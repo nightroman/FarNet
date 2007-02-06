@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "FarCommandLine.h"
+#include "CommandLineSelection.h"
 #include "Utils.h"
 
 namespace FarManagerImpl
@@ -8,18 +9,56 @@ FarCommandLine::FarCommandLine()
 {
 }
 
+ILine^ FarCommandLine::FullLine::get()
+{
+	return this;
+}
+
+ILineSelection^ FarCommandLine::Selection::get()
+{
+	return gcnew CommandLineSelection();
+}
+
+int FarCommandLine::No::get()
+{
+	return -1;
+}
+
+String^ FarCommandLine::Eol::get()
+{
+	return String::Empty;
+}
+
+void FarCommandLine::Eol::set(String^ /*value*/)
+{
+}
+
 String^ FarCommandLine::Text::get()
 {
-	char sCmd[1024];
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sCmd))
+	char sb[1024];
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sb))
 		throw gcnew OperationCanceledException();
-	return OemToStr(sCmd);
+	return OemToStr(sb);
 }
 
 void FarCommandLine::Text::set(String^ value)
 {
-	CStr sCmd(value);
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, sCmd))
+	CStr sb(value);
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, sb))
+		throw gcnew OperationCanceledException();
+}
+
+int FarCommandLine::Pos::get()
+{
+	int pos;
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINEPOS, &pos))
+		throw gcnew OperationCanceledException();
+	return pos;
+}
+
+void FarCommandLine::Pos::set(int value)
+{
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINEPOS, &value))
 		throw gcnew OperationCanceledException();
 }
 
@@ -28,6 +67,20 @@ void FarCommandLine::Insert(String^ text)
 	CStr sText(text);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, sText))
 		throw gcnew OperationCanceledException();
+}
+
+void FarCommandLine::Select(int start, int end)
+{
+	CmdLineSelect cls;
+	cls.SelStart = start;
+	cls.SelEnd = end;
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, &cls))
+		throw gcnew OperationCanceledException();
+}
+
+void FarCommandLine::Unselect()
+{
+	Select(-1, -1);
 }
 
 String^ FarCommandLine::ToString()

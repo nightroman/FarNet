@@ -52,10 +52,8 @@ namespace FarNetPlugMan
 					string assembly = classes[0];
 					Trace.WriteLine("Assembly:" + assembly);
 					Assembly plugAsm = Assembly.LoadFrom(bin.GetFiles(assembly)[0].FullName);
-					for (int i = 1; i < classes.Length; i++)
-					{
-						AddPlugin(plugAsm.GetType(classes[i], true));
-					}
+					foreach(string s in classes)
+						AddPlugin(plugAsm.GetType(s, true));
 				}
 			}
 			finally
@@ -103,26 +101,7 @@ namespace FarNetPlugMan
 			}
 			catch (Exception e)
 			{
-				Trace.WriteLine("Exception: " + e.Message);
-				IMessage m = Far.CreateMessage();
-				m.Body.Add(e.Message);
-				m.Body.Add("Plugin:" + dir.Name);
-				m.Buttons.Add("Ok");
-				m.Buttons.Add("Stack trace");
-				m.Header = "Error while loading plugin";
-				m.IsWarning = true;
-				m.Show();
-				if (m.Selected == 1)
-				{
-					String traceFile = Path.GetTempFileName();
-					StreamWriter f = File.CreateText(traceFile);
-					f.WriteLine(e.Message);
-					f.Write(e.StackTrace);
-					f.Close();
-					IEditor editor = Far.CreateEditor();
-					editor.FileName = traceFile;
-					editor.Open();
-				}
+				Far.ShowError("Error in plugin: " + dir.Name, e);
 			}
 			Trace.Unindent();
 		}

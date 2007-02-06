@@ -32,6 +32,44 @@ void CStr::Set(String^ str)
 	StrToOem(str, m_str);
 }
 
+///<summary>Temp string buffer.</summary>
+template<class T>
+class TStr
+{
+public:
+	TStr(int len)
+	{
+		if (len > eMaxLen)
+			m_str = new T[len + 1];
+		else
+			m_str = m_buf;
+	}
+	TStr(const T* str, int len)
+	{
+		if (len > eMaxLen)
+			m_str = new T[len + 1];
+		else
+			m_str = m_buf;
+		strncpy_s(m_str, len + 1, str, len);
+	}
+	~TStr()
+	{
+		if (m_str != m_buf)
+			delete m_str;
+	}
+	operator T*()
+	{
+		return m_str;
+	}
+private:
+	enum {eMaxLen = 255};
+	T m_buf[eMaxLen + 1];
+	T* m_str;
+};
+
+// now new after this point
+#define new dont_use_new
+
 void WC2OEM(LPCWSTR src, char* dst, int len)
 {
 	if (src == 0)
@@ -63,40 +101,36 @@ void OEM2WC(const char* src, LPWSTR dst)
 
 String^ OemToStr(const char* oem, int len)
 {
-	pin_ptr<wchar_t> dst = new wchar_t[len+1];
+	TStr<wchar_t> dst(len);
 	OEM2WC(oem, dst, len);
 	dst[len] = 0;
 	String^ r = gcnew String(dst);
-	delete dst;
 	return r;
 }
 
 String^ OemToStr(const char* oem)
 {
 	size_t len = strlen(oem);
-	pin_ptr<wchar_t> dst = new wchar_t[len+1];
+	TStr<wchar_t> dst(len);
 	OEM2WC(oem, dst);
 	String^ r = gcnew String(dst);
-	delete dst;
 	return r;
 }
 
-void convert(int cmd, char* text, int len)
+String^ FromEditor(const char* text, int len)
+{
+	TStr<char> textCopy(text, len);
+	EditorControl_ECTL_EDITORTOOEM(textCopy, len);
+	String^ r = OemToStr(textCopy, len);
+	return r;
+}
+
+void EditorControl_ECTL_EDITORTOOEM(char* text, int len)
 {
 	EditorConvertText ect;
 	ect.Text = text;
 	ect.TextLength = len;
-	Info.EditorControl(cmd, &ect);
-}
-
-String^ fromEditor(const char* text, int len)
-{
-	char* textCopy = new char[len+1];
-	strncpy_s(textCopy, len+1, text, len);
-	convert(ECTL_EDITORTOOEM, textCopy, len);
-	String^ r = OemToStr(textCopy, len);
-	delete textCopy;
-	return r;
+	Info.EditorControl(ECTL_EDITORTOOEM, &ect);
 }
 
 void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm)
@@ -123,10 +157,24 @@ void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int no)
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + no + ". Ensure current editor and valid line number.");
 }
 
+void EditorControl_ECTL_OEMTOEDITOR(char* text, int len)
+{
+	EditorConvertText ect;
+	ect.Text = text;
+	ect.TextLength = len;
+	Info.EditorControl(ECTL_OEMTOEDITOR, &ect);
+}
+
 // Don't check result here!
 void EditorControl_ECTL_SELECT(EditorSelect& es)
 {
 	Info.EditorControl(ECTL_SELECT, &es);
+}
+
+void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp)
+{
+	if (!Info.EditorControl(ECTL_SETPOSITION, (EditorSetPosition*)&esp))
+		throw gcnew InvalidOperationException(__FUNCTION__);
 }
 
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess)

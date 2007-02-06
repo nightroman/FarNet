@@ -130,7 +130,7 @@ bool InputBox::Show(String^ prompt, String^ text, String^ title, String^ history
 	if (history != nullptr)
 		_history = history;
 	char* dest = new char[_maxLength+1];
-	STR_ARG(_title); STR_ARG(_prompt); STR_ARG(_history); STR_ARG(_text);
+	CStr pc_title(_title); CStr pc_prompt(_prompt); CStr pc_history(_history); CStr pc_text(_text);
 	bool ok = Info.InputBox(pc_title, pc_prompt, pc_history, pc_text, dest, MaxLength, "", Flags()) != 0;
 	if (ok)
 		Text = OemToStr(dest);

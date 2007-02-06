@@ -8,7 +8,7 @@ public:
 	virtual property bool Highlight { bool get(); }
 	virtual property bool IsActive { bool get(); }
 	virtual property bool IsPlugin { bool get(); }
-	virtual property bool IsVisible { bool get(); }
+	virtual property bool IsVisible { bool get(); void set(bool value); }
 	virtual property bool NumericSort { bool get(); }
 	virtual property bool RealNames { bool get(); }
 	virtual property bool ReverseSortOrder { bool get(); }

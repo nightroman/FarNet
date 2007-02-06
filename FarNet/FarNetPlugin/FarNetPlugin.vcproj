@@ -228,6 +228,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CommandLineSelection.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Editor.cpp"
 				>
 			</File>
@@ -253,10 +257,6 @@
 			</File>
 			<File
 				RelativePath=".\FarPanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FarVersion.cpp"
 				>
 			</File>
 			<File
@@ -326,6 +326,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\CommandLineSelection.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Editor.h"
 				>
 			</File>
@@ -343,10 +347,6 @@
 			</File>
 			<File
 				RelativePath=".\FarPanel.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FarVersion.h"
 				>
 			</File>
 			<File

@@ -27,6 +27,6 @@ private:
 	Key^ _key;
 	Mouse^ _mouse;
 	Editor^ _waiting;
-	bool _before_1_71_2169;
+	bool _version_1_71_2169;
 };
 }

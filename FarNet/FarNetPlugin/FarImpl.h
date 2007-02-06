@@ -12,18 +12,19 @@ public ref class Far : public IFar
 public:
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get(); }
 	virtual property ICollection<IEditor^>^ Editors { ICollection<IEditor^>^ get(); }
-	virtual property ICommandLine^ CommandLine { ICommandLine^ get(); }
+	virtual property ILine^ CommandLine { ILine^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
 	virtual property int HWnd { int get(); }
 	virtual property IPanel^ AnotherPanel { IPanel^ get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
-	virtual property IVersion^ Version { IVersion^ get(); }
+	virtual property System::Version^ Version { System::Version^ get(); }
 	virtual property String^ Clipboard { String^ get(); void set(String^ value); }
 	virtual property String^ PluginFolderPath { String^ get(); }
 	virtual property String^ WordDiv { String^ get(); }
 public:
 	virtual bool Msg(String^ body);
 	virtual bool Msg(String^ body,String^ header);
+	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual IEditor^ CreateEditor();
 	virtual IInputBox^ CreateInputBox();
 	virtual IList<int>^ CreateKeySequence(String^ keys);
@@ -35,13 +36,16 @@ public:
 	virtual IPluginMenuItem^ RegisterPluginsMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ onOpen);
 	virtual IRect^ CreateRect(int left, int top, int right, int bottom);
 	virtual ITwoPoint^ CreateStream(int left, int top, int right, int bottom);
+	virtual void GetUserScreen();
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(IList<int>^ sequence,bool disableOutput);
+	virtual void PostText(String^ text, bool disableOutput);
 	virtual void RegisterPluginsMenuItem(IPluginMenuItem^ item);
 	virtual void RegisterPrefix(String^ prefix, StringDelegate^ handler);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ cmdLine);
 	virtual void SetUserScreen();
+	virtual void ShowError(String^ title, Exception^ error);
 	virtual void UnregisterPluginsMenuItem(IPluginMenuItem^ item);
 public:
 	Object^ Test();
@@ -49,7 +53,7 @@ internal:
 	Far();
 	~Far();
 internal:
-	EditorManager^ editorManager;
+	EditorManager^ _editorManager;
 	void OnGetPluginInfo(PluginInfo* pi);
 	HANDLE OnOpenPlugin(int from, int item);
 private:
@@ -62,7 +66,6 @@ private:
 	CStr* _prefixes;
 	IPanel^ _panel;
 	IPanel^ _anotherPanel;
-	ICommandLine^ _commandLine;
 	List<IPluginMenuItem^>^ _registeredMenuItems;
 	Dictionary<String^, StringDelegate^>^ _registeredPrefixes;
 };

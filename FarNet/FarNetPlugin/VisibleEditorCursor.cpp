@@ -9,7 +9,7 @@ VisibleEditorCursor::VisibleEditorCursor()
 }
 
 #define __get(X) EditorInfo ei; EditorControl_ECTL_GETINFO(ei); return ei.X
-#define __set(X) SEditorSetPosition esp; esp.X = value; PutEsp(esp)
+#define __set(X) SEditorSetPosition esp; esp.X = value; EditorControl_ECTL_SETPOSITION(esp)
 
 int VisibleEditorCursor::LeftPos::get()
 {
@@ -72,7 +72,7 @@ void VisibleEditorCursor::Assign(ICursor^ cursor)
 	esp.LeftPos = cursor->LeftPos;
 	esp.TopScreenLine = cursor->TopLine;
 	esp.Overtype = -1;
-	PutEsp(esp);
+	EditorControl_ECTL_SETPOSITION(esp);
 }
 
 void VisibleEditorCursor::Set(int pos, int line)
@@ -80,11 +80,6 @@ void VisibleEditorCursor::Set(int pos, int line)
 	SEditorSetPosition esp;
 	esp.CurPos = pos;
 	esp.CurLine = line;
-	PutEsp(esp);
-}
-
-void VisibleEditorCursor::PutEsp(const EditorSetPosition& esp)
-{
-	Info.EditorControl(ECTL_SETPOSITION, (EditorSetPosition*)&esp);
+	EditorControl_ECTL_SETPOSITION(esp);
 }
 }

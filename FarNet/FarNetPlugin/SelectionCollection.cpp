@@ -7,8 +7,8 @@
 namespace FarManagerImpl
 {;
 SelectionCollection::SelectionCollection(IEditor^ editor)
+: _editor(editor)
 {
-	_editor = editor;
 	_strings = gcnew EditorStringCollection(this, true);
 }
 
