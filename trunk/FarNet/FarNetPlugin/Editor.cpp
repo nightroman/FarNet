@@ -4,6 +4,7 @@
 #include "SelectionCollection.h"
 #include "Utils.h"
 #include "VisibleEditorCursor.h"
+#include "VisibleEditorLine.h"
 #include "VisibleEditorLineCollection.h"
 
 namespace FarManagerImpl
@@ -15,7 +16,6 @@ Editor::Editor(EditorManager^ manager)
 	_title = String::Empty;
 	_window = gcnew Rect();
 	_lines = gcnew VisibleEditorLineCollection();
-	_selection = gcnew SelectionCollection(this);
 	_openedCursor = gcnew VisibleEditorCursor();
 	_storedCursor = gcnew StoredEditorCursor();
 	_cursor = gcnew ProxyEditorCursor();
@@ -162,7 +162,7 @@ void Editor::Overtype::set(bool value)
 {
 	SEditorSetPosition esp;
 	esp.Overtype = value;
-	Info.EditorControl(ECTL_SETPOSITION, &esp);
+	EditorControl_ECTL_SETPOSITION(esp);
 }
 
 ExpandTabsMode Editor::ExpandTabs::get()
@@ -190,6 +190,11 @@ void Editor::ExpandTabs::set(ExpandTabsMode value)
 ICursor^ Editor::Cursor::get()
 {
 	return _cursor;
+}
+
+ILine^ Editor::CurrentLine::get()
+{
+	return gcnew VisibleEditorLine(-1, false);
 }
 
 ILines^ Editor::Lines::get()
@@ -274,7 +279,7 @@ void Editor::Window::set(IRect^ value)
 
 ISelection^ Editor::Selection::get()
 {
-	return _selection;
+	return gcnew SelectionCollection(this);
 }
 
 void Editor::Insert(String^ text)

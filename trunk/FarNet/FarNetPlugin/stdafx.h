@@ -12,6 +12,7 @@ using namespace FarManager::Impl;
 using namespace FarManager;
 using namespace System::Collections::Specialized;
 using namespace System::Collections::Generic;
+using namespace System::Text;
 using namespace System;
 
 extern PluginStartupInfo Info;

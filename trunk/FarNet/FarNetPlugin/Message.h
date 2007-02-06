@@ -22,7 +22,7 @@ private:
 	int Amount();
 	int Flags();
 	CStr* CreateBlock();
-	static void Add(StringCollection^ Coll, CStr* result, int& index);
+	static void Add(StringCollection^ strings, CStr* result, int& index);
 private:
 	bool _isError;
 	bool _isWarning;

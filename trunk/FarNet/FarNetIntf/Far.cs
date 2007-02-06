@@ -37,6 +37,7 @@ namespace FarManager
 		/// </summary>
 		Viewer,
 	};
+
 	/// <summary>
 	/// Item of plugins menu (F11)
 	/// </summary>
@@ -57,6 +58,7 @@ namespace FarManager
 		/// <param name="from">from where it is opened</param>
 		void FireOnOpen(IPluginMenuItem sender, OpenFrom from);
 	}
+	
 	/// <summary>
 	/// Item of Far disk menu
 	/// </summary>
@@ -80,28 +82,12 @@ namespace FarManager
 		/// <param name="sender">IDiskMenuItem of menu</param>
 		void FireOnOpen(IDiskMenuItem sender);
 	}
-	/// <summary>
-	/// Version of FAR manager
-	/// </summary>
-	public interface IVersion
-	{
-		/// <summary>
-		/// Major part (1 for 1.70 build 1973)
-		/// </summary>
-		int Major { get; }
-		/// <summary>
-		/// Minor part (70 for 1.70 build 1973)
-		/// </summary>
-		int Minor { get; }
-		/// <summary>
-		/// Build part (1973 for 1.70 build 1973)
-		/// </summary>
-		int Build { get; }
-	}
+	
 	/// <summary>
 	/// Delegate which takes 1 string parameter
 	/// </summary>
 	public delegate void StringDelegate(string s);
+	
 	/// <summary>
 	/// The main interface of Far manager
 	/// </summary>
@@ -112,14 +98,13 @@ namespace FarManager
 		/// </summary>
 		string PluginFolderPath { get; }
 		/// <summary>
-		/// Register command line prefix
+		/// Registers a command line prefix.
 		/// </summary>
 		/// <remarks>
-		/// Call this function at plugin connection 
-		/// if you want to handle command line prefixes.
+		/// Call this function at plugin connection if you want to handle command line prefixes.
 		/// </remarks>
-		/// <param name="prefix">the prefix</param>
-		/// <param name="handler">handler of command line</param>
+		/// <param name="prefix">Command prefix.</param>
+		/// <param name="handler">Handler of a command.</param>
 		void RegisterPrefix(string prefix, StringDelegate handler);
 		/// <summary>
 		/// Adds menu item to the main plugin menu (shown by F11)
@@ -176,7 +161,7 @@ namespace FarManager
 		/// <summary>
 		/// FAR version
 		/// </summary>
-		IVersion Version { get; }
+		Version Version { get; }
 		/// <summary>
 		/// Create InputBox implementation
 		/// </summary>
@@ -217,6 +202,12 @@ namespace FarManager
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeys(string keys, bool disableOutput);
 		/// <summary>
+		/// Post text to the FAR keyboard queue.
+		/// </summary>
+		/// <param name="text">Literal text. \t, \r, \n, \r\n are supported, too.</param>
+		/// <param name="disableOutput">Do not display processing on the screen.</param>
+		void PostText(string text, bool disableOutput);
+		/// <summary>
 		/// Sequence of key codes from string of keys.
 		/// </summary>
 		IList<int> CreateKeySequence(string keys);
@@ -255,15 +246,40 @@ namespace FarManager
 		/// </summary>
 		IPanel AnotherPanel { get; }
 		/// <summary>
-		/// Command line.
+		/// The Far command line.
 		/// </summary>
-		ICommandLine CommandLine { get; }
+		/// <remarks>
+		/// If a plugin is called from the command line (including a user menu (F2)
+		/// then command line properties and methods may not work correctly; in
+		/// this case consider to call a plugin operation from a plugin menu.
+		/// Staring from Far 1.71.2192 you can set the entire command line text
+		/// if you call a plugin from the command line (but not from a user menu).
+		/// </remarks>
+		ILine CommandLine { get; }
 		/// <summary>
 		/// Copies the current screen contents to the FAR user screen buffer
 		/// (which is displayed when the panels are switched off).
 		/// </summary>
 		void SetUserScreen();
+		/// <summary>
+		/// Copies the current user screen buffer to console screen
+		/// (which is displayed when the panels are switched off).
+		/// VERSION: Far 1.71.2186.
+		/// </summary>
+		void GetUserScreen();
+		/// <summary>
+		/// Returns strings from history.
+		/// </summary>
+		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory</param>
+		ICollection<string> GetHistory(string name);
+		/// <summary>
+		/// Show error information
+		/// </summary>
+		/// <param name="title">Message.</param>
+		/// <param name="error">Exception.</param>
+		void ShowError(string title, Exception error);
 	}
+
 	/// <summary>
 	/// Arguments of <see cref="IPluginMenuItem.OnOpen"/> event.
 	/// </summary>

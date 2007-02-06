@@ -117,6 +117,11 @@ namespace FarManager
 		/// <seealso cref="IFar.WordDiv"/>
 		string WordDiv { get; set; }
 		/// <summary>
+		/// Current line.
+		/// Only for opened and current editor.
+		/// </summary>
+		ILine CurrentLine { get; }
+		/// <summary>
 		/// Editor lines.
 		/// Only for opened and current editor.
 		/// </summary>
@@ -325,10 +330,12 @@ namespace FarManager
 	{
 		/// <summary>
 		/// Line number in source <see cref="IEditor"/>.
+		/// -1 for <see cref="IEditor.CurrentLine"/> and <see cref="IFar.CommandLine"/>.
 		/// </summary>
 		int No { get; }
 		/// <summary>
-		/// Line text or selected text depending on a source (<see cref="IEditor.Lines"/> or <see cref="IEditor.Selection"/>).
+		/// Line text (<see cref="IEditor.Lines"/>, <see cref="IEditor.CurrentLine"/>, <see cref="IFar.CommandLine"/>)
+		/// or text of selected line part (<see cref="IEditor.Selection"/>).
 		/// </summary>
 		string Text { get; set; }
 		/// <summary>
@@ -336,9 +343,35 @@ namespace FarManager
 		/// </summary>
 		string Eol { get; set; }
 		/// <summary>
-		/// Selected part of the line.
+		/// Selected line parts.
 		/// </summary>
 		ILineSelection Selection { get; }
+		/// <summary>
+		/// Cursor position. -1 if the line is not current.
+		/// </summary>
+		int Pos { get; set; }
+		/// <summary>
+		/// Inserts text into the current or command line beginning from the current cursor position.
+		/// Don't use if it is not the current line or the command line.
+		/// </summary>
+		/// <param name="text">String to insert to the line.</param>
+		void Insert(string text);
+		/// <summary>
+		/// Selects a text fragment in the current or command line.
+		/// </summary>
+		/// <param name="start">Start position.</param>
+		/// <param name="end">End position.</param>
+		void Select(int start, int end);
+		/// <summary>
+		/// Clears selection in the current or command line.
+		/// </summary>
+		void Unselect();
+		/// <summary>
+		/// Gets an instance of a full line if this line represents only a part,
+		/// (e.g. the line is from <see cref="IEditor.Selection"/>),
+		/// or returns this instance itself.
+		/// </summary>
+		ILine FullLine { get; }
 	}
 
 	/// <summary>

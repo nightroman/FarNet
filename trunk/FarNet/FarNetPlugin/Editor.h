@@ -24,6 +24,7 @@ public:
 	virtual property bool Overtype { bool get(); void set(bool value); }
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get(); void set(ExpandTabsMode value); }
 	virtual property ICursor^ Cursor { ICursor^ get(); }
+	virtual property ILine^ CurrentLine { ILine^ get(); }
 	virtual property ILines^ Lines { ILines^ get(); }
 	virtual property int Id { int get(); void set(int value); }
 	virtual property int TabSize { int get(); void set(int value); }
@@ -65,7 +66,6 @@ private:
 	bool _isModal;
 	bool _isNew;
 	IRect^ _window;
-	SelectionCollection^ _selection;
 	String^ _fileName;
 	String^ _title;
 	VisibleEditorLineCollection^ _lines;

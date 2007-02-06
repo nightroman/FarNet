@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNetPlugMan", "FarPlugins
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F38634E7-742B-4082-9A34-D17D3156B872}"
 	ProjectSection(SolutionItems) = preProject
-		fordistr\Resources\Far.Net.Readme.txt = fordistr\Resources\Far.Net.Readme.txt
+		fordistr\Resources\About-Far.Net.txt = fordistr\Resources\About-Far.Net.txt
 	EndProjectSection
 EndProject
 Global
