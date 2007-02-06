@@ -5,8 +5,8 @@
 namespace FarManagerImpl
 {;
 VisibleEditorLineSelection::VisibleEditorLineSelection(int no)
+: _no(no)
 {
-	_no = no;
 }
 
 String^ VisibleEditorLineSelection::Text::get()
@@ -16,7 +16,8 @@ String^ VisibleEditorLineSelection::Text::get()
 		return nullptr;
 	if (egs.SelEnd < 0)
 		egs.SelEnd = egs.StringLength;
-	return fromEditor(egs.StringText + egs.SelStart, egs.SelEnd - egs.SelStart);
+
+	return FromEditor(egs.StringText + egs.SelStart, egs.SelEnd - egs.SelStart);
 }
 
 void VisibleEditorLineSelection::Text::set(String^ value)
@@ -25,7 +26,7 @@ void VisibleEditorLineSelection::Text::set(String^ value)
 	if (egs.SelStart < 0)
 		throw gcnew InvalidOperationException("Can't set text: there is no selection.");
 
-	String^ text1 = fromEditor(egs.StringText, egs.StringLength);
+	String^ text1 = FromEditor(egs.StringText, egs.StringLength);
 	String^ text2 = text1->Substring(0, egs.SelStart) + value;
 	int dd = 0;
 	if (egs.SelEnd >= 0)
@@ -36,7 +37,7 @@ void VisibleEditorLineSelection::Text::set(String^ value)
 
 	// set string
 	CStr sb(text2);
-	convert(ECTL_OEMTOEDITOR, sb, text2->Length);
+	EditorControl_ECTL_OEMTOEDITOR(sb, text2->Length);
 	EditorSetString ess;
 	ess.StringEOL = (char*)egs.StringEOL;
 	ess.StringLength = text2->Length;

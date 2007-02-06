@@ -84,8 +84,8 @@ void VisibleEditorLineCollection::Insert(int index, String^ item)
 	if (index <= ei.CurLine)
 	{
 		++ei.CurLine;
-		for(int i = item->Length; --i >= 0;)
-			if (item[i] == '\r')
+		for each(Char c in item)
+			if (c == '\r')
 				++ei.CurLine;
 	}
 
@@ -103,7 +103,7 @@ void VisibleEditorLineCollection::Insert(int index, String^ item)
 	{
 		SEditorSetPosition esp;
 		esp.Overtype = false;
-		Info.EditorControl(ECTL_SETPOSITION, &esp);
+		EditorControl_ECTL_SETPOSITION(esp);
 	}
 
 	// insert text
@@ -115,7 +115,7 @@ void VisibleEditorLineCollection::Insert(int index, String^ item)
 	{
 		SEditorSetPosition esp;
 		esp.Overtype = true;
-		Info.EditorControl(ECTL_SETPOSITION, &esp);
+		EditorControl_ECTL_SETPOSITION(esp);
 	}
 
 	// restore pos
@@ -172,7 +172,7 @@ void VisibleEditorLineCollection::SetPos(const EditorInfo& ei)
 	esp.CurPos = ei.CurPos;
 	esp.TopScreenLine = ei.TopScreenLine;
 	esp.LeftPos = ei.LeftPos;
-	Info.EditorControl(ECTL_SETPOSITION, &esp);
+	EditorControl_ECTL_SETPOSITION(esp);
 }
 
 void VisibleEditorLineCollection::Go(int no, int pos)
@@ -180,7 +180,7 @@ void VisibleEditorLineCollection::Go(int no, int pos)
 	SEditorSetPosition esp;
 	esp.CurLine = no;
 	esp.CurPos = pos;
-	Info.EditorControl(ECTL_SETPOSITION, &esp);
+	EditorControl_ECTL_SETPOSITION(esp);
 }
 
 void VisibleEditorLineCollection::Go(int no)

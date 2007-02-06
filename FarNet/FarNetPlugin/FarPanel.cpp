@@ -40,6 +40,21 @@ bool FarPanel::IsVisible::get()
 	return pi.Visible != 0;
 }
 
+void FarPanel::IsVisible::set(bool value)
+{
+	PanelInfo pi; GetBrief(pi);
+	bool old = pi.Visible != 0;
+	if (old == value)
+		return;
+
+	DWORD key = Info.FSF->FarNameToKey(pi.PanelRect.left == 0 ? "CtrlF1" : "CtrlF2");
+	KeySequence ks;
+	ks.Count = 1;
+	ks.Flags = 0;
+	ks.Sequence = &key;
+	Info.AdvControl(Info.ModuleNumber, ACTL_POSTKEYSEQUENCE, &ks);
+}
+
 IFile^ FarPanel::Current::get()
 {
 	RefreshContents();
@@ -138,9 +153,9 @@ void FarPanel::RefreshContents()
 
 void FarPanel::ClearContents()
 {
-	for(int i = 0; i < _contents->Files->Count; ++i)
+	for each(IFile^ i in _contents->Files)
 	{
-		StoredItem^ f = safe_cast<StoredItem^>(_contents->Files[i]);
+		StoredItem^ f = safe_cast<StoredItem^>(i);
 		f->Parent = nullptr;
 	}
 	_contents->Files->Clear();

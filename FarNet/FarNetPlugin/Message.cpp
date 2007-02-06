@@ -137,12 +137,12 @@ CStr* Message::CreateBlock()
 	return r;
 }
 
-void Message::Add(StringCollection^ Coll, CStr* result, int& index)
+void Message::Add(StringCollection^ strings, CStr* result, int& index)
 {
-	for(int i = 0; i<Coll->Count; i++)
+	for each(String^ s in strings)
 	{
-		result[index].Set(Coll[i]);
-		index++;
+		result[index].Set(s);
+		++index;
 	}
 }
 }

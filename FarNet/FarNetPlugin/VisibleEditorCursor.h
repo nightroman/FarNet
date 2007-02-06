@@ -14,7 +14,5 @@ public:
 	virtual void Set(int pos, int line);
 internal:
 	VisibleEditorCursor();
-private:
-	static void PutEsp(const EditorSetPosition& esp);
 };
 }

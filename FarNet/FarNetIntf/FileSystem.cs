@@ -238,7 +238,7 @@ namespace FarManager
 		/// <summary>
 		/// Is it visible?
 		/// </summary>
-		bool IsVisible { get; }
+		bool IsVisible { get; set; }
 		/// <summary>
 		/// Current panel path.
 		/// If the panel is Tree, it is currently selected directory in panel.
@@ -310,21 +310,5 @@ namespace FarManager
 		/// </summary>
 		/// <param name="keepSelection">Keep the current selection.</param>
 		void Update(bool keepSelection);
-	}
-
-	/// <summary>
-	/// Far command line
-	/// </summary>
-	public interface ICommandLine
-	{
-		/// <summary>
-		/// Command line text.
-		/// </summary>
-		string Text { get; set; }
-		/// <summary>
-		/// Inserts text into the command line beginning from the current cursor position.
-		/// </summary>
-		/// <param name="text">String to insert to the command line.</param>
-		void Insert(string text);
 	}
 }

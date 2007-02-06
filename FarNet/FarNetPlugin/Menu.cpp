@@ -146,12 +146,10 @@ void Menu::ReverseAutoAssign::set(bool value)
 
 FarMenuItem* Menu::CreateItems()
 {
-	FarMenuItem* r = new struct FarMenuItem[Items->Count];
+	FarMenuItem* r = new struct FarMenuItem[_items->Count];
 	FarMenuItem* p = r;
-	Collections::IEnumerator^ i = Items->GetEnumerator();
-	while(i->MoveNext())
+	for each(IMenuItem^ item in _items)
 	{
-		IMenuItem^ item = (IMenuItem^)i->Current;
 		StrToOem((item->Text->Length > 127 ? item->Text->Substring(0, 127) : item->Text), p->Text);
 		p->Selected = item->Selected;
 		p->Checked = item->Checked;
@@ -168,10 +166,9 @@ int* Menu::CreateBreakKeys()
 	{
 		r = new int[_breakKeys->Count + 1];
 		int* cur = r;
-		IEnumerator<int>^ i = _breakKeys->GetEnumerator();
-		while(i->MoveNext())
+		for each(int i in _breakKeys)
 		{
-			*cur = i->Current;
+			*cur = i;
 			++cur;
 		}
 		*cur = 0;
