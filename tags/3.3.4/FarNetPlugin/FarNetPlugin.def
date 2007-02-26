@@ -1,0 +1,8 @@
+LIBRARY	FarNetPlugin
+EXPORTS
+    SetStartupInfo
+    GetPluginInfo
+    OpenPlugin
+    ExitFAR
+    ProcessEditorInput
+    ProcessEditorEvent
