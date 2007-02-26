@@ -3,7 +3,7 @@
 :: Zip command: pkzipc -add -dir %dst% *.*
 
 @echo off
-set version=3.2.9
+set version=3.3.4
 set dst=Far.NET.%version%.rar
 
 if exist tmp rmdir /s /q tmp

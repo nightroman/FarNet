@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "FarCommandLine.h"
 #include "CommandLineSelection.h"
-#include "Utils.h"
 
 namespace FarManagerImpl
 {;
@@ -29,7 +28,7 @@ String^ FarCommandLine::Eol::get()
 	return String::Empty;
 }
 
-void FarCommandLine::Eol::set(String^ /*value*/)
+void FarCommandLine::Eol::set(String^)
 {
 }
 

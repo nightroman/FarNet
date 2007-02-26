@@ -1,8 +1,7 @@
 #include "StdAfx.h"
 #include "SelectionCollection.h"
-#include "LineListEnumerator.h"
-#include "VisibleEditorLine.h"
 #include "Utils.h"
+#include "VisibleEditorLine.h"
 
 namespace FarManagerImpl
 {;
@@ -19,10 +18,10 @@ bool SelectionCollection::Contains(ILine^)
 
 IEnumerator<ILine^>^ SelectionCollection::GetEnumerator()
 {
-	ITwoPoint^ shape = Shape;
-	if (shape == nullptr)
+	Place ss = SelectionPlace();
+	if (ss.Top < 0)
 		return gcnew LineListEnumerator(this, 0, 0);
-	return gcnew LineListEnumerator(this, 0, Count);
+	return gcnew LineListEnumerator(this, 0, ss.Height);
 }
 
 Collections::IEnumerator^ SelectionCollection::GetEnumeratorObject()
@@ -67,49 +66,15 @@ ILine^ SelectionCollection::Last::get()
 
 int SelectionCollection::Count::get()
 {
-	ITwoPoint^ shape = Shape;
-	if (shape == nullptr)
+	Place ss = SelectionPlace();
+	if (ss.Top < 0)
 		return 0;
-	return shape->Height;
+	return ss.Height;
 }
 
-ITwoPoint^ SelectionCollection::Shape::get()
+Place SelectionCollection::Shape::get()
 {
-	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
-	if (ei.BlockType == BTYPE_NONE)
-		return nullptr;
-
-	ITwoPoint^ r;
-	if (ei.BlockType == BTYPE_STREAM)
-		r = gcnew Impl::Stream();
-	else
-		r = gcnew Impl::Rect();
-
-	EditorGetString egs;
-	r->Top = ei.BlockStartLine;
-	r->Left = -1;
-	for(egs.StringNumber = r->Top; Info.EditorControl(ECTL_GETSTRING, &egs); ++egs.StringNumber) // use EditorControl() here, not wrapper
-	{
-		if (r->Left < 0)
-			r->Left = egs.SelStart;
-		if (egs.SelStart < 0)
-			break;
-		r->Right = egs.SelEnd;
-	}
-	--r->Right;
-	r->Bottom = egs.StringNumber - 1;
-
-	return r;
-}
-
-void SelectionCollection::Shape::set(ITwoPoint^ value)
-{
-	if (value == nullptr)
-		Unselect();
-	else
-		Select(
-		(dynamic_cast<IRect^>(value) != nullptr ? SelectionType::Rect : SelectionType::Stream),
-		value->Left, value->Top, value->Right, value->Bottom);
+	return SelectionPlace();
 }
 
 IStrings^ SelectionCollection::Strings::get()
@@ -162,7 +127,7 @@ void SelectionCollection::Text::set(String^ value)
 	Clear();
 
 	// move cursor to the selection start
-	_editor->Cursor->Set(left, top);
+	_editor->GoTo(left, top);
 
 	// change overtype
 	if (ei.Overtype)
@@ -250,7 +215,7 @@ void SelectionCollection::Insert(int index, String^ item)
 
 	// case: add (prior is actually the last)
 	item = item->Replace("\r\n", "\r")->Replace('\n', '\r');
-	_editor->Cursor->Set(egsp.SelEnd, ip);
+	_editor->GoTo(egsp.SelEnd, ip);
 
 	// change overtype
 	if (ei.Overtype)
@@ -313,10 +278,10 @@ void SelectionCollection::RemoveAt(int index)
 		int left = egss.SelStart;
 
 		// change selection
-		ITwoPoint^ shape = Shape;
-		++shape->Top;
-		shape->Left = 0;
-		Shape = shape;
+		Place ss = Shape;
+		++ss.Top;
+		ss.Left = 0;
+		Select((SelectionType)ei.BlockType, ss.Left, ss.Top, ss.Right, ss.Bottom);
 
 		// remove selected part of line
 		ILine^ line = _editor->Lines[top];
@@ -356,8 +321,9 @@ void SelectionCollection::RemoveAt(int index)
 	_editor->Lines->RemoveAt(bottom);
 }
 
-void SelectionCollection::Select(SelectionType type, int left, int top, int right, int bottom)
+void SelectionCollection::Select(SelectionType type, int pos1, int line1, int pos2, int line2)
 {
+	// type
 	EditorSelect es;
 	switch(type)
 	{
@@ -374,10 +340,20 @@ void SelectionCollection::Select(SelectionType type, int left, int top, int righ
 	default:
 		throw gcnew ArgumentException("Unknown selection type");
 	}
-	es.BlockStartLine = top;
-	es.BlockStartPos = left;
-	es.BlockHeight = bottom - top + 1;
-	es.BlockWidth = right - left + 1;
+
+	// swap
+	if (line1 > line2 || line1 == line2 && pos1 > pos2)
+	{
+		int t;
+		t = pos1; pos1 = pos2; pos2 = t;
+		t = line1; line1 = line2; line2 = t;
+	}
+
+	// go
+	es.BlockStartLine = line1;
+	es.BlockStartPos = pos1;
+	es.BlockHeight = line2 - line1 + 1;
+	es.BlockWidth = pos2 - pos1 + 1;
 	EditorControl_ECTL_SELECT(es);
 }
 

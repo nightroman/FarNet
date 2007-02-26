@@ -2,6 +2,9 @@
 
 namespace FarManagerImpl
 {;
+ref class StoredFolder;
+ref class StoredItem;
+
 public ref class FarPanel : public IPanel
 {
 public:

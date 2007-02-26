@@ -6,5 +6,3 @@ EXPORTS
     ExitFAR
     ProcessEditorInput
     ProcessEditorEvent
-
-    

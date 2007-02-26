@@ -8,7 +8,7 @@
 #include "plugin.hpp"
 #pragma warning(pop)
 
-using namespace FarManager::Impl;
+using namespace FarManager::Forms;
 using namespace FarManager;
 using namespace System::Collections::Specialized;
 using namespace System::Collections::Generic;
@@ -16,3 +16,5 @@ using namespace System::Text;
 using namespace System;
 
 extern PluginStartupInfo Info;
+
+#include "Utils.h"

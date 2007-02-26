@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "Message.h"
-#include "Utils.h"
 
 namespace FarManagerImpl
 {;
@@ -8,7 +7,21 @@ Message::Message()
 {
 	_body = gcnew StringCollection();
 	_buttons = gcnew StringCollection();
-	_header = String::Empty;
+}
+
+DEF_PROP_FLAG(Message, IsWarning, FMSG_WARNING);
+DEF_PROP_FLAG(Message, IsError, FMSG_ERRORTYPE);
+DEF_PROP_FLAG(Message, KeepBackground, FMSG_KEEPBACKGROUND);
+DEF_PROP_FLAG(Message, LeftAligned, FMSG_LEFTALIGN);
+
+MessageOptions Message::Options::get()
+{
+	return (MessageOptions)_flags;
+}
+
+void Message::Options::set(MessageOptions value)
+{
+	_flags = (int)value;
 }
 
 StringCollection^ Message::Body::get()
@@ -21,16 +34,6 @@ StringCollection^ Message::Buttons::get()
 	return _buttons;
 }
 
-String^ Message::Header::get()
-{
-	return _header;
-}
-
-void Message::Header::set(String^ value)
-{
-	_header = value;
-}
-
 int Message::Selected::get()
 {
 	return _selected;
@@ -41,81 +44,36 @@ void Message::Selected::set(int value)
 	_selected = value;
 }
 
-bool Message::IsWarning::get()
-{
-	return _isWarning;
-}
-
-void Message::IsWarning::set(bool value)
-{
-	_isWarning = value;
-}
-
-bool Message::IsError::get()
-{
-	return _isError;
-}
-
-void Message::IsError::set(bool value)
-{
-	_isError = value;
-}
-
-bool Message::KeepBackground::get()
-{
-	return _keepBackground;
-}
-
-void Message::KeepBackground::set(bool value)
-{
-	_keepBackground = value;
-}
-
-bool Message::LeftAligned::get()
-{
-	return _leftAligned;
-}
-
-void Message::LeftAligned::set(bool value)
-{
-	_leftAligned = value;
-}
-
 bool Message::Show()
 {
+	// flags: add OK if no buttons
+	int flags = _flags;
+	if (_buttons->Count == 0 && (flags & (FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMSG_MB_YESNO|FMSG_MB_YESNOCANCEL|FMSG_MB_RETRYCANCEL)) == 0)
+		flags |= FMSG_MB_OK;
+
 	CStr* items = CreateBlock();
-	_selected = Info.Message(0, Flags(), "", (char**)items, Amount(), Buttons->Count);
+	CStr sHelp;
+	if (!String::IsNullOrEmpty(HelpTopic))
+		sHelp.Set(HelpTopic);
+	_selected = Info.Message(0, flags, sHelp, (char**)items, Amount(), _buttons->Count);
 	delete[] items;
 	return Selected != -1;
 }
 
 void Message::Reset()
 {
-	Header = "";
-	Selected = 0;
-	IsWarning = false;
-	IsError = false;
-	KeepBackground = false;
-	LeftAligned = false;
-	Buttons->Clear();
+	Header = nullptr;
+	Selected = -1;
+	_flags = 0;
+	_buttons->Clear();
 }
 
 int Message::Amount()
 {
 	int a = 2;
 	if (Body->Count != 0)
-		a = 1+Body->Count;
-	return a+Buttons->Count;
-}
-
-int Message::Flags()
-{
-	int Result = 0;
-	if (IsWarning) Result += FMSG_WARNING;
-	if (IsError) Result += FMSG_ERRORTYPE;
-	if (KeepBackground) Result += FMSG_KEEPBACKGROUND;
-	if (LeftAligned) Result += FMSG_LEFTALIGN;
-	return Result;
+		a = 1 + Body->Count;
+	return a + _buttons->Count;
 }
 
 CStr* Message::CreateBlock()
@@ -123,17 +81,17 @@ CStr* Message::CreateBlock()
 	CStr* r = new CStr[Amount()];
 	int index = 0;
 	r[index].Set(Header);
-	index++;
+	++index;
 	if (Body->Count == 0)
 	{
 		r[index].Set(String::Empty);
-		index++;
+		++index;
 	}
 	else
 	{
 		Add(Body, r, index);
 	}
-	Add(Buttons, r, index);
+	Add(_buttons, r, index);
 	return r;
 }
 

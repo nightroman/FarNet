@@ -29,6 +29,8 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+				CommandLine="cd .. &amp; nmake copy config=$(ConfigurationName)&#x0D;&#x0A;"
+				Outputs="&quot;C:\Program Files\Far\Lib\FarNetIntf.dll&quot;;&quot;C:\Program Files\Far\Lib\FarNetIntf.xml&quot;;&quot;C:\Program Files\Far\Lib\FarPluginsLoader.dll&quot;;&quot;C:\Program Files\Far\Plugins\Far.NET\FarNetPlugin.dll&quot;"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -96,8 +98,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="copy resources"
-				CommandLine="xcopy $(TargetDir)FarNetPlugin.dll &quot;C:\Program Files\Far\Plugins\far.net&quot; /y"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -114,6 +115,8 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+				CommandLine="cd .. &amp; nmake copy config=$(ConfigurationName)&#x0D;&#x0A;"
+				Outputs="&quot;C:\Program Files\Far\Lib\FarNetIntf.dll&quot;;&quot;C:\Program Files\Far\Lib\FarNetIntf.xml&quot;;&quot;C:\Program Files\Far\Lib\FarPluginsLoader.dll&quot;;&quot;C:\Program Files\Far\Plugins\Far.NET\FarNetPlugin.dll&quot;"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -178,20 +181,11 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="copy resources"
-				CommandLine="xcopy $(InputDir)*.hlf $(TargetDir) /Y&#x0D;&#x0A;xcopy $(InputDir)*.lng $(TargetDir) /Y&#x0D;&#x0A;xcopy $(TargetDir)FarNetPlugin.dll &quot;C:\Program Files\Far\Plugins\far.net&quot; /Y&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
 	<References>
-		<ProjectReference
-			ReferencedProjectIdentifier="{413FE411-D845-4DF5-9D6F-F1A45ED1818A}"
-			CopyLocal="false"
-			CopyLocalDependencies="false"
-			UseDependenciesInBuild="false"
-			CopyLocalSatelliteAssemblies="false"
-			RelativePathToProject=".\FarDotNetStruct\FarDotNetStruct.csproj"
-		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
 			CopyLocal="false"
@@ -228,7 +222,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Collections.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CommandLineSelection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Dialog.cpp"
 				>
 			</File>
 			<File
@@ -304,7 +306,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\VisibleEditorCursor.cpp"
+				RelativePath=".\Viewer.cpp"
 				>
 			</File>
 			<File
@@ -326,7 +328,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\Collections.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CommandLineSelection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Dialog.h"
 				>
 			</File>
 			<File
@@ -354,10 +364,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LineListEnumerator.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Menu.h"
 				>
 			</File>
@@ -382,7 +388,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\VisibleEditorCursor.h"
+				RelativePath=".\Viewer.h"
 				>
 			</File>
 			<File
