@@ -1,9 +1,71 @@
 #include "StdAfx.h"
 #include "Menu.h"
-#include "Utils.h"
 
 namespace FarManagerImpl
 {;
+public ref class MenuItem : IMenuItem
+{
+public:
+	DEF_EVENT(OnClick, OnClickHandler);
+public:
+	virtual property String^ Text;
+	virtual property bool Selected;
+	virtual property bool Checked;
+	virtual property bool IsSeparator;
+	virtual property Object^ Data;
+	virtual void FireOnClick()
+	{
+		if (OnClickHandler != nullptr)
+			OnClickHandler(this, gcnew EventArgs());
+	}
+	void Add(EventHandler^ handler)
+	{
+		OnClick += handler;
+	}
+	virtual String^ ToString() override
+	{
+		return Text;
+	}
+};
+
+public ref class MenuItemCollection : public List<IMenuItem^>, IMenuItems
+{
+public:
+	virtual IMenuItem^ Add(String^ text)
+	{
+		return Add(text, false, false, false);
+	}
+	virtual IMenuItem^ Add(String^ text, EventHandler^ onClick)
+	{
+		MenuItem^ r = gcnew MenuItem();
+		r->Text = text;
+		r->OnClick += onClick;
+		Add(r);
+		return r;
+	}
+	virtual IMenuItem^ Add(String^ text, bool isSelected, bool isChecked, bool isSeparator)
+	{
+		MenuItem^ r = gcnew MenuItem();
+		r->Text = text;
+		r->Selected = isSelected;
+		r->Checked = isChecked;
+		r->IsSeparator = isSeparator;
+		Add(r);
+		return r;
+	}
+private:
+	// private: makes problems in PowerShell: it is called instead of Add(string, EventHandler)
+	virtual IMenuItem^ Add(String^ text, bool isSelected) sealed = IMenuItems::Add
+	{
+		return Add(text, isSelected, false, false);
+	}
+	// private: it was private originally, perhaps it used to make problems, too
+	virtual IMenuItem^ Add(String^ text, bool isSelected, bool isChecked) sealed = IMenuItems::Add
+	{
+		return Add(text, isSelected, isChecked, false);
+	}
+};
+
 Menu::Menu()
 {
 	_createdItems = NULL;
@@ -47,31 +109,11 @@ void Menu::MaxHeight::set(int value)
 	_maxHeight = value;
 }
 
-String^ Menu::Title::get()
-{
-	return _title;
-}
-
-void Menu::Title::set(String^ value)
-{
-	_title = value;
-}
-
 Object^ Menu::SelectedData::get()
 {
 	if (_selected < 0 || _selected >= _items->Count)
 		return nullptr;
 	return _items[_selected]->Data;
-}
-
-String^ Menu::Bottom::get()
-{
-	return _bottom;
-}
-
-void Menu::Bottom::set(String^ value)
-{
-	_bottom = value;
 }
 
 IList<int>^ Menu::BreakKeys::get()
@@ -190,21 +232,6 @@ int Menu::Flags()
 	return r;
 }
 
-void Menu::ShowMenu(const FarMenuItem* items, const int* breaks)
-{
-	// validate X,Y to avoid crashes
-	int x = _x < 0 ? -1 : _x < 2 ? 2 : _x;
-	int y = _y < 0 ? -1 : _y < 2 ? 2 : _y;
-
-	// show
-	int bc;
-	CStr sTitle(_title);
-	CStr sBottom(_bottom);
-	_selected = Info.Menu(
-		Info.ModuleNumber, x, y, _maxHeight, Flags(), sTitle, sBottom, "", breaks, &bc, items, _items->Count);
-	_breakCode = bc;
-}
-
 bool Menu::Show()
 {
 	FarMenuItem* items;
@@ -294,5 +321,33 @@ Menu::~Menu()
 Menu::!Menu()
 {
 	Unlock();
+}
+
+void Menu::ShowMenu(const FarMenuItem* items, const int* breaks)
+{
+	// validate X, Y to avoid crashes and out of screen
+	int x = _x < 0 ? -1 : _x < 2 ? 2 : _x;
+	int y = _y;
+	if (y != -1)
+	{
+		int yMax = Console::WindowHeight - Math::Max(_items->Count, _maxHeight) - 4;
+		if (y > yMax)
+			y = yMax;
+		if (y < 0)
+			y = -1;
+		else if (y < 2)
+			y = 2;
+	}
+
+	// show
+	int bc;
+	CStr sTitle(_title);
+	CStr sBottom(_bottom);
+	CStr sHelp;
+	if (!String::IsNullOrEmpty(HelpTopic))
+		sHelp.Set(HelpTopic);
+	_selected = Info.Menu(
+		Info.ModuleNumber, x, y, _maxHeight, Flags(), sTitle, sBottom, sHelp, breaks, &bc, items, _items->Count);
+	_breakCode = bc;
 }
 }

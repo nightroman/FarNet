@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "FarImpl.h"
 #include "FarPanel.h"
+#include "Dialog.h"
 #include "Editor.h"
 #include "EditorManager.h"
 #include "FarCommandLine.h"
@@ -8,11 +9,16 @@
 #include "Menu.h"
 #include "Message.h"
 #include "PluginMenuItem.h"
-#include "Utils.h"
+#include "Viewer.h"
 using namespace System::Reflection;
 
 namespace FarManagerImpl
 {;
+Object^ Far::Test()
+{
+	return nullptr;
+}
+
 Far::Far()
 : _menuStrings(NULL)
 , _prefixes(NULL)
@@ -65,19 +71,60 @@ IPluginMenuItem^ Far::CreatePluginsMenuItem()
 	return gcnew PluginMenuItem();
 }
 
-bool Far::Msg(String^ body,String^ header)
-{
-	IMessage^ m = CreateMessage();
-	array<String^>^ ss = Regex::Split(body, "\r\n");
-	m->Body->AddRange(ss);
-	m->Header = header;
-	m->Buttons->Add("Ok");
-	return m->Show();
-}
-
 bool Far::Msg(String^ body)
 {
-	return Msg(body, nullptr);
+	return Msg(body, nullptr, MessageOptions::Ok) >= 0;
+}
+
+bool Far::Msg(String^ body, String^ header)
+{
+	return Msg(body, header, MessageOptions::Ok) >= 0;
+}
+
+int Far::Msg(String^ body, String^ header, MessageOptions options)
+{
+	return Msg(body, header, options, nullptr);
+}
+
+int Far::Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons)
+{
+	// object
+	IMessage^ m = CreateMessage();
+	m->Header = header;
+	m->Options = options;
+
+	// body
+	Regex^ format = nullptr;
+	int width = Console::WindowWidth - 16;
+	int height = Console::WindowHeight - 7;
+	for each(String^ s1 in Regex::Split(body->Replace('\t', ' '), "\r\n|\r|\n"))
+	{
+		if (s1->Length <= width)
+		{
+			m->Body->Add(s1);
+		}
+		else
+		{
+			if (format == nullptr)
+				format = gcnew Regex("(.{0," + width + "}(?:\\s|$))");
+			for each (String^ s2 in format->Split(s1))
+				if (s2->Length > 0)
+					m->Body->Add(s2);
+		}
+		if (m->Body->Count >= height)
+			break;
+	}
+
+	// buttons
+	if (buttons != nullptr)
+	{
+		for each(String^ s in buttons)
+			m->Buttons->Add(s);
+	}
+
+	// go
+	m->Show();
+	return m->Selected;
 }
 
 IMessage^ Far::CreateMessage()
@@ -151,16 +198,6 @@ void Far::Clipboard::set(String^ value)
 IEditor^ Far::CreateEditor()
 {
 	return _editorManager->CreateEditor();
-}
-
-IRect^ Far::CreateRect(int left, int top, int right, int bottom)
-{
-	return gcnew Rect(left, top, right, bottom);
-}
-
-ITwoPoint^ Far::CreateStream(int left, int top, int right, int bottom)
-{
-	return gcnew FarManager::Impl::Stream(left, top, right, bottom);
 }
 
 IList<int>^ Far::CreateKeySequence(String^ keys)
@@ -370,11 +407,6 @@ void Far::SetUserScreen()
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0);
 }
 
-Object^ Far::Test()
-{
-	return nullptr;
-}
-
 ICollection<String^>^ Far::GetHistory(String^ name)
 {
 	String^ keyName = "Software\\Far\\" + name;
@@ -432,41 +464,71 @@ void ShowExceptionInfo(Exception^ e)
 {
 	String^ info = e->Message + "\n\n";
 
-	if (e->GetType()->FullName->StartsWith("System.Management.Automation."))
+	Object^ er = nullptr;
+	for(Exception^ ex = e; ex != nullptr; ex = ex->InnerException)
 	{
-		Object^ er = Property(e, "ErrorRecord");
-		if (er != nullptr)
+		if (ex->GetType()->FullName->StartsWith("System.Management.Automation."))
 		{
-			Object^ ii = Property(er, "InvocationInfo");
-			if (ii != nullptr)
-			{
-				Object^ pm = Property(ii, "PositionMessage");
-				if (pm != nullptr)
-					info = info + pm->ToString() + "\n\n";
-			}
+			er = Property(ex, "ErrorRecord");
+			break;
+		}
+	}
+	if (er != nullptr)
+	{
+		Object^ ii = Property(er, "InvocationInfo");
+		if (ii != nullptr)
+		{
+			Object^ pm = Property(ii, "PositionMessage");
+			if (pm != nullptr)
+				info = info + pm->ToString() + "\n\n";
 		}
 	}
 
 	String^ path = Path::GetTempFileName();
 	File::WriteAllText(path, info + e->ToString(), System::Text::Encoding::Unicode);
 
-	CStr title(e->GetType()->FullName);
-	CStr filename(path);
-	Info.Viewer(filename, title, -1, -1, -1, -1, VF_DELETEONLYFILEONCLOSE | VF_DISABLEHISTORY);
+	// view file
+	Viewer v;
+	v.Title = e->GetType()->FullName;
+	v.FileName = path;
+	v.DeleteOnlyFileOnClose = true;
+	v.DisableHistory = true;
+	v.IsModal = true;
+	v.Open();
 }
 
 void Far::ShowError(String^ title, Exception^ error)
 {
-	CStr sTitle(String::IsNullOrEmpty(title) ? error->GetType()->FullName : title);
-	CStr sMessage(error->Message);
-
-	const char* Msg[7];
-	Msg[0] = sTitle;
-	Msg[1] = sMessage;
-	Msg[2] = "Ok";
-	Msg[3] = "Info";
-	int button = Info.Message(Info.ModuleNumber, FMSG_WARNING | FMSG_LEFTALIGN, "Contents", Msg, 4, 2);
-	if (button == 1)
+	if (1 == Msg(
+		error->Message,
+		String::IsNullOrEmpty(title) ? error->GetType()->FullName : title,
+		MessageOptions::LeftAligned | MessageOptions::Warning,
+		gcnew array<String^>{"Ok", "Info"}))
+	{
 		ShowExceptionInfo(error);
+	}
+}
+
+IDialog^ Far::CreateDialog(int left, int top, int right, int bottom)
+{
+	return gcnew FarDialog(this, left, top, right, bottom);
+}
+
+IViewer^ Far::CreateViewer()
+{
+	return gcnew Viewer();
+}
+
+void Far::WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
+{
+	CStr sText(text);
+	Info.Text(left, top, int(foregroundColor)|(int(backgroundColor)<<4), sText);
+}
+
+void Far::ShowHelp(String^ path, String^ topic, HelpOptions options)
+{
+	CStr sPath; if (!String::IsNullOrEmpty(path)) sPath.Set(path);
+	CStr sTopic; if (!String::IsNullOrEmpty(topic)) sTopic.Set(topic);
+	Info.ShowHelp(sPath, sTopic, (int)options);
 }
 }

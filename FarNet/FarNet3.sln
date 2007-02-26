@@ -5,18 +5,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FarNetPlugin", "FarNetPlugi
 		{587C75EA-F66E-4025-B6AE-271BDD253585} = {587C75EA-F66E-4025-B6AE-271BDD253585}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarDotNetStruct", "FarDotNetStruct\FarDotNetStruct.csproj", "{413FE411-D845-4DF5-9D6F-F1A45ED1818A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNetIntf", "FarNetIntf\FarNetIntf.csproj", "{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNetPlugMan", "FarPluginsLoader\FarNetPlugMan.csproj", "{587C75EA-F66E-4025-B6AE-271BDD253585}"
-	ProjectSection(ProjectDependencies) = postProject
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A} = {413FE411-D845-4DF5-9D6F-F1A45ED1818A}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F38634E7-742B-4082-9A34-D17D3156B872}"
 	ProjectSection(SolutionItems) = preProject
-		fordistr\Resources\About-Far.Net.txt = fordistr\Resources\About-Far.Net.txt
+		makefile = makefile
 	EndProjectSection
 EndProject
 Global
@@ -39,16 +34,6 @@ Global
 		{A5F07EDB-2242-4A92-BFD1-48396007C625}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{A5F07EDB-2242-4A92-BFD1-48396007C625}.Release|Win32.ActiveCfg = Release|Win32
 		{A5F07EDB-2242-4A92-BFD1-48396007C625}.Release|Win32.Build.0 = Release|Win32
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{413FE411-D845-4DF5-9D6F-F1A45ED1818A}.Release|Win32.ActiveCfg = Release|Any CPU
 		{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

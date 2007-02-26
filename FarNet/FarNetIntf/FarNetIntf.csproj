@@ -94,13 +94,12 @@
     <Compile Include="FileSystem.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms.cs" />
+    <Compile Include="FormsEvents.cs" />
     <Compile Include="Geometry.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="InputBox.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Key.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Menu.cs">
@@ -109,7 +108,7 @@
     <Compile Include="Message.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Mouse.cs">
+    <Compile Include="UserInput.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Plugin.cs">
@@ -118,12 +117,13 @@
     <Compile Include="Selection.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Viewer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>xcopy *.dll "c:\program files\far\lib"/y
-xcopy *.xml "c:\program files\far\lib"/y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

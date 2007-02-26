@@ -1,9 +1,8 @@
 #pragma once
+#include "Editor.h"
 
 namespace FarManagerImpl
 {;
-ref class Editor;
-
 public ref class EditorManager
 {
 internal:
@@ -14,19 +13,20 @@ internal:
 	Editor^ GetCurrentEditor();
 	int ProcessEditorEvent(int type, void* param);
 	int ProcessEditorInput(const INPUT_RECORD* rec);
-	void Wait(Editor^ editor);
+	void SetWaitingEditor(Editor^ editor);
 private:
-	static int CurrentEditorId();
-	Editor^ GetEditorById(int id);
 	Editor^ CreateEditorById(int id);
-	void ToKey(const INPUT_RECORD* rec);
-	void ToMouse(const INPUT_RECORD* rec);
+	Editor^ GetOrCreateEditorById(int id);
 private:
-	BaseEditor^ _anyEditor;
-	Dictionary<int, IEditor^>^ _editors;
-	Key^ _key;
-	Mouse^ _mouse;
-	Editor^ _waiting;
+	// Any editor object
+	BaseEditor _anyEditor;
+	// Registered opened editors
+	Dictionary<int, IEditor^> _editors;
+	// Cached current editor
+	Editor^ _editorCurrent;
+	// Editor waiting for ID
+	Editor^ _editorWaiting;
+	// Versions
 	bool _version_1_71_2169;
 };
 }

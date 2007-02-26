@@ -1,0 +1,122 @@
+3.3.4
+
+- Implemented IEdit\IComboBox.Line.Selection.
+- Interfaces IRect, IStream, ITwoPoints are replaced with value type with
+neutral name Place which can be used as Rect, Stream or TwoPoints.
+- New properties HelpTopic in IDialog, IMenu, IInputBox, IMessage and new method
+IFar.ShowHelp().
+- Removed FarDotNetStruct.dll; you should remove it manually if you have one,
+normally it is in here: "%FARHOME%\Lib\".
+
+3.3.3
+
+- New editor methods Begin()\End(). They drastically improve performance of
+operations on large number of editor lines. Example: an operation used to take
+2-3 minutes on a file containing 40,000 lines; now being used with Begin\End it
+takes 4 seconds.
+- Interface ICursor is replaced with struct TextFrame + related properties
+Frame, Cursor and methods GoTo*.
+- New property Line (ILine) in IEdit and IComboBox.
+- Fixed crash in dialogs on Idled event.
+
+3.3.2
+
+- Fixed IInputBox.History issue.
+- IEditor: new ConvertPosToTab(), ConvertTabToPos() and ConvertScreenToCursor()
+- IMenu.Show() automatically changes coordinate Y (if >= 0) if items are out of
+the screen.
+- Interface IPoint is replaced with struct Point.
+
+3.3.1
+
+- New dialog item IComboBox, IListBox, password editor and vertical text or
+separator.
+- Implemented main dialog events. See Test-Dialog-.ps1 in PowerShellFar 1.1.1
+for examples.
+- Most of dialog items properties are dynamic, i.e. when a dialog is started
+they reflect the current dialog state both for reading and writing. Example:
+Test-Dialog-.ps1 - button [Test] and related code.
+- IFar.Msg(): supported line delimiters are \r, \n и \r\n, Tabs are replaced
+with spaces. Text is wrapped if required. Two new methods IFar.Msg() with more
+options.
+- Revision of old Key, Mouse and related events. New structs are KeyInfo and
+MouseInfo.
+
+3.3.0
+
+- FarManager.Forms: implemented IDialog, IBox (double, single), IButton,
+ICheckBox, IEdit (standard, fixed), IRadioButton, IText. Example -
+Test-Dialog-.ps1 in PowerShellFar 1.1.0.
+- New method IFar.CreateViewer() and interface IViewer.
+- New method IFar.WriteText().
+- Revision of IInputBox.
+- IFar.PostText() processes \n, \r and \r\n as Enter. Empty text and empty key
+sequence for IFar.PostKeys() is not an error.
+- Optimized some string operations.
+
+3.2.9
+
+- Improved exception handling.
+- New IFar.ShowError() for internal use but can be used externally as well.
+- New IFar.PostText().
+
+3.2.8
+
+- New IFar.GetHistory()
+- IVersion is replaced with System.Version
+
+3.2.7
+
+- New IEditor.CurrentLine of type ILine.
+- New in ILine: Pos, Insert(), Select(), Unselect().
+- IFar.CommandLine is ILine now. ICommandLine is removed.
+- IFar.GetUserScreen() sends "user screen" to screen. Far >= 1.71.2187.
+- IPanel.IsVisible is get\set (set works via sending CtrlF1\F2).
+
+3.2.6
+
+- New IMenuItem.Data, IMenu.SelectedData, IPanel.NumericSort,
+IFar.SetUserScreen(), ICommandLine.Insert().
+- IEditor.ExpandTabs type is enum ExpandTabsMode.
+- Improved some exceptions info.
+
+3.2.5
+
+- Minor changes in IMenu и ISelection and fix of potential crash of a menu with
+incorrect coordinates.
+
+3.2.4
+
+- Main editor functionality is now implemented as it was designed.
+- Vast revision of existing IEditor implementation.
+- New IEditor.Bookmarks().
+- New properties in IPanel, mostly 'get', but Path is also 'set'.
+- New interface ICommandLine and property IFar.CommandLine.
+- Examples: added Build-CS.bat, Build-JS.bat, Build-VB.bat.
+
+3.2.3
+
+- Implemented lists in editor.
+- All collections are generic now.
+- All event handlers are standard now (i.e.: object sender, ..EventArgs e).
+
+3.2.1
+
+- Fixed selection in editor.
+- Completed .NET 2.0 porting.
+
+3.1.? и ранее
+
+- 29.08.06 - ported to .NET 2.0
+- 19.08.05 - beta stage
+- editor fixes
+- new plugin loading scheme
+- new IFar.RegisterPluginsMenuItem(name, onclick)
+- new IMenuItems.Add(name, onclick)
+- XML comments in FarNetIntf.dll
+- 11.08.05 - alpha stage
+- new settings in Far.exe.config
+- further editor implementation
+- added demo plugins: CopyShared, JS.NetCalc, ReplaceSlashes
+- 19.07.05 - started implementation of editor, fixed bugs in panels
+- 16.05.05 - implemented SHPCE 2.0 functionality (except editor)

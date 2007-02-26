@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "EditorManager.h"
 #include "FarImpl.h"
-#include "Utils.h"
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;

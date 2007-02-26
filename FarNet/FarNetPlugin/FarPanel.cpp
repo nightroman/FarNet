@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "FarPanel.h"
-#include "Utils.h"
 
 DateTime ft2dt(FILETIME time)
 {
@@ -15,6 +14,61 @@ bool at(unsigned int a, int f)
 
 namespace FarManagerImpl
 {;
+public ref class StoredItem : IFile
+{
+public:
+	virtual property bool IsAlias;
+	virtual property bool IsArchive;
+	virtual property bool IsCompressed;
+	virtual property bool IsDirectory;
+	virtual property bool IsEncrypted;
+	virtual property bool IsFolder;
+	virtual property bool IsHidden;
+	virtual property bool IsReadOnly;
+	virtual property bool IsSelected;
+	virtual property bool IsSystem;
+	virtual property bool IsVolume;
+	virtual property DateTime CreationTime;
+	virtual property DateTime LastAccessTime;
+	virtual property IFolder^ Parent;
+	virtual property Int64 Size;
+	virtual property String^ AlternateName;
+	virtual property String^ Description;
+	virtual property String^ Name;
+	virtual property String^ Owner;
+	virtual property String^ Path;
+	virtual String^ ToString() override
+	{
+		return Path;
+	}
+};
+
+public ref class StoredFile : public StoredItem, IFile
+{
+public:
+	StoredFile()
+	{
+		IsDirectory = false;
+		IsFolder = false;
+	}
+};
+
+public ref class StoredFolder : public StoredItem, IFolder
+{
+	List<IFile^>^ _files;
+public:
+	StoredFolder()
+	{
+		IsDirectory = true;
+		IsFolder = true;
+		_files = gcnew List<IFile^>();
+	}
+	virtual property IList<IFile^>^ Files
+	{
+		IList<IFile^>^ get() { return _files; }
+	}
+};
+
 FarPanel::FarPanel(bool current)
 {
 	_isCurrentPanel = current;
@@ -188,7 +242,10 @@ StoredItem^ FarPanel::ItemToFile(PluginPanelItem* i)
 	f->Description = i->Description ? OemToStr(i->Description) : String::Empty; 
 	f->Path = System::IO::Path::Combine(_contents->Path, f->Name);
 	if (at(i->Flags, PPIF_SELECTED))
+	{
+		f->IsSelected = true;
 		_selected->Add(f);
+	}
 	return f;
 }
 

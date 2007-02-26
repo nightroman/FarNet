@@ -1,4 +1,5 @@
 #pragma once
+#include "Collections.h"
 
 namespace FarManagerImpl
 {;
@@ -13,8 +14,6 @@ public:
 	virtual void RemoveAt(int index) override;
 internal:
 	VisibleEditorLineCollection();
-protected:
-	virtual property IEnumerator<ILine^>^ EnumeratorImpl { IEnumerator<ILine^>^ get() override; }
 private:
 	static void Go(int no);
 	static void Go(int no, int pos);

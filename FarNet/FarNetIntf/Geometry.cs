@@ -3,74 +3,223 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Some geometric shape
+	/// Represents an ordered pair of integer x- and y-coordinates that defines a point in a two-dimensional plane.
 	/// </summary>
-	public interface IShape
+	public struct Point
 	{
-		//ILineRegions RegionsOf();
+		private int x;
+		private int y;
 		/// <summary>
-		/// Does this page contains point
+		/// Initializes a point with the same x and y.
 		/// </summary>
-		/// <param name="point">a point</param>
-		/// <returns>true, if contains</returns>
-		bool Contains(IPoint point);
+		public Point(int coordinate)
+		{
+			x = y = coordinate;
+		}
+		/// <summary>
+		/// Initializes a new instance with the specified coordinates.
+		/// </summary>
+		/// <param name="y">The vertical position of the point.</param>
+		/// <param name="x">The horizontal position of the point.</param>
+		public Point(int x, int y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+		/// <summary>
+		/// Gets or sets the x-coordinate.
+		/// </summary>
+		public int X
+		{
+			get { return x; }
+			set { x = value; }
+		}
+		/// <summary>
+		/// Gets or sets the y-coordinate.
+		/// </summary>
+		public int Y
+		{
+			get { return y; }
+			set { y = value; }
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator ==(Point left, Point right)
+		{
+			return left.x == right.x && left.y == right.y;
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator !=(Point left, Point right)
+		{
+			return left.x != right.x || left.y != right.y;
+		}
+		/// <summary>
+		/// Equals()
+		/// </summary>
+		public override bool Equals(Object obj)
+		{
+			if (obj == null || GetType() != obj.GetType())
+				return false;
+			Point p = (Point)obj;
+			return x == p.x && y == p.y;
+		}
+		/// <summary>
+		/// GetHashCode()
+		/// </summary>
+		public override int GetHashCode()
+		{
+			return x | (y << 16);
+		}
+		/// <summary>
+		/// ToString()
+		/// </summary>
+		public override string ToString()
+		{
+			return "(" + x + ", " + y + ")";
+		}
 	}
+
 	/// <summary>
-	/// 2D point
+	/// Place between two points: rectangle or stream.
 	/// </summary>
-	public interface IPoint
+	public struct Place
 	{
+		Point _first;
+		Point _last;
 		/// <summary>
-		/// Position (x coordinate)
+		/// Constructor.
 		/// </summary>
-		int Pos { get; set; }
+		/// <param name="x">Value.</param>
+		public Place(int x)
+		{
+			_first = new Point(x);
+			_last = new Point(x);
+		}
 		/// <summary>
-		/// Line (y coordinate)
+		/// Constructor.
 		/// </summary>
-		int Line { get; set; }
-	}
-	/// <summary>
-	/// Shape which is defined by two points
-	/// </summary>
-	public interface ITwoPoint : IShape
-	{
+		/// <param name="first">First point.</param>
+		/// <param name="last">Last Point.</param>
+		public Place(Point first, Point last)
+		{
+			_first = first;
+			_last = last;
+		}
 		/// <summary>
-		/// First point
+		/// Constructor.
 		/// </summary>
-		IPoint First { get; set; }
+		/// <param name="left">Left position.</param>
+		/// <param name="top">Top line.</param>
+		/// <param name="right">Right position.</param>
+		/// <param name="bottom">Bottom line.</param>
+		public Place(int left, int top, int right, int bottom)
+		{
+			_first = new Point(left, top);
+			_last = new Point(right, bottom);
+		}
 		/// <summary>
-		/// Last point
+		/// First point.
 		/// </summary>
-		IPoint Last { get; set; }
+		public Point First
+		{
+			get { return _first; }
+			set { _first = value; }
+		}
 		/// <summary>
-		/// Top line
+		/// Last point.
 		/// </summary>
-		int Top { get; set; }
+		public Point Last
+		{
+			get { return _last; }
+			set { _last = value; }
+		}
 		/// <summary>
-		/// Left pos
+		/// Top line.
 		/// </summary>
-		int Left { get; set; }
+		public int Top
+		{
+			get { return _first.Y; }
+			set { _first.Y = value; }
+		}
 		/// <summary>
-		/// Right pos
+		/// Left position.
 		/// </summary>
-		int Right { get; set; }
+		public int Left
+		{
+			get { return _first.X; }
+			set { _first.X = value; }
+		}
 		/// <summary>
-		/// Bottom line
+		/// Bottom line.
 		/// </summary>
-		int Bottom { get; set; }
+		public int Bottom
+		{
+			get { return _last.Y; }
+			set { _last.Y = value; }
+		}
 		/// <summary>
-		/// Width of shape
+		/// Right position.
 		/// </summary>
-		int Width { get; set; }
+		public int Right
+		{
+			get { return _last.X; }
+			set { _last.X = value; }
+		}
 		/// <summary>
-		/// Height of the shape
+		/// Horizontal size.
 		/// </summary>
-		int Height { get; set; }
-	}
-	/// <summary>
-	/// Rectangle
-	/// </summary>
-	public interface IRect : ITwoPoint
-	{
+		public int Width
+		{
+			get { return this.Right - this.Left + 1; }
+			set { this.Right = (this.Left + value - 1); }
+		}
+		/// <summary>
+		/// Vertical size.
+		/// </summary>
+		public int Height
+		{
+			get { return this.Bottom - this.Top + 1; }
+			set { this.Bottom = (this.Top + value - 1); }
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator ==(Place left, Place right)
+		{
+			return left.First == right.First && left.Last == right.Last;
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator !=(Place left, Place right)
+		{
+			return left.First != right.First || left.Last != right.Last;
+		}
+		/// <summary>
+		/// Equals()
+		/// </summary>
+		public override bool Equals(Object obj)
+		{
+			if (obj == null || GetType() != obj.GetType())
+				return false;
+			return this == (Place)obj;
+		}
+		/// <summary>
+		/// GetHashCode()
+		/// </summary>
+		public override int GetHashCode()
+		{
+			return First.GetHashCode() ^ Last.GetHashCode();
+		}
+		/// <summary>
+		/// ToString()
+		/// </summary>
+		public override string ToString()
+		{
+			return "(" + First + ", " + Last + ")";
+		}
 	}
 }
