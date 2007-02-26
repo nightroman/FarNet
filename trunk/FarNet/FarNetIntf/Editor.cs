@@ -13,54 +13,25 @@ namespace FarManager
 		/// </summary>
 		event EventHandler<RedrawEventArgs> OnRedraw;
 		/// <summary>
-		/// Fire <see cref="OnRedraw"/>.
-		/// </summary>
-		void FireOnRedraw(IEditor sender, int mode);
-
-		/// <summary>
 		/// Editor is opened event.
 		/// </summary>
 		event EventHandler AfterOpen;
-		/// <summary>
-		/// Fire <see cref="AfterOpen"/>.
-		/// </summary>
-		void FireAfterOpen(IEditor sender);
-
 		/// <summary>
 		/// Event is fired before editor contents is saved.
 		/// </summary>
 		event EventHandler BeforeSave;
 		/// <summary>
-		/// Fire <see cref="BeforeSave"/>.
-		/// </summary>
-		void FireBeforeSave(IEditor sender);
-
-		/// <summary>
 		/// Event is fired when the editor is closed.
 		/// </summary>
 		event EventHandler AfterClose;
-		/// <summary>
-		/// Fire <see cref="AfterClose"/>.
-		/// </summary>
-		void FireAfterClose(IEditor sender);
-
 		/// <summary>
 		/// Key pressed in editor.
 		/// </summary>
 		event EventHandler<KeyEventArgs> OnKey;
 		/// <summary>
-		/// Fire <see cref="OnKey"/>.
-		/// </summary>
-		void FireOnKey(IEditor sender, Key key);
-
-		/// <summary>
 		/// Mouse state is changed.
 		/// </summary>
 		event EventHandler<MouseEventArgs> OnMouse;
-		/// <summary>
-		/// Fire <see cref="OnMouse"/>.
-		/// </summary>
-		void FireOnMouse(IEditor sender, Mouse mouse);
 	}
 
 	/// <summary>
@@ -89,7 +60,7 @@ namespace FarManager
 		/// </summary>
 		bool Async { get; set; }
 		/// <summary>
-		/// Delete a directory with a file when it is closed.
+		/// Delete a directory with a file when it is closed and it is the only file there.
 		/// It is read only when an editor is opened.
 		/// </summary>
 		/// <seealso cref="DeleteOnlyFileOnClose"/>
@@ -134,12 +105,7 @@ namespace FarManager
 		/// <summary>
 		/// Editor window position.
 		/// </summary>
-		IRect Window { get; set; }
-		/// <summary>
-		/// Controls the current cursor position.
-		/// Normally it is for opened and current editor.
-		/// </summary>
-		ICursor Cursor { get; }
+		Place Window { get; }
 		/// <summary>
 		/// Current selection. It is a collection <see cref="ILines"/> of selected line parts and a few extra members.
 		/// Only for opened and current editor.
@@ -231,12 +197,6 @@ namespace FarManager
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
-		/// Gets bookmarks in the current editor.
-		/// Each bookmark is defined as ICursor. Negative Line means undefined bookmark.
-		/// To go to a bookmark use <see cref="Cursor"/>.<see cref="ICursor.Assign"/>.
-		/// </summary>
-		ICollection<ICursor> Bookmarks();
-		/// <summary>
 		/// Overtype mode.
 		/// Only for opened and current editor.
 		/// </summary>
@@ -256,12 +216,79 @@ namespace FarManager
 		/// Only for opened and current editor.
 		/// </summary>
 		bool IsLocked { get; }
+		/// <summary>
+		/// Converts Char position to Tab position for a given line.
+		/// </summary>
+		/// <param name="line">Line index, -1 for current.</param>
+		/// <param name="pos">Char posistion.</param>
+		int ConvertPosToTab(int line, int pos);
+		/// <summary>
+		/// Converts Tab position to Char position for a given line.
+		/// </summary>
+		/// <param name="line">Line index, -1 for current.</param>
+		/// <param name="tab">Tab posistion.</param>
+		int ConvertTabToPos(int line, int tab);
+		/// <summary>
+		/// Converts a screen point to editor cursor point.
+		/// </summary>
+		/// <param name="screen"></param>
+		/// <returns></returns>
+		Point ConvertScreenToCursor(Point screen);
+		/// <summary>
+		/// Current text frame.
+		/// </summary>
+		TextFrame Frame { get; set; }
+		/// <summary>
+		/// Call this method before processing large amount of lines, performance can be drastically improved.
+		/// It is strongly recommended to call <see cref="End"/> after processing.
+		/// Nested calls of <see cref="Begin"/> .. <see cref="End"/> are allowed.
+		/// <remarks>
+		/// Avoid using this method together with getting <see cref="Frame"/> or <see cref="Cursor"/>,
+		/// their values can be invalid. But you can set them directly or using <see cref="GoTo"/> methods.
+		/// </remarks>
+		/// </summary>
+		void Begin();
+		/// <summary>
+		/// If you have called <see cref="Begin"/> you have to call this method in the end of processing.
+		/// </summary>
+		void End();
+		/// <summary>
+		/// Current cursor position.
+		/// Only for opened and current editor.
+		/// </summary>
+		Point Cursor { get; }
+		/// <summary>
+		/// Gets bookmarks in the current editor.
+		/// Bookmarks are defined as <see cref="TextFrame"/>.
+		/// Negative Line means undefined bookmark.
+		/// To go to a bookmark set <see cref="Frame"/>.
+		/// </summary>
+		ICollection<TextFrame> Bookmarks();
+		/// <summary>
+		/// Go to a new cursor position.
+		/// <seealso cref="Frame"/>
+		/// </summary>
+		/// <param name="pos">Position.</param>
+		/// <param name="line">Line.</param>
+		void GoTo(int pos, int line);
+		/// <summary>
+		/// Go to a line.
+		/// <seealso cref="Frame"/>
+		/// </summary>
+		/// <param name="line">Line.</param>
+		void GoToLine(int line);
+		/// <summary>
+		/// Go to a position in the current line.
+		/// <seealso cref="Frame"/>
+		/// </summary>
+		/// <param name="pos">Position.</param>
+		void GoToPos(int pos);
 	}
 
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnRedraw"/> event.
 	/// </summary>
-	public class RedrawEventArgs : EventArgs
+	public sealed class RedrawEventArgs : EventArgs
 	{
 		int _mode;
 		/// <summary>
@@ -406,87 +433,83 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// <see cref="IEditor">Editor</see> cursor position.
+	/// Text event arguments
 	/// </summary>
-	public interface ICursor
+	public class TextEventArgs : EventArgs
 	{
+		string _text;
 		/// <summary>
-		/// Line index (starting with 0).
+		/// Text to be processed.
 		/// </summary>
-		int Line { get; set; }
-		/// <summary>
-		/// Position in the string (i.e. in chars).
-		/// </summary>
-		int Pos { get; set; }
-		/// <summary>
-		/// Position on the screen (i.e. in columns).
-		/// </summary>
-		int TabPos { get; set; }
-		/// <summary>
-		/// First visible line index.
-		/// </summary>
-		int TopLine { get; set; }
-		/// <summary>
-		/// Leftmost visible position of the text on the screen.
-		/// </summary>
-		int LeftPos { get; set; }
-		/// <summary>
-		/// Assign another cursor position.
-		/// </summary>
-		/// <param name="cursor">Another cursor</param>
-		void Assign(ICursor cursor);
-		/// <summary>
-		/// Sets both line and position.
-		/// </summary>
-		/// <param name="pos">Position.</param>
-		/// <param name="line">Line.</param>
-		void Set(int pos, int line);
+		public string Text
+		{
+			get { return _text; }
+			set { _text = value; }
+		}
 	}
 
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnKey"/> event.
 	/// </summary>
-	public class KeyEventArgs : EventArgs
+	public sealed class KeyEventArgs : EventArgs
 	{
-		Key _key;
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="key">Key data.</param>
-		public KeyEventArgs(Key key)
+		public KeyEventArgs(KeyInfo key)
 		{
 			_key = key;
 		}
 		/// <summary>
 		/// Key data.
 		/// </summary>
-		public Key Key
+		public KeyInfo Key
 		{
 			get { return _key; }
 		}
+		KeyInfo _key;
+		/// <summary>
+		/// Ignore event.
+		/// </summary>
+		public bool Ignore
+		{
+			get { return _ignore; }
+			set { _ignore = value; }
+		}
+		bool _ignore;
 	}
 
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnMouse"/> event.
 	/// </summary>
-	public class MouseEventArgs : EventArgs
+	public sealed class MouseEventArgs : EventArgs
 	{
-		Mouse _mouse;
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="mouse">Mouse data.</param>
-		public MouseEventArgs(Mouse mouse)
+		public MouseEventArgs(MouseInfo mouse)
 		{
 			_mouse = mouse;
 		}
 		/// <summary>
 		/// Mouse data.
 		/// </summary>
-		public Mouse Mouse
+		public MouseInfo Mouse
 		{
 			get { return _mouse; }
 		}
+		MouseInfo _mouse;
+		/// <summary>
+		/// Ignore event.
+		/// </summary>
+		public bool Ignore
+		{
+			get { return _ignore; }
+			set { _ignore = value; }
+		}
+		bool _ignore;
 	}
 
 	/// <summary>
@@ -506,5 +529,88 @@ namespace FarManager
 		/// Only new tabs are replaced with spaces.
 		/// </summary>
 		New
+	}
+
+	/// <summary>
+	/// Complete information about text frame in <see cref="IEditor">Editor</see>.
+	/// </summary>
+	public struct TextFrame
+	{
+		/// <summary>
+		/// Sets the same value x  for all members.
+		/// </summary>
+		/// <param name="x">Value.</param>
+		public TextFrame(int x)
+		{
+			_line = _pos = _tabPos = _topLine = _leftPos = x;
+		}
+		/// <summary>
+		/// Line index (starting with 0).
+		/// </summary>
+		public int Line { get { return _line; } set { _line = value; } }
+		int _line;
+		/// <summary>
+		/// Position in the string (i.e. in chars).
+		/// </summary>
+		public int Pos { get { return _pos; } set { _pos = value; } }
+		int _pos;
+		/// <summary>
+		/// Position on the screen (i.e. in columns).
+		/// </summary>
+		public int TabPos { get { return _tabPos; } set { _tabPos = value; } }
+		int _tabPos;
+		/// <summary>
+		/// First visible line index.
+		/// </summary>
+		public int TopLine { get { return _topLine; } set { _topLine = value; } }
+		int _topLine;
+		/// <summary>
+		/// Leftmost visible position of the text on the screen.
+		/// </summary>
+		public int LeftPos { get { return _leftPos; } set { _leftPos = value; } }
+		int _leftPos;
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator ==(TextFrame left, TextFrame right)
+		{
+			return
+				left._line == right._line &&
+				left._pos == right._pos &&
+				left._tabPos == right._tabPos &&
+				left._topLine == right._topLine &&
+				left._leftPos == right._leftPos;
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator !=(TextFrame left, TextFrame right)
+		{
+			return !(left == right);
+		}
+		/// <summary>
+		/// Equals()
+		/// </summary>
+		public override bool Equals(Object obj)
+		{
+			if (obj == null || GetType() != obj.GetType())
+				return false;
+			TextFrame that = (TextFrame)obj;
+			return this == that;
+		}
+		/// <summary>
+		/// ToString()
+		/// </summary>
+		public override string ToString()
+		{
+			return "((" + _pos + "/" + _tabPos + ", " + _line + ")(" + _leftPos + ", " + _topLine + "))";
+		}
+		/// <summary>
+		/// GetHashCode()
+		/// </summary>
+		public override int GetHashCode()
+		{
+			return (_line << 16) ^ (_pos << 16) ^ _tabPos ^ _topLine ^ _leftPos;
+		}
 	}
 }

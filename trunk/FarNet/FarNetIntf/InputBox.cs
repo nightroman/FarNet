@@ -41,24 +41,19 @@ namespace FarManager
 		/// </summary>
 		bool EnvExpanded { get; set; }
 		/// <summary>
-		/// Use last history as default value
+		/// If Text is empty and History is not empty, then do not initialize the input line from the history.
 		/// </summary>
-		bool UseLastHistory { get; set; }
+		bool NoLastHistory { get; set; }
 		/// <summary>
 		/// Buttons are visible
 		/// </summary>
 		bool ButtonsAreVisible { get; set; }
 		/// <summary>
-		/// Show message box
+		/// Describes a help topic. <see cref="IFar.ShowHelp"/> for details.
 		/// </summary>
-		/// <param name="prompt">parameter overrides property with the same name</param>
-		/// <param name="text">parameter overrides property with the same name</param>
-		/// <param name="title">parameter overrides property with the same name</param>
-		/// <param name="history">parameter overrides property with the same name</param>
-		/// <returns>true if OK was pressed</returns>
-		bool Show(string prompt, string text, string title, string history);
+		string HelpTopic { get; set; }
 		/// <summary>
-		/// Show list boz and wait until user press OK or Cancel
+		/// Shows input box and waits until user press OK or Cancel
 		/// </summary>
 		/// <returns>true if OK was pressed</returns>
 		bool Show();

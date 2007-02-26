@@ -1,5 +1,4 @@
 #include "StdAfx.h"
-#include "Utils.h"
 
 ///<summary>Constructor: converts a string and holds the result.</summary>
 CStr::CStr(String^ str)
@@ -148,13 +147,30 @@ void EditorControl_ECTL_GETINFO(EditorInfo& ei, bool safe)
 		else
 			throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 	}
+	//!! this is possible after working with current line (-1)
+	else if (ei.BlockStartLine < 0)
+		ei.BlockStartLine = ei.CurLine;
 }
 
+int _fastGetString;
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int no)
 {
-	egs.StringNumber = no;
-	if (!Info.EditorControl(ECTL_GETSTRING, &egs))
-		throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + no + ". Ensure current editor and valid line number.");
+	if (no >= 0 && _fastGetString)
+	{
+		static EditorSetPosition esp = {-1, -1, -1, -1, -1, -1};
+		esp.CurLine = no;
+		if (!Info.EditorControl(ECTL_SETPOSITION, &esp))
+			throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + no + ". Ensure current editor and valid line number.");
+		egs.StringNumber = -1;
+		Info.EditorControl(ECTL_GETSTRING, &egs);
+		egs.StringNumber = no;
+	}
+	else
+	{
+		egs.StringNumber = no;
+		if (!Info.EditorControl(ECTL_GETSTRING, &egs))
+			throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + no + ". Ensure current editor and valid line number.");
+	}
 }
 
 void EditorControl_ECTL_OEMTOEDITOR(char* text, int len)
@@ -181,4 +197,48 @@ void EditorControl_ECTL_SETSTRING(EditorSetString& ess)
 {
 	if (!Info.EditorControl(ECTL_SETSTRING, &ess))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + ess.StringNumber + ". Ensure current editor and valid line number.");
+}
+
+void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe)
+{
+	if (!Info.ViewerControl(VCTL_GETINFO, &vi))
+	{
+		if (safe)
+			vi.ViewerID = -1;
+		else
+			throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current viewer.");
+	}
+}
+
+MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m)
+{
+	return MouseInfo(
+		Point(m.dwMousePosition.X, m.dwMousePosition.Y),
+		(MouseAction)m.dwEventFlags & MouseAction::All,
+		(MouseButtons)m.dwButtonState & MouseButtons::All,
+		(ControlKeyStates)m.dwControlKeyState & ControlKeyStates::All);
+}
+
+Place SelectionPlace()
+{
+	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
+	if (ei.BlockType == BTYPE_NONE)
+		return Place(-1);
+
+	Place r;
+	EditorGetString egs;
+	r.Top = ei.BlockStartLine;
+	r.Left = -1;
+	for(egs.StringNumber = r.Top; Info.EditorControl(ECTL_GETSTRING, &egs); ++egs.StringNumber) // use EditorControl() here, not wrapper
+	{
+		if (r.Left < 0)
+			r.Left = egs.SelStart;
+		if (egs.SelStart < 0)
+			break;
+		r.Right = egs.SelEnd;
+	}
+	--r.Right;
+	r.Bottom = egs.StringNumber - 1;
+
+	return r;
 }

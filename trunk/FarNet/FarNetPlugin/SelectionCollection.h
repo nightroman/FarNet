@@ -1,4 +1,5 @@
 #pragma once
+#include "Collections.h"
 
 namespace FarManagerImpl
 {;
@@ -14,7 +15,7 @@ public:
 	virtual property ILine^ Last { ILine^ get(); }
 	virtual property int Count { int get(); }
 	virtual property IStrings^ Strings { IStrings^ get(); }
-	virtual property ITwoPoint^ Shape { ITwoPoint^ get(); void set(ITwoPoint^ value); }
+	virtual property Place Shape { Place get(); }
 	virtual property Object^ SyncRoot { Object^ get(); }
 	virtual property SelectionType Type { SelectionType get(); }
 	virtual property String^ Text { String^ get(); void set(String^ value); }
@@ -32,7 +33,7 @@ public:
 	virtual void Insert(int, String^ item);
 	virtual void RemoveAt(int index);
 public:
-	virtual void Select(SelectionType type, int left, int top, int right, int bottom);
+	virtual void Select(SelectionType type, int pos1, int line1, int pos2, int line2);
 	virtual void Unselect();
 internal:
 	SelectionCollection(IEditor^ editor);

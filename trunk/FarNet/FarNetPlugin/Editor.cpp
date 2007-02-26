@@ -2,24 +2,18 @@
 #include "Editor.h"
 #include "EditorManager.h"
 #include "SelectionCollection.h"
-#include "Utils.h"
-#include "VisibleEditorCursor.h"
 #include "VisibleEditorLine.h"
 #include "VisibleEditorLineCollection.h"
 
 namespace FarManagerImpl
 {;
 Editor::Editor(EditorManager^ manager)
+: _manager(manager)
+, _id(-1)
+, _title(String::Empty)
+, _lines(gcnew VisibleEditorLineCollection())
+, _frameStart(-1)
 {
-	_manager = manager;
-	_id = -1;
-	_title = String::Empty;
-	_window = gcnew Rect();
-	_lines = gcnew VisibleEditorLineCollection();
-	_openedCursor = gcnew VisibleEditorCursor();
-	_storedCursor = gcnew StoredEditorCursor();
-	_cursor = gcnew ProxyEditorCursor();
-	_cursor->Impl = _storedCursor;
 }
 
 void Editor::Open()
@@ -28,16 +22,16 @@ void Editor::Open()
 
 	CStr sFileName(FileName);
 	CStr sTitle(Title);
-	int nLine = _cursor->Line >= 0 ? _cursor->Line + 1 : -1;
-	int nPos = _cursor->Pos >= 0 ? _cursor->Pos + 1 : -1;
+	int nLine = _frameStart.Line >= 0 ? _frameStart.Line + 1 : -1;
+	int nPos = _frameStart.Pos >= 0 ? _frameStart.Pos + 1 : -1;
 
 	// it is used by the manager on READ event
-	_manager->Wait(this);
+	_manager->SetWaitingEditor(this);
 
 	// it fires READ event and the manager sets the Id
 	int res = Info.Editor(
 		sFileName, sTitle,
-		_window->Left, _window->Top, _window->Right, _window->Bottom,
+		_window.Left, _window.Top, _window.Right, _window.Bottom,
 		Flags(), nLine, nPos);
 
 	// check errors
@@ -187,11 +181,6 @@ void Editor::ExpandTabs::set(ExpandTabsMode value)
 	Info.EditorControl(ECTL_SETPARAM, &esp);
 }
 
-ICursor^ Editor::Cursor::get()
-{
-	return _cursor;
-}
-
 ILine^ Editor::CurrentLine::get()
 {
 	return gcnew VisibleEditorLine(-1, false);
@@ -209,10 +198,6 @@ int Editor::Id::get()
 
 void Editor::Id::set(int value)
 {
-	if (IsOpened && (value == -1))
-		BecomeClosed();
-	if (!IsOpened && (value != -1))
-		BecomeOpened();
 	_id = value;
 }
 
@@ -265,21 +250,22 @@ void Editor::Title::set(String^ value)
 	}
 }
 
-IRect^ Editor::Window::get()
+Place Editor::Window::get()
 {
 	if (IsOpened)
 		GetParams();
 	return _window;
 }
 
-void Editor::Window::set(IRect^ value)
-{
-	_window = value;
-}
-
 ISelection^ Editor::Selection::get()
 {
 	return gcnew SelectionCollection(this);
+}
+
+Point Editor::Cursor::get()
+{
+	TextFrame f = Frame;
+	return Point(f.Pos, f.Line);
 }
 
 void Editor::Insert(String^ text)
@@ -385,21 +371,12 @@ void Editor::EnsureCurrent(EditorInfo& ei)
 
 void Editor::GetParams()
 {
-	_window = gcnew Rect();
 	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
-	_window->Width = ei.WindowSizeX;
-	_window->Height = ei.WindowSizeY;
+	_window.Top = 0;
+	_window.Left = 0;
+	_window.Width = ei.WindowSizeX;
+	_window.Height = ei.WindowSizeY;
 	_fileName = OemToStr(ei.FileName);
-}
-
-void Editor::BecomeClosed()
-{
-	_cursor->Impl = _storedCursor;
-}
-
-void Editor::BecomeOpened()
-{
-	_cursor->Impl = _openedCursor;
 }
 
 String^ Editor::WordDiv::get()
@@ -427,11 +404,55 @@ void Editor::WordDiv::set(String^ value)
 	Info.EditorControl(ECTL_SETPARAM, &esp);
 }
 
-ICollection<ICursor^>^ Editor::Bookmarks()
+TextFrame Editor::Frame::get()
+{
+	if (!IsOpened)
+		return _frameStart;
+
+	if (_fastGetString > 0)
+		return _frameSaved;
+
+	EditorInfo ei;
+	EditorControl_ECTL_GETINFO(ei);
+	TextFrame r;
+	r.Line = ei.CurLine;
+	r.Pos = ei.CurPos;
+	r.TabPos = ei.CurTabPos;
+	r.TopLine = ei.TopScreenLine;
+	r.LeftPos = ei.LeftPos;
+	return r;
+}
+
+void Editor::Frame::set(TextFrame value)
+{
+	if (!IsOpened)
+	{
+		_frameStart = value;
+		return;
+	}
+
+    SEditorSetPosition esp;
+	if (value.Line >= 0)
+		esp.CurLine = value.Line;
+	if (value.Pos >= 0)
+		esp.CurPos = value.Pos;
+	if (value.TabPos >= 0)
+		esp.CurTabPos = value.TabPos;
+	if (value.TopLine >= 0)
+		esp.TopScreenLine = value.TopLine;
+	if (value.LeftPos >= 0)
+		esp.LeftPos = value.LeftPos;
+    EditorControl_ECTL_SETPOSITION(esp);
+
+	if (_fastGetString > 0)
+		_frameSaved = Frame;
+}
+
+ICollection<TextFrame>^ Editor::Bookmarks()
 {
 	EditorInfo ei; EnsureCurrent(ei);
 
-	List<ICursor^>^ r = gcnew List<ICursor^>();
+	List<TextFrame>^ r = gcnew List<TextFrame>();
 	if (ei.BookMarkCount > 0)
 	{
 		EditorBookMarks ebm;
@@ -444,12 +465,13 @@ ICollection<ICursor^>^ Editor::Bookmarks()
 		r->Capacity = ei.BookMarkCount;
 		for(int i = 0; i < ei.BookMarkCount; ++i)
 		{
-			StoredEditorCursor^ c = gcnew StoredEditorCursor();
-			c->LeftPos = ebm.LeftPos[i];
-			c->Line = ebm.Line[i];
-			c->Pos = ebm.Cursor[i];
-			c->TopLine = c->Line - ebm.ScreenLine[i];
-			r->Add(c);
+			TextFrame f;
+			f.Line = ebm.Line[i];
+			f.Pos = ebm.Cursor[i];
+			f.TabPos = -1;
+			f.TopLine = f.Line - ebm.ScreenLine[i];
+			f.LeftPos = ebm.LeftPos[i];
+			r->Add(f);
 		}
 
 		delete ebm.Cursor;
@@ -459,5 +481,73 @@ ICollection<ICursor^>^ Editor::Bookmarks()
 	}
 
 	return r;
+}
+
+int Editor::ConvertPosToTab(int line, int pos)
+{
+	EditorConvertPos ecp;
+	ecp.StringNumber = line;
+	ecp.SrcPos = pos;
+	Info.EditorControl(ECTL_REALTOTAB, &ecp);
+	return ecp.DestPos;
+}
+
+int Editor::ConvertTabToPos(int line, int tab)
+{
+	EditorConvertPos ecp;
+	ecp.StringNumber = line;
+	ecp.SrcPos = tab;
+	Info.EditorControl(ECTL_TABTOREAL, &ecp);
+	return ecp.DestPos;
+}
+
+Point Editor::ConvertScreenToCursor(Point screen)
+{
+	TextFrame f = Frame;
+	screen.Y += f.TopLine - 1;
+	screen.X = ConvertTabToPos(screen.Y, screen.X) + f.LeftPos;
+	return screen;
+}
+
+void Editor::Begin()
+{
+	if (_fastGetString > 0)
+	{
+		++_fastGetString;
+		return;
+	}
+
+	_frameSaved = Frame;
+	_fastGetString = 1;
+}
+
+void Editor::End()
+{
+	if (_fastGetString == 1)
+		Frame = _frameSaved;
+	if (--_fastGetString < 0)
+		_fastGetString = 0;
+}
+
+void Editor::GoTo(int pos, int line)
+{
+	TextFrame f(-1);
+	f.Pos = pos;
+	f.Line = line;
+	Frame = f;
+}
+
+void Editor::GoToLine(int line)
+{
+	TextFrame f(-1);
+	f.Line = line;
+	Frame = f;
+}
+
+void Editor::GoToPos(int pos)
+{
+	TextFrame f(-1);
+	f.Pos = pos;
+	Frame = f;
 }
 }

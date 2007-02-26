@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "VisibleEditorLineCollection.h"
-#include "LineListEnumerator.h"
 #include "Utils.h"
 #include "VisibleEditorLine.h"
 
@@ -18,11 +17,6 @@ ILine^ VisibleEditorLineCollection::Item::get(int index)
 void VisibleEditorLineCollection::Item::set(int, ILine^)
 {
 	throw gcnew NotSupportedException();
-}
-
-IEnumerator<ILine^>^ VisibleEditorLineCollection::EnumeratorImpl::get()
-{
-	return gcnew LineListEnumerator(this, 0, Count);
 }
 
 int VisibleEditorLineCollection::Count::get()

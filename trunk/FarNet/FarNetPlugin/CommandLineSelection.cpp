@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "CommandLineSelection.h"
-#include "Utils.h"
 
 namespace FarManagerImpl
 {;

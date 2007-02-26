@@ -2,6 +2,8 @@
 
 namespace FarManagerImpl
 {;
+ref class MenuItemCollection;
+
 public ref class Menu : public IMenu
 {
 public:
@@ -18,8 +20,9 @@ public:
 	virtual property int X { int get(); void set(int value); }
 	virtual property int Y { int get(); void set(int value); }
 	virtual property Object^ SelectedData { Object^ get(); }
-	virtual property String^ Bottom { String^ get(); void set(String^ value); }
-	virtual property String^ Title { String^ get(); void set(String^ value); }
+	virtual property String^ Bottom;
+	virtual property String^ HelpTopic;
+	virtual property String^ Title;
 public:
 	~Menu();
 	!Menu();

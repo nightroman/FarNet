@@ -99,6 +99,10 @@ namespace FarManager
 		/// Items can be changed if the menu is still used.
 		/// </summary>
 		void Unlock();
+		/// <summary>
+		/// Describes a help topic. <see cref="IFar.ShowHelp"/> for details.
+		/// </summary>
+		string HelpTopic { get; set; }
 	}
 
 	/// <summary>

@@ -1,187 +1,83 @@
-
-	Far.NET3
-
-
-Плагин для написания плагинов для Far Manager на .NET языках.
-Использует объектную модель, аналогичную модели плагина SHPCE.
-Домашняя страница: http://code.google.com/p/farnet
-
-
-	0. Требования
+Plugin name  : Far.NET3
+Category     : Development
+Version      : 3.3.4
+Release date : 2007.02.25
+Author       : Roman Kuzmin
+Email        : nightroman@hotmail.com
+HomePage     : http://nightroman.spaces.live.com
+Sources      : C#, C++/CLI (at home page)
 
 
-- Far Manager 1.71
-- .NET 2.0
+	Requirements
 
 
-	0. Установка
+- Far Manager 1.71 (recommended 1.71.2192 and above)
+- .NET Frameworks 2.0
 
 
-Стандартная - переписать содержимое папки в "C:\Program Files\Far". Если хотите
-изменить положение Plugins.NET или lib, отразите в Far.exe.config. Plugins.NET с
-примерами без надобности можно не копировать, чтобы не усложнять поиск плагинов
-в этой папке при загрузке.
+	Description
 
 
-	0. Структура
+Plugin for writing pligins for Far Manager in any .NET language (or even in
+PowerShell with PowerShellFar plugin). It not only covers Far API but also
+extends it and makes it really easy to use with object oriented approach.
 
 
-- Plugins\Far.Net\FarNetPlugin.dll - собственно реализация плагина для Far.
-- lib - в этой папке находятся библиотеки плагина (прописана в Far.exe.config).
-- lib\FarDotNetStruct.dll - объекты, которые легче было реализовать на C#.
-- lib\FarNetIntf.dll - интерфейс FarManager - объектная модель типа SHPCE.
-- lib\FarNetIntf.xml - XML документация, например, для VS Object Browser.
-- lib\FarPluginsLoader.dll - загрузчик Far.Net плагинов.
-- Plugins.Net - папка с плагинами. Каждый плагин представляет собой папку с
-подпапками bin (сборки) и cfg (конфигурационные файлы):
-- cfg\plugin.cfg - конфигурационный файл. Каждая строка - последовательность
-	<Сборка> <Класс1> <Класс2> ... <КлассN>, где:
-		<Сборка> - название сборки в папке bin
-		<Классi> - название класса в этой сборке
+	Installation
 
 
-	0. Алгоритм загрузки плагинов
+Copy to %FARHOME%: file "Far.exe.config", folders "Lib", "Plugins" and
+optionally "Plugins.NET" (if you use something from there). This is default and
+recommended installation. But you can change location of "Lib" and "Plugins.NET"
+if you want; in this case you have to update "Far.exe.config" accordingly.
 
 
-Для всех папок находящихся в директории Plugins.NET:
-- если есть cfg\plugin.cfg - загрузить плагин согласно конфигу;
-- если нет, то грузить все *.dll из bin, из которых присоединять к Far
-неабстрактные классы, реализующие IPlugin;
-- если папки bin нет - грузить все dll из самой папки плагина.
+	Structure
 
 
-	0. XML документация
+- Plugins\Far.Net\FarNetPlugin.dll - standard Far plugin;
+- Plugins\Far.Net\FarNetPlugin_en.hlf - help (for manually added plugin links);
+- Lib - plugin assemblies and their resources;
+- Lib\FarNetIntf.dll - FarManager interfaces;
+- Lib\FarNetIntf.xml - XML documentation, e.g. for VS Object Browser;
+- Lib\FarPluginsLoader.dll - loader of Far.NET plugins;
+- Plugins.NET - plugins folder. Each plugin is a folder with optional subfolders
+Bin (assemblies) and Cfg (configuration files):
+- Cfg\Plugin.cfg - configuration file. Each line is:
+	<Assembly> <Class1> <Class2> ... <ClassN>
+	where
+	<Assembly> - name of an assembly from Bin;
+	<ClassX> - name of a class in this assembly.
 
 
-Прилагаемая XML документация - это, может, и не оптимальная форма документации,
-зато самая свежая и практичная для разработки.
-
-Visual Studio Object Browser автоматически отображает XML комментарии вполне
-неплохо. Но еще более удобно воспользоваться великолепной бесплатной программой
-Reflector for .NET http://www.aisto.com/roeder/dotnet/, которая отображает help
-в стиле MSDN документации и обеспечивает отличную навигацию и удобный поиск по
-объектам (включая и сам .NET и вообще любые .NET сборки). Напоминание: следует
-открыть в Reflector FarNetIntf.dll, XML документация зачитается автоматически,
-если в опциях поставить галку для "Show XML Doc Comments".
+	Loading Plugins
 
 
-	0. История изменений
+*) For each folder in Plugins.NET:
+- if "Cfg\Plugin.cfg" exists then load it according to the configuration;
+- else if "Bin" exists then load all *.dll from there;
+- else load all *.dll from the plagin folder.
+*) For each loaded *.dll find and create instances of all non abstract classes
+implementing IPlugin interface.
 
 
-3.2.10
+	XML Documentation
 
-- IFar.PostText() обрабатывает не только \n, как Enter, но и \r и \r\n; пустой
-текст, а также пустая последовательность для IFar.PostKeys() - это не ошибка.
-- Оптимизация некоторых операций со строками.
 
-3.2.9
+Included XML documentation is not perhaps a perfect form of documentation but it is
+always up-to-date and it is actually the most practically useful for development.
 
-- Централизована обработка исключений; кодировка временного файла с деталями
-исключения теперь юникод, отсюда правильное отображение кириллицы в ошибках.
-- Новый метод IFar.ShowError() - для внутренних нужд, но можно использовать и
-для плагинов - выводит краткое сообщение и позволяет взглянуть на подробности.
-- Новый метод IFar.PostText() - посылает текст, как будто он был напечатан,
-обрабатывая в том числе символы табуляции и разделители строк.
+Visual Studio Object Browser automatically uses XML comments well enough in
+Object Browser. Another possible way is to use for example Reflector for .NET
+http://www.aisto.com/roeder/dotnet/, (it is free). It displays documentation in
+MSDN-like style, provides powerful navigation and search (including .NET and any
+loaded .NET assemblies). Tip: ensure that XML comments are enabled in options.
 
-3.2.8
 
-- Новый метод IFar.GetHistory()
-- Интерфейс IVersion заменен на стандартный класс System.Version
+	Plugins Help
 
-3.2.7
-
-- Новое свойство IEditor.CurrentLine типа ILine.
-- Новые свойства и методы ILine: Pos, Insert(), Select(), Unselect().
-- IFar.CommandLine теперь типа ILine со всеми положенными свойствами и методами,
-в т.ч. работа с выделенной частью. Тип ICommandLine пока стал не нужен и удален.
-- IFar.GetUserScreen() - посылает "user screen" (содержимое экрана под панелями)
-на экран Far. ВАЖНО: нужен Far 1.71.2187.
-- IPanel.IsVisible теперь get\set - то есть можно скрыть\показать панель (но это
-сделано через макросы, то есть эта операция не всегда адекватно применима).
-
-3.2.6
-
-- Новые свойства и методы: IMenuItem.Data, IMenu.SelectedData,
-IPanel.NumericSort, IFar.SetUserScreen(), ICommandLine.Insert().
-- Тип свойства IEditor.ExpandTabs теперь не bool, а enum ExpandTabsMode.
-- Более подробная информация для некоторых типов исключений, например, файл,
-строка и позиция ошибки в PowerShell скрипте.
-
-3.2.5
-
-- Незначительные изменения в функциональности IMenu и ISelection, но есть и
-исправление потенциального падения Far при неаккуратных координатах.
-
-3.2.4
-
-ФУНКЦИОНАЛЬНОСТЬ
-
-- функциональность редактора для работы с текстом реализована практически
-полностью, если что-то не работает, то это уже не временная недоделка, а
-недосмотр или ошибка, можно жаловаться.
-- добавлен метод IEditor.Bookmarks(), возвращающий текущий набор закладок.
-- в IPanel добавлено много новых свойств, в основном get, но Path - это
-get\set, что позволяет менять текущую папку панели.
-- добавлен интерфейс ICommandLine и свойство IFar.CommandLine, позволяет
-получить\установить содержимое командной строки через свойство Text.
-- в папке примеров добавлены Build-CS.bat, Build-JS.bat, Build-VB.bat
-облегчающие сборку плагинов без наличия Visual Studio и т.п. под рукой.
-- примеры плагинов адаптированы к последним изменениям в Far.Net и заодно
-показывают, как можно использовать скрипты Build-*.bat для сборок.
-
-ИЗМЕНЕНИЯ В ИНТЕРФЕЙСЕ (в том числе "breaking changes")
-
-- IFar.Editor теперь возвращает null, если нет текущего редактора, для создания
-нового редактора используйте только явный способ: IFar.CreateEditor().
-- IFar.AnyEditor возвращает интерфейс IAnyEditor, а не IEditor. IEditor теперь
-порожден из IAnyEditor. Возможно, это чисто техническая информация, которая
-изменений в коде и логике не потребует.
-- IEditor.Editors() возвращает ICollection<IEditor>, а не IList<IEditor>, так
-как большинство операций IList для этого набора не предполагается.
-- некоторые свойства IFar.Editor работают только для еще неоткрытого или уже
-закрытого редактора, некоторые только для открытого и текущего редактора, все
-отражено в XML документации. Если это нарушается - ловите исключения.
-- Свойство Overtype перемещено из ICursor в IEditor, то есть ICursor теперь
-отвечает только за описание позиции, а Overtype - это состояние редактора.
-- удален метод ILine ILines.Get(int), полезный только до перехода на generics
-коллекции; вместо него используйте семантику массива с индексом или Item.
-- удалено свойство IEditor.Text, как дублирующее IEditor.Lines.Strings, которым
-(последним) и следует пользоваться.
-- свойство IStrings Text в ILines переименовано в Strings.
-- свойства AsString переименованы в Text, т.е. теперь Text - это везде string.
-- некоторые переименования в соответствии с рекомендуемым .NET стилем имен:
-EOL -> Eol, ID -> Id, Cr -> InsertLine.
-- удален вспомогательный интерфейс IPostParams, поскольку практически ни новых
-удобств, ни функциональности он не добавляет. Если это не так, убедите - будет
-восстановлен.
-- IPanel: то, что не реализовано, убрано из интерфейса, чтобы не заблуждать, в
-основном, свойства сделаны только для чтения, что пока соответствует ситуации.
-
-3.2.3
-- реализована основная функциональность редактора через списки текстовых строк и
-строк-объектов.
-- все коллекции типизированы, то есть стали generic.
-- все обработчики событий сделаны стандартными, то есть типа (object sender,
-..EventArgs e).
-
-3.2.1
-- исправлено выделение в редакторе (возвращало только одну строку)
-- доработка под .NET 2.0 и несколько исправлений
-
-3.1.? и ранее
-
-* 29.08.06 - перекомпиляция под .NET 2.0
-* 19.08.05 - начала бета стадии
-* исправлена куча ошибок в редакторе
-* изменен способ загрузки плагинов
-* добавлен IFar.RegisterPluginsMenuItem(name, onclick)
-* добавлен IMenuItems.Add(name, onclick)
-* FarNetIntf.dll прокомментирован xml comments
-* 11.08.05 - начала альфа стадии
-* Добавлена настройка расположения папки плагинов в Far.exe.config
-* Дореализован редактор
-* В интерфейс ILines добавлен метод GET, который аналогичен свойству Item за
-исключением того, что возвращаемый тип - ILine а не Object
-* В комплект поставки добавлены плагины: CopyShared, JS.NetCalc, ReplaceSlashes
-* 19.07.05 - начало реализации редактора, исправлено несколько багов в панели
-* 16.05.05 - реализован весь функционал SHPCE 2.0 кроме редатора
+You can add help for your plugins. It works in dialogs, menus, input and message
+boxes (see property HelpTopic) or by IFar.ShowHelp(). Unfortunately help can not
+be automatically shown by ShiftF2 because technically Far.NET plugins are not
+visible for Far, it can see only Far.NET. Of course you can add a link to your
+plugin help file to "FarNetPlugin_en.hlf" manually.

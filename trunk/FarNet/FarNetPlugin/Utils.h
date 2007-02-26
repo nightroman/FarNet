@@ -1,5 +1,29 @@
 #pragma once
 
+#define DEF_EVENT(EventName, Handler)\
+virtual event EventHandler^ EventName {\
+void add(EventHandler^ handler) { Handler += handler; }\
+void remove(EventHandler^ handler) { Handler -= handler; }\
+void raise(Object^ sender, EventArgs^ e) { if (Handler != nullptr) Handler(sender, e); }\
+}\
+internal: EventHandler^ Handler;
+
+#define DEF_EVENT_ARGS(EventName, Handler, Arguments)\
+virtual event EventHandler<Arguments^>^ EventName {\
+void add(EventHandler<Arguments^>^ handler) { Handler += handler; }\
+void remove(EventHandler<Arguments^>^ handler) { Handler -= handler; }\
+void raise(Object^ sender, Arguments^ e) { if (Handler != nullptr) Handler(sender, e); }\
+}\
+internal: EventHandler<Arguments^>^ Handler;
+
+#define DEF_PROP_SET(Class, Type, Prop, Var) \
+Type Class::Prop::get() { return Var; } \
+void Class::Prop::set(Type value) { Var = value; }
+
+#define DEF_PROP_FLAG(Class, Prop, Flag) \
+bool Class::Prop::get() { return (_flags & Flag) != 0; } \
+void Class::Prop::set(bool value) { if (value) _flags |= Flag; else _flags &= ~Flag; }
+
 /// <summary>
 /// Holder of OEM char* converted from String.
 /// </summary>
@@ -50,3 +74,11 @@ void EditorControl_ECTL_OEMTOEDITOR(char* text, int len);
 void EditorControl_ECTL_SELECT(EditorSelect& es);
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp);
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess);
+void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);
+
+// Helpers
+MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
+
+extern int _fastGetString;
+
+Place SelectionPlace();

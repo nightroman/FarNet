@@ -81,6 +81,10 @@ namespace FarManager
 		/// </summary>
 		bool IsEncrypted { get; set; }
 		/// <summary>
+		/// Selected state
+		/// </summary>
+		bool IsSelected { get; set; }
+		/// <summary>
 		/// Parent folder
 		/// </summary>
 		IFolder Parent { get; set; }
