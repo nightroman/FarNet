@@ -3,7 +3,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Represents an ordered pair of integer x- and y-coordinates that defines a point in a two-dimensional plane.
+	/// Ordered pair of integer X and Y coordinates that defines a point in a two-dimensional plane.
 	/// </summary>
 	public struct Point
 	{
@@ -61,10 +61,7 @@ namespace FarManager
 		/// </summary>
 		public override bool Equals(Object obj)
 		{
-			if (obj == null || GetType() != obj.GetType())
-				return false;
-			Point p = (Point)obj;
-			return x == p.x && y == p.y;
+			return obj is Point && this == (Point)obj;
 		}
 		/// <summary>
 		/// GetHashCode()
@@ -111,10 +108,7 @@ namespace FarManager
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="right">Right position.</param>
-		/// <param name="bottom">Bottom line.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		public Place(int left, int top, int right, int bottom)
 		{
 			_first = new Point(left, top);
@@ -203,9 +197,7 @@ namespace FarManager
 		/// </summary>
 		public override bool Equals(Object obj)
 		{
-			if (obj == null || GetType() != obj.GetType())
-				return false;
-			return this == (Place)obj;
+			return obj is Place && this == (Place)obj;
 		}
 		/// <summary>
 		/// GetHashCode()

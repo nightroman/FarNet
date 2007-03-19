@@ -95,8 +95,6 @@ public ref class EditorStringCollection : IStrings
 {
 	ILines^ _lines;
 	bool _selected;
-	static String^ _CR = "\r";
-	static String^ _CRLF = "\r\n";
 public:
 	EditorStringCollection(ILines^ lines, bool selected)
 	{
@@ -220,8 +218,14 @@ public:
 	}
 	virtual property String^ Text
 	{
-		String^ get() { return _strings->Text; }
-		void set(String^ value) { _strings->Text = value; }
+		String^ get()
+		{
+			return _strings->Text;
+		}
+		void set(String^ value)
+		{
+			_strings->Text = value;
+		}
 	}
 	virtual property IStrings^ Strings
 	{

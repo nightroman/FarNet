@@ -135,6 +135,13 @@ public:
 			return gcnew FarEditLineSelection(_hDlg, _id);
 		}
 	}
+	virtual property int Length
+	{
+		int get()
+		{
+			return Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
+		}
+	}
 	virtual property int No
 	{
 		int get()
@@ -153,6 +160,8 @@ public:
 		}
 		void set(int value)
 		{
+			if (value < 0)
+				value = Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
 			COORD c;
 			c.Y = 0;
 			c.X = (SHORT)value;

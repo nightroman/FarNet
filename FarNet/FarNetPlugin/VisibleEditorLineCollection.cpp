@@ -56,7 +56,7 @@ void VisibleEditorLineCollection::Insert(int index, String^ item)
 		index = Count;
 
 	// prepare string
-	item = item->Replace("\r\n", "\r")->Replace('\n', '\r');
+	item = item->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r');
 
 	// add?
 	int y = 0;
@@ -69,7 +69,7 @@ void VisibleEditorLineCollection::Insert(int index, String^ item)
 		if (y == 0)
 		{
 			newline = false;
-			item += "\r";
+			item += CV::CR;
 		}
 	}
 

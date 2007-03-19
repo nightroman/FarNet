@@ -1,7 +1,7 @@
 Plugin name  : Far.NET3
 Category     : Development
-Version      : 3.3.4
-Release date : 2007.02.25
+Version      : 3.3.7
+Release date : 2007.03.18
 Author       : Roman Kuzmin
 Email        : nightroman@hotmail.com
 HomePage     : http://nightroman.spaces.live.com
@@ -21,6 +21,7 @@ Sources      : C#, C++/CLI (at home page)
 Plugin for writing pligins for Far Manager in any .NET language (or even in
 PowerShell with PowerShellFar plugin). It not only covers Far API but also
 extends it and makes it really easy to use with object oriented approach.
+Home page: http://code.google.com/p/farnet/
 
 
 	Installation
@@ -40,7 +41,6 @@ if you want; in this case you have to update "Far.exe.config" accordingly.
 - Lib - plugin assemblies and their resources;
 - Lib\FarNetIntf.dll - FarManager interfaces;
 - Lib\FarNetIntf.xml - XML documentation, e.g. for VS Object Browser;
-- Lib\FarPluginsLoader.dll - loader of Far.NET plugins;
 - Plugins.NET - plugins folder. Each plugin is a folder with optional subfolders
 Bin (assemblies) and Cfg (configuration files):
 - Cfg\Plugin.cfg - configuration file. Each line is:
@@ -53,12 +53,18 @@ Bin (assemblies) and Cfg (configuration files):
 	Loading Plugins
 
 
-*) For each folder in Plugins.NET:
-- if "Cfg\Plugin.cfg" exists then load it according to the configuration;
-- else if "Bin" exists then load all *.dll from there;
-- else load all *.dll from the plagin folder.
-*) For each loaded *.dll find and create instances of all non abstract classes
+- For each folder in Plugins.NET:
+	- if "Cfg\Plugin.cfg" exists then load it according to the configuration;
+	- else if "Bin" exists then load all *.dll from there;
+	- else load all *.dll from the plagin folder.
+- For each loaded *.dll find and create instances of all non abstract classes
 implementing IPlugin interface.
+
+
+	CHM Documentation
+
+
+Download the latest version from: http://code.google.com/p/farnet/downloads/list
 
 
 	XML Documentation
@@ -67,14 +73,15 @@ implementing IPlugin interface.
 Included XML documentation is not perhaps a perfect form of documentation but it is
 always up-to-date and it is actually the most practically useful for development.
 
-Visual Studio Object Browser automatically uses XML comments well enough in
-Object Browser. Another possible way is to use for example Reflector for .NET
-http://www.aisto.com/roeder/dotnet/, (it is free). It displays documentation in
-MSDN-like style, provides powerful navigation and search (including .NET and any
-loaded .NET assemblies). Tip: ensure that XML comments are enabled in options.
+Visual Studio Object Browser automatically uses XML comments well enough.
+Another possible way is to use for example Reflector for .NET (it is free). It
+displays documentation in MSDN-like style, provides powerful navigation and
+search (including .NET and any loaded .NET assemblies).
+(Reflector for .NET: http://www.aisto.com/roeder/dotnet/)
 
 
 	Plugins Help
+
 
 You can add help for your plugins. It works in dialogs, menus, input and message
 boxes (see property HelpTopic) or by IFar.ShowHelp(). Unfortunately help can not

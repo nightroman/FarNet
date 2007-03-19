@@ -3,19 +3,16 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Plugin
+	/// Plugin interface. See <see cref="Far"/> property.
 	/// </summary>
-	/// <remarks>
-	/// Plugin is controlled by <see cref="Far"/> property.
-	/// </remarks>
 	public interface IPlugin
 	{
 		/// <summary>
-		/// Far manager application 
+		/// Far manager application.
 		/// </summary>
 		/// <remarks>
-		/// When object is set - plugin must register MenuItems, prefixes, etc.
-		/// When null is set plugin must unregister its hooks
+		/// When object is set - plugin must register menu items, prefixes, etc.
+		/// When <c>null</c> is set plugin must unregister its hooks.
 		/// </remarks>
 		IFar Far { get; set; }
 	}
@@ -24,9 +21,8 @@ namespace FarManager
 	/// Base class for all plugins.
 	/// </summary>
 	/// <remarks>
-	/// It stores reference to the FarManager and provides
-	/// <see cref="Connect"/> and <see cref="Disconnect"/> methods.
-	/// Override those methods to handle attachment and detachment of plugin.
+	/// It keeps reference to <see cref="IFar"/> and provides <see cref="Connect"/> and <see cref="Disconnect"/> methods.
+	/// Override those methods to handle attachment and detachment of your plugin.
 	/// </remarks>
 	public class BasePlugin : IPlugin
 	{
@@ -34,7 +30,7 @@ namespace FarManager
 		IFar _far;
 
 		/// <summary>
-		/// See <see cref="IPlugin.Far"/>.
+		/// Object implementing <see cref="IFar"/>.
 		/// </summary>
 		public IFar Far
 		{
@@ -44,18 +40,16 @@ namespace FarManager
 				if (_far != null)
 					Disconnect();
 				_far = value;
-				if (_far != null)
+				if (value != null)
 					Connect();
 			}
 		}
 
-		/// <summary>
-		/// Override this method to handle plugin startup
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="Connect"]/*'/>
 		public virtual void Connect() { }
 
 		/// <summary>
-		/// Override this metod to handle plugin shutdown
+		/// Override this metod to handle plugin shutdown.
 		/// </summary>
 		public virtual void Disconnect() { }
 	}

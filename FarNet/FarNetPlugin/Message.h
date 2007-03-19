@@ -20,6 +20,7 @@ public:
 	virtual void Reset();
 internal:
 	Message();
+	static int Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons);
 private:
 	int Amount();
 	CStr* CreateBlock();

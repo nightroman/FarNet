@@ -3,7 +3,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Represents Control key state
+	/// Represents Control key states.
 	/// </summary>
 	[Flags]
 	public enum ControlKeyStates
@@ -35,14 +35,14 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Keyboard event info
+	/// Keyboard event information.
 	/// </summary>
 	public struct KeyInfo
 	{
-		private bool keyDown;
-		private char character;
-		private ControlKeyStates controlKeyState;
-		private int virtualKeyCode;
+		private bool _keyDown;
+		private char _character;
+		private ControlKeyStates _controlKeyState;
+		private int _virtualKeyCode;
 
 		/// <summary>
 		/// Constructor.
@@ -53,41 +53,78 @@ namespace FarManager
 		/// <param name="keyDown"></param>
 		public KeyInfo(int virtualKeyCode, char character, ControlKeyStates controlKeyState, bool keyDown)
 		{
-			this.virtualKeyCode = virtualKeyCode;
-			this.character = character;
-			this.controlKeyState = controlKeyState;
-			this.keyDown = keyDown;
+			_virtualKeyCode = virtualKeyCode;
+			_character = character;
+			_controlKeyState = controlKeyState;
+			_keyDown = keyDown;
 		}
 		/// <summary>
 		/// Virtual key code.
 		/// </summary>
-		public int VirtualKeyCode { get { return virtualKeyCode; } set { virtualKeyCode = value; } }
+		public int VirtualKeyCode { get { return _virtualKeyCode; } set { _virtualKeyCode = value; } }
 		/// <summary>
 		/// Character.
 		/// </summary>
-		public char Character { get { return character; } set { character = value; } }
+		public char Character { get { return _character; } set { _character = value; } }
 		/// <summary>
 		/// Control key states.
 		/// </summary>
-		public ControlKeyStates ControlKeyState { get { return controlKeyState; } set { controlKeyState = value; } }
+		public ControlKeyStates ControlKeyState { get { return _controlKeyState; } set { _controlKeyState = value; } }
 		/// <summary>
 		/// Key down event.
 		/// </summary>
-		public bool KeyDown { get { return keyDown; } set { keyDown = value; } }
+		public bool KeyDown { get { return _keyDown; } set { _keyDown = value; } }
 		/// <summary>
 		/// Gets only Alt, Ctrl and Shift states.
 		/// </summary>
-		public ControlKeyStates AltCtrlShift { get { return controlKeyState & ControlKeyStates.AltCtrlShift; } }
+		public ControlKeyStates AltCtrlShift { get { return _controlKeyState & ControlKeyStates.AltCtrlShift; } }
 		/// <summary>
 		/// ToString()
 		/// </summary>
 		public override string ToString()
 		{
-			return "Down = " + keyDown + "; Code = " + virtualKeyCode + "; Char = " + character + " (" + controlKeyState + ")";
+			return "Down = " + _keyDown + "; Code = " + _virtualKeyCode + "; Char = " + _character + " (" + _controlKeyState + ")";
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator ==(KeyInfo left, KeyInfo right)
+		{
+			return
+				left._character == right._character &&
+				left._controlKeyState == right._controlKeyState &&
+				left._keyDown == right._keyDown &&
+				left._virtualKeyCode == right._virtualKeyCode;
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator !=(KeyInfo left, KeyInfo right)
+		{
+			return !(left == right);
+		}
+		/// <summary>
+		/// Equals()
+		/// </summary>
+		public override bool Equals(Object obj)
+		{
+			return obj is KeyInfo && this == (KeyInfo)obj;
+		}
+		/// <summary>
+		/// GetHashCode()
+		/// </summary>
+		public override int GetHashCode()
+		{
+			uint num = _keyDown ? 0x10000000u : 0;
+			num |= ((uint)_controlKeyState) << 0x10;
+			num |= (uint)_virtualKeyCode;
+			return num.GetHashCode();
 		}
 	}
 
-	/// <summary>Specifies constants that define which mouse button was pressed.</summary>
+	/// <summary>
+	/// Specifies constants that define which mouse button was pressed.
+	/// </summary>
 	[Flags]
 	public enum MouseButtons
 	{
@@ -136,7 +173,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Mouse event info
+	/// Mouse event information.
 	/// </summary>
 	public struct MouseInfo
 	{
@@ -184,6 +221,39 @@ namespace FarManager
 		public override string ToString()
 		{
 			return _where.ToString() + " " + _action + " (" + _buttons + ") (" + _controlKeyState + ")";
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator ==(MouseInfo left, MouseInfo right)
+		{
+			return
+				left._action == right._action &&
+				left._buttons == right._buttons &&
+				left._controlKeyState == right._controlKeyState &&
+				left._where == right._where;
+		}
+		/// <summary>
+		/// Compares two objects.
+		/// </summary>
+		public static bool operator !=(MouseInfo left, MouseInfo right)
+		{
+			return !(left == right);
+		}
+		/// <summary>
+		/// Equals()
+		/// </summary>
+		public override bool Equals(Object obj)
+		{
+			return obj is MouseInfo && this == (MouseInfo)obj;
+		}
+		/// <summary>
+		/// GetHashCode()
+		/// </summary>
+		public override int GetHashCode()
+		{
+			uint num = (uint)_action + ((uint)_buttons << 8) + ((uint)_controlKeyState << 16);
+			return num.GetHashCode() ^ _where.GetHashCode();
 		}
 	}
 }

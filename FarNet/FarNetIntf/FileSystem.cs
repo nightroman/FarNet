@@ -4,7 +4,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Item of file system
+	/// Item of file system. It is used by <see cref="IPanel"/>.
 	/// </summary>
 	public interface IFile
 	{
@@ -91,7 +91,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Folder of file system
+	/// Folder of file system. It is used by <see cref="IPanel"/>.
 	/// </summary>
 	public interface IFolder : IFile
 	{
@@ -102,7 +102,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Type of panel.
+	/// Type of a panel.
 	/// </summary>
 	public enum PanelType
 	{
@@ -227,7 +227,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Panel of the Far Manager
+	/// Panel of the Far Manager. See active <see cref="IFar.Panel"/> and passive <see cref="IFar.AnotherPanel"/>.
 	/// </summary>
 	public interface IPanel
 	{

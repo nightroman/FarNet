@@ -1,3 +1,32 @@
+3.3.7
+
+- Created CHM help: from now on the latest version can be downloaded from:
+http://code.google.com/p/farnet/downloads/list
+- IFar: two new methods Write() appending plain or colored text to the user
+screen (under panels).
+- Far.NET does not show now error message boxes during the procedure of loading
+plugins (it is annoying if problems are known and temporary). Instead, it writes
+all error messages to the user screen and continues.
+
+3.3.6
+
+- Removed: IMenuItem.Selected and related IMenu.Show(int) and parameters
+Selected from several methods IMenuItems.Add(). Instead, IMenu.Show() uses
+IMenu.Selected as input if it is set. This way seems more consistent than
+approach with IMenuItem.Selected (potential conflict between items).
+
+3.3.5
+
+- ILine.Pos: setting of a negative value moves cursor to the end of a line.
+- New ILine.Length: text length; use it when text itself is irrelevant.
+- New IEditor.GoEnd(): effective way to move cursor to the end of file.
+- IFar.Msg(): header: chars '\t', '\r', '\n', if any, are replaced with spaces.
+- Removed FarPluginsLoader.dll; you have to do it manually (in %FARHOME%\Lib).
+- Fixed recent bugs in menus.
+- New property IMenu.SelectLast: tells to select the last item.
+- New IMenu feature: filters. See XML docs for properties Filter, FilterKey,
+FilterHistory, FilterRestore.
+
 3.3.4
 
 - Implemented IEdit\IComboBox.Line.Selection.

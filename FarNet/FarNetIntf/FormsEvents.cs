@@ -3,7 +3,7 @@ using System;
 namespace FarManager.Forms
 {
 	/// <summary>
-	/// Arguments of any event in <see cref="IDialog"/>.
+	/// Arguments of any dialog or control event.
 	/// </summary>
 	public class AnyEventArgs : EventArgs
 	{
@@ -26,7 +26,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Initialized event arguments: <see cref="IDialog"/>.
+	/// <see cref="IDialog.Initialized"/> event arguments.
 	/// </summary>
 	public sealed class InitializedEventArgs : AnyEventArgs
 	{
@@ -50,7 +50,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Closing event arguments: <see cref="IDialog"/>.
+	/// <see cref="IDialog.Closing"/> event arguments.
 	/// </summary>
 	public sealed class ClosingEventArgs : AnyEventArgs
 	{
@@ -74,7 +74,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// LosingFocus event arguments: <see cref="IControl"/>.
+	/// <see cref="IControl.LosingFocus"/> event arguments.
 	/// </summary>
 	public sealed class LosingFocusEventArgs : AnyEventArgs
 	{
@@ -98,7 +98,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Clicked event arguments: <see cref="IButton"/>, <see cref="ICheckBox"/>, <see cref="IRadioButton"/>.
+	/// <c>ButtonClicked</c> event arguments for <see cref="IButton"/>, <see cref="ICheckBox"/>, <see cref="IRadioButton"/>.
 	/// </summary>
 	public sealed class ButtonClickedEventArgs : AnyEventArgs
 	{
@@ -135,7 +135,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// TextChanged event arguments: <see cref="IEdit"/>, <see cref="IComboBox"/>.
+	/// <c>TextChanged</c> event arguments for <see cref="IEdit"/>, <see cref="IComboBox"/>.
 	/// </summary>
 	public sealed class TextChangedEventArgs : AnyEventArgs
 	{
@@ -169,7 +169,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Internal key event.
+	/// <c>KeyPressed</c> event arguments for <see cref="IDialog"/> and <see cref="IControl"/>.
 	/// </summary>
 	public sealed class KeyPressedEventArgs : AnyEventArgs
 	{
@@ -203,7 +203,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Mouse clicked event.
+	/// <c>MouseClicked</c> event arguments for <see cref="IDialog"/> and <see cref="IControl"/>..
 	/// </summary>
 	public sealed class MouseClickedEventArgs : AnyEventArgs
 	{

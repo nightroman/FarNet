@@ -207,7 +207,7 @@ namespace FarManager.Forms
 		/// <summary>
 		/// Change selection in a radio button group when focus is moved.
 		/// Radio buttons with this flag set are also drawn without parentheses around the selection mark
-		/// (example: FAR color selection dialog).
+		/// (example: Far color selection dialog).
 		/// </summary>
 		bool MoveSelect { get; set; }
 		/// <summary>
@@ -418,9 +418,7 @@ namespace FarManager.Forms
 		/// Don't draw dialog panel. 
 		/// </summary>
 		bool NoPanel { get; set; }
-		/// <summary>
-		/// Describes a help topic. <see cref="IFar.ShowHelp"/> for details.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
 		/// Any user data.
@@ -434,88 +432,67 @@ namespace FarManager.Forms
 		/// <summary>
 		/// Adds a double or single box control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="right">Right position.</param>
-		/// <param name="bottom">Bottom line.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <param name="text">Control text.</param>
 		IBox AddBox(int left, int top, int right, int bottom, string text);
 		/// <summary>
 		/// Adds a button control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		IButton AddButton(int left, int top, string text);
 		/// <summary>
 		/// Adds a check box control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		ICheckBox AddCheckBox(int left, int top, string text);
 		/// <summary>
 		/// Adds a ComboBox control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="right">Right position.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IComboBox AddComboBox(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a standard edit control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="right">Right position.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEdit(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a fixed size edit control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="right">Right position.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEditFixed(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a password edit control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="right">Right position.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEditPassword(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a ListBox control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="right">Right position.</param>
-		/// <param name="bottom">Bottom line.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <param name="text">Control text.</param>
 		IListBox AddListBox(int left, int top, int right, int bottom, string text);
 		/// <summary>
 		/// Adds a radio button.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		IRadioButton AddRadioButton(int left, int top, string text);
 		/// <summary>
 		/// Adds a text control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="right">Right position.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddText(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a vertical text control.
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="bottom">Bottom line.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTB"]/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddVerticalText(int left, int top, int bottom, string text);
 	}

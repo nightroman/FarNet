@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "EditorManager.h"
 #include "FarImpl.h"
+#include "PluginManager.h"
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
@@ -20,7 +21,13 @@ enum EMessage
 };
 
 gcroot<Far^> farImpl;
-gcroot<FarNetPlugMan::PluginManager^> pluginManager;
+gcroot<PluginManager^> pluginManager;
+
+// Far for anybody
+Far^ GetFar()
+{
+	return farImpl;
+}
 
 // GetMsg gets a message string from a lang file. Here is the wrapper.
 char* GetMsg(int MsgId)
@@ -39,8 +46,8 @@ void WINAPI _export SetStartupInfo(const PluginStartupInfo* psi)
 	Info.FSF = &FSF;
 	__START;
 	farImpl = gcnew Far();
-	pluginManager = gcnew FarNetPlugMan::PluginManager();
-	pluginManager->Far = farImpl;
+	pluginManager = gcnew PluginManager(farImpl);
+	pluginManager->LoadPlugins();
 	__END;
 }
 
@@ -52,7 +59,7 @@ void WINAPI _export GetPluginInfo(PluginInfo* pi)
 	__END;
 }
 
-// OpenPlugin is called on new plagin instance.
+// OpenPlugin is called on new plugin instance.
 HANDLE WINAPI _export OpenPlugin(int OpenFrom, int item)
 {
 	__START;
@@ -65,7 +72,7 @@ void WINAPI _export ExitFAR()
 {
 	__START;
 	farImpl = nullptr;
-	pluginManager->Far = nullptr;
+	pluginManager->UnloadPlugins();
 	pluginManager = nullptr;
 	__END;
 }

@@ -10,18 +10,28 @@ VisibleEditorLine::VisibleEditorLine(int no, bool selected)
 {
 }
 
+//!! Keep it before "#define _selection"
 ILineSelection^ VisibleEditorLine::Selection::get()
 {
 	if (_selection == nullptr)
 		_selection = gcnew VisibleEditorLineSelection(_no);
 	return _selection;
 }
-// DON'T use:
+//!! DON'T use _selection after this point
 #define _selection _selection__use_property
 
 ILine^ VisibleEditorLine::FullLine::get()
 {
 	return _selected ? gcnew VisibleEditorLine(_no, false) : this;
+}
+
+int VisibleEditorLine::Length::get()
+{
+	if (_selected)
+		return Selection->Length;
+
+	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
+	return egs.StringLength;
 }
 
 int VisibleEditorLine::No::get()
@@ -40,6 +50,11 @@ int VisibleEditorLine::Pos::get()
 
 void VisibleEditorLine::Pos::set(int value)
 {
+	if (value < 0)
+	{
+		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
+		value = egs.StringLength;
+	}
 	SEditorSetPosition esp;
 	esp.CurPos = value;
 	esp.CurLine = _no;
@@ -98,7 +113,7 @@ void VisibleEditorLine::Insert(String^ text)
 	int pos = Pos;
 	if (pos < 0)
 		throw gcnew InvalidOperationException("The line is not current");
-	CStr sb(text->Replace("\r\n", "\r")->Replace('\n', '\r'));
+	CStr sb(text->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r'));
 	Info.EditorControl(ECTL_INSERTTEXT, sb);
 }
 

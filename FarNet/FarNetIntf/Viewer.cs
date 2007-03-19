@@ -3,7 +3,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Far Viewer interface.
+	/// Far Viewer interface. It is created by <see cref="IFar.CreateViewer"/>.
 	/// </summary>
 	public interface IViewer
 	{
