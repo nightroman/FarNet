@@ -78,7 +78,20 @@ void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);
 
 // Helpers
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
+String^ ExceptionInfo(Exception^ e);
 
 extern int _fastGetString;
 
 Place SelectionPlace();
+
+namespace FarManagerImpl
+{;
+// Constant Values
+public ref class CV
+{
+internal:
+	static String^ const CR = "\r";
+	static String^ const LF = "\n";
+	static String^ const CRLF = "\r\n";
+};
+}

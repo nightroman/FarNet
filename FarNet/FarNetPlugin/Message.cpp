@@ -103,4 +103,54 @@ void Message::Add(StringCollection^ strings, CStr* result, int& index)
 		++index;
 	}
 }
+
+int Message::Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons)
+{
+	// object
+	Message m;
+	m.Options = options;
+
+	// text width
+	int width = Console::WindowWidth - 16;
+
+	// header
+	if (!String::IsNullOrEmpty(header))
+	{
+		m.Header = Regex::Replace(header, "[\t\r\n]+", " ");
+		if (m.Header->Length > width)
+			m.Header = m.Header->Substring(0, width);
+	}
+
+	// body
+	Regex^ format = nullptr;
+	int height = Console::WindowHeight - 10;
+	for each(String^ s1 in Regex::Split(body->Replace('\t', ' '), "\r\n|\r|\n"))
+	{
+		if (s1->Length <= width)
+		{
+			m.Body->Add(s1);
+		}
+		else
+		{
+			if (format == nullptr)
+				format = gcnew Regex("(.{0," + width + "}(?:\\s|$))");
+			for each (String^ s2 in format->Split(s1))
+				if (s2->Length > 0)
+					m.Body->Add(s2);
+		}
+		if (m.Body->Count >= height)
+			break;
+	}
+
+	// buttons
+	if (buttons != nullptr)
+	{
+		for each(String^ s in buttons)
+			m.Buttons->Add(s);
+	}
+
+	// go
+	m.Show();
+	return m.Selected;
+}
 }

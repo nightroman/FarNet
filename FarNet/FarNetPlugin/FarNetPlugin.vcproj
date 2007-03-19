@@ -30,7 +30,7 @@
 			<Tool
 				Name="VCCustomBuildTool"
 				CommandLine="cd .. &amp; nmake copy config=$(ConfigurationName)&#x0D;&#x0A;"
-				Outputs="&quot;C:\Program Files\Far\Lib\FarNetIntf.dll&quot;;&quot;C:\Program Files\Far\Lib\FarNetIntf.xml&quot;;&quot;C:\Program Files\Far\Lib\FarPluginsLoader.dll&quot;;&quot;C:\Program Files\Far\Plugins\Far.NET\FarNetPlugin.dll&quot;"
+				Outputs="&quot;C:\Program Files\Far\Lib\FarNetIntf.dll&quot;;&quot;C:\Program Files\Far\Lib\FarNetIntf.xml&quot;;&quot;C:\Program Files\Far\Plugins\Far.NET\FarNetPlugin.dll&quot;"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -116,7 +116,7 @@
 			<Tool
 				Name="VCCustomBuildTool"
 				CommandLine="cd .. &amp; nmake copy config=$(ConfigurationName)&#x0D;&#x0A;"
-				Outputs="&quot;C:\Program Files\Far\Lib\FarNetIntf.dll&quot;;&quot;C:\Program Files\Far\Lib\FarNetIntf.xml&quot;;&quot;C:\Program Files\Far\Lib\FarPluginsLoader.dll&quot;;&quot;C:\Program Files\Far\Plugins\Far.NET\FarNetPlugin.dll&quot;"
+				Outputs="&quot;C:\Program Files\Far\Lib\FarNetIntf.dll&quot;;&quot;C:\Program Files\Far\Lib\FarNetIntf.xml&quot;;&quot;C:\Program Files\Far\Plugins\Far.NET\FarNetPlugin.dll&quot;"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -202,14 +202,6 @@
 			RelativePath="System.dll"
 			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{587C75EA-F66E-4025-B6AE-271BDD253585}"
-			CopyLocal="false"
-			CopyLocalDependencies="false"
-			UseDependenciesInBuild="false"
-			CopyLocalSatelliteAssemblies="false"
-			RelativePathToProject=".\FarPluginsLoader\FarNetPlugMan.csproj"
-		/>
 	</References>
 	<Files>
 		<Filter
@@ -271,6 +263,10 @@
 			</File>
 			<File
 				RelativePath=".\Message.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PluginManager.cpp"
 				>
 			</File>
 			<File
@@ -369,6 +365,10 @@
 			</File>
 			<File
 				RelativePath=".\Message.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PluginManager.h"
 				>
 			</File>
 			<File

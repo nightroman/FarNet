@@ -1,10 +1,11 @@
+using FarManager.Forms;
 using System.Collections.Generic;
 using System;
 
 namespace FarManager
 {
 	/// <summary>
-	/// Interface of any editor.
+	/// Interface of any editor. See <see cref="IFar.AnyEditor"/>.
 	/// </summary>
 	public interface IAnyEditor
 	{
@@ -35,7 +36,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Far Editor interface.
+	/// Far Editor interface. See <see cref="IFar.Editor"/>, <see cref="IFar.CreateEditor"/>.
 	/// </summary>
 	public interface IEditor : IAnyEditor
 	{
@@ -88,7 +89,7 @@ namespace FarManager
 		/// <seealso cref="IFar.WordDiv"/>
 		string WordDiv { get; set; }
 		/// <summary>
-		/// Current line.
+		/// The current line. It is not a 'copy', when you move cursor to another line this object is changed respectively.
 		/// Only for opened and current editor.
 		/// </summary>
 		ILine CurrentLine { get; }
@@ -110,7 +111,6 @@ namespace FarManager
 		/// Current selection. It is a collection <see cref="ILines"/> of selected line parts and a few extra members.
 		/// Only for opened and current editor.
 		/// </summary>
-		/// <seealso cref="ISelection.Type"/>
 		ISelection Selection { get; }
 		/// <summary>
 		/// Disable switching to other windows.
@@ -118,7 +118,7 @@ namespace FarManager
 		/// </summary>
 		bool IsModal { get; set; }
 		/// <summary>
-		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in FAR. 
+		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in Far. 
 		/// It is read only when an editor is opened.
 		/// </summary>
 		bool IsNew { get; set; }
@@ -130,7 +130,7 @@ namespace FarManager
 		/// <param name="text">The text. Supported EOL: CR, LF, CR+LF.</param>
 		void Insert(string text);
 		/// <summary>
-		/// Redraw editor.
+		/// Redraw editor window. Normally it should be called when changes are completed.
 		/// Only for opened and current editor.
 		/// </summary>
 		void Redraw();
@@ -175,7 +175,7 @@ namespace FarManager
 		/// <param name="indent">Insert a line with indent.</param>
 		void InsertLine(bool indent);
 		/// <summary>
-		/// Open an editor using properties:
+		/// Opens an editor using properties:
 		/// <see cref="FileName"/>,
 		/// <see cref="Title"/>,
 		/// <see cref="Async"/>,
@@ -231,8 +231,6 @@ namespace FarManager
 		/// <summary>
 		/// Converts a screen point to editor cursor point.
 		/// </summary>
-		/// <param name="screen"></param>
-		/// <returns></returns>
 		Point ConvertScreenToCursor(Point screen);
 		/// <summary>
 		/// Current text frame.
@@ -242,11 +240,11 @@ namespace FarManager
 		/// Call this method before processing large amount of lines, performance can be drastically improved.
 		/// It is strongly recommended to call <see cref="End"/> after processing.
 		/// Nested calls of <see cref="Begin"/> .. <see cref="End"/> are allowed.
+		/// </summary>
 		/// <remarks>
 		/// Avoid using this method together with getting <see cref="Frame"/> or <see cref="Cursor"/>,
 		/// their values can be invalid. But you can set them directly or using <see cref="GoTo"/> methods.
 		/// </remarks>
-		/// </summary>
 		void Begin();
 		/// <summary>
 		/// If you have called <see cref="Begin"/> you have to call this method in the end of processing.
@@ -260,29 +258,43 @@ namespace FarManager
 		/// <summary>
 		/// Gets bookmarks in the current editor.
 		/// Bookmarks are defined as <see cref="TextFrame"/>.
-		/// Negative Line means undefined bookmark.
+		/// Negative <c>Line</c> means undefined bookmark.
 		/// To go to a bookmark set <see cref="Frame"/>.
 		/// </summary>
 		ICollection<TextFrame> Bookmarks();
 		/// <summary>
 		/// Go to a new cursor position.
-		/// <seealso cref="Frame"/>
 		/// </summary>
 		/// <param name="pos">Position.</param>
 		/// <param name="line">Line.</param>
+		/// <seealso cref="Frame"/>
 		void GoTo(int pos, int line);
 		/// <summary>
 		/// Go to a line.
-		/// <seealso cref="Frame"/>
 		/// </summary>
 		/// <param name="line">Line.</param>
+		/// <seealso cref="Frame"/>
 		void GoToLine(int line);
 		/// <summary>
 		/// Go to a position in the current line.
-		/// <seealso cref="Frame"/>
 		/// </summary>
 		/// <param name="pos">Position.</param>
+		/// <seealso cref="Frame"/>
 		void GoToPos(int pos);
+		/// <summary>
+		/// Go to the end of text.
+		/// </summary>
+		/// <param name="addLine">Add an empty line if the last is not empty.</param>
+		void GoEnd(bool addLine);
+		/// <summary>
+		/// User data.
+		/// </summary>
+		object Data { get; set; }
+		/// <summary>
+		/// Is the end line the current one?
+		/// Only for opened and current editor.
+		/// </summary>
+		bool IsEnd { get; }
 	}
 
 	/// <summary>
@@ -314,21 +326,21 @@ namespace FarManager
 	/// <remarks>
 	/// Usually the list is internally connected to <see cref="ILines"/>,
 	/// thus, strings in the list are dependent on this source; i.e.
-	/// *) if it is <see cref="ILines.Text"/> from <see cref="IEditor.Lines"/> then strings are lines of editor
-	/// and list operations Add, Clear, Insert, RemoveAt and etc. affect editor text;
-	/// *) if it is <see cref="ILines.Text"/> from <see cref="IEditor.Selection"/> then strings are selected line parts
+	/// *) if it is <see cref="ILines.Strings"/> from <see cref="IEditor.Lines"/> then strings are lines of editor
+	/// and standard list operations affect editor text;
+	/// *) if it is <see cref="ILines.Strings"/> from <see cref="IEditor.Selection"/> then strings are selected line parts
 	/// and list operations affect only selected text.
 	/// </remarks>
 	public interface IStrings : IList<string>
 	{
 		/// <summary>
-		/// Strings concatenated with CRLF
+		/// Strings concatenated with CRLF.
 		/// </summary>
 		string Text { get; set; }
 	}
 
 	/// <summary>
-	/// Selection of <see cref="ILine">editor line</see>
+	/// Selection in <see cref="ILine"/>.
 	/// </summary>
 	public interface ILineSelection
 	{
@@ -351,7 +363,10 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Line in <see cref="IEditor.Lines"/> or <see cref="IEditor.Selection"/> from <see cref="IEditor"/>.
+	/// Interface of a line in various text and line editors:
+	/// *) item of <see cref="IEditor.Lines"/> or <see cref="IEditor.Selection"/> in <see cref="IEditor"/>;
+	/// *) command line <see cref="IFar.CommandLine"/>;
+	/// *) edit box (<see cref="IEdit.Line"/>) and combo box (<see cref="IComboBox.Line"/>) in <see cref="IDialog"/>.
 	/// </summary>
 	public interface ILine
 	{
@@ -374,7 +389,9 @@ namespace FarManager
 		/// </summary>
 		ILineSelection Selection { get; }
 		/// <summary>
-		/// Cursor position. -1 if the line is not current.
+		/// Cursor position.
+		/// Returns -1 if the line is not current.
+		/// Setting of negative value moves cursor to the line end.
 		/// </summary>
 		int Pos { get; set; }
 		/// <summary>
@@ -399,10 +416,14 @@ namespace FarManager
 		/// or returns this instance itself.
 		/// </summary>
 		ILine FullLine { get; }
+		/// <summary>
+		/// The text length.
+		/// </summary>
+		int Length { get; }
 	}
 
 	/// <summary>
-	/// List of lines
+	/// List of lines. See <see cref="IEditor.Lines"/> (all editor lines), <see cref="IEditor.Selection"/> (editor selected lines\parts).
 	/// </summary>
 	public interface ILines : IList<ILine>
 	{
@@ -513,7 +534,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Expand tabs mode
+	/// Editor expand tabs mode.
 	/// </summary>
 	public enum ExpandTabsMode
 	{
@@ -532,7 +553,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Complete information about text frame in <see cref="IEditor">Editor</see>.
+	/// Complete information about text frame and cursor position in an editor.
 	/// </summary>
 	public struct TextFrame
 	{

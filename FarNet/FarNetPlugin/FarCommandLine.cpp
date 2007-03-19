@@ -18,6 +18,14 @@ ILineSelection^ FarCommandLine::Selection::get()
 	return gcnew CommandLineSelection();
 }
 
+int FarCommandLine::Length::get()
+{
+	char sb[1024];
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sb))
+		throw gcnew OperationCanceledException();
+	return strlen(sb);
+}
+
 int FarCommandLine::No::get()
 {
 	return -1;
@@ -57,6 +65,13 @@ int FarCommandLine::Pos::get()
 
 void FarCommandLine::Pos::set(int value)
 {
+	if (value < 0)
+	{
+		char sb[1024];
+		if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sb))
+			throw gcnew OperationCanceledException();
+		value = strlen(sb);
+	}
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINEPOS, &value))
 		throw gcnew OperationCanceledException();
 }

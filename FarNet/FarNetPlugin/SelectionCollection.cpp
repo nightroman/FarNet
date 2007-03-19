@@ -134,7 +134,7 @@ void SelectionCollection::Text::set(String^ value)
 		_editor->Overtype = false;
 
 	// insert
-	CStr sb(value->Replace("\r\n", "\r")->Replace('\n', '\r'));
+	CStr sb(value->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r'));
 	Info.EditorControl(ECTL_INSERTTEXT, sb);
 
 	// restore overtype
@@ -189,7 +189,7 @@ void SelectionCollection::Insert(int index, String^ item)
 		if (egss.SelStart > 0)
 		{
 			// TODO tweak
-			Text = item + "\r" + Text;
+			Text = item + CV::CR + Text;
 			return;
 		}
 
@@ -214,7 +214,7 @@ void SelectionCollection::Insert(int index, String^ item)
 	}
 
 	// case: add (prior is actually the last)
-	item = item->Replace("\r\n", "\r")->Replace('\n', '\r');
+	item = item->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r');
 	_editor->GoTo(egsp.SelEnd, ip);
 
 	// change overtype
@@ -224,7 +224,7 @@ void SelectionCollection::Insert(int index, String^ item)
 	if (egsp.SelEnd == 0)
 	{
 		// ELL case
-		CStr sb(item + "\r");
+		CStr sb(item + CV::CR);
 		Info.EditorControl(ECTL_INSERTTEXT, sb);
 	}
 	else

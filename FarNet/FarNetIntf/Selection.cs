@@ -3,7 +3,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// List of selected line parts and extra methods.
+	/// List of selected line parts and extra methods to manage editor selected area.
 	/// </summary>
 	public interface ISelection : ILines
 	{
@@ -35,7 +35,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Types of selection. <see cref="ISelection.Type"/>
+	/// Type of editor selected area.
 	/// </summary>
 	public enum SelectionType
 	{

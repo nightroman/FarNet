@@ -73,58 +73,22 @@ IPluginMenuItem^ Far::CreatePluginsMenuItem()
 
 bool Far::Msg(String^ body)
 {
-	return Msg(body, nullptr, MessageOptions::Ok) >= 0;
+	return Message::Show(body, nullptr, MessageOptions::Ok, nullptr) >= 0;
 }
 
 bool Far::Msg(String^ body, String^ header)
 {
-	return Msg(body, header, MessageOptions::Ok) >= 0;
+	return Message::Show(body, header, MessageOptions::Ok, nullptr) >= 0;
 }
 
 int Far::Msg(String^ body, String^ header, MessageOptions options)
 {
-	return Msg(body, header, options, nullptr);
+	return Message::Show(body, header, options, nullptr);
 }
 
 int Far::Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons)
 {
-	// object
-	IMessage^ m = CreateMessage();
-	m->Header = header;
-	m->Options = options;
-
-	// body
-	Regex^ format = nullptr;
-	int width = Console::WindowWidth - 16;
-	int height = Console::WindowHeight - 7;
-	for each(String^ s1 in Regex::Split(body->Replace('\t', ' '), "\r\n|\r|\n"))
-	{
-		if (s1->Length <= width)
-		{
-			m->Body->Add(s1);
-		}
-		else
-		{
-			if (format == nullptr)
-				format = gcnew Regex("(.{0," + width + "}(?:\\s|$))");
-			for each (String^ s2 in format->Split(s1))
-				if (s2->Length > 0)
-					m->Body->Add(s2);
-		}
-		if (m->Body->Count >= height)
-			break;
-	}
-
-	// buttons
-	if (buttons != nullptr)
-	{
-		for each(String^ s in buttons)
-			m->Buttons->Add(s);
-	}
-
-	// go
-	m->Show();
-	return m->Selected;
+	return Message::Show(body, header, options, buttons);
 }
 
 IMessage^ Far::CreateMessage()
@@ -267,7 +231,7 @@ void Far::PostText(String^ text, bool disableOutput)
 		throw gcnew ArgumentNullException("text");
 
 	StringBuilder^ keys = gcnew StringBuilder();
-	text = text->Replace("\r\n", "\n")->Replace('\r', '\n');
+	text = text->Replace(CV::CRLF, CV::LF)->Replace('\r', '\n');
 	for each(Char c in text)
 	{
 		switch(c)
@@ -446,46 +410,10 @@ ICollection<String^>^ Far::GetHistory(String^ name)
 	}
 }
 
-// Gets a property value by name or null
-Object^ Property(Object^ obj, String^ name)
-{
-	try
-	{
-		return obj->GetType()->InvokeMember(
-			name, BindingFlags::GetProperty | BindingFlags::Public | BindingFlags::Instance, nullptr, obj, nullptr);
-	}
-	catch(...)
-	{
-		return nullptr;
-	}
-}
-
 void ShowExceptionInfo(Exception^ e)
 {
-	String^ info = e->Message + "\n\n";
-
-	Object^ er = nullptr;
-	for(Exception^ ex = e; ex != nullptr; ex = ex->InnerException)
-	{
-		if (ex->GetType()->FullName->StartsWith("System.Management.Automation."))
-		{
-			er = Property(ex, "ErrorRecord");
-			break;
-		}
-	}
-	if (er != nullptr)
-	{
-		Object^ ii = Property(er, "InvocationInfo");
-		if (ii != nullptr)
-		{
-			Object^ pm = Property(ii, "PositionMessage");
-			if (pm != nullptr)
-				info = info + pm->ToString() + "\n\n";
-		}
-	}
-
 	String^ path = Path::GetTempFileName();
-	File::WriteAllText(path, info + e->ToString(), System::Text::Encoding::Unicode);
+	File::WriteAllText(path, ExceptionInfo(e) + "\n" + e->ToString(), System::Text::Encoding::Unicode);
 
 	// view file
 	Viewer v;
@@ -530,5 +458,23 @@ void Far::ShowHelp(String^ path, String^ topic, HelpOptions options)
 	CStr sPath; if (!String::IsNullOrEmpty(path)) sPath.Set(path);
 	CStr sTopic; if (!String::IsNullOrEmpty(topic)) sTopic.Set(topic);
 	Info.ShowHelp(sPath, sTopic, (int)options);
+}
+
+void Far::Write(String^ text)
+{
+	GetUserScreen();
+	Console::Write(text);
+	SetUserScreen();
+}
+
+void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
+{
+	ConsoleColor fc = Console::ForegroundColor;
+	ConsoleColor bc = Console::BackgroundColor;
+	Console::ForegroundColor = foregroundColor;
+	Console::BackgroundColor = backgroundColor;
+	Write(text);
+	Console::ForegroundColor = fc;
+	Console::BackgroundColor = bc;
 }
 }

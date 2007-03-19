@@ -48,30 +48,13 @@ void VisibleEditorLineSelection::Text::set(String^ value)
 	// change selection
 	if (dd != 0)
 	{
-		EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
-		if (ei.BlockType != BTYPE_STREAM)
-			throw gcnew InvalidOperationException("Can't process this selection shape");
-
-		EditorGetString egs;
-		int top = ei.BlockStartLine;
-		int left = -1;
-		int right = -1;
-		for(egs.StringNumber = top; Info.EditorControl(ECTL_GETSTRING, &egs); ++egs.StringNumber) // TODO dupe
-		{
-			if (left < 0)
-				left = egs.SelStart;
-			if (egs.SelStart < 0)
-				break;
-			right = egs.SelEnd;
-		}
-		int bottom = egs.StringNumber - 1;
-
+		Place pp = SelectionPlace();
 		EditorSelect es;
-		es.BlockHeight = bottom - top + 1;
-		es.BlockStartLine = top;
-		es.BlockStartPos = left;
+		es.BlockHeight = pp.Bottom - pp.Top + 1;
+		es.BlockStartLine = pp.Top;
+		es.BlockStartPos = pp.Left;
 		es.BlockType = BTYPE_STREAM;
-		es.BlockWidth = right - left + dd;
+		es.BlockWidth = pp.Right + 1 - pp.Left + dd;
 		EditorControl_ECTL_SELECT(es);
 	}
 }

@@ -3,9 +3,8 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Input box
+	/// Input box. It is created by <see cref="IFar.CreateInputBox"/>.
 	/// </summary>
-	/// <seealso cref="IFar.CreateInputBox"/>
 	public interface IInputBox
 	{
 		/// <summary>
@@ -48,9 +47,7 @@ namespace FarManager
 		/// Buttons are visible
 		/// </summary>
 		bool ButtonsAreVisible { get; set; }
-		/// <summary>
-		/// Describes a help topic. <see cref="IFar.ShowHelp"/> for details.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
 		/// Shows input box and waits until user press OK or Cancel
