@@ -4,53 +4,52 @@ using System.Collections.Specialized;
 namespace FarManager
 {
 	/// <summary>
-	/// Message box
+	/// Message box. It is created by <see cref="IFar.CreateMessage"/>.
+	/// In many cases you may just use one of <see cref="IFar.Msg(string)"/> methods.
 	/// </summary>
 	public interface IMessage
 	{
 		/// <summary>
-		/// Body of message
+		/// Message body: lines of text.
 		/// </summary>
 		StringCollection Body { get; }
 		/// <summary>
-		/// Buttons of message box
+		/// Set of button labels.
 		/// </summary>
 		StringCollection Buttons { get; }
 		/// <summary>
-		/// Header of message box
+		/// Message box header.
 		/// </summary>
 		String Header { get; set; }
 		/// <summary>
-		///  Index of selected <see cref="Buttons">button</see>
+		/// Index of a selected button or -1 on Escape.
 		/// </summary>
 		int Selected { get; set; }
 		/// <summary>
-		/// Message is warning
+		/// Message is warning.
 		/// </summary>
 		bool IsWarning { get; set; }
 		/// <summary>
-		/// Message is error 
+		/// Message is error.
 		/// </summary>
 		bool IsError { get; set; }
 		/// <summary>
-		/// Store and restore background contents
+		/// Store and restore background contents.
 		/// </summary>
 		bool KeepBackground { get; set; }
 		/// <summary>
-		/// Align message text to the left
+		/// Align message text to the left.
 		/// </summary>
 		bool LeftAligned { get; set; }
-		/// <summary>
-		/// Describes a help topic. <see cref="IFar.ShowHelp"/> for details.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
-		/// Show the message box
+		/// Show the message box.
 		/// </summary>
-		/// <returns>Ok is pressed</returns>
+		/// <returns>True if a button is pressed.</returns>
 		bool Show();
 		/// <summary>
-		/// Reset all properties to initial values
+		/// Reset all properties to initial values.
 		/// </summary>
 		void Reset();
 		/// <summary>
@@ -60,7 +59,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Message box options for <see cref="IFar.Msg(string,string,MessageOptions)"/>.
+	/// Message box options.
 	/// </summary>
 	[Flags]
 	public enum MessageOptions
@@ -69,7 +68,7 @@ namespace FarManager
 		None,
 		/// <summary>Warning message colors are used (white text on red background by default).</summary>
 		Warning = 0x00000001,
-		/// <summary>If error type returned by GetLastErroris known to FAR or Windows, the error description will be shown in the first message line. In that case, the text given by the plugin will be displayed below the error description.</summary>
+		/// <summary>If error type returned by GetLastErroris known to Far or Windows, the error description will be shown in the first message line. In that case, the text given by the plugin will be displayed below the error description.</summary>
 		Error = 0x00000002,
 		/// <summary>Do not redraw the message background.</summary>
 		KeepBackground = 0x00000004,
@@ -89,7 +88,7 @@ namespace FarManager
 		YesNoCancel = 0x00050000,
 		/// <summary>Additional buttons: Retry and Cancel.</summary>
 		RetryCancel = 0x00060000,
-		/// <summary>Don't use it.</summary>
+		/// <summary>Reserved.</summary>
 		Reserved1 = 0x00000020,
 	}
 }

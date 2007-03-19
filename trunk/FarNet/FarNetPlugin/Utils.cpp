@@ -147,12 +147,17 @@ void EditorControl_ECTL_GETINFO(EditorInfo& ei, bool safe)
 		else
 			throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 	}
-	//!! this is possible after working with current line (-1)
 	else if (ei.BlockStartLine < 0)
+	{
+		//! it is possible after selecting with current line (-1)
+		//! it is fixed in 1.71 m268 on build 2205
 		ei.BlockStartLine = ei.CurLine;
+	}
 }
 
+// dirty global
 int _fastGetString;
+
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int no)
 {
 	if (no >= 0 && _fastGetString)
@@ -229,8 +234,9 @@ Place SelectionPlace()
 	EditorGetString egs;
 	r.Top = ei.BlockStartLine;
 	r.Left = -1;
-	for(egs.StringNumber = r.Top; Info.EditorControl(ECTL_GETSTRING, &egs); ++egs.StringNumber) // use EditorControl() here, not wrapper
+	for(egs.StringNumber = r.Top; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
 	{
+		EditorControl_ECTL_GETSTRING(egs, egs.StringNumber);
 		if (r.Left < 0)
 			r.Left = egs.SelStart;
 		if (egs.SelStart < 0)
@@ -241,4 +247,45 @@ Place SelectionPlace()
 	r.Bottom = egs.StringNumber - 1;
 
 	return r;
+}
+
+// Gets a property value by name or null
+Object^ Property(Object^ obj, String^ name)
+{
+	try
+	{
+		return obj->GetType()->InvokeMember(
+			name, BindingFlags::GetProperty | BindingFlags::Public | BindingFlags::Instance, nullptr, obj, nullptr);
+	}
+	catch(...)
+	{
+		return nullptr;
+	}
+}
+
+String^ ExceptionInfo(Exception^ e)
+{
+	String^ info = e->Message + "\n";
+
+	Object^ er = nullptr;
+	for(Exception^ ex = e; ex != nullptr; ex = ex->InnerException)
+	{
+		if (ex->GetType()->FullName->StartsWith("System.Management.Automation."))
+		{
+			er = Property(ex, "ErrorRecord");
+			break;
+		}
+	}
+	if (er != nullptr)
+	{
+		Object^ ii = Property(er, "InvocationInfo");
+		if (ii != nullptr)
+		{
+			Object^ pm = Property(ii, "PositionMessage");
+			if (pm != nullptr)
+				info += pm->ToString() + "\n";
+		}
+	}
+
+	return Regex::Replace(info, "[\r\n]+", "\n");
 }

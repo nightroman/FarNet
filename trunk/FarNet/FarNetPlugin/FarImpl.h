@@ -51,6 +51,8 @@ public:
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
 	virtual void UnregisterPluginsMenuItem(IPluginMenuItem^ item);
+	virtual void Write(String^ text);
+	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
 public:
 	Object^ Test();
@@ -74,4 +76,7 @@ private:
 	List<IPluginMenuItem^>^ _registeredMenuItems;
 	Dictionary<String^, StringDelegate^>^ _registeredPrefixes;
 };
+
+// Far for anybody
+Far^ GetFar();
 }

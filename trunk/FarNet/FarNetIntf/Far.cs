@@ -5,12 +5,14 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// The main interface of Far manager
+	/// Interface of Far manager. It is available in your plugin as property <see cref="BasePlugin.Far"/> of <see cref="BasePlugin"/>.
+	/// It provides access to general Far data and functionality and creates UI and other objects like
+	/// menus, input and message boxes, dialogs, editors, viewers and etc.
 	/// </summary>
 	public interface IFar
 	{
 		/// <summary>
-		/// Path to folder where plugin dll situated
+		/// Path to the plugin folder.
 		/// </summary>
 		string PluginFolderPath { get; }
 		/// <summary>
@@ -23,46 +25,46 @@ namespace FarManager
 		/// <param name="handler">Handler of a command.</param>
 		void RegisterPrefix(string prefix, StringDelegate handler);
 		/// <summary>
-		/// Adds menu item to the main plugin menu (shown by F11)
-		/// <seealso cref="UnregisterPluginsMenuItem"/>
+		/// Adds a menu item to the Far main plugins menu (F11).
 		/// </summary>
-		/// <param name="item">the menuitem being registered</param>
+		/// <param name="item">The menu item being registered.</param>
+		/// <seealso cref="UnregisterPluginsMenuItem"/>
 		void RegisterPluginsMenuItem(IPluginMenuItem item);
 		/// <summary>
-		/// Create and add menu item to the main plugin menu (shown by F11)
-		/// <seealso cref="UnregisterPluginsMenuItem"/>
+		/// Adds a menu item to the Far main plugins menu (F11).
 		/// </summary>
-		/// <param name="name">name of menu item</param>
-		/// <param name="onOpen">OnOpen event handler</param>
+		/// <param name="name">Name of a menu item.</param>
+		/// <param name="onOpen">Handler called on selection of the menu item.</param>
 		/// <returns>newly created item</returns>
+		/// <seealso cref="UnregisterPluginsMenuItem"/>
 		IPluginMenuItem RegisterPluginsMenuItem(string name, EventHandler<OpenPluginMenuItemEventArgs> onOpen);
 		/// <summary>
-		/// Unregister plugin menu item
+		/// Call it to unregister the plugin menu item.
 		/// </summary>
-		/// <param name="item">item being unregistered</param>
+		/// <param name="item">Item being unregistered.</param>
 		void UnregisterPluginsMenuItem(IPluginMenuItem item);
 		/// <summary>
-		/// Create new plugin menu item
+		/// Creates a new plugin menu item.
+		/// </summary>
+		/// <returns>Created plugin menu item.</returns>
 		/// <seealso cref="RegisterPluginsMenuItem(IPluginMenuItem)"/>
 		/// <seealso cref="UnregisterPluginsMenuItem"/>
-		/// </summary>
-		/// <returns>newly created plugin menu item</returns>
 		IPluginMenuItem CreatePluginsMenuItem();
 		/// <summary>
-		/// Show message box.
+		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <returns>True on Enter.</returns>
 		bool Msg(string body);
 		/// <summary>
-		/// Show message box.
+		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
 		/// <returns>True on Enter.</returns>
 		bool Msg(string body, string header);
 		/// <summary>
-		/// Show message box with options.
+		/// Shows a message box with options.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
@@ -70,7 +72,7 @@ namespace FarManager
 		/// <returns>Button index or -1 on Escape.</returns>
 		int Msg(string body, string header, MessageOptions options);
 		/// <summary>
-		/// Show message box with options and buttons.
+		/// Shows a message box with options and buttons.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
@@ -79,7 +81,9 @@ namespace FarManager
 		/// <returns>Button index or -1 on Escape.</returns>
 		int Msg(string body, string header, MessageOptions options, string[] buttons);
 		/// <summary>
-		/// Create IMessage implementation
+		/// Creates a new message box (<see cref="IMessage"/>).
+		/// You have to set its properties and call <see cref="IMessage.Show"/>.
+		/// Note that in most cases using one of <c>Msg</c> methods instead of this is enough.
 		/// </summary>
 		IMessage CreateMessage();
 		/// <summary>
@@ -88,19 +92,21 @@ namespace FarManager
 		///<param name="cmdLine">Command line</param>
 		void Run(string cmdLine);
 		/// <summary>
-		/// Windows handle of FAR
+		/// Windows handle of Far
 		/// </summary>
 		int HWnd { get; }
 		/// <summary>
-		/// FAR version
+		/// Far version
 		/// </summary>
 		Version Version { get; }
 		/// <summary>
-		/// Create InputBox implementation
+		/// Creates a new input box (<see cref="IInputBox"/>).
+		/// You have to set its properties and call <see cref="IInputBox.Show"/>.
 		/// </summary>
 		IInputBox CreateInputBox();
 		/// <summary>
-		/// Create Menu implementation
+		/// Creates a new menu (<see cref="IMenu"/>).
+		/// You have to set its properties and call <see cref="IMenu.Show"/>.
 		/// </summary>		
 		IMenu CreateMenu();
 		/// <summary>
@@ -109,61 +115,82 @@ namespace FarManager
 		/// </summary>
 		IAnyEditor AnyEditor { get; }
 		/// <summary>
-		/// String of word delimiters
+		/// String of word delimiters used in editors.
 		/// </summary>
 		string WordDiv { get; }
 		/// <summary>
-		/// Clipboard contents
+		/// Clipboard text.
 		/// </summary>		
 		string Clipboard { get; set; }
 		/// <summary>
-		/// Create new editor
+		/// Creates a new not yet opened editor.
+		/// You have to set its properties and call <see cref="IEditor.Open"/>.
 		/// </summary>
 		IEditor CreateEditor();
 		/// <summary>
-		/// Create new viewer
+		/// Creates a new not yet opened viewer.
+		/// You have to set its properties and call <see cref="IViewer.Open"/>.
 		/// </summary>
 		IViewer CreateViewer();
 		/// <summary>
-		/// Post keys to the FAR keyboard queue.
+		/// Posts keys to the Far keyboard queue.
 		/// </summary>
 		/// <param name="keys">String of keys.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeys(string keys, bool disableOutput);
 		/// <summary>
-		/// Post text to the FAR keyboard queue.
+		/// Posts literal text to the Far keyboard queue.
 		/// </summary>
 		/// <param name="text">Literal text. \t, \r, \n, \r\n are supported, too.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostText(string text, bool disableOutput);
 		/// <summary>
-		/// Sequence of key codes from string of keys.
+		/// Creates a sequence of key codes from a string of keys.
 		/// </summary>
 		IList<int> CreateKeySequence(string keys);
 		/// <summary>
-		/// Post a sequence of keys to the FAR keyboard queue.
+		/// Posts a sequence of keys to the Far keyboard queue.
 		/// </summary>
 		/// <param name="sequence">Sequence of keys.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeySequence(IList<int> sequence, bool disableOutput);
 		/// <summary>
-		/// Convert key string representation to the key code
+		/// Converts a key string representation to the key code.
 		/// </summary>
 		int NameToKey(string key);
 		/// <summary>
-		/// Save screen area 
+		/// Saves screen area.
+		/// You have to always call <see cref="RestoreScreen"/>.
 		/// </summary>
-		int SaveScreen(int x1, int y1, int x2, int y2);
+		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
+		/// <returns>A handle for restoring the screen.</returns>
+		/// <remarks>
+		/// If <c>right</c> and <c>bottom</c> are equal to -1,
+		/// they are replaced with screen right and bottom coordinates.
+		/// So <c>SaveScreen(0,0,-1,-1)</c> will save the entire screen.
+		/// </remarks>
+		int SaveScreen(int left, int top, int right, int bottom);
 		/// <summary>
-		/// Restore screen area
+		/// Restores previously saved by <see cref="SaveScreen"/> screen area.
 		/// </summary>
+		/// <param name="screen">
+		/// A handle received from <c>SaveScreen</c>.
+		/// This handle is no longer usable after calling.
+		/// </param>
+		/// <remarks>
+		/// To improve speed it redraws only the modified screen area.
+		/// But if there was screen output produced by an external program, it can not correctly calculate this area.
+		/// In that case you need first to call it <c>screen</c> = 0 and then call it as usually with screen handle. 
+		/// </remarks>
 		void RestoreScreen(int screen);
 		/// <summary>
 		/// Active editor or null if none.
+		/// Normally you have to use this object instantly, i.e. do not keep it "for later use".
 		/// </summary>
 		IEditor Editor { get; }
 		/// <summary>
-		/// Editor collection. Be extremely careful working with it.
+		/// Collection of all editors.
+		/// Be extremely careful working on not current editors: actually it is not recommended at all.
 		/// </summary>
 		ICollection<IEditor> Editors { get; }
 		/// <summary>
@@ -186,7 +213,7 @@ namespace FarManager
 		/// </remarks>
 		ILine CommandLine { get; }
 		/// <summary>
-		/// Copies the current screen contents to the FAR user screen buffer
+		/// Copies the current screen contents to the Far user screen buffer
 		/// (which is displayed when the panels are switched off).
 		/// </summary>
 		void SetUserScreen();
@@ -202,59 +229,41 @@ namespace FarManager
 		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory</param>
 		ICollection<string> GetHistory(string name);
 		/// <summary>
-		/// Show error information
+		/// Shows an error information in a message box.
 		/// </summary>
 		/// <param name="title">Message.</param>
 		/// <param name="error">Exception.</param>
 		void ShowError(string title, Exception error);
 		/// <summary>
-		/// Returns new <see cref="IDialog"/>.
+		/// Creates a new dialog (<see cref="IDialog"/>).
+		/// You have to set its properties, add controls, add event handlers and then call <see cref="IDialog.Show"/>.
 		/// </summary>
-		/// <param name="left">Left position or -1: auto.</param>
-		/// <param name="top">Top line or -1: auto.</param>
-		/// <param name="right">Right position or width if Left = -1.</param>
-		/// <param name="bottom">Bootom line or height if Top = -1.</param>
+		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
+		/// <remarks>
+		/// You can set <c>left</c> = -1 or <c>top</c> = -1 to be auto-calculated.
+		/// In this case <c>right</c> or <c>bottom</c> should be width and height.
+		/// </remarks>
 		IDialog CreateDialog(int left, int top, int right, int bottom);
+		/// <include file='doc.xml' path='docs/pp[@name="ShowHelp"]/*'/>
+		void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
-		///  Writes a text string to the screen.
+		///  Writes text on the user screen (under panels).
 		/// </summary>
-		/// <param name="left">Left position.</param>
-		/// <param name="top">Top line.</param>
-		/// <param name="foregroundColor">Foreground color.</param>
-		/// <param name="backgroundColor">Background color.</param>
+		/// <param name="text">Text.</param>
+		void Write(string text);
+		/// <summary>
+		///  Writes colored text on the user screen (under panels).
+		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="Colors"]/*'/>
+		/// <param name="text">Text.</param>
+		void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
+		/// <summary>
+		///  Writes a string at the specified position.
+		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
+		/// <include file='doc.xml' path='docs/pp[@name="Colors"]/*'/>
 		/// <param name="text">Text.</param>
 		void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
-		/// <summary>
-		/// Shows the specified topic from a given hlf-file.
-		/// </summary>
-		/// <param name="path">Help file location, see options.</param>
-		/// <param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
-		/// <param name="options">Help options describing path and topic.</param>
-		/// <remarks>
-		/// The topic parameter describes a help topic and can be in one of the following formats:
-		/** <code>
-"Topic"
-Reference to a topic in the plugins help file.
-
-":Topic"
-Reference to a topic from the main FAR Manager help file.
-
-"&lt;FullPath&gt;Topic"
-Reference to a topic in a help file located in a folder with full or relative
-path of FullPath. An ending backslash must be added. The reference must not be
-split on multiple lines. For example, the plugin Foo is located in folder
-"D:\FAR\Plugins\Foo" and we need to show the topic "FooInfo" from its help file:
-"&lt;D:\FAR\Plugins\Foo\&gt;FooInfo"
- 
-"&lt;FullModuleName&gt;Topic"
-Reference to a topic in a help file located in the same folder as the plugin
-with the relative or full path of FullModuleName. The reference must not be
-split on mutiple lines. For example, we need to show the help topic "FooInfo"
-from the help file of the plugin Foo "D:\FAR\Plugins\Foo\Foo.dll":
-"&lt;D:\FAR\Plugins\Foo\Foo.dll&gt;FooInfo"
-		</code> */
-		/// </remarks>
-		void ShowHelp(string path, string topic, HelpOptions options);
 	}
 
 	/// <summary>
@@ -265,11 +274,11 @@ from the help file of the plugin Foo "D:\FAR\Plugins\Foo\Foo.dll":
 	{
 		/// <summary>
 		/// Assume path is Info.ModuleName and show the topic from the help file of the calling plugin (it is Far.NET).
-		/// If topic begins with a colon ':', the topic from the main FAR help file is shown and path is ignored.
+		/// If topic begins with a colon ':', the topic from the main Far help file is shown and path is ignored.
 		/// </summary>
 		None = 0x0,
 		/// <summary>
-		/// Path is ignored and the topic from the main FAR help file is shown.
+		/// Path is ignored and the topic from the main Far help file is shown.
 		/// In this case you do not need to start the topic with a colon ':'.
 		/// </summary>
 		Far = 1 << 0,
@@ -295,7 +304,7 @@ from the help file of the plugin Foo "D:\FAR\Plugins\Foo\Foo.dll":
 	}
 
 	/// <summary>
-	/// From where IPluginMenuItem was opened from
+	/// Where plugin is opened from.
 	/// </summary>
 	public enum OpenFrom
 	{
@@ -330,52 +339,28 @@ from the help file of the plugin Foo "D:\FAR\Plugins\Foo\Foo.dll":
 	};
 
 	/// <summary>
-	/// Item of plugins menu (F11)
+	/// Item of plugins menu (F11).
 	/// </summary>
 	public interface IPluginMenuItem
 	{
 		/// <summary>
-		/// Is fired when menu item is opened
+		/// Is fired when menu item is opened.
 		/// </summary>
 		event EventHandler<OpenPluginMenuItemEventArgs> OnOpen;
 		/// <summary>
-		/// Name of menu item (Caption)
+		/// Name of menu item (caption in plugins menu).
 		/// </summary>
 		string Name { get; set; }
 		/// <summary>
-		/// Fire OnOpen event
+		/// Fire <see cref="OnOpen"/> event.
 		/// </summary>
-		/// <param name="sender">IPluginMenuItem hich is opened</param>
-		/// <param name="from">from where it is opened</param>
+		/// <param name="sender">Opened menu item.</param>
+		/// <param name="from">Where it is opened from.</param>
 		void FireOnOpen(IPluginMenuItem sender, OpenFrom from);
 	}
 
 	/// <summary>
-	/// Item of Far disk menu
-	/// </summary>
-	public interface IDiskMenuItem
-	{
-		/// <summary>
-		/// Name (caption) of disk menu
-		/// </summary>
-		string Name { get; set; }
-		/// <summary>
-		/// Number of the item
-		/// </summary>
-		int Number { get; set; }
-		/// <summary>
-		/// Event fired when item is opened
-		/// </summary>
-		event EventHandler OnOpen;
-		/// <summary>
-		/// Fire Onopen event
-		/// </summary>
-		/// <param name="sender">IDiskMenuItem of menu</param>
-		void FireOnOpen(IDiskMenuItem sender);
-	}
-
-	/// <summary>
-	/// Delegate which takes 1 string parameter
+	/// Delegate which takes a string parameter.
 	/// </summary>
 	public delegate void StringDelegate(string s);
 

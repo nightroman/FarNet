@@ -9,6 +9,7 @@ public ref class VisibleEditorLine : public ILine
 public:
 	virtual property ILine^ FullLine { ILine^ get(); }
 	virtual property ILineSelection^ Selection { ILineSelection^ get(); }
+	virtual property int Length { int get(); }
 	virtual property int No { int get(); }
 	virtual property int Pos { int get(); void set(int value); }
 	virtual property String^ Eol { String^ get(); void set(String^ value); }

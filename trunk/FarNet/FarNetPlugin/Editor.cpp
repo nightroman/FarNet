@@ -20,8 +20,11 @@ void Editor::Open()
 {
 	EnsureClosed();
 
-	CStr sFileName(FileName);
-	CStr sTitle(Title);
+	// strings
+	CStr sFileName(_fileName);
+	CStr sTitle(_title);
+
+	// frame
 	int nLine = _frameStart.Line >= 0 ? _frameStart.Line + 1 : -1;
 	int nPos = _frameStart.Pos >= 0 ? _frameStart.Pos + 1 : -1;
 
@@ -99,6 +102,12 @@ void Editor::DisableHistory::set(bool value)
 {
 	EnsureClosed();
 	_disableHistory = value;
+}
+
+bool Editor::IsEnd::get()
+{
+	EditorInfo ei; EnsureCurrent(ei);
+	return ei.CurLine == ei.TotalLines - 1;
 }
 
 bool Editor::IsLocked::get()
@@ -271,7 +280,7 @@ Point Editor::Cursor::get()
 void Editor::Insert(String^ text)
 {
 	EnsureCurrent();
-	CStr sb(text->Replace("\r\n", "\r")->Replace('\n', '\r'));
+	CStr sb(text->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r'));
 	Info.EditorControl(ECTL_INSERTTEXT, sb);
 }
 
@@ -329,19 +338,19 @@ void Editor::InsertLine(bool indent)
 int Editor::Flags()
 {
 	int r = 0;
-	if (!IsModal)
+	if (!_isModal)
 		r |= EF_NONMODAL;
-	if (Async)
+	if (_async)
 		r |= EF_IMMEDIATERETURN;
-	if (DeleteOnClose)
+	if (_deleteOnClose)
 		r |= EF_DELETEONCLOSE;
-	if (DeleteOnlyFileOnClose)
+	if (_deleteOnlyFileOnClose)
 		r |= EF_DELETEONLYFILEONCLOSE;
-	if (IsNew)
+	if (_isNew)
 		r |= EF_CREATENEW;
-	if (EnableSwitch)
+	if (_enableSwitch)
 		r |= EF_ENABLE_F6;
-	if (DisableHistory)
+	if (_disableHistory)
 		r |= EF_DISABLEHISTORY;
 	return r;
 }
@@ -549,5 +558,27 @@ void Editor::GoToPos(int pos)
 	TextFrame f(-1);
 	f.Pos = pos;
 	Frame = f;
+}
+
+void Editor::GoEnd(bool addLine)
+{
+	EditorInfo ei; EnsureCurrent(ei);
+	if (ei.CurLine != ei.TotalLines - 1)
+	{
+		SEditorSetPosition esp;
+		esp.CurPos = 0;
+		esp.CurLine = ei.TotalLines - 1;
+		EditorControl_ECTL_SETPOSITION(esp);
+	}
+	EditorGetString egs;
+	EditorControl_ECTL_GETSTRING(egs, -1);
+	if (egs.StringLength > 0)
+	{
+		SEditorSetPosition esp;
+		esp.CurPos = egs.StringLength;
+		EditorControl_ECTL_SETPOSITION(esp);
+		if (addLine)
+			InsertLine();
+	}
 }
 }
