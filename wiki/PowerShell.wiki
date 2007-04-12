@@ -1,0 +1,7 @@
+#summary Windows PowerShell
+
+= Introduction =
+
+Windows PowerShell, previously Microsoft Shell or MSH (codenamed Monad) is an extensible command line interface (CLI) shell and scripting language product developed by Microsoft. The product is based on object-oriented programming and the Microsoft .NET Framework.
+
+[http://en.wikipedia.org/wiki/Powershell wikipedia]
