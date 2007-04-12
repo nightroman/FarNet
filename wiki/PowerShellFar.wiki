@@ -1,4 +1,4 @@
-#summary PowerShell host in FarManager with Far.NET plugin.
+#summary PowerShell host for FarManager with Far.NET plugin.
 
 = Introduction =
 
