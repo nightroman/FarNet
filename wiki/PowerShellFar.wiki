@@ -2,4 +2,4 @@
 
 = Introduction =
 
-Invokes PowerShell commands and scripts in the same session directly by PowerShell core, i.e. without calling PowerShell.exe application. Provides access from PowerShell code to FAR data and functionality via Far.NET object model. Includes PowerShellFar scripts and PowerShell.hrc for Colorer-take5.beta5
+Invokes PowerShell commands and scripts in the same session directly by PowerShell core, i.e. without calling `PowerShell.exe` application. Provides access from PowerShell code to FAR data and functionality via Far.NET object model. Includes PowerShellFar scripts and PowerShell.hrc for Colorer-take5.beta5
