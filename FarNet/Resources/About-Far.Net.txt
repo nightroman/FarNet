@@ -1,7 +1,7 @@
 Plugin name  : Far.NET3
 Category     : Development
-Version      : 3.3.7
-Release date : 2007.03.18
+Version      : 3.3.12
+Release date : 2007.04.22
 Author       : Roman Kuzmin
 Email        : nightroman@hotmail.com
 HomePage     : http://nightroman.spaces.live.com
@@ -18,9 +18,9 @@ Sources      : C#, C++/CLI (at home page)
 	Description
 
 
-Plugin for writing pligins for Far Manager in any .NET language (or even in
-PowerShell with PowerShellFar plugin). It not only covers Far API but also
-extends it and makes it really easy to use with object oriented approach.
+Plugin for writing Far Manager plugins in any .NET language (even in PowerShell
+with PowerShellFar plugin). It exposes significant part of Far API and also
+extends it for comfortable use in object oriented way.
 Home page: http://code.google.com/p/farnet/
 
 

@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #include "StdAfx.h"
 #include "Menu.h"
 #include "InputBox.h"
@@ -8,21 +13,12 @@ namespace FarManagerImpl
 public ref class MenuItem : IMenuItem
 {
 public:
-	DEF_EVENT(OnClick, OnClickHandler);
+	DEF_EVENT(OnClick, _OnClick);
 public:
 	virtual property String^ Text;
 	virtual property bool Checked;
 	virtual property bool IsSeparator;
 	virtual property Object^ Data;
-	virtual void FireOnClick()
-	{
-		if (OnClickHandler != nullptr)
-			OnClickHandler(this, gcnew EventArgs());
-	}
-	void Add(EventHandler^ handler)
-	{
-		OnClick += handler;
-	}
 	virtual String^ ToString() override
 	{
 		return Text;
@@ -296,7 +292,11 @@ bool Menu::Show()
 
 	bool r = _selected >= 0;
 	if (r)
-		_items[_selected]->FireOnClick();
+	{
+		MenuItem^ item = (MenuItem^)_items[_selected];
+		if (item->_OnClick)
+			item->_OnClick(item, nullptr);
+	}
 
 	return r;
 }

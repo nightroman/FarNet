@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #include "StdAfx.h"
 #include "EditorManager.h"
 #include "Editor.h"
@@ -96,7 +101,7 @@ void EditorManager::SetWaitingEditor(Editor^ editor)
 	_editorWaiting = editor;
 }
 
-int EditorManager::ProcessEditorInput(const INPUT_RECORD* rec)
+int EditorManager::AsProcessEditorInput(const INPUT_RECORD* rec)
 {
 	Editor^ editor = GetCurrentEditor();
 	while (_fastGetString > 0)
@@ -139,7 +144,7 @@ int EditorManager::ProcessEditorInput(const INPUT_RECORD* rec)
 	return 0;
 }
 
-int EditorManager::ProcessEditorEvent(int type, void* param)
+int EditorManager::AsProcessEditorEvent(int type, void* param)
 {
 	switch(type)
 	{

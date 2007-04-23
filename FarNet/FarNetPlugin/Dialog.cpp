@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #include "StdAfx.h"
 #include "Dialog.h"
 #include "FarImpl.h"
@@ -24,10 +29,10 @@ long WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, long param2)
 			dialog->_hDlg = hDlg;
 
 			// event
-			if (dialog->_initializedHandler)
+			if (dialog->_Initialized)
 			{
 				InitializedEventArgs ea(param1 < 0 ? nullptr : dialog->_items[param1]);
-				dialog->_initializedHandler(dialog, %ea);
+				dialog->_Initialized(dialog, %ea);
 				return !ea.Ignore;
 			}
 			break;
@@ -971,10 +976,10 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 		case DN_CLOSE:
 			{
 				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
-				if (_closingHandler)
+				if (_Closing)
 				{
 					ClosingEventArgs ea(fc);
-					_closingHandler(this, %ea);
+					_Closing(this, %ea);
 					if (ea.Ignore)
 						return false;
 				}
@@ -983,20 +988,20 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 		case DN_GOTFOCUS:
 			{
 				FarControl^ fc = _items[param1];
-				if (fc->_gotFocusHandler)
+				if (fc->_GotFocus)
 				{
 					AnyEventArgs ea(fc);
-					fc->_gotFocusHandler(this, %ea);
+					fc->_GotFocus(this, %ea);
 				}
 				return 0;
 			}
 		case DN_KILLFOCUS:
 			{
 				FarControl^ fc = _items[param1];
-				if (fc->_losingFocusHandler)
+				if (fc->_LosingFocus)
 				{
 					LosingFocusEventArgs ea(fc);
-					fc->_losingFocusHandler(this, %ea);
+					fc->_LosingFocus(this, %ea);
 					if (ea.Focused)
 						return ea.Focused->Id;
 				}
@@ -1008,10 +1013,10 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				FarButton^ fb = dynamic_cast<FarButton^>(fc);
 				if (fb)
 				{
-					if (fb->_buttonClickedHandler)
+					if (fb->_ButtonClicked)
 					{
 						ButtonClickedEventArgs ea(fb, 0);
-						fb->_buttonClickedHandler(this, %ea);
+						fb->_ButtonClicked(this, %ea);
 						return ea.Ignore;
 					}
 					break;
@@ -1019,10 +1024,10 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				FarCheckBox^ cb = dynamic_cast<FarCheckBox^>(fc);
 				if (cb)
 				{
-					if (cb->_buttonClickedHandler)
+					if (cb->_ButtonClicked)
 					{
 						ButtonClickedEventArgs ea(cb, param2);
-						cb->_buttonClickedHandler(this, %ea);
+						cb->_ButtonClicked(this, %ea);
 						return !ea.Ignore;
 					}
 					break;
@@ -1030,10 +1035,10 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				FarRadioButton^ rb = dynamic_cast<FarRadioButton^>(fc);
 				if (rb)
 				{
-					if (rb->_buttonClickedHandler)
+					if (rb->_ButtonClicked)
 					{
 						ButtonClickedEventArgs ea(rb, param2);
-						rb->_buttonClickedHandler(this, %ea);
+						rb->_ButtonClicked(this, %ea);
 						return !ea.Ignore;
 					}
 					break;
@@ -1046,11 +1051,11 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				FarEdit^ fe = dynamic_cast<FarEdit^>(fc);
 				if (fe)
 				{
-					if (fe->_textChangedHandler)
+					if (fe->_TextChanged)
 					{
 						FarDialogItem& item = *(FarDialogItem*)param2;
 						TextChangedEventArgs ea(fe, OemToStr(item.Data));
-						fe->_textChangedHandler(this, %ea);
+						fe->_TextChanged(this, %ea);
 						return !ea.Ignore;
 					}
 					break;
@@ -1058,11 +1063,11 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				FarComboBox^ cb = dynamic_cast<FarComboBox^>(fc);
 				if (cb)
 				{
-					if (cb->_textChangedHandler)
+					if (cb->_TextChanged)
 					{
 						FarDialogItem& item = *(FarDialogItem*)param2;
 						TextChangedEventArgs ea(cb, OemToStr(item.Data));
-						cb->_textChangedHandler(this, %ea);
+						cb->_TextChanged(this, %ea);
 						return !ea.Ignore;
 					}
 					break;
@@ -1071,10 +1076,10 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 			}
 		case DN_ENTERIDLE:
 			{
-				if (_idledHandler)
+				if (_Idled)
 				{
 					AnyEventArgs ea(nullptr);
-					_idledHandler(this, %ea);
+					_Idled(this, %ea);
 				}
 				break;
 			}
@@ -1083,18 +1088,18 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
 				if (fc)
 				{
-					if (fc->_mouseClickedHandler)
+					if (fc->_MouseClicked)
 					{
 						MouseClickedEventArgs ea(fc, GetMouseInfo(*(MOUSE_EVENT_RECORD*)param2));
-						fc->_mouseClickedHandler(this, %ea);
+						fc->_MouseClicked(this, %ea);
 						if (ea.Ignore)
 							return true;
 					}
 				}
-				else if (_mouseClickedHandler)
+				else if (_MouseClicked)
 				{
 					MouseClickedEventArgs ea(nullptr, GetMouseInfo(*(MOUSE_EVENT_RECORD*)param2));
-					_mouseClickedHandler(this, %ea);
+					_MouseClicked(this, %ea);
 					if (ea.Ignore)
 						return true;
 				}
@@ -1103,17 +1108,17 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 		case DN_KEY:
 			{
 				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
-				if (fc && fc->_keyPressedHandler)
+				if (fc && fc->_KeyPressed)
 				{
 					KeyPressedEventArgs ea(fc, param2);
-					fc->_keyPressedHandler(this, %ea);
+					fc->_KeyPressed(this, %ea);
 					if (ea.Ignore)
 						return true;
 				}
-				if (_keyPressedHandler)
+				if (_KeyPressed)
 				{
 					KeyPressedEventArgs ea(fc, param2);
-					_keyPressedHandler(this, %ea);
+					_KeyPressed(this, %ea);
 					if (ea.Ignore)
 						return true;
 				}

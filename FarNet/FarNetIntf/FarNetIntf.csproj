@@ -26,6 +26,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -91,7 +92,7 @@
     <Compile Include="Far.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FileSystem.cs">
+    <Compile Include="Panel.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms.cs" />

@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #include "StdAfx.h"
 #include "PluginMenuItem.h"
 
@@ -13,8 +18,4 @@ void PluginMenuItem::Name::set(String^ value)
 	_name = value;
 }
 
-void PluginMenuItem::FireOnOpen(IPluginMenuItem^ sender, OpenFrom from)
-{
-	OnOpen(sender, gcnew OpenPluginMenuItemEventArgs(from));
-}
 }

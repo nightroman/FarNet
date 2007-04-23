@@ -1,5 +1,5 @@
 Descript.ion File descriptions
-farcolor.hpp Colors Index for FAR Manager 1.70 (C/C++)
-farkeys.hpp Inside FAR KeyName for FAR Manager 1.70 (C/C++)
 fmt.hpp Archive Support API for FAR Manager 1.70 and MultiArc plugin (C/C++)
-plugin.hpp Plugin API for FAR Manager 1.70 (C/C++)
+plugin.hpp Plugin API for FAR Manager 1.71
+farkeys.hpp Inside FAR KeyName for FAR Manager 1.71
+farcolor.hpp Colors Index for FAR Manager 1.71
