@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 using System.Collections.Generic;
 using System;
 
@@ -9,7 +14,7 @@ namespace FarManager
 	public interface IMenu : IDisposable
 	{
 		/// <summary>
-		/// Event is raised when menu item is clicked.
+		/// Event is raised when a menu item is clicked or selected.
 		/// </summary>
 		event EventHandler OnClick;
 		/// <summary>
@@ -25,7 +30,7 @@ namespace FarManager
 		/// </summary>
 		int MaxHeight { get; set; }
 		/// <summary>
-		/// Title of menu.
+		/// Title of the menu.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
@@ -41,7 +46,7 @@ namespace FarManager
 		/// </summary>
 		IMenuItems Items { get; }
 		/// <summary>
-		/// Before <see cref="Show"/> tells to select this item;
+		/// Before <see cref="Show"/> tells to select the item by this index.
 		/// After <see cref="Show"/> returns the selected item index or -1 if nothing is selected.
 		/// </summary>
 		int Selected { get; set; }
@@ -50,15 +55,15 @@ namespace FarManager
 		/// </summary>
 		object SelectedData { get; }
 		/// <summary>
-		/// <see cref="BreakKeys"/> index of key interrupted menu.
+		/// <see cref="BreakKeys"/> index of a key interrupted the menu.
 		/// </summary>
 		int BreakCode { get; }
 		/// <summary>
-		/// Show ampersands in menu items or used as accelerator character.
+		/// Show ampersands in menu items instead of using them for accelerator characters.
 		/// </summary>
 		bool ShowAmpersands { get; set; }
 		/// <summary>
-		/// Cursor will go to upper position if is is at downmost position and down is pressed.
+		/// Cursor will go to upper position if it is at downmost position and down is pressed.
 		/// </summary>
 		bool WrapCursor { get; set; }
 		/// <summary>
@@ -70,19 +75,19 @@ namespace FarManager
 		/// </summary>
 		bool ReverseAutoAssign { get; set; }
 		/// <summary>
-		/// Show menu.
+		/// Shows the menu.
 		/// </summary>
-		/// <returns>true if a menu item was selected, otherwise cancelled</returns>
+		/// <returns>true if a menu item is selected.</returns>
 		bool Show();
 		/// <summary>
 		/// Creates low level internal data of the menu from the current items.
-		/// It is used for multiple calls of Show() with the same item set.
-		/// <see cref="Unlock"/> has to be called to change items again.
+		/// It may be used for better performance when you call Show() repeatedly with the same item set.
+		/// <see cref="Unlock"/> has to be called to change items again or to free internal data immediately.
 		/// </summary>
 		void Lock();
 		/// <summary>
 		/// Destroys internal data created by <see cref="Lock"/>.
-		/// Items can be changed if the menu is still used.
+		/// Items can be changed again if the menu is still used.
 		/// </summary>
 		void Unlock();
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
@@ -94,24 +99,24 @@ namespace FarManager
 		/// <summary>
 		/// Filter string.
 		/// Format: [regex] or [*substring].
-		/// It is used by filter input box enabled by <see cref="FilterKey"/>.
-		/// If it is null and <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set it is restored from history.
+		/// It is also used by a filter input box (if it is enabled by <see cref="FilterKey"/>).
+		/// If it is null and <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set it is taken from history.
 		/// Don't use it if you use <see cref="Lock"/>.
 		/// </summary>
 		string Filter { get; set; }
 		/// <summary>
-		/// Filter history used by filter input box.
+		/// Filter history used by the filter input box.
 		/// Don't use it if you use <see cref="Lock"/>.
 		/// </summary>
 		string FilterHistory { get; set; }
 		/// <summary>
-		/// Restore filter from history if it is null and <see cref="FilterHistory"/> is set.
+		/// Tells to restore a filter from history if it <see cref="Filter"/> is null and <see cref="FilterHistory"/> is set.
 		/// Don't use it if you use <see cref="Lock"/>.
 		/// </summary>
 		bool FilterRestore { get; set; }
 		/// <summary>
-		/// Virtual key code of a key opening a filter input box.
-		/// It is added to other break keys automatically.
+		/// Virtual key code of a key opening the filter input box.
+		/// It is added to your break keys automatically.
 		/// Don't use it if you use <see cref="Lock"/>.
 		/// </summary>
 		int FilterKey { get; set; }
@@ -142,10 +147,6 @@ namespace FarManager
 		/// Event raised when menu item is clicked.
 		/// </summary>
 		event EventHandler OnClick;
-		/// <summary>
-		/// Fires <see cref="OnClick"/>.
-		/// </summary>
-		void FireOnClick();
 	}
 
 	/// <summary>

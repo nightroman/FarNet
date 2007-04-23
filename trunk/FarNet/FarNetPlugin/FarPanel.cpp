@@ -1,79 +1,16 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #include "StdAfx.h"
 #include "FarPanel.h"
 
-DateTime ft2dt(FILETIME time)
-{
-	__int64* p = (__int64* )&time;
-	return DateTime::FromFileTime(*p);
-}
-
-bool at(unsigned int a, int f)
-{
-	return(a & f) != 0;
-}
-
 namespace FarManagerImpl
 {;
-public ref class StoredItem : IFile
-{
-public:
-	virtual property bool IsAlias;
-	virtual property bool IsArchive;
-	virtual property bool IsCompressed;
-	virtual property bool IsDirectory;
-	virtual property bool IsEncrypted;
-	virtual property bool IsFolder;
-	virtual property bool IsHidden;
-	virtual property bool IsReadOnly;
-	virtual property bool IsSelected;
-	virtual property bool IsSystem;
-	virtual property bool IsVolume;
-	virtual property DateTime CreationTime;
-	virtual property DateTime LastAccessTime;
-	virtual property IFolder^ Parent;
-	virtual property Int64 Size;
-	virtual property String^ AlternateName;
-	virtual property String^ Description;
-	virtual property String^ Name;
-	virtual property String^ Owner;
-	virtual property String^ Path;
-	virtual String^ ToString() override
-	{
-		return Path;
-	}
-};
-
-public ref class StoredFile : public StoredItem, IFile
-{
-public:
-	StoredFile()
-	{
-		IsDirectory = false;
-		IsFolder = false;
-	}
-};
-
-public ref class StoredFolder : public StoredItem, IFolder
-{
-	List<IFile^>^ _files;
-public:
-	StoredFolder()
-	{
-		IsDirectory = true;
-		IsFolder = true;
-		_files = gcnew List<IFile^>();
-	}
-	virtual property IList<IFile^>^ Files
-	{
-		IList<IFile^>^ get() { return _files; }
-	}
-};
-
 FarPanel::FarPanel(bool current)
+: _isCurrentPanel(current)
 {
-	_isCurrentPanel = current;
-	_contents = gcnew StoredFolder();
-	_selected = gcnew List<IFile^>();
 }
 
 bool FarPanel::IsActive::get()
@@ -111,14 +48,34 @@ void FarPanel::IsVisible::set(bool value)
 
 IFile^ FarPanel::Current::get()
 {
-	RefreshContents();
-	return _current;
+	PanelInfo pi; GetInfo(pi);
+	if (pi.ItemsNumber == 0)
+		return nullptr;
+
+	StoredFile^ r = ItemToFile(pi.PanelItems[pi.CurrentItem]);
+	return r;
+}
+
+int FarPanel::CurrentIndex::get()
+{
+	PanelInfo pi; GetBrief(pi);
+	return pi.ItemsNumber ? pi.CurrentItem : -1;
 }
 
 IFile^ FarPanel::Top::get()
 {
-	RefreshContents();
-	return _top;
+	PanelInfo pi; GetInfo(pi);
+	if (pi.ItemsNumber == 0)
+		return nullptr;
+
+	StoredFile^ r = ItemToFile(pi.PanelItems[pi.TopPanelItem]);
+	return r;
+}
+
+int FarPanel::TopIndex::get()
+{
+	PanelInfo pi; GetBrief(pi);
+	return pi.ItemsNumber ? pi.TopPanelItem : -1;
 }
 
 PanelSortMode FarPanel::SortMode::get()
@@ -142,8 +99,8 @@ String^ FarPanel::Path::get()
 void FarPanel::Path::set(String^ value)
 {
 	int command = _isCurrentPanel ? FCTL_SETPANELDIR : FCTL_SETANOTHERPANELDIR;
-	CStr sValue(value);
-	if (!Info.Control(INVALID_HANDLE_VALUE, command, sValue))
+	CStr sb(value);
+	if (!Info.Control(INVALID_HANDLE_VALUE, command, sb))
 		throw gcnew OperationCanceledException();
 }
 
@@ -152,16 +109,25 @@ String^ FarPanel::ToString()
 	return Path;
 }
 
-IFolder^ FarPanel::Contents::get()
+IList<IFile^>^ FarPanel::Contents::get()
 {
-	RefreshContents();
-	return _contents;
+	List<IFile^>^ r = gcnew List<IFile^>();
+	PanelInfo pi; GetInfo(pi);
+	for(int i = 0; i < pi.ItemsNumber; ++i)
+		r->Add(ItemToFile(pi.PanelItems[i]));
+	return r;
 }
 
 IList<IFile^>^ FarPanel::Selected::get()
 {
-	RefreshContents();
-	return _selected;
+	List<IFile^>^ r = gcnew List<IFile^>();
+	PanelInfo pi; GetInfo(pi);
+	for(int i = 0; i < pi.ItemsNumber; ++i)
+	{
+		if (pi.PanelItems[i].Flags & PPIF_SELECTED)
+			r->Add(ItemToFile(pi.PanelItems[i]));
+	}
+	return r;
 }
 
 PanelType FarPanel::Type::get()
@@ -184,68 +150,22 @@ void FarPanel::GetInfo(PanelInfo& pi)
 		throw gcnew OperationCanceledException("Can't get panel information.");
 }
 
-void FarPanel::RefreshContents()
+StoredFile^ FarPanel::ItemToFile(PluginPanelItem& i)
 {
-	PanelInfo pi; GetInfo(pi);
-	_contents->Path = OemToStr(pi.CurDir);
-	ClearContents();
-	_selected->Clear();
-	PluginPanelItem* itm = pi.PanelItems;
-	for(int i = 0; i < pi.ItemsNumber; ++i)
-	{
-		StoredItem^ f = ItemToFile(itm);
-		f->Parent = _contents;
-		_contents->Files->Add(f);
-		itm++;
-	}
-	if (_contents->Files->Count != 0)
-	{
-		_current = safe_cast<StoredItem^>(_contents->Files[pi.CurrentItem]);
-		_top = safe_cast<StoredItem^>(_contents->Files[pi.TopPanelItem]);
-	}
-}
+	StoredFile^ f = gcnew StoredFile();
 
-void FarPanel::ClearContents()
-{
-	for each(IFile^ i in _contents->Files)
-	{
-		StoredItem^ f = safe_cast<StoredItem^>(i);
-		f->Parent = nullptr;
-	}
-	_contents->Files->Clear();
-}
+	f->Name = OemToStr(i.FindData.cFileName);
+	f->Description = i.Description ? OemToStr(i.Description) : String::Empty; 
+	f->AlternateName = gcnew String(i.FindData.cAlternateFileName);
 
-StoredItem^ FarPanel::ItemToFile(PluginPanelItem* i)
-{
-	String^ name = OemToStr(i->FindData.cFileName);
-	unsigned int a = i->FindData.dwFileAttributes;
-	bool isFolder = at(a, FILE_ATTRIBUTE_DIRECTORY);
-	StoredItem^ f;
-	if (isFolder)
-		f = gcnew StoredFolder();
-	else
-		f = gcnew StoredFile();
-	f->Name = name;
-	f->AlternateName = gcnew String(i->FindData.cAlternateFileName);
-	f->CreationTime = ft2dt(i->FindData.ftCreationTime);
-	f->LastAccessTime = ft2dt(i->FindData.ftLastAccessTime);
-	f->Size = i->FindData.nFileSizeLow;
-	f->IsReadOnly = at(a, FILE_ATTRIBUTE_READONLY);
-	f->IsHidden = at(a, FILE_ATTRIBUTE_READONLY);
-	f->IsVolume = false;
-	f->IsSystem = at(a, FILE_ATTRIBUTE_SYSTEM);
-	f->IsDirectory = at(a, FILE_ATTRIBUTE_DIRECTORY);
-	f->IsArchive = at(a, FILE_ATTRIBUTE_ARCHIVE);
-	f->IsAlias = at(a, FILE_ATTRIBUTE_REPARSE_POINT);
-	f->IsCompressed = at(a, FILE_ATTRIBUTE_COMPRESSED);
-	f->IsEncrypted = at(a, FILE_ATTRIBUTE_ENCRYPTED);
-	f->Description = i->Description ? OemToStr(i->Description) : String::Empty; 
-	f->Path = System::IO::Path::Combine(_contents->Path, f->Name);
-	if (at(i->Flags, PPIF_SELECTED))
-	{
-		f->IsSelected = true;
-		_selected->Add(f);
-	}
+	f->_flags = i.FindData.dwFileAttributes;
+	f->CreationTime = ft2dt(i.FindData.ftCreationTime);
+	f->LastAccessTime = ft2dt(i.FindData.ftLastAccessTime);
+	f->LastWriteTime = ft2dt(i.FindData.ftLastWriteTime);
+	f->Size = i.FindData.nFileSizeLow;
+	f->IsSelected = (i.Flags & PPIF_SELECTED) != 0;
+	f->Tag = i.UserData;
+
 	return f;
 }
 
@@ -297,9 +217,19 @@ void FarPanel::Redraw()
 	Info.Control(INVALID_HANDLE_VALUE, command, 0);
 }
 
+void FarPanel::Redraw(int current, int top)
+{
+	PanelRedrawInfo pri;
+	pri.CurrentItem = current;
+	pri.TopPanelItem = top;
+	int command = _isCurrentPanel ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;
+	Info.Control(INVALID_HANDLE_VALUE, command, &pri);
+}
+
 void FarPanel::Update(bool keepSelection)
 {
 	int command = _isCurrentPanel ? FCTL_UPDATEPANEL : FCTL_UPDATEANOTHERPANEL;
 	Info.Control(INVALID_HANDLE_VALUE, command, (void*)keepSelection);
 }
+
 }

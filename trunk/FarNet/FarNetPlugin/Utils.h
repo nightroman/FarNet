@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #pragma once
 
 #define DEF_EVENT(EventName, Handler)\
@@ -16,13 +21,19 @@ void raise(Object^ sender, Arguments^ e) { if (Handler != nullptr) Handler(sende
 }\
 internal: EventHandler<Arguments^>^ Handler;
 
-#define DEF_PROP_SET(Class, Type, Prop, Var) \
-Type Class::Prop::get() { return Var; } \
+#define DEF_PROP_SET(Class, Type, Prop, Var)\
+Type Class::Prop::get() { return Var; }\
 void Class::Prop::set(Type value) { Var = value; }
 
-#define DEF_PROP_FLAG(Class, Prop, Flag) \
-bool Class::Prop::get() { return (_flags & Flag) != 0; } \
+#define DEF_PROP_FLAG(Class, Prop, Flag)\
+bool Class::Prop::get() { return (_flags & Flag) != 0; }\
 void Class::Prop::set(bool value) { if (value) _flags |= Flag; else _flags &= ~Flag; }
+
+#define INL_PROP_FLAG(Prop, Flag) virtual property bool Prop\
+{\
+	bool get() { return (_flags & Flag) != 0; }\
+	void set(bool value) { if (value) _flags |= Flag; else _flags &= ~Flag; }\
+}
 
 /// <summary>
 /// Holder of OEM char* converted from String.
@@ -95,3 +106,7 @@ internal:
 	static String^ const CRLF = "\r\n";
 };
 }
+
+// DateTime tools
+DateTime ft2dt(FILETIME time);
+FILETIME dt2ft(DateTime time);

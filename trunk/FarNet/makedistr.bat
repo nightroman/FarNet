@@ -3,7 +3,7 @@
 :: Zip command: pkzipc -add -dir %dst% *.*
 
 @echo off
-set version=3.3.7
+set version=3.3.12
 set dst=Far.NET.%version%.rar
 
 if exist tmp rmdir /s /q tmp
@@ -13,6 +13,7 @@ xcopy "%FARHOME%\lib" tmp\lib /i
 xcopy "%FARHOME%\Plugins\Far.Net" tmp\Plugins\Far.Net /i
 xcopy Plugins.Net tmp\Plugins.Net /i /s
 xcopy Resources tmp /i /s
+copy LICENSE tmp\LICENSE
 
 pushd tmp
 rar a %dst% -m5 -r -s -t *.* > nul

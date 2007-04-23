@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #pragma once
 #include "Editor.h"
 
@@ -11,8 +16,8 @@ internal:
 	property ICollection<IEditor^>^ Editors { ICollection<IEditor^>^ get(); }
 	Editor^ CreateEditor();
 	Editor^ GetCurrentEditor();
-	int ProcessEditorEvent(int type, void* param);
-	int ProcessEditorInput(const INPUT_RECORD* rec);
+	int AsProcessEditorEvent(int type, void* param);
+	int AsProcessEditorInput(const INPUT_RECORD* rec);
 	void SetWaitingEditor(Editor^ editor);
 private:
 	Editor^ CreateEditorById(int id);

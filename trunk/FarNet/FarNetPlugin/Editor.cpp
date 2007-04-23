@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #include "StdAfx.h"
 #include "Editor.h"
 #include "EditorManager.h"
@@ -106,12 +111,16 @@ void Editor::DisableHistory::set(bool value)
 
 bool Editor::IsEnd::get()
 {
+	if (!IsOpened)
+		return false;
 	EditorInfo ei; EnsureCurrent(ei);
 	return ei.CurLine == ei.TotalLines - 1;
 }
 
 bool Editor::IsLocked::get()
 {
+	if (!IsOpened)
+		return false;
 	EditorInfo ei; EnsureCurrent(ei);
 	return (ei.CurState & ECSTATE_LOCKED) != 0;
 }
@@ -129,6 +138,8 @@ void Editor::IsModal::set(bool value)
 
 bool Editor::IsModified::get()
 {
+	if (!IsOpened)
+		return false;
 	EditorInfo ei; EnsureCurrent(ei);
 	return (ei.CurState & ECSTATE_MODIFIED) != 0;
 }
@@ -151,12 +162,16 @@ bool Editor::IsOpened::get()
 
 bool Editor::IsSaved::get()
 {
+	if (!IsOpened)
+		return false;
 	EditorInfo ei; EnsureCurrent(ei);
 	return (ei.CurState & ECSTATE_SAVED) != 0;
 }
 
 bool Editor::Overtype::get()
 {
+	if (!IsOpened)
+		return false;
 	EditorInfo ei; EnsureCurrent(ei);
 	return ei.Overtype == 1;
 }
@@ -192,11 +207,15 @@ void Editor::ExpandTabs::set(ExpandTabsMode value)
 
 ILine^ Editor::CurrentLine::get()
 {
+	if (!IsOpened)
+		return nullptr;
 	return gcnew VisibleEditorLine(-1, false);
 }
 
 ILines^ Editor::Lines::get()
 {
+	if (!IsOpened)
+		return nullptr;
 	return _lines;
 }
 
@@ -268,6 +287,8 @@ Place Editor::Window::get()
 
 ISelection^ Editor::Selection::get()
 {
+	if (!IsOpened)
+		return nullptr;
 	return gcnew SelectionCollection(this);
 }
 
