@@ -1,5 +1,11 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 using FarManager.Forms;
 using System.Collections.Generic;
+using System.IO;
 using System;
 
 namespace FarManager
@@ -264,6 +270,74 @@ namespace FarManager
 		/// <include file='doc.xml' path='docs/pp[@name="Colors"]/*'/>
 		/// <param name="text">Text.</param>
 		void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
+		/// <summary>
+		/// Creates a panel plugin and optionally posts it for opening.
+		/// </summary>
+		/// <param name="open">
+		/// If it is true then the plugin is posted for opening, see <see cref="OpenPanelPlugin"/> for details.
+		/// If it is false (rare) then you are about to use the plugin later by <see cref="OpenPanelPlugin"/>.
+		/// </param>
+		IPanelPlugin CreatePanelPlugin(bool open);
+		/// <summary>
+		/// Posts a panel plugin for opening (thus, the panel is opened when FAR API <c>OpenPlugin</c> is completed).
+		/// It should be called only from processing a command line, a plugin menu command, etc.
+		/// If you call it more than once then the last call has actual effect.
+		/// </summary>
+		void OpenPanelPlugin(IPanelPlugin plugin);
+		/// <summary>
+		/// Creates a panel item.
+		/// </summary>
+		IFile CreatePanelItem();
+		/// <summary>
+		/// Creates a panel item from <c>FileSystemInfo</c> object.
+		/// </summary>
+		/// <param name="info">File system item info.</param>
+		/// <param name="fullName">Use full name for panel item name.</param>
+		IFile CreatePanelItem(FileSystemInfo info, bool fullName);
+		/// <summary>
+		/// Closes the current plugin panel. [FCTL_CLOSEPLUGIN]
+		/// </summary>
+		/// <param name="path">
+		/// Name of the directory that will be set in the panel after closing the plugin (or null\empty).
+		/// If the path doesn't exist FAR shows an error.
+		/// </param>
+		void ClosePanel(string path);
+		/// <summary>
+		/// Confirmation settings according to options in the "Confirmations" dialog. [ACTL_GETCONFIRMATIONS]
+		/// </summary>
+		FarConfirmations Confirmations { get; }
+		/// <summary>
+		/// Creates and shows <see cref="IInputBox"/>.
+		/// </summary>
+		/// <param name="prompt">Prompt text.</param>
+		/// <returns>Entered text or null if cancelled.</returns>
+		string Input(string prompt);
+		/// <summary>
+		/// Creates and shows <see cref="IInputBox"/>.
+		/// </summary>
+		/// <param name="prompt">Prompt text.</param>
+		/// <param name="history">History string.</param>
+		/// <returns>Entered text or null if cancelled.</returns>
+		string Input(string prompt, string history);
+		/// <summary>
+		/// Creates and shows <see cref="IInputBox"/>.
+		/// </summary>
+		/// <param name="prompt">Prompt text.</param>
+		/// <param name="history">History string.</param>
+		/// <param name="title">Title of the box.</param>
+		/// <returns>Entered text or null if cancelled.</returns>
+		string Input(string prompt, string history, string title);
+		/// <summary>
+		/// Creates and shows <see cref="IInputBox"/>.
+		/// Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
+		/// If you need more input box options, use this class directly.
+		/// </summary>
+		/// <param name="prompt">Prompt text.</param>
+		/// <param name="history">History string.</param>
+		/// <param name="title">Title of the box.</param>
+		/// <param name="text">Text to be edited.</param>
+		/// <returns>Entered text or null if cancelled.</returns>
+		string Input(string prompt, string history, string title, string text);
 	}
 
 	/// <summary>
@@ -351,12 +425,6 @@ namespace FarManager
 		/// Name of menu item (caption in plugins menu).
 		/// </summary>
 		string Name { get; set; }
-		/// <summary>
-		/// Fire <see cref="OnOpen"/> event.
-		/// </summary>
-		/// <param name="sender">Opened menu item.</param>
-		/// <param name="from">Where it is opened from.</param>
-		void FireOnOpen(IPluginMenuItem sender, OpenFrom from);
 	}
 
 	/// <summary>
@@ -369,7 +437,6 @@ namespace FarManager
 	/// </summary>
 	public sealed class OpenPluginMenuItemEventArgs : EventArgs
 	{
-		OpenFrom _from;
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -385,5 +452,59 @@ namespace FarManager
 		{
 			get { return _from; }
 		}
+		OpenFrom _from;
+	}
+
+	/// <summary>
+	/// Information about the confirmation settings.
+	/// Corresponds to options in the "Confirmations" dialog.
+	/// </summary>
+	[Flags]
+	public enum FarConfirmations
+	{
+		/// <summary>
+		/// Nothing.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Overwrite files when copying.
+		/// </summary>
+		CopyOverwrite = 0x1,
+		/// <summary>
+		/// Overwritte files when moving.
+		/// </summary>
+		MoveOverwrite = 0x2,
+		/// <summary>
+		/// Drag and drop.
+		/// </summary>
+		DragAndDrop = 0x4,
+		/// <summary>
+		/// Delete.
+		/// </summary>
+		Delete = 0x8,
+		/// <summary>
+		/// Delete non-empty folders.
+		/// </summary>
+		DeleteNonEmptyFolders = 0x10,
+		/// <summary>
+		/// Interrupt operation.
+		/// </summary>
+		InterruptOperation = 0x20,
+		/// <summary>
+		/// Disconnect network drive.
+		/// </summary>
+		DisconnectNetworkDrive = 0x40,
+		/// <summary>
+		/// Reload edited file.
+		/// </summary>
+		ReloadEditedFile = 0x80,
+		/// <summary>
+		/// Clear history list.
+		/// </summary>
+		ClearHistoryList = 0x100,
+		/// <summary>
+		/// Exit
+		/// </summary>
+		Exit = 0x200,
 	}
 }

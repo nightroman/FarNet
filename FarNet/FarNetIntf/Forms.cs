@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 using System.Collections.Generic;
 using System;
 
@@ -43,7 +48,8 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Double or single box control.
+	/// Double line or single line box control.
+	/// It is created and added to a dialog by <see cref="IDialog.AddBox"/>.
 	/// </summary>
 	public interface IBox : IControl
 	{
@@ -63,6 +69,7 @@ namespace FarManager.Forms
 
 	/// <summary>
 	/// Button control.
+	/// It is created and added to a dialog by <see cref="IDialog.AddButton"/>.
 	/// </summary>
 	public interface IButton : IControl
 	{
@@ -94,7 +101,8 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// CheckBox control.
+	/// Check box control.
+	/// It is created and added to a dialog by <see cref="IDialog.AddCheckBox"/>.
 	/// </summary>
 	public interface ICheckBox : IControl
 	{
@@ -129,6 +137,7 @@ namespace FarManager.Forms
 
 	/// <summary>
 	/// Edit control.
+	/// It is created and added to a dialog by <see cref="IDialog.AddEdit"/>.
 	/// </summary>
 	public interface IEdit : IControl
 	{
@@ -188,7 +197,8 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Radio button.
+	/// Radio button control.
+	/// It is created and added to a dialog by <see cref="IDialog.AddRadioButton"/>.
 	/// </summary>
 	public interface IRadioButton : IControl
 	{
@@ -227,6 +237,7 @@ namespace FarManager.Forms
 
 	/// <summary>
 	/// Static text label.
+	/// It is created and added to a dialog by <see cref="IDialog.AddText"/>.
 	/// </summary>
 	public interface IText : IControl
 	{
@@ -285,7 +296,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Base interface for ComboBox and ListBox.
+	/// Base interface for <see cref="IComboBox"/> and <see cref="IListBox"/>.
 	/// </summary>
 	public interface IBaseList : IControl
 	{
@@ -323,7 +334,8 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// ComboBox control.
+	/// Combo box control.
+	/// It is created and added to a dialog by <see cref="IDialog.AddComboBox"/>.
 	/// </summary>
 	public interface IComboBox : IBaseList
 	{
@@ -354,7 +366,8 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// ListBox control.
+	/// List box control.
+	/// It is created and added to a dialog by <see cref="IDialog.AddListBox"/>.
 	/// </summary>
 	public interface IListBox : IBaseList
 	{
@@ -364,9 +377,18 @@ namespace FarManager.Forms
 		bool NoBox { get; set; }
 	}
 
-	/// <summary>
-	/// Far dialog.
-	/// </summary>
+	/**
+<summary>
+Far dialog.
+It is created by <see cref="IFar.CreateDialog"/>.
+</summary>
+<remarks>
+After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
+*) create and add controls using <c>Add*</c> methods;
+*) set control and dialog properties and|or add event handlers;
+*) call <see cref="IDialog.Show"/>.
+</remarks>
+*/
 	public interface IDialog
 	{
 		/// <summary>
@@ -378,7 +400,7 @@ namespace FarManager.Forms
 		/// </summary>
 		event EventHandler<ClosingEventArgs> Closing;
 		/// <summary>
-		/// Event is sent to the dialog callback function when the dialog enters the idle state.
+		/// Event is sent to the dialog when the dialog enters the idle state.
 		/// </summary>
 		event EventHandler<AnyEventArgs> Idled;
 		/// <summary>
@@ -448,7 +470,7 @@ namespace FarManager.Forms
 		/// <param name="text">Control text.</param>
 		ICheckBox AddCheckBox(int left, int top, string text);
 		/// <summary>
-		/// Adds a ComboBox control.
+		/// Adds a combo box control.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
@@ -472,7 +494,7 @@ namespace FarManager.Forms
 		/// <param name="text">Control text.</param>
 		IEdit AddEditPassword(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a ListBox control.
+		/// Adds a list box control.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <param name="text">Control text.</param>

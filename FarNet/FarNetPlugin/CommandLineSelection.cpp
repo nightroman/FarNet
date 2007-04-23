@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #include "StdAfx.h"
 #include "CommandLineSelection.h"
 

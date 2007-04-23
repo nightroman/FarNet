@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #include "StdAfx.h"
 
 ///<summary>Constructor: converts a string and holds the result.</summary>
@@ -288,4 +293,19 @@ String^ ExceptionInfo(Exception^ e)
 	}
 
 	return Regex::Replace(info, "[\r\n]+", "\n");
+}
+
+DateTime ft2dt(FILETIME time)
+{
+	return DateTime::FromFileTime(*(Int64*)&time);
+}
+
+FILETIME dt2ft(DateTime time)
+{
+	Int64 r;
+	if (time.Ticks == 0)
+		r = 0;
+	else
+		r = time.ToFileTime();
+	return *(FILETIME*)&r;
 }

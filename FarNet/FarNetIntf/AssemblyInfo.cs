@@ -3,13 +3,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("3.3.7.0")]
-[assembly: AssemblyTitle("Far.Net interface")]
-[assembly: AssemblyDescription("Interface for Far.Net plugins")]
+[assembly: AssemblyVersion("3.3.12.0")]
+[assembly: AssemblyTitle("Far.NET interface")]
+[assembly: AssemblyDescription("Interface for Far.NET plugins")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http://scrhostplugin.sf.net")]
+[assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
 [assembly: AssemblyProduct("Far.Net")]
-[assembly: AssemblyCopyright("Far.Net team")]
+[assembly: AssemblyCopyright("Copyright (c) 2005-2007 Far.NET Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

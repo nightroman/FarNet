@@ -1,3 +1,49 @@
+3.3.12
+
+- Updated Plugins.NET\IronPython plugin (by Max Belugin).
+- IFar.Input(): added 3 overloaded methods and changed parameter order in
+the existing method: prompt, history, title, text.
+
+3.3.11
+
+- Fixed minor issues on exceptions in panel plugin events.
+- IFar: new method Input() - helper to create and show IInputBox.
+- IEditor: fixed exceptions from get-properties of not opened editor.
+- Added Plugins.NET\Ipy: plugin to run scripts in IronPython (by Max Belugin).
+
+3.3.10
+
+- IFar: new method ClosePanel(): closes the current plugin panel.
+- IPanelPluginInfo: new property ConfirmClose:bool.
+- IPanel: new method Redraw(int, int).
+- IFile: new property: Tag:int. It works as user data attached to an item.
+Unfortunately Data:object, as in other interfaces, is not possible for IFile.
+Removed properties Path and ParentPath, sorry for a breaking change, but they
+were error prone in many cases (and redundant in many other cases); thus, if you
+need parent path take it as IPanel.Path and then you decide what Path is in your
+scenario: with slash, backslash, nothing, ... (if you need Path at all).
+- Refactoring of panel related interfaces for new panel plugin functionality,
+added new features, some minor changes may be breaking.
+- Updated documentation.
+
+3.3.9
+
+- Implemented panel plugin interfaces: main of them are: IPanelPlugin and
+IPanelPluginInfo. See docs for details. Not yet everything is implemented but
+significant part. Everything is a subject to change, this is the first version.
+A simple but not really trivial example is Search-Regex-.ps1 in PowerShellFar.
+- Refactoring for panel plugins: removed interface IFolder; replaced property
+IFolder IFile.Parent with string IFile.ParentPath; replaced property IFolder
+IPanel.Contents with IList<IFile> IPanel.Contents.
+- Removed from public interface currently redundant IPluginMenuItem.FireOnOpen()
+and IMenuItem.FireOnClick().
+
+3.3.8
+
+- Improved some XML doc code comments, updated CHM help. CHM help: removed MSDN
+references, inherited .NET comments and other redundant information.
+- Preliminary internal changes for coming features.
+
 3.3.7
 
 - Created CHM help: from now on the latest version can be downloaded from:

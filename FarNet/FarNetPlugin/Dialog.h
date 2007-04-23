@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #pragma once
 
 namespace FarManagerImpl
@@ -12,10 +17,10 @@ public:
 	virtual property bool Hidden { bool get(); void set(bool value); }
 	virtual property int Id;
 	virtual property String^ Text { String^ get(); void set(String^ value); }
-public: DEF_EVENT_ARGS(GotFocus, _gotFocusHandler, AnyEventArgs);
-public: DEF_EVENT_ARGS(KeyPressed, _keyPressedHandler, KeyPressedEventArgs);
-public: DEF_EVENT_ARGS(LosingFocus, _losingFocusHandler, LosingFocusEventArgs);
-public: DEF_EVENT_ARGS(MouseClicked, _mouseClickedHandler, MouseClickedEventArgs);
+public: DEF_EVENT_ARGS(GotFocus, _GotFocus, AnyEventArgs);
+public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
+public: DEF_EVENT_ARGS(LosingFocus, _LosingFocus, LosingFocusEventArgs);
+public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);
 public:
 	virtual String^ ToString() override;
 internal:
@@ -55,7 +60,7 @@ public:
 	virtual property bool NoClose { bool get(); void set(bool value); }
 	virtual property bool NoFocus { bool get(); void set(bool value); }
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
-public: DEF_EVENT_ARGS(ButtonClicked, _buttonClickedHandler, ButtonClickedEventArgs);
+public: DEF_EVENT_ARGS(ButtonClicked, _ButtonClicked, ButtonClickedEventArgs);
 internal:
 	FarButton(FarDialog^ dialog, int left, int top, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
@@ -69,7 +74,7 @@ public:
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
 	virtual property bool ThreeState { bool get(); void set(bool value); }
 	virtual property int Selected { int get(); void set(int value); }
-public: DEF_EVENT_ARGS(ButtonClicked, _buttonClickedHandler, ButtonClickedEventArgs);
+public: DEF_EVENT_ARGS(ButtonClicked, _ButtonClicked, ButtonClickedEventArgs);
 internal:
 	FarCheckBox(FarDialog^ dialog, int left, int top, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
@@ -90,7 +95,7 @@ public:
 	virtual property ILine^ Line { ILine^ get(); }
 	virtual property String^ History { String^ get(); void set(String^ value); }
 	virtual property String^ Mask { String^ get(); void set(String^ value); }
-public: DEF_EVENT_ARGS(TextChanged, _textChangedHandler, TextChangedEventArgs);
+public: DEF_EVENT_ARGS(TextChanged, _TextChanged, TextChangedEventArgs);
 internal:
 	FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, int type);
 	virtual void Setup(FarDialogItem& item) override;
@@ -109,7 +114,7 @@ public:
 	virtual property bool NoFocus { bool get(); void set(bool value); }
 	virtual property bool Selected { bool get(); void set(bool value); }
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
-public: DEF_EVENT_ARGS(ButtonClicked, _buttonClickedHandler, ButtonClickedEventArgs);
+public: DEF_EVENT_ARGS(ButtonClicked, _ButtonClicked, ButtonClickedEventArgs);
 internal:
 	FarRadioButton(FarDialog^ dialog, int left, int top, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
@@ -174,7 +179,7 @@ public:
 	virtual property bool ReadOnly { bool get(); void set(bool value); }
 	virtual property bool SelectOnEntry { bool get(); void set(bool value); }
 	virtual property ILine^ Line { ILine^ get(); }
-public: DEF_EVENT_ARGS(TextChanged, _textChangedHandler, TextChangedEventArgs);
+public: DEF_EVENT_ARGS(TextChanged, _TextChanged, TextChangedEventArgs);
 internal:
 	FarComboBox(FarDialog^ dialog, int left, int top, int right, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
@@ -213,11 +218,11 @@ public:
 	virtual IRadioButton^ AddRadioButton(int left, int top, String^ text);
 	virtual IText^ AddText(int left, int top, int right, String^ text);
 	virtual IText^ AddVerticalText(int left, int top, int bottom, String^ text);
-public: DEF_EVENT_ARGS(Closing, _closingHandler, ClosingEventArgs);
-public: DEF_EVENT_ARGS(Idled, _idledHandler, AnyEventArgs);
-public: DEF_EVENT_ARGS(Initialized, _initializedHandler, InitializedEventArgs);
-public: DEF_EVENT_ARGS(KeyPressed, _keyPressedHandler, KeyPressedEventArgs);
-public: DEF_EVENT_ARGS(MouseClicked, _mouseClickedHandler, MouseClickedEventArgs);
+public: DEF_EVENT_ARGS(Closing, _Closing, ClosingEventArgs);
+public: DEF_EVENT_ARGS(Idled, _Idled, AnyEventArgs);
+public: DEF_EVENT_ARGS(Initialized, _Initialized, InitializedEventArgs);
+public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
+public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);
 internal:
 	FarDialog(Far^ manager, int left, int top, int right, int bottom);
 	long DialogProc(int msg, int param1, long param2);

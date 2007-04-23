@@ -1,9 +1,14 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 using System;
 
 namespace FarManager.Forms
 {
 	/// <summary>
-	/// Arguments of any dialog or control event.
+	/// Base class of dialog and control event arguments.
 	/// </summary>
 	public class AnyEventArgs : EventArgs
 	{
@@ -17,6 +22,7 @@ namespace FarManager.Forms
 		}
 		/// <summary>
 		/// Control involved into this event or null.
+		/// In a derived class take a look at the event constructor for details.
 		/// </summary>
 		public IControl Control
 		{
@@ -33,7 +39,7 @@ namespace FarManager.Forms
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="focused">Focused control.</param>
+		/// <param name="focused">Control that will initially receive focus.</param>
 		public InitializedEventArgs(IControl focused)
 			: base(focused)
 		{
@@ -57,13 +63,14 @@ namespace FarManager.Forms
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="selected">Selected control.</param>
+		/// <param name="selected">Control that had the keyboard focus when <c>Ctrl+Enter</c> was pressed or the default control. 
+		/// </param>
 		public ClosingEventArgs(IControl selected)
 			: base(selected)
 		{
 		}
 		/// <summary>
-		/// Ingore and Continue the dialog.
+		/// Ingore and don't close the dialog.
 		/// </summary>
 		public bool Ignore
 		{
@@ -87,7 +94,7 @@ namespace FarManager.Forms
 		{
 		}
 		/// <summary>
-		/// null to allow to lose focus or control you want to pass the focus to.
+		/// Control you want to pass focus to or leave it null to allow to lose focus.
 		/// </summary>
 		public IControl Focused
 		{
@@ -203,7 +210,7 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// <c>MouseClicked</c> event arguments for <see cref="IDialog"/> and <see cref="IControl"/>..
+	/// <c>MouseClicked</c> event arguments for <see cref="IDialog"/> and <see cref="IControl"/>.
 	/// </summary>
 	public sealed class MouseClickedEventArgs : AnyEventArgs
 	{

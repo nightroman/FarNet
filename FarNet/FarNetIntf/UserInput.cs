@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 using System;
 
 namespace FarManager
@@ -32,6 +37,22 @@ namespace FarManager
 		AltCtrlShift = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed,
 		/// <summary>All states.</summary>
 		All = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed | NumLockOn | ScrollLockOn | CapsLockOn | EnhancedKey
+	}
+
+	/// <summary>
+	/// Represents Control, Alt and Shift states.
+	/// </summary>
+	[Flags]
+	public enum KeyStates
+	{
+		/// <summary>None.</summary>
+		None = 0,
+		/// <summary>Control pressed.</summary>
+		Control = 0x1,
+		/// <summary>Alt pressed.</summary>
+		Alt = 0x2,
+		/// <summary>Shift pressed.</summary>
+		Shift = 0x4,
 	}
 
 	/// <summary>

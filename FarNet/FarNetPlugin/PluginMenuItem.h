@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 #pragma once
 
 namespace FarManagerImpl
@@ -5,9 +10,9 @@ namespace FarManagerImpl
 public ref class PluginMenuItem : public IPluginMenuItem
 {
 public:
-	virtual event EventHandler<OpenPluginMenuItemEventArgs^>^ OnOpen;
+	DEF_EVENT_ARGS(OnOpen, _OnOpen, OpenPluginMenuItemEventArgs);
+public:
 	virtual property String^ Name { String^ get(); void set(String^ value); }
-	virtual void FireOnOpen(IPluginMenuItem^ sender, OpenFrom from);
 private:
 	String^ _name;
 };

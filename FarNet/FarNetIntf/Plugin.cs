@@ -1,3 +1,8 @@
+/*
+Far.NET plugin for Far Manager
+Copyright (c) 2005-2007 Far.NET Team
+*/
+
 using System;
 
 namespace FarManager
@@ -11,8 +16,8 @@ namespace FarManager
 		/// Far manager application.
 		/// </summary>
 		/// <remarks>
-		/// When object is set - plugin must register menu items, prefixes, etc.
-		/// When <c>null</c> is set plugin must unregister its hooks.
+		/// When an object is set - plugin must register menu items, prefixes, etc.
+		/// When null is set plugin must unregister its hooks.
 		/// </remarks>
 		IFar Far { get; set; }
 	}
