@@ -31,6 +31,12 @@ namespace FarManager
 		/// <param name="handler">Handler of a command.</param>
 		void RegisterPrefix(string prefix, StringDelegate handler);
 		/// <summary>
+		/// Adds a menu item to the Far disks menu.
+		/// </summary>
+		/// <param name="item">The menu item being registered.</param>
+		/// <seealso cref="UnregisterPluginsDiskItem"/>
+		void RegisterPluginsDiskItem(IPluginMenuItem item);
+		/// <summary>
 		/// Adds a menu item to the Far main plugins menu (F11).
 		/// </summary>
 		/// <param name="item">The menu item being registered.</param>
@@ -44,6 +50,11 @@ namespace FarManager
 		/// <returns>newly created item</returns>
 		/// <seealso cref="UnregisterPluginsMenuItem"/>
 		IPluginMenuItem RegisterPluginsMenuItem(string name, EventHandler<OpenPluginMenuItemEventArgs> onOpen);
+		/// <summary>
+		/// Call it to unregister the plugin disk item.
+		/// </summary>
+		/// <param name="item">Item being unregistered.</param>
+		void UnregisterPluginsDiskItem(IPluginMenuItem item);
 		/// <summary>
 		/// Call it to unregister the plugin menu item.
 		/// </summary>
@@ -201,10 +212,12 @@ namespace FarManager
 		ICollection<IEditor> Editors { get; }
 		/// <summary>
 		/// Current (active) panel.
+		/// If it is a FAR.NET plugin panel it returns <see cref="IPanelPlugin"/>.
 		/// </summary>
 		IPanel Panel { get; }
 		/// <summary>
 		/// Another (passive) panel.
+		/// If it is a FAR.NET plugin panel it returns <see cref="IPanelPlugin"/>.
 		/// </summary>
 		IPanel AnotherPanel { get; }
 		/// <summary>
@@ -271,19 +284,18 @@ namespace FarManager
 		/// <param name="text">Text.</param>
 		void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
 		/// <summary>
-		/// Creates a panel plugin and optionally posts it for opening.
+		/// Gets FAR.NET panel plugin of the specified host type (see <see cref="IPanelPlugin.Host"/>).
 		/// </summary>
-		/// <param name="open">
-		/// If it is true then the plugin is posted for opening, see <see cref="OpenPanelPlugin"/> for details.
-		/// If it is false (rare) then you are about to use the plugin later by <see cref="OpenPanelPlugin"/>.
+		/// <param name="hostType">
+		/// Type of the hosting class.
+		/// If null any existing plugin is returned.
+		/// If typeof(object) a plugin having any host is returned.
 		/// </param>
-		IPanelPlugin CreatePanelPlugin(bool open);
+		IPanelPlugin GetPanelPlugin(Type hostType);
 		/// <summary>
-		/// Posts a panel plugin for opening (thus, the panel is opened when FAR API <c>OpenPlugin</c> is completed).
-		/// It should be called only from processing a command line, a plugin menu command, etc.
-		/// If you call it more than once then the last call has actual effect.
+		/// Creates new not yet opened panel plugin. You have to open it by <see cref="IPanelPlugin.Open()"/>
 		/// </summary>
-		void OpenPanelPlugin(IPanelPlugin plugin);
+		IPanelPlugin CreatePanelPlugin();
 		/// <summary>
 		/// Creates a panel item.
 		/// </summary>
@@ -298,7 +310,7 @@ namespace FarManager
 		/// Closes the current plugin panel. [FCTL_CLOSEPLUGIN]
 		/// </summary>
 		/// <param name="path">
-		/// Name of the directory that will be set in the panel after closing the plugin (or null\empty).
+		/// Name of the directory that will be set in the panel after closing the plugin (or {null|empty}).
 		/// If the path doesn't exist FAR shows an error.
 		/// </param>
 		void ClosePanel(string path);
@@ -306,32 +318,22 @@ namespace FarManager
 		/// Confirmation settings according to options in the "Confirmations" dialog. [ACTL_GETCONFIRMATIONS]
 		/// </summary>
 		FarConfirmations Confirmations { get; }
-		/// <summary>
-		/// Creates and shows <see cref="IInputBox"/>.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt);
-		/// <summary>
-		/// Creates and shows <see cref="IInputBox"/>.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt, string history);
-		/// <summary>
-		/// Creates and shows <see cref="IInputBox"/>.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt, string history, string title);
-		/// <summary>
-		/// Creates and shows <see cref="IInputBox"/>.
-		/// Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
-		/// If you need more input box options, use this class directly.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>

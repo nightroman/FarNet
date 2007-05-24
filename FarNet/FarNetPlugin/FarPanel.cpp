@@ -5,12 +5,29 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 #include "FarPanel.h"
+#include "FarImpl.h"
 
 namespace FarManagerImpl
 {;
+
+//
+//::FarPanel::
+//
+
 FarPanel::FarPanel(bool current)
-: _isCurrentPanel(current)
+: _id(INVALID_HANDLE_VALUE)
+, _active(current)
 {
+}
+
+int FarPanel::Id::get()
+{
+	return (int)_id;
+}
+
+void FarPanel::Id::set(int value)
+{
+	_id = (HANDLE)value;
 }
 
 bool FarPanel::IsActive::get()
@@ -52,7 +69,7 @@ IFile^ FarPanel::Current::get()
 	if (pi.ItemsNumber == 0)
 		return nullptr;
 
-	StoredFile^ r = ItemToFile(pi.PanelItems[pi.CurrentItem]);
+	FarFile^ r = ItemToFile(pi.PanelItems[pi.CurrentItem]);
 	return r;
 }
 
@@ -62,20 +79,16 @@ int FarPanel::CurrentIndex::get()
 	return pi.ItemsNumber ? pi.CurrentItem : -1;
 }
 
-IFile^ FarPanel::Top::get()
-{
-	PanelInfo pi; GetInfo(pi);
-	if (pi.ItemsNumber == 0)
-		return nullptr;
-
-	StoredFile^ r = ItemToFile(pi.PanelItems[pi.TopPanelItem]);
-	return r;
-}
-
 int FarPanel::TopIndex::get()
 {
 	PanelInfo pi; GetBrief(pi);
 	return pi.ItemsNumber ? pi.TopPanelItem : -1;
+}
+
+Point FarPanel::Frame::get()
+{
+	PanelInfo pi; GetBrief(pi);
+	return pi.ItemsNumber ? Point(pi.CurrentItem, pi.TopPanelItem) : Point(-1, -1);
 }
 
 PanelSortMode FarPanel::SortMode::get()
@@ -98,9 +111,9 @@ String^ FarPanel::Path::get()
 
 void FarPanel::Path::set(String^ value)
 {
-	int command = _isCurrentPanel ? FCTL_SETPANELDIR : FCTL_SETANOTHERPANELDIR;
+	int command = _active ? FCTL_SETPANELDIR : FCTL_SETANOTHERPANELDIR;
 	CStr sb(value);
-	if (!Info.Control(INVALID_HANDLE_VALUE, command, sb))
+	if (!Info.Control(_id, command, sb))
 		throw gcnew OperationCanceledException();
 }
 
@@ -130,6 +143,27 @@ IList<IFile^>^ FarPanel::Selected::get()
 	return r;
 }
 
+IList<IFile^>^ FarPanel::Targeted::get()
+{
+	List<IFile^>^ r = gcnew List<IFile^>();
+	PanelInfo pi; GetInfo(pi);
+	for(int i = 0; i < pi.ItemsNumber; ++i)
+	{
+		if (pi.PanelItems[i].Flags & PPIF_SELECTED)
+			r->Add(ItemToFile(pi.PanelItems[i]));
+	}
+	if (r->Count == 0)
+	{
+		if (pi.ItemsNumber > 0)
+		{
+			FarFile^ f = ItemToFile(pi.PanelItems[pi.CurrentItem]);
+			if (f->Name != "..")
+				r->Add(f);
+		}
+	}
+	return r;
+}
+
 PanelType FarPanel::Type::get()
 {
 	PanelInfo pi; GetBrief(pi);
@@ -138,33 +172,32 @@ PanelType FarPanel::Type::get()
 
 void FarPanel::GetBrief(PanelInfo& pi)
 {
-	int command = _isCurrentPanel ? FCTL_GETPANELSHORTINFO : FCTL_GETANOTHERPANELSHORTINFO;
-	if (!Info.Control(INVALID_HANDLE_VALUE, command, &pi))
+	int command = _active ? FCTL_GETPANELSHORTINFO : FCTL_GETANOTHERPANELSHORTINFO;
+	if (!Info.Control(_id, command, &pi))
 		throw gcnew OperationCanceledException("Can't get panel information.");
 }
 
 void FarPanel::GetInfo(PanelInfo& pi)
 {
-	int command = _isCurrentPanel ? FCTL_GETPANELINFO : FCTL_GETANOTHERPANELINFO;
-	if (!Info.Control(INVALID_HANDLE_VALUE, command, &pi))
+	int command = _active ? FCTL_GETPANELINFO : FCTL_GETANOTHERPANELINFO;
+	if (!Info.Control(_id, command, &pi))
 		throw gcnew OperationCanceledException("Can't get panel information.");
 }
 
-StoredFile^ FarPanel::ItemToFile(PluginPanelItem& i)
+FarFile^ FarPanel::ItemToFile(PluginPanelItem& item)
 {
-	StoredFile^ f = gcnew StoredFile();
+	FarFile^ f = gcnew FarFile();
 
-	f->Name = OemToStr(i.FindData.cFileName);
-	f->Description = i.Description ? OemToStr(i.Description) : String::Empty; 
-	f->AlternateName = gcnew String(i.FindData.cAlternateFileName);
+	f->Name = OemToStr(item.FindData.cFileName);
+	f->Description = item.Description ? OemToStr(item.Description) : String::Empty; 
+	f->AlternateName = gcnew String(item.FindData.cAlternateFileName);
 
-	f->_flags = i.FindData.dwFileAttributes;
-	f->CreationTime = ft2dt(i.FindData.ftCreationTime);
-	f->LastAccessTime = ft2dt(i.FindData.ftLastAccessTime);
-	f->LastWriteTime = ft2dt(i.FindData.ftLastWriteTime);
-	f->Size = i.FindData.nFileSizeLow;
-	f->IsSelected = (i.Flags & PPIF_SELECTED) != 0;
-	f->Tag = i.UserData;
+	f->_flags = item.FindData.dwFileAttributes;
+	f->CreationTime = ft2dt(item.FindData.ftCreationTime);
+	f->LastAccessTime = ft2dt(item.FindData.ftLastAccessTime);
+	f->LastWriteTime = ft2dt(item.FindData.ftLastWriteTime);
+	f->Length = item.FindData.nFileSizeLow;
+	f->IsSelected = (item.Flags & PPIF_SELECTED) != 0;
 
 	return f;
 }
@@ -213,23 +246,184 @@ bool FarPanel::RealNames::get()
 
 void FarPanel::Redraw()
 {
-	int command = _isCurrentPanel ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;
-	Info.Control(INVALID_HANDLE_VALUE, command, 0);
+	int command = _active ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;
+	Info.Control(_id, command, 0);
 }
 
 void FarPanel::Redraw(int current, int top)
 {
+	//! do it, else result is different
+	if (current < 0 && top < 0)
+	{
+		Redraw();
+		return;
+	}
+
 	PanelRedrawInfo pri;
 	pri.CurrentItem = current;
 	pri.TopPanelItem = top;
-	int command = _isCurrentPanel ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;
-	Info.Control(INVALID_HANDLE_VALUE, command, &pri);
+	int command = _active ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;
+	Info.Control(_id, command, &pri);
 }
 
 void FarPanel::Update(bool keepSelection)
 {
-	int command = _isCurrentPanel ? FCTL_UPDATEPANEL : FCTL_UPDATEANOTHERPANEL;
-	Info.Control(INVALID_HANDLE_VALUE, command, (void*)keepSelection);
+	int command = _active ? FCTL_UPDATEPANEL : FCTL_UPDATEANOTHERPANEL;
+	Info.Control(_id, command, (void*)keepSelection);
 }
 
+//
+//::FarPanelPluginInfo::
+//
+
+// Flags
+#define DEF_FLAG(Prop, Flag)\
+bool FarPanelPluginInfo::Prop::get() { return (m->Flags & (Flag)) != 0; }\
+void FarPanelPluginInfo::Prop::set(bool value) { { if (value) m->Flags |= Flag; else m->Flags &= ~Flag; } }
+DEF_FLAG(AddDots, OPIF_ADDDOTS);
+DEF_FLAG(CompareFatTime, OPIF_COMPAREFATTIME);
+DEF_FLAG(ExternalDelete, OPIF_EXTERNALDELETE);
+DEF_FLAG(ExternalGet, OPIF_EXTERNALGET);
+DEF_FLAG(ExternalMakeDirectory, OPIF_EXTERNALMKDIR);
+DEF_FLAG(ExternalPut, OPIF_EXTERNALPUT);
+DEF_FLAG(PreserveCase, OPIF_SHOWPRESERVECASE);
+DEF_FLAG(RawSelection, OPIF_RAWSELECTION);
+DEF_FLAG(RealNames, OPIF_REALNAMES);
+DEF_FLAG(RightAligned, OPIF_SHOWRIGHTALIGNNAMES);
+DEF_FLAG(ShowNamesOnly, OPIF_SHOWNAMESONLY);
+DEF_FLAG(UseAttrHighlighting, OPIF_USEATTRHIGHLIGHTING);
+DEF_FLAG(UseFilter, OPIF_USEFILTER);
+DEF_FLAG(UseHighlighting, OPIF_USEHIGHLIGHTING);
+DEF_FLAG(UseSortGroups, OPIF_USESORTGROUPS);
+
+// Strings
+#define DEF_STRING(Prop, Field)\
+String^ FarPanelPluginInfo::Prop::get()\
+{\
+	if (!m->Field || !m->Field[0])\
+		return nullptr;\
+	return OemToStr(m->Field);\
+}\
+void FarPanelPluginInfo::Prop::set(String^ value)\
+{\
+	if (m->Field)\
+		delete m->Field;\
+	if (String::IsNullOrEmpty(value))\
+	{\
+		m->Field = NULL;\
+		return;\
+	}\
+	m->Field = new char[value->Length + 1];\
+	StrToOem(value, (char*)m->Field);\
+}
+DEF_STRING(CurrentDirectory, CurDir);
+DEF_STRING(Format, Format);
+DEF_STRING(HostFile, HostFile);
+DEF_STRING(Title, PanelTitle);
+
+//
+//::FarPanelPlugin::
+//
+
+bool FarPanelPlugin::IsOpened::get()
+{
+	return Id > 0;
+}
+
+IList<IFile^>^ FarPanelPlugin::Files::get()
+{
+	return %_files;
+}
+
+bool FarPanelPlugin::IsPlugin::get()
+{
+	return true;
+}
+
+IFile^ FarPanelPlugin::Current::get()
+{
+	PanelInfo pi; GetInfo(pi);
+	if (pi.ItemsNumber == 0 || _info.AddDots && pi.CurrentItem == 0)
+		return nullptr;
+	return _files[pi.PanelItems[pi.CurrentItem].UserData];
+}
+
+IList<IFile^>^ FarPanelPlugin::Contents::get()
+{
+	List<IFile^>^ r = gcnew List<IFile^>();
+	PanelInfo pi; GetInfo(pi);
+	for(int i = (_info.AddDots ? 1 : 0); i < pi.ItemsNumber; ++i)
+		r->Add(_files[pi.PanelItems[i].UserData]);
+	return r;
+}
+
+IList<IFile^>^ FarPanelPlugin::Selected::get()
+{
+	List<IFile^>^ r = gcnew List<IFile^>();
+	PanelInfo pi; GetInfo(pi);
+	for(int i = (_info.AddDots ? 1 : 0); i < pi.ItemsNumber; ++i)
+	{
+		if (pi.PanelItems[i].Flags & PPIF_SELECTED)
+			r->Add(_files[pi.PanelItems[i].UserData]);
+	}
+	return r;
+}
+
+IList<IFile^>^ FarPanelPlugin::Targeted::get()
+{
+	List<IFile^>^ r = gcnew List<IFile^>();
+	PanelInfo pi; GetInfo(pi);
+	for(int i = 0; i < pi.ItemsNumber; ++i)
+	{
+		if (pi.PanelItems[i].Flags & PPIF_SELECTED)
+			r->Add(_files[pi.PanelItems[i].UserData]);
+	}
+	if (r->Count == 0)
+	{
+		if (pi.ItemsNumber > 0)
+		{
+			int j = pi.PanelItems[pi.CurrentItem].UserData;
+			if (j >= 0 && _files[j]->Name != "..")
+				r->Add(_files[j]);
+		}
+	}
+	return r;
+}
+
+String^ FarPanelPlugin::Path::get()
+{
+	return _info.CurrentDirectory;
+}
+
+void FarPanelPlugin::Path::set(String^ value)
+{
+	if (!_SettingDirectory)
+		throw gcnew NotSupportedException("Plugin panel does not support setting a new path.");
+	SettingDirectoryEventArgs e(value, OperationModes::None);
+	_SettingDirectory(this, %e);
+	if (!e.Ignore)
+	{
+		Update(false);
+		Redraw();
+	}
+}
+
+IPanelPlugin^ FarPanelPlugin::Another::get()
+{
+	return GetFar()->GetAnotherPanelPlugin(this);
+}
+
+void FarPanelPlugin::Open()
+{
+	if (Id > 0)
+		throw gcnew InvalidOperationException("Panel plugin can not be opened because it is already opened.");
+	GetFar()->OpenPanelPlugin(this);
+}
+
+void FarPanelPlugin::Open(IPanelPlugin^ oldPanelPlugin)
+{
+	if (!oldPanelPlugin)
+		throw gcnew ArgumentNullException("oldPanelPlugin");
+	GetFar()->ReplacePanelPlugin((FarPanelPlugin^)oldPanelPlugin, this);
+}
 }

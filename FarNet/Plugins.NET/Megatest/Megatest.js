@@ -1,7 +1,7 @@
 import FarManager;
 import System;
 public class Megatest extends BasePlugin{
-	var menuItem:IPluginMenuItem;	
+	var menuItem:IPluginMenuItem;
 		function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
 			var menu=Far.CreateMenu();
 			menu.Title="Select a test";
@@ -15,7 +15,7 @@ public class Megatest extends BasePlugin{
 				menu.Items.Add("Editor", testEditor);
 			menu.Show();
 		}
-		function Connect(){			
+		function Connect(){
 			this.menuItem=Far.CreatePluginsMenuItem();
 			this.menuItem.Name="Run Far.Net tests";
 			this.menuItem.add_OnOpen(this.item_OnOpen);
@@ -28,13 +28,13 @@ public class Megatest extends BasePlugin{
 			var ib=Far.CreateInputBox();
 			ib.Title="Test input box";
 			ib.Prompt="Enter text";
-			Far.Msg(ib.Show()?("Entered:"+ib.Text):"Canceled");			
+			Far.Msg(ib.Show()?("Entered:"+ib.Text):"Canceled");
 		}
         function testKeySequence(sender:Object, eventArgs:EventArgs){
         	Far.PostKeySequence(Far.CreateKeySequence('t e s t'), false);
         }
         function testPanel(sender:Object, eventArgs:EventArgs){
-        	for(var file in Far.Panel.Contents.Files){
+        	for(var file in Far.Panel.Contents){
         		Far.Msg(file.Name);
         	}
         }
@@ -52,7 +52,8 @@ public class Megatest extends BasePlugin{
         	var m=Far.CreateMenu();
         	m.Items.Add("Test Checked").Checked=true;
         	m.Items.Add("Test IsSeparator").IsSeparator=true;
-        	m.Items.Add("Test Selected").Selected=true;
+        	m.Items.Add("Test Selected");
+        	m.Selected=2
         	m.Show();
         	Far.Msg(m.Selected);
         }
