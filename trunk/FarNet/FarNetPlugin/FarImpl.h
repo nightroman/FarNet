@@ -45,7 +45,8 @@ public:
 	virtual int Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons);
 	virtual int NameToKey(String^ key);
 	virtual int SaveScreen(int x1, int y1, int x2, int y2);
-	virtual IPanelPlugin^ CreatePanelPlugin(bool open);
+	virtual IPanelPlugin^ CreatePanelPlugin();
+	virtual IPanelPlugin^ GetPanelPlugin(Type^ hostType);
 	virtual IPluginMenuItem^ CreatePluginsMenuItem();
 	virtual IPluginMenuItem^ RegisterPluginsMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ onOpen);
 	virtual IViewer^ CreateViewer();
@@ -55,10 +56,10 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual void ClosePanel(String^ path);
 	virtual void GetUserScreen();
-	virtual void OpenPanelPlugin(IPanelPlugin^ plugin);
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(IList<int>^ sequence,bool disableOutput);
 	virtual void PostText(String^ text, bool disableOutput);
+	virtual void RegisterPluginsDiskItem(IPluginMenuItem^ item);
 	virtual void RegisterPluginsMenuItem(IPluginMenuItem^ item);
 	virtual void RegisterPrefix(String^ prefix, StringDelegate^ handler);
 	virtual void RestoreScreen(int screen);
@@ -66,15 +67,17 @@ public:
 	virtual void SetUserScreen();
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
+	virtual void UnregisterPluginsDiskItem(IPluginMenuItem^ item);
 	virtual void UnregisterPluginsMenuItem(IPluginMenuItem^ item);
 	virtual void Write(String^ text);
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
-public:
-	Object^ Test();
 internal:
 	Far();
 	~Far();
+	IPanelPlugin^ GetAnotherPanelPlugin(FarPanelPlugin^ plugin);
+	void OpenPanelPlugin(FarPanelPlugin^ plugin);
+	void ReplacePanelPlugin(FarPanelPlugin^ oldPanelPlugin, FarPanelPlugin^ newPanelPlugin);
 internal:
 	EditorManager^ _editorManager;
 internal:
@@ -92,20 +95,20 @@ internal:
 	void AsGetPluginInfo(PluginInfo* pi);
 	static void AsFreeFindData(PluginPanelItem* panelItem, int itemsNumber);
 private:
-	HANDLE AddPlugin(FarPanelPlugin^ plugin);
+	HANDLE AddPanelPlugin(FarPanelPlugin^ plugin);
 	void CreateMenuStringsBlock();
 	void FreeMenuStrings();
 	void ProcessPrefixes(int Item);
 	void MakePrefixes();
 private:
+	CStr* _diskStrings;
 	CStr* _menuStrings;
 	CStr* _prefixes;
-	IPanel^ _panel;
-	IPanel^ _anotherPanel;
+	List<IPluginMenuItem^>^ _registeredDiskItems;
 	List<IPluginMenuItem^>^ _registeredMenuItems;
 	Dictionary<String^, StringDelegate^>^ _registeredPrefixes;
-	List<FarPanelPlugin^> _plugins;
-	IPanelPlugin^ _pluginToOpen;
+	bool _canOpenPanelPlugin;
+	array<FarPanelPlugin^>^ _panels;
 };
 
 // Far for anybody

@@ -2,12 +2,12 @@ import FarManager
 import System.Reflection
 import System.IO
 public class CopyShared extends BasePlugin{
-	var menuItem:IPluginMenuItem;	
+	var menuItem:IPluginMenuItem;
 	var shares;
 	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
 		this.copySelected();
 	}
-	function Connect(){			
+	function Connect(){
 		this.readCfg()
 		this.menuItem=Far.CreatePluginsMenuItem();
 		this.menuItem.Name="Copy Sha&red";
@@ -18,8 +18,8 @@ public class CopyShared extends BasePlugin{
 	function Disconnect(){
 		Far.UnregisterPluginsMenuItem(this.menuItem);
 	}
-	
-	function GetExternalPath(CmdLine){    	
+
+	function GetExternalPath(CmdLine){
    		for(var folder in shares)
        		if(startsWith(CmdLine.toLowerCase(), folder))
            		return (shares[folder]+"\\"+CmdLine.substr(folder.length+1)).replace(/ /ig, "%20");
@@ -31,12 +31,12 @@ public class CopyShared extends BasePlugin{
 	}
 	function copySelected(){
 		if(Far.Panel.Selected.Count==0){
-			Far.Clipboard=(GetExternalPath(Far.Panel.Current.Path));
+			Far.Clipboard=(GetExternalPath(Far.Panel.Path+"\\"+Far.Panel.Current.Name));
 		}else{
 			var s="";
 			for(var item in Far.Panel.Selected)
 				s+="\r\n"+(this.GetExternalPath(item.Path));
-							
+
 			Far.Clipboard=s;
 		}
 	}

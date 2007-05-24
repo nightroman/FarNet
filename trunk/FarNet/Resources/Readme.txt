@@ -1,7 +1,7 @@
 Plugin name  : Far.NET3
 Category     : Development
-Version      : 3.3.12
-Release date : 2007.04.22
+Version      : 3.3.15
+Release date : 2007.05.24
 Author       : Roman Kuzmin
 Email        : nightroman@hotmail.com
 HomePage     : http://nightroman.spaces.live.com
@@ -56,7 +56,7 @@ Bin (assemblies) and Cfg (configuration files):
 - For each folder in Plugins.NET:
 	- if "Cfg\Plugin.cfg" exists then load it according to the configuration;
 	- else if "Bin" exists then load all *.dll from there;
-	- else load all *.dll from the plagin folder.
+	- else load all *.dll from the plugin folder.
 - For each loaded *.dll find and create instances of all non abstract classes
 implementing IPlugin interface.
 

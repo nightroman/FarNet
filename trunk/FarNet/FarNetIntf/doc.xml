@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding='windows-1251'?>
 <docs>
 	<!--
-	<include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
+	/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 	-->
 	<pp name="HelpTopic">
-		<summary>Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.</summary>
+		<summary>
+			Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
+		</summary>
 	</pp>
 	<pp name="LT">
 		<param name="left">Left position.</param>
@@ -29,7 +31,7 @@
 	<pp name="Connect">
 		<summary>Override this method to handle plugin startup.</summary>
 		<example>
-			(C#) how to register pluging command line prefix and plugin menu command
+			(C#) how to register plugin command line prefix and plugin menu command
 			<code>
 				<![CDATA[
 public override void Connect()
@@ -80,5 +82,12 @@ from the help file of the plugin Foo "D:\Far\Plugins\Foo\Foo.dll":
 	<pp name="Colors">
 		<param name="foregroundColor">Foreground color.</param>
 		<param name="backgroundColor">Background color.</param>
+	</pp>
+	<pp name="Include">
+		<summary>
+			Creates and shows <see cref="IInputBox"/>.
+			Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
+			If you need more input box options, use the interface directly.
+		</summary>
 	</pp>
 </docs>

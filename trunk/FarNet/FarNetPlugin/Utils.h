@@ -89,7 +89,7 @@ void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);
 
 // Helpers
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
-String^ ExceptionInfo(Exception^ e);
+String^ ExceptionInfo(Exception^ e, bool full);
 
 extern int _fastGetString;
 

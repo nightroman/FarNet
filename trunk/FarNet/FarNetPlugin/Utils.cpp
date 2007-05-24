@@ -105,6 +105,9 @@ void OEM2WC(const char* src, LPWSTR dst)
 
 String^ OemToStr(const char* oem, int len)
 {
+	if (!oem)
+		return String::Empty;
+
 	TStr<wchar_t> dst(len);
 	OEM2WC(oem, dst, len);
 	dst[len] = 0;
@@ -114,6 +117,9 @@ String^ OemToStr(const char* oem, int len)
 
 String^ OemToStr(const char* oem)
 {
+	if (!oem)
+		return String::Empty;
+
 	size_t len = strlen(oem);
 	TStr<wchar_t> dst(len);
 	OEM2WC(oem, dst);
@@ -268,7 +274,7 @@ Object^ Property(Object^ obj, String^ name)
 	}
 }
 
-String^ ExceptionInfo(Exception^ e)
+String^ ExceptionInfo(Exception^ e, bool full)
 {
 	String^ info = e->Message + "\n";
 
@@ -291,6 +297,9 @@ String^ ExceptionInfo(Exception^ e)
 				info += pm->ToString() + "\n";
 		}
 	}
+
+	if (full)
+		info += "\n" + e->StackTrace + "\n";
 
 	return Regex::Replace(info, "[\r\n]+", "\n");
 }

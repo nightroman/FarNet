@@ -43,9 +43,9 @@ namespace FarManager
 		/// </summary>
 		DateTime LastWriteTime { get; set; }
 		/// <summary>
-		/// Size of file.
+		/// File length.
 		/// </summary>
-		long Size { get; set; }
+		long Length { get; set; }
 		/// <summary>
 		/// Read only attribute.
 		/// </summary>
@@ -88,10 +88,9 @@ namespace FarManager
 		/// <param name="attributes">Attributes.</param>
 		void SetAttributes(System.IO.FileAttributes attributes);
 		/// <summary>
-		/// User data tag. Note, it is <c>int</c>, not <c>object</c> as property <c>Data</c> in other interfaces.
-		/// Thus, its value may be used as an index or key in <b>your</b> array, hashtable, etc.
+		/// User data. Only for <see cref="IPanelPlugin"/>.
 		/// </summary>
-		int Tag { get; set; }
+		object Data { get; set; }
 	}
 
 	/// <summary>
@@ -188,19 +187,19 @@ namespace FarManager
 		/// <summary>
 		/// Sorted by modification time.
 		/// </summary>
-		MTime,
+		LastWriteTime,
 		/// <summary>
 		/// Sorted by creation time.
 		/// </summary>
-		CTime,
+		CreationTime,
 		/// <summary>
 		/// Sorted by access time.
 		/// </summary>
-		ATime,
+		LastAccessTime,
 		/// <summary>
-		/// Sorted by size.
+		/// Sorted by length.
 		/// </summary>
-		Size,
+		Length,
 		/// <summary>
 		/// Sorted by description.
 		/// </summary>
@@ -244,16 +243,13 @@ namespace FarManager
 		string Path { get; set; }
 		/// <summary>
 		/// Current item.
+		/// See <see cref="IPanelPluginInfo.AddDots"/>.
 		/// </summary>
 		IFile Current { get; }
 		/// <summary>
 		/// Current item index.
 		/// </summary>
 		int CurrentIndex { get; }
-		/// <summary>
-		/// The first visible item.
-		/// </summary>
-		IFile Top { get; }
 		/// <summary>
 		/// The first visible item index.
 		/// </summary>
@@ -264,12 +260,17 @@ namespace FarManager
 		PanelViewMode ViewMode { get; }
 		/// <summary>
 		/// List of all panel items.
+		/// See <see cref="IPanelPluginInfo.AddDots"/>.
 		/// </summary>
 		IList<IFile> Contents { get; }
 		/// <summary>
 		/// List of selected panel items.
 		/// </summary>
 		IList<IFile> Selected { get; }
+		/// <summary>
+		/// List of selected panel items if any or the current; '..' is excluded.
+		/// </summary>
+		IList<IFile> Targeted { get; }
 		/// <summary>
 		/// Panel type.
 		/// </summary>
@@ -312,6 +313,7 @@ namespace FarManager
 		void Redraw();
 		/// <summary>
 		/// Redraws the panel and sets the current and\or the first visible item. [FCTL_REDRAWPANEL]
+		/// If both arguments are negative, result is the same as per <see cref="Redraw()"/>
 		/// </summary>
 		/// <param name="current">Index of the current panel item.</param>
 		/// <param name="top">Index of the first visible panel item.</param>
@@ -321,6 +323,10 @@ namespace FarManager
 		/// </summary>
 		/// <param name="keepSelection">Keep the current selection.</param>
 		void Update(bool keepSelection);
+		/// <summary>
+		/// Gets current frame: current and top index.
+		/// </summary>
+		Point Frame { get; }
 	}
 
 	/// <summary>
@@ -328,6 +334,13 @@ namespace FarManager
 	/// </summary>
 	public interface IPanelPluginInfo : IDisposable
 	{
+		/// <summary>
+		/// Add ".." item automatically if it is absent.
+		/// If you enable this mode ".." is not returned by <see cref="IPanel.Current"/> and <see cref="IPanel.Contents"/>.
+		/// Thus, if you need this item you should add it yourself.
+		/// [OPIF_ADDDOTS]
+		/// </summary>
+		bool AddDots { get; set; }
 		/// <summary>
 		/// Use filter in the plugin panel. [OPIF_USEFILTER]
 		/// </summary>
@@ -346,10 +359,6 @@ namespace FarManager
 		/// (i.e. option "[ ] Match file mask(s)" in file highlighting setup dialog is off). [OPIF_USEATTRHIGHLIGHTING]
 		/// </summary>
 		bool UseAttrHighlighting { get; set; }
-		/// <summary>
-		/// Add ".." item automatically if it is absent. [OPIF_ADDDOTS]
-		/// </summary>
-		bool AddDots { get; set; }
 		/// <summary>
 		/// Folders may be selected regardless of FAR settings. [OPIF_RAWSELECTION]
 		/// </summary>
@@ -649,7 +658,7 @@ namespace FarManager
 	/// </summary>
 	public class FilesEventArgs : PanelEventArgs
 	{
-		ICollection<IFile> _files;
+		IList<IFile> _files;
 		bool _move;
 		/// <summary>
 		/// Constructor.
@@ -657,7 +666,7 @@ namespace FarManager
 		/// <param name="files">Files to delete.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		/// <param name="move">Files are moved.</param>
-		public FilesEventArgs(ICollection<IFile> files, OperationModes mode, bool move)
+		public FilesEventArgs(IList<IFile> files, OperationModes mode, bool move)
 			: base(mode)
 		{
 			_files = files;
@@ -665,9 +674,8 @@ namespace FarManager
 		}
 		/// <summary>
 		/// Files to process.
-		/// Note: only <see cref="IFile.Name"/> and <see cref="IFile.Tag"/> are set.
 		/// </summary>
-		public ICollection<IFile> Files
+		public IList<IFile> Files
 		{
 			get { return _files; }
 		}
@@ -694,7 +702,7 @@ namespace FarManager
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		/// <param name="move">Files are moved.</param>
 		/// <param name="destination">Destination path to put files.</param>
-		public GettingFilesEventArgs(ICollection<IFile> files, OperationModes mode, bool move, string destination)
+		public GettingFilesEventArgs(IList<IFile> files, OperationModes mode, bool move, string destination)
 			: base(files, mode, move)
 		{
 			_destination = destination;
@@ -738,16 +746,36 @@ namespace FarManager
 	/// Panel plugin. It is created by <see cref="IFar.CreatePanelPlugin"/>.
 	/// After that you have to set <see cref="Info"/> properties and add event handlers.
 	/// </summary>
-	public interface IPanelPlugin
+	public interface IPanelPlugin : IPanel
 	{
 		/// <summary>
-		/// Plugin ID.
+		/// Opens a panel plugin.
 		/// </summary>
-		int Id { get; }
+		void Open();
 		/// <summary>
-		/// Any user data.
+		/// Opens a panel plugin instead of another opened plugin.
+		/// </summary>
+		/// <param name="oldPanelPlugin">Plugin to be opened.</param>
+		void Open(IPanelPlugin oldPanelPlugin);
+		/// <summary>
+		/// True if the panel is opened.
+		/// </summary>
+		bool IsOpened { get; }
+		/// <summary>
+		/// Another FAR.NET panel plugin instance or null.
+		/// Note that it may be not "yours", use <see cref="Host"/> property for identification.
+		/// </summary>
+		IPanelPlugin Another { get; }
+		/// <summary>
+		/// Any user data not used by FAR.NET.
 		/// </summary>
 		object Data { get; set; }
+		/// <summary>
+		/// User object that is normally a host of the panel (i.e. container of data, event handlers and etc.).
+		/// Normally you should use it if you have more than one panel with communication between them.
+		/// See <see cref="Another"/>.
+		/// </summary>
+		object Host { get; set; }
 		/// <summary>
 		/// Use this property to set the information about your panel
 		/// just after <see cref="IFar.CreatePanelPlugin"/> (e.g. to set properties that never change)
@@ -755,15 +783,16 @@ namespace FarManager
 		/// </summary>
 		IPanelPluginInfo Info { get; }
 		/// <summary>
-		/// Panel items (files).
+		/// Panel items (files). For performance sake this list is not protected but you have to follow some rules.
+		/// When a panel has started normally you can change this list only in <see cref="GettingData"/> event handler.
+		/// If you change it not in this function then you have to update the panel immediately after the changes.
 		/// </summary>
 		IList<IFile> Files { get; }
 		/// <summary>
 		/// Raised when a plugin info is being requested.
 		/// You have to set or change <see cref="Info"/> properties.
 		/// If your panel info is never changed you should not use this event,
-		/// set all info properties on a panel creation.
-		/// [GetOpenPluginInfo]
+		/// set all info properties on a panel creation. [GetOpenPluginInfo]
 		/// </summary>
 		/// <remarks>
 		/// <c>PowerShell</c> handlers should be added via <c>$Psf.WrapEventHandler()</c> (workaround for Find mode).
@@ -771,83 +800,68 @@ namespace FarManager
 		event EventHandler GettingInfo;
 		/// <summary>
 		/// Raised to prepare <see cref="Files"/> list in the current directory of the file system emulated by the plugin.
-		/// Note: don't set <c>Path</c> or <c>ParentPath</c> in <see cref="IFile"/>: they are not used in this operation.
-		/// Note: if your file set is constant you may fill it once on the panel creation and not use this event at all.
-		/// [GetFindData]
+		/// Note: if your file set is constant you may fill it once on the panel creation and not use this event at all. [GetFindData]
 		/// </summary>
 		/// <remarks>
 		/// <c>PowerShell</c> handlers should be added via <c>$Psf.WrapPanelEvent()</c> (workaround for Find mode).
 		/// </remarks>
 		event EventHandler<PanelEventArgs> GettingData;
 		/// <summary>
-		/// Raised when a plugin is closed.
-		/// [ClosePlugin]
+		/// Raised when a plugin is closed. [ClosePlugin]
 		/// </summary>
 		event EventHandler Closed;
 		/// <summary>
-		/// Raised when a plugin is about to be closed.
-		/// [FE_CLOSE]
+		/// Raised when a plugin is about to be closed. [FE_CLOSE]
 		/// </summary>
 		event EventHandler<PanelEventArgs> Closing;
 		/// <summary>
 		/// Raised every few seconds.
-		/// A plugin can use this event to request panel updating and redrawing.
-		/// [FE_IDLE]
+		/// A plugin can use this event to request panel updating and redrawing. [FE_IDLE]
 		/// </summary>
 		event EventHandler Idled;
 		/// <summary>
 		/// Raised on executing a command from the FAR command line.
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
-		/// [FE_COMMAND]
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally. [FE_COMMAND]
 		/// </summary>
 		event EventHandler<ExecutingEventArgs> Executing;
 		/// <summary>
 		/// Raised when Ctrl-Break is pressed.
 		/// Processing of this event is performed in separate thread,
-		/// so be careful when performing console input or output and don't use FAR service functions.
-		/// [FE_BREAK]
+		/// so be careful when performing console input or output and don't use FAR service functions. [FE_BREAK]
 		/// </summary>
 		event EventHandler CtrlBreakPressed;
 		/// <summary>
 		/// Raised when the panel is about to redraw.
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin redraws the panel itself.
-		/// [FE_REDRAW]
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin redraws the panel itself. [FE_REDRAW]
 		/// </summary>
 		event EventHandler<PanelEventArgs> Redrawing;
 		/// <summary>
-		/// Raised when panel view mode is changed.
-		/// [FE_CHANGEVIEWMODE]
+		/// Raised when panel view mode is changed. [FE_CHANGEVIEWMODE]
 		/// </summary>
 		event EventHandler<ViewModeChangedEventArgs> ViewModeChanged;
 		/// <summary>
 		/// Raised when a key is pressed.
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin processes the key itself.
-		/// [ProcessKey]
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin processes the key itself. [ProcessKey]
 		/// </summary>
 		event EventHandler<PanelKeyEventArgs> KeyPressed;
 		/// <summary>
-		/// Raised to set the current directory in the file system emulated by the plugin.
-		/// [SetDirectory]
+		/// Raised to set the current directory in the file system emulated by the plugin. [SetDirectory]
 		/// </summary>
 		event EventHandler<SettingDirectoryEventArgs> SettingDirectory;
 		/// <summary>
-		/// Raised to delete files in the file system emulated by the plugin.
-		/// [DeleteFiles]
+		/// Raised to delete files in the file system emulated by the plugin. [DeleteFiles]
 		/// </summary>
 		event EventHandler<FilesEventArgs> DeletingFiles;
 		/// <summary>
-		/// Raised to get files on copy\move operation.
-		/// [GetFiles]
+		/// Raised to get files on copy\move operation. [GetFiles]
 		/// </summary>
 		event EventHandler<GettingFilesEventArgs> GettingFiles;
 		/// <summary>
-		/// Raised to put files on copy\move operation.
-		/// [PutFiles]
+		/// Raised to put files on copy\move operation. [PutFiles]
 		/// </summary>
 		event EventHandler<FilesEventArgs> PuttingFiles;
 		/// <summary>
-		/// Rised to create a new directory in the file system emulated by the plugin.
-		/// [MakeDirectory]
+		/// Rised to create a new directory in the file system emulated by the plugin. [MakeDirectory]
 		/// </summary>
 		event EventHandler<MakingDirectoryEventArgs> MakingDirectory;
 	}

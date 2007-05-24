@@ -16,6 +16,14 @@ PluginManager::PluginManager(Far^ plugin) : _far(plugin)
 void PluginManager::LoadPlugins()
 {
 	Trace::WriteLine("Loading plugins");
+
+	String^ show = System::Configuration::ConfigurationSettings::AppSettings["FarManager.StartupErrorDialog"];
+	if (!String::IsNullOrEmpty(show))
+	{
+		show = show->Trim();
+		_startupErrorDialog = show->Length > 0 && show != "0";
+	}
+
 	String^ path = Environment::ExpandEnvironmentVariables(System::Configuration::ConfigurationSettings::AppSettings["FarManager.Plugins"]);
 	for each(DirectoryInfo^ dir in DirectoryInfo(path).GetDirectories())
 		LoadPlugin(dir->FullName);
@@ -90,7 +98,7 @@ void PluginManager::LoadPlugin(String^ dir)
 				return;
 			}
 		}
-		
+
 		// folder Bin
 		String^ dirBin = dir + "\\Bin";
 		if (Directory::Exists(dirBin))
@@ -104,10 +112,18 @@ void PluginManager::LoadPlugin(String^ dir)
 	}
 	catch(Exception^ e)
 	{
-		// USER REQUEST: don't use message boxes at this point
-		_far->Write(
-			"ERROR: plugin " + dir + ":\n" + ExceptionInfo(e),
-			ConsoleColor::Red, Console::BackgroundColor);
+		// USER REQUEST 1: don't use message boxes at this point
+		// USER REQUEST 2: make it optional
+		if (_startupErrorDialog)
+		{
+			_far->ShowError("ERROR in plugin " + dir, e);
+		}
+		else
+		{
+			_far->Write(
+				"ERROR: plugin " + dir + ":\n" + ExceptionInfo(e, true),
+				ConsoleColor::Red, Console::BackgroundColor);
+		}
 	}
 }
 }
