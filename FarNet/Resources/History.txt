@@ -1,3 +1,42 @@
+3.3.15
+
+- Far.exe.config: added option FarManager.StartupErrorDialog: 0: write error
+info to console (default); 1: show standard error dialog (you may want to turn
+it on to view error info in viewer (button [Info])).
+- fixed exception on clipboard failure.
+- fixed broken examples in Plugins.NET folder
+
+3.3.14
+
+BREAKING CHANGE: some of IFile properties and panel modes enums renamed using
+names of standard .NET class FileSystemInfo. Sorry for that, but it should be
+much more convenient than to have 3 different set of names for the same things.
+
+Panels:
+- change: IFar.CreatePanelPlugin() creates a panel, then IPanelPlugin.Open()
+should be called explicitly.
+- removed IPanelPlugin.Panel:IPanel. Instead, IPanelPlugin is derived from
+IPanel and implements some functionality more effectively.
+- removed IPanel.Top (it looks like it is not used), use IPanel.TopIndex which
+is really needed.
+- IFar.Panel, IFar.AnotherPanel: if it is a FAR.NET plugin panel it returns
+IPanelPlugin (derived from IPanel, see above).
+- IFile.Tag:int was replaced with IFile.Data:object, so that you can attach any
+objects to your panel plugin items.
+
+3.3.13
+
+Plugin panels:
+- new method IFar.GetPanelPlugin().
+- removed from public interface property IPanelPlugin.Id (used internally).
+- new IPanelPlugin.Another - another FAR.NET IPanelPlugin if it exists.
+- new IPanelPlugin.Panel - IPanel interface for this IPanelPlugin.
+- new IPanelPlugin.Host - you may use it if you have more than one panel.
+
+Plugin disk menu:
+- Added IFar.{Register | Unregister} PluginsDiskItem(): the same as
+IFar.{Register | Unregister} PluginsMenuItem() but for FAR disk menu.
+
 3.3.12
 
 - Updated Plugins.NET\IronPython plugin (by Max Belugin).

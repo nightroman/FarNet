@@ -24,5 +24,7 @@ private:
 	void LoadAllFrom(String^ dir);
 	void LoadConfig(StreamReader^ text, String^ dir);
 	void LoadPlugin(String^ dir);
+private:
+	static bool _startupErrorDialog;
 };
 }

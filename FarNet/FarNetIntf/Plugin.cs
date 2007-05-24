@@ -26,8 +26,8 @@ namespace FarManager
 	/// Base class for all plugins.
 	/// </summary>
 	/// <remarks>
-	/// It keeps reference to <see cref="IFar"/> and provides <see cref="Connect"/> and <see cref="Disconnect"/> methods.
-	/// Override those methods to handle attachment and detachment of your plugin.
+	/// It keeps reference to <see cref="IFar"/> and provides <see cref="Connect"/> and <see cref="Disconnect"/> methods
+	/// that can be overrided to process main plugin events.
 	/// </remarks>
 	public class BasePlugin : IPlugin
 	{
@@ -54,7 +54,7 @@ namespace FarManager
 		public virtual void Connect() { }
 
 		/// <summary>
-		/// Override this metod to handle plugin shutdown.
+		/// Override this to handle plugin shutdown.
 		/// </summary>
 		public virtual void Disconnect() { }
 	}
