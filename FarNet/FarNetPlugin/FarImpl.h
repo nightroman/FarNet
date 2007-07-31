@@ -25,10 +25,13 @@ public:
 	virtual property int HWnd { int get(); }
 	virtual property IPanel^ AnotherPanel { IPanel^ get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
-	virtual property System::Version^ Version { System::Version^ get(); }
+	virtual property OpenFrom From { OpenFrom get(); }
 	virtual property String^ Clipboard { String^ get(); void set(String^ value); }
 	virtual property String^ PluginFolderPath { String^ get(); }
+	virtual property String^ RootFar { String^ get(); }
+	virtual property String^ RootKey { String^ get(); }
 	virtual property String^ WordDiv { String^ get(); }
+	virtual property Version^ Version { System::Version^ get(); }
 public:
 	virtual bool Msg(String^ body);
 	virtual bool Msg(String^ body, String^ header);
@@ -77,7 +80,7 @@ internal:
 	~Far();
 	IPanelPlugin^ GetAnotherPanelPlugin(FarPanelPlugin^ plugin);
 	void OpenPanelPlugin(FarPanelPlugin^ plugin);
-	void ReplacePanelPlugin(FarPanelPlugin^ oldPanelPlugin, FarPanelPlugin^ newPanelPlugin);
+	void ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel);
 internal:
 	EditorManager^ _editorManager;
 internal:
@@ -107,6 +110,7 @@ private:
 	List<IPluginMenuItem^>^ _registeredDiskItems;
 	List<IPluginMenuItem^>^ _registeredMenuItems;
 	Dictionary<String^, StringDelegate^>^ _registeredPrefixes;
+	OpenFrom _from;
 	bool _canOpenPanelPlugin;
 	array<FarPanelPlugin^>^ _panels;
 };

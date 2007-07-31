@@ -52,9 +52,9 @@ public:
 	virtual property bool IsActive { bool get(); }
 	virtual property bool IsPlugin { bool get(); }
 	virtual property bool IsVisible { bool get(); void set(bool value); }
-	virtual property bool NumericSort { bool get(); }
+	virtual property bool NumericSort { bool get(); void set(bool value); }
 	virtual property bool RealNames { bool get(); }
-	virtual property bool ReverseSortOrder { bool get(); }
+	virtual property bool ReverseSortOrder { bool get(); void set(bool value); }
 	virtual property bool SelectedFirst { bool get(); }
 	virtual property bool ShowHidden { bool get(); }
 	virtual property bool UseSortGroups { bool get(); }
@@ -64,9 +64,10 @@ public:
 	virtual property IList<IFile^>^ Targeted { IList<IFile^>^ get(); }
 	virtual property int CurrentIndex { int get(); }
 	virtual property int TopIndex { int get(); }
-	virtual property PanelSortMode SortMode { PanelSortMode get(); }
+	virtual property PanelSortMode SortMode { PanelSortMode get(); void set(PanelSortMode value); }
 	virtual property PanelType Type { PanelType get(); }
-	virtual property PanelViewMode ViewMode { PanelViewMode get(); }
+	virtual property PanelViewMode ViewMode { PanelViewMode get(); void set(PanelViewMode value); }
+	virtual property Place Window { Place get(); }
 	virtual property Point Frame { Point get(); }
 	virtual property String^ Path { String^ get(); void set(String^ value); }
 public:
@@ -141,12 +142,12 @@ public:
 	}
 	virtual property PanelSortMode StartSortMode
 	{
-		PanelSortMode get() { return (PanelSortMode)(m->StartSortMode - 0x30); }
+		PanelSortMode get() { return (PanelSortMode)(m->StartSortMode); }
 		void set(PanelSortMode value) { m->StartSortMode = (int)value; }
 	}
 	virtual property PanelViewMode StartViewMode
 	{
-		PanelViewMode get() { return (PanelViewMode)m->StartPanelMode; }
+		PanelViewMode get() { return (PanelViewMode)(m->StartPanelMode - 0x30); }
 		void set(PanelViewMode value) { m->StartPanelMode = (int)value + 0x30; }
 	}
 private:
@@ -170,7 +171,7 @@ public: // IPanelPlugin
 	virtual property Object^ Data;
 	virtual property Object^ Host;
 	virtual void Open();
-	virtual void Open(IPanelPlugin^ oldPanelPlugin);
+	virtual void Open(IPanelPlugin^ oldPanel);
 public: DEF_EVENT(GettingInfo, _GettingInfo);
 public: DEF_EVENT(Closed, _Closed);
 public: DEF_EVENT(CtrlBreakPressed, _CtrlBreakPressed);
@@ -187,8 +188,8 @@ public: DEF_EVENT_ARGS(Redrawing, _Redrawing, PanelEventArgs);
 public: DEF_EVENT_ARGS(SettingDirectory, _SettingDirectory, SettingDirectoryEventArgs);
 public: DEF_EVENT_ARGS(ViewModeChanged, _ViewModeChanged, ViewModeChangedEventArgs);
 internal:
-	FarPanelPlugin() : FarPanel(true)
-	{}
+	FarPanelPlugin() : FarPanel(true) {}
+	void AssertOpen();
 private:
 	FarPanelPluginInfo _info;
 	List<IFile^> _files;

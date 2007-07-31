@@ -64,6 +64,17 @@ String^ Far::PluginFolderPath::get()
 	return (gcnew FileInfo(pluginPath))->DirectoryName;
 }
 
+String^ Far::RootFar::get()
+{
+	String^ key = RootKey;
+	return key->Substring(0, key->LastIndexOf('\\'));
+}
+
+String^ Far::RootKey::get()
+{
+	return OemToStr(Info.RootKey);
+}
+
 void Far::RegisterPrefix(String^ prefix, StringDelegate^ handler)
 {
 	_registeredPrefixes->Add(prefix, handler);
@@ -183,6 +194,11 @@ String^ Far::WordDiv::get()
 	CStr wd(length);
 	Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, wd);
 	return OemToStr(wd);
+}
+
+OpenFrom Far::From::get()
+{
+	return _from;
 }
 
 String^ Far::Clipboard::get()
@@ -381,7 +397,7 @@ void Far::FreeMenuStrings()
 
 void Far::ProcessPrefixes(int Item)
 {
-	char* commandLine = (char* )Item;
+	char* commandLine = (char*)Item;
 	Run(OemToStr(commandLine));
 }
 
@@ -414,11 +430,11 @@ void Far::SetUserScreen()
 
 ICollection<String^>^ Far::GetHistory(String^ name)
 {
-	String^ keyName = "Software\\Far\\" + name;
+	String^ keyName = RootFar + "\\" + name;
 	CStr sKeyName(keyName);
 
 	HKEY hk;
-	LONG lResult = ::RegOpenKeyEx(HKEY_CURRENT_USER, sKeyName, 0, KEY_WRITE|KEY_READ, &hk);
+	LONG lResult = ::RegOpenKeyEx(HKEY_CURRENT_USER, sKeyName, 0, KEY_READ, &hk);
 	if (lResult != ERROR_SUCCESS)
 		throw gcnew OperationCanceledException();
 
@@ -538,27 +554,61 @@ IPanelPlugin^ Far::CreatePanelPlugin()
 	return gcnew FarPanelPlugin();
 }
 
-void Far::ReplacePanelPlugin(FarPanelPlugin^ oldPanelPlugin, FarPanelPlugin^ newPanelPlugin)
+void Far::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel)
 {
 	// check
-	if (!oldPanelPlugin)
-		throw gcnew ArgumentNullException("oldPanelPlugin");
-	if (!newPanelPlugin)
-		throw gcnew ArgumentNullException("newPanelPlugin");
+	if (!oldPanel)
+		throw gcnew ArgumentNullException("oldPanel");
+	if (!newPanel)
+		throw gcnew ArgumentNullException("newPanel");
 
-	FarPanelPlugin^ pp1 = (FarPanelPlugin^)oldPanelPlugin;
-	int id1 = pp1->Id;
+	int id1 = oldPanel->Id;
 	if (id1 < 1)
 		throw gcnew InvalidOperationException("Old panel plugin must be opened.");
 
-	FarPanelPlugin^ pp2 = (FarPanelPlugin^)newPanelPlugin;
-	if (pp2->Id >= 1)
+	if (newPanel->Id >= 1)
 		throw gcnew InvalidOperationException("New panel plugin must not be opened.");
 
-	// unregister old, register new
-	pp1->Id = 0;
-	_panels[id1] = pp2;
-	pp2->Id = id1;
+	// save old modes
+	oldPanel->Info->StartSortDesc = oldPanel->ReverseSortOrder;
+	oldPanel->Info->StartSortMode = oldPanel->SortMode;
+	oldPanel->Info->StartViewMode = oldPanel->ViewMode;
+
+	// disconnect old panel
+	oldPanel->Id = 0;
+
+	// change panel modes
+	if (newPanel->Info->StartViewMode != PanelViewMode::Undefined &&
+		newPanel->Info->StartViewMode != oldPanel->Info->StartViewMode ||
+		newPanel->Info->StartSortMode != PanelSortMode::Default && (
+		newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode ||
+		newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc))
+	{
+		// connect tmp panel with no data
+		FarPanelPlugin tmpPanel;
+		_panels[id1] = %tmpPanel;
+		tmpPanel.Id = id1;
+		tmpPanel.Update(false);
+
+		// set new modes
+		if (newPanel->Info->StartViewMode != PanelViewMode::Undefined && newPanel->Info->StartViewMode != oldPanel->Info->StartViewMode)
+			tmpPanel.ViewMode = newPanel->Info->StartViewMode;
+		if (newPanel->Info->StartSortMode != PanelSortMode::Default)
+		{
+			if (newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode)
+				tmpPanel.SortMode = newPanel->Info->StartSortMode;
+			if (newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc)
+				tmpPanel.ReverseSortOrder = newPanel->Info->StartSortDesc;
+		}
+	}
+
+	// connect new panel
+	_panels[id1] = newPanel;
+	newPanel->Id = id1;
+
+	//! switch to new data and redraw
+	newPanel->Update(false);
+	newPanel->Redraw(0, 0);
 }
 
 IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
@@ -673,6 +723,9 @@ HANDLE Far::AsOpenPlugin(int from, int item)
 {
 	try
 	{
+		// where from
+		_from = (OpenFrom)from;
+
 		// call, plugin may create a panel waiting for opening
 		if (from == OPEN_COMMANDLINE)
 		{
@@ -708,6 +761,7 @@ HANDLE Far::AsOpenPlugin(int from, int item)
 	{
 		// drop waiting and set lock
 		_panels[0] = nullptr;
+		_from = OpenFrom::Other;
 		_canOpenPanelPlugin = false;
 	}
 }
@@ -824,8 +878,9 @@ int Far::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 
 int Far::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
+	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
 	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
-	if (!plugin->_KeyPressed)
+	if (!plugin || !plugin->_KeyPressed)
 		return FALSE;
 
 	PanelKeyEventArgs e((key & ~PKF_PREPROCESS), (KeyStates)controlState, (key & PKF_PREPROCESS) != 0);
@@ -850,6 +905,7 @@ int Far::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		}
 		break;
 	case FE_CLOSE:
+		//? workaround is needed: unwanted extra call before plugin commands
 		if (plugin->_Closing)
 		{
 			PanelEventArgs e(OperationModes::None);

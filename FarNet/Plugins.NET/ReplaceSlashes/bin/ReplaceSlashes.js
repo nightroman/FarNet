@@ -1,14 +1,14 @@
 import FarManager;
 public class ReplaceSlashes extends BasePlugin{
-	var menuItem:IPluginMenuItem;	
+	var menuItem:IPluginMenuItem;
 		function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
 			if(e.From==OpenFrom.Editor)
-				Far.Editor.Selection.Text=
-					Far.Editor.Selection.Text.replace(/\\/ig, "\\\\");
+				Far.Editor.Selection.SetText(
+					Far.Editor.Selection.GetText().replace(/\\/ig, "\\\\"));
 			else
 				Far.Msg("It works only under editor");
-		}		
-		function Connect(){			
+		}
+		function Connect(){
 			this.menuItem=Far.CreatePluginsMenuItem();
 			this.menuItem.Name="Replace slashes";
 			this.menuItem.add_OnOpen(this.item_OnOpen);
