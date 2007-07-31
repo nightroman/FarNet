@@ -9,7 +9,7 @@ namespace FarManagerImpl
 {;
 ref class FarCommandLine : ILine
 {
-public: // ILine
+public:
 	virtual property ILine^ FullLine { ILine^ get(); }
 	virtual property ILineSelection^ Selection { ILineSelection^ get(); }
 	virtual property int Length { int get(); }

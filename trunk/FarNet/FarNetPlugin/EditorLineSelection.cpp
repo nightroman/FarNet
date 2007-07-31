@@ -4,17 +4,17 @@ Copyright (c) 2005-2007 Far.NET Team
 */
 
 #include "StdAfx.h"
-#include "VisibleEditorLineSelection.h"
+#include "EditorLineSelection.h"
 #include "Utils.h"
 
 namespace FarManagerImpl
 {;
-VisibleEditorLineSelection::VisibleEditorLineSelection(int no)
+EditorLineSelection::EditorLineSelection(int no)
 : _no(no)
 {
 }
 
-String^ VisibleEditorLineSelection::Text::get()
+String^ EditorLineSelection::Text::get()
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	if (egs.SelStart < 0)
@@ -25,7 +25,7 @@ String^ VisibleEditorLineSelection::Text::get()
 	return FromEditor(egs.StringText + egs.SelStart, egs.SelEnd - egs.SelStart);
 }
 
-void VisibleEditorLineSelection::Text::set(String^ value)
+void EditorLineSelection::Text::set(String^ value)
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	if (egs.SelStart < 0)
@@ -64,13 +64,13 @@ void VisibleEditorLineSelection::Text::set(String^ value)
 	}
 }
 
-int VisibleEditorLineSelection::End::get()
+int EditorLineSelection::End::get()
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	return egs.SelStart < 0 ? -2 : egs.SelEnd;
 }
 
-int VisibleEditorLineSelection::Length::get()
+int EditorLineSelection::Length::get()
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	if (egs.SelStart < 0)
@@ -80,13 +80,13 @@ int VisibleEditorLineSelection::Length::get()
 	return egs.SelEnd - egs.SelStart;
 }
 
-int VisibleEditorLineSelection::Start::get()
+int EditorLineSelection::Start::get()
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	return egs.SelStart;
 }
 
-String^ VisibleEditorLineSelection::ToString()
+String^ EditorLineSelection::ToString()
 {
 	return Text;
 }

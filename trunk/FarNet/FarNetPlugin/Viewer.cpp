@@ -20,7 +20,7 @@ Viewer::Viewer()
 
 void Viewer::Open()
 {
-	EnsureClosed();
+	AssertClosed();
 
 	CStr sFileName(_fileName);
 	CStr sTitle(_title);
@@ -42,7 +42,7 @@ bool Viewer::Async::get()
 
 void Viewer::Async::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	SET_BIT(_flags, value, VF_IMMEDIATERETURN);
 }
 
@@ -53,7 +53,7 @@ bool Viewer::DeleteOnClose::get()
 
 void Viewer::DeleteOnClose::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	SET_BIT(_flags, value, VF_DELETEONCLOSE);
 }
 
@@ -64,7 +64,7 @@ bool Viewer::DeleteOnlyFileOnClose::get()
 
 void Viewer::DeleteOnlyFileOnClose::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	SET_BIT(_flags, value, VF_DELETEONLYFILEONCLOSE);
 }
 
@@ -75,7 +75,7 @@ bool Viewer::EnableSwitch::get()
 
 void Viewer::EnableSwitch::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	SET_BIT(_flags, value, VF_ENABLE_F6);
 }
 
@@ -86,7 +86,7 @@ bool Viewer::DisableHistory::get()
 
 void Viewer::DisableHistory::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	SET_BIT(_flags, value, VF_DISABLEHISTORY);
 }
 
@@ -97,7 +97,7 @@ bool Viewer::IsModal::get()
 
 void Viewer::IsModal::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	value = !value;
 	SET_BIT(_flags, value, VF_NONMODAL);
 }
@@ -114,7 +114,7 @@ String^ Viewer::FileName::get()
 
 void Viewer::FileName::set(String^ value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_fileName = value;
 }
 
@@ -125,7 +125,7 @@ String^ Viewer::Title::get()
 
 void Viewer::Title::set(String^ value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_title = value;
 }
 
@@ -141,10 +141,9 @@ void Viewer::Window::set(Place value)
 	_window = value;
 }
 
-void Viewer::EnsureClosed()
+void Viewer::AssertClosed()
 {
-	if (IsOpened)
-		throw gcnew InvalidOperationException("Viewer must not be open for this operation.");
+	if (IsOpened) throw gcnew InvalidOperationException("Viewer must not be open for this operation.");
 }
 
 void Viewer::GetParams()
@@ -156,4 +155,5 @@ void Viewer::GetParams()
 	_window.Height = vi.WindowSizeY;
 	_fileName = OemToStr(vi.FileName);
 }
+
 }

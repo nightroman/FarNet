@@ -85,6 +85,15 @@ int FarPanel::TopIndex::get()
 	return pi.ItemsNumber ? pi.TopPanelItem : -1;
 }
 
+Place FarPanel::Window::get()
+{
+	PanelInfo pi; GetBrief(pi);
+	Place r;
+	r.Left = pi.PanelRect.left; r.Top = pi.PanelRect.top;
+	r.Right = pi.PanelRect.right; r.Bottom = pi.PanelRect.bottom;
+	return r;
+}
+
 Point FarPanel::Frame::get()
 {
 	PanelInfo pi; GetBrief(pi);
@@ -97,10 +106,24 @@ PanelSortMode FarPanel::SortMode::get()
 	return (PanelSortMode)pi.SortMode;
 }
 
+void FarPanel::SortMode::set(PanelSortMode value)
+{
+	int command = _active ? FCTL_SETSORTMODE : FCTL_SETANOTHERSORTMODE;
+	int mode = (int)value;
+	Info.Control(_id, command, &mode);
+}
+
 PanelViewMode FarPanel::ViewMode::get()
 {
 	PanelInfo pi; GetBrief(pi);
 	return (PanelViewMode)pi.ViewMode;
+}
+
+void FarPanel::ViewMode::set(PanelViewMode value)
+{
+	int command = _active ? FCTL_SETVIEWMODE : FCTL_SETANOTHERVIEWMODE;
+	int mode = (int)value;
+	Info.Control(_id, command, &mode);
 }
 
 String^ FarPanel::Path::get()
@@ -220,6 +243,13 @@ bool FarPanel::ReverseSortOrder::get()
 	return (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
 }
 
+void FarPanel::ReverseSortOrder::set(bool value)
+{
+	int command = _active ? FCTL_SETSORTORDER : FCTL_SETANOTHERSORTORDER;
+	int mode = (int)value;
+	Info.Control(_id, command, &mode);
+}
+
 bool FarPanel::UseSortGroups::get()
 {
 	PanelInfo pi; GetBrief(pi);
@@ -236,6 +266,13 @@ bool FarPanel::NumericSort::get()
 {
 	PanelInfo pi; GetBrief(pi);
 	return (pi.Flags & PFLAGS_NUMERICSORT) != 0;
+}
+
+void FarPanel::NumericSort::set(bool value)
+{
+	int command = _active ? FCTL_SETNUMERICSORT : FCTL_SETANOTHERNUMERICSORT;
+	int mode = (int)value;
+	Info.Control(_id, command, &mode);
 }
 
 bool FarPanel::RealNames::get()
@@ -300,8 +337,6 @@ DEF_FLAG(UseSortGroups, OPIF_USESORTGROUPS);
 #define DEF_STRING(Prop, Field)\
 String^ FarPanelPluginInfo::Prop::get()\
 {\
-	if (!m->Field || !m->Field[0])\
-		return nullptr;\
 	return OemToStr(m->Field);\
 }\
 void FarPanelPluginInfo::Prop::set(String^ value)\
@@ -325,6 +360,11 @@ DEF_STRING(Title, PanelTitle);
 //::FarPanelPlugin::
 //
 
+void FarPanelPlugin::AssertOpen()
+{
+	if (Id <= 0) throw gcnew InvalidOperationException("Panel plugin is not opened.");
+}
+
 bool FarPanelPlugin::IsOpened::get()
 {
 	return Id > 0;
@@ -342,6 +382,7 @@ bool FarPanelPlugin::IsPlugin::get()
 
 IFile^ FarPanelPlugin::Current::get()
 {
+	AssertOpen();
 	PanelInfo pi; GetInfo(pi);
 	if (pi.ItemsNumber == 0 || _info.AddDots && pi.CurrentItem == 0)
 		return nullptr;
@@ -350,6 +391,7 @@ IFile^ FarPanelPlugin::Current::get()
 
 IList<IFile^>^ FarPanelPlugin::Contents::get()
 {
+	AssertOpen();
 	List<IFile^>^ r = gcnew List<IFile^>();
 	PanelInfo pi; GetInfo(pi);
 	for(int i = (_info.AddDots ? 1 : 0); i < pi.ItemsNumber; ++i)
@@ -359,6 +401,7 @@ IList<IFile^>^ FarPanelPlugin::Contents::get()
 
 IList<IFile^>^ FarPanelPlugin::Selected::get()
 {
+	AssertOpen();
 	List<IFile^>^ r = gcnew List<IFile^>();
 	PanelInfo pi; GetInfo(pi);
 	for(int i = (_info.AddDots ? 1 : 0); i < pi.ItemsNumber; ++i)
@@ -371,6 +414,7 @@ IList<IFile^>^ FarPanelPlugin::Selected::get()
 
 IList<IFile^>^ FarPanelPlugin::Targeted::get()
 {
+	AssertOpen();
 	List<IFile^>^ r = gcnew List<IFile^>();
 	PanelInfo pi; GetInfo(pi);
 	for(int i = 0; i < pi.ItemsNumber; ++i)
@@ -420,10 +464,11 @@ void FarPanelPlugin::Open()
 	GetFar()->OpenPanelPlugin(this);
 }
 
-void FarPanelPlugin::Open(IPanelPlugin^ oldPanelPlugin)
+void FarPanelPlugin::Open(IPanelPlugin^ oldPanel)
 {
-	if (!oldPanelPlugin)
-		throw gcnew ArgumentNullException("oldPanelPlugin");
-	GetFar()->ReplacePanelPlugin((FarPanelPlugin^)oldPanelPlugin, this);
+	if (!oldPanel)
+		throw gcnew ArgumentNullException("oldPanel");
+	GetFar()->ReplacePanelPlugin((FarPanelPlugin^)oldPanel, this);
 }
+
 }

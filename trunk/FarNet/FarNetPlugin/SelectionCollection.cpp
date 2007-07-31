@@ -6,19 +6,15 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "StdAfx.h"
 #include "SelectionCollection.h"
 #include "Utils.h"
-#include "VisibleEditorLine.h"
+#include "EditorLine.h"
 
 namespace FarManagerImpl
 {;
-SelectionCollection::SelectionCollection(IEditor^ editor)
+SelectionCollection::SelectionCollection(IEditor^ editor, bool trueLines)
 : _editor(editor)
+, _trueLines(trueLines)
 {
 	_strings = gcnew EditorStringCollection(this, true);
-}
-
-bool SelectionCollection::Contains(ILine^)
-{
-	throw gcnew NotSupportedException();
 }
 
 IEnumerator<ILine^>^ SelectionCollection::GetEnumerator()
@@ -32,11 +28,6 @@ IEnumerator<ILine^>^ SelectionCollection::GetEnumerator()
 Collections::IEnumerator^ SelectionCollection::GetEnumeratorObject()
 {
 	return GetEnumerator();
-}
-
-int SelectionCollection::IndexOf(ILine^)
-{
-	throw gcnew NotSupportedException();
 }
 
 bool SelectionCollection::Exists::get()
@@ -69,14 +60,6 @@ ILine^ SelectionCollection::Last::get()
 	return Item[Count - 1];
 }
 
-int SelectionCollection::Count::get()
-{
-	Place ss = SelectionPlace();
-	if (ss.Top < 0)
-		return 0;
-	return ss.Height;
-}
-
 Place SelectionCollection::Shape::get()
 {
 	return SelectionPlace();
@@ -92,12 +75,7 @@ ILine^ SelectionCollection::Item::get(int index)
 	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
 	if (ei.BlockType == BTYPE_NONE)
 		throw gcnew InvalidOperationException();
-	return gcnew VisibleEditorLine(index + ei.BlockStartLine, true);
-}
-
-void SelectionCollection::Item::set(int, ILine^)
-{
-	throw gcnew NotSupportedException();
+	return gcnew EditorLine(index + ei.BlockStartLine, true);
 }
 
 Object^ SelectionCollection::SyncRoot::get()
@@ -105,55 +83,10 @@ Object^ SelectionCollection::SyncRoot::get()
 	return this;
 }
 
-String^ SelectionCollection::Text::get()
-{
-	return _strings->Text;
-}
-
 SelectionType SelectionCollection::Type::get()
 {
 	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
 	return (SelectionType)ei.BlockType;
-}
-
-void SelectionCollection::Text::set(String^ value)
-{
-	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
-	if (ei.BlockType == BTYPE_NONE)
-		throw gcnew InvalidOperationException("No selection shape");
-
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.BlockStartLine);
-	if (ei.BlockType == BTYPE_COLUMN && egs.SelEnd < 0)
-		throw gcnew InvalidOperationException("Can't process this selection shape");
-
-	// delete selection
-	int top = ei.BlockStartLine;
-	int left = egs.SelStart;
-	Clear();
-
-	// move cursor to the selection start
-	_editor->GoTo(left, top);
-
-	// change overtype
-	if (ei.Overtype)
-		_editor->Overtype = false;
-
-	// insert
-	CStr sb(value->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r'));
-	Info.EditorControl(ECTL_INSERTTEXT, sb);
-
-	// restore overtype
-	if (ei.Overtype)
-		_editor->Overtype = true;
-
-	// select inserted
-	EditorControl_ECTL_GETINFO(ei);
-	Select(SelectionType::Stream, left, top, ei.CurPos - 1, ei.CurLine);
-}
-
-void SelectionCollection::Add(ILine^)
-{
-	throw gcnew NotSupportedException();
 }
 
 void SelectionCollection::Add(String^ item)
@@ -164,17 +97,7 @@ void SelectionCollection::Add(String^ item)
 
 void SelectionCollection::Clear()
 {
-	Info.EditorControl(ECTL_DELETEBLOCK, 0);
-}
-
-void SelectionCollection::CopyTo(array<ILine^>^, int)
-{
-	throw gcnew NotSupportedException();
-}
-
-void SelectionCollection::Insert(int, ILine^)
-{
-	throw gcnew NotSupportedException();
+	EditorControl_ECTL_DELETEBLOCK();
 }
 
 void SelectionCollection::Insert(int index, String^ item)
@@ -190,22 +113,15 @@ void SelectionCollection::Insert(int index, String^ item)
 	// case: first
 	if (index == 0)
 	{
-		// case: first incomplete
-		if (egss.SelStart > 0)
-		{
-			// TODO tweak
-			Text = item + CV::CR + Text;
-			return;
-		}
-
-		// case: first complete
-		_editor->Lines->Insert(ei.BlockStartLine, item);
+		// NB: both cases: first incomplete\complete
+		_editor->GoTo(egss.SelStart, ei.BlockStartLine);
+		EditorControl_ECTL_INSERTTEXT(item + CV::CR, ei.Overtype);
 		return;
 	}
 
 	// correct negative index
 	if (index < 0)
-		index = Count; //TODO tweak
+		index = Count;
 
 	// prior to insertion line
 	int ip = ei.BlockStartLine + index - 1;
@@ -219,40 +135,24 @@ void SelectionCollection::Insert(int index, String^ item)
 	}
 
 	// case: add (prior is actually the last)
-	item = item->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r');
 	_editor->GoTo(egsp.SelEnd, ip);
-
-	// change overtype
-	if (ei.Overtype)
-		_editor->Overtype = false;
 
 	if (egsp.SelEnd == 0)
 	{
 		// ELL case
-		CStr sb(item + CV::CR);
-		Info.EditorControl(ECTL_INSERTTEXT, sb);
+		EditorControl_ECTL_INSERTTEXT(item + CV::CR, ei.Overtype);
 	}
 	else
 	{
 		// not ELL case
-		Info.EditorControl(ECTL_INSERTSTRING, 0);
-		Info.EditorControl(ECTL_DELETECHAR, 0);
-		CStr sb(item);
-		Info.EditorControl(ECTL_INSERTTEXT, sb);
+		EditorControl_ECTL_INSERTSTRING(false);
+		EditorControl_ECTL_DELETECHAR();
+		EditorControl_ECTL_INSERTTEXT(item, ei.Overtype);
 	}
-
-	// restore overtype
-	if (ei.Overtype)
-		_editor->Overtype = true;
 
 	// select inserted
 	EditorInfo ei2; EditorControl_ECTL_GETINFO(ei2);
 	Select(SelectionType::Stream, egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine);
-}
-
-bool SelectionCollection::Remove(ILine^)
-{
-	throw gcnew NotSupportedException();
 }
 
 void SelectionCollection::RemoveAt(int index)
@@ -367,5 +267,85 @@ void SelectionCollection::Unselect()
 	EditorSelect es;
 	es.BlockType = BTYPE_NONE;
 	EditorControl_ECTL_SELECT(es);
+}
+
+int SelectionCollection::Count::get()
+{
+	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
+	if (ei.BlockType == BTYPE_NONE)
+		return 0;
+
+	int r = 0;
+	EditorGetString egs;
+	for(egs.StringNumber = ei.BlockStartLine; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
+	{
+		EditorControl_ECTL_GETSTRING(egs, egs.StringNumber);
+		if (egs.SelStart < 0)
+			break;
+		if (egs.SelEnd == 0)
+		{
+			if (!_trueLines)
+				++r;
+			break;
+		}
+		++r;
+	}
+	return r;
+}
+
+String^ SelectionCollection::GetText(String^ separator)
+{
+	StringBuilder sb;
+
+	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
+	if (ei.BlockType == BTYPE_NONE)
+		return String::Empty;
+
+	if (separator == nullptr)
+		separator = CV::CRLF;
+
+	EditorGetString egs; egs.StringNumber = -1;
+    SEditorSetPosition esp;
+	for(esp.CurLine = ei.BlockStartLine; esp.CurLine < ei.TotalLines; ++esp.CurLine)
+    {
+        EditorControl_ECTL_SETPOSITION(esp);
+        Info.EditorControl(ECTL_GETSTRING, &egs);
+		if (egs.SelStart < 0)
+			break;
+		if (esp.CurLine > ei.BlockStartLine)
+			sb.Append(separator);
+		int len = (egs.SelEnd < 0 ? egs.StringLength : egs.SelEnd) - egs.SelStart;
+		if (len > 0)
+			sb.Append(FromEditor(egs.StringText + egs.SelStart, len));
+    }
+	Edit_RestoreEditorInfo(ei);
+
+	return sb.ToString();
+}
+
+void SelectionCollection::SetText(String^ text)
+{
+	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
+	if (ei.BlockType == BTYPE_NONE)
+		throw gcnew InvalidOperationException("No selection shape");
+
+	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.BlockStartLine);
+	if (ei.BlockType == BTYPE_COLUMN && egs.SelEnd < 0)
+		throw gcnew InvalidOperationException("Can't process this selection shape.");
+
+	// delete selection
+	int top = ei.BlockStartLine;
+	int left = egs.SelStart;
+	Clear();
+
+	// move cursor to the selection start
+	_editor->GoTo(left, top);
+
+	// insert
+	EditorControl_ECTL_INSERTTEXT(text, ei.Overtype);
+
+	// select inserted
+	EditorControl_ECTL_GETINFO(ei);
+	Select(SelectionType::Stream, left, top, ei.CurPos - 1, ei.CurLine);
 }
 }

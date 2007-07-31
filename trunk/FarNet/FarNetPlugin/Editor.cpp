@@ -7,8 +7,8 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "Editor.h"
 #include "EditorManager.h"
 #include "SelectionCollection.h"
-#include "VisibleEditorLine.h"
-#include "VisibleEditorLineCollection.h"
+#include "EditorLine.h"
+#include "EditorLineCollection.h"
 
 namespace FarManagerImpl
 {;
@@ -16,14 +16,13 @@ Editor::Editor(EditorManager^ manager)
 : _manager(manager)
 , _id(-1)
 , _title(String::Empty)
-, _lines(gcnew VisibleEditorLineCollection())
 , _frameStart(-1)
 {
 }
 
 void Editor::Open()
 {
-	EnsureClosed();
+	AssertClosed();
 
 	// strings
 	CStr sFileName(_fileName);
@@ -49,7 +48,7 @@ void Editor::Open()
 
 void Editor::Close()
 {
-	EnsureCurrent();
+	AssertCurrent();
 	if (!Info.EditorControl(ECTL_QUIT, 0))
 		throw gcnew OperationCanceledException();
 }
@@ -61,7 +60,7 @@ bool Editor::Async::get()
 
 void Editor::Async::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_async = value;
 }
 
@@ -72,7 +71,7 @@ bool Editor::DeleteOnClose::get()
 
 void Editor::DeleteOnClose::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_deleteOnClose = value;
 }
 
@@ -83,7 +82,7 @@ bool Editor::DeleteOnlyFileOnClose::get()
 
 void Editor::DeleteOnlyFileOnClose::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_deleteOnlyFileOnClose = value;
 }
 
@@ -94,7 +93,7 @@ bool Editor::EnableSwitch::get()
 
 void Editor::EnableSwitch::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_enableSwitch = value;
 }
 
@@ -105,7 +104,7 @@ bool Editor::DisableHistory::get()
 
 void Editor::DisableHistory::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_disableHistory = value;
 }
 
@@ -113,7 +112,7 @@ bool Editor::IsEnd::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 	return ei.CurLine == ei.TotalLines - 1;
 }
 
@@ -121,7 +120,7 @@ bool Editor::IsLocked::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 	return (ei.CurState & ECSTATE_LOCKED) != 0;
 }
 
@@ -132,7 +131,7 @@ bool Editor::IsModal::get()
 
 void Editor::IsModal::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_isModal = value;
 }
 
@@ -140,7 +139,7 @@ bool Editor::IsModified::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 	return (ei.CurState & ECSTATE_MODIFIED) != 0;
 }
 
@@ -151,7 +150,7 @@ bool Editor::IsNew::get()
 
 void Editor::IsNew::set(bool value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_isNew = value;
 }
 
@@ -164,7 +163,7 @@ bool Editor::IsSaved::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 	return (ei.CurState & ECSTATE_SAVED) != 0;
 }
 
@@ -172,15 +171,13 @@ bool Editor::Overtype::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 	return ei.Overtype == 1;
 }
 
 void Editor::Overtype::set(bool value)
 {
-	SEditorSetPosition esp;
-	esp.Overtype = value;
-	EditorControl_ECTL_SETPOSITION(esp);
+	Edit_SetOvertype(value);
 }
 
 ExpandTabsMode Editor::ExpandTabs::get()
@@ -188,7 +185,7 @@ ExpandTabsMode Editor::ExpandTabs::get()
 	if (!IsOpened)
 		return ExpandTabsMode::None;
 
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 	if (ei.Options & EOPT_EXPANDALLTABS)
 		return ExpandTabsMode::All;
 	if (ei.Options & EOPT_EXPANDONLYNEWTABS)
@@ -198,25 +195,32 @@ ExpandTabsMode Editor::ExpandTabs::get()
 
 void Editor::ExpandTabs::set(ExpandTabsMode value)
 {
-	EnsureCurrent();
+	AssertCurrent();
 	EditorSetParameter esp;
 	esp.Type = ESPT_EXPANDTABS;
 	esp.Param.iParam = (int)value;
-	Info.EditorControl(ECTL_SETPARAM, &esp);
+	EditorControl_ECTL_SETPARAM(esp);
 }
 
 ILine^ Editor::CurrentLine::get()
 {
 	if (!IsOpened)
 		return nullptr;
-	return gcnew VisibleEditorLine(-1, false);
+	return gcnew EditorLine(-1, false);
 }
 
 ILines^ Editor::Lines::get()
 {
 	if (!IsOpened)
 		return nullptr;
-	return _lines;
+	return gcnew EditorLineCollection(false);
+}
+
+ILines^ Editor::TrueLines::get()
+{
+	if (!IsOpened)
+		return nullptr;
+	return gcnew EditorLineCollection(true);
 }
 
 int Editor::Id::get()
@@ -233,19 +237,18 @@ int Editor::TabSize::get()
 {
 	if (!IsOpened)
 		return 0;
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 	return ei.TabSize;
 }
 
 void Editor::TabSize::set(int value)
 {
-	if (value <= 0)
-		throw gcnew ArgumentException("value");
-	EnsureCurrent();
+	if (value <= 0) throw gcnew ArgumentException("'value' must be positive.");
+	AssertCurrent();
 	EditorSetParameter esp;
 	esp.Type = ESPT_TABSIZE;
 	esp.Param.iParam = value;
-	Info.EditorControl(ECTL_SETPARAM, &esp);
+	EditorControl_ECTL_SETPARAM(esp);
 }
 
 String^ Editor::FileName::get()
@@ -255,7 +258,7 @@ String^ Editor::FileName::get()
 
 void Editor::FileName::set(String^ value)
 {
-	EnsureClosed();
+	AssertClosed();
 	_fileName = value;
 }
 
@@ -268,7 +271,7 @@ void Editor::Title::set(String^ value)
 {
 	if (IsOpened)
 	{
-		EnsureCurrent();
+		AssertCurrent();
 		CStr sValue(value);
 		Info.EditorControl(ECTL_SETTITLE, sValue);
 	}
@@ -289,7 +292,14 @@ ISelection^ Editor::Selection::get()
 {
 	if (!IsOpened)
 		return nullptr;
-	return gcnew SelectionCollection(this);
+	return gcnew SelectionCollection(this, false);
+}
+
+ISelection^ Editor::TrueSelection::get()
+{
+	if (!IsOpened)
+		return nullptr;
+	return gcnew SelectionCollection(this, true);
 }
 
 Point Editor::Cursor::get()
@@ -300,32 +310,31 @@ Point Editor::Cursor::get()
 
 void Editor::Insert(String^ text)
 {
-	EnsureCurrent();
-	CStr sb(text->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r'));
-	Info.EditorControl(ECTL_INSERTTEXT, sb);
+	AssertCurrent();
+	EditorControl_ECTL_INSERTTEXT(text, -1);
 }
 
 void Editor::Redraw()
 {
-	EnsureCurrent();
+	AssertCurrent();
 	Info.EditorControl(ECTL_REDRAW, 0);
 }
 
 void Editor::DeleteChar()
 {
-	EnsureCurrent();
-	Info.EditorControl(ECTL_DELETECHAR, 0);
+	AssertCurrent();
+	EditorControl_ECTL_DELETECHAR();
 }
 
 void Editor::DeleteLine()
 {
-	EnsureCurrent();
-	Info.EditorControl(ECTL_DELETESTRING, 0);
+	AssertCurrent();
+	EditorControl_ECTL_DELETESTRING();
 }
 
 void Editor::Save()
 {
-	EnsureCurrent();
+	AssertCurrent();
 	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
 		throw gcnew OperationCanceledException("Can't save the editor file.");
 }
@@ -334,7 +343,7 @@ void Editor::Save(String^ fileName)
 {
 	if (fileName == nullptr)
 		return Save();
-	EnsureCurrent();
+	AssertCurrent();
 	CStr sFileName(fileName);
 	EditorSaveFile esf;
 	memset(&esf, 0, NM);
@@ -351,9 +360,8 @@ void Editor::InsertLine()
 
 void Editor::InsertLine(bool indent)
 {
-	EnsureCurrent();
-	int v = indent;
-	Info.EditorControl(ECTL_INSERTSTRING, &v);
+	AssertCurrent();
+	EditorControl_ECTL_INSERTSTRING(indent);
 }
 
 int Editor::Flags()
@@ -376,27 +384,23 @@ int Editor::Flags()
 	return r;
 }
 
-void Editor::EnsureClosed()
+void Editor::AssertClosed()
 {
-	if (IsOpened)
-		throw gcnew InvalidOperationException("Editor must not be open for this operation.");
+	if (IsOpened) throw gcnew InvalidOperationException("Editor must not be open for this operation.");
 }
 
-void Editor::EnsureCurrent()
+void Editor::AssertCurrent()
 {
 	EditorInfo ei;
-	EnsureCurrent(ei);
+	AssertCurrent(ei);
 }
 
-void Editor::EnsureCurrent(EditorInfo& ei)
+void Editor::AssertCurrent(EditorInfo& ei)
 {
-	if (!IsOpened)
-		throw gcnew InvalidOperationException("Editor must be open for this operation.");
+	if (!IsOpened) throw gcnew InvalidOperationException("Editor must be open for this operation.");
 	EditorControl_ECTL_GETINFO(ei, true);
-	if (ei.EditorID < 0)
-		throw gcnew InvalidOperationException("This operation is only for current editor.");
-	if (ei.EditorID != _id)
-		throw gcnew InvalidOperationException("This editor must be current for this operation.");
+	if (ei.EditorID < 0) throw gcnew InvalidOperationException("This operation is only for current editor.");
+	if (ei.EditorID != _id) throw gcnew InvalidOperationException("This editor must be current for this operation.");
 }
 
 void Editor::GetParams()
@@ -413,12 +417,12 @@ String^ Editor::WordDiv::get()
 {
 	if (!IsOpened)
 		return String::Empty;
-	EnsureCurrent();
+	AssertCurrent();
 	EditorSetParameter esp;
 	esp.Type = ESPT_GETWORDDIV;
 	char s[257];
 	esp.Param.cParam = s;
-	Info.EditorControl(ECTL_SETPARAM, &esp);
+	EditorControl_ECTL_SETPARAM(esp);
 	return OemToStr(s);
 }
 
@@ -426,12 +430,12 @@ void Editor::WordDiv::set(String^ value)
 {
 	if (value == nullptr)
 		throw gcnew ArgumentNullException("value");
-	EnsureCurrent();
+	AssertCurrent();
 	EditorSetParameter esp;
 	CStr sValue(value);
 	esp.Type = ESPT_SETWORDDIV;
 	esp.Param.cParam = sValue;
-	Info.EditorControl(ECTL_SETPARAM, &esp);
+	EditorControl_ECTL_SETPARAM(esp);
 }
 
 TextFrame Editor::Frame::get()
@@ -480,7 +484,7 @@ void Editor::Frame::set(TextFrame value)
 
 ICollection<TextFrame>^ Editor::Bookmarks()
 {
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 
 	List<TextFrame>^ r = gcnew List<TextFrame>();
 	if (ei.BookMarkCount > 0)
@@ -583,7 +587,7 @@ void Editor::GoToPos(int pos)
 
 void Editor::GoEnd(bool addLine)
 {
-	EditorInfo ei; EnsureCurrent(ei);
+	EditorInfo ei; AssertCurrent(ei);
 	if (ei.CurLine != ei.TotalLines - 1)
 	{
 		SEditorSetPosition esp;
@@ -602,4 +606,101 @@ void Editor::GoEnd(bool addLine)
 			InsertLine();
 	}
 }
+
+String^ Editor::GetText(String^ separator)
+{
+	StringBuilder sb;
+	if (separator == nullptr)
+		separator = CV::CRLF;
+
+    EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
+   	EditorGetString egs; egs.StringNumber = -1;
+	SEditorSetPosition esp;
+	for(esp.CurLine = 0; esp.CurLine < ei.TotalLines; ++esp.CurLine)
+    {
+        EditorControl_ECTL_SETPOSITION(esp);
+        Info.EditorControl(ECTL_GETSTRING, &egs);
+		if (esp.CurLine > 0)
+			sb.Append(separator);
+		if (egs.StringLength > 0)
+			sb.Append(FromEditor(egs.StringText,  egs.StringLength));
+    }
+    Edit_RestoreEditorInfo(ei);
+
+	return sb.ToString();
+}
+
+void Editor::SetText(String^ text)
+{
+	// info
+	EditorInfo ei; AssertCurrent(ei);
+
+	// case: empty
+	if (String::IsNullOrEmpty(text))
+	{
+		Edit_Clear();
+		return;
+	}
+
+	// workaround: Watch-Output-.ps1, missed the first empty line of the first output
+	if (ei.TotalLines == 1 && ei.CurPos == 0 && _isNew)
+	{
+		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, 0);
+		if (egs.StringLength == 0)
+			EditorControl_ECTL_INSERTSTRING(false);
+		EditorControl_ECTL_GETINFO(ei);
+	}
+
+	// split: the fact: this way is much faster than clear\insert all text
+	array<String^>^ newLines = Regex::Split(text, "\\r\\n|[\\r\\n]");
+
+	const bool overtype = ei.Overtype != 0;
+	try
+	{
+		if (overtype)
+			Edit_SetOvertype(false);
+
+		// replace existing lines
+		int i;
+		ILines^ lines = Lines;
+		for(i = 0; i < newLines->Length; ++i)
+		{
+			if (i < ei.TotalLines)
+			{
+				lines[i]->Text = newLines[i];
+				continue;
+			}
+
+			GoEnd(false);
+			while(i < newLines->Length)
+			{
+				EditorControl_ECTL_INSERTSTRING(false);
+				EditorControl_ECTL_INSERTTEXT(newLines[i], -1);
+				++i;
+			}
+			return;
+		}
+
+		// kill the rest of text (only if any, don't touch selection!)
+		--i;
+		ILine^ last = lines->Last;
+		if (i < last->No)
+		{
+			ISelection^ select = Selection;
+			select->Select(SelectionType::Stream, newLines[i]->Length, i, last->Length, last->No);
+			select->Clear();
+		}
+
+		// empty last line is not deleted
+		EditorControl_ECTL_GETINFO(ei);
+		if (ei.TotalLines > newLines->Length)
+			lines->RemoveAt(ei.TotalLines - 1);
+	}
+	finally
+	{
+		if (overtype)
+			Edit_SetOvertype(true);
+	}
+}
+
 }

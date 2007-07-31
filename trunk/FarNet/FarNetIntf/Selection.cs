@@ -37,6 +37,20 @@ namespace FarManager
 		/// Shape of selection.
 		/// </summary>
 		Place Shape { get; }
+		/// <summary>
+		/// Gets text with default line separator.
+		/// </summary>
+		string GetText();
+		/// <summary>
+		/// Gets text.
+		/// </summary>
+		/// <param name="separator">Line separator. null ~ CRLF.</param>
+		string GetText(string separator);
+		/// <summary>
+		/// Sets text.
+		/// </summary>
+		/// <param name="text">New text.</param>
+		void SetText(string text);
 	}
 
 	/// <summary>

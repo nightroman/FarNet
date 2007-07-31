@@ -192,7 +192,7 @@
 			CopyLocalDependencies="false"
 			UseDependenciesInBuild="false"
 			CopyLocalSatelliteAssemblies="false"
-			RelativePathToProject=".\FarNetIntf\FarNetIntf.csproj"
+			RelativePathToProject="..\FarNET\FarNetIntf\FarNetIntf.csproj"
 		/>
 		<AssemblyReference
 			RelativePath="mscorlib.dll"
@@ -227,6 +227,18 @@
 			</File>
 			<File
 				RelativePath=".\Editor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EditorLine.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EditorLineCollection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EditorLineSelection.cpp"
 				>
 			</File>
 			<File
@@ -305,18 +317,6 @@
 				RelativePath=".\Viewer.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\VisibleEditorLine.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VisibleEditorLineCollection.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VisibleEditorLineSelection.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -337,6 +337,18 @@
 			</File>
 			<File
 				RelativePath=".\Editor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EditorLine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EditorLineCollection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EditorLineSelection.h"
 				>
 			</File>
 			<File
@@ -389,18 +401,6 @@
 			</File>
 			<File
 				RelativePath=".\Viewer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VisibleEditorLine.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VisibleEditorLineCollection.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VisibleEditorLineSelection.h"
 				>
 			</File>
 		</Filter>

@@ -9,112 +9,36 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarManagerImpl
 {;
-String^ EditorStringCollection::Text::get()
+EditorStringCollection::EditorStringCollection(ILines^ lines, bool selected)
+: _lines(lines)
+, _selected(selected)
+{}
+
+String^ EditorStringCollection::default::get(int index)
 {
-	StringBuilder sb;
-	String^ eol = String::Empty;
-	for each(ILine^ line in _lines)
-	{
-		sb.Append(eol + (_selected ? line->Selection->Text : line->Text));
-		eol = line->Eol;
-		if (eol->Length == 0)
-			eol = CV::CRLF;
-	}
-	return sb.ToString();
+	if (_selected)
+		return _lines[index]->Selection->Text;
+	else
+		return _lines[index]->Text;
 }
 
-void EditorStringCollection::Text::set(String^ value)
+void EditorStringCollection::default::set(int index, String^ value)
 {
-	if (value == nullptr)
-		throw gcnew ArgumentNullException("value");
-
 	if (_selected)
-	{
-		_lines->Text = value;
-		return;
-	}
+		_lines[index]->Selection->Text = value;
+	else
+		_lines[index]->Text = value;
+}
 
-	// case: empty
-	if (value->Length == 0)
-	{
-		Clear();
-		return;
-	}
-
-	// editor
-	//TODO using editor here is dirty
-	IEditor^ editor = GetFar()->Editor;
-
-	// info
-	EditorInfo ei;
-	EditorControl_ECTL_GETINFO(ei);
-
-	// workaround: Watch-Output-.ps1, missed the first empty line of the first output
-	if (ei.TotalLines == 1 && ei.CurPos == 0 && editor->IsNew)
-	{
-		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, 0);
-		if (egs.StringLength == 0)
-			editor->InsertLine();
-		EditorControl_ECTL_GETINFO(ei);
-	}
-
-	// split: the fact: this way is much faster than clear\insert all text
-	array<String^>^ newLines = Regex::Split(value, "\\r\\n|[\\r|\\n]");
-
-	const bool overtype = ei.Overtype != 0;
-	try
-	{
-		// off
-		if (overtype)
-		{
-			SEditorSetPosition esp;
-			esp.Overtype = 0;
-			EditorControl_ECTL_SETPOSITION(esp);
-		}
-
-		// replace existing lines
-		int i;
-		ILines^ lines = editor->Lines;
-		for(i = 0; i < newLines->Length; ++i)
-		{
-			if (i < ei.TotalLines)
-			{
-				lines[i]->Text = newLines[i];
-				continue;
-			}
-
-			editor->GoEnd(false);
-			while(i < newLines->Length)
-			{
-				editor->InsertLine();
-				editor->Insert(newLines[i]);
-				++i;
-			}
-			return;
-		}
-
-		// kill the rest of text (only if any, don't touch selection!)
-		--i;
-		ILine^ last = lines->Last;
-		if (i < last->No)
-		{
-			editor->Selection->Select(SelectionType::Stream, newLines[i]->Length, i, last->Length, last->No);
-			editor->Selection->Clear();
-		}
-
-		// empty last line is not deleted
-		EditorControl_ECTL_GETINFO(ei);
-		if (ei.TotalLines > newLines->Length)
-			lines->RemoveAt(ei.TotalLines - 1);
-	}
-	finally
-	{
-		if (overtype)
-		{
-			SEditorSetPosition esp;
-			esp.Overtype = 1;
-			EditorControl_ECTL_SETPOSITION(esp);
-		}
-	}
+void EditorStringCollection::CopyTo(array<String^>^ arrayObject, int arrayIndex)
+{
+	if (arrayObject == nullptr)
+		throw gcnew ArgumentNullException("array");
+	if (arrayIndex < 0)
+		throw gcnew ArgumentOutOfRangeException("arrayIndex");
+	if (arrayObject->Length - arrayIndex > Count)
+		throw gcnew ArgumentException("array, arrayIndex");
+	for each(String^ s in this)
+		arrayObject[++arrayIndex] = s;
 }
 }

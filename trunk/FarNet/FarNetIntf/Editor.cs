@@ -51,12 +51,12 @@ namespace FarManager
 		int Id { get; }
 		/// <summary>
 		/// Size of tab symbol in spaces.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		int TabSize { get; set; }
 		/// <summary>
 		/// Expand tabs mode.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		ExpandTabsMode ExpandTabs { get; set; }
 		/// <summary>
@@ -89,20 +89,25 @@ namespace FarManager
 		bool DisableHistory { get; set; }
 		/// <summary>
 		/// Word delimiters specific to the current editor.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		/// <seealso cref="IFar.WordDiv"/>
 		string WordDiv { get; set; }
 		/// <summary>
 		/// The current line. It is not a 'copy', when you move cursor to another line this object is changed respectively.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		ILine CurrentLine { get; }
 		/// <summary>
-		/// Editor lines.
-		/// Only for opened and current editor.
+		/// Editor lines. Always contains at least a line.
+		/// Editor must be current.
 		/// </summary>
 		ILines Lines { get; }
+		/// <summary>
+		/// Editor lines with no last empty line if any. Can be empty.
+		/// Editor must be current.
+		/// </summary>
+		ILines TrueLines { get; }
 		/// <summary>
 		/// Name of a file being edited.
 		/// It is read only when an editor is opened.
@@ -114,9 +119,16 @@ namespace FarManager
 		Place Window { get; }
 		/// <summary>
 		/// Current selection. It is a collection <see cref="ILines"/> of selected line parts and a few extra members.
-		/// Only for opened and current editor.
+		/// If selection <see cref="ISelection.Exists"/> it contains at least one line.
+		/// Editor must be current.
 		/// </summary>
 		ISelection Selection { get; }
+		/// <summary>
+		/// Current selection with no last empty line if any.
+		/// Can be empty even if selection <see cref="ISelection.Exists"/>.
+		/// Editor must be current.
+		/// </summary>
+		ISelection TrueSelection { get; }
 		/// <summary>
 		/// Disable switching to other windows.
 		/// It is read only when an editor is opened.
@@ -130,52 +142,52 @@ namespace FarManager
 		/// <summary>
 		/// Insert text.
 		/// The text is processed in the same way as it it had been entered from the keyboard.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		/// <param name="text">The text. Supported EOL: CR, LF, CR+LF.</param>
 		void Insert(string text);
 		/// <summary>
 		/// Redraw editor window. Normally it should be called when changes are completed.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		void Redraw();
 		/// <summary>
 		/// Delete a character under <see cref="Cursor"/>.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		void DeleteChar();
 		/// <summary>
 		/// Delete a line under <see cref="Cursor"/>.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		void DeleteLine();
 		/// <summary>
 		/// Close the editor.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		void Close();
 		/// <summary>
 		/// Save the file being edited. Exception on failure.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		void Save();
 		/// <summary>
 		/// Save the file being edited to <paramref name="fileName"/>. Exception on failure.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		/// <param name="fileName">File name to save to.</param>
 		void Save(string fileName);
 		/// <summary>
 		/// Inserts a new line at the current <see cref="Cursor"/> position
 		/// and moves the cursor to the first position in the new line.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		void InsertLine();
 		/// <summary>
 		/// Inserts a new line at the current <see cref="Cursor"/> position
 		/// and moves the cursor to the first position in the new line or to the indented position.
 		/// The indent behaviour is the same as on pressing Enter in the editor.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		/// <param name="indent">Insert a line with indent.</param>
 		void InsertLine(bool indent);
@@ -203,22 +215,22 @@ namespace FarManager
 		string Title { get; set; }
 		/// <summary>
 		/// Overtype mode.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		bool Overtype { get; set; }
 		/// <summary>
 		/// Is the file modified?
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		bool IsModified { get; }
 		/// <summary>
 		/// Is the file saved?
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		bool IsSaved { get; }
 		/// <summary>
 		/// Is the file locked (Ctrl-L)?
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		bool IsLocked { get; }
 		/// <summary>
@@ -248,7 +260,7 @@ namespace FarManager
 		/// </summary>
 		/// <remarks>
 		/// Avoid using this method together with getting <see cref="Frame"/> or <see cref="Cursor"/>,
-		/// their values can be invalid. But you can set them directly or using <see cref="GoTo"/> methods.
+		/// their values can be unpredictable. But it is OK to set them (directly or by <see cref="GoTo"/> methods).
 		/// </remarks>
 		void Begin();
 		/// <summary>
@@ -257,7 +269,7 @@ namespace FarManager
 		void End();
 		/// <summary>
 		/// Current cursor position.
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		Point Cursor { get; }
 		/// <summary>
@@ -288,6 +300,7 @@ namespace FarManager
 		void GoToPos(int pos);
 		/// <summary>
 		/// Go to the end of text.
+		/// Editor must be current.
 		/// </summary>
 		/// <param name="addLine">Add an empty line if the last is not empty.</param>
 		void GoEnd(bool addLine);
@@ -297,9 +310,26 @@ namespace FarManager
 		object Data { get; set; }
 		/// <summary>
 		/// Is the end line the current one?
-		/// Only for opened and current editor.
+		/// Editor must be current.
 		/// </summary>
 		bool IsEnd { get; }
+		/// <summary>
+		/// Gets text with default line separator.
+		/// Editor must be current.
+		/// </summary>
+		string GetText();
+		/// <summary>
+		/// Gets text.
+		/// Editor must be current.
+		/// </summary>
+		/// <param name="separator">Line separator. Empty or null ~ CRLF.</param>
+		string GetText(string separator);
+		/// <summary>
+		/// Sets text.
+		/// Editor must be current.
+		/// </summary>
+		/// <param name="text">New text.</param>
+		void SetText(string text);
 	}
 
 	/// <summary>
@@ -338,10 +368,6 @@ namespace FarManager
 	/// </remarks>
 	public interface IStrings : IList<string>
 	{
-		/// <summary>
-		/// Strings concatenated with CRLF.
-		/// </summary>
-		string Text { get; set; }
 	}
 
 	/// <summary>
@@ -433,19 +459,18 @@ namespace FarManager
 	public interface ILines : IList<ILine>
 	{
 		/// <summary>
-		/// First line. Note that it always exists in editor.
+		/// First line.
 		/// </summary>
 		ILine First { get; }
 		/// <summary>
-		/// Last line. Note that it always exists in editor.
+		/// Last line.
 		/// </summary>
 		ILine Last { get; }
 		/// <summary>
 		/// All text as string.
 		/// </summary>
-		string Text { get; set; }
 		/// <summary>
-		/// Text as string list, see <see cref="IStrings"/>.
+		/// String list, see <see cref="IStrings"/>.
 		/// </summary>
 		IStrings Strings { get; }
 		/// <summary>
@@ -595,9 +620,7 @@ namespace FarManager
 		/// </summary>
 		public int LeftPos { get { return _leftPos; } set { _leftPos = value; } }
 		int _leftPos;
-		/// <summary>
-		/// Compares two objects.
-		/// </summary>
+		///
 		public static bool operator ==(TextFrame left, TextFrame right)
 		{
 			return
@@ -607,16 +630,12 @@ namespace FarManager
 				left._topLine == right._topLine &&
 				left._leftPos == right._leftPos;
 		}
-		/// <summary>
-		/// Compares two objects.
-		/// </summary>
+		///
 		public static bool operator !=(TextFrame left, TextFrame right)
 		{
 			return !(left == right);
 		}
-		/// <summary>
-		/// Equals()
-		/// </summary>
+		///
 		public override bool Equals(Object obj)
 		{
 			if (obj == null || GetType() != obj.GetType())
@@ -624,16 +643,12 @@ namespace FarManager
 			TextFrame that = (TextFrame)obj;
 			return this == that;
 		}
-		/// <summary>
-		/// ToString()
-		/// </summary>
+		///
 		public override string ToString()
 		{
 			return "((" + _pos + "/" + _tabPos + ", " + _line + ")(" + _leftPos + ", " + _topLine + "))";
 		}
-		/// <summary>
-		/// GetHashCode()
-		/// </summary>
+		///
 		public override int GetHashCode()
 		{
 			return (_line << 16) ^ (_pos << 16) ^ _tabPos ^ _topLine ^ _leftPos;

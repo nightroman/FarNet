@@ -160,7 +160,11 @@ namespace FarManager
 		/// <summary>
 		/// FileLinks (Ctrl-9).
 		/// </summary>
-		FileLinks
+		FileLinks,
+		/// <summary>
+		/// Undefined value.
+		/// </summary>
+		Undefined = -0x30
 	}
 
 	/// <summary>
@@ -215,7 +219,7 @@ namespace FarManager
 		/// <summary>
 		/// Sorted by hard link number.
 		/// </summary>
-		LinksNumber
+		LinksNumber,
 	}
 
 	/// <summary>
@@ -257,7 +261,7 @@ namespace FarManager
 		/// <summary>
 		/// View mode.
 		/// </summary>
-		PanelViewMode ViewMode { get; }
+		PanelViewMode ViewMode { get; set; }
 		/// <summary>
 		/// List of all panel items.
 		/// See <see cref="IPanelPluginInfo.AddDots"/>.
@@ -278,7 +282,7 @@ namespace FarManager
 		/// <summary>
 		/// Panel sort mode.
 		/// </summary>
-		PanelSortMode SortMode { get; }
+		PanelSortMode SortMode { get; set; }
 		/// <summary>
 		/// Hidden and system files are displayed.
 		/// </summary>
@@ -288,9 +292,9 @@ namespace FarManager
 		/// </summary>
 		bool Highlight { get; }
 		/// <summary>
-		/// Descending sort is used.
+		/// Reversed sort order is used.
 		/// </summary>
-		bool ReverseSortOrder { get; }
+		bool ReverseSortOrder { get; set; }
 		/// <summary>
 		/// Sort groups are used.
 		/// </summary>
@@ -306,7 +310,7 @@ namespace FarManager
 		/// <summary>
 		/// Numeric sort mode.
 		/// </summary>
-		bool NumericSort { get; }
+		bool NumericSort { get; set; }
 		/// <summary>
 		/// Redraws the panel. [FCTL_REDRAWPANEL]
 		/// </summary>
@@ -327,6 +331,10 @@ namespace FarManager
 		/// Gets current frame: current and top index.
 		/// </summary>
 		Point Frame { get; }
+		/// <summary>
+		/// Panel window position.
+		/// </summary>
+		Place Window { get; }
 	}
 
 	/// <summary>
@@ -419,14 +427,17 @@ namespace FarManager
 		string Title { get; set; }
 		/// <summary>
 		/// The panel view mode to set on panel creation.
+		/// When a panel has started it may be used internally for keeping\restoring the current mode.
 		/// </summary>
 		PanelViewMode StartViewMode { get; set; }
 		/// <summary>
 		/// The panel sort mode to set on panel creation.
+		/// When a panel has started it may be used internally for keeping\restoring the current mode.
 		/// </summary>
 		PanelSortMode StartSortMode { get; set; }
 		/// <summary>
 		/// If <see cref="StartSortMode"/> is specified, this field is used to set sort direction.
+		/// When a panel has started it may be used internally for keeping\restoring the current mode.
 		/// </summary>
 		bool StartSortDesc { get; set; }
 		/// <summary>
@@ -755,8 +766,8 @@ namespace FarManager
 		/// <summary>
 		/// Opens a panel plugin instead of another opened plugin.
 		/// </summary>
-		/// <param name="oldPanelPlugin">Plugin to be opened.</param>
-		void Open(IPanelPlugin oldPanelPlugin);
+		/// <param name="oldPanel">Old panel to be replaced.</param>
+		void Open(IPanelPlugin oldPanel);
 		/// <summary>
 		/// True if the panel is opened.
 		/// </summary>

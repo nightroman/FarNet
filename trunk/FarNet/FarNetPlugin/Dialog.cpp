@@ -66,7 +66,7 @@ public:
 			EditorSelect es;
 			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (long)&es);
 			if (es.BlockType == BTYPE_NONE)
-				return; //TODO ?
+				return;
 
 			char buf[512];
 			Info.SendDlgMessage(_hDlg, DM_GETTEXTPTR, _id, (long)buf);

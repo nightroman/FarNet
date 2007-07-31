@@ -10,7 +10,7 @@ namespace FarManagerImpl
 ref class EditorManager;
 ref class SelectionCollection;
 ref class VisibleEditorCursor;
-ref class VisibleEditorLineCollection;
+ref class EditorLineCollection;
 
 public ref class BaseEditor : IAnyEditor
 {
@@ -41,9 +41,11 @@ public:
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get(); void set(ExpandTabsMode value); }
 	virtual property ILine^ CurrentLine { ILine^ get(); }
 	virtual property ILines^ Lines { ILines^ get(); }
+	virtual property ILines^ TrueLines { ILines^ get(); }
 	virtual property int Id { int get(); void set(int value); }
 	virtual property int TabSize { int get(); void set(int value); }
 	virtual property ISelection^ Selection { ISelection^ get(); }
+	virtual property ISelection^ TrueSelection { ISelection^ get(); }
 	virtual property Object^ Data;
 	virtual property Place Window { Place get(); }
 	virtual property Point Cursor { Point get(); }
@@ -52,34 +54,37 @@ public:
 	virtual property String^ WordDiv { String^ get(); void set(String^ value); }
 	virtual property TextFrame Frame { TextFrame get(); void set(TextFrame value); }
 public:
+	virtual ICollection<TextFrame>^ Bookmarks();
+	virtual int ConvertPosToTab(int line, int pos);
+	virtual int ConvertTabToPos(int line, int tab);
+	virtual Point ConvertScreenToCursor(Point screen);
+	virtual String^ GetText() { return GetText(CV::CRLF); }
+	virtual String^ GetText(String^ separator);
 	virtual void Begin();
 	virtual void Close();
 	virtual void DeleteChar();
 	virtual void DeleteLine();
 	virtual void End();
-	virtual void Insert(String^ text);
-	virtual void InsertLine();
-	virtual void InsertLine(bool indent);
 	virtual void GoEnd(bool addLine);
 	virtual void GoTo(int pos, int line);
 	virtual void GoToLine(int line);
 	virtual void GoToPos(int pos);
+	virtual void Insert(String^ text);
+	virtual void InsertLine();
+	virtual void InsertLine(bool indent);
 	virtual void Open();
 	virtual void Redraw();
 	virtual void Save();
 	virtual void Save(String^ fileName);
-	virtual ICollection<TextFrame>^ Bookmarks();
-	virtual int ConvertPosToTab(int line, int pos);
-	virtual int ConvertTabToPos(int line, int tab);
-	virtual Point ConvertScreenToCursor(Point screen);
+	virtual void SetText(String^ text);
 internal:
 	Editor(EditorManager^ manager);
 	void GetParams();
 private:
 	int Flags();
-	void EnsureClosed();
-	void EnsureCurrent();
-	void EnsureCurrent(EditorInfo& ei);
+	void AssertClosed();
+	void AssertCurrent();
+	void AssertCurrent(EditorInfo& ei);
 private:
 	EditorManager^ _manager;
 	int _id;
@@ -93,8 +98,6 @@ private:
 	Place _window;
 	String^ _fileName;
 	String^ _title;
-	VisibleEditorLineCollection^ _lines;
-	// Frames
 	TextFrame _frameStart;
 	TextFrame _frameSaved;
 };

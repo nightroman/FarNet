@@ -7,9 +7,9 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarManagerImpl
 {;
-ref class VisibleEditorLineSelection;
+ref class EditorLineSelection;
 
-public ref class VisibleEditorLine : public ILine
+public ref class EditorLine : public ILine
 {
 public:
 	virtual property ILine^ FullLine { ILine^ get(); }
@@ -25,7 +25,7 @@ public:
 public:
 	virtual String^ ToString() override;
 internal:
-	VisibleEditorLine(int no, bool selected);
+	EditorLine(int no, bool selected);
 private:
 	EditorSetString GetEss();
 private:
@@ -34,6 +34,6 @@ private:
 	// Line is from selection
 	bool _selected;
 	// Selection; created on request
-	VisibleEditorLineSelection^ _selection;
+	EditorLineSelection^ _selection;
 };
 }
