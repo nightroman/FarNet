@@ -7,7 +7,7 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarManagerImpl
 {;
-public ref class VisibleEditorLineSelection : public ILineSelection
+public ref class EditorLineSelection : public ILineSelection
 {
 public:
 	virtual property String^ Text { String^ get(); void set(String^ value); }
@@ -16,7 +16,7 @@ public:
 	virtual property int Start { int get(); }
 	virtual String^ ToString() override;
 internal:
-	VisibleEditorLineSelection(int no);
+	EditorLineSelection(int no);
 private:
 	int _no;
 };

@@ -5,6 +5,7 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 #include "Menu.h"
+#include "FarImpl.h"
 #include "InputBox.h"
 #include "Message.h"
 
@@ -309,7 +310,7 @@ FarMenuItem* Menu::CreateItems()
 		RegistryKey^ key;
 		try
 		{
-			key = Registry::CurrentUser->OpenSubKey("Software\\Far\\SavedDialogHistory\\" + FilterHistory, false);
+			key = Registry::CurrentUser->OpenSubKey(GetFar()->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
 			if (key)
 			{
 				int flags = (int)key->GetValue("Flags");

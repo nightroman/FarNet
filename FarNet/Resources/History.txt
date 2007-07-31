@@ -1,3 +1,45 @@
+3.3.21
+
+This is mostly a technical build needed for PowerShellFar.
+
+3.3.20
+
+This is mostly a technical build needed for PowerShellFar.
+
+3.3.19
+
+- Added 'set' method to property IPanel.NumericSort.
+- Fixed issues in plugin panel start sort modes.
+
+3.3.18
+
+- Properties IPanel.{ReverseSortOrder | SortMode | ViewMode} are now 'get\set'
+(i.e. not 'get' only).
+- New properties IFar.{RootFar | RootKey} - registry paths taking into account
+a user, e.g. '/u user1' in FAR command line.
+- Improved switching\keeping\restoring of plugin panels modes.
+- Fixed lib path in Build-JS.bat.
+- Fixed ReplaceSlashes.js in examples.
+
+3.3.17
+
+- removed obsolete properties {ILines | IStrings}.Text; please, use methods
+{IEditor | ISelection}.{GetText | SetText}.
+
+3.3.16
+
+- new property IFar.From:OpenFrom - where a plugin is opened from.
+- new property IPanel.Window:Place - panel coordinates.
+- new properties IEditor.TrueLines,TrueSelection: no empty last line if any.
+They are designed for convenient reading or changing existing lines in foreach
+loops; Add(), Insert(), RemoveAt() are available, but not yet recommended, they
+can not be used in foreach anyway.
+
+OBSOLETE:
+- properties {ILines | IStrings}.Text will be removed; please, use methods
+{IEditor | ISelection}.{GetText | SetText} - they will be more effective.
+ILines and IStrings will be almost nothing but ILine and string lists.
+
 3.3.15
 
 - Far.exe.config: added option FarManager.StartupErrorDialog: 0: write error
@@ -219,7 +261,7 @@ incorrect coordinates.
 - Fixed selection in editor.
 - Completed .NET 2.0 porting.
 
-3.1.? и ранее
+3.1.? and below
 
 - 29.08.06 - ported to .NET 2.0
 - 19.08.05 - beta stage

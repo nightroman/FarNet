@@ -12,8 +12,8 @@ namespace FarManager
 	/// </summary>
 	public struct Point
 	{
-		private int x;
-		private int y;
+		int x;
+		int y;
 		/// <summary>
 		/// Initializes a point with the same x and y.
 		/// </summary>
@@ -47,37 +47,27 @@ namespace FarManager
 			get { return y; }
 			set { y = value; }
 		}
-		/// <summary>
-		/// Compares two objects.
-		/// </summary>
+		///
 		public static bool operator ==(Point left, Point right)
 		{
 			return left.x == right.x && left.y == right.y;
 		}
-		/// <summary>
-		/// Compares two objects.
-		/// </summary>
+		///
 		public static bool operator !=(Point left, Point right)
 		{
 			return left.x != right.x || left.y != right.y;
 		}
-		/// <summary>
-		/// Equals()
-		/// </summary>
+		///
 		public override bool Equals(Object obj)
 		{
 			return obj is Point && this == (Point)obj;
 		}
-		/// <summary>
-		/// GetHashCode()
-		/// </summary>
+		///
 		public override int GetHashCode()
 		{
 			return x | (y << 16);
 		}
-		/// <summary>
-		/// ToString()
-		/// </summary>
+		///
 		public override string ToString()
 		{
 			return "(" + x + ", " + y + ")";
@@ -183,37 +173,27 @@ namespace FarManager
 			get { return this.Bottom - this.Top + 1; }
 			set { this.Bottom = (this.Top + value - 1); }
 		}
-		/// <summary>
-		/// Compares two objects.
-		/// </summary>
+		///
 		public static bool operator ==(Place left, Place right)
 		{
 			return left.First == right.First && left.Last == right.Last;
 		}
-		/// <summary>
-		/// Compares two objects.
-		/// </summary>
+		///
 		public static bool operator !=(Place left, Place right)
 		{
 			return left.First != right.First || left.Last != right.Last;
 		}
-		/// <summary>
-		/// Equals()
-		/// </summary>
+		///
 		public override bool Equals(Object obj)
 		{
 			return obj is Place && this == (Place)obj;
 		}
-		/// <summary>
-		/// GetHashCode()
-		/// </summary>
+		///
 		public override int GetHashCode()
 		{
 			return First.GetHashCode() ^ Last.GetHashCode();
 		}
-		/// <summary>
-		/// ToString()
-		/// </summary>
+		///
 		public override string ToString()
 		{
 			return "(" + First + ", " + Last + ")";

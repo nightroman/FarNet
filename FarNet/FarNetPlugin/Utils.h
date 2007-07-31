@@ -77,15 +77,27 @@ String^ OemToStr(const char* oem);
 String^ OemToStr(const char* oem, int length);
 
 // Far API wrappers
+void EditorControl_ECTL_DELETEBLOCK();
+void EditorControl_ECTL_DELETECHAR();
+void EditorControl_ECTL_DELETESTRING();
 void EditorControl_ECTL_EDITORTOOEM(char* text, int len);
 void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm);
 void EditorControl_ECTL_GETINFO(EditorInfo& ei, bool safe = false);
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int no);
+void EditorControl_ECTL_INSERTSTRING(bool indent);
+void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype);
 void EditorControl_ECTL_OEMTOEDITOR(char* text, int len);
 void EditorControl_ECTL_SELECT(EditorSelect& es);
+void EditorControl_ECTL_SETPARAM(const EditorSetParameter esp);
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp);
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess);
 void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);
+
+// Advanced wrappers
+void Edit_Clear();
+void Edit_GoTo(int pos, int line);
+void Edit_RestoreEditorInfo(const EditorInfo& ei);
+void Edit_SetOvertype(bool value);
 
 // Helpers
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);

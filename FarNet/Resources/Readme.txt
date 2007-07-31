@@ -1,7 +1,7 @@
 Plugin name  : Far.NET3
 Category     : Development
-Version      : 3.3.15
-Release date : 2007.05.24
+Version      : 3.3.21
+Release date : 2007.07.23
 Author       : Roman Kuzmin
 Email        : nightroman@hotmail.com
 HomePage     : http://nightroman.spaces.live.com

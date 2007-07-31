@@ -32,12 +32,6 @@ Far^ GetFar()
 	return farImpl;
 }
 
-// GetMsg gets a message string from a lang file. Here is the wrapper.
-char* GetMsg(int MsgId)
-{
-	return (char*)Info.GetMsg(Info.ModuleNumber, MsgId);
-}
-
 #define __START try {
 #define __END } catch(Exception^ e) { farImpl->ShowError(nullptr, e); }
 

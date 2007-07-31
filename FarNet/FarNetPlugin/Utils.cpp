@@ -135,6 +135,25 @@ String^ FromEditor(const char* text, int len)
 	return r;
 }
 
+//
+// Generic FAR wrappers
+//
+
+void EditorControl_ECTL_DELETEBLOCK()
+{
+	Info.EditorControl(ECTL_DELETEBLOCK, 0);
+}
+
+void EditorControl_ECTL_DELETECHAR()
+{
+	Info.EditorControl(ECTL_DELETECHAR, 0);
+}
+
+void EditorControl_ECTL_DELETESTRING()
+{
+	Info.EditorControl(ECTL_DELETESTRING, 0);
+}
+
 void EditorControl_ECTL_EDITORTOOEM(char* text, int len)
 {
 	EditorConvertText ect;
@@ -189,6 +208,22 @@ void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int no)
 	}
 }
 
+void EditorControl_ECTL_INSERTSTRING(bool indent)
+{
+	int value = indent;
+	Info.EditorControl(ECTL_INSERTSTRING, &value);
+}
+
+void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype)
+{
+	if (overtype > 0)
+		Edit_SetOvertype(false);
+	CStr sb(text->Replace("\r\n", "\r")->Replace('\n', '\r'));
+	Info.EditorControl(ECTL_INSERTTEXT, sb);
+	if (overtype > 0)
+		Edit_SetOvertype(true);
+}
+
 void EditorControl_ECTL_OEMTOEDITOR(char* text, int len)
 {
 	EditorConvertText ect;
@@ -197,12 +232,18 @@ void EditorControl_ECTL_OEMTOEDITOR(char* text, int len)
 	Info.EditorControl(ECTL_OEMTOEDITOR, &ect);
 }
 
-// Don't check result here!
+//! Don't check result here.
 void EditorControl_ECTL_SELECT(EditorSelect& es)
 {
 	Info.EditorControl(ECTL_SELECT, &es);
 }
 
+void EditorControl_ECTL_SETPARAM(const EditorSetParameter esp)
+{
+	Info.EditorControl(ECTL_SETPARAM, (void*)&esp);
+}
+
+//! Looks like it does not fail if input is 'out of range'
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp)
 {
 	if (!Info.EditorControl(ECTL_SETPOSITION, (EditorSetPosition*)&esp))
@@ -224,6 +265,55 @@ void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe)
 		else
 			throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current viewer.");
 	}
+}
+
+//
+// Advanced FAR wrappers
+//
+
+// select and delete all text if any
+void Edit_Clear()
+{
+	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
+	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.TotalLines - 1);
+
+	EditorSelect es;
+	es.BlockHeight = ei.TotalLines;
+	es.BlockWidth = egs.StringLength;
+	if (es.BlockHeight > 1 || es.BlockWidth > 0)
+	{
+		es.BlockType = BTYPE_STREAM;
+		es.BlockStartLine = 0;
+		es.BlockStartPos = 0;
+		EditorControl_ECTL_SELECT(es);
+		EditorControl_ECTL_DELETEBLOCK();
+	}
+}
+
+void Edit_GoTo(int pos, int line)
+{
+	SEditorSetPosition esp;
+	esp.CurLine = line;
+	esp.CurPos = pos;
+	EditorControl_ECTL_SETPOSITION(esp);
+}
+
+void Edit_RestoreEditorInfo(const EditorInfo& ei)
+{
+	SEditorSetPosition esp;
+	esp.CurLine = ei.CurLine;
+	esp.CurPos = ei.CurPos;
+	esp.LeftPos = ei.LeftPos;
+	esp.Overtype = ei.Overtype;
+	esp.TopScreenLine = ei.TopScreenLine;
+	EditorControl_ECTL_SETPOSITION(esp);
+}
+
+void Edit_SetOvertype(bool value)
+{
+	SEditorSetPosition esp;
+	esp.Overtype = value;
+	EditorControl_ECTL_SETPOSITION(esp);
 }
 
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m)

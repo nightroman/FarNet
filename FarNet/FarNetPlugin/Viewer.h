@@ -27,7 +27,7 @@ internal:
 	Viewer();
 	void GetParams();
 private:
-	void EnsureClosed();
+	void AssertClosed();
 private:
 	int _id;
 	long _flags;

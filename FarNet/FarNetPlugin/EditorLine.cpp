@@ -4,33 +4,33 @@ Copyright (c) 2005-2007 Far.NET Team
 */
 
 #include "StdAfx.h"
-#include "VisibleEditorLine.h"
+#include "EditorLine.h"
 #include "Utils.h"
-#include "VisibleEditorLineSelection.h"
+#include "EditorLineSelection.h"
 
 namespace FarManagerImpl
 {;
-VisibleEditorLine::VisibleEditorLine(int no, bool selected)
+EditorLine::EditorLine(int no, bool selected)
 : _no(no), _selected(selected)
 {
 }
 
 //!! Keep it before "#define _selection"
-ILineSelection^ VisibleEditorLine::Selection::get()
+ILineSelection^ EditorLine::Selection::get()
 {
 	if (_selection == nullptr)
-		_selection = gcnew VisibleEditorLineSelection(_no);
+		_selection = gcnew EditorLineSelection(_no);
 	return _selection;
 }
 //!! DON'T use _selection after this point
 #define _selection _selection__use_property
 
-ILine^ VisibleEditorLine::FullLine::get()
+ILine^ EditorLine::FullLine::get()
 {
-	return _selected ? gcnew VisibleEditorLine(_no, false) : this;
+	return _selected ? gcnew EditorLine(_no, false) : this;
 }
 
-int VisibleEditorLine::Length::get()
+int EditorLine::Length::get()
 {
 	if (_selected)
 		return Selection->Length;
@@ -39,12 +39,12 @@ int VisibleEditorLine::Length::get()
 	return egs.StringLength;
 }
 
-int VisibleEditorLine::No::get()
+int EditorLine::No::get()
 {
 	return _no;
 }
 
-int VisibleEditorLine::Pos::get()
+int EditorLine::Pos::get()
 {
 	EditorInfo ei;
 	EditorControl_ECTL_GETINFO(ei);
@@ -53,7 +53,7 @@ int VisibleEditorLine::Pos::get()
 	return -1;
 }
 
-void VisibleEditorLine::Pos::set(int value)
+void EditorLine::Pos::set(int value)
 {
 	if (value < 0)
 	{
@@ -66,13 +66,13 @@ void VisibleEditorLine::Pos::set(int value)
 	EditorControl_ECTL_SETPOSITION(esp);
 }
 
-String^ VisibleEditorLine::Eol::get()
+String^ EditorLine::Eol::get()
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	return FromEditor(egs.StringEOL, strlen(egs.StringEOL));
 }
 
-void VisibleEditorLine::Eol::set(String^ value)
+void EditorLine::Eol::set(String^ value)
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	EditorSetString ess = GetEss();
@@ -86,7 +86,7 @@ void VisibleEditorLine::Eol::set(String^ value)
 	EditorControl_ECTL_SETSTRING(ess);
 }
 
-String^ VisibleEditorLine::Text::get()
+String^ EditorLine::Text::get()
 {
 	if (_selected)
 		return Selection->Text;
@@ -95,7 +95,7 @@ String^ VisibleEditorLine::Text::get()
 	return FromEditor(egs.StringText,  egs.StringLength);
 }
 
-void VisibleEditorLine::Text::set(String^ value)
+void EditorLine::Text::set(String^ value)
 {
 	if (_selected)
 	{
@@ -113,16 +113,15 @@ void VisibleEditorLine::Text::set(String^ value)
 	EditorControl_ECTL_SETSTRING(ess);
 }
 
-void VisibleEditorLine::Insert(String^ text)
+void EditorLine::Insert(String^ text)
 {
 	int pos = Pos;
 	if (pos < 0)
 		throw gcnew InvalidOperationException("The line is not current");
-	CStr sb(text->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r'));
-	Info.EditorControl(ECTL_INSERTTEXT, sb);
+	EditorControl_ECTL_INSERTTEXT(text, -1);
 }
 
-void VisibleEditorLine::Select(int start, int end)
+void EditorLine::Select(int start, int end)
 {
 	EditorSelect es;
 	es.BlockType = BTYPE_STREAM;
@@ -133,19 +132,19 @@ void VisibleEditorLine::Select(int start, int end)
 	EditorControl_ECTL_SELECT(es);
 }
 
-void VisibleEditorLine::Unselect()
+void EditorLine::Unselect()
 {
 	EditorSelect es;
 	es.BlockType = BTYPE_NONE;
 	EditorControl_ECTL_SELECT(es);
 }
 
-String^ VisibleEditorLine::ToString()
+String^ EditorLine::ToString()
 {
 	return Text;
 }
 
-EditorSetString VisibleEditorLine::GetEss()
+EditorSetString EditorLine::GetEss()
 {
 	EditorSetString ess;
 	ess.StringNumber = _no;

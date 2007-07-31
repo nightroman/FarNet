@@ -340,6 +340,19 @@ namespace FarManager
 		/// <param name="text">Text to be edited.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt, string history, string title, string text);
+		/// <summary>
+		/// Where plugin is opened from.
+		/// </summary>
+		OpenFrom From { get; }
+		/// <summary>
+		/// Registry root key of FAR settings taking into account a user (command line parameter /u).
+		/// </summary>
+		string RootFar { get; }
+		/// <summary>
+		/// Registry root key, where plugins can save their parameters.
+		/// Do not save parameters directly in this key, create your own subkey here.
+		/// </summary>
+		string RootKey { get; }
 	}
 
 	/// <summary>
@@ -412,6 +425,10 @@ namespace FarManager
 		/// Viewer
 		/// </summary>
 		Viewer,
+		/// <summary>
+		/// Other event (actually can be from editor, viewer, command line, etc.)
+		/// </summary>
+		Other
 	};
 
 	/// <summary>
