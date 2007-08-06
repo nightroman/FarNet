@@ -225,7 +225,7 @@ public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
 public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);
 internal:
 	FarDialog(Far^ manager, int left, int top, int right, int bottom);
-	long DialogProc(int msg, int param1, long param2);
+	LONG_PTR DialogProc(int msg, int param1, LONG_PTR param2);
 internal:
 	static List<FarDialog^> _dialogs;
 	HANDLE _hDlg;
