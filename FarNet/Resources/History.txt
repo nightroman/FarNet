@@ -1,3 +1,7 @@
+3.3.22
+
+- Fixed most of x64 issues.
+
 3.3.21
 
 This is mostly a technical build needed for PowerShellFar.

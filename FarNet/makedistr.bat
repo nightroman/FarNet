@@ -1,17 +1,17 @@
 :: Makes distribution archive
-:: It is .rar because Far.exe.config is blocked in .zip, e.g. by gmail.
+:: It is .rar because Far.exe.config can be blocked in .zip, e.g. by gmail.
 :: Zip command: pkzipc -add -dir %dst% *.*
 
 @echo off
-set version=3.3.21
+set version=3.3.22
 set dst=Far.NET.%version%.rar
 
 if exist tmp rmdir /s /q tmp
 if exist %dst% del %dst%
 
-xcopy "%FARHOME%\lib" tmp\lib /i
-xcopy "%FARHOME%\Plugins\Far.Net" tmp\Plugins\Far.Net /i
-xcopy Plugins.Net tmp\Plugins.Net /i /s
+xcopy "%FARHOME%\lib" tmp\Lib /i
+xcopy "%FARHOME%\Plugins\Far.Net" tmp\Plugins\Far.NET /i
+xcopy Plugins.Net tmp\Plugins.NET /i /s
 xcopy Resources tmp /i /s
 copy LICENSE tmp\LICENSE
 

@@ -120,7 +120,7 @@ String^ OemToStr(const char* oem)
 	if (!oem)
 		return String::Empty;
 
-	size_t len = strlen(oem);
+	int len = (int)strlen(oem);
 	TStr<wchar_t> dst(len);
 	OEM2WC(oem, dst);
 	String^ r = gcnew String(dst);

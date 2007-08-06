@@ -57,10 +57,10 @@ void WINAPI _export GetPluginInfo(PluginInfo* pi)
 }
 
 // OpenPlugin is called on new plugin instance.
-HANDLE WINAPI _export OpenPlugin(int OpenFrom, int item)
+HANDLE WINAPI _export OpenPlugin(int from, INT_PTR item)
 {
 	__START;
-	return farImpl->AsOpenPlugin(OpenFrom, item);
+	return farImpl->AsOpenPlugin(from, item);
 	__END;
 	return INVALID_HANDLE_VALUE;
 }

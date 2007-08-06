@@ -84,7 +84,7 @@ internal:
 internal:
 	EditorManager^ _editorManager;
 internal:
-	HANDLE AsOpenPlugin(int from, int item);
+	HANDLE AsOpenPlugin(int from, INT_PTR item);
 	int AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode);
 	int AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode);
 	int AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode);
@@ -101,7 +101,7 @@ private:
 	HANDLE AddPanelPlugin(FarPanelPlugin^ plugin);
 	void CreateMenuStringsBlock();
 	void FreeMenuStrings();
-	void ProcessPrefixes(int Item);
+	void ProcessPrefixes(INT_PTR item);
 	void MakePrefixes();
 private:
 	CStr* _diskStrings;

@@ -22,12 +22,12 @@ FarPanel::FarPanel(bool current)
 
 int FarPanel::Id::get()
 {
-	return (int)_id;
+	return (int)(INT_PTR)_id;
 }
 
 void FarPanel::Id::set(int value)
 {
-	_id = (HANDLE)value;
+	_id = (HANDLE)(INT_PTR)value;
 }
 
 bool FarPanel::IsActive::get()
@@ -386,7 +386,7 @@ IFile^ FarPanelPlugin::Current::get()
 	PanelInfo pi; GetInfo(pi);
 	if (pi.ItemsNumber == 0 || _info.AddDots && pi.CurrentItem == 0)
 		return nullptr;
-	return _files[pi.PanelItems[pi.CurrentItem].UserData];
+	return _files[(int)(INT_PTR)pi.PanelItems[pi.CurrentItem].UserData];
 }
 
 IList<IFile^>^ FarPanelPlugin::Contents::get()
@@ -395,7 +395,7 @@ IList<IFile^>^ FarPanelPlugin::Contents::get()
 	List<IFile^>^ r = gcnew List<IFile^>();
 	PanelInfo pi; GetInfo(pi);
 	for(int i = (_info.AddDots ? 1 : 0); i < pi.ItemsNumber; ++i)
-		r->Add(_files[pi.PanelItems[i].UserData]);
+		r->Add(_files[(int)(INT_PTR)pi.PanelItems[i].UserData]);
 	return r;
 }
 
@@ -407,7 +407,7 @@ IList<IFile^>^ FarPanelPlugin::Selected::get()
 	for(int i = (_info.AddDots ? 1 : 0); i < pi.ItemsNumber; ++i)
 	{
 		if (pi.PanelItems[i].Flags & PPIF_SELECTED)
-			r->Add(_files[pi.PanelItems[i].UserData]);
+			r->Add(_files[(int)(INT_PTR)pi.PanelItems[i].UserData]);
 	}
 	return r;
 }
@@ -420,13 +420,13 @@ IList<IFile^>^ FarPanelPlugin::Targeted::get()
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
 		if (pi.PanelItems[i].Flags & PPIF_SELECTED)
-			r->Add(_files[pi.PanelItems[i].UserData]);
+			r->Add(_files[(int)(INT_PTR)pi.PanelItems[i].UserData]);
 	}
 	if (r->Count == 0)
 	{
 		if (pi.ItemsNumber > 0)
 		{
-			int j = pi.PanelItems[pi.CurrentItem].UserData;
+			int j = (int)(INT_PTR)pi.PanelItems[pi.CurrentItem].UserData;
 			if (j >= 0 && _files[j]->Name != "..")
 				r->Add(_files[j]);
 		}

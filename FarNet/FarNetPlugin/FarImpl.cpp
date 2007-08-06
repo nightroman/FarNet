@@ -24,7 +24,7 @@ static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelIt
 	List<IFile^>^ r = gcnew List<IFile^>();
 	r->Capacity = itemsNumber;
 	for(int i = 0; i < itemsNumber; ++i)
-		r->Add(files[panelItem[i].UserData]);
+		r->Add(files[(int)(INT_PTR)panelItem[i].UserData]);
 	return r;
 }
 
@@ -309,12 +309,12 @@ void Far::PostText(String^ text, bool disableOutput)
 
 int Far::SaveScreen(int x1, int y1, int x2, int y2)
 {
-	return (int)Info.SaveScreen(x1, y1, x2, y2);
+	return (int)(INT_PTR)Info.SaveScreen(x1, y1, x2, y2);
 }
 
 void Far::RestoreScreen(int screen)
 {
-	Info.RestoreScreen((HANDLE)screen);
+	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
 }
 
 ILine^ Far::CommandLine::get()
@@ -395,9 +395,9 @@ void Far::FreeMenuStrings()
 	_menuStrings = NULL;
 }
 
-void Far::ProcessPrefixes(int Item)
+void Far::ProcessPrefixes(INT_PTR item)
 {
-	char* commandLine = (char*)Item;
+	char* commandLine = (char*)item;
 	Run(OemToStr(commandLine));
 }
 
@@ -543,7 +543,7 @@ HANDLE Far::AddPanelPlugin(FarPanelPlugin^ plugin)
 		{
 			_panels[i] = plugin;
 			plugin->Id = i;
-			return (HANDLE)i;
+			return (HANDLE)(INT_PTR)i;
 		}
 	}
 	throw gcnew InvalidOperationException("Can't register plugin panel.");
@@ -719,7 +719,7 @@ void Far::ClosePanel(String^ path)
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_CLOSEPLUGIN, sb);
 }
 
-HANDLE Far::AsOpenPlugin(int from, int item)
+HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 {
 	try
 	{
@@ -735,14 +735,14 @@ HANDLE Far::AsOpenPlugin(int from, int item)
 		else if (from == OPEN_DISKMENU)
 		{
 			_canOpenPanelPlugin = true;
-			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredDiskItems[item];
+			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredDiskItems[(int)item];
 			OpenPluginMenuItemEventArgs e((OpenFrom)from);
 			menuItem->_OnOpen(menuItem, %e);
 		}
 		else if (from == OPEN_PLUGINSMENU || from == OPEN_EDITOR || from == OPEN_VIEWER)
 		{
 			_canOpenPanelPlugin = (from == OPEN_PLUGINSMENU);
-			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredMenuItems[item];
+			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredMenuItems[(int)item];
 			OpenPluginMenuItemEventArgs e((OpenFrom)from);
 			menuItem->_OnOpen(menuItem, %e);
 		}
@@ -768,7 +768,7 @@ HANDLE Far::AsOpenPlugin(int from, int item)
 
 void Far::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 	FarPanelPluginInfo^ pluginInfo = (FarPanelPluginInfo^)plugin->Info;
 	if (plugin->_GettingInfo)
 		plugin->_GettingInfo(plugin, nullptr);
@@ -777,15 +777,15 @@ void Far::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 
 void Far::AsClosePlugin(HANDLE hPlugin)
 {
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
-	_panels[(int)hPlugin] = nullptr;
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
+	_panels[(int)(INT_PTR)hPlugin] = nullptr;
 	if (plugin->_Closed)
 		plugin->_Closed(plugin, nullptr);
 }
 
 int Far::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
 {
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 	if (!plugin->_DeletingFiles)
 		return FALSE;
 	IList<IFile^>^ files = ItemsToFiles(plugin->Files, panelItem, itemsNumber);
@@ -798,7 +798,7 @@ int Far::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItems
 {
 	try
 	{
-		FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+		FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 		if (plugin->_GettingData)
 		{
 			PanelEventArgs e((OperationModes)opMode);
@@ -868,7 +868,7 @@ void Far::AsFreeFindData(PluginPanelItem* panelItem, int itemsNumber)
 
 int Far::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 {
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 	if (!plugin->_SettingDirectory)
 		return TRUE;
 	SettingDirectoryEventArgs e(OemToStr(dir), (OperationModes)opMode);
@@ -879,7 +879,7 @@ int Far::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 int Far::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
 	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 	if (!plugin || !plugin->_KeyPressed)
 		return FALSE;
 
@@ -890,7 +890,7 @@ int Far::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 int Far::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 {
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 	switch(id)
 	{
 	case FE_BREAK:
@@ -952,7 +952,7 @@ int Far::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 int Far::AsMakeDirectory(HANDLE hPlugin, char* name, int opMode)
 {
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 	if (!plugin->_MakingDirectory)
 		return FALSE;
 	MakingDirectoryEventArgs e(OemToStr(name), (OperationModes)opMode);
@@ -962,7 +962,7 @@ int Far::AsMakeDirectory(HANDLE hPlugin, char* name, int opMode)
 
 int Far::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode)
 {
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 	if (!plugin->_GettingFiles)
 		return 0;
 	List<IFile^>^ files = ItemsToFiles(plugin->Files, panelItem, itemsNumber);
@@ -973,7 +973,7 @@ int Far::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber,
 
 int Far::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
 {
-	FarPanelPlugin^ plugin = _panels[(int)hPlugin];
+	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
 	if (!plugin->_PuttingFiles)
 		return 0;
 	List<IFile^>^ files = ItemsToFiles(plugin->Files, panelItem, itemsNumber);
