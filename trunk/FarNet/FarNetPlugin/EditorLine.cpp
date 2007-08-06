@@ -69,7 +69,7 @@ void EditorLine::Pos::set(int value)
 String^ EditorLine::Eol::get()
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
-	return FromEditor(egs.StringEOL, strlen(egs.StringEOL));
+	return FromEditor(egs.StringEOL, (int)strlen(egs.StringEOL));
 }
 
 void EditorLine::Eol::set(String^ value)

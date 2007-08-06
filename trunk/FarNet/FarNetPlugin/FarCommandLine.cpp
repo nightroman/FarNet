@@ -28,7 +28,7 @@ int FarCommandLine::Length::get()
 	char sb[1024];
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sb))
 		throw gcnew OperationCanceledException();
-	return strlen(sb);
+	return (int)strlen(sb);
 }
 
 int FarCommandLine::No::get()
@@ -75,7 +75,7 @@ void FarCommandLine::Pos::set(int value)
 		char sb[1024];
 		if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sb))
 			throw gcnew OperationCanceledException();
-		value = strlen(sb);
+		value = (int)strlen(sb);
 	}
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINEPOS, &value))
 		throw gcnew OperationCanceledException();

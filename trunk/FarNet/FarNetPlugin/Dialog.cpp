@@ -16,7 +16,7 @@ void Class::Prop::set(bool value) { SetFlag(Flag, value); }
 namespace FarManagerImpl
 {;
 // Dialog callback
-long WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, long param2)
+LONG_PTR WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, LONG_PTR param2)
 {
 	for each(FarDialog^ dialog in FarDialog::_dialogs)
 	{
@@ -53,30 +53,30 @@ public:
 		String^ get()
 		{
 			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (long)&es);
+			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
 			if (es.BlockType == BTYPE_NONE)
 				return String::Empty;
 
 			char buf[512];
-			Info.SendDlgMessage(_hDlg, DM_GETTEXTPTR, _id, (long)buf);
+			Info.SendDlgMessage(_hDlg, DM_GETTEXTPTR, _id, (LONG_PTR)buf);
 			return OemToStr(buf + es.BlockStartPos, es.BlockWidth);
 		}
 		void set(String^ value)
 		{
 			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (long)&es);
+			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
 			if (es.BlockType == BTYPE_NONE)
 				return;
 
 			char buf[512];
-			Info.SendDlgMessage(_hDlg, DM_GETTEXTPTR, _id, (long)buf);
+			Info.SendDlgMessage(_hDlg, DM_GETTEXTPTR, _id, (LONG_PTR)buf);
 
 			String^ text = OemToStr(buf, es.BlockStartPos) + value + OemToStr(buf + es.BlockStartPos + es.BlockWidth);
 			CStr sText(text);
-			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (long)(char*)sText);
+			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(char*)sText);
 
 			es.BlockWidth = value->Length;
-			Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (long)&es);
+			Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
 		}
 	}
 	virtual property int End
@@ -84,7 +84,7 @@ public:
 		int get()
 		{
 			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (long)&es);
+			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
 			return es.BlockType == BTYPE_NONE ? -1 : es.BlockStartPos + es.BlockWidth;
 		}
 	}
@@ -93,7 +93,7 @@ public:
 		int get()
 		{
 			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (long)&es);
+			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
 			return es.BlockType == BTYPE_NONE ? 0 : es.BlockWidth;
 		}
 	}
@@ -102,7 +102,7 @@ public:
 		int get()
 		{
 			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (long)&es);
+			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
 			return es.BlockType == BTYPE_NONE ? -1 : es.BlockStartPos;
 		}
 	}
@@ -160,7 +160,7 @@ public:
 		{
 			COORD c;
 			c.Y = 0;
-			Info.SendDlgMessage(_hDlg, DM_GETCURSORPOS, _id, (long)&c);
+			Info.SendDlgMessage(_hDlg, DM_GETCURSORPOS, _id, (LONG_PTR)&c);
 			return c.X;
 		}
 		void set(int value)
@@ -170,7 +170,7 @@ public:
 			COORD c;
 			c.Y = 0;
 			c.X = (SHORT)value;
-			Info.SendDlgMessage(_hDlg, DM_SETCURSORPOS, _id, (long)&c);
+			Info.SendDlgMessage(_hDlg, DM_SETCURSORPOS, _id, (LONG_PTR)&c);
 		}
 	}
 	virtual property String^ Eol
@@ -188,13 +188,13 @@ public:
 		String^ get()
 		{
 			char buf[512];
-			Info.SendDlgMessage(_hDlg, DM_GETTEXTPTR, _id, (long)buf);
+			Info.SendDlgMessage(_hDlg, DM_GETTEXTPTR, _id, (LONG_PTR)buf);
 			return OemToStr(buf);
 		}
 		void set(String^ value)
 		{
 			CStr sText(value);
-			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (long)(char*)sText);
+			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(char*)sText);
 		}
 	}
 	virtual void Insert(String^ text)
@@ -218,13 +218,13 @@ public:
 		es.BlockStartPos = start;
 		es.BlockWidth = end - start;
 		es.BlockHeight = 1;
-		Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (long)&es);
+		Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
 	}
 	virtual void Unselect()
 	{
 		EditorSelect es;
 		es.BlockType = BTYPE_NONE;
-		Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (long)&es);
+		Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
 	}
 internal:
 	FarEditLine(HANDLE hDlg, int id) : _hDlg(hDlg), _id(id)
@@ -285,7 +285,7 @@ bool FarControl::GetFlag(int flag)
 	if (_dialog->_hDlg)
 	{
 		FarDialogItem di;
-		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEM, Id, (long)&di);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEM, Id, (LONG_PTR)&di);
 		return (di.Flags & flag) != 0;
 	}
 	else
@@ -299,11 +299,11 @@ void FarControl::SetFlag(int flag, bool value)
 	if (_dialog->_hDlg)
 	{
 		FarDialogItem di;
-		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEM, Id, (long)&di);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEM, Id, (LONG_PTR)&di);
 		if (value == ((di.Flags & flag) != 0))
 			return;
 		SET_FLAG(di.Flags, flag, value);
-		Info.SendDlgMessage(_dialog->_hDlg, DM_SETDLGITEM, Id, (long)&di);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_SETDLGITEM, Id, (LONG_PTR)&di);
 	}
 	else
 	{
@@ -316,7 +316,7 @@ int FarControl::GetSelected()
 	if (_dialog->_hDlg)
 	{
 		FarDialogItem di;
-		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEM, Id, (long)&di);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEM, Id, (LONG_PTR)&di);
 		return di.Selected;
 	}
 	else
@@ -330,11 +330,11 @@ void FarControl::SetSelected(int value)
 	if (_dialog->_hDlg)
 	{
 		FarDialogItem di;
-		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEM, Id, (long)&di);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEM, Id, (LONG_PTR)&di);
 		if (di.Selected == value)
 			return;
 		di.Selected = value;
-		Info.SendDlgMessage(_dialog->_hDlg, DM_SETDLGITEM, Id, (long)&di);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_SETDLGITEM, Id, (LONG_PTR)&di);
 	}
 	else
 	{
@@ -395,7 +395,7 @@ String^ FarControl::Text::get()
 	if (_dialog->_hDlg)
 	{
 		char buf[512];
-		Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, (long)buf);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, (LONG_PTR)buf);
 		return OemToStr(buf);
 	}
 	else
@@ -409,7 +409,7 @@ void FarControl::Text::set(String^ value)
 	if (_dialog->_hDlg)
 	{
 		CStr sText(value);
-		Info.SendDlgMessage(_dialog->_hDlg, DM_SETTEXTPTR, Id, (long)(char*)sText);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_SETTEXTPTR, Id, (LONG_PTR)(char*)sText);
 	}
 	else
 	{
@@ -676,7 +676,7 @@ void FarBaseBox::Selected::set(int value)
 		FarListPos flp;
 		flp.SelectPos = value;
 		flp.TopPos = -1;
-		Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETCURPOS, Id, (long)&flp);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETCURPOS, Id, (LONG_PTR)&flp);
 	}
 	else
 	{
@@ -937,10 +937,11 @@ bool FarDialog::Show()
 
 		// show
 		_dialogs.Add(this);
-		int selected = Info.DialogEx(Info.ModuleNumber,
-			_rect.Left, _rect.Top, _rect.Right, _rect.Bottom, sHelp,
-			items, _items->Count,
-			0, _flags, FarDialogProc, NULL);
+		int selected = Info.DialogEx(
+			Info.ModuleNumber,
+			_rect.Left, _rect.Top, _rect.Right, _rect.Bottom,
+			(char*)sHelp, items, _items->Count,
+			(DWORD)0, (DWORD)_flags, FarDialogProc, NULL);
 
 		// update
 		for(int i = _items->Count; --i >= 0;)
@@ -966,7 +967,7 @@ bool FarDialog::Show()
 	}
 }
 
-long FarDialog::DialogProc(int msg, int param1, long param2)
+LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 {
 	try
 	{
@@ -1026,7 +1027,7 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				{
 					if (cb->_ButtonClicked)
 					{
-						ButtonClickedEventArgs ea(cb, param2);
+						ButtonClickedEventArgs ea(cb, (int)param2);
 						cb->_ButtonClicked(this, %ea);
 						return !ea.Ignore;
 					}
@@ -1037,7 +1038,7 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				{
 					if (rb->_ButtonClicked)
 					{
-						ButtonClickedEventArgs ea(rb, param2);
+						ButtonClickedEventArgs ea(rb, (int)param2);
 						rb->_ButtonClicked(this, %ea);
 						return !ea.Ignore;
 					}
@@ -1053,7 +1054,7 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				{
 					if (fe->_TextChanged)
 					{
-						FarDialogItem& item = *(FarDialogItem*)param2;
+						FarDialogItem& item = *(FarDialogItem*)(LONG_PTR)param2;
 						TextChangedEventArgs ea(fe, OemToStr(item.Data));
 						fe->_TextChanged(this, %ea);
 						return !ea.Ignore;
@@ -1065,7 +1066,7 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				{
 					if (cb->_TextChanged)
 					{
-						FarDialogItem& item = *(FarDialogItem*)param2;
+						FarDialogItem& item = *(FarDialogItem*)(LONG_PTR)param2;
 						TextChangedEventArgs ea(cb, OemToStr(item.Data));
 						cb->_TextChanged(this, %ea);
 						return !ea.Ignore;
@@ -1090,7 +1091,7 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				{
 					if (fc->_MouseClicked)
 					{
-						MouseClickedEventArgs ea(fc, GetMouseInfo(*(MOUSE_EVENT_RECORD*)param2));
+						MouseClickedEventArgs ea(fc, GetMouseInfo(*(MOUSE_EVENT_RECORD*)(LONG_PTR)param2));
 						fc->_MouseClicked(this, %ea);
 						if (ea.Ignore)
 							return true;
@@ -1098,7 +1099,7 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				}
 				else if (_MouseClicked)
 				{
-					MouseClickedEventArgs ea(nullptr, GetMouseInfo(*(MOUSE_EVENT_RECORD*)param2));
+					MouseClickedEventArgs ea(nullptr, GetMouseInfo(*(MOUSE_EVENT_RECORD*)(LONG_PTR)param2));
 					_MouseClicked(this, %ea);
 					if (ea.Ignore)
 						return true;
@@ -1110,14 +1111,14 @@ long FarDialog::DialogProc(int msg, int param1, long param2)
 				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
 				if (fc && fc->_KeyPressed)
 				{
-					KeyPressedEventArgs ea(fc, param2);
+					KeyPressedEventArgs ea(fc, (int)param2);
 					fc->_KeyPressed(this, %ea);
 					if (ea.Ignore)
 						return true;
 				}
 				if (_KeyPressed)
 				{
-					KeyPressedEventArgs ea(fc, param2);
+					KeyPressedEventArgs ea(fc, (int)param2);
 					_KeyPressed(this, %ea);
 					if (ea.Ignore)
 						return true;

@@ -187,7 +187,7 @@ int EditorManager::AsProcessEditorEvent(int type, void* param)
 		}
 	case EE_REDRAW:
 		{
-			int mode = (int)param;
+			int mode = (int)(INT_PTR)param;
 			Editor^ ed = GetCurrentEditor();
 			if (_anyEditor._onRedraw)
 			{

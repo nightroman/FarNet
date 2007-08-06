@@ -1,7 +1,7 @@
 Plugin name  : Far.NET3
 Category     : Development
-Version      : 3.3.21
-Release date : 2007.07.23
+Version      : 3.3.22
+Release date : 2007.08.01
 Author       : Roman Kuzmin
 Email        : nightroman@hotmail.com
 HomePage     : http://nightroman.spaces.live.com
@@ -11,8 +11,9 @@ Sources      : C#, C++/CLI (at home page)
 	Requirements
 
 
-- Far Manager 1.71 (recommended 1.71.2192 and above)
 - .NET Frameworks 2.0
+- Far Manager 1.71 (recommended 1.71.2192 and above)
+* The plugin is built and tested on Far Manager 1.71.2248
 
 
 	Description
