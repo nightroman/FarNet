@@ -1,6 +1,15 @@
+3.3.23
+
+- New methods IFar.{Get|Set}PluginValue(string pluginName, string valueName,
+object {default|new}Value) to {get|set} a plugin value stored in the registry,
+usually at "Software\Far\Plugins" (or "Software\Far\Users\user1\Plugins" if FAR
+is started started with '/u user1' parameter). "pluginName" defines a subkey
+there; the subkey is created if it does not exist even if you only get a value.
+
 3.3.22
 
-- Fixed most of x64 issues.
+- Fixed most (all?) of x64 issues. Sources are ready for x64. Currently binaries
+are provided for x32 only, sorry for inconvenience.
 
 3.3.21
 

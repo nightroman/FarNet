@@ -353,6 +353,21 @@ namespace FarManager
 		/// Do not save parameters directly in this key, create your own subkey here.
 		/// </summary>
 		string RootKey { get; }
+		/// <summary>
+		/// Gets a plugin value from the registry.
+		/// </summary>
+		/// <param name="pluginName">Plugin name. The registry key is created if it does not exist.</param>
+		/// <param name="valueName">Name of a value.</param>
+		/// <param name="defaultValue">Default value.</param>
+		/// <returns>Found or default value.</returns>
+		object GetPluginValue(string pluginName, string valueName, object defaultValue);
+		/// <summary>
+		/// Sets a plugin value.
+		/// </summary>
+		/// <param name="pluginName">Plugin name. The registry key is created if it does not exist.</param>
+		/// <param name="valueName">Name of a value.</param>
+		/// <param name="newValue">New value to be set.</param>
+		void SetPluginValue(string pluginName, string valueName, object newValue);
 	}
 
 	/// <summary>
