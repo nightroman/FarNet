@@ -1,7 +1,7 @@
 Plugin name  : Far.NET3
 Category     : Development
-Version      : 3.3.22
-Release date : 2007.08.01
+Version      : 3.3.23
+Release date : 2007.08.08
 Author       : Roman Kuzmin
 Email        : nightroman@hotmail.com
 HomePage     : http://nightroman.spaces.live.com
@@ -37,8 +37,8 @@ if you want; in this case you have to update "Far.exe.config" accordingly.
 	Structure
 
 
-- Plugins\Far.Net\FarNetPlugin.dll - standard Far plugin;
-- Plugins\Far.Net\FarNetPlugin_en.hlf - help (for manually added plugin links);
+- Plugins\Far.NET\FarNetPlugin.dll - standard Far plugin;
+- Plugins\Far.NET\FarNetPlugin_en.hlf - help (for manually added plugin links);
 - Lib - plugin assemblies and their resources;
 - Lib\FarNetIntf.dll - FarManager interfaces;
 - Lib\FarNetIntf.xml - XML documentation, e.g. for VS Object Browser;
@@ -65,7 +65,8 @@ implementing IPlugin interface.
 	CHM Documentation
 
 
-Download the latest version from: http://code.google.com/p/farnet/downloads/list
+Download the latest version from
+http://code.google.com/p/farnet/
 
 
 	XML Documentation

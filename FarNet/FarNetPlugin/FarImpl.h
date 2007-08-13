@@ -53,6 +53,7 @@ public:
 	virtual IPluginMenuItem^ CreatePluginsMenuItem();
 	virtual IPluginMenuItem^ RegisterPluginsMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ onOpen);
 	virtual IViewer^ CreateViewer();
+	virtual Object^ GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue);
 	virtual String^ Input(String^ prompt);
 	virtual String^ Input(String^ prompt, String^ history);
 	virtual String^ Input(String^ prompt, String^ history, String^ title);
@@ -67,6 +68,7 @@ public:
 	virtual void RegisterPrefix(String^ prefix, StringDelegate^ handler);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ cmdLine);
+	virtual void SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue);
 	virtual void SetUserScreen();
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);

@@ -15,6 +15,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "Message.h"
 #include "PluginMenuItem.h"
 #include "Viewer.h"
+using namespace Microsoft::Win32;
 using namespace System::Reflection;
 
 namespace FarManagerImpl
@@ -980,6 +981,44 @@ int Far::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber,
 	FilesEventArgs e(files, (OperationModes)opMode, move != 0);
 	plugin->_PuttingFiles(plugin, %e);
 	return e.Ignore ? FALSE : TRUE;
+}
+
+Object^ Far::GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
+{
+	RegistryKey^ key1 = nullptr;
+	RegistryKey^ key2 = nullptr;
+	try
+	{
+		key1 = Registry::CurrentUser->CreateSubKey(RootKey);
+		key2 = key1->CreateSubKey(pluginName);
+		return key2->GetValue(valueName, defaultValue);
+	}
+	finally
+	{
+		if (key2)
+			key2->Close();
+		if (key1)
+			key1->Close();
+	}
+}
+
+void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue)
+{
+	RegistryKey^ key1 = nullptr;
+	RegistryKey^ key2 = nullptr;
+	try
+	{
+		key1 = Registry::CurrentUser->CreateSubKey(RootKey);
+		key2 = key1->CreateSubKey(pluginName);
+		key2->SetValue(valueName, newValue);
+	}
+	finally
+	{
+		if (key2)
+			key2->Close();
+		if (key1)
+			key1->Close();
+	}
 }
 
 }
