@@ -16,6 +16,7 @@ public:
 	virtual property bool Disabled { bool get(); void set(bool value); }
 	virtual property bool Hidden { bool get(); void set(bool value); }
 	virtual property int Id;
+	virtual property Place Rect { Place get() { return _rect; } }
 	virtual property String^ Text { String^ get(); void set(String^ value); }
 public: DEF_EVENT_ARGS(GotFocus, _GotFocus, AnyEventArgs);
 public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
@@ -201,9 +202,12 @@ public:
 	virtual property bool IsWarning { bool get(); void set(bool value); }
 	virtual property bool NoPanel { bool get(); void set(bool value); }
 	virtual property bool NoShadow { bool get(); void set(bool value); }
+	virtual property bool NoSmartCoords;
+	virtual property IButton^ Cancel;
 	virtual property IControl^ Default { IControl^ get(); void set(IControl^ value); }
 	virtual property IControl^ Focused { IControl^ get(); void set(IControl^ value); }
 	virtual property IControl^ Selected { IControl^ get(); }
+	virtual property Place Rect { Place get() { return _rect; } }
 	virtual property String^ HelpTopic;
 	virtual property Object^ Data;
 	virtual bool Show();

@@ -71,6 +71,8 @@ public:
 	virtual property Point Frame { Point get(); }
 	virtual property String^ Path { String^ get(); void set(String^ value); }
 public:
+	virtual void Close();
+	virtual void Close(String^ path);
 	virtual void Redraw();
 	virtual void Redraw(int current, int top);
 	virtual void Update(bool keepSelection);
@@ -117,7 +119,6 @@ internal:
 public:
 	virtual property bool AddDots { bool get(); void set(bool value); }
 	virtual property bool CompareFatTime { bool get(); void set(bool value); }
-	virtual property bool ConfirmClose;
 	virtual property bool ExternalDelete { bool get(); void set(bool value); }
 	virtual property bool ExternalGet { bool get(); void set(bool value); }
 	virtual property bool ExternalMakeDirectory { bool get(); void set(bool value); }

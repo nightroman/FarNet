@@ -38,7 +38,7 @@ namespace FarManager
 		/// </summary>
 		string Bottom { get; set; }
 		/// <summary>
-		/// List of virtual key codes that closes menu (see VK_* in Far API docs).
+		/// List of virtual key codes that closes menu (see VK_* in FAR API docs).
 		/// </summary>
 		IList<int> BreakKeys { get; }
 		/// <summary>

@@ -65,6 +65,14 @@ HANDLE WINAPI _export OpenPlugin(int from, INT_PTR item)
 	return INVALID_HANDLE_VALUE;
 }
 
+int WINAPI _export Configure(int itemIndex)
+{
+	__START;
+	return farImpl->AsConfigure(itemIndex);
+	__END;
+	return false;
+}
+
 void WINAPI _export ExitFAR()
 {
 	__START;

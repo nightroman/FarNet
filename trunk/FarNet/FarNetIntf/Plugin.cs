@@ -13,7 +13,7 @@ namespace FarManager
 	public interface IPlugin
 	{
 		/// <summary>
-		/// Far manager application.
+		/// FAR Manager application.
 		/// </summary>
 		/// <remarks>
 		/// When an object is set - plugin must register menu items, prefixes, etc.

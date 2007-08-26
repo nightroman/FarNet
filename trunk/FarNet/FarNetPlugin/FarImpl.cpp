@@ -34,7 +34,8 @@ static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelIt
 //
 
 Far::Far()
-: _registeredDiskItems(gcnew List<IPluginMenuItem^>())
+: _registeredConfigItems(gcnew List<IPluginMenuItem^>())
+, _registeredDiskItems(gcnew List<IPluginMenuItem^>())
 , _registeredMenuItems(gcnew List<IPluginMenuItem^>())
 , _registeredPrefixes(gcnew Dictionary<String^, StringDelegate^>())
 , _editorManager(gcnew EditorManager())
@@ -81,6 +82,11 @@ void Far::RegisterPrefix(String^ prefix, StringDelegate^ handler)
 	_registeredPrefixes->Add(prefix, handler);
 }
 
+void Far::RegisterPluginsConfigItem(IPluginMenuItem^ item)
+{
+	_registeredConfigItems->Add(item);
+}
+
 void Far::RegisterPluginsDiskItem(IPluginMenuItem^ item)
 {
 	_registeredDiskItems->Add(item);
@@ -98,16 +104,6 @@ IPluginMenuItem^ Far::RegisterPluginsMenuItem(String^ name, EventHandler<OpenPlu
 	r->OnOpen += onOpen;
 	RegisterPluginsMenuItem(r);
 	return r;
-}
-
-void Far::UnregisterPluginsDiskItem(IPluginMenuItem^ item)
-{
-	_registeredDiskItems->Remove(item);
-}
-
-void Far::UnregisterPluginsMenuItem(IPluginMenuItem^ item)
-{
-	_registeredMenuItems->Remove(item);
 }
 
 IPluginMenuItem^ Far::CreatePluginsMenuItem()
@@ -365,6 +361,8 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 	pi->DiskMenuStringsNumber = _registeredDiskItems->Count;
 	pi->PluginMenuStrings = (char**)_menuStrings;
 	pi->PluginMenuStringsNumber = _registeredMenuItems->Count;
+	pi->PluginConfigStrings = (char**)_configStrings;
+	pi->PluginConfigStringsNumber = _registeredConfigItems->Count;
 
 	MakePrefixes();
 	if (_registeredPrefixes->Count > 0)
@@ -374,26 +372,39 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 void Far::CreateMenuStringsBlock()
 {
 	FreeMenuStrings();
+
 	_diskStrings = new CStr[_registeredDiskItems->Count];
-	_menuStrings = new CStr[_registeredMenuItems->Count];
 	for(int i = 0; i < _registeredDiskItems->Count; ++i)
 	{
 		IPluginMenuItem^ item = dynamic_cast<IPluginMenuItem^>(_registeredDiskItems[i]);
 		_diskStrings[i].Set(item->Name);
 	}
+
+	_menuStrings = new CStr[_registeredMenuItems->Count];
 	for(int i = 0; i < _registeredMenuItems->Count; ++i)
 	{
 		IPluginMenuItem^ item = dynamic_cast<IPluginMenuItem^>(_registeredMenuItems[i]);
 		_menuStrings[i].Set(item->Name);
+	}
+
+	_configStrings = new CStr[_registeredConfigItems->Count];
+	for(int i = 0; i < _registeredConfigItems->Count; ++i)
+	{
+		IPluginMenuItem^ item = dynamic_cast<IPluginMenuItem^>(_registeredConfigItems[i]);
+		_configStrings[i].Set(item->Name);
 	}
 }
 
 void Far::FreeMenuStrings()
 {
 	delete[] _diskStrings;
-	delete[] _menuStrings;
 	_diskStrings = NULL;
+
+	delete[] _menuStrings;
 	_menuStrings = NULL;
+
+	delete[] _configStrings;
+	_configStrings = NULL;
 }
 
 void Far::ProcessPrefixes(INT_PTR item)
@@ -711,13 +722,12 @@ String^ Far::Input(String^ prompt, String^ history, String^ title, String^ text)
 	return ib.Show() ? ib.Text : nullptr;
 }
 
-void Far::ClosePanel(String^ path)
+bool Far::AsConfigure(int itemIndex)
 {
-	CStr sb;
-	if (!String::IsNullOrEmpty(path))
-		sb.Set(path);
-
-	Info.Control(INVALID_HANDLE_VALUE, FCTL_CLOSEPLUGIN, sb);
+	PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredConfigItems[itemIndex];
+	OpenPluginMenuItemEventArgs e(OpenFrom::Other);
+	menuItem->_OnOpen(menuItem, %e);
+	return e.Ignore ? false : true;
 }
 
 HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
@@ -913,11 +923,6 @@ int Far::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			plugin->_Closing(plugin, %e);
 			return e.Ignore;
 		}
-		if (plugin->Info->ConfirmClose)
-		{
-			if (Msg("Close the panel?", plugin->Info->Title, MessageOptions::YesNo))
-				return TRUE;
-		}
 		break;
 	case FE_COMMAND:
 		if (plugin->_Executing)
@@ -1019,6 +1024,58 @@ void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue
 		if (key1)
 			key1->Close();
 	}
+}
+
+//::FAR Window managenent
+
+public ref class FarWindowInfo : public IWindowInfo
+{
+public:
+	FarWindowInfo(const WindowInfo& wi, bool full)
+		: _Current(wi.Current != 0), _Modified(wi.Modified != 0), _Type((WindowType)wi.Type)
+	{
+		if (full)
+		{
+			_Name = OemToStr(wi.Name);
+			_TypeName = OemToStr(wi.TypeName);
+		}
+	}
+	virtual property bool Current { bool get() { return _Current; } }
+	virtual property bool Modified { bool get() { return _Modified; } }
+	virtual property String^ Name { String^ get() { return _Name; } }
+	virtual property String^ TypeName { String^ get() { return _TypeName; } }
+	virtual property WindowType Type { WindowType get() { return _Type; } }
+private:
+	bool _Current;
+	bool _Modified;
+	String^ _Name;
+	String^ _TypeName;
+	WindowType _Type;
+};
+
+int Far::WindowCount::get()
+{
+	return Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWCOUNT, 0);
+}
+
+IWindowInfo^ Far::GetWindowInfo(int index, bool full)
+{
+	WindowInfo wi;
+	wi.Pos = index;
+	if (!Info.AdvControl(Info.ModuleNumber, full ? ACTL_GETWINDOWINFO : ACTL_GETSHORTWINDOWINFO, &wi))
+		throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
+	return gcnew FarWindowInfo(wi, full);
+}
+
+void Far::SetCurrentWindow(int index)
+{
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_SETCURRENTWINDOW, (void*)(INT_PTR)index))
+		throw gcnew InvalidOperationException("SetCurrentWindow:" + index + " failed.");
+}
+
+bool Far::Commit()
+{
+	return Info.AdvControl(Info.ModuleNumber, ACTL_COMMIT, 0) != 0;
 }
 
 }

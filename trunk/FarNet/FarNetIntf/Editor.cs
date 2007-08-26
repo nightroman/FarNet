@@ -41,7 +41,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Far Editor interface. See <see cref="IFar.Editor"/>, <see cref="IFar.CreateEditor"/>.
+	/// FAR editor interface. See <see cref="IFar.Editor"/>, <see cref="IFar.CreateEditor"/>.
 	/// </summary>
 	public interface IEditor : IAnyEditor
 	{
@@ -135,7 +135,7 @@ namespace FarManager
 		/// </summary>
 		bool IsModal { get; set; }
 		/// <summary>
-		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in Far. 
+		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in FAR. 
 		/// It is read only when an editor is opened.
 		/// </summary>
 		bool IsNew { get; set; }
@@ -347,7 +347,7 @@ namespace FarManager
 			_mode = mode;
 		}
 		/// <summary>
-		/// Parameter of Far EE_REDRAW event, see Far API, ProcessEditorEvent.
+		/// Parameter of FAR EE_REDRAW event, see FAR API, ProcessEditorEvent.
 		/// </summary>
 		public int Mode
 		{

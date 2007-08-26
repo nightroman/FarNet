@@ -8,7 +8,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Far Viewer interface. It is created by <see cref="IFar.CreateViewer"/>.
+	/// FAR viewer interface. It is created by <see cref="IFar.CreateViewer"/>.
 	/// </summary>
 	public interface IViewer
 	{

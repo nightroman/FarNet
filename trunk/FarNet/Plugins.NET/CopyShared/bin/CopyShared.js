@@ -14,20 +14,15 @@ public class CopyShared extends BasePlugin{
 		this.menuItem.add_OnOpen(this.item_OnOpen);
 		Far.RegisterPluginsMenuItem(this.menuItem);
 	}
-
-	function Disconnect(){
-		Far.UnregisterPluginsMenuItem(this.menuItem);
-	}
-
 	function GetExternalPath(CmdLine){
-   		for(var folder in shares)
-       		if(startsWith(CmdLine.toLowerCase(), folder))
-           		return (shares[folder]+"\\"+CmdLine.substr(folder.length+1)).replace(/ /ig, "%20");
+		for(var folder in shares)
+		if(startsWith(CmdLine.toLowerCase(), folder))
+		return (shares[folder]+"\\"+CmdLine.substr(folder.length+1)).replace(/ /ig, "%20");
 	}
 	function startsWith(s, s1){
-  			// var s // : String
-  			// var s1 // : String
-  			return s.substr(0, s1.length).toLowerCase()==s1.toLowerCase();
+		// var s // : String
+		// var s1 // : String
+		return s.substr(0, s1.length).toLowerCase()==s1.toLowerCase();
 	}
 	function copySelected(){
 		if(Far.Panel.Selected.Count==0){
@@ -35,15 +30,15 @@ public class CopyShared extends BasePlugin{
 		}else{
 			var s="";
 			for(var item in Far.Panel.Selected)
-				s+="\r\n"+(this.GetExternalPath(item.Path));
+			s+="\r\n"+(this.GetExternalPath(item.Path));
 
 			Far.Clipboard=s;
 		}
 	}
 	function PluginFile(s){
-       	var fi=new FileInfo(Assembly.GetExecutingAssembly().Location);
-       	return fi.Directory.Parent.FullName+"\\"+s;
-    }
+		var fi=new FileInfo(Assembly.GetExecutingAssembly().Location);
+		return fi.Directory.Parent.FullName+"\\"+s;
+	}
 	function readCfg(){
 		this.shares=[];
 		var cfg=File.OpenText(this.PluginFile("cfg\\shares.cfg"));
@@ -53,5 +48,5 @@ public class CopyShared extends BasePlugin{
 			shares[name]=value;
 		}
 		cfg.Close();
-	} //readCfg
+	}
 }
