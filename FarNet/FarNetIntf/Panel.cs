@@ -10,6 +10,133 @@ using System;
 namespace FarManager
 {
 	/// <summary>
+	/// Panel of the FAR Manager. See active <see cref="IFar.Panel"/> and passive <see cref="IFar.AnotherPanel"/>.
+	/// </summary>
+	public interface IPanel
+	{
+		/// <summary>
+		/// Is it active?
+		/// </summary>
+		bool IsActive { get; }
+		/// <summary>
+		/// Is it plugin panel?
+		/// </summary>
+		bool IsPlugin { get; }
+		/// <summary>
+		/// Is it visible?
+		/// </summary>
+		bool IsVisible { get; set; }
+		/// <summary>
+		/// Current panel path.
+		/// If the panel is Tree, it is currently selected directory in panel.
+		/// If you set an invalid path you get an error message box, not an exception.
+		/// </summary>
+		string Path { get; set; }
+		/// <summary>
+		/// Current item.
+		/// See <see cref="IPanelPluginInfo.AddDots"/>.
+		/// </summary>
+		IFile Current { get; }
+		/// <summary>
+		/// Current item index.
+		/// </summary>
+		int CurrentIndex { get; }
+		/// <summary>
+		/// The first visible item index.
+		/// </summary>
+		int TopIndex { get; }
+		/// <summary>
+		/// View mode.
+		/// </summary>
+		PanelViewMode ViewMode { get; set; }
+		/// <summary>
+		/// List of all panel items.
+		/// See <see cref="IPanelPluginInfo.AddDots"/>.
+		/// </summary>
+		IList<IFile> Contents { get; }
+		/// <summary>
+		/// List of selected panel items.
+		/// </summary>
+		IList<IFile> Selected { get; }
+		/// <summary>
+		/// List of selected panel items if any or the current; '..' is excluded.
+		/// </summary>
+		IList<IFile> Targeted { get; }
+		/// <summary>
+		/// Panel type.
+		/// </summary>
+		PanelType Type { get; }
+		/// <summary>
+		/// Panel sort mode.
+		/// </summary>
+		PanelSortMode SortMode { get; set; }
+		/// <summary>
+		/// Hidden and system files are displayed.
+		/// </summary>
+		bool ShowHidden { get; }
+		/// <summary>
+		/// File highlighting is used.
+		/// </summary>
+		bool Highlight { get; }
+		/// <summary>
+		/// Reversed sort order is used.
+		/// </summary>
+		bool ReverseSortOrder { get; set; }
+		/// <summary>
+		/// Sort groups are used.
+		/// </summary>
+		bool UseSortGroups { get; }
+		/// <summary>
+		/// Show selected files first.
+		/// </summary>
+		bool SelectedFirst { get; }
+		/// <summary>
+		/// Plugin panel items are shown with real file names.
+		/// </summary>
+		bool RealNames { get; }
+		/// <summary>
+		/// Numeric sort mode.
+		/// </summary>
+		bool NumericSort { get; set; }
+		/// <summary>
+		/// Redraws the panel. [FCTL_REDRAWPANEL]
+		/// </summary>
+		void Redraw();
+		/// <summary>
+		/// Redraws the panel and sets the current and\or the first visible item. [FCTL_REDRAWPANEL]
+		/// If both arguments are negative, result is the same as per <see cref="Redraw()"/>
+		/// </summary>
+		/// <param name="current">Index of the current panel item.</param>
+		/// <param name="top">Index of the first visible panel item.</param>
+		void Redraw(int current, int top);
+		/// <summary>
+		/// Updates panel contents.
+		/// </summary>
+		/// <param name="keepSelection">Keep the current selection.</param>
+		void Update(bool keepSelection);
+		/// <summary>
+		/// Gets current frame: current and top index.
+		/// </summary>
+		Point Frame { get; }
+		/// <summary>
+		/// Panel window position.
+		/// </summary>
+		Place Window { get; }
+		/// <summary>
+		/// Closes the current plugin panel. [FCTL_CLOSEPLUGIN]
+		/// </summary>
+		void Close();
+		/// <summary>
+		/// Closes the current plugin panel. [FCTL_CLOSEPLUGIN]
+		/// </summary>
+		/// <param name="path">
+		/// Name of the directory that will be set in the panel after closing the plugin (or {null|empty}).
+		/// If the path doesn't exist FAR shows an error.
+		/// </param>
+		void Close(string path);
+	}
+
+	/// <summary>
 	/// Item of file system. It is used by <see cref="IPanel"/>.
 	/// </summary>
 	public interface IFile
@@ -223,121 +350,6 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Panel of the Far Manager. See active <see cref="IFar.Panel"/> and passive <see cref="IFar.AnotherPanel"/>.
-	/// </summary>
-	public interface IPanel
-	{
-		/// <summary>
-		/// Is it active?
-		/// </summary>
-		bool IsActive { get; }
-		/// <summary>
-		/// Is it plugin panel?
-		/// </summary>
-		bool IsPlugin { get; }
-		/// <summary>
-		/// Is it visible?
-		/// </summary>
-		bool IsVisible { get; set; }
-		/// <summary>
-		/// Current panel path.
-		/// If the panel is Tree, it is currently selected directory in panel.
-		/// If you set an invalid path you get an error message box, not an exception.
-		/// </summary>
-		string Path { get; set; }
-		/// <summary>
-		/// Current item.
-		/// See <see cref="IPanelPluginInfo.AddDots"/>.
-		/// </summary>
-		IFile Current { get; }
-		/// <summary>
-		/// Current item index.
-		/// </summary>
-		int CurrentIndex { get; }
-		/// <summary>
-		/// The first visible item index.
-		/// </summary>
-		int TopIndex { get; }
-		/// <summary>
-		/// View mode.
-		/// </summary>
-		PanelViewMode ViewMode { get; set; }
-		/// <summary>
-		/// List of all panel items.
-		/// See <see cref="IPanelPluginInfo.AddDots"/>.
-		/// </summary>
-		IList<IFile> Contents { get; }
-		/// <summary>
-		/// List of selected panel items.
-		/// </summary>
-		IList<IFile> Selected { get; }
-		/// <summary>
-		/// List of selected panel items if any or the current; '..' is excluded.
-		/// </summary>
-		IList<IFile> Targeted { get; }
-		/// <summary>
-		/// Panel type.
-		/// </summary>
-		PanelType Type { get; }
-		/// <summary>
-		/// Panel sort mode.
-		/// </summary>
-		PanelSortMode SortMode { get; set; }
-		/// <summary>
-		/// Hidden and system files are displayed.
-		/// </summary>
-		bool ShowHidden { get; }
-		/// <summary>
-		/// File highlighting is used.
-		/// </summary>
-		bool Highlight { get; }
-		/// <summary>
-		/// Reversed sort order is used.
-		/// </summary>
-		bool ReverseSortOrder { get; set; }
-		/// <summary>
-		/// Sort groups are used.
-		/// </summary>
-		bool UseSortGroups { get; }
-		/// <summary>
-		/// Show selected files first.
-		/// </summary>
-		bool SelectedFirst { get; }
-		/// <summary>
-		/// Plugin panel items are shown with real file names.
-		/// </summary>
-		bool RealNames { get; }
-		/// <summary>
-		/// Numeric sort mode.
-		/// </summary>
-		bool NumericSort { get; set; }
-		/// <summary>
-		/// Redraws the panel. [FCTL_REDRAWPANEL]
-		/// </summary>
-		void Redraw();
-		/// <summary>
-		/// Redraws the panel and sets the current and\or the first visible item. [FCTL_REDRAWPANEL]
-		/// If both arguments are negative, result is the same as per <see cref="Redraw()"/>
-		/// </summary>
-		/// <param name="current">Index of the current panel item.</param>
-		/// <param name="top">Index of the first visible panel item.</param>
-		void Redraw(int current, int top);
-		/// <summary>
-		/// Updates panel contents.
-		/// </summary>
-		/// <param name="keepSelection">Keep the current selection.</param>
-		void Update(bool keepSelection);
-		/// <summary>
-		/// Gets current frame: current and top index.
-		/// </summary>
-		Point Frame { get; }
-		/// <summary>
-		/// Panel window position.
-		/// </summary>
-		Place Window { get; }
-	}
-
-	/// <summary>
 	/// Describes a plugin instance. [OpenPluginInfo]
 	/// </summary>
 	public interface IPanelPluginInfo : IDisposable
@@ -440,10 +452,6 @@ namespace FarManager
 		/// When a panel has started it may be used internally for keeping\restoring the current mode.
 		/// </summary>
 		bool StartSortDesc { get; set; }
-		/// <summary>
-		/// Tells to show a confirmation message when a panel is about to close.
-		/// </summary>
-		bool ConfirmClose { get; set; }
 	}
 
 	/// <summary>

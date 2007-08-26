@@ -1,13 +1,9 @@
 import FarManager;
-public class HelloJS extends BasePlugin{
-	var menuItem;
+public class HelloJS extends BasePlugin {
 	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
-		Far.Msg("Hello, world from js.net");
+		Far.Msg("Hello world!");
 	}
-	function Connect(){			
-		this.menuItem=Far.RegisterPluginsMenuItem("Hello js.net", this.item_OnOpen);
-	}
-	function Disconnect() {
-		Far.UnregisterPluginsMenuItem(this.menuItem);
+	function Connect() {
+		Far.RegisterPluginsMenuItem("Hello js.net", this.item_OnOpen);
 	}
 }

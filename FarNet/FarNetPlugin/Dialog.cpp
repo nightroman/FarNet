@@ -824,12 +824,32 @@ IControl^ FarDialog::Selected::get()
 
 void FarDialog::AddItem(FarControl^ item)
 {
+	// add
 	item->Id = _items->Count;
 	_items->Add(item);
+
+	// done?
+	if (NoSmartCoords || item->Id == 0)
+		return;
+
+	// smart coords
+	int i = _items->Count - 2;
+	if (item->_rect.Top <= 0)
+	{
+		item->_rect.Top = _items[i]->_rect.Top - item->_rect.Top;
+		if (item->_rect.Bottom <= 0)
+			item->_rect.Bottom = item->_rect.Top;
+		else
+			item->_rect.Bottom += item->_rect.Top;
+	}
 }
 
 IBox^ FarDialog::AddBox(int left, int top, int right, int bottom, String^ text)
 {
+	if (right == 0)
+		right = _rect.Width - left - 1;
+	if (bottom == 0)
+		bottom = _rect.Height - top - 1;
 	FarBox^ r = gcnew FarBox(this, left, top, right, bottom, text);
 	AddItem(r);
 	return r;
@@ -951,7 +971,7 @@ bool FarDialog::Show()
 		if (selected >= 0)
 		{
 			_selected = _items[selected];
-			return true;
+			return (Object^)_selected != (Object^)Cancel;
 		}
 		else
 		{

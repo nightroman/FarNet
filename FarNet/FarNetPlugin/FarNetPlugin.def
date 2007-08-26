@@ -1,6 +1,7 @@
 LIBRARY	FarNetPlugin
 EXPORTS
 	ClosePlugin
+	Configure
 	DeleteFiles
 	ExitFAR
 	FreeFindData

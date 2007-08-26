@@ -18,8 +18,4 @@ Inherits BasePlugin
 		Far.RegisterPluginsMenuItem(Me.menuItem)
 		Far.RegisterPrefix("hellovb", AddressOf sayHello)
 	End Sub
-
-	Public Overloads Overrides Sub Disconnect()
-		Far.UnregisterPluginsMenuItem(Me.menuItem)
-	End Sub
-End Class 
+End Class

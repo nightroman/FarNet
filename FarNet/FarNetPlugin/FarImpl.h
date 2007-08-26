@@ -23,6 +23,7 @@ public:
 	virtual property ILine^ CommandLine { ILine^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
 	virtual property int HWnd { int get(); }
+	virtual property int WindowCount { int get(); }
 	virtual property IPanel^ AnotherPanel { IPanel^ get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
 	virtual property OpenFrom From { OpenFrom get(); }
@@ -33,6 +34,7 @@ public:
 	virtual property String^ WordDiv { String^ get(); }
 	virtual property Version^ Version { System::Version^ get(); }
 public:
+	virtual bool Commit();
 	virtual bool Msg(String^ body);
 	virtual bool Msg(String^ body, String^ header);
 	virtual ICollection<String^>^ GetHistory(String^ name);
@@ -53,30 +55,32 @@ public:
 	virtual IPluginMenuItem^ CreatePluginsMenuItem();
 	virtual IPluginMenuItem^ RegisterPluginsMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ onOpen);
 	virtual IViewer^ CreateViewer();
+	virtual IWindowInfo^ GetWindowInfo(int index, bool full);
 	virtual Object^ GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue);
 	virtual String^ Input(String^ prompt);
 	virtual String^ Input(String^ prompt, String^ history);
 	virtual String^ Input(String^ prompt, String^ history, String^ title);
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
-	virtual void ClosePanel(String^ path);
 	virtual void GetUserScreen();
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(IList<int>^ sequence,bool disableOutput);
 	virtual void PostText(String^ text, bool disableOutput);
+	virtual void RegisterPluginsConfigItem(IPluginMenuItem^ item);
 	virtual void RegisterPluginsDiskItem(IPluginMenuItem^ item);
 	virtual void RegisterPluginsMenuItem(IPluginMenuItem^ item);
 	virtual void RegisterPrefix(String^ prefix, StringDelegate^ handler);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ cmdLine);
+	virtual void SetCurrentWindow(int index);
 	virtual void SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue);
 	virtual void SetUserScreen();
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
-	virtual void UnregisterPluginsDiskItem(IPluginMenuItem^ item);
-	virtual void UnregisterPluginsMenuItem(IPluginMenuItem^ item);
 	virtual void Write(String^ text);
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
+	virtual void UnregisterPluginsDiskItem(IPluginMenuItem^) {}
+	virtual void UnregisterPluginsMenuItem(IPluginMenuItem^) {}
 internal:
 	Far();
 	~Far();
@@ -86,6 +90,7 @@ internal:
 internal:
 	EditorManager^ _editorManager;
 internal:
+	bool AsConfigure(int itemIndex);
 	HANDLE AsOpenPlugin(int from, INT_PTR item);
 	int AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode);
 	int AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode);
@@ -106,9 +111,11 @@ private:
 	void ProcessPrefixes(INT_PTR item);
 	void MakePrefixes();
 private:
+	CStr* _configStrings;
 	CStr* _diskStrings;
 	CStr* _menuStrings;
 	CStr* _prefixes;
+	List<IPluginMenuItem^>^ _registeredConfigItems;
 	List<IPluginMenuItem^>^ _registeredDiskItems;
 	List<IPluginMenuItem^>^ _registeredMenuItems;
 	Dictionary<String^, StringDelegate^>^ _registeredPrefixes;

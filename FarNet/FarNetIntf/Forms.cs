@@ -45,6 +45,10 @@ namespace FarManager.Forms
 		/// Hides a dialog item. 
 		/// </summary>
 		bool Hidden { get; set; }
+		/// <summary>
+		/// Gets a rectangular.
+		/// </summary>
+		Place Rect { get; }
 	}
 
 	/// <summary>
@@ -217,7 +221,7 @@ namespace FarManager.Forms
 		/// <summary>
 		/// Change selection in a radio button group when focus is moved.
 		/// Radio buttons with this flag set are also drawn without parentheses around the selection mark
-		/// (example: Far color selection dialog).
+		/// (example: FAR color selection dialog).
 		/// </summary>
 		bool MoveSelect { get; set; }
 		/// <summary>
@@ -379,7 +383,7 @@ namespace FarManager.Forms
 
 	/**
 <summary>
-Far dialog.
+FAR dialog.
 It is created by <see cref="IFar.CreateDialog"/>.
 </summary>
 <remarks>
@@ -440,6 +444,15 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// Don't draw dialog panel. 
 		/// </summary>
 		bool NoPanel { get; set; }
+		/// <summary>
+		/// Disable smart coordinates.
+		/// </summary>
+		/// <remarks>
+		/// Smart coordinates mode: not positive <c>Top</c> is subtracted from the previous control <c>Top</c>:
+		/// i.e. 0: the same line, -1: next line and so on; <c>Bottom</c> value, if any, should be relative to 0.
+		/// Example: last <c>Top</c> is 5, then <c>AddBox(*, -1, *, 2, *)</c> is recalculated as <c>AddBox(*, 6, *, 8, *)</c>.
+		/// </remarks>
+		bool NoSmartCoords { get; set; }
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
@@ -447,72 +460,83 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// </summary>
 		object Data { get; set; }
 		/// <summary>
+		/// Gets a rectangular.
+		/// </summary>
+		Place Rect { get; }
+		/// <summary>
+		/// If it is set and the button is pushed <see cref="Show"/> returns <c>false</c>.
+		/// </summary>
+		IButton Cancel { get; set; }
+		/// <summary>
 		/// Shows a dialog.
 		/// </summary>
-		/// <returns>false if the user cancelled the dialog.</returns>
+		/// <returns>false if the user cancelled the dialog or pushed <see cref="Cancel"/> button.</returns>
 		bool Show();
 		/// <summary>
-		/// Adds a double or single box control.
+		/// Adds a double or single box control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <param name="text">Control text.</param>
+		/// <remarks>
+		/// If <c>right</c>\<c>bottom</c> is 0 then it is calculated.
+		/// </remarks>
 		IBox AddBox(int left, int top, int right, int bottom, string text);
 		/// <summary>
-		/// Adds a button control.
+		/// Adds a button control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		IButton AddButton(int left, int top, string text);
 		/// <summary>
-		/// Adds a check box control.
+		/// Adds a check box control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		ICheckBox AddCheckBox(int left, int top, string text);
 		/// <summary>
-		/// Adds a combo box control.
+		/// Adds a combo box control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IComboBox AddComboBox(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a standard edit control.
+		/// Adds a standard edit control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEdit(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a fixed size edit control.
+		/// Adds a fixed size edit control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEditFixed(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a password edit control.
+		/// Adds a password edit control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEditPassword(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a list box control.
+		/// Adds a list box control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <param name="text">Control text.</param>
 		IListBox AddListBox(int left, int top, int right, int bottom, string text);
 		/// <summary>
-		/// Adds a radio button.
+		/// Adds a radio button. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		IRadioButton AddRadioButton(int left, int top, string text);
 		/// <summary>
-		/// Adds a text control.
+		/// Adds a text control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddText(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a vertical text control.
+		/// Adds a vertical text control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTB"]/*'/>
 		/// <param name="text">Control text.</param>

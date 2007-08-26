@@ -281,6 +281,20 @@ bool FarPanel::RealNames::get()
 	return (pi.Flags & PFLAGS_REALNAMES) != 0;
 }
 
+void FarPanel::Close()
+{
+	Info.Control(_id, FCTL_CLOSEPLUGIN, 0);
+}
+
+void FarPanel::Close(String^ path)
+{
+	CStr sb;
+	if (!String::IsNullOrEmpty(path))
+		sb.Set(path);
+
+	Info.Control(_id, FCTL_CLOSEPLUGIN, sb);
+}
+
 void FarPanel::Redraw()
 {
 	int command = _active ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;
