@@ -73,7 +73,7 @@ namespace FarManager
 		None,
 		/// <summary>Warning message colors are used (white text on red background by default).</summary>
 		Warning = 0x00000001,
-		/// <summary>If error type returned by GetLastErroris known to Far or Windows, the error description will be shown in the first message line. In that case, the text given by the plugin will be displayed below the error description.</summary>
+		/// <summary>If error type returned by GetLastErroris known to FAR or Windows, the error description will be shown in the first message line. In that case, the text given by the plugin will be displayed below the error description.</summary>
 		Error = 0x00000002,
 		/// <summary>Do not redraw the message background.</summary>
 		KeepBackground = 0x00000004,

@@ -11,8 +11,8 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Interface of Far manager. It is available in your plugin as property <see cref="BasePlugin.Far"/> of <see cref="BasePlugin"/>.
-	/// It provides access to general Far data and functionality and creates UI and other objects like
+	/// Interface of FAR Manager. It is available in your plugin as property <see cref="BasePlugin.Far"/> of <see cref="BasePlugin"/>.
+	/// It provides access to general FAR data and functionality and creates UI and other objects like
 	/// menus, input and message boxes, dialogs, editors, viewers and etc.
 	/// </summary>
 	public interface IFar
@@ -31,41 +31,37 @@ namespace FarManager
 		/// <param name="handler">Handler of a command.</param>
 		void RegisterPrefix(string prefix, StringDelegate handler);
 		/// <summary>
-		/// Adds a menu item to the Far disks menu.
+		/// Adds a menu item to the FAR plugin configuration menu.
+		/// It should be called only from <see cref="BasePlugin.Connect"/>.
 		/// </summary>
 		/// <param name="item">The menu item being registered.</param>
-		/// <seealso cref="UnregisterPluginsDiskItem"/>
+		void RegisterPluginsConfigItem(IPluginMenuItem item);
+		/// <summary>
+		/// Adds a menu item to the FAR disks menu.
+		/// It should be called only from <see cref="BasePlugin.Connect"/>.
+		/// </summary>
+		/// <param name="item">The menu item being registered.</param>
 		void RegisterPluginsDiskItem(IPluginMenuItem item);
 		/// <summary>
-		/// Adds a menu item to the Far main plugins menu (F11).
+		/// Adds a menu item to the FAR main plugins menu (F11).
+		/// It should be called only from <see cref="BasePlugin.Connect"/>.
 		/// </summary>
 		/// <param name="item">The menu item being registered.</param>
-		/// <seealso cref="UnregisterPluginsMenuItem"/>
 		void RegisterPluginsMenuItem(IPluginMenuItem item);
 		/// <summary>
-		/// Adds a menu item to the Far main plugins menu (F11).
+		/// Adds a menu item to the FAR main plugins menu (F11).
+		/// It should be called only from <see cref="BasePlugin.Connect"/>.
 		/// </summary>
 		/// <param name="name">Name of a menu item.</param>
 		/// <param name="onOpen">Handler called on selection of the menu item.</param>
-		/// <returns>newly created item</returns>
-		/// <seealso cref="UnregisterPluginsMenuItem"/>
+		/// <returns>Created and registered item.</returns>
 		IPluginMenuItem RegisterPluginsMenuItem(string name, EventHandler<OpenPluginMenuItemEventArgs> onOpen);
 		/// <summary>
-		/// Call it to unregister the plugin disk item.
-		/// </summary>
-		/// <param name="item">Item being unregistered.</param>
-		void UnregisterPluginsDiskItem(IPluginMenuItem item);
-		/// <summary>
-		/// Call it to unregister the plugin menu item.
-		/// </summary>
-		/// <param name="item">Item being unregistered.</param>
-		void UnregisterPluginsMenuItem(IPluginMenuItem item);
-		/// <summary>
-		/// Creates a new plugin menu item.
+		/// Creates a new plugin menu item used by
+		/// <see cref="RegisterPluginsConfigItem"/>, <see cref="RegisterPluginsDiskItem"/>
+		/// and <see cref="RegisterPluginsMenuItem(IPluginMenuItem)"/>.
 		/// </summary>
 		/// <returns>Created plugin menu item.</returns>
-		/// <seealso cref="RegisterPluginsMenuItem(IPluginMenuItem)"/>
-		/// <seealso cref="UnregisterPluginsMenuItem"/>
 		IPluginMenuItem CreatePluginsMenuItem();
 		/// <summary>
 		/// Shows a message box.
@@ -104,16 +100,16 @@ namespace FarManager
 		/// </summary>
 		IMessage CreateMessage();
 		/// <summary>
-		/// Run specified command line (works only with Far.Net registered prefixes)
+		/// Run specified command line (works only with Far.NET registered prefixes).
 		/// </summary>
 		///<param name="cmdLine">Command line</param>
 		void Run(string cmdLine);
 		/// <summary>
-		/// Windows handle of Far
+		/// Windows handle of FAR window.
 		/// </summary>
 		int HWnd { get; }
 		/// <summary>
-		/// Far version
+		/// FAR version.
 		/// </summary>
 		Version Version { get; }
 		/// <summary>
@@ -150,13 +146,13 @@ namespace FarManager
 		/// </summary>
 		IViewer CreateViewer();
 		/// <summary>
-		/// Posts keys to the Far keyboard queue.
+		/// Posts keys to the FAR keyboard queue.
 		/// </summary>
 		/// <param name="keys">String of keys.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeys(string keys, bool disableOutput);
 		/// <summary>
-		/// Posts literal text to the Far keyboard queue.
+		/// Posts literal text to the FAR keyboard queue.
 		/// </summary>
 		/// <param name="text">Literal text. \t, \r, \n, \r\n are supported, too.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
@@ -166,7 +162,7 @@ namespace FarManager
 		/// </summary>
 		IList<int> CreateKeySequence(string keys);
 		/// <summary>
-		/// Posts a sequence of keys to the Far keyboard queue.
+		/// Posts a sequence of keys to the FAR keyboard queue.
 		/// </summary>
 		/// <param name="sequence">Sequence of keys.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
@@ -221,25 +217,25 @@ namespace FarManager
 		/// </summary>
 		IPanel AnotherPanel { get; }
 		/// <summary>
-		/// The Far command line.
+		/// FAR command line.
 		/// </summary>
 		/// <remarks>
 		/// If a plugin is called from the command line (including a user menu (F2)
 		/// then command line properties and methods may not work correctly; in
 		/// this case consider to call a plugin operation from a plugin menu.
-		/// Staring from Far 1.71.2192 you can set the entire command line text
+		/// Staring from FAR 1.71.2192 you can set the entire command line text
 		/// if you call a plugin from the command line (but not from a user menu).
 		/// </remarks>
 		ILine CommandLine { get; }
 		/// <summary>
-		/// Copies the current screen contents to the Far user screen buffer
+		/// Copies the current screen contents to the FAR user screen buffer
 		/// (which is displayed when the panels are switched off).
 		/// </summary>
 		void SetUserScreen();
 		/// <summary>
 		/// Copies the current user screen buffer to console screen
 		/// (which is displayed when the panels are switched off).
-		/// VERSION: Far 1.71.2186.
+		/// VERSION: FAR 1.71.2186.
 		/// </summary>
 		void GetUserScreen();
 		/// <summary>
@@ -307,14 +303,6 @@ namespace FarManager
 		/// <param name="fullName">Use full name for panel item name.</param>
 		IFile CreatePanelItem(FileSystemInfo info, bool fullName);
 		/// <summary>
-		/// Closes the current plugin panel. [FCTL_CLOSEPLUGIN]
-		/// </summary>
-		/// <param name="path">
-		/// Name of the directory that will be set in the panel after closing the plugin (or {null|empty}).
-		/// If the path doesn't exist FAR shows an error.
-		/// </param>
-		void ClosePanel(string path);
-		/// <summary>
 		/// Confirmation settings according to options in the "Confirmations" dialog. [ACTL_GETCONFIRMATIONS]
 		/// </summary>
 		FarConfirmations Confirmations { get; }
@@ -368,6 +356,43 @@ namespace FarManager
 		/// <param name="valueName">Name of a value.</param>
 		/// <param name="newValue">New value to be set.</param>
 		void SetPluginValue(string pluginName, string valueName, object newValue);
+		/// <summary>
+		/// Count of open FAR windows. [ACTL_GETWINDOWCOUNT]
+		/// </summary>
+		/// <remarks>
+		/// There is at least one window (panels, editor or viewer).
+		/// </remarks>
+		int WindowCount { get; }
+		/// <summary>
+		/// Allows to switch to a specific FAR Manager window. [ACTL_SETCURRENTWINDOW]
+		/// </summary>
+		/// <param name="index">Window index. See <see cref="WindowCount"/>.</param>
+		/// <remarks>
+		/// The switching will not occur untill <see cref="Commit"/> is called or FAR receives control.
+		/// </remarks>
+		void SetCurrentWindow(int index);
+		/// <summary>
+		/// "Commits" the results of the last operation with FAR windows
+		/// (e.g. <see cref="SetCurrentWindow"/>). [ACTL_COMMIT]
+		/// </summary>
+		/// <returns><c>true</c> on success.</returns>
+		bool Commit();
+		/// <summary>
+		/// Gets information about a FAR Manager window. [ACTL_GETWINDOWINFO ACTL_GETSHORTWINDOWINFO]
+		/// </summary>
+		/// <param name="index">Window index, -1 ~ current. See <see cref="WindowCount"/>.</param>
+		/// <param name="full">If false <see>IWindowInfo.Name</see> and <see>IWindowInfo.TypeName</see> are not filled.</param>
+		IWindowInfo GetWindowInfo(int index, bool full);
+		/// <summary>
+		/// Will be removed.
+		/// </summary>
+		[Obsolete]
+		void UnregisterPluginsDiskItem(IPluginMenuItem item);
+		/// <summary>
+		/// Will be removed.
+		/// </summary>
+		[Obsolete]
+		void UnregisterPluginsMenuItem(IPluginMenuItem item);
 	}
 
 	/// <summary>
@@ -378,11 +403,11 @@ namespace FarManager
 	{
 		/// <summary>
 		/// Assume path is Info.ModuleName and show the topic from the help file of the calling plugin (it is Far.NET).
-		/// If topic begins with a colon ':', the topic from the main Far help file is shown and path is ignored.
+		/// If topic begins with a colon ':', the topic from the main FAR help file is shown and path is ignored.
 		/// </summary>
 		None = 0x0,
 		/// <summary>
-		/// Path is ignored and the topic from the main Far help file is shown.
+		/// Path is ignored and the topic from the main FAR help file is shown.
 		/// In this case you do not need to start the topic with a colon ':'.
 		/// </summary>
 		Far = 1 << 0,
@@ -477,16 +502,25 @@ namespace FarManager
 		/// <param name="from">See <see cref="From"/>.</param>
 		public OpenPluginMenuItemEventArgs(OpenFrom from)
 		{
-			_from = from;
+			_From = from;
 		}
 		/// <summary>
 		/// Where it is called from. See <see cref="OpenFrom"/>.
 		/// </summary>
 		public OpenFrom From
 		{
-			get { return _from; }
+			get { return _From; }
 		}
-		OpenFrom _from;
+		OpenFrom _From;
+		/// <summary>
+		/// Tells to ignore results, e.g. when configuration dialog is cancelled.
+		/// </summary>
+		public bool Ignore
+		{
+			get { return _Ignore; }
+			set { _Ignore = value; }
+		}
+		bool _Ignore;
 	}
 
 	/// <summary>
@@ -540,5 +574,71 @@ namespace FarManager
 		/// Exit
 		/// </summary>
 		Exit = 0x200,
+	}
+
+	/// <summary>
+	/// FAR window types. [WINDOWINFO_TYPE]
+	/// </summary>
+	public enum WindowType
+	{
+		/// <summary>
+		/// Dummy.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// File panels.
+		/// </summary>
+		Panels = 1,
+		/// <summary>
+		/// Internal viewer window.
+		/// </summary>
+		Viewer,
+		/// <summary>
+		/// Internal editor window.
+		/// </summary>
+		Editor,
+		/// <summary>
+		/// Dialog.
+		/// </summary>
+		Dialog,
+		/// <summary>
+		/// Menu.
+		/// </summary>
+		Menu,
+		/// <summary>
+		/// Help window.
+		/// </summary>
+		Help
+	}
+
+	/// <summary>
+	/// Contains information about one FAR window. See <see cref="IFar.GetWindowInfo"/>. [WindowInfo]
+	/// </summary>
+	public interface IWindowInfo
+	{
+		/// <summary>
+		/// Window type.
+		/// </summary>
+		WindowType Type { get; }
+		/// <summary>
+		/// Modification flag. Valid only for editor window.
+		/// </summary>
+		bool Modified { get; }
+		/// <summary>
+		/// Is the window active?
+		/// </summary>
+		bool Current { get; }
+		/// <summary>
+		/// Name of the window type, depends on the current FAR language.
+		/// </summary>
+		string TypeName { get; }
+		/// <summary>
+		/// Window title:
+		/// viewer\editor: the file name;
+		/// panels: selected file name;
+		/// help: HLF file path;
+		/// menu\dialog: header.
+		/// </summary>
+		string Name { get; }
 	}
 }

@@ -36,11 +36,13 @@
 				<![CDATA[
 public override void Connect()
 {
+	// register a command prefix
 	Far.RegisterPrefix([your prefix], [method to be called]);
-	this.menuItem = Far.CreatePluginsMenuItem();
-	this.menuItem.Name = [name of plugin menu item];
-	this.menuItem.OnOpen += [method to be called];
-	Far.RegisterPluginsMenuItem(this.menuItem);
+	// register a menu item
+	IPluginMenuItem item1 = Far.CreatePluginsMenuItem();
+	item1.Name = [name of plugin menu item];
+	item1.OnOpen += [method to be called];
+	Far.RegisterPluginsMenuItem(item1);
 	...
 }
 ]]>

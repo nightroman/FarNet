@@ -76,7 +76,7 @@ String^ FromEditor(const char* text, int len);
 String^ OemToStr(const char* oem);
 String^ OemToStr(const char* oem, int length);
 
-// Far API wrappers
+// FAR API wrappers
 void EditorControl_ECTL_DELETEBLOCK();
 void EditorControl_ECTL_DELETECHAR();
 void EditorControl_ECTL_DELETESTRING();

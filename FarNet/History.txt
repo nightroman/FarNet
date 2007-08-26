@@ -1,3 +1,43 @@
+3.3.25
+
+OBSOLETE
+- IFar.UnregisterPluginsDiskItem, IFar.UnregisterPluginsMenuItem are obsolete
+and will be removed because they are not really effective: registration is done
+only when Connect() is called and it cannot be 'undone'. Besides, when FAR.NET
+is disconnected all registered items are 'unregistered' automatically. Example
+plugin sources are already updated, you may have to update your existing
+plugins too: simply remove calls of these methods. Bonus: you don't have to keep
+menu item references waiting for Disconnect() to be unregistered, and in most
+cases a plugin does not have to implement Disconnect() at all.
+
+PLUGIN CONFIGURATION
+- New method RegisterPluginsConfigItem(): adds "Plugin configuration" item.
+
+WINDOWS
+- New property IFar.WindowCount {get}.
+- New interface IWindowInfo and enum WindowType.
+- New methods IFar: GetWindowInfo(), SetCurrentWindow(), Commit().
+
+DIALOGS
+New features mostly simplifying creation of a dialog and especially future
+modifications of it (Test-Dialog-.ps1 in PowerShellFar shows them all):
+- IDialog.AddBox(): if a parameter right\bottom is 0 then it is calculated;
+- New properties IDialog.Rect, IControl.Rect (useful for relative positions);
+- New property IDialog.NoSmartCoords. By default coordinates are "smart", i.e.
+not positive Top is subtracted from the previous control Top: (0) - the same
+line, (-1) - the next line, and so on. See more in help.
+- New property IDialog.Cancel:IButton - if it is set and the button is pushed
+then Selected is set to this button as usually, but Show() returns false now.
+
+PLUGIN PANELS
+- REMOVED property IPanelPluginInfo.ConfirmClose because of FE_CLOSE issues: it
+may not happen or it may happen when a panel is not about to close.
+- New methods IPanel.Close() and IPanel.Close(string path).
+- REMOVED method IFar.ClosePanel(), instead of it use IPanel.Close() (also for
+IPanelPlugin), i.e. call Far.Panel.Close() to close an active panel,
+Far.AnotherPanel.Close() to close a passive panel, <IPluginPanel>.Close() to
+close a plugin panel (active or passive).
+
 3.3.23
 
 - New methods IFar.{Get|Set}PluginValue(string pluginName, string valueName,
