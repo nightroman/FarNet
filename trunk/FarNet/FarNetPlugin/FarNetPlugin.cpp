@@ -35,7 +35,8 @@ Far^ GetFar()
 #define __START try {
 #define __END } catch(Exception^ e) { farImpl->ShowError(nullptr, e); }
 
-// SetStartupInfo is called once, after the DLL module is loaded to memory.
+// SetStartupInfo is called once, after the plugin DLL is loaded.
+// It creates a plugin manager and loads all found .NET plugins.
 void WINAPI _export SetStartupInfo(const PluginStartupInfo* psi)
 {
 	Info = *psi;
@@ -49,6 +50,7 @@ void WINAPI _export SetStartupInfo(const PluginStartupInfo* psi)
 }
 
 // GetPluginInfo is called to get general plugin info.
+// It passes in joined information about all plugins.
 void WINAPI _export GetPluginInfo(PluginInfo* pi)
 {
 	__START;
@@ -56,7 +58,7 @@ void WINAPI _export GetPluginInfo(PluginInfo* pi)
 	__END;
 }
 
-// OpenPlugin is called on new plugin instance.
+// OpenPlugin is called to create a new plugin instance or do a job.
 HANDLE WINAPI _export OpenPlugin(int from, INT_PTR item)
 {
 	__START;

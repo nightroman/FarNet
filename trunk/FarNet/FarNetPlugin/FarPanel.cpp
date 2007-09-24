@@ -374,6 +374,11 @@ DEF_STRING(Title, PanelTitle);
 //::FarPanelPlugin::
 //
 
+FarPanelPlugin::FarPanelPlugin() : FarPanel(true)
+{
+	_StartDirectory = Environment::CurrentDirectory;
+}
+
 void FarPanelPlugin::AssertOpen()
 {
 	if (Id <= 0) throw gcnew InvalidOperationException("Panel plugin is not opened.");
@@ -464,6 +469,16 @@ void FarPanelPlugin::Path::set(String^ value)
 		Update(false);
 		Redraw();
 	}
+}
+
+String^ FarPanelPlugin::StartDirectory::get()
+{
+	return _StartDirectory;
+}
+
+void FarPanelPlugin::StartDirectory::set(String^ value)
+{
+	_StartDirectory = value;
 }
 
 IPanelPlugin^ FarPanelPlugin::Another::get()

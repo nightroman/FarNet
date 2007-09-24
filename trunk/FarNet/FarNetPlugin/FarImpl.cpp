@@ -136,19 +136,19 @@ IMessage^ Far::CreateMessage()
 	return gcnew Message();
 }
 
-void Far::Run(String^ cmdLine)
+void Far::Run(String^ command)
 {
-	int colon = cmdLine->IndexOf(':');
+	int colon = command->IndexOf(':');
 	if (colon < 0)
 		return;
 
 	for each(KeyValuePair<String^, StringDelegate^>^ i in _registeredPrefixes)
 	{
 		String^ pref = i->Key;
-		if (colon != pref->Length || !cmdLine->StartsWith(pref))
+		if (colon != pref->Length || !command->StartsWith(pref))
 			continue;
 		StringDelegate^ handler = i->Value;
-		handler->Invoke(cmdLine->Substring(colon + 1));
+		handler->Invoke(command->Substring(colon + 1));
 		break;
 	}
 }
@@ -266,6 +266,11 @@ int Far::NameToKey(String^ key)
 	return Info.FSF->FarNameToKey(sKey);
 }
 
+void Far::PostKeys(String^ keys)
+{
+	PostKeys(keys, true);
+}
+
 void Far::PostKeys(String^ keys, bool disableOutput)
 {
 	if (keys == nullptr)
@@ -273,6 +278,11 @@ void Far::PostKeys(String^ keys, bool disableOutput)
 
 	keys = keys->Trim();
 	PostKeySequence(CreateKeySequence(keys), disableOutput);
+}
+
+void Far::PostText(String^ text)
+{
+	PostText(text, true);
 }
 
 void Far::PostText(String^ text, bool disableOutput)
@@ -409,8 +419,8 @@ void Far::FreeMenuStrings()
 
 void Far::ProcessPrefixes(INT_PTR item)
 {
-	char* commandLine = (char*)item;
-	Run(OemToStr(commandLine));
+	char* command = (char*)item;
+	Run(OemToStr(command));
 }
 
 void Far::MakePrefixes()
@@ -536,6 +546,14 @@ void Far::Write(String^ text)
 	SetUserScreen();
 }
 
+void Far::Write(String^ text, ConsoleColor foregroundColor)
+{
+	ConsoleColor fc = Console::ForegroundColor;
+	Console::ForegroundColor = foregroundColor;
+	Write(text);
+	Console::ForegroundColor = fc;
+}
+
 void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
 {
 	ConsoleColor fc = Console::ForegroundColor;
@@ -625,7 +643,7 @@ void Far::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel)
 
 IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
 {
-	// any panel
+	// case: any panel
 	if (hostType == nullptr)
 	{
 		for (int i = 1; i < 4; ++i)
@@ -637,7 +655,7 @@ IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
 		return nullptr;
 	}
 
-	// panel with defined host
+	// panel with defined host type
 	for (int i = 1; i < 4; ++i)
 	{
 		FarPanelPlugin^ p = _panels[i];
@@ -758,7 +776,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 			menuItem->_OnOpen(menuItem, %e);
 		}
 
-		// open a panel
+		// open a waiting panel
 		if (_panels[0])
 		{
 			HANDLE h = AddPanelPlugin(_panels[0]);
@@ -770,7 +788,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 	}
 	finally
 	{
-		// drop waiting and set lock
+		// drop a waiting panel and set the global lock
 		_panels[0] = nullptr;
 		_from = OpenFrom::Other;
 		_canOpenPanelPlugin = false;
@@ -916,7 +934,9 @@ int Far::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		}
 		break;
 	case FE_CLOSE:
-		//? workaround is needed: unwanted extra call before plugin commands
+		//? FE_CLOSE issues:
+		// *) unwanted extra call on plugin commands entered in command line
+		// *) may not be called at all e.g. if tmp panel is opened
 		if (plugin->_Closing)
 		{
 			PanelEventArgs e(OperationModes::None);

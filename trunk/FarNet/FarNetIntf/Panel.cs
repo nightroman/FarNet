@@ -791,10 +791,14 @@ namespace FarManager
 		object Data { get; set; }
 		/// <summary>
 		/// User object that is normally a host of the panel (i.e. container of data, event handlers and etc.).
-		/// Normally you should use it if you have more than one panel with communication between them.
+		/// Normally you should use it if you have several communicating panels.
 		/// See <see cref="Another"/>.
 		/// </summary>
 		object Host { get; set; }
+		/// <summary>
+		/// Current directory when the panel starts.
+		/// </summary>
+		string StartDirectory { get; set; }
 		/// <summary>
 		/// Use this property to set the information about your panel
 		/// just after <see cref="IFar.CreatePanelPlugin"/> (e.g. to set properties that never change)
@@ -802,9 +806,9 @@ namespace FarManager
 		/// </summary>
 		IPanelPluginInfo Info { get; }
 		/// <summary>
-		/// Panel items (files). For performance sake this list is not protected but you have to follow some rules.
-		/// When a panel has started normally you can change this list only in <see cref="GettingData"/> event handler.
-		/// If you change it not in this function then you have to update the panel immediately after the changes.
+		/// Panel items. For performance and simplicity the list is not protected and it should be used properly.
+		/// Normally it is filled on startup and then can be changed by <see cref="GettingData"/> handler.
+		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately.
 		/// </summary>
 		IList<IFile> Files { get; }
 		/// <summary>
