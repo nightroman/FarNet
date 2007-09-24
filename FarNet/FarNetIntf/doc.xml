@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding='windows-1251'?>
 <docs>
-	<!--
-	/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
-	-->
+	<!-- /// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/> -->
 	<pp name="HelpTopic">
 		<summary>
-			Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
-		</summary>
+Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
+</summary>
 	</pp>
 	<pp name="LT">
 		<param name="left">Left position.</param>
@@ -31,23 +29,21 @@
 	<pp name="Connect">
 		<summary>Override this method to handle plugin startup.</summary>
 		<example>
-			(C#) how to register plugin command line prefix and plugin menu command
-			<code>
-				<![CDATA[
+(C#) how to register a command line prefix and a menu command.
+<code>
 public override void Connect()
 {
 	// register a command prefix
-	Far.RegisterPrefix([your prefix], [method to be called]);
-	// register a menu item
+	Far.RegisterPrefix([prefix name], [method to be called]);
+	// register a menu command
 	IPluginMenuItem item1 = Far.CreatePluginsMenuItem();
-	item1.Name = [name of plugin menu item];
+	item1.Name = [plugin menu item name];
 	item1.OnOpen += [method to be called];
 	Far.RegisterPluginsMenuItem(item1);
 	...
 }
-]]>
-			</code>
-		</example>
+</code>
+</example>
 	</pp>
 	<pp name="ShowHelp">
 		<summary>Shows the specified topic from a given hlf-file.</summary>
@@ -55,9 +51,9 @@ public override void Connect()
 		<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
 		<param name="options">Help options describing path and topic.</param>
 		<remarks>
-			The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
-			<code>
-				<![CDATA[
+The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
+<code>
+<![CDATA[
 "Topic"
 Reference to a topic in the plugins help file.
 
@@ -68,18 +64,18 @@ Reference to a topic from the main Far Manager help file.
 Reference to a topic in a help file located in a folder with full or relative
 path of FullPath. An ending backslash must be added. The reference must not be
 split on multiple lines. For example, the plugin Foo is located in folder
-"D:\Far\Plugins\Foo" and we need to show the topic "FooInfo" from its help file:
-	"<D:\Far\Plugins\Foo\>FooInfo"
+"D:\Far\Plugins\Foo" and we need the topic "FooInfo" from its help file:
+"<D:\Far\Plugins\Foo\>FooInfo"
 
 "<FullModuleName>Topic"
 Reference to a topic in a help file located in the same folder as the plugin
 with the relative or full path of FullModuleName. The reference must not be
-split on mutiple lines. For example, we need to show the help topic "FooInfo"
-from the help file of the plugin Foo "D:\Far\Plugins\Foo\Foo.dll":
-	"<D:\Far\Plugins\Foo\Foo.dll>FooInfo"
+split on mutiple lines. For example, we need the help topic "FooInfo" from the
+help file of the plugin Foo "D:\Far\Plugins\Foo\Foo.dll":
+"<D:\Far\Plugins\Foo\Foo.dll>FooInfo"
 ]]>
-			</code>
-		</remarks>
+</code>
+</remarks>
 	</pp>
 	<pp name="Colors">
 		<param name="foregroundColor">Foreground color.</param>
@@ -87,9 +83,9 @@ from the help file of the plugin Foo "D:\Far\Plugins\Foo\Foo.dll":
 	</pp>
 	<pp name="Include">
 		<summary>
-			Creates and shows <see cref="IInputBox"/>.
-			Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
-			If you need more input box options, use the interface directly.
-		</summary>
+Creates and shows <see cref="IInputBox"/>.
+Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
+If you need more input box options, use the interface directly.
+</summary>
 	</pp>
 </docs>

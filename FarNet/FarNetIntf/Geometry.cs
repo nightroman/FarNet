@@ -75,7 +75,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Place between two points: rectangle or stream.
+	/// Ordered pair of two points defining a rectangle or a stream selection in editor.
 	/// </summary>
 	public struct Place
 	{

@@ -62,25 +62,26 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title);
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual void GetUserScreen();
+	virtual void PostKeys(String^ keys);
 	virtual void PostKeys(String^ keys, bool disableOutput);
-	virtual void PostKeySequence(IList<int>^ sequence,bool disableOutput);
+	virtual void PostKeySequence(IList<int>^ sequence, bool disableOutput);
+	virtual void PostText(String^ text);
 	virtual void PostText(String^ text, bool disableOutput);
 	virtual void RegisterPluginsConfigItem(IPluginMenuItem^ item);
 	virtual void RegisterPluginsDiskItem(IPluginMenuItem^ item);
 	virtual void RegisterPluginsMenuItem(IPluginMenuItem^ item);
 	virtual void RegisterPrefix(String^ prefix, StringDelegate^ handler);
 	virtual void RestoreScreen(int screen);
-	virtual void Run(String^ cmdLine);
+	virtual void Run(String^ command);
 	virtual void SetCurrentWindow(int index);
 	virtual void SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue);
 	virtual void SetUserScreen();
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
 	virtual void Write(String^ text);
+	virtual void Write(String^ text, ConsoleColor foregroundColor);
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
-	virtual void UnregisterPluginsDiskItem(IPluginMenuItem^) {}
-	virtual void UnregisterPluginsMenuItem(IPluginMenuItem^) {}
 internal:
 	Far();
 	~Far();
