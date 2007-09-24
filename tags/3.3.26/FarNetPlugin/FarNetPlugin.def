@@ -1,0 +1,20 @@
+LIBRARY	FarNetPlugin
+EXPORTS
+	ClosePlugin
+	Configure
+	DeleteFiles
+	ExitFAR
+	FreeFindData
+	GetFiles
+	GetFindData
+	GetOpenPluginInfo
+	GetPluginInfo
+	MakeDirectory
+	OpenPlugin
+	ProcessEditorEvent
+	ProcessEditorInput
+	ProcessEvent
+	ProcessKey
+	PutFiles
+	SetDirectory
+	SetStartupInfo
