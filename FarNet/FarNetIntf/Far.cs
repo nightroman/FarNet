@@ -11,9 +11,11 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Interface of FAR Manager. It is available in your plugin as property <see cref="BasePlugin.Far"/> of <see cref="BasePlugin"/>.
-	/// It provides access to general FAR data and functionality and creates UI and other objects like
-	/// menus, input and message boxes, dialogs, editors, viewers and etc.
+	/// Interface of FAR Manager.
+	/// It is available in a plugin as property <see cref="BasePlugin.Far"/> of <see cref="BasePlugin"/>.
+	/// It provides top level access to FAR data and functionality and creates objects like
+	/// menus, input and message boxes, dialogs, editors, viewers, panels with
+	/// their own properties and methods.
 	/// </summary>
 	public interface IFar
 	{
@@ -23,10 +25,8 @@ namespace FarManager
 		string PluginFolderPath { get; }
 		/// <summary>
 		/// Registers a command line prefix.
+		/// It should be called only from <see cref="BasePlugin.Connect"/>.
 		/// </summary>
-		/// <remarks>
-		/// Call this function at plugin connection if you want to handle command line prefixes.
-		/// </remarks>
 		/// <param name="prefix">Command prefix.</param>
 		/// <param name="handler">Handler of a command.</param>
 		void RegisterPrefix(string prefix, StringDelegate handler);
@@ -58,8 +58,9 @@ namespace FarManager
 		IPluginMenuItem RegisterPluginsMenuItem(string name, EventHandler<OpenPluginMenuItemEventArgs> onOpen);
 		/// <summary>
 		/// Creates a new plugin menu item used by
-		/// <see cref="RegisterPluginsConfigItem"/>, <see cref="RegisterPluginsDiskItem"/>
-		/// and <see cref="RegisterPluginsMenuItem(IPluginMenuItem)"/>.
+		/// <see cref="RegisterPluginsConfigItem"/>,
+		/// <see cref="RegisterPluginsDiskItem"/>,
+		/// <see cref="RegisterPluginsMenuItem(IPluginMenuItem)"/>.
 		/// </summary>
 		/// <returns>Created plugin menu item.</returns>
 		IPluginMenuItem CreatePluginsMenuItem();
@@ -67,14 +68,14 @@ namespace FarManager
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
-		/// <returns>True on Enter.</returns>
+		/// <returns><c>false</c> if cancelled.</returns>
 		bool Msg(string body);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
-		/// <returns>True on Enter.</returns>
+		/// <returns><c>false</c> if cancelled.</returns>
 		bool Msg(string body, string header);
 		/// <summary>
 		/// Shows a message box with options.
@@ -82,7 +83,7 @@ namespace FarManager
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
-		/// <returns>Button index or -1 on Escape.</returns>
+		/// <returns>Button index or -1 if cancelled.</returns>
 		int Msg(string body, string header, MessageOptions options);
 		/// <summary>
 		/// Shows a message box with options and buttons.
@@ -91,21 +92,21 @@ namespace FarManager
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons.</param>
-		/// <returns>Button index or -1 on Escape.</returns>
+		/// <returns>Button index or -1 if cancelled.</returns>
 		int Msg(string body, string header, MessageOptions options, string[] buttons);
 		/// <summary>
-		/// Creates a new message box (<see cref="IMessage"/>).
+		/// Creates a new message box.
 		/// You have to set its properties and call <see cref="IMessage.Show"/>.
 		/// Note that in most cases using one of <c>Msg</c> methods instead of this is enough.
 		/// </summary>
 		IMessage CreateMessage();
 		/// <summary>
-		/// Run specified command line (works only with Far.NET registered prefixes).
+		/// Runs a command with a registered Far.NET prefix.
 		/// </summary>
-		///<param name="cmdLine">Command line</param>
-		void Run(string cmdLine);
+		///<param name="command">Command with a prefix.</param>
+		void Run(string command);
 		/// <summary>
-		/// Windows handle of FAR window.
+		/// Handle of FAR window.
 		/// </summary>
 		int HWnd { get; }
 		/// <summary>
@@ -113,18 +114,18 @@ namespace FarManager
 		/// </summary>
 		Version Version { get; }
 		/// <summary>
-		/// Creates a new input box (<see cref="IInputBox"/>).
+		/// Creates a new input box.
 		/// You have to set its properties and call <see cref="IInputBox.Show"/>.
 		/// </summary>
 		IInputBox CreateInputBox();
 		/// <summary>
-		/// Creates a new menu (<see cref="IMenu"/>).
+		/// Creates a new menu.
 		/// You have to set its properties and call <see cref="IMenu.Show"/>.
 		/// </summary>		
 		IMenu CreateMenu();
 		/// <summary>
-		/// Virtual editor instance. Subscribe to its events when you want be 
-		/// informed about all editors events.
+		/// Virtual editor instance.
+		/// Subscribe to its events if you want to handle events of all editors.
 		/// </summary>
 		IAnyEditor AnyEditor { get; }
 		/// <summary>
@@ -136,15 +137,20 @@ namespace FarManager
 		/// </summary>		
 		string Clipboard { get; set; }
 		/// <summary>
-		/// Creates a new not yet opened editor.
+		/// Creates a new editor.
 		/// You have to set its properties and call <see cref="IEditor.Open"/>.
 		/// </summary>
 		IEditor CreateEditor();
 		/// <summary>
-		/// Creates a new not yet opened viewer.
+		/// Creates a new viewer.
 		/// You have to set its properties and call <see cref="IViewer.Open"/>.
 		/// </summary>
 		IViewer CreateViewer();
+		/// <summary>
+		/// Posts keys to the FAR keyboard queue. Processing is not displayed.
+		/// </summary>
+		/// <param name="keys">String of keys.</param>
+		void PostKeys(string keys);
 		/// <summary>
 		/// Posts keys to the FAR keyboard queue.
 		/// </summary>
@@ -152,9 +158,14 @@ namespace FarManager
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeys(string keys, bool disableOutput);
 		/// <summary>
+		/// Posts literal text to the FAR keyboard queue. Processing is not displayed.
+		/// </summary>
+		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
+		void PostText(string text);
+		/// <summary>
 		/// Posts literal text to the FAR keyboard queue.
 		/// </summary>
-		/// <param name="text">Literal text. \t, \r, \n, \r\n are supported, too.</param>
+		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostText(string text, bool disableOutput);
 		/// <summary>
@@ -173,7 +184,7 @@ namespace FarManager
 		int NameToKey(string key);
 		/// <summary>
 		/// Saves screen area.
-		/// You have to always call <see cref="RestoreScreen"/>.
+		/// You always have to call <see cref="RestoreScreen"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <returns>A handle for restoring the screen.</returns>
@@ -191,19 +202,21 @@ namespace FarManager
 		/// This handle is no longer usable after calling.
 		/// </param>
 		/// <remarks>
-		/// To improve speed it redraws only the modified screen area.
-		/// But if there was screen output produced by an external program, it can not correctly calculate this area.
-		/// In that case you need first to call it <c>screen</c> = 0 and then call it as usually with screen handle. 
+		/// For performance sake it redraws only the modified screen area.
+		/// But if there was screen output produced by an external program,
+		/// it can't calculate this area correctly. In that case you have to
+		/// call it with <c>screen</c> = 0 and then with an actual screen handle. 
 		/// </remarks>
 		void RestoreScreen(int screen);
 		/// <summary>
 		/// Active editor or null if none.
-		/// Normally you have to use this object instantly, i.e. do not keep it "for later use".
+		/// Normally you have to use this object instantly, do not store it "for later use".
 		/// </summary>
 		IEditor Editor { get; }
 		/// <summary>
 		/// Collection of all editors.
-		/// Be extremely careful working on not current editors: actually it is not recommended at all.
+		/// Be careful working on not current editors because many
+		/// properties and methods are designed for a current editor only.
 		/// </summary>
 		ICollection<IEditor> Editors { get; }
 		/// <summary>
@@ -220,10 +233,10 @@ namespace FarManager
 		/// FAR command line.
 		/// </summary>
 		/// <remarks>
-		/// If a plugin is called from the command line (including a user menu (F2)
+		/// If a plugin is called from the command line (including user menu (F2)
 		/// then command line properties and methods may not work correctly; in
 		/// this case consider to call a plugin operation from a plugin menu.
-		/// Staring from FAR 1.71.2192 you can set the entire command line text
+		/// Starting from FAR 1.71.2192 you can set the entire command line text
 		/// if you call a plugin from the command line (but not from a user menu).
 		/// </remarks>
 		ILine CommandLine { get; }
@@ -241,7 +254,10 @@ namespace FarManager
 		/// <summary>
 		/// Returns strings from history.
 		/// </summary>
-		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory</param>
+		/// <param name="name">
+		/// History name. Standard values are:
+		/// SavedHistory, SavedFolderHistory, SavedViewHistory
+		/// </param>
 		ICollection<string> GetHistory(string name);
 		/// <summary>
 		/// Shows an error information in a message box.
@@ -250,8 +266,8 @@ namespace FarManager
 		/// <param name="error">Exception.</param>
 		void ShowError(string title, Exception error);
 		/// <summary>
-		/// Creates a new dialog (<see cref="IDialog"/>).
-		/// You have to set its properties, add controls, add event handlers and then call <see cref="IDialog.Show"/>.
+		/// Creates a new dialog.
+		/// You have to set its properties, add controls, event handlers and then call <see cref="IDialog.Show"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <remarks>
@@ -262,38 +278,46 @@ namespace FarManager
 		/// <include file='doc.xml' path='docs/pp[@name="ShowHelp"]/*'/>
 		void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
-		///  Writes text on the user screen (under panels).
+		/// Writes text on the user screen (under panels).
 		/// </summary>
 		/// <param name="text">Text.</param>
 		void Write(string text);
 		/// <summary>
-		///  Writes colored text on the user screen (under panels).
+		/// Writes colored text on the user screen (under panels).
+		/// </summary>
+		/// <param name="text">Text.</param>
+		/// <param name="foregroundColor">Text color.</param>
+		void Write(string text, ConsoleColor foregroundColor);
+		/// <summary>
+		/// Writes colored text on the user screen (under panels).
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="Colors"]/*'/>
 		/// <param name="text">Text.</param>
 		void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 		/// <summary>
-		///  Writes a string at the specified position.
+		/// Writes a string at the specified position.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <include file='doc.xml' path='docs/pp[@name="Colors"]/*'/>
 		/// <param name="text">Text.</param>
 		void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
 		/// <summary>
-		/// Gets FAR.NET panel plugin of the specified host type (see <see cref="IPanelPlugin.Host"/>).
+		/// Gets existing FAR.NET plugin panel with the specified host type
+		/// (see <see cref="IPanelPlugin.Host"/>).
 		/// </summary>
 		/// <param name="hostType">
 		/// Type of the hosting class.
-		/// If null any existing plugin is returned.
-		/// If typeof(object) a plugin having any host is returned.
+		/// If it is <c>null</c> then any plugin panel is returned.
+		/// If it is <c>typeof(object)</c> then any plugin panel having a host is returned.
 		/// </param>
 		IPanelPlugin GetPanelPlugin(Type hostType);
 		/// <summary>
-		/// Creates new not yet opened panel plugin. You have to open it by <see cref="IPanelPlugin.Open()"/>
+		/// Creates a new panel plugin.
+		/// You have to configure it and then open by <see cref="IPanelPlugin.Open()"/>.
 		/// </summary>
 		IPanelPlugin CreatePanelPlugin();
 		/// <summary>
-		/// Creates a panel item.
+		/// Creates a new empty panel item.
 		/// </summary>
 		IFile CreatePanelItem();
 		/// <summary>
@@ -326,7 +350,7 @@ namespace FarManager
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
 		/// <param name="text">Text to be edited.</param>
-		/// <returns>Entered text or null if cancelled.</returns>
+		/// <returns>Entered text or <c>null</c> if cancelled.</returns>
 		string Input(string prompt, string history, string title, string text);
 		/// <summary>
 		/// Where plugin is opened from.
@@ -338,22 +362,23 @@ namespace FarManager
 		string RootFar { get; }
 		/// <summary>
 		/// Registry root key, where plugins can save their parameters.
-		/// Do not save parameters directly in this key, create your own subkey here.
+		/// Do not save parameters directly in this key, create your own subkey here
+		/// or use <see cref="GetPluginValue"/> and <see cref="SetPluginValue"/>.
 		/// </summary>
 		string RootKey { get; }
 		/// <summary>
 		/// Gets a plugin value from the registry.
 		/// </summary>
-		/// <param name="pluginName">Plugin name. The registry key is created if it does not exist.</param>
-		/// <param name="valueName">Name of a value.</param>
+		/// <param name="pluginName">Plugin and registry key name. The key is created if it does not exist.</param>
+		/// <param name="valueName">Value name.</param>
 		/// <param name="defaultValue">Default value.</param>
 		/// <returns>Found or default value.</returns>
 		object GetPluginValue(string pluginName, string valueName, object defaultValue);
 		/// <summary>
-		/// Sets a plugin value.
+		/// Sets a plugin value in the registry.
 		/// </summary>
-		/// <param name="pluginName">Plugin name. The registry key is created if it does not exist.</param>
-		/// <param name="valueName">Name of a value.</param>
+		/// <param name="pluginName">Plugin and registry key name. The key is created if it does not exist.</param>
+		/// <param name="valueName">Value name.</param>
 		/// <param name="newValue">New value to be set.</param>
 		void SetPluginValue(string pluginName, string valueName, object newValue);
 		/// <summary>
@@ -380,19 +405,11 @@ namespace FarManager
 		/// <summary>
 		/// Gets information about a FAR Manager window. [ACTL_GETWINDOWINFO ACTL_GETSHORTWINDOWINFO]
 		/// </summary>
-		/// <param name="index">Window index, -1 ~ current. See <see cref="WindowCount"/>.</param>
-		/// <param name="full">If false <see>IWindowInfo.Name</see> and <see>IWindowInfo.TypeName</see> are not filled.</param>
+		/// <param name="index">Window index; -1 ~ current. See <see cref="WindowCount"/>.</param>
+		/// <param name="full">
+		/// If it is <c>false</c> <see>IWindowInfo.Name</see> and <see>IWindowInfo.TypeName</see> are not filled.
+		/// </param>
 		IWindowInfo GetWindowInfo(int index, bool full);
-		/// <summary>
-		/// Will be removed.
-		/// </summary>
-		[Obsolete]
-		void UnregisterPluginsDiskItem(IPluginMenuItem item);
-		/// <summary>
-		/// Will be removed.
-		/// </summary>
-		[Obsolete]
-		void UnregisterPluginsMenuItem(IPluginMenuItem item);
 	}
 
 	/// <summary>

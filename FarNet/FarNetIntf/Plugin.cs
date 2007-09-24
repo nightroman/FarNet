@@ -23,28 +23,29 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Base class for all plugins.
+	/// Base class for any FAR.NET plugin.
 	/// </summary>
 	/// <remarks>
-	/// It keeps reference to <see cref="IFar"/> and provides <see cref="Connect"/> and <see cref="Disconnect"/> methods
-	/// that can be overrided to process main plugin events.
+	/// It keeps reference to <see cref="IFar"/> and provides
+	/// <see cref="Connect"/> and <see cref="Disconnect"/> methods.
+	/// Normally a plugin should implement at least <see cref="Connect"/>.
 	/// </remarks>
 	public class BasePlugin : IPlugin
 	{
-		// FarManager
-		IFar _far;
+		IFar _Far;
 
 		/// <summary>
-		/// Object implementing <see cref="IFar"/>.
+		/// Object implementing <see cref="IFar"/> interface.
+		/// It is set internally and normally should not be changed directly.
 		/// </summary>
 		public IFar Far
 		{
-			get { return _far; }
+			get { return _Far; }
 			set
 			{
-				if (_far != null)
+				if (_Far != null)
 					Disconnect();
-				_far = value;
+				_Far = value;
 				if (value != null)
 					Connect();
 			}

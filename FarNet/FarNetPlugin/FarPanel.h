@@ -164,6 +164,7 @@ public: // FarPanel
 	virtual property IList<IFile^>^ Selected { IList<IFile^>^ get() override; }
 	virtual property IList<IFile^>^ Targeted { IList<IFile^>^ get() override; }
 	virtual property String^ Path { String^ get() override; void set(String^ value) override; }
+	virtual property String^ StartDirectory { String^ get(); void set(String^ value); }
 public: // IPanelPlugin
 	virtual property bool IsOpened { bool get(); }
 	virtual property IPanelPluginInfo^ Info { IPanelPluginInfo^ get() { return %_info; } }
@@ -189,11 +190,12 @@ public: DEF_EVENT_ARGS(Redrawing, _Redrawing, PanelEventArgs);
 public: DEF_EVENT_ARGS(SettingDirectory, _SettingDirectory, SettingDirectoryEventArgs);
 public: DEF_EVENT_ARGS(ViewModeChanged, _ViewModeChanged, ViewModeChangedEventArgs);
 internal:
-	FarPanelPlugin() : FarPanel(true) {}
+	FarPanelPlugin();
 	void AssertOpen();
 private:
 	FarPanelPluginInfo _info;
 	List<IFile^> _files;
+	String^ _StartDirectory;
 };
 
 }
