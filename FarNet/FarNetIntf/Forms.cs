@@ -464,7 +464,7 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// </summary>
 		Place Rect { get; }
 		/// <summary>
-		/// If it is set and the button is pushed <see cref="Show"/> returns <c>false</c>.
+		/// If it is set and the button is pushed <see cref="Show"/> returns false.
 		/// </summary>
 		IButton Cancel { get; set; }
 		/// <summary>

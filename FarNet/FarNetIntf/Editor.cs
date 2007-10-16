@@ -484,7 +484,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Text event arguments
+	/// Text event arguments.
 	/// </summary>
 	public class TextEventArgs : EventArgs
 	{
