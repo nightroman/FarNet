@@ -78,12 +78,19 @@ namespace FarManager
 		/// Shows the menu.
 		/// </summary>
 		/// <returns>true if a menu item is selected.</returns>
+		/// <remarks>
+		/// If a menu item is selected then its <see cref="IMenuItem.OnClick"/> is fired.
+		/// Index of the selected item is stored in <see cref="Selected"/>.
+		/// </remarks>
 		bool Show();
 		/// <summary>
 		/// Creates low level internal data of the menu from the current items.
+		/// </summary>
+		/// <remarks>
 		/// It may be used for better performance when you call Show() repeatedly with the same item set.
 		/// <see cref="Unlock"/> has to be called to change items again or to free internal data immediately.
-		/// </summary>
+		/// Do not use with filters.
+		/// </remarks>
 		void Lock();
 		/// <summary>
 		/// Destroys internal data created by <see cref="Lock"/>.
@@ -100,26 +107,36 @@ namespace FarManager
 		/// Filter string.
 		/// Format: [regex] or [*substring].
 		/// It is also used by a filter input box (if it is enabled by <see cref="FilterKey"/>).
-		/// If it is null and <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set it is taken from history.
-		/// Don't use it if you use <see cref="Lock"/>.
+		/// If it is null then it is taken from history if
+		/// <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set.
+		/// Don't use it with <see cref="Lock"/>.
 		/// </summary>
 		string Filter { get; set; }
 		/// <summary>
 		/// Filter history used by the filter input box.
-		/// Don't use it if you use <see cref="Lock"/>.
+		/// Don't use it with <see cref="Lock"/>.
 		/// </summary>
 		string FilterHistory { get; set; }
 		/// <summary>
-		/// Tells to restore a filter from history if it <see cref="Filter"/> is null and <see cref="FilterHistory"/> is set.
-		/// Don't use it if you use <see cref="Lock"/>.
+		/// Tells to restore a filter from history if <see cref="Filter"/> is null
+		/// and <see cref="FilterHistory"/> is set.
+		/// Don't use it with <see cref="Lock"/>.
 		/// </summary>
 		bool FilterRestore { get; set; }
 		/// <summary>
 		/// Virtual key code of a key opening the filter input box.
 		/// It is added to your break keys automatically.
-		/// Don't use it if you use <see cref="Lock"/>.
+		/// Don't use it with <see cref="Lock"/>.
 		/// </summary>
 		int FilterKey { get; set; }
+		/// <summary>
+		/// Sender passed in <see cref="IMenuItem.OnClick"/> event.
+		/// </summary>
+		/// <remarks>
+		/// By default <see cref="IMenuItem"/> is a sender.
+		/// Creator of a menu can provide another sender passed in events.
+		/// </remarks>
+		object Sender { get; set; }
 	}
 
 	/// <summary>
