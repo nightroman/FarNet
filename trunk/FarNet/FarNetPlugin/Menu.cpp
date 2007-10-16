@@ -296,7 +296,12 @@ bool Menu::Show()
 	{
 		MenuItem^ item = (MenuItem^)_items[_selected];
 		if (item->_OnClick)
-			item->_OnClick(item, nullptr);
+		{
+			if (Sender)
+				item->_OnClick(Sender, nullptr);
+			else
+				item->_OnClick(item, nullptr);
+		}
 	}
 
 	return r;

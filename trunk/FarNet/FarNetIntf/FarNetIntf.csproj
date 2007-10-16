@@ -120,6 +120,9 @@
     </Compile>
     <Compile Include="Viewer.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="doc.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

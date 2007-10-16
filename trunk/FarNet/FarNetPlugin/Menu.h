@@ -28,6 +28,7 @@ public:
 	virtual property int X { int get(); void set(int value); }
 	virtual property int Y { int get(); void set(int value); }
 	virtual property Object^ SelectedData { Object^ get(); }
+	virtual property Object^ Sender;
 	virtual property String^ Bottom;
 	virtual property String^ Filter;
 	virtual property String^ FilterHistory;

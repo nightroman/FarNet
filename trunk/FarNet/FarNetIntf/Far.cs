@@ -68,14 +68,14 @@ namespace FarManager
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
-		/// <returns><c>false</c> if cancelled.</returns>
+		/// <returns>false if cancelled.</returns>
 		bool Msg(string body);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
-		/// <returns><c>false</c> if cancelled.</returns>
+		/// <returns>false if cancelled.</returns>
 		bool Msg(string body, string header);
 		/// <summary>
 		/// Shows a message box with options.
@@ -307,7 +307,7 @@ namespace FarManager
 		/// </summary>
 		/// <param name="hostType">
 		/// Type of the hosting class.
-		/// If it is <c>null</c> then any plugin panel is returned.
+		/// If it is null then any plugin panel is returned.
 		/// If it is <c>typeof(object)</c> then any plugin panel having a host is returned.
 		/// </param>
 		IPanelPlugin GetPanelPlugin(Type hostType);
@@ -350,7 +350,7 @@ namespace FarManager
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
 		/// <param name="text">Text to be edited.</param>
-		/// <returns>Entered text or <c>null</c> if cancelled.</returns>
+		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt, string history, string title, string text);
 		/// <summary>
 		/// Where plugin is opened from.
@@ -400,14 +400,14 @@ namespace FarManager
 		/// "Commits" the results of the last operation with FAR windows
 		/// (e.g. <see cref="SetCurrentWindow"/>). [ACTL_COMMIT]
 		/// </summary>
-		/// <returns><c>true</c> on success.</returns>
+		/// <returns>true on success.</returns>
 		bool Commit();
 		/// <summary>
 		/// Gets information about a FAR Manager window. [ACTL_GETWINDOWINFO ACTL_GETSHORTWINDOWINFO]
 		/// </summary>
 		/// <param name="index">Window index; -1 ~ current. See <see cref="WindowCount"/>.</param>
 		/// <param name="full">
-		/// If it is <c>false</c> <see>IWindowInfo.Name</see> and <see>IWindowInfo.TypeName</see> are not filled.
+		/// If it is false <see>IWindowInfo.Name</see> and <see>IWindowInfo.TypeName</see> are not filled.
 		/// </param>
 		IWindowInfo GetWindowInfo(int index, bool full);
 	}

@@ -849,7 +849,7 @@ int Far::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItems
 			++i;
 
 			PluginPanelItem& p = (*pPanelItem)[i];
-			WIN32_FIND_DATA& d = p.FindData;
+			FAR_FIND_DATA& d = p.FindData;
 
 			// names
 			StrToOem(f->Name->Length >= MAX_PATH ? f->Name->Substring(0, MAX_PATH - 1) : f->Name, d.cFileName);
