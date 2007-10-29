@@ -216,9 +216,9 @@ FarFile^ FarPanel::ItemToFile(PluginPanelItem& item)
 	f->AlternateName = gcnew String(item.FindData.cAlternateFileName);
 
 	f->_flags = item.FindData.dwFileAttributes;
-	f->CreationTime = ft2dt(item.FindData.ftCreationTime);
-	f->LastAccessTime = ft2dt(item.FindData.ftLastAccessTime);
-	f->LastWriteTime = ft2dt(item.FindData.ftLastWriteTime);
+	f->CreationTime = FileTimeToDateTime(item.FindData.ftCreationTime);
+	f->LastAccessTime = FileTimeToDateTime(item.FindData.ftLastAccessTime);
+	f->LastWriteTime = FileTimeToDateTime(item.FindData.ftLastWriteTime);
 	f->Length = item.FindData.nFileSizeLow;
 	f->IsSelected = (item.Flags & PPIF_SELECTED) != 0;
 

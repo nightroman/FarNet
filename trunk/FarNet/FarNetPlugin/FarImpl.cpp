@@ -170,6 +170,11 @@ IMenu^ Far::CreateMenu()
 	return gcnew Menu();
 }
 
+IListMenu^ Far::CreateListMenu()
+{
+	return gcnew ListMenu();
+}
+
 FarConfirmations Far::Confirmations::get()
 {
 	return (FarConfirmations)Info.AdvControl(Info.ModuleNumber, ACTL_GETCONFIRMATIONS, 0);
@@ -518,7 +523,7 @@ void Far::ShowError(String^ title, Exception^ error)
 
 IDialog^ Far::CreateDialog(int left, int top, int right, int bottom)
 {
-	return gcnew FarDialog(this, left, top, right, bottom);
+	return gcnew FarDialog(left, top, right, bottom);
 }
 
 IViewer^ Far::CreateViewer()
@@ -864,9 +869,9 @@ int Far::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItems
 			d.dwFileAttributes = f->_flags;
 			d.nFileSizeLow = (DWORD)(f->Length & 0xFFFFFFFF);
 			d.nFileSizeHigh = (DWORD)(f->Length >> 32);
-			d.ftCreationTime = dt2ft(f->CreationTime);
-			d.ftLastAccessTime = dt2ft(f->LastAccessTime);
-			d.ftLastWriteTime = dt2ft(f->LastWriteTime);
+			d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
+			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
+			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
 			p.UserData = i;
 
 			if (!String::IsNullOrEmpty(f->Description))
@@ -1096,6 +1101,12 @@ void Far::SetCurrentWindow(int index)
 bool Far::Commit()
 {
 	return Info.AdvControl(Info.ModuleNumber, ACTL_COMMIT, 0) != 0;
+}
+
+Char Far::CodeToChar(int code)
+{
+	code &= ~(KeyCode::Alt | KeyCode::Ctrl);
+	return code < 0 || code > 255 ? 0 : OemToChar(char(code));
 }
 
 }

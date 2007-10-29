@@ -6,6 +6,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "StdAfx.h"
 #include "Dialog.h"
 #include "FarImpl.h"
+#include "Menu.h"
 
 #define SET_FLAG(Var, Flag, Value) { if (Value) Var |= Flag; else Var &= ~Flag; }
 
@@ -42,7 +43,7 @@ LONG_PTR WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, LONG_PTR param2)
 }
 
 //
-// FarEditLineSelection
+//::FarEditLineSelection
 //
 
 public ref class FarEditLineSelection : public ILineSelection
@@ -120,7 +121,7 @@ private:
 };
 
 //
-// FarEditLine
+//::FarEditLine
 //
 
 public ref class FarEditLine : public ILine
@@ -236,7 +237,7 @@ private:
 };
 
 //
-// FarControl
+//::FarControl
 //
 
 FarControl::FarControl(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text)
@@ -256,7 +257,6 @@ String^ FarControl::ToString()
 
 void FarControl::Setup(FarDialogItem& item, int type)
 {
-	const int MaxEditLen = sizeof(item.Data) - 1;
 	_item = &item;
 	item.Type = type;
 	item.X1 = _rect.Left;
@@ -267,7 +267,7 @@ void FarControl::Setup(FarDialogItem& item, int type)
 	item.Selected = _selected;
 	item.Flags = _flags;
 	item.DefaultButton = 0;
-	StrToOem((Text->Length > MaxEditLen ? Text->Substring(0, MaxEditLen) : Text), item.Data);
+	StrToOem(Text, item.Data, sizeof(item.Data));
 }
 
 void FarControl::Update(bool ok)
@@ -418,7 +418,7 @@ void FarControl::Text::set(String^ value)
 }
 
 //
-// FarBox
+//::FarBox
 //
 
 FarBox::FarBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text)
@@ -435,7 +435,7 @@ void FarBox::Setup(FarDialogItem& item)
 }
 
 //
-// FarButton
+//::FarButton
 //
 
 FarButton::FarButton(FarDialog^ dialog, int left, int top, String^ text)
@@ -455,7 +455,7 @@ void FarButton::Setup(FarDialogItem& item)
 }
 
 //
-// FarCheckBox
+//::FarCheckBox
 //
 
 FarCheckBox::FarCheckBox(FarDialog^ dialog, int left, int top, String^ text)
@@ -484,7 +484,7 @@ void FarCheckBox::Selected::set(int value)
 }
 
 //
-// FarEdit
+//::FarEdit
 //
 
 FarEdit::FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, int type)
@@ -573,7 +573,7 @@ ILine^ FarEdit::Line::get()
 }
 
 //
-// FarRadioButton
+//::FarRadioButton
 //
 
 FarRadioButton::FarRadioButton(FarDialog^ dialog, int left, int top, String^ text)
@@ -603,7 +603,7 @@ void FarRadioButton::Selected::set(bool value)
 }
 
 //
-// FarText
+//::FarText
 //
 
 FarText::FarText(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text)
@@ -624,29 +624,12 @@ void FarText::Setup(FarDialogItem& item)
 }
 
 //
-// ListItem
-//
-
-ListItem::ListItem()
-{
-}
-
-DEF_PROP_FLAG(ListItem, Checked, LIF_CHECKED);
-DEF_PROP_FLAG(ListItem, Disabled, LIF_DISABLE);
-DEF_PROP_FLAG(ListItem, IsSeparator, LIF_SEPARATOR);
-
-String^ ListItem::ToString()
-{
-	return Text;
-}
-
-//
-// FarBaseBox
+//::FarBaseBox
 //
 
 FarBaseBox::FarBaseBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text)
 : FarControl(dialog, left, top, right, bottom, text)
-, _items(gcnew List<IListItem^>())
+, _items(gcnew MenuItemCollection)
 {
 	_selected = -1;
 }
@@ -660,13 +643,9 @@ DEF_CONTROL_FLAG(FarBaseBox, WrapCursor, DIF_LISTWRAPMODE);
 int FarBaseBox::Selected::get()
 {
 	if (_dialog->_hDlg)
-	{
 		return Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETCURPOS, Id, 0);
-	}
 	else
-	{
 		return _selected;
-	}
 }
 
 void FarBaseBox::Selected::set(int value)
@@ -684,17 +663,29 @@ void FarBaseBox::Selected::set(int value)
 	}
 }
 
-IList<IListItem^>^ FarBaseBox::Items::get()
+IMenuItems^ FarBaseBox::Items::get()
 {
 	return _items;
 }
 
-IListItem^ FarBaseBox::Add(String^ text)
+IMenuItem^ FarBaseBox::Add(String^ text)
 {
-	ListItem^ r = gcnew ListItem();
+	MenuItem^ r = gcnew MenuItem;
 	r->Text = text;
 	_items->Add(r);
 	return r;
+}
+
+static void InitFarListItem(FarListItem& i2, MenuItem^ i1)
+{
+	StrToOem(i1->Text, i2.Text, sizeof(i2.Text));
+	i2.Flags = i2.Reserved[0] = i2.Reserved[1] = i2.Reserved[2] = 0;
+	if (i1->Checked)
+		i2.Flags |= LIF_CHECKED;
+	if (i1->Disabled)
+		i2.Flags |= LIF_DISABLE;
+	if (i1->IsSeparator)
+		i2.Flags |= LIF_SEPARATOR;
 }
 
 void FarBaseBox::Setup(FarDialogItem& item, int type)
@@ -702,19 +693,26 @@ void FarBaseBox::Setup(FarDialogItem& item, int type)
 	FarControl::Setup(item, type);
 
 	_pFarList = item.ListItems = new FarList;
-	_pFarList->ItemsNumber = _items->Count;
-	_pFarList->Items = new FarListItem[_items->Count];
-
-	for(int i = _items->Count; --i >= 0;)
+	if (_ii)
 	{
-		ListItem^ i1 = (ListItem^)_items[i];
-		FarListItem& i2 = _pFarList->Items[i];
-		i2.Reserved[0] = i2.Reserved[1] = i2.Reserved[2] = 0;
-		i2.Flags = i1->_flags;
-		StrToOem((i1->Text->Length > 127 ? i1->Text->Substring(0, 127) : i1->Text), i2.Text);
+		_pFarList->ItemsNumber = _ii->Count;
+		_pFarList->Items = new FarListItem[_ii->Count];
+
+		for(int i = _ii->Count; --i >= 0;)
+			InitFarListItem(_pFarList->Items[i], (MenuItem^)_items[_ii[i]]);
+	}
+	else
+	{
+		_pFarList->ItemsNumber = _items->Count;
+		_pFarList->Items = new FarListItem[_items->Count];
+
+		for(int i = _items->Count; --i >= 0;)
+			InitFarListItem(_pFarList->Items[i], (MenuItem^)_items[i]);
 	}
 
-	if (_selected >= 0 && _selected < _items->Count)
+	if (SelectLast)
+		_selected = _pFarList->ItemsNumber - 1;
+	if (_selected >= 0 && _selected < _pFarList->ItemsNumber)
 		_pFarList->Items[_selected].Flags |= LIF_SELECTED;
 }
 
@@ -730,7 +728,7 @@ void FarBaseBox::Update(bool ok)
 }
 
 //
-// FarComboBox
+//::FarComboBox
 //
 
 FarComboBox::FarComboBox(FarDialog^ dialog, int left, int top, int right, String^ text)
@@ -756,7 +754,7 @@ ILine^ FarComboBox::Line::get()
 }
 
 //
-// FarListBox
+//::FarListBox
 //
 
 FarListBox::FarListBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text)
@@ -772,12 +770,11 @@ void FarListBox::Setup(FarDialogItem& item)
 }
 
 //
-// FarDialog
+//::FarDialog
 //
 
-FarDialog::FarDialog(Far^ manager, int left, int top, int right, int bottom)
+FarDialog::FarDialog(int left, int top, int right, int bottom)
 : _rect(left, top, right, bottom)
-, _far(manager)
 , _items(gcnew List<FarControl^>())
 {
 	if (left < 0)
@@ -1149,10 +1146,16 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 	}
 	catch(Exception^ e)
 	{
-		_far->ShowError("Error in DlgProc", e);
+		GetFar()->ShowError("Error in DlgProc", e);
 	}
 
 	// default
 	return Info.DefDlgProc(_hDlg, msg, param1, param2);
 }
+
+void FarDialog::Close()
+{
+	Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
+}
+
 }

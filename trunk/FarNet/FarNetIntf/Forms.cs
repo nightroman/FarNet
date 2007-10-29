@@ -273,33 +273,6 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
-	/// Item of <see cref="IComboBox"/> and <see cref="IListBox"/>.
-	/// </summary>
-	public interface IListItem
-	{
-		/// <summary>
-		/// Item text.
-		/// </summary>
-		string Text { get; set; }
-		/// <summary>
-		/// Is it checked?
-		/// </summary>
-		bool Checked { get; set; }
-		/// <summary>
-		/// Is it disabled?
-		/// </summary>
-		bool Disabled { get; set; }
-		/// <summary>
-		/// Is it separator?
-		/// </summary>
-		bool IsSeparator { get; set; }
-		/// <summary>
-		/// Any user data.
-		/// </summary>
-		object Data { get; set; }
-	}
-
-	/// <summary>
 	/// Base interface for <see cref="IComboBox"/> and <see cref="IListBox"/>.
 	/// </summary>
 	public interface IBaseList : IControl
@@ -308,7 +281,7 @@ namespace FarManager.Forms
 		/// Adds and returns a new item.
 		/// </summary>
 		/// <param name="text">Item text.</param>
-		IListItem Add(string text);
+		IMenuItem Add(string text);
 		/// <summary>
 		/// Selected item.
 		/// </summary>
@@ -335,6 +308,10 @@ namespace FarManager.Forms
 		/// Default list behavior after item selection is to end dialog processing.
 		/// </summary>
 		bool NoClose { get; set; }
+		/// <summary>
+		/// Tells to select the last item when started.
+		/// </summary>
+		bool SelectLast { get; set; }
 	}
 
 	/// <summary>
@@ -541,5 +518,9 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// <include file='doc.xml' path='docs/pp[@name="LTB"]/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddVerticalText(int left, int top, int bottom, string text);
+		/// <summary>
+		/// Closes the dialog.
+		/// </summary>
+		void Close();
 	}
 }
