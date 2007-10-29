@@ -1,4 +1,28 @@
+3.3.31
+
+3.3.30
+
+NEW
+
+- IAnyMenu - any menu interface; IMenu is now derived from it.
+- IListMenu, Far.CreateListMenu() - new style menu with extra features, e.g.
+incremental filter on typing (substring/prefix/wildcard). It is ready to use,
+but further changes are very possible.
+- Far.CodeToChar() - converts internal key code to char (20h-FFh).
+- KeyCode - helper constants for internal key codes (subject to change).
+
+REMOVED
+(these changes are unlikely breaking, but...)
+
+- Removed IListItem, use IMenuItem instead (items of combo and list boxes).
+In other words property Items of IMenu, IListMenu, IComboBox, IListBox is a
+collection of IMenuItem's. If you used IListItem directly, just rename it.
+- Removed IMenu.OnClick - it turned out that it was declared but not really
+implemented or used. Looks like it was declared by mistake.
+
 3.3.29
+
+This is mostly a technical build for PowerShellFar.
 
 3.3.28
 

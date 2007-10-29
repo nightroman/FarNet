@@ -191,7 +191,7 @@ namespace FarManager.Forms
 			_code = code;
 		}
 		/// <summary>
-		/// Key code.
+		/// Internal key code. <see cref="KeyCode"/>
 		/// </summary>
 		public int Code
 		{

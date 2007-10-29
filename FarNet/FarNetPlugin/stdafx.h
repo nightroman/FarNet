@@ -14,6 +14,7 @@ using namespace Microsoft::Win32;
 using namespace System::Collections::Specialized;
 using namespace System::Collections::Generic;
 using namespace System::Diagnostics;
+using namespace System::Globalization;
 using namespace System::IO;
 using namespace System::Reflection;
 using namespace System::Text::RegularExpressions;

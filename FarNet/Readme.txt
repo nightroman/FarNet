@@ -1,7 +1,7 @@
 Plugin name  : Far.NET3
 Category     : Development
-Version      : 3.3.29
-Release date : 2007.10.22
+Version      : 3.3.31
+Release date : 2007.11.05
 Author       : Roman Kuzmin
 Email        : nightroman@hotmail.com
 HomePage     : http://nightroman.spaces.live.com
@@ -73,7 +73,7 @@ http://code.google.com/p/farnet/
 
 
 Included XML documentation is not perhaps a perfect form of documentation but it is
-always up-to-date and it is actually the most practically useful for development.
+always up-to-date and practically very useful for development.
 
 Visual Studio Object Browser automatically uses XML comments well enough.
 Another possible way is to use for example Reflector for .NET (it is free). It
@@ -88,5 +88,5 @@ search (including .NET and any loaded .NET assemblies).
 You can add help for your plugins. It works in dialogs, menus, input and message
 boxes (see property HelpTopic) or by IFar.ShowHelp(). Unfortunately help can not
 be automatically shown by ShiftF2 because technically Far.NET plugins are not
-visible for Far, it can see only Far.NET. Of course you can add a link to your
-plugin help file to "FarNetPlugin_en.hlf" manually.
+visible for FAR, it sees only Far.NET. But you can add a link to your plugin
+help file to "FarNetPlugin_en.hlf" manually as it is done for PowerShellFar.

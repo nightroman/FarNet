@@ -12,10 +12,10 @@ namespace FarManager
 {
 	/// <summary>
 	/// Interface of FAR Manager.
-	/// It is available in a plugin as property <see cref="BasePlugin.Far"/> of <see cref="BasePlugin"/>.
-	/// It provides top level access to FAR data and functionality and creates objects like
-	/// menus, input and message boxes, dialogs, editors, viewers, panels with
-	/// their own properties and methods.
+	/// It is exposed by <see cref="BasePlugin"/> as the property <see cref="BasePlugin.Far"/>.
+	/// It provides access to top level FAR methods and objects or creates new FAR objects like
+	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
+	/// Further operations are performed on object properties and methods.
 	/// </summary>
 	public interface IFar
 	{
@@ -119,10 +119,15 @@ namespace FarManager
 		/// </summary>
 		IInputBox CreateInputBox();
 		/// <summary>
-		/// Creates a new menu.
-		/// You have to set its properties and call <see cref="IMenu.Show"/>.
+		/// Creates a new standard FAR menu.
+		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
 		/// </summary>		
 		IMenu CreateMenu();
+		/// <summary>
+		/// Creates a new menu implemented with <see cref="IListBox"/>.
+		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
+		/// </summary>		
+		IListMenu CreateListMenu();
 		/// <summary>
 		/// Virtual editor instance.
 		/// Subscribe to its events if you want to handle events of all editors.
@@ -179,7 +184,7 @@ namespace FarManager
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeySequence(IList<int> sequence, bool disableOutput);
 		/// <summary>
-		/// Converts a key string representation to the key code.
+		/// Converts a key string representation to the internal key code. <see cref="KeyCode"/>
 		/// </summary>
 		int NameToKey(string key);
 		/// <summary>
@@ -410,6 +415,10 @@ namespace FarManager
 		/// If it is false <see>IWindowInfo.Name</see> and <see>IWindowInfo.TypeName</see> are not filled.
 		/// </param>
 		IWindowInfo GetWindowInfo(int index, bool full);
+		/// <summary>
+		/// Converts an internal key code to a string. <see cref="KeyCode"/>
+		/// </summary>
+		char CodeToChar(int code);
 	}
 
 	/// <summary>
