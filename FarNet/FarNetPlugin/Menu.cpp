@@ -5,119 +5,242 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 #include "Menu.h"
+#include "Dialog.h"
 #include "FarImpl.h"
 #include "InputBox.h"
 #include "Message.h"
 
 namespace FarManagerImpl
 {;
-public ref class MenuItem : IMenuItem
-{
-public:
-	DEF_EVENT(OnClick, _OnClick);
-public:
-	virtual property String^ Text;
-	virtual property bool Checked;
-	virtual property bool IsSeparator;
-	virtual property Object^ Data;
-	virtual String^ ToString() override
-	{
-		return Text;
-	}
-};
 
-public ref class MenuItemCollection : public List<IMenuItem^>, IMenuItems
-{
-public:
-	virtual IMenuItem^ Add(String^ text)
-	{
-		return Add(text, false, false);
-	}
-	virtual IMenuItem^ Add(String^ text, EventHandler^ onClick)
-	{
-		MenuItem^ r = gcnew MenuItem();
-		r->Text = text;
-		r->OnClick += onClick;
-		Add(r);
-		return r;
-	}
-	virtual IMenuItem^ Add(String^ text, bool isChecked, bool isSeparator)
-	{
-		MenuItem^ r = gcnew MenuItem();
-		r->Text = text;
-		r->Checked = isChecked;
-		r->IsSeparator = isSeparator;
-		Add(r);
-		return r;
-	}
-private:
-	// private: it was private originally, perhaps it used to make problems, too
-	virtual IMenuItem^ Add(String^ text, bool isChecked) sealed = IMenuItems::Add
-	{
-		return Add(text, isChecked, false);
-	}
-};
+//
+//::MenuItemCollection
+//
 
-Menu::Menu()
+IMenuItem^ MenuItemCollection::Add(String^ text)
 {
-	_createdItems = NULL;
-	_createdBreaks = NULL;
-	_items = gcnew MenuItemCollection();
-	_x = -1;
-	_y = -1;
-	_selected = -1;
+	return Add(text, false, false);
 }
 
-int Menu::X::get()
+IMenuItem^ MenuItemCollection::Add(String^ text, EventHandler^ onClick)
+{
+	MenuItem^ r = gcnew MenuItem();
+	r->Text = text;
+	r->OnClick += onClick;
+	Add(r);
+	return r;
+}
+
+IMenuItem^ MenuItemCollection::Add(String^ text, bool isChecked, bool isSeparator)
+{
+	MenuItem^ r = gcnew MenuItem();
+	r->Text = text;
+	r->Checked = isChecked;
+	r->IsSeparator = isSeparator;
+	Add(r);
+	return r;
+}
+
+IMenuItem^ MenuItemCollection::Add(String^ text, bool isChecked)
+{
+	return Add(text, isChecked, false);
+}
+
+//
+//::AnyMenu
+//
+
+AnyMenu::AnyMenu()
+: _x(-1)
+, _y(-1)
+, _selected(-1)
+{
+	_items = gcnew MenuItemCollection();
+}
+
+int AnyMenu::X::get()
 {
 	return _x;
 }
 
-void Menu::X::set(int value)
+void AnyMenu::X::set(int value)
 {
 	_x = value;
 }
 
-int Menu::Y::get()
+int AnyMenu::Y::get()
 {
 	return _y;
 }
 
-void Menu::Y::set(int value)
+void AnyMenu::Y::set(int value)
 {
 	_y = value;
 }
 
-Object^ Menu::SelectedData::get()
+Object^ AnyMenu::SelectedData::get()
 {
 	if (_selected < 0 || _selected >= _items->Count)
 		return nullptr;
 	return _items[_selected]->Data;
 }
 
-IList<int>^ Menu::BreakKeys::get()
-{
-	return %_breakKeys;
-}
-
-IMenuItems^ Menu::Items::get()
+IMenuItems^ AnyMenu::Items::get()
 {
 	return _items;
 }
 
-int Menu::Selected::get()
+int AnyMenu::Selected::get()
 {
 	return _selected;
 }
 
-void Menu::Selected::set(int value)
+void AnyMenu::Selected::set(int value)
 {
 	_selected = value;
 }
 
-int Menu::BreakCode::get()
+Regex^ AnyMenu::CreateFilter(String^ filter, bool* ok)
+{
+	if (ok)
+		*ok = true;
+
+	if (String::IsNullOrEmpty(filter))
+		return nullptr;
+
+	try
+	{
+		// case: substring
+		if (filter->StartsWith("*"))
+			return filter->Length == 0 ? nullptr :
+				gcnew Regex(Regex::Escape(filter->Substring(1)), RegexOptions::IgnoreCase);
+
+		// case: prefix
+		if (filter->StartsWith("?"))
+			return filter->Length == 0 ? nullptr :
+				gcnew Regex("^" + Regex::Escape(filter->Substring(1)), RegexOptions::IgnoreCase);
+
+		// standard
+		return gcnew Regex(filter, RegexOptions::IgnoreCase);
+	}
+	catch(ArgumentException^ e)
+	{
+		if (ok)
+		{
+			*ok = false;
+			Message::Show(e->Message, "Filter expression", MessageOptions::Ok, nullptr);
+		}
+		return nullptr;
+	}
+}
+
+String^ AnyMenu::InputFilter(String^ filter, String^ history)
+{
+	InputBox ib;
+	ib.Title = "Filter";
+	ib.Prompt = "Filter expression";
+	ib.EmptyEnabled = true;
+	ib.History = history;
+	if (!String::IsNullOrEmpty(filter))
+		ib.Text = filter;
+
+	// show filter input box
+	for(;;)
+	{
+		// cancelled
+		if (!ib.Show())
+			return nullptr;
+
+		// validate
+		bool ok;
+		CreateFilter(ib.Text, &ok);
+		if (ok)
+			return ib.Text;
+	}
+}
+
+Regex^ AnyMenu::CreateFilter()
+{
+	// get filter
+	if (!Filter && FilterRestore && !String::IsNullOrEmpty(FilterHistory))
+	{
+		RegistryKey^ key;
+		try
+		{
+			key = Registry::CurrentUser->OpenSubKey(GetFar()->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
+			if (key)
+			{
+				int flags = (int)key->GetValue("Flags");
+				if (flags)
+					Filter = key->GetValue("Line0")->ToString();
+			}
+		}
+		finally
+		{
+			if (key)
+				key->Close();
+		}
+	}
+
+	// filter
+	Regex^ r = CreateFilter(Filter, NULL);
+	if (r)
+	{
+		// init filter
+		_ii = gcnew List<int>;
+	}
+	else
+	{
+		// reset filter!
+		Filter = nullptr;
+		_ii = nullptr;
+	}
+	return r;
+}
+
+String^ AnyMenu::InfoLine()
+{
+	String^ r = FilterKey ? String::Concat("<", Filter) + ">" : String::Empty;
+	r += "(";
+	if (_ii)
+		r += _ii->Count + "/";
+	r += _items->Count + ")";
+	return JoinText(r, Bottom);
+}
+
+IList<int>^ AnyMenu::BreakKeys::get()
+{
+	return %_breakKeys;
+}
+
+int AnyMenu::BreakCode::get()
 {
 	return _breakCode;
+}
+
+//
+//::Menu
+//
+
+Menu::Menu()
+: _createdItems(NULL)
+, _createdBreaks(NULL)
+{
+}
+
+// Dispose of managed resources.
+// Call C++ finalizer to clean up unmanaged resources.
+// Mark the class as disposed (manually) to throw an exception if a disposed object is accessed.
+Menu::~Menu()
+{
+	this->!Menu();
+}
+
+// The C++ finalizer destructor ensures that unmanaged resources get
+// released if the user releases the object without explicitly disposing of it.
+Menu::!Menu()
+{
+	Unlock();
 }
 
 int* Menu::CreateBreakKeys()
@@ -133,7 +256,7 @@ int* Menu::CreateBreakKeys()
 		for each(int k in _breakKeys)
 			r[i++] = k;
 		if (FilterKey)
-			r[i++] = FilterKey;
+			r[i++] = (int)FilterKey;
 		r[i] = 0;
 	}
 	return r;
@@ -175,19 +298,45 @@ void Menu::Unlock()
 	}
 }
 
-// Dispose of managed resources.
-// Call C++ finalizer to clean up unmanaged resources.
-// Mark the class as disposed (manually) to throw an exception if a disposed object is accessed.
-Menu::~Menu()
+FarMenuItem* Menu::CreateItems()
 {
-	this->!Menu();
-}
+	// filter
+	Regex^ re = CreateFilter();
 
-// The C++ finalizer destructor ensures that unmanaged resources get
-// released if the user releases the object without explicitly disposing of it.
-Menu::!Menu()
-{
-	Unlock();
+	// add items, filter
+	int i = -1, n = 0;
+	FarMenuItem* r = new struct FarMenuItem[_items->Count];
+	for each(IMenuItem^ item in _items)
+	{
+		++i;
+		if (re)
+		{
+			if (!re->IsMatch(item->Text))
+				continue;
+			_ii->Add(i);
+		}
+		StrToOem(item->Text, r[n].Text, sizeof(r->Text));
+		r[n].Checked = item->Checked;
+		r[n].Separator = item->IsSeparator;
+		r[n].Selected = 0;
+		++n;
+	}
+
+	// select an item
+	if (SelectLast)
+	{
+		if (n > 0)
+			r[n - 1].Selected = true;
+	}
+	else if (_selected >= 0)
+	{
+		if (_selected < n)
+			r[_selected].Selected = true;
+		else if (n > 0)
+			r[n - 1].Selected = true;
+	}
+
+	return r;
 }
 
 void Menu::ShowMenu(const FarMenuItem* items, const int* breaks)
@@ -217,17 +366,7 @@ void Menu::ShowMenu(const FarMenuItem* items, const int* breaks)
 		sHelpTopic.Set(HelpTopic);
 
 	// bottom
-	String^ info = Bottom ? Bottom : String::Empty;
-	if (FilterKey)
-	{
-		info += info->Length ? " [" : "[";
-		if (Filter)
-			info += Filter;
-		info += "] (";
-		if (_ii)
-			info += _ii->Count + "/";
-		info += _items->Count + ")";
-	}
+	String^ info = InfoLine();
 	CStr sBottom;
 	if (info->Length)
 		sBottom.Set(info);
@@ -307,127 +446,329 @@ bool Menu::Show()
 	return r;
 }
 
-FarMenuItem* Menu::CreateItems()
+//
+//::ListMenu
+//
+
+void ListMenu::GetInfo(String^& head, String^& foot)
 {
-	// get filter
-	if (!Filter && FilterRestore && !String::IsNullOrEmpty(FilterHistory))
+	head = Title ? Title : String::Empty;
+	foot = InfoLine();
+	if (Bottom)
+		foot += " ";
+	if (Incremental != FilterOptions::None && IncrementalFilter)
 	{
-		RegistryKey^ key;
-		try
+		if (SelectLast)
+			foot = "[" + IncrementalFilter + "]" + foot;
+		else
+			head = JoinText("[" + IncrementalFilter + "]", head);
+	}
+}
+
+void ListMenu::MakeFilter()
+{
+	// filter 1
+	if (_toFilter1)
+	{
+		_toFilter1 = false;
+		Regex^ re1 = CreateFilter();
+		if (re1)
 		{
-			key = Registry::CurrentUser->OpenSubKey(GetFar()->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
-			if (key)
+			int i = -1;
+			for each(IMenuItem^ mi in Items)
 			{
-				int flags = (int)key->GetValue("Flags");
-				if (flags)
-					Filter = key->GetValue("Line0")->ToString();
+				++i;
+				if (re1->IsMatch(mi->Text))
+					_ii->Add(i);
 			}
 		}
-		finally
+	}
+
+	// filter 2
+	if (!_toFilter2)
+		return;
+	_toFilter2 = false;
+	Regex^ re2 = CreateIncrementalFilter();
+	if (!re2)
+		return;
+
+	// case: filter already filtered
+	if (_ii)
+	{
+		List<int>^ ii = gcnew List<int>;
+		for each(int k in _ii)
 		{
-			if (key)
-				key->Close();
+			if (re2->IsMatch(_items[k]->Text))
+				ii->Add(k);
 		}
+		_ii = ii;
+		return;
+	}
+
+	// case: not yet filtered
+	_ii = gcnew List<int>;
+	int i = -1;
+	for each(IMenuItem^ mi in Items)
+	{
+		++i;
+		if (re2->IsMatch(mi->Text))
+			_ii->Add(i);
+	}
+}
+
+Regex^ ListMenu::CreateIncrementalFilter()
+{
+	if (!IncrementalFilter)
+		return nullptr;
+
+	String^ re = IncrementalFilter;
+	if (int(Incremental & FilterOptions::Literal))
+		re = Regex::Escape(IncrementalFilter);
+	else
+		re = Wildcard(IncrementalFilter);
+
+	if (int(Incremental & FilterOptions::Prefix))
+		re = "^" + re;
+
+	return gcnew Regex(re, RegexOptions::IgnoreCase);
+}
+
+void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
+{
+	// Tab - go to next
+	if (e->Code == KeyCode::Tab)
+	{
+		FarListBox^ box = (FarListBox^)e->Control;
+		++box->Selected;
+		e->Ignore = true;
+		return;
+	}
+
+	FarDialog^ d = (FarDialog^)sender;
+
+	//! break keys first
+	if (_breakKeys.IndexOf(e->Code) >= 0)
+	{
+		_breakCode = e->Code;
+		d->Close();
+		return;
 	}
 
 	// filter
-	Regex^ re = CreateFilter(Filter, NULL);
-	if (re)
+	if (e->Code == FilterKey)
 	{
-		_ii = gcnew List<int>;
-	}
-	else
-	{
-		// reset Filter!
-		Filter = nullptr;
-		_ii = nullptr;
+		// input filter
+		String^ filter = InputFilter(Filter, FilterHistory);
+		if (!filter)
+			return;
+
+		// reset filters
+		Filter = filter;
+		_restart = true;
+		_toFilter1 = true;
+		IncrementalFilter = nullptr;
+		_incrementalLength1 = 0;
+		d->Close();
+		return;
 	}
 
-	// add items, filter
-	int i = -1, n = 0;
-	FarMenuItem* r = new struct FarMenuItem[_items->Count];
-	for each(IMenuItem^ item in _items)
+	// incremental
+	if (Incremental != FilterOptions::None)
 	{
-		++i;
-		if (re)
+		if (e->Code == KeyCode::Backspace)
 		{
-			if (!re->IsMatch(item->Text))
-				continue;
-			_ii->Add(i);
+			if (IncrementalFilter)
+			{
+				if (IncrementalFilter->Length > _incrementalLength1)
+				{
+					Char c = IncrementalFilter[IncrementalFilter->Length - 1];
+					IncrementalFilter = IncrementalFilter->Substring(0, IncrementalFilter->Length - 1);
+					// * and ?
+					if (!int(Incremental & FilterOptions::Literal) && (c == '*' || c == '?'))
+					{
+						String^ t; String^ b; GetInfo(t, b);
+						d->_items[0]->Text = t;
+						d->_items[2]->Text = b;
+					}
+					else
+					{
+						_restart = -1;
+						_toFilter1 = _toFilter2 = true;
+					}
+				}
+				if (IncrementalFilter->Length == 0)
+					IncrementalFilter = nullptr;
+			}
 		}
-		StrToOem((item->Text->Length > 127 ? item->Text->Substring(0, 127) : item->Text), r[n].Text);
-		r[n].Checked = item->Checked;
-		r[n].Separator = item->IsSeparator;
-		r[n].Selected = 0;
-		++n;
-	}
-
-	// select an item
-	if (SelectLast)
-	{
-		if (n > 0)
-			r[n - 1].Selected = true;
-	}
-	else if (_selected >= 0)
-	{
-		if (_selected < n)
-			r[_selected].Selected = true;
-		else if (n > 0)
-			r[n - 1].Selected = true;
-	}
-
-	return r;
-}
-
-Regex^ Menu::CreateFilter(String^ filter, bool* ok)
-{
-	if (ok)
-		*ok = true;
-
-	if (String::IsNullOrEmpty(filter))
-		return nullptr;
-
-	try
-	{
-		if (!filter->StartsWith("*"))
-			return gcnew Regex(filter, RegexOptions::IgnoreCase);
-		else if (filter->Length > 1)
-			return gcnew Regex(Regex::Escape(filter->Substring(1)), RegexOptions::IgnoreCase);
-		return nullptr;
-	}
-	catch(ArgumentException^ e)
-	{
-		if (ok)
+		else
 		{
-			*ok = false;
-			Message::Show(e->Message, "Filter expression", MessageOptions::Ok, nullptr);
+			Char c = GetFar()->CodeToChar(e->Code);
+			if (c >= ' ')
+			{
+				// keep and change filter
+				String^ filterBak = IncrementalFilter;
+				if (IncrementalFilter)
+					IncrementalFilter += c;
+				else
+					IncrementalFilter = gcnew String(c, 1);
+
+				// * and ?
+				if (!int(Incremental & FilterOptions::Literal) && (c == '*' || c == '?'))
+				{
+					String^ t; String^ b; GetInfo(t, b);
+					d->_items[0]->Text = t;
+					d->_items[2]->Text = b;
+					return;
+				}
+				
+				// try the filter, rollback on empty
+				List<int>^ iiBak = _ii;
+				_toFilter2 = true;
+				MakeFilter();
+				if (_ii && _ii->Count == 0)
+				{
+					IncrementalFilter = filterBak;
+					_ii = iiBak;
+					return;
+				}
+
+				_toFilter2 = true;
+				_restart = +1;
+			}
+
 		}
-		return nullptr;
+		if (_restart)
+			d->Close();
+		return;
 	}
 }
 
-String^ Menu::InputFilter(String^ filter, String^ history)
+bool ListMenu::Show()
 {
-	InputBox ib;
-	ib.Title = "Filter";
-	ib.Prompt = "Filter expression";
-	ib.EmptyEnabled = true;
-	ib.History = history;
-	if (!String::IsNullOrEmpty(filter))
-		ib.Text = filter;
+	// keep length
+	if (IncrementalFilter)
+		_incrementalLength1 = IncrementalFilter->Length;
 
-	// show filter input box
-	for(;;)
+	// main loop
+	_toFilter1 = _toFilter2 = true;
+	for(int pass = 0;; ++pass)
 	{
-		// cancelled
-		if (!ib.Show())
-			return nullptr;
+		// filtered item number
+		const int nItem1 = _ii ? _ii->Count : _items->Count;
 
-		// validate
-		bool ok;
-		CreateFilter(ib.Text, &ok);
-		if (ok)
-			return ib.Text;
+		// filter
+		MakeFilter();
+
+		// filtered item number
+		const int nItem2 = _ii ? _ii->Count : _items->Count;
+		if (nItem2 < 2 && AutoSelect)
+		{
+			if (nItem2 == 1)
+			{
+				_selected = _ii ? _ii[0] : 0;
+				return true;
+			}
+			else if (pass == 0)
+			{
+				_selected = -1;
+				return false;
+			}
+		}
+		if (_restart && nItem1 != nItem2)
+			_selected = 0;
+
+		// title, bottom
+		String^ title; String^ info;
+		GetInfo(title, info);
+
+		// width
+		int w = 0;
+		if (_ii)
+		{
+			for each(int k in _ii)
+				if (_items[k]->Text->Length > w)
+					w = _items[k]->Text->Length;
+		}
+		else
+		{
+			for each(IMenuItem^ mi in _items)
+				if (mi->Text->Length > w)
+					w = mi->Text->Length;
+		}
+		w += 2; // if less last chars are lost
+
+		// height
+		int n = _ii ? _ii->Count : _items->Count;
+		if (MaxHeight > 0 && n > MaxHeight)
+			n = MaxHeight;
+
+		// fix width
+		if (w > 127)
+			w = 127;
+		if (title && w < title->Length)
+			w = title->Length + 4;
+		if (w < info->Length)
+			w = info->Length + 4;
+		if (w < 20)
+			w = 20;
+
+		// place
+		const int min = ScreenMargin > 1 ? ScreenMargin : 1;
+		int dw = w + 4, dx = _x;
+		ValidateRect(dx, dw, min, Console::WindowWidth - (2*min));
+		int dh = n + 2, dy = _y;
+		ValidateRect(dy, dh, min, Console::WindowHeight - (2*min));
+
+		// dialog
+		FarDialog dialog(dx, dy, dx + dw - 1, dy + dh - 1);
+		dialog.HelpTopic = HelpTopic;
+		dialog.NoShadow = NoShadow;
+
+		// title
+		dialog.AddBox(0, 0, dw - 1, dh - 1, title);
+
+		// list
+		FarListBox^ box = (FarListBox^)dialog.AddListBox(1, 1, dw - 2, dh - 2, String::Empty);
+		box->Selected = _selected;
+		box->SelectLast = SelectLast;
+		box->NoBox = true;
+		ListBox = box;
+		if (Incremental == FilterOptions::None)
+		{
+			box->AutoAssignHotkeys = AutoAssignHotkeys;
+			box->NoAmpersands = !ShowAmpersands;
+			box->WrapCursor = WrapCursor;
+		}
+
+		// "bottom"
+		dialog.AddText(1, dh - 1, 0, info);
+
+		// items and filter
+		box->_items = _items;
+		box->_ii = _ii;
+
+		// filter
+		box->_KeyPressed += gcnew EventHandler<KeyPressedEventArgs^>(this, &ListMenu::OnKeyPressed);
+
+		_restart = 0;
+		if (_Showing)
+			_Showing(this, nullptr);
+		bool ok = dialog.Show();
+		ListBox = nullptr;
+		if (!ok)
+			return false;
+
+		if (_restart)
+			continue;
+
+		// correct by filter
+		_selected = box->Selected;
+		if (_ii && _selected >= 0)
+			_selected = _ii[_selected];
+
+		//! [Enter] on empty gives -1
+		return _selected >= 0;
 	}
 }
+
 }

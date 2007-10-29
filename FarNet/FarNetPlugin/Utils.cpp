@@ -93,6 +93,14 @@ void StrToOem(String^ str, char* oem)
 	WC2OEM(p, oem, str->Length);
 }
 
+void StrToOem(String^ str, char* oem, int size)
+{
+	if (str)
+		StrToOem((str->Length < size ? str : str->Substring(0, size - 1)), oem);
+	else
+		oem[0] = 0;
+}
+
 void OEM2WC(const char* src, LPWSTR dst, size_t size)
 {
 	MultiByteToWideChar(CP_OEMCP, 0, src, (int)size, dst, (int)size);
@@ -101,6 +109,13 @@ void OEM2WC(const char* src, LPWSTR dst, size_t size)
 void OEM2WC(const char* src, LPWSTR dst)
 {
 	OEM2WC(src, dst, strlen(src) + 1);
+}
+
+Char OemToChar(char oem)
+{
+	Char dst;
+	OEM2WC(&oem, &dst, 1);
+	return dst;
 }
 
 String^ OemToStr(const char* oem, int len)
@@ -394,12 +409,12 @@ String^ ExceptionInfo(Exception^ e, bool full)
 	return Regex::Replace(info, "[\r\n]+", "\n");
 }
 
-DateTime ft2dt(FILETIME time)
+DateTime FileTimeToDateTime(FILETIME time)
 {
 	return DateTime::FromFileTime(*(Int64*)&time);
 }
 
-FILETIME dt2ft(DateTime time)
+FILETIME DateTimeToFileTime(DateTime time)
 {
 	Int64 r;
 	if (time.Ticks == 0)
@@ -407,4 +422,50 @@ FILETIME dt2ft(DateTime time)
 	else
 		r = time.ToFileTime();
 	return *(FILETIME*)&r;
+}
+
+// Simple wildcard (* and ?)
+String^ Wildcard(String^ pattern)
+{
+	pattern = Regex::Escape(pattern);
+	for(int i = 0; i < pattern->Length - 1; ++i)
+	{
+		if (pattern[i] != '\\')
+			continue;
+		
+		if (pattern[i + 1] == '*')
+			pattern = pattern->Substring(0, i) + ".*" + pattern->Substring(i + 2);
+		if (pattern[i + 1] == '?')
+			pattern = pattern->Substring(0, i) + ".?" + pattern->Substring(i + 2);
+		else
+			++i;
+	}
+	return pattern;
+}
+
+// Joins strings with spaces
+String^ JoinText(String^ head, String^ tail)
+{
+	if (String::IsNullOrEmpty(head))
+		return tail ? tail : String::Empty;
+	if (String::IsNullOrEmpty(tail))
+		return head ? head : String::Empty;
+	return head + " " + tail;
+}
+
+// Validates rect position and width by screen size so that rect is visible.
+void ValidateRect(int& x, int& w, int min, int size)
+{
+	if (x < 0)
+		x = min + (size - w)/2;
+	int r = x + w - 1;
+	if (r > min + size - 1)
+	{
+		x -= (r - min - size + 1);
+		if (x < min)
+			x = min;
+		r = x + w - 1;
+		if (r > min + size - 1)
+			w -= (r - min - size + 1);
+	}
 }

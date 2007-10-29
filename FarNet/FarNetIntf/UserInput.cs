@@ -257,4 +257,140 @@ namespace FarManager
 			return num.GetHashCode() ^ _where.GetHashCode();
 		}
 	}
+
+	/// <summary>
+	/// Internal key codes. [farkeys.hpp]
+	/// </summary>
+	public static class KeyCode
+	{
+		/// <summary></summary>
+		public const long CtrlMask = 0xFF000000;
+
+		/// <summary></summary>
+		public const int
+
+		Ctrl = 0x01000000,
+		Alt = 0x02000000,
+		Shift = 0x04000000,
+		RCtrl = 0x10000000,
+		Ralt = 0x20000000,
+
+		LBracket = '[',
+		RBracket = ']',
+		Comma = ',',
+		Quote = '"',
+		Dot = '.',
+		Slash = '/',
+		Colon = ':',
+		Semicolon = ';',
+		Backslash = '\\',
+
+		Backspace = 0x00000008,
+		Tab = 0x00000009,
+		Enter = 0x0000000D,
+		Escape = 0x0000001B,
+		Space = 0x00000020,
+
+		FKeyMask = 0x00000FFF,
+		FKeyBegin = 0x00000100,
+
+		Break = 0x00000103,
+
+		PageUp = 0x00000121,
+		PageDown = 0x00000122,
+		End = 0x00000123,
+		Home = 0x00000124,
+		Left = 0x00000125,
+		Up = 0x00000126,
+		Right = 0x00000127,
+		Down = 0x00000128,
+		Insert = 0x0000012D,
+		Delete = 0x0000012E,
+
+		LWin = 0x0000015B,
+		RWin = 0x0000015C,
+		Apps = 0x0000015D,
+
+		Numpad0 = 0x00000160,
+		Numpad1 = 0x00000161,
+		Numpad2 = 0x00000162,
+		Numpad3 = 0x00000163,
+		Numpad4 = 0x00000164,
+		Numpad5 = 0x00000165,
+		Clear = Numpad5,
+		Numpad6 = 0x00000166,
+		Numpad7 = 0x00000167,
+		Numpad8 = 0x00000168,
+		Numpad9 = 0x00000169,
+
+		Multiply = 0x0000016A,
+		Add = 0x0000016B,
+		Subtract = 0x0000016D,
+		Divide = 0x0000016F,
+
+		F1 = 0x00000170,
+		F2 = 0x00000171,
+		F3 = 0x00000172,
+		F4 = 0x00000173,
+		F5 = 0x00000174,
+		F6 = 0x00000175,
+		F7 = 0x00000176,
+		F8 = 0x00000177,
+		F9 = 0x00000178,
+		F10 = 0x00000179,
+		F11 = 0x0000017A,
+		F12 = 0x0000017B,
+
+		F13 = 0x0000017C,
+		F14 = 0x0000017D,
+		F15 = 0x0000017E,
+		F16 = 0x0000017F,
+		F17 = 0x00000180,
+		F18 = 0x00000181,
+		F19 = 0x00000182,
+		F20 = 0x00000183,
+		F21 = 0x00000184,
+		F22 = 0x00000185,
+		F23 = 0x00000186,
+		F24 = 0x00000187,
+
+		BrowserBack = 0x000001A6,
+		BrowserForward = 0x000001A7,
+		BrowserRefresh = 0x000001A8,
+		BrowserStop = 0x000001A9,
+		BrowserSearch = 0x000001AA,
+		BrowserFavorites = 0x000001AB,
+		BrowserHome = 0x000001AC,
+		VolumeMute = 0x000001AD,
+		VolumeDown = 0x000001AE,
+		VolumeUp = 0x000001AF,
+		MediaNextTrack = 0x000001B0,
+		MediaPrevTrack = 0x000001B1,
+		MediaStop = 0x000001B2,
+		MediaPlayPause = 0x000001B3,
+		LaunchMail = 0x000001B4,
+		LaunchMediaSelect = 0x000001B5,
+		LaunchApp1 = 0x000001B6,
+		LaunchApp2 = 0x000001B7,
+
+		CtrlAltShiftPress = 0x00000201,
+		CtrlAltShiftRelease = 0x00000202,
+
+		MouseWheelUp = 0x00000203,
+		MouseWheelDown = 0x00000204,
+		NumpadDelete = 0x00000209,
+		Decimal = 0x0000020A,
+		NumpadEnter = 0x0000020B,
+
+		//FFBegin = 0x00000300,
+		//FFEnd = 0x000003FF,
+
+		FKeyEnd = 0x00000FFF,
+
+		None = 0x00001001,
+		Idle = 0x00001002,
+
+		SKeyEnd = 0x0000FFFF,
+		LastBase = SKeyEnd;
+	}
 }

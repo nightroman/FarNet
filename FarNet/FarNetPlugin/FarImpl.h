@@ -37,6 +37,7 @@ public:
 	virtual bool Commit();
 	virtual bool Msg(String^ body);
 	virtual bool Msg(String^ body, String^ header);
+	virtual Char CodeToChar(int code);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
 	virtual IEditor^ CreateEditor();
@@ -44,6 +45,7 @@ public:
 	virtual IFile^ CreatePanelItem(FileSystemInfo^ info, bool fullName);
 	virtual IInputBox^ CreateInputBox();
 	virtual IList<int>^ CreateKeySequence(String^ keys);
+	virtual IListMenu^ CreateListMenu();
 	virtual IMenu^ CreateMenu();
 	virtual IMessage^ CreateMessage();
 	virtual int Msg(String^ body, String^ header, MessageOptions options);

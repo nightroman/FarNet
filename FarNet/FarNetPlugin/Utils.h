@@ -71,7 +71,9 @@ struct SEditorSetPosition : EditorSetPosition
 };
 
 // String converters
+Char OemToChar(char oem);
 void StrToOem(String^ str, char* oem);
+void StrToOem(String^ str, char* oem, int size);
 String^ FromEditor(const char* text, int len);
 String^ OemToStr(const char* oem);
 String^ OemToStr(const char* oem, int length);
@@ -102,6 +104,9 @@ void Edit_SetOvertype(bool value);
 // Helpers
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
 String^ ExceptionInfo(Exception^ e, bool full);
+void ValidateRect(int& x, int& w, int min, int size);
+String^ Wildcard(String^ pattern);
+String^ JoinText(String^ head, String^ tail);
 
 extern int _fastGetString;
 
@@ -120,5 +125,5 @@ internal:
 }
 
 // DateTime tools
-DateTime ft2dt(FILETIME time);
-FILETIME dt2ft(DateTime time);
+DateTime FileTimeToDateTime(FILETIME time);
+FILETIME DateTimeToFileTime(DateTime time);

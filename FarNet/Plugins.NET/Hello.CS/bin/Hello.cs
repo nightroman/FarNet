@@ -15,6 +15,6 @@ public class HelloCS : BasePlugin
 		menuItem.Name = "Hello c#";
 		menuItem.OnOpen += item_OnOpen;
 		Far.RegisterPluginsMenuItem(menuItem);
-		Far.RegisterPrefix("hellocs", new StringDelegate(sayHello));
+		Far.RegisterPrefix("hellocs", sayHello);
 	}
 }
