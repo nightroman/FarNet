@@ -7,6 +7,8 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarManagerImpl
 {;
+ref class FarListBox;
+
 public ref class MenuItem : IMenuItem
 {
 public:
@@ -39,14 +41,12 @@ public ref class AnyMenu abstract : public IAnyMenu
 {
 public:
 	virtual property bool AutoAssignHotkeys;
-	virtual property bool FilterRestore;
 	virtual property bool SelectLast;
 	virtual property bool ShowAmpersands;
 	virtual property bool WrapCursor;
 	virtual property IList<int>^ BreakKeys { IList<int>^ get(); }
 	virtual property IMenuItems^ Items { IMenuItems^ get(); }
 	virtual property int BreakCode { int get(); }
-	virtual property int FilterKey;
 	virtual property int MaxHeight;
 	virtual property int Selected { int get(); void set(int value); }
 	virtual property int X { int get(); void set(int value); }
@@ -54,25 +54,18 @@ public:
 	virtual property Object^ SelectedData { Object^ get(); }
 	virtual property Object^ Sender;
 	virtual property String^ Bottom;
-	virtual property String^ Filter;
-	virtual property String^ FilterHistory;
 	virtual property String^ HelpTopic;
 	virtual property String^ Title;
 public:
 	virtual bool Show() = 0;
 protected:
 	AnyMenu();
-	Regex^ CreateFilter();
-	String^ AnyMenu::InfoLine();
-	static Regex^ CreateFilter(String^ filter, bool* ok);
-	static String^ InputFilter(String^ filter, String^ history);
 internal:
 	MenuItemCollection^ _items;
-	List<int>^ _ii;
 	int _x;
 	int _y;
 	int _selected;
-	List<int> _breakKeys;
+	List<int> _keys;
 	int _breakCode;
 };
 
@@ -100,30 +93,50 @@ private:
 	int* _createdBreaks;
 };
 
-public ref class ListMenu sealed : public AnyMenu, public IListMenu
+public ref class ListMenu : public AnyMenu, public IListMenu
 {
 public:
-	DEF_EVENT(Showing, _Showing);
-public:
 	virtual property bool AutoSelect;
+	virtual property bool FilterRestore;
 	virtual property bool NoShadow;
-	virtual property FilterOptions Alternative;
-	virtual property FilterOptions Incremental;
-	virtual property IListBox^ ListBox;
+	virtual property bool UsualMargins;
+	virtual property int FilterKey { int get() { return _FilterKey; } void set(int value) { _FilterKey = value; } }
 	virtual property int ScreenMargin;
-	virtual property String^ IncrementalFilter;
+	virtual property PatternOptions FilterOptions;
+	virtual property PatternOptions IncrementalOptions { PatternOptions get(); void set(PatternOptions value); }
+	virtual property String^ Filter { String^ get(); void set(String^ value); }
+	virtual property String^ FilterHistory;
+	virtual property String^ Incremental { String^ get(); void set(String^ value); }
 public:
 	virtual bool Show() override;
+	virtual void AddKey(int key);
+	virtual void AddKey(int key, EventHandler<MenuEventArgs^>^ handler);
+internal:
+	ListMenu();
 private:
-	void OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e);
-	Regex^ CreateIncrementalFilter();
-	void MakeFilter();
+	String^ InfoLine();
 	void GetInfo(String^& head, String^& foot);
+	void MakeFilter1();
+	void MakeFilters();
+	void OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e);
 private:
-	int _restart;
+	FarListBox^ _box;
+	List<EventHandler<MenuEventArgs^>^> _handlers;
+	String^ _filter1_;
+	int _FilterKey;
+	// Original user defined filter
+	String^ _Incremental_;
+	PatternOptions _IncrementalOptions;
+	// Currently used filter
+	String^ _filter2;
+	// To update permanent filter
 	bool _toFilter1;
+	// To update incremental filter
 	bool _toFilter2;
-	int _incrementalLength1;
+	// Filtered
+	List<int>^ _ii;
+	Regex^ _re1;
+	Regex^ _re2;
 };
 
 }

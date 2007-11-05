@@ -5,13 +5,20 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 
+char CStr::s_empty[1] = {0};
+
 ///<summary>Constructor: converts a string and holds the result.</summary>
 CStr::CStr(String^ str)
 {
-	if (str == nullptr)
-		str = String::Empty;
-	m_str = new char[str->Length + 1];
-	StrToOem(str, m_str);
+	if (String::IsNullOrEmpty(str))
+	{
+		m_str = s_empty;
+	}
+	else
+	{
+		m_str = new char[str->Length + 1];
+		StrToOem(str, m_str);
+	}
 }
 
 ///<summary>Constructor: makes and holds new char[length+1].</summary>
@@ -23,17 +30,25 @@ CStr::CStr(int length)
 ///<summary>Destructor: deletes the data.</summary>
 CStr::~CStr()
 {
-	delete m_str;
+	if (m_str != s_empty)
+		delete m_str;
 }
 
 ///<summary>Converts a string and holds the result.</summary>
 void CStr::Set(String^ str)
 {
-	delete m_str;
-	if (str == nullptr)
-		str = String::Empty;
-	m_str = new char[str->Length + 1];
-	StrToOem(str, m_str);
+	if (m_str != s_empty)
+		delete m_str;
+
+	if (String::IsNullOrEmpty(str))
+	{
+		m_str = s_empty;
+	}
+	else
+	{
+		m_str = new char[str->Length + 1];
+		StrToOem(str, m_str);
+	}
 }
 
 ///<summary>Temp string buffer.</summary>

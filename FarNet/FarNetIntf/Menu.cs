@@ -11,6 +11,51 @@ using System;
 namespace FarManager
 {
 	/// <summary>
+	/// Arguments of a menu key handler, see <see cref="IListMenu.AddKey(int,EventHandler&lt;MenuEventArgs&gt;)"/>.
+	/// By default the key closes the menu and <see cref="IAnyMenu.BreakCode"/> is set to its internal code.
+	/// Use <see cref="Ignore"/> or <see cref="Restart"/> to perform different actions.
+	/// </summary>
+	public class MenuEventArgs : EventArgs
+	{
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="item">Current item.</param>
+		public MenuEventArgs(IMenuItem item)
+		{
+			_Item = item;
+		}
+		IMenuItem _Item;
+		/// <summary>
+		/// Current item.
+		/// </summary>
+		public IMenuItem Item
+		{
+			get { return _Item; }
+		}
+		bool _Ignore;
+		/// <summary>
+		/// Tells to do nothing, a handler has processed everything.
+		/// </summary>
+		public bool Ignore
+		{
+			get { return _Ignore; }
+			set { _Ignore = value; }
+		}
+		bool _Restart;
+		/// <summary>
+		/// Tells to restart the menu, normally when items or properties are changed.
+		/// In some cases you may want to set proper <see cref="IAnyMenu.Selected"/> or -1
+		/// (e.g. you recreated all items and want the first or the last to be current after that).
+		/// </summary>
+		public bool Restart
+		{
+			get { return _Restart; }
+			set { _Restart = value; }
+		}
+	}
+
+	/// <summary>
 	/// Used by <see cref="IAnyMenu.Items"/> in a menu or a menu-list and <see cref="IComboBox"/>, <see cref="IListBox"/>.
 	/// </summary>
 	public interface IMenuItem
@@ -32,7 +77,7 @@ namespace FarManager
 		/// </summary>
 		string Text { get; set; }
 		/// <summary>
-		/// Item is separator. <see cref="Text"/> is used for a list item and ignored for a menu item.
+		/// Item is a separator. <see cref="Text"/> is shown in a list and ignored in a menu.
 		/// </summary>
 		bool IsSeparator { get; set; }
 		/// <summary>
@@ -49,29 +94,29 @@ namespace FarManager
 		/// <summary>
 		/// Add menu item to list
 		/// </summary>
-		/// <param name="text"><see cref="IMenuItem.Text"/></param>
+		/// <param name="text">Item text.</param>
 		/// <returns>new menu item</returns>
 		IMenuItem Add(string text);
 		/// <summary>
 		/// Add menu item to list
 		/// </summary>
-		/// <param name="text"><see cref="IMenuItem.Text"/></param>
-		/// <param name="isChecked"><see cref="IMenuItem.Checked"/></param>
+		/// <param name="text">Item text.</param>
+		/// <param name="isChecked">Item is checked.</param>
 		/// <returns>new menu item</returns>
 		IMenuItem Add(string text, bool isChecked);
 		/// <summary>
 		/// Add menu item to list
 		/// </summary>
-		/// <param name="text"><see cref="IMenuItem.Text"/></param>
-		/// <param name="isChecked"><see cref="IMenuItem.Checked"/></param>
-		/// <param name="isSeparator"><see cref="IMenuItem.IsSeparator"/></param>
+		/// <param name="text">Item text.</param>
+		/// <param name="isChecked">Item is checked.</param>
+		/// <param name="isSeparator">Item is a separator.</param>
 		/// <returns>new menu item</returns>
 		IMenuItem Add(string text, bool isChecked, bool isSeparator);
 		/// <summary>
 		/// Add menu item to list
 		/// </summary>
-		/// <param name="text"><see cref="IMenuItem.Text"/></param>
-		/// <param name="onClick"><see cref="IMenuItem.OnClick"/></param>
+		/// <param name="text">Item text.</param>
+		/// <param name="onClick"><see cref="IMenuItem.OnClick"/>.</param>
 		/// <returns>new menu item</returns>
 		IMenuItem Add(string text, EventHandler onClick);
 	}
@@ -95,7 +140,7 @@ namespace FarManager
 		/// </summary>
 		int MaxHeight { get; set; }
 		/// <summary>
-		/// Title of the menu.
+		/// Menu title.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
@@ -112,7 +157,7 @@ namespace FarManager
 		/// </summary>
 		int Selected { get; set; }
 		/// <summary>
-		/// User data attached to the <see cref="Selected"/> menu item or null if nothing is selected.
+		/// User data attached to the <see cref="Selected"/> item or null if nothing is selected.
 		/// </summary>
 		object SelectedData { get; }
 		/// <summary>
@@ -131,36 +176,14 @@ namespace FarManager
 		/// </summary>
 		bool SelectLast { get; set; }
 		/// <summary>
-		/// Filter string. Format: regex | *substring | ?prefix.
-		/// It is also used by a filter input box (if it is enabled by <see cref="FilterKey"/>).
-		/// If null, it is taken from history if
-		/// <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set.
-		/// </summary>
-		string Filter { get; set; }
-		/// <summary>
-		/// Filter history used by the filter input box opened by <see cref="FilterKey"/>.
-		/// </summary>
-		string FilterHistory { get; set; }
-		/// <summary>
-		/// Tells to restore a filter from history if <see cref="Filter"/> is null
-		/// and <see cref="FilterHistory"/> is set.
-		/// </summary>
-		bool FilterRestore { get; set; }
-		/// <summary>
-		/// Virtual key code (for <see cref="IMenu"/>, added to break keys automatically)
-		/// or internal key code (for <see cref="IListMenu"/>) opening the filter input box.
-		/// </summary>
-		int FilterKey { get; set; }
-		/// <summary>
 		/// Sender passed in <see cref="IMenuItem.OnClick"/> event.
 		/// </summary>
 		/// <remarks>
-		/// By default <see cref="IMenuItem"/> is a sender.
-		/// Creator of a menu can provide another sender passed in events.
+		/// By default <see cref="IMenuItem"/> is a sender. You can provide another sender passed in.
 		/// </remarks>
 		object Sender { get; set; }
 		/// <summary>
-		/// Show ampersands in menu items instead of using them for accelerator characters.
+		/// Show ampersands in items instead of using them for accelerator characters.
 		/// </summary>
 		bool ShowAmpersands { get; set; }
 		/// <summary>
@@ -172,16 +195,10 @@ namespace FarManager
 		/// </summary>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
-		/// For <see cref="IMenu"/>: <see cref="BreakKeys"/> index of a key interrupted the menu.
+		/// For <see cref="IMenu"/>: <see cref="IMenu.BreakKeys"/> index of a key interrupted the menu.
 		/// For <see cref="IListMenu"/>: internal key code, see <see cref="KeyCode"/> helper.
 		/// </summary>
 		int BreakCode { get; }
-		/// <summary>
-		/// List of keys that closes menu.
-		/// For <see cref="IMenu"/> they are virtual key code (VK_* in FAR API docs).
-		/// For <see cref="IListMenu"/> they are internal key codes, see <see cref="KeyCode"/> helper.
-		/// </summary>
-		IList<int> BreakKeys { get; }
 	}
 
 	/// <summary>
@@ -195,9 +212,12 @@ namespace FarManager
 		/// </summary>
 		bool ReverseAutoAssign { get; set; }
 		/// <summary>
+		/// List of virtual key codes that close the menu. See VK_* in FAR API.
+		/// </summary>
+		IList<int> BreakKeys { get; }
+		/// <summary>
 		/// Creates low level internal data of the menu from the current items.
-		/// DON'T use filters or change menu items before <see cref="Unlock"/>
-		/// which also disposes internal resources.
+		/// Don't change menu or items before <see cref="Unlock"/>.
 		/// </summary>
 		/// <remarks>
 		/// Used for better performance when you call <see cref="IAnyMenu.Show"/> repeatedly
@@ -214,28 +234,36 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Filter options. By default * and ? are wildcard symbols.
-	/// See <see cref="IListMenu.Incremental"/>.
+	/// Filter pattern options.
+	/// All combinations are allowed though normally you have to set one and only of
+	/// <see cref="Regex"/>, <see cref="Prefix"/> or <see cref="Substring"/>.
 	/// </summary>
 	[Flags]
-	public enum FilterOptions
+	public enum PatternOptions
 	{
 		/// <summary>
-		/// No filter.
+		/// None. Usually it means that filter is not enabled.
 		/// </summary>
 		None,
 		/// <summary>
-		/// Filter by prefix. 
+		/// Regular expression with forms: <c>standard</c> | <c>?prefix</c> | <c>*substring</c>.
+		/// In prefix and substring forms * and ? are wildcards if <see cref="Literal"/> is not set,
+		/// otherwise prefix and substring are exact string parts.
 		/// </summary>
-		Prefix = 1,
+		Regex = 1,
 		/// <summary>
-		/// Filter by substring.
+		/// Prefix pattern, * and ? are wildcards if <see cref="Literal"/> is not set.
 		/// </summary>
-		Substring = 2,
+		Prefix = 2,
+		/// <summary>
+		/// Substring pattern, * and ? are wildcards if <see cref="Literal"/> is not set.
+		/// </summary>
+		Substring = 4,
 		/// <summary>
 		/// All filter symbols including * and ? are literal.
+		/// Should be used with one of <see cref="Regex"/>, <see cref="Prefix"/> or <see cref="Substring"/>.
 		/// </summary>
-		Literal = 4
+		Literal = 8
 	}
 
 	/// <summary>
@@ -243,41 +271,78 @@ namespace FarManager
 	/// It is created by <see cref="IFar.CreateListMenu"/>.
 	/// </summary>
 	/// <remarks>
-	/// This kind of a menu is more suitable for selecting an item from a list.
-	/// It provides extra features for incremental filtering by typed substring or prefix.
+	/// This kind of a menu is more suitable for a list of objects than a set of commands.
+	/// It provides two kinds of filters: permanent and incremental, both with many options, both can be used together.
+	/// <para>
+	/// Keys: [CtrlDown] - default key to open a permanent filter input box;
+	/// [Backspace] - removes the last symbol from the incremental filter string (until the initial part is reached, if any);
+	/// [ShiftBackspace] - removes the incremental filter string completely, even initial part (rarely needed, but there are some cases).
+	/// </para>
 	/// </remarks>
 	public interface IListMenu : IAnyMenu
 	{
 		/// <summary>
-		/// Predefined incremental filter string used at start.
-		/// It does not enables filtering itself, you have to set <see cref="Incremental"/>.
+		/// Enables permanent filter and defines its type.
 		/// </summary>
-		string IncrementalFilter { get; set; }
+		PatternOptions FilterOptions { get; set; }
+		/// <summary>
+		/// Permanent filter pattern.
+		/// It does not enable filter itself, you have to set <see cref="FilterOptions"/>.
+		/// If it is empty, it is taken from history if <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set.
+		/// </summary>
+		string Filter { get; set; }
+		/// <summary>
+		/// Permanent filter history used by the filter input box opened by <see cref="FilterKey"/>.
+		/// </summary>
+		string FilterHistory { get; set; }
+		/// <summary>
+		/// Tells to restore permanent filter pattern from history
+		/// if <see cref="Filter"/> is empty and <see cref="FilterHistory"/> is set.
+		/// </summary>
+		bool FilterRestore { get; set; }
+		/// <summary>
+		/// Internal key code that opens a permanent filter input box.
+		/// Default: CtrlDown, i.e. <c>KeyCode.Ctrl | KeyCode.Down</c>
+		/// </summary>
+		int FilterKey { get; set; }
 		/// <summary>
 		/// Enables specified incremental filter and related options
 		/// and disables hotkey highlighting and related options.
 		/// </summary>
-		FilterOptions Incremental { get; set; }
+		PatternOptions IncrementalOptions { get; set; }
+		/// <summary>
+		/// Predefined incremental filter pattern used to continue typing.
+		/// It is not used to filter the initial list, initial list contains all items.
+		/// It does not enable filter itself, you have to set <see cref="IncrementalOptions"/>.
+		/// </summary>
+		string Incremental { get; set; }
 		/// <summary>
 		/// Tells to select a single item or nothing automatically on less than two items.
 		/// </summary>
 		bool AutoSelect { get; set; }
 		/// <summary>
-		/// Disables menu shadow.
+		/// Disables the dialog shadow.
 		/// </summary>
 		bool NoShadow { get; set; }
-		/// <summary>
-		/// Raised before show.
-		/// </summary>
-		event EventHandler Showing;
-		/// <summary>
-		/// Underlying list box.
-		/// Use it instantly in <see cref="Showing"/> to subscribe to its events.
-		/// </summary>
-		IListBox ListBox { get; }
 		/// <summary>
 		/// Screen margin size.
 		/// </summary>
 		int ScreenMargin { get; set; }
+		/// <summary>
+		/// Tells to use usual FAR menu margins.
+		/// </summary>
+		bool UsualMargins { get; set; }
+		/// <summary>
+		/// Adds an internal key code that closes the menu.
+		/// </summary>
+		/// <param name="key">Internal key code, see <see cref="KeyCode"/> helper.</param>
+		void AddKey(int key);
+		/// <summary>
+		/// Adds an internal key code with associated handler.
+		/// </summary>
+		/// <param name="key">Internal key code, see <see cref="KeyCode"/> helper.</param>
+		/// <param name="handler">Key handler triggered on the key pressed.</param>
+		void AddKey(int key, EventHandler<MenuEventArgs> handler);
 	}
+
 }

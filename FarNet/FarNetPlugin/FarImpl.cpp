@@ -1109,4 +1109,20 @@ Char Far::CodeToChar(int code)
 	return code < 0 || code > 255 ? 0 : OemToChar(char(code));
 }
 
+void Far::LoadMacros()
+{
+	ActlKeyMacro command;
+	command.Command = MCMD_LOADALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+}
+
+void Far::SaveMacros()
+{
+	ActlKeyMacro command;
+	command.Command = MCMD_SAVEALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+}
+
 }

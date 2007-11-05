@@ -5,6 +5,10 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #pragma once
 
+// Empty String and Solid String
+#define ES(s) (String::IsNullOrEmpty(s))
+#define SS(s) (!String::IsNullOrEmpty(s))
+
 #define DEF_EVENT(EventName, Handler)\
 virtual event EventHandler^ EventName {\
 void add(EventHandler^ handler) { Handler += handler; }\
@@ -52,6 +56,7 @@ public:
 	}
 private:
 	char* m_str;
+	static char s_empty[1];
 };
 
 /// <summary>
