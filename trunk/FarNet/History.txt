@@ -1,5 +1,29 @@
 3.3.31
 
+NEW
+
+- IFar.LoadMacros(), IFar.SaveMacros().
+
+REVISION: IMenu, IListMenu
+
+- IMenu does not support filters any more, it is now pure MENU OF COMMANDS, as
+simple and effective as possible. If your menu is rather a LIST OF OBJECTS for
+selection than use IListMenu, which provides filters: permanent and incremental,
+both with variety of PatternOptions.
+
+- Migration from IMenu to IListMenu (if you really need it) is simple: semantics
+is the same, just rename IMenu and CreateMenu to IListMenu and CreateListMenu;
+actually only keys are different: IMenu uses virtual key codes, IListMenu uses
+internal key codes added by AddKey() with optional handlers.
+
+- If you use permanent filter than, to enable it, now you have to define
+IListMenu.FilterOption according to your preferences, not FilterKey, which is
+now set to default (CtrlDown) and you don't have to fuss about internal codes,
+at least for this.
+
+- [F1] in list menus and input filter dialogs opens basic Far.NET help about
+predefined and recommended list menu keys and about patterns used for filters.
+
 3.3.30
 
 NEW

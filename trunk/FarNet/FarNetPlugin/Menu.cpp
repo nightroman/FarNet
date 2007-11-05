@@ -12,6 +12,100 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarManagerImpl
 {;
+//! UI: error message
+static Regex^ CreateRegex(String^ pattern, PatternOptions options, bool* ok)
+{
+	if (ok)
+		*ok = true;
+
+	if (ES(pattern) || !int(options))
+		return nullptr;
+
+	// regex?
+	if (int(options & PatternOptions::Regex))
+	{
+		try
+		{
+			if (pattern->StartsWith("?"))
+			{
+				// prefix
+				if (pattern->Length <= 1)
+					return nullptr;
+
+				pattern = pattern->Substring(1);
+				options = (options | PatternOptions::Prefix);
+			}
+			else if (pattern->StartsWith("*"))
+			{
+				// substring
+				if (pattern->Length <= 1)
+					return nullptr;
+
+				pattern = pattern->Substring(1);
+				options = (options | PatternOptions::Substring);
+			}
+			else
+			{
+				//! standard regex; errors may come here
+				return gcnew Regex(pattern, RegexOptions::IgnoreCase);
+			}
+		}
+		catch(ArgumentException^ e)
+		{
+			if (ok)
+			{
+				*ok = false;
+				Message::Show(e->Message, "Filter expression", MessageOptions::Ok, nullptr);
+			}
+			return nullptr;
+		}
+	}
+
+	// literal else wildcard
+	String^ re;
+	if (int(options & PatternOptions::Literal))
+		re = Regex::Escape(pattern);
+	else
+		re = Wildcard(pattern);
+
+	// prefix?
+	if (int(options & PatternOptions::Prefix))
+		re = "^" + re;
+
+	//! normally errors must not come here
+	return gcnew Regex(re, RegexOptions::IgnoreCase);
+}
+
+static String^ InputFilter(String^ pattern, PatternOptions options, String^ history, Regex^& regex)
+{
+	static CStr help;
+	InputBox ib;
+	ib.Title = "Filter";
+	ib.Prompt = "Pattern (" + options.ToString() + ")";
+	ib.EmptyEnabled = true;
+	ib.History = history;
+	if (SS(pattern))
+		ib.Text = pattern;
+
+	//! help; note that it fails without 'Far::_helpTopic' part
+	if (help == NULL)
+		help.Set(Far::_helpTopic + "InputFilter");
+	ib._oemHelpTopic = help;
+
+	// show filter input box
+	for(;;)
+	{
+		// cancelled
+		if (!ib.Show())
+			return nullptr;
+
+		// get regex (with UI errors)
+		bool ok;
+		regex = CreateRegex(ib.Text, options, &ok);
+		if (ok)
+			return ib.Text;
+	}
+}
 
 //
 //::MenuItemCollection
@@ -100,117 +194,9 @@ void AnyMenu::Selected::set(int value)
 	_selected = value;
 }
 
-Regex^ AnyMenu::CreateFilter(String^ filter, bool* ok)
-{
-	if (ok)
-		*ok = true;
-
-	if (String::IsNullOrEmpty(filter))
-		return nullptr;
-
-	try
-	{
-		// case: substring
-		if (filter->StartsWith("*"))
-			return filter->Length == 0 ? nullptr :
-				gcnew Regex(Regex::Escape(filter->Substring(1)), RegexOptions::IgnoreCase);
-
-		// case: prefix
-		if (filter->StartsWith("?"))
-			return filter->Length == 0 ? nullptr :
-				gcnew Regex("^" + Regex::Escape(filter->Substring(1)), RegexOptions::IgnoreCase);
-
-		// standard
-		return gcnew Regex(filter, RegexOptions::IgnoreCase);
-	}
-	catch(ArgumentException^ e)
-	{
-		if (ok)
-		{
-			*ok = false;
-			Message::Show(e->Message, "Filter expression", MessageOptions::Ok, nullptr);
-		}
-		return nullptr;
-	}
-}
-
-String^ AnyMenu::InputFilter(String^ filter, String^ history)
-{
-	InputBox ib;
-	ib.Title = "Filter";
-	ib.Prompt = "Filter expression";
-	ib.EmptyEnabled = true;
-	ib.History = history;
-	if (!String::IsNullOrEmpty(filter))
-		ib.Text = filter;
-
-	// show filter input box
-	for(;;)
-	{
-		// cancelled
-		if (!ib.Show())
-			return nullptr;
-
-		// validate
-		bool ok;
-		CreateFilter(ib.Text, &ok);
-		if (ok)
-			return ib.Text;
-	}
-}
-
-Regex^ AnyMenu::CreateFilter()
-{
-	// get filter
-	if (!Filter && FilterRestore && !String::IsNullOrEmpty(FilterHistory))
-	{
-		RegistryKey^ key;
-		try
-		{
-			key = Registry::CurrentUser->OpenSubKey(GetFar()->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
-			if (key)
-			{
-				int flags = (int)key->GetValue("Flags");
-				if (flags)
-					Filter = key->GetValue("Line0")->ToString();
-			}
-		}
-		finally
-		{
-			if (key)
-				key->Close();
-		}
-	}
-
-	// filter
-	Regex^ r = CreateFilter(Filter, NULL);
-	if (r)
-	{
-		// init filter
-		_ii = gcnew List<int>;
-	}
-	else
-	{
-		// reset filter!
-		Filter = nullptr;
-		_ii = nullptr;
-	}
-	return r;
-}
-
-String^ AnyMenu::InfoLine()
-{
-	String^ r = FilterKey ? String::Concat("<", Filter) + ">" : String::Empty;
-	r += "(";
-	if (_ii)
-		r += _ii->Count + "/";
-	r += _items->Count + ")";
-	return JoinText(r, Bottom);
-}
-
 IList<int>^ AnyMenu::BreakKeys::get()
 {
-	return %_breakKeys;
+	return %_keys;
 }
 
 int AnyMenu::BreakCode::get()
@@ -246,17 +232,13 @@ Menu::!Menu()
 int* Menu::CreateBreakKeys()
 {
 	int* r = NULL;
-	int nKey = _breakKeys.Count;
-	if (FilterKey)
-		++nKey;
+	int nKey = _keys.Count;
 	if (nKey > 0)
 	{
 		r = new int[nKey + 1];
 		int i = 0;
-		for each(int k in _breakKeys)
+		for each(int k in _keys)
 			r[i++] = k;
-		if (FilterKey)
-			r[i++] = (int)FilterKey;
 		r[i] = 0;
 	}
 	return r;
@@ -300,21 +282,11 @@ void Menu::Unlock()
 
 FarMenuItem* Menu::CreateItems()
 {
-	// filter
-	Regex^ re = CreateFilter();
-
-	// add items, filter
-	int i = -1, n = 0;
+	// add items
+	int n = 0;
 	FarMenuItem* r = new struct FarMenuItem[_items->Count];
 	for each(IMenuItem^ item in _items)
 	{
-		++i;
-		if (re)
-		{
-			if (!re->IsMatch(item->Text))
-				continue;
-			_ii->Add(i);
-		}
 		StrToOem(item->Text, r[n].Text, sizeof(r->Text));
 		r[n].Checked = item->Checked;
 		r[n].Separator = item->IsSeparator;
@@ -355,27 +327,24 @@ void Menu::ShowMenu(const FarMenuItem* items, const int* breaks)
 			y = 2;
 	}
 
-	// title
-	CStr sTitle;
-	if (!String::IsNullOrEmpty(Title))
-		sTitle.Set(Title);
-
 	// help
 	CStr sHelpTopic;
-	if (!String::IsNullOrEmpty(HelpTopic))
+	if (SS(HelpTopic))
 		sHelpTopic.Set(HelpTopic);
 
+	// title
+	CStr sTitle;
+	if (SS(Title))
+		sTitle.Set(Title);
+
 	// bottom
-	String^ info = InfoLine();
 	CStr sBottom;
-	if (info->Length)
-		sBottom.Set(info);
+	if (SS(Bottom))
+		sBottom.Set(Bottom);
 
 	// show
 	int bc;
-	_selected = Info.Menu(
-		Info.ModuleNumber, x, y, MaxHeight, Flags(), sTitle, sBottom, sHelpTopic, breaks, &bc, items,
-		_ii ? _ii->Count : _items->Count);
+	_selected = Info.Menu(Info.ModuleNumber, x, y, MaxHeight, Flags(), sTitle, sBottom, sHelpTopic, breaks, &bc, items, _items->Count);
 	_breakCode = bc;
 }
 
@@ -397,28 +366,8 @@ bool Menu::Show()
 
 	try
 	{
-		for(;;)
-		{
-			ShowMenu(items, bkeys);
-
-			// correct filtered index
-			if (_ii && _selected >= 0)
-				_selected = _ii[_selected];
-
-			// stop if not a filter key
-			if (_breakCode != _breakKeys.Count)
-				break;
-
-			// input filter
-			String^ filter = InputFilter(Filter, FilterHistory);
-			if (!filter)
-				continue;
-
-			// reset filter
-			Filter = filter;
-			delete items;
-			items = CreateItems();
-		}
+		// show
+		ShowMenu(items, bkeys);
 	}
 	finally
 	{
@@ -426,12 +375,11 @@ bool Menu::Show()
 		{
 			delete items;
 			delete bkeys;
-			_ii = nullptr;
 		}
 	}
 
-	bool r = _selected >= 0;
-	if (r)
+	// OnClick
+	if (_selected >= 0)
 	{
 		MenuItem^ item = (MenuItem^)_items[_selected];
 		if (item->_OnClick)
@@ -443,44 +391,127 @@ bool Menu::Show()
 		}
 	}
 
-	return r;
+	return _selected >= 0;
 }
 
 //
 //::ListMenu
 //
 
+ListMenu::ListMenu()
+: _filter1_(String::Empty)
+, _Incremental_(String::Empty)
+, _filter2(String::Empty)
+, _FilterKey(KeyCode::Ctrl | KeyCode::Down)
+{
+}
+
+String^ ListMenu::Incremental::get() { return _Incremental_; }
+void ListMenu::Incremental::set(String^ value)
+{
+	if (!value) throw gcnew ArgumentNullException("value");
+	_Incremental_ = value;
+	_filter2 = value;
+	_re2 = nullptr;
+} 
+
+String^ ListMenu::Filter::get() { return _filter1_; }
+void ListMenu::Filter::set(String^ value)
+{
+	_filter1_ = value;
+	_re1 = nullptr;
+}
+
+PatternOptions ListMenu::IncrementalOptions::get() { return _IncrementalOptions; }
+void ListMenu::IncrementalOptions::set(PatternOptions value)
+{
+	if (int(value & PatternOptions::Regex))
+		throw gcnew ArgumentException("Incremental filter can not be 'Regex'.");
+	_IncrementalOptions = value;
+}
+
+String^ ListMenu::InfoLine()
+{
+	String^ r = "(";
+	if (_ii)
+		r += _ii->Count + "/";
+	r += _items->Count + ")";
+	if (int(FilterOptions))
+		r += "<" + Filter + ">";
+	return JoinText(r, Bottom);
+}
+
 void ListMenu::GetInfo(String^& head, String^& foot)
 {
 	head = Title ? Title : String::Empty;
 	foot = InfoLine();
-	if (Bottom)
+	if (SS(Bottom))
 		foot += " ";
-	if (Incremental != FilterOptions::None && IncrementalFilter)
+	if (int(IncrementalOptions) && _filter2->Length)
 	{
 		if (SelectLast)
-			foot = "[" + IncrementalFilter + "]" + foot;
+			foot = "[" + _filter2 + "]" + foot;
 		else
-			head = JoinText("[" + IncrementalFilter + "]", head);
+			head = JoinText("[" + _filter2 + "]", head);
 	}
 }
 
-void ListMenu::MakeFilter()
+void ListMenu::MakeFilter1()
+{
+	if (_re1)
+		return;
+
+	// get pattern
+	if (!Filter->Length && FilterRestore && SS(FilterHistory))
+	{
+		RegistryKey^ key = nullptr;
+		try
+		{
+			key = Registry::CurrentUser->OpenSubKey(GetFar()->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
+			if (key)
+			{
+				int flags = (int)key->GetValue("Flags");
+				if (flags)
+					Filter = key->GetValue("Line0")->ToString();
+			}
+		}
+		finally
+		{
+			if (key)
+				key->Close();
+		}
+	}
+
+	// make filter
+	_re1 = CreateRegex(Filter, FilterOptions, NULL);
+}
+
+void ListMenu::MakeFilters()
 {
 	// filter 1
 	if (_toFilter1)
 	{
 		_toFilter1 = false;
-		Regex^ re1 = CreateFilter();
-		if (re1)
+		MakeFilter1();
+		if (_re1)
 		{
+			// init filter
+			_ii = gcnew List<int>;
+
+			// fill
 			int i = -1;
 			for each(IMenuItem^ mi in Items)
 			{
 				++i;
-				if (re1->IsMatch(mi->Text))
+				if (_re1->IsMatch(mi->Text))
 					_ii->Add(i);
 			}
+		}
+		else
+		{
+			// reset filter!
+			Filter = String::Empty;
+			_ii = nullptr;
 		}
 	}
 
@@ -488,8 +519,16 @@ void ListMenu::MakeFilter()
 	if (!_toFilter2)
 		return;
 	_toFilter2 = false;
-	Regex^ re2 = CreateIncrementalFilter();
-	if (!re2)
+
+	// Don't filter by predefined, assume that predefined filter is usually used without permanent.
+	// E.g. TabEx: 'sc[Tab]' gets 'Set-Contents' which doesn't match prefix 'sc', but it should be shown.
+	if (!Filter->Length && _filter2 == Incremental)
+		return;
+
+	// create
+	if (!_re2)
+		_re2 = CreateRegex(_filter2, IncrementalOptions, NULL);
+	if (!_re2)
 		return;
 
 	// case: filter already filtered
@@ -498,7 +537,7 @@ void ListMenu::MakeFilter()
 		List<int>^ ii = gcnew List<int>;
 		for each(int k in _ii)
 		{
-			if (re2->IsMatch(_items[k]->Text))
+			if (_re2->IsMatch(_items[k]->Text))
 				ii->Add(k);
 		}
 		_ii = ii;
@@ -511,26 +550,20 @@ void ListMenu::MakeFilter()
 	for each(IMenuItem^ mi in Items)
 	{
 		++i;
-		if (re2->IsMatch(mi->Text))
+		if (_re2->IsMatch(mi->Text))
 			_ii->Add(i);
 	}
 }
 
-Regex^ ListMenu::CreateIncrementalFilter()
+void ListMenu::AddKey(int key)
 {
-	if (!IncrementalFilter)
-		return nullptr;
+	AddKey(key, nullptr);
+}
 
-	String^ re = IncrementalFilter;
-	if (int(Incremental & FilterOptions::Literal))
-		re = Regex::Escape(IncrementalFilter);
-	else
-		re = Wildcard(IncrementalFilter);
-
-	if (int(Incremental & FilterOptions::Prefix))
-		re = "^" + re;
-
-	return gcnew Regex(re, RegexOptions::IgnoreCase);
+void ListMenu::AddKey(int key, EventHandler<MenuEventArgs^>^ handler)
+{
+	_keys.Add(key);
+	_handlers.Add(handler);
 }
 
 void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
@@ -547,57 +580,87 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 	FarDialog^ d = (FarDialog^)sender;
 
 	//! break keys first
-	if (_breakKeys.IndexOf(e->Code) >= 0)
+	int k = _keys.IndexOf(e->Code);
+	if (k >= 0)
 	{
-		_breakCode = e->Code;
-		d->Close();
+		if (_handlers[k])
+		{
+			_selected = _box->Selected;
+			if (_ii)
+				_selected = _ii[_selected];
+			MenuEventArgs a((_selected >= 0 ? _items[_selected] : nullptr));
+			_handlers[k]((Sender ? Sender : this), %a);
+			if (a.Ignore)
+			{
+				e->Ignore = true;
+				return;
+			}
+			d->Close();
+			if (a.Restart)
+				_breakCode = -1;
+		}
+		else
+		{
+			_breakCode = e->Code;
+			d->Close();
+		}
 		return;
 	}
 
 	// filter
-	if (e->Code == FilterKey)
+	if (e->Code == _FilterKey)
 	{
 		// input filter
-		String^ filter = InputFilter(Filter, FilterHistory);
+		Regex^ re;
+		String^ filter = InputFilter(Filter, FilterOptions, FilterHistory, re);
 		if (!filter)
 			return;
 
-		// reset filters
+		// reset
 		Filter = filter;
-		_restart = true;
+		_re1 = re;
 		_toFilter1 = true;
-		IncrementalFilter = nullptr;
-		_incrementalLength1 = 0;
+		_toFilter2 = true;
 		d->Close();
 		return;
 	}
 
 	// incremental
-	if (Incremental != FilterOptions::None)
+	if (int(IncrementalOptions))
 	{
-		if (e->Code == KeyCode::Backspace)
+		if (e->Code == KeyCode::Backspace || e->Code == (KeyCode::Backspace | KeyCode::Shift))
 		{
-			if (IncrementalFilter)
+			if (_filter2->Length)
 			{
-				if (IncrementalFilter->Length > _incrementalLength1)
+				// case: Shift, drop incremental
+				if (e->Code != KeyCode::Backspace)
 				{
-					Char c = IncrementalFilter[IncrementalFilter->Length - 1];
-					IncrementalFilter = IncrementalFilter->Substring(0, IncrementalFilter->Length - 1);
+					Incremental = String::Empty;
+					_toFilter1 = true;
+					_toFilter2 = false;
+					d->Close();
+					return;
+				}
+
+				if (_filter2->Length > Incremental->Length)
+				{
+					Char c = _filter2[_filter2->Length - 1];
+					_filter2 = _filter2->Substring(0, _filter2->Length - 1);
+					_re2 = nullptr;
 					// * and ?
-					if (!int(Incremental & FilterOptions::Literal) && (c == '*' || c == '?'))
+					if (!int(IncrementalOptions & PatternOptions::Literal) && (c == '*' || c == '?'))
 					{
+						// update title/bottom
 						String^ t; String^ b; GetInfo(t, b);
 						d->_items[0]->Text = t;
 						d->_items[2]->Text = b;
 					}
 					else
 					{
-						_restart = -1;
-						_toFilter1 = _toFilter2 = true;
+						_toFilter1 = true;
+						_toFilter2 = true;
 					}
 				}
-				if (IncrementalFilter->Length == 0)
-					IncrementalFilter = nullptr;
 			}
 		}
 		else
@@ -606,38 +669,38 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 			if (c >= ' ')
 			{
 				// keep and change filter
-				String^ filterBak = IncrementalFilter;
-				if (IncrementalFilter)
-					IncrementalFilter += c;
-				else
-					IncrementalFilter = gcnew String(c, 1);
+				String^ filter2Bak = _filter2;
+				Regex^ re2Bak = _re2;
+				_filter2 += c;
+				_re2 = nullptr;
 
 				// * and ?
-				if (!int(Incremental & FilterOptions::Literal) && (c == '*' || c == '?'))
+				if (!int(IncrementalOptions & PatternOptions::Literal) && (c == '*' || c == '?'))
 				{
+					// update title/bottom
 					String^ t; String^ b; GetInfo(t, b);
 					d->_items[0]->Text = t;
 					d->_items[2]->Text = b;
 					return;
 				}
-				
+
 				// try the filter, rollback on empty
 				List<int>^ iiBak = _ii;
 				_toFilter2 = true;
-				MakeFilter();
+				MakeFilters();
 				if (_ii && _ii->Count == 0)
 				{
-					IncrementalFilter = filterBak;
+					_filter2 = filter2Bak;
+					_re2 = re2Bak;
 					_ii = iiBak;
 					return;
 				}
 
 				_toFilter2 = true;
-				_restart = +1;
 			}
 
 		}
-		if (_restart)
+		if (_toFilter1 || _toFilter2)
 			d->Close();
 		return;
 	}
@@ -645,19 +708,12 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 
 bool ListMenu::Show()
 {
-	// keep length
-	if (IncrementalFilter)
-		_incrementalLength1 = IncrementalFilter->Length;
-
 	// main loop
 	_toFilter1 = _toFilter2 = true;
 	for(int pass = 0;; ++pass)
 	{
-		// filtered item number
-		const int nItem1 = _ii ? _ii->Count : _items->Count;
-
 		// filter
-		MakeFilter();
+		MakeFilters();
 
 		// filtered item number
 		const int nItem2 = _ii ? _ii->Count : _items->Count;
@@ -674,12 +730,15 @@ bool ListMenu::Show()
 				return false;
 			}
 		}
-		if (_restart && nItem1 != nItem2)
-			_selected = 0;
 
 		// title, bottom
 		String^ title; String^ info;
 		GetInfo(title, info);
+
+		// margins
+		const int ms = ScreenMargin > 1 ? ScreenMargin : 1;
+		const int mx = UsualMargins ? 2 : 0;
+		const int my = UsualMargins ? 1 : 0;
 
 		// width
 		int w = 0;
@@ -695,7 +754,7 @@ bool ListMenu::Show()
 				if (mi->Text->Length > w)
 					w = mi->Text->Length;
 		}
-		w += 2; // if less last chars are lost
+		w += 2 + 2*mx; // if less last chars are lost
 
 		// height
 		int n = _ii ? _ii->Count : _items->Count;
@@ -713,58 +772,65 @@ bool ListMenu::Show()
 			w = 20;
 
 		// place
-		const int min = ScreenMargin > 1 ? ScreenMargin : 1;
 		int dw = w + 4, dx = _x;
-		ValidateRect(dx, dw, min, Console::WindowWidth - (2*min));
-		int dh = n + 2, dy = _y;
-		ValidateRect(dy, dh, min, Console::WindowHeight - (2*min));
+		ValidateRect(dx, dw, ms, Console::WindowWidth - 2*ms);
+		int dh = n + 2 + 2*my, dy = _y;
+		ValidateRect(dy, dh, ms, Console::WindowHeight - 2*ms);
 
 		// dialog
 		FarDialog dialog(dx, dy, dx + dw - 1, dy + dh - 1);
-		dialog.HelpTopic = HelpTopic;
+		dialog.HelpTopic = SS(HelpTopic) ? HelpTopic : "ListMenu";
 		dialog.NoShadow = NoShadow;
 
 		// title
-		dialog.AddBox(0, 0, dw - 1, dh - 1, title);
+		dialog.AddBox(mx, my, dw - 1 - mx, dh - 1 - my, title);
 
 		// list
-		FarListBox^ box = (FarListBox^)dialog.AddListBox(1, 1, dw - 2, dh - 2, String::Empty);
-		box->Selected = _selected;
-		box->SelectLast = SelectLast;
-		box->NoBox = true;
-		ListBox = box;
-		if (Incremental == FilterOptions::None)
+		_box = (FarListBox^)dialog.AddListBox(1 + mx, 1 + my, dw - 2 - mx, dh - 2 - my, String::Empty);
+		_box->Selected = _selected;
+		_box->SelectLast = SelectLast;
+		_box->NoBox = true;
+		if (IncrementalOptions == PatternOptions::None)
 		{
-			box->AutoAssignHotkeys = AutoAssignHotkeys;
-			box->NoAmpersands = !ShowAmpersands;
-			box->WrapCursor = WrapCursor;
+			_box->AutoAssignHotkeys = AutoAssignHotkeys;
+			_box->NoAmpersands = !ShowAmpersands;
+			_box->WrapCursor = WrapCursor;
 		}
 
 		// "bottom"
-		dialog.AddText(1, dh - 1, 0, info);
+		dialog.AddText(1 + mx, dh - 1 - my, 0, info);
 
 		// items and filter
-		box->_items = _items;
-		box->_ii = _ii;
+		_box->_items = _items;
+		_box->_ii = _ii;
 
 		// filter
-		box->_KeyPressed += gcnew EventHandler<KeyPressedEventArgs^>(this, &ListMenu::OnKeyPressed);
+		_box->_KeyPressed += gcnew EventHandler<KeyPressedEventArgs^>(this, &ListMenu::OnKeyPressed);
 
-		_restart = 0;
-		if (_Showing)
-			_Showing(this, nullptr);
+		// go!
+		_toFilter1 = _toFilter2 = false;
+		_breakCode = 0;
 		bool ok = dialog.Show();
-		ListBox = nullptr;
 		if (!ok)
 			return false;
-
-		if (_restart)
+		if (_breakCode == -1 || _toFilter1 || _toFilter2)
 			continue;
 
 		// correct by filter
-		_selected = box->Selected;
+		_selected = _box->Selected;
 		if (_ii && _selected >= 0)
 			_selected = _ii[_selected];
+
+		// OnClick
+		if (_selected >= 0)
+		{
+			MenuItem^ item = (MenuItem^)_items[_selected];
+			MenuEventArgs e(item);
+			if (item->_OnClick)
+				item->_OnClick((Sender ? Sender : this), %e);
+			if (e.Ignore || e.Restart)
+				continue;
+		}
 
 		//! [Enter] on empty gives -1
 		return _selected >= 0;

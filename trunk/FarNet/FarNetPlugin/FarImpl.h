@@ -64,6 +64,7 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title);
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual void GetUserScreen();
+	virtual void LoadMacros();
 	virtual void PostKeys(String^ keys);
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(IList<int>^ sequence, bool disableOutput);
@@ -75,6 +76,7 @@ public:
 	virtual void RegisterPrefix(String^ prefix, StringDelegate^ handler);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ command);
+	virtual void SaveMacros();
 	virtual void SetCurrentWindow(int index);
 	virtual void SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue);
 	virtual void SetUserScreen();
@@ -92,6 +94,8 @@ internal:
 	void ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel);
 internal:
 	EditorManager^ _editorManager;
+	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
+	static String^ _helpTopic = "<" + _folder + "\\>";
 internal:
 	bool AsConfigure(int itemIndex);
 	HANDLE AsOpenPlugin(int from, INT_PTR item);

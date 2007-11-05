@@ -1,7 +1,77 @@
 .Language=English,English (English)
-.PluginContents=Far.NET Plugins
+.PluginContents=Far.NET
+.Options TabSize=4
 
 @Contents
-$#Far.NET Plugins#
+$#Far.NET#
+
+#User interface features#
+
+	~List menu~@ListMenu@
+	~Input filter~@InputFilter@
+
+#Far.NET plugins#
 
     ~PowerShellFar~@<..\..\Plugins.NET\PowerShellFar\>@
+
+
+@ListMenu
+$#List menu#
+~Contents~@Contents@
+
+This is basic description of all list menus. Actual keys and operations depend
+on properties set by a sub-plugin.
+
+#Enter#
+	Selects the current item and closes the menu. The selected item is processed
+	by a caller. Example: command history: the selected command is invoked.
+
+#CtrlEnter#
+	Recommended key for an alternative action, i.e. it selects the current item,
+	closes the menu and the item is processed by a caller in alternative way.
+	Example: command history: the selected command is inserted into the command
+	line.
+
+#Delete#
+	Recommended key for removing item(s) from the menu. Example: command
+	history: removes duplicated commands or removes the current command and etc.
+
+#CtrlDown#
+	Recommended key to open an input filter dialog (if permanent filter is
+	enabled). Note that in this case #AltDown# does the same if you use this
+	popular macro (addon AltDown.reg). See also ~Input filter~@InputFilter@.
+
+#Symbols#
+	Applies incremental filter immediately on typing (if incremental filter is
+	enabled). By default symbols * and ? are wildcards.
+
+#Backspace#
+	Removes the last symbol from the current incremental filter pattern.
+
+#ShiftBackspace#
+	Removes the incremental filter string completely.
+
+
+@InputFilter
+$#Input filter#
+~Contents~@Contents@
+
+Input box for a filter pattern. Pattern type depends on a sub-plugin or its
+settings. Available types:
+
+ #Regex#
+ #Regex, Literal#
+
+	regex - standard regular expression
+	?text - text is prefix where * and ? are wildcards or #Literal#
+	*text - text is substring where * and ? are wildcards or #Literal#
+
+ #Prefix#
+ #Prefix, Literal#
+
+ 	Pattern is prefix where * and ? are wildcards or #Literal#
+
+ #Substring#
+ #Substring, Literal#
+
+	Pattern is substring where * and ? are wildcards or #Literal#

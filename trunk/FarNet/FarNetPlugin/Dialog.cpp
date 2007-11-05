@@ -710,7 +710,7 @@ void FarBaseBox::Setup(FarDialogItem& item, int type)
 			InitFarListItem(_pFarList->Items[i], (MenuItem^)_items[i]);
 	}
 
-	if (SelectLast)
+	if (_selected < 0 && SelectLast)
 		_selected = _pFarList->ItemsNumber - 1;
 	if (_selected >= 0 && _selected < _pFarList->ItemsNumber)
 		_pFarList->Items[_selected].Flags |= LIF_SELECTED;
