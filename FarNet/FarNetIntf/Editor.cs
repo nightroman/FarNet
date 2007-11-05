@@ -484,22 +484,6 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Text event arguments.
-	/// </summary>
-	public class TextEventArgs : EventArgs
-	{
-		string _text;
-		/// <summary>
-		/// Text to be processed.
-		/// </summary>
-		public string Text
-		{
-			get { return _text; }
-			set { _text = value; }
-		}
-	}
-
-	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnKey"/> event.
 	/// </summary>
 	public sealed class KeyEventArgs : EventArgs

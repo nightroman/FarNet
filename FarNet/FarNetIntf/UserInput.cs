@@ -273,7 +273,7 @@ namespace FarManager
 		Alt = 0x02000000,
 		Shift = 0x04000000,
 		RCtrl = 0x10000000,
-		Ralt = 0x20000000,
+		RAlt = 0x20000000,
 
 		LBracket = '[',
 		RBracket = ']',
@@ -381,9 +381,6 @@ namespace FarManager
 		NumpadDelete = 0x00000209,
 		Decimal = 0x0000020A,
 		NumpadEnter = 0x0000020B,
-
-		//FFBegin = 0x00000300,
-		//FFEnd = 0x000003FF,
 
 		FKeyEnd = 0x00000FFF,
 

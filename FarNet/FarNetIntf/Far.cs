@@ -419,6 +419,14 @@ namespace FarManager
 		/// Converts an internal key code to a string. <see cref="KeyCode"/>
 		/// </summary>
 		char CodeToChar(int code);
+		/// <summary>
+		/// Read all macros from the registry into FAR memory. Previous values are erased.
+		/// </summary>
+		void LoadMacros();
+		/// <summary>
+		/// Forces FAR to save all macros from memory to the registry.
+		/// </summary>
+		void SaveMacros();
 	}
 
 	/// <summary>
@@ -610,11 +618,11 @@ namespace FarManager
 		/// <summary>
 		/// Dummy.
 		/// </summary>
-		None = 0,
+		None,
 		/// <summary>
 		/// File panels.
 		/// </summary>
-		Panels = 1,
+		Panels,
 		/// <summary>
 		/// Internal viewer window.
 		/// </summary>

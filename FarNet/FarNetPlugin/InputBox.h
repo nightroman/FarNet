@@ -24,6 +24,8 @@ public:
 	virtual property String^ Title;
 internal:
 	InputBox();
+internal:
+	const char* _oemHelpTopic;
 private:
 	int Flags();
 private:

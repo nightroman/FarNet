@@ -31,13 +31,20 @@ bool InputBox::Show()
 	CStr sPrompt(Prompt);
 	CStr sText(Text);
 	CStr sDest(_maxLength + 1);
-	CStr sHelp;
-	if (!String::IsNullOrEmpty(HelpTopic))
-		sHelp.Set(HelpTopic);
 	CStr sHistory;
 	if (!String::IsNullOrEmpty(History))
 		sHistory.Set(History);
-	bool ok = Info.InputBox(sTitle, sPrompt, sHistory, sText, sDest, MaxLength, sHelp, Flags()) != 0;
+
+	// help
+	const char* help; CStr sHelp;
+	if (!String::IsNullOrEmpty(HelpTopic))
+		sHelp.Set(HelpTopic), help = sHelp;
+	if (_oemHelpTopic)
+		help = _oemHelpTopic;
+	else
+		help = NULL;
+
+	bool ok = Info.InputBox(sTitle, sPrompt, sHistory, sText, sDest, MaxLength, help, Flags()) != 0;
 	if (ok)
 		Text = OemToStr(sDest);
 	return ok;
