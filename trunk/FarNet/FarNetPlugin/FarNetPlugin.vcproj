@@ -21,6 +21,7 @@
 			IntermediateDirectory="Debug"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
 			CharacterSet="2"
 			ManagedExtensions="1"
 			>
@@ -284,10 +285,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PluginMenuItem.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\SelectionCollection.cpp"
 				>
 			</File>
@@ -383,10 +380,6 @@
 			</File>
 			<File
 				RelativePath=".\PluginManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PluginMenuItem.h"
 				>
 			</File>
 			<File

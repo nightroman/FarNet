@@ -38,6 +38,10 @@ namespace FarManager
 		/// Mouse state is changed.
 		/// </summary>
 		event EventHandler<MouseEventArgs> OnMouse;
+		/// <summary>
+		/// Opens a modal editor to edit text.
+		/// </summary>
+		string EditText(string text, string title);
 	}
 
 	/// <summary>

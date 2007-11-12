@@ -63,15 +63,15 @@ settings. Available types:
  #Regex, Literal#
 
 	regex - standard regular expression
-	?text - text is prefix where * and ? are wildcards or #Literal#
-	*text - text is substring where * and ? are wildcards or #Literal#
+	?text - text is a prefix where * and ? are wildcards or #Literal#
+	*text - text is a substring where * and ? are wildcards or #Literal#
 
  #Prefix#
  #Prefix, Literal#
 
- 	Pattern is prefix where * and ? are wildcards or #Literal#
+ 	Pattern is a prefix where * and ? are wildcards or #Literal#
 
  #Substring#
  #Substring, Literal#
 
-	Pattern is substring where * and ? are wildcards or #Literal#
+	Pattern is a substring where * and ? are wildcards or #Literal#

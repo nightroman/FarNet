@@ -2,17 +2,13 @@ import FarManager
 import System.Reflection
 import System.IO
 public class CopyShared extends BasePlugin{
-	var menuItem:IPluginMenuItem;
 	var shares;
 	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
 		this.copySelected();
 	}
 	function Connect(){
 		this.readCfg()
-		this.menuItem=Far.CreatePluginsMenuItem();
-		this.menuItem.Name="Copy Sha&red";
-		this.menuItem.add_OnOpen(this.item_OnOpen);
-		Far.RegisterPluginsMenuItem(this.menuItem);
+		Far.RegisterPluginsMenuItem("Copy Shared", this.item_OnOpen);
 	}
 	function GetExternalPath(CmdLine){
 		for(var folder in shares)

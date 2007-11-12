@@ -11,10 +11,7 @@ public class HelloCS : BasePlugin
 	}
 	override public void Connect()
 	{
-		IPluginMenuItem menuItem = Far.CreatePluginsMenuItem();
-		menuItem.Name = "Hello c#";
-		menuItem.OnOpen += item_OnOpen;
-		Far.RegisterPluginsMenuItem(menuItem);
+		Far.RegisterPluginsMenuItem("Hello c#", item_OnOpen);
 		Far.RegisterPrefix("hellocs", sayHello);
 	}
 }

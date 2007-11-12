@@ -60,4 +60,5 @@ int InputBox::Flags()
 	if (NoLastHistory) r += FIB_NOUSELASTHISTORY;
 	return r;
 }
+
 }

@@ -34,36 +34,23 @@ namespace FarManager
 		/// Adds a menu item to the FAR plugin configuration menu.
 		/// It should be called only from <see cref="BasePlugin.Connect"/>.
 		/// </summary>
-		/// <param name="item">The menu item being registered.</param>
-		void RegisterPluginsConfigItem(IPluginMenuItem item);
+		/// <param name="name">Item name.</param>
+		/// <param name="handler">Item handler.</param>
+		void RegisterPluginsConfigItem(string name, EventHandler<OpenPluginMenuItemEventArgs> handler);
 		/// <summary>
 		/// Adds a menu item to the FAR disks menu.
 		/// It should be called only from <see cref="BasePlugin.Connect"/>.
 		/// </summary>
-		/// <param name="item">The menu item being registered.</param>
-		void RegisterPluginsDiskItem(IPluginMenuItem item);
+		/// <param name="name">Item name.</param>
+		/// <param name="handler">Item handler.</param>
+		void RegisterPluginsDiskItem(string name, EventHandler<OpenPluginMenuItemEventArgs> handler);
 		/// <summary>
 		/// Adds a menu item to the FAR main plugins menu (F11).
 		/// It should be called only from <see cref="BasePlugin.Connect"/>.
 		/// </summary>
-		/// <param name="item">The menu item being registered.</param>
-		void RegisterPluginsMenuItem(IPluginMenuItem item);
-		/// <summary>
-		/// Adds a menu item to the FAR main plugins menu (F11).
-		/// It should be called only from <see cref="BasePlugin.Connect"/>.
-		/// </summary>
-		/// <param name="name">Name of a menu item.</param>
-		/// <param name="onOpen">Handler called on selection of the menu item.</param>
-		/// <returns>Created and registered item.</returns>
-		IPluginMenuItem RegisterPluginsMenuItem(string name, EventHandler<OpenPluginMenuItemEventArgs> onOpen);
-		/// <summary>
-		/// Creates a new plugin menu item used by
-		/// <see cref="RegisterPluginsConfigItem"/>,
-		/// <see cref="RegisterPluginsDiskItem"/>,
-		/// <see cref="RegisterPluginsMenuItem(IPluginMenuItem)"/>.
-		/// </summary>
-		/// <returns>Created plugin menu item.</returns>
-		IPluginMenuItem CreatePluginsMenuItem();
+		/// <param name="name">Item name.</param>
+		/// <param name="handler">Item handler.</param>
+		void RegisterPluginsMenuItem(string name, EventHandler<OpenPluginMenuItemEventArgs> handler);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
@@ -176,13 +163,19 @@ namespace FarManager
 		/// <summary>
 		/// Creates a sequence of key codes from a string of keys.
 		/// </summary>
-		IList<int> CreateKeySequence(string keys);
+		int[] CreateKeySequence(string keys);
+		/// <summary>
+		/// Posts a sequence of keys to the FAR keyboard queue.
+		/// Processing is not displayed.
+		/// </summary>
+		/// <param name="sequence">Sequence of keys.</param>
+		void PostKeySequence(int[] sequence);
 		/// <summary>
 		/// Posts a sequence of keys to the FAR keyboard queue.
 		/// </summary>
 		/// <param name="sequence">Sequence of keys.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
-		void PostKeySequence(IList<int> sequence, bool disableOutput);
+		void PostKeySequence(int[] sequence, bool disableOutput);
 		/// <summary>
 		/// Converts a key string representation to the internal key code. <see cref="KeyCode"/>
 		/// </summary>
@@ -230,9 +223,14 @@ namespace FarManager
 		/// </summary>
 		IPanel Panel { get; }
 		/// <summary>
-		/// Another (passive) panel.
+		/// Current (active) panel.
 		/// If it is a FAR.NET plugin panel it returns <see cref="IPanelPlugin"/>.
 		/// </summary>
+		IPanel Panel2 { get; }
+		/// <summary>
+		/// Use <see cref="Panel2"/>.
+		/// </summary>
+		[Obsolete("Use Panel2.")]
 		IPanel AnotherPanel { get; }
 		/// <summary>
 		/// FAR command line.
@@ -427,6 +425,19 @@ namespace FarManager
 		/// Forces FAR to save all macros from memory to the registry.
 		/// </summary>
 		void SaveMacros();
+		/// <summary>
+		/// Posts a macro to FAR.
+		/// Processing is not displayed, and keys are sent to editor plugins.
+		/// </summary>
+		/// <param name="macro">Macro text.</param>
+		void PostMacro(string macro);
+		/// <summary>
+		/// Posts a macro to FAR.
+		/// </summary>
+		/// <param name="macro">Macro text.</param>
+		/// <param name="disableOutput">Disable screen output during macro playback.</param>
+		/// <param name="noSendKeysToPlugins">Don't send keystrokes to editor plugins.</param>
+		void PostMacro(string macro, bool disableOutput, bool noSendKeysToPlugins);
 	}
 
 	/// <summary>
@@ -506,27 +517,12 @@ namespace FarManager
 	};
 
 	/// <summary>
-	/// Item of plugins menu (F11).
-	/// </summary>
-	public interface IPluginMenuItem
-	{
-		/// <summary>
-		/// Is fired when menu item is opened.
-		/// </summary>
-		event EventHandler<OpenPluginMenuItemEventArgs> OnOpen;
-		/// <summary>
-		/// Name of menu item (caption in plugins menu).
-		/// </summary>
-		string Name { get; set; }
-	}
-
-	/// <summary>
 	/// Delegate which takes a string parameter.
 	/// </summary>
 	public delegate void StringDelegate(string s);
 
 	/// <summary>
-	/// Arguments of <see cref="IPluginMenuItem.OnOpen"/> event.
+	/// Arguments of a plugin menu item event.
 	/// </summary>
 	public sealed class OpenPluginMenuItemEventArgs : EventArgs
 	{

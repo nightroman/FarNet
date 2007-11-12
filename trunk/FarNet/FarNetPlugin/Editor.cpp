@@ -6,12 +6,37 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "StdAfx.h"
 #include "Editor.h"
 #include "EditorManager.h"
+#include "FarImpl.h"
 #include "SelectionCollection.h"
 #include "EditorLine.h"
 #include "EditorLineCollection.h"
 
 namespace FarManagerImpl
 {;
+String^ BaseEditor::EditText(String^ text, String^ title)
+{
+	String^ file = Path::GetTempFileName();
+	try
+	{
+		if (SS(text))
+			File::WriteAllText(file, text, Encoding::Default);
+		
+		IEditor^ edit = GetFar()->CreateEditor();
+		edit->FileName = file;
+		edit->IsModal = true;
+		edit->DisableHistory = true;
+		if (SS(title))
+			edit->Title = title;
+		edit->Open();
+		
+		return File::ReadAllText(file, Encoding::Default);
+	}
+	finally
+	{
+		File::Delete(file);
+	}
+}
+
 Editor::Editor(EditorManager^ manager)
 : _manager(manager)
 , _id(-1)
