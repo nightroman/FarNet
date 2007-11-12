@@ -1,7 +1,7 @@
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN	// Exclude rarely-used stuff from Windows headers
-#define NOTEXTMETRIC // fixes pack 2 linking problem
+#define NOTEXTMETRIC // Fix pack 2 linking problem
 
 #pragma warning(push,3)
 #include <vcclr.h>
@@ -20,6 +20,11 @@ using namespace System::Reflection;
 using namespace System::Text::RegularExpressions;
 using namespace System::Text;
 using namespace System;
+
+#ifdef _DEBUG
+// remove if not found
+#include <Test1.h>
+#endif
 
 extern PluginStartupInfo Info;
 

@@ -11,6 +11,68 @@ namespace FarManagerImpl
 {;
 
 //
+//::FarPanelPluginInfo::
+//
+
+#define DEF_FLAG(Prop, Flag) if (Prop) m->Flags |= Flag
+#define DEF_STRING(Prop, Field) if (SS(Prop)) { m->Field = new char[Prop->Length + 1]; StrToOem(Prop, (char*)m->Field); }
+
+FarPanelPluginInfo::FarPanelPluginInfo()
+: _StartViewMode(PanelViewMode::Undefined)
+{
+}
+
+OpenPluginInfo& FarPanelPluginInfo::Make()
+{
+	if (m)
+		return *m;
+
+	m = new OpenPluginInfo;
+	memset(m, 0, sizeof(*m));
+	m->StructSize = sizeof(*m);
+
+	m->StartSortOrder = StartSortDesc;
+	m->StartSortMode = int(StartSortMode);
+	m->StartPanelMode = int(StartViewMode) + 0x30;
+
+	DEF_FLAG(AddDots, OPIF_ADDDOTS);
+	DEF_FLAG(CompareFatTime, OPIF_COMPAREFATTIME);
+	DEF_FLAG(ExternalDelete, OPIF_EXTERNALDELETE);
+	DEF_FLAG(ExternalGet, OPIF_EXTERNALGET);
+	DEF_FLAG(ExternalMakeDirectory, OPIF_EXTERNALMKDIR);
+	DEF_FLAG(ExternalPut, OPIF_EXTERNALPUT);
+	DEF_FLAG(PreserveCase, OPIF_SHOWPRESERVECASE);
+	DEF_FLAG(RawSelection, OPIF_RAWSELECTION);
+	DEF_FLAG(RealNames, OPIF_REALNAMES);
+	DEF_FLAG(RightAligned, OPIF_SHOWRIGHTALIGNNAMES);
+	DEF_FLAG(ShowNamesOnly, OPIF_SHOWNAMESONLY);
+	DEF_FLAG(UseAttrHighlighting, OPIF_USEATTRHIGHLIGHTING);
+	DEF_FLAG(UseFilter, OPIF_USEFILTER);
+	DEF_FLAG(UseHighlighting, OPIF_USEHIGHLIGHTING);
+	DEF_FLAG(UseSortGroups, OPIF_USESORTGROUPS);
+
+	DEF_STRING(CurrentDirectory, CurDir);
+	DEF_STRING(Format, Format);
+	DEF_STRING(HostFile, HostFile);
+	DEF_STRING(Title, PanelTitle);
+
+	return *m;
+}
+
+void FarPanelPluginInfo::Free()
+{
+	if (m)
+	{
+		delete m->CurDir;
+		delete m->Format;
+		delete m->HostFile;
+		delete m->PanelTitle;
+		delete m;
+		m = 0;
+	}
+}
+
+//
 //::FarPanel::
 //
 
@@ -324,57 +386,12 @@ void FarPanel::Update(bool keepSelection)
 }
 
 //
-//::FarPanelPluginInfo::
-//
-
-// Flags
-#define DEF_FLAG(Prop, Flag)\
-bool FarPanelPluginInfo::Prop::get() { return (m->Flags & (Flag)) != 0; }\
-void FarPanelPluginInfo::Prop::set(bool value) { { if (value) m->Flags |= Flag; else m->Flags &= ~Flag; } }
-DEF_FLAG(AddDots, OPIF_ADDDOTS);
-DEF_FLAG(CompareFatTime, OPIF_COMPAREFATTIME);
-DEF_FLAG(ExternalDelete, OPIF_EXTERNALDELETE);
-DEF_FLAG(ExternalGet, OPIF_EXTERNALGET);
-DEF_FLAG(ExternalMakeDirectory, OPIF_EXTERNALMKDIR);
-DEF_FLAG(ExternalPut, OPIF_EXTERNALPUT);
-DEF_FLAG(PreserveCase, OPIF_SHOWPRESERVECASE);
-DEF_FLAG(RawSelection, OPIF_RAWSELECTION);
-DEF_FLAG(RealNames, OPIF_REALNAMES);
-DEF_FLAG(RightAligned, OPIF_SHOWRIGHTALIGNNAMES);
-DEF_FLAG(ShowNamesOnly, OPIF_SHOWNAMESONLY);
-DEF_FLAG(UseAttrHighlighting, OPIF_USEATTRHIGHLIGHTING);
-DEF_FLAG(UseFilter, OPIF_USEFILTER);
-DEF_FLAG(UseHighlighting, OPIF_USEHIGHLIGHTING);
-DEF_FLAG(UseSortGroups, OPIF_USESORTGROUPS);
-
-// Strings
-#define DEF_STRING(Prop, Field)\
-String^ FarPanelPluginInfo::Prop::get()\
-{\
-	return OemToStr(m->Field);\
-}\
-void FarPanelPluginInfo::Prop::set(String^ value)\
-{\
-	if (m->Field)\
-		delete m->Field;\
-	if (String::IsNullOrEmpty(value))\
-	{\
-		m->Field = NULL;\
-		return;\
-	}\
-	m->Field = new char[value->Length + 1];\
-	StrToOem(value, (char*)m->Field);\
-}
-DEF_STRING(CurrentDirectory, CurDir);
-DEF_STRING(Format, Format);
-DEF_STRING(HostFile, HostFile);
-DEF_STRING(Title, PanelTitle);
-
-//
 //::FarPanelPlugin::
 //
 
-FarPanelPlugin::FarPanelPlugin() : FarPanel(true)
+FarPanelPlugin::FarPanelPlugin()
+: FarPanel(true)
+, _files(gcnew List<IFile^>)
 {
 	_StartDirectory = Environment::CurrentDirectory;
 }
@@ -384,6 +401,13 @@ void FarPanelPlugin::AssertOpen()
 	if (Id <= 0) throw gcnew InvalidOperationException("Panel plugin is not opened.");
 }
 
+List<IFile^>^ FarPanelPlugin::ReplaceFiles(List<IFile^>^ files)
+{
+	List<IFile^>^ r = _files;
+	_files = files;
+	return r;
+}
+
 bool FarPanelPlugin::IsOpened::get()
 {
 	return Id > 0;
@@ -391,7 +415,7 @@ bool FarPanelPlugin::IsOpened::get()
 
 IList<IFile^>^ FarPanelPlugin::Files::get()
 {
-	return %_files;
+	return _files;
 }
 
 bool FarPanelPlugin::IsPlugin::get()
@@ -483,7 +507,7 @@ void FarPanelPlugin::StartDirectory::set(String^ value)
 
 IPanelPlugin^ FarPanelPlugin::Another::get()
 {
-	return GetFar()->GetAnotherPanelPlugin(this);
+	return GetFar()->GetPanelPlugin2(this);
 }
 
 void FarPanelPlugin::Open()

@@ -10,7 +10,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Panel of the FAR Manager. See active <see cref="IFar.Panel"/> and passive <see cref="IFar.AnotherPanel"/>.
+	/// Panel of the FAR Manager. See active <see cref="IFar.Panel"/> and passive <see cref="IFar.Panel2"/>.
 	/// </summary>
 	public interface IPanel
 	{
@@ -289,7 +289,7 @@ namespace FarManager
 		/// </summary>
 		FileLinks,
 		/// <summary>
-		/// Undefined value.
+		/// Undefined.
 		/// </summary>
 		Undefined = -0x30
 	}
@@ -352,7 +352,7 @@ namespace FarManager
 	/// <summary>
 	/// Describes a plugin instance. [OpenPluginInfo]
 	/// </summary>
-	public interface IPanelPluginInfo : IDisposable
+	public interface IPanelPluginInfo
 	{
 		/// <summary>
 		/// Add ".." item automatically if it is absent.
@@ -564,7 +564,7 @@ namespace FarManager
 
 	/// <summary>
 	/// Arguments of <see cref="IPanelPlugin.ViewModeChanged"/> event.
-	/// See FAR API <c>FE_CHANGEVIEWMODE</c> and "Column types" topic.
+	/// [FE_CHANGEVIEWMODE], [Column types].
 	/// </summary>
 	public class ViewModeChangedEventArgs : EventArgs
 	{

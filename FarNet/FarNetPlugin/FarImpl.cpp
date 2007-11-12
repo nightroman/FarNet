@@ -13,7 +13,6 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "InputBox.h"
 #include "Menu.h"
 #include "Message.h"
-#include "PluginMenuItem.h"
 #include "Viewer.h"
 using namespace Microsoft::Win32;
 using namespace System::Reflection;
@@ -34,22 +33,23 @@ static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelIt
 //
 
 Far::Far()
-: _registeredConfigItems(gcnew List<IPluginMenuItem^>())
-, _registeredDiskItems(gcnew List<IPluginMenuItem^>())
-, _registeredMenuItems(gcnew List<IPluginMenuItem^>())
+: _registeredConfigItems(gcnew List<PluginMenuItem^>())
+, _registeredDiskItems(gcnew List<PluginMenuItem^>())
+, _registeredMenuItems(gcnew List<PluginMenuItem^>())
 , _registeredPrefixes(gcnew Dictionary<String^, StringDelegate^>())
 , _editorManager(gcnew EditorManager())
 , _panels(gcnew array<FarPanelPlugin^>(4))
 {
 }
 
-Far::~Far()
+void Far::Free()
 {
 	FreeMenuStrings();
 	delete _prefixes;
+	_prefixes = 0;
 }
 
-IPanelPlugin^ Far::GetAnotherPanelPlugin(FarPanelPlugin^ plugin)
+IPanelPlugin^ Far::GetPanelPlugin2(FarPanelPlugin^ plugin)
 {
 	for (int i = 1; i < 4; ++i)
 	{
@@ -82,33 +82,19 @@ void Far::RegisterPrefix(String^ prefix, StringDelegate^ handler)
 	_registeredPrefixes->Add(prefix, handler);
 }
 
-void Far::RegisterPluginsConfigItem(IPluginMenuItem^ item)
+void Far::RegisterPluginsConfigItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler)
 {
-	_registeredConfigItems->Add(item);
+	_registeredConfigItems->Add(gcnew PluginMenuItem(name, handler));
 }
 
-void Far::RegisterPluginsDiskItem(IPluginMenuItem^ item)
+void Far::RegisterPluginsDiskItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler)
 {
-	_registeredDiskItems->Add(item);
+	_registeredDiskItems->Add(gcnew PluginMenuItem(name, handler));
 }
 
-void Far::RegisterPluginsMenuItem(IPluginMenuItem^ item)
+void Far::RegisterPluginsMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler)
 {
-	_registeredMenuItems->Add(item);
-}
-
-IPluginMenuItem^ Far::RegisterPluginsMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ onOpen)
-{
-	IPluginMenuItem^ r = CreatePluginsMenuItem();
-	r->Name = name;
-	r->OnOpen += onOpen;
-	RegisterPluginsMenuItem(r);
-	return r;
-}
-
-IPluginMenuItem^ Far::CreatePluginsMenuItem()
-{
-	return gcnew PluginMenuItem();
+	_registeredMenuItems->Add(gcnew PluginMenuItem(name, handler));
 }
 
 bool Far::Msg(String^ body)
@@ -219,33 +205,36 @@ IEditor^ Far::CreateEditor()
 	return _editorManager->CreateEditor();
 }
 
-IList<int>^ Far::CreateKeySequence(String^ keys)
+array<int>^ Far::CreateKeySequence(String^ keys)
 {
-	List<int>^ r = gcnew List<int>;
-	if (keys->Length > 0)
+	if (!keys) throw gcnew ArgumentNullException("keys");
+	array<wchar_t>^ space = {' ', '\t', '\r', '\n'};
+	array<String^>^ a = keys->Split(space, StringSplitOptions::RemoveEmptyEntries);
+	array<int>^ r = gcnew array<int>(a->Length);
+	for(int i = 0; i < a->Length; ++i)
 	{
-		array<wchar_t>^ space = {' '};
-		array<String^>^ a = keys->Split(space);
-		for each(String^ s in a)
-		{
-			int k = NameToKey(s);
-			if (k == -1)
-				throw gcnew ArgumentException("Argument 'keys' contains unknown key: " + s);
-			r->Add(k);
-		}
+		int k = NameToKey(a[i]);
+		if (k == -1)
+			throw gcnew ArgumentException("Argument 'keys' contains invalid key: '" + a[i] + "'.");
+		r[i] = k;
 	}
 	return r;
 }
 
-void Far::PostKeySequence(IList<int>^ sequence, bool disableOutput)
+void Far::PostKeySequence(array<int>^ sequence)
+{
+	PostKeySequence(sequence, true);
+}
+
+void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 {
 	if (sequence == nullptr)
 		throw gcnew ArgumentNullException("sequence");
-	if (sequence->Count == 0)
+	if (sequence->Length == 0)
 		return;
 
 	KeySequence keySequence;
-	keySequence.Count = sequence->Count;
+	keySequence.Count = sequence->Length;
 	keySequence.Flags = disableOutput ? KSFLAGS_DISABLEOUTPUT : 0;
 	keySequence.Sequence = new DWORD[keySequence.Count];
 	DWORD* cur = keySequence.Sequence;
@@ -265,10 +254,13 @@ void Far::PostKeySequence(IList<int>^ sequence, bool disableOutput)
 	}
 }
 
+// don't throw on a wrong key, it is used for validation
 int Far::NameToKey(String^ key)
 {
-	CStr sKey(key);
-	return Info.FSF->FarNameToKey(sKey);
+	if (!key) throw gcnew ArgumentNullException("key");
+	char buf[33];
+	StrToOem(key, buf, sizeof(buf));
+	return Info.FSF->FarNameToKey(buf);
 }
 
 void Far::PostKeys(String^ keys)
@@ -350,7 +342,7 @@ IPanel^ Far::Panel::get()
 	return gcnew FarPanel(true);
 }
 
-IPanel^ Far::AnotherPanel::get()
+IPanel^ Far::Panel2::get()
 {
 	for (int i = 1; i < 4; ++i)
 	{
@@ -391,21 +383,21 @@ void Far::CreateMenuStringsBlock()
 	_diskStrings = new CStr[_registeredDiskItems->Count];
 	for(int i = 0; i < _registeredDiskItems->Count; ++i)
 	{
-		IPluginMenuItem^ item = dynamic_cast<IPluginMenuItem^>(_registeredDiskItems[i]);
+		PluginMenuItem^ item = _registeredDiskItems[i];
 		_diskStrings[i].Set(item->Name);
 	}
 
 	_menuStrings = new CStr[_registeredMenuItems->Count];
 	for(int i = 0; i < _registeredMenuItems->Count; ++i)
 	{
-		IPluginMenuItem^ item = dynamic_cast<IPluginMenuItem^>(_registeredMenuItems[i]);
+		PluginMenuItem^ item = _registeredMenuItems[i];
 		_menuStrings[i].Set(item->Name);
 	}
 
 	_configStrings = new CStr[_registeredConfigItems->Count];
 	for(int i = 0; i < _registeredConfigItems->Count; ++i)
 	{
-		IPluginMenuItem^ item = dynamic_cast<IPluginMenuItem^>(_registeredConfigItems[i]);
+		PluginMenuItem^ item = _registeredConfigItems[i];
 		_configStrings[i].Set(item->Name);
 	}
 }
@@ -430,19 +422,18 @@ void Far::ProcessPrefixes(INT_PTR item)
 
 void Far::MakePrefixes()
 {
-	if (_registeredPrefixes->Count > 0)
+	if (_registeredPrefixes->Count == 0)
+		return;
+
+	String^ PrefString = String::Empty;
+	for each(KeyValuePair<String^, StringDelegate^>^ i in _registeredPrefixes)
 	{
-		String^ PrefString = String::Empty;
-		for each(KeyValuePair<String^, StringDelegate^>^ i in _registeredPrefixes)
-		{
-			if (PrefString->Length > 0)
-				PrefString = String::Concat(PrefString, ":");
-			PrefString = String::Concat(PrefString, i->Key);
-		}
-		_prefixes = new CStr(PrefString);
+		if (PrefString->Length > 0)
+			PrefString = String::Concat(PrefString, ":");
+		PrefString = String::Concat(PrefString, i->Key);
 	}
-	else
-		_prefixes = NULL;
+	delete _prefixes;
+	_prefixes = new CStr(PrefString);
 }
 
 void Far::GetUserScreen()
@@ -589,6 +580,7 @@ IPanelPlugin^ Far::CreatePanelPlugin()
 	return gcnew FarPanelPlugin();
 }
 
+//! it call Update/Redraw in some cases
 void Far::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel)
 {
 	// check
@@ -611,6 +603,11 @@ void Far::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel)
 
 	// disconnect old panel
 	oldPanel->Id = 0;
+	((FarPanelPluginInfo^)oldPanel->Info)->Free();
+
+	// connect new panel
+	_panels[id1] = newPanel;
+	newPanel->Id = id1;
 
 	// change panel modes
 	if (newPanel->Info->StartViewMode != PanelViewMode::Undefined &&
@@ -619,31 +616,32 @@ void Far::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel)
 		newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode ||
 		newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc))
 	{
-		// connect tmp panel with no data
-		FarPanelPlugin tmpPanel;
-		_panels[id1] = %tmpPanel;
-		tmpPanel.Id = id1;
-		tmpPanel.Update(false);
+		// detach files to change modes with no files
+		List<IFile^> dummy;
+		List<IFile^>^ files = newPanel->ReplaceFiles(%dummy);
+		newPanel->Update(false);
 
-		// set new modes
+		// set only new modes
 		if (newPanel->Info->StartViewMode != PanelViewMode::Undefined && newPanel->Info->StartViewMode != oldPanel->Info->StartViewMode)
-			tmpPanel.ViewMode = newPanel->Info->StartViewMode;
+			newPanel->ViewMode = newPanel->Info->StartViewMode;
 		if (newPanel->Info->StartSortMode != PanelSortMode::Default)
 		{
 			if (newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode)
-				tmpPanel.SortMode = newPanel->Info->StartSortMode;
+				newPanel->SortMode = newPanel->Info->StartSortMode;
 			if (newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc)
-				tmpPanel.ReverseSortOrder = newPanel->Info->StartSortDesc;
+				newPanel->ReverseSortOrder = newPanel->Info->StartSortDesc;
 		}
+
+		// restore original files
+		newPanel->ReplaceFiles(files);
 	}
 
-	// connect new panel
-	_panels[id1] = newPanel;
-	newPanel->Id = id1;
-
-	//! switch to new data and redraw
-	newPanel->Update(false);
-	newPanel->Redraw(0, 0);
+	//! switch to new data and redraw, but not always: in some cases it will be done anyway, e.g. by FAR
+	if (!_inAsSetDirectory)
+	{
+		newPanel->Update(false);
+		newPanel->Redraw(0, 0);
+	}
 }
 
 IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
@@ -677,25 +675,8 @@ IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
 
 void Far::OpenPanelPlugin(FarPanelPlugin^ plugin)
 {
-	// standard opening
-	if (_canOpenPanelPlugin)
-	{
-		_panels[0] = plugin;
-		return;
-	}
-
-	// not standard opening: replace existing if any
-	FarPanelPlugin^ p = dynamic_cast<FarPanelPlugin^>(Panel);
-	if (p)
-	{
-		ReplacePanelPlugin(p, plugin);
-		plugin->Update(false);
-		plugin->Redraw(0, 0);
-		return;
-	}
-
-	// give up
-	throw gcnew InvalidOperationException("Can't open a plugin panel at this moment.");
+	if (!_canOpenPanelPlugin) throw gcnew InvalidOperationException("Can't open a plugin panel at this moment.");
+	_panels[0] = plugin;
 }
 
 IFile^ Far::CreatePanelItem()
@@ -745,11 +726,147 @@ String^ Far::Input(String^ prompt, String^ history, String^ title, String^ text)
 	return ib.Show() ? ib.Text : nullptr;
 }
 
+//::FAR Window managenent
+
+public ref class FarWindowInfo : public IWindowInfo
+{
+public:
+	FarWindowInfo(const WindowInfo& wi, bool full)
+		: _Current(wi.Current != 0), _Modified(wi.Modified != 0), _Type((WindowType)wi.Type)
+	{
+		if (full)
+		{
+			_Name = OemToStr(wi.Name);
+			_TypeName = OemToStr(wi.TypeName);
+		}
+	}
+	virtual property bool Current { bool get() { return _Current; } }
+	virtual property bool Modified { bool get() { return _Modified; } }
+	virtual property String^ Name { String^ get() { return _Name; } }
+	virtual property String^ TypeName { String^ get() { return _TypeName; } }
+	virtual property WindowType Type { WindowType get() { return _Type; } }
+private:
+	bool _Current;
+	bool _Modified;
+	String^ _Name;
+	String^ _TypeName;
+	WindowType _Type;
+};
+
+int Far::WindowCount::get()
+{
+	return Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWCOUNT, 0);
+}
+
+IWindowInfo^ Far::GetWindowInfo(int index, bool full)
+{
+	WindowInfo wi;
+	wi.Pos = index;
+	if (!Info.AdvControl(Info.ModuleNumber, full ? ACTL_GETWINDOWINFO : ACTL_GETSHORTWINDOWINFO, &wi))
+		throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
+	return gcnew FarWindowInfo(wi, full);
+}
+
+void Far::SetCurrentWindow(int index)
+{
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_SETCURRENTWINDOW, (void*)(INT_PTR)index))
+		throw gcnew InvalidOperationException("SetCurrentWindow:" + index + " failed.");
+}
+
+bool Far::Commit()
+{
+	return Info.AdvControl(Info.ModuleNumber, ACTL_COMMIT, 0) != 0;
+}
+
+Char Far::CodeToChar(int code)
+{
+	code &= ~(KeyCode::Alt | KeyCode::Ctrl);
+	return code < 0 || code > 255 ? 0 : OemToChar(char(code));
+}
+
+void Far::LoadMacros()
+{
+	ActlKeyMacro command;
+	command.Command = MCMD_LOADALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+}
+
+void Far::SaveMacros()
+{
+	ActlKeyMacro command;
+	command.Command = MCMD_SAVEALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+}
+
+void Far::PostMacro(String^ macro)
+{
+	PostMacro(macro, true, false);
+}
+
+void Far::PostMacro(String^ macro, bool disableOutput, bool noSendKeysToPlugins)
+{
+	if (!macro) throw gcnew ArgumentNullException("macro");
+	
+	CStr sMacro(macro);
+	ActlKeyMacro command;
+	command.Command = MCMD_POSTMACROSTRING;
+	command.Param.PlainText.SequenceText = sMacro;
+	command.Param.PlainText.Flags = 0;
+	if (disableOutput)
+		command.Param.PlainText.Flags |= KSFLAGS_DISABLEOUTPUT;
+	if (noSendKeysToPlugins)
+		command.Param.PlainText.Flags |= KSFLAGS_NOSENDKEYSTOPLUGINS;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+}
+
+Object^ Far::GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
+{
+	RegistryKey^ key1 = nullptr;
+	RegistryKey^ key2 = nullptr;
+	try
+	{
+		key1 = Registry::CurrentUser->CreateSubKey(RootKey);
+		key2 = key1->CreateSubKey(pluginName);
+		return key2->GetValue(valueName, defaultValue);
+	}
+	finally
+	{
+		if (key2)
+			key2->Close();
+		if (key1)
+			key1->Close();
+	}
+}
+
+void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue)
+{
+	RegistryKey^ key1 = nullptr;
+	RegistryKey^ key2 = nullptr;
+	try
+	{
+		key1 = Registry::CurrentUser->CreateSubKey(RootKey);
+		key2 = key1->CreateSubKey(pluginName);
+		key2->SetValue(valueName, newValue);
+	}
+	finally
+	{
+		if (key2)
+			key2->Close();
+		if (key1)
+			key1->Close();
+	}
+}
+
+//::FAR callbacks
+
 bool Far::AsConfigure(int itemIndex)
 {
-	PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredConfigItems[itemIndex];
+	PluginMenuItem^ item = (PluginMenuItem^)_registeredConfigItems[itemIndex];
 	OpenPluginMenuItemEventArgs e(OpenFrom::Other);
-	menuItem->_OnOpen(menuItem, %e);
+	item->Handler(item, %e);
 	return e.Ignore ? false : true;
 }
 
@@ -771,14 +888,14 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 			_canOpenPanelPlugin = true;
 			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredDiskItems[(int)item];
 			OpenPluginMenuItemEventArgs e((OpenFrom)from);
-			menuItem->_OnOpen(menuItem, %e);
+			menuItem->Handler(menuItem, %e);
 		}
 		else if (from == OPEN_PLUGINSMENU || from == OPEN_EDITOR || from == OPEN_VIEWER)
 		{
 			_canOpenPanelPlugin = (from == OPEN_PLUGINSMENU);
 			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredMenuItems[(int)item];
 			OpenPluginMenuItemEventArgs e((OpenFrom)from);
-			menuItem->_OnOpen(menuItem, %e);
+			menuItem->Handler(menuItem, %e);
 		}
 
 		// open a waiting panel
@@ -806,7 +923,7 @@ void Far::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 	FarPanelPluginInfo^ pluginInfo = (FarPanelPluginInfo^)plugin->Info;
 	if (plugin->_GettingInfo)
 		plugin->_GettingInfo(plugin, nullptr);
-	*info = pluginInfo->Get();
+	*info = pluginInfo->Make();
 }
 
 void Far::AsClosePlugin(HANDLE hPlugin)
@@ -815,6 +932,7 @@ void Far::AsClosePlugin(HANDLE hPlugin)
 	_panels[(int)(INT_PTR)hPlugin] = nullptr;
 	if (plugin->_Closed)
 		plugin->_Closed(plugin, nullptr);
+	((FarPanelPluginInfo^)plugin->Info)->Free();
 }
 
 int Far::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
@@ -828,86 +946,22 @@ int Far::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	return e.Ignore ? FALSE : TRUE;
 }
 
-int Far::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
+int Far::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 {
+	_inAsSetDirectory = true;
 	try
 	{
 		FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-		if (plugin->_GettingData)
-		{
-			PanelEventArgs e((OperationModes)opMode);
-			plugin->_GettingData(plugin, %e);
-			if (e.Ignore)
-				return FALSE;
-		}
-		(*pItemsNumber) = plugin->Files->Count;
-		if ((*pItemsNumber) == 0)
-		{
-			(*pPanelItem) = NULL;
+		if (!plugin->_SettingDirectory)
 			return TRUE;
-		}
-		(*pPanelItem) = new PluginPanelItem[(*pItemsNumber)];
-		memset((*pPanelItem), 0, (*pItemsNumber)*sizeof(PluginPanelItem));
-		int i = -1;
-		for each(FarFile^ f in plugin->Files)
-		{
-			++i;
-
-			PluginPanelItem& p = (*pPanelItem)[i];
-			FAR_FIND_DATA& d = p.FindData;
-
-			// names
-			StrToOem(f->Name->Length >= MAX_PATH ? f->Name->Substring(0, MAX_PATH - 1) : f->Name, d.cFileName);
-			if (!String::IsNullOrEmpty(f->AlternateName))
-			{
-				if (f->AlternateName->Length > 12)
-					throw gcnew InvalidOperationException("Alternate name is longer than 12 chars.");
-				StrToOem(f->AlternateName, d.cAlternateFileName);
-			}
-
-			// other
-			d.dwFileAttributes = f->_flags;
-			d.nFileSizeLow = (DWORD)(f->Length & 0xFFFFFFFF);
-			d.nFileSizeHigh = (DWORD)(f->Length >> 32);
-			d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
-			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
-			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
-			p.UserData = i;
-
-			if (!String::IsNullOrEmpty(f->Description))
-			{
-				p.Description = new char[f->Description->Length + 1];
-				StrToOem(f->Description, p.Description);
-			}
-		}
-		return TRUE;
+		SettingDirectoryEventArgs e(OemToStr(dir), (OperationModes)opMode);
+		plugin->_SettingDirectory(plugin, %e);
+		return !e.Ignore;
 	}
-	catch(Exception^ e)
+	finally
 	{
-		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
-			ShowError(__FUNCTION__, e);
-		return FALSE;
+		_inAsSetDirectory = false;
 	}
-}
-
-void Far::AsFreeFindData(PluginPanelItem* panelItem, int itemsNumber)
-{
-	for(int i = itemsNumber; --i >= 0;)
-	{
-		PluginPanelItem& p = panelItem[i];
-		delete p.Description;
-	}
-	delete panelItem;
-}
-
-int Far::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
-{
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	if (!plugin->_SettingDirectory)
-		return TRUE;
-	SettingDirectoryEventArgs e(OemToStr(dir), (OperationModes)opMode);
-	plugin->_SettingDirectory(plugin, %e);
-	return !e.Ignore;
 }
 
 int Far::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
@@ -1013,116 +1067,83 @@ int Far::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber,
 	return e.Ignore ? FALSE : TRUE;
 }
 
-Object^ Far::GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
+void Far::AsFreeFindData(PluginPanelItem* panelItem)
 {
-	RegistryKey^ key1 = nullptr;
-	RegistryKey^ key2 = nullptr;
-	try
-	{
-		key1 = Registry::CurrentUser->CreateSubKey(RootKey);
-		key2 = key1->CreateSubKey(pluginName);
-		return key2->GetValue(valueName, defaultValue);
-	}
-	finally
-	{
-		if (key2)
-			key2->Close();
-		if (key1)
-			key1->Close();
-	}
+	delete[] (char*)panelItem;
 }
 
-void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue)
+int Far::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
-	RegistryKey^ key1 = nullptr;
-	RegistryKey^ key2 = nullptr;
 	try
 	{
-		key1 = Registry::CurrentUser->CreateSubKey(RootKey);
-		key2 = key1->CreateSubKey(pluginName);
-		key2->SetValue(valueName, newValue);
-	}
-	finally
-	{
-		if (key2)
-			key2->Close();
-		if (key1)
-			key1->Close();
-	}
-}
-
-//::FAR Window managenent
-
-public ref class FarWindowInfo : public IWindowInfo
-{
-public:
-	FarWindowInfo(const WindowInfo& wi, bool full)
-		: _Current(wi.Current != 0), _Modified(wi.Modified != 0), _Type((WindowType)wi.Type)
-	{
-		if (full)
+		FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
+		if (plugin->_GettingData)
 		{
-			_Name = OemToStr(wi.Name);
-			_TypeName = OemToStr(wi.TypeName);
+			PanelEventArgs e((OperationModes)opMode);
+			plugin->_GettingData(plugin, %e);
+			if (e.Ignore)
+				return FALSE;
 		}
+		(*pItemsNumber) = plugin->Files->Count;
+		if ((*pItemsNumber) == 0)
+		{
+			(*pPanelItem) = NULL;
+			return TRUE;
+		}
+
+		int sizeDesc = 0;
+		for each(FarFile^ f in plugin->Files)
+		{
+			if (SS(f->Description))
+				sizeDesc += f->Description->Length + 1;
+		}
+		int sizeFile = (*pItemsNumber)*sizeof(PluginPanelItem);
+		char* buff = new char[sizeFile + sizeDesc];
+		char* desc = buff + sizeFile;
+		(*pPanelItem) = (PluginPanelItem*)buff;
+		memset((*pPanelItem), 0, (*pItemsNumber)*sizeof(PluginPanelItem));
+
+		int i = -1;
+		for each(FarFile^ f in plugin->Files)
+		{
+			++i;
+
+			PluginPanelItem& p = (*pPanelItem)[i];
+			FAR_FIND_DATA& d = p.FindData;
+
+			// names
+			StrToOem(f->Name->Length >= MAX_PATH ? f->Name->Substring(0, MAX_PATH - 1) : f->Name, d.cFileName);
+			if (!String::IsNullOrEmpty(f->AlternateName))
+			{
+				if (f->AlternateName->Length > 12)
+					throw gcnew InvalidOperationException("Alternate name is longer than 12 chars.");
+				StrToOem(f->AlternateName, d.cAlternateFileName);
+			}
+
+			// other
+			d.dwFileAttributes = f->_flags;
+			d.nFileSizeLow = (DWORD)(f->Length & 0xFFFFFFFF);
+			d.nFileSizeHigh = (DWORD)(f->Length >> 32);
+			d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
+			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
+			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
+			p.UserData = i;
+
+			if (SS(f->Description))
+			{
+				p.Description = desc;
+				desc += f->Description->Length + 1;
+				StrToOem(f->Description, p.Description);
+			}
+		}
+		return TRUE;
 	}
-	virtual property bool Current { bool get() { return _Current; } }
-	virtual property bool Modified { bool get() { return _Modified; } }
-	virtual property String^ Name { String^ get() { return _Name; } }
-	virtual property String^ TypeName { String^ get() { return _TypeName; } }
-	virtual property WindowType Type { WindowType get() { return _Type; } }
-private:
-	bool _Current;
-	bool _Modified;
-	String^ _Name;
-	String^ _TypeName;
-	WindowType _Type;
-};
-
-int Far::WindowCount::get()
-{
-	return Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWCOUNT, 0);
-}
-
-IWindowInfo^ Far::GetWindowInfo(int index, bool full)
-{
-	WindowInfo wi;
-	wi.Pos = index;
-	if (!Info.AdvControl(Info.ModuleNumber, full ? ACTL_GETWINDOWINFO : ACTL_GETSHORTWINDOWINFO, &wi))
-		throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
-	return gcnew FarWindowInfo(wi, full);
-}
-
-void Far::SetCurrentWindow(int index)
-{
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_SETCURRENTWINDOW, (void*)(INT_PTR)index))
-		throw gcnew InvalidOperationException("SetCurrentWindow:" + index + " failed.");
-}
-
-bool Far::Commit()
-{
-	return Info.AdvControl(Info.ModuleNumber, ACTL_COMMIT, 0) != 0;
-}
-
-Char Far::CodeToChar(int code)
-{
-	code &= ~(KeyCode::Alt | KeyCode::Ctrl);
-	return code < 0 || code > 255 ? 0 : OemToChar(char(code));
-}
-
-void Far::LoadMacros()
-{
-	ActlKeyMacro command;
-	command.Command = MCMD_LOADALL;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
-}
-
-void Far::SaveMacros()
-{
-	ActlKeyMacro command;
-	command.Command = MCMD_SAVEALL;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+	catch(Exception^ e)
+	{
+		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
+			ShowError(__FUNCTION__, e);
+		return FALSE;
+	}
 }
 
 }

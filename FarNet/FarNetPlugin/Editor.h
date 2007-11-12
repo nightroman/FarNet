@@ -20,6 +20,8 @@ public: DEF_EVENT(BeforeSave, _beforeSave);
 public: DEF_EVENT_ARGS(OnKey, _onKey, KeyEventArgs);
 public: DEF_EVENT_ARGS(OnMouse, _onMouse, MouseEventArgs);
 public: DEF_EVENT_ARGS(OnRedraw, _onRedraw, RedrawEventArgs);
+public:
+	virtual String^ EditText(String^ text, String^ title);
 };
 
 public ref class Editor : public BaseEditor, public IEditor

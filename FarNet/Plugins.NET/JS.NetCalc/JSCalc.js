@@ -12,9 +12,6 @@ public class JSCalc extends BasePlugin{
 		};
 	}
 	function Connect(){
-		var menuItem:IPluginMenuItem=Far.CreatePluginsMenuItem();
-		menuItem.Name="Hello js.net";
-		menuItem.add_OnOpen(this.item_OnOpen);
-		Far.RegisterPluginsMenuItem(menuItem);
+		Far.RegisterPluginsMenuItem("Hello js.net", this.item_OnOpen);
 	}
 }

@@ -1,6 +1,5 @@
 import FarManager;
 public class Bench extends BasePlugin{
-	var menuItem:IPluginMenuItem;
 	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
 		if(e.From==OpenFrom.Editor){
 			this.measure(this.testLineAccess, "String access");
@@ -19,9 +18,6 @@ public class Bench extends BasePlugin{
 		Far.Msg(desc+":"+new String((new Date().getTime())-start))
 	}
 	function Connect(){
-		this.menuItem=Far.CreatePluginsMenuItem();
-		this.menuItem.Name="Bench.net";
-		this.menuItem.add_OnOpen(this.item_OnOpen);
-		Far.RegisterPluginsMenuItem(this.menuItem);
+		Far.RegisterPluginsMenuItem("Bench.net", this.item_OnOpen);
 	}
 }

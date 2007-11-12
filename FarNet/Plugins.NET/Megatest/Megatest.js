@@ -15,10 +15,7 @@ public class Megatest extends BasePlugin{
 		menu.Show();
 	}
 	function Connect(){
-		var menuItem:IPluginMenuItem=Far.CreatePluginsMenuItem();
-		menuItem.Name="Run Far.Net tests";
-		menuItem.add_OnOpen(this.item_OnOpen);
-		Far.RegisterPluginsMenuItem(menuItem);
+		Far.RegisterPluginsMenuItem("Run Far.NET tests", this.item_OnOpen);
 	}
 	function testInputBox(sender:Object, eventArgs:EventArgs){
 		var ib=Far.CreateInputBox();
