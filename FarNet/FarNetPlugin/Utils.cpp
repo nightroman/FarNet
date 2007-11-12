@@ -87,6 +87,7 @@ private:
 };
 
 // now new after this point
+#undef new
 #define new dont_use_new
 
 void WC2OEM(LPCWSTR src, char* dst, int len)
@@ -484,3 +485,7 @@ void ValidateRect(int& x, int& w, int min, int size)
 			w -= (r - min - size + 1);
 	}
 }
+
+#ifdef TEST1
+#include <Test1.cpp>
+#endif

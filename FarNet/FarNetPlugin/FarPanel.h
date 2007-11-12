@@ -92,65 +92,39 @@ private:
 	HANDLE _id;
 };
 
+#define FPPI_PROP(Type, Name)\
+public: virtual property Type Name { Type get() { return _##Name; } void set(Type value) { Free(); _##Name = value; } }\
+private: Type _##Name
+
 ref class FarPanelPluginInfo : IPanelPluginInfo
 {
 internal:
-	FarPanelPluginInfo()
-		: m(new OpenPluginInfo)
-	{
-		memset(m, 0, sizeof(*m));
-		m->StructSize = sizeof(*m);
-	}
-	~FarPanelPluginInfo()
-	{
-		if (m)
-		{
-			delete m->CurDir;
-			delete m->Format;
-			delete m->HostFile;
-			delete m->PanelTitle;
-			delete m;
-		}
-	}
-	OpenPluginInfo& Get()
-	{
-		return *m;
-	}
+	FarPanelPluginInfo();
+	void Free();
+	OpenPluginInfo& Make();
 public:
-	virtual property bool AddDots { bool get(); void set(bool value); }
-	virtual property bool CompareFatTime { bool get(); void set(bool value); }
-	virtual property bool ExternalDelete { bool get(); void set(bool value); }
-	virtual property bool ExternalGet { bool get(); void set(bool value); }
-	virtual property bool ExternalMakeDirectory { bool get(); void set(bool value); }
-	virtual property bool ExternalPut { bool get(); void set(bool value); }
-	virtual property bool PreserveCase { bool get(); void set(bool value); }
-	virtual property bool RawSelection { bool get(); void set(bool value); }
-	virtual property bool RealNames { bool get(); void set(bool value); }
-	virtual property bool ShowNamesOnly { bool get(); void set(bool value); }
-	virtual property bool RightAligned { bool get(); void set(bool value); }
-	virtual property bool UseAttrHighlighting { bool get(); void set(bool value); }
-	virtual property bool UseFilter { bool get(); void set(bool value); }
-	virtual property bool UseHighlighting { bool get(); void set(bool value); }
-	virtual property bool UseSortGroups { bool get(); void set(bool value); }
-	virtual property String^ CurrentDirectory { String^ get(); void set(String^ value); }
-	virtual property String^ Format { String^ get(); void set(String^ value); }
-	virtual property String^ HostFile { String^ get(); void set(String^ value); }
-	virtual property String^ Title { String^ get(); void set(String^ value); }
-	virtual property bool StartSortDesc
-	{
-		bool get() { return m->StartSortOrder != 0; }
-		void set(bool value) { m->StartSortOrder = value; }
-	}
-	virtual property PanelSortMode StartSortMode
-	{
-		PanelSortMode get() { return (PanelSortMode)(m->StartSortMode); }
-		void set(PanelSortMode value) { m->StartSortMode = (int)value; }
-	}
-	virtual property PanelViewMode StartViewMode
-	{
-		PanelViewMode get() { return (PanelViewMode)(m->StartPanelMode - 0x30); }
-		void set(PanelViewMode value) { m->StartPanelMode = (int)value + 0x30; }
-	}
+	FPPI_PROP(bool, AddDots);
+	FPPI_PROP(bool, CompareFatTime);
+	FPPI_PROP(bool, ExternalDelete);
+	FPPI_PROP(bool, ExternalGet);
+	FPPI_PROP(bool, ExternalMakeDirectory);
+	FPPI_PROP(bool, ExternalPut);
+	FPPI_PROP(bool, PreserveCase);
+	FPPI_PROP(bool, RawSelection);
+	FPPI_PROP(bool, RealNames);
+	FPPI_PROP(bool, RightAligned);
+	FPPI_PROP(bool, ShowNamesOnly);
+	FPPI_PROP(bool, StartSortDesc);
+	FPPI_PROP(bool, UseAttrHighlighting);
+	FPPI_PROP(bool, UseFilter);
+	FPPI_PROP(bool, UseHighlighting);
+	FPPI_PROP(bool, UseSortGroups);
+	FPPI_PROP(PanelSortMode, StartSortMode);
+	FPPI_PROP(PanelViewMode, StartViewMode);
+	FPPI_PROP(String^, CurrentDirectory);
+	FPPI_PROP(String^, Format);
+	FPPI_PROP(String^, HostFile);
+	FPPI_PROP(String^, Title);
 private:
 	OpenPluginInfo* m;
 };
@@ -192,9 +166,10 @@ public: DEF_EVENT_ARGS(ViewModeChanged, _ViewModeChanged, ViewModeChangedEventAr
 internal:
 	FarPanelPlugin();
 	void AssertOpen();
+	List<IFile^>^ ReplaceFiles(List<IFile^>^ files);
 private:
+	List<IFile^>^ _files;
 	FarPanelPluginInfo _info;
-	List<IFile^> _files;
 	String^ _StartDirectory;
 };
 

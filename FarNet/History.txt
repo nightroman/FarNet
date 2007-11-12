@@ -1,3 +1,24 @@
+3.3.32
+
+FIXED/IMPROVED
+
+- Fixed memory leaks on panel operations.
+- Optimized memory use on panel operations.
+- Avoided redundant panel updates in some cases.
+
+NEW
+
+- IAnyEditor.EditText() - simple way to edit text in a modal editor.
+- IFar.PostMacro()
+
+OBSOLETE/CHANGED/REMOVED
+
+- IFar.AnotherPanel will be removed, use IFar.Panel2 instead.
+- Methods IFar.CreateKeySequence() and IFar.PostKeySequence() work with int[],
+not IList<int>.
+- Removed IPluginMenuItem and CreatePluginsMenuItem, RegisterPlugins*Item. Use
+methods RegisterPlugins*Item(string, handler) instead.
+
 3.3.31
 
 NEW
@@ -103,8 +124,8 @@ may not happen or it may happen when a panel is not about to close.
 - New methods IPanel.Close() and IPanel.Close(string path).
 - REMOVED method IFar.ClosePanel(), instead of it use IPanel.Close() (also for
 IPanelPlugin), i.e. call Far.Panel.Close() to close an active panel,
-Far.AnotherPanel.Close() to close a passive panel, <IPluginPanel>.Close() to
-close a plugin panel (active or passive).
+Far.Panel2.Close() to close a passive panel, <IPluginPanel>.Close() to close a
+plugin panel (active or passive).
 
 3.3.23
 
@@ -182,7 +203,7 @@ should be called explicitly.
 IPanel and implements some functionality more effectively.
 - removed IPanel.Top (it looks like it is not used), use IPanel.TopIndex which
 is really needed.
-- IFar.Panel, IFar.AnotherPanel: if it is a FAR.NET plugin panel it returns
+- IFar.Panel, IFar.Panel2: if it is a FAR.NET plugin panel it returns
 IPanelPlugin (derived from IPanel, see above).
 - IFile.Tag:int was replaced with IFile.Data:object, so that you can attach any
 objects to your panel plugin items.

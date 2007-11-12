@@ -85,12 +85,13 @@ private:
 	FarMenuItem* CreateItems();
 	int Flags();
 	int* CreateBreakKeys();
-	void ShowMenu(const FarMenuItem* items, const int* breaks);
+	void ShowMenu(const FarMenuItem* items, const int* breaks, const char* title, const char* bottom, const char* help);
 private:
-	// locked items
 	FarMenuItem* _createdItems;
-	// locked breaks
 	int* _createdBreaks;
+	char* _help;
+	char* _title;
+	char* _bottom;
 };
 
 public ref class ListMenu : public AnyMenu, public IListMenu

@@ -209,8 +209,6 @@ int AnyMenu::BreakCode::get()
 //
 
 Menu::Menu()
-: _createdItems(NULL)
-, _createdBreaks(NULL)
 {
 }
 
@@ -264,9 +262,27 @@ void Menu::Lock()
 	{
 		delete _createdItems;
 		delete _createdBreaks;
+		delete _help;
+		delete _title;
+		delete _bottom;
 	}
 	_createdItems = CreateItems();
 	_createdBreaks = CreateBreakKeys();
+	
+	if (SS(HelpTopic))
+		StrToOem(HelpTopic, _help = new char[HelpTopic->Length + 1]);
+	else
+		_help = 0;
+
+	if (SS(Title))
+		StrToOem(Title, _title = new char[Title->Length + 1]);
+	else
+		_title = 0;
+
+	if (SS(Bottom))
+		StrToOem(Bottom, _bottom = new char[Bottom->Length + 1]);
+	else
+		_bottom = 0;
 }
 
 void Menu::Unlock()
@@ -275,8 +291,14 @@ void Menu::Unlock()
 	{
 		delete _createdItems;
 		delete _createdBreaks;
-		_createdItems = NULL;
-		_createdBreaks = NULL;
+		delete _help;
+		delete _title;
+		delete _bottom;
+		_createdItems = 0;
+		_createdBreaks = 0;
+		_help = 0;
+		_title = 0;
+		_bottom = 0;
 	}
 }
 
@@ -311,7 +333,7 @@ FarMenuItem* Menu::CreateItems()
 	return r;
 }
 
-void Menu::ShowMenu(const FarMenuItem* items, const int* breaks)
+void Menu::ShowMenu(const FarMenuItem* items, const int* breaks, const char* title, const char* bottom, const char* help)
 {
 	// validate X, Y to avoid crashes and out of screen
 	int x = _x < 0 ? -1 : _x < 2 ? 2 : _x;
@@ -327,54 +349,39 @@ void Menu::ShowMenu(const FarMenuItem* items, const int* breaks)
 			y = 2;
 	}
 
-	// help
-	CStr sHelpTopic;
-	if (SS(HelpTopic))
-		sHelpTopic.Set(HelpTopic);
-
-	// title
-	CStr sTitle;
-	if (SS(Title))
-		sTitle.Set(Title);
-
-	// bottom
-	CStr sBottom;
-	if (SS(Bottom))
-		sBottom.Set(Bottom);
-
 	// show
 	int bc;
-	_selected = Info.Menu(Info.ModuleNumber, x, y, MaxHeight, Flags(), sTitle, sBottom, sHelpTopic, breaks, &bc, items, _items->Count);
+	_selected = Info.Menu(Info.ModuleNumber, x, y, MaxHeight, Flags(), title, bottom, help, breaks, &bc, items, _items->Count);
 	_breakCode = bc;
 }
 
 bool Menu::Show()
 {
-	FarMenuItem* items;
-	int* bkeys;
-
 	if (_createdItems)
 	{
-		items = _createdItems;
-		bkeys = _createdBreaks;
+		ShowMenu(_createdItems, _createdBreaks, _title, _bottom, _help);
 	}
 	else
 	{
-		items = CreateItems();
-		bkeys = CreateBreakKeys();
-	}
-
-	try
-	{
-		// show
-		ShowMenu(items, bkeys);
-	}
-	finally
-	{
-		if (!_createdItems)
+		FarMenuItem* items = CreateItems();
+		int* breaks = CreateBreakKeys();
+		CStr sTitle;
+		if (SS(Title))
+			sTitle.Set(Title);
+		CStr sBottom;
+		if (SS(Bottom))
+			sBottom.Set(Bottom);
+		CStr sHelpTopic;
+		if (SS(HelpTopic))
+			sHelpTopic.Set(HelpTopic);
+		try
+		{
+			ShowMenu(items, breaks, sTitle, sBottom, sHelpTopic);
+		}
+		finally
 		{
 			delete items;
-			delete bkeys;
+			delete breaks;
 		}
 	}
 

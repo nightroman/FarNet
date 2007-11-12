@@ -7,10 +7,7 @@ public class HelloJS extends BasePlugin{
 		Far.Msg("(JS.Net)Hello, "+s);
 	}
 	function Connect(){
-		var menuItem:IPluginMenuItem=Far.CreatePluginsMenuItem();
-		menuItem.Name="Hello js.net";
-		menuItem.add_OnOpen(this.item_OnOpen);
-		Far.RegisterPluginsMenuItem(menuItem);
+		Far.RegisterPluginsMenuItem("Hello js.net", this.item_OnOpen);
 		Far.RegisterPrefix("hello", this.sayHello);
 	}
 }

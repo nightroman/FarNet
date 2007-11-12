@@ -7,9 +7,6 @@ public class ReplaceSlashes extends BasePlugin {
 		Far.Msg("It works only under editor");
 	}
 	function Connect() {
-		var menuItem:IPluginMenuItem=Far.CreatePluginsMenuItem();
-		menuItem.Name="Replace slashes";
-		menuItem.add_OnOpen(this.item_OnOpen);
-		Far.RegisterPluginsMenuItem(menuItem);
+		Far.RegisterPluginsMenuItem("Replace slashes", this.item_OnOpen);
 	}
 }

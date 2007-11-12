@@ -1,56 +1,53 @@
 <?xml version="1.0" encoding='windows-1251'?>
 <docs>
-	<!-- /// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/> -->
-	<pp name="HelpTopic">
-		<summary>
+<!-- /// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/> -->
+<pp name="HelpTopic">
+<summary>
 Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
 </summary>
-	</pp>
-	<pp name="LT">
-		<param name="left">Left position.</param>
-		<param name="top">Top line.</param>
-	</pp>
-	<pp name="LTB">
-		<param name="left">Left position.</param>
-		<param name="top">Top line.</param>
-		<param name="bottom">Bottom line.</param>
-	</pp>
-	<pp name="LTR">
-		<param name="left">Left position.</param>
-		<param name="top">Top line.</param>
-		<param name="right">Right position.</param>
-	</pp>
-	<pp name="LTRB">
-		<param name="left">Left position.</param>
-		<param name="top">Top line.</param>
-		<param name="right">Right position.</param>
-		<param name="bottom">Bottom line.</param>
-	</pp>
-	<pp name="Connect">
-		<summary>Override this method to handle plugin startup.</summary>
-		<example>
+</pp>
+<pp name="LT">
+<param name="left">Left position.</param>
+<param name="top">Top line.</param>
+</pp>
+<pp name="LTB">
+<param name="left">Left position.</param>
+<param name="top">Top line.</param>
+<param name="bottom">Bottom line.</param>
+</pp>
+<pp name="LTR">
+<param name="left">Left position.</param>
+<param name="top">Top line.</param>
+<param name="right">Right position.</param>
+</pp>
+<pp name="LTRB">
+<param name="left">Left position.</param>
+<param name="top">Top line.</param>
+<param name="right">Right position.</param>
+<param name="bottom">Bottom line.</param>
+</pp>
+<pp name="Connect">
+<summary>Override this method to handle plugin startup.</summary>
+<example>
 (C#) how to register a command line prefix and a menu command.
 <code>
 public override void Connect()
 {
-	// register a command prefix
-	Far.RegisterPrefix([prefix name], [method to be called]);
-	// register a menu command
-	IPluginMenuItem item1 = Far.CreatePluginsMenuItem();
-	item1.Name = [plugin menu item name];
-	item1.OnOpen += [method to be called];
-	Far.RegisterPluginsMenuItem(item1);
-	...
+// register a command prefix
+Far.RegisterPrefix([prefix name], [prefix handler]);
+// register a menu command
+Far.RegisterPluginsMenuItem([item name], [item handler]);
+...
 }
 </code>
 </example>
-	</pp>
-	<pp name="ShowHelp">
-		<summary>Shows the specified topic from a given hlf-file.</summary>
-		<param name="path">Help file location, see options.</param>
-		<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
-		<param name="options">Help options describing path and topic.</param>
-		<remarks>
+</pp>
+<pp name="ShowHelp">
+<summary>Shows the specified topic from a given hlf-file.</summary>
+<param name="path">Help file location, see options.</param>
+<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
+<param name="options">Help options describing path and topic.</param>
+<remarks>
 The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
 <code>
 <![CDATA[
@@ -76,16 +73,16 @@ help file of the plugin Foo "D:\Far\Plugins\Foo\Foo.dll":
 ]]>
 </code>
 </remarks>
-	</pp>
-	<pp name="Colors">
-		<param name="foregroundColor">Foreground color.</param>
-		<param name="backgroundColor">Background color.</param>
-	</pp>
-	<pp name="Include">
-		<summary>
+</pp>
+<pp name="Colors">
+<param name="foregroundColor">Foreground color.</param>
+<param name="backgroundColor">Background color.</param>
+</pp>
+<pp name="Include">
+<summary>
 Creates and shows <see cref="IInputBox"/>.
 Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
 If you need more input box options, use the interface directly.
 </summary>
-	</pp>
+</pp>
 </docs>
