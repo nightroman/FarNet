@@ -27,7 +27,11 @@ public:
 	virtual property String^ AlternateName;
 	virtual property String^ Description;
 	virtual property String^ Owner;
-	virtual property String^ Name;
+	virtual property String^ Name
+	{
+		String^ get() { return _Name; }
+		void set(String^ value) { if (!value) throw gcnew ArgumentNullException("value"); _Name = value; }
+	}
 public:
 	virtual void SetAttributes(FileAttributes attributes)
 	{
@@ -39,10 +43,10 @@ public:
 		return Name;
 	}
 internal:
-	FarFile()
-	{}
+	FarFile() : _Name(String::Empty) {}
 internal:
 	DWORD _flags;
+	String^ _Name;
 };
 
 public ref class FarPanel : public IPanel
@@ -80,11 +84,12 @@ public:
 	virtual String^ ToString() override;
 internal:
 	FarPanel(bool current);
+	static FarFile^ ItemToFile(PluginPanelItem& item);
 protected:
+	bool TryBrief(PanelInfo& pi);
 	void GetBrief(PanelInfo& pi);
 	void GetInfo(PanelInfo& pi);
 private:
-	static FarFile^ ItemToFile(PluginPanelItem& item);
 internal:
 	property int Id { int get(); void set(int value); }
 	bool _active;
@@ -92,9 +97,35 @@ private:
 	HANDLE _id;
 };
 
-#define FPPI_PROP(Type, Name)\
-public: virtual property Type Name { Type get() { return _##Name; } void set(Type value) { Free(); _##Name = value; } }\
+#define FPPI_FLAG(Name)\
+public: virtual property bool Name {\
+	bool get() { return _##Name; }\
+	void set(bool value) {\
+	_##Name = value;\
+	if (m) m->Flags = Flags();\
+}}\
+private: bool _##Name
+
+#define FPPI_PROP(Type, Name, Set)\
+public: virtual property Type Name {\
+	Type get() { return _##Name; }\
+	void set(Type value) {\
+	_##Name = value;\
+	if (m) { Set; }\
+}}\
 private: Type _##Name
+
+#define FPPI_TEXT(Name, Data)\
+public: virtual property String^ Name {\
+	String^ get() { return _##Name; }\
+	void set(String^ value) {\
+	_##Name = value;\
+	if (m) {\
+	delete[] m->Data;\
+	m->Data = NewOem(value);\
+	}\
+}}\
+private: String^ _##Name
 
 ref class FarPanelPluginInfo : IPanelPluginInfo
 {
@@ -103,30 +134,51 @@ internal:
 	void Free();
 	OpenPluginInfo& Make();
 public:
-	FPPI_PROP(bool, AddDots);
-	FPPI_PROP(bool, CompareFatTime);
-	FPPI_PROP(bool, ExternalDelete);
-	FPPI_PROP(bool, ExternalGet);
-	FPPI_PROP(bool, ExternalMakeDirectory);
-	FPPI_PROP(bool, ExternalPut);
-	FPPI_PROP(bool, PreserveCase);
-	FPPI_PROP(bool, RawSelection);
-	FPPI_PROP(bool, RealNames);
-	FPPI_PROP(bool, RightAligned);
-	FPPI_PROP(bool, ShowNamesOnly);
-	FPPI_PROP(bool, StartSortDesc);
-	FPPI_PROP(bool, UseAttrHighlighting);
-	FPPI_PROP(bool, UseFilter);
-	FPPI_PROP(bool, UseHighlighting);
-	FPPI_PROP(bool, UseSortGroups);
-	FPPI_PROP(PanelSortMode, StartSortMode);
-	FPPI_PROP(PanelViewMode, StartViewMode);
-	FPPI_PROP(String^, CurrentDirectory);
-	FPPI_PROP(String^, Format);
-	FPPI_PROP(String^, HostFile);
-	FPPI_PROP(String^, Title);
+	FPPI_FLAG(CompareFatTime);
+	FPPI_FLAG(ExternalDelete);
+	FPPI_FLAG(ExternalGet);
+	FPPI_FLAG(ExternalMakeDirectory);
+	FPPI_FLAG(ExternalPut);
+	FPPI_FLAG(PreserveCase);
+	FPPI_FLAG(RawSelection);
+	FPPI_FLAG(RealNames);
+	FPPI_FLAG(RightAligned);
+	FPPI_FLAG(ShowNamesOnly);
+	FPPI_FLAG(UseAttrHighlighting);
+	FPPI_FLAG(UseFilter);
+	FPPI_FLAG(UseHighlighting);
+	FPPI_FLAG(UseSortGroups);
+	FPPI_PROP(bool, StartSortDesc, m->StartSortOrder = _StartSortDesc);
+	FPPI_PROP(PanelSortMode, StartSortMode, m->StartSortMode = int(_StartSortMode));
+	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
+	FPPI_TEXT(CurrentDirectory, CurDir);
+	FPPI_TEXT(Format, Format);
+	FPPI_TEXT(HostFile, HostFile);
+	FPPI_TEXT(Title, PanelTitle);
+public:
+	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() { return _InfoItems; } void set(array<DataItem^>^ value); }
+	virtual void SetKeyBarAlt(array<String^>^ labels);
+	virtual void SetKeyBarAltShift(array<String^>^ labels);
+	virtual void SetKeyBarCtrl(array<String^>^ labels);
+	virtual void SetKeyBarCtrlAlt(array<String^>^ labels);
+	virtual void SetKeyBarCtrlShift(array<String^>^ labels);
+	virtual void SetKeyBarMain(array<String^>^ labels);
+	virtual void SetKeyBarShift(array<String^>^ labels);
+private:
+	int Flags();
+	void MakeInfoItems();
+	static void Free12Strings(char** dst);
+	static void Make12Strings(char** dst, array<String^>^ src);
 private:
 	OpenPluginInfo* m;
+	array<DataItem^>^ _InfoItems;
+	array<String^>^ _keyBarAlt;
+	array<String^>^ _keyBarAltShift;
+	array<String^>^ _keyBarCtrl;
+	array<String^>^ _keyBarCtrlAlt;
+	array<String^>^ _keyBarCtrlShift;
+	array<String^>^ _keyBarMain;
+	array<String^>^ _keyBarShift;
 };
 
 ref class FarPanelPlugin : public FarPanel, IPanelPlugin
@@ -140,17 +192,24 @@ public: // FarPanel
 	virtual property String^ Path { String^ get() override; void set(String^ value) override; }
 	virtual property String^ StartDirectory { String^ get(); void set(String^ value); }
 public: // IPanelPlugin
+	virtual property bool AddDots;
 	virtual property bool IsOpened { bool get(); }
+	virtual property bool IsPushed { bool get() { return _IsPushed; } }
 	virtual property IPanelPluginInfo^ Info { IPanelPluginInfo^ get() { return %_info; } }
 	virtual property IList<IFile^>^ Files { IList<IFile^>^ get(); }
 	virtual property IPanelPlugin^ Another { IPanelPlugin^ get(); }
 	virtual property Object^ Data;
 	virtual property Object^ Host;
+	virtual property String^ DotsDescription;
 	virtual void Open();
 	virtual void Open(IPanelPlugin^ oldPanel);
-public: DEF_EVENT(GettingInfo, _GettingInfo);
+	virtual void PostData(Object^ data) { _postData = data; }
+	virtual void PostFile(IFile^ file) { _postFile = file; }
+	virtual void PostName(String^ name) { _postName = name; }
+	virtual void Push();
 public: DEF_EVENT(Closed, _Closed);
 public: DEF_EVENT(CtrlBreakPressed, _CtrlBreakPressed);
+public: DEF_EVENT(GettingInfo, _GettingInfo);
 public: DEF_EVENT(Idled, _Idled);
 public: DEF_EVENT_ARGS(Closing, _Closing, PanelEventArgs);
 public: DEF_EVENT_ARGS(DeletingFiles, _DeletingFiles, FilesEventArgs);
@@ -167,10 +226,42 @@ internal:
 	FarPanelPlugin();
 	void AssertOpen();
 	List<IFile^>^ ReplaceFiles(List<IFile^>^ files);
+internal:
+	bool _IsPushed;
+	FarPanelPluginInfo _info;
+	Object^ _postData;
+	IFile^ _postFile;
+	String^ _postName;
 private:
 	List<IFile^>^ _files;
-	FarPanelPluginInfo _info;
 	String^ _StartDirectory;
+};
+
+ref class PanelSet
+{
+internal:
+	static HANDLE AddPanelPlugin(FarPanelPlugin^ plugin);
+	static int AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode);
+	static int AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode);
+	static int AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode);
+	static int AsMakeDirectory(HANDLE hPlugin, char* name, int opMode);
+	static int AsProcessEvent(HANDLE hPlugin, int id, void* param);
+	static int AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState);
+	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode);
+	static int AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode);
+	static FarPanelPlugin^ GetPanelPlugin2(FarPanelPlugin^ plugin);
+	static void AsClosePlugin(HANDLE hPlugin);
+	static void AsFreeFindData(PluginPanelItem* panelItem);
+	static void AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info);
+	static void OpenPanelPlugin(FarPanelPlugin^ plugin);
+	static void PushPanelPlugin(FarPanelPlugin^ plugin);
+	static void ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel);
+internal:
+	static array<FarPanelPlugin^>^ _panels = gcnew array<FarPanelPlugin^>(3);
+	static List<FarPanelPlugin^> _stack;
+private:
+	PanelSet() {}
+	static bool _inAsSetDirectory;
 };
 
 }

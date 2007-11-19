@@ -34,7 +34,7 @@ namespace FarManager
 		string Path { get; set; }
 		/// <summary>
 		/// Current item.
-		/// See <see cref="IPanelPluginInfo.AddDots"/>.
+		/// See <see cref="IPanelPlugin.AddDots"/>.
 		/// </summary>
 		IFile Current { get; }
 		/// <summary>
@@ -51,7 +51,7 @@ namespace FarManager
 		PanelViewMode ViewMode { get; set; }
 		/// <summary>
 		/// List of all panel items.
-		/// See <see cref="IPanelPluginInfo.AddDots"/>.
+		/// See <see cref="IPanelPlugin.AddDots"/>.
 		/// </summary>
 		IList<IFile> Contents { get; }
 		/// <summary>
@@ -350,17 +350,61 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Describes a plugin instance. [OpenPluginInfo]
+	/// Named data item.
+	/// </summary>
+	public class DataItem
+	{
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="name">Name (or separator text in some cases).</param>
+		/// <param name="data">Data (or null for separator in some cases).</param>
+		public DataItem(string name, object data)
+		{
+			_Name = name;
+			_Data = data;
+		}
+		string _Name;
+		/// <summary>
+		/// Name (or separator text in some cases).
+		/// </summary>
+		public string Name
+		{
+			get { return _Name; }
+			set { _Name = value; }
+		}
+		object _Data;
+		/// <summary>
+		/// Data (or null for separator in some cases).
+		/// </summary>
+		public object Data
+		{
+			get { return _Data; }
+			set { _Data = value; }
+		}
+	}
+
+	/// <summary>
+	/// Describes a panel.
+	/// For better performance set its properties only when they are really changed. [OpenPluginInfo]
 	/// </summary>
 	public interface IPanelPluginInfo
 	{
 		/// <summary>
-		/// Add ".." item automatically if it is absent.
-		/// If you enable this mode ".." is not returned by <see cref="IPanel.Current"/> and <see cref="IPanel.Contents"/>.
-		/// Thus, if you need this item you should add it yourself.
-		/// [OPIF_ADDDOTS]
+		/// The panel view mode to set on panel creation.
+		/// When a panel is started it is used internally for keeping and restoring the current mode.
 		/// </summary>
-		bool AddDots { get; set; }
+		PanelViewMode StartViewMode { get; set; }
+		/// <summary>
+		/// The panel sort mode to set on panel creation.
+		/// When a panel is started it is used internally for keeping and restoring the current mode.
+		/// </summary>
+		PanelSortMode StartSortMode { get; set; }
+		/// <summary>
+		/// If <see cref="StartSortMode"/> is specified, this field is used to set sort direction.
+		/// When a panel is started it is used internally for keeping and restoring the current mode.
+		/// </summary>
+		bool StartSortDesc { get; set; }
 		/// <summary>
 		/// Use filter in the plugin panel. [OPIF_USEFILTER]
 		/// </summary>
@@ -422,11 +466,11 @@ namespace FarManager
 		/// </summary>
 		bool ExternalMakeDirectory { get; set; }
 		/// <summary>
-		/// File name on emulated file system. If plugin doesn't emulate a file system based on files it is null.
+		/// File name on emulated file system. If plugin doesn't emulate a file system based on files it is empty.
 		/// </summary>
 		string HostFile { get; set; }
 		/// <summary>
-		/// Current directory of plugin. If plugin returns empty string here, FAR will close plugin automatically if ENTER is pressed on ".." item.
+		/// Plugin current directory. If it is empty, FAR closes the plugin if ENTER is pressed on ".." item.
 		/// </summary>
 		string CurrentDirectory { get; set; }
 		/// <summary>
@@ -438,20 +482,37 @@ namespace FarManager
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
-		/// The panel view mode to set on panel creation.
-		/// When a panel has started it may be used internally for keeping\restoring the current mode.
+		/// Info panel items. If you change them then set this again even to the same object.
 		/// </summary>
-		PanelViewMode StartViewMode { get; set; }
+		DataItem[] InfoItems { get; set; }
 		/// <summary>
-		/// The panel sort mode to set on panel creation.
-		/// When a panel has started it may be used internally for keeping\restoring the current mode.
+		/// 1-12 key bar labels, use empty labels for FAR defaults.
 		/// </summary>
-		PanelSortMode StartSortMode { get; set; }
+		void SetKeyBarMain(string[] labels);
 		/// <summary>
-		/// If <see cref="StartSortMode"/> is specified, this field is used to set sort direction.
-		/// When a panel has started it may be used internally for keeping\restoring the current mode.
+		/// 1-12 key bar labels, use empty labels for FAR defaults.
 		/// </summary>
-		bool StartSortDesc { get; set; }
+		void SetKeyBarCtrl(string[] labels);
+		/// <summary>
+		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// </summary>
+		void SetKeyBarAlt(string[] labels);
+		/// <summary>
+		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// </summary>
+		void SetKeyBarShift(string[] labels);
+		/// <summary>
+		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// </summary>
+		void SetKeyBarCtrlShift(string[] labels);
+		/// <summary>
+		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// </summary>
+		void SetKeyBarAltShift(string[] labels);
+		/// <summary>
+		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// </summary>
+		void SetKeyBarCtrlAlt(string[] labels);
 	}
 
 	/// <summary>
@@ -598,7 +659,7 @@ namespace FarManager
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="code">Virtual key code.</param>
+		/// <param name="code"><see cref="VKeyCode"/> code.</param>
 		/// <param name="state">Indicates key states.</param>
 		/// <param name="preprocess">Preprocess flag.</param>
 		public PanelKeyEventArgs(int code, KeyStates state, bool preprocess)
@@ -609,7 +670,7 @@ namespace FarManager
 			_preprocess = preprocess;
 		}
 		/// <summary>
-		/// Virtual key code. See FAR API.
+		/// <see cref="VKeyCode"/> code.
 		/// </summary>
 		public int Code
 		{
@@ -777,14 +838,32 @@ namespace FarManager
 		/// <param name="oldPanel">Old panel to be replaced.</param>
 		void Open(IPanelPlugin oldPanel);
 		/// <summary>
+		/// Pushes the panel to the stack and displays a FAR panel.
+		/// </summary>
+		void Push();
+		/// <summary>
 		/// True if the panel is opened.
 		/// </summary>
 		bool IsOpened { get; }
+		/// <summary>
+		/// True if the panel is pushed.
+		/// </summary>
+		bool IsPushed { get; }
 		/// <summary>
 		/// Another FAR.NET panel plugin instance or null.
 		/// Note that it may be not "yours", use <see cref="Host"/> property for identification.
 		/// </summary>
 		IPanelPlugin Another { get; }
+		/// <summary>
+		/// Tells to add item ".." automatically and not to return it by
+		/// <see cref="IPanel.Current"/> and <see cref="IPanel.Contents"/>.
+		/// See also <see cref="DotsDescription"/>.
+		/// </summary>
+		bool AddDots { get; set; }
+		/// <summary>
+		/// If <see cref="AddDots"/> is true it is used as ".." item description.
+		/// </summary>
+		string DotsDescription { get; set; }
 		/// <summary>
 		/// Any user data not used by FAR.NET.
 		/// </summary>
@@ -800,9 +879,9 @@ namespace FarManager
 		/// </summary>
 		string StartDirectory { get; set; }
 		/// <summary>
-		/// Use this property to set the information about your panel
-		/// just after <see cref="IFar.CreatePanelPlugin"/> (e.g. to set properties that never change)
-		/// or add you handler to <see cref="GettingInfo"/> (e.g. to set dynamic properties).
+		/// Use this to set the panel properties.
+		/// For better performance set its properties only when they are really changed.
+		/// Redraw the opened panel if you change properties not from events calling redraw.
 		/// </summary>
 		IPanelPluginInfo Info { get; }
 		/// <summary>
@@ -812,10 +891,8 @@ namespace FarManager
 		/// </summary>
 		IList<IFile> Files { get; }
 		/// <summary>
-		/// Raised when a plugin info is being requested.
-		/// You have to set or change <see cref="Info"/> properties.
-		/// If your panel info is never changed you should not use this event,
-		/// set all info properties on a panel creation. [GetOpenPluginInfo]
+		/// Raised to get a plugin <see cref="Info"/> data. Normally you don't have to use this but
+		/// if info is changed externally you may check and update really changed properties. [GetOpenPluginInfo]
 		/// </summary>
 		/// <remarks>
 		/// <c>PowerShell</c> handlers should be added via <c>$Psf.WrapEventHandler()</c> (workaround for Find mode).
@@ -887,5 +964,18 @@ namespace FarManager
 		/// Rised to create a new directory in the file system emulated by the plugin. [MakeDirectory]
 		/// </summary>
 		event EventHandler<MakingDirectoryEventArgs> MakingDirectory;
+		/// <summary>
+		/// Panel data to be set current.
+		/// </summary>
+		void PostData(object data);
+		/// <summary>
+		/// Panel file to be set current.
+		/// </summary>
+		void PostFile(IFile file);
+		/// <summary>
+		/// Panel name to be set current.
+		/// </summary>
+		void PostName(string name);
 	}
+
 }

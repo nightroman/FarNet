@@ -1,7 +1,7 @@
 import FarManager
 import System.Reflection
 public class JSCalc extends BasePlugin{
-	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
+	function item_OnOpen(sender:Object, e:PluginMenuEventArgs) {
 		var InpBox = Far.CreateInputBox();
 		InpBox.Prompt = "Enter expression";
 		InpBox.History = Assembly.GetExecutingAssembly().Location;

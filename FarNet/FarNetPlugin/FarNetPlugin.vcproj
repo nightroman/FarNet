@@ -221,6 +221,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CommandLine.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CommandLineSelection.cpp"
 				>
 			</File>
@@ -249,10 +253,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FarCommandLine.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\FarImpl.cpp"
 				>
 			</File>
@@ -262,10 +262,6 @@
 			</File>
 			<File
 				RelativePath=".\FarNetPlugin.def"
-				>
-			</File>
-			<File
-				RelativePath=".\FarPanel.cpp"
 				>
 			</File>
 			<File
@@ -281,7 +277,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PluginManager.cpp"
+				RelativePath=".\Panel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PluginSet.cpp"
 				>
 			</File>
 			<File
@@ -327,6 +327,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CommandLine.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CommandLineSelection.h"
 				>
 			</File>
@@ -355,15 +359,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FarCommandLine.h"
-				>
-			</File>
-			<File
 				RelativePath=".\FarImpl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FarPanel.h"
 				>
 			</File>
 			<File
@@ -379,7 +375,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PluginManager.h"
+				RelativePath=".\Panel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PluginSet.h"
 				>
 			</File>
 			<File

@@ -6,7 +6,8 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "stdafx.h"
 #include "EditorManager.h"
 #include "FarImpl.h"
-#include "PluginManager.h"
+#include "Panel.h"
+#include "PluginSet.h"
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
@@ -23,21 +24,12 @@ enum EMessage
 	MButton,
 };
 
-gcroot<Far^> theFar;
-gcroot<PluginManager^> thePlugins;
-
-// Far for anybody
-Far^ GetFar()
-{
-	return theFar;
-}
-
 #define __START try {
-#define __END } catch(Exception^ e) { theFar->ShowError(nullptr, e); }
+#define __END } catch(Exception^ e) { Far::Get()->ShowError(nullptr, e); }
 
 // SetStartupInfo is called once, after the plugin DLL is loaded.
 // It loads the main plugin and found sub-plugins.
-void WINAPI _export SetStartupInfo(const PluginStartupInfo* psi)
+void WINAPI SetStartupInfo(const PluginStartupInfo* psi)
 {
 #ifdef TEST1
 	StartTest1();
@@ -48,21 +40,18 @@ void WINAPI _export SetStartupInfo(const PluginStartupInfo* psi)
 	Info.FSF = &FSF;
 
 	__START;
-	theFar = gcnew Far;
-	thePlugins = gcnew PluginManager(theFar);
-	thePlugins->LoadPlugins();
+	Far::StartFar();
+	PluginSet::LoadPlugins();
+	Far::Get()->Start();
 	__END;
 }
 
 // Unloads sub-plugins and the main plugin
-void WINAPI _export ExitFAR()
+void WINAPI ExitFAR()
 {
-	__START;
-	thePlugins->UnloadPlugins();
-	thePlugins = nullptr;
-	theFar->Free();
-	theFar = nullptr;
-	__END;
+	// don't try/catch, FAR can't help
+	PluginSet::UnloadPlugins();
+	Far::Get()->Stop();
 
 #ifdef TEST1
 	StopTest1();
@@ -71,126 +60,134 @@ void WINAPI _export ExitFAR()
 
 // GetPluginInfo is called to get general plugin info.
 // It passes in joined information about all plugins.
-void WINAPI _export GetPluginInfo(PluginInfo* pi)
+void WINAPI GetPluginInfo(PluginInfo* pi)
 {
 	__START;
-	theFar->AsGetPluginInfo(pi);
+	Far::Get()->AsGetPluginInfo(pi);
 	__END;
 }
 
 // OpenPlugin is called to create a new plugin instance or do a job.
-HANDLE WINAPI _export OpenPlugin(int from, INT_PTR item)
+HANDLE WINAPI OpenPlugin(int from, INT_PTR item)
 {
 	__START;
-	return theFar->AsOpenPlugin(from, item);
+	return Far::Get()->AsOpenPlugin(from, item);
 	__END;
 	return INVALID_HANDLE_VALUE;
 }
 
-int WINAPI _export Configure(int itemIndex)
+int WINAPI Configure(int itemIndex)
 {
 	__START;
-	return theFar->AsConfigure(itemIndex);
+	return Far::Get()->AsConfigure(itemIndex);
 	__END;
 	return false;
 }
 
-int WINAPI _export ProcessEditorInput(const INPUT_RECORD* rec)
+int WINAPI ProcessEditorInput(const INPUT_RECORD* rec)
 {
 	__START;
-	return theFar->_editorManager->AsProcessEditorInput(rec);
+	return Far::Get()->_editorManager->AsProcessEditorInput(rec);
 	__END;
 	return 0;
 }
 
-int WINAPI _export ProcessEditorEvent(int type, void* param)
+int WINAPI ProcessEditorEvent(int type, void* param)
 {
 	__START;
-	return theFar->_editorManager->AsProcessEditorEvent(type, param);
+	return Far::Get()->_editorManager->AsProcessEditorEvent(type, param);
 	__END;
 	return 0;
 }
 
-void WINAPI _export ClosePlugin(HANDLE hPlugin)
+void WINAPI ClosePlugin(HANDLE hPlugin)
 {
 	__START;
-	theFar->AsClosePlugin(hPlugin);
+	PanelSet::AsClosePlugin(hPlugin);
 	__END;
 }
 
-int WINAPI _export GetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode)
+int WINAPI GetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode)
 {
 	__START;
-	return theFar->AsGetFiles(hPlugin, panelItem, itemsNumber, move, destPath, opMode);
-	__END;
-	return 0;
-}
-
-int WINAPI _export PutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
-{
-	__START;
-	return theFar->AsPutFiles(hPlugin, panelItem, itemsNumber, move, opMode);
+	return PanelSet::AsGetFiles(hPlugin, panelItem, itemsNumber, move, destPath, opMode);
 	__END;
 	return 0;
 }
 
-int WINAPI _export GetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
-{
-	return theFar->AsGetFindData(hPlugin, pPanelItem, pItemsNumber, opMode);
-}
-
-void WINAPI _export FreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int /*itemsNumber*/)
+int WINAPI PutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
 {
 	__START;
-	theFar->AsFreeFindData(panelItem);
+	return PanelSet::AsPutFiles(hPlugin, panelItem, itemsNumber, move, opMode);
+	__END;
+	return 0;
+}
+
+int WINAPI GetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
+{
+	return PanelSet::AsGetFindData(hPlugin, pPanelItem, pItemsNumber, opMode);
+}
+
+void WINAPI FreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int /*itemsNumber*/)
+{
+	__START;
+	PanelSet::AsFreeFindData(panelItem);
 	__END;
 }
 
-void WINAPI _export GetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
+void WINAPI GetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
 	__START;
-	theFar->AsGetOpenPluginInfo(hPlugin, info);
+	PanelSet::AsGetOpenPluginInfo(hPlugin, info);
 	__END;
 }
 
-int WINAPI _export SetDirectory(HANDLE hPlugin, const char* dir, int opMode)
+int WINAPI SetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 {
 	__START;
-	return theFar->AsSetDirectory(hPlugin, dir, opMode);
+	return PanelSet::AsSetDirectory(hPlugin, dir, opMode);
 	__END;
 	return FALSE;
 }
 
-int WINAPI _export DeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
+int WINAPI DeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
 {
 	__START;
-	return theFar->AsDeleteFiles(hPlugin, panelItem, itemsNumber, opMode);
+	return PanelSet::AsDeleteFiles(hPlugin, panelItem, itemsNumber, opMode);
 	__END;
 	return FALSE;
 }
 
-int WINAPI _export ProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
+int WINAPI ProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
 	__START;
-	return theFar->AsProcessKey(hPlugin, key, controlState);
+	return PanelSet::AsProcessKey(hPlugin, key, controlState);
 	__END;
 	return TRUE; // TRUE: ignore the key because there was a problem
 }
 
-int WINAPI _export ProcessEvent(HANDLE hPlugin, int id, void* param)
+int WINAPI ProcessEvent(HANDLE hPlugin, int id, void* param)
 {
 	__START;
-	return theFar->AsProcessEvent(hPlugin, id, param);
+	return PanelSet::AsProcessEvent(hPlugin, id, param);
 	__END;
 	return FALSE;
 }
 
-int WINAPI _export MakeDirectory(HANDLE hPlugin, char* name, int opMode)
+int WINAPI MakeDirectory(HANDLE hPlugin, char* name, int opMode)
 {
 	__START;
-	return theFar->AsMakeDirectory(hPlugin, name, opMode);
+	return PanelSet::AsMakeDirectory(hPlugin, name, opMode);
 	__END;
 	return 0;
+}
+
+HANDLE WINAPI OpenFilePlugin(char* name, const unsigned char* data, int dataSize)
+{
+	__START;
+	return Far::Get()->AsOpenFilePlugin(name, data, dataSize);
+	__END;
+	return INVALID_HANDLE_VALUE;
 }
 
 }

@@ -24,33 +24,68 @@ namespace FarManager
 		/// </summary>
 		string PluginFolderPath { get; }
 		/// <summary>
+		/// Registers a file plugin handler.
+		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
+		/// See <see cref="OpenFileEventArgs"/>. [OpenFilePlugin]
+		/// </summary>
+		/// <param name="handler">File handler.</param>
+		void RegisterOpenFile(EventHandler<OpenFileEventArgs> handler);
+		/// <summary>
+		/// Adds a menu item to the FAR plugin configuration menu.
+		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
+		/// </summary>
+		/// <param name="name">Item name.</param>
+		/// <param name="handler">Item handler.</param>
+		void RegisterPluginsConfigItem(string name, EventHandler<PluginMenuEventArgs> handler);
+		/// <summary>
+		/// Adds a menu item to the FAR disks menu.
+		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
+		/// </summary>
+		/// <param name="name">Item name.</param>
+		/// <param name="handler">Item handler.</param>
+		void RegisterPluginsDiskItem(string name, EventHandler<PluginMenuEventArgs> handler);
+		/// <summary>
+		/// Adds a menu item to the FAR main plugins menu (F11).
+		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
+		/// </summary>
+		/// <param name="name">Item name.</param>
+		/// <param name="handler">Item handler.</param>
+		void RegisterPluginsMenuItem(string name, EventHandler<PluginMenuEventArgs> handler);
+		/// <summary>
 		/// Registers a command line prefix.
-		/// It should be called only from <see cref="BasePlugin.Connect"/>.
+		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
 		/// </summary>
 		/// <param name="prefix">Command prefix.</param>
 		/// <param name="handler">Handler of a command.</param>
-		void RegisterPrefix(string prefix, StringDelegate handler);
+		void RegisterPrefix(string prefix, EventHandler<ExecutingEventArgs> handler);
 		/// <summary>
-		/// Adds a menu item to the FAR plugin configuration menu.
-		/// It should be called only from <see cref="BasePlugin.Connect"/>.
+		/// Unregisters the handler.
 		/// </summary>
 		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler.</param>
-		void RegisterPluginsConfigItem(string name, EventHandler<OpenPluginMenuItemEventArgs> handler);
+		/// <param name="handler">Item handler or null.</param>
+		void UnregisterPluginsConfigItem(string name, EventHandler<PluginMenuEventArgs> handler);
 		/// <summary>
-		/// Adds a menu item to the FAR disks menu.
-		/// It should be called only from <see cref="BasePlugin.Connect"/>.
+		/// Unregisters the handler.
 		/// </summary>
 		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler.</param>
-		void RegisterPluginsDiskItem(string name, EventHandler<OpenPluginMenuItemEventArgs> handler);
+		/// <param name="handler">Item handler or null.</param>
+		void UnregisterPluginsDiskItem(string name, EventHandler<PluginMenuEventArgs> handler);
 		/// <summary>
-		/// Adds a menu item to the FAR main plugins menu (F11).
-		/// It should be called only from <see cref="BasePlugin.Connect"/>.
+		/// Unregisters the handler.
 		/// </summary>
 		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler.</param>
-		void RegisterPluginsMenuItem(string name, EventHandler<OpenPluginMenuItemEventArgs> handler);
+		/// <param name="handler">Item handler or null.</param>
+		void UnregisterPluginsMenuItem(string name, EventHandler<PluginMenuEventArgs> handler);
+		/// <summary>
+		/// Unregisters the prefix handler.
+		/// </summary>
+		/// <param name="prefix">Command prefix.</param>
+		void UnregisterPrefix(string prefix);
+		/// <summary>
+		/// Unregisters the handler.
+		/// </summary>
+		/// <param name="handler">File handler.</param>
+		void UnregisterOpenFile(EventHandler<OpenFileEventArgs> handler);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
@@ -227,11 +262,6 @@ namespace FarManager
 		/// If it is a FAR.NET plugin panel it returns <see cref="IPanelPlugin"/>.
 		/// </summary>
 		IPanel Panel2 { get; }
-		/// <summary>
-		/// Use <see cref="Panel2"/>.
-		/// </summary>
-		[Obsolete("Use Panel2.")]
-		IPanel AnotherPanel { get; }
 		/// <summary>
 		/// FAR command line.
 		/// </summary>
@@ -438,6 +468,15 @@ namespace FarManager
 		/// <param name="disableOutput">Disable screen output during macro playback.</param>
 		/// <param name="noSendKeysToPlugins">Don't send keystrokes to editor plugins.</param>
 		void PostMacro(string macro, bool disableOutput, bool noSendKeysToPlugins);
+		/// <summary>
+		/// Gets stacked panels.
+		/// </summary>
+		IPanelPlugin[] PushedPanels();
+		/// <summary>
+		/// Shows FAR.NET panel menu.
+		/// </summary>
+		/// <param name="showPushCommand">Show "Push" command.</param>
+		void ShowPanelMenu(bool showPushCommand);
 	}
 
 	/// <summary>
@@ -517,20 +556,15 @@ namespace FarManager
 	};
 
 	/// <summary>
-	/// Delegate which takes a string parameter.
-	/// </summary>
-	public delegate void StringDelegate(string s);
-
-	/// <summary>
 	/// Arguments of a plugin menu item event.
 	/// </summary>
-	public sealed class OpenPluginMenuItemEventArgs : EventArgs
+	public sealed class PluginMenuEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="from">See <see cref="From"/>.</param>
-		public OpenPluginMenuItemEventArgs(OpenFrom from)
+		public PluginMenuEventArgs(OpenFrom from)
 		{
 			_From = from;
 		}
@@ -551,6 +585,36 @@ namespace FarManager
 			set { _Ignore = value; }
 		}
 		bool _Ignore;
+	}
+
+	/// <summary>
+	/// Arguments for a handler registered by <see cref="IFar.RegisterOpenFile"/>.
+	/// A handler is called to open a <see cref="IPanelPlugin"/> which emulates a file system based on a file.
+	/// If a file is unknown a handler should do nothing. [OpenFilePlugin]
+	/// </summary>
+	public sealed class OpenFileEventArgs : EventArgs
+	{
+		string _Name;
+		/// <summary>
+		/// Full name of a file including the path.
+		/// If it is empty then a handler is called to create a new file [ShiftF1].
+		/// In any case a handler opens <see cref="IPanelPlugin"/> or ignores this call.
+		/// </summary>
+		public string Name
+		{
+			get { return _Name; }
+			set { _Name = value; }
+		}
+		byte[] _Data;
+		/// <summary>
+		/// Data from the beginning of the file used to detect the file type.
+		/// The plugin must not change these data.
+		/// </summary>
+		public byte[] Data
+		{
+			get { return _Data; }
+			set { _Data = value; }
+		}
 	}
 
 	/// <summary>

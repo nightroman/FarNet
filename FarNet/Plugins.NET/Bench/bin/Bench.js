@@ -1,6 +1,6 @@
 import FarManager;
 public class Bench extends BasePlugin{
-	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
+	function item_OnOpen(sender:Object, e:PluginMenuEventArgs) {
 		if(e.From==OpenFrom.Editor){
 			this.measure(this.testLineAccess, "String access");
 		}

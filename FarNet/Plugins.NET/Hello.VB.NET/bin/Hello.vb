@@ -1,12 +1,12 @@
 Imports FarManager
 Public Class HelloVB
 Inherits BasePlugin
-	Sub item_OnOpen(ByVal sender As Object, ByVal e As OpenPluginMenuItemEventArgs)
+	Sub item_OnOpen(ByVal sender As Object, ByVal e As PluginMenuEventArgs)
 		Far.Msg("Hello, world from vb.net", "Far.NET")
 	End Sub
 
-	Sub sayHello(ByVal s As String)
-		Far.Msg("VB.NET: Hello, " + s)
+	Sub sayHello(ByVal sender As Object, ByVal e As ExecutingEventArgs)
+		Far.Msg("VB.NET: Hello, " + e.Command)
 	End Sub
 
 	Public Overloads Overrides Sub Connect()

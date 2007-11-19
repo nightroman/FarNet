@@ -1,3 +1,39 @@
+3.3.33
+
+NEW
+
+- You can now open as many panels as you want (or keep one invisible for later
+use). Of course, only two of them can be shown but the others can be pushed to
+the stack by IPanelPlugin.Push so that later you can IPanelPlugin.Open them.
+Another new related methods: IFar.ShowPanelMenu() - panel menu where you can
+push a panel or open pushed panels (it is included in plugins and disk menus);
+IFar.PushedPanels() - array of pushed panels, IPanelPlugin.Post*() - used
+internally to remember and restore the current file in a pushed panel.
+- IPanelPlugin.DotsDescription (used together with AddDots).
+- IPanelPluginInfo.InfoItems allows to set custom info panel items.
+- IPanelPluginInfo.SetKeyBar*() allows to set custom key bar labels.
+- IFar.{Register|Unregister}OpenFile() implements OpenFilePlugin FAR API.
+- VKeyCode - some of virtual key codes.
+
+BREAKING CHANGES
+
+- Property AddDots moved from IPanelPluginInfo to IPanelPlugin, i.e. item dots
+now is rather panel data than info.
+- StringDelegate was removed, RegisterPrefix uses now another type of handler:
+EventHandler<ExcutingEventArgs>. This way is more flexible for future changes
+and allows to RegisterPrefix from PowerShell.
+- Removed obsolete IFar.AnotherPanel; use IFar.Panel2 instead.
+- Renamed OpenPluginMenuItemEventArgs into PluginMenuEventArgs.
+
+FIXED/IMPROVED
+
+- Fixed IPanelPlugin.PuttingFiles Event.
+- Fixed (or, say, implemented) processing of AddDots in panels.
+- Avoided redundant internal memory allocations on GetPluginInfo().
+- IFar.Plugin bug when two plugin panels are opened and one of them is under
+the info panel.
+- Restored removed by mistake IFar.Unregister* methods.
+
 3.3.32
 
 FIXED/IMPROVED

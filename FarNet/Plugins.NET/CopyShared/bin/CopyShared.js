@@ -3,7 +3,7 @@ import System.Reflection
 import System.IO
 public class CopyShared extends BasePlugin{
 	var shares;
-	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
+	function item_OnOpen(sender:Object, e:PluginMenuEventArgs) {
 		this.copySelected();
 	}
 	function Connect(){

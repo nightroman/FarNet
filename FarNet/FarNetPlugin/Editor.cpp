@@ -21,7 +21,7 @@ String^ BaseEditor::EditText(String^ text, String^ title)
 		if (SS(text))
 			File::WriteAllText(file, text, Encoding::Default);
 		
-		IEditor^ edit = GetFar()->CreateEditor();
+		IEditor^ edit = Far::Get()->CreateEditor();
 		edit->FileName = file;
 		edit->IsModal = true;
 		edit->DisableHistory = true;

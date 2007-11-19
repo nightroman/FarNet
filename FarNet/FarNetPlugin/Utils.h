@@ -77,6 +77,7 @@ struct SEditorSetPosition : EditorSetPosition
 
 // String converters
 Char OemToChar(char oem);
+char* NewOem(String^ str);
 void StrToOem(String^ str, char* oem);
 void StrToOem(String^ str, char* oem, int size);
 String^ FromEditor(const char* text, int len);

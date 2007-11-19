@@ -4,7 +4,7 @@ Copyright (c) 2005-2007 Far.NET Team
 */
 
 #include "StdAfx.h"
-#include "FarCommandLine.h"
+#include "CommandLine.h"
 #include "CommandLineSelection.h"
 
 namespace FarManagerImpl
