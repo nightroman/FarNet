@@ -1,6 +1,6 @@
 import FarManager;
 public class HelloJS extends BasePlugin {
-	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
+	function item_OnOpen(sender:Object, e:PluginMenuEventArgs) {
 		Far.Msg("Hello world!");
 	}
 	function Connect() {

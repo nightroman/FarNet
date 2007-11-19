@@ -56,6 +56,7 @@ namespace FarManager
 
 		/// <summary>
 		/// Override this to handle plugin shutdown.
+		/// CAUTION: don't call FAR UI, if it is exiting UI do not work.
 		/// </summary>
 		public virtual void Disconnect() { }
 	}

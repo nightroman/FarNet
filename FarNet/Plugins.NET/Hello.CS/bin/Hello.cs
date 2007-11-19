@@ -1,13 +1,13 @@
 using FarManager;
 public class HelloCS : BasePlugin
 {
-	void item_OnOpen(object sender, OpenPluginMenuItemEventArgs e)
+	void item_OnOpen(object sender, PluginMenuEventArgs e)
 	{
 		Far.Msg("Hello, world from c#", "Far.NET");
 	}
-	void sayHello(string s)
+	void sayHello(object sender, ExecutingEventArgs e)
 	{
-		Far.Msg("C#: Hello, " + s);
+		Far.Msg("C#: Hello, " + e.Command);
 	}
 	override public void Connect()
 	{

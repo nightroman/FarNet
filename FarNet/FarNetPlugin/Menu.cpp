@@ -474,7 +474,7 @@ void ListMenu::MakeFilter1()
 		RegistryKey^ key = nullptr;
 		try
 		{
-			key = Registry::CurrentUser->OpenSubKey(GetFar()->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
+			key = Registry::CurrentUser->OpenSubKey(Far::Get()->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
 			if (key)
 			{
 				int flags = (int)key->GetValue("Flags");
@@ -672,7 +672,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 		}
 		else
 		{
-			Char c = GetFar()->CodeToChar(e->Code);
+			Char c = Far::Get()->CodeToChar(e->Code);
 			if (c >= ' ')
 			{
 				// keep and change filter

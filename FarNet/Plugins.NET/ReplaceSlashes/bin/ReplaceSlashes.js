@@ -1,6 +1,6 @@
 import FarManager;
 public class ReplaceSlashes extends BasePlugin {
-	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
+	function item_OnOpen(sender:Object, e:PluginMenuEventArgs) {
 		if (e.From==OpenFrom.Editor)
 		Far.Editor.Selection.SetText(Far.Editor.Selection.GetText().replace(/\\/ig, "\\\\"));
 		else
