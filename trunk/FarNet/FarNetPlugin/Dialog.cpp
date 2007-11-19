@@ -1146,7 +1146,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 	}
 	catch(Exception^ e)
 	{
-		GetFar()->ShowError("Error in DlgProc", e);
+		Far::Get()->ShowError("Error in DlgProc", e);
 	}
 
 	// default

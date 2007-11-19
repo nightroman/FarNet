@@ -33,7 +33,7 @@ Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
 <code>
 public override void Connect()
 {
-// register a command prefix
+// register a prefix
 Far.RegisterPrefix([prefix name], [prefix handler]);
 // register a menu command
 Far.RegisterPluginsMenuItem([item name], [item handler]);

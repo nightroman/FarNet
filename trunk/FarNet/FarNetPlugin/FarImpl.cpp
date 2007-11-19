@@ -5,59 +5,49 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 #include "FarImpl.h"
-#include "FarPanel.h"
+#include "CommandLine.h"
 #include "Dialog.h"
 #include "Editor.h"
 #include "EditorManager.h"
-#include "FarCommandLine.h"
 #include "InputBox.h"
 #include "Menu.h"
 #include "Message.h"
+#include "Panel.h"
 #include "Viewer.h"
 using namespace Microsoft::Win32;
 using namespace System::Reflection;
 
 namespace FarManagerImpl
 {;
-static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelItem, int itemsNumber)
-{
-	List<IFile^>^ r = gcnew List<IFile^>();
-	r->Capacity = itemsNumber;
-	for(int i = 0; i < itemsNumber; ++i)
-		r->Add(files[(int)(INT_PTR)panelItem[i].UserData]);
-	return r;
-}
-
 //
 //::Far::
 //
 
 Far::Far()
-: _registeredConfigItems(gcnew List<PluginMenuItem^>())
-, _registeredDiskItems(gcnew List<PluginMenuItem^>())
-, _registeredMenuItems(gcnew List<PluginMenuItem^>())
-, _registeredPrefixes(gcnew Dictionary<String^, StringDelegate^>())
-, _editorManager(gcnew EditorManager())
-, _panels(gcnew array<FarPanelPlugin^>(4))
+: _editorManager(gcnew EditorManager)
 {
 }
 
-void Far::Free()
+void Far::StartFar()
 {
-	FreeMenuStrings();
+	if (_instance) throw gcnew InvalidOperationException("Already started.");
+	_instance = gcnew Far();
+}
+
+void Far::Start()
+{
+	// this has to be done after loading plugins
+	RegisterPluginsDiskItem("FAR.NET", gcnew EventHandler<PluginMenuEventArgs^>(&Far::OnFarNetDisk));
+	RegisterPluginsMenuItem("FAR.NET", gcnew EventHandler<PluginMenuEventArgs^>(&Far::OnFarNetMenu));
+}
+
+void Far::Stop()
+{
+	delete[] _configStrings;
+	delete[] _diskStrings;
+	delete[] _menuStrings;
 	delete _prefixes;
-	_prefixes = 0;
-}
-
-IPanelPlugin^ Far::GetPanelPlugin2(FarPanelPlugin^ plugin)
-{
-	for (int i = 1; i < 4; ++i)
-	{
-		FarPanelPlugin^ p = _panels[i];
-		if (p && p != plugin)
-			return p;
-	}
-	return nullptr;
+	_instance = nullptr;
 }
 
 String^ Far::PluginFolderPath::get()
@@ -77,24 +67,80 @@ String^ Far::RootKey::get()
 	return OemToStr(Info.RootKey);
 }
 
-void Far::RegisterPrefix(String^ prefix, StringDelegate^ handler)
+static void RemoveItem(List<PluginMenuItem^>^ list, String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
 {
-	_registeredPrefixes->Add(prefix, handler);
+	for(int i = list->Count; --i >= 0;)
+	{
+		PluginMenuItem^ p = list[i];
+		if (name == p->Name && (!handler || handler == p->Handler))
+			list->RemoveAt(i);
+	}
 }
 
-void Far::RegisterPluginsConfigItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler)
+void Far::RegisterPluginsConfigItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
 {
-	_registeredConfigItems->Add(gcnew PluginMenuItem(name, handler));
+	delete[] _configStrings;
+	_configStrings = 0;
+	_registeredConfigItems.Add(gcnew PluginMenuItem(name, handler));
 }
 
-void Far::RegisterPluginsDiskItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler)
+void Far::UnregisterPluginsConfigItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
 {
-	_registeredDiskItems->Add(gcnew PluginMenuItem(name, handler));
+	delete[] _configStrings;
+	_configStrings = 0;
+	RemoveItem(%_registeredConfigItems, name, handler);
 }
 
-void Far::RegisterPluginsMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler)
+void Far::RegisterPluginsDiskItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
 {
-	_registeredMenuItems->Add(gcnew PluginMenuItem(name, handler));
+	delete[] _diskStrings;
+	_diskStrings = 0;
+	_registeredDiskItems.Add(gcnew PluginMenuItem(name, handler));
+}
+
+void Far::UnregisterPluginsDiskItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
+{
+	delete[] _diskStrings;
+	_diskStrings = 0;
+	RemoveItem(%_registeredDiskItems, name, handler);
+}
+
+void Far::RegisterPluginsMenuItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
+{
+	delete[] _menuStrings;
+	_menuStrings = 0;
+	_registeredMenuItems.Add(gcnew PluginMenuItem(name, handler));
+}
+
+void Far::UnregisterPluginsMenuItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
+{
+	delete[] _menuStrings;
+	_menuStrings = 0;
+	RemoveItem(%_registeredMenuItems, name, handler);
+}
+
+void Far::RegisterPrefix(String^ prefix, EventHandler<ExecutingEventArgs^>^ handler)
+{
+	delete _prefixes;
+	_prefixes = 0;
+	_registeredPrefixes[prefix] = handler;
+}
+
+void Far::UnregisterPrefix(String^ prefix)
+{
+	delete _prefixes;
+	_prefixes = 0;
+	_registeredPrefixes.Remove(prefix);
+}
+
+void Far::RegisterOpenFile(EventHandler<OpenFileEventArgs^>^ handler)
+{
+	_registeredOpenFile.Add(handler);
+}
+
+void Far::UnregisterOpenFile(EventHandler<OpenFileEventArgs^>^ handler)
+{
+	_registeredOpenFile.Remove(handler);
 }
 
 bool Far::Msg(String^ body)
@@ -128,13 +174,14 @@ void Far::Run(String^ command)
 	if (colon < 0)
 		return;
 
-	for each(KeyValuePair<String^, StringDelegate^>^ i in _registeredPrefixes)
+	for each(KeyValuePair<String^, EventHandler<ExecutingEventArgs^>^>^ i in _registeredPrefixes)
 	{
 		String^ pref = i->Key;
 		if (colon != pref->Length || !command->StartsWith(pref))
 			continue;
-		StringDelegate^ handler = i->Value;
-		handler->Invoke(command->Substring(colon + 1));
+		EventHandler<ExecutingEventArgs^>^ handler = i->Value;
+		ExecutingEventArgs e(command->Substring(colon + 1));
+		handler(nullptr, %e);
 		break;
 	}
 }
@@ -333,9 +380,9 @@ IEditor^ Far::Editor::get()
 
 IPanel^ Far::Panel::get()
 {
-	for (int i = 1; i < 4; ++i)
+	for (int i = 1; i < 3; ++i)
 	{
-		FarPanelPlugin^ p = _panels[i];
+		FarPanelPlugin^ p = PanelSet::_panels[i];
 		if (p && p->IsActive)
 			return p;
 	}
@@ -344,9 +391,9 @@ IPanel^ Far::Panel::get()
 
 IPanel^ Far::Panel2::get()
 {
-	for (int i = 1; i < 4; ++i)
+	for (int i = 1; i < 3; ++i)
 	{
-		FarPanelPlugin^ p = _panels[i];
+		FarPanelPlugin^ p = PanelSet::_panels[i];
 		if (p && !p->IsActive)
 			return p;
 	}
@@ -358,82 +405,78 @@ IInputBox^ Far::CreateInputBox()
 	return gcnew InputBox();
 }
 
+//! frequently called
 void Far::AsGetPluginInfo(PluginInfo* pi)
 {
 	pi->StructSize = sizeof(PluginInfo);
 	pi->Flags = PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
 
-	CreateMenuStringsBlock();
-	pi->DiskMenuStrings = (char**)_diskStrings;
-	pi->DiskMenuStringsNumber = _registeredDiskItems->Count;
-	pi->PluginMenuStrings = (char**)_menuStrings;
-	pi->PluginMenuStringsNumber = _registeredMenuItems->Count;
-	pi->PluginConfigStrings = (char**)_configStrings;
-	pi->PluginConfigStringsNumber = _registeredConfigItems->Count;
-
-	MakePrefixes();
-	if (_registeredPrefixes->Count > 0)
-		pi->CommandPrefix = _prefixes ? *_prefixes : NULL;
-}
-
-void Far::CreateMenuStringsBlock()
-{
-	FreeMenuStrings();
-
-	_diskStrings = new CStr[_registeredDiskItems->Count];
-	for(int i = 0; i < _registeredDiskItems->Count; ++i)
+	if (_registeredConfigItems.Count)
 	{
-		PluginMenuItem^ item = _registeredDiskItems[i];
-		_diskStrings[i].Set(item->Name);
+		pi->PluginConfigStringsNumber = _registeredConfigItems.Count;
+		if (_configStrings == 0)
+		{
+			_configStrings = new CStr[_registeredConfigItems.Count];
+			for(int i = 0; i < _registeredConfigItems.Count; ++i)
+			{
+				PluginMenuItem^ item = _registeredConfigItems[i];
+				_configStrings[i].Set(item->Name);
+			}
+		}
+		pi->PluginConfigStrings = (char**)_configStrings;
+	}
+	
+	if (_registeredDiskItems.Count)
+	{
+		pi->DiskMenuStringsNumber = _registeredDiskItems.Count;
+		if (_diskStrings == 0)
+		{
+			_diskStrings = new CStr[_registeredDiskItems.Count];
+			for(int i = 0; i < _registeredDiskItems.Count; ++i)
+			{
+				PluginMenuItem^ item = _registeredDiskItems[i];
+				_diskStrings[i].Set(item->Name);
+			}
+		}
+		pi->DiskMenuStrings = (char**)_diskStrings;
 	}
 
-	_menuStrings = new CStr[_registeredMenuItems->Count];
-	for(int i = 0; i < _registeredMenuItems->Count; ++i)
+	if (_registeredMenuItems.Count)
 	{
-		PluginMenuItem^ item = _registeredMenuItems[i];
-		_menuStrings[i].Set(item->Name);
+		pi->PluginMenuStringsNumber = _registeredMenuItems.Count;
+		if (_menuStrings == 0)
+		{
+			_menuStrings = new CStr[_registeredMenuItems.Count];
+			for(int i = 0; i < _registeredMenuItems.Count; ++i)
+			{
+				PluginMenuItem^ item = _registeredMenuItems[i];
+				_menuStrings[i].Set(item->Name);
+			}
+		}
+		pi->PluginMenuStrings = (char**)_menuStrings;
 	}
 
-	_configStrings = new CStr[_registeredConfigItems->Count];
-	for(int i = 0; i < _registeredConfigItems->Count; ++i)
+	if (_registeredPrefixes.Count)
 	{
-		PluginMenuItem^ item = _registeredConfigItems[i];
-		_configStrings[i].Set(item->Name);
+		if (_prefixes == 0)
+		{
+			String^ PrefString = String::Empty;
+			for each(KeyValuePair<String^, EventHandler<ExecutingEventArgs^>^>^ i in _registeredPrefixes)
+			{
+				if (PrefString->Length > 0)
+					PrefString = String::Concat(PrefString, ":");
+				PrefString = String::Concat(PrefString, i->Key);
+			}
+			_prefixes = new CStr(PrefString);
+		}
+		pi->CommandPrefix = *_prefixes;
 	}
-}
-
-void Far::FreeMenuStrings()
-{
-	delete[] _diskStrings;
-	_diskStrings = NULL;
-
-	delete[] _menuStrings;
-	_menuStrings = NULL;
-
-	delete[] _configStrings;
-	_configStrings = NULL;
 }
 
 void Far::ProcessPrefixes(INT_PTR item)
 {
 	char* command = (char*)item;
 	Run(OemToStr(command));
-}
-
-void Far::MakePrefixes()
-{
-	if (_registeredPrefixes->Count == 0)
-		return;
-
-	String^ PrefString = String::Empty;
-	for each(KeyValuePair<String^, StringDelegate^>^ i in _registeredPrefixes)
-	{
-		if (PrefString->Length > 0)
-			PrefString = String::Concat(PrefString, ":");
-		PrefString = String::Concat(PrefString, i->Key);
-	}
-	delete _prefixes;
-	_prefixes = new CStr(PrefString);
 }
 
 void Far::GetUserScreen()
@@ -561,87 +604,9 @@ void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgro
 	Console::BackgroundColor = bc;
 }
 
-HANDLE Far::AddPanelPlugin(FarPanelPlugin^ plugin)
-{
-	for(int i = 1; i < 4; ++i)
-	{
-		if (_panels[i] == nullptr)
-		{
-			_panels[i] = plugin;
-			plugin->Id = i;
-			return (HANDLE)(INT_PTR)i;
-		}
-	}
-	throw gcnew InvalidOperationException("Can't register plugin panel.");
-}
-
 IPanelPlugin^ Far::CreatePanelPlugin()
 {
 	return gcnew FarPanelPlugin();
-}
-
-//! it call Update/Redraw in some cases
-void Far::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel)
-{
-	// check
-	if (!oldPanel)
-		throw gcnew ArgumentNullException("oldPanel");
-	if (!newPanel)
-		throw gcnew ArgumentNullException("newPanel");
-
-	int id1 = oldPanel->Id;
-	if (id1 < 1)
-		throw gcnew InvalidOperationException("Old panel plugin must be opened.");
-
-	if (newPanel->Id >= 1)
-		throw gcnew InvalidOperationException("New panel plugin must not be opened.");
-
-	// save old modes
-	oldPanel->Info->StartSortDesc = oldPanel->ReverseSortOrder;
-	oldPanel->Info->StartSortMode = oldPanel->SortMode;
-	oldPanel->Info->StartViewMode = oldPanel->ViewMode;
-
-	// disconnect old panel
-	oldPanel->Id = 0;
-	((FarPanelPluginInfo^)oldPanel->Info)->Free();
-
-	// connect new panel
-	_panels[id1] = newPanel;
-	newPanel->Id = id1;
-
-	// change panel modes
-	if (newPanel->Info->StartViewMode != PanelViewMode::Undefined &&
-		newPanel->Info->StartViewMode != oldPanel->Info->StartViewMode ||
-		newPanel->Info->StartSortMode != PanelSortMode::Default && (
-		newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode ||
-		newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc))
-	{
-		// detach files to change modes with no files
-		List<IFile^> dummy;
-		List<IFile^>^ files = newPanel->ReplaceFiles(%dummy);
-		newPanel->Update(false);
-
-		// set only new modes
-		if (newPanel->Info->StartViewMode != PanelViewMode::Undefined && newPanel->Info->StartViewMode != oldPanel->Info->StartViewMode)
-			newPanel->ViewMode = newPanel->Info->StartViewMode;
-		if (newPanel->Info->StartSortMode != PanelSortMode::Default)
-		{
-			if (newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode)
-				newPanel->SortMode = newPanel->Info->StartSortMode;
-			if (newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc)
-				newPanel->ReverseSortOrder = newPanel->Info->StartSortDesc;
-		}
-
-		// restore original files
-		newPanel->ReplaceFiles(files);
-	}
-
-	//! switch to new data and redraw, but not always: in some cases it will be done anyway, e.g. by FAR
-	if (!_inAsSetDirectory)
-	{
-		newPanel->Update(false);
-		newPanel->Redraw(0, 0);
-	}
 }
 
 IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
@@ -649,9 +614,9 @@ IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
 	// case: any panel
 	if (hostType == nullptr)
 	{
-		for (int i = 1; i < 4; ++i)
+		for (int i = 1; i < 3; ++i)
 		{
-			FarPanelPlugin^ p = _panels[i];
+			FarPanelPlugin^ p = PanelSet::_panels[i];
 			if (p)
 				return p;
 		}
@@ -659,9 +624,9 @@ IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
 	}
 
 	// panel with defined host type
-	for (int i = 1; i < 4; ++i)
+	for (int i = 1; i < 3; ++i)
 	{
-		FarPanelPlugin^ p = _panels[i];
+		FarPanelPlugin^ p = PanelSet::_panels[i];
 		if (p && p->Host)
 		{
 			Type^ type = p->Host->GetType();
@@ -671,12 +636,6 @@ IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
 	}
 
 	return nullptr;
-}
-
-void Far::OpenPanelPlugin(FarPanelPlugin^ plugin)
-{
-	if (!_canOpenPanelPlugin) throw gcnew InvalidOperationException("Can't open a plugin panel at this moment.");
-	_panels[0] = plugin;
 }
 
 IFile^ Far::CreatePanelItem()
@@ -865,9 +824,46 @@ void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue
 bool Far::AsConfigure(int itemIndex)
 {
 	PluginMenuItem^ item = (PluginMenuItem^)_registeredConfigItems[itemIndex];
-	OpenPluginMenuItemEventArgs e(OpenFrom::Other);
+	PluginMenuEventArgs e(OpenFrom::Other);
 	item->Handler(item, %e);
 	return e.Ignore ? false : true;
+}
+
+HANDLE Far::AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize)
+{
+	if (_registeredOpenFile.Count == 0)
+		return INVALID_HANDLE_VALUE;
+
+	try
+	{
+		_canOpenPanelPlugin = true;
+
+		OpenFileEventArgs e;
+		e.Name = OemToStr(name);
+		e.Data = gcnew array<Byte>(dataSize);
+		for(int i = dataSize; --i >= 0;)
+			e.Data[i] = data[i];
+
+		for each(EventHandler<OpenFileEventArgs^>^ handler in _registeredOpenFile)
+		{
+			handler(this, %e);
+
+			// open a waiting panel
+			if (PanelSet::_panels[0])
+			{
+				HANDLE h = PanelSet::AddPanelPlugin(PanelSet::_panels[0]);
+				return h;
+			}
+		}
+
+		return INVALID_HANDLE_VALUE;
+	}
+	finally
+	{
+		// drop a waiting panel and set the global lock
+		PanelSet::_panels[0] = nullptr;
+		_canOpenPanelPlugin = false;
+	}
 }
 
 HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
@@ -887,21 +883,21 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 		{
 			_canOpenPanelPlugin = true;
 			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredDiskItems[(int)item];
-			OpenPluginMenuItemEventArgs e((OpenFrom)from);
+			PluginMenuEventArgs e((OpenFrom)from);
 			menuItem->Handler(menuItem, %e);
 		}
 		else if (from == OPEN_PLUGINSMENU || from == OPEN_EDITOR || from == OPEN_VIEWER)
 		{
 			_canOpenPanelPlugin = (from == OPEN_PLUGINSMENU);
 			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredMenuItems[(int)item];
-			OpenPluginMenuItemEventArgs e((OpenFrom)from);
+			PluginMenuEventArgs e((OpenFrom)from);
 			menuItem->Handler(menuItem, %e);
 		}
 
 		// open a waiting panel
-		if (_panels[0])
+		if (PanelSet::_panels[0])
 		{
-			HANDLE h = AddPanelPlugin(_panels[0]);
+			HANDLE h = PanelSet::AddPanelPlugin(PanelSet::_panels[0]);
 			return h;
 		}
 
@@ -911,239 +907,80 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 	finally
 	{
 		// drop a waiting panel and set the global lock
-		_panels[0] = nullptr;
+		PanelSet::_panels[0] = nullptr;
 		_from = OpenFrom::Other;
 		_canOpenPanelPlugin = false;
 	}
 }
 
-void Far::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
+array<IPanelPlugin^>^ Far::PushedPanels()
 {
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	FarPanelPluginInfo^ pluginInfo = (FarPanelPluginInfo^)plugin->Info;
-	if (plugin->_GettingInfo)
-		plugin->_GettingInfo(plugin, nullptr);
-	*info = pluginInfo->Make();
+	array<IPanelPlugin^>^ r = gcnew array<IPanelPlugin^>(PanelSet::_stack.Count);
+	for(int i = PanelSet::_stack.Count; --i >= 0;)
+		r[i] = PanelSet::_stack[i];
+	return r;
 }
 
-void Far::AsClosePlugin(HANDLE hPlugin)
+void Far::OnFarNetDisk(Object^ /*sender*/, PluginMenuEventArgs^ /*e*/)
 {
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	_panels[(int)(INT_PTR)hPlugin] = nullptr;
-	if (plugin->_Closed)
-		plugin->_Closed(plugin, nullptr);
-	((FarPanelPluginInfo^)plugin->Info)->Free();
+	_instance->ShowPanelMenu(false);
 }
 
-int Far::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
+void Far::OnFarNetMenu(Object^ /*sender*/, PluginMenuEventArgs^ /*e*/)
 {
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	if (!plugin->_DeletingFiles)
-		return FALSE;
-	IList<IFile^>^ files = ItemsToFiles(plugin->Files, panelItem, itemsNumber);
-	FilesEventArgs e(files, (OperationModes)opMode, false);
-	plugin->_DeletingFiles(plugin, %e);
-	return e.Ignore ? FALSE : TRUE;
+	_instance->ShowPanelMenu(true);
 }
 
-int Far::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
+void Far::ShowPanelMenu(bool showPushCommand)
 {
-	_inAsSetDirectory = true;
-	try
+	Menu m;
+	m.Title = "FAR.NET";
+	m.AutoAssignHotkeys = true;
+	m.ShowAmpersands = true;
+
+	// "Push" command
+	if (showPushCommand)
 	{
-		FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-		if (!plugin->_SettingDirectory)
-			return TRUE;
-		SettingDirectoryEventArgs e(OemToStr(dir), (OperationModes)opMode);
-		plugin->_SettingDirectory(plugin, %e);
-		return !e.Ignore;
+		FarPanelPlugin^ pp = dynamic_cast<FarPanelPlugin^>(Panel);
+		if (pp)
+		{
+			IMenuItem^ mi = m.Items->Add("Push the panel");
+			mi->Data = pp;
+		}
+		else
+		{
+			showPushCommand = false;
+		}
 	}
-	finally
+
+	// pushed panels
+	if (PanelSet::_stack.Count)
 	{
-		_inAsSetDirectory = false;
+		if (showPushCommand)
+			m.Items->Add(String::Empty)->IsSeparator = true;
+		for(int i = PanelSet::_stack.Count; --i >= 0;)
+		{
+			FarPanelPlugin^ pp = PanelSet::_stack[i];
+			IMenuItem^ mi = m.Items->Add(JoinText(pp->_info.Title, pp->_info.CurrentDirectory));
+			mi->Data = pp;
+		}
 	}
-}
+	
+	// go
+	if (!m.Show())
+		return;
 
-int Far::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
-{
-	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	if (!plugin || !plugin->_KeyPressed)
-		return FALSE;
-
-	PanelKeyEventArgs e((key & ~PKF_PREPROCESS), (KeyStates)controlState, (key & PKF_PREPROCESS) != 0);
-	plugin->_KeyPressed(plugin, %e);
-	return e.Ignore;
-}
-
-int Far::AsProcessEvent(HANDLE hPlugin, int id, void* param)
-{
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	switch(id)
+	// push
+	if (showPushCommand && m.Selected == 0)
 	{
-	case FE_BREAK:
-		if (plugin->_CtrlBreakPressed)
-			plugin->_CtrlBreakPressed(plugin, nullptr);
-		break;
-	case FE_CHANGEVIEWMODE:
-		if (plugin->_ViewModeChanged)
-		{
-			ViewModeChangedEventArgs e(OemToStr((const char*)param));
-			plugin->_ViewModeChanged(plugin, %e);
-		}
-		break;
-	case FE_CLOSE:
-		//? FE_CLOSE issues:
-		// *) unwanted extra call on plugin commands entered in command line
-		// *) may not be called at all e.g. if tmp panel is opened
-		if (plugin->_Closing)
-		{
-			PanelEventArgs e(OperationModes::None);
-			plugin->_Closing(plugin, %e);
-			return e.Ignore;
-		}
-		break;
-	case FE_COMMAND:
-		if (plugin->_Executing)
-		{
-			//! We have to try\catch in here in order to return exactly what plugin returns.
-			ExecutingEventArgs e(OemToStr((const char*)param));
-			try
-			{
-				plugin->_Executing(plugin, %e);
-			}
-			catch(Exception^ exception)
-			{
-				ShowError("Event: Executing", exception);
-			}
-			return e.Ignore;
-		}
-		break;
-	case FE_IDLE:
-		if (plugin->_Idled)
-			plugin->_Idled(plugin, nullptr);
-		break;
-	case FE_REDRAW:
-		if (plugin->_Redrawing)
-		{
-			PanelEventArgs e(OperationModes::None);
-			plugin->_Redrawing(plugin, %e);
-			return e.Ignore;
-		}
-		break;
+		FarPanelPlugin^ pp = (FarPanelPlugin^)m.SelectedData;
+		pp->Push();
+		return;
 	}
-	return FALSE;
-}
 
-int Far::AsMakeDirectory(HANDLE hPlugin, char* name, int opMode)
-{
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	if (!plugin->_MakingDirectory)
-		return FALSE;
-	MakingDirectoryEventArgs e(OemToStr(name), (OperationModes)opMode);
-	plugin->_MakingDirectory(plugin, %e);
-	return e.Ignore ? FALSE : TRUE;
-}
-
-int Far::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode)
-{
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	if (!plugin->_GettingFiles)
-		return 0;
-	List<IFile^>^ files = ItemsToFiles(plugin->Files, panelItem, itemsNumber);
-	GettingFilesEventArgs e(files, (OperationModes)opMode, move != 0, OemToStr(destPath));
-	plugin->_GettingFiles(plugin, %e);
-	return e.Ignore ? FALSE : TRUE;
-}
-
-int Far::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
-{
-	FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-	if (!plugin->_PuttingFiles)
-		return 0;
-	List<IFile^>^ files = ItemsToFiles(plugin->Files, panelItem, itemsNumber);
-	FilesEventArgs e(files, (OperationModes)opMode, move != 0);
-	plugin->_PuttingFiles(plugin, %e);
-	return e.Ignore ? FALSE : TRUE;
-}
-
-void Far::AsFreeFindData(PluginPanelItem* panelItem)
-{
-	delete[] (char*)panelItem;
-}
-
-int Far::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
-{
-	try
-	{
-		FarPanelPlugin^ plugin = _panels[(int)(INT_PTR)hPlugin];
-		if (plugin->_GettingData)
-		{
-			PanelEventArgs e((OperationModes)opMode);
-			plugin->_GettingData(plugin, %e);
-			if (e.Ignore)
-				return FALSE;
-		}
-		(*pItemsNumber) = plugin->Files->Count;
-		if ((*pItemsNumber) == 0)
-		{
-			(*pPanelItem) = NULL;
-			return TRUE;
-		}
-
-		int sizeDesc = 0;
-		for each(FarFile^ f in plugin->Files)
-		{
-			if (SS(f->Description))
-				sizeDesc += f->Description->Length + 1;
-		}
-		int sizeFile = (*pItemsNumber)*sizeof(PluginPanelItem);
-		char* buff = new char[sizeFile + sizeDesc];
-		char* desc = buff + sizeFile;
-		(*pPanelItem) = (PluginPanelItem*)buff;
-		memset((*pPanelItem), 0, (*pItemsNumber)*sizeof(PluginPanelItem));
-
-		int i = -1;
-		for each(FarFile^ f in plugin->Files)
-		{
-			++i;
-
-			PluginPanelItem& p = (*pPanelItem)[i];
-			FAR_FIND_DATA& d = p.FindData;
-
-			// names
-			StrToOem(f->Name->Length >= MAX_PATH ? f->Name->Substring(0, MAX_PATH - 1) : f->Name, d.cFileName);
-			if (!String::IsNullOrEmpty(f->AlternateName))
-			{
-				if (f->AlternateName->Length > 12)
-					throw gcnew InvalidOperationException("Alternate name is longer than 12 chars.");
-				StrToOem(f->AlternateName, d.cAlternateFileName);
-			}
-
-			// other
-			d.dwFileAttributes = f->_flags;
-			d.nFileSizeLow = (DWORD)(f->Length & 0xFFFFFFFF);
-			d.nFileSizeHigh = (DWORD)(f->Length >> 32);
-			d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
-			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
-			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
-			p.UserData = i;
-
-			if (SS(f->Description))
-			{
-				p.Description = desc;
-				desc += f->Description->Length + 1;
-				StrToOem(f->Description, p.Description);
-			}
-		}
-		return TRUE;
-	}
-	catch(Exception^ e)
-	{
-		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
-			ShowError(__FUNCTION__, e);
-		return FALSE;
-	}
+	// pop
+	FarPanelPlugin^ pp = (FarPanelPlugin^)m.SelectedData;
+	pp->Open();
 }
 
 }

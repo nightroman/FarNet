@@ -212,7 +212,7 @@ namespace FarManager
 		/// </summary>
 		bool ReverseAutoAssign { get; set; }
 		/// <summary>
-		/// List of virtual key codes that close the menu. See VK_* in FAR API.
+		/// List of <see cref="VKeyCode"/> codes that close the menu. See VK_* in FAR API.
 		/// </summary>
 		IList<int> BreakKeys { get; }
 		/// <summary>

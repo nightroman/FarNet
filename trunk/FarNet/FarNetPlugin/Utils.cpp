@@ -86,7 +86,17 @@ private:
 	T* m_str;
 };
 
-// now new after this point
+// caller deletes the result
+char* NewOem(String^ str)
+{
+	if (ES(str))
+		return 0;
+	char* r = new char[str->Length + 1];
+	StrToOem(str, r);
+	return r;
+}
+
+// no new after this point
 #undef new
 #define new dont_use_new
 

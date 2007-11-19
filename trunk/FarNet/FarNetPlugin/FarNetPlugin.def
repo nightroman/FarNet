@@ -10,6 +10,7 @@ EXPORTS
 	GetOpenPluginInfo
 	GetPluginInfo
 	MakeDirectory
+	OpenFilePlugin
 	OpenPlugin
 	ProcessEditorEvent
 	ProcessEditorInput

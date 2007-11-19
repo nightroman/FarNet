@@ -12,18 +12,16 @@ class CStr;
 namespace FarManagerImpl
 {;
 ref class EditorManager;
-ref class FarPanelPlugin;
 
 ref class PluginMenuItem
 {
 public:
-	PluginMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler)
-	{
-		Name = name;
-		Handler = handler;
-	}
-	property String^ Name;
-	property EventHandler<OpenPluginMenuItemEventArgs^>^ Handler;
+	PluginMenuItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler) : _Name(name), _Handler(handler) {}
+	property String^ Name { String^ get() { return _Name; } }
+	property EventHandler<PluginMenuEventArgs^>^ Handler { EventHandler<PluginMenuEventArgs^>^ get() { return _Handler; } }
+private:
+	String^ _Name;
+	EventHandler<PluginMenuEventArgs^>^ _Handler;
 };
 
 public ref class Far : public IFar
@@ -36,7 +34,6 @@ public:
 	virtual property IEditor^ Editor { IEditor^ get(); }
 	virtual property int HWnd { int get(); }
 	virtual property int WindowCount { int get(); }
-	virtual property IPanel^ AnotherPanel { IPanel^ get() { return Panel2; } }
 	virtual property IPanel^ Panel { IPanel^ get(); }
 	virtual property IPanel^ Panel2 { IPanel^ get(); }
 	virtual property OpenFrom From { OpenFrom get(); }
@@ -48,6 +45,7 @@ public:
 	virtual property Version^ Version { System::Version^ get(); }
 public:
 	virtual array<int>^ CreateKeySequence(String^ keys);
+	virtual array<IPanelPlugin^>^ PushedPanels();
 	virtual bool Commit();
 	virtual bool Msg(String^ body);
 	virtual bool Msg(String^ body, String^ header);
@@ -84,10 +82,11 @@ public:
 	virtual void PostMacro(String^ macro, bool disableOutput, bool noSendKeysToPlugins);
 	virtual void PostText(String^ text);
 	virtual void PostText(String^ text, bool disableOutput);
-	virtual void RegisterPluginsConfigItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler);
-	virtual void RegisterPluginsDiskItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler);
-	virtual void RegisterPluginsMenuItem(String^ name, EventHandler<OpenPluginMenuItemEventArgs^>^ handler);
-	virtual void RegisterPrefix(String^ prefix, StringDelegate^ handler);
+	virtual void RegisterOpenFile(EventHandler<OpenFileEventArgs^>^ handler);
+	virtual void RegisterPluginsConfigItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler);
+	virtual void RegisterPluginsDiskItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler);
+	virtual void RegisterPluginsMenuItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler);
+	virtual void RegisterPrefix(String^ prefix, EventHandler<ExecutingEventArgs^>^ handler);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ command);
 	virtual void SaveMacros();
@@ -96,56 +95,48 @@ public:
 	virtual void SetUserScreen();
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
+	virtual void ShowPanelMenu(bool showPushCommand);
+	virtual void UnregisterOpenFile(EventHandler<OpenFileEventArgs^>^ handler);
+	virtual void UnregisterPluginsConfigItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler);
+	virtual void UnregisterPluginsDiskItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler);
+	virtual void UnregisterPluginsMenuItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler);
+	virtual void UnregisterPrefix(String^ prefix);
 	virtual void Write(String^ text);
 	virtual void Write(String^ text, ConsoleColor foregroundColor);
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
 internal:
-	Far();
-	void Free();
-	IPanelPlugin^ GetPanelPlugin2(FarPanelPlugin^ plugin);
-	void OpenPanelPlugin(FarPanelPlugin^ plugin);
-	void ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel);
+	static Far^ Get() { return _instance; }
+	static void StartFar();
+	void Start();
+	void Stop();
 internal:
 	EditorManager^ _editorManager;
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
 internal:
 	bool AsConfigure(int itemIndex);
+	HANDLE AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize);
 	HANDLE AsOpenPlugin(int from, INT_PTR item);
-	int AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode);
-	int AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode);
-	int AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode);
-	int AsMakeDirectory(HANDLE hPlugin, char* name, int opMode);
-	int AsProcessEvent(HANDLE hPlugin, int id, void* param);
-	int AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState);
-	int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode);
-	int AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode);
-	void AsClosePlugin(HANDLE hPlugin);
-	void AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info);
 	void AsGetPluginInfo(PluginInfo* pi);
-	static void AsFreeFindData(PluginPanelItem* panelItem);
 private:
-	HANDLE AddPanelPlugin(FarPanelPlugin^ plugin);
-	void CreateMenuStringsBlock();
-	void FreeMenuStrings();
+	Far();
 	void ProcessPrefixes(INT_PTR item);
-	void MakePrefixes();
+	static void OnFarNetDisk(Object^ sender, PluginMenuEventArgs^ e);
+	static void OnFarNetMenu(Object^ sender, PluginMenuEventArgs^ e);
 private:
+	static Far^ _instance;
 	CStr* _configStrings;
 	CStr* _diskStrings;
 	CStr* _menuStrings;
 	CStr* _prefixes;
-	List<PluginMenuItem^>^ _registeredConfigItems;
-	List<PluginMenuItem^>^ _registeredDiskItems;
-	List<PluginMenuItem^>^ _registeredMenuItems;
-	Dictionary<String^, StringDelegate^>^ _registeredPrefixes;
+	List<EventHandler<OpenFileEventArgs^>^> _registeredOpenFile;
+	List<PluginMenuItem^> _registeredConfigItems;
+	List<PluginMenuItem^> _registeredDiskItems;
+	List<PluginMenuItem^> _registeredMenuItems;
+	Dictionary<String^, EventHandler<ExecutingEventArgs^>^> _registeredPrefixes;
 	OpenFrom _from;
+internal: //??
 	bool _canOpenPanelPlugin;
-	array<FarPanelPlugin^>^ _panels;
-	bool _inAsSetDirectory;
 };
-
-// Far for anybody
-Far^ GetFar();
 }

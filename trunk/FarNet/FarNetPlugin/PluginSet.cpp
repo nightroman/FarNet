@@ -4,16 +4,12 @@ Copyright (c) 2005-2007 Far.NET Team
 */
 
 #include "StdAfx.h"
-#include "PluginManager.h"
+#include "PluginSet.h"
 #include "FarImpl.h"
 
 namespace FarManagerImpl
 {;
-PluginManager::PluginManager(Far^ plugin) : _far(plugin)
-{
-}
-
-void PluginManager::LoadPlugins()
+void PluginSet::LoadPlugins()
 {
 	Trace::WriteLine("Loading plugins");
 
@@ -29,24 +25,39 @@ void PluginManager::LoadPlugins()
 		LoadPlugin(dir->FullName);
 }
 
-void PluginManager::UnloadPlugins()
+void PluginSet::UnloadPlugins()
 {
 	for each(IPlugin^ plug in _plugins)
-		plug->Far = nullptr;
+	{
+		try
+		{
+			plug->Far = nullptr;
+		}
+		catch(Exception^ e)
+		{
+			Console::WriteLine();
+			Console::ForegroundColor = ConsoleColor::Red;
+			Console::WriteLine(plug->ToString() + " error:");
+			Console::WriteLine(e->Message);
+			if (_startupErrorDialog)
+				Console::ReadKey(true);
+			else
+				System::Threading::Thread::Sleep(1000);
+		}
+	}
 	_plugins.Clear();
-	_far = nullptr;
 }
 
-void PluginManager::AddPlugin(Type^ type)
+void PluginSet::AddPlugin(Type^ type)
 {
 	Trace::WriteLine("Class:" + type->Name);
 	IPlugin^ plugin = (IPlugin^)Activator::CreateInstance(type);
 	_plugins.Add(plugin);
-	plugin->Far = _far;
+	plugin->Far = Far::Get();
 	Trace::WriteLine("Attached:" + type->Name);
 }
 
-void PluginManager::LoadConfig(StreamReader^ text, String^ dir)
+void PluginSet::LoadConfig(StreamReader^ text, String^ dir)
 {
 	try
 	{
@@ -69,7 +80,7 @@ void PluginManager::LoadConfig(StreamReader^ text, String^ dir)
 	}
 }
 
-void PluginManager::LoadAllFrom(String^ dir)
+void PluginSet::LoadAllFrom(String^ dir)
 {
 	for each(String^ dll in Directory::GetFiles(dir, "*.dll"))
 	{
@@ -82,7 +93,7 @@ void PluginManager::LoadAllFrom(String^ dir)
 	}
 }
 
-void PluginManager::LoadPlugin(String^ dir)
+void PluginSet::LoadPlugin(String^ dir)
 {
 	Trace::WriteLine("Plugin:" + dir);
 	try
@@ -116,11 +127,11 @@ void PluginManager::LoadPlugin(String^ dir)
 		// USER REQUEST 2: make it optional
 		if (_startupErrorDialog)
 		{
-			_far->ShowError("ERROR in plugin " + dir, e);
+			Far::Get()->ShowError("ERROR in plugin " + dir, e);
 		}
 		else
 		{
-			_far->Write(
+			Far::Get()->Write(
 				"ERROR: plugin " + dir + ":\n" + ExceptionInfo(e, true),
 				ConsoleColor::Red, Console::BackgroundColor);
 		}

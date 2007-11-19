@@ -1,7 +1,7 @@
 import FarManager;
 import System;
 public class Megatest extends BasePlugin{
-	function item_OnOpen(sender:Object, e:OpenPluginMenuItemEventArgs) {
+	function item_OnOpen(sender:Object, e:PluginMenuEventArgs) {
 		var menu=Far.CreateMenu();
 		menu.Title="Select a test";
 		menu.Items.Add("Message", testMessage);
