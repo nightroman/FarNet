@@ -25,6 +25,14 @@ void InputBox::MaxLength::set(int value)
 	_maxLength = value;
 }
 
+String^ InputBox::HelpTopic::get() { return _HelpTopic; }
+void InputBox::HelpTopic::set(String^ value)
+{
+	if (SS(value) && !value->StartsWith("<"))
+		throw gcnew ArgumentException("'value' format must be '<FullPath\\>Topic'");
+	_HelpTopic = value;
+}
+
 bool InputBox::Show()
 {
 	CStr sTitle(Title);
@@ -32,22 +40,26 @@ bool InputBox::Show()
 	CStr sText(Text);
 	CStr sDest(_maxLength + 1);
 	CStr sHistory;
-	if (!String::IsNullOrEmpty(History))
+	if (SS(History))
 		sHistory.Set(History);
 
 	// help
-	const char* help; CStr sHelp;
-	if (!String::IsNullOrEmpty(HelpTopic))
-		sHelp.Set(HelpTopic), help = sHelp;
+	const char* help = 0; CStr sHelp;
 	if (_oemHelpTopic)
+	{
 		help = _oemHelpTopic;
-	else
-		help = NULL;
+	}
+	else if (SS(HelpTopic))
+	{
+		sHelp.Set(HelpTopic);
+		help = sHelp;
+	}
 
-	bool ok = Info.InputBox(sTitle, sPrompt, sHistory, sText, sDest, MaxLength, help, Flags()) != 0;
-	if (ok)
-		Text = OemToStr(sDest);
-	return ok;
+	if (!Info.InputBox(sTitle, sPrompt, sHistory, sText, sDest, MaxLength, help, Flags()))
+		return false;
+
+	Text = OemToStr(sDest);
+	return true;
 }
 
 int InputBox::Flags()

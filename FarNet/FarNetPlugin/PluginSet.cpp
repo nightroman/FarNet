@@ -9,25 +9,10 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarManagerImpl
 {;
-void PluginSet::LoadPlugins()
-{
-	Trace::WriteLine("Loading plugins");
-
-	String^ show = System::Configuration::ConfigurationSettings::AppSettings["FarManager.StartupErrorDialog"];
-	if (!String::IsNullOrEmpty(show))
-	{
-		show = show->Trim();
-		_startupErrorDialog = show->Length > 0 && show != "0";
-	}
-
-	String^ path = Environment::ExpandEnvironmentVariables(System::Configuration::ConfigurationSettings::AppSettings["FarManager.Plugins"]);
-	for each(DirectoryInfo^ dir in DirectoryInfo(path).GetDirectories())
-		LoadPlugin(dir->FullName);
-}
-
+//! Don't use FAR UI
 void PluginSet::UnloadPlugins()
 {
-	for each(IPlugin^ plug in _plugins)
+	for each(BasePlugin^ plug in _plugins)
 	{
 		try
 		{
@@ -48,83 +33,48 @@ void PluginSet::UnloadPlugins()
 	_plugins.Clear();
 }
 
-void PluginSet::AddPlugin(Type^ type)
+void PluginSet::LoadPlugins()
 {
-	Trace::WriteLine("Class:" + type->Name);
-	IPlugin^ plugin = (IPlugin^)Activator::CreateInstance(type);
-	_plugins.Add(plugin);
-	plugin->Far = Far::Get();
-	Trace::WriteLine("Attached:" + type->Name);
-}
-
-void PluginSet::LoadConfig(StreamReader^ text, String^ dir)
-{
-	try
+	String^ show = System::Configuration::ConfigurationSettings::AppSettings["FarManager.StartupErrorDialog"];
+	if (!String::IsNullOrEmpty(show))
 	{
-		String^ dirBin = dir + "\\Bin";
-		String^ line;
-		while ((line = text->ReadLine()) != nullptr)
-		{
-			Trace::WriteLine("Loaded Line:" + line);
-			array<String^>^ classes = line->Split(' ');
-			String^ assemblyName = classes[0];
-			Trace::WriteLine("Assembly:" + assemblyName);
-			Assembly^ assembly = Assembly::LoadFrom(dirBin + "\\" + assemblyName);
-			for(int i = 1; i < classes->Length; ++i)
-				AddPlugin(assembly->GetType(classes[i], true));
-		}
+		show = show->Trim();
+		_startupErrorDialog = show->Length > 0 && show != "0";
 	}
-	finally
-	{
-		text->Close();
-	}
-}
 
-void PluginSet::LoadAllFrom(String^ dir)
-{
-	for each(String^ dll in Directory::GetFiles(dir, "*.dll"))
+	String^ path = Environment::ExpandEnvironmentVariables(System::Configuration::ConfigurationSettings::AppSettings["FarManager.Plugins"]);
+	for each(String^ dir in Directory::GetDirectories(path))
 	{
-		Assembly^ assembly = Assembly::LoadFrom(dll);
-		for each(Type^ type in assembly->GetExportedTypes())
-		{
-			if (!type->IsAbstract && IPlugin::typeid->IsAssignableFrom(type))
-				AddPlugin(type);
-		}
+		// skip
+		if (Path::GetFileName(dir)->StartsWith("-"))
+			continue;
+
+		// load
+		LoadPlugin(dir);
 	}
 }
 
 void PluginSet::LoadPlugin(String^ dir)
 {
-	Trace::WriteLine("Plugin:" + dir);
 	try
 	{
-		// folder Cfg
-		String^ dirCfg = dir + "\\Cfg";
-		if (Directory::Exists(dirCfg))
+		// the only *.cfg
+		array<String^>^ files = Directory::GetFiles(dir, "*.cfg");
+		if (files->Length > 1)
+			throw gcnew InvalidOperationException("More than one .cfg files found.");
+		if (files->Length == 1)
 		{
-			String^ cfg = dirCfg + "\\plugin.cfg";
-			if (File::Exists(cfg))
-			{
-				LoadConfig(File::OpenText(cfg), dirCfg);
-				return;
-			}
-		}
-
-		// folder Bin
-		String^ dirBin = dir + "\\Bin";
-		if (Directory::Exists(dirBin))
-		{
-			LoadAllFrom(dirBin);
+			LoadConfig(files[0], dir);
 			return;
 		}
 
-		// folder itself
+		// DLLs
 		LoadAllFrom(dir);
 	}
 	catch(Exception^ e)
 	{
-		// USER REQUEST 1: don't use message boxes at this point
-		// USER REQUEST 2: make it optional
+		// WISH: don't use message boxes at this point
+		// WISH: make it optional
 		if (_startupErrorDialog)
 		{
 			Far::Get()->ShowError("ERROR in plugin " + dir, e);
@@ -137,4 +87,49 @@ void PluginSet::LoadPlugin(String^ dir)
 		}
 	}
 }
+
+void PluginSet::LoadConfig(String^ file, String^ dir)
+{
+	for each(String^ line in File::ReadAllLines(file))
+	{
+		array<String^>^ classes = line->Split(gcnew array<Char>{' '}, StringSplitOptions::RemoveEmptyEntries);
+		if (classes->Length == 0)
+			continue;
+		String^ assemblyName = classes[0];
+		Assembly^ assembly = Assembly::LoadFrom(Path::Combine(dir, assemblyName));
+		for(int i = 1; i < classes->Length; ++i)
+			AddPlugin(assembly->GetType(classes[i], true));
+	}
+}
+
+void PluginSet::LoadAllFrom(String^ dir)
+{
+	for each(String^ dll in Directory::GetFiles(dir, "*.dll"))
+	{
+		Assembly^ assembly = Assembly::LoadFrom(dll);
+		for each(Type^ type in assembly->GetExportedTypes())
+		{
+			if (type->IsAbstract)
+				continue;
+			if (BasePlugin::typeid->IsAssignableFrom(type))
+				AddPlugin(type);
+		}
+	}
+}
+
+void PluginSet::AddPlugin(Type^ type)
+{
+	BasePlugin^ plugin = (BasePlugin^)Activator::CreateInstance(type);
+	_plugins.Add(plugin);
+	plugin->Far = Far::Get();
+
+	// case: tool
+	ToolPlugin^ tool = dynamic_cast<ToolPlugin^>(plugin);
+	if (tool)
+	{
+		Far::Get()->RegisterTool(plugin, tool->Name, gcnew EventHandler<ToolEventArgs^>(tool, &ToolPlugin::Invoke), tool->Options);
+		return;
+	}
+}
+
 }

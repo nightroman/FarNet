@@ -118,18 +118,55 @@ extern int _fastGetString;
 
 Place SelectionPlace();
 
-namespace FarManagerImpl
-{;
-// Constant Values
-public ref class CV
-{
-internal:
-	static String^ const CR = "\r";
-	static String^ const LF = "\n";
-	static String^ const CRLF = "\r\n";
-};
-}
-
 // DateTime tools
 DateTime FileTimeToDateTime(FILETIME time);
 FILETIME DateTimeToFileTime(DateTime time);
+
+// Value host and switch
+#define VALUE_HOST(Type, Name)\
+class Name\
+{\
+public:\
+	Name(Type value = 0) { _value = value; }\
+	~Name() { _value = 0; }\
+	static Type Get() { return _value; }\
+	static void Set(Type value) { _value = value; }\
+private:\
+	static Type _value;\
+}
+
+// Hosted values
+VALUE_HOST(bool, ValueCanOpenPanel);
+VALUE_HOST(bool, ValueUserScreen);
+
+namespace FarManagerImpl
+{;
+// Constant values
+typedef String^ const ConstString;
+public ref class CV
+{
+internal:
+	static ConstString
+		CR = "\r",
+		LF = "\n",
+		CRLF = "\r\n";
+};
+
+// Resource strings
+ref class Res
+{
+	Res() {}
+internal:
+	static ConstString
+		PanelsTools = "Panels tools",
+		EditorTools = "Editor tools",
+		ViewerTools = "Viewer tools",
+		PrefixTools = "Prefix tools",
+		DiskTools = "Disk tools",
+		ConfigTools = "Config tools",
+		FilePlugins = "File plugins",
+		ErrorNoHotKey = "A .NET item hotkey must be set (F4) in the FAR plugins menu (F11).",
+		MenuPanels = "Push/show panels",
+		MenuPrefix = ".NET ";
+};
+}

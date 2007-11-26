@@ -53,7 +53,9 @@ namespace FarManager
 		/// Buttons are visible.
 		/// </summary>
 		bool ButtonsAreVisible { get; set; }
-		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
+		/// <summary>
+		/// The only supported format is "&lt;FullPath\&gt;Topic", see <see cref="IFar.ShowHelp"/>.
+		/// </summary>
 		string HelpTopic { get; set; }
 		/// <summary>
 		/// Shows input box and waits until user press OK or Cancel.

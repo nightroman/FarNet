@@ -17,7 +17,7 @@ public:
 	virtual property bool IsPassword;
 	virtual property bool NoLastHistory;
 	virtual property int MaxLength { int get(); void set(int value); }
-	virtual property String^ HelpTopic;
+	virtual property String^ HelpTopic { String^ get(); void set(String^ value); }
 	virtual property String^ History;
 	virtual property String^ Prompt;
 	virtual property String^ Text;
@@ -30,5 +30,6 @@ private:
 	int Flags();
 private:
 	int _maxLength;
+	String^ _HelpTopic;
 };
 }

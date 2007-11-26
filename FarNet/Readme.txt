@@ -1,7 +1,7 @@
-Plugin name  : Far.NET3
+Plugin name  : FAR.NET
 Category     : Development
-Version      : 3.3.33
-Release date : 2007.11.19
+Version      : 3.3.34
+Release date : 2007.11.26
 Author       : Roman Kuzmin
 Email        : nightroman@hotmail.com
 HomePage     : http://nightroman.spaces.live.com
@@ -28,38 +28,42 @@ Home page: http://code.google.com/p/farnet/
 	Installation
 
 
-Copy to %FARHOME%: file "Far.exe.config", folders "Lib", "Plugins" and
-optionally "Plugins.NET" (if you use something from there). This is default and
-recommended installation. But you can change location of "Lib" and "Plugins.NET"
-if you want; in this case you have to update "Far.exe.config" accordingly.
+Copy to %FARHOME%:
+- Far.exe.config
+- Lib
+- Plugins\FAR.NET
+- Plugins.NET (with optional examples)
+
+This is the default installation. You can move Lib or Plugins.NET; in this case
+you have to update Far.exe.config accordingly.
 
 
 	Structure
 
 
-- Plugins\Far.NET\FarNetPlugin.dll - standard Far plugin;
-- Plugins\Far.NET\FarNetPlugin_en.hlf - help (for manually added plugin links);
-- Lib - plugin assemblies and their resources;
-- Lib\FarNetIntf.dll - FarManager interfaces;
-- Lib\FarNetIntf.xml - XML documentation, e.g. for VS Object Browser;
-- Plugins.NET - plugins folder. Each plugin is a folder with optional subfolders
-Bin (assemblies) and Cfg (configuration files):
-- Cfg\Plugin.cfg - configuration file. Each line is:
+Plugins\Far.NET\
+- FarNetPlugin.dll - FAR plugin and loader of FAR.NET plugins;
+- FarNetPlugin_en.hlf - basic FAR.NET help;
+
+Lib\
+- FarNetIntf.dll - FarManager interfaces;
+- FarNetIntf.xml - XML documentation;
+
+Plugins.NET\
+Each plugin folder contains one or more assemblies (.dll) and at most one
+optional configuration file (.cfg). Each line of .cfg file is:
 	<Assembly> <Class1> <Class2> ... <ClassN>
 	where
-	<Assembly> - name of an assembly from Bin;
-	<ClassX> - name of a class in this assembly.
+	<Assembly> - relative path of a plugin assembly;
+	<ClassX> - name of a class from this assembly.
 
 
 	Loading Plugins
 
 
-- For each folder in Plugins.NET:
-	- if "Cfg\Plugin.cfg" exists then load it according to the configuration;
-	- else if "Bin" exists then load all *.dll from there;
-	- else load all *.dll from the plugin folder.
-- For each loaded *.dll find and create instances of all non abstract classes
-implementing IPlugin interface.
+For each folder in Plugins.NET: if a file *.cfg exists then only specified
+assemblies and their classes are loaded, else all non abstract BasePlugin
+children are loaded from all DLLs in the plugin folder.
 
 
 	CHM Documentation
@@ -76,10 +80,9 @@ Included XML documentation is not perhaps a perfect form of documentation but it
 always up-to-date and practically very useful for development.
 
 Visual Studio Object Browser automatically uses XML comments well enough.
-Another possible way is to use for example Reflector for .NET (it is free). It
-displays documentation in MSDN-like style, provides powerful navigation and
-search (including .NET and any loaded .NET assemblies).
-(Reflector for .NET: http://www.aisto.com/roeder/dotnet/)
+Another good tool is Reflector for .NET (it is free). It displays documentation
+in MSDN-like style, provides powerful navigation and search (including .NET and
+any loaded .NET assemblies): http://www.aisto.com/roeder/dotnet/
 
 
 	Plugins Help
@@ -87,6 +90,5 @@ search (including .NET and any loaded .NET assemblies).
 
 You can add help for your plugins. It works in dialogs, menus, input and message
 boxes (see property HelpTopic) or by IFar.ShowHelp(). Unfortunately help can not
-be automatically shown by ShiftF2 because technically Far.NET plugins are not
-visible for FAR, it sees only Far.NET. But you can add a link to your plugin
-help file to "FarNetPlugin_en.hlf" manually as it is done for PowerShellFar.
+be automatically shown by F1 ShiftF2 because technically FAR.NET plugins are not
+visible to FAR.

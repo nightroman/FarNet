@@ -13,12 +13,112 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "Menu.h"
 #include "Message.h"
 #include "Panel.h"
+#include "PluginSet.h"
 #include "Viewer.h"
 using namespace Microsoft::Win32;
 using namespace System::Reflection;
 
 namespace FarManagerImpl
 {;
+PluginAny::PluginAny(BasePlugin^ plugin, String^ name)
+: _Name(name)
+{
+	if (plugin)
+	{
+		Assembly^ a = Assembly::GetAssembly(plugin->GetType());
+		_Key = "FAR.NET\\" + Path::GetFileName(a->Location) + "\\" + _Name->Replace("\\", "/");
+	}
+	else
+	{
+		_Key = "FAR.NET\\:" + _Name->Replace("\\", "/");
+	}
+}
+
+PluginTool::PluginTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
+: PluginAny(plugin, name)
+, _Handler(handler)
+, _Options(options)
+{}
+
+String^ PluginTool::Alias(ToolOptions option)
+{
+	if (ES(Name))
+		return String::Empty;
+	switch(option)
+	{
+	case ToolOptions::Config:
+		if (ES(_AliasConfig))
+			_AliasConfig = Far::Get()->GetPluginValue(Key, "Config", Name)->ToString();
+		return _AliasConfig;
+	case ToolOptions::Disk:
+		if (ES(_AliasDisk))
+			_AliasDisk = Far::Get()->GetPluginValue(Key, "Disk", Name)->ToString();
+		return _AliasDisk;
+	case ToolOptions::Editor:
+		if (ES(_AliasEditor))
+			_AliasEditor = Far::Get()->GetPluginValue(Key, "Editor", Name)->ToString();
+		return _AliasEditor;
+	case ToolOptions::Panels:
+		if (ES(_AliasPanels))
+			_AliasPanels = Far::Get()->GetPluginValue(Key, "Panels", Name)->ToString();
+		return _AliasPanels;
+	case ToolOptions::Viewer:
+		if (ES(_AliasViewer))
+			_AliasViewer = Far::Get()->GetPluginValue(Key, "Viewer", Name)->ToString();
+		return _AliasViewer;
+	default:
+		throw gcnew InvalidOperationException("Unknown tool option.");
+	}
+}
+
+void PluginTool::Alias(ToolOptions option, String^ value)
+{
+	if (ES(value))
+		throw gcnew ArgumentException("'value' must not be empty.");
+
+	switch(option)
+	{
+	case ToolOptions::Config:
+		Far::Get()->SetPluginValue(Key, "Config", value);
+		_AliasConfig = value;
+		break;
+	case ToolOptions::Disk:
+		Far::Get()->SetPluginValue(Key, "Disk", value);
+		_AliasDisk = value;
+		break;
+	case ToolOptions::Editor:
+		Far::Get()->SetPluginValue(Key, "Editor", value);
+		_AliasEditor = value;
+		break;
+	case ToolOptions::Panels:
+		Far::Get()->SetPluginValue(Key, "Panels", value);
+		_AliasPanels = value;
+		break;
+	case ToolOptions::Viewer:
+		Far::Get()->SetPluginValue(Key, "Viewer", value);
+		_AliasViewer = value;
+		break;
+	default:
+		throw gcnew InvalidOperationException("Unknown tool option.");
+	}
+}
+
+String^ PluginPrefix::Alias()
+{
+	if (ES(_Alias))
+		_Alias = Far::Get()->GetPluginValue(Key, "Prefix", Prefix)->ToString();
+	return _Alias;
+}
+
+void PluginPrefix::Alias(String^ value)
+{
+	if (ES(value))
+		throw gcnew ArgumentException("'value' must not be empty.");
+
+	Far::Get()->SetPluginValue(Key, "Prefix", value);
+	_Alias = value;
+}
+
 //
 //::Far::
 //
@@ -32,22 +132,29 @@ void Far::StartFar()
 {
 	if (_instance) throw gcnew InvalidOperationException("Already started.");
 	_instance = gcnew Far();
+	_instance->Start();
 }
 
 void Far::Start()
 {
-	// this has to be done after loading plugins
-	RegisterPluginsDiskItem("FAR.NET", gcnew EventHandler<PluginMenuEventArgs^>(&Far::OnFarNetDisk));
-	RegisterPluginsMenuItem("FAR.NET", gcnew EventHandler<PluginMenuEventArgs^>(&Far::OnFarNetMenu));
+	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetF11Menus), ToolOptions::F11Menus);
+	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetConfig), ToolOptions::Config);
+	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetDisk), ToolOptions::Disk);
+	PluginSet::LoadPlugins();
 }
 
+//! Don't use FAR UI
 void Far::Stop()
 {
-	delete[] _configStrings;
-	delete[] _diskStrings;
-	delete[] _menuStrings;
-	delete _prefixes;
+	PluginSet::UnloadPlugins();
 	_instance = nullptr;
+
+	delete[] _pConfig;
+	delete[] _pDisk;
+	delete[] _pEditor;
+	delete[] _pPanels;
+	delete[] _pViewer;
+	delete _prefixes;
 }
 
 String^ Far::PluginFolderPath::get()
@@ -67,90 +174,160 @@ String^ Far::RootKey::get()
 	return OemToStr(Info.RootKey);
 }
 
-static void RemoveItem(List<PluginMenuItem^>^ list, String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
+void Far::Free(ToolOptions options)
 {
-	for(int i = list->Count; --i >= 0;)
+	if (int(options & ToolOptions::Config))
 	{
-		PluginMenuItem^ p = list[i];
-		if (name == p->Name && (!handler || handler == p->Handler))
-			list->RemoveAt(i);
+		delete[] _pConfig;
+		_pConfig = 0;
+	}
+	if (int(options & ToolOptions::Disk))
+	{
+		delete[] _pDisk;
+		_pDisk = 0;
+	}
+	if (int(options & ToolOptions::Editor))
+	{
+		delete[] _pEditor;
+		_pEditor = 0;
+	}
+	if (int(options & ToolOptions::Panels))
+	{
+		delete[] _pPanels;
+		_pPanels = 0;
+	}
+	if (int(options & ToolOptions::Viewer))
+	{
+		delete[] _pViewer;
+		_pViewer = 0;
 	}
 }
 
-void Far::RegisterPluginsConfigItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
+void Far::RegisterTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
 {
-	delete[] _configStrings;
-	_configStrings = 0;
-	_registeredConfigItems.Add(gcnew PluginMenuItem(name, handler));
+	if (_registeredTools.ContainsKey(handler))
+		throw gcnew InvalidOperationException("Can't register the handler because it is already registered.");
+	if (plugin && ES(name))
+		throw gcnew ArgumentException("'name' must not be empty.");
+
+	PluginTool^ tool = gcnew PluginTool(plugin, name, handler, options);
+	_registeredTools.Add(handler, tool);
+
+	if (int(options & ToolOptions::Config))
+	{
+		delete[] _pConfig;
+		_pConfig = 0;
+		_registeredConfig.Add(tool);
+	}
+	if (int(options & ToolOptions::Disk))
+	{
+		delete[] _pDisk;
+		_pDisk = 0;
+		_registeredDisk.Add(tool);
+	}
+	if (int(options & ToolOptions::Editor))
+	{
+		delete[] _pEditor;
+		_pEditor = 0;
+		_registeredEditor.Add(tool);
+	}
+	if (int(options & ToolOptions::Panels))
+	{
+		delete[] _pPanels;
+		_pPanels = 0;
+		_registeredPanels.Add(tool);
+	}
+	if (int(options & ToolOptions::Viewer))
+	{
+		delete[] _pViewer;
+		_pViewer = 0;
+		_registeredViewer.Add(tool);
+	}
 }
 
-void Far::UnregisterPluginsConfigItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
+void Far::UnregisterTool(EventHandler<ToolEventArgs^>^ handler)
 {
-	delete[] _configStrings;
-	_configStrings = 0;
-	RemoveItem(%_registeredConfigItems, name, handler);
+	if (_registeredTools.ContainsKey(handler))
+	{
+		PluginTool^ tool = _registeredTools[handler];
+		_registeredTools.Remove(handler);
+
+		ToolOptions options = tool->Options;
+		if (int(options & ToolOptions::Config))
+		{
+			delete[] _pConfig;
+			_pConfig = 0;
+			_registeredConfig.Remove(tool);
+		}
+		if (int(options & ToolOptions::Disk))
+		{
+			delete[] _pDisk;
+			_pDisk = 0;
+			_registeredDisk.Remove(tool);
+		}
+		if (int(options & ToolOptions::Editor))
+		{
+			delete[] _pEditor;
+			_pEditor = 0;
+			_registeredEditor.Remove(tool);
+		}
+		if (int(options & ToolOptions::Panels))
+		{
+			delete[] _pPanels;
+			_pPanels = 0;
+			_registeredPanels.Remove(tool);
+		}
+		if (int(options & ToolOptions::Viewer))
+		{
+			delete[] _pViewer;
+			_pViewer = 0;
+			_registeredViewer.Remove(tool);
+		}
+	}
 }
 
-void Far::RegisterPluginsDiskItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
-{
-	delete[] _diskStrings;
-	_diskStrings = 0;
-	_registeredDiskItems.Add(gcnew PluginMenuItem(name, handler));
-}
-
-void Far::UnregisterPluginsDiskItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
-{
-	delete[] _diskStrings;
-	_diskStrings = 0;
-	RemoveItem(%_registeredDiskItems, name, handler);
-}
-
-void Far::RegisterPluginsMenuItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
-{
-	delete[] _menuStrings;
-	_menuStrings = 0;
-	_registeredMenuItems.Add(gcnew PluginMenuItem(name, handler));
-}
-
-void Far::UnregisterPluginsMenuItem(String^ name, EventHandler<PluginMenuEventArgs^>^ handler)
-{
-	delete[] _menuStrings;
-	_menuStrings = 0;
-	RemoveItem(%_registeredMenuItems, name, handler);
-}
-
-void Far::RegisterPrefix(String^ prefix, EventHandler<ExecutingEventArgs^>^ handler)
+String^ Far::RegisterPrefix(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<ExecutingEventArgs^>^ handler)
 {
 	delete _prefixes;
 	_prefixes = 0;
-	_registeredPrefixes[prefix] = handler;
+	PluginPrefix^ it = gcnew PluginPrefix(plugin, name, prefix, handler);
+	_registeredPrefix.Add(it);
+	return it->Alias();
 }
 
-void Far::UnregisterPrefix(String^ prefix)
+void Far::UnregisterPrefix(EventHandler<ExecutingEventArgs^>^ handler)
 {
-	delete _prefixes;
-	_prefixes = 0;
-	_registeredPrefixes.Remove(prefix);
+	for(int i = _registeredPrefix.Count; --i >= 0;)
+	{
+		if (_registeredPrefix[i]->Handler == handler)
+		{
+			delete _prefixes;
+			_prefixes = 0;
+			_registeredPrefix.RemoveAt(i);
+		}
+	}
 }
 
-void Far::RegisterOpenFile(EventHandler<OpenFileEventArgs^>^ handler)
+void Far::RegisterFile(BasePlugin^ plugin, String^ name, EventHandler<OpenFileEventArgs^>^ handler)
 {
-	_registeredOpenFile.Add(handler);
+	_registeredFile.Add(gcnew PluginFile(plugin, name, handler));
 }
 
-void Far::UnregisterOpenFile(EventHandler<OpenFileEventArgs^>^ handler)
+void Far::UnregisterFile(EventHandler<OpenFileEventArgs^>^ handler)
 {
-	_registeredOpenFile.Remove(handler);
+	for(int i = _registeredFile.Count; --i >= 0;)
+		if (_registeredFile[i]->Handler == handler)
+			_registeredFile.RemoveAt(i);
 }
 
-bool Far::Msg(String^ body)
+void Far::Msg(String^ body)
 {
-	return Message::Show(body, nullptr, MessageOptions::Ok, nullptr) >= 0;
+	Message::Show(body, nullptr, MessageOptions::Ok, nullptr);
 }
 
-bool Far::Msg(String^ body, String^ header)
+void Far::Msg(String^ body, String^ header)
 {
-	return Message::Show(body, header, MessageOptions::Ok, nullptr) >= 0;
+	Message::Show(body, header, MessageOptions::Ok, nullptr);
 }
 
 int Far::Msg(String^ body, String^ header, MessageOptions options)
@@ -174,14 +351,13 @@ void Far::Run(String^ command)
 	if (colon < 0)
 		return;
 
-	for each(KeyValuePair<String^, EventHandler<ExecutingEventArgs^>^>^ i in _registeredPrefixes)
+	for each(PluginPrefix^ it in _registeredPrefix)
 	{
-		String^ pref = i->Key;
+		String^ pref = it->Alias();
 		if (colon != pref->Length || !command->StartsWith(pref))
 			continue;
-		EventHandler<ExecutingEventArgs^>^ handler = i->Value;
 		ExecutingEventArgs e(command->Substring(colon + 1));
-		handler(nullptr, %e);
+		it->Handler(this, %e);
 		break;
 	}
 }
@@ -231,20 +407,26 @@ String^ Far::WordDiv::get()
 	return OemToStr(wd);
 }
 
-OpenFrom Far::From::get()
-{
-	return _from;
-}
-
-String^ Far::Clipboard::get()
+String^ Far::Clipboard::get() //?? obsolete
 {
 	return OemToStr(Info.FSF->PasteFromClipboard());
 }
 
-void Far::Clipboard::set(String^ value)
+String^ Far::PasteFromClipboard()
+{
+	return OemToStr(Info.FSF->PasteFromClipboard());
+}
+
+void Far::Clipboard::set(String^ value) //?? obsolete
 {
 	CStr pcvalue(value);
 	Info.FSF->CopyToClipboard(pcvalue);
+}
+
+void Far::CopyToClipboard(String^ text)
+{
+	CStr sText(text);
+	Info.FSF->CopyToClipboard(sText);
 }
 
 IEditor^ Far::CreateEditor()
@@ -275,15 +457,18 @@ void Far::PostKeySequence(array<int>^ sequence)
 
 void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 {
-	if (sequence == nullptr)
-		throw gcnew ArgumentNullException("sequence");
+	if (sequence == nullptr) throw gcnew ArgumentNullException("sequence");
 	if (sequence->Length == 0)
 		return;
+
+	// local buffer for a small sequence
+	const int smallCount = 50;
+	DWORD keys[smallCount];
 
 	KeySequence keySequence;
 	keySequence.Count = sequence->Length;
 	keySequence.Flags = disableOutput ? KSFLAGS_DISABLEOUTPUT : 0;
-	keySequence.Sequence = new DWORD[keySequence.Count];
+	keySequence.Sequence = keySequence.Count <= smallCount ? keys : new DWORD[keySequence.Count];
 	DWORD* cur = keySequence.Sequence;
 	for each(int i in sequence)
 	{
@@ -297,7 +482,8 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 	}
 	finally
 	{
-		delete keySequence.Sequence;
+		if (keySequence.Sequence != keys)
+			delete keySequence.Sequence;
 	}
 }
 
@@ -411,61 +597,88 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 	pi->StructSize = sizeof(PluginInfo);
 	pi->Flags = PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
 
-	if (_registeredConfigItems.Count)
+	WindowInfo wi;
+	wi.Pos = -1;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
+		wi.Type = -1;
+
+	if (_registeredConfig.Count)
 	{
-		pi->PluginConfigStringsNumber = _registeredConfigItems.Count;
-		if (_configStrings == 0)
+		if (!_pConfig)
 		{
-			_configStrings = new CStr[_registeredConfigItems.Count];
-			for(int i = 0; i < _registeredConfigItems.Count; ++i)
-			{
-				PluginMenuItem^ item = _registeredConfigItems[i];
-				_configStrings[i].Set(item->Name);
-			}
+			_pConfig = new CStr[_registeredConfig.Count];
+			for(int i = _registeredConfig.Count; --i >= 0;)
+				_pConfig[i].Set(Res::MenuPrefix + _registeredConfig[i]->Alias(ToolOptions::Config));
 		}
-		pi->PluginConfigStrings = (char**)_configStrings;
-	}
-	
-	if (_registeredDiskItems.Count)
-	{
-		pi->DiskMenuStringsNumber = _registeredDiskItems.Count;
-		if (_diskStrings == 0)
-		{
-			_diskStrings = new CStr[_registeredDiskItems.Count];
-			for(int i = 0; i < _registeredDiskItems.Count; ++i)
-			{
-				PluginMenuItem^ item = _registeredDiskItems[i];
-				_diskStrings[i].Set(item->Name);
-			}
-		}
-		pi->DiskMenuStrings = (char**)_diskStrings;
+		pi->PluginConfigStringsNumber = _registeredConfig.Count;
+		pi->PluginConfigStrings = (const char**)_pConfig;
 	}
 
-	if (_registeredMenuItems.Count)
+	if (_registeredDisk.Count)
 	{
-		pi->PluginMenuStringsNumber = _registeredMenuItems.Count;
-		if (_menuStrings == 0)
+		if (!_pDisk)
 		{
-			_menuStrings = new CStr[_registeredMenuItems.Count];
-			for(int i = 0; i < _registeredMenuItems.Count; ++i)
-			{
-				PluginMenuItem^ item = _registeredMenuItems[i];
-				_menuStrings[i].Set(item->Name);
-			}
+			_pDisk = new CStr[_registeredDisk.Count];
+			for(int i = _registeredDisk.Count; --i >= 0;)
+				_pDisk[i].Set(Res::MenuPrefix + _registeredDisk[i]->Alias(ToolOptions::Disk));
 		}
-		pi->PluginMenuStrings = (char**)_menuStrings;
+		pi->DiskMenuStringsNumber = _registeredDisk.Count;
+		pi->DiskMenuStrings = (const char**)_pDisk;
 	}
 
-	if (_registeredPrefixes.Count)
+	switch(wi.Type)
+	{
+	case WTYPE_EDITOR:
+		if (_registeredEditor.Count)
+		{
+			if (!_pEditor)
+			{
+				_pEditor = new CStr[_registeredEditor.Count];
+				for(int i = _registeredEditor.Count; --i >= 0;)
+					_pEditor[i].Set(Res::MenuPrefix + _registeredEditor[i]->Alias(ToolOptions::Editor));
+			}
+			pi->PluginMenuStringsNumber = _registeredEditor.Count;
+			pi->PluginMenuStrings = (const char**)_pEditor;
+		}
+		break;
+	case WTYPE_PANELS:
+		if (_registeredPanels.Count)
+		{
+			if (!_pPanels)
+			{
+				_pPanels = new CStr[_registeredPanels.Count];
+				for(int i = _registeredPanels.Count; --i >= 0;)
+					_pPanels[i].Set(Res::MenuPrefix + _registeredPanels[i]->Alias(ToolOptions::Panels));
+			}
+			pi->PluginMenuStringsNumber = _registeredPanels.Count;
+			pi->PluginMenuStrings = (const char**)_pPanels;
+		}
+		break;
+	case WTYPE_VIEWER:
+		if (_registeredViewer.Count)
+		{
+			if (!_pViewer)
+			{
+				_pViewer = new CStr[_registeredViewer.Count];
+				for(int i = _registeredViewer.Count; --i >= 0;)
+					_pViewer[i].Set(Res::MenuPrefix + _registeredViewer[i]->Alias(ToolOptions::Viewer));
+			}
+			pi->PluginMenuStringsNumber = _registeredViewer.Count;
+			pi->PluginMenuStrings = (const char**)_pViewer;
+		}
+		break;
+	}
+
+	if (_registeredPrefix.Count)
 	{
 		if (_prefixes == 0)
 		{
 			String^ PrefString = String::Empty;
-			for each(KeyValuePair<String^, EventHandler<ExecutingEventArgs^>^>^ i in _registeredPrefixes)
+			for each(PluginPrefix^ it in _registeredPrefix)
 			{
 				if (PrefString->Length > 0)
 					PrefString = String::Concat(PrefString, ":");
-				PrefString = String::Concat(PrefString, i->Key);
+				PrefString = String::Concat(PrefString, it->Alias());
 			}
 			_prefixes = new CStr(PrefString);
 		}
@@ -545,13 +758,18 @@ void ShowExceptionInfo(Exception^ e)
 
 void Far::ShowError(String^ title, Exception^ error)
 {
-	if (1 == Msg(
+	switch(Msg(
 		error->Message,
 		String::IsNullOrEmpty(title) ? error->GetType()->FullName : title,
 		MessageOptions::LeftAligned | MessageOptions::Warning,
-		gcnew array<String^>{"Ok", "Info"}))
+		gcnew array<String^>{"Ok", "View Info", "Copy Info"}))
 	{
+	case 1:
 		ShowExceptionInfo(error);
+		return;
+	case 2:
+		CopyToClipboard(ExceptionInfo(error, false) + "\r\n" + error->ToString());
+		return;
 	}
 }
 
@@ -580,7 +798,11 @@ void Far::ShowHelp(String^ path, String^ topic, HelpOptions options)
 
 void Far::Write(String^ text)
 {
-	GetUserScreen();
+	if (!ValueUserScreen::Get())
+	{
+		ValueUserScreen::Set(true);
+		GetUserScreen();
+	}
 	Console::Write(text);
 	SetUserScreen();
 }
@@ -726,6 +948,15 @@ IWindowInfo^ Far::GetWindowInfo(int index, bool full)
 	return gcnew FarWindowInfo(wi, full);
 }
 
+WindowType Far::GetWindowType(int index)
+{
+	WindowInfo wi;
+	wi.Pos = index;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
+		throw gcnew InvalidOperationException("GetWindowType:" + index + " failed.");
+	return (WindowType)wi.Type;
+}
+
 void Far::SetCurrentWindow(int index)
 {
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_SETCURRENTWINDOW, (void*)(INT_PTR)index))
@@ -767,7 +998,7 @@ void Far::PostMacro(String^ macro)
 void Far::PostMacro(String^ macro, bool disableOutput, bool noSendKeysToPlugins)
 {
 	if (!macro) throw gcnew ArgumentNullException("macro");
-	
+
 	CStr sMacro(macro);
 	ActlKeyMacro command;
 	command.Command = MCMD_POSTMACROSTRING;
@@ -783,8 +1014,8 @@ void Far::PostMacro(String^ macro, bool disableOutput, bool noSendKeysToPlugins)
 
 Object^ Far::GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
 {
-	RegistryKey^ key1 = nullptr;
-	RegistryKey^ key2 = nullptr;
+	RegistryKey^ key1;
+	RegistryKey^ key2;
 	try
 	{
 		key1 = Registry::CurrentUser->CreateSubKey(RootKey);
@@ -800,10 +1031,33 @@ Object^ Far::GetPluginValue(String^ pluginName, String^ valueName, Object^ defau
 	}
 }
 
+Object^ Far::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
+{
+	RegistryKey^ key1;
+	RegistryKey^ key2;
+	try
+	{
+		key1 = Registry::CurrentUser->OpenSubKey(RootFar);
+		key2 = key1->OpenSubKey(keyPath);
+		return key2->GetValue(valueName, defaultValue);
+	}
+	catch(...)
+	{
+		return defaultValue;
+	}
+	finally
+	{
+		if (key2)
+			key2->Close();
+		if (key1)
+			key1->Close();
+	}
+}
+
 void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue)
 {
-	RegistryKey^ key1 = nullptr;
-	RegistryKey^ key2 = nullptr;
+	RegistryKey^ key1;
+	RegistryKey^ key2;
 	try
 	{
 		key1 = Registry::CurrentUser->CreateSubKey(RootKey);
@@ -823,30 +1077,31 @@ void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue
 
 bool Far::AsConfigure(int itemIndex)
 {
-	PluginMenuItem^ item = (PluginMenuItem^)_registeredConfigItems[itemIndex];
-	PluginMenuEventArgs e(OpenFrom::Other);
-	item->Handler(item, %e);
+	PluginTool^ tool = _registeredConfig[itemIndex];
+	ToolEventArgs e(ToolOptions::Config);
+	tool->Handler(this, %e);
 	return e.Ignore ? false : true;
 }
 
 HANDLE Far::AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize)
 {
-	if (_registeredOpenFile.Count == 0)
+	if (_registeredFile.Count == 0)
 		return INVALID_HANDLE_VALUE;
+
+	ValueCanOpenPanel canopenpanel(true);
+	ValueUserScreen userscreen;
 
 	try
 	{
-		_canOpenPanelPlugin = true;
-
 		OpenFileEventArgs e;
 		e.Name = OemToStr(name);
 		e.Data = gcnew array<Byte>(dataSize);
 		for(int i = dataSize; --i >= 0;)
 			e.Data[i] = data[i];
 
-		for each(EventHandler<OpenFileEventArgs^>^ handler in _registeredOpenFile)
+		for each(PluginFile^ it in _registeredFile)
 		{
-			handler(this, %e);
+			it->Handler(this, %e);
 
 			// open a waiting panel
 			if (PanelSet::_panels[0])
@@ -862,36 +1117,52 @@ HANDLE Far::AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize
 	{
 		// drop a waiting panel and set the global lock
 		PanelSet::_panels[0] = nullptr;
-		_canOpenPanelPlugin = false;
 	}
 }
 
 HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 {
+	ValueCanOpenPanel canopenpanel(true);
+	ValueUserScreen userscreen;
+
 	try
 	{
-		// where from
-		_from = (OpenFrom)from;
-
 		// call, plugin may create a panel waiting for opening
-		if (from == OPEN_COMMANDLINE)
+		switch(from)
 		{
-			_canOpenPanelPlugin = true;
+		case OPEN_COMMANDLINE:
 			ProcessPrefixes(item);
-		}
-		else if (from == OPEN_DISKMENU)
-		{
-			_canOpenPanelPlugin = true;
-			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredDiskItems[(int)item];
-			PluginMenuEventArgs e((OpenFrom)from);
-			menuItem->Handler(menuItem, %e);
-		}
-		else if (from == OPEN_PLUGINSMENU || from == OPEN_EDITOR || from == OPEN_VIEWER)
-		{
-			_canOpenPanelPlugin = (from == OPEN_PLUGINSMENU);
-			PluginMenuItem^ menuItem = (PluginMenuItem^)_registeredMenuItems[(int)item];
-			PluginMenuEventArgs e((OpenFrom)from);
-			menuItem->Handler(menuItem, %e);
+			break;
+		case OPEN_DISKMENU:
+			{
+				PluginTool^ tool = _registeredDisk[(int)item];
+				ToolEventArgs e(ToolOptions::Disk);
+				tool->Handler(this, %e);
+			}
+			break;
+		case OPEN_PLUGINSMENU:
+			{
+				PluginTool^ tool = _registeredPanels[(int)item];
+				ToolEventArgs e(ToolOptions::Panels);
+				tool->Handler(this, %e);
+			}
+			break;
+		case OPEN_EDITOR:
+			{
+				ValueCanOpenPanel::Set(false);
+				PluginTool^ tool = _registeredEditor[(int)item];
+				ToolEventArgs e(ToolOptions::Editor);
+				tool->Handler(this, %e);
+			}
+			break;
+		case OPEN_VIEWER:
+			{
+				ValueCanOpenPanel::Set(false);
+				PluginTool^ tool = _registeredViewer[(int)item];
+				ToolEventArgs e(ToolOptions::Viewer);
+				tool->Handler(this, %e);
+			}
+			break;
 		}
 
 		// open a waiting panel
@@ -906,10 +1177,8 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 	}
 	finally
 	{
-		// drop a waiting panel and set the global lock
+		// drop a waiting panel
 		PanelSet::_panels[0] = nullptr;
-		_from = OpenFrom::Other;
-		_canOpenPanelPlugin = false;
 	}
 }
 
@@ -921,20 +1190,10 @@ array<IPanelPlugin^>^ Far::PushedPanels()
 	return r;
 }
 
-void Far::OnFarNetDisk(Object^ /*sender*/, PluginMenuEventArgs^ /*e*/)
-{
-	_instance->ShowPanelMenu(false);
-}
-
-void Far::OnFarNetMenu(Object^ /*sender*/, PluginMenuEventArgs^ /*e*/)
-{
-	_instance->ShowPanelMenu(true);
-}
-
 void Far::ShowPanelMenu(bool showPushCommand)
 {
 	Menu m;
-	m.Title = "FAR.NET";
+	m.Title = "Push/show panels";
 	m.AutoAssignHotkeys = true;
 	m.ShowAmpersands = true;
 
@@ -965,7 +1224,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 			mi->Data = pp;
 		}
 	}
-	
+
 	// go
 	if (!m.Show())
 		return;
@@ -981,6 +1240,204 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	// pop
 	FarPanelPlugin^ pp = (FarPanelPlugin^)m.SelectedData;
 	pp->Open();
+}
+
+void Far::PostStep(EventHandler^ step)
+{
+	// make keys
+	if (!_hotkeys)
+	{
+		if (ES(_hotkey))
+		{
+			_hotkey = GetFarValue("PluginHotkeys\\Plugins/Far.Net/FarNetPlugin.dll", "Hotkey", String::Empty)->ToString();
+			if (ES(_hotkey))
+				throw gcnew InvalidOperationException(Res::ErrorNoHotKey);
+		}
+		array<int>^ keys = gcnew array<int>(2);
+		keys[1] = NameToKey(_hotkey);
+		keys[0] = NameToKey("F11");
+		_hotkeys = keys;
+	}
+
+	// post handler and keys
+	_handler = step;
+	PostKeySequence(_hotkeys);
+}
+
+void Far::OnNetF11Menus(Object^ /*sender*/, ToolEventArgs^ e)
+{
+	if (_handler) //??
+	{
+		EventHandler^ handler = _handler;
+		_handler = nullptr;
+		handler(nullptr, nullptr);
+		return;
+	}
+
+	if (e->From == ToolOptions::Panels)
+		ShowPanelMenu(true);
+}
+
+void Far::OnNetDisk(Object^ /*sender*/, ToolEventArgs^ /*e*/)
+{
+	ShowPanelMenu(false);
+}
+
+void Far::OnNetConfig(Object^ /*sender*/, ToolEventArgs^ /*e*/)
+{
+	Menu m;
+	m.Title = "FAR.NET tools";
+	m.AutoAssignHotkeys = true;
+
+	m.Items->Add(Res::PanelsTools + " : " + (_registeredPanels.Count - 1));
+	m.Items->Add(Res::EditorTools + " : " + (_registeredEditor.Count - 1));
+	m.Items->Add(Res::ViewerTools + " : " + (_registeredViewer.Count - 1));
+	m.Items->Add(Res::DiskTools + "   : " + (_registeredDisk.Count - 1));
+	m.Items->Add(Res::ConfigTools + " : " + (_registeredConfig.Count - 1));
+	m.Items->Add(Res::PrefixTools + " : " + (_registeredPrefix.Count));
+	m.Items->Add(Res::FilePlugins + " : " + (_registeredFile.Count));
+
+	while(m.Show())
+	{
+		switch(m.Selected)
+		{
+		case 0:
+			if (_registeredPanels.Count)
+				OnConfigTool(Res::PanelsTools, ToolOptions::Panels, %_registeredPanels);
+			break;
+		case 1:
+			if (_registeredEditor.Count)
+				OnConfigTool(Res::EditorTools, ToolOptions::Editor, %_registeredEditor);
+			break;
+		case 2:
+			if (_registeredViewer.Count)
+				OnConfigTool(Res::ViewerTools, ToolOptions::Viewer, %_registeredViewer);
+			break;
+		case 3:
+			Msg("Under construction.");
+			break;
+		case 4:
+			if (_registeredConfig.Count)
+				OnConfigTool(Res::ConfigTools, ToolOptions::Config, %_registeredConfig);
+			break;
+		case 5:
+			if (_registeredPrefix.Count)
+				OnConfigPrefix();
+			break;
+		case 6:
+			if (_registeredFile.Count)
+				OnConfigFile();
+			break;
+		}
+	}
+}
+
+void Far::OnConfigTool(String^ title, ToolOptions option, List<PluginTool^>^ list)
+{
+	Menu m;
+	m.Title = title;
+	m.HelpTopic = "EditMenuStrings";
+
+	for each(PluginTool^ it in list)
+	{
+		if (ES(it->Name))
+			continue;
+		IMenuItem^ mi = m.Items->Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Name);
+		mi->Data = it;
+	}
+
+	while(m.Show())
+	{
+		IMenuItem^ mi = m.Items[m.Selected];
+		PluginTool^ it = (PluginTool^)mi->Data;
+
+		InputBox ib;
+		ib.EmptyEnabled = true;
+		ib.HelpTopic = _helpTopic + "EditMenuStrings";
+		ib.Prompt = "New string (ampersand ~ hotkey)";
+		ib.Text = it->Alias(option);
+		ib.Title = "Original: " + it->Name;
+		if (!ib.Show())
+			continue;
+
+		// restore the name on empty alias
+		String^ alias = ib.Text->TrimEnd();
+		if (alias->Length == 0)
+			alias = it->Name;
+
+		// reset the alias
+		Free(option);
+		it->Alias(option, alias);
+		mi->Text = Res::MenuPrefix + alias + " : " + it->Name;
+	}
+}
+
+void Far::OnConfigPrefix()
+{
+	Menu m;
+	m.Title = Res::PrefixTools;
+	m.AutoAssignHotkeys = true;
+	m.HelpTopic = "EditPrefixes";
+
+	for each(PluginPrefix^ it in _registeredPrefix)
+	{
+		IMenuItem^ mi = m.Items->Add(it->Alias()->PadRight(4) + " " + it->Name);
+		mi->Data = it;
+	}
+
+	while(m.Show())
+	{
+		IMenuItem^ mi = m.Items[m.Selected];
+		PluginPrefix^ it = (PluginPrefix^)mi->Data;
+
+		InputBox ib;
+		ib.EmptyEnabled = true;
+		ib.HelpTopic = _helpTopic + "EditPrefixes";
+		ib.Prompt = "New prefix for " + it->Name;
+		ib.Text = it->Alias();
+		ib.Title = "Original: " + it->Prefix;
+
+		String^ alias = nullptr;
+		while(ib.Show())
+		{
+			alias = ib.Text->Trim();
+			if (alias->IndexOf(" ") >= 0 || alias->IndexOf(":") >= 0)
+			{
+				Msg("Prefix must not contain ' ' or ':'.");
+				alias = nullptr;
+				continue;
+			}
+			break;
+		}
+		if (!alias)
+			continue;
+
+		// restore original on empty
+		if (alias->Length == 0)
+			alias = it->Prefix;
+
+		// reset
+		delete _prefixes;
+		_prefixes = 0;
+		it->Alias(alias);
+		mi->Text = alias->PadRight(4) + " " + it->Name;
+	}
+}
+
+void Far::OnConfigFile()
+{
+	Menu m;
+	m.Title = Res::FilePlugins;
+	m.AutoAssignHotkeys = true;
+
+	for each(PluginFile^ it in _registeredFile)
+	{
+		IMenuItem^ mi = m.Items->Add(it->Name);
+		mi->Data = it;
+	}
+
+	while(m.Show())
+	{}
 }
 
 }

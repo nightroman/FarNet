@@ -1,3 +1,48 @@
+3.3.34
+
+MAIN CHANGES (BREAKING) AND NEW FEATURES
+(result of all recent forum discussions)
+
+- IFar.Register*|Unregister* methods are quite different, see .CHM and updated
+examples. BasePlugin class can be used as usual with new Register*|Unregister*
+methods. There is also a new simpler helper ToolPlugin - all you need is to
+implement a single method (other stuff is up to you).
+- FAR.NET provides some configuration tools for all its plugins: 1) you can edit
+plugin menu strings in different areas (Panels, Editor, Viewer..); 2) you can
+edit all prefixes according to your preferences or to resolve conflicts; plugins
+may do not care of prefixes in their configurations.
+- Removed IFar.From as not really important. Plugin handlers have this info.
+Besides, new IFar.GetWindowType() gets almost the same information.
+- Slightly changed rules of loading plugins, see Readme.txt.
+
+HOTKEYS
+
+- You have to reset your hotkeys. It is recommended to set the main FAR.NET
+hotkey as usual by F4 and set other FAR.NET hotkeys by ampersands in Options \
+Plugins configuration \ .NET \ Panels tools, Editor tools, Viewer tools (yes,
+.NET plugins may have different hotkeys in different areas).
+
+NEW
+
+- Button [Copy Info] in error dialog copies the error info to the clipboard.
+- IFar.PostStep() returns control to FAR and after that invokes a step handler.
+
+FIXED
+
+- "Index out of range" in IListMenu when a key handler changes menu items.
+
+CHANGED
+
+- IFar.Msg(string) and IFar.Msg(string, string) return void. Other Msg methods
+as usual return pressed button index or -1 on Escape.
+- VKeyCode: some keys were renamed according to .NET naming guidelines.
+
+OBSOLETE
+
+- Property IFar.Clipboard will be removed, use methods CopyToClipboard and
+PasteFromClipboard. Property is sometimes triggered when it is not really
+wanted: e.g. in debugger, in PowerShell member list and etc.
+
 3.3.33
 
 NEW

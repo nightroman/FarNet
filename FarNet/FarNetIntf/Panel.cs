@@ -829,16 +829,17 @@ namespace FarManager
 	public interface IPanelPlugin : IPanel
 	{
 		/// <summary>
-		/// Opens a panel plugin.
+		/// Opens a panel when the plugin is called from panels (command line, disk menu or plugins menu in panels).
+		/// Only one panel can be opened during this call of the plugin.
 		/// </summary>
 		void Open();
 		/// <summary>
-		/// Opens a panel plugin instead of another opened plugin.
+		/// Opens a panel instead of another opened FAR.NET panel of any FAR.NET plugin.
 		/// </summary>
 		/// <param name="oldPanel">Old panel to be replaced.</param>
 		void Open(IPanelPlugin oldPanel);
 		/// <summary>
-		/// Pushes the panel to the stack and displays a FAR panel.
+		/// Pushes the panel to the stack and shows a standard FAR panel.
 		/// </summary>
 		void Push();
 		/// <summary>

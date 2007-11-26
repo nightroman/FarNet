@@ -57,7 +57,7 @@ Reference to a topic in the plugins help file.
 ":Topic"
 Reference to a topic from the main Far Manager help file.
 
-"<FullPath>Topic"
+"<FullPath\>Topic"
 Reference to a topic in a help file located in a folder with full or relative
 path of FullPath. An ending backslash must be added. The reference must not be
 split on multiple lines. For example, the plugin Foo is located in folder
