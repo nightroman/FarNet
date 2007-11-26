@@ -15,90 +15,65 @@ namespace FarManager
 	/// It is exposed by <see cref="BasePlugin"/> as the property <see cref="BasePlugin.Far"/>.
 	/// It provides access to top level FAR methods and objects or creates new FAR objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
-	/// Further operations are performed on object properties and methods.
+	/// Further operations are performed on that objects methods and properties.
 	/// </summary>
 	public interface IFar
 	{
+		/// <summary>
+		/// Registers a handler invoked from one of FAR menus.
+		/// </summary>
+		/// <param name="plugin">Plugin instance.</param>
+		/// <param name="name">UI name.</param>
+		/// <param name="handler">Tool handler.</param>
+		/// <param name="options">Tool options.</param>
+		void RegisterTool(BasePlugin plugin, string name, EventHandler<ToolEventArgs> handler, ToolOptions options);
+		/// <summary>
+		/// Unregisters a tool handler.
+		/// </summary>
+		/// <param name="handler">Tool handler.</param>
+		void UnregisterTool(EventHandler<ToolEventArgs> handler);
+		/// <summary>
+		/// Registers a handler invoked from the command line by its prefix.
+		/// If a plugin uses this prefix itself then it should use the returned value instead.
+		/// </summary>
+		/// <param name="plugin">Plugin instance.</param>
+		/// <param name="name">UI name.</param>
+		/// <param name="prefix">Command prefix.</param>
+		/// <param name="handler">Command handler.</param>
+		/// <returns>Actual prefix that is used by FAR.NET for this command.</returns>
+		string RegisterPrefix(BasePlugin plugin, string name, string prefix, EventHandler<ExecutingEventArgs> handler);
+		/// <summary>
+		/// Unregisters a prefix handler.
+		/// </summary>
+		/// <param name="handler">Prefix handler.</param>
+		void UnregisterPrefix(EventHandler<ExecutingEventArgs> handler);
+		/// <summary>
+		/// Registers a handler invoked for a file. See <see cref="OpenFileEventArgs"/>.
+		/// </summary>
+		/// <param name="plugin">Plugin instance.</param>
+		/// <param name="name">UI name.</param>
+		/// <param name="handler">File handler.</param>
+		void RegisterFile(BasePlugin plugin, string name, EventHandler<OpenFileEventArgs> handler);
+		/// <summary>
+		/// Unregisters a file handler.
+		/// </summary>
+		/// <param name="handler">File handler.</param>
+		void UnregisterFile(EventHandler<OpenFileEventArgs> handler);
 		/// <summary>
 		/// Path to the plugin folder.
 		/// </summary>
 		string PluginFolderPath { get; }
 		/// <summary>
-		/// Registers a file plugin handler.
-		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
-		/// See <see cref="OpenFileEventArgs"/>. [OpenFilePlugin]
-		/// </summary>
-		/// <param name="handler">File handler.</param>
-		void RegisterOpenFile(EventHandler<OpenFileEventArgs> handler);
-		/// <summary>
-		/// Adds a menu item to the FAR plugin configuration menu.
-		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
-		/// </summary>
-		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler.</param>
-		void RegisterPluginsConfigItem(string name, EventHandler<PluginMenuEventArgs> handler);
-		/// <summary>
-		/// Adds a menu item to the FAR disks menu.
-		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
-		/// </summary>
-		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler.</param>
-		void RegisterPluginsDiskItem(string name, EventHandler<PluginMenuEventArgs> handler);
-		/// <summary>
-		/// Adds a menu item to the FAR main plugins menu (F11).
-		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
-		/// </summary>
-		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler.</param>
-		void RegisterPluginsMenuItem(string name, EventHandler<PluginMenuEventArgs> handler);
-		/// <summary>
-		/// Registers a command line prefix.
-		/// Normally it is called from <see cref="BasePlugin.Connect"/>.
-		/// </summary>
-		/// <param name="prefix">Command prefix.</param>
-		/// <param name="handler">Handler of a command.</param>
-		void RegisterPrefix(string prefix, EventHandler<ExecutingEventArgs> handler);
-		/// <summary>
-		/// Unregisters the handler.
-		/// </summary>
-		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler or null.</param>
-		void UnregisterPluginsConfigItem(string name, EventHandler<PluginMenuEventArgs> handler);
-		/// <summary>
-		/// Unregisters the handler.
-		/// </summary>
-		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler or null.</param>
-		void UnregisterPluginsDiskItem(string name, EventHandler<PluginMenuEventArgs> handler);
-		/// <summary>
-		/// Unregisters the handler.
-		/// </summary>
-		/// <param name="name">Item name.</param>
-		/// <param name="handler">Item handler or null.</param>
-		void UnregisterPluginsMenuItem(string name, EventHandler<PluginMenuEventArgs> handler);
-		/// <summary>
-		/// Unregisters the prefix handler.
-		/// </summary>
-		/// <param name="prefix">Command prefix.</param>
-		void UnregisterPrefix(string prefix);
-		/// <summary>
-		/// Unregisters the handler.
-		/// </summary>
-		/// <param name="handler">File handler.</param>
-		void UnregisterOpenFile(EventHandler<OpenFileEventArgs> handler);
-		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
-		/// <returns>false if cancelled.</returns>
-		bool Msg(string body);
+		void Msg(string body);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
-		/// <returns>false if cancelled.</returns>
-		bool Msg(string body, string header);
+		void Msg(string body, string header);
 		/// <summary>
 		/// Shows a message box with options.
 		/// </summary>
@@ -160,9 +135,18 @@ namespace FarManager
 		/// </summary>
 		string WordDiv { get; }
 		/// <summary>
-		/// Clipboard text.
-		/// </summary>		
+		/// Obsolete. Use <see cref="PasteFromClipboard"/> and <see cref="CopyToClipboard"/>.
+		/// </summary>
+		[Obsolete("Use PasteFromClipboard and CopyToClipboard.")]
 		string Clipboard { get; set; }
+		/// <summary>
+		/// Gets the clipboard text.
+		/// </summary>		
+		string PasteFromClipboard();
+		/// <summary>
+		/// Sets the clipboard text.
+		/// </summary>		
+		void CopyToClipboard(string text);
 		/// <summary>
 		/// Creates a new editor.
 		/// You have to set its properties and call <see cref="IEditor.Open"/>.
@@ -386,10 +370,6 @@ namespace FarManager
 		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Where plugin is opened from.
-		/// </summary>
-		OpenFrom From { get; }
-		/// <summary>
 		/// Registry root key of FAR settings taking into account a user (command line parameter /u).
 		/// </summary>
 		string RootFar { get; }
@@ -444,6 +424,11 @@ namespace FarManager
 		/// </param>
 		IWindowInfo GetWindowInfo(int index, bool full);
 		/// <summary>
+		/// Gets the current window type.
+		/// </summary>
+		/// <param name="index">Window index; -1 ~ current. See <see cref="WindowCount"/>.</param>
+		WindowType GetWindowType(int index);
+		/// <summary>
 		/// Converts an internal key code to a string. <see cref="KeyCode"/>
 		/// </summary>
 		char CodeToChar(int code);
@@ -477,6 +462,16 @@ namespace FarManager
 		/// </summary>
 		/// <param name="showPushCommand">Show "Push" command.</param>
 		void ShowPanelMenu(bool showPushCommand);
+		/// <summary>
+		/// Returns control to FAR and immediately after that invokes the step handler.
+		/// Ensure any FAR.NET hotkey (F4) in the FAR plugins menu (F11).
+		/// </summary>
+		/// <param name="step">Step handler.</param>
+		/// <remarks>
+		/// Many FAR operations are executed only when FAR gets control, i.e. when your code has finished.
+		/// Thus, normally you can not performs several such operations together. This method may help.
+		/// </remarks>
+		void PostStep(EventHandler step);
 	}
 
 	/// <summary>
@@ -517,65 +512,26 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Where plugin is opened from.
-	/// </summary>
-	public enum OpenFrom
-	{
-		/// <summary>
-		/// Disk menu
-		/// </summary>
-		DiskMenu,
-		/// <summary>
-		/// Plugins menu (F11)
-		/// </summary>
-		PluginsMenu,
-		/// <summary>
-		/// Find list
-		/// </summary>
-		FindList,
-		/// <summary>
-		/// Shortcut
-		/// </summary>
-		Shortcut,
-		/// <summary>
-		/// Command line
-		/// </summary>
-		CommandLine,
-		/// <summary>
-		/// Editor
-		/// </summary>
-		Editor,
-		/// <summary>
-		/// Viewer
-		/// </summary>
-		Viewer,
-		/// <summary>
-		/// Other event (actually can be from editor, viewer, command line, etc.)
-		/// </summary>
-		Other
-	};
-
-	/// <summary>
 	/// Arguments of a plugin menu item event.
 	/// </summary>
-	public sealed class PluginMenuEventArgs : EventArgs
+	public sealed class ToolEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="from">See <see cref="From"/>.</param>
-		public PluginMenuEventArgs(OpenFrom from)
+		public ToolEventArgs(ToolOptions from)
 		{
 			_From = from;
 		}
 		/// <summary>
-		/// Where it is called from. See <see cref="OpenFrom"/>.
+		/// Where it is called from.
 		/// </summary>
-		public OpenFrom From
+		public ToolOptions From
 		{
 			get { return _From; }
 		}
-		OpenFrom _From;
+		ToolOptions _From;
 		/// <summary>
 		/// Tells to ignore results, e.g. when configuration dialog is cancelled.
 		/// </summary>
@@ -588,7 +544,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Arguments for a handler registered by <see cref="IFar.RegisterOpenFile"/>.
+	/// Arguments for a handler registered by <see cref="IFar.RegisterFile"/>.
 	/// A handler is called to open a <see cref="IPanelPlugin"/> which emulates a file system based on a file.
 	/// If a file is unknown a handler should do nothing. [OpenFilePlugin]
 	/// </summary>
@@ -728,11 +684,12 @@ namespace FarManager
 		string TypeName { get; }
 		/// <summary>
 		/// Window title:
-		/// viewer\editor: the file name;
+		/// viewer, editor: the file name;
 		/// panels: selected file name;
-		/// help: HLF file path;
-		/// menu\dialog: header.
+		/// help: .hlf file path;
+		/// menu, dialog: header.
 		/// </summary>
 		string Name { get; }
 	}
+
 }

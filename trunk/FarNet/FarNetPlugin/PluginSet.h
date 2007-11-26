@@ -12,14 +12,14 @@ namespace FarManagerImpl
 /// </summary>
 ref class PluginSet
 {
-	static List<IPlugin^> _plugins;
+	static List<BasePlugin^> _plugins;
 public:
 	static void LoadPlugins();
 	static void UnloadPlugins();
 private:
 	static void AddPlugin(Type^ type);
 	static void LoadAllFrom(String^ dir);
-	static void LoadConfig(StreamReader^ text, String^ dir);
+	static void LoadConfig(String^ file, String^ dir);
 	static void LoadPlugin(String^ dir);
 private:
 	PluginSet() {}

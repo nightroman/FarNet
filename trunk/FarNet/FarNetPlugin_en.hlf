@@ -75,3 +75,52 @@ settings. Available types:
  #Substring, Literal#
 
 	Pattern is a substring where * and ? are wildcards or #Literal#
+
+
+@EditMenuStrings
+$#Edit menu strings#
+~Contents~@Contents@
+
+This menu and the input box allow to edit FAR.NET plugin strings shown in the
+FAR plugins menus (F11) in Panels, Editor and Viewer areas.
+
+#Enter# (menu)
+	opens the input box where you can change the selected menu string.
+
+#Esc# (menu)
+	closes the menu.
+
+#Input box#
+
+In the input box you change the selected menu string. Use an ampersand to define
+a hotkey. If you enter an empty string then the very original menu string will
+be restored.
+
+#.NET hotkeys#
+
+It is recommended to set the main .NET hotkey as usual by F4 and to set other
+FAR.NET hotkeys by ampersands using this way: Options \ Plugins configuration \
+ .NET \ Panels tools | Editor tools | Viewer tools.
+
+
+@EditPrefixes
+$#Edit prefixes#
+~Contents~@Contents@
+
+This menu and the input box allow to edit FAR.NET plugin command line prefixes.
+
+#Enter# (menu)
+	opens the input box where you can change the selected prefix.
+
+#Esc# (menu)
+	closes the menu.
+
+#Input box#
+
+In the input box you change the selected prefix. If you enter an empty string
+then the default plugin prefix will be restored.
+
+#NOTE#
+
+Some plugins may require restart of FAR after changing the prefixes. Please, do
+it if you are not sure that it is not required.

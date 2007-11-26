@@ -7,7 +7,6 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "EditorManager.h"
 #include "FarImpl.h"
 #include "Panel.h"
-#include "PluginSet.h"
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
@@ -28,7 +27,6 @@ enum EMessage
 #define __END } catch(Exception^ e) { Far::Get()->ShowError(nullptr, e); }
 
 // SetStartupInfo is called once, after the plugin DLL is loaded.
-// It loads the main plugin and found sub-plugins.
 void WINAPI SetStartupInfo(const PluginStartupInfo* psi)
 {
 #ifdef TEST1
@@ -41,8 +39,6 @@ void WINAPI SetStartupInfo(const PluginStartupInfo* psi)
 
 	__START;
 	Far::StartFar();
-	PluginSet::LoadPlugins();
-	Far::Get()->Start();
 	__END;
 }
 
@@ -50,7 +46,6 @@ void WINAPI SetStartupInfo(const PluginStartupInfo* psi)
 void WINAPI ExitFAR()
 {
 	// don't try/catch, FAR can't help
-	PluginSet::UnloadPlugins();
 	Far::Get()->Stop();
 
 #ifdef TEST1

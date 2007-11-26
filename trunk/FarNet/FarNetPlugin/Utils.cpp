@@ -5,6 +5,11 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 
+// hosted values
+bool ValueCanOpenPanel::_value;
+bool ValueUserScreen::_value;
+
+// empty oem string
 char CStr::s_empty[1] = {0};
 
 ///<summary>Constructor: converts a string and holds the result.</summary>
@@ -405,9 +410,11 @@ Object^ Property(Object^ obj, String^ name)
 	}
 }
 
+//? Regex is used to fix bad PS V1 strings; check V2
 String^ ExceptionInfo(Exception^ e, bool full)
 {
-	String^ info = e->Message + "\n";
+	Regex re("[\r\n]+");
+	String^ info = re.Replace(e->Message, "\r\n") + "\r\n";
 
 	Object^ er = nullptr;
 	for(Exception^ ex = e; ex != nullptr; ex = ex->InnerException)
@@ -425,14 +432,14 @@ String^ ExceptionInfo(Exception^ e, bool full)
 		{
 			Object^ pm = Property(ii, "PositionMessage");
 			if (pm != nullptr)
-				info += pm->ToString() + "\n";
+				info += re.Replace(pm->ToString(), "\r\n") + "\r\n";
 		}
 	}
 
 	if (full)
-		info += "\n" + e->StackTrace + "\n";
+		info += "\r\n" + e->StackTrace + "\r\n";
 
-	return Regex::Replace(info, "[\r\n]+", "\n");
+	return info;
 }
 
 DateTime FileTimeToDateTime(FILETIME time)
