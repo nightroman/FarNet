@@ -1,4 +1,4 @@
-#summary Loads IronPython scripts.
+#summary Loads IronPython scripts as FAR.NET tools.
 
 = Introduction =
 
