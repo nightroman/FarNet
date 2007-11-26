@@ -1,0 +1,5 @@
+#summary Loads IronPython scripts.
+
+= Introduction =
+
+The plugin loads all the scripts from Scripts directory. Scripts register a few tools available in the FAR plugin menu and in the command line (the default command prefix is "ipy").
