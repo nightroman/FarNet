@@ -1,5 +1,5 @@
 
-## Test all Build.bat in sub-folders
+## Test Build.bat in sub-folders
 
 $ErrorActionPreference = 'Stop'
 Get-ChildItem -Recurse -Include Build.bat | .{ process {

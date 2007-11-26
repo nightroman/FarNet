@@ -1,1 +1,0 @@
-..\..\Build-VB /out:Hello_VB.dll Hello.vb

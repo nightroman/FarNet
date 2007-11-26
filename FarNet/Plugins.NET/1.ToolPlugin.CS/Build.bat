@@ -1,0 +1,1 @@
+..\Build-CS /out:Hello.cs.dll Hello.cs

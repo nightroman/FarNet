@@ -593,7 +593,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 		if (_handlers[k])
 		{
 			_selected = _box->Selected;
-			if (_ii)
+			if (_ii && _selected >= 0)
 				_selected = _ii[_selected];
 			MenuEventArgs a((_selected >= 0 ? _items[_selected] : nullptr));
 			_handlers[k]((Sender ? Sender : this), %a);
@@ -604,7 +604,11 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 			}
 			d->Close();
 			if (a.Restart)
+			{
 				_breakCode = -1;
+				_toFilter1 = true;
+				_toFilter2 = true;
+			}
 		}
 		else
 		{

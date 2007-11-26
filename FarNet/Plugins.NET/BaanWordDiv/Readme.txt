@@ -1,1 +1,0 @@
-Deletes . from editor word delimiters for BAAN files
