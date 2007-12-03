@@ -8,7 +8,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "Utils.h"
 #include "EditorLineSelection.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 EditorLine::EditorLine(int no, bool selected)
 : _no(no), _selected(selected)
@@ -76,7 +76,7 @@ void EditorLine::Eol::set(String^ value)
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	EditorSetString ess = GetEss();
-	CStr sb(value);
+	CBox sb(value);
 	EditorControl_ECTL_OEMTOEDITOR(sb, value->Length);
 
 	ess.StringEOL = sb;
@@ -105,7 +105,7 @@ void EditorLine::Text::set(String^ value)
 
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	EditorSetString ess = GetEss();
-	CStr sb(value);
+	CBox sb(value);
 	EditorControl_ECTL_OEMTOEDITOR(sb, value->Length);
 	ess.StringText = sb;
 	ess.StringEOL = (char*)egs.StringEOL;

@@ -7,7 +7,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "CommandLine.h"
 #include "CommandLineSelection.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 FarCommandLine::FarCommandLine()
 {
@@ -55,7 +55,7 @@ String^ FarCommandLine::Text::get()
 
 void FarCommandLine::Text::set(String^ value)
 {
-	CStr sb(value);
+	CBox sb(value);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, sb))
 		throw gcnew OperationCanceledException();
 }
@@ -83,7 +83,7 @@ void FarCommandLine::Pos::set(int value)
 
 void FarCommandLine::Insert(String^ text)
 {
-	CStr sText(text);
+	CBox sText(text);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, sText))
 		throw gcnew OperationCanceledException();
 }

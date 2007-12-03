@@ -1,3 +1,38 @@
+3.3.35
+
+NEW
+
+- CommandPlugin, FilerPlugin classes - two more plugin helpers, see .CHM help
+and Plugins.NET examples.
+- ToolPlugin, CommandPlugin, FilerPlugin are normally not preloaded, i.e.
+information is read from the registry cache only and an assembly is loaded only
+when a plugin feature is invoked.
+- FAR.NET config allows to edit file masks of file plugins.
+- FAR.NET features are described in .hlf topics (also opened on F1).
+- Loading plugins: if a DLL has nothing to load an exception is thrown. This DLL
+has to be removed from a plugin folder or a .cfg file has to be used to define
+what DLLs and classes are loaded exactly.
+- New information in Readme.txt.
+
+FIXED
+
+- Recent bug: can't not open a panel when two panels are already opened.
+- Command prefixes were case sensitive.
+- IEdit.Line.Insert() did not work.
+- A few x64 issues.
+
+CHANGED
+- Removed obsolete IFar.Clipboard, use CopyToClipboard and PasteFromClipboard.
+- A few breaking renamings in the recent features for the sake of common names
+style: RegisterPrefix -> RegisterCommand (actually we register a command, prefix
+is only a default suggestion); UnregisterPrefix -> UnregisterCommand;
+ExecutingEventArgs -> CommandEventArgs (for plugin); RegisterFile ->
+RegisterFiler; UnregisterFile -> UnregisterFiler; OpenFileEventArgs ->
+FilerEventArgs.
+- RegisterFiler has two more parameters: 'mask' and 'creates'.
+- FilerEventArgs.Data type changed from byte[] to System.IO.Stream (to avoid
+redundant data copy), see example in Plugins.NET.
+
 3.3.34
 
 MAIN CHANGES (BREAKING) AND NEW FEATURES

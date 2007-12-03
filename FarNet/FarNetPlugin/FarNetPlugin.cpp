@@ -5,13 +5,13 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "stdafx.h"
 #include "EditorManager.h"
-#include "FarImpl.h"
+#include "Far.h"
 #include "Panel.h"
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 enum EMessage
 {
@@ -24,7 +24,7 @@ enum EMessage
 };
 
 #define __START try {
-#define __END } catch(Exception^ e) { Far::Get()->ShowError(nullptr, e); }
+#define __END } catch(Exception^ e) { Far::Instance->ShowError(nullptr, e); }
 
 // SetStartupInfo is called once, after the plugin DLL is loaded.
 void WINAPI SetStartupInfo(const PluginStartupInfo* psi)
@@ -46,7 +46,7 @@ void WINAPI SetStartupInfo(const PluginStartupInfo* psi)
 void WINAPI ExitFAR()
 {
 	// don't try/catch, FAR can't help
-	Far::Get()->Stop();
+	Far::Instance->Stop();
 
 #ifdef TEST1
 	StopTest1();
@@ -58,7 +58,7 @@ void WINAPI ExitFAR()
 void WINAPI GetPluginInfo(PluginInfo* pi)
 {
 	__START;
-	Far::Get()->AsGetPluginInfo(pi);
+	Far::Instance->AsGetPluginInfo(pi);
 	__END;
 }
 
@@ -66,7 +66,7 @@ void WINAPI GetPluginInfo(PluginInfo* pi)
 HANDLE WINAPI OpenPlugin(int from, INT_PTR item)
 {
 	__START;
-	return Far::Get()->AsOpenPlugin(from, item);
+	return Far::Instance->AsOpenPlugin(from, item);
 	__END;
 	return INVALID_HANDLE_VALUE;
 }
@@ -74,7 +74,7 @@ HANDLE WINAPI OpenPlugin(int from, INT_PTR item)
 int WINAPI Configure(int itemIndex)
 {
 	__START;
-	return Far::Get()->AsConfigure(itemIndex);
+	return Far::Instance->AsConfigure(itemIndex);
 	__END;
 	return false;
 }
@@ -82,7 +82,7 @@ int WINAPI Configure(int itemIndex)
 int WINAPI ProcessEditorInput(const INPUT_RECORD* rec)
 {
 	__START;
-	return Far::Get()->_editorManager->AsProcessEditorInput(rec);
+	return Far::Instance->_editorManager->AsProcessEditorInput(rec);
 	__END;
 	return 0;
 }
@@ -90,7 +90,7 @@ int WINAPI ProcessEditorInput(const INPUT_RECORD* rec)
 int WINAPI ProcessEditorEvent(int type, void* param)
 {
 	__START;
-	return Far::Get()->_editorManager->AsProcessEditorEvent(type, param);
+	return Far::Instance->_editorManager->AsProcessEditorEvent(type, param);
 	__END;
 	return 0;
 }
@@ -180,7 +180,7 @@ int WINAPI MakeDirectory(HANDLE hPlugin, char* name, int opMode)
 HANDLE WINAPI OpenFilePlugin(char* name, const unsigned char* data, int dataSize)
 {
 	__START;
-	return Far::Get()->AsOpenFilePlugin(name, data, dataSize);
+	return Far::Instance->AsOpenFilePlugin(name, data, dataSize);
 	__END;
 	return INVALID_HANDLE_VALUE;
 }

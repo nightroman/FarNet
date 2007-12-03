@@ -6,12 +6,12 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "StdAfx.h"
 #include "Editor.h"
 #include "EditorManager.h"
-#include "FarImpl.h"
+#include "Far.h"
 #include "SelectionCollection.h"
 #include "EditorLine.h"
 #include "EditorLineCollection.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 String^ BaseEditor::EditText(String^ text, String^ title)
 {
@@ -21,7 +21,7 @@ String^ BaseEditor::EditText(String^ text, String^ title)
 		if (SS(text))
 			File::WriteAllText(file, text, Encoding::Default);
 		
-		IEditor^ edit = Far::Get()->CreateEditor();
+		IEditor^ edit = Far::Instance->CreateEditor();
 		edit->FileName = file;
 		edit->IsModal = true;
 		edit->DisableHistory = true;
@@ -50,8 +50,8 @@ void Editor::Open()
 	AssertClosed();
 
 	// strings
-	CStr sFileName(_fileName);
-	CStr sTitle(_title);
+	CBox sFileName(_fileName);
+	CBox sTitle(_title);
 
 	// frame
 	int nLine = _frameStart.Line >= 0 ? _frameStart.Line + 1 : -1;
@@ -297,7 +297,7 @@ void Editor::Title::set(String^ value)
 	if (IsOpened)
 	{
 		AssertCurrent();
-		CStr sValue(value);
+		CBox sValue(value);
 		Info.EditorControl(ECTL_SETTITLE, sValue);
 	}
 	else
@@ -369,7 +369,7 @@ void Editor::Save(String^ fileName)
 	if (fileName == nullptr)
 		return Save();
 	AssertCurrent();
-	CStr sFileName(fileName);
+	CBox sFileName(fileName);
 	EditorSaveFile esf;
 	memset(&esf, 0, NM);
 	strncpy_s(esf.FileName, NM, sFileName, NM);
@@ -457,7 +457,7 @@ void Editor::WordDiv::set(String^ value)
 		throw gcnew ArgumentNullException("value");
 	AssertCurrent();
 	EditorSetParameter esp;
-	CStr sValue(value);
+	CBox sValue(value);
 	esp.Type = ESPT_SETWORDDIV;
 	esp.Param.cParam = sValue;
 	EditorControl_ECTL_SETPARAM(esp);

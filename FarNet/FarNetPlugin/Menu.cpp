@@ -6,11 +6,11 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "StdAfx.h"
 #include "Menu.h"
 #include "Dialog.h"
-#include "FarImpl.h"
+#include "Far.h"
 #include "InputBox.h"
 #include "Message.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 //! UI: error message
 static Regex^ CreateRegex(String^ pattern, PatternOptions options, bool* ok)
@@ -365,15 +365,9 @@ bool Menu::Show()
 	{
 		FarMenuItem* items = CreateItems();
 		int* breaks = CreateBreakKeys();
-		CStr sTitle;
-		if (SS(Title))
-			sTitle.Set(Title);
-		CStr sBottom;
-		if (SS(Bottom))
-			sBottom.Set(Bottom);
-		CStr sHelpTopic;
-		if (SS(HelpTopic))
-			sHelpTopic.Set(HelpTopic);
+		CBox sTitle; sTitle.Reset(Title);
+		CBox sBottom; sBottom.Reset(Bottom);
+		CBox sHelpTopic; sHelpTopic.Reset(HelpTopic);
 		try
 		{
 			ShowMenu(items, breaks, sTitle, sBottom, sHelpTopic);
@@ -474,7 +468,7 @@ void ListMenu::MakeFilter1()
 		RegistryKey^ key = nullptr;
 		try
 		{
-			key = Registry::CurrentUser->OpenSubKey(Far::Get()->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
+			key = Registry::CurrentUser->OpenSubKey(Far::Instance->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
 			if (key)
 			{
 				int flags = (int)key->GetValue("Flags");
@@ -676,7 +670,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 		}
 		else
 		{
-			Char c = Far::Get()->CodeToChar(e->Code);
+			Char c = Far::Instance->CodeToChar(e->Code);
 			if (c >= ' ')
 			{
 				// keep and change filter

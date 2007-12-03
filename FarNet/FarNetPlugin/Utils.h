@@ -39,25 +39,113 @@ void Class::Prop::set(bool value) { if (value) _flags |= Flag; else _flags &= ~F
 	void set(bool value) { if (value) _flags |= Flag; else _flags &= ~Flag; }\
 }
 
-/// <summary>
-/// Holder of OEM char* converted from String.
-/// </summary>
+// String converters
+Char OemToChar(char oem);
+char* NewOem(String^ str);
+void StrToOem(String^ str, char* oem);
+void StrToOem(String^ str, char* oem, int size);
+String^ FromEditor(const char* text, int len);
+String^ OemToStr(const char* oem);
+String^ OemToStr(const char* oem, int length);
+
+/// <summary> Holder of OEM char* converted from String. </summary>
 class CStr
 {
 public:
 	CStr() : m_str(0) {}
+	CStr(int len);
 	CStr(String^ str);
-	CStr(int length);
 	~CStr();
 	void Set(String^ str);
-	operator char*() const
+	operator char*()
 	{
 		return m_str;
 	}
-private:
+protected:
 	char* m_str;
 	static char s_empty[1];
 };
+
+///<summary> Temp string buffer. </summary>
+template<class T>
+class TStr
+{
+public:
+	TStr() : m_str(0)
+	{}
+	TStr(int len)
+	{
+		if (len > eLen)
+			m_str = new T[len + 1];
+		else
+			m_str = m_buf;
+	}
+	TStr(const T* str, int len)
+	{
+		if (len > eLen)
+			m_str = new T[len + 1];
+		else
+			m_str = m_buf;
+		strncpy_s(m_str, len + 1, str, len);
+	}
+	TStr(String^ str)
+	{
+		if (!str || str->Length == 0)
+		{
+			m_str = m_buf;
+			m_buf[0] = 0;
+			return;
+		}
+		if (str->Length > eLen)
+			m_str = new char[str->Length + 1];
+		else
+			m_str = m_buf;
+		StrToOem(str, m_str);
+	}
+	~TStr()
+	{
+		if (m_str != m_buf)
+			delete m_str;
+	}
+	operator T*()
+	{
+		return m_str;
+	}
+	void Set(String^ str)
+	{
+		if (m_str != m_buf)
+			delete m_str;
+		if (!str || str->Length == 0)
+		{
+			m_str = m_buf;
+			m_buf[0] = 0;
+			return;
+		}
+		if (str->Length > eLen)
+			m_str = new char[str->Length + 1];
+		else
+			m_str = m_buf;
+		StrToOem(str, m_str);
+	}
+	void Reset(String^ str)
+	{
+		if (str && str->Length)
+		{
+			Set(str);
+			return;
+		}
+		if (m_str != m_buf)
+			delete m_str;
+		m_str = 0;
+	}
+private:
+	enum { eLen = 255 };
+	T m_buf[eLen + 1];
+	T* m_str;
+};
+
+// String box
+typedef TStr<char> CBox;
 
 /// <summary>
 /// Holder of OEM char* converted from String.
@@ -74,15 +162,6 @@ struct SEditorSetPosition : EditorSetPosition
 		TopScreenLine = -1;
 	}
 };
-
-// String converters
-Char OemToChar(char oem);
-char* NewOem(String^ str);
-void StrToOem(String^ str, char* oem);
-void StrToOem(String^ str, char* oem, int size);
-String^ FromEditor(const char* text, int len);
-String^ OemToStr(const char* oem);
-String^ OemToStr(const char* oem, int length);
 
 // FAR API wrappers
 void EditorControl_ECTL_DELETEBLOCK();
@@ -139,7 +218,7 @@ private:\
 VALUE_HOST(bool, ValueCanOpenPanel);
 VALUE_HOST(bool, ValueUserScreen);
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 // Constant values
 typedef String^ const ConstString;
@@ -158,14 +237,14 @@ ref class Res
 	Res() {}
 internal:
 	static ConstString
+		CommandPlugins = "Command plugins",
 		PanelsTools = "Panels tools",
 		EditorTools = "Editor tools",
 		ViewerTools = "Viewer tools",
-		PrefixTools = "Prefix tools",
 		DiskTools = "Disk tools",
 		ConfigTools = "Config tools",
-		FilePlugins = "File plugins",
-		ErrorNoHotKey = "A .NET item hotkey must be set (F4) in the FAR plugins menu (F11).",
+		FilerPlugins = "Filer plugins",
+		ErrorNoHotKey = "Ensure a FAR.NET hotkey (F4) in the FAR plugins menu (F11) and restart FAR.",
 		MenuPanels = "Push/show panels",
 		MenuPrefix = ".NET ";
 };

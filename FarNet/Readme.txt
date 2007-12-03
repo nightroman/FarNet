@@ -1,17 +1,17 @@
-Plugin name  : FAR.NET
-Category     : Development
-Version      : 3.3.34
-Release date : 2007.11.26
-Author       : Roman Kuzmin
-Email        : nightroman@hotmail.com
-HomePage     : http://nightroman.spaces.live.com
-Sources      : C#, C++/CLI (at home page)
+Plugin   : FAR.NET
+Category : Development
+Version  : 3.3.35
+Release  : 2007.12.03
+Author   : Roman Kuzmin
+Email    : nightroman@hotmail.com
+Sources  : C#, C++/CLI (see "Build sources")
+HomePage : http://code.google.com/p/farnet/
 
 
 	Requirements
 
 
-- .NET Frameworks 2.0
+- .NET Framework 2.0
 - Far Manager 1.71 (recommended 1.71.2192 and above)
 * The plugin is built and tested on Far Manager 1.71.2287
 
@@ -43,7 +43,7 @@ you have to update Far.exe.config accordingly.
 
 Plugins\Far.NET\
 - FarNetPlugin.dll - FAR plugin and loader of FAR.NET plugins;
-- FarNetPlugin_en.hlf - basic FAR.NET help;
+- FarNetPlugin.hlf - FAR.NET help;
 
 Lib\
 - FarNetIntf.dll - FarManager interfaces;
@@ -58,22 +58,40 @@ optional configuration file (.cfg). Each line of .cfg file is:
 	<ClassX> - name of a class from this assembly.
 
 
-	Loading Plugins
+	Loading plugins from disk
 
 
-For each folder in Plugins.NET: if a file *.cfg exists then only specified
+*) For each folder in Plugins.NET: if a file *.cfg exists then only specified
 assemblies and their classes are loaded, else all non abstract BasePlugin
 children are loaded from all DLLs in the plugin folder.
+*) Excluded folders: folders "-*", e.g. "-MyPlugin", are not loaded.
+*) Plugin assembly names must be unique among all plugins otherwise there can be
+both .NET and FAR.NET problems. An assembly name defines kind of namespace for
+information stored in the registry. Directory names and assembly locations are
+not important.
 
 
-	CHM Documentation
+	Loading plugins from cache
 
 
-Download the latest version from
+FAR.NET plugin info registry cache:
+HKCU\Software\Far\Plugins\FAR.NET\<cache>
+
+If possible, FAR.NET caches information about assemblies and loads them only
+when they are really invoked. In many cases when you change, rename or move
+assemblies or classes FAR.NET updates the cache itself. But some changes are
+too difficult for that (e.g. changes in config files), in these cases you have
+to remove the registry cache manually (ditto for other cache problems).
+
+
+	CHM documentation
+
+
+Download the latest version from:
 http://code.google.com/p/farnet/
 
 
-	XML Documentation
+	XML documentation
 
 
 Included XML documentation is not perhaps a perfect form of documentation but it is
@@ -85,10 +103,27 @@ in MSDN-like style, provides powerful navigation and search (including .NET and
 any loaded .NET assemblies): http://www.aisto.com/roeder/dotnet/
 
 
-	Plugins Help
+	Plugins help
 
 
 You can add help for your plugins. It works in dialogs, menus, input and message
 boxes (see property HelpTopic) or by IFar.ShowHelp(). Unfortunately help can not
 be automatically shown by F1 ShiftF2 because technically FAR.NET plugins are not
 visible to FAR.
+
+
+	Build sources
+
+
+- If you build Debug remove the line "#include <Test1.h>" from "stdafx.h".
+- You can use msbuild.exe to build the sources:
+
+	msbuild Build-FarNet.proj
+
+and then to install all the files to "C:\Program Files\Far":
+
+	msbuild Build-FarNet.proj /t:Install
+
+or even both operations:
+
+	msbuild Build-FarNet.proj /t:Build;Install

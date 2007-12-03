@@ -81,18 +81,12 @@ namespace FarManager
 	{
 		Point _first;
 		Point _last;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="x">Value.</param>
 		public Place(int x)
 		{
 			_first = new Point(x);
 			_last = new Point(x);
 		}
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="first">First point.</param>
 		/// <param name="last">Last Point.</param>
 		public Place(Point first, Point last)
@@ -100,9 +94,6 @@ namespace FarManager
 			_first = first;
 			_last = last;
 		}
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		public Place(int left, int top, int right, int bottom)
 		{

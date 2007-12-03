@@ -2,8 +2,9 @@
 // Escape and unescape \ and " in editor selection with \
 // (e.g. string values in .reg files)
 
-using FarManager;
+using System;
 using System.Text.RegularExpressions;
+using FarManager;
 
 public class Escape : ToolPlugin
 {

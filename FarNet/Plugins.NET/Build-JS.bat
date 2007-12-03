@@ -1,5 +1,5 @@
 
-:: Synopsis : Build Far.Net plugin library from JS source
+:: Synopsis : Build FAR.NET plugin library from JS source
 :: Example  : Build-JS MyPlugin.js
 :: Output   : MyPlugin.dll
 

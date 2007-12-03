@@ -6,7 +6,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "StdAfx.h"
 #include "Message.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 Message::Message()
 {
@@ -57,9 +57,7 @@ bool Message::Show()
 		flags |= FMSG_MB_OK;
 
 	CStr* items = CreateBlock();
-	CStr sHelp;
-	if (!String::IsNullOrEmpty(HelpTopic))
-		sHelp.Set(HelpTopic);
+	CBox sHelp; sHelp.Reset(HelpTopic);
 	_selected = Info.Message(0, flags, sHelp, (char**)items, Amount(), _buttons->Count);
 	delete[] items;
 	return Selected != -1;

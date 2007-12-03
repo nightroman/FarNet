@@ -5,10 +5,17 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 #include "PluginSet.h"
-#include "FarImpl.h"
+#include "Far.h"
+#include "PluginInfo.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
+void PluginSet::AddPlugin(BasePlugin^ plugin)
+{
+	if (!_plugins.Contains(plugin))
+		_plugins.Add(plugin);
+}
+
 //! Don't use FAR UI
 void PluginSet::UnloadPlugins()
 {
@@ -35,6 +42,8 @@ void PluginSet::UnloadPlugins()
 
 void PluginSet::LoadPlugins()
 {
+	ReadCache();
+
 	String^ show = System::Configuration::ConfigurationSettings::AppSettings["FarManager.StartupErrorDialog"];
 	if (!String::IsNullOrEmpty(show))
 	{
@@ -50,11 +59,11 @@ void PluginSet::LoadPlugins()
 			continue;
 
 		// load
-		LoadPlugin(dir);
+		LoadFromDirectory(dir);
 	}
 }
 
-void PluginSet::LoadPlugin(String^ dir)
+void PluginSet::LoadFromDirectory(String^ dir)
 {
 	try
 	{
@@ -64,71 +73,278 @@ void PluginSet::LoadPlugin(String^ dir)
 			throw gcnew InvalidOperationException("More than one .cfg files found.");
 		if (files->Length == 1)
 		{
-			LoadConfig(files[0], dir);
+			LoadFromConfig(files[0], dir);
 			return;
 		}
 
 		// DLLs
-		LoadAllFrom(dir);
+		for each(String^ dll in Directory::GetFiles(dir, "*.dll"))
+			LoadFromAssembly(dll, nullptr);
 	}
 	catch(Exception^ e)
 	{
-		// WISH: don't use message boxes at this point
-		// WISH: make it optional
+		// WISH: no UI on loading by default
 		if (_startupErrorDialog)
 		{
-			Far::Get()->ShowError("ERROR in plugin " + dir, e);
+			Far::Instance->ShowError("ERROR in plugin " + dir, e);
 		}
 		else
 		{
-			Far::Get()->Write(
-				"ERROR: plugin " + dir + ":\n" + ExceptionInfo(e, true),
-				ConsoleColor::Red, Console::BackgroundColor);
+			Far::Instance->Write("ERROR: plugin " + dir + ":\n" + ExceptionInfo(e, true), ConsoleColor::Red);
 		}
 	}
 }
 
-void PluginSet::LoadConfig(String^ file, String^ dir)
+void PluginSet::LoadFromConfig(String^ file, String^ dir)
 {
 	for each(String^ line in File::ReadAllLines(file))
 	{
 		array<String^>^ classes = line->Split(gcnew array<Char>{' '}, StringSplitOptions::RemoveEmptyEntries);
 		if (classes->Length == 0)
 			continue;
+		
 		String^ assemblyName = classes[0];
-		Assembly^ assembly = Assembly::LoadFrom(Path::Combine(dir, assemblyName));
-		for(int i = 1; i < classes->Length; ++i)
-			AddPlugin(assembly->GetType(classes[i], true));
+		if (classes->Length == 1)
+			throw gcnew InvalidDataException("Missed class list after '" + assemblyName + "' in the config file '" + file + "'.");
+
+		LoadFromAssembly(Path::Combine(dir, assemblyName), classes);
 	}
 }
 
-void PluginSet::LoadAllFrom(String^ dir)
+void PluginSet::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 {
-	for each(String^ dll in Directory::GetFiles(dir, "*.dll"))
+	// loaded from cache?
+	String^ dllName = Path::GetFileName(assemblyPath);
+	if (_cache.ContainsKey(dllName))
+		return;
+
+	// load from assembly
+	int nBasePlugin = 0;
+	List<CommandPluginInfo^> commands;
+	List<FilerPluginInfo^> filers;
+	List<ToolPluginInfo^> tools;
+	Assembly^ assembly = Assembly::LoadFrom(assemblyPath);
+	if (classes)
 	{
-		Assembly^ assembly = Assembly::LoadFrom(dll);
+		for(int i = 1; i < classes->Length; ++i)
+			nBasePlugin += AddPlugin(assembly->GetType(classes[i], true), %commands, %filers, %tools);
+	}
+	else
+	{
+		int nLoaded = 0;
 		for each(Type^ type in assembly->GetExportedTypes())
 		{
 			if (type->IsAbstract)
 				continue;
 			if (BasePlugin::typeid->IsAssignableFrom(type))
-				AddPlugin(type);
+			{
+				++nLoaded;
+				nBasePlugin += AddPlugin(type, %commands, %filers, %tools);
+			}
 		}
+
+		if (nLoaded == 0)
+			throw gcnew InvalidOperationException("Assembly '" + assemblyPath + "' has no valid BasePlugin derived classes. Remove this assembly from the directory or use a .cfg file.");
+	}
+
+	// add plugins
+	if (commands.Count)
+		Far::Instance->RegisterCommands(%commands);
+	if (filers.Count)
+		Far::Instance->RegisterFilers(%filers);
+	if (tools.Count)
+		Far::Instance->RegisterTools(%tools);
+
+	// write cache
+	if (nBasePlugin == 0)
+		WriteCache(assemblyPath, %commands, %filers, %tools);
+}
+
+int PluginSet::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
+{
+	// create and add
+	BasePlugin^ instance = (BasePlugin^)Activator::CreateInstance(type);
+	_plugins.Add(instance);
+
+	// connect
+	instance->Far = Far::Instance;
+
+	// case: tool
+	ToolPlugin^ tool = dynamic_cast<ToolPlugin^>(instance);
+	if (tool)
+	{
+		ToolPluginInfo^ pt = gcnew ToolPluginInfo(tool, tool->Name, gcnew EventHandler<ToolEventArgs^>(tool, &ToolPlugin::Invoke), tool->Options);
+		tools->Add(pt);
+		return 0;
+	}
+
+	// case: command
+	CommandPlugin^ command = dynamic_cast<CommandPlugin^>(instance);
+	if (command)
+	{
+		CommandPluginInfo^ pc = gcnew CommandPluginInfo(command, command->Name, command->Prefix, gcnew EventHandler<CommandEventArgs^>(command, &CommandPlugin::Invoke));
+		command->Prefix = pc->Prefix;
+		commands->Add(pc);
+		return 0;
+	}
+
+	// case: filer
+	FilerPlugin^ filer = dynamic_cast<FilerPlugin^>(instance);
+	if (filer)
+	{
+		FilerPluginInfo^ pf = gcnew FilerPluginInfo(filer, filer->Name, gcnew EventHandler<FilerEventArgs^>(filer, &FilerPlugin::Invoke), filer->Mask, filer->Creates);
+		filer->Mask = pf->Mask;
+		filers->Add(pf);
+		return 0;
+	}
+
+	return 1;
+}
+
+void PluginSet::ReadCache()
+{
+	RegistryKey^ keyCache;
+	try
+	{
+		keyCache = Registry::CurrentUser->CreateSubKey(Far::Instance->RootKey + "\\FAR.NET\\<cache>");
+		for each (String^ dllName in keyCache->GetSubKeyNames())
+		{
+			RegistryKey^ keyDll;
+			RegistryKey^ keyPlugin;
+			List<CommandPluginInfo^> commands;
+			List<FilerPluginInfo^> filers;
+			List<ToolPluginInfo^> tools;
+			try
+			{
+				keyDll = keyCache->OpenSubKey(dllName);
+
+				String^ assemblyPath = keyDll->GetValue("Path", String::Empty)->ToString();
+				if (!assemblyPath->Length || !File::Exists(assemblyPath))
+					throw gcnew OperationCanceledException();
+
+				String^ assemblyStamp = keyDll->GetValue("Stamp", String::Empty)->ToString();
+				FileInfo fi(assemblyPath);
+				if (assemblyStamp != fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture))
+					throw gcnew OperationCanceledException();
+
+				for each (String^ className in keyDll->GetSubKeyNames())
+				{
+					keyPlugin = keyDll->OpenSubKey(className);
+
+					String^ pluginName = keyPlugin->GetValue("Name", String::Empty)->ToString();
+					if (!pluginName->Length)
+						throw gcnew OperationCanceledException();
+
+					String^ type = keyPlugin->GetValue("Type", String::Empty)->ToString();
+					if (type == "Tool")
+					{
+						int options = (int)keyPlugin->GetValue("Options");
+						if (!options)
+							throw gcnew OperationCanceledException();
+
+						ToolPluginInfo^ plugin = gcnew ToolPluginInfo(assemblyPath, className, pluginName, (ToolOptions)options);
+						tools.Add(plugin);
+					}
+					else if (type == "Command")
+					{
+						String^ prefix = keyPlugin->GetValue("Prefix", String::Empty)->ToString();
+						if (!prefix->Length)
+							throw gcnew OperationCanceledException();
+
+						CommandPluginInfo^ plugin = gcnew CommandPluginInfo(assemblyPath, className, pluginName, prefix);
+						commands.Add(plugin);
+					}
+					else if (type == "Filer")
+					{
+						String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
+						int creates = (int)keyPlugin->GetValue("Creates", (Object^)-1);
+
+						FilerPluginInfo^ plugin = gcnew FilerPluginInfo(assemblyPath, className, pluginName, mask, creates != 0);
+						filers.Add(plugin);
+					}
+					else
+					{
+						throw gcnew OperationCanceledException();
+					}
+
+					keyPlugin->Close();
+				}
+
+				keyDll->Close();
+
+				// add dllName to dictionary and add plugins
+				_cache.Add(dllName, nullptr);
+				if (commands.Count)
+					Far::Instance->RegisterCommands(%commands);
+				if (filers.Count)
+					Far::Instance->RegisterFilers(%filers);
+				if (tools.Count)
+					Far::Instance->RegisterTools(%tools);
+			}
+			catch(OperationCanceledException^)
+			{
+				if (keyPlugin)
+					keyPlugin->Close();
+				if (keyDll)
+					keyDll->Close();
+				keyCache->DeleteSubKeyTree(dllName);
+			}
+			catch(Exception^ ex)
+			{
+				throw gcnew OperationCanceledException(
+					"Error on reading the cache. Remove registry FAR.NET\\<cache> manually and restart FAR.", ex);
+			}
+		}
+	}
+	finally
+	{
+		if (keyCache)
+			keyCache->Close();
 	}
 }
 
-void PluginSet::AddPlugin(Type^ type)
+void PluginSet::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
 {
-	BasePlugin^ plugin = (BasePlugin^)Activator::CreateInstance(type);
-	_plugins.Add(plugin);
-	plugin->Far = Far::Get();
-
-	// case: tool
-	ToolPlugin^ tool = dynamic_cast<ToolPlugin^>(plugin);
-	if (tool)
+	FileInfo fi(assemblyPath);
+	RegistryKey^ keyDll;
+	try
 	{
-		Far::Get()->RegisterTool(plugin, tool->Name, gcnew EventHandler<ToolEventArgs^>(tool, &ToolPlugin::Invoke), tool->Options);
-		return;
+		keyDll = Registry::CurrentUser->CreateSubKey(Far::Instance->RootKey + "\\FAR.NET\\<cache>\\" + fi.Name);
+		keyDll->SetValue("Path", assemblyPath);
+		keyDll->SetValue("Stamp", fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture));
+
+		for each(ToolPluginInfo^ plugin in tools)
+		{
+			RegistryKey^ key = keyDll->CreateSubKey(plugin->ClassName);
+			key->SetValue("Type", "Tool");
+			key->SetValue("Name", plugin->Name);
+			key->SetValue("Options", (int)plugin->Options);
+			key->Close();
+		}
+
+		for each(CommandPluginInfo^ plugin in commands)
+		{
+			RegistryKey^ key = keyDll->CreateSubKey(plugin->ClassName);
+			key->SetValue("Type", "Command");
+			key->SetValue("Name", plugin->Name);
+			key->SetValue("Prefix", plugin->DefaultPrefix);
+			key->Close();
+		}
+
+		for each(FilerPluginInfo^ plugin in filers)
+		{
+			RegistryKey^ key = keyDll->CreateSubKey(plugin->ClassName);
+			key->SetValue("Type", "Filer");
+			key->SetValue("Name", plugin->Name);
+			key->SetValue("Mask", plugin->DefaultMask);
+			key->SetValue("Creates", (int)plugin->Creates);
+			key->Close();
+		}
+	}
+	finally
+	{
+		if (keyDll)
+			keyDll->Close();
 	}
 }
 

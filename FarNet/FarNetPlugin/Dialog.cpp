@@ -5,7 +5,7 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 #include "Dialog.h"
-#include "FarImpl.h"
+#include "Far.h"
 #include "Menu.h"
 
 #define SET_FLAG(Var, Flag, Value) { if (Value) Var |= Flag; else Var &= ~Flag; }
@@ -14,7 +14,7 @@ Copyright (c) 2005-2007 Far.NET Team
 bool Class::Prop::get() { return GetFlag(Flag); }\
 void Class::Prop::set(bool value) { SetFlag(Flag, value); }
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 // Dialog callback
 LONG_PTR WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, LONG_PTR param2)
@@ -73,7 +73,7 @@ public:
 			Info.SendDlgMessage(_hDlg, DM_GETTEXTPTR, _id, (LONG_PTR)buf);
 
 			String^ text = OemToStr(buf, es.BlockStartPos) + value + OemToStr(buf + es.BlockStartPos + es.BlockWidth);
-			CStr sText(text);
+			CBox sText(text);
 			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(char*)sText);
 
 			es.BlockWidth = value->Length;
@@ -145,7 +145,7 @@ public:
 	{
 		int get()
 		{
-			return Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
+			return (int)Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
 		}
 	}
 	virtual property int No
@@ -167,7 +167,7 @@ public:
 		void set(int value)
 		{
 			if (value < 0)
-				value = Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
+				value = (int)Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
 			COORD c;
 			c.Y = 0;
 			c.X = (SHORT)value;
@@ -194,21 +194,20 @@ public:
 		}
 		void set(String^ value)
 		{
-			CStr sText(value);
+			CBox sText(value);
 			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(char*)sText);
 		}
 	}
 	virtual void Insert(String^ text)
 	{
-		if (!text)
-			throw gcnew ArgumentNullException("text");
+		if (!text) throw gcnew ArgumentNullException("text");
 
 		// insert string before cursor
 		int pos = Pos;
 		String^ str = Text;
-		str = str->Substring(0, pos) + text + str->Substring(pos);
 
-		// move cursor to the end of inserted part
+		// set new text and move cursor to the end of inserted part
+		Text = str->Substring(0, pos) + text + str->Substring(pos);
 		Pos = pos + text->Length;
 	}
 	virtual void Select(int start, int end)
@@ -229,8 +228,7 @@ public:
 	}
 internal:
 	FarEditLine(HANDLE hDlg, int id) : _hDlg(hDlg), _id(id)
-	{
-	}
+	{}
 private:
 	HANDLE _hDlg;
 	int _id;
@@ -408,7 +406,7 @@ void FarControl::Text::set(String^ value)
 {
 	if (_dialog->_hDlg)
 	{
-		CStr sText(value);
+		CBox sText(value);
 		Info.SendDlgMessage(_dialog->_hDlg, DM_SETTEXTPTR, Id, (LONG_PTR)(char*)sText);
 	}
 	else
@@ -643,7 +641,7 @@ DEF_CONTROL_FLAG(FarBaseBox, WrapCursor, DIF_LISTWRAPMODE);
 int FarBaseBox::Selected::get()
 {
 	if (_dialog->_hDlg)
-		return Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETCURPOS, Id, 0);
+		return (int)Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETCURPOS, Id, 0);
 	else
 		return _selected;
 }
@@ -948,9 +946,7 @@ bool FarDialog::Show()
 		}
 
 		// help
-		CStr sHelp;
-		if (!String::IsNullOrEmpty(HelpTopic))
-			sHelp.Set(HelpTopic);
+		CBox sHelp; sHelp.Reset(HelpTopic);
 
 		// show
 		_dialogs.Add(this);
@@ -1146,7 +1142,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 	}
 	catch(Exception^ e)
 	{
-		Far::Get()->ShowError("Error in DlgProc", e);
+		Far::Instance->ShowError("Error in DlgProc", e);
 	}
 
 	// default

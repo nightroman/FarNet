@@ -30,8 +30,8 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-				CommandLine="cd .. &amp; nmake copy config=$(ConfigurationName)&#x0D;&#x0A;"
-				Outputs="&quot;C:\Program Files\Far\Lib\FarNetIntf.dll&quot;;&quot;C:\Program Files\Far\Lib\FarNetIntf.xml&quot;;&quot;C:\Program Files\Far\Plugins\Far.NET\FarNetPlugin.dll&quot;"
+				CommandLine=""
+				Outputs=""
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -117,8 +117,8 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-				CommandLine="cd .. &amp; nmake copy config=$(ConfigurationName)&#x0D;&#x0A;"
-				Outputs="&quot;C:\Program Files\Far\Lib\FarNetIntf.dll&quot;;&quot;C:\Program Files\Far\Lib\FarNetIntf.xml&quot;;&quot;C:\Program Files\Far\Plugins\Far.NET\FarNetPlugin.dll&quot;"
+				CommandLine=""
+				Outputs=""
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -253,7 +253,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FarImpl.cpp"
+				RelativePath=".\Far.cpp"
 				>
 			</File>
 			<File
@@ -278,6 +278,10 @@
 			</File>
 			<File
 				RelativePath=".\Panel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PluginInfo.cpp"
 				>
 			</File>
 			<File
@@ -359,7 +363,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FarImpl.h"
+				RelativePath=".\Far.h"
 				>
 			</File>
 			<File
@@ -376,6 +380,10 @@
 			</File>
 			<File
 				RelativePath=".\Panel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PluginInfo.h"
 				>
 			</File>
 			<File

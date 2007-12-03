@@ -8,7 +8,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "Utils.h"
 #include "EditorLine.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 EditorLineCollection::EditorLineCollection(bool trueLines)
 : _trueLines(trueLines)

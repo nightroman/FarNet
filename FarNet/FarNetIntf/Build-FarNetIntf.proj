@@ -1,0 +1,18 @@
+<Project DefaultTargets="Install" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Install Condition="'$(Install)' == ''">C:\Program Files\Far\Lib</Install>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+	</PropertyGroup>
+	<Target Name="Clean">
+		<RemoveDir Directories="bin;obj"/>
+	</Target>
+	<Target Name="Install">
+		<MakeDir Directories="$(Install)"/>
+		<Copy SourceFiles="Bin\$(Configuration)\FarNetIntf.dll" DestinationFolder="$(Install)"/>
+		<Copy SourceFiles="Bin\$(Configuration)\FarNetIntf.xml" DestinationFolder="$(Install)" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\FarNetIntf.xml')"/>
+	</Target>
+	<Target Name="Uninstall">
+		<Delete Files="$(Install)\FarNetIntf.dll;$(Install)\FarNetIntf.xml"/>
+		<Exec Command='rd "$(Install)"'/>
+	</Target>
+</Project>

@@ -65,9 +65,7 @@ namespace FarManager
 		ControlKeyStates _controlKeyState;
 		int _virtualKeyCode;
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
+		///
 		public KeyInfo(int virtualKeyCode, char character, ControlKeyStates controlKeyState, bool keyDown)
 		{
 			_virtualKeyCode = virtualKeyCode;
@@ -184,9 +182,6 @@ namespace FarManager
 	/// </summary>
 	public struct MouseInfo
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="where">Position.</param>
 		/// <param name="action">Mouse action.</param>
 		/// <param name="buttons">Mouse buttons.</param>
