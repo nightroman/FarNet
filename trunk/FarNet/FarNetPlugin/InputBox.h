@@ -5,7 +5,7 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #pragma once
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 public ref class InputBox : public IInputBox
 {

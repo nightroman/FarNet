@@ -6,7 +6,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "StdAfx.h"
 #include "InputBox.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 InputBox::InputBox()
 {
@@ -35,16 +35,14 @@ void InputBox::HelpTopic::set(String^ value)
 
 bool InputBox::Show()
 {
-	CStr sTitle(Title);
-	CStr sPrompt(Prompt);
-	CStr sText(Text);
-	CStr sDest(_maxLength + 1);
-	CStr sHistory;
-	if (SS(History))
-		sHistory.Set(History);
+	CBox sTitle(Title);
+	CBox sPrompt(Prompt);
+	CBox sText(Text);
+	CBox sDest(_maxLength + 1);
+	CBox sHistory; sHistory.Reset(History);
 
 	// help
-	const char* help = 0; CStr sHelp;
+	const char* help = 0; CBox sHelp;
 	if (_oemHelpTopic)
 	{
 		help = _oemHelpTopic;

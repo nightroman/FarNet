@@ -1,6 +1,11 @@
 
 ## Test Build.bat in sub-folders
 
+param
+(
+	[switch]$Test
+)
+
 $ErrorActionPreference = 'Stop'
 Get-ChildItem -Recurse -Include Build.bat | .{ process {
 	Set-Location $_.PSParentPath
@@ -8,4 +13,8 @@ Get-ChildItem -Recurse -Include Build.bat | .{ process {
 	if ($LastExitCode) { throw }
 	if (!(Test-Path *.dll)) { throw }
 	Get-Item *.dll
-}} | Remove-Item -Confirm
+}} | .{process{
+	if ($Test) {
+		Remove-Item $_
+	}
+}}

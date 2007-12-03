@@ -12,9 +12,6 @@ namespace FarManager.Forms
 	/// </summary>
 	public class AnyEventArgs : EventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="control">Control involved into this event or null.</param>
 		public AnyEventArgs(IControl control)
 		{
@@ -36,9 +33,6 @@ namespace FarManager.Forms
 	/// </summary>
 	public sealed class InitializedEventArgs : AnyEventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="focused">Control that will initially receive focus.</param>
 		public InitializedEventArgs(IControl focused)
 			: base(focused)
@@ -60,11 +54,7 @@ namespace FarManager.Forms
 	/// </summary>
 	public sealed class ClosingEventArgs : AnyEventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="selected">Control that had the keyboard focus when <c>Ctrl+Enter</c> was pressed or the default control. 
-		/// </param>
+		/// <param name="selected">Control that had the keyboard focus when <c>Ctrl+Enter</c> was pressed or the default control.</param>
 		public ClosingEventArgs(IControl selected)
 			: base(selected)
 		{
@@ -85,9 +75,6 @@ namespace FarManager.Forms
 	/// </summary>
 	public sealed class LosingFocusEventArgs : AnyEventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="losing">Control losing focus.</param>
 		public LosingFocusEventArgs(IControl losing)
 			: base(losing)
@@ -109,9 +96,6 @@ namespace FarManager.Forms
 	/// </summary>
 	public sealed class ButtonClickedEventArgs : AnyEventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="button">Button clicked.</param>
 		/// <param name="selected">Selected state.</param>
 		public ButtonClickedEventArgs(IControl button, int selected)
@@ -146,9 +130,6 @@ namespace FarManager.Forms
 	/// </summary>
 	public sealed class TextChangedEventArgs : AnyEventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="edit">Edit control.</param>
 		/// <param name="text">New text.</param>
 		public TextChangedEventArgs(IControl edit, string text)
@@ -180,9 +161,6 @@ namespace FarManager.Forms
 	/// </summary>
 	public sealed class KeyPressedEventArgs : AnyEventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="control">Current control.</param>
 		/// <param name="code">Internal key code.</param>
 		public KeyPressedEventArgs(IControl control, int code)
@@ -214,9 +192,6 @@ namespace FarManager.Forms
 	/// </summary>
 	public sealed class MouseClickedEventArgs : AnyEventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="control">Current control.</param>
 		/// <param name="mouse">Mouse info.</param>
 		public MouseClickedEventArgs(IControl control, MouseInfo mouse)

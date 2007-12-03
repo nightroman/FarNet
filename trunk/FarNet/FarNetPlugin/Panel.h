@@ -5,7 +5,7 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #pragma once
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 public ref class FarFile : IFile
 {
@@ -237,9 +237,11 @@ private:
 	String^ _StartDirectory;
 };
 
+const int cPanels = 4;
 ref class PanelSet
 {
 internal:
+	static property FarPanelPlugin^ PostedPanel { FarPanelPlugin^ get() { return _panels[0]; } void set(FarPanelPlugin^ value) { _panels[0] = value; } }
 	static HANDLE AddPanelPlugin(FarPanelPlugin^ plugin);
 	static int AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode);
 	static int AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode);
@@ -249,6 +251,8 @@ internal:
 	static int AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState);
 	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode);
 	static int AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode);
+	static FarPanel^ GetPanel(bool active);
+	static FarPanelPlugin^ GetPanelPlugin(Type^ hostType);
 	static FarPanelPlugin^ GetPanelPlugin2(FarPanelPlugin^ plugin);
 	static void AsClosePlugin(HANDLE hPlugin);
 	static void AsFreeFindData(PluginPanelItem* panelItem);
@@ -257,10 +261,12 @@ internal:
 	static void PushPanelPlugin(FarPanelPlugin^ plugin);
 	static void ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newPanel);
 internal:
-	static array<FarPanelPlugin^>^ _panels = gcnew array<FarPanelPlugin^>(3);
 	static List<FarPanelPlugin^> _stack;
 private:
 	PanelSet() {}
+private:
+	// Posted [0] and opened [1..3] panels; i.e. size is 4, see AddPanelPlugin().
+	static array<FarPanelPlugin^>^ _panels = gcnew array<FarPanelPlugin^>(cPanels);
 	static bool _inAsSetDirectory;
 };
 

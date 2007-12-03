@@ -6,7 +6,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "StdAfx.h"
 #include "CommandLineSelection.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 CommandLineSelection::CommandLineSelection()
 {
@@ -37,7 +37,7 @@ void CommandLineSelection::Text::set(String^ value)
 	String^ text1 = text->Substring(0, cls.SelStart);
 	String^ text2 = text->Substring(cls.SelEnd);
 	text = text1 + value + text2;
-	CStr sb(text);
+	CBox sb(text);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, sb))
 		throw gcnew OperationCanceledException();
 	cls.SelEnd = cls.SelStart + value->Length;

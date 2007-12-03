@@ -354,9 +354,6 @@ namespace FarManager
 	/// </summary>
 	public class DataItem
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="name">Name (or separator text in some cases).</param>
 		/// <param name="data">Data (or null for separator in some cases).</param>
 		public DataItem(string name, object data)
@@ -571,9 +568,6 @@ namespace FarManager
 	{
 		OperationModes _mode;
 		bool _ignore;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="mode">
 		/// Combination of the operation mode flags.
 		/// </param>
@@ -605,9 +599,6 @@ namespace FarManager
 	public class ExecutingEventArgs : PanelEventArgs
 	{
 		string _command;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="command">Command text.</param>
 		public ExecutingEventArgs(string command)
 			: base(0)
@@ -630,9 +621,6 @@ namespace FarManager
 	public class ViewModeChangedEventArgs : EventArgs
 	{
 		string _columns;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="columns">Column types, e.g. N,S,D,T.</param>
 		public ViewModeChangedEventArgs(string columns)
 		{
@@ -656,9 +644,6 @@ namespace FarManager
 		int _code;
 		KeyStates _state;
 		bool _preprocess;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="code"><see cref="VKeyCode"/> code.</param>
 		/// <param name="state">Indicates key states.</param>
 		/// <param name="preprocess">Preprocess flag.</param>
@@ -707,9 +692,6 @@ namespace FarManager
 	public class SettingDirectoryEventArgs : PanelEventArgs
 	{
 		string _name;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="name">Directory name.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		public SettingDirectoryEventArgs(string name, OperationModes mode)
@@ -740,9 +722,6 @@ namespace FarManager
 	{
 		IList<IFile> _files;
 		bool _move;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="files">Files to delete.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		/// <param name="move">Files are moved.</param>
@@ -775,9 +754,6 @@ namespace FarManager
 	public class GettingFilesEventArgs : FilesEventArgs
 	{
 		string _destination;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="files">Files to delete.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		/// <param name="move">Files are moved.</param>
@@ -803,9 +779,6 @@ namespace FarManager
 	public class MakingDirectoryEventArgs : PanelEventArgs
 	{
 		string _name;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="name">New directory name.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		public MakingDirectoryEventArgs(string name, OperationModes mode)

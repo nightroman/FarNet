@@ -1,5 +1,5 @@
 
-:: Synopsis : Build Far.Net plugin library from VB source
+:: Synopsis : Build FAR.NET plugin library from VB source
 :: Example  : Build-VB MyPlugin.vb
 :: Output   : MyPlugin.dll
 

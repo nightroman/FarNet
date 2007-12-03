@@ -17,9 +17,6 @@ namespace FarManager
 	/// </summary>
 	public class MenuEventArgs : EventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="item">Current item.</param>
 		public MenuEventArgs(IMenuItem item)
 		{

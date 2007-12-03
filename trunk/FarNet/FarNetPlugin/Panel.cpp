@@ -5,9 +5,9 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 #include "Panel.h"
-#include "FarImpl.h"
+#include "Far.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelItem, int itemsNumber)
 {
@@ -163,7 +163,7 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 	catch(Exception^ e)
 	{
 		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
-			Far::Get()->ShowError(__FUNCTION__, e);
+			Far::Instance->ShowError(__FUNCTION__, e);
 		return FALSE;
 	}
 }
@@ -232,7 +232,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			}
 			catch(Exception^ exception)
 			{
-				Far::Get()->ShowError("Event: Executing", exception);
+				Far::Instance->ShowError("Event: Executing", exception);
 			}
 			return e.Ignore;
 		}
@@ -385,9 +385,58 @@ int PanelSet::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 	}
 }
 
+FarPanel^ PanelSet::GetPanel(bool active)
+{
+	// get info and return null (e.g. FAR started with /e or /v)
+	PanelInfo pi;
+	if (!Info.Control(INVALID_HANDLE_VALUE, (active ? FCTL_GETPANELSHORTINFO : FCTL_GETANOTHERPANELSHORTINFO), &pi))
+		return nullptr;
+
+	if (!pi.Plugin)
+		return gcnew FarPanel(active);
+
+	for (int i = 1; i < cPanels; ++i)
+	{
+		FarPanelPlugin^ p = _panels[i];
+		if (p && p->IsActive == active)
+			return p;
+	}
+
+	return gcnew FarPanel(true);
+}
+
+FarPanelPlugin^ PanelSet::GetPanelPlugin(Type^ hostType)
+{
+	// case: any panel
+	if (hostType == nullptr)
+	{
+		for (int i = 1; i < cPanels; ++i)
+		{
+			FarPanelPlugin^ p = _panels[i];
+			if (p)
+				return p;
+		}
+		return nullptr;
+	}
+
+	// panel with defined host type
+	for (int i = 1; i < cPanels; ++i)
+	{
+		FarPanelPlugin^ p = _panels[i];
+		if (p && p->Host)
+		{
+			Type^ type = p->Host->GetType();
+			if (type == hostType || type->IsSubclassOf(hostType))
+				return p;
+		}
+	}
+
+	return nullptr;
+}
+
 FarPanelPlugin^ PanelSet::GetPanelPlugin2(FarPanelPlugin^ plugin)
 {
-	for (int i = 1; i < 3; ++i)
+	for (int i = 1; i < cPanels; ++i)
 	{
 		FarPanelPlugin^ p = _panels[i];
 		if (p && p != plugin)
@@ -396,9 +445,12 @@ FarPanelPlugin^ PanelSet::GetPanelPlugin2(FarPanelPlugin^ plugin)
 	return nullptr;
 }
 
+// [0] is for a waiting panel;
+// [1-3] are 2 for already opened and 1 for being added
+//? create a test case: open 2 panels and try to open 1 more
 HANDLE PanelSet::AddPanelPlugin(FarPanelPlugin^ plugin)
 {
-	for(int i = 1; i < 3; ++i)
+	for(int i = 1; i < cPanels; ++i)
 	{
 		if (_panels[i] == nullptr)
 		{
@@ -821,7 +873,7 @@ String^ FarPanel::Path::get()
 void FarPanel::Path::set(String^ value)
 {
 	int command = _active ? FCTL_SETPANELDIR : FCTL_SETANOTHERPANELDIR;
-	CStr sb(value);
+	CBox sb(value);
 	if (!Info.Control(_id, command, sb))
 		throw gcnew OperationCanceledException();
 }
@@ -981,10 +1033,7 @@ void FarPanel::Close()
 
 void FarPanel::Close(String^ path)
 {
-	CStr sb;
-	if (!String::IsNullOrEmpty(path))
-		sb.Set(path);
-
+	CBox sb; sb.Reset(path);
 	Info.Control(_id, FCTL_CLOSEPLUGIN, sb);
 }
 

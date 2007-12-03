@@ -34,9 +34,9 @@ Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
 public override void Connect()
 {
 // register a prefix
-Far.RegisterPrefix([prefix name], [prefix handler]);
+Far.RegisterCommand(this, [name], [prefix], [handler]);
 // register a menu command
-Far.RegisterPluginsMenuItem([item name], [item handler]);
+Far.RegisterTool(this, [name], [handler], [options]);
 ...
 }
 </code>

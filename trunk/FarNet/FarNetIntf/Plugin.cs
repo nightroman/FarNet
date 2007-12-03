@@ -3,20 +3,29 @@ Far.NET plugin for Far Manager
 Copyright (c) 2005-2007 Far.NET Team
 */
 
-using System;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using System;
 
 namespace FarManager
 {
 	/// <summary>
-	/// Base class of a FAR.NET plugin.
-	/// If a plugin is a single operation then use <see cref="ToolPlugin"/>.
+	/// Base class of a preloadable plugin and not preloadable <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> and <see cref="FilerPlugin"/>.
 	/// </summary>
 	/// <remarks>
 	/// It keeps reference to <see cref="IFar"/> and provides
 	/// <see cref="Connect"/> and <see cref="Disconnect"/> methods.
-	/// Normally a plugin should implement at least <see cref="Connect"/>.
+	/// Normally a direct child should implement at least <see cref="Connect"/>.
+	/// <para>
+	/// Any direct child of this class is always preloadable and makes other plugins in the same assembly preloadable as well.
+	/// </para>
+	/// <para>
+	/// If a plugin implements a single operation consider to use <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> or <see cref="FilerPlugin"/>.
+	/// Besides, these plugins are not preloadable by design.
+	/// </para>
 	/// </remarks>
+	[DebuggerStepThroughAttribute]
 	public class BasePlugin
 	{
 		IFar _Far;
@@ -50,34 +59,16 @@ namespace FarManager
 		/// <summary>
 		/// Plugin or menu item name. By default it is the class name.
 		/// </summary>
+		/// <remarks>
+		/// If it is overridden (usually in <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> or <see cref="FilerPlugin"/>)
+		/// then it is strongly recommended to be a unique name in the assembly.
+		/// </remarks>
 		public virtual string Name
 		{
 			get
 			{
 				return GetType().FullName;
 			}
-		}
-	}
-
-	/// <summary>
-	/// Base class of a FAR.NET tool represented by a single menu command.
-	/// It is enough to implement <see cref="Invoke"/> method only.
-	/// Override other properties and methods as needed.
-	/// </summary>
-	public abstract class ToolPlugin : BasePlugin
-	{
-		/// <summary>
-		/// Tool handler.
-		/// </summary>
-		public abstract void Invoke(object sender, ToolEventArgs e);
-
-		/// <summary>
-		/// Tool options. By default the tool is shown in all menus.
-		/// Override this to specify only really needed areas.
-		/// </summary>
-		public virtual ToolOptions Options
-		{
-			get { return ToolOptions.AllAreas; }
 		}
 	}
 
@@ -116,13 +107,196 @@ namespace FarManager
 		/// </summary>
 		F11Menus = Panels | Editor | Viewer,
 		/// <summary>
-		/// Show the item in all menus.
+		/// Show the item in F11 menus and in the disk menu.
 		/// </summary>
 		AllMenus = F11Menus | Disk,
 		/// <summary>
-		/// All areas.
+		/// Show the item in F11 menus, the disk menu and the config menu.
 		/// </summary>
 		AllAreas = AllMenus | Config
+	}
+
+	/// <summary>
+	/// Arguments of a tool plugin event. This event normally happens when a user selects a menu item.
+	/// </summary>
+	public sealed class ToolEventArgs : EventArgs
+	{
+		///
+		public ToolEventArgs(ToolOptions from)
+		{
+			_From = from;
+		}
+		/// <summary>
+		/// Where it is called from.
+		/// </summary>
+		public ToolOptions From
+		{
+			get { return _From; }
+		}
+		ToolOptions _From;
+		/// <summary>
+		/// Tells to ignore results, e.g. when configuration dialog is cancelled.
+		/// </summary>
+		public bool Ignore
+		{
+			get { return _Ignore; }
+			set { _Ignore = value; }
+		}
+		bool _Ignore;
+	}
+
+	/// <summary>
+	/// Base class of a FAR.NET tool represented by a single menu command in one or more FAR menus.
+	/// </summary>
+	/// <remarks>
+	/// It is enough to implement <see cref="Invoke"/> method only.
+	/// Override other properties and methods as needed.
+	/// You may derive any number of such classes.
+	/// <para>
+	/// If the assembly has no direct <see cref="BasePlugin"/> children
+	/// then this plugin is loaded only when invoked the first time.
+	/// </para>
+	/// </remarks>
+	public abstract class ToolPlugin : BasePlugin
+	{
+		/// <summary>
+		/// Tool handler.
+		/// </summary>
+		public abstract void Invoke(object sender, ToolEventArgs e);
+
+		/// <summary>
+		/// Tool options. By default the tool is shown in all menus.
+		/// Override this to specify only really needed areas.
+		/// </summary>
+		public virtual ToolOptions Options
+		{
+			get { return ToolOptions.AllAreas; }
+		}
+	}
+
+	/// <summary>
+	/// Arguments of a command plugin event.
+	/// </summary>
+	public class CommandEventArgs : EventArgs
+	{
+		///
+		public CommandEventArgs(string command)
+		{
+			_command = command;
+		}
+		string _command;
+		/// <summary>
+		/// Command to process.
+		/// </summary>
+		public string Command
+		{
+			get { return _command; }
+		}
+	}
+
+	/// <summary>
+	/// Base class of a FAR.NET pluging called from a command line by a command prefix.
+	/// </summary>
+	/// <remarks>
+	/// You have to implement <see cref="Invoke"/> and provide <see cref="Prefix"/>.
+	/// Override other properties and methods as needed.
+	/// You may derive any number of such classes.
+	/// <para>
+	/// If the assembly has no direct <see cref="BasePlugin"/> children
+	/// then this plugin is loaded only when invoked the first time.
+	/// </para>
+	/// </remarks>
+	public abstract class CommandPlugin : BasePlugin
+	{
+		/// <summary>
+		/// Command handler.
+		/// </summary>
+		public abstract void Invoke(object sender, CommandEventArgs e);
+
+		/// <summary>
+		/// Command prefix. By default it is the class name, override <c>get</c> for another one.
+		/// But it is only a suggestion, actual prefix may be changed by a user, so that
+		/// if the plugin uses the prefix itself then override <c>set</c> too.
+		/// </summary>
+		public virtual string Prefix
+		{
+			get { return this.GetType().Name; }
+			set { }
+		}
+	}
+
+	/// <summary>
+	/// Arguments for a handler registered by <see cref="IFar.RegisterFiler"/>.
+	/// A handler is called to open a <see cref="IPanelPlugin"/> which emulates a file system based on a file.
+	/// If a file is unknown a handler should do nothing. [OpenFilePlugin]
+	/// </summary>
+	public sealed class FilerEventArgs : EventArgs
+	{
+		///
+		public FilerEventArgs(string name, Stream data)
+		{
+			_Name = name;
+			_Data = data;
+		}
+		string _Name;
+		/// <summary>
+		/// Full name of a file including the path.
+		/// If it is empty then a handler is called to create a new file [ShiftF1].
+		/// In any case a handler opens <see cref="IPanelPlugin"/> or ignores this call.
+		/// </summary>
+		public string Name
+		{
+			get { return _Name; }
+		}
+		Stream _Data;
+		/// <summary>
+		/// Data from the beginning of the file used to detect the file type.
+		/// Use this stream in a handler only or copy the data for later use.
+		/// </summary>
+		public Stream Data
+		{
+			get { return _Data; }
+		}
+	}
+
+	/// <summary>
+	/// Base class of a FAR.NET file based plugin.
+	/// </summary>
+	/// <remarks>
+	/// It is enough to implement <see cref="Invoke"/> method only.
+	/// Override other properties and methods as needed.
+	/// You may derive any number of such classes.
+	/// <para>
+	/// If the assembly has no direct <see cref="BasePlugin"/> children
+	/// then this plugin is loaded only when invoked the first time.
+	/// </para>
+	/// </remarks>
+	public abstract class FilerPlugin : BasePlugin
+	{
+		/// <summary>
+		/// Filer handler.
+		/// </summary>
+		public abstract void Invoke(object sender, FilerEventArgs e);
+
+		/// <summary>
+		/// File(s) mask, see FAR API help topic [File masks]; format "include|exclude" is also supported.
+		/// This value is only default, actual mask may be changed by a user, so that
+		/// if the plugin uses this mask itself then override <c>set</c> too.
+		/// </summary>
+		public virtual string Mask
+		{
+			get { return string.Empty; }
+			set { }
+		}
+
+		/// <summary>
+		/// Tells that the plugin also creates files.
+		/// </summary>
+		public virtual bool Creates
+		{
+			get { return false; }
+			set { }
+		}
 	}
 
 }

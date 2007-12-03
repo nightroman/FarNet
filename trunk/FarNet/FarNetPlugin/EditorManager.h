@@ -6,7 +6,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #pragma once
 #include "Editor.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 public ref class EditorManager
 {

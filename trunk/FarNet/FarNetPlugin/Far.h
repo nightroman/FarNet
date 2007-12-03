@@ -5,66 +5,13 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #pragma once
 #undef CreateDialog
-using namespace System::IO;
-using namespace System::Text::RegularExpressions;
-class CStr;
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 ref class EditorManager;
-
-ref class PluginAny abstract
-{
-public:
-	property String^ Name { String^ get() { return _Name; } }
-protected:
-	PluginAny(BasePlugin^ plugin, String^ name);
-	property String^ Key { String^ get() { return _Key; } }
-private:
-	String^ _Key;
-	String^ _Name;
-};
-
-ref class PluginTool : PluginAny
-{
-public:
-	PluginTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
-	property EventHandler<ToolEventArgs^>^ Handler { EventHandler<ToolEventArgs^>^ get() { return _Handler; } }
-	property ToolOptions Options { ToolOptions get() { return _Options; } }
-	String^ Alias(ToolOptions option);
-	void Alias(ToolOptions option, String^ value);
-private:
-	EventHandler<ToolEventArgs^>^ _Handler;
-	ToolOptions _Options;
-	String^ _AliasConfig;
-	String^ _AliasDisk;
-	String^ _AliasEditor;
-	String^ _AliasPanels;
-	String^ _AliasViewer;
-};
-
-ref class PluginPrefix : PluginAny
-{
-public:
-	PluginPrefix(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<ExecutingEventArgs^>^ handler) : PluginAny(plugin, name), _Prefix(prefix), _Handler(handler) {}
-	property String^ Prefix { String^ get() { return _Prefix; } }
-	property EventHandler<ExecutingEventArgs^>^ Handler { EventHandler<ExecutingEventArgs^>^ get() { return _Handler; } }
-	String^ Alias();
-	void Alias(String^ value);
-private:
-	String^ _Prefix;
-	EventHandler<ExecutingEventArgs^>^ _Handler;
-	String^ _Alias;
-};
-
-ref class PluginFile : PluginAny
-{
-public:
-	PluginFile(BasePlugin^ plugin, String^ name, EventHandler<OpenFileEventArgs^>^ handler) : PluginAny(plugin, name), _Handler(handler) {}
-	property EventHandler<OpenFileEventArgs^>^ Handler { EventHandler<OpenFileEventArgs^>^ get() { return _Handler; } }
-private:
-	EventHandler<OpenFileEventArgs^>^ _Handler;
-};
+ref class CommandPluginInfo;
+ref class FilerPluginInfo;
+ref class ToolPluginInfo;
 
 public ref class Far : public IFar
 {
@@ -74,11 +21,10 @@ public:
 	virtual property ICollection<IEditor^>^ Editors { ICollection<IEditor^>^ get(); }
 	virtual property ILine^ CommandLine { ILine^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
-	virtual property int HWnd { int get(); }
+	virtual property IntPtr HWnd { IntPtr get(); }
 	virtual property int WindowCount { int get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
 	virtual property IPanel^ Panel2 { IPanel^ get(); }
-	virtual property String^ Clipboard { String^ get(); void set(String^ value); }
 	virtual property String^ PluginFolderPath { String^ get(); }
 	virtual property String^ RootFar { String^ get(); }
 	virtual property String^ RootKey { String^ get(); }
@@ -114,7 +60,7 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title);
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual String^ PasteFromClipboard();
-	virtual String^ RegisterPrefix(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<ExecutingEventArgs^>^ handler);
+	virtual String^ RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler);
 	virtual void CopyToClipboard(String^ text);
 	virtual void GetUserScreen();
 	virtual void LoadMacros();
@@ -127,7 +73,7 @@ public:
 	virtual void PostStep(EventHandler^ step);
 	virtual void PostText(String^ text);
 	virtual void PostText(String^ text, bool disableOutput);
-	virtual void RegisterFile(BasePlugin^ plugin, String^ name, EventHandler<OpenFileEventArgs^>^ handler);
+	virtual void RegisterFiler(BasePlugin^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates);
 	virtual void RegisterTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ command);
@@ -138,8 +84,8 @@ public:
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
 	virtual void ShowPanelMenu(bool showPushCommand);
-	virtual void UnregisterFile(EventHandler<OpenFileEventArgs^>^ handler);
-	virtual void UnregisterPrefix(EventHandler<ExecutingEventArgs^>^ handler);
+	virtual void UnregisterCommand(EventHandler<CommandEventArgs^>^ handler);
+	virtual void UnregisterFiler(EventHandler<FilerEventArgs^>^ handler);
 	virtual void UnregisterTool(EventHandler<ToolEventArgs^>^ handler);
 	virtual void Write(String^ text);
 	virtual void Write(String^ text, ConsoleColor foregroundColor);
@@ -147,7 +93,7 @@ public:
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
 	virtual WindowType GetWindowType(int index);
 internal:
-	static Far^ Get() { return _instance; }
+	static property Far^ Instance { Far^ get() { return _instance; } }
 	static void StartFar();
 	void Stop();
 internal:
@@ -159,34 +105,44 @@ internal:
 	HANDLE AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize);
 	HANDLE AsOpenPlugin(int from, INT_PTR item);
 	void AsGetPluginInfo(PluginInfo* pi);
+	void RegisterCommands(IEnumerable<CommandPluginInfo^>^ commands);
+	void RegisterFilers(IEnumerable<FilerPluginInfo^>^ filers);
+	void RegisterTool(ToolPluginInfo^ tool);
+	void RegisterTools(IEnumerable<ToolPluginInfo^>^ tools);
+	Object^ GetFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue) { return GetPluginValue("FAR.NET\\" + keyPath, valueName, defaultValue); }
+	void SetFarNetValue(String^ keyPath, String^ valueName, Object^ value) { SetPluginValue("FAR.NET\\" + keyPath, valueName, value); }
 private:
 	Far();
-	void Start();
-	void Free(ToolOptions options);
-	void ProcessPrefixes(INT_PTR item);
 	Object^ GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue);
+	void Free(ToolOptions options);
+	void OnConfigCommand();
+	void OnConfigFiler();
+	void OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^ list);
 	void OnNetConfig(Object^ sender, ToolEventArgs^ e);
-	void OnNetF11Menus(Object^ sender, ToolEventArgs^ e);
 	void OnNetDisk(Object^ sender, ToolEventArgs^ e);
-	void OnConfigFile();
-	void OnConfigPrefix();
-	void OnConfigTool(String^ title, ToolOptions option, List<PluginTool^>^ list);
+	void OnNetF11Menus(Object^ sender, ToolEventArgs^ e);
+	void ProcessPrefixes(INT_PTR item);
+	void Start();
+private: // public candidates
+	static bool CompareName(String^ mask, const char* name, bool skipPath);
 private:
+	// The instance
 	static Far^ _instance;
+private:
 	CStr* _pConfig;
 	CStr* _pDisk;
 	CStr* _pEditor;
 	CStr* _pPanels;
 	CStr* _pViewer;
 	CStr* _prefixes;
-	List<PluginFile^> _registeredFile;
-	List<PluginPrefix^> _registeredPrefix;
-	List<PluginTool^> _registeredConfig;
-	List<PluginTool^> _registeredDisk;
-	List<PluginTool^> _registeredEditor;
-	List<PluginTool^> _registeredPanels;
-	List<PluginTool^> _registeredViewer;
-	Dictionary<EventHandler<ToolEventArgs^>^, PluginTool^> _registeredTools;
+	List<CommandPluginInfo^> _registeredCommand;
+	List<FilerPluginInfo^> _registeredFiler;
+	List<ToolPluginInfo^> _registeredConfig;
+	List<ToolPluginInfo^> _registeredDisk;
+	List<ToolPluginInfo^> _registeredEditor;
+	List<ToolPluginInfo^> _registeredPanels;
+	List<ToolPluginInfo^> _registeredViewer;
+private:
 	String^ _hotkey;
 	array<int>^ _hotkeys;
 	EventHandler^ _handler;
