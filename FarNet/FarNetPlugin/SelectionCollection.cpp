@@ -8,7 +8,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "Utils.h"
 #include "EditorLine.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 SelectionCollection::SelectionCollection(IEditor^ editor, bool trueLines)
 : _editor(editor)

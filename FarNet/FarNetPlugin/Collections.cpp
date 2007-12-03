@@ -5,9 +5,9 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #include "StdAfx.h"
 #include "Collections.h"
-#include "FarImpl.h"
+#include "Far.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 EditorStringCollection::EditorStringCollection(ILines^ lines, bool selected)
 : _lines(lines)

@@ -22,8 +22,8 @@ namespace FarManager
 		/// <summary>
 		/// Registers a handler invoked from one of FAR menus.
 		/// </summary>
-		/// <param name="plugin">Plugin instance.</param>
-		/// <param name="name">UI name.</param>
+		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
+		/// <param name="name">Tool name and also the default menu item name. Recommended to be a unique name in the assembly.</param>
 		/// <param name="handler">Tool handler.</param>
 		/// <param name="options">Tool options.</param>
 		void RegisterTool(BasePlugin plugin, string name, EventHandler<ToolEventArgs> handler, ToolOptions options);
@@ -36,29 +36,37 @@ namespace FarManager
 		/// Registers a handler invoked from the command line by its prefix.
 		/// If a plugin uses this prefix itself then it should use the returned value instead.
 		/// </summary>
-		/// <param name="plugin">Plugin instance.</param>
-		/// <param name="name">UI name.</param>
-		/// <param name="prefix">Command prefix.</param>
+		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
+		/// <param name="name">Command name and also the config menu item name. Recommended to be a unique name in the assembly.</param>
+		/// <param name="prefix">Command prefix, see remarks.</param>
 		/// <param name="handler">Command handler.</param>
 		/// <returns>Actual prefix that is used by FAR.NET for this command.</returns>
-		string RegisterPrefix(BasePlugin plugin, string name, string prefix, EventHandler<ExecutingEventArgs> handler);
+		/// <remarks>
+		/// Provided <c>prefix</c> is only a default suggestion, actual prefix used by FAR.NET can be different,
+		/// e.g. changed by a user, so that use the returned prefix if the plugin uses it. Note that the plugin
+		/// is not notified about prefix changes during the session. If it is really important (rare) then use
+		/// <see cref="CommandPlugin"/> which can always have a fresh prefix set by a user.
+		/// </remarks>
+		string RegisterCommand(BasePlugin plugin, string name, string prefix, EventHandler<CommandEventArgs> handler);
 		/// <summary>
-		/// Unregisters a prefix handler.
+		/// Unregisters a command handler.
 		/// </summary>
-		/// <param name="handler">Prefix handler.</param>
-		void UnregisterPrefix(EventHandler<ExecutingEventArgs> handler);
+		/// <param name="handler">Command handler.</param>
+		void UnregisterCommand(EventHandler<CommandEventArgs> handler);
 		/// <summary>
-		/// Registers a handler invoked for a file. See <see cref="OpenFileEventArgs"/>.
+		/// Registers a handler invoked for a file. See <see cref="FilerEventArgs"/>.
 		/// </summary>
-		/// <param name="plugin">Plugin instance.</param>
-		/// <param name="name">UI name.</param>
-		/// <param name="handler">File handler.</param>
-		void RegisterFile(BasePlugin plugin, string name, EventHandler<OpenFileEventArgs> handler);
+		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
+		/// <param name="name">Filer name and also the config menu items. Recommended to be a unique name in the assembly.</param>
+		/// <param name="handler">Filer handler.</param>
+		/// <param name="mask">File(s) mask, see <see cref="FilerPlugin.Mask"/>.</param>
+		/// <param name="creates">Tells that the plugin also creates files.</param>
+		void RegisterFiler(BasePlugin plugin, string name, EventHandler<FilerEventArgs> handler, string mask, bool creates);
 		/// <summary>
 		/// Unregisters a file handler.
 		/// </summary>
-		/// <param name="handler">File handler.</param>
-		void UnregisterFile(EventHandler<OpenFileEventArgs> handler);
+		/// <param name="handler">Filer handler.</param>
+		void UnregisterFiler(EventHandler<FilerEventArgs> handler);
 		/// <summary>
 		/// Path to the plugin folder.
 		/// </summary>
@@ -105,7 +113,7 @@ namespace FarManager
 		/// <summary>
 		/// Handle of FAR window.
 		/// </summary>
-		int HWnd { get; }
+		IntPtr HWnd { get; }
 		/// <summary>
 		/// FAR version.
 		/// </summary>
@@ -134,11 +142,6 @@ namespace FarManager
 		/// String of word delimiters used in editors.
 		/// </summary>
 		string WordDiv { get; }
-		/// <summary>
-		/// Obsolete. Use <see cref="PasteFromClipboard"/> and <see cref="CopyToClipboard"/>.
-		/// </summary>
-		[Obsolete("Use PasteFromClipboard and CopyToClipboard.")]
-		string Clipboard { get; set; }
 		/// <summary>
 		/// Gets the clipboard text.
 		/// </summary>		
@@ -237,17 +240,23 @@ namespace FarManager
 		/// </summary>
 		ICollection<IEditor> Editors { get; }
 		/// <summary>
-		/// Current (active) panel.
-		/// If it is a FAR.NET plugin panel it returns <see cref="IPanelPlugin"/>.
+		/// Active panel. It is null if FAR started with /e or /v.
 		/// </summary>
+		/// <remarks>
+		/// If it is a FAR.NET panel it returns <see cref="IPanelPlugin"/>, you can keep this, but remember its state may change.
+		/// Else it points to an active panel no matter if it changes, so that use this reference instantly.
+		/// </remarks>
 		IPanel Panel { get; }
 		/// <summary>
-		/// Current (active) panel.
-		/// If it is a FAR.NET plugin panel it returns <see cref="IPanelPlugin"/>.
+		/// Passive panel. It is null if FAR started with /e or /v.
 		/// </summary>
+		/// <remarks>
+		/// If it is a FAR.NET panel it returns <see cref="IPanelPlugin"/>, you can keep this, but remember its state may change.
+		/// Else it points to a passive panel no matter if it changes, so that use this reference instantly.
+		/// </remarks>
 		IPanel Panel2 { get; }
 		/// <summary>
-		/// FAR command line.
+		/// The command line instance.
 		/// </summary>
 		/// <remarks>
 		/// If a plugin is called from the command line (including user menu (F2)
@@ -258,14 +267,14 @@ namespace FarManager
 		/// </remarks>
 		ILine CommandLine { get; }
 		/// <summary>
-		/// Copies the current screen contents to the FAR user screen buffer
+		/// Copies the current screen contents to the user screen buffer
 		/// (which is displayed when the panels are switched off).
 		/// </summary>
 		void SetUserScreen();
 		/// <summary>
 		/// Copies the current user screen buffer to console screen
 		/// (which is displayed when the panels are switched off).
-		/// VERSION: FAR 1.71.2186.
+		/// Requires FAR 1.71.2186.
 		/// </summary>
 		void GetUserScreen();
 		/// <summary>
@@ -382,7 +391,7 @@ namespace FarManager
 		/// <summary>
 		/// Gets a plugin value from the registry.
 		/// </summary>
-		/// <param name="pluginName">Plugin and registry key name. The key is created if it does not exist.</param>
+		/// <param name="pluginName">Plugin name (registry key).</param>
 		/// <param name="valueName">Value name.</param>
 		/// <param name="defaultValue">Default value.</param>
 		/// <returns>Found or default value.</returns>
@@ -509,68 +518,6 @@ namespace FarManager
 		/// This flag can be combined with other flags.
 		/// </summary>
 		NoError = unchecked((int)0x80000000),
-	}
-
-	/// <summary>
-	/// Arguments of a plugin menu item event.
-	/// </summary>
-	public sealed class ToolEventArgs : EventArgs
-	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="from">See <see cref="From"/>.</param>
-		public ToolEventArgs(ToolOptions from)
-		{
-			_From = from;
-		}
-		/// <summary>
-		/// Where it is called from.
-		/// </summary>
-		public ToolOptions From
-		{
-			get { return _From; }
-		}
-		ToolOptions _From;
-		/// <summary>
-		/// Tells to ignore results, e.g. when configuration dialog is cancelled.
-		/// </summary>
-		public bool Ignore
-		{
-			get { return _Ignore; }
-			set { _Ignore = value; }
-		}
-		bool _Ignore;
-	}
-
-	/// <summary>
-	/// Arguments for a handler registered by <see cref="IFar.RegisterFile"/>.
-	/// A handler is called to open a <see cref="IPanelPlugin"/> which emulates a file system based on a file.
-	/// If a file is unknown a handler should do nothing. [OpenFilePlugin]
-	/// </summary>
-	public sealed class OpenFileEventArgs : EventArgs
-	{
-		string _Name;
-		/// <summary>
-		/// Full name of a file including the path.
-		/// If it is empty then a handler is called to create a new file [ShiftF1].
-		/// In any case a handler opens <see cref="IPanelPlugin"/> or ignores this call.
-		/// </summary>
-		public string Name
-		{
-			get { return _Name; }
-			set { _Name = value; }
-		}
-		byte[] _Data;
-		/// <summary>
-		/// Data from the beginning of the file used to detect the file type.
-		/// The plugin must not change these data.
-		/// </summary>
-		public byte[] Data
-		{
-			get { return _Data; }
-			set { _Data = value; }
-		}
 	}
 
 	/// <summary>

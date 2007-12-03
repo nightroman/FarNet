@@ -1,5 +1,5 @@
 
-:: Synopsis : Build Far.Net plugin library from CS source
+:: Synopsis : Build FAR.NET plugin library from CS source
 :: Example  : Build-CS MyPlugin.cs
 :: Output   : MyPlugin.dll
 

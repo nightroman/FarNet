@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("3.3.34.0")]
+[assembly: AssemblyVersion("3.3.35.0")]
 [assembly: AssemblyTitle("Far.NET interface")]
 [assembly: AssemblyDescription("Interface for Far.NET plugins")]
 [assembly: AssemblyConfiguration("")]

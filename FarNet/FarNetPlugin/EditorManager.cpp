@@ -7,7 +7,7 @@ Copyright (c) 2005-2007 Far.NET Team
 #include "EditorManager.h"
 #include "Editor.h"
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 EditorManager::EditorManager()
 {

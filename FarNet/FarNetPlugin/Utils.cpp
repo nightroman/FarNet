@@ -12,7 +12,7 @@ bool ValueUserScreen::_value;
 // empty oem string
 char CStr::s_empty[1] = {0};
 
-///<summary>Constructor: converts a string and holds the result.</summary>
+///<summary>Converts a string and holds the result.</summary>
 CStr::CStr(String^ str)
 {
 	if (String::IsNullOrEmpty(str))
@@ -26,10 +26,10 @@ CStr::CStr(String^ str)
 	}
 }
 
-///<summary>Constructor: makes and holds new char[length+1].</summary>
-CStr::CStr(int length)
+///<summary>Makes and holds new char[len+1].</summary>
+CStr::CStr(int len)
 {
-	m_str = new char[length + 1];
+	m_str = new char[len + 1];
 }
 
 ///<summary>Destructor: deletes the data.</summary>
@@ -55,41 +55,6 @@ void CStr::Set(String^ str)
 		StrToOem(str, m_str);
 	}
 }
-
-///<summary>Temp string buffer.</summary>
-template<class T>
-class TStr
-{
-public:
-	TStr(int len)
-	{
-		if (len > eMaxLen)
-			m_str = new T[len + 1];
-		else
-			m_str = m_buf;
-	}
-	TStr(const T* str, int len)
-	{
-		if (len > eMaxLen)
-			m_str = new T[len + 1];
-		else
-			m_str = m_buf;
-		strncpy_s(m_str, len + 1, str, len);
-	}
-	~TStr()
-	{
-		if (m_str != m_buf)
-			delete m_str;
-	}
-	operator T*()
-	{
-		return m_str;
-	}
-private:
-	enum {eMaxLen = 255};
-	T m_buf[eMaxLen + 1];
-	T* m_str;
-};
 
 // caller deletes the result
 char* NewOem(String^ str)
@@ -118,6 +83,16 @@ void WC2OEM(LPCWSTR src, char* dst, int len)
 	}
 }
 
+void OEM2WC(const char* src, LPWSTR dst, size_t size)
+{
+	MultiByteToWideChar(CP_OEMCP, 0, src, (int)size, dst, (int)size);
+}
+
+void OEM2WC(const char* src, LPWSTR dst)
+{
+	OEM2WC(src, dst, strlen(src) + 1);
+}
+
 void StrToOem(String^ str, char* oem)
 {
 	pin_ptr<const wchar_t> p = PtrToStringChars(str);
@@ -130,16 +105,6 @@ void StrToOem(String^ str, char* oem, int size)
 		StrToOem((str->Length < size ? str : str->Substring(0, size - 1)), oem);
 	else
 		oem[0] = 0;
-}
-
-void OEM2WC(const char* src, LPWSTR dst, size_t size)
-{
-	MultiByteToWideChar(CP_OEMCP, 0, src, (int)size, dst, (int)size);
-}
-
-void OEM2WC(const char* src, LPWSTR dst)
-{
-	OEM2WC(src, dst, strlen(src) + 1);
 }
 
 Char OemToChar(char oem)
@@ -175,7 +140,7 @@ String^ OemToStr(const char* oem)
 
 String^ FromEditor(const char* text, int len)
 {
-	TStr<char> textCopy(text, len);
+	CBox textCopy(text, len);
 	EditorControl_ECTL_EDITORTOOEM(textCopy, len);
 	String^ r = OemToStr(textCopy, len);
 	return r;
@@ -264,7 +229,7 @@ void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype)
 {
 	if (overtype > 0)
 		Edit_SetOvertype(false);
-	CStr sb(text->Replace("\r\n", "\r")->Replace('\n', '\r'));
+	CBox sb(text->Replace("\r\n", "\r")->Replace('\n', '\r'));
 	Info.EditorControl(ECTL_INSERTTEXT, sb);
 	if (overtype > 0)
 		Edit_SetOvertype(true);

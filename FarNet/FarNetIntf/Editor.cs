@@ -342,9 +342,6 @@ namespace FarManager
 	public sealed class RedrawEventArgs : EventArgs
 	{
 		int _mode;
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="mode">See <see cref="Mode"/>.</param>
 		public RedrawEventArgs(int mode)
 		{
@@ -492,9 +489,6 @@ namespace FarManager
 	/// </summary>
 	public sealed class KeyEventArgs : EventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="key">Key data.</param>
 		public KeyEventArgs(KeyInfo key)
 		{
@@ -524,9 +518,6 @@ namespace FarManager
 	/// </summary>
 	public sealed class MouseEventArgs : EventArgs
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
 		/// <param name="mouse">Mouse data.</param>
 		public MouseEventArgs(MouseInfo mouse)
 		{

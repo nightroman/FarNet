@@ -9,7 +9,7 @@ Copyright (c) 2005-2007 Far.NET Team
 
 #define SET_BIT(VAR, VALUE, FLAG) if (VALUE) VAR |= FLAG; else VAR &= ~FLAG;
 
-namespace FarManagerImpl
+namespace FarNet
 {;
 Viewer::Viewer()
 {
@@ -22,8 +22,8 @@ void Viewer::Open()
 {
 	AssertClosed();
 
-	CStr sFileName(_fileName);
-	CStr sTitle(_title);
+	CBox sFileName(_fileName);
+	CBox sTitle(_title);
 
 	int res = Info.Viewer(sFileName, sTitle, _window.Left, _window.Top, _window.Right, _window.Bottom, _flags);
 
