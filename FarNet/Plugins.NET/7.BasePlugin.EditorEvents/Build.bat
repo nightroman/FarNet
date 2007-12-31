@@ -1,1 +1,0 @@
-..\Build-CS TrimEndsWhenSave.cs

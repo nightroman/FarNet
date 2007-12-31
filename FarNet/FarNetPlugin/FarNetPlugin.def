@@ -12,6 +12,7 @@ EXPORTS
 	MakeDirectory
 	OpenFilePlugin
 	OpenPlugin
+	ProcessDialogEvent
 	ProcessEditorEvent
 	ProcessEditorInput
 	ProcessEvent

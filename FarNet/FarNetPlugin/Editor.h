@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -12,19 +12,22 @@ ref class SelectionCollection;
 ref class VisibleEditorCursor;
 ref class EditorLineCollection;
 
-public ref class BaseEditor : IAnyEditor
+ref class BaseEditor : IAnyEditor
 {
-public: DEF_EVENT(AfterClose, _afterClose);
-public: DEF_EVENT(AfterOpen, _afterOpen);
-public: DEF_EVENT(BeforeSave, _beforeSave);
-public: DEF_EVENT_ARGS(OnKey, _onKey, KeyEventArgs);
-public: DEF_EVENT_ARGS(OnMouse, _onMouse, MouseEventArgs);
-public: DEF_EVENT_ARGS(OnRedraw, _onRedraw, RedrawEventArgs);
+public: DEF_EVENT(AfterClose, _AfterClose);
+public: DEF_EVENT(AfterOpen, _AfterOpen);
+public: DEF_EVENT(BeforeSave, _BeforeSave);
+public: DEF_EVENT(GotFocus, _GotFocus);
+public: DEF_EVENT(LosingFocus, _LosingFocus);
+public: DEF_EVENT_ARGS(OnKey, _OnKey, KeyEventArgs);
+public: DEF_EVENT_ARGS(OnMouse, _OnMouse, MouseEventArgs);
+public: DEF_EVENT_ARGS(OnRedraw, _OnRedraw, RedrawEventArgs);
 public:
+	virtual property String^ WordDiv { String^ get(); void set(String^ value); }
 	virtual String^ EditText(String^ text, String^ title);
 };
 
-public ref class Editor : public BaseEditor, public IEditor
+ref class Editor : public BaseEditor, public IEditor
 {
 public:
 	virtual property bool Async { bool get(); void set(bool value); }
@@ -53,7 +56,7 @@ public:
 	virtual property Point Cursor { Point get(); }
 	virtual property String^ FileName { String^ get(); void set(String^ value); }
 	virtual property String^ Title { String^ get(); void set(String^ value); }
-	virtual property String^ WordDiv { String^ get(); void set(String^ value); }
+	virtual property String^ WordDiv { String^ get() override; void set(String^ value) override; }
 	virtual property TextFrame Frame { TextFrame get(); void set(TextFrame value); }
 public:
 	virtual ICollection<TextFrame>^ Bookmarks();
@@ -84,9 +87,11 @@ internal:
 	void GetParams();
 private:
 	int Flags();
+	[CA_USED]
 	void AssertClosed();
+	[CA_USED]
 	void AssertCurrent();
-	void AssertCurrent(EditorInfo& ei);
+	void CurrentInfo(EditorInfo& ei);
 private:
 	EditorManager^ _manager;
 	int _id;

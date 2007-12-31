@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -9,7 +9,7 @@ namespace FarNet
 {;
 ref class FarListBox;
 
-public ref class MenuItem : IMenuItem
+ref class MenuItem : IMenuItem
 {
 public:
 	DEF_EVENT(OnClick, _OnClick);
@@ -26,7 +26,7 @@ public:
 	}
 };
 
-public ref class MenuItemCollection : public List<IMenuItem^>, IMenuItems
+ref class MenuItemCollection : public List<IMenuItem^>, IMenuItems
 {
 public:
 	virtual IMenuItem^ Add(String^ text);
@@ -37,7 +37,7 @@ private:
 	virtual IMenuItem^ Add(String^ text, bool isChecked) sealed = IMenuItems::Add;
 };
 
-public ref class AnyMenu abstract : public IAnyMenu
+ref class AnyMenu abstract : public IAnyMenu
 {
 public:
 	virtual property bool AutoAssignHotkeys;
@@ -47,6 +47,7 @@ public:
 	virtual property IList<int>^ BreakKeys { IList<int>^ get(); }
 	virtual property IMenuItems^ Items { IMenuItems^ get(); }
 	virtual property int BreakCode { int get(); }
+	virtual property int BreakKey { int get(); }
 	virtual property int MaxHeight;
 	virtual property int Selected { int get(); void set(int value); }
 	virtual property int X { int get(); void set(int value); }
@@ -66,10 +67,10 @@ internal:
 	int _y;
 	int _selected;
 	List<int> _keys;
-	int _breakCode;
+	int _breakKey;
 };
 
-public ref class Menu : public AnyMenu, public IMenu
+ref class Menu : public AnyMenu, public IMenu
 {
 public:
 	virtual property bool ReverseAutoAssign;
@@ -94,7 +95,7 @@ private:
 	char* _bottom;
 };
 
-public ref class ListMenu : public AnyMenu, public IListMenu
+ref class ListMenu : public AnyMenu, public IListMenu
 {
 public:
 	virtual property bool AutoSelect;

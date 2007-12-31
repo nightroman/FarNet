@@ -1,8 +1,9 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
+using System.Diagnostics;
 using System;
 
 namespace FarManager
@@ -58,6 +59,7 @@ namespace FarManager
 	/// <summary>
 	/// Keyboard event information.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public struct KeyInfo
 	{
 		bool _keyDown;
@@ -180,6 +182,7 @@ namespace FarManager
 	/// <summary>
 	/// Mouse event information.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public struct MouseInfo
 	{
 		/// <param name="where">Position.</param>
@@ -252,6 +255,7 @@ namespace FarManager
 	/// <summary>
 	/// Internal key codes. [farkeys.hpp]
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public static class KeyCode
 	{
 		/// <summary></summary>
@@ -386,6 +390,7 @@ namespace FarManager
 	/// Virtual key codes.
 	/// <c>Add{Control|Alt|Shift}</c> are not virtual key codes but helpers, e.g. to join menu break codes.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public static class VKeyCode
 	{
 		/// <summary></summary>

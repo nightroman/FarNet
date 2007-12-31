@@ -1,8 +1,9 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
+using System.Diagnostics;
 using System;
 
 namespace FarManager
@@ -10,6 +11,7 @@ namespace FarManager
 	/// <summary>
 	/// Ordered pair of integer X and Y coordinates that defines a point in a two-dimensional plane.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public struct Point
 	{
 		int x;
@@ -77,6 +79,7 @@ namespace FarManager
 	/// <summary>
 	/// Ordered pair of two points defining a rectangle or a stream selection in editor.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public struct Place
 	{
 		Point _first;

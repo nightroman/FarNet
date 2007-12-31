@@ -1,5 +1,5 @@
-using System;
 using FarManager;
+using System;
 
 /// A simplest command: it uses the default Prefix and Name (the class name,
 /// "cmd1") and it does not care that actually used prefix can be different.

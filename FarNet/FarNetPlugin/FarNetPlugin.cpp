@@ -1,9 +1,10 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "stdafx.h"
+#include "Dialog.h"
 #include "EditorManager.h"
 #include "Far.h"
 #include "Panel.h"
@@ -79,22 +80,6 @@ int WINAPI Configure(int itemIndex)
 	return false;
 }
 
-int WINAPI ProcessEditorInput(const INPUT_RECORD* rec)
-{
-	__START;
-	return Far::Instance->_editorManager->AsProcessEditorInput(rec);
-	__END;
-	return 0;
-}
-
-int WINAPI ProcessEditorEvent(int type, void* param)
-{
-	__START;
-	return Far::Instance->_editorManager->AsProcessEditorEvent(type, param);
-	__END;
-	return 0;
-}
-
 void WINAPI ClosePlugin(HANDLE hPlugin)
 {
 	__START;
@@ -153,22 +138,6 @@ int WINAPI DeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	return FALSE;
 }
 
-int WINAPI ProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
-{
-	__START;
-	return PanelSet::AsProcessKey(hPlugin, key, controlState);
-	__END;
-	return TRUE; // TRUE: ignore the key because there was a problem
-}
-
-int WINAPI ProcessEvent(HANDLE hPlugin, int id, void* param)
-{
-	__START;
-	return PanelSet::AsProcessEvent(hPlugin, id, param);
-	__END;
-	return FALSE;
-}
-
 int WINAPI MakeDirectory(HANDLE hPlugin, char* name, int opMode)
 {
 	__START;
@@ -183,6 +152,46 @@ HANDLE WINAPI OpenFilePlugin(char* name, const unsigned char* data, int dataSize
 	return Far::Instance->AsOpenFilePlugin(name, data, dataSize);
 	__END;
 	return INVALID_HANDLE_VALUE;
+}
+
+int WINAPI ProcessDialogEvent(int id, void* param)
+{
+	__START;
+	return FarDialog::AsProcessDialogEvent(id, param);
+	__END;
+	return true; // ignore, there was a problem
+}
+
+int WINAPI ProcessEditorEvent(int type, void* param)
+{
+	__START;
+	return Far::Instance->_editorManager->AsProcessEditorEvent(type, param);
+	__END;
+	return 0;
+}
+
+int WINAPI ProcessEditorInput(const INPUT_RECORD* rec)
+{
+	__START;
+	return Far::Instance->_editorManager->AsProcessEditorInput(rec);
+	__END;
+	return 0;
+}
+
+int WINAPI ProcessEvent(HANDLE hPlugin, int id, void* param)
+{
+	__START;
+	return PanelSet::AsProcessEvent(hPlugin, id, param);
+	__END;
+	return false;
+}
+
+int WINAPI ProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
+{
+	__START;
+	return PanelSet::AsProcessKey(hPlugin, key, controlState);
+	__END;
+	return true; // ignore, there was a problem
 }
 
 }

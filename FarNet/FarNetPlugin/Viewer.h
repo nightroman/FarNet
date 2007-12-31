@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -8,7 +8,7 @@ Copyright (c) 2005-2007 Far.NET Team
 namespace FarNet
 {;
 
-public ref class Viewer : public IViewer
+ref class Viewer : public IViewer
 {
 public:
 	virtual property bool Async { bool get(); void set(bool value); }
@@ -27,6 +27,7 @@ internal:
 	Viewer();
 	void GetParams();
 private:
+	[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 	void AssertClosed();
 private:
 	int _id;

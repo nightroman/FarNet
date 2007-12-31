@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -98,6 +98,10 @@ String^ ToolPluginInfo::Alias(ToolOptions option)
 		if (ES(_AliasViewer))
 			_AliasViewer = Far::Instance->GetFarNetValue(Key, "Viewer", Name)->ToString();
 		return _AliasViewer;
+	case ToolOptions::Dialog:
+		if (ES(_AliasDialog))
+			_AliasDialog = Far::Instance->GetFarNetValue(Key, "Dialog", Name)->ToString();
+		return _AliasDialog;
 	default:
 		throw gcnew InvalidOperationException("Unknown tool option.");
 	}
@@ -129,6 +133,10 @@ void ToolPluginInfo::Alias(ToolOptions option, String^ value)
 	case ToolOptions::Viewer:
 		Far::Instance->SetFarNetValue(Key, "Viewer", value);
 		_AliasViewer = value;
+		break;
+	case ToolOptions::Dialog:
+		Far::Instance->SetFarNetValue(Key, "Dialog", value);
+		_AliasDialog = value;
 		break;
 	default:
 		throw gcnew InvalidOperationException("Unknown tool option.");
@@ -192,6 +200,33 @@ String^ FilerPluginInfo::Mask::get()
 }
 
 void FilerPluginInfo::Mask::set(String^ value)
+{
+	if (!value) throw gcnew ArgumentNullException("value");
+
+	Far::Instance->SetFarNetValue(Key, "Mask", value);
+	_Mask = value;
+}
+
+//
+//::EditorPluginInfo::
+//
+
+void EditorPluginInfo::Invoke(Object^ sender, EventArgs^ e)
+{
+	Connect();
+	EditorPlugin^ instance = (EditorPlugin^)Plugin;
+	_Handler = gcnew EventHandler(instance, &EditorPlugin::Invoke);
+	instance->Invoke(sender, e);
+}
+
+String^ EditorPluginInfo::Mask::get()
+{
+	if (ES(_Mask))
+		_Mask = Far::Instance->GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
+	return _Mask;
+}
+
+void EditorPluginInfo::Mask::set(String^ value)
 {
 	if (!value) throw gcnew ArgumentNullException("value");
 

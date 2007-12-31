@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -11,7 +11,7 @@ ref class Far;
 ref class FarDialog;
 ref class MenuItemCollection;
 
-public ref class FarControl abstract : public IControl
+ref class FarControl abstract : public IControl
 {
 public:
 	virtual property bool Disabled { bool get(); void set(bool value); }
@@ -43,7 +43,7 @@ internal:
 	String^ _text;
 };
 
-public ref class FarBox : public FarControl, public IBox
+ref class FarBox : public FarControl, public IBox
 {
 public:
 	virtual property bool LeftText { bool get(); void set(bool value); }
@@ -54,7 +54,7 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-public ref class FarButton : public FarControl, public IButton
+ref class FarButton : public FarControl, public IButton
 {
 public:
 	virtual property bool CenterGroup { bool get(); void set(bool value); }
@@ -68,7 +68,7 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-public ref class FarCheckBox : public FarControl, public ICheckBox
+ref class FarCheckBox : public FarControl, public ICheckBox
 {
 public:
 	virtual property bool CenterGroup { bool get(); void set(bool value); }
@@ -82,13 +82,14 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-public ref class FarEdit : public FarControl, public IEdit
+ref class FarEdit : public FarControl, public IEdit
 {
 public:
 	virtual property bool Editor { bool get(); void set(bool value); }
 	virtual property bool EnvExpanded { bool get(); void set(bool value); }
 	virtual property bool Fixed { bool get(); }
 	virtual property bool ManualAddHistory { bool get(); void set(bool value); }
+	virtual property bool NoAutoComplete { bool get(); void set(bool value); }
 	virtual property bool NoFocus { bool get(); void set(bool value); }
 	virtual property bool Password { bool get(); }
 	virtual property bool ReadOnly { bool get(); void set(bool value); }
@@ -107,7 +108,7 @@ private:
 	String^ _history;
 };
 
-public ref class FarRadioButton : public FarControl, public IRadioButton
+ref class FarRadioButton : public FarControl, public IRadioButton
 {
 public:
 	virtual property bool CenterGroup { bool get(); void set(bool value); }
@@ -122,7 +123,7 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-public ref class FarText : public FarControl, public IText
+ref class FarText : public FarControl, public IText
 {
 public:
 	virtual property bool BoxColor { bool get(); void set(bool value); }
@@ -136,7 +137,7 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-public ref class FarBaseBox abstract : public FarControl, public IBaseList
+ref class FarBaseBox abstract : public FarControl, public IBaseList
 {
 public:
 	virtual property bool AutoAssignHotkeys { bool get(); void set(bool value); }
@@ -150,6 +151,7 @@ public:
 public:
 	virtual IMenuItem^ Add(String^ text);
 protected:
+	[CA_USED]
 	FarBaseBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 internal:
 	virtual void Setup(FarDialogItem& item, int type) override;
@@ -161,7 +163,7 @@ private:
 	FarList* _pFarList;
 };
 
-public ref class FarComboBox : public FarBaseBox, public IComboBox
+ref class FarComboBox : public FarBaseBox, public IComboBox
 {
 public:
 	virtual property bool DropDownList { bool get(); void set(bool value); }
@@ -175,7 +177,7 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-public ref class FarListBox : public FarBaseBox, public IListBox
+ref class FarListBox : public FarBaseBox, public IListBox
 {
 public:
 	virtual property bool NoBox { bool get(); void set(bool value); }
@@ -184,7 +186,7 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-public ref class FarDialog : public IDialog
+ref class FarDialog : public IDialog
 {
 public:
 	virtual property bool IsSmall { bool get(); void set(bool value); }
@@ -220,6 +222,7 @@ public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
 public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);
 internal:
 	FarDialog(int left, int top, int right, int bottom);
+	static int AsProcessDialogEvent(int id, void* param);
 	LONG_PTR DialogProc(int msg, int param1, LONG_PTR param2);
 internal:
 	static List<FarDialog^> _dialogs;

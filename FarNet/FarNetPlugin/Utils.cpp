@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -191,7 +191,7 @@ void EditorControl_ECTL_GETINFO(EditorInfo& ei, bool safe)
 	else if (ei.BlockStartLine < 0)
 	{
 		//! it is possible after selecting with current line (-1)
-		//! it is fixed in 1.71 m268 on build 2205
+		//! it is fixed in 1.71.2205
 		ei.BlockStartLine = ei.CurLine;
 	}
 }

@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -11,13 +11,12 @@ namespace FarNet
 {;
 static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelItem, int itemsNumber)
 {
-	List<IFile^>^ r = gcnew List<IFile^>();
+	List<IFile^>^ r = gcnew List<IFile^>(itemsNumber);
 
 	//? FAR bug: alone dots has UserData = 0 no matter what was written there; so check the dots name
 	if (itemsNumber == 1 && panelItem[0].UserData == 0 && strcmp(panelItem[0].FindData.cFileName, "..") == 0)
 		return r;
 
-	r->Capacity = itemsNumber;
 	for(int i = 0; i < itemsNumber; ++i)
 	{
 		int fi = (int)(INT_PTR)panelItem[i].UserData;
@@ -33,6 +32,8 @@ static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelIt
 
 void PanelSet::AsClosePlugin(HANDLE hPlugin)
 {
+	Log(__FUNCTION__); LogLine((INT_PTR)hPlugin);
+
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	pp->_info.Free();
 	_panels[(int)(INT_PTR)hPlugin] = nullptr;
@@ -42,6 +43,8 @@ void PanelSet::AsClosePlugin(HANDLE hPlugin)
 
 int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
 {
+	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_DeletingFiles)
 		return FALSE;
@@ -53,11 +56,15 @@ int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int item
 
 void PanelSet::AsFreeFindData(PluginPanelItem* panelItem)
 {
+	LogLine(__FUNCTION__);
+
 	delete[] (char*)panelItem;
 }
 
 int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode)
 {
+	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_GettingFiles)
 		return 0;
@@ -69,6 +76,8 @@ int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 
 int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
+	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+
 	try
 	{
 		FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
@@ -170,6 +179,8 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 
 void PanelSet::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
+	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (pp->_GettingInfo)
 		pp->_GettingInfo(pp, nullptr);
@@ -178,6 +189,8 @@ void PanelSet::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 
 int PanelSet::AsMakeDirectory(HANDLE hPlugin, char* name, int opMode)
 {
+	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_MakingDirectory)
 		return FALSE;
@@ -192,141 +205,165 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	switch(id)
 	{
-	case FE_BREAK:
-
-		if (pp->_CtrlBreakPressed)
-			pp->_CtrlBreakPressed(pp, nullptr);
-		break;
-
-	case FE_CHANGEVIEWMODE:
-
-		if (pp->_ViewModeChanged)
-		{
-			ViewModeChangedEventArgs e(OemToStr((const char*)param));
-			pp->_ViewModeChanged(pp, %e);
-		}
-		break;
-
-	case FE_CLOSE:
-
-		//? FE_CLOSE issues:
-		// *) unwanted extra call on plugin commands entered in command line
-		// *) may not be called at all e.g. if tmp panel is opened
-		if (!pp->_IsPushed && pp->_Closing)
-		{
-			PanelEventArgs e(OperationModes::None);
-			pp->_Closing(pp, %e);
-			return e.Ignore;
-		}
-		break;
-
-	case FE_COMMAND:
-
-		if (pp->_Executing)
-		{
-			//! We have to try\catch in here in order to return exactly what plugin returns.
-			ExecutingEventArgs e(OemToStr((const char*)param));
-			try
-			{
-				pp->_Executing(pp, %e);
-			}
-			catch(Exception^ exception)
-			{
-				Far::Instance->ShowError("Event: Executing", exception);
-			}
-			return e.Ignore;
-		}
-		break;
-
 	case FE_IDLE:
-
-		if (pp->_Idled)
-			pp->_Idled(pp, nullptr);
+#if LOG & LOG_IDLE
+		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("IDLE");
+#endif
+		{
+			if (pp->_Idled)
+				pp->_Idled(pp, nullptr);
+		}
 		break;
-
+	case FE_CHANGEVIEWMODE:
+		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("CHANGEVIEWMODE");
+		{
+			if (pp->_ViewModeChanged)
+			{
+				ViewModeChangedEventArgs e(OemToStr((const char*)param));
+				pp->_ViewModeChanged(pp, %e);
+			}
+		}
+		break;
+	case FE_CLOSE:
+		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("CLOSE");
+		{
+			//? FE_CLOSE issues:
+			// *) unwanted extra call on plugin commands entered in command line
+			// *) may not be called at all e.g. if tmp panel is opened
+			if (!pp->_IsPushed && pp->_Closing)
+			{
+				PanelEventArgs e(OperationModes::None);
+				pp->_Closing(pp, %e);
+				return e.Ignore;
+			}
+		}
+		break;
+	case FE_COMMAND:
+		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("COMMAND");
+		{
+			if (pp->_Executing)
+			{
+				//! We have to try\catch in here in order to return exactly what plugin returns.
+				ExecutingEventArgs e(OemToStr((const char*)param));
+				try
+				{
+					pp->_Executing(pp, %e);
+				}
+				catch(Exception^ exception)
+				{
+					Far::Instance->ShowError("Event: Executing", exception);
+				}
+				return e.Ignore;
+			}
+		}
+		break;
 	case FE_REDRAW:
-
-		if (_reenterOnRedrawing)
+		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("REDRAW");
 		{
-			_reenterOnRedrawing = false;
-			return FALSE;
-		}
-
-		if (pp->_Redrawing)
-		{
-			PanelEventArgs e(OperationModes::None);
-			pp->_Redrawing(pp, %e);
-			if (e.Ignore)
-				return TRUE;
-		}
-
-		int r = FALSE;
-
-		// case: check posted data
-		if (pp->_postData)
-		{
-			pp->_postFile = nullptr;
-			pp->_postName = nullptr;
-
-			int i = pp->AddDots ? 0 : -1;
-			for each (IFile^ f in pp->Contents)
+			if (_reenterOnRedrawing)
 			{
-				++i;
-				if (pp->_postData == f->Data)
-				{
-					_reenterOnRedrawing = true;
-					pp->Redraw(i, -1);
-					r = true;
-					break;
-				}
+				_reenterOnRedrawing = false;
+				return FALSE;
 			}
 
-			pp->_postData = nullptr;
-			return r;
-		}
-
-		// case: check posted file
-		if (pp->_postFile)
-		{
-			pp->_postName = nullptr;
-
-			int i = pp->AddDots ? 0 : -1;
-			for each (IFile^ f in pp->Contents)
+			if (pp->_Redrawing)
 			{
-				++i;
-				if (pp->_postFile == f)
-				{
-					_reenterOnRedrawing = true;
-					pp->Redraw(i, -1);
-					r = true;
-					break;
-				}
+				PanelEventArgs e(OperationModes::None);
+				pp->_Redrawing(pp, %e);
+				if (e.Ignore)
+					return TRUE;
 			}
 
-			pp->_postFile = nullptr;
-			return r;
-		}
+			int r = FALSE;
 
-		// case: check posted name
-		if (pp->_postName)
-		{
-			int i = pp->AddDots ? 0 : -1;
-			for each (IFile^ f in pp->Contents)
+			// case: check posted data
+			if (pp->_postData)
 			{
-				++i;
-				if (String::Compare(pp->_postName, f->Name, true, CultureInfo::InvariantCulture) == 0)
+				pp->_postFile = nullptr;
+				pp->_postName = nullptr;
+
+				int i = pp->AddDots ? 0 : -1;
+				for each (IFile^ f in pp->Contents)
 				{
-					_reenterOnRedrawing = true;
-					pp->Redraw(i, -1);
-					r = true;
-					break;
+					++i;
+					if (pp->_postData == f->Data)
+					{
+						_reenterOnRedrawing = true;
+						pp->Redraw(i, -1);
+						r = true;
+						break;
+					}
 				}
+
+				pp->_postData = nullptr;
+				return r;
 			}
 
-			pp->_postName = nullptr;
-			return r;
-		}
+			// case: check posted file
+			if (pp->_postFile)
+			{
+				pp->_postName = nullptr;
 
+				int i = pp->AddDots ? 0 : -1;
+				for each (IFile^ f in pp->Contents)
+				{
+					++i;
+					if (pp->_postFile == f)
+					{
+						_reenterOnRedrawing = true;
+						pp->Redraw(i, -1);
+						r = true;
+						break;
+					}
+				}
+
+				pp->_postFile = nullptr;
+				return r;
+			}
+
+			// case: check posted name
+			if (pp->_postName)
+			{
+				int i = pp->AddDots ? 0 : -1;
+				for each (IFile^ f in pp->Contents)
+				{
+					++i;
+					if (String::Compare(pp->_postName, f->Name, true, CultureInfo::InvariantCulture) == 0)
+					{
+						_reenterOnRedrawing = true;
+						pp->Redraw(i, -1);
+						r = true;
+						break;
+					}
+				}
+
+				pp->_postName = nullptr;
+				return r;
+			}
+		}
+		break;
+	case FE_GOTFOCUS:
+		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("GOTFOCUS");
+		LogLine((gcnew FarPanel(true))->Path);
+		{
+			if (pp->_GotFocus)
+				pp->_GotFocus(pp, nullptr);
+		}
+		break;
+	case FE_KILLFOCUS:
+		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("KILLFOCUS");
+		LogLine((gcnew FarPanel(true))->Path);
+		{
+			if (pp->_LosingFocus)
+				pp->_LosingFocus(pp, nullptr);
+		}
+		break;
+	case FE_BREAK:
+		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("BREAK");
+		{
+			if (pp->_CtrlBreakPressed)
+				pp->_CtrlBreakPressed(pp, nullptr);
+		}
 		break;
 	}
 	return FALSE;
@@ -334,6 +371,10 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
+#if LOG & LOG_KEYS
+	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+#endif
+
 	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp || !pp->_KeyPressed)
@@ -346,6 +387,8 @@ int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
 {
+	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_PuttingFiles)
 		return 0;
@@ -357,8 +400,7 @@ int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 	}
 	else
 	{
-		files = gcnew List<IFile^>;
-		files->Capacity = itemsNumber;
+		files = gcnew List<IFile^>(itemsNumber);
 		for(int i = 0; i < itemsNumber; ++i)
 			files->Add(FarPanel::ItemToFile(panelItem[i]));
 	}
@@ -369,6 +411,8 @@ int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 
 int PanelSet::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 {
+	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+
 	_inAsSetDirectory = true;
 	try
 	{
@@ -793,7 +837,7 @@ void FarPanel::IsVisible::set(bool value)
 	if (old == value)
 		return;
 
-	DWORD key = Info.FSF->FarNameToKey(pi.PanelRect.left == 0 ? "CtrlF1" : "CtrlF2");
+	DWORD key = pi.PanelRect.left == 0 ? (KeyCode::Ctrl | KeyCode::F1) : (KeyCode::Ctrl | KeyCode::F2);
 	KeySequence ks;
 	ks.Count = 1;
 	ks.Flags = 0;
@@ -885,8 +929,8 @@ String^ FarPanel::ToString()
 
 IList<IFile^>^ FarPanel::Contents::get()
 {
-	List<IFile^>^ r = gcnew List<IFile^>();
 	PanelInfo pi; GetInfo(pi);
+	List<IFile^>^ r = gcnew List<IFile^>(pi.ItemsNumber);
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 		r->Add(ItemToFile(pi.PanelItems[i]));
 	return r;
@@ -1118,8 +1162,8 @@ IFile^ FarPanelPlugin::Current::get()
 IList<IFile^>^ FarPanelPlugin::Contents::get()
 {
 	AssertOpen();
-	List<IFile^>^ r = gcnew List<IFile^>();
 	PanelInfo pi; GetInfo(pi);
+	List<IFile^>^ r = gcnew List<IFile^>(pi.ItemsNumber);
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
 		int fi = (int)(INT_PTR)pi.PanelItems[i].UserData;
