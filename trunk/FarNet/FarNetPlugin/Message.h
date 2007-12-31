@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -8,7 +8,7 @@ class CStr;
 
 namespace FarNet
 {;
-public ref class Message : public IMessage
+ref class Message : public IMessage
 {
 public:
 	virtual bool Show();

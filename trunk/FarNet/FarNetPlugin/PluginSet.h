@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -8,6 +8,7 @@ Copyright (c) 2005-2007 Far.NET Team
 namespace FarNet
 {;
 ref class CommandPluginInfo;
+ref class EditorPluginInfo;
 ref class FilerPluginInfo;
 ref class ToolPluginInfo;
 
@@ -19,12 +20,12 @@ public:
 	static void LoadPlugins();
 	static void UnloadPlugins();
 private:
-	static int AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools);
+	static int AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools);
 	static void LoadFromAssembly(String^ assemblyPath, array<String^>^ classes);
 	static void LoadFromConfig(String^ file, String^ dir);
 	static void LoadFromDirectory(String^ dir);
 	static void ReadCache();
-	static void WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools);
+	static void WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools);
 private:
 	// Static
 	PluginSet() {}

@@ -1,3 +1,33 @@
+http://code.google.com/p/farnet/
+
+3.3.36
+
+Requires FAR 1.71 alpha 4 (build 2309)
+http://forum.farmanager.com/viewtopic.php?p=29848#29848
+
+NEW IN FAR.NET
+- EditorPlugin - yet another plugin helper, see help and examples.
+
+NEW IN FAR API AND FAR.NET
+- Support of FAR plugins menu in dialogs.
+- IEdit.NoAutoComplete ~ DIF_NOAUTOCOMPLETE.
+- Events GotFocus and LosingFocus in plugin panels and editor instances.
+- Enum FarMacroState, property IFar.MacroState ~ FARMACROSTATE, MCMD_GETSTATE.
+
+FIXED
+- Memory was not freed on PasteFromClipboard().
+
+CHANGED
+- Moved property WordDiv from IFar to IAnyEditor.
+- Converted property IFar.Editors into method Editors(), it returns an array of
+opened editors.
+
+OBSOLETE
+- Property BreakCode in menus (IListMenu and IMenu) will be removed, use the new
+property BreakKey instead. For IListMenu it is simply renaming; for IMenu it is
+not an index of a break key but a key code itself - this way looks more natural
+and makes coding and changes easier.
+
 3.3.35
 
 NEW
@@ -158,7 +188,7 @@ IListMenu.FilterOption according to your preferences, not FilterKey, which is
 now set to default (CtrlDown) and you don't have to fuss about internal codes,
 at least for this.
 
-- [F1] in list menus and input filter dialogs opens basic Far.NET help about
+- [F1] in list menus and input filter dialogs opens basic FAR.NET help about
 predefined and recommended list menu keys and about patterns used for filters.
 
 3.3.30
@@ -389,7 +419,7 @@ references, inherited .NET comments and other redundant information.
 http://code.google.com/p/farnet/downloads/list
 - IFar: two new methods Write() appending plain or colored text to the user
 screen (under panels).
-- Far.NET does not show now error message boxes during the procedure of loading
+- FAR.NET does not show now error message boxes during the procedure of loading
 plugins (it is annoying if problems are known and temporary). Instead, it writes
 all error messages to the user screen and continues.
 

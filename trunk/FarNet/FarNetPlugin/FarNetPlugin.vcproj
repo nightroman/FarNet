@@ -44,10 +44,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
 				Optimization="0"
-				PreprocessorDefinitions="_export=."
 				MinimalRebuild="false"
-				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				StructMemberAlignment="0"
 				UsePrecompiledHeader="2"
@@ -82,6 +81,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				UseUnicodeResponseFiles="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -111,6 +111,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
 			ManagedExtensions="1"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -131,7 +132,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="_export=."
+				UseUnicodeResponseFiles="false"
 				RuntimeLibrary="2"
 				StructMemberAlignment="0"
 				UsePrecompiledHeader="2"
@@ -166,6 +167,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				UseUnicodeResponseFiles="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

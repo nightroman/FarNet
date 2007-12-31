@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -13,6 +13,19 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarNet
 {;
+String^ BaseEditor::WordDiv::get()
+{
+	int length = (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, 0);
+	CBox wd(length);
+	Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, wd);
+	return OemToStr(wd);
+}
+
+void BaseEditor::WordDiv::set(String^)
+{
+	throw gcnew NotSupportedException("You may set it only for an editor instance, not globally.");
+}
+
 String^ BaseEditor::EditText(String^ text, String^ title)
 {
 	String^ file = Path::GetTempFileName();
@@ -137,7 +150,7 @@ bool Editor::IsEnd::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 	return ei.CurLine == ei.TotalLines - 1;
 }
 
@@ -145,7 +158,7 @@ bool Editor::IsLocked::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 	return (ei.CurState & ECSTATE_LOCKED) != 0;
 }
 
@@ -164,7 +177,7 @@ bool Editor::IsModified::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 	return (ei.CurState & ECSTATE_MODIFIED) != 0;
 }
 
@@ -188,7 +201,7 @@ bool Editor::IsSaved::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 	return (ei.CurState & ECSTATE_SAVED) != 0;
 }
 
@@ -196,7 +209,7 @@ bool Editor::Overtype::get()
 {
 	if (!IsOpened)
 		return false;
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 	return ei.Overtype == 1;
 }
 
@@ -210,7 +223,7 @@ ExpandTabsMode Editor::ExpandTabs::get()
 	if (!IsOpened)
 		return ExpandTabsMode::None;
 
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 	if (ei.Options & EOPT_EXPANDALLTABS)
 		return ExpandTabsMode::All;
 	if (ei.Options & EOPT_EXPANDONLYNEWTABS)
@@ -262,7 +275,7 @@ int Editor::TabSize::get()
 {
 	if (!IsOpened)
 		return 0;
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 	return ei.TabSize;
 }
 
@@ -411,21 +424,21 @@ int Editor::Flags()
 
 void Editor::AssertClosed()
 {
-	if (IsOpened) throw gcnew InvalidOperationException("Editor must not be open for this operation.");
+	if (IsOpened) throw gcnew InvalidOperationException("This editor must not be open.");
 }
 
 void Editor::AssertCurrent()
 {
 	EditorInfo ei;
-	AssertCurrent(ei);
+	CurrentInfo(ei);
 }
 
-void Editor::AssertCurrent(EditorInfo& ei)
+void Editor::CurrentInfo(EditorInfo& ei)
 {
-	if (!IsOpened) throw gcnew InvalidOperationException("Editor must be open for this operation.");
+	if (!IsOpened) throw gcnew InvalidOperationException("This editor is not opened.");
 	EditorControl_ECTL_GETINFO(ei, true);
-	if (ei.EditorID < 0) throw gcnew InvalidOperationException("This operation is only for current editor.");
-	if (ei.EditorID != _id) throw gcnew InvalidOperationException("This editor must be current for this operation.");
+	if (ei.EditorID < 0) throw gcnew InvalidOperationException("There is no current editor.");
+	if (ei.EditorID != _id) throw gcnew InvalidOperationException("This editor is not the current.");
 }
 
 void Editor::GetParams()
@@ -509,7 +522,7 @@ void Editor::Frame::set(TextFrame value)
 
 ICollection<TextFrame>^ Editor::Bookmarks()
 {
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 
 	List<TextFrame>^ r = gcnew List<TextFrame>();
 	if (ei.BookMarkCount > 0)
@@ -612,7 +625,7 @@ void Editor::GoToPos(int pos)
 
 void Editor::GoEnd(bool addLine)
 {
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 	if (ei.CurLine != ei.TotalLines - 1)
 	{
 		SEditorSetPosition esp;
@@ -658,7 +671,7 @@ String^ Editor::GetText(String^ separator)
 void Editor::SetText(String^ text)
 {
 	// info
-	EditorInfo ei; AssertCurrent(ei);
+	EditorInfo ei; CurrentInfo(ei);
 
 	// case: empty
 	if (String::IsNullOrEmpty(text))

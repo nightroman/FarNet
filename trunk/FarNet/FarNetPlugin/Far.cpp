@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -32,7 +32,7 @@ void Far::StartFar()
 
 void Far::Start()
 {
-	_hotkey = GetFarValue("PluginHotkeys\\Plugins/Far.Net/FarNetPlugin.dll", "Hotkey", String::Empty)->ToString();
+	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FAR.NET/FarNetPlugin.dll", "Hotkey", String::Empty)->ToString();
 	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetF11Menus), ToolOptions::F11Menus);
 	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetConfig), ToolOptions::Config);
 	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetDisk), ToolOptions::Disk);
@@ -47,6 +47,7 @@ void Far::Stop()
 
 	delete[] _pConfig;
 	delete[] _pDisk;
+	delete[] _pDialog;
 	delete[] _pEditor;
 	delete[] _pPanels;
 	delete[] _pViewer;
@@ -82,6 +83,11 @@ void Far::Free(ToolOptions options)
 		delete[] _pDisk;
 		_pDisk = 0;
 	}
+	if (int(options & ToolOptions::Dialog))
+	{
+		delete[] _pDialog;
+		_pDialog = 0;
+	}
 	if (int(options & ToolOptions::Editor))
 	{
 		delete[] _pEditor;
@@ -114,31 +120,37 @@ void Far::RegisterTool(ToolPluginInfo^ tool)
 	{
 		delete[] _pConfig;
 		_pConfig = 0;
-		_registeredConfig.Add(tool);
+		_toolConfig.Add(tool);
 	}
 	if (int(options & ToolOptions::Disk))
 	{
 		delete[] _pDisk;
 		_pDisk = 0;
-		_registeredDisk.Add(tool);
+		_toolDisk.Add(tool);
+	}
+	if (int(options & ToolOptions::Dialog))
+	{
+		delete[] _pDialog;
+		_pDialog = 0;
+		_toolDialog.Add(tool);
 	}
 	if (int(options & ToolOptions::Editor))
 	{
 		delete[] _pEditor;
 		_pEditor = 0;
-		_registeredEditor.Add(tool);
+		_toolEditor.Add(tool);
 	}
 	if (int(options & ToolOptions::Panels))
 	{
 		delete[] _pPanels;
 		_pPanels = 0;
-		_registeredPanels.Add(tool);
+		_toolPanels.Add(tool);
 	}
 	if (int(options & ToolOptions::Viewer))
 	{
 		delete[] _pViewer;
 		_pViewer = 0;
-		_registeredViewer.Add(tool);
+		_toolViewer.Add(tool);
 	}
 }
 
@@ -164,27 +176,32 @@ static int RemoveByHandler(List<ToolPluginInfo^>^ list, EventHandler<ToolEventAr
 
 void Far::UnregisterTool(EventHandler<ToolEventArgs^>^ handler)
 {
-	if (RemoveByHandler(%_registeredConfig, handler))
+	if (RemoveByHandler(%_toolConfig, handler))
 	{
 		delete[] _pConfig;
 		_pConfig = 0;
 	}
-	if (RemoveByHandler(%_registeredDisk, handler))
+	if (RemoveByHandler(%_toolDisk, handler))
 	{
 		delete[] _pDisk;
 		_pDisk = 0;
 	}
-	if (RemoveByHandler(%_registeredEditor, handler))
+	if (RemoveByHandler(%_toolDialog, handler))
+	{
+		delete[] _pDialog;
+		_pDialog = 0;
+	}
+	if (RemoveByHandler(%_toolEditor, handler))
 	{
 		delete[] _pEditor;
 		_pEditor = 0;
 	}
-	if (RemoveByHandler(%_registeredPanels, handler))
+	if (RemoveByHandler(%_toolPanels, handler))
 	{
 		delete[] _pPanels;
 		_pPanels = 0;
 	}
-	if (RemoveByHandler(%_registeredViewer, handler))
+	if (RemoveByHandler(%_toolViewer, handler))
 	{
 		delete[] _pViewer;
 		_pViewer = 0;
@@ -223,6 +240,11 @@ void Far::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
 void Far::RegisterFiler(BasePlugin^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates)
 {
 	_registeredFiler.Add(gcnew FilerPluginInfo(plugin, name, handler, mask, creates));
+}
+
+void Far::RegisterEditors(IEnumerable<EditorPluginInfo^>^ editors)
+{
+	_registeredEditor.AddRange(editors);
 }
 
 void Far::RegisterFilers(IEnumerable<FilerPluginInfo^>^ filers)
@@ -306,9 +328,16 @@ FarConfirmations Far::Confirmations::get()
 	return (FarConfirmations)Info.AdvControl(Info.ModuleNumber, ACTL_GETCONFIRMATIONS, 0);
 }
 
-ICollection<IEditor^>^ Far::Editors::get()
+FarMacroState Far::MacroState::get()
 {
-	return _editorManager->Editors;
+	ActlKeyMacro command;
+	command.Command = MCMD_GETSTATE;
+	return (FarMacroState)Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command);
+}
+
+array<IEditor^>^ Far::Editors()
+{
+	return _editorManager->Editors();
 }
 
 IAnyEditor^ Far::AnyEditor::get()
@@ -316,17 +345,12 @@ IAnyEditor^ Far::AnyEditor::get()
 	return _editorManager->AnyEditor;
 }
 
-String^ Far::WordDiv::get()
-{
-	int length = (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, 0);
-	CBox wd(length);
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, wd);
-	return OemToStr(wd);
-}
-
 String^ Far::PasteFromClipboard()
 {
-	return OemToStr(Info.FSF->PasteFromClipboard());
+	char* buffer = Info.FSF->PasteFromClipboard();
+	String^ r = OemToStr(buffer);
+	Info.FSF->DeleteBuffer(buffer);
+	return r;
 }
 
 void Far::CopyToClipboard(String^ text)
@@ -337,7 +361,7 @@ void Far::CopyToClipboard(String^ text)
 
 IEditor^ Far::CreateEditor()
 {
-	return _editorManager->CreateEditor();
+	return gcnew FarNet::Editor(_editorManager);
 }
 
 array<int>^ Far::CreateKeySequence(String^ keys)
@@ -489,76 +513,89 @@ IInputBox^ Far::CreateInputBox()
 void Far::AsGetPluginInfo(PluginInfo* pi)
 {
 	pi->StructSize = sizeof(PluginInfo);
-	pi->Flags = PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
+	pi->Flags = PF_DIALOG | PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
 
 	WindowInfo wi;
 	wi.Pos = -1;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
 		wi.Type = -1;
 
-	if (_registeredConfig.Count)
+	if (_toolConfig.Count)
 	{
 		if (!_pConfig)
 		{
-			_pConfig = new CStr[_registeredConfig.Count];
-			for(int i = _registeredConfig.Count; --i >= 0;)
-				_pConfig[i].Set(Res::MenuPrefix + _registeredConfig[i]->Alias(ToolOptions::Config));
+			_pConfig = new CStr[_toolConfig.Count];
+			for(int i = _toolConfig.Count; --i >= 0;)
+				_pConfig[i].Set(Res::MenuPrefix + _toolConfig[i]->Alias(ToolOptions::Config));
 		}
-		pi->PluginConfigStringsNumber = _registeredConfig.Count;
+		pi->PluginConfigStringsNumber = _toolConfig.Count;
 		pi->PluginConfigStrings = (const char**)_pConfig;
 	}
 
-	if (_registeredDisk.Count)
+	if (_toolDisk.Count)
 	{
 		if (!_pDisk)
 		{
-			_pDisk = new CStr[_registeredDisk.Count];
-			for(int i = _registeredDisk.Count; --i >= 0;)
-				_pDisk[i].Set(Res::MenuPrefix + _registeredDisk[i]->Alias(ToolOptions::Disk));
+			_pDisk = new CStr[_toolDisk.Count];
+			for(int i = _toolDisk.Count; --i >= 0;)
+				_pDisk[i].Set(Res::MenuPrefix + _toolDisk[i]->Alias(ToolOptions::Disk));
 		}
-		pi->DiskMenuStringsNumber = _registeredDisk.Count;
+		pi->DiskMenuStringsNumber = _toolDisk.Count;
 		pi->DiskMenuStrings = (const char**)_pDisk;
 	}
 
 	switch(wi.Type)
 	{
 	case WTYPE_EDITOR:
-		if (_registeredEditor.Count)
+		if (_toolEditor.Count)
 		{
 			if (!_pEditor)
 			{
-				_pEditor = new CStr[_registeredEditor.Count];
-				for(int i = _registeredEditor.Count; --i >= 0;)
-					_pEditor[i].Set(Res::MenuPrefix + _registeredEditor[i]->Alias(ToolOptions::Editor));
+				_pEditor = new CStr[_toolEditor.Count];
+				for(int i = _toolEditor.Count; --i >= 0;)
+					_pEditor[i].Set(Res::MenuPrefix + _toolEditor[i]->Alias(ToolOptions::Editor));
 			}
-			pi->PluginMenuStringsNumber = _registeredEditor.Count;
+			pi->PluginMenuStringsNumber = _toolEditor.Count;
 			pi->PluginMenuStrings = (const char**)_pEditor;
 		}
 		break;
 	case WTYPE_PANELS:
-		if (_registeredPanels.Count)
+		if (_toolPanels.Count)
 		{
 			if (!_pPanels)
 			{
-				_pPanels = new CStr[_registeredPanels.Count];
-				for(int i = _registeredPanels.Count; --i >= 0;)
-					_pPanels[i].Set(Res::MenuPrefix + _registeredPanels[i]->Alias(ToolOptions::Panels));
+				_pPanels = new CStr[_toolPanels.Count];
+				for(int i = _toolPanels.Count; --i >= 0;)
+					_pPanels[i].Set(Res::MenuPrefix + _toolPanels[i]->Alias(ToolOptions::Panels));
 			}
-			pi->PluginMenuStringsNumber = _registeredPanels.Count;
+			pi->PluginMenuStringsNumber = _toolPanels.Count;
 			pi->PluginMenuStrings = (const char**)_pPanels;
 		}
 		break;
 	case WTYPE_VIEWER:
-		if (_registeredViewer.Count)
+		if (_toolViewer.Count)
 		{
 			if (!_pViewer)
 			{
-				_pViewer = new CStr[_registeredViewer.Count];
-				for(int i = _registeredViewer.Count; --i >= 0;)
-					_pViewer[i].Set(Res::MenuPrefix + _registeredViewer[i]->Alias(ToolOptions::Viewer));
+				_pViewer = new CStr[_toolViewer.Count];
+				for(int i = _toolViewer.Count; --i >= 0;)
+					_pViewer[i].Set(Res::MenuPrefix + _toolViewer[i]->Alias(ToolOptions::Viewer));
 			}
-			pi->PluginMenuStringsNumber = _registeredViewer.Count;
+			pi->PluginMenuStringsNumber = _toolViewer.Count;
 			pi->PluginMenuStrings = (const char**)_pViewer;
+		}
+		break;
+	case WTYPE_DIALOG:
+		if (_toolDialog.Count)
+		{
+			if (!_pDialog)
+			{
+				_pDialog = new CStr[_toolDialog.Count];
+				for(int i = _toolDialog.Count; --i >= 0;)
+					_pDialog[i].Set(Res::MenuPrefix + _toolDialog[i]->Alias(ToolOptions::Dialog));
+			}
+			pi->PluginMenuStringsNumber = _toolDialog.Count;
+			pi->PluginMenuStrings = (const char**)_pDialog;
 		}
 		break;
 	}
@@ -781,7 +818,7 @@ String^ Far::Input(String^ prompt, String^ history, String^ title, String^ text)
 
 //::FAR Window managenent
 
-public ref class FarWindowInfo : public IWindowInfo
+ref class FarWindowInfo : public IWindowInfo
 {
 public:
 	FarWindowInfo(const WindowInfo& wi, bool full)
@@ -933,7 +970,7 @@ void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue
 
 bool Far::AsConfigure(int itemIndex)
 {
-	ToolPluginInfo^ tool = _registeredConfig[itemIndex];
+	ToolPluginInfo^ tool = _toolConfig[itemIndex];
 	ToolEventArgs e(ToolOptions::Config);
 	tool->Handler(this, %e);
 	return e.Ignore ? false : true;
@@ -957,19 +994,8 @@ HANDLE Far::AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize
 				continue;
 
 			// mask?
-			if (SS(it->Mask))
-			{
-				String^ mask1 = it->Mask;
-				int i = mask1->IndexOf('|');
-				if (i >= 0)
-				{
-					if (CompareName(mask1->Substring(i + 1), name, true))
-						continue;
-					mask1 = mask1->Substring(0, i);
-				}
-				if (!CompareName(mask1, name, true))
-					continue;
-			}
+			if (SS(it->Mask) && !CompareNameEx(it->Mask, name, true))
+				continue;
 
 			// arguments
 			if (!e)
@@ -1014,14 +1040,14 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 			break;
 		case OPEN_DISKMENU:
 			{
-				ToolPluginInfo^ tool = _registeredDisk[(int)item];
+				ToolPluginInfo^ tool = _toolDisk[(int)item];
 				ToolEventArgs e(ToolOptions::Disk);
 				tool->Handler(this, %e);
 			}
 			break;
 		case OPEN_PLUGINSMENU:
 			{
-				ToolPluginInfo^ tool = _registeredPanels[(int)item];
+				ToolPluginInfo^ tool = _toolPanels[(int)item];
 				ToolEventArgs e(ToolOptions::Panels);
 				tool->Handler(this, %e);
 			}
@@ -1029,7 +1055,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 		case OPEN_EDITOR:
 			{
 				ValueCanOpenPanel::Set(false);
-				ToolPluginInfo^ tool = _registeredEditor[(int)item];
+				ToolPluginInfo^ tool = _toolEditor[(int)item];
 				ToolEventArgs e(ToolOptions::Editor);
 				tool->Handler(this, %e);
 			}
@@ -1037,8 +1063,18 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 		case OPEN_VIEWER:
 			{
 				ValueCanOpenPanel::Set(false);
-				ToolPluginInfo^ tool = _registeredViewer[(int)item];
+				ToolPluginInfo^ tool = _toolViewer[(int)item];
 				ToolEventArgs e(ToolOptions::Viewer);
+				tool->Handler(this, %e);
+			}
+			break;
+		case OPEN_DIALOG:
+			{
+				ValueCanOpenPanel::Set(false);
+				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)item;
+				ToolPluginInfo^ tool = _toolDialog[dd->ItemNumber];
+				//?? make use of dd->hDlg
+				ToolEventArgs e(ToolOptions::Dialog);
 				tool->Handler(this, %e);
 			}
 			break;
@@ -1170,13 +1206,15 @@ void Far::OnNetConfig(Object^ /*sender*/, ToolEventArgs^ /*e*/)
 	m.Title = "FAR.NET plugins";
 
 	m.Items->Add(Res::CommandPlugins + " : " + (_registeredCommand.Count));
+	m.Items->Add(Res::EditorPlugins + "  : " + (_registeredEditor.Count));
 	m.Items->Add(Res::FilerPlugins + "   : " + (_registeredFiler.Count));
 	m.Items->Add(String::Empty)->IsSeparator = true;
-	m.Items->Add(Res::PanelsTools + "    : " + (_registeredPanels.Count - 1));
-	m.Items->Add(Res::EditorTools + "    : " + (_registeredEditor.Count - 1));
-	m.Items->Add(Res::ViewerTools + "    : " + (_registeredViewer.Count - 1));
-	m.Items->Add(Res::ConfigTools + "    : " + (_registeredConfig.Count - 1));
-	m.Items->Add(Res::DiskTools + "      : " + (_registeredDisk.Count - 1));
+	m.Items->Add(Res::PanelsTools + "    : " + (_toolPanels.Count - 1));
+	m.Items->Add(Res::EditorTools + "    : " + (_toolEditor.Count - 1));
+	m.Items->Add(Res::ViewerTools + "    : " + (_toolViewer.Count - 1));
+	m.Items->Add(Res::DialogTools + "    : " + (_toolDialog.Count - 1));
+	m.Items->Add(Res::ConfigTools + "    : " + (_toolConfig.Count - 1));
+	m.Items->Add(Res::DiskTools + "      : " + (_toolDisk.Count - 1));
 
 	while(m.Show())
 	{
@@ -1187,28 +1225,37 @@ void Far::OnNetConfig(Object^ /*sender*/, ToolEventArgs^ /*e*/)
 				OnConfigCommand();
 			break;
 		case 1:
+			if (_registeredEditor.Count)
+				OnConfigEditor();
+			break;
+		case 2:
 			if (_registeredFiler.Count)
 				OnConfigFiler();
 			break;
-		case 3:
-			if (_registeredPanels.Count > 1)
-				OnConfigTool(Res::PanelsTools, ToolOptions::Panels, %_registeredPanels);
-			break;
+			// mind separator
 		case 4:
-			if (_registeredEditor.Count > 1)
-				OnConfigTool(Res::EditorTools, ToolOptions::Editor, %_registeredEditor);
+			if (_toolPanels.Count > 1)
+				OnConfigTool(Res::PanelsTools, ToolOptions::Panels, %_toolPanels);
 			break;
 		case 5:
-			if (_registeredViewer.Count > 1)
-				OnConfigTool(Res::ViewerTools, ToolOptions::Viewer, %_registeredViewer);
+			if (_toolEditor.Count > 1)
+				OnConfigTool(Res::EditorTools, ToolOptions::Editor, %_toolEditor);
 			break;
 		case 6:
-			if (_registeredConfig.Count > 1)
-				OnConfigTool(Res::ConfigTools, ToolOptions::Config, %_registeredConfig);
+			if (_toolViewer.Count > 1)
+				OnConfigTool(Res::ViewerTools, ToolOptions::Viewer, %_toolViewer);
 			break;
 		case 7:
-			if (_registeredDisk.Count > 1)
-				OnConfigTool(Res::DiskTools, ToolOptions::Disk, %_registeredDisk);
+			if (_toolDialog.Count > 1)
+				OnConfigTool(Res::DialogTools, ToolOptions::Dialog, %_toolDialog);
+			break;
+		case 8:
+			if (_toolConfig.Count > 1)
+				OnConfigTool(Res::ConfigTools, ToolOptions::Config, %_toolConfig);
+			break;
+		case 9:
+			if (_toolDisk.Count > 1)
+				OnConfigTool(Res::DiskTools, ToolOptions::Disk, %_toolDisk);
 			break;
 		}
 	}
@@ -1325,6 +1372,48 @@ void Far::OnConfigCommand()
 	}
 }
 
+void Far::OnConfigEditor()
+{
+	Menu m;
+	m.AutoAssignHotkeys = true;
+	m.HelpTopic = "ConfigEditor";
+	m.Title = Res::EditorPlugins;
+
+	for each(EditorPluginInfo^ it in _registeredEditor)
+	{
+		IMenuItem^ mi = m.Items->Add(it->Key);
+		mi->Data = it;
+	}
+
+	while(m.Show())
+	{
+		IMenuItem^ mi = m.Items[m.Selected];
+		EditorPluginInfo^ it = (EditorPluginInfo^)mi->Data;
+
+		InputBox ib;
+		ib.EmptyEnabled = true;
+		ib.HelpTopic = _helpTopic + "ConfigEditor";
+		ib.History = "Masks";
+		ib.Prompt = "New mask for " + it->Name;
+		ib.Text = it->Mask;
+		ib.Title = "Original mask: " + it->DefaultMask;
+
+		if (!ib.Show())
+			return;
+		String^ mask = ib.Text->Trim();
+
+		// restore original on empty
+		if (mask->Length == 0)
+			mask = it->DefaultMask;
+
+		// set
+		it->Mask = mask;
+		EditorPlugin^ filer = dynamic_cast<EditorPlugin^>(it->Plugin);
+		if (filer)
+			filer->Mask = mask;
+	}
+}
+
 void Far::OnConfigFiler()
 {
 	Menu m;
@@ -1346,6 +1435,7 @@ void Far::OnConfigFiler()
 		InputBox ib;
 		ib.EmptyEnabled = true;
 		ib.HelpTopic = _helpTopic + "ConfigFiler";
+		ib.History = "Masks";
 		ib.Prompt = "New mask for " + it->Name;
 		ib.Text = it->Mask;
 		ib.Title = "Original mask: " + it->DefaultMask;
@@ -1374,8 +1464,41 @@ bool Far::CompareName(String^ mask, const char* name, bool skipPath)
 		if (Info.CmpName(buf, name, skipPath))
 			return true;
 	}
-
 	return false;
+}
+
+bool Far::CompareNameEx(String^ mask, const char* name, bool skipPath)
+{
+	int i = mask->IndexOf('|');
+	if (i < 0)
+		return CompareName(mask, name, skipPath);
+	return  CompareName(mask->Substring(0, i), name, skipPath) && !CompareName(mask->Substring(i + 1), name, skipPath);
+}
+
+void Far::OnEditorOpened(FarNet::Editor^ editor)
+{
+	if (_registeredEditor.Count == 0)
+		return;
+
+	EditorInfo ei;
+	EditorControl_ECTL_GETINFO(ei);
+	for each(EditorPluginInfo^ it in _registeredEditor)
+	{
+		// mask?
+		if (SS(it->Mask) && !CompareNameEx(it->Mask, ei.FileName, true))
+			continue;
+
+		//! tradeoff: catch all to call other plugins, too
+		try
+		{
+			it->Handler(editor, EventArgs::Empty);
+		}
+		catch(Exception^ error)
+		{
+			//! show plugin info, too
+			ShowError(it->Key, error);
+		}
+	}
 }
 
 }

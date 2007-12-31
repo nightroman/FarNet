@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -9,7 +9,7 @@ namespace FarNet
 {;
 ref class EditorLineSelection;
 
-public ref class EditorLine : public ILine
+ref class EditorLine : public ILine
 {
 public:
 	virtual property ILine^ FullLine { ILine^ get(); }
@@ -27,6 +27,7 @@ public:
 internal:
 	EditorLine(int no, bool selected);
 private:
+	[CA_USED]
 	EditorSetString GetEss();
 private:
 	// Line number

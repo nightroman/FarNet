@@ -1,13 +1,13 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
 
 namespace FarNet
 {;
-public ref class EditorLineSelection : public ILineSelection
+ref class EditorLineSelection : public ILineSelection
 {
 public:
 	virtual property String^ Text { String^ get(); void set(String^ value); }

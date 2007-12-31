@@ -3,7 +3,7 @@
 .Options TabSize=4
 
 @Contents
-$#Far.NET#
+$#FAR.NET#
 
 #FAR.NET facilities#
 
@@ -36,9 +36,9 @@ FAR.NET shows its menu item ".NET" in all FAR plugin menus and in the disk menu.
 #Config#
 	It shows the ~Config menu~@MenuConfig@.
 
-#Editor, Viewer#
-	It does nothing when selected manually but these items are used internally
-	for important internal feature "PostStep" which works in these areas, too.
+#Editor, Viewer, Dialog#
+	It does nothing when selected manually, but this item is used internally for
+	important feature "PostStep" which works in these areas, too.
 
 
 @MenuPanels
@@ -72,6 +72,9 @@ This menu allows to select and configure FAR.NET command plugins, tool plugins
 #Command plugins#
 	It shows the ~Configure command plugins~@ConfigCommand@ menu.
 
+#Editor plugins#
+	It shows the ~Configure editor plugins~@ConfigEditor@ menu.
+
 #Filer plugins#
 	It shows the ~Configure filer plugins~@ConfigFiler@ menu.
 
@@ -83,6 +86,9 @@ This menu allows to select and configure FAR.NET command plugins, tool plugins
 
 #Viewer tools#
 	It shows the ~Configure tool plugins~@ConfigTool@ menu for Viewer area.
+
+#Dialog tools#
+	It shows the ~Configure tool plugins~@ConfigTool@ menu for Dialog area.
 
 #Config tools#
 	It shows the ~Configure tool plugins~@ConfigTool@ menu for Config area.
@@ -96,7 +102,7 @@ $#Configure tool plugins#
 ~Contents~@Contents@
 
 This menu and the input box allow to edit FAR.NET plugin strings shown in the
-FAR plugins menus (F11) in Panels, Editor and Viewer areas.
+FAR plugins menus (F11) in Panels, Editor, Viewer and Dialog areas.
 
 #Enter# (menu)
 	opens the input box where you can change the selected menu string.
@@ -133,6 +139,25 @@ This menu and the input box allow to edit FAR.NET plugin command line prefixes.
 
 In the input box you change the selected prefix. If you enter an empty string
 then the default plugin prefix is restored.
+
+
+@ConfigEditor
+$#Configure editor plugins#
+~Contents~@Contents@
+
+This menu and the input box allow to edit editor plugin file masks.
+
+#Enter# (menu)
+	opens the input box where you can change the file mask.
+
+#Esc# (menu)
+	closes the menu.
+
+#Input box#
+
+In the input box you change the file mask, see ~File masks~@:FileMasks@, exclude
+masks are supported (i.e. <include>|<exclude>). If you enter an empty string
+then the default plugin mask is restored.
 
 
 @ConfigFiler

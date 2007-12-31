@@ -1,10 +1,11 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 using FarManager.Forms;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System;
 
 namespace FarManager
@@ -39,9 +40,22 @@ namespace FarManager
 		/// </summary>
 		event EventHandler<MouseEventArgs> OnMouse;
 		/// <summary>
-		/// Opens a modal editor to edit text.
+		/// Editor window has got focus. FAR 1.71.2309
+		/// </summary>
+		event EventHandler GotFocus;
+		/// <summary>
+		/// Editor window is losing focus. FAR 1.71.2309
+		/// </summary>
+		event EventHandler LosingFocus;
+		/// <summary>
+		/// Opens a modal temporary editor to edit and return some text.
 		/// </summary>
 		string EditText(string text, string title);
+		/// <summary>
+		/// Editor(s) word delimiters.
+		/// You may set it only for an editor instance, not globally.
+		/// </summary>
+		string WordDiv { get; set; }
 	}
 
 	/// <summary>
@@ -91,12 +105,6 @@ namespace FarManager
 		/// It is read only when an editor is opened.
 		/// </summary>
 		bool DisableHistory { get; set; }
-		/// <summary>
-		/// Word delimiters specific to the current editor.
-		/// Editor must be current.
-		/// </summary>
-		/// <seealso cref="IFar.WordDiv"/>
-		string WordDiv { get; set; }
 		/// <summary>
 		/// The current line. It is not a 'copy', when you move cursor to another line this object is changed respectively.
 		/// Editor must be current.
@@ -339,6 +347,7 @@ namespace FarManager
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnRedraw"/> event.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public sealed class RedrawEventArgs : EventArgs
 	{
 		int _mode;
@@ -487,6 +496,7 @@ namespace FarManager
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnKey"/> event.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public sealed class KeyEventArgs : EventArgs
 	{
 		/// <param name="key">Key data.</param>
@@ -516,6 +526,7 @@ namespace FarManager
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnMouse"/> event.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public sealed class MouseEventArgs : EventArgs
 	{
 		/// <param name="mouse">Mouse data.</param>
@@ -564,6 +575,7 @@ namespace FarManager
 	/// <summary>
 	/// Complete information about text frame and cursor position in an editor.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public struct TextFrame
 	{
 		/// <summary>

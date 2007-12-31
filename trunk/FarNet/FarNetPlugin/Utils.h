@@ -1,9 +1,25 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
+
+// Log
+#define LOG_IDLE 2
+#define LOG_KEYS 4
+#if defined(_DEBUG)
+#define LOG 1
+#define Log(Text) Trace::Write(Text); Trace::Write(" ");
+#define LogLine(Text) Trace::WriteLine(Text)
+#else
+#define LOG 0
+#define Log(Text)
+#define LogLine(Text)
+#endif
+
+// Code analysis
+#define CA_USED SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")
 
 // Empty String and Solid String
 #define ES(s) (String::IsNullOrEmpty(s))
@@ -222,13 +238,15 @@ namespace FarNet
 {;
 // Constant values
 typedef String^ const ConstString;
-public ref class CV
+ref class CV
 {
 internal:
 	static ConstString
 		CR = "\r",
 		LF = "\n",
 		CRLF = "\r\n";
+private:
+	CV() {}
 };
 
 // Resource strings
@@ -238,7 +256,9 @@ ref class Res
 internal:
 	static ConstString
 		CommandPlugins = "Command plugins",
+		EditorPlugins = "Editor plugins",
 		PanelsTools = "Panels tools",
+		DialogTools = "Dialog tools",
 		EditorTools = "Editor tools",
 		ViewerTools = "Viewer tools",
 		DiskTools = "Disk tools",

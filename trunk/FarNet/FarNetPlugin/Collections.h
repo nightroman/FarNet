@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -10,7 +10,7 @@ namespace FarNet
 /// <summary>
 /// Enumerator of ILine items in IList.
 /// </summary>
-public ref class LineListEnumerator : public IEnumerator<ILine^>
+ref class LineListEnumerator : public IEnumerator<ILine^>
 {
 public:
 	LineListEnumerator(IList<ILine^>^ list, int start, int end)
@@ -96,7 +96,7 @@ private:
 /// <summary>
 /// Implements IStrings editor lines as strings.
 /// </summary>
-public ref class EditorStringCollection : IStrings
+ref class EditorStringCollection : IStrings
 {
 	ILines^ _lines;
 	bool _selected;

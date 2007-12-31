@@ -1,11 +1,12 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 using FarManager.Forms;
 using System.Collections.Generic;
 using System.Collections;
+using System.Diagnostics;
 using System;
 
 namespace FarManager
@@ -15,6 +16,7 @@ namespace FarManager
 	/// By default the key closes the menu and <see cref="IAnyMenu.BreakCode"/> is set to its internal code.
 	/// Use <see cref="Ignore"/> or <see cref="Restart"/> to perform different actions.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class MenuEventArgs : EventArgs
 	{
 		/// <param name="item">Current item.</param>
@@ -78,7 +80,7 @@ namespace FarManager
 		/// </summary>
 		bool IsSeparator { get; set; }
 		/// <summary>
-		/// Event raised when an item is clicked.
+		/// Event raised when a menu item is clicked.
 		/// </summary>
 		event EventHandler OnClick;
 	}
@@ -192,10 +194,14 @@ namespace FarManager
 		/// </summary>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
-		/// For <see cref="IMenu"/>: <see cref="IMenu.BreakKeys"/> index of a key interrupted the menu.
-		/// For <see cref="IListMenu"/>: internal key code, see <see cref="KeyCode"/> helper.
+		/// Obsolete, use <see cref="BreakKey"/>.
 		/// </summary>
+		[Obsolete("Use 'BreakKey'.")]
 		int BreakCode { get; }
+		/// <summary>
+		/// A key that has closed the menu; it is virtual <see cref="VKeyCode"/> for <see cref="IMenu"/> and internal <see cref="KeyCode"/> for <see cref="IListMenu"/>.
+		/// </summary>
+		int BreakKey { get; }
 	}
 
 	/// <summary>

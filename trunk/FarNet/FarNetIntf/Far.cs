@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 using FarManager.Forms;
@@ -106,7 +106,7 @@ namespace FarManager
 		/// </summary>
 		IMessage CreateMessage();
 		/// <summary>
-		/// Runs a command with a registered Far.NET prefix.
+		/// Runs a command with a registered FAR.NET prefix.
 		/// </summary>
 		///<param name="command">Command with a prefix.</param>
 		void Run(string command);
@@ -138,10 +138,6 @@ namespace FarManager
 		/// Subscribe to its events if you want to handle events of all editors.
 		/// </summary>
 		IAnyEditor AnyEditor { get; }
-		/// <summary>
-		/// String of word delimiters used in editors.
-		/// </summary>
-		string WordDiv { get; }
 		/// <summary>
 		/// Gets the clipboard text.
 		/// </summary>		
@@ -234,11 +230,11 @@ namespace FarManager
 		/// </summary>
 		IEditor Editor { get; }
 		/// <summary>
-		/// Collection of all editors.
+		/// All editors.
 		/// Be careful working on not current editors because many
 		/// properties and methods are designed for a current editor only.
 		/// </summary>
-		ICollection<IEditor> Editors { get; }
+		IEditor[] Editors();
 		/// <summary>
 		/// Active panel. It is null if FAR started with /e or /v.
 		/// </summary>
@@ -274,7 +270,7 @@ namespace FarManager
 		/// <summary>
 		/// Copies the current user screen buffer to console screen
 		/// (which is displayed when the panels are switched off).
-		/// Requires FAR 1.71.2186.
+		/// FAR 1.71.2186.
 		/// </summary>
 		void GetUserScreen();
 		/// <summary>
@@ -481,6 +477,10 @@ namespace FarManager
 		/// Thus, normally you can not performs several such operations together. This method may help.
 		/// </remarks>
 		void PostStep(EventHandler step);
+		/// <summary>
+		/// Current macro state.
+		/// </summary>
+		FarMacroState MacroState { get; }
 	}
 
 	/// <summary>
@@ -490,7 +490,7 @@ namespace FarManager
 	public enum HelpOptions
 	{
 		/// <summary>
-		/// Assume path is Info.ModuleName and show the topic from the help file of the calling plugin (it is Far.NET).
+		/// Assume path is Info.ModuleName and show the topic from the help file of the calling plugin (it is FAR.NET).
 		/// If topic begins with a colon ':', the topic from the main FAR help file is shown and path is ignored.
 		/// </summary>
 		None = 0x0,
@@ -637,6 +637,33 @@ namespace FarManager
 		/// menu, dialog: header.
 		/// </summary>
 		string Name { get; }
+	}
+
+	/// <summary>
+	/// States of macro processing.
+	/// </summary>
+	public enum FarMacroState
+	{
+		/// <summary>
+		/// No processing.
+		/// </summary>
+		None,
+		/// <summary>
+		/// A macro is in progress with plugins excluded.
+		/// </summary>
+		Executing,
+		/// <summary>
+		/// A macro is in progress with plugins included.
+		/// </summary>
+		ExecutingCommon,
+		/// <summary>
+		/// A macro is in been recorded with plugins excluded.
+		/// </summary>
+		Recording,
+		/// <summary>
+		/// A macro is in been recorded with plugins included.
+		/// </summary>
+		RecordingCommon
 	}
 
 }

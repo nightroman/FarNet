@@ -6,13 +6,13 @@ using namespace System::Runtime::CompilerServices;
 using namespace System::Runtime::InteropServices;
 using namespace System::Security::Permissions;
 
-[assembly:AssemblyVersionAttribute("3.3.35.0")];
-[assembly:AssemblyTitleAttribute("Far.NET plugin")];
-[assembly:AssemblyDescriptionAttribute("Far.NET plugin")];
+[assembly:AssemblyVersionAttribute("3.3.36.0")];
+[assembly:AssemblyTitleAttribute("FAR.NET plugin")];
+[assembly:AssemblyDescriptionAttribute("FAR.NET plugin")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("http://code.google.com/p/farnet/")];
-[assembly:AssemblyProductAttribute("Far.NET")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) 2005-2007 Far.NET Team")];
+[assembly:AssemblyProductAttribute("FAR.NET")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) 2005-2007 FAR.NET Team")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
