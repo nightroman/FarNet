@@ -1,10 +1,11 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 using System.Collections.Generic;
 using System.Collections;
+using System.Diagnostics;
 using System;
 
 namespace FarManager
@@ -24,6 +25,7 @@ namespace FarManager
 		bool IsPlugin { get; }
 		/// <summary>
 		/// Is it visible?
+		/// If you set it it takes effect only when FAR gets control.
 		/// </summary>
 		bool IsVisible { get; set; }
 		/// <summary>
@@ -50,7 +52,7 @@ namespace FarManager
 		/// </summary>
 		PanelViewMode ViewMode { get; set; }
 		/// <summary>
-		/// List of all panel items.
+		/// All panel items.
 		/// See <see cref="IPanelPlugin.AddDots"/>.
 		/// </summary>
 		IList<IFile> Contents { get; }
@@ -352,6 +354,7 @@ namespace FarManager
 	/// <summary>
 	/// Named data item.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class DataItem
 	{
 		/// <param name="name">Name (or separator text in some cases).</param>
@@ -564,6 +567,7 @@ namespace FarManager
 	/// <summary>
 	/// Base <see cref="IPanelPlugin"/> event arguments.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class PanelEventArgs : EventArgs
 	{
 		OperationModes _mode;
@@ -596,6 +600,7 @@ namespace FarManager
 	/// Arguments of <see cref="IPanelPlugin.Executing"/> event.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class ExecutingEventArgs : PanelEventArgs
 	{
 		string _command;
@@ -615,9 +620,9 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IPanelPlugin.ViewModeChanged"/> event.
-	/// [FE_CHANGEVIEWMODE], [Column types].
+	/// Arguments of <see cref="IPanelPlugin.ViewModeChanged"/> event. [FE_CHANGEVIEWMODE], [Column types].
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class ViewModeChangedEventArgs : EventArgs
 	{
 		string _columns;
@@ -639,6 +644,7 @@ namespace FarManager
 	/// Arguments of <see cref="IPanelPlugin.KeyPressed"/> event.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that the key has been processed internally.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class PanelKeyEventArgs : PanelEventArgs
 	{
 		int _code;
@@ -689,6 +695,7 @@ namespace FarManager
 	/// if it is impossible to change the directory. (The plugin should not try to close or update the panels,
 	/// ask the user for confirmations, show messages and so on.)
 	/// </remarks>
+	[DebuggerStepThroughAttribute]
 	public class SettingDirectoryEventArgs : PanelEventArgs
 	{
 		string _name;
@@ -718,6 +725,7 @@ namespace FarManager
 	/// Arguments of file events (copy, move, delete, etc).
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class FilesEventArgs : PanelEventArgs
 	{
 		IList<IFile> _files;
@@ -751,6 +759,7 @@ namespace FarManager
 	/// Arguments of <see cref="IPanelPlugin.GettingFiles"/>.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class GettingFilesEventArgs : FilesEventArgs
 	{
 		string _destination;
@@ -776,6 +785,7 @@ namespace FarManager
 	/// Arguments of <see cref="IPanelPlugin.MakingDirectory"/>.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class MakingDirectoryEventArgs : PanelEventArgs
 	{
 		string _name;
@@ -938,6 +948,14 @@ namespace FarManager
 		/// Rised to create a new directory in the file system emulated by the plugin. [MakeDirectory]
 		/// </summary>
 		event EventHandler<MakingDirectoryEventArgs> MakingDirectory;
+		/// <summary>
+		/// A panel has got focus. FAR 1.71.2309
+		/// </summary>
+		event EventHandler GotFocus;
+		/// <summary>
+		/// A panel is losing focus. FAR 1.71.2309
+		/// </summary>
+		event EventHandler LosingFocus;
 		/// <summary>
 		/// Panel data to be set current.
 		/// </summary>

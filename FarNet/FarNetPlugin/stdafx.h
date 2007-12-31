@@ -11,8 +11,9 @@
 using namespace FarManager::Forms;
 using namespace FarManager;
 using namespace Microsoft::Win32;
-using namespace System::Collections::Specialized;
 using namespace System::Collections::Generic;
+using namespace System::Collections::Specialized;
+using namespace System::Diagnostics::CodeAnalysis;
 using namespace System::Diagnostics;
 using namespace System::Globalization;
 using namespace System::IO;
@@ -24,6 +25,8 @@ using namespace System;
 #ifdef _DEBUG
 // remove if not found
 #include <Test1.h>
+#else
+#define Trace _DONT_USE_TRACE_
 #endif
 
 extern PluginStartupInfo Info;

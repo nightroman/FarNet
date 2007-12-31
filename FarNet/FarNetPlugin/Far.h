@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -8,17 +8,19 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarNet
 {;
-ref class EditorManager;
 ref class CommandPluginInfo;
+ref class Editor;
+ref class EditorManager;
+ref class EditorPluginInfo;
 ref class FilerPluginInfo;
 ref class ToolPluginInfo;
 
-public ref class Far : public IFar
+ref class Far : public IFar
 {
 public:
 	virtual property FarConfirmations Confirmations { FarConfirmations get(); }
+	virtual property FarMacroState MacroState { FarMacroState get(); }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get(); }
-	virtual property ICollection<IEditor^>^ Editors { ICollection<IEditor^>^ get(); }
 	virtual property ILine^ CommandLine { ILine^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
 	virtual property IntPtr HWnd { IntPtr get(); }
@@ -28,9 +30,9 @@ public:
 	virtual property String^ PluginFolderPath { String^ get(); }
 	virtual property String^ RootFar { String^ get(); }
 	virtual property String^ RootKey { String^ get(); }
-	virtual property String^ WordDiv { String^ get(); }
 	virtual property Version^ Version { System::Version^ get(); }
 public:
+	virtual array<IEditor^>^ Editors();
 	virtual array<int>^ CreateKeySequence(String^ keys);
 	virtual array<IPanelPlugin^>^ PushedPanels();
 	virtual bool Commit();
@@ -96,6 +98,7 @@ internal:
 	static property Far^ Instance { Far^ get() { return _instance; } }
 	static void StartFar();
 	void Stop();
+	void OnEditorOpened(FarNet::Editor^ editor);
 internal:
 	EditorManager^ _editorManager;
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
@@ -106,6 +109,7 @@ internal:
 	HANDLE AsOpenPlugin(int from, INT_PTR item);
 	void AsGetPluginInfo(PluginInfo* pi);
 	void RegisterCommands(IEnumerable<CommandPluginInfo^>^ commands);
+	void RegisterEditors(IEnumerable<EditorPluginInfo^>^ editors);
 	void RegisterFilers(IEnumerable<FilerPluginInfo^>^ filers);
 	void RegisterTool(ToolPluginInfo^ tool);
 	void RegisterTools(IEnumerable<ToolPluginInfo^>^ tools);
@@ -116,6 +120,7 @@ private:
 	Object^ GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue);
 	void Free(ToolOptions options);
 	void OnConfigCommand();
+	void OnConfigEditor();
 	void OnConfigFiler();
 	void OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^ list);
 	void OnNetConfig(Object^ sender, ToolEventArgs^ e);
@@ -125,23 +130,27 @@ private:
 	void Start();
 private: // public candidates
 	static bool CompareName(String^ mask, const char* name, bool skipPath);
+	static bool CompareNameEx(String^ mask, const char* name, bool skipPath);
 private:
 	// The instance
 	static Far^ _instance;
 private:
 	CStr* _pConfig;
 	CStr* _pDisk;
+	CStr* _pDialog;
 	CStr* _pEditor;
 	CStr* _pPanels;
 	CStr* _pViewer;
 	CStr* _prefixes;
 	List<CommandPluginInfo^> _registeredCommand;
+	List<EditorPluginInfo^> _registeredEditor;
 	List<FilerPluginInfo^> _registeredFiler;
-	List<ToolPluginInfo^> _registeredConfig;
-	List<ToolPluginInfo^> _registeredDisk;
-	List<ToolPluginInfo^> _registeredEditor;
-	List<ToolPluginInfo^> _registeredPanels;
-	List<ToolPluginInfo^> _registeredViewer;
+	List<ToolPluginInfo^> _toolConfig;
+	List<ToolPluginInfo^> _toolDisk;
+	List<ToolPluginInfo^> _toolDialog;
+	List<ToolPluginInfo^> _toolEditor;
+	List<ToolPluginInfo^> _toolPanels;
+	List<ToolPluginInfo^> _toolViewer;
 private:
 	String^ _hotkey;
 	array<int>^ _hotkeys;

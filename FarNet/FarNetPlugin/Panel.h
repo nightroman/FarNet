@@ -1,13 +1,13 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
 
 namespace FarNet
 {;
-public ref class FarFile : IFile
+ref class FarFile : IFile
 {
 public:
 	INL_PROP_FLAG(IsAlias, FILE_ATTRIBUTE_REPARSE_POINT);
@@ -49,7 +49,7 @@ internal:
 	String^ _Name;
 };
 
-public ref class FarPanel : public IPanel
+ref class FarPanel : public IPanel
 {
 public:
 	virtual property bool Highlight { bool get(); }
@@ -86,7 +86,9 @@ internal:
 	FarPanel(bool current);
 	static FarFile^ ItemToFile(PluginPanelItem& item);
 protected:
+	[CA_USED]
 	bool TryBrief(PanelInfo& pi);
+	[CA_USED]
 	void GetBrief(PanelInfo& pi);
 	void GetInfo(PanelInfo& pi);
 private:
@@ -210,7 +212,9 @@ public: // IPanelPlugin
 public: DEF_EVENT(Closed, _Closed);
 public: DEF_EVENT(CtrlBreakPressed, _CtrlBreakPressed);
 public: DEF_EVENT(GettingInfo, _GettingInfo);
+public: DEF_EVENT(GotFocus, _GotFocus);
 public: DEF_EVENT(Idled, _Idled);
+public: DEF_EVENT(LosingFocus, _LosingFocus);
 public: DEF_EVENT_ARGS(Closing, _Closing, PanelEventArgs);
 public: DEF_EVENT_ARGS(DeletingFiles, _DeletingFiles, FilesEventArgs);
 public: DEF_EVENT_ARGS(Executing, _Executing, ExecutingEventArgs);
@@ -224,6 +228,7 @@ public: DEF_EVENT_ARGS(SettingDirectory, _SettingDirectory, SettingDirectoryEven
 public: DEF_EVENT_ARGS(ViewModeChanged, _ViewModeChanged, ViewModeChangedEventArgs);
 internal:
 	FarPanelPlugin();
+	[CA_USED]
 	void AssertOpen();
 	List<IFile^>^ ReplaceFiles(List<IFile^>^ files);
 internal:

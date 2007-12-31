@@ -85,4 +85,17 @@ Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
 If you need more input box options, use the interface directly.
 </summary>
 </pp>
+<pp name="PluginFileMask">
+<summary>
+File(s) mask, see FAR API help topic [File masks]; format "include|exclude" is also supported.
+This value is only default, actual mask may be changed by a user, so that
+if the plugin uses this mask itself then override <c>set</c> too.
+</summary>
+</pp>
+<pp name="InvokeLoad">
+<para>
+If the assembly has no direct <see cref="BasePlugin"/> children
+then this plugin is normally loaded only when invoked the first time.
+</para>
+</pp>
 </docs>

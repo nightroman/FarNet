@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 using System.Diagnostics;
@@ -11,7 +11,8 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Base class of a preloadable plugin and not preloadable <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> and <see cref="FilerPlugin"/>.
+	/// Base class of a preloadable plugin and not preloadable
+	/// <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/>, <see cref="EditorPlugin"/> and <see cref="FilerPlugin"/>.
 	/// </summary>
 	/// <remarks>
 	/// It keeps reference to <see cref="IFar"/> and provides
@@ -22,7 +23,8 @@ namespace FarManager
 	/// </para>
 	/// <para>
 	/// If a plugin implements a single operation consider to use <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> or <see cref="FilerPlugin"/>.
-	/// Besides, these plugins are not preloadable by design.
+	/// For a plugin that only installs editor events for specified file types consider <see cref="EditorPlugin"/>.
+	/// These plugins are normally not preloadable and slightly easier to implement.
 	/// </para>
 	/// </remarks>
 	[DebuggerStepThroughAttribute]
@@ -103,9 +105,13 @@ namespace FarManager
 		/// </summary>
 		Viewer = 1 << 4,
 		/// <summary>
+		/// Show the item in the menu called from dialogs.
+		/// </summary>
+		Dialog = 1 << 5,
+		/// <summary>
 		/// Show the item in F11 menus.
 		/// </summary>
-		F11Menus = Panels | Editor | Viewer,
+		F11Menus = Panels | Editor | Viewer | Dialog,
 		/// <summary>
 		/// Show the item in F11 menus and in the disk menu.
 		/// </summary>
@@ -119,6 +125,7 @@ namespace FarManager
 	/// <summary>
 	/// Arguments of a tool plugin event. This event normally happens when a user selects a menu item.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public sealed class ToolEventArgs : EventArgs
 	{
 		///
@@ -152,11 +159,9 @@ namespace FarManager
 	/// It is enough to implement <see cref="Invoke"/> method only.
 	/// Override other properties and methods as needed.
 	/// You may derive any number of such classes.
-	/// <para>
-	/// If the assembly has no direct <see cref="BasePlugin"/> children
-	/// then this plugin is loaded only when invoked the first time.
-	/// </para>
+	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
+	[DebuggerStepThroughAttribute]
 	public abstract class ToolPlugin : BasePlugin
 	{
 		/// <summary>
@@ -177,6 +182,7 @@ namespace FarManager
 	/// <summary>
 	/// Arguments of a command plugin event.
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public class CommandEventArgs : EventArgs
 	{
 		///
@@ -201,11 +207,9 @@ namespace FarManager
 	/// You have to implement <see cref="Invoke"/> and provide <see cref="Prefix"/>.
 	/// Override other properties and methods as needed.
 	/// You may derive any number of such classes.
-	/// <para>
-	/// If the assembly has no direct <see cref="BasePlugin"/> children
-	/// then this plugin is loaded only when invoked the first time.
-	/// </para>
+	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
+	[DebuggerStepThroughAttribute]
 	public abstract class CommandPlugin : BasePlugin
 	{
 		/// <summary>
@@ -230,6 +234,7 @@ namespace FarManager
 	/// A handler is called to open a <see cref="IPanelPlugin"/> which emulates a file system based on a file.
 	/// If a file is unknown a handler should do nothing. [OpenFilePlugin]
 	/// </summary>
+	[DebuggerStepThroughAttribute]
 	public sealed class FilerEventArgs : EventArgs
 	{
 		///
@@ -266,11 +271,9 @@ namespace FarManager
 	/// It is enough to implement <see cref="Invoke"/> method only.
 	/// Override other properties and methods as needed.
 	/// You may derive any number of such classes.
-	/// <para>
-	/// If the assembly has no direct <see cref="BasePlugin"/> children
-	/// then this plugin is loaded only when invoked the first time.
-	/// </para>
+	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
+	[DebuggerStepThroughAttribute]
 	public abstract class FilerPlugin : BasePlugin
 	{
 		/// <summary>
@@ -278,11 +281,7 @@ namespace FarManager
 		/// </summary>
 		public abstract void Invoke(object sender, FilerEventArgs e);
 
-		/// <summary>
-		/// File(s) mask, see FAR API help topic [File masks]; format "include|exclude" is also supported.
-		/// This value is only default, actual mask may be changed by a user, so that
-		/// if the plugin uses this mask itself then override <c>set</c> too.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="PluginFileMask"]/*'/>
 		public virtual string Mask
 		{
 			get { return string.Empty; }
@@ -295,6 +294,31 @@ namespace FarManager
 		public virtual bool Creates
 		{
 			get { return false; }
+			set { }
+		}
+	}
+
+	/// <summary>
+	/// Base class of a FAR.NET editor plugin.
+	/// </summary>
+	/// <remarks>
+	/// It is enough to implement <see cref="Invoke"/> method only.
+	/// Override other properties and methods as needed.
+	/// You may derive any number of such classes.
+	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
+	/// </remarks>
+	[DebuggerStepThroughAttribute]
+	public abstract class EditorPlugin : BasePlugin
+	{
+		/// <summary>
+		/// Editor <see cref="IAnyEditor.AfterOpen"/> handler.
+		/// </summary>
+		public abstract void Invoke(object sender, EventArgs e);
+
+		/// <include file='doc.xml' path='docs/pp[@name="PluginFileMask"]/*'/>
+		public virtual string Mask
+		{
+			get { return string.Empty; }
 			set { }
 		}
 	}

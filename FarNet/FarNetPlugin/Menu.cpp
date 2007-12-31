@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -201,7 +201,12 @@ IList<int>^ AnyMenu::BreakKeys::get()
 
 int AnyMenu::BreakCode::get()
 {
-	return _breakCode;
+	return _keys.IndexOf(_breakKey);
+}
+
+int AnyMenu::BreakKey::get()
+{
+	return _breakKey;
 }
 
 //
@@ -352,7 +357,7 @@ void Menu::ShowMenu(const FarMenuItem* items, const int* breaks, const char* tit
 	// show
 	int bc;
 	_selected = Info.Menu(Info.ModuleNumber, x, y, MaxHeight, Flags(), title, bottom, help, breaks, &bc, items, _items->Count);
-	_breakCode = bc;
+	_breakKey = bc < 0 ? 0 : _keys[bc];
 }
 
 bool Menu::Show()
@@ -599,14 +604,14 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 			d->Close();
 			if (a.Restart)
 			{
-				_breakCode = -1;
+				_breakKey = -1;
 				_toFilter1 = true;
 				_toFilter2 = true;
 			}
 		}
 		else
 		{
-			_breakCode = e->Code;
+			_breakKey = e->Code;
 			d->Close();
 		}
 		return;
@@ -814,11 +819,11 @@ bool ListMenu::Show()
 
 		// go!
 		_toFilter1 = _toFilter2 = false;
-		_breakCode = 0;
+		_breakKey = 0;
 		bool ok = dialog.Show();
 		if (!ok)
 			return false;
-		if (_breakCode == -1 || _toFilter1 || _toFilter2)
+		if (_breakKey == -1 || _toFilter1 || _toFilter2)
 			continue;
 
 		// correct by filter

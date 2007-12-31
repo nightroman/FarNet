@@ -4,7 +4,7 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 1.71 build 2275
+  Plugin API for FAR Manager 1.71 build 2309
 
   Copyright (c) 1996-2000 Eugene Roshal
   Copyright (c) 2000-2007 FAR group
@@ -12,7 +12,7 @@
 
 #define MAKEFARVERSION(major,minor,build) ( ((major)<<8) | (minor) | ((build)<<16))
 
-#define FARMANAGERVERSION MAKEFARVERSION(1,71,2275)
+#define FARMANAGERVERSION MAKEFARVERSION(1,71,2309)
 
 
 #if !defined(_INC_WINDOWS) && !defined(_WINDOWS_)
@@ -171,6 +171,7 @@ enum FarDialogItemFlags {
   DIF_SELECTONENTRY         = 0x00800000UL,
   DIF_3STATE                = 0x00800000UL,
   DIF_LISTWRAPMODE          = 0x01000000UL,
+  DIF_NOAUTOCOMPLETE        = 0x02000000UL,
   DIF_LISTAUTOHIGHLIGHT     = 0x02000000UL,
   DIF_LISTNOCLOSE           = 0x04000000UL,
   DIF_HIDDEN                = 0x10000000UL,
@@ -456,6 +457,21 @@ struct FarDialogItemData
 {
   int   PtrLength;
   char *PtrData;
+};
+
+struct FarDialogEvent
+{
+  HANDLE hDlg;
+  int Msg;
+  int Param1;
+  LONG_PTR Param2;
+  LONG_PTR Result;
+};
+
+struct OpenDlgPluginData
+{
+  int ItemNumber;
+  HANDLE hDlg;
 };
 
 #define Dlg_RedrawDialog(Info,hDlg)            Info.SendDlgMessage(hDlg,DM_REDRAW,0,0)
@@ -994,9 +1010,18 @@ struct KeySequence{
 };
 
 enum FARMACROCOMMAND{
-  MCMD_LOADALL,
-  MCMD_SAVEALL,
-  MCMD_POSTMACROSTRING,
+  MCMD_LOADALL           = 0,
+  MCMD_SAVEALL           = 1,
+  MCMD_POSTMACROSTRING   = 2,
+  MCMD_GETSTATE          = 5,
+};
+
+enum FARMACROSTATE {
+  MACROSTATE_NOMACRO          =0,
+  MACROSTATE_EXECUTING        =1,
+  MACROSTATE_EXECUTING_COMMON =2,
+  MACROSTATE_RECORDING        =3,
+  MACROSTATE_RECORDING_COMMON =4,
 };
 
 struct ActlKeyMacro{
@@ -1006,7 +1031,7 @@ struct ActlKeyMacro{
       char *SequenceText;
       DWORD Flags;
     } PlainText;
-    DWORD Reserved[3];
+    DWORD_PTR Reserved[3];
   } Param;
 };
 
@@ -1143,16 +1168,25 @@ typedef int (WINAPI *FARAPIVIEWERCONTROL)(
 );
 
 enum VIEWER_EVENTS {
-  VE_READ     =0,
-  VE_CLOSE    =1
+  VE_READ       =0,
+  VE_CLOSE      =1,
 };
 
 
 enum EDITOR_EVENTS {
-  EE_READ,
-  EE_SAVE,
-  EE_REDRAW,
-  EE_CLOSE
+  EE_READ       =0,
+  EE_SAVE       =1,
+  EE_REDRAW     =2,
+  EE_CLOSE      =3,
+
+  EE_GOTFOCUS   =6,
+  EE_KILLFOCUS  =7,
+};
+
+enum DIALOG_EVENTS {
+  DE_DLGPROCINIT    =0,
+  DE_DEFDLGPROCINIT =1,
+  DE_DLGPROCEND     =2,
 };
 
 #define EEREDRAW_ALL    (void*)0
@@ -1580,6 +1614,7 @@ enum PLUGIN_FLAGS {
   PF_EDITOR         = 0x0004,
   PF_VIEWER         = 0x0008,
   PF_FULLCMDLINE    = 0x0010,
+  PF_DIALOG         = 0x0020,
 };
 
 
@@ -1705,13 +1740,14 @@ struct OpenPluginInfo
 };
 
 enum OPENPLUGIN_OPENFROM{
-  OPEN_DISKMENU,
-  OPEN_PLUGINSMENU,
-  OPEN_FINDLIST,
-  OPEN_SHORTCUT,
-  OPEN_COMMANDLINE,
-  OPEN_EDITOR,
-  OPEN_VIEWER,
+  OPEN_DISKMENU     = 0,
+  OPEN_PLUGINSMENU  = 1,
+  OPEN_FINDLIST     = 2,
+  OPEN_SHORTCUT     = 3,
+  OPEN_COMMANDLINE  = 4,
+  OPEN_EDITOR       = 5,
+  OPEN_VIEWER       = 6,
+  OPEN_DIALOG       = 8,
 };
 
 enum FAR_PKF_FLAGS {
@@ -1728,6 +1764,9 @@ enum FAR_EVENTS {
   FE_CLOSE          =3,
   FE_BREAK          =4,
   FE_COMMAND        =5,
+
+  FE_GOTFOCUS       =6,
+  FE_KILLFOCUS      =7,
 };
 
 
@@ -1753,6 +1792,7 @@ int    WINAPI _export GetVirtualFindData(HANDLE hPlugin,struct PluginPanelItem *
 int    WINAPI _export MakeDirectory(HANDLE hPlugin,char *Name,int OpMode);
 HANDLE WINAPI _export OpenFilePlugin(char *Name,const unsigned char *Data,int DataSize);
 HANDLE WINAPI _export OpenPlugin(int OpenFrom,INT_PTR Item);
+int    WINAPI _export ProcessDialogEvent(int Event,void *Param);
 int    WINAPI _export ProcessEditorEvent(int Event,void *Param);
 int    WINAPI _export ProcessEditorInput(const INPUT_RECORD *Rec);
 int    WINAPI _export ProcessEvent(HANDLE hPlugin,int Event,void *Param);

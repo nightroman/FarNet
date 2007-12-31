@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -11,6 +11,7 @@ ref class BasePluginInfo abstract
 {
 public:
 	property BasePlugin^ Plugin { BasePlugin^ get() { return _Plugin; } }
+	[CA_USED]
 	property String^ AssemblyPath { String^ get(); }
 	property String^ ClassName { String^ get(); }
 	property String^ Key { String^ get(); }
@@ -43,6 +44,7 @@ private:
 	ToolOptions _Options;
 	String^ _AliasConfig;
 	String^ _AliasDisk;
+	String^ _AliasDialog;
 	String^ _AliasEditor;
 	String^ _AliasPanels;
 	String^ _AliasViewer;
@@ -80,6 +82,23 @@ private:
 private:
 	bool _Creates;
 	EventHandler<FilerEventArgs^>^ _Handler;
+	String^ _DefaultMask;
+	String^ _Mask;
+};
+
+ref class EditorPluginInfo : BasePluginInfo
+{
+public:
+	EditorPluginInfo(BasePlugin^ plugin, String^ name, EventHandler^ handler, String^ mask) : BasePluginInfo(plugin, name), _Handler(handler), _DefaultMask(mask) {}
+	EditorPluginInfo(String^ assemblyPath, String^ className, String^ name, String^ mask) : BasePluginInfo(assemblyPath, className, name), _DefaultMask(mask) { _Handler = gcnew EventHandler(this, &EditorPluginInfo::Invoke); }
+public:
+	property EventHandler^ Handler { EventHandler^ get() { return _Handler; } }
+	property String^ DefaultMask { String^ get() { return _DefaultMask; } }
+	property String^ Mask { String^ get(); void set(String^ value); }
+private:
+	void Invoke(Object^ sender, EventArgs^ e);
+private:
+	EventHandler^ _Handler;
 	String^ _DefaultMask;
 	String^ _Mask;
 };

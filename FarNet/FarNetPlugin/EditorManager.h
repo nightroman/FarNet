@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #pragma once
@@ -8,13 +8,12 @@ Copyright (c) 2005-2007 Far.NET Team
 
 namespace FarNet
 {;
-public ref class EditorManager
+ref class EditorManager
 {
 internal:
 	EditorManager();
-	property IAnyEditor^ AnyEditor { IAnyEditor^ get(); }
-	property ICollection<IEditor^>^ Editors { ICollection<IEditor^>^ get(); }
-	Editor^ CreateEditor();
+	property BaseEditor^ AnyEditor { BaseEditor^ get() { return %_anyEditor; } }
+	array<IEditor^>^ Editors();
 	Editor^ GetCurrentEditor();
 	int AsProcessEditorEvent(int type, void* param);
 	int AsProcessEditorInput(const INPUT_RECORD* rec);
@@ -26,7 +25,7 @@ private:
 	// Any editor object
 	BaseEditor _anyEditor;
 	// Registered opened editors
-	Dictionary<int, IEditor^> _editors;
+	Dictionary<int, Editor^> _editors;
 	// Cached current editor
 	Editor^ _editorCurrent;
 	// Editor waiting for ID

@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -121,13 +121,14 @@ void PluginSet::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 	// load from assembly
 	int nBasePlugin = 0;
 	List<CommandPluginInfo^> commands;
+	List<EditorPluginInfo^> editors;
 	List<FilerPluginInfo^> filers;
 	List<ToolPluginInfo^> tools;
 	Assembly^ assembly = Assembly::LoadFrom(assemblyPath);
 	if (classes)
 	{
 		for(int i = 1; i < classes->Length; ++i)
-			nBasePlugin += AddPlugin(assembly->GetType(classes[i], true), %commands, %filers, %tools);
+			nBasePlugin += AddPlugin(assembly->GetType(classes[i], true), %commands, %editors, %filers, %tools);
 	}
 	else
 	{
@@ -139,7 +140,7 @@ void PluginSet::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 			if (BasePlugin::typeid->IsAssignableFrom(type))
 			{
 				++nLoaded;
-				nBasePlugin += AddPlugin(type, %commands, %filers, %tools);
+				nBasePlugin += AddPlugin(type, %commands, %editors, %filers, %tools);
 			}
 		}
 
@@ -150,6 +151,8 @@ void PluginSet::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 	// add plugins
 	if (commands.Count)
 		Far::Instance->RegisterCommands(%commands);
+	if (editors.Count)
+		Far::Instance->RegisterEditors(%editors);
 	if (filers.Count)
 		Far::Instance->RegisterFilers(%filers);
 	if (tools.Count)
@@ -157,10 +160,10 @@ void PluginSet::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 
 	// write cache
 	if (nBasePlugin == 0)
-		WriteCache(assemblyPath, %commands, %filers, %tools);
+		WriteCache(assemblyPath, %commands, %editors, %filers, %tools);
 }
 
-int PluginSet::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
+int PluginSet::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
 {
 	// create and add
 	BasePlugin^ instance = (BasePlugin^)Activator::CreateInstance(type);
@@ -188,6 +191,16 @@ int PluginSet::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<Fi
 		return 0;
 	}
 
+	// case: editor
+	EditorPlugin^ editor = dynamic_cast<EditorPlugin^>(instance);
+	if (editor)
+	{
+		EditorPluginInfo^ pe = gcnew EditorPluginInfo(editor, editor->Name, gcnew EventHandler(editor, &EditorPlugin::Invoke), editor->Mask);
+		editor->Mask = pe->Mask;
+		editors->Add(pe);
+		return 0;
+	}
+
 	// case: filer
 	FilerPlugin^ filer = dynamic_cast<FilerPlugin^>(instance);
 	if (filer)
@@ -212,6 +225,7 @@ void PluginSet::ReadCache()
 			RegistryKey^ keyDll;
 			RegistryKey^ keyPlugin;
 			List<CommandPluginInfo^> commands;
+			List<EditorPluginInfo^> editors;
 			List<FilerPluginInfo^> filers;
 			List<ToolPluginInfo^> tools;
 			try
@@ -254,6 +268,13 @@ void PluginSet::ReadCache()
 						CommandPluginInfo^ plugin = gcnew CommandPluginInfo(assemblyPath, className, pluginName, prefix);
 						commands.Add(plugin);
 					}
+					else if (type == "Editor")
+					{
+						String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
+
+						EditorPluginInfo^ plugin = gcnew EditorPluginInfo(assemblyPath, className, pluginName, mask);
+						editors.Add(plugin);
+					}
 					else if (type == "Filer")
 					{
 						String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
@@ -276,6 +297,8 @@ void PluginSet::ReadCache()
 				_cache.Add(dllName, nullptr);
 				if (commands.Count)
 					Far::Instance->RegisterCommands(%commands);
+				if (editors.Count)
+					Far::Instance->RegisterEditors(%editors);
 				if (filers.Count)
 					Far::Instance->RegisterFilers(%filers);
 				if (tools.Count)
@@ -303,7 +326,7 @@ void PluginSet::ReadCache()
 	}
 }
 
-void PluginSet::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
+void PluginSet::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
 {
 	FileInfo fi(assemblyPath);
 	RegistryKey^ keyDll;
@@ -328,6 +351,15 @@ void PluginSet::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ comma
 			key->SetValue("Type", "Command");
 			key->SetValue("Name", plugin->Name);
 			key->SetValue("Prefix", plugin->DefaultPrefix);
+			key->Close();
+		}
+
+		for each(EditorPluginInfo^ plugin in editors)
+		{
+			RegistryKey^ key = keyDll->CreateSubKey(plugin->ClassName);
+			key->SetValue("Type", "Editor");
+			key->SetValue("Name", plugin->Name);
+			key->SetValue("Mask", plugin->DefaultMask);
 			key->Close();
 		}
 

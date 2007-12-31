@@ -7,9 +7,8 @@
 		<RemoveDir Directories="Debug;Release"/>
 	</Target>
 	<Target Name="Install">
-		<MakeDir Directories="$(Install)"/>
-		<Copy SourceFiles="$(Configuration)\FarNetPlugin.dll" DestinationFolder="$(Install)"/>
-		<Copy SourceFiles="FarNetPlugin.hlf" DestinationFolder="$(Install)"/>
+		<Copy SourceFiles="FarNetPlugin.hlf" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="$(Configuration)\FarNetPlugin.dll" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
 	</Target>
 	<Target Name="Uninstall">
 		<Delete Files="$(Install)\FarNetPlugin.dll;$(Install)\FarNetPlugin.hlf"/>

@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<ProductVersion>3.3.35</ProductVersion>
+		<ProductVersion>3.3.36</ProductVersion>
 		<OutputPath>FAR.NET.$(ProductVersion).rar</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
@@ -15,17 +15,15 @@
 		<MSBuild Projects="FarNetIntf\Build-FarNetIntf.proj;FarNetPlugin\Build-FarNetPlugin.proj" Targets="Clean"/>
 	</Target>
 	<Target Name="Install">
-		<MSBuild
-		Projects="FarNetIntf\Build-FarNetIntf.proj;FarNetPlugin\Build-FarNetPlugin.proj"
-		Targets="Install" Properties="Configuration=$(Configuration)"/>
-		<Copy SourceFiles="Far.exe.config" DestinationFolder="$(Install)"/>
+		<MSBuild Projects="FarNetIntf\Build-FarNetIntf.proj;FarNetPlugin\Build-FarNetPlugin.proj" Targets="Install" Properties="Configuration=$(Configuration)"/>
+		<Copy SourceFiles="Far.exe.config" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
 	</Target>
 	<Target Name="Uninstall">
 		<Delete Files="$(Install)\Far.exe.config"/>
 		<MSBuild Projects="FarNetIntf\Build-FarNetIntf.proj;FarNetPlugin\Build-FarNetPlugin.proj" Targets="Uninstall"/>
 	</Target>
 	<Target Name="Archive">
-		<Exec Command="powershell .\Build-All -Test > nul" WorkingDirectory="Plugins.NET"/>
+		<MSBuild Projects="Plugins.NET\Build.proj" Targets="Build;Clean"/>
 		<Delete Files="$(OutputPath)"/>
 		<RemoveDir Directories="Tmp"/>
 		<MakeDir Directories="Tmp\Lib;Tmp\Plugins\FAR.NET;Tmp\Plugins.NET"/>

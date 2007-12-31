@@ -1,6 +1,6 @@
 /*
-Far.NET plugin for Far Manager
-Copyright (c) 2005-2007 Far.NET Team
+FAR.NET plugin for Far Manager
+Copyright (c) 2005-2007 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -46,7 +46,7 @@ LONG_PTR WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, LONG_PTR param2)
 //::FarEditLineSelection
 //
 
-public ref class FarEditLineSelection : public ILineSelection
+ref class FarEditLineSelection : public ILineSelection
 {
 public:
 	virtual property String^ Text
@@ -124,7 +124,7 @@ private:
 //::FarEditLine
 //
 
-public ref class FarEditLine : public ILine
+ref class FarEditLine : public ILine
 {
 public:
 	virtual property ILine^ FullLine
@@ -494,6 +494,7 @@ FarEdit::FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, 
 DEF_CONTROL_FLAG(FarEdit, Editor, DIF_EDITOR);
 DEF_CONTROL_FLAG(FarEdit, EnvExpanded, DIF_EDITEXPAND);
 DEF_CONTROL_FLAG(FarEdit, ManualAddHistory, DIF_MANUALADDHISTORY);
+DEF_CONTROL_FLAG(FarEdit, NoAutoComplete, DIF_NOAUTOCOMPLETE);
 DEF_CONTROL_FLAG(FarEdit, NoFocus, DIF_NOFOCUS);
 DEF_CONTROL_FLAG(FarEdit, ReadOnly, DIF_READONLY);
 DEF_CONTROL_FLAG(FarEdit, SelectOnEntry, DIF_SELECTONENTRY);
@@ -1152,6 +1153,32 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 void FarDialog::Close()
 {
 	Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
+}
+
+/*
+return:
+- false - continue processing.
+- true - done, stop processing
+?? FarDialogEvent.Result - указатель на переменную, используемую обработчиком в качестве возвращаемого значения.
+*/
+int FarDialog::AsProcessDialogEvent(int /*id*/, void* /*param*/)
+{
+#if 0
+	FarDialogEvent* de = (FarDialogEvent*)param;
+	switch(id)
+	{
+	case DE_DLGPROCINIT:
+		// before handler
+		break;
+	case DE_DEFDLGPROCINIT:
+		// before standard handler
+		break;
+	case DE_DLGPROCEND:
+		// after handlers
+		break;
+	}
+#endif
+	return false;
 }
 
 }
