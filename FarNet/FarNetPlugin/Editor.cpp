@@ -36,11 +36,10 @@ String^ BaseEditor::EditText(String^ text, String^ title)
 		
 		IEditor^ edit = Far::Instance->CreateEditor();
 		edit->FileName = file;
-		edit->IsModal = true;
 		edit->DisableHistory = true;
 		if (SS(title))
 			edit->Title = title;
-		edit->Open();
+		edit->Open(OpenMode::Modal);
 		
 		return File::ReadAllText(file, Encoding::Default);
 	}
@@ -60,6 +59,16 @@ Editor::Editor(EditorManager^ manager)
 
 void Editor::Open()
 {
+	if (IsModal)
+		Open(OpenMode::Modal);
+	else if (Async)
+		Open(OpenMode::None);
+	else
+		Open(OpenMode::Wait);
+}
+
+void Editor::Open(OpenMode mode)
+{
 	AssertClosed();
 
 	// strings
@@ -70,14 +79,40 @@ void Editor::Open()
 	int nLine = _frameStart.Line >= 0 ? _frameStart.Line + 1 : -1;
 	int nPos = _frameStart.Pos >= 0 ? _frameStart.Pos + 1 : -1;
 
-	// it is used by the manager on READ event
-	_manager->SetWaitingEditor(this);
+	// from dialog? set modal
+	WindowType wt = Far::Instance->GetWindowType(-1);
+	if (wt == WindowType::Dialog)
+		mode = OpenMode::Modal;
 
-	// it fires READ event and the manager sets the Id
-	int res = Info.Editor(
-		sFileName, sTitle,
-		_window.Left, _window.Top, _window.Right, _window.Bottom,
-		Flags(), nLine, nPos);
+	// flags
+	int flags = 0;
+	if (_deleteOnClose)
+		flags |= EF_DELETEONCLOSE;
+	if (_deleteOnlyFileOnClose)
+		flags |= EF_DELETEONLYFILEONCLOSE;
+	if (_isNew)
+		flags |= EF_CREATENEW;
+	if (_enableSwitch)
+		flags |= EF_ENABLE_F6;
+	if (_disableHistory)
+		flags |= EF_DISABLEHISTORY;
+	switch(mode)
+	{
+	case OpenMode::None:
+		flags |= (EF_NONMODAL | EF_IMMEDIATERETURN);
+		break;
+	case OpenMode::Wait:
+		flags |= EF_NONMODAL;
+		break;
+	}
+
+	// open; it fires READ event and the manager sets the Id
+	_manager->SetWaitingEditor(this);
+	int res = Info.Editor(sFileName, sTitle, _window.Left, _window.Top, _window.Right, _window.Bottom, flags, nLine, nPos);
+
+	// redraw FAR
+	if (wt == WindowType::Dialog)
+		Far::Instance->Redraw();
 
 	// check errors
 	if (res != EEC_MODIFIED && res != EEC_NOT_MODIFIED)
@@ -400,26 +435,6 @@ void Editor::InsertLine(bool indent)
 {
 	AssertCurrent();
 	EditorControl_ECTL_INSERTSTRING(indent);
-}
-
-int Editor::Flags()
-{
-	int r = 0;
-	if (!_isModal)
-		r |= EF_NONMODAL;
-	if (_async)
-		r |= EF_IMMEDIATERETURN;
-	if (_deleteOnClose)
-		r |= EF_DELETEONCLOSE;
-	if (_deleteOnlyFileOnClose)
-		r |= EF_DELETEONLYFILEONCLOSE;
-	if (_isNew)
-		r |= EF_CREATENEW;
-	if (_enableSwitch)
-		r |= EF_ENABLE_F6;
-	if (_disableHistory)
-		r |= EF_DISABLEHISTORY;
-	return r;
 }
 
 void Editor::AssertClosed()

@@ -23,6 +23,7 @@ public:
 	virtual property String^ Title { String^ get(); void set(String^ value); }
 public:
 	virtual void Open();
+	virtual void Open(OpenMode mode);
 internal:
 	Viewer();
 	void GetParams();

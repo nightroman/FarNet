@@ -95,7 +95,7 @@ namespace FarManager.Forms
 		/// </summary>
 		bool NoBrackets { get; set; }
 		/// <summary>
-		/// The dialog item cannot receive keyboard focus, but can handle other user events.
+		/// Cannot get keyboard focus, but can handle other events.
 		/// </summary>
 		bool NoFocus { get; set; }
 		/// <summary>
@@ -126,7 +126,7 @@ namespace FarManager.Forms
 		/// </summary>
 		bool CenterGroup { get; set; }
 		/// <summary>
-		/// The dialog item cannot receive keyboard focus, but can handle other user events.
+		/// Cannot get keyboard focus, but can handle other events.
 		/// </summary>
 		bool NoFocus { get; set; }
 		/// <summary>
@@ -191,7 +191,7 @@ namespace FarManager.Forms
 		/// </summary>
 		bool SelectOnEntry { get; set; }
 		/// <summary>
-		/// The dialog item cannot receive keyboard focus, but can handle other user events.
+		/// Cannot get keyboard focus, but can handle other events.
 		/// </summary>
 		bool NoFocus { get; set; }
 		/// <summary>
@@ -234,7 +234,7 @@ namespace FarManager.Forms
 		/// </summary>
 		bool CenterGroup { get; set; }
 		/// <summary>
-		/// The dialog item cannot receive keyboard focus, but can handle other user events.
+		/// Cannot get keyboard focus, but can handle other events.
 		/// </summary>
 		bool NoFocus { get; set; }
 		/// <summary>
@@ -277,6 +277,22 @@ namespace FarManager.Forms
 	}
 
 	/// <summary>
+	/// User control.
+	/// It is created and added to a dialog by <see cref="IDialog.AddUserControl"/>.
+	/// </summary>
+	/// <remarks>
+	/// Currently it is not really a user defined control with custom drawing.
+	/// But it still can be used to receive some events where other controls are not suitable.
+	/// </remarks>
+	public interface IUserControl : IControl
+	{
+		/// <summary>
+		/// Cannot get keyboard focus, but can handle other events.
+		/// </summary>
+		bool NoFocus { get; set; }
+	}
+
+	/// <summary>
 	/// Base interface for <see cref="IComboBox"/> and <see cref="IListBox"/>.
 	/// </summary>
 	public interface IBaseList : IControl
@@ -304,7 +320,7 @@ namespace FarManager.Forms
 		/// </summary>
 		bool WrapCursor { get; set; }
 		/// <summary>
-		/// The dialog item cannot receive keyboard focus, but can handle other user events.
+		/// Cannot get keyboard focus, but can handle other events.
 		/// </summary>
 		bool NoFocus { get; set; }
 		/// <summary>
@@ -313,7 +329,7 @@ namespace FarManager.Forms
 		/// </summary>
 		bool NoClose { get; set; }
 		/// <summary>
-		/// Tells to select the last item when started.
+		/// Tells to select the last item if <see cref="Selected"/> is not set.
 		/// </summary>
 		bool SelectLast { get; set; }
 	}
@@ -522,6 +538,11 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// <include file='doc.xml' path='docs/pp[@name="LTB"]/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddVerticalText(int left, int top, int bottom, string text);
+		/// <summary>
+		/// Adds a user control. See <see cref="NoSmartCoords"/>.
+		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
+		IUserControl AddUserControl(int left, int top, int right, int bottom);
 		/// <summary>
 		/// Closes the dialog.
 		/// </summary>

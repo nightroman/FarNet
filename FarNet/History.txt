@@ -1,5 +1,28 @@
 http://code.google.com/p/farnet/
 
+3.3.37
+
+Recommended FAR 1.71.2315
+http://farmanager.com/farbugs/Far171.b2315.x86.rar
+
+NEW
+- IFar.Redraw() for FAR 1.71.2315
+- IMenuItem.Disabled works in menus.
+- IMenuItem.Text + IsSeparator is shown in menus.
+- IMenuItem.From enables\disables a menu item "automatically".
+- IMenu: item properties (except Text) can be changed in locked mode.
+- BasePlugin.Invoking(): rarely needed, but sometimes useful, see help.
+- IUserControl - currently it is not really a user defined control with custom
+drawing, but it still can be used to receive some events where other controls
+are not suitable.
+
+OBSOLETE
+- REMOVED property BreakCode from menus, see 3.3.36 notes.
+- Editor and viewer properties Async and IsModal WILL BE REMOVED. Use new method
+Open( OpenMode ) with OpenMode enum. Old method Open() with no parameter is also
+obsolete for now, don't use it for this transition period; but it will not be
+removed, later it will work as Open( OpenMode.None ).
+
 3.3.36
 
 Requires FAR 1.71 alpha 4 (build 2309)

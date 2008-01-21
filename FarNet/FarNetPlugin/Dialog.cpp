@@ -623,6 +623,22 @@ void FarText::Setup(FarDialogItem& item)
 }
 
 //
+//::FarUserControl
+//
+
+FarUserControl::FarUserControl(FarDialog^ dialog, int left, int top, int right, int bottom)
+: FarControl(dialog, left, top, right, bottom, String::Empty)
+{
+}
+
+DEF_CONTROL_FLAG(FarUserControl, NoFocus, DIF_NOFOCUS);
+
+void FarUserControl::Setup(FarDialogItem& item)
+{
+	Setup(item, DI_USERCONTROL);
+}
+
+//
 //::FarBaseBox
 //
 
@@ -709,9 +725,10 @@ void FarBaseBox::Setup(FarDialogItem& item, int type)
 			InitFarListItem(_pFarList->Items[i], (MenuItem^)_items[i]);
 	}
 
-	if (_selected < 0 && SelectLast)
+	// select an item (same as menu!)
+	if (_selected >= _pFarList->ItemsNumber || SelectLast && _selected < 0)
 		_selected = _pFarList->ItemsNumber - 1;
-	if (_selected >= 0 && _selected < _pFarList->ItemsNumber)
+	if (_selected >= 0)
 		_pFarList->Items[_selected].Flags |= LIF_SELECTED;
 }
 
@@ -917,6 +934,13 @@ IText^ FarDialog::AddText(int left, int top, int right, String^ text)
 IText^ FarDialog::AddVerticalText(int left, int top, int bottom, String^ text)
 {
 	FarText^ r = gcnew FarText(this, left, top, left, bottom, text);
+	AddItem(r);
+	return r;
+}
+
+IUserControl^ FarDialog::AddUserControl(int left, int top, int right, int bottom)
+{
+	FarUserControl^ r = gcnew FarUserControl(this, left, top, right, bottom);
 	AddItem(r);
 	return r;
 }

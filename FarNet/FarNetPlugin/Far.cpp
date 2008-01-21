@@ -28,6 +28,19 @@ void Far::StartFar()
 	if (_instance) throw gcnew InvalidOperationException("Already started.");
 	_instance = gcnew Far();
 	_instance->Start();
+
+	// versions
+	DWORD vn; Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
+	int v1 = (vn & 0x0000ff00)>>8, v2 = vn & 0x000000ff, v3 = (int)((long)vn&0xffff0000)>>16;
+	if (v1 >= 1 && v2 >= 71 && v3 >= 2315)
+	{
+		_version_1_71_2315 = true;
+		_version_1_71_2169 = true;
+	}
+	else if (v1 >= 1 && v2 >= 71 && v3 >= 2169)
+	{
+		_version_1_71_2169 = true;
+	}
 }
 
 void Far::Start()
@@ -286,7 +299,7 @@ IMessage^ Far::CreateMessage()
 
 void Far::Run(String^ command)
 {
-	int colon = command->IndexOf(':');
+	int colon = command->IndexOf(':', 1);
 	if (colon < 0)
 		return;
 
@@ -295,6 +308,14 @@ void Far::Run(String^ command)
 		String^ pref = it->Prefix;
 		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
 			continue;
+
+		//! Notify before each command, because a plugin may have to set a command environment,
+		//! e.g. PowerShellFar sets the default runspace once and location always.
+		//! If there is a plugin, call it directly, else it has to be done by its handler.
+		if (it->Plugin)
+			it->Plugin->Invoking();
+
+		// invoke
 		CommandEventArgs e(command->Substring(colon + 1));
 		it->Handler(this, %e);
 		break;
@@ -683,8 +704,7 @@ void ShowExceptionInfo(Exception^ e)
 	v.FileName = path;
 	v.DeleteOnlyFileOnClose = true;
 	v.DisableHistory = true;
-	v.IsModal = true;
-	v.Open();
+	v.Open(OpenMode::Modal);
 }
 
 void Far::ShowError(String^ title, Exception^ error)
@@ -1499,6 +1519,12 @@ void Far::OnEditorOpened(FarNet::Editor^ editor)
 			ShowError(it->Key, error);
 		}
 	}
+}
+
+void Far::Redraw()
+{
+	if (_version_1_71_2315)
+		Info.AdvControl(Info.ModuleNumber, ACTL_REDRAWALL, 0);
 }
 
 }

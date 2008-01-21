@@ -173,8 +173,14 @@ void CommandPluginInfo::Prefix::set(String^ value)
 
 void CommandPluginInfo::Invoke(Object^ sender, CommandEventArgs^ e)
 {
+	// connect
 	Connect();
 	CommandPlugin^ instance = (CommandPlugin^)Plugin;
+
+	// notify ??
+	instance->Invoking();
+
+	// invoke
 	instance->Prefix = Prefix;
 	_Handler = gcnew EventHandler<CommandEventArgs^>(instance, &CommandPlugin::Invoke);
 	instance->Invoke(sender, e);

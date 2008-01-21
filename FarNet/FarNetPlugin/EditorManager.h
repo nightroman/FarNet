@@ -30,7 +30,5 @@ private:
 	Editor^ _editorCurrent;
 	// Editor waiting for ID
 	Editor^ _editorWaiting;
-	// Versions
-	bool _version_1_71_2169;
 };
 }

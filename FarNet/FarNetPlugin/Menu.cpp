@@ -199,11 +199,6 @@ IList<int>^ AnyMenu::BreakKeys::get()
 	return %_keys;
 }
 
-int AnyMenu::BreakCode::get()
-{
-	return _keys.IndexOf(_breakKey);
-}
-
 int AnyMenu::BreakKey::get()
 {
 	return _breakKey;
@@ -249,7 +244,7 @@ int* Menu::CreateBreakKeys()
 
 int Menu::Flags()
 {
-	int r = 0;
+	int r = FMENU_USEEXT;
 	if (ShowAmpersands)
 		r |= FMENU_SHOWAMPERSAND;
 	if (WrapCursor)
@@ -307,38 +302,40 @@ void Menu::Unlock()
 	}
 }
 
-FarMenuItem* Menu::CreateItems()
+FarMenuItemEx* Menu::CreateItems()
 {
-	// add items
 	int n = 0;
-	FarMenuItem* r = new struct FarMenuItem[_items->Count];
-	for each(IMenuItem^ item in _items)
+	FarMenuItemEx* r = new struct FarMenuItemEx[_items->Count];
+	for each(IMenuItem^ item1 in _items)
 	{
-		StrToOem(item->Text, r[n].Text, sizeof(r->Text));
-		r[n].Checked = item->Checked;
-		r[n].Separator = item->IsSeparator;
-		r[n].Selected = 0;
+		FarMenuItemEx& item2 = r[n];
+		StrToOem(item1->Text, item2.Text.Text, sizeof(r->Text.Text));
+		item2.AccelKey = 0;
+		item2.Reserved = 0;
 		++n;
 	}
-
-	// select an item
-	if (SelectLast)
-	{
-		if (n > 0)
-			r[n - 1].Selected = true;
-	}
-	else if (_selected >= 0)
-	{
-		if (_selected < n)
-			r[_selected].Selected = true;
-		else if (n > 0)
-			r[n - 1].Selected = true;
-	}
-
 	return r;
 }
 
-void Menu::ShowMenu(const FarMenuItem* items, const int* breaks, const char* title, const char* bottom, const char* help)
+ToolOptions Menu::From()
+{
+	switch(Far::Instance->GetWindowType(-1))
+	{
+	case WindowType::Panels:
+		return ToolOptions::Panels;
+	case WindowType::Editor:
+		return ToolOptions::Editor;
+	case WindowType::Viewer:
+		return ToolOptions::Viewer;
+	case WindowType::Dialog:
+		return ToolOptions::Dialog;
+	default:
+		// not a window value
+		return ToolOptions::Config;
+	}
+}
+
+void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const char* title, const char* bottom, const char* help)
 {
 	// validate X, Y to avoid crashes and out of screen
 	int x = _x < 0 ? -1 : _x < 2 ? 2 : _x;
@@ -354,9 +351,42 @@ void Menu::ShowMenu(const FarMenuItem* items, const int* breaks, const char* tit
 			y = 2;
 	}
 
+	// update flags
+	ToolOptions from = ToolOptions::None;
+	for(int i = _items->Count; --i >= 0;)
+	{
+		MenuItem^ item1 = (MenuItem^)_items[i];
+		FarMenuItemEx& item2 = items[i];
+
+		item2.Flags = 0;
+		if (item1->Checked)
+			item2.Flags |= MIF_CHECKED;
+		if (item1->IsSeparator)
+			item2.Flags |= MIF_SEPARATOR;
+
+		// enable\disable
+		if (item1->Disabled)
+		{
+			item2.Flags |= MIF_DISABLE;
+		}
+		else if (item1->From != ToolOptions::None)
+		{
+			if (from == ToolOptions::None)
+				from = From();
+			if (!int(item1->From & from))
+				items[i].Flags |= MIF_DISABLE;
+		}
+	}
+
+	// select an item (same as listbox!)
+	if (_selected >= _items->Count || SelectLast && _selected < 0)
+		_selected = _items->Count - 1;
+	if (_selected >= 0)
+		items[_selected].Flags |= MIF_SELECTED;
+
 	// show
 	int bc;
-	_selected = Info.Menu(Info.ModuleNumber, x, y, MaxHeight, Flags(), title, bottom, help, breaks, &bc, items, _items->Count);
+	_selected = Info.Menu(Info.ModuleNumber, x, y, MaxHeight, Flags(), title, bottom, help, breaks, &bc, (const FarMenuItem*)items, _items->Count);
 	_breakKey = bc < 0 ? 0 : _keys[bc];
 }
 
@@ -368,7 +398,7 @@ bool Menu::Show()
 	}
 	else
 	{
-		FarMenuItem* items = CreateItems();
+		FarMenuItemEx* items = CreateItems();
 		int* breaks = CreateBreakKeys();
 		CBox sTitle; sTitle.Reset(Title);
 		CBox sBottom; sBottom.Reset(Bottom);
@@ -384,20 +414,20 @@ bool Menu::Show()
 		}
 	}
 
-	// OnClick
-	if (_selected >= 0)
-	{
-		MenuItem^ item = (MenuItem^)_items[_selected];
-		if (item->_OnClick)
-		{
-			if (Sender)
-				item->_OnClick(Sender, nullptr);
-			else
-				item->_OnClick(item, nullptr);
-		}
-	}
+	// exit
+	if (_selected < 0)
+		return false;
 
-	return _selected >= 0;
+	// more
+	MenuItem^ item = (MenuItem^)_items[_selected];
+	if (item->_OnClick)
+	{
+		if (Sender)
+			item->_OnClick(Sender, nullptr);
+		else
+			item->_OnClick(item, nullptr);
+	}
+	return true;
 }
 
 //
