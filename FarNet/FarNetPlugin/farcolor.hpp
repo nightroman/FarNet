@@ -3,11 +3,11 @@
 /*
   farcolor.hpp
 
-  Colors Index for FAR Manager 1.71 build 2275
+  Colors Index for FAR Manager 1.71 build 2315
   HKCU\Software\Far\Colors\CurrentPalette
 
   Copyright (c) 1996-2000 Eugene Roshal
-  Copyrigth (c) 2000-2007 FAR group
+  Copyrigth (c) 2000-2008 FAR group
 */
 
 

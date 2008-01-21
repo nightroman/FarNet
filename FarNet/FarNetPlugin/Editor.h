@@ -78,6 +78,7 @@ public:
 	virtual void InsertLine();
 	virtual void InsertLine(bool indent);
 	virtual void Open();
+	virtual void Open(OpenMode mode);
 	virtual void Redraw();
 	virtual void Save();
 	virtual void Save(String^ fileName);
@@ -86,7 +87,6 @@ internal:
 	Editor(EditorManager^ manager);
 	void GetParams();
 private:
-	int Flags();
 	[CA_USED]
 	void AssertClosed();
 	[CA_USED]

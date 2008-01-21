@@ -4,15 +4,15 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 1.71 build 2309
+  Plugin API for FAR Manager 1.71 build 2315
 
   Copyright (c) 1996-2000 Eugene Roshal
-  Copyright (c) 2000-2007 FAR group
+  Copyright (c) 2000-2008 FAR group
 */
 
 #define MAKEFARVERSION(major,minor,build) ( ((major)<<8) | (minor) | ((build)<<16))
 
-#define FARMANAGERVERSION MAKEFARVERSION(1,71,2309)
+#define FARMANAGERVERSION MAKEFARVERSION(1,71,2315)
 
 
 #if !defined(_INC_WINDOWS) && !defined(_WINDOWS_)
@@ -908,6 +908,7 @@ enum ADVANCED_CONTROL_COMMANDS{
   ACTL_GETPLUGINMAXREADDATA,
   ACTL_GETDIALOGSETTINGS,
   ACTL_GETSHORTWINDOWINFO,
+  ACTL_REDRAWALL = 27, // RVK http://forum.farmanager.com/viewtopic.php?p=30242#30242
 };
 
 

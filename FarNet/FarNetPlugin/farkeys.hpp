@@ -3,10 +3,10 @@
 /*
   farkeys.hpp
 
-  Inside KeyName for FAR Manager 1.71 build 2275
+  Inside KeyName for FAR Manager 1.71 build 2315
 
   Copyright (c) 1996-2000 Eugene Roshal
-  Copyrigth (c) 2000-2007 FAR group
+  Copyrigth (c) 2000-2008 FAR group
 */
 
 
@@ -40,6 +40,9 @@ enum BaseDefKeyboard
   KEY_FKEY_BEGIN           =0x00000100,
 
   KEY_BREAK                =0x00000103,
+
+  KEY_PAUSE                =0x00000113,
+  KEY_CAPSLOCK             =0x00000114,
 
   KEY_PGUP                 =0x00000121,
   KEY_PGDN                 =0x00000122,
@@ -99,6 +102,9 @@ enum BaseDefKeyboard
   KEY_F23                  =0x00000186,
   KEY_F24                  =0x00000187,
 
+  KEY_NUMLOCK              =0x00000190,
+  KEY_SCROLLLOCK           =0x00000191,
+
   KEY_BROWSER_BACK         =0x000001A6,
   KEY_BROWSER_FORWARD      =0x000001A7,
   KEY_BROWSER_REFRESH      =0x000001A8,
@@ -126,6 +132,9 @@ enum BaseDefKeyboard
   KEY_NUMDEL               =0x00000209,
   KEY_DECIMAL              =0x0000020A,
   KEY_NUMENTER             =0x0000020B,
+
+  KEY_MSWHEEL_LEFT         =0x0000020C,
+  KEY_MSWHEEL_RIGHT        =0x0000020D,
 
   KEY_VK_0xFF_BEGIN        =0x00000300,
   KEY_VK_0xFF_END          =0x000003FF,

@@ -72,6 +72,14 @@ namespace FarManager
 				return GetType().FullName;
 			}
 		}
+
+		/// <summary>
+		/// Called before invoking of a command.
+		/// A plugin may want to override it to perform some preparations.
+		/// Example: PowerShellFar sets the location according to the active panel.
+		/// </summary>
+		public virtual void Invoking()
+		{ }
 	}
 
 	/// <summary>

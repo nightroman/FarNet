@@ -12,11 +12,6 @@ namespace FarNet
 {;
 EditorManager::EditorManager()
 {
-	// versions
-	DWORD vn; Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
-	int v1 = (vn & 0x0000ff00)>>8, v2 = vn & 0x000000ff, v3 = (int)((long)vn&0xffff0000)>>16;
-	if (v1 >= 1 && v2 >= 71 && v3 >= 2169)
-		_version_1_71_2169 = true;
 }
 
 array<IEditor^>^ EditorManager::Editors()
@@ -66,7 +61,7 @@ Editor^ EditorManager::CreateEditorById(int id)
 	r->GetParams();
 
 	// !! ?New File? is not removed (Close is not fired for it)
-	if (!_version_1_71_2169 && r->FileName->EndsWith("?"))
+	if (!Far::_version_1_71_2169 && r->FileName->EndsWith("?"))
 	{
 		for each(KeyValuePair<int, Editor^>^ i in _editors)
 		{

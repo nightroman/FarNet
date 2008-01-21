@@ -19,6 +19,7 @@ public:
 	virtual property bool IsSeparator;
 	virtual property Object^ Data;
 	virtual property String^ Text;
+	virtual property ToolOptions From;
 public:
 	virtual String^ ToString() override
 	{
@@ -46,7 +47,6 @@ public:
 	virtual property bool WrapCursor;
 	virtual property IList<int>^ BreakKeys { IList<int>^ get(); }
 	virtual property IMenuItems^ Items { IMenuItems^ get(); }
-	virtual property int BreakCode { int get(); }
 	virtual property int BreakKey { int get(); }
 	virtual property int MaxHeight;
 	virtual property int Selected { int get(); void set(int value); }
@@ -77,18 +77,19 @@ public:
 public:
 	~Menu();
 	!Menu();
-	virtual bool Show() override;
 	virtual void Lock();
+	virtual bool Show() override;
 	virtual void Unlock();
 internal:
 	Menu();
 private:
-	FarMenuItem* CreateItems();
+	FarMenuItemEx* CreateItems();
 	int Flags();
 	int* CreateBreakKeys();
-	void ShowMenu(const FarMenuItem* items, const int* breaks, const char* title, const char* bottom, const char* help);
+	void ShowMenu(FarMenuItemEx* items, const int* breaks, const char* title, const char* bottom, const char* help);
+	static ToolOptions From();
 private:
-	FarMenuItem* _createdItems;
+	FarMenuItemEx* _createdItems;
 	int* _createdBreaks;
 	char* _help;
 	char* _title;

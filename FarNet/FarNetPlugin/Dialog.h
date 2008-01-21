@@ -137,6 +137,15 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
+ref class FarUserControl : public FarControl, public IUserControl
+{
+public:
+	virtual property bool NoFocus { bool get(); void set(bool value); }
+internal:
+	FarUserControl(FarDialog^ dialog, int left, int top, int right, int bottom);
+	virtual void Setup(FarDialogItem& item) override;
+};
+
 ref class FarBaseBox abstract : public FarControl, public IBaseList
 {
 public:
@@ -214,6 +223,7 @@ public:
 	virtual IRadioButton^ AddRadioButton(int left, int top, String^ text);
 	virtual IText^ AddText(int left, int top, int right, String^ text);
 	virtual IText^ AddVerticalText(int left, int top, int bottom, String^ text);
+	virtual IUserControl^ AddUserControl(int left, int top, int right, int bottom);
 	virtual void Close();
 public: DEF_EVENT_ARGS(Closing, _Closing, ClosingEventArgs);
 public: DEF_EVENT_ARGS(Idled, _Idled, AnyEventArgs);

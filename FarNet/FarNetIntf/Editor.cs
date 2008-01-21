@@ -78,12 +78,6 @@ namespace FarManager
 		/// </summary>
 		ExpandTabsMode ExpandTabs { get; set; }
 		/// <summary>
-		/// Returns control to the calling function immediately after <see cref="Open"/>.
-		/// If false continues when a user has closed the editor.
-		/// It is read only when the editor is opened.
-		/// </summary>
-		bool Async { get; set; }
-		/// <summary>
 		/// Delete a directory with a file when it is closed and it is the only file there.
 		/// It is read only when an editor is opened.
 		/// </summary>
@@ -142,11 +136,6 @@ namespace FarManager
 		/// </summary>
 		ISelection TrueSelection { get; }
 		/// <summary>
-		/// Disable switching to other windows.
-		/// It is read only when an editor is opened.
-		/// </summary>
-		bool IsModal { get; set; }
-		/// <summary>
 		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in FAR. 
 		/// It is read only when an editor is opened.
 		/// </summary>
@@ -203,19 +192,6 @@ namespace FarManager
 		/// </summary>
 		/// <param name="indent">Insert a line with indent.</param>
 		void InsertLine(bool indent);
-		/// <summary>
-		/// Opens an editor using properties:
-		/// <see cref="FileName"/>,
-		/// <see cref="Title"/>,
-		/// <see cref="Async"/>,
-		/// <see cref="DeleteOnClose"/>,
-		/// <see cref="DeleteOnlyFileOnClose"/>,
-		/// <see cref="DisableHistory"/>,
-		/// <see cref="EnableSwitch"/>,
-		/// <see cref="IsModal"/>,
-		/// <see cref="IsNew"/>.
-		/// </summary>
-		void Open();
 		/// <summary>
 		/// Is this editor opened?
 		/// </summary>
@@ -342,6 +318,32 @@ namespace FarManager
 		/// </summary>
 		/// <param name="text">New text.</param>
 		void SetText(string text);
+		/// <summary>
+		/// Opens the editor using properties:
+		/// <see cref="FileName"/>,
+		/// <see cref="Title"/>,
+		/// <see cref="DeleteOnClose"/>,
+		/// <see cref="DeleteOnlyFileOnClose"/>,
+		/// <see cref="DisableHistory"/>,
+		/// <see cref="EnableSwitch"/>,
+		/// <see cref="IsNew"/>.
+		/// </summary>
+		void Open(OpenMode mode);
+		/// <summary>
+		/// Obsolete. Use <see cref="Open(OpenMode)"/> with <see cref="OpenMode"/> parameter.
+		/// </summary>
+		[Obsolete("Use Open(OpenMode).")]
+		bool Async { get; set; }
+		/// <summary>
+		/// Obsolete. Use <see cref="Open(OpenMode)"/> with <see cref="OpenMode"/> parameter.
+		/// </summary>
+		[Obsolete("Use Open(OpenMode).")]
+		bool IsModal { get; set; }
+		/// <summary>
+		/// Obsolete. Use <see cref="Open(OpenMode)"/> with <see cref="OpenMode"/> parameter.
+		/// </summary>
+		[Obsolete("Use Open(OpenMode).")]
+		void Open();
 	}
 
 	/// <summary>
