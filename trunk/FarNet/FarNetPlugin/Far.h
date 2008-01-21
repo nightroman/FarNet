@@ -38,6 +38,7 @@ public:
 	virtual bool Commit();
 	virtual void Msg(String^ body);
 	virtual void Msg(String^ body, String^ header);
+	virtual void Redraw();
 	virtual Char CodeToChar(int code);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
@@ -103,6 +104,9 @@ internal:
 	EditorManager^ _editorManager;
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
+	// Versions
+	static bool _version_1_71_2169;
+	static bool _version_1_71_2315;
 internal:
 	bool AsConfigure(int itemIndex);
 	HANDLE AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize);

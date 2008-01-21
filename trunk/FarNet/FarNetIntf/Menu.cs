@@ -13,7 +13,7 @@ namespace FarManager
 {
 	/// <summary>
 	/// Arguments of a menu key handler, see <see cref="IListMenu.AddKey(int,EventHandler&lt;MenuEventArgs&gt;)"/>.
-	/// By default the key closes the menu and <see cref="IAnyMenu.BreakCode"/> is set to its internal code.
+	/// By default the key closes the menu and it is stored in <see cref="IAnyMenu.BreakKey"/>.
 	/// Use <see cref="Ignore"/> or <see cref="Restart"/> to perform different actions.
 	/// </summary>
 	[DebuggerStepThroughAttribute]
@@ -64,7 +64,7 @@ namespace FarManager
 		/// </summary>
 		bool Checked { get; set; }
 		/// <summary>
-		/// Item is disabled. It is used only in a list item.
+		/// Item is disabled.
 		/// </summary>
 		bool Disabled { get; set; }
 		/// <summary>
@@ -76,9 +76,13 @@ namespace FarManager
 		/// </summary>
 		string Text { get; set; }
 		/// <summary>
-		/// Item is a separator. <see cref="Text"/> is shown in a list and ignored in a menu.
+		/// Item is a separator. <see cref="Text"/>, if any, is shown center aligned.
 		/// </summary>
 		bool IsSeparator { get; set; }
+		/// <summary>
+		/// If this menu item is not disabled then these flags enable or disable it depending on where a menu is called from.
+		/// </summary>
+		ToolOptions From { get; set; }
 		/// <summary>
 		/// Event raised when a menu item is clicked.
 		/// </summary>
@@ -166,12 +170,13 @@ namespace FarManager
 		/// <remarks>
 		/// If a menu item is selected then its <see cref="IMenuItem.OnClick"/> is fired.
 		/// Index of the selected item is stored in <see cref="Selected"/>.
+		/// (if the menu is shown again it is used for the current item).
 		/// </remarks>
 		bool Show();
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
-		/// Tells to select the last item on <see cref="Show()"/>.
+		/// Tells to select the last item on <see cref="Show()"/> if <see cref="Selected"/> is not set.
 		/// </summary>
 		bool SelectLast { get; set; }
 		/// <summary>
@@ -194,11 +199,6 @@ namespace FarManager
 		/// </summary>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
-		/// Obsolete, use <see cref="BreakKey"/>.
-		/// </summary>
-		[Obsolete("Use 'BreakKey'.")]
-		int BreakCode { get; }
-		/// <summary>
 		/// A key that has closed the menu; it is virtual <see cref="VKeyCode"/> for <see cref="IMenu"/> and internal <see cref="KeyCode"/> for <see cref="IListMenu"/>.
 		/// </summary>
 		int BreakKey { get; }
@@ -219,14 +219,17 @@ namespace FarManager
 		/// </summary>
 		IList<int> BreakKeys { get; }
 		/// <summary>
-		/// Creates low level internal data of the menu from the current items.
-		/// Don't change menu or items before <see cref="Unlock"/>.
+		/// Creates low level internal data of the menu from the current items. Normally you have to call <see cref="Unlock"/> after use.
 		/// </summary>
 		/// <remarks>
 		/// Used for better performance when you call <see cref="IAnyMenu.Show"/> repeatedly
 		/// with an item set that never changes (e.g. a plugin menu with fixed command set:
-		/// it can be created once on <see cref="BasePlugin.Connect"/> and locked forever;
-		/// in this particular case you don't even have to unlock).
+		/// it can be created once on <see cref="BasePlugin.Connect"/> and locked forever -
+		/// in this particular case you don't even have to call <see cref="Unlock"/>).
+		/// <para>
+		/// Don't change the menu or item set before <see cref="Unlock"/>.
+		/// You still can change item properties except <see cref="IMenuItem.Text"/>.
+		/// </para>
 		/// </remarks>
 		void Lock();
 		/// <summary>

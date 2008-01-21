@@ -5,6 +5,7 @@ Copyright (c) 2005-2007 FAR.NET Team
 
 #include "StdAfx.h"
 #include "Viewer.h"
+#include "Far.h"
 #include "Utils.h"
 
 #define SET_BIT(VAR, VALUE, FLAG) if (VALUE) VAR |= FLAG; else VAR &= ~FLAG;
@@ -12,24 +13,59 @@ Copyright (c) 2005-2007 FAR.NET Team
 namespace FarNet
 {;
 Viewer::Viewer()
+: _id(-1)
+, _flags(VF_NONMODAL)
+, _title(String::Empty)
 {
-	_id = -1;
-	_flags = VF_NONMODAL;
-	_title = String::Empty;
 }
 
 void Viewer::Open()
 {
+	if (IsModal)
+		Open(OpenMode::Modal);
+	else if (Async)
+		Open(OpenMode::None);
+	else
+		Open(OpenMode::Wait);
+}
+
+void Viewer::Open(OpenMode mode)
+{
 	AssertClosed();
+
+	// flags
+	switch(mode)
+	{
+	case OpenMode::Wait:
+		_flags |= VF_NONMODAL;
+		_flags &= ~VF_IMMEDIATERETURN;
+		break;
+	case OpenMode::Modal:
+		_flags &= ~(VF_NONMODAL | VF_IMMEDIATERETURN);
+		break;
+	default:
+		_flags |= (VF_NONMODAL | VF_IMMEDIATERETURN);
+		break;
+	}
 
 	CBox sFileName(_fileName);
 	CBox sTitle(_title);
 
+	// from dialog? set modal
+	WindowType wt = Far::Instance->GetWindowType(-1);
+	if (wt == WindowType::Dialog)
+		_flags &= ~VF_NONMODAL;
+
+	// open
 	int res = Info.Viewer(sFileName, sTitle, _window.Left, _window.Top, _window.Right, _window.Bottom, _flags);
 
-	// check errors
+	// errors?
 	if ((_flags & VF_NONMODAL) == 0 && res == FALSE)
 		throw gcnew OperationCanceledException("Can't open file: " + _fileName);
+
+	// redraw FAR
+	if (wt == WindowType::Dialog)
+		Far::Instance->Redraw();
 
 	// tmp
 	_id = 0;

@@ -25,12 +25,6 @@ namespace FarManager
 		/// <seealso cref="DeleteOnClose"/>
 		bool DeleteOnlyFileOnClose { get; set; }
 		/// <summary>
-		/// Returns control to the calling function immediately after <see cref="Open"/>.
-		/// If false continues when a user has closed the viewer.
-		/// It is read only when the viewer is opened.
-		/// </summary>
-		bool Async { get; set; }
-		/// <summary>
 		/// Enable switching to viewer.
 		/// It is read only when a viewer is opened.
 		/// </summary>
@@ -50,25 +44,52 @@ namespace FarManager
 		/// </summary>
 		Place Window { get; set; }
 		/// <summary>
-		/// Disable switching to other windows.
-		/// It is read only when a viewer is opened.
-		/// </summary>
-		bool IsModal { get; set; }
-		/// <summary>
 		/// Viewer window title. Set it before opening.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
-		/// Open a viewer using properties:
+		/// Opens the viewer using properties:
 		/// <see cref="FileName"/>,
 		/// <see cref="Title"/>,
-		/// <see cref="Async"/>,
 		/// <see cref="DeleteOnClose"/>,
 		/// <see cref="DeleteOnlyFileOnClose"/>,
 		/// <see cref="DisableHistory"/>,
 		/// <see cref="EnableSwitch"/>,
-		/// <see cref="IsModal"/>,
 		/// </summary>
+		void Open(OpenMode mode);
+		/// <summary>
+		/// Obsolete. Use <see cref="Open(OpenMode)"/>.
+		/// </summary>
+		[Obsolete("Use Open(OpenMode).")]
 		void Open();
+		/// <summary>
+		/// Obsolete. Use <see cref="Open(OpenMode)"/>.
+		/// </summary>
+		[Obsolete("Use Open(OpenMode).")]
+		bool Async { get; set; }
+		/// <summary>
+		/// Obsolete. Use <see cref="Open(OpenMode)"/>.
+		/// </summary>
+		[Obsolete("Use Open(OpenMode).")]
+		bool IsModal { get; set; }
+	}
+
+	/// <summary>
+	/// Open modes of editor and viewer.
+	/// </summary>
+	public enum OpenMode
+	{
+		/// <summary>
+		/// Tells to open not modal editor or viewer and return immediately.
+		/// </summary>
+		None,
+		/// <summary>
+		/// Tells to open not modal editor or viewer and wait for exit.
+		/// </summary>
+		Wait,
+		/// <summary>
+		/// Tells to open modal editor or viewer.
+		/// </summary>
+		Modal
 	}
 }

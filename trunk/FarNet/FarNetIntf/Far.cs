@@ -148,12 +148,12 @@ namespace FarManager
 		void CopyToClipboard(string text);
 		/// <summary>
 		/// Creates a new editor.
-		/// You have to set its properties and call <see cref="IEditor.Open"/>.
+		/// You have to set its properties and call <see cref="IEditor.Open(OpenMode)"/>.
 		/// </summary>
 		IEditor CreateEditor();
 		/// <summary>
 		/// Creates a new viewer.
-		/// You have to set its properties and call <see cref="IViewer.Open"/>.
+		/// You have to set its properties and call <see cref="IViewer.Open(OpenMode)"/>.
 		/// </summary>
 		IViewer CreateViewer();
 		/// <summary>
@@ -481,6 +481,14 @@ namespace FarManager
 		/// Current macro state.
 		/// </summary>
 		FarMacroState MacroState { get; }
+		/// <summary>
+		/// Redraws all windows. FAR 1.71.2315
+		/// </summary>
+		/// <remarks>
+		/// Example: you open an editor (assume it is modal) from a dialog;
+		/// when you exit the editor you have to call this, otherwise only the dialog area is refreshed by FAR.
+		/// </remarks>
+		void Redraw();
 	}
 
 	/// <summary>
