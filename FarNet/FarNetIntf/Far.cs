@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 using FarManager.Forms;
@@ -139,6 +139,11 @@ namespace FarManager
 		/// </summary>
 		IAnyEditor AnyEditor { get; }
 		/// <summary>
+		/// Virtual viewer instance.
+		/// Subscribe to its events if you want to handle events of all viewers.
+		/// </summary>
+		IAnyViewer AnyViewer { get; }
+		/// <summary>
 		/// Gets the clipboard text.
 		/// </summary>		
 		string PasteFromClipboard();
@@ -226,15 +231,24 @@ namespace FarManager
 		void RestoreScreen(int screen);
 		/// <summary>
 		/// Active editor or null if none.
-		/// Normally you have to use this object instantly, do not store it "for later use".
+		/// Normally you have to use this object instantly.
 		/// </summary>
 		IEditor Editor { get; }
 		/// <summary>
+		/// Active viewer or null if none.
+		/// Normally you have to use this object instantly.
+		/// </summary>
+		IViewer Viewer { get; }
+		/// <summary>
 		/// All editors.
-		/// Be careful working on not current editors because many
-		/// properties and methods are designed for a current editor only.
+		/// Be careful working with not current instance.
 		/// </summary>
 		IEditor[] Editors();
+		/// <summary>
+		/// All viewers.
+		/// Be careful working with not current instance.
+		/// </summary>
+		IViewer[] Viewers();
 		/// <summary>
 		/// Active panel. It is null if FAR started with /e or /v.
 		/// </summary>
@@ -489,6 +503,27 @@ namespace FarManager
 		/// when you exit the editor you have to call this, otherwise only the dialog area is refreshed by FAR.
 		/// </remarks>
 		void Redraw();
+		/// <summary>
+		/// Generates full path for a temp file or directory in %TEMP% (nothing is created).
+		/// </summary>
+		/// <param name="prefix">If empty "FTMP" is generated otherwise at most 4 first characters are used and padded by "0".</param>
+		/// <returns>Generated name.</returns>
+		string TempName(string prefix);
+		/// <summary>
+		/// See <see cref="TempName(string)"/>
+		/// </summary>
+		string TempName();
+		/// <summary>
+		/// Creates a folder in %TEMP%.
+		/// </summary>
+		/// <param name="prefix">If empty "FTMP" is generated otherwise at most 4 first characters are used and padded by "0".</param>
+		/// <returns>Full path of the created folder.</returns>
+		string TempFolder(string prefix);
+		/// <summary>
+		/// See <see cref="TempFolder(string)"/>
+		/// </summary>
+		/// <returns></returns>
+		string TempFolder();
 	}
 
 	/// <summary>
@@ -673,5 +708,4 @@ namespace FarManager
 		/// </summary>
 		RecordingCommon
 	}
-
 }

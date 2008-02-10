@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -1179,12 +1179,6 @@ void FarDialog::Close()
 	Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
 }
 
-/*
-return:
-- false - continue processing.
-- true - done, stop processing
-?? FarDialogEvent.Result - указатель на переменную, используемую обработчиком в качестве возвращаемого значения.
-*/
 int FarDialog::AsProcessDialogEvent(int /*id*/, void* /*param*/)
 {
 #if 0

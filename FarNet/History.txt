@@ -1,9 +1,28 @@
 http://code.google.com/p/farnet/
 
+3.3.38
+
+NEW
+- Many new features in IViewer and new interface IAnyViewer. In short, viewer
+management is now similar to editor management (but features are different).
+- Minor changes in IEditor and replacements for obsoletes (see below).
+- IFar: TempName(), TempFolder().
+
+FIX
+- Improved error detection on Open() in editor and viewer (it used to throw a
+false error in some rare special cases).
+
+OBSOLETE\CHANGED
+- Removed editor and viewer properties Async and IsModal. Use new method Open(
+OpenMode ). Old method Open() with no parameter works as Open( OpenMode.None ).
+- Editor and viewer properties DeleteOnClose and DeleteOnlyFileOnClose will be
+removed, use new property and enum DeleteSource.
+- Editor events AfterOpen, AfterClose, BeforeSave will be removed because their
+names violate .NET naming guidelines; use new events: Opened, Closed, Saving.
+
 3.3.37
 
 Recommended FAR 1.71.2315
-http://farmanager.com/farbugs/Far171.b2315.x86.rar
 
 NEW
 - IFar.Redraw() for FAR 1.71.2315

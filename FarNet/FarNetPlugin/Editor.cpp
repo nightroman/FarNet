@@ -1,11 +1,11 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #include "StdAfx.h"
 #include "Editor.h"
-#include "EditorManager.h"
+#include "EditorHost.h"
 #include "Far.h"
 #include "SelectionCollection.h"
 #include "EditorLine.h"
@@ -28,7 +28,7 @@ void BaseEditor::WordDiv::set(String^)
 
 String^ BaseEditor::EditText(String^ text, String^ title)
 {
-	String^ file = Path::GetTempFileName();
+	String^ file = Far::Instance->TempName();
 	try
 	{
 		if (SS(text))
@@ -49,22 +49,15 @@ String^ BaseEditor::EditText(String^ text, String^ title)
 	}
 }
 
-Editor::Editor(EditorManager^ manager)
-: _manager(manager)
-, _id(-1)
-, _title(String::Empty)
+Editor::Editor()
+: _id(-1)
+, _Title(String::Empty)
 , _frameStart(-1)
-{
-}
+{}
 
 void Editor::Open()
 {
-	if (IsModal)
-		Open(OpenMode::Modal);
-	else if (Async)
-		Open(OpenMode::None);
-	else
-		Open(OpenMode::Wait);
+	Open(OpenMode::None);
 }
 
 void Editor::Open(OpenMode mode)
@@ -72,8 +65,8 @@ void Editor::Open(OpenMode mode)
 	AssertClosed();
 
 	// strings
-	CBox sFileName(_fileName);
-	CBox sTitle(_title);
+	CBox sFileName(_FileName);
+	CBox sTitle(_Title);
 
 	// frame
 	int nLine = _frameStart.Line >= 0 ? _frameStart.Line + 1 : -1;
@@ -86,37 +79,55 @@ void Editor::Open(OpenMode mode)
 
 	// flags
 	int flags = 0;
-	if (_deleteOnClose)
-		flags |= EF_DELETEONCLOSE;
-	if (_deleteOnlyFileOnClose)
-		flags |= EF_DELETEONLYFILEONCLOSE;
-	if (_isNew)
+	if (_IsNew)
 		flags |= EF_CREATENEW;
-	if (_enableSwitch)
+	if (_EnableSwitch)
 		flags |= EF_ENABLE_F6;
-	if (_disableHistory)
+	if (_DisableHistory)
 		flags |= EF_DISABLEHISTORY;
+	switch(_DeleteSource)
+	{
+	case FarManager::DeleteSource::UnusedFile:
+		flags |= EF_DELETEONLYFILEONCLOSE; break;
+	case FarManager::DeleteSource::UnusedFolder:
+		flags |= EF_DELETEONCLOSE; break;
+	}
 	switch(mode)
 	{
 	case OpenMode::None:
-		flags |= (EF_NONMODAL | EF_IMMEDIATERETURN);
-		break;
+		flags |= (EF_NONMODAL | EF_IMMEDIATERETURN); break;
 	case OpenMode::Wait:
-		flags |= EF_NONMODAL;
-		break;
+		flags |= EF_NONMODAL; break;
 	}
 
-	// open; it fires READ event and the manager sets the Id
-	_manager->SetWaitingEditor(this);
-	int res = Info.Editor(sFileName, sTitle, _window.Left, _window.Top, _window.Right, _window.Bottom, flags, nLine, nPos);
+	// open:
+	// - set ID to -1 just in case if it is reopened;
+	// - it fires READ event and the host sets the Id;
+	// - in any case after this ID = -1 means an error
+	_id = -1;
+	EditorHost::_editorWaiting = this;
+	Info.Editor(sFileName, sTitle, _Window.Left, _Window.Top, _Window.Right, _Window.Bottom, flags, nLine, nPos); //?? test window values, make window settable
 
 	// redraw FAR
 	if (wt == WindowType::Dialog)
 		Far::Instance->Redraw();
 
-	// check errors
-	if (res != EEC_MODIFIED && res != EEC_NOT_MODIFIED)
-		throw gcnew OperationCanceledException("Can't open file: " + FileName);
+	// Check an error: ID must not be -1, even if it is already closed then ID = -2.
+	// Using FAR diagnostics fires false errors, e.g.:
+	// Test-CallStack-.ps1 \ s \ type: exit \ enter
+	if (_id == -1)
+	{
+		// - error or a file was already opened in the editor and its window is activated
+		Editor^ editor = EditorHost::GetCurrentEditor();
+		if (editor)
+		{
+			String^ fileName1 = Path::GetFullPath(_FileName);
+			String^ fileName2 = Path::GetFullPath(editor->_FileName);
+			if (String::Compare(fileName1, fileName2, true) == 0)
+				return;
+		}
+		throw gcnew OperationCanceledException("Cannot open the file '" + FileName + "'");
+	}
 }
 
 void Editor::Close()
@@ -126,59 +137,58 @@ void Editor::Close()
 		throw gcnew OperationCanceledException();
 }
 
-bool Editor::Async::get()
+DeleteSource Editor::DeleteSource::get()
 {
-	return _async;
+	return _DeleteSource;
 }
 
-void Editor::Async::set(bool value)
+void Editor::DeleteSource::set(FarManager::DeleteSource value)
 {
-	AssertClosed();
-	_async = value;
+	_DeleteSource = value;
 }
 
 bool Editor::DeleteOnClose::get()
 {
-	return _deleteOnClose;
+	return _DeleteSource == FarManager::DeleteSource::UnusedFolder;
 }
 
 void Editor::DeleteOnClose::set(bool value)
 {
 	AssertClosed();
-	_deleteOnClose = value;
+	_DeleteSource = value ? FarManager::DeleteSource::UnusedFolder : FarManager::DeleteSource::None;
 }
 
 bool Editor::DeleteOnlyFileOnClose::get()
 {
-	return _deleteOnlyFileOnClose;
+	return _DeleteSource == FarManager::DeleteSource::UnusedFile;
 }
 
 void Editor::DeleteOnlyFileOnClose::set(bool value)
 {
 	AssertClosed();
-	_deleteOnlyFileOnClose = value;
+	_DeleteSource = value ? FarManager::DeleteSource::UnusedFile : FarManager::DeleteSource::None;
 }
 
 bool Editor::EnableSwitch::get()
 {
-	return _enableSwitch;
+	return _EnableSwitch;
 }
 
 void Editor::EnableSwitch::set(bool value)
 {
 	AssertClosed();
-	_enableSwitch = value;
+	_EnableSwitch = value;
 }
 
 bool Editor::DisableHistory::get()
 {
-	return _disableHistory;
+	return _DisableHistory;
 }
 
 void Editor::DisableHistory::set(bool value)
 {
 	AssertClosed();
-	_disableHistory = value;
+	_DisableHistory = value;
 }
 
 bool Editor::IsEnd::get()
@@ -197,17 +207,6 @@ bool Editor::IsLocked::get()
 	return (ei.CurState & ECSTATE_LOCKED) != 0;
 }
 
-bool Editor::IsModal::get()
-{
-	return _isModal;
-}
-
-void Editor::IsModal::set(bool value)
-{
-	AssertClosed();
-	_isModal = value;
-}
-
 bool Editor::IsModified::get()
 {
 	if (!IsOpened)
@@ -218,18 +217,18 @@ bool Editor::IsModified::get()
 
 bool Editor::IsNew::get()
 {
-	return _isNew;
+	return _IsNew;
 }
 
 void Editor::IsNew::set(bool value)
 {
 	AssertClosed();
-	_isNew = value;
+	_IsNew = value;
 }
 
 bool Editor::IsOpened::get()
 {
-	return Id != -1;
+	return Id >= 0;
 }
 
 bool Editor::IsSaved::get()
@@ -301,11 +300,6 @@ int Editor::Id::get()
 	return _id;
 }
 
-void Editor::Id::set(int value)
-{
-	_id = value;
-}
-
 int Editor::TabSize::get()
 {
 	if (!IsOpened)
@@ -326,18 +320,30 @@ void Editor::TabSize::set(int value)
 
 String^ Editor::FileName::get()
 {
-	return _fileName;
+	return _FileName;
 }
 
 void Editor::FileName::set(String^ value)
 {
 	AssertClosed();
-	_fileName = value;
+	_FileName = value;
+}
+
+Point Editor::WindowSize::get()
+{
+	EditorInfo ei; EditorControl_ECTL_GETINFO(ei, true);
+	Point r;
+	if (ei.EditorID >= 0 && ei.EditorID == _id)
+	{
+		r.X = ei.WindowSizeX;
+		r.Y = ei.WindowSizeY;
+	}
+	return r;
 }
 
 String^ Editor::Title::get()
 {
-	return _title;
+	return _Title;
 }
 
 void Editor::Title::set(String^ value)
@@ -350,15 +356,19 @@ void Editor::Title::set(String^ value)
 	}
 	else
 	{
-		_title = value;
+		_Title = value;
 	}
 }
 
 Place Editor::Window::get()
 {
-	if (IsOpened)
-		GetParams();
-	return _window;
+	return _Window;
+}
+
+void Editor::Window::set(Place value)
+{
+	AssertClosed();
+	_Window = value;
 }
 
 ISelection^ Editor::Selection::get()
@@ -454,16 +464,6 @@ void Editor::CurrentInfo(EditorInfo& ei)
 	EditorControl_ECTL_GETINFO(ei, true);
 	if (ei.EditorID < 0) throw gcnew InvalidOperationException("There is no current editor.");
 	if (ei.EditorID != _id) throw gcnew InvalidOperationException("This editor is not the current.");
-}
-
-void Editor::GetParams()
-{
-	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
-	_window.Top = 0;
-	_window.Left = 0;
-	_window.Width = ei.WindowSizeX;
-	_window.Height = ei.WindowSizeY;
-	_fileName = OemToStr(ei.FileName);
 }
 
 String^ Editor::WordDiv::get()
@@ -696,7 +696,7 @@ void Editor::SetText(String^ text)
 	}
 
 	// workaround: Watch-Output-.ps1, missed the first empty line of the first output
-	if (ei.TotalLines == 1 && ei.CurPos == 0 && _isNew)
+	if (ei.TotalLines == 1 && ei.CurPos == 0 && _IsNew)
 	{
 		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, 0);
 		if (egs.StringLength == 0)
