@@ -1,77 +1,154 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
+using System.Diagnostics;
 using System;
 
 namespace FarManager
 {
 	/// <summary>
-	/// FAR viewer interface. It is created by <see cref="IFar.CreateViewer"/>.
+	/// Interface of any viewer. See <see cref="IFar.AnyViewer"/>.
 	/// </summary>
-	public interface IViewer
+	public interface IAnyViewer
 	{
 		/// <summary>
-		/// Delete a directory with a file when it is closed and it is the only file there.
-		/// It is read only when a viewer is opened.
+		/// Viewer is opened.
 		/// </summary>
-		/// <seealso cref="DeleteOnlyFileOnClose"/>
+		event EventHandler Opened;
+		/// <summary>
+		/// Viewer is closed. Don't operate on it, it has really gone.
+		/// </summary>
+		event EventHandler Closed;
+	}
+
+	/// <summary>
+	/// Viewer interface. See <see cref="IFar.Viewer"/>, <see cref="IFar.CreateViewer"/>.
+	/// </summary>
+	public interface IViewer : IAnyViewer
+	{
+		/// <summary>
+		/// Internal ID.
+		/// </summary>
+		int Id { get; }
+		/// <summary>
+		/// Option to delete a source file when the viewer is closed.
+		/// </summary>
+		DeleteSource DeleteSource { get; set; }
+		/// <summary>
+		/// Use <see cref="DeleteSource"/>.
+		/// </summary>
+		[Obsolete("Use Delete")]
 		bool DeleteOnClose { get; set; }
 		/// <summary>
-		/// Delete a file when it is closed.
-		/// It is read only when a viewer is opened.
+		/// Use <see cref="DeleteSource"/>.
 		/// </summary>
-		/// <seealso cref="DeleteOnClose"/>
+		[Obsolete("Use Delete")]
 		bool DeleteOnlyFileOnClose { get; set; }
 		/// <summary>
-		/// Enable switching to viewer.
-		/// It is read only when a viewer is opened.
+		/// Enables switching to viewer. Set it before opening.
 		/// </summary>
 		bool EnableSwitch { get; set; }
 		/// <summary>
-		/// Do not use viewer history.
-		/// It is read only when a viewer is opened.
+		/// Do not use viewer history. Set it before opening.
 		/// </summary>
 		bool DisableHistory { get; set; }
 		/// <summary>
-		/// Name of a file being edited.
-		/// It is read only when a viewer is opened.
+		/// Name of a file being viewed. Set it before opening.
+		/// On opening it can be corrected, e.g. converted into full path.
 		/// </summary>
 		string FileName { get; set; }
 		/// <summary>
-		/// Viewer window position.
+		/// Window start position. Set it before opening.
 		/// </summary>
 		Place Window { get; set; }
 		/// <summary>
-		/// Viewer window title. Set it before opening.
+		/// Current viewer window size.
+		/// </summary>
+		Point WindowSize { get; }
+		/// <summary>
+		/// Window title. Set it before opening.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
 		/// Opens the viewer using properties:
-		/// <see cref="FileName"/>,
-		/// <see cref="Title"/>,
-		/// <see cref="DeleteOnClose"/>,
-		/// <see cref="DeleteOnlyFileOnClose"/>,
-		/// <see cref="DisableHistory"/>,
-		/// <see cref="EnableSwitch"/>,
+		/// <see cref="DeleteSource"/>
+		/// <see cref="DisableHistory"/>
+		/// <see cref="EnableSwitch"/>
+		/// <see cref="FileName"/>
+		/// <see cref="Title"/>
+		/// <see cref="Window"/>
 		/// </summary>
 		void Open(OpenMode mode);
 		/// <summary>
-		/// Obsolete. Use <see cref="Open(OpenMode)"/>.
+		/// See <see cref="Open(OpenMode)"/> with <see cref="OpenMode.None"/>.
 		/// </summary>
-		[Obsolete("Use Open(OpenMode).")]
 		void Open();
 		/// <summary>
-		/// Obsolete. Use <see cref="Open(OpenMode)"/>.
+		/// File size.
 		/// </summary>
-		[Obsolete("Use Open(OpenMode).")]
-		bool Async { get; set; }
+		long FileSize { get; }
 		/// <summary>
-		/// Obsolete. Use <see cref="Open(OpenMode)"/>.
+		/// View frame.
 		/// </summary>
-		[Obsolete("Use Open(OpenMode).")]
-		bool IsModal { get; set; }
+		ViewFrame Frame { get; set; }
+		/// <summary>
+		/// Sets new viewer frame.
+		/// </summary>
+		/// <param name="pos">New file position (depends on options).</param>
+		/// <param name="left">New left position.</param>
+		/// <param name="options">Options.</param>
+		/// <returns>New actual position.</returns>
+		long SetFrame(long pos, int left, ViewFrameOptions options);
+		/// <summary>
+		/// Closes the current viewer window.
+		/// </summary>
+		void Close();
+		/// <summary>
+		/// Redraws the current viewer window.
+		/// </summary>
+		void Redraw();
+		/// <summary>
+		/// Sets selected block.
+		/// </summary>
+		/// <param name="symbolStart">Selection start in charactes, not in bytes.</param>
+		/// <param name="symbolCount">Selected character count.</param>
+		void Select(long symbolStart, int symbolCount);
+		/// <summary>
+		/// Hexadecimal mode.
+		/// </summary>
+		bool HexMode { get; set; }
+		/// <summary>
+		/// Wrap mode. 
+		/// </summary>
+		bool WrapMode { get; set; }
+		/// <summary>
+		/// Word wrap mode. 
+		/// </summary>
+		bool WordWrapMode { get; set; }
+	}
+
+	/// <summary>
+	/// Options for <see cref="IViewer.SetFrame"/>.
+	/// </summary>
+	[Flags]
+	public enum ViewFrameOptions
+	{
+		///
+		None,
+		/// <summary>
+		/// Don't redraw.
+		/// </summary>
+		NoRedraw = 1,
+		/// <summary>
+		/// Position is defined in percents.
+		/// </summary>
+		Percent = 2,
+		/// <summary>
+		/// Position is relative to the current (and can be negative).
+		/// </summary>
+		Relative = 4
 	}
 
 	/// <summary>
@@ -91,5 +168,93 @@ namespace FarManager
 		/// Tells to open modal editor or viewer.
 		/// </summary>
 		Modal
+	}
+
+	/// <summary>
+	/// Options to delete a file when a viewer or editor is closed.
+	/// </summary>
+	public enum DeleteSource
+	{
+		/// <summary>
+		/// Default action: do not delete a file.
+		/// </summary>
+		None,
+		/// <summary>
+		/// Try to delete a file always. It is not recommended if editor\viewer switching is enabled (F6).
+		/// You may set it at any time, i.e. before or after opening.
+		/// </summary>
+		File,
+		/// <summary>
+		/// The same as <see cref="File"/> plus delete its folder if it is empty.
+		/// You may set it at any time, i.e. before or after opening.
+		/// </summary>
+		Folder,
+		/// <summary>
+		/// Delete a file if it was not used. The file is "used" if:
+		/// *) it was saved;
+		/// *) there was editor\viewer switching (F6).
+		/// *) it is opened in another editor or viewer.
+		/// You should set it before opening.
+		/// </summary>
+		UnusedFile,
+		/// <summary>
+		/// The same as <see cref="UnusedFile"/> plus delete its folder if it is empty.
+		/// You should set it before opening.
+		/// </summary>
+		UnusedFolder
+	}
+
+	/// <summary>
+	/// Viewer frame info.
+	/// </summary>
+	[DebuggerStepThroughAttribute]
+	public struct ViewFrame
+	{
+		///
+		public ViewFrame(long pos, int left)
+		{
+			_pos = pos;
+			_leftPos = left;
+		}
+		/// <summary>
+		/// Position in the file.
+		/// </summary>
+		public long Pos { get { return _pos; } set { _pos = value; } }
+		long _pos;
+		/// <summary>
+		/// Leftmost visible position of the text on the screen.
+		/// </summary>
+		public int LeftPos { get { return _leftPos; } set { _leftPos = value; } }
+		int _leftPos;
+		///
+		public static bool operator ==(ViewFrame left, ViewFrame right)
+		{
+			return
+				left._pos == right._pos &&
+				left._leftPos == right._leftPos;
+		}
+		///
+		public static bool operator !=(ViewFrame left, ViewFrame right)
+		{
+			return !(left == right);
+		}
+		///
+		public override bool Equals(Object obj)
+		{
+			if (obj == null || GetType() != obj.GetType())
+				return false;
+			ViewFrame that = (ViewFrame)obj;
+			return this == that;
+		}
+		///
+		public override string ToString()
+		{
+			return "(" + _pos + ", " + _leftPos + ")";
+		}
+		///
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 }

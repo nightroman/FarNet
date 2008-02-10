@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #pragma once
@@ -10,10 +10,12 @@ namespace FarNet
 {;
 ref class CommandPluginInfo;
 ref class Editor;
-ref class EditorManager;
+ref class EditorHost;
 ref class EditorPluginInfo;
 ref class FilerPluginInfo;
 ref class ToolPluginInfo;
+ref class Viewer;
+ref class ViewerHost;
 
 ref class Far : public IFar
 {
@@ -21,12 +23,14 @@ public:
 	virtual property FarConfirmations Confirmations { FarConfirmations get(); }
 	virtual property FarMacroState MacroState { FarMacroState get(); }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get(); }
+	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get(); }
 	virtual property ILine^ CommandLine { ILine^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
 	virtual property IntPtr HWnd { IntPtr get(); }
 	virtual property int WindowCount { int get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
 	virtual property IPanel^ Panel2 { IPanel^ get(); }
+	virtual property IViewer^ Viewer { IViewer^ get(); }
 	virtual property String^ PluginFolderPath { String^ get(); }
 	virtual property String^ RootFar { String^ get(); }
 	virtual property String^ RootKey { String^ get(); }
@@ -35,6 +39,7 @@ public:
 	virtual array<IEditor^>^ Editors();
 	virtual array<int>^ CreateKeySequence(String^ keys);
 	virtual array<IPanelPlugin^>^ PushedPanels();
+	virtual array<IViewer^>^ Viewers();
 	virtual bool Commit();
 	virtual void Msg(String^ body);
 	virtual void Msg(String^ body, String^ header);
@@ -64,6 +69,10 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual String^ PasteFromClipboard();
 	virtual String^ RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler);
+	virtual String^ TempName() { return TempName(nullptr); }
+	virtual String^ TempName(String^ prefix);
+	virtual String^ TempFolder() { return TempFolder(nullptr); }
+	virtual String^ TempFolder(String^ prefix);
 	virtual void CopyToClipboard(String^ text);
 	virtual void GetUserScreen();
 	virtual void LoadMacros();
@@ -101,11 +110,9 @@ internal:
 	void Stop();
 	void OnEditorOpened(FarNet::Editor^ editor);
 internal:
-	EditorManager^ _editorManager;
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
 	// Versions
-	static bool _version_1_71_2169;
 	static bool _version_1_71_2315;
 internal:
 	bool AsConfigure(int itemIndex);

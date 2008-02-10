@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -177,7 +177,7 @@ void CommandPluginInfo::Invoke(Object^ sender, CommandEventArgs^ e)
 	Connect();
 	CommandPlugin^ instance = (CommandPlugin^)Plugin;
 
-	// notify ??
+	// notify
 	instance->Invoking();
 
 	// invoke

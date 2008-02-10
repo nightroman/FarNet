@@ -1,32 +1,24 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #include "StdAfx.h"
 #include "Viewer.h"
 #include "Far.h"
 #include "Utils.h"
-
-#define SET_BIT(VAR, VALUE, FLAG) if (VALUE) VAR |= FLAG; else VAR &= ~FLAG;
+#include "ViewerHost.h"
 
 namespace FarNet
 {;
 Viewer::Viewer()
 : _id(-1)
-, _flags(VF_NONMODAL)
-, _title(String::Empty)
-{
-}
+, _Title(String::Empty)
+{}
 
 void Viewer::Open()
 {
-	if (IsModal)
-		Open(OpenMode::Modal);
-	else if (Async)
-		Open(OpenMode::None);
-	else
-		Open(OpenMode::Wait);
+	Open(OpenMode::None);
 }
 
 void Viewer::Open(OpenMode mode)
@@ -34,108 +26,105 @@ void Viewer::Open(OpenMode mode)
 	AssertClosed();
 
 	// flags
+	int flags = 0;
+	if (_EnableSwitch)
+		flags |= VF_ENABLE_F6;
+	if (_DisableHistory)
+		flags |= VF_DISABLEHISTORY;
 	switch(mode)
 	{
+	case OpenMode::None:
+		flags |= (VF_NONMODAL | VF_IMMEDIATERETURN); break;
 	case OpenMode::Wait:
-		_flags |= VF_NONMODAL;
-		_flags &= ~VF_IMMEDIATERETURN;
-		break;
-	case OpenMode::Modal:
-		_flags &= ~(VF_NONMODAL | VF_IMMEDIATERETURN);
-		break;
-	default:
-		_flags |= (VF_NONMODAL | VF_IMMEDIATERETURN);
-		break;
+		flags |= VF_NONMODAL; break;
+	}
+	switch(_DeleteSource)
+	{
+	case FarManager::DeleteSource::UnusedFile:
+		flags |= VF_DELETEONLYFILEONCLOSE; break;
+	case FarManager::DeleteSource::UnusedFolder:
+		flags |= VF_DELETEONCLOSE; break;
 	}
 
-	CBox sFileName(_fileName);
-	CBox sTitle(_title);
+	CBox sFileName(_FileName);
+	CBox sTitle(_Title);
 
 	// from dialog? set modal
 	WindowType wt = Far::Instance->GetWindowType(-1);
 	if (wt == WindowType::Dialog)
-		_flags &= ~VF_NONMODAL;
+		flags &= ~VF_NONMODAL;
 
-	// open
-	int res = Info.Viewer(sFileName, sTitle, _window.Left, _window.Top, _window.Right, _window.Bottom, _flags);
-
-	// errors?
-	if ((_flags & VF_NONMODAL) == 0 && res == FALSE)
-		throw gcnew OperationCanceledException("Can't open file: " + _fileName);
+	// open: see editor
+	_id = -1;
+	ViewerHost::_viewerWaiting = this;
+	Info.Viewer(sFileName, sTitle, _Window.Left, _Window.Top, _Window.Right, _Window.Bottom, flags); //?? test window values
 
 	// redraw FAR
 	if (wt == WindowType::Dialog)
 		Far::Instance->Redraw();
 
-	// tmp
-	_id = 0;
+	// errors: see editor
+	if (_id == -1)
+		throw gcnew OperationCanceledException("Cannot open the file '" + FileName + "'");
 }
 
-bool Viewer::Async::get()
+int Viewer::Id::get()
 {
-	return (_flags & VF_IMMEDIATERETURN) != 0;
+	return _id;
 }
 
-void Viewer::Async::set(bool value)
+DeleteSource Viewer::DeleteSource::get()
 {
-	AssertClosed();
-	SET_BIT(_flags, value, VF_IMMEDIATERETURN);
+	return _DeleteSource;
+}
+
+void Viewer::DeleteSource::set(FarManager::DeleteSource value)
+{
+	_DeleteSource = value;
 }
 
 bool Viewer::DeleteOnClose::get()
 {
-	return (_flags & VF_DELETEONCLOSE) != 0;
+	return _DeleteSource == FarManager::DeleteSource::UnusedFolder;
 }
 
 void Viewer::DeleteOnClose::set(bool value)
 {
 	AssertClosed();
-	SET_BIT(_flags, value, VF_DELETEONCLOSE);
+	_DeleteSource = value ? FarManager::DeleteSource::UnusedFolder : FarManager::DeleteSource::None;
 }
 
 bool Viewer::DeleteOnlyFileOnClose::get()
 {
-	return (_flags & VF_DELETEONLYFILEONCLOSE) != 0;
+	return _DeleteSource == FarManager::DeleteSource::UnusedFile;
 }
 
 void Viewer::DeleteOnlyFileOnClose::set(bool value)
 {
 	AssertClosed();
-	SET_BIT(_flags, value, VF_DELETEONLYFILEONCLOSE);
+	_DeleteSource = value ? FarManager::DeleteSource::UnusedFile : FarManager::DeleteSource::None;
 }
 
 bool Viewer::EnableSwitch::get()
 {
-	return (_flags & VF_ENABLE_F6) != 0;
+	return _EnableSwitch;
 }
 
 void Viewer::EnableSwitch::set(bool value)
 {
 	AssertClosed();
-	SET_BIT(_flags, value, VF_ENABLE_F6);
+	_EnableSwitch = value;
 }
 
 bool Viewer::DisableHistory::get()
 {
-	return (_flags & VF_DISABLEHISTORY) != 0;
+	return _DisableHistory;
 }
 
 void Viewer::DisableHistory::set(bool value)
 {
 	AssertClosed();
-	SET_BIT(_flags, value, VF_DISABLEHISTORY);
-}
-
-bool Viewer::IsModal::get()
-{
-	return (_flags & VF_NONMODAL) == 0;
-}
-
-void Viewer::IsModal::set(bool value)
-{
-	AssertClosed();
-	value = !value;
-	SET_BIT(_flags, value, VF_NONMODAL);
+	_DisableHistory = value;
 }
 
 bool Viewer::IsOpened::get()
@@ -145,36 +134,117 @@ bool Viewer::IsOpened::get()
 
 String^ Viewer::FileName::get()
 {
-	return _fileName;
+	return _FileName;
 }
 
 void Viewer::FileName::set(String^ value)
 {
 	AssertClosed();
-	_fileName = value;
+	_FileName = value;
 }
 
 String^ Viewer::Title::get()
 {
-	return _title;
+	return _Title;
+}
+
+Int64 Viewer::FileSize::get()
+{
+	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
+	if (vi.ViewerID >= 0 && vi.ViewerID == _id)
+		return vi.FileSize.i64;
+	else
+		return -1;
+}
+
+Point Viewer::WindowSize::get()
+{
+	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
+	Point r;
+	if (vi.ViewerID >= 0 && vi.ViewerID == _id)
+	{
+		r.X = vi.WindowSizeX;
+		r.Y = vi.WindowSizeY;
+	}
+	return r;
 }
 
 void Viewer::Title::set(String^ value)
 {
 	AssertClosed();
-	_title = value;
+	_Title = value;
 }
 
 Place Viewer::Window::get()
 {
-	if (IsOpened)
-		GetParams();
-	return _window;
+	return _Window;
 }
 
 void Viewer::Window::set(Place value)
 {
-	_window = value;
+	AssertClosed();
+	_Window = value;
+}
+
+ViewFrame Viewer::Frame::get()
+{
+	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
+	ViewFrame r;
+	if (vi.ViewerID >= 0 && vi.ViewerID == _id)
+	{
+		r.Pos = vi.FilePos.i64;
+		r.LeftPos = vi.LeftPos;
+	}
+	return r;
+}
+
+void Viewer::Frame::set(ViewFrame value)
+{
+	AssertCurrentViewer();
+	ViewerSetPosition vsp;
+	vsp.Flags = VSP_NORETNEWPOS;
+	vsp.LeftPos = value.LeftPos;
+	vsp.StartPos.i64 = value.Pos;
+	Info.ViewerControl(VCTL_SETPOSITION, &vsp);
+}
+
+Int64 Viewer::SetFrame(Int64 pos, int left, ViewFrameOptions options)
+{
+	AssertCurrentViewer();
+	ViewerSetPosition vsp;
+	vsp.Flags = (DWORD)options;
+	vsp.LeftPos = left;
+	vsp.StartPos.i64 = pos;
+	Info.ViewerControl(VCTL_SETPOSITION, &vsp);
+	return vsp.StartPos.i64;
+}
+
+void Viewer::Close()
+{
+	AssertCurrentViewer();
+	Info.ViewerControl(VCTL_QUIT, 0);
+}
+
+void Viewer::Redraw()
+{
+	AssertCurrentViewer();
+	Info.ViewerControl(VCTL_REDRAW, 0);
+}
+
+void Viewer::Select(Int64 symbolStart, int symbolCount)
+{
+	AssertCurrentViewer();
+	if (symbolCount <= 0)
+	{
+		Info.ViewerControl(VCTL_SELECT, 0);
+	}
+	else
+	{
+		ViewerSelect vs;
+		vs.BlockLen = symbolCount;
+		vs.BlockStartPos.i64 = symbolStart;
+		Info.ViewerControl(VCTL_SELECT, &vs);
+	}
 }
 
 void Viewer::AssertClosed()
@@ -182,14 +252,61 @@ void Viewer::AssertClosed()
 	if (IsOpened) throw gcnew InvalidOperationException("Viewer must not be open for this operation.");
 }
 
-void Viewer::GetParams()
+bool Viewer::HexMode::get()
 {
-	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi);
-	_window.Top = 0;
-	_window.Left = 0;
-	_window.Width = vi.WindowSizeX;
-	_window.Height = vi.WindowSizeY;
-	_fileName = OemToStr(vi.FileName);
+	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
+	if (vi.ViewerID < 0 || vi.ViewerID != _id)
+		return false;
+	else
+		return vi.CurMode.Hex != 0;
+}
+
+void Viewer::HexMode::set(bool value)
+{
+	AssertCurrentViewer();
+	ViewerSetMode vsm;
+	vsm.Flags = vsm.Reserved = 0;
+	vsm.Type = VSMT_HEX;
+	vsm.Param.iParam = value;
+	Info.ViewerControl(VCTL_SETMODE, &vsm);
+}
+
+bool Viewer::WrapMode::get()
+{
+	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
+	if (vi.ViewerID < 0 || vi.ViewerID != _id)
+		return false;
+	else
+		return vi.CurMode.Wrap != 0;
+}
+
+void Viewer::WrapMode::set(bool value)
+{
+	AssertCurrentViewer();
+	ViewerSetMode vsm;
+	vsm.Flags = vsm.Reserved = 0;
+	vsm.Type = VSMT_WRAP;
+	vsm.Param.iParam = value;
+	Info.ViewerControl(VCTL_SETMODE, &vsm);
+}
+
+bool Viewer::WordWrapMode::get()
+{
+	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
+	if (vi.ViewerID < 0 || vi.ViewerID != _id)
+		return false;
+	else
+		return vi.CurMode.WordWrap != 0;
+}
+
+void Viewer::WordWrapMode::set(bool value)
+{
+	AssertCurrentViewer();
+	ViewerSetMode vsm;
+	vsm.Flags = vsm.Reserved = 0;
+	vsm.Type = VSMT_WORDWRAP;
+	vsm.Param.iParam = value;
+	Info.ViewerControl(VCTL_SETMODE, &vsm);
 }
 
 }

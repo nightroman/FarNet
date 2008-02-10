@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -267,15 +267,45 @@ void EditorControl_ECTL_SETSTRING(EditorSetString& ess)
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + ess.StringNumber + ". Ensure current editor and valid line number.");
 }
 
+bool IsCurrentViewer()
+{
+	WindowInfo wi; wi.Pos = -1;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
+		throw gcnew InvalidOperationException("ACTL_GETSHORTWINDOWINFO failed.");
+	if (wi.Type == WTYPE_VIEWER)
+		return true;
+	if (wi.Type != WTYPE_PANELS)
+		return false;
+	PanelInfo pi;
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETPANELSHORTINFO, &pi))
+		throw gcnew OperationCanceledException("Can't get panel information.");
+	return pi.PanelType == PTYPE_QVIEWPANEL;
+}
+
+//! If a viewer does not exist or even it is not current then FAR may crash.
+//! Thus, we check the current window type.
 void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe)
 {
-	if (!Info.ViewerControl(VCTL_GETINFO, &vi))
+	// check window type
+	if (!IsCurrentViewer())
 	{
 		if (safe)
+		{
 			vi.ViewerID = -1;
-		else
-			throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current viewer.");
+			return;
+		}
+		throw gcnew InvalidOperationException("A viewer window must be current.");
 	}
+
+	// get viewer info
+	vi.StructSize = sizeof(vi);
+	Info.ViewerControl(VCTL_GETINFO, &vi);
+}
+
+void AssertCurrentViewer()
+{
+	if (!IsCurrentViewer())
+		throw gcnew InvalidOperationException("A viewer window must be current.");
 }
 
 //
@@ -466,6 +496,21 @@ void ValidateRect(int& x, int& w, int min, int size)
 		if (r > min + size - 1)
 			w -= (r - min - size + 1);
 	}
+}
+
+void DeleteSourceOptional(String^ path, DeleteSource option)
+{
+	if (option != DeleteSource::File && option != DeleteSource::Folder)
+		return;
+
+	if (File::Exists(path))
+		File::Delete(path);
+
+	if (option != DeleteSource::Folder)
+		return;
+
+	try { Directory::Delete(Path::GetDirectoryName(path)); }
+	catch(IOException^) {}
 }
 
 #ifdef TEST1

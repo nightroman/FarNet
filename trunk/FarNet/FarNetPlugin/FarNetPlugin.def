@@ -17,6 +17,7 @@ EXPORTS
 	ProcessEditorInput
 	ProcessEvent
 	ProcessKey
+	ProcessViewerEvent
 	PutFiles
 	SetDirectory
 	SetStartupInfo

@@ -239,6 +239,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EditorHost.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\EditorLine.cpp"
 				>
 			</File>
@@ -248,10 +252,6 @@
 			</File>
 			<File
 				RelativePath=".\EditorLineSelection.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EditorManager.cpp"
 				>
 			</File>
 			<File
@@ -322,6 +322,10 @@
 				RelativePath=".\Viewer.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\ViewerHost.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -349,6 +353,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EditorHost.h"
+				>
+			</File>
+			<File
 				RelativePath=".\EditorLine.h"
 				>
 			</File>
@@ -358,10 +366,6 @@
 			</File>
 			<File
 				RelativePath=".\EditorLineSelection.h"
-				>
-			</File>
-			<File
-				RelativePath=".\EditorManager.h"
 				>
 			</File>
 			<File
@@ -406,6 +410,10 @@
 			</File>
 			<File
 				RelativePath=".\Viewer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ViewerHost.h"
 				>
 			</File>
 		</Filter>

@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -8,7 +8,7 @@ Copyright (c) 2005-2007 FAR.NET Team
 #include "CommandLine.h"
 #include "Dialog.h"
 #include "Editor.h"
-#include "EditorManager.h"
+#include "EditorHost.h"
 #include "InputBox.h"
 #include "Menu.h"
 #include "Message.h"
@@ -16,11 +16,11 @@ Copyright (c) 2005-2007 FAR.NET Team
 #include "PluginInfo.h"
 #include "PluginSet.h"
 #include "Viewer.h"
+#include "ViewerHost.h"
 
 namespace FarNet
 {;
 Far::Far()
-: _editorManager(gcnew EditorManager)
 {}
 
 void Far::StartFar()
@@ -33,14 +33,7 @@ void Far::StartFar()
 	DWORD vn; Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
 	int v1 = (vn & 0x0000ff00)>>8, v2 = vn & 0x000000ff, v3 = (int)((long)vn&0xffff0000)>>16;
 	if (v1 >= 1 && v2 >= 71 && v3 >= 2315)
-	{
 		_version_1_71_2315 = true;
-		_version_1_71_2169 = true;
-	}
-	else if (v1 >= 1 && v2 >= 71 && v3 >= 2169)
-	{
-		_version_1_71_2169 = true;
-	}
 }
 
 void Far::Start()
@@ -358,12 +351,22 @@ FarMacroState Far::MacroState::get()
 
 array<IEditor^>^ Far::Editors()
 {
-	return _editorManager->Editors();
+	return EditorHost::Editors();
+}
+
+array<IViewer^>^ Far::Viewers()
+{
+	return ViewerHost::Viewers();
 }
 
 IAnyEditor^ Far::AnyEditor::get()
 {
-	return _editorManager->AnyEditor;
+	return %EditorHost::_anyEditor;
+}
+
+IAnyViewer^ Far::AnyViewer::get()
+{
+	return %ViewerHost::_anyViewer;
 }
 
 String^ Far::PasteFromClipboard()
@@ -382,7 +385,12 @@ void Far::CopyToClipboard(String^ text)
 
 IEditor^ Far::CreateEditor()
 {
-	return gcnew FarNet::Editor(_editorManager);
+	return gcnew FarNet::Editor;
+}
+
+IViewer^ Far::CreateViewer()
+{
+	return gcnew FarNet::Viewer;
 }
 
 array<int>^ Far::CreateKeySequence(String^ keys)
@@ -512,7 +520,12 @@ ILine^ Far::CommandLine::get()
 
 IEditor^ Far::Editor::get()
 {
-	return _editorManager->GetCurrentEditor();
+	return EditorHost::GetCurrentEditor();
+}
+
+IViewer^ Far::Viewer::get()
+{
+	return ViewerHost::GetCurrentViewer();
 }
 
 IPanel^ Far::Panel::get()
@@ -695,7 +708,7 @@ ICollection<String^>^ Far::GetHistory(String^ name)
 
 void ShowExceptionInfo(Exception^ e)
 {
-	String^ path = Path::GetTempFileName();
+	String^ path = Far::Instance->TempName();
 	File::WriteAllText(path, ExceptionInfo(e, false) + "\n" + e->ToString(), System::Text::Encoding::Unicode);
 
 	// view file
@@ -729,11 +742,6 @@ void Far::ShowError(String^ title, Exception^ error)
 IDialog^ Far::CreateDialog(int left, int top, int right, int bottom)
 {
 	return gcnew FarDialog(left, top, right, bottom);
-}
-
-IViewer^ Far::CreateViewer()
-{
-	return gcnew Viewer();
 }
 
 void Far::WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
@@ -1525,6 +1533,23 @@ void Far::Redraw()
 {
 	if (_version_1_71_2315)
 		Info.AdvControl(Info.ModuleNumber, ACTL_REDRAWALL, 0);
+}
+
+String^ Far::TempName(String^ prefix)
+{
+	char dest[MAX_PATH];
+	char pref[5];
+	StrToOem(prefix, pref, 5);
+	if (!Info.FSF->MkTemp(dest, pref))
+		throw gcnew OperationCanceledException(__FUNCTION__);
+	return gcnew String(dest);
+}
+
+String^ Far::TempFolder(String^ prefix)
+{
+	String^ r = TempName(prefix);
+	Directory::CreateDirectory(r);
+	return r;
 }
 
 }

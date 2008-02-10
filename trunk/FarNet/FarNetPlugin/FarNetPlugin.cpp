@@ -1,13 +1,14 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #include "stdafx.h"
 #include "Dialog.h"
-#include "EditorManager.h"
+#include "EditorHost.h"
 #include "Far.h"
 #include "Panel.h"
+#include "ViewerHost.h"
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
@@ -165,7 +166,7 @@ int WINAPI ProcessDialogEvent(int id, void* param)
 int WINAPI ProcessEditorEvent(int type, void* param)
 {
 	__START;
-	return Far::Instance->_editorManager->AsProcessEditorEvent(type, param);
+	return EditorHost::AsProcessEditorEvent(type, param);
 	__END;
 	return 0;
 }
@@ -173,7 +174,7 @@ int WINAPI ProcessEditorEvent(int type, void* param)
 int WINAPI ProcessEditorInput(const INPUT_RECORD* rec)
 {
 	__START;
-	return Far::Instance->_editorManager->AsProcessEditorInput(rec);
+	return EditorHost::AsProcessEditorInput(rec);
 	__END;
 	return 0;
 }
@@ -192,6 +193,14 @@ int WINAPI ProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 	return PanelSet::AsProcessKey(hPlugin, key, controlState);
 	__END;
 	return true; // ignore, there was a problem
+}
+
+int WINAPI ProcessViewerEvent(int type, void* param)
+{
+	__START;
+	return ViewerHost::AsProcessViewerEvent(type, param);
+	__END;
+	return 0;
 }
 
 }
