@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 using FarManager.Forms;
@@ -16,21 +16,36 @@ namespace FarManager
 	public interface IAnyEditor
 	{
 		/// <summary>
+		/// Use <see cref="Opened"/>.
+		/// </summary>
+		[Obsolete("Use Opened.")]
+		event EventHandler AfterOpen;
+		/// <summary>
+		/// Editor is opened.
+		/// </summary>
+		event EventHandler Opened;
+		/// <summary>
+		/// Use <see cref="Saving"/>.
+		/// </summary>
+		[Obsolete("Use Saving.")]
+		event EventHandler BeforeSave;
+		/// <summary>
+		/// Fired before saving.
+		/// </summary>
+		event EventHandler Saving;
+		/// <summary>
+		/// Use <see cref="Closed"/>.
+		/// </summary>
+		[Obsolete("Use Closed.")]
+		event EventHandler AfterClose;
+		/// <summary>
+		/// Editor is closed.
+		/// </summary>
+		event EventHandler Closed;
+		/// <summary>
 		/// Redraw event.
 		/// </summary>
 		event EventHandler<RedrawEventArgs> OnRedraw;
-		/// <summary>
-		/// Editor is opened event.
-		/// </summary>
-		event EventHandler AfterOpen;
-		/// <summary>
-		/// Event is fired before editor contents is saved.
-		/// </summary>
-		event EventHandler BeforeSave;
-		/// <summary>
-		/// Event is fired when the editor is closed.
-		/// </summary>
-		event EventHandler AfterClose;
 		/// <summary>
 		/// Key pressed in editor.
 		/// </summary>
@@ -59,12 +74,12 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// FAR editor interface. See <see cref="IFar.Editor"/>, <see cref="IFar.CreateEditor"/>.
+	/// Editor interface. See <see cref="IFar.Editor"/>, <see cref="IFar.CreateEditor"/>.
 	/// </summary>
 	public interface IEditor : IAnyEditor
 	{
 		/// <summary>
-		/// Internal editor identifier.
+		/// Internal identifier.
 		/// </summary>
 		int Id { get; }
 		/// <summary>
@@ -78,25 +93,25 @@ namespace FarManager
 		/// </summary>
 		ExpandTabsMode ExpandTabs { get; set; }
 		/// <summary>
-		/// Delete a directory with a file when it is closed and it is the only file there.
-		/// It is read only when an editor is opened.
+		/// Use <see cref="DeleteSource"/>.
 		/// </summary>
-		/// <seealso cref="DeleteOnlyFileOnClose"/>
+		[Obsolete("Use Delete")]
 		bool DeleteOnClose { get; set; }
 		/// <summary>
-		/// Delete a file when it is closed.
-		/// It is read only when an editor is opened.
+		/// Use <see cref="DeleteSource"/>.
 		/// </summary>
-		/// <seealso cref="DeleteOnClose"/>
+		[Obsolete("Use Delete")]
 		bool DeleteOnlyFileOnClose { get; set; }
 		/// <summary>
-		/// Enable switching to viewer.
-		/// It is read only when an editor is opened.
+		/// Option to delete a temp file when closed.
+		/// </summary>
+		DeleteSource DeleteSource { get; set; }
+		/// <summary>
+		/// Enable switching to viewer. Set it before opening.
 		/// </summary>
 		bool EnableSwitch { get; set; }
 		/// <summary>
-		/// Do not use editor history.
-		/// It is read only when an editor is opened.
+		/// Do not use editor history. Set it before opening.
 		/// </summary>
 		bool DisableHistory { get; set; }
 		/// <summary>
@@ -115,14 +130,18 @@ namespace FarManager
 		/// </summary>
 		ILines TrueLines { get; }
 		/// <summary>
-		/// Name of a file being edited.
-		/// It is read only when an editor is opened.
+		/// Name of a file being edited. Set it before opening.
+		/// On opening it can be corrected, e.g. converted into full path.
 		/// </summary>
 		string FileName { get; set; }
 		/// <summary>
-		/// Editor window position.
+		/// Window start position. Set it before opening.
 		/// </summary>
-		Place Window { get; }
+		Place Window { get; set; }
+		/// <summary>
+		/// Window size. Window must be current.
+		/// </summary>
+		Point WindowSize { get; }
 		/// <summary>
 		/// Current selection. It is a collection <see cref="ILines"/> of selected line parts and a few extra members.
 		/// If selection <see cref="ISelection.Exists"/> it contains at least one line.
@@ -137,7 +156,7 @@ namespace FarManager
 		ISelection TrueSelection { get; }
 		/// <summary>
 		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in FAR. 
-		/// It is read only when an editor is opened.
+		/// Set it before opening.
 		/// </summary>
 		bool IsNew { get; set; }
 		/// <summary>
@@ -320,29 +339,23 @@ namespace FarManager
 		void SetText(string text);
 		/// <summary>
 		/// Opens the editor using properties:
-		/// <see cref="FileName"/>,
-		/// <see cref="Title"/>,
-		/// <see cref="DeleteOnClose"/>,
-		/// <see cref="DeleteOnlyFileOnClose"/>,
-		/// <see cref="DisableHistory"/>,
-		/// <see cref="EnableSwitch"/>,
-		/// <see cref="IsNew"/>.
+		/// <see cref="DeleteSource"/>
+		/// <see cref="DisableHistory"/>
+		/// <see cref="EnableSwitch"/>
+		/// <see cref="FileName"/>
+		/// <see cref="IsNew"/>
+		/// <see cref="Title"/>
+		/// <see cref="Window"/>
 		/// </summary>
+		/// <remarks>
+		/// If the file is already opened in an editor and you select the existing editor window then
+		/// this editor object should not be used after opening because technically it is not opened.
+		/// The safe way is to request the current editor and continue work with it.
+		/// </remarks>
 		void Open(OpenMode mode);
 		/// <summary>
-		/// Obsolete. Use <see cref="Open(OpenMode)"/> with <see cref="OpenMode"/> parameter.
+		/// See <see cref="Open(OpenMode)"/> with <see cref="OpenMode.None"/> and remarks.
 		/// </summary>
-		[Obsolete("Use Open(OpenMode).")]
-		bool Async { get; set; }
-		/// <summary>
-		/// Obsolete. Use <see cref="Open(OpenMode)"/> with <see cref="OpenMode"/> parameter.
-		/// </summary>
-		[Obsolete("Use Open(OpenMode).")]
-		bool IsModal { get; set; }
-		/// <summary>
-		/// Obsolete. Use <see cref="Open(OpenMode)"/> with <see cref="OpenMode"/> parameter.
-		/// </summary>
-		[Obsolete("Use Open(OpenMode).")]
 		void Open();
 	}
 

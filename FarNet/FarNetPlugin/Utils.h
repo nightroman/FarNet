@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #pragma once
@@ -269,3 +269,6 @@ internal:
 		MenuPrefix = ".NET ";
 };
 }
+
+void AssertCurrentViewer();
+void DeleteSourceOptional(String^ path, DeleteSource option);

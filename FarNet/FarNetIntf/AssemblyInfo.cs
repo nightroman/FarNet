@@ -3,13 +3,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("3.3.37.0")]
+[assembly: AssemblyVersion("3.3.38.0")]
 [assembly: AssemblyTitle("FAR.NET interface")]
 [assembly: AssemblyDescription("Interface for FAR.NET plugins")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
 [assembly: AssemblyProduct("FAR.NET")]
-[assembly: AssemblyCopyright("Copyright (c) 2005-2007 FAR.NET Team")]
+[assembly: AssemblyCopyright("Copyright (c) 2005-2008 FAR.NET Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

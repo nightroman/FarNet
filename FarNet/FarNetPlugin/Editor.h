@@ -1,22 +1,42 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2007 FAR.NET Team
+Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #pragma once
 
 namespace FarNet
 {;
-ref class EditorManager;
 ref class SelectionCollection;
 ref class VisibleEditorCursor;
 ref class EditorLineCollection;
 
 ref class BaseEditor : IAnyEditor
 {
-public: DEF_EVENT(AfterClose, _AfterClose);
-public: DEF_EVENT(AfterOpen, _AfterOpen);
-public: DEF_EVENT(BeforeSave, _BeforeSave);
+public: DEF_EVENT(Opened, _Opened);
+public:
+	virtual event EventHandler^ AfterOpen
+	{
+		void add(EventHandler^ handler) { _Opened += handler; }
+		void remove(EventHandler^ handler) { _Opened -= handler; }
+		void raise(Object^ sender, EventArgs^ e) { if (_Opened != nullptr) _Opened(sender, e); }
+	}
+public: DEF_EVENT(Saving, _Saving);
+public:
+	virtual event EventHandler^ BeforeSave
+	{
+		void add(EventHandler^ handler) { _Saving += handler; }
+		void remove(EventHandler^ handler) { _Saving -= handler; }
+		void raise(Object^ sender, EventArgs^ e) { if (_Saving != nullptr) _Saving(sender, e); }
+	}
+public: DEF_EVENT(Closed, _Closed);
+public:
+	virtual event EventHandler^ AfterClose
+	{
+		void add(EventHandler^ handler) { _Closed += handler; }
+		void remove(EventHandler^ handler) { _Closed -= handler; }
+		void raise(Object^ sender, EventArgs^ e) { if (_Closed != nullptr) _Closed(sender, e); }
+	}
 public: DEF_EVENT(GotFocus, _GotFocus);
 public: DEF_EVENT(LosingFocus, _LosingFocus);
 public: DEF_EVENT_ARGS(OnKey, _OnKey, KeyEventArgs);
@@ -30,30 +50,30 @@ public:
 ref class Editor : public BaseEditor, public IEditor
 {
 public:
-	virtual property bool Async { bool get(); void set(bool value); }
 	virtual property bool DeleteOnClose { bool get(); void set(bool value); }
 	virtual property bool DeleteOnlyFileOnClose { bool get(); void set(bool value); }
 	virtual property bool DisableHistory { bool get(); void set(bool value); }
 	virtual property bool EnableSwitch { bool get(); void set(bool value); }
 	virtual property bool IsEnd { bool get(); }
 	virtual property bool IsLocked { bool get(); }
-	virtual property bool IsModal { bool get(); void set(bool value); }
 	virtual property bool IsModified { bool get(); }
 	virtual property bool IsNew { bool get(); void set(bool value); }
 	virtual property bool IsOpened { bool get(); }
 	virtual property bool IsSaved { bool get(); }
 	virtual property bool Overtype { bool get(); void set(bool value); }
+	virtual property FarManager::DeleteSource DeleteSource { FarManager::DeleteSource get(); void set(FarManager::DeleteSource value); }
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get(); void set(ExpandTabsMode value); }
 	virtual property ILine^ CurrentLine { ILine^ get(); }
 	virtual property ILines^ Lines { ILines^ get(); }
 	virtual property ILines^ TrueLines { ILines^ get(); }
-	virtual property int Id { int get(); void set(int value); }
+	virtual property int Id { int get(); }
 	virtual property int TabSize { int get(); void set(int value); }
 	virtual property ISelection^ Selection { ISelection^ get(); }
 	virtual property ISelection^ TrueSelection { ISelection^ get(); }
 	virtual property Object^ Data;
-	virtual property Place Window { Place get(); }
+	virtual property Place Window { Place get(); void set(Place value); }
 	virtual property Point Cursor { Point get(); }
+	virtual property Point WindowSize { Point get(); }
 	virtual property String^ FileName { String^ get(); void set(String^ value); }
 	virtual property String^ Title { String^ get(); void set(String^ value); }
 	virtual property String^ WordDiv { String^ get() override; void set(String^ value) override; }
@@ -84,27 +104,23 @@ public:
 	virtual void Save(String^ fileName);
 	virtual void SetText(String^ text);
 internal:
-	Editor(EditorManager^ manager);
-	void GetParams();
+	Editor();
 private:
 	[CA_USED]
 	void AssertClosed();
 	[CA_USED]
 	void AssertCurrent();
 	void CurrentInfo(EditorInfo& ei);
-private:
-	EditorManager^ _manager;
+internal:
 	int _id;
-	bool _async;
-	bool _deleteOnClose;
-	bool _deleteOnlyFileOnClose;
-	bool _disableHistory;
-	bool _enableSwitch;
-	bool _isModal;
-	bool _isNew;
-	Place _window;
-	String^ _fileName;
-	String^ _title;
+	String^ _FileName;
+private:
+	FarManager::DeleteSource _DeleteSource;
+	bool _DisableHistory;
+	bool _EnableSwitch;
+	bool _IsNew;
+	Place _Window;
+	String^ _Title;
 	TextFrame _frameStart;
 	TextFrame _frameSaved;
 };
