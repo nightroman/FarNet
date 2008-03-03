@@ -41,9 +41,6 @@ public:
 	virtual array<IPanelPlugin^>^ PushedPanels();
 	virtual array<IViewer^>^ Viewers();
 	virtual bool Commit();
-	virtual void Msg(String^ body);
-	virtual void Msg(String^ body, String^ header);
-	virtual void Redraw();
 	virtual Char CodeToChar(int code);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
@@ -69,13 +66,15 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual String^ PasteFromClipboard();
 	virtual String^ RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler);
-	virtual String^ TempName() { return TempName(nullptr); }
-	virtual String^ TempName(String^ prefix);
 	virtual String^ TempFolder() { return TempFolder(nullptr); }
 	virtual String^ TempFolder(String^ prefix);
+	virtual String^ TempName() { return TempName(nullptr); }
+	virtual String^ TempName(String^ prefix);
 	virtual void CopyToClipboard(String^ text);
 	virtual void GetUserScreen();
 	virtual void LoadMacros();
+	virtual void Msg(String^ body);
+	virtual void Msg(String^ body, String^ header);
 	virtual void PostKeys(String^ keys);
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(array<int>^ sequence);
@@ -85,6 +84,7 @@ public:
 	virtual void PostStep(EventHandler^ step);
 	virtual void PostText(String^ text);
 	virtual void PostText(String^ text, bool disableOutput);
+	virtual void Redraw();
 	virtual void RegisterFiler(BasePlugin^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates);
 	virtual void RegisterTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
 	virtual void RestoreScreen(int screen);

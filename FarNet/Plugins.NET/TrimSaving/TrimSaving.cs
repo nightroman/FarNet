@@ -8,7 +8,7 @@ public class TrimSaving : EditorPlugin
 	public override void Invoke(object sender, EventArgs e)
 	{
 		IEditor editor = (IEditor)sender;
-		editor.BeforeSave += OnSaving;
+		editor.Saving += OnSaving;
 	}
 
 	/// Trims line ends.

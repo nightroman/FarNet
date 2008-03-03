@@ -713,10 +713,10 @@ void ShowExceptionInfo(Exception^ e)
 
 	// view file
 	Viewer v;
-	v.Title = e->GetType()->FullName;
-	v.FileName = path;
-	v.DeleteOnlyFileOnClose = true;
+	v.DeleteSource = DeleteSource::UnusedFile;
 	v.DisableHistory = true;
+	v.FileName = path;
+	v.Title = e->GetType()->FullName;
 	v.Open(OpenMode::Modal);
 }
 
