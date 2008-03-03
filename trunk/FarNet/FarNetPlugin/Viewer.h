@@ -16,8 +16,6 @@ public: DEF_EVENT(Opened, _Opened);
 ref class Viewer : public BaseViewer, public IViewer
 {
 public:
-	virtual property bool DeleteOnClose { bool get(); void set(bool value); }
-	virtual property bool DeleteOnlyFileOnClose { bool get(); void set(bool value); }
 	virtual property bool DisableHistory { bool get(); void set(bool value); }
 	virtual property bool EnableSwitch { bool get(); void set(bool value); }
 	virtual property bool HexMode { bool get(); void set(bool value); }

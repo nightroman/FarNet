@@ -202,13 +202,6 @@ void Edit_GoTo(int pos, int line);
 void Edit_RestoreEditorInfo(const EditorInfo& ei);
 void Edit_SetOvertype(bool value);
 
-// Helpers
-MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
-String^ ExceptionInfo(Exception^ e, bool full);
-void ValidateRect(int& x, int& w, int min, int size);
-String^ Wildcard(String^ pattern);
-String^ JoinText(String^ head, String^ tail);
-
 extern int _fastGetString;
 
 Place SelectionPlace();
@@ -270,5 +263,12 @@ internal:
 };
 }
 
+// Helpers
+int Compare(String^ strA, String^ strB);
+MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
+String^ ExceptionInfo(Exception^ e, bool full);
+String^ JoinText(String^ head, String^ tail);
+String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();
 void DeleteSourceOptional(String^ path, DeleteSource option);
+void ValidateRect(int& x, int& w, int min, int size);

@@ -13,32 +13,11 @@ ref class EditorLineCollection;
 
 ref class BaseEditor : IAnyEditor
 {
-public: DEF_EVENT(Opened, _Opened);
-public:
-	virtual event EventHandler^ AfterOpen
-	{
-		void add(EventHandler^ handler) { _Opened += handler; }
-		void remove(EventHandler^ handler) { _Opened -= handler; }
-		void raise(Object^ sender, EventArgs^ e) { if (_Opened != nullptr) _Opened(sender, e); }
-	}
-public: DEF_EVENT(Saving, _Saving);
-public:
-	virtual event EventHandler^ BeforeSave
-	{
-		void add(EventHandler^ handler) { _Saving += handler; }
-		void remove(EventHandler^ handler) { _Saving -= handler; }
-		void raise(Object^ sender, EventArgs^ e) { if (_Saving != nullptr) _Saving(sender, e); }
-	}
 public: DEF_EVENT(Closed, _Closed);
-public:
-	virtual event EventHandler^ AfterClose
-	{
-		void add(EventHandler^ handler) { _Closed += handler; }
-		void remove(EventHandler^ handler) { _Closed -= handler; }
-		void raise(Object^ sender, EventArgs^ e) { if (_Closed != nullptr) _Closed(sender, e); }
-	}
 public: DEF_EVENT(GotFocus, _GotFocus);
 public: DEF_EVENT(LosingFocus, _LosingFocus);
+public: DEF_EVENT(Opened, _Opened);
+public: DEF_EVENT(Saving, _Saving);
 public: DEF_EVENT_ARGS(OnKey, _OnKey, KeyEventArgs);
 public: DEF_EVENT_ARGS(OnMouse, _OnMouse, MouseEventArgs);
 public: DEF_EVENT_ARGS(OnRedraw, _OnRedraw, RedrawEventArgs);
@@ -50,8 +29,6 @@ public:
 ref class Editor : public BaseEditor, public IEditor
 {
 public:
-	virtual property bool DeleteOnClose { bool get(); void set(bool value); }
-	virtual property bool DeleteOnlyFileOnClose { bool get(); void set(bool value); }
 	virtual property bool DisableHistory { bool get(); void set(bool value); }
 	virtual property bool EnableSwitch { bool get(); void set(bool value); }
 	virtual property bool IsEnd { bool get(); }

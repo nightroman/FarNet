@@ -83,28 +83,6 @@ void Viewer::DeleteSource::set(FarManager::DeleteSource value)
 	_DeleteSource = value;
 }
 
-bool Viewer::DeleteOnClose::get()
-{
-	return _DeleteSource == FarManager::DeleteSource::UnusedFolder;
-}
-
-void Viewer::DeleteOnClose::set(bool value)
-{
-	AssertClosed();
-	_DeleteSource = value ? FarManager::DeleteSource::UnusedFolder : FarManager::DeleteSource::None;
-}
-
-bool Viewer::DeleteOnlyFileOnClose::get()
-{
-	return _DeleteSource == FarManager::DeleteSource::UnusedFile;
-}
-
-void Viewer::DeleteOnlyFileOnClose::set(bool value)
-{
-	AssertClosed();
-	_DeleteSource = value ? FarManager::DeleteSource::UnusedFile : FarManager::DeleteSource::None;
-}
-
 bool Viewer::EnableSwitch::get()
 {
 	return _EnableSwitch;
