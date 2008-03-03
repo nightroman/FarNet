@@ -1,0 +1,17 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<Target Name="Build">
+		<CreateItem Include="*\Build.bat">
+			<Output TaskParameter="Include" ItemName="BatFile"/>
+		</CreateItem>
+		<Exec Command="%(BatFile.FullPath)" WorkingDirectory="%(RootDir)%(Directory)"/>
+	</Target>
+
+	<Target Name="Clean">
+		<CreateItem Include="*\*.dll">
+			<Output TaskParameter="Include" ItemName="DllFile"/>
+		</CreateItem>
+		<Delete Files="@(DllFile)"/>
+	</Target>
+
+</Project>
