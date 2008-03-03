@@ -123,7 +123,7 @@ void Editor::Open(OpenMode mode)
 		{
 			String^ fileName1 = Path::GetFullPath(_FileName);
 			String^ fileName2 = Path::GetFullPath(editor->_FileName);
-			if (String::Compare(fileName1, fileName2, true) == 0)
+			if (Compare(fileName1, fileName2) == 0)
 				return;
 		}
 		throw gcnew OperationCanceledException("Cannot open the file '" + FileName + "'");
@@ -145,28 +145,6 @@ DeleteSource Editor::DeleteSource::get()
 void Editor::DeleteSource::set(FarManager::DeleteSource value)
 {
 	_DeleteSource = value;
-}
-
-bool Editor::DeleteOnClose::get()
-{
-	return _DeleteSource == FarManager::DeleteSource::UnusedFolder;
-}
-
-void Editor::DeleteOnClose::set(bool value)
-{
-	AssertClosed();
-	_DeleteSource = value ? FarManager::DeleteSource::UnusedFolder : FarManager::DeleteSource::None;
-}
-
-bool Editor::DeleteOnlyFileOnClose::get()
-{
-	return _DeleteSource == FarManager::DeleteSource::UnusedFile;
-}
-
-void Editor::DeleteOnlyFileOnClose::set(bool value)
-{
-	AssertClosed();
-	_DeleteSource = value ? FarManager::DeleteSource::UnusedFile : FarManager::DeleteSource::None;
 }
 
 bool Editor::EnableSwitch::get()

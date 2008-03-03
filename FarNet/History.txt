@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+3.3.39
+
+CHANGED
+- VKeyCode names was made compatible with System.ConcoleKey names.
+
+OBSOLETE
+- Removed obsolete editor and viewer properties DeleteOnClose and
+DeleteOnlyFileOnClose. Use new property DeleteSource (enum DeleteSource).
+- Removed obsolete editor events AfterOpen, AfterClose, BeforeSave. Use new
+events: Opened, Closed, Saving. Updated demo plugin Plugins.NET \ TrimSaving.
+
 3.3.38
 
 NEW

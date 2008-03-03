@@ -319,7 +319,7 @@ namespace FarManager
 	public abstract class EditorPlugin : BasePlugin
 	{
 		/// <summary>
-		/// Editor <see cref="IAnyEditor.AfterOpen"/> handler.
+		/// Editor <see cref="IAnyEditor.Opened"/> handler.
 		/// </summary>
 		public abstract void Invoke(object sender, EventArgs e);
 

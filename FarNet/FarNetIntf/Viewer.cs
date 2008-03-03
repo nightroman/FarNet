@@ -37,16 +37,6 @@ namespace FarManager
 		/// </summary>
 		DeleteSource DeleteSource { get; set; }
 		/// <summary>
-		/// Use <see cref="DeleteSource"/>.
-		/// </summary>
-		[Obsolete("Use Delete")]
-		bool DeleteOnClose { get; set; }
-		/// <summary>
-		/// Use <see cref="DeleteSource"/>.
-		/// </summary>
-		[Obsolete("Use Delete")]
-		bool DeleteOnlyFileOnClose { get; set; }
-		/// <summary>
 		/// Enables switching to viewer. Set it before opening.
 		/// </summary>
 		bool EnableSwitch { get; set; }

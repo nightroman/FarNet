@@ -16,28 +16,13 @@ namespace FarManager
 	public interface IAnyEditor
 	{
 		/// <summary>
-		/// Use <see cref="Opened"/>.
-		/// </summary>
-		[Obsolete("Use Opened.")]
-		event EventHandler AfterOpen;
-		/// <summary>
 		/// Editor is opened.
 		/// </summary>
 		event EventHandler Opened;
 		/// <summary>
-		/// Use <see cref="Saving"/>.
-		/// </summary>
-		[Obsolete("Use Saving.")]
-		event EventHandler BeforeSave;
-		/// <summary>
 		/// Fired before saving.
 		/// </summary>
 		event EventHandler Saving;
-		/// <summary>
-		/// Use <see cref="Closed"/>.
-		/// </summary>
-		[Obsolete("Use Closed.")]
-		event EventHandler AfterClose;
 		/// <summary>
 		/// Editor is closed.
 		/// </summary>
@@ -92,16 +77,6 @@ namespace FarManager
 		/// Editor must be current.
 		/// </summary>
 		ExpandTabsMode ExpandTabs { get; set; }
-		/// <summary>
-		/// Use <see cref="DeleteSource"/>.
-		/// </summary>
-		[Obsolete("Use Delete")]
-		bool DeleteOnClose { get; set; }
-		/// <summary>
-		/// Use <see cref="DeleteSource"/>.
-		/// </summary>
-		[Obsolete("Use Delete")]
-		bool DeleteOnlyFileOnClose { get; set; }
 		/// <summary>
 		/// Option to delete a temp file when closed.
 		/// </summary>
