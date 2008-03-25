@@ -11,6 +11,8 @@ ref class BaseViewer : IAnyViewer
 {
 public: DEF_EVENT(Closed, _Closed);
 public: DEF_EVENT(Opened, _Opened);
+public:
+	virtual void ViewText(String^ text, String^ title, OpenMode mode);
 };
 
 ref class Viewer : public BaseViewer, public IViewer

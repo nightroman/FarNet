@@ -141,7 +141,8 @@ namespace FarManager.Forms
 
 	/// <summary>
 	/// Edit control.
-	/// It is created and added to a dialog by <see cref="IDialog.AddEdit"/>.
+	/// It is created and added to a dialog by:
+	/// <see cref="IDialog.AddEdit"/>, <see cref="IDialog.AddEditFixed"/>, <see cref="IDialog.AddEditPassword"/>.
 	/// </summary>
 	public interface IEdit : IControl
 	{
@@ -245,7 +246,8 @@ namespace FarManager.Forms
 
 	/// <summary>
 	/// Static text label.
-	/// It is created and added to a dialog by <see cref="IDialog.AddText"/>.
+	/// It is created and added to a dialog by
+	/// <see cref="IDialog.AddText"/>, <see cref="IDialog.AddVerticalText"/>.
 	/// </summary>
 	public interface IText : IControl
 	{
@@ -259,13 +261,9 @@ namespace FarManager.Forms
 		/// </summary>
 		bool CenterGroup { get; set; }
 		/// <summary>
-		/// Draws a single-line separator including text if any.
+		/// Draws a single-line (1) or double-line (2) separator including text if any.
 		/// </summary>
-		bool Separator { get; set; }
-		/// <summary>
-		/// Draws a double-line separator including text if any.
-		/// </summary>
-		bool Separator2 { get; set; }
+		int Separator { get; set; }
 		/// <summary>
 		/// Show ampersand symbol in caption instead of using it for defining hotkeys.
 		/// </summary>
@@ -274,6 +272,10 @@ namespace FarManager.Forms
 		/// Centers the text (horizontally or vertically).
 		/// </summary>
 		bool Centered { get; set; }
+		/// <summary>
+		/// Text is vertical.
+		/// </summary>
+		bool Vertical { get; }
 	}
 
 	/// <summary>
@@ -386,7 +388,7 @@ It is created by <see cref="IFar.CreateDialog"/>.
 <remarks>
 After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 *) create and add controls using <c>Add*</c> methods;
-*) set control and dialog properties and|or add event handlers;
+*) set control and dialog properties and add event handlers;
 *) call <see cref="IDialog.Show"/>.
 </remarks>
 */
@@ -547,5 +549,16 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// Closes the dialog.
 		/// </summary>
 		void Close();
+		/// <summary>
+		/// Gets a control.
+		/// </summary>
+		/// <param name="ID">Control ID (index).</param>
+		/// <returns>Requested control or null if ID is not valid.</returns>
+		IControl GetControl(int ID);
+		/// <summary>
+		/// Set focus to a control.
+		/// </summary>
+		/// <param name="ID">Control ID (index).</param>
+		void SetFocus(int ID);
 	}
 }

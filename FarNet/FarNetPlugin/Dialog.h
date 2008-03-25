@@ -16,8 +16,8 @@ ref class FarControl abstract : public IControl
 public:
 	virtual property bool Disabled { bool get(); void set(bool value); }
 	virtual property bool Hidden { bool get(); void set(bool value); }
-	virtual property int Id;
-	virtual property Place Rect { Place get() { return _rect; } }
+	virtual property int Id { int get() { return _id; } }
+	virtual property Place Rect { Place get(); }
 	virtual property String^ Text { String^ get(); void set(String^ value); }
 public: DEF_EVENT_ARGS(GotFocus, _GotFocus, AnyEventArgs);
 public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
@@ -25,6 +25,9 @@ public: DEF_EVENT_ARGS(LosingFocus, _LosingFocus, LosingFocusEventArgs);
 public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);
 public:
 	virtual String^ ToString() override;
+protected:
+	[CA_USED]
+	FarControl(FarDialog^ dialog, int index);
 internal:
 	FarControl(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 	bool GetFlag(int flag);
@@ -35,6 +38,7 @@ internal:
 	virtual void Setup(FarDialogItem& item) = 0;
 	virtual void Update(bool ok);
 internal:
+	int _id;
 	Place _rect;
 	FarDialogItem* _item;
 	FarDialog^ _dialog;
@@ -50,6 +54,7 @@ public:
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
 	virtual property bool Single;
 internal:
+	FarBox(FarDialog^ dialog, int index);
 	FarBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
 };
@@ -64,6 +69,7 @@ public:
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
 public: DEF_EVENT_ARGS(ButtonClicked, _ButtonClicked, ButtonClickedEventArgs);
 internal:
+	FarButton(FarDialog^ dialog, int index);
 	FarButton(FarDialog^ dialog, int left, int top, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
 };
@@ -78,6 +84,7 @@ public:
 	virtual property int Selected { int get(); void set(int value); }
 public: DEF_EVENT_ARGS(ButtonClicked, _ButtonClicked, ButtonClickedEventArgs);
 internal:
+	FarCheckBox(FarDialog^ dialog, int index);
 	FarCheckBox(FarDialog^ dialog, int left, int top, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
 };
@@ -100,6 +107,7 @@ public:
 	virtual property String^ Mask { String^ get(); void set(String^ value); }
 public: DEF_EVENT_ARGS(TextChanged, _TextChanged, TextChangedEventArgs);
 internal:
+	FarEdit(FarDialog^ dialog, int index, int type);
 	FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, int type);
 	virtual void Setup(FarDialogItem& item) override;
 	virtual void Update(bool ok) override;
@@ -119,6 +127,7 @@ public:
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
 public: DEF_EVENT_ARGS(ButtonClicked, _ButtonClicked, ButtonClickedEventArgs);
 internal:
+	FarRadioButton(FarDialog^ dialog, int index);
 	FarRadioButton(FarDialog^ dialog, int left, int top, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
 };
@@ -129,10 +138,11 @@ public:
 	virtual property bool BoxColor { bool get(); void set(bool value); }
 	virtual property bool Centered { bool get(); void set(bool value); }
 	virtual property bool CenterGroup { bool get(); void set(bool value); }
-	virtual property bool Separator { bool get(); void set(bool value); }
-	virtual property bool Separator2 { bool get(); void set(bool value); }
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
+	virtual property bool Vertical { bool get(); }
+	virtual property int Separator { int get(); void set(int value); }
 internal:
+	FarText(FarDialog^ dialog, int index);
 	FarText(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
 };
@@ -142,6 +152,7 @@ ref class FarUserControl : public FarControl, public IUserControl
 public:
 	virtual property bool NoFocus { bool get(); void set(bool value); }
 internal:
+	FarUserControl(FarDialog^ dialog, int index);
 	FarUserControl(FarDialog^ dialog, int left, int top, int right, int bottom);
 	virtual void Setup(FarDialogItem& item) override;
 };
@@ -159,6 +170,9 @@ public:
 	virtual property int Selected { int get(); void set(int value); }
 public:
 	virtual IMenuItem^ Add(String^ text);
+protected:
+	[CA_USED]
+	FarBaseBox(FarDialog^ dialog, int index);
 protected:
 	[CA_USED]
 	FarBaseBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
@@ -182,6 +196,7 @@ public:
 	virtual property ILine^ Line { ILine^ get(); }
 public: DEF_EVENT_ARGS(TextChanged, _TextChanged, TextChangedEventArgs);
 internal:
+	FarComboBox(FarDialog^ dialog, int index);
 	FarComboBox(FarDialog^ dialog, int left, int top, int right, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
 };
@@ -191,12 +206,18 @@ ref class FarListBox : public FarBaseBox, public IListBox
 public:
 	virtual property bool NoBox { bool get(); void set(bool value); }
 internal:
+	FarListBox(FarDialog^ dialog, int index);
 	FarListBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-ref class FarDialog : public IDialog
+ref class FarDialog : IDialog
 {
+public: DEF_EVENT_ARGS(Closing, _Closing, ClosingEventArgs);
+public: DEF_EVENT_ARGS(Idled, _Idled, AnyEventArgs);
+public: DEF_EVENT_ARGS(Initialized, _Initialized, InitializedEventArgs);
+public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
+public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);
 public:
 	virtual property bool IsSmall { bool get(); void set(bool value); }
 	virtual property bool IsWarning { bool get(); void set(bool value); }
@@ -207,7 +228,7 @@ public:
 	virtual property IControl^ Default { IControl^ get(); void set(IControl^ value); }
 	virtual property IControl^ Focused { IControl^ get(); void set(IControl^ value); }
 	virtual property IControl^ Selected { IControl^ get(); }
-	virtual property Place Rect { Place get() { return _rect; } }
+	virtual property Place Rect { Place get(); }
 	virtual property String^ HelpTopic;
 	virtual property Object^ Data;
 public:
@@ -216,6 +237,7 @@ public:
 	virtual IButton^ AddButton(int left, int top, String^ text);
 	virtual ICheckBox^ AddCheckBox(int left, int top, String^ text);
 	virtual IComboBox^ AddComboBox(int left, int top, int right, String^ text);
+	virtual IControl^ GetControl(int ID);
 	virtual IEdit^ AddEdit(int left, int top, int right, String^ text);
 	virtual IEdit^ AddEditFixed(int left, int top, int right, String^ text);
 	virtual IEdit^ AddEditPassword(int left, int top, int right, String^ text);
@@ -225,15 +247,13 @@ public:
 	virtual IText^ AddVerticalText(int left, int top, int bottom, String^ text);
 	virtual IUserControl^ AddUserControl(int left, int top, int right, int bottom);
 	virtual void Close();
-public: DEF_EVENT_ARGS(Closing, _Closing, ClosingEventArgs);
-public: DEF_EVENT_ARGS(Idled, _Idled, AnyEventArgs);
-public: DEF_EVENT_ARGS(Initialized, _Initialized, InitializedEventArgs);
-public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
-public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);
+	virtual void SetFocus(int ID);
 internal:
+	FarDialog(HANDLE hDlg);
 	FarDialog(int left, int top, int right, int bottom);
 	static int AsProcessDialogEvent(int id, void* param);
 	LONG_PTR DialogProc(int msg, int param1, LONG_PTR param2);
+	static FarDialog^ GetDialog();
 internal:
 	static List<FarDialog^> _dialogs;
 	HANDLE _hDlg;
@@ -241,10 +261,11 @@ internal:
 private:
 	void AddItem(FarControl^ item);
 private:
-	Place _rect;
 	int _flags;
+	Place _rect;
 	FarControl^ _default;
 	FarControl^ _focused;
 	FarControl^ _selected;
+	static HANDLE _hDlgLast;
 };
 }

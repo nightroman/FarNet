@@ -667,33 +667,78 @@ void Far::SetUserScreen()
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0);
 }
 
+// No exceptions, return what we can get
+ICollection<String^>^ Far::GetDialogHistory(String^ name)
+{
+	List<String^>^ r = gcnew List<String^>;
+
+	String^ keyName = RootFar + "\\SavedDialogHistory\\" + name;
+	CBox sKeyName(keyName);
+
+	HKEY hk;
+	LONG lResult = ::RegOpenKeyEx(HKEY_CURRENT_USER, sKeyName, 0, KEY_READ, &hk);
+	if (lResult != ERROR_SUCCESS)
+		return r;
+
+	try
+	{
+		char lineName[99];
+		int index = 0;
+		for(;; ++index)
+		{
+			Info.FSF->sprintf(lineName, "Line%i", index);
+
+			DWORD dwType = 0, dwCount = 0;
+			lResult = ::RegQueryValueEx(hk, lineName, NULL, &dwType, NULL, &dwCount);
+			if (lResult != ERROR_SUCCESS || dwType != REG_SZ)
+				break;
+
+			char* buf = new char[dwCount];
+			lResult = ::RegQueryValueEx(hk, lineName, NULL, &dwType, (LPBYTE)buf, &dwCount);
+			if (lResult != ERROR_SUCCESS)
+				break;
+
+			String^ s = OemToStr(buf);
+			delete[] buf;
+			r->Add(s);
+		}
+		return r;
+	}
+	finally
+	{
+		::RegCloseKey(hk);
+	}
+}
+
+// No exceptions, return what we can get
 ICollection<String^>^ Far::GetHistory(String^ name)
 {
+	List<String^>^ r = gcnew List<String^>;
+
 	String^ keyName = RootFar + "\\" + name;
 	CBox sKeyName(keyName);
 
 	HKEY hk;
 	LONG lResult = ::RegOpenKeyEx(HKEY_CURRENT_USER, sKeyName, 0, KEY_READ, &hk);
 	if (lResult != ERROR_SUCCESS)
-		throw gcnew OperationCanceledException();
+		return r;
 
-	char* cb = NULL;
+	char* buf = NULL;
 	try
 	{
 		DWORD dwType = 0, dwCount = 0;
 		lResult = ::RegQueryValueEx(hk, "Lines", NULL, &dwType, NULL, &dwCount);
 		if (lResult != ERROR_SUCCESS || dwType != REG_BINARY)
-			throw gcnew OperationCanceledException();
+			return r;
 
-		cb = new char[dwCount];
-		lResult = ::RegQueryValueEx(hk, "Lines", NULL, &dwType, (LPBYTE)cb, &dwCount);
+		buf = new char[dwCount];
+		lResult = ::RegQueryValueEx(hk, "Lines", NULL, &dwType, (LPBYTE)buf, &dwCount);
 		if (lResult != ERROR_SUCCESS)
-			throw gcnew OperationCanceledException();
+			return r;
 
-		List<String^>^ r = gcnew List<String^>();
 		for(int i = 0; i < (int)dwCount;)
 		{
-			String^ s = OemToStr(cb + i);
+			String^ s = OemToStr(buf + i);
 			r->Add(s);
 			i += s->Length + 1;
 		}
@@ -701,23 +746,9 @@ ICollection<String^>^ Far::GetHistory(String^ name)
 	}
 	finally
 	{
-		delete cb;
+		delete[] buf;
 		::RegCloseKey(hk);
 	}
-}
-
-void ShowExceptionInfo(Exception^ e)
-{
-	String^ path = Far::Instance->TempName();
-	File::WriteAllText(path, ExceptionInfo(e, false) + "\n" + e->ToString(), System::Text::Encoding::Unicode);
-
-	// view file
-	Viewer v;
-	v.DeleteSource = DeleteSource::UnusedFile;
-	v.DisableHistory = true;
-	v.FileName = path;
-	v.Title = e->GetType()->FullName;
-	v.Open(OpenMode::Modal);
 }
 
 void Far::ShowError(String^ title, Exception^ error)
@@ -731,7 +762,10 @@ void Far::ShowError(String^ title, Exception^ error)
 		gcnew array<String^>{"Ok", "View Info", "Copy Info"}))
 	{
 	case 1:
-		ShowExceptionInfo(error);
+		Far::Instance->AnyViewer->ViewText(
+			ExceptionInfo(error, false) + "\n" + error->ToString(),
+			error->GetType()->FullName,
+			OpenMode::Modal);
 		return;
 	case 2:
 		CopyToClipboard(ExceptionInfo(error, false) + "\r\n" + error->ToString());
@@ -1550,6 +1584,11 @@ String^ Far::TempFolder(String^ prefix)
 	String^ r = TempName(prefix);
 	Directory::CreateDirectory(r);
 	return r;
+}
+
+IDialog^ Far::Dialog::get()
+{
+	return FarDialog::GetDialog();
 }
 
 }

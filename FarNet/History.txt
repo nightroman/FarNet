@@ -1,9 +1,33 @@
 http://code.google.com/p/farnet/
 
+3.3.40
+
+- Access to dialogs and controls. New property IFar.Dialog - the current dialog
+if any (including standard FAR dialogs). You can get the current dialog item as
+IDialog.Focused or by index and work on it, e.g. get or set text of the current
+IEdit. Some controls in not FAR.NET dialogs are not fully supported yet.
+Example: Complete-Word-.ps1 from PowerShellFar completes a word from history of
+any edit contol in any FAR dialog. See also Generate-Dialog-.ps1 as a demo of
+access to all dialog controls and properties.
+
+- New IFar.GetDialogHistory() - gets saved dialog history by its name (used by
+Complete-Word-.ps1 for completion from editor control history).
+
+- BREAKING: removed IText.Separator2 and converted type of IText.Separator from
+bool to int: 0: standard text; 1: single line separator; 2: double line
+separator.
+
+- New helper IAnyViewer.ViewText - opens a viewer to view some text. Similar to
+IAnyEditor.EditText but you can also choose whether it is modal or not.
+
+- Slightly changed action on setting of IPanel.Path and IPanelPath.Path: if the
+panel is a plugin not supporting the path then it is closed and a FAR panel is
+opened if the new path exists.
+
 3.3.39
 
 CHANGED
-- VKeyCode names was made compatible with System.ConcoleKey names.
+- VKeyCode names was made compatible with System.ConsoleKey names.
 
 OBSOLETE
 - Removed obsolete editor and viewer properties DeleteOnClose and

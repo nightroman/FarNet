@@ -296,6 +296,11 @@ namespace FarManager
 		/// </param>
 		ICollection<string> GetHistory(string name);
 		/// <summary>
+		/// Returns strings from dialog control history.
+		/// </summary>
+		/// <param name="name">History name.</param>
+		ICollection<string> GetDialogHistory(string name);
+		/// <summary>
 		/// Shows an error information in a message box.
 		/// </summary>
 		/// <param name="title">Message.</param>
@@ -524,6 +529,10 @@ namespace FarManager
 		/// </summary>
 		/// <returns></returns>
 		string TempFolder();
+		/// <summary>
+		/// The current dialog if any.
+		/// </summary>
+		IDialog Dialog { get; }
 	}
 
 	/// <summary>
