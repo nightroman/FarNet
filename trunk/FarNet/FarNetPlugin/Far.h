@@ -24,10 +24,11 @@ public:
 	virtual property FarMacroState MacroState { FarMacroState get(); }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get(); }
 	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get(); }
-	virtual property ILine^ CommandLine { ILine^ get(); }
+	virtual property IDialog^ Dialog { IDialog^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
-	virtual property IntPtr HWnd { IntPtr get(); }
+	virtual property ILine^ CommandLine { ILine^ get(); }
 	virtual property int WindowCount { int get(); }
+	virtual property IntPtr HWnd { IntPtr get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
 	virtual property IPanel^ Panel2 { IPanel^ get(); }
 	virtual property IViewer^ Viewer { IViewer^ get(); }
@@ -42,6 +43,7 @@ public:
 	virtual array<IViewer^>^ Viewers();
 	virtual bool Commit();
 	virtual Char CodeToChar(int code);
+	virtual ICollection<String^>^ GetDialogHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
 	virtual IEditor^ CreateEditor();

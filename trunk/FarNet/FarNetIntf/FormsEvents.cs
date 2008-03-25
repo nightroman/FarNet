@@ -19,7 +19,7 @@ namespace FarManager.Forms
 		}
 		/// <summary>
 		/// Control involved into this event or null.
-		/// In a derived class take a look at the event constructor for details.
+		/// In a derived class see the event constructor for details.
 		/// </summary>
 		public IControl Control
 		{
@@ -54,7 +54,7 @@ namespace FarManager.Forms
 	/// </summary>
 	public sealed class ClosingEventArgs : AnyEventArgs
 	{
-		/// <param name="selected">Control that had the keyboard focus when <c>Ctrl+Enter</c> was pressed or the default control.</param>
+		/// <param name="selected">Control that had the keyboard focus when [CtrlEnter] was pressed or the default control.</param>
 		public ClosingEventArgs(IControl selected)
 			: base(selected)
 		{

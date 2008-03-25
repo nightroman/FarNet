@@ -11,6 +11,19 @@ Copyright (c) 2005-2008 FAR.NET Team
 
 namespace FarNet
 {;
+void BaseViewer::ViewText(String^ text, String^ title, OpenMode mode)
+{
+	String^ tmpfile = Far::Instance->TempName();
+	File::WriteAllText(tmpfile, text, Encoding::Unicode);
+
+	Viewer viewer;
+	viewer.DeleteSource = FarManager::DeleteSource::UnusedFile;
+	viewer.DisableHistory = true;
+	viewer.FileName = tmpfile;
+	viewer.Title = title;
+	viewer.Open(mode);
+}
+
 Viewer::Viewer()
 : _id(-1)
 , _Title(String::Empty)

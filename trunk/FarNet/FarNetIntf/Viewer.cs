@@ -21,6 +21,10 @@ namespace FarManager
 		/// Viewer is closed. Don't operate on it, it has really gone.
 		/// </summary>
 		event EventHandler Closed;
+		/// <summary>
+		/// Opens a viewer to view some text.
+		/// </summary>
+		void ViewText(string text, string title, OpenMode mode);
 	}
 
 	/// <summary>

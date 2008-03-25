@@ -128,7 +128,7 @@ int WINAPI SetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 	__START;
 	return PanelSet::AsSetDirectory(hPlugin, dir, opMode);
 	__END;
-	return FALSE;
+	return false;
 }
 
 int WINAPI DeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
@@ -136,7 +136,7 @@ int WINAPI DeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	__START;
 	return PanelSet::AsDeleteFiles(hPlugin, panelItem, itemsNumber, opMode);
 	__END;
-	return FALSE;
+	return false;
 }
 
 int WINAPI MakeDirectory(HANDLE hPlugin, char* name, int opMode)

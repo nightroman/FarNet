@@ -91,7 +91,8 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 			// get registered, close and unregister
 			int id = *((int*)param);
 			Viewer^ viewer;
-			// not found if CtrlQ on dots is closed (because READ was not called)
+			//! not found if CtrlQ on dots is closed (because READ was not called)
+			//! fixed in 1.71.2335 but let it stay for a while ??
 			if (!_viewers.TryGetValue(id, viewer))
 				break;
 			viewer->_id = -2;
