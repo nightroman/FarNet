@@ -91,7 +91,6 @@ protected:
 	[CA_USED]
 	void GetBrief(PanelInfo& pi);
 	void GetInfo(PanelInfo& pi);
-private:
 internal:
 	property int Id { int get(); void set(int value); }
 	bool _active;

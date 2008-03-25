@@ -30,9 +30,18 @@ namespace FarManager
 		bool IsVisible { get; set; }
 		/// <summary>
 		/// Current panel path.
-		/// If the panel is Tree, it is currently selected directory in panel.
-		/// If you set an invalid path you get an error message box, not an exception.
 		/// </summary>
+		/// <remarks>
+		/// If the panel is a directory tree panel then the path is the currently selected directory in the tree.
+		/// <para>
+		/// If it is a plugin panel and you set a path the action depends on <see cref="IPanelPlugin.SettingDirectory"/> handler.
+		/// If the panel does not have this handler and the path exists then the panel is closed and
+		/// a file panel is opened at the new path.
+		/// </para>
+		/// <para>
+		/// On opening a file panel an exception is thrown if a path is not valid or does not exist.
+		/// </para>
+		/// </remarks>
 		string Path { get; set; }
 		/// <summary>
 		/// Current item.
@@ -156,7 +165,7 @@ namespace FarManager
 		/// </summary>
 		string Owner { get; set; }
 		/// <summary>
-		/// Alternate name.
+		/// Alternate name, maximum 12 characters.
 		/// </summary>
 		string AlternateName { get; set; }
 		/// <summary>

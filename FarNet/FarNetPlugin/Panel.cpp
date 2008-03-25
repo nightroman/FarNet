@@ -47,11 +47,11 @@ int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int item
 
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_DeletingFiles)
-		return FALSE;
+		return false;
 	IList<IFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
 	FilesEventArgs e(files, (OperationModes)opMode, false);
 	pp->_DeletingFiles(pp, %e);
-	return e.Ignore ? FALSE : TRUE;
+	return e.Ignore ? false : true;
 }
 
 void PanelSet::AsFreeFindData(PluginPanelItem* panelItem)
@@ -71,7 +71,7 @@ int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 	List<IFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
 	GettingFilesEventArgs e(files, (OperationModes)opMode, move != 0, OemToStr(destPath));
 	pp->_GettingFiles(pp, %e);
-	return e.Ignore ? FALSE : TRUE;
+	return e.Ignore ? false : true;
 }
 
 int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
@@ -86,7 +86,7 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 			PanelEventArgs e((OperationModes)opMode);
 			pp->_GettingData(pp, %e);
 			if (e.Ignore)
-				return FALSE;
+				return false;
 		}
 
 		// all item number
@@ -97,7 +97,7 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 		if (nItem == 0)
 		{
 			(*pPanelItem) = NULL;
-			return TRUE;
+			return true;
 		}
 
 		// descriptions size
@@ -156,8 +156,8 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 			d.nFileSizeLow = (DWORD)(f->Length & 0xFFFFFFFF);
 			d.nFileSizeHigh = (DWORD)(f->Length >> 32);
 			d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
-			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
 			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
+			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
 			p.UserData = fi;
 
 			if (SS(f->Description))
@@ -167,13 +167,13 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 				StrToOem(f->Description, p.Description);
 			}
 		}
-		return TRUE;
+		return true;
 	}
 	catch(Exception^ e)
 	{
 		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
 			Far::Instance->ShowError(__FUNCTION__, e);
-		return FALSE;
+		return false;
 	}
 }
 
@@ -193,10 +193,10 @@ int PanelSet::AsMakeDirectory(HANDLE hPlugin, char* name, int opMode)
 
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_MakingDirectory)
-		return FALSE;
+		return false;
 	MakingDirectoryEventArgs e(OemToStr(name), (OperationModes)opMode);
 	pp->_MakingDirectory(pp, %e);
-	return e.Ignore ? FALSE : TRUE;
+	return e.Ignore ? false : true;
 }
 
 static bool _reenterOnRedrawing;
@@ -263,7 +263,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			if (_reenterOnRedrawing)
 			{
 				_reenterOnRedrawing = false;
-				return FALSE;
+				return false;
 			}
 
 			if (pp->_Redrawing)
@@ -271,10 +271,10 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				PanelEventArgs e(OperationModes::None);
 				pp->_Redrawing(pp, %e);
 				if (e.Ignore)
-					return TRUE;
+					return true;
 			}
 
-			int r = FALSE;
+			int r = false;
 
 			// case: check posted data
 			if (pp->_postData)
@@ -366,7 +366,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		}
 		break;
 	}
-	return FALSE;
+	return false;
 }
 
 int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
@@ -378,7 +378,7 @@ int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp || !pp->_KeyPressed)
-		return FALSE;
+		return false;
 
 	PanelKeyEventArgs e((key & ~PKF_PREPROCESS), (KeyStates)controlState, (key & PKF_PREPROCESS) != 0);
 	pp->_KeyPressed(pp, %e);
@@ -406,7 +406,7 @@ int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 	}
 	FilesEventArgs e(files, (OperationModes)opMode, move != 0);
 	pp->_PuttingFiles(pp, %e);
-	return e.Ignore ? FALSE : TRUE;
+	return e.Ignore ? false : true;
 }
 
 int PanelSet::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
@@ -418,7 +418,7 @@ int PanelSet::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 	{
 		FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 		if (!pp->_SettingDirectory)
-			return TRUE;
+			return true;
 		SettingDirectoryEventArgs e(OemToStr(dir), (OperationModes)opMode);
 		pp->_SettingDirectory(pp, %e);
 		return !e.Ignore;
@@ -916,6 +916,11 @@ String^ FarPanel::Path::get()
 
 void FarPanel::Path::set(String^ value)
 {
+	if (value == nullptr)
+		throw gcnew ArgumentNullException("value");
+	if (!Directory::Exists(value))
+		throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
+
 	int command = _active ? FCTL_SETPANELDIR : FCTL_SETANOTHERPANELDIR;
 	CBox sb(value);
 	if (!Info.Control(_id, command, sb))
@@ -1223,8 +1228,17 @@ String^ FarPanelPlugin::Path::get()
 
 void FarPanelPlugin::Path::set(String^ value)
 {
+	if (value == nullptr)
+		throw gcnew ArgumentNullException("value");
+
 	if (!_SettingDirectory)
-		throw gcnew NotSupportedException("Plugin panel does not support setting a new path.");
+	{
+		if (!Directory::Exists(value))
+			throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
+		Close(value);
+		return;
+	}
+
 	SettingDirectoryEventArgs e(value, OperationModes::None);
 	_SettingDirectory(this, %e);
 	if (!e.Ignore)
