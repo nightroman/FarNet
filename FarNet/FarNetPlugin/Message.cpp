@@ -10,8 +10,8 @@ namespace FarNet
 {;
 Message::Message()
 {
-	_body = gcnew StringCollection();
-	_buttons = gcnew StringCollection();
+	_body = gcnew StringCollection;
+	_buttons = gcnew StringCollection;
 }
 
 DEF_PROP_FLAG(Message, IsWarning, FMSG_WARNING);

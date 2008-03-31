@@ -6,7 +6,7 @@ Copyright (c) 2005-2008 FAR.NET Team
 #include "StdAfx.h"
 #include "Dialog.h"
 #include "Far.h"
-#include "Menu.h"
+#include "ListItemCollection.h"
 
 #define SET_FLAG(Var, Flag, Value) { if (Value) Var |= Flag; else Var &= ~Flag; }
 
@@ -431,21 +431,6 @@ String^ FarControl::Text::get()
 	}
 }
 
-Place FarControl::Rect::get()
-{
-	if (_dialog->_hDlg)
-	{
-		SMALL_RECT rect;
-		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_GETITEMPOSITION, Id, (LONG_PTR)&rect))
-			return Place();
-		return Place(rect.Left, rect.Top, rect.Right, rect.Bottom);
-	}
-	else
-	{
-		return _rect;
-	}
-}
-
 void FarControl::Text::set(String^ value)
 {
 	if (_dialog->_hDlg)
@@ -456,6 +441,34 @@ void FarControl::Text::set(String^ value)
 	else
 	{
 		_text = value;
+	}
+}
+
+Place FarControl::Rect::get()
+{
+	if (_dialog->_hDlg)
+	{
+		SMALL_RECT arg;
+		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_GETITEMPOSITION, Id, (LONG_PTR)&arg))
+			return Place();
+		return Place(arg.Left, arg.Top, arg.Right, arg.Bottom);
+	}
+	else
+	{
+		return _rect;
+	}
+}
+void FarControl::Rect::set(Place value)
+{
+	if (_dialog->_hDlg)
+	{
+		SMALL_RECT arg = { (SHORT)value.Left, (SHORT)value.Top, (SHORT)value.Right, (SHORT)value.Bottom };
+		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_SETITEMPOSITION, Id, (LONG_PTR)&arg))
+			throw gcnew OperationCanceledException;
+	}
+	else
+	{
+		_rect = value;
 	}
 }
 
@@ -600,7 +613,7 @@ void FarEdit::History::set(String^ value)
 {
 	if (_dialog->_hDlg)
 	{
-		throw gcnew NotImplementedException();
+		throw gcnew NotImplementedException;
 		//! the code is not correct: the string has to be allocated; problem: to free //??
 		//CBox sValue; if (SS(value)) sValue.Set(value);
 		//if (!Info.SendDlgMessage(_dialog->_hDlg, DM_SETHISTORY, Id, (LONG_PTR)(char*)sValue))
@@ -741,7 +754,7 @@ void FarText::Separator::set(int value)
 		SetFlag(DIF_SEPARATOR2, true);
 		break;
 	default:
-		throw gcnew ArgumentOutOfRangeException();
+		throw gcnew ArgumentOutOfRangeException("value");
 	}
 }
 
@@ -778,44 +791,43 @@ void FarUserControl::Setup(FarDialogItem& item)
 }
 
 //
-//::FarBaseBox
+//::FarBaseList
 //
 
-FarBaseBox::FarBaseBox(FarDialog^ dialog, int index)
+FarBaseList::FarBaseList(FarDialog^ dialog, int index)
 : FarControl(dialog, index)
-, _items(gcnew MenuItemCollection)
 {
+	_Items = gcnew ListItemCollection(this);
 }
 
-FarBaseBox::FarBaseBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text)
+FarBaseList::FarBaseList(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text)
 : FarControl(dialog, left, top, right, bottom, text)
-, _items(gcnew MenuItemCollection)
 {
 	_selected = -1;
+	_Items = gcnew ListItemCollection(this);
 }
 
-DEF_CONTROL_FLAG(FarBaseBox, AutoAssignHotkeys, DIF_LISTAUTOHIGHLIGHT);
-DEF_CONTROL_FLAG(FarBaseBox, NoAmpersands, DIF_LISTNOAMPERSAND);
-DEF_CONTROL_FLAG(FarBaseBox, NoClose, DIF_LISTNOCLOSE);
-DEF_CONTROL_FLAG(FarBaseBox, NoFocus, DIF_NOFOCUS);
-DEF_CONTROL_FLAG(FarBaseBox, WrapCursor, DIF_LISTWRAPMODE);
+DEF_CONTROL_FLAG(FarBaseList, AutoAssignHotkeys, DIF_LISTAUTOHIGHLIGHT);
+DEF_CONTROL_FLAG(FarBaseList, NoAmpersands, DIF_LISTNOAMPERSAND);
+DEF_CONTROL_FLAG(FarBaseList, NoClose, DIF_LISTNOCLOSE);
+DEF_CONTROL_FLAG(FarBaseList, NoFocus, DIF_NOFOCUS);
+DEF_CONTROL_FLAG(FarBaseList, WrapCursor, DIF_LISTWRAPMODE);
 
-int FarBaseBox::Selected::get()
+int FarBaseList::Selected::get()
 {
 	if (_dialog->_hDlg)
 		return (int)Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETCURPOS, Id, 0);
 	else
 		return _selected;
 }
-
-void FarBaseBox::Selected::set(int value)
+void FarBaseList::Selected::set(int value)
 {
 	if (_dialog->_hDlg)
 	{
-		FarListPos flp;
-		flp.SelectPos = value;
-		flp.TopPos = -1;
-		Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETCURPOS, Id, (LONG_PTR)&flp);
+		FarListPos arg;
+		arg.SelectPos = value;
+		arg.TopPos = -1;
+		Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETCURPOS, Id, (LONG_PTR)&arg);
 	}
 	else
 	{
@@ -823,20 +835,20 @@ void FarBaseBox::Selected::set(int value)
 	}
 }
 
-IMenuItems^ FarBaseBox::Items::get()
+IList<IMenuItem^>^ FarBaseList::Items::get()
 {
-	return _items;
+	return _Items;
 }
 
-IMenuItem^ FarBaseBox::Add(String^ text)
+IMenuItem^ FarBaseList::Add(String^ text)
 {
 	MenuItem^ r = gcnew MenuItem;
 	r->Text = text;
-	_items->Add(r);
+	_Items->Add(r);
 	return r;
 }
 
-static void InitFarListItem(FarListItem& i2, MenuItem^ i1)
+void FarBaseList::InitFarListItem(FarListItem& i2, IMenuItem^ i1)
 {
 	StrToOem(i1->Text, i2.Text, sizeof(i2.Text));
 	i2.Flags = i2.Reserved[0] = i2.Reserved[1] = i2.Reserved[2] = 0;
@@ -848,7 +860,7 @@ static void InitFarListItem(FarListItem& i2, MenuItem^ i1)
 		i2.Flags |= LIF_SEPARATOR;
 }
 
-void FarBaseBox::Setup(FarDialogItem& item, int type)
+void FarBaseList::Setup(FarDialogItem& item, int type)
 {
 	FarControl::Setup(item, type);
 
@@ -859,15 +871,15 @@ void FarBaseBox::Setup(FarDialogItem& item, int type)
 		_pFarList->Items = new FarListItem[_ii->Count];
 
 		for(int i = _ii->Count; --i >= 0;)
-			InitFarListItem(_pFarList->Items[i], (MenuItem^)_items[_ii[i]]);
+			InitFarListItem(_pFarList->Items[i], (MenuItem^)_Items[_ii[i]]);
 	}
 	else
 	{
-		_pFarList->ItemsNumber = _items->Count;
-		_pFarList->Items = new FarListItem[_items->Count];
+		_pFarList->ItemsNumber = _Items->Count;
+		_pFarList->Items = new FarListItem[_Items->Count];
 
-		for(int i = _items->Count; --i >= 0;)
-			InitFarListItem(_pFarList->Items[i], (MenuItem^)_items[i]);
+		for(int i = _Items->Count; --i >= 0;)
+			InitFarListItem(_pFarList->Items[i], (MenuItem^)_Items[i]);
 	}
 
 	// select an item (same as menu!)
@@ -877,7 +889,7 @@ void FarBaseBox::Setup(FarDialogItem& item, int type)
 		_pFarList->Items[_selected].Flags |= LIF_SELECTED;
 }
 
-void FarBaseBox::Update(bool ok)
+void FarBaseList::Update(bool ok)
 {
 	FarControl::Update(ok);
 	if (ok)
@@ -893,12 +905,12 @@ void FarBaseBox::Update(bool ok)
 //
 
 FarComboBox::FarComboBox(FarDialog^ dialog, int index)
-: FarBaseBox(dialog, index)
+: FarBaseList(dialog, index)
 {
 }
 
 FarComboBox::FarComboBox(FarDialog^ dialog, int left, int top, int right, String^ text)
-: FarBaseBox(dialog, left, top, right, top, text)
+: FarBaseList(dialog, left, top, right, top, text)
 {
 }
 
@@ -924,12 +936,13 @@ ILine^ FarComboBox::Line::get()
 //
 
 FarListBox::FarListBox(FarDialog^ dialog, int index)
-: FarBaseBox(dialog, index)
+: FarBaseList(dialog, index)
 {
 }
 
 FarListBox::FarListBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text)
-: FarBaseBox(dialog, left, top, right, bottom, text)
+: FarBaseList(dialog, left, top, right, bottom, nullptr)
+, _Title(text)
 {
 }
 
@@ -938,6 +951,72 @@ DEF_CONTROL_FLAG(FarListBox, NoBox, DIF_LISTNOBOX);
 void FarListBox::Setup(FarDialogItem& item)
 {
 	Setup(item, DI_LISTBOX);
+	StrToOem(_Title, item.Data, sizeof(item.Data));
+}
+
+String^ FarListBox::Title::get()
+{
+	if (_dialog->_hDlg)
+	{
+		char title[512];
+		FarListTitles arg;
+		arg.Bottom = NULL;
+		arg.BottomLen = 0;
+		arg.Title = title;
+		arg.TitleLen = sizeof(title);
+		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETTITLES, Id, (LONG_PTR)&arg))
+			return String::Empty;
+		return OemToStr(title);
+	}
+	else
+	{
+		return _Title;
+	}
+}
+
+void FarListBox::Title::set(String^ value)
+{
+	if (_dialog->_hDlg)
+	{
+		CBox sValue; if (value) sValue.Set(value);
+		FarListTitles arg;
+		arg.Title = sValue;
+		arg.Bottom = NULL;
+		Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETTITLES, Id, (LONG_PTR)&arg);
+	}
+	else
+	{
+		_Title = value;
+	}
+}
+
+String^ FarListBox::Text::get()
+{
+	if (_dialog->_hDlg)
+	{
+		FarListGetItem list;
+		list.ItemIndex = (int)Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETCURPOS, Id, 0);
+		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETITEM, Id, (LONG_PTR)&list))
+			throw gcnew OperationCanceledException;
+
+		return OemToStr(list.Item.Text);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+void FarListBox::Text::set(String^ value)
+{
+	if (_dialog->_hDlg)
+	{
+		Text = value;
+	}
+	else
+	{
+		throw gcnew NotSupportedException;
+	}
 }
 
 //
@@ -953,7 +1032,7 @@ FarDialog::FarDialog(HANDLE hDlg)
 // User dialog
 FarDialog::FarDialog(int left, int top, int right, int bottom)
 : _rect(left, top, right, bottom)
-, _items(gcnew List<FarControl^>())
+, _items(gcnew List<FarControl^>)
 {
 	if (left < 0)
 	{
@@ -993,12 +1072,12 @@ IControl^ FarDialog::Focused::get()
 
 void FarDialog::Focused::set(IControl^ value)
 {
+	FarControl^ control = (FarControl^)value;
 	if (_hDlg)
 	{
 		if (!value)
 			throw gcnew ArgumentNullException("value");
-		FarControl^ control = (FarControl^)value;
-		//! Check handle, not 'this'. It won't matter if we force the same dialog instance later??
+		//! Check handle, not 'this'. It won't matter if we force the same dialog instance later. ??
 		if (control->_dialog->_hDlg != this->_hDlg)
 			throw gcnew ArgumentException("'value': the control does not belong to this dialog.");
 		if (!Info.SendDlgMessage(_hDlg, DM_SETFOCUS, control->Id, 0))
@@ -1006,7 +1085,7 @@ void FarDialog::Focused::set(IControl^ value)
 	}
 	else
 	{
-		_focused = (FarControl^)value;
+		_focused = control;
 	}
 }
 
@@ -1015,9 +1094,21 @@ Place FarDialog::Rect::get()
 	if (!_hDlg)
 		return _rect;
 
-	SMALL_RECT rect;
-    Info.SendDlgMessage(_hDlg, DM_GETDLGRECT, 0, (LONG_PTR)&rect);
-	return Place(rect.Left, rect.Top, rect.Right, rect.Bottom);
+	SMALL_RECT arg;
+    Info.SendDlgMessage(_hDlg, DM_GETDLGRECT, 0, (LONG_PTR)&arg);
+	return Place(arg.Left, arg.Top, arg.Right, arg.Bottom);
+}
+
+void FarDialog::Rect::set(Place value)
+{
+	if (_hDlg)
+	{
+		throw gcnew NotSupportedException("Use Move() and Resize().");
+	}
+	else
+	{
+		_rect = value;
+	}
 }
 
 IControl^ FarDialog::Selected::get()
@@ -1100,9 +1191,9 @@ IEdit^ FarDialog::AddEditPassword(int left, int top, int right, String^ text)
 	return r;
 }
 
-IListBox^ FarDialog::AddListBox(int left, int top, int right, int bottom, String^ text)
+IListBox^ FarDialog::AddListBox(int left, int top, int right, int bottom, String^ title)
 {
-	FarListBox^ r = gcnew FarListBox(this, left, top, right, bottom, text);
+	FarListBox^ r = gcnew FarListBox(this, left, top, right, bottom, title);
 	AddItem(r);
 	return r;
 }
@@ -1190,9 +1281,138 @@ bool FarDialog::Show()
 	finally
 	{
 		_hDlg = 0;
+		delete[] items;
 		_dialogs.Remove(this);
-		delete items;
 	}
+}
+
+void FarDialog::Close()
+{
+	Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
+}
+
+FarDialog^ FarDialog::GetDialog()
+{
+	if (!_hDlgLast)
+		return nullptr;
+
+	for each(FarDialog^ dialog in FarDialog::_dialogs)
+	{
+		if (dialog->_hDlg == _hDlgLast)
+			return dialog;
+	}
+
+	return gcnew FarDialog(_hDlgLast);
+}
+
+IControl^ FarDialog::GetControl(int id)
+{
+	if (id < 0)
+		throw gcnew ArgumentOutOfRangeException("id");
+
+	if (_items)
+	{
+		if (id >= _items->Count)
+			return nullptr;
+		return _items[id];
+	}
+
+	FarDialogItem di;
+	if (!Info.SendDlgMessage(_hDlg, DM_GETDLGITEM, id, (LONG_PTR)&di))
+		return nullptr;
+
+	switch(di.Type)
+	{
+	case DI_BUTTON:
+		return gcnew FarButton(this, id);
+	case DI_CHECKBOX:
+		return gcnew FarCheckBox(this, id);
+	case DI_COMBOBOX:
+		return gcnew FarComboBox(this, id);
+	case DI_DOUBLEBOX:
+		return gcnew FarBox(this, id);
+	case DI_EDIT:
+		return gcnew FarEdit(this, id, di.Type);
+	case DI_FIXEDIT:
+		return gcnew FarEdit(this, id, di.Type);
+	case DI_LISTBOX:
+		return gcnew FarListBox(this, id);
+	case DI_PSWEDIT:
+		return gcnew FarEdit(this, id, di.Type);
+	case DI_RADIOBUTTON:
+		return gcnew FarRadioButton(this, id);
+	case DI_SINGLEBOX:
+		return gcnew FarBox(this, id);
+	case DI_TEXT:
+		return gcnew FarText(this, id);
+	case DI_USERCONTROL:
+		return gcnew FarUserControl(this, id);
+	case DI_VTEXT:
+		return gcnew FarText(this, id);
+	default:
+		return nullptr;
+	}
+}
+
+void FarDialog::SetFocus(int id)
+{
+	if (_hDlg)
+	{
+		if (!Info.SendDlgMessage(_hDlg, DM_SETFOCUS, id, 0))
+			throw gcnew OperationCanceledException("Can't set focus.");
+	}
+	else
+	{
+		if (!_items)
+			throw gcnew InvalidOperationException("Dialog has no items.");
+		if (id < 0 || id >= _items->Count)
+			throw gcnew ArgumentOutOfRangeException("id");
+		_focused = _items[id];
+	}
+}
+
+void FarDialog::Move(Point point, bool absolute)
+{
+	if (!_hDlg)
+		throw gcnew InvalidOperationException("Dialog is not started.");
+
+	COORD arg = { (SHORT)point.X, (SHORT)point.Y };
+	Info.SendDlgMessage(_hDlg, DM_MOVEDIALOG, absolute, (LONG_PTR)&arg);
+}
+
+void FarDialog::Resize(Point size)
+{
+	if (!_hDlg)
+		throw gcnew InvalidOperationException("Dialog is not started.");
+
+	COORD arg = { (SHORT)size.X, (SHORT)size.Y };
+	Info.SendDlgMessage(_hDlg, DM_RESIZEDIALOG, 0, (LONG_PTR)&arg);
+}
+
+int FarDialog::AsProcessDialogEvent(int id, void* param)
+{
+	FarDialogEvent* de = (FarDialogEvent*)param;
+	_hDlgLast = de->hDlg;
+	switch(id)
+	{
+	case DE_DLGPROCINIT:
+		// before outer handler; it always happens
+		break;
+	case DE_DEFDLGPROCINIT:
+		// before inner handler; it is called if outer has not handled the event
+		break;
+	case DE_DLGPROCEND:
+		// after all handlers
+		switch(de->Msg)
+		{
+		case DN_CLOSE:
+			if (de->Result)
+				_hDlgLast = NULL;
+			break;
+		}
+		break;
+	}
+	return false;
 }
 
 LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
@@ -1364,116 +1584,40 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 	return Info.DefDlgProc(_hDlg, msg, param1, param2);
 }
 
-void FarDialog::Close()
+void FarBaseList::AttachItems()
 {
-	Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
-}
+	if (!_dialog->_hDlg)
+		throw gcnew InvalidOperationException("Dialog must be started.");
 
-int FarDialog::AsProcessDialogEvent(int id, void* param)
-{
-	FarDialogEvent* de = (FarDialogEvent*)param;
-	LONG_PTR& result = *(PLONG_PTR)de->Result;
-	_hDlgLast = de->hDlg;
-	switch(id)
+	ListItemCollection^ list = dynamic_cast<ListItemCollection^>(_Items);
+	if (list)
+		list->_box = this;
+
+	FarList arg;
+	arg.Items = new FarListItem[_Items->Count];
+	arg.ItemsNumber = _Items->Count;
+	for(int i = _Items->Count; --i >= 0;)
+		InitFarListItem(arg.Items[i], _Items[i]);
+
+	try
 	{
-	case DE_DLGPROCINIT:
-		// before outer handler; it always happens
-		break;
-	case DE_DEFDLGPROCINIT:
-		// before inner handler; it is called if outer has not handled the event
-		break;
-	case DE_DLGPROCEND:
-		// after all handlers
-		switch(de->Msg)
-		{
-		case DN_CLOSE:
-			if (result)
-				_hDlgLast = NULL;
-			break;
-		}
-		break;
+		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSET, Id, (LONG_PTR)&arg))
+			throw gcnew OperationCanceledException();
 	}
-	return false;
-}
-
-FarDialog^ FarDialog::GetDialog()
-{
-	if (!_hDlgLast)
-		return nullptr;
-
-	for each(FarDialog^ dialog in FarDialog::_dialogs)
+	finally
 	{
-		if (dialog->_hDlg == _hDlgLast)
-			return dialog;
-	}
-
-	return gcnew FarDialog(_hDlgLast);
-}
-
-IControl^ FarDialog::GetControl(int ID)
-{
-	if (ID < 0)
-		throw gcnew ArgumentOutOfRangeException("'ID' canot be negative.");
-
-	if (_items)
-	{
-		if (ID >= _items->Count)
-			return nullptr;
-		return _items[ID];
-	}
-
-	FarDialogItem di;
-	if (!Info.SendDlgMessage(_hDlg, DM_GETDLGITEM, ID, (LONG_PTR)&di))
-		return nullptr;
-
-	switch(di.Type)
-	{
-	case DI_BUTTON:
-		return gcnew FarButton(this, ID);
-	case DI_CHECKBOX:
-		return gcnew FarCheckBox(this, ID);
-	case DI_COMBOBOX:
-		return gcnew FarComboBox(this, ID);
-	case DI_DOUBLEBOX:
-		return gcnew FarBox(this, ID);
-	case DI_EDIT:
-		return gcnew FarEdit(this, ID, di.Type);
-	case DI_FIXEDIT:
-		return gcnew FarEdit(this, ID, di.Type);
-	case DI_LISTBOX:
-		return gcnew FarListBox(this, ID);
-	case DI_PSWEDIT:
-		return gcnew FarEdit(this, ID, di.Type);
-	case DI_RADIOBUTTON:
-		return gcnew FarRadioButton(this, ID);
-	case DI_SINGLEBOX:
-		return gcnew FarBox(this, ID);
-	case DI_TEXT:
-		return gcnew FarText(this, ID);
-	case DI_USERCONTROL:
-		return gcnew FarUserControl(this, ID);
-	case DI_VTEXT:
-		return gcnew FarText(this, ID);
-	default:
-		return nullptr;
+		delete[] arg.Items;
 	}
 }
 
-void FarDialog::SetFocus(int ID)
+void FarBaseList::DetachItems()
 {
-	if (_hDlg)
-	{
-		if (!Info.SendDlgMessage(_hDlg, DM_SETFOCUS, ID, 0))
-			throw gcnew OperationCanceledException("Can't set focus.");
-	}
-	else
-	{
-		if (!_items)
-			throw gcnew InvalidOperationException("Dialog has no items.");
-		if (ID < 0 || ID >= _items->Count)
-			throw gcnew ArgumentOutOfRangeException("ID");
-		_focused = _items[ID];
-	}
+	if (!_dialog->_hDlg)
+		throw gcnew InvalidOperationException("Dialog must be started.");
+
+	ListItemCollection^ list = dynamic_cast<ListItemCollection^>(_Items);
+	if (list)
+		list->_box = nullptr;
 }
 
 }

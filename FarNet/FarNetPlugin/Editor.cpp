@@ -112,9 +112,9 @@ void Editor::Open(OpenMode mode)
 	if (wt == WindowType::Dialog)
 		Far::Instance->Redraw();
 
-	// Check an error: ID must not be -1, even if it is already closed then ID = -2.
-	// Using FAR diagnostics fires false errors, e.g.:
-	// Test-CallStack-.ps1 \ s \ type: exit \ enter
+	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
+	//! Using FAR diagnostics fires false errors, e.g.:
+	//! Test-CallStack-.ps1 \ s \ type: exit \ enter
 	if (_id == -1)
 	{
 		// - error or a file was already opened in the editor and its window is activated
@@ -134,7 +134,7 @@ void Editor::Close()
 {
 	AssertCurrent();
 	if (!Info.EditorControl(ECTL_QUIT, 0))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 }
 
 DeleteSource Editor::DeleteSource::get()
@@ -408,7 +408,8 @@ void Editor::Save(String^ fileName)
 	CBox sFileName(fileName);
 	EditorSaveFile esf;
 	memset(&esf, 0, NM);
-	strncpy_s(esf.FileName, NM, sFileName, NM);
+	if (strncpy_s(esf.FileName, NM, sFileName, NM) != 0)
+		throw gcnew OperationCanceledException;
 	esf.FileEOL = 0;
 	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
 		throw gcnew OperationCanceledException("Can't save the editor file as: " + fileName);

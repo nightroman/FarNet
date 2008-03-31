@@ -234,12 +234,12 @@ void PluginSet::ReadCache()
 
 				String^ assemblyPath = keyDll->GetValue("Path", String::Empty)->ToString();
 				if (!assemblyPath->Length || !File::Exists(assemblyPath))
-					throw gcnew OperationCanceledException();
+					throw gcnew OperationCanceledException;
 
 				String^ assemblyStamp = keyDll->GetValue("Stamp", String::Empty)->ToString();
 				FileInfo fi(assemblyPath);
 				if (assemblyStamp != fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture))
-					throw gcnew OperationCanceledException();
+					throw gcnew OperationCanceledException;
 
 				for each (String^ className in keyDll->GetSubKeyNames())
 				{
@@ -247,14 +247,14 @@ void PluginSet::ReadCache()
 
 					String^ pluginName = keyPlugin->GetValue("Name", String::Empty)->ToString();
 					if (!pluginName->Length)
-						throw gcnew OperationCanceledException();
+						throw gcnew OperationCanceledException;
 
 					String^ type = keyPlugin->GetValue("Type", String::Empty)->ToString();
 					if (type == "Tool")
 					{
 						int options = (int)keyPlugin->GetValue("Options");
 						if (!options)
-							throw gcnew OperationCanceledException();
+							throw gcnew OperationCanceledException;
 
 						ToolPluginInfo^ plugin = gcnew ToolPluginInfo(assemblyPath, className, pluginName, (ToolOptions)options);
 						tools.Add(plugin);
@@ -263,7 +263,7 @@ void PluginSet::ReadCache()
 					{
 						String^ prefix = keyPlugin->GetValue("Prefix", String::Empty)->ToString();
 						if (!prefix->Length)
-							throw gcnew OperationCanceledException();
+							throw gcnew OperationCanceledException;
 
 						CommandPluginInfo^ plugin = gcnew CommandPluginInfo(assemblyPath, className, pluginName, prefix);
 						commands.Add(plugin);
@@ -285,7 +285,7 @@ void PluginSet::ReadCache()
 					}
 					else
 					{
-						throw gcnew OperationCanceledException();
+						throw gcnew OperationCanceledException;
 					}
 
 					keyPlugin->Close();

@@ -98,4 +98,30 @@ If the assembly has no direct <see cref="BasePlugin"/> children
 then this plugin is normally loaded only when invoked the first time.
 </para>
 </pp>
+<pp name="BaseListItems">
+<summary>
+List item collection.
+</summary>
+<remarks>
+Normally you fill the list with items and set their properties before opening a
+dialog. After opening this collection is mapped to a control dynamically, i.e.
+all operations (set, insert, remove and etc.) are displayed immediately. The
+items themselves are not mapped dynamically, so that if you change an item then
+you have to reset it explicitly, see the example.
+<para>
+Dynamic mapping is simple, useful and effective when you change (or add, remove)
+one item at a time (or just a few items). But if you actually recreate all the
+items then for better performance you have to use <see cref="DetachItems"/>
+before changes and <see cref="AttachItems"/> after changes.
+</para>
+</remarks>
+<example>
+(PowerShell): how to set an item checked (dynamic mode)
+<code>
+$item = $listbox.Items[3]
+$item.Checked = $true
+$listbox.Items[3] = $item
+</code>
+</example>
+</pp>
 </docs>

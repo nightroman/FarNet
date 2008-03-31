@@ -79,7 +79,8 @@ void WC2OEM(LPCWSTR src, char* dst, int len)
 	else
 	{
 		int size = len + 1;
-		WideCharToMultiByte(CP_OEMCP, 0, src, size, dst, size, NULL, NULL);
+		if (WideCharToMultiByte(CP_OEMCP, 0, src, size, dst, size, NULL, NULL) == 0)
+			*dst = 0;
 	}
 }
 
@@ -254,11 +255,12 @@ void EditorControl_ECTL_SETPARAM(const EditorSetParameter esp)
 	Info.EditorControl(ECTL_SETPARAM, (void*)&esp);
 }
 
-//! Looks like it does not fail if input is 'out of range'
+//! *) Looks like it does not fail if input is 'out of range'.
+//! *) It is called from 'finally' and FxCop is against exceptions in 'finally'.
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp)
 {
 	if (!Info.EditorControl(ECTL_SETPOSITION, (EditorSetPosition*)&esp))
-		throw gcnew InvalidOperationException(__FUNCTION__);
+		TraceFail(__FUNCTION__);
 }
 
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess)

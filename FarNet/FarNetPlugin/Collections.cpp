@@ -33,11 +33,11 @@ void EditorStringCollection::default::set(int index, String^ value)
 void EditorStringCollection::CopyTo(array<String^>^ arrayObject, int arrayIndex)
 {
 	if (arrayObject == nullptr)
-		throw gcnew ArgumentNullException("array");
+		throw gcnew ArgumentNullException("arrayObject");
 	if (arrayIndex < 0)
 		throw gcnew ArgumentOutOfRangeException("arrayIndex");
 	if (arrayObject->Length - arrayIndex > Count)
-		throw gcnew ArgumentException("array, arrayIndex");
+		throw gcnew ArgumentException("arrayObject, arrayIndex");
 	for each(String^ s in this)
 		arrayObject[++arrayIndex] = s;
 }
