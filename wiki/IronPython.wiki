@@ -1,5 +1,6 @@
 #summary IronPython is an implementation of python language for .NET
+#labels Python
 
   * homepage: http://www.codeplex.com/IronPython
   * some articles: http://www.voidspace.org.uk/ironpython/
-  * http://www.ironpython.info 
+  * http://www.ironpython.info
