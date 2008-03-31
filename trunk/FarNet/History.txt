@@ -1,5 +1,30 @@
 http://code.google.com/p/farnet/
 
+3.3.42
+
+MENU AND LIST DIALOG CONTROLS
+
+- BREAKING. Interface IMenuItems was completely removed and standard collection
+type was used instead. Not standard methods Add() of IMenuItems were moved to
+IAnyMenu.Add(). In other words, in your code replace "menu.Items.Add(<text>)"
+with "menu.Add(<text>)".
+- New dynamic property IBaseList.Items (IListBox, IComboBox), see help. In
+brief: when a dialog is started this collection is mapped to a FAR control
+dynamically, i.e. all operations (set, insert, remove and etc.) are displayed
+immediately. See also new DetachItems(), AttachItems().
+- New method IFar::CreateMenuItem()
+
+OTHER
+
+- IControl.Rect is also settable (always); IDialog.Rect is settable before
+Show(); after Show() you can use new methods Move() and Resize().
+
+3.3.41
+
+- This is mostly a technical build for FAR 1.71.2346
+- New IListBox.Title. IListBox.Text get\set is mapped to the current item text
+(dynamically, i.e. when a dialog is opened).
+
 3.3.40
 
 - Access to dialogs and controls. New property IFar.Dialog - the current dialog

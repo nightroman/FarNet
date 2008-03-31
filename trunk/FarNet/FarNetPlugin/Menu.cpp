@@ -108,39 +108,6 @@ static String^ InputFilter(String^ pattern, PatternOptions options, String^ hist
 }
 
 //
-//::MenuItemCollection
-//
-
-IMenuItem^ MenuItemCollection::Add(String^ text)
-{
-	return Add(text, false, false);
-}
-
-IMenuItem^ MenuItemCollection::Add(String^ text, EventHandler^ onClick)
-{
-	MenuItem^ r = gcnew MenuItem();
-	r->Text = text;
-	r->OnClick += onClick;
-	Add(r);
-	return r;
-}
-
-IMenuItem^ MenuItemCollection::Add(String^ text, bool isChecked, bool isSeparator)
-{
-	MenuItem^ r = gcnew MenuItem();
-	r->Text = text;
-	r->Checked = isChecked;
-	r->IsSeparator = isSeparator;
-	Add(r);
-	return r;
-}
-
-IMenuItem^ MenuItemCollection::Add(String^ text, bool isChecked)
-{
-	return Add(text, isChecked, false);
-}
-
-//
 //::AnyMenu
 //
 
@@ -149,7 +116,7 @@ AnyMenu::AnyMenu()
 , _y(-1)
 , _selected(-1)
 {
-	_items = gcnew MenuItemCollection();
+	_items = gcnew List<IMenuItem^>;
 }
 
 int AnyMenu::X::get()
@@ -179,7 +146,7 @@ Object^ AnyMenu::SelectedData::get()
 	return _items[_selected]->Data;
 }
 
-IMenuItems^ AnyMenu::Items::get()
+IList<IMenuItem^>^ AnyMenu::Items::get()
 {
 	return _items;
 }
@@ -202,6 +169,20 @@ IList<int>^ AnyMenu::BreakKeys::get()
 int AnyMenu::BreakKey::get()
 {
 	return _breakKey;
+}
+
+IMenuItem^ AnyMenu::Add(String^ text)
+{
+	return Add(text, nullptr);
+}
+
+IMenuItem^ AnyMenu::Add(String^ text, EventHandler^ handler)
+{
+	MenuItem^ r = gcnew MenuItem;
+	r->Text = text;
+	r->OnClick += handler;
+	Items->Add(r);
+	return r;
 }
 
 //
@@ -841,7 +822,7 @@ bool ListMenu::Show()
 		dialog.AddText(1 + mx, dh - 1 - my, 0, info);
 
 		// items and filter
-		_box->_items = _items;
+		_box->_Items = _items;
 		_box->_ii = _ii;
 
 		// filter

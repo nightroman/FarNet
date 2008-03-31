@@ -129,6 +129,10 @@ namespace FarManager
 		/// </summary>		
 		IMenu CreateMenu();
 		/// <summary>
+		/// Creates a new menu or list item.
+		/// </summary>		
+		IMenuItem CreateMenuItem();
+		/// <summary>
 		/// Creates a new menu implemented with <see cref="IListBox"/>.
 		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
 		/// </summary>		

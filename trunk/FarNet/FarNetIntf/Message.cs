@@ -94,6 +94,6 @@ namespace FarManager
 		/// <summary>Additional buttons: Retry and Cancel.</summary>
 		RetryCancel = 0x00060000,
 		/// <summary>Reserved.</summary>
-		Reserved1 = 0x00000020,
+		Z1 = 0x00000020,
 	}
 }

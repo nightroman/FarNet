@@ -131,7 +131,8 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Arguments of a tool plugin event. This event normally happens when a user selects a menu item.
+	/// Arguments of a tool plugin event.
+	/// This event normally happens when a user selects a plugin menu item.
 	/// </summary>
 	[DebuggerStepThroughAttribute]
 	public sealed class ToolEventArgs : EventArgs

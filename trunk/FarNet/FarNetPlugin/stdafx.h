@@ -12,6 +12,7 @@ using namespace FarManager::Forms;
 using namespace FarManager;
 using namespace Microsoft::Win32;
 using namespace System::Collections::Generic;
+using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Specialized;
 using namespace System::Diagnostics::CodeAnalysis;
 using namespace System::Diagnostics;

@@ -57,7 +57,7 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 	switch(type)
 	{
 	case VE_READ:
-		LogLine(__FUNCTION__ " READ");
+		LL(__FUNCTION__ " READ");
 		{
 			// take waiting or create new
 			Viewer^ viewer;
@@ -86,13 +86,13 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 		}
 		break;
 	case VE_CLOSE:
-		LogLine(__FUNCTION__ " CLOSE");
+		LL(__FUNCTION__ " CLOSE");
 		{
 			// get registered, close and unregister
 			int id = *((int*)param);
 			Viewer^ viewer;
 			//! not found if CtrlQ on dots is closed (because READ was not called)
-			//! fixed in 1.71.2335 but let it stay for a while ??
+			//! fixed in 1.71.2335 but let it stay for a while. ??
 			if (!_viewers.TryGetValue(id, viewer))
 				break;
 			viewer->_id = -2;

@@ -52,6 +52,7 @@ public:
 	virtual IInputBox^ CreateInputBox();
 	virtual IListMenu^ CreateListMenu();
 	virtual IMenu^ CreateMenu();
+	virtual IMenuItem^ CreateMenuItem();
 	virtual IMessage^ CreateMessage();
 	virtual int Msg(String^ body, String^ header, MessageOptions options);
 	virtual int Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons);

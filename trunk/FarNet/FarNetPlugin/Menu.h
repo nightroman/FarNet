@@ -27,17 +27,6 @@ public:
 	}
 };
 
-ref class MenuItemCollection : public List<IMenuItem^>, IMenuItems
-{
-public:
-	virtual IMenuItem^ Add(String^ text);
-	virtual IMenuItem^ Add(String^ text, EventHandler^ onClick);
-	virtual IMenuItem^ Add(String^ text, bool isChecked, bool isSeparator);
-private:
-	// private: it was private originally, perhaps it used to make problems, too
-	virtual IMenuItem^ Add(String^ text, bool isChecked) sealed = IMenuItems::Add;
-};
-
 ref class AnyMenu abstract : public IAnyMenu
 {
 public:
@@ -46,7 +35,7 @@ public:
 	virtual property bool ShowAmpersands;
 	virtual property bool WrapCursor;
 	virtual property IList<int>^ BreakKeys { IList<int>^ get(); }
-	virtual property IMenuItems^ Items { IMenuItems^ get(); }
+	virtual property IList<IMenuItem^>^ Items { IList<IMenuItem^>^ get(); }
 	virtual property int BreakKey { int get(); }
 	virtual property int MaxHeight;
 	virtual property int Selected { int get(); void set(int value); }
@@ -59,10 +48,12 @@ public:
 	virtual property String^ Title;
 public:
 	virtual bool Show() = 0;
+	virtual IMenuItem^ Add(String^ text);
+	virtual IMenuItem^ Add(String^ text, EventHandler^ handler);
 protected:
 	AnyMenu();
 internal:
-	MenuItemCollection^ _items;
+	List<IMenuItem^>^ _items;
 	int _x;
 	int _y;
 	int _selected;

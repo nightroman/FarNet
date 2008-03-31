@@ -55,7 +55,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Used by <see cref="IAnyMenu.Items"/> in a menu or a menu-list and <see cref="IComboBox"/>, <see cref="IListBox"/>.
+	/// Item of a menu, a list menu or one of list dialog controls.
 	/// </summary>
 	public interface IMenuItem
 	{
@@ -64,64 +64,29 @@ namespace FarManager
 		/// </summary>
 		bool Checked { get; set; }
 		/// <summary>
-		/// Item is disabled.
-		/// </summary>
-		bool Disabled { get; set; }
-		/// <summary>
 		/// Any user data attached to the item.
 		/// </summary>
 		object Data { get; set; }
 		/// <summary>
-		/// Item text.
+		/// Item is disabled.
 		/// </summary>
-		string Text { get; set; }
+		bool Disabled { get; set; }
 		/// <summary>
 		/// Item is a separator. <see cref="Text"/>, if any, is shown center aligned.
 		/// </summary>
 		bool IsSeparator { get; set; }
 		/// <summary>
-		/// If this menu item is not disabled then these flags enable or disable it depending on where a menu is called from.
+		/// Item text.
+		/// </summary>
+		string Text { get; set; }
+		/// <summary>
+		/// If this item is not disabled then the flags disables it depending on where a menu is called from.
 		/// </summary>
 		ToolOptions From { get; set; }
 		/// <summary>
 		/// Event raised when a menu item is clicked.
 		/// </summary>
 		event EventHandler OnClick;
-	}
-
-	/// <summary>
-	/// List of menu items <see cref="IMenuItem"/> in a menu.
-	/// </summary>
-	public interface IMenuItems : IList<IMenuItem>
-	{
-		/// <summary>
-		/// Add menu item to list
-		/// </summary>
-		/// <param name="text">Item text.</param>
-		/// <returns>new menu item</returns>
-		IMenuItem Add(string text);
-		/// <summary>
-		/// Add menu item to list
-		/// </summary>
-		/// <param name="text">Item text.</param>
-		/// <param name="isChecked">Item is checked.</param>
-		/// <returns>new menu item</returns>
-		IMenuItem Add(string text, bool isChecked);
-		/// <summary>
-		/// Add menu item to list
-		/// </summary>
-		/// <param name="text">Item text.</param>
-		/// <param name="isChecked">Item is checked.</param>
-		/// <param name="isSeparator">Item is a separator.</param>
-		/// <returns>new menu item</returns>
-		IMenuItem Add(string text, bool isChecked, bool isSeparator);
-		/// <summary>
-		/// Add menu item to list
-		/// </summary>
-		/// <param name="text">Item text.</param>
-		/// <param name="onClick"><see cref="IMenuItem.OnClick"/>.</param>
-		/// <returns>new menu item</returns>
-		IMenuItem Add(string text, EventHandler onClick);
 	}
 
 	/// <summary>
@@ -151,9 +116,9 @@ namespace FarManager
 		/// </summary>
 		string Bottom { get; set; }
 		/// <summary>
-		/// Menu items.
+		/// Menu item collection.
 		/// </summary>
-		IMenuItems Items { get; }
+		IList<IMenuItem> Items { get; }
 		/// <summary>
 		/// Before <see cref="Show"/> tells to select the item by this index.
 		/// After <see cref="Show"/> returns the selected item index or -1 if nothing is selected.
@@ -202,6 +167,19 @@ namespace FarManager
 		/// A key that has closed the menu; it is virtual <see cref="VKeyCode"/> for <see cref="IMenu"/> and internal <see cref="KeyCode"/> for <see cref="IListMenu"/>.
 		/// </summary>
 		int BreakKey { get; }
+		/// <summary>
+		/// Add menu item to list
+		/// </summary>
+		/// <param name="text">Item text.</param>
+		/// <returns>New menu item. Use it to set more properties.</returns>
+		IMenuItem Add(string text);
+		/// <summary>
+		/// Add menu item to list
+		/// </summary>
+		/// <param name="text">Item text.</param>
+		/// <param name="onClick"><see cref="IMenuItem.OnClick"/>.</param>
+		/// <returns>New menu item. Use it to set more properties.</returns>
+		IMenuItem Add(string text, EventHandler onClick);
 	}
 
 	/// <summary>

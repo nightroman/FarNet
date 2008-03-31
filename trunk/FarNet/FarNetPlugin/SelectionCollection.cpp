@@ -74,7 +74,7 @@ ILine^ SelectionCollection::Item::get(int index)
 {
 	EditorInfo ei; EditorControl_ECTL_GETINFO(ei);
 	if (ei.BlockType == BTYPE_NONE)
-		throw gcnew InvalidOperationException();
+		throw gcnew InvalidOperationException;
 	return gcnew EditorLine(index + ei.BlockStartLine, true);
 }
 

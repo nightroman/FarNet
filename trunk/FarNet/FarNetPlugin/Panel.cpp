@@ -32,18 +32,18 @@ static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelIt
 
 void PanelSet::AsClosePlugin(HANDLE hPlugin)
 {
-	Log(__FUNCTION__); LogLine((INT_PTR)hPlugin);
+	LL(__FUNCTION__); LL((INT_PTR)hPlugin);
 
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	pp->_info.Free();
 	_panels[(int)(INT_PTR)hPlugin] = nullptr;
-	if (!pp->_IsPushed && pp->_Closed) //??
+	if (!pp->_IsPushed && pp->_Closed)
 		pp->_Closed(pp, nullptr);
 }
 
 int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
 {
-	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+	LL(__FUNCTION__); LL(INT_PTR(hPlugin));
 
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_DeletingFiles)
@@ -56,14 +56,14 @@ int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int item
 
 void PanelSet::AsFreeFindData(PluginPanelItem* panelItem)
 {
-	LogLine(__FUNCTION__);
+	LL(__FUNCTION__);
 
 	delete[] (char*)panelItem;
 }
 
 int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode)
 {
-	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+	LL(__FUNCTION__); LL(INT_PTR(hPlugin));
 
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_GettingFiles)
@@ -76,7 +76,7 @@ int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 
 int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
-	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+	LL(__FUNCTION__); LL(INT_PTR(hPlugin));
 
 	try
 	{
@@ -179,7 +179,7 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 
 void PanelSet::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
-	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+	LL(__FUNCTION__); LL(INT_PTR(hPlugin));
 
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (pp->_GettingInfo)
@@ -189,7 +189,7 @@ void PanelSet::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 
 int PanelSet::AsMakeDirectory(HANDLE hPlugin, char* name, int opMode)
 {
-	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+	LL(__FUNCTION__); LL(INT_PTR(hPlugin));
 
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_MakingDirectory)
@@ -206,8 +206,8 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 	switch(id)
 	{
 	case FE_IDLE:
-#if LOG & LOG_IDLE
-		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("IDLE");
+#if LL & LOG_IDLE
+		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("IDLE");
 #endif
 		{
 			if (pp->_Idled)
@@ -215,7 +215,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		}
 		break;
 	case FE_CHANGEVIEWMODE:
-		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("CHANGEVIEWMODE");
+		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("CHANGEVIEWMODE");
 		{
 			if (pp->_ViewModeChanged)
 			{
@@ -225,7 +225,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		}
 		break;
 	case FE_CLOSE:
-		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("CLOSE");
+		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("CLOSE");
 		{
 			//? FE_CLOSE issues:
 			// *) unwanted extra call on plugin commands entered in command line
@@ -239,7 +239,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		}
 		break;
 	case FE_COMMAND:
-		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("COMMAND");
+		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("COMMAND");
 		{
 			if (pp->_Executing)
 			{
@@ -258,7 +258,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		}
 		break;
 	case FE_REDRAW:
-		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("REDRAW");
+		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("REDRAW");
 		{
 			if (_reenterOnRedrawing)
 			{
@@ -343,23 +343,23 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		}
 		break;
 	case FE_GOTFOCUS:
-		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("GOTFOCUS");
-		LogLine((gcnew FarPanel(true))->Path);
+		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("GOTFOCUS");
+		LL((gcnew FarPanel(true))->Path);
 		{
 			if (pp->_GotFocus)
 				pp->_GotFocus(pp, nullptr);
 		}
 		break;
 	case FE_KILLFOCUS:
-		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("KILLFOCUS");
-		LogLine((gcnew FarPanel(true))->Path);
+		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("KILLFOCUS");
+		LL((gcnew FarPanel(true))->Path);
 		{
 			if (pp->_LosingFocus)
 				pp->_LosingFocus(pp, nullptr);
 		}
 		break;
 	case FE_BREAK:
-		Log(__FUNCTION__); Log(INT_PTR(hPlugin)); LogLine("BREAK");
+		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("BREAK");
 		{
 			if (pp->_CtrlBreakPressed)
 				pp->_CtrlBreakPressed(pp, nullptr);
@@ -371,8 +371,8 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
-#if LOG & LOG_KEYS
-	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+#if LL & LOG_KEYS
+	LL(__FUNCTION__); LL(INT_PTR(hPlugin));
 #endif
 
 	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
@@ -387,7 +387,7 @@ int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
 {
-	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+	LL(__FUNCTION__); LL(INT_PTR(hPlugin));
 
 	FarPanelPlugin^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_PuttingFiles)
@@ -411,7 +411,7 @@ int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 
 int PanelSet::AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode)
 {
-	Log(__FUNCTION__); LogLine(INT_PTR(hPlugin));
+	LL(__FUNCTION__); LL(INT_PTR(hPlugin));
 
 	_inAsSetDirectory = true;
 	try
@@ -563,7 +563,7 @@ void PanelSet::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newP
 	}
 
 	//! switch to new data and redraw, but not always: in some cases it will be done anyway, e.g. by FAR
-	if (!_inAsSetDirectory) //??
+	if (!_inAsSetDirectory)
 	{
 		newPanel->Update(false);
 		newPanel->Redraw(0, 0);
@@ -924,7 +924,7 @@ void FarPanel::Path::set(String^ value)
 	int command = _active ? FCTL_SETPANELDIR : FCTL_SETANOTHERPANELDIR;
 	CBox sb(value);
 	if (!Info.Control(_id, command, sb))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 }
 
 String^ FarPanel::ToString()
@@ -1003,7 +1003,7 @@ void FarPanel::GetInfo(PanelInfo& pi)
 
 FarFile^ FarPanel::ItemToFile(PluginPanelItem& item)
 {
-	FarFile^ f = gcnew FarFile();
+	FarFile^ f = gcnew FarFile;
 
 	f->Name = OemToStr(item.FindData.cFileName);
 	f->Description = item.Description ? OemToStr(item.Description) : String::Empty; 
@@ -1284,7 +1284,7 @@ void FarPanelPlugin::Open()
 void FarPanelPlugin::Push()
 {
 	PanelSet::PushPanelPlugin(this);
-	Id = 0; //??
+	Id = 0;
 }
 
 }
