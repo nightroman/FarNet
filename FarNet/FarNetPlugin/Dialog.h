@@ -9,7 +9,7 @@ namespace FarNet
 {;
 ref class Far;
 ref class FarDialog;
-ref class MenuItemCollection;
+ref class ListItemCollection;
 
 ref class FarControl abstract : public IControl
 {
@@ -17,7 +17,7 @@ public:
 	virtual property bool Disabled { bool get(); void set(bool value); }
 	virtual property bool Hidden { bool get(); void set(bool value); }
 	virtual property int Id { int get() { return _id; } }
-	virtual property Place Rect { Place get(); }
+	virtual property Place Rect { Place get(); void set(Place value); }
 	virtual property String^ Text { String^ get(); void set(String^ value); }
 public: DEF_EVENT_ARGS(GotFocus, _GotFocus, AnyEventArgs);
 public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
@@ -157,7 +157,7 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-ref class FarBaseBox abstract : public FarControl, public IBaseList
+ref class FarBaseList abstract : public FarControl, public IBaseList
 {
 public:
 	virtual property bool AutoAssignHotkeys { bool get(); void set(bool value); }
@@ -166,27 +166,30 @@ public:
 	virtual property bool NoFocus { bool get(); void set(bool value); }
 	virtual property bool SelectLast;
 	virtual property bool WrapCursor { bool get(); void set(bool value); }
-	virtual property IMenuItems^ Items { IMenuItems^ get(); }
+	virtual property IList<IMenuItem^>^ Items { IList<IMenuItem^>^ get(); }
 	virtual property int Selected { int get(); void set(int value); }
 public:
 	virtual IMenuItem^ Add(String^ text);
+	virtual void AttachItems();
+	virtual void DetachItems();
 protected:
 	[CA_USED]
-	FarBaseBox(FarDialog^ dialog, int index);
+	FarBaseList(FarDialog^ dialog, int index);
 protected:
 	[CA_USED]
-	FarBaseBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
+	FarBaseList(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 internal:
 	virtual void Setup(FarDialogItem& item, int type) override;
 	virtual void Update(bool ok) override;
+	static void InitFarListItem(FarListItem& i2, IMenuItem^ i1);
 internal:
-	MenuItemCollection^ _items;
+	IList<IMenuItem^>^ _Items;
 	List<int>^ _ii;
 private:
 	FarList* _pFarList;
 };
 
-ref class FarComboBox : public FarBaseBox, public IComboBox
+ref class FarComboBox : public FarBaseList, public IComboBox
 {
 public:
 	virtual property bool DropDownList { bool get(); void set(bool value); }
@@ -201,14 +204,18 @@ internal:
 	virtual void Setup(FarDialogItem& item) override;
 };
 
-ref class FarListBox : public FarBaseBox, public IListBox
+ref class FarListBox : public FarBaseList, public IListBox
 {
 public:
 	virtual property bool NoBox { bool get(); void set(bool value); }
+	virtual property String^ Text { String^ get() override; void set(String^ value) override; }
+	virtual property String^ Title { String^ get(); void set(String^ value); }
 internal:
 	FarListBox(FarDialog^ dialog, int index);
 	FarListBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 	virtual void Setup(FarDialogItem& item) override;
+private:
+	String^ _Title;
 };
 
 ref class FarDialog : IDialog
@@ -228,7 +235,7 @@ public:
 	virtual property IControl^ Default { IControl^ get(); void set(IControl^ value); }
 	virtual property IControl^ Focused { IControl^ get(); void set(IControl^ value); }
 	virtual property IControl^ Selected { IControl^ get(); }
-	virtual property Place Rect { Place get(); }
+	virtual property Place Rect { Place get(); void set(Place value); }
 	virtual property String^ HelpTopic;
 	virtual property Object^ Data;
 public:
@@ -237,17 +244,19 @@ public:
 	virtual IButton^ AddButton(int left, int top, String^ text);
 	virtual ICheckBox^ AddCheckBox(int left, int top, String^ text);
 	virtual IComboBox^ AddComboBox(int left, int top, int right, String^ text);
-	virtual IControl^ GetControl(int ID);
+	virtual IControl^ GetControl(int id);
 	virtual IEdit^ AddEdit(int left, int top, int right, String^ text);
 	virtual IEdit^ AddEditFixed(int left, int top, int right, String^ text);
 	virtual IEdit^ AddEditPassword(int left, int top, int right, String^ text);
-	virtual IListBox^ AddListBox(int left, int top, int right, int bottom, String^ text);
+	virtual IListBox^ AddListBox(int left, int top, int right, int bottom, String^ title);
 	virtual IRadioButton^ AddRadioButton(int left, int top, String^ text);
 	virtual IText^ AddText(int left, int top, int right, String^ text);
 	virtual IText^ AddVerticalText(int left, int top, int bottom, String^ text);
 	virtual IUserControl^ AddUserControl(int left, int top, int right, int bottom);
 	virtual void Close();
-	virtual void SetFocus(int ID);
+	virtual void Move(Point point, bool absolute);
+	virtual void Resize(Point size);
+	virtual void SetFocus(int id);
 internal:
 	FarDialog(HANDLE hDlg);
 	FarDialog(int left, int top, int right, int bottom);
@@ -255,9 +264,10 @@ internal:
 	LONG_PTR DialogProc(int msg, int param1, LONG_PTR param2);
 	static FarDialog^ GetDialog();
 internal:
+	static HANDLE _hDlgLast;
 	static List<FarDialog^> _dialogs;
 	HANDLE _hDlg;
-	IList<FarControl^>^ _items;
+	List<FarControl^>^ _items;
 private:
 	void AddItem(FarControl^ item);
 private:
@@ -266,6 +276,5 @@ private:
 	FarControl^ _default;
 	FarControl^ _focused;
 	FarControl^ _selected;
-	static HANDLE _hDlgLast;
 };
 }

@@ -46,9 +46,9 @@ namespace FarManager.Forms
 		/// </summary>
 		bool Hidden { get; set; }
 		/// <summary>
-		/// Gets a rectangular.
+		/// Control rectangular.
 		/// </summary>
-		Place Rect { get; }
+		Place Rect { get; set; }
 	}
 
 	/// <summary>
@@ -303,22 +303,27 @@ namespace FarManager.Forms
 		/// Adds and returns a new item.
 		/// </summary>
 		/// <param name="text">Item text.</param>
+		/// <remarks>
+		/// This is the simplest way to setup items before opening a dialog.
+		/// After opening it is often better to create an item by <see cref="IFar.CreateMenuItem"/>,
+		/// set its properties and then add it to <see cref="Items"/>.
+		/// </remarks>
 		IMenuItem Add(string text);
 		/// <summary>
-		/// Selected item.
+		/// The selected item index.
 		/// </summary>
 		int Selected { get; set; }
 		/// <summary>
-		/// Assigns hotkeys for the list elements automatically, starting with the first item.
+		/// Assigns hotkeys for the items automatically, starting with the first item.
 		/// </summary>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
-		/// Shows a hotkey instead of showing the ampersand itself.
+		/// Shows hotkeys instead of showing ampersands.
 		/// </summary>
 		bool NoAmpersands { get; set; }
 		/// <summary>
 		/// Try to move the cursor up from the first element or down from the last element
-		/// will move the cursor to the bottom or the top of the list, respectively.
+		/// will move the cursor to the bottom or the top of the list.
 		/// </summary>
 		bool WrapCursor { get; set; }
 		/// <summary>
@@ -326,14 +331,27 @@ namespace FarManager.Forms
 		/// </summary>
 		bool NoFocus { get; set; }
 		/// <summary>
-		/// Don't not to close the dialog after item selection.
-		/// Default list behavior after item selection is to end dialog processing.
+		/// Do not close the dialog after an item selection.
+		/// Default behaviour is to end the dialog processing.
 		/// </summary>
 		bool NoClose { get; set; }
 		/// <summary>
 		/// Tells to select the last item if <see cref="Selected"/> is not set.
 		/// </summary>
 		bool SelectLast { get; set; }
+		/// <summary>
+		/// Attaches previously detached items.
+		/// </summary>
+		/// <seealso cref="Items"/>
+		void AttachItems();
+		/// <summary>
+		/// Detaches the items before large changes for better performance.
+		/// You have to call <see cref="AttachItems"/> when changes are done.
+		/// <seealso cref="Items"/>
+		/// </summary>
+		void DetachItems();
+		/// <include file='doc.xml' path='docs/pp[@name="BaseListItems"]/*'/>
+		IList<IMenuItem> Items { get; }
 	}
 
 	/// <summary>
@@ -378,6 +396,10 @@ namespace FarManager.Forms
 		/// Disables the drawing of a frame around the list.
 		/// </summary>
 		bool NoBox { get; set; }
+		/// <summary>
+		/// Title.
+		/// </summary>
+		string Title { get; set; }
 	}
 
 	/**
@@ -459,9 +481,9 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// </summary>
 		object Data { get; set; }
 		/// <summary>
-		/// Gets a rectangular.
+		/// Dialog rectangular.
 		/// </summary>
-		Place Rect { get; }
+		Place Rect { get; set; }
 		/// <summary>
 		/// If it is set and the button is pushed <see cref="Show"/> returns false.
 		/// </summary>
@@ -520,8 +542,8 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// Adds a list box control. See <see cref="NoSmartCoords"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
-		/// <param name="text">Control text.</param>
-		IListBox AddListBox(int left, int top, int right, int bottom, string text);
+		/// <param name="title">Title.</param>
+		IListBox AddListBox(int left, int top, int right, int bottom, string title);
 		/// <summary>
 		/// Adds a radio button. See <see cref="NoSmartCoords"/>.
 		/// </summary>
@@ -552,13 +574,24 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// <summary>
 		/// Gets a control.
 		/// </summary>
-		/// <param name="ID">Control ID (index).</param>
+		/// <param name="id">Control ID (index).</param>
 		/// <returns>Requested control or null if ID is not valid.</returns>
-		IControl GetControl(int ID);
+		IControl GetControl(int id);
 		/// <summary>
 		/// Set focus to a control.
 		/// </summary>
-		/// <param name="ID">Control ID (index).</param>
-		void SetFocus(int ID);
+		/// <param name="id">Control ID (index).</param>
+		void SetFocus(int id);
+		/// <summary>
+		/// Moves the dialog window to a new position.
+		/// </summary>
+		/// <param name="point">Absolute point or relative shift.</param>
+		/// <param name="absolute">true: point is absolute (use -1 to center the dialog); false: point is relative.</param>
+		void Move(Point point, bool absolute);
+		/// <summary>
+		/// Resizes the dialog window.
+		/// </summary>
+		/// <param name="size">New size.</param>
+		void Resize(Point size);
 	}
 }

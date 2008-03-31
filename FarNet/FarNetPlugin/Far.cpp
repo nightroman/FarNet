@@ -26,7 +26,7 @@ Far::Far()
 void Far::StartFar()
 {
 	if (_instance) throw gcnew InvalidOperationException("Already started.");
-	_instance = gcnew Far();
+	_instance = gcnew Far;
 	_instance->Start();
 
 	// versions
@@ -287,7 +287,7 @@ int Far::Msg(String^ body, String^ header, MessageOptions options, array<String^
 
 IMessage^ Far::CreateMessage()
 {
-	return gcnew Message();
+	return gcnew Message;
 }
 
 void Far::Run(String^ command)
@@ -329,12 +329,17 @@ System::Version^ Far::Version::get()
 
 IMenu^ Far::CreateMenu()
 {
-	return gcnew Menu();
+	return gcnew Menu;
+}
+
+IMenuItem^ Far::CreateMenuItem()
+{
+	return gcnew MenuItem;
 }
 
 IListMenu^ Far::CreateListMenu()
 {
-	return gcnew ListMenu();
+	return gcnew ListMenu;
 }
 
 FarConfirmations Far::Confirmations::get()
@@ -437,7 +442,7 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 	try
 	{
 		if (!Info.AdvControl(Info.ModuleNumber, ACTL_POSTKEYSEQUENCE, &keySequence))
-			throw gcnew OperationCanceledException();
+			throw gcnew OperationCanceledException;
 	}
 	finally
 	{
@@ -479,7 +484,7 @@ void Far::PostText(String^ text, bool disableOutput)
 	if (text == nullptr)
 		throw gcnew ArgumentNullException("text");
 
-	StringBuilder^ keys = gcnew StringBuilder();
+	StringBuilder^ keys = gcnew StringBuilder;
 	text = text->Replace(CV::CRLF, CV::LF)->Replace('\r', '\n');
 	for each(Char c in text)
 	{
@@ -515,7 +520,7 @@ void Far::RestoreScreen(int screen)
 
 ILine^ Far::CommandLine::get()
 {
-	return gcnew FarCommandLine();
+	return gcnew FarCommandLine;
 }
 
 IEditor^ Far::Editor::get()
@@ -540,7 +545,7 @@ IPanel^ Far::Panel2::get()
 
 IInputBox^ Far::CreateInputBox()
 {
-	return gcnew InputBox();
+	return gcnew InputBox;
 }
 
 //! frequently called
@@ -823,7 +828,7 @@ void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgro
 
 IPanelPlugin^ Far::CreatePanelPlugin()
 {
-	return gcnew FarPanelPlugin();
+	return gcnew FarPanelPlugin;
 }
 
 IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
@@ -833,12 +838,12 @@ IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)
 
 IFile^ Far::CreatePanelItem()
 {
-	return gcnew FarFile();
+	return gcnew FarFile;
 }
 
 IFile^ Far::CreatePanelItem(FileSystemInfo^ info, bool fullName)
 {
-	FarFile^ r = gcnew FarFile();
+	FarFile^ r = gcnew FarFile;
 	if (info)
 	{
 		r->Name = fullName ? info->FullName : info->Name;
@@ -1135,8 +1140,8 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 				ValueCanOpenPanel::Set(false);
 				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)item;
 				ToolPluginInfo^ tool = _toolDialog[dd->ItemNumber];
-				//?? make use of dd->hDlg
 				ToolEventArgs e(ToolOptions::Dialog);
+				FarDialog::_hDlgLast = dd->hDlg;
 				tool->Handler(this, %e);
 			}
 			break;
@@ -1181,7 +1186,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 		FarPanelPlugin^ pp = dynamic_cast<FarPanelPlugin^>(Panel);
 		if (pp)
 		{
-			IMenuItem^ mi = m.Items->Add("Push the panel");
+			IMenuItem^ mi = m.Add("Push the panel");
 			mi->Data = pp;
 		}
 		else
@@ -1194,11 +1199,11 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	if (PanelSet::_stack.Count)
 	{
 		if (showPushCommand)
-			m.Items->Add(String::Empty)->IsSeparator = true;
+			m.Add(String::Empty)->IsSeparator = true;
 		for(int i = PanelSet::_stack.Count; --i >= 0;)
 		{
 			FarPanelPlugin^ pp = PanelSet::_stack[i];
-			IMenuItem^ mi = m.Items->Add(JoinText(pp->_info.Title, pp->_info.CurrentDirectory));
+			IMenuItem^ mi = m.Add(JoinText(pp->_info.Title, pp->_info.CurrentDirectory));
 			mi->Data = pp;
 		}
 	}
@@ -1267,16 +1272,16 @@ void Far::OnNetConfig(Object^ /*sender*/, ToolEventArgs^ /*e*/)
 	m.HelpTopic = "MenuConfig";
 	m.Title = "FAR.NET plugins";
 
-	m.Items->Add(Res::CommandPlugins + " : " + (_registeredCommand.Count));
-	m.Items->Add(Res::EditorPlugins + "  : " + (_registeredEditor.Count));
-	m.Items->Add(Res::FilerPlugins + "   : " + (_registeredFiler.Count));
-	m.Items->Add(String::Empty)->IsSeparator = true;
-	m.Items->Add(Res::PanelsTools + "    : " + (_toolPanels.Count - 1));
-	m.Items->Add(Res::EditorTools + "    : " + (_toolEditor.Count - 1));
-	m.Items->Add(Res::ViewerTools + "    : " + (_toolViewer.Count - 1));
-	m.Items->Add(Res::DialogTools + "    : " + (_toolDialog.Count - 1));
-	m.Items->Add(Res::ConfigTools + "    : " + (_toolConfig.Count - 1));
-	m.Items->Add(Res::DiskTools + "      : " + (_toolDisk.Count - 1));
+	m.Add(Res::CommandPlugins + " : " + (_registeredCommand.Count));
+	m.Add(Res::EditorPlugins + "  : " + (_registeredEditor.Count));
+	m.Add(Res::FilerPlugins + "   : " + (_registeredFiler.Count));
+	m.Add(String::Empty)->IsSeparator = true;
+	m.Add(Res::PanelsTools + "    : " + (_toolPanels.Count - 1));
+	m.Add(Res::EditorTools + "    : " + (_toolEditor.Count - 1));
+	m.Add(Res::ViewerTools + "    : " + (_toolViewer.Count - 1));
+	m.Add(Res::DialogTools + "    : " + (_toolDialog.Count - 1));
+	m.Add(Res::ConfigTools + "    : " + (_toolConfig.Count - 1));
+	m.Add(Res::DiskTools + "      : " + (_toolDisk.Count - 1));
 
 	while(m.Show())
 	{
@@ -1341,7 +1346,7 @@ void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^
 				continue;
 			if (it == selected)
 				m.Selected = m.Items->Count;
-			IMenuItem^ mi = m.Items->Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Key);
+			IMenuItem^ mi = m.Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Key);
 			mi->Data = it;
 		}
 
@@ -1388,7 +1393,7 @@ void Far::OnConfigCommand()
 
 	for each(CommandPluginInfo^ it in _registeredCommand)
 	{
-		IMenuItem^ mi = m.Items->Add(it->Prefix->PadRight(4) + " " + it->Key);
+		IMenuItem^ mi = m.Add(it->Prefix->PadRight(4) + " " + it->Key);
 		mi->Data = it;
 	}
 
@@ -1443,7 +1448,7 @@ void Far::OnConfigEditor()
 
 	for each(EditorPluginInfo^ it in _registeredEditor)
 	{
-		IMenuItem^ mi = m.Items->Add(it->Key);
+		IMenuItem^ mi = m.Add(it->Key);
 		mi->Data = it;
 	}
 
@@ -1485,7 +1490,7 @@ void Far::OnConfigFiler()
 
 	for each(FilerPluginInfo^ it in _registeredFiler)
 	{
-		IMenuItem^ mi = m.Items->Add(it->Key);
+		IMenuItem^ mi = m.Add(it->Key);
 		mi->Data = it;
 	}
 

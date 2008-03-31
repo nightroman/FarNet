@@ -129,15 +129,15 @@ public:
 	}
 	virtual bool Contains(String^)
 	{
-		throw gcnew NotSupportedException();
+		throw gcnew NotSupportedException;
 	}
 	virtual int IndexOf(String^)
 	{
-		throw gcnew NotSupportedException();
+		throw gcnew NotSupportedException;
 	}
 	virtual bool Remove(String^)
 	{
-		throw gcnew NotSupportedException();
+		throw gcnew NotSupportedException;
 	}
 public:
 	virtual property bool IsSynchronized

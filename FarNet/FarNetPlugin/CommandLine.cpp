@@ -20,14 +20,14 @@ ILine^ FarCommandLine::FullLine::get()
 
 ILineSelection^ FarCommandLine::Selection::get()
 {
-	return gcnew CommandLineSelection();
+	return gcnew CommandLineSelection;
 }
 
 int FarCommandLine::Length::get()
 {
 	char sb[1024];
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sb))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 	return (int)strlen(sb);
 }
 
@@ -49,7 +49,7 @@ String^ FarCommandLine::Text::get()
 {
 	char sb[1024];
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sb))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 	return OemToStr(sb);
 }
 
@@ -57,14 +57,14 @@ void FarCommandLine::Text::set(String^ value)
 {
 	CBox sb(value);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, sb))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 }
 
 int FarCommandLine::Pos::get()
 {
 	int pos;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINEPOS, &pos))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 	return pos;
 }
 
@@ -74,18 +74,18 @@ void FarCommandLine::Pos::set(int value)
 	{
 		char sb[1024];
 		if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, sb))
-			throw gcnew OperationCanceledException();
+			throw gcnew OperationCanceledException;
 		value = (int)strlen(sb);
 	}
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINEPOS, &value))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 }
 
 void FarCommandLine::Insert(String^ text)
 {
 	CBox sText(text);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, sText))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 }
 
 void FarCommandLine::Select(int start, int end)
@@ -94,7 +94,7 @@ void FarCommandLine::Select(int start, int end)
 	cls.SelStart = start;
 	cls.SelEnd = end;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, &cls))
-		throw gcnew OperationCanceledException();
+		throw gcnew OperationCanceledException;
 }
 
 void FarCommandLine::Unselect()

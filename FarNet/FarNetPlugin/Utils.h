@@ -10,12 +10,12 @@ Copyright (c) 2005-2008 FAR.NET Team
 #define LOG_KEYS 4
 #if defined(_DEBUG)
 #define LOG 1
-#define Log(Text) Trace::Write(Text); Trace::Write(" ");
-#define LogLine(Text) Trace::WriteLine(Text)
+#define TraceFail(Text) Trace::Fail(Text)
+#define LL(Text) Trace::WriteLine(Text);
 #else
 #define LOG 0
-#define Log(Text)
-#define LogLine(Text)
+#define TraceFail(Text) {}
+#define LL(Text) {} 
 #endif
 
 // Code analysis
@@ -258,7 +258,6 @@ internal:
 		ConfigTools = "Config tools",
 		FilerPlugins = "Filer plugins",
 		ErrorNoHotKey = "Ensure a FAR.NET hotkey (F4) in the FAR plugins menu (F11) and restart FAR.",
-		MenuPanels = "Push/show panels",
 		MenuPrefix = ".NET ";
 };
 }
