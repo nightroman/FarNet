@@ -54,6 +54,7 @@ ref class FarPanel : public IPanel
 public:
 	virtual property bool Highlight { bool get(); }
 	virtual property bool IsActive { bool get(); }
+	virtual property bool IsLeft { bool get(); }
 	virtual property bool IsPlugin { bool get(); }
 	virtual property bool IsVisible { bool get(); void set(bool value); }
 	virtual property bool NumericSort { bool get(); void set(bool value); }

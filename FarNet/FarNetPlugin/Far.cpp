@@ -1227,7 +1227,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 
 void Far::PostStep(EventHandler^ step)
 {
-	// make keys
+	// make keys once
 	if (!_hotkeys)
 	{
 		if (ES(_hotkey))

@@ -4,7 +4,7 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 1.71 build 2346
+  Plugin API for FAR Manager 1.71 build 2348
 
   Copyright (c) 1996-2000 Eugene Roshal
   Copyright (c) 2000-2008 FAR group
@@ -12,7 +12,7 @@
 
 #define MAKEFARVERSION(major,minor,build) ( ((major)<<8) | (minor) | ((build)<<16))
 
-#define FARMANAGERVERSION MAKEFARVERSION(1,71,2346)
+#define FARMANAGERVERSION MAKEFARVERSION(1,71,2348)
 
 
 #if !defined(_INC_WINDOWS) && !defined(_WINDOWS_)
@@ -678,6 +678,8 @@ enum PANELINFOFLAGS {
   PFLAGS_SELECTEDFIRST      = 0x00000010,
   PFLAGS_REALNAMES          = 0x00000020,
   PFLAGS_NUMERICSORT        = 0x00000040,
+  PFLAGS_PANELLEFT          = 0x00000080,
+  PFLAGS_PANELRIGHT         = 0x00000100,
 };
 
 enum PANELINFOTYPE{

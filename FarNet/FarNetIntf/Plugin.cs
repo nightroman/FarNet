@@ -241,7 +241,7 @@ namespace FarManager
 	/// <summary>
 	/// Arguments for a handler registered by <see cref="IFar.RegisterFiler"/>.
 	/// A handler is called to open a <see cref="IPanelPlugin"/> which emulates a file system based on a file.
-	/// If a file is unknown a handler should do nothing. [OpenFilePlugin]
+	/// If a file is unknown a handler should do nothing.
 	/// </summary>
 	[DebuggerStepThroughAttribute]
 	public sealed class FilerEventArgs : EventArgs
