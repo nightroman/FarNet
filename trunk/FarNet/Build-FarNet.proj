@@ -1,6 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<ProductVersion>3.3.42</ProductVersion>
+		<ProductVersion>3.3.43</ProductVersion>
 		<OutputPath>FAR.NET.$(ProductVersion).rar</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>

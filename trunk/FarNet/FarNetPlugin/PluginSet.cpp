@@ -222,6 +222,7 @@ void PluginSet::ReadCache()
 		keyCache = Registry::CurrentUser->CreateSubKey(Far::Instance->RootKey + "\\FAR.NET\\<cache>");
 		for each (String^ dllName in keyCache->GetSubKeyNames())
 		{
+			bool ok = true;
 			RegistryKey^ keyDll;
 			RegistryKey^ keyPlugin;
 			List<CommandPluginInfo^> commands;
@@ -239,83 +240,94 @@ void PluginSet::ReadCache()
 				String^ assemblyStamp = keyDll->GetValue("Stamp", String::Empty)->ToString();
 				FileInfo fi(assemblyPath);
 				if (assemblyStamp != fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture))
-					throw gcnew OperationCanceledException;
-
-				for each (String^ className in keyDll->GetSubKeyNames())
 				{
-					keyPlugin = keyDll->OpenSubKey(className);
-
-					String^ pluginName = keyPlugin->GetValue("Name", String::Empty)->ToString();
-					if (!pluginName->Length)
-						throw gcnew OperationCanceledException;
-
-					String^ type = keyPlugin->GetValue("Type", String::Empty)->ToString();
-					if (type == "Tool")
-					{
-						int options = (int)keyPlugin->GetValue("Options");
-						if (!options)
-							throw gcnew OperationCanceledException;
-
-						ToolPluginInfo^ plugin = gcnew ToolPluginInfo(assemblyPath, className, pluginName, (ToolOptions)options);
-						tools.Add(plugin);
-					}
-					else if (type == "Command")
-					{
-						String^ prefix = keyPlugin->GetValue("Prefix", String::Empty)->ToString();
-						if (!prefix->Length)
-							throw gcnew OperationCanceledException;
-
-						CommandPluginInfo^ plugin = gcnew CommandPluginInfo(assemblyPath, className, pluginName, prefix);
-						commands.Add(plugin);
-					}
-					else if (type == "Editor")
-					{
-						String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
-
-						EditorPluginInfo^ plugin = gcnew EditorPluginInfo(assemblyPath, className, pluginName, mask);
-						editors.Add(plugin);
-					}
-					else if (type == "Filer")
-					{
-						String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
-						int creates = (int)keyPlugin->GetValue("Creates", (Object^)-1);
-
-						FilerPluginInfo^ plugin = gcnew FilerPluginInfo(assemblyPath, className, pluginName, mask, creates != 0);
-						filers.Add(plugin);
-					}
-					else
-					{
-						throw gcnew OperationCanceledException;
-					}
-
-					keyPlugin->Close();
+					// do not throw, it's PITA in debugging
+					ok = false;
 				}
+				else
+				{
+					for each (String^ className in keyDll->GetSubKeyNames())
+					{
+						keyPlugin = keyDll->OpenSubKey(className);
 
-				keyDll->Close();
+						String^ pluginName = keyPlugin->GetValue("Name", String::Empty)->ToString();
+						if (!pluginName->Length)
+							throw gcnew OperationCanceledException;
 
-				// add dllName to dictionary and add plugins
-				_cache.Add(dllName, nullptr);
-				if (commands.Count)
-					Far::Instance->RegisterCommands(%commands);
-				if (editors.Count)
-					Far::Instance->RegisterEditors(%editors);
-				if (filers.Count)
-					Far::Instance->RegisterFilers(%filers);
-				if (tools.Count)
-					Far::Instance->RegisterTools(%tools);
+						String^ type = keyPlugin->GetValue("Type", String::Empty)->ToString();
+						if (type == "Tool")
+						{
+							int options = (int)keyPlugin->GetValue("Options");
+							if (!options)
+								throw gcnew OperationCanceledException;
+
+							ToolPluginInfo^ plugin = gcnew ToolPluginInfo(assemblyPath, className, pluginName, (ToolOptions)options);
+							tools.Add(plugin);
+						}
+						else if (type == "Command")
+						{
+							String^ prefix = keyPlugin->GetValue("Prefix", String::Empty)->ToString();
+							if (!prefix->Length)
+								throw gcnew OperationCanceledException;
+
+							CommandPluginInfo^ plugin = gcnew CommandPluginInfo(assemblyPath, className, pluginName, prefix);
+							commands.Add(plugin);
+						}
+						else if (type == "Editor")
+						{
+							String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
+
+							EditorPluginInfo^ plugin = gcnew EditorPluginInfo(assemblyPath, className, pluginName, mask);
+							editors.Add(plugin);
+						}
+						else if (type == "Filer")
+						{
+							String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
+							int creates = (int)keyPlugin->GetValue("Creates", (Object^)-1);
+
+							FilerPluginInfo^ plugin = gcnew FilerPluginInfo(assemblyPath, className, pluginName, mask, creates != 0);
+							filers.Add(plugin);
+						}
+						else
+						{
+							throw gcnew OperationCanceledException;
+						}
+
+						keyPlugin->Close();
+					}
+
+					keyDll->Close();
+
+					// add dllName to dictionary and add plugins
+					_cache.Add(dllName, nullptr);
+					if (commands.Count)
+						Far::Instance->RegisterCommands(%commands);
+					if (editors.Count)
+						Far::Instance->RegisterEditors(%editors);
+					if (filers.Count)
+						Far::Instance->RegisterFilers(%filers);
+					if (tools.Count)
+						Far::Instance->RegisterTools(%tools);
+				}
 			}
 			catch(OperationCanceledException^)
+			{
+				ok = false;
+			}
+			catch(Exception^ ex)
+			{
+				throw gcnew OperationCanceledException(
+					"Error on reading the cache. Remove registry FAR.NET\\<cache> manually and restart FAR.", ex);
+			}
+
+			// error or outdated info
+			if (!ok)
 			{
 				if (keyPlugin)
 					keyPlugin->Close();
 				if (keyDll)
 					keyDll->Close();
 				keyCache->DeleteSubKeyTree(dllName);
-			}
-			catch(Exception^ ex)
-			{
-				throw gcnew OperationCanceledException(
-					"Error on reading the cache. Remove registry FAR.NET\\<cache> manually and restart FAR.", ex);
 			}
 		}
 	}

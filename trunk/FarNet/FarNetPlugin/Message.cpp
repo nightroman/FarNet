@@ -5,6 +5,7 @@ Copyright (c) 2005-2008 FAR.NET Team
 
 #include "StdAfx.h"
 #include "Message.h"
+#include "Dialog.h"
 
 namespace FarNet
 {;
@@ -63,14 +64,6 @@ bool Message::Show()
 	return Selected != -1;
 }
 
-void Message::Reset()
-{
-	Header = nullptr;
-	Selected = -1;
-	_flags = 0;
-	_buttons->Clear();
-}
-
 int Message::Amount()
 {
 	int a = 2;
@@ -126,7 +119,7 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 
 	// body
 	Regex^ format = nullptr;
-	int height = Console::WindowHeight - 10;
+	int height = Console::WindowHeight - 9;
 	for each(String^ s1 in Regex::Split(body->Replace('\t', ' '), "\r\n|\r|\n"))
 	{
 		if (s1->Length <= width)
@@ -145,15 +138,66 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 			break;
 	}
 
-	// buttons
+	// buttons? dialog?
 	if (buttons != nullptr)
 	{
+		int len = 0;
 		for each(String^ s in buttons)
-			m.Buttons->Add(s);
+		{
+			len += s->Length + 2;
+			if (len > width)
+				return ShowDialog(%m, buttons, width);
+		}
+		m.Buttons->AddRange(buttons);
 	}
 
 	// go
 	m.Show();
 	return m.Selected;
 }
+
+int Message::ShowDialog(Message^ msg, array<String^>^ buttons, int width)
+{
+	int w = msg->Header->Length;
+	for each(String^ s in msg->Body)
+		if (s->Length > w)
+			w = s->Length;
+	for each(String^ s in buttons)
+	{
+		if (s->Length > w)
+		{
+			w = s->Length;
+			if (w > width)
+			{
+				w = width;
+				break;
+			}
+		}
+	}
+	w += 10;
+	int nBody = min(msg->Body->Count, Console::WindowHeight / 3);
+	int h = 5 + nBody + buttons->Length;
+	if (h > Console::WindowHeight - 4)
+		h = Console::WindowHeight - 4;
+
+	FarDialog dialog(-1, -1, w, h);
+	dialog.HelpTopic = msg->HelpTopic;
+	dialog.IsWarning = msg->IsWarning;
+	dialog.AddBox(3, 1, w - 4, h - 2, msg->Header);
+	for(int i = 0; i < nBody; ++i)
+		dialog.AddText(5, -1, 0, msg->Body[i]);
+	dialog.AddText(5, -1, 0, nullptr)->Separator = 1;
+
+	IListBox^ list = dialog.AddListBox(4, -1, w - 5, h - 6 - nBody, nullptr);
+	list->NoAmpersands = true;
+	list->NoBox = true;
+	for each(String^ s in buttons)
+		list->Add(s);
+
+	if (!dialog.Show())
+		return -1;
+
+	return list->Selected;
+}
+
 }

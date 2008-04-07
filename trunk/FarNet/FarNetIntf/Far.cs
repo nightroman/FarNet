@@ -126,16 +126,16 @@ namespace FarManager
 		/// <summary>
 		/// Creates a new standard FAR menu.
 		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
-		/// </summary>		
+		/// </summary>
 		IMenu CreateMenu();
 		/// <summary>
 		/// Creates a new menu or list item.
-		/// </summary>		
+		/// </summary>
 		IMenuItem CreateMenuItem();
 		/// <summary>
 		/// Creates a new menu implemented with <see cref="IListBox"/>.
 		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
-		/// </summary>		
+		/// </summary>
 		IListMenu CreateListMenu();
 		/// <summary>
 		/// Virtual editor instance.
@@ -149,11 +149,11 @@ namespace FarManager
 		IAnyViewer AnyViewer { get; }
 		/// <summary>
 		/// Gets the clipboard text.
-		/// </summary>		
+		/// </summary>
 		string PasteFromClipboard();
 		/// <summary>
 		/// Sets the clipboard text.
-		/// </summary>		
+		/// </summary>
 		void CopyToClipboard(string text);
 		/// <summary>
 		/// Creates a new editor.
@@ -230,7 +230,7 @@ namespace FarManager
 		/// For performance sake it redraws only the modified screen area.
 		/// But if there was screen output produced by an external program,
 		/// it can't calculate this area correctly. In that case you have to
-		/// call it with <c>screen</c> = 0 and then with an actual screen handle. 
+		/// call it with <c>screen</c> = 0 and then with an actual screen handle.
 		/// </remarks>
 		void RestoreScreen(int screen);
 		/// <summary>
@@ -372,7 +372,7 @@ namespace FarManager
 		/// <param name="fullName">Use full name for panel item name.</param>
 		IFile CreatePanelItem(FileSystemInfo info, bool fullName);
 		/// <summary>
-		/// Confirmation settings according to options in the "Confirmations" dialog. [ACTL_GETCONFIRMATIONS]
+		/// Confirmation settings according to options in the "Confirmations" dialog.
 		/// </summary>
 		FarConfirmations Confirmations { get; }
 		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
@@ -423,14 +423,14 @@ namespace FarManager
 		/// <param name="newValue">New value to be set.</param>
 		void SetPluginValue(string pluginName, string valueName, object newValue);
 		/// <summary>
-		/// Count of open FAR windows. [ACTL_GETWINDOWCOUNT]
+		/// Count of open FAR windows.
 		/// </summary>
 		/// <remarks>
 		/// There is at least one window (panels, editor or viewer).
 		/// </remarks>
 		int WindowCount { get; }
 		/// <summary>
-		/// Allows to switch to a specific FAR Manager window. [ACTL_SETCURRENTWINDOW]
+		/// Allows to switch to a specific FAR Manager window.
 		/// </summary>
 		/// <param name="index">Window index. See <see cref="WindowCount"/>.</param>
 		/// <remarks>
@@ -439,7 +439,7 @@ namespace FarManager
 		void SetCurrentWindow(int index);
 		/// <summary>
 		/// "Commits" the results of the last operation with FAR windows
-		/// (e.g. <see cref="SetCurrentWindow"/>). [ACTL_COMMIT]
+		/// (e.g. <see cref="SetCurrentWindow"/>).
 		/// </summary>
 		/// <returns>true on success.</returns>
 		bool Commit();
@@ -630,7 +630,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// FAR window types. [WINDOWINFO_TYPE]
+	/// FAR window types.
 	/// </summary>
 	public enum WindowType
 	{
@@ -665,7 +665,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Contains information about one FAR window. See <see cref="IFar.GetWindowInfo"/>. [WindowInfo]
+	/// Contains information about one FAR window. See <see cref="IFar.GetWindowInfo"/>.
 	/// </summary>
 	public interface IWindowInfo
 	{
