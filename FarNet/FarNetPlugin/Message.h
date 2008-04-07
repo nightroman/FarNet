@@ -22,7 +22,6 @@ public:
 	virtual property String^ HelpTopic;
 	virtual property StringCollection^ Body { StringCollection^ get(); }
 	virtual property StringCollection^ Buttons { StringCollection^ get(); }
-	virtual void Reset();
 internal:
 	Message();
 	static int Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons);
@@ -30,6 +29,7 @@ private:
 	int Amount();
 	CStr* CreateBlock();
 	static void Add(StringCollection^ strings, CStr* result, int& index);
+	static int ShowDialog(Message^ msg, array<String^>^ buttons, int width);
 private:
 	int _flags;
 	int _selected;

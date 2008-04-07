@@ -110,11 +110,11 @@ namespace FarManager
 		/// </summary>
 		bool NumericSort { get; set; }
 		/// <summary>
-		/// Redraws the panel. [FCTL_REDRAWPANEL]
+		/// Redraws the panel.
 		/// </summary>
 		void Redraw();
 		/// <summary>
-		/// Redraws the panel and sets the current and\or the first visible item. [FCTL_REDRAWPANEL]
+		/// Redraws the panel and sets the current and\or the first visible item.
 		/// If both arguments are negative, result is the same as per <see cref="Redraw()"/>
 		/// </summary>
 		/// <param name="current">Index of the current panel item.</param>
@@ -134,17 +134,21 @@ namespace FarManager
 		/// </summary>
 		Place Window { get; }
 		/// <summary>
-		/// Closes the current plugin panel. [FCTL_CLOSEPLUGIN]
+		/// Closes the current plugin panel.
 		/// </summary>
 		void Close();
 		/// <summary>
-		/// Closes the current plugin panel. [FCTL_CLOSEPLUGIN]
+		/// Closes the current plugin panel.
 		/// </summary>
 		/// <param name="path">
 		/// Name of the directory that will be set in the panel after closing the plugin (or {null|empty}).
 		/// If the path doesn't exist FAR shows an error.
 		/// </param>
 		void Close(string path);
+		/// <summary>
+		/// Is this a left panel? FAR 1.71.2348
+		/// </summary>
+		bool IsLeft { get; }
 	}
 
 	/// <summary>
@@ -395,7 +399,7 @@ namespace FarManager
 
 	/// <summary>
 	/// Describes a panel.
-	/// For better performance set its properties only when they are really changed. [OpenPluginInfo]
+	/// For better performance set its properties only when they are really changed.
 	/// </summary>
 	public interface IPanelPluginInfo
 	{
@@ -415,63 +419,63 @@ namespace FarManager
 		/// </summary>
 		bool StartSortDesc { get; set; }
 		/// <summary>
-		/// Use filter in the plugin panel. [OPIF_USEFILTER]
+		/// Use filter in the plugin panel.
 		/// </summary>
 		bool UseFilter { get; set; }
 		/// <summary>
-		/// Use sort groups in the plugin panel. [OPIF_USESORTGROUPS]
+		/// Use sort groups in the plugin panel.
 		/// </summary>
 		bool UseSortGroups { get; set; }
 		/// <summary>
-		/// Use file highlighting in the plugin panel. [OPIF_USEHIGHLIGHTING]
+		/// Use file highlighting in the plugin panel.
 		/// </summary>
 		bool UseHighlighting { get; set; }
 		/// <summary>
 		/// Use attributes only for file highlighting. File names will be ignored.
 		/// Color is chosen from file color groups, which have templates excluded from analysis
-		/// (i.e. option "[ ] Match file mask(s)" in file highlighting setup dialog is off). [OPIF_USEATTRHIGHLIGHTING]
+		/// (i.e. option "[ ] Match file mask(s)" in file highlighting setup dialog is off).
 		/// </summary>
 		bool UseAttrHighlighting { get; set; }
 		/// <summary>
-		/// Folders may be selected regardless of FAR settings. [OPIF_RAWSELECTION]
+		/// Folders may be selected regardless of FAR settings.
 		/// </summary>
 		bool RawSelection { get; set; }
 		/// <summary>
 		/// Turns on the standard FAR file processing mechanism if requested operation is not supported by the plugin.
-		/// If this flag is set, the items on the plugin panel should be real file names. [OPIF_REALNAMES]
+		/// If this flag is set, the items on the plugin panel should be real file names.
 		/// </summary>
 		bool RealNames { get; set; }
 		/// <summary>
-		/// Show file names without paths by default. [OPIF_SHOWNAMESONLY]
+		/// Show file names without paths by default.
 		/// </summary>
 		bool ShowNamesOnly { get; set; }
 		/// <summary>
-		/// Show file names right-aligned by default in all panel display modes. [OPIF_SHOWRIGHTALIGNNAMES]
+		/// Show file names right-aligned by default in all panel display modes.
 		/// </summary>
 		bool RightAligned { get; set; }
 		/// <summary>
-		/// Show file names using original case regardless of FAR settings. [OPIF_SHOWPRESERVECASE]
+		/// Show file names using original case regardless of FAR settings.
 		/// </summary>
 		bool PreserveCase { get; set; }
 		/// <summary>
 		/// Convert timestamps to FAT format for the Compare folders operation.
-		/// Set this flag if the plugin file system doesn't provide the time accuracy necessary for standard comparison operations. [OPIF_COMPAREFATTIME]
+		/// Set this flag if the plugin file system doesn't provide the time accuracy necessary for standard comparison operations.
 		/// </summary>
 		bool CompareFatTime { get; set; }
 		/// <summary>
-		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function. [OPIF_EXTERNALGET]
+		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function.
 		/// </summary>
 		bool ExternalGet { get; set; }
 		/// <summary>
-		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function. [OPIF_EXTERNALPUT]
+		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function.
 		/// </summary>
 		bool ExternalPut { get; set; }
 		/// <summary>
-		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function. [OPIF_EXTERNALDELETE]
+		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function.
 		/// </summary>
 		bool ExternalDelete { get; set; }
 		/// <summary>
-		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function. [OPIF_EXTERNALMKDIR]
+		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function.
 		/// </summary>
 		bool ExternalMakeDirectory { get; set; }
 		/// <summary>
@@ -684,7 +688,7 @@ namespace FarManager
 			get { return _state; }
 		}
 		/// <summary>
-		/// Preprocess flag. [PKF_PREPROCESS]
+		/// Preprocess flag.
 		/// </summary>
 		public bool Preprocess
 		{
@@ -885,7 +889,7 @@ namespace FarManager
 		IList<IFile> Files { get; }
 		/// <summary>
 		/// Raised to get a plugin <see cref="Info"/> data. Normally you don't have to use this but
-		/// if info is changed externally you may check and update really changed properties. [GetOpenPluginInfo]
+		/// if info is changed externally you may check and update really changed properties.
 		/// </summary>
 		/// <remarks>
 		/// <c>PowerShell</c> handlers should be added via <c>$Psf.WrapEventHandler()</c> (workaround for Find mode).
@@ -893,68 +897,68 @@ namespace FarManager
 		event EventHandler GettingInfo;
 		/// <summary>
 		/// Raised to prepare <see cref="Files"/> list in the current directory of the file system emulated by the plugin.
-		/// Note: if your file set is constant you may fill it once on the panel creation and not use this event at all. [GetFindData]
+		/// Note: if your file set is constant you may fill it once on the panel creation and not use this event at all.
 		/// </summary>
 		/// <remarks>
 		/// <c>PowerShell</c> handlers should be added via <c>$Psf.WrapPanelEvent()</c> (workaround for Find mode).
 		/// </remarks>
 		event EventHandler<PanelEventArgs> GettingData;
 		/// <summary>
-		/// Raised when a plugin is closed. [ClosePlugin]
+		/// Raised when a plugin is closed.
 		/// </summary>
 		event EventHandler Closed;
 		/// <summary>
-		/// Raised when a plugin is about to be closed. [FE_CLOSE]
+		/// Raised when a plugin is about to be closed.
 		/// </summary>
 		event EventHandler<PanelEventArgs> Closing;
 		/// <summary>
 		/// Raised every few seconds.
-		/// A plugin can use this event to request panel updating and redrawing. [FE_IDLE]
+		/// A plugin can use this event to request panel updating and redrawing.
 		/// </summary>
 		event EventHandler Idled;
 		/// <summary>
 		/// Raised on executing a command from the FAR command line.
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally. [FE_COMMAND]
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
 		/// </summary>
 		event EventHandler<ExecutingEventArgs> Executing;
 		/// <summary>
 		/// Raised when Ctrl-Break is pressed.
 		/// Processing of this event is performed in separate thread,
-		/// so be careful when performing console input or output and don't use FAR service functions. [FE_BREAK]
+		/// so be careful when performing console input or output and don't use FAR service functions.
 		/// </summary>
 		event EventHandler CtrlBreakPressed;
 		/// <summary>
 		/// Raised when the panel is about to redraw.
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin redraws the panel itself. [FE_REDRAW]
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin redraws the panel itself.
 		/// </summary>
 		event EventHandler<PanelEventArgs> Redrawing;
 		/// <summary>
-		/// Raised when panel view mode is changed. [FE_CHANGEVIEWMODE]
+		/// Raised when panel view mode is changed.
 		/// </summary>
 		event EventHandler<ViewModeChangedEventArgs> ViewModeChanged;
 		/// <summary>
 		/// Raised when a key is pressed.
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin processes the key itself. [ProcessKey]
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin processes the key itself.
 		/// </summary>
 		event EventHandler<PanelKeyEventArgs> KeyPressed;
 		/// <summary>
-		/// Raised to set the current directory in the file system emulated by the plugin. [SetDirectory]
+		/// Raised to set the current directory in the file system emulated by the plugin.
 		/// </summary>
 		event EventHandler<SettingDirectoryEventArgs> SettingDirectory;
 		/// <summary>
-		/// Raised to delete files in the file system emulated by the plugin. [DeleteFiles]
+		/// Raised to delete files in the file system emulated by the plugin.
 		/// </summary>
 		event EventHandler<FilesEventArgs> DeletingFiles;
 		/// <summary>
-		/// Raised to get files on copy\move operation. [GetFiles]
+		/// Raised to get files on copy\move operation.
 		/// </summary>
 		event EventHandler<GettingFilesEventArgs> GettingFiles;
 		/// <summary>
-		/// Raised to put files on copy\move operation. [PutFiles]
+		/// Raised to put files on copy\move operation.
 		/// </summary>
 		event EventHandler<FilesEventArgs> PuttingFiles;
 		/// <summary>
-		/// Rised to create a new directory in the file system emulated by the plugin. [MakeDirectory]
+		/// Rised to create a new directory in the file system emulated by the plugin.
 		/// </summary>
 		event EventHandler<MakingDirectoryEventArgs> MakingDirectory;
 		/// <summary>

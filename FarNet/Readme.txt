@@ -1,7 +1,7 @@
 Plugin   : FAR.NET
 Category : Development
-Version  : 3.3.42
-Release  : 2008.03.28
+Version  : 3.3.43
+Release  : 2008.03.31
 Author   : Roman Kuzmin
 Email    : nightroman@hotmail.com
 Sources  : C#, C++/CLI (see "Build sources")
@@ -40,7 +40,7 @@ you have to update Far.exe.config accordingly.
 	Structure
 
 
-Plugins\Far.NET\
+Plugins\FAR.NET\
 - FarNetPlugin.dll - FAR plugin and loader of FAR.NET plugins;
 - FarNetPlugin.hlf - FAR.NET help;
 

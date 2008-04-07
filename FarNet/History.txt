@@ -1,5 +1,15 @@
 http://code.google.com/p/farnet/
 
+3.3.43
+
+- Avoided inconvenient for plugin development internal exceptions on loading
+when plugin assemblies are changed and registry cache has to updated.
+- IMessage, IFar.Msg() - if a message contains too many buttons or their text is
+too long, then a dialog with a list box is used instead of a message box where
+listbox items work as buttons.
+- New property IPanel.IsLeft (FAR 1.71.2348).
+- REMOVED IMessage.Reset() because it is not actually needed or used.
+
 3.3.42
 
 MENU AND LIST DIALOG CONTROLS

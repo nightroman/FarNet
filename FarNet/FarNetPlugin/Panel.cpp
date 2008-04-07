@@ -818,6 +818,14 @@ bool FarPanel::IsActive::get()
 	return pi.Focus != 0;
 }
 
+bool FarPanel::IsLeft::get()
+{
+	PanelInfo pi;
+	if (!TryBrief(pi))
+		return false;
+	return (pi.Flags & PFLAGS_PANELLEFT) != 0;
+}
+
 bool FarPanel::IsPlugin::get()
 {
 	PanelInfo pi; GetBrief(pi);

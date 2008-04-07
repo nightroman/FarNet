@@ -10,16 +10,20 @@ namespace FarManager
 {
 	/// <summary>
 	/// Message box. It is created by <see cref="IFar.CreateMessage"/>.
-	/// In many cases you may just use one of <see cref="IFar.Msg(string)"/> methods.
+	/// Often it is easier to use one of <see cref="IFar.Msg(string)"/> methods.
 	/// </summary>
+	/// <remarks>
+	/// In extreme cases, e.g. when a message is generated and contain too many or too long buttons,
+	/// then a message box is converted into a listbox dialog where listbox items work as buttons.
+	/// </remarks>
 	public interface IMessage
 	{
 		/// <summary>
-		/// Message body: lines of text.
+		/// Message body text lines. Too long lines are wrapped automatically.
 		/// </summary>
 		StringCollection Body { get; }
 		/// <summary>
-		/// Set of button labels.
+		/// Button labels. See <see cref="IMessage"/> remarks.
 		/// </summary>
 		StringCollection Buttons { get; }
 		/// <summary>
@@ -31,15 +35,16 @@ namespace FarManager
 		/// </summary>
 		int Selected { get; set; }
 		/// <summary>
-		/// Message is warning.
+		/// Warning message colors are used (white text on red background by default).
 		/// </summary>
 		bool IsWarning { get; set; }
 		/// <summary>
-		/// Message is error.
+		/// If error type returned by GetLastError is known to FAR or Windows,
+		/// the error description will be shown before the message body text.
 		/// </summary>
 		bool IsError { get; set; }
 		/// <summary>
-		/// Store and restore background contents.
+		/// Do not redraw the message background.
 		/// </summary>
 		bool KeepBackground { get; set; }
 		/// <summary>
@@ -51,12 +56,8 @@ namespace FarManager
 		/// <summary>
 		/// Show the message box.
 		/// </summary>
-		/// <returns>True if a button is pressed.</returns>
+		/// <returns>True if a button is pressed, its index stored as <see cref="Selected"/>.</returns>
 		bool Show();
-		/// <summary>
-		/// Reset all properties to initial values.
-		/// </summary>
-		void Reset();
 		/// <summary>
 		/// Message options.
 		/// </summary>
