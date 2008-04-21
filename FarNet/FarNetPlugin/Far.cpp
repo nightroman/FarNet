@@ -267,22 +267,27 @@ void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 
 void Far::Msg(String^ body)
 {
-	Message::Show(body, nullptr, MessageOptions::Ok, nullptr);
+	Message::Show(body, nullptr, MessageOptions::Ok, nullptr, nullptr);
 }
 
 void Far::Msg(String^ body, String^ header)
 {
-	Message::Show(body, header, MessageOptions::Ok, nullptr);
+	Message::Show(body, header, MessageOptions::Ok, nullptr, nullptr);
 }
 
 int Far::Msg(String^ body, String^ header, MessageOptions options)
 {
-	return Message::Show(body, header, options, nullptr);
+	return Message::Show(body, header, options, nullptr, nullptr);
 }
 
 int Far::Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons)
 {
-	return Message::Show(body, header, options, buttons);
+	return Message::Show(body, header, options, buttons, nullptr);
+}
+
+int Far::Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic)
+{
+	return Message::Show(body, header, options, buttons, helpTopic);
 }
 
 IMessage^ Far::CreateMessage()

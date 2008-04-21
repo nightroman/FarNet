@@ -100,6 +100,16 @@ namespace FarManager
 		/// <returns>Button index or -1 if cancelled.</returns>
 		int Msg(string body, string header, MessageOptions options, string[] buttons);
 		/// <summary>
+		/// Shows a message box with options, buttons and help.
+		/// </summary>
+		/// <param name="body">Message text.</param>
+		/// <param name="header">Message header.</param>
+		/// <param name="options">Message options.</param>
+		/// <param name="buttons">Message buttons.</param>
+		/// <param name="helpTopic">See <see cref="IMessage.HelpTopic"/>.</param>
+		/// <returns>Button index or -1 if cancelled.</returns>
+		int Msg(string body, string header, MessageOptions options, string[] buttons, string helpTopic);
+		/// <summary>
 		/// Creates a new message box.
 		/// You have to set its properties and call <see cref="IMessage.Show"/>.
 		/// Note that in most cases using one of <c>Msg</c> methods instead of this is enough.

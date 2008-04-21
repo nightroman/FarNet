@@ -4,7 +4,7 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 1.71 build 2348
+  Plugin API for FAR Manager 1.71 build 2358
 
   Copyright (c) 1996-2000 Eugene Roshal
   Copyright (c) 2000-2008 FAR group
@@ -12,7 +12,7 @@
 
 #define MAKEFARVERSION(major,minor,build) ( ((major)<<8) | (minor) | ((build)<<16))
 
-#define FARMANAGERVERSION MAKEFARVERSION(1,71,2348)
+#define FARMANAGERVERSION MAKEFARVERSION(1,71,2358)
 
 
 #if !defined(_INC_WINDOWS) && !defined(_WINDOWS_)
@@ -1233,6 +1233,8 @@ enum EDITOR_CONTROL_COMMANDS {
   ECTL_PREVSTACKBOOKMARK,
   ECTL_NEXTSTACKBOOKMARK,
   ECTL_CLEARSTACKBOOKMARKS,
+  ECTL_DELETESTACKBOOKMARK,
+  ECTL_GETSTACKBOOKMARKS,
 };
 
 enum EDITOR_SETPARAMETER_TYPES {

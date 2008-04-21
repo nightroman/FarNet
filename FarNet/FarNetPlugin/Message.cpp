@@ -100,10 +100,11 @@ void Message::Add(StringCollection^ strings, CStr* result, int& index)
 	}
 }
 
-int Message::Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons)
+int Message::Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic)
 {
 	// object
 	Message m;
+	m.HelpTopic = helpTopic;
 	m.Options = options;
 
 	// text width
@@ -118,25 +119,8 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 	}
 
 	// body
-	Regex^ format = nullptr;
 	int height = Console::WindowHeight - 9;
-	for each(String^ s1 in Regex::Split(body->Replace('\t', ' '), "\r\n|\r|\n"))
-	{
-		if (s1->Length <= width)
-		{
-			m.Body->Add(s1);
-		}
-		else
-		{
-			if (format == nullptr)
-				format = gcnew Regex("(.{0," + width + "}(?:\\s|$))");
-			for each (String^ s2 in format->Split(s1))
-				if (s2->Length > 0)
-					m.Body->Add(s2);
-		}
-		if (m.Body->Count >= height)
-			break;
-	}
+	FormatMessageLines(m._body, body, width, height);
 
 	// buttons? dialog?
 	if (buttons != nullptr)
@@ -198,6 +182,34 @@ int Message::ShowDialog(Message^ msg, array<String^>^ buttons, int width)
 		return -1;
 
 	return list->Selected;
+}
+
+void Message::FormatMessageLines(StringCollection^ lines, String^ message, int width, int height)
+{
+	Regex^ format = nullptr;
+	for each(String^ s1 in Regex::Split(message->Replace('\t', ' '), "\r\n|\r|\n"))
+	{
+		if (s1->Length <= width)
+		{
+			lines->Add(s1);
+		}
+		else
+		{
+			if (format == nullptr)
+				format = gcnew Regex("(.{0," + width + "}(?:\\s|$))");
+			for each (String^ s2 in format->Split(s1))
+			{
+				if (s2->Length > 0)
+				{
+					lines->Add(s2);
+					if (lines->Count >= height)
+						return;
+				}
+			}
+		}
+		if (lines->Count >= height)
+			return;
+	}
 }
 
 }

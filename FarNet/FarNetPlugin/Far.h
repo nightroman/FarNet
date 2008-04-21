@@ -56,6 +56,7 @@ public:
 	virtual IMessage^ CreateMessage();
 	virtual int Msg(String^ body, String^ header, MessageOptions options);
 	virtual int Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons);
+	virtual int Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic);
 	virtual int NameToKey(String^ key);
 	virtual int SaveScreen(int x1, int y1, int x2, int y2);
 	virtual IPanelPlugin^ CreatePanelPlugin();
