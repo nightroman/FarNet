@@ -1,5 +1,17 @@
 http://code.google.com/p/farnet/
 
+3.3.45
+
+3.3.44
+
+- One more method IFar.Msg() with extra parameter 'helpTopic' (FYI: it looks
+like IMessage is completely covered by IFar.Msg() methods and perhaps it will be
+removed in the future).
+- IListMenu.Incremental: '*' in the end in 'prefix' mode: see help for more
+(example: used by completions in PowerShellFar).
+- IEditor.Open(): if a file is already opened then start position, if any, is
+not set -- fixed.
+
 3.3.43
 
 - Avoided inconvenient for plugin development internal exceptions on loading

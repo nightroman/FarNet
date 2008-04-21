@@ -24,12 +24,13 @@ public:
 	virtual property StringCollection^ Buttons { StringCollection^ get(); }
 internal:
 	Message();
-	static int Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons);
+	static int Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic);
 private:
 	int Amount();
 	CStr* CreateBlock();
 	static void Add(StringCollection^ strings, CStr* result, int& index);
 	static int ShowDialog(Message^ msg, array<String^>^ buttons, int width);
+	static void FormatMessageLines(StringCollection^ lines, String^ message, int width, int height);
 private:
 	int _flags;
 	int _selected;

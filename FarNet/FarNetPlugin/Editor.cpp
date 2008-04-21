@@ -124,7 +124,12 @@ void Editor::Open(OpenMode mode)
 			String^ fileName1 = Path::GetFullPath(_FileName);
 			String^ fileName2 = Path::GetFullPath(editor->_FileName);
 			if (Compare(fileName1, fileName2) == 0)
+			{
+				// goto?
+				if (nLine >= 0 || nPos >= 0)
+					editor->GoTo(_frameStart.Pos, _frameStart.Line);
 				return;
+			}
 		}
 		throw gcnew OperationCanceledException("Cannot open the file '" + FileName + "'");
 	}
