@@ -55,7 +55,7 @@ static Regex^ CreateRegex(String^ pattern, PatternOptions options, bool* ok)
 			if (ok)
 			{
 				*ok = false;
-				Message::Show(e->Message, "Filter expression", MessageOptions::Ok, nullptr);
+				Message::Show(e->Message, "Filter expression", MessageOptions::Ok, nullptr, nullptr);
 			}
 			return nullptr;
 		}
@@ -663,7 +663,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 					return;
 				}
 
-				if (_filter2->Length > Incremental->Length)
+				if (_filter2->Length > Incremental->Length || _filter2->Length == Incremental->Length && Incremental->EndsWith("*"))
 				{
 					Char c = _filter2[_filter2->Length - 1];
 					_filter2 = _filter2->Substring(0, _filter2->Length - 1);

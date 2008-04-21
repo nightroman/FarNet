@@ -116,16 +116,17 @@ namespace FarManager
 		/// </summary>
 		string Bottom { get; set; }
 		/// <summary>
-		/// Menu item collection.
+		/// Menu items.
 		/// </summary>
 		IList<IMenuItem> Items { get; }
 		/// <summary>
-		/// Before <see cref="Show"/> tells to select the item by this index.
-		/// After <see cref="Show"/> returns the selected item index or -1 if nothing is selected.
+		/// Before and after <see cref="Show"/>:
+		/// before: selects the item by this index;
+		/// after: gets the selected item index or -1 on cancel.
 		/// </summary>
 		int Selected { get; set; }
 		/// <summary>
-		/// User data attached to the <see cref="Selected"/> item or null if nothing is selected.
+		/// User data attached to the <see cref="Selected"/> item or null on cancel.
 		/// </summary>
 		object SelectedData { get; }
 		/// <summary>
@@ -141,7 +142,7 @@ namespace FarManager
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
-		/// Tells to select the last item on <see cref="Show()"/> if <see cref="Selected"/> is not set.
+		/// To select the last item on <see cref="Show()"/> if <see cref="Selected"/> is not set.
 		/// </summary>
 		bool SelectLast { get; set; }
 		/// <summary>
@@ -168,17 +169,17 @@ namespace FarManager
 		/// </summary>
 		int BreakKey { get; }
 		/// <summary>
-		/// Add menu item to list
+		/// Adds a new item to <see cref="Items"/> and returns it.
 		/// </summary>
 		/// <param name="text">Item text.</param>
-		/// <returns>New menu item. Use it to set more properties.</returns>
+		/// <returns>New menu item. You may set more properties.</returns>
 		IMenuItem Add(string text);
 		/// <summary>
-		/// Add menu item to list
+		/// Adds a new item to <see cref="Items"/> and returns it.
 		/// </summary>
 		/// <param name="text">Item text.</param>
 		/// <param name="onClick"><see cref="IMenuItem.OnClick"/>.</param>
-		/// <returns>New menu item. Use it to set more properties.</returns>
+		/// <returns>New menu item. You may set more properties.</returns>
 		IMenuItem Add(string text, EventHandler onClick);
 	}
 
@@ -296,9 +297,17 @@ namespace FarManager
 		PatternOptions IncrementalOptions { get; set; }
 		/// <summary>
 		/// Predefined incremental filter pattern used to continue typing.
-		/// It is not used to filter the initial list, initial list contains all items.
-		/// It does not enable filter itself, you have to set <see cref="IncrementalOptions"/>.
 		/// </summary>
+		/// <remarks>
+		/// It is not used to filter the initial list, initial list contains all items.
+		/// <para>
+		/// It does not enable filter itself, you have to set <see cref="IncrementalOptions"/>.
+		/// </para>
+		/// <para>
+		/// In 'prefix' mode it is sometimes iseful to add '*' to the end of the initial pattern,
+		/// as if it is already typed to filter with wildcard (it can be 'undone' by backspace).
+		/// </para>
+		/// </remarks>
 		string Incremental { get; set; }
 		/// <summary>
 		/// Tells to select a single item or nothing automatically on less than two items.

@@ -262,14 +262,14 @@ namespace FarManager
 		/// </summary>
 		ICollection<TextFrame> Bookmarks();
 		/// <summary>
-		/// Go to a new cursor position.
+		/// Go to a new cursor position or set it for opening.
 		/// </summary>
 		/// <param name="pos">Position.</param>
 		/// <param name="line">Line.</param>
 		/// <seealso cref="Frame"/>
 		void GoTo(int pos, int line);
 		/// <summary>
-		/// Go to a line.
+		/// Go to a line or set it for opening.
 		/// </summary>
 		/// <param name="line">Line.</param>
 		/// <seealso cref="Frame"/>
