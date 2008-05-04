@@ -1,6 +1,9 @@
 http://code.google.com/p/farnet/
 
-3.3.45
+3.3.46
+
+- Fixed IFar.AnyEditor.EditText(): error if the text is empty and the file is
+not saved on exit.
 
 3.3.44
 

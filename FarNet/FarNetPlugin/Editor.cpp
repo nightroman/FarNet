@@ -41,7 +41,19 @@ String^ BaseEditor::EditText(String^ text, String^ title)
 			edit->Title = title;
 		edit->Open(OpenMode::Modal);
 		
-		return File::ReadAllText(file, Encoding::Default);
+		if (File::Exists(file))
+		{
+			// read and delete
+			String^ r = File::ReadAllText(file, Encoding::Default);
+			try { File::Delete(file); }
+			catch(IOException^) {}
+			return r;
+		}
+		else
+		{
+			// no file, e.g. the text was empty and user exits without saving; case 080502
+			return String::Empty;
+		}
 	}
 	finally
 	{
