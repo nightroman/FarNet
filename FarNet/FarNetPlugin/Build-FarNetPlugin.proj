@@ -1,17 +1,25 @@
 <Project DefaultTargets="Install" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
 	<PropertyGroup>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far\Plugins\FAR.NET</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<PublishFile Include="FarNetPlugin.hlf;$(Configuration)\FarNetPlugin.dll"/>
+	</ItemGroup>
+
 	<Target Name="Clean">
 		<RemoveDir Directories="Debug;Release"/>
 	</Target>
+
 	<Target Name="Install">
-		<Copy SourceFiles="FarNetPlugin.hlf" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="$(Configuration)\FarNetPlugin.dll" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(PublishFile)" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
 	</Target>
+
 	<Target Name="Uninstall">
 		<Delete Files="$(Install)\FarNetPlugin.dll;$(Install)\FarNetPlugin.hlf"/>
 		<Exec Command='rd "$(Install)"'/>
 	</Target>
+
 </Project>
