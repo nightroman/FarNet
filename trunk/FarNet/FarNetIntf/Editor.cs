@@ -416,7 +416,7 @@ namespace FarManager
 		/// </summary>
 		string Eol { get; set; }
 		/// <summary>
-		/// Selected line parts.
+		/// Selected line part.
 		/// </summary>
 		ILineSelection Selection { get; }
 		/// <summary>
@@ -426,8 +426,8 @@ namespace FarManager
 		/// </summary>
 		int Pos { get; set; }
 		/// <summary>
-		/// Inserts text into the current or command line beginning from the current cursor position.
-		/// Don't use if it is not the current line or the command line.
+		/// Inserts text into the line at the current cursor position.
+		/// Editor: don't use if it is not the current line.
 		/// </summary>
 		/// <param name="text">String to insert to the line.</param>
 		void Insert(string text);
