@@ -2,4 +2,8 @@
 
 = Introduction =
 
-Graphical PowerShell V2 CTP2 still looks like a demo, basically speaking. Nevertheless, it is already suitable for some tasks. Unfortunately it does not implement a few host features including default breakpoint debugger action. Breakpoints without action are simply ignored. Fortunately PowerShell provides a way to solve this. Here it is: simple and yet practically useful Add-Debugger.ps1. The archive also contains Test-Debugger.ps1 to play with and see how debugging goes (in any host, actually). Follow instructions in the script headers.
+*Graphical PowerShell V2 CTP2* still looks like a demo, basically speaking. Nevertheless, it is already suitable for some tasks. Unfortunately it does not implement a few host features including default breakpoint debugger action. Breakpoints without action are simply ignored. Fortunately PowerShell provides a way to solve this. Here it is: simple and yet practically useful *Add-Debugger.ps1*.
+
+= Details =
+
+Dowload *Utility_GPowerShellDebugger*. The archive contains the main script *Add-Debugger.ps1* and also *Test-Debugger.ps1* to play with and see how debugging goes (in any host, actually). Follow instructions in the script headers.
