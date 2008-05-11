@@ -1,7 +1,7 @@
 Plugin   : FAR.NET
 Category : Development
-Version  : 3.3.46
-Release  : 2008.04.26
+Version  : 3.3.48
+Release  : 2008.05.11
 Author   : Roman Kuzmin
 Email    : nightroman@hotmail.com
 Sources  : C#, C++/CLI (see "Build sources")
