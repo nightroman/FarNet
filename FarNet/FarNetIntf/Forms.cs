@@ -400,6 +400,10 @@ namespace FarManager.Forms
 		/// Title.
 		/// </summary>
 		string Title { get; set; }
+		/// <summary>
+		/// Sets both cursor and top position. It should be called when a dialog is shown.
+		/// </summary>
+		void SetFrame(int selected, int top);
 	}
 
 	/**
