@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/
 
+3.3.47
+
+- IListBox: new method SetFrame() to set both current and top positions.
+
 3.3.46
 
 - Fixed IFar.AnyEditor.EditText(): error if the text is empty and the file is

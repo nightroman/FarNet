@@ -210,6 +210,8 @@ public:
 	virtual property bool NoBox { bool get(); void set(bool value); }
 	virtual property String^ Text { String^ get() override; void set(String^ value) override; }
 	virtual property String^ Title { String^ get(); void set(String^ value); }
+public:
+	virtual void SetFrame(int selected, int top);
 internal:
 	FarListBox(FarDialog^ dialog, int index);
 	FarListBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);

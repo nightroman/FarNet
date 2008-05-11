@@ -1019,6 +1019,14 @@ void FarListBox::Text::set(String^ value)
 	}
 }
 
+void FarListBox::SetFrame(int selected, int top)
+{
+	FarListPos arg;
+	arg.SelectPos = selected;
+	arg.TopPos = top;
+	Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETCURPOS, Id, (LONG_PTR)&arg);
+}
+
 //
 //::FarDialog
 //
