@@ -585,7 +585,7 @@ void ListMenu::AddKey(int key, EventHandler<MenuEventArgs^>^ handler)
 
 void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 {
-	// Tab - go to next
+	// Tab: go to next
 	if (e->Code == KeyCode::Tab)
 	{
 		FarListBox^ box = (FarListBox^)e->Control;
@@ -643,6 +643,15 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 		_toFilter1 = true;
 		_toFilter2 = true;
 		d->Close();
+		return;
+	}
+
+	// CtrlC: copy to clipboard
+	if (e->Code == (KeyCode::Ctrl | 'C') || e->Code == (KeyCode::Ctrl | KeyCode::Insert))
+	{
+		FarListBox^ box = (FarListBox^)e->Control;
+		Far::Instance->CopyToClipboard(box->Text);
+		e->Ignore = true;
 		return;
 	}
 

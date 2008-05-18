@@ -259,9 +259,11 @@ namespace FarManager
 	/// This kind of a menu is more suitable for a list of objects than a set of commands.
 	/// It provides two kinds of filters: permanent and incremental, both with many options, both can be used together.
 	/// <para>
-	/// Keys: [CtrlDown] - default key to open a permanent filter input box;
-	/// [Backspace] - removes the last symbol from the incremental filter string (until the initial part is reached, if any);
-	/// [ShiftBackspace] - removes the incremental filter string completely, even initial part (rarely needed, but there are some cases).
+	/// Keys:<br/>
+	/// [CtrlC], [CtrlIns] - copy text of the current item to the clipboard.<br/>
+	/// [CtrlDown] - this is a default key to open a permanent filter input box.<br/>
+	/// [Backspace] - remove the last symbol from the incremental filter string (until the initial part is reached, if any).<br/>
+	/// [ShiftBackspace] - remove the incremental filter string completely, even initial part (rarely needed, but there are some cases).<br/>
 	/// </para>
 	/// </remarks>
 	public interface IListMenu : IAnyMenu

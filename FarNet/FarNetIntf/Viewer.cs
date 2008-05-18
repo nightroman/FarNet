@@ -14,12 +14,20 @@ namespace FarManager
 	public interface IAnyViewer
 	{
 		/// <summary>
-		/// Viewer is opened.
+		/// A file is opened in the viewer.
 		/// </summary>
+		/// <remarks>
+		/// This event can be triggered more than once for the same viewer instance,
+		/// e.g. by 'Add', 'Subtract' keys.
+		/// </remarks>
 		event EventHandler Opened;
 		/// <summary>
 		/// Viewer is closed. Don't operate on it, it has really gone.
 		/// </summary>
+		/// <remarks>
+		/// This event is triggered once for the viewer instance,
+		/// even if there were several files opened in it.
+		/// </remarks>
 		event EventHandler Closed;
 		/// <summary>
 		/// Opens a viewer to view some text.

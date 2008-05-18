@@ -27,6 +27,7 @@ public:
 	virtual property IDialog^ Dialog { IDialog^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
 	virtual property ILine^ CommandLine { ILine^ get(); }
+	virtual property ILine^ Line { ILine^ get(); }
 	virtual property int WindowCount { int get(); }
 	virtual property IntPtr HWnd { IntPtr get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
@@ -68,6 +69,7 @@ public:
 	virtual String^ Input(String^ prompt, String^ history);
 	virtual String^ Input(String^ prompt, String^ history, String^ title);
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
+	virtual String^ KeyToName(int key);
 	virtual String^ PasteFromClipboard();
 	virtual String^ RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler);
 	virtual String^ TempFolder() { return TempFolder(nullptr); }

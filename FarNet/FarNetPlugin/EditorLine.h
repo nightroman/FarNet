@@ -19,6 +19,8 @@ public:
 	virtual property int Pos { int get(); void set(int value); }
 	virtual property String^ Eol { String^ get(); void set(String^ value); }
 	virtual property String^ Text { String^ get(); void set(String^ value); }
+	virtual property FarManager::WindowType WindowType { FarManager::WindowType get() { return FarManager::WindowType::Editor; } }
+public:
 	virtual void Insert(String^ text);
 	virtual void Select(int start, int end);
 	virtual void Unselect();

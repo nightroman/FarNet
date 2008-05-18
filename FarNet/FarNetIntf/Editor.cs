@@ -451,6 +451,10 @@ namespace FarManager
 		/// The text length.
 		/// </summary>
 		int Length { get; }
+		/// <summary>
+		/// Parent window type (<c>Editor</c>, <c>Panels</c>, <c>Dialog</c>).
+		/// </summary>
+		WindowType WindowType { get; }
 	}
 
 	/// <summary>

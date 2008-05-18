@@ -221,6 +221,10 @@ public:
 			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(char*)sText);
 		}
 	}
+	virtual property FarManager::WindowType WindowType
+	{
+		FarManager::WindowType get() { return FarManager::WindowType::Dialog; }
+	}
 	virtual void Insert(String^ text)
 	{
 		if (!text) throw gcnew ArgumentNullException("text");

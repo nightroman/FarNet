@@ -18,8 +18,8 @@
 	</Target>
 
 	<Target Name="Uninstall">
-		<Delete Files="$(Install)\FarNetPlugin.dll;$(Install)\FarNetPlugin.hlf"/>
-		<Exec Command='rd "$(Install)"'/>
+		<Error Condition="'$(Install)' == ''"/>
+		<RemoveDir Directories="$(Install)"/>
 	</Target>
 
 </Project>
