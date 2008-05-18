@@ -465,6 +465,14 @@ int Far::NameToKey(String^ key)
 	return Info.FSF->FarNameToKey(buf);
 }
 
+String^ Far::KeyToName(int key)
+{
+	char name[33];
+	if (!Info.FSF->FarKeyToName(key, name, sizeof(name) - 1))
+		return nullptr;
+	return OemToStr(name);
+}
+
 void Far::PostKeys(String^ keys)
 {
 	PostKeys(keys, true);
@@ -526,6 +534,38 @@ void Far::RestoreScreen(int screen)
 ILine^ Far::CommandLine::get()
 {
 	return gcnew FarCommandLine;
+}
+
+ILine^ Far::Line::get()
+{
+	switch (GetWindowType(-1))
+	{
+	case WindowType::Editor:
+		{
+			IEditor^ editor = Editor;
+			return editor->CurrentLine;
+		}
+	case WindowType::Panels:
+		{
+			return CommandLine;
+		}
+	case WindowType::Dialog:
+		{
+			IDialog^ dialog = Dialog;
+			if (dialog) //?? need?
+			{
+				IControl^ control = dialog->Focused;
+				IEdit^ edit = dynamic_cast<IEdit^>(control);
+				if (edit)
+					return edit->Line;
+				IComboBox^ combo = dynamic_cast<IComboBox^>(control);
+				if (combo)
+					return combo->Line;
+			}
+			break;
+		}
+	}
+	return nullptr;
 }
 
 IEditor^ Far::Editor::get()
