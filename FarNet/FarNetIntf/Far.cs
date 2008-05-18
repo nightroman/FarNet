@@ -214,9 +214,13 @@ namespace FarManager
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeySequence(int[] sequence, bool disableOutput);
 		/// <summary>
-		/// Converts a key string representation to the internal key code. <see cref="KeyCode"/>
+		/// Converts a key string representation to the internal <see cref="KeyCode"/>. Returns -1 on errors.
 		/// </summary>
 		int NameToKey(string key);
+		/// <summary>
+		/// Converts an internal <see cref="KeyCode"/> to string representation. Returns null on errors.
+		/// </summary>
+		string KeyToName(int key);
 		/// <summary>
 		/// Saves screen area.
 		/// You always have to call <see cref="RestoreScreen"/>.
@@ -547,6 +551,11 @@ namespace FarManager
 		/// The current dialog if any.
 		/// </summary>
 		IDialog Dialog { get; }
+		/// <summary>
+		/// The current editor or dialog edit box line or the command line.
+		/// It is null if there is no current editor line available.
+		/// </summary>
+		ILine Line { get; }
 	}
 
 	/// <summary>

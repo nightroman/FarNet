@@ -1,5 +1,20 @@
 http://code.google.com/p/farnet/
 
+3.3.48
+
+- Fixed error messages in viewer on Add|Subtract keys ~ open next|prev file.
+
+- IFar: new property ILine Line { get; }: current editor line in any area (it is
+$Psf.HotLine moved from PowerShellFar).
+
+- IFar: new method KeyToName(): converts an internal key code to its string
+representation.
+
+- ILine: new property WindowType: parent window type (Editor, Panels, Dialog).
+
+- IListMenu: by default in any list menu keys [CtrlC] and [CtrlIns] are used to
+copy text of the current item to the clipboard.
+
 3.3.47
 
 - IListBox: new method SetFrame() to set both current and top positions.

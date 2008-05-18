@@ -59,24 +59,29 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 	case VE_READ:
 		LL(__FUNCTION__ " READ");
 		{
-			// take waiting or create new
+			// get info
+			ViewerInfo vi; vi.StructSize = sizeof(vi);
+			Info.ViewerControl(VCTL_GETINFO, &vi);
+
+			// take waiting, existing or create new
+			//! It really may exist on 'Add', 'Subtract' in a viewer open a file in the *same* viewer.
 			Viewer^ viewer;
 			if (_viewerWaiting)
 			{
 				viewer = _viewerWaiting;
 				_viewerWaiting = nullptr;
+				Register(viewer, vi);
+			}
+			else if (!_viewers.TryGetValue(vi.ViewerID, viewer))
+			{
+				viewer = gcnew Viewer;
+				Register(viewer, vi);
 			}
 			else
 			{
-				viewer = gcnew Viewer;
+				// new file is opened in the same viewer -- update file name
+				viewer->_FileName = OemToStr(vi.FileName);
 			}
-
-			// get info
-			ViewerInfo vi; vi.StructSize = sizeof(vi);
-			Info.ViewerControl(VCTL_GETINFO, &vi);
-
-			// register
-			Register(viewer, vi);
 
 			// event
 			if (_anyViewer._Opened)

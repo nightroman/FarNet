@@ -19,7 +19,7 @@
 	</Target>
 
 	<Target Name="Uninstall">
-		<Delete Files="$(Install)\FarNetIntf.dll;$(Install)\FarNetIntf.xml"/>
-		<Exec Command='rd "$(Install)"'/>
+		<Error Condition="'$(Install)' == ''"/>
+		<RemoveDir Directories="$(Install)"/>
 	</Target>
 </Project>

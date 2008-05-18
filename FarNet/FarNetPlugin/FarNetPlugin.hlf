@@ -28,17 +28,21 @@ $#Menu#
 FAR.NET shows its menu item ".NET" in all FAR plugin menus and in the disk menu.
 
 #Disk#
-	It shows the ~Panels menu~@MenuPanels@.
+
+It shows the ~Panels menu~@MenuPanels@.
 
 #Panels#
-	It shows the ~Panels menu~@MenuPanels@.
+
+It shows the ~Panels menu~@MenuPanels@.
 
 #Config#
-	It shows the ~Config menu~@MenuConfig@.
+
+It shows the ~Config menu~@MenuConfig@.
 
 #Editor, Viewer, Dialog#
-	It does nothing when selected manually, but this item is used internally for
-	important feature "PostStep" which works in these areas, too.
+
+It does nothing when selected manually, but this item is used internally for
+important feature "PostStep" which works in these areas, too.
 
 
 @MenuPanels
@@ -70,31 +74,40 @@ This menu allows to select and configure FAR.NET command plugins, tool plugins
 (by areas) and file plugins.
 
 #Command plugins#
-	It shows the ~Configure command plugins~@ConfigCommand@ menu.
+
+It shows the ~Configure command plugins~@ConfigCommand@ menu.
 
 #Editor plugins#
-	It shows the ~Configure editor plugins~@ConfigEditor@ menu.
+
+It shows the ~Configure editor plugins~@ConfigEditor@ menu.
 
 #Filer plugins#
-	It shows the ~Configure filer plugins~@ConfigFiler@ menu.
+
+It shows the ~Configure filer plugins~@ConfigFiler@ menu.
 
 #Panels tools#
-	It shows the ~Configure tool plugins~@ConfigTool@ menu for Panels area.
+
+It shows the ~Configure tool plugins~@ConfigTool@ menu for Panels area.
 
 #Editor tools#
-	It shows the ~Configure tool plugins~@ConfigTool@ menu for Editor area.
+
+It shows the ~Configure tool plugins~@ConfigTool@ menu for Editor area.
 
 #Viewer tools#
-	It shows the ~Configure tool plugins~@ConfigTool@ menu for Viewer area.
+
+It shows the ~Configure tool plugins~@ConfigTool@ menu for Viewer area.
 
 #Dialog tools#
-	It shows the ~Configure tool plugins~@ConfigTool@ menu for Dialog area.
+
+It shows the ~Configure tool plugins~@ConfigTool@ menu for Dialog area.
 
 #Config tools#
-	It shows the ~Configure tool plugins~@ConfigTool@ menu for Config area.
+
+It shows the ~Configure tool plugins~@ConfigTool@ menu for Config area.
 
 #Disk tools#
-	It shows the ~Configure disk tools~@ConfigDisk@ menu.
+
+It shows the ~Configure disk tools~@ConfigDisk@ menu.
 
 
 @ConfigTool
@@ -105,10 +118,12 @@ This menu and the input box allow to edit FAR.NET plugin strings shown in the
 FAR plugins menus (F11) in Panels, Editor, Viewer and Dialog areas.
 
 #Enter# (menu)
-	opens the input box where you can change the selected menu string.
+
+Opens the input box where you can change the selected menu string.
 
 #Esc# (menu)
-	closes the menu.
+
+Closes the menu.
 
 #Input box#
 
@@ -130,10 +145,12 @@ $#Configure command plugins#
 This menu and the input box allow to edit FAR.NET plugin command line prefixes.
 
 #Enter# (menu)
-	opens the input box where you can change the selected prefix.
+
+Opens the input box where you can change the selected prefix.
 
 #Esc# (menu)
-	closes the menu.
+
+Closes the menu.
 
 #Input box#
 
@@ -148,10 +165,12 @@ $#Configure editor plugins#
 This menu and the input box allow to edit editor plugin file masks.
 
 #Enter# (menu)
-	opens the input box where you can change the file mask.
+
+Opens the input box where you can change the file mask.
 
 #Esc# (menu)
-	closes the menu.
+
+Closes the menu.
 
 #Input box#
 
@@ -167,10 +186,12 @@ $#Configure filer plugins#
 This menu and the input box allow to edit file plugin file masks.
 
 #Enter# (menu)
-	opens the input box where you can change the file mask.
+
+Opens the input box where you can change the file mask.
 
 #Esc# (menu)
-	closes the menu.
+
+Closes the menu.
 
 #Input box#
 
@@ -195,33 +216,44 @@ This is basic description of all list menus. Actual keys and operations depend
 on properties set by a sub-plugin.
 
 #Enter#
-	Selects the current item and closes the menu. The selected item is processed
-	by a caller. Example: command history: the selected command is invoked.
+
+Selects the current item and closes the menu. The selected item is processed by
+a caller. Example: command history: the selected command is invoked.
 
 #CtrlEnter#
-	Recommended key for an alternative action, i.e. it selects the current item,
-	closes the menu and the item is processed by a caller in alternative way.
-	Example: command history: the selected command is inserted into the command
-	line.
+
+Recommended key for an alternative action, i.e. it selects the current item,
+closes the menu and the item is processed by a caller in alternative way.
+Example: command history: the selected command is inserted into the command
+line.
 
 #Delete#
-	Recommended key for removing item(s) from the menu. Example: command
-	history: removes duplicated commands or removes the current command and etc.
+
+Recommended key for removing item(s) from the menu. Example: command history:
+removes duplicated commands or removes the current command and etc.
 
 #CtrlDown#
-	Recommended key to open an input filter dialog (if permanent filter is
-	enabled). Note that in this case #AltDown# does the same if you use this
-	popular macro (addon AltDown.reg). See also ~Input filter~@InputFilter@.
+
+Recommended key to open an input filter dialog (if permanent filter is enabled).
+Note that in this case #AltDown# does the same if you use this popular macro
+(addon AltDown.reg). See also ~Input filter~@InputFilter@.
 
 #Symbols#
-	Applies incremental filter immediately on typing (if incremental filter is
-	enabled). By default symbols * and ? are wildcards.
+
+Applies incremental filter immediately on typing (if incremental filter is
+enabled). By default symbols * and ? are wildcards.
 
 #Backspace#
-	Removes the last symbol from the current incremental filter pattern.
+
+Removes the last symbol from the current incremental filter pattern.
 
 #ShiftBackspace#
-	Removes the incremental filter string completely.
+
+Removes the incremental filter string completely.
+
+#CtrlC, CtrlIns#
+
+Copies the current item text to the clipboard.
 
 
 @InputFilter
@@ -234,16 +266,16 @@ settings. Available types:
  #Regex#
  #Regex, Literal#
 
-	regex - standard regular expression
-	?text - text is a prefix where * and ? are wildcards or #Literal#
-	*text - text is a substring where * and ? are wildcards or #Literal#
+ regex - standard regular expression
+ ?text - text is a prefix where * and ? are wildcards or #Literal#
+ *text - text is a substring where * and ? are wildcards or #Literal#
 
  #Prefix#
  #Prefix, Literal#
 
- 	Pattern is a prefix where * and ? are wildcards or #Literal#
+ Pattern is a prefix where * and ? are wildcards or #Literal#
 
  #Substring#
  #Substring, Literal#
 
-	Pattern is a substring where * and ? are wildcards or #Literal#
+ Pattern is a substring where * and ? are wildcards or #Literal#

@@ -143,11 +143,11 @@ namespace FarManager
 		Right = 0x0002,
 		/// <summary>The middle mouse button was pressed.</summary>
 		Middle = 0x0004,
-		/// <summary></summary>
+		///
 		XButton1 = 0x0008,
-		/// <summary></summary>
+		///
 		XButton2 = 0x0010,
-		/// <summary></summary>
+		///
 		All = Left | Right | Middle | XButton1 | XButton2
 	}
 
@@ -258,10 +258,10 @@ namespace FarManager
 	[DebuggerStepThroughAttribute]
 	public static class KeyCode
 	{
-		/// <summary></summary>
+		///
 		public const long CtrlMask = 0xFF000000;
 
-		/// <summary></summary>
+		///
 		public const int
 
 		Ctrl = 0x01000000,
@@ -393,7 +393,7 @@ namespace FarManager
 	[DebuggerStepThroughAttribute]
 	public static class VKeyCode
 	{
-		/// <summary></summary>
+		///
 		public const int
 		AddControl = 1 << 16,
 		AddAlt = 2 << 16,
