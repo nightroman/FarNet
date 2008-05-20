@@ -9,8 +9,8 @@ Invokes PowerShell (V2 CTP2) commands and scripts in the same session directly b
 
 (not supported by the author any more)
 
-The last version for PowerShell V1 is 1.1.42:
-http://farnet.googlecode.com/files/PowerShellFar.1.1.42.rar
+The last PSF and FAR.NET versions for PowerShell V1 is 1.1.42 and 3.3.42:
+  * http://farnet.googlecode.com/files/PowerShellFar.1.1.42.rar
+  * http://farnet.googlecode.com/files/PowerShellFar.1.1.48.rar
 
-The latest suitable FAR.NET version for it is 3.3.48:
-http://farnet.googlecode.com/files/PowerShellFar.1.1.48.rar
+Some later FAR.NET versions may work with PSF 1.1.42, too, but they were not tested together.
