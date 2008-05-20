@@ -3,3 +3,9 @@
 = Introduction =
 
 Invokes PowerShell (V2 CTP2) commands and scripts in the same session directly by PowerShell core, i.e. without calling `PowerShell.exe` application. Provides access from PowerShell code to FAR data and functionality via Far.NET object model. Includes PowerShellFar scripts and `PowerShell.hrc` for `Colorer-take5.beta5`
+
+The last version for PowerShell V1 is 1.1.42:
+http://farnet.googlecode.com/files/PowerShellFar.1.1.42.rar
+
+The latest suitable FAR.NET version for it is 3.3.48:
+http://farnet.googlecode.com/files/PowerShellFar.1.1.48.rar
