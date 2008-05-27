@@ -4,6 +4,7 @@ Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #pragma once
+#include "AnyEditor.h"
 
 namespace FarNet
 {;
@@ -11,22 +12,7 @@ ref class SelectionCollection;
 ref class VisibleEditorCursor;
 ref class EditorLineCollection;
 
-ref class BaseEditor : IAnyEditor
-{
-public: DEF_EVENT(Closed, _Closed);
-public: DEF_EVENT(GotFocus, _GotFocus);
-public: DEF_EVENT(LosingFocus, _LosingFocus);
-public: DEF_EVENT(Opened, _Opened);
-public: DEF_EVENT(Saving, _Saving);
-public: DEF_EVENT_ARGS(OnKey, _OnKey, KeyEventArgs);
-public: DEF_EVENT_ARGS(OnMouse, _OnMouse, MouseEventArgs);
-public: DEF_EVENT_ARGS(OnRedraw, _OnRedraw, RedrawEventArgs);
-public:
-	virtual property String^ WordDiv { String^ get(); void set(String^ value); }
-	virtual String^ EditText(String^ text, String^ title);
-};
-
-ref class Editor : public BaseEditor, public IEditor
+ref class Editor : public AnyEditor, public IEditor
 {
 public:
 	virtual property bool DisableHistory { bool get(); void set(bool value); }

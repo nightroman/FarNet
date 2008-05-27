@@ -6,7 +6,7 @@ using namespace System::Runtime::CompilerServices;
 using namespace System::Runtime::InteropServices;
 using namespace System::Security::Permissions;
 
-[assembly:AssemblyVersion("3.3.48.0")];
+[assembly:AssemblyVersion("3.3.49.0")];
 [assembly:AssemblyTitle("FAR.NET plugin")];
 [assembly:AssemblyDescription("FAR.NET plugin")];
 [assembly:AssemblyConfiguration("")];

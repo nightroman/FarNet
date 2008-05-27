@@ -4,18 +4,11 @@ Copyright (c) 2005-2008 FAR.NET Team
 */
 
 #pragma once
+#include "AnyViewer.h"
 
 namespace FarNet
 {;
-ref class BaseViewer : IAnyViewer
-{
-public: DEF_EVENT(Closed, _Closed);
-public: DEF_EVENT(Opened, _Opened);
-public:
-	virtual void ViewText(String^ text, String^ title, OpenMode mode);
-};
-
-ref class Viewer : public BaseViewer, public IViewer
+ref class Viewer : public AnyViewer, public IViewer
 {
 public:
 	virtual property bool DisableHistory { bool get(); void set(bool value); }

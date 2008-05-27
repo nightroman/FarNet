@@ -20,7 +20,7 @@ internal:
 	// Editor waiting for ID
 	static Editor^ _editorWaiting;
 	// Any editor object
-	static BaseEditor _anyEditor;
+	static AnyEditor _anyEditor;
 private:
 	// Registered opened editors
 	static SortedList<int, Editor^> _editors;
