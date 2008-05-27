@@ -515,10 +515,14 @@ void DeleteSourceOptional(String^ path, DeleteSource option)
 	catch(IOException^) {}
 }
 
-// string.Compare with ignoreCase and InvariantCulture
 int Compare(String^ strA, String^ strB)
 {
 	return String::Compare(strA, strB, true, CultureInfo::InvariantCulture);
+}
+
+bool EqualsOrdinal(String^ strA, String^ strB)
+{
+	return StringComparer::OrdinalIgnoreCase->Equals(strA, strB);
 }
 
 #ifdef TEST1

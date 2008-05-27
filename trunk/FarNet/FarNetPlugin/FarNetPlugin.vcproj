@@ -215,6 +215,18 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\AnyEditor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AnyMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AnyViewer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\AssemblyInfo.cpp"
 				>
 			</File>
@@ -271,7 +283,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeyMacroHost.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ListItemCollection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ListMenu.cpp"
 				>
 			</File>
 			<File
@@ -337,6 +357,18 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\AnyEditor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AnyMenu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AnyViewer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Collections.h"
 				>
 			</File>
@@ -381,11 +413,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeyMacroHost.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ListItemCollection.h"
 				>
 			</File>
 			<File
+				RelativePath=".\ListMenu.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Menu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MenuItem.h"
 				>
 			</File>
 			<File
