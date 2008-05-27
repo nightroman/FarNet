@@ -1,5 +1,37 @@
 http://code.google.com/p/farnet/
 
+3.3.49
+
+MACRO MANAGEMENT
+
+- New interface IKeyMacroHost exposed as IFar.KeyMacro property. It provides
+methods for macro management.
+
+- New class KeyMacroData: data set describing a macro. It is used by
+IKeyMacroHost to get\set a macro data. Note: property names and values are
+related to FAR native registry names and values, but this relation is not always
+direct, RTFM.
+
+- These IFar methods are OBSOLETE and will be removed: LoadMacros(),
+SaveMacros(), PostMacro(). Use new methods of IKeyMacroHost: Load(), Save(),
+Post(). Note: new Post() uses 'enableOutput' parameter which is 'false' by
+default instead of PostMacro() 'disableOutput' which is 'true' by default.
+
+DOCUMENTATION
+
+- New style of .CHM documentation. Old MSDN style actually has more disadvatages
+and it is difficult to improve. New style is somehow simpler and still can be
+improved in next versions. What is already improved:
+*) separated indices of properties with same names;
+*) overloaded methods are all shown in member list;
+*) method parameter names are shown in contents;
+*) enabled advanced search features;
+*) added favourites tab.
+
+OTHER CHANGES
+
+- IListMenu: if filter is not enabled then filter dialog should not start.
+
 3.3.48
 
 - Fixed error messages in viewer on Add|Subtract keys ~ open next|prev file.

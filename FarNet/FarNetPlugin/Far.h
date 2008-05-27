@@ -26,6 +26,7 @@ public:
 	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get(); }
 	virtual property IDialog^ Dialog { IDialog^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
+	virtual property IKeyMacroHost^ KeyMacro { IKeyMacroHost^ get(); }
 	virtual property ILine^ CommandLine { ILine^ get(); }
 	virtual property ILine^ Line { ILine^ get(); }
 	virtual property int WindowCount { int get(); }

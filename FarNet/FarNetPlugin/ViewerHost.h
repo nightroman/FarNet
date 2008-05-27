@@ -19,7 +19,7 @@ internal:
 	// Viewer waiting for ID
 	static Viewer^ _viewerWaiting;
 	// Any viewer object
-	static BaseViewer _anyViewer;
+	static AnyViewer _anyViewer;
 private:
 	static void Register(Viewer^ viewer, const ViewerInfo& vi);
 private:

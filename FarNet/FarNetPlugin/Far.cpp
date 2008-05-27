@@ -10,6 +10,8 @@ Copyright (c) 2005-2008 FAR.NET Team
 #include "Editor.h"
 #include "EditorHost.h"
 #include "InputBox.h"
+#include "KeyMacroHost.h"
+#include "ListMenu.h"
 #include "Menu.h"
 #include "Message.h"
 #include "Panel.h"
@@ -497,28 +499,28 @@ void Far::PostText(String^ text, bool disableOutput)
 	if (text == nullptr)
 		throw gcnew ArgumentNullException("text");
 
-	StringBuilder^ keys = gcnew StringBuilder;
+	StringBuilder keys;
 	text = text->Replace(CV::CRLF, CV::LF)->Replace('\r', '\n');
 	for each(Char c in text)
 	{
 		switch(c)
 		{
 		case ' ':
-			keys->Append("Space ");
+			keys.Append("Space ");
 			break;
 		case '\n':
-			keys->Append("Enter ");
+			keys.Append("Enter ");
 			break;
 		case '\t':
-			keys->Append("Tab ");
+			keys.Append("Tab ");
 			break;
 		default:
-			keys->Append(c);
-			keys->Append(" ");
+			keys.Append(c);
+			keys.Append(" ");
 			break;
 		}
 	}
-	PostKeys(keys->ToString(), disableOutput);
+	PostKeys(keys.ToString(), disableOutput);
 }
 
 int Far::SaveScreen(int x1, int y1, int x2, int y2)
@@ -529,6 +531,11 @@ int Far::SaveScreen(int x1, int y1, int x2, int y2)
 void Far::RestoreScreen(int screen)
 {
 	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
+}
+
+IKeyMacroHost^ Far::KeyMacro::get()
+{
+	return %KeyMacroHost::_instance;
 }
 
 ILine^ Far::CommandLine::get()
@@ -997,40 +1004,22 @@ Char Far::CodeToChar(int code)
 
 void Far::LoadMacros()
 {
-	ActlKeyMacro command;
-	command.Command = MCMD_LOADALL;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+	KeyMacro->Load();
 }
 
 void Far::SaveMacros()
 {
-	ActlKeyMacro command;
-	command.Command = MCMD_SAVEALL;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+	KeyMacro->Save();
 }
 
 void Far::PostMacro(String^ macro)
 {
-	PostMacro(macro, true, false);
+	KeyMacro->Post(macro, false, false);
 }
 
 void Far::PostMacro(String^ macro, bool disableOutput, bool noSendKeysToPlugins)
 {
-	if (!macro) throw gcnew ArgumentNullException("macro");
-
-	CBox sMacro(macro);
-	ActlKeyMacro command;
-	command.Command = MCMD_POSTMACROSTRING;
-	command.Param.PlainText.SequenceText = sMacro;
-	command.Param.PlainText.Flags = 0;
-	if (disableOutput)
-		command.Param.PlainText.Flags |= KSFLAGS_DISABLEOUTPUT;
-	if (noSendKeysToPlugins)
-		command.Param.PlainText.Flags |= KSFLAGS_NOSENDKEYSTOPLUGINS;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+	KeyMacro->Post(macro, !disableOutput, noSendKeysToPlugins);
 }
 
 Object^ Far::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)

@@ -94,6 +94,8 @@
     <Compile Include="Far.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="KeyMacroData.cs" />
+    <Compile Include="KeyMacroHost.cs" />
     <Compile Include="Panel.cs">
       <SubType>Code</SubType>
     </Compile>

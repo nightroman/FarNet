@@ -475,25 +475,24 @@ namespace FarManager
 		/// </summary>
 		char CodeToChar(int code);
 		/// <summary>
-		/// Read all macros from the registry into FAR memory. Previous values are erased.
+		/// <see cref="IKeyMacroHost.Load"/>
 		/// </summary>
+		[Obsolete("Use KeyMacroHost.Load")]
 		void LoadMacros();
 		/// <summary>
-		/// Forces FAR to save all macros from memory to the registry.
+		/// <see cref="IKeyMacroHost.Save"/>
 		/// </summary>
+		[Obsolete("Use KeyMacroHost.Save")]
 		void SaveMacros();
 		/// <summary>
-		/// Posts a macro to FAR.
-		/// Processing is not displayed, and keys are sent to editor plugins.
+		/// <see cref="IKeyMacroHost.Post(string)"/>
 		/// </summary>
-		/// <param name="macro">Macro text.</param>
+		[Obsolete("Use KeyMacroHost.Post(string)")]
 		void PostMacro(string macro);
 		/// <summary>
-		/// Posts a macro to FAR.
+		/// <see cref="IKeyMacroHost.Post(string,bool,bool)"/>
 		/// </summary>
-		/// <param name="macro">Macro text.</param>
-		/// <param name="disableOutput">Disable screen output during macro playback.</param>
-		/// <param name="noSendKeysToPlugins">Don't send keystrokes to editor plugins.</param>
+		[Obsolete("Use KeyMacroHost.Post(string,bool,bool)")]
 		void PostMacro(string macro, bool disableOutput, bool noSendKeysToPlugins);
 		/// <summary>
 		/// Gets stacked panels.
@@ -556,6 +555,10 @@ namespace FarManager
 		/// It is null if there is no current editor line available.
 		/// </summary>
 		ILine Line { get; }
+		/// <summary>
+		/// Key macros host.
+		/// </summary>
+		IKeyMacroHost KeyMacro { get; }
 	}
 
 	/// <summary>
