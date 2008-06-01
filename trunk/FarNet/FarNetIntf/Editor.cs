@@ -11,7 +11,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Interface of any editor. See <see cref="IFar.AnyEditor"/>.
+	/// Editor base interface. Exposed as <see cref="IFar.AnyEditor"/>.
 	/// </summary>
 	public interface IAnyEditor
 	{
@@ -59,7 +59,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Editor interface. See <see cref="IFar.Editor"/>, <see cref="IFar.CreateEditor"/>.
+	/// Editor interface. Exposed as <see cref="IFar.Editor"/>. Created by <see cref="IFar.CreateEditor"/>.
 	/// </summary>
 	public interface IEditor : IAnyEditor
 	{

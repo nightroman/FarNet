@@ -12,10 +12,10 @@ namespace FarManager
 {
 	/// <summary>
 	/// Interface of FAR Manager.
-	/// It is exposed by <see cref="BasePlugin"/> as the property <see cref="BasePlugin.Far"/>.
+	/// It is exposed for plugin derived classes as property <see cref="BasePlugin.Far"/>.
 	/// It provides access to top level FAR methods and objects or creates new FAR objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
-	/// Further operations are performed on that objects methods and properties.
+	/// Further operations are performed on that objects.
 	/// </summary>
 	public interface IFar
 	{
@@ -474,26 +474,6 @@ namespace FarManager
 		/// Converts an internal key code to a string. <see cref="KeyCode"/>
 		/// </summary>
 		char CodeToChar(int code);
-		/// <summary>
-		/// <see cref="IKeyMacroHost.Load"/>
-		/// </summary>
-		[Obsolete("Use KeyMacroHost.Load")]
-		void LoadMacros();
-		/// <summary>
-		/// <see cref="IKeyMacroHost.Save"/>
-		/// </summary>
-		[Obsolete("Use KeyMacroHost.Save")]
-		void SaveMacros();
-		/// <summary>
-		/// <see cref="IKeyMacroHost.Post(string)"/>
-		/// </summary>
-		[Obsolete("Use KeyMacroHost.Post(string)")]
-		void PostMacro(string macro);
-		/// <summary>
-		/// <see cref="IKeyMacroHost.Post(string,bool,bool)"/>
-		/// </summary>
-		[Obsolete("Use KeyMacroHost.Post(string,bool,bool)")]
-		void PostMacro(string macro, bool disableOutput, bool noSendKeysToPlugins);
 		/// <summary>
 		/// Gets stacked panels.
 		/// </summary>

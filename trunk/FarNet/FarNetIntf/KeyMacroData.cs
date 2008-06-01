@@ -8,7 +8,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Key macro data.
+	/// Key macro data. See <see cref="IKeyMacroHost"/>.
 	/// </summary>
 	public class KeyMacroData
 	{
