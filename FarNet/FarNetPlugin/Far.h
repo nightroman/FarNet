@@ -79,15 +79,12 @@ public:
 	virtual String^ TempName(String^ prefix);
 	virtual void CopyToClipboard(String^ text);
 	virtual void GetUserScreen();
-	virtual void LoadMacros();
 	virtual void Msg(String^ body);
 	virtual void Msg(String^ body, String^ header);
 	virtual void PostKeys(String^ keys);
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(array<int>^ sequence);
 	virtual void PostKeySequence(array<int>^ sequence, bool disableOutput);
-	virtual void PostMacro(String^ macro);
-	virtual void PostMacro(String^ macro, bool disableOutput, bool noSendKeysToPlugins);
 	virtual void PostStep(EventHandler^ step);
 	virtual void PostText(String^ text);
 	virtual void PostText(String^ text, bool disableOutput);
@@ -96,7 +93,6 @@ public:
 	virtual void RegisterTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ command);
-	virtual void SaveMacros();
 	virtual void SetCurrentWindow(int index);
 	virtual void SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue);
 	virtual void SetUserScreen();

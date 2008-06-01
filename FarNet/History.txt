@@ -1,5 +1,22 @@
 http://code.google.com/p/farnet/
 
+3.3.50
+
+MACRO MANAGEMENT
+
+- REMOVED obsolete IFar methods: LoadMacros(), SaveMacros(), PostMacro(). Use
+new methods of IKeyMacroHost: Load(), Save(), Post().
+
+DOCUMENTATION
+
+- Improved look of member tables: set relative column width
+- Removed annoying members inherited from System.Object
+- Other little improvements and topic updates.
+
+OTHER
+
+- Added protected constructor to BasePlugin. It denies instances of this class.
+
 3.3.49
 
 MACRO MANAGEMENT

@@ -9,7 +9,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Represents Control key states.
+	/// Represents control key states.
 	/// </summary>
 	[Flags]
 	public enum ControlKeyStates

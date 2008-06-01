@@ -90,8 +90,8 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Any menu interface.
-	/// Contains common settings and menu item collection.
+	/// Menu base interface.
+	/// Contains common settings and item collection.
 	/// </summary>
 	public interface IAnyMenu
 	{

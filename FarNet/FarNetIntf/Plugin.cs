@@ -33,8 +33,13 @@ namespace FarManager
 		IFar _Far;
 
 		/// <summary>
-		/// This object exposes all FAR.NET features.
-		/// It is set internally and should not be changed directly.
+		/// Protected constructor denies instances of this class.
+		/// </summary>
+		protected BasePlugin()
+		{ }
+
+		/// <summary>
+		/// This object exposes FAR.NET API. It is set internally and should not be changed.
 		/// </summary>
 		public IFar Far
 		{
@@ -50,20 +55,22 @@ namespace FarManager
 		}
 
 		/// <include file='doc.xml' path='docs/pp[@name="Connect"]/*'/>
-		public virtual void Connect() { }
+		public virtual void Connect()
+		{ }
 
 		/// <summary>
 		/// Override this to handle plugin shutdown.
-		/// CAUTION: don't call FAR UI, if FAR is exiting its UI features do not work.
+		/// NOTE: don't call FAR UI, it is not working if FAR is exiting.
 		/// </summary>
-		public virtual void Disconnect() { }
+		public virtual void Disconnect()
+		{ }
 
 		/// <summary>
-		/// Plugin or menu item name. By default it is the class name.
+		/// Plugin or menu item name. By default it is the plugin class name.
 		/// </summary>
 		/// <remarks>
-		/// If it is overridden (usually in <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> or <see cref="FilerPlugin"/>)
-		/// then it is strongly recommended to be a unique name in the assembly.
+		/// If you override it (usually in <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> or <see cref="FilerPlugin"/>)
+		/// and use several plugins in the assembly then make sure that names do not clash.
 		/// </remarks>
 		public virtual string Name
 		{
@@ -76,7 +83,7 @@ namespace FarManager
 		/// <summary>
 		/// Called before invoking of a command.
 		/// A plugin may want to override it to perform some preparations.
-		/// Example: PowerShellFar sets the location according to the active panel.
+		/// Example: PowerShellFar sets its location to the active panel path.
 		/// </summary>
 		public virtual void Invoking()
 		{ }
@@ -210,7 +217,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Base class of a FAR.NET pluging called from a command line by a command prefix.
+	/// Base class of a FAR.NET plugin called from a command line by a command prefix.
 	/// </summary>
 	/// <remarks>
 	/// You have to implement <see cref="Invoke"/> and provide <see cref="Prefix"/>.

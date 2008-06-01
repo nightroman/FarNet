@@ -9,7 +9,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Interface of any viewer. See <see cref="IFar.AnyViewer"/>.
+	/// Viewer base interface. Exposed as <see cref="IFar.AnyViewer"/>.
 	/// </summary>
 	public interface IAnyViewer
 	{
@@ -36,7 +36,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Viewer interface. See <see cref="IFar.Viewer"/>, <see cref="IFar.CreateViewer"/>.
+	/// Viewer interface. Exposed as <see cref="IFar.Viewer"/>. Created by <see cref="IFar.CreateViewer"/>.
 	/// </summary>
 	public interface IViewer : IAnyViewer
 	{
