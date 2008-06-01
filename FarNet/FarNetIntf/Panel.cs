@@ -11,7 +11,7 @@ using System;
 namespace FarManager
 {
 	/// <summary>
-	/// Panel of the FAR Manager. See active <see cref="IFar.Panel"/> and passive <see cref="IFar.Panel2"/>.
+	/// Panel interface (FAR or plugin panel). Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 	/// </summary>
 	public interface IPanel
 	{
@@ -152,7 +152,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Item of file system. It is used by <see cref="IPanel"/>.
+	/// <see cref="IPanel"/> item representing standard file or directory or a plugin item.
 	/// </summary>
 	public interface IFile
 	{
@@ -701,7 +701,6 @@ namespace FarManager
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
 	/// <remarks>
-	/// Combination of the operation mode flags.
 	/// The plugin should be ready to process <see cref="OperationModes.Find"/> flag.
 	/// If it is set, the event is raised from Find file or another directory scanning command,
 	/// and the plugin must not perform any actions except changing directory or setting <see cref="PanelEventArgs.Ignore"/> = true
@@ -820,7 +819,7 @@ namespace FarManager
 
 	/// <summary>
 	/// Panel plugin. It is created by <see cref="IFar.CreatePanelPlugin"/>.
-	/// After that you have to set <see cref="Info"/> properties and add event handlers.
+	/// Then you set <see cref="Info"/>, add event handlers and open it.
 	/// </summary>
 	public interface IPanelPlugin : IPanel
 	{
@@ -830,7 +829,7 @@ namespace FarManager
 		/// </summary>
 		void Open();
 		/// <summary>
-		/// Opens a panel instead of another opened FAR.NET panel of any FAR.NET plugin.
+		/// Opens a panel instead of another opened FAR.NET panel.
 		/// </summary>
 		/// <param name="oldPanel">Old panel to be replaced.</param>
 		void Open(IPanelPlugin oldPanel);

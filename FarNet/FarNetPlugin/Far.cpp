@@ -1002,26 +1002,6 @@ Char Far::CodeToChar(int code)
 	return code < 0 || code > 255 ? 0 : OemToChar(char(code));
 }
 
-void Far::LoadMacros()
-{
-	KeyMacro->Load();
-}
-
-void Far::SaveMacros()
-{
-	KeyMacro->Save();
-}
-
-void Far::PostMacro(String^ macro)
-{
-	KeyMacro->Post(macro, false, false);
-}
-
-void Far::PostMacro(String^ macro, bool disableOutput, bool noSendKeysToPlugins)
-{
-	KeyMacro->Post(macro, !disableOutput, noSendKeysToPlugins);
-}
-
 Object^ Far::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
 {
 	RegistryKey^ key;
