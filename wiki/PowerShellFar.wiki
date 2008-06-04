@@ -1,4 +1,4 @@
-#summary PowerShell (V2 CTP2) host for FarManager with Far.NET plugin.
+#summary PowerShell (V2 CTP2) host for Far Manager with FAR.NET plugin.
 
 = Introduction =
 
