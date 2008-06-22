@@ -35,7 +35,7 @@ public:
 	virtual property ISelection^ TrueSelection { ISelection^ get(); }
 	virtual property Object^ Data;
 	virtual property Place Window { Place get(); void set(Place value); }
-	virtual property Point Cursor { Point get(); }
+	virtual property Point Cursor { Point get(); void set(Point value); }
 	virtual property Point WindowSize { Point get(); }
 	virtual property String^ FileName { String^ get(); void set(String^ value); }
 	virtual property String^ Title { String^ get(); void set(String^ value); }

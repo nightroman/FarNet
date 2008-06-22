@@ -234,6 +234,7 @@ namespace FarManager
 		/// <summary>
 		/// Current text frame.
 		/// </summary>
+		/// <seealso cref="Cursor"/>
 		TextFrame Frame { get; set; }
 		/// <summary>
 		/// Call this method before processing large amount of lines, performance can be drastically improved.
@@ -253,7 +254,9 @@ namespace FarManager
 		/// Current cursor position.
 		/// Editor must be current.
 		/// </summary>
-		Point Cursor { get; }
+		/// <seealso cref="Frame"/>
+		/// <seealso cref="GoTo"/>
+		Point Cursor { get; set; }
 		/// <summary>
 		/// Gets bookmarks in the current editor.
 		/// Bookmarks are defined as <see cref="TextFrame"/>.
@@ -266,18 +269,21 @@ namespace FarManager
 		/// </summary>
 		/// <param name="pos">Position.</param>
 		/// <param name="line">Line.</param>
+		/// <seealso cref="Cursor"/>
 		/// <seealso cref="Frame"/>
 		void GoTo(int pos, int line);
 		/// <summary>
 		/// Go to a line or set it for opening.
 		/// </summary>
 		/// <param name="line">Line.</param>
+		/// <seealso cref="Cursor"/>
 		/// <seealso cref="Frame"/>
 		void GoToLine(int line);
 		/// <summary>
 		/// Go to a position in the current line.
 		/// </summary>
 		/// <param name="pos">Position.</param>
+		/// <seealso cref="Cursor"/>
 		/// <seealso cref="Frame"/>
 		void GoToPos(int pos);
 		/// <summary>
@@ -471,10 +477,7 @@ namespace FarManager
 		/// </summary>
 		ILine Last { get; }
 		/// <summary>
-		/// All text as string.
-		/// </summary>
-		/// <summary>
-		/// String list, see <see cref="IStrings"/>.
+		/// Lines as strings.
 		/// </summary>
 		IStrings Strings { get; }
 		/// <summary>
