@@ -230,7 +230,7 @@ void KeyMacroHost::Install(array<System::Collections::IDictionary^>^ dataSet)
 				data->GetType()->InvokeMember(
 					key,
 					BindingFlags::SetProperty | BindingFlags::Public | BindingFlags::Instance | BindingFlags::IgnoreCase,
-					nullptr, data, gcnew array<Object^> { value });
+					nullptr, data, gcnew array<Object^> { value }, CultureInfo::InvariantCulture);
 			}
 		}
 
