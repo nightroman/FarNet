@@ -338,6 +338,11 @@ Point Editor::Cursor::get()
 	return Point(f.Pos, f.Line);
 }
 
+void Editor::Cursor::set(Point value)
+{
+	GoTo(value.X, value.Y);
+}
+
 void Editor::Insert(String^ text)
 {
 	AssertCurrent();
