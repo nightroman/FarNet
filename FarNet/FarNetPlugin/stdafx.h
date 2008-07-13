@@ -6,6 +6,7 @@
 #pragma warning(push,3)
 #include <vcclr.h>
 #include "plugin.hpp"
+#include "farcolor.hpp"
 #pragma warning(pop)
 
 using namespace FarManager::Forms;

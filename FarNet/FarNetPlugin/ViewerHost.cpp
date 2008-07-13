@@ -113,6 +113,38 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 			DeleteSourceOptional(viewer->_FileName, viewer->DeleteSource);
 		}
 		break;
+	case VE_GOTFOCUS:
+		LL(__FUNCTION__ " VE_GOTFOCUS");
+		{
+			// get registered
+			int id = *((int*)param);
+			Viewer^ viewer;
+			if (!_viewers.TryGetValue(id, viewer))
+				break;
+
+			// event
+			if (_anyViewer._GotFocus)
+				_anyViewer._GotFocus(viewer, EventArgs::Empty);
+			if (viewer->_GotFocus)
+				viewer->_GotFocus(viewer, EventArgs::Empty);
+		}
+		break;
+	case VE_KILLFOCUS:
+		LL(__FUNCTION__ " VE_KILLFOCUS");
+		{
+			// get registered
+			int id = *((int*)param);
+			Viewer^ viewer;
+			if (!_viewers.TryGetValue(id, viewer))
+				break;
+
+			// event
+			if (_anyViewer._LosingFocus)
+				_anyViewer._LosingFocus(viewer, EventArgs::Empty);
+			if (viewer->_LosingFocus)
+				viewer->_LosingFocus(viewer, EventArgs::Empty);
+		}
+		break;
 	}
 	return 0;
 }

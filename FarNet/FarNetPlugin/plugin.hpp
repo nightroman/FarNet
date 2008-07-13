@@ -4,16 +4,21 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 1.71 build 2368
+  Plugin API for FAR Manager 1.71 build 2406
 
   Copyright (c) 1996-2000 Eugene Roshal
   Copyright (c) 2000-2008 FAR group
 */
 
+#define FARMANAGERVERSION_MAJOR 1
+#define FARMANAGERVERSION_MINOR 71
+#define FARMANAGERVERSION_BUILD 2406
+
+#ifndef RC_INVOKED
+
 #define MAKEFARVERSION(major,minor,build) ( ((major)<<8) | (minor) | ((build)<<16))
 
-#define FARMANAGERVERSION MAKEFARVERSION(1,71,2368)
-
+#define FARMANAGERVERSION MAKEFARVERSION(FARMANAGERVERSION_MAJOR,FARMANAGERVERSION_MINOR,FARMANAGERVERSION_BUILD)
 
 #if !defined(_INC_WINDOWS) && !defined(_WINDOWS_)
  #if (defined(__GNUC__) || defined(_MSC_VER)) && !defined(_WIN64)
@@ -657,7 +662,7 @@ struct PluginPanelItem
   int                  CustomColumnNumber;
   DWORD_PTR            UserData;
   DWORD                CRC32;
-  DWORD                Reserved[2];
+  DWORD_PTR            Reserved[2];
 };
 
 #if defined(__BORLANDC__)
@@ -1179,6 +1184,9 @@ typedef int (WINAPI *FARAPIVIEWERCONTROL)(
 enum VIEWER_EVENTS {
   VE_READ       =0,
   VE_CLOSE      =1,
+
+  VE_GOTFOCUS   =6,
+  VE_KILLFOCUS  =7,
 };
 
 
@@ -1833,5 +1841,7 @@ void   WINAPI _export SetStartupInfo(const struct PluginStartupInfo *Info);
   #pragma pack(pop)
 #endif
 #endif
+
+#endif /* RC_INVOKED */
 
 #endif /* __PLUGIN_HPP__ */
