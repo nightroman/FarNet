@@ -354,11 +354,20 @@ namespace FarManager
 		/// <param name="text">Text.</param>
 		void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 		/// <summary>
-		/// Writes a string at the specified position.
+		/// Writes a string at the specified position using FAR palette colors.
+		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
+		/// <param name="paletteColor">Palette color.</param>
+		/// <param name="text">Text.</param>
+		void WritePalette(int left, int top, PaletteColor paletteColor, string text);
+		/// <summary>
+		/// Writes a string at the specified position with defined colors.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <include file='doc.xml' path='docs/pp[@name="Colors"]/*'/>
 		/// <param name="text">Text.</param>
+		/// <seealso cref="IFar.GetPaletteForeground"/>
+		/// <seealso cref="IFar.GetPaletteBackground"/>
 		void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
 		/// <summary>
 		/// Gets existing FAR.NET plugin panel with the specified host type
@@ -539,6 +548,16 @@ namespace FarManager
 		/// Key macros host.
 		/// </summary>
 		IKeyMacroHost KeyMacro { get; }
+		/// <summary>
+		/// Gets background color of FAR palette.
+		/// </summary>
+		/// <param name="paletteColor">Palette color.</param>
+		ConsoleColor GetPaletteBackground(PaletteColor paletteColor);
+		/// <summary>
+		/// Gets foreground color of FAR palette.
+		/// </summary>
+		/// <param name="paletteColor">Palette color.</param>
+		ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
 	}
 
 	/// <summary>

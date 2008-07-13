@@ -30,6 +30,14 @@ namespace FarManager
 		/// </remarks>
 		event EventHandler Closed;
 		/// <summary>
+		/// Viewer window has got focus. FAR 1.71.2406
+		/// </summary>
+		event EventHandler GotFocus;
+		/// <summary>
+		/// Viewer window is losing focus. FAR 1.71.2406
+		/// </summary>
+		event EventHandler LosingFocus;
+		/// <summary>
 		/// Opens a viewer to view some text.
 		/// </summary>
 		void ViewText(string text, string title, OpenMode mode);

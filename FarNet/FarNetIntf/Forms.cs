@@ -14,19 +14,23 @@ namespace FarManager.Forms
 	public interface IControl
 	{
 		/// <summary>
-		/// Event is sent after a dialog item has received keyboard focus.
+		/// Event is sent to draw the control. 
+		/// </summary>
+		event EventHandler<DrawingEventArgs> Drawing;
+		/// <summary>
+		/// Event is sent when the control has received keyboard focus.
 		/// </summary>
 		event EventHandler<AnyEventArgs> GotFocus;
 		/// <summary>
-		/// Event is sent before a dialog item loses the focus.
+		/// Event is sent before the control loses the focus.
 		/// </summary>
 		event EventHandler<LosingFocusEventArgs> LosingFocus;
 		/// <summary>
-		/// Event is sent after the user clicks the mouse on one of the dialog items.
+		/// Event is sent when the mouse has clicked on the control.
 		/// </summary>
 		event EventHandler<MouseClickedEventArgs> MouseClicked;
 		/// <summary>
-		/// Event is sent after the user presses a key in the dialog. 
+		/// Event is sent when a key has been pressed in the dialog. 
 		/// </summary>
 		event EventHandler<KeyPressedEventArgs> KeyPressed;
 		/// <summary>
@@ -283,8 +287,15 @@ namespace FarManager.Forms
 	/// It is created and added to a dialog by <see cref="IDialog.AddUserControl"/>.
 	/// </summary>
 	/// <remarks>
-	/// Currently it is not really a user defined control with custom drawing.
-	/// But it still can be used to receive some events where other controls are not suitable.
+	/// Use <see cref="IControl.Drawing"/> event to draw this control by
+	/// <see cref="IFar.WritePalette"/> or <see cref="IFar.WriteText"/>
+	/// with <see cref="IFar.GetPaletteForeground"/> and <see cref="IFar.GetPaletteBackground"/>.
+	/// Also usually you should at first calculate absolute coordinates using
+	/// absolute dialog <see cref="IDialog.Rect"/> and relative control <see cref="IControl.Rect"/>.
+	/// <para>
+	/// User control can be used to emulate <c>MouseClicked</c> event for a dialog:
+	/// add this control so that it covers all the dialog area and use its event handler.
+	/// </para>
 	/// </remarks>
 	public interface IUserControl : IControl
 	{

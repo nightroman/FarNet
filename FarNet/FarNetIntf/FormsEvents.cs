@@ -36,8 +36,7 @@ namespace FarManager.Forms
 		/// <param name="focused">Control that will initially receive focus.</param>
 		public InitializedEventArgs(IControl focused)
 			: base(focused)
-		{
-		}
+		{ }
 		/// <summary>
 		/// Ingore changes.
 		/// </summary>
@@ -57,10 +56,29 @@ namespace FarManager.Forms
 		/// <param name="selected">Control that had the keyboard focus when [CtrlEnter] was pressed or the default control.</param>
 		public ClosingEventArgs(IControl selected)
 			: base(selected)
-		{
-		}
+		{ }
 		/// <summary>
 		/// Ingore and don't close the dialog.
+		/// </summary>
+		public bool Ignore
+		{
+			get { return _ignore; }
+			set { _ignore = value; }
+		}
+		bool _ignore;
+	}
+
+	/// <summary>
+	/// <see cref="IControl.Drawing"/> event arguments.
+	/// </summary>
+	public sealed class DrawingEventArgs : AnyEventArgs
+	{
+		/// <param name="control">Control that is about to be drawn.</param>
+		public DrawingEventArgs(IControl control)
+			: base(control)
+		{ }
+		/// <summary>
+		/// Ingore and don't draw the control.
 		/// </summary>
 		public bool Ignore
 		{
@@ -78,8 +96,7 @@ namespace FarManager.Forms
 		/// <param name="losing">Control losing focus.</param>
 		public LosingFocusEventArgs(IControl losing)
 			: base(losing)
-		{
-		}
+		{ }
 		/// <summary>
 		/// Control you want to pass focus to or leave it null to allow to lose focus.
 		/// </summary>
