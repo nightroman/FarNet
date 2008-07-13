@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+3.3.52
+
+*) New event IControl.Drawing (e.g. it can be used to draw a user control by
+IFar.WriteText and IFar.WritePalette methods).
+*) New enum PaletteColor - standard FAR color palette indices.
+*) New IFar.WritePalette - to write text using standard FAR colors.
+*) New IFar.GetPaletteBackground, IFar.GetPaletteForeground get palette colors.
+*) IAnyViewer, IViewer - new events GotFocus, LosingFocus (FAR 1.71.2406).
+
 3.3.51
 
 *) IEditor.Cursor is {get; set;} property now (it was {get;} only).

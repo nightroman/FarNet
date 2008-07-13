@@ -835,6 +835,20 @@ IDialog^ Far::CreateDialog(int left, int top, int right, int bottom)
 	return gcnew FarDialog(left, top, right, bottom);
 }
 
+int Far::GetPaletteColor(PaletteColor paletteColor)
+{
+	INT_PTR index = (INT_PTR)paletteColor;
+	if (index < 0 || index >= COL_LASTPALETTECOLOR)
+		throw gcnew ArgumentOutOfRangeException("paletteColor");
+	return Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
+}
+
+void Far::WritePalette(int left, int top, PaletteColor paletteColor, String^ text)
+{
+	CBox sText(text);
+	Info.Text(left, top, GetPaletteColor(paletteColor), sText);
+}
+
 void Far::WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
 {
 	CBox sText(text);
@@ -1608,6 +1622,18 @@ String^ Far::TempFolder(String^ prefix)
 IDialog^ Far::Dialog::get()
 {
 	return FarDialog::GetDialog();
+}
+
+ConsoleColor Far::GetPaletteBackground(PaletteColor paletteColor)
+{
+	int color = GetPaletteColor(paletteColor);
+	return ConsoleColor(color >> 4);
+}
+
+ConsoleColor Far::GetPaletteForeground(PaletteColor paletteColor)
+{
+	int color = GetPaletteColor(paletteColor);
+	return ConsoleColor(color & 0xF);
 }
 
 }

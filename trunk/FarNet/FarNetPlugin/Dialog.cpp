@@ -1446,6 +1446,17 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 				}
 				break;
 			}
+		case DN_DRAWDLGITEM:
+			{
+				FarControl^ fc = _items[param1];
+				if (fc->_Drawing)
+				{
+					DrawingEventArgs ea(fc);
+					fc->_Drawing(this, %ea);
+					return !ea.Ignore;
+				}
+				return 1;
+			}
 		case DN_GOTFOCUS:
 			{
 				FarControl^ fc = _items[param1];

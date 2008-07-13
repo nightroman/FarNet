@@ -45,6 +45,8 @@ public:
 	virtual array<IViewer^>^ Viewers();
 	virtual bool Commit();
 	virtual Char CodeToChar(int code);
+	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor);
+	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
 	virtual ICollection<String^>^ GetDialogHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
@@ -105,6 +107,7 @@ public:
 	virtual void Write(String^ text);
 	virtual void Write(String^ text, ConsoleColor foregroundColor);
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
+	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
 	virtual WindowType GetWindowType(int index);
 internal:
@@ -142,9 +145,11 @@ private:
 	void OnNetF11Menus(Object^ sender, ToolEventArgs^ e);
 	void ProcessPrefixes(INT_PTR item);
 	void Start();
-private: // public candidates
+private:
 	static bool CompareName(String^ mask, const char* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const char* name, bool skipPath);
+	[CA_USED]
+	static int GetPaletteColor(PaletteColor paletteColor);
 private:
 	// The instance
 	static Far^ _instance;
