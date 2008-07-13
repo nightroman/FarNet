@@ -1,0 +1,1 @@
+..\Build-JS /out:Hello.js.dll Hello.js
