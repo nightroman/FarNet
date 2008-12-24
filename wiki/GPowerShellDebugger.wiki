@@ -1,4 +1,5 @@
 #summary Debugger for Graphical PowerShell V2 CTP2
+#labels Deprecated
 
 = Introduction =
 
