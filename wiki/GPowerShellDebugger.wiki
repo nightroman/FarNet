@@ -4,7 +4,7 @@
 
 [NOTE:  PowerShell V2 CTP3 introduces next version of Graphical PowerShell which is called PowerShell ISE (Integrated Scripting Environment). This version implements the debugger itself, so that Utility_GPowerShellDebugger is not really needed any more.]
 
-*Graphical PowerShell V2 CTP2* still looks like a demo, basically speaking. Nevertheless, it is already suitable for some tasks. Unfortunately it does not implement a few host features including default breakpoint debugger action. Breakpoints without action are simply ignored. Fortunately PowerShell provides a way to solve this. Here it is: simple and yet practically useful *Add-Debugger.ps1*.
+*Graphical PowerShell V2 CTP2* looks like a demo, basically speaking. Nevertheless, it is suitable for some tasks. Unfortunately it does not implement a few host features including default breakpoint debugger action. Breakpoints without action are simply ignored. Fortunately PowerShell provides a way to solve this. Here it is: simple and yet practically useful *Add-Debugger.ps1*.
 
 = Details =
 
