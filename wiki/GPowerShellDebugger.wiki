@@ -1,4 +1,4 @@
-#summary Debugger for Graphical PowerShell V2 CTP2
+#summary (Obsolete) Debugger for Graphical PowerShell V2 CTP2
 
 = Introduction =
 
