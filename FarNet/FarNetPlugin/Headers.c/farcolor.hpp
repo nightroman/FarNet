@@ -3,7 +3,7 @@
 /*
   farcolor.hpp
 
-  Colors Index for FAR Manager 1.71 build 2406
+  Colors Index for FAR Manager 1.75 build 2494
   HKCU\Software\Far\Colors\CurrentPalette
 
   Copyright (c) 1996-2000 Eugene Roshal
@@ -162,6 +162,8 @@ enum PaletteColors
   COL_MENUARROWS,
   COL_MENUARROWSDISABLED,
   COL_MENUARROWSSELECTED,
+  COL_COMMANDLINEUSERSCREEN,
+  COL_EDITORSCROLLBAR,
 
   COL_LASTPALETTECOLOR
 };

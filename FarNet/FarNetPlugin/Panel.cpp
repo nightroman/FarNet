@@ -1094,6 +1094,31 @@ void FarPanel::Close(String^ path)
 	Info.Control(_id, FCTL_CLOSEPLUGIN, sb);
 }
 
+void FarPanel::GoToName(String^ name)
+{
+	if (!name) throw gcnew ArgumentNullException("name");
+
+	CBox sb; sb.Reset(name);
+	PanelInfo pi; GetInfo(pi);
+	for(int i = 0; i < pi.ItemsNumber; ++i)
+	{
+		if (_strcmpi(sb, pi.PanelItems[i].FindData.cFileName) == 0 || _strcmpi(sb, pi.PanelItems[i].FindData.cAlternateFileName) == 0)
+		{
+			Redraw(i, 0);
+			return;
+		}
+	}
+}
+
+void FarPanel::GoToPath(String^ path)
+{
+	if (!path) throw gcnew ArgumentNullException("path");
+
+	Path = IO::Path::GetDirectoryName(path);
+	Redraw();
+	GoToName(IO::Path::GetFileName(path));
+}
+
 void FarPanel::Redraw()
 {
 	int command = _active ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;

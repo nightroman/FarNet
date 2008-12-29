@@ -133,6 +133,9 @@ namespace FarManager
 		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in FAR. 
 		/// Set it before opening.
 		/// </summary>
+		/// <remarks>
+		/// Perhaps this option in not actually used (FAR 1.71.2406).
+		/// </remarks>
 		bool IsNew { get; set; }
 		/// <summary>
 		/// Insert text.
