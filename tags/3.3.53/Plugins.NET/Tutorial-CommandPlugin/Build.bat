@@ -1,0 +1,1 @@
+..\Build-CS CommandPlugin.cs
