@@ -78,6 +78,8 @@ public:
 public:
 	virtual void Close();
 	virtual void Close(String^ path);
+	virtual void GoToName(String^ name);
+	virtual void GoToPath(String^ path);
 	virtual void Redraw();
 	virtual void Redraw(int current, int top);
 	virtual void Update(bool keepSelection);

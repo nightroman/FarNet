@@ -46,6 +46,7 @@
 				Name="VCCLCompilerTool"
 				UseUnicodeResponseFiles="false"
 				Optimization="0"
+				AdditionalIncludeDirectories="Headers.c"
 				MinimalRebuild="false"
 				RuntimeLibrary="3"
 				StructMemberAlignment="0"
@@ -133,6 +134,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				UseUnicodeResponseFiles="false"
+				AdditionalIncludeDirectories="Headers.c"
 				RuntimeLibrary="2"
 				StructMemberAlignment="0"
 				UsePrecompiledHeader="2"
