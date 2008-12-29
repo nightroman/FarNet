@@ -29,7 +29,7 @@ namespace FarManager
 		/// </summary>
 		bool IsVisible { get; set; }
 		/// <summary>
-		/// Current panel path.
+		/// Gets or sets the panel path.
 		/// </summary>
 		/// <remarks>
 		/// If the panel is a directory tree panel then the path is the currently selected directory in the tree.
@@ -41,7 +41,12 @@ namespace FarManager
 		/// <para>
 		/// On opening a file panel an exception is thrown if a path is not valid or does not exist.
 		/// </para>
+		/// <para>
+		/// You may call <see cref="Redraw()"/> after changing the path so that FAR shows the change immediately.
+		/// </para>
 		/// </remarks>
+		/// <seealso cref="GoToName"/>
+		/// <seealso cref="GoToPath"/>
 		string Path { get; set; }
 		/// <summary>
 		/// Current item.
@@ -149,6 +154,31 @@ namespace FarManager
 		/// Is this a left panel? FAR 1.71.2348
 		/// </summary>
 		bool IsLeft { get; }
+		/// <summary>
+		/// Sets the specified item current by name.
+		/// </summary>
+		/// <param name="name">Name or alternative name of an item to be set current.</param>
+		/// <remarks>
+		/// If the item does not exist or it is hidden and the panel does not show hidden items
+		/// then just nothing happens, it is not an error.
+		/// </remarks>
+		/// <seealso cref="Path"/>
+		/// <seealso cref="GoToPath"/>
+		void GoToName(string name);
+		/// <summary>
+		/// Opens the parent directory of a specified item and sets the item current in the panel.
+		/// </summary>
+		/// <param name="path">Path of an item to be set current.</param>
+		/// <remarks>
+		/// If the path is not valid or the parent directory does not exist an exception is thrown.
+		/// Otherwise the directory of the item is opened on the panel. If the item does not exist
+		/// or it is hidden and the panel does not show hidden items it is fine, in this case the
+		/// top panel item is set current after the call. Otherwise the requested item is set as
+		/// the current.
+		/// </remarks>
+		/// <seealso cref="Path"/>
+		/// <seealso cref="GoToName"/>
+		void GoToPath(string path);
 	}
 
 	/// <summary>

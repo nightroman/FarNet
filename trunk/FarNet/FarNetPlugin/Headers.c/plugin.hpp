@@ -4,15 +4,15 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 1.71 build 2406
+  Plugin API for FAR Manager 1.75 build 2494
 
   Copyright (c) 1996-2000 Eugene Roshal
   Copyright (c) 2000-2008 FAR group
 */
 
 #define FARMANAGERVERSION_MAJOR 1
-#define FARMANAGERVERSION_MINOR 71
-#define FARMANAGERVERSION_BUILD 2406
+#define FARMANAGERVERSION_MINOR 75
+#define FARMANAGERVERSION_BUILD 2494
 
 #ifndef RC_INVOKED
 
@@ -81,6 +81,8 @@
 #endif
 
 #define NM 260
+
+#undef DefDlgProc
 
 #define FARMACRO_KEY_EVENT  (KEY_EVENT|0x8000)
 
@@ -684,7 +686,6 @@ enum PANELINFOFLAGS {
   PFLAGS_REALNAMES          = 0x00000020,
   PFLAGS_NUMERICSORT        = 0x00000040,
   PFLAGS_PANELLEFT          = 0x00000080,
-  PFLAGS_PANELRIGHT         = 0x00000100,
 };
 
 enum PANELINFOTYPE{
@@ -1517,12 +1518,15 @@ enum FRSMODE{
 
 typedef void    (WINAPI *FARSTDRECURSIVESEARCH)(const char *InitDir,const char *Mask,FRSUSERFUNC Func,DWORD Flags,void *Param);
 typedef char*   (WINAPI *FARSTDMKTEMP)(char *Dest,const char *Prefix);
-typedef void    (WINAPI *FARSTDDELETEBUFFER)(char *Buffer);
+typedef void    (WINAPI *FARSTDDELETEBUFFER)(void *Buffer);
 
 enum MKLINKOP{
   FLINK_HARDLINK         = 1,
-  FLINK_SYMLINK          = 2,
+  FLINK_JUNCTION         = 2,
+  FLINK_SYMLINK          = FLINK_JUNCTION,
   FLINK_VOLMOUNT         = 3,
+  FLINK_SYMLINKFILE      = 4,
+  FLINK_SYMLINKDIR       = 5,
 
   FLINK_SHOWERRMSG       = 0x10000,
   FLINK_DONOTUPDATEPANEL = 0x20000,
@@ -1759,7 +1763,7 @@ struct OpenPluginInfo
   int                   StartSortOrder;
   const struct KeyBarTitles *KeyBar;
   const char           *ShortcutData;
-  long                  Reserverd;
+  long                  Reserved;
 };
 
 enum OPENPLUGIN_OPENFROM{

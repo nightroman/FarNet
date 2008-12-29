@@ -255,6 +255,9 @@ namespace FarManager
 	/// <summary>
 	/// Internal key codes. [farkeys.hpp]
 	/// </summary>
+	/// <example>
+	/// Use KeyCode.Ctrl | 'R' for Ctrl-R, KeyCode.Ctrl | KeyCode.Enter for Ctrl-Enter and etc.
+	/// </example>
 	[DebuggerStepThroughAttribute]
 	public static class KeyCode
 	{

@@ -1,6 +1,14 @@
 http://code.google.com/p/farnet/
 
-3.3.52
+= 3.3.53 =
+
+This is mostly a techical build reflecting FAR API changes up to 1.75.2494.
+
+There are though a couple of new items in FAR.NET:
+*) IPanel.GoToName() - sets an item current by its name;
+*) IPanel.GoToPath() - similar to FAR command goto:<path>.
+
+= 3.3.52 =
 
 *) New event IControl.Drawing (e.g. it can be used to draw a user control by
 IFar.WriteText and IFar.WritePalette methods).
@@ -9,11 +17,11 @@ IFar.WriteText and IFar.WritePalette methods).
 *) New IFar.GetPaletteBackground, IFar.GetPaletteForeground get palette colors.
 *) IAnyViewer, IViewer - new events GotFocus, LosingFocus (FAR 1.71.2406).
 
-3.3.51
+= 3.3.51 =
 
 *) IEditor.Cursor is {get; set;} property now (it was {get;} only).
 
-3.3.50
+= 3.3.50 =
 
 MACRO MANAGEMENT
 
@@ -30,7 +38,7 @@ OTHER
 
 - Added protected constructor to BasePlugin. It denies instances of this class.
 
-3.3.49
+= 3.3.49 =
 
 MACRO MANAGEMENT
 
@@ -62,7 +70,7 @@ OTHER CHANGES
 
 - IListMenu: if filter is not enabled then filter dialog should not start.
 
-3.3.48
+= 3.3.48 =
 
 - Fixed error messages in viewer on Add|Subtract keys ~ open next|prev file.
 
@@ -77,16 +85,16 @@ representation.
 - IListMenu: by default in any list menu keys [CtrlC] and [CtrlIns] are used to
 copy text of the current item to the clipboard.
 
-3.3.47
+= 3.3.47 =
 
 - IListBox: new method SetFrame() to set both current and top positions.
 
-3.3.46
+= 3.3.46 =
 
 - Fixed IFar.AnyEditor.EditText(): error if the text is empty and the file is
 not saved on exit.
 
-3.3.44
+= 3.3.44 =
 
 - One more method IFar.Msg() with extra parameter 'helpTopic' (FYI: it looks
 like IMessage is completely covered by IFar.Msg() methods and perhaps it will be
@@ -96,7 +104,7 @@ removed in the future).
 - IEditor.Open(): if a file is already opened then start position, if any, is
 not set -- fixed.
 
-3.3.43
+= 3.3.43 =
 
 - Avoided inconvenient for plugin development internal exceptions on loading
 when plugin assemblies are changed and registry cache has to updated.
@@ -106,7 +114,7 @@ listbox items work as buttons.
 - New property IPanel.IsLeft (FAR 1.71.2348).
 - REMOVED IMessage.Reset() because it is not actually needed or used.
 
-3.3.42
+= 3.3.42 =
 
 MENU AND LIST DIALOG CONTROLS
 
@@ -125,13 +133,13 @@ OTHER
 - IControl.Rect is also settable (always); IDialog.Rect is settable before
 Show(); after Show() you can use new methods Move() and Resize().
 
-3.3.41
+= 3.3.41 =
 
 - This is mostly a technical build for FAR 1.71.2346
 - New IListBox.Title. IListBox.Text get\set is mapped to the current item text
 (dynamically, i.e. when a dialog is opened).
 
-3.3.40
+= 3.3.40 =
 
 - Access to dialogs and controls. New property IFar.Dialog - the current dialog
 if any (including standard FAR dialogs). You can get the current dialog item as
@@ -155,7 +163,7 @@ IAnyEditor.EditText but you can also choose whether it is modal or not.
 panel is a plugin not supporting the path then it is closed and a FAR panel is
 opened if the new path exists.
 
-3.3.39
+= 3.3.39 =
 
 CHANGED
 - VKeyCode names was made compatible with System.ConsoleKey names.
@@ -166,7 +174,7 @@ DeleteOnlyFileOnClose. Use new property DeleteSource (enum DeleteSource).
 - Removed obsolete editor events AfterOpen, AfterClose, BeforeSave. Use new
 events: Opened, Closed, Saving. Updated demo plugin Plugins.NET \ TrimSaving.
 
-3.3.38
+= 3.3.38 =
 
 NEW
 - Many new features in IViewer and new interface IAnyViewer. In short, viewer
@@ -186,7 +194,7 @@ removed, use new property and enum DeleteSource.
 - Editor events AfterOpen, AfterClose, BeforeSave will be removed because their
 names violate .NET naming guidelines; use new events: Opened, Closed, Saving.
 
-3.3.37
+= 3.3.37 =
 
 Recommended FAR 1.71.2315
 
@@ -208,7 +216,7 @@ Open( OpenMode ) with OpenMode enum. Old method Open() with no parameter is also
 obsolete for now, don't use it for this transition period; but it will not be
 removed, later it will work as Open( OpenMode.None ).
 
-3.3.36
+= 3.3.36 =
 
 Requires FAR 1.71 alpha 4 (build 2309)
 http://forum.farmanager.com/viewtopic.php?p=29848#29848
@@ -236,7 +244,7 @@ property BreakKey instead. For IListMenu it is simply renaming; for IMenu it is
 not an index of a break key but a key code itself - this way looks more natural
 and makes coding and changes easier.
 
-3.3.35
+= 3.3.35 =
 
 NEW
 
@@ -271,7 +279,7 @@ FilerEventArgs.
 - FilerEventArgs.Data type changed from byte[] to System.IO.Stream (to avoid
 redundant data copy), see example in Plugins.NET.
 
-3.3.34
+= 3.3.34 =
 
 MAIN CHANGES (BREAKING) AND NEW FEATURES
 (result of all recent forum discussions)
@@ -316,7 +324,7 @@ OBSOLETE
 PasteFromClipboard. Property is sometimes triggered when it is not really
 wanted: e.g. in debugger, in PowerShell member list and etc.
 
-3.3.33
+= 3.3.33 =
 
 NEW
 
@@ -352,7 +360,7 @@ FIXED/IMPROVED
 the info panel.
 - Restored removed by mistake IFar.Unregister* methods.
 
-3.3.32
+= 3.3.32 =
 
 FIXED/IMPROVED
 
@@ -373,7 +381,7 @@ not IList<int>.
 - Removed IPluginMenuItem and CreatePluginsMenuItem, RegisterPlugins*Item. Use
 methods RegisterPlugins*Item(string, handler) instead.
 
-3.3.31
+= 3.3.31 =
 
 NEW
 
@@ -399,7 +407,7 @@ at least for this.
 - [F1] in list menus and input filter dialogs opens basic FAR.NET help about
 predefined and recommended list menu keys and about patterns used for filters.
 
-3.3.30
+= 3.3.30 =
 
 NEW
 
@@ -419,20 +427,20 @@ collection of IMenuItem's. If you used IListItem directly, just rename it.
 - Removed IMenu.OnClick - it turned out that it was declared but not really
 implemented or used. Looks like it was declared by mistake.
 
-3.3.29
+= 3.3.29 =
 
 This is mostly a technical build for PowerShellFar.
 
-3.3.28
+= 3.3.28 =
 
 - Added property IMenu.Sender:object; this object is passed in event handler as
 a sender. By default IMenuItem is a sender.
 
-3.3.27
+= 3.3.27 =
 
 This is mostly a technical build for PowerShellFar.
 
-3.3.26
+= 3.3.26 =
 
 PLUGIN PANELS
 - New property IPanelPlugin.StartDirectory (current directory when it starts).
@@ -441,7 +449,7 @@ REMOVED
 - Removed IFar.UnregisterPluginsDiskItem, IFar.UnregisterPluginsMenuItem, see
 explanation in history 3.3.25.
 
-3.3.25
+= 3.3.25 =
 
 OBSOLETE
 - IFar.UnregisterPluginsDiskItem, IFar.UnregisterPluginsMenuItem are obsolete
@@ -481,7 +489,7 @@ IPanelPlugin), i.e. call Far.Panel.Close() to close an active panel,
 Far.Panel2.Close() to close a passive panel, <IPluginPanel>.Close() to close a
 plugin panel (active or passive).
 
-3.3.23
+= 3.3.23 =
 
 - New methods IFar.{Get|Set}PluginValue(string pluginName, string valueName,
 object {default|new}Value) to {get|set} a plugin value stored in the registry,
@@ -489,25 +497,25 @@ usually at "Software\Far\Plugins" (or "Software\Far\Users\user1\Plugins" if FAR
 is started started with '/u user1' parameter). "pluginName" defines a subkey
 there; the subkey is created if it does not exist even if you only get a value.
 
-3.3.22
+= 3.3.22 =
 
 - Fixed most (all?) of x64 issues. Sources are ready for x64. Currently binaries
 are provided for x32 only, sorry for inconvenience.
 
-3.3.21
+= 3.3.21 =
 
 This is mostly a technical build for PowerShellFar.
 
-3.3.20
+= 3.3.20 =
 
 This is mostly a technical build for PowerShellFar.
 
-3.3.19
+= 3.3.19 =
 
 - Added 'set' method to property IPanel.NumericSort.
 - Fixed issues in plugin panel start sort modes.
 
-3.3.18
+= 3.3.18 =
 
 - Properties IPanel.{ReverseSortOrder | SortMode | ViewMode} are now 'get\set'
 (i.e. not 'get' only).
@@ -517,12 +525,12 @@ a user, e.g. '/u user1' in FAR command line.
 - Fixed lib path in Build-JS.bat.
 - Fixed ReplaceSlashes.js in examples.
 
-3.3.17
+= 3.3.17 =
 
 - removed obsolete properties {ILines | IStrings}.Text; please, use methods
 {IEditor | ISelection}.{GetText | SetText}.
 
-3.3.16
+= 3.3.16 =
 
 - new property IFar.From:OpenFrom - where a plugin is opened from.
 - new property IPanel.Window:Place - panel coordinates.
@@ -536,7 +544,7 @@ OBSOLETE:
 {IEditor | ISelection}.{GetText | SetText} - they will be more effective.
 ILines and IStrings will be almost nothing but ILine and string lists.
 
-3.3.15
+= 3.3.15 =
 
 - Far.exe.config: added option FarManager.StartupErrorDialog: 0: write error
 info to console (default); 1: show standard error dialog (you may want to turn
@@ -544,7 +552,7 @@ it on to view error info in viewer (button [Info])).
 - fixed exception on clipboard failure.
 - fixed broken examples in Plugins.NET folder
 
-3.3.14
+= 3.3.14 =
 
 BREAKING CHANGE: some of IFile properties and panel modes enums renamed using
 names of standard .NET class FileSystemInfo. Sorry for that, but it should be
@@ -562,7 +570,7 @@ IPanelPlugin (derived from IPanel, see above).
 - IFile.Tag:int was replaced with IFile.Data:object, so that you can attach any
 objects to your panel plugin items.
 
-3.3.13
+= 3.3.13 =
 
 Plugin panels:
 - new method IFar.GetPanelPlugin().
@@ -575,20 +583,20 @@ Plugin disk menu:
 - Added IFar.{Register | Unregister} PluginsDiskItem(): the same as
 IFar.{Register | Unregister} PluginsMenuItem() but for FAR disk menu.
 
-3.3.12
+= 3.3.12 =
 
 - Updated Plugins.NET\IronPython plugin (by Max Belugin).
 - IFar.Input(): added 3 overloaded methods and changed parameter order in
 the existing method: prompt, history, title, text.
 
-3.3.11
+= 3.3.11 =
 
 - Fixed minor issues on exceptions in panel plugin events.
 - IFar: new method Input() - helper to create and show IInputBox.
 - IEditor: fixed exceptions from get-properties of not opened editor.
 - Added Plugins.NET\Ipy: plugin to run scripts in IronPython (by Max Belugin).
 
-3.3.10
+= 3.3.10 =
 
 - IFar: new method ClosePanel(): closes the current plugin panel.
 - IPanelPluginInfo: new property ConfirmClose:bool.
@@ -603,7 +611,7 @@ scenario: with slash, backslash, nothing, ... (if you need Path at all).
 added new features, some minor changes may be breaking.
 - Updated documentation.
 
-3.3.9
+= 3.3.9 =
 
 - Implemented panel plugin interfaces: main of them are: IPanelPlugin and
 IPanelPluginInfo. See docs for details. Not yet everything is implemented but
@@ -615,13 +623,13 @@ IPanel.Contents with IList<IFile> IPanel.Contents.
 - Removed from public interface currently redundant IPluginMenuItem.FireOnOpen()
 and IMenuItem.FireOnClick().
 
-3.3.8
+= 3.3.8 =
 
 - Improved some XML doc code comments, updated CHM help. CHM help: removed MSDN
 references, inherited .NET comments and other redundant information.
 - Preliminary internal changes for coming features.
 
-3.3.7
+= 3.3.7 =
 
 - Created CHM help: from now on the latest version can be downloaded from:
 http://code.google.com/p/farnet/downloads/list
@@ -631,14 +639,14 @@ screen (under panels).
 plugins (it is annoying if problems are known and temporary). Instead, it writes
 all error messages to the user screen and continues.
 
-3.3.6
+= 3.3.6 =
 
 - Removed: IMenuItem.Selected and related IMenu.Show(int) and parameters
 Selected from several methods IMenuItems.Add(). Instead, IMenu.Show() uses
 IMenu.Selected as input if it is set. This way seems more consistent than
 approach with IMenuItem.Selected (potential conflict between items).
 
-3.3.5
+= 3.3.5 =
 
 - ILine.Pos: setting of a negative value moves cursor to the end of a line.
 - New ILine.Length: text length; use it when text itself is irrelevant.
@@ -650,7 +658,7 @@ approach with IMenuItem.Selected (potential conflict between items).
 - New IMenu feature: filters. See XML docs for properties Filter, FilterKey,
 FilterHistory, FilterRestore.
 
-3.3.4
+= 3.3.4 =
 
 - Implemented IEdit\IComboBox.Line.Selection.
 - Interfaces IRect, IStream, ITwoPoints are replaced with value type with
@@ -660,7 +668,7 @@ IFar.ShowHelp().
 - Removed FarDotNetStruct.dll; you should remove it manually if you have one,
 normally it is in here: "%FARHOME%\Lib\".
 
-3.3.3
+= 3.3.3 =
 
 - New editor methods Begin()\End(). They drastically improve performance of
 operations on large number of editor lines. Example: an operation used to take
@@ -671,7 +679,7 @@ Frame, Cursor and methods GoTo*.
 - New property Line (ILine) in IEdit and IComboBox.
 - Fixed crash in dialogs on Idled event.
 
-3.3.2
+= 3.3.2 =
 
 - Fixed IInputBox.History issue.
 - IEditor: new ConvertPosToTab(), ConvertTabToPos() and ConvertScreenToCursor()
@@ -679,7 +687,7 @@ Frame, Cursor and methods GoTo*.
 the screen.
 - Interface IPoint is replaced with struct Point.
 
-3.3.1
+= 3.3.1 =
 
 - New dialog item IComboBox, IListBox, password editor and vertical text or
 separator.
@@ -694,7 +702,7 @@ options.
 - Revision of old Key, Mouse and related events. New structs are KeyInfo and
 MouseInfo.
 
-3.3.0
+= 3.3.0 =
 
 - FarManager.Forms: implemented IDialog, IBox (double, single), IButton,
 ICheckBox, IEdit (standard, fixed), IRadioButton, IText. Example -
@@ -706,18 +714,18 @@ Test-Dialog-.ps1 in PowerShellFar 1.1.0.
 sequence for IFar.PostKeys() is not an error.
 - Optimized some string operations.
 
-3.2.9
+= 3.2.9 =
 
 - Improved exception handling.
 - New IFar.ShowError() for internal use but can be used externally as well.
 - New IFar.PostText().
 
-3.2.8
+= 3.2.8 =
 
 - New IFar.GetHistory()
 - IVersion is replaced with System.Version
 
-3.2.7
+= 3.2.7 =
 
 - New IEditor.CurrentLine of type ILine.
 - New in ILine: Pos, Insert(), Select(), Unselect().
@@ -725,19 +733,19 @@ sequence for IFar.PostKeys() is not an error.
 - IFar.GetUserScreen() sends "user screen" to screen. Far >= 1.71.2187.
 - IPanel.IsVisible is get\set (set works via sending CtrlF1\F2).
 
-3.2.6
+= 3.2.6 =
 
 - New IMenuItem.Data, IMenu.SelectedData, IPanel.NumericSort,
 IFar.SetUserScreen(), ICommandLine.Insert().
 - IEditor.ExpandTabs type is enum ExpandTabsMode.
 - Improved some exceptions info.
 
-3.2.5
+= 3.2.5 =
 
 - Minor changes in IMenu è ISelection and fix of potential crash of a menu with
 incorrect coordinates.
 
-3.2.4
+= 3.2.4 =
 
 - Main editor functionality is now implemented as it was designed.
 - Vast revision of existing IEditor implementation.
@@ -746,18 +754,18 @@ incorrect coordinates.
 - New interface ICommandLine and property IFar.CommandLine.
 - Examples: added Build-CS.bat, Build-JS.bat, Build-VB.bat.
 
-3.2.3
+= 3.2.3 =
 
 - Implemented lists in editor.
 - All collections are generic now.
 - All event handlers are standard now (i.e.: object sender, ..EventArgs e).
 
-3.2.1
+= 3.2.1 =
 
 - Fixed selection in editor.
 - Completed .NET 2.0 porting.
 
-3.1.? and below
+= 3.1.? and older =
 
 - 29.08.06 - ported to .NET 2.0
 - 19.08.05 - beta stage
