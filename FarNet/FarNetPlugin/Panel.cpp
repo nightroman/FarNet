@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2008 FAR.NET Team
+Copyright (c) 2005-2009 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -210,6 +210,11 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("IDLE");
 #endif
 		{
+			if (pp->IdleUpdate)
+			{
+				pp->Update(true);
+				pp->Redraw();
+			}
 			if (pp->_Idled)
 				pp->_Idled(pp, nullptr);
 		}
@@ -275,6 +280,30 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			}
 
 			int r = false;
+
+			// case: use data matcher
+			if (pp->DataComparison && (pp->_postData || pp->_postFile && pp->_postFile->Data))
+			{
+				Object^ data = pp->_postData ? pp->_postData : pp->_postFile->Data;
+				pp->_postFile = nullptr;
+				pp->_postData = nullptr;
+				pp->_postName = nullptr;
+
+				int i = pp->AddDots ? 0 : -1;
+				for each (IFile^ f in pp->Contents)
+				{
+					++i;
+					if (pp->DataComparison(data, f->Data) == 0)
+					{
+						_reenterOnRedrawing = true;
+						pp->Redraw(i, -1);
+						r = true;
+						break;
+					}
+				}
+
+				return r;
+			}
 
 			// case: check posted data
 			if (pp->_postData)
@@ -449,6 +478,17 @@ FarPanel^ PanelSet::GetPanel(bool active)
 	return gcnew FarPanel(true);
 }
 
+FarPanelPlugin^ PanelSet::GetPanelPlugin(Guid id)
+{
+	for (int i = 1; i < cPanels; ++i)
+	{
+		FarPanelPlugin^ p = _panels[i];
+		if (p && p->Id == id)
+			return p;
+	}
+	return nullptr;
+}
+
 FarPanelPlugin^ PanelSet::GetPanelPlugin(Type^ hostType)
 {
 	// case: any panel
@@ -499,7 +539,7 @@ HANDLE PanelSet::AddPanelPlugin(FarPanelPlugin^ plugin)
 		if (_panels[i] == nullptr)
 		{
 			_panels[i] = plugin;
-			plugin->Id = i;
+			plugin->Handle = i;
 			return (HANDLE)(INT_PTR)i;
 		}
 	}
@@ -515,11 +555,11 @@ void PanelSet::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newP
 	if (!newPanel)
 		throw gcnew ArgumentNullException("newPanel");
 
-	int id1 = oldPanel->Id;
+	int id1 = oldPanel->Handle;
 	if (id1 < 1)
 		throw gcnew InvalidOperationException("Old panel must be opened.");
 
-	if (newPanel->Id >= 1)
+	if (newPanel->Handle >= 1)
 		throw gcnew InvalidOperationException("New panel must be not opened.");
 
 	// save old modes
@@ -528,12 +568,12 @@ void PanelSet::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newP
 	oldPanel->Info->StartViewMode = oldPanel->ViewMode;
 
 	// disconnect old panel
-	oldPanel->Id = 0;
+	oldPanel->Handle = 0;
 	((FarPanelPluginInfo^)oldPanel->Info)->Free();
 
 	// connect new panel
 	_panels[id1] = newPanel;
-	newPanel->Id = id1;
+	newPanel->Handle = id1;
 
 	// change panel modes
 	if (newPanel->Info->StartViewMode != PanelViewMode::Undefined &&
@@ -795,19 +835,19 @@ void FarPanelPluginInfo::Free()
 //
 
 FarPanel::FarPanel(bool current)
-: _id(INVALID_HANDLE_VALUE)
+: _handle(INVALID_HANDLE_VALUE)
 , _active(current)
 {
 }
 
-int FarPanel::Id::get()
+int FarPanel::Handle::get()
 {
-	return (int)(INT_PTR)_id;
+	return (int)(INT_PTR)_handle;
 }
 
-void FarPanel::Id::set(int value)
+void FarPanel::Handle::set(int value)
 {
-	_id = (HANDLE)(INT_PTR)value;
+	_handle = (HANDLE)(INT_PTR)value;
 }
 
 bool FarPanel::IsActive::get()
@@ -900,7 +940,7 @@ void FarPanel::SortMode::set(PanelSortMode value)
 {
 	int command = _active ? FCTL_SETSORTMODE : FCTL_SETANOTHERSORTMODE;
 	int mode = (int)value;
-	Info.Control(_id, command, &mode);
+	Info.Control(_handle, command, &mode);
 }
 
 PanelViewMode FarPanel::ViewMode::get()
@@ -913,7 +953,7 @@ void FarPanel::ViewMode::set(PanelViewMode value)
 {
 	int command = _active ? FCTL_SETVIEWMODE : FCTL_SETANOTHERVIEWMODE;
 	int mode = (int)value;
-	Info.Control(_id, command, &mode);
+	Info.Control(_handle, command, &mode);
 }
 
 String^ FarPanel::Path::get()
@@ -931,7 +971,7 @@ void FarPanel::Path::set(String^ value)
 
 	int command = _active ? FCTL_SETPANELDIR : FCTL_SETANOTHERPANELDIR;
 	CBox sb(value);
-	if (!Info.Control(_id, command, sb))
+	if (!Info.Control(_handle, command, sb))
 		throw gcnew OperationCanceledException;
 }
 
@@ -991,7 +1031,7 @@ PanelType FarPanel::Type::get()
 void FarPanel::GetBrief(PanelInfo& pi)
 {
 	int command = _active ? FCTL_GETPANELSHORTINFO : FCTL_GETANOTHERPANELSHORTINFO;
-	if (!Info.Control(_id, command, &pi))
+	if (!Info.Control(_handle, command, &pi))
 		throw gcnew OperationCanceledException("Can't get panel information.");
 }
 
@@ -999,13 +1039,13 @@ void FarPanel::GetBrief(PanelInfo& pi)
 bool FarPanel::TryBrief(PanelInfo& pi)
 {
 	int command = _active ? FCTL_GETPANELSHORTINFO : FCTL_GETANOTHERPANELSHORTINFO;
-	return Info.Control(_id, command, &pi) != 0;
+	return Info.Control(_handle, command, &pi) != 0;
 }
 
 void FarPanel::GetInfo(PanelInfo& pi)
 {
 	int command = _active ? FCTL_GETPANELINFO : FCTL_GETANOTHERPANELINFO;
-	if (!Info.Control(_id, command, &pi))
+	if (!Info.Control(_handle, command, &pi))
 		throw gcnew OperationCanceledException("Can't get panel information.");
 }
 
@@ -1049,7 +1089,7 @@ void FarPanel::ReverseSortOrder::set(bool value)
 {
 	int command = _active ? FCTL_SETSORTORDER : FCTL_SETANOTHERSORTORDER;
 	int mode = (int)value;
-	Info.Control(_id, command, &mode);
+	Info.Control(_handle, command, &mode);
 }
 
 bool FarPanel::UseSortGroups::get()
@@ -1074,7 +1114,7 @@ void FarPanel::NumericSort::set(bool value)
 {
 	int command = _active ? FCTL_SETNUMERICSORT : FCTL_SETANOTHERNUMERICSORT;
 	int mode = (int)value;
-	Info.Control(_id, command, &mode);
+	Info.Control(_handle, command, &mode);
 }
 
 bool FarPanel::RealNames::get()
@@ -1085,13 +1125,13 @@ bool FarPanel::RealNames::get()
 
 void FarPanel::Close()
 {
-	Info.Control(_id, FCTL_CLOSEPLUGIN, 0);
+	Info.Control(_handle, FCTL_CLOSEPLUGIN, 0);
 }
 
 void FarPanel::Close(String^ path)
 {
 	CBox sb; sb.Reset(path);
-	Info.Control(_id, FCTL_CLOSEPLUGIN, sb);
+	Info.Control(_handle, FCTL_CLOSEPLUGIN, sb);
 }
 
 void FarPanel::GoToName(String^ name)
@@ -1122,7 +1162,7 @@ void FarPanel::GoToPath(String^ path)
 void FarPanel::Redraw()
 {
 	int command = _active ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;
-	Info.Control(_id, command, 0);
+	Info.Control(_handle, command, 0);
 }
 
 void FarPanel::Redraw(int current, int top)
@@ -1138,13 +1178,13 @@ void FarPanel::Redraw(int current, int top)
 	pri.CurrentItem = current;
 	pri.TopPanelItem = top;
 	int command = _active ? FCTL_REDRAWPANEL : FCTL_REDRAWANOTHERPANEL;
-	Info.Control(_id, command, &pri);
+	Info.Control(_handle, command, &pri);
 }
 
 void FarPanel::Update(bool keepSelection)
 {
 	int command = _active ? FCTL_UPDATEPANEL : FCTL_UPDATEANOTHERPANEL;
-	Info.Control(_id, command, (void*)keepSelection);
+	Info.Control(_handle, command, (void*)keepSelection);
 }
 
 //
@@ -1160,7 +1200,7 @@ FarPanelPlugin::FarPanelPlugin()
 
 void FarPanelPlugin::AssertOpen()
 {
-	if (Id <= 0) throw gcnew InvalidOperationException("Panel plugin is not opened.");
+	if (Handle <= 0) throw gcnew InvalidOperationException("Panel plugin is not opened.");
 }
 
 List<IFile^>^ FarPanelPlugin::ReplaceFiles(List<IFile^>^ files)
@@ -1172,7 +1212,7 @@ List<IFile^>^ FarPanelPlugin::ReplaceFiles(List<IFile^>^ files)
 
 bool FarPanelPlugin::IsOpened::get()
 {
-	return Id > 0;
+	return Handle > 0;
 }
 
 IList<IFile^>^ FarPanelPlugin::Files::get()
@@ -1183,6 +1223,19 @@ IList<IFile^>^ FarPanelPlugin::Files::get()
 bool FarPanelPlugin::IsPlugin::get()
 {
 	return true;
+}
+
+Guid FarPanelPlugin::Id::get()
+{
+	return _Id;
+}
+
+void FarPanelPlugin::Id::set(Guid value)
+{
+	if (_Id != Guid::Empty)
+		throw gcnew InvalidOperationException("Id cannot be set twice.");
+
+	_Id = value;
 }
 
 IFile^ FarPanelPlugin::Current::get()
@@ -1305,7 +1358,7 @@ void FarPanelPlugin::Open(IPanelPlugin^ oldPanel)
 
 void FarPanelPlugin::Open()
 {
-	if (Id > 0) throw gcnew InvalidOperationException("Can't open the panel because it is already opened.");
+	if (Handle > 0) throw gcnew InvalidOperationException("Can't open the panel because it is already opened.");
 	PanelSet::OpenPanelPlugin(this);
 	if (_IsPushed)
 	{
@@ -1317,7 +1370,7 @@ void FarPanelPlugin::Open()
 void FarPanelPlugin::Push()
 {
 	PanelSet::PushPanelPlugin(this);
-	Id = 0;
+	Handle = 0;
 }
 
 }

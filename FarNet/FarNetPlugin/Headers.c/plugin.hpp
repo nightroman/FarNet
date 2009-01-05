@@ -4,7 +4,7 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 1.75 build 2494
+  Plugin API for FAR Manager 1.75 build 2502
 
   Copyright (c) 1996-2000 Eugene Roshal
   Copyright (c) 2000-2008 FAR group
@@ -12,7 +12,7 @@
 
 #define FARMANAGERVERSION_MAJOR 1
 #define FARMANAGERVERSION_MINOR 75
-#define FARMANAGERVERSION_BUILD 2494
+#define FARMANAGERVERSION_BUILD 2502
 
 #ifndef RC_INVOKED
 
@@ -601,10 +601,6 @@ enum FARMENUFLAGS{
   FMENU_REVERSEAUTOHIGHLIGHT = 0x00000008,
   FMENU_USEEXT               = 0x00000020,
   FMENU_CHANGECONSOLETITLE   = 0x00000040,
-
-  FMENU_TRUNCPATH            = 0x10000000,
-  FMENU_TRUNCSTR             = 0x20000000,
-  FMENU_TRUNCSTREND          = 0x30000000,
 };
 
 typedef int (WINAPI *FARAPIMENU)(

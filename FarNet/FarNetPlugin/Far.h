@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2008 FAR.NET Team
+Copyright (c) 2005-2009 FAR.NET Team
 */
 
 #pragma once
@@ -64,6 +64,7 @@ public:
 	virtual int NameToKey(String^ key);
 	virtual int SaveScreen(int x1, int y1, int x2, int y2);
 	virtual IPanelPlugin^ CreatePanelPlugin();
+	virtual IPanelPlugin^ GetPanelPlugin(Guid id);
 	virtual IPanelPlugin^ GetPanelPlugin(Type^ hostType);
 	virtual IViewer^ CreateViewer();
 	virtual IWindowInfo^ GetWindowInfo(int index, bool full);

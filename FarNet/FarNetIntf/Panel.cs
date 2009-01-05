@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2008 FAR.NET Team
+Copyright (c) 2005-2009 FAR.NET Team
 */
 
 using System.Collections.Generic;
@@ -848,7 +848,7 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Panel plugin. It is created by <see cref="IFar.CreatePanelPlugin"/>.
+	/// Panel plugin. It is created by <see cref="IFar.CreatePanelPlugin()"/>.
 	/// Then you set <see cref="Info"/>, add event handlers and open it.
 	/// </summary>
 	public interface IPanelPlugin : IPanel
@@ -881,6 +881,24 @@ namespace FarManager
 		/// </summary>
 		IPanelPlugin Another { get; }
 		/// <summary>
+		/// Comparison of posted and current data.
+		/// </summary>
+		/// <remarks>
+		/// When a panel opens a child panel for the current item it is normally expected that on return
+		/// the current item will be the same. Methods <see cref="PostData"/>, <see cref="PostFile"/>
+		/// and <see cref="PostName"/> are designed to post an item to be restored as current.
+		/// But in some cases with not trivial equality a comparison is needed in addition.
+		/// <para>
+		/// Example: a panel shows some frequently changed data like current system processes.
+		/// On update it simply recreates the list. In this case it cannot just use <c>PostFile</c>,
+		/// because they are changed. It cannot just use <c>PostData</c> because process objects may be
+		/// not equal even if they represent the same process. Finally, it cannot just use <c>PostName</c>
+		/// because there may be more than one process with the same name. Solution: a comparison that
+		/// returns 0 if objects representing processes have the same process Id.
+		/// </para>
+		/// </remarks>
+		Comparison<object> DataComparison { get; set; }
+		/// <summary>
 		/// Tells to add item ".." automatically and not to return it by
 		/// <see cref="IPanel.Current"/> and <see cref="IPanel.Contents"/>.
 		/// See also <see cref="DotsDescription"/>.
@@ -895,10 +913,11 @@ namespace FarManager
 		/// </summary>
 		object Data { get; set; }
 		/// <summary>
-		/// User object that is normally a host of the panel (i.e. container of data, event handlers and etc.).
-		/// Normally you should use it if you have several communicating panels.
-		/// See <see cref="Another"/>.
+		/// User object that is normally a host of the panel (i.e. container of data, event handlers, ...).
+		/// It can be used for example by communicating panels.
 		/// </summary>
+		/// <seealso cref="Another"/>
+		/// <seealso cref="Id"/>
 		object Host { get; set; }
 		/// <summary>
 		/// Current directory when the panel starts.
@@ -916,6 +935,25 @@ namespace FarManager
 		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately.
 		/// </summary>
 		IList<IFile> Files { get; }
+		/// <summary>
+		/// User panel type ID.
+		/// </summary>
+		/// <remarks>
+		/// This property is optionally set once, normally by a creator.
+		/// It is used for distinguishing panel types when <see cref="Host"/> is not enough.
+		/// </remarks>
+		/// <seealso cref="IFar.GetPanelPlugin(Guid)"/>
+		Guid Id { get; set; }
+		/// <summary>
+		/// Tells to update and redraw the panel automatically when idle.
+		/// </summary>
+		/// <remarks>
+		/// If it is set the panel is updated automatically every few seconds when idle.
+		/// This is suitable only for panels with very frequently changed data,
+		/// otherwise it may cause overhead job for nothing.
+		/// </remarks>
+		/// <seealso cref="Idled"/>
+		bool IdleUpdate { get; set; }
 		/// <summary>
 		/// Raised to get a plugin <see cref="Info"/> data. Normally you don't have to use this but
 		/// if info is changed externally you may check and update really changed properties.
@@ -942,8 +980,9 @@ namespace FarManager
 		event EventHandler<PanelEventArgs> Closing;
 		/// <summary>
 		/// Raised every few seconds.
-		/// A plugin can use this event to request panel updating and redrawing.
+		/// Plugins can use this event to request panel updating and redrawing.
 		/// </summary>
+		/// <seealso cref="IdleUpdate"/>
 		event EventHandler Idled;
 		/// <summary>
 		/// Raised on executing a command from the FAR command line.
@@ -1001,6 +1040,7 @@ namespace FarManager
 		/// <summary>
 		/// Panel data to be set current.
 		/// </summary>
+		/// <seealso cref="DataComparison"/>
 		void PostData(object data);
 		/// <summary>
 		/// Panel file to be set current.
