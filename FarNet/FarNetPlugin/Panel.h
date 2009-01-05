@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2008 FAR.NET Team
+Copyright (c) 2005-2009 FAR.NET Team
 */
 
 #pragma once
@@ -95,10 +95,10 @@ protected:
 	void GetBrief(PanelInfo& pi);
 	void GetInfo(PanelInfo& pi);
 internal:
-	property int Id { int get(); void set(int value); }
+	property int Handle { int get(); void set(int value); }
 	bool _active;
 private:
-	HANDLE _id;
+	HANDLE _handle;
 };
 
 #define FPPI_FLAG(Name)\
@@ -189,6 +189,7 @@ ref class FarPanelPlugin : public FarPanel, IPanelPlugin
 {
 public: // FarPanel
 	virtual property bool IsPlugin { bool get() override; }
+	virtual property Guid Id { Guid get(); void set(Guid value); }
 	virtual property IFile^ Current { IFile^ get() override; }
 	virtual property IList<IFile^>^ Contents { IList<IFile^>^ get() override; }
 	virtual property IList<IFile^>^ Selected { IList<IFile^>^ get() override; }
@@ -197,11 +198,13 @@ public: // FarPanel
 	virtual property String^ StartDirectory { String^ get(); void set(String^ value); }
 public: // IPanelPlugin
 	virtual property bool AddDots;
+	virtual property bool IdleUpdate;
 	virtual property bool IsOpened { bool get(); }
 	virtual property bool IsPushed { bool get() { return _IsPushed; } }
-	virtual property IPanelPluginInfo^ Info { IPanelPluginInfo^ get() { return %_info; } }
 	virtual property IList<IFile^>^ Files { IList<IFile^>^ get(); }
+	virtual property Comparison<Object^>^ DataComparison;
 	virtual property IPanelPlugin^ Another { IPanelPlugin^ get(); }
+	virtual property IPanelPluginInfo^ Info { IPanelPluginInfo^ get() { return %_info; } }
 	virtual property Object^ Data;
 	virtual property Object^ Host;
 	virtual property String^ DotsDescription;
@@ -240,6 +243,7 @@ internal:
 	IFile^ _postFile;
 	String^ _postName;
 private:
+	Guid _Id;
 	List<IFile^>^ _files;
 	String^ _StartDirectory;
 };
@@ -259,6 +263,7 @@ internal:
 	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode);
 	static int AsSetDirectory(HANDLE hPlugin, const char* dir, int opMode);
 	static FarPanel^ GetPanel(bool active);
+	static FarPanelPlugin^ GetPanelPlugin(Guid id);
 	static FarPanelPlugin^ GetPanelPlugin(Type^ hostType);
 	static FarPanelPlugin^ GetPanelPlugin2(FarPanelPlugin^ plugin);
 	static void AsClosePlugin(HANDLE hPlugin);

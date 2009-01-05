@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<ProductVersion>3.3.54</ProductVersion>
-		<OutputPath>FAR.NET.$(ProductVersion).rar</OutputPath>
+		<OutputPath>FAR.NET.$(ProductVersion).7z</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
@@ -40,7 +40,7 @@
 		<Copy SourceFiles="$(FarHome)\Plugins\FAR.NET\FarNetPlugin.dll" DestinationFolder="Tmp\Plugins\FAR.NET"/>
 		<Exec Command="xcopy Plugins.NET Tmp\Plugins.NET /s > nul"/>
 		<Copy SourceFiles="History.txt;LICENSE;Readme.txt" DestinationFolder="Tmp"/>
-		<Exec Command="rar a $(OutputPath) -m5 -r -s -t *.* > nul" WorkingDirectory="Tmp"/>
+		<Exec Command="7z a $(OutputPath) .\*" WorkingDirectory="Tmp"/>
 		<Copy SourceFiles="Tmp\$(OutputPath)" DestinationFolder="."/>
 		<RemoveDir Directories="Tmp"/>
 	</Target>

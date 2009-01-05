@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2008 FAR.NET Team
+Copyright (c) 2005-2009 FAR.NET Team
 */
 
 using FarManager.Forms;
@@ -379,6 +379,12 @@ namespace FarManager
 		/// If it is <c>typeof(object)</c> then any plugin panel having a host is returned.
 		/// </param>
 		IPanelPlugin GetPanelPlugin(Type hostType);
+		/// <summary>
+		/// Gets existing FAR.NET plugin panel with the specified ID or returns null.
+		/// </summary>
+		/// <param name="id">Panel ID. It is normally assigned by a creator.</param>
+		/// <seealso cref="IPanelPlugin.Id"/>
+		IPanelPlugin GetPanelPlugin(Guid id);
 		/// <summary>
 		/// Creates a new panel plugin.
 		/// You have to configure it and then open by <see cref="IPanelPlugin.Open()"/>.

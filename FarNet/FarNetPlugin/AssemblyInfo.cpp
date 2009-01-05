@@ -12,7 +12,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfiguration("")];
 [assembly:AssemblyCompany("http://code.google.com/p/farnet/")];
 [assembly:AssemblyProduct("FAR.NET")];
-[assembly:AssemblyCopyright("Copyright (c) 2005-2008 FAR.NET Team")];
+[assembly:AssemblyCopyright("Copyright (c) 2005-2009 FAR.NET Team")];
 [assembly:AssemblyTrademark("")];
 [assembly:AssemblyCulture("")];
 
