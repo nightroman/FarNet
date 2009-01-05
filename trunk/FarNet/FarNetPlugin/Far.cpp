@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2008 FAR.NET Team
+Copyright (c) 2005-2009 FAR.NET Team
 */
 
 #include "StdAfx.h"
@@ -895,6 +895,11 @@ void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgro
 IPanelPlugin^ Far::CreatePanelPlugin()
 {
 	return gcnew FarPanelPlugin;
+}
+
+IPanelPlugin^ Far::GetPanelPlugin(Guid id)
+{
+	return PanelSet::GetPanelPlugin(id);
 }
 
 IPanelPlugin^ Far::GetPanelPlugin(Type^ hostType)

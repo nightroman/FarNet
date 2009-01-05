@@ -1,6 +1,6 @@
 /*
 FAR.NET plugin for Far Manager
-Copyright (c) 2005-2008 FAR.NET Team
+Copyright (c) 2005-2009 FAR.NET Team
 */
 
 #pragma once

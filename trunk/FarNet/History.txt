@@ -1,5 +1,20 @@
 http://code.google.com/p/farnet/
 
+= 3.3.54 =
+
+*) New property IPanelPlugin.DataComparison - compares data attached to panel
+items (normally in order to restore the current item correctly). Needed for
+cases with not trivial equality.
+
+*) New property IPanelPlugin.IdleUpdate - tells to update and redraw the panel
+automatically when idle. Useful for frequently changed data.
+
+*) New user property Guid IPanel.Id - normally assigned once and used by a
+creator for distinguishing panel types and reusing opened panels.
+
+*) New method IFar.GetPanelPlugin(Guid) - gets opened panel plugin by ID (see
+above). Can be used for reusing already opened panels.
+
 = 3.3.53 =
 
 This is mostly a techical build reflecting FAR API changes up to 1.75.2494.
