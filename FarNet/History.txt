@@ -1,5 +1,23 @@
 http://code.google.com/p/farnet/
 
+= 3.3.55 =
+
+CHANGES
+
+*) Logic of IKeyMacroHost.Install(IDictionary[]) is changed. This is not a
+breaking change but if you use it you have to take a look at the manual.
+
+FIXED
+
+*) False error "Can't open a plugin panel at this moment." in rare cases.
+*) Minor issue in error message in editor on opening a file with null name.
+
+OBSOLETE
+
+*) As it was announced in 3.3.44, method IFar.CreateMessage() and interface
+IMessage are obsolete and will be removed. Use IFar.Msg() instead, these 5
+methods provide the same features and also some improvements.
+
 = 3.3.54 =
 
 *) New property IPanelPlugin.DataComparison - compares data attached to panel

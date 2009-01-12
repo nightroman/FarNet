@@ -6,7 +6,6 @@ Copyright (c) 2005-2009 FAR.NET Team
 #include "StdAfx.h"
 
 // hosted values
-bool ValueCanOpenPanel::_value;
 bool ValueUserScreen::_value;
 
 // empty oem string

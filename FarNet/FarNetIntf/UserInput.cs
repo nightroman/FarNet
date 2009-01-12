@@ -302,6 +302,7 @@ namespace FarManager
 		Up = 0x00000126,
 		Right = 0x00000127,
 		Down = 0x00000128,
+		PrintScreen = 0x0000012C,
 		Insert = 0x0000012D,
 		Delete = 0x0000012E,
 
@@ -309,17 +310,17 @@ namespace FarManager
 		RWin = 0x0000015C,
 		Apps = 0x0000015D,
 
-		Numpad0 = 0x00000160,
-		Numpad1 = 0x00000161,
-		Numpad2 = 0x00000162,
-		Numpad3 = 0x00000163,
-		Numpad4 = 0x00000164,
-		Numpad5 = 0x00000165,
-		Clear = Numpad5,
-		Numpad6 = 0x00000166,
-		Numpad7 = 0x00000167,
-		Numpad8 = 0x00000168,
-		Numpad9 = 0x00000169,
+		NumPad0 = 0x00000160,
+		NumPad1 = 0x00000161,
+		NumPad2 = 0x00000162,
+		NumPad3 = 0x00000163,
+		NumPad4 = 0x00000164,
+		NumPad5 = 0x00000165,
+		Clear = NumPad5,
+		NumPad6 = 0x00000166,
+		NumPad7 = 0x00000167,
+		NumPad8 = 0x00000168,
+		NumPad9 = 0x00000169,
 
 		Multiply = 0x0000016A,
 		Add = 0x0000016B,
@@ -376,9 +377,9 @@ namespace FarManager
 
 		MouseWheelUp = 0x00000203,
 		MouseWheelDown = 0x00000204,
-		NumpadDelete = 0x00000209,
+		NumPadDelete = 0x00000209,
 		Decimal = 0x0000020A,
-		NumpadEnter = 0x0000020B,
+		NumPadEnter = 0x0000020B,
 
 		FKeyEnd = 0x00000FFF,
 
@@ -390,9 +391,12 @@ namespace FarManager
 	}
 
 	/// <summary>
-	/// Virtual key codes. They are similar to <see cref="ConsoleKey"/>.
+	/// Virtual key codes.
 	/// <c>Add{Control|Alt|Shift}</c> are additional helpers for combinations.
 	/// </summary>
+	/// <remarks>
+	/// They are similar to <c>System.ConsoleKey</c>, <c>System.Windows.Forms.Keys</c>.
+	/// </remarks>
 	[DebuggerStepThroughAttribute]
 	public static class VKeyCode
 	{

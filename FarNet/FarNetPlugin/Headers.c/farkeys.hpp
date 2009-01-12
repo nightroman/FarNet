@@ -3,10 +3,10 @@
 /*
   farkeys.hpp
 
-  Inside KeyName for FAR Manager 1.75 build 2502
+  Inside KeyName for FAR Manager 1.75 build 2505
 
   Copyright (c) 1996-2000 Eugene Roshal
-  Copyrigth (c) 2000-2008 FAR group
+  Copyrigth (c) 2000-2009 FAR group
 */
 
 
@@ -52,6 +52,7 @@ enum BaseDefKeyboard
   KEY_UP                   =0x00000126,
   KEY_RIGHT                =0x00000127,
   KEY_DOWN                 =0x00000128,
+  KEY_PRNTSCRN             =0x0000012C,
   KEY_INS                  =0x0000012D,
   KEY_DEL                  =0x0000012E,
 
