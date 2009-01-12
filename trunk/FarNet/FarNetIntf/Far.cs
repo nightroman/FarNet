@@ -106,14 +106,17 @@ namespace FarManager
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons.</param>
-		/// <param name="helpTopic">See <see cref="IMessage.HelpTopic"/>.</param>
+		/// <param name="helpTopic">
+		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
+		/// </param>
 		/// <returns>Button index or -1 if cancelled.</returns>
+		/// <remarks>
+		/// In extreme cases when a message contains too many or too long buttons, then a message
+		/// box is converted into a listbox dialog where listbox items work as buttons.
+		/// </remarks>
 		int Msg(string body, string header, MessageOptions options, string[] buttons, string helpTopic);
-		/// <summary>
-		/// Creates a new message box.
-		/// You have to set its properties and call <see cref="IMessage.Show"/>.
-		/// Note that in most cases using one of <c>Msg</c> methods instead of this is enough.
-		/// </summary>
+		///
+		[Obsolete("Use IFar.Msg()")]
 		IMessage CreateMessage();
 		/// <summary>
 		/// Runs a command with a registered FAR.NET prefix.

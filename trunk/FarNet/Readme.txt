@@ -1,52 +1,52 @@
 Plugin   : FAR.NET
 Category : Development
-Version  : 3.3.54
-Release  : 2008.12.29
+Version  : 3.3.55
+Release  : 2009.01.05
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
-Sources  : C#, C++/CLI (see "Build sources")
+Sources  : C#, C++/CLI
 HomePage : http://code.google.com/p/farnet/
 
 
-	Requirements
+	REQUIREMENTS
 
 
 - .NET Framework 2.0
-- FAR Manager 1.75.2494.
+- FAR Manager 1.75.2505.
 
 
-	Description
+	DESCRIPTION
 
 
 Plugin for writing Far Manager plugins in any .NET language (even in PowerShell
-with PowerShellFar plugin). It exposes significant part of Far API and also
+with PowerShellFar plugin). It exposes significant part of FAR API and also
 extends it for comfortable use in object oriented way.
 Home page: http://code.google.com/p/farnet/
 
 
-	Installation
+	INSTALLATION
 
 
 Copy to %FARHOME%:
 - Far.exe.config
 - Lib
 - Plugins\FAR.NET
-- Plugins.NET (with optional examples)
+- Plugins.NET (optional examples)
 
-This is the default installation. You can move Lib or Plugins.NET; in this case
-you have to update Far.exe.config accordingly.
+This is the default installation (recommended). You can move Lib or\and
+Plugins.NET, in this case you have to update Far.exe.config accordingly.
 
 
-	Structure
+	STRUCTURE
 
 
 Plugins\FAR.NET\
-- FarNetPlugin.dll - FAR plugin and loader of FAR.NET plugins;
-- FarNetPlugin.hlf - FAR.NET help;
+- FarNetPlugin.dll - FAR plugin, manager of FAR.NET plugins
+- FarNetPlugin.hlf - FAR.NET help
 
 Lib\
-- FarNetIntf.dll - FarManager interfaces;
-- FarNetIntf.xml - XML documentation;
+- FarNetIntf.dll - FarManager interfaces
+- FarNetIntf.xml - XML documentation
 
 Plugins.NET\
 Each plugin folder contains one or more assemblies (.dll) and at most one
@@ -57,7 +57,7 @@ optional configuration file (.cfg). Each line of .cfg file is:
 	<ClassX> - name of a class from this assembly.
 
 
-	Loading plugins from disk
+	LOADING PLUGINS FROM DISK
 
 
 *) For each folder in Plugins.NET: if a file *.cfg exists then only specified
@@ -70,7 +70,7 @@ information stored in the registry. Directory names and assembly locations are
 not important.
 
 
-	Loading plugins from cache
+	LOADING PLUGINS FROM CACHE
 
 
 FAR.NET plugin info registry cache:
@@ -83,26 +83,26 @@ too difficult for that (e.g. changes in config files), in these cases you have
 to remove the registry cache manually (ditto for other cache problems).
 
 
-	CHM documentation
+	CHM DOCUMENTATION
 
 
 Download the latest version from:
 http://code.google.com/p/farnet/
 
 
-	XML documentation
+	XML DOCUMENTATION
 
 
 Included XML documentation is not perhaps a perfect form of documentation but it is
 always up-to-date and practically very useful for development.
 
 Visual Studio Object Browser automatically uses XML comments well enough.
-Another good tool is Reflector for .NET (it is free). It displays documentation
-in MSDN-like style, provides powerful navigation and search (including .NET and
-any loaded .NET assemblies): http://www.aisto.com/roeder/dotnet/
+Another excellent and free tool is .NET Reflector. It displays documentation in
+MSDN-like style, provides powerful navigation and search (including .NET and
+any loaded .NET assemblies)
 
 
-	Plugins help
+	PLUGINS HELP
 
 
 You can add help for your plugins. It works in dialogs, menus, input and message
@@ -111,7 +111,7 @@ be automatically shown by F1 ShiftF2 because technically FAR.NET plugins are not
 visible to FAR.
 
 
-	Build sources
+	BUILDING SOURCES
 
 
 - If you build Debug remove the line "#include <Test1.h>" from "stdafx.h".

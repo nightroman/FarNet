@@ -205,48 +205,66 @@ void KeyMacroHost::Post(String^ macro, bool enableOutput, bool disablePlugins)
 
 void KeyMacroHost::Install(array<System::Collections::IDictionary^>^ dataSet)
 {
-	KeyMacroData^ data = gcnew KeyMacroData;
-	String^ area;
-	String^ name;
-
+	Save();
+	
 	int done = 0;
-	Dictionary<String^, bool> paths;
-	for each(System::Collections::IDictionary^ map in dataSet)
+	try
 	{
-		// get data
-		for each(String^ key in map->Keys)
+		KeyMacroData^ data = gcnew KeyMacroData;
+		String^ area;
+		String^ name;
+
+		Dictionary<String^, bool> paths;
+		for each(System::Collections::IDictionary^ map in dataSet)
 		{
-			Object^ value = map[key];
-			if (EqualsOrdinal(key, "Area"))
+			// reset
+			if (!map)
 			{
-				area = value->ToString();
+				data = gcnew KeyMacroData;
+				area = nullptr;
+				name = nullptr;
+				continue;
 			}
-			else if (EqualsOrdinal(key, "Name"))
+
+			// get data
+			for each(String^ key in map->Keys)
 			{
-				name = value->ToString();
+				Object^ value = map[key];
+				if (EqualsOrdinal(key, "Area"))
+				{
+					area = value->ToString();
+				}
+				else if (EqualsOrdinal(key, "Name"))
+				{
+					name = value->ToString();
+				}
+				else
+				{
+					data->GetType()->InvokeMember(
+						key,
+						BindingFlags::SetProperty | BindingFlags::Public | BindingFlags::Instance | BindingFlags::IgnoreCase,
+						nullptr, data, gcnew array<Object^> { value }, CultureInfo::InvariantCulture);
+				}
 			}
-			else
-			{
-				data->GetType()->InvokeMember(
-					key,
-					BindingFlags::SetProperty | BindingFlags::Public | BindingFlags::Instance | BindingFlags::IgnoreCase,
-					nullptr, data, gcnew array<Object^> { value }, CultureInfo::InvariantCulture);
-			}
+
+			// not ready?
+			if (ES(area) || ES(name) || data->Sequence->Length == 0)
+				continue;
+
+			// dupe?
+			String^ path = area + "\\" + name;
+			if (paths.ContainsKey(path))
+				throw gcnew ArgumentException("Macros '" + path + "' is defined twice.");
+			paths.Add(path, 0);
+
+			// install
+			Install(area, name, data);
+			++done;
 		}
-
-		// not ready?
-		if (ES(area) || ES(name) || data->Sequence->Length == 0)
-			continue;
-
-		// dupe?
-		String^ path = area + "\\" + name;
-		if (paths.ContainsKey(path))
-			throw gcnew ArgumentException("Macros '" + path + "' is defined twice.");
-		paths.Add(path, 0);
-
-		// install
-		Install(area, name, data);
-		++done;
+	}
+	finally
+	{
+		Load();
 	}
 
 	if (done == 0)

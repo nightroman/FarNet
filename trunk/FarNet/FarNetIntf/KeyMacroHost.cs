@@ -76,24 +76,32 @@ namespace FarManager
 		/// <param name="data">Macro data.</param>
 		void Install(string area, string name, KeyMacroData data);
 		/// <summary>
-		/// Installs one or more macros from the data set.
+		/// Installs several macros in batch mode using a set of macro data dictionaries.
 		/// </summary>
-		/// <param name="dataSet">Dictionary data set.</param>
+		/// <param name="dataSet">Set of dictionaries providing portions of macro data incrementally.</param>
 		/// <remarks>
-		/// Any dictionary in the sequence sets values and triggers installation if data are ready.
-		/// Dictionary keys and values: strings 'Area' and 'Name' define macro's area and name,
-		/// the others correspond to property names and values of <see cref="KeyMacroData"/>.
-		/// You don't have to set default values. Values are active for all next entries.
-		/// Entries install macros as soon as 'Area', 'Name' and 'Sequence' are all set.
+		/// Any dictionary provides a portion of macro data and triggers installation if data are ready.
+		/// Data are ready when at least these three values are defined: 'Area', 'Name' and 'Sequence'.
 		/// <para>
-		/// This method may look unusual at first but it allows to install effectively
-		/// the same macro in several areas or several similar macros in the same area
-		/// (these tasks are quite common).
+		/// If a dictionary in the sequence is null then all the current data are reset,
+		/// so that the next dictionary starts a new portion of data for next macros.
+		/// </para>
+		/// <para>
+		/// Dictionary keys and values: strings 'Area' and 'Name' define macro area and name,
+		/// the others correspond to property names and values of <see cref="KeyMacroData"/>.
+		/// You don't have to set default values. Values are active for all next entries
+		/// until a null dictionary in the sequence.
+		/// </para>
+		/// <para>
+		/// This method at first may look unusual, but it is suitable for scripting and it:
+		/// *) allows to set many macros in one shot effectively;
+		/// *) calls Save() and Load() internally, so that one this call is enough for installation;
+		/// *) makes it easy to set the same macro in several areas or several similar macros in the same area.
 		/// </para>
 		/// <para>
 		/// An exceptions is thrown if no macro is actually installed ('Area', 'Name' or 'Sequence' is never set)
 		/// or the same macro is defined more than once (the same 'Area' and 'Name' are used second time).
-		/// In the latter case macros installed before the exception remain installed.
+		/// Note that macros installed before the exception remain installed.
 		/// </para>
 		/// </remarks>
 		void Install(IDictionary[] dataSet);

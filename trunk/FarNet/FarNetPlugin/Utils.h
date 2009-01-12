@@ -224,7 +224,6 @@ private:\
 }
 
 // Hosted values
-VALUE_HOST(bool, ValueCanOpenPanel);
 VALUE_HOST(bool, ValueUserScreen);
 
 namespace FarNet

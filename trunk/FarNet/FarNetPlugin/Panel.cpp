@@ -612,7 +612,9 @@ void PanelSet::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newP
 
 void PanelSet::OpenPanelPlugin(FarPanelPlugin^ plugin)
 {
-	if (!ValueCanOpenPanel::Get()) throw gcnew InvalidOperationException("Can't open a plugin panel at this moment.");
+	try { Far::Instance->SetCurrentWindow(0); }
+	catch(InvalidOperationException^ e) { throw gcnew InvalidOperationException("Can't open a plugin panel at this moment.", e); }
+
 	_panels[0] = plugin;
 }
 
