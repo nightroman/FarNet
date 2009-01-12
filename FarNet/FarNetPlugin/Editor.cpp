@@ -29,7 +29,7 @@ void Editor::Open(OpenMode mode)
 	AssertClosed();
 
 	// strings
-	CBox sFileName(_FileName);
+	CBox sFileName(_FileName); // NULL causes crash (1.75.2505)
 	CBox sTitle(_Title);
 
 	// frame
@@ -95,7 +95,7 @@ void Editor::Open(OpenMode mode)
 				return;
 			}
 		}
-		throw gcnew OperationCanceledException("Cannot open the file '" + FileName + "'");
+		throw gcnew OperationCanceledException("Cannot open the file '" + (FileName ? FileName : "<null>") + "'");
 	}
 }
 

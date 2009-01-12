@@ -292,10 +292,13 @@ int Far::Msg(String^ body, String^ header, MessageOptions options, array<String^
 	return Message::Show(body, header, options, buttons, helpTopic);
 }
 
+#pragma warning(push)
+#pragma warning(disable : 4947)
 IMessage^ Far::CreateMessage()
 {
 	return gcnew Message;
 }
+#pragma warning(pop)
 
 void Far::Run(String^ command)
 {
@@ -840,7 +843,7 @@ int Far::GetPaletteColor(PaletteColor paletteColor)
 	INT_PTR index = (INT_PTR)paletteColor;
 	if (index < 0 || index >= COL_LASTPALETTECOLOR)
 		throw gcnew ArgumentOutOfRangeException("paletteColor");
-	return Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
+	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
 }
 
 void Far::WritePalette(int left, int top, PaletteColor paletteColor, String^ text)
@@ -1081,7 +1084,6 @@ HANDLE Far::AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize
 	if (_registeredFiler.Count == 0)
 		return INVALID_HANDLE_VALUE;
 
-	ValueCanOpenPanel canopenpanel(true);
 	ValueUserScreen userscreen;
 
 	try
@@ -1125,7 +1127,6 @@ HANDLE Far::AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize
 
 HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 {
-	ValueCanOpenPanel canopenpanel(true);
 	ValueUserScreen userscreen;
 
 	try
@@ -1154,7 +1155,6 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 			break;
 		case OPEN_EDITOR:
 			{
-				ValueCanOpenPanel::Set(false);
 				ToolPluginInfo^ tool = _toolEditor[(int)item];
 				ToolEventArgs e(ToolOptions::Editor);
 				tool->Handler(this, %e);
@@ -1162,7 +1162,6 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 			break;
 		case OPEN_VIEWER:
 			{
-				ValueCanOpenPanel::Set(false);
 				ToolPluginInfo^ tool = _toolViewer[(int)item];
 				ToolEventArgs e(ToolOptions::Viewer);
 				tool->Handler(this, %e);
@@ -1170,7 +1169,6 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 			break;
 		case OPEN_DIALOG:
 			{
-				ValueCanOpenPanel::Set(false);
 				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)item;
 				ToolPluginInfo^ tool = _toolDialog[dd->ItemNumber];
 				ToolEventArgs e(ToolOptions::Dialog);

@@ -8,6 +8,8 @@ class CStr;
 
 namespace FarNet
 {;
+#pragma warning(push)
+#pragma warning(disable : 4947)
 ref class Message : public IMessage
 {
 public:
@@ -37,4 +39,5 @@ private:
 	StringCollection^ _body;
 	StringCollection^ _buttons;
 };
+#pragma warning(pop)
 }
