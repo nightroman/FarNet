@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Implements Windows PowerShell V2 CTP3 host in FAR Manager and user interface tools for invoking PowerShell commands and scripts. PowerShell code can access and control FAR functionality via FAR.NET object model. The package includes many ready to use scripts for various tasks popular among FAR Manager users and `PowerShell.hrc` for `Colorer-take5.beta5` for rich PowerShell syntax highlighting in the internal editor.
+Implements Windows PowerShell host in FAR Manager and user interface for invoking commands and scripts. PowerShell code can access and control FAR functionality with FAR.NET object model. The package includes ready to use scripts for various popular FAR Manager tasks and PowerShell.hrc for Colorer-take5.beta5 providing rich PowerShell syntax highlighting.
 
 ----
 === PowerShell V2 CTP2 ===
