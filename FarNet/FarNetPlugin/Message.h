@@ -8,26 +8,13 @@ class CStr;
 
 namespace FarNet
 {;
-#pragma warning(push)
-#pragma warning(disable : 4947)
-ref class Message : public IMessage
+//???
+ref class Message
 {
-public:
-	virtual bool Show();
-	virtual property bool IsError { bool get(); void set(bool value); }
-	virtual property bool IsWarning { bool get(); void set(bool value); }
-	virtual property bool KeepBackground { bool get(); void set(bool value); }
-	virtual property bool LeftAligned { bool get(); void set(bool value); }
-	virtual property int Selected { int get(); void set(int value); }
-	virtual property MessageOptions Options { MessageOptions get(); void set(MessageOptions value); }
-	virtual property String^ Header;
-	virtual property String^ HelpTopic;
-	virtual property StringCollection^ Body { StringCollection^ get(); }
-	virtual property StringCollection^ Buttons { StringCollection^ get(); }
 internal:
-	Message();
 	static int Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic);
 private:
+	bool Show();
 	int Amount();
 	CStr* CreateBlock();
 	static void Add(StringCollection^ strings, CStr* result, int& index);
@@ -36,8 +23,9 @@ private:
 private:
 	int _flags;
 	int _selected;
-	StringCollection^ _body;
-	StringCollection^ _buttons;
+	String^ _header;
+	String^ _helpTopic;
+	StringCollection _body;
+	StringCollection _buttons;
 };
-#pragma warning(pop)
 }

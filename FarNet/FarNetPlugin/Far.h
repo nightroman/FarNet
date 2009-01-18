@@ -57,10 +57,6 @@ public:
 	virtual IListMenu^ CreateListMenu();
 	virtual IMenu^ CreateMenu();
 	virtual IMenuItem^ CreateMenuItem();
-#pragma warning(push)
-#pragma warning(disable : 4947)
-	virtual IMessage^ CreateMessage();
-#pragma warning(pop)
 	virtual int Msg(String^ body, String^ header, MessageOptions options);
 	virtual int Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons);
 	virtual int Msg(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic);

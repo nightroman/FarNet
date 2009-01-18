@@ -115,9 +115,6 @@ namespace FarManager
 		/// box is converted into a listbox dialog where listbox items work as buttons.
 		/// </remarks>
 		int Msg(string body, string header, MessageOptions options, string[] buttons, string helpTopic);
-		///
-		[Obsolete("Use IFar.Msg()")]
-		IMessage CreateMessage();
 		/// <summary>
 		/// Runs a command with a registered FAR.NET prefix.
 		/// </summary>
@@ -389,8 +386,9 @@ namespace FarManager
 		/// <seealso cref="IPanelPlugin.Id"/>
 		IPanelPlugin GetPanelPlugin(Guid id);
 		/// <summary>
-		/// Creates a new panel plugin.
-		/// You have to configure it and then open by <see cref="IPanelPlugin.Open()"/>.
+		/// Creates a new panel.
+		/// If it is opened on the same plugin call then call <see cref="IPanelPlugin.Open()"/>
+		/// as soon as possible and then only configure the panel and other data.
 		/// </summary>
 		IPanelPlugin CreatePanelPlugin();
 		/// <summary>
