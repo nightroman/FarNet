@@ -1,5 +1,15 @@
 http://code.google.com/p/farnet/
 
+= 3.3.56 =
+
+*) Improved control over panel opening and possible failures. Fixed cases when
+opening used to fail silently, now errors with explained reasons are shown.
+
+*) IPanel.GoToPath() - fixed a few issues with not complete paths.
+
+*) As it was announced, obsolete method IFar.CreateMessage() and interface
+IMessage are removed. Use one of 5 overloaded IFar.Msg() methods instead.
+
 = 3.3.55 =
 
 CHANGES

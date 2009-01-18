@@ -543,7 +543,49 @@ HANDLE PanelSet::AddPanelPlugin(FarPanelPlugin^ plugin)
 			return (HANDLE)(INT_PTR)i;
 		}
 	}
-	throw gcnew InvalidOperationException("Can't register plugin panel.");
+	throw gcnew InvalidOperationException("Cannot add a plugin panel.");
+}
+
+// EndOpenMode() must be called after
+void PanelSet::BeginOpenMode()
+{
+	if (_openMode < 0)
+		throw gcnew InvalidOperationException("Negative open mode."); //????
+	
+	++_openMode;
+}
+
+// BeginOpenMode() must be called before
+void PanelSet::EndOpenMode()
+{
+	if (_openMode <= 0)
+		throw gcnew InvalidOperationException("Not positive open mode."); //????
+
+	if (--_openMode == 0)
+		_panels[0] = nullptr;
+}
+
+void PanelSet::OpenPanelPlugin(FarPanelPlugin^ plugin)
+{
+	// plugin must be called for opening
+	if (_openMode == 0)
+		throw gcnew InvalidOperationException("Cannot open a panel because a plugin is not called for opening.");
+
+	// only one panel can be opened at a time
+	if (_panels[0] && _panels[0] != plugin)
+		throw gcnew InvalidOperationException("Cannot open a panel because another panel is already waiting.");
+
+	// panels window should be current
+	try
+	{
+		Far::Instance->SetCurrentWindow(0);
+	}
+	catch(InvalidOperationException^ e)
+	{
+		throw gcnew InvalidOperationException("Cannot open a panel because panels window cannot be set current.", e);
+	}
+
+	_panels[0] = plugin;
 }
 
 //! it call Update/Redraw in some cases
@@ -608,14 +650,6 @@ void PanelSet::ReplacePanelPlugin(FarPanelPlugin^ oldPanel, FarPanelPlugin^ newP
 		newPanel->Update(false);
 		newPanel->Redraw(0, 0);
 	}
-}
-
-void PanelSet::OpenPanelPlugin(FarPanelPlugin^ plugin)
-{
-	try { Far::Instance->SetCurrentWindow(0); }
-	catch(InvalidOperationException^ e) { throw gcnew InvalidOperationException("Can't open a plugin panel at this moment.", e); }
-
-	_panels[0] = plugin;
 }
 
 void PanelSet::PushPanelPlugin(FarPanelPlugin^ plugin)
@@ -1138,7 +1172,8 @@ void FarPanel::Close(String^ path)
 
 void FarPanel::GoToName(String^ name)
 {
-	if (!name) throw gcnew ArgumentNullException("name");
+	if (!name)
+		throw gcnew ArgumentNullException("name");
 
 	CBox sb; sb.Reset(name);
 	PanelInfo pi; GetInfo(pi);
@@ -1154,11 +1189,21 @@ void FarPanel::GoToName(String^ name)
 
 void FarPanel::GoToPath(String^ path)
 {
-	if (!path) throw gcnew ArgumentNullException("path");
+	if (!path)
+		throw gcnew ArgumentNullException("path");
 
-	Path = IO::Path::GetDirectoryName(path);
-	Redraw();
-	GoToName(IO::Path::GetFileName(path));
+	//! can be nullptr, e.g. for '\'
+	String^ dir =  IO::Path::GetDirectoryName(path);
+	if (!dir && (path->StartsWith("\\") || path->StartsWith("/")))
+		dir = "\\";
+	if (dir && dir->Length)
+	{
+		Path = dir;
+		Redraw();
+	}
+	
+	String^ name = IO::Path::GetFileName(path);
+	GoToName(name);
 }
 
 void FarPanel::Redraw()
