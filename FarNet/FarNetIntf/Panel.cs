@@ -854,12 +854,25 @@ namespace FarManager
 	public interface IPanelPlugin : IPanel
 	{
 		/// <summary>
-		/// Opens a panel when the plugin is called from panels (command line, disk menu or plugins menu in panels).
-		/// Only one panel can be opened during this call of the plugin.
+		/// Tells to open the panel when the plugin call is completed.
+		/// Only one panel can be opened during this plugin call, otherwise it throws.
 		/// </summary>
+		/// <remarks>
+		/// Normally a panel should be opened when a plugin is called from panels window
+		/// (command line, disk menu or plugins menu in panels). If panels window cannot
+		/// be set current, this method fails.
+		/// <para>
+		/// Other possible reasons of failure: *) another panel has been already registered for opening;
+		/// *) the plugin is not called for opening, e.g. it is called to process events, not opening.
+		/// </para>
+		/// <para>
+		/// It is recommended to call this as soon as possible and only then configure the panel and other data.
+		/// Technically this method only tries to post the panel for opening and may fail due to the reasons above.
+		/// </para>
+		/// </remarks>
 		void Open();
 		/// <summary>
-		/// Opens a panel instead of another opened FAR.NET panel.
+		/// Opens a panel by replacing another opened FAR.NET panel.
 		/// </summary>
 		/// <param name="oldPanel">Old panel to be replaced.</param>
 		void Open(IPanelPlugin oldPanel);

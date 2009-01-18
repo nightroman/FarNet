@@ -292,14 +292,6 @@ int Far::Msg(String^ body, String^ header, MessageOptions options, array<String^
 	return Message::Show(body, header, options, buttons, helpTopic);
 }
 
-#pragma warning(push)
-#pragma warning(disable : 4947)
-IMessage^ Far::CreateMessage()
-{
-	return gcnew Message;
-}
-#pragma warning(pop)
-
 void Far::Run(String^ command)
 {
 	int colon = command->IndexOf(':', 1);
@@ -1084,6 +1076,7 @@ HANDLE Far::AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize
 	if (_registeredFiler.Count == 0)
 		return INVALID_HANDLE_VALUE;
 
+	PanelSet::BeginOpenMode();
 	ValueUserScreen userscreen;
 
 	try
@@ -1120,13 +1113,13 @@ HANDLE Far::AsOpenFilePlugin(char* name, const unsigned char* data, int dataSize
 	}
 	finally
 	{
-		// drop a posted panel
-		PanelSet::PostedPanel = nullptr;
+		PanelSet::EndOpenMode();
 	}
 }
 
 HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 {
+	PanelSet::BeginOpenMode();
 	ValueUserScreen userscreen;
 
 	try
@@ -1190,8 +1183,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 	}
 	finally
 	{
-		// drop a posted panel
-		PanelSet::PostedPanel = nullptr;
+		PanelSet::EndOpenMode();
 	}
 }
 

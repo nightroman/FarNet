@@ -8,34 +8,6 @@ using System.Collections.Specialized;
 
 namespace FarManager
 {
-	///
-	[Obsolete("Use IFar.Msg()")]
-	public interface IMessage
-	{
-		///
-		StringCollection Body { get; }
-		///
-		StringCollection Buttons { get; }
-		///
-		String Header { get; set; }
-		///
-		int Selected { get; set; }
-		///
-		bool IsWarning { get; set; }
-		///
-		bool IsError { get; set; }
-		///
-		bool KeepBackground { get; set; }
-		///
-		bool LeftAligned { get; set; }
-		///
-		string HelpTopic { get; set; }
-		///
-		bool Show();
-		///
-		MessageOptions Options { get; set; }
-	}
-
 	/// <summary>
 	/// Message box options.
 	/// </summary>

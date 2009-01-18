@@ -252,7 +252,9 @@ const int cPanels = 4;
 ref class PanelSet
 {
 internal:
-	static property FarPanelPlugin^ PostedPanel { FarPanelPlugin^ get() { return _panels[0]; } void set(FarPanelPlugin^ value) { _panels[0] = value; } }
+	static property FarPanelPlugin^ PostedPanel { FarPanelPlugin^ get() { return _panels[0]; } }
+	static void BeginOpenMode();
+	static void EndOpenMode();
 	static HANDLE AddPanelPlugin(FarPanelPlugin^ plugin);
 	static int AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode);
 	static int AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, char* destPath, int opMode);
@@ -280,6 +282,7 @@ private:
 	// Posted [0] and opened [1..3] panels; i.e. size is 4, see AddPanelPlugin().
 	static array<FarPanelPlugin^>^ _panels = gcnew array<FarPanelPlugin^>(cPanels);
 	static bool _inAsSetDirectory;
+	static int _openMode;
 };
 
 }
