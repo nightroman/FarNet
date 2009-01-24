@@ -550,7 +550,7 @@ HANDLE PanelSet::AddPanelPlugin(FarPanelPlugin^ plugin)
 void PanelSet::BeginOpenMode()
 {
 	if (_openMode < 0)
-		throw gcnew InvalidOperationException("Negative open mode."); //????
+		throw gcnew InvalidOperationException("Negative open mode.");
 	
 	++_openMode;
 }
@@ -559,7 +559,7 @@ void PanelSet::BeginOpenMode()
 void PanelSet::EndOpenMode()
 {
 	if (_openMode <= 0)
-		throw gcnew InvalidOperationException("Not positive open mode."); //????
+		throw gcnew InvalidOperationException("Not positive open mode.");
 
 	if (--_openMode == 0)
 		_panels[0] = nullptr;
@@ -1174,6 +1174,10 @@ void FarPanel::GoToName(String^ name)
 {
 	if (!name)
 		throw gcnew ArgumentNullException("name");
+
+	// well, empty names are technically possible, but it is weird, ignore this
+	if (name->Length == 0)
+		return;
 
 	CBox sb; sb.Reset(name);
 	PanelInfo pi; GetInfo(pi);

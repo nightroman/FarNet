@@ -8,24 +8,21 @@ class CStr;
 
 namespace FarNet
 {;
-//???
 ref class Message
 {
 internal:
 	static int Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic);
 private:
 	bool Show();
-	int Amount();
-	CStr* CreateBlock();
-	static void Add(StringCollection^ strings, CStr* result, int& index);
-	static int ShowDialog(Message^ msg, array<String^>^ buttons, int width);
-	static void FormatMessageLines(StringCollection^ lines, String^ message, int width, int height);
+	int ShowDialog(int width);
+	CStr* CreateBlock(int& outNbItems);
+	static void FormatMessageLines(List<String^>^ lines, String^ message, int width, int height);
 private:
 	int _flags;
 	int _selected;
 	String^ _header;
 	String^ _helpTopic;
-	StringCollection _body;
-	StringCollection _buttons;
+	List<String^> _body;
+	array<String^>^ _buttons;
 };
 }
