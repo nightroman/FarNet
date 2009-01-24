@@ -1,5 +1,25 @@
 http://code.google.com/p/farnet/
 
+= 3.3.57 =
+
+ANNOUNCEMENT
+
+This version is presumably the last one for FAR 1.x; the next version is going
+to be for Unicode FAR 2.x. If you find new or know some old issues in 3.3.57,
+report as soon as possible, this is the last call, then support of the frosen
+version will be very limited.
+
+FIX/CHANGE
+
+*) Two accidentally related issues: fixed regression in IFar.ShowHelp();
+changed how IPanel.GoToName() works with empty names: now it ignores them
+(well, empty names are technically possible, but it is a weird case anyway).
+
+HOUSEKEEPING
+
+*) Refactoring and cleaning of legacy code shared between IFar.Msg and recently
+removed obsolete IMessage.
+
 = 3.3.56 =
 
 *) Improved control over panel opening and possible failures. Fixed cases when

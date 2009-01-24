@@ -13,31 +13,25 @@ bool Message::Show()
 {
 	// flags: add OK if no buttons
 	int flags = _flags;
-	if (_buttons.Count == 0 && (flags & (FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMSG_MB_YESNO|FMSG_MB_YESNOCANCEL|FMSG_MB_RETRYCANCEL)) == 0)
+	if ((!_buttons || _buttons->Length == 0) && (flags & (FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMSG_MB_YESNO|FMSG_MB_YESNOCANCEL|FMSG_MB_RETRYCANCEL)) == 0)
 		flags |= FMSG_MB_OK;
 
-	CStr* items = CreateBlock();
+	int nbItems;
+	CStr* items = CreateBlock(nbItems);
 	CBox sHelp; sHelp.Reset(_helpTopic);
-	_selected = Info.Message(0, flags, sHelp, (char**)items, Amount(), _buttons.Count);
+	_selected = Info.Message(0, flags, sHelp, (char**)items, nbItems, _buttons ? _buttons->Length : 0);
 	delete[] items;
 
 	return _selected != -1;
 }
 
-int Message::Amount()
+CStr* Message::CreateBlock(int& outNbItems)
 {
-	int a = 2;
-	if (_body.Count != 0)
-		a = 1 + _body.Count;
-	return a + _buttons.Count;
-}
+	outNbItems = (_buttons ? _buttons->Length : 0) + (_body.Count == 0 ? 2 : 1 + _body.Count);
+	CStr* r = new CStr[outNbItems];
 
-CStr* Message::CreateBlock()
-{
-	CStr* r = new CStr[Amount()];
-	int index = 0;
-	r[index].Set(_header);
-	++index;
+	r[0].Set(_header);
+	int index = 1;
 	if (_body.Count == 0)
 	{
 		r[index].Set(String::Empty);
@@ -45,19 +39,23 @@ CStr* Message::CreateBlock()
 	}
 	else
 	{
-		Add(%_body, r, index);
+		for each(String^ s in _body)
+		{
+			r[index].Set(s);
+			++index;
+		}
 	}
-	Add(%_buttons, r, index);
-	return r;
-}
 
-void Message::Add(StringCollection^ strings, CStr* result, int& index)
-{
-	for each(String^ s in strings)
+	if (_buttons)
 	{
-		result[index].Set(s);
-		++index;
+		for each(String^ s in _buttons)
+		{
+			r[index].Set(s);
+			++index;
+		}
 	}
+	
+	return r;
 }
 
 int Message::Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic)
@@ -83,16 +81,16 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 	FormatMessageLines(%m._body, body, width, height);
 
 	// buttons? dialog?
-	if (buttons != nullptr)
+	if (buttons)
 	{
+		m._buttons = buttons;
 		int len = 0;
 		for each(String^ s in buttons)
 		{
 			len += s->Length + 2;
 			if (len > width)
-				return ShowDialog(%m, buttons, width);
+				return m.ShowDialog(width);
 		}
-		m._buttons.AddRange(buttons);
 	}
 
 	// go
@@ -100,13 +98,13 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 	return m._selected;
 }
 
-int Message::ShowDialog(Message^ m, array<String^>^ buttons, int width)
+int Message::ShowDialog(int width)
 {
-	int w = m->_header->Length;
-	for each(String^ s in m->_body)
+	int w = _header->Length;
+	for each(String^ s in _body)
 		if (s->Length > w)
 			w = s->Length;
-	for each(String^ s in buttons)
+	for each(String^ s in _buttons)
 	{
 		if (s->Length > w)
 		{
@@ -119,23 +117,23 @@ int Message::ShowDialog(Message^ m, array<String^>^ buttons, int width)
 		}
 	}
 	w += 10;
-	int nBody = min(m->_body.Count, Console::WindowHeight / 3);
-	int h = 5 + nBody + buttons->Length;
+	int nBody = Math::Min(_body.Count, Console::WindowHeight / 3);
+	int h = 5 + nBody + _buttons->Length;
 	if (h > Console::WindowHeight - 4)
 		h = Console::WindowHeight - 4;
 
 	FarDialog dialog(-1, -1, w, h);
-	dialog.HelpTopic = m->_helpTopic;
-	dialog.IsWarning = (m->_flags & FMSG_WARNING);
-	dialog.AddBox(3, 1, w - 4, h - 2, m->_header);
+	dialog.HelpTopic = _helpTopic;
+	dialog.IsWarning = (_flags & FMSG_WARNING);
+	dialog.AddBox(3, 1, w - 4, h - 2, _header);
 	for(int i = 0; i < nBody; ++i)
-		dialog.AddText(5, -1, 0, m->_body[i]);
+		dialog.AddText(5, -1, 0, _body[i]);
 	dialog.AddText(5, -1, 0, nullptr)->Separator = 1;
 
 	IListBox^ list = dialog.AddListBox(4, -1, w - 5, h - 6 - nBody, nullptr);
 	list->NoAmpersands = true;
 	list->NoBox = true;
-	for each(String^ s in buttons)
+	for each(String^ s in _buttons)
 		list->Add(s);
 
 	if (!dialog.Show())
@@ -144,7 +142,7 @@ int Message::ShowDialog(Message^ m, array<String^>^ buttons, int width)
 	return list->Selected;
 }
 
-void Message::FormatMessageLines(StringCollection^ lines, String^ message, int width, int height)
+void Message::FormatMessageLines(List<String^>^ lines, String^ message, int width, int height)
 {
 	Regex^ format = nullptr;
 	for each(String^ s1 in Regex::Split(message->Replace('\t', ' '), "\r\n|\r|\n"))

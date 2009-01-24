@@ -469,7 +469,7 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		bool IsWarning { get; set; }
 		/// <summary>
 		/// Allows to create dialogs with reduced border size:
-		/// there is no shadow and for separators there is no space between dialog border and dialog double box.
+		/// for separators there is no space between dialog border and dialog double box.
 		/// </summary>
 		bool IsSmall { get; set; }
 		/// <summary>

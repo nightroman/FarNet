@@ -145,7 +145,7 @@ public:
 	}
 	void Reset(String^ str)
 	{
-		if (str)
+		if (str && str->Length)
 		{
 			Set(str);
 			return;
