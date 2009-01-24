@@ -1,7 +1,7 @@
 Plugin   : FAR.NET
 Category : Development
-Version  : 3.3.56
-Release  : 2009.01.12
+Version  : 3.3.57
+Release  : 2009.01.18
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, C++/CLI
@@ -12,7 +12,7 @@ HomePage : http://code.google.com/p/farnet/
 
 
 - .NET Framework 2.0
-- FAR Manager 1.75.2511
+- FAR Manager 1.75.2520
 
 
 	DESCRIPTION
