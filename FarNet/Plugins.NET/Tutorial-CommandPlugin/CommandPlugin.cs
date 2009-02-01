@@ -1,4 +1,4 @@
-using FarManager;
+using FarNet;
 using System;
 
 /// A simplest command: it uses the default Prefix and Name (the class name,
@@ -19,7 +19,7 @@ public class Cmd2 : Cmd1
 {
 	string prefix = "test";
 
-	/// Gets the prefix; 'set' is used by FAR.NET only to change the prefix.
+	/// Gets the prefix; 'set' is used by FarNet only to change the prefix.
 	public override string Prefix
 	{
 		get { return prefix; }

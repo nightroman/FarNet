@@ -1,0 +1,25 @@
+<Project DefaultTargets="Install" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<Install Condition="'$(Install)' == ''">C:\Program Files\Far\Lib</Install>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PublishFile Include="Bin\$(Configuration)\FarNet.dll"/>
+		<PublishFile Include="Bin\$(Configuration)\FarNet.xml" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\FarNet.xml')"/>
+	</ItemGroup>
+
+	<Target Name="Clean">
+		<RemoveDir Directories="bin;obj"/>
+	</Target>
+
+	<Target Name="Install">
+		<Copy SourceFiles="@(PublishFile)" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
+	</Target>
+
+	<Target Name="Uninstall">
+		<Error Condition="'$(Install)' == ''"/>
+		<RemoveDir Directories="$(Install)"/>
+	</Target>
+</Project>
