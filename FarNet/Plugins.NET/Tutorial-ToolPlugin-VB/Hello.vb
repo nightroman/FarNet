@@ -1,5 +1,5 @@
 Imports System
-Imports FarManager
+Imports FarNet
 
 Public Class VBTool
 Inherits ToolPlugin
