@@ -2,7 +2,7 @@
 // Escape and unescape \ and " in editor selection with \
 // (e.g. string values in .reg files)
 
-using FarManager;
+using FarNet;
 using System.Text.RegularExpressions;
 using System;
 

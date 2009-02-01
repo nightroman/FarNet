@@ -1,5 +1,78 @@
 http://code.google.com/p/farnet/
 
+= 4.0.0 =
+
+ANNOUNCEMENT
+
+From now on FarNet 4.x is for Far 2.x. FarNet 3.x is officially not supported.
+Theoretically it is possible to use both FarNet 3.x and 4.x in Far 2.x at the
+same time but this scenario is not supported, not tested and not recommended.
+
+This is the first and mostly technical phase of transition from Far 1.x to 2.x.
+Next FarNet version will use new Far API more effectively.
+
+INSTALLATION
+
+If you did not use FarNet 3.x in Far 2.x then simply do what Readme.txt says;
+do read it again even if you read it before: some default names are changed.
+
+If you use or used FarNet 3.x in Far 2.x then do in this order:
+
+1) Remove all(!) installed files of FarNet and .NET plugins.
+
+2) If you want to migrate old settings then rename in the registry:
+HKEY_CURRENT_USER\Software\Far2\PluginHotkeys:
+rename key "Plugins/FAR.NET/FarNetPlugin.dll" into "Plugins/FarNet/FarNetMan.dll"
+HKEY_CURRENT_USER\Software\Far2\Plugins:
+rename key "FAR.NET" info "FarNet"
+
+3) Install FarNet, see Readme.txt for instructions.
+
+4) Install new FarNet plugins, e.g. PowerShellFar 2.x
+
+5) If you have your own FarNet plugins rebuild them with new FarNet.
+
+BREAKING CHANGES (MAJOR)
+
+*) You have to change dependency from FarNetInt.dll to FarNet.dll and rename
+namespace FarManager into FarNet.
+
+*) Removed property Targeted from panels, use new property SelectedFiles.
+
+*) Removed property IFile.IsSelected. Originally it was introduced "a la FAR
+API", but in fact it is not fit well to FarNet concept and planned evolution.
+
+*) IViewer, IEditor - boolean property EnableSwitch is replaced with Switching
+with 3 states: Auto(default), Enabled and Disabled.
+
+BREAKING CHANGES (MINOR)
+
+A few renamings for better consistency, discoverability and English, too.
+
+*) IPanel:
+Current -> CurrentFile
+Contents -> ShownFiles
+Selected -> SelectedFiles
+
+*) All names *PanelPlugin* renamed into *PluginPanel*, e.g. new names are:
+IPluginPanel, IPluginPanelInfo, CreatePluginPanel() and etc.
+
+*) IPluginPanel.Another -> AnotherPanel
+
+*) MessageOptions -> MsgOptions (to conform with IFar.Msg())
+
+*) KeyCode constants:
+- all names now are the same as FAR macro key names
+- Ctrl, Alt, Shift moved to another type: KeyMode
+
+*) VKeyCode constants:
+- Ctrl, Alt, Shift moved to another type: VKeyMode
+
+OTHER CHANGES
+
+*) Do not use new properties CodePage in IEditor and IViewer, they are added,
+but it turned out that FAR does not use them yet :)
+
 = 3.3.57 =
 
 ANNOUNCEMENT
@@ -50,17 +123,17 @@ methods provide the same features and also some improvements.
 
 = 3.3.54 =
 
-*) New property IPanelPlugin.DataComparison - compares data attached to panel
+*) New property IPluginPanel.DataComparison - compares data attached to panel
 items (normally in order to restore the current item correctly). Needed for
 cases with not trivial equality.
 
-*) New property IPanelPlugin.IdleUpdate - tells to update and redraw the panel
+*) New property IPluginPanel.IdleUpdate - tells to update and redraw the panel
 automatically when idle. Useful for frequently changed data.
 
 *) New user property Guid IPanel.Id - normally assigned once and used by a
 creator for distinguishing panel types and reusing opened panels.
 
-*) New method IFar.GetPanelPlugin(Guid) - gets opened panel plugin by ID (see
+*) New method IFar.GetPluginPanel(Guid) - gets opened plugin panel by ID (see
 above). Can be used for reusing already opened panels.
 
 = 3.3.53 =
@@ -393,20 +466,20 @@ NEW
 
 - You can now open as many panels as you want (or keep one invisible for later
 use). Of course, only two of them can be shown but the others can be pushed to
-the stack by IPanelPlugin.Push so that later you can IPanelPlugin.Open them.
+the stack by IPluginPanel.Push so that later you can IPluginPanel.Open them.
 Another new related methods: IFar.ShowPanelMenu() - panel menu where you can
 push a panel or open pushed panels (it is included in plugins and disk menus);
-IFar.PushedPanels() - array of pushed panels, IPanelPlugin.Post*() - used
+IFar.PushedPanels() - array of pushed panels, IPluginPanel.Post*() - used
 internally to remember and restore the current file in a pushed panel.
-- IPanelPlugin.DotsDescription (used together with AddDots).
-- IPanelPluginInfo.InfoItems allows to set custom info panel items.
-- IPanelPluginInfo.SetKeyBar*() allows to set custom key bar labels.
+- IPluginPanel.DotsDescription (used together with AddDots).
+- IPluginPanelInfo.InfoItems allows to set custom info panel items.
+- IPluginPanelInfo.SetKeyBar*() allows to set custom key bar labels.
 - IFar.{Register|Unregister}OpenFile() implements OpenFilePlugin FAR API.
 - VKeyCode - some of virtual key codes.
 
 BREAKING CHANGES
 
-- Property AddDots moved from IPanelPluginInfo to IPanelPlugin, i.e. item dots
+- Property AddDots moved from IPluginPanelInfo to IPluginPanel, i.e. item dots
 now is rather panel data than info.
 - StringDelegate was removed, RegisterPrefix uses now another type of handler:
 EventHandler<ExcutingEventArgs>. This way is more flexible for future changes
@@ -416,7 +489,7 @@ and allows to RegisterPrefix from PowerShell.
 
 FIXED/IMPROVED
 
-- Fixed IPanelPlugin.PuttingFiles Event.
+- Fixed IPluginPanel.PuttingFiles Event.
 - Fixed (or, say, implemented) processing of AddDots in panels.
 - Avoided redundant internal memory allocations on GetPluginInfo().
 - IFar.Plugin bug when two plugin panels are opened and one of them is under
@@ -506,7 +579,7 @@ This is mostly a technical build for PowerShellFar.
 = 3.3.26 =
 
 PLUGIN PANELS
-- New property IPanelPlugin.StartDirectory (current directory when it starts).
+- New property IPluginPanel.StartDirectory (current directory when it starts).
 
 REMOVED
 - Removed IFar.UnregisterPluginsDiskItem, IFar.UnregisterPluginsMenuItem, see
@@ -544,11 +617,11 @@ line, (-1) - the next line, and so on. See more in help.
 then Selected is set to this button as usually, but Show() returns false now.
 
 PLUGIN PANELS
-- REMOVED property IPanelPluginInfo.ConfirmClose because of FE_CLOSE issues: it
+- REMOVED property IPluginPanelInfo.ConfirmClose because of FE_CLOSE issues: it
 may not happen or it may happen when a panel is not about to close.
 - New methods IPanel.Close() and IPanel.Close(string path).
 - REMOVED method IFar.ClosePanel(), instead of it use IPanel.Close() (also for
-IPanelPlugin), i.e. call Far.Panel.Close() to close an active panel,
+IPluginPanel), i.e. call Far.Panel.Close() to close an active panel,
 Far.Panel2.Close() to close a passive panel, <IPluginPanel>.Close() to close a
 plugin panel (active or passive).
 
@@ -622,25 +695,25 @@ names of standard .NET class FileSystemInfo. Sorry for that, but it should be
 much more convenient than to have 3 different set of names for the same things.
 
 Panels:
-- change: IFar.CreatePanelPlugin() creates a panel, then IPanelPlugin.Open()
+- change: IFar.CreatePluginPanel() creates a panel, then IPluginPanel.Open()
 should be called explicitly.
-- removed IPanelPlugin.Panel:IPanel. Instead, IPanelPlugin is derived from
+- removed IPluginPanel.Panel:IPanel. Instead, IPluginPanel is derived from
 IPanel and implements some functionality more effectively.
 - removed IPanel.Top (it looks like it is not used), use IPanel.TopIndex which
 is really needed.
 - IFar.Panel, IFar.Panel2: if it is a FAR.NET plugin panel it returns
-IPanelPlugin (derived from IPanel, see above).
+IPluginPanel (derived from IPanel, see above).
 - IFile.Tag:int was replaced with IFile.Data:object, so that you can attach any
-objects to your panel plugin items.
+objects to your plugin panel items.
 
 = 3.3.13 =
 
 Plugin panels:
-- new method IFar.GetPanelPlugin().
-- removed from public interface property IPanelPlugin.Id (used internally).
-- new IPanelPlugin.Another - another FAR.NET IPanelPlugin if it exists.
-- new IPanelPlugin.Panel - IPanel interface for this IPanelPlugin.
-- new IPanelPlugin.Host - you may use it if you have more than one panel.
+- new method IFar.GetPluginPanel().
+- removed from public interface property IPluginPanel.Id (used internally).
+- new IPluginPanel.Another - another FAR.NET IPluginPanel if it exists.
+- new IPluginPanel.Panel - IPanel interface for this IPluginPanel.
+- new IPluginPanel.Host - you may use it if you have more than one panel.
 
 Plugin disk menu:
 - Added IFar.{Register | Unregister} PluginsDiskItem(): the same as
@@ -654,7 +727,7 @@ the existing method: prompt, history, title, text.
 
 = 3.3.11 =
 
-- Fixed minor issues on exceptions in panel plugin events.
+- Fixed minor issues on exceptions in plugin panel events.
 - IFar: new method Input() - helper to create and show IInputBox.
 - IEditor: fixed exceptions from get-properties of not opened editor.
 - Added Plugins.NET\Ipy: plugin to run scripts in IronPython (by Max Belugin).
@@ -662,7 +735,7 @@ the existing method: prompt, history, title, text.
 = 3.3.10 =
 
 - IFar: new method ClosePanel(): closes the current plugin panel.
-- IPanelPluginInfo: new property ConfirmClose:bool.
+- IPluginPanelInfo: new property ConfirmClose:bool.
 - IPanel: new method Redraw(int, int).
 - IFile: new property: Tag:int. It works as user data attached to an item.
 Unfortunately Data:object, as in other interfaces, is not possible for IFile.
@@ -670,14 +743,14 @@ Removed properties Path and ParentPath, sorry for a breaking change, but they
 were error prone in many cases (and redundant in many other cases); thus, if you
 need parent path take it as IPanel.Path and then you decide what Path is in your
 scenario: with slash, backslash, nothing, ... (if you need Path at all).
-- Refactoring of panel related interfaces for new panel plugin functionality,
+- Refactoring of panel related interfaces for new plugin panel functionality,
 added new features, some minor changes may be breaking.
 - Updated documentation.
 
 = 3.3.9 =
 
-- Implemented panel plugin interfaces: main of them are: IPanelPlugin and
-IPanelPluginInfo. See docs for details. Not yet everything is implemented but
+- Implemented plugin panel interfaces: main of them are: IPluginPanel and
+IPluginPanelInfo. See docs for details. Not yet everything is implemented but
 significant part. Everything is a subject to change, this is the first version.
 A simple but not really trivial example is Search-Regex-.ps1 in PowerShellFar.
 - Refactoring for panel plugins: removed interface IFolder; replaced property

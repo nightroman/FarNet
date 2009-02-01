@@ -1,4 +1,4 @@
-using FarManager;
+using FarNet;
 using System;
 
 /// Trims line ends in a saving file.

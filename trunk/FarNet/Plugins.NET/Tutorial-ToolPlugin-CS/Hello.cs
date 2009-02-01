@@ -1,5 +1,5 @@
 using System;
-using FarManager;
+using FarNet;
 
 public class CSTool : ToolPlugin
 {

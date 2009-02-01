@@ -1,5 +1,5 @@
 import System;
-import FarManager;
+import FarNet;
 
 public class JSTool extends ToolPlugin
 {

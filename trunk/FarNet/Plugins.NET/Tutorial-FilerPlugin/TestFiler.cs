@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using FarManager;
+using FarNet;
 
 /// Test filer for *.test files with "TEST" header
 public class TestFiler : FilerPlugin
@@ -18,7 +18,7 @@ public class TestFiler : FilerPlugin
 			return;
 
 		// create panel
-		IPanelPlugin p = Far.CreatePanelPlugin();
+		IPluginPanel p = Far.CreatePluginPanel();
 		p.Info.HostFile = e.Name;
 		p.Info.StartSortMode = PanelSortMode.Unsorted;
 		p.Info.Title = "File lines";
