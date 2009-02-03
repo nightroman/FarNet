@@ -3,9 +3,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.0.0.0")]
-[assembly: AssemblyTitle("FarNet interface")]
-[assembly: AssemblyDescription("Interface for FarNet plugins")]
+[assembly: AssemblyVersion("4.0.1.0")]
+[assembly: AssemblyTitle("FarNet - .NET interfaces for Far Manager")]
+[assembly: AssemblyDescription("FarNet - .NET interfaces for Far Manager")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
 [assembly: AssemblyProduct("FarNet")]

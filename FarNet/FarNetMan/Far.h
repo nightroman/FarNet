@@ -120,7 +120,7 @@ internal:
 	static String^ _helpTopic = "<" + _folder + "\\>";
 internal:
 	bool AsConfigure(int itemIndex);
-	HANDLE AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize);
+	HANDLE AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode);
 	HANDLE AsOpenPlugin(int from, INT_PTR item);
 	void AsGetPluginInfo(PluginInfo* pi);
 	void RegisterCommands(IEnumerable<CommandPluginInfo^>^ commands);
