@@ -6,9 +6,9 @@ using namespace System::Runtime::CompilerServices;
 using namespace System::Runtime::InteropServices;
 using namespace System::Security::Permissions;
 
-[assembly:AssemblyVersion("4.0.0.0")];
-[assembly:AssemblyTitle("FarNet plugin")];
-[assembly:AssemblyDescription("FarNet plugin")];
+[assembly:AssemblyVersion("4.0.1.0")];
+[assembly:AssemblyTitle("FarNet plugin manager")];
+[assembly:AssemblyDescription("FarNet plugin manager")];
 [assembly:AssemblyConfiguration("")];
 [assembly:AssemblyCompany("http://code.google.com/p/farnet/")];
 [assembly:AssemblyProduct("FarNet")];

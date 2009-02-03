@@ -254,10 +254,11 @@ namespace FarNet
 	public sealed class FilerEventArgs : EventArgs
 	{
 		///
-		public FilerEventArgs(string name, Stream data)
+		public FilerEventArgs(string name, Stream data, OperationModes mode)
 		{
 			_Name = name;
 			_Data = data;
+			_Mode = mode;
 		}
 		string _Name;
 		/// <summary>
@@ -277,6 +278,14 @@ namespace FarNet
 		public Stream Data
 		{
 			get { return _Data; }
+		}
+		OperationModes _Mode;
+		/// <summary>
+		/// Combination of the operation mode flags.
+		/// </summary>
+		public OperationModes Mode
+		{
+			get { return _Mode; }
 		}
 	}
 

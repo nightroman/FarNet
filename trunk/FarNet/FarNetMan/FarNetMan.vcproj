@@ -415,6 +415,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Headers.c\farcolor.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Headers.c\farkeys.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\InputBox.h"
 				>
 			</File>
@@ -444,6 +452,10 @@
 			</File>
 			<File
 				RelativePath=".\Panel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Headers.c\plugin.hpp"
 				>
 			</File>
 			<File
