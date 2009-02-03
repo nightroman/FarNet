@@ -147,10 +147,10 @@ int WINAPI MakeDirectoryW(HANDLE hPlugin, const wchar_t** name, int opMode)
 	return 0;
 }
 
-HANDLE WINAPI OpenFilePluginW(wchar_t* name, const unsigned char* data, int dataSize)
+HANDLE WINAPI OpenFilePluginW(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
 {
 	__START;
-	return Far::Instance->AsOpenFilePlugin(name, data, dataSize);
+	return Far::Instance->AsOpenFilePlugin(name, data, dataSize, opMode);
 	__END;
 	return INVALID_HANDLE_VALUE;
 }

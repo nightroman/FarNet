@@ -1081,7 +1081,7 @@ bool Far::AsConfigure(int itemIndex)
 	return e.Ignore ? false : true;
 }
 
-HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize)
+HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
 {
 	if (_registeredFiler.Count == 0)
 		return INVALID_HANDLE_VALUE;
@@ -1104,7 +1104,7 @@ HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataS
 
 			// arguments
 			if (!e)
-				e = gcnew FilerEventArgs(OemToStr(name), gcnew UnmanagedMemoryStream((unsigned char*)data, dataSize, dataSize, FileAccess::Read));
+				e = gcnew FilerEventArgs(OemToStr(name), gcnew UnmanagedMemoryStream((unsigned char*)data, dataSize, dataSize, FileAccess::Read), (OperationModes)opMode);
 			else
 				e->Data->Seek(0, SeekOrigin::Begin);
 

@@ -1,5 +1,15 @@
 http://code.google.com/p/farnet/
 
+= 4.0.1 =
+
+** REMINDER: Far 2.x, read History.txt = 4.0.0 = **
+
+*) Due to a bug in FarNet multiarc plugin did not work. Fixed.
+
+*) FilerEventArgs: new property OperationModes Mode. Unfortunately it is not
+yet clear how to use it, you may only experiment for now.
+
+
 = 4.0.0 =
 
 ANNOUNCEMENT

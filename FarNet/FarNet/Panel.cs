@@ -605,29 +605,29 @@ namespace FarNet
 	[DebuggerStepThroughAttribute]
 	public class PanelEventArgs : EventArgs
 	{
-		OperationModes _mode;
-		bool _ignore;
+		OperationModes _Mode;
+		bool _Ignore;
 		/// <param name="mode">
 		/// Combination of the operation mode flags.
 		/// </param>
 		public PanelEventArgs(OperationModes mode)
 		{
-			_mode = mode;
+			_Mode = mode;
 		}
 		/// <summary>
 		/// Combination of the operation mode flags.
 		/// </summary>
 		public OperationModes Mode
 		{
-			get { return _mode; }
+			get { return _Mode; }
 		}
 		/// <summary>
 		/// Set true to tell that action has to be ignored; exact meaning depends on an event.
 		/// </summary>
 		public bool Ignore
 		{
-			get { return _ignore; }
-			set { _ignore = value; }
+			get { return _Ignore; }
+			set { _Ignore = value; }
 		}
 	}
 
