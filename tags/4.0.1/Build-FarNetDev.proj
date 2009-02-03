@@ -1,0 +1,48 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<ProductVersion>4.0.1</ProductVersion>
+		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
+		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+	</PropertyGroup>
+
+	<Target Name="Build">
+		<MSBuild Projects="FarNetDev.sln" Targets="Build" Properties="Configuration=$(Configuration)"/>
+	</Target>
+
+	<Target Name="Clean">
+		<MSBuild Projects="FarNetDev.sln" Targets="Clean" Properties="Configuration=Debug"/>
+		<MSBuild Projects="FarNetDev.sln" Targets="Clean" Properties="Configuration=Release"/>
+		<Delete Files="FarNetDev.ncb"/>
+		<MSBuild Projects="FarNet\Build-FarNet.proj;FarNetMan\Build-FarNetMan.proj" Targets="Clean"/>
+	</Target>
+
+	<Target Name="Install">
+		<MSBuild Projects="FarNet\Build-FarNet.proj;FarNetMan\Build-FarNetMan.proj" Targets="Install" Properties="Configuration=$(Configuration)"/>
+		<Copy SourceFiles="Far.exe.config" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
+	</Target>
+
+	<Target Name="Uninstall">
+		<Delete Files="$(Install)\Far.exe.config"/>
+		<MSBuild Projects="FarNet\Build-FarNet.proj;FarNetMan\Build-FarNetMan.proj" Targets="Uninstall"/>
+	</Target>
+
+	<Target Name="Archive">
+		<MSBuild Projects="Plugins.NET\Build.proj" Targets="Build;Clean"/>
+		<Delete Files="$(OutputPath)"/>
+		<RemoveDir Directories="Tmp"/>
+		<MakeDir Directories="Tmp\Lib;Tmp\Plugins\FarNet;Tmp\Plugins.NET"/>
+		<Copy SourceFiles="$(FarHome)\Far.exe.config" DestinationFolder="Tmp"/>
+		<Copy SourceFiles="$(FarHome)\Lib\FarNet.dll" DestinationFolder="Tmp\Lib"/>
+		<Copy SourceFiles="$(FarHome)\Lib\FarNet.xml" DestinationFolder="Tmp\Lib"/>
+		<Copy SourceFiles="$(FarHome)\Plugins\FarNet\FarNetMan.hlf" DestinationFolder="Tmp\Plugins\FarNet"/>
+		<Copy SourceFiles="$(FarHome)\Plugins\FarNet\FarNetMan.dll" DestinationFolder="Tmp\Plugins\FarNet"/>
+		<Exec Command="xcopy Plugins.NET Tmp\Plugins.NET /s > nul"/>
+		<Copy SourceFiles="History.txt;LICENSE;Readme.txt" DestinationFolder="Tmp"/>
+		<Exec Command="7z a $(OutputPath) .\*" WorkingDirectory="Tmp"/>
+		<Copy SourceFiles="Tmp\$(OutputPath)" DestinationFolder="."/>
+		<RemoveDir Directories="Tmp"/>
+	</Target>
+
+</Project>
