@@ -188,12 +188,13 @@ void KeyMacroHost::Post(String^ macro)
 
 void KeyMacroHost::Post(String^ macro, bool enableOutput, bool disablePlugins)
 {
-	if (!macro) throw gcnew ArgumentNullException("macro");
+	if (!macro)
+		throw gcnew ArgumentNullException("macro");
 
-	CBox sMacro(macro);
+	PIN_NE(pin, macro);
 	ActlKeyMacro command;
 	command.Command = MCMD_POSTMACROSTRING;
-	command.Param.PlainText.SequenceText = sMacro;
+	command.Param.PlainText.SequenceText = (wchar_t*)pin;
 	command.Param.PlainText.Flags = 0;
 	if (!enableOutput)
 		command.Param.PlainText.Flags |= KSFLAGS_DISABLEOUTPUT;

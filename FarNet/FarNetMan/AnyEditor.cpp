@@ -15,10 +15,10 @@ namespace FarNet
 {;
 String^ AnyEditor::WordDiv::get()
 {
-	int length = (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, 0);
-	CBox wd(length);
+	int size = (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, 0);
+	CBox wd(size);
 	Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, wd);
-	return OemToStr(wd);
+	return gcnew String(wd);
 }
 
 void AnyEditor::WordDiv::set(String^)

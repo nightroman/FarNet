@@ -63,8 +63,8 @@ void Viewer::Open(OpenMode mode)
 		flags |= VF_DELETEONCLOSE; break;
 	}
 
-	CBox sFileName(_FileName);
-	CBox sTitle(_Title);
+	PIN_ES(pinFileName, _FileName);
+	PIN_ES(pinTitle, _Title);
 
 	// from dialog? set modal
 	WindowType wt = Far::Instance->GetWindowType(-1);
@@ -75,8 +75,8 @@ void Viewer::Open(OpenMode mode)
 	_id = -1;
 	ViewerHost::_viewerWaiting = this;
 	Info.Viewer(
-		sFileName,
-		sTitle,
+		pinFileName,
+		pinTitle,
 		_Window.Left,
 		_Window.Top,
 		_Window.Right,

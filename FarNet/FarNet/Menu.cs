@@ -108,7 +108,7 @@ namespace FarNet
 		/// </summary>
 		int MaxHeight { get; set; }
 		/// <summary>
-		/// Menu title.
+		/// Title line text.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>

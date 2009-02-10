@@ -14,9 +14,14 @@ ListItemCollection::ListItemCollection(FarBaseList^ box)
 {
 }
 
+void ListItemCollection::SetBox(FarBaseList^ value)
+{
+	_box = value;
+}
+
 void ListItemCollection::ClearItems()
 {
-	if (_box && _box->_dialog->_hDlg)
+	if (_box && _box->_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
 		FarListDelete arg;
 		arg.Count = 0;
@@ -33,11 +38,13 @@ void ListItemCollection::InsertItem(int index, IMenuItem^ item)
 	if (index < 0 || index > Count)
 		throw gcnew ArgumentOutOfRangeException("index");
 
-	if (_box && _box->_dialog->_hDlg)
+	if (_box && _box->_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
+		PIN_ES(pinText, item->Text);
 		FarListInsert arg;
+		FarBaseList::InitFarListItemShort(arg.Item, item);
+		arg.Item.Text = pinText;
 		arg.Index = index;
-		FarBaseList::InitFarListItem(arg.Item, item);
 
 		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTINSERT, _box->Id, (LONG_PTR)&arg))
 			throw gcnew OperationCanceledException;
@@ -51,7 +58,7 @@ void ListItemCollection::RemoveItem(int index)
 	if (index < 0 || index >= Count)
 		throw gcnew ArgumentOutOfRangeException("index");
 
-	if (_box && _box->_dialog->_hDlg)
+	if (_box && _box->_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
 		FarListDelete d;
 		d.Count = 1;

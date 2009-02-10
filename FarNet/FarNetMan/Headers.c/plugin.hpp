@@ -4,7 +4,7 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 2.0 build 759
+  Plugin API for FAR Manager 2.0 build 768
 */
 
 /*
@@ -41,7 +41,7 @@ other possible license with no implications from the above license on them.
 
 #define FARMANAGERVERSION_MAJOR 2
 #define FARMANAGERVERSION_MINOR 0
-#define FARMANAGERVERSION_BUILD 759
+#define FARMANAGERVERSION_BUILD 768
 
 #ifndef RC_INVOKED
 

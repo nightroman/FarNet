@@ -63,7 +63,7 @@ void Far::Stop()
 
 String^ Far::PluginFolderPath::get()
 {
-	String^ pluginPath = OemToStr(Info.ModuleName);
+	String^ pluginPath = gcnew String(Info.ModuleName);
 	return (gcnew FileInfo(pluginPath))->DirectoryName;
 }
 
@@ -75,7 +75,7 @@ String^ Far::RootFar::get()
 
 String^ Far::RootKey::get()
 {
-	return OemToStr(Info.RootKey);
+	return gcnew String(Info.RootKey);
 }
 
 void Far::Free(ToolOptions options)
@@ -378,15 +378,15 @@ IAnyViewer^ Far::AnyViewer::get()
 String^ Far::PasteFromClipboard()
 {
 	wchar_t* buffer = Info.FSF->PasteFromClipboard();
-	String^ r = OemToStr(buffer);
+	String^ r = gcnew String(buffer);
 	Info.FSF->DeleteBuffer(buffer);
 	return r;
 }
 
 void Far::CopyToClipboard(String^ text)
 {
-	CBox sText(text);
-	Info.FSF->CopyToClipboard(sText);
+	PIN_NE(pin, text);
+	Info.FSF->CopyToClipboard(pin);
 }
 
 IEditor^ Far::CreateEditor()
@@ -455,18 +455,19 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 // don't throw on a wrong key, it is used for validation
 int Far::NameToKey(String^ key)
 {
-	if (!key) throw gcnew ArgumentNullException("key");
-	wchar_t buf[33];
-	StrToOem(key, buf, sizeof(buf));
-	return Info.FSF->FarNameToKey(buf);
+	if (!key)
+		throw gcnew ArgumentNullException("key");
+	
+	PIN_NE(pin, key);
+	return Info.FSF->FarNameToKey(pin);
 }
 
 String^ Far::KeyToName(int key)
 {
 	wchar_t name[33];
-	if (!Info.FSF->FarKeyToName(key, name, sizeof(name) - 1))
+	if (!Info.FSF->FarKeyToName(key, name, SIZEOF(name) - 1))
 		return nullptr;
-	return OemToStr(name);
+	return gcnew String(name);
 }
 
 void Far::PostKeys(String^ keys)
@@ -705,7 +706,7 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 void Far::ProcessPrefixes(INT_PTR item)
 {
 	wchar_t* command = (wchar_t*)item;
-	Run(OemToStr(command));
+	Run(gcnew String(command));
 }
 
 void Far::GetUserScreen()
@@ -718,92 +719,80 @@ void Far::SetUserScreen()
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
 
-// No exceptions, return what we can get
+//! Hack, not API.
+// Avoid exceptions, return what we can get.
 ICollection<String^>^ Far::GetDialogHistory(String^ name)
 {
 	List<String^>^ r = gcnew List<String^>;
 
 	String^ keyName = RootFar + "\\SavedDialogHistory\\" + name;
-	CBox sKeyName(keyName);
-
-	HKEY hk;
-	LONG lResult = ::RegOpenKeyEx(HKEY_CURRENT_USER, sKeyName, 0, KEY_READ, &hk);
-	if (lResult != ERROR_SUCCESS)
-		return r;
-
+	RegistryKey^ key = nullptr;
 	try
 	{
-		wchar_t lineName[99];
-		int index = 0;
-		for(;; ++index)
+		key = Registry::CurrentUser->OpenSubKey(keyName);
+		if (key)
 		{
-			Info.FSF->sprintf(lineName, L"Line%i", index);
-
-			DWORD dwType = 0, dwCount = 0;
-			lResult = ::RegQueryValueEx(hk, lineName, NULL, &dwType, NULL, &dwCount);
-			if (lResult != ERROR_SUCCESS || dwType != REG_SZ)
-				break;
-
-			wchar_t* buf = new wchar_t[dwCount];
-			lResult = ::RegQueryValueEx(hk, lineName, NULL, &dwType, (LPBYTE)buf, &dwCount);
-			if (lResult != ERROR_SUCCESS)
-				break;
-
-			String^ s = OemToStr(buf);
-			delete[] buf;
-			r->Add(s);
+			for each(String^ name in key->GetValueNames())
+			{
+				if (String::Compare(name, "Flags", StringComparison::OrdinalIgnoreCase) != 0)
+					r->Add(key->GetValue(name)->ToString());
+			}
 		}
-		return r;
 	}
 	finally
 	{
-		::RegCloseKey(hk);
+		if (key)
+			key->Close();
 	}
+
+	return r;
 }
 
 //! Hack, not API.
-// No exceptions, return what we can get
+// Avoid exceptions, return what we can get.
 ICollection<String^>^ Far::GetHistory(String^ name)
 {
 	List<String^>^ r = gcnew List<String^>;
+	List<String^>^ tail = gcnew List<String^>;
 
 	String^ keyName = RootFar + "\\" + name;
-	CBox sKeyName(keyName);
-
-	HKEY hk;
-	LONG lResult = ::RegOpenKeyEx(HKEY_CURRENT_USER, sKeyName, 0, KEY_READ, &hk);
-	if (lResult != ERROR_SUCCESS)
-		return r;
-
-	char* buf = NULL;
+	RegistryKey^ key = nullptr;
 	try
 	{
-		DWORD dwType = 0, dwCount = 0;
-		lResult = ::RegQueryValueEx(hk, L"Lines", NULL, &dwType, NULL, &dwCount);
-		if (lResult != ERROR_SUCCESS || dwType != REG_BINARY)
-			return r;
-
-		buf = new char[dwCount];
-		lResult = ::RegQueryValueEx(hk, L"Lines", NULL, &dwType, (LPBYTE)buf, &dwCount);
-		if (lResult != ERROR_SUCCESS)
-			return r;
-
-		wchar_t* buf2 = (wchar_t*)buf;
-		int nb2 = dwCount / 2;
-		for(int i = 0; i < nb2;)
+		key = Registry::CurrentUser->OpenSubKey(keyName);
+		if (key)
 		{
-			String^ s = gcnew String(buf2 + i);
-			r->Add(s);
-			i += s->Length + 1;
+			array<Byte>^ value = reinterpret_cast<array<Byte>^>(key->GetValue(L"Lines", nullptr));
+			if (value && value->Length)
+			{
+				Object^ o = key->GetValue(L"Position", nullptr);
+				int position = o ? (int)(o) : 0;
+				pin_ptr<Byte> pin = &value[0];
+				wchar_t* chars = (wchar_t*)pin;
+				int nb = (value->Length - 2) / 2;
+				for(int i = 0, index = 0; i < nb; ++index)
+				{
+					String^ s = gcnew String(chars + i);
+					i += s->Length + 1;
+					if (index >= position)
+						r->Add(s);
+					else
+						tail->Add(s);
+				}
+			}
 		}
-
-		return r;
 	}
 	finally
 	{
-		delete[] buf;
-		::RegCloseKey(hk);
+		if (key)
+			key->Close();
 	}
+
+	// add tail to the result
+	if (tail->Count > 0)
+		r->AddRange(tail);
+
+	return r;
 }
 
 void Far::ShowError(String^ title, Exception^ error)
@@ -843,21 +832,22 @@ int Far::GetPaletteColor(PaletteColor paletteColor)
 
 void Far::WritePalette(int left, int top, PaletteColor paletteColor, String^ text)
 {
-	CBox sText(text);
-	Info.Text(left, top, GetPaletteColor(paletteColor), sText);
+	PIN_NE(pin, text);
+	Info.Text(left, top, GetPaletteColor(paletteColor), pin);
 }
 
 void Far::WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
 {
-	CBox sText(text);
-	Info.Text(left, top, int(foregroundColor)|(int(backgroundColor)<<4), sText);
+	PIN_NE(pin, text);
+	Info.Text(left, top, int(foregroundColor)|(int(backgroundColor)<<4), pin);
 }
 
 void Far::ShowHelp(String^ path, String^ topic, HelpOptions options)
 {
-	CBox sPath; sPath.Reset(path);
-	CBox sTopic; sTopic.Reset(topic);
-	Info.ShowHelp(sPath, sTopic, (int)options);
+	PIN_NE(pinPath, path);
+	PIN_NS(pinTopic, topic);
+
+	Info.ShowHelp(pinPath, pinTopic, (int)options);
 }
 
 void Far::Write(String^ text)
@@ -962,8 +952,8 @@ public:
 	{
 		if (full)
 		{
-			_Name = OemToStr(wi.Name);
-			_TypeName = OemToStr(wi.TypeName);
+			_Name = gcnew String(wi.Name);
+			_TypeName = gcnew String(wi.TypeName);
 		}
 	}
 	virtual property bool Current { bool get() { return _Current; } }
@@ -1023,7 +1013,7 @@ bool Far::Commit()
 Char Far::CodeToChar(int code)
 {
 	code &= ~ KeyMode::CtrlAlt;
-	return code < 0 || code > 255 ? 0 : OemToChar(char(code));
+	return code < 0 || code > 255 ? 0 : Char(code); //?? Unicode chars?
 }
 
 Object^ Far::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
@@ -1104,7 +1094,7 @@ HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataS
 
 			// arguments
 			if (!e)
-				e = gcnew FilerEventArgs(OemToStr(name), gcnew UnmanagedMemoryStream((unsigned char*)data, dataSize, dataSize, FileAccess::Read), (OperationModes)opMode);
+				e = gcnew FilerEventArgs(gcnew String(name), gcnew UnmanagedMemoryStream((unsigned char*)data, dataSize, dataSize, FileAccess::Read), (OperationModes)opMode);
 			else
 				e->Data->Seek(0, SeekOrigin::Begin);
 
@@ -1175,7 +1165,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)item;
 				ToolPluginInfo^ tool = _toolDialog[dd->ItemNumber];
 				ToolEventArgs e(ToolOptions::Dialog);
-				FarDialog::_hDlgLast = dd->hDlg;
+				FarDialog::_hDlgTop = dd->hDlg;
 				tool->Handler(this, %e);
 			}
 			break;
@@ -1560,8 +1550,8 @@ bool Far::CompareName(String^ mask, const wchar_t* name, bool skipPath)
 {
 	for each(String^ s in mask->Split(gcnew array<Char>{',', ';'}, StringSplitOptions::RemoveEmptyEntries))
 	{
-		CBox buf(s);
-		if (Info.CmpName(buf, name, skipPath))
+		PIN_NE(pin, s);
+		if (Info.CmpName(pin, name, skipPath))
 			return true;
 	}
 	return false;
@@ -1608,10 +1598,9 @@ void Far::Redraw()
 
 String^ Far::TempName(String^ prefix)
 {
-	wchar_t dest[MAX_PATH];
-	wchar_t pref[5];
-	StrToOem(prefix, pref, 5);
-	if (!Info.FSF->MkTemp(dest, sizeof(dest), pref))
+	wchar_t dest[MAX_PATH]; //??? use any size
+	PIN_NE(pin, prefix);
+	if (!Info.FSF->MkTemp(dest, SIZEOF(dest), pin))
 		throw gcnew OperationCanceledException(__FUNCTION__);
 	return gcnew String(dest);
 }

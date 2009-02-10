@@ -18,8 +18,8 @@ bool Message::Show()
 
 	int nbItems;
 	CStr* items = CreateBlock(nbItems);
-	CBox sHelp; sHelp.Reset(_helpTopic);
-	_selected = Info.Message(0, flags, sHelp, (wchar_t**)items, nbItems, _buttons ? _buttons->Length : 0);
+	PIN_NS(pinHelpTopic, _helpTopic);
+	_selected = Info.Message(0, flags, pinHelpTopic, (wchar_t**)items, nbItems, _buttons ? _buttons->Length : 0);
 	delete[] items;
 
 	return _selected != -1;

@@ -1,14 +1,32 @@
 http://code.google.com/p/farnet/
 
-= 4.0.1 =
+= 4.0.2 =
 
-** REMINDER: Far 2.x, read History.txt = 4.0.0 = **
+*) Improved exchange of strings between .NET and FAR. Note that now in some
+cases FarNet is less tolerant to null input strings where text is expected.
+
+*) Dialogs: fixed a few FAR 1 to 2 issues, fixed memory leaks in list controls
+on dynamic operations on items, asked to implement IListBox.Title so that it
+should work now, added new property IListBox.Bottom, etc.
+
+*) Fixed order of history strings returned by IFar.GetHistory().
+
+*) Wish: allow to "unload" FarNet. Note: DLLs are not phisically unloaded. It
+is OK to call ExitFARW several times, the first call terminates FarNet. Then it
+is safe to call GetPluginInfoW, FarNet simply returns "nothing". Other exported
+functions must not be called. STILL, THIS SCENARIO IS NOT RECOMMENDED. Besides,
+perhaps some FarNet sub-plugins were not designed for "half-termination".
+
+*) Issue: http://bugs.farmanager.com/view.php?id=730
+Do not make dialog list controls empty directly when a dialog is running. Use
+this way: DetachItems(), Clear() or RemoveAt(), add items, AttachItems().
+
+= 4.0.1 =
 
 *) Due to a bug in FarNet multiarc plugin did not work. Fixed.
 
 *) FilerEventArgs: new property OperationModes Mode. Unfortunately it is not
 yet clear how to use it, you may only experiment for now.
-
 
 = 4.0.0 =
 
@@ -122,7 +140,7 @@ breaking change but if you use it you have to take a look at the manual.
 
 FIXED
 
-*) False error "Can't open a plugin panel at this moment." in rare cases.
+*) False error "Cannot open a plugin panel at this moment." in rare cases.
 *) Minor issue in error message in editor on opening a file with null name.
 
 OBSOLETE

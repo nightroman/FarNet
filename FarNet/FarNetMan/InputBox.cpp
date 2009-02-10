@@ -9,8 +9,8 @@ Copyright (c) 2005-2009 FarNet Team
 namespace FarNet
 {;
 InputBox::InputBox()
+: _maxLength(511)
 {
-	_maxLength = 511;
 }
 
 int InputBox::MaxLength::get()
@@ -22,41 +22,48 @@ void InputBox::MaxLength::set(int value)
 {
 	if (value < 1)
 		throw gcnew ArgumentOutOfRangeException("value");
+
 	_maxLength = value;
 }
 
-String^ InputBox::HelpTopic::get() { return _HelpTopic; }
+String^ InputBox::HelpTopic::get()
+{
+	return _HelpTopic;
+}
+
 void InputBox::HelpTopic::set(String^ value)
 {
 	if (SS(value) && !value->StartsWith("<"))
 		throw gcnew ArgumentException("'value' format must be '<FullPath\\>Topic'");
+
 	_HelpTopic = value;
 }
 
 bool InputBox::Show()
 {
-	CBox sTitle(Title);
-	CBox sPrompt(Prompt);
-	CBox sText(Text);
-	CBox sDest(_maxLength + 1);
-	CBox sHistory; sHistory.Reset(History);
+	PIN_ES(pinTitle, Title);
+	PIN_ES(pinPrompt, Prompt);
+	PIN_ES(pinText, Text);
+	PIN_NS(pinHistory, History);
+	CBox sDest(_maxLength);
 
 	// help
-	const wchar_t* help = 0; CBox sHelp;
-	if (_oemHelpTopic)
+	pin_ptr<const wchar_t> pinHelp;
+	const wchar_t* help = 0;
+	if (_internalHelpTopic)
 	{
-		help = _oemHelpTopic;
+		help = _internalHelpTopic;
 	}
 	else if (SS(HelpTopic))
 	{
-		sHelp.Set(HelpTopic);
-		help = sHelp;
+		pinHelp = PtrToStringChars(HelpTopic);
+		help = pinHelp;
 	}
 
-	if (!Info.InputBox(sTitle, sPrompt, sHistory, sText, sDest, MaxLength, help, Flags()))
+	if (!Info.InputBox(pinTitle, pinPrompt, pinHistory, pinText, sDest, MaxLength, help, Flags()))
 		return false;
 
-	Text = OemToStr(sDest);
+	Text = gcnew String(sDest);
 	return true;
 }
 
