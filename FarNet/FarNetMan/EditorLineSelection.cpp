@@ -22,16 +22,19 @@ String^ EditorLineSelection::Text::get()
 	if (egs.SelEnd < 0)
 		egs.SelEnd = egs.StringLength;
 
-	return FromEditor(egs.StringText + egs.SelStart, egs.SelEnd - egs.SelStart);
+	return gcnew String(egs.StringText + egs.SelStart, 0, egs.SelEnd - egs.SelStart);
 }
 
 void EditorLineSelection::Text::set(String^ value)
 {
+	if (!value)
+		throw gcnew ArgumentNullException("value");
+
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	if (egs.SelStart < 0)
-		throw gcnew InvalidOperationException("Can't set text: there is no selection.");
+		throw gcnew InvalidOperationException("Cannot set selected text because there is no selection.");
 
-	String^ text1 = FromEditor(egs.StringText, egs.StringLength);
+	String^ text1 = gcnew String(egs.StringText, 0, egs.StringLength);
 	String^ text2 = text1->Substring(0, egs.SelStart) + value;
 	int dd = 0;
 	if (egs.SelEnd >= 0)
@@ -41,12 +44,12 @@ void EditorLineSelection::Text::set(String^ value)
 	}
 
 	// set string
-	CBox sb(text2);
+	PIN_NE(pin, text2);
 	EditorSetString ess;
 	ess.StringEOL = egs.StringEOL;
 	ess.StringLength = text2->Length;
 	ess.StringNumber = _no;
-	ess.StringText = sb;
+	ess.StringText = pin;
 	EditorControl_ECTL_SETSTRING(ess);
 	
 	// change selection

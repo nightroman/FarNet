@@ -44,24 +44,43 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 	__END;
 }
 
-// Unloads sub-plugins and the main plugin
+/*
+Unloads sub-plugins and the main plugin.
+STOP
+Check the instance: perhaps it is brutally called more than once.
+*/
 void WINAPI ExitFARW()
 {
-	// don't try/catch, FAR can't help
-	Far::Instance->Stop();
+	if (Far::Instance)
+	{
+		// don't try/catch, FAR can't help
+		Far::Instance->Stop();
 
 #ifdef TEST1
-	StopTest1();
+		StopTest1();
 #endif
+	}
 }
 
-// GetPluginInfo is called to get general plugin info.
-// It passes in joined information about all plugins.
+/*
+GetPluginInfo is called to get general plugin info.
+FarNet returns joined information about its plugins.
+STOP
+Exotic case: FarNet was "unloaded", for example by Extended Plugin Menu plugin.
+So, check the instance: if it is null the return void information.
+*/
 void WINAPI GetPluginInfoW(PluginInfo* pi)
 {
 	__START;
-	Far::Instance->AsGetPluginInfo(pi);
+	if (Far::Instance)
+	{
+		Far::Instance->AsGetPluginInfo(pi);
+		return;
+	}
 	__END;
+
+	memset(pi, 0, sizeof(PluginInfo));
+	pi->StructSize = sizeof(PluginInfo);
 }
 
 // OpenPlugin is called to create a new plugin instance or do a job.

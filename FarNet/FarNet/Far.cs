@@ -543,7 +543,7 @@ namespace FarNet
 		/// <returns></returns>
 		string TempFolder();
 		/// <summary>
-		/// The current dialog if any.
+		/// The current dialog. STOP: be sure that a dialog exists otherwise effects are not predictable.
 		/// </summary>
 		IDialog Dialog { get; }
 		/// <summary>

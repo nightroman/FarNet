@@ -20,6 +20,8 @@ protected:
 	virtual void RemoveItem(int index) override;
 	virtual void SetItem(int index, IMenuItem^ item) override;
 internal:
+	void SetBox(FarBaseList^ value);
+private:
 	FarBaseList^ _box;
 };
 

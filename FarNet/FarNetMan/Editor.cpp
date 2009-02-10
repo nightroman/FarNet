@@ -31,8 +31,8 @@ void Editor::Open(OpenMode mode)
 	AssertClosed();
 
 	// strings
-	CBox sFileName(_FileName); // NULL causes crash (1.75.2505)
-	CBox sTitle(_Title);
+	PIN_ES(pinFileName, _FileName);
+	PIN_ES(pinTitle, _Title);
 
 	// frame
 	int nLine = _frameStart.Line >= 0 ? _frameStart.Line + 1 : -1;
@@ -94,8 +94,8 @@ void Editor::Open(OpenMode mode)
 	_id = -1;
 	EditorHost::_editorWaiting = this;
 	Info.Editor(
-		sFileName,
-		sTitle,
+		pinFileName,
+		pinTitle,
 		_Window.Left,
 		_Window.Top,
 		_Window.Right,
@@ -363,8 +363,8 @@ void Editor::Title::set(String^ value)
 {
 	if (IsOpened)
 	{
-		CBox sValue(value);
-		Info.EditorControl(ECTL_SETTITLE, sValue);
+		PIN_NE(pin, value);
+		Info.EditorControl(ECTL_SETTITLE, (wchar_t*)pin);
 	}
 	else
 	{
@@ -431,7 +431,7 @@ void Editor::DeleteLine()
 void Editor::Save()
 {
 	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
-		throw gcnew OperationCanceledException("Can't save the editor file.");
+		throw gcnew OperationCanceledException("Cannot save the editor file.");
 }
 
 void Editor::Save(String^ fileName)
@@ -439,13 +439,13 @@ void Editor::Save(String^ fileName)
 	if (fileName == nullptr)
 		return Save();
 
-	CBox sFileName(fileName);
-	EditorSaveFile esf; //???
-	esf.FileName = sFileName;
+	PIN_NE(pin, fileName);
+	EditorSaveFile esf;
+	esf.FileName = pin;
 	esf.FileEOL = 0;
 	esf.CodePage = 0; //???
 	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
-		throw gcnew OperationCanceledException("Can't save the editor file as: " + fileName);
+		throw gcnew OperationCanceledException("Cannot save the editor file as: " + fileName);
 }
 
 void Editor::InsertLine()
@@ -471,10 +471,10 @@ String^ Editor::WordDiv::get()
 
 	EditorSetParameter esp;
 	esp.Type = ESPT_GETWORDDIV;
-	wchar_t s[257];
-	esp.Param.cParam = s;
+	wchar_t buf[257];
+	esp.Param.cParam = buf;
 	EditorControl_ECTL_SETPARAM(esp);
-	return OemToStr(s);
+	return gcnew String(buf);
 }
 
 void Editor::WordDiv::set(String^ value)
@@ -482,10 +482,10 @@ void Editor::WordDiv::set(String^ value)
 	if (value == nullptr)
 		throw gcnew ArgumentNullException("value");
 
+	PIN_NE(pin, value);
 	EditorSetParameter esp;
-	CBox sValue(value);
 	esp.Type = ESPT_SETWORDDIV;
-	esp.Param.cParam = sValue;
+	esp.Param.cParam = (wchar_t*)pin;
 	EditorControl_ECTL_SETPARAM(esp);
 }
 
@@ -676,7 +676,7 @@ String^ Editor::GetText(String^ separator)
 		if (esp.CurLine > 0)
 			sb.Append(separator);
 		if (egs.StringLength > 0)
-			sb.Append(FromEditor(egs.StringText,  egs.StringLength));
+			sb.Append(gcnew String(egs.StringText, 0, egs.StringLength));
     }
     Edit_RestoreEditorInfo(ei);
 

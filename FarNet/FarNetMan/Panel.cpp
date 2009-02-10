@@ -97,7 +97,7 @@ int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 		return 0;
 
 	List<IFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
-	GettingFilesEventArgs e(files, (OperationModes)opMode, move != 0, OemToStr((*destPath)));
+	GettingFilesEventArgs e(files, (OperationModes)opMode, move != 0, gcnew String((*destPath)));
 	pp->_GettingFiles(pp, %e);
 
 	return e.Ignore ? false : true;
@@ -158,10 +158,10 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 			++i;
 			PluginPanelItem& p = (*pPanelItem)[0];
 			p.UserData = (DWORD_PTR)-1;
-			p.FindData.lpwszFileName = (wchar_t*)s_dots; //???? why not const wchar_t?
+			p.FindData.lpwszFileName = (wchar_t*)s_dots;
 			if (SS(pp->DotsDescription))
 			{
-				StrToOem(pp->DotsDescription, data);
+				CopyStringToChars(pp->DotsDescription, data);
 				p.Description = data;
 				data += pp->DotsDescription->Length + 1;
 			}
@@ -179,20 +179,20 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 			// names
 			if (SS(f->Name))
 			{
-				StrToOem(f->Name, data);
-				p.FindData.lpwszFileName = data;
+				CopyStringToChars(f->Name, data);
+				d.lpwszFileName = data;
 				data += f->Name->Length + 1;
 			}
 			if (SS(f->Description))
 			{
-				StrToOem(f->Description, data);
+				CopyStringToChars(f->Description, data);
 				p.Description = data;
 				data += f->Description->Length + 1;
 			}
 			if (SS(f->AlternateName))
 			{
-				StrToOem(f->AlternateName, data);
-				p.FindData.lpwszAlternateFileName = data;
+				CopyStringToChars(f->AlternateName, data);
+				d.lpwszAlternateFileName = data;
 				data += f->AlternateName->Length + 1;
 			}
 
@@ -233,7 +233,7 @@ int PanelSet::AsMakeDirectory(HANDLE hPlugin, const wchar_t** name, int opMode)
 	if (!pp->_MakingDirectory)
 		return false;
 
-	MakingDirectoryEventArgs e(OemToStr((*name)), (OperationModes)opMode);
+	MakingDirectoryEventArgs e(gcnew String((*name)), (OperationModes)opMode);
 	pp->_MakingDirectory(pp, %e);
 
 	return e.Ignore ? false : true;
@@ -264,7 +264,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		{
 			if (pp->_ViewModeChanged)
 			{
-				ViewModeChangedEventArgs e(OemToStr((const wchar_t*)param));
+				ViewModeChangedEventArgs e(gcnew String((const wchar_t*)param));
 				pp->_ViewModeChanged(pp, %e);
 			}
 		}
@@ -289,7 +289,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			if (pp->_Executing)
 			{
 				//! We have to try\catch in here in order to return exactly what plugin returns.
-				ExecutingEventArgs e(OemToStr((const wchar_t*)param));
+				ExecutingEventArgs e(gcnew String((const wchar_t*)param));
 				try
 				{
 					pp->_Executing(pp, %e);
@@ -488,7 +488,7 @@ int PanelSet::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 		FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
 		if (!pp->_SettingDirectory)
 			return true;
-		SettingDirectoryEventArgs e(OemToStr(dir), (OperationModes)opMode);
+		SettingDirectoryEventArgs e(gcnew String(dir), (OperationModes)opMode);
 		pp->_SettingDirectory(pp, %e);
 		return !e.Ignore;
 	}
@@ -729,7 +729,7 @@ void FarPluginPanelInfo::Make12Strings(wchar_t** dst, array<String^>^ src)
 		if (i >= src->Length)
 			dst[i] = 0;
 		else
-			dst[i] = NewOem(src[i]);
+			dst[i] = NewChars(src[i]);
 	}
 }
 
@@ -791,10 +791,10 @@ void FarPluginPanelInfo::CreateInfoLines()
 	{
 		DataItem^ s = _InfoItems[i];
 		InfoPanelLine& d = (InfoPanelLine&)m->InfoLines[i];
-		d.Text = NewOem(s->Name);
+		d.Text = NewChars(s->Name);
 		if (s->Data)
 		{
-			d.Data = NewOem(s->Data->ToString());
+			d.Data = NewChars(s->Data->ToString());
 			d.Separator = false;
 		}
 		else
@@ -874,10 +874,10 @@ OpenPluginInfo& FarPluginPanelInfo::Make()
 	m->StartSortMode = int(_StartSortMode);
 	m->StartPanelMode = int(_StartViewMode) + 0x30;
 
-	m->CurDir = NewOem(_CurrentDirectory);
-	m->Format = NewOem(_Format);
-	m->HostFile = NewOem(_HostFile);
-	m->PanelTitle = NewOem(_Title);
+	m->CurDir = NewChars(_CurrentDirectory);
+	m->Format = NewChars(_Format);
+	m->HostFile = NewChars(_HostFile);
+	m->PanelTitle = NewChars(_Title);
 
 	SetKeyBarAlt(_keyBarAlt);
 	SetKeyBarAltShift(_keyBarAltShift);
@@ -1068,8 +1068,8 @@ void FarPanel::Path::set(String^ value)
 	if (!Directory::Exists(value))
 		throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
 
-	CBox sb(value);
-	if (!Info.Control(_handle, FCTL_SETPANELDIR, 0, (LONG_PTR)(wchar_t*)sb))
+	PIN_NE(pin, value);
+	if (!Info.Control(_handle, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
 		throw gcnew OperationCanceledException;
 }
 
@@ -1123,8 +1123,8 @@ FarFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
 {
 	FarFile^ f = gcnew FarFile;
 
-	f->Name = OemToStr(item.FindData.lpwszFileName);
-	f->Description = item.Description ? OemToStr(item.Description) : String::Empty; 
+	f->Name = gcnew String(item.FindData.lpwszFileName);
+	f->Description = gcnew String(item.Description); 
 	f->AlternateName = gcnew String(item.FindData.lpwszAlternateFileName);
 
 	f->Attributes = (FileAttributes)item.FindData.dwFileAttributes;
@@ -1202,8 +1202,8 @@ void FarPanel::Close()
 
 void FarPanel::Close(String^ path)
 {
-	CBox sb; sb.Reset(path);
-	Info.Control(_handle, FCTL_CLOSEPLUGIN, 0, (LONG_PTR)(wchar_t*)sb);
+	PIN_NE(pin, path);
+	Info.Control(_handle, FCTL_CLOSEPLUGIN, 0, (LONG_PTR)(const wchar_t*)pin);
 }
 
 void FarPanel::GoToName(String^ name)
@@ -1217,11 +1217,11 @@ void FarPanel::GoToName(String^ name)
 
 	AutoPanelInfo info(_handle);
 
-	CBox sb; sb.Reset(name);
+	PIN_NE(pin, name);
 	for(int i = 0; i < info.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i);
-		if (Info.FSF->LStricmp(sb, item.FindData.lpwszFileName) == 0 || Info.FSF->LStricmp(sb, item.FindData.lpwszAlternateFileName) == 0)
+		if (Info.FSF->LStricmp(pin, item.FindData.lpwszFileName) == 0 || Info.FSF->LStricmp(pin, item.FindData.lpwszAlternateFileName) == 0)
 		{
 			Redraw(i, 0);
 			break;

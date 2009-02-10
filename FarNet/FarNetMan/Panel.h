@@ -118,7 +118,7 @@ public: virtual property String^ Name {\
 	_##Name = value;\
 	if (m) {\
 	delete[] m->Data;\
-	m->Data = NewOem(value);\
+	m->Data = NewChars(value);\
 	}\
 }}\
 private: String^ _##Name

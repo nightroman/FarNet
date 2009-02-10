@@ -253,17 +253,18 @@ namespace FarNet
 		/// <seealso cref="Cursor"/>
 		TextFrame Frame { get; set; }
 		/// <summary>
-		/// Call this method before processing large amount of lines, performance can be drastically improved.
+		/// Call this method before processing of large amount of lines, performance can be drastically improved.
 		/// It is strongly recommended to call <see cref="End"/> after processing.
-		/// Nested calls of <see cref="Begin"/> .. <see cref="End"/> are allowed.
+		/// Nested calls of <b>Begin()</b> .. <b>End()</b> are allowed.
 		/// </summary>
 		/// <remarks>
 		/// Avoid using this method together with getting <see cref="Frame"/> or <see cref="Cursor"/>,
-		/// their values can be unpredictable. But it is OK to set them (directly or by <see cref="GoTo"/> methods).
+		/// their values are unpredictable. You have to get them before. But it is OK to set them
+		/// between <b>Begin()</b> and <b>End()</b>, directly or by <see cref="GoTo"/> methods.
 		/// </remarks>
 		void Begin();
 		/// <summary>
-		/// If you have called <see cref="Begin"/> you have to call this method in the end of processing.
+		/// It has to be called after any <see cref="Begin"/> when editor lines processing is done.
 		/// </summary>
 		void End();
 		/// <summary>

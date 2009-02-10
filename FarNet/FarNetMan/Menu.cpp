@@ -70,20 +70,9 @@ void Menu::Lock()
 	_createdItems = CreateItems();
 	_createdBreaks = CreateBreakKeys();
 	
-	if (SS(HelpTopic))
-		StrToOem(HelpTopic, _help = new wchar_t[HelpTopic->Length + 1]);
-	else
-		_help = 0;
-
-	if (SS(Title))
-		StrToOem(Title, _title = new wchar_t[Title->Length + 1]);
-	else
-		_title = 0;
-
-	if (SS(Bottom))
-		StrToOem(Bottom, _bottom = new wchar_t[Bottom->Length + 1]);
-	else
-		_bottom = 0;
+	_help = NewChars(HelpTopic);
+	_title = NewChars(Title);
+	_bottom = NewChars(Bottom);
 }
 
 void Menu::Unlock()
@@ -110,7 +99,7 @@ FarMenuItemEx* Menu::CreateItems()
 	for each(IMenuItem^ item1 in _items)
 	{
 		FarMenuItemEx& item2 = r[n];
-		item2.Text = NewOem(item1->Text); //??? leak
+		item2.Text = NewChars(item1->Text); //??? leak
 		item2.AccelKey = 0;
 		item2.Reserved = 0;
 		++n;
@@ -223,12 +212,12 @@ bool Menu::Show()
 	{
 		FarMenuItemEx* items = CreateItems();
 		int* breaks = CreateBreakKeys();
-		CBox sTitle; sTitle.Reset(Title);
-		CBox sBottom; sBottom.Reset(Bottom);
-		CBox sHelpTopic; sHelpTopic.Reset(HelpTopic);
+		PIN_NS(pinTitle, Title);
+		PIN_NS(pinBottom, Bottom);
+		PIN_NS(pinHelpTopic, HelpTopic);
 		try
 		{
-			ShowMenu(items, breaks, sTitle, sBottom, sHelpTopic);
+			ShowMenu(items, breaks, pinTitle, pinBottom, pinHelpTopic);
 		}
 		finally
 		{

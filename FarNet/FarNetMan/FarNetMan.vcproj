@@ -141,7 +141,6 @@
 				WarningLevel="4"
 				WarnAsError="true"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -157,7 +156,6 @@
 				OutputFile="$(OutDir)/FarNetMan.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="FarNetMan.def"
-				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

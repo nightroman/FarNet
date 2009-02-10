@@ -18,7 +18,7 @@ $#FarNet#
 
 #FarNet plugins#
 
-    ~PowerShellFar~@<..\..\Plugins.NET\PowerShellFar\>@
+    ~PowerShellFar~@<..\..\Plugins.NET\PowerShellFar\>Contents@
 
 
 @Menu
