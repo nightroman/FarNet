@@ -45,7 +45,6 @@ void FarCommandLine::Eol::set(String^)
 
 String^ FarCommandLine::Text::get()
 {
-	//??? tweak size and empty
 	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
 	CBox buf(size);
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, size, (LONG_PTR)(wchar_t*)buf);
@@ -54,8 +53,11 @@ String^ FarCommandLine::Text::get()
 
 void FarCommandLine::Text::set(String^ value)
 {
-	CBox sb(value);
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (LONG_PTR)(wchar_t*)sb))
+	if (!value)
+		throw gcnew ArgumentNullException("value");
+
+	PIN_NE(pin, value);
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (LONG_PTR)pin))
 		throw gcnew OperationCanceledException;
 }
 
@@ -78,8 +80,11 @@ void FarCommandLine::Pos::set(int value)
 
 void FarCommandLine::Insert(String^ text)
 {
-	CBox sText(text);
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, 0, (LONG_PTR)(wchar_t*)sText))
+	if (!text)
+		throw gcnew ArgumentNullException("text");
+
+	PIN_NE(pin, text);
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, 0, (LONG_PTR)pin))
 		throw gcnew OperationCanceledException;
 }
 

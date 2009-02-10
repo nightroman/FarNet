@@ -363,6 +363,10 @@ namespace FarNet.Forms
 		void DetachItems();
 		/// <include file='doc.xml' path='docs/pp[@name="BaseListItems"]/*'/>
 		IList<IMenuItem> Items { get; }
+		/// <summary>
+		/// STOP: this is temporary, use it only if <see cref="Items"/>.<b>Clear()</b> fails. [_090208_042536]
+		/// </summary>
+		void Clear();
 	}
 
 	/// <summary>
@@ -408,9 +412,13 @@ namespace FarNet.Forms
 		/// </summary>
 		bool NoBox { get; set; }
 		/// <summary>
-		/// Title.
+		/// Title line text.
 		/// </summary>
 		string Title { get; set; }
+		/// <summary>
+		/// Bottom line text.
+		/// </summary>
+		string Bottom { get; set; }
 		/// <summary>
 		/// Sets both cursor and top position. It should be called when a dialog is shown.
 		/// </summary>

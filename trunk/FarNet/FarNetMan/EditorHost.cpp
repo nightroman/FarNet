@@ -70,7 +70,7 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 
 			// set info
 			editor->_id = ei.EditorID;
-			editor->_FileName = OemToStr(ei.FileName);
+			editor->_FileName = gcnew String(ei.FileName);
 
 			// event
 			Far::Instance->OnEditorOpened(editor);

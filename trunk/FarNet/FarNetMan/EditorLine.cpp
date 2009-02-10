@@ -71,16 +71,19 @@ void EditorLine::Pos::set(int value)
 String^ EditorLine::Eol::get()
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
-	return FromEditor(egs.StringEOL, (int)wcslen(egs.StringEOL)); //???
+	return gcnew String(egs.StringEOL);
 }
 
 void EditorLine::Eol::set(String^ value)
 {
+	if (!value)
+		throw gcnew ArgumentNullException("value");
+
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	EditorSetString ess = GetEss();
-	CBox sb(value);
 
-	ess.StringEOL = sb;
+	PIN_NE(pin, value);
+	ess.StringEOL = pin;
 	ess.StringLength = egs.StringLength;
 	ess.StringText = egs.StringText;
 
@@ -93,11 +96,14 @@ String^ EditorLine::Text::get()
 		return Selection->Text;
 
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
-	return FromEditor(egs.StringText,  egs.StringLength);
+	return gcnew String(egs.StringText, 0, egs.StringLength);
 }
 
 void EditorLine::Text::set(String^ value)
 {
+	if (!value)
+		throw gcnew ArgumentNullException("value");
+
 	if (_selected)
 	{
 		Selection->Text = value;
@@ -106,8 +112,8 @@ void EditorLine::Text::set(String^ value)
 
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	EditorSetString ess = GetEss();
-	CBox sb(value);
-	ess.StringText = sb;
+	PIN_NE(pin, value);
+	ess.StringText = pin;
 	ess.StringEOL = egs.StringEOL;
 	ess.StringLength = value->Length;
 	EditorControl_ECTL_SETSTRING(ess);

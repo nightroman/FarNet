@@ -100,7 +100,7 @@ then this plugin is normally loaded only when invoked the first time.
 </pp>
 <pp name="BaseListItems">
 <summary>
-List item collection.
+List item collection. STOP: see remarks.
 </summary>
 <remarks>
 Normally you fill the list with items and set their properties before opening a
@@ -114,12 +114,20 @@ one item at a time (or just a few items). But if you actually recreate all the
 items then for better performance you have to use <see cref="DetachItems"/>
 before changes and <see cref="AttachItems"/> after changes.
 </para>
+<para>
+STOP: in rare cases (found in PowerShell, bug?), method <b>Clear()</b> cannot be
+called. If you really have this problem then call the workaround method <see cref="IBaseList.Clear"/>.
+[_090208_042536]
+</para>
 </remarks>
 <example>
-(PowerShell): how to set an item checked (dynamic mode)
+(PowerShell): how to set an item checked when the dialog is running
 <code>
+# get an item
 $item = $listbox.Items[3]
+# change it
 $item.Checked = $true
+# set it!
 $listbox.Items[3] = $item
 </code>
 </example>

@@ -113,7 +113,7 @@ void SelectionCollection::Insert(int index, String^ item)
 
 	EditorGetString egss; EditorControl_ECTL_GETSTRING(egss, ei.BlockStartLine);
 	if (ei.BlockType == BTYPE_COLUMN && egss.SelEnd < 0)
-		throw gcnew InvalidOperationException("Can't process this selection shape");
+		throw gcnew InvalidOperationException("Cannot process this selection shape");
 
 	// case: first
 	if (index == 0)
@@ -170,7 +170,7 @@ void SelectionCollection::RemoveAt(int index)
 
 	EditorGetString egss; EditorControl_ECTL_GETSTRING(egss, ei.BlockStartLine);
 	if (ei.BlockType == BTYPE_COLUMN && egss.SelEnd < 0)
-		throw gcnew InvalidOperationException("Can't process this selection shape");
+		throw gcnew InvalidOperationException("Cannot process this selection shape");
 
 	if (index < 0 || egss.SelStart < 0)
 		throw gcnew ArgumentOutOfRangeException("index");
@@ -325,7 +325,7 @@ String^ SelectionCollection::GetText(String^ separator)
 			sb.Append(separator);
 		int len = (egs.SelEnd < 0 ? egs.StringLength : egs.SelEnd) - egs.SelStart;
 		if (len > 0)
-			sb.Append(FromEditor(egs.StringText + egs.SelStart, len));
+			sb.Append(gcnew String(egs.StringText + egs.SelStart, 0, len)); //??
     }
 	Edit_RestoreEditorInfo(ei);
 
@@ -341,7 +341,7 @@ void SelectionCollection::SetText(String^ text)
 
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.BlockStartLine);
 	if (ei.BlockType == BTYPE_COLUMN && egs.SelEnd < 0)
-		throw gcnew InvalidOperationException("Can't process this selection shape.");
+		throw gcnew InvalidOperationException("Cannot process this selection shape.");
 
 	// delete selection
 	int top = ei.BlockStartLine;

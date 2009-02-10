@@ -90,7 +90,7 @@ static String^ InputFilter(String^ pattern, PatternOptions options, String^ hist
 	//! help; note that it fails without 'Far::_helpTopic' part
 	if (help == NULL)
 		help.Set(Far::_helpTopic + "InputFilter");
-	ib._oemHelpTopic = help;
+	ib._internalHelpTopic = help;
 
 	// show filter input box
 	for(;;)

@@ -5,6 +5,27 @@ Copyright (c) 2005-2009 FarNet Team
 
 #pragma once
 
+#pragma region String pins and converters
+// STOP: choose a right one, relevant for FAR.
+
+// Pins as null, empty or solid string, all as it is.
+#define PIN_NE(PinName, StringVar) pin_ptr<const wchar_t> PinName = PtrToStringChars(StringVar);
+
+// Pins as empty or solid string, null is treated as empty.
+#define PIN_ES(PinName, StringVar) pin_ptr<const wchar_t> PinName = PtrToStringChars(StringVar ? StringVar : String::Empty);
+
+// Pins as null or solid string, empty is treated as null.
+#define PIN_NS(PinName, StringVar) pin_ptr<const wchar_t> PinName = (StringVar && StringVar->Length) ? PtrToStringChars(StringVar) : (wchar_t*)0;
+
+// Converters
+wchar_t* NewChars(String^ str);
+void CopyStringToChars(String^ str, wchar_t* buffer);
+
+#pragma endregion
+
+// Buffer size in items, not bytes.
+#define SIZEOF(Buffer) (sizeof(Buffer) / sizeof(*Buffer))
+
 // Log
 #define LOG_IDLE 2
 #define LOG_KEYS 4
@@ -55,16 +76,7 @@ void Class::Prop::set(bool value) { if (value) _flags |= Flag; else _flags &= ~F
 	void set(bool value) { if (value) _flags |= Flag; else _flags &= ~Flag; }\
 }
 
-// String converters
-Char OemToChar(wchar_t oem);
-wchar_t* NewOem(String^ str);
-void StrToOem(String^ str, wchar_t* oem);
-void StrToOem(String^ str, wchar_t* oem, int size);
-String^ FromEditor(const wchar_t* text, int len);
-String^ OemToStr(const wchar_t* oem);
-String^ OemToStr(const wchar_t* oem, int length);
-
-/// <summary> Holder of OEM char* converted from String. </summary>
+/// <summary> Holder of chars converted from String. </summary>
 class CStr
 {
 public:
@@ -104,20 +116,6 @@ public:
 			m_str = m_buf;
 		strncpy_s(m_str, len + 1, str, len);
 	}
-	TStr(String^ str)
-	{
-		if (!str || str->Length == 0)
-		{
-			m_str = m_buf;
-			m_buf[0] = 0;
-			return;
-		}
-		if (str->Length > eLen)
-			m_str = new wchar_t[str->Length + 1];
-		else
-			m_str = m_buf;
-		StrToOem(str, m_str);
-	}
 	~TStr()
 	{
 		if (m_str != m_buf)
@@ -126,33 +124,6 @@ public:
 	operator T*()
 	{
 		return m_str;
-	}
-	void Set(String^ str)
-	{
-		if (m_str != m_buf)
-			delete m_str;
-		if (!str || str->Length == 0)
-		{
-			m_str = m_buf;
-			m_buf[0] = 0;
-			return;
-		}
-		if (str->Length > eLen)
-			m_str = new wchar_t[str->Length + 1];
-		else
-			m_str = m_buf;
-		StrToOem(str, m_str);
-	}
-	void Reset(String^ str)
-	{
-		if (str && str->Length)
-		{
-			Set(str);
-			return;
-		}
-		if (m_str != m_buf)
-			delete m_str;
-		m_str = 0;
 	}
 private:
 	enum { eLen = 255 };
@@ -163,9 +134,6 @@ private:
 // String box
 typedef TStr<wchar_t> CBox; //???
 
-/// <summary>
-/// Holder of OEM char* converted from String.
-/// </summary>
 struct SEditorSetPosition : EditorSetPosition
 {
 	SEditorSetPosition()

@@ -9,24 +9,19 @@ Copyright (c) 2005-2009 FarNet Team
 // hosted values
 bool ValueUserScreen::_value;
 
-// empty oem string
+// empty string
 wchar_t CStr::s_empty[1] = {0};
 
 ///<summary>Converts a string and holds the result.</summary>
 CStr::CStr(String^ str)
 {
 	if (String::IsNullOrEmpty(str))
-	{
 		m_str = s_empty;
-	}
 	else
-	{
-		m_str = new wchar_t[str->Length + 1];
-		StrToOem(str, m_str);
-	}
+		m_str = NewChars(str);
 }
 
-///<summary>Makes and holds new char[len+1].</summary>
+///<summary>Makes and holds new char[len + 1].</summary>
 CStr::CStr(int len)
 {
 	m_str = new wchar_t[len + 1];
@@ -46,74 +41,35 @@ void CStr::Set(String^ str)
 		delete m_str;
 
 	if (String::IsNullOrEmpty(str))
-	{
 		m_str = s_empty;
-	}
 	else
-	{
-		m_str = new wchar_t[str->Length + 1];
-		StrToOem(str, m_str);
-	}
+		m_str = NewChars(str);
 }
-
-// caller deletes the result
-wchar_t* NewOem(String^ str) //???
-{
-	if (ES(str))
-		return 0;
-	wchar_t* r = new wchar_t[str->Length + 1];
-	StrToOem(str, r);
-	return r;
-}
-
-// no new after this point
-#undef new
-#define new dont_use_new
 
 #pragma warning (push)
 #pragma warning (disable : 4996)
-void StrToOem(String^ str, wchar_t* oem) //???
+
+// Returns NULL for null or empty. Callers delete the result.
+wchar_t* NewChars(String^ str)
 {
-	pin_ptr<const wchar_t> p = PtrToStringChars(str);
-	wcscpy(oem, p);
+	if (ES(str))
+		return 0;
+
+	wchar_t* r = new wchar_t[str->Length + 1];
+	PIN_NE(pin, str);
+	wcscpy(r, pin);
+	return r;
+}
+// No new after this point.
+#undef new
+#define new dont_use_new
+
+void CopyStringToChars(String^ str, wchar_t* buffer)
+{
+	PIN_NE(pin, str);
+	wcscpy(buffer, pin);
 }
 #pragma warning (pop)
-
-void StrToOem(String^ str, wchar_t* oem, int size) //???
-{
-	if (str)
-		StrToOem((str->Length < size ? str : str->Substring(0, size - 1)), oem);
-	else
-		oem[0] = 0;
-}
-
-Char OemToChar(wchar_t oem) //??? get rid
-{
-	return oem;
-}
-
-//! Returns Empty for NULL
-String^ OemToStr(const wchar_t* oem, int len)
-{
-	if (oem)
-		return gcnew String(oem, 0, len);
-	else
-		return String::Empty;
-}
-
-//! Returns Empty for NULL
-String^ OemToStr(const wchar_t* oem)
-{
-	if (oem)
-		return gcnew String(oem);
-	else
-		return String::Empty;
-}
-
-String^ FromEditor(const wchar_t* text, int len) //?? get rid, use OemToStr
-{
-	return OemToStr(text, len);
-}
 
 //
 // Generic FAR wrappers
@@ -173,8 +129,11 @@ void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype)
 {
 	if (overtype > 0)
 		Edit_SetOvertype(false);
-	CBox sb(text->Replace("\r\n", "\r")->Replace('\n', '\r'));
-	Info.EditorControl(ECTL_INSERTTEXT, sb);
+
+	String^ text2 = text->Replace("\r\n", "\r")->Replace('\n', '\r');
+	PIN_NE(pin, text2);
+	Info.EditorControl(ECTL_INSERTTEXT, (wchar_t*)pin);
+
 	if (overtype > 0)
 		Edit_SetOvertype(true);
 }
@@ -216,7 +175,7 @@ bool IsCurrentViewer()
 	//??? is it still like this?
 	PanelInfo pi;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETPANELINFO, 0, (LONG_PTR)&pi))
-		throw gcnew OperationCanceledException("Can't get panel information.");
+		throw gcnew OperationCanceledException("Cannot get panel information.");
 	return pi.PanelType == PTYPE_QVIEWPANEL;
 }
 

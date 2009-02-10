@@ -25,7 +25,7 @@ public:
 internal:
 	InputBox();
 internal:
-	const wchar_t* _oemHelpTopic;
+	const wchar_t* _internalHelpTopic;
 private:
 	int Flags();
 private:

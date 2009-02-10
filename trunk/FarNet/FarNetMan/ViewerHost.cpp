@@ -25,7 +25,7 @@ void ViewerHost::Register(Viewer^ viewer, const ViewerInfo& vi)
 {
 	_viewers.Add(vi.ViewerID, viewer);
 	viewer->_id = vi.ViewerID;
-	viewer->_FileName = OemToStr(vi.FileName);
+	viewer->_FileName = gcnew String(vi.FileName);
 }
 
 //! For exturnal use.
@@ -80,7 +80,7 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 			else
 			{
 				// new file is opened in the same viewer -- update file name
-				viewer->_FileName = OemToStr(vi.FileName);
+				viewer->_FileName = gcnew String(vi.FileName);
 			}
 
 			// event
