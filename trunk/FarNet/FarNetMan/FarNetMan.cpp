@@ -12,25 +12,40 @@ Copyright (c) 2005-2009 FarNet Team
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
+static bool s_loaded, s_unloaded;
 
 namespace FarNet
 {;
-enum EMessage
-{
-	MTitle,
-	MMessage1,
-	MMessage2,
-	MMessage3,
-	MMessage4,
-	MButton,
-};
-
 #define __START try {
 #define __END } catch(Exception^ e) { Far::Instance->ShowError(nullptr, e); }
 
-// SetStartupInfo is called once, after the plugin DLL is loaded.
+/*
+SetStartupInfo is normally called once when the plugin DLL has been loaded.
+But more calls are possible, we have to ignore them.
+*/
 void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 {
+	// case: loaded
+	if (s_loaded)
+	{
+		Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+		Console::WriteLine("WARNING: FarNet has been already loaded.");
+		Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+		return;
+	}
+
+	// case: unloaded
+	if (s_unloaded)
+	{
+		Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+		Console::WriteLine("WARNING: FarNet has been unloaded before and the second load is not supported.");
+		Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+		return;
+	}
+
+	// load!
+	s_loaded = true;
+
 #ifdef TEST1
 	StartTest1();
 #endif
@@ -46,13 +61,16 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 
 /*
 Unloads sub-plugins and the main plugin.
-STOP
-Check the instance: perhaps it is brutally called more than once.
+STOP: ensure it is "loaded".
 */
 void WINAPI ExitFARW()
 {
-	if (Far::Instance)
+	if (s_loaded)
 	{
+		// set flags
+		s_loaded = false;
+		s_unloaded = true;
+
 		// don't try/catch, FAR can't help
 		Far::Instance->Stop();
 
@@ -65,22 +83,13 @@ void WINAPI ExitFARW()
 /*
 GetPluginInfo is called to get general plugin info.
 FarNet returns joined information about its plugins.
-STOP
-Exotic case: FarNet was "unloaded", for example by Extended Plugin Menu plugin.
-So, check the instance: if it is null the return void information.
+STOP: exotic case: FarNet has been "unloaded", return empty information.
 */
 void WINAPI GetPluginInfoW(PluginInfo* pi)
 {
 	__START;
-	if (Far::Instance)
-	{
-		Far::Instance->AsGetPluginInfo(pi);
-		return;
-	}
+	Far::Instance->AsGetPluginInfo(pi);
 	__END;
-
-	memset(pi, 0, sizeof(PluginInfo));
-	pi->StructSize = sizeof(PluginInfo);
 }
 
 // OpenPlugin is called to create a new plugin instance or do a job.

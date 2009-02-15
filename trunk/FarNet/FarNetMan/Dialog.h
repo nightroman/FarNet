@@ -37,6 +37,7 @@ internal:
 	void SetSelected(int value);
 	virtual void Init(FarDialogItem& item, int type);
 	virtual void Starting(FarDialogItem& item) = 0;
+	virtual void Started() {}
 	virtual void Stop(bool ok);
 	virtual void Free();
 internal:
@@ -179,7 +180,6 @@ public:
 protected:
 	[CA_USED]
 	FarBaseList(FarDialog^ dialog, int index);
-protected:
 	[CA_USED]
 	FarBaseList(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 internal:
@@ -223,6 +223,7 @@ public:
 internal:
 	FarListBox(FarDialog^ dialog, int index);
 	FarListBox(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
+	virtual void Started() override;
 	virtual void Starting(FarDialogItem& item) override;
 private:
 	String^ _Title;

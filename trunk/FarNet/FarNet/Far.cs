@@ -306,13 +306,18 @@ namespace FarNet
 		/// </summary>
 		void GetUserScreen();
 		/// <summary>
-		/// Returns strings from history.
+		/// Returns all strings from history.
 		/// </summary>
-		/// <param name="name">
-		/// History name. Standard values are:
-		/// SavedHistory, SavedFolderHistory, SavedViewHistory
-		/// </param>
+		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory.</param>
 		ICollection<string> GetHistory(string name);
+		/// <summary>
+		/// Returns strings from history by type.
+		/// </summary>
+		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory.</param>
+		/// <param name="filter">
+		/// Type filter: each character represents a type. For example for SavedViewHistory: 0: view; 1: edit; 2: external.
+		/// </param>
+		ICollection<string> GetHistory(string name, string filter);
 		/// <summary>
 		/// Returns strings from dialog control history.
 		/// </summary>
