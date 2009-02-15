@@ -595,11 +595,18 @@ IInputBox^ Far::CreateInputBox()
 	return gcnew InputBox;
 }
 
-//! frequently called
+/*
+It is called frequently to get information about menu and disk commands.
+STOP:
+Check the instance, FarNet may be "unloaded", return empty information,
+but return flags, at least preloadable flag is absolutely important as cached.
+*/
 void Far::AsGetPluginInfo(PluginInfo* pi)
 {
 	pi->StructSize = sizeof(PluginInfo);
 	pi->Flags = PF_DIALOG | PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
+	if (!_instance)
+		return;
 
 	WindowInfo wi;
 	wi.Pos = -1;
@@ -748,9 +755,14 @@ ICollection<String^>^ Far::GetDialogHistory(String^ name)
 	return r;
 }
 
+ICollection<String^>^ Far::GetHistory(String^ name)
+{
+	return GetHistory(name, nullptr);
+}
+
 //! Hack, not API.
 // Avoid exceptions, return what we can get.
-ICollection<String^>^ Far::GetHistory(String^ name)
+ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 {
 	List<String^>^ r = gcnew List<String^>;
 	List<String^>^ tail = gcnew List<String^>;
@@ -767,13 +779,32 @@ ICollection<String^>^ Far::GetHistory(String^ name)
 			{
 				Object^ o = key->GetValue(L"Position", nullptr);
 				int position = o ? (int)(o) : 0;
+
+				String^ types = nullptr;
+				if (filter)
+				{
+					o = key->GetValue(L"Types", nullptr);
+					if (o)
+						types = o->ToString();
+				}
+				
 				pin_ptr<Byte> pin = &value[0];
 				wchar_t* chars = (wchar_t*)pin;
 				int nb = (value->Length - 2) / 2;
 				for(int i = 0, index = 0; i < nb; ++index)
 				{
+					// the string
 					String^ s = gcnew String(chars + i);
 					i += s->Length + 1;
+
+					// filter
+					if (filter && types && index < types->Length)
+					{
+						if (filter->IndexOf(types[index]) < 0)
+							continue;
+					}
+					
+					// add
 					if (index >= position)
 						r->Add(s);
 					else

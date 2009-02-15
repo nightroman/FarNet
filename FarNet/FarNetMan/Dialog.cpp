@@ -347,7 +347,7 @@ void FarControl::SetFlag(int flag, bool value)
 int FarControl::GetSelected()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
-		return Info.SendDlgMessage(_dialog->_hDlg, DM_GETCHECK, Id, 0);
+		return (int)Info.SendDlgMessage(_dialog->_hDlg, DM_GETCHECK, Id, 0);
 	else
 		return _selected;
 }
@@ -1001,6 +1001,13 @@ void FarListBox::Starting(FarDialogItem& item)
 	item.PtrData = NewChars(_Title);
 }
 
+void FarListBox::Started()
+{
+	FarBaseList::Started();
+	if (SS(_Bottom))
+		Bottom = _Bottom;
+}
+
 //! Bottom and Title use the same calls, so that our get/set methods are similar, sync.
 String^ FarListBox::Bottom::get()
 {
@@ -1546,6 +1553,10 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 		{
 		case DN_INITDIALOG:
 			{
+				// setup items
+				for each(FarControl^ fc in _items)
+					fc->Started();
+
 				if (_Initialized)
 				{
 					InitializedEventArgs ea(param1 < 0 ? nullptr : _items[param1]);
