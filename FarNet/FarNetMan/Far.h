@@ -49,6 +49,7 @@ public:
 	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
 	virtual ICollection<String^>^ GetDialogHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name);
+	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter);
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
 	virtual IEditor^ CreateEditor();
 	virtual IFile^ CreatePanelItem();

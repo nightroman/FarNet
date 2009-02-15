@@ -1,5 +1,17 @@
 http://code.google.com/p/farnet/
 
+= 4.0.3 =
+
+*) Property IListBox.Bottom - it was runtime only, now it is standard: as
+usual, you can set it before opening a dialog.
+
+*) New overloaded IFar.GetHistory() with extra parameter 'filter' returns
+history strings by type(s).
+
+*) It turned out that it is possible to unload FarNet abnormally, for example
+by 'unloadp' FAR command or by some plugin manager. This scenario is not
+recommended but some changes still were done for avoiding problems.
+
 = 4.0.2 =
 
 *) Improved exchange of strings between .NET and FAR. Note that now in some
