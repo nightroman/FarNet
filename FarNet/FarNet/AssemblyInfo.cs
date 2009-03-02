@@ -1,9 +1,9 @@
+using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.0.3.0")]
+[assembly: AssemblyVersion("4.0.4.0")]
 [assembly: AssemblyTitle("FarNet - .NET interfaces for Far Manager")]
 [assembly: AssemblyDescription("FarNet - .NET interfaces for Far Manager")]
 [assembly: AssemblyConfiguration("")]
@@ -14,5 +14,5 @@ using System.Security.Permissions;
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
-[assembly: System.CLSCompliant(true)]
+[assembly: CLSCompliant(true)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]

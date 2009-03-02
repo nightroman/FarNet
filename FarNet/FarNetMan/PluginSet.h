@@ -17,6 +17,7 @@ ref class PluginSet
 {
 public:
 	static void AddPlugin(BasePlugin^ plugin);
+	static void UnloadPlugin(BasePlugin^ plugin);
 	static void LoadPlugins();
 	static void UnloadPlugins();
 private:

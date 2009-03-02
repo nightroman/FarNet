@@ -33,6 +33,7 @@ public:
 	virtual property IntPtr HWnd { IntPtr get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
 	virtual property IPanel^ Panel2 { IPanel^ get(); }
+	virtual property IRawUI^ RawUI { IRawUI^ get(); }
 	virtual property IViewer^ Viewer { IViewer^ get(); }
 	virtual property String^ PluginFolderPath { String^ get(); }
 	virtual property String^ RootFar { String^ get(); }
@@ -102,6 +103,7 @@ public:
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
 	virtual void ShowPanelMenu(bool showPushCommand);
+	virtual void Unregister(BasePlugin^ plugin);
 	virtual void UnregisterCommand(EventHandler<CommandEventArgs^>^ handler);
 	virtual void UnregisterFiler(EventHandler<FilerEventArgs^>^ handler);
 	virtual void UnregisterTool(EventHandler<ToolEventArgs^>^ handler);
@@ -147,7 +149,6 @@ private:
 private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
-	[CA_USED]
 	static int GetPaletteColor(PaletteColor paletteColor);
 private:
 	// The instance

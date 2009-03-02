@@ -23,7 +23,7 @@ String^ GetText(HANDLE hDlg, int id, int start, int len)
 {
 	int textLen = (int)Info.SendDlgMessage(hDlg, DM_GETTEXTLENGTH, id, 0);
 
-	//! Apply command (CtrlG) returns 513 //???
+	//! Apply command (CtrlG) returns 513 // is is for Far1 ??
 	wchar_t buf[514];
 	wchar_t* pBuf;
 	if (textLen >= SIZEOF(buf))
@@ -611,7 +611,7 @@ String^ FarEdit::Mask::get()
 
 void FarEdit::Mask::set(String^ value)
 {
-	//??? dialog mode?
+	//??? dialog mode? perhaps we cannot change, then it has to fail
 	if (_type != DI_FIXEDIT)
 		throw gcnew InvalidOperationException("You can set this only for fixed size edit control.");
 

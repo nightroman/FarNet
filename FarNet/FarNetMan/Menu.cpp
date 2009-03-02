@@ -99,7 +99,7 @@ FarMenuItemEx* Menu::CreateItems()
 	for each(IMenuItem^ item1 in _items)
 	{
 		FarMenuItemEx& item2 = r[n];
-		item2.Text = NewChars(item1->Text); //??? leak
+		item2.Text = NewChars(item1->Text);
 		item2.AccelKey = 0;
 		item2.Reserved = 0;
 		++n;

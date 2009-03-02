@@ -16,7 +16,6 @@
 #define ECTL_GETINFO stop_ECTL_GETINFO
 #define ECTL_FREEINFO stop_ECTL_FREEINFO
 
-#define FCTL_FREEPANELITEM stop_FCTL_FREEPANELITEM
 #define FCTL_GETCURRENTPANELITEM stop_FCTL_GETCURRENTPANELITEM
 #define FCTL_GETPANELITEM stop_FCTL_GETPANELITEM
 #define FCTL_GETSELECTEDPANELITEM stop_FCTL_GETSELECTEDPANELITEM
@@ -30,7 +29,6 @@ using namespace Microsoft::Win32;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Specialized;
-using namespace System::Diagnostics::CodeAnalysis;
 using namespace System::Diagnostics;
 using namespace System::Globalization;
 using namespace System::IO;

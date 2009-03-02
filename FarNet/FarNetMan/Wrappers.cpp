@@ -47,28 +47,32 @@ void AutoEditorInfo::Update()
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 }
 
-#undef FCTL_FREEPANELITEM
 #undef FCTL_GETPANELITEM
 #undef FCTL_GETSELECTEDPANELITEM
 
-AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index) : _handle(handle)
+AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, bool selected)
 {
-	if (!Info.Control(handle, FCTL_GETPANELITEM, index, (LONG_PTR)this))
-		throw gcnew OperationCanceledException("Cannot get panel item; index: " + index);
+	const int type = selected ? FCTL_GETSELECTEDPANELITEM : FCTL_GETPANELITEM;
+	const int size = Info.Control(handle, type, index, 0);
+	if (size > sizeof(mBuffer))
+		m = (PluginPanelItem*)new char[size];
+	else
+		m = (PluginPanelItem*)mBuffer;
+
+	try
+	{
+		if (!Info.Control(handle, type, index, (LONG_PTR)m))
+			throw gcnew OperationCanceledException("Cannot get panel item; index: " + index);
+	}
+	catch(...)
+	{
+		if (mBuffer != (char*)m)
+			delete[] (char*)m;
+	}
 }
 
 AutoPluginPanelItem::~AutoPluginPanelItem()
 {
-	Info.Control(_handle, FCTL_FREEPANELITEM, 0, (LONG_PTR)this);
-}
-
-AutoSelectedPluginPanelItem::AutoSelectedPluginPanelItem(HANDLE handle, int index) : _handle(handle)
-{
-	if (!Info.Control(handle, FCTL_GETSELECTEDPANELITEM, index, (LONG_PTR)this))
-		throw gcnew OperationCanceledException("Cannot get selected panel item; index: " + index);
-}
-
-AutoSelectedPluginPanelItem::~AutoSelectedPluginPanelItem()
-{
-	Info.Control(_handle, FCTL_FREEPANELITEM, 0, (LONG_PTR)this);
+	if (mBuffer != (char*)m)
+		delete[] (char*)m;
 }

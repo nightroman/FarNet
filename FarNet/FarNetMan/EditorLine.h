@@ -29,7 +29,6 @@ public:
 internal:
 	EditorLine(int no, bool selected);
 private:
-	[CA_USED]
 	EditorSetString GetEss();
 private:
 	// Line number

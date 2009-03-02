@@ -39,9 +39,6 @@ void CopyStringToChars(String^ str, wchar_t* buffer);
 #define LL(Text) {} 
 #endif
 
-// Code analysis
-#define CA_USED SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")
-
 // Empty String and Solid String
 #define ES(s) (String::IsNullOrEmpty(s))
 #define SS(s) (!String::IsNullOrEmpty(s))

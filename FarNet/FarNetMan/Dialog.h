@@ -27,7 +27,6 @@ public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);
 public:
 	virtual String^ ToString() override;
 protected:
-	[CA_USED]
 	FarControl(FarDialog^ dialog, int index);
 internal:
 	FarControl(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
@@ -178,9 +177,7 @@ public:
 	virtual void DetachItems();
 	virtual void Clear() { _Items->Clear(); } // [_090208_042536]
 protected:
-	[CA_USED]
 	FarBaseList(FarDialog^ dialog, int index);
-	[CA_USED]
 	FarBaseList(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 internal:
 	virtual void Init(FarDialogItem& item, int type) override;

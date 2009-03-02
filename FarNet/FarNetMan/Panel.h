@@ -83,7 +83,6 @@ internal:
 	FarPanel(bool current);
 	static FarFile^ ItemToFile(const PluginPanelItem& item);
 protected:
-	[CA_USED]
 	bool TryInfo(PanelInfo& pi);
 internal:
 	property HANDLE Handle { HANDLE get(); void set(HANDLE value); }
@@ -164,7 +163,7 @@ private:
 	int Flags();
 	void CreateInfoLines();
 	void DeleteInfoLines();
-	static void Free12Strings(wchar_t** dst);
+	static void Free12Strings(wchar_t* const dst[12]);
 	static void Make12Strings(wchar_t** dst, array<String^>^ src);
 private:
 	OpenPluginInfo* m;
@@ -225,7 +224,6 @@ public: DEF_EVENT_ARGS(SettingDirectory, _SettingDirectory, SettingDirectoryEven
 public: DEF_EVENT_ARGS(ViewModeChanged, _ViewModeChanged, ViewModeChangedEventArgs);
 internal:
 	FarPluginPanel();
-	[CA_USED]
 	void AssertOpen();
 	List<IFile^>^ ReplaceFiles(List<IFile^>^ files);
 internal:

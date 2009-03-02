@@ -11,7 +11,6 @@ ref class BasePluginInfo abstract
 {
 public:
 	property BasePlugin^ Plugin { BasePlugin^ get() { return _Plugin; } }
-	[CA_USED]
 	property String^ AssemblyPath { String^ get(); }
 	property String^ ClassName { String^ get(); }
 	property String^ Key { String^ get(); }

@@ -1,18 +1,11 @@
 Plugin   : FarNet
 Category : Development
-Version  : 4.0.3
-Release  : 2009.02.15
+Version  : 4.0.4
+Release  : 2009.03.02
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, C++/CLI
 HomePage : http://code.google.com/p/farnet/
-
-
-	REQUIREMENTS
-
-
- - .NET Framework 2.0
- - Far Manager 2.0.770
 
 
 	DESCRIPTION
@@ -22,6 +15,19 @@ Plugin for writing Far Manager plugins in any .NET language (even in PowerShell
 with PowerShellFar plugin). It exposes significant part of FAR API and also
 extends it for comfortable use in object oriented way.
 Home page: http://code.google.com/p/farnet/
+
+
+	PREREQUISITES
+
+
+ - .NET Framework 2.0
+ - Far Manager 2.0.802
+ - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
+
+ (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
+ modules. You may have to google, download and install one of the packages:
+ - Microsoft Visual C++ 2008 SP1 Redistributable Package (x86)
+ - Microsoft Visual C++ 2008 SP1 Redistributable Package (x64)
 
 
 	INSTALLATION

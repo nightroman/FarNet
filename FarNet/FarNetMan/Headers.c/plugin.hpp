@@ -4,7 +4,7 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 2.0 build 768
+  Plugin API for FAR Manager 2.0 build 802
 */
 
 /*
@@ -41,7 +41,7 @@ other possible license with no implications from the above license on them.
 
 #define FARMANAGERVERSION_MAJOR 2
 #define FARMANAGERVERSION_MINOR 0
-#define FARMANAGERVERSION_BUILD 768
+#define FARMANAGERVERSION_BUILD 802
 
 #ifndef RC_INVOKED
 
@@ -757,7 +757,6 @@ enum FILE_CONTROL_COMMANDS{
 	FCTL_GETPANELITEM,
 	FCTL_GETSELECTEDPANELITEM,
 	FCTL_GETCURRENTPANELITEM,
-	FCTL_FREEPANELITEM,
 	FCTL_GETCURRENTDIRECTORY,
 	FCTL_GETCOLUMNTYPES,
 	FCTL_GETCOLUMNWIDTHS,

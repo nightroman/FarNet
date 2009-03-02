@@ -3,10 +3,10 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
-using FarNet.Forms;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System;
+using FarNet.Forms;
 
 namespace FarNet
 {
@@ -67,6 +67,10 @@ namespace FarNet
 		/// </summary>
 		/// <param name="handler">Filer handler.</param>
 		void UnregisterFiler(EventHandler<FilerEventArgs> handler);
+		/// <summary>
+		/// Unregisters a base plugin. This method should be called only in critical cases.
+		/// </summary>
+		void Unregister(BasePlugin plugin);
 		/// <summary>
 		/// Path to the plugin folder.
 		/// </summary>
@@ -327,8 +331,8 @@ namespace FarNet
 		/// Shows an error information in a message box.
 		/// </summary>
 		/// <param name="title">Message.</param>
-		/// <param name="error">Exception.</param>
-		void ShowError(string title, Exception error);
+		/// <param name="exception">Exception.</param>
+		void ShowError(string title, Exception exception);
 		/// <summary>
 		/// Creates a new dialog.
 		/// You have to set its properties, add controls, event handlers and then call <see cref="IDialog.Show"/>.
@@ -508,12 +512,12 @@ namespace FarNet
 		/// Returns control to FAR and immediately after that invokes the step handler.
 		/// Ensure any FarNet hotkey (F4) in the FAR plugins menu (F11).
 		/// </summary>
-		/// <param name="step">Step handler.</param>
+		/// <param name="handler">Step handler.</param>
 		/// <remarks>
 		/// Many FAR operations are executed only when FAR gets control, i.e. when your code has finished.
 		/// Thus, normally you can not performs several such operations together. This method may help.
 		/// </remarks>
-		void PostStep(EventHandler step);
+		void PostStep(EventHandler handler);
 		/// <summary>
 		/// Current macro state.
 		/// </summary>
@@ -570,6 +574,10 @@ namespace FarNet
 		/// </summary>
 		/// <param name="paletteColor">Palette color.</param>
 		ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
+		/// <summary>
+		/// TEST ONLY.
+		/// </summary>
+		IRawUI RawUI { get; }
 	}
 
 	/// <summary>
@@ -639,7 +647,7 @@ namespace FarNet
 		/// <summary>
 		/// Delete non-empty folders.
 		/// </summary>
-		DeleteNonEmptyFolders = 0x10,
+		DeleteNotEmptyFolders = 0x10,
 		/// <summary>
 		/// Interrupt operation.
 		/// </summary>
