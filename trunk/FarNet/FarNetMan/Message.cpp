@@ -145,21 +145,21 @@ int Message::ShowDialog(int width)
 void Message::FormatMessageLines(List<String^>^ lines, String^ message, int width, int height)
 {
 	Regex^ format = nullptr;
-	for each(String^ s1 in Regex::Split(message->Replace('\t', ' '), "\r\n|\r|\n"))
+	for each(String^ line in Regex::Split(message->Replace('\t', ' '), "\r\n|\r|\n"))
 	{
-		if (s1->Length <= width)
+		if (line->Length <= width)
 		{
-			lines->Add(s1);
+			lines->Add(line);
 		}
 		else
 		{
 			if (format == nullptr)
 				format = gcnew Regex("(.{0," + width + "}(?:\\s|$))");
-			for each (String^ s2 in format->Split(s1))
+			for each (String^ split in format->Split(line))
 			{
-				if (s2->Length > 0)
+				if (split->Length > 0)
 				{
-					lines->Add(s2);
+					lines->Add(split);
 					if (lines->Count >= height)
 						return;
 				}

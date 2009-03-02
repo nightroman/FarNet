@@ -36,7 +36,6 @@ public:
 internal:
 	Viewer();
 private:
-	[CA_USED]
 	void AssertClosed();
 internal:
 	int _id;

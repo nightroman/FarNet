@@ -3,11 +3,10 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
+using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Diagnostics;
 using System.IO;
-using System;
 
 namespace FarNet
 {
@@ -389,7 +388,6 @@ namespace FarNet
 	/// <summary>
 	/// Named data item.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class DataItem
 	{
 		/// <param name="name">Name (or separator text in some cases).</param>
@@ -602,7 +600,6 @@ namespace FarNet
 	/// <summary>
 	/// Base <see cref="IPluginPanel"/> event arguments.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class PanelEventArgs : EventArgs
 	{
 		OperationModes _Mode;
@@ -635,7 +632,6 @@ namespace FarNet
 	/// Arguments of <see cref="IPluginPanel.Executing"/> event.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class ExecutingEventArgs : PanelEventArgs
 	{
 		string _command;
@@ -657,7 +653,6 @@ namespace FarNet
 	/// <summary>
 	/// Arguments of <see cref="IPluginPanel.ViewModeChanged"/> event. [FE_CHANGEVIEWMODE], [Column types].
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class ViewModeChangedEventArgs : EventArgs
 	{
 		string _columns;
@@ -679,7 +674,6 @@ namespace FarNet
 	/// Arguments of <see cref="IPluginPanel.KeyPressed"/> event.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that the key has been processed internally.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class PanelKeyEventArgs : PanelEventArgs
 	{
 		int _code;
@@ -729,7 +723,6 @@ namespace FarNet
 	/// if it is impossible to change the directory. (The plugin should not try to close or update the panels,
 	/// ask the user for confirmations, show messages and so on.)
 	/// </remarks>
-	[DebuggerStepThroughAttribute]
 	public class SettingDirectoryEventArgs : PanelEventArgs
 	{
 		string _name;
@@ -759,7 +752,6 @@ namespace FarNet
 	/// Arguments of file events (copy, move, delete, etc).
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class FilesEventArgs : PanelEventArgs
 	{
 		IList<IFile> _files;
@@ -793,7 +785,6 @@ namespace FarNet
 	/// Arguments of <see cref="IPluginPanel.GettingFiles"/>.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class GettingFilesEventArgs : FilesEventArgs
 	{
 		string _destination;
@@ -819,7 +810,6 @@ namespace FarNet
 	/// Arguments of <see cref="IPluginPanel.MakingDirectory"/>.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class MakingDirectoryEventArgs : PanelEventArgs
 	{
 		string _name;

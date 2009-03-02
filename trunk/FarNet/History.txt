@@ -1,5 +1,28 @@
 http://code.google.com/p/farnet/
 
+= 4.0.4 =
+
+MAIN CHANGES
+
+*) FarNet is adapted to new Far panel API in 2.0.789. Of course .NET plugins
+should not care about it.
+
+*) For technical reasons FarNet is built by Visual Studio 2008 SP1 and FarNet
+C++/CLI depends on VS runtime modules. If you do not have VS 2008 then you may
+have to google, download and install one of the redistributable packages:
+- Microsoft Visual C++ 2008 SP1 Redistributable Package (x86)
+- Microsoft Visual C++ 2008 SP1 Redistributable Package (x64)
+
+OTHER CHANGES
+
+*) IAnyViewer.ViewText() - switching to editor is enabled. For now if you
+switch by [F6] to editor then on exit you see "The file ... was moved or
+deleted. [Save]...". It is not a perfect solution perhaps but it is just
+useful. If you do not like it, do not switch. Better ideas are welcome.
+
+*) New interface IRawUI and property in IFar, TEST ONLY, they are experimental
+and perhaps will be removed.
+
 = 4.0.3 =
 
 *) Property IListBox.Bottom - it was runtime only, now it is standard: as

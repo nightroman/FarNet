@@ -3,7 +3,6 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
-using System.Diagnostics;
 using System;
 
 namespace FarNet
@@ -59,7 +58,6 @@ namespace FarNet
 	/// <summary>
 	/// Keyboard event information.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public struct KeyInfo
 	{
 		bool _keyDown;
@@ -173,16 +171,13 @@ namespace FarNet
 		/// The mouse wheel was rolled.
 		/// </summary>
 		Wheeled = 0x0004,
-		/// <summary>
-		/// All.
-		/// </summary>
-		All = Moved | DoubleClick | Wheeled
+		/// Masks all flags.
+		All = Moved | DoubleClick | DoubleClick
 	}
 
 	/// <summary>
 	/// Mouse event information.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public struct MouseInfo
 	{
 		/// <param name="where">Position.</param>
@@ -261,7 +256,6 @@ namespace FarNet
 	/// <example>
 	/// Use (KeyMode.Ctrl | 'R') for [CtrlR], (KeyMode.Ctrl | KeyCode.Enter) for [CtrlEnter] and etc.
 	/// </example>
-	[DebuggerStepThroughAttribute]
 	public static class KeyMode
 	{
 		/// <summary>
@@ -304,7 +298,6 @@ namespace FarNet
 	/// <example>
 	/// Use KeyMode.Ctrl | 'R' for CtrlR, KeyMode.Ctrl | KeyCode.Enter for CtrlEnter and etc.
 	/// </example>
-	[DebuggerStepThroughAttribute]
 	public static class KeyCode
 	{
 		///
@@ -407,7 +400,6 @@ namespace FarNet
 	/// <summary>
 	/// Virtual key modes for key combinations.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public static class VKeyMode
 	{
 		///
@@ -427,7 +419,6 @@ Shift = 4 << 16;
 	/// [enum]::GetNames([consolekey]) | %{ '{0} = {1},' -f $_, [int][consolekey]$_ }
 	/// </para>
 	/// </remarks>
-	[DebuggerStepThroughAttribute]
 	public static class VKeyCode
 	{
 		///

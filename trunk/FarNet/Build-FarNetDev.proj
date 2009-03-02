@@ -1,7 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.0.3</ProductVersion>
+		<ProductVersion>4.0.4</ProductVersion>
 		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
@@ -12,8 +12,8 @@
 	</Target>
 
 	<Target Name="Clean">
-		<MSBuild Projects="FarNetDev.sln" Targets="Clean" Properties="Configuration=Debug"/>
-		<MSBuild Projects="FarNetDev.sln" Targets="Clean" Properties="Configuration=Release"/>
+		<MSBuild Projects="FarNet\Build-FarNet.proj" Targets="Clean"/>
+		<MSBuild Projects="FarNetMan\Build-FarNetMan.proj" Targets="Clean"/>
 		<Delete Files="FarNetDev.ncb"/>
 		<MSBuild Projects="FarNet\Build-FarNet.proj;FarNetMan\Build-FarNetMan.proj" Targets="Clean"/>
 	</Target>

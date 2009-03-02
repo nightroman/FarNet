@@ -443,7 +443,7 @@ void Editor::Save(String^ fileName)
 	EditorSaveFile esf;
 	esf.FileName = pin;
 	esf.FileEOL = 0;
-	esf.CodePage = 0; //???
+	esf.CodePage = 0; //?? NYI in Far
 	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
 		throw gcnew OperationCanceledException("Cannot save the editor file as: " + fileName);
 }
@@ -545,24 +545,29 @@ ICollection<TextFrame>^ Editor::Bookmarks()
 		ebm.LeftPos = new long[ei.BookMarkCount];
 		ebm.Line = new long[ei.BookMarkCount];
 		ebm.ScreenLine = new long[ei.BookMarkCount];
-		EditorControl_ECTL_GETBOOKMARKS(ebm);
-
-		r->Capacity = ei.BookMarkCount;
-		for(int i = 0; i < ei.BookMarkCount; ++i)
+		try
 		{
-			TextFrame f;
-			f.Line = ebm.Line[i];
-			f.Pos = ebm.Cursor[i];
-			f.TabPos = -1;
-			f.TopLine = f.Line - ebm.ScreenLine[i];
-			f.LeftPos = ebm.LeftPos[i];
-			r->Add(f);
-		}
+			EditorControl_ECTL_GETBOOKMARKS(ebm);
 
-		delete ebm.Cursor;
-		delete ebm.LeftPos;
-		delete ebm.Line;
-		delete ebm.ScreenLine;
+			r->Capacity = ei.BookMarkCount;
+			for(int i = 0; i < ei.BookMarkCount; ++i)
+			{
+				TextFrame f;
+				f.Line = ebm.Line[i];
+				f.Pos = ebm.Cursor[i];
+				f.TabPos = -1;
+				f.TopLine = f.Line - ebm.ScreenLine[i];
+				f.LeftPos = ebm.LeftPos[i];
+				r->Add(f);
+			}
+		}
+		finally
+		{
+			delete ebm.Cursor;
+			delete ebm.LeftPos;
+			delete ebm.Line;
+			delete ebm.ScreenLine;
+		}
 	}
 
 	return r;

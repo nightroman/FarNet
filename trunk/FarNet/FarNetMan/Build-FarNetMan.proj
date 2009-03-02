@@ -10,7 +10,7 @@
 	</ItemGroup>
 
 	<Target Name="Clean">
-		<RemoveDir Directories="Debug;Release"/>
+		<RemoveDir Directories="Debug;Release;x64"/>
 	</Target>
 
 	<Target Name="Install">

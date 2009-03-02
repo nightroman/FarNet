@@ -145,11 +145,11 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 		}
 
 		// alloc all
-		int sizeFile = nItem*sizeof(PluginPanelItem);
+		int sizeFile = nItem * sizeof(PluginPanelItem);
 		wchar_t* buff = new wchar_t[sizeFile + sizeData];
 		wchar_t* data = buff + sizeFile;
 		(*pPanelItem) = (PluginPanelItem*)buff;
-		memset((*pPanelItem), 0, nItem*sizeof(PluginPanelItem));
+		memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
 
 		// add dots
 		int i = -1, fi = -1;
@@ -733,13 +733,10 @@ void FarPluginPanelInfo::Make12Strings(wchar_t** dst, array<String^>^ src)
 	}
 }
 
-void FarPluginPanelInfo::Free12Strings(wchar_t** dst)
+void FarPluginPanelInfo::Free12Strings(wchar_t* const dst[12])
 {
 	for(int i = 11; i >= 0; --i)
-	{
 		delete[] dst[i];
-		dst[i] = 0;
-	}
 }
 
 #define FLAG(Prop, Flag) if (Prop) r |= Flag
@@ -906,13 +903,13 @@ void FarPluginPanelInfo::Free()
 
 		if (m->KeyBar)
 		{
-			Free12Strings((wchar_t**)m->KeyBar->AltShiftTitles);
-			Free12Strings((wchar_t**)m->KeyBar->AltTitles);
-			Free12Strings((wchar_t**)m->KeyBar->CtrlAltTitles);
-			Free12Strings((wchar_t**)m->KeyBar->CtrlShiftTitles);
-			Free12Strings((wchar_t**)m->KeyBar->CtrlTitles);
-			Free12Strings((wchar_t**)m->KeyBar->ShiftTitles);
-			Free12Strings((wchar_t**)m->KeyBar->Titles);
+			Free12Strings(m->KeyBar->AltShiftTitles);
+			Free12Strings(m->KeyBar->AltTitles);
+			Free12Strings(m->KeyBar->CtrlAltTitles);
+			Free12Strings(m->KeyBar->CtrlShiftTitles);
+			Free12Strings(m->KeyBar->CtrlTitles);
+			Free12Strings(m->KeyBar->ShiftTitles);
+			Free12Strings(m->KeyBar->Titles);
 			delete m->KeyBar;
 		}
 
@@ -993,9 +990,9 @@ IFile^ FarPanel::CurrentFile::get()
 	if (info.ItemsNumber == 0)
 		return nullptr;
 
-	AutoPluginPanelItem item(_handle, info.CurrentItem);
+	AutoPluginPanelItem item(_handle, info.CurrentItem, false);
 
-	return ItemToFile(item);
+	return ItemToFile(item.Get());
 }
 
 int FarPanel::CurrentIndex::get()
@@ -1085,8 +1082,8 @@ IList<IFile^>^ FarPanel::ShownFiles::get()
 	List<IFile^>^ r = gcnew List<IFile^>(info.ItemsNumber);
 	for(int i = 0; i < info.ItemsNumber; ++i)
 	{
-		AutoPluginPanelItem item(_handle, i);
-		r->Add(ItemToFile(item));
+		AutoPluginPanelItem item(_handle, i, false);
+		r->Add(ItemToFile(item.Get()));
 	}
 
 	return r;
@@ -1099,8 +1096,8 @@ IList<IFile^>^ FarPanel::SelectedFiles::get()
 	List<IFile^>^ r = gcnew List<IFile^>(info.SelectedItemsNumber);
 	for(int i = 0; i < info.SelectedItemsNumber; ++i)
 	{
-		AutoSelectedPluginPanelItem item(_handle, i);
-		r->Add(ItemToFile(item));
+		AutoPluginPanelItem item(_handle, i, true);
+		r->Add(ItemToFile(item.Get()));
 	}
 
 	return r;
@@ -1220,8 +1217,8 @@ void FarPanel::GoToName(String^ name)
 	PIN_NE(pin, name);
 	for(int i = 0; i < info.ItemsNumber; ++i)
 	{
-		AutoPluginPanelItem item(_handle, i);
-		if (Info.FSF->LStricmp(pin, item.FindData.lpwszFileName) == 0 || Info.FSF->LStricmp(pin, item.FindData.lpwszAlternateFileName) == 0)
+		AutoPluginPanelItem item(_handle, i, false);
+		if (Info.FSF->LStricmp(pin, item.Get().FindData.lpwszFileName) == 0 || Info.FSF->LStricmp(pin, item.Get().FindData.lpwszAlternateFileName) == 0)
 		{
 			Redraw(i, 0);
 			break;
@@ -1329,13 +1326,13 @@ void FarPluginPanel::Id::set(Guid value)
 IFile^ FarPluginPanel::CurrentFile::get()
 {
 	AssertOpen();
-	const AutoPanelInfo info(Handle);
+	AutoPanelInfo info(Handle);
 
 	if (info.ItemsNumber == 0)
 		return nullptr;
 
-	AutoPluginPanelItem item(Handle, info.CurrentItem);
-	int fi = (int)(INT_PTR)item.UserData;
+	AutoPluginPanelItem item(Handle, info.CurrentItem, false);
+	int fi = (int)(INT_PTR)item.Get().UserData;
 	if (fi < 0)
 		return nullptr;
 
@@ -1350,8 +1347,8 @@ IList<IFile^>^ FarPluginPanel::ShownFiles::get()
 	List<IFile^>^ r = gcnew List<IFile^>(info.ItemsNumber);
 	for(int i = 0; i < info.ItemsNumber; ++i)
 	{
-		AutoPluginPanelItem item(Handle, i);
-		int fi = (int)(INT_PTR)item.UserData;
+		AutoPluginPanelItem item(Handle, i, false);
+		int fi = (int)(INT_PTR)item.Get().UserData;
 		if (fi >= 0)
 			r->Add(_files[fi]);
 	}
@@ -1367,8 +1364,8 @@ IList<IFile^>^ FarPluginPanel::SelectedFiles::get()
 	List<IFile^>^ r = gcnew List<IFile^>(info.SelectedItemsNumber);
 	for(int i = 0; i < info.SelectedItemsNumber; ++i)
 	{
-		AutoSelectedPluginPanelItem item(Handle, i);
-		int fi = (int)(INT_PTR)item.UserData;
+		AutoPluginPanelItem item(Handle, i, true);
+		int fi = (int)(INT_PTR)item.Get().UserData;
 		if (fi >= 0)
 			r->Add(_files[fi]);
 	}

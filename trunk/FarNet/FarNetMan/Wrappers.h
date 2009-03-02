@@ -24,22 +24,14 @@ private:
 	void operator=(const AutoEditorInfo&) {}
 };
 
-class AutoPluginPanelItem : public PluginPanelItem
+class AutoPluginPanelItem
 {
 public:
-	AutoPluginPanelItem(HANDLE handle, int index);
+	AutoPluginPanelItem(HANDLE handle, int index, bool selected);
 	~AutoPluginPanelItem();
+	const PluginPanelItem& Get() const { return *m; }
 private:
-	const HANDLE _handle;
+	PluginPanelItem* m;
+	char mBuffer[1024];
 	void operator=(const AutoPluginPanelItem&) {}
-};
-
-class AutoSelectedPluginPanelItem : public PluginPanelItem
-{
-public:
-	AutoSelectedPluginPanelItem(HANDLE handle, int index);
-	~AutoSelectedPluginPanelItem();
-private:
-	const HANDLE _handle;
-	void operator=(const AutoSelectedPluginPanelItem&) {}
 };

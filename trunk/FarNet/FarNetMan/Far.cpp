@@ -17,6 +17,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "Panel.h"
 #include "PluginInfo.h"
 #include "PluginSet.h"
+#include "RawUI.h"
 #include "Viewer.h"
 #include "ViewerHost.h"
 #include "Wrappers.h"
@@ -264,6 +265,11 @@ void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 	for(int i = _registeredFiler.Count; --i >= 0;)
 		if (_registeredFiler[i]->Handler == handler)
 			_registeredFiler.RemoveAt(i);
+}
+
+void Far::Unregister(BasePlugin^ plugin)
+{
+	PluginSet::UnloadPlugin(plugin);
 }
 
 void Far::Msg(String^ body)
@@ -739,10 +745,10 @@ ICollection<String^>^ Far::GetDialogHistory(String^ name)
 		key = Registry::CurrentUser->OpenSubKey(keyName);
 		if (key)
 		{
-			for each(String^ name in key->GetValueNames())
+			for each(String^ name1 in key->GetValueNames())
 			{
-				if (String::Compare(name, "Flags", StringComparison::OrdinalIgnoreCase) != 0)
-					r->Add(key->GetValue(name)->ToString());
+				if (String::Compare(name1, "Flags", StringComparison::OrdinalIgnoreCase) != 0)
+					r->Add(key->GetValue(name1)->ToString());
 			}
 		}
 	}
@@ -1279,7 +1285,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	pp->Open();
 }
 
-void Far::PostStep(EventHandler^ step)
+void Far::PostStep(EventHandler^ handler)
 {
 	// make keys once
 	if (!_hotkeys)
@@ -1294,7 +1300,7 @@ void Far::PostStep(EventHandler^ step)
 	}
 
 	// post handler and keys
-	_handler = step;
+	_handler = handler;
 	PostKeySequence(_hotkeys);
 }
 
@@ -1658,6 +1664,11 @@ ConsoleColor Far::GetPaletteForeground(PaletteColor paletteColor)
 {
 	int color = GetPaletteColor(paletteColor);
 	return ConsoleColor(color & 0xF);
+}
+
+IRawUI^ Far::RawUI::get()
+{
+	return gcnew FarNet::RawUI;
 }
 
 }

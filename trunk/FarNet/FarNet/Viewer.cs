@@ -3,8 +3,8 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
-using System.Diagnostics;
 using System;
+using System.Diagnostics;
 
 namespace FarNet
 {
@@ -225,7 +225,6 @@ namespace FarNet
 	/// <summary>
 	/// Viewer frame info.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public struct ViewFrame
 	{
 		///

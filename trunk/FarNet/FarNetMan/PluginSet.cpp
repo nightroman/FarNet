@@ -17,26 +17,33 @@ void PluginSet::AddPlugin(BasePlugin^ plugin)
 }
 
 //! Don't use FAR UI
+void PluginSet::UnloadPlugin(BasePlugin^ plugin)
+{
+	_plugins.Remove(plugin);
+
+	try
+	{
+		plugin->Disconnect();
+	}
+	catch(Exception^ e)
+	{
+		Console::WriteLine();
+		Console::ForegroundColor = ConsoleColor::Red;
+		Console::WriteLine(plugin->ToString() + " error:");
+		Console::WriteLine(e->Message);
+		if (_startupErrorDialog)
+			Console::ReadKey(true);
+		else
+			System::Threading::Thread::Sleep(1000);
+	}
+}
+
+//! Don't use FAR UI
 void PluginSet::UnloadPlugins()
 {
-	for each(BasePlugin^ plug in _plugins)
-	{
-		try
-		{
-			plug->Far = nullptr;
-		}
-		catch(Exception^ e)
-		{
-			Console::WriteLine();
-			Console::ForegroundColor = ConsoleColor::Red;
-			Console::WriteLine(plug->ToString() + " error:");
-			Console::WriteLine(e->Message);
-			if (_startupErrorDialog)
-				Console::ReadKey(true);
-			else
-				System::Threading::Thread::Sleep(1000);
-		}
-	}
+	for(int i  = _plugins.Count; --i >= 0;)
+		UnloadPlugin(_plugins[i]);
+
 	_plugins.Clear();
 }
 
@@ -165,12 +172,13 @@ void PluginSet::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 
 int PluginSet::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
 {
-	// create and add
+	// create
 	BasePlugin^ instance = (BasePlugin^)Activator::CreateInstance(type);
-	_plugins.Add(instance);
 
-	// connect
+	// register, attach connect
+	_plugins.Add(instance);
 	instance->Far = Far::Instance;
+	instance->Connect();
 
 	// case: tool
 	ToolPlugin^ tool = dynamic_cast<ToolPlugin^>(instance);
