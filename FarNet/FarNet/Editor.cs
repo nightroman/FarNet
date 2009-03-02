@@ -3,10 +3,10 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
-using FarNet.Forms;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System;
+using FarNet.Forms;
 
 namespace FarNet
 {
@@ -360,7 +360,6 @@ namespace FarNet
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnRedraw"/> event.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public sealed class RedrawEventArgs : EventArgs
 	{
 		int _mode;
@@ -457,9 +456,9 @@ namespace FarNet
 		/// <summary>
 		/// Selects a text fragment in the current or command line.
 		/// </summary>
-		/// <param name="start">Start position.</param>
-		/// <param name="end">End position.</param>
-		void Select(int start, int end);
+		/// <param name="startPosition">Start position.</param>
+		/// <param name="endPosition">End position.</param>
+		void Select(int startPosition, int endPosition);
 		/// <summary>
 		/// Clears selection in the current or command line.
 		/// </summary>
@@ -510,7 +509,6 @@ namespace FarNet
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnKey"/> event.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public sealed class KeyEventArgs : EventArgs
 	{
 		/// <param name="key">Key data.</param>
@@ -540,7 +538,6 @@ namespace FarNet
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnMouse"/> event.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public sealed class MouseEventArgs : EventArgs
 	{
 		/// <param name="mouse">Mouse data.</param>
@@ -589,7 +586,6 @@ namespace FarNet
 	/// <summary>
 	/// Complete information about text frame and cursor position in an editor.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public struct TextFrame
 	{
 		/// <summary>

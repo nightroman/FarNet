@@ -55,11 +55,10 @@ void BasePluginInfo::Connect()
 	_AssemblyPath = nullptr;
 	_ClassName = nullptr;
 
-	// register
+	// register, attach and connect
 	PluginSet::AddPlugin(_Plugin);
-
-	// connect
 	_Plugin->Far = Far::Instance;
+	_Plugin->Connect();
 }
 
 //

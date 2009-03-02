@@ -3,8 +3,8 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 
 namespace FarNet.Forms
 {

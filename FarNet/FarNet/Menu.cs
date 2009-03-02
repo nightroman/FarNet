@@ -3,11 +3,9 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
-using FarNet.Forms;
-using System.Collections.Generic;
-using System.Collections;
-using System.Diagnostics;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace FarNet
 {
@@ -16,7 +14,6 @@ namespace FarNet
 	/// By default the key closes the menu and it is stored in <see cref="IAnyMenu.BreakKey"/>.
 	/// Use <see cref="Ignore"/> or <see cref="Restart"/> to perform different actions.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class MenuEventArgs : EventArgs
 	{
 		/// <param name="item">Current item.</param>

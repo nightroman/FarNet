@@ -70,7 +70,6 @@ public:
 internal:
 	Editor();
 private:
-	[CA_USED]
 	void AssertClosed();
 internal:
 	int _id;

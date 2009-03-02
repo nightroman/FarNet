@@ -3,15 +3,14 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
-using System.Diagnostics;
 using System;
+using System.Diagnostics;
 
 namespace FarNet
 {
 	/// <summary>
 	/// Ordered pair of integer X and Y coordinates that defines a point in a two-dimensional plane.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public struct Point
 	{
 		int x;
@@ -79,7 +78,6 @@ namespace FarNet
 	/// <summary>
 	/// Ordered pair of two points defining a rectangle or a stream selection in editor.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public struct Place
 	{
 		Point _first;

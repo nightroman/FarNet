@@ -3,10 +3,9 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2009 FarNet Team
 */
 
+using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System;
 
 namespace FarNet
 {
@@ -27,7 +26,6 @@ namespace FarNet
 	/// These plugins are normally not preloadable and slightly easier to implement.
 	/// </para>
 	/// </remarks>
-	[DebuggerStepThroughAttribute]
 	public class BasePlugin
 	{
 		IFar _Far;
@@ -44,14 +42,7 @@ namespace FarNet
 		public IFar Far
 		{
 			get { return _Far; }
-			set
-			{
-				if (_Far != null)
-					Disconnect();
-				_Far = value;
-				if (value != null)
-					Connect();
-			}
+			set { _Far = value; }
 		}
 
 		/// <include file='doc.xml' path='docs/pp[@name="Connect"]/*'/>
@@ -141,7 +132,6 @@ namespace FarNet
 	/// Arguments of a tool plugin event.
 	/// This event normally happens when a user selects a plugin menu item.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public sealed class ToolEventArgs : EventArgs
 	{
 		///
@@ -177,7 +167,6 @@ namespace FarNet
 	/// You may derive any number of such classes.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	[DebuggerStepThroughAttribute]
 	public abstract class ToolPlugin : BasePlugin
 	{
 		/// <summary>
@@ -198,7 +187,6 @@ namespace FarNet
 	/// <summary>
 	/// Arguments of a command plugin event.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public class CommandEventArgs : EventArgs
 	{
 		///
@@ -225,7 +213,6 @@ namespace FarNet
 	/// You may derive any number of such classes.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	[DebuggerStepThroughAttribute]
 	public abstract class CommandPlugin : BasePlugin
 	{
 		/// <summary>
@@ -250,7 +237,6 @@ namespace FarNet
 	/// A handler is called to open a <see cref="IPluginPanel"/> which emulates a file system based on a file.
 	/// If a file is unknown a handler should do nothing.
 	/// </summary>
-	[DebuggerStepThroughAttribute]
 	public sealed class FilerEventArgs : EventArgs
 	{
 		///
@@ -298,7 +284,6 @@ namespace FarNet
 	/// You may derive any number of such classes.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	[DebuggerStepThroughAttribute]
 	public abstract class FilerPlugin : BasePlugin
 	{
 		/// <summary>
@@ -332,7 +317,6 @@ namespace FarNet
 	/// You may derive any number of such classes.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	[DebuggerStepThroughAttribute]
 	public abstract class EditorPlugin : BasePlugin
 	{
 		/// <summary>
