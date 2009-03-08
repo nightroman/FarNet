@@ -228,7 +228,7 @@ namespace FarNet
 	public struct ViewFrame
 	{
 		///
-		public ViewFrame(long pos, int left)
+		public ViewFrame(long pos, long left)
 		{
 			_pos = pos;
 			_leftPos = left;
@@ -241,8 +241,8 @@ namespace FarNet
 		/// <summary>
 		/// Leftmost visible position of the text on the screen.
 		/// </summary>
-		public int LeftPos { get { return _leftPos; } set { _leftPos = value; } }
-		int _leftPos;
+		public long LeftPos { get { return _leftPos; } set { _leftPos = value; } }
+		long _leftPos;
 		///
 		public static bool operator ==(ViewFrame left, ViewFrame right)
 		{

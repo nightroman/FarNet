@@ -1285,9 +1285,8 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	pp->Open();
 }
 
-void Far::PostStep(EventHandler^ handler)
+void Far::AssertHotkeys()
 {
-	// make keys once
 	if (!_hotkeys)
 	{
 		if (ES(_hotkey))
@@ -1298,10 +1297,38 @@ void Far::PostStep(EventHandler^ handler)
 		keys[0] = NameToKey("F11");
 		_hotkeys = keys;
 	}
+}
+
+void Far::PostStep(EventHandler^ handler)
+{
+	// ensure keys
+	AssertHotkeys();
 
 	// post handler and keys
 	_handler = handler;
 	PostKeySequence(_hotkeys);
+}
+
+void Far::PostStepAfterKeys(String^ keys, EventHandler^ handler)
+{
+	// ensure keys
+	AssertHotkeys();
+
+	// post the handler, keys and hotkeys
+	_handler = handler;
+	PostKeys(keys);
+	PostKeySequence(_hotkeys);
+}
+
+void Far::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
+{
+	// ensure keys
+	AssertHotkeys();
+
+	// post the second handler, keys and invoke the first handler
+	_handler = handler2;
+	PostKeySequence(_hotkeys);
+	handler1->Invoke(nullptr, nullptr);
 }
 
 void Far::OnNetF11Menus(Object^ /*sender*/, ToolEventArgs^ e)

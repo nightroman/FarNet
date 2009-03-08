@@ -196,7 +196,7 @@ ViewFrame Viewer::Frame::get()
 	if (vi.ViewerID >= 0 && vi.ViewerID == _id)
 	{
 		r.Pos = vi.FilePos;
-		r.LeftPos = (int)vi.LeftPos; //??? (int)
+		r.LeftPos = vi.LeftPos;
 	}
 	return r;
 }

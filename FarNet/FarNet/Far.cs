@@ -509,15 +509,39 @@ namespace FarNet
 		/// <param name="showPushCommand">Show "Push" command.</param>
 		void ShowPanelMenu(bool showPushCommand);
 		/// <summary>
-		/// Returns control to FAR and immediately after that invokes the step handler.
-		/// Ensure any FarNet hotkey (F4) in the FAR plugins menu (F11).
+		/// Posts a handler to be invoked when user code has finished and FAR gets control.
 		/// </summary>
 		/// <param name="handler">Step handler.</param>
 		/// <remarks>
-		/// Many FAR operations are executed only when FAR gets control, i.e. when your code has finished.
+		/// Many FAR operations are executed only when FAR gets control, i.e. when user code has finished.
 		/// Thus, normally you can not performs several such operations together. This method may help.
+		/// <para>
+		/// This mechanism work only when plugins menu is available ([F11]), because it is used internally for stepping.
+		/// Ensure any FarNet hotkey in the FAR plugins menu. Use [F11] for plugins menu, [F4] to set a hotkey there.
+		/// </para>
+		/// <para>
+		/// If a step handler starts modal UI without exiting (e.g. dialog) then use <see cref="PostStepAfterStep"/>
+		/// if you have another step to be invoked in modal mode (e.g. in a dialog after opening).
+		/// </para>
 		/// </remarks>
 		void PostStep(EventHandler handler);
+		/// <summary>
+		/// Posts the keys that normally start modal UI and a handler which is invoked in that modal mode.
+		/// </summary>
+		/// <param name="keys">Keys starting modal UI.</param>
+		/// <param name="handler">Handler to be called in modal mode.</param>
+		void PostStepAfterKeys(string keys, EventHandler handler);
+		/// <summary>
+		/// Invokes a handler that normally starts modal UI and posts another handler which is invoked in that modal mode.
+		/// </summary>
+		/// <param name="handler1">Handler starting modal UI.</param>
+		/// <param name="handler2">Handler to be called in modal mode.</param>
+		/// <remarks>
+		/// Steps in <see cref="PostStep"/> work fine if they do not call something modal, like a dialog, for example.
+		/// For this special case you should use this method: <b>handler1</b> normally calls something modal (dialog)
+		/// and <b>handler2</b> is posted to be invoked after that (e.g. when a dialog is opened).
+		/// </remarks>
+		void PostStepAfterStep(EventHandler handler1, EventHandler handler2);
 		/// <summary>
 		/// Current macro state.
 		/// </summary>
