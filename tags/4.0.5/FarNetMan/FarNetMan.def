@@ -1,0 +1,23 @@
+LIBRARY	FarNetMan
+EXPORTS
+	ClosePluginW
+	ConfigureW
+	DeleteFilesW
+	ExitFARW
+	FreeFindDataW
+	GetFilesW
+	GetFindDataW
+	GetOpenPluginInfoW
+	GetPluginInfoW
+	MakeDirectoryW
+	OpenFilePluginW
+	OpenPluginW
+	ProcessDialogEventW
+	ProcessEditorEventW
+	ProcessEditorInputW
+	ProcessEventW
+	ProcessKeyW
+	ProcessViewerEventW
+	PutFilesW
+	SetDirectoryW
+	SetStartupInfoW
