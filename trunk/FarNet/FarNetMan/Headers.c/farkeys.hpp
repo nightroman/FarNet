@@ -3,7 +3,7 @@
 /*
   farkeys.hpp
 
-  Inside KeyName for FAR Manager 2.0 build 802
+  Inside KeyName for FAR Manager 2.0 build 817
 */
 
 /*
@@ -173,6 +173,14 @@ enum BaseDefKeyboard
   KEY_MSWHEEL_RIGHT        =INTERNAL_KEY_BASE+0xD,
 
   KEY_SLEEP                =INTERNAL_KEY_BASE+0xE,
+
+  KEY_MSLCLICK             =INTERNAL_KEY_BASE+0xF,
+  KEY_MSRCLICK             =INTERNAL_KEY_BASE+0x10,
+
+  KEY_MSM1CLICK            =INTERNAL_KEY_BASE+0x11,
+  KEY_MSM2CLICK            =INTERNAL_KEY_BASE+0x12,
+  KEY_MSM3CLICK            =INTERNAL_KEY_BASE+0x13,
+
 
   KEY_VK_0xFF_BEGIN        =EXTENDED_KEY_BASE+0x00000100,
   KEY_VK_0xFF_END          =EXTENDED_KEY_BASE+0x000001FF,

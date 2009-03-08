@@ -2,11 +2,12 @@
 
 	<PropertyGroup>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far\Plugins\FarNet</Install>
+		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PublishFile Include="FarNetMan.hlf;$(Configuration)\FarNetMan.dll"/>
+		<PublishFile Include="FarNetMan.hlf;$(Configuration)\$(Platform)\FarNetMan.dll"/>
 	</ItemGroup>
 
 	<Target Name="Clean">

@@ -1,5 +1,18 @@
 http://code.google.com/p/farnet/
 
+= 4.0.5 =
+
+*) New IFar methods PostStepAfterKeys() and PostStepAfterStep(). This is a very
+important achievement for "super-macros" that can be used now also with modal UI.
+See PowerShellFar History.txt for more details.
+
+*) Mantis #730 - thanks to DrKnS, the problem is fixed for listboxes in Far
+2.0.812, so that listboxes can be used as normal. Other problems still exist
+for comboedit and combolist; workaround: when a dialog has started do not use
+Clear() and then Insert() without detaching and attaching items.
+
+*) ViewFrame.LeftPos - changed from 'int' to 'long', as it is in Far API.
+
 = 4.0.4 =
 
 MAIN CHANGES
