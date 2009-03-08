@@ -89,7 +89,9 @@ public:
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(array<int>^ sequence);
 	virtual void PostKeySequence(array<int>^ sequence, bool disableOutput);
-	virtual void PostStep(EventHandler^ step);
+	virtual void PostStep(EventHandler^ handler);
+	virtual void PostStepAfterKeys(String^ keys, EventHandler^ handler);
+	virtual void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
 	virtual void PostText(String^ text);
 	virtual void PostText(String^ text, bool disableOutput);
 	virtual void Redraw();
@@ -136,6 +138,7 @@ internal:
 private:
 	Far();
 	Object^ GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue);
+	void AssertHotkeys();
 	void Free(ToolOptions options);
 	void OnConfigCommand();
 	void OnConfigEditor();

@@ -129,7 +129,7 @@ private:
 };
 
 // String box
-typedef TStr<wchar_t> CBox; //???
+typedef TStr<wchar_t> CBox;
 
 struct SEditorSetPosition : EditorSetPosition
 {

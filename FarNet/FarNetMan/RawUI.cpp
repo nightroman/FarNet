@@ -8,7 +8,6 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-//???
 void ThrowWithLastError(String^ msg)
 {
 	throw gcnew OperationCanceledException(msg + " error code: " + GetLastError());
