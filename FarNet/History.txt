@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+= 4.0.6 =
+
+*) x64 support: FarNetMan.dll for x64 Far Manager should be copied from
+Plugins.x64\FarNet.
+
+*) Optimized performance of stepping mechanism (IFar.PostStepXXX methods).
+
+*) Experimental low level UI types were moved to FarNet.Raw namespace.
+
 = 4.0.5 =
 
 *) New IFar methods PostStepAfterKeys() and PostStepAfterStep(). This is a very

@@ -1,7 +1,7 @@
 Plugin   : FarNet
 Category : Development
-Version  : 4.0.5
-Release  : 2009.03.08
+Version  : 4.0.6
+Release  : 2009.03.12
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, C++/CLI
@@ -21,7 +21,7 @@ Home page: http://code.google.com/p/farnet/
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.817
+ - Far Manager 2.0.820
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
@@ -32,12 +32,14 @@ Home page: http://code.google.com/p/farnet/
 
 	INSTALLATION
 
-
 Copy to %FARHOME%:
 - Far.exe.config
 - Lib
-- Plugins\FarNet
-- Plugins.NET (optional examples)
+- Plugins\FarNet (*)
+- Plugins.NET (for .NET plugins, contains optional examples)
+
+(*) x64 installation:
+- the file FarNetMan.dll should be copied from Plugins.x64\FarNet
 
 This is the default installation (recommended). You can move Lib or\and
 Plugins.NET, in this case you have to update Far.exe.config accordingly.

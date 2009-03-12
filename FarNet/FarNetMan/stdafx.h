@@ -24,6 +24,7 @@
 #define ACTL_FREEWINDOWINFO stop_ACTL_FREEWINDOWINFO
 
 using namespace FarNet::Forms;
+using namespace FarNet::Raw;
 using namespace FarNet;
 using namespace Microsoft::Win32;
 using namespace System::Collections::Generic;

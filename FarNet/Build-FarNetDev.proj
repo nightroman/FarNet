@@ -1,20 +1,21 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.0.5</ProductVersion>
+		<ProductVersion>4.0.6</ProductVersion>
 		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
+		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
 
 	<Target Name="Build">
-		<MSBuild Projects="FarNetDev.sln" Targets="Build" Properties="Configuration=$(Configuration)"/>
+		<MSBuild Projects="FarNetDev.sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
 	</Target>
 
 	<Target Name="Clean">
 		<MSBuild Projects="FarNet\Build-FarNet.proj" Targets="Clean"/>
 		<MSBuild Projects="FarNetMan\Build-FarNetMan.proj" Targets="Clean"/>
-		<Delete Files="FarNetDev.ncb"/>
+		<Delete Files="FarNetDev.ncb;FarNetDev.sln.cache"/>
 		<MSBuild Projects="FarNet\Build-FarNet.proj;FarNetMan\Build-FarNetMan.proj" Targets="Clean"/>
 	</Target>
 
@@ -29,20 +30,27 @@
 	</Target>
 
 	<Target Name="Archive">
+		<!--Ensure we can build examples-->
 		<MSBuild Projects="Plugins.NET\Build.proj" Targets="Build;Clean"/>
+		<!--Build x64-->
+		<MSBuild Projects="FarNetDev.sln" Targets="Build" Properties="Configuration=Release;Platform=x64"/>
+		<!--Copy and archive-->
 		<Delete Files="$(OutputPath)"/>
 		<RemoveDir Directories="Tmp"/>
-		<MakeDir Directories="Tmp\Lib;Tmp\Plugins\FarNet;Tmp\Plugins.NET"/>
+		<MakeDir Directories="Tmp\Lib;Tmp\Plugins\FarNet;Tmp\Plugins.x64\FarNet;Tmp\Plugins.NET"/>
 		<Copy SourceFiles="$(FarHome)\Far.exe.config" DestinationFolder="Tmp"/>
 		<Copy SourceFiles="$(FarHome)\Lib\FarNet.dll" DestinationFolder="Tmp\Lib"/>
 		<Copy SourceFiles="$(FarHome)\Lib\FarNet.xml" DestinationFolder="Tmp\Lib"/>
 		<Copy SourceFiles="$(FarHome)\Plugins\FarNet\FarNetMan.hlf" DestinationFolder="Tmp\Plugins\FarNet"/>
 		<Copy SourceFiles="$(FarHome)\Plugins\FarNet\FarNetMan.dll" DestinationFolder="Tmp\Plugins\FarNet"/>
+		<Copy SourceFiles="FarNetMan\Release\x64\FarNetMan.dll" DestinationFolder="Tmp\Plugins.x64\FarNet"/>
 		<Exec Command="xcopy Plugins.NET Tmp\Plugins.NET /s > nul"/>
 		<Copy SourceFiles="History.txt;LICENSE;Readme.txt" DestinationFolder="Tmp"/>
 		<Exec Command="7z a $(OutputPath) .\*" WorkingDirectory="Tmp"/>
 		<Copy SourceFiles="Tmp\$(OutputPath)" DestinationFolder="."/>
+		<!--Clean-->
 		<RemoveDir Directories="Tmp"/>
+		<MSBuild Projects="Build-FarNetDev.proj" Targets="Clean"/>
 	</Target>
 
 </Project>

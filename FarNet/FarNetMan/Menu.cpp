@@ -230,7 +230,7 @@ bool Menu::Show()
 	if (_selected < 0)
 		return false;
 
-	// more
+	// event
 	MenuItem^ item = (MenuItem^)_items[_selected];
 	if (item->_OnClick)
 	{
@@ -239,6 +239,7 @@ bool Menu::Show()
 		else
 			item->_OnClick(item, nullptr);
 	}
+
 	return true;
 }
 }
