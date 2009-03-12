@@ -425,18 +425,19 @@ namespace FarNet.Forms
 		void SetFrame(int selected, int top);
 	}
 
-	/**
-<summary>
-FAR dialog.
-It is created by <see cref="IFar.CreateDialog"/>.
-</summary>
-<remarks>
-After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
-*) create and add controls using <c>Add*</c> methods;
-*) set control and dialog properties and add event handlers;
-*) call <see cref="IDialog.Show"/>.
-</remarks>
-*/
+	/// <summary>
+	/// FAR dialog.
+	/// It is created by <see cref="IFar.CreateDialog"/>.
+	/// </summary>
+	/// <remarks>
+	/// After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
+	/// *) create and add controls using <c>Add*</c> methods;
+	/// *) set control and dialog properties and add event handlers;
+	/// *) call <see cref="IDialog.Show"/>.
+	/// <para>
+	/// Event <see cref="Closing"/> can be used for input data validation without closing the dialog.
+	/// </para>
+	/// </remarks>
 	public interface IDialog
 	{
 		/// <summary>
@@ -446,6 +447,16 @@ After creation of a dialog by <see cref="IFar.CreateDialog"/> you have to:
 		/// <summary>
 		/// Event is sent as a notification before the dialog is closed - the user wants to close the dialog.
 		/// </summary>
+		/// <remarks>
+		/// This event can be used for example for input data validation before the dialog is closed.
+		/// If event argument <see cref="AnyEventArgs.Control"/> is null then the dialog is about to
+		/// be closed by [Esc] or [F10]; in this case you should not stop closing unless this is really needed.
+		/// Otherwise you may check validity of input data.
+		/// If a user mistake is found you may show a message box (<see cref="IFar.Msg(string)"/>),
+		/// set focus to the culprit control (dialog <see cref="Focused"/>) and finally set
+		/// event argument <see cref="ClosingEventArgs.Ignore"/> to keep the dialog running,
+		/// so that a user may correct the input or cancel the dialog.
+		/// </remarks>
 		event EventHandler<ClosingEventArgs> Closing;
 		/// <summary>
 		/// Event is sent to the dialog when the dialog enters the idle state.

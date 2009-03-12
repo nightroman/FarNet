@@ -433,7 +433,7 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 		return;
 
 	// local buffer for a small sequence
-	const int smallCount = 50;
+	const int smallCount = 256;
 	DWORD keys[smallCount];
 
 	KeySequence keySequence;
@@ -610,10 +610,26 @@ but return flags, at least preloadable flag is absolutely important as cached.
 void Far::AsGetPluginInfo(PluginInfo* pi)
 {
 	pi->StructSize = sizeof(PluginInfo);
+
 	pi->Flags = PF_DIALOG | PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
 	if (!_instance)
 		return;
 
+	// stepping is in progress, add the only item and return
+	// http://forum.farmanager.com/viewtopic.php?f=7&t=3890
+	// (?? it would be nice to have ACTL_POSTCALLBACK)
+	if (_handler)
+	{
+		static const wchar_t s_DummyMenuString[] = L"";
+		static const wchar_t* s_DummyMenuStrings[] = { s_DummyMenuString };
+
+		pi->PluginMenuStringsNumber = 1;
+		pi->PluginMenuStrings = s_DummyMenuStrings;
+		
+		return;
+	}
+
+	// get window type, this is the only known way to get the current area (?? it would be nice to have 'from' parameter)
 	WindowInfo wi;
 	wi.Pos = -1;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
