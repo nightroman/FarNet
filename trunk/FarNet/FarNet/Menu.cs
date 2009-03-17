@@ -285,8 +285,7 @@ namespace FarNet
 		/// </summary>
 		bool FilterRestore { get; set; }
 		/// <summary>
-		/// Internal key code that opens a permanent filter input box.
-		/// Default: CtrlDown, i.e. <c>KeyCode.Ctrl | KeyCode.Down</c>
+		/// Internal key code that opens a permanent filter input box. Default: [CtrlDown].
 		/// </summary>
 		int FilterKey { get; set; }
 		/// <summary>
@@ -312,6 +311,10 @@ namespace FarNet
 		/// Tells to select a single item or nothing automatically on less than two items.
 		/// </summary>
 		bool AutoSelect { get; set; }
+		/// <summary>
+		/// Do not show item count information at the bottom line.
+		/// </summary>
+		bool NoInfo { get; set; }
 		/// <summary>
 		/// Disables the dialog shadow.
 		/// </summary>
