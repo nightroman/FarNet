@@ -1,9 +1,17 @@
 http://code.google.com/p/farnet/
 
+= 4.0.7 =
+
+*) IListMenu
+- New property NoInfo: Do not show item count information at the bottom line.
+- Fix. If a key handler is available and called then a standard handler, if
+any, should not be called.
+
 = 4.0.6 =
 
 *) x64 support: FarNetMan.dll for x64 Far Manager should be copied from
-Plugins.x64\FarNet.
+Plugins.x64\FarNet. (NOTE: the build contains both x86 and x64 versions,
+only FarNetMan.dll depends on a platform, FarNet.dll does not).
 
 *) Optimized performance of stepping mechanism (IFar.PostStepXXX methods).
 

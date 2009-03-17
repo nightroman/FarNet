@@ -15,6 +15,7 @@ ref class ListMenu : public AnyMenu, public IListMenu
 public:
 	virtual property bool AutoSelect;
 	virtual property bool FilterRestore;
+	virtual property bool NoInfo;
 	virtual property bool NoShadow;
 	virtual property bool UsualMargins;
 	virtual property int FilterKey { int get() { return _FilterKey; } void set(int value) { _FilterKey = value; } }
@@ -50,6 +51,8 @@ private:
 	bool _toFilter1;
 	// To update incremental filter
 	bool _toFilter2;
+	// Key handler was invoked
+	bool _isKeyHandled;
 	// Filtered
 	List<int>^ _ii;
 	Regex^ _re1;

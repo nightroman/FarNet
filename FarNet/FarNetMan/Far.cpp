@@ -850,7 +850,8 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 
 void Far::ShowError(String^ title, Exception^ error)
 {
-	if (!error) throw gcnew ArgumentNullException("error");
+	if (!error)
+		throw gcnew ArgumentNullException("error");
 
 	switch(Msg(
 		error->Message,
