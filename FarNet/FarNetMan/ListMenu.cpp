@@ -153,7 +153,7 @@ String^ ListMenu::InfoLine()
 void ListMenu::GetInfo(String^& head, String^& foot)
 {
 	head = Title ? Title : String::Empty;
-	foot = InfoLine();
+	foot = NoInfo ? String::Empty : InfoLine();
 	if (SS(Bottom))
 		foot += " ";
 	if (int(IncrementalOptions) && _filter2->Length)
@@ -294,6 +294,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 	{
 		if (_handlers[k])
 		{
+			_isKeyHandled = true;
 			_selected = _box->Selected;
 			if (_ii && _selected >= 0)
 				_selected = _ii[_selected];
@@ -520,7 +521,8 @@ bool ListMenu::Show()
 		}
 
 		// "bottom"
-		dialog.AddText(1 + mx, dh - 1 - my, 0, info);
+		if (info->Length)
+			dialog.AddText(1 + mx, dh - 1 - my, 0, info);
 
 		// items and filter
 		_box->_Items = _items;
@@ -530,7 +532,7 @@ bool ListMenu::Show()
 		_box->_KeyPressed += gcnew EventHandler<KeyPressedEventArgs^>(this, &ListMenu::OnKeyPressed);
 
 		// go!
-		_toFilter1 = _toFilter2 = false;
+		_toFilter1 = _toFilter2 = _isKeyHandled = false;
 		_breakKey = 0;
 		bool ok = dialog.Show();
 		if (!ok)
@@ -543,8 +545,8 @@ bool ListMenu::Show()
 		if (_ii && _selected >= 0)
 			_selected = _ii[_selected];
 
-		// OnClick
-		if (_selected >= 0)
+		// trigger OnClick if a key was not handled yet
+		if (_selected >= 0 && !_isKeyHandled)
 		{
 			MenuItem^ item = (MenuItem^)_items[_selected];
 			MenuEventArgs e(item);

@@ -224,6 +224,7 @@
 				Name="VCCLCompilerTool"
 				UseUnicodeResponseFiles="false"
 				AdditionalIncludeDirectories="Headers.c"
+				AdditionalUsingDirectories=""
 				PreprocessorDefinitions=""
 				RuntimeLibrary="2"
 				StructMemberAlignment="0"
