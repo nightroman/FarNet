@@ -174,8 +174,7 @@ bool IsCurrentViewer()
 		return false;
 	//??? is it still like this?
 	PanelInfo pi;
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETPANELINFO, 0, (LONG_PTR)&pi))
-		throw gcnew OperationCanceledException("Cannot get panel information.");
+	GetPanelInfo(INVALID_HANDLE_VALUE, pi);
 	return pi.PanelType == PTYPE_QVIEWPANEL;
 }
 

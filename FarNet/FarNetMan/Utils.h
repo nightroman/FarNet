@@ -24,7 +24,7 @@ void CopyStringToChars(String^ str, wchar_t* buffer);
 #pragma endregion
 
 // Buffer size in items, not bytes.
-#define SIZEOF(Buffer) (sizeof(Buffer) / sizeof(*Buffer))
+#define countof(Buffer) (sizeof(Buffer) / sizeof(*Buffer))
 
 // Log
 #define LOG_IDLE 2

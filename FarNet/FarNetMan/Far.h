@@ -39,6 +39,7 @@ public:
 	virtual property String^ RootFar { String^ get(); }
 	virtual property String^ RootKey { String^ get(); }
 	virtual property Version^ Version { System::Version^ get(); }
+	virtual property WindowType WindowType { FarNet::WindowType get(); }
 public:
 	virtual array<IEditor^>^ Editors();
 	virtual array<int>^ CreateKeySequence(String^ keys);
@@ -114,7 +115,7 @@ public:
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
-	virtual WindowType GetWindowType(int index);
+	virtual FarNet::WindowType GetWindowType(int index);
 internal:
 	static property Far^ Instance { Far^ get() { return _instance; } }
 	static void StartFar();
@@ -153,6 +154,7 @@ private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
 	static int GetPaletteColor(PaletteColor paletteColor);
+	static void VoidStep(Object^, EventArgs^) {}
 private:
 	// The instance
 	static Far^ _instance;

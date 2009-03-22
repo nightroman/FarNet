@@ -1,5 +1,25 @@
 http://code.google.com/p/farnet/
 
+= 4.0.8 =
+
+*) IPluginPanel. New event Escaping. It is triggered when [Escape] is pressed
+and the command line is empty. Basically it only helps to use [Escape] key for
+closing a panel (or other action). There is no default action, perhaps it will
+be added later, suggestions are welcome.
+
+*) As far as IFar.GetWindowType(-1) is used quite frequently, a new property
+IFar.WindowType is introduced: it gets a type of the current Far window:
+Panels, Dialog, Editor and etc.
+
+*) Undone stepping mode optimization because of problems for command, tool and
+filer plugins dynamically registered during stepping.
+
+*) IFar.PostStepAfterStep - fixed a subtle issue: when the first step throws an
+error then the second should not be invoked even if it has been already posted.
+
+*) Dialog controls. Improved some code originally designed in Far/1 and not
+effective in Far/2.
+
 = 4.0.7 =
 
 *) IListMenu

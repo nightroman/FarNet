@@ -33,7 +33,8 @@ void ListItemCollection::ClearItems()
 	Collection<IMenuItem^>::ClearItems();
 }
 
-// watch issue [_090208_042536]
+// Bug [_090208_040000] combos crash in here after Clear().
+// Listbox used to crash, too, fixed in Far.
 void ListItemCollection::InsertItem(int index, IMenuItem^ item)
 {
 	if (index < 0 || index > Count)

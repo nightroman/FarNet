@@ -16,15 +16,15 @@ namespace FarNet
 	public interface IPanel
 	{
 		/// <summary>
-		/// Is it active?
+		/// Is the panel active?
 		/// </summary>
 		bool IsActive { get; }
 		/// <summary>
-		/// Is it plugin panel?
+		/// Is the panel a plugin panel?
 		/// </summary>
 		bool IsPlugin { get; }
 		/// <summary>
-		/// Is it visible?
+		/// Is the panel visible?
 		/// If you set it it takes effect only when FAR gets control.
 		/// </summary>
 		bool IsVisible { get; set; }
@@ -36,13 +36,13 @@ namespace FarNet
 		/// <para>
 		/// If it is a plugin panel and you set a path the action depends on <see cref="IPluginPanel.SettingDirectory"/> handler.
 		/// If the panel does not have this handler and the path exists then the panel is closed and
-		/// a file panel is opened at the new path.
+		/// a file panel is opened at the specified path.
 		/// </para>
 		/// <para>
 		/// On opening a file panel an exception is thrown if a path is not valid or does not exist.
 		/// </para>
 		/// <para>
-		/// You may call <see cref="Redraw()"/> after changing the path so that FAR shows the change immediately.
+		/// You may call <see cref="Redraw()"/> after changing the path so that FAR shows changes immediately.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="GoToName"/>
@@ -50,7 +50,6 @@ namespace FarNet
 		string Path { get; set; }
 		/// <summary>
 		/// Current file.
-		/// See <see cref="IPluginPanel.AddDots"/>.
 		/// </summary>
 		IFile CurrentFile { get; }
 		/// <summary>
@@ -67,7 +66,6 @@ namespace FarNet
 		PanelViewMode ViewMode { get; set; }
 		/// <summary>
 		/// Shown panel items.
-		/// See <see cref="IPluginPanel.AddDots"/>.
 		/// </summary>
 		IList<IFile> ShownFiles { get; }
 		/// <summary>
@@ -137,6 +135,9 @@ namespace FarNet
 		/// <summary>
 		/// Closes the current plugin panel.
 		/// </summary>
+		/// <remarks>
+		/// Bug [_090321_210416]: the current Far panel item depends on the current plugin panel item.
+		/// </remarks>
 		void Close();
 		/// <summary>
 		/// Closes the current plugin panel.
@@ -604,6 +605,9 @@ namespace FarNet
 	{
 		OperationModes _Mode;
 		bool _Ignore;
+		///
+		public PanelEventArgs()
+		{ }
 		/// <param name="mode">
 		/// Combination of the operation mode flags.
 		/// </param>
@@ -894,8 +898,7 @@ namespace FarNet
 		/// </remarks>
 		Comparison<object> DataComparison { get; set; }
 		/// <summary>
-		/// Tells to add item ".." automatically and not to return it by
-		/// <see cref="IPanel.CurrentFile"/> and <see cref="IPanel.ShownFiles"/>.
+		/// Tells to add item ".." automatically.
 		/// See also <see cref="DotsDescription"/>.
 		/// </summary>
 		bool AddDots { get; set; }
@@ -966,12 +969,17 @@ namespace FarNet
 		/// </remarks>
 		event EventHandler<PanelEventArgs> GettingData;
 		/// <summary>
-		/// Raised when a plugin is closed.
+		/// Raised when a panel has been closed.
 		/// </summary>
 		event EventHandler Closed;
 		/// <summary>
-		/// Raised when a plugin is about to be closed.
+		/// Raised when a panel is about to be closed.
 		/// </summary>
+		/// <remarks>
+		/// Bug [_090321_165608].
+		/// Unfortunately FAR triggers this also on plugin commands from command line
+		/// even if a new panel is not going to be opened and the current one closed.
+		/// </remarks>
 		event EventHandler<PanelEventArgs> Closing;
 		/// <summary>
 		/// Raised every few seconds.
@@ -1032,6 +1040,15 @@ namespace FarNet
 		/// A panel is losing focus.
 		/// </summary>
 		event EventHandler LosingFocus;
+		/// <summary>
+		/// Raised when [Escape] is pressed and the command line is empty.
+		/// </summary>
+		/// <remarks>
+		/// The default action for now is standard key processing.
+		/// Some advanced default action perhaps will be added in a future.
+		/// In any case a handler has to set <see cref="PanelEventArgs.Ignore"/> to stop avoid processing.
+		/// </remarks>
+		event EventHandler<PanelEventArgs> Escaping;
 		/// <summary>
 		/// Panel data to be set current.
 		/// </summary>

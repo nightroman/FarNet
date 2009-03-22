@@ -35,3 +35,6 @@ private:
 	char mBuffer[1024];
 	void operator=(const AutoPluginPanelItem&) {}
 };
+
+void GetPanelInfo(HANDLE handle, PanelInfo& info);
+bool TryPanelInfo(HANDLE handle, PanelInfo& info);
