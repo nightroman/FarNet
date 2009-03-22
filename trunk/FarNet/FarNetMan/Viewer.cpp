@@ -67,7 +67,7 @@ void Viewer::Open(OpenMode mode)
 	PIN_ES(pinTitle, _Title);
 
 	// from dialog? set modal
-	WindowType wt = Far::Instance->GetWindowType(-1);
+	WindowType wt = Far::Instance->WindowType;
 	if (wt == WindowType::Dialog)
 		flags &= ~VF_NONMODAL;
 
@@ -317,8 +317,8 @@ int Viewer::CodePage::get()
 	if (!IsOpened)
 		return _CodePage;
 
-#if 1 //??? request this
-		return _CodePage;
+#if 1 //??? .CodePage is NYI in Far viewer
+	return _CodePage;
 #else
 	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
 	if (vi.ViewerID < 0 || vi.ViewerID != _id)

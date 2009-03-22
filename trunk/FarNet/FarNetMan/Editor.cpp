@@ -39,7 +39,7 @@ void Editor::Open(OpenMode mode)
 	int nPos = _frameStart.Pos >= 0 ? _frameStart.Pos + 1 : -1;
 
 	// from dialog? set modal
-	WindowType wt = Far::Instance->GetWindowType(-1);
+	WindowType wt = Far::Instance->WindowType;
 	if (wt == WindowType::Dialog)
 		mode = OpenMode::Modal;
 

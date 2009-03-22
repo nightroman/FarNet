@@ -14,7 +14,7 @@ namespace FarNet.Forms
 	public interface IControl
 	{
 		/// <summary>
-		/// Event is sent to draw the control. 
+		/// Event is sent to draw the control.
 		/// </summary>
 		event EventHandler<DrawingEventArgs> Drawing;
 		/// <summary>
@@ -30,7 +30,7 @@ namespace FarNet.Forms
 		/// </summary>
 		event EventHandler<MouseClickedEventArgs> MouseClicked;
 		/// <summary>
-		/// Event is sent when a key has been pressed in the dialog. 
+		/// Event is sent when a key has been pressed in the dialog.
 		/// </summary>
 		event EventHandler<KeyPressedEventArgs> KeyPressed;
 		/// <summary>
@@ -46,7 +46,7 @@ namespace FarNet.Forms
 		/// </summary>
 		bool Disabled { get; set; }
 		/// <summary>
-		/// Hides a dialog item. 
+		/// Hides a dialog item.
 		/// </summary>
 		bool Hidden { get; set; }
 		/// <summary>
@@ -364,8 +364,9 @@ namespace FarNet.Forms
 		/// <include file='doc.xml' path='docs/pp[@name="BaseListItems"]/*'/>
 		IList<IMenuItem> Items { get; }
 		/// <summary>
-		/// STOP: this is temporary, use it only if <see cref="Items"/>.<b>Clear()</b> fails. [_090208_042536]
+		/// STOP: this is workaround, use it only if <see cref="Items"/>.<b>Clear()</b> fails. Bug [_090208_042536]
 		/// </summary>
+		[Obsolete("Use Items.Clear() if it works fine.")]
 		void Clear();
 	}
 
@@ -467,7 +468,7 @@ namespace FarNet.Forms
 		/// </summary>
 		event EventHandler<MouseClickedEventArgs> MouseClicked;
 		/// <summary>
-		/// Event is sent after the user presses a key in the dialog. 
+		/// Event is sent after the user presses a key in the dialog.
 		/// </summary>
 		event EventHandler<KeyPressedEventArgs> KeyPressed;
 		/// <summary>
@@ -483,7 +484,7 @@ namespace FarNet.Forms
 		/// </summary>
 		IControl Selected { get; }
 		/// <summary>
-		/// Sets "Warning" color scheme for the dialog. 
+		/// Sets "Warning" color scheme for the dialog.
 		/// </summary>
 		bool IsWarning { get; set; }
 		/// <summary>
@@ -496,7 +497,7 @@ namespace FarNet.Forms
 		/// </summary>
 		bool NoShadow { get; set; }
 		/// <summary>
-		/// Don't draw dialog panel. 
+		/// Don't draw dialog panel.
 		/// </summary>
 		bool NoPanel { get; set; }
 		/// <summary>

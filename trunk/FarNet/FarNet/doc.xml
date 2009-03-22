@@ -117,7 +117,7 @@ before changes and <see cref="AttachItems"/> after changes.
 <para>
 STOP: in rare cases (found in PowerShell, bug?), method <b>Clear()</b> cannot be
 called. If you really have this problem then call the workaround method <see cref="IBaseList.Clear"/>.
-[_090208_042536]
+Bug [_090208_042536]
 </para>
 </remarks>
 <example>

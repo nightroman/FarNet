@@ -76,3 +76,17 @@ AutoPluginPanelItem::~AutoPluginPanelItem()
 	if (mBuffer != (char*)m)
 		delete[] (char*)m;
 }
+
+#undef FCTL_GETPANELINFO
+
+void GetPanelInfo(HANDLE handle, PanelInfo& info)
+{
+	if (!Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&info))
+		throw gcnew OperationCanceledException("Cannot get panel information.");
+}
+
+//! Steps: open a panel; Tab; CtrlL; $Far.Panel used to fail
+bool TryPanelInfo(HANDLE handle, PanelInfo& info)
+{
+	return Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&info) ? true : false;
+}

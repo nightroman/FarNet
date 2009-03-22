@@ -492,9 +492,16 @@ namespace FarNet
 		/// </param>
 		IWindowInfo GetWindowInfo(int index, bool full);
 		/// <summary>
-		/// Gets the current window type.
+		/// Type of the current window, the same as <see cref="GetWindowType"/> with parameter -1.
 		/// </summary>
-		/// <param name="index">Window index; -1 ~ current. See <see cref="WindowCount"/>.</param>
+		WindowType WindowType { get; }
+		/// <summary>
+		/// Gets type of a window specified by an index.
+		/// </summary>
+		/// <param name="index">
+		/// Window index or -1 for the current window, same as <see cref="WindowType"/>.
+		/// See <see cref="WindowCount"/>.
+		/// </param>
 		WindowType GetWindowType(int index);
 		/// <summary>
 		/// Converts an internal key code to a string. <see cref="KeyCode"/>
