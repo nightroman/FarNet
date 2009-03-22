@@ -471,7 +471,7 @@ int Far::NameToKey(String^ key)
 String^ Far::KeyToName(int key)
 {
 	wchar_t name[33];
-	if (!Info.FSF->FarKeyToName(key, name, SIZEOF(name) - 1))
+	if (!Info.FSF->FarKeyToName(key, name, countof(name) - 1))
 		return nullptr;
 	return gcnew String(name);
 }
@@ -546,18 +546,18 @@ ILine^ Far::CommandLine::get()
 
 ILine^ Far::Line::get()
 {
-	switch (GetWindowType(-1))
+	switch (WindowType)
 	{
-	case WindowType::Editor:
+	case FarNet::WindowType::Editor:
 		{
 			IEditor^ editor = Editor;
 			return editor->CurrentLine;
 		}
-	case WindowType::Panels:
+	case FarNet::WindowType::Panels:
 		{
 			return CommandLine;
 		}
-	case WindowType::Dialog:
+	case FarNet::WindowType::Dialog:
 		{
 			IDialog^ dialog = Dialog;
 			if (dialog) //?? need?
@@ -615,11 +615,19 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 	if (!_instance)
 		return;
 
-	// stepping is in progress, add the only item and return
-	// http://forum.farmanager.com/viewtopic.php?f=7&t=3890
-	// (?? it would be nice to have ACTL_POSTCALLBACK)
+	//! STOP
+	// Do not ignore this methods even in stepping mode:
+	// *) plugins can change this during stepping and Far has to be informed;
+	// *) there is no more or less noticeable performance gain at all, really.
+	// We still can do that with some global flags telling that something was changed, but with
+	// not at all performance gain it would be more complexity for nothing. The code is disabled.
+#if 0
 	if (_handler)
 	{
+		// stepping is in progress, add the only item and return
+		// http://forum.farmanager.com/viewtopic.php?f=7&t=3890
+		// (?? it would be nice to have ACTL_POSTCALLBACK)
+
 		static const wchar_t s_DummyMenuString[] = L"";
 		static const wchar_t* s_DummyMenuStrings[] = { s_DummyMenuString };
 
@@ -628,6 +636,7 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 		
 		return;
 	}
+#endif
 
 	// get window type, this is the only known way to get the current area (?? it would be nice to have 'from' parameter)
 	WindowInfo wi;
@@ -1044,13 +1053,20 @@ IWindowInfo^ Far::GetWindowInfo(int index, bool full)
 	return gcnew FarWindowInfo(wi, full);
 }
 
+WindowType Far::WindowType::get()
+{
+	WindowInfo wi;
+	wi.Pos = -1;
+	return Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi) ? (FarNet::WindowType)wi.Type : FarNet::WindowType::None;
+}
+
 WindowType Far::GetWindowType(int index)
 {
 	WindowInfo wi;
 	wi.Pos = index;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
 		throw gcnew InvalidOperationException("GetWindowType:" + index + " failed.");
-	return (WindowType)wi.Type;
+	return (FarNet::WindowType)wi.Type;
 }
 
 void Far::SetCurrentWindow(int index)
@@ -1345,7 +1361,16 @@ void Far::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
 	// post the second handler, keys and invoke the first handler
 	_handler = handler2;
 	PostKeySequence(_hotkeys);
-	handler1->Invoke(nullptr, nullptr);
+	try
+	{
+		handler1->Invoke(nullptr, nullptr);
+	}
+	catch(...)
+	{
+		//! 'F11 <hotkey>' is already posted and will trigger the menu; so, let's use a fake step
+		_handler = gcnew EventHandler(&VoidStep);
+		throw;
+	}
 }
 
 void Far::OnNetF11Menus(Object^ /*sender*/, ToolEventArgs^ e)
@@ -1679,10 +1704,13 @@ void Far::Redraw()
 
 String^ Far::TempName(String^ prefix)
 {
-	wchar_t dest[MAX_PATH]; //??? use any size
+	// lame, but should work
+	wchar_t dest[MAX_PATH + 20];
+
 	PIN_NE(pin, prefix);
-	if (!Info.FSF->MkTemp(dest, SIZEOF(dest), pin))
+	if (!Info.FSF->MkTemp(dest, countof(dest), pin))
 		throw gcnew OperationCanceledException(__FUNCTION__);
+
 	return gcnew String(dest);
 }
 

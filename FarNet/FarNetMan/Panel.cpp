@@ -22,19 +22,6 @@ void FarFile::Attributes::set(FileAttributes value)
 
 #pragma region Kit
 
-//??? obsolete? Gets panel info, does not frees (not needed)
-class AutoPanelInfo : public PanelInfo
-{
-public:
-	AutoPanelInfo(HANDLE handle)
-	{
-		if (!Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)this))
-			throw gcnew OperationCanceledException("Cannot get panel information.");
-	}
-private:
-	void operator=(const AutoPanelInfo&) {}
-};
-
 static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelItem, int itemsNumber)
 {
 	List<IFile^>^ r = gcnew List<IFile^>(itemsNumber);
@@ -273,7 +260,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		LL(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("CLOSE");
 		{
 			//? FE_CLOSE issues:
-			// *) unwanted extra call on plugin commands entered in command line
+			// *) Bug [_090321_165608]: unwanted extra call on plugin commands entered in command line
 			// *) may not be called at all e.g. if tmp panel is opened
 			if (!pp->_IsPushed && pp->_Closing)
 			{
@@ -446,9 +433,33 @@ int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
-	if (!pp || !pp->_KeyPressed)
+	if (!pp)
 		return false;
 
+	// Escaping handler
+	if (pp->_Escaping)
+	{
+		// [Escape] is pressed:
+		if (VK_ESCAPE == key && 0 == controlState)
+		{
+			// if cmdline is not empty then do nothing
+			int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
+			if (size > 1)
+				return false;
+
+			// trigger the handler
+			PanelEventArgs e;
+			pp->_Escaping(pp, %e);
+			if (e.Ignore)
+				return true;
+		}
+	}
+
+	// panel has no handler:
+	if (!pp->_KeyPressed)
+		return false;
+
+	// trigger the handler
 	PanelKeyEventArgs e((key & ~PKF_PREPROCESS), (KeyStates)controlState, (key & PKF_PREPROCESS) != 0);
 	pp->_KeyPressed(pp, %e);
 	return e.Ignore;
@@ -502,7 +513,7 @@ FarPanel^ PanelSet::GetPanel(bool active)
 {
 	// get info and return null (e.g. FAR started with /e or /v)
 	PanelInfo pi;
-	if (!Info.Control((active ? PANEL_ACTIVE : PANEL_PASSIVE), FCTL_GETPANELINFO, 0, (LONG_PTR)&pi))
+	if (!TryPanelInfo((active ? PANEL_ACTIVE : PANEL_PASSIVE), pi))
 		return nullptr;
 
 	if (!pi.Plugin)
@@ -591,7 +602,7 @@ void PanelSet::BeginOpenMode()
 {
 	if (_openMode < 0)
 		throw gcnew InvalidOperationException("Negative open mode.");
-	
+
 	++_openMode;
 }
 
@@ -695,7 +706,7 @@ void PanelSet::ReplacePluginPanel(FarPluginPanel^ oldPanel, FarPluginPanel^ newP
 void PanelSet::PushPluginPanel(FarPluginPanel^ plugin)
 {
 	if (plugin->_IsPushed) throw gcnew InvalidOperationException("Cannot push the panel because it is already pushed.");
-	
+
 	plugin->_IsPushed = true;
 	_stack.Add(plugin);
 
@@ -783,7 +794,7 @@ void FarPluginPanelInfo::CreateInfoLines()
 	m->InfoLinesNumber = _InfoItems->Length;
 	if (!m->InfoLines)
 		m->InfoLines = new InfoPanelLine[_InfoItems->Length];
-	
+
 	for(int i = _InfoItems->Length; --i >= 0;)
 	{
 		DataItem^ s = _InfoItems[i];
@@ -940,35 +951,40 @@ void FarPanel::Handle::set(HANDLE value)
 bool FarPanel::IsActive::get()
 {
 	PanelInfo pi;
-	if (!TryInfo(pi))
+	if (!TryPanelInfo(_handle, pi))
 		return false;
+
 	return pi.Focus != 0;
 }
 
 bool FarPanel::IsLeft::get()
 {
 	PanelInfo pi;
-	if (!TryInfo(pi))
+	if (!TryPanelInfo(_handle, pi))
 		return false;
+
 	return (pi.Flags & PFLAGS_PANELLEFT) != 0;
 }
 
 bool FarPanel::IsPlugin::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return pi.Plugin != 0;
 }
 
 bool FarPanel::IsVisible::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 	return pi.Visible != 0;
 }
 
 void FarPanel::IsVisible::set(bool value)
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	bool old = pi.Visible != 0;
 	if (old == value)
@@ -985,33 +1001,37 @@ void FarPanel::IsVisible::set(bool value)
 //! It is possible to ask the current file directly, but implementation is not safe
 IFile^ FarPanel::CurrentFile::get()
 {
-	AutoPanelInfo info(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
-	if (info.ItemsNumber == 0)
+	if (pi.ItemsNumber == 0)
 		return nullptr;
 
-	AutoPluginPanelItem item(_handle, info.CurrentItem, false);
+	AutoPluginPanelItem item(_handle, pi.CurrentItem, false);
 
 	return ItemToFile(item.Get());
 }
 
 int FarPanel::CurrentIndex::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return pi.ItemsNumber ? pi.CurrentItem : -1;
 }
 
 int FarPanel::TopIndex::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return pi.ItemsNumber ? pi.TopPanelItem : -1;
 }
 
 Place FarPanel::Window::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	Place r;
 	r.Left = pi.PanelRect.left; r.Top = pi.PanelRect.top;
@@ -1021,14 +1041,16 @@ Place FarPanel::Window::get()
 
 Point FarPanel::Frame::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return pi.ItemsNumber ? Point(pi.CurrentItem, pi.TopPanelItem) : Point(-1, -1);
 }
 
 PanelSortMode FarPanel::SortMode::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (PanelSortMode)pi.SortMode;
 }
@@ -1040,7 +1062,8 @@ void FarPanel::SortMode::set(PanelSortMode value)
 
 PanelViewMode FarPanel::ViewMode::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (PanelViewMode)pi.ViewMode;
 }
@@ -1077,10 +1100,11 @@ String^ FarPanel::ToString()
 
 IList<IFile^>^ FarPanel::ShownFiles::get()
 {
-	AutoPanelInfo info(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
-	List<IFile^>^ r = gcnew List<IFile^>(info.ItemsNumber);
-	for(int i = 0; i < info.ItemsNumber; ++i)
+	List<IFile^>^ r = gcnew List<IFile^>(pi.ItemsNumber);
+	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, false);
 		r->Add(ItemToFile(item.Get()));
@@ -1091,10 +1115,11 @@ IList<IFile^>^ FarPanel::ShownFiles::get()
 
 IList<IFile^>^ FarPanel::SelectedFiles::get()
 {
-	AutoPanelInfo info(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
-	List<IFile^>^ r = gcnew List<IFile^>(info.SelectedItemsNumber);
-	for(int i = 0; i < info.SelectedItemsNumber; ++i)
+	List<IFile^>^ r = gcnew List<IFile^>(pi.SelectedItemsNumber);
+	for(int i = 0; i < pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, true);
 		r->Add(ItemToFile(item.Get()));
@@ -1105,15 +1130,10 @@ IList<IFile^>^ FarPanel::SelectedFiles::get()
 
 PanelType FarPanel::Type::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (PanelType)pi.PanelType;
-}
-
-//! steps: open a panel; Tab; CtrlL; $Far.Panel used to fail
-bool FarPanel::TryInfo(PanelInfo& pi)
-{
-	return Info.Control(_handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&pi) != 0;
 }
 
 FarFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
@@ -1121,7 +1141,7 @@ FarFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
 	FarFile^ f = gcnew FarFile;
 
 	f->Name = gcnew String(item.FindData.lpwszFileName);
-	f->Description = gcnew String(item.Description); 
+	f->Description = gcnew String(item.Description);
 	f->AlternateName = gcnew String(item.FindData.lpwszAlternateFileName);
 
 	f->Attributes = (FileAttributes)item.FindData.dwFileAttributes;
@@ -1135,21 +1155,24 @@ FarFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
 
 bool FarPanel::ShowHidden::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_SHOWHIDDEN) != 0;
 }
 
 bool FarPanel::Highlight::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_HIGHLIGHT) != 0;
 }
 
 bool FarPanel::ReverseSortOrder::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
 }
@@ -1161,21 +1184,24 @@ void FarPanel::ReverseSortOrder::set(bool value)
 
 bool FarPanel::UseSortGroups::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_USESORTGROUPS) != 0;
 }
 
 bool FarPanel::SelectedFirst::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_SELECTEDFIRST) != 0;
 }
 
 bool FarPanel::NumericSort::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_NUMERICSORT) != 0;
 }
@@ -1187,7 +1213,8 @@ void FarPanel::NumericSort::set(bool value)
 
 bool FarPanel::RealNames::get()
 {
-	AutoPanelInfo pi(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_REALNAMES) != 0;
 }
@@ -1212,10 +1239,11 @@ void FarPanel::GoToName(String^ name)
 	if (name->Length == 0)
 		return;
 
-	AutoPanelInfo info(_handle);
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
 
 	PIN_NE(pin, name);
-	for(int i = 0; i < info.ItemsNumber; ++i)
+	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, false);
 		if (Info.FSF->LStricmp(pin, item.Get().FindData.lpwszFileName) == 0 || Info.FSF->LStricmp(pin, item.Get().FindData.lpwszAlternateFileName) == 0)
@@ -1240,7 +1268,7 @@ void FarPanel::GoToPath(String^ path)
 		Path = dir;
 		Redraw();
 	}
-	
+
 	String^ name = IO::Path::GetFileName(path);
 	GoToName(name);
 }
@@ -1326,12 +1354,14 @@ void FarPluginPanel::Id::set(Guid value)
 IFile^ FarPluginPanel::CurrentFile::get()
 {
 	AssertOpen();
-	AutoPanelInfo info(Handle);
 
-	if (info.ItemsNumber == 0)
+	PanelInfo pi;
+	GetPanelInfo(Handle, pi);
+
+	if (pi.ItemsNumber == 0)
 		return nullptr;
 
-	AutoPluginPanelItem item(Handle, info.CurrentItem, false);
+	AutoPluginPanelItem item(Handle, pi.CurrentItem, false);
 	int fi = (int)(INT_PTR)item.Get().UserData;
 	if (fi < 0)
 		return nullptr;
@@ -1342,10 +1372,12 @@ IFile^ FarPluginPanel::CurrentFile::get()
 IList<IFile^>^ FarPluginPanel::ShownFiles::get()
 {
 	AssertOpen();
-	AutoPanelInfo info(Handle);
 
-	List<IFile^>^ r = gcnew List<IFile^>(info.ItemsNumber);
-	for(int i = 0; i < info.ItemsNumber; ++i)
+	PanelInfo pi;
+	GetPanelInfo(Handle, pi);
+
+	List<IFile^>^ r = gcnew List<IFile^>(pi.ItemsNumber);
+	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, false);
 		int fi = (int)(INT_PTR)item.Get().UserData;
@@ -1359,10 +1391,12 @@ IList<IFile^>^ FarPluginPanel::ShownFiles::get()
 IList<IFile^>^ FarPluginPanel::SelectedFiles::get()
 {
 	AssertOpen();
-	AutoPanelInfo info(Handle);
 
-	List<IFile^>^ r = gcnew List<IFile^>(info.SelectedItemsNumber);
-	for(int i = 0; i < info.SelectedItemsNumber; ++i)
+	PanelInfo pi;
+	GetPanelInfo(Handle, pi);
+
+	List<IFile^>^ r = gcnew List<IFile^>(pi.SelectedItemsNumber);
+	for(int i = 0; i < pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, true);
 		int fi = (int)(INT_PTR)item.Get().UserData;

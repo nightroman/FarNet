@@ -119,7 +119,7 @@ void Menu::DeleteItems(FarMenuItemEx* items)
 
 ToolOptions Menu::From()
 {
-	switch(Far::Instance->GetWindowType(-1))
+	switch(Far::Instance->WindowType)
 	{
 	case WindowType::Panels:
 		return ToolOptions::Panels;

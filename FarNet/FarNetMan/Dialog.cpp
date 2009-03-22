@@ -21,28 +21,11 @@ namespace FarNet
 // Gets control text of any length
 String^ GetText(HANDLE hDlg, int id, int start, int len)
 {
-	int textLen = (int)Info.SendDlgMessage(hDlg, DM_GETTEXTLENGTH, id, 0);
-
-	//! Apply command (CtrlG) returns 513 // is is for Far1 ??
-	wchar_t buf[514];
-	wchar_t* pBuf;
-	if (textLen >= SIZEOF(buf))
-		pBuf = new wchar_t[textLen + 1];
-	else
-		pBuf = buf;
-	Info.SendDlgMessage(hDlg, DM_GETTEXTPTR, id, (LONG_PTR)pBuf);
-
-	String^ r;
+	const wchar_t* sz = (const wchar_t*)Info.SendDlgMessage(hDlg, DM_GETCONSTTEXTPTR, id, 0);
 	if (start >= 0)
-		//?? TODO: selection: len is -1 when CtrlG is 513 and selected all
-		r = gcnew String(pBuf + start, 0, len);
+		return gcnew String(sz, start, len);
 	else
-		r = gcnew String(pBuf, 0, textLen);
-
-	if (pBuf != buf)
-		delete[] pBuf;
-
-	return r;
+		return gcnew String(sz);
 }
 #define DM_GETTEXT use_GetText
 #define DM_GETTEXTPTR use_GetText
@@ -606,12 +589,15 @@ String^ FarEdit::Mask::get()
 {
 	if ((_flags & DIF_MASKEDIT) == 0)
 		return nullptr;
+
 	return _history;
 }
 
 void FarEdit::Mask::set(String^ value)
 {
-	//??? dialog mode? perhaps we cannot change, then it has to fail
+	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
+		throw gcnew NotImplementedException();
+
 	if (_type != DI_FIXEDIT)
 		throw gcnew InvalidOperationException("You can set this only for fixed size edit control.");
 

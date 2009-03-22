@@ -175,7 +175,7 @@ public:
 	virtual IMenuItem^ Add(String^ text);
 	virtual void AttachItems();
 	virtual void DetachItems();
-	virtual void Clear() { _Items->Clear(); } // [_090208_042536]
+	virtual void Clear() { _Items->Clear(); } // Bug [_090208_042536]
 protected:
 	FarBaseList(FarDialog^ dialog, int index);
 	FarBaseList(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);

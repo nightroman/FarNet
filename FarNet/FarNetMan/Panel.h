@@ -82,8 +82,6 @@ public:
 internal:
 	FarPanel(bool current);
 	static FarFile^ ItemToFile(const PluginPanelItem& item);
-protected:
-	bool TryInfo(PanelInfo& pi);
 internal:
 	property HANDLE Handle { HANDLE get(); void set(HANDLE value); }
 	property int Index { int get() { return (int)(INT_PTR)_handle; } void set(int value) { _handle = (HANDLE)(INT_PTR)value; } }
@@ -213,6 +211,7 @@ public: DEF_EVENT(Idled, _Idled);
 public: DEF_EVENT(LosingFocus, _LosingFocus);
 public: DEF_EVENT_ARGS(Closing, _Closing, PanelEventArgs);
 public: DEF_EVENT_ARGS(DeletingFiles, _DeletingFiles, FilesEventArgs);
+public: DEF_EVENT_ARGS(Escaping, _Escaping, PanelEventArgs);
 public: DEF_EVENT_ARGS(Executing, _Executing, ExecutingEventArgs);
 public: DEF_EVENT_ARGS(GettingData, _GettingData, PanelEventArgs);
 public: DEF_EVENT_ARGS(GettingFiles, _GettingFiles, GettingFilesEventArgs);
