@@ -426,6 +426,8 @@ void Far::PostKeySequence(array<int>^ sequence)
 	PostKeySequence(sequence, true);
 }
 
+//! [_090328_170110] KSFLAGS_NOSENDKEYSTOPLUGINS is not set,
+//! but Tab for TabExpansion is not working in .ps1 editor, why?
 void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 {
 	if (sequence == nullptr) throw gcnew ArgumentNullException("sequence");
@@ -439,13 +441,15 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 	KeySequence keySequence;
 	keySequence.Count = sequence->Length;
 	keySequence.Flags = disableOutput ? KSFLAGS_DISABLEOUTPUT : 0;
+	
 	keySequence.Sequence = keySequence.Count <= smallCount ? keys : new DWORD[keySequence.Count];
 	DWORD* cur = keySequence.Sequence;
 	for each(int i in sequence)
 	{
 		*cur = i;
-		cur++;
+		++cur;
 	}
+	
 	try
 	{
 		if (!Info.AdvControl(Info.ModuleNumber, ACTL_POSTKEYSEQUENCE, &keySequence))
@@ -913,14 +917,22 @@ void Far::ShowHelp(String^ path, String^ topic, HelpOptions options)
 	Info.ShowHelp(pinPath, pinTopic, (int)options);
 }
 
+//! Console::Write writes some Unicode chars as '?'.
 void Far::Write(String^ text)
 {
+	if (ES(text))
+		return;
+
 	if (!ValueUserScreen::Get())
 	{
 		ValueUserScreen::Set(true);
 		GetUserScreen();
 	}
-	Console::Write(text);
+
+	PIN_NE(pin, text);
+	DWORD cch = text->Length;
+	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, NULL);
+
 	SetUserScreen();
 }
 
