@@ -350,6 +350,9 @@ namespace FarNet
 		/// Writes text on the user screen (under panels).
 		/// </summary>
 		/// <param name="text">Text.</param>
+		/// <remarks>
+		/// Avoid <c>Console.Write*</c> methods.
+		/// </remarks>
 		void Write(string text);
 		/// <summary>
 		/// Writes colored text on the user screen (under panels).

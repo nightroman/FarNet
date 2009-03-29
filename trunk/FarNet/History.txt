@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.0.9 =
+
+*) IFar.Write - fixed Unicode output (some characters were written as '?').
+Lesson to learn: avoid Console.Write* methods in FarNet and its plugins.
+
 = 4.0.8 =
 
 *) IPluginPanel. New event Escaping. It is triggered when [Escape] is pressed

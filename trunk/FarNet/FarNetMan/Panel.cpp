@@ -261,6 +261,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		{
 			//? FE_CLOSE issues:
 			// *) Bug [_090321_165608]: unwanted extra call on plugin commands entered in command line
+			// http://bugs.farmanager.com/view.php?id=602
 			// *) may not be called at all e.g. if tmp panel is opened
 			if (!pp->_IsPushed && pp->_Closing)
 			{
