@@ -317,15 +317,11 @@ int Viewer::CodePage::get()
 	if (!IsOpened)
 		return _CodePage;
 
-#if 1 //??? .CodePage is NYI in Far viewer
-	return _CodePage;
-#else
 	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
 	if (vi.ViewerID < 0 || vi.ViewerID != _id)
 		return 0;
 
-	return vi.CodePage;
-#endif
+	return vi.CurMode.CodePage;
 }
 
 void Viewer::CodePage::set(int value)

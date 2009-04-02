@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+= 4.0.10 =
+
+*) ISelection - new method SelectAll() selects all text in the editor. It is
+a helper, you can do the same by Select() with proper parameters.
+
+*) IViewer.CodePage for the opened viewer works now (read only).
+
+*) IFar.CodeToChar() fixed old ANSI approach.
+
 = 4.0.9 =
 
 *) IFar.Write - fixed Unicode output (some characters were written as '?').

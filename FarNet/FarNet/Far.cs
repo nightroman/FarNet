@@ -507,8 +507,12 @@ namespace FarNet
 		/// </param>
 		WindowType GetWindowType(int index);
 		/// <summary>
-		/// Converts an internal key code to a string. <see cref="KeyCode"/>
+		/// Converts an internal key code to a 'printable' char. <see cref="KeyCode"/>
 		/// </summary>
+		/// <remarks>
+		/// If the code does not correspond to a 'printable' char then 0 is returned.
+		/// Note: chars below space are returned as they are because they are sort of 'printable'.
+		/// </remarks>
 		char CodeToChar(int code);
 		/// <summary>
 		/// Gets stacked panels.
