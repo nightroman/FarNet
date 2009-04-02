@@ -269,6 +269,13 @@ void SelectionCollection::Select(SelectionType type, int pos1, int line1, int po
 	EditorControl_ECTL_SELECT(es);
 }
 
+void SelectionCollection::SelectAll()
+{
+	AutoEditorInfo ei;
+	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.TotalLines - 1);
+	Select(SelectionType::Stream, 0, 0, egs.StringLength - 1, ei.TotalLines - 1);
+}
+
 void SelectionCollection::Unselect()
 {
 	EditorSelect es;

@@ -165,14 +165,22 @@ void EditorControl_ECTL_SETSTRING(EditorSetString& ess)
 
 bool IsCurrentViewer()
 {
+	// get type
 	WindowInfo wi; wi.Pos = -1;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
 		throw gcnew InvalidOperationException("ACTL_GETSHORTWINDOWINFO failed.");
+
+	// viewer
 	if (wi.Type == WTYPE_VIEWER)
 		return true;
+
+	// not panels
 	if (wi.Type != WTYPE_PANELS)
 		return false;
-	//??? is it still like this?
+	
+	// qview
+	//! Verified for Far 2.0.843:
+	//! QView panel creates a viewer, it gets read and close events, but not focus.
 	PanelInfo pi;
 	GetPanelInfo(INVALID_HANDLE_VALUE, pi);
 	return pi.PanelType == PTYPE_QVIEWPANEL;

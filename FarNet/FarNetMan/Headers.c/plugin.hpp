@@ -4,7 +4,7 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 2.0 build 837
+  Plugin API for FAR Manager 2.0 build 849
 */
 
 /*
@@ -41,7 +41,7 @@ other possible license with no implications from the above license on them.
 
 #define FARMANAGERVERSION_MAJOR 2
 #define FARMANAGERVERSION_MINOR 0
-#define FARMANAGERVERSION_BUILD 837
+#define FARMANAGERVERSION_BUILD 849
 
 #ifndef RC_INVOKED
 
@@ -368,6 +368,8 @@ enum LISTITEMFLAGS {
   LIF_CHECKED            = 0x00020000UL,
   LIF_SEPARATOR          = 0x00040000UL,
   LIF_DISABLE            = 0x00080000UL,
+  LIF_GRAYED             = 0x00100000UL,
+  LIF_HIDDEN             = 0x00200000UL,
   LIF_DELETEUSERDATA     = 0x80000000UL,
 };
 
@@ -609,6 +611,8 @@ enum MENUITEMFLAGS {
   MIF_CHECKED    = 0x00020000UL,
   MIF_SEPARATOR  = 0x00040000UL,
   MIF_DISABLE    = 0x00080000UL,
+  MIF_GRAYED     = 0x00100000UL,
+  MIF_HIDDEN     = 0x00200000UL,
   MIF_USETEXTPTR = 0x80000000UL,
 };
 

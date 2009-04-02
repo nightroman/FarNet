@@ -28,6 +28,10 @@ namespace FarNet
 		/// <param name="line2">Line 2.</param>
 		void Select(SelectionType type, int pos1, int line1, int pos2, int line2);
 		/// <summary>
+		/// Selects all text.
+		/// </summary>
+		void SelectAll();
+		/// <summary>
 		/// Turns the selection off.
 		/// </summary>
 		void Unselect();

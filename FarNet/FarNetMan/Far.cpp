@@ -607,9 +607,13 @@ IInputBox^ Far::CreateInputBox()
 
 /*
 It is called frequently to get information about menu and disk commands.
+
 STOP:
 Check the instance, FarNet may be "unloaded", return empty information,
 but return flags, at least preloadable flag is absolutely important as cached.
+
+// http://forum.farmanager.com/viewtopic.php?f=7&t=3890
+// (?? it would be nice to have ACTL_POSTCALLBACK)
 */
 void Far::AsGetPluginInfo(PluginInfo* pi)
 {
@@ -620,29 +624,14 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 		return;
 
 	//! STOP
-	// Do not ignore this methods even in stepping mode:
+	// Do not ignore these methods even in stepping mode:
 	// *) plugins can change this during stepping and Far has to be informed;
 	// *) there is no more or less noticeable performance gain at all, really.
 	// We still can do that with some global flags telling that something was changed, but with
 	// not at all performance gain it would be more complexity for nothing. The code is disabled.
-#if 0
-	if (_handler)
-	{
-		// stepping is in progress, add the only item and return
-		// http://forum.farmanager.com/viewtopic.php?f=7&t=3890
-		// (?? it would be nice to have ACTL_POSTCALLBACK)
 
-		static const wchar_t s_DummyMenuString[] = L"";
-		static const wchar_t* s_DummyMenuStrings[] = { s_DummyMenuString };
-
-		pi->PluginMenuStringsNumber = 1;
-		pi->PluginMenuStrings = s_DummyMenuStrings;
-		
-		return;
-	}
-#endif
-
-	// get window type, this is the only known way to get the current area (?? it would be nice to have 'from' parameter)
+	// get window type, this is the only known way to get the current area
+	// (?? wish to have 'from' parameter)
 	WindowInfo wi;
 	wi.Pos = -1;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
@@ -1094,8 +1083,15 @@ bool Far::Commit()
 
 Char Far::CodeToChar(int code)
 {
-	code &= ~ KeyMode::CtrlAlt;
-	return code < 0 || code > 255 ? 0 : Char(code); //?? Unicode chars?
+	// get just the code
+	code &= KeyMode::CodeMask;
+
+	// not char
+	if (code > 0xFFFF)
+		return 0;
+
+	// convert
+	return Char(code);
 }
 
 Object^ Far::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
