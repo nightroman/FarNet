@@ -35,6 +35,7 @@ public:
 	virtual void SetText(String^ text);
 public:
 	virtual void Select(SelectionType type, int pos1, int line1, int pos2, int line2);
+	virtual void SelectAll();
 	virtual void Unselect();
 public:
 	virtual bool Contains(ILine^) { throw gcnew NotSupportedException; }

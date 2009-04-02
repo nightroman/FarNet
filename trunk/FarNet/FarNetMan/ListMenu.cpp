@@ -389,7 +389,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 		else
 		{
 			Char c = Far::Instance->CodeToChar(e->Code);
-			if (c >= ' ')
+			if (c >= KeyCode::Space)
 			{
 				// keep and change filter
 				String^ filter2Bak = _filter2;

@@ -1,7 +1,7 @@
 <Project DefaultTargets="Install" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<Install Condition="'$(Install)' == ''">C:\Program Files\Far\Plugins\FarNet</Install>
+		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
@@ -15,12 +15,12 @@
 	</Target>
 
 	<Target Name="Install">
-		<Copy SourceFiles="@(PublishFile)" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(PublishFile)" DestinationFolder="$(Install)\Plugins\FarNet" SkipUnchangedFiles="true"/>
 	</Target>
 
 	<Target Name="Uninstall">
 		<Error Condition="'$(Install)' == ''"/>
-		<RemoveDir Directories="$(Install)"/>
+		<RemoveDir Directories="$(Install)\Plugins\FarNet"/>
 	</Target>
 
 </Project>
