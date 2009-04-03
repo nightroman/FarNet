@@ -2,6 +2,6 @@
 
 = Introduction =
 
-(FAR.NET 3.x only!)
+NOTE: *It is not developed or supported*. The last available version is only for Far Manager 1.x with FAR.NET 3.x.
 
 The plugin loads all the scripts from Scripts directory. Scripts register a few tools available in the FAR plugin menu and in the command line (the default command prefix is "ipy").
