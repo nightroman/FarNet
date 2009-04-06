@@ -14,6 +14,8 @@ public:
 public:
 	virtual property bool Checked;
 	virtual property bool Disabled;
+	virtual property bool Grayed;
+	virtual property bool Hidden;
 	virtual property bool IsSeparator;
 	virtual property Object^ Data;
 	virtual property String^ Text;

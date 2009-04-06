@@ -150,6 +150,7 @@ public:
 	FPPI_TEXT(Title, PanelTitle);
 public:
 	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() { return _InfoItems; } void set(array<DataItem^>^ value); }
+	virtual property array<PanelModeInfo^>^ Modes { array<PanelModeInfo^>^ get() { return _Modes; } void set(array<PanelModeInfo^>^ value); }
 	virtual void SetKeyBarAlt(array<String^>^ labels);
 	virtual void SetKeyBarAltShift(array<String^>^ labels);
 	virtual void SetKeyBarCtrl(array<String^>^ labels);
@@ -160,12 +161,15 @@ public:
 private:
 	int Flags();
 	void CreateInfoLines();
+	void CreateModes();
 	void DeleteInfoLines();
+	void DeleteModes();
 	static void Free12Strings(wchar_t* const dst[12]);
 	static void Make12Strings(wchar_t** dst, array<String^>^ src);
 private:
 	OpenPluginInfo* m;
 	array<DataItem^>^ _InfoItems;
+	array<PanelModeInfo^>^ _Modes;
 	array<String^>^ _keyBarAlt;
 	array<String^>^ _keyBarAltShift;
 	array<String^>^ _keyBarCtrl;

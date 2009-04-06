@@ -1,5 +1,23 @@
 http://code.google.com/p/farnet/
 
+= 4.0.11 =
+
+*) New. PanelModeInfo and IPluginPanelInfo.Modes are used for setting plugin
+panel view modes (column types, widths, titles, status line and etc.). To be
+continued, remarks are welcome.
+
+*) Implemented processing of IFile.Owner for plugin panels. It can be used as
+a custom column (with proper view mode and column titles, see above).
+
+*) IFar.GetHistory() - adapted to recent Far Manger registry history changes.
+
+*) IMenuItem - new properties Grayed, Hidded (new in Far API).
+
+*) PaletteColor - added new values (new in Far API).
+
+*) ControlKeyStates, KeyInfo and MouseInfo: AltCtrlShift is set obsolete (not
+standard name) and will be removed soon. Use classic CtrlAltShift instead.
+
 = 4.0.10 =
 
 *) ISelection - new method SelectAll() selects all text in the editor. It is

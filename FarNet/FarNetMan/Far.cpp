@@ -789,7 +789,6 @@ ICollection<String^>^ Far::GetHistory(String^ name)
 ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 {
 	List<String^>^ r = gcnew List<String^>;
-	List<String^>^ tail = gcnew List<String^>;
 
 	String^ keyName = RootFar + "\\" + name;
 	RegistryKey^ key = nullptr;
@@ -798,41 +797,31 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 		key = Registry::CurrentUser->OpenSubKey(keyName);
 		if (key)
 		{
-			array<Byte>^ value = reinterpret_cast<array<Byte>^>(key->GetValue(L"Lines", nullptr));
-			if (value && value->Length)
+			array<String^>^ lines = reinterpret_cast<array<String^>^>(key->GetValue(L"Lines", nullptr));
+			if (lines && lines->Length)
 			{
-				Object^ o = key->GetValue(L"Position", nullptr);
-				int position = o ? (int)(o) : 0;
+				// capacity
+				r->Capacity = lines->Length;
 
 				String^ types = nullptr;
 				if (filter)
 				{
-					o = key->GetValue(L"Types", nullptr);
+					Object^ o = key->GetValue(L"Types", nullptr);
 					if (o)
 						types = o->ToString();
 				}
 				
-				pin_ptr<Byte> pin = &value[0];
-				wchar_t* chars = (wchar_t*)pin;
-				int nb = (value->Length - 2) / 2;
-				for(int i = 0, index = 0; i < nb; ++index)
+				for(int i = lines->Length; --i >= 0;)
 				{
-					// the string
-					String^ s = gcnew String(chars + i);
-					i += s->Length + 1;
-
 					// filter
-					if (filter && types && index < types->Length)
+					if (types && i < types->Length)
 					{
-						if (filter->IndexOf(types[index]) < 0)
+						if (filter->IndexOf(types[i]) < 0)
 							continue;
 					}
 					
 					// add
-					if (index >= position)
-						r->Add(s);
-					else
-						tail->Add(s);
+					r->Add(lines[i]);
 				}
 			}
 		}
@@ -842,10 +831,6 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 		if (key)
 			key->Close();
 	}
-
-	// add tail to the result
-	if (tail->Count > 0)
-		r->AddRange(tail);
 
 	return r;
 }
