@@ -161,6 +161,10 @@ void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* titl
 		item2.Flags = 0;
 		if (item1->Checked)
 			item2.Flags |= MIF_CHECKED;
+		if (item1->Grayed)
+			item2.Flags |= MIF_GRAYED;
+		if (item1->Hidden)
+			item2.Flags |= MIF_HIDDEN;
 		if (item1->IsSeparator)
 			item2.Flags |= MIF_SEPARATOR;
 

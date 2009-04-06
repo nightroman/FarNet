@@ -127,6 +127,8 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 				sizeData += f->Name->Length + 1;
 			if (SS(f->Description))
 				sizeData += f->Description->Length + 1;
+			if (SS(f->Owner))
+				sizeData += f->Owner->Length + 1;
 			if (SS(f->AlternateName))
 				sizeData += f->AlternateName->Length + 1;
 		}
@@ -175,6 +177,12 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 				CopyStringToChars(f->Description, data);
 				p.Description = data;
 				data += f->Description->Length + 1;
+			}
+			if (SS(f->Owner))
+			{
+				CopyStringToChars(f->Owner, data);
+				p.Owner = data;
+				data += f->Owner->Length + 1;
 			}
 			if (SS(f->AlternateName))
 			{
@@ -829,6 +837,86 @@ void FarPluginPanelInfo::DeleteInfoLines()
 	}
 }
 
+void FarPluginPanelInfo::Modes::set(array<PanelModeInfo^>^ value)
+{
+	LL(__FUNCTION__);
+
+	if (m)
+	{
+		DeleteModes();
+	
+		_Modes = value;
+		CreateModes();
+	}
+	else
+	{
+		_Modes = value;
+	}
+}
+
+void FarPluginPanelInfo::CreateModes()
+{
+	LL(__FUNCTION__);
+
+	if (!_Modes)
+		return;
+
+	m->PanelModesNumber = _Modes->Length;
+	if (!m->PanelModesArray)
+		m->PanelModesArray = new ::PanelMode[_Modes->Length];
+
+	for(int i = _Modes->Length; --i >= 0;)
+	{
+		PanelModeInfo^ s = _Modes[i];
+		::PanelMode& d = (::PanelMode&)m->PanelModesArray[i];
+		memset(&d, 0, sizeof(::PanelMode));
+		if (!s)
+			continue;
+
+		d.ColumnTypes = NewChars(s->ColumnTypes);
+		d.ColumnWidths = NewChars(s->ColumnWidths);
+		d.StatusColumnTypes = NewChars(s->StatusColumnTypes);
+		d.StatusColumnWidths = NewChars(s->StatusColumnWidths);
+		
+		if (s->ColumnTitles && s->ColumnTitles->Length)
+		{
+			d.ColumnTitles = new wchar_t*[s->ColumnTitles->Length];
+			for(int i = s->ColumnTitles->Length; --i >= 0;)
+				d.ColumnTitles[i] = NewChars(s->ColumnTitles[i]);
+		}
+
+		d.DetailedStatus = s->IsDetailedStatus;
+		d.FullScreen = s->IsFullScreen;
+	}
+}
+
+void FarPluginPanelInfo::DeleteModes()
+{
+	LL(__FUNCTION__);
+
+	if (m->PanelModesArray)
+	{
+		for(int i = m->PanelModesNumber; --i >= 0;)
+		{
+			delete m->PanelModesArray[i].ColumnTypes;
+			delete m->PanelModesArray[i].ColumnWidths;
+			delete m->PanelModesArray[i].StatusColumnTypes;
+			delete m->PanelModesArray[i].StatusColumnWidths;
+
+			if (m->PanelModesArray[i].ColumnTitles)
+			{
+				for(int j = _Modes[i]->ColumnTitles->Length; --j >= 0;)
+					delete m->PanelModesArray[i].ColumnTitles[j];
+				delete m->PanelModesArray[i].ColumnTitles;
+			}
+		}
+
+		delete[] m->PanelModesArray;
+		m->PanelModesNumber = 0;
+		m->PanelModesArray = 0;
+	}
+}
+
 void FarPluginPanelInfo::InfoItems::set(array<DataItem^>^ value)
 {
 	_InfoItems = value;
@@ -899,6 +987,9 @@ OpenPluginInfo& FarPluginPanelInfo::Make()
 	if (_InfoItems)
 		CreateInfoLines();
 
+	if (_Modes)
+		CreateModes();
+
 	return *m;
 }
 
@@ -912,6 +1003,7 @@ void FarPluginPanelInfo::Free()
 		delete[] m->PanelTitle;
 
 		DeleteInfoLines();
+		DeleteModes();
 
 		if (m->KeyBar)
 		{

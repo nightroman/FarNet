@@ -427,6 +427,6 @@ bool EqualsOrdinal(String^ strA, String^ strB)
 	return StringComparer::OrdinalIgnoreCase->Equals(strA, strB);
 }
 
-#ifdef TEST1
+#ifdef DEBUG_MEMORY
 #include <Test1.cpp>
 #endif

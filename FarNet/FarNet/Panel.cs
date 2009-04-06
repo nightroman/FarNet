@@ -520,6 +520,14 @@ namespace FarNet
 		/// </summary>
 		DataItem[] InfoItems { get; set; }
 		/// <summary>
+		/// Panel modes information list.
+		/// </summary>
+		/// <remarks>
+		/// When a panel is opened you can changes items dynamically, but do not forget
+		/// to reset the list itself, changes in items are not reflected without this.
+		/// </remarks>
+		PanelModeInfo[] Modes { get; set; }
+		/// <summary>
 		/// 1-12 key bar labels, use empty labels for FAR defaults.
 		/// </summary>
 		void SetKeyBarMain(string[] labels);
@@ -547,6 +555,98 @@ namespace FarNet
 		/// 1-12 key bar labels, use empty labels for FAR defaults.
 		/// </summary>
 		void SetKeyBarCtrlAlt(string[] labels);
+	}
+
+	/// <summary>
+	/// Describes one panel view mode.
+	/// </summary>
+	/// <remarks>
+	/// Normally it is used as an item of <see cref="IPluginPanelInfo.Modes"/>.
+	/// When a panel is opened you can change modes dynamically, but do not forget
+	/// to reset the list itself, changes in items are not reflected without this.
+	/// <para>
+	/// Properties <c>IsAlignedExtensions</c> and <c>IsCaseConversion</c>
+	/// can be implemented in the future on demand.
+	/// </para>
+	/// </remarks>
+	public sealed class PanelModeInfo
+	{
+		string _ColumnTypes;
+		/// <summary>
+		/// Text string which describes column types.
+		/// </summary>
+		/// <remarks>
+		/// Column types are encoded by one or more letters separated by commas: "N,SC,D,T".
+		/// To use standard Far panel view modes, keep this field null or empty.
+		/// See Far [Column types].
+		/// </remarks>
+		public string ColumnTypes
+		{
+			get { return _ColumnTypes; }
+			set { _ColumnTypes = value; }
+		}
+		string _ColumnWidths;
+		/// <summary>
+		/// Column widths.
+		/// See Far [Column width].
+		/// </summary>
+		public string ColumnWidths
+		{
+			get { return _ColumnWidths; }
+			set { _ColumnWidths = value; }
+		}
+		string[] _ColumnTitles;
+		/// <summary>
+		/// Column titles. To use standard column names, keep it null.
+		/// </summary>
+		/// <remarks>
+		/// WARNING: number of items must be not less than number of <see cref="ColumnTypes"/>. Otherwise Far may crash.
+		/// </remarks>
+		public string[] ColumnTitles
+		{
+			get { return _ColumnTitles; }
+			set { _ColumnTitles = value; }
+		}
+		bool _IsFullScreen;
+		/// <summary>
+		/// Tells to resize panel to fill the entire window (instead of half).
+		/// </summary>
+		public bool IsFullScreen
+		{
+			get { return _IsFullScreen; }
+			set { _IsFullScreen = value; }
+		}
+		bool _IsDetailedStatus;
+		/// <summary>
+		/// Tells to display full status info for a file.
+		/// </summary>
+		/// <remarks>
+		/// Tells to display full status info for a file if <c>Status*</c> are not defined.
+		/// Otherwise, the status line displays the file name.
+		/// </remarks>
+		public bool IsDetailedStatus
+		{
+			get { return _IsDetailedStatus; }
+			set { _IsDetailedStatus = value; }
+		}
+		string _StatusColumnTypes;
+		/// <summary>
+		/// Text string which describes status column types.
+		/// </summary>
+		public string StatusColumnTypes
+		{
+			get { return _StatusColumnTypes; }
+			set { _StatusColumnTypes = value; }
+		}
+		string _StatusColumnWidths;
+		/// <summary>
+		/// Status column widths.
+		/// </summary>
+		public string StatusColumnWidths
+		{
+			get { return _StatusColumnWidths; }
+			set { _StatusColumnWidths = value; }
+		}
 	}
 
 	/// <summary>

@@ -57,17 +57,21 @@ namespace FarNet
 	public interface IMenuItem
 	{
 		/// <summary>
-		/// Item is checked (i.e. ticked off in a menu or a list).
+		/// Item is checked.
 		/// </summary>
 		bool Checked { get; set; }
 		/// <summary>
-		/// Any user data attached to the item.
-		/// </summary>
-		object Data { get; set; }
-		/// <summary>
-		/// Item is disabled.
+		/// Item is disabled. It cannot be selected.
 		/// </summary>
 		bool Disabled { get; set; }
+		/// <summary>
+		/// Item is shown, but cannot be selected.
+		/// </summary>
+		bool Grayed { get; set; }
+		/// <summary>
+		/// Item is hidden. It cannot be selected.
+		/// </summary>
+		bool Hidden { get; set; }
 		/// <summary>
 		/// Item is a separator. <see cref="Text"/>, if any, is shown center aligned.
 		/// </summary>
@@ -84,6 +88,10 @@ namespace FarNet
 		/// Event raised when a menu item is clicked.
 		/// </summary>
 		event EventHandler OnClick;
+		/// <summary>
+		/// Any user data attached to the item.
+		/// </summary>
+		object Data { get; set; }
 	}
 
 	/// <summary>

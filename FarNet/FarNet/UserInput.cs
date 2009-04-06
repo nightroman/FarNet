@@ -33,7 +33,12 @@ namespace FarNet
 		CapsLockOn = 0x0080,
 		/// <summary>Enhanced key.</summary>
 		EnhancedKey = 0x0100,
-		/// <summary>Alt, Ctrl and Shift states.</summary>
+		/// <summary>Ctrl, Alt and Shift states.</summary>
+		CtrlAltShift = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed,
+		/// <summary>
+		/// [Obsolete("Use CtrlAltShift")]
+		/// </summary>
+		[Obsolete("Use CtrlAltShift")]
 		AltCtrlShift = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed,
 		/// <summary>All states.</summary>
 		All = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed | NumLockOn | ScrollLockOn | CapsLockOn | EnhancedKey
@@ -712,6 +717,27 @@ OemClear = 254;
 		MenuArrowsSelected,
 
 		///
+		MenuGrayText,
+		///
+		MenuSelectedGrayText,
+		///
+		DialogComboGray,
+		///
+		DialogComboSelectedGrayText,
+		///
+		DialogListGray,
+		///
+		DialogListSelectedGrayText,
+		///
+		WarnDialogComboGray,
+		///
+		WarnDialogComboSelectedGrayText,
+		///
+		WarnDialogListGray,
+		///
+		WarnDialogListSelectedGrayText,
+
+		///
 		LastPaletteColor
 	}
 
@@ -762,7 +788,7 @@ OemClear = 254;
 		/// </summary>
 		public char Character { get { return _character; } set { _character = value; } }
 		/// <summary>
-		/// Control key states.
+		/// Gets all control key states.
 		/// </summary>
 		public ControlKeyStates ControlKeyState { get { return _controlKeyState; } set { _controlKeyState = value; } }
 		/// <summary>
@@ -770,17 +796,14 @@ OemClear = 254;
 		/// </summary>
 		public bool KeyDown { get { return _keyDown; } set { _keyDown = value; } }
 		/// <summary>
-		/// Gets only Alt, Ctrl and Shift states.
+		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
-		public ControlKeyStates AltCtrlShift { get { return _controlKeyState & ControlKeyStates.AltCtrlShift; } }
+		public ControlKeyStates CtrlAltShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
 		/// <summary>
-		/// <see cref="AltCtrlShift"/> is equal to <see cref="ControlKeyStates.ShiftPressed"/>. TEST ONLY ????
+		/// [Obsolete("Use CtrlAltShift")]
 		/// </summary>
-		public bool JustShiftPressed { get { return (_controlKeyState & ControlKeyStates.AltCtrlShift) == ControlKeyStates.ShiftPressed; } }
-		/// <summary>
-		/// <see cref="ControlKeyState"/> has <see cref="ControlKeyStates.EnhancedKey"/>. TEST ONLY ????
-		/// </summary>
-		public bool WithEnhancedKey { get { return (_controlKeyState & ControlKeyStates.EnhancedKey) != ControlKeyStates.None; } }
+		[Obsolete("Use CtrlAltShift")]
+		public ControlKeyStates AltCtrlShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
 		///
 		public override string ToString()
 		{
@@ -847,22 +870,19 @@ OemClear = 254;
 		public MouseAction Action { get { return _action; } set { _action = value; } }
 		MouseAction _action;
 		/// <summary>
-		/// Control key states.
+		/// Gets all control key states.
 		/// </summary>
 		public ControlKeyStates ControlKeyState { get { return _controlKeyState; } set { _controlKeyState = value; } }
 		ControlKeyStates _controlKeyState;
 		/// <summary>
-		/// Gets only Alt, Ctrl and Shift states.
+		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
-		public ControlKeyStates AltCtrlShift { get { return _controlKeyState & ControlKeyStates.AltCtrlShift; } }
+		public ControlKeyStates CtrlAltShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
 		/// <summary>
-		/// <see cref="AltCtrlShift"/> is equal to <see cref="ControlKeyStates.ShiftPressed"/>. TEST ONLY ????
+		/// [Obsolete("Use CtrlAltShift")]
 		/// </summary>
-		public bool JustShiftPressed { get { return (_controlKeyState & ControlKeyStates.AltCtrlShift) == ControlKeyStates.ShiftPressed; } }
-		/// <summary>
-		/// <see cref="ControlKeyState"/> has <see cref="ControlKeyStates.EnhancedKey"/>. TEST ONLY ????
-		/// </summary>
-		public bool WithEnhancedKey { get { return (_controlKeyState & ControlKeyStates.EnhancedKey) != ControlKeyStates.None; } }
+		[Obsolete("Use CtrlAltShift")]
+		public ControlKeyStates AltCtrlShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
 		///
 		public override string ToString()
 		{
