@@ -821,6 +821,10 @@ void FarBaseList::InitFarListItem(FarListItem& i2, IMenuItem^ i1)
 		i2.Flags |= LIF_CHECKED;
 	if (i1->Disabled)
 		i2.Flags |= LIF_DISABLE;
+	if (i1->Grayed)
+		i2.Flags |= LIF_GRAYED;
+	if (i1->Hidden)
+		i2.Flags |= LIF_HIDDEN;
 	if (i1->IsSeparator)
 		i2.Flags |= LIF_SEPARATOR;
 }
@@ -832,6 +836,10 @@ void FarBaseList::InitFarListItemShort(FarListItem& i2, IMenuItem^ i1)
 		i2.Flags |= LIF_CHECKED;
 	if (i1->Disabled)
 		i2.Flags |= LIF_DISABLE;
+	if (i1->Grayed)
+		i2.Flags |= LIF_GRAYED;
+	if (i1->Hidden)
+		i2.Flags |= LIF_HIDDEN;
 	if (i1->IsSeparator)
 		i2.Flags |= LIF_SEPARATOR;
 }
