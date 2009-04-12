@@ -6,6 +6,15 @@ Copyright (c) 2005-2009 FarNet Team
 #include "StdAfx.h"
 #include "Wrappers.h"
 
+/*
+GetPanelInfo is in progress. The problem: Far calls AsGetOpenPluginInfo and plugin may have GettingInfo handler
+where it may call panel properties, i.e. GetPanelInfo again. Far resolves recursion fine, but there are issues.
+E.g. GettingInfo asks the current file; GettingData removes items and asks view mode - the latter triggers
+GettingInfo and returned current file info is inconsistent with the actual items.
+NOTE: Far design flaw.
+*/
+bool State::GetPanelInfo;
+
 #undef ACTL_GETWINDOWINFO
 #undef ACTL_FREEWINDOWINFO
 
@@ -81,6 +90,8 @@ AutoPluginPanelItem::~AutoPluginPanelItem()
 
 void GetPanelInfo(HANDLE handle, PanelInfo& info)
 {
+	SetState<bool> state(State::GetPanelInfo, true);
+
 	if (!Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&info))
 		throw gcnew OperationCanceledException("Cannot get panel information.");
 }
@@ -88,5 +99,7 @@ void GetPanelInfo(HANDLE handle, PanelInfo& info)
 //! Steps: open a panel; Tab; CtrlL; $Far.Panel used to fail
 bool TryPanelInfo(HANDLE handle, PanelInfo& info)
 {
+	SetState<bool> state(State::GetPanelInfo, true);
+
 	return Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&info) ? true : false;
 }

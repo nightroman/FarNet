@@ -1,5 +1,25 @@
 http://code.google.com/p/farnet/
 
+= 4.0.12 =
+
+PLUGIN PANEL VIEW MODES
+(in progress, subject to change)
+
+*) New .NET menu item "Switch full screen" allows to switch "full screen"
+mode for any view mode of any FarNet panel. So that you may actually have
+20 modes = 10 as usual + 10 the same but with switched "full screen".
+
+*) PanelModeInfo - new method Clone() for shallow copy. It is useful for
+creation of similar modes with a few differences.
+
+*) IPluginPanelInfo - replaced property Modes (array of all modes) with two
+methods GetMode() and SetMode() (they work only for one mode).
+
+OTHER CHANGES
+
+*) ControlKeyStates, KeyInfo and MouseInfo: obsolete not standard name
+AltCtrlShift was replaced with classic name CtrlAltShift.
+
 = 4.0.11 =
 
 *) New. PanelModeInfo and IPluginPanelInfo.Modes are used for setting plugin

@@ -46,8 +46,8 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 	// load!
 	s_loaded = true;
 
-#ifdef DEBUG_MEMORY
-	StartDebugMemory();
+#ifdef TRACE_MEMORY
+	StartTraceMemory();
 #endif
 
 	Info = *psi;
@@ -74,8 +74,8 @@ void WINAPI ExitFARW()
 		// don't try/catch, FAR can't help
 		Far::Instance->Stop();
 
-#ifdef DEBUG_MEMORY
-		StopDebugMemory();
+#ifdef TRACE_MEMORY
+		StopTraceMemory();
 #endif
 	}
 }

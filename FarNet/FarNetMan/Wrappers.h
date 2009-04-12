@@ -5,6 +5,29 @@ Copyright (c) 2005-2009 FarNet Team
 
 #pragma once
 
+class State
+{
+public:
+	static bool GetPanelInfo;
+};
+
+template<class Type>
+class SetState
+{
+public:
+	SetState(Type& value1, Type value2) : _value(&value1), _saved(value1)
+	{
+		*_value = value2;
+	}
+	~SetState()
+	{
+		*_value = _saved;
+	}
+private:
+	Type* _value;
+	Type _saved;
+};
+
 class AutoWindowInfo : public WindowInfo
 {
 public:

@@ -520,14 +520,6 @@ namespace FarNet
 		/// </summary>
 		DataItem[] InfoItems { get; set; }
 		/// <summary>
-		/// Panel modes information list.
-		/// </summary>
-		/// <remarks>
-		/// When a panel is opened you can changes items dynamically, but do not forget
-		/// to reset the list itself, changes in items are not reflected without this.
-		/// </remarks>
-		PanelModeInfo[] Modes { get; set; }
-		/// <summary>
 		/// 1-12 key bar labels, use empty labels for FAR defaults.
 		/// </summary>
 		void SetKeyBarMain(string[] labels);
@@ -555,13 +547,27 @@ namespace FarNet
 		/// 1-12 key bar labels, use empty labels for FAR defaults.
 		/// </summary>
 		void SetKeyBarCtrlAlt(string[] labels);
+		/// <summary>
+		/// Gets panel mode information or null if it is not set.
+		/// </summary>
+		/// <param name="viewMode">View mode to get information for.</param>
+		/// <returns>
+		/// Mode information. If you change it for opened panel then call <see cref="SetMode"/>.
+		/// </returns>
+		PanelModeInfo GetMode(PanelViewMode viewMode);
+		/// <summary>
+		/// Sets panel mode information.
+		/// </summary>
+		/// <param name="viewMode">View mode to set information for.</param>
+		/// <param name="modeInfo">Mode information.</param>
+		void SetMode(PanelViewMode viewMode, PanelModeInfo modeInfo);
 	}
 
 	/// <summary>
 	/// Describes one panel view mode.
 	/// </summary>
 	/// <remarks>
-	/// Normally it is used as an item of <see cref="IPluginPanelInfo.Modes"/>.
+	/// Normally it is used for <see cref="IPluginPanelInfo.SetMode"/>.
 	/// When a panel is opened you can change modes dynamically, but do not forget
 	/// to reset the list itself, changes in items are not reflected without this.
 	/// <para>
@@ -569,7 +575,7 @@ namespace FarNet
 	/// can be implemented in the future on demand.
 	/// </para>
 	/// </remarks>
-	public sealed class PanelModeInfo
+	public sealed class PanelModeInfo : ICloneable
 	{
 		string _ColumnTypes;
 		/// <summary>
@@ -647,10 +653,20 @@ namespace FarNet
 			get { return _StatusColumnWidths; }
 			set { _StatusColumnWidths = value; }
 		}
+		/// <summary>
+		/// Shallow copy.
+		/// </summary>
+		/// <remarks>
+		/// Use it to create another mode with the same properties and then change a few of them.
+		/// </remarks>
+		public object Clone()
+		{
+			return MemberwiseClone();
+		}
 	}
 
 	/// <summary>
-	/// Sent to a plugin additional information about function operation mode and place, from which it was called.
+	/// Additional information about the operation a plugin if called for.
 	/// </summary>
 	[Flags]
 	public enum OperationModes

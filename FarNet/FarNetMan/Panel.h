@@ -150,7 +150,7 @@ public:
 	FPPI_TEXT(Title, PanelTitle);
 public:
 	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() { return _InfoItems; } void set(array<DataItem^>^ value); }
-	virtual property array<PanelModeInfo^>^ Modes { array<PanelModeInfo^>^ get() { return _Modes; } void set(array<PanelModeInfo^>^ value); }
+	virtual PanelModeInfo^ GetMode(PanelViewMode viewMode);
 	virtual void SetKeyBarAlt(array<String^>^ labels);
 	virtual void SetKeyBarAltShift(array<String^>^ labels);
 	virtual void SetKeyBarCtrl(array<String^>^ labels);
@@ -158,6 +158,7 @@ public:
 	virtual void SetKeyBarCtrlShift(array<String^>^ labels);
 	virtual void SetKeyBarMain(array<String^>^ labels);
 	virtual void SetKeyBarShift(array<String^>^ labels);
+	virtual void SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo);
 private:
 	int Flags();
 	void CreateInfoLines();
@@ -228,9 +229,11 @@ public: DEF_EVENT_ARGS(ViewModeChanged, _ViewModeChanged, ViewModeChangedEventAr
 internal:
 	FarPluginPanel();
 	void AssertOpen();
+	void SwitchFullScreen();
 	List<IFile^>^ ReplaceFiles(List<IFile^>^ files);
 internal:
 	bool _IsPushed;
+	bool _skipGettingData;
 	FarPluginPanelInfo _info;
 	Object^ _postData;
 	IFile^ _postFile;

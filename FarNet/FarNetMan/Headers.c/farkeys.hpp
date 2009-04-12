@@ -3,7 +3,7 @@
 /*
   farkeys.hpp
 
-  Inside KeyName for FAR Manager 2.0 build 849
+  Inside KeyName for FAR Manager 2.0 build 866
 */
 
 /*
