@@ -35,11 +35,6 @@ namespace FarNet
 		EnhancedKey = 0x0100,
 		/// <summary>Ctrl, Alt and Shift states.</summary>
 		CtrlAltShift = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed,
-		/// <summary>
-		/// [Obsolete("Use CtrlAltShift")]
-		/// </summary>
-		[Obsolete("Use CtrlAltShift")]
-		AltCtrlShift = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed,
 		/// <summary>All states.</summary>
 		All = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed | NumLockOn | ScrollLockOn | CapsLockOn | EnhancedKey
 	}
@@ -799,11 +794,6 @@ OemClear = 254;
 		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
 		public ControlKeyStates CtrlAltShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
-		/// <summary>
-		/// [Obsolete("Use CtrlAltShift")]
-		/// </summary>
-		[Obsolete("Use CtrlAltShift")]
-		public ControlKeyStates AltCtrlShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
 		///
 		public override string ToString()
 		{
@@ -878,11 +868,6 @@ OemClear = 254;
 		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
 		public ControlKeyStates CtrlAltShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
-		/// <summary>
-		/// [Obsolete("Use CtrlAltShift")]
-		/// </summary>
-		[Obsolete("Use CtrlAltShift")]
-		public ControlKeyStates AltCtrlShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
 		///
 		public override string ToString()
 		{

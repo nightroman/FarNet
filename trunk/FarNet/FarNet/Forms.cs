@@ -79,6 +79,14 @@ namespace FarNet.Forms
 	/// Button control.
 	/// It is created and added to a dialog by <see cref="IDialog.AddButton"/>.
 	/// </summary>
+	/// <remarks>
+	/// When a button is clicked then <see cref="ButtonClicked"/> event is triggered and normally the dialog closes.
+	/// <para>
+	/// There are a few ways to keep the dialog running: set the button property <see cref="NoClose"/> or
+	/// set the event property <see cref="ButtonClickedEventArgs.Ignore"/>.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="IDialog.Cancel"/>
 	public interface IButton : IControl
 	{
 		/// <summary>
@@ -460,7 +468,7 @@ namespace FarNet.Forms
 		/// </remarks>
 		event EventHandler<ClosingEventArgs> Closing;
 		/// <summary>
-		/// Event is sent to the dialog when the dialog enters the idle state.
+		/// Event is sent to the dialog periodically when the dialog is idle.
 		/// </summary>
 		event EventHandler<AnyEventArgs> Idled;
 		/// <summary>
@@ -520,13 +528,14 @@ namespace FarNet.Forms
 		/// </summary>
 		Place Rect { get; set; }
 		/// <summary>
-		/// If it is set and the button is pushed <see cref="Show"/> returns false.
+		/// When this button is clicked then the dialog method <see cref="Show"/>
+		/// returns false as if a user cancels the dialog.
 		/// </summary>
 		IButton Cancel { get; set; }
 		/// <summary>
 		/// Shows a dialog.
 		/// </summary>
-		/// <returns>false if the user cancelled the dialog or pushed <see cref="Cancel"/> button.</returns>
+		/// <returns>false if the user cancelled the dialog or clicked the button<see cref="Cancel"/>.</returns>
 		bool Show();
 		/// <summary>
 		/// Adds a double or single box control. See <see cref="NoSmartCoords"/>.

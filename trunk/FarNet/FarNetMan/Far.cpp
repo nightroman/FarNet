@@ -36,6 +36,14 @@ void Far::StartFar()
 	// versions
 	//DWORD vn; Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
 	//int v1 = (vn & 0x0000ff00)>>8, v2 = vn & 0x000000ff, v3 = (int)((long)vn&0xffff0000)>>16;
+
+#if defined(_DEBUG) && 0
+	Trace::Listeners->Clear();
+	Trace::AutoFlush = true;
+	Stream^ myFile = File::Open("c:\\Far.log", FileMode::Append, FileAccess::Write, FileShare::Read);
+	TextWriterTraceListener^ myTextListener = gcnew TextWriterTraceListener(myFile);
+	Trace::Listeners->Add(myTextListener);
+#endif
 }
 
 void Far::Start()
@@ -804,7 +812,7 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 				r->Capacity = lines->Length;
 
 				String^ types = nullptr;
-				if (filter)
+				if (SS(filter))
 				{
 					Object^ o = key->GetValue(L"Types", nullptr);
 					if (o)
@@ -1264,7 +1272,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	m.AutoAssignHotkeys = true;
 	m.HelpTopic = "MenuPanels";
 	m.ShowAmpersands = true;
-	m.Title = showPushCommand ? "Push/show panels" : "Show panels";
+	m.Title = ".NET panel tools";
 
 	// "Push" command
 	if (showPushCommand)
@@ -1272,7 +1280,12 @@ void Far::ShowPanelMenu(bool showPushCommand)
 		FarPluginPanel^ pp = dynamic_cast<FarPluginPanel^>(Panel);
 		if (pp)
 		{
-			IMenuItem^ mi = m.Add("Push the panel");
+			IMenuItem^ mi;
+			
+			mi = m.Add("Push current panel");
+			mi->Data = pp;
+
+			mi = m.Add("Switch full screen");
 			mi->Data = pp;
 		}
 		else
@@ -1285,7 +1298,8 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	if (PanelSet::_stack.Count)
 	{
 		if (showPushCommand)
-			m.Add(String::Empty)->IsSeparator = true;
+			m.Add("Show panel")->IsSeparator = true;
+		
 		for(int i = PanelSet::_stack.Count; --i >= 0;)
 		{
 			FarPluginPanel^ pp = PanelSet::_stack[i];
@@ -1303,6 +1317,14 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	{
 		FarPluginPanel^ pp = (FarPluginPanel^)m.SelectedData;
 		pp->Push();
+		return;
+	}
+
+	// full screen
+	if (showPushCommand && m.Selected == 1)
+	{
+		FarPluginPanel^ pp = (FarPluginPanel^)m.SelectedData;
+		pp->SwitchFullScreen();
 		return;
 	}
 
