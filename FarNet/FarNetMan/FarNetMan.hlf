@@ -25,7 +25,7 @@ $#FarNet#
 $#Menu#
 ~Contents~@Contents@
 
-FarNet shows its menu item ".NET" in all FAR plugin menus and in the disk menu.
+FarNet shows its menu item ".NET" in all Far plugin menus and in the disk menu.
 
 #Disk#
 
@@ -49,15 +49,20 @@ important feature "PostStep" which works in these areas, too.
 $#Panels menu#
 ~Contents~@Contents@
 
-#Push the panel#
+#Push current panel#
 
-If the menu is called from the FAR plugin menu (F11) and the current panel is
-any FarNet panel of any plugin then the first menu item is "Push the panel".
-When you select it the current panel is pushed to the internal panel stack for
-later use and the standard FAR panel is shown. You can push any number of
-panels.
+If the menu is called from the Far plugin menu (F11) and the current panel is
+any FarNet panel of any plugin then the first menu item is "Push panel". When
+you select it the current panel is pushed to the internal panel stack for later
+use and the standard Far panel is shown. You can push any number of panels.
 
-#Pushed panel list#
+#Switch full screen#
+
+This command allows to switch "full screen" mode for any view mode of any
+FarNet panel. So that you may actually have 20 modes = 10 as usual + 10 the
+same but with switched "full screen".
+
+#Show panel list#
 
 If there are previously pushed panels in the internal stack then this menu shows
 titles of these panels. When you select one then the selected panel is shown and
@@ -115,7 +120,7 @@ $#Configure tool plugins#
 ~Contents~@Contents@
 
 This menu and the input box allow to edit FarNet plugin strings shown in the
-FAR plugins menus (F11) in Panels, Editor, Viewer and Dialog areas.
+Far plugins menus (F11) in Panels, Editor, Viewer and Dialog areas.
 
 #Enter# (menu)
 
