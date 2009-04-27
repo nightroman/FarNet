@@ -10,9 +10,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-//
-//::BasePluginInfo::
-//
+#pragma region BasePluginInfo
 
 BasePluginInfo::BasePluginInfo(BasePlugin^ plugin, String^ name)
 : _Plugin(plugin)
@@ -22,6 +20,12 @@ BasePluginInfo::BasePluginInfo(BasePlugin^ plugin, String^ name)
 BasePluginInfo::BasePluginInfo(String^ assemblyPath, String^ className, String^ name)
 : _AssemblyPath(assemblyPath), _ClassName(className), _Name(name)
 {}
+
+String^ BasePluginInfo::ToString()
+{
+	//?? Do not call property 'ClassName' to avoid premature loading
+	return String::Format("{0} Name='{1}' Class='{2}'", GetType()->FullName, _Name, _ClassName);
+}
 
 String^ BasePluginInfo::AssemblyPath::get()
 {
@@ -44,7 +48,10 @@ String^ BasePluginInfo::Key::get()
 
 void BasePluginInfo::Connect()
 {
-	if (_Plugin) throw gcnew InvalidOperationException("Already connected.");
+	LOG_AUTO(3, String::Format("Load plugin Class='{0}' Path='{1}'", _ClassName, _AssemblyPath));
+
+	if (_Plugin)
+		throw gcnew InvalidOperationException("Plugin is already connected.");
 
 	// create from info
 	Assembly^ assembly = Assembly::LoadFrom(_AssemblyPath);
@@ -58,18 +65,27 @@ void BasePluginInfo::Connect()
 	// register, attach and connect
 	PluginSet::AddPlugin(_Plugin);
 	_Plugin->Far = Far::Instance;
-	_Plugin->Connect();
+	{
+		LOG_AUTO(3, String::Format("{0}.Connect", _Plugin));
+
+		_Plugin->Connect();
+	}
 }
 
-//
-//::ToolPluginInfo::
-//
+#pragma endregion
+
+#pragma region ToolPluginInfo
 
 ToolPluginInfo::ToolPluginInfo(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
 : BasePluginInfo(plugin, name)
 , _Handler(handler)
 , _Options(options)
 {}
+
+String^ ToolPluginInfo::ToString()
+{
+	return String::Format("{0} Options='{1}'", BasePluginInfo::ToString(), Options);
+}
 
 String^ ToolPluginInfo::Alias(ToolOptions option)
 {
@@ -150,9 +166,14 @@ void ToolPluginInfo::Invoke(Object^ sender, ToolEventArgs^ e)
 	instance->Invoke(sender, e);
 }
 
-//
-//::CommandPluginInfo::
-//
+#pragma endregion
+
+#pragma region CommandPluginInfo
+
+String^ CommandPluginInfo::ToString()
+{
+	return String::Format("{0} Prefix='{1}'", BasePluginInfo::ToString(), Prefix);
+}
 
 String^ CommandPluginInfo::Prefix::get()
 {
@@ -185,9 +206,14 @@ void CommandPluginInfo::Invoke(Object^ sender, CommandEventArgs^ e)
 	instance->Invoke(sender, e);
 }
 
-//
-//::FilerPluginInfo::
-//
+#pragma endregion
+
+#pragma region FilerPluginInfo
+
+String^ FilerPluginInfo::ToString()
+{
+	return String::Format("{0} Mask='{1}'", BasePluginInfo::ToString(), Mask);
+}
 
 void FilerPluginInfo::Invoke(Object^ sender, FilerEventArgs^ e)
 {
@@ -212,9 +238,14 @@ void FilerPluginInfo::Mask::set(String^ value)
 	_Mask = value;
 }
 
-//
-//::EditorPluginInfo::
-//
+#pragma endregion
+
+#pragma region EditorPluginInfo
+
+String^ EditorPluginInfo::ToString()
+{
+	return String::Format("{0} Mask='{1}'", BasePluginInfo::ToString(), Mask);
+}
 
 void EditorPluginInfo::Invoke(Object^ sender, EventArgs^ e)
 {
@@ -239,4 +270,14 @@ void EditorPluginInfo::Mask::set(String^ value)
 	_Mask = value;
 }
 
+#pragma endregion
+
+#pragma region ToolPluginAliasComparer
+
+int ToolPluginAliasComparer::Compare(ToolPluginInfo^ x, ToolPluginInfo^ y)
+{
+	return String::Compare(x->Alias(_Option), y->Alias(_Option), true, CultureInfo::InvariantCulture);
+}
+
+#pragma endregion
 }

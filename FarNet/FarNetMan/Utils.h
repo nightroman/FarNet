@@ -5,12 +5,6 @@ Copyright (c) 2005-2009 FarNet Team
 
 #pragma once
 
-#ifdef _DEBUG
-#define assert(e) Debug::Assert(e);
-#else
-#define assert(e)
-#endif
-
 #pragma region String pins and converters
 // STOP: choose a right one, relevant for FAR.
 
@@ -25,40 +19,13 @@ Copyright (c) 2005-2009 FarNet Team
 
 // Converters
 wchar_t* NewChars(String^ str);
+wchar_t* NewChars(Object^ str);
 void CopyStringToChars(String^ str, wchar_t* buffer);
 
 #pragma endregion
 
 // Buffer size in items, not bytes.
 #define countof(Buffer) (sizeof(Buffer) / sizeof(*Buffer))
-
-// Log
-#define LOG_IDLE 2
-#define LOG_KEYS 4
-#if defined(_DEBUG) && 0 // switch
-#define LOG 1
-#define TraceFail(Text) Trace::Fail(Text)
-#define LL(Text) Trace::WriteLine(Text);
-class TraceScopeTrigger
-{
-public:
-	TraceScopeTrigger(String^ name)
-	{
-		Trace::WriteLine(name);
-		Trace::Indent();
-	}
-	~TraceScopeTrigger()
-	{
-		Trace::Unindent();
-	}
-};
-#define TRACE_SCOPE(Name) TraceScopeTrigger _traceScopeTrigger(Name);
-#else
-#define LOG 0
-#define TraceFail(Text) {}
-#define LL(Text) {} 
-#define TRACE_SCOPE(Name)
-#endif
 
 // Empty String and Solid String
 #define ES(s) (String::IsNullOrEmpty(s))

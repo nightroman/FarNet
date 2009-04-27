@@ -30,8 +30,6 @@ private:
 private:
 	// Static
 	PluginSet() {}
-	// Option
-	static bool _startupErrorDialog;
 	// Registered plugins
 	static List<BasePlugin^> _plugins;
 	static StringDictionary _cache;

@@ -10,6 +10,7 @@ namespace FarNet
 ref class BasePluginInfo abstract
 {
 public:
+	virtual String^ ToString() override;
 	property BasePlugin^ Plugin { BasePlugin^ get() { return _Plugin; } }
 	property String^ AssemblyPath { String^ get(); }
 	property String^ ClassName { String^ get(); }
@@ -31,6 +32,7 @@ ref class ToolPluginInfo : BasePluginInfo
 public:
 	ToolPluginInfo(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
 	ToolPluginInfo(String^ assemblyPath, String^ className, String^ name, ToolOptions options) : BasePluginInfo(assemblyPath, className, name), _Options(options) { _Handler = gcnew EventHandler<ToolEventArgs^>(this, &ToolPluginInfo::Invoke); }
+	virtual String^ ToString() override;
 	String^ Alias(ToolOptions option);
 	void Alias(ToolOptions option, String^ value);
 public:
@@ -54,6 +56,7 @@ ref class CommandPluginInfo : BasePluginInfo
 public:
 	CommandPluginInfo(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler) : BasePluginInfo(plugin, name), _DefaultPrefix(prefix), _Handler(handler) {}
 	CommandPluginInfo(String^ assemblyPath, String^ className, String^ name, String^ prefix) : BasePluginInfo(assemblyPath, className, name), _DefaultPrefix(prefix) { _Handler = gcnew EventHandler<CommandEventArgs^>(this, &CommandPluginInfo::Invoke); }
+	virtual String^ ToString() override;
 public:
 	property EventHandler<CommandEventArgs^>^ Handler { EventHandler<CommandEventArgs^>^ get() { return _Handler; } }
 	property String^ DefaultPrefix { String^ get() { return _DefaultPrefix; } }
@@ -71,6 +74,7 @@ ref class FilerPluginInfo : BasePluginInfo
 public:
 	FilerPluginInfo(BasePlugin^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates) : BasePluginInfo(plugin, name), _Handler(handler), _DefaultMask(mask), _Creates(creates) {}
 	FilerPluginInfo(String^ assemblyPath, String^ className, String^ name, String^ mask, bool creates) : BasePluginInfo(assemblyPath, className, name), _DefaultMask(mask), _Creates(creates) { _Handler = gcnew EventHandler<FilerEventArgs^>(this, &FilerPluginInfo::Invoke); }
+	virtual String^ ToString() override;
 public:
 	property bool Creates { bool get() { return _Creates; } }
 	property EventHandler<FilerEventArgs^>^ Handler { EventHandler<FilerEventArgs^>^ get() { return _Handler; } }
@@ -90,6 +94,7 @@ ref class EditorPluginInfo : BasePluginInfo
 public:
 	EditorPluginInfo(BasePlugin^ plugin, String^ name, EventHandler^ handler, String^ mask) : BasePluginInfo(plugin, name), _Handler(handler), _DefaultMask(mask) {}
 	EditorPluginInfo(String^ assemblyPath, String^ className, String^ name, String^ mask) : BasePluginInfo(assemblyPath, className, name), _DefaultMask(mask) { _Handler = gcnew EventHandler(this, &EditorPluginInfo::Invoke); }
+	virtual String^ ToString() override;
 public:
 	property EventHandler^ Handler { EventHandler^ get() { return _Handler; } }
 	property String^ DefaultMask { String^ get() { return _DefaultMask; } }
@@ -106,10 +111,7 @@ ref class ToolPluginAliasComparer : IComparer<ToolPluginInfo^>
 {
 public:
 	ToolPluginAliasComparer(ToolOptions option) : _Option(option) {}
-	virtual int Compare(ToolPluginInfo^ x, ToolPluginInfo^ y)
-	{
-		return String::Compare(x->Alias(_Option), y->Alias(_Option), true, CultureInfo::InvariantCulture);
-	}
+	virtual int Compare(ToolPluginInfo^ x, ToolPluginInfo^ y);
 private:
 	ToolOptions _Option;
 };

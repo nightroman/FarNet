@@ -45,8 +45,14 @@ String^ AnyEditor::EditText(String^ text, String^ title)
 		{
 			// read and delete
 			String^ r = File::ReadAllText(file, Encoding::Default);
-			try { File::Delete(file); }
-			catch(IOException^) {}
+			try
+			{
+				File::Delete(file);
+			}
+			catch(IOException^ e)
+			{
+				Log::TraceError(e);
+			}
 			return r;
 		}
 		else

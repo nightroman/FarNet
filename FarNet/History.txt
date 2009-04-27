@@ -1,5 +1,49 @@
 http://code.google.com/p/farnet/
 
+= 4.0.13 =
+
+TRACING
+
+*) FarNet core supports standard .NET tracing mechanism. It is customized in
+"Far.exe.config", take a look at comments there and customize it for yourself.
+
+*) A default listener (added in machine .config) outputs to a debugger, so that
+FarNet plugin debugging may be easier. Trace levels 3 and 4 (see below) can be
+slow with a debugger; in this case you can remove default listeners by <clear/>
+and still use a fast file writer added by <add ... />.
+
+*) Removed option FarNet.StartupErrorDialog from "Far.exe.config" - critical
+startup errors are written to the console and optionally traced now. Modal
+dialogs should not be shown on loading.
+
+*) Most important calls Far <-> FarNet <-> FarNetPlugin are already traced.
+More tracing, especially FarNet <-> FarNetPlugin will be introduced later.
+
+TRACING TIPS
+
+1) Switch 'FarNet.Trace' defines 5 levels of tracing (0:Off ... 4:Verbose);
+recommended level is 2:Warning - to trace errors and warnings, if any. Note:
+they normally show plugins or system issues, not FarNet itself.
+
+2) You can add more trace listeners, for example a log file writer; one is
+added in "Far.exe.config". Remove it or change it as needed.
+
+3) Your plugin can call System.Diagnostics.Trace methods itself. 'FarNet.Trace'
+does not affect your tracing unless you use it directly (see TraceSwitch, MSDN).
+
+4) Tracing is a standard .NET feature, see MSDN for details about tracing and
+configuration files - there are many useful titbits for free there.
+
+5) Do not be tempted to use tracing for normal data output. Tracing is for
+diagnostics and troubleshooting.
+
+MISC
+
+*) Renamed namespace FarNet.Raw into FarNet.Support; it contains supportive
+features that normally should not be used from user code.
+
+*) Internal FarNet menu commands are processed more effectively.
+
 = 4.0.12 =
 
 PLUGIN PANEL VIEW MODES

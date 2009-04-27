@@ -145,9 +145,8 @@ private:
 	void OnConfigEditor();
 	void OnConfigFiler();
 	void OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^ list);
-	void OnNetConfig(Object^ sender, ToolEventArgs^ e);
-	void OnNetDisk(Object^ sender, ToolEventArgs^ e);
-	void OnNetF11Menus(Object^ sender, ToolEventArgs^ e);
+	void OpenConfig();
+	void OpenMenu(ToolOptions from);
 	void ProcessPrefixes(INT_PTR item);
 	void Start();
 private:
