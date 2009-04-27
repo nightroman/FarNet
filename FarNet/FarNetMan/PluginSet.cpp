@@ -19,22 +19,25 @@ void PluginSet::AddPlugin(BasePlugin^ plugin)
 //! Don't use FAR UI
 void PluginSet::UnloadPlugin(BasePlugin^ plugin)
 {
+	LOG_AUTO(3, "Unload plugin " + plugin);
+
 	_plugins.Remove(plugin);
 
 	try
 	{
+		LOG_AUTO(3, String::Format("{0}.Disconnect", plugin));
 		plugin->Disconnect();
 	}
 	catch(Exception^ e)
 	{
+		Log::TraceError(e);
+
 		Console::WriteLine();
 		Console::ForegroundColor = ConsoleColor::Red;
 		Console::WriteLine(plugin->ToString() + " error:");
 		Console::WriteLine(e->Message);
-		if (_startupErrorDialog)
-			Console::ReadKey(true);
-		else
-			System::Threading::Thread::Sleep(1000);
+
+		System::Threading::Thread::Sleep(1000);
 	}
 }
 
@@ -51,14 +54,7 @@ void PluginSet::LoadPlugins()
 {
 	ReadCache();
 
-	String^ show = System::Configuration::ConfigurationSettings::AppSettings["FarNet.StartupErrorDialog"];
-	if (!String::IsNullOrEmpty(show))
-	{
-		show = show->Trim();
-		_startupErrorDialog = show->Length > 0 && show != "0";
-	}
-
-	String^ path = Environment::ExpandEnvironmentVariables(System::Configuration::ConfigurationSettings::AppSettings["FarNet.Plugins"]);
+	String^ path = Environment::ExpandEnvironmentVariables(ConfigurationManager::AppSettings["FarNet.Plugins"]);
 	for each(String^ dir in Directory::GetDirectories(path))
 	{
 		// skip
@@ -90,15 +86,11 @@ void PluginSet::LoadFromDirectory(String^ dir)
 	}
 	catch(Exception^ e)
 	{
-		// WISH: no UI on loading by default
-		if (_startupErrorDialog)
-		{
-			Far::Instance->ShowError("ERROR in plugin " + dir, e);
-		}
-		else
-		{
-			Far::Instance->Write("ERROR: plugin " + dir + ":\n" + ExceptionInfo(e, true), ConsoleColor::Red);
-		}
+		Log::TraceError(e);
+
+		// Wish: no UI on loading
+		String^ msg = "ERROR: plugin " + dir + ":\n" + ExceptionInfo(e, true);
+		Far::Instance->Write(msg, ConsoleColor::Red);
 	}
 }
 
@@ -175,10 +167,15 @@ int PluginSet::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<Ed
 	// create
 	BasePlugin^ instance = (BasePlugin^)Activator::CreateInstance(type);
 
+	LOG_AUTO(3, "Load plugin " + instance);
+
 	// register, attach connect
 	_plugins.Add(instance);
 	instance->Far = Far::Instance;
-	instance->Connect();
+	{
+		LOG_AUTO(3, String::Format("{0}.Connect", instance));
+		instance->Connect();
+	}
 
 	// case: tool
 	ToolPlugin^ tool = dynamic_cast<ToolPlugin^>(instance);

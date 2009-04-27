@@ -14,10 +14,8 @@ PluginStartupInfo Info;
 static FarStandardFunctions FSF;
 static bool s_loaded, s_unloaded;
 
-namespace FarNet
-{;
 #define __START try {
-#define __END } catch(Exception^ e) { Far::Instance->ShowError(nullptr, e); }
+#define __END } catch(Exception^ e) { Log::TraceError(e); Far::Instance->ShowError(nullptr, e); }
 
 /*
 SetStartupInfo is normally called once when the plugin DLL has been loaded.
@@ -25,6 +23,8 @@ But more calls are possible, we have to ignore them.
 */
 void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 {
+	LOG_AUTO(3, __FUNCTION__);
+
 	// case: loaded
 	if (s_loaded)
 	{
@@ -65,6 +65,8 @@ STOP: ensure it is "loaded".
 */
 void WINAPI ExitFARW()
 {
+	LOG_AUTO(3, __FUNCTION__);
+
 	if (s_loaded)
 	{
 		// set flags
@@ -229,6 +231,4 @@ int WINAPI ProcessViewerEventW(int type, void* param)
 	return ViewerHost::AsProcessViewerEvent(type, param);
 	__END;
 	return 0;
-}
-
 }

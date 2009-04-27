@@ -25,12 +25,13 @@
 #define ACTL_FREEWINDOWINFO stop_ACTL_FREEWINDOWINFO
 
 using namespace FarNet::Forms;
-using namespace FarNet::Raw;
+using namespace FarNet::Support;
 using namespace FarNet;
 using namespace Microsoft::Win32;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Specialized;
+using namespace System::Configuration;
 using namespace System::Diagnostics;
 using namespace System::Globalization;
 using namespace System::IO;
@@ -42,10 +43,9 @@ using namespace System;
 #ifdef _DEBUG
 // remove if not found
 #include <Test1.h>
-#else
-#define Trace _DONT_USE_TRACE_
 #endif
 
 extern PluginStartupInfo Info;
 
+#include "Log.h"
 #include "Utils.h"

@@ -60,6 +60,10 @@ wchar_t* NewChars(String^ str)
 	wcscpy(r, pin);
 	return r;
 }
+wchar_t* NewChars(Object^ str)
+{
+	return str ? NewChars(str->ToString()) : 0;
+}
 // No new after this point.
 #undef new
 #define new dont_use_new
@@ -154,7 +158,7 @@ void EditorControl_ECTL_SETPARAM(const EditorSetParameter esp)
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp)
 {
 	if (!Info.EditorControl(ECTL_SETPOSITION, (EditorSetPosition*)&esp))
-		TraceFail(__FUNCTION__);
+		Log::TraceWarning("ECTL_SETPOSITION failed");
 }
 
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess)
@@ -303,8 +307,9 @@ Object^ Property(Object^ obj, String^ name)
 		return obj->GetType()->InvokeMember(
 			name, BindingFlags::GetProperty | BindingFlags::Public | BindingFlags::Instance, nullptr, obj, nullptr);
 	}
-	catch(...)
+	catch(Exception^ e)
 	{
+		Log::TraceError(e);
 		return nullptr;
 	}
 }
@@ -413,8 +418,14 @@ void DeleteSourceOptional(String^ path, DeleteSource option)
 	if (option != DeleteSource::Folder)
 		return;
 
-	try { Directory::Delete(Path::GetDirectoryName(path)); }
-	catch(IOException^) {}
+	try
+	{
+		Directory::Delete(Path::GetDirectoryName(path));
+	}
+	catch(IOException^ e)
+	{
+		Log::TraceError(e);
+	}
 }
 
 int Compare(String^ strA, String^ strB)
@@ -428,5 +439,6 @@ bool EqualsOrdinal(String^ strA, String^ strB)
 }
 
 #ifdef TRACE_MEMORY
+#define TRACE_MEMORY_BREAK
 #include <Test1.cpp>
 #endif

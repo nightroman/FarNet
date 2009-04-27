@@ -47,8 +47,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 	switch(type)
 	{
 	case EE_READ:
-		LL(__FUNCTION__ " READ");
 		{
+			LOG_AUTO(3, "EE_READ");
+
 			// take waiting or create new
 			Editor^ editor;
 			if (_editorWaiting)
@@ -81,8 +82,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 		}
 		break;
 	case EE_CLOSE:
-		LL(__FUNCTION__ " CLOSE");
 		{
+			LOG_AUTO(3, "EE_CLOSE");
+
 			// get registered, close and unregister
 			int id = *((int*)param);
 			Editor^ editor = _editors[id];
@@ -103,6 +105,8 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 		break;
 	case EE_REDRAW:
 		{
+			LOG_AUTO(4, "EE_REDRAW");
+
 			int mode = (int)(INT_PTR)param;
 			Editor^ ed = GetCurrentEditor();
 			if (_anyEditor._OnRedraw)
@@ -118,8 +122,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 		}
 		break;
 	case EE_SAVE:
-		LL(__FUNCTION__ " SAVE");
 		{
+			LOG_AUTO(3, "EE_SAVE");
+
 			Editor^ ed = GetCurrentEditor();
 			if (_anyEditor._Saving)
 				_anyEditor._Saving(ed, EventArgs::Empty);
@@ -128,16 +133,14 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 		}
 		break;
 	case EE_GOTFOCUS:
-		LL(__FUNCTION__ " GOTFOCUS");
 		{
+			LOG_AUTO(3, "EE_GOTFOCUS");
+
 			int id = *((int*)param);
 			Editor^ ed;
 			if (!_editors.TryGetValue(id, ed))
 				return 0;
 			
-			LL(ed->FileName);
-			LL(GetCurrentEditor()->FileName);
-
 			if (_anyEditor._GotFocus)
 				_anyEditor._GotFocus(ed, EventArgs::Empty);
 			if (ed->_GotFocus)
@@ -145,16 +148,14 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 		}
 		break;
 	case EE_KILLFOCUS:
-		LL(__FUNCTION__ " KILLFOCUS");
 		{
+			LOG_AUTO(3, "EE_KILLFOCUS");
+
 			int id = *((int*)param);
 			Editor^ ed;
 			if (!_editors.TryGetValue(id, ed))
 				return 0;
 			
-			LL(ed->FileName);
-			LL(GetCurrentEditor()->FileName);
-
 			if (_anyEditor._LosingFocus)
 				_anyEditor._LosingFocus(ed, EventArgs::Empty);
 			if (ed->_LosingFocus)
