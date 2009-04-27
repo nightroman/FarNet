@@ -36,22 +36,11 @@ void Far::StartFar()
 	// versions
 	//DWORD vn; Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
 	//int v1 = (vn & 0x0000ff00)>>8, v2 = vn & 0x000000ff, v3 = (int)((long)vn&0xffff0000)>>16;
-
-#if defined(_DEBUG) && 0
-	Trace::Listeners->Clear();
-	Trace::AutoFlush = true;
-	Stream^ myFile = File::Open("c:\\Far.log", FileMode::Append, FileAccess::Write, FileShare::Read);
-	TextWriterTraceListener^ myTextListener = gcnew TextWriterTraceListener(myFile);
-	Trace::Listeners->Add(myTextListener);
-#endif
 }
 
 void Far::Start()
 {
 	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
-	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetF11Menus), ToolOptions::F11Menus);
-	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetConfig), ToolOptions::Config);
-	RegisterTool(nullptr, String::Empty, gcnew EventHandler<ToolEventArgs^>(this, &Far::OnNetDisk), ToolOptions::Disk);
 	PluginSet::LoadPlugins();
 }
 
@@ -131,6 +120,8 @@ void Far::RegisterTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventA
 
 void Far::RegisterTool(ToolPluginInfo^ tool)
 {
+	LOG_INFO("Register " + tool);
+
 	ToolOptions options = tool->Options;
 	if (int(options & ToolOptions::Config))
 	{
@@ -192,6 +183,9 @@ static int RemoveByHandler(List<ToolPluginInfo^>^ list, EventHandler<ToolEventAr
 
 void Far::UnregisterTool(EventHandler<ToolEventArgs^>^ handler)
 {
+	assert(handler != nullptr);
+	LOG_INFO(String::Format("Unregister tool {0}", Log::Format(handler->Method)));
+
 	if (RemoveByHandler(%_toolConfig, handler))
 	{
 		delete[] _pConfig;
@@ -230,6 +224,9 @@ String^ Far::RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, E
 	_prefixes = 0;
 	CommandPluginInfo^ it = gcnew CommandPluginInfo(plugin, name, prefix, handler);
 	_registeredCommand.Add(it);
+
+	LOG_INFO("Register " + it);
+	
 	return it->Prefix;
 }
 
@@ -238,6 +235,12 @@ void Far::RegisterCommands(IEnumerable<CommandPluginInfo^>^ commands)
 	delete _prefixes;
 	_prefixes = 0;
 	_registeredCommand.AddRange(commands);
+
+	if (Log::Switch->TraceInfo)
+	{
+		for each(CommandPluginInfo^ it in commands)
+			LOG_INFO("Register " + it);
+	}
 }
 
 void Far::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
@@ -246,6 +249,8 @@ void Far::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
 	{
 		if (_registeredCommand[i]->Handler == handler)
 		{
+			LOG_INFO("Unregister " + _registeredCommand[i]);
+
 			delete _prefixes;
 			_prefixes = 0;
 			_registeredCommand.RemoveAt(i);
@@ -255,24 +260,45 @@ void Far::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
 
 void Far::RegisterFiler(BasePlugin^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates)
 {
-	_registeredFiler.Add(gcnew FilerPluginInfo(plugin, name, handler, mask, creates));
+	FilerPluginInfo^ it = gcnew FilerPluginInfo(plugin, name, handler, mask, creates);
+	_registeredFiler.Add(it);
+
+	LOG_INFO("Register " + it);
 }
 
 void Far::RegisterEditors(IEnumerable<EditorPluginInfo^>^ editors)
 {
 	_registeredEditor.AddRange(editors);
+
+	if (Log::Switch->TraceInfo)
+	{
+		for each(EditorPluginInfo^ it in editors)
+			LOG_INFO("Register " + it);
+	}
 }
 
 void Far::RegisterFilers(IEnumerable<FilerPluginInfo^>^ filers)
 {
 	_registeredFiler.AddRange(filers);
+
+	if (Log::Switch->TraceInfo)
+	{
+		for each(FilerPluginInfo^ it in filers)
+			LOG_INFO("Register " + it);
+	}
 }
 
 void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 {
 	for(int i = _registeredFiler.Count; --i >= 0;)
+	{
 		if (_registeredFiler[i]->Handler == handler)
+		{
+			LOG_INFO("Unregister " + _registeredFiler[i]);
+
 			_registeredFiler.RemoveAt(i);
+		}
+	}
 }
 
 void Far::Unregister(BasePlugin^ plugin)
@@ -321,11 +347,22 @@ void Far::Run(String^ command)
 		//! e.g. PowerShellFar sets the default runspace once and location always.
 		//! If there is a plugin, call it directly, else it has to be done by its handler.
 		if (it->Plugin)
+		{
+			LOG_AUTO(3, String::Format("{0}.Invoking", it->Plugin));
+
 			it->Plugin->Invoking();
+		}
 
 		// invoke
-		CommandEventArgs e(command->Substring(colon + 1));
-		it->Handler(this, %e);
+		{
+			String^ code = command->Substring(colon + 1);
+			
+			LOG_AUTO(3, String::Format("{0} {1}", Log::Format(it->Handler->Method), code));
+
+			CommandEventArgs e(code);
+			it->Handler(this, %e);
+		}
+
 		break;
 	}
 }
@@ -449,7 +486,7 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 	KeySequence keySequence;
 	keySequence.Count = sequence->Length;
 	keySequence.Flags = disableOutput ? KSFLAGS_DISABLEOUTPUT : 0;
-	
+
 	keySequence.Sequence = keySequence.Count <= smallCount ? keys : new DWORD[keySequence.Count];
 	DWORD* cur = keySequence.Sequence;
 	for each(int i in sequence)
@@ -457,7 +494,7 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 		*cur = i;
 		++cur;
 	}
-	
+
 	try
 	{
 		if (!Info.AdvControl(Info.ModuleNumber, ACTL_POSTKEYSEQUENCE, &keySequence))
@@ -475,7 +512,7 @@ int Far::NameToKey(String^ key)
 {
 	if (!key)
 		throw gcnew ArgumentNullException("key");
-	
+
 	PIN_NE(pin, key);
 	return Info.FSF->FarNameToKey(pin);
 }
@@ -645,81 +682,98 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
 		wi.Type = -1;
 
-	if (_toolConfig.Count)
+	//! Do not forget to add FarNet menus first -> alloc one more and use shifted index.
+
+	// config
 	{
 		if (!_pConfig)
 		{
-			_pConfig = new CStr[_toolConfig.Count];
+			_pConfig = new CStr[_toolConfig.Count + 1];
+			_pConfig[0].Set(Res::MenuPrefix);
+
 			for(int i = _toolConfig.Count; --i >= 0;)
-				_pConfig[i].Set(Res::MenuPrefix + _toolConfig[i]->Alias(ToolOptions::Config));
+				_pConfig[i + 1].Set(Res::MenuPrefix + _toolConfig[i]->Alias(ToolOptions::Config));
 		}
-		pi->PluginConfigStringsNumber = _toolConfig.Count;
+		
+		pi->PluginConfigStringsNumber = _toolConfig.Count + 1;
 		pi->PluginConfigStrings = (const wchar_t**)_pConfig;
 	}
 
-	if (_toolDisk.Count)
+	// disk
 	{
 		if (!_pDisk)
 		{
-			_pDisk = new CStr[_toolDisk.Count];
+			_pDisk = new CStr[_toolDisk.Count + 1];
+			_pDisk[0].Set(Res::MenuPrefix);
+
 			for(int i = _toolDisk.Count; --i >= 0;)
-				_pDisk[i].Set(Res::MenuPrefix + _toolDisk[i]->Alias(ToolOptions::Disk));
+				_pDisk[i + 1].Set(Res::MenuPrefix + _toolDisk[i]->Alias(ToolOptions::Disk));
 		}
-		pi->DiskMenuStringsNumber = _toolDisk.Count;
+		
+		pi->DiskMenuStringsNumber = _toolDisk.Count + 1;
 		pi->DiskMenuStrings = (const wchar_t**)_pDisk;
 	}
 
+	// type
 	switch(wi.Type)
 	{
 	case WTYPE_EDITOR:
-		if (_toolEditor.Count)
 		{
 			if (!_pEditor)
 			{
-				_pEditor = new CStr[_toolEditor.Count];
+				_pEditor = new CStr[_toolEditor.Count + 1];
+				_pEditor[0].Set(Res::MenuPrefix);
+
 				for(int i = _toolEditor.Count; --i >= 0;)
-					_pEditor[i].Set(Res::MenuPrefix + _toolEditor[i]->Alias(ToolOptions::Editor));
+					_pEditor[i + 1].Set(Res::MenuPrefix + _toolEditor[i]->Alias(ToolOptions::Editor));
 			}
-			pi->PluginMenuStringsNumber = _toolEditor.Count;
+			
+			pi->PluginMenuStringsNumber = _toolEditor.Count + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pEditor;
 		}
 		break;
 	case WTYPE_PANELS:
-		if (_toolPanels.Count)
 		{
 			if (!_pPanels)
 			{
-				_pPanels = new CStr[_toolPanels.Count];
+				_pPanels = new CStr[_toolPanels.Count + 1];
+				_pPanels[0].Set(Res::MenuPrefix);
+				
 				for(int i = _toolPanels.Count; --i >= 0;)
-					_pPanels[i].Set(Res::MenuPrefix + _toolPanels[i]->Alias(ToolOptions::Panels));
+					_pPanels[i + 1].Set(Res::MenuPrefix + _toolPanels[i]->Alias(ToolOptions::Panels));
 			}
-			pi->PluginMenuStringsNumber = _toolPanels.Count;
+			
+			pi->PluginMenuStringsNumber = _toolPanels.Count + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pPanels;
 		}
 		break;
 	case WTYPE_VIEWER:
-		if (_toolViewer.Count)
 		{
 			if (!_pViewer)
 			{
-				_pViewer = new CStr[_toolViewer.Count];
+				_pViewer = new CStr[_toolViewer.Count + 1];
+				_pViewer[0].Set(Res::MenuPrefix);
+				
 				for(int i = _toolViewer.Count; --i >= 0;)
-					_pViewer[i].Set(Res::MenuPrefix + _toolViewer[i]->Alias(ToolOptions::Viewer));
+					_pViewer[i + 1].Set(Res::MenuPrefix + _toolViewer[i]->Alias(ToolOptions::Viewer));
 			}
-			pi->PluginMenuStringsNumber = _toolViewer.Count;
+
+			pi->PluginMenuStringsNumber = _toolViewer.Count + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pViewer;
 		}
 		break;
 	case WTYPE_DIALOG:
-		if (_toolDialog.Count)
 		{
 			if (!_pDialog)
 			{
-				_pDialog = new CStr[_toolDialog.Count];
+				_pDialog = new CStr[_toolDialog.Count + 1];
+				_pDialog[0].Set(Res::MenuPrefix);
+				
 				for(int i = _toolDialog.Count; --i >= 0;)
-					_pDialog[i].Set(Res::MenuPrefix + _toolDialog[i]->Alias(ToolOptions::Dialog));
+					_pDialog[i + 1].Set(Res::MenuPrefix + _toolDialog[i]->Alias(ToolOptions::Dialog));
 			}
-			pi->PluginMenuStringsNumber = _toolDialog.Count;
+			
+			pi->PluginMenuStringsNumber = _toolDialog.Count + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pDialog;
 		}
 		break;
@@ -738,6 +792,7 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 			}
 			_prefixes = new CStr(PrefString);
 		}
+
 		pi->CommandPrefix = *_prefixes;
 	}
 }
@@ -818,7 +873,7 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 					if (o)
 						types = o->ToString();
 				}
-				
+
 				for(int i = lines->Length; --i >= 0;)
 				{
 					// filter
@@ -827,7 +882,7 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 						if (filter->IndexOf(types[i]) < 0)
 							continue;
 					}
-					
+
 					// add
 					r->Add(lines[i]);
 				}
@@ -1136,7 +1191,13 @@ void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue
 
 bool Far::AsConfigure(int itemIndex)
 {
-	ToolPluginInfo^ tool = _toolConfig[itemIndex];
+	if (itemIndex == 0)
+	{
+		OpenConfig();
+		return true;
+	}
+
+	ToolPluginInfo^ tool = _toolConfig[itemIndex - 1];
 	ToolEventArgs e(ToolOptions::Config);
 	tool->Handler(this, %e);
 	return e.Ignore ? false : true;
@@ -1193,18 +1254,28 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 	PanelSet::BeginOpenMode();
 	ValueUserScreen userscreen;
 
+	// call a plugin; it may create a panel waiting for opening
 	try
 	{
-		// call, plugin may create a panel waiting for opening
 		switch(from)
 		{
 		case OPEN_COMMANDLINE:
 			{
+				LOG_AUTO(3, "OPEN_COMMANDLINE");
+
 				ProcessPrefixes(item);
 			}
 			break;
 		case OPEN_DISKMENU:
 			{
+				if (item == 0)
+				{
+					OpenMenu(ToolOptions::Disk);
+					break;
+				}
+
+				LOG_AUTO(3, "OPEN_DISKMENU");
+
 				ToolPluginInfo^ tool = _toolDisk[(int)item];
 				ToolEventArgs e(ToolOptions::Disk);
 				tool->Handler(this, %e);
@@ -1212,29 +1283,64 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 			break;
 		case OPEN_PLUGINSMENU:
 			{
-				ToolPluginInfo^ tool = _toolPanels[(int)item];
+				if (item == 0)
+				{
+					OpenMenu(ToolOptions::Panels);
+					break;
+				}
+
+				LOG_AUTO(3, "OPEN_PLUGINSMENU");
+
+				ToolPluginInfo^ tool = _toolPanels[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Panels);
 				tool->Handler(this, %e);
 			}
 			break;
 		case OPEN_EDITOR:
 			{
-				ToolPluginInfo^ tool = _toolEditor[(int)item];
+				if (item == 0)
+				{
+					OpenMenu(ToolOptions::Editor);
+					break;
+				}
+
+				LOG_AUTO(3, "OPEN_EDITOR");
+
+				ToolPluginInfo^ tool = _toolEditor[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Editor);
 				tool->Handler(this, %e);
 			}
 			break;
 		case OPEN_VIEWER:
 			{
-				ToolPluginInfo^ tool = _toolViewer[(int)item];
+				if (item == 0)
+				{
+					OpenMenu(ToolOptions::Viewer);
+					break;
+				}
+
+				LOG_AUTO(3, "OPEN_VIEWER");
+
+				ToolPluginInfo^ tool = _toolViewer[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Viewer);
 				tool->Handler(this, %e);
 			}
 			break;
+		//! STOP: dialog case is different
 		case OPEN_DIALOG:
 			{
 				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)item;
-				ToolPluginInfo^ tool = _toolDialog[dd->ItemNumber];
+				int index = dd->ItemNumber;
+
+				if (index == 0)
+				{
+					OpenMenu(ToolOptions::Dialog);
+					break;
+				}
+
+				LOG_AUTO(3, "OPEN_DIALOG");
+
+				ToolPluginInfo^ tool = _toolDialog[index - 1];
 				ToolEventArgs e(ToolOptions::Dialog);
 				FarDialog::_hDlgTop = dd->hDlg;
 				tool->Handler(this, %e);
@@ -1245,6 +1351,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 		// open a posted panel
 		if (PanelSet::PostedPanel)
 		{
+			//??? LOG
 			HANDLE h = PanelSet::AddPluginPanel(PanelSet::PostedPanel);
 			return h;
 		}
@@ -1281,7 +1388,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 		if (pp)
 		{
 			IMenuItem^ mi;
-			
+
 			mi = m.Add("Push current panel");
 			mi->Data = pp;
 
@@ -1299,7 +1406,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	{
 		if (showPushCommand)
 			m.Add("Show panel")->IsSeparator = true;
-		
+
 		for(int i = PanelSet::_stack.Count; --i >= 0;)
 		{
 			FarPluginPanel^ pp = PanelSet::_stack[i];
@@ -1380,15 +1487,17 @@ void Far::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
 	{
 		handler1->Invoke(nullptr, nullptr);
 	}
-	catch(...)
+	catch(Exception^ e)
 	{
+		FarNet::Log::TraceError(e);
+		
 		//! 'F11 <hotkey>' is already posted and will trigger the menu; so, let's use a fake step
 		_handler = gcnew EventHandler(&VoidStep);
 		throw;
 	}
 }
 
-void Far::OnNetF11Menus(Object^ /*sender*/, ToolEventArgs^ e)
+void Far::OpenMenu(ToolOptions from)
 {
 	// process and drop a posted step handler
 	if (_handler)
@@ -1400,16 +1509,11 @@ void Far::OnNetF11Menus(Object^ /*sender*/, ToolEventArgs^ e)
 	}
 
 	// show panels menu
-	if (e->From == ToolOptions::Panels)
+	if (from == ToolOptions::Panels)
 		ShowPanelMenu(true);
 }
 
-void Far::OnNetDisk(Object^ /*sender*/, ToolEventArgs^ /*e*/)
-{
-	ShowPanelMenu(false);
-}
-
-void Far::OnNetConfig(Object^ /*sender*/, ToolEventArgs^ /*e*/)
+void Far::OpenConfig()
 {
 	Menu m;
 	m.AutoAssignHotkeys = true;
@@ -1704,10 +1808,12 @@ void Far::OnEditorOpened(FarNet::Editor^ editor)
 		{
 			it->Handler(editor, EventArgs::Empty);
 		}
-		catch(Exception^ error)
+		catch(Exception^ e)
 		{
+			FarNet::Log::TraceError(e);
+			
 			//! show plugin info, too
-			ShowError(it->Key, error);
+			ShowError(it->Key, e);
 		}
 	}
 }

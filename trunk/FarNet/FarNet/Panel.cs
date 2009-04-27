@@ -606,7 +606,7 @@ namespace FarNet
 		/// Column titles. To use standard column names, keep it null.
 		/// </summary>
 		/// <remarks>
-		/// WARNING: number of items must be not less than number of <see cref="ColumnTypes"/>. Otherwise Far may crash.
+		/// STOP If it is not null then number of titles must be equal to number of column types.
 		/// </remarks>
 		public string[] ColumnTitles
 		{

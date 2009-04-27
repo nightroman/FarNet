@@ -54,6 +54,10 @@ namespace FarNet
 	/// <summary>
 	/// Item of a menu, a list menu or one of list dialog controls.
 	/// </summary>
+	/// <seealso cref="IMenu"/>
+	/// <seealso cref="IListMenu"/>
+	/// <seealso cref="Forms.IListBox"/>
+	/// <seealso cref="Forms.IComboBox"/>
 	public interface IMenuItem
 	{
 		/// <summary>

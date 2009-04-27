@@ -45,8 +45,7 @@ static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelIt
 
 void PanelSet::AsClosePlugin(HANDLE hPlugin)
 {
-	TRACE_SCOPE(__FUNCTION__);
-	LL((INT_PTR)hPlugin);
+	LOG_AUTO(3, "ClosePlugin");
 
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
 	pp->_info.Free();
@@ -57,21 +56,22 @@ void PanelSet::AsClosePlugin(HANDLE hPlugin)
 
 int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
 {
-	TRACE_SCOPE(__FUNCTION__);
-	LL(INT_PTR(hPlugin));
+	LOG_AUTO(3, "DeleteFiles");
 
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_DeletingFiles)
 		return false;
+
 	IList<IFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
 	FilesEventArgs e(files, (OperationModes)opMode, false);
 	pp->_DeletingFiles(pp, %e);
+
 	return e.Ignore ? false : true;
 }
 
 void PanelSet::AsFreeFindData(PluginPanelItem* panelItem)
 {
-	TRACE_SCOPE(__FUNCTION__);
+	LOG_AUTO(3, "FreeFindData");
 
 	delete[] (char*)panelItem;
 }
@@ -79,8 +79,7 @@ void PanelSet::AsFreeFindData(PluginPanelItem* panelItem)
 //?? Parameter destPath can be changed, i.e. (*destPath) replaced. NYI here.
 int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode)
 {
-	TRACE_SCOPE(__FUNCTION__);
-	LL(INT_PTR(hPlugin));
+	LOG_AUTO(3, "GetFiles");
 
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_GettingFiles)
@@ -96,8 +95,7 @@ int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 static const wchar_t s_dots[] = L"..";
 int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
-	TRACE_SCOPE(__FUNCTION__);
-	LL(INT_PTR(hPlugin));
+	LOG_AUTO(3, "GetFindData");
 
 	try
 	{
@@ -123,25 +121,25 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 		}
 
 		// calculate size
-		int sizeData = 0;
+		int countChars = 0;
 		if (pp->AddDots && SS(pp->DotsDescription))
-			sizeData += pp->DotsDescription->Length + 1;
+			countChars += pp->DotsDescription->Length + 1;
 		for each(IFile^ f in pp->Files)
 		{
 			if (SS(f->Name))
-				sizeData += f->Name->Length + 1;
+				countChars += f->Name->Length + 1;
 			if (SS(f->Description))
-				sizeData += f->Description->Length + 1;
+				countChars += f->Description->Length + 1;
 			if (SS(f->Owner))
-				sizeData += f->Owner->Length + 1;
+				countChars += f->Owner->Length + 1;
 			if (SS(f->AlternateName))
-				sizeData += f->AlternateName->Length + 1;
+				countChars += f->AlternateName->Length + 1;
 		}
 
 		// alloc all
 		int sizeFile = nItem * sizeof(PluginPanelItem);
-		wchar_t* buff = new wchar_t[sizeFile + sizeData];
-		wchar_t* data = buff + sizeFile;
+		char* buff = new char[sizeFile + countChars * sizeof(wchar_t)];
+		wchar_t* data = (wchar_t*)(buff + sizeFile);
 		(*pPanelItem) = (PluginPanelItem*)buff;
 		memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
 
@@ -208,16 +206,18 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 	}
 	catch(Exception^ e)
 	{
+		Log::TraceError(e);
+
 		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
 			Far::Instance->ShowError(__FUNCTION__, e);
+		
 		return false;
 	}
 }
 
 void PanelSet::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
-	TRACE_SCOPE(__FUNCTION__);
-	LL(INT_PTR(hPlugin));
+	LOG_AUTO(3, "GetOpenPluginInfo");
 
 	// plugin panel
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
@@ -241,8 +241,7 @@ void PanelSet::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 //?? Parameter name can be changed, i.e. (*name) replaced. NYI here.
 int PanelSet::AsMakeDirectory(HANDLE hPlugin, const wchar_t** name, int opMode)
 {
-	TRACE_SCOPE(__FUNCTION__);
-	LL(INT_PTR(hPlugin));
+	LOG_AUTO(3, "MakeDirectory");
 
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_MakingDirectory)
@@ -262,9 +261,8 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 	{
 	case FE_IDLE:
 		{
-#if LL & LOG_IDLE
-			TRACE_SCOPE(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("IDLE");
-#endif
+			LOG_AUTO(4, "FE_IDLE");
+
 			if (pp->IdleUpdate)
 			{
 				pp->Update(true);
@@ -276,7 +274,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_CHANGEVIEWMODE:
 		{
-			TRACE_SCOPE(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("CHANGEVIEWMODE");
+			LOG_AUTO(3, "FE_CHANGEVIEWMODE");
 
 			if (pp->_ViewModeChanged)
 			{
@@ -287,7 +285,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_CLOSE:
 		{
-			TRACE_SCOPE(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("CLOSE");
+			LOG_AUTO(3, "FE_CLOSE");
 
 			//? FE_CLOSE issues:
 			// *) Bug [_090321_165608]: unwanted extra call on plugin commands entered in command line
@@ -303,7 +301,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_COMMAND:
 		{
-			TRACE_SCOPE(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("COMMAND");
+			LOG_AUTO(3, "FE_COMMAND");
 
 			if (pp->_Executing)
 			{
@@ -315,6 +313,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				}
 				catch(Exception^ exception)
 				{
+					Log::TraceError(exception);
 					Far::Instance->ShowError("Event: Executing", exception);
 				}
 				return e.Ignore;
@@ -323,7 +322,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_REDRAW:
 		{
-			TRACE_SCOPE(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("REDRAW");
+			LOG_AUTO(3, "FE_REDRAW");
 
 			// ??? 090411 Data are shown now. Drop this flag to allow normal processing.
 			pp->_skipGettingData = false;
@@ -436,8 +435,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_GOTFOCUS:
 		{
-			TRACE_SCOPE(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("GOTFOCUS");
-			LL((gcnew FarPanel(true))->Path);
+			LOG_AUTO(3, "FE_GOTFOCUS");
 
 			if (pp->_GotFocus)
 				pp->_GotFocus(pp, nullptr);
@@ -445,8 +443,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_KILLFOCUS:
 		{
-			TRACE_SCOPE(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("KILLFOCUS");
-			LL((gcnew FarPanel(true))->Path);
+			LOG_AUTO(3, "FE_KILLFOCUS");
 
 			if (pp->_LosingFocus)
 				pp->_LosingFocus(pp, nullptr);
@@ -454,7 +451,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_BREAK:
 		{
-			TRACE_SCOPE(__FUNCTION__); LL(INT_PTR(hPlugin)); LL("BREAK");
+			LOG_AUTO(3, "FE_BREAK");
 	
 			if (pp->_CtrlBreakPressed)
 				pp->_CtrlBreakPressed(pp, nullptr);
@@ -466,10 +463,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
-#if LL & LOG_KEYS
-	TRACE_SCOPE(__FUNCTION__);
-	LL(INT_PTR(hPlugin));
-#endif
+	LOG_AUTO(4, "ProcessKey");
 
 	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
@@ -507,8 +501,7 @@ int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
 {
-	TRACE_SCOPE(__FUNCTION__);
-	LL(INT_PTR(hPlugin));
+	LOG_AUTO(3, "PutFiles");
 
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_PuttingFiles)
@@ -532,8 +525,7 @@ int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 
 int PanelSet::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 {
-	TRACE_SCOPE(__FUNCTION__);
-	LL(INT_PTR(hPlugin));
+	LOG_AUTO(3, "SetDirectory");
 
 	_inAsSetDirectory = true;
 	try
@@ -553,8 +545,6 @@ int PanelSet::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 
 FarPanel^ PanelSet::GetPanel(bool active)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	// get info and return null (e.g. FAR started with /e or /v)
 	PanelInfo pi;
 	if (!TryPanelInfo((active ? PANEL_ACTIVE : PANEL_PASSIVE), pi))
@@ -575,8 +565,6 @@ FarPanel^ PanelSet::GetPanel(bool active)
 
 FarPluginPanel^ PanelSet::GetPluginPanel(Guid id)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	for (int i = 1; i < cPanels; ++i)
 	{
 		FarPluginPanel^ p = _panels[i];
@@ -588,8 +576,6 @@ FarPluginPanel^ PanelSet::GetPluginPanel(Guid id)
 
 FarPluginPanel^ PanelSet::GetPluginPanel(Type^ hostType)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	// case: any panel
 	if (hostType == nullptr)
 	{
@@ -619,8 +605,6 @@ FarPluginPanel^ PanelSet::GetPluginPanel(Type^ hostType)
 
 FarPluginPanel^ PanelSet::GetPluginPanel2(FarPluginPanel^ plugin)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	for (int i = 1; i < cPanels; ++i)
 	{
 		FarPluginPanel^ p = _panels[i];
@@ -635,8 +619,6 @@ FarPluginPanel^ PanelSet::GetPluginPanel2(FarPluginPanel^ plugin)
 //? create a test case: open 2 panels and try to open 1 more
 HANDLE PanelSet::AddPluginPanel(FarPluginPanel^ plugin)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	for(int i = 1; i < cPanels; ++i)
 	{
 		if (_panels[i] == nullptr)
@@ -652,8 +634,6 @@ HANDLE PanelSet::AddPluginPanel(FarPluginPanel^ plugin)
 // EndOpenMode() must be called after
 void PanelSet::BeginOpenMode()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (_openMode < 0)
 		throw gcnew InvalidOperationException("Negative open mode.");
 
@@ -663,8 +643,6 @@ void PanelSet::BeginOpenMode()
 // BeginOpenMode() must be called before
 void PanelSet::EndOpenMode()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (_openMode <= 0)
 		throw gcnew InvalidOperationException("Not positive open mode.");
 
@@ -674,8 +652,6 @@ void PanelSet::EndOpenMode()
 
 void PanelSet::OpenPluginPanel(FarPluginPanel^ plugin)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	// plugin must be called for opening
 	if (_openMode == 0)
 		throw gcnew InvalidOperationException("Cannot open a panel because a plugin is not called for opening.");
@@ -700,8 +676,6 @@ void PanelSet::OpenPluginPanel(FarPluginPanel^ plugin)
 //! it call Update/Redraw in some cases
 void PanelSet::ReplacePluginPanel(FarPluginPanel^ oldPanel, FarPluginPanel^ newPanel)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	// check
 	if (!oldPanel)
 		throw gcnew ArgumentNullException("oldPanel");
@@ -765,8 +739,6 @@ void PanelSet::ReplacePluginPanel(FarPluginPanel^ oldPanel, FarPluginPanel^ newP
 
 void PanelSet::PushPluginPanel(FarPluginPanel^ plugin)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (plugin->_IsPushed)
 		throw gcnew InvalidOperationException("Cannot push the panel because it is already pushed.");
 
@@ -810,13 +782,10 @@ void PanelSet::PushPluginPanel(FarPluginPanel^ plugin)
 FarPluginPanelInfo::FarPluginPanelInfo()
 : _StartViewMode(PanelViewMode::Undefined)
 {
-	TRACE_SCOPE(__FUNCTION__);
 }
 
 void FarPluginPanelInfo::Make12Strings(wchar_t** dst, array<String^>^ src)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	for(int i = 11; i >= 0; --i)
 	{
 		delete dst[i];
@@ -829,8 +798,6 @@ void FarPluginPanelInfo::Make12Strings(wchar_t** dst, array<String^>^ src)
 
 void FarPluginPanelInfo::Free12Strings(wchar_t* const dst[12])
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	for(int i = 11; i >= 0; --i)
 		delete[] dst[i];
 }
@@ -838,8 +805,6 @@ void FarPluginPanelInfo::Free12Strings(wchar_t* const dst[12])
 #define FLAG(Prop, Flag) if (Prop) r |= Flag
 int FarPluginPanelInfo::Flags()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	int r = 0;
 	FLAG(CompareFatTime, OPIF_COMPAREFATTIME);
 	FLAG(ExternalDelete, OPIF_EXTERNALDELETE);
@@ -861,8 +826,6 @@ int FarPluginPanelInfo::Flags()
 
 void FarPluginPanelInfo::CreateInfoLines()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (m->InfoLines)
 	{
 		if (!_InfoItems)
@@ -904,8 +867,6 @@ void FarPluginPanelInfo::CreateInfoLines()
 
 void FarPluginPanelInfo::DeleteInfoLines()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (m->InfoLines)
 	{
 		for(int i = m->InfoLinesNumber; --i >= 0;)
@@ -921,8 +882,6 @@ void FarPluginPanelInfo::DeleteInfoLines()
 
 PanelModeInfo^ FarPluginPanelInfo::GetMode(PanelViewMode viewMode)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	int i = int(viewMode);
 	if (i < 0 || i > 9)
 		throw gcnew ArgumentException("viewMode");
@@ -936,8 +895,6 @@ PanelModeInfo^ FarPluginPanelInfo::GetMode(PanelViewMode viewMode)
 //???
 void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	assert(s != nullptr);
 
 	d.ColumnTypes = NewChars(s->ColumnTypes);
@@ -960,8 +917,6 @@ void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
 //???
 void FreePanelMode(const ::PanelMode& d)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	delete d.ColumnTypes;
 	delete d.ColumnWidths;
 	delete d.StatusColumnTypes;
@@ -977,8 +932,6 @@ void FreePanelMode(const ::PanelMode& d)
 
 void FarPluginPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	// index
 	int i = int(viewMode);
 	if (i < 0 || i > 9)
@@ -998,8 +951,9 @@ void FarPluginPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo
 				++nb;
 
 		// test title number (or Far will read crap)
-		if (modeInfo->ColumnTitles->Length < nb)
-			throw gcnew ArgumentException("Column title number is too small.");
+		// '<' will do, but let it be '!='
+		if (modeInfo->ColumnTitles->Length != nb)
+			throw gcnew ArgumentException("Column titles number does not match column types.");
 	}
 
 	// ensure managed array
@@ -1043,8 +997,6 @@ void FarPluginPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo
 
 void FarPluginPanelInfo::CreateModes()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	assert(m != nullptr);
 	assert(_Modes != nullptr);
 	assert(!m->PanelModesArray);
@@ -1065,8 +1017,6 @@ void FarPluginPanelInfo::CreateModes()
 
 void FarPluginPanelInfo::DeleteModes()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	assert(m != nullptr);
 
 	if (!m->PanelModesArray)
@@ -1087,8 +1037,6 @@ void FarPluginPanelInfo::DeleteModes()
 
 void FarPluginPanelInfo::InfoItems::set(array<DataItem^>^ value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	_InfoItems = value;
 	if (m)
 	{
@@ -1128,8 +1076,6 @@ SETKEYBAR(Shift, ShiftTitles)
 
 OpenPluginInfo& FarPluginPanelInfo::Make()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (m)
 		return *m;
 
@@ -1167,8 +1113,6 @@ OpenPluginInfo& FarPluginPanelInfo::Make()
 
 void FarPluginPanelInfo::Free()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (m)
 	{
 		delete[] m->CurDir;
@@ -1203,27 +1147,20 @@ void FarPluginPanelInfo::Free()
 FarPanel::FarPanel(bool current)
 : _handle(current ? PANEL_ACTIVE : PANEL_PASSIVE)
 {
-	TRACE_SCOPE(__FUNCTION__);
 }
 
 HANDLE FarPanel::Handle::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return _handle;
 }
 
 void FarPanel::Handle::set(HANDLE value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	_handle = value;
 }
 
 bool FarPanel::IsActive::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	if (!TryPanelInfo(_handle, pi))
 		return false;
@@ -1233,8 +1170,6 @@ bool FarPanel::IsActive::get()
 
 bool FarPanel::IsLeft::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	if (!TryPanelInfo(_handle, pi))
 		return false;
@@ -1244,8 +1179,6 @@ bool FarPanel::IsLeft::get()
 
 bool FarPanel::IsPlugin::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1254,8 +1187,6 @@ bool FarPanel::IsPlugin::get()
 
 bool FarPanel::IsVisible::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 	return pi.Visible != 0;
@@ -1263,8 +1194,6 @@ bool FarPanel::IsVisible::get()
 
 void FarPanel::IsVisible::set(bool value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1283,8 +1212,6 @@ void FarPanel::IsVisible::set(bool value)
 //! It is possible to ask the current file directly, but implementation is not safe
 IFile^ FarPanel::CurrentFile::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1298,8 +1225,6 @@ IFile^ FarPanel::CurrentFile::get()
 
 int FarPanel::CurrentIndex::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1308,8 +1233,6 @@ int FarPanel::CurrentIndex::get()
 
 int FarPanel::TopIndex::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1318,8 +1241,6 @@ int FarPanel::TopIndex::get()
 
 Place FarPanel::Window::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1331,8 +1252,6 @@ Place FarPanel::Window::get()
 
 Point FarPanel::Frame::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1341,8 +1260,6 @@ Point FarPanel::Frame::get()
 
 PanelSortMode FarPanel::SortMode::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1351,15 +1268,11 @@ PanelSortMode FarPanel::SortMode::get()
 
 void FarPanel::SortMode::set(PanelSortMode value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	Info.Control(_handle, FCTL_SETSORTMODE, (int)value, NULL);
 }
 
 PanelViewMode FarPanel::ViewMode::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1368,15 +1281,11 @@ PanelViewMode FarPanel::ViewMode::get()
 
 void FarPanel::ViewMode::set(PanelViewMode value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	Info.Control(_handle, FCTL_SETVIEWMODE, (int)value, NULL);
 }
 
 String^ FarPanel::Path::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	int size = Info.Control(_handle, FCTL_GETCURRENTDIRECTORY, 0, NULL);
 	CBox buf(size);
 	Info.Control(_handle, FCTL_GETCURRENTDIRECTORY, size, (LONG_PTR)(wchar_t*)buf);
@@ -1385,8 +1294,6 @@ String^ FarPanel::Path::get()
 
 void FarPanel::Path::set(String^ value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (value == nullptr)
 		throw gcnew ArgumentNullException("value");
 	if (!Directory::Exists(value))
@@ -1399,15 +1306,11 @@ void FarPanel::Path::set(String^ value)
 
 String^ FarPanel::ToString()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return Path;
 }
 
 IList<IFile^>^ FarPanel::ShownFiles::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1423,8 +1326,6 @@ IList<IFile^>^ FarPanel::ShownFiles::get()
 
 IList<IFile^>^ FarPanel::SelectedFiles::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1440,8 +1341,6 @@ IList<IFile^>^ FarPanel::SelectedFiles::get()
 
 PanelType FarPanel::Type::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1450,8 +1349,6 @@ PanelType FarPanel::Type::get()
 
 FarFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	FarFile^ f = gcnew FarFile;
 
 	f->Name = gcnew String(item.FindData.lpwszFileName);
@@ -1469,8 +1366,6 @@ FarFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
 
 bool FarPanel::ShowHidden::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1479,8 +1374,6 @@ bool FarPanel::ShowHidden::get()
 
 bool FarPanel::Highlight::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1489,8 +1382,6 @@ bool FarPanel::Highlight::get()
 
 bool FarPanel::ReverseSortOrder::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1499,15 +1390,11 @@ bool FarPanel::ReverseSortOrder::get()
 
 void FarPanel::ReverseSortOrder::set(bool value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	Info.Control(_handle, FCTL_SETSORTORDER, (int)value, NULL);
 }
 
 bool FarPanel::UseSortGroups::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1516,8 +1403,6 @@ bool FarPanel::UseSortGroups::get()
 
 bool FarPanel::SelectedFirst::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1526,8 +1411,6 @@ bool FarPanel::SelectedFirst::get()
 
 bool FarPanel::NumericSort::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1536,15 +1419,11 @@ bool FarPanel::NumericSort::get()
 
 void FarPanel::NumericSort::set(bool value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	Info.Control(_handle, FCTL_SETNUMERICSORT, (int)value, NULL);
 }
 
 bool FarPanel::RealNames::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1553,23 +1432,17 @@ bool FarPanel::RealNames::get()
 
 void FarPanel::Close()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	Info.Control(_handle, FCTL_CLOSEPLUGIN, 0, NULL);
 }
 
 void FarPanel::Close(String^ path)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PIN_NE(pin, path);
 	Info.Control(_handle, FCTL_CLOSEPLUGIN, 0, (LONG_PTR)(const wchar_t*)pin);
 }
 
 void FarPanel::GoToName(String^ name)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (!name)
 		throw gcnew ArgumentNullException("name");
 
@@ -1594,8 +1467,6 @@ void FarPanel::GoToName(String^ name)
 
 void FarPanel::GoToPath(String^ path)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (!path)
 		throw gcnew ArgumentNullException("path");
 
@@ -1615,15 +1486,11 @@ void FarPanel::GoToPath(String^ path)
 
 void FarPanel::Redraw()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	Info.Control(_handle, FCTL_REDRAWPANEL, 0, NULL);
 }
 
 void FarPanel::Redraw(int current, int top)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	//! do it, else result is different
 	if (current < 0 && top < 0)
 	{
@@ -1639,8 +1506,6 @@ void FarPanel::Redraw(int current, int top)
 
 void FarPanel::Update(bool keepSelection)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	Info.Control(_handle, FCTL_UPDATEPANEL, keepSelection, NULL);
 }
 
@@ -1652,15 +1517,11 @@ FarPluginPanel::FarPluginPanel()
 : FarPanel(true)
 , _files(gcnew List<IFile^>)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	_StartDirectory = Environment::CurrentDirectory;
 }
 
 void FarPluginPanel::AssertOpen()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (Index <= 0)
 		throw gcnew InvalidOperationException("Expected opened plugin panel.");
 }
@@ -1675,11 +1536,9 @@ To submit a wish?
 */
 void FarPluginPanel::SwitchFullScreen()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	// get
-	PanelViewMode i = ViewMode;
-	PanelModeInfo^ mode = Info->GetMode(i);
+	PanelViewMode iViewMode = ViewMode;
+	PanelModeInfo^ mode = Info->GetMode(iViewMode);
 	if (!mode)
 	{
 		mode = gcnew PanelModeInfo;
@@ -1698,14 +1557,14 @@ void FarPluginPanel::SwitchFullScreen()
 		array<String^>^ types = mode->ColumnTypes->Split(',');
 		array<String^>^ widths = mode->ColumnWidths->Split(',');
 		String^ w = String::Empty;
-		for(int i = 0; i < types->Length; ++i)
+		for(int iType = 0; iType < types->Length; ++iType)
 		{
 			String^ w1;
-			if (types[i] == "N" || types[i] == "Z" || types[i] == "O")
+			if (types[iType] == "N" || types[iType] == "Z" || types[iType] == "O")
 				w1 = "0";
 			else
-				w1 = widths[i];
-			if (i == 0)
+				w1 = widths[iType];
+			if (iType == 0)
 				w = w1;
 			else
 				w = "," + w1;
@@ -1717,14 +1576,12 @@ void FarPluginPanel::SwitchFullScreen()
 	mode->IsFullScreen = !mode->IsFullScreen;
 
 	// set
-	Info->SetMode(i, mode);
+	Info->SetMode(iViewMode, mode);
 	Redraw();
 }
 
 List<IFile^>^ FarPluginPanel::ReplaceFiles(List<IFile^>^ files)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	List<IFile^>^ r = _files;
 	_files = files;
 	return r;
@@ -1732,36 +1589,26 @@ List<IFile^>^ FarPluginPanel::ReplaceFiles(List<IFile^>^ files)
 
 bool FarPluginPanel::IsOpened::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return Index > 0;
 }
 
 IList<IFile^>^ FarPluginPanel::Files::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return _files;
 }
 
 bool FarPluginPanel::IsPlugin::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return true;
 }
 
 Guid FarPluginPanel::Id::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return _Id;
 }
 
 void FarPluginPanel::Id::set(Guid value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (_Id != Guid::Empty)
 		throw gcnew InvalidOperationException("Id cannot be set twice.");
 
@@ -1771,8 +1618,6 @@ void FarPluginPanel::Id::set(Guid value)
 //! see remark for FarPanel::CurrentFile::get()
 IFile^ FarPluginPanel::CurrentFile::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	AssertOpen();
 
 	PanelInfo pi;
@@ -1799,8 +1644,6 @@ IFile^ FarPluginPanel::CurrentFile::get()
 
 IList<IFile^>^ FarPluginPanel::ShownFiles::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	AssertOpen();
 
 	PanelInfo pi;
@@ -1820,8 +1663,6 @@ IList<IFile^>^ FarPluginPanel::ShownFiles::get()
 
 IList<IFile^>^ FarPluginPanel::SelectedFiles::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	AssertOpen();
 
 	PanelInfo pi;
@@ -1841,15 +1682,11 @@ IList<IFile^>^ FarPluginPanel::SelectedFiles::get()
 
 String^ FarPluginPanel::Path::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return _info.CurrentDirectory;
 }
 
 void FarPluginPanel::Path::set(String^ value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (value == nullptr)
 		throw gcnew ArgumentNullException("value");
 
@@ -1872,29 +1709,21 @@ void FarPluginPanel::Path::set(String^ value)
 
 String^ FarPluginPanel::StartDirectory::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return _StartDirectory;
 }
 
 void FarPluginPanel::StartDirectory::set(String^ value)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	_StartDirectory = value;
 }
 
 IPluginPanel^ FarPluginPanel::AnotherPanel::get()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	return PanelSet::GetPluginPanel2(this);
 }
 
 void FarPluginPanel::Open(IPluginPanel^ oldPanel)
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (!oldPanel)
 		throw gcnew ArgumentNullException("oldPanel");
 
@@ -1903,8 +1732,6 @@ void FarPluginPanel::Open(IPluginPanel^ oldPanel)
 
 void FarPluginPanel::Open()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	if (Index > 0)
 		throw gcnew InvalidOperationException("Cannot open the panel because it is already opened.");
 
@@ -1919,8 +1746,6 @@ void FarPluginPanel::Open()
 
 void FarPluginPanel::Push()
 {
-	TRACE_SCOPE(__FUNCTION__);
-
 	PanelSet::PushPluginPanel(this);
 }
 

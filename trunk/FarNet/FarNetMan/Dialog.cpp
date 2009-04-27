@@ -1725,6 +1725,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 	}
 	catch(Exception^ e)
 	{
+		Log::TraceError(e);
 		Far::Instance->ShowError("Error in " __FUNCTION__, e);
 	}
 

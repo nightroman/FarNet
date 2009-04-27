@@ -57,8 +57,9 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 	switch(type)
 	{
 	case VE_READ:
-		LL(__FUNCTION__ " READ");
 		{
+			LOG_AUTO(3, "VE_READ");
+
 			// get info
 			ViewerInfo vi; vi.StructSize = sizeof(vi);
 			Info.ViewerControl(VCTL_GETINFO, &vi);
@@ -91,8 +92,9 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 		}
 		break;
 	case VE_CLOSE:
-		LL(__FUNCTION__ " CLOSE");
 		{
+			LOG_AUTO(3, "VE_CLOSE");
+
 			// get registered, close and unregister
 			int id = *((int*)param);
 			Viewer^ viewer;
@@ -114,8 +116,9 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 		}
 		break;
 	case VE_GOTFOCUS:
-		LL(__FUNCTION__ " VE_GOTFOCUS");
 		{
+			LOG_AUTO(3, "VE_GOTFOCUS");
+
 			// get registered
 			int id = *((int*)param);
 			Viewer^ viewer;
@@ -130,8 +133,9 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 		}
 		break;
 	case VE_KILLFOCUS:
-		LL(__FUNCTION__ " VE_KILLFOCUS");
 		{
+			LOG_AUTO(3, "VE_KILLFOCUS");
+
 			// get registered
 			int id = *((int*)param);
 			Viewer^ viewer;

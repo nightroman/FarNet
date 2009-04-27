@@ -71,7 +71,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/FarNetMan.dll"
 				LinkIncremental="2"
-				ModuleDefinitionFile="FarNetMan.def"
+				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				ProgramDatabaseFile="$(OutDir)/FarNetMan.pdb"
@@ -159,7 +159,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/FarNetMan.dll"
 				LinkIncremental="2"
-				ModuleDefinitionFile="FarNetMan.def"
+				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				ProgramDatabaseFile="$(OutDir)/FarNetMan.pdb"
@@ -246,7 +246,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/FarNetMan.dll"
 				LinkIncremental="1"
-				ModuleDefinitionFile="FarNetMan.def"
+				ModuleDefinitionFile="Export.def"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -330,7 +330,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/FarNetMan.dll"
 				LinkIncremental="1"
-				ModuleDefinitionFile="FarNetMan.def"
+				ModuleDefinitionFile="Export.def"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -381,6 +381,11 @@
 		<AssemblyReference
 			RelativePath="System.dll"
 			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
+			MinFrameworkVersion="131072"
+		/>
+		<AssemblyReference
+			RelativePath="System.configuration.dll"
+			AssemblyName="System.Configuration, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
 			MinFrameworkVersion="131072"
 		/>
 	</References>
@@ -443,15 +448,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Export.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Export.def"
+				>
+			</File>
+			<File
 				RelativePath=".\Far.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FarNetMan.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FarNetMan.def"
 				>
 			</File>
 			<File
@@ -468,6 +473,10 @@
 			</File>
 			<File
 				RelativePath=".\ListMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Log.cpp"
 				>
 			</File>
 			<File
@@ -630,6 +639,10 @@
 			</File>
 			<File
 				RelativePath=".\ListMenu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Log.h"
 				>
 			</File>
 			<File

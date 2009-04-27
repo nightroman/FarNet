@@ -6,7 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 using System;
 using System.Globalization;
 
-namespace FarNet.Raw
+namespace FarNet.Support
 {
 	/// <summary>
 	/// TEST ONLY.
