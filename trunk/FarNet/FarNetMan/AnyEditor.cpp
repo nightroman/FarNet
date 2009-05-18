@@ -51,7 +51,7 @@ String^ AnyEditor::EditText(String^ text, String^ title)
 			}
 			catch(IOException^ e)
 			{
-				Log::TraceError(e);
+				Log::TraceException(e);
 			}
 			return r;
 		}

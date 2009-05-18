@@ -405,15 +405,15 @@ namespace FarNet
 		/// </summary>
 		IPluginPanel CreatePluginPanel();
 		/// <summary>
-		/// Creates a new empty panel item.
+		/// Obsolete. You should create SetFile directly by 'new'.
 		/// </summary>
-		IFile CreatePanelItem();
+		[Obsolete("You should create SetFile directly by 'new'.")]
+		SetFile CreatePanelItem();
 		/// <summary>
-		/// Creates a panel item from <c>FileSystemInfo</c> object.
+		/// Obsolete. You should create SetFile directly by 'new'.
 		/// </summary>
-		/// <param name="info">File system item info.</param>
-		/// <param name="fullName">Use full name for panel item name.</param>
-		IFile CreatePanelItem(FileSystemInfo info, bool fullName);
+		[Obsolete("You should create SetFile directly by 'new'.")]
+		SetFile CreatePanelItem(FileSystemInfo info, bool fullName);
 		/// <summary>
 		/// Confirmation settings according to options in the "Confirmations" dialog.
 		/// </summary>

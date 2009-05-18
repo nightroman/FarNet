@@ -215,9 +215,9 @@ internal:
 int Compare(String^ strA, String^ strB);
 bool EqualsOrdinal(String^ strA, String^ strB);
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
-String^ ExceptionInfo(Exception^ e, bool full);
 String^ JoinText(String^ head, String^ tail);
 String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();
 void DeleteSourceOptional(String^ path, DeleteSource option);
 void ValidateRect(int& x, int& w, int min, int size);
+Object^ Property(Object^ obj, String^ name);

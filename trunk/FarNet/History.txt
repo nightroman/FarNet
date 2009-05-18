@@ -1,5 +1,26 @@
 http://code.google.com/p/farnet/
 
+= 4.1.0 =
+
+MAJOR CHANGES
+
+*) Interface 'IFile' is replaced with abstract class 'FarFile'. This approach
+is more convenient for plugins that use custom implementation of files. Also,
+though it is less important, it provides slightly faster access to members.
+WARNING: this change is breaking, but technically in almost 100% cases you
+simply just have to replace the name IFile with FarFile everywhere.
+
+*) FarNet provides ready to use implementation of 'FarFile': class 'SetFile'.
+Instances of this class can be created directly by 'new'. That is why two
+methods IFar.CreatePanelItem() are not needed now; they are attributed
+'Obsolete' and will be removed in the next version.
+
+OTHER CHANGES
+
+*) Reviewed and improved (hopefully) tracing of errors. IFar.ShowError() now
+traces errors, too, so that if a plugin calls this function then error info is
+sent to trace listeners. Reminder: see "Far.exe.config" for tracing options.
+
 = 4.0.13 =
 
 TRACING

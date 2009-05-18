@@ -7,43 +7,6 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-ref class FarFile : IFile
-{
-public:
-	INL_PROP_FLAG(IsArchive, FILE_ATTRIBUTE_ARCHIVE);
-	INL_PROP_FLAG(IsCompressed, FILE_ATTRIBUTE_COMPRESSED);
-	INL_PROP_FLAG(IsDirectory, FILE_ATTRIBUTE_DIRECTORY);
-	INL_PROP_FLAG(IsEncrypted, FILE_ATTRIBUTE_ENCRYPTED);
-	INL_PROP_FLAG(IsHidden, FILE_ATTRIBUTE_HIDDEN);
-	INL_PROP_FLAG(IsReadOnly, FILE_ATTRIBUTE_READONLY);
-	INL_PROP_FLAG(IsReparsePoint, FILE_ATTRIBUTE_REPARSE_POINT);
-	INL_PROP_FLAG(IsSystem, FILE_ATTRIBUTE_SYSTEM);
-	virtual property DateTime CreationTime;
-	virtual property DateTime LastAccessTime;
-	virtual property DateTime LastWriteTime;
-	virtual property FileAttributes Attributes { FileAttributes get(); void set(FileAttributes value); }
-	virtual property Int64 Length;
-	virtual property Object^ Data;
-	virtual property String^ AlternateName;
-	virtual property String^ Description;
-	virtual property String^ Owner;
-	virtual property String^ Name
-	{
-		String^ get() { return _Name; }
-		void set(String^ value) { if (!value) throw gcnew ArgumentNullException("value"); _Name = value; }
-	}
-public:
-	virtual String^ ToString() override
-	{
-		return Name;
-	}
-internal:
-	FarFile() : _Name(String::Empty) {}
-private:
-	DWORD _flags;
-	String^ _Name;
-};
-
 ref class FarPanel : public IPanel
 {
 public:
@@ -58,9 +21,9 @@ public:
 	virtual property bool SelectedFirst { bool get(); }
 	virtual property bool ShowHidden { bool get(); }
 	virtual property bool UseSortGroups { bool get(); }
-	virtual property IFile^ CurrentFile { IFile^ get(); }
-	virtual property IList<IFile^>^ ShownFiles { IList<IFile^>^ get(); }
-	virtual property IList<IFile^>^ SelectedFiles { IList<IFile^>^ get(); }
+	virtual property FarFile^ CurrentFile { FarFile^ get(); }
+	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get(); }
+	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get(); }
 	virtual property int CurrentIndex { int get(); }
 	virtual property int TopIndex { int get(); }
 	virtual property PanelSortMode SortMode { PanelSortMode get(); void set(PanelSortMode value); }
@@ -81,7 +44,7 @@ public:
 	virtual String^ ToString() override;
 internal:
 	FarPanel(bool current);
-	static FarFile^ ItemToFile(const PluginPanelItem& item);
+	static SetFile^ ItemToFile(const PluginPanelItem& item);
 internal:
 	property HANDLE Handle { HANDLE get(); void set(HANDLE value); }
 	property int Index { int get() { return (int)(INT_PTR)_handle; } void set(int value) { _handle = (HANDLE)(INT_PTR)value; } }
@@ -185,9 +148,9 @@ ref class FarPluginPanel : public FarPanel, IPluginPanel
 public: // FarPanel
 	virtual property bool IsPlugin { bool get() override; }
 	virtual property Guid Id { Guid get(); void set(Guid value); }
-	virtual property IFile^ CurrentFile { IFile^ get() override; }
-	virtual property IList<IFile^>^ ShownFiles { IList<IFile^>^ get() override; }
-	virtual property IList<IFile^>^ SelectedFiles { IList<IFile^>^ get() override; }
+	virtual property FarFile^ CurrentFile { FarFile^ get() override; }
+	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get() override; }
+	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get() override; }
 	virtual property String^ Path { String^ get() override; void set(String^ value) override; }
 	virtual property String^ StartDirectory { String^ get(); void set(String^ value); }
 public: // IPluginPanel
@@ -195,7 +158,7 @@ public: // IPluginPanel
 	virtual property bool IdleUpdate;
 	virtual property bool IsOpened { bool get(); }
 	virtual property bool IsPushed { bool get() { return _IsPushed; } }
-	virtual property IList<IFile^>^ Files { IList<IFile^>^ get(); }
+	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); }
 	virtual property Comparison<Object^>^ DataComparison;
 	virtual property IPluginPanel^ AnotherPanel { IPluginPanel^ get(); }
 	virtual property IPluginPanelInfo^ Info { IPluginPanelInfo^ get() { return %_info; } }
@@ -205,7 +168,7 @@ public: // IPluginPanel
 	virtual void Open();
 	virtual void Open(IPluginPanel^ oldPanel);
 	virtual void PostData(Object^ data) { _postData = data; }
-	virtual void PostFile(IFile^ file) { _postFile = file; }
+	virtual void PostFile(FarFile^ file) { _postFile = file; }
 	virtual void PostName(String^ name) { _postName = name; }
 	virtual void Push();
 public: DEF_EVENT(Closed, _Closed);
@@ -230,17 +193,17 @@ internal:
 	FarPluginPanel();
 	void AssertOpen();
 	void SwitchFullScreen();
-	List<IFile^>^ ReplaceFiles(List<IFile^>^ files);
+	List<FarFile^>^ ReplaceFiles(List<FarFile^>^ files);
 internal:
 	bool _IsPushed;
 	bool _skipGettingData;
 	FarPluginPanelInfo _info;
 	Object^ _postData;
-	IFile^ _postFile;
+	FarFile^ _postFile;
 	String^ _postName;
 private:
 	Guid _Id;
-	List<IFile^>^ _files;
+	List<FarFile^>^ _files;
 	String^ _StartDirectory;
 };
 

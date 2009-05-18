@@ -99,6 +99,7 @@
     <Compile Include="Far.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="File.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="KeyMacroData.cs" />
     <Compile Include="KeyMacroHost.cs" />

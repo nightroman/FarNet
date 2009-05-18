@@ -226,7 +226,7 @@ String^ Far::RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, E
 	_registeredCommand.Add(it);
 
 	LOG_INFO("Register " + it);
-	
+
 	return it->Prefix;
 }
 
@@ -356,7 +356,7 @@ void Far::Run(String^ command)
 		// invoke
 		{
 			String^ code = command->Substring(colon + 1);
-			
+
 			LOG_AUTO(3, String::Format("{0} {1}", Log::Format(it->Handler->Method), code));
 
 			CommandEventArgs e(code);
@@ -694,7 +694,7 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 			for(int i = _toolConfig.Count; --i >= 0;)
 				_pConfig[i + 1].Set(Res::MenuPrefix + _toolConfig[i]->Alias(ToolOptions::Config));
 		}
-		
+
 		pi->PluginConfigStringsNumber = _toolConfig.Count + 1;
 		pi->PluginConfigStrings = (const wchar_t**)_pConfig;
 	}
@@ -709,7 +709,7 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 			for(int i = _toolDisk.Count; --i >= 0;)
 				_pDisk[i + 1].Set(Res::MenuPrefix + _toolDisk[i]->Alias(ToolOptions::Disk));
 		}
-		
+
 		pi->DiskMenuStringsNumber = _toolDisk.Count + 1;
 		pi->DiskMenuStrings = (const wchar_t**)_pDisk;
 	}
@@ -727,7 +727,7 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 				for(int i = _toolEditor.Count; --i >= 0;)
 					_pEditor[i + 1].Set(Res::MenuPrefix + _toolEditor[i]->Alias(ToolOptions::Editor));
 			}
-			
+
 			pi->PluginMenuStringsNumber = _toolEditor.Count + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pEditor;
 		}
@@ -738,11 +738,11 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 			{
 				_pPanels = new CStr[_toolPanels.Count + 1];
 				_pPanels[0].Set(Res::MenuPrefix);
-				
+
 				for(int i = _toolPanels.Count; --i >= 0;)
 					_pPanels[i + 1].Set(Res::MenuPrefix + _toolPanels[i]->Alias(ToolOptions::Panels));
 			}
-			
+
 			pi->PluginMenuStringsNumber = _toolPanels.Count + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pPanels;
 		}
@@ -753,7 +753,7 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 			{
 				_pViewer = new CStr[_toolViewer.Count + 1];
 				_pViewer[0].Set(Res::MenuPrefix);
-				
+
 				for(int i = _toolViewer.Count; --i >= 0;)
 					_pViewer[i + 1].Set(Res::MenuPrefix + _toolViewer[i]->Alias(ToolOptions::Viewer));
 			}
@@ -768,11 +768,11 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 			{
 				_pDialog = new CStr[_toolDialog.Count + 1];
 				_pDialog[0].Set(Res::MenuPrefix);
-				
+
 				for(int i = _toolDialog.Count; --i >= 0;)
 					_pDialog[i + 1].Set(Res::MenuPrefix + _toolDialog[i]->Alias(ToolOptions::Dialog));
 			}
-			
+
 			pi->PluginMenuStringsNumber = _toolDialog.Count + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pDialog;
 		}
@@ -903,21 +903,33 @@ void Far::ShowError(String^ title, Exception^ error)
 	if (!error)
 		throw gcnew ArgumentNullException("error");
 
-	switch(Msg(
+	// log
+	String^ info = Log::TraceException(error);
+
+	int res = Msg(
 		error->Message,
 		String::IsNullOrEmpty(title) ? error->GetType()->FullName : title,
 		MsgOptions::LeftAligned | MsgOptions::Warning,
-		gcnew array<String^>{"Ok", "View Info", "Copy Info"}))
+		gcnew array<String^>{"Ok", "View Info", "Copy Info"});
+
+	if (res != 1 && res != 2)
+		return;
+
+	if (!info)
+		info = Log::FormatException(error);
+
+	info += "\r\n" + error->StackTrace;
+
+	if (res == 1)
 	{
-	case 1:
 		Far::Instance->AnyViewer->ViewText(
-			ExceptionInfo(error, false) + "\n" + error->ToString(),
+			info,
 			error->GetType()->FullName,
 			OpenMode::Modal);
-		return;
-	case 2:
-		CopyToClipboard(ExceptionInfo(error, false) + "\r\n" + error->ToString());
-		return;
+	}
+	else
+	{
+		CopyToClipboard(info);
 	}
 }
 
@@ -1007,25 +1019,14 @@ IPluginPanel^ Far::GetPluginPanel(Type^ hostType)
 	return PanelSet::GetPluginPanel(hostType);
 }
 
-IFile^ Far::CreatePanelItem()
+SetFile^ Far::CreatePanelItem()
 {
-	return gcnew FarFile;
+	return gcnew SetFile;
 }
 
-IFile^ Far::CreatePanelItem(FileSystemInfo^ info, bool fullName)
+SetFile^ Far::CreatePanelItem(FileSystemInfo^ info, bool fullName)
 {
-	FarFile^ r = gcnew FarFile;
-	if (info)
-	{
-		r->Name = fullName ? info->FullName : info->Name;
-		r->CreationTime = info->CreationTime;
-		r->LastAccessTime = info->LastAccessTime;
-		r->LastWriteTime = info->LastWriteTime;
-		r->Attributes = info->Attributes;
-		if (!r->IsDirectory)
-			r->Length = ((FileInfo^)info)->Length;
-	}
-	return r;
+	return gcnew SetFile(info, fullName);
 }
 
 String^ Far::Input(String^ prompt)
@@ -1487,10 +1488,8 @@ void Far::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
 	{
 		handler1->Invoke(nullptr, nullptr);
 	}
-	catch(Exception^ e)
+	catch(...)
 	{
-		FarNet::Log::TraceError(e);
-		
 		//! 'F11 <hotkey>' is already posted and will trigger the menu; so, let's use a fake step
 		_handler = gcnew EventHandler(&VoidStep);
 		throw;
@@ -1810,8 +1809,6 @@ void Far::OnEditorOpened(FarNet::Editor^ editor)
 		}
 		catch(Exception^ e)
 		{
-			FarNet::Log::TraceError(e);
-			
 			//! show plugin info, too
 			ShowError(it->Key, e);
 		}

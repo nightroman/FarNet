@@ -4,7 +4,7 @@
 /*
   plugin.hpp
 
-  Plugin API for FAR Manager 2.0 build 883
+  Plugin API for FAR Manager 2.0 build 916
 */
 
 /*
@@ -41,7 +41,7 @@ other possible license with no implications from the above license on them.
 
 #define FARMANAGERVERSION_MAJOR 2
 #define FARMANAGERVERSION_MINOR 0
-#define FARMANAGERVERSION_BUILD 883
+#define FARMANAGERVERSION_BUILD 916
 
 #ifndef RC_INVOKED
 
@@ -1717,8 +1717,6 @@ enum OPERATION_MODES {
   OPM_DESCR      =0x0020,
   OPM_QUICKVIEW  =0x0040,
 };
-
-#define MAXSIZE_SHORTCUTDATA  8192
 
 struct OpenPluginInfo
 {

@@ -26,7 +26,7 @@ public class TestFiler : FilerPlugin
 		// read lines
 		foreach (string s in File.ReadAllLines(e.Name))
 		{
-			IFile f = Far.CreatePanelItem();
+			SetFile f = new SetFile();
 			f.Name = s;
 			p.Files.Add(f);
 		}

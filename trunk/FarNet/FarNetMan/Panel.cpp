@@ -10,21 +10,86 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-FileAttributes FarFile::Attributes::get()
+// Transient wrapper
+ref class NativeFile sealed : public FarFile
 {
-	return (FileAttributes)_flags;
-}
-
-void FarFile::Attributes::set(FileAttributes value)
-{
-	_flags = (DWORD)value;
-}
+private:
+	const PluginPanelItem& m;
+internal:
+	NativeFile(const PluginPanelItem& item) : m(item)
+	{}
+public:
+	//! PS V2 CTP3 formatter shows these properties in reversed order, before base class properties
+	virtual property FileAttributes Attributes
+	{
+		FileAttributes get() override
+		{
+			return (FileAttributes)m.FindData.dwFileAttributes;
+		}
+	}
+	virtual property Int64 Length
+	{
+		Int64 get() override
+		{
+			return m.FindData.nFileSize;
+		}
+	}
+	virtual property DateTime LastWriteTime
+	{
+		DateTime get() override
+		{
+			return FileTimeToDateTime(m.FindData.ftLastWriteTime);
+		}
+	}
+	virtual property DateTime LastAccessTime
+	{
+		DateTime get() override
+		{
+			return FileTimeToDateTime(m.FindData.ftLastAccessTime);
+		}
+	}
+	virtual property DateTime CreationTime
+	{
+		DateTime get() override
+		{
+			return FileTimeToDateTime(m.FindData.ftCreationTime);
+		}
+	}
+	virtual property String^ AlternateName
+	{
+		String^ get() override
+		{
+			return gcnew String(m.FindData.lpwszAlternateFileName);
+		}
+	}
+	virtual property String^ Owner
+	{
+		String^ get() override
+		{
+			return gcnew String(m.Owner);
+		}
+	}
+	virtual property String^ Description
+	{
+		String^ get() override
+		{
+			return gcnew String(m.Description);
+		}
+	}
+	virtual property String^ Name
+	{
+		String^ get() override
+		{
+			return gcnew String(m.FindData.lpwszFileName);
+		}
+	}
+};
 
 #pragma region Kit
 
-static List<IFile^>^ ItemsToFiles(IList<IFile^>^ files, PluginPanelItem* panelItem, int itemsNumber)
+static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, PluginPanelItem* panelItem, int itemsNumber)
 {
-	List<IFile^>^ r = gcnew List<IFile^>(itemsNumber);
+	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
 
 	//? FAR bug: alone dots has UserData = 0 no matter what was written there; so check the dots name
 	if (itemsNumber == 1 && panelItem[0].UserData == 0 && wcscmp(panelItem[0].FindData.lpwszFileName, L"..") == 0)
@@ -62,7 +127,7 @@ int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int item
 	if (!pp->_DeletingFiles)
 		return false;
 
-	IList<IFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
+	IList<FarFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
 	FilesEventArgs e(files, (OperationModes)opMode, false);
 	pp->_DeletingFiles(pp, %e);
 
@@ -85,7 +150,7 @@ int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 	if (!pp->_GettingFiles)
 		return 0;
 
-	List<IFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
+	List<FarFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
 	GettingFilesEventArgs e(files, (OperationModes)opMode, move != 0, gcnew String((*destPath)));
 	pp->_GettingFiles(pp, %e);
 
@@ -124,7 +189,7 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 		int countChars = 0;
 		if (pp->AddDots && SS(pp->DotsDescription))
 			countChars += pp->DotsDescription->Length + 1;
-		for each(IFile^ f in pp->Files)
+		for each(FarFile^ f in pp->Files)
 		{
 			if (SS(f->Name))
 				countChars += f->Name->Length + 1;
@@ -160,7 +225,7 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 		}
 
 		// add files
-		for each(IFile^ f in pp->Files)
+		for each(FarFile^ f in pp->Files)
 		{
 			++i;
 			++fi;
@@ -206,11 +271,10 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 	}
 	catch(Exception^ e)
 	{
-		Log::TraceError(e);
-
+		//??? .. else log error?
 		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
 			Far::Instance->ShowError(__FUNCTION__, e);
-		
+
 		return false;
 	}
 }
@@ -221,7 +285,7 @@ void PanelSet::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 
 	// plugin panel
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
-	
+
 	//! pushed case
 	//?? Far calls this after Close(), perhaps a bug. How: push folder tree panel.
 	if (pp->IsPushed)
@@ -313,7 +377,6 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				}
 				catch(Exception^ exception)
 				{
-					Log::TraceError(exception);
 					Far::Instance->ShowError("Event: Executing", exception);
 				}
 				return e.Ignore;
@@ -352,7 +415,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				pp->_postName = nullptr;
 
 				int i = pp->AddDots ? 0 : -1;
-				for each (IFile^ f in pp->ShownFiles)
+				for each (FarFile^ f in pp->ShownFiles)
 				{
 					++i;
 					if (pp->DataComparison(data, f->Data) == 0)
@@ -374,7 +437,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				pp->_postName = nullptr;
 
 				int i = pp->AddDots ? 0 : -1;
-				for each (IFile^ f in pp->ShownFiles)
+				for each (FarFile^ f in pp->ShownFiles)
 				{
 					++i;
 					if (pp->_postData == f->Data)
@@ -396,7 +459,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				pp->_postName = nullptr;
 
 				int i = pp->AddDots ? 0 : -1;
-				for each (IFile^ f in pp->ShownFiles)
+				for each (FarFile^ f in pp->ShownFiles)
 				{
 					++i;
 					if (pp->_postFile == f)
@@ -416,7 +479,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			if (pp->_postName)
 			{
 				int i = pp->AddDots ? 0 : -1;
-				for each (IFile^ f in pp->ShownFiles)
+				for each (FarFile^ f in pp->ShownFiles)
 				{
 					++i;
 					if (String::Compare(pp->_postName, f->Name, true, CultureInfo::InvariantCulture) == 0)
@@ -452,7 +515,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 	case FE_BREAK:
 		{
 			LOG_AUTO(3, "FE_BREAK");
-	
+
 			if (pp->_CtrlBreakPressed)
 				pp->_CtrlBreakPressed(pp, nullptr);
 		}
@@ -506,18 +569,23 @@ int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 	FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_PuttingFiles)
 		return 0;
+
 	FarPluginPanel^ plugin2 = GetPluginPanel2(pp);
-	List<IFile^>^ files;
+	List<FarFile^>^ files;
 	if (plugin2)
 	{
 		files = ItemsToFiles(plugin2->Files, panelItem, itemsNumber);
 	}
 	else
 	{
-		files = gcnew List<IFile^>(itemsNumber);
+		files = gcnew List<FarFile^>(itemsNumber);
 		for(int i = 0; i < itemsNumber; ++i)
+		{
+			//! we can use transient 'NativeFile' in here, but 'transient' it is not that safe
 			files->Add(FarPanel::ItemToFile(panelItem[i]));
+		}
 	}
+
 	FilesEventArgs e(files, (OperationModes)opMode, move != 0);
 	pp->_PuttingFiles(pp, %e);
 	return e.Ignore ? false : true;
@@ -710,8 +778,8 @@ void PanelSet::ReplacePluginPanel(FarPluginPanel^ oldPanel, FarPluginPanel^ newP
 		newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc))
 	{
 		// detach files to change modes with no files
-		List<IFile^> dummy;
-		List<IFile^>^ files = newPanel->ReplaceFiles(%dummy);
+		List<FarFile^> dummy;
+		List<FarFile^>^ files = newPanel->ReplaceFiles(%dummy);
 		newPanel->Update(false);
 
 		// set only new modes
@@ -752,7 +820,7 @@ void PanelSet::PushPluginPanel(FarPluginPanel^ plugin)
 	plugin->_info.StartViewMode = (PanelViewMode)pi.ViewMode;
 
 	// current
-	IFile^ file = nullptr;
+	FarFile^ file = nullptr;
 	if (pi.ItemsNumber > 0)
 	{
 		AutoPluginPanelItem item(plugin->Handle, pi.CurrentItem, false);
@@ -986,7 +1054,7 @@ void FarPluginPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo
 		m->PanelModesArray = modes;
 		m->PanelModesNumber = 10;
 	}
-	
+
 	// init
 	if (modeInfo)
 		InitPanelMode((::PanelMode&)m->PanelModesArray[i], modeInfo);
@@ -1021,7 +1089,7 @@ void FarPluginPanelInfo::DeleteModes()
 
 	if (!m->PanelModesArray)
 		return;
-	
+
 	assert(_Modes && _Modes->Length == 10);
 
 	for(int i = 10; --i >= 0;)
@@ -1210,7 +1278,7 @@ void FarPanel::IsVisible::set(bool value)
 }
 
 //! It is possible to ask the current file directly, but implementation is not safe
-IFile^ FarPanel::CurrentFile::get()
+FarFile^ FarPanel::CurrentFile::get()
 {
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
@@ -1309,12 +1377,12 @@ String^ FarPanel::ToString()
 	return Path;
 }
 
-IList<IFile^>^ FarPanel::ShownFiles::get()
+IList<FarFile^>^ FarPanel::ShownFiles::get()
 {
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	List<IFile^>^ r = gcnew List<IFile^>(pi.ItemsNumber);
+	List<FarFile^>^ r = gcnew List<FarFile^>(pi.ItemsNumber);
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, false);
@@ -1324,12 +1392,12 @@ IList<IFile^>^ FarPanel::ShownFiles::get()
 	return r;
 }
 
-IList<IFile^>^ FarPanel::SelectedFiles::get()
+IList<FarFile^>^ FarPanel::SelectedFiles::get()
 {
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	List<IFile^>^ r = gcnew List<IFile^>(pi.SelectedItemsNumber);
+	List<FarFile^>^ r = gcnew List<FarFile^>(pi.SelectedItemsNumber);
 	for(int i = 0; i < pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, true);
@@ -1347,13 +1415,14 @@ PanelType FarPanel::Type::get()
 	return (PanelType)pi.PanelType;
 }
 
-FarFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
+SetFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
 {
-	FarFile^ f = gcnew FarFile;
+	SetFile^ f = gcnew SetFile;
 
 	f->Name = gcnew String(item.FindData.lpwszFileName);
-	f->Description = gcnew String(item.Description);
 	f->AlternateName = gcnew String(item.FindData.lpwszAlternateFileName);
+	f->Description = gcnew String(item.Description);
+	f->Owner = gcnew String(item.Owner);
 
 	f->Attributes = (FileAttributes)item.FindData.dwFileAttributes;
 	f->CreationTime = FileTimeToDateTime(item.FindData.ftCreationTime);
@@ -1515,7 +1584,7 @@ void FarPanel::Update(bool keepSelection)
 
 FarPluginPanel::FarPluginPanel()
 : FarPanel(true)
-, _files(gcnew List<IFile^>)
+, _files(gcnew List<FarFile^>)
 {
 	_StartDirectory = Environment::CurrentDirectory;
 }
@@ -1580,9 +1649,9 @@ void FarPluginPanel::SwitchFullScreen()
 	Redraw();
 }
 
-List<IFile^>^ FarPluginPanel::ReplaceFiles(List<IFile^>^ files)
+List<FarFile^>^ FarPluginPanel::ReplaceFiles(List<FarFile^>^ files)
 {
-	List<IFile^>^ r = _files;
+	List<FarFile^>^ r = _files;
 	_files = files;
 	return r;
 }
@@ -1592,7 +1661,7 @@ bool FarPluginPanel::IsOpened::get()
 	return Index > 0;
 }
 
-IList<IFile^>^ FarPluginPanel::Files::get()
+IList<FarFile^>^ FarPluginPanel::Files::get()
 {
 	return _files;
 }
@@ -1616,7 +1685,7 @@ void FarPluginPanel::Id::set(Guid value)
 }
 
 //! see remark for FarPanel::CurrentFile::get()
-IFile^ FarPluginPanel::CurrentFile::get()
+FarFile^ FarPluginPanel::CurrentFile::get()
 {
 	AssertOpen();
 
@@ -1642,14 +1711,14 @@ IFile^ FarPluginPanel::CurrentFile::get()
 	return _files[fi];
 }
 
-IList<IFile^>^ FarPluginPanel::ShownFiles::get()
+IList<FarFile^>^ FarPluginPanel::ShownFiles::get()
 {
 	AssertOpen();
 
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
-	List<IFile^>^ r = gcnew List<IFile^>(pi.ItemsNumber);
+	List<FarFile^>^ r = gcnew List<FarFile^>(pi.ItemsNumber);
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, false);
@@ -1661,14 +1730,14 @@ IList<IFile^>^ FarPluginPanel::ShownFiles::get()
 	return r;
 }
 
-IList<IFile^>^ FarPluginPanel::SelectedFiles::get()
+IList<FarFile^>^ FarPluginPanel::SelectedFiles::get()
 {
 	AssertOpen();
 
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
-	List<IFile^>^ r = gcnew List<IFile^>(pi.SelectedItemsNumber);
+	List<FarFile^>^ r = gcnew List<FarFile^>(pi.SelectedItemsNumber);
 	for(int i = 0; i < pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, true);
