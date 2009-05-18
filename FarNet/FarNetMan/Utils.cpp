@@ -305,45 +305,17 @@ Object^ Property(Object^ obj, String^ name)
 	try
 	{
 		return obj->GetType()->InvokeMember(
-			name, BindingFlags::GetProperty | BindingFlags::Public | BindingFlags::Instance, nullptr, obj, nullptr);
+			name,
+			BindingFlags::GetProperty | BindingFlags::Public | BindingFlags::Instance,
+			nullptr,
+			obj,
+			nullptr);
 	}
 	catch(Exception^ e)
 	{
-		Log::TraceError(e);
+		Log::TraceException(e);
 		return nullptr;
 	}
-}
-
-//? Regex is used to fix bad PS V1 strings; check V2
-String^ ExceptionInfo(Exception^ e, bool full)
-{
-	Regex re("[\r\n]+");
-	String^ info = re.Replace(e->Message, "\r\n") + "\r\n";
-
-	Object^ er = nullptr;
-	for(Exception^ ex = e; ex != nullptr; ex = ex->InnerException)
-	{
-		if (ex->GetType()->FullName->StartsWith("System.Management.Automation."))
-		{
-			er = Property(ex, "ErrorRecord");
-			break;
-		}
-	}
-	if (er != nullptr)
-	{
-		Object^ ii = Property(er, "InvocationInfo");
-		if (ii != nullptr)
-		{
-			Object^ pm = Property(ii, "PositionMessage");
-			if (pm != nullptr)
-				info += re.Replace(pm->ToString(), "\r\n") + "\r\n";
-		}
-	}
-
-	if (full)
-		info += "\r\n" + e->StackTrace + "\r\n";
-
-	return info;
 }
 
 DateTime FileTimeToDateTime(FILETIME time)
@@ -424,7 +396,7 @@ void DeleteSourceOptional(String^ path, DeleteSource option)
 	}
 	catch(IOException^ e)
 	{
-		Log::TraceError(e);
+		Log::TraceException(e);
 	}
 }
 

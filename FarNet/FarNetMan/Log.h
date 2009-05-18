@@ -6,7 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 #pragma once
 
 #ifdef _DEBUG
-#define assert(e) Debug::Assert(e);
+#define assert(e) Log::Assert(e);
 #else
 #define assert(e)
 #endif
@@ -17,17 +17,21 @@ ref class Log
 {
 public:
 	static property int IndentLevel { int get() { return Trace::IndentLevel; } void set(int value) { Trace::IndentLevel = value; } }
-	static void TraceError(Exception^ error);
+	static String^ TraceException(Exception^ error);
+	static void TraceError(String^ error);
 	static void TraceWarning(String^ info) { Trace::TraceWarning(info); }
 	static void WriteLine(String^ info);
 	static String^ Format(MethodInfo^ method);
+	static String^ FormatException(Exception^ e);
+#ifdef _DEBUG
+	static void Assert(bool expression);
+#endif
 public:
 	static TraceSwitch^ Switch = gcnew TraceSwitch("FarNet.Trace", "FarNet trace switch.");
-private:
-	static bool IsStarted;
 };
 };
 
+#define Debug stop_Debug
 #define Trace stop_Trace
 
 /*
@@ -44,7 +48,7 @@ public:
 	void Log(String^ info)
 	{
 		assert(IndentLevel == -1); // should be called once at most
-		assert(level >= 0 && level <= 4);
+		assert(IndentLevel >= 0 && IndentLevel <= 4);
 
 		// begin
 		IndentLevel = Log::IndentLevel;
