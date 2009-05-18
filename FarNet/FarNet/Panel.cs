@@ -5,8 +5,6 @@ Copyright (c) 2005-2009 FarNet Team
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 
 namespace FarNet
 {
@@ -51,7 +49,7 @@ namespace FarNet
 		/// <summary>
 		/// Current file.
 		/// </summary>
-		IFile CurrentFile { get; }
+		FarFile CurrentFile { get; }
 		/// <summary>
 		/// Current item index.
 		/// </summary>
@@ -67,11 +65,11 @@ namespace FarNet
 		/// <summary>
 		/// Shown panel items.
 		/// </summary>
-		IList<IFile> ShownFiles { get; }
+		IList<FarFile> ShownFiles { get; }
 		/// <summary>
 		/// List of selected panel items if any or the current; '..' is excluded.
 		/// </summary>
-		IList<IFile> SelectedFiles { get; }
+		IList<FarFile> SelectedFiles { get; }
 		/// <summary>
 		/// Panel type.
 		/// </summary>
@@ -176,85 +174,6 @@ namespace FarNet
 		/// <seealso cref="Path"/>
 		/// <seealso cref="GoToName"/>
 		void GoToPath(string path);
-	}
-
-	/// <summary>
-	/// <see cref="IPanel"/> item representing standard file or directory or a plugin item.
-	/// </summary>
-	public interface IFile
-	{
-		/// <summary>
-		/// File name.
-		/// </summary>
-		string Name { get; set; }
-		/// <summary>
-		/// Description.
-		/// </summary>
-		string Description { get; set; }
-		/// <summary>
-		/// Owner.
-		/// </summary>
-		string Owner { get; set; }
-		/// <summary>
-		/// Alternate name, can be used as a file system name.
-		/// </summary>
-		string AlternateName { get; set; }
-		/// <summary>
-		/// Creation time.
-		/// </summary>
-		DateTime CreationTime { get; set; }
-		/// <summary>
-		/// Last access time.
-		/// </summary>
-		DateTime LastAccessTime { get; set; }
-		/// <summary>
-		/// Last access time.
-		/// </summary>
-		DateTime LastWriteTime { get; set; }
-		/// <summary>
-		/// File length.
-		/// </summary>
-		long Length { get; set; }
-		/// <summary>
-		/// User data. Only for <see cref="IPluginPanel"/>.
-		/// </summary>
-		object Data { get; set; }
-		/// <summary>
-		/// Standard file attributes.
-		/// </summary>
-		FileAttributes Attributes { get; set; }
-		/// <summary>
-		/// Read only attribute.
-		/// </summary>
-		bool IsReadOnly { get; set; }
-		/// <summary>
-		/// Hidden attribute.
-		/// </summary>
-		bool IsHidden { get; set; }
-		/// <summary>
-		/// System attribute.
-		/// </summary>
-		bool IsSystem { get; set; }
-		/// <summary>
-		/// Directory attribute.
-		/// </summary>
-		bool IsDirectory { get; set; }
-		/// <summary>
-		/// Archive attribute.
-		/// </summary>
-		bool IsArchive { get; set; }
-		/// <summary>
-		/// Reparse point attribute.
-		/// </summary>
-		bool IsReparsePoint { get; set; }
-		/// <summary>
-		/// Compressed attribute.
-		/// </summary>
-		bool IsCompressed { get; set; }
-		/// <summary>
-		/// Encrypted attribute.
-		/// </summary>
-		bool IsEncrypted { get; set; }
 	}
 
 	/// <summary>
@@ -874,12 +793,12 @@ namespace FarNet
 	/// </summary>
 	public class FilesEventArgs : PanelEventArgs
 	{
-		IList<IFile> _files;
+		IList<FarFile> _files;
 		bool _move;
 		/// <param name="files">Files to delete.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		/// <param name="move">Files are moved.</param>
-		public FilesEventArgs(IList<IFile> files, OperationModes mode, bool move)
+		public FilesEventArgs(IList<FarFile> files, OperationModes mode, bool move)
 			: base(mode)
 		{
 			_files = files;
@@ -888,7 +807,7 @@ namespace FarNet
 		/// <summary>
 		/// Files to process.
 		/// </summary>
-		public IList<IFile> Files
+		public IList<FarFile> Files
 		{
 			get { return _files; }
 		}
@@ -912,7 +831,7 @@ namespace FarNet
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		/// <param name="move">Files are moved.</param>
 		/// <param name="destination">Destination path to put files.</param>
-		public GettingFilesEventArgs(IList<IFile> files, OperationModes mode, bool move, string destination)
+		public GettingFilesEventArgs(IList<FarFile> files, OperationModes mode, bool move, string destination)
 			: base(files, mode, move)
 		{
 			_destination = destination;
@@ -1048,7 +967,7 @@ namespace FarNet
 		/// Normally it is filled on startup and then can be changed by <see cref="GettingData"/> handler.
 		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately.
 		/// </summary>
-		IList<IFile> Files { get; }
+		IList<FarFile> Files { get; }
 		/// <summary>
 		/// User panel type ID.
 		/// </summary>
@@ -1173,7 +1092,7 @@ namespace FarNet
 		/// <summary>
 		/// Panel file to be set current.
 		/// </summary>
-		void PostFile(IFile file);
+		void PostFile(FarFile file);
 		/// <summary>
 		/// Panel name to be set current.
 		/// </summary>

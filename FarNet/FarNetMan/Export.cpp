@@ -15,7 +15,7 @@ static FarStandardFunctions FSF;
 static bool s_loaded, s_unloaded;
 
 #define __START try {
-#define __END } catch(Exception^ e) { Log::TraceError(e); Far::Instance->ShowError(nullptr, e); }
+#define __END } catch(Exception^ e) { Far::Instance->ShowError(nullptr, e); }
 
 /*
 SetStartupInfo is normally called once when the plugin DLL has been loaded.

@@ -73,12 +73,12 @@ AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, bool selected
 		if (!Info.Control(handle, type, index, (LONG_PTR)m))
 			throw gcnew OperationCanceledException("Cannot get panel item; index: " + index);
 	}
-	catch(Exception^ e)
+	catch(...)
 	{
-		Log::TraceError(e);
-
 		if (mBuffer != (char*)m)
 			delete[] (char*)m;
+
+		throw;
 	}
 }
 

@@ -30,12 +30,10 @@ void PluginSet::UnloadPlugin(BasePlugin^ plugin)
 	}
 	catch(Exception^ e)
 	{
-		Log::TraceError(e);
-
-		Console::WriteLine();
+		String^ msg = "ERROR: plugin " + plugin->ToString() + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
 		Console::ForegroundColor = ConsoleColor::Red;
-		Console::WriteLine(plugin->ToString() + " error:");
-		Console::WriteLine(e->Message);
+		Console::WriteLine(msg);
+		Log::TraceError(msg);
 
 		System::Threading::Thread::Sleep(1000);
 	}
@@ -86,11 +84,10 @@ void PluginSet::LoadFromDirectory(String^ dir)
 	}
 	catch(Exception^ e)
 	{
-		Log::TraceError(e);
-
 		// Wish: no UI on loading
-		String^ msg = "ERROR: plugin " + dir + ":\n" + ExceptionInfo(e, true);
+		String^ msg = "ERROR: plugin " + dir + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
 		Far::Instance->Write(msg, ConsoleColor::Red);
+		Log::TraceError(msg);
 	}
 }
 
