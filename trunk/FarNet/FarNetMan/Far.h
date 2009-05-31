@@ -54,8 +54,6 @@ public:
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter);
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
 	virtual IEditor^ CreateEditor();
-	virtual SetFile^ CreatePanelItem();
-	virtual SetFile^ CreatePanelItem(FileSystemInfo^ info, bool fullName);
 	virtual IInputBox^ CreateInputBox();
 	virtual IListMenu^ CreateListMenu();
 	virtual IMenu^ CreateMenu();

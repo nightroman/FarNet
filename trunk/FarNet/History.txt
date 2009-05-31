@@ -1,5 +1,17 @@
 http://code.google.com/p/farnet/
 
+= 4.1.1 =
+
+*) IEditor.CodePage for the opened editor works now (read only).
+
+*) As it was announced, two obsolete methods IFar.CreatePanelItem() were
+removed. Plugins should create instances of SetFile directly by 'new' or they
+can use custom files derived from FarFile.
+
+*) Build. Directory FarNetMan\Headers.c is removed. The FarNetMan expects it in
+here: "C:\Program Files\Far\PluginSDK\Headers.c". If this is not a case then
+project include directories should be corrected.
+
 = 4.1.0 =
 
 MAJOR CHANGES
