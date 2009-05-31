@@ -1019,16 +1019,6 @@ IPluginPanel^ Far::GetPluginPanel(Type^ hostType)
 	return PanelSet::GetPluginPanel(hostType);
 }
 
-SetFile^ Far::CreatePanelItem()
-{
-	return gcnew SetFile;
-}
-
-SetFile^ Far::CreatePanelItem(FileSystemInfo^ info, bool fullName)
-{
-	return gcnew SetFile(info, fullName);
-}
-
 String^ Far::Input(String^ prompt)
 {
 	return Input(prompt, nullptr, nullptr, String::Empty);
