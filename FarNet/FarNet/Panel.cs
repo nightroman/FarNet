@@ -305,6 +305,8 @@ namespace FarNet
 		LinksNumber,
 	}
 
+	//! DictionaryEntry is not good for this, because it is a value type.
+	//! DataItem is a reference type with some advantages.
 	/// <summary>
 	/// Named data item.
 	/// </summary>

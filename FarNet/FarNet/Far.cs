@@ -405,16 +405,6 @@ namespace FarNet
 		/// </summary>
 		IPluginPanel CreatePluginPanel();
 		/// <summary>
-		/// Obsolete. You should create SetFile directly by 'new'.
-		/// </summary>
-		[Obsolete("You should create SetFile directly by 'new'.")]
-		SetFile CreatePanelItem();
-		/// <summary>
-		/// Obsolete. You should create SetFile directly by 'new'.
-		/// </summary>
-		[Obsolete("You should create SetFile directly by 'new'.")]
-		SetFile CreatePanelItem(FileSystemInfo info, bool fullName);
-		/// <summary>
 		/// Confirmation settings according to options in the "Confirmations" dialog.
 		/// </summary>
 		FarConfirmations Confirmations { get; }
