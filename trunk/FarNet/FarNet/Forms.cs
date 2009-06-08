@@ -468,9 +468,10 @@ namespace FarNet.Forms
 		/// </remarks>
 		event EventHandler<ClosingEventArgs> Closing;
 		/// <summary>
-		/// Event is sent to the dialog periodically when the dialog is idle.
+		/// Event is triggered periodically when a user is idle.
 		/// </summary>
-		event EventHandler<AnyEventArgs> Idled;
+		/// <seealso cref="IdledHandler"/>
+		event EventHandler Idled;
 		/// <summary>
 		/// Event is sent after the user clicks the mouse outside the dialog.
 		/// </summary>
