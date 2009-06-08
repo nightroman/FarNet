@@ -48,6 +48,11 @@ namespace FarNet
 		/// </summary>
 		event EventHandler LosingFocus;
 		/// <summary>
+		/// Event is triggered periodically when a user is idle.
+		/// </summary>
+		/// <seealso cref="IdledHandler"/>
+		event EventHandler Idled;
+		/// <summary>
 		/// Opens a modal temporary editor to edit and return some text.
 		/// </summary>
 		string EditText(string text, string title);

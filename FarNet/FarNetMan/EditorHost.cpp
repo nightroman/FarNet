@@ -176,7 +176,16 @@ int EditorHost::AsProcessEditorInput(const INPUT_RECORD* rec)
 	{
 	case KEY_EVENT:
 		{
-			if (_anyEditor._OnKey || editor->_OnKey)
+			// idled
+			if (rec->Event.KeyEvent.wVirtualKeyCode == 0)
+			{
+				if (_anyEditor._Idled)
+					_anyEditor._Idled(editor, nullptr);
+				if (editor->_Idled)
+					editor->_Idled(editor, nullptr);
+			}
+			// a key
+			else if (_anyEditor._OnKey || editor->_OnKey)
 			{
 				KeyEventArgs ea(KeyInfo(
 					rec->Event.KeyEvent.wVirtualKeyCode,
