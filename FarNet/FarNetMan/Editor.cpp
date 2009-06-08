@@ -428,10 +428,25 @@ void Editor::DeleteLine()
 	EditorControl_ECTL_DELETESTRING();
 }
 
+//! 090607 Do use the current code page, Far saves ANSI by default
+//! not that simple, see my post "√рабли с ECTL_SAVEFILE" at forum.
 void Editor::Save()
 {
+#if 1 //???
 	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
 		throw gcnew OperationCanceledException("Cannot save the editor file.");
+#else
+	AutoEditorInfo ei;
+
+	EditorSaveFile esf;
+	memset(&esf, 0, sizeof(EditorSaveFile));
+
+	esf.FileName = ei.FileName;
+	esf.CodePage = ei.CodePage;
+
+	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
+		throw gcnew OperationCanceledException("Cannot save the editor file.");
+#endif
 }
 
 void Editor::Save(String^ fileName)
@@ -440,10 +455,15 @@ void Editor::Save(String^ fileName)
 		return Save();
 
 	PIN_NE(pin, fileName);
+
+	AutoEditorInfo ei;
+
 	EditorSaveFile esf;
+	memset(&esf, 0, sizeof(EditorSaveFile));
+
 	esf.FileName = pin;
-	esf.FileEOL = 0;
-	esf.CodePage = 0; //?? NYI in Far
+	esf.CodePage = ei.CodePage;
+
 	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
 		throw gcnew OperationCanceledException("Cannot save the editor file as: " + fileName);
 }

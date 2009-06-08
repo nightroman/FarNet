@@ -1019,10 +1019,11 @@ namespace FarNet
 		/// </remarks>
 		event EventHandler<PanelEventArgs> Closing;
 		/// <summary>
-		/// Raised every few seconds.
+		/// Event is triggered periodically when a user is idle.
 		/// Plugins can use this event to request panel updating and redrawing.
 		/// </summary>
 		/// <seealso cref="IdleUpdate"/>
+		/// <seealso cref="IdledHandler"/>
 		event EventHandler Idled;
 		/// <summary>
 		/// Raised on executing a command from the FAR command line.

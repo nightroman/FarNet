@@ -1267,7 +1267,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_DISKMENU");
 
-				ToolPluginInfo^ tool = _toolDisk[(int)item];
+				ToolPluginInfo^ tool = _toolDisk[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Disk);
 				tool->Handler(this, %e);
 			}

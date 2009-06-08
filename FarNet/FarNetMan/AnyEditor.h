@@ -11,6 +11,7 @@ ref class AnyEditor : IAnyEditor
 {
 public: DEF_EVENT(Closed, _Closed);
 public: DEF_EVENT(GotFocus, _GotFocus);
+public: DEF_EVENT(Idled, _Idled);
 public: DEF_EVENT(LosingFocus, _LosingFocus);
 public: DEF_EVENT(Opened, _Opened);
 public: DEF_EVENT(Saving, _Saving);

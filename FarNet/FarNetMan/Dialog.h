@@ -229,8 +229,8 @@ private:
 
 ref class FarDialog : IDialog
 {
+public: DEF_EVENT(Idled, _Idled);
 public: DEF_EVENT_ARGS(Closing, _Closing, ClosingEventArgs);
-public: DEF_EVENT_ARGS(Idled, _Idled, AnyEventArgs);
 public: DEF_EVENT_ARGS(Initialized, _Initialized, InitializedEventArgs);
 public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);
 public: DEF_EVENT_ARGS(MouseClicked, _MouseClicked, MouseClickedEventArgs);

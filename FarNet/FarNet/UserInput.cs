@@ -900,4 +900,48 @@ OemClear = 254;
 		}
 	}
 
+	/// <summary>
+	/// Helper for <c>Idled</c> events with a custom frequency.
+	/// </summary>
+	/// <remarks>
+	/// It is a helper for <c>Idled</c> events. These events may be called too frequently for
+	/// a particular task. In this case use <see cref="Create"/> to get a handler with a
+	/// custom call frequency.
+	/// </remarks>
+	public sealed class IdledHandler
+	{
+		DateTime _Time;
+		double _Seconds;
+		EventHandler _Handler;
+
+		/// <summary>
+		/// Creates a handler with a custom frequency.
+		/// </summary>
+		/// <param name="seconds">Time interval in seconds.</param>
+		/// <param name="handler">Wrapped handler to be invoked.</param>
+		public static EventHandler Create(double seconds, EventHandler handler)
+		{
+			if (handler == null)
+				throw new ArgumentNullException("handler");
+
+			return (new IdledHandler(seconds, handler)).Invoke;
+		}
+
+		IdledHandler(double seconds, EventHandler handler)
+		{
+			_Seconds = seconds;
+			_Handler = handler;
+		}
+
+		void Invoke(object sender, EventArgs e)
+		{
+			DateTime now = DateTime.Now;
+			if ((now - _Time).TotalSeconds >= _Seconds)
+			{
+				_Time = now;
+				_Handler(sender, e);
+			}
+		}
+	}
+
 }

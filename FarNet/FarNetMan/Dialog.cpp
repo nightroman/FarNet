@@ -1675,8 +1675,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 			{
 				if (_Idled)
 				{
-					AnyEventArgs ea(nullptr);
-					_Idled(this, %ea);
+					_Idled(this, nullptr);
 				}
 				break;
 			}
