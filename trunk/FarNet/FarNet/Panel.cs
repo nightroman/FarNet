@@ -495,7 +495,14 @@ namespace FarNet
 	/// Properties <c>IsAlignedExtensions</c> and <c>IsCaseConversion</c>
 	/// can be implemented in the future on demand.
 	/// </para>
+	/// <para>
+	/// WARNING: titles, types and custom columns is a sort of low level stuff;
+	/// if you use this incorrectly the Far may crash. For performance sake
+	/// FarNet does only basic sanity checks.
+	/// </para>
 	/// </remarks>
+	/// <seealso cref="FarFile.Columns"/>
+	/// <seealso cref="SetFile.Columns"/>
 	public sealed class PanelModeInfo : ICloneable
 	{
 		string _ColumnTypes;

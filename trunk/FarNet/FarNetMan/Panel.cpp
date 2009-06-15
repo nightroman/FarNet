@@ -10,7 +10,8 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-// Transient wrapper
+// Transient wrapper ???
+#if 0
 ref class NativeFile sealed : public FarFile
 {
 private:
@@ -84,6 +85,7 @@ public:
 		}
 	}
 };
+#endif
 
 #pragma region Kit
 
@@ -134,9 +136,22 @@ int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int item
 	return e.Ignore ? false : true;
 }
 
-void PanelSet::AsFreeFindData(PluginPanelItem* panelItem)
+//??? do this in the background?
+void PanelSet::AsFreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int itemsNumber)
 {
 	LOG_AUTO(3, "FreeFindData");
+
+	//??? do this only if columns are really used
+	for(int i = itemsNumber; --i >= 0;)
+	{
+		if (panelItem[i].CustomColumnData)
+		{
+			for(int j = panelItem[i].CustomColumnNumber; --j >= 0;)
+				delete[] panelItem[i].CustomColumnData[j];
+
+			delete[] panelItem[i].CustomColumnData;
+		}
+	}
 
 	delete[] (char*)panelItem;
 }
@@ -266,6 +281,27 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
 			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
 			p.UserData = fi;
+
+			// columns
+			System::Collections::ICollection^ columns = f->Columns;
+			if (columns)
+			{
+				int nb = columns->Count;
+				if (nb)
+				{
+					p.CustomColumnNumber = nb;
+					p.CustomColumnData = new wchar_t*[nb];
+					int i = 0;
+					for each(Object^ it in columns)
+					{
+						if (it)
+							p.CustomColumnData[i] = NewChars(it->ToString());
+						else
+							p.CustomColumnData[i] = 0;
+						++i;
+					}
+				}
+			}
 		}
 		return true;
 	}
@@ -1417,20 +1453,28 @@ PanelType FarPanel::Type::get()
 
 SetFile^ FarPanel::ItemToFile(const PluginPanelItem& item)
 {
-	SetFile^ f = gcnew SetFile;
+	SetFile^ file = gcnew SetFile;
 
-	f->Name = gcnew String(item.FindData.lpwszFileName);
-	f->AlternateName = gcnew String(item.FindData.lpwszAlternateFileName);
-	f->Description = gcnew String(item.Description);
-	f->Owner = gcnew String(item.Owner);
+	file->Name = gcnew String(item.FindData.lpwszFileName);
+	file->AlternateName = gcnew String(item.FindData.lpwszAlternateFileName);
+	file->Description = gcnew String(item.Description);
+	file->Owner = gcnew String(item.Owner);
 
-	f->Attributes = (FileAttributes)item.FindData.dwFileAttributes;
-	f->CreationTime = FileTimeToDateTime(item.FindData.ftCreationTime);
-	f->LastAccessTime = FileTimeToDateTime(item.FindData.ftLastAccessTime);
-	f->LastWriteTime = FileTimeToDateTime(item.FindData.ftLastWriteTime);
-	f->Length = item.FindData.nFileSize;
+	file->Attributes = (FileAttributes)item.FindData.dwFileAttributes;
+	file->CreationTime = FileTimeToDateTime(item.FindData.ftCreationTime);
+	file->LastAccessTime = FileTimeToDateTime(item.FindData.ftLastAccessTime);
+	file->LastWriteTime = FileTimeToDateTime(item.FindData.ftLastWriteTime);
+	file->Length = item.FindData.nFileSize;
 
-	return f;
+	if (item.CustomColumnNumber)
+	{
+		array<String^>^ columns = gcnew array<String^>(item.CustomColumnNumber);
+		file->Columns = columns;
+		for(int i = item.CustomColumnNumber; --i >= 0;)
+			columns[i] = gcnew String(item.CustomColumnData[i]);
+	}
+
+	return file;
 }
 
 bool FarPanel::ShowHidden::get()

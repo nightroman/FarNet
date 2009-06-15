@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.1.4 =
+
+Udapted to Far 2.0.992 (breaking changes in Far Dialog API)
+
+CUSTOM PANEL COLUMNS
+
+At last FarNet supports custom user panel columns. Use FarFile.Columns,
+SetFile.Columns. Custom columns are very easy: property Columns is any
+collection of any objects. See also FarNet.PanelModeInfo: use C0-C9 in
+ColumnTypes and StatusColumnTypes.
+
 = 4.1.3 =
 
 *) Fixed plugin calls from the disk menu.
