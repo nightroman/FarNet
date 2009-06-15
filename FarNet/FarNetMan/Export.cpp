@@ -139,10 +139,10 @@ int WINAPI GetFindDataW(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItem
 	return PanelSet::AsGetFindData(hPlugin, pPanelItem, pItemsNumber, opMode);
 }
 
-void WINAPI FreeFindDataW(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int /*itemsNumber*/)
+void WINAPI FreeFindDataW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber)
 {
 	__START;
-	PanelSet::AsFreeFindData(panelItem);
+	PanelSet::AsFreeFindData(hPlugin, panelItem, itemsNumber);
 	__END;
 }
 
