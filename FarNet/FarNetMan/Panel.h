@@ -228,7 +228,7 @@ internal:
 	static FarPluginPanel^ GetPluginPanel(Type^ hostType);
 	static FarPluginPanel^ GetPluginPanel2(FarPluginPanel^ plugin);
 	static void AsClosePlugin(HANDLE hPlugin);
-	static void AsFreeFindData(PluginPanelItem* panelItem);
+	static void AsFreeFindData(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber);
 	static void AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info);
 	static void OpenPluginPanel(FarPluginPanel^ plugin);
 	static void PushPluginPanel(FarPluginPanel^ plugin);

@@ -4,6 +4,7 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 using System;
+using System.Collections;
 using System.IO;
 
 namespace FarNet
@@ -54,7 +55,7 @@ namespace FarNet
 		/// </summary>
 		public virtual object Data
 		{
-			get { return null; }
+			get { return null; } //??? _090610_071700
 			set { throw new NotSupportedException(); }
 		}
 		/// <summary>
@@ -87,6 +88,14 @@ namespace FarNet
 		public virtual long Length
 		{
 			get { return 0; }
+			set { throw new NotSupportedException(); }
+		}
+		/// <summary>
+		/// Custom columns. See <see cref="PanelModeInfo"/>.
+		/// </summary>
+		public virtual ICollection Columns
+		{
+			get { return null; }
 			set { throw new NotSupportedException(); }
 		}
 		/// <summary>
@@ -294,5 +303,10 @@ namespace FarNet
 		/// </summary>
 		public override FileAttributes Attributes { get { return _Attributes; } set { _Attributes = value; } }
 		FileAttributes _Attributes;
+		/// <summary>
+		/// Custom columns. See <see cref="PanelModeInfo"/>.
+		/// </summary>
+		public override ICollection Columns { get { return _Columns; } set { _Columns = value; } }
+		ICollection _Columns;
 	}
 }
