@@ -15,23 +15,7 @@ NOTE: Far design flaw.
 */
 bool State::GetPanelInfo;
 
-#undef ACTL_GETWINDOWINFO
-#undef ACTL_FREEWINDOWINFO
-
-AutoWindowInfo::AutoWindowInfo(int index)
-{
-	Pos = index;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWINFO, this))
-		throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
-}
-
-AutoWindowInfo::~AutoWindowInfo()
-{
-	Info.AdvControl(Info.ModuleNumber, ACTL_FREEWINDOWINFO, this);
-}
-
 #undef ECTL_GETINFO
-#undef ECTL_FREEINFO
 
 AutoEditorInfo::AutoEditorInfo(bool safe)
 {
@@ -44,14 +28,8 @@ AutoEditorInfo::AutoEditorInfo(bool safe)
 	}
 }
 
-AutoEditorInfo::~AutoEditorInfo()
-{
-	Info.EditorControl(ECTL_FREEINFO, this);
-}
-
 void AutoEditorInfo::Update()
 {
-	Info.EditorControl(ECTL_FREEINFO, this);
 	if (!Info.EditorControl(ECTL_GETINFO, this))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 }

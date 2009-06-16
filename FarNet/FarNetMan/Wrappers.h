@@ -28,20 +28,10 @@ private:
 	Type _saved;
 };
 
-class AutoWindowInfo : public WindowInfo
-{
-public:
-	AutoWindowInfo(int index);
-	~AutoWindowInfo();
-private:
-	void operator=(const AutoWindowInfo&) {}
-};
-
 class AutoEditorInfo : public EditorInfo
 {
 public:
 	AutoEditorInfo(bool safe = false);
-	~AutoEditorInfo();
 	void Update();
 private:
 	void operator=(const AutoEditorInfo&) {}
