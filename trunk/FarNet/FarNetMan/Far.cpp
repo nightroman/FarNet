@@ -1050,14 +1050,39 @@ String^ Far::Input(String^ prompt, String^ history, String^ title, String^ text)
 ref class FarWindowInfo : public IWindowInfo
 {
 public:
-	FarWindowInfo(const WindowInfo& wi, bool full)
-		: _Current(wi.Current != 0), _Modified(wi.Modified != 0), _Type((WindowType)wi.Type)
+	FarWindowInfo(int index, bool full)
 	{
+		WindowInfo wi;
+		wi.Pos = index;
+
 		if (full)
 		{
-			_Name = gcnew String(wi.Name);
-			_TypeName = gcnew String(wi.TypeName);
+#pragma push_macro("ACTL_GETWINDOWINFO")
+#undef ACTL_GETWINDOWINFO
+			wi.Name = wi.TypeName = NULL;
+			wi.NameSize = wi.TypeNameSize = 0;
+			if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWINFO, &wi))
+				throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
+
+			CBox name(wi.NameSize), typeName(wi.TypeNameSize);
+			wi.Name = name;
+			wi.TypeName = typeName;
+			if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWINFO, &wi))
+				throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
+
+			_Name = gcnew String(name);
+			_TypeName = gcnew String(typeName);
+#pragma pop_macro("ACTL_GETWINDOWINFO")
 		}
+		else
+		{
+			if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
+				throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
+		}
+
+		_Current = wi.Current != 0;
+		_Modified = wi.Modified != 0;
+		_Type = (WindowType)wi.Type;
 	}
 	virtual property bool Current { bool get() { return _Current; } }
 	virtual property bool Modified { bool get() { return _Modified; } }
@@ -1079,18 +1104,7 @@ int Far::WindowCount::get()
 
 IWindowInfo^ Far::GetWindowInfo(int index, bool full)
 {
-	if (full)
-	{
-		AutoWindowInfo wi(index);
-		return gcnew FarWindowInfo(wi, true);
-	}
-
-	WindowInfo wi;
-	wi.Pos = index;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
-		throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
-
-	return gcnew FarWindowInfo(wi, full);
+	return gcnew FarWindowInfo(index, full);
 }
 
 WindowType Far::WindowType::get()
@@ -1342,7 +1356,6 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 		// open a posted panel
 		if (PanelSet::PostedPanel)
 		{
-			//??? LOG
 			HANDLE h = PanelSet::AddPluginPanel(PanelSet::PostedPanel);
 			return h;
 		}
@@ -1789,7 +1802,9 @@ void Far::OnEditorOpened(FarNet::Editor^ editor)
 	for each(EditorPluginInfo^ it in _registeredEditor)
 	{
 		// mask?
-		if (SS(it->Mask) && !CompareNameEx(it->Mask, ei.FileName, true))
+		CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
+		Info.EditorControl(ECTL_GETFILENAME, fileName);
+		if (SS(it->Mask) && !CompareNameEx(it->Mask, fileName, true))
 			continue;
 
 		//! tradeoff: catch all to call other plugins, too
