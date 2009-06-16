@@ -428,11 +428,10 @@ void Editor::DeleteLine()
 	EditorControl_ECTL_DELETESTRING();
 }
 
-//! 090607 Do use the current code page, Far saves ANSI by default
-//! not that simple, see my post "√рабли с ECTL_SAVEFILE" at forum.
+//! 090607 see my post "√рабли с ECTL_SAVEFILE" at forum. ???
 void Editor::Save()
 {
-#if 1 //???
+#if 1
 	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
 		throw gcnew OperationCanceledException("Cannot save the editor file.");
 #else

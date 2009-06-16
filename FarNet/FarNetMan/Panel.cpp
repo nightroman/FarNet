@@ -10,7 +10,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-// Transient wrapper ???
+// Transient wrapper ??
 #if 0
 ref class NativeFile sealed : public FarFile
 {
@@ -136,12 +136,11 @@ int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int item
 	return e.Ignore ? false : true;
 }
 
-//??? do this in the background?
 void PanelSet::AsFreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int itemsNumber)
 {
 	LOG_AUTO(3, "FreeFindData");
 
-	//??? do this only if columns are really used
+	//?? do this only if columns are really used (e.g. I can set a flag in AsGetFindData)
 	for(int i = itemsNumber; --i >= 0;)
 	{
 		if (panelItem[i].CustomColumnData)
@@ -307,7 +306,7 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 	}
 	catch(Exception^ e)
 	{
-		//??? .. else log error?
+		//?? .. else log error?
 		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
 			Far::Instance->ShowError(__FUNCTION__, e);
 
@@ -423,7 +422,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		{
 			LOG_AUTO(3, "FE_REDRAW");
 
-			// ??? 090411 Data are shown now. Drop this flag to allow normal processing.
+			// 090411 Data are shown now. Drop this flag to allow normal processing.
 			pp->_skipGettingData = false;
 
 			if (_reenterOnRedrawing)
@@ -996,7 +995,6 @@ PanelModeInfo^ FarPluginPanelInfo::GetMode(PanelViewMode viewMode)
 	return _Modes[i];
 }
 
-//???
 void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
 {
 	assert(s != nullptr);
@@ -1018,7 +1016,6 @@ void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
 	d.FullScreen = s->IsFullScreen;
 }
 
-//???
 void FreePanelMode(const ::PanelMode& d)
 {
 	delete d.ColumnTypes;
@@ -1640,7 +1637,6 @@ void FarPluginPanel::AssertOpen()
 }
 
 /*
-??? or works?
 ?? It works only for panels that have the current mode defined,
 because Far does not provide this info and we do not want to hack
 Far:\Panel\ViewModes\ModeX, though it should work, more likely.

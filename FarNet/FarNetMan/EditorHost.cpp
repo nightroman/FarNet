@@ -71,7 +71,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 
 			// set info
 			editor->_id = ei.EditorID;
-			editor->_FileName = gcnew String(ei.FileName);
+			CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
+			Info.EditorControl(ECTL_GETFILENAME, fileName);
+			editor->_FileName = gcnew String(fileName);
 
 			// event
 			Far::Instance->OnEditorOpened(editor);
