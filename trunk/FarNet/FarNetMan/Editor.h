@@ -67,6 +67,11 @@ public:
 	virtual void Save();
 	virtual void Save(String^ fileName);
 	virtual void SetText(String^ text);
+public:
+	virtual void BeginUndo();
+	virtual void EndUndo();
+	virtual void Undo();
+	virtual void Redo();
 internal:
 	Editor();
 private:

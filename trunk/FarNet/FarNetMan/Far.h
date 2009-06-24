@@ -114,6 +114,7 @@ public:
 	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
 	virtual FarNet::WindowType GetWindowType(int index);
+	virtual void PostJob(EventHandler^ handler);
 internal:
 	static property Far^ Instance { Far^ get() { return _instance; } }
 	static void StartFar();
@@ -127,6 +128,7 @@ internal:
 	HANDLE AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode);
 	HANDLE AsOpenPlugin(int from, INT_PTR item);
 	void AsGetPluginInfo(PluginInfo* pi);
+	void AsProcessSynchroEvent(int type, void* param);
 	void RegisterCommands(IEnumerable<CommandPluginInfo^>^ commands);
 	void RegisterEditors(IEnumerable<EditorPluginInfo^>^ editors);
 	void RegisterFilers(IEnumerable<FilerPluginInfo^>^ filers);
@@ -176,6 +178,7 @@ private:
 	String^ _hotkey;
 	array<int>^ _hotkeys;
 	EventHandler^ _handler;
+	EventHandler^ _syncHandler;
 };
 
 }

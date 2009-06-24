@@ -548,6 +548,11 @@ namespace FarNet
 		/// </remarks>
 		void PostStepAfterStep(EventHandler handler1, EventHandler handler2);
 		/// <summary>
+		/// Posts a job that will be called by the Far main thread when Far gets control.
+		/// </summary>
+		/// <param name="handler">Job handler to invoked.</param>
+		void PostJob(EventHandler handler);
+		/// <summary>
 		/// Current macro state.
 		/// </summary>
 		FarMacroState MacroState { get; }
