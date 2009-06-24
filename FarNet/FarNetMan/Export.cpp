@@ -225,6 +225,14 @@ int WINAPI ProcessKeyW(HANDLE hPlugin, int key, unsigned int controlState)
 	return true; // ignore, there was a problem
 }
 
+int WINAPI ProcessSynchroEventW(int type, void* param)
+{
+	__START;
+	Far::Instance->AsProcessSynchroEvent(type, param);
+	__END;
+	return 0;
+}
+
 int WINAPI ProcessViewerEventW(int type, void* param)
 {
 	__START;

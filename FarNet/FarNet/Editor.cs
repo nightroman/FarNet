@@ -360,6 +360,22 @@ namespace FarNet
 		/// See <see cref="Open(OpenMode)"/> with <see cref="OpenMode.None"/> and remarks.
 		/// </summary>
 		void Open();
+		/// <summary>
+		/// Begins an undo block.
+		/// </summary>
+		void BeginUndo();
+		/// <summary>
+		/// Ends an undo block.
+		/// </summary>
+		void EndUndo();
+		/// <summary>
+		/// Invokes undo.
+		/// </summary>
+		void Undo();
+		/// <summary>
+		/// Invokes redo.
+		/// </summary>
+		void Redo();
 	}
 
 	/// <summary>

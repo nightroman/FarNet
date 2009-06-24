@@ -17,6 +17,7 @@ EXPORTS
 	ProcessEditorInputW
 	ProcessEventW
 	ProcessKeyW
+	ProcessSynchroEventW
 	ProcessViewerEventW
 	PutFilesW
 	SetDirectoryW

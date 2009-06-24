@@ -1,5 +1,20 @@
 http://code.google.com/p/farnet/
 
+= 4.1.6 =
+
+*) IEditor. New methods BeginUndo(), EndUndo(), Undo(), Redo(). Note: they
+implement new Far API.
+
+*) IEditor::SetText is now atomic for Undo\Redo.
+
+*) IFar. New method PostJob() - posts a handler to be invoked in the Far main
+thread when Far gets control. Note: it implements new Far API. Note: test only
+so far.
+
+INTERNAL
+- Removed workaround in Editor::SetText (missed the first empty line of the
+first output), the editor looks working fine in the latest Far.
+
 = 4.1.5 =
 
 Updated for Far 2.0.997 (breaking changes in Far Editor and Window API)

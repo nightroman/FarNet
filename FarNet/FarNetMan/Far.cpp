@@ -1866,4 +1866,28 @@ IRawUI^ Far::RawUI::get()
 	return gcnew FarNet::RawUI;
 }
 
+void Far::AsProcessSynchroEvent(int type, void* /*param*/)
+{
+	if (type == SE_COMMONSYNCHRO)
+	{
+		if (_syncHandler)
+		{
+			try
+			{
+				_syncHandler(nullptr, nullptr);
+			}
+			finally
+			{
+				_syncHandler = nullptr;
+			}
+		}
+	}
+}
+
+void Far::PostJob(EventHandler^ handler)
+{
+	_syncHandler = handler;
+	Info.AdvControl(Info.ModuleNumber, ACTL_SYNCHRO, 0);
+}
+
 }
