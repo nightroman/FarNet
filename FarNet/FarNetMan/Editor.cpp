@@ -718,7 +718,9 @@ void Editor::SetText(String^ text)
 
 	AutoEditorInfo ei;
 
-	// workaround: Watch-Output-.ps1, missed the first empty line of the first output
+	// workaround: Watch-Output-.ps1, missed the first empty line of the first output;
+	// 090617 disabled this workaround because I cannot see any problem (I do not remember what it was)
+#if 0
 	if (ei.TotalLines == 1 && ei.CurPos == 0 && _IsNew)
 	{
 		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, 0);
@@ -727,6 +729,7 @@ void Editor::SetText(String^ text)
 		
 		ei.Update();
 	}
+#endif
 
 	// split: the fact: this way is much faster than clear\insert all text
 	array<String^>^ newLines = Regex::Split(text, "\\r\\n|[\\r\\n]");
@@ -734,6 +737,8 @@ void Editor::SetText(String^ text)
 	const bool overtype = ei.Overtype != 0;
 	try
 	{
+		BeginUndo();
+
 		if (overtype)
 			Edit_SetOvertype(false);
 
@@ -778,7 +783,33 @@ void Editor::SetText(String^ text)
 	{
 		if (overtype)
 			Edit_SetOvertype(true);
+
+		EndUndo();
 	}
+}
+
+void Editor::BeginUndo()
+{
+	EditorUndoRedo eur = { EUR_BEGIN };
+	Info.EditorControl(ECTL_UNDOREDO, &eur);
+}
+
+void Editor::EndUndo()
+{
+	EditorUndoRedo eur = { EUR_END };
+	Info.EditorControl(ECTL_UNDOREDO, &eur);
+}
+
+void Editor::Undo()
+{
+	EditorUndoRedo eur = { EUR_UNDO };
+	Info.EditorControl(ECTL_UNDOREDO, &eur);
+}
+
+void Editor::Redo()
+{
+	EditorUndoRedo eur = { EUR_REDO };
+	Info.EditorControl(ECTL_UNDOREDO, &eur);
 }
 
 }
