@@ -51,8 +51,12 @@ namespace FarNet
 		/// </summary>
 		FarFile CurrentFile { get; }
 		/// <summary>
-		/// Current item index.
+		/// Current item index in the <see cref="ShownList"/>.
 		/// </summary>
+		/// <remarks>
+		/// This is an index of the current item in <see cref="ShownList"/>.
+		/// It has nothing to do with other panel file collections.
+		/// </remarks>
 		int CurrentIndex { get; }
 		/// <summary>
 		/// The first visible item index.
@@ -63,13 +67,33 @@ namespace FarNet
 		/// </summary>
 		PanelViewMode ViewMode { get; set; }
 		/// <summary>
-		/// Shown panel items.
+		/// Shown panel items. Item ".." is excluded. Gets all items at once.
 		/// </summary>
+		/// <remarks>
+		/// In contrast to <see cref="ShownList"/> this list is a snapshot of files, it can be used even after changes in the panel.
+		/// </remarks>
 		IList<FarFile> ShownFiles { get; }
 		/// <summary>
-		/// List of selected panel items if any or the current; '..' is excluded.
+		/// List of selected panel items if any or the current. Gets all items at once.
 		/// </summary>
+		/// <remarks>
+		/// In contrast to <see cref="SelectedList"/> this list is a snapshot of files, it can be used even after changes in the panel.
+		/// </remarks>
 		IList<FarFile> SelectedFiles { get; }
+		/// <summary>
+		/// All shown panel items including ".." item. Gets items only on access.
+		/// </summary>
+		/// <remarks>
+		/// In contrast to <see cref="ShownFiles"/> you must not change panel items while using this list.
+		/// </remarks>
+		IList<FarFile> ShownList { get; }
+		/// <summary>
+		/// List of selected panel items if any or the current. Gets items only on access.
+		/// </summary>
+		/// <remarks>
+		/// In contrast to <see cref="SelectedFiles"/> you must not change panel items while using this list.
+		/// </remarks>
+		IList<FarFile> SelectedList { get; }
 		/// <summary>
 		/// Panel type.
 		/// </summary>
@@ -107,7 +131,7 @@ namespace FarNet
 		/// </summary>
 		bool NumericSort { get; set; }
 		/// <summary>
-		/// Redraws the panel.
+		/// Redraws the panel. Normally you should call it after changes to make them visible.
 		/// </summary>
 		void Redraw();
 		/// <summary>
@@ -174,6 +198,24 @@ namespace FarNet
 		/// <seealso cref="Path"/>
 		/// <seealso cref="GoToName"/>
 		void GoToPath(string path);
+		/// <summary>
+		/// Selects shown items by their indexes. See <see cref="Redraw()"/>.
+		/// </summary>
+		/// <param name="indexes">Indexes of items to be selected.</param>
+		void SelectAt(int[] indexes);
+		/// <summary>
+		/// Selects all shown items. See <see cref="Redraw()"/>.
+		/// </summary>
+		void SelectAll();
+		/// <summary>
+		/// Unselects shown items by their indexes. See <see cref="Redraw()"/>.
+		/// </summary>
+		/// <param name="indexes">Indices of items to be selected.</param>
+		void UnselectAt(int[] indexes);
+		/// <summary>
+		/// Unselects all shown items. See <see cref="Redraw()"/>.
+		/// </summary>
+		void UnselectAll();
 	}
 
 	/// <summary>
@@ -959,7 +1001,7 @@ namespace FarNet
 		/// It can be used for example by communicating panels.
 		/// </summary>
 		/// <seealso cref="AnotherPanel"/>
-		/// <seealso cref="Id"/>
+		/// <seealso cref="TypeId"/>
 		object Host { get; set; }
 		/// <summary>
 		/// Current directory when the panel starts.
@@ -985,7 +1027,7 @@ namespace FarNet
 		/// It is used for distinguishing panel types when <see cref="Host"/> is not enough.
 		/// </remarks>
 		/// <seealso cref="IFar.GetPluginPanel(Guid)"/>
-		Guid Id { get; set; }
+		Guid TypeId { get; set; }
 		/// <summary>
 		/// Tells to update and redraw the panel automatically when idle.
 		/// </summary>

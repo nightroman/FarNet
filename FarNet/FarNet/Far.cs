@@ -396,7 +396,7 @@ namespace FarNet
 		/// Gets existing FarNet plugin panel with the specified ID or returns null.
 		/// </summary>
 		/// <param name="id">Panel ID. It is normally assigned by a creator.</param>
-		/// <seealso cref="IPluginPanel.Id"/>
+		/// <seealso cref="IPluginPanel.TypeId"/>
 		IPluginPanel GetPluginPanel(Guid id);
 		/// <summary>
 		/// Creates a new panel.

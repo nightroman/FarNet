@@ -34,12 +34,8 @@ void AutoEditorInfo::Update()
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 }
 
-#undef FCTL_GETPANELITEM
-#undef FCTL_GETSELECTEDPANELITEM
-
-AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, bool selected)
+AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, FileType type)
 {
-	const int type = selected ? FCTL_GETSELECTEDPANELITEM : FCTL_GETPANELITEM;
 	const int size = Info.Control(handle, type, index, 0);
 	if (size > sizeof(mBuffer))
 		m = (PluginPanelItem*)new char[size];
