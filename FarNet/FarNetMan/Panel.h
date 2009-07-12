@@ -4,6 +4,7 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 #pragma once
+#include "Wrappers.h"
 
 namespace FarNet
 {;
@@ -24,6 +25,8 @@ public:
 	virtual property FarFile^ CurrentFile { FarFile^ get(); }
 	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get(); }
 	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get(); }
+	virtual property IList<FarFile^>^ ShownList { IList<FarFile^>^ get(); }
+	virtual property IList<FarFile^>^ SelectedList { IList<FarFile^>^ get(); }
 	virtual property int CurrentIndex { int get(); }
 	virtual property int TopIndex { int get(); }
 	virtual property PanelSortMode SortMode { PanelSortMode get(); void set(PanelSortMode value); }
@@ -39,17 +42,27 @@ public:
 	virtual void GoToPath(String^ path);
 	virtual void Redraw();
 	virtual void Redraw(int current, int top);
+	virtual void SelectAt(array<int>^ indexes);
+	virtual void SelectAll();
+	virtual void UnselectAt(array<int>^ indexes);
+	virtual void UnselectAll();
 	virtual void Update(bool keepSelection);
 public:
 	virtual String^ ToString() override;
 internal:
 	FarPanel(bool current);
 	static SetFile^ ItemToFile(const PluginPanelItem& item);
+	int GetShownFileCount();
+	int GetSelectedFileCount();
+	virtual FarFile^ GetFile(int index, FileType type);
+private:
+	void Select(array<int>^ indexes, bool select);
+	void SelectAll(bool select);
 internal:
 	property HANDLE Handle { HANDLE get(); void set(HANDLE value); }
 	property int Index { int get() { return (int)(INT_PTR)_handle; } void set(int value) { _handle = (HANDLE)(INT_PTR)value; } }
 private:
-	// For FAR panel it is PANEL_ACTIVE or PANEL_PASSIVE, otherwise it is a plugin handle
+	// PANEL_ACTIVE, PANEL_PASSIVE, or a plugin handle
 	HANDLE _handle;
 };
 
@@ -147,7 +160,7 @@ ref class FarPluginPanel : public FarPanel, IPluginPanel
 {
 public: // FarPanel
 	virtual property bool IsPlugin { bool get() override; }
-	virtual property Guid Id { Guid get(); void set(Guid value); }
+	virtual property Guid TypeId { Guid get(); void set(Guid value); }
 	virtual property FarFile^ CurrentFile { FarFile^ get() override; }
 	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get() override; }
 	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get() override; }
@@ -194,6 +207,7 @@ internal:
 	void AssertOpen();
 	void SwitchFullScreen();
 	List<FarFile^>^ ReplaceFiles(List<FarFile^>^ files);
+	virtual FarFile^ GetFile(int index, FileType type) override;
 internal:
 	bool _IsPushed;
 	bool _skipGettingData;
@@ -202,7 +216,7 @@ internal:
 	FarFile^ _postFile;
 	String^ _postName;
 private:
-	Guid _Id;
+	Guid _TypeId;
 	List<FarFile^>^ _files;
 	String^ _StartDirectory;
 };

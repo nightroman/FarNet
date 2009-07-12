@@ -1,5 +1,19 @@
 http://code.google.com/p/farnet/
 
+= 4.1.7 =
+
+*) IPanel. New methods SelectAt, UnselectAt, SelectAll, UnselectAll.
+
+*) IPanel. New properties ShownList and SelectedList. They are similar to
+ShownFiles and SelectedFiles, but not always the same and work dynamically,
+i.e. return only really accessed items. Note that ShownFiles now does not
+return ".." item, if you need this item then use new ShownList instead.
+
+*) IPluginPanel. Property Id is renamed into TypeId.
+
+*) Internal. Changed memory management for panel items. As a result, reduced
+"out-of-memory" chances for panels with extremely large number of items.
+
 = 4.1.6 =
 
 *) IEditor. New methods BeginUndo(), EndUndo(), Undo(), Redo(). Note: they
@@ -444,7 +458,7 @@ There are though a couple of new items in FAR.NET:
 
 *) New event IControl.Drawing (e.g. it can be used to draw a user control by
 IFar.WriteText and IFar.WritePalette methods).
-*) New enum PaletteColor - standard FAR color palette indices.
+*) New enum PaletteColor - standard FAR color palette indexes.
 *) New IFar.WritePalette - to write text using standard FAR colors.
 *) New IFar.GetPaletteBackground, IFar.GetPaletteForeground get palette colors.
 *) IAnyViewer, IViewer - new events GotFocus, LosingFocus (FAR 1.71.2406).
@@ -492,7 +506,7 @@ DOCUMENTATION
 - New style of .CHM documentation. Old MSDN style actually has more disadvatages
 and it is difficult to improve. New style is somehow simpler and still can be
 improved in next versions. What is already improved:
-*) separated indices of properties with same names;
+*) separated indexes of properties with same names;
 *) overloaded methods are all shown in member list;
 *) method parameter names are shown in contents;
 *) enabled advanced search features;

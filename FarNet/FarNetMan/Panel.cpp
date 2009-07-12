@@ -6,7 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "StdAfx.h"
 #include "Panel.h"
 #include "Far.h"
-#include "Wrappers.h"
+#include "PanelFileCollection.h"
 
 namespace FarNet
 {;
@@ -140,19 +140,25 @@ void PanelSet::AsFreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, in
 {
 	LOG_AUTO(3, "FreeFindData");
 
-	//?? do this only if columns are really used (e.g. I can set a flag in AsGetFindData)
 	for(int i = itemsNumber; --i >= 0;)
 	{
-		if (panelItem[i].CustomColumnData)
-		{
-			for(int j = panelItem[i].CustomColumnNumber; --j >= 0;)
-				delete[] panelItem[i].CustomColumnData[j];
+		PluginPanelItem& item = panelItem[i];
 
-			delete[] panelItem[i].CustomColumnData;
+		delete[] item.Owner;
+		delete[] item.Description;
+		delete[] item.FindData.lpwszAlternateFileName;
+		delete[] item.FindData.lpwszFileName;
+
+		if (item.CustomColumnData)
+		{
+			for(int j = item.CustomColumnNumber; --j >= 0;)
+				delete[] item.CustomColumnData[j];
+
+			delete[] item.CustomColumnData;
 		}
 	}
 
-	delete[] (char*)panelItem;
+	delete[] panelItem;
 }
 
 //?? Parameter destPath can be changed, i.e. (*destPath) replaced. NYI here.
@@ -171,7 +177,9 @@ int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 	return e.Ignore ? false : true;
 }
 
-static const wchar_t s_dots[] = L"..";
+//! 090712. Allocation by chunks was originally used. But it turns out it does not improve
+//! performance much (tested for 200000+ files). On the other hand allocation of large chunks
+//! may fail due to memory fragmentation more frequently.
 int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
 	LOG_AUTO(3, "GetFindData");
@@ -199,27 +207,8 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 			return true;
 		}
 
-		// calculate size
-		int countChars = 0;
-		if (pp->AddDots && SS(pp->DotsDescription))
-			countChars += pp->DotsDescription->Length + 1;
-		for each(FarFile^ f in pp->Files)
-		{
-			if (SS(f->Name))
-				countChars += f->Name->Length + 1;
-			if (SS(f->Description))
-				countChars += f->Description->Length + 1;
-			if (SS(f->Owner))
-				countChars += f->Owner->Length + 1;
-			if (SS(f->AlternateName))
-				countChars += f->AlternateName->Length + 1;
-		}
-
 		// alloc all
-		int sizeFile = nItem * sizeof(PluginPanelItem);
-		char* buff = new char[sizeFile + countChars * sizeof(wchar_t)];
-		wchar_t* data = (wchar_t*)(buff + sizeFile);
-		(*pPanelItem) = (PluginPanelItem*)buff;
+		(*pPanelItem) = new PluginPanelItem[nItem];
 		memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
 
 		// add dots
@@ -228,14 +217,10 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 		{
 			++i;
 			PluginPanelItem& p = (*pPanelItem)[0];
-			p.UserData = (DWORD_PTR)-1;
-			p.FindData.lpwszFileName = (wchar_t*)s_dots;
-			if (SS(pp->DotsDescription))
-			{
-				CopyStringToChars(pp->DotsDescription, data);
-				p.Description = data;
-				data += pp->DotsDescription->Length + 1;
-			}
+			p.UserData = (DWORD_PTR)(-1);
+			p.FindData.lpwszFileName = new wchar_t[3];
+			p.FindData.lpwszFileName[0] = p.FindData.lpwszFileName[1] = '.'; p.FindData.lpwszFileName[2] = '\0';
+			p.Description = NewChars(pp->DotsDescription);
 		}
 
 		// add files
@@ -248,30 +233,10 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 			FAR_FIND_DATA& d = p.FindData;
 
 			// names
-			if (SS(f->Name))
-			{
-				CopyStringToChars(f->Name, data);
-				d.lpwszFileName = data;
-				data += f->Name->Length + 1;
-			}
-			if (SS(f->Description))
-			{
-				CopyStringToChars(f->Description, data);
-				p.Description = data;
-				data += f->Description->Length + 1;
-			}
-			if (SS(f->Owner))
-			{
-				CopyStringToChars(f->Owner, data);
-				p.Owner = data;
-				data += f->Owner->Length + 1;
-			}
-			if (SS(f->AlternateName))
-			{
-				CopyStringToChars(f->AlternateName, data);
-				d.lpwszAlternateFileName = data;
-				data += f->AlternateName->Length + 1;
-			}
+			d.lpwszFileName = NewChars(f->Name);
+			d.lpwszAlternateFileName = NewChars(f->AlternateName);
+			p.Description = NewChars(f->Description);
+			p.Owner = NewChars(f->Owner);
 
 			// other
 			d.dwFileAttributes = (DWORD)f->Attributes;
@@ -290,14 +255,14 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 				{
 					p.CustomColumnNumber = nb;
 					p.CustomColumnData = new wchar_t*[nb];
-					int i = 0;
+					int iColumn = 0;
 					for each(Object^ it in columns)
 					{
 						if (it)
-							p.CustomColumnData[i] = NewChars(it->ToString());
+							p.CustomColumnData[iColumn] = NewChars(it->ToString());
 						else
-							p.CustomColumnData[i] = 0;
-						++i;
+							p.CustomColumnData[iColumn] = 0;
+						++iColumn;
 					}
 				}
 			}
@@ -671,7 +636,7 @@ FarPluginPanel^ PanelSet::GetPluginPanel(Guid id)
 	for (int i = 1; i < cPanels; ++i)
 	{
 		FarPluginPanel^ p = _panels[i];
-		if (p && p->Id == id)
+		if (p && p->TypeId == id)
 			return p;
 	}
 	return nullptr;
@@ -858,7 +823,7 @@ void PanelSet::PushPluginPanel(FarPluginPanel^ plugin)
 	FarFile^ file = nullptr;
 	if (pi.ItemsNumber > 0)
 	{
-		AutoPluginPanelItem item(plugin->Handle, pi.CurrentItem, false);
+		AutoPluginPanelItem item(plugin->Handle, pi.CurrentItem, ShownFile);
 		int index = (int)item.Get().UserData;
 		if (index >= 0 && index < plugin->Files->Count)
 			file = plugin->Files[index];
@@ -1319,7 +1284,7 @@ FarFile^ FarPanel::CurrentFile::get()
 	if (pi.ItemsNumber == 0)
 		return nullptr;
 
-	AutoPluginPanelItem item(_handle, pi.CurrentItem, false);
+	AutoPluginPanelItem item(_handle, pi.CurrentItem, ShownFile);
 
 	return ItemToFile(item.Get());
 }
@@ -1418,7 +1383,9 @@ IList<FarFile^>^ FarPanel::ShownFiles::get()
 	List<FarFile^>^ r = gcnew List<FarFile^>(pi.ItemsNumber);
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
-		AutoPluginPanelItem item(_handle, i, false);
+		AutoPluginPanelItem item(_handle, i, ShownFile);
+		if (i == 0 && item.Get().FindData.lpwszFileName[0] == '.' && item.Get().FindData.lpwszFileName[1] == '.' && item.Get().FindData.lpwszFileName[2] == '\0')
+			continue;
 		r->Add(ItemToFile(item.Get()));
 	}
 
@@ -1433,11 +1400,27 @@ IList<FarFile^>^ FarPanel::SelectedFiles::get()
 	List<FarFile^>^ r = gcnew List<FarFile^>(pi.SelectedItemsNumber);
 	for(int i = 0; i < pi.SelectedItemsNumber; ++i)
 	{
-		AutoPluginPanelItem item(_handle, i, true);
+		AutoPluginPanelItem item(_handle, i, SelectedFile);
 		r->Add(ItemToFile(item.Get()));
 	}
 
 	return r;
+}
+
+IList<FarFile^>^ FarPanel::ShownList::get()
+{
+	return gcnew PanelFileCollection(this, ShownFile);
+}
+
+IList<FarFile^>^ FarPanel::SelectedList::get()
+{
+	return gcnew PanelFileCollection(this, SelectedFile);
+}
+
+FarFile^ FarPanel::GetFile(int index, FileType type)
+{
+	AutoPluginPanelItem item(_handle, index, type);
+	return ItemToFile(item.Get());
 }
 
 PanelType FarPanel::Type::get()
@@ -1545,6 +1528,22 @@ void FarPanel::Close()
 	Info.Control(_handle, FCTL_CLOSEPLUGIN, 0, NULL);
 }
 
+int FarPanel::GetShownFileCount()
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	return pi.ItemsNumber;
+}
+
+int FarPanel::GetSelectedFileCount()
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	return pi.SelectedItemsNumber;
+}
+
 void FarPanel::Close(String^ path)
 {
 	PIN_NE(pin, path);
@@ -1566,7 +1565,7 @@ void FarPanel::GoToName(String^ name)
 	PIN_NE(pin, name);
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
-		AutoPluginPanelItem item(_handle, i, false);
+		AutoPluginPanelItem item(_handle, i, ShownFile);
 		if (Info.FSF->LStricmp(pin, item.Get().FindData.lpwszFileName) == 0 || Info.FSF->LStricmp(pin, item.Get().FindData.lpwszAlternateFileName) == 0)
 		{
 			Redraw(i, 0);
@@ -1612,6 +1611,64 @@ void FarPanel::Redraw(int current, int top)
 	pri.CurrentItem = current;
 	pri.TopPanelItem = top;
 	Info.Control(_handle, FCTL_REDRAWPANEL, 0, (LONG_PTR)&pri);
+}
+
+void FarPanel::Select(array<int>^ indexes, bool select)
+{
+	if (!indexes)
+		throw gcnew ArgumentNullException("indexes");
+	
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	Info.Control(_handle, FCTL_BEGINSELECTION, 0, 0);
+	try
+	{
+		for(int i = 0; i < indexes->Length; ++i)
+		{
+			int index = indexes[i];
+			if (index < 0 || index >= pi.ItemsNumber)
+				throw gcnew IndexOutOfRangeException("Invalid panel item index.");
+			Info.Control(_handle, FCTL_SETSELECTION, index, select);
+		}
+	}
+	finally
+	{
+		Info.Control(_handle, FCTL_ENDSELECTION, 0, 0);
+	}
+}
+
+void FarPanel::SelectAt(array<int>^ indexes)
+{
+	Select(indexes, true);
+}
+
+void FarPanel::UnselectAt(array<int>^ indexes)
+{
+	Select(indexes, false);
+}
+
+void FarPanel::SelectAll(bool select)
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	Info.Control(_handle, FCTL_BEGINSELECTION, 0, 0);
+	{
+		for(int i = 0; i < pi.ItemsNumber; ++i)
+			Info.Control(_handle, FCTL_SETSELECTION, i, select);
+	}
+	Info.Control(_handle, FCTL_ENDSELECTION, 0, 0);
+}
+
+void FarPanel::SelectAll()
+{
+	SelectAll(true);
+}
+
+void FarPanel::UnselectAll()
+{
+	SelectAll(false);
 }
 
 void FarPanel::Update(bool keepSelection)
@@ -1711,17 +1768,17 @@ bool FarPluginPanel::IsPlugin::get()
 	return true;
 }
 
-Guid FarPluginPanel::Id::get()
+Guid FarPluginPanel::TypeId::get()
 {
-	return _Id;
+	return _TypeId;
 }
 
-void FarPluginPanel::Id::set(Guid value)
+void FarPluginPanel::TypeId::set(Guid value)
 {
-	if (_Id != Guid::Empty)
-		throw gcnew InvalidOperationException("Id cannot be set twice.");
+	if (_TypeId != Guid::Empty)
+		throw gcnew InvalidOperationException("TypeId must not change.");
 
-	_Id = value;
+	_TypeId = value;
 }
 
 //! see remark for FarPanel::CurrentFile::get()
@@ -1735,7 +1792,7 @@ FarFile^ FarPluginPanel::CurrentFile::get()
 	if (pi.ItemsNumber == 0)
 		return nullptr;
 
-	AutoPluginPanelItem item(Handle, pi.CurrentItem, false);
+	AutoPluginPanelItem item(Handle, pi.CurrentItem, ShownFile);
 	int fi = (int)(INT_PTR)item.Get().UserData;
 	if (fi < 0)
 		return nullptr;
@@ -1761,7 +1818,7 @@ IList<FarFile^>^ FarPluginPanel::ShownFiles::get()
 	List<FarFile^>^ r = gcnew List<FarFile^>(pi.ItemsNumber);
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
-		AutoPluginPanelItem item(Handle, i, false);
+		AutoPluginPanelItem item(Handle, i, ShownFile);
 		int fi = (int)(INT_PTR)item.Get().UserData;
 		if (fi >= 0)
 			r->Add(_files[fi]);
@@ -1780,13 +1837,23 @@ IList<FarFile^>^ FarPluginPanel::SelectedFiles::get()
 	List<FarFile^>^ r = gcnew List<FarFile^>(pi.SelectedItemsNumber);
 	for(int i = 0; i < pi.SelectedItemsNumber; ++i)
 	{
-		AutoPluginPanelItem item(Handle, i, true);
+		AutoPluginPanelItem item(Handle, i, SelectedFile);
 		int fi = (int)(INT_PTR)item.Get().UserData;
 		if (fi >= 0)
 			r->Add(_files[fi]);
 	}
 
 	return r;
+}
+
+FarFile^ FarPluginPanel::GetFile(int index, FileType type)
+{
+	AutoPluginPanelItem item(Handle, index, type);
+	int fi = (int)(INT_PTR)item.Get().UserData;
+	if (fi >= 0)
+		return _files[fi];
+	else
+		return nullptr;
 }
 
 String^ FarPluginPanel::Path::get()
