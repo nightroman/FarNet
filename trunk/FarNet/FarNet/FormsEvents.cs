@@ -40,12 +40,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Ingore changes.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
@@ -60,12 +55,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Ingore and don't close the dialog.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
@@ -80,12 +70,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Ingore and don't draw the control.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
@@ -100,12 +85,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Control you want to pass focus to or leave it null to allow to lose focus.
 		/// </summary>
-		public IControl Focused
-		{
-			get { return _focused; }
-			set { _focused = value; }
-		}
-		IControl _focused;
+		public IControl Focused { get; set; }
 	}
 
 	/// <summary>
@@ -134,12 +114,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// The message has been handled and it should not be processed by the kernel.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
@@ -163,14 +138,9 @@ namespace FarNet.Forms
 		}
 		string _text;
 		/// <summary>
-		/// Ignore changes. [NOT USED in Dialog API 1.0]
+		/// Ignore changes.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
@@ -196,12 +166,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Ignore further processing.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
@@ -214,24 +179,15 @@ namespace FarNet.Forms
 		public MouseClickedEventArgs(IControl control, MouseInfo mouse)
 			: base(control)
 		{
-			_mouse = mouse;
+			Mouse = mouse;
 		}
 		/// <summary>
 		/// Mouse info.
 		/// </summary>
-		public MouseInfo Mouse
-		{
-			get { return _mouse; }
-		}
-		MouseInfo _mouse;
+		public MouseInfo Mouse { get; set; }
 		/// <summary>
 		/// Ignore further processing.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 }

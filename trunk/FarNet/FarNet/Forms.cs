@@ -28,6 +28,10 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Event is sent when the mouse has clicked on the control.
 		/// </summary>
+		/// <remarks>
+		/// For <see cref="IUserControl"/> coordinates are relative to its left top;
+		/// for other controls coordinates are absolute screen coordinates.
+		/// </remarks>
 		event EventHandler<MouseClickedEventArgs> MouseClicked;
 		/// <summary>
 		/// Event is sent when a key has been pressed in the dialog.
@@ -473,11 +477,14 @@ namespace FarNet.Forms
 		/// <seealso cref="IdledHandler"/>
 		event EventHandler Idled;
 		/// <summary>
-		/// Event is sent after the user clicks the mouse outside the dialog.
+		/// Event is sent when when the mouse clicks outside the dialog or if a control does not process the click.
 		/// </summary>
+		/// <remarks>
+		/// Coordinates are absolute screen coordinates.
+		/// </remarks>
 		event EventHandler<MouseClickedEventArgs> MouseClicked;
 		/// <summary>
-		/// Event is sent after the user presses a key in the dialog.
+		/// Event is sent when a key is pressed in the dialog and a control does not process the key.
 		/// </summary>
 		event EventHandler<KeyPressedEventArgs> KeyPressed;
 		/// <summary>
@@ -529,7 +536,14 @@ namespace FarNet.Forms
 		/// </summary>
 		Place Rect { get; set; }
 		/// <summary>
-		/// When this button is clicked then the dialog method <see cref="Show"/>
+		/// Dialog type ID.
+		/// </summary>
+		/// <remarks>
+		/// It is normally set by the dialog creator.
+		/// It cannot be changed for running dialogs.
+		/// </remarks>
+		Guid TypeId { get; set; }
+		/// <summary>
 		/// returns false as if a user cancels the dialog.
 		/// </summary>
 		IButton Cancel { get; set; }
@@ -638,5 +652,44 @@ namespace FarNet.Forms
 		/// </summary>
 		/// <param name="size">New size.</param>
 		void Resize(Point size);
+	}
+
+	/// <summary>
+	/// Specialized dialog.
+	/// </summary>
+	public interface IForm
+	{
+		/// <summary>
+		/// Form title.
+		/// </summary>
+		string Title { get; set; }
+		/// <summary>
+		/// Shows the form.
+		/// </summary>
+		/// <returns>False if the form was cancelled.</returns>
+		bool Show();
+	}
+
+	/// <summary>
+	/// Form for selecting an ordered subset of a given set of items.
+	/// </summary>
+	/// <remarks>
+	/// Create it by <see cref="IFar.CreateSubsetForm"/>, set its <see cref="Items"/>
+	/// and initial <see cref="Indexes"/>, call <see cref="IForm.Show"/>, get result <see cref="Indexes"/>.
+	/// </remarks>
+	public interface ISubsetForm : IForm
+	{
+		/// <summary>
+		/// Items to select from.
+		/// </summary>
+		object[] Items { get; set; }
+		/// <summary>
+		/// Indexes of selected items.
+		/// </summary>
+		int[] Indexes { get; set; }
+		/// <summary>
+		/// Optional converter of items to strings.
+		/// </summary>
+		Func<object, string> ItemToString { get; set; }
 	}
 }

@@ -7,7 +7,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-ref class FarCommandLine : ILine
+ref class CommandLine : ILine
 {
 public:
 	virtual property ILine^ FullLine { ILine^ get(); }
@@ -24,7 +24,5 @@ public:
 	virtual void Unselect();
 public:
 	virtual String^ ToString() override;
-internal:
-	FarCommandLine();
 };
 }

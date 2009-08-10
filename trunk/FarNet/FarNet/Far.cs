@@ -344,6 +344,10 @@ namespace FarNet
 		/// In this case <c>right</c> or <c>bottom</c> should be width and height.
 		/// </remarks>
 		IDialog CreateDialog(int left, int top, int right, int bottom);
+		/// <summary>
+		/// Creates a dialog for selecting a subset of items.
+		/// </summary>
+		ISubsetForm CreateSubsetForm();
 		/// <include file='doc.xml' path='docs/pp[@name="ShowHelp"]/*'/>
 		void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
@@ -796,4 +800,13 @@ namespace FarNet
 		/// </summary>
 		RecordingCommon
 	}
+
+	/// <summary>
+	/// Encapsulates a method that has one parameter and returns a value of the type specified by the TResult parameter.
+	/// </summary>
+	/// <typeparam name="T">The type of the parameter of the method that this delegate encapsulates.</typeparam>
+	/// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates.</typeparam>
+	/// <param name="arg">The parameter of the method that this delegate encapsulates.</param>
+	/// <returns>The return value of the method that this delegate encapsulates.</returns>
+	public delegate TResult Func<T, TResult>(T arg);
 }

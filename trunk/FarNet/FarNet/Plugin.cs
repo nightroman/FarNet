@@ -28,8 +28,6 @@ namespace FarNet
 	/// </remarks>
 	public class BasePlugin
 	{
-		IFar _Far;
-
 		/// <summary>
 		/// Protected constructor denies instances of this class.
 		/// </summary>
@@ -39,11 +37,7 @@ namespace FarNet
 		/// <summary>
 		/// This object exposes FarNet API. It is set internally and should not be changed.
 		/// </summary>
-		public IFar Far
-		{
-			get { return _Far; }
-			set { _Far = value; }
-		}
+		public IFar Far { get; set; }
 
 		/// <include file='doc.xml' path='docs/pp[@name="Connect"]/*'/>
 		public virtual void Connect()
@@ -150,12 +144,7 @@ namespace FarNet
 		/// <summary>
 		/// Tells to ignore results, e.g. when configuration dialog is cancelled.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _Ignore; }
-			set { _Ignore = value; }
-		}
-		bool _Ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>

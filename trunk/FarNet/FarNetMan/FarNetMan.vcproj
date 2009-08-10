@@ -460,6 +460,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Form.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\InputBox.cpp"
 				>
 			</File>
@@ -548,6 +552,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SubsetForm.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Utils.cpp"
 				>
 			</File>
@@ -630,6 +638,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Form.h"
+				>
+			</File>
+			<File
 				RelativePath=".\InputBox.h"
 				>
 			</File>
@@ -691,6 +703,10 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SubsetForm.h"
 				>
 			</File>
 			<File
