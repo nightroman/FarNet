@@ -358,27 +358,17 @@ namespace FarNet
 		/// <param name="data">Data (or null for separator in some cases).</param>
 		public DataItem(string name, object data)
 		{
-			_Name = name;
-			_Data = data;
+			Name = name;
+			Data = data;
 		}
-		string _Name;
 		/// <summary>
 		/// Name (or separator text in some cases).
 		/// </summary>
-		public string Name
-		{
-			get { return _Name; }
-			set { _Name = value; }
-		}
-		object _Data;
+		public string Name { get; set; }
 		/// <summary>
 		/// Data (or null for separator in some cases).
 		/// </summary>
-		public object Data
-		{
-			get { return _Data; }
-			set { _Data = value; }
-		}
+		public object Data { get; set; }
 	}
 
 	/// <summary>
@@ -547,7 +537,6 @@ namespace FarNet
 	/// <seealso cref="SetFile.Columns"/>
 	public sealed class PanelModeInfo : ICloneable
 	{
-		string _ColumnTypes;
 		/// <summary>
 		/// Text string which describes column types.
 		/// </summary>
@@ -556,43 +545,23 @@ namespace FarNet
 		/// To use standard Far panel view modes, keep this field null or empty.
 		/// See Far [Column types].
 		/// </remarks>
-		public string ColumnTypes
-		{
-			get { return _ColumnTypes; }
-			set { _ColumnTypes = value; }
-		}
-		string _ColumnWidths;
+		public string ColumnTypes { get; set; }
 		/// <summary>
 		/// Column widths.
 		/// See Far [Column width].
 		/// </summary>
-		public string ColumnWidths
-		{
-			get { return _ColumnWidths; }
-			set { _ColumnWidths = value; }
-		}
-		string[] _ColumnTitles;
+		public string ColumnWidths { get; set; }
 		/// <summary>
 		/// Column titles. To use standard column names, keep it null.
 		/// </summary>
 		/// <remarks>
 		/// STOP If it is not null then number of titles must be equal to number of column types.
 		/// </remarks>
-		public string[] ColumnTitles
-		{
-			get { return _ColumnTitles; }
-			set { _ColumnTitles = value; }
-		}
-		bool _IsFullScreen;
+		public string[] ColumnTitles { get; set; }
 		/// <summary>
 		/// Tells to resize panel to fill the entire window (instead of half).
 		/// </summary>
-		public bool IsFullScreen
-		{
-			get { return _IsFullScreen; }
-			set { _IsFullScreen = value; }
-		}
-		bool _IsDetailedStatus;
+		public bool IsFullScreen { get; set; }
 		/// <summary>
 		/// Tells to display full status info for a file.
 		/// </summary>
@@ -600,29 +569,15 @@ namespace FarNet
 		/// Tells to display full status info for a file if <c>Status*</c> are not defined.
 		/// Otherwise, the status line displays the file name.
 		/// </remarks>
-		public bool IsDetailedStatus
-		{
-			get { return _IsDetailedStatus; }
-			set { _IsDetailedStatus = value; }
-		}
-		string _StatusColumnTypes;
+		public bool IsDetailedStatus { get; set; }
 		/// <summary>
 		/// Text string which describes status column types.
 		/// </summary>
-		public string StatusColumnTypes
-		{
-			get { return _StatusColumnTypes; }
-			set { _StatusColumnTypes = value; }
-		}
-		string _StatusColumnWidths;
+		public string StatusColumnTypes { get; set; }
 		/// <summary>
 		/// Status column widths.
 		/// </summary>
-		public string StatusColumnWidths
-		{
-			get { return _StatusColumnWidths; }
-			set { _StatusColumnWidths = value; }
-		}
+		public string StatusColumnWidths { get; set; }
 		/// <summary>
 		/// Shallow copy.
 		/// </summary>
@@ -690,7 +645,6 @@ namespace FarNet
 	public class PanelEventArgs : EventArgs
 	{
 		OperationModes _Mode;
-		bool _Ignore;
 		///
 		public PanelEventArgs()
 		{ }
@@ -711,11 +665,7 @@ namespace FarNet
 		/// <summary>
 		/// Set true to tell that action has to be ignored; exact meaning depends on an event.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _Ignore; }
-			set { _Ignore = value; }
-		}
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>

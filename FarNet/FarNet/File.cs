@@ -213,16 +213,16 @@ namespace FarNet
 			if (file == null)
 				throw new ArgumentNullException("file");
 
-			_AlternateName = file.AlternateName;
-			_Attributes = file.Attributes;
-			_CreationTime = file.CreationTime;
-			_Data = file.Data;
-			_Description = file.Description;
-			_LastAccessTime = file.LastAccessTime;
-			_LastWriteTime = file.LastWriteTime;
-			_Length = file.Length;
-			_Name = file.Name;
-			_Owner = file.Owner;
+			AlternateName = file.AlternateName;
+			Attributes = file.Attributes;
+			CreationTime = file.CreationTime;
+			Data = file.Data;
+			Description = file.Description;
+			LastAccessTime = file.LastAccessTime;
+			LastWriteTime = file.LastWriteTime;
+			Length = file.Length;
+			Name = file.Name;
+			Owner = file.Owner;
 		}
 		/// <summary>
 		/// Creates file data snapshot from a <see cref="FileSystemInfo"/> object.
@@ -235,13 +235,13 @@ namespace FarNet
 				throw new ArgumentNullException("info");
 
 			_Name = fullName ? info.FullName : info.Name;
-			_CreationTime = info.CreationTime;
-			_LastAccessTime = info.LastAccessTime;
-			_LastWriteTime = info.LastWriteTime;
-			_Attributes = info.Attributes;
+			CreationTime = info.CreationTime;
+			LastAccessTime = info.LastAccessTime;
+			LastWriteTime = info.LastWriteTime;
+			Attributes = info.Attributes;
 
-			if ((_Attributes & FileAttributes.Directory) == 0)
-				_Length = ((FileInfo)info).Length;
+			if ((Attributes & FileAttributes.Directory) == 0)
+				Length = ((FileInfo)info).Length;
 		}
 		/// <summary>
 		/// File name.
@@ -261,52 +261,42 @@ namespace FarNet
 		/// <summary>
 		/// Description.
 		/// </summary>
-		public override string Description { get { return _Description; } set { _Description = value; } }
-		string _Description;
+		public override string Description { get; set; }
 		/// <summary>
 		/// Owner.
 		/// </summary>
-		public override string Owner { get { return _Owner; } set { _Owner = value; } }
-		string _Owner;
+		public override string Owner { get; set; }
 		/// <summary>
 		/// Alternate name, can be used as a file system name.
 		/// </summary>
-		public override string AlternateName { get { return _AlternateName; } set { _AlternateName = value; } }
-		string _AlternateName;
+		public override string AlternateName { get; set; }
 		/// <summary>
 		/// Creation time.
 		/// </summary>
-		public override DateTime CreationTime { get { return _CreationTime; } set { _CreationTime = value; } }
-		DateTime _CreationTime;
+		public override DateTime CreationTime { get; set; }
 		/// <summary>
 		/// Last access time.
 		/// </summary>
-		public override DateTime LastAccessTime { get { return _LastAccessTime; } set { _LastAccessTime = value; } }
-		DateTime _LastAccessTime;
+		public override DateTime LastAccessTime { get; set; }
 		/// <summary>
 		/// Last access time.
 		/// </summary>
-		public override DateTime LastWriteTime { get { return _LastWriteTime; } set { _LastWriteTime = value; } }
-		DateTime _LastWriteTime;
+		public override DateTime LastWriteTime { get; set; }
 		/// <summary>
 		/// File length.
 		/// </summary>
-		public override long Length { get { return _Length; } set { _Length = value; } }
-		long _Length;
+		public override long Length { get; set; }
 		/// <summary>
 		/// User data. Only for <see cref="IPluginPanel"/>.
 		/// </summary>
-		public override object Data { get { return _Data; } set { _Data = value; } }
-		object _Data;
+		public override object Data { get; set; }
 		/// <summary>
 		/// File attributes.
 		/// </summary>
-		public override FileAttributes Attributes { get { return _Attributes; } set { _Attributes = value; } }
-		FileAttributes _Attributes;
+		public override FileAttributes Attributes { get; set; }
 		/// <summary>
 		/// Custom columns. See <see cref="PanelModeInfo"/>.
 		/// </summary>
-		public override ICollection Columns { get { return _Columns; } set { _Columns = value; } }
-		ICollection _Columns;
+		public override ICollection Columns { get; set; }
 	}
 }

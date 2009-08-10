@@ -5,9 +5,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 #include "StdAfx.h"
 #include "Far.h"
-#include "CommandLine.h"
 #include "Dialog.h"
-#include "Editor.h"
 #include "EditorHost.h"
 #include "InputBox.h"
 #include "KeyMacroHost.h"
@@ -18,7 +16,6 @@ Copyright (c) 2005-2009 FarNet Team
 #include "PluginInfo.h"
 #include "PluginSet.h"
 #include "RawUI.h"
-#include "Viewer.h"
 #include "ViewerHost.h"
 #include "Wrappers.h"
 
@@ -586,11 +583,6 @@ void Far::RestoreScreen(int screen)
 IKeyMacroHost^ Far::KeyMacro::get()
 {
 	return %KeyMacroHost::_instance;
-}
-
-ILine^ Far::CommandLine::get()
-{
-	return gcnew FarCommandLine;
 }
 
 ILine^ Far::Line::get()

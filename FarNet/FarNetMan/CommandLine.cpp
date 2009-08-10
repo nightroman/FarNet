@@ -5,45 +5,47 @@ Copyright (c) 2005-2009 FarNet Team
 
 #include "StdAfx.h"
 #include "CommandLine.h"
+#include "Far.h"
 #include "CommandLineSelection.h"
 
 namespace FarNet
 {;
-FarCommandLine::FarCommandLine()
+ILine^ Far::CommandLine::get()
 {
+	return gcnew FarNet::CommandLine;
 }
 
-ILine^ FarCommandLine::FullLine::get()
+ILine^ CommandLine::FullLine::get()
 {
 	return this;
 }
 
-ILineSelection^ FarCommandLine::Selection::get()
+ILineSelection^ CommandLine::Selection::get()
 {
 	return gcnew CommandLineSelection;
 }
 
-int FarCommandLine::Length::get()
+int CommandLine::Length::get()
 {
 	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
 	return size - 1;
 }
 
-int FarCommandLine::No::get()
+int CommandLine::No::get()
 {
 	return -1;
 }
 
-String^ FarCommandLine::Eol::get()
+String^ CommandLine::Eol::get()
 {
 	return String::Empty;
 }
 
-void FarCommandLine::Eol::set(String^)
+void CommandLine::Eol::set(String^)
 {
 }
 
-String^ FarCommandLine::Text::get()
+String^ CommandLine::Text::get()
 {
 	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
 	CBox buf(size);
@@ -51,7 +53,7 @@ String^ FarCommandLine::Text::get()
 	return gcnew String(buf);
 }
 
-void FarCommandLine::Text::set(String^ value)
+void CommandLine::Text::set(String^ value)
 {
 	if (!value)
 		throw gcnew ArgumentNullException("value");
@@ -61,7 +63,7 @@ void FarCommandLine::Text::set(String^ value)
 		throw gcnew OperationCanceledException;
 }
 
-int FarCommandLine::Pos::get()
+int CommandLine::Pos::get()
 {
 	int pos;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINEPOS, 0, (LONG_PTR)&pos))
@@ -69,7 +71,7 @@ int FarCommandLine::Pos::get()
 	return pos;
 }
 
-void FarCommandLine::Pos::set(int value)
+void CommandLine::Pos::set(int value)
 {
 	if (value < 0)
 		value = Length;
@@ -78,7 +80,7 @@ void FarCommandLine::Pos::set(int value)
 		throw gcnew OperationCanceledException;
 }
 
-void FarCommandLine::Insert(String^ text)
+void CommandLine::Insert(String^ text)
 {
 	if (!text)
 		throw gcnew ArgumentNullException("text");
@@ -88,7 +90,7 @@ void FarCommandLine::Insert(String^ text)
 		throw gcnew OperationCanceledException;
 }
 
-void FarCommandLine::Select(int start, int end)
+void CommandLine::Select(int start, int end)
 {
 	CmdLineSelect cls;
 	cls.SelStart = start;
@@ -97,12 +99,12 @@ void FarCommandLine::Select(int start, int end)
 		throw gcnew OperationCanceledException;
 }
 
-void FarCommandLine::Unselect()
+void CommandLine::Unselect()
 {
 	Select(-1, -1);
 }
 
-String^ FarCommandLine::ToString()
+String^ CommandLine::ToString()
 {
 	return Text;
 }

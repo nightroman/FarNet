@@ -41,8 +41,18 @@ public:
 	virtual property Version^ Version { System::Version^ get(); }
 	virtual property WindowType WindowType { FarNet::WindowType get(); }
 public:
-	virtual array<IEditor^>^ Editors();
 	virtual array<int>^ CreateKeySequence(String^ keys);
+	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
+	virtual IEditor^ CreateEditor();
+	virtual IInputBox^ CreateInputBox();
+	virtual IListMenu^ CreateListMenu();
+	virtual IMenu^ CreateMenu();
+	virtual IMenuItem^ CreateMenuItem();
+	virtual IPluginPanel^ CreatePluginPanel();
+	virtual ISubsetForm^ CreateSubsetForm();
+	virtual IViewer^ CreateViewer();
+public:
+	virtual array<IEditor^>^ Editors();
 	virtual array<IPluginPanel^>^ PushedPanels();
 	virtual array<IViewer^>^ Viewers();
 	virtual bool Commit();
@@ -52,21 +62,13 @@ public:
 	virtual ICollection<String^>^ GetDialogHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter);
-	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
-	virtual IEditor^ CreateEditor();
-	virtual IInputBox^ CreateInputBox();
-	virtual IListMenu^ CreateListMenu();
-	virtual IMenu^ CreateMenu();
-	virtual IMenuItem^ CreateMenuItem();
 	virtual int Msg(String^ body, String^ header, MsgOptions options);
 	virtual int Msg(String^ body, String^ header, MsgOptions options, array<String^>^ buttons);
 	virtual int Msg(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
 	virtual int NameToKey(String^ key);
 	virtual int SaveScreen(int x1, int y1, int x2, int y2);
-	virtual IPluginPanel^ CreatePluginPanel();
 	virtual IPluginPanel^ GetPluginPanel(Guid id);
 	virtual IPluginPanel^ GetPluginPanel(Type^ hostType);
-	virtual IViewer^ CreateViewer();
 	virtual IWindowInfo^ GetWindowInfo(int index, bool full);
 	virtual Object^ GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue);
 	virtual String^ Input(String^ prompt);
