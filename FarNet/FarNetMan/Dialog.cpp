@@ -1208,6 +1208,37 @@ void FarDialog::Rect::set(Place value)
 		_rect = value;
 }
 
+Guid FarDialog::TypeId::get()
+{
+	if (_hDlg == INVALID_HANDLE_VALUE)
+		return _typeId;
+
+	DialogInfo arg;
+	if (Info.SendDlgMessage(_hDlg, DM_GETDIALOGINFO, 0, (LONG_PTR)&arg))
+		return Guid(
+		arg.Id.Data1,
+		arg.Id.Data2,
+		arg.Id.Data3,
+		arg.Id.Data4[0],
+		arg.Id.Data4[1],
+		arg.Id.Data4[2],
+		arg.Id.Data4[3],
+		arg.Id.Data4[4],
+		arg.Id.Data4[5],
+		arg.Id.Data4[6],
+		arg.Id.Data4[7]);
+	else
+		return Guid();
+}
+
+void FarDialog::TypeId::set(Guid value)
+{
+	if (_hDlg != INVALID_HANDLE_VALUE)
+		throw gcnew InvalidOperationException("Cannot set type ID.");
+	else
+		_typeId = value;
+}
+
 IControl^ FarDialog::Selected::get()
 {
 	return _selected;
@@ -1428,6 +1459,7 @@ FarDialog^ FarDialog::GetDialog()
 	return gcnew FarDialog(_hDlgTop);
 }
 
+//! 090719 There is no way to get control count, so we allow an index to be too large - we return null in this case even for our dialog.
 IControl^ FarDialog::GetControl(int id)
 {
 	if (id < 0)
@@ -1437,6 +1469,7 @@ IControl^ FarDialog::GetControl(int id)
 	{
 		if (id >= _items->Count)
 			return nullptr;
+
 		return _items[id];
 	}
 
@@ -1682,22 +1715,32 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 		case DN_MOUSECLICK:
 			{
 				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
-				if (fc)
+				if (fc && fc->_MouseClicked || _MouseClicked)
 				{
-					if (fc->_MouseClicked)
+					//! get args once: if both handler work then for the second this memory may be garbage
+					MouseClickedEventArgs ea(fc, GetMouseInfo(*(MOUSE_EVENT_RECORD*)(LONG_PTR)param2));
+					if (fc && fc->_MouseClicked)
 					{
-						MouseClickedEventArgs ea(fc, GetMouseInfo(*(MOUSE_EVENT_RECORD*)(LONG_PTR)param2));
 						fc->_MouseClicked(this, %ea);
 						if (ea.Ignore)
 							return true;
 					}
-				}
-				else if (_MouseClicked)
-				{
-					MouseClickedEventArgs ea(nullptr, GetMouseInfo(*(MOUSE_EVENT_RECORD*)(LONG_PTR)param2));
-					_MouseClicked(this, %ea);
-					if (ea.Ignore)
-						return true;
+					if (_MouseClicked)
+					{
+						//! translate user control coordinates to standard
+						if (fc && dynamic_cast<FarUserControl^>(fc) != nullptr)
+						{
+							Point pt1 = Rect.First;
+							Point pt2 = fc->Rect.First;
+							Point pt3 = ea.Mouse.Where;
+							MouseInfo mi = ea.Mouse;
+							mi.Where = Point(pt1.X + pt2.X + pt3.X, pt1.Y + pt2.Y + pt3.Y);
+							ea.Mouse = mi;
+						}
+						_MouseClicked(this, %ea);
+						if (ea.Ignore)
+							return true;
+					}
 				}
 				break;
 			}
@@ -1719,6 +1762,20 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 						return true;
 				}
 				break;
+			}
+		case DN_GETDIALOGINFO:
+			{
+				// get my dialog info
+				DialogInfo& di = *(DialogInfo*)param2;
+				di.StructSize = sizeof(DialogInfo);
+
+				// copy type ID
+				array<unsigned char>^ bytes = _typeId.ToByteArray();
+				for(int i = 0; i < 16; ++i)
+					((unsigned char*)&di.Id)[i] = bytes[i];
+				
+				// done
+				return true;
 			}
 		}
 	}

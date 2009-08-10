@@ -206,11 +206,11 @@ internal:
 	FarPluginPanel();
 	void AssertOpen();
 	void SwitchFullScreen();
-	List<FarFile^>^ ReplaceFiles(List<FarFile^>^ files);
 	virtual FarFile^ GetFile(int index, FileType type) override;
 internal:
 	bool _IsPushed;
 	bool _skipGettingData;
+	bool _voidGettingData;
 	FarPluginPanelInfo _info;
 	Object^ _postData;
 	FarFile^ _postFile;

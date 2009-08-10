@@ -1,5 +1,20 @@
 http://code.google.com/p/farnet/
 
+= 4.1.8 =
+
+*) New utility interface ISubsetForm - Dialog for selecting a subset of items.
+Create it by IFar.CreateSubsetForm(), set its Items and initial selected
+Indexes, call Show(), get result selected Indexes. To be continued.
+
+*) IDialog.MouseClicked is now also called if a control does not process this
+event (same as for KeyPressed event).
+
+*) IDialog. New property TypeId. Implemented recently added related Far API:
+DN_GETDIALOGINFO, DM_GETDIALOGINFO.
+
+*) Fixed not shown panel data of a child panel which view mode is different
+from parent panel view mode. New code is also more optimal.
+
 = 4.1.7 =
 
 *) IPanel. New methods SelectAt, UnselectAt, SelectAll, UnselectAll.

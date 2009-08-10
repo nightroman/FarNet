@@ -190,5 +190,12 @@ namespace FarNet
 		{
 			return "(" + First + ", " + Last + ")";
 		}
+		/// <summary>
+		/// Returns true if the rectangular contains the point.
+		/// </summary>
+		public bool RectContains(Point point)
+		{
+			return point.X >= First.X && point.Y >= First.Y && point.X <= Last.X && point.Y <= Last.Y;
+		}
 	}
 }

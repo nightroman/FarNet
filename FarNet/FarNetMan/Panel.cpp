@@ -188,6 +188,14 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 	{
 		FarPluginPanel^ pp = _panels[(int)(INT_PTR)hPlugin];
 
+		// fake empty panel needed on switching modes, for example
+		if (pp->_voidGettingData)
+		{
+			(*pItemsNumber) = 0;
+			(*pPanelItem) = NULL;
+			return true;
+		}
+
 		if (pp->_GettingData && !pp->_skipGettingData)
 		{
 			PanelEventArgs e((OperationModes)opMode);
@@ -777,9 +785,8 @@ void PanelSet::ReplacePluginPanel(FarPluginPanel^ oldPanel, FarPluginPanel^ newP
 		newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode ||
 		newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc))
 	{
-		// detach files to change modes with no files
-		List<FarFile^> dummy;
-		List<FarFile^>^ files = newPanel->ReplaceFiles(%dummy);
+		// set void mode for switching panel modes
+		newPanel->_voidGettingData = true;
 		newPanel->Update(false);
 
 		// set only new modes
@@ -793,8 +800,8 @@ void PanelSet::ReplacePluginPanel(FarPluginPanel^ oldPanel, FarPluginPanel^ newP
 				newPanel->ReverseSortOrder = newPanel->Info->StartSortDesc;
 		}
 
-		// restore original files
-		newPanel->ReplaceFiles(files);
+		// drop void mode
+		newPanel->_voidGettingData = false;
 	}
 
 	//! switch to new data and redraw, but not always: in some cases it will be done anyway, e.g. by FAR
@@ -1744,13 +1751,6 @@ void FarPluginPanel::SwitchFullScreen()
 	// set
 	Info->SetMode(iViewMode, mode);
 	Redraw();
-}
-
-List<FarFile^>^ FarPluginPanel::ReplaceFiles(List<FarFile^>^ files)
-{
-	List<FarFile^>^ r = _files;
-	_files = files;
-	return r;
 }
 
 bool FarPluginPanel::IsOpened::get()

@@ -548,12 +548,7 @@ namespace FarNet
 		/// <summary>
 		/// Ignore event.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
@@ -577,12 +572,7 @@ namespace FarNet
 		/// <summary>
 		/// Ignore event.
 		/// </summary>
-		public bool Ignore
-		{
-			get { return _ignore; }
-			set { _ignore = value; }
-		}
-		bool _ignore;
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
