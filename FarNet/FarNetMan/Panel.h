@@ -126,6 +126,7 @@ public:
 	FPPI_TEXT(Title, PanelTitle);
 public:
 	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() { return _InfoItems; } void set(array<DataItem^>^ value); }
+	virtual property bool AutoAlternateNames;
 	virtual PanelModeInfo^ GetMode(PanelViewMode viewMode);
 	virtual void SetKeyBarAlt(array<String^>^ labels);
 	virtual void SetKeyBarAltShift(array<String^>^ labels);
@@ -171,7 +172,7 @@ public: // IPluginPanel
 	virtual property bool IdleUpdate;
 	virtual property bool IsOpened { bool get(); }
 	virtual property bool IsPushed { bool get() { return _IsPushed; } }
-	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); }
+	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
 	virtual property Comparison<Object^>^ DataComparison;
 	virtual property IPluginPanel^ AnotherPanel { IPluginPanel^ get(); }
 	virtual property IPluginPanelInfo^ Info { IPluginPanelInfo^ get() { return %_info; } }
@@ -217,7 +218,7 @@ internal:
 	String^ _postName;
 private:
 	Guid _TypeId;
-	List<FarFile^>^ _files;
+	IList<FarFile^>^ _files;
 	String^ _StartDirectory;
 };
 

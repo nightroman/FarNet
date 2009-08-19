@@ -19,7 +19,7 @@ public:
 public:
 	virtual property array<Object^>^ Items { array<Object^>^ get(); void set(array<Object^>^ value); }
 	virtual property array<int>^ Indexes { array<int>^ get(); void set(array<int>^ value); }
-	virtual property Func<Object^, String^>^ ItemToString;
+	virtual property Converter<Object^, String^>^ ItemToString;
 internal:
 	FarSubsetForm();
 private:

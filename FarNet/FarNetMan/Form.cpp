@@ -8,7 +8,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-#define DLG_XSIZE 74
+#define DLG_XSIZE 78
 #define DLG_YSIZE 22
 
 FarForm::FarForm()

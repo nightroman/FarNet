@@ -45,6 +45,7 @@ namespace FarNet
 		/// <summary>
 		/// Alternate name, can be used as a file system name.
 		/// </summary>
+		/// <seealso cref="IPluginPanelInfo.AutoAlternateNames"/>
 		public virtual string AlternateName
 		{
 			get { return null; }
@@ -197,7 +198,7 @@ namespace FarNet
 	/// In most cases plugin panels should just use this class for their items.
 	/// In some cases they may use custom implementations of <see cref="FarFile"/>.
 	/// </remarks>
-	public class SetFile : FarFile
+	public sealed class SetFile : FarFile
 	{
 		/// <summary>
 		/// Creates an empty file data object.
@@ -269,6 +270,7 @@ namespace FarNet
 		/// <summary>
 		/// Alternate name, can be used as a file system name.
 		/// </summary>
+		/// <seealso cref="IPluginPanelInfo.AutoAlternateNames"/>
 		public override string AlternateName { get; set; }
 		/// <summary>
 		/// Creation time.
