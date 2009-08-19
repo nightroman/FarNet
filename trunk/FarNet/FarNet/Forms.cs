@@ -690,6 +690,6 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Optional converter of items to strings.
 		/// </summary>
-		Func<object, string> ItemToString { get; set; }
+		Converter<object, string> ItemToString { get; set; }
 	}
 }

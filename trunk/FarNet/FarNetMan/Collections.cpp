@@ -39,6 +39,9 @@ void EditorStringCollection::CopyTo(array<String^>^ arrayObject, int arrayIndex)
 	if (arrayObject->Length - arrayIndex > Count)
 		throw gcnew ArgumentException("arrayObject, arrayIndex");
 	for each(String^ s in this)
-		arrayObject[++arrayIndex] = s;
+	{
+		arrayObject[arrayIndex] = s;
+		++arrayIndex;
+	}
 }
 }

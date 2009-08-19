@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.1.9 =
+
+*) Fixed not restored parent panel current item on exit from a child panel
+which view mode is different from parent.
+
+*) New property IPluginPanelInfo.AutoAlternateNames: Tells to generate
+AlternateName value in plugin panel files automatically.
+
+*) Property IPluginPanel.Files is now get/set, you can set any IList<FarFile>
+instead of refilling the existing list instance.
+
 = 4.1.8 =
 
 *) New utility interface ISubsetForm - Dialog for selecting a subset of items.
