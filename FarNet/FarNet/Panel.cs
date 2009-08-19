@@ -388,6 +388,15 @@ namespace FarNet
 		/// </summary>
 		PanelSortMode StartSortMode { get; set; }
 		/// <summary>
+		/// Tells to generate alternate names automatically.
+		/// </summary>
+		/// <remarks>
+		/// Alternate names are used by Far for example for Quick View (CtrlQ) temp file names.
+		/// This is important because plugin files may have any names, including prohibited by
+		/// the file system; in this case alternate names help.
+		/// </remarks>
+		bool AutoAlternateNames { get; set; }
+		/// <summary>
 		/// If <see cref="StartSortMode"/> is specified, this field is used to set sort direction.
 		/// When a panel is started it is used internally for keeping and restoring the current mode.
 		/// </summary>
@@ -968,7 +977,7 @@ namespace FarNet
 		/// Normally it is filled on startup and then can be changed by <see cref="GettingData"/> handler.
 		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately.
 		/// </summary>
-		IList<FarFile> Files { get; }
+		IList<FarFile> Files { get; set; } //????
 		/// <summary>
 		/// User panel type ID.
 		/// </summary>

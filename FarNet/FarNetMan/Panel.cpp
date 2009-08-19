@@ -242,9 +242,22 @@ int PanelSet::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* p
 
 			// names
 			d.lpwszFileName = NewChars(f->Name);
-			d.lpwszAlternateFileName = NewChars(f->AlternateName);
 			p.Description = NewChars(f->Description);
 			p.Owner = NewChars(f->Owner);
+
+			// alternate name is special
+			if (pp->Info->AutoAlternateNames && opMode == 0)
+			{
+				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
+				Info.FSF->itoa(i, buf, 10);
+				int size = (int)wcslen(buf) + 1;
+				d.lpwszAlternateFileName = new wchar_t[size];
+				memcpy(d.lpwszAlternateFileName, buf, size * sizeof(wchar_t));
+			}
+			else
+			{
+				d.lpwszAlternateFileName = NewChars(f->AlternateName);
+			}
 
 			// other
 			d.dwFileAttributes = (DWORD)f->Attributes;
@@ -397,6 +410,10 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 			// 090411 Data are shown now. Drop this flag to allow normal processing.
 			pp->_skipGettingData = false;
+
+			// 090811 ????
+			if (pp->_voidGettingData)
+				return false;
 
 			if (_reenterOnRedrawing)
 			{
@@ -1761,6 +1778,14 @@ bool FarPluginPanel::IsOpened::get()
 IList<FarFile^>^ FarPluginPanel::Files::get()
 {
 	return _files;
+}
+
+void FarPluginPanel::Files::set(IList<FarFile^>^ value)
+{
+	if (value == nullptr)
+		throw gcnew ArgumentNullException("value");
+
+	_files = value;
 }
 
 bool FarPluginPanel::IsPlugin::get()
