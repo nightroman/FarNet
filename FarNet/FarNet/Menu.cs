@@ -183,7 +183,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Standard FAR menu.
+	/// Standard Far menu.
 	/// It is created by <see cref="IFar.CreateMenu"/>.
 	/// </summary>
 	public interface IMenu : IAnyMenu, IDisposable
@@ -193,7 +193,7 @@ namespace FarNet
 		/// </summary>
 		bool ReverseAutoAssign { get; set; }
 		/// <summary>
-		/// List of <see cref="VKeyCode"/> codes that close the menu. See VK_* in FAR API.
+		/// List of <see cref="VKeyCode"/> codes that close the menu. See VK_* in Far API.
 		/// </summary>
 		IList<int> BreakKeys { get; }
 		/// <summary>
@@ -326,7 +326,7 @@ namespace FarNet
 		/// </summary>
 		int ScreenMargin { get; set; }
 		/// <summary>
-		/// Tells to use usual FAR menu margins.
+		/// Tells to use usual Far menu margins.
 		/// </summary>
 		bool UsualMargins { get; set; }
 		/// <summary>

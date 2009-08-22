@@ -76,7 +76,7 @@ void CopyStringToChars(String^ str, wchar_t* buffer)
 #pragma warning (pop)
 
 //
-// Generic FAR wrappers
+// Generic Far wrappers
 //
 
 void EditorControl_ECTL_DELETEBLOCK()
@@ -190,7 +190,7 @@ bool IsCurrentViewer()
 	return pi.PanelType == PTYPE_QVIEWPANEL;
 }
 
-//! If a viewer does not exist or even it is not current then FAR may crash.
+//! If a viewer does not exist or even it is not current then Far may crash.
 //! Thus, we check the current window type.
 void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe)
 {
@@ -217,7 +217,7 @@ void AssertCurrentViewer()
 }
 
 //
-// Advanced FAR wrappers
+// Advanced Far wrappers
 //
 
 // select and delete all text if any

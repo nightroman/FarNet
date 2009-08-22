@@ -73,7 +73,7 @@ void WINAPI ExitFARW()
 		s_loaded = false;
 		s_unloaded = true;
 
-		// don't try/catch, FAR can't help
+		// don't try/catch, Far can't help
 		Far::Instance->Stop();
 
 #ifdef TRACE_MEMORY

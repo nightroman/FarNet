@@ -148,11 +148,11 @@ namespace FarNet
 		/// </summary>
 		ISelection TrueSelection { get; }
 		/// <summary>
-		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in FAR. 
+		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in Far. 
 		/// Set it before opening.
 		/// </summary>
 		/// <remarks>
-		/// Perhaps this option in not actually used (FAR 1.71.2406).
+		/// Perhaps this option in not actually used (Far 1.71.2406).
 		/// </remarks>
 		bool IsNew { get; set; }
 		/// <summary>
@@ -390,7 +390,7 @@ namespace FarNet
 			_mode = mode;
 		}
 		/// <summary>
-		/// Parameter of FAR EE_REDRAW event, see FAR API, ProcessEditorEvent.
+		/// Parameter of Far EE_REDRAW event, see Far API, ProcessEditorEvent.
 		/// </summary>
 		public int Mode
 		{

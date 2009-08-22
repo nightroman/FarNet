@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/
 
+= 4.1.10 =
+
+*) Fix: Menu: item event handler should not be triggered on a break key.
+
 = 4.1.9 =
 
 *) Fixed not restored parent panel current item on exit from a child panel

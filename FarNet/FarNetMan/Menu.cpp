@@ -234,7 +234,11 @@ bool Menu::Show()
 	if (_selected < 0)
 		return false;
 
-	// event
+	// break key
+	if (_breakKey > 0)
+		return true;
+
+	// trigger event (if not a break key!)
 	MenuItem^ item = (MenuItem^)_items[_selected];
 	if (item->_OnClick)
 	{

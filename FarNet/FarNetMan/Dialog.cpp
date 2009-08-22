@@ -1588,6 +1588,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 				{
 					InitializedEventArgs ea(param1 < 0 ? nullptr : _items[param1]);
 					_Initialized(this, %ea);
+					_Initialized = nullptr;
 					return !ea.Ignore;
 				}
 				break;

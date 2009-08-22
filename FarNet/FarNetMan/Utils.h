@@ -6,7 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 #pragma once
 
 #pragma region String pins and converters
-// STOP: choose a right one, relevant for FAR.
+// STOP: choose a right one, relevant for Far.
 
 // Pins as null, empty or solid string, all as it is.
 #define PIN_NE(PinName, StringVar) pin_ptr<const wchar_t> PinName = PtrToStringChars(StringVar);
@@ -132,7 +132,7 @@ struct SEditorSetPosition : EditorSetPosition
 	}
 };
 
-// FAR API wrappers
+// Far API wrappers
 void EditorControl_ECTL_DELETEBLOCK();
 void EditorControl_ECTL_DELETECHAR();
 void EditorControl_ECTL_DELETESTRING();
@@ -206,7 +206,7 @@ internal:
 		DiskTools = "Disk tools",
 		ConfigTools = "Config tools",
 		FilerPlugins = "Filer plugins",
-		ErrorNoHotKey = "Ensure a FarNet hotkey (F4) in the FAR plugins menu (F11) and restart FAR.",
+		ErrorNoHotKey = "Ensure a FarNet hotkey (F4) in the Far plugins menu (F11) and restart Far.",
 		MenuPrefix = ".NET ";
 };
 }

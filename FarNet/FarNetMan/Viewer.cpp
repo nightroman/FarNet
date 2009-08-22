@@ -84,7 +84,7 @@ void Viewer::Open(OpenMode mode)
 		flags,
 		_CodePage); //?? test window values
 
-	// redraw FAR
+	// redraw Far
 	if (wt == WindowType::Dialog)
 		Far::Instance->Redraw();
 
