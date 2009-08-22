@@ -16,7 +16,7 @@ void PluginSet::AddPlugin(BasePlugin^ plugin)
 		_plugins.Add(plugin);
 }
 
-//! Don't use FAR UI
+//! Don't use Far UI
 void PluginSet::UnloadPlugin(BasePlugin^ plugin)
 {
 	LOG_AUTO(3, "Unload plugin " + plugin);
@@ -39,7 +39,7 @@ void PluginSet::UnloadPlugin(BasePlugin^ plugin)
 	}
 }
 
-//! Don't use FAR UI
+//! Don't use Far UI
 void PluginSet::UnloadPlugins()
 {
 	for(int i  = _plugins.Count; --i >= 0;)
@@ -319,7 +319,7 @@ void PluginSet::ReadCache()
 			catch(Exception^ ex)
 			{
 				throw gcnew OperationCanceledException(
-					"Error on reading the cache. Remove registry FarNet\\<cache> manually and restart FAR.", ex);
+					"Error on reading the cache. Remove registry FarNet\\<cache> manually and restart Far.", ex);
 			}
 
 			// error or outdated info

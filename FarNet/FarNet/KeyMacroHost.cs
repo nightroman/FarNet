@@ -12,7 +12,7 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// Important: your macro changes are all in the storage,
-	/// not in memory where the current macros are loaded by FAR.
+	/// not in memory where the current macros are loaded by Far.
 	/// Thus, when you work on macros you should normally follow this scheme:
 	/// 1) call <see cref="Save"/> (it saves memory macros to the storage);
 	/// 2) do your work on macros (remember, you operate on data in the storage);
@@ -21,20 +21,20 @@ namespace FarNet
 	public interface IKeyMacroHost
 	{
 		/// <summary>
-		/// Posts a macro to FAR.
+		/// Posts a macro to Far.
 		/// Processing is not displayed, and keys are sent to editor plugins.
 		/// </summary>
 		/// <param name="macro">Macro text.</param>
 		void Post(string macro);
 		/// <summary>
-		/// Posts a macro to FAR.
+		/// Posts a macro to Far.
 		/// </summary>
 		/// <param name="macro">Macro text.</param>
 		/// <param name="enableOutput">Enable screen output during macro playback.</param>
 		/// <param name="disablePlugins">Don't send keystrokes to editor plugins.</param>
 		void Post(string macro, bool enableOutput, bool disablePlugins);
 		/// <summary>
-		/// Save all macros from FAR memory into the storage.
+		/// Save all macros from Far memory into the storage.
 		/// </summary>
 		/// <remarks>
 		/// It is recommended to call this before your work on macros.
@@ -60,7 +60,7 @@ namespace FarNet
 		/// <param name="name">Macro name.</param>
 		void Remove(string area, string name);
 		/// <summary>
-		/// Loads all macros from the storage into FAR memory. Previous values are erased.
+		/// Loads all macros from the storage into Far memory. Previous values are erased.
 		/// </summary>
 		/// <remarks>
 		/// It is recommended to call this when you have finished macro changes.

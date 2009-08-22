@@ -93,7 +93,7 @@ static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, PluginPanelItem* pan
 {
 	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
 
-	//? FAR bug: alone dots has UserData = 0 no matter what was written there; so check the dots name
+	//? Far bug: alone dots has UserData = 0 no matter what was written there; so check the dots name
 	if (itemsNumber == 1 && panelItem[0].UserData == 0 && wcscmp(panelItem[0].FindData.lpwszFileName, L"..") == 0)
 		return r;
 
@@ -638,7 +638,7 @@ int PanelSet::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 
 FarPanel^ PanelSet::GetPanel(bool active)
 {
-	// get info and return null (e.g. FAR started with /e or /v)
+	// get info and return null (e.g. Far started with /e or /v)
 	PanelInfo pi;
 	if (!TryPanelInfo((active ? PANEL_ACTIVE : PANEL_PASSIVE), pi))
 		return nullptr;
@@ -821,7 +821,7 @@ void PanelSet::ReplacePluginPanel(FarPluginPanel^ oldPanel, FarPluginPanel^ newP
 		newPanel->_voidGettingData = false;
 	}
 
-	//! switch to new data and redraw, but not always: in some cases it will be done anyway, e.g. by FAR
+	//! switch to new data and redraw, but not always: in some cases it will be done anyway, e.g. by Far
 	if (!_inAsSetDirectory)
 	{
 		newPanel->Update(false);

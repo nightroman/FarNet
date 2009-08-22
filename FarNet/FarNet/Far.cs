@@ -12,16 +12,16 @@ using FarNet.Support;
 namespace FarNet
 {
 	/// <summary>
-	/// Interface of FAR Manager.
+	/// Interface of Far Manager.
 	/// It is exposed for plugin derived classes as property <see cref="BasePlugin.Far"/>.
-	/// It provides access to top level FAR methods and objects or creates new FAR objects like
+	/// It provides access to top level Far methods and objects or creates new Far objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
 	/// Further operations are performed on that objects.
 	/// </summary>
 	public interface IFar
 	{
 		/// <summary>
-		/// Registers a handler invoked from one of FAR menus.
+		/// Registers a handler invoked from one of Far menus.
 		/// </summary>
 		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
 		/// <param name="name">Tool name and also the default menu item name. Recommended to be a unique name in the assembly.</param>
@@ -126,11 +126,11 @@ namespace FarNet
 		///<param name="command">Command with a prefix.</param>
 		void Run(string command);
 		/// <summary>
-		/// Handle of FAR window.
+		/// Handle of Far window.
 		/// </summary>
 		IntPtr HWnd { get; }
 		/// <summary>
-		/// FAR version.
+		/// Far version.
 		/// </summary>
 		Version Version { get; }
 		/// <summary>
@@ -139,7 +139,7 @@ namespace FarNet
 		/// </summary>
 		IInputBox CreateInputBox();
 		/// <summary>
-		/// Creates a new standard FAR menu.
+		/// Creates a new standard Far menu.
 		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
 		/// </summary>
 		IMenu CreateMenu();
@@ -181,23 +181,23 @@ namespace FarNet
 		/// </summary>
 		IViewer CreateViewer();
 		/// <summary>
-		/// Posts keys to the FAR keyboard queue. Processing is not displayed.
+		/// Posts keys to the Far keyboard queue. Processing is not displayed.
 		/// </summary>
 		/// <param name="keys">String of keys.</param>
 		void PostKeys(string keys);
 		/// <summary>
-		/// Posts keys to the FAR keyboard queue.
+		/// Posts keys to the Far keyboard queue.
 		/// </summary>
 		/// <param name="keys">String of keys.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeys(string keys, bool disableOutput);
 		/// <summary>
-		/// Posts literal text to the FAR keyboard queue. Processing is not displayed.
+		/// Posts literal text to the Far keyboard queue. Processing is not displayed.
 		/// </summary>
 		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
 		void PostText(string text);
 		/// <summary>
-		/// Posts literal text to the FAR keyboard queue.
+		/// Posts literal text to the Far keyboard queue.
 		/// </summary>
 		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
@@ -207,13 +207,13 @@ namespace FarNet
 		/// </summary>
 		int[] CreateKeySequence(string keys);
 		/// <summary>
-		/// Posts a sequence of keys to the FAR keyboard queue.
+		/// Posts a sequence of keys to the Far keyboard queue.
 		/// Processing is not displayed.
 		/// </summary>
 		/// <param name="sequence">Sequence of keys.</param>
 		void PostKeySequence(int[] sequence);
 		/// <summary>
-		/// Posts a sequence of keys to the FAR keyboard queue.
+		/// Posts a sequence of keys to the Far keyboard queue.
 		/// </summary>
 		/// <param name="sequence">Sequence of keys.</param>
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
@@ -273,7 +273,7 @@ namespace FarNet
 		/// </summary>
 		IViewer[] Viewers();
 		/// <summary>
-		/// Active panel. It is null if FAR started with /e or /v.
+		/// Active panel. It is null if Far started with /e or /v.
 		/// </summary>
 		/// <remarks>
 		/// If it is a FarNet panel it returns <see cref="IPluginPanel"/>, you can keep this, but remember its state may change.
@@ -281,7 +281,7 @@ namespace FarNet
 		/// </remarks>
 		IPanel Panel { get; }
 		/// <summary>
-		/// Passive panel. It is null if FAR started with /e or /v.
+		/// Passive panel. It is null if Far started with /e or /v.
 		/// </summary>
 		/// <remarks>
 		/// If it is a FarNet panel it returns <see cref="IPluginPanel"/>, you can keep this, but remember its state may change.
@@ -295,7 +295,7 @@ namespace FarNet
 		/// If a plugin is called from the command line (including user menu (F2)
 		/// then command line properties and methods may not work correctly; in
 		/// this case consider to call a plugin operation from a plugin menu.
-		/// Starting from FAR 1.71.2192 you can set the entire command line text
+		/// Starting from Far 1.71.2192 you can set the entire command line text
 		/// if you call a plugin from the command line (but not from a user menu).
 		/// </remarks>
 		ILine CommandLine { get; }
@@ -307,7 +307,7 @@ namespace FarNet
 		/// <summary>
 		/// Copies the current user screen buffer to console screen
 		/// (which is displayed when the panels are switched off).
-		/// FAR 1.71.2186.
+		/// Far 1.71.2186.
 		/// </summary>
 		void GetUserScreen();
 		/// <summary>
@@ -371,7 +371,7 @@ namespace FarNet
 		/// <param name="text">Text.</param>
 		void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 		/// <summary>
-		/// Writes a string at the specified position using FAR palette colors.
+		/// Writes a string at the specified position using Far palette colors.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="paletteColor">Palette color.</param>
@@ -435,7 +435,7 @@ namespace FarNet
 		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Registry root key of FAR settings taking into account a user (command line parameter /u).
+		/// Registry root key of Far settings taking into account a user (command line parameter /u).
 		/// </summary>
 		string RootFar { get; }
 		/// <summary>
@@ -460,28 +460,28 @@ namespace FarNet
 		/// <param name="newValue">New value to be set.</param>
 		void SetPluginValue(string pluginName, string valueName, object newValue);
 		/// <summary>
-		/// Count of open FAR windows.
+		/// Count of open Far windows.
 		/// </summary>
 		/// <remarks>
 		/// There is at least one window (panels, editor or viewer).
 		/// </remarks>
 		int WindowCount { get; }
 		/// <summary>
-		/// Allows to switch to a specific FAR Manager window.
+		/// Allows to switch to a specific Far Manager window.
 		/// </summary>
 		/// <param name="index">Window index. See <see cref="WindowCount"/>.</param>
 		/// <remarks>
-		/// The switching will not occur untill <see cref="Commit"/> is called or FAR receives control.
+		/// The switching will not occur untill <see cref="Commit"/> is called or Far receives control.
 		/// </remarks>
 		void SetCurrentWindow(int index);
 		/// <summary>
-		/// "Commits" the results of the last operation with FAR windows
+		/// "Commits" the results of the last operation with Far windows
 		/// (e.g. <see cref="SetCurrentWindow"/>).
 		/// </summary>
 		/// <returns>true on success.</returns>
 		bool Commit();
 		/// <summary>
-		/// Gets information about a FAR Manager window.
+		/// Gets information about a Far Manager window.
 		/// </summary>
 		/// <param name="index">Window index; -1 ~ current. See <see cref="WindowCount"/>.</param>
 		/// <param name="full">
@@ -518,15 +518,15 @@ namespace FarNet
 		/// <param name="showPushCommand">Show "Push" command.</param>
 		void ShowPanelMenu(bool showPushCommand);
 		/// <summary>
-		/// Posts a handler to be invoked when user code has finished and FAR gets control.
+		/// Posts a handler to be invoked when user code has finished and Far gets control.
 		/// </summary>
 		/// <param name="handler">Step handler.</param>
 		/// <remarks>
-		/// Many FAR operations are executed only when FAR gets control, i.e. when user code has finished.
+		/// Many Far operations are executed only when Far gets control, i.e. when user code has finished.
 		/// Thus, normally you can not performs several such operations together. This method may help.
 		/// <para>
 		/// This mechanism work only when plugins menu is available ([F11]), because it is used internally for stepping.
-		/// Ensure any FarNet hotkey in the FAR plugins menu. Use [F11] for plugins menu, [F4] to set a hotkey there.
+		/// Ensure any FarNet hotkey in the Far plugins menu. Use [F11] for plugins menu, [F4] to set a hotkey there.
 		/// </para>
 		/// <para>
 		/// If a step handler starts modal UI without exiting (e.g. dialog) then use <see cref="PostStepAfterStep"/>
@@ -561,11 +561,11 @@ namespace FarNet
 		/// </summary>
 		FarMacroState MacroState { get; }
 		/// <summary>
-		/// Redraws all windows. FAR 1.71.2315
+		/// Redraws all windows. Far 1.71.2315
 		/// </summary>
 		/// <remarks>
 		/// Example: you open an editor (assume it is modal) from a dialog;
-		/// when you exit the editor you have to call this, otherwise only the dialog area is refreshed by FAR.
+		/// when you exit the editor you have to call this, otherwise only the dialog area is refreshed by Far.
 		/// </remarks>
 		void Redraw();
 		/// <summary>
@@ -603,12 +603,12 @@ namespace FarNet
 		/// </summary>
 		IKeyMacroHost KeyMacro { get; }
 		/// <summary>
-		/// Gets background color of FAR palette.
+		/// Gets background color of Far palette.
 		/// </summary>
 		/// <param name="paletteColor">Palette color.</param>
 		ConsoleColor GetPaletteBackground(PaletteColor paletteColor);
 		/// <summary>
-		/// Gets foreground color of FAR palette.
+		/// Gets foreground color of Far palette.
 		/// </summary>
 		/// <param name="paletteColor">Palette color.</param>
 		ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
@@ -626,11 +626,11 @@ namespace FarNet
 	{
 		/// <summary>
 		/// Assume path is Info.ModuleName and show the topic from the help file of the calling plugin (it is FarNet).
-		/// If topic begins with a colon ':', the topic from the main FAR help file is shown and path is ignored.
+		/// If topic begins with a colon ':', the topic from the main Far help file is shown and path is ignored.
 		/// </summary>
 		None = 0x0,
 		/// <summary>
-		/// Path is ignored and the topic from the main FAR help file is shown.
+		/// Path is ignored and the topic from the main Far help file is shown.
 		/// In this case you do not need to start the topic with a colon ':'.
 		/// </summary>
 		Far = 1 << 0,
@@ -709,7 +709,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// FAR window types.
+	/// Far window types.
 	/// </summary>
 	public enum WindowType
 	{
@@ -744,7 +744,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Contains information about one FAR window. See <see cref="IFar.GetWindowInfo"/>.
+	/// Contains information about one Far window. See <see cref="IFar.GetWindowInfo"/>.
 	/// </summary>
 	public interface IWindowInfo
 	{
@@ -761,7 +761,7 @@ namespace FarNet
 		/// </summary>
 		bool Current { get; }
 		/// <summary>
-		/// Name of the window type, depends on the current FAR language.
+		/// Name of the window type, depends on the current Far language.
 		/// </summary>
 		string TypeName { get; }
 		/// <summary>

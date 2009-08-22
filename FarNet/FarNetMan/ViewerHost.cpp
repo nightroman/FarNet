@@ -37,7 +37,7 @@ Viewer^ ViewerHost::GetCurrentViewer()
 		return nullptr;
 
 	// get viewer by ID
-	//! It may be not yet registered: CtrlQ panel started with FAR or CtrlQ of folder (there was no VE_READ event)
+	//! It may be not yet registered: CtrlQ panel started with Far or CtrlQ of folder (there was no VE_READ event)
 	Viewer^ viewer;
 	if (!_viewers.TryGetValue(vi.ViewerID, viewer))
 	{
