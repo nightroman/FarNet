@@ -1,7 +1,0 @@
-.Language=English,English (English)
-.PluginContents=Far.NET Plugins
-
-@Contents
-$#Far.NET Plugins#
-
-    ~PowerShellFar~@<..\..\Plugins.NET\PowerShellFar\>@
