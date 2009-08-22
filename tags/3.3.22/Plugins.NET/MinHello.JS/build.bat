@@ -1,1 +1,0 @@
-..\Build-JS MinHello.js
