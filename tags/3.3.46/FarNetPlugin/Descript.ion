@@ -1,5 +1,0 @@
-Descript.ion File descriptions
-plugin.hpp Plugin API for FAR Manager
-fmt.hpp Archive Support API for FAR Manager and MultiArc plugin
-farcolor.hpp Colors Index for FAR Manager
-farkeys.hpp Internal keys
