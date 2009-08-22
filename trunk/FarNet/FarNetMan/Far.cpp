@@ -41,7 +41,7 @@ void Far::Start()
 	PluginSet::LoadPlugins();
 }
 
-//! Don't use FAR UI
+//! Don't use Far UI
 void Far::Stop()
 {
 	PluginSet::UnloadPlugins();
@@ -1037,7 +1037,7 @@ String^ Far::Input(String^ prompt, String^ history, String^ title, String^ text)
 	return ib.Show() ? ib.Text : nullptr;
 }
 
-//::FAR Window managenent
+//::Far Window managenent
 
 ref class FarWindowInfo : public IWindowInfo
 {
@@ -1184,7 +1184,7 @@ void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue
 	}
 }
 
-//::FAR callbacks
+//::Far callbacks
 
 bool Far::AsConfigure(int itemIndex)
 {

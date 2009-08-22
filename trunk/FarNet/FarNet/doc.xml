@@ -87,7 +87,7 @@ If you need more input box options, use the interface directly.
 </pp>
 <pp name="PluginFileMask">
 <summary>
-File(s) mask, see FAR API help topic [File masks]; format "include|exclude" is also supported.
+File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
 This value is only default, actual mask may be changed by a user, so that
 if the plugin uses this mask itself then override <c>set</c> too.
 </summary>

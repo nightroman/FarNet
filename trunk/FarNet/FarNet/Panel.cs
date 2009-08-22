@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace FarNet
 {
 	/// <summary>
-	/// Panel interface (FAR or plugin panel). Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
+	/// Panel interface (Far or plugin panel). Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 	/// </summary>
 	public interface IPanel
 	{
@@ -23,7 +23,7 @@ namespace FarNet
 		bool IsPlugin { get; }
 		/// <summary>
 		/// Is the panel visible?
-		/// If you set it it takes effect only when FAR gets control.
+		/// If you set it it takes effect only when Far gets control.
 		/// </summary>
 		bool IsVisible { get; set; }
 		/// <summary>
@@ -40,7 +40,7 @@ namespace FarNet
 		/// On opening a file panel an exception is thrown if a path is not valid or does not exist.
 		/// </para>
 		/// <para>
-		/// You may call <see cref="Redraw()"/> after changing the path so that FAR shows changes immediately.
+		/// You may call <see cref="Redraw()"/> after changing the path so that Far shows changes immediately.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="GoToName"/>
@@ -166,11 +166,11 @@ namespace FarNet
 		/// </summary>
 		/// <param name="path">
 		/// Name of the directory that will be set in the panel after closing the plugin (or {null|empty}).
-		/// If the path doesn't exist FAR shows an error.
+		/// If the path doesn't exist Far shows an error.
 		/// </param>
 		void Close(string path);
 		/// <summary>
-		/// Is this a left panel? FAR 1.71.2348
+		/// Is this a left panel? Far 1.71.2348
 		/// </summary>
 		bool IsLeft { get; }
 		/// <summary>
@@ -420,11 +420,11 @@ namespace FarNet
 		/// </summary>
 		bool UseAttrHighlighting { get; set; }
 		/// <summary>
-		/// Folders may be selected regardless of FAR settings.
+		/// Folders may be selected regardless of Far settings.
 		/// </summary>
 		bool RawSelection { get; set; }
 		/// <summary>
-		/// Turns on the standard FAR file processing mechanism if requested operation is not supported by the plugin.
+		/// Turns on the standard Far file processing mechanism if requested operation is not supported by the plugin.
 		/// If this flag is set, the items on the plugin panel should be real file names.
 		/// </summary>
 		bool RealNames { get; set; }
@@ -437,7 +437,7 @@ namespace FarNet
 		/// </summary>
 		bool RightAligned { get; set; }
 		/// <summary>
-		/// Show file names using original case regardless of FAR settings.
+		/// Show file names using original case regardless of Far settings.
 		/// </summary>
 		bool PreserveCase { get; set; }
 		/// <summary>
@@ -446,19 +446,19 @@ namespace FarNet
 		/// </summary>
 		bool CompareFatTime { get; set; }
 		/// <summary>
-		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function.
+		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
 		/// </summary>
 		bool ExternalGet { get; set; }
 		/// <summary>
-		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function.
+		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
 		/// </summary>
 		bool ExternalPut { get; set; }
 		/// <summary>
-		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function.
+		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
 		/// </summary>
 		bool ExternalDelete { get; set; }
 		/// <summary>
-		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal FAR function.
+		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
 		/// </summary>
 		bool ExternalMakeDirectory { get; set; }
 		/// <summary>
@@ -466,7 +466,7 @@ namespace FarNet
 		/// </summary>
 		string HostFile { get; set; }
 		/// <summary>
-		/// Plugin current directory. If it is empty, FAR closes the plugin if ENTER is pressed on ".." item.
+		/// Plugin current directory. If it is empty, Far closes the plugin if ENTER is pressed on ".." item.
 		/// </summary>
 		string CurrentDirectory { get; set; }
 		/// <summary>
@@ -482,31 +482,31 @@ namespace FarNet
 		/// </summary>
 		DataItem[] InfoItems { get; set; }
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarMain(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarCtrl(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarAlt(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarShift(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarCtrlShift(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarAltShift(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for FAR defaults.
+		/// 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarCtrlAlt(string[] labels);
 		/// <summary>
@@ -628,7 +628,7 @@ namespace FarNet
 		Edit = 0x0008,
 		/// <summary>
 		/// All files in host file of file based plugin should be processed.
-		/// This flag is set when executing Shift-F2 and Shift-F3 FAR commands outside of host file.
+		/// This flag is set when executing Shift-F2 and Shift-F3 Far commands outside of host file.
 		/// Passed to plugin functions files list also contains all necessary information,
 		/// so plugin can either ignore this flag or use it to speed up processing.
 		/// </summary>
@@ -908,7 +908,7 @@ namespace FarNet
 		/// <param name="oldPanel">Old panel to be replaced.</param>
 		void Open(IPluginPanel oldPanel);
 		/// <summary>
-		/// Pushes the panel to the stack and shows a standard FAR panel.
+		/// Pushes the panel to the stack and shows a standard Far panel.
 		/// </summary>
 		void Push();
 		/// <summary>
@@ -973,11 +973,12 @@ namespace FarNet
 		/// </summary>
 		IPluginPanelInfo Info { get; }
 		/// <summary>
-		/// Panel items. For performance and simplicity the list is not protected and it should be used properly.
+		/// Panel items. For performance and simplicity the list is not protected and it should be used carefully.
 		/// Normally it is filled on startup and then can be changed by <see cref="GettingData"/> handler.
-		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately.
+		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately;
+		/// otherwise not coherent panel and list data may cause unpredictable problems.
 		/// </summary>
-		IList<FarFile> Files { get; set; } //????
+		IList<FarFile> Files { get; set; }
 		/// <summary>
 		/// User panel type ID.
 		/// </summary>
@@ -1022,7 +1023,7 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// Bug [_090321_165608].
-		/// Unfortunately FAR triggers this also on plugin commands from command line
+		/// Unfortunately Far triggers this also on plugin commands from command line
 		/// even if a new panel is not going to be opened and the current one closed.
 		/// </remarks>
 		event EventHandler<PanelEventArgs> Closing;
@@ -1034,14 +1035,14 @@ namespace FarNet
 		/// <seealso cref="IdledHandler"/>
 		event EventHandler Idled;
 		/// <summary>
-		/// Raised on executing a command from the FAR command line.
+		/// Raised on executing a command from the Far command line.
 		/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
 		/// </summary>
 		event EventHandler<ExecutingEventArgs> Executing;
 		/// <summary>
 		/// Raised when Ctrl-Break is pressed.
 		/// Processing of this event is performed in separate thread,
-		/// so be careful when performing console input or output and don't use FAR service functions.
+		/// so be careful when performing console input or output and don't use Far service functions.
 		/// </summary>
 		event EventHandler CtrlBreakPressed;
 		/// <summary>

@@ -143,7 +143,7 @@ namespace FarNet
 	/// Internal key codes. Use <see cref="KeyMode"/> to make key combinations. [farkeys.hpp]
 	/// </summary>
 	/// <remarks>
-	/// Key names and codes are FAR key macro names and codes.
+	/// Key names and codes are Far key macro names and codes.
 	/// <para>
 	/// This PowerShellFar code gets names and codes from BS to 131086 (Oem* and Spec* are excluded):
 	/// </para>

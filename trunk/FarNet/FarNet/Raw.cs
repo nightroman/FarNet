@@ -159,5 +159,7 @@ namespace FarNet.Support
 		void SetBufferContents(Point origin, BufferCell[,] contents);
 		///
 		void SetBufferContents(Place rectangle, BufferCell fill);
+		///
+		int GetOEMCP();
 	}
 }

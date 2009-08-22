@@ -242,7 +242,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Change selection in a radio button group when focus is moved.
 		/// Radio buttons with this flag set are also drawn without parentheses around the selection mark
-		/// (example: FAR color selection dialog).
+		/// (example: Far color selection dialog).
 		/// </summary>
 		bool MoveSelect { get; set; }
 		/// <summary>
@@ -439,7 +439,7 @@ namespace FarNet.Forms
 	}
 
 	/// <summary>
-	/// FAR dialog.
+	/// Far dialog.
 	/// It is created by <see cref="IFar.CreateDialog"/>.
 	/// </summary>
 	/// <remarks>

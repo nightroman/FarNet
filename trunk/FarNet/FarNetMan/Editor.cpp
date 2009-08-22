@@ -105,12 +105,12 @@ void Editor::Open(OpenMode mode)
 		nPos,
 		_CodePage); //?? test window values, make window settable
 
-	// redraw FAR
+	// redraw Far
 	if (wt == WindowType::Dialog)
 		Far::Instance->Redraw();
 
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
-	//! Using FAR diagnostics fires false errors, e.g.:
+	//! Using Far diagnostics fires false errors, e.g.:
 	//! Test-CallStack-.ps1 \ s \ type: exit \ enter
 	if (_id == -1)
 	{

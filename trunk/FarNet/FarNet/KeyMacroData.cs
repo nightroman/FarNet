@@ -31,7 +31,7 @@ namespace FarNet
 		/// </summary>
 		public bool DisablePlugins { get; set; }
 		/// <summary>
-		/// Execute macro command after FAR startup. This flag is only for macros in the Shell area.
+		/// Execute macro command after Far startup. This flag is only for macros in the Shell area.
 		/// </summary>
 		public bool RunAfterFarStart { get; set; }
 		/// <summary>

@@ -45,7 +45,7 @@ namespace FarNet
 
 		/// <summary>
 		/// Override this to handle plugin shutdown.
-		/// NOTE: don't call FAR UI, it is not working if FAR is exiting.
+		/// NOTE: don't call Far UI, it is not working if Far is exiting.
 		/// </summary>
 		public virtual void Disconnect()
 		{ }
@@ -148,7 +148,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class of a FarNet tool represented by a single menu command in one or more FAR menus.
+	/// Base class of a FarNet tool represented by a single menu command in one or more Far menus.
 	/// </summary>
 	/// <remarks>
 	/// It is enough to implement <see cref="Invoke"/> method only.

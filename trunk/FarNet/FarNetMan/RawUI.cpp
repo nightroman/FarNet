@@ -247,4 +247,9 @@ void RawUI::SetBufferContents(Place rectangle, BufferCell fill)
 		delete[] buf;
 	}
 }
+
+int RawUI::GetOEMCP()
+{
+	return ::GetOEMCP();
+}
 }

@@ -16,5 +16,6 @@ public:
 	virtual void ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill);
 	virtual void SetBufferContents(Point origin, array<BufferCell,2>^ contents);
 	virtual void SetBufferContents(Place rectangle, BufferCell fill);
+	virtual int GetOEMCP();
 };
 }
