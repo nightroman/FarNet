@@ -89,7 +89,7 @@ public:
 
 #pragma region Kit
 
-static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, PluginPanelItem* panelItem, int itemsNumber)
+static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, List<String^>^ names, PluginPanelItem* panelItem, int itemsNumber)
 {
 	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
 
@@ -101,7 +101,11 @@ static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, PluginPanelItem* pan
 	{
 		int fi = (int)(INT_PTR)panelItem[i].UserData;
 		if (fi >= 0)
+		{
 			r->Add(files[fi]);
+			if (names)
+				names->Add(gcnew String(panelItem[i].FindData.lpwszAlternateFileName));
+		}
 	}
 	return r;
 }
@@ -129,7 +133,7 @@ int PanelSet::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int item
 	if (!pp->_DeletingFiles)
 		return false;
 
-	IList<FarFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
+	IList<FarFile^>^ files = ItemsToFiles(pp->Files, nullptr, panelItem, itemsNumber);
 	FilesEventArgs e(files, (OperationModes)opMode, false);
 	pp->_DeletingFiles(pp, %e);
 
@@ -170,8 +174,9 @@ int PanelSet::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 	if (!pp->_GettingFiles)
 		return 0;
 
-	List<FarFile^>^ files = ItemsToFiles(pp->Files, panelItem, itemsNumber);
-	GettingFilesEventArgs e(files, (OperationModes)opMode, move != 0, gcnew String((*destPath)));
+	List<String^>^ names = pp->Info->AutoAlternateNames ? gcnew List<String^> : nullptr;
+	List<FarFile^>^ files = ItemsToFiles(pp->Files, names, panelItem, itemsNumber);
+	GettingFilesEventArgs e(files, names, (OperationModes)opMode, move != 0, gcnew String((*destPath)));
 	pp->_GettingFiles(pp, %e);
 
 	return e.Ignore ? false : true;
@@ -411,7 +416,7 @@ int PanelSet::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			// 090411 Data are shown now. Drop this flag to allow normal processing.
 			pp->_skipGettingData = false;
 
-			// 090811 ????
+			// 090811 Internal work is in progress, do nothing
 			if (pp->_voidGettingData)
 				return false;
 
@@ -599,7 +604,7 @@ int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 	List<FarFile^>^ files;
 	if (plugin2)
 	{
-		files = ItemsToFiles(plugin2->Files, panelItem, itemsNumber);
+		files = ItemsToFiles(plugin2->Files, nullptr, panelItem, itemsNumber);
 	}
 	else
 	{
@@ -1876,9 +1881,11 @@ FarFile^ FarPluginPanel::GetFile(int index, FileType type)
 	AutoPluginPanelItem item(Handle, index, type);
 	int fi = (int)(INT_PTR)item.Get().UserData;
 	if (fi >= 0)
+		// plugin file
 		return _files[fi];
 	else
-		return nullptr;
+		// 090823 dots, not null
+		return ItemToFile(item.Get());
 }
 
 String^ FarPluginPanel::Path::get()

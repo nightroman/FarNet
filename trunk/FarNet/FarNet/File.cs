@@ -235,7 +235,7 @@ namespace FarNet
 			if (info == null)
 				throw new ArgumentNullException("info");
 
-			_Name = fullName ? info.FullName : info.Name;
+			Name = fullName ? info.FullName : info.Name;
 			CreationTime = info.CreationTime;
 			LastAccessTime = info.LastAccessTime;
 			LastWriteTime = info.LastWriteTime;
@@ -247,18 +247,7 @@ namespace FarNet
 		/// <summary>
 		/// File name.
 		/// </summary>
-		public override string Name
-		{
-			get { return _Name; }
-			set
-			{
-				if (value == null)
-					throw new ArgumentNullException("value");
-
-				_Name = value;
-			}
-		}
-		string _Name = string.Empty;
+		public override string Name { get; set; }
 		/// <summary>
 		/// Description.
 		/// </summary>

@@ -160,6 +160,6 @@ namespace FarNet.Support
 		///
 		void SetBufferContents(Place rectangle, BufferCell fill);
 		///
-		int GetOEMCP();
+		int OemCP { get; }
 	}
 }

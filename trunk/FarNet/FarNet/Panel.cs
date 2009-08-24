@@ -388,12 +388,20 @@ namespace FarNet
 		/// </summary>
 		PanelSortMode StartSortMode { get; set; }
 		/// <summary>
-		/// Tells to generate alternate names automatically.
+		/// Tells to generate and use alternate names internally.
 		/// </summary>
 		/// <remarks>
 		/// Alternate names are used by Far for example for Quick View (CtrlQ) temp file names.
 		/// This is important because plugin files may have any names, including prohibited by
 		/// the file system; in this case alternate names help.
+		/// <para>
+		/// If you set this flag then alternate names will be generated and used internally
+		/// and <see cref="FarFile.AlternateName"/> of your panel files will not be used at all
+		/// (derived from <see cref="FarFile"/> classes do not have to implement this property setter).
+		/// But this convenience is not completely free: on <see cref="IPluginPanel.GettingFiles"/> event
+		/// you have to use alternate names from additional list <see cref="GettingFilesEventArgs.Names"/>,
+		/// not from the files.
+		/// </para>
 		/// </remarks>
 		bool AutoAlternateNames { get; set; }
 		/// <summary>
@@ -837,21 +845,34 @@ namespace FarNet
 	public class GettingFilesEventArgs : FilesEventArgs
 	{
 		string _destination;
-		/// <param name="files">Files to delete.</param>
+		IList<string> _names;
+
+		/// <param name="files">Files to process.</param>
+		/// <param name="names">Alternate names.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		/// <param name="move">Files are moved.</param>
 		/// <param name="destination">Destination path to put files.</param>
-		public GettingFilesEventArgs(IList<FarFile> files, OperationModes mode, bool move, string destination)
+		public GettingFilesEventArgs(IList<FarFile> files, IList<string> names, OperationModes mode, bool move, string destination)
 			: base(files, mode, move)
 		{
 			_destination = destination;
+			_names = names;
 		}
+		
 		/// <summary>
-		/// Destination path to put files.
+		/// Destination directory path.
 		/// </summary>
 		public string Destination
 		{
 			get { return _destination; }
+		}
+		
+		/// <summary>
+		/// Alternate destination names (if <see cref="IPluginPanelInfo.AutoAlternateNames"/> is set) or null.
+		/// </summary>
+		public IList<string> Names
+		{
+			get { return _names; }
 		}
 	}
 
