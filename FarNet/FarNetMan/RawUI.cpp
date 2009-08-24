@@ -248,7 +248,7 @@ void RawUI::SetBufferContents(Place rectangle, BufferCell fill)
 	}
 }
 
-int RawUI::GetOEMCP()
+int RawUI::OemCP::get()
 {
 	return ::GetOEMCP();
 }

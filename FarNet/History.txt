@@ -1,5 +1,12 @@
 http://code.google.com/p/farnet/
 
+= 4.1.11 =
+
+*) Fix: IPluginPanel.ShownList used to return null instead of a "dots" file.
+
+*) Added property GettingFilesEventArgs.Names needed in rare cases when auto
+alternate names are used.
+
 = 4.1.10 =
 
 *) Fix: Menu: item event handler should not be triggered on a break key.
