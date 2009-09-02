@@ -6,6 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using FarNet.Forms;
 
 namespace FarNet
@@ -148,7 +149,7 @@ namespace FarNet
 		/// </summary>
 		ISelection TrueSelection { get; }
 		/// <summary>
-		/// Open a new (non-existing) file in the editor, similar to pressing Shift-F4 in Far. 
+		/// Tells to open a new (non-existing) file in the editor, similar to pressing Shift-F4 in Far. 
 		/// Set it before opening.
 		/// </summary>
 		/// <remarks>
@@ -156,39 +157,46 @@ namespace FarNet
 		/// </remarks>
 		bool IsNew { get; set; }
 		/// <summary>
-		/// Insert text.
+		/// Inserts a string.
 		/// The text is processed in the same way as it it had been entered from the keyboard.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="text">The text. Supported EOL: CR, LF, CR+LF.</param>
 		void Insert(string text);
 		/// <summary>
-		/// Redraw editor window. Normally it should be called when changes are completed.
+		/// Inserts a character.
+		/// The text is processed in the same way as it it had been entered from the keyboard.
+		/// Editor must be current.
+		/// </summary>
+		/// <param name="text">A character.</param>
+		void InsertChar(char text);
+		/// <summary>
+		/// Redraws editor window. Normally it should be called when changes are completed.
 		/// Editor must be current.
 		/// </summary>
 		void Redraw();
 		/// <summary>
-		/// Delete a character under <see cref="Cursor"/>.
+		/// Deletes a character under <see cref="Cursor"/>.
 		/// Editor must be current.
 		/// </summary>
 		void DeleteChar();
 		/// <summary>
-		/// Delete a line under <see cref="Cursor"/>.
+		/// Deletes a line under <see cref="Cursor"/>.
 		/// Editor must be current.
 		/// </summary>
 		void DeleteLine();
 		/// <summary>
-		/// Close the editor.
+		/// Closes the editor.
 		/// Editor must be current.
 		/// </summary>
 		void Close();
 		/// <summary>
-		/// Save the file being edited. Exception on failure.
+		/// Saves the file being edited. Exception on failure.
 		/// Editor must be current.
 		/// </summary>
 		void Save();
 		/// <summary>
-		/// Save the file being edited to <paramref name="fileName"/>. Exception on failure.
+		/// Saves the file being edited to <paramref name="fileName"/>. Exception on failure.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="fileName">File name to save to.</param>
@@ -269,7 +277,7 @@ namespace FarNet
 		/// </remarks>
 		void Begin();
 		/// <summary>
-		/// It has to be called after any <see cref="Begin"/> when editor lines processing is done.
+		/// Call it after any <see cref="Begin"/> when editor lines processing is done.
 		/// </summary>
 		void End();
 		/// <summary>
@@ -287,7 +295,7 @@ namespace FarNet
 		/// </summary>
 		ICollection<TextFrame> Bookmarks();
 		/// <summary>
-		/// Go to a new cursor position or set it for opening.
+		/// Goes to a new cursor position or set it for opening.
 		/// </summary>
 		/// <param name="pos">Position.</param>
 		/// <param name="line">Line.</param>
@@ -295,21 +303,21 @@ namespace FarNet
 		/// <seealso cref="Frame"/>
 		void GoTo(int pos, int line);
 		/// <summary>
-		/// Go to a line or set it for opening.
+		/// Goes to a line or set it for opening.
 		/// </summary>
 		/// <param name="line">Line.</param>
 		/// <seealso cref="Cursor"/>
 		/// <seealso cref="Frame"/>
 		void GoToLine(int line);
 		/// <summary>
-		/// Go to a position in the current line.
+		/// Goes to a position in the current line.
 		/// </summary>
 		/// <param name="pos">Position.</param>
 		/// <seealso cref="Cursor"/>
 		/// <seealso cref="Frame"/>
 		void GoToPos(int pos);
 		/// <summary>
-		/// Go to the end of text.
+		/// Goes to the end of text.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="addLine">Add an empty line if the last is not empty.</param>
@@ -376,6 +384,11 @@ namespace FarNet
 		/// Invokes redo.
 		/// </summary>
 		void Redo();
+		/// <summary>
+		/// Creates a writer.
+		/// </summary>
+		/// <returns></returns>
+		TextWriter CreateWriter();
 	}
 
 	/// <summary>

@@ -666,10 +666,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MenuItem.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Message.h"
 				>
 			</File>

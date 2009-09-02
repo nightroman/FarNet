@@ -92,7 +92,7 @@ bool FarSubsetForm::Show()
 	{
 		for(int index1 = 0; index1 < _Items->Length; ++index1)
 		{
-			IMenuItem^ item;
+			FarItem^ item;
 			if (Array::IndexOf(_Indexes, index1) < 0)
 				item = _ListBox1->Add(DoItemToString(_Items[index1]));
 			else
@@ -116,7 +116,7 @@ bool FarSubsetForm::Show()
 
 	// collect and reset selected indexes
 	List<int> r = gcnew List<int>;
-	for each(IMenuItem^ item in _ListBox2->Items)
+	for each(FarItem^ item in _ListBox2->Items)
 	{
 		int index = (int)item->Data;
 		if (index < 0)
@@ -133,7 +133,7 @@ void FarSubsetForm::DoAdd()
 	int selected1 = _ListBox1->Selected;
 	if (selected1 >= 0)
 	{
-		IMenuItem^ item = _ListBox1->Items[selected1];
+		FarItem^ item = _ListBox1->Items[selected1];
 		_ListBox1->Items->RemoveAt(selected1);
 		int selected2 = _ListBox2->Selected;
 		_ListBox2->Items->Insert(selected2, item);
@@ -146,7 +146,7 @@ void FarSubsetForm::DoRemove()
 	int selected2 = _ListBox2->Selected;
 	if (selected2 >= 0 && selected2 < _ListBox2->Items->Count - 1)
 	{
-		IMenuItem^ item = _ListBox2->Items[selected2];
+		FarItem^ item = _ListBox2->Items[selected2];
 		int index2 = (int)item->Data;
 		_ListBox2->Items->RemoveAt(selected2);
 		for(int i = 0; i < _ListBox1->Items->Count; ++i)
@@ -167,8 +167,8 @@ void FarSubsetForm::DoUp()
 	int selected2 = _ListBox2->Selected;
 	if (selected2 > 0 && selected2 < _ListBox2->Items->Count - 1)
 	{
-		IMenuItem^ item = _ListBox2->Items[selected2];
-		IMenuItem^ prev = _ListBox2->Items[selected2 - 1];
+		FarItem^ item = _ListBox2->Items[selected2];
+		FarItem^ prev = _ListBox2->Items[selected2 - 1];
 		_ListBox2->Items[selected2] = prev;
 		_ListBox2->Items[selected2 - 1] = item;
 		_ListBox2->Selected = selected2 - 1;
@@ -180,8 +180,8 @@ void FarSubsetForm::DoDown()
 	int selected2 = _ListBox2->Selected;
 	if (selected2 >= 0 && selected2 < _ListBox2->Items->Count - 2)
 	{
-		IMenuItem^ item = _ListBox2->Items[selected2];
-		IMenuItem^ next = _ListBox2->Items[selected2 + 1];
+		FarItem^ item = _ListBox2->Items[selected2];
+		FarItem^ next = _ListBox2->Items[selected2 + 1];
 		_ListBox2->Items[selected2] = next;
 		_ListBox2->Items[selected2 + 1] = item;
 		_ListBox2->Selected = selected2 + 1;

@@ -63,6 +63,9 @@ namespace FarNet.Forms
 	/// Double line or single line box control.
 	/// It is created and added to a dialog by <see cref="IDialog.AddBox"/>.
 	/// </summary>
+	/// <remarks>
+	/// If this item is added first to the dialog then its <see cref="IControl.Text"/> is copied into the Far console title.
+	/// </remarks>
 	public interface IBox : IControl
 	{
 		/// <summary>
@@ -328,10 +331,9 @@ namespace FarNet.Forms
 		/// <param name="text">Item text.</param>
 		/// <remarks>
 		/// This is the simplest way to setup items before opening a dialog.
-		/// After opening it is often better to create an item by <see cref="IFar.CreateMenuItem"/>,
-		/// set its properties and then add it to <see cref="Items"/>.
+		/// After opening it is better to create and add items directly to <see cref="Items"/>.
 		/// </remarks>
-		IMenuItem Add(string text);
+		FarItem Add(string text);
 		/// <summary>
 		/// The selected item index.
 		/// </summary>
@@ -374,7 +376,7 @@ namespace FarNet.Forms
 		/// </summary>
 		void DetachItems();
 		/// <include file='doc.xml' path='docs/pp[@name="BaseListItems"]/*'/>
-		IList<IMenuItem> Items { get; }
+		IList<FarItem> Items { get; }
 		/// <summary>
 		/// STOP: this is workaround, use it only if <see cref="Items"/>.<b>Clear()</b> fails. Bug [_090208_042536]
 		/// </summary>

@@ -37,6 +37,7 @@ void Far::StartFar()
 
 void Far::Start()
 {
+	_hMutex = CreateMutex(NULL, FALSE, NULL);
 	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
 	PluginSet::LoadPlugins();
 }
@@ -44,6 +45,7 @@ void Far::Start()
 //! Don't use Far UI
 void Far::Stop()
 {
+	CloseHandle(_hMutex);
 	PluginSet::UnloadPlugins();
 	_instance = nullptr;
 
@@ -379,11 +381,6 @@ System::Version^ Far::Version::get()
 IMenu^ Far::CreateMenu()
 {
 	return gcnew Menu;
-}
-
-IMenuItem^ Far::CreateMenuItem()
-{
-	return gcnew MenuItem;
 }
 
 IListMenu^ Far::CreateListMenu()
@@ -1383,7 +1380,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 		FarPluginPanel^ pp = dynamic_cast<FarPluginPanel^>(Panel);
 		if (pp)
 		{
-			IMenuItem^ mi;
+			FarItem^ mi;
 
 			mi = m.Add("Push current panel");
 			mi->Data = pp;
@@ -1406,7 +1403,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 		for(int i = PanelSet::_stack.Count; --i >= 0;)
 		{
 			FarPluginPanel^ pp = PanelSet::_stack[i];
-			IMenuItem^ mi = m.Add(JoinText(pp->_info.Title, pp->_info.CurrentDirectory));
+			FarItem^ mi = m.Add(JoinText(pp->_info.Title, pp->_info.CurrentDirectory));
 			mi->Data = pp;
 		}
 	}
@@ -1588,7 +1585,7 @@ void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^
 				continue;
 			if (it == selected)
 				m.Selected = m.Items->Count;
-			IMenuItem^ mi = m.Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Key);
+			FarItem^ mi = m.Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Key);
 			mi->Data = it;
 		}
 
@@ -1603,7 +1600,7 @@ void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^
 		if (!m.Show())
 			return;
 
-		IMenuItem^ mi = m.Items[m.Selected];
+		FarItem^ mi = m.Items[m.Selected];
 		selected = (ToolPluginInfo^)mi->Data;
 
 		InputBox ib;
@@ -1635,13 +1632,13 @@ void Far::OnConfigCommand()
 
 	for each(CommandPluginInfo^ it in _registeredCommand)
 	{
-		IMenuItem^ mi = m.Add(it->Prefix->PadRight(4) + " " + it->Key);
+		FarItem^ mi = m.Add(it->Prefix->PadRight(4) + " " + it->Key);
 		mi->Data = it;
 	}
 
 	while(m.Show())
 	{
-		IMenuItem^ mi = m.Items[m.Selected];
+		FarItem^ mi = m.Items[m.Selected];
 		CommandPluginInfo^ it = (CommandPluginInfo^)mi->Data;
 
 		InputBox ib;
@@ -1690,13 +1687,13 @@ void Far::OnConfigEditor()
 
 	for each(EditorPluginInfo^ it in _registeredEditor)
 	{
-		IMenuItem^ mi = m.Add(it->Key);
+		FarItem^ mi = m.Add(it->Key);
 		mi->Data = it;
 	}
 
 	while(m.Show())
 	{
-		IMenuItem^ mi = m.Items[m.Selected];
+		FarItem^ mi = m.Items[m.Selected];
 		EditorPluginInfo^ it = (EditorPluginInfo^)mi->Data;
 
 		InputBox ib;
@@ -1732,13 +1729,13 @@ void Far::OnConfigFiler()
 
 	for each(FilerPluginInfo^ it in _registeredFiler)
 	{
-		IMenuItem^ mi = m.Add(it->Key);
+		FarItem^ mi = m.Add(it->Key);
 		mi->Data = it;
 	}
 
 	while(m.Show())
 	{
-		IMenuItem^ mi = m.Items[m.Selected];
+		FarItem^ mi = m.Items[m.Selected];
 		FilerPluginInfo^ it = (FilerPluginInfo^)mi->Data;
 
 		InputBox ib;
@@ -1860,26 +1857,55 @@ IRawUI^ Far::RawUI::get()
 
 void Far::AsProcessSynchroEvent(int type, void* /*param*/)
 {
-	if (type == SE_COMMONSYNCHRO)
+	if (type != SE_COMMONSYNCHRO)
+		return;
+	
+	WaitForSingleObject(_hMutex, INFINITE);
+	try
 	{
-		if (_syncHandler)
+		//! handlers can be added during calls, don't use 'for each'
+		while(_syncHandlers.Count)
 		{
-			try
-			{
-				_syncHandler(nullptr, nullptr);
-			}
-			finally
-			{
-				_syncHandler = nullptr;
-			}
+			EventHandler^ handler = _syncHandlers[0];
+			_syncHandlers.RemoveAt(0);
+			
+			LOG_AUTO(3, String::Format("AsProcessSynchroEvent: {0}", Log::Format(handler->Method)));
+
+			handler(nullptr, nullptr);
 		}
+	}
+	finally
+	{
+		_syncHandlers.Clear();
+
+		ReleaseMutex(_hMutex);
 	}
 }
 
 void Far::PostJob(EventHandler^ handler)
 {
-	_syncHandler = handler;
-	Info.AdvControl(Info.ModuleNumber, ACTL_SYNCHRO, 0);
+	if (!handler)
+		throw gcnew ArgumentNullException("handler");
+
+	WaitForSingleObject(_hMutex, INFINITE);
+	try
+	{
+		if (_syncHandlers.IndexOf(handler) >= 0)
+		{
+			LOG_INFO(String::Format("PostJob: skip already posted {0}", Log::Format(handler->Method)));
+			return;
+		}
+
+		LOG_INFO(String::Format("PostJob: call ACTL_SYNCHRO and post {0}", Log::Format(handler->Method)));
+
+		_syncHandlers.Add(handler);
+		if (_syncHandlers.Count == 1)
+			Info.AdvControl(Info.ModuleNumber, ACTL_SYNCHRO, 0);
+	}
+	finally
+	{
+		ReleaseMutex(_hMutex);
+	}
 }
 
 }

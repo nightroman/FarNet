@@ -144,10 +144,6 @@ namespace FarNet
 		/// </summary>
 		IMenu CreateMenu();
 		/// <summary>
-		/// Creates a new menu or list item.
-		/// </summary>
-		IMenuItem CreateMenuItem();
-		/// <summary>
 		/// Creates a new menu implemented with <see cref="IListBox"/>.
 		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
 		/// </summary>
@@ -555,6 +551,15 @@ namespace FarNet
 		/// Posts a job that will be called by the Far main thread when Far gets control.
 		/// </summary>
 		/// <param name="handler">Job handler to invoked.</param>
+		/// <remarks>
+		/// It is mostly designed for background job calls. Normally other threads are not allowed to call FarNet.
+		/// Violation of this rule may lead to crashes and unpredictable results. This methods is thread safe and it
+		/// allowes to post a delayed job that will be called from the main thread as soon as Far gets input control.
+		/// Thus, this posted job can use FarNet as usual.
+		/// <para>
+		/// This method should be used very carefully and only when it is really needed.
+		/// </para>
+		/// </remarks>
 		void PostJob(EventHandler handler);
 		/// <summary>
 		/// Current macro state.

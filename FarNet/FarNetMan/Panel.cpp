@@ -1185,7 +1185,7 @@ OpenPluginInfo& FarPluginPanelInfo::Make()
 	m->StartPanelMode = int(_StartViewMode) + 0x30;
 
 	m->CurDir = NewChars(_CurrentDirectory);
-	m->Format = NewChars(_Format);
+	m->Format = NewChars(_FormatName);
 	m->HostFile = NewChars(_HostFile);
 	m->PanelTitle = NewChars(_Title);
 
@@ -1581,12 +1581,17 @@ void FarPanel::Close(String^ path)
 
 void FarPanel::GoToName(String^ name)
 {
+	GoToName(name, false);
+}
+bool FarPanel::GoToName(String^ name, bool fail)
+{
 	if (!name)
 		throw gcnew ArgumentNullException("name");
 
+	//$RVK 090825
 	// well, empty names are technically possible, but it is weird, ignore this
-	if (name->Length == 0)
-		return;
+	//if (name->Length == 0 && !strict)
+	//	return;
 
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
@@ -1598,9 +1603,14 @@ void FarPanel::GoToName(String^ name)
 		if (Info.FSF->LStricmp(pin, item.Get().FindData.lpwszFileName) == 0 || Info.FSF->LStricmp(pin, item.Get().FindData.lpwszAlternateFileName) == 0)
 		{
 			Redraw(i, 0);
-			break;
+			return true;
 		}
 	}
+
+	if (fail)
+		throw gcnew FileNotFoundException("File is not found: " + name);
+
+	return false;
 }
 
 void FarPanel::GoToPath(String^ path)

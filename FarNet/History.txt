@@ -1,5 +1,37 @@
 http://code.google.com/p/farnet/
 
+= 4.2.0 =
+
+----- Major changes -----
+
+4.1.0 introduced classes FarFile and SetFile instead of interface IFile. This
+approach looks good. So now 4.2.0 in the same way introduces classes FarItem
+and SetItem instead of interface IMenuItem.
+
+Yet another change is replacement of a menu item event OnClick (with ability to
+add multiple handlers) with a single handler Click. Practice shows that a
+single handler is enough and less confusing.
+
+The changes are breaking, indeed, but it should be really easy to update your
+code, please follow the simple steps below:
+
+In your code:
+1) replace 'IMenuItem' with 'FarItem'
+2) replace 'Far.CreateMenuItem()' with 'new SetItem()'
+3) replace adding 'OnClick += ...' with setting 'Click = ...'
+
+----- Other changes -----
+
+*) IMenu: added still missed property ChangeConsoleTitle.
+
+*) IFar: improved PostJob; it collects all posted handlers (excluding dupes);
+then they are all invoked in the order they were posted.
+
+*) IPanel: new method GoToName(string, bool) in addition to GoToName(string).
+New one returns succeess flag or may optionally throw if a name is not found.
+
+*) IPluginPanelInfo: renamed too general name Format into FormatName.
+
 = 4.1.11 =
 
 *) Fix: IPluginPanel.ShownList used to return null instead of a "dots" file.

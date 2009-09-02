@@ -209,7 +209,7 @@ void ListMenu::MakeFilters()
 
 			// fill
 			int i = -1;
-			for each(IMenuItem^ mi in Items)
+			for each(FarItem^ mi in Items)
 			{
 				++i;
 				if (_re1->IsMatch(mi->Text))
@@ -256,7 +256,7 @@ void ListMenu::MakeFilters()
 	// case: not yet filtered
 	_ii = gcnew List<int>;
 	int i = -1;
-	for each(IMenuItem^ mi in Items)
+	for each(FarItem^ mi in Items)
 	{
 		++i;
 		if (_re2->IsMatch(mi->Text))
@@ -473,7 +473,7 @@ bool ListMenu::Show()
 		}
 		else
 		{
-			for each(IMenuItem^ mi in _items)
+			for each(FarItem^ mi in _items)
 				if (mi->Text->Length > w)
 					w = mi->Text->Length;
 		}
@@ -545,15 +545,17 @@ bool ListMenu::Show()
 		if (_ii && _selected >= 0)
 			_selected = _ii[_selected];
 
-		// trigger OnClick if a key was not handled yet
+		// call click if a key was not handled yet
 		if (_selected >= 0 && !_isKeyHandled)
 		{
-			MenuItem^ item = (MenuItem^)_items[_selected];
-			MenuEventArgs e(item);
-			if (item->_OnClick)
-				item->_OnClick((Sender ? Sender : this), %e);
-			if (e.Ignore || e.Restart)
-				continue;
+			FarItem^ item = _items[_selected];
+			if (item->Click)
+			{
+				MenuEventArgs e(item);
+				item->Click((Sender ? Sender : this), %e);
+				if (e.Ignore || e.Restart)
+					continue;
+			}
 		}
 
 		//! [Enter] on empty gives -1

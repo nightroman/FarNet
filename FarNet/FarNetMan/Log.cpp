@@ -65,7 +65,7 @@ String^ Log::Format(MethodInfo^ method)
 
 String^ Log::FormatException(Exception^ e)
 {
-	//?? Regex is used to fix bad PS V1 strings; check V2
+	//?? _090901_055134 Regex is used to fix bad PS V1 strings; check V2
 	Regex re("[\r\n]+");
 	String^ info = re.Replace(e->Message, "\r\n") + "\r\n";
 
