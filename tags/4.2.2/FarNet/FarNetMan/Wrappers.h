@@ -1,0 +1,65 @@
+/*
+FarNet plugin for Far Manager
+Copyright (c) 2005-2009 FarNet Team
+*/
+
+#pragma once
+
+class State
+{
+public:
+	static bool GetPanelInfo;
+};
+
+template<class Type>
+class SetState
+{
+public:
+	SetState(Type& value1, Type value2) : _value(&value1), _saved(value1)
+	{
+		*_value = value2;
+	}
+	~SetState()
+	{
+		*_value = _saved;
+	}
+private:
+	Type* _value;
+	Type _saved;
+};
+
+class AutoEditorInfo : public EditorInfo
+{
+public:
+	AutoEditorInfo(bool safe = false);
+	void Update();
+private:
+	void operator=(const AutoEditorInfo&) {}
+};
+
+#pragma push_macro("FCTL_GETPANELITEM")
+#pragma push_macro("FCTL_GETSELECTEDPANELITEM")
+#undef FCTL_GETPANELITEM
+#undef FCTL_GETSELECTEDPANELITEM
+enum FileType
+{
+	ShownFile = FCTL_GETPANELITEM,
+	SelectedFile = FCTL_GETSELECTEDPANELITEM
+};
+#pragma pop_macro("FCTL_GETPANELITEM")
+#pragma pop_macro("FCTL_GETSELECTEDPANELITEM")
+
+class AutoPluginPanelItem
+{
+public:
+	AutoPluginPanelItem(HANDLE handle, int index, FileType type);
+	~AutoPluginPanelItem();
+	const PluginPanelItem& Get() const { return *m; }
+private:
+	PluginPanelItem* m;
+	char mBuffer[1024];
+	void operator=(const AutoPluginPanelItem&) {}
+};
+
+void GetPanelInfo(HANDLE handle, PanelInfo& info);
+bool TryPanelInfo(HANDLE handle, PanelInfo& info);
