@@ -139,6 +139,7 @@ void EditorControl_ECTL_DELETESTRING();
 void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm);
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int no);
 void EditorControl_ECTL_INSERTSTRING(bool indent);
+void EditorControl_ECTL_INSERTTEXT(Char text, int overtype);
 void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype);
 void EditorControl_ECTL_SELECT(EditorSelect& es);
 void EditorControl_ECTL_SETPARAM(const EditorSetParameter esp);

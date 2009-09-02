@@ -30,12 +30,12 @@ void ListItemCollection::ClearItems()
 			throw gcnew OperationCanceledException;
 	}
 
-	Collection<IMenuItem^>::ClearItems();
+	Collection<FarItem^>::ClearItems();
 }
 
 // Bug [_090208_040000] combos crash in here after Clear().
 // Listbox used to crash, too, fixed in Far.
-void ListItemCollection::InsertItem(int index, IMenuItem^ item)
+void ListItemCollection::InsertItem(int index, FarItem^ item)
 {
 	if (index < 0 || index > Count)
 		throw gcnew ArgumentOutOfRangeException("index");
@@ -52,7 +52,7 @@ void ListItemCollection::InsertItem(int index, IMenuItem^ item)
 			throw gcnew OperationCanceledException;
 	}
 
-	Collection<IMenuItem^>::InsertItem(index, item);
+	Collection<FarItem^>::InsertItem(index, item);
 }
 
 void ListItemCollection::RemoveItem(int index)
@@ -69,10 +69,10 @@ void ListItemCollection::RemoveItem(int index)
 			throw gcnew OperationCanceledException;
 	}
 
-	Collection<IMenuItem^>::RemoveItem(index);
+	Collection<FarItem^>::RemoveItem(index);
 }
 
-void ListItemCollection::SetItem(int index, IMenuItem^ item)
+void ListItemCollection::SetItem(int index, FarItem^ item)
 {
 	RemoveItem(index);
 	InsertItem(index, item);

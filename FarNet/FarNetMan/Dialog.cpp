@@ -800,20 +800,20 @@ void FarBaseList::Selected::set(int value)
 	}
 }
 
-IList<IMenuItem^>^ FarBaseList::Items::get()
+IList<FarItem^>^ FarBaseList::Items::get()
 {
 	return _Items;
 }
 
-IMenuItem^ FarBaseList::Add(String^ text)
+FarItem^ FarBaseList::Add(String^ text)
 {
-	MenuItem^ r = gcnew MenuItem;
+	FarItem^ r = gcnew SetItem;
 	r->Text = text;
 	_Items->Add(r);
 	return r;
 }
 
-void FarBaseList::InitFarListItem(FarListItem& i2, IMenuItem^ i1)
+void FarBaseList::InitFarListItem(FarListItem& i2, FarItem^ i1)
 {
 	i2.Text = NewChars(i1->Text);
 	i2.Flags = i2.Reserved[0] = i2.Reserved[1] = i2.Reserved[2] = 0;
@@ -829,7 +829,7 @@ void FarBaseList::InitFarListItem(FarListItem& i2, IMenuItem^ i1)
 		i2.Flags |= LIF_SEPARATOR;
 }
 
-void FarBaseList::InitFarListItemShort(FarListItem& i2, IMenuItem^ i1)
+void FarBaseList::InitFarListItemShort(FarListItem& i2, FarItem^ i1)
 {
 	i2.Flags = i2.Reserved[0] = i2.Reserved[1] = i2.Reserved[2] = 0;
 	if (i1->Checked)
@@ -855,7 +855,7 @@ void FarBaseList::Init(FarDialogItem& item, int type)
 		_pFarList->Items = new FarListItem[_ii->Count];
 
 		for(int i = _ii->Count; --i >= 0;)
-			InitFarListItem(_pFarList->Items[i], (MenuItem^)_Items[_ii[i]]);
+			InitFarListItem(_pFarList->Items[i], _Items[_ii[i]]);
 	}
 	else
 	{
@@ -863,7 +863,7 @@ void FarBaseList::Init(FarDialogItem& item, int type)
 		_pFarList->Items = new FarListItem[_Items->Count];
 
 		for(int i = _Items->Count; --i >= 0;)
-			InitFarListItem(_pFarList->Items[i], (MenuItem^)_Items[i]);
+			InitFarListItem(_pFarList->Items[i], _Items[i]);
 	}
 
 	// select an item (same as menu!)

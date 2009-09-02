@@ -17,7 +17,7 @@ AnyMenu::AnyMenu()
 , _y(-1)
 , _selected(-1)
 {
-	_items = gcnew List<IMenuItem^>;
+	_items = gcnew List<FarItem^>;
 }
 
 int AnyMenu::X::get()
@@ -47,7 +47,7 @@ Object^ AnyMenu::SelectedData::get()
 	return _items[_selected]->Data;
 }
 
-IList<IMenuItem^>^ AnyMenu::Items::get()
+IList<FarItem^>^ AnyMenu::Items::get()
 {
 	return _items;
 }
@@ -72,16 +72,16 @@ int AnyMenu::BreakKey::get()
 	return _breakKey;
 }
 
-IMenuItem^ AnyMenu::Add(String^ text)
+FarItem^ AnyMenu::Add(String^ text)
 {
 	return Add(text, nullptr);
 }
 
-IMenuItem^ AnyMenu::Add(String^ text, EventHandler^ handler)
+FarItem^ AnyMenu::Add(String^ text, EventHandler^ handler)
 {
-	MenuItem^ r = gcnew MenuItem;
+	FarItem^ r = gcnew SetItem;
 	r->Text = text;
-	r->OnClick += handler;
+	r->Click = handler;
 	Items->Add(r);
 	return r;
 }

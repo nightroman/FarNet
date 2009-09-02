@@ -17,15 +17,15 @@ namespace FarNet
 	public class MenuEventArgs : EventArgs
 	{
 		/// <param name="item">Current item.</param>
-		public MenuEventArgs(IMenuItem item)
+		public MenuEventArgs(FarItem item)
 		{
 			_Item = item;
 		}
-		IMenuItem _Item;
+		FarItem _Item;
 		/// <summary>
 		/// Current item.
 		/// </summary>
-		public IMenuItem Item
+		public FarItem Item
 		{
 			get { return _Item; }
 		}
@@ -48,44 +48,83 @@ namespace FarNet
 	/// <seealso cref="IListMenu"/>
 	/// <seealso cref="Forms.IListBox"/>
 	/// <seealso cref="Forms.IComboBox"/>
-	public interface IMenuItem
+	public abstract class FarItem
 	{
-		/// <summary>
-		/// Item is checked.
-		/// </summary>
-		bool Checked { get; set; }
-		/// <summary>
-		/// Item is disabled. It cannot be selected.
-		/// </summary>
-		bool Disabled { get; set; }
-		/// <summary>
-		/// Item is shown, but cannot be selected.
-		/// </summary>
-		bool Grayed { get; set; }
-		/// <summary>
-		/// Item is hidden. It cannot be selected.
-		/// </summary>
-		bool Hidden { get; set; }
-		/// <summary>
-		/// Item is a separator. <see cref="Text"/>, if any, is shown center aligned.
-		/// </summary>
-		bool IsSeparator { get; set; }
 		/// <summary>
 		/// Item text.
 		/// </summary>
-		string Text { get; set; }
+		public abstract string Text { get; set; }
 		/// <summary>
-		/// If this item is not disabled then the flags disables it depending on where a menu is called from.
+		/// Item is checked.
 		/// </summary>
-		ToolOptions From { get; set; }
+		public virtual bool Checked { get { return false; } set { throw new NotImplementedException(); } }
 		/// <summary>
-		/// Event raised when a menu item is clicked.
+		/// Item is disabled. It cannot be selected.
 		/// </summary>
-		event EventHandler OnClick;
+		public virtual bool Disabled { get { return false; } set { throw new NotImplementedException(); } }
+		/// <summary>
+		/// Item is shown, but cannot be selected.
+		/// </summary>
+		public virtual bool Grayed { get { return false; } set { throw new NotImplementedException(); } }
+		/// <summary>
+		/// Item is hidden. It cannot be selected.
+		/// </summary>
+		public virtual bool Hidden { get { return false; } set { throw new NotImplementedException(); } }
+		/// <summary>
+		/// Item is a separator. <see cref="Text"/>, if any, is shown center aligned.
+		/// </summary>
+		public virtual bool IsSeparator { get { return false; } set { throw new NotImplementedException(); } }
 		/// <summary>
 		/// Any user data attached to the item.
 		/// </summary>
-		object Data { get; set; }
+		public virtual object Data { get { return null; } set { throw new NotImplementedException(); } }
+		/// <summary>
+		/// Called when a menu item is clicked.
+		/// </summary>
+		public virtual EventHandler Click { get { return null; } set { throw new NotImplementedException(); } }
+	}
+
+	/// <summary>
+	/// Item of a menu, a list menu or one of list dialog controls.
+	/// </summary>
+	/// <seealso cref="IMenu"/>
+	/// <seealso cref="IListMenu"/>
+	/// <seealso cref="Forms.IListBox"/>
+	/// <seealso cref="Forms.IComboBox"/>
+	public class SetItem : FarItem
+	{
+		/// <summary>
+		/// Item text.
+		/// </summary>
+		public override string Text { get; set; }
+		/// <summary>
+		/// Item is checked.
+		/// </summary>
+		public override bool Checked { get; set; }
+		/// <summary>
+		/// Item is disabled. It cannot be selected.
+		/// </summary>
+		public override bool Disabled { get; set; }
+		/// <summary>
+		/// Item is shown, but cannot be selected.
+		/// </summary>
+		public override bool Grayed { get; set; }
+		/// <summary>
+		/// Item is hidden. It cannot be selected.
+		/// </summary>
+		public override bool Hidden { get; set; }
+		/// <summary>
+		/// Item is a separator. <see cref="Text"/>, if any, is shown center aligned.
+		/// </summary>
+		public override bool IsSeparator { get; set; }
+		/// <summary>
+		/// Any user data attached to the item.
+		/// </summary>
+		public override object Data { get; set; }
+		/// <summary>
+		/// Called when a menu item is clicked.
+		/// </summary>
+		public override EventHandler Click { get; set; }
 	}
 
 	/// <summary>
@@ -117,7 +156,7 @@ namespace FarNet
 		/// <summary>
 		/// Menu items.
 		/// </summary>
-		IList<IMenuItem> Items { get; }
+		IList<FarItem> Items { get; }
 		/// <summary>
 		/// Before and after <see cref="Show"/>:
 		/// before: selects the item by this index;
@@ -131,9 +170,9 @@ namespace FarNet
 		/// <summary>
 		/// Shows the menu.
 		/// </summary>
-		/// <returns>true if a menu item is selected.</returns>
+		/// <returns>True if a menu item is selected.</returns>
 		/// <remarks>
-		/// If a menu item is selected then its <see cref="IMenuItem.OnClick"/> is fired.
+		/// If a menu item is selected then its <see cref="FarItem.Click"/> is called.
 		/// Index of the selected item is stored in <see cref="Selected"/>.
 		/// (if the menu is shown again it is used for the current item).
 		/// </remarks>
@@ -145,10 +184,10 @@ namespace FarNet
 		/// </summary>
 		bool SelectLast { get; set; }
 		/// <summary>
-		/// Sender passed in <see cref="IMenuItem.OnClick"/> event.
+		/// Sender passed in <see cref="FarItem.Click"/>.
 		/// </summary>
 		/// <remarks>
-		/// By default <see cref="IMenuItem"/> is a sender. You can provide another sender passed in.
+		/// By default <see cref="FarItem"/> is a sender. You can provide another sender passed in.
 		/// </remarks>
 		object Sender { get; set; }
 		/// <summary>
@@ -172,14 +211,14 @@ namespace FarNet
 		/// </summary>
 		/// <param name="text">Item text.</param>
 		/// <returns>New menu item. You may set more properties.</returns>
-		IMenuItem Add(string text);
+		FarItem Add(string text);
 		/// <summary>
 		/// Adds a new item to <see cref="Items"/> and returns it.
 		/// </summary>
 		/// <param name="text">Item text.</param>
-		/// <param name="onClick"><see cref="IMenuItem.OnClick"/>.</param>
+		/// <param name="click">Handler to be called on <see cref="FarItem.Click"/>.</param>
 		/// <returns>New menu item. You may set more properties.</returns>
-		IMenuItem Add(string text, EventHandler onClick);
+		FarItem Add(string text, EventHandler click);
 	}
 
 	/// <summary>
@@ -192,6 +231,10 @@ namespace FarNet
 		/// Assign hotkeys automatically from bottom.
 		/// </summary>
 		bool ReverseAutoAssign { get; set; }
+		/// <summary>
+		/// Tells to set the console title to the menu title.
+		/// </summary>
+		bool ChangeConsoleTitle { get; set; }
 		/// <summary>
 		/// List of <see cref="VKeyCode"/> codes that close the menu. See VK_* in Far API.
 		/// </summary>
@@ -206,7 +249,7 @@ namespace FarNet
 		/// in this particular case you don't even have to call <see cref="Unlock"/>).
 		/// <para>
 		/// Don't change the menu or item set before <see cref="Unlock"/>.
-		/// You still can change item properties except <see cref="IMenuItem.Text"/>.
+		/// You still can change item properties except <see cref="FarItem.Text"/>.
 		/// </para>
 		/// </remarks>
 		void Lock();

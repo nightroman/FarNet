@@ -12,6 +12,7 @@ ref class Menu : public AnyMenu, public IMenu
 {
 public:
 	virtual property bool ReverseAutoAssign;
+	virtual property bool ChangeConsoleTitle;
 public:
 	~Menu();
 	!Menu();
@@ -26,7 +27,6 @@ private:
 	int Flags();
 	int* CreateBreakKeys();
 	void ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* title, const wchar_t* bottom, const wchar_t* help);
-	static ToolOptions From();
 private:
 	FarMenuItemEx* _createdItems;
 	int* _createdBreaks;

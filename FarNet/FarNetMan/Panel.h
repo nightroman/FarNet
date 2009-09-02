@@ -36,6 +36,7 @@ public:
 	virtual property Point Frame { Point get(); }
 	virtual property String^ Path { String^ get(); void set(String^ value); }
 public:
+	virtual bool GoToName(String^ name, bool fail);
 	virtual void Close();
 	virtual void Close(String^ path);
 	virtual void GoToName(String^ name);
@@ -121,7 +122,7 @@ public:
 	FPPI_PROP(PanelSortMode, StartSortMode, m->StartSortMode = int(_StartSortMode));
 	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
 	FPPI_TEXT(CurrentDirectory, CurDir);
-	FPPI_TEXT(Format, Format);
+	FPPI_TEXT(FormatName, Format);
 	FPPI_TEXT(HostFile, HostFile);
 	FPPI_TEXT(Title, PanelTitle);
 public:
