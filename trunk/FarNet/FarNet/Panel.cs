@@ -4,6 +4,7 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 
 namespace FarNet
@@ -43,7 +44,7 @@ namespace FarNet
 		/// You may call <see cref="Redraw()"/> after changing the path so that Far shows changes immediately.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="GoToName"/>
+		/// <seealso cref="GoToName(string)"/>
 		/// <seealso cref="GoToPath"/>
 		string Path { get; set; }
 		/// <summary>
@@ -174,7 +175,7 @@ namespace FarNet
 		/// </summary>
 		bool IsLeft { get; }
 		/// <summary>
-		/// Sets the specified item current by name.
+		/// Sets the specified item current by name, if it exists.
 		/// </summary>
 		/// <param name="name">Name or alternative name of an item to be set current.</param>
 		/// <remarks>
@@ -183,7 +184,19 @@ namespace FarNet
 		/// </remarks>
 		/// <seealso cref="Path"/>
 		/// <seealso cref="GoToPath"/>
+		/// <seealso cref="GoToName(string, bool)"/>
 		void GoToName(string name);
+		/// <summary>
+		/// Sets the specified item current by name and optionally fails if it is not shown.
+		/// </summary>
+		/// <returns>True if a file is found.</returns>
+		/// <param name="name">Name or alternative name of a file to be set current.</param>
+		/// <param name="fail">Fail mode: to throw if a file is not shown.</param>
+		/// <exception cref="FileNotFoundException">Fail mode: a file is not shown.</exception>
+		/// <seealso cref="Path"/>
+		/// <seealso cref="GoToName(string)"/>
+		/// <seealso cref="GoToPath"/>
+		bool GoToName(string name, bool fail);
 		/// <summary>
 		/// Opens the parent directory of a specified item and sets the item current in the panel.
 		/// </summary>
@@ -196,7 +209,7 @@ namespace FarNet
 		/// the current.
 		/// </remarks>
 		/// <seealso cref="Path"/>
-		/// <seealso cref="GoToName"/>
+		/// <seealso cref="GoToName(string)"/>
 		void GoToPath(string path);
 		/// <summary>
 		/// Selects shown items by their indexes. See <see cref="Redraw()"/>.
@@ -480,7 +493,7 @@ namespace FarNet
 		/// <summary>
 		/// Plugin's format name. This is shown in the file copy dialog.
 		/// </summary>
-		string Format { get; set; }
+		string FormatName { get; set; }
 		/// <summary>
 		/// Plugin panel header.
 		/// </summary>

@@ -129,6 +129,19 @@ void EditorControl_ECTL_INSERTSTRING(bool indent)
 	Info.EditorControl(ECTL_INSERTSTRING, &value);
 }
 
+void EditorControl_ECTL_INSERTTEXT(Char text, int overtype)
+{
+	if (overtype > 0)
+		Edit_SetOvertype(false);
+
+	wchar_t buf[2] = { text, 0 };
+
+	Info.EditorControl(ECTL_INSERTTEXT, (wchar_t*)buf);
+
+	if (overtype > 0)
+		Edit_SetOvertype(true);
+}
+
 void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype)
 {
 	if (overtype > 0)

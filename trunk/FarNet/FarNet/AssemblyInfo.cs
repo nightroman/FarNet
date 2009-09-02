@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.1.11.0")]
+[assembly: AssemblyVersion("4.2.0.0")]
 [assembly: AssemblyTitle("FarNet - .NET interfaces for Far Manager")]
 [assembly: AssemblyDescription("FarNet - .NET interfaces for Far Manager")]
 [assembly: AssemblyConfiguration("")]

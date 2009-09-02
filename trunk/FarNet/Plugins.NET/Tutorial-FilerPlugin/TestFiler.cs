@@ -3,10 +3,10 @@ using System.IO;
 using System.Text;
 using FarNet;
 
-/// Test filer for *.test files with "TEST" header
+// Test filer for *.test files with "TEST" header
 public class TestFiler : FilerPlugin
 {
-	/// Shows data in a message box and lines in a panel
+	// Shows data in a message box and lines in a panel
 	public override void Invoke(object sender, FilerEventArgs e)
 	{
 		// read and check the header from sent data
@@ -33,7 +33,7 @@ public class TestFiler : FilerPlugin
 		p.Open();
 	}
 
-	/// Default mask
+	// Default mask
 	public override string Mask
 	{
 		get { return "*.test"; }

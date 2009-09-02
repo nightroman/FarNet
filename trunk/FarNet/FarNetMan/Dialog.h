@@ -169,10 +169,10 @@ public:
 	virtual property bool NoFocus { bool get(); void set(bool value); }
 	virtual property bool SelectLast;
 	virtual property bool WrapCursor { bool get(); void set(bool value); }
-	virtual property IList<IMenuItem^>^ Items { IList<IMenuItem^>^ get(); }
+	virtual property IList<FarItem^>^ Items { IList<FarItem^>^ get(); }
 	virtual property int Selected { int get(); void set(int value); }
 public:
-	virtual IMenuItem^ Add(String^ text);
+	virtual FarItem^ Add(String^ text);
 	virtual void AttachItems();
 	virtual void DetachItems();
 	virtual void Clear() { _Items->Clear(); } // Bug [_090208_042536]
@@ -183,10 +183,10 @@ internal:
 	virtual void Init(FarDialogItem& item, int type) override;
 	virtual void Free() override;
 	void FreeItems();
-	static void InitFarListItem(FarListItem& i2, IMenuItem^ i1);
-	static void InitFarListItemShort(FarListItem& i2, IMenuItem^ i1);
+	static void InitFarListItem(FarListItem& i2, FarItem^ i1);
+	static void InitFarListItemShort(FarListItem& i2, FarItem^ i1);
 internal:
-	IList<IMenuItem^>^ _Items;
+	IList<FarItem^>^ _Items;
 	List<int>^ _ii;
 private:
 	FarList* _pFarList;

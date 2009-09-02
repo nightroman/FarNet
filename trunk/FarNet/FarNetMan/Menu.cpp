@@ -10,8 +10,7 @@ Copyright (c) 2005-2009 FarNet Team
 namespace FarNet
 {;
 Menu::Menu()
-{
-}
+{}
 
 // Dispose of managed resources.
 // Call C++ finalizer to clean up unmanaged resources.
@@ -54,19 +53,17 @@ int Menu::Flags()
 		r |= FMENU_AUTOHIGHLIGHT;
 	if (ReverseAutoAssign)
 		r |= FMENU_REVERSEAUTOHIGHLIGHT;
+	if (ChangeConsoleTitle)
+		r |= FMENU_CHANGECONSOLETITLE;
 	return r;
 }
 
 void Menu::Lock()
 {
+	// locked?
 	if (_createdItems)
-	{
-		DeleteItems(_createdItems);
-		delete _createdBreaks;
-		delete _help;
-		delete _title;
-		delete _bottom;
-	}
+		return;
+
 	_createdItems = CreateItems();
 	_createdBreaks = CreateBreakKeys();
 	
@@ -77,26 +74,27 @@ void Menu::Lock()
 
 void Menu::Unlock()
 {
-	if (_createdItems)
-	{
-		DeleteItems(_createdItems);
-		delete _createdBreaks;
-		delete _help;
-		delete _title;
-		delete _bottom;
-		_createdItems = 0;
-		_createdBreaks = 0;
-		_help = 0;
-		_title = 0;
-		_bottom = 0;
-	}
+	// not locked?
+	if (!_createdItems)
+		return;
+
+	DeleteItems(_createdItems);
+	delete _createdBreaks;
+	delete _help;
+	delete _title;
+	delete _bottom;
+	_createdItems = 0;
+	_createdBreaks = 0;
+	_help = 0;
+	_title = 0;
+	_bottom = 0;
 }
 
 FarMenuItemEx* Menu::CreateItems()
 {
 	int n = 0;
 	FarMenuItemEx* r = new struct FarMenuItemEx[_items->Count];
-	for each(IMenuItem^ item1 in _items)
+	for each(FarItem^ item1 in _items)
 	{
 		FarMenuItemEx& item2 = r[n];
 		item2.Text = NewChars(item1->Text);
@@ -117,24 +115,6 @@ void Menu::DeleteItems(FarMenuItemEx* items)
 	}
 }
 
-ToolOptions Menu::From()
-{
-	switch(Far::Instance->WindowType)
-	{
-	case WindowType::Panels:
-		return ToolOptions::Panels;
-	case WindowType::Editor:
-		return ToolOptions::Editor;
-	case WindowType::Viewer:
-		return ToolOptions::Viewer;
-	case WindowType::Dialog:
-		return ToolOptions::Dialog;
-	default:
-		// not a window value
-		return ToolOptions::Config;
-	}
-}
-
 void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* title, const wchar_t* bottom, const wchar_t* help)
 {
 	// validate X, Y to avoid crashes and out of screen
@@ -152,34 +132,24 @@ void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* titl
 	}
 
 	// update flags
-	ToolOptions from = ToolOptions::None;
 	for(int i = _items->Count; --i >= 0;)
 	{
-		MenuItem^ item1 = (MenuItem^)_items[i];
+		// source and destination
+		FarItem^ item1 = _items[i];
 		FarMenuItemEx& item2 = items[i];
 
+		// common flags
 		item2.Flags = 0;
 		if (item1->Checked)
 			item2.Flags |= MIF_CHECKED;
+		if (item1->Disabled)
+			item2.Flags |= MIF_DISABLE;
 		if (item1->Grayed)
 			item2.Flags |= MIF_GRAYED;
 		if (item1->Hidden)
 			item2.Flags |= MIF_HIDDEN;
 		if (item1->IsSeparator)
 			item2.Flags |= MIF_SEPARATOR;
-
-		// enable\disable
-		if (item1->Disabled)
-		{
-			item2.Flags |= MIF_DISABLE;
-		}
-		else if (item1->From != ToolOptions::None)
-		{
-			if (from == ToolOptions::None)
-				from = From();
-			if (!int(item1->From & from))
-				items[i].Flags |= MIF_DISABLE;
-		}
 	}
 
 	// select an item (same as listbox!)
@@ -238,14 +208,14 @@ bool Menu::Show()
 	if (_breakKey > 0)
 		return true;
 
-	// trigger event (if not a break key!)
-	MenuItem^ item = (MenuItem^)_items[_selected];
-	if (item->_OnClick)
+	// call click (if not a break key!)
+	FarItem^ item = _items[_selected];
+	if (item->Click)
 	{
 		if (Sender)
-			item->_OnClick(Sender, nullptr);
+			item->Click(Sender, nullptr);
 		else
-			item->_OnClick(item, nullptr);
+			item->Click(item, nullptr);
 	}
 
 	return true;

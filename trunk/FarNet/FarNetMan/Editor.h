@@ -49,6 +49,7 @@ public:
 	virtual Point ConvertScreenToCursor(Point screen);
 	virtual String^ GetText() { return GetText(CV::CRLF); }
 	virtual String^ GetText(String^ separator);
+	virtual TextWriter^ CreateWriter();
 	virtual void Begin();
 	virtual void Close();
 	virtual void DeleteChar();
@@ -59,6 +60,7 @@ public:
 	virtual void GoToLine(int line);
 	virtual void GoToPos(int pos);
 	virtual void Insert(String^ text);
+	virtual void InsertChar(Char text);
 	virtual void InsertLine();
 	virtual void InsertLine(bool indent);
 	virtual void Open();

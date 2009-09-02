@@ -14,6 +14,33 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
+//$RVK move
+ref class EditorTextWriter : TextWriter
+{
+	IEditor^ _editor;
+internal:
+	EditorTextWriter(IEditor^ editor);
+public:
+	virtual void Write(Char value) override;
+	virtual void Write(String^ value) override;
+	virtual property System::Text::Encoding^ Encoding { System::Text::Encoding ^ get() override { return System::Text::Encoding::Unicode; } }
+};
+
+EditorTextWriter::EditorTextWriter(IEditor^ editor) : _editor(editor)
+{
+	NewLine = "\r";
+}
+
+void EditorTextWriter::Write(Char value)
+{
+	_editor->InsertChar(value);
+}
+
+void EditorTextWriter::Write(String^ value)
+{
+	_editor->Insert(value);
+}
+
 Editor::Editor()
 : _id(-1)
 , _Title(String::Empty)
@@ -409,6 +436,11 @@ void Editor::Cursor::set(Point value)
 }
 
 void Editor::Insert(String^ text)
+{
+	EditorControl_ECTL_INSERTTEXT(text, -1);
+}
+
+void Editor::InsertChar(Char text)
 {
 	EditorControl_ECTL_INSERTTEXT(text, -1);
 }
@@ -810,6 +842,11 @@ void Editor::Redo()
 {
 	EditorUndoRedo eur = { EUR_REDO };
 	Info.EditorControl(ECTL_UNDOREDO, &eur);
+}
+
+TextWriter^ Editor::CreateWriter()
+{
+	return gcnew EditorTextWriter(this);
 }
 
 }

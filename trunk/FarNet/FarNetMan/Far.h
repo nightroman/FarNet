@@ -47,7 +47,6 @@ public:
 	virtual IInputBox^ CreateInputBox();
 	virtual IListMenu^ CreateListMenu();
 	virtual IMenu^ CreateMenu();
-	virtual IMenuItem^ CreateMenuItem();
 	virtual IPluginPanel^ CreatePluginPanel();
 	virtual ISubsetForm^ CreateSubsetForm();
 	virtual IViewer^ CreateViewer();
@@ -180,7 +179,9 @@ private:
 	String^ _hotkey;
 	array<int>^ _hotkeys;
 	EventHandler^ _handler;
-	EventHandler^ _syncHandler;
+	
+	HANDLE _hMutex;
+	List<EventHandler^> _syncHandlers;
 };
 
 }

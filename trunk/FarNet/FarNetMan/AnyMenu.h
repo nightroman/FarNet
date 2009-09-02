@@ -4,7 +4,6 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 #pragma once
-#include "MenuItem.h"
 
 namespace FarNet
 {;
@@ -15,8 +14,8 @@ public:
 	virtual property bool SelectLast;
 	virtual property bool ShowAmpersands;
 	virtual property bool WrapCursor;
+	virtual property IList<FarItem^>^ Items { IList<FarItem^>^ get(); }
 	virtual property IList<int>^ BreakKeys { IList<int>^ get(); }
-	virtual property IList<IMenuItem^>^ Items { IList<IMenuItem^>^ get(); }
 	virtual property int BreakKey { int get(); }
 	virtual property int MaxHeight;
 	virtual property int Selected { int get(); void set(int value); }
@@ -29,12 +28,12 @@ public:
 	virtual property String^ Title;
 public:
 	virtual bool Show() = 0;
-	virtual IMenuItem^ Add(String^ text);
-	virtual IMenuItem^ Add(String^ text, EventHandler^ handler);
+	virtual FarItem^ Add(String^ text);
+	virtual FarItem^ Add(String^ text, EventHandler^ handler);
 protected:
 	AnyMenu();
 internal:
-	List<IMenuItem^>^ _items;
+	List<FarItem^>^ _items;
 	int _x;
 	int _y;
 	int _selected;
