@@ -385,15 +385,22 @@ namespace FarNet
 		/// </summary>
 		void Redo();
 		/// <summary>
-		/// Creates a writer.
+		/// Creates a writer that writes to the current position of the current editor.
 		/// </summary>
-		/// <returns></returns>
+		/// <remarks>
+		/// It is not recommended to change the <see cref="Cursor"/> position during writing,
+		/// but it seems to be safe to do so if you <c>Flush()</c> the writer before the change.
+		/// </remarks>
+		/// <returns>Created writer. As any writer, it has to be closed after use.</returns>
 		TextWriter CreateWriter();
 	}
 
 	/// <summary>
 	/// Arguments of <see cref="IAnyEditor.OnRedraw"/> event.
 	/// </summary>
+	/// <remarks>
+	/// This API is not complete and will be improved when needed.
+	/// </remarks>
 	public sealed class RedrawEventArgs : EventArgs
 	{
 		int _mode;
