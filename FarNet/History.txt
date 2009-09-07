@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+= 4.2.1 =
+
+*) IEditor: new method TextWriter CreateWriter(): the writer calls Insert*()
+internally. It is convenient and efficient for using where a writer is
+expected.
+
+*) IEditor: new method InsertChar(): not a big deal (Insert() can do the job)
+but it is effectively used by text writers created by CreateWriter().
+
 = 4.2.0 =
 
 ----- Major changes -----
