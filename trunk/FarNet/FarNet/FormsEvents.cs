@@ -18,8 +18,7 @@ namespace FarNet.Forms
 			_control = control;
 		}
 		/// <summary>
-		/// Control involved into this event or null.
-		/// In a derived class see the event constructor for details.
+		/// Event's control or null. See the constructor for details.
 		/// </summary>
 		public IControl Control
 		{
@@ -190,4 +189,23 @@ namespace FarNet.Forms
 		/// </summary>
 		public bool Ignore { get; set; }
 	}
+
+	/// <summary>
+	/// Size event arguments, e.g. of <see cref="IDialog.ConsoleSizeChanged"/> event.
+	/// </summary>
+	public sealed class SizeEventArgs : AnyEventArgs
+	{
+		/// <param name="control">It is null.</param>
+		/// <param name="size">The size.</param>
+		public SizeEventArgs(IControl control, Point size)
+			: base(control)
+		{
+			Size = size;
+		}
+		/// <summary>
+		/// The size.
+		/// </summary>
+		public Point Size { get; set; }
+	}
+
 }

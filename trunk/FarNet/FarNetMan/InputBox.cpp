@@ -44,23 +44,11 @@ bool InputBox::Show()
 	PIN_ES(pinTitle, Title);
 	PIN_ES(pinPrompt, Prompt);
 	PIN_ES(pinText, Text);
+	PIN_NS(pinHelp, HelpTopic);
 	PIN_NS(pinHistory, History);
 	CBox sDest(_maxLength);
 
-	// help
-	pin_ptr<const wchar_t> pinHelp;
-	const wchar_t* help = 0;
-	if (_internalHelpTopic)
-	{
-		help = _internalHelpTopic;
-	}
-	else if (SS(HelpTopic))
-	{
-		pinHelp = PtrToStringChars(HelpTopic);
-		help = pinHelp;
-	}
-
-	if (!Info.InputBox(pinTitle, pinPrompt, pinHistory, pinText, sDest, MaxLength, help, Flags()))
+	if (!Info.InputBox(pinTitle, pinPrompt, pinHistory, pinText, sDest, MaxLength, pinHelp, Flags()))
 		return false;
 
 	Text = gcnew String(sDest);

@@ -61,5 +61,23 @@ private:
 	void operator=(const AutoPluginPanelItem&) {}
 };
 
+#pragma push_macro("DM_ENABLEREDRAW")
+#undef DM_ENABLEREDRAW
+class AutoStopDialogRedraw
+{
+public:
+	AutoStopDialogRedraw(HANDLE hDlg) : _hDlg(hDlg)
+	{
+		Info.SendDlgMessage(_hDlg, DM_ENABLEREDRAW, FALSE, 0);
+	}
+	~AutoStopDialogRedraw()
+	{
+		Info.SendDlgMessage(_hDlg, DM_ENABLEREDRAW, TRUE, 0);
+	}
+private:
+	HANDLE _hDlg;
+};
+#pragma pop_macro("DM_ENABLEREDRAW")
+
 void GetPanelInfo(HANDLE handle, PanelInfo& info);
 bool TryPanelInfo(HANDLE handle, PanelInfo& info);

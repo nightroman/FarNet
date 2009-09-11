@@ -490,6 +490,10 @@ namespace FarNet.Forms
 		/// </summary>
 		event EventHandler<KeyPressedEventArgs> KeyPressed;
 		/// <summary>
+		/// Event is sent when the console window size has changed, e.g. when [AltF9] is pressed.
+		/// </summary>
+		event EventHandler<SizeEventArgs> ConsoleSizeChanged;
+		/// <summary>
 		/// "Default control" which is selected on [Enter] if the focus is not set on a button.
 		/// </summary>
 		IControl Default { get; set; }
@@ -654,6 +658,25 @@ namespace FarNet.Forms
 		/// </summary>
 		/// <param name="size">New size.</param>
 		void Resize(Point size);
+		/// <summary>
+		/// Disables redrawing of the dialog.
+		/// </summary>
+		/// <remarks>
+		/// This method is used to prevent excessive dialog redraws when modifying multiple dialog items. 
+		/// <para>
+		/// It increments the internal redraw lock counter.
+		/// WARNING: you must call <see cref="EnableRedraw"/> (normally when dialog changes are done).
+		/// </para>
+		/// </remarks>
+		void DisableRedraw();
+		/// <summary>
+		/// Enables redrawing of the dialog.
+		/// </summary>
+		/// <remarks>
+		/// It decrements the internal redraw lock counter; when it is equal to 0 the dialog gets drawn.
+		/// WARNING: it must be called after any call of <see cref="DisableRedraw"/>.
+		/// </remarks>
+		void EnableRedraw();
 	}
 
 	/// <summary>
