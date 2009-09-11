@@ -6,6 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "StdAfx.h"
 #include "ListItemCollection.h"
 #include "Dialog.h"
+#include "DialogControls.h"
 
 namespace FarNet
 {;

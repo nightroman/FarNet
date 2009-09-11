@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.2.2 =
+
+*) IDialog: new event ConsoleSizeChanged ~ DN_RESIZECONSOLE.
+
+*) IDialog: new methods DisableRedraw(), EnableRedraw() ~ DM_ENABLEREDRAW.
+
+*) IDialog: Rect is settable after Show(), too; same as Move() + Resize().
+
+*) IListMenu uses ConsoleSizeChanged to recalculate its size according to the
+new console size.
+
 = 4.2.1 =
 
 *) IEditor: new method TextWriter CreateWriter(): the writer calls Insert*()

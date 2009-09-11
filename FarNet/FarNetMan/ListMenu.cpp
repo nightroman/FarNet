@@ -6,6 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "StdAfx.h"
 #include "ListMenu.h"
 #include "Dialog.h"
+#include "DialogControls.h"
 #include "Far.h"
 #include "InputBox.h"
 #include "Message.h"
@@ -78,7 +79,6 @@ static Regex^ CreateRegex(String^ pattern, PatternOptions options, bool* ok)
 
 static String^ InputFilter(String^ pattern, PatternOptions options, String^ history, Regex^& regex)
 {
-	static CStr help;
 	InputBox ib;
 	ib.Title = "Filter";
 	ib.Prompt = "Pattern (" + options.ToString() + ")";
@@ -87,10 +87,8 @@ static String^ InputFilter(String^ pattern, PatternOptions options, String^ hist
 	if (SS(pattern))
 		ib.Text = pattern;
 
-	//! help; note that it fails without 'Far::_helpTopic' part
-	if (help == NULL)
-		help.Set(Far::_helpTopic + "InputFilter");
-	ib._internalHelpTopic = help;
+	//! help; it fails without 'Far::_helpTopic' part
+	ib.HelpTopic = Far::_helpTopic + "InputFilter";
 
 	// show filter input box
 	for(;;)
@@ -273,6 +271,84 @@ void ListMenu::AddKey(int key, EventHandler<MenuEventArgs^>^ handler)
 {
 	_keys.Add(key);
 	_handlers.Add(handler);
+}
+
+void ListMenu::MakeSizes(FarDialog^ dialog, Point size)
+{
+	// controls with text
+	IControl^ border = dialog->GetControl(0);
+	IControl^ bottom = dialog->GetControl(2);
+	
+	// text lengths
+	String^ borderText = border->Text;
+	int borderTextLength = borderText ? borderText->Length : 0;
+	String^ bottomText = bottom ? bottom->Text : nullptr;
+	int bottomTextLength = bottomText ? bottomText->Length : 0;
+
+	// margins
+	const int ms = ScreenMargin > 1 ? ScreenMargin : 1;
+	const int mx = UsualMargins ? 2 : 0;
+	const int my = UsualMargins ? 1 : 0;
+
+	// width
+	int w = 0;
+	if (_ii)
+	{
+		for each(int k in _ii)
+			if (_items[k]->Text->Length > w)
+				w = _items[k]->Text->Length;
+	}
+	else
+	{
+		for each(FarItem^ mi in _items)
+			if (mi->Text->Length > w)
+				w = mi->Text->Length;
+	}
+	w += 2 + 2*mx; // if less last chars are lost
+
+	// height
+	int n = _ii ? _ii->Count : _items->Count;
+	if (MaxHeight > 0 && n > MaxHeight)
+		n = MaxHeight;
+
+	// fix width
+	if (w > 127)
+		w = 127;
+	if (w < borderTextLength)
+		w = borderTextLength + 4;
+	if (w < bottomTextLength)
+		w = bottomTextLength + 4;
+	if (w < 20)
+		w = 20;
+
+	// X
+	int dw = w + 4, dx = _x;
+	ValidateRect(dx, dw, ms, size.X - 2*ms);
+
+	// Y
+	int dh = n + 2 + 2*my, dy = _y;
+	ValidateRect(dy, dh, ms, size.Y - 2*ms);
+
+	// dialog
+	dialog->Rect = Place(dx, dy, dx + dw - 1, dy + dh - 1);
+
+	// border
+	border->Rect = Place(mx, my, dw - 1 - mx, dh - 1 - my);
+
+	// list
+	dialog->GetControl(1)->Rect = Place(1 + mx, 1 + my, dw - 2 - mx, dh - 2 - my);
+
+	// bottom
+	if (bottom)
+	{
+		Point xy(1 + mx, dh - 1 - my);
+		bottom->Rect = Place(xy.X, xy.Y, xy.X + bottomTextLength - 1, xy.Y);
+	}
+}
+
+void ListMenu::OnConsoleSizeChanged(Object^ sender, SizeEventArgs^ e)
+{
+	MakeSizes((FarDialog^)sender, e->Size);
 }
 
 void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
@@ -458,58 +534,16 @@ bool ListMenu::Show()
 		String^ title; String^ info;
 		GetInfo(title, info);
 
-		// margins
-		const int ms = ScreenMargin > 1 ? ScreenMargin : 1;
-		const int mx = UsualMargins ? 2 : 0;
-		const int my = UsualMargins ? 1 : 0;
-
-		// width
-		int w = 0;
-		if (_ii)
-		{
-			for each(int k in _ii)
-				if (_items[k]->Text->Length > w)
-					w = _items[k]->Text->Length;
-		}
-		else
-		{
-			for each(FarItem^ mi in _items)
-				if (mi->Text->Length > w)
-					w = mi->Text->Length;
-		}
-		w += 2 + 2*mx; // if less last chars are lost
-
-		// height
-		int n = _ii ? _ii->Count : _items->Count;
-		if (MaxHeight > 0 && n > MaxHeight)
-			n = MaxHeight;
-
-		// fix width
-		if (w > 127)
-			w = 127;
-		if (title && w < title->Length)
-			w = title->Length + 4;
-		if (w < info->Length)
-			w = info->Length + 4;
-		if (w < 20)
-			w = 20;
-
-		// place
-		int dw = w + 4, dx = _x;
-		ValidateRect(dx, dw, ms, Console::WindowWidth - 2*ms);
-		int dh = n + 2 + 2*my, dy = _y;
-		ValidateRect(dy, dh, ms, Console::WindowHeight - 2*ms);
-
 		// dialog
-		FarDialog dialog(dx, dy, dx + dw - 1, dy + dh - 1);
+		FarDialog dialog(1, 1, 1, 1);
 		dialog.HelpTopic = SS(HelpTopic) ? HelpTopic : "ListMenu";
 		dialog.NoShadow = NoShadow;
 
 		// title
-		dialog.AddBox(mx, my, dw - 1 - mx, dh - 1 - my, title);
+		dialog.AddBox(1, 1, 1, 1, title);
 
 		// list
-		_box = (FarListBox^)dialog.AddListBox(1 + mx, 1 + my, dw - 2 - mx, dh - 2 - my, String::Empty);
+		_box = (FarListBox^)dialog.AddListBox(1, 1, 1, 1, String::Empty);
 		_box->Selected = _selected;
 		_box->SelectLast = SelectLast;
 		_box->NoBox = true;
@@ -522,13 +556,17 @@ bool ListMenu::Show()
 
 		// "bottom"
 		if (info->Length)
-			dialog.AddText(1 + mx, dh - 1 - my, 0, info);
+			dialog.AddText(1, 1, 1, info);
 
 		// items and filter
 		_box->_Items = _items;
 		_box->_ii = _ii;
 
-		// filter
+		// now we are ready to make sizes
+		MakeSizes(%dialog, Point(Console::WindowWidth, Console::WindowHeight));
+
+		// handlers
+		dialog._ConsoleSizeChanged += gcnew EventHandler<SizeEventArgs^>(this, &ListMenu::OnConsoleSizeChanged);
 		_box->_KeyPressed += gcnew EventHandler<KeyPressedEventArgs^>(this, &ListMenu::OnKeyPressed);
 
 		// go!
@@ -562,4 +600,5 @@ bool ListMenu::Show()
 		return _selected >= 0;
 	}
 }
+
 }

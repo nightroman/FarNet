@@ -24,8 +24,6 @@ public:
 	virtual property String^ Title;
 internal:
 	InputBox();
-internal:
-	const wchar_t* _internalHelpTopic;
 private:
 	int Flags();
 private:
