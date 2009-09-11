@@ -8,6 +8,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
+ref class FarDialog;
 ref class FarListBox;
 
 ref class ListMenu : public AnyMenu, public IListMenu
@@ -36,6 +37,8 @@ private:
 	void GetInfo(String^& head, String^& foot);
 	void MakeFilter1();
 	void MakeFilters();
+	void MakeSizes(FarDialog^ dialog, Point size);
+	void OnConsoleSizeChanged(Object^ sender, SizeEventArgs^ e);
 	void OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e);
 private:
 	FarListBox^ _box;

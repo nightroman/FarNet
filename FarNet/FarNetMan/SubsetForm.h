@@ -10,6 +10,7 @@ namespace FarNet
 {;
 ref class Far;
 ref class FarDialog;
+ref class FarListBox;
 ref class ListItemCollection;
 
 ref class FarSubsetForm : FarForm, ISubsetForm

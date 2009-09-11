@@ -118,6 +118,13 @@ namespace FarNet
 			set { _last = value; }
 		}
 		/// <summary>
+		/// Size as (<c>Width</c>, <c>Height</c>) pair.
+		/// </summary>
+		public Point Size
+		{
+			get { return new Point(Width, Height); }
+		}
+		/// <summary>
 		/// Top line.
 		/// </summary>
 		public int Top
