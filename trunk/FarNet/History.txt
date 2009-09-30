@@ -1,5 +1,18 @@
 http://code.google.com/p/farnet/
 
+= 4.2.3 =
+
+*) Adapted to Far 2.0.1145+: Far does not set the current directory to the
+active panel path (a step to long paths support). Still, remember that .NET
+itself and many other external tools do not like long paths. _090929_061740
+
+*) New property IFar.ActivePath: Gets the path of the active Far panel or the
+ActivePath (former StartDirectory) of the active FarNet panel. Mind long paths.
+
+*) IEditor.CodePage is now settable after opening, so that it is possible to
+change code pages from a plugin. Another good news: Far 2.0.1144+ API works
+correctly with code pages on open, save, and save as operations.
+
 = 4.2.2 =
 
 *) IDialog: new event ConsoleSizeChanged ~ DN_RESIZECONSOLE.

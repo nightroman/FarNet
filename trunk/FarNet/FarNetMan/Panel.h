@@ -167,7 +167,7 @@ public: // FarPanel
 	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get() override; }
 	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get() override; }
 	virtual property String^ Path { String^ get() override; void set(String^ value) override; }
-	virtual property String^ StartDirectory { String^ get(); void set(String^ value); }
+	virtual property String^ ActivePath { String^ get(); void set(String^ value); }
 public: // IPluginPanel
 	virtual property bool AddDots;
 	virtual property bool IdleUpdate;
@@ -220,7 +220,7 @@ internal:
 private:
 	Guid _TypeId;
 	IList<FarFile^>^ _files;
-	String^ _StartDirectory;
+	String^ _ActivePath;
 };
 
 const int cPanels = 4;

@@ -6,41 +6,15 @@ Copyright (c) 2005-2009 FarNet Team
 #include "StdAfx.h"
 #include "Editor.h"
 #include "EditorHost.h"
-#include "Far.h"
-#include "SelectionCollection.h"
 #include "EditorLine.h"
 #include "EditorLineCollection.h"
+#include "EditorTextWriter.h"
+#include "Far.h"
+#include "SelectionCollection.h"
 #include "Wrappers.h"
 
 namespace FarNet
 {;
-//$RVK move
-ref class EditorTextWriter : TextWriter
-{
-	IEditor^ _editor;
-internal:
-	EditorTextWriter(IEditor^ editor);
-public:
-	virtual void Write(Char value) override;
-	virtual void Write(String^ value) override;
-	virtual property System::Text::Encoding^ Encoding { System::Text::Encoding ^ get() override { return System::Text::Encoding::Unicode; } }
-};
-
-EditorTextWriter::EditorTextWriter(IEditor^ editor) : _editor(editor)
-{
-	NewLine = "\r";
-}
-
-void EditorTextWriter::Write(Char value)
-{
-	_editor->InsertChar(value);
-}
-
-void EditorTextWriter::Write(String^ value)
-{
-	_editor->Insert(value);
-}
-
 Editor::Editor()
 : _id(-1)
 , _Title(String::Empty)
@@ -280,7 +254,13 @@ int Editor::CodePage::get()
 
 void Editor::CodePage::set(int value)
 {
-	AssertClosed();
+	if (IsOpened)
+	{
+		EditorSetParameter esp;
+		esp.Type = ESPT_CODEPAGE;
+		esp.Param.iParam = value;
+		EditorControl_ECTL_SETPARAM(esp);
+	}
 
 	_CodePage = value;
 }
@@ -460,24 +440,11 @@ void Editor::DeleteLine()
 	EditorControl_ECTL_DELETESTRING();
 }
 
-//! 090607 see my post "√рабли с ECTL_SAVEFILE" at forum. ???
+//! 090926 Mantis 921. Fixed in 1142
 void Editor::Save()
 {
-#if 1
 	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
 		throw gcnew OperationCanceledException("Cannot save the editor file.");
-#else
-	AutoEditorInfo ei;
-
-	EditorSaveFile esf;
-	memset(&esf, 0, sizeof(EditorSaveFile));
-
-	esf.FileName = ei.FileName;
-	esf.CodePage = ei.CodePage;
-
-	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
-		throw gcnew OperationCanceledException("Cannot save the editor file.");
-#endif
 }
 
 void Editor::Save(String^ fileName)
@@ -485,14 +452,13 @@ void Editor::Save(String^ fileName)
 	if (fileName == nullptr)
 		return Save();
 
-	PIN_NE(pin, fileName);
-
-	AutoEditorInfo ei;
-
 	EditorSaveFile esf;
 	memset(&esf, 0, sizeof(EditorSaveFile));
 
+	PIN_NE(pin, fileName);
 	esf.FileName = pin;
+
+	AutoEditorInfo ei;
 	esf.CodePage = ei.CodePage;
 
 	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))

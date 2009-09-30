@@ -1387,16 +1387,20 @@ String^ FarPanel::Path::get()
 	return gcnew String(buf);
 }
 
+// _090929_061740
+// Directory::Exists gets false for paths >= 260. But we should check anyway, because FCTL_SETPANELDIR
+// never gets false, instead it only shows an error dialog. Let it be safe at least for good paths.
 void FarPanel::Path::set(String^ value)
 {
 	if (value == nullptr)
 		throw gcnew ArgumentNullException("value");
-	if (!Directory::Exists(value))
+
+	if (value->Length < 260 && !Directory::Exists(value))
 		throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
 
 	PIN_NE(pin, value);
 	if (!Info.Control(_handle, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
-		throw gcnew OperationCanceledException;
+		throw gcnew OperationCanceledException("Cannot set panel directory: " + value);
 }
 
 String^ FarPanel::ToString()
@@ -1588,11 +1592,6 @@ bool FarPanel::GoToName(String^ name, bool fail)
 	if (!name)
 		throw gcnew ArgumentNullException("name");
 
-	//$RVK 090825
-	// well, empty names are technically possible, but it is weird, ignore this
-	//if (name->Length == 0 && !strict)
-	//	return;
-
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -1722,8 +1721,8 @@ void FarPanel::Update(bool keepSelection)
 FarPluginPanel::FarPluginPanel()
 : FarPanel(true)
 , _files(gcnew List<FarFile^>)
+, _ActivePath(Far::Instance->ActivePath)
 {
-	_StartDirectory = Environment::CurrentDirectory;
 }
 
 void FarPluginPanel::AssertOpen()
@@ -1910,8 +1909,10 @@ void FarPluginPanel::Path::set(String^ value)
 
 	if (!_SettingDirectory)
 	{
-		if (!Directory::Exists(value))
+		// _090929_061740 Directory::Exists gets false for long paths
+		if (value->Length < 260 && !Directory::Exists(value))
 			throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
+		
 		Close(value);
 		return;
 	}
@@ -1925,14 +1926,14 @@ void FarPluginPanel::Path::set(String^ value)
 	}
 }
 
-String^ FarPluginPanel::StartDirectory::get()
+String^ FarPluginPanel::ActivePath::get()
 {
-	return _StartDirectory;
+	return _ActivePath;
 }
 
-void FarPluginPanel::StartDirectory::set(String^ value)
+void FarPluginPanel::ActivePath::set(String^ value)
 {
-	_StartDirectory = value;
+	_ActivePath = value;
 }
 
 IPluginPanel^ FarPluginPanel::AnotherPanel::get()
