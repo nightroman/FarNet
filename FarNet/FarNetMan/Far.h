@@ -35,7 +35,8 @@ public:
 	virtual property IPanel^ Panel2 { IPanel^ get(); }
 	virtual property IRawUI^ RawUI { IRawUI^ get(); }
 	virtual property IViewer^ Viewer { IViewer^ get(); }
-	virtual property String^ PluginFolderPath { String^ get(); }
+	virtual property String^ ActivePath { String^ get(); }
+	virtual property String^ PluginPath { String^ get(); }
 	virtual property String^ RootFar { String^ get(); }
 	virtual property String^ RootKey { String^ get(); }
 	virtual property Version^ Version { System::Version^ get(); }

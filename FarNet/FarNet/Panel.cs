@@ -997,9 +997,9 @@ namespace FarNet
 		/// <seealso cref="TypeId"/>
 		object Host { get; set; }
 		/// <summary>
-		/// Current directory when the panel starts.
+		/// <see cref="IFar.ActivePath"/> at the moment of start.
 		/// </summary>
-		string StartDirectory { get; set; }
+		string ActivePath { get; set; }
 		/// <summary>
 		/// Use this to set the panel properties.
 		/// For better performance set its properties only when they are really changed.

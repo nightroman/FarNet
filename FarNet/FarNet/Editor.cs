@@ -125,8 +125,12 @@ namespace FarNet
 		/// </summary>
 		string FileName { get; set; }
 		/// <summary>
-		/// Code page identifier. Set it before opening.
+		/// Code page identifier.
 		/// </summary>
+		/// <remarks>
+		/// Before opening it specifies encoding for reading a file.
+		/// After opening it gets and sets current encoding.
+		/// </remarks>
 		int CodePage { get; set; }
 		/// <summary>
 		/// Window start position. Set it before opening.

@@ -58,7 +58,20 @@ void Far::Stop()
 	delete _prefixes;
 }
 
-String^ Far::PluginFolderPath::get()
+String^ Far::ActivePath::get()
+{
+	IPanel^ panel = Panel;
+	if (!panel)
+		return String::Empty;
+
+	FarPluginPanel^ plugin = dynamic_cast<FarPluginPanel^>(panel); 
+	if (plugin)
+		return plugin->ActivePath;
+	
+	return panel->Path;
+}
+
+String^ Far::PluginPath::get()
 {
 	String^ pluginPath = gcnew String(Info.ModuleName);
 	return (gcnew FileInfo(pluginPath))->DirectoryName;

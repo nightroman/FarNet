@@ -73,9 +73,9 @@ namespace FarNet
 		/// </summary>
 		void Unregister(BasePlugin plugin);
 		/// <summary>
-		/// Path to the plugin folder.
+		/// Path of the plugin directory.
 		/// </summary>
-		string PluginFolderPath { get; }
+		string PluginPath { get; }
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
@@ -621,6 +621,14 @@ namespace FarNet
 		/// TEST ONLY.
 		/// </summary>
 		IRawUI RawUI { get; }
+		/// <summary>
+		/// Gets the active directory path.
+		/// </summary>
+		/// <remarks>
+		/// Gets the path of the active Far panel or the <see cref="IPluginPanel.ActivePath"/> of the active FarNet panel.
+		/// If there are no suitable panels it returns an empty string.
+		/// </remarks>
+		string ActivePath { get; }
 	}
 
 	/// <summary>
