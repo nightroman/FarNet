@@ -307,12 +307,28 @@ ILines^ Editor::TrueLines::get()
 {
 	if (!IsOpened)
 		return nullptr;
+	
 	return gcnew EditorLineCollection(true);
 }
 
 int Editor::Id::get()
 {
 	return _id;
+}
+
+Object^ Editor::Host::get()
+{
+	return _Host;
+}
+
+void Editor::Host::set(Object^ value)
+{
+	if (!value)
+		throw gcnew ArgumentNullException("value");
+	if (_Host)
+		throw gcnew InvalidOperationException("Host is already set.");
+
+	_Host = value;
 }
 
 int Editor::TabSize::get()
@@ -394,6 +410,7 @@ ISelection^ Editor::Selection::get()
 {
 	if (!IsOpened)
 		return nullptr;
+	
 	return gcnew SelectionCollection(this, false);
 }
 
@@ -401,6 +418,7 @@ ISelection^ Editor::TrueSelection::get()
 {
 	if (!IsOpened)
 		return nullptr;
+	
 	return gcnew SelectionCollection(this, true);
 }
 
@@ -417,12 +435,64 @@ void Editor::Cursor::set(Point value)
 
 void Editor::Insert(String^ text)
 {
-	EditorControl_ECTL_INSERTTEXT(text, -1);
+	if (!_hMutex)
+	{
+		EditorControl_ECTL_INSERTTEXT(text, -1);
+		return;
+	}
+
+	WaitForSingleObject(_hMutex, INFINITE);
+	try
+	{
+		_output->Append(text);
+	}
+	finally
+	{
+		ReleaseMutex(_hMutex);
+	}
 }
 
 void Editor::InsertChar(Char text)
 {
-	EditorControl_ECTL_INSERTTEXT(text, -1);
+	if (!_hMutex)
+	{
+		EditorControl_ECTL_INSERTTEXT(text, -1);
+		return;
+	}
+
+	WaitForSingleObject(_hMutex, INFINITE);
+	try
+	{
+		_output->Append(text);
+	}
+	finally
+	{
+		ReleaseMutex(_hMutex);
+	}
+}
+
+void Editor::InsertLine(bool indent)
+{
+	if (!_hMutex)
+	{
+		EditorControl_ECTL_INSERTSTRING(indent);
+		return;
+	}
+
+	WaitForSingleObject(_hMutex, INFINITE);
+	try
+	{
+		_output->Append("\r");
+	}
+	finally
+	{
+		ReleaseMutex(_hMutex);
+	}
+}
+
+void Editor::InsertLine()
+{
+	InsertLine(false);
 }
 
 void Editor::Redraw()
@@ -463,16 +533,6 @@ void Editor::Save(String^ fileName)
 
 	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
 		throw gcnew OperationCanceledException("Cannot save the editor file as: " + fileName);
-}
-
-void Editor::InsertLine()
-{
-	InsertLine(false);
-}
-
-void Editor::InsertLine(bool indent)
-{
-	EditorControl_ECTL_INSERTSTRING(indent);
 }
 
 void Editor::AssertClosed()
@@ -813,6 +873,63 @@ void Editor::Redo()
 TextWriter^ Editor::CreateWriter()
 {
 	return gcnew EditorTextWriter(this);
+}
+
+void Editor::BeginAsync()
+{
+	// do throw now, this is a bug to call it twice
+	if (_hMutex)
+		throw gcnew InvalidOperationException("Asynchronous mode is already started.");
+
+	if (!IsOpened)
+		throw gcnew InvalidOperationException("Editor must be opened.");
+
+	_hMutex = CreateMutex(NULL, FALSE, NULL);
+
+	BeginUndo();
+	_output = gcnew StringBuilder();
+}
+
+void Editor::EndAsync()
+{
+	// do not throw, this is OK to call it twice
+	if (!_hMutex)
+		return;
+
+	CloseHandle(_hMutex);
+	_hMutex = 0;
+}
+
+void Editor::Sync()
+{
+	if (_hMutex)
+		WaitForSingleObject(_hMutex, INFINITE);
+
+	try
+	{
+		if (_output->Length)
+		{
+			GoEnd(false); //$RVK performance?
+			EditorControl_ECTL_INSERTTEXT(_output->ToString(), -1);
+
+			Redraw();
+		}
+
+		if (_hMutex)
+		{
+			_output->Length = 0;
+		}
+		else
+		{
+			_output = nullptr;
+			EndUndo();
+		}
+	}
+	finally
+	{
+		if (_hMutex)
+			ReleaseMutex(_hMutex);
+	}
 }
 
 }

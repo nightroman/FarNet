@@ -1,5 +1,12 @@
 http://code.google.com/p/farnet/
 
+= 4.2.4 =
+
+*) IEditor: new methods BeginAsync() and EndAsync() allows to write to not a
+current editor or from background jobs. Output procedure is similar to console
+output. Use this mode very carefully and only when it is absolutely needed.
+Plugin PowerShellFar uses this mode for asynchronous editor consoles.
+
 = 4.2.3 =
 
 *) Adapted to Far 2.0.1145+: Far does not set the current directory to the

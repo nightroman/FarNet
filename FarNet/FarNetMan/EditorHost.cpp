@@ -95,6 +95,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 			_fastGetString = 0;
 			_editorCurrent = nullptr;
 
+			// end async
+			editor->EndAsync();
+
 			// event, after the above
 			if (_anyEditor._Closed)
 				_anyEditor._Closed(editor, EventArgs::Empty);
@@ -139,14 +142,19 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 			LOG_AUTO(3, "EE_GOTFOCUS");
 
 			int id = *((int*)param);
-			Editor^ ed;
-			if (!_editors.TryGetValue(id, ed))
+			Editor^ editor;
+			if (!_editors.TryGetValue(id, editor))
 				return 0;
+
+			// sync
+			if (editor->_output)
+				editor->Sync();
 			
+			// event
 			if (_anyEditor._GotFocus)
-				_anyEditor._GotFocus(ed, EventArgs::Empty);
-			if (ed->_GotFocus)
-				ed->_GotFocus(ed, EventArgs::Empty);
+				_anyEditor._GotFocus(editor, EventArgs::Empty);
+			if (editor->_GotFocus)
+				editor->_GotFocus(editor, EventArgs::Empty);
 		}
 		break;
 	case EE_KILLFOCUS:
@@ -173,6 +181,36 @@ int EditorHost::AsProcessEditorInput(const INPUT_RECORD* rec)
 	Editor^ editor = GetCurrentEditor();
 	while (_fastGetString > 0)
 		_editorCurrent->End();
+
+	// async
+	if (editor->_output)
+	{
+		// sync
+		editor->Sync();
+		
+		// ignore most of events
+		if (editor->_hMutex)
+		{
+			if (rec->EventType != KEY_EVENT)
+				return true;
+
+			switch(rec->Event.KeyEvent.wVirtualKeyCode)
+			{
+			case VKeyCode::Escape:
+			case VKeyCode::F10:
+				return false;
+			case VKeyCode::C:
+				if ((rec->Event.KeyEvent.dwControlKeyState & int(ControlKeyStates::CtrlAltShift)) == int(ControlKeyStates::LeftCtrlPressed))
+				{
+					if (editor->_CtrlCPressed)
+						editor->_CtrlCPressed(editor, nullptr);
+				}
+				return true;
+			default:
+				return true;
+			}
+		}
+	}
 
 	switch(rec->EventType)
 	{
