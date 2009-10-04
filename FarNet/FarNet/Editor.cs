@@ -54,6 +54,10 @@ namespace FarNet
 		/// <seealso cref="IdledHandler"/>
 		event EventHandler Idled;
 		/// <summary>
+		/// Event is sent on <c>CtrlC</c> in asynchronous mode, see <see cref="IEditor.BeginAsync"/> .
+		/// </summary>
+		event EventHandler CtrlCPressed;
+		/// <summary>
 		/// Opens a modal temporary editor to edit and return some text.
 		/// </summary>
 		string EditText(string text, string title);
@@ -153,7 +157,7 @@ namespace FarNet
 		/// </summary>
 		ISelection TrueSelection { get; }
 		/// <summary>
-		/// Tells to open a new (non-existing) file in the editor, similar to pressing Shift-F4 in Far. 
+		/// Tells to open a new (non-existing) file in the editor, similar to pressing Shift-F4 in Far.
 		/// Set it before opening.
 		/// </summary>
 		/// <remarks>
@@ -331,6 +335,20 @@ namespace FarNet
 		/// </summary>
 		object Data { get; set; }
 		/// <summary>
+		/// Host operating on the editor.
+		/// </summary>
+		/// <remarks>
+		/// This property is set by a plugin in advanced scenarios when an editor is used in a very unusual way.
+		/// It can be set once, usually by a creator or by a handler on opening. It is not used internally, it
+		/// only helps plugins to avoid conflicts.
+		/// <para>Example scenario: <b>PowerShellFar</b> may use editors as command consoles. On opening it
+		/// attaches a host object which is subscribed to the editor events. This approach makes impossible
+		/// to attach yet another editor host and prevents advanced use of the editor from other plugins
+		/// (if they also follow this technique of attaching a host).
+		/// </para>
+		/// </remarks>
+		object Host { get; set; }
+		/// <summary>
 		/// Is the end line the current one?
 		/// Editor must be current.
 		/// </summary>
@@ -397,6 +415,41 @@ namespace FarNet
 		/// </remarks>
 		/// <returns>Created writer. As any writer, it has to be closed after use.</returns>
 		TextWriter CreateWriter();
+		/// <summary>
+		/// Starts asynchronous mode.
+		/// </summary>
+		/// <remarks>
+		/// This mode is designed for writing text to a not current editor or from background jobs.
+		/// The editor is partially blocked until the mode is not closed by <see cref="EndAsync"/>.
+		/// Actual writing happens when the editor has or gets focus, otherwise data are queued.
+		/// <para>
+		/// In this mode data are always appended to the end of the current text, so that the
+		/// output procedure is similar to console output.
+		/// </para>
+		/// <para>
+		/// Only <c>Insert*</c> methods should be called during asynchronous mode even if you can
+		/// call something else technically without problems.
+		/// </para>
+		/// <para>
+		/// Input events (keys, mouse, idle) are disabled in asynchronous mode.
+		/// There is only a special event <see cref="IAnyEditor.CtrlCPressed"/>
+		/// that can be used for example for stopping the mode by a user.
+		/// </para>
+		/// <ul>
+		/// <li>Nested calls of are not allowed.</li>
+		/// <li>Use this mode only when it is absolutely needed.</li>
+		/// <li>Plugin <b>PowerShellFar</b> uses this mode for asynchronous editor consoles.</li>
+		/// </ul>
+		/// </remarks>
+		void BeginAsync();
+		/// <summary>
+		/// Stops asynchronous mode.
+		/// </summary>
+		/// <remarks>
+		/// It must be called after <see cref="BeginAsync"/> when asynchronous operations complete.
+		/// Note: it is OK to call it when asynchronous mode is already stopped or even was not started.
+		/// </remarks>
+		void EndAsync();
 	}
 
 	/// <summary>

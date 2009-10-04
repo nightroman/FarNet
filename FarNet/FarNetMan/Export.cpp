@@ -206,7 +206,7 @@ int WINAPI ProcessEditorInputW(const INPUT_RECORD* rec)
 	__START;
 	return EditorHost::AsProcessEditorInput(rec);
 	__END;
-	return 0;
+	return true; // on problems consider event as processed to avoid default actions
 }
 
 int WINAPI ProcessEventW(HANDLE hPlugin, int id, void* param)

@@ -8,7 +8,8 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-EditorTextWriter::EditorTextWriter(IEditor^ editor) : _editor(editor)
+EditorTextWriter::EditorTextWriter(IEditor^ editor)
+: _editor(editor)
 {
 	NewLine = "\r";
 }
