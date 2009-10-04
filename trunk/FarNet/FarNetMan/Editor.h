@@ -34,6 +34,7 @@ public:
 	virtual property ISelection^ Selection { ISelection^ get(); }
 	virtual property ISelection^ TrueSelection { ISelection^ get(); }
 	virtual property Object^ Data;
+	virtual property Object^ Host { Object^ get(); void set(Object^ value); }
 	virtual property Place Window { Place get(); void set(Place value); }
 	virtual property Point Cursor { Point get(); void set(Point value); }
 	virtual property Point WindowSize { Point get(); }
@@ -51,10 +52,14 @@ public:
 	virtual String^ GetText(String^ separator);
 	virtual TextWriter^ CreateWriter();
 	virtual void Begin();
+	virtual void BeginAsync();
+	virtual void BeginUndo();
 	virtual void Close();
 	virtual void DeleteChar();
 	virtual void DeleteLine();
 	virtual void End();
+	virtual void EndAsync();
+	virtual void EndUndo();
 	virtual void GoEnd(bool addLine);
 	virtual void GoTo(int pos, int line);
 	virtual void GoToLine(int line);
@@ -65,17 +70,15 @@ public:
 	virtual void InsertLine(bool indent);
 	virtual void Open();
 	virtual void Open(OpenMode mode);
+	virtual void Redo();
 	virtual void Redraw();
 	virtual void Save();
 	virtual void Save(String^ fileName);
 	virtual void SetText(String^ text);
-public:
-	virtual void BeginUndo();
-	virtual void EndUndo();
 	virtual void Undo();
-	virtual void Redo();
 internal:
 	Editor();
+	void Sync();
 private:
 	void AssertClosed();
 internal:
@@ -91,5 +94,10 @@ private:
 	int _CodePage;
 	TextFrame _frameStart;
 	TextFrame _frameSaved;
+	Object^ _Host;
+internal:
+	// async stuff
+	HANDLE _hMutex;
+	StringBuilder^ _output;
 };
 }

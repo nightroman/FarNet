@@ -15,7 +15,6 @@ internal:
 public:
 	virtual void Write(Char value) override;
 	virtual void Write(String^ value) override;
-	virtual property System::Text::Encoding^ Encoding { System::Text::Encoding ^ get() override { return System::Text::Encoding::Unicode; } }
+	virtual property System::Text::Encoding^ Encoding { System::Text::Encoding^ get() override { return System::Text::Encoding::Unicode; } }
 };
-
 }
