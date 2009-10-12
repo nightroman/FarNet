@@ -200,7 +200,7 @@ public: DEF_EVENT_ARGS(GettingData, _GettingData, PanelEventArgs);
 public: DEF_EVENT_ARGS(GettingFiles, _GettingFiles, GettingFilesEventArgs);
 public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, PanelKeyEventArgs);
 public: DEF_EVENT_ARGS(MakingDirectory, _MakingDirectory, MakingDirectoryEventArgs);
-public: DEF_EVENT_ARGS(PuttingFiles, _PuttingFiles, FilesEventArgs);
+public: DEF_EVENT_ARGS(PuttingFiles, _PuttingFiles, PuttingFilesEventArgs);
 public: DEF_EVENT_ARGS(Redrawing, _Redrawing, PanelEventArgs);
 public: DEF_EVENT_ARGS(SettingDirectory, _SettingDirectory, SettingDirectoryEventArgs);
 public: DEF_EVENT_ARGS(ViewModeChanged, _ViewModeChanged, ViewModeChangedEventArgs);
@@ -237,7 +237,7 @@ internal:
 	static int AsMakeDirectory(HANDLE hPlugin, const wchar_t** name, int opMode);
 	static int AsProcessEvent(HANDLE hPlugin, int id, void* param);
 	static int AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState);
-	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode);
+	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode);
 	static int AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode);
 	static FarPanel^ GetPanel(bool active);
 	static FarPluginPanel^ GetPluginPanel(Guid id);

@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.2.5 =
+
+*) Requires Far 2.0.1160. Event IPluginPanel.PuttingFiles now accepts arguments
+as PuttingFilesEventArgs which has additional property Source - source path of
+the files being processed. This is not a breaking change, but in Far 2.0.1145+
+some operations cannot be performed correctly without this Source information,
+such plugins have to be updated.
+
 = 4.2.4 =
 
 *) IEditor: new methods BeginAsync() and EndAsync() allows to write to not a

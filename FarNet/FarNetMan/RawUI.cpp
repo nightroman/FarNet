@@ -252,4 +252,15 @@ int RawUI::OemCP::get()
 {
 	return ::GetOEMCP();
 }
+
+// _091007_034112
+String^ RawUI::ConsoleTitle::get()
+{
+	wchar_t buf[0x5fb5];
+	if (::GetConsoleTitle(buf, sizeof(buf)))
+		return gcnew String(buf);
+
+	return String::Empty;
+}
+
 }
