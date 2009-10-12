@@ -9,7 +9,7 @@ using System.Globalization;
 namespace FarNet.Support
 {
 	/// <summary>
-	/// TEST ONLY.
+	/// For internal use.
 	/// </summary>
 	public enum BufferCellType
 	{
@@ -21,7 +21,9 @@ namespace FarNet.Support
 		Trailing = 2,
 	}
 
-	///
+	/// <summary>
+	/// For internal use.
+	/// </summary>
 	[Flags]
 	public enum ReadKeyOptions
 	{
@@ -36,7 +38,7 @@ namespace FarNet.Support
 	}
 
 	/// <summary>
-	/// TEST ONLY.
+	/// For internal use.
 	/// </summary>
 	public struct BufferCell
 	{
@@ -143,7 +145,7 @@ namespace FarNet.Support
 	}
 
 	/// <summary>
-	/// TEST ONLY.
+	/// For internal use.
 	/// </summary>
 	public interface IRawUI
 	{
@@ -153,6 +155,8 @@ namespace FarNet.Support
 		KeyInfo ReadKey(ReadKeyOptions options);
 		///
 		BufferCell[,] GetBufferContents(Place rectangle);
+		///
+		string ConsoleTitle { get; }
 		///
 		void ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill);
 		///

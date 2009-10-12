@@ -871,7 +871,6 @@ namespace FarNet
 			_destination = destination;
 			_names = names;
 		}
-		
 		/// <summary>
 		/// Destination directory path.
 		/// </summary>
@@ -879,13 +878,38 @@ namespace FarNet
 		{
 			get { return _destination; }
 		}
-		
 		/// <summary>
 		/// Alternate destination names (if <see cref="IPluginPanelInfo.AutoAlternateNames"/> is set) or null.
 		/// </summary>
 		public IList<string> Names
 		{
 			get { return _names; }
+		}
+	}
+
+	/// <summary>
+	/// Arguments of <see cref="IPluginPanel.PuttingFiles"/>.
+	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
+	/// </summary>
+	public class PuttingFilesEventArgs : FilesEventArgs
+	{
+		string _source;
+
+		/// <param name="files">Files to process.</param>
+		/// <param name="mode">Combination of the operation mode flags.</param>
+		/// <param name="move">Files are moved.</param>
+		/// <param name="source">Source path to get files from.</param>
+		public PuttingFilesEventArgs(IList<FarFile> files, OperationModes mode, bool move, string source)
+			: base(files, mode, move)
+		{
+			_source = source;
+		}
+		/// <summary>
+		/// Source directory path.
+		/// </summary>
+		public string Source
+		{
+			get { return _source; }
 		}
 	}
 
@@ -1108,7 +1132,7 @@ namespace FarNet
 		/// <summary>
 		/// Raised to put files on copy\move operation.
 		/// </summary>
-		event EventHandler<FilesEventArgs> PuttingFiles;
+		event EventHandler<PuttingFilesEventArgs> PuttingFiles;
 		/// <summary>
 		/// Rised to create a new directory in the file system emulated by the plugin.
 		/// </summary>
