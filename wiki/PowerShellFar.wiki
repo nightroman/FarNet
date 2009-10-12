@@ -1,4 +1,4 @@
-#summary PowerShell V2 CTP3 host for Far Manager 2.x
+#summary PowerShell V2 host for Far Manager 2.x
 
 = Introduction =
 
