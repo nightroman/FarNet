@@ -618,7 +618,7 @@ namespace FarNet
 		/// <param name="paletteColor">Palette color.</param>
 		ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
 		/// <summary>
-		/// TEST ONLY.
+		/// For internal use.
 		/// </summary>
 		IRawUI RawUI { get; }
 		/// <summary>

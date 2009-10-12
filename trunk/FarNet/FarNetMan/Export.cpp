@@ -126,10 +126,10 @@ int WINAPI GetFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber
 	return 0;
 }
 
-int WINAPI PutFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
+int WINAPI PutFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode)
 {
 	__START;
-	return PanelSet::AsPutFiles(hPlugin, panelItem, itemsNumber, move, opMode);
+	return PanelSet::AsPutFiles(hPlugin, panelItem, itemsNumber, move, srcPath, opMode);
 	__END;
 	return 0;
 }

@@ -592,7 +592,7 @@ int PanelSet::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 	return e.Ignore;
 }
 
-int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, int opMode)
+int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode)
 {
 	LOG_AUTO(3, "PutFiles");
 
@@ -616,7 +616,7 @@ int PanelSet::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNu
 		}
 	}
 
-	FilesEventArgs e(files, (OperationModes)opMode, move != 0);
+	PuttingFilesEventArgs e(files, (OperationModes)opMode, move != 0, (srcPath ? gcnew String(srcPath) : String::Empty));
 	pp->_PuttingFiles(pp, %e);
 	return e.Ignore ? false : true;
 }
