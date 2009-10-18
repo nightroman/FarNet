@@ -1,5 +1,31 @@
 http://code.google.com/p/farnet/
 
+= 4.2.6 =
+
+MULTIPLE PANELS
+(true for FarNet panels, simulation for Far file panels)
+
+FarNet plugin panels on closing by Close() restore the original file panel
+current and selected items. (Far does not do this itself, see Mantis 1114).
+
+FarNet panel tools (available from the plugin menu) allow to work with multiple
+FarNet panels and to simulate work with multiple standard Far file panels. You
+can:
+-- push any FarNet plugin panel for later use (as usual);
+-- shelve any standard Far file panel, i.e. keep its state (new feature!);
+-- pop/unshelve previously pushed/shelved panels; the shown panel restores its
+state: current and selected items and sort and view modes (new for file panels
++ restoring of selection is new for FarNet plugin panels).
+
+OTHER CHANGES
+
+*) IPanel: new method SelectNames(). It is introduced for *restoring* of the
+selection (see above), but it can be used for other selection tasks as well.
+
+*) IFar: removed method PushedPanels(). It is unlikely needed for external use.
+
+*) IPluginPanel: property ActivePath is read only now.
+
 = 4.2.5 =
 
 *) Requires Far 2.0.1160. Event IPluginPanel.PuttingFiles now accepts arguments

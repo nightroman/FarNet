@@ -6,7 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "StdAfx.h"
 #include "PluginInfo.h"
 #include "Far.h"
-#include "PluginSet.h"
+#include "Plugin0.h"
 
 namespace FarNet
 {;
@@ -63,7 +63,7 @@ void BasePluginInfo::Connect()
 	_ClassName = nullptr;
 
 	// register, attach and connect
-	PluginSet::AddPlugin(_Plugin);
+	Plugin0::AddPlugin(_Plugin);
 	_Plugin->Far = Far::Instance;
 	{
 		LOG_AUTO(3, String::Format("{0}.Connect", _Plugin));

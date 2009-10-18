@@ -7,11 +7,12 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-ref class RawUI : IRawUI
+ref class Zoo : IZoo
 {
 public:
 	virtual property int OemCP { int get(); }
 	virtual property String^ ConsoleTitle { String^ get(); }
+	virtual property Object^ Shelve { Object^ get(); }
 public:
 	virtual array<BufferCell,2>^ GetBufferContents(Place rectangle);
 	virtual KeyInfo ReadKey(ReadKeyOptions options);

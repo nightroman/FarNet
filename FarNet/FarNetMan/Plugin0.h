@@ -13,7 +13,7 @@ ref class FilerPluginInfo;
 ref class ToolPluginInfo;
 
 /// <summary> Plugin manager loading plugins </summary>
-ref class PluginSet
+ref class Plugin0
 {
 public:
 	static void AddPlugin(BasePlugin^ plugin);
@@ -29,7 +29,7 @@ private:
 	static void WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools);
 private:
 	// Static
-	PluginSet() {}
+	Plugin0() {}
 	// Registered plugins
 	static List<BasePlugin^> _plugins;
 	static StringDictionary _cache;

@@ -1,0 +1,368 @@
+/*
+FarNet plugin for Far Manager
+Copyright (c) 2005-2009 FarNet Team
+*/
+
+#include "StdAfx.h"
+#include "PanelInfo.h"
+
+namespace FarNet
+{;
+FarPluginPanelInfo::FarPluginPanelInfo()
+: _StartViewMode(PanelViewMode::Undefined)
+{}
+
+void FarPluginPanelInfo::Make12Strings(wchar_t** dst, array<String^>^ src)
+{
+	for(int i = 11; i >= 0; --i)
+	{
+		delete dst[i];
+		if (i >= src->Length)
+			dst[i] = 0;
+		else
+			dst[i] = NewChars(src[i]);
+	}
+}
+
+void FarPluginPanelInfo::Free12Strings(wchar_t* const dst[12])
+{
+	for(int i = 11; i >= 0; --i)
+		delete[] dst[i];
+}
+
+#define FLAG(Prop, Flag) if (Prop) r |= Flag
+int FarPluginPanelInfo::Flags()
+{
+	int r = 0;
+	FLAG(CompareFatTime, OPIF_COMPAREFATTIME);
+	FLAG(ExternalDelete, OPIF_EXTERNALDELETE);
+	FLAG(ExternalGet, OPIF_EXTERNALGET);
+	FLAG(ExternalMakeDirectory, OPIF_EXTERNALMKDIR);
+	FLAG(ExternalPut, OPIF_EXTERNALPUT);
+	FLAG(PreserveCase, OPIF_SHOWPRESERVECASE);
+	FLAG(RawSelection, OPIF_RAWSELECTION);
+	FLAG(RealNames, OPIF_REALNAMES);
+	FLAG(RightAligned, OPIF_SHOWRIGHTALIGNNAMES);
+	FLAG(ShowNamesOnly, OPIF_SHOWNAMESONLY);
+	FLAG(UseAttrHighlighting, OPIF_USEATTRHIGHLIGHTING);
+	FLAG(UseFilter, OPIF_USEFILTER);
+	FLAG(UseHighlighting, OPIF_USEHIGHLIGHTING);
+	FLAG(UseSortGroups, OPIF_USESORTGROUPS);
+	return r;
+}
+#undef FLAG
+
+void FarPluginPanelInfo::CreateInfoLines()
+{
+	if (m->InfoLines)
+	{
+		if (!_InfoItems)
+		{
+			DeleteInfoLines();
+			m->InfoLinesNumber = 0;
+			m->InfoLines = 0;
+			return;
+		}
+
+		if (m->InfoLinesNumber < _InfoItems->Length)
+			DeleteInfoLines();
+	}
+
+	if (!_InfoItems)
+		return;
+
+	m->InfoLinesNumber = _InfoItems->Length;
+	if (!m->InfoLines)
+		m->InfoLines = new InfoPanelLine[_InfoItems->Length];
+
+	for(int i = _InfoItems->Length; --i >= 0;)
+	{
+		DataItem^ s = _InfoItems[i];
+		InfoPanelLine& d = (InfoPanelLine&)m->InfoLines[i];
+		d.Text = NewChars(s->Name);
+		if (s->Data)
+		{
+			d.Data = NewChars(s->Data->ToString());
+			d.Separator = false;
+		}
+		else
+		{
+			d.Data = 0;
+			d.Separator = true;
+		}
+	}
+}
+
+void FarPluginPanelInfo::DeleteInfoLines()
+{
+	if (m->InfoLines)
+	{
+		for(int i = m->InfoLinesNumber; --i >= 0;)
+		{
+			delete m->InfoLines[i].Text;
+			delete m->InfoLines[i].Data;
+		}
+
+		delete[] m->InfoLines;
+		m->InfoLines = 0;
+	}
+}
+
+PanelModeInfo^ FarPluginPanelInfo::GetMode(PanelViewMode viewMode)
+{
+	int i = int(viewMode);
+	if (i < 0 || i > 9)
+		throw gcnew ArgumentException("viewMode");
+
+	if (!_Modes)
+		return nullptr;
+
+	return _Modes[i];
+}
+
+void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
+{
+	assert(s != nullptr);
+
+	d.ColumnTypes = NewChars(s->ColumnTypes);
+	d.ColumnWidths = NewChars(s->ColumnWidths);
+	d.StatusColumnTypes = NewChars(s->StatusColumnTypes);
+	d.StatusColumnWidths = NewChars(s->StatusColumnWidths);
+
+	if (s->ColumnTitles && s->ColumnTitles->Length)
+	{
+		d.ColumnTitles = new wchar_t*[s->ColumnTitles->Length + 1];
+		d.ColumnTitles[s->ColumnTitles->Length] = 0;
+		for(int i = s->ColumnTitles->Length; --i >= 0;)
+			d.ColumnTitles[i] = NewChars(s->ColumnTitles[i]);
+	}
+
+	d.DetailedStatus = s->IsDetailedStatus;
+	d.FullScreen = s->IsFullScreen;
+}
+
+void FreePanelMode(const ::PanelMode& d)
+{
+	delete d.ColumnTypes;
+	delete d.ColumnWidths;
+	delete d.StatusColumnTypes;
+	delete d.StatusColumnWidths;
+
+	if (d.ColumnTitles)
+	{
+		for(int i = 0; d.ColumnTitles[i]; ++i)
+			delete d.ColumnTitles[i];
+		delete d.ColumnTitles;
+	}
+}
+
+void FarPluginPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo)
+{
+	// index
+	int i = int(viewMode);
+	if (i < 0 || i > 9)
+		throw gcnew ArgumentOutOfRangeException("viewMode");
+
+	// types
+	if (ES(modeInfo->ColumnTypes))
+		throw gcnew ArgumentException("Column types must be defined.");
+
+	// titles
+	if (modeInfo->ColumnTitles)
+	{
+		// eval column number by types delimited by comma
+		int nb = 1;
+		for each(char c in modeInfo->ColumnTypes)
+			if (c == ',')
+				++nb;
+
+		// test title number (or Far will read crap)
+		// '<' will do, but let it be '!='
+		if (modeInfo->ColumnTitles->Length != nb)
+			throw gcnew ArgumentException("Column titles number does not match column types.");
+	}
+
+	// ensure managed array
+	if (!_Modes)
+		_Modes = gcnew array<PanelModeInfo^>(10);
+
+	// no native info yet, just keep data
+	if (!m)
+	{
+		_Modes[i] = modeInfo;
+		return;
+	}
+
+	// native modes?
+	if (m->PanelModesArray)
+	{
+		// free
+		if (_Modes[i])
+		{
+			FreePanelMode(m->PanelModesArray[i]);
+			memset((void*)&m->PanelModesArray[i], 0, sizeof(::PanelMode));
+		}
+	}
+	// no native modes, create empty
+	else
+	{
+		::PanelMode* modes = new PanelMode[10];
+		memset(modes, 0, 10 * sizeof(::PanelMode));
+
+		m->PanelModesArray = modes;
+		m->PanelModesNumber = 10;
+	}
+
+	// init
+	if (modeInfo)
+		InitPanelMode((::PanelMode&)m->PanelModesArray[i], modeInfo);
+
+	// keep data
+	_Modes[i] = modeInfo;
+}
+
+void FarPluginPanelInfo::CreateModes()
+{
+	assert(m != nullptr);
+	assert(_Modes != nullptr);
+	assert(!m->PanelModesArray);
+
+	::PanelMode* modes = new PanelMode[10];
+	memset(modes, 0, 10 * sizeof(::PanelMode));
+
+	m->PanelModesArray = modes;
+	m->PanelModesNumber = 10;
+
+	for(int i = 10; --i >= 0;)
+	{
+		PanelModeInfo^ s = _Modes[i];
+		if (s)
+			InitPanelMode(modes[i], s);
+	}
+}
+
+void FarPluginPanelInfo::DeleteModes()
+{
+	assert(m != nullptr);
+
+	if (!m->PanelModesArray)
+		return;
+
+	assert(_Modes && _Modes->Length == 10);
+
+	for(int i = 10; --i >= 0;)
+	{
+		if (_Modes[i])
+			FreePanelMode(m->PanelModesArray[i]);
+	}
+
+	delete[] m->PanelModesArray;
+	m->PanelModesNumber = 0;
+	m->PanelModesArray = 0;
+}
+
+void FarPluginPanelInfo::InfoItems::set(array<DataItem^>^ value)
+{
+	_InfoItems = value;
+	if (m)
+	{
+		DeleteInfoLines();
+		CreateInfoLines();
+	}
+}
+
+#define SETKEYBAR(Name, Data)\
+	void FarPluginPanelInfo::SetKeyBar##Name(array<String^>^ labels)\
+{\
+	_keyBar##Name = labels;\
+	if (!m) return;\
+	if (m->KeyBar)\
+{\
+	if (labels)\
+	Make12Strings((wchar_t**)m->KeyBar->Data, labels);\
+else\
+	Free12Strings((wchar_t**)m->KeyBar->Data);\
+	return;\
+}\
+	if (labels)\
+{\
+	m->KeyBar = new KeyBarTitles;\
+	memset((void*)m->KeyBar, 0, sizeof(KeyBarTitles));\
+	Make12Strings((wchar_t**)m->KeyBar->Data, labels);\
+}\
+}
+
+SETKEYBAR(Alt, AltTitles)
+SETKEYBAR(AltShift, AltShiftTitles)
+SETKEYBAR(Ctrl, CtrlTitles)
+SETKEYBAR(CtrlAlt, CtrlAltTitles)
+SETKEYBAR(CtrlShift, CtrlShiftTitles)
+SETKEYBAR(Main, Titles)
+SETKEYBAR(Shift, ShiftTitles)
+
+OpenPluginInfo& FarPluginPanelInfo::Make()
+{
+	if (m)
+		return *m;
+
+	m = new OpenPluginInfo;
+	memset(m, 0, sizeof(*m));
+	m->StructSize = sizeof(*m);
+
+	m->Flags = Flags();
+
+	m->StartSortOrder = _StartSortDesc;
+	m->StartSortMode = int(_StartSortMode);
+	m->StartPanelMode = int(_StartViewMode) + 0x30;
+
+	m->CurDir = NewChars(_CurrentDirectory);
+	m->Format = NewChars(_FormatName);
+	m->HostFile = NewChars(_HostFile);
+	m->PanelTitle = NewChars(_Title);
+
+	SetKeyBarAlt(_keyBarAlt);
+	SetKeyBarAltShift(_keyBarAltShift);
+	SetKeyBarCtrl(_keyBarCtrl);
+	SetKeyBarCtrlAlt(_keyBarCtrlAlt);
+	SetKeyBarCtrlShift(_keyBarCtrlShift);
+	SetKeyBarMain(_keyBarMain);
+	SetKeyBarShift(_keyBarShift);
+
+	if (_InfoItems)
+		CreateInfoLines();
+
+	if (_Modes)
+		CreateModes();
+
+	return *m;
+}
+
+void FarPluginPanelInfo::Free()
+{
+	if (m)
+	{
+		delete[] m->CurDir;
+		delete[] m->Format;
+		delete[] m->HostFile;
+		delete[] m->PanelTitle;
+
+		DeleteInfoLines();
+		DeleteModes();
+
+		if (m->KeyBar)
+		{
+			Free12Strings(m->KeyBar->AltShiftTitles);
+			Free12Strings(m->KeyBar->AltTitles);
+			Free12Strings(m->KeyBar->CtrlAltTitles);
+			Free12Strings(m->KeyBar->CtrlShiftTitles);
+			Free12Strings(m->KeyBar->CtrlTitles);
+			Free12Strings(m->KeyBar->ShiftTitles);
+			Free12Strings(m->KeyBar->Titles);
+			delete m->KeyBar;
+		}
+
+		delete m;
+		m = 0;
+	}
+}
+}

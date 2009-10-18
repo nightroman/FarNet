@@ -5,11 +5,11 @@ Copyright (c) 2005-2009 FarNet Team
 
 #include "StdAfx.h"
 #include "PanelFileCollection.h"
+#include "Panel1.h"
 
 namespace FarNet
 {;
-
-PanelFileEnumerator::PanelFileEnumerator(FarPanel^ panel, FileType type, int count)
+PanelFileEnumerator::PanelFileEnumerator(Panel1^ panel, FileType type, int count)
 : _Panel(panel)
 , _Type(type)
 , _Count(count)
@@ -44,7 +44,7 @@ void PanelFileEnumerator::Reset()
 	_Index = -1;
 }
 
-PanelFileCollection::PanelFileCollection(FarPanel^ panel, FileType type)
+PanelFileCollection::PanelFileCollection(Panel1^ panel, FileType type)
 : _Panel(panel)
 , _Type(type)
 , _Count(type == ShownFile ? panel->GetShownFileCount() : panel->GetSelectedFileCount())

@@ -4,7 +4,7 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "EditorHost.h"
+#include "Editor0.h"
 #include "Editor.h"
 #include "Far.h"
 #include "Wrappers.h"
@@ -12,7 +12,7 @@ Copyright (c) 2005-2009 FarNet Team
 namespace FarNet
 {;
 //! Values.CopyTo() is not used because of different return type.
-array<IEditor^>^ EditorHost::Editors()
+array<IEditor^>^ Editor0::Editors()
 {
 	array<IEditor^>^ r = gcnew array<IEditor^>(_editors.Count);
 	int i = 0;
@@ -22,7 +22,7 @@ array<IEditor^>^ EditorHost::Editors()
 }
 
 //! For exturnal use.
-Editor^ EditorHost::GetCurrentEditor()
+Editor^ Editor0::GetCurrentEditor()
 {
 	AutoEditorInfo ei(true);
 
@@ -42,7 +42,7 @@ Editor^ EditorHost::GetCurrentEditor()
 	return _editorCurrent;
 }
 
-int EditorHost::AsProcessEditorEvent(int type, void* param)
+int Editor0::AsProcessEditorEvent(int type, void* param)
 {
 	switch(type)
 	{
@@ -78,9 +78,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 			// event
 			Far::Instance->OnEditorOpened(editor);
 			if (_anyEditor._Opened)
-				_anyEditor._Opened(editor, EventArgs::Empty);
+				_anyEditor._Opened(editor, nullptr);
 			if (editor->_Opened)
-				editor->_Opened(editor, EventArgs::Empty);
+				editor->_Opened(editor, nullptr);
 		}
 		break;
 	case EE_CLOSE:
@@ -100,9 +100,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 
 			// event, after the above
 			if (_anyEditor._Closed)
-				_anyEditor._Closed(editor, EventArgs::Empty);
+				_anyEditor._Closed(editor, nullptr);
 			if (editor->_Closed)
-				editor->_Closed(editor, EventArgs::Empty);
+				editor->_Closed(editor, nullptr);
 
 			// delete the file after all
 			DeleteSourceOptional(editor->_FileName, editor->DeleteSource);
@@ -132,9 +132,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 
 			Editor^ ed = GetCurrentEditor();
 			if (_anyEditor._Saving)
-				_anyEditor._Saving(ed, EventArgs::Empty);
+				_anyEditor._Saving(ed, nullptr);
 			if (ed->_Saving)
-				ed->_Saving(ed, EventArgs::Empty);
+				ed->_Saving(ed, nullptr);
 		}
 		break;
 	case EE_GOTFOCUS:
@@ -152,9 +152,9 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 			
 			// event
 			if (_anyEditor._GotFocus)
-				_anyEditor._GotFocus(editor, EventArgs::Empty);
+				_anyEditor._GotFocus(editor, nullptr);
 			if (editor->_GotFocus)
-				editor->_GotFocus(editor, EventArgs::Empty);
+				editor->_GotFocus(editor, nullptr);
 		}
 		break;
 	case EE_KILLFOCUS:
@@ -167,16 +167,16 @@ int EditorHost::AsProcessEditorEvent(int type, void* param)
 				return 0;
 			
 			if (_anyEditor._LosingFocus)
-				_anyEditor._LosingFocus(ed, EventArgs::Empty);
+				_anyEditor._LosingFocus(ed, nullptr);
 			if (ed->_LosingFocus)
-				ed->_LosingFocus(ed, EventArgs::Empty);
+				ed->_LosingFocus(ed, nullptr);
 		}
 		break;
 	}
 	return 0;
 }
 
-int EditorHost::AsProcessEditorInput(const INPUT_RECORD* rec)
+int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 {
 	Editor^ editor = GetCurrentEditor();
 	while (_fastGetString > 0)
