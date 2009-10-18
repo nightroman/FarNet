@@ -8,9 +8,9 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-ref class EditorHost
+ref class Editor0
 {
-	EditorHost() {}
+	Editor0() {}
 internal:
 	static array<IEditor^>^ Editors();
 	static Editor^ GetCurrentEditor();

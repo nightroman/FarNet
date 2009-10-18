@@ -505,10 +505,6 @@ namespace FarNet
 		/// </remarks>
 		char CodeToChar(int code);
 		/// <summary>
-		/// Gets stacked panels.
-		/// </summary>
-		IPluginPanel[] PushedPanels();
-		/// <summary>
 		/// Shows FarNet panel menu.
 		/// </summary>
 		/// <param name="showPushCommand">Show "Push" command.</param>
@@ -618,10 +614,6 @@ namespace FarNet
 		/// <param name="paletteColor">Palette color.</param>
 		ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
 		/// <summary>
-		/// For internal use.
-		/// </summary>
-		IRawUI RawUI { get; }
-		/// <summary>
 		/// Gets the active directory path.
 		/// </summary>
 		/// <remarks>
@@ -629,6 +621,10 @@ namespace FarNet
 		/// If there are no suitable panels it returns an empty string.
 		/// </remarks>
 		string ActivePath { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		IZoo Zoo { get; }
 	}
 
 	/// <summary>

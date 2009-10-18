@@ -156,14 +156,15 @@ namespace FarNet
 		/// </summary>
 		Place Window { get; }
 		/// <summary>
-		/// Closes the current plugin panel.
+		/// Closes the plugin panel and opens the original file panel.
 		/// </summary>
 		/// <remarks>
-		/// Bug [_090321_210416]: the current Far panel item depends on the current plugin panel item.
+		/// Mantis 1114: the current original panel item depends on the current plugin panel item on closing.
+		/// It is resolved for FarNet panels, the original current and even selected items should be restored.
 		/// </remarks>
-		void Close();
+		void Close(); // _090321_210416
 		/// <summary>
-		/// Closes the current plugin panel.
+		/// Closes the plugin panel and opens a file panel with the specified path.
 		/// </summary>
 		/// <param name="path">
 		/// Name of the directory that will be set in the panel after closing the plugin (or {null|empty}).
@@ -171,7 +172,7 @@ namespace FarNet
 		/// </param>
 		void Close(string path);
 		/// <summary>
-		/// Is this a left panel? Far 1.71.2348
+		/// Gets true/false if the panel if left/right.
 		/// </summary>
 		bool IsLeft { get; }
 		/// <summary>
@@ -229,6 +230,18 @@ namespace FarNet
 		/// Unselects all shown items. See <see cref="Redraw()"/>.
 		/// </summary>
 		void UnselectAll();
+		/// <summary>
+		/// Select panel items with specified names.
+		/// </summary>
+		/// <param name="names">Names to be selected. Null or empty collection is fine.</param>
+		/// <remarks>
+		/// Input and panel names are processed as case sensitive, not found input names are ignored.
+		/// </remarks>
+		void SelectNames(string[] names);
+		/// <summary>
+		/// Pushes or puts the panel to the internal panel shelve.
+		/// </summary>
+		void Push();
 	}
 
 	/// <summary>
@@ -966,10 +979,6 @@ namespace FarNet
 		/// <param name="oldPanel">Old panel to be replaced.</param>
 		void Open(IPluginPanel oldPanel);
 		/// <summary>
-		/// Pushes the panel to the stack and shows a standard Far panel.
-		/// </summary>
-		void Push();
-		/// <summary>
 		/// True if the panel is opened.
 		/// </summary>
 		bool IsOpened { get; }
@@ -1021,9 +1030,9 @@ namespace FarNet
 		/// <seealso cref="TypeId"/>
 		object Host { get; set; }
 		/// <summary>
-		/// <see cref="IFar.ActivePath"/> at the moment of start.
+		/// Gets <see cref="IFar.ActivePath"/> saved when the panel starts.
 		/// </summary>
-		string ActivePath { get; set; }
+		string ActivePath { get; }
 		/// <summary>
 		/// Use this to set the panel properties.
 		/// For better performance set its properties only when they are really changed.
@@ -1057,11 +1066,19 @@ namespace FarNet
 		/// <seealso cref="Idled"/>
 		bool IdleUpdate { get; set; }
 		/// <summary>
-		/// Raised to get a plugin <see cref="Info"/> data. Normally you don't have to use this but
-		/// if info is changed externally you may check and update really changed properties.
+		/// Raised to get a plugin <see cref="Info"/> data. Use it only when it is absolutely needed.
 		/// </summary>
 		/// <remarks>
 		/// <c>PowerShell</c> handlers should be added via <c>$Psf.WrapEventHandler()</c> (workaround for Find mode).
+		/// <para>
+		/// Normally you don't really have to use this event and it is not recommended to use it for many reasons:
+		/// it is called frequently and it is expensive due to internal technical details; it may have issues if
+		/// the panel data are accessed during this call, even for reading only. 
+		/// </para>
+		/// <para>
+		/// The only reasonable case to use this event is when <see cref="Info"/> depends on some external data
+		/// that may be changed externally, that is not from this panel event handlers.
+		/// </para>
 		/// </remarks>
 		event EventHandler GettingInfo;
 		/// <summary>

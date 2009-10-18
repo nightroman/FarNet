@@ -10,7 +10,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-//! See EditorHost::Editors().
+//! See Editor0::Editors().
 array<IViewer^>^ ViewerHost::Viewers()
 {
 	array<IViewer^>^ r = gcnew array<IViewer^>(_viewers.Count);
@@ -86,9 +86,9 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 
 			// event
 			if (_anyViewer._Opened)
-				_anyViewer._Opened(viewer, EventArgs::Empty);
+				_anyViewer._Opened(viewer, nullptr);
 			if (viewer->_Opened)
-				viewer->_Opened(viewer, EventArgs::Empty);
+				viewer->_Opened(viewer, nullptr);
 		}
 		break;
 	case VE_CLOSE:
@@ -107,9 +107,9 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 
 			// event, after the above
 			if (_anyViewer._Closed)
-				_anyViewer._Closed(viewer, EventArgs::Empty);
+				_anyViewer._Closed(viewer, nullptr);
 			if (viewer->_Closed)
-				viewer->_Closed(viewer, EventArgs::Empty);
+				viewer->_Closed(viewer, nullptr);
 
 			// delete the file after all
 			DeleteSourceOptional(viewer->_FileName, viewer->DeleteSource);
@@ -127,9 +127,9 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 
 			// event
 			if (_anyViewer._GotFocus)
-				_anyViewer._GotFocus(viewer, EventArgs::Empty);
+				_anyViewer._GotFocus(viewer, nullptr);
 			if (viewer->_GotFocus)
-				viewer->_GotFocus(viewer, EventArgs::Empty);
+				viewer->_GotFocus(viewer, nullptr);
 		}
 		break;
 	case VE_KILLFOCUS:
@@ -144,9 +144,9 @@ int ViewerHost::AsProcessViewerEvent(int type, void* param)
 
 			// event
 			if (_anyViewer._LosingFocus)
-				_anyViewer._LosingFocus(viewer, EventArgs::Empty);
+				_anyViewer._LosingFocus(viewer, nullptr);
 			if (viewer->_LosingFocus)
-				viewer->_LosingFocus(viewer, EventArgs::Empty);
+				viewer->_LosingFocus(viewer, nullptr);
 		}
 		break;
 	}

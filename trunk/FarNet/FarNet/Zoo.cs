@@ -147,7 +147,7 @@ namespace FarNet.Support
 	/// <summary>
 	/// For internal use.
 	/// </summary>
-	public interface IRawUI
+	public interface IZoo
 	{
 		///
 		void FlushInputBuffer();
@@ -165,5 +165,7 @@ namespace FarNet.Support
 		void SetBufferContents(Place rectangle, BufferCell fill);
 		///
 		int OemCP { get; }
+		///
+		object Shelve { get; }
 	}
 }
