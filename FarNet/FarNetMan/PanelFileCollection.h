@@ -4,15 +4,16 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 #pragma once
-#include "Panel.h"
 #include "Wrappers.h"
 
 namespace FarNet
 {;
+ref class Panel1;
+
 ref class PanelFileEnumerator : IEnumerator<FarFile^>
 {
 internal:
-	PanelFileEnumerator(FarPanel^ panel, FileType type, int count);
+	PanelFileEnumerator(Panel1^ panel, FileType type, int count);
 public:
 	~PanelFileEnumerator() {}
 	virtual property FarFile^ Current { FarFile^ get(); }
@@ -21,7 +22,7 @@ public:
 private:
 	virtual property Object^ CurrentObject { Object^ get() sealed = System::Collections::IEnumerator::Current::get { return Current; } }
 protected:
-	FarPanel^ _Panel;
+	Panel1^ _Panel;
 	FarFile^ _File;
 	FileType _Type;
 	int _Count;
@@ -31,7 +32,7 @@ protected:
 ref class PanelFileCollection : IList<FarFile^>
 {
 internal:
-	PanelFileCollection(FarPanel^ panel, FileType type);
+	PanelFileCollection(Panel1^ panel, FileType type);
 public:
 	virtual bool Contains(FarFile^) { throw gcnew NotSupportedException; }
 	virtual bool Remove(FarFile^) { throw gcnew NotSupportedException; }
@@ -48,7 +49,7 @@ public:
 private:
 	virtual System::Collections::IEnumerator^ GetEnumerator2() sealed = System::Collections::IEnumerable::GetEnumerator { return GetEnumerator(); }
 protected:
-	FarPanel^ _Panel;
+	Panel1^ _Panel;
 	FileType _Type;
 	int _Count;
 };

@@ -5,9 +5,9 @@ Copyright (c) 2005-2009 FarNet Team
 
 #include "stdafx.h"
 #include "Dialog.h"
-#include "EditorHost.h"
+#include "Editor0.h"
 #include "Far.h"
-#include "Panel.h"
+#include "Panel0.h"
 #include "ViewerHost.h"
 
 PluginStartupInfo Info;
@@ -114,14 +114,14 @@ int WINAPI ConfigureW(int itemIndex)
 void WINAPI ClosePluginW(HANDLE hPlugin)
 {
 	__START;
-	PanelSet::AsClosePlugin(hPlugin);
+	Panel0::AsClosePlugin(hPlugin);
 	__END;
 }
 
 int WINAPI GetFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode)
 {
 	__START;
-	return PanelSet::AsGetFiles(hPlugin, panelItem, itemsNumber, move, destPath, opMode);
+	return Panel0::AsGetFiles(hPlugin, panelItem, itemsNumber, move, destPath, opMode);
 	__END;
 	return 0;
 }
@@ -129,34 +129,34 @@ int WINAPI GetFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber
 int WINAPI PutFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode)
 {
 	__START;
-	return PanelSet::AsPutFiles(hPlugin, panelItem, itemsNumber, move, srcPath, opMode);
+	return Panel0::AsPutFiles(hPlugin, panelItem, itemsNumber, move, srcPath, opMode);
 	__END;
 	return 0;
 }
 
 int WINAPI GetFindDataW(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
-	return PanelSet::AsGetFindData(hPlugin, pPanelItem, pItemsNumber, opMode);
+	return Panel0::AsGetFindData(hPlugin, pPanelItem, pItemsNumber, opMode);
 }
 
 void WINAPI FreeFindDataW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber)
 {
 	__START;
-	PanelSet::AsFreeFindData(hPlugin, panelItem, itemsNumber);
+	Panel0::AsFreeFindData(hPlugin, panelItem, itemsNumber);
 	__END;
 }
 
 void WINAPI GetOpenPluginInfoW(HANDLE hPlugin, OpenPluginInfo* info)
 {
 	__START;
-	PanelSet::AsGetOpenPluginInfo(hPlugin, info);
+	Panel0::AsGetOpenPluginInfo(hPlugin, info);
 	__END;
 }
 
 int WINAPI SetDirectoryW(HANDLE hPlugin, const wchar_t* dir, int opMode)
 {
 	__START;
-	return PanelSet::AsSetDirectory(hPlugin, dir, opMode);
+	return Panel0::AsSetDirectory(hPlugin, dir, opMode);
 	__END;
 	return false;
 }
@@ -164,7 +164,7 @@ int WINAPI SetDirectoryW(HANDLE hPlugin, const wchar_t* dir, int opMode)
 int WINAPI DeleteFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
 {
 	__START;
-	return PanelSet::AsDeleteFiles(hPlugin, panelItem, itemsNumber, opMode);
+	return Panel0::AsDeleteFiles(hPlugin, panelItem, itemsNumber, opMode);
 	__END;
 	return false;
 }
@@ -172,7 +172,7 @@ int WINAPI DeleteFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNum
 int WINAPI MakeDirectoryW(HANDLE hPlugin, const wchar_t** name, int opMode)
 {
 	__START;
-	return PanelSet::AsMakeDirectory(hPlugin, name, opMode);
+	return Panel0::AsMakeDirectory(hPlugin, name, opMode);
 	__END;
 	return 0;
 }
@@ -196,7 +196,7 @@ int WINAPI ProcessDialogEventW(int id, void* param)
 int WINAPI ProcessEditorEventW(int type, void* param)
 {
 	__START;
-	return EditorHost::AsProcessEditorEvent(type, param);
+	return Editor0::AsProcessEditorEvent(type, param);
 	__END;
 	return 0;
 }
@@ -204,7 +204,7 @@ int WINAPI ProcessEditorEventW(int type, void* param)
 int WINAPI ProcessEditorInputW(const INPUT_RECORD* rec)
 {
 	__START;
-	return EditorHost::AsProcessEditorInput(rec);
+	return Editor0::AsProcessEditorInput(rec);
 	__END;
 	return true; // on problems consider event as processed to avoid default actions
 }
@@ -212,7 +212,7 @@ int WINAPI ProcessEditorInputW(const INPUT_RECORD* rec)
 int WINAPI ProcessEventW(HANDLE hPlugin, int id, void* param)
 {
 	__START;
-	return PanelSet::AsProcessEvent(hPlugin, id, param);
+	return Panel0::AsProcessEvent(hPlugin, id, param);
 	__END;
 	return false;
 }
@@ -220,7 +220,7 @@ int WINAPI ProcessEventW(HANDLE hPlugin, int id, void* param)
 int WINAPI ProcessKeyW(HANDLE hPlugin, int key, unsigned int controlState)
 {
 	__START;
-	return PanelSet::AsProcessKey(hPlugin, key, controlState);
+	return Panel0::AsProcessKey(hPlugin, key, controlState);
 	__END;
 	return true; // ignore, there was a problem
 }

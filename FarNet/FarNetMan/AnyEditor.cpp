@@ -5,7 +5,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 #include "StdAfx.h"
 #include "AnyEditor.h"
-#include "EditorHost.h"
+#include "Editor0.h"
 #include "Far.h"
 #include "SelectionCollection.h"
 #include "EditorLine.h"

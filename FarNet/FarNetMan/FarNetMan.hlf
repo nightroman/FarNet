@@ -49,26 +49,44 @@ important feature "PostStep" which works in these areas, too.
 $#Panels menu#
 ~Contents~@Contents@
 
-#Push current panel#
+#Push/Shelve the panel#
 
-If the menu is called from the Far plugin menu (F11) and the current panel is
-any FarNet panel of any plugin then the first menu item is "Push panel". When
-you select it the current panel is pushed to the internal panel stack for later
-use and the standard Far panel is shown. You can push any number of panels.
+If the current panel is any FarNet plugin panel then you can push it to the
+internal shelve for later use. The pushed panel is replaced with a Far file
+panel.
+
+If the current panel is a Far file panel then you can shelve it: to remember
+its path, current and selected items, sort and view modes. The shelved panel
+remains current.
+
+You can push/shelve any number of panels and pop/unshelve them later.
 
 #Switch full screen#
 
 This command allows to switch "full screen" mode for any view mode of any
-FarNet panel. So that you may actually have 20 modes = 10 as usual + 10 the
-same but with switched "full screen".
+FarNet plugin panel. Thus, you may actually use 20 modes = 10 as usual + 10
+the same with switched "full screen".
 
-#Show panel list#
+#Close the panel#
 
-If there are previously pushed panels in the internal stack then this menu shows
-titles of these panels. When you select one then the selected panel is shown and
-removed from the internal stack. The shown panel normally should have restored
-its current item and settings like panel mode, sort mode and etc. Selection is
-not restored.
+Closes the plugin panel. It can be any plugin: FarNet or native. Note that for
+native plugins on closing the original Far panel state is not restored.
+
+#Pop/Unshelve [Enter]#
+
+If there are previously pushed/shelved panels then this menu shows titles of
+these panels. When you select one then the selected panel is restored and its
+original current item, selected items, sort and view modes normally should be
+restored, too.
+
+Pushed FarNet panels are popped, i.e. removed from the internal shelve. Shelved
+Far panels are unshelved, i.e. not removed from the shelve, they are kind of
+panel bookmarks that can be used several times.
+
+#Pop/Unshelve [Del]#
+
+Removes the selected shelved panel information from the internal shelve. It is
+ignored if the selected item is not a shelved panel.
 
 
 @MenuConfig

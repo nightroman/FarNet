@@ -4,7 +4,8 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "RawUI.h"
+#include "Zoo.h"
+#include "Shelve.h"
 
 namespace FarNet
 {;
@@ -13,7 +14,7 @@ void ThrowWithLastError(String^ msg)
 	throw gcnew OperationCanceledException(msg + " error code: " + GetLastError());
 }
 
-void RawUI::FlushInputBuffer()
+void Zoo::FlushInputBuffer()
 {
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
 	if (hStdin == INVALID_HANDLE_VALUE)
@@ -23,7 +24,7 @@ void RawUI::FlushInputBuffer()
 		ThrowWithLastError("FlushConsoleInputBuffer");
 }
 
-KeyInfo RawUI::ReadKey(ReadKeyOptions options)
+KeyInfo Zoo::ReadKey(ReadKeyOptions options)
 {
 	if (int(options & (ReadKeyOptions::IncludeKeyDown | ReadKeyOptions::IncludeKeyUp)) == 0)
 		throw gcnew ArgumentException("Argument 'options': either IncludeKeyDown, IncludeKeyUp or both must be set.");
@@ -78,7 +79,7 @@ KeyInfo RawUI::ReadKey(ReadKeyOptions options)
 	}
 }
 
-void RawUI::ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill)
+void Zoo::ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -105,7 +106,7 @@ void RawUI::ScrollBufferContents(Place source, Point destination, Place clip, Bu
 		ThrowWithLastError("ScrollConsoleScreenBuffer");
 }
 
-array<BufferCell,2>^ RawUI::GetBufferContents(Place rectangle)
+array<BufferCell,2>^ Zoo::GetBufferContents(Place rectangle)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -168,7 +169,7 @@ array<BufferCell,2>^ RawUI::GetBufferContents(Place rectangle)
 	}
 }
 
-void RawUI::SetBufferContents(Point origin, array<BufferCell,2>^ contents)
+void Zoo::SetBufferContents(Point origin, array<BufferCell,2>^ contents)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -209,7 +210,7 @@ void RawUI::SetBufferContents(Point origin, array<BufferCell,2>^ contents)
 	}
 }
 
-void RawUI::SetBufferContents(Place rectangle, BufferCell fill)
+void Zoo::SetBufferContents(Place rectangle, BufferCell fill)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -248,19 +249,24 @@ void RawUI::SetBufferContents(Place rectangle, BufferCell fill)
 	}
 }
 
-int RawUI::OemCP::get()
+int Zoo::OemCP::get()
 {
 	return ::GetOEMCP();
 }
 
 // _091007_034112
-String^ RawUI::ConsoleTitle::get()
+String^ Zoo::ConsoleTitle::get()
 {
 	wchar_t buf[0x5fb5];
 	if (::GetConsoleTitle(buf, sizeof(buf)))
 		return gcnew String(buf);
 
 	return String::Empty;
+}
+
+Object^ Zoo::Shelve::get()
+{
+	return %ShelveInfo::_stack;
 }
 
 }

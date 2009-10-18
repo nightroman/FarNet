@@ -4,20 +4,20 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "PluginSet.h"
+#include "Plugin0.h"
 #include "Far.h"
 #include "PluginInfo.h"
 
 namespace FarNet
 {;
-void PluginSet::AddPlugin(BasePlugin^ plugin)
+void Plugin0::AddPlugin(BasePlugin^ plugin)
 {
 	if (!_plugins.Contains(plugin))
 		_plugins.Add(plugin);
 }
 
 //! Don't use Far UI
-void PluginSet::UnloadPlugin(BasePlugin^ plugin)
+void Plugin0::UnloadPlugin(BasePlugin^ plugin)
 {
 	LOG_AUTO(3, "Unload plugin " + plugin);
 
@@ -40,7 +40,7 @@ void PluginSet::UnloadPlugin(BasePlugin^ plugin)
 }
 
 //! Don't use Far UI
-void PluginSet::UnloadPlugins()
+void Plugin0::UnloadPlugins()
 {
 	for(int i  = _plugins.Count; --i >= 0;)
 		UnloadPlugin(_plugins[i]);
@@ -48,7 +48,7 @@ void PluginSet::UnloadPlugins()
 	_plugins.Clear();
 }
 
-void PluginSet::LoadPlugins()
+void Plugin0::LoadPlugins()
 {
 	ReadCache();
 
@@ -64,7 +64,7 @@ void PluginSet::LoadPlugins()
 	}
 }
 
-void PluginSet::LoadFromDirectory(String^ dir)
+void Plugin0::LoadFromDirectory(String^ dir)
 {
 	try
 	{
@@ -91,7 +91,7 @@ void PluginSet::LoadFromDirectory(String^ dir)
 	}
 }
 
-void PluginSet::LoadFromConfig(String^ file, String^ dir)
+void Plugin0::LoadFromConfig(String^ file, String^ dir)
 {
 	for each(String^ line in File::ReadAllLines(file))
 	{
@@ -107,7 +107,7 @@ void PluginSet::LoadFromConfig(String^ file, String^ dir)
 	}
 }
 
-void PluginSet::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
+void Plugin0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 {
 	// loaded from cache?
 	String^ dllName = Path::GetFileName(assemblyPath);
@@ -159,7 +159,7 @@ void PluginSet::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 		WriteCache(assemblyPath, %commands, %editors, %filers, %tools);
 }
 
-int PluginSet::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
+int Plugin0::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
 {
 	// create
 	BasePlugin^ instance = (BasePlugin^)Activator::CreateInstance(type);
@@ -216,7 +216,7 @@ int PluginSet::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<Ed
 	return 1;
 }
 
-void PluginSet::ReadCache()
+void Plugin0::ReadCache()
 {
 	RegistryKey^ keyCache;
 	try
@@ -340,7 +340,7 @@ void PluginSet::ReadCache()
 	}
 }
 
-void PluginSet::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
+void Plugin0::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
 {
 	FileInfo fi(assemblyPath);
 	RegistryKey^ keyDll;

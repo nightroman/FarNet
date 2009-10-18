@@ -436,7 +436,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\EditorHost.cpp"
+				RelativePath=".\Editor0.cpp"
 				>
 			</File>
 			<File
@@ -500,7 +500,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Panel.cpp"
+				RelativePath=".\Panel0.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Panel1.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Panel2.cpp"
 				>
 			</File>
 			<File
@@ -508,19 +516,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PanelInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Plugin0.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PluginInfo.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\PluginSet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RawUI.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\SelectionCollection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Shelve.cpp"
 				>
 			</File>
 			<File
@@ -579,6 +591,10 @@
 				RelativePath=".\Wrappers.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Zoo.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -622,7 +638,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\EditorHost.h"
+				RelativePath=".\Editor0.h"
 				>
 			</File>
 			<File
@@ -686,7 +702,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Panel.h"
+				RelativePath=".\Panel0.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Panel1.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Panel2.h"
 				>
 			</File>
 			<File
@@ -694,7 +718,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PanelInfo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Headers.c\plugin.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Plugin0.h"
 				>
 			</File>
 			<File
@@ -702,15 +734,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PluginSet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RawUI.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SelectionCollection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Shelve.h"
 				>
 			</File>
 			<File
@@ -735,6 +763,10 @@
 			</File>
 			<File
 				RelativePath=".\Wrappers.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Zoo.h"
 				>
 			</File>
 		</Filter>

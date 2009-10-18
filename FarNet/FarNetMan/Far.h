@@ -10,7 +10,7 @@ namespace FarNet
 {;
 ref class CommandPluginInfo;
 ref class Editor;
-ref class EditorHost;
+ref class Editor0;
 ref class EditorPluginInfo;
 ref class FilerPluginInfo;
 ref class ToolPluginInfo;
@@ -33,7 +33,6 @@ public:
 	virtual property IntPtr HWnd { IntPtr get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
 	virtual property IPanel^ Panel2 { IPanel^ get(); }
-	virtual property IRawUI^ RawUI { IRawUI^ get(); }
 	virtual property IViewer^ Viewer { IViewer^ get(); }
 	virtual property String^ ActivePath { String^ get(); }
 	virtual property String^ PluginPath { String^ get(); }
@@ -41,6 +40,7 @@ public:
 	virtual property String^ RootKey { String^ get(); }
 	virtual property Version^ Version { System::Version^ get(); }
 	virtual property WindowType WindowType { FarNet::WindowType get(); }
+	virtual property IZoo^ Zoo { IZoo^ get(); }
 public:
 	virtual array<int>^ CreateKeySequence(String^ keys);
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
@@ -53,7 +53,6 @@ public:
 	virtual IViewer^ CreateViewer();
 public:
 	virtual array<IEditor^>^ Editors();
-	virtual array<IPluginPanel^>^ PushedPanels();
 	virtual array<IViewer^>^ Viewers();
 	virtual bool Commit();
 	virtual Char CodeToChar(int code);

@@ -6,18 +6,19 @@ Copyright (c) 2005-2009 FarNet Team
 #include "StdAfx.h"
 #include "Far.h"
 #include "Dialog.h"
-#include "EditorHost.h"
+#include "Editor0.h"
 #include "InputBox.h"
 #include "KeyMacroHost.h"
 #include "ListMenu.h"
 #include "Menu.h"
 #include "Message.h"
-#include "Panel.h"
+#include "Panel0.h"
+#include "Panel2.h"
+#include "Plugin0.h"
 #include "PluginInfo.h"
-#include "PluginSet.h"
-#include "RawUI.h"
+#include "Shelve.h"
 #include "ViewerHost.h"
-#include "Wrappers.h"
+#include "Zoo.h"
 
 namespace FarNet
 {;
@@ -26,27 +27,25 @@ Far::Far()
 
 void Far::StartFar()
 {
-	if (_instance) throw gcnew InvalidOperationException("Already started.");
+	if (_instance)
+		throw gcnew InvalidOperationException("Already started.");
+
 	_instance = gcnew Far;
 	_instance->Start();
-
-	// versions
-	//DWORD vn; Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
-	//int v1 = (vn & 0x0000ff00)>>8, v2 = vn & 0x000000ff, v3 = (int)((long)vn&0xffff0000)>>16;
 }
 
 void Far::Start()
 {
 	_hMutex = CreateMutex(NULL, FALSE, NULL);
 	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
-	PluginSet::LoadPlugins();
+	Plugin0::LoadPlugins();
 }
 
 //! Don't use Far UI
 void Far::Stop()
 {
 	CloseHandle(_hMutex);
-	PluginSet::UnloadPlugins();
+	Plugin0::UnloadPlugins();
 	_instance = nullptr;
 
 	delete[] _pConfig;
@@ -64,7 +63,7 @@ String^ Far::ActivePath::get()
 	if (!panel)
 		return String::Empty;
 
-	FarPluginPanel^ plugin = dynamic_cast<FarPluginPanel^>(panel); 
+	FarNet::Panel2^ plugin = dynamic_cast<FarNet::Panel2^>(panel); 
 	if (plugin)
 		return plugin->ActivePath;
 	
@@ -315,7 +314,7 @@ void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 
 void Far::Unregister(BasePlugin^ plugin)
 {
-	PluginSet::UnloadPlugin(plugin);
+	Plugin0::UnloadPlugin(plugin);
 }
 
 void Far::Msg(String^ body)
@@ -415,7 +414,7 @@ FarMacroState Far::MacroState::get()
 
 array<IEditor^>^ Far::Editors()
 {
-	return EditorHost::Editors();
+	return Editor0::Editors();
 }
 
 array<IViewer^>^ Far::Viewers()
@@ -425,7 +424,7 @@ array<IViewer^>^ Far::Viewers()
 
 IAnyEditor^ Far::AnyEditor::get()
 {
-	return %EditorHost::_anyEditor;
+	return %Editor0::_anyEditor;
 }
 
 IAnyViewer^ Far::AnyViewer::get()
@@ -629,7 +628,7 @@ ILine^ Far::Line::get()
 
 IEditor^ Far::Editor::get()
 {
-	return EditorHost::GetCurrentEditor();
+	return Editor0::GetCurrentEditor();
 }
 
 IViewer^ Far::Viewer::get()
@@ -639,12 +638,12 @@ IViewer^ Far::Viewer::get()
 
 IPanel^ Far::Panel::get()
 {
-	return PanelSet::GetPanel(true);
+	return Panel0::GetPanel(true);
 }
 
 IPanel^ Far::Panel2::get()
 {
-	return PanelSet::GetPanel(false);
+	return Panel0::GetPanel(false);
 }
 
 IInputBox^ Far::CreateInputBox()
@@ -1008,17 +1007,17 @@ void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgro
 
 IPluginPanel^ Far::CreatePluginPanel()
 {
-	return gcnew FarPluginPanel;
+	return gcnew FarNet::Panel2;
 }
 
 IPluginPanel^ Far::GetPluginPanel(Guid id)
 {
-	return PanelSet::GetPluginPanel(id);
+	return Panel0::GetPluginPanel(id);
 }
 
 IPluginPanel^ Far::GetPluginPanel(Type^ hostType)
 {
-	return PanelSet::GetPluginPanel(hostType);
+	return Panel0::GetPluginPanel(hostType);
 }
 
 String^ Far::Input(String^ prompt)
@@ -1215,7 +1214,7 @@ HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataS
 	if (_registeredFiler.Count == 0)
 		return INVALID_HANDLE_VALUE;
 
-	PanelSet::BeginOpenMode();
+	Panel0::BeginOpenMode();
 	ValueUserScreen userscreen;
 
 	try
@@ -1241,9 +1240,9 @@ HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataS
 			it->Handler(this, e);
 
 			// open a posted panel
-			if (PanelSet::PostedPanel)
+			if (Panel0::PostedPanel)
 			{
-				HANDLE h = PanelSet::AddPluginPanel(PanelSet::PostedPanel);
+				HANDLE h = Panel0::AddPluginPanel(Panel0::PostedPanel);
 				return h;
 			}
 		}
@@ -1252,13 +1251,13 @@ HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataS
 	}
 	finally
 	{
-		PanelSet::EndOpenMode();
+		Panel0::EndOpenMode();
 	}
 }
 
 HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 {
-	PanelSet::BeginOpenMode();
+	Panel0::BeginOpenMode();
 	ValueUserScreen userscreen;
 
 	// call a plugin; it may create a panel waiting for opening
@@ -1356,9 +1355,9 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 		}
 
 		// open a posted panel
-		if (PanelSet::PostedPanel)
+		if (Panel0::PostedPanel)
 		{
-			HANDLE h = PanelSet::AddPluginPanel(PanelSet::PostedPanel);
+			HANDLE h = Panel0::AddPluginPanel(Panel0::PostedPanel);
 			return h;
 		}
 
@@ -1367,83 +1366,115 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 	}
 	finally
 	{
-		PanelSet::EndOpenMode();
+		Panel0::EndOpenMode();
 	}
-}
-
-array<IPluginPanel^>^ Far::PushedPanels()
-{
-	array<IPluginPanel^>^ r = gcnew array<IPluginPanel^>(PanelSet::_stack.Count);
-	for(int i = PanelSet::_stack.Count; --i >= 0;)
-		r[i] = PanelSet::_stack[i];
-	return r;
 }
 
 void Far::ShowPanelMenu(bool showPushCommand)
 {
-	Menu m;
-	m.AutoAssignHotkeys = true;
-	m.HelpTopic = "MenuPanels";
-	m.ShowAmpersands = true;
-	m.Title = ".NET panel tools";
+	String^ sPushShelveThePanel = "Push/Shelve the panel";
+	String^ sSwitchFullScreen = "Switch full screen";
+	String^ sClose = "Close the panel";
+	
+	Menu menu;
+	menu.AutoAssignHotkeys = true;
+	menu.HelpTopic = "MenuPanels";
+	menu.ShowAmpersands = true;
+	menu.Title = ".NET panel tools";
+	menu.BreakKeys->Add(VKeyCode::Delete);
 
-	// "Push" command
-	if (showPushCommand)
+	FarItem^ mi;
+	for(;; menu.Items->Clear())
 	{
-		FarPluginPanel^ pp = dynamic_cast<FarPluginPanel^>(Panel);
-		if (pp)
-		{
-			FarItem^ mi;
-
-			mi = m.Add("Push current panel");
-			mi->Data = pp;
-
-			mi = m.Add("Switch full screen");
-			mi->Data = pp;
-		}
-		else
-		{
-			showPushCommand = false;
-		}
-	}
-
-	// pushed panels
-	if (PanelSet::_stack.Count)
-	{
+		// Push/Shelve
 		if (showPushCommand)
-			m.Add("Show panel")->IsSeparator = true;
-
-		for(int i = PanelSet::_stack.Count; --i >= 0;)
 		{
-			FarPluginPanel^ pp = PanelSet::_stack[i];
-			FarItem^ mi = m.Add(JoinText(pp->_info.Title, pp->_info.CurrentDirectory));
-			mi->Data = pp;
+			IPanel^ panel = Panel;
+			if (panel->IsPlugin)
+			{
+				FarNet::Panel2^ plugin = dynamic_cast<FarNet::Panel2^>(Panel);
+				if (plugin)
+				{
+					mi = menu.Add(sPushShelveThePanel);
+					mi->Data = plugin;
+
+					mi = menu.Add(sSwitchFullScreen);
+					mi->Data = plugin;
+				}
+				else
+				{
+					showPushCommand = false;
+				}
+
+				mi = menu.Add(sClose);
+				mi->Data = panel;
+			}
+			else if (panel->Type == PanelType::File)
+			{
+				FarItem^ mi = menu.Add(sPushShelveThePanel);
+				mi->Data = panel;
+			}
 		}
-	}
 
-	// go
-	if (!m.Show())
+		// Pop/Unshelve
+		if (ShelveInfo::_stack.Count)
+		{
+			menu.Add("Pop/Unshelve")->IsSeparator = true;
+
+			for each(ShelveInfo^ si in ShelveInfo::_stack)
+			{
+				FarItem^ mi = menu.Add(si->Title);
+				mi->Data = si;
+			}
+		}
+
+		// go
+		if (!menu.Show())
+			return;
+
+		FarItem^ item = menu.Items[menu.Selected];
+		Object^ data = item->Data;
+
+		// [Delete]:
+		if (menu.BreakKey == VKeyCode::Delete)
+		{
+			// case: remove shelved file panel;
+			// do not remove plugin panels because of their shutdown bypassed
+			ShelveInfoPanel^ shelve = dynamic_cast<ShelveInfoPanel^>(data);
+			if (shelve)
+				ShelveInfo::_stack.Remove(shelve);
+
+			continue;
+		}
+
+		// Push/Shelve
+		if ((Object^)item->Text == (Object^)sPushShelveThePanel)
+		{
+			((Panel1^)data)->Push();
+			return;
+		}
+
+		// Full screen:
+		if ((Object^)item->Text == (Object^)sSwitchFullScreen)
+		{
+			FarNet::Panel2^ pp = (FarNet::Panel2^)data;
+			pp->SwitchFullScreen();
+			return;
+		}
+
+		// Close panel:
+		if ((Object^)item->Text == (Object^)sClose)
+		{
+			((Panel1^)data)->Close();
+			return;
+		}
+
+		// Pop/Unshelve
+		ShelveInfo^ shelve = (ShelveInfo^)data;
+		shelve->Unshelve();
+
 		return;
-
-	// push
-	if (showPushCommand && m.Selected == 0)
-	{
-		FarPluginPanel^ pp = (FarPluginPanel^)m.SelectedData;
-		pp->Push();
-		return;
 	}
-
-	// full screen
-	if (showPushCommand && m.Selected == 1)
-	{
-		FarPluginPanel^ pp = (FarPluginPanel^)m.SelectedData;
-		pp->SwitchFullScreen();
-		return;
-	}
-
-	// pop
-	FarPluginPanel^ pp = (FarPluginPanel^)m.SelectedData;
-	pp->Open();
 }
 
 void Far::AssertHotkeys()
@@ -1519,25 +1550,25 @@ void Far::OpenMenu(ToolOptions from)
 
 void Far::OpenConfig()
 {
-	Menu m;
-	m.AutoAssignHotkeys = true;
-	m.HelpTopic = "MenuConfig";
-	m.Title = "FarNet plugins";
+	Menu menu;
+	menu.AutoAssignHotkeys = true;
+	menu.HelpTopic = "MenuConfig";
+	menu.Title = "FarNet plugins";
 
-	m.Add(Res::CommandPlugins + " : " + (_registeredCommand.Count));
-	m.Add(Res::EditorPlugins + "  : " + (_registeredEditor.Count));
-	m.Add(Res::FilerPlugins + "   : " + (_registeredFiler.Count));
-	m.Add(String::Empty)->IsSeparator = true;
-	m.Add(Res::PanelsTools + "    : " + (_toolPanels.Count - 1));
-	m.Add(Res::EditorTools + "    : " + (_toolEditor.Count - 1));
-	m.Add(Res::ViewerTools + "    : " + (_toolViewer.Count - 1));
-	m.Add(Res::DialogTools + "    : " + (_toolDialog.Count - 1));
-	m.Add(Res::ConfigTools + "    : " + (_toolConfig.Count - 1));
-	m.Add(Res::DiskTools + "      : " + (_toolDisk.Count - 1));
+	menu.Add(Res::CommandPlugins + " : " + (_registeredCommand.Count));
+	menu.Add(Res::EditorPlugins + "  : " + (_registeredEditor.Count));
+	menu.Add(Res::FilerPlugins + "   : " + (_registeredFiler.Count));
+	menu.Add(String::Empty)->IsSeparator = true;
+	menu.Add(Res::PanelsTools + "    : " + (_toolPanels.Count - 1));
+	menu.Add(Res::EditorTools + "    : " + (_toolEditor.Count - 1));
+	menu.Add(Res::ViewerTools + "    : " + (_toolViewer.Count - 1));
+	menu.Add(Res::DialogTools + "    : " + (_toolDialog.Count - 1));
+	menu.Add(Res::ConfigTools + "    : " + (_toolConfig.Count - 1));
+	menu.Add(Res::DiskTools + "      : " + (_toolDisk.Count - 1));
 
-	while(m.Show())
+	while(menu.Show())
 	{
-		switch(m.Selected)
+		switch(menu.Selected)
 		{
 		case 0:
 			if (_registeredCommand.Count)
@@ -1582,38 +1613,38 @@ void Far::OpenConfig()
 
 void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^ list)
 {
-	Menu m;
-	m.Title = title;
-	m.HelpTopic = option == ToolOptions::Disk ? "ConfigDisk" : "ConfigTool";
+	Menu menu;
+	menu.Title = title;
+	menu.HelpTopic = option == ToolOptions::Disk ? "ConfigDisk" : "ConfigTool";
 
 	ToolPluginInfo^ selected;
 	List<ToolPluginInfo^> sorted(list);
 	for(;;)
 	{
-		m.Items->Clear();
+		menu.Items->Clear();
 		sorted.Sort(gcnew ToolPluginAliasComparer(option));
 		for each(ToolPluginInfo^ it in sorted)
 		{
 			if (ES(it->Name))
 				continue;
 			if (it == selected)
-				m.Selected = m.Items->Count;
-			FarItem^ mi = m.Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Key);
+				menu.Selected = menu.Items->Count;
+			FarItem^ mi = menu.Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Key);
 			mi->Data = it;
 		}
 
 		// case: disk
 		if (option == ToolOptions::Disk)
 		{
-			while(m.Show()) {}
+			while(menu.Show()) {}
 			return;
 		}
 
 		// show others
-		if (!m.Show())
+		if (!menu.Show())
 			return;
 
-		FarItem^ mi = m.Items[m.Selected];
+		FarItem^ mi = menu.Items[menu.Selected];
 		selected = (ToolPluginInfo^)mi->Data;
 
 		InputBox ib;
@@ -1638,20 +1669,20 @@ void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^
 
 void Far::OnConfigCommand()
 {
-	Menu m;
-	m.AutoAssignHotkeys = true;
-	m.HelpTopic = "ConfigCommand";
-	m.Title = Res::CommandPlugins;
+	Menu menu;
+	menu.AutoAssignHotkeys = true;
+	menu.HelpTopic = "ConfigCommand";
+	menu.Title = Res::CommandPlugins;
 
 	for each(CommandPluginInfo^ it in _registeredCommand)
 	{
-		FarItem^ mi = m.Add(it->Prefix->PadRight(4) + " " + it->Key);
+		FarItem^ mi = menu.Add(it->Prefix->PadRight(4) + " " + it->Key);
 		mi->Data = it;
 	}
 
-	while(m.Show())
+	while(menu.Show())
 	{
-		FarItem^ mi = m.Items[m.Selected];
+		FarItem^ mi = menu.Items[menu.Selected];
 		CommandPluginInfo^ it = (CommandPluginInfo^)mi->Data;
 
 		InputBox ib;
@@ -1693,20 +1724,20 @@ void Far::OnConfigCommand()
 
 void Far::OnConfigEditor()
 {
-	Menu m;
-	m.AutoAssignHotkeys = true;
-	m.HelpTopic = "ConfigEditor";
-	m.Title = Res::EditorPlugins;
+	Menu menu;
+	menu.AutoAssignHotkeys = true;
+	menu.HelpTopic = "ConfigEditor";
+	menu.Title = Res::EditorPlugins;
 
 	for each(EditorPluginInfo^ it in _registeredEditor)
 	{
-		FarItem^ mi = m.Add(it->Key);
+		FarItem^ mi = menu.Add(it->Key);
 		mi->Data = it;
 	}
 
-	while(m.Show())
+	while(menu.Show())
 	{
-		FarItem^ mi = m.Items[m.Selected];
+		FarItem^ mi = menu.Items[menu.Selected];
 		EditorPluginInfo^ it = (EditorPluginInfo^)mi->Data;
 
 		InputBox ib;
@@ -1735,20 +1766,20 @@ void Far::OnConfigEditor()
 
 void Far::OnConfigFiler()
 {
-	Menu m;
-	m.AutoAssignHotkeys = true;
-	m.HelpTopic = "ConfigFiler";
-	m.Title = Res::FilerPlugins;
+	Menu menu;
+	menu.AutoAssignHotkeys = true;
+	menu.HelpTopic = "ConfigFiler";
+	menu.Title = Res::FilerPlugins;
 
 	for each(FilerPluginInfo^ it in _registeredFiler)
 	{
-		FarItem^ mi = m.Add(it->Key);
+		FarItem^ mi = menu.Add(it->Key);
 		mi->Data = it;
 	}
 
-	while(m.Show())
+	while(menu.Show())
 	{
-		FarItem^ mi = m.Items[m.Selected];
+		FarItem^ mi = menu.Items[menu.Selected];
 		FilerPluginInfo^ it = (FilerPluginInfo^)mi->Data;
 
 		InputBox ib;
@@ -1812,7 +1843,7 @@ void Far::OnEditorOpened(FarNet::Editor^ editor)
 		//! tradeoff: catch all to call other plugins, too
 		try
 		{
-			it->Handler(editor, EventArgs::Empty);
+			it->Handler(editor, nullptr);
 		}
 		catch(Exception^ e)
 		{
@@ -1863,9 +1894,9 @@ ConsoleColor Far::GetPaletteForeground(PaletteColor paletteColor)
 	return ConsoleColor(color & 0xF);
 }
 
-IRawUI^ Far::RawUI::get()
+IZoo^ Far::Zoo::get()
 {
-	return gcnew FarNet::RawUI;
+	return gcnew FarNet::Zoo;
 }
 
 void Far::AsProcessSynchroEvent(int type, void* /*param*/)

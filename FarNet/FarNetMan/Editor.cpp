@@ -5,7 +5,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 #include "StdAfx.h"
 #include "Editor.h"
-#include "EditorHost.h"
+#include "Editor0.h"
 #include "EditorLine.h"
 #include "EditorLineCollection.h"
 #include "EditorTextWriter.h"
@@ -93,7 +93,7 @@ void Editor::Open(OpenMode mode)
 	// - it fires READ event and the host sets the Id;
 	// - in any case after this ID = -1 means an error
 	_id = -1;
-	EditorHost::_editorWaiting = this;
+	Editor0::_editorWaiting = this;
 	Info.Editor(
 		pinFileName,
 		pinTitle,
@@ -116,7 +116,7 @@ void Editor::Open(OpenMode mode)
 	if (_id == -1)
 	{
 		// - error or a file was already opened in the editor and its window is activated
-		Editor^ editor = EditorHost::GetCurrentEditor();
+		Editor^ editor = Editor0::GetCurrentEditor();
 		if (editor)
 		{
 			String^ fileName1 = Path::GetFullPath(_FileName);
