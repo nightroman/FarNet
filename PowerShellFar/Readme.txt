@@ -1,7 +1,7 @@
 Plugin   : PowerShellFar
 Category : Development
 Version  : 2.2.7
-Release  : 2009.10.18
+Release  : 2009.10.20
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, PowerShell (included)

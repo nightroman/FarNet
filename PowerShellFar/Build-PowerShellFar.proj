@@ -13,14 +13,14 @@
 	</Target>
 
 	<Target Name="Clean">
-		<MSBuild Projects="..\FarNetDev\Build-FarNetDev.proj" Targets="Clean" />
+		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Clean" />
 		<RemoveDir Directories="bin;obj;Debug;Release" />
 		<Delete Files="PowerShellFar.ncb;PowerShellFar.sln.cache;Bench\Test\Test-Zoo.clixml" />
 	</Target>
 
 	<!--Install FarNet and PSF bin-->
 	<Target Name="Install-Bin">
-		<MSBuild Projects="..\FarNetDev\Build-FarNetDev.proj" Targets="Install" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Install" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true" />
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')" />
 	</Target>
@@ -39,7 +39,7 @@
 	<Target Name="Uninstall">
 		<Error Condition="'$(Install)' == ''" />
 		<RemoveDir Directories="$(Install)\Plugins.NET\PowerShellFar" />
-		<MSBuild Projects="..\FarNetDev\Build-FarNetDev.proj" Targets="Uninstall" />
+		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Uninstall" />
 	</Target>
 
 	<!--Archive PSF to distribute-->
@@ -76,11 +76,11 @@
 	<!--Archive all to distribute-->
 	<Target Name="Archive2" DependsOnTargets="Archive">
 		<!--Archive FarNet-->
-		<MSBuild Projects="..\FarNetDev\Build-FarNetDev.proj" Targets="Archive" />
+		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Archive" />
 		<!--Archive API documentation-->
 		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z PowerShellFar.chm" WorkingDirectory="$(Install)" />
 		<!--Move FarNet and API documentation archives-->
-		<CreateItem Include="..\FarNetDev\FarNet.*.7z;$(Install)\PowerShellFar.*.7z">
+		<CreateItem Include="..\FarNet\FarNet.*.7z;$(Install)\PowerShellFar.*.7z">
 			<Output ItemName="Archive2" TaskParameter="Include" />
 		</CreateItem>
 		<Copy SourceFiles="@(Archive2)" DestinationFolder="."/>

@@ -4,12 +4,12 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41B8AD22-D6A2-4056-92DD-7BC963D754DC}"
 	ProjectSection(SolutionItems) = preProject
 		..\About-Dev.txt = ..\About-Dev.txt
-		..\FarNetDev\FarNet\Build-FarNet.proj = ..\FarNetDev\FarNet\Build-FarNet.proj
-		..\FarNetDev\Build-FarNetDev.proj = ..\FarNetDev\Build-FarNetDev.proj
-		..\FarNetDev\FarNetMan\Build-FarNetMan.proj = ..\FarNetDev\FarNetMan\Build-FarNetMan.proj
+		..\FarNet\FarNet\Build-FarNet.proj = ..\FarNet\FarNet\Build-FarNet.proj
+		..\FarNet\Build-FarNetDev.proj = ..\FarNet\Build-FarNetDev.proj
+		..\FarNet\FarNetMan\Build-FarNetMan.proj = ..\FarNet\FarNetMan\Build-FarNetMan.proj
 		Build-PowerShellFar.proj = Build-PowerShellFar.proj
-		..\FarNetDev\Far.exe.config = ..\FarNetDev\Far.exe.config
-		..\FarNetDev\FarNetMan\FarNetMan.hlf = ..\FarNetDev\FarNetMan\FarNetMan.hlf
+		..\FarNet\Far.exe.config = ..\FarNet\Far.exe.config
+		..\FarNet\FarNetMan\FarNetMan.hlf = ..\FarNet\FarNetMan\FarNetMan.hlf
 		Resources\PowerShellFar.ps1 = Resources\PowerShellFar.ps1
 		PowerShellFar.types.ps1xml = PowerShellFar.types.ps1xml
 	EndProjectSection
@@ -19,9 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellFar", "PowerShell
 		{A5F07EDB-2242-4A92-BFD1-48396007C625} = {A5F07EDB-2242-4A92-BFD1-48396007C625}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet", "..\FarNetDev\FarNet\FarNet.csproj", "{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet", "..\FarNet\FarNet\FarNet.csproj", "{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FarNetMan", "..\FarNetDev\FarNetMan\FarNetMan.vcproj", "{A5F07EDB-2242-4A92-BFD1-48396007C625}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FarNetMan", "..\FarNet\FarNetMan\FarNetMan.vcproj", "{A5F07EDB-2242-4A92-BFD1-48396007C625}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Build", "Build.vcproj", "{A253D0DE-1626-4E50-A3D1-8C0A533901B3}"
 	ProjectSection(ProjectDependencies) = postProject
