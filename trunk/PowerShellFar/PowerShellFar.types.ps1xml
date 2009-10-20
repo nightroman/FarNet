@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!--
+## NOTE: normally you should not modify the file
+## - doing this may interfere with PowerShellFar;
+## - you may lose your changes with new versions.
+## Use your own file and load it by Update-TypeData.
+-->
+<Types xmlns="http://schemas.microsoft.com/PowerShell/TypeData/2007/04">
+	<Type>
+		<!-- Files and directories -->
+		<Name>System.IO.FileSystemInfo</Name>
+		<Members>
+			<!-- Far description property from Descript.ion, Files.bbs (depends on Far options) -->
+			<CodeProperty>
+				<Name>FarDescription</Name>
+				<GetCodeReference>
+					<TypeName>PowerShellFar.CodeMethods</TypeName>
+					<MethodName>FileSystemInfoGetFarDescription</MethodName>
+				</GetCodeReference>
+				<SetCodeReference>
+					<TypeName>PowerShellFar.CodeMethods</TypeName>
+					<MethodName>FileSystemInfoSetFarDescription</MethodName>
+				</SetCodeReference>
+			</CodeProperty>
+		</Members>
+	</Type>
+</Types>

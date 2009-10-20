@@ -1,0 +1,60 @@
+/*
+PowerShellFar plugin for Far Manager
+Copyright (C) 2006-2009 Roman Kuzmin
+*/
+
+using FarNet.Forms;
+
+namespace PowerShellFar.UI
+{
+	class SettingsDialog
+	{
+		const int x = 25;
+		IDialog _Dialog;
+		IEdit _StartupCode;
+		IEdit _StartupEdit;
+
+		public SettingsDialog()
+		{
+			_Dialog = A.Far.CreateDialog(-1, -1, 77, 8);
+			_Dialog.HelpTopic = A.Psf.HelpTopic + "PluginSettings";
+			_Dialog.AddBox(3, 1, 0, 0, Res.Name);
+
+			_Dialog.AddText(5, -1, 0, "&Main startup code");
+			_StartupCode = _Dialog.AddEdit(x, 0, 71, A.Psf.Settings.PluginStartupCode);
+
+			_Dialog.AddText(5, -1, 0, "&Editor startup code");
+			_StartupEdit = _Dialog.AddEdit(x, 0, 71, A.Psf.Settings.PluginStartupEdit);
+
+			_Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
+			IButton buttonOK = _Dialog.AddButton(0, -1, "Ok");
+			buttonOK.CenterGroup = true;
+			_Dialog.Default = buttonOK;
+			_Dialog.Cancel = _Dialog.AddButton(0, 0, Res.Cancel);
+			_Dialog.Cancel.CenterGroup = true;
+		}
+
+		public bool Show()
+		{
+			while (_Dialog.Show())
+			{
+				_StartupCode.Text = _StartupCode.Text.TrimEnd();
+				_StartupEdit.Text = _StartupEdit.Text.TrimEnd();
+
+				bool needRestart =
+					A.Psf.Settings.PluginStartupCode != _StartupCode.Text ||
+					A.Psf.Settings.PluginStartupEdit != _StartupEdit.Text;
+
+				A.Psf.Settings.PluginStartupCode = _StartupCode.Text;
+				A.Psf.Settings.PluginStartupEdit = _StartupEdit.Text;
+				A.Psf.Settings.Save();
+
+				if (needRestart)
+					A.Far.Msg("Some settings will take effect only when Far restarts.");
+
+				return true;
+			}
+			return false;
+		}
+	}
+}
