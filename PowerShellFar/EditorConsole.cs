@@ -1,0 +1,552 @@
+/*
+PowerShellFar plugin for Far Manager
+Copyright (C) 2006-2009 Roman Kuzmin
+*/
+
+using System;
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using System.Text;
+using System.Text.RegularExpressions;
+using FarNet;
+using FarNet.Forms;
+
+namespace PowerShellFar
+{
+	/// <summary>
+	/// Editor console.
+	/// </summary>
+	class EditorConsole
+	{
+		/// <summary>
+		/// Creates an editor console.
+		/// </summary>
+		/// <remarks>
+		/// With prompt may return null if a user cancels.
+		/// </remarks>
+		public static EditorConsole CreateConsole(bool prompt)
+		{
+			string dir = Path.Combine(A.Psf.AppData, "psfconsole");
+			if (!Directory.Exists(dir))
+				Directory.CreateDirectory(dir);
+
+			int mode = 0;
+			string name = null;
+			if (prompt)
+			{
+				string[] files = Directory.GetFiles(dir, "*.psfconsole");
+				IMenu menu = A.Far.CreateMenu();
+				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Shift);
+				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Ctrl);
+				menu.AutoAssignHotkeys = true;
+				menu.Title = "Open Editor Console";
+				menu.Bottom = "[Shift+|Ctrl+]Enter";
+				menu.Add("* New console or session *");
+				menu.HelpTopic = A.Psf.HelpTopic + "EditorConsoleMenuOpen";
+				if (files.Length > 0)
+				{
+					menu.Add("Saved Consoles").IsSeparator = true;
+					foreach (string file in files)
+						menu.Add(Path.GetFileName(file));
+				}
+				if (!menu.Show())
+					return null;
+
+				switch (menu.BreakKey)
+				{
+					case (VKeyCode.Enter | VKeyMode.Shift): mode = 1; break;
+					case (VKeyCode.Enter | VKeyMode.Ctrl): mode = 2; break;
+				}
+
+				name = menu.Items[menu.Selected].Text;
+				if (name.Length > 0 && name[0] == '*')
+					name = null;
+			}
+
+			// editor
+			IEditor editor = A.Far.CreateEditor();
+
+			// new file, generate a name, set Unicode
+			if (name == null)
+			{
+				name = Kit.ToString(DateTime.Now, "yyMMdd-HHmmss") + ".psfconsole";
+				editor.CodePage = Encoding.Unicode.CodePage;
+				editor.IsNew = true;
+			}
+
+			// do not set code page now
+			editor.FileName = Path.Combine(dir, name);
+
+			// create the console and attach it as the host to avoid conflicts
+			EditorConsole r = new EditorConsole(editor, mode);
+			editor.Host = r;
+			return r;
+		}
+
+		public IEditor Editor { get; private set; }
+
+		FarUI FarUI;
+		FarHost FarHost;
+		Runspace Runspace;
+		PowerShell PowerShell;
+
+		public EditorConsole(IEditor editor) : this(editor, 0) { }
+
+		public EditorConsole(IEditor editor, int mode)
+		{
+			Editor = editor;
+			Editor.OnKey += OnKey;
+
+			switch (mode)
+			{
+				case 1:
+					OpenLocalSession();
+					break;
+				case 2:
+					OpenRemoteSession();
+					break;
+			}
+		}
+
+		void CloseSession()
+		{
+			if (Runspace != null)
+			{
+				Runspace.Close();
+				Runspace = null;
+			}
+		}
+
+		void EnsureHost()
+		{
+			if (FarHost == null)
+			{
+				Editor.Closed += delegate { CloseSession(); };
+				Editor.CtrlCPressed += OnCtrlCPressed;
+				FarUI = new FarUI();
+				FarHost = new FarHost(FarUI);
+			}
+		}
+
+		void OpenLocalSession()
+		{
+			EnsureHost();
+
+			Runspace = RunspaceFactory.CreateRunspace(FarHost, Runspace.DefaultRunspace.RunspaceConfiguration);
+			Runspace.Open();
+		}
+
+		void OpenRemoteSession()
+		{
+			UI.ConnectionDialog dialog = new UI.ConnectionDialog("New Remote Editor Console");
+			if (!dialog.Show())
+				return;
+
+			string computerName = (dialog.ComputerName.Length == 0 || dialog.ComputerName == ".") ? "localhost" : dialog.ComputerName;
+			PSCredential credential = null;
+			if (dialog.UserName.Length > 0)
+			{
+				credential = NativeMethods.PromptForCredential(null, null, dialog.UserName, string.Empty, PSCredentialTypes.Generic | PSCredentialTypes.Domain, PSCredentialUIOptions.Default);
+				if (credential == null)
+					return;
+			}
+
+			WSManConnectionInfo connectionInfo = new WSManConnectionInfo(false, computerName, 0, null, null, credential);
+
+			EnsureHost();
+
+			Runspace = RunspaceFactory.CreateRunspace(FarHost, connectionInfo);
+			Runspace.Open();
+		}
+
+		//! This method is sync and uses pipeline, that is why we must not null the pipeline async.
+		void OnCtrlCPressed(object sender, EventArgs e)
+		{
+			if (PowerShell != null && PowerShell.InvocationStateInfo.State == PSInvocationState.Running)
+			{
+				//! Stop() tends to hang.
+				PowerShell.BeginStop(AsyncStop, null);
+			}
+		}
+
+		void OnF1()
+		{
+			IMenu menu = A.Far.CreateMenu();
+			menu.Title = "Editor Console";
+			menu.HelpTopic = A.Psf.HelpTopic + "EditorConsole";
+			if (Runspace != null)
+				menu.Add("&Global session").Click = OnGlobalSession;
+			menu.Add("New &local session").Click = delegate { OpenLocalSession(); };
+			menu.Add("New &remote session").Click = delegate { OpenRemoteSession(); };
+			menu.Add("&Help").Click = delegate { A.Far.ShowHelp(A.Psf.AppHome, "EditorConsole", HelpOptions.Path); };
+			menu.Show();
+		}
+
+		void OnGlobalSession(object sender, EventArgs e)
+		{
+			CloseSession();
+		}
+
+		/// <summary>
+		/// Called on key in psfconsole.
+		/// </summary>
+		void OnKey(object sender, KeyEventArgs e)
+		{
+			// drop pipeline now, if any
+			PowerShell = null;
+
+			// skip some keys
+			if (!e.Key.KeyDown || e.Key.CtrlAltShift != ControlKeyStates.None)
+				return;
+
+			// skip if selected
+			if (Editor.Selection.Exists)
+				return;
+
+			switch (e.Key.VirtualKeyCode)
+			{
+				case VKeyCode.Enter:
+					{
+						e.Ignore = true;
+						Invoke();
+						return;
+					}
+				case VKeyCode.Tab:
+					{
+						if (Editor.IsEnd)
+						{
+							e.Ignore = true;
+							if (Runspace == null)
+								EditorKit.ExpandCode(Editor.CurrentLine);
+							else
+								ExpandCode(Editor.CurrentLine);
+
+							Editor.Redraw();
+						}
+						return;
+					}
+				case VKeyCode.Escape:
+					{
+						if (!Editor.IsEnd || Editor.CurrentLine.Length == 0)
+							return;
+
+						e.Ignore = true;
+						ILine line = Editor.CurrentLine;
+						line.Text = string.Empty;
+						line.Pos = 0;
+						Editor.Redraw();
+						return;
+					}
+				case VKeyCode.End:
+					{
+						if (!Editor.IsEnd)
+							return;
+
+						ILine curr = Editor.CurrentLine;
+						if (curr.Pos != curr.Length)
+							return;
+
+						string pref = curr.Text;
+						if (pref.Length > 0 && pref[0] != '*')
+							pref = "^" + Regex.Escape(pref);
+						UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(pref);
+						string code = m.Show();
+						if (code == null)
+							return;
+
+						e.Ignore = true;
+						curr.Text = code;
+						curr.Pos = -1;
+						Editor.Redraw();
+						return;
+					}
+				case VKeyCode.UpArrow:
+					goto case VKeyCode.DownArrow;
+				case VKeyCode.DownArrow:
+					{
+						if (!Editor.IsEnd)
+							return;
+
+						string lastUsedCmd = null;
+						if (History.Cache == null)
+						{
+							// don't lose not empty line!
+							if (Editor.CurrentLine.Length > 0)
+								return;
+							History.Cache = History.GetLines();
+							History.CacheIndex = History.Cache.Length;
+						}
+						else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
+						{
+							lastUsedCmd = History.Cache[History.CacheIndex];
+						}
+						string code;
+						if (e.Key.VirtualKeyCode == 38)
+						{
+							for (; ; )
+							{
+								if (--History.CacheIndex < 0)
+								{
+									code = string.Empty;
+									History.CacheIndex = -1;
+								}
+								else
+								{
+									code = History.Cache[History.CacheIndex];
+									if (code == lastUsedCmd)
+										continue;
+								}
+								break;
+							}
+						}
+						else
+						{
+							for (; ; )
+							{
+								if (++History.CacheIndex >= History.Cache.Length)
+								{
+									code = string.Empty;
+									History.CacheIndex = History.Cache.Length;
+								}
+								else
+								{
+									code = History.Cache[History.CacheIndex];
+									if (code == lastUsedCmd)
+										continue;
+								}
+								break;
+							}
+						}
+
+						e.Ignore = true;
+						ILine curr = Editor.CurrentLine;
+						curr.Text = code;
+						curr.Pos = -1;
+						Editor.Redraw();
+						return;
+					}
+				case VKeyCode.Delete:
+					{
+						if (!Editor.IsEnd)
+							return;
+
+						ILine curr = Editor.CurrentLine;
+						if (curr.Length > 0)
+							return;
+
+						e.Ignore = true;
+
+						Editor.Begin();
+						Point pt = Editor.Cursor;
+						for (int i = pt.Y - 1; i >= 0; --i)
+						{
+							string text = Editor.Lines[i].Text;
+							if (text == "<=")
+							{
+								Editor.Selection.Select(SelectionType.Stream, 0, i, -1, pt.Y);
+								Editor.Selection.Clear();
+								break;
+							}
+							if (text == "=>")
+							{
+								pt = new Point(-1, i + 1);
+								continue;
+							}
+						}
+						Editor.End();
+
+						Editor.Redraw();
+						return;
+					}
+				case VKeyCode.F1:
+					{
+						e.Ignore = true;
+						OnF1();
+						return;
+					}
+				default:
+					{
+						if (e.Key.Character != 0)
+							History.Cache = null;
+						return;
+					}
+			}
+		}
+
+		internal void Invoke()
+		{
+			// current line and script, skip empty
+			ILine curr = Editor.CurrentLine;
+			string code = curr.Text;
+			if (code.Length == 0)
+				return;
+
+			// end?
+			if (!Editor.IsEnd)
+			{
+				// - no, copy code and exit
+				Editor.GoEnd(true);
+				Editor.Insert(code);
+				Editor.Redraw();
+				return;
+			}
+
+			// go end
+			curr.Pos = -1;
+
+			// go async
+			if (Runspace != null)
+			{
+				InvokePipeline(code);
+				return;
+			}
+
+			// invoke
+			EditorOutputWriter2 writer = new EditorOutputWriter2(Editor);
+			Editor.BeginUndo();
+
+			// default runspace
+			A.Psf.InvokePipeline(code, writer, true);
+			if (Editor != A.Far.Editor)
+			{
+				A.Far.Msg(Res.EditorConsoleCannotComplete);
+			}
+			else
+			{
+				if (writer.WriteCount > 0)
+					Editor.Insert("=>\r");
+				else
+					Editor.InsertLine();
+
+				Editor.EndUndo();
+				Editor.Redraw();
+			}
+		}
+
+		void InvokePipeline(string code)
+		{
+			// drop history cache
+			History.Cache = null;
+
+			// push writer
+			FarUI.PushWriter(new EditorOutputWriter1(Editor));
+
+			// invoke
+			try
+			{
+				// history
+				code = code.Trim();
+				if (code.Length > 0 && code[code.Length - 1] != '#' && A.Psf._myLastCommand != code)
+				{
+					History.AddLine(code);
+					A.Psf._myLastCommand = code;
+				}
+
+				// invoke command
+				PowerShell = PowerShell.Create();
+				PowerShell.Runspace = Runspace;
+				PowerShell.Commands.AddScript(code);
+				PowerShell.AddCommand("Out-Default");
+				PowerShell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+
+				Editor.BeginAsync();
+				PowerShell.BeginInvoke<PSObject>(null, null, AsyncInvoke, null);
+			}
+			catch (RuntimeException ex)
+			{
+				A.Far.ShowError(Res.Name, ex);
+			}
+		}
+
+		void AsyncInvoke(IAsyncResult ar)
+		{
+			// end; it may throw, e.g. on [CtrlC]
+			try
+			{
+				PowerShell.EndInvoke(ar);
+			}
+			catch (RuntimeException)
+			{ }
+
+			// write failure
+			if (PowerShell.InvocationStateInfo.State == PSInvocationState.Failed)
+			{
+				using (PowerShell ps = PowerShell.Create())
+				{
+					ps.Runspace = Runspace;
+					A.OutReason(ps, PowerShell.InvocationStateInfo.Reason);
+				}
+			}
+
+			// complete output
+			{
+				EditorOutputWriter1 writer = (EditorOutputWriter1)FarUI.PopWriter();
+				if (writer.WriteCount > 0)
+					Editor.Insert("=>\r");
+				else
+					Editor.InsertLine();
+
+				Editor.EndAsync();
+			}
+
+			// kill
+			PowerShell.Dispose();
+		}
+
+		void AsyncStop(IAsyncResult ar)
+		{
+			PowerShell.EndStop(ar);
+		}
+
+		int _initTabExpansion;
+		public void ExpandCode(ILine editLine)
+		{
+			if (_initTabExpansion == 0)
+			{
+				_initTabExpansion = -1;
+				string path = A.Psf.AppHome + @"\TabExpansion.ps1";
+				if (!File.Exists(path))
+					return;
+
+				string code = File.ReadAllText(path);
+
+				using (PowerShell shell = PowerShell.Create())
+				{
+					shell.Runspace = Runspace;
+					shell.AddScript(code);
+					shell.Invoke();
+				}
+
+				_initTabExpansion = +1;
+			}
+
+			// line and last word
+			string text = editLine.Text;
+			string line = text.Substring(0, editLine.Pos);
+			Match match = Regex.Match(line, @"(?:^|\s)(\S+)$");
+			if (!match.Success)
+				return;
+
+			text = text.Substring(line.Length);
+			string lastWord = match.Groups[1].Value;
+
+			// invoke
+			Collection<PSObject> words;
+			using (PowerShell shell = PowerShell.Create())
+			{
+				shell.Runspace = Runspace;
+				shell.AddScript("TabExpansion $args[0] $args[1]");
+				shell.AddParameters(new object[] { line, lastWord });
+				words = shell.Invoke();
+			}
+
+			// complete expansion
+			EditorKit.ExpandText(editLine, text, line, lastWord, words);
+		}
+
+	}
+}

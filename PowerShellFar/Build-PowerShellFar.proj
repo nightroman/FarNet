@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="Windows-1251"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
+		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+		<ProductVersion>2.2.7</ProductVersion>
+	</PropertyGroup>
+
+	<Target Name="Build">
+		<MSBuild Projects="PowerShellFar.sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+	</Target>
+
+	<Target Name="Clean">
+		<MSBuild Projects="..\FarNetDev\Build-FarNetDev.proj" Targets="Clean" />
+		<RemoveDir Directories="bin;obj;Debug;Release" />
+		<Delete Files="PowerShellFar.ncb;PowerShellFar.sln.cache;Bench\Test\Test-Zoo.clixml" />
+	</Target>
+
+	<!--Install FarNet and PSF bin-->
+	<Target Name="Install-Bin">
+		<MSBuild Projects="..\FarNetDev\Build-FarNetDev.proj" Targets="Install" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')" />
+	</Target>
+
+	<!--Install PSF resource files-->
+	<Target Name="Install-Res">
+		<Copy
+			SourceFiles="PowerShellFar.cfg;PowerShellFar.hlf;PowerShellFar.types.ps1xml;TabExpansion.ps1"
+			DestinationFolder="$(Install)\Plugins.NET\PowerShellFar"
+			SkipUnchangedFiles="true" />
+	</Target>
+
+	<!--Install all. Call it after 'Build'.-->
+	<Target Name="Install" DependsOnTargets="Install-Bin;Install-Res" />
+
+	<Target Name="Uninstall">
+		<Error Condition="'$(Install)' == ''" />
+		<RemoveDir Directories="$(Install)\Plugins.NET\PowerShellFar" />
+		<MSBuild Projects="..\FarNetDev\Build-FarNetDev.proj" Targets="Uninstall" />
+	</Target>
+
+	<!--Archive PSF to distribute-->
+	<Target Name="Archive" DependsOnTargets="Clean">
+		<RemoveDir Directories="Tmp" />
+		<!--Root files-->
+		<CreateItem Include="LICENSE;*.txt;*.ion">
+			<Output ItemName="root_file" TaskParameter="Include" />
+		</CreateItem>
+		<Copy SourceFiles="@(root_file)" DestinationFolder="Tmp" />
+		<!-- Extras-->
+		<Copy SourceFiles="C:\ROM\SET\FARSET\PowerShell.hrc;C:\ROM\SET\FARSET\RomanConsole.hrd;C:\ROM\SET\farset\RomanRainbow.hrd" DestinationFolder="Tmp\Extras" ContinueOnError="true" />
+		<!--Plugin files-->
+		<CreateItem Include="$(Install)\Plugins.NET\PowerShellFar\*">
+			<Output ItemName="plugin_file" TaskParameter="Include" />
+		</CreateItem>
+		<Copy SourceFiles="@(plugin_file)" DestinationFolder="Tmp\Plugin" />
+		<!--Scripts-->
+		<CreateItem Include="Bench\**;Extras\**">
+			<Output ItemName="script_file" TaskParameter="Include" />
+		</CreateItem>
+		<Copy SourceFiles="@(script_file)" DestinationFiles="@(script_file->'Tmp\%(Identity)')" />
+		<!--Source files-->
+		<CreateItem Include="*;Commands\*;Panels\*;Properties\*;Resources\*;UI\*" Exclude="@(root_file);**\*.suo;**\*.user">
+			<Output ItemName="source_file" TaskParameter="Include" />
+		</CreateItem>
+		<Copy SourceFiles="@(source_file)" DestinationFiles="@(source_file->'Tmp\Sources\%(RelativeDir)%(Filename)%(Extension)')" />
+		<!--Archive-->
+		<Exec Command="7z a PowerShellFar.$(ProductVersion).7z .\*" WorkingDirectory="Tmp" />
+		<Copy SourceFiles="Tmp\PowerShellFar.$(ProductVersion).7z" DestinationFolder="." />
+		<RemoveDir Directories="Tmp" />
+	</Target>
+
+	<!--Archive all to distribute-->
+	<Target Name="Archive2" DependsOnTargets="Archive">
+		<!--Archive FarNet-->
+		<MSBuild Projects="..\FarNetDev\Build-FarNetDev.proj" Targets="Archive" />
+		<!--Archive API documentation-->
+		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z PowerShellFar.chm" WorkingDirectory="$(Install)" />
+		<!--Move FarNet and API documentation archives-->
+		<CreateItem Include="..\FarNetDev\FarNet.*.7z;$(Install)\PowerShellFar.*.7z">
+			<Output ItemName="Archive2" TaskParameter="Include" />
+		</CreateItem>
+		<Copy SourceFiles="@(Archive2)" DestinationFolder="."/>
+		<Delete Files="@(Archive2)"/>
+	</Target>
+
+</Project>
