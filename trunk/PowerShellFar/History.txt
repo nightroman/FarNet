@@ -3,6 +3,9 @@ http://code.google.com/p/farnet/
 
 = 2.2.7 =
 
+*) From now on the plugin sources are not in the distributed archive but in the
+SVN repository together with FarNet sources.
+
 *) Folder tree panel: hidden file system folders are processed in a standard
 Far way ([CtrlH]).
 
