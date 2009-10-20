@@ -8,9 +8,9 @@ Copyright (c) 2005-2009 FarNet Team
 
 namespace FarNet
 {;
-ref class ViewerHost
+ref class Viewer0
 {
-	ViewerHost() {}
+	Viewer0() {}
 internal:
 	static array<IViewer^>^ Viewers();
 	static Viewer^ GetCurrentViewer();
