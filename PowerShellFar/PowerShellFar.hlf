@@ -1,0 +1,2170 @@
+.Language=English,English (English)
+.PluginContents=PowerShellFar
+.Options TabSize=4
+
+@Contents
+$#PowerShellFar#
+
+#General#
+
+	~About~@About@
+	~Requirements~@Requirements@
+	~Command line~@CommandLine@
+	~Menu commands~@MenuCommands@
+	~Editor console~@EditorConsole@
+	~Power panel~@PowerPanel@
+	~Folder tree~@FolderTree@
+	~Data panel~@DataPanel@
+	~Tree panel~@TreePanel@
+	~Global objects~@GlobalObjects@
+	~Plugin settings~@PluginSettings@
+
+#Details#
+
+	~Restrictions~@Restrictions@
+	~Commands output~@CommandsOutput@
+	~Background jobs~@BackgroundJobs@
+	~Debugger dialog~@DebuggerDialog@
+	~Frequently asked questions~@FAQ@
+	~PowerShellFar command examples~@Examples@
+
+#Scripts#
+
+	~Suffixes~@Suffix@
+	~Profile-.ps1~@Profile@
+	~Profile-Editor-.ps1~@ProfileEditor@
+	~TabExpansion.ps1~@TabExpansion@
+
+	~Debug-Msg-.ps1~@DebugMsg@
+	~Remove-EndSpace-.ps1~@RemoveEndSpace@
+	~Job-RemoveItem-.ps1~@JobRemoveItem@
+	~Search-Regex-.ps1~@SearchRegex@
+
+	~Other scripts~@Others@
+
+#Remarks#
+
+	~Autoloaded functions~@AutoloadedFunctions@
+	~Using .NET assemblies~@UsingAssemblies@
+
+
+@About
+$#About#
+~Contents~@Contents@
+
+#PowerShellFar 2.2.7#
+
+Implements Windows PowerShell host in Far Manager and user interface for
+invoking commands and scripts. PowerShell code can access and control Far
+functionality with FarNet object model. The package includes ready to use
+scripts for various popular Far Manager tasks and PowerShell.hrc for
+Colorer-take5.beta5 providing rich PowerShell syntax highlighting.
+
+The latest versions of PowerShellFar, FarNet and documentation can be
+downloaded from: ~http://code.google.com/p/farnet/~
+
+
+#Author#
+
+ #Roman Kuzmin#
+ ~nightroman@@gmail.com~@mailto:nightroman@@gmail.com@
+ ~http://nightroman.spaces.live.com~@http://nightroman.spaces.live.com@
+
+* Many thanks to Max Belugin for the plugin Far.NET 3.2 and cooperation in
+further development of it.
+
+
+@Requirements
+$#Requirements#
+~Contents~@Contents@
+
+#Requirements#
+
+ - Far Manager 2.0.1170
+ - Plugin FarNet 4.2.7
+ - Windows PowerShell V2 (RC or RTM)
+
+
+#Installation#
+
+Check\change PowerShell execution policy: run standard PowerShell.exe and type
+Get-ExecutionPolicy - it should be RemoteSigned or Unrestricted. If it is not
+then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
+
+Copy all files from "Plugin" to "Plugins.NET\PowerShellFar\" where "Plugins.NET"
+is a folder for FarNet plugins. If FarNet is installed as recommended by
+default then it is "%FARHOME%\Plugins.NET".
+
+
+#Using Bench scripts#
+
+Included Bench scripts are ready to use handy tools for various tasks. There are
+also tests and demos for learning PowerShellFar or even PowerShell. But nothing
+is enabled by default. If you are going to use these scripts directly from Bench
+then:
+
+*) Include directory Bench into the system path.
+
+*) In addition, if you are a new PowerShellFar user then it is recommended to
+set the following configuration properties:
+
+	#Startup code#       . Profile-.ps1
+
+This enables for you many features including additional menu tools, so that you
+can invoke some scripts right from the menus. Read this help and script
+comments for more details.
+
+
+@CommandLine
+$#Command line#
+~Contents~@Contents@
+
+By default command prefixes are: '>' for standard commands and '>>' for
+background jobs. According to Far rules prefix and command are delimited by ':',
+so that actually you have to type '>:' and '>>:' before each command. Examples:
+
+#Standard commands#
+
+ >: 3.14/3
+ >: [math]::pi/3
+ >: $Far.Version
+ >: $Far.Msg("Hello world!")
+ >: Get-Process | Out-FarList -Text Name | Start-FarPanel
+
+#Background jobs#
+
+ >>: MyJob.ps1
+ >>: Remove-Item C:\TEMP\LargeFolder -Recurse -Force
+
+For "Easy prefix" and "Easy invoke" macros see ~FAQ~@FAQ@.
+Some more examples: ~PowerShellFar command examples~@Examples@.
+
+#Command history#
+
+Most of commands are added to PowerShellFar command history automatically. There
+is an exception: a command is not added if the last symbol is "##"; you may
+want to use this trick for commands in Far user menu (F2) and file
+associations, so that they do not pollute the history.
+
+
+@MenuCommands
+$#Menu Commands#
+~Contents~@Contents@
+
+#Invoke input code...#
+
+You are prompted to enter any PowerShell code to be executed. Don't use plugin
+prefix. Use [Tab] to complete the expression being typed using PowerShell
+TabExpansion (see also ~TabExpansion.ps1~@TabExpansion@).
+
+#Invoke selected code#
+
+*) In editor: execute the selected code or the current line if nothing is
+selected. Thus, you can try your code just in the editor. The code is executed
+in the global scope, variables created by commands are available for other
+commands.
+
+*) In command line: execute the command line text, plugin prefix is not required
+(but it is not an error). The command text is kept in the command line if an
+error happens or if there is a selection. See also "Easy invoke": ~FAQ~@FAQ@.
+
+#Background jobs#
+
+Shows the background jobs menu. See ~Background jobs menu~@MenuBJ@.
+
+#Command history#
+
+Shows the command history menu. See ~Command history menu~@MenuCH@.
+
+#Editor console#
+
+Opens new or existing .psfconsole file in editor. Files are stored in
+%TEMP%\psfconsole directory. You can open several editor consoles.
+See ~Editor console~@EditorConsole@.
+
+#Power panel#
+
+Shows a menu which allows to open a panel for any .NET objects or a provider
+panel at the selected drive or the current location (<Esc>).
+See ~Power panel menu~@MenuPanels@ and ~Power panel~@PowerPanel@.
+
+#TabExpansion#
+
+It calls TabExpansion for the text in the editor, the command line or any edit
+control in any dialog. Default weak TabExpansion is replaced with the powerful
+one from ~TabExpansion.ps1~@TabExpansion@.
+
+#Modules+#
+
+Shows available PowerShell modules and registered PowerShell snap-ins in a menu
+which allows to import/remove them to/from the session.
+See ~Modules menu~@MenuModules@.
+
+#Errors#
+
+Shows a menu allowing you to view PowerShell errors ($Error items) as menu
+items. See ~Errors menu~@MenuErrors@.
+
+#Others#
+
+Other tools exist in the menu only if you have added them yourself, for example
+using a startup profile like ~Profile-.ps1~@Profile@.
+
+
+@MenuBJ
+$#Background jobs menu#
+~Contents~@Contents@
+
+Shows the background jobs information. Job state:
+
+ - Running ([Del] stops a job)
+ - Stopped (e.g. by [Del])
+ - Errors (there is one or more not terminating errors)
+ - Failed (there is a terminating error)
+ - Completed (there are no errors)
+
+Other information: output data size and a job name or its command text (shortened).
+
+#KEYS AND ACTIONS#
+
+#Enter#
+
+If there are output data closes the menu and opens a viewer for the output.
+
+#F3#
+
+The same but you will return to the job menu when you close a viewer.
+
+#F5#
+
+Refreshes job data shown by this menu.
+
+#Del#
+
+For a running job: stops it. For a not running job: removes it from the list,
+discards its output, errors, and deletes temp files, if any.
+
+#ShiftDel#
+
+Invokes [Del] action for each job in the list.
+
+
+@MenuCH
+$#Command history menu#
+~Contents~@Contents@
+
+Shows PowerShell command history. Behaviour and actions may depend on where the
+menu has started.
+
+#KEYS AND ACTIONS#
+
+#Enter#
+
+Invokes the command immediately as it is. Note that history contains commands
+from all areas and the current area may be not suitable for the selected code.
+For example commands that open panels normally should not be called from the
+dialog, editor or viewer.
+
+#CtrlEnter#
+
+Allows to edit the command before invocation. In panels it inserts the command
+text into the command line with automatically added prefix; in editor console
+inserts the command text at the current position; otherwise opens the "Invoke
+input code" dialog with the command text inserted there.
+
+#CtrlC#
+
+Copies the command text to the clipboard.
+
+#CtrlR, Delete#
+
+Removes old and duplicated commands from the history.
+
+#CtrlDown#
+
+Opens the permanent filter input box. Filter patterns: <regex> or *<substring>
+or ?<prefix>. [AltDown] does the same if you use popular macro (add-on
+AltDown.reg).
+
+#Symbols#
+
+Applies incremental filter immediately on typing. Symbols * and ? are wildcards.
+
+#Backspace#
+
+Removes the last symbol from the incremental filter string.
+
+#ShiftBackspace#
+
+Removes the incremental filter string completely.
+
+
+@MenuPanels
+$#Power panel menu#
+~Contents~@Contents@
+
+This menu allows to open a panel for any .NET objects or a provider panel at the
+selected drive.
+
+#Enter#
+
+Opens the selected panel.
+
+
+@MenuModules
+$#Modules menu#
+~Contents~@Contents@
+
+This menu shows available module and registered snap-in names and descriptions
+and allows you to import/remove them to/from the session. Already imported
+modules and added snap-ins have their items checked on the left.
+
+#Enter#
+
+Switches module or snap-in state: imported module or added snap-in is removed,
+otherwise it is imported/added.
+
+#Esc#
+
+Closes the menu.
+
+
+#RELATED POWERSHELL COMMANDS#
+
+Show help:
+
+ >: help about_modules
+ >: help about_pssnapins
+
+Get available/registered:
+
+ >: Get-Module -ListAvailable
+ >: Get-PSSnapin -Registered
+
+Get imported/added:
+
+ >: Get-Module
+ >: Get-PSSnapin
+
+Remove from the session:
+
+ >: Remove-Module -Name <name>
+ >: Remove-PSSnapin -Name <name>
+
+Import/add to the session:
+
+ >: Import-Module -Name <name>
+ >: Add-PSSnapin -Name <name>
+
+You may use Import-Module and Add-PSSnapin in your profile to import/add
+favourite modules and snap-ins always when PowerShellFar starts.
+
+
+@MenuErrors
+$#Errors menu#
+~Contents~@Contents@
+
+This menu shows PowerShell error list, i.e. ErrorRecord objects stored in the
+global variable $Error. Menu items of error objects with source info are
+checked on the left.
+
+#F4#
+
+If source information is available (checked menu items) it opens a source file
+in the internal editor at the line that caused an error.
+
+#Enter#
+
+Shows the standard FarNet error message dialog for a selected item.
+
+#Del#
+
+Removes all error records and closes the menu.
+
+
+@MenuDebugger
+$#Debugger tools menu#
+~Contents~@Contents@
+
+This menu consists of two sections: commands to create various breakpoints and
+the list of existing breakpoints.
+
+---------------------------------------------------------------------
+
+#CREATE BREAKPOINT COMMANDS#
+
+This menu section contains commands that create various breakpoints. There are
+three kind of breakpoints in PowerShell: line, command and variable.
+See also ~Breakpoint dialog~@BreakpointDialog@.
+
+#Line breakpoint...#
+
+Opens a dialog to create a new line breakpoint. If the command is invoked from
+the editor and a line breakpoint already exists at the current editor line then
+you are prompted to remove, enable/disable, modify the existing breakpoint or
+add a new one at the same line.
+
+#Command breakpoint...#
+
+Opens a dialog to create a new command breakpoint.
+
+#Variable breakpoint...#
+
+Opens a dialog to create a new variable breakpoint.
+
+---------------------------------------------------------------------
+
+#BREAKPOINT LIST COMMANDS#
+
+This section shows the list of available breakpoints where you can disable, enable
+or remove breakpoints.
+
+#F4#
+
+Opens the script in the editor for the current breakpoint if it is a line or
+breakpoint or another breakpoint assotiated with a script.
+
+#Space#
+
+Enables or disables the current breakpoint.
+
+#ShiftBS#
+
+Disables all breakpoints.
+
+#Del#
+
+Removes the current breakpoint.
+
+#ShiftDel#
+
+Removes all existing breakpoints.
+
+
+@BreakpointDialog
+$#Breakpoint dialog#
+~Contents~@Contents@
+
+The dialog creates a new breakpoint. There are three kind of breakpoints in
+PowerShell:
+
+#Line breakpoint# - you have to provide a script line number, script file path
+(mandatory) and optional action code.
+
+#Command breakpoint# - you have to provide a command name (mandatory), optional
+script path and optional action code.
+
+#Variable breakpoint# - you have to provide a variable name (mandatory),
+optional script path and optional action code.
+
+Script path is mandatory only for line breakpoints. But you can specify it for
+other breakpoints, too; in this case breakpoint scope is limited to the script.
+If you open a breakpoint dialog from the editor then the path of the file being
+edited is inserted by default. Clean or change it if it is not what you want.
+
+If you do not provide action code then breakpoints are created with standard
+action - breaking into debugger. Otherwise breakpoint action completely depends
+on the code. You can do a lot of useful things using breakpoints with actions:
+debugging, logging, diagnostics, adding extra or altering original features
+without changing the original source code - all depends on your fantasy.
+
+
+@DebuggerDialog
+$#Debugger dialog#
+~Contents~@Contents@
+
+This dialog is shown when one or more breakpoints are hit or you step in debug
+mode. You may step through the code, open editor console, take a look at the
+source code, view stack and error information.
+
+Dialog keys and buttons:
+
+#Escape, F10#
+
+(Continue) Continue execution.
+
+#[Step]#
+
+(Step Into) Executes the next statement. Step Into steps through the script one
+line at a time.
+
+#[Over]#
+
+(Step Over) Executes the next statement, but skips over statements in functions
+or other scripts. The functions and scripts are executed, but Step Over does not
+stop at each statement.
+
+#[Out]#
+
+(Step Out) Runs the script until completion or the next breakpoint. If used
+while stepping through a function, it exits the function and steps to the next
+statement.
+
+#Console..#
+
+Opens an editor console (in other words, nested prompt) where you can examine or
+change variables, invoke commands and etc. On exit the same dialog is repeated.
+See also ~Editor console~@EditorConsole@.
+
+#Goto..#
+
+Two actions: sets the current list line to the current debugger line if not yet
+overwise opens the editor at the debugger line. You should not edit the script
+at this moment, it is only for taking a look at the code. On exit the same
+dialog is repeated.
+
+#Stack..#
+
+Shows the call stack and error records in the viewer. On exit the same dialog is
+repeated.
+
+
+#NOTES#
+
+When you enter debug mode and the command being executed already has pending
+output then its output is sent to a file and external viewer is started to view
+it. It may look unusual but it allows you to see output during debugging.
+
+It is (theoretically) possible that the debugger or your actions in the debugger
+may affect the code being debugged in unusual way, especially if the code itself
+deals with Far UI that clashes against the debugger UI. Just think of it a bit
+when you are about to debug such a special code.
+
+
+@EditorConsole
+$#Editor console#
+~Contents~@Contents@
+
+It is any "*.psfconsole" file opened in Far editor. It is designed for typing
+and running PowerShell commands so that their output is directed to the same
+editor to the end. Editor console is also opened when you enter so called
+"nested prompt" mode, for example when you suspend PowerShell execution.
+
+The default console is opened from the "Editor console" menu by [Enter].
+[ShiftEnter] opens asynchronous local console sessions. [CtrlEnter] opens
+asynchronous remote console sessions. When any console is opened its [F1] menu
+allows you to change or reset the current session to default, local, or remote.
+
+An editor console works like a command console but it is still an editor window
+with some rules and special hotkeys.
+
+#Rule of selection#
+
+If any selection exists then editor always acts as a standard editor.
+
+Without selection some editor events for such a file are different:
+
+#Enter#
+
+If it is the last line its text is executed as PowerShell code and output is
+appended to the end of the file (marked by <= and =>). If it is not the last
+line its text is copied to the end and the cursor is moved there, too.
+
+#End#
+
+If it is the last line and the cursor is at its end then it shows a menu of
+from history commands beginning with the characters that are in the line. If
+the line is empty it actually shows all history commands. If the line starts
+with * then the rest of it is used as a substring filter.
+
+#Up\Down#
+
+If it is the last line and it is initially empty inserts previous\next command
+from PowerShellFar history while you press these keys.
+
+#Escape#
+
+If it is the last line and it is not empty clears its text.
+
+#Del#
+
+If it is the last line and it is empty it deletes all text from the end to the
+last mark <= found in the text. It is useful when you want to discard recent
+output.
+
+#Tab#
+
+Executes PowerShell TabExpansion procedure. See
+~TabExpansion.ps1~@TabExpansion@
+
+#F1#
+
+Opens the help menu where you can change or reset the current session to
+default, local, or remote, or open this help topic.
+
+
+#DEFAULT CONSOLE SESSIONS#
+
+Do not invoke commands with $Far.Editor (i.e. this editor) because during the
+operation this object is already used for the command output. Also, do not run
+commands opening other editors because the default console writes output to the
+current editor and results will be unexpected (note that this is not a problem
+for async consoles, they output using a special async mode).
+
+You still can call external PowerShell commands working on text in this editor
+console as usual. "External" means that a command is executed not from this
+editor console. In other words, you still can use menu actions "Invoke input
+code", "Invoke selected code", your own editor tools, and etc.
+
+
+#ASYNCHRONOUS CONSOLE SESSIONS#
+
+An async console opens a separate runspace with its private session state:
+provider locations, variables, aliases, and many other settings.
+
+Commands are invoked asyncronously in background threads, so that console
+editors and Far itself are not blocked: you can switch to panels or another
+editors while a command is running. Moreover, you can open several async
+consoles, invoke parallel commands and still continue other work in Far.
+
+LIMITATIONS: objects $Far and $Psf are not exposed; cmdlets *-Far* are exposed
+but in fact you must not use them unless it is explicitly allowed; PowerShell
+UI should be avoided (Read-Host, Write-Progress, confirmations).
+
+
+#OTHER NOTES#
+
+Do use PowerShell.hrc with Colorer plugin. It works not only for ".ps1", but
+for ".psfconsole" files, too. In addition to PowerShell syntax editor console
+output is also highlighted (numbers, errors, warnings, and etc.).
+
+Do use word completing (e.g. "Complete-Word-.ps1"): words from output of
+previous commands often can be effectively completed in a new command being
+composed.
+
+Note that output of called external console applications by default directed to
+the user screen (under panels and the editor). If it is not what you want use "|
+Out-Default", in this case output is sent to the editor. Be careful, especially
+for async sessions.
+
+
+@EditorConsoleMenuOpen
+$#Editor console menu#
+~Contents~@Contents@
+~Editor console~@EditorConsole@
+
+This menu allows to open a new editor console or one of editor consoles
+previously saved in the special directory for console files.
+
+#Enter#
+
+Opens a new or selected existing console file in the default global PowerShell
+session. Commands are invoked synchronously in the default global runspace. All
+consoles opened by [Enter] share the same workspace.
+
+#ShiftEnter#
+
+Opens a new or selected existing console file in a new local PowerShell
+session. Commands are invoked asynchronously in a private runspace.
+
+#CtrlEnter#
+
+Opens a new or selected existing console file in a new remote PowerShell
+session. Commands are invoked asynchronously in a private remote runspace. You
+are prompted to enter a computer name and a user domain\name. If a user name is
+specified then a password is also requested. See PowerShell about_remote* help
+topics for more details.
+
+
+@PowerPanel
+$#Power panel#
+~Contents~@Contents@
+
+#WARNING: use this feature carefully, you can change or delete system data, files and etc. depending on a panel.#
+
+Power panel is a Far panel with any .NET objects or with PowerShell provider
+items and their members and properties. Actually, there are several panels: Item
+panel and Object panel, and their children Property panel and Member panel.
+
+
+#KEYS AND OPERATIONS#
+
+Availability and details of operations may depend on a panel mode, data types,
+providers and etc. For example for internal providers properties are supported
+only by FileSystem and Registry. Then, properties of FileSystem provider (i.e.
+directory or file properties) are "static", you can only change values, but
+properties of Registry provider (i.e. key values) are "dynamic", you can add,
+delete, copy\move or rename them. Then, FileSystem and Certificate have both
+"container" and "leaf" items (e.g. directories and files), Registry has only
+"container" items (keys), other internal default providers have only "leaves",
+and so on, other providers may have their own implementation details.
+
+#F1#
+
+Opens the panel help menu with some of available panel specific commands. [F1]
+pressed in this menu opens the panel help topic.
+
+#F3#
+
+Views content, properties or other PowerShell or .NET information about the
+current object, provider item, member, property or '..' element.
+
+#F4#
+
+Starts internal editor for editing the current item content or a property value.
+Note: some items or properties are read only. Power panel may not recognize this
+before the operation. Editor is not modal and you can edit other elements at the
+same time. Data are updated on saving. It is recommended to save only by <F2>
+(i.e. not on exiting) - in this case on errors you are still in editor and can
+fix problems.
+
+#AltF4#
+
+Starts Notepad. In contrast to <F4> it is "modal", you have to finish editing
+and exit. If there are errors then Notepad is started again with the same temp
+file (i.e. your changes are not lost, you can fix them, or just exit).
+
+#F5#
+
+Copies items or properties from the active panel to another. You can copy almost
+any items to Object panel, so that an Object panel can be used as a collector of
+items for further operations.
+
+#ShiftF5#
+
+Copies an item or a dynamic property here with another name.
+
+#F6#
+
+Moves items or properties from the active panel to another. You can "move" items
+to Object panel, but it works the same as copying (<F5>).
+
+#ShiftF6#
+
+Renames a current item or a dynamic property.
+
+#F7#
+
+Creates a new item or a property or even a new custom object. Depending on a
+provider you may have to specify required provider item or property type or
+initial value. (If you don't know what to enter then enter something and follow
+error message instructions (or read provider manuals)). In Object mode an empty
+object is created for you and you are prompted to create the first property (so
+called NoteProperty).
+
+#F8#
+
+Object mode: removes objects from the panel. Item mode: deletes the selected
+items or the current item or dynamic properties. Confirmations depend on Far
+settings for delete operations, but confirmation dialog is not the same as in
+Far, it is UI version of standard PowerShell confirmation request, so don't push
+a button through habit.
+
+#Esc#
+
+Closes or clears the panel. You may be prompted to clarify.
+
+#ShiftEsc#
+
+Closes the current panel together with all its parent panels if any.
+
+#Enter#
+
+Used for navigation (as usually), for starting items (registered file types,
+etc.) or (in Member or Property mode) can be used to put a trivial property
+value to the command line as =<value>, you can change the value and press
+<Enter> again to set it (if a property is settable).
+
+#ShiftEnter, CtrlA#
+
+Opens a panel with provider properties of the current item. Values are shown in
+the Description column. You can modify, add and delete some properties
+(depending on a provider). Example: key values of Registry provider.
+
+#CtrlPgDn#
+
+Opens a panel with the current object members. Values are shown in the
+Description column. If a member type is *Property you also can open its members
+by <CtrlPgDn> and so on. Use <CtrlShiftM> to switch member modes.
+
+#CtrlQ#
+
+Quick view. Shows contents, properties and other information. Data may be not
+the same as information shown by <F3>.
+
+#CtrlS#
+
+Saves panel data. Implementation depends on a panel. E.g. a data panel commits
+changes to a database, an object panel exports objects to .clixml file, etc.
+
+#CtrlShiftM#
+
+Switches panel internal modes (if there are more than 1). In Member panel: mode
+1: properties and their values in the Description column (you can edit settable
+properties); mode 2: all public members and their information in the Description
+column (read only).
+
+#AltF7#
+
+Search. Currently it is just a dummy, not really useful.
+
+
+#OBJECT PANEL#
+
+Any .NET or PowerShell objects, for example output of commands. You can send
+objects to the panel using ~Out-FarPanel~@Out-FarPanel@.
+
+Examples:
+
+	>: ps | Out-FarPanel
+
+- shows all processes in the Power panel with some properties in the description
+column, then you can select one and view (<F3>) or quick view (<CtrlQ>) all its
+properties - thus, it works like well known ProcList plugin but provides much
+more information (more advanced example is Panel-Process-.ps1).
+
+	>: ps | sort ws | Out-FarPanel
+
+- the same but now objects (processes) are sorted by WS (working set); note that
+you have to use unsorted Far mode to see the results sorted by you.
+
+It is important that panel objects are real - they exist and they are reusable -
+you can collect them, view\edit\delete\create properties, select\filter\sort
+them and get back by $Psf panel properties: Items, CurrentItem, SelectedItems.
+Thus, Object panel can be used as intermediate visual storage for objects. Note:
+you can collect together on the same panel objects of different types, but in
+this case generated description column may be confusing, if it is so then just
+ignore it, it is not a bug.
+
+
+#ITEM PANEL#
+
+By default you can browse and operate on data stores of the following PowerShell
+providers:
+
+#FileSystem#
+
+not a big deal, of course, but it is added for completeness and some exercises.
+
+#Registry#
+
+(HKCU:\, HKLM:\) access to registry and copy, move, delete, create and other
+operations on registry keys and values.
+
+#Alias#
+
+(Alias:\) PowerShell aliases.
+
+#Function#
+
+(Function:\) PowerShell functions.
+
+#Environment#
+
+(Env:\) environment variables of the current process.
+
+#Variable#
+
+(Variable:\) PowerShell variables of the current session.
+
+#Certificate#
+
+(Cert:\) sorry, not even sure what it is and what's for.
+
+If you change PowerShell location by a command, e.g. execute "cd HKCU:\Software"
+or "Set-Location variable:\" or whatever - the panel contents is updated
+accordingly. And vice versa: if you navigate in the panel to some location then
+PowerShell current location is changed, so that in commands you may use current
+panel item names without full paths.
+
+If you add external PowerShell providers then you can browse their data stores
+as well. The idea is very promising: some people (or you) implement providers
+and they are available in Power panel automatically (when loaded properly). For
+example Power panel was tested on three more providers from PowerShell Community
+Extensions (http://www.codeplex.com/PowerShellCX):
+
+#DirectoryServices#
+
+access to LDAP servers like Active Directory or AD Lightweight Directory
+Services.
+
+#FeedStore#
+
+access to the Internet Explorer 7 RSS feed store.
+
+#AssemblyCache#
+
+access to the .NET Global Assembly Cache and the assemblies it contains.
+
+
+#HOW TO OPEN ITEM OR PROPERTY PANEL AT SOME LOCATION#
+
+If you want to open a Power panel at the specified location from a script you
+may use scripts Go-To.ps1 (not FileSystem) and Panel-Property-.ps1 (any
+provider). See comments and examples there.
+
+
+#NOTE: SPECIAL PREFIX =#
+
+Special case: in Member and Property panels a command starting with = enters
+data to the current property (if possible). Everything after = including spaces
+is literal text that will be converted into required data type and assigned.
+
+
+#SOME DATA FOR EXPERIMENTS#
+
+There are some data ready for tests and experiments. See the script
+"Test-Zoo-.ps1" and comments. When you run this script you get 4 objects in a
+panel: original .NET and PowerShell objects and their restored versions.
+
+Tip: you can associate *.clixml with this commands which imports objects from
+".clixml" to Object panel:
+
+	>: Import-Clixml (Get-FarPath) | Out-FarPanel ##
+	or
+	>: Import-Panel-.ps1 (Get-FarPath) ##
+
+(reminder: ## in the end tells not to add a command to PowerShellFar history)
+
+Note that only primitive data (basic value types and byte[]) keep their types on
+importing from clixml (enough for many tasks). You can also export\import data
+to\from .csv files, in this case most of imported data are strings.
+
+
+#OTHER NOTES#
+
+- PowerShell native messages (e.g. confirmations) may look unusual, read them
+carefully before your next steps.
+
+- Global PowerShell variable $FormatEnumerationLimit may affect Description mode
+(number of shown enumerable items).
+
+- Registry default property (with no name, displayed as "(default)") is not
+processed correctly due to known PowerShell bug. But PowerShellFar implements a
+patch: you can edit, delete and create it (use "(default)" name when create).
+Other operations may fail (and exceptions are not suppressed deliberately (Far
+should not crash, of course)).
+
+- Member panel: it is strongly not recommended to play with any object property
+related to the current panel state, because this panel is actually working just
+now and it can be in some intermediate (invalid) state for data requests,
+results can be unpredictable, exceptions at this point are not suppressed
+deliberately (but they are caught later). Some properties and objects are
+already protected for panels internally but it is not possible to control all
+(your) objects. In other words, try not to deal with $Psf, $Far and their
+properties on panels (though it can be useful sometimes).
+
+
+@FolderTree
+$#Folder Tree#
+~Contents~@Contents@
+
+Folder tree panel is a ~Tree panel~@TreePanel@ where tree nodes represent
+provider container items (folders). It works for so called "navigation"
+providers. For example standard PowerShell navigation providers are:
+FileSystem, Registry and Certificate. Other providers depend on installed
+PowerShell snap-ins.
+
+#Enter#
+
+As far this panel is for navigation providers, it is used mostly for navigation
+through an item tree. Note that quick search [Alt-[Letter]] works, too. When
+you reach an item you are looking for, press [Enter] to open an item panel for
+this location.
+
+For FileSystem provider [Enter] opens a standard Far file panel on the passive
+panel. This is done for convenience: standard Far file panel allows much more
+than its provider analogue. As a result the Folder tree panel is still opened
+and active, you can take a look at files on the passive panel and continue
+navigation in the tree.
+
+For all other providers [Enter] opens an item panel at the same active panel,
+as a child panel. When you exit it you return back to the folder tree.
+
+#ShiftEnter, CtrlA#
+
+Opens a panel with provider properties of the current item. Values are shown in
+the Description column. You can modify, add and delete some properties
+(depending on a provider). Example: key values of Registry provider.
+
+#Other keys#
+
+See ~Tree panel~@TreePanel@ for other tree panels keys used for navigation
+(expanding, collapsing nodes and etc.).
+
+
+@DataPanel
+$#Data panel#
+~Contents~@Contents@
+
+#WARNING: use this feature very carefully, you can change or delete database data#
+
+Data panel shows database records selected by a SQL command and allows to modify
+and update data, insert and delete records.
+
+
+#KEYS AND OPERATIONS#
+
+Data panel is built on the same engine as other ~Power panels~@PowerPanel@, so
+that you can find other keys not listed here that still work in Data panel.
+
+#F7#
+
+Inserts a new record into a table and opens a Member panel for editing data of
+the added record.
+
+#F8#
+
+Deletes selected records. If an error happens cursor is set to a record with an
+error.
+
+#CtrlR#
+
+Reads data from the database and fills the table. Note that not yet saved
+changes will be lost (usually not manual changes, e.g. changes done by scripts).
+
+#CtrlS#
+
+Commits all remaining changes to a database if they exist (for example if you
+have changed the table data by PowerShell commands or scripts). Table may have
+any number of modified, new and deleted records. <CtrlS> saves them all.
+
+#Enter, CtrlPgDn#
+
+Opens a Member panel for the current record. You may edit fields values. Use
+<CtrlS> to save your changes or <Esc> to return to the parent Data panel (you
+will be prompted to save changes). On <Enter> some fields can open another
+(lookup) table so that values (or\and foreign keys) are taken from there (see
+Test-Panel-DbNotes-.ps1). If <Enter> is pressed in a lookup table panel it
+selects the value and closes the panel (<CtrlPgDn> still can be used to enter
+the record).
+
+
+#EXAMPLES#
+
+Almost complete set of data panel features is demonstrated by provided scripts,
+at least it should be enough to learn how to create data panels including
+complex.
+
+UTILITY SCRIPTS:
+
+#Panel-Data-.ps1#
+
+creates a data panel by a single command with parameters;
+
+#Panel-Table-.ps1#
+
+shows all connected tables and opens them in basic mode;
+
+DEMO SCRIPTS (SEE ALSO ABOUT-TEST.HLF):
+
+#Test-Panel-DbCategories-.ps1#
+
+'simple' data table with all operations;
+
+#Test-Panel-DbNotes-.ps1#
+
+'complex' data table with all operations and lookup field.
+
+#Test-Panel-DbText-.ps1#
+
+read only table with data from two joined .CSV files (Jet 4.0).
+
+
+#OTHER NOTES#
+
+Known issue: if you are about to delete or modify again just added and saved
+record then at first you have to re-read the table data explicitly by <CtrlR>
+(otherwise you can get concurrency error or record data can be incomplete and
+etc.).
+
+Once again: remember that Data panel is a ~Power panel~@PowerPanel@, so that
+many keys and rules are the same; for example: everything typed in command line
+is executed as PowerShell command (except =<text> when you edit field values).
+
+
+@TreePanel
+$#Tree panel#
+~Contents~@Contents@
+
+Tree panel is a kind of ~Power panel~@PowerPanel@. It is designed to display
+hierarchy of items as a tree with expandable nodes.
+
+#KEYS AND OPERATIONS#
+
+#Right#
+
+Expands an item's children or, if it is already expanded or it is not expandable
+(Fill handler is null), moves the cursor to the next item. If an item was
+already expanded and then collapsed then its children are not refilled (for
+performance and keeping expanded children).
+
+#AltRight#
+
+Similar to [Right] but children items are refilled. Normally it is used to
+reflect external changes of source data.
+
+#Left#
+
+Collapses an item's children or moves the cursor to the parent item.
+
+#AltLeft#
+
+Similar to [Left] but child items are removed from the tree. It can be used to
+free not needed resources, or just to get refilled children when they are
+expanded next time.
+
+#Alt-[Letter]#
+
+Quick search. It should work fine, '+' and '-' in tree node names are 'ignored'.
+
+
+@PluginSettings
+$#Plugin settings#
+~Contents~@Contents@
+
+Permanent settings (i.e. properties Plugin*) are changed interactively in the
+"Plugins configuration \ PowerShellFar" dialog or programmatically as properties
+of $Psf.Settings (if you want to apply $Psf.Settings changes permanently then
+call $Psf.Settings.Save()).
+
+Other settings are kind of user preferences and they are usually set in the
+profile (e.g. Profile-.ps1). Useful command to view/change all settings:
+
+	>: Start-FarPanel $Psf.Settings
+
+Preference settings are described in .chm, permanent settings in here:
+
+ #Main startup code#
+ #($Psf.Settings.PluginStartupCode)#
+
+PowerShell code which is executed once in the beginning of PowerShell session.
+Normally it dot-sources a profile. See ~Profile-.ps1~@Profile@ for a demo
+profile, at first you may use it, then you may want to create and use your own.
+Note that you can dot-source several profiles, see example below.
+
+IMPORTANT: main startup code is invoked asynchronously for faster Far startup
+and this adds some limitations: *) do not add editor event handlers in main
+startup code, use "Editor startup code"; *) startup code errors are not shown
+automatically, you are notified later on other operations and have to examine
+variable $Error; *) don't call $Far directly or not, profile code is only for
+initialisation of the session, not for work. But, indeed, profile functions
+themselves work as usually, they are only installed, not called on startup.
+
+	Examples (mind dot and space before names):
+	. Profile-.ps1
+	. Profile-AnyPS.ps1; . Profile-PSFar-.ps1
+
+IMPORTANT: this profile has nothing to do with background jobs, it is for the
+default runspace, but jobs are invoked in their own runspaces.
+
+ #Editor startup code#
+ #($Psf.Settings.PluginStartupEdit)#
+
+This code is executed once when an editor is opened the first time. Normally it
+adds editor event handlers ($Far.AnyEditor events). Full-fledged example is
+~ProfileEditor~@Profile-Editor-.ps1@ (please, don't try it without reading
+information about it).
+
+	Example (mind dot and space before the name):
+	. Profile-Editor-.ps1
+
+ #More settings#
+
+There are many settings not included in configuration dialog and $Psf.Settings
+(for example other public properties of $Psf). These settings should be set or
+configured in a profile script (example: ~Profile-.ps1~@Profile@).
+
+
+@GlobalObjects
+$#Global objects#
+~Contents~@Contents@
+
+There are three main objects defined as global variables: $Host, $Far and $Psf.
+
+#$Host#
+
+Standard PowerShell host instance, see PowerShell documentation. It is not
+really useful in PowerShellFar, but you may use property $Host.Name: it is
+"ConsoleHost" for PowerShell.exe and "FarHost" in PowerShellFar. Thus, a script
+can check this and decide what can be used in the current host environment.
+
+#$Far#
+
+Object implementing FarNet interface IFar. It provides access to Far data and
+functionality. See FarNet documentation.
+
+#$Psf#
+
+PowerShellFar plugin object. See PowerShellFar.chm for documentation of all
+members. Main properties and methods:
+
+#$Psf.Settings#
+
+Plugin basic settings, see ~Plugin settings~@PluginSettings@.
+
+#$Psf.Action()#
+
+Registers your action, a PowerShell script block called from the menu.
+
+#$Psf.HotLines#
+
+Gets $Far.Editor.Selection if there is a selected text, else $Far.Editor.Lines
+if there is a current editor else null. The returned value is a list (ILines),
+so that you can add, remove and modify its items (ILine).
+
+#$Psf.HotText#
+
+In editor: return selected text if any else the whole text. If there is no
+current editor then returns the command line selection or the whole text. The
+same rules are for setting this property.
+
+#$Psf.Editor()#
+
+Gets an object IEditor of the current editor if any else throws
+InvalidOperationException. This method allows to avoid boring checks and
+throwing errors in almost all scripts operating on editor.
+
+#$Psf.CanExit()#
+
+It can be used to prevent closing of Far by [F10] with existing background jobs.
+See ~Background jobs~@BackgroundJobs@.
+
+#$Psf.GetHistory()#
+
+Gets a list of all PowerShellFar commands from history.
+
+#$Psf.Providers#
+
+This is a dictionary where keys are provider names and values are dictionaries
+of their settings. See ~Profile-.ps1~@Profile@ for examples.
+
+
+#NOTE#
+
+This list is not full. Moreover, PowerShellFar namespace provides public classes
+that can be used by New-Object. They are not documented in here. Please, refer
+to PowerShellFar.chm and scripts for more documentation and examples.
+
+
+@Restrictions
+$#Restrictions#
+~Contents~@Contents@
+
+#STOPPING RUNNING COMMANDS#
+
+You can stop the currently running interactive command by [CtrlC] (note that
+commands in the Far user menu [F2] are interactive, as if you run them from the
+command line). You can stop a background job by [Del] in the background job
+list. But running script blocks from your menu tools ($Psf.Action) and event
+handlers (e.g. in editor or panel) normally cannot be stopped, design them
+carefully.
+
+
+#NOT IMPLEMENTED OR SUPPORTED#
+
+There is nothing really serious not implemented, normally you won't even notice
+that something is missed or works partially.
+
+Still, a few PowerShell cmdlets and host methods are not supported, normally
+designed for real plain console UI. Some of these commands may not work
+silently, some may work partially (Write-Progress), some commands throw
+NotImplementedException.
+
+
+@CommandsOutput
+$#Commands output#
+~Contents~@Contents@
+
+Normally output of a standard command including errors is collected and then,
+when a command has completed:
+
+1) It is written to a user screen (under panels) if it is not too large and it
+is not interrupted but debugger.
+
+2) It is shown in internal viewer if it is too large for 1) or if it is started
+from editor, viewer or dialog.
+
+3) In some cases (e.g. debugging) output can be redirected to a file and an
+external viewer is started to view it.
+
+Output of some commands is discarded (e.g. commands from your menu tools or
+event handlers). For these commands fatal errors are shown using error message
+boxes, other error messages are ignored.
+
+
+@BackgroundJobs
+$#Background jobs#
+~Contents~@Contents@
+
+Background jobs are started from the command line by commands with the prefix
+">>:". You can also start jobs using Start-FarJob cmdlet, see Test-Job-.ps1
+
+#IMPORTANT RULES#
+
+*) If a job starts a console application with output, you have to redirect this
+output to the job's output file, for example, by a command Out-Default:
+
+	>>: robocopy foo1 foo2 | Out-Default
+
+Otherwise output is written to the console - it can be unexpected or fatal.
+
+*) Objects $Far and $Psf are not exposed for job code and they should not be
+accessed in any other way because this is not thread safe. Accessing these
+objects may lead to unpredictable results.
+
+*) Background jobs should not rely on the process current directory: while they
+are working, Far or whatever may change it. It also looks dangerous if a job
+changes the current directory. But PowerShell current location is totally under
+control of a job, i.e. PowerShell command Set-Location is safe and this job
+location is not visible or changed from outside.
+
+*) Background jobs must not be interactive in any way, they should work
+absolutely without a user until the end or failure. But you can perform
+interactive part in the main thread (interactive data input or validation with
+error messages) and then only, having all data ready, start the background part
+(example of this approach is Job-RemoveItem-.ps1 which is started in the main
+thread, where it still can interact with a user, then it starts a background
+job and exits).
+
+#OTHER NOTES#
+
+*) You can change job thread priority if it is really needed. E.g. put this
+command as the first command of a job code:
+
+	[System.Threading.Thread]::CurrentThread.Priority = 'Lowest'
+
+*) If you close Far safely (F10) and jobs still exist in the job list then for
+any job you are prompted to abort it, wait for its exit, view its output or
+discard all jobs and output. It is done with WinForm message boxes and
+Notepad.exe because on exiting Far UI is not available.
+
+If it is not enough then there is another way. Next two steps get total control
+of F10 event:
+
+	1) add a command to Far user menu (F2):
+
+		F10:  Exit
+		    >: if ($Psf.CanExit()) { $Far.PostKeys('F10', $true) }
+
+	2) create the following file panels macro for F10:
+
+		REGEDIT4
+		[-HKEY_CURRENT_USER\Software\Far2\KeyMacros\Shell\F10]
+		[HKEY_CURRENT_USER\Software\Far2\KeyMacros\Shell\F10]
+		"Sequence"="F2 F10"
+		"Description"="Exit"
+		"DisableOutput"=dword:00000001
+
+Now when you press F10 and there are jobs in the background Far does not exit
+but instead the job menu is shown so that you can manage your jobs or exit the
+menu and continue work in Far.
+
+
+@Suffix
+$#Suffixes#
+~Contents~@Contents@
+
+Some scripts in Bench and Test folders have suffixes '-', '+'. Why?
+
+The suffixes designate that these scrips are not standard PowerShell scripts
+for, say, PowerShell console or ISE. Namely:
+
+ Suffix '-': PowerShellFar scripts that should be invoked by FarHost. Normally
+ they will fail if you invoke them by console host or by ISE host.
+
+ Suffix '+': PowerShellFar step unit scripts. Normally they should be invoked
+ by PowerShellFar.Stepper for step sequence processing.
+
+The suffixes are not mandatory for PowerShellFar scripts or step units, you may
+use any names with or without suffixes. But suffixes help to distinguish very
+different script classes. Also, suffixes can be effectively used for assigning
+commands, see
+~file associations~@:FileAssoc@
+
+#EXAMPLES#
+
+	*) standard PowerShell scripts:
+		mask    :  *[0-~~].ps1
+		command :  powershell.exe -noexit ". '!\!.!'; exit"
+
+	*) PowerShellFar scripts:
+		mask    :  *-.ps1
+		command :  >: & '!\!.!' ##
+
+	*) PowerShellFar steps:
+		mask    :  *+.ps1
+		command :  >: $Psf.Go((& '!\!.!')) ##
+
+With the associations above when you press [Enter] on scripts in the panel then
+standard scripts are started by PowerShell.exe, PowerShellFar scripts are
+started by the plugin and step units are started by a stepper.
+
+
+@Profile
+$#Profile-.ps1 - recommended template of startup code
+~Contents~@Contents@
+
+It is a recommended profile to start with, but you should take only what suits
+you there. It is not enabled by default, you have to open the configuration
+dialog and set:
+
+#PluginStartupCode#
+
+	. Profile-.ps1
+
+ (!) Mind leading dot-space before the script name.
+ (!) If it is not in the system path then use its full path.
+
+Then you can change this profile (actually it's better use your own) according
+to your preferences and activity, the script is only an example.
+
+The startup code can be more complex, but basically you should only load
+(dot-source) various profile scripts:
+
+	. C:\Scripts\AnyHost-Profile.ps1; . FarHost-Profile.ps1
+
+---------------------------------------------------------------------
+
+#PROFILE CONTENTS DETAILS#
+
+	## Error action: 'Stop' is recommended to stop on errors immediately
+	$ErrorActionPreference = 'Stop'
+
+By default PowerShell does not stop on not fatal errors. Is it convenient? The
+answer depends on many factors including personal preferences. After all the
+experiments the author recommends to use 'Stop' for normal work.
+
+'Inquire' is perhaps useful sometimes for troubleshooting:
+
+Advantages: you have a choice what to do on an error: continue; silently
+continue; break; suspend and invoke intermediate commands in Editor console;
+view call stack on error ([Esc] in error message dialog).
+
+Disadvantages: can be annoying if you simply compose a new command; not all
+scripts allow interaction, e.g. inside DB transactions (but actually in this
+case you can explicitly set $ErrorActionPreference = 'Stop\Continue' for the
+script or any other scope).
+ __________
+
+	## Aliases
+	Set-Alias bp Debug-Msg-
+	...
+
+the profile is a good place to define aliases. Some sample aliases are predefined,
+for example: bp (see ~Debug-Msg-.ps1~@DebugMsg@), gd, ip, pi, pm, po, pp.
+ __________
+
+	## Actions
+	$Psf.Action('&m. Macro(s)...', { Panel-Macro- })
+	...
+
+adds actions that you may invike from the PowerShellFar menu directly or by
+macros connected to scripts via action script blocks.
+ __________
+
+	## Provider settings
+	$Psf.Providers = ...
+
+define how provider data look in a panel (ItemPanel); see API help for more
+details: properties Providers (Actor), Columns, ExcludeColumns, FarName
+(ItemPanel).
+ __________
+
+	## Preferences
+	$Psf.Settings.IntelliAutoSelect = $false
+	...
+
+Here you can set some options of $Psf.Settings, mostly UI preferences.
+ __________
+
+	## External viewer
+	$Psf.Settings.ExternalViewerFileName = "conemu.exe"
+	...
+
+Settings of an external viewer. Of course if you do not use "conemu.exe" then
+remove this section or change it appropriately.
+ __________
+
+
+@ProfileEditor
+$#Profile-Editor-.ps1 - editor operations based on events#
+~Contents~@Contents@
+
+#WARNINGS#
+
+Read this topic carefully, view the script and then decide what you are going to
+use from this script and what should be removed. If you are not absolutely sure
+just don't use it at all. Besides, some operations can be invoked by commands,
+menu and used by macros. On the other hand, if you use at least one tool by
+editor event handlers then it is better to call more tools from them.
+
+The author himself deliberately uses this editor profile to set editor event
+handlers even for keys, where macros might be used instead. This is done at
+least in order to be sure that handlers work fine - yes, they do.
+
+- Don't use it together with HlfViewer: disable HlfViewer or remove F1 code from
+the script.
+
+- Don't use it with another plugin(s) working with mouse events in editor or
+remove mouse code from the script.
+
+- Never run it more than once; more calls will add conflicting handlers.
+Actually you should not run it manually at all, it should be "installed".
+
+
+#INSTALLATION#
+
+This or your own editor profile should be invoked automatically when an editor
+is opened the first time, if you set it as "Editor startup code"
+(see ~Plugin Settings~@PluginSettings@).
+
+	Example of "Editor startup code" (mind dot and space before the name):
+	. Profile-Editor-.ps1
+
+
+#EVENTS AND ACTIONS#
+
+This template profile covers the following events:
+
+Key events:
+ - Home: go to extended home of the current line.
+ - ShiftHome: select from cursor to extended home.
+ - F1: if .hlf file: save and show help for the current topic.
+
+Mouse events:
+ - LeftMove: select to the moving location dynamically while moving.
+ - RightClick: shows a menu with several commands (mostly just for demo sake).
+ - Shift+LeftClick: select from the last LeftClick position or from the cursor.
+
+
+#See also#
+
+Topic ~Remove-EndSpace-.ps1~@RemoveEndSpace@ shows how to set different event
+handlers for different file types.
+
+
+@TabExpansion
+$#TabExpansion.ps1#
+~Contents~@Contents@
+
+This is a powerful replacement of the default PowerShell function TabExpansion.
+
+The script has to be in the plugin directory. It is loaded once and only when
+it is requested the first time. It installs the function global:TabExpansion.
+
+In fact, TabExpansion.ps1 is host independent and you can use it in standard
+PowerShell.exe console, too. All you need is to call this script once, for
+example from your PowerShell profile script.
+
+---------------------------------------------------------------------
+
+#EXAMPLES OF WHAT CAN BE EXPANDED#
+
+	(typed text)
+		(found choices)
+
+full paths (if text contains slashes) (also with * and ?)
+
+	c:\p*\fa?\p
+		C:\Program Files\far\Plugins
+		C:\Program Files\far\Plugins.NET
+
+file\folder names in the current folder (e.g. in Bench):
+
+	go
+		Go-Home-.ps1
+		Go-Selection-.ps1
+
+static members of .NET types:
+
+	[regex]::m
+		[regex]::Match(
+		[regex]::Matches(
+
+global variables:
+
+	$er
+		$Error
+		$ErrorActionPreference
+		$ErrorView
+
+	$
+		(all variables)
+
+members of an object defined by a variable:
+
+	$far.e
+		$far.Editor
+		$far.Editors
+		$far.Equals(
+
+	$far.
+		(all members)
+
+e.g. $far.Editor is selected, now you can continue:
+
+	$far.Editor.in
+		$far.Editor.Insert(
+		$far.Editor.InsertLine(
+
+members of a static object:
+
+	[datetime]::Now.h
+		[datetime]::Now.Hour
+
+members of an object defined by a simple expression (WARNING: expression in ()
+is really executed, think twice of unsafe effects before expansion!):
+
+	(get-date).h
+		(get-date).Hour
+
+	(1 + 1).t
+		(1 + 1).ToString(
+
+environment variables:
+
+	$env:c
+		$env:COMPUTERNAME
+		$env:ComSpec
+
+named parameters of cmdlets (or their aliases):
+
+	dir -f
+		-Filter
+		-Force
+
+	dir -
+		(all parameters)
+
+replacement of an alias with cmdlet or script name:
+
+	dir
+		Get-ChildItem
+
+	pd
+		Panel-Data-
+
+parameters of scripts, via aliases, too
+
+	pd -t
+		-TableName
+		-Title
+
+	Panel-Data- -
+		(all parameters)
+
+type and namespace names after '[' or 'New-Object' directly or by substring
+(starts with *):
+
+	New-Object Sy
+		System
+		SystemException
+
+	[Sy
+		[System
+		[SystemException]
+
+	[System.Data.Sq
+		[System.Data.SqlClient
+		...
+
+	[P
+		[PowerShellFar
+		[ParamArrayAttribute]
+		...
+
+	[PowerShellFar.
+		(all types in PowerShellFar)
+
+	[*commandty
+		[System.Data.CommandType]
+		[System.Management.Automation.CommandTypes]
+
+This long list of examples is not perhaps even full, more examples can be found
+in the test script Test-TabExpansion-.ps1.
+
+---------------------------------------------------------------------
+
+#NOTE#
+
+Cached information about types in currently loaded assemblies is stored in a
+global variable $TypeCache (it is built once on the first call). If you load a
+new assembly after that its information is not yet available for tab expansion.
+Remove $TypeCache or set it to $null and the cache will be rebuilt later.
+
+
+@DebugMsg
+$#Debug-Msg-.ps1#
+~Contents~@Contents@
+
+#NOTE: new debugging features makes this script kind of obsolete, but it still can be useful.#
+
+This script shows error or any kind of information and some choices. Choices
+are:
+
+#Close#
+
+Close the message box with no actions.
+
+#Suspend#
+
+Open modal Editor console where you can, say, view or modify current variables
+(see below).
+
+#Goto#
+
+Go to the source line of an error or invocation line in a file in a modal
+editor. The idea is just to glance at the source, editing is not recommended if
+the file is already open.
+
+#Throw#
+
+Throws an error.
+
+#Exit#
+
+Call exit.
+
+
+#----- Example -----#
+
+The example demonstrates a few techniques and issues:
+
+	- using "bp" (alias for Debug-Msg-) to show some information
+	- suspending and reading\writing data in editor console
+	- using "trap" for catching errors
+	- dot-source or not dot-source
+	- execution scopes and etc.
+
+Create the script (assume that alias "bp" is used for "Debug-Msg-.ps1", see
+~Profile-.ps1~@Profile@):
+
+	trap { bp $_; continue }
+	$x = 12345
+	. bp $x ## Message 1
+	1/$x ## Message 2 from trap if you have set $x = 0 in editor console
+	"x=$x"
+
+Recommended steps for this demo:
+
+ Run the script.
+ You see Message 1.
+ Select #Suspend# and in the editor type #$x<Enter>#.
+ You see #12345#, i.e. you can read current variables.
+ Type #$x=0<Enter>#, press #<Esc>#, don't save a file (or save, up to you).
+ You see Message 2, i.e. you have really changed #$x# when you set #$x=0#.
+ Select #Suspend# again and in the editor type #$x<Enter># again.
+ You see #0#, so you have double checked that #$x# was changed.
+ Type #$x=12345<Enter>#, press #<Esc>#, don't save a file, select #Continue#.
+ You see output is #x=0#, not #x=12345#.
+
+ Why? Because:
+
+- the first time "bp" was "dot-sourced" (called with '. '), i.e. executed in the
+current scope.
+
+- the second time "bp" was called in a child scope where parent variables are
+read-only.
+
+But it is useful to know: you still can change variables in parent scope from
+child:
+
+	Set-Variable -Scope 1 ## for parent
+	Set-Variable -Scope 2 ## for grandparent and so on.
+
+For example in our Editor console called from "trap" try this:
+
+	Set-Variable x 12345 -Scope 2 ## 2 = 1 (trap) + 1 (bp not dot-sourced)
+
+
+@RemoveEndSpace
+$#Remove-EndSpace-.ps1#
+~Contents~@Contents@
+
+[and example of editor event handlers]
+
+It removes white spaces from end of string property Text of any objects (note
+that they can be even not related to Far). It can be used in Far editor:
+
+	$Far.Editor.Lines | Remove-EndSpace- ## all editor lines
+	$Far.Editor.Selection | Remove-EndSpace- ## selected lines
+	$Psf.HotLines | Remove-EndSpace- ## selected (if any) or all lines
+
+A straightforward way of using this script is to use these commands from a menu
+(PSF menu or Far user menu).
+
+There is another way based on editor events and PowerShell handlers.
+
+#EXAMPLE TASK#
+
+How to trim lines automatically on saving only .ps1 files (by the way, sometimes
+end space in PowerShell is just a syntax error).
+
+Put the following code into the editor profile:
+
+	## add Opened handler for any file
+
+	$Far.AnyEditor.add_Opened({ Handle-AnyEditorOpened })
+
+	## this is a handler of Opened for any file:
+	## if it is .ps1 file it adds Saving handler for it
+
+	function Handle-AnyEditorOpened
+	{
+		if ([IO.Path]::GetExtension($this.FileName) -eq '.ps1') {
+			$this.add_Saving({ Handle-EditorSaving })
+		}
+	}
+
+	## This is a handler of Saving added to .ps1 files only in this example.
+	## It calls Remove-EndSpace- to trim lines. Performance advice: use editor
+	## methods Begin() and End() for batch line processing.
+
+	function Handle-EditorSaving
+	{
+		$this.Begin()
+		$this.Lines | Remove-EndSpace-
+		$this.End()
+	}
+
+#NOTES#
+
+You can add more than one handler for any event.
+
+PowerShell handlers do not use parameters, they use special variables:
+	- #$this# - sender of an event (editor in our example)
+	- #$_# - event argument (not used in our example)
+
+
+@JobRemoveItem
+$#Job-RemoveItem-.ps1#
+~Contents~@Contents@
+
+Removing of large directories may be very time consuming. This script does the
+job in the background, so that Far is not blocked during this time.
+
+#EXAMPLE#
+
+Remove items selected in the active panel (e.g. you can use this from the Far
+user menu, directly or by a macro):
+
+ >: Job-RemoveItem- (Get-FarItem -Selected)
+
+Note, we use prefix '>' for standard PowerShellFar command, not '>>' for a
+background one. The script itself is not a background job, it is a job starter.
+Thus, it is OK for it to call Far and to request some user interaction before
+the job starts.
+
+
+@SearchRegex
+$#Search-Regex-.ps1#
+~Contents~@Contents@
+
+The script searches for a regex or literal substring entered as *substring in
+the specified source files and sends found matches to a panel, so that you can
+open an editor just at those lines with found text selected.
+
+Search is performed in the background and results are sent to a panel
+dynamically. You may work with found results immediately even if the search will
+take ages.
+
+If the parameter -Regex is not defined you are prompted to enter it together
+with other data.
+
+---------------------------------------------------------------------
+
+#INPUT DIALOG CONTROLS#
+
+#Expression#
+
+Regular expression or *substring (regular expressions cannot start with *).
+See .NET documentation for regular expression details.
+
+#Options#
+
+Comma delimited regular expression options. Available options are: None,
+IgnoreCase, Multiline, ExplicitCapture, Compiled, Singleline,
+IgnorePatternWhitespace, RightToLeft, ECMAScript, CultureInvariant. See .NET
+documentation for option details.
+
+#Input#
+
+Any PowerShell command returning strings (file paths) or file system items (for
+example, but not only, from Get-*Item cmdlets). It is OK if some paths do not
+exist or some items are directories - such elements are ignored. STANDARD
+WARNING: design and use commands carefully. If a command is not trivial try at
+first to compose it in the command line, test it and only then use for a search.
+See examples below.
+
+#Groups#
+
+Tells to put to a panel found regex groups instead of full matches. It is
+ingored if "All text" is set.
+
+#All text#
+
+Tells to read and process a file as a single string, not as a line set. In this
+case options Multiline and Singleline can be used (they do not have much sense
+if 'All text' is off). Results are processed in the same way but a found match
+is not selected in the editor, only cursor is set at the beginning of it.
+
+#Background input#
+
+By default an input command is invoked in the main thread, i.e. there are no
+restrictions to access Far data, PowerShell data and etc. In some cases when
+this access is not needed and a command itself takes long time (e.g. DIR C:\
+-REC -INC *.TXT) then it is more effective to run it in the background by
+setting this flag on.
+
+---------------------------------------------------------------------
+
+#RESULT PANEL KEYS#
+
+#Enter#
+
+opens an editor at the selected match position in the text
+
+#Esc#
+
+closes the panel (asking confirmation)
+
+#F1#
+
+opens this help topic
+
+---------------------------------------------------------------------
+
+#EXAMPLES OF INPUT COMMAND IN A DIALOG#
+
+#dir . -Include *.ps1#
+
+- search in .ps1 files in the current directory (OK for background input)
+
+#dir . -Include *.ps1 -Recurse#
+
+- the same but with all sub-directories (OK for background input)
+
+#Get-FarPath -All#
+
+- search in all panel items (TmpPanel, too) (NOT for background input)
+
+#Get-FarPath -Selected#
+
+- search in selected panel items (TmpPanel, too) (NOT for background input)
+
+#$Far.GetHistory('SavedViewHistory')#
+
+#$Far.GetHistory('SavedViewHistory') | ?{ !$_.StartsWith('\\') }#
+
+- search in files from view\edit history. WARNING: be careful with the first
+command: if history contains missed network paths or you are not connected to
+network then the search may take ages and sometimes it is very difficult to stop
+it, even by killing Far. The second command is safe, it removes network paths
+from the input.
+
+---------------------------------------------------------------------
+
+#COMMAND LINE USE#
+
+The script is started with no input dialog if the parameter -Regex is defined.
+In this case, of course, the other data and options should be also defined in
+the command. Source items can be defined as the parameter -InputObject or simply
+pipelined to the script.
+
+Example:
+
+ls *.ps1 | Search-Regex- -Regex 'return' -Options 'IgnoreCase'
+
+---------------------------------------------------------------------
+
+#NOTES#
+
+The script demonstrates a few important PowerShellFar and FarNet techniques:
+using background jobs and using Far panels for the results and further
+operations. In addition the script shows how to use a pure FarNet panel, i.e.
+not derived from PowerShellFar.AnyPanel.
+
+Note that this script uses PowerShellFar.Invoker which is more effective than
+PowerShellFar.Job for reading job output during processing. Also remember that
+PowerShellFar.Invoker is not included in background job list and it belongs to
+you completely, don't forget to dispose it.
+
+
+@Others
+$#Other scripts#
+~Contents~@Contents@
+
+All other scripts are described just in place, see documentation comments there
+or you can just invoke standard help commands, for example:
+
+	man -det Panel-Data-.ps1
+	help -full Panel-Property-.ps1
+	...
+
+
+@AutoloadedFunctions
+$#Autoloaded functions#
+~Contents~@Contents@
+
+Some scripts: Go-Home-.ps1, Complete-Word-.ps1 and others designed for frequent
+use are implemented as "autoloaded global functions". Take a look at Go-Home-:
+on the first call of Go-Home- (with no extension!) from any code the script
+Go-Home-.ps1 is invoked. It takes its parameters, installs the global function
+Go-Home- (the same name!) and calls it with all the parameters passed in. From
+now on Go-Home- calls the installed function, not the source script. Note: you
+can simply resend all the parameters using @@PSBoundParameters.
+
+
+#Two rules of using this technique#
+
+	- put a script into a directory included in the system path
+	- call it from your code just by name, with no path or extension
+
+
+#Advantages of autoloaded functions#
+
+Needless to say that calling a loaded function from memory is more effective
+than calling a script file from disk. But it is not a good idea to load all the
+functions that can be potentially used if many of them actually may not be used
+in a session. The described technique solves the dilemma: you load only what you
+really use and it is loaded it only once on the first call.
+
+
+@UsingAssemblies
+$#Using .NET assemblies#
+~Contents~@Contents@
+
+Suppose you want to write a tool in a .NET language, not in PowerShell (perhaps
+performance is quite important or a tool is too complex for PowerShell). Be
+aware that there are at least two ways.
+
+
+#Way 1 - no PowerShell at all#
+
+This way is straightforward but not the easiest. You create a plugin for
+FarNet, implement a plugin class, add a menu and so on.
+
+Perhaps it is a right way to go if you don't actually use PowerShell. But if you
+do then there is a much better way.
+
+
+#Way 2 - PowerShell uses .NET assembly#
+
+Create a standard class library and a class like this:
+
+#Code (C##):#
+
+	using System;
+	using FarManager;
+	namespace ClassLibrary1
+	{
+	   public class Class1
+	   {
+	      IFar _far;
+
+	      public Class1(IFar far)
+	      {
+	         _far = far;
+	      }
+
+	      public bool HelloWorld(string title)
+	      {
+	         return _far.Msg("Hello World", title);
+	      }
+	   }
+	}
+
+That is all you need to do, really. The last step is to call HelloWorld() from
+your PowerShell code.
+
+#Code (PowerShell):#
+
+	## load assembly (perhaps in profile if it is always used)
+	Add-Type -Path "<path>\HelloWorld.dll"
+
+	## create our class passing $Far there
+	## (note: if the code is in profile then all scripts can use $Hello)
+	$Hello = New-Object ClassLibrary1.Class1 $Far
+
+	## use anything public from $Hello, e.g. call HelloWorld()
+	$result = $Hello.HelloWorld("This is example of parameter")
+
+
+#Advantages#
+
+- Functionality of this assembly is available everywhere in PowerShell code and
+for other .NET plugins.
+
+- Simplicity: .NET assembly contains pure functionality, no extra plugin
+infrastructure.
+
+- Flexibility: now you can decide how to use it: from command line or from a
+menu or from a script or whatever. PowerShellFar provides many choices.
+
+- This assembly is loaded only when needed and once even if Add-Type is called
+many times.
+
+
+#Way 3 - Compile .NET code dynamically#
+
+Test-Zoo.cs defines some C## code; Test-Zoo-.ps1 shows how to compile it
+dynamically. This is also done by Add-Type, see more about this cmdlet in
+PowerShell manuals.
+
+
+@FAQ
+$#Frequently asked questions#
+~Contents~@Contents@
+
+#Q: How to make PowerShell code invocation from command line easier?#
+
+A: There are at least two ways
+
+1) Easy prefix: a macro that expands the empty command line to '>: '. In this
+example ']' is expanded into '>: '. Space after the prefix is recommended for
+normal TabExpansion of the first word:
+
+ >: $Far.KeyMacro.Install(@@{Area='Shell'; Name=']'; Sequence="> : Space"; CommandLine='0'; Description='Easy prefix'})
+
+2) Easy invoke: type and run without prefix using a macro associated with
+"Invoke selected code" menu command. In this example assume PowerShellFar
+hotkey in the Far plugin menu is "1" and [ShiftBS] is the macro key:
+
+ >: $Far.KeyMacro.Install(@@{Area='Shell'; Name='ShiftBS'; Sequence='F11 1 2'; CommandLine='1'; Description='Easy invoke'})
+
+Now you can type PowerShell commands without the prefix and press [ShiftBS] (or
+whatever you use) to execute it. By the way, this mode gives a nice bonus: if a
+command fails (often due to mistakes in it) its text is still in the command
+line, ready for correction, even cursor position is the same - this really
+saves time on composing complex commands.
+
+
+@Examples
+$#PowerShellFar command examples#
+~Contents~@Contents@
+
+Some examples are just demos, but some of them may be practically useful as Far
+user menu commands (do not forget to add space and ## to the end if you do not
+want a command to be added to PSF history). Examples with panels should be run
+from panels, but for the others it is not a requirement.
+
+Do some math, keep results in variables, use them later
+ >: $x = [math]::sqrt([math]::pi)
+ >: $y = [math]::sqrt(3.14)
+ >: $x - $y
+
+Add the current folder to the system path for this Far session (.NET example: static methods and properties)
+ >: [Environment]::SetEnvironmentVariable('PATH', $env:PATH + ';' + [Environment]::CurrentDirectory, 'Process')
+
+Open selected files in editor at once
+ >: Get-FarPath -Selected | Start-FarEditor
+
+View *.log files one by one, don't add to history
+ >: Get-Item *.log | Start-FarViewer -Modal -DisableHistory
+
+Find string "alias" in .ps1 files, show list of found lines and open editor at
+the selected line (guess why these commands are the same):
+ >: Get-Item *.ps1 | Select-String alias | Out-FarList | Start-FarEditor
+ >: Get-Item *.ps1 | Select-String alias | Out-FarList | %{ Start-FarEditor $_.Path $_.LineNumber }
+
+Show PSF settings in the member panel
+ >: Start-FarPanel $Psf.Settings
+
+Show list of names and command lines of running processes and then show the selected process member panel (WMI)
+ >: Get-WmiObject Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Start-FarPanel
+
+Show available scripts and their help synopsis in description column
+ >: Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -Columns Name, Synopsis
+
+===
