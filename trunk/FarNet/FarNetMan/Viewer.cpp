@@ -7,7 +7,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "Viewer.h"
 #include "Far.h"
 #include "Utils.h"
-#include "ViewerHost.h"
+#include "Viewer0.h"
 
 namespace FarNet
 {;
@@ -73,7 +73,7 @@ void Viewer::Open(OpenMode mode)
 
 	// open: see editor
 	_id = -1;
-	ViewerHost::_viewerWaiting = this;
+	Viewer0::_viewerWaiting = this;
 	Info.Viewer(
 		pinFileName,
 		pinTitle,

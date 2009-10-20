@@ -15,7 +15,7 @@ ref class EditorPluginInfo;
 ref class FilerPluginInfo;
 ref class ToolPluginInfo;
 ref class Viewer;
-ref class ViewerHost;
+ref class Viewer0;
 
 ref class Far : public IFar
 {

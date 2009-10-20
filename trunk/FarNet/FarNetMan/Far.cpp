@@ -17,7 +17,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "Plugin0.h"
 #include "PluginInfo.h"
 #include "Shelve.h"
-#include "ViewerHost.h"
+#include "Viewer0.h"
 #include "Zoo.h"
 
 namespace FarNet
@@ -419,7 +419,7 @@ array<IEditor^>^ Far::Editors()
 
 array<IViewer^>^ Far::Viewers()
 {
-	return ViewerHost::Viewers();
+	return Viewer0::Viewers();
 }
 
 IAnyEditor^ Far::AnyEditor::get()
@@ -429,7 +429,7 @@ IAnyEditor^ Far::AnyEditor::get()
 
 IAnyViewer^ Far::AnyViewer::get()
 {
-	return %ViewerHost::_anyViewer;
+	return %Viewer0::_anyViewer;
 }
 
 String^ Far::PasteFromClipboard()
@@ -633,7 +633,7 @@ IEditor^ Far::Editor::get()
 
 IViewer^ Far::Viewer::get()
 {
-	return ViewerHost::GetCurrentViewer();
+	return Viewer0::GetCurrentViewer();
 }
 
 IPanel^ Far::Panel::get()
