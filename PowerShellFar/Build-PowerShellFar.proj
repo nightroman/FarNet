@@ -50,7 +50,7 @@
 			<Output ItemName="root_file" TaskParameter="Include" />
 		</CreateItem>
 		<Copy SourceFiles="@(root_file)" DestinationFolder="Tmp" />
-		<!-- Extras-->
+		<!--Extras-->
 		<Copy SourceFiles="C:\ROM\SET\FARSET\PowerShell.hrc;C:\ROM\SET\FARSET\RomanConsole.hrd;C:\ROM\SET\farset\RomanRainbow.hrd" DestinationFolder="Tmp\Extras" ContinueOnError="true" />
 		<!--Plugin files-->
 		<CreateItem Include="$(Install)\Plugins.NET\PowerShellFar\*">
@@ -58,15 +58,10 @@
 		</CreateItem>
 		<Copy SourceFiles="@(plugin_file)" DestinationFolder="Tmp\Plugin" />
 		<!--Scripts-->
-		<CreateItem Include="Bench\**;Extras\**">
+		<CreateItem Include="Bench\**;Extras\**" Exclude="Bench\**\.svn\**">
 			<Output ItemName="script_file" TaskParameter="Include" />
 		</CreateItem>
 		<Copy SourceFiles="@(script_file)" DestinationFiles="@(script_file->'Tmp\%(Identity)')" />
-		<!--Source files-->
-		<CreateItem Include="*;Commands\*;Panels\*;Properties\*;Resources\*;UI\*" Exclude="@(root_file);**\*.suo;**\*.user">
-			<Output ItemName="source_file" TaskParameter="Include" />
-		</CreateItem>
-		<Copy SourceFiles="@(source_file)" DestinationFiles="@(source_file->'Tmp\Sources\%(RelativeDir)%(Filename)%(Extension)')" />
 		<!--Archive-->
 		<Exec Command="7z a PowerShellFar.$(ProductVersion).7z .\*" WorkingDirectory="Tmp" />
 		<Copy SourceFiles="Tmp\PowerShellFar.$(ProductVersion).7z" DestinationFolder="." />
