@@ -8,7 +8,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "Editor0.h"
 #include "Far.h"
 #include "Panel0.h"
-#include "ViewerHost.h"
+#include "Viewer0.h"
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
@@ -236,7 +236,7 @@ int WINAPI ProcessSynchroEventW(int type, void* param)
 int WINAPI ProcessViewerEventW(int type, void* param)
 {
 	__START;
-	return ViewerHost::AsProcessViewerEvent(type, param);
+	return Viewer0::AsProcessViewerEvent(type, param);
 	__END;
 	return 0;
 }

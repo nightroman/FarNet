@@ -4,14 +4,14 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "ViewerHost.h"
+#include "Viewer0.h"
 #include "Viewer.h"
 #include "Far.h"
 
 namespace FarNet
 {;
 //! See Editor0::Editors().
-array<IViewer^>^ ViewerHost::Viewers()
+array<IViewer^>^ Viewer0::Viewers()
 {
 	array<IViewer^>^ r = gcnew array<IViewer^>(_viewers.Count);
 	int i = 0;
@@ -21,7 +21,7 @@ array<IViewer^>^ ViewerHost::Viewers()
 }
 
 // Viewer must not be registered yet
-void ViewerHost::Register(Viewer^ viewer, const ViewerInfo& vi)
+void Viewer0::Register(Viewer^ viewer, const ViewerInfo& vi)
 {
 	_viewers.Add(vi.ViewerID, viewer);
 	viewer->_id = vi.ViewerID;
@@ -29,7 +29,7 @@ void ViewerHost::Register(Viewer^ viewer, const ViewerInfo& vi)
 }
 
 //! For exturnal use.
-Viewer^ ViewerHost::GetCurrentViewer()
+Viewer^ Viewer0::GetCurrentViewer()
 {
 	// get current ID
 	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
@@ -52,7 +52,7 @@ Viewer^ ViewerHost::GetCurrentViewer()
 	return viewer;
 }
 
-int ViewerHost::AsProcessViewerEvent(int type, void* param)
+int Viewer0::AsProcessViewerEvent(int type, void* param)
 {
 	switch(type)
 	{
