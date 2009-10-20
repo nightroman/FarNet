@@ -371,7 +371,7 @@
 			CopyLocalDependencies="false"
 			UseDependenciesInBuild="false"
 			CopyLocalSatelliteAssemblies="false"
-			RelativePathToProject="..\FarNetDev\FarNet\FarNet.csproj"
+			RelativePathToProject="..\FarNet\FarNet\FarNet.csproj"
 		/>
 		<AssemblyReference
 			RelativePath="mscorlib.dll"

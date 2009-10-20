@@ -153,7 +153,7 @@
     <Content Include="doc.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FarNetDev\FarNet\FarNet.csproj">
+    <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">
       <Project>{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}</Project>
       <Name>FarNet</Name>
       <Private>False</Private>
