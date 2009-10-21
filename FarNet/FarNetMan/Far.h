@@ -38,7 +38,8 @@ public:
 	virtual property String^ PluginPath { String^ get(); }
 	virtual property String^ RootFar { String^ get(); }
 	virtual property String^ RootKey { String^ get(); }
-	virtual property Version^ Version { System::Version^ get(); }
+	virtual property Version^ FarVersion { System::Version^ get(); }
+	virtual property Version^ FarNetVersion { System::Version^ get(); }
 	virtual property WindowType WindowType { FarNet::WindowType get(); }
 	virtual property IZoo^ Zoo { IZoo^ get(); }
 public:
