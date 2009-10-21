@@ -51,7 +51,7 @@
 		</CreateItem>
 		<Copy SourceFiles="@(root_file)" DestinationFolder="Tmp" />
 		<!--Extras-->
-		<Copy SourceFiles="C:\ROM\SET\FARSET\PowerShell.hrc;C:\ROM\SET\FARSET\RomanConsole.hrd;C:\ROM\SET\farset\RomanRainbow.hrd" DestinationFolder="Tmp\Extras" ContinueOnError="true" />
+		<Copy SourceFiles="C:\ROM\FarDev\Draw\PowerShell.hrc;C:\ROM\FarDev\Draw\RomanConsole.hrd;C:\ROM\FarDev\Draw\RomanRainbow.hrd" DestinationFolder="Tmp\Extras" ContinueOnError="true" />
 		<!--Plugin files-->
 		<CreateItem Include="$(Install)\Plugins.NET\PowerShellFar\*">
 			<Output ItemName="plugin_file" TaskParameter="Include" />

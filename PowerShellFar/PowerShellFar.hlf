@@ -127,7 +127,6 @@ so that actually you have to type '>:' and '>>:' before each command. Examples:
 
  >: 3.14/3
  >: [math]::pi/3
- >: $Far.Version
  >: $Far.Msg("Hello world!")
  >: Get-Process | Out-FarList -Text Name | Start-FarPanel
 
@@ -2138,6 +2137,10 @@ Some examples are just demos, but some of them may be practically useful as Far
 user menu commands (do not forget to add space and ## to the end if you do not
 want a command to be added to PSF history). Examples with panels should be run
 from panels, but for the others it is not a requirement.
+
+Show three versions: Far, FarNet, PowerShellFar:
+
+ >: "Far: $($Far.FarVersion)`nFarNet: $($Far.FarNetVersion)`nPowerShellFar: $($Host.Version)"
 
 Do some math, keep results in variables, use them later
  >: $x = [math]::sqrt([math]::pi)
