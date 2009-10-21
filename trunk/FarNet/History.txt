@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.2.7 =
+
+*) IFar: property Version is replaced with two properties: FarVersion and
+FarNetVersion.
+
 = 4.2.6 =
 
 MULTIPLE PANELS

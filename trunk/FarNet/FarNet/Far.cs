@@ -132,7 +132,11 @@ namespace FarNet
 		/// <summary>
 		/// Far version.
 		/// </summary>
-		Version Version { get; }
+		Version FarVersion { get; }
+		/// <summary>
+		/// FarNet version.
+		/// </summary>
+		Version FarNetVersion { get; }
 		/// <summary>
 		/// Creates a new input box.
 		/// You have to set its properties and call <see cref="IInputBox.Show"/>.

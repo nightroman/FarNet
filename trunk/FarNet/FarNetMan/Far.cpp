@@ -383,11 +383,16 @@ IntPtr Far::HWnd::get()
 	return (IntPtr)Info.AdvControl(Info.ModuleNumber, ACTL_GETFARHWND, nullptr);
 }
 
-System::Version^ Far::Version::get()
+System::Version^ Far::FarVersion::get()
 {
 	DWORD vn;
 	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
 	return gcnew System::Version((vn&0x0000ff00)>>8, vn&0x000000ff, (int)((long)vn&0xffff0000)>>16);
+}
+
+System::Version^ Far::FarNetVersion::get()
+{
+	return Assembly::GetExecutingAssembly()->GetName()->Version;
 }
 
 IMenu^ Far::CreateMenu()
