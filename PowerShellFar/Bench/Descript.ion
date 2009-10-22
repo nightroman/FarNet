@@ -50,3 +50,4 @@ Start-MSBuild-.ps1 Starts MSBuild with input dialog for the project file
 Test Tests and demos
 Update-FarManager.ps1 Updates Far Manager 2.x and standard plugins.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
+Show-Image.ps1 Shows images in a GUI window.
