@@ -13,11 +13,15 @@
 	by starting a separate PowerShell process in a hidden window.
 
 	For a single image the window is resizable. More than one input images are
-	placed from left to right and scaled, if needed; click on a picture opens a
-	separate modal window with this picture.
+	placed from left to right and scaled, if needed; mouse click on a picture
+	opens a separate modal window with this picture, [Enter] opens the current
+	picture, [Left] and [Right] changes the current picture. [Escape] closes
+	the window.
 
 .INPUTS
-	Image file paths are passed in as arguments or piped.
+	Image file paths are passed in as arguments or piped. If there is no input
+	all *.bmp, *.gif, *.jpg, *.jpeg, *.png files from the current location are
+	taken.
 
 .EXAMPLE
 	# Far Manager association: internal way: faster but picture windows will be
@@ -67,6 +71,56 @@ if ($images.Count -eq 0) {
 	return
 }
 
+function Left {
+	$box = $this.Controls[$current]
+	$box.BorderStyle = 'FixedSingle'
+	--$current
+	if ($current -lt 0) { $current = $images.Count - 1 }
+	$box = $this.Controls[$current]
+	$box.BorderStyle = 'Fixed3D'
+}
+
+function Right {
+	$box = $this.Controls[$current]
+	$box.BorderStyle = 'FixedSingle'
+	++$current
+	if ($current -ge $images.Count) { $current = 0 }
+	$box = $this.Controls[$current]
+	$box.BorderStyle = 'Fixed3D'
+}
+
+function Click {
+	for($e = 0; $e -lt $images.Count; ++$e) {
+		if ($images[$e].Bitmap -eq $this.Image) {
+			break
+		}
+	}
+	$box = $this.Parent.Controls[$current]
+	$box.BorderStyle = 'FixedSingle'
+	$current = $e
+	$box = $this.Parent.Controls[$current]
+	$box.BorderStyle = 'Fixed3D'
+	. ShowCurrent
+}
+
+function ShowCurrent {
+	for(;;) {
+		$action = [ref]$null
+		Show-Image $images[$current]
+		switch($action.Value) {
+			'Left' {
+				. Left
+			}
+			'Right' {
+				. Right
+			}
+			default {
+				return
+			}
+		}
+	}
+}
+
 ### create a form
 $form = New-Object System.Windows.Forms.Form
 $form.Text = ($images | .{process{ $_.Name }}) -join ', '
@@ -79,8 +133,37 @@ else {
 	$form.FormBorderStyle = 'FixedDialog'
 	$form.MaximizeBox = $false
 }
-$form.add_KeyDown({ switch($_.KeyCode) { 'Escape' { $this.Close() } } })
 $form.add_Shown({ $form.Activate() })
+$form.add_KeyDown({
+	switch($_.KeyCode) {
+		'Escape' {
+			$this.Close()
+		}
+		'Return' {
+			if ($images.Count -ne 1) {
+				. ShowCurrent
+			}
+		}
+		'Left' {
+			if ($images.Count -ne 1) {
+				. Left
+			}
+			else {
+				$action.Value = 'Left'
+				$this.Close()
+			}
+		}
+		'Right' {
+			if ($images.Count -ne 1) {
+				. Right
+			}
+			else {
+				$action.Value = 'Right'
+				$this.Close()
+			}
+		}
+	}
+})
 
 ### get scale factor and set form size
 $scale = 1
@@ -113,15 +196,15 @@ foreach($image in $images) {
 	else {
 		$box.BorderStyle = 'FixedSingle'
 		$box.add_Click({
-			foreach($image in $images) {
-				if ($image.Bitmap -eq $this.Image) {
-					Show-Image $image
-					break
-				}
-			}
+			. Click
 		})
 	}
 	$form.Controls.Add($box)
+}
+
+if ($images.Count -ne 1) {
+	$current = 0
+	$form.Controls[0].BorderStyle = 'Fixed3D'
 }
 
 # show!
