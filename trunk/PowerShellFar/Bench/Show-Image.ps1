@@ -72,20 +72,20 @@ if ($images.Count -eq 0) {
 }
 
 function Left {
-	$box = $this.Controls[$current]
+	$box = $form1.Controls[$current]
 	$box.BorderStyle = 'FixedSingle'
 	--$current
 	if ($current -lt 0) { $current = $images.Count - 1 }
-	$box = $this.Controls[$current]
+	$box = $form1.Controls[$current]
 	$box.BorderStyle = 'Fixed3D'
 }
 
 function Right {
-	$box = $this.Controls[$current]
+	$box = $form1.Controls[$current]
 	$box.BorderStyle = 'FixedSingle'
 	++$current
 	if ($current -ge $images.Count) { $current = 0 }
-	$box = $this.Controls[$current]
+	$box = $form1.Controls[$current]
 	$box.BorderStyle = 'Fixed3D'
 }
 
@@ -95,10 +95,10 @@ function Click {
 			break
 		}
 	}
-	$box = $this.Parent.Controls[$current]
+	$box = $form1.Controls[$current]
 	$box.BorderStyle = 'FixedSingle'
 	$current = $e
-	$box = $this.Parent.Controls[$current]
+	$box = $form1.Controls[$current]
 	$box.BorderStyle = 'Fixed3D'
 	. ShowCurrent
 }
@@ -204,6 +204,7 @@ foreach($image in $images) {
 
 if ($images.Count -ne 1) {
 	$current = 0
+	$form1 = $form
 	$form.Controls[0].BorderStyle = 'Fixed3D'
 }
 
