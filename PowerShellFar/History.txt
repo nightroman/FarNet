@@ -17,6 +17,9 @@ panels are notified (basically for correct disposal of their resources).
 *) Closing a panel together with parents by [ShiftEsc]: implemented in a right
 way: parent panels are asked before closing and notified after closing.
 
+*) New script Show-Image.ps1 for trivial viewing of pictures. It is a standard
+PowerShell script, but it is handy in Far via associations, user menu, and etc.
+
 *) Internal: command execution engine migrated from the 'Pipeline' interface to
 the modern 'PowerShell' interface (new in PS V2).
 
