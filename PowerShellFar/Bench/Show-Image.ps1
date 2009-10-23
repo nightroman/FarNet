@@ -4,9 +4,9 @@
 	Shows image(s) in a GUI window.
 
 .DESCRIPTION
-	This is a simple way to take a look at a picture or several pictures. It is
-	fast and it does not need any extra software. It is convenient to use from
-	Far Manager via file associations or user menu commands, see examples.
+	This script shows pictures in a very simple way. It does does not require
+	any additional tools. It is convenient to use from Far Manager via file
+	associations or user menu commands, see examples.
 
 	The script can be called directly but in this case its modal dialog blocks
 	the calling thread. To avoid this this script should be called as a job or
@@ -20,8 +20,7 @@
 
 .INPUTS
 	Image file paths are passed in as arguments or piped. If there is no input
-	all *.bmp, *.gif, *.jpg, *.jpeg, *.png files from the current location are
-	taken.
+	then all image files from the current location are taken.
 
 .EXAMPLE
 	# Far Manager association: internal way: faster but picture windows will be
@@ -34,31 +33,32 @@
 	start /min powershell -WindowStyle Hidden -File C:\Scripts\Show-Image.ps1 "!\!.!"
 
 .EXAMPLE
-	# Far Manager user menu: internal way: show (several) selected images
+	# Far Manager user menu: internal way: show selected images
 	>: Start-FarJob -Hidden Show-Image (Get-FarPath -Selected) #
+
+.EXAMPLE
+	# Far Manager user menu: external way: show all images here
+	start /min powershell -WindowStyle Hidden Show-Image
 #>
 
+param([switch]$Internal)
+Set-StrictMode -Version 2
 Add-Type -AssemblyName System.Windows.Forms
 
 ### input, create bitmaps
 $files = if ($args) { $args } else { $input }
-if (!$files) { $files = Get-Item *.bmp, *.gif, *.jpg, *.jpeg, *.png }
+if (!$files) { $files = Get-Item *.bmp,*.gif,*.jpg,*.jpeg,*.png,*.tif,*.tiff,*.wmf }
 $width = 0
 $height = 0
 $images = New-Object System.Collections.ArrayList
 foreach($file in $files) {
 	try {
-		if ($file -is [System.Collections.IDictionary]) {
-			$image = $file
+		$path = $file.ToString()
+		$bitmap = New-Object System.Drawing.Bitmap $path
+		$image = @{
+			Path = $path
+			Bitmap = $bitmap
 		}
-		else {
-			$path = $file.ToString()
-			$image = @{
-				Bitmap = New-Object System.Drawing.Bitmap $path
-				Name = Split-Path $path -Leaf
-			}
-		}
-		$bitmap = $image.Bitmap
 		$width += $bitmap.Size.Width
 		if ($height -lt $bitmap.Size.Height) {
 			$height = $bitmap.Size.Height
@@ -71,110 +71,37 @@ if ($images.Count -eq 0) {
 	return
 }
 
-function Left {
-	$box = $form1.Controls[$current]
-	$box.BorderStyle = 'FixedSingle'
-	--$current
-	if ($current -lt 0) { $current = $images.Count - 1 }
-	$box = $form1.Controls[$current]
-	$box.BorderStyle = 'Fixed3D'
-}
-
-function Right {
-	$box = $form1.Controls[$current]
-	$box.BorderStyle = 'FixedSingle'
-	++$current
-	if ($current -ge $images.Count) { $current = 0 }
-	$box = $form1.Controls[$current]
-	$box.BorderStyle = 'Fixed3D'
-}
-
-function Click {
-	for($e = 0; $e -lt $images.Count; ++$e) {
-		if ($images[$e].Bitmap -eq $this.Image) {
-			break
-		}
-	}
-	$box = $form1.Controls[$current]
-	$box.BorderStyle = 'FixedSingle'
-	$current = $e
-	$box = $form1.Controls[$current]
-	$box.BorderStyle = 'Fixed3D'
-	. ShowCurrent
-}
-
-function ShowCurrent {
-	for(;;) {
-		$action = [ref]$null
-		Show-Image $images[$current]
-		switch($action.Value) {
-			'Left' {
-				. Left
-			}
-			'Right' {
-				. Right
-			}
-			default {
-				return
-			}
-		}
-	}
-}
-
 ### create a form
 $form = New-Object System.Windows.Forms.Form
-$form.Text = ($images | .{process{ $_.Name }}) -join ', '
-$form.StartPosition = 'CenterScreen'
+$form.Text = ($images | .{process{ [System.IO.Path]::GetFileName($_.Path) }}) -join ', '
+$form.BackColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
 if ($images.Count -eq 1) {
+	$form.StartPosition = 'CenterScreen'
 	$form.FormBorderStyle = 'Sizable'
+	$bordersize = [System.Windows.Forms.SystemInformation]::FrameBorderSize
 	$form.MaximizeBox = $true
 }
 else {
+	$form.StartPosition = 'Manual'
 	$form.FormBorderStyle = 'FixedDialog'
+	$bordersize = [System.Windows.Forms.SystemInformation]::FixedFrameBorderSize
 	$form.MaximizeBox = $false
 }
 $form.add_Shown({ $form.Activate() })
-$form.add_KeyDown({
-	switch($_.KeyCode) {
-		'Escape' {
-			$this.Close()
-		}
-		'Return' {
-			if ($images.Count -ne 1) {
-				. ShowCurrent
-			}
-		}
-		'Left' {
-			if ($images.Count -ne 1) {
-				. Left
-			}
-			else {
-				$action.Value = 'Left'
-				$this.Close()
-			}
-		}
-		'Right' {
-			if ($images.Count -ne 1) {
-				. Right
-			}
-			else {
-				$action.Value = 'Right'
-				$this.Close()
-			}
-		}
-	}
-})
+$form.add_KeyDown({ . KeyDown })
 
 ### get scale factor and set form size
 $scale = 1
-$maxsize = [System.Windows.Forms.SystemInformation]::MaxWindowTrackSize
-if ($width -gt $maxsize.Width) {
-	$scale = $maxsize.Width / $width * 0.98
+$maxsize = [System.Windows.Forms.SystemInformation]::WorkingArea
+$maxwidth = $maxsize.Width - 2 * $bordersize.Width
+if ($width -gt $maxwidth) {
+	$scale = $maxwidth / $width
 	$width = $width * $scale
 	$height = $height * $scale
 }
-if ($height -gt $maxsize.Height) {
-	$scale = $maxsize.Height / $height * 0.98
+$maxheight = $maxsize.Height - $bordersize.Height - [System.Windows.Forms.SystemInformation]::CaptionHeight
+if ($height -gt $maxheight) {
+	$scale = $maxheight / $height
 	$width = $width * $scale
 	$height = $height * $scale
 }
@@ -194,7 +121,7 @@ foreach($image in $images) {
 		$box.Dock = 'Fill'
 	}
 	else {
-		$box.BorderStyle = 'FixedSingle'
+		$box.BorderStyle = 'None'
 		$box.add_Click({
 			. Click
 		})
@@ -204,16 +131,96 @@ foreach($image in $images) {
 
 if ($images.Count -ne 1) {
 	$current = 0
-	$form1 = $form
+	$mainform = $form
 	$form.Controls[0].BorderStyle = 'Fixed3D'
 }
 
-# show!
-[void]$form.ShowDialog()
-
-# clean
-foreach($image in $images) {
-	if ($files -notcontains $image) {
-		$image.Bitmap.Dispose()
+function KeyDown {
+	switch($_.KeyCode) {
+		'Escape' {
+			$this.Close()
+		}
+		'Return' {
+			if ($images.Count -ne 1) {
+				. ShowCurrent
+			}
+		}
+		'Left' {
+			if ($images.Count -ne 1) {
+				. Left
+			}
+			elseif ($Internal) {
+				$action.Value = 'Left'
+				$this.Close()
+			}
+		}
+		'Right' {
+			if ($images.Count -ne 1) {
+				. Right
+			}
+			elseif ($Internal) {
+				$action.Value = 'Right'
+				$this.Close()
+			}
+		}
 	}
+}
+
+function Left {
+	$box = $mainform.Controls[$current]
+	$box.BorderStyle = 'None'
+	--$current
+	if ($current -lt 0) { $current = $images.Count - 1 }
+	$box = $mainform.Controls[$current]
+	$box.BorderStyle = 'Fixed3D'
+}
+
+function Right {
+	$box = $mainform.Controls[$current]
+	$box.BorderStyle = 'None'
+	++$current
+	if ($current -ge $images.Count) { $current = 0 }
+	$box = $mainform.Controls[$current]
+	$box.BorderStyle = 'Fixed3D'
+}
+
+function Click {
+	for($e = 0; $e -lt $images.Count; ++$e) {
+		if ($images[$e].Bitmap -eq $this.Image) {
+			break
+		}
+	}
+	$box = $mainform.Controls[$current]
+	$box.BorderStyle = 'None'
+	$current = $e
+	$box = $mainform.Controls[$current]
+	$box.BorderStyle = 'Fixed3D'
+	. ShowCurrent
+}
+
+function ShowCurrent {
+	for(;;) {
+		$action = [ref]$null
+		Show-Image -Internal ($images[$current].Path)
+		switch($action.Value) {
+			'Left' {
+				. Left
+			}
+			'Right' {
+				. Right
+			}
+			default {
+				return
+			}
+		}
+	}
+}
+
+### show
+[void]$form.ShowDialog()
+$form.Dispose()
+
+### dispose
+foreach($_ in $images) {
+	$_.Bitmap.Dispose()
 }
