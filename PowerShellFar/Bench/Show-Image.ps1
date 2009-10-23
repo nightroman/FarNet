@@ -1,22 +1,21 @@
 
 <#
 .SYNOPSIS
-	Shows image(s) in a GUI window.
+	Shows one or more images in a GUI window.
 
 .DESCRIPTION
-	This script shows pictures in a very simple way. It does does not require
-	any additional tools. It is convenient to use from Far Manager via file
-	associations or user menu commands, see examples.
+	This script shows pictures in a GUI window. No extra software is needed. It
+	is a standard PowerShell script but it may be easier to use in Far Manager
+	via file associations or user menu commands, see examples.
 
 	The script can be called directly but in this case its modal dialog blocks
-	the calling thread. To avoid this this script should be called as a job or
+	the calling thread. To avoid this the script should be called as a job or
 	by starting a separate PowerShell process in a hidden window.
 
-	For a single image the window is resizable. More than one input images are
-	placed from left to right and scaled, if needed; mouse click on a picture
-	opens a separate modal window with this picture, [Enter] opens the current
-	picture, [Left] and [Right] changes the current picture. [Escape] closes
-	the window.
+	For a single image its window is resizable. More than one images are placed
+	from left to right and scaled, if needed; mouse click on a picture opens a
+	window with this picture, [Enter] opens the current picture, [Left] and
+	[Right] changes the current picture. [Escape] closes the window.
 
 .INPUTS
 	Image file paths are passed in as arguments or piped. If there is no input
@@ -30,7 +29,7 @@
 .EXAMPLE
 	# Far Manager association: external way: slower but picture windows will be
 	# opened even after closing the Far window.
-	start /min powershell -WindowStyle Hidden -File C:\Scripts\Show-Image.ps1 "!\!.!"
+	start /min powershell -WindowStyle Hidden -File C:\PS\Show-Image.ps1 "!\!.!"
 
 .EXAMPLE
 	# Far Manager user menu: internal way: show selected images
@@ -45,9 +44,11 @@ param([switch]$Internal)
 Set-StrictMode -Version 2
 Add-Type -AssemblyName System.Windows.Forms
 
-### input, create bitmaps
+### input, create bitmaps, get total width and height
 $files = if ($args) { $args } else { $input }
-if (!$files) { $files = Get-Item *.bmp,*.gif,*.jpg,*.jpeg,*.png,*.tif,*.tiff,*.wmf }
+if (!$files) {
+	$files = Get-Item *.bmp,*.gif,*.jpg,*.jpeg,*.png,*.tif,*.tiff,*.wmf
+}
 $width = 0
 $height = 0
 $images = New-Object System.Collections.ArrayList
@@ -55,15 +56,11 @@ foreach($file in $files) {
 	try {
 		$path = $file.ToString()
 		$bitmap = New-Object System.Drawing.Bitmap $path
-		$image = @{
-			Path = $path
-			Bitmap = $bitmap
-		}
 		$width += $bitmap.Size.Width
 		if ($height -lt $bitmap.Size.Height) {
 			$height = $bitmap.Size.Height
 		}
-		$null = $images.Add($image)
+		$null = $images.Add(@{ Path = $path; Bitmap = $bitmap })
 	}
 	catch {}
 }
@@ -75,43 +72,44 @@ if ($images.Count -eq 0) {
 $form = New-Object System.Windows.Forms.Form
 $form.Text = ($images | .{process{ [System.IO.Path]::GetFileName($_.Path) }}) -join ', '
 $form.BackColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
+$form.add_Shown({ $form.Activate() })
+$form.add_KeyDown({ . KeyDown })
 if ($images.Count -eq 1) {
+	$form.MaximizeBox = $true
 	$form.StartPosition = 'CenterScreen'
 	$form.FormBorderStyle = 'Sizable'
 	$bordersize = [System.Windows.Forms.SystemInformation]::FrameBorderSize
-	$form.MaximizeBox = $true
 }
 else {
+	$form.MaximizeBox = $false
 	$form.StartPosition = 'Manual'
 	$form.FormBorderStyle = 'FixedDialog'
 	$bordersize = [System.Windows.Forms.SystemInformation]::FixedFrameBorderSize
-	$form.MaximizeBox = $false
 }
-$form.add_Shown({ $form.Activate() })
-$form.add_KeyDown({ . KeyDown })
 
-### get scale factor and set form size
+### get scale factor, calculate and set form client size
 $scale = 1
 $maxsize = [System.Windows.Forms.SystemInformation]::WorkingArea
 $maxwidth = $maxsize.Width - 2 * $bordersize.Width
 if ($width -gt $maxwidth) {
 	$scale = $maxwidth / $width
-	$width = $width * $scale
-	$height = $height * $scale
+	$width *= $scale
+	$height *= $scale
 }
 $maxheight = $maxsize.Height - $bordersize.Height - [System.Windows.Forms.SystemInformation]::CaptionHeight
 if ($height -gt $maxheight) {
-	$scale = $maxheight / $height
-	$width = $width * $scale
-	$height = $height * $scale
+	$scale2 = $maxheight / $height
+	$scale *= $scale2
+	$width *= $scale2
+	$height *= $scale2
 }
 $form.ClientSize = New-Object System.Drawing.Size $width, $height
 
-### add picture boxes
+### create and add picture boxes
 $left = 0
 foreach($image in $images) {
-	$box = New-Object System.Windows.Forms.PictureBox
 	$bitmap = $image.Bitmap
+	$box = New-Object System.Windows.Forms.PictureBox
 	$box.Image = $bitmap
 	$box.SizeMode = 'Zoom'
 	$box.Size = New-Object System.Drawing.Size ($bitmap.Size.Width * $scale), ($bitmap.Size.Height * $scale)
@@ -121,14 +119,12 @@ foreach($image in $images) {
 		$box.Dock = 'Fill'
 	}
 	else {
-		$box.BorderStyle = 'None'
-		$box.add_Click({
-			. Click
-		})
+		$box.add_Click({ . Click })
 	}
 	$form.Controls.Add($box)
 }
 
+### init the current picture box
 if ($images.Count -ne 1) {
 	$current = 0
 	$mainform = $form
@@ -216,11 +212,11 @@ function ShowCurrent {
 	}
 }
 
-### show
+### show the modal dialog
 [void]$form.ShowDialog()
 $form.Dispose()
 
-### dispose
+### dispose bitmaps
 foreach($_ in $images) {
 	$_.Bitmap.Dispose()
 }
