@@ -110,25 +110,24 @@ $left = 0
 foreach($image in $images) {
 	$bitmap = $image.Bitmap
 	$box = New-Object System.Windows.Forms.PictureBox
-	$box.Image = $bitmap
-	$box.SizeMode = 'Zoom'
-	$box.Size = New-Object System.Drawing.Size ($bitmap.Size.Width * $scale), ($bitmap.Size.Height * $scale)
-	$box.Left = $left
-	$left = $box.Right
 	if ($images.Count -eq 1) {
 		$box.Dock = 'Fill'
 	}
 	else {
 		$box.add_Click({ . Click })
+		if ($Left -eq 0) {
+			### init the current picture box
+			$script:current = 0
+			$script:mainform = $form
+			$box.BorderStyle = 'Fixed3D'
+		}
 	}
+	$box.Image = $bitmap
+	$box.SizeMode = 'Zoom'
+	$box.Size = New-Object System.Drawing.Size ($bitmap.Size.Width * $scale), ($bitmap.Size.Height * $scale)
+	$box.Left = $left
+	$left = $box.Right
 	$form.Controls.Add($box)
-}
-
-### init the current picture box
-if ($images.Count -ne 1) {
-	$current = 0
-	$mainform = $form
-	$form.Controls[0].BorderStyle = 'Fixed3D'
 }
 
 function KeyDown {
@@ -163,51 +162,45 @@ function KeyDown {
 }
 
 function Left {
-	$box = $mainform.Controls[$current]
-	$box.BorderStyle = 'None'
-	--$current
-	if ($current -lt 0) { $current = $images.Count - 1 }
-	$box = $mainform.Controls[$current]
-	$box.BorderStyle = 'Fixed3D'
+	$index = $script:current - 1
+	if ($index -lt 0) {
+		$index = $images.Count - 1
+	}
+	. SetCurrent $index
 }
 
 function Right {
-	$box = $mainform.Controls[$current]
-	$box.BorderStyle = 'None'
-	++$current
-	if ($current -ge $images.Count) { $current = 0 }
-	$box = $mainform.Controls[$current]
-	$box.BorderStyle = 'Fixed3D'
+	$index = $script:current + 1
+	if ($index -ge $images.Count) {
+		$index = 0
+	}
+	. SetCurrent $index
 }
 
 function Click {
-	for($e = 0; $e -lt $images.Count; ++$e) {
-		if ($images[$e].Bitmap -eq $this.Image) {
+	for($index = 0; $index -lt $images.Count; ++$index) {
+		if ($images[$index].Bitmap -eq $this.Image) {
 			break
 		}
 	}
-	$box = $mainform.Controls[$current]
-	$box.BorderStyle = 'None'
-	$current = $e
-	$box = $mainform.Controls[$current]
-	$box.BorderStyle = 'Fixed3D'
+	. SetCurrent $index
 	. ShowCurrent
+}
+
+function SetCurrent($index) {
+	$script:mainform.Controls[$script:current].BorderStyle = 'None'
+	$script:mainform.Controls[$index].BorderStyle = 'Fixed3D'
+	$script:current = $index
 }
 
 function ShowCurrent {
 	for(;;) {
 		$action = [ref]$null
-		Show-Image -Internal ($images[$current].Path)
+		Show-Image -Internal ($images[$script:current].Path)
 		switch($action.Value) {
-			'Left' {
-				. Left
-			}
-			'Right' {
-				. Right
-			}
-			default {
-				return
-			}
+			'Left' { . Left }
+			'Right' { . Right }
+			default { return }
 		}
 	}
 }
