@@ -3,12 +3,16 @@ http://code.google.com/p/farnet/
 
 = 2.2.7 =
 
-*) From now on the plugin sources are not in the distributed archive but in the
-SVN repository together with FarNet sources. Bench scripts are included as
-usual, they are essential working part of the plugin.
+*) From now on the plugin sources are in the SVN repository together with the
+FarNet sources. Scripts are released as usual.
 
-*) New script Show-Image.ps1 for trivial viewing of pictures. It is a standard
-PowerShell script, but in Far it is easier to use: associations, user menu.
+*) A few weeks of work with Far 2.0.1145+ show confusing effects of difference
+between the current process directory and the active panel path. It is decided
+to sync these paths before calling PowerShell with user commands/scripts.
+
+*) New script Show-Image.ps1 for simple viewing of pictures. It is a standard
+PowerShell script, but in Far it is easier to use: associations, user menu. It
+is also an example of how to drive windows forms from PowerShell.
 
 *) Folder tree panel: hidden file system folders are processed in a standard
 Far way ([CtrlH]).
@@ -21,8 +25,14 @@ panels are notified (basically for correct disposal of their resources).
 *) Closing a panel together with parents by [ShiftEsc]: implemented in a right
 way: parent panels are asked before closing and notified after closing.
 
+*) Menu-More.ps1: removed the action "Sync the current directory". The same
+effect you now get on any PowerShell command, even empty.
+
+*) TabExpansion: this should work, too (e.g. in definition of a hashtable):
+Name = Split-Path -l[Tab]
+
 *) Internal: command execution engine migrated from the 'Pipeline' interface to
-the modern 'PowerShell' interface (new in PS V2).
+the modern 'PowerShell' interface introduced in PS V2.
 
 = 2.2.6 =
 

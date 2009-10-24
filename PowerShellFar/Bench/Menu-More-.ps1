@@ -41,9 +41,6 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 	elseif ($Far.WindowType -eq 'Panels') {
 		$SelectedItems = @(Get-FarItem -Selected)
 
-		# Sets the process current directory to the active path.
-		New-FarItem "&s. Sync the current directory" { [Environment]::CurrentDirectory = $Far.ActivePath }
-
 		# Job: Set synopsis descriptions (called as job mostly for demonstration and testing).
 		New-FarItem "&d. Job: Set synopsis descriptions" { Start-FarJob Set-SynopsisDescription-.ps1 $Far.Panel.Path -Hidden }
 

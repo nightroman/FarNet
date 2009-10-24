@@ -1,37 +1,38 @@
+
 Plugin   : PowerShellFar
 Category : Development
 Version  : 2.2.7
-Release  : 2009.10.20
+Release  : 2009.10.24
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, PowerShell (included)
 HomePage : http://code.google.com/p/farnet/
 
 
-	DESCRIPTION
+	= DESCRIPTION =
 
 
-Implements Windows PowerShell host in FAR Manager and user interface for
-invoking commands and scripts. PowerShell code can access and control FAR
+Implements Windows PowerShell host in Far Manager and user interface for
+invoking commands and scripts. PowerShell code can access and control Far
 functionality with FarNet object model. The package includes ready to use
-scripts for various popular FAR Manager tasks and PowerShell.hrc for
+scripts for various popular Far Manager tasks and PowerShell.hrc for
 Colorer-take5.beta5 providing rich PowerShell syntax highlighting.
 
 The latest versions of PowerShellFar, FarNet and documentation can be
-downloaded from: ~http://code.google.com/p/farnet/~
+downloaded from: http://code.google.com/p/farnet/
 
 
-	PREREQUISITES
+	= PREREQUISITES =
 
 
- - Far Manager 2.0.1170
+ - Far Manager 2.0.1179
  - Plugin FarNet 4.2.7 (*)
  - Windows PowerShell V2 (RC or RTM)
 
  (*) see also FarNet prerequisites
 
 
-	INSTALLATION
+	= INSTALLATION =
 
 
 PowerShell:

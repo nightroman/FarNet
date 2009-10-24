@@ -69,8 +69,9 @@ the same with switched "full screen".
 
 #Close the panel#
 
-Closes the plugin panel. It can be any plugin: FarNet or native. Note that for
-native plugins on closing the original Far panel state is not restored.
+Closes the plugin panel. It can be any plugin: FarNet or native. Some plugin
+panels may not close on this command. For native plugins original Far panel
+state may be not restored on closing.
 
 #Pop/Unshelve [Enter]#
 
