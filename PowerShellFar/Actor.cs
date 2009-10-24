@@ -259,43 +259,70 @@ $null = [System.Windows.Forms.MessageBox]::Show(
 				}
 			}
 
-			//! sync location to avoid confusions
-			if (!IsRunning)
+			// that's all for a running code
+			if (IsRunning)
+				return;
+
+			//! now sync the location and current directory with the active panel
+			IPanel panel = A.Far.Panel;
+			if (panel == null)
+				return;
+
+			// get paths
+			string directory = A.Far.ActivePath;
+			string location = null;
+			if (panel.IsPlugin)
 			{
-				IPanel panel = A.Far.Panel;
-				if (panel != null)
+				IPluginPanel plugin = panel as IPluginPanel;
+				if (plugin != null)
 				{
-					// get path
-					string dir;
-					if (panel.IsPlugin)
+					ItemPanel itemPanel = plugin.Host as ItemPanel;
+					if (itemPanel != null)
 					{
-						dir = null;
-						IPluginPanel pp = panel as IPluginPanel;
-						if (pp != null)
-						{
-							ItemPanel ip = pp.Host as ItemPanel;
-							if (ip != null)
-								dir = ip.Location.Path;
-						}
+						location = itemPanel.Location.Path;
 					}
 					else
 					{
-						dir = panel.Path;
-					}
-
-					// set path
-					if (!string.IsNullOrEmpty(dir))
-					{
-						try
-						{
-							//! Parameter is wildcard.
-							//! Test: enter into a container "[]" and invoke a command
-							Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(dir));
-						}
-						catch (ItemNotFoundException)
-						{ }
+						FolderTree folderTree = plugin.Host as FolderTree;
+						if (folderTree != null)
+							location = panel.Path;
+						else
+							location = directory;
 					}
 				}
+			}
+
+			// set directory
+			if (!string.IsNullOrEmpty(directory))
+			{
+				// _090929_061740 091023 Sync the current directory
+				try
+				{
+					Directory.SetCurrentDirectory(directory);
+				}
+				catch //$RVK swallowing... should we show a warning and ask to cancel?
+				{
+					// don't try the same in PowerShell if it fails in Windows
+					if (location == null || location == directory)
+						return;
+				}
+			}
+
+			// to sync location
+			if (location == null)
+				location = directory;
+
+			// set location
+			if (!string.IsNullOrEmpty(location))
+			{
+				try
+				{
+					//! Parameter is wildcard.
+					//! Test: enter into a container "[]" and invoke a command
+					Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(location));
+				}
+				catch (ItemNotFoundException)
+				{ }
 			}
 		}
 
@@ -513,16 +540,6 @@ $null = [System.Windows.Forms.MessageBox]::Show(
 		public EventHandler<PanelEventArgs> WrapPanelEvent(EventHandler<PanelEventArgs> that)
 		{
 			return (new EventWrapper<PanelEventArgs>(that)).Invoke;
-		}
-
-		/// <summary>
-		/// Invokes PowerShell code as if "from command line".
-		/// </summary>
-		/// <param name="code">PowerShell code.</param>
-		internal void OnCommandLine(string code)
-		{
-			Invoking();
-			InvokePipeline(code, null, true);
 		}
 
 		/// <summary>

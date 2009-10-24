@@ -66,6 +66,11 @@ function global:TabExpansion
 			function ParseCommand($line)
 			{
 				$tokens = @([System.Management.Automation.PSParser]::Tokenize($line, [ref]$null))
+				# _091023_204251
+				if ($tokens.Count -ge 4 -and $tokens[1].Content -eq '=' -and $tokens[1].Type -eq 'CommandArgument' -and $tokens[0].Type -eq 'Command') {
+					$line = $line.Substring($tokens[2].Start)
+					$tokens = @([System.Management.Automation.PSParser]::Tokenize($line, [ref]$null))
+				}
 				$group = 0
 				$cmd = ''
 				for($e = $tokens.Count; --$e -ge 0;) {
@@ -83,6 +88,7 @@ function global:TabExpansion
 					}
 				}
 			}
+
 			$cmd = ParseCommand $line
 			if (!$cmd) {
 				if ($line -match '^\W+(.+)') {

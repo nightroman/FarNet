@@ -88,7 +88,8 @@ namespace PowerShellFar
 
 		void OnCommandLine(object sender, CommandEventArgs e)
 		{
-			A.Psf.OnCommandLine(e.Command);
+			//! do not call Invoking(), it is done by FarNet
+			A.Psf.InvokePipeline(e.Command, null, true);
 		}
 
 		void OnCommandLineJob(object sender, CommandEventArgs e)

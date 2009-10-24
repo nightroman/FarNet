@@ -1,27 +1,28 @@
+
 Plugin   : FarNet
 Category : Development
 Version  : 4.2.7
-Release  : 2009.10.20
+Release  : 2009.10.24
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, C++/CLI
 HomePage : http://code.google.com/p/farnet/
 
 
-	DESCRIPTION
+	= DESCRIPTION =
 
 
 Plugin for writing Far Manager plugins in any .NET language (even in PowerShell
-with PowerShellFar plugin). It exposes significant part of FAR API and also
+with PowerShellFar plugin). It exposes significant part of Far API and also
 extends it for comfortable use in object oriented way.
 Home page: http://code.google.com/p/farnet/
 
 
-	PREREQUISITES
+	= PREREQUISITES =
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1170
+ - Far Manager 2.0.1179
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
@@ -30,7 +31,7 @@ Home page: http://code.google.com/p/farnet/
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (x64)
 
 
-	INSTALLATION
+	= INSTALLATION =
 
 Copy to %FARHOME%:
 - Far.exe.config
@@ -45,11 +46,11 @@ This is the default installation (recommended). You can move Lib or\and
 Plugins.NET, in this case you have to update Far.exe.config accordingly.
 
 
-	STRUCTURE
+	= STRUCTURE =
 
 
 Plugins\FarNet\
-- FarNetMan.dll - FAR plugin, manager of FarNet .NET plugins
+- FarNetMan.dll - Far plugin, manager of FarNet .NET plugins
 - FarNetMan.hlf - FarNet help
 
 Lib\
@@ -62,10 +63,10 @@ optional configuration file (.cfg). Each line of .cfg file is:
 	<Assembly> <Class1> <Class2> ... <ClassN>
 	where
 	<Assembly> - relative path of a plugin assembly;
-	<ClassX> - name of a class from this assembly.
+	<ClassX> - name of a plugin class to be loaded and connected.
 
 
-	LOADING PLUGINS FROM DISK
+	= LOADING PLUGINS FROM DISK =
 
 
 *) For each folder in Plugins.NET: if a file *.cfg exists then only specified
@@ -78,7 +79,7 @@ information stored in the registry. Directory names and assembly locations are
 not important.
 
 
-	LOADING PLUGINS FROM CACHE
+	= LOADING PLUGINS FROM CACHE =
 
 
 FarNet plugin info registry cache:
@@ -91,34 +92,33 @@ too difficult to discover (e.g. changes in config files), in these cases you
 have to remove the registry cache manually (ditto for other cache problems).
 
 
-	CHM DOCUMENTATION
+	= API DOCUMENTATION (.CHM) =
 
 
-Download the latest version from:
-http://code.google.com/p/farnet/
+Download the latest version from: http://code.google.com/p/farnet/
+It includes PowerShellFar API documentation.
 
 
-	XML DOCUMENTATION
+	= API DOCUMENTATION (.XML) =
 
 
 Included XML documentation is used by other development tools like Visual
 Studio Object Browser, .NET Reflector and etc.
 
 
-	PLUGINS HELP
+	= PLUGINS HELP =
 
 
 You can add help for your plugins. It works in dialogs, menus, input and message
 boxes (see property HelpTopic) or by IFar.ShowHelp(). Unfortunately help can not
 be automatically shown by F1 ShiftF2 because technically FarNet plugins are not
-visible to FAR.
+visible to Far Manager.
 
 
-	BUILDING SOURCES
+	= BUILDING SOURCES =
 
 
-- If you build Debug remove the line "#include <Test1.h>" from "stdafx.h".
-- You can use msbuild.exe to build the sources:
+You can use msbuild.exe to build the sources:
 
 	msbuild Build-FarNetDev.proj
 

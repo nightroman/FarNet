@@ -77,6 +77,8 @@ Test 'gc -p' '-p' { $_ -eq '-Path' } | Write-Error
 Test 'Get-Content -p' '-p' { $_ -eq '-Path' } | Write-Error
 Test 'ls -' '-' { $_ -contains '-Path' -and $_ -contains '-LiteralPath' } | Write-Error
 Test '$e = ls -' '-' { $_ -contains '-Path' -and $_ -contains '-LiteralPath' } | Write-Error
+# _091023_204251 E.g. definition of a hashtable
+Test 'Name = Split-Path -l' '-l' { $_ -contains '-Leaf' -and $_ -contains '-LiteralPath' } | Write-Error
 
 ### scripts, their aliases and parameters
 Test '' 'pd' { $_ -eq 'Panel-DbData-' } | Write-Error
