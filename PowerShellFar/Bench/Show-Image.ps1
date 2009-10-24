@@ -2,6 +2,7 @@
 <#
 .SYNOPSIS
 	Shows one or more images in a GUI window.
+	Author: Roman Kuzmin
 
 .DESCRIPTION
 	This script shows pictures in a GUI window. No extra software is needed. It
