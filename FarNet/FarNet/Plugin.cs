@@ -67,8 +67,8 @@ namespace FarNet
 
 		/// <summary>
 		/// Called before invoking of a command.
-		/// A plugin may want to override it to perform some preparations.
-		/// Example: PowerShellFar sets its location to the active panel path.
+		/// A plugin may override it to perform some preparations.
+		/// Example: PowerShellFar completes loading of the PowerShell engine.
 		/// </summary>
 		public virtual void Invoking()
 		{ }

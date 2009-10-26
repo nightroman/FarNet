@@ -1,6 +1,28 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.8 =
+
+*** Requires Far 2.0.1181+ and FarNet 4.2.8+ ***
+
+INVOKING USER COMMANDS AND SCRIPTS
+
+*) Before invoking: process current directory is set to $Far.ActivePath;
+provider location is usually set to $Far.ActivePath, too, but for provider
+panels (ItemPanel, FolderTree) it is set to their current location paths.
+
+*) After invoking: process current directory is restored. If it is not, please,
+report as a bug. Provider location is not restored (or is it really needed?).
+
+*) If the plugin cannot change provider location or current directory then it
+shows actual current location and directory and asks how to proceed. This is
+for safety: PowerShell commands can be dangerous if they are used incorrectly,
+for example when current paths are not what a user expects on invoking.
+
+OTHER CHANGES
+
+*) Show-Image.ps1: [Enter] switches maximized / normal state.
+
 = 2.2.7 =
 
 *) From now on the plugin sources are in the SVN repository together with the

@@ -623,6 +623,7 @@ namespace FarNet
 		/// <remarks>
 		/// Gets the path of the active Far panel or the <see cref="IPluginPanel.ActivePath"/> of the active FarNet panel.
 		/// If there are no suitable panels it returns an empty string.
+		/// $RVK
 		/// </remarks>
 		string ActivePath { get; }
 		/// <summary>

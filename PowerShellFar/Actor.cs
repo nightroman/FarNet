@@ -136,11 +136,14 @@ namespace PowerShellFar
 		bool _lock_runspace_opened_or_broken_;
 
 		// tells to sleep
-		bool IsRunspaceOpened()
+		bool IsRunspaceOpened
 		{
-			lock (_lock)
+			get
 			{
-				return _lock_runspace_opened_or_broken_;
+				lock (_lock)
+				{
+					return _lock_runspace_opened_or_broken_;
+				}
 			}
 		}
 
@@ -209,12 +212,11 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Called by FarNet on command line and by PowerShellFar on PowerShellFar actions.
+		/// Called by FarNet on command line and by PowerShellFar on its actions.
 		/// </summary>
 		/// <remarks>
 		/// *) No interaction is allowed, a macro can be in progress.
 		/// *) It opens a runspace if not yet and waits for it.
-		/// *) After all it sync PS location.
 		/// </remarks>
 		internal void Invoking()
 		{
@@ -229,10 +231,11 @@ namespace PowerShellFar
 				throw new RuntimeException("PowerShell engine is not initialized due to fatal reasons and will be unloaded.", _errorFatal);
 			}
 
+			// complete opening
 			if (Runspace.DefaultRunspace == null)
 			{
 				//! wait for initialization
-				while (!IsRunspaceOpened())
+				while (!IsRunspaceOpened)
 					System.Threading.Thread.Sleep(100);
 
 				//! set default runspace for handlers
@@ -258,17 +261,26 @@ $null = [System.Windows.Forms.MessageBox]::Show(
 					job.StartJob();
 				}
 			}
+		}
 
-			// that's all for a running code
+		/// <summary>
+		/// Sync provider location and current directory with Far state.
+		/// </summary>
+		/// <remarks>
+		/// Returned system path (if not null) must be restored by a called.
+		/// </remarks>
+		internal string SyncPaths()
+		{
+			// don't on running
 			if (IsRunning)
-				return;
+				return null;
 
-			//! now sync the location and current directory with the active panel
+			// don't on no panels mode
 			IPanel panel = A.Far.Panel;
 			if (panel == null)
-				return;
+				return null;
 
-			// get paths
+			// at first get both paths: for the current system directory and provider location
 			string directory = A.Far.ActivePath;
 			string location = null;
 			if (panel.IsPlugin)
@@ -292,39 +304,105 @@ $null = [System.Windows.Forms.MessageBox]::Show(
 				}
 			}
 
-			// set directory
-			if (!string.IsNullOrEmpty(directory))
-			{
-				// _090929_061740 091023 Sync the current directory
-				try
-				{
-					Directory.SetCurrentDirectory(directory);
-				}
-				catch //$RVK swallowing... should we show a warning and ask to cancel?
-				{
-					// don't try the same in PowerShell if it fails in Windows
-					if (location == null || location == directory)
-						return;
-				}
-			}
-
-			// to sync location
+			// to set yet unknown location to the directory
 			if (location == null)
 				location = directory;
 
-			// set location
-			if (!string.IsNullOrEmpty(location))
+			// set the current provider location; let's do it first, in case of failure
+			// we can skip directory setting/restoring in cases when they are the same.
+			bool okLocation = true;
+			try
 			{
-				try
-				{
-					//! Parameter is wildcard.
-					//! Test: enter into a container "[]" and invoke a command
-					Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(location));
-				}
-				catch (ItemNotFoundException)
-				{ }
+				//! Parameter is wildcard. Test: enter into a container "[]" and invoke a command.
+				Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(location));
+
+				// drop failure info
+				_failedInvokingLocationNew = null;
+				_failedInvokingLocationOld = null;
 			}
+			catch
+			{
+				okLocation = false;
+
+				// get the current
+				string currentLocation = Engine.SessionState.Path.CurrentLocation.Path;
+
+				// ask a user if he has not told to ignore this pair
+				if (location != _failedInvokingLocationNew || currentLocation != _failedInvokingLocationOld)
+				{
+					string message = Kit.Format(@"
+Cannot set the current location to
+{0}
+
+Continue with this current location?
+{1}
+", location, currentLocation);
+					switch (A.Far.Msg(message, Res.Name, MsgOptions.Warning | MsgOptions.LeftAligned, new string[] { "&Yes", "Yes to &All", "&No" }))
+					{
+						case 0:
+							break;
+						case 1:
+							_failedInvokingLocationNew = location;
+							_failedInvokingLocationOld = currentLocation;
+							break;
+						default:
+							throw;
+					}
+				}
+			}
+
+			// do not try failed
+			if (!okLocation && location == directory)
+				return null;
+
+			// get the current directory to be restored by a caller
+			string currentDirectory = Directory.GetCurrentDirectory();
+
+			// set the current directory to the active path to avoid confusions [_090929_061740]
+			try
+			{
+				// try to set
+				Directory.SetCurrentDirectory(directory);
+
+				// drop failure info
+				_failedInvokingDirectoryNew = null;
+				_failedInvokingDirectoryOld = null;
+			}
+			catch
+			{
+				// ask a user if he has not told to ignore this pair
+				if (directory != _failedInvokingDirectoryNew || currentDirectory != _failedInvokingDirectoryOld)
+				{
+					string message = Kit.Format(@"
+Cannot set the current directory to
+{0}
+
+Continue with this current directory?
+{1}
+", directory, currentDirectory);
+					switch (A.Far.Msg(message, Res.Name, MsgOptions.Warning | MsgOptions.LeftAligned, new string[] { "&Yes", "Yes to &All", "&No" }))
+					{
+						case 0:
+							currentDirectory = null;
+							break;
+						case 1:
+							currentDirectory = null;
+							_failedInvokingDirectoryNew = directory;
+							_failedInvokingDirectoryOld = currentDirectory;
+							break;
+						default:
+							throw;
+					}
+				}
+			}
+
+			// to be restored by a caller
+			return currentDirectory;
 		}
+		string _failedInvokingDirectoryNew;
+		string _failedInvokingDirectoryOld;
+		string _failedInvokingLocationNew;
+		string _failedInvokingLocationOld;
 
 		// Installed before interactive invocation to watch [CtrlC] for stopping.
 		void OnTimer(object state)
@@ -548,7 +626,7 @@ $null = [System.Windows.Forms.MessageBox]::Show(
 		/// <param name="code">PowerShell code.</param>
 		internal void OnCommandLineJob(string code)
 		{
-			Invoking();
+			Invoking(); //$RVK need?
 
 			Job job = new Job(new JobCommand(code, true), null, code, true, int.MaxValue);
 			job.StartJob();
@@ -595,20 +673,27 @@ $null = [System.Windows.Forms.MessageBox]::Show(
 		/// </summary>
 		public void ShowPanel()
 		{
-			Invoking();
+			Invoking(); //$RVK need?
+			string currentDirectory = A.Psf.SyncPaths();
+			try
+			{
+				string drive = AnyPanel.SelectDrivePrompt(null);
+				if (drive == null)
+					return;
 
-			string drive = AnyPanel.SelectDrivePrompt(null);
-			if (drive == null)
-				return;
-
-			AnyPanel ap;
-			if (drive == "Folder &tree")
-				ap = new FolderTree();
-			else if (drive == "&Any objects")
-				ap = new ObjectPanel();
-			else
-				ap = new ItemPanel(drive);
-			ap.Show();
+				AnyPanel ap;
+				if (drive == "Folder &tree")
+					ap = new FolderTree();
+				else if (drive == "&Any objects")
+					ap = new ObjectPanel();
+				else
+					ap = new ItemPanel(drive);
+				ap.Show();
+			}
+			finally
+			{
+				A.SetCurrentDirectoryFinally(currentDirectory);
+			}
 		}
 
 		/// <summary>
