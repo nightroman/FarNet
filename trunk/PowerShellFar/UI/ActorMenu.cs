@@ -92,28 +92,35 @@ namespace PowerShellFar.UI
 
 		internal static void Show(object sender, ToolEventArgs e)
 		{
-			//! caution
+			//! NOTE: 1) do Invoking()!; 2) do sync for item handlers
 			A.Psf.Invoking();
-
-			// create once
-			if (_menuDialog == null)
-				Create();
-
-			IMenu menu;
-
-			switch (e.From)
+			string currentDirectory = A.Psf.SyncPaths();
+			try
 			{
-				case ToolOptions.Dialog: menu = _menuDialog; break;
-				case ToolOptions.Editor: menu = _menuEditor; break;
-				case ToolOptions.Panels: menu = _menuPanels; break;
-				case ToolOptions.Viewer: menu = _menuViewer; break;
-				default: return;
-			}
+				// create once
+				if (_menuDialog == null)
+					Create();
 
-			// reset, lock and show
-			menu.Selected = -1;
-			menu.Lock();
-			menu.Show();
+				IMenu menu;
+
+				switch (e.From)
+				{
+					case ToolOptions.Dialog: menu = _menuDialog; break;
+					case ToolOptions.Editor: menu = _menuEditor; break;
+					case ToolOptions.Panels: menu = _menuPanels; break;
+					case ToolOptions.Viewer: menu = _menuViewer; break;
+					default: return;
+				}
+
+				// reset, lock and show
+				menu.Selected = -1;
+				menu.Lock();
+				menu.Show();
+			}
+			finally
+			{
+				A.SetCurrentDirectoryFinally(currentDirectory);
+			}
 		}
 
 		static FarItem NewItem(string text, EventHandler click)

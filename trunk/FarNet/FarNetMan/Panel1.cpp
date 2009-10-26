@@ -151,9 +151,9 @@ void Panel1::ViewMode::set(PanelViewMode value)
 
 String^ Panel1::Path::get()
 {
-	int size = Info.Control(_handle, FCTL_GETCURRENTDIRECTORY, 0, NULL);
+	int size = Info.Control(_handle, FCTL_GETPANELDIR, 0, NULL);
 	CBox buf(size);
-	Info.Control(_handle, FCTL_GETCURRENTDIRECTORY, size, (LONG_PTR)(wchar_t*)buf);
+	Info.Control(_handle, FCTL_GETPANELDIR, size, (LONG_PTR)(wchar_t*)buf);
 	return gcnew String(buf);
 }
 
@@ -369,7 +369,7 @@ bool Panel1::GoToName(String^ name, bool fail)
 	for(int i = 0; i < pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
-		if (Info.FSF->LStricmp(pin, item.Get().FindData.lpwszFileName) == 0 || Info.FSF->LStricmp(pin, item.Get().FindData.lpwszAlternateFileName) == 0)
+		if (Info.FSF->LStricmp(pin, item.Get().FindData.lpwszFileName) == 0)
 		{
 			Redraw(i, 0);
 			return true;
@@ -388,7 +388,7 @@ void Panel1::GoToPath(String^ path)
 		throw gcnew ArgumentNullException("path");
 
 	//! can be nullptr, e.g. for '\'
-	String^ dir =  IO::Path::GetDirectoryName(path);
+	String^ dir = IO::Path::GetDirectoryName(path);
 	if (!dir && (path->StartsWith("\\") || path->StartsWith("/")))
 		dir = "\\";
 	if (dir && dir->Length)
@@ -398,7 +398,8 @@ void Panel1::GoToPath(String^ path)
 	}
 
 	String^ name = IO::Path::GetFileName(path);
-	GoToName(name);
+	if (name->Length > 0)
+		GoToName(name);
 }
 
 void Panel1::Redraw()

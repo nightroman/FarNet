@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 2.2.7#
+#PowerShellFar 2.2.8#
 
 Implements Windows PowerShell host in Far Manager and user interface for
 invoking commands and scripts. PowerShell code can access and control Far
@@ -80,8 +80,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1179
- - Plugin FarNet 4.2.7
+ - Far Manager 2.0.1182
+ - Plugin FarNet 4.2.8
  - Windows PowerShell V2 (RC or RTM)
 
 
@@ -2017,7 +2017,7 @@ Needless to say that calling a loaded function from memory is more effective
 than calling a script file from disk. But it is not a good idea to load all the
 functions that can be potentially used if many of them actually may not be used
 in a session. The described technique solves the dilemma: you load only what you
-really use and it is loaded it only once on the first call.
+really use and it is loaded once on the first call.
 
 
 @UsingAssemblies

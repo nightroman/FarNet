@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+= 4.2.8 =
+
+*** Requires Far 2.0.1181+ ***
+
+*) IFar.ActivePath returns the internal Far current directory path. NOTE: this
+is not always the same as the IPanel.Path of the active panel.
+
+*) IPanel.GoToPath(): fixed wrong current item for paths ending with a slash.
+
 = 4.2.7 =
 
 *) IFar: property Version is replaced with two properties: FarVersion and
