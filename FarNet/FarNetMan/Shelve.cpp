@@ -29,14 +29,26 @@ void ShelveInfo::InitSelected(Panel1^ panel, String^ current) //$RVK tweak
 ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 : _modes(modes)
 {
+	// case: special panel, e.g. QView.
+	// Let's use the active path to restore, no path (just close) is worse.
+	if (panel->Type != PanelType::File)
+	{
+		Path = Far::Instance->ActivePath;
+		return;
+	}
+
+	// file panel, path
 	Path = panel->Path;
-	
+
+	// current name
 	FarFile^ file = panel->CurrentFile;
 	if (file)
 		Current = file->Name;
 
+	// selected names
 	InitSelected(panel, Current);
 
+	// modes
 	if (!modes)
 		return;
 

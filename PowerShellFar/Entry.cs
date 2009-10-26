@@ -86,10 +86,18 @@ namespace PowerShellFar
 			A.Psf.Invoking();
 		}
 
+		//! do not call Invoking(), it is done by FarNet
 		void OnCommandLine(object sender, CommandEventArgs e)
 		{
-			//! do not call Invoking(), it is done by FarNet
-			A.Psf.InvokePipeline(e.Command, null, true);
+			string currentDirectory = A.Psf.SyncPaths();
+			try
+			{
+				A.Psf.InvokePipeline(e.Command, null, true);
+			}
+			finally
+			{
+				A.SetCurrentDirectoryFinally(currentDirectory);
+			}
 		}
 
 		void OnCommandLineJob(object sender, CommandEventArgs e)

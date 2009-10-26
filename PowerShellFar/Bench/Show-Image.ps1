@@ -13,10 +13,11 @@
 	the calling thread. To avoid this the script should be called as a job or
 	by starting a separate PowerShell process in a hidden window.
 
-	For a single image its window is resizable. More than one images are placed
-	from left to right and scaled, if needed; mouse click on a picture opens a
-	window with this picture, [Enter] opens the current picture, [Left] and
-	[Right] changes the current picture. [Escape] closes the window.
+	For a single image its window is resizable, [Enter] switches maximized and
+	normal state. Several images are placed from left to right and scaled, if
+	needed; mouse click on a picture opens a window with this picture, [Enter]
+	opens the current picture, [Left] and [Right] changes the current picture.
+	[Escape] closes the window.
 
 .INPUTS
 	Image file paths are passed in as arguments or piped. If there is no input
@@ -87,6 +88,9 @@ else {
 	$form.FormBorderStyle = 'FixedDialog'
 	$bordersize = [System.Windows.Forms.SystemInformation]::FixedFrameBorderSize
 }
+if ($Internal) {
+	$form.WindowState = $WindowState.Value
+}
 
 ### get scale factor, calculate and set form client size
 $scale = 1
@@ -118,9 +122,9 @@ foreach($image in $images) {
 		$box.add_Click({ . Click })
 		if ($Left -eq 0) {
 			### init the current picture box
+			$box.BorderStyle = 'Fixed3D'
 			$script:current = 0
 			$script:mainform = $form
-			$box.BorderStyle = 'Fixed3D'
 		}
 	}
 	$box.Image = $bitmap
@@ -140,13 +144,20 @@ function KeyDown {
 			if ($images.Count -ne 1) {
 				. ShowCurrent
 			}
+			else {
+				switch($this.WindowState) {
+					'Normal' { $this.WindowState = 'Maximized' }
+					'Maximized' { $this.WindowState = 'Normal' }
+				}
+			}
 		}
 		'Left' {
 			if ($images.Count -ne 1) {
 				. Left
 			}
 			elseif ($Internal) {
-				$action.Value = 'Left'
+				$Action.Value = 'Left'
+				$WindowState.Value = $this.WindowState
 				$this.Close()
 			}
 		}
@@ -155,7 +166,8 @@ function KeyDown {
 				. Right
 			}
 			elseif ($Internal) {
-				$action.Value = 'Right'
+				$Action.Value = 'Right'
+				$WindowState.Value = $this.WindowState
 				$this.Close()
 			}
 		}
@@ -195,10 +207,11 @@ function SetCurrent($index) {
 }
 
 function ShowCurrent {
+	$WindowState = [ref]'Normal'
 	for(;;) {
-		$action = [ref]$null
+		$Action = [ref]$null
 		Show-Image -Internal ($images[$script:current].Path)
-		switch($action.Value) {
+		switch($Action.Value) {
 			'Left' { . Left }
 			'Right' { . Right }
 			default { return }

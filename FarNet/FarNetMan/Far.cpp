@@ -59,42 +59,10 @@ void Far::Stop()
 
 String^ Far::ActivePath::get()
 {
-	// the active panel
-	IPanel^ panel = Panel;
-	
-	// case: no panel
-	if (!panel)
-		return String::Empty;
-
-	// case: FarNet plugin
-	FarNet::Panel2^ plugin = dynamic_cast<FarNet::Panel2^>(panel);
-	if (plugin)
-		return plugin->ActivePath;
-	
-	// case: solid native path
-	String^ r = panel->Path;
-	if (r->Length)
-		return r;
-
-	// the passive panel
-	panel = Panel2;
-	
-	// case: no panel
-	if (!panel)
-		return String::Empty;
-
-	// case: FarNet plugin
-	plugin = dynamic_cast<FarNet::Panel2^>(panel); 
-	if (plugin)
-		return plugin->ActivePath;
-	
-	// case: solid native path
-	r = panel->Path;
-	if (r->Length)
-		return r;
-
-	// give up
-	return String::Empty;
+	DWORD size = Info.FSF->GetCurrentDirectory(0, 0);
+	CBox buf(size);
+	Info.FSF->GetCurrentDirectory(size, buf);
+	return gcnew String(buf);
 }
 
 String^ Far::PluginPath::get()

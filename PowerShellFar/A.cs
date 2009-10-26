@@ -197,5 +197,24 @@ namespace PowerShellFar
 			return true;
 		}
 
+		/// <summary>
+		/// Sets current directory, shows errors but does not throw.
+		/// </summary>
+		/// <param name="currentDirectory">null or a path.</param>
+		public static void SetCurrentDirectoryFinally(string currentDirectory)
+		{
+			if (currentDirectory != null)
+			{
+				try
+				{
+					Directory.SetCurrentDirectory(currentDirectory);
+				}
+				catch (Exception ex)
+				{
+					Far.ShowError(Res.Name, ex);
+				}
+			}
+		}
+
 	}
 }

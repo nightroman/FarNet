@@ -34,6 +34,11 @@ namespace PowerShellFar
 	/// </summary>
 	static class Kit
 	{
+		public static string Format(string format, params object[] args)
+		{
+			return string.Format(CultureInfo.CurrentCulture, format, args);
+		}
+
 		public static string ToString<T>(T value) where T : IConvertible
 		{
 			return value.ToString(CultureInfo.InvariantCulture);
