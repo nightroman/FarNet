@@ -7,6 +7,7 @@ using System;
 using System.Management.Automation;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Security.Permissions;
 using System.Text;
 
 namespace PowerShellFar
@@ -67,6 +68,7 @@ namespace PowerShellFar
 		}
 
 		// From System.Management.Automation.HostUtilities, adapted
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
 		{
 			PSCredential credential = null;

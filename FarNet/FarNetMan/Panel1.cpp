@@ -158,8 +158,9 @@ String^ Panel1::Path::get()
 }
 
 // _090929_061740
-// Directory::Exists gets false for paths >= 260. But we should check anyway, because FCTL_SETPANELDIR
-// never gets false, instead it only shows an error dialog. Let it be safe at least for good paths.
+// Directory::Exists gets false for paths >= 260. But we have to check at least short, because FCTL_SETPANELDIR
+// shows unwanted dialog on failure. So, let it works with no breaks at least for normal paths.
+// See also Mantis #1087: before Far 2.0.1187 it used to get true always.
 void Panel1::Path::set(String^ value)
 {
 	if (value == nullptr)

@@ -5,6 +5,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 #include "StdAfx.h"
 #include "Zoo.h"
+#include "Plugin0.h"
 #include "Shelve.h"
 
 namespace FarNet
@@ -257,8 +258,10 @@ int Zoo::OemCP::get()
 // _091007_034112
 String^ Zoo::ConsoleTitle::get()
 {
-	wchar_t buf[0x5fb5];
-	if (::GetConsoleTitle(buf, sizeof(buf)))
+	// .NET uses buf[0x5fb5] size
+	// CA: C6262: Function uses '49008' bytes of stack: exceeds /analyze:stacksize'16384'. Consider moving some data to heap.
+	wchar_t buf[4096];
+	if (::GetConsoleTitle(buf, countof(buf)))
 		return gcnew String(buf);
 
 	return String::Empty;
@@ -267,6 +270,22 @@ String^ Zoo::ConsoleTitle::get()
 Object^ Zoo::Shelve::get()
 {
 	return %ShelveInfo::_stack;
+}
+
+void Zoo::Break()
+{
+	INPUT_RECORD rec;
+	DWORD writeCount;
+
+	rec.EventType = KEY_EVENT;
+	rec.Event.KeyEvent.bKeyDown = 1;
+	rec.Event.KeyEvent.wRepeatCount = 1;
+	rec.Event.KeyEvent.wVirtualKeyCode = VK_CANCEL;
+	rec.Event.KeyEvent.wVirtualScanCode = (WORD)MapVirtualKeyA(rec.Event.KeyEvent.wVirtualKeyCode, 0);
+	rec.Event.KeyEvent.uChar.UnicodeChar = rec.Event.KeyEvent.uChar.AsciiChar = 0;
+	rec.Event.KeyEvent.dwControlKeyState = LEFT_CTRL_PRESSED;
+
+	WriteConsoleInput(::GetStdHandle(STD_INPUT_HANDLE), &rec, 1, &writeCount);
 }
 
 }

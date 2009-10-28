@@ -1,6 +1,21 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.9 =
+
+*) This is the first version for just released PowerShell V2 RTM. Nothing is
+changed in the plugin for this; it is simply "officially tested" with V2 RTM.
+
+*) Invoking (see 2.2.8): if the plugin cannot set location or directory and a
+macro is in progress then instead of Far message boxes GUI message boxes are
+used, so that a macro is safely suspended and then, depending on a choice,
+stopped or resumed. GUI can be disabled in Far.exe.config but this is not
+recommended.
+
+*) Clear-Session.ps1: changed scenario of variable removal:
+-- updated the hardcoded exclude name list for PS V2
+-- an attribute is not a reason to keep a variable
+
 = 2.2.8 =
 
 *** Requires Far 2.0.1181+ and FarNet 4.2.8+ ***

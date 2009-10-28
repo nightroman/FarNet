@@ -6,12 +6,12 @@ Copyright (C) 2006-2009 Roman Kuzmin
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Security.Permissions;
 using System.Text.RegularExpressions;
 using System.Threading;
 using FarNet;
@@ -359,6 +359,9 @@ namespace PowerShellFar
 		/// <remarks>
 		/// If you own this object, e.g. call <c>Start-FarJob</c> with <see cref="Commands.StartFarJobCommand.Output"/> switch
 		/// then you should dispose it after use. It is OK to call this for already disposed object.
+		/// <para>
+		/// NOTE: The job must not be running.
+		/// </para>
 		/// </remarks>
 		public void Dispose()
 		{
@@ -659,6 +662,7 @@ namespace PowerShellFar
 			}
 		}
 
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal static void StopJobsOnExit()
 		{
 			while (Jobs.Count > 0)
@@ -672,7 +676,7 @@ namespace PowerShellFar
 					continue;
 				}
 
-				string message = string.Format(CultureInfo.InvariantCulture, @"
+				string message = Kit.Format(@"
 Job:
 {0}
 
@@ -685,29 +689,20 @@ Ignore: discard all jobs and output
 
 ", job.ToLine(100), job.StateText, job.Length);
 
-				string code = @"
-Add-Type -AssemblyName System.Windows.Forms
-[string][Windows.Forms.MessageBox]::Show(
-$args[0],
-'Background job',
-[Windows.Forms.MessageBoxButtons]::AbortRetryIgnore,
-[Windows.Forms.MessageBoxIcon]::Exclamation,
-0,
-[Windows.Forms.MessageBoxOptions]::ServiceNotification)
-";
+				string title = "Background job";
+				Console.Title = title;
 
-				Console.Title = "Background job";
-				string res = A.Psf.InvokeCode(code, message)[0].ToString();
-
-				switch (res)
+				switch (A.Far.Msg(message, title, MsgOptions.Gui | MsgOptions.AbortRetryIgnore))
 				{
-					case "Abort":
+					case 0:
 						{
+							if (job.IsRunning)
+								job.StopJob();
 							job.Dispose();
 							Jobs.RemoveAt(0);
 						}
 						break;
-					case "Retry":
+					case 1:
 						if (job.IsRunning)
 						{
 							Console.Title = "Waiting for a background job...";
