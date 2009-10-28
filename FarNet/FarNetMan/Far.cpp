@@ -901,8 +901,22 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 
 void Far::ShowError(String^ title, Exception^ error)
 {
+	// 091028 Do not throw on null, just ignore.
 	if (!error)
-		throw gcnew ArgumentNullException("error");
+		return;
+
+	// stop a running macro
+	String^ msgMacro = nullptr;
+	FarMacroState macro = MacroState;
+	if (macro == FarMacroState::Executing || macro == FarMacroState::ExecutingCommon)
+	{
+		// log
+		msgMacro = "A macro has been stopped.";
+		Log::TraceWarning(msgMacro);
+
+		// stop
+		Zoo->Break();
+	}
 
 	// log
 	String^ info = Log::TraceException(error);
@@ -916,11 +930,18 @@ void Far::ShowError(String^ title, Exception^ error)
 	if (res != 1 && res != 2)
 		return;
 
+	// info to show
 	if (!info)
 		info = Log::FormatException(error);
 
+	// add stack info
 	info += "\r\n" + error->StackTrace;
 
+	// add macro info
+	if (msgMacro)
+		info += "\r\n\r\n" + msgMacro + "\r\n";
+
+	// show or clip
 	if (res == 1)
 	{
 		Far::Instance->AnyViewer->ViewText(

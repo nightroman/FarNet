@@ -39,5 +39,9 @@ namespace FarNet
 		RetryCancel = 0x00060000,
 		/// <summary>Reserved.</summary>
 		Z1 = 0x00000020,
+		/// <summary>For internal use. GUI message.</summary>
+		Gui = 0x00000040,
+		/// <summary>For internal use. GUI message on a macro in progress.</summary>
+		GuiOnMacro = 0x00000080,
 	}
 }

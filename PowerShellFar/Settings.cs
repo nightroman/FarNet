@@ -213,5 +213,6 @@ namespace PowerShellFar
 				_ExternalViewerArguments = value;
 			}
 		}
+
 	}
 }

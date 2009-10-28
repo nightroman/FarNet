@@ -34,6 +34,9 @@ namespace PowerShellFar
 	/// </summary>
 	static class Kit
 	{
+		/// <summary>
+		/// Formats using the current culture.
+		/// </summary>
 		public static string Format(string format, params object[] args)
 		{
 			return string.Format(CultureInfo.CurrentCulture, format, args);

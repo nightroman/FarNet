@@ -167,5 +167,7 @@ namespace FarNet.Support
 		int OemCP { get; }
 		///
 		object Shelve { get; }
+		///
+		void Break();
 	}
 }

@@ -4,16 +4,14 @@ Copyright (C) 2006-2009 Roman Kuzmin
 */
 
 using System;
-using System.Collections;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
 using FarNet;
-using FarNet.Forms;
 
 namespace PowerShellFar
 {
@@ -96,6 +94,7 @@ namespace PowerShellFar
 
 		public EditorConsole(IEditor editor) : this(editor, 0) { }
 
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public EditorConsole(IEditor editor, int mode)
 		{
 			Editor = editor;
@@ -140,6 +139,7 @@ namespace PowerShellFar
 			Runspace.Open();
 		}
 
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		void OpenRemoteSession()
 		{
 			UI.ConnectionDialog dialog = new UI.ConnectionDialog("New Remote Editor Console");

@@ -5,13 +5,11 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	It removes all "unknown" global variables with empty Description, Option
-	and Attributes but keeps variables listed in the code as $keep. Thus, you
-	may keep your permanent global variables alive by setting one of the
-	properties or by adding names to the list.
+	It removes global variables with empty Description and Option values but
+	keeps variables listed in the code as $keep.
 
 	In addition, the script clears $Error list (optionally), calls garbage
-	collection and returns some statistics.
+	collection and gets some statistics.
 
 .OUTPUTS
 	An object with properties:
@@ -49,22 +47,21 @@ Set-StrictMode -Version 2
 		'^'
 		'_'
 		'args'
+		'PSBoundParameters'
 		'ConfirmPreference'
 		'ConsoleFileName'
-		'Culture'
 		'DebugPreference'
 		'Error'
 		'ErrorActionPreference'
 		'ErrorView'
 		'ExecutionContext'
-		'false'
+		'foreach'
 		'FormatEnumerationLimit'
 		'HOME'
 		'Host'
 		'input'
-		'LASTEXITCODE'
-		'lastWord'
-		'line'
+		'LastExitCode'
+		'Matches'
 		'MaximumAliasCount'
 		'MaximumDriveCount'
 		'MaximumErrorCount'
@@ -73,14 +70,17 @@ Set-StrictMode -Version 2
 		'MaximumVariableCount'
 		'MyInvocation'
 		'NestedPromptLevel'
-		'null'
-		'OutputEncoding'
+		'OFS'
 		'PID'
-		'PROFILE'
+		'Profile'
 		'ProgressPreference'
-		'PSBoundParameters'
 		'PSCmdlet'
+		'PSCulture'
+		'PSDebugContext'
 		'PSHOME'
+		'psISE'
+		'psScriptRoot'
+		'PSUICulture'
 		'PSVersionTable'
 		'PWD'
 		'ReportErrorShowExceptionClass'
@@ -90,8 +90,6 @@ Set-StrictMode -Version 2
 		'ShellId'
 		'StackTrace'
 		'this'
-		'true'
-		'UICulture'
 		'VerbosePreference'
 		'WarningPreference'
 		'WhatIfPreference'
@@ -99,7 +97,7 @@ Set-StrictMode -Version 2
 
 	$r.RemovedVariableCount = 0
 	Get-Variable * -Scope Global | .{process{
-		if ((!$_.Description) -and ($_.Options -eq 0) -and (!$_.Attributes) -and ($keep -notcontains $_.Name)) {
+		if ((!$_.Description) -and ($_.Options -eq 0) -and ($keep -notcontains $_.Name)) {
 			Remove-Variable $_.Name -Scope Global -ErrorAction Continue -Verbose:$Verbose
 			++$r.RemovedVariableCount
 		}
