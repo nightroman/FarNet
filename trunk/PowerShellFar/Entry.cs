@@ -4,14 +4,7 @@ Copyright (C) 2006-2009 Roman Kuzmin
 */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Reflection;
-using System.Threading;
+using System.Security.Permissions;
 using FarNet;
 
 namespace PowerShellFar
@@ -65,6 +58,7 @@ namespace PowerShellFar
 		}
 
 		///
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public override void Disconnect()
 		{
 			// detach tools
@@ -100,9 +94,13 @@ namespace PowerShellFar
 			}
 		}
 
+		//! do not call Invoking(), it is done by FarNet
+		//! do not sync paths for jobs
 		void OnCommandLineJob(object sender, CommandEventArgs e)
 		{
-			A.Psf.OnCommandLineJob(e.Command);
+			string code = e.Command;
+			Job job = new Job(new JobCommand(code, true), null, code, true, int.MaxValue);
+			job.StartJob();
 		}
 
 		void OnConfig(object sender, ToolEventArgs e)

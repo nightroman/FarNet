@@ -11,6 +11,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Reflection;
+using System.Security.Permissions;
 using System.Threading;
 using FarNet;
 
@@ -58,6 +59,7 @@ namespace PowerShellFar
 		/// Called on disconnection internally.
 		/// If there are background jobs it shows a dialog about them.
 		/// </summary>
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal void Disconnect()
 		{
 			// event
@@ -215,7 +217,7 @@ namespace PowerShellFar
 		/// Called by FarNet on command line and by PowerShellFar on its actions.
 		/// </summary>
 		/// <remarks>
-		/// *) No interaction is allowed, a macro can be in progress.
+		/// *) No Far (!) interaction is allowed, a macro can be in progress.
 		/// *) It opens a runspace if not yet and waits for it.
 		/// </remarks>
 		internal void Invoking()
@@ -250,15 +252,10 @@ namespace PowerShellFar
 				ArrayList errors = Engine.SessionState.PSVariable.GetValue("Error") as ArrayList;
 				if (errors != null && errors.Count > 0)
 				{
-					// show error async
-					const string code = @"
-Add-Type -AssemblyName System.Windows.Forms
-$null = [System.Windows.Forms.MessageBox]::Show(
-""The startup code was invoked with errors.`nView the error list or see the variable Error."",
-'PowerShellFar startup errors', [Windows.Forms.MessageBoxButtons]::OK, 'Warning', 'Button1', 'DefaultDesktopOnly')
-";
-					Job job = new Job(new JobCommand(code, true), null, null, false, 0);
-					job.StartJob();
+					A.Far.Msg(@"
+The startup code was invoked with errors.
+View the error list or the variable $Error.
+", "PowerShellFar startup errors", MsgOptions.Gui);
 				}
 			}
 		}
@@ -337,15 +334,18 @@ Cannot set the current location to
 Continue with this current location?
 {1}
 ", location, currentLocation);
-					switch (A.Far.Msg(message, Res.Name, MsgOptions.Warning | MsgOptions.LeftAligned, new string[] { "&Yes", "Yes to &All", "&No" }))
+
+					switch (A.Far.Msg(message, Res.Name, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
 					{
-						case 0:
-							break;
 						case 1:
+							break;
+						case 2:
 							_failedInvokingLocationNew = location;
 							_failedInvokingLocationOld = currentLocation;
 							break;
 						default:
+							if (A.Far.MacroState != FarMacroState.None)
+								A.Far.Zoo.Break();
 							throw;
 					}
 				}
@@ -380,17 +380,20 @@ Cannot set the current directory to
 Continue with this current directory?
 {1}
 ", directory, currentDirectory);
-					switch (A.Far.Msg(message, Res.Name, MsgOptions.Warning | MsgOptions.LeftAligned, new string[] { "&Yes", "Yes to &All", "&No" }))
+
+					switch (A.Far.Msg(message, Res.Name, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
 					{
-						case 0:
+						case 1:
 							currentDirectory = null;
 							break;
-						case 1:
+						case 2:
 							currentDirectory = null;
 							_failedInvokingDirectoryNew = directory;
 							_failedInvokingDirectoryOld = currentDirectory;
 							break;
 						default:
+							if (A.Far.MacroState != FarMacroState.None)
+								A.Far.Zoo.Break();
 							throw;
 					}
 				}
@@ -618,18 +621,6 @@ Continue with this current directory?
 		public EventHandler<PanelEventArgs> WrapPanelEvent(EventHandler<PanelEventArgs> that)
 		{
 			return (new EventWrapper<PanelEventArgs>(that)).Invoke;
-		}
-
-		/// <summary>
-		/// Invokes PowerShell code as if "from command line".
-		/// </summary>
-		/// <param name="code">PowerShell code.</param>
-		internal void OnCommandLineJob(string code)
-		{
-			Invoking(); //$RVK need?
-
-			Job job = new Job(new JobCommand(code, true), null, code, true, int.MaxValue);
-			job.StartJob();
 		}
 
 		/// <summary>

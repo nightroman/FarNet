@@ -329,10 +329,15 @@ namespace FarNet
 		/// <param name="name">History name.</param>
 		ICollection<string> GetDialogHistory(string name);
 		/// <summary>
-		/// Shows an error information in a message box.
+		/// Shows an error information in a message box which also stops any macro.
 		/// </summary>
 		/// <param name="title">Message.</param>
 		/// <param name="exception">Exception.</param>
+		/// <remarks>
+		/// For safety sake: avoiding unexpected results on exceptions during a running
+		/// macro this method stops a macro before showing an error dialog. That is why
+		/// it should be called only in exceptional situations.
+		/// </remarks>
 		void ShowError(string title, Exception exception);
 		/// <summary>
 		/// Creates a new dialog.
@@ -618,12 +623,12 @@ namespace FarNet
 		/// <param name="paletteColor">Palette color.</param>
 		ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
 		/// <summary>
-		/// Gets the active directory path.
+		/// Gets the internal active path.
 		/// </summary>
 		/// <remarks>
-		/// Gets the path of the active Far panel or the <see cref="IPluginPanel.ActivePath"/> of the active FarNet panel.
-		/// If there are no suitable panels it returns an empty string.
-		/// $RVK
+		/// The process current directory is not related to panels paths at all (Far 2.0.1145).
+		/// and normally plugins should forget about the current directory, they should use this path.
+		/// It should be used as the default for plugin file system operations, just like Far uses it.
 		/// </remarks>
 		string ActivePath { get; }
 		/// <summary>

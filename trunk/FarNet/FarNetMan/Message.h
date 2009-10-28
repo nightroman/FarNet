@@ -12,6 +12,7 @@ ref class Message
 {
 internal:
 	static int Show(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
+	static int ShowGui(String^ body, String^ header, MsgOptions options);
 private:
 	bool Show();
 	int ShowDialog(int width);

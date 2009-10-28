@@ -5,7 +5,7 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	Requires V2 RC or RTM.
+	Requires PS V2.
 
 	Without parameters it opens the panel with file transfer jobs where you can
 	operate on them. It monitors all existing jobs, even created in another

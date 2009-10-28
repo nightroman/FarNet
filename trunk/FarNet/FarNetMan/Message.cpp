@@ -6,6 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 #include "StdAfx.h"
 #include "Message.h"
 #include "Dialog.h"
+#include "Far.h"
 
 namespace FarNet
 {;
@@ -58,8 +59,35 @@ CStr* Message::CreateBlock(int& outNbItems)
 	return r;
 }
 
+static bool ConfigBool(String^ key) //$RVK share
+{
+	bool r = false;
+	Object^ value = ConfigurationManager::AppSettings[key];
+	if (value)
+		Boolean::TryParse(value->ToString(), r);
+	return r;
+}
+
 int Message::Show(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
 {
+	// GUI on macro
+	if (int(options & MsgOptions::GuiOnMacro) != 0)
+	{
+		// check macro
+		if (Far::Instance->MacroState != FarMacroState::None)
+			options = options | MsgOptions::Gui;
+	}
+
+	// GUI
+	if (int(options & MsgOptions::Gui) != 0)
+	{
+		if (buttons || helpTopic)
+			throw gcnew ArgumentException("Custom buttons and help topic are not supported for GUI message boxes."); //$RVK
+
+		if (!ConfigBool("FarNet.DisableGui"))
+			return ShowGui(body, header, options);
+	}
+
 	// object
 	Message m;
 	m._helpTopic = helpTopic;
@@ -168,6 +196,64 @@ void Message::FormatMessageLines(List<String^>^ lines, String^ message, int widt
 		if (lines->Count >= height)
 			return;
 	}
+}
+
+int Message::ShowGui(String^ body, String^ header, MsgOptions options)
+{
+	PIN_ES(pinText, body);
+	PIN_ES(pinCaption, header);
+
+	UINT type = MB_SYSTEMMODAL; //$RVK
+
+	// buttons
+	switch(UINT(options) & 0xFFFF0000)
+	{
+	case UINT(MsgOptions::OkCancel):
+		type |= MB_OKCANCEL;
+		break;
+	case UINT(MsgOptions::AbortRetryIgnore):
+		type |= MB_ABORTRETRYIGNORE;
+		break;
+	case UINT(MsgOptions::YesNo):
+		type |= MB_YESNO;
+		break;
+	case UINT(MsgOptions::YesNoCancel):
+		type |= MB_YESNOCANCEL;
+		break;
+	case UINT(MsgOptions::RetryCancel):
+		type |= MB_RETRYCANCEL;
+		break;
+	default:
+		type |= MB_OK;
+		break;
+	}
+
+	// icon
+	if (int(options & MsgOptions::Warning))
+		type |= MB_ICONSTOP;
+	else
+		type |= MB_ICONEXCLAMATION;
+
+	// show
+	int res = ::MessageBox(0, pinText, pinCaption, type);
+
+	// result
+	switch(UINT(options) & 0xFFFF0000)
+	{
+	case UINT(MsgOptions::Ok):
+		return res == IDOK ? 0 : -1;
+	case UINT(MsgOptions::OkCancel):
+		return res == IDOK ? 0 : res == IDCANCEL ? 1 : -1;
+	case UINT(MsgOptions::AbortRetryIgnore):
+		return res == IDABORT ? 0 : res == IDRETRY ? 1 : res == IDIGNORE ? 2 : -1;
+	case UINT(MsgOptions::YesNo):
+		return res == IDYES ? 0 : res == IDNO ? 1 : -1;
+	case UINT(MsgOptions::YesNoCancel):
+		return res == IDYES ? 0 : res == IDNO ? 1 : res == IDCANCEL ? 2 : -1;
+	case UINT(MsgOptions::RetryCancel):
+		return res == IDRETRY ? 0 : res == IDCANCEL ? 1 : -1;
+	}
+	return -1;
 }
 
 }

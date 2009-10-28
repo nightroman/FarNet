@@ -5,6 +5,7 @@ Copyright (C) 2006-2009 Roman Kuzmin
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -177,7 +178,7 @@ namespace PowerShellFar
 				error = ex;
 			else
 				error = asRuntimeException.ErrorRecord;
-			
+
 			Out(ps, new object[] { "ERROR\n" + ex.GetType().Name + ":", error });
 		}
 
@@ -192,7 +193,7 @@ namespace PowerShellFar
 			StringBuilder sb = new StringBuilder();
 			foreach (object o in ps.Streams.Error)
 				sb.AppendLine(o.ToString());
-			
+
 			Far.Msg(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
 			return true;
 		}
@@ -209,7 +210,7 @@ namespace PowerShellFar
 				{
 					Directory.SetCurrentDirectory(currentDirectory);
 				}
-				catch (Exception ex)
+				catch (IOException ex)
 				{
 					Far.ShowError(Res.Name, ex);
 				}

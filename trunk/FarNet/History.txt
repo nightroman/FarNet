@@ -1,5 +1,17 @@
 http://code.google.com/p/farnet/
 
+= 4.2.9 =
+
+*) IFar.Msg(): new MsgOptions flags Gui and GuiOnMacro allow to show standard
+Windows GUI message boxes. Do not use these flags without good reasons.
+
+*) Far.exe.config: appSettings: added key FarNet.DisableGui. Allows to disable
+GUI message boxes used internally in exceptional cases. Recommended (default)
+value is false, i.e. special GUI messages are enabled.
+
+*) For safety sake: avoiding unexpected results on exceptions during a running
+macro IFar.ShowError() now stops a macro before showing an error dialog.
+
 = 4.2.8 =
 
 *** Requires Far 2.0.1181+ ***

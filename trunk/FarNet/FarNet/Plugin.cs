@@ -4,8 +4,8 @@ Copyright (c) 2005-2009 FarNet Team
 */
 
 using System;
-using System.Diagnostics;
 using System.IO;
+using System.Security.Permissions;
 
 namespace FarNet
 {
@@ -47,6 +47,7 @@ namespace FarNet
 		/// Override this to handle plugin shutdown.
 		/// NOTE: don't call Far UI, it is not working if Far is exiting.
 		/// </summary>
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public virtual void Disconnect()
 		{ }
 
