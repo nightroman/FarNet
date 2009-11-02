@@ -19,8 +19,6 @@ namespace PowerShellFar
 		/// <summary>
 		/// Extends possible Boolean input with 0 and 1.
 		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		public static bool ParseBoolean(string value)
 		{
 			value = value.ToString().Trim();
@@ -88,8 +86,6 @@ namespace PowerShellFar
 		/// <summary>
 		/// Converts property info to a string. Null is represented by default value string.
 		/// </summary>
-		/// <param name="info"></param>
-		/// <returns></returns>
 		public static string InfoToLine(PSPropertyInfo info)
 		{
 			// convert existing value

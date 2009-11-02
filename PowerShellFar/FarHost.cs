@@ -21,9 +21,6 @@ namespace PowerShellFar
 		// UI object
 		PSHostUserInterface _ui;
 
-		// Application mode
-		bool _appMode;
-
 		/// <summary>
 		/// Construct an instance of this PSHost implementation.
 		/// Keep a reference to the hosting application object.
@@ -136,12 +133,7 @@ namespace PowerShellFar
 		/// </summary>
 		public override void NotifyBeginApplication()
 		{
-			_appMode = true;
-
-			//! after any changes test with status line visible
-			A.Far.GetUserScreen();
-
-			Console.CursorVisible = true;
+			//$RVK 2.2.10 Do not need this. ??
 		}
 
 		/// <summary>
@@ -150,11 +142,7 @@ namespace PowerShellFar
 		/// </summary>
 		public override void NotifyEndApplication()
 		{
-			if (_appMode)
-			{
-				A.Far.SetUserScreen();
-				_appMode = false;
-			}
+			//$RVK 2.2.10 Do not need this. ??
 		}
 
 		/// <summary>

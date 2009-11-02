@@ -1,5 +1,24 @@
 http://code.google.com/p/farnet/
 
+= 4.2.10 =
+
+REVISION OF PanelModeInfo
+
+*) New abstract class FarColumn and its simple implementation SetColumn. Use
+SetColumn to define panel column type, width, and title or status column type
+and width.
+
+*) Properties ColumnTitles, ColumnTypes, ColumnWidths are replaced with new
+property - array Columns.
+
+*) Properties StatusColumnTypes, StatusColumnWidths are replaced with new
+property - array StatusColumns.
+
+New columns definition is perhaps slightly more verbose but it is more object
+oriented and safe: with old version incorrect data could crash Far or lead to
+displayed garbage. Also, it is now easier to change column options and order
+after creation (both in code and at run time).
+
 = 4.2.9 =
 
 *) IFar.Msg(): new MsgOptions flags Gui and GuiOnMacro allow to show standard

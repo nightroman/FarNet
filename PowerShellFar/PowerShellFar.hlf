@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 2.2.9#
+#PowerShellFar 2.2.10#
 
 Implements Windows PowerShell host in Far Manager and user interface for
 invoking commands and scripts. PowerShell code can access and control Far
@@ -80,8 +80,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1187
- - Plugin FarNet 4.2.9
+ - Far Manager 2.0.1192
+ - Plugin FarNet 4.2.10
  - Windows PowerShell 2.0
 
 
@@ -631,10 +631,8 @@ Do use word completing (e.g. "Complete-Word-.ps1"): words from output of
 previous commands often can be effectively completed in a new command being
 composed.
 
-Note that output of called external console applications by default directed to
-the user screen (under panels and the editor). If it is not what you want use "|
-Out-Default", in this case output is sent to the editor. Be careful, especially
-for async sessions.
+See also:
+ ~Invoking console applications~@ConsoleApplications@
 
 
 @EditorConsoleMenuOpen
@@ -1291,13 +1289,6 @@ Background jobs are started from the command line by commands with the prefix
 
 #IMPORTANT RULES#
 
-*) If a job starts a console application with output, you have to redirect this
-output to the job's output file, for example, by a command Out-Default:
-
-	>>: robocopy foo1 foo2 | Out-Default
-
-Otherwise output is written to the console - it can be unexpected or fatal.
-
 *) Objects $Far and $Psf are not exposed for job code and they should not be
 accessed in any other way because this is not thread safe. Accessing these
 objects may lead to unpredictable results.
@@ -1316,6 +1307,9 @@ error messages) and then only, having all data ready, start the background part
 thread, where it still can interact with a user, then it starts a background
 job and exits).
 
+*) In most cases it is fine to call external applications with or without
+output, see ~Invoking console applications~@ConsoleApplications@.
+
 #OTHER NOTES#
 
 *) You can change job thread priority if it is really needed. E.g. put this
@@ -1325,8 +1319,8 @@ command as the first command of a job code:
 
 *) If you close Far safely (F10) and jobs still exist in the job list then for
 any job you are prompted to abort it, wait for its exit, view its output or
-discard all jobs and output. It is done with WinForm message boxes and
-Notepad.exe because on exiting Far UI is not available.
+discard all jobs and output. It is done with GUI message boxes and Notepad.exe
+because on exiting Far UI is not available.
 
 If it is not enough then there is another way. Next two steps get total control
 of F10 event:
@@ -2127,6 +2121,20 @@ whatever you use) to execute it. By the way, this mode gives a nice bonus: if a
 command fails (often due to mistakes in it) its text is still in the command
 line, ready for correction, even cursor position is the same - this really
 saves time on composing complex commands.
+
+
+@ConsoleApplications
+$#Invoking console applications#
+~Contents~@Contents@
+
+Since 2.2.10 output of invoked in PSF console applications is not written to
+the console but merged with other commands output. Thus, in most cases it is
+fine to call external applications with output from the command line, scripts,
+editor consoles, and even background jobs.
+
+Still, console applications with user interaction and applications operating on
+console directly should not be used in PSF. Run them in Far or Cmd. This is
+especially important for asynchronous editor consoles and background jobs.
 
 
 @Examples

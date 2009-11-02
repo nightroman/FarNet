@@ -7,6 +7,7 @@ using System;
 using System.Globalization;
 using System.Management.Automation;
 using System.Text;
+using FarNet;
 
 namespace PowerShellFar
 {
@@ -26,16 +27,16 @@ namespace PowerShellFar
 	/// </para>
 	/// <para>
 	/// <b>Type</b>: Far column type.
-	/// See <see cref="TablePanel.Columns"/> for supported types and Far API for possible type suffixes.
+	/// See <see cref="PanelModeInfo.Columns"/>.
 	/// </para>
 	/// <para>
-	/// <b>Width</b>: Far column width: an integer or a string: an integer + suffix'%'.
+	/// <b>Width</b>: Far column width: an integer or a string: an integer + %, e.g. "30%".
 	/// </para>
 	/// </remarks>
-	public class Meta
+	public class Meta : FarColumn
 	{
+		string _ColumnName;
 		string _ColumnType;
-		string _ColumnTitle;
 		string _ColumnWidth;
 
 		string _Property;
@@ -51,30 +52,24 @@ namespace PowerShellFar
 		/// </summary>
 		public ScriptBlock Script { get { return _Script; } }
 
-		/// <summary>
-		/// Data type, e.g. for Far column type.
-		/// </summary>
-		public string ColumnType { get { return _ColumnType; } internal set { _ColumnType = value; } }
-
-		/// <summary>
-		/// Data label, e.g for Far column title.
-		/// </summary>
-		public string ColumnTitle
+		///
+		public override string Name
 		{
 			get
 			{
 				return
-					_ColumnTitle != null ? _ColumnTitle :
+					_ColumnName != null ? _ColumnName :
 					_Property != null ? _Property :
 					_Script != null ? _Script.ToString().Trim() :
 					string.Empty;
 			}
 		}
 
-		/// <summary>
-		/// Column width.
-		/// </summary>
-		public string ColumnWidth
+		///
+		public override string Type { get { return _ColumnType; } set { _ColumnType = value; } }
+
+		///
+		public override string Width
 		{
 			get
 			{
@@ -143,7 +138,7 @@ namespace PowerShellFar
 					if ("Name".StartsWith(key, StringComparison.OrdinalIgnoreCase) ||
 						"Label".StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
-						_ColumnTitle = (string)kv.Value;
+						_ColumnName = (string)kv.Value;
 					}
 					else if ("Type".StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
@@ -178,15 +173,14 @@ namespace PowerShellFar
 		/// <summary>
 		/// Gets PowerShell code.
 		/// </summary>
-		/// <returns></returns>
 		public string Export()
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append("@{");
 			if (_ColumnType != null)
 				sb.Append(" Type = '" + _ColumnType + "';");
-			if (_ColumnTitle != null)
-				sb.Append(" Label = '" + _ColumnTitle + "';");
+			if (_ColumnName != null)
+				sb.Append(" Label = '" + _ColumnName + "';");
 			if (_ColumnWidth != null)
 				sb.Append(" Width = '" + _ColumnWidth + "';");
 			if (_Property != null)

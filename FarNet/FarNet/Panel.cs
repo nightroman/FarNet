@@ -6,6 +6,7 @@ Copyright (c) 2005-2009 FarNet Team
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace FarNet
 {
@@ -581,28 +582,38 @@ namespace FarNet
 	public sealed class PanelModeInfo : ICloneable
 	{
 		/// <summary>
-		/// Text string which describes column types.
+		/// Columns info.
 		/// </summary>
 		/// <remarks>
-		/// Column types are encoded by one or more letters separated by commas: "N,SC,D,T".
-		/// To use standard Far panel view modes, keep this field null or empty.
-		/// See Far [Column types].
+		/// <para>
+		/// All supported types: "N", "Z", "O", "S", "DC", "DM", "DA", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
+		/// Supported Far column type suffixes may be added to the end, e.g. NR, ST, DCB, and etc., see Far API [Column types].
+		/// </para>
+		/// <para>
+		/// Default column type sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
+		/// It is exposed as <see cref="FarColumn.DefaultColumnTypes"/>.
+		/// </para>
+		/// <para>
+		/// Type rules:
+		/// <ul>
+		/// <li>Specify column types only when you really have to do so, especially try to avoid C0..C9, let them to be processed by default.</li>
+		/// <li>C0...C9 must be listed incrementally without gaps; but other types between them is OK. E.g. C0, C2 is bad; C0, N, C1 is OK.</li>
+		/// <li>If a type is not specified then the next available from the remaining default sequence is taken.</li>
+		/// <li>Column types should not be specified more than once.</li>
+		/// </ul>
+		/// </para>
 		/// </remarks>
-		public string ColumnTypes { get; set; }
+		public FarColumn[] Columns { get; set; }
 		/// <summary>
-		/// Column widths.
-		/// See Far [Column width].
-		/// </summary>
-		public string ColumnWidths { get; set; }
-		/// <summary>
-		/// Column titles. To use standard column names, keep it null.
+		/// Status columns info.
 		/// </summary>
 		/// <remarks>
-		/// STOP If it is not null then number of titles must be equal to number of column types.
+		/// Use it for status columns in the same way as <see cref="Columns"/> is used.
+		/// Column names are ignored.
 		/// </remarks>
-		public string[] ColumnTitles { get; set; }
+		public FarColumn[] StatusColumns { get; set; }
 		/// <summary>
-		/// Tells to resize panel to fill the entire window (instead of half).
+		/// Tells to resize panel to fill the entire window (instead of a half).
 		/// </summary>
 		public bool IsFullScreen { get; set; }
 		/// <summary>
@@ -613,14 +624,6 @@ namespace FarNet
 		/// Otherwise, the status line displays the file name.
 		/// </remarks>
 		public bool IsDetailedStatus { get; set; }
-		/// <summary>
-		/// Text string which describes status column types.
-		/// </summary>
-		public string StatusColumnTypes { get; set; }
-		/// <summary>
-		/// Status column widths.
-		/// </summary>
-		public string StatusColumnWidths { get; set; }
 		/// <summary>
 		/// Shallow copy.
 		/// </summary>
@@ -1184,6 +1187,66 @@ namespace FarNet
 		/// Panel name to be set current.
 		/// </summary>
 		void PostName(string name);
+	}
+
+	/// <summary>
+	/// Panel column options (abstract).
+	/// </summary>
+	/// <remarks>
+	/// Column options are used by <see cref="PanelModeInfo.Columns"/> and <see cref="PanelModeInfo.StatusColumns"/>.
+	/// <para>
+	/// This class is only a base for <see cref="SetColumn"/> (recommended and ready to use by plugins)
+	/// and other classes derived by plugins (basically they are not needed).
+	/// </para>
+	/// </remarks>
+	public class FarColumn
+	{
+		/// <summary>
+		/// Column name.
+		/// </summary>
+		/// <remarks>
+		/// Title of a standard panel column. It is ignored for a status column.
+		/// </remarks>
+		public virtual string Name { get { return null; } set { throw new NotImplementedException(); } }
+		/// <summary>
+		/// Column type. See <see cref="PanelModeInfo.Columns"/>.
+		/// </summary>
+		public virtual string Type { get { return null; } set { throw new NotImplementedException(); } }
+		/// <summary>
+		/// Column width (absolute or percentage).
+		/// </summary>
+		/// <remarks>
+		/// It is a number ("30") or a number with % ("30%").
+		/// Null or empty is the same as "0" (Far decides).
+		/// See Far API [Column width].
+		/// </remarks>
+		public virtual string Width { get { return null; } set { throw new NotImplementedException(); } }
+		/// <summary>
+		/// Default column type sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
+		/// </summary>
+		public static ReadOnlyCollection<string> DefaultColumnTypes { get { return _DefaultColumnTypes; } }
+		static readonly ReadOnlyCollection<string> _DefaultColumnTypes = new ReadOnlyCollection<string>(new string[] { "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9" });
+		/// <summary>
+		/// Only for derived classes.
+		/// </summary>
+		protected FarColumn() { }
+	}
+
+	/// <summary>
+	/// Panel column options.
+	/// </summary>
+	/// <remarks>
+	/// Use this class directly to create column options instance and set its properties.
+	/// See <see cref="FarColumn"/> for details.
+	/// </remarks>
+	public sealed class SetColumn : FarColumn
+	{
+		///
+		public override string Name { get; set; }
+		///
+		public override string Type { get; set; }
+		///
+		public override string Width { get; set; }
 	}
 
 }
