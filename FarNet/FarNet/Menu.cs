@@ -91,7 +91,7 @@ namespace FarNet
 	/// <seealso cref="IListMenu"/>
 	/// <seealso cref="Forms.IListBox"/>
 	/// <seealso cref="Forms.IComboBox"/>
-	public class SetItem : FarItem
+	public sealed class SetItem : FarItem
 	{
 		/// <summary>
 		/// Item text.

@@ -37,34 +37,37 @@ void Panel2::SwitchFullScreen()
 	PanelModeInfo^ mode = Info->GetMode(iViewMode);
 	if (!mode)
 	{
-		mode = gcnew PanelModeInfo;
+		String^ sColumnTypes;
 		{
 			int size = ::Info.Control(Handle, FCTL_GETCOLUMNTYPES, 0, NULL);
 			CBox buf(size);
 			::Info.Control(Handle, FCTL_GETCOLUMNTYPES, size, (LONG_PTR)(wchar_t*)buf);
-			mode->ColumnTypes = gcnew String(buf);
+			sColumnTypes = gcnew String(buf);
 		}
+		String^ sColumnWidths;
 		{
 			int size = ::Info.Control(Handle, FCTL_GETCOLUMNWIDTHS, 0, NULL);
 			CBox buf(size);
 			::Info.Control(Handle, FCTL_GETCOLUMNWIDTHS, size, (LONG_PTR)(wchar_t*)buf);
-			mode->ColumnWidths = gcnew String(buf);
+			sColumnWidths = gcnew String(buf);
 		}
-		array<String^>^ types = mode->ColumnTypes->Split(',');
-		array<String^>^ widths = mode->ColumnWidths->Split(',');
-		String^ w = String::Empty;
+
+		array<String^>^ types = sColumnTypes->Split(',');
+		array<String^>^ widths = sColumnWidths->Split(',');
+		if (types->Length != widths->Length)
+			throw gcnew InvalidOperationException("Different numbers of column types and widths.");
+
+		mode = gcnew PanelModeInfo;
+		mode->Columns = gcnew array<FarColumn^>(types->Length);
 		for(int iType = 0; iType < types->Length; ++iType)
 		{
-			String^ w1;
+			SetColumn^ column = gcnew SetColumn();
+			mode->Columns[iType] = column;
+			column->Type = types[iType];
 			if (types[iType] == "N" || types[iType] == "Z" || types[iType] == "O")
-				w1 = "0";
+				column->Width = "0";
 			else
-				w1 = widths[iType];
-			if (iType == 0)
-				w = w1;
-			else
-				w = "," + w1;
-			mode->ColumnWidths = w;
+				column->Width = widths[iType];
 		}
 	}
 

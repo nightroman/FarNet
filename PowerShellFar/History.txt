@@ -1,6 +1,29 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.10 =
+
+*) Output of invoked console applications is not written to the console but
+merged with other PS output. Thus, in most cases it is allowed now to use these
+commands in editor consoles and in background jobs directly with no tricks like
+"... | Out-Default". Still, as usual, applications operating on the console
+directly should not be called in PSF, run them in Far or Cmd.
+
+*) New FarNet.SetColumn (see FarNet) is used in the plugin code and in the
+scripts: see Test-Panel-.ps1, Search-Regex-.ps1.
+
+*) TabExpansion
+-- Revised and updated.
+-- Expands available module names right after 'Import-Module', 'ipmo',
+'Remove-Module', 'rmo', and optional '-Name'. E.g.:
+Import-Module b[Tab] -> BitsTransfer
+-- Expands #<pattern> as command history entries (not exactly the same as in
+PS because PSF history is different, e.g. #<id> is not supported).
+
+*) Added internal function Get-History: for now it simply returns all entries
+as strings. N.B.: for compatibility with PS history entries some code may use
+.ToString() instead of .CommandLine: then results are the same in PS and PSF.
+
 = 2.2.9 =
 
 *) This is the first version for just released PowerShell V2 RTM. Nothing is

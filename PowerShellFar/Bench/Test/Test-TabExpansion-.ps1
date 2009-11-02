@@ -145,11 +145,18 @@ Test '' '[*commandty' { $_ -contains '[System.Data.CommandType]' } | Write-Error
 Test '' '[*sqlcom' { $_ -contains '[System.Data.SqlClient.SqlCommand]' } | Write-Error
 
 ### types for New-Object
-Test 'new-object System.da' 'System.da' { $_ -contains 'System.Data' } | Write-Error
+Test 'NEW-OBJECT System.da' 'System.da' { $_ -contains 'System.Data' } | Write-Error
+Test 'NEW-OBJECT  -TYPENAME  System.da' 'System.da' { $_ -contains 'System.Data' } | Write-Error
 Test 'NEW-OBJECT   System.Data.SqlClient.SqlE' 'System.Data.SqlClient.SqlE' { $_[0] -eq 'System.Data.SqlClient.SqlError' } | Write-Error
 
 ### WMI
 Test '' 'win32*sc*j' { $_ -eq 'Win32_ScheduledJob' } | Write-Error
+
+### Module name
+Test 'IMPORT-MODULE b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
+Test 'IPMO b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
+Test 'IMPORT-MODULE -NAME b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
+Test 'IPMO -NAME b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
 
 ### Help comments
 Test '.' '.' { $_ -contains '.SYNOPSIS' -and $_ -contains '.LINK' } | Write-Error

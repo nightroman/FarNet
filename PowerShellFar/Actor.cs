@@ -838,8 +838,7 @@ Continue with this current directory?
 					_myCommand = code;
 					ps.Commands
 						.AddScript(code)
-						.AddCommand("Out-Default")
-						.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+						.AddCommand(A.OutCommand);
 					ps.Invoke();
 				}
 			}

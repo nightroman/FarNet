@@ -91,13 +91,12 @@ namespace PowerShellFar
 			if (Panel.IsOpened)
 				return;
 
-			// 090411 Use custom Descriptions mode ???
+			// 090411 Use custom Descriptions mode
 			if (Panel.Info.GetMode(PanelViewMode.AlternativeFull) == null)
 			{
 				PanelModeInfo mode = new PanelModeInfo();
-				mode.ColumnTypes = "Z";
-				mode.ColumnWidths = "0";
-				mode.ColumnTitles = new string[] { "Format-Table" };
+				SetColumn c1 = new SetColumn(); c1.Name = "Format-Table"; c1.Type = "Z";
+				mode.Columns = new FarColumn[] { c1 };
 				Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 			}
 
@@ -141,7 +140,7 @@ namespace PowerShellFar
 			foreach (Meta meta in metas)
 			{
 				// type -> map:
-				switch (meta.ColumnType[0])
+				switch (meta.Type[0])
 				{
 					case 'N':
 						Map.Name = meta;
@@ -164,10 +163,10 @@ namespace PowerShellFar
 						break;
 					case 'D':
 						{
-							if (meta.ColumnType.Length < 2)
+							if (meta.Type.Length < 2)
 								throw new InvalidOperationException("Invalid column type: D");
 
-							switch (meta.ColumnType[1])
+							switch (meta.Type[1])
 							{
 								case 'C':
 									{
@@ -194,12 +193,12 @@ namespace PowerShellFar
 									}
 									break;
 								default:
-									throw new InvalidOperationException("Invalid column type: " + meta.ColumnType);
+									throw new InvalidOperationException("Invalid column type: " + meta.Type);
 							}
 						}
 						break;
 					default:
-						throw new InvalidOperationException("Unknown column type: " + meta.ColumnType);
+						throw new InvalidOperationException("Unknown column type: " + meta.Type);
 				}
 			}
 

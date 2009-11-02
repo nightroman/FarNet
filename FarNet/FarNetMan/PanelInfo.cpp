@@ -120,25 +120,144 @@ PanelModeInfo^ FarPluginPanelInfo::GetMode(PanelViewMode viewMode)
 	return _Modes[i];
 }
 
+String^ GetColumnTypes(IEnumerable<FarColumn^>^ columns)
+{
+	// available types
+	List<String^> availableColumnTypes(FarColumn::DefaultColumnTypes);
+
+	// pass 1: pre-process specified default types, remove them from available
+	int iCustom = 0;
+	for each(FarColumn^ column in columns)
+	{
+		// skip not specified
+		if (ES(column->Type))
+			continue;
+
+		// pre-process only default types: N, O, Z, C
+		switch(column->Type[0])
+		{
+		case 'N':
+			{
+				if (!availableColumnTypes.Remove("N"))
+					throw gcnew InvalidOperationException("Column 'N' is used twice.");
+			}
+			break;
+		case 'O':
+			{
+				if (!availableColumnTypes.Remove("O"))
+					throw gcnew InvalidOperationException("Column 'O' is used twice.");
+			}
+			break;
+		case 'Z':
+			{
+				if (!availableColumnTypes.Remove("Z"))
+					throw gcnew InvalidOperationException("Column 'Z' is used twice.");
+			}
+			break;
+		case 'C':
+			{
+				if (column->Type->Length < 2)
+					throw gcnew InvalidOperationException("Invalid column type: C");
+
+				if (iCustom != (int)(column->Type[1] - '0'))
+					throw gcnew InvalidOperationException("Invalid column type: " + column->Type + ". Expected: C" + iCustom);
+
+				availableColumnTypes.Remove(column->Type->Substring(0, 2));
+				++iCustom;
+			}
+			break;
+		}
+	}
+
+	// pass 2: get missed types from yet available
+	int iAvailable = 0;
+	StringBuilder sb(80);
+	for each(FarColumn^ column in columns)
+	{
+		if (sb.Length)
+			sb.Append(",");
+		
+		if (SS(column->Type))
+			sb.Append(column->Type);
+		else
+			sb.Append(availableColumnTypes[iAvailable++]);
+	}
+
+	return sb.ToString();
+}
+
+wchar_t* NewColumnWidths(IEnumerable<FarColumn^>^ columns)
+{
+	StringBuilder sb(80);
+	for each(FarColumn^ column in columns)
+	{
+		if (sb.Length)
+			sb.Append(",");
+		if (SS(column->Width))
+			sb.Append(column->Width);
+		else
+			sb.Append("0");
+	}
+	return NewChars(sb.ToString());
+}
+
+wchar_t** NewColumnTitles(array<FarColumn^>^ columns)
+{
+	int i = -1;
+	wchar_t** r = NULL;
+	for each(FarColumn^ column in columns)
+	{
+		++i;
+		if (ES(column->Name))
+			continue;
+		
+		if (r == NULL)
+		{
+			int n = columns->Length + 1;
+			r = new wchar_t*[n];
+			memset(r, 0, n * sizeof(wchar_t*));
+		}
+
+		r[i] = NewChars(column->Name);
+	}
+	return r;
+}
+
 void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
 {
 	assert(s != nullptr);
 
-	d.ColumnTypes = NewChars(s->ColumnTypes);
-	d.ColumnWidths = NewChars(s->ColumnWidths);
-	d.StatusColumnTypes = NewChars(s->StatusColumnTypes);
-	d.StatusColumnWidths = NewChars(s->StatusColumnWidths);
+	// get type strings first, it can throw
+	String^ types1 = s->Columns ? GetColumnTypes(s->Columns) : nullptr;
+	String^ types2 = s->StatusColumns ? GetColumnTypes(s->StatusColumns) : nullptr;
 
-	if (s->ColumnTitles && s->ColumnTitles->Length)
-	{
-		d.ColumnTitles = new wchar_t*[s->ColumnTitles->Length + 1];
-		d.ColumnTitles[s->ColumnTitles->Length] = 0;
-		for(int i = s->ColumnTitles->Length; --i >= 0;)
-			d.ColumnTitles[i] = NewChars(s->ColumnTitles[i]);
-	}
-
+	// set others
 	d.DetailedStatus = s->IsDetailedStatus;
 	d.FullScreen = s->IsFullScreen;
+
+	if (types1)
+	{
+		d.ColumnTypes = NewChars(types1);
+		d.ColumnWidths = NewColumnWidths(s->Columns);
+		d.ColumnTitles = NewColumnTitles(s->Columns);
+	}
+	else
+	{
+		d.ColumnTypes = NULL;
+		d.ColumnWidths = NULL;
+		d.ColumnTitles = NULL;
+	}
+
+	if (types2)
+	{
+		d.StatusColumnTypes = NewChars(types2);
+		d.StatusColumnWidths = NewColumnWidths(s->StatusColumns);
+	}
+	else
+	{
+		d.StatusColumnTypes = NULL;
+		d.StatusColumnWidths = NULL;
+	}
 }
 
 void FreePanelMode(const ::PanelMode& d)
@@ -162,25 +281,6 @@ void FarPluginPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo
 	int i = int(viewMode);
 	if (i < 0 || i > 9)
 		throw gcnew ArgumentOutOfRangeException("viewMode");
-
-	// types
-	if (ES(modeInfo->ColumnTypes))
-		throw gcnew ArgumentException("Column types must be defined.");
-
-	// titles
-	if (modeInfo->ColumnTitles)
-	{
-		// eval column number by types delimited by comma
-		int nb = 1;
-		for each(char c in modeInfo->ColumnTypes)
-			if (c == ',')
-				++nb;
-
-		// test title number (or Far will read crap)
-		// '<' will do, but let it be '!='
-		if (modeInfo->ColumnTitles->Length != nb)
-			throw gcnew ArgumentException("Column titles number does not match column types.");
-	}
 
 	// ensure managed array
 	if (!_Modes)

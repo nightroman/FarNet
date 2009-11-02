@@ -161,7 +161,7 @@ namespace PowerShellFar
 		/// <param name="input">Input objects.</param>
 		public static void Out(PowerShell ps, IEnumerable input)
 		{
-			ps.Commands.AddCommand("Out-Default");
+			ps.Commands.AddCommand(A.OutCommand);
 			ps.Invoke(input);
 		}
 
@@ -214,6 +214,26 @@ namespace PowerShellFar
 				{
 					Far.ShowError(Res.Name, ex);
 				}
+			}
+		}
+
+		static Command _OutCommand;
+		/// <summary>
+		/// Command for formatted output of everything.
+		/// </summary>
+		/// <remarks>
+		/// "Out-Default" is not suitable for external apps, output goes to console.
+		/// </remarks>
+		public static Command OutCommand
+		{
+			get
+			{
+				if (_OutCommand == null)
+				{
+					_OutCommand = new Command("Microsoft.PowerShell.Utility\\Out-Host");
+					_OutCommand.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error;
+				}
+				return _OutCommand;
 			}
 		}
 

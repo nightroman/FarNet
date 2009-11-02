@@ -33,20 +33,7 @@ namespace PowerShellFar
 		/// <see cref="DataPanel"/> items should be mapped to properties only.
 		/// For other panels items are similar to <c>Format-Table</c> parameter <c>-Property</c>.
 		/// <para>
-		/// All supported types: "N", "Z", "O", "S", "DC", "DM", "DA", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
-		/// Supported Far column type suffixes may be added to the end, e.g. NR, ST, DCB, and etc., see [Column types] in Far API.
-		/// </para>
-		/// <para>
-		/// Default column type sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
-		/// </para>
-		/// <para>
-		/// Type rules:
-		/// <ul>
-		/// <li>Specify column types only when you really have to do so, especially try to avoid C0..C9, let them to be processed by default.</li>
-		/// <li>C0...C9 must be listed incrementally without gaps; but other types between them is OK. E.g. C0, C2 is bad; C0, N, C1 is OK.</li>
-		/// <li>If a type is not specified then the next available from the remaining default sequence is taken.</li>
-		/// <li>Column types cannot be specified more than once.</li>
-		/// </ul>
+		/// See <see cref="PanelModeInfo.Columns"/> about column types.
 		/// </para>
 		/// </remarks>
 		public virtual object[] Columns
@@ -62,8 +49,6 @@ namespace PowerShellFar
 		}
 		object[] _Columns;
 
-		internal static readonly string[] DefaultColumnTypes = { "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9" };
-
 		/// <summary>
 		/// Infrastructure. Gets meta objects for columns.
 		/// </summary>
@@ -71,7 +56,7 @@ namespace PowerShellFar
 		public static Meta[] SetupColumns(object[] columns)
 		{
 			Meta[] r = new Meta[columns.Length];
-			List<string> availableColumnTypes = new List<string>(DefaultColumnTypes);
+			List<string> availableColumnTypes = new List<string>(FarColumn.DefaultColumnTypes);
 
 			// pass 1: pre-process specified default types, remove them from available
 			int iCustom = 0;
@@ -82,11 +67,11 @@ namespace PowerShellFar
 				r[iColumn] = meta;
 
 				// skip not specified
-				if (string.IsNullOrEmpty(meta.ColumnType))
+				if (string.IsNullOrEmpty(meta.Type))
 					continue;
 
 				// pre-process only default types: N, O, Z, C
-				switch (meta.ColumnType[0])
+				switch (meta.Type[0])
 				{
 					case 'N':
 						{
@@ -108,13 +93,13 @@ namespace PowerShellFar
 						break;
 					case 'C':
 						{
-							if (meta.ColumnType.Length < 2)
+							if (meta.Type.Length < 2)
 								throw new InvalidOperationException("Invalid column type: C");
 
-							if (iCustom != (int)(meta.ColumnType[1] - '0'))
-								throw new InvalidOperationException("Invalid column type: " + meta.ColumnType + ". Expected: C" + iCustom);
+							if (iCustom != (int)(meta.Type[1] - '0'))
+								throw new InvalidOperationException("Invalid column type: " + meta.Type + ". Expected: C" + iCustom);
 
-							availableColumnTypes.Remove(meta.ColumnType.Substring(0, 2));
+							availableColumnTypes.Remove(meta.Type.Substring(0, 2));
 							++iCustom;
 						}
 						break;
@@ -123,14 +108,14 @@ namespace PowerShellFar
 
 			// pass 2: set missed types from yet available
 			int iAvailable = 0;
-			foreach(Meta meta in r)
+			foreach (Meta meta in r)
 			{
-				if (string.IsNullOrEmpty(meta.ColumnType))
+				if (string.IsNullOrEmpty(meta.Type))
 				{
 					if (iAvailable >= availableColumnTypes.Count)
 						throw new InvalidOperationException("Too many columns.");
 
-					meta.ColumnType = availableColumnTypes[iAvailable];
+					meta.Type = availableColumnTypes[iAvailable];
 					++iAvailable;
 				}
 			}
@@ -141,26 +126,14 @@ namespace PowerShellFar
 		internal static PanelModeInfo SetupPanelMode(IList<Meta> metas)
 		{
 			PanelModeInfo r = new PanelModeInfo();
-			r.ColumnTitles = new string[metas.Count];
 
+			r.Columns = new FarColumn[metas.Count];
 			for (int i = 0; i < metas.Count; ++i)
-			{
-				r.ColumnTitles[i] = metas[i].ColumnTitle;
-				if (i == 0)
-				{
-					r.ColumnTypes = metas[0].ColumnType;
-					r.ColumnWidths = metas[0].ColumnWidth;
-				}
-				else
-				{
-					r.ColumnTypes += "," + metas[i].ColumnType;
-					r.ColumnWidths += "," + metas[i].ColumnWidth;
-				}
-			}
+				r.Columns[i] = metas[i];
 
 			return r;
 		}
-		
+
 		internal abstract string HelpMenuTextOpenFileMembers { get; }
 
 		///

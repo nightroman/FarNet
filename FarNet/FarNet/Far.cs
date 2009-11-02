@@ -597,7 +597,6 @@ namespace FarNet
 		/// <summary>
 		/// See <see cref="TempFolder(string)"/>
 		/// </summary>
-		/// <returns></returns>
 		string TempFolder();
 		/// <summary>
 		/// The current dialog. STOP: be sure that a dialog exists otherwise effects are not predictable.
