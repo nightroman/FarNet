@@ -134,16 +134,15 @@ namespace PowerShellFar
 					PowerShell.AddParameters(new object[] { parameters });
 			}
 
-			// UI: Send errors to output.
+			// UI: Write all output, including errors.
 			if (JobUI != null)
 			{
-				PowerShell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
-				PowerShell.AddCommand("Out-Default");
+				PowerShell.Commands.AddCommand(A.OutCommand);
 			}
-			// Hidden: Output to Out-Null to avoid memory use for nothing.
+			// Hidden: Write output to "Out-Null" to avoid memory use.
 			else if (keepSeconds <= 0)
 			{
-				PowerShell.AddCommand("Out-Null");
+				PowerShell.AddCommand("Out-Null"); //$RVK full name?
 			}
 			// Output: create it once: it is cumulative 
 			else

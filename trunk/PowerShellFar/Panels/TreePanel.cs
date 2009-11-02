@@ -26,9 +26,9 @@ namespace PowerShellFar
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
 
 			PanelModeInfo mode0 = new PanelModeInfo();
-			mode0.ColumnTitles = new string[] { "Name", "Description" };
-			mode0.ColumnTypes = "O,Z";
-			mode0.ColumnWidths = "0,0";
+			SetColumn c1 = new SetColumn(); c1.Type = "O"; c1.Name = "Name";
+			SetColumn c2 = new SetColumn(); c2.Type = "Z"; c2.Name = "Description";
+			mode0.Columns = new FarColumn[] { c1, c2 };
 
 			PanelModeInfo mode1 = (PanelModeInfo)mode0.Clone();
 			mode1.IsFullScreen = true;

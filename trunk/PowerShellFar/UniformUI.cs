@@ -11,6 +11,13 @@ using System.Management.Automation.Host;
 
 namespace PowerShellFar
 {
+	/// <summary>
+	/// Base of PSF UI.
+	/// </summary>
+	/// <remarks>
+	/// Basically most of writing methods are called in here,
+	/// then they recall new virtual methods Append*.
+	/// </remarks>
 	abstract class UniformUI : PSHostUserInterface
 	{
 		/// <summary>
@@ -95,19 +102,19 @@ namespace PowerShellFar
 		{
 		}
 
-		public override void Write(string value)
+		public sealed override void Write(string value)
 		{
 			_mode = WriteMode.None;
 			Append(value);
 		}
 
-		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+		public sealed override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			_mode = WriteMode.None;
 			Append(value);
 		}
 
-		public override void WriteDebugLine(string message)
+		public sealed override void WriteDebugLine(string message)
 		{
 			if (_mode != WriteMode.Debug)
 			{
@@ -127,25 +134,25 @@ namespace PowerShellFar
 			AppendLine(value);
 		}
 
-		public override void WriteLine()
+		public sealed override void WriteLine()
 		{
 			_mode = WriteMode.None;
 			AppendLine();
 		}
 
-		public override void WriteLine(string value)
+		public sealed override void WriteLine(string value)
 		{
 			_mode = WriteMode.None;
 			AppendLine(value);
 		}
 
-		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+		public sealed override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			_mode = WriteMode.None;
 			AppendLine(value);
 		}
 
-		public override void WriteVerboseLine(string message)
+		public sealed override void WriteVerboseLine(string message)
 		{
 			if (_mode != WriteMode.Verbose)
 			{
@@ -155,7 +162,7 @@ namespace PowerShellFar
 			AppendLine(message);
 		}
 
-		public override void WriteWarningLine(string message)
+		public sealed override void WriteWarningLine(string message)
 		{
 			if (_mode != WriteMode.Warning)
 			{

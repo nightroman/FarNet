@@ -40,6 +40,15 @@ function more
 	}
 }
 
+<#
+.SYNOPSIS
+	Replacement of default for Far.
+#>
+function Get-History
+{
+	$Psf.GetHistory()
+}
+
 # Completes replacement of more
 Set-Alias more.com more
 

@@ -449,9 +449,9 @@ namespace PowerShellFar
 				// invoke command
 				PowerShell = PowerShell.Create();
 				PowerShell.Runspace = Runspace;
-				PowerShell.Commands.AddScript(code);
-				PowerShell.AddCommand("Out-Default");
-				PowerShell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+				PowerShell.Commands
+					.AddScript(code)
+					.AddCommand(A.OutCommand);
 
 				Editor.BeginAsync();
 				PowerShell.BeginInvoke<PSObject>(null, null, AsyncInvoke, null);

@@ -165,7 +165,6 @@ namespace PowerShellFar
 		/// <summary>
 		/// Creates a new child file and adds it to the collection.
 		/// </summary>
-		/// <returns></returns>
 		public TreeFile Add()
 		{
 			TreeFile r = new TreeFile();

@@ -229,13 +229,13 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 					$text = [System.IO.File]::ReadAllText($item.FullName, [System.Text.Encoding]::Default)
 					if ($text -match $re) {
 						for($m = $re.Match($text); $m.Success; $m = $m.NextMatch()) {
-							$e = New-Object FarNet.SetFile $item, $true
 							$s = $text.Substring(0, $m.Index)
 							$n = [regex]::Split($s, '[^\n]+')
 							$null = $s -match '\n?([^\n]*)$'
-							$e.Data = @($matches[1].Length, 0)
-							$e.Description = '{0,4:d}: {1}' -f ($n.Count - 1), $m.Value
-							$e
+							New-Object FarNet.SetFile $item, $true -Property @{
+								Data = @($matches[1].Length, 0)
+								Description = '{0,4:d}: {1}' -f ($n.Count - 1), $m.Value
+							}
 						}
 					}
 				}
@@ -248,17 +248,17 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 								if ($Groups -and $m.Groups.Count -gt 1) {
 									for($gi = 1; $gi -lt $m.Groups.Count; ++$gi) {
 										$g = $m.Groups[$gi]
-										$e = New-Object FarNet.SetFile $item, $true
-										$e.Data = @($g.Index, $g.Length)
-										$e.Description = '{0,4:d}: {1}' -f $no, $line.Trim()
-										$e
+										New-Object FarNet.SetFile $item, $true -Property @{
+											Data = @($g.Index, $g.Length)
+											Description = '{0,4:d}: {1}' -f $no, $line.Trim()
+										}
 									}
 								}
 								else {
-									$e = New-Object FarNet.SetFile $item, $true
-									$e.Data = @($m.Index, $m.Length)
-									$e.Description = '{0,4:d}: {1}' -f $no, $line.Trim()
-									$e
+									New-Object FarNet.SetFile $item, $true -Property @{
+										Data = @($m.Index, $m.Length)
+										Description = '{0,4:d}: {1}' -f $no, $line.Trim()
+									}
 								}
 							}
 						}
@@ -283,11 +283,10 @@ $panel.Data = $job
 ### Modes
 # 'Descriptions'
 $m0 = New-Object FarNet.PanelModeInfo
-$m0.ColumnTypes = 'NR,Z'
-$m0.ColumnWidths = '0,0'
-$m0.ColumnTitles = 'File', 'Match'
-$m0.StatusColumnTypes = 'Z'
-$m0.StatusColumnWidths = '0'
+$c1 = New-Object FarNet.SetColumn -Property @{ Type = 'NR'; Name = 'File' }
+$c2 = New-Object FarNet.SetColumn -Property @{ Type = 'Z'; Name = 'Match' }
+$m0.Columns = $c1, $c2
+$m0.StatusColumns = $c2
 $panel.Info.SetMode('Descriptions', $m0)
 # 'LongDescriptions'
 $m1 = $m0.Clone()

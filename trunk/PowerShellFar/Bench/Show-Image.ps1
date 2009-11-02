@@ -23,6 +23,9 @@
 	Image file paths are passed in as arguments or piped. If there is no input
 	then all image files from the current location are taken.
 
+	NOTE: do not open too much images at once, this script may fail due to out
+	of memory exception.
+
 .EXAMPLE
 	# Far Manager association: internal way: faster but picture windows will be
 	# closed together with the Far window on exit.

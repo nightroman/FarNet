@@ -21,7 +21,7 @@
 	- [CtrlL] - shows event statistics in the info panel
 	- [CtrlB] - shows changed key bar labels on each event
 	- [Ctrl7], [Ctrl0] - other panel view modes, [Ctrl0] shows custom columns
-	- [Esc] - closes a panel
+	- [Esc] - closes a panel with a dialog
 #>
 
 param
@@ -39,23 +39,22 @@ $p.Info.StartViewMode = 'Descriptions'
 ### Modes
 # 'Descriptions'
 $m = New-Object FarNet.PanelModeInfo
-$m.ColumnTypes = "N,O,Z"
-$m.ColumnWidths = "0,0,0"
-$m.ColumnTitles = "Name (custom title)", "Owner (custom title)", "Description (custom title)"
-$m.StatusColumnTypes = "N,O,Z"
-$m.StatusColumnWidths = "0,0,0"
+$cn = New-Object FarNet.SetColumn -Property @{ Type = "N"; Name = "Name (custom title)" }
+$co = New-Object FarNet.SetColumn -Property @{ Type = "O"; Name = "Owner (custom title)" }
+$cz = New-Object FarNet.SetColumn -Property @{ Type = "Z"; Name = "Description (custom title)" }
+$m.Columns = $cn, $co, $cz
+$m.StatusColumns = $m.Columns
 $p.Info.SetMode('Descriptions', $m)
 # 'LongDescriptions'
 $m = $m.Clone()
 $m.IsFullScreen = $true
 $p.Info.SetMode('LongDescriptions', $m)
-# '0'
+# 'Ctrl0 mode'
 $m = New-Object FarNet.PanelModeInfo
-$m.ColumnTypes = "N,C0,C1"
-$m.ColumnWidths = "0,0,0"
-$m.ColumnTitles = "Name (custom title)", "Custom column C0", "Custom column C1"
-$m.StatusColumnTypes = "N,C0,C1"
-$m.StatusColumnWidths = "0,0,0"
+$c0 = New-Object FarNet.SetColumn -Property @{ Type = "C0"; Name = "Custom column C0" }
+$c1 = New-Object FarNet.SetColumn -Property @{ Type = "C1"; Name = "Custom column C1" }
+$m.Columns = $cn, $c0, $c1
+$m.StatusColumns = $m.Columns
 $p.Info.SetMode(0, $m)
 
 ### Info items
@@ -154,16 +153,14 @@ $p.add_PuttingFiles({&{
 ### Escaping: closes the panel
 $p.add_Escaping({&{
 	$_.Ignore = $true
-	$r = Show-FarMsg 'How to close this panel?' -Choices '&1:StartDir', '&2:CurrentDir', '&3:Close()'
-	if ($r -eq 0) {
-		$this.Close($this.ActivePath)
-	}
-	elseif ($r -eq 1) {
-		$this.Close('.')
-	}
-	elseif ($r -eq 2) {
-		# Bug [_090321_210416]: Far panel current item depends on the plugin panel current item
-		$this.Close()
+	switch(Show-FarMsg 'How to close this panel?' -Choices '&1:Close()', '&2:Close(ActivePath)', 'Cancel') {
+		0 {
+			# [_090321_210416]: Far panel current item depends on the plugin panel current item (fixed in FarNet)
+			$this.Close()
+		}
+		1 {
+			$this.Close($this.ActivePath)
+		}
 	}
 }})
 
@@ -186,7 +183,7 @@ Bug [_090321_165608]: how to reproduce:
 - open this panel and keep it active
 - invoke a trivial PowerShell command from cmdline:
 >: 1+1
-- breakpoint should be triggered because the even handler is called: this is bad!
+- breakpoint should be triggered because the event handler is called: this is bad!
 #>
 $p.add_Closing({&{
 	$DebugPanelClosing = $true
