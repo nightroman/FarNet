@@ -7,9 +7,11 @@ PowerShellFar. Implements Windows PowerShell host in Far Manager and user interf
 ----
 = Windows PowerShell =
 
-Windows PowerShell is an extensible command-line shell and associated scripting language from Microsoft. It was released in 2006 and is currently available for Windows XP SP2/SP3, Windows Server 2003, Windows Vista, and is included in Windows Server 2008 as an optional feature. Windows PowerShell is included in Windows 7 by default and cannot be uninstalled.
+Windows PowerShell is an extensible automation engine from Microsoft, consisting of a command-line shell and associated scripting language. Codenamed "Monad", it was first shown publicly at the Professional Developers Conference in September 2003. Version 1.0 was released in 2006 and is currently available for Windows XP SP2/SP3, Windows Server 2003, Windows Vista, and is included in Windows Server 2008 as an optional feature.
 
-  * [http://en.wikipedia.org/wiki/powershell Wikipedia]
+Windows PowerShell 2.0 was released with Windows 7 and Windows Server 2008 R2. It has also been released for older platforms, i.e. Windows XP SP3, Windows Server 2003 SP2, Windows Vista SP1 and Windows Server 2008.
+
+  * [http://en.wikipedia.org/wiki/powershell More...]
 
 ----
 === PowerShellFar for Far Manager 1.x ===
