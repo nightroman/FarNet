@@ -548,9 +548,13 @@ String^ Editor::WordDiv::get()
 
 	EditorSetParameter esp;
 	esp.Type = ESPT_GETWORDDIV;
-	wchar_t buf[257];
-	esp.Param.cParam = buf;
+	esp.Param.wszParam = NULL;
+	esp.Size = EditorControl_ECTL_SETPARAM(esp);
+
+	CBox buf(esp.Size);
+	esp.Param.wszParam = buf;
 	EditorControl_ECTL_SETPARAM(esp);
+
 	return gcnew String(buf);
 }
 
@@ -562,7 +566,7 @@ void Editor::WordDiv::set(String^ value)
 	PIN_NE(pin, value);
 	EditorSetParameter esp;
 	esp.Type = ESPT_SETWORDDIV;
-	esp.Param.cParam = (wchar_t*)pin;
+	esp.Param.wszParam = (wchar_t*)pin;
 	EditorControl_ECTL_SETPARAM(esp);
 }
 

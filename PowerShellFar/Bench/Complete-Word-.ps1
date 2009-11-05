@@ -76,7 +76,7 @@ function global:Complete-Word-
 			$Editor.Lines | CollectWords
 			$Editor.End()
 			if ($Editor.FileName -like '*.psfconsole') {
-				$Psf.GetHistory() | CollectWords
+				$Psf.GetHistory(0) | CollectWords
 			}
 		}
 		'Dialog' {

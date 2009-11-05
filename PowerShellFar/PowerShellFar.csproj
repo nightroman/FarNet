@@ -57,6 +57,7 @@
     <Compile Include="Commands\TraceFarCommand.cs" />
     <Compile Include="Commands\UpdateFarDescriptionCommand.cs" />
     <Compile Include="EditorConsole.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="JobCommand.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Panels\AnyPanelSet.cs" />
@@ -90,7 +91,6 @@
     <Compile Include="Files.cs" />
     <Compile Include="Panels\FormatPanel.cs" />
     <Compile Include="Panels\FormatPanelTypes.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="History.cs" />
     <Compile Include="Panels\ListPanel.cs" />
     <Compile Include="Editor.cs" />

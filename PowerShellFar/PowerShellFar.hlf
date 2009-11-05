@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 2.2.10#
+#PowerShellFar 2.2.11#
 
 Implements Windows PowerShell host in Far Manager and user interface for
 invoking commands and scripts. PowerShell code can access and control Far
@@ -80,8 +80,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1192
- - Plugin FarNet 4.2.10
+ - Far Manager 2.0.1200
+ - Plugin FarNet 4.2.11
  - Windows PowerShell 2.0
 
 
@@ -1217,9 +1217,9 @@ throwing errors in almost all scripts operating on editor.
 It can be used to prevent closing of Far by [F10] with existing background jobs.
 See ~Background jobs~@BackgroundJobs@.
 
-#$Psf.GetHistory()#
+#$Psf.GetHistory(count)#
 
-Gets a list of all PowerShellFar commands from history.
+Gets a list PowerShellFar commands from history.
 
 #$Psf.Providers#
 
@@ -2148,7 +2148,7 @@ from panels, but for the others it is not a requirement.
 
 Show three versions: Far, FarNet, PowerShellFar:
 
- >: "Far: $($Far.FarVersion)`nFarNet: $($Far.FarNetVersion)`nPowerShellFar: $($Host.Version)"
+ >: "Far $($Far.FarVersion)`nFarNet $($Far.FarNetVersion)`nPowerShellFar $($Host.Version)"
 
 Do some math, keep results in variables, use them later
  >: $x = [math]::sqrt([math]::pi)

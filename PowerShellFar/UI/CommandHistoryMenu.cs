@@ -34,7 +34,7 @@ namespace PowerShellFar.UI
 		void ResetItems()
 		{
 			_menu.Items.Clear();
-			foreach(string s in History.GetLines())
+			foreach(string s in History.GetLines(0))
 				_menu.Add(s);
 		}
 

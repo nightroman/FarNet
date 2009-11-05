@@ -13,7 +13,7 @@ Update-TypeData "$($Psf.AppHome)\PowerShellFar.types.ps1xml" -ErrorAction 'Conti
 
 <#
 .SYNOPSIS
-	Replacement of default for Far.
+	Far friendly implementation.
 #>
 function Clear-Host
 {
@@ -23,7 +23,7 @@ function Clear-Host
 
 <#
 .SYNOPSIS
-	Replacement of default for Far.
+	Far friendly implementation.
 #>
 function more
 (
@@ -42,11 +42,25 @@ function more
 
 <#
 .SYNOPSIS
-	Replacement of default for Far.
+	Far friendly implementation.
 #>
 function Get-History
+(
+	[Parameter()][int]
+	$Count = 32
+)
 {
-	$Psf.GetHistory()
+	$Psf.GetHistory($Count)
+}
+
+<#
+.SYNOPSIS
+	Far friendly implementation.
+#>
+function Invoke-History
+{
+	if ($args) { throw "Invoke-History does not support parameters." }
+	$Psf.ShowHistory()
 }
 
 # Completes replacement of more
