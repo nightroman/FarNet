@@ -596,15 +596,18 @@ Continue with this current directory?
 		/// Gets PowerShellFar commands from history.
 		/// </summary>
 		/// <remarks>
-		/// PowerShellFar command history is absolutely different from PowerShell command history
-		/// and in fact PowerShell mechanism is not used internally and you should not use it,
-		/// i.e. forget about <c>Add-History</c>, <c>Get-History</c>, <c>Invoke-History</c>,
-		/// <c>$MaximumHistoryCount</c> - you don't need this in PowerShellFar which keeps
-		/// commands in the registry so that they can be used in other sessions, too.
+		/// PowerShellFar command history is absolutely different from PowerShell command history; PowerShell mechanism is not used
+		/// internally and you should not use it, i.e. forget about <c>Add-History</c>, <c>$MaximumHistoryCount</c>, and etc. - you
+		/// don't need them in PowerShellFar. The history is stored in the registry, so that commands can be used in other sessions.
+		/// <para>
+		/// Some standard history commands are partially implemented as internal functions.
+		/// <c>Get-History</c> returns command strings, <c>Invoke-History</c> calls <see cref="ShowHistory"/>.
+		/// </para>
 		/// </remarks>
-		public IList<string> GetHistory()
+		/// <param name="count">Number of last commands to be returned. 0: all commands.</param>
+		public IList<string> GetHistory(int count)
 		{
-			return History.GetLines();
+			return History.GetLines(count);
 		}
 
 		/// <summary>
@@ -700,6 +703,7 @@ Continue with this current directory?
 		/// Shows PowerShellFar command history and invokes or insert the selected command or text.
 		/// Called on "Command history".
 		/// </summary>
+		/// <seealso cref="GetHistory"/>
 		public void ShowHistory()
 		{
 			History.ShowHistory();

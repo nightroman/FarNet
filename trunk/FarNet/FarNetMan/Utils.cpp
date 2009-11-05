@@ -161,9 +161,9 @@ void EditorControl_ECTL_SELECT(EditorSelect& es)
 	Info.EditorControl(ECTL_SELECT, &es);
 }
 
-void EditorControl_ECTL_SETPARAM(const EditorSetParameter esp)
+int EditorControl_ECTL_SETPARAM(const EditorSetParameter esp)
 {
-	Info.EditorControl(ECTL_SETPARAM, (void*)&esp);
+	return Info.EditorControl(ECTL_SETPARAM, (void*)&esp);
 }
 
 //! *) Looks like it does not fail if input is 'out of range'.

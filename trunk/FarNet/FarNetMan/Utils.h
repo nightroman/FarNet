@@ -142,7 +142,7 @@ void EditorControl_ECTL_INSERTSTRING(bool indent);
 void EditorControl_ECTL_INSERTTEXT(Char text, int overtype);
 void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype);
 void EditorControl_ECTL_SELECT(EditorSelect& es);
-void EditorControl_ECTL_SETPARAM(const EditorSetParameter esp);
+int EditorControl_ECTL_SETPARAM(const EditorSetParameter esp);
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp);
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess);
 void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);

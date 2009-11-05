@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.2.11 =
+
+*** Requires Far 2.0.1200+ ***
+
+*) Adapted for Far 2.0.1200 (IEditor.WordDiv).
+
 = 4.2.10 =
 
 REVISION OF PanelModeInfo

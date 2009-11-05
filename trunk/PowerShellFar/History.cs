@@ -35,14 +35,19 @@ namespace PowerShellFar
 		/// <summary>
 		/// Gets history lines.
 		/// </summary>
-		public static string[] GetLines()
+		public static string[] GetLines(int count)
 		{
 			using (RegistryKey key = Open(false))
 			{
-				string[] r = key.GetValueNames();
-				for (int i = r.Length; --i >= 0; )
-					r[i] = key.GetValue(r[i]).ToString();
-				return r;
+				string[] names = key.GetValueNames();
+				if (count <= 0 || count > names.Length)
+					count = names.Length;
+
+				string[] lines = new string[count];
+				for(int s = names.Length - count, d = 0; s < names.Length; ++s, ++d)
+					lines[d] = key.GetValue(names[s]).ToString();
+
+				return lines;
 			}
 		}
 

@@ -1,6 +1,21 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.11 =
+
+*) History:
+-- $Psf: .GetHistory() is replaced with .GetHistory(int count)
+-- Command Get-History: added parameter -Count, default is 32.
+-- Command Invoke-History: simply calls $Psf.ShowHistory().
+
+*) TabExpansion
+-- Fixed a few issues with #<pattern> (history expansion).
+-- cd x[tab] expands only folder names
+
+*) PowerShellFar.AnyPanel.ShowAsChild(<panel>): it is OK now to send null as
+<panel>, even if there is no active PSF panel (why not?): in this case it is
+the same as Show().
+
 = 2.2.10 =
 
 *) Output of invoked console applications is not written to the console but
