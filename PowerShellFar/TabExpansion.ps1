@@ -11,23 +11,25 @@ function global:TabExpansion
 	$lastWord
 )
 {
+	# ignore but keep errors
 	trap { continue }
 
-	# prefix to use with results
+	# prefix and corrected word
 	$prefWord = $null
 	if ($lastWord -match '^(.*[!;\(\{\|"'']+)(.*)$') {
 		$prefWord = $matches[1]
 		$lastWord = $matches[2]
 	}
 
-	### Get results, sort and prefix
-	.{
+	### Expand
+	$sort = $true
+	$expanded = .{
 		### Members of variables, expressions or static objects
 		if ($lastWord -match '(^.*?)(\$[\w\.]+|.+\)|\[[\w\.]+\]::\w+)\.(\w*)$') {
 			$method = [Management.Automation.PSMemberTypes]'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
 			$pref = $matches[1]
 			$expr = $matches[2]
-			$pat = $matches[3] + '*'
+			$patt = $matches[3] + '*'
 			if ($expr.EndsWith(')')) {
 				if ($line -notmatch '\(([^\(\)]+)\)\.\w*$') {
 					return
@@ -37,7 +39,7 @@ function global:TabExpansion
 			else {
 				$val = Invoke-Expression $expr
 			}
-			foreach($m in Get-Member -InputObject $val $pat -View 'extended', 'adapted', 'base') {
+			foreach($m in Get-Member -InputObject $val $patt -View 'extended', 'adapted', 'base') {
 				if ($m.MemberType -band $method) {
 					# method
 					$pref + $expr + '.' + $m.name + '('
@@ -62,7 +64,7 @@ function global:TabExpansion
 
 		### Parameter expansion
 		elseif ($lastWord -match '^-([\*\?\w]*)') {
-			$pat = $matches[1] + '*'
+			$patt = $matches[1] + '*'
 
 			function ParseCommand($line)
 			{
@@ -119,13 +121,13 @@ function global:TabExpansion
 
 				# process parameters and emit matching
 				if ($cmd.Parameters.Keys.Count) {
-					foreach($_ in $cmd.Parameters.Keys -like $pat) {
+					foreach($_ in $cmd.Parameters.Keys -like $patt) {
 						'-' + $_
 					}
 				}
 				# script parameter, see GetScriptParameter remarks
 				elseif ($cmd.CommandType -eq 'ExternalScript') {
-					foreach($_ in GetScriptParameter -Path $cmd.Definition -Pattern $pat) {
+					foreach($_ in GetScriptParameter -Path $cmd.Definition -Pattern $patt) {
 						 '-' + $_
 					}
 				}
@@ -155,11 +157,11 @@ function global:TabExpansion
 			# e.g. alias, env, function, variable etc.
 			$type = $matches[2]
 			# e.g. '$' + 'alias'
-			$prefix = $matches[1] + $type
+			$pref = $matches[1] + $type
 			# e.g. in $alias:x, $name is x
 			$name = $matches[3]
 			foreach($_ in Get-ChildItem "$($type):$name*") {
-				$prefix + ":" + $_.Name
+				$pref + ":" + $_.Name
 			}
 		}
 
@@ -206,35 +208,42 @@ function global:TabExpansion
 			) -like "$lastWord*"
 		}
 
-		### Module names
+		### Module names for *-Module
 		elseif ($line -match '\b(Import-Module|ipmo|Remove-Module|rmo)(?:\s+-Name)?\s+[*\w]+$') {
 			foreach($_ in Get-Module "$lastWord*" -ListAvailable:($matches[1] -eq 'Import-Module' -or $matches[1] -eq 'ipmo')) {
 				$_.Name
 			}
 		}
 
-		### Types and namespaces 2
-		elseif ($line -match '\b(New-Object)(?:\s+-TypeName)?\s+[*.\w]+$') {
+		### Containers only for Set-Location
+		elseif ($line -match '\b(?:Set-Location|cd|chdir|sl)\s+[*\w]+$') {
+			foreach($_ in Get-ChildItem "$lastWord*" -Force -ErrorAction 0) {
+				if ($_.PSIsContainer) {
+					$_.Name -replace '([ $\[\]])', '`$1'
+				}
+			}
+		}
+
+		### Types and namespaces 2 for New-Object
+		elseif ($line -match '\bNew-Object(?:\s+-TypeName)?\s+[*.\w]+$') {
 			GetTypeOrNamespace $lastWord
 		}
 
 		### History: ... #<pattern>
-		elseif ($line -match '(^|\s)#(\S*)$') {
-			$pat = "*$($matches[1])*"
-			foreach($_ in Get-History -Count 32767) {
-				$_ = $_.ToString()
-				if ($_ -like $pat) {
-					$_
-				}
+		elseif ($line -match '(?:^|\s)#(\S*)$') {
+			$sort = $false
+			$cmds = @(Get-History -Count 32767) -like "*$($matches[1])*"
+			for($$ = $cmds.Count - 1; $$ -ge 0; --$$) {
+				$cmds[$$]
 			}
 		}
 
 		### Commands, aliases, paths and some WMI classes
 		else {
-			$pattern = "$lastWord*"
+			$patt = "$lastWord*"
 
 			### Commands
-			foreach($_ in Get-Command $pattern -CommandType 'Cmdlet,Function,ExternalScript') {
+			foreach($_ in Get-Command $patt -CommandType 'Cmdlet,Function,ExternalScript') {
 				$_.Name
 			}
 
@@ -245,18 +254,24 @@ function global:TabExpansion
 			}
 
 			### Paths
-			Get-ChildItem . -Include $pattern -Force -Name -ErrorAction 0
+			Get-ChildItem . -Include $patt -Force -Name -ErrorAction 0
 
 			### WMI
 			if ($lastWord -like 'Win32*') {
-				foreach($_ in Get-WmiObject $pattern -List) {
+				foreach($_ in Get-WmiObject $patt -List) {
 					$_.__Class
 				}
 			}
 		}
-	} |
-	Sort-Object -Unique |
-	.{process{ $prefWord + $_ }}
+	}
+
+	### Complete
+	if ($sort) {
+		$expanded | Sort-Object -Unique | .{process{ $prefWord + $_ }}
+	}
+	else {
+		$expanded | .{process{ $prefWord + $_ }}
+	}
 }
 
 function global:GetTypeOrNamespace($match, [string]$prefix)

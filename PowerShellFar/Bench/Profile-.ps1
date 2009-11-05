@@ -86,7 +86,7 @@ $Psf.Providers = @{
 			'Name'
 			'Value'
 			'Description'
-			@{ Expression = 'Options'; Width = '10%' }
+			@{ Expression = 'Options'; Width = '10' }
 		)
 	}
 

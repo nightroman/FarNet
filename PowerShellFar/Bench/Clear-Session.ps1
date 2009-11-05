@@ -31,8 +31,6 @@ param
 	$Verbose
 )
 
-Set-StrictMode -Version 2
-
 &{
 	if ($Verbose) { $VerbosePreference = 'Continue' }
 

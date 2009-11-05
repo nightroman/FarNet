@@ -277,7 +277,7 @@ namespace PowerShellFar
 							// don't lose not empty line!
 							if (Editor.CurrentLine.Length > 0)
 								return;
-							History.Cache = History.GetLines();
+							History.Cache = History.GetLines(0);
 							History.CacheIndex = History.Cache.Length;
 						}
 						else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)

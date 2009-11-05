@@ -261,7 +261,10 @@ namespace PowerShellFar
 		/// Shows this panel as a child of a parent panel.
 		/// It sets parent/child relation and calls <see cref="Show()"/>.
 		/// </summary>
-		/// <param name="parent">Parent panel (must be shown at this moment). null means the active panel.</param>
+		/// <param name="parent">
+		/// Parent panel (must be shown at this moment).
+		/// Null tells to use the active PSF panel, if any.
+		/// </param>
 		/// <remarks>
 		/// When this panel is shown as a child of its parent panel, the parent
 		/// panel is not closed and normally it is shown again later when the
@@ -272,11 +275,16 @@ namespace PowerShellFar
 			// resolve 'null' parent
 			if (parent == null)
 			{
+				// use the active as parent
 				parent = GetPanel(true);
+
+				// 091103 Do not try to use the passive panel and do not throw, why? Show as normal.
 				if (parent == null)
-					parent = GetPanel(false);
-				if (parent == null)
-					throw new ArgumentException("Argument 'parent' is null and there is no panel to use as parent.");
+				{
+					// go
+					Show();
+					return;
+				}
 			}
 
 			// sanity
@@ -300,9 +308,10 @@ namespace PowerShellFar
 			_Parent = parent;
 			_Parent._Child = this;
 
+			// begin
 			_Parent.SaveState();
 
-			//! call this virtual
+			// go
 			Show();
 		}
 
