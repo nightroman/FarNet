@@ -611,22 +611,6 @@ Continue with this current directory?
 		}
 
 		/// <summary>
-		/// Wraps any EventHandler. (Workaround for Find mode).
-		/// </summary>
-		public EventHandler WrapEventHandler(EventHandler<EventArgs> that)
-		{
-			return (new EventWrapper<EventArgs>(that)).Invoke;
-		}
-
-		/// <summary>
-		/// Wraps EventHandler[PanelEventArgs]. (Workaround for Find mode).
-		/// </summary>
-		public EventHandler<PanelEventArgs> WrapPanelEvent(EventHandler<PanelEventArgs> that)
-		{
-			return (new EventWrapper<PanelEventArgs>(that)).Invoke;
-		}
-
-		/// <summary>
 		/// Shows the configuration dialog.
 		/// Called on selection of the plugin config item.
 		/// </summary>

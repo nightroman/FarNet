@@ -1072,12 +1072,9 @@ namespace FarNet
 		/// Raised to get a plugin <see cref="Info"/> data. Use it only when it is absolutely needed.
 		/// </summary>
 		/// <remarks>
-		/// <c>PowerShell</c> handlers should be added via <c>$Psf.WrapEventHandler()</c> (workaround for Find mode).
-		/// <para>
 		/// Normally you don't really have to use this event and it is not recommended to use it for many reasons:
 		/// it is called frequently and it is expensive due to internal technical details; it may have issues if
-		/// the panel data are accessed during this call, even for reading only. 
-		/// </para>
+		/// the panel data are accessed during this call, even for reading only.
 		/// <para>
 		/// The only reasonable case to use this event is when <see cref="Info"/> depends on some external data
 		/// that may be changed externally, that is not from this panel event handlers.
@@ -1086,10 +1083,9 @@ namespace FarNet
 		event EventHandler GettingInfo;
 		/// <summary>
 		/// Raised to prepare <see cref="Files"/> list in the current directory of the file system emulated by the plugin.
-		/// Note: if your file set is constant you may fill it once on the panel creation and not use this event at all.
 		/// </summary>
 		/// <remarks>
-		/// <c>PowerShell</c> handlers should be added via <c>$Psf.WrapPanelEvent()</c> (workaround for Find mode).
+		/// If the file set is constant and may be filled once on the panel creation then this event is not needed.
 		/// </remarks>
 		event EventHandler<PanelEventArgs> GettingData;
 		/// <summary>

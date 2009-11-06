@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.12 =
+
+*) Removed workaround $Psf.WrapEventHandler() and $Psf.WrapPanelEvent(). If
+some problems still exist now (in PS V2) without them, please, report.
+
 = 2.2.11 =
 
 *) History:
