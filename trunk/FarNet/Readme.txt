@@ -1,8 +1,8 @@
 
 Plugin   : FarNet
 Category : Development
-Version  : 4.2.11
-Release  : 2009.11.05
+Version  : 4.2.12
+Release  : 2009.11.06
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, C++/CLI
@@ -22,7 +22,7 @@ Home page: http://code.google.com/p/farnet/
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1200
+ - Far Manager 2.0.1201
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
@@ -32,6 +32,7 @@ Home page: http://code.google.com/p/farnet/
 
 
 	= INSTALLATION =
+
 
 Copy to %FARHOME%:
 - Far.exe.config
@@ -45,19 +46,26 @@ Copy to %FARHOME%:
 This is the default installation (recommended). You can move Lib or\and
 Plugins.NET, in this case you have to update Far.exe.config accordingly.
 
+IMPORTANT: Far.exe.config cannot be moved or renamed. If this file is missed in
+%FARHOME% or configured incorrectly then Far Manager fails to load FarNet and
+shows only basic error message.
+
 
 	= STRUCTURE =
 
 
-Plugins\FarNet\
-- FarNetMan.dll - Far plugin, manager of FarNet .NET plugins
-- FarNetMan.hlf - FarNet help
+.\
+Far.exe.config - configuration file
 
-Lib\
-- FarNet.dll - FarNet interfaces
-- FarNet.xml - XML documentation
+.\Lib\
+FarNet.dll - FarNet interfaces
+FarNet.xml - XML documentation
 
-Plugins.NET\
+.\Plugins\FarNet\
+FarNetMan.dll - Far plugin, manager of FarNet plugins
+FarNetMan.hlf - FarNet help
+
+.\Plugins.NET\
 Each plugin folder contains one or more assemblies (.dll) and at most one
 optional configuration file (.cfg). Each line of .cfg file is:
 	<Assembly> <Class1> <Class2> ... <ClassN>

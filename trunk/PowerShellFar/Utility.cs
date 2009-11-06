@@ -170,30 +170,6 @@ namespace PowerShellFar
 			Name = "PowerShellFar";
 	}
 
-	/// <summary>
-	/// Wrapper of script event handlers (workaround for Find mode)
-	/// </summary>
-	class EventWrapper<TEventArgs> where TEventArgs : EventArgs
-	{
-		readonly EventHandler<TEventArgs> _that;
-
-		/// <summary>
-		/// Wraps a handler.
-		/// </summary>
-		public EventWrapper(EventHandler<TEventArgs> that)
-		{
-			_that = that;
-		}
-
-		/// <summary>
-		/// Invokes wrapped handler.
-		/// </summary>
-		public void Invoke(object sender, EventArgs e)
-		{
-			A.Psf.InvokeCode("$args[0].Invoke($args[1], $args[2])", _that, sender, e);
-		}
-	}
-
 	class PowerPath
 	{
 		readonly PathInfo _p;
