@@ -315,11 +315,11 @@ $panel.add_Idled({&{
 }})
 
 ### GettingData: reads found (with wrapper - workaround Find mode)
-$panel.add_GettingData($Psf.WrapPanelEvent({&{
+$panel.add_GettingData({&{
 	foreach($e in $this.Data.Output.ReadAll()) {
 		$this.Files.Add($e)
 	}
-}}))
+}})
 
 ### KeyPressed: handles keys
 $panel.add_KeyPressed({&{
