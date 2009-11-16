@@ -88,6 +88,21 @@ namespace PowerShellFar
 				itemPath, propertyName, value);
 		}
 
+
+		/// <summary>
+		/// Tries to get a property value.
+		/// </summary>
+		public static bool TryGetPropertyValue<T>(PSObject target, string name, out T value)
+		{
+			value = default(T);
+
+			PSPropertyInfo pi = target.Properties[name];
+			if (pi == null)
+				return false;
+
+			return LanguagePrimitives.TryConvertTo<T>(pi.Value, out value);
+		}
+
 		// Sets location (with workaround)
 		public static void SetLocation(string path)
 		{

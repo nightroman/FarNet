@@ -67,33 +67,29 @@ String^ Log::FormatException(Exception^ e)
 {
 	//?? _090901_055134 Regex is used to fix bad PS V1 strings; check V2
 	Regex re("[\r\n]+");
-	String^ info = re.Replace(e->Message, "\r\n") + "\r\n";
+	String^ info = e->GetType()->Name + ":\r\n" + re.Replace(e->Message, "\r\n") + "\r\n";
 
-	// search for an error record recursively
-	Object^ errorRecord = nullptr;
-	for(Exception^ ex = e; ex != nullptr; ex = ex->InnerException)
+	// get an error record
+	if (e->GetType()->FullName->StartsWith("System.Management.Automation."))
 	{
-		if (ex->GetType()->FullName->StartsWith("System.Management.Automation."))
+		Object^ errorRecord = Property(e, "ErrorRecord");
+		if (errorRecord)
 		{
-			errorRecord = Property(ex, "ErrorRecord");
-			break;
+			// process the error record
+			Object^ ii = Property(errorRecord, "InvocationInfo");
+			if (ii != nullptr)
+			{
+				Object^ pm = Property(ii, "PositionMessage");
+				if (pm != nullptr)
+					//?? 090517 Added Trim(), because a position message starts with an empty line
+					info += re.Replace(pm->ToString()->Trim(), "\r\n") + "\r\n";
+			}
 		}
 	}
 
-	// enough?
-	if (!errorRecord)
-		return info;
-
-	// process the error record
-	Object^ ii = Property(errorRecord, "InvocationInfo");
-	if (ii != nullptr)
-	{
-		Object^ pm = Property(ii, "PositionMessage");
-		if (pm != nullptr)
-			//?? 090517 Added Trim(), because a position message starts with an empty line
-			info += re.Replace(pm->ToString()->Trim(), "\r\n") + "\r\n";
-	}
-
+	if (e->InnerException)
+		info += "\r\n" + FormatException(e->InnerException);
+	
 	return info;
 }
 

@@ -3,8 +3,31 @@ http://code.google.com/p/farnet/
 
 = 2.2.12 =
 
-*) Removed workaround $Psf.WrapEventHandler() and $Psf.WrapPanelEvent(). If
-some problems still exist now (in PS V2) without them, please, report.
+*) Extra error message on exceptions in the plugin user startup code (see
+configuration dialog). Otherwise it was not clear enough where an error was.
+Note: it is GUI, because initialization is performed in a background thread.
+
+*) ObjectPanel (and derived) supports Edit operation [F4] for MatchInfo items:
+an editor is opened at a match position and matched text is selected. What are
+these MatchInfo items? They are results of Select-String, so that you can do:
+>: dir | Select-String foo | Out-FarPanel
+or even slightly better:
+>: dir | Select-String foo | Out-FarPanel FileName, LineNumber, Line
+and [F4] on items opens an editor at the found match with its text selected.
+
+*) Removed event 'Exiting' from $Psf. In PS V2 there is a native way:
+>: Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { ... }
+This way works for any workspace where Register-EngineEvent is called, so that
+it can be used by background jobs (PSF and PS), async consoles (local and
+remote), and etc.
+
+*) Removed workaround $Psf.WrapEventHandler() and $Psf.WrapPanelEvent(). You
+should remove them from your panel scripts. If some problems still exist now
+(in PS V2) without them, please, report.
+
+*) PowerShell.hrc, Clear-Session.ps1: added yet missed automatic variables.
+
+*) Revised .hlf help, corrected obsolete information, added some new.
 
 = 2.2.11 =
 

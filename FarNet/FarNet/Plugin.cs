@@ -5,6 +5,7 @@ Copyright (c) 2005-2009 FarNet Team
 
 using System;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Security.Permissions;
 
 namespace FarNet
@@ -320,6 +321,30 @@ namespace FarNet
 			get { return string.Empty; }
 			set { }
 		}
+	}
+
+	/// <summary>
+	/// Base class for plugin exceptions.
+	/// </summary>
+	/// <remarks>
+	/// If a plugin throws exceptions then for better diagnostics it is recommended to use this or derived exceptions
+	/// in order to be able to distinguish between system, plugin, and even particular plugin exceptions.
+	/// <para>
+	/// Best practice: catch an exception, wrap it by a new plugin exception with better explanation of a problem and throw the new one.
+	/// Wrapped inner exception is not lost: its message and stack are shown, for example by <see cref="IFar.ShowError"/>.
+	/// </para>
+	/// </remarks>
+	[Serializable]
+	public class PluginException : Exception
+	{
+		///
+		public PluginException() { }
+		///
+		public PluginException(string message) : base(message) { }
+		///
+		public PluginException(string message, Exception innerException) : base(message, innerException) { }
+		///
+		protected PluginException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 
 }

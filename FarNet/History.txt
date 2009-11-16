@@ -1,5 +1,15 @@
 http://code.google.com/p/farnet/
 
+= 4.2.12 =
+
+*) Improved view of error messages and stack information shown on exceptions
+when you press buttons [View info] and [Copy info] in exception dialogs.
+
+*) Added class PluginException. If a plugin throws exceptions then for better
+diagnostics it is recommended to use this or derived from this exceptions.
+
+*) Minor internal tweaks.
+
 = 4.2.11 =
 
 *** Requires Far 2.0.1200+ ***

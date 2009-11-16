@@ -3,9 +3,9 @@ PowerShellFar plugin for Far Manager
 Copyright (C) 2006-2009 Roman Kuzmin
 */
 
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Management.Automation;
+using FarNet;
 
 namespace PowerShellFar.Commands
 {
@@ -22,8 +22,12 @@ namespace PowerShellFar.Commands
 		ObjectPanel _panel;
 
 		/// <summary>
-		/// See <see cref="TablePanel.Columns"/>.
+		/// Custom columns (names or special hashtables).
 		/// </summary>
+		/// <remarks>
+		/// Use property names to specify columns or hashtables to describe columns in details,
+		/// see <see cref="Meta"/> about hashtables and <see cref="PanelModeInfo.Columns"/> about column types.
+		/// </remarks>
 		[Parameter(HelpMessage = "Sets Columns property.", Position = 0)]
 		public object[] Columns { get; set; }
 

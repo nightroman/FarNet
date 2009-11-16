@@ -336,7 +336,12 @@ namespace FarNet
 		/// <remarks>
 		/// For safety sake: avoiding unexpected results on exceptions during a running
 		/// macro this method stops a macro before showing an error dialog. That is why
-		/// it should be called only in exceptional situations.
+		/// this method should be called only in exceptional situations.
+		/// <para>
+		/// Basically it is called internally on all exceptions not handled by plugins
+		/// but it is as well designed for direct calls by plugins.
+		/// </para>
+		/// <seealso cref="PluginException"/>
 		/// </remarks>
 		void ShowError(string title, Exception exception);
 		/// <summary>
