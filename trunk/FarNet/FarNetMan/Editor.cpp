@@ -913,7 +913,8 @@ void Editor::Sync()
 	{
 		if (_output->Length)
 		{
-			GoEnd(false); //$RVK performance?
+			GoEnd(false);
+
 			EditorControl_ECTL_INSERTTEXT(_output->ToString(), -1);
 
 			Redraw();

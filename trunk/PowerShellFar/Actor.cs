@@ -18,13 +18,25 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// PowerShellFar tools exposed by the global variable <b>$Psf</b>.
+	/// PowerShellFar tools exposed by the global variable <c>$Psf</c>.
 	/// </summary>
 	/// <remarks>
 	/// Global PowerShell variables:
-	/// <b>$Far</b> is an instance of <see cref="IFar"/>, it exposes FarNet tools.
-	/// <b>$Psf</b> is the only instance of this class, it exposes PowerShellFar tools.
+	/// <c>$Far</c> is an instance of <see cref="IFar"/>, it exposes FarNet tools.
+	/// <c>$Psf</c> is the only instance of this class, it exposes PowerShellFar tools.
+	/// <para>
+	/// There is no 'Exiting' event because in PS V2 there is a native way using <c>Register-EngineEvent</c>, see examples.
+	/// Do not use native Far UI in such a handler, it may not work on exiting. GUI dialogs still can be used.
+	/// This way works for any workspace where <c>Register-EngineEvent</c> is called, so that
+	/// it can be used by background jobs (PSF and PS), async consoles (local and remote), and etc.
+	/// </para>
 	/// </remarks>
+	/// <example>
+	/// <code>
+	/// # Do some job on exiting
+	/// Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { $Far.Msg('See you', 'Exit', 'Gui') }
+	/// </code>
+	/// </example>
 	public sealed class Actor
 	{
 		// protector
@@ -62,10 +74,6 @@ namespace PowerShellFar
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal void Disconnect()
 		{
-			// event
-			if (Exiting != null)
-				Exiting.Invoke(null, null);
-
 			// editor events
 			A.Far.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
 			A.Far.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
@@ -196,11 +204,34 @@ namespace PowerShellFar
 				// invoke internal profile (NB: there is trap in there) and startup code
 				using (Pipeline p = Runspace.CreatePipeline())
 				{
-					string code = Resource.PowerShellFar;
-					if (!string.IsNullOrEmpty(_settings.PluginStartupCode))
-						code += "\r\n" + _settings.PluginStartupCode;
-					p.Commands.AddScript(code);
+					p.Commands.AddScript(Resource.PowerShellFar);
 					p.Invoke();
+				}
+
+				// invoke user startup code, separately for better diagnostics
+				if (!string.IsNullOrEmpty(_settings.PluginStartupCode))
+				{
+					try
+					{
+						using (Pipeline p = Runspace.CreatePipeline())
+						{
+							p.Commands.AddScript(_settings.PluginStartupCode);
+							p.Invoke();
+						}
+					}
+					catch (RuntimeException ex)
+					{
+						string msg = Kit.Format(@"
+Plugin startup code failed.
+
+Code (see configuration):
+{0}
+
+Reason (see also $Error):
+{1}
+", _settings.PluginStartupCode, ex.Message);
+						A.Far.Msg(msg, Res.Name, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
+					}
 				}
 			}
 			finally
@@ -230,7 +261,7 @@ namespace PowerShellFar
 			{
 				//! emergency
 				Entry.Unregister();
-				throw new RuntimeException("PowerShell engine is not initialized due to fatal reasons and will be unloaded.", _errorFatal);
+				throw new PluginException("PowerShell engine is not initialized due to fatal reasons and will be unloaded.", _errorFatal);
 			}
 
 			// complete opening
@@ -497,6 +528,7 @@ Continue with this current directory?
 			IEditor editor = A.Far.Editor;
 			if (editor == null)
 				throw new InvalidOperationException(Res.NeedsEditor);
+			
 			return editor;
 		}
 
@@ -651,7 +683,6 @@ Continue with this current directory?
 		/// </summary>
 		public void ShowPanel()
 		{
-			Invoking(); //$RVK need?
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
@@ -801,10 +832,7 @@ Continue with this current directory?
 			History.Cache = null;
 
 			// push writer
-			if (writer == null)
-				FarUI.PushWriter(new StringOutputWriter());
-			else
-				FarUI.PushWriter(writer);
+			FarUI.PushWriter(writer ?? new StringOutputWriter());
 
 			// install timer
 			Timer timer = new Timer(OnTimer, null, 3000, 1000);
@@ -942,7 +970,7 @@ Continue with this current directory?
 		/// </summary>
 		/// <remarks>
 		/// This is a helper method to invoke a step sequence. Step sequence is usually kept in a step unit script.
-		/// It is recommended to use some naming convension to distinguish these scripts from the others.
+		/// It is recommended to use some naming convension to distinguish between these scripts and the others.
 		/// <para>
 		/// For example, assume that step unit scripts are named as "*+.ps1". Then we can create Far Manager association:
 		/// </para>
@@ -1011,28 +1039,6 @@ Continue with this current directory?
 			UI.DebuggerDialog ui = new UI.DebuggerDialog(e);
 			e.ResumeAction = ui.Show();
 		}
-
-		/// <summary>
-		/// Invoked when the plugin is exiting.
-		/// </summary>
-		/// <remarks>
-		/// It is invoked when the plugin is being disconnected, normally when Far is exiting.
-		/// You should not call Far from handlers because it may not work. Pure PowerShell should
-		/// work fine, but you will see no output or errors, you should design this code properly.
-		/// <para>
-		/// You can add several handlers, they will be invoked in the order they are added.
-		/// Note that handlers may not be called if Far is terminated abnormally.
-		/// </para>
-		/// </remarks>
-		/// <example>
-		/// <code>
-		/// # write some log on exit
-		/// $Psf.add_Exiting({
-		///     "Exit time $(Get-Date)" >> c:\Far.log
-		/// })
-		/// </code>
-		/// </example>
-		public event EventHandler Exiting;
 
 		/// <summary>
 		/// Gets currently running stepper instance if any or null.

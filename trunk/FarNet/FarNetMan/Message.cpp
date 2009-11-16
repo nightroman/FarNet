@@ -59,15 +59,6 @@ CStr* Message::CreateBlock(int& outNbItems)
 	return r;
 }
 
-static bool ConfigBool(String^ key) //$RVK share
-{
-	bool r = false;
-	Object^ value = ConfigurationManager::AppSettings[key];
-	if (value)
-		Boolean::TryParse(value->ToString(), r);
-	return r;
-}
-
 int Message::Show(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
 {
 	// GUI on macro
@@ -84,7 +75,7 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 		if (buttons || helpTopic)
 			throw gcnew ArgumentException("Custom buttons and help topic are not supported for GUI message boxes."); //$RVK
 
-		if (!ConfigBool("FarNet.DisableGui"))
+		if (!Config::GetBool("FarNet.DisableGui"))
 			return ShowGui(body, header, options);
 	}
 
@@ -203,7 +194,7 @@ int Message::ShowGui(String^ body, String^ header, MsgOptions options)
 	PIN_ES(pinText, body);
 	PIN_ES(pinCaption, header);
 
-	UINT type = MB_SYSTEMMODAL; //$RVK
+	UINT type = MB_SYSTEMMODAL;
 
 	// buttons
 	switch(UINT(options) & 0xFFFF0000)

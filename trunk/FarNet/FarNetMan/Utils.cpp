@@ -423,6 +423,18 @@ bool EqualsOrdinal(String^ strA, String^ strB)
 	return StringComparer::OrdinalIgnoreCase->Equals(strA, strB);
 }
 
+namespace FarNet
+{;
+bool Config::GetBool(String^ key)
+{
+	bool r = false;
+	Object^ value = ConfigurationManager::AppSettings[key];
+	if (value)
+		Boolean::TryParse(value->ToString(), r);
+	return r;
+}
+}
+
 #ifdef TRACE_MEMORY
 #define TRACE_MEMORY_BREAK
 #include <Test1.cpp>

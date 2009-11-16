@@ -70,12 +70,12 @@ $Far.KeyMacro.Install(@(
 
 	### Shell only
 
-	### Easy prefix: expands empty command line to '>: '
-	@{ Area = 'Shell'; Name = ']'; Sequence = "> : Space"; CommandLine = '0'; Description = 'PSF: Easy prefix' }
+	### Easy prefix: space expands empty command line to '>: '
+	@{ Area = 'Shell'; Name = 'Space'; Sequence = "> : Space"; CommandLine = '0'; Description = 'PSF: Easy prefix' }
 	$null
 
 	### Easy invoke: type and run without prefix (Invoke selected code)
-	@{ Area = 'Shell'; Name = 'ShiftBS'; Sequence = "F11 $P 2"; CommandLine = '1'; Description = 'PSF: Easy invoke' }
+	@{ Area = 'Shell'; Name = 'ShiftSpace'; Sequence = "F11 $P 2"; CommandLine = '1'; Description = 'PSF: Easy invoke' }
 	$null
 
 	### Other Shell macros

@@ -512,7 +512,7 @@ namespace PowerShellFar
 				// See Mantis 1114: why it was needed. Now FarNet panels restore original state.
 
 				// ask parents
-				if (all) //$RVK
+				if (all)
 				{
 					for (AnyPanel parent = _Parent; parent != null; parent = parent._Parent)
 						if (!parent.CanClose())
@@ -935,7 +935,7 @@ $_.Description
 		/// </summary>
 		internal virtual void OnClosed()
 		{
-			//$RVK notify the parents
+			// notify the parents
 			if (_Parent != null)
 				_Parent.OnClosed();
 		}

@@ -11,7 +11,7 @@ Copyright (c) 2005-2009 FarNet Team
 namespace FarNet
 {;
 // current: do provide the current name!
-void ShelveInfo::InitSelected(Panel1^ panel, String^ current) //$RVK tweak
+void ShelveInfo::InitSelected(Panel1^ panel, String^ current)
 {
 	// get selected
 	IList<FarFile^>^ files = panel->SelectedList;
@@ -75,14 +75,18 @@ ShelveInfoPanel^ ShelveInfoPanel::CreateActiveInfo(bool modes)
 	return gcnew ShelveInfoPanel((Panel1^)panel, modes);
 }
 
+// NOW: works only for the active panel.
 void ShelveInfoPanel::Unshelve()
 {
 	if (Path)
 	{
 		PIN_NE(pin, Path);
-		if (!Info.Control(PANEL_ACTIVE, FCTL_SETPANELDIR, 0, (LONG_PTR)pin)) //$RVK What if we unshelve on the passive?
+		if (!Info.Control(PANEL_ACTIVE, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
 			throw gcnew OperationCanceledException("Cannot set panel directory: " + Path);
 	}
+
+	if (!Current && !Selected && !_modes)
+		return;
 
 	PanelInfo pi;
 	GetPanelInfo(PANEL_ACTIVE, pi);

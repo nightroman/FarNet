@@ -133,7 +133,7 @@ namespace PowerShellFar
 		/// </summary>
 		public override void NotifyBeginApplication()
 		{
-			//$RVK 2.2.10 Do not need this. ??
+			// PSF 2.2.10 Do not need this.
 		}
 
 		/// <summary>
@@ -142,7 +142,7 @@ namespace PowerShellFar
 		/// </summary>
 		public override void NotifyEndApplication()
 		{
-			//$RVK 2.2.10 Do not need this. ??
+			// PSF 2.2.10 Do not need this.
 		}
 
 		/// <summary>

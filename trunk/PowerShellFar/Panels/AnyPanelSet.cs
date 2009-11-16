@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Text.RegularExpressions;
 using FarNet;
 
 namespace PowerShellFar
@@ -124,6 +125,10 @@ namespace PowerShellFar
 		/// </remarks>
 		internal virtual void EditFile(FarFile file, bool alternative)
 		{
+			// no data, no job
+			if (file.Data == null)
+				return;
+
 			// get file and open in internal\external editor
 			FileInfo fi = Convert<FileInfo>.From(file.Data);
 			if (fi != null)
@@ -132,6 +137,40 @@ namespace PowerShellFar
 					Process.Start("Notepad", fi.FullName);
 				else
 					A.CreateEditor(fi.FullName).Open(OpenMode.None);
+				return;
+			}
+
+			// source info
+			PSObject data = PSObject.AsPSObject(file.Data);
+			if (data.BaseObject.GetType().Name == "MatchInfo")
+			{
+				string path;
+				if (!A.TryGetPropertyValue(data, "Path", out path))
+					return;
+				int lineNumber;
+				if (!A.TryGetPropertyValue(data, "LineNumber", out lineNumber))
+					return;
+				Match[] matches;
+				if (!A.TryGetPropertyValue(data, "Matches", out matches) || matches.Length == 0)
+					return;
+
+				IEditor editor = A.Far.CreateEditor();
+				editor.DisableHistory = true;
+				editor.FileName = path;
+				TextFrame frame = new TextFrame();
+				frame.Line = lineNumber - 1;
+				editor.Frame = frame;
+				editor.Open();
+				frame.TopLine = frame.Line - Console.WindowHeight / 3;
+				editor.Frame = frame;
+				ILine line = editor.CurrentLine; // can be null if a file is already opened
+				if (line != null)
+				{
+					int end = matches[0].Index + matches[0].Length;
+					line.Pos = end;
+					line.Select(matches[0].Index, end);
+					editor.Redraw();
+				}
 			}
 		}
 
