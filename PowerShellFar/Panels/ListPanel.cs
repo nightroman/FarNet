@@ -140,5 +140,11 @@ namespace PowerShellFar
 
 			return true;
 		}
+
+		internal override void ShowHelp()
+		{
+			A.Far.ShowHelp(A.Psf.AppHome, "ListPanel", HelpOptions.Path);
+		}
+
 	}
 }

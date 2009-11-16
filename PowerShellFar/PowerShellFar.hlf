@@ -61,7 +61,7 @@ scripts for various popular Far Manager tasks and PowerShell.hrc for
 Colorer-take5.beta5 providing rich PowerShell syntax highlighting.
 
 The latest versions of PowerShellFar, FarNet and documentation can be
-downloaded from: ~http://code.google.com/p/farnet/~
+downloaded from: ~http://code.google.com/p/farnet/~@http://code.google.com/p/farnet/@
 
 
 #Author#
@@ -70,9 +70,6 @@ downloaded from: ~http://code.google.com/p/farnet/~
  ~nightroman@@gmail.com~@mailto:nightroman@@gmail.com@
  ~http://nightroman.spaces.live.com~@http://nightroman.spaces.live.com@
 
-* Many thanks to Max Belugin for the plugin Far.NET 3.2 and cooperation in
-further development of it.
-
 
 @Requirements
 $#Requirements#
@@ -80,7 +77,7 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1201
+ - Far Manager 2.0.1204
  - Plugin FarNet 4.2.12
  - Windows PowerShell 2.0
 
@@ -135,8 +132,9 @@ so that actually you have to type '>:' and '>>:' before each command. Examples:
  >>: MyJob.ps1
  >>: Remove-Item C:\TEMP\LargeFolder -Recurse -Force
 
-For "Easy prefix" and "Easy invoke" macros see ~FAQ~@FAQ@.
-Some more examples: ~PowerShellFar command examples~@Examples@.
+#Accelerators#
+
+You can reduce typing by "Easy prefix" and "Easy invoke" macros, see ~FAQ~@FAQ@.
 
 #Command history#
 
@@ -147,7 +145,7 @@ associations, so that they do not pollute the history.
 
 
 @MenuCommands
-$#Menu Commands#
+$#Menu commands#
 ~Contents~@Contents@
 
 #Invoke input code...#
@@ -177,21 +175,21 @@ Shows the command history menu. See ~Command history menu~@MenuCH@.
 
 #Editor console#
 
-Opens new or existing .psfconsole file in editor. Files are stored in
-%TEMP%\psfconsole directory. You can open several editor consoles.
+Opens new or existing .psfconsole file. Files are stored in
+%APPDATA%\PowerShellFar\psfconsole directory. You can open several editor
+consoles.
 See ~Editor console~@EditorConsole@.
 
 #Power panel#
 
-Shows a menu which allows to open a panel for any .NET objects or a provider
-panel at the selected drive or the current location (<Esc>).
+Shows a menu with a list of panels available for opening.
 See ~Power panel menu~@MenuPanels@ and ~Power panel~@PowerPanel@.
 
 #TabExpansion#
 
 It calls TabExpansion for the text in the editor, the command line or any edit
-control in any dialog. Default weak TabExpansion is replaced with the powerful
-one from ~TabExpansion.ps1~@TabExpansion@.
+control in any dialog. Default TabExpansion is replaced with advanced
+~TabExpansion.ps1~@TabExpansion@.
 
 #Modules+#
 
@@ -224,28 +222,20 @@ Shows the background jobs information. Job state:
 
 Other information: output data size and a job name or its command text (shortened).
 
+
 #KEYS AND ACTIONS#
 
-#Enter#
+[#Enter#] If there are output data closes the menu and opens a viewer for the
+output.
 
-If there are output data closes the menu and opens a viewer for the output.
+[#F3#] The same but you will return to the job menu when you close a viewer.
 
-#F3#
+[#F5#] Refreshes job data shown by this menu.
 
-The same but you will return to the job menu when you close a viewer.
+[#Del#] For a running job: stops it. For a not running job: removes it from the
+list, discards its output, errors, and deletes temp files, if any.
 
-#F5#
-
-Refreshes job data shown by this menu.
-
-#Del#
-
-For a running job: stops it. For a not running job: removes it from the list,
-discards its output, errors, and deletes temp files, if any.
-
-#ShiftDel#
-
-Invokes [Del] action for each job in the list.
+[#ShiftDel#] Invokes [Del] action for each job in the list.
 
 
 @MenuCH
@@ -255,77 +245,56 @@ $#Command history menu#
 Shows PowerShell command history. Behaviour and actions may depend on where the
 menu has started.
 
+
 #KEYS AND ACTIONS#
 
-#Enter#
+[#Enter#] Invokes the command immediately as it is. Note that history contains
+commands from all areas and the current area may be not suitable. For example
+commands that open panels normally should not be called from a dialog, editor
+or viewer.
 
-Invokes the command immediately as it is. Note that history contains commands
-from all areas and the current area may be not suitable for the selected code.
-For example commands that open panels normally should not be called from the
-dialog, editor or viewer.
+[#CtrlEnter#] Allows to edit the command before invocation. In panels: inserts
+the command text into the command line with automatically added prefix; in
+editor consoles: inserts the command text into the editor; otherwise: opens the
+"Invoke input code" dialog with the command text inserted there.
 
-#CtrlEnter#
+[#CtrlC#] Copies the command text to the clipboard.
 
-Allows to edit the command before invocation. In panels it inserts the command
-text into the command line with automatically added prefix; in editor console
-inserts the command text at the current position; otherwise opens the "Invoke
-input code" dialog with the command text inserted there.
+[#CtrlR#], [#Del#] Removes old and duplicated commands from the history.
 
-#CtrlC#
+[#CtrlDown#] Opens the permanent filter input box. Filter patterns: <regex> or
+*<substring> or ?<prefix>. [AltDown] does the same if you use popular macro
+(add-on AltDown.reg).
 
-Copies the command text to the clipboard.
+[#Symbol#] Applies incremental filter immediately on typing. Symbols * and ?
+are wildcards.
 
-#CtrlR, Delete#
+[#BS#] Removes the last symbol from the incremental filter string.
 
-Removes old and duplicated commands from the history.
-
-#CtrlDown#
-
-Opens the permanent filter input box. Filter patterns: <regex> or *<substring>
-or ?<prefix>. [AltDown] does the same if you use popular macro (add-on
-AltDown.reg).
-
-#Symbols#
-
-Applies incremental filter immediately on typing. Symbols * and ? are wildcards.
-
-#Backspace#
-
-Removes the last symbol from the incremental filter string.
-
-#ShiftBackspace#
-
-Removes the incremental filter string completely.
+[#ShiftBS#] Removes the incremental filter string completely.
 
 
 @MenuPanels
 $#Power panel menu#
 ~Contents~@Contents@
+~Power panel~@PowerPanel@
 
 This menu allows to open a panel for any .NET objects or a provider panel at the
 selected drive.
 
-#Enter#
-
-Opens the selected panel.
+[#Enter#] Opens the selected panel.
 
 
 @MenuModules
 $#Modules menu#
 ~Contents~@Contents@
 
-This menu shows available module and registered snap-in names and descriptions
+This menu shows available module and registered snap-in names with descriptions
 and allows you to import/remove them to/from the session. Already imported
 modules and added snap-ins have their items checked on the left.
 
-#Enter#
-
-Switches module or snap-in state: imported module or added snap-in is removed,
-otherwise it is imported/added.
-
-#Esc#
-
-Closes the menu.
+[#Enter#] Switches module or snap-in state: imported module or added snap-in is
+removed, otherwise it is imported/added.
 
 
 #RELATED POWERSHELL COMMANDS#
@@ -345,15 +314,15 @@ Get imported/added:
  >: Get-Module
  >: Get-PSSnapin
 
-Remove from the session:
-
- >: Remove-Module -Name <name>
- >: Remove-PSSnapin -Name <name>
-
 Import/add to the session:
 
  >: Import-Module -Name <name>
  >: Add-PSSnapin -Name <name>
+
+Remove from the session:
+
+ >: Remove-Module -Name <name>
+ >: Remove-PSSnapin -Name <name>
 
 You may use Import-Module and Add-PSSnapin in your profile to import/add
 favourite modules and snap-ins always when PowerShellFar starts.
@@ -367,18 +336,12 @@ This menu shows PowerShell error list, i.e. ErrorRecord objects stored in the
 global variable $Error. Menu items of error objects with source info are
 checked on the left.
 
-#F4#
+[#F4#] If source information is available (checked menu items) it opens a
+source file in the internal editor at the line that caused an error.
 
-If source information is available (checked menu items) it opens a source file
-in the internal editor at the line that caused an error.
+[#Enter#] Shows a standard FarNet error message dialog for a selected item.
 
-#Enter#
-
-Shows the standard FarNet error message dialog for a selected item.
-
-#Del#
-
-Removes all error records and closes the menu.
+[#Del#] Removes all error records and closes the menu.
 
 
 @MenuDebugger
@@ -388,56 +351,38 @@ $#Debugger tools menu#
 This menu consists of two sections: commands to create various breakpoints and
 the list of existing breakpoints.
 
----------------------------------------------------------------------
 
-#CREATE BREAKPOINT COMMANDS#
+#CREATE BREAKPOINT ACTIONS#
 
-This menu section contains commands that create various breakpoints. There are
+This section contains commands that create various breakpoints. There are
 three kind of breakpoints in PowerShell: line, command and variable.
 See also ~Breakpoint dialog~@BreakpointDialog@.
 
-#Line breakpoint...#
+* #Line breakpoint...# Opens a dialog to create a new line breakpoint. If the
+command is invoked from an editor and a line breakpoint already exists at the
+current editor line then you are prompted to remove, enable/disable, modify the
+existing breakpoint or add a new one at the same line.
 
-Opens a dialog to create a new line breakpoint. If the command is invoked from
-the editor and a line breakpoint already exists at the current editor line then
-you are prompted to remove, enable/disable, modify the existing breakpoint or
-add a new one at the same line.
+* #Command breakpoint...# Opens a dialog to create a new command breakpoint.
 
-#Command breakpoint...#
+* #Variable breakpoint...# Opens a dialog to create a new variable breakpoint.
 
-Opens a dialog to create a new command breakpoint.
 
-#Variable breakpoint...#
-
-Opens a dialog to create a new variable breakpoint.
-
----------------------------------------------------------------------
-
-#BREAKPOINT LIST COMMANDS#
+#BREAKPOINT LIST KEYS AND ACTIONS#
 
 This section shows the list of available breakpoints where you can disable, enable
 or remove breakpoints.
 
-#F4#
+[#F4#] Opens the script in the editor for the current breakpoint if it is a
+line or breakpoint or another breakpoint assotiated with a script.
 
-Opens the script in the editor for the current breakpoint if it is a line or
-breakpoint or another breakpoint assotiated with a script.
+[#Space#] Enables or disables the current breakpoint.
 
-#Space#
+[#ShiftBS#] Disables all breakpoints.
 
-Enables or disables the current breakpoint.
+[#Del#] Removes the current breakpoint.
 
-#ShiftBS#
-
-Disables all breakpoints.
-
-#Del#
-
-Removes the current breakpoint.
-
-#ShiftDel#
-
-Removes all existing breakpoints.
+[#ShiftDel#] Removes all existing breakpoints.
 
 
 @BreakpointDialog
@@ -447,13 +392,13 @@ $#Breakpoint dialog#
 The dialog creates a new breakpoint. There are three kind of breakpoints in
 PowerShell:
 
-#Line breakpoint# - you have to provide a script line number, script file path
-(mandatory) and optional action code.
+* #Line breakpoint# - you have to provide a script line number, script file
+path (mandatory) and optional action code.
 
-#Command breakpoint# - you have to provide a command name (mandatory), optional
-script path and optional action code.
+* #Command breakpoint# - you have to provide a command name (mandatory),
+optional script path and optional action code.
 
-#Variable breakpoint# - you have to provide a variable name (mandatory),
+* #Variable breakpoint# - you have to provide a variable name (mandatory),
 optional script path and optional action code.
 
 Script path is mandatory only for line breakpoints. But you can specify it for
@@ -476,46 +421,34 @@ This dialog is shown when one or more breakpoints are hit or you step in debug
 mode. You may step through the code, open editor console, take a look at the
 source code, view stack and error information.
 
-Dialog keys and buttons:
 
-#Escape, F10#
+#KEYS, BUTTONS AND ACTIONS#
 
-(Continue) Continue execution.
+[#Esc#], [#F10#] (Continue) Continue execution.
 
-#[Step]#
+[#[Step]#] (Step Into) Executes the next statement. Step Into steps through the
+script one line at a time.
 
-(Step Into) Executes the next statement. Step Into steps through the script one
-line at a time.
+[#[Over]#] (Step Over) Executes the next statement, but skips over statements
+in functions or other scripts. The functions and scripts are executed, but Step
+Over does not stop at each statement.
 
-#[Over]#
+[#[Out]#] (Step Out) Runs the script until completion or the next breakpoint.
+If used while stepping through a function, it exits the function and steps to
+the next statement.
 
-(Step Over) Executes the next statement, but skips over statements in functions
-or other scripts. The functions and scripts are executed, but Step Over does not
-stop at each statement.
-
-#[Out]#
-
-(Step Out) Runs the script until completion or the next breakpoint. If used
-while stepping through a function, it exits the function and steps to the next
-statement.
-
-#Console..#
-
-Opens an editor console (in other words, nested prompt) where you can examine or
-change variables, invoke commands and etc. On exit the same dialog is repeated.
+[#[Console..]#] Opens an editor console (in other words, nested prompt) where
+you can examine or change variables, invoke commands and etc. On exit the same
+dialog is repeated.
 See also ~Editor console~@EditorConsole@.
 
-#Goto..#
+[#[Goto..]#] Two actions: sets the current list line to the current debugger
+line if not yet overwise opens the editor at the debugger line. You should not
+edit the script at this moment, it is only for taking a look at the code. On
+exit from the editor the same dialog is repeated.
 
-Two actions: sets the current list line to the current debugger line if not yet
-overwise opens the editor at the debugger line. You should not edit the script
-at this moment, it is only for taking a look at the code. On exit the same
-dialog is repeated.
-
-#Stack..#
-
-Shows the call stack and error records in the viewer. On exit the same dialog is
-repeated.
+[#[Stack..]#] Shows the call stack and error records in the viewer. On exit the
+same dialog is repeated.
 
 
 #NOTES#
@@ -526,8 +459,8 @@ it. It may look unusual but it allows you to see output during debugging.
 
 It is (theoretically) possible that the debugger or your actions in the debugger
 may affect the code being debugged in unusual way, especially if the code itself
-deals with Far UI that clashes against the debugger UI. Just think of it a bit
-when you are about to debug such a special code.
+deals with Far UI that clashes against the debugger UI. Think of it when you
+are about to debug such a special code.
 
 
 @EditorConsole
@@ -547,48 +480,34 @@ allows you to change or reset the current session to default, local, or remote.
 An editor console works like a command console but it is still an editor window
 with some rules and special hotkeys.
 
-#Rule of selection#
+#RULE OF SELECTION#
 
 If any selection exists then editor always acts as a standard editor.
 
 Without selection some editor events for such a file are different:
 
-#Enter#
+[#Enter#] If it is the last line its text is executed as PowerShell code and
+output is appended to the end of the file (marked by <= and =>). If it is not
+the last line its text is copied to the end and the cursor is moved there, too.
 
-If it is the last line its text is executed as PowerShell code and output is
-appended to the end of the file (marked by <= and =>). If it is not the last
-line its text is copied to the end and the cursor is moved there, too.
+[#End#] If it is the last line and the cursor is in the end then it shows a
+menu of history commands beginning with the characters that are in the line. If
+the line is empty then it actually shows all history commands. If the line
+starts with * then the rest of it is used as a substring filter.
 
-#End#
+[#Up#]\[#Down#] If it is the last line and it is initially empty inserts
+previous\next command from PowerShellFar history while you press these keys.
 
-If it is the last line and the cursor is at its end then it shows a menu of
-from history commands beginning with the characters that are in the line. If
-the line is empty it actually shows all history commands. If the line starts
-with * then the rest of it is used as a substring filter.
+[#Esc#] If it is the last line and it is not empty clears its text.
 
-#Up\Down#
+[#Del#] If it is the last line and it is empty it deletes all text from the end
+to the last mark <= found in the text. It is useful when you want to discard
+recent output.
 
-If it is the last line and it is initially empty inserts previous\next command
-from PowerShellFar history while you press these keys.
-
-#Escape#
-
-If it is the last line and it is not empty clears its text.
-
-#Del#
-
-If it is the last line and it is empty it deletes all text from the end to the
-last mark <= found in the text. It is useful when you want to discard recent
-output.
-
-#Tab#
-
-Executes PowerShell TabExpansion procedure. See
+[#Tab#] Executes PowerShell TabExpansion procedure. See
 ~TabExpansion.ps1~@TabExpansion@
 
-#F1#
-
-Opens the help menu where you can change or reset the current session to
+[#F1#] Opens the help menu where you can change or reset the current session to
 default, local, or remote, or open this help topic.
 
 
@@ -597,8 +516,8 @@ default, local, or remote, or open this help topic.
 Do not invoke commands with $Far.Editor (i.e. this editor) because during the
 operation this object is already used for the command output. Also, do not run
 commands opening other editors because the default console writes output to the
-current editor and results will be unexpected (note that this is not a problem
-for async consoles, they output using a special async mode).
+current editor and results will be unexpected (this is not a problem for async
+consoles, they do not require an editor to be currrent).
 
 You still can call external PowerShell commands working on text in this editor
 console as usual. "External" means that a command is executed not from this
@@ -621,15 +540,14 @@ but in fact you must not use them unless it is explicitly allowed; PowerShell
 UI should be avoided (Read-Host, Write-Progress, confirmations).
 
 
-#OTHER NOTES#
+#NOTES#
 
-Do use PowerShell.hrc with Colorer plugin. It works not only for ".ps1", but
-for ".psfconsole" files, too. In addition to PowerShell syntax editor console
+Use PowerShell.hrc with Colorer plugin. It works not only for ".ps1", but for
+".psfconsole" files, too. In addition to PowerShell syntax editor console
 output is also highlighted (numbers, errors, warnings, and etc.).
 
-Do use word completing (e.g. "Complete-Word-.ps1"): words from output of
-previous commands often can be effectively completed in a new command being
-composed.
+Use word completion (e.g. "Complete-Word-.ps1"): words from output of previous
+commands often can be effectively completed in a new command being composed.
 
 See also:
  ~Invoking console applications~@ConsoleApplications@
@@ -643,38 +561,47 @@ $#Editor console menu#
 This menu allows to open a new editor console or one of editor consoles
 previously saved in the special directory for console files.
 
-#Enter#
+[#Enter#] Opens a new or selected existing console file in the default global
+PowerShell session. Commands are invoked synchronously in the default global
+runspace. All consoles opened by [Enter] share the same workspace.
 
-Opens a new or selected existing console file in the default global PowerShell
-session. Commands are invoked synchronously in the default global runspace. All
-consoles opened by [Enter] share the same workspace.
+[#ShiftEnter#] Opens a new or selected existing console file in a new local
+PowerShell session. Commands are invoked asynchronously in a private runspace.
 
-#ShiftEnter#
-
-Opens a new or selected existing console file in a new local PowerShell
-session. Commands are invoked asynchronously in a private runspace.
-
-#CtrlEnter#
-
-Opens a new or selected existing console file in a new remote PowerShell
-session. Commands are invoked asynchronously in a private remote runspace. You
-are prompted to enter a computer name and a user domain\name. If a user name is
-specified then a password is also requested. See PowerShell about_remote* help
-topics for more details.
+[#CtrlEnter#] Opens a new or selected existing console file in a new remote
+PowerShell session. Commands are invoked asynchronously in a private remote
+runspace. You are prompted to enter a computer name and a user domain\name. If
+a user name is specified then a password is also requested. See PowerShell
+about_remote* help topics for more details.
 
 
 @PowerPanel
 $#Power panel#
 ~Contents~@Contents@
 
-#WARNING: use this feature carefully, you can change or delete system data, files and etc. depending on a panel.#
+#WARNING: use panels carefully, you can change or delete system data, files and etc. depending on a panel.#
 
 Power panel is a Far panel with any .NET objects or with PowerShell provider
-items and their members and properties. Actually, there are several panels: Item
-panel and Object panel, and their children Property panel and Member panel.
+items and their members and properties. There are several panels:
+
+~Object panel~@ObjectPanel@ - Table of any .NET objects, normally of the same
+type or the same base type. Columns (default or custom) show property values.
+The simplest way to use a panel is #Out-FarPanel# cmdlet.
+
+~Member panel~@ListPanel@ - List of members (properties, methods, and etc.) of
+a .NET object. There are two columns: Name and Value.
+
+~Provider item panel~@ItemPanel@ - Table of PowerShell provider items in a
+specified path. Columns (default or custom) show item .NET properties.
+
+~Provider folder tree~@FolderTree@ - Tree of PowerShell provider container
+items. Providers that support container items: FileSystem, Registry, ...
+
+~Provider property panel~@ListPanel@ - List of provider properties of an item.
+Providers that support them: FileSystem, Registry, ...
 
 
-#KEYS AND OPERATIONS#
+#KEYS AND ACTIONS#
 
 Availability and details of operations may depend on a panel mode, data types,
 providers and etc. For example for internal providers properties are supported
@@ -686,120 +613,87 @@ delete, copy\move or rename them. Then, FileSystem and Certificate have both
 "container" items (keys), other internal default providers have only "leaves",
 and so on, other providers may have their own implementation details.
 
-#F1#
+[#F1#] Opens the panel help menu with some of available panel specific
+commands. [F1] pressed in this menu opens the panel help topic.
 
-Opens the panel help menu with some of available panel specific commands. [F1]
-pressed in this menu opens the panel help topic.
+[#F3#] Views content, properties or other PowerShell or .NET information about
+the current object, provider item, member, property or '..' element.
 
-#F3#
+[#F4#] Starts internal editor for editing the current item content or a
+property value. Note: some items or properties are read only. Power panel may
+not recognize this before the operation. Editor is not modal and you can edit
+other elements at the same time. Data are updated on saving. It is recommended
+to save only by [F2] (i.e. not on exiting) - in this case on errors you are
+still in editor and can fix problems.
 
-Views content, properties or other PowerShell or .NET information about the
-current object, provider item, member, property or '..' element.
+[#AltF4#] Starts Notepad. In contrast to [F4] it is "modal", you have to finish
+editing and exit. If there are errors then Notepad is started again with the
+same temp file (i.e. your changes are not lost, you can fix them, or just
+exit).
 
-#F4#
+[#F5#] Copies items or properties from the active panel to another. You can
+copy almost any items to Object panel, so that an Object panel can be used as a
+collector of items for further operations.
 
-Starts internal editor for editing the current item content or a property value.
-Note: some items or properties are read only. Power panel may not recognize this
-before the operation. Editor is not modal and you can edit other elements at the
-same time. Data are updated on saving. It is recommended to save only by <F2>
-(i.e. not on exiting) - in this case on errors you are still in editor and can
-fix problems.
+[#ShiftF5#] Copies an item or a dynamic property here with another name.
 
-#AltF4#
+[#F6#] Moves items or properties from the active panel to another. You can
+"move" items to Object panel but it works the same as copying ([F5]).
 
-Starts Notepad. In contrast to <F4> it is "modal", you have to finish editing
-and exit. If there are errors then Notepad is started again with the same temp
-file (i.e. your changes are not lost, you can fix them, or just exit).
+[#ShiftF6#] Renames a current item or a dynamic property.
 
-#F5#
+[#F7#] Creates a new item or a property or even a new custom object. Depending
+on a provider you may have to specify required provider item or property type
+or initial value. (If you don't know what to enter then enter something and
+follow error message instructions (or read provider manuals)). In Object mode
+an empty object is created for you and you are prompted to create the first
+property (so called NoteProperty).
 
-Copies items or properties from the active panel to another. You can copy almost
-any items to Object panel, so that an Object panel can be used as a collector of
-items for further operations.
+[#F8#] Object mode: removes objects from the panel. Item mode: deletes the
+selected items or the current item or dynamic properties. Confirmations depend
+on Far settings for delete operations, but confirmation dialog is not the same
+as in Far, it is UI version of standard PowerShell confirmation request, so
+don't push a button through habit.
 
-#ShiftF5#
+[#Esc#] Closes or clears the panel. You may be prompted to clarify.
 
-Copies an item or a dynamic property here with another name.
+[#ShiftEsc#] Closes the current panel together with all its parent panels.
 
-#F6#
+[#Enter#] Enters folders, opens items (registered file types, etc.), etc.
+Actual action depends on a particular panel, for example in list panels it is
+used for editing values via command line with prefix #=#.
 
-Moves items or properties from the active panel to another. You can "move" items
-to Object panel, but it works the same as copying (<F5>).
+[#ShiftEnter#], [#CtrlA#] Opens a panel with provider properties of the current
+item. Values are shown in the Description column. You can modify, add and
+delete some properties (depending on a provider). Example: key values of
+Registry provider.
 
-#ShiftF6#
+[#CtrlPgDn#] Opens a panel with the current object members. Values are shown in
+the Description column. If a member type is *Property you also can open its
+members by [CtrlPgDn] and so on. Use [CtrlShiftM] to switch member modes.
 
-Renames a current item or a dynamic property.
+[#CtrlQ#] Quick view. Shows contents, properties and other information. Data
+may be not the same as information shown by [F3].
 
-#F7#
+[#CtrlS#] Saves panel data. Implementation depends on a panel. E.g. a data
+panel commits changes to a database, an object panel exports objects to .clixml
+file, etc.
 
-Creates a new item or a property or even a new custom object. Depending on a
-provider you may have to specify required provider item or property type or
-initial value. (If you don't know what to enter then enter something and follow
-error message instructions (or read provider manuals)). In Object mode an empty
-object is created for you and you are prompted to create the first property (so
-called NoteProperty).
+[#CtrlShiftM#] Switches panel internal modes (if there are more than 1). In
+Member panel: mode 1: properties and their values in the Description column
+(you can edit settable properties); mode 2: all public members and their
+information in the Description column (read only).
 
-#F8#
-
-Object mode: removes objects from the panel. Item mode: deletes the selected
-items or the current item or dynamic properties. Confirmations depend on Far
-settings for delete operations, but confirmation dialog is not the same as in
-Far, it is UI version of standard PowerShell confirmation request, so don't push
-a button through habit.
-
-#Esc#
-
-Closes or clears the panel. You may be prompted to clarify.
-
-#ShiftEsc#
-
-Closes the current panel together with all its parent panels if any.
-
-#Enter#
-
-Used for navigation (as usually), for starting items (registered file types,
-etc.) or (in Member or Property mode) can be used to put a trivial property
-value to the command line as =<value>, you can change the value and press
-<Enter> again to set it (if a property is settable).
-
-#ShiftEnter, CtrlA#
-
-Opens a panel with provider properties of the current item. Values are shown in
-the Description column. You can modify, add and delete some properties
-(depending on a provider). Example: key values of Registry provider.
-
-#CtrlPgDn#
-
-Opens a panel with the current object members. Values are shown in the
-Description column. If a member type is *Property you also can open its members
-by <CtrlPgDn> and so on. Use <CtrlShiftM> to switch member modes.
-
-#CtrlQ#
-
-Quick view. Shows contents, properties and other information. Data may be not
-the same as information shown by <F3>.
-
-#CtrlS#
-
-Saves panel data. Implementation depends on a panel. E.g. a data panel commits
-changes to a database, an object panel exports objects to .clixml file, etc.
-
-#CtrlShiftM#
-
-Switches panel internal modes (if there are more than 1). In Member panel: mode
-1: properties and their values in the Description column (you can edit settable
-properties); mode 2: all public members and their information in the Description
-column (read only).
-
-#AltF7#
-
-Search. Currently it is just a dummy, not really useful.
+[#AltF7#] Search. Currently it is just a dummy, not really useful.
 
 
-#OBJECT PANEL#
+@ObjectPanel
+$#Object panel#
+~Contents~@Contents@
+~Power panel~@PowerPanel@
 
-Any .NET or PowerShell objects, for example output of commands. You can send
-objects to the panel using ~Out-FarPanel~@Out-FarPanel@.
+Table of any .NET or PowerShell objects, for example output of PowerShell
+commands. You can send objects to the panel using #Out-FarPanel# cmdlet.
 
 Examples:
 
@@ -815,87 +709,40 @@ more information (more advanced example is Panel-Process-.ps1).
 - the same but now objects (processes) are sorted by WS (working set); note that
 you have to use unsorted Far mode to see the results sorted by you.
 
-It is important that panel objects are real - they exist and they are reusable -
-you can collect them, view\edit\delete\create properties, select\filter\sort
-them and get back by $Psf panel properties: Items, CurrentItem, SelectedItems.
-Thus, Object panel can be used as intermediate visual storage for objects. Note:
-you can collect together on the same panel objects of different types, but in
-this case generated description column may be confusing, if it is so then just
-ignore it, it is not a bug.
+	>: ps | sort ws | Out-FarPanel Name, @@{Expression='WS'; Type='S'}
+
+- the same but with only two custom columns: Name and WS, where WS is mapped to
+Far Size column.
+
+You can collect objects in a panel, select, filter, sort them, view and edit
+properties, sometimes delete and create properties. Then you can get them back
+by #Get-FarItem# cmdlet (current, selected, all). Thus, object panel can be
+used as intermediate visual storage for objects.
+
+Note: you can collect together on the same panel objects of different types,
+but in this case the engine may not know what columns should be shown, then
+only names or string representation of objects is shown. This is not a bug.
 
 
-#ITEM PANEL#
+#SPECIAL OBJECTS#
 
-By default you can browse and operate on data stores of the following PowerShell
-providers:
+Object panels may recognize some object types and be able to perform some
+operations by default. For example:
 
-#FileSystem#
+* #Edit [F4]# works for objects based on FileInfo (from Get-*Item cmdlets),
+MatchInfo (from Select-String cmdlet, found match is selected).
 
-not a big deal, of course, but it is added for completeness and some exercises.
+* #Open [Enter]# works for GroupInfo (from Group-Object), it opens yet another
+child object panel for the group, [Esc] returns you to the parent panel with
+groups.
 
-#Registry#
+Example commands to play with [Enter] on groups and [F4] on items:
 
-(HKCU:\, HKLM:\) access to registry and copy, move, delete, create and other
-operations on registry keys and values.
+ ## Group files by extensions:
+ >: Get-ChildItem | Group-Object Extension | Out-FarPanel
 
-#Alias#
-
-(Alias:\) PowerShell aliases.
-
-#Function#
-
-(Function:\) PowerShell functions.
-
-#Environment#
-
-(Env:\) environment variables of the current process.
-
-#Variable#
-
-(Variable:\) PowerShell variables of the current session.
-
-#Certificate#
-
-(Cert:\) sorry, not even sure what it is and what's for.
-
-If you change PowerShell location by a command, e.g. execute "cd HKCU:\Software"
-or "Set-Location variable:\" or whatever - the panel contents is updated
-accordingly. And vice versa: if you navigate in the panel to some location then
-PowerShell current location is changed, so that in commands you may use current
-panel item names without full paths.
-
-If you add external PowerShell providers then you can browse their data stores
-as well. The idea is very promising: some people (or you) implement providers
-and they are available in Power panel automatically (when loaded properly). For
-example Power panel was tested on three more providers from PowerShell Community
-Extensions (http://www.codeplex.com/PowerShellCX):
-
-#DirectoryServices#
-
-access to LDAP servers like Active Directory or AD Lightweight Directory
-Services.
-
-#FeedStore#
-
-access to the Internet Explorer 7 RSS feed store.
-
-#AssemblyCache#
-
-access to the .NET Global Assembly Cache and the assemblies it contains.
-
-
-#HOW TO OPEN ITEM OR PROPERTY PANEL AT SOME LOCATION#
-
-If you want to open a Power panel at the specified location from a script you
-may use scripts Go-To.ps1 (not FileSystem) and Panel-Property-.ps1 (any
-provider). See comments and examples there.
-
-
-#NOTE: SPECIAL PREFIX =#
-
-Special case: in Member and Property panels a command starting with = enters
-data to the current property (if possible). Everything after = including spaces
-is literal text that will be converted into required data type and assigned.
+ ## Find string "throw" in files, group results by files:
+ >: Get-ChildItem | Select-String throw | Group-Object Path | Out-FarPanel
 
 
 #SOME DATA FOR EXPERIMENTS#
@@ -904,7 +751,7 @@ There are some data ready for tests and experiments. See the script
 "Test-Zoo-.ps1" and comments. When you run this script you get 4 objects in a
 panel: original .NET and PowerShell objects and their restored versions.
 
-Tip: you can associate *.clixml with this commands which imports objects from
+Tip: you can associate *.clixml with a command which imports objects from
 ".clixml" to Object panel:
 
 	>: Import-Clixml (Get-FarPath) | Out-FarPanel ##
@@ -918,46 +765,83 @@ importing from clixml (enough for many tasks). You can also export\import data
 to\from .csv files, in this case most of imported data are strings.
 
 
-#OTHER NOTES#
+@ItemPanel
+$#Provider item panel#
+~Contents~@Contents@
+~Power panel~@PowerPanel@
 
-- PowerShell native messages (e.g. confirmations) may look unusual, read them
-carefully before your next steps.
+It shows PowerShell provider items in a specified provider path. Columns
+(default or custom) show item properties. Default PowerShell providers:
 
-- Global PowerShell variable $FormatEnumerationLimit may affect Description mode
-(number of shown enumerable items).
+Provider #FileSystem# - not a big deal, of course, but it is added for
+completeness and some exercises.
 
-- Registry default property (with no name, displayed as "(default)") is not
-processed correctly due to known PowerShell bug. But PowerShellFar implements a
-patch: you can edit, delete and create it (use "(default)" name when create).
-Other operations may fail (and exceptions are not suppressed deliberately (Far
-should not crash, of course)).
+Provider #Registry# (HKCU:\, HKLM:\) - access to the system registry and copy,
+move, delete, create and other operations on registry keys and values.
 
-- Member panel: it is strongly not recommended to play with any object property
-related to the current panel state, because this panel is actually working just
-now and it can be in some intermediate (invalid) state for data requests,
-results can be unpredictable, exceptions at this point are not suppressed
-deliberately (but they are caught later). Some properties and objects are
-already protected for panels internally but it is not possible to control all
-(your) objects. In other words, try not to deal with $Psf, $Far and their
-properties on panels (though it can be useful sometimes).
+Provider #Alias# (Alias:\) - PowerShell aliases.
+
+Provider #Function# (Function:\) - PowerShell functions.
+
+Provider #Environment# (Env:\) - environment variables of the current process.
+
+Provider #Variable# (Variable:\) - PowerShell variables of the current session.
+
+Provider #Certificate# (Cert:\) - x509 certificates for digital signatures.
+
+Provider #WSMan# (WSMan:\) - WS-Management configuration information.
+
+Other available providers in a session depend on imported PowerShell modules
+and added snap-ins. For example providers from PowerShell Community Extensions
+(http://www.codeplex.com/PowerShellCX):
+
+Provider #DirectoryServices# - access to LDAP servers like Active Directory or
+AD Lightweight Directory Services.
+
+Provider #AssemblyCache# - access to the .NET Global Assembly Cache and the
+assemblies it contains.
+
+Provider #FeedStore# - access to the Internet Explorer 7 RSS feed store.
+
+
+#PANEL NAVIGATION AND CURRENT POWERSHELL LOCATION#
+
+If you change PowerShell location by a command, e.g. invoke commands like:
+
+	>: cd HKCU:\Software
+	>: Set-Location variable:\
+
+then the panel contents is updated accordingly. And vice versa: if you navigate
+in the panel to some location then PowerShell current location is changed, so
+that in commands you may use current panel item names without full paths.
+
+
+#HOW TO OPEN ITEM OR PROPERTY PANEL AT SOME LOCATION#
+
+If you want to open a Power panel at the specified location from a script you
+may use scripts Go-To-.ps1 (not for FileSystem) and Panel-Property-.ps1 (for
+any provider). See comments and examples there.
 
 
 @FolderTree
-$#Folder Tree#
+$#Provider folder tree#
 ~Contents~@Contents@
+~Tree panel~@TreePanel@
+~Power panel~@PowerPanel@
 
-Folder tree panel is a ~Tree panel~@TreePanel@ where tree nodes represent
-provider container items (folders). It works for so called "navigation"
-providers. For example standard PowerShell navigation providers are:
-FileSystem, Registry and Certificate. Other providers depend on installed
-PowerShell snap-ins.
+Provider folder tree panel is a tree panel where nodes represent provider
+container items. It works for so called "navigation" providers. For example
+standard PowerShell navigation providers are: FileSystem, Registry,
+Certificate, and WSMan. Other providers depend on imported/added PowerShell
+modules/snap-ins.
 
-#Enter#
 
-As far this panel is for navigation providers, it is used mostly for navigation
-through an item tree. Note that quick search [Alt-[Letter]] works, too. When
-you reach an item you are looking for, press [Enter] to open an item panel for
-this location.
+#KEYS AND ACTIONS#
+
+[#Enter#] As far this panel is for navigation providers, it is used mostly for
+navigation through an item tree. Note that quick search [Alt-[Letter]] works,
+too. When you reach an item you are looking for, press [Enter] to open an item
+panel for this location.
 
 For FileSystem provider [Enter] opens a standard Far file panel on the passive
 panel. This is done for convenience: standard Far file panel allows much more
@@ -968,13 +852,10 @@ navigation in the tree.
 For all other providers [Enter] opens an item panel at the same active panel,
 as a child panel. When you exit it you return back to the folder tree.
 
-#ShiftEnter, CtrlA#
-
-Opens a panel with provider properties of the current item. Values are shown in
-the Description column. You can modify, add and delete some properties
-(depending on a provider). Example: key values of Registry provider.
-
-#Other keys#
+[#ShiftEnter#], [#CtrlA#] Opens a panel with provider properties of the current
+item. Values are shown in the Description column. You can modify, add and
+delete some properties (depending on a provider). Example: key values of
+Registry provider.
 
 See ~Tree panel~@TreePanel@ for other tree panels keys used for navigation
 (expanding, collapsing nodes and etc.).
@@ -983,127 +864,132 @@ See ~Tree panel~@TreePanel@ for other tree panels keys used for navigation
 @DataPanel
 $#Data panel#
 ~Contents~@Contents@
+~Power panel~@PowerPanel@
 
-#WARNING: use this feature very carefully, you can change or delete database data#
+#WARNING: use this feature carefully, you can change or delete database data.#
 
 Data panel shows database records selected by a SQL command and allows to modify
 and update data, insert and delete records.
 
 
-#KEYS AND OPERATIONS#
+#KEYS AND ACTIONS#
 
-Data panel is built on the same engine as other ~Power panels~@PowerPanel@, so
-that you can find other keys not listed here that still work in Data panel.
+Data panel is built on the same engine as any other ~Power panel~@PowerPanel@,
+so that you can find other keys not listed here that still work in Data panel.
 
-#F7#
+[#F7#] Inserts a new record into a table and opens a Member panel for editing
+data of the added record.
 
-Inserts a new record into a table and opens a Member panel for editing data of
-the added record.
+[#F8#] Deletes selected records. If an error happens cursor is set to a record
+with an error.
 
-#F8#
+[#CtrlR#] Reads data from the database and fills the table. Note that not yet
+saved changes will be lost (usually not manual changes, e.g. changes done by
+scripts).
 
-Deletes selected records. If an error happens cursor is set to a record with an
-error.
+[#CtrlS#] Commits all remaining changes to a database if they exist (for
+example if you have changed the table data by PowerShell commands or scripts).
+Table may have any number of modified, new and deleted records. <CtrlS> saves
+them all.
 
-#CtrlR#
-
-Reads data from the database and fills the table. Note that not yet saved
-changes will be lost (usually not manual changes, e.g. changes done by scripts).
-
-#CtrlS#
-
-Commits all remaining changes to a database if they exist (for example if you
-have changed the table data by PowerShell commands or scripts). Table may have
-any number of modified, new and deleted records. <CtrlS> saves them all.
-
-#Enter, CtrlPgDn#
-
-Opens a Member panel for the current record. You may edit fields values. Use
-<CtrlS> to save your changes or <Esc> to return to the parent Data panel (you
-will be prompted to save changes). On <Enter> some fields can open another
-(lookup) table so that values (or\and foreign keys) are taken from there (see
-Test-Panel-DbNotes-.ps1). If <Enter> is pressed in a lookup table panel it
-selects the value and closes the panel (<CtrlPgDn> still can be used to enter
-the record).
+[#Enter#], [#CtrlPgDn#] Opens a Member panel for the current record. You may
+edit fields values. Use [CtrlS] to save your changes or [Esc] to return to the
+parent Data panel (you will be prompted to save changes). On [Enter] some
+fields can open another (lookup) table so that values (or\and foreign keys) are
+taken from there (see Test-Panel-DbNotes-.ps1). If [Enter] is pressed in a
+lookup table panel it selects the value and closes the panel ([CtrlPgDn] still
+can be used to enter the record).
 
 
 #EXAMPLES#
 
 Almost complete set of data panel features is demonstrated by provided scripts,
-at least it should be enough to learn how to create data panels including
-complex.
+at least it should be enough to learn how to create data panels.
 
 UTILITY SCRIPTS:
 
-#Panel-Data-.ps1#
+* #Panel-DbData-.ps1# creates a data panel by a single command with parameters;
 
-creates a data panel by a single command with parameters;
-
-#Panel-Table-.ps1#
-
-shows all connected tables and opens them in basic mode;
+* #Panel-DbTable-.ps1# shows all connected tables and opens them in basic mode;
 
 DEMO SCRIPTS (SEE ALSO ABOUT-TEST.HLF):
 
-#Test-Panel-DbCategories-.ps1#
+* #Test-Panel-DbCategories-.ps1# - 'simple' data table with all operations;
 
-'simple' data table with all operations;
+* #Test-Panel-DbNotes-.ps1# - 'complex' data table with all operations and
+lookup field.
 
-#Test-Panel-DbNotes-.ps1#
-
-'complex' data table with all operations and lookup field.
-
-#Test-Panel-DbText-.ps1#
-
-read only table with data from two joined .CSV files (Jet 4.0).
+* #Test-Panel-DbText-.ps1# - read only table with data from two joined .CSV
+files (Jet 4.0).
 
 
-#OTHER NOTES#
+#NOTES#
 
 Known issue: if you are about to delete or modify again just added and saved
-record then at first you have to re-read the table data explicitly by <CtrlR>
+record then at first you have to re-read the table data explicitly by [CtrlR]
 (otherwise you can get concurrency error or record data can be incomplete and
 etc.).
 
-Once again: remember that Data panel is a ~Power panel~@PowerPanel@, so that
-many keys and rules are the same; for example: everything typed in command line
-is executed as PowerShell command (except =<text> when you edit field values).
+Once again: remember that Data panel is a kind of a ~Power panel~@PowerPanel@,
+so that many keys and rules are the same.
+
+
+@ListPanel
+$#List panel#
+~Contents~@Contents@
+~Power panel~@PowerPanel@
+
+List panel allows to view and modify properties of .NET objects; to view,
+modify, add and remove dynamic properties of provider items and PSObject items;
+to view all members of .NET objects. This panel consists of two columns:
+property names and values.
+
+
+#HOW TO MODIFY A PROPERTY VIA COMMAND LINE#
+
+[#Enter#] If the command line is empty and the current property value is
+trivial, i.e. can be represented as a single line of text then [Enter] puts the
+value into the command line with a prefix #=#. If the command line is not empty
+and it starts with #=# then [Enter] treats the rest of the line as a new
+property value and assigns it (if possible, i.e. a property is settable and a
+new value is correct).
+
+
+#NOTES#
+
+It is not recommended to use member panel to view exposed internal active
+objects like $Far, $Psf, $Far.Panel, $Far.Panel2, and etc.
 
 
 @TreePanel
 $#Tree panel#
 ~Contents~@Contents@
+~Power panel~@PowerPanel@
 
-Tree panel is a kind of ~Power panel~@PowerPanel@. It is designed to display
-hierarchy of items as a tree with expandable nodes.
+Tree panel is a kind of power panels dealing with PowerShell providers. It is
+designed to display hierarchy of provider container items as a tree with
+expandable nodes. Not all providers support container items, for example:
+FileSystem and Registry do, Function and Variable do not.
 
-#KEYS AND OPERATIONS#
 
-#Right#
+#KEYS AND ACTIONS#
 
-Expands an item's children or, if it is already expanded or it is not expandable
-(Fill handler is null), moves the cursor to the next item. If an item was
-already expanded and then collapsed then its children are not refilled (for
-performance and keeping expanded children).
+[#Right#] Expands an item's children or, if it is already expanded or it is not
+expandable (Fill handler is null), moves the cursor to the next item. If an
+item was already expanded and then collapsed then its children are not refilled
+(for performance and keeping expanded children).
 
-#AltRight#
+[#AltRight#] Similar to [Right] but children items are refilled. Normally it is
+used to reflect external changes of source data.
 
-Similar to [Right] but children items are refilled. Normally it is used to
-reflect external changes of source data.
+[#Left#] Collapses an item's children or moves the cursor to the parent item.
 
-#Left#
+[#AltLeft#] Similar to [Left] but child items are removed from the tree. It can
+be used to free not needed resources, or just to get refilled children when
+they are expanded next time.
 
-Collapses an item's children or moves the cursor to the parent item.
-
-#AltLeft#
-
-Similar to [Left] but child items are removed from the tree. It can be used to
-free not needed resources, or just to get refilled children when they are
-expanded next time.
-
-#Alt-[Letter]#
-
-Quick search. It should work fine, '+' and '-' in tree node names are 'ignored'.
+[#Alt-Letter#] Quick search. It should work fine, '+' and '-' in tree node
+names are 'ignored'.
 
 
 @PluginSettings
@@ -1142,8 +1028,9 @@ themselves work as usually, they are only installed, not called on startup.
 	. Profile-.ps1
 	. Profile-AnyPS.ps1; . Profile-PSFar-.ps1
 
-IMPORTANT: this profile has nothing to do with background jobs, it is for the
-default runspace, but jobs are invoked in their own runspaces.
+IMPORTANT: this profile has nothing to do with background jobs or async
+consoles, it is for the default runspace. Jobs and async consoles use their own
+runspaces.
 
  #Editor startup code#
  #($Psf.Settings.PluginStartupEdit)#
@@ -1167,19 +1054,19 @@ configured in a profile script (example: ~Profile-.ps1~@Profile@).
 $#Global objects#
 ~Contents~@Contents@
 
-There are three main objects defined as global variables: $Host, $Far and $Psf.
+There are three main objects defined as global variables: $Far, $Psf, and $Host.
 
 #$Host#
 
-Standard PowerShell host instance, see PowerShell documentation. It is not
-really useful in PowerShellFar, but you may use property $Host.Name: it is
-"ConsoleHost" for PowerShell.exe and "FarHost" in PowerShellFar. Thus, a script
-can check this and decide what can be used in the current host environment.
+PowerShell host instance, see PowerShell documentation. It is not really useful
+in PowerShellFar but you may use property $Host.Name: it is "ConsoleHost" for
+PowerShell.exe and "FarHost" in PowerShellFar. Thus, a script can check this
+and decide what can be used depending on a host.
 
 #$Far#
 
 Object implementing FarNet interface IFar. It provides access to Far data and
-functionality. See FarNet documentation.
+functionality. See FarNet API documentation.
 
 #$Psf#
 
@@ -1267,7 +1154,8 @@ Normally output of a standard command including errors is collected and then,
 when a command has completed:
 
 1) It is written to a user screen (under panels) if it is not too large and it
-is not interrupted but debugger.
+is not interrupted by debugger. Use [CtrlUp]\[CtrlDown] to increase\decrease
+available space for output below panels.
 
 2) It is shown in internal viewer if it is too large for 1) or if it is started
 from editor, viewer or dialog.
@@ -1277,7 +1165,7 @@ external viewer is started to view it.
 
 Output of some commands is discarded (e.g. commands from your menu tools or
 event handlers). For these commands fatal errors are shown using error message
-boxes, other error messages are ignored.
+boxes, other errors and warnings are ignored.
 
 
 @BackgroundJobs
@@ -1285,7 +1173,8 @@ $#Background jobs#
 ~Contents~@Contents@
 
 Background jobs are started from the command line by commands with the prefix
-">>:". You can also start jobs using Start-FarJob cmdlet, see Test-Job-.ps1
+'>>:'. You can also start jobs using Start-FarJob cmdlet, see Test-Job-.ps1
+
 
 #IMPORTANT RULES#
 
@@ -1294,23 +1183,24 @@ accessed in any other way because this is not thread safe. Accessing these
 objects may lead to unpredictable results.
 
 *) Background jobs should not rely on the process current directory: while they
-are working, Far or whatever may change it. It also looks dangerous if a job
-changes the current directory. But PowerShell current location is totally under
-control of a job, i.e. PowerShell command Set-Location is safe and this job
-location is not visible or changed from outside.
+are working it can be changed externally. A job should not change the current
+directory, too. But PowerShell current location is totally under control of a
+job, i.e. PowerShell command Set-Location is safe and this job location is not
+visible or changed from outside.
 
 *) Background jobs must not be interactive in any way, they should work
 absolutely without a user until the end or failure. But you can perform
 interactive part in the main thread (interactive data input or validation with
 error messages) and then only, having all data ready, start the background part
 (example of this approach is Job-RemoveItem-.ps1 which is started in the main
-thread, where it still can interact with a user, then it starts a background
-job and exits).
+thread, where it interacts with a user, then it starts a background job and
+exits).
 
 *) In most cases it is fine to call external applications with or without
 output, see ~Invoking console applications~@ConsoleApplications@.
 
-#OTHER NOTES#
+
+s#OTHER NOTES#
 
 *) You can change job thread priority if it is really needed. E.g. put this
 command as the first command of a job code:
@@ -1323,12 +1213,12 @@ discard all jobs and output. It is done with GUI message boxes and Notepad.exe
 because on exiting Far UI is not available.
 
 If it is not enough then there is another way. Next two steps get total control
-of F10 event:
+of [F10] event:
 
 	1) add a command to Far user menu (F2):
 
 		F10:  Exit
-		    >: if ($Psf.CanExit()) { $Far.PostKeys('F10', $true) }
+		    >: if ($Psf.CanExit()) { $Far.PostKeys('F10', $true) } ##
 
 	2) create the following file panels macro for F10:
 
@@ -1381,7 +1271,7 @@ commands, see
 
 With the associations above when you press [Enter] on scripts in the panel then
 standard scripts are started by PowerShell.exe, PowerShellFar scripts are
-started by the plugin and step units are started by a stepper.
+started by the plugin and step units are started by the stepper.
 
 
 @Profile
@@ -1399,8 +1289,8 @@ dialog and set:
  (!) Mind leading dot-space before the script name.
  (!) If it is not in the system path then use its full path.
 
-Then you can change this profile (actually it's better use your own) according
-to your preferences and activity, the script is only an example.
+Then you can change this profile (or even better use your own) according to
+your preferences and activities, the script is only an example.
 
 The startup code can be more complex, but basically you should only load
 (dot-source) various profile scripts:
@@ -1422,7 +1312,7 @@ experiments the author recommends to use 'Stop' for normal work.
 
 Advantages: you have a choice what to do on an error: continue; silently
 continue; break; suspend and invoke intermediate commands in Editor console;
-view call stack on error ([Esc] in error message dialog).
+view call stack on error ([Esc] in error message dialogs).
 
 Disadvantages: can be annoying if you simply compose a new command; not all
 scripts allow interaction, e.g. inside DB transactions (but actually in this
@@ -1434,15 +1324,14 @@ script or any other scope).
 	Set-Alias bp Debug-Msg-
 	...
 
-the profile is a good place to define aliases. Some sample aliases are predefined,
-for example: bp (see ~Debug-Msg-.ps1~@DebugMsg@), gd, ip, pi, pm, po, pp.
+the profile is a good place to define aliases. Some sample aliases are predefined.
  __________
 
 	## Actions
 	$Psf.Action('&m. Macro(s)...', { Panel-Macro- })
 	...
 
-adds actions that you may invike from the PowerShellFar menu directly or by
+adds actions that you may invoke from the PowerShellFar menu directly or by
 macros connected to scripts via action script blocks.
  __________
 
@@ -1493,10 +1382,11 @@ the script.
 remove mouse code from the script.
 
 - Never run it more than once; more calls will add conflicting handlers.
-Actually you should not run it manually at all, it should be "installed".
+Actually you should not run it manually at all, use configuration "Editor
+startup code".
 
 
-#INSTALLATION#
+#CONFIGURATION#
 
 This or your own editor profile should be invoked automatically when an editor
 is opened the first time, if you set it as "Editor startup code"
@@ -1545,7 +1435,7 @@ example from your PowerShell profile script.
 #EXAMPLES OF WHAT CAN BE EXPANDED#
 
 	(typed text)
-		(found choices)
+		(expanded choices)
 
 full paths (if text contains slashes) (also with * and ?)
 
@@ -1597,7 +1487,7 @@ members of a static object:
 		[datetime]::Now.Hour
 
 members of an object defined by a simple expression (WARNING: expression in ()
-is really executed, think twice of unsafe effects before expansion!):
+is really executed now, think of unwanted effects before expansion!):
 
 	(get-date).h
 		(get-date).Hour
@@ -1664,8 +1554,8 @@ type and namespace names after '[' or 'New-Object' directly or by substring
 		[System.Data.CommandType]
 		[System.Management.Automation.CommandTypes]
 
-This long list of examples is not perhaps even full, more examples can be found
-in the test script Test-TabExpansion-.ps1.
+This long list of examples is not even full, more examples can be found in the
+test script Test-TabExpansion-.ps1.
 
 ---------------------------------------------------------------------
 
@@ -1686,31 +1576,21 @@ $#Debug-Msg-.ps1#
 This script shows error or any kind of information and some choices. Choices
 are:
 
-#Close#
+* #Close# Close the message box with no actions.
 
-Close the message box with no actions.
+* #Suspend# Open modal Editor console where you can, say, view or modify
+current variables (see below).
 
-#Suspend#
+* #Goto# Go to the source line of an error or invocation line in a file in a
+modal editor. The idea is just to glance at the source, editing is not
+recommended if the file is already open.
 
-Open modal Editor console where you can, say, view or modify current variables
-(see below).
+* #Throw# Throws an error.
 
-#Goto#
-
-Go to the source line of an error or invocation line in a file in a modal
-editor. The idea is just to glance at the source, editing is not recommended if
-the file is already open.
-
-#Throw#
-
-Throws an error.
-
-#Exit#
-
-Call exit.
+* #Exit# Calls exit.
 
 
-#----- Example -----#
+#EXAMPLE#
 
 The example demonstrates a few techniques and issues:
 
@@ -1733,13 +1613,13 @@ Recommended steps for this demo:
 
  Run the script.
  You see Message 1.
- Select #Suspend# and in the editor type #$x<Enter>#.
+ Select #Suspend# and in the editor type #$x[Enter]#.
  You see #12345#, i.e. you can read current variables.
- Type #$x=0<Enter>#, press #<Esc>#, don't save a file (or save, up to you).
+ Type #$x=0[Enter]#, press #[Esc]#, don't save a file (or save, up to you).
  You see Message 2, i.e. you have really changed #$x# when you set #$x=0#.
- Select #Suspend# again and in the editor type #$x<Enter># again.
- You see #0#, so you have double checked that #$x# was changed.
- Type #$x=12345<Enter>#, press #<Esc>#, don't save a file, select #Continue#.
+ Select #Suspend# again and in the editor type #$x[Enter]# again.
+ You see #0#, so now you have double checked that #$x# is changed.
+ Type #$x=12345[Enter]#, press #[Esc]#, don't save a file, select #Continue#.
  You see output is #x=0#, not #x=12345#.
 
  Why? Because:
@@ -1765,7 +1645,7 @@ For example in our Editor console called from "trap" try this:
 $#Remove-EndSpace-.ps1#
 ~Contents~@Contents@
 
-[and example of editor event handlers]
+(This is also an example of editor event handlers)
 
 It removes white spaces from end of string property Text of any objects (note
 that they can be even not related to Far). It can be used in Far editor:
@@ -1832,7 +1712,7 @@ job in the background, so that Far is not blocked during this time.
 Remove items selected in the active panel (e.g. you can use this from the Far
 user menu, directly or by a macro):
 
- >: Job-RemoveItem- (Get-FarItem -Selected)
+ >: Job-RemoveItem- (Get-FarItem -Selected) ##
 
 Note, we use prefix '>' for standard PowerShellFar command, not '>>' for a
 background one. The script itself is not a background job, it is a job starter.
@@ -1904,17 +1784,11 @@ setting this flag on.
 
 #RESULT PANEL KEYS#
 
-#Enter#
+[#Enter#] Opens an editor at the selected match position in the text.
 
-opens an editor at the selected match position in the text
+[#Esc#] Closes the panel (asking confirmation).
 
-#Esc#
-
-closes the panel (asking confirmation)
-
-#F1#
-
-opens this help topic
+[#F1#] Opens this help topic.
 
 ---------------------------------------------------------------------
 
@@ -1961,17 +1835,12 @@ ls *.ps1 | Search-Regex- -Regex 'return' -Options 'IgnoreCase'
 
 ---------------------------------------------------------------------
 
-#NOTES#
+#NOTE#
 
 The script demonstrates a few important PowerShellFar and FarNet techniques:
 using background jobs and using Far panels for the results and further
 operations. In addition the script shows how to use a pure FarNet panel, i.e.
-not derived from PowerShellFar.AnyPanel.
-
-Note that this script uses PowerShellFar.Invoker which is more effective than
-PowerShellFar.Job for reading job output during processing. Also remember that
-PowerShellFar.Invoker is not included in background job list and it belongs to
-you completely, don't forget to dispose it.
+not derived from PowerShellFar.AnyPanel (not a "power panel").
 
 
 @Others
@@ -2100,27 +1969,26 @@ PowerShell manuals.
 $#Frequently asked questions#
 ~Contents~@Contents@
 
-#Q: How to make PowerShell code invocation from command line easier?#
+#Q: How to make PowerShell code invocation from the command line easier?#
 
-A: There are at least two ways
+A: There are at least two options, both using macros
 
 1) Easy prefix: a macro that expands the empty command line to '>: '. In this
-example ']' is expanded into '>: '. Space after the prefix is recommended for
-normal TabExpansion of the first word:
+example [Space] is expanded into '>: '. Space after the prefix is recommended
+for normal TabExpansion of the first word:
 
- >: $Far.KeyMacro.Install(@@{Area='Shell'; Name=']'; Sequence="> : Space"; CommandLine='0'; Description='Easy prefix'})
+ >: $Far.KeyMacro.Install(@@{Area='Shell'; Name='Space'; Sequence="> : Space"; CommandLine='0'; Description='Easy prefix'})
 
 2) Easy invoke: type and run without prefix using a macro associated with
 "Invoke selected code" menu command. In this example assume PowerShellFar
-hotkey in the Far plugin menu is "1" and [ShiftBS] is the macro key:
+hotkey in the Far plugin menu is "1" and [ShiftSpace] is the macro key:
 
- >: $Far.KeyMacro.Install(@@{Area='Shell'; Name='ShiftBS'; Sequence='F11 1 2'; CommandLine='1'; Description='Easy invoke'})
+ >: $Far.KeyMacro.Install(@@{Area='Shell'; Name='ShiftSpace'; Sequence='F11 1 2'; CommandLine='1'; Description='Easy invoke'})
 
-Now you can type PowerShell commands without the prefix and press [ShiftBS] (or
-whatever you use) to execute it. By the way, this mode gives a nice bonus: if a
-command fails (often due to mistakes in it) its text is still in the command
-line, ready for correction, even cursor position is the same - this really
-saves time on composing complex commands.
+Now you can type PowerShell commands without the prefix and press [ShiftSpace]
+(or whatever you use) to execute it. There is a bonus: if a command fails, say,
+due to mistakes, its text is still in the command line, ready for correction,
+even cursor position is the same: it really helps to compose complex commands.
 
 
 @ConsoleApplications

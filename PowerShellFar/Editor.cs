@@ -212,11 +212,20 @@ namespace PowerShellFar
 		{
 			A.Psf.Invoking();
 
-			string code = A.Psf.Settings.PluginStartupEdit;
-			if (!string.IsNullOrEmpty(code))
-				A.Psf.InvokeCode(code);
-
-			A.Far.AnyEditor.Opened -= OnEditorOpened1;
+			try
+			{
+				string code = A.Psf.Settings.PluginStartupEdit;
+				if (!string.IsNullOrEmpty(code))
+					A.Psf.InvokeCode(code);
+			}
+			catch (RuntimeException ex)
+			{
+				throw new RuntimeException("Editor startup code failed (see configuration).", ex);
+			}
+			finally
+			{
+				A.Far.AnyEditor.Opened -= OnEditorOpened1;
+			}
 		}
 
 		public static void OnEditorOpened2(object sender, EventArgs e)
@@ -298,6 +307,7 @@ namespace PowerShellFar
 			{
 				using (ExternalOutputWriter writer = new ExternalOutputWriter())
 					A.Psf.InvokePipeline(code, writer, false);
+				
 				Console.Title = "Done " + DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
 			}
 			catch

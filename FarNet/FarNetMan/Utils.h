@@ -210,6 +210,12 @@ internal:
 		ErrorNoHotKey = "Ensure a FarNet hotkey (F4) in the Far plugins menu (F11) and restart Far.",
 		MenuPrefix = ".NET ";
 };
+
+ref class Config
+{
+public:
+	static bool GetBool(String^ key);
+};
 }
 
 // Helpers

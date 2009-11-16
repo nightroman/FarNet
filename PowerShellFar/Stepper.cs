@@ -188,9 +188,13 @@ namespace PowerShellFar
 						}
 					}
 					else if (o == null)
+					{
 						throw new RuntimeException("Step sequence contains a null object.");
+					}
 					else
+					{
 						throw new RuntimeException("Step sequence contains unknown object: " + o.ToString());
+					}
 				}
 				_steps.Insert(index, oInsert);
 				++index;
@@ -403,7 +407,15 @@ namespace PowerShellFar
 				if (block != null)
 				{
 					// invoke the step script
-					object value = block.InvokeReturnAsIs();
+					object value;
+					try
+					{
+						value = block.InvokeReturnAsIs();
+					}
+					catch (RuntimeException ex)
+					{
+						throw new PluginException("Step failed: " + ex.Message, ex);
+					}
 
 					// extra script, normally starts modal UI
 					ScriptBlock script = Convert<ScriptBlock>.From(value);

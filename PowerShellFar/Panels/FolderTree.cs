@@ -297,5 +297,13 @@ namespace PowerShellFar
 			(new PropertyPanel(node.Path)).ShowAsChild(this);
 		}
 
+		/// <summary>
+		/// Shows help.
+		/// </summary>
+		internal override void ShowHelp()
+		{
+			A.Far.ShowHelp(A.Psf.AppHome, "FolderTree", HelpOptions.Path);
+		}
+
 	}
 }

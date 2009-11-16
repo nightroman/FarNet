@@ -10,10 +10,25 @@ using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Provider;
 using System.Management.Automation.Runspaces;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace PowerShellFar
 {
+	///
+	[Serializable]
+	public class PluginException : FarNet.PluginException
+	{
+		///
+		public PluginException() { }
+		///
+		public PluginException(string message) : base(message) { }
+		///
+		public PluginException(string message, Exception innerException) : base(message, innerException) { }
+		///
+		protected PluginException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+	}
+
 	/// <summary>
 	/// Parameters. Use them to avoid typos.
 	/// </summary>
@@ -353,5 +368,4 @@ namespace My
 			return provider.ImplementingType.IsSubclassOf(typeof(NavigationCmdletProvider));
 		}
 	}
-
 }

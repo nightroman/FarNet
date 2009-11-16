@@ -921,25 +921,25 @@ void Far::ShowError(String^ title, Exception^ error)
 	// log
 	String^ info = Log::TraceException(error);
 
+	// ask
 	int res = Msg(
 		error->Message,
 		String::IsNullOrEmpty(title) ? error->GetType()->FullName : title,
 		MsgOptions::LeftAligned | MsgOptions::Warning,
-		gcnew array<String^>{"Ok", "View Info", "Copy Info"});
-
-	if (res != 1 && res != 2)
+		gcnew array<String^>{"Ok", "View info", "Copy info"});
+	if (res < 1)
 		return;
 
 	// info to show
 	if (!info)
 		info = Log::FormatException(error);
 
-	// add stack info
-	info += "\r\n" + error->StackTrace;
-
 	// add macro info
 	if (msgMacro)
-		info += "\r\n\r\n" + msgMacro + "\r\n";
+		info += "\r\n" + msgMacro + "\r\n";
+
+	// add verbose information
+	info += "\r\n" + error->ToString();
 
 	// show or clip
 	if (res == 1)
