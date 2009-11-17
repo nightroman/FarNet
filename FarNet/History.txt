@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.2.13 =
+
+*** Far 2.0.1209+ ***
+
+*) Updated IFar.GetDialogHistory() for Far 2.0.1208
+
 = 4.2.12 =
 
 *) Improved view of error messages and stack information shown on exceptions

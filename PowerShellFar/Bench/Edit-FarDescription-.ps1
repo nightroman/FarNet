@@ -33,7 +33,7 @@ $text1 = $item.FarDescription
 $text2 = $text1.Replace(' _ ', "`r`n")
 
 $edit = $Far.TempName()
-[System.IO.File]::WriteAllText($edit, $text2, [System.Text.Encoding]::Default)
+[System.IO.File]::WriteAllText($edit, $text2, [System.Text.Encoding]::Unicode)
 
 # setup editor
 $editor = New-FarEditor $edit -Title "Description: $Path" -DeleteSource 'File' -DisableHistory -Data $item
