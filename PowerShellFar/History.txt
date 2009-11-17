@@ -1,6 +1,18 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.13 =
+
+*** Far 2.0.1209+ ***
+
+*) Description tools (FarDescription property, Update-FarDescription cmdlet)
+work according to Far 2.0.1206 (see changelog). After changing Far settings
+"ANSI by default" and "Save in UTF8" you should restart Far or save settings
+[ShiftF9] => PSF works with new settings.
+
+*) Edit-FarDescription-.ps1 saves an intermediate file in Unicode, so that data
+are not lost on convertion. Final description encoding depends on Far settings.
+
 = 2.2.12 =
 
 *) Extra error message on exceptions in the plugin user startup code (see

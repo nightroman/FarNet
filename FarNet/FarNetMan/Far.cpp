@@ -814,33 +814,9 @@ void Far::SetUserScreen()
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
 
-//! Hack, not API.
-// Avoid exceptions, return what we can get.
 ICollection<String^>^ Far::GetDialogHistory(String^ name)
 {
-	List<String^>^ r = gcnew List<String^>;
-
-	String^ keyName = RootFar + "\\SavedDialogHistory\\" + name;
-	RegistryKey^ key = nullptr;
-	try
-	{
-		key = Registry::CurrentUser->OpenSubKey(keyName);
-		if (key)
-		{
-			for each(String^ name1 in key->GetValueNames())
-			{
-				if (String::Compare(name1, "Flags", StringComparison::OrdinalIgnoreCase) != 0)
-					r->Add(key->GetValue(name1)->ToString());
-			}
-		}
-	}
-	finally
-	{
-		if (key)
-			key->Close();
-	}
-
-	return r;
+	return GetHistory("SavedDialogHistory\\" + name, nullptr);
 }
 
 ICollection<String^>^ Far::GetHistory(String^ name)

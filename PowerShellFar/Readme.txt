@@ -1,8 +1,8 @@
 
 Plugin   : PowerShellFar
 Category : Development
-Version  : 2.2.12
-Release  : 2009.11.16
+Version  : 2.2.13
+Release  : 2009.11.17
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, PowerShell
@@ -25,8 +25,8 @@ downloaded from: http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
 
- - Far Manager 2.0.1204
- - Plugin FarNet 4.2.12 (*)
+ - Far Manager 2.0.1209
+ - Plugin FarNet 4.2.13 (*)
  - Windows PowerShell 2.0
 
  (*) see also FarNet prerequisites
@@ -35,25 +35,25 @@ downloaded from: http://code.google.com/p/farnet/
 	= INSTALLATION =
 
 
-PowerShell:
+*) Configure PowerShell:
 Check\change PowerShell execution policy: run standard PowerShell.exe and type
 Get-ExecutionPolicy - it should be RemoteSigned or Unrestricted. If it is not
 then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
 
-Plugin:
-Copy all files from "Plugin" to "Plugins.NET\PowerShellFar\" where "Plugins.NET"
-is a folder for FarNet plugins. If FarNet is installed as recommended by
-default then it is "%FARHOME%\Plugins.NET".
+*) Install the plugin:
+Copy all files (not directory!) from "Plugin" to "Plugins.NET\PowerShellFar"
+where "Plugins.NET" is a folder for FarNet plugins. Normally this folder is
+"%FARHOME%\Plugins.NET" if you did not change it in the "Far.exe.config".
 
-Bench:
+*) Recommended: Install and configure Bench scripts:
 You can put scripts anywhere: all together or not, but it is highly recommended
 that all the used scripts are in the system %PATH% folders. For example, if you
-use Bench scripts, include Bench directory into the system path.
+use Bench scripts then include Bench path into the system path.
 
-PowerShell.hrc (for Colorer):
+*) Recommended: Install PowerShell.hrc for Colorer:
 PowerShell syntax for Colorer. See installation instructions in the file.
 
-RomanConsole.hrd (for Colorer):
+*) Optionally: Install RomanConsole.hrd for Colorer:
 Console palette with white background. PowerShell.hrc is actually designed with
-this palette in use, other palettes can be less suitable or even practically
+this palette in use, other palettes may be less suitable or even practically
 unusable. See installation instructions in the file.
