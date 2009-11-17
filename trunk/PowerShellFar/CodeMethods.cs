@@ -62,29 +62,54 @@ namespace PowerShellFar
 		// Default description file name
 		const string DefaultDescriptionName = "Descript.ion";
 
-		// Description file names from registry, at least one, and other data.
-		static string[] _DescriptionNames;
+		// Options: registry key name
+		static string RegKeyName
+		{
+			get
+			{
+				return Registry.CurrentUser.Name + "\\" + A.Far.RootFar + "\\Descriptions";
+			}
+		}
+
+		// Description file names from registry, at least one.
 		static string[] DescriptionNames { get { Init(); return _DescriptionNames; } }
-		static bool _SetHidden;
-		static bool SetHidden { get { Init(); return _SetHidden; } }
+		static string[] _DescriptionNames;
+
+		static bool IsAnsiByDefault
+		{
+			get
+			{
+				return 0 != (int)Registry.GetValue(RegKeyName, "AnsiByDefault", 0);
+			}
+		}
+
+		static bool IsSaveInUtf
+		{
+			get
+			{
+				return 0 != (int)Registry.GetValue(RegKeyName, "SaveInUtf", 0);
+			}
+		}
+
+		static bool IsSetHidden
+		{
+			get
+			{
+				return 0 != (int)Registry.GetValue(RegKeyName, "SetHidden", 0);
+			}
+		}
 
 		// Directory description data cache, use locked!
 		static readonly WeakReference WeakCache = new WeakReference(null);
 
-		// Gets settings once.
-		static void Init()
+		// Gets settings once
+		internal static void Init()
 		{
 			if (_DescriptionNames != null)
 				return;
 
-			// the key
-			string keyName = Registry.CurrentUser.Name + "\\" + A.Far.RootFar + "\\Descriptions";
-
-			// SetHidden
-			_SetHidden = 0 != (int)Registry.GetValue(keyName, "SetHidden", 0);
-
 			// ListNames
-			string csv = (string)Registry.GetValue(keyName, "ListNames", DefaultDescriptionName);
+			string csv = (string)Registry.GetValue(RegKeyName, "ListNames", DefaultDescriptionName);
 			string[] names = csv.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			if (names.Length == 0)
 				_DescriptionNames = new string[] { DefaultDescriptionName };
@@ -131,7 +156,9 @@ namespace PowerShellFar
 			if (!File.Exists(descriptionFile))
 				return r;
 
-			using (StreamReader sr = new StreamReader(descriptionFile, Encoding.GetEncoding(A.Far.Zoo.OemCP)))
+			// preamble is recognized anyway, we just set a fallback encoding
+			Encoding encoding = IsAnsiByDefault ? Encoding.Default : Encoding.GetEncoding(A.Far.Zoo.OemCP);
+			using (StreamReader sr = new StreamReader(descriptionFile, encoding, true))
 			{
 				string line;
 				while ((line = sr.ReadLine()) != null)
@@ -232,9 +259,18 @@ namespace PowerShellFar
 						File.SetAttributes(descriptionFile, attr & ~(FileAttributes.ReadOnly | FileAttributes.System | FileAttributes.Hidden));
 				}
 
+				// encoding
+				Encoding encoding;
+				if (IsSaveInUtf)
+					encoding = Encoding.UTF8;
+				else if (IsAnsiByDefault)
+					encoding = Encoding.Default;
+				else
+					encoding = Encoding.GetEncoding(A.Far.Zoo.OemCP);
+
 				// write
 				int nWritten = 0;
-				using (StreamWriter sw = new StreamWriter(descriptionFile, false, Encoding.GetEncoding(A.Far.Zoo.OemCP)))
+				using (StreamWriter sw = new StreamWriter(descriptionFile, false, encoding))
 				{
 					foreach (string key in keys)
 					{
@@ -262,11 +298,11 @@ namespace PowerShellFar
 				if (existed)
 					File.SetAttributes(descriptionFile, attr | FileAttributes.Archive);
 				// add hidden attribute for a new file
-				else if (SetHidden)
+				else if (IsSetHidden)
 					File.SetAttributes(descriptionFile, File.GetAttributes(descriptionFile) | FileAttributes.Hidden);
 
 				// cache
-				WeakCache.Target = new DescriptionMap(Path.GetDirectoryName(descriptionFile), File.GetLastWriteTime(descriptionFile), map); 
+				WeakCache.Target = new DescriptionMap(Path.GetDirectoryName(descriptionFile), File.GetLastWriteTime(descriptionFile), map);
 			}
 		}
 
