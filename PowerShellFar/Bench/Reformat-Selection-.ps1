@@ -14,18 +14,17 @@
 
 .LINK
 	Help: Autoloaded functions
-
-.PARAMETER RightMargin
-		Right margin; default value is from the registry: Plugins\Align
-		RightMargin.
-.PARAMETER TabSize
-		Tab size for line length calculation; default value is from the editor.
 #>
 
 param
 (
-	[int]$RightMargin,
-	[int]$TabSize
+	[int]
+	# Right margin. Default: registry: Plugins\Align RightMargin.
+	$RightMargin
+	,
+	[int]
+	# Tab size for line length calculation. Default: from the editor.
+	$TabSize
 )
 
 function global:Reformat-Selection-

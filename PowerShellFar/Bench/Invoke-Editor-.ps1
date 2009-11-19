@@ -42,7 +42,7 @@ $ext = [IO.Path]::GetExtension($path)
 ### Start PowerShell in extermnal window and return immediately
 if ($ext -eq '.ps1') {
 	$env:script = $path
-	[Diagnostics.Process]::Start('powershell', @"
+	[Diagnostics.Process]::Start('powershell.exe', @"
 -noexit . '$env:script'; Read-Host '[ENTER]'; exit
 "@)
 	return

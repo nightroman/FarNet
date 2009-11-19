@@ -339,7 +339,7 @@ namespace PowerShellFar
 			}
 		}
 
-		bool UIAttributesCan() //$RVK
+		bool UIAttributesCan()
 		{
 			return Drive.Length == 0 && My.ProviderInfoEx.HasProperty(Location.Provider);
 		}
@@ -443,7 +443,7 @@ namespace PowerShellFar
 			UpdateRedraw(false, ib.Text);
 		}
 
-		internal override bool UICopyMoveCan(bool move) //$RVK
+		internal override bool UICopyMoveCan(bool move)
 		{
 			if (base.UICopyMoveCan(move))
 				return true;

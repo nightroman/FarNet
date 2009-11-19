@@ -1,6 +1,21 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.14 =
+
+*) Fixed external viewer bugs and temporary file issues (encoding, removal).
+Hmm, bugs were there for ages and nobody found them... Just in case: external
+viewer is used on [F5] = invoke scripts from editor in the current session and
+on debugging to be able to see output in an outside Far window because this Far
+window is used by the debugger dialog.
+
+*) Profile-.ps1: removed custom external viewer settings. Let's external viewer
+be really default by default (i.e. Far.exe /m /p /v ...).
+
+*) Invoke-Editor-.ps1: fixed invocation of .ps1 files. FYI: this way is very
+different from [F5]: a script is invoked outside of Far by PowerShell.exe, not
+by the Far host. So far it is done by a script, in contrast to built-in [F5].
+
 = 2.2.13 =
 
 *** Far 2.0.1209+ ***
