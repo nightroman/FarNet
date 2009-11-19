@@ -142,7 +142,8 @@ namespace PowerShellFar
 			// Hidden: Write output to "Out-Null" to avoid memory use.
 			else if (keepSeconds <= 0)
 			{
-				PowerShell.AddCommand("Out-Null"); //$RVK full name?
+				//! User can use his Out-Null
+				PowerShell.AddCommand("Out-Null");
 			}
 			// Output: create it once: it is cumulative 
 			else

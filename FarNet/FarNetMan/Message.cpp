@@ -72,8 +72,8 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 	// GUI
 	if (int(options & MsgOptions::Gui) != 0)
 	{
-		if (buttons || helpTopic)
-			throw gcnew ArgumentException("Custom buttons and help topic are not supported for GUI message boxes."); //$RVK
+		if (buttons)
+			throw gcnew ArgumentException("Custom buttons are not supported in GUI message boxes.");
 
 		if (!Config::GetBool("FarNet.DisableGui"))
 			return ShowGui(body, header, options);

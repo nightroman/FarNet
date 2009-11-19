@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 2.2.13#
+#PowerShellFar 2.2.14#
 
 Implements Windows PowerShell host in Far Manager and user interface for
 invoking commands and scripts. PowerShell code can access and control Far
@@ -77,8 +77,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1209
- - Plugin FarNet 4.2.13
+ - Far Manager 2.0.1212
+ - Plugin FarNet 4.2.14
  - Windows PowerShell 2.0
 
 
@@ -1056,69 +1056,23 @@ $#Global objects#
 
 There are three main objects defined as global variables: $Far, $Psf, and $Host.
 
-#$Host#
-
-PowerShell host instance, see PowerShell documentation. It is not really useful
-in PowerShellFar but you may use property $Host.Name: it is "ConsoleHost" for
-PowerShell.exe and "FarHost" in PowerShellFar. Thus, a script can check this
-and decide what can be used depending on a host.
-
 #$Far#
-
-Object implementing FarNet interface IFar. It provides access to Far data and
-functionality. See FarNet API documentation.
+The instance of a class implementing FarNet.IFar interface. It provides access
+to all Far data and functionality via FarNet object model. See FarNet API
+documentation.
 
 #$Psf#
 
-PowerShellFar plugin object. See PowerShellFar.chm for documentation of all
-members. Main properties and methods:
+The instance of PowerShellFar.Actor class exposing PowerShellFar features
+additional to FarNet features. See PowerShellFar.chm documentation. Note that
+PowerShellFar namespace provides public classes that can be created directly by
+New-Object.
 
-#$Psf.Settings#
+#$Host#
 
-Plugin basic settings, see ~Plugin settings~@PluginSettings@.
-
-#$Psf.Action()#
-
-Registers your action, a PowerShell script block called from the menu.
-
-#$Psf.HotLines#
-
-Gets $Far.Editor.Selection if there is a selected text, else $Far.Editor.Lines
-if there is a current editor else null. The returned value is a list (ILines),
-so that you can add, remove and modify its items (ILine).
-
-#$Psf.HotText#
-
-In editor: return selected text if any else the whole text. If there is no
-current editor then returns the command line selection or the whole text. The
-same rules are for setting this property.
-
-#$Psf.Editor()#
-
-Gets an object IEditor of the current editor if any else throws
-InvalidOperationException. This method allows to avoid boring checks and
-throwing errors in almost all scripts operating on editor.
-
-#$Psf.CanExit()#
-
-It can be used to prevent closing of Far by [F10] with existing background jobs.
-See ~Background jobs~@BackgroundJobs@.
-
-#$Psf.GetHistory(count)#
-
-Gets a list PowerShellFar commands from history.
-
-#$Psf.Providers#
-
-This is a dictionary where keys are provider names and values are dictionaries
-of their settings. See ~Profile-.ps1~@Profile@ for examples.
-
-
-#NOTE#
-
-This list is not full. Moreover, PowerShellFar namespace provides public classes
-that can be used by New-Object. They are not documented in here. Please, refer
-to PowerShellFar.chm and scripts for more documentation and examples.
+The PowerShell host instance. It is not that useful in PowerShellFar. You may
+check the property $Host.Name, it is "FarHost" in PowerShellFar. The script may
+choose how to work depending on a host.
 
 
 @Restrictions
@@ -1348,14 +1302,6 @@ details: properties Providers (Actor), Columns, ExcludeColumns, FarName
 	...
 
 Here you can set some options of $Psf.Settings, mostly UI preferences.
- __________
-
-	## External viewer
-	$Psf.Settings.ExternalViewerFileName = "conemu.exe"
-	...
-
-Settings of an external viewer. Of course if you do not use "conemu.exe" then
-remove this section or change it appropriately.
  __________
 
 

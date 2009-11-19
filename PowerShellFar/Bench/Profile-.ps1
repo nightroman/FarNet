@@ -104,9 +104,3 @@ $Psf.Settings.IntelliAutoSelect = $false
 $Psf.Settings.IntelliMaxHeight = 0
 $Psf.Settings.IntelliNoShadow = $false
 $Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Down
-
-### External viewer
-$Psf.Settings.ExternalViewerFileName = "conemu.exe"
-$Psf.Settings.ExternalViewerArguments = @"
-/cmd "$env:FARHOME\far.exe" /p /m /v "{0}"
-"@

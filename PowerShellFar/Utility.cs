@@ -168,7 +168,7 @@ namespace PowerShellFar
 			EditorConsoleCannotComplete = "Editor console can't complete the command\nbecause its window is not current at this moment.",
 			LogError = "Cannot write to the log; ensure the path is valid and the file is not busy.",
 			PropertyIsNotSettable = "Note: this property is not settable, changes will be lost.",
-			NeedsEditor = "There is no editor for this operation.",
+			NeedsEditor = "Editor is not opened or its window is not current.",
 			NotSupportedByProvider = "Operation is not supported by the provider.",
 			NoUserMenu = "You did not define your user menu $Psf.UserMenu.\nPlease, see help and example script Profile-.ps1",
 			PropertyIsNotSettableNow = "The property is not settable at this moment.",

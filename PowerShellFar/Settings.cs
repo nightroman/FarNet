@@ -20,7 +20,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Restores permanent settings (Plugin*).
 		/// </summary>
-		public Settings()
+		internal Settings()
 		{
 			using (RegistryKey keyFar = Registry.CurrentUser.CreateSubKey(A.Far.RootKey))
 			{
@@ -169,10 +169,10 @@ namespace PowerShellFar
 
 		string _ExternalViewerFileName = string.Empty;
 		/// <summary>
-		/// External viewer application.
+		/// Gets or sets the external viewer application path.
 		/// </summary>
 		/// <remarks>
-		/// By default external Far viewer is used.
+		/// By default it is empty and external Far viewer is used.
 		/// <example>
 		/// See <see cref="ExternalViewerArguments"/>
 		/// </example>
@@ -189,18 +189,15 @@ namespace PowerShellFar
 
 		string _ExternalViewerArguments = string.Empty;
 		/// <summary>
-		/// Arguments of <see cref="ExternalViewerFileName"/> application.
-		/// Use "{0}" where a file path should be inserted.
+		/// Gets or sets the command line arguments for the external viewer.
 		/// </summary>
 		/// <remarks>
+		/// It is used together with <see cref="ExternalViewerFileName"/>.
+		/// Use "{0}" where a file path should be inserted.
 		/// <example>
-		/// If you normally use Far with ConEmu then it is better to run external viewer by ConEmu as well,
-		/// otherwise due to different screen width the output can be wrapped or not completely shown and etc.
 		/// <code>
-		/// $Psf.Settings.ExternalViewerFileName = "conemu.exe"
-		/// $Psf.Settings.ExternalViewerArguments = @"
-		/// /cmd "$env:FARHOME\far.exe" /p /m /v "{0}"
-		/// "@
+		/// $Psf.Settings.ExternalViewerFileName = "$env:FARHOME\Far.exe"
+		/// $Psf.Settings.ExternalViewerArguments = '/m /p /v "{0}"'
 		/// </code>
 		/// </example>
 		/// </remarks>
