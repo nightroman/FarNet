@@ -101,7 +101,7 @@ namespace FarNet
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
-		/// <param name="buttons">Message buttons.</param>
+		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
 		int Msg(string body, string header, MsgOptions options, string[] buttons);
 		/// <summary>
@@ -110,9 +110,10 @@ namespace FarNet
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
-		/// <param name="buttons">Message buttons.</param>
+		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <param name="helpTopic">
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
+		/// It is ignored in a GUI message.
 		/// </param>
 		/// <returns>Button index or -1 if cancelled.</returns>
 		/// <remarks>

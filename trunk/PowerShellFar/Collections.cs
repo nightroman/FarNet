@@ -50,7 +50,6 @@ namespace My
 		public void Dispose()
 		{
 			_enumerator.Dispose();
-			GC.SuppressFinalize(this);
 		}
 	}
 
@@ -61,7 +60,7 @@ namespace My
 	{
 		public void Reset() { }
 		public bool MoveNext() { return false; }
-		public void Dispose() { GC.SuppressFinalize(this); }
+		public void Dispose() { }
 		public T Current { get { throw new InvalidOperationException(); } }
 		object IEnumerator.Current { get { throw new InvalidOperationException(); } }
 	}

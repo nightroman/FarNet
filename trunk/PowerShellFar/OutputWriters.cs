@@ -141,35 +141,33 @@ namespace PowerShellFar
 	class ExternalOutputWriter : AnyOutputWriter, IDisposable
 	{
 		// Output file name
-		internal static string _fileName;
+		string FileName;
 
 		// Outer process
-		static Process _process;
+		Process Process;
 
 		// Output writer
-		StreamWriter _writer;
+		StreamWriter Writer;
 
 		void Open()
 		{
-			if (_writer == null)
+			// new writer
+			if (Writer == null)
 			{
-				if (_fileName == null)
-					_fileName = Path.GetTempFileName();
+				if (FileName == null)
+					FileName = Path.GetTempFileName();
 
-				StartViewer();
+				Writer = new StreamWriter(FileName, false, Encoding.Unicode);
+				Writer.AutoFlush = true;
+			}
 
-				_writer = new StreamWriter(_fileName, false, Encoding.Unicode);
-				_writer.AutoFlush = true;
-			}
-			else
-			{
-				StartViewer();
-			}
+			//! start after opening a writer when BOM is already written
+			StartViewer();
 		}
 
-		static void StartViewer()
+		void StartViewer()
 		{
-			if (_process == null || _process.HasExited)
+			if (Process == null || Process.HasExited)
 			{
 				string externalViewerFileName = A.Psf.Settings.ExternalViewerFileName;
 				string externalViewerArguments;
@@ -177,11 +175,13 @@ namespace PowerShellFar
 				// try user defined external viewer
 				if (!string.IsNullOrEmpty(externalViewerFileName))
 				{
-					externalViewerArguments = string.Format(CultureInfo.InvariantCulture, A.Psf.Settings.ExternalViewerArguments, _fileName);
+					externalViewerArguments = string.Format(CultureInfo.InvariantCulture, A.Psf.Settings.ExternalViewerArguments, FileName);
 					try
 					{
 						ProcessStartInfo info = new ProcessStartInfo(externalViewerFileName, externalViewerArguments);
-						_process = Process.Start(info);
+						Process = Process.Start(info);
+						Process.EnableRaisingEvents = true;
+						Process.Exited += OnExited;
 					}
 					catch (Exception)
 					{
@@ -192,43 +192,61 @@ namespace PowerShellFar
 				}
 
 				// use default external viewer
-				if (_process == null)
+				if (Process == null || Process.HasExited)
 				{
 					externalViewerFileName = Process.GetCurrentProcess().MainModule.FileName;
-					externalViewerArguments = "/p /m /v \"" + _fileName + "\"";
+					externalViewerArguments = "/m /p /v \"" + FileName + "\"";
 
 					ProcessStartInfo info = new ProcessStartInfo(externalViewerFileName, externalViewerArguments);
-					_process = Process.Start(info);
+					Process = Process.Start(info);
+					Process.EnableRaisingEvents = true;
+					Process.Exited += OnExited;
 				}
 			}
 		}
 
+		// Closes writing.
+		// *) Do not delete the file: case: viewer is starting and has not yet opened the file => output won't be shown.
+		// *) As a result: If Far is closed but external viewers are not yet then their files are not deleted.
 		public void Dispose()
 		{
-			if (_writer != null)
+			if (Writer != null)
 			{
-				_writer.Close();
-				_writer = null;
-				GC.SuppressFinalize(this);
+				Writer.Close();
+				Writer = null;
+			}
+		}
+
+		// Try to delete the file: ignore IO errors, the file still may be in use.
+		void OnExited(object sender, EventArgs e)
+		{
+			if (FileName != null && File.Exists(FileName))
+			{
+				try
+				{
+					File.Delete(FileName);
+				}
+				catch (IOException) { }
+				catch (UnauthorizedAccessException) { }
 			}
 		}
 
 		public override void Append(string value)
 		{
 			Open();
-			_writer.Write(value);
+			Writer.Write(value);
 		}
 
 		public override void AppendLine()
 		{
 			Open();
-			_writer.WriteLine();
+			Writer.WriteLine();
 		}
 
 		public override void AppendLine(string value)
 		{
 			Open();
-			_writer.WriteLine(value);
+			Writer.WriteLine(value);
 		}
 	}
 }

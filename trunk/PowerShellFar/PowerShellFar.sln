@@ -3,7 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41B8AD22-D6A2-4056-92DD-7BC963D754DC}"
 	ProjectSection(SolutionItems) = preProject
-		..\About-Dev.txt = ..\About-Dev.txt
 		..\FarNet\FarNet\Build-FarNet.proj = ..\FarNet\FarNet\Build-FarNet.proj
 		..\FarNet\Build-FarNetDev.proj = ..\FarNet\Build-FarNetDev.proj
 		..\FarNet\FarNetMan\Build-FarNetMan.proj = ..\FarNet\FarNetMan\Build-FarNetMan.proj

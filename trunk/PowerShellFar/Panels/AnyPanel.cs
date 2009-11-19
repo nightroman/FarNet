@@ -461,7 +461,7 @@ namespace PowerShellFar
 		/// <summary>Copy here action.</summary>
 		internal virtual void UICopyHere() { }
 
-		internal virtual bool UICopyMoveCan(bool move) //$RVK
+		internal virtual bool UICopyMoveCan(bool move)
 		{
 			return !move && AnotherPanel is ObjectPanel;
 		}

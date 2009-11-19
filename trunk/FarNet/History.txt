@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.2.14 =
+
+*) IFar.Msg() with 'Gui*' options: it is OK to provide 'helpTopic' parameter,
+it's not an error, it is simply ignored. Throw only on custom buttoms: they
+are not supported in GUI mode.
+
 = 4.2.13 =
 
 *** Far 2.0.1209+ ***

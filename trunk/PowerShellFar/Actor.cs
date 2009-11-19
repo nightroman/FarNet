@@ -55,7 +55,7 @@ namespace PowerShellFar
 		// *) Invoking() is called by FarNet on a user action; it should wait for opened/broken runspace and continue or die.
 		internal void Connect()
 		{
-			// get settings
+			// new settings
 			_settings = new Settings();
 
 			// editor events: OnEditorOpened1 should be called always and first
@@ -104,13 +104,6 @@ namespace PowerShellFar
 					Pipeline = null;
 					Runspace = null;
 				}
-			}
-
-			// tmp files: ignore IO errors, e.g. they can be still used externally
-			if (ExternalOutputWriter._fileName != null && File.Exists(ExternalOutputWriter._fileName))
-			{
-				try { File.Delete(ExternalOutputWriter._fileName); }
-				catch (IOException) { }
 			}
 		}
 
@@ -209,13 +202,13 @@ namespace PowerShellFar
 				}
 
 				// invoke user startup code, separately for better diagnostics
-				if (!string.IsNullOrEmpty(_settings.PluginStartupCode))
+				if (!string.IsNullOrEmpty(Settings.PluginStartupCode))
 				{
 					try
 					{
 						using (Pipeline p = Runspace.CreatePipeline())
 						{
-							p.Commands.AddScript(_settings.PluginStartupCode);
+							p.Commands.AddScript(Settings.PluginStartupCode);
 							p.Invoke();
 						}
 					}
@@ -229,7 +222,7 @@ Code (see configuration):
 
 Reason (see also $Error):
 {1}
-", _settings.PluginStartupCode, ex.Message);
+", Settings.PluginStartupCode, ex.Message);
 						A.Far.Msg(msg, Res.Name, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
 					}
 				}
@@ -460,27 +453,44 @@ Continue with this current directory?
 
 		Settings _settings;
 		/// <summary>
-		/// Settings: permanent (<c>.Plugin*</c>, see the configuration dialog)
-		/// and the current session preferences, usually configured in the profile.
+		/// Gets the configuration settings and the session settings.
 		/// </summary>
+		/// <remarks>
+		/// The configuration settings (<c>.Plugin*</c>) are used see the configuration dialog.
+		/// The current session preferences are usually set in the profile.
+		/// <para>
+		/// See also .hlf topic [Plugin settings].
+		/// </para>
+		/// </remarks>
 		public PowerShellFar.Settings Settings
 		{
 			get { return _settings; }
 		}
 
 		/// <summary>
-		/// Returns <see cref="IEditor.Selection"/> if stream selection exists,
-		/// else <see cref="IEditor.Lines"/> if editor exists or null otherwise.
+		/// Gets a list of active editor lines.
 		/// </summary>
+		/// <remarks>
+		/// Gets <see cref="IEditor.Selection"/> if stream selection exists,
+		/// else <see cref="IEditor.Lines"/> if editor exists,
+		/// else null.
+		/// <para>
+		/// You can not just get line strings but add lines (as strings) to the list,
+		/// remove items and modify items (<see cref="ILine"/>).
+		/// </para>
+		/// </remarks>
 		public ILines HotLines
 		{
 			get { return EditorKit.HotLines; }
 		}
 
 		/// <summary>
-		/// Selected text if selection exists in the current editor or an editor line,
-		/// else an editor line text if an editor line exists.
+		/// Gets or sets the active text of active editor or editor line.
 		/// </summary>
+		/// <remarks>
+		/// Gets or sets selected text if selection exists in the current editor or an editor line,
+		/// else a line text if any kind of editor line is active.
+		/// </remarks>
 		public string HotText
 		{
 			get { return EditorKit.HotText; }
@@ -521,14 +531,19 @@ Continue with this current directory?
 		}
 
 		/// <summary>
-		/// Gets the current editor or throws <c>InvalidOperationException</c> if it does not exist.
+		/// Gets the editor or throws.
 		/// </summary>
+		/// <remarks>
+		/// Gets the editor associated with the current window or throws, if none.
+		/// It just helps to avoid boring checks in many editor scripts.
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Editor is not opened or its window is not current.</exception>
 		public IEditor Editor()
 		{
 			IEditor editor = A.Far.Editor;
-			if (editor == null)
+			if (editor == null || A.Far.WindowType != WindowType.Editor)
 				throw new InvalidOperationException(Res.NeedsEditor);
-			
+
 			return editor;
 		}
 
@@ -618,6 +633,9 @@ Continue with this current directory?
 		/// If there are background jobs this methods calls <see cref="ShowJobs"/>
 		/// so that you are prompted to remove jobs manually. If you do not remove all the jobs
 		/// then the method returns false.
+		/// <para>
+		/// It can be used to prevent closing of Far by [F10] with existing background jobs.
+		/// </para>
 		/// </remarks>
 		public bool CanExit()
 		{
