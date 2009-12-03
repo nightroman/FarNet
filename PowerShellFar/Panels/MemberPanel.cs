@@ -136,8 +136,16 @@ namespace PowerShellFar
 						SetFile f = new SetFile();
 						f.Name = pi.Name;
 
+						// get the base object
+						PSObject asPSObject = value as PSObject;
+						if (asPSObject != null)
+							value = asPSObject.BaseObject;
+
+						//! ArrayList.ToString() catenates items' ToString() - avoid this
 						if (value == null || value.GetType() == typeof(DBNull))
 							f.Description = "<null>";
+						else if (value is System.Collections.IEnumerable && !(value is string))
+							f.Description = value.GetType().Name;
 						else
 							f.Description = value.ToString();
 
@@ -323,7 +331,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public EventHandler<FileEventArgs> CreateDataLookup(string[] namePairs)
 		{
-			if (Convert<DataRow>.From(_Value) == null) throw new InvalidOperationException("Data lookup is designed only for DataRow.");
+			if (Cast<DataRow>.From(_Value) == null) throw new InvalidOperationException("Data lookup is designed only for DataRow.");
 			if (namePairs == null || namePairs.Length == 0) throw new ArgumentException("Argument 'namePairs' must not be null or empty.");
 			if (namePairs.Length % 2 != 0) throw new ArgumentException("Argument 'namePairs' must contain even number of items.");
 
@@ -366,7 +374,7 @@ namespace PowerShellFar
 
 		internal override void EditFile(FarFile file, bool alternative)
 		{
-			PSPropertyInfo pi = Convert<PSPropertyInfo>.From(file.Data);
+			PSPropertyInfo pi = Cast<PSPropertyInfo>.From(file.Data);
 			if (pi == null)
 				return;
 

@@ -114,14 +114,23 @@ void FarDialog::Rect::set(Place value)
 	}
 }
 
+// _091126_135929 $Far.Dialog.TypeId is empty or null (how can it be null?!).
+// Try at least to reduce problem cases...
 Guid FarDialog::TypeId::get()
 {
 	if (_hDlg == INVALID_HANDLE_VALUE)
 		return _typeId;
 
+	// _091126_135929 At least FarNet dialogs work fine in this way.
+	if (_typeId != Guid::Empty)
+		return _typeId;
+
+	// request
 	DialogInfo arg;
 	if (Info.SendDlgMessage(_hDlg, DM_GETDIALOGINFO, 0, (LONG_PTR)&arg))
-		return Guid(
+	{
+		// _091126_135929 Save it so that next time we do not try.
+		_typeId = Guid(
 		arg.Id.Data1,
 		arg.Id.Data2,
 		arg.Id.Data3,
@@ -133,8 +142,10 @@ Guid FarDialog::TypeId::get()
 		arg.Id.Data4[5],
 		arg.Id.Data4[6],
 		arg.Id.Data4[7]);
-	else
-		return Guid();
+		return _typeId;
+	}
+
+	return Guid::Empty;
 }
 
 void FarDialog::TypeId::set(Guid value)
@@ -467,10 +478,15 @@ void FarDialog::Resize(Point size)
 	Info.SendDlgMessage(_hDlg, DM_RESIZEDIALOG, 0, (LONG_PTR)&arg);
 }
 
+// _091127_112807 Do we need to keep a global dialog handle in here?
+// 1) It is done on OPEN_DIALOG => all code called from the plugin menu is happy.
+// 2) Other code can be dialog event handlers (DialogProc), the dialog is a sender.
+// Stepper now uses [1]. But e.g. on callbacks [1] is not called, we need Far API.
+// Mantis 1179 requests such API, let's wait.
 int FarDialog::AsProcessDialogEvent(int id, void* param)
 {
 	FarDialogEvent* de = (FarDialogEvent*)param;
-	_hDlgTop = de->hDlg;
+
 	switch(id)
 	{
 	case DE_DLGPROCINIT:
@@ -485,11 +501,19 @@ int FarDialog::AsProcessDialogEvent(int id, void* param)
 		{
 		case DN_CLOSE:
 			if (de->Result)
+			{
+				// drop the global current handle
 				_hDlgTop = INVALID_HANDLE_VALUE;
+				return false;
+			}
 			break;
 		}
 		break;
 	}
+
+	// set the global current to be used by $Far.Dialog
+	_hDlgTop = de->hDlg;
+
 	return false;
 }
 

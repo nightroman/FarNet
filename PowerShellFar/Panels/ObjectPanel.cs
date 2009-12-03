@@ -37,7 +37,7 @@ namespace PowerShellFar
 		internal int AddObjectsWorker(object values)
 		{
 			int r = 0;
-			IEnumerable ie = Convert<IEnumerable>.From(values);
+			IEnumerable ie = Cast<IEnumerable>.From(values);
 			if (ie == null || ie is string)
 			{
 				Panel.Files.Add(NewFile(values));
@@ -136,7 +136,7 @@ namespace PowerShellFar
 				return;
 
 			// case: enumerable (string is excluded by linear type case)
-			IEnumerable ie = Convert<IEnumerable>.From(file.Data);
+			IEnumerable ie = Cast<IEnumerable>.From(file.Data);
 			if (ie != null)
 			{
 				ObjectPanel op = new ObjectPanel();

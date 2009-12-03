@@ -122,7 +122,7 @@ namespace PowerShellFar
 				writer.WriteLine("ERROR:");
 				writer.WriteLine(error.ToString());
 
-				ErrorRecord asErrorRecord = Convert<ErrorRecord>.From(error);
+				ErrorRecord asErrorRecord = Cast<ErrorRecord>.From(error);
 				if (asErrorRecord != null && asErrorRecord.InvocationInfo != null)
 					writer.WriteLine(Kit.PositionMessage(asErrorRecord.InvocationInfo.PositionMessage));
 			}

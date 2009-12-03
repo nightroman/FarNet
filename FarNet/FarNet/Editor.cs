@@ -450,6 +450,10 @@ namespace FarNet
 		/// Note: it is OK to call it when asynchronous mode is already stopped or even was not started.
 		/// </remarks>
 		void EndAsync();
+		/// <summary>
+		/// Gets or sets show white space flag.
+		/// </summary>
+		bool ShowWhiteSpace { get; set; }
 	}
 
 	/// <summary>
