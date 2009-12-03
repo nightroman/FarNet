@@ -638,7 +638,7 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 			if (file.IsDirectory)
 				return;
 
-			FileInfo fi = Convert<FileInfo>.From(file.Data);
+			FileInfo fi = Cast<FileInfo>.From(file.Data);
 			if (fi != null)
 			{
 				base.EditFile(file, alternative);

@@ -1,4 +1,4 @@
-Add-Path.ps1 Adds a directory path to the current process path.
+﻿Add-Path.ps1 Adds a directory path to the current process path.
 Clear-Session.ps1 Clears PowerShell session resources.
 Complete-Word-.ps1 Completes the current word in the editor, command line or edit box.
 Connect-Mdb-.ps1 Connects .mdb database and optionally panels its tables.
@@ -40,6 +40,7 @@ Remove-EmptyString-.ps1 Removes empty strings from a list
 Remove-EndSpace-.ps1 Removes end spaces in object Text property
 Search-Regex-.ps1 Searches for a regex in files and work on results in a panel
 Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected
+Set-Console.ps1 Sets console window properties.
 Set-Selection-.ps1 Set selected text in editor, command line or dialog editbox
 Set-SynopsisDescription-.ps1 Sets script file descriptions to their help synopses.
 Show-History-.ps1 Shows command, folder or view history

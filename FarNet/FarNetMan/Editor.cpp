@@ -937,4 +937,25 @@ void Editor::Sync()
 	}
 }
 
+bool Editor::ShowWhiteSpace::get()
+{
+	if (!IsOpened)
+		return false;
+
+	AutoEditorInfo ei;
+
+	if (ei.Options & EOPT_SHOWWHITESPACE)
+		return true;
+	else
+		return false;
+}
+
+void Editor::ShowWhiteSpace::set(bool value)
+{
+	EditorSetParameter esp;
+	esp.Type = ESPT_SHOWWHITESPACE;
+	esp.Param.iParam = (int)value;
+	EditorControl_ECTL_SETPARAM(esp);
+}
+
 }

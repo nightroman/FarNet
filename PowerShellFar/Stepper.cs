@@ -166,14 +166,14 @@ namespace PowerShellFar
 			foreach (object o in steps)
 			{
 				object oInsert;
-				ScriptBlock b = Convert<ScriptBlock>.From(o);
+				ScriptBlock b = Cast<ScriptBlock>.From(o);
 				if (b != null)
 				{
 					oInsert = b;
 				}
 				else
 				{
-					string s = Convert<string>.From(o);
+					string s = Cast<string>.From(o);
 					if (s != null)
 					{
 						try
@@ -219,7 +219,7 @@ namespace PowerShellFar
 				throw new ArgumentNullException("command");
 
 			// code
-			string code = Convert<string>.From(command);
+			string code = Cast<string>.From(command);
 			if (code != null)
 			{
 				_units.Add(ScriptBlock.Create(code));
@@ -227,7 +227,7 @@ namespace PowerShellFar
 			}
 
 			// script
-			ScriptBlock script = Convert<ScriptBlock>.From(command);
+			ScriptBlock script = Cast<ScriptBlock>.From(command);
 			if (script != null)
 			{
 				_units.Add(script);
@@ -403,7 +403,7 @@ namespace PowerShellFar
 				}
 
 				// invoke the next step
-				ScriptBlock block = Convert<ScriptBlock>.From(it);
+				ScriptBlock block = Cast<ScriptBlock>.From(it);
 				if (block != null)
 				{
 					// invoke the step script
@@ -418,7 +418,7 @@ namespace PowerShellFar
 					}
 
 					// extra script, normally starts modal UI
-					ScriptBlock script = Convert<ScriptBlock>.From(value);
+					ScriptBlock script = Cast<ScriptBlock>.From(value);
 					if (script != null)
 					{
 						++_StepIndex;
@@ -427,7 +427,7 @@ namespace PowerShellFar
 					}
 
 					// extra keys, normally start modal UI
-					string keys = Convert<string>.From(value);
+					string keys = Cast<string>.From(value);
 					if (keys != null)
 					{
 						++_StepIndex;
@@ -438,7 +438,7 @@ namespace PowerShellFar
 				else
 				{
 					// post keys
-					int[] keys = Convert<int[]>.From(it);
+					int[] keys = Cast<int[]>.From(it);
 					if (keys == null)
 						keys = A.Far.CreateKeySequence(it.ToString());
 

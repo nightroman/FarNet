@@ -4,13 +4,9 @@ Copyright (C) 2006-2009 Roman Kuzmin
 */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using System.Text.RegularExpressions;
 using FarNet;
 
@@ -76,7 +72,7 @@ namespace PowerShellFar
 			try
 			{
 				// case: file system
-				FileSystemInfo fi = Convert<FileSystemInfo>.From(file.Data);
+				FileSystemInfo fi = Cast<FileSystemInfo>.From(file.Data);
 				if (fi != null)
 				{
 					A.Psf.InvokeCode("Invoke-Item -LiteralPath $args[0] -ErrorAction Stop", fi.FullName);
@@ -109,7 +105,7 @@ namespace PowerShellFar
 		{
 			if (file == null)
 				return;
-			
+
 			if (_Edit == null)
 				EditFile(file, alternative);
 			else
@@ -117,11 +113,11 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Edits a file. <c>Data</c> must not be null.
-		/// Mind that <c>Data</c> can be wrapped by <c>PSObject</c>.
+		/// Edits a file.
 		/// </summary>
 		/// <remarks>
-		/// This class edits FS files only.
+		/// NB: <c>Data</c> can be wrapped by <c>PSObject</c>.
+		/// _091202_073429
 		/// </remarks>
 		internal virtual void EditFile(FarFile file, bool alternative)
 		{
@@ -130,13 +126,13 @@ namespace PowerShellFar
 				return;
 
 			// get file and open in internal\external editor
-			FileInfo fi = Convert<FileInfo>.From(file.Data);
-			if (fi != null)
+			string filePath = My.PathEx.TryGetFilePath(file.Data);
+			if (filePath != null)
 			{
 				if (alternative)
-					Process.Start("Notepad", fi.FullName);
+					Process.Start("Notepad", filePath);
 				else
-					A.CreateEditor(fi.FullName).Open(OpenMode.None);
+					A.CreateEditor(filePath).Open(OpenMode.None);
 				return;
 			}
 
@@ -211,13 +207,16 @@ namespace PowerShellFar
 		/// <summary>
 		/// Viewer of a file.
 		/// </summary>
+		/// <remarks>
+		/// _091202_073429
+		/// </remarks>
 		void ViewFile(FarFile file)
 		{
-			// get file and open in internal viewer
-			FileInfo fi = Convert<FileInfo>.From(file.Data);
-			if (fi != null)
+			// get file path and open in internal viewer
+			string filePath = My.PathEx.TryGetFilePath(file.Data);
+			if (filePath != null)
 			{
-				IViewer view = A.CreateViewer(fi.FullName);
+				IViewer view = A.CreateViewer(filePath);
 				view.Open(OpenMode.None);
 				return;
 			}

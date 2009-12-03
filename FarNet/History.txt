@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+= 4.2.15 =
+
+*** Far 2.0.1238+ ***
+
+*) IEditor: new property ShowWhiteSpace: Gets or sets show white space flag.
+
+*) Internal: more robust IFar.Dialog (current dialog). Note: implemented as
+workaround: there is no such Far API, see Mantis 1179.
+
 = 4.2.14 =
 
 *) IFar.Msg() with 'Gui*' options: it is OK to provide 'helpTopic' parameter,

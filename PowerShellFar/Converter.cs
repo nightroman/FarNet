@@ -56,10 +56,6 @@ namespace PowerShellFar
 			if (type == typeof(ulong)) return true;
 			if (type == typeof(ushort)) return true;
 
-			//! object via string
-			if (type == typeof(PSObject))
-				return true;
-
 			return false;
 		}
 
@@ -136,6 +132,12 @@ namespace PowerShellFar
 
 		public static string ValueToLine(object value)
 		{
+			// get the base object
+			PSObject asPSObject = value as PSObject;
+			if (asPSObject != null)
+				value = asPSObject.BaseObject;
+
+			// skip null and not linear
 			if (value == null || !IsLinearType(value.GetType()))
 				return null;
 
@@ -282,13 +284,13 @@ namespace PowerShellFar
 	}
 
 	/// <summary>
-	/// Converter to a type.
+	/// Casts to a type.
 	/// </summary>
 	/// <typeparam name="T">A type to convert to.</typeparam>
-	static class Convert<T> where T : class
+	static class Cast<T> where T : class
 	{
 		/// <summary>
-		/// Converts from object or PSObject.
+		/// Casts from object or PSObject.
 		/// </summary>
 		internal static T From(object obj)
 		{

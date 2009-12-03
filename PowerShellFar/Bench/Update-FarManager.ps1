@@ -114,18 +114,31 @@ Write-Host -ForegroundColor Cyan @"
 Extracting from '$Archive'...
 "@
 $plugins1 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
+$files1 = foreach($_ in '*.hlf', '*.lng') { [System.IO.Directory]::GetFiles($FARHOME, $_) }
 & '7z' 'x' $Archive "-o$FARHOME" '-aoa'
 if ($lastexitcode) { throw "7z failed." }
 
 ### remove not used plugins
 Write-Host -ForegroundColor Cyan @"
-Removing not used standard plugins...
+Removing not used plugins...
 "@
 $plugins2 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
 foreach($plugin in $plugins2) {
 	if ($plugins1 -notcontains $plugin) {
 		Write-Host "Removing $plugin"
 		[System.IO.Directory]::Delete($plugin, $true)
+	}
+}
+
+### remove not used files
+Write-Host -ForegroundColor Cyan @"
+Removing not used files...
+"@
+$files2 = foreach($_ in '*.hlf', '*.lng') { [System.IO.Directory]::GetFiles($FARHOME, $_) }
+foreach($file in $files2) {
+	if ($files1 -notcontains $file) {
+		Write-Host "Removing $file"
+		[System.IO.File]::Delete($file)
 	}
 }
 

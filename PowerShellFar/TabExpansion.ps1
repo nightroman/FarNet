@@ -26,7 +26,7 @@ function global:TabExpansion
 	$expanded = .{
 		### Members of variables, expressions or static objects
 		if ($lastWord -match '(^.*?)(\$[\w\.]+|.+\)|\[[\w\.]+\]::\w+)\.(\w*)$') {
-			$method = [Management.Automation.PSMemberTypes]'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
+			$method = [System.Management.Automation.PSMemberTypes]'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
 			$pref = $matches[1]
 			$expr = $matches[2]
 			$patt = $matches[3] + '*'
@@ -140,7 +140,7 @@ function global:TabExpansion
 			$pref = $matches[1]
 			$type = $matches[2]
 			$name = $matches[3]
-			$method = [Management.Automation.PSMemberTypes] 'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
+			$method = [System.Management.Automation.PSMemberTypes] 'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
 			foreach($_ in (Invoke-Expression "$type | Get-Member '$name*' -Static")) {
 				if ($_.MemberType -band $method) {
 					'{0}{1}::{2}(' -f $pref, $type, $_.Name
@@ -327,10 +327,9 @@ function global:GetTypeOrNamespace($match, [string]$prefix)
 .SYNOPSIS
 	Gets parameter names of a script.
 .NOTES
-	Approach (Get-Command X).Parameters does not work in V2 CTP3 if scripts
-	have parameters with types defined in not yet loaded assemblies. For
-	functions we do not need this, they are loaded and Get-Command gets
-	parameters fine.
+	Approach (Get-Command X).Parameters does not work in V2 if scripts have
+	parameters with types defined in not yet loaded assemblies. For functions
+	we do not need this, they are loaded and Get-Command gets parameters fine.
 #>
 function global:GetScriptParameter
 (
@@ -343,12 +342,12 @@ function global:GetScriptParameter
 )
 {
 	if ($Path) {
-		$Script = [IO.File]::ReadAllText($Path)
+		$Script = [System.IO.File]::ReadAllText($Path)
 	}
 
 	$mode = 0
 	$param = $true
-	$tokens = @([Management.Automation.PSParser]::Tokenize($Script, [ref]$null))
+	$tokens = @([System.Management.Automation.PSParser]::Tokenize($Script, [ref]$null))
 	for($i = 0; $i -lt $tokens.Count; ++$i) {
 		$t = $tokens[$i]
 
