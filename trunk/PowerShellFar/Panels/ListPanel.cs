@@ -66,7 +66,7 @@ namespace PowerShellFar
 			}
 
 			// case: enumerable
-			IEnumerable ie = Convert<IEnumerable>.From(pi.Value);
+			IEnumerable ie = Cast<IEnumerable>.From(pi.Value);
 			if (ie != null)
 			{
 				ObjectPanel op = new ObjectPanel();

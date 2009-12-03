@@ -215,6 +215,7 @@ namespace PowerShellFar
 				Writer.Close();
 				Writer = null;
 			}
+			GC.SuppressFinalize(this); // CA1816
 		}
 
 		// Try to delete the file: ignore IO errors, the file still may be in use.

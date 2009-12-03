@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Provider;
 using System.Management.Automation.Runspaces;
@@ -338,6 +339,34 @@ namespace My
 				return string.Empty;
 
 			return path.Substring(0, i);
+		}
+
+		/// <summary>
+		/// Tries to recognize an existing file path by an object.
+		/// </summary>
+		/// <param name="value">Any object, e.g. FileInfo, String.</param>
+		/// <returns>Existing file path or null.</returns>
+		/// <remarks>
+		/// _091202_073429
+		/// </remarks>
+		public static string TryGetFilePath(object value)
+		{
+			FileInfo fi = PowerShellFar.Cast<FileInfo>.From(value);
+			if (fi != null)
+				return fi.FullName;
+
+			string path;
+			if (LanguagePrimitives.TryConvertTo<string>(value, out path))
+			{
+				// looks like a full path
+				if (path.Length > 3 && path.Substring(1, 2) == ":\\" || path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))
+				{
+					if (File.Exists(path))
+						return path;
+				}
+			}
+
+			return null;
 		}
 
 	}

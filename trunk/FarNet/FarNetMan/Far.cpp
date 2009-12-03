@@ -1333,8 +1333,11 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 		case OPEN_DIALOG:
 			{
 				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)item;
-				int index = dd->ItemNumber;
 
+				// just to be sure, see also _091127_112807
+				FarDialog::_hDlgTop = dd->hDlg;
+
+				int index = dd->ItemNumber;
 				if (index == 0)
 				{
 					OpenMenu(ToolOptions::Dialog);
@@ -1345,7 +1348,6 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				ToolPluginInfo^ tool = _toolDialog[index - 1];
 				ToolEventArgs e(ToolOptions::Dialog);
-				FarDialog::_hDlgTop = dd->hDlg;
 				tool->Handler(this, %e);
 			}
 			break;

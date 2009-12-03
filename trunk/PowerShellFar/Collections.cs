@@ -50,6 +50,7 @@ namespace My
 		public void Dispose()
 		{
 			_enumerator.Dispose();
+			GC.SuppressFinalize(this); // CA1816
 		}
 	}
 

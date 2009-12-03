@@ -1,6 +1,24 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.15 =
+
+*) List panel: improved presentation and processing of properties of PSObject
+type (e.g. deserialized from .clixml properties are PSObject-s).
+
+*) Power panel: if an object "looks like" a full path of an existing file then
+[F3], [F4] allow to view, edit that file. This is by default, real actions may
+depend on a panel.
+
+*) New script Set-Console.ps1. It is the next version of this script:
+http://nightroman.spaces.live.com/blog/cns!F011223B604739FA!129.entry
+1) It can be called from any of these consoles: Far, PowerShell, or Cmd.
+2) In Far it must be invoked by PowerShell.exe, not by the PSF host.
+3) Do not use with console emulators.
+
+*) Update-FarManager.ps1: You can remove not used .hlf and .lng files from Far
+home; they will be also removed after updating from an archive.
+
 = 2.2.14 =
 
 *) Fixed external viewer bugs and temporary file issues (encoding, removal).

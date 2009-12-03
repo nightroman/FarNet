@@ -22,7 +22,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static string FileSystemInfoGetFarDescription(PSObject instance)
 		{
-			FileSystemInfo info = Convert<FileSystemInfo>.From(instance);
+			FileSystemInfo info = Cast<FileSystemInfo>.From(instance);
 			if (info != null)
 				return Description.Get(info.FullName);
 			else
@@ -34,7 +34,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void FileSystemInfoSetFarDescription(PSObject instance, string value)
 		{
-			FileSystemInfo info = Convert<FileSystemInfo>.From(instance);
+			FileSystemInfo info = Cast<FileSystemInfo>.From(instance);
 			if (info != null)
 				Description.Set(info.FullName, value);
 		}

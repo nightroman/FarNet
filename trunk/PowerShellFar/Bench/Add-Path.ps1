@@ -21,7 +21,7 @@ param
 	# Path to be added to an environment variable.
 	$Path = '.',
 
-	# Environment variable name.
+	# Environment variable name. Default: 'PATH'.
 	$Name = 'PATH'
 )
 
