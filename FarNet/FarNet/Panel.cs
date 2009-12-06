@@ -16,17 +16,19 @@ namespace FarNet
 	public interface IPanel
 	{
 		/// <summary>
-		/// Is the panel active?
+		/// Gets true if the panel is active.
 		/// </summary>
 		bool IsActive { get; }
 		/// <summary>
-		/// Is the panel a plugin panel?
+		/// Gets true if the panel is a plugin panel.
 		/// </summary>
 		bool IsPlugin { get; }
 		/// <summary>
-		/// Is the panel visible?
-		/// If you set it it takes effect only when Far gets control.
+		/// Gets or sets visibility of the panels.
 		/// </summary>
+		/// <remarks>
+		/// Setting takes effect only when Far gets control.
+		/// </remarks>
 		bool IsVisible { get; set; }
 		/// <summary>
 		/// Gets or sets the panel path.
@@ -49,87 +51,93 @@ namespace FarNet
 		/// <seealso cref="GoToPath"/>
 		string Path { get; set; }
 		/// <summary>
-		/// Current file.
+		/// Gets the current file.
 		/// </summary>
 		FarFile CurrentFile { get; }
 		/// <summary>
-		/// Current item index in the <see cref="ShownList"/>.
+		/// Gets the current file index in the <see cref="ShownList"/> files.
 		/// </summary>
 		/// <remarks>
-		/// This is an index of the current item in <see cref="ShownList"/>.
-		/// It has nothing to do with other panel file collections.
+		/// This is the index of the current file in the <see cref="ShownList"/> files.
+		/// It is not directly related to other panel file collections.
 		/// </remarks>
 		int CurrentIndex { get; }
 		/// <summary>
-		/// The first visible item index.
+		/// Gets the first visible file index.
 		/// </summary>
 		int TopIndex { get; }
 		/// <summary>
-		/// View mode.
+		/// Gets or sets the panel view mode.
 		/// </summary>
 		PanelViewMode ViewMode { get; set; }
 		/// <summary>
-		/// Shown panel items. Item ".." is excluded. Gets all items at once.
+		/// Gets all shown panel files at once. File ".." is excluded.
 		/// </summary>
 		/// <remarks>
-		/// In contrast to <see cref="ShownList"/> this list is a snapshot of files, it can be used even after changes in the panel.
+		/// In contrast to <see cref="ShownList"/> this list is a snapshot of all files,
+		/// it can be used even after changes in the panel.
 		/// </remarks>
 		IList<FarFile> ShownFiles { get; }
 		/// <summary>
-		/// List of selected panel items if any or the current. Gets all items at once.
+		/// Gets all selected panel files at once or the current file if none is selected.
 		/// </summary>
 		/// <remarks>
-		/// In contrast to <see cref="SelectedList"/> this list is a snapshot of files, it can be used even after changes in the panel.
+		/// In contrast to <see cref="SelectedList"/> this list is a snapshot of files,
+		/// it can be used even after changes in the panel.
 		/// </remarks>
 		IList<FarFile> SelectedFiles { get; }
 		/// <summary>
-		/// All shown panel items including ".." item. Gets items only on access.
+		/// Gets all shown panel files including "..".
 		/// </summary>
 		/// <remarks>
 		/// In contrast to <see cref="ShownFiles"/> you must not change panel items while using this list.
+		/// The current file index in this list is <see cref="CurrentIndex"/>.
 		/// </remarks>
 		IList<FarFile> ShownList { get; }
 		/// <summary>
-		/// List of selected panel items if any or the current. Gets items only on access.
+		/// Gets all selected panel files or the current file if none is selected.
 		/// </summary>
 		/// <remarks>
 		/// In contrast to <see cref="SelectedFiles"/> you must not change panel items while using this list.
 		/// </remarks>
 		IList<FarFile> SelectedList { get; }
 		/// <summary>
-		/// Panel type.
+		/// Gets the panel type.
 		/// </summary>
 		PanelType Type { get; }
 		/// <summary>
-		/// Panel sort mode.
+		/// Gets or sets the panel sort mode.
 		/// </summary>
 		PanelSortMode SortMode { get; set; }
 		/// <summary>
-		/// Hidden and system files are displayed.
+		/// Gets visibility of hidden and system files.
 		/// </summary>
 		bool ShowHidden { get; }
 		/// <summary>
-		/// File highlighting is used.
+		/// Gets file highlighting flag.
 		/// </summary>
 		bool Highlight { get; }
 		/// <summary>
-		/// Reversed sort order is used.
+		/// Gets or sets reverse sort order flag.
 		/// </summary>
 		bool ReverseSortOrder { get; set; }
 		/// <summary>
-		/// Sort groups are used.
+		/// Gets sort groups flags.
 		/// </summary>
 		bool UseSortGroups { get; }
 		/// <summary>
-		/// Show selected files first.
+		/// Gets show selected files first flag.
 		/// </summary>
 		bool SelectedFirst { get; }
 		/// <summary>
-		/// Plugin panel items are shown with real file names.
+		/// Gets real file system names flag.
 		/// </summary>
+		/// <remarks>
+		/// If this flag is set then panel item names are related to real file system names.
+		/// </remarks>
 		bool RealNames { get; }
 		/// <summary>
-		/// Numeric sort mode.
+		/// Gets or sets numeric sort flag.
 		/// </summary>
 		bool NumericSort { get; set; }
 		/// <summary>
@@ -149,11 +157,11 @@ namespace FarNet
 		/// <param name="keepSelection">Keep the current selection.</param>
 		void Update(bool keepSelection);
 		/// <summary>
-		/// Gets current frame: current and top index.
+		/// Gets the current frame: current and top file indexes.
 		/// </summary>
 		Point Frame { get; }
 		/// <summary>
-		/// Panel window position.
+		/// Gets the panel window position.
 		/// </summary>
 		Place Window { get; }
 		/// <summary>
@@ -173,7 +181,7 @@ namespace FarNet
 		/// </param>
 		void Close(string path);
 		/// <summary>
-		/// Gets true/false if the panel if left/right.
+		/// Gets true if the panel is the left panel.
 		/// </summary>
 		bool IsLeft { get; }
 		/// <summary>
@@ -399,18 +407,22 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Describes a panel.
-	/// For better performance set its properties only when they are really changed.
+	/// Property set describing a plugin panel.
 	/// </summary>
+	/// <remarks>
+	/// This information is requested by Far for a panel very often.
+	/// For better performance FarNet caches internal native representation of these data.
+	/// After opening a panel it is recommended to avoid frequent modifications of these data.
+	/// </remarks>
 	public interface IPluginPanelInfo
 	{
 		/// <summary>
-		/// The panel view mode to set on panel creation.
+		/// Panel view mode to be set on panel creation.
 		/// When a panel is started it is used internally for keeping and restoring the current mode.
 		/// </summary>
 		PanelViewMode StartViewMode { get; set; }
 		/// <summary>
-		/// The panel sort mode to set on panel creation.
+		/// Panel sort mode to be set on panel creation.
 		/// When a panel is started it is used internally for keeping and restoring the current mode.
 		/// </summary>
 		PanelSortMode StartSortMode { get; set; }
@@ -432,53 +444,61 @@ namespace FarNet
 		/// </remarks>
 		bool AutoAlternateNames { get; set; }
 		/// <summary>
-		/// If <see cref="StartSortMode"/> is specified, this field is used to set sort direction.
+		/// If <see cref="StartSortMode"/> is specified, this flag tells to set sort direction.
 		/// When a panel is started it is used internally for keeping and restoring the current mode.
 		/// </summary>
 		bool StartSortDesc { get; set; }
 		/// <summary>
-		/// Use filter in the plugin panel.
+		/// Tells to use filter in the plugin panel.
 		/// </summary>
 		bool UseFilter { get; set; }
 		/// <summary>
-		/// Use sort groups in the plugin panel.
+		/// Tells to use sort groups in the plugin panel.
 		/// </summary>
 		bool UseSortGroups { get; set; }
 		/// <summary>
-		/// Use file highlighting in the plugin panel.
+		/// Tells to use file highlighting in the plugin panel.
 		/// </summary>
 		bool UseHighlighting { get; set; }
 		/// <summary>
-		/// Use attributes only for file highlighting. File names will be ignored.
+		/// Tells to use attributes only for file highlighting.
+		/// </summary>
+		/// <remarks>
+		/// File names are ignored.
 		/// Color is chosen from file color groups, which have templates excluded from analysis
 		/// (i.e. option "[ ] Match file mask(s)" in file highlighting setup dialog is off).
-		/// </summary>
+		/// </remarks>
 		bool UseAttrHighlighting { get; set; }
 		/// <summary>
-		/// Folders may be selected regardless of Far settings.
+		/// Tells that folders may be selected regardless of Far settings.
 		/// </summary>
 		bool RawSelection { get; set; }
 		/// <summary>
+		/// Tells that items represent real file system.
+		/// </summary>
+		/// <remarks>
 		/// Turns on the standard Far file processing mechanism if requested operation is not supported by the plugin.
 		/// If this flag is set, the items on the plugin panel should be real file names.
-		/// </summary>
+		/// </remarks>
 		bool RealNames { get; set; }
 		/// <summary>
-		/// Show file names without paths by default.
+		/// Tells to show file names without paths by default.
 		/// </summary>
 		bool ShowNamesOnly { get; set; }
 		/// <summary>
-		/// Show file names right-aligned by default in all panel display modes.
+		/// Tells to show file names right-aligned by default in all panel display modes.
 		/// </summary>
 		bool RightAligned { get; set; }
 		/// <summary>
-		/// Show file names using original case regardless of Far settings.
+		/// Tells to show file names using original case regardless of Far settings.
 		/// </summary>
 		bool PreserveCase { get; set; }
 		/// <summary>
-		/// Convert timestamps to FAT format for the Compare folders operation.
-		/// Set this flag if the plugin file system doesn't provide the time accuracy necessary for standard comparison operations.
+		/// Tells to convert timestamps to FAT format for the Compare folders operation.
 		/// </summary>
+		/// <remarks>
+		/// Set this flag if the plugin file system doesn't provide time accuracy necessary for standard comparison operations.
+		/// </remarks>
 		bool CompareFatTime { get; set; }
 		/// <summary>
 		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
@@ -497,51 +517,61 @@ namespace FarNet
 		/// </summary>
 		bool ExternalMakeDirectory { get; set; }
 		/// <summary>
-		/// File name on emulated file system. If plugin doesn't emulate a file system based on files it is empty.
+		/// Gets or sets the base file of emulated file system.
 		/// </summary>
+		/// <remarks>
+		/// If plugin doesn't emulate a file system based on files it should be empty.
+		/// </remarks>
 		string HostFile { get; set; }
 		/// <summary>
-		/// Plugin current directory. If it is empty, Far closes the plugin if ENTER is pressed on ".." item.
+		/// Gets or sets the plugin panel current directory.
 		/// </summary>
+		/// <remarks>
+		/// If it is empty, Far closes the plugin if [Enter] is pressed on ".." item.
+		/// </remarks>
 		string CurrentDirectory { get; set; }
 		/// <summary>
-		/// Plugin's format name. This is shown in the file copy dialog.
+		/// Gets or sets the format name (shown in the file copy dialog).
 		/// </summary>
 		string FormatName { get; set; }
 		/// <summary>
-		/// Plugin panel header.
+		/// Gets or sets the plugin panel header.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
-		/// Info panel item array. If you get it and change items then set it again after changes.
+		/// Gets or sets info panel item array.
 		/// </summary>
+		/// <remarks>
+		/// If you get it and change items then set it again after changes.
+		/// Without that individual item changes will have no effect.
+		/// </remarks>
 		DataItem[] InfoItems { get; set; }
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for Far defaults.
+		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarMain(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for Far defaults.
+		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarCtrl(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for Far defaults.
+		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarAlt(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for Far defaults.
+		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarShift(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for Far defaults.
+		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarCtrlShift(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for Far defaults.
+		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarAltShift(string[] labels);
 		/// <summary>
-		/// 1-12 key bar labels, use empty labels for Far defaults.
+		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
 		void SetKeyBarCtrlAlt(string[] labels);
 		/// <summary>
@@ -625,7 +655,7 @@ namespace FarNet
 		/// </remarks>
 		public bool IsDetailedStatus { get; set; }
 		/// <summary>
-		/// Shallow copy.
+		/// Creates a new mode as a shallow copy of this.
 		/// </summary>
 		/// <remarks>
 		/// Use it to create another mode with the same properties and then change a few of them.

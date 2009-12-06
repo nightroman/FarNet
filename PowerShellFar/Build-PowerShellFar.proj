@@ -5,7 +5,7 @@
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-		<ProductVersion>2.2.15</ProductVersion>
+		<ProductVersion>2.2.16</ProductVersion>
 	</PropertyGroup>
 
 	<Target Name="Build">

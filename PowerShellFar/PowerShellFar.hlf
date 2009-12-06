@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 2.2.15#
+#PowerShellFar 2.2.16#
 
 Implements Windows PowerShell host in Far Manager and user interface for
 invoking commands and scripts. PowerShell code can access and control Far
@@ -77,8 +77,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1259
- - Plugin FarNet 4.2.15
+ - Far Manager 2.0.1273
+ - Plugin FarNet 4.2.16
  - Windows PowerShell 2.0
 
 
@@ -990,6 +990,10 @@ they are expanded next time.
 
 [#Alt-Letter#] Quick search. It should work fine, '+' and '-' in tree node
 names are 'ignored'.
+
+[#Ctrl0#] - view mode: tree and description columns.
+
+[#Ctrl1#] - view mode: tree column and description status.
 
 
 @PluginSettings
