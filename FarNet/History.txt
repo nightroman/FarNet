@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/
 
+= 4.2.16 =
+
+*) Updated API code comments and documentation.
+
 = 4.2.15 =
 
 *** Far 2.0.1238+ ***
