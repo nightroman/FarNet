@@ -12,6 +12,13 @@ namespace PowerShellFar
 	/// <summary>
 	/// Panel with <see cref="TreeFile"/> items.
 	/// </summary>
+	/// <remarks>
+	/// Available view modes:
+	/// <ul>
+	/// <li>[Ctrl0] - tree and description columns</li>
+	/// <li>[Ctrl1] - tree column and description status</li>
+	/// </ul>
+	/// </remarks>
 	public class TreePanel : AnyPanel
 	{
 		/// <summary>
@@ -25,18 +32,22 @@ namespace PowerShellFar
 			Panel.Info.UseFilter = true;
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
 
-			PanelModeInfo mode0 = new PanelModeInfo();
-			SetColumn c1 = new SetColumn(); c1.Type = "O"; c1.Name = "Name";
-			SetColumn c2 = new SetColumn(); c2.Type = "Z"; c2.Name = "Description";
-			mode0.Columns = new FarColumn[] { c1, c2 };
-
-			PanelModeInfo mode1 = (PanelModeInfo)mode0.Clone();
-			mode1.IsFullScreen = true;
-
-			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode0);
-			Panel.Info.SetMode(PanelViewMode.Full, mode1);
-
 			Panel.KeyPressed += OnKeyPressedTreePanel;
+
+			// columns
+			SetColumn cO = new SetColumn(); cO.Type = "O"; cO.Name = "Name";
+			SetColumn cZ = new SetColumn(); cZ.Type = "Z"; cZ.Name = "Description";
+
+			// mode: tree and description columns
+			PanelModeInfo mode0 = new PanelModeInfo();
+			mode0.Columns = new FarColumn[] { cO, cZ };
+			Panel.Info.SetMode((PanelViewMode)0, mode0);
+
+			// mode: tree column and description status
+			PanelModeInfo mode1 = new PanelModeInfo();
+			mode1.Columns = new FarColumn[] { cO };
+			mode1.StatusColumns = new FarColumn[] { cZ };
+			Panel.Info.SetMode((PanelViewMode)1, mode1);
 		}
 
 		/// <summary>

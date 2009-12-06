@@ -20,8 +20,10 @@ namespace PowerShellFar
 {
 	/// <summary>
 	/// <see cref="TreePanel"/> with provider container items.
-	/// NOTE: it works, but it is experimental and under construction.
 	/// </summary>
+	/// <remarks>
+	/// See <see cref="TreePanel"/> for details.
+	/// </remarks>
 	public sealed class FolderTree : TreePanel
 	{
 		/// <summary>

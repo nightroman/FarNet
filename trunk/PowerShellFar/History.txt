@@ -1,6 +1,13 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.16 =
+
+*) Tree panels (e.g. Folder tree): available view modes are:
+[Ctrl0] - view mode: tree and description columns (start mode).
+[Ctrl1] - view mode: tree column and description status.
+Note: any FarNet panel can switch full screen mode by FarNet menu command.
+
 = 2.2.15 =
 
 *) List panel: improved presentation and processing of properties of PSObject
