@@ -158,6 +158,10 @@ Test 'IPMO b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
 Test 'IMPORT-MODULE -NAME b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
 Test 'IPMO -NAME b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
 
+### Process name
+Test 'GET-PROCESS f' 'f' { $_ -contains 'Far' } | Write-Error
+Test 'ps f' 'f' { $_ -contains 'Far' } | Write-Error
+
 ### Help comments
 Test '.' '.' { $_ -contains '.SYNOPSIS' -and $_ -contains '.LINK' } | Write-Error
 Test '.s' '.s' { $_ -eq '.SYNOPSIS' } | Write-Error

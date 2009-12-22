@@ -27,7 +27,7 @@ Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
 <param name="bottom">Bottom line.</param>
 </pp>
 <pp name="Connect">
-<summary>Override this method to handle plugin startup.</summary>
+<summary>Override this method to process plugin connection.</summary>
 <example>
 (C#) how to register a command line prefix and a menu command.
 <code>

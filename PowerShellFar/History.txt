@@ -1,6 +1,14 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 2.2.17 =
+
+*) Added section PROBLEMS AND SOLUTIONS to the Readme.txt; discribed a rare
+problem of loading PowerShell core in x86 Far on x64 machines and a possible
+workaround. The PSF error message points to this section as well.
+
+*) TabExpansion: added expansion of process names for a few *-Process cmdlets.
+
 = 2.2.16 =
 
 *) Tree panels (e.g. Folder tree): available view modes are:
