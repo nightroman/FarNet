@@ -1,8 +1,8 @@
 
 Plugin   : FarNet
 Category : Development
-Version  : 4.2.16
-Release  : 2009.12.06
+Version  : 4.2.17
+Release  : 2009.12.22
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, C++/CLI
@@ -22,7 +22,7 @@ Home page: http://code.google.com/p/farnet/
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1273
+ - Far Manager 2.0.1286
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
@@ -137,3 +137,26 @@ and then to install all the files to "C:\Program Files\Far":
 or even both operations:
 
 	msbuild Build-FarNetDev.proj /t:Build;Install
+
+
+	= PROBLEMS AND SOLUTIONS =
+
+
+PROBLEM
+x86 Far on x64 machines: in rare cases not trivial .NET plugins cannot load
+because x86 Far disables WOW64 redirection (normally needed for loading).
+SOLUTION
+Theoretically the best way to avoid this problem is to use x64 Far and FarNet
+on x64 machines. Unfortunately it is not always possible in practice: plugins
+may not have x64 versions or x64 Far may have not yet resolved problems. Then
+the following batch file can be used to start Far:
+
+	set PATH=%WINDIR%\syswow64;%PATH%
+	"c:\program files\Far\Far.exe"
+
+PROBLEM
+After installation Far cannot load FarNet or FarNet cannot load .NET plugins.
+SOLUTION
+Read installation steps in Readme.txt (FarNet and plugins) carefully and ensure
+that you do everything correctly. Often mistake: Far.exe.config is not copied
+to the Far home directory.

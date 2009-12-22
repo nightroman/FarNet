@@ -254,7 +254,10 @@ Reason (see also $Error):
 			{
 				//! emergency
 				Entry.Unregister();
-				throw new PluginException("PowerShell engine is not initialized due to fatal reasons and will be unloaded.", _errorFatal);
+				throw new PluginException(@"
+PowerShell engine is not initialized due to fatal reasons and will be unloaded.
+See also the section PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
+", _errorFatal);
 			}
 
 			// complete opening

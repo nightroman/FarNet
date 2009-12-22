@@ -11,13 +11,18 @@ using System.Security.Permissions;
 namespace FarNet
 {
 	/// <summary>
-	/// Base class of a preloadable plugin and not preloadable
-	/// <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/>, <see cref="EditorPlugin"/> and <see cref="FilerPlugin"/>.
+	/// The base class of any plugin and the gateway to all FarNet API.
 	/// </summary>
 	/// <remarks>
+	/// <para>
+	/// This is the base class of preloadable plugins and not preloadable
+	/// <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/>, <see cref="EditorPlugin"/> and <see cref="FilerPlugin"/>.
+	/// </para>
+	/// <para>
 	/// It keeps reference to <see cref="IFar"/> and provides
 	/// <see cref="Connect"/> and <see cref="Disconnect"/> methods.
 	/// Normally a direct child should implement at least <see cref="Connect"/>.
+	/// </para>
 	/// <para>
 	/// Any direct child of this class is always preloadable and makes other plugins in the same assembly preloadable as well.
 	/// </para>
@@ -36,8 +41,16 @@ namespace FarNet
 		{ }
 
 		/// <summary>
-		/// This object exposes FarNet API. It is set internally and should not be changed.
+		/// Gets the main object which exposes FarNet methods and creates other FarNet objects.
 		/// </summary>
+		/// <remarks>
+		/// This object is really the main gateway to absolutely all FarNet API.
+		/// It exposes properties and methods for direct use and a few Create*
+		/// methods that create other FarNet objects with their own members.
+		/// <para>
+		/// NOTE: It is set internally once and should never be changed.
+		/// </para>
+		/// </remarks>
 		public IFar Far { get; set; }
 
 		/// <include file='doc.xml' path='docs/pp[@name="Connect"]/*'/>
@@ -45,15 +58,18 @@ namespace FarNet
 		{ }
 
 		/// <summary>
-		/// Override this to handle plugin shutdown.
-		/// NOTE: don't call Far UI, it is not working if Far is exiting.
+		/// Override this method to process plugin disconnection.
 		/// </summary>
+		/// <remarks>
+		/// NOTE: Don't call Far UI, it is not working on exiting.
+		/// Consider to use GUI message boxes if it is absolutely needed.
+		/// </remarks>
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public virtual void Disconnect()
 		{ }
 
 		/// <summary>
-		/// Plugin or menu item name. By default it is the plugin class name.
+		/// Gets plugin or menu item name. By default it is the plugin class name.
 		/// </summary>
 		/// <remarks>
 		/// If you override it (usually in <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> or <see cref="FilerPlugin"/>)
@@ -69,9 +85,11 @@ namespace FarNet
 
 		/// <summary>
 		/// Called before invoking of a command.
-		/// A plugin may override it to perform some preparations.
-		/// Example: PowerShellFar completes loading of the PowerShell engine.
 		/// </summary>
+		/// <remarks>
+		/// A plugin may override it to perform some preparations before invoking.
+		/// Example: PowerShellFar may wait for the PowerShell engine loading to complete.
+		/// </remarks>
 		public virtual void Invoking()
 		{ }
 	}
