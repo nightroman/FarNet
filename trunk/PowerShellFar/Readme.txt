@@ -1,8 +1,8 @@
 
 Plugin   : PowerShellFar
 Category : Development
-Version  : 2.2.16
-Release  : 2009.12.06
+Version  : 2.2.17
+Release  : 2009.12.22
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, PowerShell
@@ -25,8 +25,8 @@ downloaded from: http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
 
- - Far Manager 2.0.1273
- - Plugin FarNet 4.2.16 (*)
+ - Far Manager 2.0.1286
+ - Plugin FarNet 4.2.17 (*)
  - Windows PowerShell 2.0
 
  (*) see also FarNet prerequisites
@@ -57,3 +57,26 @@ PowerShell syntax for Colorer. See installation instructions in the file.
 Console palette with white background. PowerShell.hrc is actually designed with
 this palette in use, other palettes may be less suitable or even practically
 unusable. See installation instructions in the file.
+
+
+	= PROBLEMS AND SOLUTIONS =
+
+
+PROBLEM
+x86 Far on x64 machines: in rare cases PowerShellFar cannot load PowerShell
+core because x86 Far disables WOW64 redirection (normally needed for loading).
+SOLUTION
+Theoretically the best way to avoid this problem is to use x64 Far and FarNet
+on x64 machines. Unfortunately it is not always possible in practice: plugins
+may not have x64 versions or x64 Far may have not yet resolved problems. Then
+the following batch file can be used to start Far:
+
+	set PATH=%WINDIR%\syswow64;%PATH%
+	"c:\program files\Far\Far.exe"
+
+PROBLEM
+After installation Far cannot load FarNet or FarNet cannot load PowerShellFar.
+SOLUTION
+Read installation steps in Readme.txt (FarNet and PowerShellFar) carefully and
+ensure that you do everything correctly. Often mistake: Far.exe.config is not
+copied to the Far home directory.

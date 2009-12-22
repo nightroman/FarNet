@@ -215,6 +215,13 @@ function global:TabExpansion
 			}
 		}
 
+		### Process names for *-Process
+		elseif ($line -match '\b(Get-Process|Stop-Process|Wait-Process|Debug-Process|gps|kill|ps|spps)(?:\s+-Name)?\s+[*\w]+$') {
+			foreach($_ in Get-Process "$lastWord*") {
+				$_.Name
+			}
+		}
+
 		### Containers only for Set-Location
 		elseif ($line -match '\b(?:Set-Location|cd|chdir|sl)\s+[*\w]+$') {
 			foreach($_ in Get-ChildItem "$lastWord*" -Force -ErrorAction 0) {

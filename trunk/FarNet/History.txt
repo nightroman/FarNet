@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.2.17 =
+
+*) Added section PROBLEMS AND SOLUTIONS to the Readme.txt; discribed a rare
+problem of loading .NET plugins in x86 Far on x64 machines and a possible
+workaround.
+
+*) API code comments and documentation.
+
 = 4.2.16 =
 
 *) Updated API code comments and documentation.
