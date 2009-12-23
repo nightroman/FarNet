@@ -83,7 +83,7 @@ Looking for updates at '$URL'...
 	### get the archive name
 	$initext = [IO.File]::ReadAllText($ini)
 	if ($initext -notmatch 'arc="(Far[^"]+\.7z)"') { throw "Cannot get an archive name from '$ini'." }
-	[IO.File]::Delete($ini)
+	Remove-Item -LiteralPath $ini -ErrorAction 'Continue'
 
 	### exit if the archive exists
 	$Name = $matches[1]

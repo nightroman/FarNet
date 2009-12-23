@@ -3,12 +3,23 @@ http://code.google.com/p/farnet/
 
 = 4.2.18 =
 
-ANNOUNCEMENT: this version is mostly designed for easy updates of PowerShellFar
-+ FarNet + API help by a script. Not standard plugin locations and folder names
-are not supported. If you want to update everything easily then read both
-Readme.txt and ensure your locations and names are the same as proposed.
-Standard location of API help file PowerShellFar.chm is
-"Plugins.NET\PowerShellFar.chm".
+CHRISTMAS-BOX FEATURE: AUTOMATED UPDATE
+
+This version is mostly designed for easy updates of PowerShellFar + FarNet +
+API help by a script. Not standard plugin locations and folder names are not
+supported. If you want to update everything easily then read both Readme.txt
+and ensure your locations and names are standard:
+
+STANDARD ITEMS IN %FARHOME%:
+FOLDERS
+-- Lib
+-- Plugins\FarNet
+-- Plugins.NET\PowerShellFar
+FILES
+-- Far.exe.config
+-- Plugins.NET\PowerShellFar.chm
+
+RELATED CHANGES AND NOTES
 
 *) Version numbers: as far as FarNet and PowerShellFar are always built and
 released together, from now on their version numbers will be the same.
@@ -18,9 +29,14 @@ that you should copy this folder to "%FARHOME%\Plugins.NET\PowerShellFar". The
 location and name can be changed but it is recommended to use exactly this way.
 
 *) New script Update-PowerShellFar.ps1: updates PowerShellFar + FarNet + API
-help from WEB or already downloaded archives. If you keep last downloaded
-archives then the script can be used simply to check for updates, it does
+help from the site or already downloaded archives. Keep the last downloaded
+archives, then the script can be used simply to check for updates, it does
 nothing if files already exist. See the script for details.
+
+*) If you want other distributed files and folders to be updatable as well then
+create an use an extra script which calls Update-PowerShellFar.ps1 and then
+extracts extra files to your personal locations. Update-PowerShellFar.ps1
+returns actual version number that may be used to find out archive names.
 
 = 2.2.17 =
 
