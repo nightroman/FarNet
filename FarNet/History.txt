@@ -1,9 +1,12 @@
 http://code.google.com/p/farnet/
 
-= 4.2.222 =
+= 4.2.18 =
 
-*) Version numbers: from now on the third number in FarNet version normally
-will be the corresponding SVN revision number.
+*) Version numbers: as far as FarNet and PowerShellFar are always built and
+released together, from now on their version numbers will be the same.
+
+*) FarNet updates: if you use FarNet together with PowerShell then it can be
+updated together with PowerShellFar by a script distributed with PowerShellFar.
 
 = 4.2.17 =
 

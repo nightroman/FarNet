@@ -6,7 +6,7 @@ using namespace System::Runtime::CompilerServices;
 using namespace System::Runtime::InteropServices;
 using namespace System::Security::Permissions;
 
-[assembly: AssemblyVersion("4.2.222.0")];
+[assembly: AssemblyVersion("4.2.18.0")];
 [assembly: AssemblyTitle("FarNet plugin manager")];
 [assembly: AssemblyDescription("FarNet plugin manager")];
 [assembly: AssemblyConfiguration("")];

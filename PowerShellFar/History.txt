@@ -1,22 +1,26 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-= 4.2.222 =
+= 4.2.18 =
+
+ANNOUNCEMENT: this version is mostly designed for easy updates of PowerShellFar
++ FarNet + API help by a script. Not standard plugin locations and folder names
+are not supported. If you want to update everything easily then read both
+Readme.txt and ensure your locations and names are the same as proposed.
+Standard location of API help file PowerShellFar.chm is
+"Plugins.NET\PowerShellFar.chm".
 
 *) Version numbers: as far as FarNet and PowerShellFar are always built and
-released together, from  now on their version numbers will be the same. Thus,
-the third number normally will be the corresponding SVN revision number.
+released together, from now on their version numbers will be the same.
 
-*) Archive structure: plugin files are now in "Plugins.NET\PowerShellFar", so
+*) Archive changes: plugin files are now in "Plugins.NET\PowerShellFar", so
 that you should copy this folder to "%FARHOME%\Plugins.NET\PowerShellFar". The
-location and name can be changed but it is recommended to use exactly this way:
-for example, in order to be able to use the script Update-PowerShellFar.ps1
-with no changes in it (see below).
+location and name can be changed but it is recommended to use exactly this way.
 
-*) New script Update-PowerShellFar.ps1: Updates both FarNet and PowerShellFar
-plugins and API documentation from WEB or downloaded archives. If you keep last
-downloaded archives then the script can be used simply to check for updates, it
-does nothing if all files already exist. See the script comments for details.
+*) New script Update-PowerShellFar.ps1: updates PowerShellFar + FarNet + API
+help from WEB or already downloaded archives. If you keep last downloaded
+archives then the script can be used simply to check for updates, it does
+nothing if files already exist. See the script for details.
 
 = 2.2.17 =
 

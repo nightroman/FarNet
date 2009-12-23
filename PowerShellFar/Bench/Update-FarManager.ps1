@@ -29,7 +29,7 @@
 .EXAMPLE
 	# This command is suitable for the Far command line or the user menu. Also,
 	# it keeps the console opened, so that you can view the output.
-	start powershell -noexit Update-FarManager.ps1
+	start powershell -noexit Update-FarManager
 #>
 
 param
