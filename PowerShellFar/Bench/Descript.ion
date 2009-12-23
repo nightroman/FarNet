@@ -51,4 +51,5 @@ Start-Far.ps1 Starts Far in /rc mode and manages start and exit current director
 Start-MSBuild-.ps1 Starts MSBuild with input dialog for the project file
 Test Tests and demos
 Update-FarManager.ps1 Updates Far Manager 2.x and standard plugins.
+Update-PowerShellFar.ps1 Updates FarNet, PowerShellFar and API help.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
