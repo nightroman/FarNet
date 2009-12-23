@@ -29,23 +29,23 @@
 .EXAMPLE
 	# This command is suitable for the Far command line or the user menu. Also,
 	# it keeps the console opened, so that you can view the output.
-	start powershell -noexit . Update-FarManager
+	start powershell -noexit Update-FarManager.ps1
 #>
 
 param
 (
 	[Parameter()][string]
 	# Far directory; needed if %FARHOME% is not defined and its location is not standard.
-	$FARHOME = $(if ($env:FARHOME) {$env:FARHOME} else {"C:\Program Files\Far"}),
-
+	$FARHOME = $(if ($env:FARHOME) {$env:FARHOME} else {"C:\Program Files\Far"})
+	,
 	[string]
 	# Target platform: x86 or x64. Default: depends on the current process.
-	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'}),
-
+	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'})
+	,
 	[string]
-	# Already downloaded archive where the Far should be updated from.
-	$Archive,
-
+	# Already downloaded archive where Far should be updated from.
+	$Archive
+	,
 	[switch]
 	# Download and update only stable builds.
 	$Stable
@@ -76,7 +76,7 @@ if (!$Archive) {
 	Write-Host -ForegroundColor Cyan @"
 Looking for updates at '$URL'...
 "@
-	$ini = "$env:usERPROFILE\Update-FarManager.ini"
+	$ini = "$env:USERPROFILE\Update-FarManager.ini"
 	$wc = New-Object Net.WebClient
 	$wc.DownloadFile($URL, $ini)
 

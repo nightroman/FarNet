@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.2.222 =
+
+*) Version numbers: from now on the third number in FarNet version normally
+will be the corresponding SVN revision number.
+
 = 4.2.17 =
 
 *) Added section PROBLEMS AND SOLUTIONS to the Readme.txt; discribed a rare

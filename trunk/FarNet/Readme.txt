@@ -1,8 +1,8 @@
 
 Plugin   : FarNet
 Category : Development
-Version  : 4.2.17
-Release  : 2009.12.22
+Version  : 4.2.222
+Release  : 2009.12.23
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, C++/CLI
