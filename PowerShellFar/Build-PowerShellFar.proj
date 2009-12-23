@@ -5,7 +5,7 @@
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-		<ProductVersion>2.2.17</ProductVersion>
+		<ProductVersion>4.2.222</ProductVersion>
 	</PropertyGroup>
 
 	<Target Name="Build">
@@ -56,7 +56,7 @@
 		<CreateItem Include="$(Install)\Plugins.NET\PowerShellFar\*">
 			<Output ItemName="plugin_file" TaskParameter="Include" />
 		</CreateItem>
-		<Copy SourceFiles="@(plugin_file)" DestinationFolder="Tmp\Plugin" />
+		<Copy SourceFiles="@(plugin_file)" DestinationFolder="Tmp\Plugins.NET\PowerShellFar" />
 		<!--Scripts-->
 		<CreateItem Include="Bench\**;Extras\**" Exclude="Bench\**\.svn\**">
 			<Output ItemName="script_file" TaskParameter="Include" />
@@ -73,7 +73,7 @@
 		<!--Archive FarNet-->
 		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Archive" />
 		<!--Archive API documentation-->
-		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z PowerShellFar.chm" WorkingDirectory="$(Install)" />
+		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z Plugins.NET\PowerShellFar.chm" WorkingDirectory="$(Install)" />
 		<!--Move FarNet and API documentation archives-->
 		<CreateItem Include="..\FarNet\FarNet.*.7z;$(Install)\PowerShellFar.*.7z">
 			<Output ItemName="Archive2" TaskParameter="Include" />

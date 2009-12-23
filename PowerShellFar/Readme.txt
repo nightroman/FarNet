@@ -1,8 +1,8 @@
 
 Plugin   : PowerShellFar
 Category : Development
-Version  : 2.2.17
-Release  : 2009.12.22
+Version  : 4.2.222
+Release  : 2009.12.23
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, PowerShell
@@ -26,7 +26,7 @@ downloaded from: http://code.google.com/p/farnet/
 
 
  - Far Manager 2.0.1286
- - Plugin FarNet 4.2.17 (*)
+ - Plugin FarNet 4.2.222 (*)
  - Windows PowerShell 2.0
 
  (*) see also FarNet prerequisites
@@ -41,9 +41,10 @@ Get-ExecutionPolicy - it should be RemoteSigned or Unrestricted. If it is not
 then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
 
 *) Install the plugin:
-Copy all files (not directory!) from "Plugin" to "Plugins.NET\PowerShellFar"
-where "Plugins.NET" is a folder for FarNet plugins. Normally this folder is
-"%FARHOME%\Plugins.NET" if you did not change it in the "Far.exe.config".
+Copy "Plugins.NET\PowerShellFar" to "%FARHOME%\Plugins.NET\PowerShellFar". The
+location and name can be changed but it is recommended to use exactly this way:
+for example, in order to be able to use the script Update-PowerShellFar.ps1
+with no changes in it.
 
 *) Recommended: Install and configure Bench scripts:
 You can put scripts anywhere: all together or not, but it is highly recommended
