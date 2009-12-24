@@ -73,9 +73,7 @@ if (!$Archive) {
 	$URL += $(if ('x86' -eq $Platform) {'?p=32'} else {'?p=64'})
 
 	### look for updates
-	Write-Host -ForegroundColor Cyan @"
-Looking for updates at '$URL'...
-"@
+	Write-Host -ForegroundColor Cyan "Looking for updates at '$URL'..."
 	$ini = "$env:USERPROFILE\Update-FarManager.ini"
 	$wc = New-Object Net.WebClient
 	$wc.DownloadFile($URL, $ini)
@@ -89,39 +87,29 @@ Looking for updates at '$URL'...
 	$Name = $matches[1]
 	$Archive = "$env:USERPROFILE\$Name"
 	if ([IO.File]::Exists($Archive)) {
-		Write-Host -ForegroundColor Cyan @"
-The archive '$Archive' already exists; use the parameter -Archive to update from it.
-"@
+		Write-Host -ForegroundColor Cyan "The archive '$Archive' already exists; use the parameter -Archive to update from it."
 		return
 	}
 
 	### download the archive
 	$URL = $(if ($Stable) {"http://www.farmanager.com/files/$Name"} else {"http://www.farmanager.com/nightly/$Name"})
-	Write-Host -ForegroundColor Cyan @"
-Downloading '$Archive' from $URL...
-"@
+	Write-Host -ForegroundColor Cyan "Downloading '$Archive' from $URL..."
 	$wc.DownloadFile($URL, $Archive)
 }
 
 ### exit running
-Write-Host -ForegroundColor Cyan @"
-Waiting for Far Manager exit...
-"@
+Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit..."
 Wait-Process Far -ErrorAction 0
 
 ### extract all
-Write-Host -ForegroundColor Cyan @"
-Extracting from '$Archive'...
-"@
+Write-Host -ForegroundColor Cyan "Extracting from '$Archive'..."
 $plugins1 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
 $files1 = foreach($_ in '*.hlf', '*.lng') { [System.IO.Directory]::GetFiles($FARHOME, $_) }
 & '7z' 'x' $Archive "-o$FARHOME" '-aoa'
 if ($lastexitcode) { throw "7z failed." }
 
 ### remove not used plugins
-Write-Host -ForegroundColor Cyan @"
-Removing not used plugins...
-"@
+Write-Host -ForegroundColor Cyan "Removing not used plugins..."
 $plugins2 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
 foreach($plugin in $plugins2) {
 	if ($plugins1 -notcontains $plugin) {
@@ -131,9 +119,7 @@ foreach($plugin in $plugins2) {
 }
 
 ### remove not used files
-Write-Host -ForegroundColor Cyan @"
-Removing not used files...
-"@
+Write-Host -ForegroundColor Cyan "Removing not used files..."
 $files2 = foreach($_ in '*.hlf', '*.lng') { [System.IO.Directory]::GetFiles($FARHOME, $_) }
 foreach($file in $files2) {
 	if ($files1 -notcontains $file) {
@@ -143,9 +129,7 @@ foreach($file in $files2) {
 }
 
 ### check extra items
-Write-Host -ForegroundColor Cyan @"
-Checking extra items...
-"@
+Write-Host -ForegroundColor Cyan "Checking extra items..."
 $nExtra = 0
 $inArchive = @{}
 .{ & '7z' 'l' $Archive '-slt' | .{process{ if ($_ -match '^Path = (.+)') { $inArchive.Add($matches[1], $null) } }} }
@@ -163,10 +147,6 @@ $inArchive = @{}
 		++$nExtra
 	}
 }}
-Write-Host -ForegroundColor Cyan @"
-$nExtra extra items.
-"@
+Write-Host -ForegroundColor Cyan "$nExtra extra items."
 
-Write-Host -ForegroundColor Green @"
-Update succeeded.
-"@
+Write-Host -ForegroundColor Green "Update succeeded."

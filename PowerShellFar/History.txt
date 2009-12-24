@@ -1,6 +1,25 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.19 =
+
+CHRISTMAS-BOX FEATURE: AUTOMATED UPDATE (modified and hopefully improved)
+
+*) Archive structure: LICENSE, History.txt, Bench, Extras moved to the plugin
+folder "Plugins.NET\PowerShellFar".
+
+*) Folders Bench (scripts and demos) and Extras (for Colorer) are extracted to
+the plugin folder "Plugins.NET\PowerShellFar". It is decided that for a calling
+script it is easier to delete\move something after update than to extract extra
+items from downloaded archives.
+
+*) Script Update-PowerShellFar.ps1:
+-- It does not return version number anymore: with new approach it is useless.
+Output of the script should be ignored.
+-- If -FARHOME is UNC then that machine has to be configured for PS remoting.
+This allows to update remote machines safely (i.e. waiting for Far exit if it
+is running there).
+
 = 4.2.18 =
 
 CHRISTMAS-BOX FEATURE: AUTOMATED UPDATE
@@ -34,7 +53,7 @@ archives, then the script can be used simply to check for updates, it does
 nothing if files already exist. See the script for details.
 
 *) If you want other distributed files and folders to be updatable as well then
-create an use an extra script which calls Update-PowerShellFar.ps1 and then
+create and use an extra script which calls Update-PowerShellFar.ps1 and then
 extracts extra files to your personal locations. Update-PowerShellFar.ps1
 returns actual version number that may be used to find out archive names.
 

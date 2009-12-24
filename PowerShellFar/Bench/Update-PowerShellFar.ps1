@@ -5,37 +5,31 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
+	Command 7z has to be available, e.g. 7z.exe in the system path.
+
 	If Far Manager is running the script prompts you to exit running instances
 	and waits until this is done. That is why you should not run the script in
 	Far Manager. On the other hand it is still useful to start the script from
 	Far Manager (using 'start' command or [ShiftEnter] in the command line), in
-	this case you do not have to set the parameter -FARHOME.
+	this case you do not have to set the parameter -FARHOME. If -FARHOME is UNC
+	then that machine has to be configured for PS remoting.
 
 	-Archive directory is used for a temp file PowerShellFar.Readme.txt and as
 	a destination for downloaded archives. Old files are not deleted. Keep the
 	last downloaded archives there, the script downloads only new archives and
 	does nothing if they are already downloaded.
 
-	Command 7z has to be available, e.g. 7z.exe in the system path.
+	On updating from the archives the script simply extracts files and replace
+	the same existing with no warnings. Existing extra files are not deleted.
 
-	On updating from the archives the script extracts only main files and skips
-	optional (e.g. Bench, Extras, and etc.). Your extra files are not deleted
-	but remember that extracted files replace existing files with no warnings.
-
-	What exactly is updated in %FARHOME% from the archives:
-	Folders:
+	Updated items in %FARHOME%:
+	FOLDERS
 	-- Lib
 	-- Plugins\FarNet
-	-- Plugins.NET\PowerShellFar
-	Files:
+	-- Plugins.NET\PowerShellFar (+ Bench and Extras)
+	FILES
 	-- Far.exe.config
 	-- Plugins.NET\PowerShellFar.chm
-
-.OUTPUTS
-	None if the script fails or does nothing. If the script really updates then
-	it returns actually used version number, string X.Y.Z, which can be used by
-	a calling script to perform extra steps, e.g. to extract more files from
-	PowerShellFar.X.Y.Z.7z archive (Bench scripts, Extras for Colorer).
 
 .EXAMPLE
 	# This command is suitable for the Far command line or the user menu. Also,
@@ -81,9 +75,7 @@ $wc = New-Object Net.WebClient
 if (!$Version) {
 	# download Readme.txt
 	$URL = "http://farnet.googlecode.com/svn/trunk/PowerShellFar/Readme.txt"
-	Write-Host -ForegroundColor Cyan @"
-Getting version from '$URL'...
-"@
+	Write-Host -ForegroundColor Cyan "Getting version from '$URL'..."
 	$ini = "$Archive\PowerShellFar.Readme.txt"
 	$wc.DownloadFile($URL, $ini)
 
@@ -114,16 +106,18 @@ if (!$Force -and $done -eq 0) {
 	return
 }
 
-### exit running
-Write-Host -ForegroundColor Cyan @"
-Waiting for Far Manager exit...
-"@
-Wait-Process Far -ErrorAction 0
+### exit running; use remoting for UNC
+if ($FARHOME -match '^\\\\([^\\/]+)') {
+	Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit: $($matches[1])..."
+	Invoke-Command -ComputerName ($matches[1]) { Wait-Process Far -ErrorAction 0 }
+}
+else {
+	Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit..."
+	Wait-Process Far -ErrorAction 0
+}
 
 ### extract FarNet
-Write-Host -ForegroundColor Cyan @"
-Extracting from '$($Archives[0])'...
-"@
+Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[0])'..."
 # x86
 & '7z' 'x' ($Archives[0]) "-o$FARHOME" '-aoa' 'Far.exe.config' 'Lib' 'Plugins\FarNet'
 if ($lastexitcode) { throw "7z failed." }
@@ -134,22 +128,14 @@ if ($Platform -eq 'x64') {
 }
 
 ### extract PowerShellFar
-Write-Host -ForegroundColor Cyan @"
-Extracting from '$($Archives[1])'...
-"@
+Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[1])'..."
 & '7z' 'x' ($Archives[1]) "-o$FARHOME" '-aoa' 'Plugins.NET\PowerShellFar'
 if ($lastexitcode) { throw "7z failed." }
 
 ### extract PowerShellFar.chm
-Write-Host -ForegroundColor Cyan @"
-Extracting from '$($Archives[2])'...
-"@
+Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[2])'..."
 & '7z' 'x' ($Archives[2]) "-o$FARHOME" '-aoa'
 if ($lastexitcode) { throw "7z failed." }
 
-### output update version
-$Version
-
-Write-Host -ForegroundColor Green @"
-Update succeeded.
-"@
+### done
+Write-Host -ForegroundColor Green "Update succeeded."
