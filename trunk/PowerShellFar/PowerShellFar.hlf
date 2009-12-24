@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.2.18#
+#PowerShellFar 4.2.19#
 
 Implements Windows PowerShell host in Far Manager and user interface for
 invoking commands and scripts. PowerShell code can access and control Far
@@ -77,8 +77,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1286
- - Plugin FarNet 4.2.18
+ - Far Manager 2.0.1289
+ - Plugin FarNet 4.2.19
  - Windows PowerShell 2.0
 
 

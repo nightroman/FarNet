@@ -1,8 +1,8 @@
 
 Plugin   : PowerShellFar
 Category : Development
-Version  : 4.2.18
-Release  : 2009.12.23
+Version  : 4.2.19
+Release  : 2009.12.24
 Author   : Roman Kuzmin
 Email    : nightroman@gmail.com
 Sources  : C#, PowerShell
@@ -25,8 +25,8 @@ downloaded from: http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
 
- - Far Manager 2.0.1286
- - Plugin FarNet 4.2.18 (*)
+ - Far Manager 2.0.1289
+ - Plugin FarNet 4.2.19 (*)
  - Windows PowerShell 2.0
 
  (*) see also FarNet prerequisites

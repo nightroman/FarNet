@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.2.19 =
+
+*) Archive structure: files LICENSE and History.txt moved to the plugin folder
+"Plugins\FarNet".
+
 = 4.2.18 =
 
 *) Version numbers: as far as FarNet and PowerShellFar are always built and
