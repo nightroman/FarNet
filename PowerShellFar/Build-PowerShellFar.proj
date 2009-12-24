@@ -5,7 +5,7 @@
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-		<ProductVersion>4.2.18</ProductVersion>
+		<ProductVersion>4.2.19</ProductVersion>
 	</PropertyGroup>
 
 	<Target Name="Build">
@@ -44,24 +44,18 @@
 
 	<!--Archive PSF to distribute-->
 	<Target Name="Archive" DependsOnTargets="Clean">
+		<!--Kill output-->
 		<RemoveDir Directories="Tmp" />
-		<!--Root files-->
-		<CreateItem Include="LICENSE;*.txt;*.ion">
-			<Output ItemName="root_file" TaskParameter="Include" />
-		</CreateItem>
-		<Copy SourceFiles="@(root_file)" DestinationFolder="Tmp" />
+		<!--Root-->
+		<Copy DestinationFolder="Tmp" SourceFiles="Readme.txt"/>
+		<!--Plugin-->
+		<CreateItem Include="$(Install)\Plugins.NET\PowerShellFar\*;History.txt;LICENSE"><Output ItemName="plugin_file" TaskParameter="Include" /></CreateItem>
+		<Copy DestinationFolder="Tmp\Plugins.NET\PowerShellFar" SourceFiles="@(plugin_file)"/>
+		<!--Bench-->
+		<CreateItem Include="Bench\**" Exclude="Bench\**\.svn\**"><Output ItemName="script_file" TaskParameter="Include" /></CreateItem>
+		<Copy DestinationFiles="@(script_file->'Tmp\Plugins.NET\PowerShellFar\%(Identity)')" SourceFiles="@(script_file)"/>
 		<!--Extras-->
-		<Copy SourceFiles="C:\ROM\FarDev\Draw\PowerShell.hrc;C:\ROM\FarDev\Draw\RomanConsole.hrd;C:\ROM\FarDev\Draw\RomanRainbow.hrd" DestinationFolder="Tmp\Extras" ContinueOnError="true" />
-		<!--Plugin files-->
-		<CreateItem Include="$(Install)\Plugins.NET\PowerShellFar\*">
-			<Output ItemName="plugin_file" TaskParameter="Include" />
-		</CreateItem>
-		<Copy SourceFiles="@(plugin_file)" DestinationFolder="Tmp\Plugins.NET\PowerShellFar" />
-		<!--Scripts-->
-		<CreateItem Include="Bench\**;Extras\**" Exclude="Bench\**\.svn\**">
-			<Output ItemName="script_file" TaskParameter="Include" />
-		</CreateItem>
-		<Copy SourceFiles="@(script_file)" DestinationFiles="@(script_file->'Tmp\%(Identity)')" />
+		<Copy DestinationFolder="Tmp\Plugins.NET\PowerShellFar\Extras" SourceFiles="C:\ROM\FarDev\Draw\PowerShell.hrc;C:\ROM\FarDev\Draw\RomanConsole.hrd;C:\ROM\FarDev\Draw\RomanRainbow.hrd"/>
 		<!--Archive-->
 		<Exec Command="7z a PowerShellFar.$(ProductVersion).7z .\*" WorkingDirectory="Tmp" />
 		<Copy SourceFiles="Tmp\PowerShellFar.$(ProductVersion).7z" DestinationFolder="." />
