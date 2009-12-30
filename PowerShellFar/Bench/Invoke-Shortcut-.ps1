@@ -10,10 +10,15 @@
 	file path the action depends on parameters; default action is to jump to
 	the target file, other actions: edit or view the file.
 
-	How to open .lnk files by [Enter], [F3], [F4]:
+	Switch -Panel allows to open a shortcut in a panel to view and edit its
+	properties. If you change data it asks you to save changes on exit or you
+	can use [CtrlS] to save data at any moment.
+
+	How to open .lnk files, e.g. by [Enter], [CtrlPgDn], [F3], [F4]:
 	Open menu Commands \ File Associations, add an association and set:
 	-- Mask: *.lnk
 	-- Command for [Enter]: >: Invoke-Shortcut- #
+	-- Command for [CtrlPgDn]: >: Invoke-Shortcut- -Panel #
 	-- Command for [F3]: >: Invoke-Shortcut- -View #
 	-- Command for [F4]: >: Invoke-Shortcut- -Edit #
 
@@ -23,13 +28,17 @@
 [CmdletBinding()]
 param
 (
-	# Path of the .lnk file to be opened. Default is the current panel item.
-	$Path = (Get-FarPath),
-
+	# Path of the .lnk file to be opened. Default: the current panel item.
+	$Path = (Get-FarPath)
+	,
+	[switch]
+	# To show shortcut properties in a panel.
+	$Panel
+	,
 	[switch]
 	# To edit the target file in the Far editor.
-	$Edit,
-
+	$Edit
+	,
 	[switch]
 	# To view the target file in the Far viewer.
 	$View
@@ -48,30 +57,40 @@ if (!$target) {
 	return Show-FarMsg "Cannot get a target path from '$Path'.`nIs it a shortcut file?"
 }
 
+### Panel properties
+if ($Panel) {
+	$p = New-Object PowerShellFar.MemberPanel $link
+	$p.Panel.Info.Title = "Shortcut $Path"
+	$p.SetSave({
+		$this.Value.Save()
+		$this.Modified = $false
+	})
+	$p.Show()
+	return
+}
+
+### Go to directory
 if ([IO.Directory]::Exists($target)) {
 	$Far.Panel.Path = $target
 	$Far.Panel.Redraw()
-	return
 }
 
-if ($Edit -or $View) {
-	if (![IO.File]::Exists($target)) {
-		return Show-FarMsg "Target file does not exist: '$target'"
-	}
-
-	if ($Edit) {
-		Start-FarEditor $target
-	}
-	else {
-		Start-FarViewer $target
-	}
-
-	return
+### Test a file
+elseif (![IO.File]::Exists($target)) {
+	Show-FarMsg "Target file does not exist: '$target'"
 }
 
-if ([IO.File]::Exists($target)) {
+### Edit a file
+elseif ($Edit) {
+	Start-FarEditor $target
+}
+
+### View a file
+elseif ($View) {
+	Start-FarViewer $target
+}
+
+### Goto a file
+else {
 	$Far.Panel.GoToPath($target)
-	return
 }
-
-Show-FarMsg "Target does not exist: '$target'"

@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
@@ -15,7 +15,24 @@ using FarNet;
 
 namespace PowerShellFar
 {
-	/// <include file='doc.xml' path='docs/pp[@name="AnyPanel"]/*'/>
+	/// <summary>
+	/// Base class of PowerShellFar panels.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This class is a host of <see cref="IPluginPanel"/>
+	/// (see <see cref="Panel"/> and <see cref="IPluginPanel.Host"/>).
+	/// It manages extra panel data and "items" attached to panel "files"
+	/// and implements panel event handlers for some basic panel operations.
+	/// </para>
+	/// <para>
+	/// Terminology (both for names and documentation):
+	/// "files" (<c>FarFile</c>) are elements of <see cref="IPluginPanel"/>;
+	/// "items" (<c>PSObject</c>) are <see cref="FarFile.Data"/> attached to "files".
+	/// Note that null and ".." items are not processed (e.g. by <see cref="ShownItems"/>
+	/// and <see cref="SelectedItems"/>).
+	/// </para>
+	/// </remarks>
 	public abstract partial class AnyPanel
 	{
 		/// <summary>
@@ -57,7 +74,7 @@ namespace PowerShellFar
 
 		object _Data;
 		/// <summary>
-		/// User data attached to this panel.
+		/// Gets or sets user data attached to this panel.
 		/// </summary>
 		public object Data
 		{
@@ -67,7 +84,7 @@ namespace PowerShellFar
 
 		List<IDisposable> _Garbage;
 		/// <summary>
-		/// List of user objects that have to be disposed when the panel is closed.
+		/// Gets the list of user objects that have to be disposed when the panel is closed.
 		/// </summary>
 		public IList<IDisposable> Garbage
 		{
@@ -81,8 +98,11 @@ namespace PowerShellFar
 
 		readonly IPluginPanel _Panel;
 		/// <summary>
-		/// Hosted plugin panel instance.
+		/// Gets the hosted plugin panel.
 		/// </summary>
+		/// <remarks>
+		/// The hosted panel refers to this as <see cref="IPluginPanel.Host"/>.
+		/// </remarks>
 		public IPluginPanel Panel
 		{
 			get { return _Panel; }
@@ -90,8 +110,11 @@ namespace PowerShellFar
 
 		AnyPanel _Parent;
 		/// <summary>
-		/// Parent panel. It is null if this panel is not a child panel.
+		/// Gets the parent panel.
 		/// </summary>
+		/// <remarks>
+		/// The parent panel is null if this panel is not a child panel.
+		/// </remarks>
 		public AnyPanel Parent
 		{
 			get { return _Parent; }

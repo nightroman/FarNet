@@ -24,8 +24,8 @@ param
 (
 	[switch]
 	# Do not remove errors.
-	$KeepError,
-
+	$KeepError
+	,
 	[switch]
 	# Writes verbose info.
 	$Verbose

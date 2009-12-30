@@ -7,23 +7,21 @@
 .DESCRIPTION
 	Generates and shows HTML page with Far key maps for various areas as tables
 	of 4 colums: key name, default Far action, common macro, area macro. It is
-	useful to have this data all in one place to avoid or resolve key
-	conflicts. By default it outputs all keys data to a file in the user
-	profile folder.
+	useful to have this data all together to avoid or resolve key conflicts. By
+	default it outputs all keys data to $env:USERPROFILE\FarKeyMaps.output.htm
 
 .EXAMPLE
 	Show-KeyMap-
 	Show-KeyMap- Del, ShiftDel, F8, ShiftF8
-
-.PARAMETER Name
-		Gets info only for the specified key names.
-.PARAMETER Output
-		Output HTML file path.
 #>
 
 param
 (
-	[string[]]$Name,
+	[string[]]
+	# Gets info only for the specified key names.
+	$Name
+	,
+	# Output HTML file path.
 	$Output = "$env:USERPROFILE\FarKeyMaps.output.htm"
 )
 
@@ -32,7 +30,7 @@ Add-Type -AssemblyName System.Web
 
 $mapShell = @{ ### SHELL MAP
 'Add' = 'Select group'
-'AltAdd' = 'Select files with the same name as the current file'
+'AltAdd' = 'Select files with the same name as current'
 'AltDel' = 'Wipe'
 'AltEnd' = 'Scroll long names and descriptions'
 'AltF1' = 'Change the current drive for left panel'
@@ -54,7 +52,7 @@ $mapShell = @{ ### SHELL MAP
 'AltShift]' = 'Insert network (UNC) path from the passive panel'
 'AltShiftF9' = 'Configure plugin modules'
 'AltShiftIns' = 'Copy full names of selected files to the clipboard'
-'AltSubtract' = 'Deselect files with the same name as the current'
+'AltSubtract' = 'Deselect files with the same name as current'
 'BS' = 'Delete char left'
 'Clear' = 'View'
 'Ctrl;' = 'Insert full file name from the passive panel'
@@ -72,12 +70,12 @@ $mapShell = @{ ### SHELL MAP
 'Ctrl8' = 'L|R: Set file owners view mode | Go to folder shortcut'
 'Ctrl9' = 'L|R: Set file links view mode | Go to folder shortcut'
 'CtrlA' = 'Set file attributes'
-'CtrlAdd' = 'Select files with the same extension as the'
+'CtrlAdd' = 'Select files with the same extension as current'
 'CtrlAlt;' = 'Insert network (UNC) file name from the passive panel'
 'CtrlAlt[' = 'Insert network (UNC) path from the left panel'
 'CtrlAlt]' = 'Insert network (UNC) path from the right panel'
 'CtrlAltF' = 'Insert network (UNC) file name from the active panel'
-'CtrlAltIns' = 'Copy network (UNC) names of selected files to the'
+'CtrlAltIns' = 'Copy selected network (UNC) names to the clipboard'
 'CtrlAltShift' = 'Temporarily hide both panels'
 'CtrlB' = 'Show/Hide functional key bar at the bottom line'
 'CtrlBS' = 'Delete word left'
@@ -112,6 +110,11 @@ $mapShell = @{ ### SHELL MAP
 'CtrlM' = 'Restore previous selection'
 'CtrlMultiply' = 'Invert selection including folders'
 'CtrlN' = 'Toggle long/short file names view mode'
+'CtrlNum2' = 'Change panels height'
+'CtrlNum4' = 'Change panels width'
+'CtrlNum5' = 'Set default panels width'
+'CtrlNum6' = 'Change panels width'
+'CtrlNum8' = 'Change panels height'
 'CtrlO' = 'Hide/show both panels'
 'CtrlP' = 'Hide/show inactive panel'
 'CtrlPgDn' = 'Change folder, enter an archive (also a SFX archive)'
@@ -133,11 +136,15 @@ $mapShell = @{ ### SHELL MAP
 'CtrlShift8' = 'Create shortcut to the current folder'
 'CtrlShift9' = 'Create shortcut to the current folder'
 'CtrlShiftClear' = 'Restore default panels height'
+'CtrlShiftDown' = 'Change current panel height'
 'CtrlShiftEnter' = 'Insert current file name from the passive panel'
 'CtrlShiftF3' = 'View'
 'CtrlShiftF4' = 'Edit'
 'CtrlShiftIns' = 'Copy the names of selected files to the clipboard'
-'CtrlSubtract' = 'Deselect files with the same extension as the'
+'CtrlShiftNum2' = 'Change current panel height'
+'CtrlShiftNum8' = 'Change current panel height'
+'CtrlShiftUp' = 'Change current panel height'
+'CtrlSubtract' = 'Deselect files with the same extension as current'
 'CtrlT' = 'Toggle tree panel'
 'CtrlU' = 'Swap panels'
 'CtrlUp' = 'Change panels height'

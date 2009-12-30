@@ -48,8 +48,8 @@
 		<Exec Command="7z a $(OutputPath) .\*" WorkingDirectory="Tmp"/>
 		<Copy DestinationFolder="." SourceFiles="Tmp\$(OutputPath)"/>
 		<!--Clean-->
-		<RemoveDir Directories="Tmp"/>
-		<MSBuild Projects="Build-FarNetDev.proj" Targets="Clean"/>
+		<RemoveDir Directories="Tmp;FarNet\bin;FarNet\obj;FarNetMan\Release"/>
+		<Delete Files="FarNetDev.sln.cache"/>
 	</Target>
 
 </Project>

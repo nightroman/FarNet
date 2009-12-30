@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 /*
@@ -82,7 +82,7 @@ namespace PowerShellFar
 			else
 			{
 				Panel.Info.Title = "Tree";
-				dir = "."; //??? we have to avoid empty (Far closes on dots or CtrlPgUp)
+				dir = "."; // to avoid empty (Far closes on dots or CtrlPgUp)
 			}
 
 			Panel.Info.CurrentDirectory = dir;

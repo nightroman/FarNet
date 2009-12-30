@@ -1,6 +1,6 @@
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2009 FarNet Team
+Copyright (c) 2005 FarNet Team
 */
 
 using System;
@@ -11,7 +11,8 @@ using System.Collections.ObjectModel;
 namespace FarNet
 {
 	/// <summary>
-	/// Panel interface (Far or plugin panel). Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
+	/// Panel interface (Far or plugin panel).
+	/// Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 	/// </summary>
 	public interface IPanel
 	{
@@ -24,7 +25,7 @@ namespace FarNet
 		/// </summary>
 		bool IsPlugin { get; }
 		/// <summary>
-		/// Gets or sets visibility of the panels.
+		/// Gets or sets visibility of the panel.
 		/// </summary>
 		/// <remarks>
 		/// Setting takes effect only when Far gets control.
@@ -1099,20 +1100,22 @@ namespace FarNet
 		/// <seealso cref="Idled"/>
 		bool IdleUpdate { get; set; }
 		/// <summary>
-		/// Raised to get a plugin <see cref="Info"/> data. Use it only when it is absolutely needed.
+		/// Called to request <see cref="Info"/> data. Use it only when it is absolutely needed.
 		/// </summary>
 		/// <remarks>
-		/// Normally you don't really have to use this event and it is not recommended to use it for many reasons:
-		/// it is called frequently and it is expensive due to internal technical details; it may have issues if
-		/// the panel data are accessed during this call, even for reading only.
+		/// Normally you should not use this event. It is not recommended for many reasons:
+		/// *) it is called very frequently;
+		/// *) it is expensive due to internal technical details;
+		/// *) it may have problems if panel data are accessed, even for reading.
 		/// <para>
-		/// The only reasonable case to use this event is when <see cref="Info"/> depends on some external data
-		/// that may be changed externally, that is not from this panel event handlers.
+		/// Try to update <see cref="Info"/> only from other panel handlers. Even if this panel
+		/// info depends on external data that are changed outside, consider to update the info
+		/// in <see cref="Redrawing"/> event handler.
 		/// </para>
 		/// </remarks>
 		event EventHandler GettingInfo;
 		/// <summary>
-		/// Raised to prepare <see cref="Files"/> list in the current directory of the file system emulated by the plugin.
+		/// Called to prepare <see cref="Files"/> list in the current directory of the file system emulated by the plugin.
 		/// </summary>
 		/// <remarks>
 		/// If the file set is constant and may be filled once on the panel creation then this event is not needed.
@@ -1164,19 +1167,19 @@ namespace FarNet
 		/// </summary>
 		event EventHandler<PanelKeyEventArgs> KeyPressed;
 		/// <summary>
-		/// Raised to set the current directory in the file system emulated by the plugin.
+		/// Called to set the current directory in the file system emulated by the plugin.
 		/// </summary>
 		event EventHandler<SettingDirectoryEventArgs> SettingDirectory;
 		/// <summary>
-		/// Raised to delete files in the file system emulated by the plugin.
+		/// Called to delete files in the file system emulated by the plugin.
 		/// </summary>
 		event EventHandler<FilesEventArgs> DeletingFiles;
 		/// <summary>
-		/// Raised to get files on copy\move operation.
+		/// Called to get files on copy\move operation.
 		/// </summary>
 		event EventHandler<GettingFilesEventArgs> GettingFiles;
 		/// <summary>
-		/// Raised to put files on copy\move operation.
+		/// Called to put files on copy\move operation.
 		/// </summary>
 		event EventHandler<PuttingFilesEventArgs> PuttingFiles;
 		/// <summary>

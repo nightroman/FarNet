@@ -1,8 +1,16 @@
 
 <#
 .SYNOPSIS
-	Connects .mdb database and optionally panels its tables.
+	Connects .mdb database and optionally shows tables in a panel.
 	Author: Roman Kuzmin
+
+.DESCRIPTION
+	With -Panel switch the script shows database tables in a panel using
+	Panel-DbTable-.ps1 and closes the connection together with a panel.
+
+	Otherwise the script has to be dot-sourced. It opens the connection and
+	creates result variables $DbConnection and $DbProviderFactory in the
+	current scope. $DbConnection is used and closed by a caller.
 #>
 
 param
@@ -10,14 +18,14 @@ param
 	[Parameter(Mandatory=$true)]
 	[string]
 	# .mdb file path.
-	$Path,
-
+	$Path
+	,
 	[string]
 	# Connection options.
-	$Options,
-
+	$Options
+	,
 	[switch]
-	# Panel database tables.
+	# To show tables in a panel.
 	$Panel
 )
 

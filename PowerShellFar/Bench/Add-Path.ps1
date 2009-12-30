@@ -2,6 +2,7 @@
 <#
 .SYNOPSIS
 	Adds a directory path to the current process path.
+	Author: Roman Kuzmin
 
 .DESCRIPTION
 	It is a standard PowerShell script for any host. But in the first place it

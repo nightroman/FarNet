@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
@@ -116,12 +116,12 @@ namespace PowerShellFar
 				return;
 			}
 
-			// case: try to get Name property
+			// case: try to get display name
 			PSObject data = PSObject.AsPSObject(file.Data);
-			PSPropertyInfo pi = data.Properties["Name"];
-			if (pi != null && pi.Value != null)
+			PSPropertyInfo pi = A.FindDisplayProperty(data);
+			if (pi != null)
 			{
-				file.Name = pi.Value.ToString();
+				file.Name = pi.Value == null ? "<null>" : pi.Value.ToString();
 				return;
 			}
 

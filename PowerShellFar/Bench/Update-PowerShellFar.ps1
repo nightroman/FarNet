@@ -14,10 +14,9 @@
 	this case you do not have to set the parameter -FARHOME. If -FARHOME is UNC
 	then that machine has to be configured for PS remoting.
 
-	-Archive directory is used for a temp file PowerShellFar.Readme.txt and as
-	a destination for downloaded archives. Old files are not deleted. Keep the
-	last downloaded archives there, the script downloads only new archives and
-	does nothing if they are already downloaded.
+	-Archive directory is the destination for downloaded archives. Old files
+	are not deleted. Keep the last downloaded archives there, the script
+	downloads only new archives.
 
 	On updating from the archives the script simply extracts files and replace
 	the same existing with no warnings. Existing extra files are not deleted.
@@ -73,16 +72,11 @@ $wc = New-Object Net.WebClient
 
 ### request version
 if (!$Version) {
-	# download Readme.txt
+	# download Readme.txt, get version
 	$URL = "http://farnet.googlecode.com/svn/trunk/PowerShellFar/Readme.txt"
 	Write-Host -ForegroundColor Cyan "Getting version from '$URL'..."
-	$ini = "$Archive\PowerShellFar.Readme.txt"
-	$wc.DownloadFile($URL, $ini)
-
-	# extract version
-	$initext = [IO.File]::ReadAllText($ini)
+	$initext = $wc.DownloadString($URL)
 	if ($initext -notmatch 'Version\s+:\s+(\d+\.\d+\.\d+)') { throw "Cannot get version from '$ini'." }
-	Remove-Item -LiteralPath $ini -ErrorAction 'Continue'
 	$Version = $matches[1]
 }
 

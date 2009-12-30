@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System.IO;
@@ -15,6 +15,9 @@ namespace PowerShellFar.Commands
 	/// Find-FarFile command.
 	/// Finds a panel file and sets it current.
 	/// </summary>
+	/// <remarks>
+	/// If a panel file is not found the cmdlet writes an error.
+	/// </remarks>
 	/// <seealso cref="IPanel.GoToName(string)"/>
 	/// <seealso cref="IPanel.GoToName(string, bool)"/>
 	[Description("Finds a panel file and sets it current.")]

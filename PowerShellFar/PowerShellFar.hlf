@@ -54,15 +54,14 @@ $#About#
 
 #PowerShellFar 4.2.19#
 
-Implements Windows PowerShell host in Far Manager and user interface for
-invoking commands and scripts. PowerShell code can access and control Far
-functionality with FarNet object model. The package includes ready to use
-scripts for various popular Far Manager tasks and PowerShell.hrc for
-Colorer-take5.beta5 providing rich PowerShell syntax highlighting.
+Implements Windows PowerShell host in Far Manager, user interface for invoking
+commands and scripts, and exposes underlying FarNet object model. The package
+includes scripts for many popular Far Manager tasks and PowerShell.hrc for
+Colorer providing rich PowerShell syntax highlighting.
 
-The latest versions of PowerShellFar, FarNet and documentation can be
-downloaded from: ~http://code.google.com/p/farnet/~@http://code.google.com/p/farnet/@
-
+PowerShellFar, FarNet and documentation can be updated by the included script
+Update-PowerShellFar.ps1 or downloaded manually from:
+~http://code.google.com/p/farnet/~@http://code.google.com/p/farnet/@
 
 #Author#
 
@@ -88,16 +87,17 @@ Check\change PowerShell execution policy: run standard PowerShell.exe and type
 Get-ExecutionPolicy - it should be RemoteSigned or Unrestricted. If it is not
 then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
 
-Copy all files from "Plugin" to "Plugins.NET\PowerShellFar\" where "Plugins.NET"
-is a folder for FarNet plugins. If FarNet is installed as recommended by
-default then it is "%FARHOME%\Plugins.NET".
+Copy "Plugins.NET\PowerShellFar" to "%FARHOME%\Plugins.NET\PowerShellFar". The
+location and name can be changed but it is recommended to use exactly this way:
+for example, in order to be able to use the script Update-PowerShellFar.ps1
+with no changes in it.
 
 
 #Using Bench scripts#
 
 Included Bench scripts are ready to use handy tools for various tasks. There are
-also tests and demos for learning PowerShellFar or even PowerShell. But nothing
-is enabled by default. If you are going to use these scripts directly from Bench
+also tests and demos for learning PowerShellFar and PowerShell. But nothing is
+enabled by default. If you are going to use these scripts directly from Bench
 then:
 
 *) Include directory Bench into the system path.
@@ -105,7 +105,7 @@ then:
 *) In addition, if you are a new PowerShellFar user then it is recommended to
 set the following configuration properties:
 
-	#Startup code#       . Profile-.ps1
+	#Startup code#   . Profile-.ps1
 
 This enables for you many features including additional menu tools, so that you
 can invoke some scripts right from the menus. Read this help and script
@@ -150,9 +150,9 @@ $#Menu commands#
 
 #Invoke input code...#
 
-You are prompted to enter any PowerShell code to be executed. Don't use plugin
-prefix. Use [Tab] to complete the expression being typed using PowerShell
-TabExpansion (see also ~TabExpansion.ps1~@TabExpansion@).
+You are prompted to enter PowerShell code to be executed. Use [Tab] to complete
+the expression being typed using PowerShell TabExpansion (see also
+~TabExpansion.ps1~@TabExpansion@).
 
 #Invoke selected code#
 
@@ -167,11 +167,11 @@ error happens or if there is a selection. See also "Easy invoke": ~FAQ~@FAQ@.
 
 #Background jobs#
 
-Shows the background jobs menu. See ~Background jobs menu~@MenuBJ@.
+Shows the background jobs menu. See ~Background jobs menu~@MenuBackgroundJobs@.
 
 #Command history#
 
-Shows the command history menu. See ~Command history menu~@MenuCH@.
+Shows the command history menu. See ~Command history menu~@MenuCommandHistory@.
 
 #Editor console#
 
@@ -208,7 +208,7 @@ Other tools exist in the menu only if you have added them yourself, for example
 using a startup profile like ~Profile-.ps1~@Profile@.
 
 
-@MenuBJ
+@MenuBackgroundJobs
 $#Background jobs menu#
 ~Contents~@Contents@
 
@@ -238,7 +238,7 @@ list, discards its output, errors, and deletes temp files, if any.
 [#ShiftDel#] Invokes [Del] action for each job in the list.
 
 
-@MenuCH
+@MenuCommandHistory
 $#Command history menu#
 ~Contents~@Contents@
 
@@ -250,8 +250,7 @@ menu has started.
 
 [#Enter#] Invokes the command immediately as it is. Note that history contains
 commands from all areas and the current area may be not suitable. For example
-commands that open panels normally should not be called from a dialog, editor
-or viewer.
+commands that open panels should not be called from a dialog.
 
 [#CtrlEnter#] Allows to edit the command before invocation. In panels: inserts
 the command text into the command line with automatically added prefix; in
@@ -579,10 +578,8 @@ about_remote* help topics for more details.
 $#Power panel#
 ~Contents~@Contents@
 
-#WARNING: use panels carefully, you can change or delete system data, files and etc. depending on a panel.#
-
-Power panel is a Far panel with any .NET objects or with PowerShell provider
-items and their members and properties. There are several panels:
+Power panel is a PowerShellFar panel with .NET objects, PowerShell provider
+items, object or item properties and etc. There are several panels:
 
 ~Object panel~@ObjectPanel@ - Table of any .NET objects, normally of the same
 type or the same base type. Columns (default or custom) show property values.
@@ -592,7 +589,7 @@ The simplest way to use a panel is #Out-FarPanel# cmdlet.
 a .NET object. There are two columns: Name and Value.
 
 ~Provider item panel~@ItemPanel@ - Table of PowerShell provider items in a
-specified path. Columns (default or custom) show item .NET properties.
+specified path. Columns (default or custom) show item properties.
 
 ~Provider folder tree~@FolderTree@ - Tree of PowerShell provider container
 items. Providers that support container items: FileSystem, Registry, ...
@@ -603,44 +600,36 @@ Providers that support them: FileSystem, Registry, ...
 
 #KEYS AND ACTIONS#
 
-Availability and details of operations may depend on a panel mode, data types,
-providers and etc. For example for internal providers properties are supported
-only by FileSystem and Registry. Then, properties of FileSystem provider (i.e.
-directory or file properties) are "static", you can only change values, but
-properties of Registry provider (i.e. key values) are "dynamic", you can add,
-delete, copy\move or rename them. Then, FileSystem and Certificate have both
-"container" and "leaf" items (e.g. directories and files), Registry has only
-"container" items (keys), other internal default providers have only "leaves",
-and so on, other providers may have their own implementation details.
+Availability and details of operations may depend on a panel type, mode, data
+types, providers and etc.
 
-[#F1#] Opens the panel help menu with some of available panel specific
-commands. [F1] pressed in this menu opens the panel help topic.
+[#F1#] Opens the panel help menu with available panel specific commands. [F1]
+pressed in this menu opens the panel help topic.
 
 [#F3#] Views content, properties or other PowerShell or .NET information about
 the current object, provider item, member, property or '..' element.
 
 [#F4#] Starts internal editor for editing the current item content or a
-property value. Note: some items or properties are read only. Power panel may
-not recognize this before the operation. Editor is not modal and you can edit
-other elements at the same time. Data are updated on saving. It is recommended
-to save only by [F2] (i.e. not on exiting) - in this case on errors you are
-still in editor and can fix problems.
+property value. Note: some items or properties are read only or cannot be
+assigned in this way - this is not always recognized on opening. Editor is not
+modal, you can edit other items at the same time. Data are updated on saving.
+It is recommended to save only by [F2] (i.e. not on exiting) - in this case on
+errors you are still in editor and can fix problems.
 
-[#AltF4#] Starts Notepad. In contrast to [F4] it is "modal", you have to finish
-editing and exit. If there are errors then Notepad is started again with the
-same temp file (i.e. your changes are not lost, you can fix them, or just
-exit).
+[#AltF4#] Starts Notepad. In contrast to [F4] you have to finish editing and
+exit. If there are errors then Notepad is started again with the same temp
+file, i.e. your changes are not lost, you can try to fix them.
 
 [#F5#] Copies items or properties from the active panel to another. You can
-copy almost any items to Object panel, so that an Object panel can be used as a
-collector of items for further operations.
+copy almost any items to an Object panel, so that an Object panel can be used
+as a collector of items for further operations.
 
 [#ShiftF5#] Copies an item or a dynamic property here with another name.
 
-[#F6#] Moves items or properties from the active panel to another. You can
-"move" items to Object panel but it works the same as copying ([F5]).
+[#F6#] Moves items or properties to another panel. You can move items to Object
+panel but it works the same as copying ([F5]).
 
-[#ShiftF6#] Renames a current item or a dynamic property.
+[#ShiftF6#] Renames an item or a dynamic property.
 
 [#F7#] Creates a new item or a property or even a new custom object. Depending
 on a provider you may have to specify required provider item or property type
@@ -649,28 +638,27 @@ follow error message instructions (or read provider manuals)). In Object mode
 an empty object is created for you and you are prompted to create the first
 property (so called NoteProperty).
 
-[#F8#] Object mode: removes objects from the panel. Item mode: deletes the
-selected items or the current item or dynamic properties. Confirmations depend
-on Far settings for delete operations, but confirmation dialog is not the same
-as in Far, it is UI version of standard PowerShell confirmation request, so
-don't push a button through habit.
+[#F8#], [#Del#] Removes selected objects from the panel and, depending on a
+panel, performs actions on related system objects. Object panel: removes
+objects from the panel. Item panels: deletes the selected items or the current
+item or dynamic properties. Confirmations depend on Far settings for delete
+operations, but confirmation dialog is not exactly the same as in Far.
 
 [#Esc#] Closes or clears the panel. You may be prompted to clarify.
 
 [#ShiftEsc#] Closes the current panel together with all its parent panels.
 
 [#Enter#] Enters folders, opens items (registered file types, etc.), etc.
-Actual action depends on a particular panel, for example in list panels it is
-used for editing values via command line with prefix #=#.
+Actual action depends on a particular panel, for example in list panels it may
+be used for editing values via command line with prefix #=#.
 
 [#ShiftEnter#], [#CtrlA#] Opens a panel with provider properties of the current
-item. Values are shown in the Description column. You can modify, add and
-delete some properties (depending on a provider). Example: key values of
-Registry provider.
+item. You can modify, add and delete some properties (depending on a provider).
+Example: key values of Registry provider.
 
-[#CtrlPgDn#] Opens a panel with the current object members. Values are shown in
-the Description column. If a member type is *Property you also can open its
-members by [CtrlPgDn] and so on. Use [CtrlShiftM] to switch member modes.
+[#CtrlPgDn#] Opens a panel with the current object members. If a member type is
+*Property you also can open its members by [CtrlPgDn] and so on. Use
+[CtrlShiftM] to switch member modes.
 
 [#CtrlQ#] Quick view. Shows contents, properties and other information. Data
 may be not the same as information shown by [F3].
@@ -679,12 +667,7 @@ may be not the same as information shown by [F3].
 panel commits changes to a database, an object panel exports objects to .clixml
 file, etc.
 
-[#CtrlShiftM#] Switches panel internal modes (if there are more than 1). In
-Member panel: mode 1: properties and their values in the Description column
-(you can edit settable properties); mode 2: all public members and their
-information in the Description column (read only).
-
-[#AltF7#] Search. Currently it is just a dummy, not really useful.
+[#AltF7#] Search. It is not really implemented.
 
 
 @ObjectPanel
@@ -939,20 +922,40 @@ $#List panel#
 ~Contents~@Contents@
 ~Power panel~@PowerPanel@
 
-List panel allows to view and modify properties of .NET objects; to view,
-modify, add and remove dynamic properties of provider items and PSObject items;
-to view all members of .NET objects. This panel consists of two columns:
-property names and values.
+List panel is used to view and modify properties of .NET objects, to view,
+modify, add\remove dynamic properties, or to view all members including
+methods. This panel consists of two columns: names and values\info.
+
+An object being shown is exposed as #$Far.Panel.Host.Value#
 
 
-#HOW TO MODIFY A PROPERTY VIA COMMAND LINE#
+#KEYS AND ACTIONS#
 
-[#Enter#] If the command line is empty and the current property value is
-trivial, i.e. can be represented as a single line of text then [Enter] puts the
-value into the command line with a prefix #=#. If the command line is not empty
-and it starts with #=# then [Enter] treats the rest of the line as a new
-property value and assigns it (if possible, i.e. a property is settable and a
-new value is correct).
+[#Enter#] Allows to modify a property using the command line. If the command
+line is empty and the current property value can be represented as a single
+line of text, then [Enter] puts the value into the command line with a prefix
+=. If the command line is not empty and it starts with = then [Enter] treats
+the rest of the line as a new property value and, if it is possible, assigns
+it. See also [F4], [ShiftF8]\[ShiftDel].
+
+[#F3#] Opens a viewer to show property information, e.g. to find out whether a
+property is settable or not.
+
+[#F4#] Opens an editor to edit property value representable as multiline text.
+You can open several editors. Properties are assigned on saving in editors.
+
+[#F8#], [#Del#] Removes selected dynamic properties from the object or provider
+item. Note: this is not always allowed, it depends on objects, providers, and
+selected properties.
+
+[#ShiftF8#], [#ShiftDel#] Sets null value to selected properties (kind of
+"deletes values"). Null values are shown as #<null>#.
+
+[#CtrlShiftM#] Switches panel modes: mode 1: properties and values (you can
+edit settable properties); mode 2: all public members and their information
+(read only).
+
+See ~Power panel~@PowerPanel@ for other keys.
 
 
 #NOTES#
