@@ -1,8 +1,8 @@
 ﻿Add-Path.ps1 Adds a directory path to the current process path.
 Clear-Session.ps1 Clears PowerShell session resources.
 Complete-Word-.ps1 Completes the current word in the editor, command line or edit box.
-Connect-Mdb-.ps1 Connects .mdb database and optionally panels its tables.
-Connect-Sdf-.ps1 Connects .sdf database and optionally panels its tables.
+Connect-Mdb-.ps1 Connects .mdb database and optionally shows tables in a panel.
+Connect-Sdf-.ps1 Connects .sdf database and optionally shows tables in a panel.
 Debug-Msg-.ps1 Shows a message box with data and choices.
 Edit-FarDescription-.ps1 Edits pseudo multiline description in the editor.
 Edit-TextLink-.ps1 Opens a file in editor by a link at the current text.

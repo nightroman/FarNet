@@ -1,6 +1,6 @@
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2009 FarNet Team
+Copyright (c) 2005 FarNet Team
 */
 
 #pragma once
@@ -16,7 +16,7 @@ ref class Editor : public AnyEditor, public IEditor
 {
 public:
 	virtual property bool DisableHistory { bool get(); void set(bool value); }
-	virtual property bool IsEnd { bool get(); }
+	virtual property bool IsLastLine { bool get(); }
 	virtual property bool IsLocked { bool get(); }
 	virtual property bool IsModified { bool get(); }
 	virtual property bool IsNew { bool get(); void set(bool value); }

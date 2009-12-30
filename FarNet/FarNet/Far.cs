@@ -1,6 +1,6 @@
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2009 FarNet Team
+Copyright (c) 2005 FarNet Team
 */
 
 using System;
@@ -12,16 +12,18 @@ using FarNet.Support;
 namespace FarNet
 {
 	/// <summary>
-	/// Interface of Far Manager.
+	/// Main Far Manager interface which exposes main FarNet object model entries.
+	/// </summary>
+	/// <remarks>
 	/// It is exposed for plugin derived classes as property <see cref="BasePlugin.Far"/>.
 	/// It provides access to top level Far methods and objects or creates new Far objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
 	/// Further operations are performed on that objects.
-	/// </summary>
+	/// </remarks>
 	public interface IFar
 	{
 		/// <summary>
-		/// Registers a handler invoked from one of Far menus.
+		/// Registers a tool handler invoked from one of Far menus.
 		/// </summary>
 		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
 		/// <param name="name">Tool name and also the default menu item name. Recommended to be a unique name in the assembly.</param>
@@ -34,8 +36,7 @@ namespace FarNet
 		/// <param name="handler">Tool handler.</param>
 		void UnregisterTool(EventHandler<ToolEventArgs> handler);
 		/// <summary>
-		/// Registers a handler invoked from the command line by its prefix.
-		/// If a plugin uses this prefix itself then it should use the returned value instead.
+		/// Registers a command handler invoked from the command line by its prefix.
 		/// </summary>
 		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
 		/// <param name="name">Command name and also the config menu item name. Recommended to be a unique name in the assembly.</param>
@@ -44,7 +45,7 @@ namespace FarNet
 		/// <returns>Actual prefix that is used by FarNet for this command.</returns>
 		/// <remarks>
 		/// Provided <c>prefix</c> is only a default suggestion, actual prefix used by FarNet can be different,
-		/// e.g. changed by a user, so that use the returned prefix if the plugin uses it. Note that the plugin
+		/// e.g. changed by a user, so that the plugin must use the returned prefix if needed. Note: the plugin
 		/// is not notified about prefix changes during the session. If it is really important (rare) then use
 		/// <see cref="CommandPlugin"/> which can always have a fresh prefix set by a user.
 		/// </remarks>
@@ -55,7 +56,7 @@ namespace FarNet
 		/// <param name="handler">Command handler.</param>
 		void UnregisterCommand(EventHandler<CommandEventArgs> handler);
 		/// <summary>
-		/// Registers a handler invoked for a file. See <see cref="FilerEventArgs"/>.
+		/// Registers a file handler invoked for a file. See <see cref="FilerEventArgs"/>.
 		/// </summary>
 		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
 		/// <param name="name">Filer name and also the config menu items. Recommended to be a unique name in the assembly.</param>
@@ -69,11 +70,15 @@ namespace FarNet
 		/// <param name="handler">Filer handler.</param>
 		void UnregisterFiler(EventHandler<FilerEventArgs> handler);
 		/// <summary>
-		/// Unregisters a base plugin. This method should be called only in critical cases.
+		/// Unregisters a base plugin. Use it sparingly.
 		/// </summary>
+		/// <remarks>
+		/// Normally there is no much sense in unloading a plugin because .NET assemblies are not unloaded anyway.
+		/// This method should be called only in critical cases (fatal errors and etc.).
+		/// </remarks>
 		void Unregister(BasePlugin plugin);
 		/// <summary>
-		/// Path of the plugin directory.
+		/// Gets the path of the plugin directory.
 		/// </summary>
 		string PluginPath { get; }
 		/// <summary>
@@ -124,44 +129,50 @@ namespace FarNet
 		/// <summary>
 		/// Runs a command with a registered FarNet prefix.
 		/// </summary>
-		///<param name="command">Command with a prefix.</param>
+		/// <param name="command">Command with a prefix of any FarNet plugin.</param>
 		void Run(string command);
 		/// <summary>
-		/// Handle of Far window.
+		/// Gets the Far window handle.
 		/// </summary>
 		IntPtr HWnd { get; }
 		/// <summary>
-		/// Far version.
+		/// Gets Far version.
 		/// </summary>
 		Version FarVersion { get; }
 		/// <summary>
-		/// FarNet version.
+		/// Gets FarNet version.
 		/// </summary>
 		Version FarNetVersion { get; }
 		/// <summary>
 		/// Creates a new input box.
-		/// You have to set its properties and call <see cref="IInputBox.Show"/>.
+		/// You set its properties and call <see cref="IInputBox.Show"/>.
 		/// </summary>
 		IInputBox CreateInputBox();
 		/// <summary>
 		/// Creates a new standard Far menu.
-		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
+		/// You set its properties and call <see cref="IAnyMenu.Show"/>.
 		/// </summary>
 		IMenu CreateMenu();
 		/// <summary>
 		/// Creates a new menu implemented with <see cref="IListBox"/>.
-		/// You have to set its properties and call <see cref="IAnyMenu.Show"/>.
+		/// You set its properties and call <see cref="IAnyMenu.Show"/>.
 		/// </summary>
 		IListMenu CreateListMenu();
 		/// <summary>
-		/// Virtual editor instance.
-		/// Subscribe to its events if you want to handle events of all editors.
+		/// Gets the object with global editor events, settings and tools.
 		/// </summary>
+		/// <remarks>
+		/// Members of the returned object deal with global editor events, settings and tools.
+		/// Subscribe to its events if you want to handle some events in the same way for all editors.
+		/// </remarks>
 		IAnyEditor AnyEditor { get; }
 		/// <summary>
-		/// Virtual viewer instance.
-		/// Subscribe to its events if you want to handle events of all viewers.
+		/// Gets the object with global viewer events, settings and tools.
 		/// </summary>
+		/// <remarks>
+		/// Members of the returned object deal with global viewer events, settings and tools.
+		/// Subscribe to its events if you want to handle some events in the same way for all viewers.
+		/// </remarks>
 		IAnyViewer AnyViewer { get; }
 		/// <summary>
 		/// Gets the clipboard text.
@@ -173,12 +184,12 @@ namespace FarNet
 		void CopyToClipboard(string text);
 		/// <summary>
 		/// Creates a new editor.
-		/// You have to set its properties and call <see cref="IEditor.Open(OpenMode)"/>.
+		/// You set its properties and call <see cref="IEditor.Open(OpenMode)"/>.
 		/// </summary>
 		IEditor CreateEditor();
 		/// <summary>
 		/// Creates a new viewer.
-		/// You have to set its properties and call <see cref="IViewer.Open(OpenMode)"/>.
+		/// You set its properties and call <see cref="IViewer.Open(OpenMode)"/>.
 		/// </summary>
 		IViewer CreateViewer();
 		/// <summary>
@@ -254,43 +265,57 @@ namespace FarNet
 		/// </remarks>
 		void RestoreScreen(int screen);
 		/// <summary>
-		/// Active editor or null if none.
-		/// Normally you have to use this object instantly.
-		/// </summary>
-		IEditor Editor { get; }
-		/// <summary>
-		/// Active viewer or null if none.
-		/// Normally you have to use this object instantly.
-		/// </summary>
-		IViewer Viewer { get; }
-		/// <summary>
-		/// All editors.
-		/// Be careful working with not current instance.
-		/// </summary>
-		IEditor[] Editors();
-		/// <summary>
-		/// All viewers.
-		/// Be careful working with not current instance.
-		/// </summary>
-		IViewer[] Viewers();
-		/// <summary>
-		/// Active panel. It is null if Far started with /e or /v.
+		/// Gets the current editor or null if none.
 		/// </summary>
 		/// <remarks>
-		/// If it is a FarNet panel it returns <see cref="IPluginPanel"/>, you can keep this, but remember its state may change.
-		/// Else it points to an active panel no matter if it changes, so that use this reference instantly.
+		/// Normally you use this object instantly and do not keep it for later use.
+		/// Next time when you work on the current editor request this object again.
+		/// </remarks>
+		IEditor Editor { get; }
+		/// <summary>
+		/// Gets the current viewer or null if none.
+		/// </summary>
+		/// <remarks>
+		/// Normally you use this object instantly and do not keep it for later use.
+		/// Next time when you work on the current viewer request this object again.
+		/// </remarks>
+		IViewer Viewer { get; }
+		/// <summary>
+		/// Gets the list of all editors. Use it sparingly.
+		/// </summary>
+		/// <remarks>
+		/// Work on not current editor instances is strongly not recommended.
+		/// Still, this list provides access to them all, so be careful.
+		/// </remarks>
+		IEditor[] Editors();
+		/// <summary>
+		/// Gets the list of all viewers. Use it sparingly.
+		/// </summary>
+		/// <remarks>
+		/// Work on not current viewer instances is strongly not recommended.
+		/// Still, this list provides access to them all, so be careful.
+		/// </remarks>
+		IViewer[] Viewers();
+		/// <summary>
+		/// Gets the active panel or null if Far started with /e or /v.
+		/// </summary>
+		/// <remarks>
+		/// If it is a FarNet panel it returns <see cref="IPluginPanel"/>, you can keep its reference for later use,
+		/// just remember that its state may change and it can be even closed.
+		/// <para>
+		/// If it is not a FarNet panel then you use this object instantly and do not keep it.
+		/// </para>
 		/// </remarks>
 		IPanel Panel { get; }
 		/// <summary>
-		/// Passive panel. It is null if Far started with /e or /v.
+		/// Gets the passive panel or null if Far started with /e or /v.
 		/// </summary>
 		/// <remarks>
-		/// If it is a FarNet panel it returns <see cref="IPluginPanel"/>, you can keep this, but remember its state may change.
-		/// Else it points to a passive panel no matter if it changes, so that use this reference instantly.
+		/// See remarks for the active panel (<see cref="Panel"/>).
 		/// </remarks>
 		IPanel Panel2 { get; }
 		/// <summary>
-		/// The command line instance.
+		/// Gets the command line operator.
 		/// </summary>
 		/// <remarks>
 		/// If a plugin is called from the command line (including user menu (F2)
@@ -347,7 +372,7 @@ namespace FarNet
 		void ShowError(string title, Exception exception);
 		/// <summary>
 		/// Creates a new dialog.
-		/// You have to set its properties, add controls, event handlers and then call <see cref="IDialog.Show"/>.
+		/// You set its properties, add controls, event handlers and then call <see cref="IDialog.Show"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <remarks>
@@ -398,8 +423,7 @@ namespace FarNet
 		/// <seealso cref="IFar.GetPaletteBackground"/>
 		void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
 		/// <summary>
-		/// Gets existing FarNet plugin panel with the specified host type
-		/// (see <see cref="IPluginPanel.Host"/>).
+		/// Gets existing FarNet plugin panel with the specified host (see <see cref="IPluginPanel.Host"/>).
 		/// </summary>
 		/// <param name="hostType">
 		/// Type of the hosting class.
@@ -415,12 +439,16 @@ namespace FarNet
 		IPluginPanel GetPluginPanel(Guid id);
 		/// <summary>
 		/// Creates a new panel.
-		/// If it is opened on the same plugin call then call <see cref="IPluginPanel.Open()"/>
-		/// as soon as possible and then only configure the panel and other data.
 		/// </summary>
+		/// <remarks>
+		/// If the panel is opened on the same plugin call (normally it is) then consider to call
+		/// <see cref="IPluginPanel.Open()"/> as soon as possible to be sure that it is allowed.
+		/// Then you may configure the panel and other data. Actual panel opening is performed
+		/// only when plugin call is over.
+		/// </remarks>
 		IPluginPanel CreatePluginPanel();
 		/// <summary>
-		/// Confirmation settings according to options in the "Confirmations" dialog.
+		/// Gets confirmation settings (see Far "Confirmations" dialog).
 		/// </summary>
 		FarConfirmations Confirmations { get; }
 		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
@@ -446,14 +474,19 @@ namespace FarNet
 		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Registry root key of Far settings taking into account a user (command line parameter /u).
+		/// Gets the path of the Far settings registry key.
 		/// </summary>
+		/// <remarks>
+		/// It also takes into account a user if it is specified in the command line by parameter /u.
+		/// </remarks>
 		string RootFar { get; }
 		/// <summary>
-		/// Registry root key, where plugins can save their parameters.
-		/// Do not save parameters directly in this key, create your own subkey here
-		/// or use <see cref="GetPluginValue"/> and <see cref="SetPluginValue"/>.
+		/// Gets the registry root key path, where all plugins can save their settings.
 		/// </summary>
+		/// <remarks>
+		/// Do not save values directly in this key, create your own subkey here
+		/// or use <see cref="GetPluginValue"/> and <see cref="SetPluginValue"/>.
+		/// </remarks>
 		string RootKey { get; }
 		/// <summary>
 		/// Gets a plugin value from the registry.
@@ -471,7 +504,7 @@ namespace FarNet
 		/// <param name="newValue">New value to be set.</param>
 		void SetPluginValue(string pluginName, string valueName, object newValue);
 		/// <summary>
-		/// Count of open Far windows.
+		/// Gets count of open Far windows.
 		/// </summary>
 		/// <remarks>
 		/// There is at least one window (panels, editor or viewer).
@@ -492,7 +525,7 @@ namespace FarNet
 		/// <returns>true on success.</returns>
 		bool Commit();
 		/// <summary>
-		/// Gets information about a Far Manager window.
+		/// Returns information about a Far Manager window.
 		/// </summary>
 		/// <param name="index">Window index; -1 ~ current. See <see cref="WindowCount"/>.</param>
 		/// <param name="full">
@@ -500,11 +533,14 @@ namespace FarNet
 		/// </param>
 		IWindowInfo GetWindowInfo(int index, bool full);
 		/// <summary>
-		/// Type of the current window, the same as <see cref="GetWindowType"/> with parameter -1.
+		/// Gets a type of the current window.
 		/// </summary>
+		/// <remarks>
+		/// It is the same as the result of <see cref="GetWindowType"/> with parameter -1.
+		/// </remarks>
 		WindowType WindowType { get; }
 		/// <summary>
-		/// Gets type of a window specified by an index.
+		/// Returns a type of a window specified by the index.
 		/// </summary>
 		/// <param name="index">
 		/// Window index or -1 for the current window, same as <see cref="WindowType"/>.
@@ -573,7 +609,7 @@ namespace FarNet
 		/// </remarks>
 		void PostJob(EventHandler handler);
 		/// <summary>
-		/// Current macro state.
+		/// Gets the current macro state.
 		/// </summary>
 		FarMacroState MacroState { get; }
 		/// <summary>
@@ -605,25 +641,30 @@ namespace FarNet
 		/// </summary>
 		string TempFolder();
 		/// <summary>
-		/// The current dialog. STOP: be sure that a dialog exists otherwise effects are not predictable.
+		/// Gets the current dialog operator. Use it sparingly.
 		/// </summary>
+		/// <remarks>
+		/// STOP: Be sure that a dialog exists otherwise effects are not predictable.
+		/// </remarks>
 		IDialog Dialog { get; }
 		/// <summary>
-		/// The current editor or dialog edit box line or the command line.
-		/// It is null if there is no current editor line available.
+		/// Gets the current editor or dialog edit box line or the command line.
 		/// </summary>
+		/// <remarks>
+		/// It is null if there is no current editor line available.
+		/// </remarks>
 		ILine Line { get; }
 		/// <summary>
-		/// Key macros host.
+		/// Gets key macro operator.
 		/// </summary>
 		IKeyMacroHost KeyMacro { get; }
 		/// <summary>
-		/// Gets background color of Far palette.
+		/// Returns background color of Far palette.
 		/// </summary>
 		/// <param name="paletteColor">Palette color.</param>
 		ConsoleColor GetPaletteBackground(PaletteColor paletteColor);
 		/// <summary>
-		/// Gets foreground color of Far palette.
+		/// Returns foreground color of Far palette.
 		/// </summary>
 		/// <param name="paletteColor">Palette color.</param>
 		ConsoleColor GetPaletteForeground(PaletteColor paletteColor);

@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System.Collections;
@@ -41,12 +41,12 @@ namespace PowerShellFar.UI
 			Dialog.AddText(5, ++y, 0, "&Encoding");
 			Encoding = Dialog.AddComboBox(x, y, 71, string.Empty);
 			Encoding.DropDownList = true;
-			Encoding.Text = "Default";
+			Encoding.Text = "Unicode";
 			Encoding.Add("Default");
 			Encoding.Add("Unicode");
+			Encoding.Add("UTF8");
 			Encoding.Add("BigEndianUnicode");
 			Encoding.Add("ASCII");
-			Encoding.Add("UTF8");
 			Encoding.Add("UTF7");
 			Encoding.Add("UTF32");
 			Encoding.Add("OEM");

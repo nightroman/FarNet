@@ -11,10 +11,9 @@
 	Far Manager (using 'start' command or [ShiftEnter] in the command line), in
 	this case you do not have to set the parameter FARHOME.
 
-	%USERPROFILE% directory is used for a temp file Update-FarManager.ini and
-	as a destination for downloaded archives. Old files are not deleted. It is
-	recommended to keep at least the last downloaded archive there, so that the
-	script downloads only new archives.
+	%USERPROFILE% directory is the destination for downloaded archives. Old
+	files are not deleted. It is recommended to keep at the last downloaded
+	archive there, the script downloads only new archives, if any.
 
 	Command 7z has to be available, e.g. 7z.exe in the system path.
 
@@ -72,16 +71,11 @@ if (!$Archive) {
 	$URL = $(if ($Stable) {"http://www.farmanager.com/files/update2.php"} else {"http://www.farmanager.com/nightly/update2.php"})
 	$URL += $(if ('x86' -eq $Platform) {'?p=32'} else {'?p=64'})
 
-	### look for updates
+	### look for updates (request the archive name)
 	Write-Host -ForegroundColor Cyan "Looking for updates at '$URL'..."
-	$ini = "$env:USERPROFILE\Update-FarManager.ini"
 	$wc = New-Object Net.WebClient
-	$wc.DownloadFile($URL, $ini)
-
-	### get the archive name
-	$initext = [IO.File]::ReadAllText($ini)
+	$initext = $wc.DownloadString($URL)
 	if ($initext -notmatch 'arc="(Far[^"]+\.7z)"') { throw "Cannot get an archive name from '$ini'." }
-	Remove-Item -LiteralPath $ini -ErrorAction 'Continue'
 
 	### exit if the archive exists
 	$Name = $matches[1]

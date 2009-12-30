@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
@@ -145,7 +145,7 @@ namespace PowerShellFar
 				//! User can use his Out-Null
 				PowerShell.AddCommand("Out-Null");
 			}
-			// Output: create it once: it is cumulative 
+			// Output: create it once: it is cumulative
 			else
 			{
 				Output = new PSDataCollection<PSObject>();
@@ -415,7 +415,7 @@ namespace PowerShellFar
 			IMenu menu = A.Far.CreateMenu();
 			menu.Title = Res.BackgroundJobs;
 			menu.ShowAmpersands = true;
-			menu.HelpTopic = A.Psf.HelpTopic + "MenuBJ";
+			menu.HelpTopic = A.Psf.HelpTopic + "MenuBackgroundJobs";
 			menu.BreakKeys.Add(VKeyCode.F3);
 			menu.BreakKeys.Add(VKeyCode.F5);
 			menu.BreakKeys.Add(VKeyCode.Delete);

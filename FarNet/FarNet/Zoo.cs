@@ -1,6 +1,6 @@
 ﻿/*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2009 FarNet Team
+Copyright (c) 2005 FarNet Team
 */
 
 using System;

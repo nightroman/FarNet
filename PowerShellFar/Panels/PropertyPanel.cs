@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
@@ -330,6 +330,14 @@ namespace PowerShellFar
 
 		internal override void DeleteFiles(IList<FarFile> files, bool shift)
 		{
+			// delete value = enter null
+			if (shift)
+			{
+				base.DeleteFiles(files, false);
+				return;
+			}
+
+			// skip not suitable provider
 			if (!My.ProviderInfoEx.HasDynamicProperty(_provider))
 			{
 				A.Msg(Res.NotSupportedByProvider);

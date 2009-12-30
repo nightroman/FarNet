@@ -1,35 +1,32 @@
 
 Plugin   : PowerShellFar
-Category : Development
 Version  : 4.2.19
 Release  : 2009.12.24
+Category : Development
 Author   : Roman Kuzmin
-Email    : nightroman@gmail.com
-Sources  : C#, PowerShell
-HomePage : http://code.google.com/p/farnet/
+E-mail   : nightroman@gmail.com
+Source   : http://code.google.com/p/farnet/
 
 
 	= DESCRIPTION =
 
 
-Implements Windows PowerShell host in Far Manager and user interface for
-invoking commands and scripts. PowerShell code can access and control Far
-functionality with FarNet object model. The package includes ready to use
-scripts for various popular Far Manager tasks and PowerShell.hrc for
-Colorer-take5.beta5 providing rich PowerShell syntax highlighting.
+Implements Windows PowerShell host in Far Manager, user interface for invoking
+commands and scripts, and exposes underlying FarNet object model. The package
+includes scripts for many popular Far Manager tasks and PowerShell.hrc for
+Colorer providing rich PowerShell syntax highlighting.
 
-The latest versions of PowerShellFar, FarNet and documentation can be
-downloaded from: http://code.google.com/p/farnet/
+PowerShellFar, FarNet and documentation can be updated by the included script
+Update-PowerShellFar.ps1 or downloaded manually from:
+http://code.google.com/p/farnet/
 
 
 	= PREREQUISITES =
 
 
  - Far Manager 2.0.1289
- - Plugin FarNet 4.2.19 (*)
+ - Plugin FarNet 4.2.19
  - Windows PowerShell 2.0
-
- (*) see also FarNet prerequisites
 
 
 	= INSTALLATION =
@@ -65,12 +62,12 @@ unusable. See installation instructions in the file.
 
 PROBLEM
 x86 Far on x64 machines: in rare cases PowerShellFar cannot load PowerShell
-core because x86 Far disables WOW64 redirection (normally needed for loading).
+core because x86 Far disables WOW64 redirection.
 SOLUTION
 Theoretically the best way to avoid this problem is to use x64 Far and FarNet
 on x64 machines. Unfortunately it is not always possible in practice: plugins
 may not have x64 versions or x64 Far may have not yet resolved problems. Then
-the following batch file can be used to start Far:
+the following batch file can be used to start x86 Far:
 
 	set PATH=%WINDIR%\syswow64;%PATH%
 	"c:\program files\Far\Far.exe"

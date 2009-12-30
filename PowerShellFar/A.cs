@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
@@ -87,7 +87,6 @@ namespace PowerShellFar
 				"Set-ItemProperty -LiteralPath $args[0] -Name $args[1] -Value $args[2] -ErrorAction Stop",
 				itemPath, propertyName, value);
 		}
-
 
 		/// <summary>
 		/// Tries to get a property value.
@@ -250,6 +249,38 @@ namespace PowerShellFar
 				}
 				return _OutCommand;
 			}
+		}
+
+		/// <summary>
+		/// Finds euristically a property to be used to display the object.
+		/// </summary>
+		public static PSPropertyInfo FindDisplayProperty(PSObject value)
+		{
+			//! Microsoft.PowerShell.Commands.Internal.Format.PSObjectHelper.GetDisplayNameExpression()
+
+			PSPropertyInfo pi;
+			pi = value.Properties["Name"];
+			if (pi != null)
+				return pi;
+			pi = value.Properties["Id"];
+			if (pi != null)
+				return pi;
+			pi = value.Properties["Key"];
+			if (pi != null)
+				return pi;
+
+			ReadOnlyPSMemberInfoCollection<PSPropertyInfo> ppi;
+			ppi = value.Properties.Match("*Key");
+			if (ppi.Count > 0)
+				return ppi[0];
+			ppi = value.Properties.Match("*Name");
+			if (ppi.Count > 0)
+				return ppi[0];
+			ppi = value.Properties.Match("*Id");
+			if (ppi.Count > 0)
+				return ppi[0];
+
+			return null;
 		}
 
 	}

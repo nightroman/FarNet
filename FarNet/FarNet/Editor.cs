@@ -1,6 +1,6 @@
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2009 FarNet Team
+Copyright (c) 2005 FarNet Team
 */
 
 using System;
@@ -12,49 +12,55 @@ using FarNet.Forms;
 namespace FarNet
 {
 	/// <summary>
-	/// Editor base interface. Exposed as <see cref="IFar.AnyEditor"/>.
+	/// Editor base interface, common editor settings and tools.
 	/// </summary>
+	/// <remarks>
+	/// Exposed as:
+	/// 1) <see cref="IFar.AnyEditor"/> (common editor settings and tools);
+	/// 2) <see cref="IFar.Editor"/> (the current editor instance);
+	/// 3) <see cref="IFar.CreateEditor"/> (new editor to open).
+	/// </remarks>
 	public interface IAnyEditor
 	{
 		/// <summary>
-		/// Editor is opened.
+		/// Called when an editor is opened.
 		/// </summary>
 		event EventHandler Opened;
 		/// <summary>
-		/// Fired before saving.
+		/// Called before saving.
 		/// </summary>
 		event EventHandler Saving;
 		/// <summary>
-		/// Editor is closed.
+		/// Called when an editor is closed.
 		/// </summary>
 		event EventHandler Closed;
 		/// <summary>
-		/// Redraw event.
+		/// Called on redrawing.
 		/// </summary>
 		event EventHandler<RedrawEventArgs> OnRedraw;
 		/// <summary>
-		/// Key pressed in editor.
+		/// Called on a key pressed.
 		/// </summary>
 		event EventHandler<KeyEventArgs> OnKey;
 		/// <summary>
-		/// Mouse state is changed.
+		/// Called on mouse actions.
 		/// </summary>
 		event EventHandler<MouseEventArgs> OnMouse;
 		/// <summary>
-		/// Editor window has got focus.
+		/// Called when an editor has got focus.
 		/// </summary>
 		event EventHandler GotFocus;
 		/// <summary>
-		/// Editor window is losing focus.
+		/// Called when an editor is losing focus.
 		/// </summary>
 		event EventHandler LosingFocus;
 		/// <summary>
-		/// Event is triggered periodically when a user is idle.
+		/// Called periodically when a user is idle.
 		/// </summary>
 		/// <seealso cref="IdledHandler"/>
 		event EventHandler Idled;
 		/// <summary>
-		/// Event is sent on <c>CtrlC</c> in asynchronous mode, see <see cref="IEditor.BeginAsync"/> .
+		/// Called on [CtrlC] in asynchronous mode, see <see cref="IEditor.BeginAsync"/> .
 		/// </summary>
 		event EventHandler CtrlCPressed;
 		/// <summary>
@@ -62,14 +68,17 @@ namespace FarNet
 		/// </summary>
 		string EditText(string text, string title);
 		/// <summary>
-		/// Editor(s) word delimiters.
-		/// You may set it only for an editor instance, not globally.
+		/// Gets or sets editor word delimiters.
 		/// </summary>
-		string WordDiv { get; set; }
+		/// <remarks>
+		/// It is read only for <see cref="IFar.AnyEditor"/>.
+		/// You may get and set it only for an opened editor instance <see cref="IFar.Editor"/>.
+		/// </remarks>
+		string WordDiv { get; set; } //! term 'WordDiv' kind of standard: used by Far and Colorer
 	}
 
 	/// <summary>
-	/// Editor interface. Exposed as <see cref="IFar.Editor"/>. Created by <see cref="IFar.CreateEditor"/>.
+	/// Editor instance interface. Exposed as <see cref="IFar.Editor"/>. Created by <see cref="IFar.CreateEditor"/>.
 	/// </summary>
 	/// <remarks>
 	/// Normally this object should be created or requested, used instantly and never kept for future use.
@@ -83,105 +92,135 @@ namespace FarNet
 	public interface IEditor : IAnyEditor
 	{
 		/// <summary>
-		/// Internal identifier.
+		/// Gets the internal identifier.
 		/// </summary>
 		int Id { get; }
 		/// <summary>
-		/// Size of tab symbol in spaces.
+		/// Gets or sets tab size in spaces.
 		/// Editor must be current.
 		/// </summary>
 		int TabSize { get; set; }
 		/// <summary>
-		/// Expand tabs mode.
+		/// Gets or sets expand tabs mode.
 		/// Editor must be current.
 		/// </summary>
 		ExpandTabsMode ExpandTabs { get; set; }
 		/// <summary>
-		/// Option to delete a temp file when closed.
+		/// Gets or sets an option to delete the source file on exit.
 		/// </summary>
 		DeleteSource DeleteSource { get; set; }
 		/// <summary>
-		/// Switching between editor and viewer. Set it before opening.
+		/// Gets or sets switching between editor and viewer.
+		/// Set it before opening.
 		/// </summary>
 		Switching Switching { get; set; }
 		/// <summary>
-		/// Do not use editor history. Set it before opening.
+		/// Tells to not use editor history.
+		/// Set it before opening.
 		/// </summary>
 		bool DisableHistory { get; set; }
 		/// <summary>
-		/// The current line. It is not a 'copy', when you move cursor to another line this object is changed respectively.
+		/// Gets the dynamic current line.
 		/// Editor must be current.
-		/// </summary>
-		ILine CurrentLine { get; }
-		/// <summary>
-		/// Editor lines. Always contains at least a line.
-		/// Editor must be current.
-		/// </summary>
-		ILines Lines { get; }
-		/// <summary>
-		/// Editor lines with no last empty line if any. Can be empty.
-		/// Editor must be current.
-		/// </summary>
-		ILines TrueLines { get; }
-		/// <summary>
-		/// Name of a file being edited. Set it before opening.
-		/// On opening it can be corrected, e.g. converted into full path.
-		/// </summary>
-		string FileName { get; set; }
-		/// <summary>
-		/// Code page identifier.
 		/// </summary>
 		/// <remarks>
-		/// Before opening it specifies encoding for reading a file.
-		/// After opening it gets and sets current encoding.
+		/// The returned object refers to the current line dynamically, it is not a copy;
+		/// when cursor moves to another line this object refers to this new current line.
 		/// </remarks>
-		int CodePage { get; set; }
+		ILine CurrentLine { get; }
 		/// <summary>
-		/// Window start position. Set it before opening.
-		/// </summary>
-		Place Window { get; set; }
-		/// <summary>
-		/// Window size. Window must be current.
-		/// </summary>
-		Point WindowSize { get; }
-		/// <summary>
-		/// Current selection. It is a collection <see cref="ILines"/> of selected line parts and a few extra members.
-		/// If selection <see cref="ISelection.Exists"/> it contains at least one line.
+		/// Gets the list of editor lines as they are.
 		/// Editor must be current.
 		/// </summary>
-		ISelection Selection { get; }
+		/// <remarks>
+		/// This list always contains at least one line.
+		/// </remarks>
+		ILines Lines { get; }
 		/// <summary>
-		/// Current selection with no last empty line if any.
-		/// Can be empty even if selection <see cref="ISelection.Exists"/>.
+		/// Gets the list of editor lines with no last empty line if any.
 		/// Editor must be current.
 		/// </summary>
-		ISelection TrueSelection { get; }
+		/// <remarks>
+		/// The last editor line is excluded if it empty.
+		/// Thus, this list is empty when an editor has no text.
+		/// </remarks>
+		ILines TrueLines { get; }
 		/// <summary>
-		/// Tells to open a new (non-existing) file in the editor, similar to pressing Shift-F4 in Far.
+		/// Gets or sets the name of a file being or to be edited.
 		/// Set it before opening.
 		/// </summary>
 		/// <remarks>
-		/// Perhaps this option in not actually used (Far 1.71.2406).
+		/// Before opening it sets a file to be edited (on opening it can be changed, e.g. converted into its full path).
+		/// For an opened editor it gets the file being edited.
+		/// </remarks>
+		string FileName { get; set; }
+		/// <summary>
+		/// Gets or sets the code page identifier.
+		/// </summary>
+		/// <remarks>
+		/// Before opening it sets encoding for reading a file.
+		/// After opening it gets and sets the current encoding.
+		/// </remarks>
+		int CodePage { get; set; }
+		/// <summary>
+		/// Gets and sets the editor start window.
+		/// Set it before opening.
+		/// </summary>
+		Place Window { get; set; }
+		/// <summary>
+		/// Gets the current window size.
+		/// </summary>
+		Point WindowSize { get; }
+		/// <summary>
+		/// Gets the current selection operator as it is.
+		/// Editor must be current.
+		/// </summary>
+		/// <remarks>
+		/// It is a collection <see cref="ILines"/> of selected line parts and a few extra members.
+		/// If selection exists (<see cref="ISelection.Exists"/>) it contains at least one line.
+		/// </remarks>
+		ISelection Selection { get; }
+		/// <summary>
+		/// Gets the current selection operator with no last empty line if any.
+		/// Editor must be current.
+		/// </summary>
+		/// <remarks>
+		/// Unlike <see cref="Selection"/> it can be empty even if selection <see cref="ISelection.Exists"/>.
+		/// </remarks>
+		ISelection TrueSelection { get; }
+		/// <summary>
+		/// Tells to open a new (non-existing) file in the editor, similar to [ShiftF4].
+		/// Set it before opening.
+		/// </summary>
+		/// <remarks>
+		/// Perhaps this option in not actually used (Far 2.0.1302).
 		/// </remarks>
 		bool IsNew { get; set; }
 		/// <summary>
 		/// Inserts a string.
-		/// The text is processed in the same way as it it had been entered from the keyboard.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="text">The text. Supported EOL: CR, LF, CR+LF.</param>
+		/// <remarks>
+		/// The text is processed in the same way as it is typed.
+		/// </remarks>
 		void Insert(string text);
 		/// <summary>
 		/// Inserts a character.
-		/// The text is processed in the same way as it it had been entered from the keyboard.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="text">A character.</param>
+		/// <remarks>
+		/// The text is processed in the same way as it is typed.
+		/// </remarks>
 		void InsertChar(char text);
 		/// <summary>
-		/// Redraws editor window. Normally it should be called when changes are completed.
+		/// Redraws the editor window.
 		/// Editor must be current.
 		/// </summary>
+		/// <remarks>
+		/// Normally it should be called when changes are done to make them visible immediately.
+		/// </remarks>
 		void Redraw();
 		/// <summary>
 		/// Deletes a character under <see cref="Cursor"/>.
@@ -210,86 +249,98 @@ namespace FarNet
 		/// <param name="fileName">File name to save to.</param>
 		void Save(string fileName);
 		/// <summary>
-		/// Inserts a new line at the current <see cref="Cursor"/> position
-		/// and moves the cursor to the first position in the new line.
+		/// Inserts a new line at the current <see cref="Cursor"/> position.
 		/// Editor must be current.
 		/// </summary>
+		/// <remarks>
+		/// After insertion the cursor is moved to the first position in the inserted line.
+		/// </remarks>
 		void InsertLine();
 		/// <summary>
-		/// Inserts a new line at the current <see cref="Cursor"/> position
-		/// and moves the cursor to the first position in the new line or to the indented position.
-		/// The indent behaviour is the same as on pressing Enter in the editor.
+		/// Inserts a new line at the current <see cref="Cursor"/> position with optional indent.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="indent">Insert a line with indent.</param>
+		/// <remarks>
+		/// After insertion the cursor is moved to the first position in the inserted line
+		/// or to the indented position in it. Indent is the same as on [Enter].
+		/// </remarks>
 		void InsertLine(bool indent);
 		/// <summary>
-		/// Is this editor opened?
+		/// Gets true if the editor is opened.
 		/// </summary>
 		bool IsOpened { get; }
 		/// <summary>
-		/// Editor window title. Set it before opening (standard title) or after opening (temporary title).
-		/// When an editor is opened the standard title will be automatically restored after the plugin has finished processing.
+		/// Gets or sets the editor window title. Set it before opening (standard title) or after opening (temporary title).
 		/// </summary>
+		/// <remarks>
+		/// When the editor is opened the standard title will be automatically restored after the plugin call is over.
+		/// </remarks>
 		string Title { get; set; }
 		/// <summary>
-		/// Overtype mode.
+		/// Gets or sets overtype mode.
 		/// Editor must be current.
 		/// </summary>
 		bool Overtype { get; set; }
 		/// <summary>
-		/// Is the file modified?
+		/// Gets true if the editor text is modified.
 		/// Editor must be current.
 		/// </summary>
 		bool IsModified { get; }
 		/// <summary>
-		/// Is the file saved?
+		/// Gets true if the editor text is saved.
 		/// Editor must be current.
 		/// </summary>
 		bool IsSaved { get; }
 		/// <summary>
-		/// Is the file locked (Ctrl-L)?
+		/// Gets true if the file is locked (by [CtrlL]).
 		/// Editor must be current.
 		/// </summary>
 		bool IsLocked { get; }
 		/// <summary>
-		/// Converts Char position to Tab position for a given line.
+		/// Converts char position to tab position for a given line.
 		/// </summary>
 		/// <param name="line">Line index, -1 for current.</param>
 		/// <param name="pos">Char posistion.</param>
 		int ConvertPosToTab(int line, int pos);
 		/// <summary>
-		/// Converts Tab position to Char position for a given line.
+		/// Converts tab position to char position for a given line.
 		/// </summary>
 		/// <param name="line">Line index, -1 for current.</param>
 		/// <param name="tab">Tab posistion.</param>
 		int ConvertTabToPos(int line, int tab);
 		/// <summary>
-		/// Converts a screen point to editor cursor point.
+		/// Converts screen coordinates to editor cursor coordinates.
 		/// </summary>
 		Point ConvertScreenToCursor(Point screen);
 		/// <summary>
-		/// Current text frame.
+		/// Gets or sets the current text frame.
 		/// </summary>
 		/// <seealso cref="Cursor"/>
 		TextFrame Frame { get; set; }
 		/// <summary>
+		/// Begins fast line iteration mode.
+		/// </summary>
+		/// <remarks>
 		/// Call this method before processing of large amount of lines, performance can be drastically improved.
 		/// It is strongly recommended to call <see cref="End"/> after processing.
 		/// Nested calls of <b>Begin()</b> .. <b>End()</b> are allowed.
-		/// </summary>
-		/// <remarks>
+		/// <para>
 		/// Avoid using this method together with getting <see cref="Frame"/> or <see cref="Cursor"/>,
 		/// their values are unpredictable. You have to get them before. But it is OK to set them
 		/// between <b>Begin()</b> and <b>End()</b>, directly or by <see cref="GoTo"/> methods.
+		/// </para>
 		/// </remarks>
 		void Begin();
 		/// <summary>
-		/// Call it after any <see cref="Begin"/> when editor lines processing is done.
+		/// Ends fast line iteration mode.
 		/// </summary>
+		/// <remarks>
+		/// Call it after any <see cref="Begin"/> when editor lines processing is done.
+		/// </remarks>
 		void End();
 		/// <summary>
-		/// Current cursor position.
+		/// Gets or sets the current cursor position.
 		/// Editor must be current.
 		/// </summary>
 		/// <seealso cref="Frame"/>
@@ -297,13 +348,15 @@ namespace FarNet
 		Point Cursor { get; set; }
 		/// <summary>
 		/// Gets bookmarks in the current editor.
+		/// </summary>
+		/// <remarks>
 		/// Bookmarks are defined as <see cref="TextFrame"/>.
 		/// Negative <c>Line</c> means undefined bookmark.
 		/// To go to a bookmark set <see cref="Frame"/>.
-		/// </summary>
+		/// </remarks>
 		ICollection<TextFrame> Bookmarks();
 		/// <summary>
-		/// Goes to a new cursor position or set it for opening.
+		/// Goes to a new cursor position or sets it for opening.
 		/// </summary>
 		/// <param name="pos">Position.</param>
 		/// <param name="line">Line.</param>
@@ -311,7 +364,7 @@ namespace FarNet
 		/// <seealso cref="Frame"/>
 		void GoTo(int pos, int line);
 		/// <summary>
-		/// Goes to a line or set it for opening.
+		/// Goes to a line or sets it for opening.
 		/// </summary>
 		/// <param name="line">Line.</param>
 		/// <seealso cref="Cursor"/>
@@ -331,11 +384,11 @@ namespace FarNet
 		/// <param name="addLine">Add an empty line if the last is not empty.</param>
 		void GoEnd(bool addLine);
 		/// <summary>
-		/// User data.
+		/// Gets or sets any user data.
 		/// </summary>
 		object Data { get; set; }
 		/// <summary>
-		/// Host operating on the editor.
+		/// Gets or sets a host operating on the editor.
 		/// </summary>
 		/// <remarks>
 		/// This property is set by a plugin in advanced scenarios when an editor is used in a very unusual way.
@@ -349,10 +402,10 @@ namespace FarNet
 		/// </remarks>
 		object Host { get; set; }
 		/// <summary>
-		/// Is the end line the current one?
+		/// Gets true if the last line is current.
 		/// Editor must be current.
 		/// </summary>
-		bool IsEnd { get; }
+		bool IsLastLine { get; }
 		/// <summary>
 		/// Gets text with default line separator.
 		/// Editor must be current.
@@ -371,7 +424,7 @@ namespace FarNet
 		/// <param name="text">New text.</param>
 		void SetText(string text);
 		/// <summary>
-		/// Opens the editor using properties:
+		/// Opens the editor using predefined properties, for example:
 		/// <see cref="DeleteSource"/>
 		/// <see cref="DisableHistory"/>
 		/// <see cref="Switching"/>
@@ -416,7 +469,7 @@ namespace FarNet
 		/// <returns>Created writer. As any writer, it has to be closed after use.</returns>
 		TextWriter CreateWriter();
 		/// <summary>
-		/// Starts asynchronous mode.
+		/// Begins asynchronous mode.
 		/// </summary>
 		/// <remarks>
 		/// This mode is designed for writing text to a not current editor or from background jobs.
@@ -443,7 +496,7 @@ namespace FarNet
 		/// </remarks>
 		void BeginAsync();
 		/// <summary>
-		/// Stops asynchronous mode.
+		/// Ends asynchronous mode.
 		/// </summary>
 		/// <remarks>
 		/// It must be called after <see cref="BeginAsync"/> when asynchronous operations complete.
@@ -452,6 +505,7 @@ namespace FarNet
 		void EndAsync();
 		/// <summary>
 		/// Gets or sets show white space flag.
+		/// Editor must be current.
 		/// </summary>
 		bool ShowWhiteSpace { get; set; }
 	}
