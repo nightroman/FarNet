@@ -2,6 +2,7 @@
 <#
 .SYNOPSIS
 	Gets a text link to the current editor line.
+	Author: Roman Kuzmin
 
 .DESCRIPTION
 	It gets a Visual Studio style text link to the current editor line.

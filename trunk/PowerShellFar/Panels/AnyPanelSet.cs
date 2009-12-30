@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
@@ -12,7 +12,6 @@ using FarNet;
 
 namespace PowerShellFar
 {
-	/// <include file='doc.xml' path='docs/pp[@name="AnyPanel"]/*'/>
 	public abstract partial class AnyPanel
 	{
 		/// <summary>

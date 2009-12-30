@@ -12,7 +12,7 @@ using namespace System::Security::Permissions;
 [assembly: AssemblyConfiguration("")];
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")];
 [assembly: AssemblyProduct("FarNet")];
-[assembly: AssemblyCopyright("Copyright (c) 2005-2009 FarNet Team")];
+[assembly: AssemblyCopyright("Copyright (c) 2005 FarNet Team")];
 [assembly: AssemblyTrademark("")];
 [assembly: AssemblyCulture("")];
 

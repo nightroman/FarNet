@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
@@ -23,6 +23,9 @@ namespace PowerShellFar
 		PSObject _Value;
 		int _mode;
 
+		/// <summary>
+		/// New panel with an object.
+		/// </summary>
 		/// <param name="instance">An object which members are shown.</param>
 		public MemberPanel(object instance)
 		{
@@ -41,25 +44,21 @@ namespace PowerShellFar
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
 		}
 
-		bool _Modified;
 		/// <summary>
-		/// Members have been changed.
+		/// Gets or sets data modification flag.
 		/// </summary>
-		public bool Modified
-		{
-			get { return _Modified; }
-			set { _Modified = value; }
-		}
+		/// <remarks>
+		/// It is set internally on any interactive data changes.
+		/// If data are changed externally the this flag should be set, too.
+		/// If this flag is set the panel asks you to save modified data and calls
+		/// a script set by <see cref="SetSave"/>.
+		/// </remarks>
+		public bool Modified { get; set; }
 
-		bool _ObjectPanelOnDots;
 		/// <summary>
-		/// Open an object panel with this <see cref="Value"/> on 'dots'.
+		/// Tells to open an object panel with this <see cref="Value"/> on 'dots'.
 		/// </summary>
-		public bool ObjectPanelOnDots
-		{
-			get { return _ObjectPanelOnDots; }
-			set { _ObjectPanelOnDots = value; }
-		}
+		public bool ObjectPanelOnDots { get; set; }
 
 		/// <summary>
 		/// Object which member list is shown at the panel.
@@ -69,15 +68,10 @@ namespace PowerShellFar
 			get { return _Value; }
 		}
 
-		bool _Static;
 		/// <summary>
-		/// Tells not to create and delete members even if it is possible.
+		/// Tells not to create or delete members even if it is possible.
 		/// </summary>
-		public bool Static
-		{
-			get { return _Static; }
-			set { _Static = value; }
-		}
+		public bool Static { get; set; }
 
 		internal override void OnGettingData(PanelEventArgs e)
 		{
@@ -190,7 +184,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal override void OnSettingDirectory(SettingDirectoryEventArgs e)
 		{
-			if (_ObjectPanelOnDots)
+			if (ObjectPanelOnDots)
 			{
 				e.Ignore = true;
 				ObjectPanel op = new ObjectPanel();
@@ -218,7 +212,7 @@ namespace PowerShellFar
 
 		internal override void UICreate()
 		{
-			if (_Static)
+			if (Static)
 				return;
 
 			if (Parent is DataPanel)
@@ -289,7 +283,7 @@ namespace PowerShellFar
 
 			if (p._Value == instance)
 			{
-				p._Modified = true;
+				p.Modified = true;
 				p.UpdateRedraw(true);
 			}
 
@@ -299,7 +293,7 @@ namespace PowerShellFar
 
 			if (p._Value == instance)
 			{
-				p._Modified = true;
+				p.Modified = true;
 				p.UpdateRedraw(true);
 			}
 		}
@@ -340,12 +334,22 @@ namespace PowerShellFar
 
 		internal override void DeleteFiles(IList<FarFile> files, bool shift)
 		{
-			if (_Static)
-				return;
-
+			// skip "all members" mode
 			if (_mode != 0)
 				return;
 
+			// delete value = enter null
+			if (shift)
+			{
+				base.DeleteFiles(files, false);
+				return;
+			}
+
+			// skip "static" mode
+			if (Static)
+				return;
+
+			// skip data row
 			if (Parent is DataPanel)
 				return;
 
@@ -457,7 +461,7 @@ namespace PowerShellFar
 			if (_Save != null)
 			{
 				InvokeThisScript(_Save, null);
-				return !_Modified;
+				return !Modified;
 			}
 
 			if (Parent != null)
@@ -469,8 +473,14 @@ namespace PowerShellFar
 		{
 			try
 			{
-				//! it is tempting to avoid our parsing, but it is not that good..
-				A.SetMemberValue(info, Converter.Parse(info, value));
+				// assign
+				if (value == null)
+					A.SetMemberValue(info, null);
+				else
+					//! it is tempting to avoid our parsing, but it is not that good..
+					A.SetMemberValue(info, Converter.Parse(info, value));
+				
+				// change is done
 				WhenMemberChanged(_Value);
 			}
 			catch (RuntimeException ex)
@@ -490,8 +500,8 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Sets a handler called to save data.
-		/// It has to save data and update <see cref="Modified"/>.
+		/// Sets a handler called to save modified data.
+		/// It has to save data and set <see cref="Modified"/> = $false.
 		/// </summary>
 		public void SetSave(ScriptBlock handler)
 		{
@@ -502,7 +512,7 @@ namespace PowerShellFar
 		internal override bool CanClose()
 		{
 			// can?
-			bool r = !_Modified || _Save == null;
+			bool r = !Modified || _Save == null;
 
 			// ask
 			if (!r)
@@ -513,10 +523,10 @@ namespace PowerShellFar
 						InvokeThisScript(_Save, null);
 						break;
 					case 1:
-						_Modified = false;
+						Modified = false;
 						break;
 				}
-				r = !_Modified;
+				r = !Modified;
 			}
 
 			if (!r)

@@ -1,6 +1,6 @@
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2009 FarNet Team
+Copyright (c) 2005 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -171,7 +171,7 @@ void Editor::DisableHistory::set(bool value)
 	_DisableHistory = value;
 }
 
-bool Editor::IsEnd::get()
+bool Editor::IsLastLine::get()
 {
 	if (!IsOpened)
 		return false;

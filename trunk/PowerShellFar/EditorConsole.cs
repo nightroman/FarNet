@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
@@ -217,7 +217,7 @@ namespace PowerShellFar
 					}
 				case VKeyCode.Tab:
 					{
-						if (Editor.IsEnd)
+						if (Editor.IsLastLine)
 						{
 							e.Ignore = true;
 							if (Runspace == null)
@@ -231,7 +231,7 @@ namespace PowerShellFar
 					}
 				case VKeyCode.Escape:
 					{
-						if (!Editor.IsEnd || Editor.CurrentLine.Length == 0)
+						if (!Editor.IsLastLine || Editor.CurrentLine.Length == 0)
 							return;
 
 						e.Ignore = true;
@@ -243,7 +243,7 @@ namespace PowerShellFar
 					}
 				case VKeyCode.End:
 					{
-						if (!Editor.IsEnd)
+						if (!Editor.IsLastLine)
 							return;
 
 						ILine curr = Editor.CurrentLine;
@@ -268,7 +268,7 @@ namespace PowerShellFar
 					goto case VKeyCode.DownArrow;
 				case VKeyCode.DownArrow:
 					{
-						if (!Editor.IsEnd)
+						if (!Editor.IsLastLine)
 							return;
 
 						string lastUsedCmd = null;
@@ -331,7 +331,7 @@ namespace PowerShellFar
 					}
 				case VKeyCode.Delete:
 					{
-						if (!Editor.IsEnd)
+						if (!Editor.IsLastLine)
 							return;
 
 						ILine curr = Editor.CurrentLine;
@@ -386,7 +386,7 @@ namespace PowerShellFar
 				return;
 
 			// end?
-			if (!Editor.IsEnd)
+			if (!Editor.IsLastLine)
 			{
 				// - no, copy code and exit
 				Editor.GoEnd(true);

@@ -1,6 +1,6 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using FarNet;
@@ -17,7 +17,7 @@ namespace PowerShellFar.UI
 			_menu = A.Far.CreateListMenu();
 			A.Psf.Settings.ListMenu(_menu);
 
-			_menu.HelpTopic = A.Psf.HelpTopic + "MenuCH";
+			_menu.HelpTopic = A.Psf.HelpTopic + "MenuCommandHistory";
 			_menu.SelectLast = true;
 			_menu.Title = "PowerShellFar History";
 

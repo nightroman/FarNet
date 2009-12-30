@@ -10,7 +10,7 @@ using System;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PowerShellFar")]
-[assembly: AssemblyCopyright("Copyright (C) 2006-2009 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2006 Roman Kuzmin")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

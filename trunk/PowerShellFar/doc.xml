@@ -4,25 +4,6 @@
 /// <include file='doc.xml' path='docs/pp[@name="xxx"]/*'/>
 -->
 
-<pp name="AnyPanel">
-<summary>Base class of PowerShellFar panels.</summary>
-<remarks>
-<para>
-This class is a host of <see cref="IPluginPanel"/>
-(see <see cref="Panel"/> and <see cref="IPluginPanel.Host"/>).
-It manages extra panel data and "items" attached to panel "files"
-and implements panel event handlers for some basic panel operations.
-</para>
-<para>
-Terminology (both for names and documentation):
-"files" (<c>FarFile</c>) are elements of <see cref="IPluginPanel"/>;
-"items" (<c>PSObject</c>) are <see cref="FarFile.Data"/> attached to "files".
-Note that null and ".." items are not processed (e.g. by <see cref="ShownItems"/>
-and <see cref="SelectedItems"/>).
-</para>
-</remarks>
-</pp>
-
 <pp name="AddLookup">
 <summary>
 Adds a lookup handler.

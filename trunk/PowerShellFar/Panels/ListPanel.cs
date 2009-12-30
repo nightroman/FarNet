@@ -1,10 +1,11 @@
 /*
 PowerShellFar plugin for Far Manager
-Copyright (C) 2006-2009 Roman Kuzmin
+Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Management.Automation;
 using FarNet;
 
@@ -98,6 +99,9 @@ namespace PowerShellFar
 		/// <param name="value">New value.</param>
 		internal abstract void SetUserValue(PSPropertyInfo info, string value);
 
+		/// <summary>
+		/// Calls base or assigns a value to the current property.
+		/// </summary>
 		internal override bool UICommand(string code)
 		{
 			// base
@@ -144,6 +148,28 @@ namespace PowerShellFar
 		internal override void ShowHelp()
 		{
 			A.Far.ShowHelp(A.Psf.AppHome, "ListPanel", HelpOptions.Path);
+		}
+
+		/// <summary>
+		/// It "deletes" property values = assigns null values.
+		/// </summary>
+		internal override void DeleteFiles(IList<FarFile> files, bool shift)
+		{
+			foreach (FarFile file in files)
+			{
+				PSPropertyInfo pi = file.Data as PSPropertyInfo;
+				if (pi == null)
+					continue;
+				try
+				{
+					SetUserValue(pi, null);
+					UpdateRedraw(true);
+				}
+				catch (RuntimeException ex)
+				{
+					A.Msg(ex.Message);
+				}
+			}
 		}
 
 	}

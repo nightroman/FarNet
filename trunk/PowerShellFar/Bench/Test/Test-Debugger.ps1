@@ -2,6 +2,7 @@
 <#
 .SYNOPSIS
 	Test debugger and breakpoints.
+	Author: Roman Kuzmin
 
 .DESCRIPTION
 	This test shows examples of a few breakpoint types: command, variable
@@ -13,9 +14,6 @@
 	>: .\Test-Debugger.ps1 -RemoveBreakpoints
 
 	Tested on: FarHost, ConsoleHost, PowerShell ISE V2 CTP3.
-
-	Author: Roman Kuzmin
-	http://nightroman.spaces.live.com
 #>
 
 param

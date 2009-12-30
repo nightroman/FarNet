@@ -1,6 +1,28 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.20 =
+
+*) List panels (MemberPanel, PropertyPanel): [ShiftDel], [ShiftF8] assign null
+to selected properties (kind of "delete values"). So far it was not easy to
+enter nulls. To delete dynamic properties, as usual, use [Del], [F8].
+
+*) Object panel: in case of unknown objects it finds euristically a name of a
+property for display: it tries: Name, Id, Key, *Key, *Name, *Id.
+
+*) Export-Clixml dialog (called on [CtrlS] in some PSF panels): default
+encoding is Unicode, just like in Export-Clixml cmdlet (BTW: PS help says
+default is UTF8 but it looks like a mistake).
+
+*) Update-FarManager.ps1, Update-PowerShellFar.ps1 do not use a temp file for
+version request, they download needed text directly.
+
+*) Invoke-Shortcut-.ps1: new switch -Panel: to view\edit shortcut properties in a
+panel. If you change data it asks you to save changes on exit or you can use
+[CtrlS] to save data at any moment.
+
+*) Tweaks in scripts and help.
+
 = 4.2.19 =
 
 CHRISTMAS-BOX FEATURE: AUTOMATED UPDATE (modified and hopefully improved)

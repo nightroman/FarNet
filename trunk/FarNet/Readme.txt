@@ -1,20 +1,19 @@
 
 Plugin   : FarNet
-Category : Development
 Version  : 4.2.19
 Release  : 2009.12.24
+Category : Development
 Author   : Roman Kuzmin
-Email    : nightroman@gmail.com
-Sources  : C#, C++/CLI
-HomePage : http://code.google.com/p/farnet/
+E-mail   : nightroman@gmail.com
+Source   : http://code.google.com/p/farnet/
 
 
 	= DESCRIPTION =
 
 
-Plugin for writing Far Manager plugins in any .NET language (even in PowerShell
-with PowerShellFar plugin). It exposes significant part of Far API and also
-extends it for comfortable use in object oriented way.
+Plugin for writing Far Manager plugins in .NET languages and even PowerShell
+scripting with PowerShellFar plugin. It exposes FarNet object model covering
+and extending Far Manager native API in comfortable object oriented way.
 Home page: http://code.google.com/p/farnet/
 
 
@@ -38,17 +37,17 @@ Copy to %FARHOME%:
 - Far.exe.config
 - Lib
 - Plugins\FarNet (*)
-- Plugins.NET (for .NET plugins, contains optional examples)
+- Plugins.NET (.NET plugins; you may copy and build optional samples)
 
 (*) x64 installation:
-- the file FarNetMan.dll should be copied from Plugins.x64\FarNet
+- Plugins\FarNet\FarNetMan.dll should be copied from Plugins.x64\FarNet
 
 This is the default installation (recommended). You can move Lib or\and
 Plugins.NET, in this case you have to update Far.exe.config accordingly.
 
 IMPORTANT: Far.exe.config cannot be moved or renamed. If this file is missed in
 %FARHOME% or configured incorrectly then Far Manager fails to load FarNet and
-shows only basic error message.
+shows only basic failure message with no details.
 
 
 	= STRUCTURE =
@@ -149,7 +148,7 @@ SOLUTION
 Theoretically the best way to avoid this problem is to use x64 Far and FarNet
 on x64 machines. Unfortunately it is not always possible in practice: plugins
 may not have x64 versions or x64 Far may have not yet resolved problems. Then
-the following batch file can be used to start Far:
+the following batch file can be used to start x86 Far:
 
 	set PATH=%WINDIR%\syswow64;%PATH%
 	"c:\program files\Far\Far.exe"
