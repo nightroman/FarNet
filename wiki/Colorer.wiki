@@ -1,0 +1,11 @@
+#summary Syntax highlighting and text parsing library and Far Manager plugin.
+
+= Introduction =
+
+*Colorer take5* is a syntax highlighting and text parsing library, that provides services of text parsing in host editor systems in real-time and transforming results into colored text. Result information allows to search and build outlined lists of functions, structures, and to search and indent programming language constructions (brackets, paired tags).
+
+
+= Details =
+
+  * [http://colorer.sourceforge.net/ Colorer home page]
+  * [http://colorer.sourceforge.net/farplugin.html Far Manager editor plugin]
