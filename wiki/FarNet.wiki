@@ -4,4 +4,4 @@
 
 FarNet. Plugin for writing [http://farmanager.com Far Manager] plugins in .NET languages and even PowerShell scripting with PowerShellFar plugin. It exposes FarNet object model covering and extending Far Manager native API in comfortable object oriented way.
 
-PowerShellFar. Implements Windows PowerShell host in [http://farmanager.com Far Manager], user interface for invoking commands and scripts, and exposes underlying FarNet object model. The package includes scripts for many popular Far Manager tasks and PowerShell.hrc for Colorer providing rich PowerShell syntax highlighting.
+PowerShellFar. Implements Windows PowerShell host in [http://farmanager.com Far Manager], user interface for invoking commands and scripts, and exposes underlying FarNet object model. The package includes scripts for many popular Far Manager tasks and PowerShell.hrc for [Colorer] providing rich PowerShell syntax highlighting.
