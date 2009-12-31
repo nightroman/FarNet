@@ -62,7 +62,6 @@ namespace PowerShellFar.UI
 				IEdit ed = Dialog.AddEdit(x, 0, w - 6, value);
 				ed.History = Res.PowerShellFarPrompt;
 				ed.UseLastHistory = false;
-				ed.NoAutoComplete = true;
 
 				Edit[i] = ed;
 			}

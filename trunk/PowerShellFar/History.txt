@@ -14,6 +14,9 @@ property for display, it tries: Name, Id, Key, *Key, *Name, *Id.
 encoding is Unicode, the same as in Export-Clixml cmdlet. BTW: PS help says the
 default is UTF8 but it looks like a mistake.
 
+*) PSF prompt dialog: enabled autocomplete from history because in latest Far
+it works more or less as expected (defects will be hopefully fixed soon).
+
 *) Update-FarManager.ps1 and Update-PowerShellFar.ps1 do not use a temp file
 for version requests, they download needed text directly.
 
