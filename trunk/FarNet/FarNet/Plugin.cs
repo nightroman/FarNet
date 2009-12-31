@@ -11,7 +11,7 @@ using System.Security.Permissions;
 namespace FarNet
 {
 	/// <summary>
-	/// The base class of any plugin and the gateway to all FarNet API.
+	/// Base plugin class, the bridge between a plugin and FarNet.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -168,7 +168,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class of a FarNet tool represented by a single menu command in one or more Far menus.
+	/// Base class of a tool represented by an item in Far menus.
 	/// </summary>
 	/// <remarks>
 	/// It is enough to implement <see cref="Invoke"/> method only.
@@ -179,13 +179,13 @@ namespace FarNet
 	public abstract class ToolPlugin : BasePlugin
 	{
 		/// <summary>
-		/// Tool handler.
+		/// Tool handler called when its menu item is invoked.
 		/// </summary>
 		public abstract void Invoke(object sender, ToolEventArgs e);
 
 		/// <summary>
 		/// Tool options. By default the tool is shown in all menus.
-		/// Override this to specify only really needed areas.
+		/// Override to specify only needed areas.
 		/// </summary>
 		public virtual ToolOptions Options
 		{
@@ -214,7 +214,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class of a FarNet plugin called from a command line by a command prefix.
+	/// Base class of a command called from the command line with a prefix.
 	/// </summary>
 	/// <remarks>
 	/// You have to implement <see cref="Invoke"/> and provide <see cref="Prefix"/>.
@@ -225,7 +225,7 @@ namespace FarNet
 	public abstract class CommandPlugin : BasePlugin
 	{
 		/// <summary>
-		/// Command handler.
+		/// Command handler called from the command line with a prefix.
 		/// </summary>
 		public abstract void Invoke(object sender, CommandEventArgs e);
 
@@ -285,7 +285,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class of a FarNet file based plugin.
+	/// Base class of a file based plugin.
 	/// </summary>
 	/// <remarks>
 	/// It is enough to implement <see cref="Invoke"/> method only.
@@ -296,8 +296,13 @@ namespace FarNet
 	public abstract class FilerPlugin : BasePlugin
 	{
 		/// <summary>
-		/// Filer handler.
+		/// Filer handler called when a file is opened.
 		/// </summary>
+		/// <remarks>
+		/// It is up to the plugin how to process a file.
+		/// But usually file based plugins represent file data in a panel,
+		/// i.e. this methods should be used to open and configure a panel (<see cref="IPluginPanel"/>).
+		/// </remarks>
 		public abstract void Invoke(object sender, FilerEventArgs e);
 
 		/// <include file='doc.xml' path='docs/pp[@name="PluginFileMask"]/*'/>
@@ -318,12 +323,16 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class of a FarNet editor plugin.
+	/// Base class of an editor plugin.
 	/// </summary>
 	/// <remarks>
+	/// This plugin works with editor events, not with menu commands in editors
+	/// (in the latter case use <see cref="ToolPlugin"/> configured for editors).
+	/// <para>
 	/// It is enough to implement <see cref="Invoke"/> method only.
 	/// Override other properties and methods as needed.
 	/// You may derive any number of such classes.
+	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
 	public abstract class EditorPlugin : BasePlugin
@@ -331,6 +340,14 @@ namespace FarNet
 		/// <summary>
 		/// Editor <see cref="IAnyEditor.Opened"/> handler.
 		/// </summary>
+		/// <remarks>
+		/// This method is called once on opening an editor.
+		/// Normally you add your editor event handlers, then they do the jobs.
+		/// </remarks>
+		/// <example>
+		/// See <c>Plugins.NET\TrimSaving</c> plugin.
+		/// It is not just an example, it can be used for real.
+		/// </example>
 		public abstract void Invoke(object sender, EventArgs e);
 
 		/// <include file='doc.xml' path='docs/pp[@name="PluginFileMask"]/*'/>
