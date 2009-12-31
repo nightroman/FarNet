@@ -189,7 +189,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Options to delete a file when a viewer or editor is closed.
+	/// Options to delete temporary source files and empty folders after use.
 	/// </summary>
 	public enum DeleteSource
 	{
@@ -208,7 +208,7 @@ namespace FarNet
 		/// </summary>
 		Folder,
 		/// <summary>
-		/// Delete a file if it was not used. The file is "used" if:
+		/// Delete a file if it was not used. The file is used if:
 		/// *) it was saved;
 		/// *) there was editor\viewer switching (F6).
 		/// *) it is opened in another editor or viewer.

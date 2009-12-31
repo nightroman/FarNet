@@ -2,7 +2,7 @@ http://code.google.com/p/farnet/
 
 = 4.2.20 =
 
-*) IEditor: not informative property name "IsEnd" is changed to "IsLastLine".
+*) IEditor: confusing property name "IsEnd" is changed to "IsLastLine".
 
 *) API code comments and documentation.
 

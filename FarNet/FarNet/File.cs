@@ -10,10 +10,10 @@ using System.IO;
 namespace FarNet
 {
 	/// <summary>
-	/// "Abstract" <see cref="IPanel"/>'s item representing a file, a directory or a plugin item.
+	/// Abstract <see cref="IPanel"/> item representing a file, directory or plugin item.
 	/// </summary>
 	/// <remarks>
-	/// Plugin panels may implement derived classes (at least <see cref="Name"/> has to be defined)
+	/// Plugins may implement derived classes (at least <see cref="Name"/> has to be defined)
 	/// or they may just use the ready straightforward implementation <see cref="SetFile"/>.
 	/// </remarks>
 	public class FarFile
@@ -76,7 +76,7 @@ namespace FarNet
 			set { throw new NotSupportedException(); }
 		}
 		/// <summary>
-		/// Last access time.
+		/// Last write time.
 		/// </summary>
 		public virtual DateTime LastWriteTime
 		{
@@ -194,7 +194,7 @@ namespace FarNet
 	/// Straightforward implementation of <see cref="FarFile"/> ready to use by <see cref="IPluginPanel"/> panels.
 	/// </summary>
 	/// <remarks>
-	/// It is just a set of properties and any property can be set.
+	/// It is just a set of properties where any property can be set.
 	/// In most cases plugin panels should just use this class for their items.
 	/// In some cases they may use custom implementations of <see cref="FarFile"/>.
 	/// </remarks>
@@ -270,7 +270,7 @@ namespace FarNet
 		/// </summary>
 		public override DateTime LastAccessTime { get; set; }
 		/// <summary>
-		/// Last access time.
+		/// Last write time.
 		/// </summary>
 		public override DateTime LastWriteTime { get; set; }
 		/// <summary>
