@@ -27,8 +27,8 @@ public: // IPluginPanel
 	virtual property bool IdleUpdate;
 	virtual property bool IsOpened { bool get(); }
 	virtual property bool IsPushed { bool get() { return _Pushed != nullptr; } }
+	virtual property Getter^ DataId;
 	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
-	virtual property Comparison<Object^>^ DataComparison;
 	virtual property IPluginPanel^ AnotherPanel { IPluginPanel^ get(); }
 	virtual property IPluginPanelInfo^ Info { IPluginPanelInfo^ get() { return %_info; } }
 	virtual property Object^ Data;

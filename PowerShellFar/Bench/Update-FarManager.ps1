@@ -5,6 +5,8 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
+	Command 7z has to be available, e.g. 7z.exe in the system path.
+
 	If Far Manager is running the script prompts you to exit running instances
 	and waits until this is done. That is why you should not run the script in
 	Far Manager. On the other hand it is still useful to start the script from
@@ -14,8 +16,6 @@
 	%USERPROFILE% directory is the destination for downloaded archives. Old
 	files are not deleted. It is recommended to keep at the last downloaded
 	archive there, the script downloads only new archives, if any.
-
-	Command 7z has to be available, e.g. 7z.exe in the system path.
 
 	The script gets the latest web archive name. If the file already exists the
 	script exits. Otherwise it downloads the archive and starts extraction. It

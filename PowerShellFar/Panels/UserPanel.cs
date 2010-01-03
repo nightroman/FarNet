@@ -6,6 +6,7 @@ Copyright (c) 2006 Roman Kuzmin
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Management.Automation;
 using FarNet;
 
@@ -44,7 +45,7 @@ namespace PowerShellFar
 		{
 			//! do not call base which removes items
 			if (_Delete != null)
-				InvokeThisScript(_Delete, new FilesEventArgs(files, OperationModes.None, shift));
+				InvokeScriptReturnAsIs(_Delete, new FilesEventArgs(files, OperationModes.None, shift));
 		}
 
 		#endregion
@@ -65,44 +66,76 @@ namespace PowerShellFar
 			if (_Write == null)
 				base.WriteFile(file, path);
 			else
-				InvokeThisScript(_Write, new WriteEventArgs(file, path));
+				InvokeScriptReturnAsIs(_Write, new WriteEventArgs(file, path));
 		}
 
 		#endregion
 
 		#region GetData
-		ScriptBlock _GetData;
+		ScriptBlock _GetFiles;
+		ScriptBlock _GetObjects;
 
 		/// <summary>
-		/// Handler called to get data.
+		/// Handler called to update the panel files.
 		/// </summary>
 		/// <remarks>
-		/// This handler should create <see cref="IPluginPanel.Files"/> (recreate completely or update existing).
+		/// This handler should work on <see cref="IPluginPanel.Files"/> (recreate completely or update existing).
 		/// <para>
 		/// One possible scenario is to clear the file list and then call <see cref="ObjectPanel.AddObjects"/> one or more times.
+		/// But <see cref="SetGetObjects"/> method is usually more convenient for this.
 		/// </para>
 		/// <para>
 		/// In another scenario new files may be created and added to the list.
 		/// In this case you should create files by <see cref="ObjectPanel.NewFile"/> method.
 		/// </para>
+		/// <para>
+		/// Normally this handler should not be used together with custom <see cref="FormatPanel.Columns"/>
+		/// because it operates on files directly and performs object to file mapping itself.
+		/// </para>
 		/// </remarks>
 		/// <example>Panel-Process-.ps1</example>
-		public void SetGetData(ScriptBlock handler)
+		public void SetGetFiles(ScriptBlock handler)
 		{
-			_GetData = handler;
+			_GetFiles = handler;
+		}
+
+		/// <summary>
+		/// Handler called to get all the objects (not files).
+		/// </summary>
+		/// <remarks>
+		/// This handler simply returns all the objects to be shown in the panel.
+		/// It should not operate directly on existing or new panel files, it is done internally.
+		/// <para>
+		/// Normally this handler is used together with custom <see cref="FormatPanel.Columns"/>
+		/// otherwise default data formatting will not always be suitable or even possible.
+		/// </para>
+		/// </remarks>
+		/// <example>Panel-Job-.ps1</example>
+		public void SetGetObjects(ScriptBlock handler)
+		{
+			_GetObjects = handler;
 		}
 
 		internal override bool OnGettingData()
 		{
-			if (_GetData == null)
+			// case: custom data update
+			if (_GetFiles != null)
 			{
-				return base.OnGettingData();
-			}
-			else
-			{
-				InvokeThisScript(_GetData, null);
+				InvokeScript(_GetFiles, null);
 				return Map != null;
 			}
+
+			// case: custom new objects
+			if (_GetObjects != null)
+			{
+				Collection<PSObject> result = InvokeScript(_GetObjects, null);
+				Panel.Files.Clear();
+				AddObjects(result);
+				return Map != null;
+			}
+
+			// case: base
+			return base.OnGettingData();
 		}
 
 		#endregion
@@ -128,7 +161,7 @@ namespace PowerShellFar
 
 		FarFile _File;
 		/// <summary>
-		/// File to be processed.
+		/// Panel file instance being processed.
 		/// </summary>
 		public FarFile File
 		{
@@ -160,7 +193,7 @@ namespace PowerShellFar
 
 		string _path;
 		/// <summary>
-		/// File path.
+		/// File system path where data are written to.
 		/// </summary>
 		public string Path
 		{

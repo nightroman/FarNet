@@ -19,7 +19,8 @@
 	downloads only new archives.
 
 	On updating from the archives the script simply extracts files and replace
-	the same existing with no warnings. Existing extra files are not deleted.
+	the same existing with no warnings. Existing extra files are not deleted:
+	thus, read History.txt on updates, you may want to remove some files.
 
 	Updated items in %FARHOME%:
 	FOLDERS

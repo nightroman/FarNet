@@ -1,40 +1,38 @@
 
 <#
 .SYNOPSIS
-	Set selected text in editor, command line or dialog editbox
+	Sets selected text in the editor, command line or dialog editbox.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	Changes the selected text in editor, command line or dialog edit boxes.
-	Operations are defined by a single parameter.
+	It changes the selected text in the current editor, command line or dialog
+	edit box. Operations are defined by a single parameter.
 
 .EXAMPLE
-	# Escape \ " with \
+	# Escape \ and " with \
 	Set-Selection- -Replace '([\\"])', '\$1'
 
-	# Unescape \\ \"
+	# Unescape \\ and \"
 	Set-Selection- -Replace '\\([\\"])', '$1'
 
-	# Convert selected text to lower case
+	# Convert selected text to lower\upper case
 	Set-Selection- -ToLower
-
-	# Convert selected text to upper case
 	Set-Selection- -ToUpper
-
-.PARAMETER Replace
-		Arguments: regex [, replacement]
-		Replace 'regex' with 'replacement' in the selected text.
-.PARAMETER ToLower
-		Change selected text to lower case.
-.PARAMETER ToUpper
-		Change selected text to upper case.
 #>
 
 param
 (
-	[object[]]$Replace,
-	[switch]$ToLower,
-	[switch]$ToUpper
+	[object[]]
+	# Replace: [0]: regex pattern, [1]: replacement string.
+	$Replace
+	,
+	[switch]
+	# Change selected text to lower case.
+	$ToLower
+	,
+	[switch]
+	# Change selected text to upper case.
+	$ToUpper
 )
 
 # get selected text

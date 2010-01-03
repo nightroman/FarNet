@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.2.20
-Release  : 2009.12.31
+Version  : 4.2.21
+Release  : 2010.01.03
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -21,7 +21,7 @@ Home page: http://code.google.com/p/farnet/
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1304
+ - Far Manager 2.0.1305
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
