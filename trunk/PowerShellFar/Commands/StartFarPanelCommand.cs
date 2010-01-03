@@ -124,18 +124,18 @@ namespace PowerShellFar.Commands
 		bool _setIdleUpdate;
 
 		///
-		[Parameter(HelpMessage = "Custom data comparison: compares $args[0] and $args[1] and returns -1, 0 or 1.")]
-		public ScriptBlock DataComparison
+		[Parameter(HelpMessage = "Custom data ID to distinguish between objects.")]
+		public Meta DataId
 		{
-			get { return _DataComparison; }
+			get { return _DataId; }
 			set
 			{
-				_setDataComparison = true;
-				_DataComparison = value;
+				_setDataId = true;
+				_DataId = value;
 			}
 		}
-		ScriptBlock _DataComparison;
-		bool _setDataComparison;
+		Meta _DataId;
+		bool _setDataId;
 
 		///
 		[Parameter(HelpMessage = "Start the panel as child of the current panel.")]
@@ -163,7 +163,7 @@ namespace PowerShellFar.Commands
 				panel = new MemberPanel(InputObject);
 
 			if (_setData) panel.Data = _Data;
-			if (_setDataComparison) panel.Panel.DataComparison = Wrap.Comparison(_DataComparison);
+			if (_setDataId) panel.Panel.DataId = _DataId;
 			if (_setDescending) panel.Panel.Info.StartSortDesc = _Descending;
 			if (_setTypeId) panel.Panel.TypeId = _TypeId;
 			if (_setIdleUpdate) panel.Panel.IdleUpdate = _IdleUpdate;

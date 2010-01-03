@@ -363,23 +363,28 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			}
 
 			// case: use data matcher
-			if (pp->DataComparison && (pp->_postData || pp->_postFile && pp->_postFile->Data))
+			if (pp->DataId && (pp->_postData || pp->_postFile && pp->_postFile->Data))
 			{
 				Object^ data = pp->_postData ? pp->_postData : pp->_postFile->Data;
+				Object^ dataId = pp->DataId(data);
+				
 				pp->_postFile = nullptr;
 				pp->_postData = nullptr;
 				pp->_postName = nullptr;
 
-				int i = pp->AddDots ? 0 : -1;
-				for each (FarFile^ f in pp->ShownFiles)
+				if (dataId)
 				{
-					++i;
-					if (pp->DataComparison(data, f->Data) == 0)
+					int i = pp->AddDots ? 0 : -1;
+					for each (FarFile^ f in pp->ShownFiles)
 					{
-						_reenterOnRedrawing = true;
-						pp->Redraw(i, -1);
-						r = true;
-						break;
+						++i;
+						if (dataId->Equals(pp->DataId(f->Data)))
+						{
+							_reenterOnRedrawing = true;
+							pp->Redraw(i, -1);
+							r = true;
+							break;
+						}
 					}
 				}
 

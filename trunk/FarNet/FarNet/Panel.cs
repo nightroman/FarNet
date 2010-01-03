@@ -893,7 +893,7 @@ namespace FarNet
 			get { return _files; }
 		}
 		/// <summary>
-		/// Files are moved.
+		/// Files are being moved on copy operations or deleted in alternative way on delete operations.
 		/// </summary>
 		public bool Move
 		{
@@ -987,6 +987,18 @@ namespace FarNet
 	}
 
 	/// <summary>
+	/// Gets data of an input object.
+	/// </summary>
+	/// <param name="value">Input object.</param>
+	/// <returns>Result data.</returns>
+	/// <remarks>
+	/// To get this delegate in <b>PowerShellFar</b> scripts use the helper class <c>PowerShellFar.Meta</c>,
+	/// for example: <c>$panel.DataId = New-Object PowerShellFar.Meta 'Id'</c>
+	/// or even shorter: <c>$panel.DataId = [PowerShellFar.Meta]'Id'</c>.
+	/// </remarks>
+	public delegate object Getter(object value);
+
+	/// <summary>
 	/// Plugin panel. It is created by <see cref="IFar.CreatePluginPanel()"/>.
 	/// Then you set <see cref="Info"/>, add event handlers and open it.
 	/// </summary>
@@ -1029,25 +1041,28 @@ namespace FarNet
 		/// </summary>
 		IPluginPanel AnotherPanel { get; }
 		/// <summary>
-		/// Comparison of posted and current data.
+		/// Gets or sets a delegate providing IDs of panel file data.
 		/// </summary>
 		/// <remarks>
 		/// When a panel opens a child panel for the current item it is normally expected that on return
 		/// the current item will be the same. Methods <see cref="PostData"/>, <see cref="PostFile"/>
 		/// and <see cref="PostName"/> are designed to post an item to be restored as current.
-		/// But in some cases with not trivial equality a comparison is needed in addition.
+		/// But in some cases with not trivial equality this delegate is needed in addition.
 		/// <para>
 		/// Example: a panel shows some frequently changed data like current system processes.
 		/// On update it simply recreates the list. In this case it cannot just use <c>PostFile</c>,
 		/// because they are changed. It cannot just use <c>PostData</c> because process objects may be
 		/// not equal even if they represent the same process. Finally, it cannot just use <c>PostName</c>
-		/// because there may be more than one process with the same name. Solution: a comparison that
-		/// returns 0 if objects representing processes have the same process Id.
+		/// because there may be more than one process with the same name. Solution: a delegate that
+		/// returns process IDs.
+		/// </para>
+		/// <para>
+		/// How to use <b>PowerShellFar</b>: see <see cref="Getter"/> remarks.
 		/// </para>
 		/// </remarks>
-		Comparison<object> DataComparison { get; set; }
+		Getter DataId { get; set; }
 		/// <summary>
-		/// Tells to add item ".." automatically.
+		/// Tells to add an item ".." automatically.
 		/// See also <see cref="DotsDescription"/>.
 		/// </summary>
 		bool AddDots { get; set; }
@@ -1209,7 +1224,7 @@ namespace FarNet
 		/// <summary>
 		/// Panel data to be set current.
 		/// </summary>
-		/// <seealso cref="DataComparison"/>
+		/// <seealso cref="DataId"/>
 		void PostData(object data);
 		/// <summary>
 		/// Panel file to be set current.

@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Shows command, folder or view history
+	Shows command, folder or view history.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -12,17 +12,17 @@
 
 	For quick incremental filter of the list just type a substring. Use
 	[AltDown] to set or change a permanent filter.
-
-.PARAMETER Folders
-		Show folder history.
-.PARAMETER View
-		Show view\edit file history.
 #>
 
 param
 (
-	[switch]$Folders,
-	[switch]$View
+	[switch]
+	# Show folder history.
+	$Folders
+	,
+	[switch]
+	# Show view\edit file history.
+	$View
 )
 
 function Menu($Title, $Key)

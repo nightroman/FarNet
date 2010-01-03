@@ -1,17 +1,16 @@
 
 <#
 .SYNOPSIS
-	Starts MSBuild with input dialog for the project file
+	Starts MSBuild with a helper input dialog for the project file.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	It reads the project file and shows the project targets with their
-	dependencies and the project parameters with their sample values (these
-	values are usually default but it depends on other project conditions, the
-	script does not analyse the project so far).
+	It reads the project file and shows targets, dependencies, and parameters
+	with values (these values are usually default but it depends on other
+	project conditions, the script does not analyse data).
 
 	If a project file is not specified, the script searches the current
-	directory for a file that has a file extension that ends in "proj".
+	directory for a single file *.*proj.
 
 	How to use
 	Compose [MSBuild options] using for assistance displayed information and
@@ -21,16 +20,15 @@
 
 	How to accociate *.*proj files with this script in Far
 	In Commands \ File associations insert an entry and set:
-	- Mask: *.*proj
-	- Command: >: Start-MSBuild- (Get-FarPath) #
-
-.PARAMETER FilePath
-		Project file. Default: the only *.*proj file in the current directory.
+	-- Mask: *.*proj
+	-- Command: >: Start-MSBuild- (Get-FarPath) #
 #>
 
 param
 (
-	[string]$FilePath
+	[string]
+	# Project file. Default: the only *.*proj file in the current directory.
+	$FilePath
 )
 
 ### resolve the project

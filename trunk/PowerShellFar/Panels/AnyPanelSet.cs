@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
@@ -15,14 +16,25 @@ namespace PowerShellFar
 	public abstract partial class AnyPanel
 	{
 		/// <summary>
-		/// Invokes script handlers.
+		/// Invokes a handler script and returns the result collection.
 		/// </summary>
-		internal void InvokeThisScript(ScriptBlock script, EventArgs e)
+		internal Collection<PSObject> InvokeScript(ScriptBlock script, EventArgs e)
 		{
 			PSVariableIntrinsics psvi = A.Psf.Engine.SessionState.PSVariable;
 			psvi.Set("this", this);
 			psvi.Set("_", e);
-			script.InvokeReturnAsIs();
+			return script.Invoke();
+		}
+
+		/// <summary>
+		/// Invokes a handler script and returns the result as is.
+		/// </summary>
+		internal object InvokeScriptReturnAsIs(ScriptBlock script, EventArgs e)
+		{
+			PSVariableIntrinsics psvi = A.Psf.Engine.SessionState.PSVariable;
+			psvi.Set("this", this);
+			psvi.Set("_", e);
+			return script.InvokeReturnAsIs();
 		}
 
 		#region Open
@@ -56,7 +68,7 @@ namespace PowerShellFar
 			if (_Open == null)
 				OpenFile(file);
 			else
-				InvokeThisScript(_Open, new FileEventArgs(file));
+				InvokeScriptReturnAsIs(_Open, new FileEventArgs(file));
 		}
 
 		/// <summary>
@@ -108,7 +120,7 @@ namespace PowerShellFar
 			if (_Edit == null)
 				EditFile(file, alternative);
 			else
-				InvokeThisScript(_Edit, new FileEventArgs(file, alternative));
+				InvokeScriptReturnAsIs(_Edit, new FileEventArgs(file, alternative));
 		}
 
 		/// <summary>
@@ -200,7 +212,7 @@ namespace PowerShellFar
 			if (_View == null)
 				ViewFile(file);
 			else
-				InvokeThisScript(_View, new FileEventArgs(file));
+				InvokeScriptReturnAsIs(_View, new FileEventArgs(file));
 		}
 
 		/// <summary>
@@ -257,7 +269,7 @@ namespace PowerShellFar
 		{
 			if (_ViewAll != null)
 			{
-				InvokeThisScript(_ViewAll, null);
+				InvokeScriptReturnAsIs(_ViewAll, null);
 				return;
 			}
 
