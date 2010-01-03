@@ -460,7 +460,7 @@ namespace PowerShellFar
 		{
 			if (_Save != null)
 			{
-				InvokeThisScript(_Save, null);
+				InvokeScriptReturnAsIs(_Save, null);
 				return !Modified;
 			}
 
@@ -520,7 +520,7 @@ namespace PowerShellFar
 				switch (A.Far.Msg(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
 				{
 					case 0:
-						InvokeThisScript(_Save, null);
+						InvokeScriptReturnAsIs(_Save, null);
 						break;
 					case 1:
 						Modified = false;

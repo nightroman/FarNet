@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Management.Automation;
 using System.Text;
@@ -255,5 +256,12 @@ namespace PowerShellFar
 			return Get<DateTime>(value);
 		}
 
+		/// <summary>
+		/// Converts a <see cref="Meta"/> object to a delegate.
+		/// </summary>
+		public static implicit operator Getter(Meta meta)
+		{
+			return meta.GetValue;
+		}
 	}
 }

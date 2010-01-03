@@ -1,6 +1,31 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.21 =
+
+*) FarNet: IPluginPanel: property DataComparison (class Comparison<object>) is
+replaced with easier to use and more natural property DataId (delegate Getter).
+PSF: DataComparison is replaced with DataId (scripts Panel-BitsTransfer-.ps1,
+Panel-Process-.ps1, cmdlet Start-FarPanel).
+
+*) [PowerShellFar.UserPanel]: method SetGetData() is replaced with two new:
+-- SetGetFiles() - basically it is exactly the same as the old SetGetData(); it
+is renamed to make it clear that scripts operate on panel files directly. The
+script Panel-Process-.ps1 still uses this way (mostly for demo).
+-- SetGetObjects() - this new method provides more natural way of getting data
+for panels: scripts simply return objects to be shown. See Panel-Job-.ps1,
+Panel-BitsTransfer-.ps1.
+
+*) New script Panel-Job-.ps1: Operates on PowerShell background jobs in a panel
+and updates these data periodically when idle. See comments for details.
+
+*) Removed script Panel-Shortcut-.ps1: Its functionality is now covered and
+extended by Invoke-Shortcut-.ps1 with the -Panel switch.
+
+Reminder for those who uses Update-PowerShellFar.ps1: read History.txt on
+updates, mind removed and renamed files: for example on this update you may
+want to remove Panel-Shortcut-.ps1 manually.
+
 = 4.2.20 =
 
 *) List panels (MemberPanel, PropertyPanel): [ShiftDel], [ShiftF8] assign null

@@ -5,8 +5,6 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	Requires PS V2.
-
 	Without parameters it opens the panel with file transfer jobs where you can
 	operate on them. It monitors all existing jobs, even created in another
 	PowerShell session or started in previous Windows sessions.
@@ -121,13 +119,12 @@ $p.Columns = @(
 	@{ Type = 'DC'; Label = 'Created'; Expression = 'CreationTime' }
 )
 
-### GetData
-$p.SetGetData({
-	$this.Panel.Files.Clear()
-	$this.AddObjects((Get-BitsTransfer -ErrorAction 0))
+### Panel jobs
+$p.SetGetObjects({
+	Get-BitsTransfer -ErrorAction 0
 })
 
-### Delete
+### Delete jobs
 $p.SetDelete({
 	if ($Far.Msg('Remove selected transfer jobs?', 'Remove', 'OkCancel') -ne 0) { return }
 	foreach($f in $_.Files) {
@@ -135,7 +132,7 @@ $p.SetDelete({
 	}
 })
 
-### Open
+### Open a job
 $p.SetOpen({
 	$job = $_.File.Data
 
@@ -164,6 +161,5 @@ $p.SetOpen({
 	$this.Panel.Redraw()
 })
 
-# Go!
-Start-FarPanel $p -TypeId $id -Title 'BITS Jobs' -IdleUpdate `
--DataComparison { $args[0].JobId.CompareTo($args[1].JobId) }
+# Go
+Start-FarPanel $p -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -IdleUpdate

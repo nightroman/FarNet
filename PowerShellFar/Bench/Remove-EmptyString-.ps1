@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Removes empty strings from a list
+	Removes empty strings from a list.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -9,22 +9,20 @@
 	contains white spaces only.
 
 .EXAMPLE
-	# remove all empty lines from editor selection:
+	# Remove all empty lines from editor selection:
 	Remove-EmptyString- $Far.Editor.Selection
 
 .EXAMPLE
-	# remove double empty lines from editor text:
+	# Remove double empty lines from editor text:
 	Remove-EmptyString- $Far.Editor.Lines 2
-
-.PARAMETER List
-		Input list of any objects.
-.PARAMETER Count
-		Empty line count: 1: any line, 2: double lines and etc.
 #>
 
 param
 (
-	$List,
+	# Input list of any objects.
+	$List
+	,
+	# Empty line count: 1: any line, 2: double lines and etc.
 	$Count = 1
 )
 

@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.2.21 =
+
+*) IPluginPanel: property DataComparison (class Comparison<object>) is replaced
+with easier to use and more natural property DataId (delegate Getter). This
+change is breaking if your plugins use DataComparison.
+
 = 4.2.20 =
 
 *) IEditor: confusing property name "IsEnd" is changed to "IsLastLine".

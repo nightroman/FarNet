@@ -7,7 +7,7 @@
 .DESCRIPTION
 	It gets a Visual Studio style text link to the current editor line.
 
-	SEE ALSO
+.LINK
 	Edit-TextLink-.ps1
 
 .EXAMPLE

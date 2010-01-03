@@ -70,7 +70,7 @@ namespace PowerShellFar
 		/// Adds objects to the panel.
 		/// </summary>
 		/// <param name="values">Objects represented by enumerable or a single object.</param>
-		public void AddObjects(object values) //?? Think of AddObject(object) which adds an object as it is.
+		public void AddObjects(object values)
 		{
 			// >: New-FarObjectPanel # example
 			if (values == null)
@@ -254,7 +254,7 @@ namespace PowerShellFar
 		/// <param name="value">An object to be attached to this file.</param>
 		/// <returns>New file. You should use it at once for this panel only.</returns>
 		/// <remarks>
-		/// This method may be used for example in the script set by <see cref="UserPanel.SetGetData"/>.
+		/// This method may be used for example in the script set by <see cref="UserPanel.SetGetFiles"/>.
 		/// </remarks>
 		public FarFile NewFile(object value)
 		{

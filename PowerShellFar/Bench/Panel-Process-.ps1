@@ -20,7 +20,7 @@
 	[CtrlPgDn]
 	Opens the process property panel.
 
-	[Delete]
+	[Del], [F8]
 	Kills selected processes.
 
 	[F3], [CtrlQ]
@@ -52,8 +52,9 @@ else {
 ### Create panel
 $p = New-FarUserPanel
 
-### GetData: files are processes
-$p.SetGetData({
+### Panel processes
+# This method operates on panel files directly.
+$p.SetGetFiles({
 	$files = $this.Panel.Files
 	$files.Clear()
 	Get-Process $this.Data.Name -ErrorAction 0 | Where-Object $this.Data.Where | .{process{
@@ -66,7 +67,7 @@ $p.SetGetData({
 	}}
 })
 
-### Delete: kill processes
+### Delete processes
 $p.SetDelete({
 	if ($Far.Msg('Kill selected process(es)?', 'Kill', 'OkCancel') -ne 0) { return }
 	foreach($f in $_.Files) {
@@ -121,5 +122,4 @@ public static class NativeMethods
 '@
 
 # Go!
-Start-FarPanel $p -Title $title -Data $data -IdleUpdate `
--DataComparison { $args[0].Id.CompareTo($args[1].Id) }
+Start-FarPanel $p -Title $title -Data $data -DataId 'Id' -IdleUpdate
