@@ -39,16 +39,16 @@ $p.Columns = @(
 	@{ Label = 'Command'; Expression = { $_.Command.ToString().TrimStart() } }
 )
 
-### Panel jobs.
+### Panel jobs
 # Sort them by Id, this is not always done by the core.
 $p.SetGetObjects({
 	Get-Job | Sort-Object Id
 })
 
-### Delete: stop\remove jobs
+### Delete jobs (stop\remove)
 $p.SetDelete({
 	$action = if ($_.Move) { 'Remove' } else { 'Stop\Remove' }
-	if ($Far.Msg("$action selected job(s)?", $action, 'OkCancel') -ne 0) { return }
+	if ($Far.Msg("$action selected jobs?", $action, 'OkCancel') -ne 0) { return }
 	foreach($job in ($_.Files | Select-Object -ExpandProperty Data)) {
 		if (!$_.Move -and $job.State -eq 'Running') {
 			Stop-Job -Job $job
@@ -59,7 +59,7 @@ $p.SetDelete({
 	}
 })
 
-### View job data
+### Write job data (for [F3], [CtrlQ])
 $p.SetWrite({
 	Receive-Job -Job $_.File.Data -Keep > $_.Path
 })

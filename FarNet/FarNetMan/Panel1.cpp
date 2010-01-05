@@ -425,8 +425,9 @@ void Panel1::Redraw(int current, int top)
 
 void Panel1::Select(array<int>^ indexes, bool select)
 {
-	if (!indexes)
-		throw gcnew ArgumentNullException("indexes");
+	//! ignore null, e.g. empty PS pipeline output
+	if (!indexes || indexes->Length == 0)
+		return;
 	
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
