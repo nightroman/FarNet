@@ -1,6 +1,23 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.22 =
+
+*) Cmdlet Find-FarFile: new parameters -Where and -Up: allow to go to the next
+(down\up) panel file which matches the specified -Where boolean scriptblock.
+See also new script Select-FarFile-.ps1.
+
+*) New script Select-FarFile-.ps1: Selects active or passive panel files by the
+specified scriptblock filter. See also Find-FarFile cmdlet with new parameters
+-Where and -Up.
+
+*) New script Menu-Favorites-.ps1: Shows Windows Favorites as a menu and
+invokes items. -Flat mode may be useful with [CtrlAltF] menu filter.
+
+*) Profile-.ps1: added call of Menu-Favorites-.ps1 to the PSF main menu.
+
+*) New script Test-Panel-Job-.ps1 to play with Panel-Job-.ps1.
+
 = 4.2.21 =
 
 *) FarNet: IPluginPanel: property DataComparison (class Comparison<object>) is

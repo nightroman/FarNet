@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.2.22 =
+
+*) IPanel: methods SelectAt(), UnselectAt(): null as input parameter is OK now,
+it is simply ignored, just like an empty array.
+
 = 4.2.21 =
 
 *) IPluginPanel: property DataComparison (class Comparison<object>) is replaced
