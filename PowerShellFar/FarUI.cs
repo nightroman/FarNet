@@ -115,7 +115,12 @@ namespace PowerShellFar
 			// done
 			if (record.RecordType == ProgressRecordType.Completed)
 			{
+				// title
 				Console.Title = "Done : " + record.Activity + " : " + record.StatusDescription;
+
+				// win7 NoProgress
+				A.Far.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
+			
 				return;
 			}
 
@@ -131,6 +136,9 @@ namespace PowerShellFar
 			if (record.SecondsRemaining > 0)
 				text = string.Empty + record.SecondsRemaining + " sec. " + text;
 			Console.Title = text;
+
+			// win7 %
+			A.Far.SetProgressValue(record.PercentComplete, 100);
 		}
 		Stopwatch _progressWatch = Stopwatch.StartNew();
 

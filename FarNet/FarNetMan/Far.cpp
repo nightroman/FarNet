@@ -1374,7 +1374,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	String^ sPushShelveThePanel = "Push/Shelve the panel";
 	String^ sSwitchFullScreen = "Switch full screen";
 	String^ sClose = "Close the panel";
-	
+
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
 	menu.HelpTopic = "MenuPanels";
@@ -1859,14 +1859,17 @@ void Far::Redraw()
 
 String^ Far::TempName(String^ prefix)
 {
-	// lame, but should work
-	wchar_t dest[MAX_PATH + 20];
-
+	// reasonable buffer
 	PIN_NE(pin, prefix);
-	if (!Info.FSF->MkTemp(dest, countof(dest), pin))
-		throw gcnew OperationCanceledException(__FUNCTION__);
+	wchar_t buf[CBox::eBuf];
+	int size = Info.FSF->MkTemp(buf, countof(buf), pin);
+	if (size <= countof(buf))
+		return gcnew String(buf);
 
-	return gcnew String(dest);
+	// larger buffer
+	CBox box(size);
+	Info.FSF->MkTemp(box, size, pin);
+	return gcnew String(box);
 }
 
 String^ Far::TempFolder(String^ prefix)
@@ -1902,7 +1905,7 @@ void Far::AsProcessSynchroEvent(int type, void* /*param*/)
 {
 	if (type != SE_COMMONSYNCHRO)
 		return;
-	
+
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
@@ -1911,7 +1914,7 @@ void Far::AsProcessSynchroEvent(int type, void* /*param*/)
 		{
 			EventHandler^ handler = _syncHandlers[0];
 			_syncHandlers.RemoveAt(0);
-			
+
 			LOG_AUTO(3, String::Format("AsProcessSynchroEvent: {0}", Log::Format(handler->Method)));
 
 			handler(nullptr, nullptr);
@@ -1949,6 +1952,54 @@ void Far::PostJob(EventHandler^ handler)
 	{
 		ReleaseMutex(_hMutex);
 	}
+}
+
+void Far::SetProgressState(TaskbarProgressBarState state)
+{
+	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSSTATE, (void*)(INT_PTR)state);
+}
+
+void Far::SetProgressValue(int currentValue, int maximumValue)
+{
+	PROGRESSVALUE arg;
+	arg.Completed = currentValue;
+	arg.Total = maximumValue;
+	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSVALUE, &arg);
+}
+
+#undef GetEnvironmentVariable
+CultureInfo^ Far::GetCurrentUICulture(bool update)
+{
+	// get cached value
+	if (_currentUICulture && !update)
+		return _currentUICulture;
+
+	// FARLANG
+	String^ lang = Environment::GetEnvironmentVariable("FARLANG");
+
+	// a few known cases
+	if (lang == "English")
+		return _currentUICulture = CultureInfo::GetCultureInfo("en");
+	if (lang == "Russian")
+		return _currentUICulture = CultureInfo::GetCultureInfo("ru");
+	if (lang == "Czech")
+		return _currentUICulture = CultureInfo::GetCultureInfo("cs");
+	if (lang == "German")
+		return _currentUICulture = CultureInfo::GetCultureInfo("de");
+	if (lang == "Hungarian")
+		return _currentUICulture = CultureInfo::GetCultureInfo("hu");
+	if (lang == "Polish")
+		return _currentUICulture = CultureInfo::GetCultureInfo("pl");
+
+	// find by name
+	for each(CultureInfo^ ci in CultureInfo::GetCultures(CultureTypes::NeutralCultures))
+	{
+		if (ci->EnglishName == lang)
+			return _currentUICulture = ci;
+	}
+
+	// fallback
+	return _currentUICulture = CultureInfo::InvariantCulture;
 }
 
 }

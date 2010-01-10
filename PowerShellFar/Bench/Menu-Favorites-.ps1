@@ -19,11 +19,14 @@
 	Opens a folder submenu or invokes a file. In panels only: if a file is a
 	shortcut (*.lnk) for existing directory then it is opened in a Far panel.
 
-	[CtrlEnter]
-	In panels only: closes the menu and navigates to the item.
+	[Space]
+	It works as [Enter] but the menu is not closed after invoking files.
 
 	[BS]
 	Goes back to the parent menu, if any.
+
+	[CtrlEnter]
+	In panels only: closes the menu and navigates to the item.
 #>
 
 param
@@ -49,6 +52,7 @@ for(;;) {
 	$menu.ShowAmpersands = $true
 	$menu.WrapCursor = $true
 	$menu.BreakKeys.Add([FarNet.VKeyCode]::Backspace)
+	$menu.BreakKeys.Add([FarNet.VKeyCode]::Spacebar)
 	if ($Far.WindowType -eq 'Panels') {
 		$menu.BreakKeys.Add([FarNet.VKeyCode]::Enter -bor [FarNet.VKeyMode]::Ctrl)
 	}
@@ -107,5 +111,8 @@ for(;;) {
 
 	### invoke the item
 	Invoke-Item -LiteralPath $$.FullName
-	return
+	if ($menu.BreakKey -ne ([FarNet.VKeyCode]::Spacebar)) {
+		return
+	}
+	$goto = $$.FullName
 }

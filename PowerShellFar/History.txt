@@ -1,6 +1,26 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.23 =
+
+*** Far 2.0.1311+ ***
+
+*) Win7 taskbar icon: PowerShellFar uses new FarNet methods SetProgressState()
+and SetProgressValue():
+-- Running commands and scripts normally show their activity during execution
+(at least Indeterminate icon state).
+-- Internal WriteProgress() calls SetProgressValue() to display percentage.
+As a result, the cmdlet Write-Progress updates the icon. NOTE: after use call
+Write-Progress -Completed: you are responsible for cleaning the icon.
+-- Finished PSF background jobs show green\red state depending on their state.
+So that if there are finished jobs you are notified via the icon in addition
+to the console title.
+
+*) Menu-Favorites-.ps1: [Space]: It works as [Enter] but the menu is not closed
+after opening a file.
+
+*) PowerShell.hrc: + new V2 number suffixes: TB and PB (tera\peta bytes).
+
 = 4.2.22 =
 
 *) Cmdlet Find-FarFile: new parameters -Where and -Up: allow to go to the next
@@ -49,7 +69,7 @@ want to remove Panel-Shortcut-.ps1 manually.
 to selected properties (kind of "delete values"). It was not easy to enter
 nulls. To delete dynamic properties, as usual, use [Del], [F8].
 
-*) Object panel: in case of unknown objects it finds (euristically) a name of a
+*) Object panel: in case of unknown objects it finds (heuristically) a name of a
 property for display, it tries: Name, Id, Key, *Key, *Name, *Id.
 
 *) Export-Clixml dialog (called on [CtrlS] in some PSF panels): the default

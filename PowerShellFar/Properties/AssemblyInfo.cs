@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System;
 
-[assembly: AssemblyVersion("4.2.22.0")]
+[assembly: AssemblyVersion("4.2.23.0")]
 [assembly: AssemblyTitle("PowerShellFar plugin for Far Manager")]
 [assembly: AssemblyDescription("Implements PowerShell host and automation tools in Far Manager.")]
 [assembly: AssemblyConfiguration("")]

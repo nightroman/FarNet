@@ -59,6 +59,7 @@ public:
 	virtual Char CodeToChar(int code);
 	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor);
 	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
+	virtual CultureInfo^ GetCurrentUICulture(bool update);
 	virtual ICollection<String^>^ GetDialogHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter);
@@ -102,6 +103,8 @@ public:
 	virtual void Run(String^ command);
 	virtual void SetCurrentWindow(int index);
 	virtual void SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue);
+	virtual void SetProgressState(TaskbarProgressBarState state);
+	virtual void SetProgressValue(int currentValue, int maximumValue);
 	virtual void SetUserScreen();
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
@@ -180,6 +183,7 @@ private:
 	String^ _hotkey;
 	array<int>^ _hotkeys;
 	EventHandler^ _handler;
+	CultureInfo^ _currentUICulture;
 	
 	HANDLE _hMutex;
 	List<EventHandler^> _syncHandlers;

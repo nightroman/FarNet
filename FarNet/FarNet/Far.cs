@@ -5,7 +5,7 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using FarNet.Forms;
 using FarNet.Support;
 
@@ -22,6 +22,10 @@ namespace FarNet
 	/// </remarks>
 	public interface IFar
 	{
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		IZoo Zoo { get; }
 		/// <summary>
 		/// Registers a tool handler invoked from one of Far menus.
 		/// </summary>
@@ -678,9 +682,50 @@ namespace FarNet
 		/// </remarks>
 		string ActivePath { get; }
 		/// <summary>
-		/// For internal use.
+		/// Sets the type and state of the progress indicator displayed on a taskbar button of the main application window.
 		/// </summary>
-		IZoo Zoo { get; }
+		/// <param name="state">Progress state of the progress button.</param>
+		void SetProgressState(TaskbarProgressBarState state);
+		/// <summary>
+		/// Displays or updates a progress bar hosted in a taskbar button of the main application window
+		/// to show the specific percentage completed of the full operation.
+		/// </summary>
+		/// <param name="currentValue">Indicates the proportion of the operation that has been completed.</param>
+		/// <param name="maximumValue">Specifies the value <c>currentValue</c> will have when the operation is complete.</param>
+		void SetProgressValue(int currentValue, int maximumValue);
+		/// <summary>
+		/// Returns the current UI culture.
+		/// </summary>
+		/// <param name="update">Tells to update the internal cached value.</param>
+		/// <returns>The current UI culture (cached or updated).</returns>
+		CultureInfo GetCurrentUICulture(bool update);
+	}
+
+	/// <summary>
+	/// Represents the thumbnail progress bar state.
+	/// </summary>
+	public enum TaskbarProgressBarState
+	{
+		/// <summary>
+		/// No progress is displayed.
+		/// </summary>
+		NoProgress = 0,
+		/// <summary>
+		/// The progress is indeterminate (marquee).
+		/// </summary>
+		Indeterminate = 1,
+		/// <summary>
+		/// Normal progress is displayed.
+		/// </summary>
+		Normal = 2,
+		/// <summary>
+		/// An error occurred (red).
+		/// </summary>
+		Error = 4,
+		/// <summary>
+		/// The operation is paused (yellow).
+		/// </summary>
+		Paused = 8
 	}
 
 	/// <summary>

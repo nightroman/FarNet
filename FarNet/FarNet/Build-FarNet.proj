@@ -20,7 +20,7 @@
 
 	<Target Name="Uninstall">
 		<Error Condition="'$(Install)' == ''"/>
-		<RemoveDir Directories="$(Install)\Lib"/>
+		<Delete Files="$(Install)\Lib\FarNet.dll;$(Install)\Lib\FarNet.xml" TreatErrorsAsWarnings="true"/>
 	</Target>
 
 </Project>
