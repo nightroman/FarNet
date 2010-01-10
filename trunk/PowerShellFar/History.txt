@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.24 =
+
+Technical build for FarNet 4.2.24
+
 = 4.2.23 =
 
 *** Far 2.0.1311+ ***
