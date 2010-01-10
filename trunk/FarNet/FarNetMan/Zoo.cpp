@@ -288,4 +288,12 @@ void Zoo::Break()
 	WriteConsoleInput(::GetStdHandle(STD_INPUT_HANDLE), &rec, 1, &writeCount);
 }
 
+ResourceManager^ Zoo::CreateFileBasedResourceManager(Object^ target)
+{
+	String^ location = target->GetType()->Assembly->Location;
+	String^ baseName = Path::GetFileNameWithoutExtension(location);
+	String^ resourceDir = Path::GetDirectoryName(location);
+	return ResourceManager::CreateFileBasedResourceManager(baseName, resourceDir, nullptr);
+}
+
 }

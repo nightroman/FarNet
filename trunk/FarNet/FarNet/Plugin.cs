@@ -4,7 +4,9 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
+using System.Globalization;
 using System.IO;
+using System.Resources;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
@@ -34,6 +36,8 @@ namespace FarNet
 	/// </remarks>
 	public class BasePlugin
 	{
+		ResourceManager Resource;
+
 		/// <summary>
 		/// Protected constructor denies instances of this class.
 		/// </summary>
@@ -84,6 +88,38 @@ namespace FarNet
 		}
 
 		/// <summary>
+		/// Gets or sets the current UI culture.
+		/// </summary>
+		/// <remarks>
+		/// Method <see cref="GetString"/> gets localized strings depending exactly on this property value.
+		/// This property is set internally to the Far UI culture and normally you do not care of it.
+		/// But you may want to set it yourself:
+		/// <ul>
+		/// <li>To ensure it is the same as the current Far UI culture after its changes.</li>
+		/// <li>To use the culture different from the current Far UI culture (for testing or whatever).</li>
+		/// <li>To use the culture which is not even known to Far itself (there is no such a .LNG file).</li>
+		/// </ul>
+		/// </remarks>
+		public CultureInfo CurrentUICulture
+		{
+			get
+			{
+				if (_CurrentUICulture == null)
+					_CurrentUICulture = Far.GetCurrentUICulture(false);
+
+				return _CurrentUICulture;
+			}
+			set
+			{
+				if (value == null)
+					throw new ArgumentNullException("value");
+
+				_CurrentUICulture = value;
+			}
+		}
+		CultureInfo _CurrentUICulture;
+
+		/// <summary>
 		/// Called before invoking of a command.
 		/// </summary>
 		/// <remarks>
@@ -92,6 +128,45 @@ namespace FarNet
 		/// </remarks>
 		public virtual void Invoking()
 		{ }
+
+		/// <summary>
+		/// Gets a localized string from .resorces files.
+		/// </summary>
+		/// <returns>Localized string. If a best match is not possible, null is returned.</returns>
+		/// <param name="name">String name.</param>
+		/// <remarks>
+		/// It gets a string from .resource files depending on the <see cref="CurrentUICulture"/>.
+		/// <para>
+		/// A plugin has to provide .resources files in its directory:
+		/// </para>
+		/// <ul>
+		/// <li>PluginBaseName.resources (default, English is recommended)</li>
+		/// <li>PluginBaseName.ru.resources (Russian)</li>
+		/// <li>PluginBaseName.de.resources (German)</li>
+		/// <li>...</li>
+		/// </ul>
+		/// <para>
+		/// The file "PluginBaseName.resources" must exist. It normally contains language independent strings
+		/// and other strings in a default\fallback language, English more likely. Other files are optional
+		/// and can be added at any time. Note that they do not have to repeat language independent strings.
+		/// </para>
+		/// <para>
+		/// See <see cref="CultureInfo"/> about culture names and MSDN about file based resource management.
+		/// Use ResGen.exe tool or MSBuild task GenerateResource for binary .resources files generation
+		/// from trivial .txt\.restext text files or Visual Studio .resx XML files.
+		/// </para>
+		/// <para>
+		/// If you edit source .resx files in Visual Studio (a very good idea) then ensure they are
+		/// either excluded from the project or not compiled and embedded into the output assembly.
+		/// </para>
+		/// </remarks>
+		public string GetString(string name)
+		{
+			if (Resource == null)
+				Resource = Far.Zoo.CreateFileBasedResourceManager(this);
+			
+			return Resource.GetString(name, CurrentUICulture);
+		}
 	}
 
 	/// <summary>

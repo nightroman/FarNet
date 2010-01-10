@@ -252,7 +252,7 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Finds euristically a property to be used to display the object.
+		/// Finds heuristically a property to be used to display the object.
 		/// </summary>
 		public static PSPropertyInfo FindDisplayProperty(PSObject value)
 		{
