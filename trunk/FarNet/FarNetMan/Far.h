@@ -150,6 +150,7 @@ private:
 	void OnConfigEditor();
 	void OnConfigFiler();
 	void OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^ list);
+	void OnConfigUICulture();
 	void OpenConfig();
 	void OpenMenu(ToolOptions from);
 	void ProcessPrefixes(INT_PTR item);

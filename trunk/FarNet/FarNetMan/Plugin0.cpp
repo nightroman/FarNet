@@ -109,9 +109,14 @@ void Plugin0::LoadFromConfig(String^ file, String^ dir)
 
 void Plugin0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 {
-	// loaded from cache?
+	// assembly name
 	String^ dllName = Path::GetFileName(assemblyPath);
-	if (_cache.ContainsKey(dllName))
+	
+	// add name
+	_names->Add(dllName, nullptr);
+	
+	// loaded from cache?
+	if (_cache->ContainsKey(dllName))
 		return;
 
 	// load from assembly
@@ -162,11 +167,11 @@ void Plugin0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 int Plugin0::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
 {
 	// create
-	BasePlugin^ instance = (BasePlugin^)Activator::CreateInstance(type);
+	BasePlugin^ instance = BasePluginInfo::CreatePlugin(type);
 
 	LOG_AUTO(3, "Load plugin " + instance);
 
-	// register, attach connect
+	// register, attach, connect
 	_plugins.Add(instance);
 	instance->Far = Far::Instance;
 	{
@@ -301,7 +306,7 @@ void Plugin0::ReadCache()
 					keyDll->Close();
 
 					// add dllName to dictionary and add plugins
-					_cache.Add(dllName, nullptr);
+					_cache->Add(dllName, nullptr);
 					if (commands.Count)
 						Far::Instance->RegisterCommands(%commands);
 					if (editors.Count)
