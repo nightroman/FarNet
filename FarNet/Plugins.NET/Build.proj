@@ -8,10 +8,10 @@
 	</Target>
 
 	<Target Name="Clean">
-		<CreateItem Include="*\*.dll">
-			<Output TaskParameter="Include" ItemName="DllFile"/>
+		<CreateItem Include="*\*.dll;*\*.resources">
+			<Output TaskParameter="Include" ItemName="FileToClean"/>
 		</CreateItem>
-		<Delete Files="@(DllFile)"/>
+		<Delete Files="@(FileToClean)"/>
 	</Target>
 
 </Project>
