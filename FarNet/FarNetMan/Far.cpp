@@ -1557,13 +1557,15 @@ void Far::OpenConfig()
 	menu.Add(Res::CommandPlugins + " : " + (_registeredCommand.Count));
 	menu.Add(Res::EditorPlugins + "  : " + (_registeredEditor.Count));
 	menu.Add(Res::FilerPlugins + "   : " + (_registeredFiler.Count));
-	menu.Add(String::Empty)->IsSeparator = true;
-	menu.Add(Res::PanelsTools + "    : " + (_toolPanels.Count - 1));
-	menu.Add(Res::EditorTools + "    : " + (_toolEditor.Count - 1));
-	menu.Add(Res::ViewerTools + "    : " + (_toolViewer.Count - 1));
-	menu.Add(Res::DialogTools + "    : " + (_toolDialog.Count - 1));
-	menu.Add(Res::ConfigTools + "    : " + (_toolConfig.Count - 1));
-	menu.Add(Res::DiskTools + "      : " + (_toolDisk.Count - 1));
+	menu.Add("Tools")->IsSeparator = true;
+	menu.Add(Res::PanelsTools + "    : " + (_toolPanels.Count));
+	menu.Add(Res::EditorTools + "    : " + (_toolEditor.Count));
+	menu.Add(Res::ViewerTools + "    : " + (_toolViewer.Count));
+	menu.Add(Res::DialogTools + "    : " + (_toolDialog.Count));
+	menu.Add(Res::ConfigTools + "    : " + (_toolConfig.Count));
+	menu.Add(Res::DiskTools + "      : " + (_toolDisk.Count));
+	menu.Add("Modules")->IsSeparator = true;
+	menu.Add("UI culture");
 
 	while(menu.Show())
 	{
@@ -1606,6 +1608,64 @@ void Far::OpenConfig()
 			if (_toolDisk.Count > 1)
 				OnConfigTool(Res::DiskTools, ToolOptions::Disk, %_toolDisk);
 			break;
+		case 11:
+			OnConfigUICulture();
+			break;
+		}
+	}
+}
+
+void Far::OnConfigUICulture()
+{
+	Menu menu;
+	menu.AutoAssignHotkeys = true;
+	menu.HelpTopic = "MenuUICulture"; //???
+	menu.Title = "Module UI culture";
+
+	int width = 0;
+	for each(String^ assemblyName in Plugin0::AssemblyNames)
+		if (width < assemblyName->Length)
+			width = assemblyName->Length;
+
+	for(;;)
+	{
+		menu.Items->Clear();
+		for each(String^ assemblyName in Plugin0::AssemblyNames)
+			menu.Add(String::Format("{0} : {1}", assemblyName->PadRight(width), Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)));
+
+		if (!menu.Show())
+			return;
+
+		String^ assemblyName = Plugin0::AssemblyNames[menu.Selected];
+		String^ cultureName = Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
+		String^ cultureName2 = Far::Instance->Input("Culture name", "Culture", assemblyName, cultureName);
+		if (!cultureName2)
+			continue;
+
+		CultureInfo^ ci;
+		try
+		{
+			// get the culture by name, it may throw
+			ci = CultureInfo::GetCultureInfo(cultureName2->Trim());
+
+			// save the name from the culture, not from a user
+			Far::Instance->SetFarNetValue(assemblyName , "UICulture", ci->Name);
+
+			// use the current Far culture instead of invariant
+			if (ci->Name->Length == 0)
+				ci = Far::Instance->GetCurrentUICulture(true);
+			
+			// update plugins
+			for each(BasePlugin^ plugin in Plugin0::Plugins)
+			{
+				String^ name = Path::GetFileName(plugin->GetType()->Assembly->Location);
+				if (String::Compare(assemblyName, name, true) == 0)
+					plugin->CurrentUICulture = ci;
+			}
+		}
+		catch(ArgumentException^)
+		{
+			Far::Instance->Msg("Unknown culture name.");
 		}
 	}
 }

@@ -95,43 +95,49 @@ $#Config menu#
 ~Contents~@Contents@
 
 This menu allows to select and configure FarNet command plugins, tool plugins
-(by areas) and file plugins.
+(by areas), file plugins, and set plugin module options.
 
-#Command plugins#
+#Command plugins# : shows the ~Configure command plugins~@ConfigCommand@ menu.
 
-It shows the ~Configure command plugins~@ConfigCommand@ menu.
+#Editor plugins# : shows the ~Configure editor plugins~@ConfigEditor@ menu.
 
-#Editor plugins#
+#Filer plugins# : shows the ~Configure filer plugins~@ConfigFiler@ menu.
 
-It shows the ~Configure editor plugins~@ConfigEditor@ menu.
+#Panels tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Panels area.
 
-#Filer plugins#
+#Editor tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Editor area.
 
-It shows the ~Configure filer plugins~@ConfigFiler@ menu.
+#Viewer tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Viewer area.
 
-#Panels tools#
+#Dialog tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Dialog area.
 
-It shows the ~Configure tool plugins~@ConfigTool@ menu for Panels area.
+#Config tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Config area.
 
-#Editor tools#
+#Disk tools# : shows the ~Configure disk tools~@ConfigDisk@ menu.
 
-It shows the ~Configure tool plugins~@ConfigTool@ menu for Editor area.
+#UI culture# : shows the ~Module UI culture~@MenuUICulture@ menu.
 
-#Viewer tools#
 
-It shows the ~Configure tool plugins~@ConfigTool@ menu for Viewer area.
+@MenuUICulture
+$#Module UI culture menu#
+~Contents~@Contents@
 
-#Dialog tools#
+This menu and the input box allow to set FarNet plugin module UI cultures
+needed for localization. It makes sense if a plugin provides more than one
+localized .resource files and you want to set its UI to a culture different
+from the current Far UI culture.
 
-It shows the ~Configure tool plugins~@ConfigTool@ menu for Dialog area.
+#Enter# (menu)
 
-#Config tools#
+Opens the input box where you can change the culture.
 
-It shows the ~Configure tool plugins~@ConfigTool@ menu for Config area.
+#Esc# (menu)
 
-#Disk tools#
+Closes the menu.
 
-It shows the ~Configure disk tools~@ConfigDisk@ menu.
+#Input box#
+
+Enter a new culture name. Empty name tells to use the current Far UI culture.
 
 
 @ConfigTool
