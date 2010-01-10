@@ -861,6 +861,9 @@ Continue with this current directory?
 			// invoke
 			try
 			{
+				// win7 Indeterminate
+				A.Far.SetProgressState(TaskbarProgressBarState.Indeterminate);
+				
 				// add history
 				if (addHistory)
 				{
@@ -889,6 +892,9 @@ Continue with this current directory?
 			{
 				// stop timer
 				timer.Dispose();
+
+				// win7 NoProgress
+				A.Far.SetProgressState(TaskbarProgressBarState.NoProgress);
 
 				_myLastCommand = _myCommand;
 				_myCommand = null;

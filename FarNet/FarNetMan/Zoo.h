@@ -16,6 +16,7 @@ public:
 public:
 	virtual array<BufferCell,2>^ GetBufferContents(Place rectangle);
 	virtual KeyInfo ReadKey(ReadKeyOptions options);
+	virtual ResourceManager^ CreateFileBasedResourceManager(Object^ target);
 	virtual void FlushInputBuffer();
 	virtual void ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill);
 	virtual void SetBufferContents(Place rectangle, BufferCell fill);

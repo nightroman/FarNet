@@ -110,9 +110,10 @@ public:
 	{
 		return m_str;
 	}
+	// Buffer size at least > MAX_PATH.
+	enum { eLen = 511, eBuf = eLen + 1 };
 private:
-	enum { eLen = 255 };
-	T m_buf[eLen + 1];
+	T m_buf[eBuf];
 	T* m_str;
 };
 

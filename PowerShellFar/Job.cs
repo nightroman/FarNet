@@ -562,6 +562,9 @@ namespace PowerShellFar
 				{
 					Timer.Dispose();
 					Timer = null;
+
+					// win7 NoProgress
+					A.Far.SetProgressState(TaskbarProgressBarState.NoProgress);
 				}
 			}
 			else
@@ -578,6 +581,10 @@ namespace PowerShellFar
 
 				// notify
 				Console.Title = JobLastNotified.StateText + ": " + JobLastNotified.ToLine(100);
+
+				// win7
+				A.Far.SetProgressValue(1, 1);
+				A.Far.SetProgressState(JobLastNotified.IsSucceeded ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Error);
 
 				// install the timer
 				if (Timer == null)

@@ -147,10 +147,11 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		if (pp->AddDots)
 		{
 			++i;
+			wchar_t* dots = new wchar_t[3];
+			dots[0] = dots[1] = '.'; dots[2] = '\0';
 			PluginPanelItem& p = (*pPanelItem)[0];
 			p.UserData = (DWORD_PTR)(-1);
-			p.FindData.lpwszFileName = new wchar_t[3];
-			p.FindData.lpwszFileName[0] = p.FindData.lpwszFileName[1] = '.'; p.FindData.lpwszFileName[2] = '\0';
+			p.FindData.lpwszFileName = dots;
 			p.Description = NewChars(pp->DotsDescription);
 		}
 
@@ -174,8 +175,9 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
 				Info.FSF->itoa(i, buf, 10);
 				int size = (int)wcslen(buf) + 1;
-				d.lpwszAlternateFileName = new wchar_t[size];
-				memcpy(d.lpwszAlternateFileName, buf, size * sizeof(wchar_t));
+				wchar_t* alternate = new wchar_t[size];
+				memcpy(alternate, buf, size * sizeof(wchar_t));
+				d.lpwszAlternateFileName = alternate;
 			}
 			else
 			{
@@ -197,15 +199,16 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 				int nb = columns->Count;
 				if (nb)
 				{
+					wchar_t** custom = new wchar_t*[nb];
 					p.CustomColumnNumber = nb;
-					p.CustomColumnData = new wchar_t*[nb];
+					p.CustomColumnData = custom;
 					int iColumn = 0;
 					for each(Object^ it in columns)
 					{
 						if (it)
-							p.CustomColumnData[iColumn] = NewChars(it->ToString());
+							custom[iColumn] = NewChars(it->ToString());
 						else
-							p.CustomColumnData[iColumn] = 0;
+							custom[iColumn] = 0;
 						++iColumn;
 					}
 				}
