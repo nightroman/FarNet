@@ -10,6 +10,7 @@ namespace FarNet
 ref class BasePluginInfo abstract
 {
 public:
+	static BasePlugin^ CreatePlugin(Type^ type);
 	virtual String^ ToString() override;
 	property BasePlugin^ Plugin { BasePlugin^ get() { return _Plugin; } }
 	property String^ AssemblyPath { String^ get(); }

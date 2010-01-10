@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+= 4.2.24 =
+
+PLUGINS LOCALIZATION SUPPORT (continued, see 4.2.23)
+
+*) FarNet configuration menus and dialogs
+-- Section "Tools": fixed displayed tool number.
+-- Section "Modules": added submenu item "UI culture".
+-- Updated the .hlf file.
+
 = 4.2.23 =
 
 PLUGINS LOCALIZATION SUPPORT

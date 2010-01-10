@@ -12,6 +12,30 @@ namespace FarNet
 {;
 #pragma region BasePluginInfo
 
+BasePlugin^ BasePluginInfo::CreatePlugin(Type^ type)
+{
+	// create the instance
+	BasePlugin^ instance = (BasePlugin^)Activator::CreateInstance(type);
+
+	// get and set UI culture, if any
+	String^ assemblyName = Path::GetFileName(instance->GetType()->Assembly->Location);
+	String^ cultureName = Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
+	if (cultureName->Length)
+	{
+		try
+		{
+			instance->CurrentUICulture = CultureInfo::GetCultureInfo(cultureName);
+		}
+		catch(ArgumentException^ ex)
+		{
+			PluginException ex2("Invalid culture name.\rCorrect it in the configuration dialog.", ex);
+			Far::Instance->ShowError(assemblyName, %ex2);
+		}
+	}
+
+	return instance;
+}
+
 BasePluginInfo::BasePluginInfo(BasePlugin^ plugin, String^ name)
 : _Plugin(plugin)
 , _Name(name)
@@ -56,13 +80,13 @@ void BasePluginInfo::Connect()
 	// create from info
 	Assembly^ assembly = Assembly::LoadFrom(_AssemblyPath);
 	Type^ type = assembly->GetType(_ClassName, true);
-	_Plugin = (BasePlugin^)Activator::CreateInstance(type);
+	_Plugin = BasePluginInfo::CreatePlugin(type);
 
 	// drop info
 	_AssemblyPath = nullptr;
 	_ClassName = nullptr;
 
-	// register, attach and connect
+	// register, attach, connect
 	Plugin0::AddPlugin(_Plugin);
 	_Plugin->Far = Far::Instance;
 	{
