@@ -1585,27 +1585,27 @@ void Far::OpenConfig()
 			break;
 			// mind separator
 		case 4:
-			if (_toolPanels.Count > 1)
+			if (_toolPanels.Count)
 				OnConfigTool(Res::PanelsTools, ToolOptions::Panels, %_toolPanels);
 			break;
 		case 5:
-			if (_toolEditor.Count > 1)
+			if (_toolEditor.Count)
 				OnConfigTool(Res::EditorTools, ToolOptions::Editor, %_toolEditor);
 			break;
 		case 6:
-			if (_toolViewer.Count > 1)
+			if (_toolViewer.Count)
 				OnConfigTool(Res::ViewerTools, ToolOptions::Viewer, %_toolViewer);
 			break;
 		case 7:
-			if (_toolDialog.Count > 1)
+			if (_toolDialog.Count)
 				OnConfigTool(Res::DialogTools, ToolOptions::Dialog, %_toolDialog);
 			break;
 		case 8:
-			if (_toolConfig.Count > 1)
+			if (_toolConfig.Count)
 				OnConfigTool(Res::ConfigTools, ToolOptions::Config, %_toolConfig);
 			break;
 		case 9:
-			if (_toolDisk.Count > 1)
+			if (_toolDisk.Count)
 				OnConfigTool(Res::DiskTools, ToolOptions::Disk, %_toolDisk);
 			break;
 		case 11:
