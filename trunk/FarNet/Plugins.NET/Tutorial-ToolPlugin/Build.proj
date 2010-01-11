@@ -1,0 +1,29 @@
+<!--
+C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe Build.proj /t:Build
+-->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<Target Name="Build" DependsOnTargets="Resources">
+		<Csc
+			Sources="Hello.cs"
+			OutputAssembly="Hello.dll"
+			References="$(FARHOME)\Lib\FarNet.dll"
+			TargetType="library"
+			Optimize="true"
+			/>
+	</Target>
+
+	<Target Name="Resources">
+		<GenerateResource
+			Sources="Hello.restext;Hello.ru.restext"
+			OutputResources="Hello.resources;Hello.ru.resources"
+			/>
+	</Target>
+
+	<Target Name="Clean">
+		<Delete
+			Files="Hello.dll;Hello.resources;Hello.ru.resources"
+			/>
+	</Target>
+
+</Project>
