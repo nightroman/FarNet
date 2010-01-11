@@ -1,17 +1,20 @@
+<!--
+C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe Build.proj /t:Build
+-->
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-	<Target Name="Build">
-		<CreateItem Include="*\Build.bat">
-			<Output TaskParameter="Include" ItemName="BatFile"/>
+	<Target Name="Projects">
+		<CreateItem Include="*\Build.proj">
+			<Output TaskParameter="Include" ItemName="ProjFile"/>
 		</CreateItem>
-		<Exec Command="%(BatFile.FullPath)" WorkingDirectory="%(RootDir)%(Directory)"/>
 	</Target>
 
-	<Target Name="Clean">
-		<CreateItem Include="*\*.dll;*\*.resources">
-			<Output TaskParameter="Include" ItemName="FileToClean"/>
-		</CreateItem>
-		<Delete Files="@(FileToClean)"/>
+	<Target Name="Build" DependsOnTargets="Projects">
+		<MSBuild Projects="%(ProjFile.FullPath)" Targets="Build"/>
+	</Target>
+
+	<Target Name="Clean" DependsOnTargets="Projects">
+		<MSBuild Projects="%(ProjFile.FullPath)" Targets="Clean"/>
 	</Target>
 
 </Project>

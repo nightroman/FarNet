@@ -1,5 +1,25 @@
 http://code.google.com/p/farnet/
 
+= 4.2.25 =
+
+*) Plugins.NET samples: replaced .bat files with .proj files for MSBuild.exe:
+C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe
+Basically "MSBuild" and "projects" are similar to "make" and "makefiles" but
+MSBuild is .NET oriented and projects are XML files (see MSDN for details).
+
+Examples:
+MSBuild.exe Build.proj (makes default targets, usually "Build")
+MSBuild.exe Build.proj /t:Build (makes the target "Build")
+MSBuild.exe Build.proj /t:Clean (makes the target "Clean")
+MSBuild.exe Build.proj /t:Build;Clean (makes the "Build" and "Clean")
+
+If you use PowerShellFar then the script Start-MSBuild-.ps1 can be used, too.
+
+Even if you develop in Visual Studio, MSBuild tasks still can be useful, for
+example you may add custom MSBuild tasks like resource files generation (see
+Tutorial-ToolPlugin\Build.proj). See commented out targets "BeforeBuild" and
+"AfterBuild" in your Visual Studio project file (.csproj, use text editor).
+
 = 4.2.24 =
 
 PLUGINS LOCALIZATION SUPPORT (continued, see 4.2.23)
