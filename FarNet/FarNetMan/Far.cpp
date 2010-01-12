@@ -493,8 +493,8 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 	keySequence.Count = sequence->Length;
 	keySequence.Flags = disableOutput ? KSFLAGS_DISABLEOUTPUT : 0;
 
-	keySequence.Sequence = keySequence.Count <= smallCount ? keys : new DWORD[keySequence.Count];
-	DWORD* cur = keySequence.Sequence;
+	DWORD* cur = keySequence.Count <= smallCount ? keys : new DWORD[keySequence.Count];
+	keySequence.Sequence = cur;
 	for each(int i in sequence)
 	{
 		*cur = i;
