@@ -970,7 +970,7 @@ namespace FarNet
 	public class MakingDirectoryEventArgs : PanelEventArgs
 	{
 		string _name;
-		/// <param name="name">New directory name.</param>
+		/// <param name="name">New item name.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		public MakingDirectoryEventArgs(string name, OperationModes mode)
 			: base(mode)
@@ -978,12 +978,9 @@ namespace FarNet
 			_name = name;
 		}
 		/// <summary>
-		/// New directory name.
+		/// Gets or sets a new item name.
 		/// </summary>
-		public string Name
-		{
-			get { return _name; }
-		}
+		public string Name { get; set; }
 	}
 
 	/// <summary>
@@ -1201,8 +1198,25 @@ namespace FarNet
 		/// </summary>
 		event EventHandler<PuttingFilesEventArgs> PuttingFiles;
 		/// <summary>
-		/// Rised to create a new directory in the file system emulated by the plugin.
+		/// Called to create a new panel item on [F7] hotkey.
 		/// </summary>
+		/// <remarks>
+		/// Set <see cref="PanelEventArgs.Ignore"/> to true if processing fails or should be ignored.
+		/// <para>
+		/// It is assumed that this method creates a new item with the <see cref="MakingDirectoryEventArgs.Name"/> name.
+		/// If the <see cref="PanelEventArgs.Mode"/> has no <see cref="OperationModes.Silent"/> flag you are supposed
+		/// to return (set) a new item name, so that this item will be current after panel update and redraw.
+		/// </para>
+		/// <para>
+		/// Don't be confused by the method's name, it is given historically due to associated [F7] hotkey.
+		/// In fact, you can create panel items of any kind, directories (containers) or files (leaves).
+		/// </para>
+		/// <para>
+		/// Remember that this is not the only way of adding items, for example you can process the same [F7] key
+		/// (or any other key) in <see cref="IPluginPanel.KeyPressed"/> event, or add items by a menu command, and etc.
+		/// But in these cases you may want to set a new item current yourself, e.g. by calling <c>Post*()</c> methods.
+		/// </para>
+		/// </remarks>
 		event EventHandler<MakingDirectoryEventArgs> MakingDirectory;
 		/// <summary>
 		/// A panel has got focus.

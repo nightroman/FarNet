@@ -11,6 +11,9 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
+// lame storage of new name
+static CStr s_makingDirectory;
+
 static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, List<String^>^ names, PluginPanelItem* panelItem, int itemsNumber)
 {
 	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
@@ -35,6 +38,9 @@ static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, List<String^>^ names
 void Panel0::AsClosePlugin(HANDLE hPlugin)
 {
 	LOG_AUTO(3, "ClosePlugin");
+
+	// drop the lame storage
+	s_makingDirectory.Set(nullptr);
 
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	pp->_info.Free();
@@ -249,19 +255,34 @@ void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 	*info = pp->_info.Make();
 }
 
-//?? Parameter name can be changed, i.e. (*name) replaced. NYI here.
+// Return values are 0, 1, -1. If 0 is returned Far shows a message "Cannot create".
+// We do not want this. http://forum.farmanager.com/viewtopic.php?p=56846#p56846
 int Panel0::AsMakeDirectory(HANDLE hPlugin, const wchar_t** name, int opMode)
 {
 	LOG_AUTO(3, "MakeDirectory");
 
+	// handler
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp->_MakingDirectory)
-		return false;
+		return -1;
 
-	MakingDirectoryEventArgs e(gcnew String((*name)), (OperationModes)opMode);
+	// call
+	String^ nameIn = gcnew String((*name));
+	MakingDirectoryEventArgs e(nameIn, (OperationModes)opMode);
 	pp->_MakingDirectory(pp, %e);
+	if (e.Ignore)
+		return -1;
 
-	return e.Ignore ? false : true;
+	// return a new name
+	if (0 == (opMode & OPM_SILENT) && e.Name != nameIn)
+	{
+		// use the lame storage
+		s_makingDirectory.Set(e.Name);
+		*name = s_makingDirectory;
+	}
+
+	// done
+	return 1;
 }
 
 static bool _reenterOnRedrawing;
