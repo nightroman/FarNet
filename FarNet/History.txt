@@ -2,6 +2,12 @@ http://code.google.com/p/farnet/
 
 = 4.2.25 =
 
+*) IPluginPanel: it turned out that the event MakingDirectory still was not
+quite implemented. Now it is.
+
+*) Far error messages in a panel which is not subscribed to MakingDirectory
+on pressing [F7] are fixed.
+
 *) Plugins.NET samples: replaced .bat files with .proj files for MSBuild.exe:
 C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe
 Basically "MSBuild" and "projects" are similar to "make" and "makefiles" but
@@ -14,6 +20,7 @@ MSBuild.exe Build.proj /t:Clean (makes the target "Clean")
 MSBuild.exe Build.proj /t:Build;Clean (makes the "Build" and "Clean")
 
 If you use PowerShellFar then the script Start-MSBuild-.ps1 can be used, too.
+It helps to choose command line parameters and keeps commands in history.
 
 Even if you develop in Visual Studio, MSBuild tasks still can be useful, for
 example you may add custom MSBuild tasks like resource files generation (see

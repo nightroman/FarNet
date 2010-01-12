@@ -108,15 +108,30 @@ $p.Data | Add-Member ScriptMethod UpdateInfo {
 
 ### MakingDirectory: called on [F7]
 $p.add_MakingDirectory({&{
+
+	# count events and update the info
 	$n = ++$this.Data.MakingDirectory
 	$this.Data.UpdateInfo()
-	$this.Files.Add((New-FarFile "Item$n" -Owner "Value$n" -Description "Description$n" -Columns "custom[0]=$n", "custom[1]=$n"))
+
+	# ignore silent mode in this demo
+	if ($_.Mode -band [FarNet.OperationModes]::Silent) {
+		$_.Ignore = $true
+		return
+	}
+
+	# get and return a new item name, add a new item
+	$_.Name = "Item$n"
+	$this.Files.Add((New-FarFile $_.Name -Owner "Value$n" -Description "Description$n" -Columns "custom[0]=$n", "custom[1]=$n"))
 }})
 
 ### DeletingFiles: called on [F8]
 $p.add_DeletingFiles({&{
+
+	# count events and update the info
 	++$this.Data.DeletingFiles
 	$this.Data.UpdateInfo()
+
+	# remove input files
 	foreach($f in $_.Files) {
 		$this.Files.Remove($f)
 	}
@@ -124,17 +139,19 @@ $p.add_DeletingFiles({&{
 
 ### GettingFiles: called on [F5], [CtrlQ]
 $p.add_GettingFiles({&{
+
+	# count events and update the info
 	++$this.Data.GettingFiles
 	$this.Data.UpdateInfo()
 
-	# [CtrlQ]
+	# case: [CtrlQ]
 	if ($_.Mode -band [FarNet.OperationModes]::QuickView) {
 		$name = $_.Files[0].Name
 		[IO.File]::WriteAllText("$($_.Destination)\$name", "Hello from $name")
 		return
 	}
 
-	# other
+	# other cases
 	$that = $Far.Panel2
 	if (!$that.Info -or $That.Info.Title -ne $this.Info.Title) {
 		$Far.Msg('Open another test panel for this operation.')
@@ -143,8 +160,12 @@ $p.add_GettingFiles({&{
 
 ### PuttingFiles: called on [F6]
 $p.add_PuttingFiles({&{
+
+	# count events and update the info
 	++$this.Data.PuttingFiles
 	$this.Data.UpdateInfo()
+
+	# process input files: just add them in this demo
 	foreach($f1 in $_.Files) {
 		$this.Files.Add((New-FarFile -Name $f1.Name))
 	}
@@ -152,7 +173,11 @@ $p.add_PuttingFiles({&{
 
 ### Escaping: closes the panel
 $p.add_Escaping({&{
+
+	# set processed
 	$_.Ignore = $true
+
+	# prompt
 	switch(Show-FarMsg 'How to close this panel?' -Choices '&1:Close()', '&2:Close(ActivePath)', 'Cancel') {
 		0 {
 			# [_090321_210416]: Far panel current item depends on the plugin panel current item (fixed in FarNet)
@@ -166,11 +191,13 @@ $p.add_Escaping({&{
 
 ### KeyPressed: shows how to process some keys
 $p.add_KeyPressed({&{
-	if ($_.Preprocess) {}
-	elseif ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
-		if (0 -eq (Show-FarMsg "[F1] has been pressed" -Choices 'Process by handler', 'Allow default action')) {
-			$_.Ignore = $true
-			Show-FarMsg "[F1] has been pressed and processed by the handler"
+	if (!$_.Preprocess) {
+		# case [F1]
+		if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
+			if (0 -eq (Show-FarMsg "[F1] has been pressed" -Choices 'Process by handler', 'Allow default action')) {
+				$_.Ignore = $true
+				Show-FarMsg "[F1] has been pressed and processed by the handler"
+			}
 		}
 	}
 }})

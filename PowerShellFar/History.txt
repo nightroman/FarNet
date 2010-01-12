@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.25 =
+
+*) Test-Panel-.ps1: IPluginPanel event MakingDrectory is fixed in FarNet and
+the test now shows how actually this event is used.
+
 = 4.2.24 =
 
 Technical build for FarNet 4.2.24
