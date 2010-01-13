@@ -98,7 +98,7 @@ function OutTrue([string]$property) { if ($c.$property) { "$vc.$property = `$tru
 					"$vc.Mask = '$(Esc $c.Mask)'"
 				}
 			}
-			elseif ($c.Password) {
+			elseif ($c.IsPassword) {
 				"$vc = `$dialog.AddEditPassword($($r.Left), $($r.Top), $($r.Right), $text)"
 			}
 			else {

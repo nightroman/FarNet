@@ -601,6 +601,7 @@ Continue with this current directory?
 		public string InputCode()
 		{
 			UI.InputDialog ui = new UI.InputDialog(Res.Name, Res.Name, "PowerShell code");
+			ui.Edit.IsPath = true;
 			ui.Edit.UseLastHistory = true;
 			return ui.Dialog.Show() ? ui.Edit.Text : null;
 		}
