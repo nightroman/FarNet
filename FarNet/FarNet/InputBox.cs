@@ -35,8 +35,18 @@ namespace FarNet
 		/// </summary>
 		bool EmptyEnabled { get; set; }
 		/// <summary>
-		/// Display asterisks instead of input characters.
+		/// Tells that it is used for file system path input.
 		/// </summary>
+		/// <remarks>
+		/// Setting this to true enables some extras, e.g. on typing: a dropdown list of matching available paths.
+		/// </remarks>
+		bool IsPath { get; set; }
+		/// <summary>
+		/// Tells that it is used for password input.
+		/// </summary>
+		/// <remarks>
+		/// If it is true then asterisks are displaied instead of input characters.
+		/// </remarks>
 		bool IsPassword { get; set; }
 		/// <summary>
 		/// Expand environment variables.

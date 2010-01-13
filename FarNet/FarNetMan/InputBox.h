@@ -14,6 +14,7 @@ public:
 	virtual property bool ButtonsAreVisible;
 	virtual property bool EmptyEnabled;
 	virtual property bool EnvExpanded;
+	virtual property bool IsPath;
 	virtual property bool IsPassword;
 	virtual property bool NoLastHistory;
 	virtual property int MaxLength { int get(); void set(int value); }

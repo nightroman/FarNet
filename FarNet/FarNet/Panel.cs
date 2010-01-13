@@ -838,7 +838,7 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// The plugin should be ready to process <see cref="OperationModes.Find"/> flag.
-	/// If it is set, the event is raised from Find file or another directory scanning command,
+	/// If it is set, the event is called from Find file or another directory scanning command,
 	/// and the plugin must not perform any actions except changing directory or setting <see cref="PanelEventArgs.Ignore"/> = true
 	/// if it is impossible to change the directory. (The plugin should not try to close or update the panels,
 	/// ask the user for confirmations, show messages and so on.)
@@ -1010,8 +1010,9 @@ namespace FarNet
 		/// (command line, disk menu or plugins menu in panels). If panels window cannot
 		/// be set current, this method fails.
 		/// <para>
-		/// Other possible reasons of failure: *) another panel has been already registered for opening;
-		/// *) the plugin is not called for opening, e.g. it is called to process events, not opening.
+		/// Other possible reasons of failure:
+		/// *) another panel has been already registered for opening;
+		/// *) the plugin is not called for opening, e.g. it is called to process events.
 		/// </para>
 		/// <para>
 		/// It is recommended to call this as soon as possible and only then configure the panel and other data.
@@ -1025,17 +1026,20 @@ namespace FarNet
 		/// <param name="oldPanel">Old panel to be replaced.</param>
 		void Open(IPluginPanel oldPanel);
 		/// <summary>
-		/// True if the panel is opened.
+		/// Gets true if the panel is opened.
 		/// </summary>
 		bool IsOpened { get; }
 		/// <summary>
-		/// True if the panel is pushed.
+		/// Gets true if the panel is pushed.
 		/// </summary>
 		bool IsPushed { get; }
 		/// <summary>
-		/// Another FarNet plugin panel instance or null.
-		/// Note that it may be not "yours", use <see cref="Host"/> property for identification.
+		/// Gets another FarNet plugin panel instance or null.
 		/// </summary>
+		/// <remarks>
+		/// It gets any panel available, even if it belongs to another plugin.
+		/// Use <see cref="Host"/> or <see cref="TypeId"/> for identification.
+		/// </remarks>
 		IPluginPanel AnotherPanel { get; }
 		/// <summary>
 		/// Gets or sets a delegate providing IDs of panel file data.
@@ -1064,17 +1068,23 @@ namespace FarNet
 		/// </summary>
 		bool AddDots { get; set; }
 		/// <summary>
-		/// If <see cref="AddDots"/> is true it is used as ".." item description.
+		/// Gets or sets the ".." item description.
 		/// </summary>
+		/// <remarks>
+		/// This text is used and shown only if <see cref="AddDots"/> is true.
+		/// </remarks>
 		string DotsDescription { get; set; }
 		/// <summary>
-		/// Any user data not used by FarNet.
+		/// Gets or sets any user data not used internally.
 		/// </summary>
 		object Data { get; set; }
 		/// <summary>
-		/// User object that is normally a host of the panel (i.e. container of data, event handlers, ...).
-		/// It can be used for example by communicating panels.
+		/// Gets or sets a user object that is normally a host of the panel.
 		/// </summary>
+		/// <remarks>
+		/// A panel host object is a container of data, event handlers, and etc.
+		/// It can be used for example by communicating panels with the same host type.
+		/// </remarks>
 		/// <seealso cref="AnotherPanel"/>
 		/// <seealso cref="TypeId"/>
 		object Host { get; set; }
@@ -1083,20 +1093,29 @@ namespace FarNet
 		/// </summary>
 		string ActivePath { get; }
 		/// <summary>
-		/// Use this to set the panel properties.
-		/// For better performance set its properties only when they are really changed.
-		/// Redraw the opened panel if you change properties not from events calling redraw.
+		/// Gets access to the panel startup and runtime property set.
 		/// </summary>
+		/// <remarks>
+		/// Use the returned info instance to set the panel properties.
+		/// For better performance set its properties only when they are really changed.
+		/// Redraw the panel if you change properties from operations that do not call redraw.
+		/// </remarks>
 		IPluginPanelInfo Info { get; }
 		/// <summary>
-		/// Panel items. For performance and simplicity the list is not protected and it should be used carefully.
+		/// Gets or sets the list of panel items.
+		/// </summary>
+		/// <remarks>
+		/// This is the main member of the panel: its items.
+		/// <para>
+		/// For performance and simplicity sake the list is not protected and it should be used carefully.
 		/// Normally it is filled on startup and then can be changed by <see cref="GettingData"/> handler.
 		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately;
 		/// otherwise not coherent panel and list data may cause unpredictable problems.
-		/// </summary>
+		/// </para>
+		/// </remarks>
 		IList<FarFile> Files { get; set; }
 		/// <summary>
-		/// User panel type ID.
+		/// Gets or sets the panel type ID.
 		/// </summary>
 		/// <remarks>
 		/// This property is optionally set once, normally by a creator.
@@ -1137,11 +1156,11 @@ namespace FarNet
 		/// </remarks>
 		event EventHandler<PanelEventArgs> GettingData;
 		/// <summary>
-		/// Raised when a panel has been closed.
+		/// Called when a panel has been closed.
 		/// </summary>
 		event EventHandler Closed;
 		/// <summary>
-		/// Raised when a panel is about to be closed.
+		/// Called when a panel is about to be closed.
 		/// </summary>
 		/// <remarks>
 		/// Bug [_090321_165608].
@@ -1157,29 +1176,35 @@ namespace FarNet
 		/// <seealso cref="IdledHandler"/>
 		event EventHandler Idled;
 		/// <summary>
-		/// Raised on executing a command from the Far command line.
+		/// Called on executing a command from the Far command line.
 		/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
 		/// </summary>
 		event EventHandler<ExecutingEventArgs> Executing;
 		/// <summary>
-		/// Raised when Ctrl-Break is pressed.
-		/// Processing of this event is performed in separate thread,
-		/// so be careful when performing console input or output and don't use Far service functions.
+		/// Called when [CtrlBreak] is pressed.
 		/// </summary>
+		/// <remarks>
+		/// Processing is performed in a separate thread,
+		/// so be careful, use only thread safe approaches.
+		/// </remarks>
 		event EventHandler CtrlBreakPressed;
 		/// <summary>
-		/// Raised when the panel is about to redraw.
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin redraws the panel itself.
+		/// Called when the panel is about to redraw.
 		/// </summary>
+		/// <remarks>
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin redraws the panel itself.
+		/// </remarks>
 		event EventHandler<PanelEventArgs> Redrawing;
 		/// <summary>
-		/// Raised when panel view mode is changed.
+		/// Called when panel view mode is changed.
 		/// </summary>
 		event EventHandler<ViewModeChangedEventArgs> ViewModeChanged;
 		/// <summary>
-		/// Raised when a key is pressed.
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin processes the key itself.
+		/// Called when a key is pressed.
 		/// </summary>
+		/// <remarks>
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin processes the key itself.
+		/// </remarks>
 		event EventHandler<PanelKeyEventArgs> KeyPressed;
 		/// <summary>
 		/// Called to set the current directory in the file system emulated by the plugin.
@@ -1201,6 +1226,7 @@ namespace FarNet
 		/// Called to create a new panel item on [F7] hotkey.
 		/// </summary>
 		/// <remarks>
+		/// The plugin should be ready to process <see cref="OperationModes.Silent"/> flag.
 		/// Set <see cref="PanelEventArgs.Ignore"/> to true if processing fails or should be ignored.
 		/// <para>
 		/// It is assumed that this method creates a new item with the <see cref="MakingDirectoryEventArgs.Name"/> name.
@@ -1214,38 +1240,43 @@ namespace FarNet
 		/// <para>
 		/// Remember that this is not the only way of adding items, for example you can process the same [F7] key
 		/// (or any other key) in <see cref="IPluginPanel.KeyPressed"/> event, or add items by a menu command, and etc.
-		/// But in these cases you may want to set a new item current yourself, e.g. by calling <c>Post*()</c> methods.
+		/// In these cases you may want to set a new item current yourself, e.g. by calling <c>Post*()</c> methods.
+		/// </para>
+		/// <para>
+		/// Main reasons to use alternative ways of creating items:
+		/// *) an operation is started not by pressing [F7];
+		/// *) item names are not unique in a panel.
 		/// </para>
 		/// </remarks>
 		event EventHandler<MakingDirectoryEventArgs> MakingDirectory;
 		/// <summary>
-		/// A panel has got focus.
+		/// Called when the panel has got focus.
 		/// </summary>
 		event EventHandler GotFocus;
 		/// <summary>
-		/// A panel is losing focus.
+		/// Called when the panel is losing focus.
 		/// </summary>
 		event EventHandler LosingFocus;
 		/// <summary>
-		/// Raised when [Escape] is pressed and the command line is empty.
+		/// Called when [Escape] is pressed and the command line is empty.
 		/// </summary>
 		/// <remarks>
 		/// The default action for now is standard key processing.
 		/// Some advanced default action perhaps will be added in a future.
-		/// In any case a handler has to set <see cref="PanelEventArgs.Ignore"/> to stop avoid processing.
+		/// In any case a handler has to set <see cref="PanelEventArgs.Ignore"/> to stop processing.
 		/// </remarks>
 		event EventHandler<PanelEventArgs> Escaping;
 		/// <summary>
-		/// Panel data to be set current.
+		/// Posts file data to be used to find and set the current file.
 		/// </summary>
 		/// <seealso cref="DataId"/>
 		void PostData(object data);
 		/// <summary>
-		/// Panel file to be set current.
+		/// Posts a file to be found and set the current.
 		/// </summary>
 		void PostFile(FarFile file);
 		/// <summary>
-		/// Panel name to be set current.
+		/// Posts a file name to be used to find and set the current file.
 		/// </summary>
 		void PostName(string name);
 	}

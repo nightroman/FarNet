@@ -515,6 +515,7 @@ FarEdit::FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, 
 
 DEF_CONTROL_FLAG(FarEdit, Editor, DIF_EDITOR);
 DEF_CONTROL_FLAG(FarEdit, EnvExpanded, DIF_EDITEXPAND);
+DEF_CONTROL_FLAG(FarEdit, IsPath, DIF_EDITPATH);
 DEF_CONTROL_FLAG(FarEdit, ManualAddHistory, DIF_MANUALADDHISTORY);
 DEF_CONTROL_FLAG(FarEdit, NoAutoComplete, DIF_NOAUTOCOMPLETE);
 DEF_CONTROL_FLAG(FarEdit, NoFocus, DIF_NOFOCUS);
@@ -527,7 +528,7 @@ bool FarEdit::Fixed::get()
 	return _type == DI_FIXEDIT;
 }
 
-bool FarEdit::Password::get()
+bool FarEdit::IsPassword::get()
 {
 	return _type == DI_PSWEDIT;
 }

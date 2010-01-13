@@ -1618,9 +1618,9 @@ void Far::OpenConfig()
 void Far::OnConfigUICulture()
 {
 	Menu menu;
-	menu.AutoAssignHotkeys = true;
-	menu.HelpTopic = "MenuUICulture"; //???
 	menu.Title = "Module UI culture";
+	menu.HelpTopic = _helpTopic + "ConfigUICulture";
+	menu.AutoAssignHotkeys = true;
 
 	int width = 0;
 	for each(String^ assemblyName in Plugin0::AssemblyNames)
@@ -1636,17 +1636,28 @@ void Far::OnConfigUICulture()
 		if (!menu.Show())
 			return;
 
+		// get data to show
 		String^ assemblyName = Plugin0::AssemblyNames[menu.Selected];
 		String^ cultureName = Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
-		String^ cultureName2 = Far::Instance->Input("Culture name", "Culture", assemblyName, cultureName);
-		if (!cultureName2)
+
+		// show the input box
+		InputBox ib;
+		ib.Title = assemblyName;
+		ib.Prompt = "Culture name (empty = the Far culture)";
+		ib.Text = cultureName;
+		ib.History = "Culture";
+		ib.HelpTopic = menu.HelpTopic;
+		ib.EmptyEnabled = true;
+		if (!ib.Show())
 			continue;
 
+		// set the culture (even the same, to refresh)
+		cultureName = ib.Text->Trim();
 		CultureInfo^ ci;
 		try
 		{
 			// get the culture by name, it may throw
-			ci = CultureInfo::GetCultureInfo(cultureName2->Trim());
+			ci = CultureInfo::GetCultureInfo(cultureName);
 
 			// save the name from the culture, not from a user
 			Far::Instance->SetFarNetValue(assemblyName , "UICulture", ci->Name);
@@ -1674,7 +1685,7 @@ void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^
 {
 	Menu menu;
 	menu.Title = title;
-	menu.HelpTopic = option == ToolOptions::Disk ? "ConfigDisk" : "ConfigTool";
+	menu.HelpTopic = _helpTopic + (option == ToolOptions::Disk ? "ConfigDisk" : "ConfigTool");
 
 	ToolPluginInfo^ selected;
 	List<ToolPluginInfo^> sorted(list);
@@ -1707,11 +1718,11 @@ void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^
 		selected = (ToolPluginInfo^)mi->Data;
 
 		InputBox ib;
-		ib.EmptyEnabled = true;
-		ib.HelpTopic = _helpTopic + "ConfigTool";
+		ib.Title = "Original: " + selected->Name;
 		ib.Prompt = "New string (ampersand ~ hotkey)";
 		ib.Text = selected->Alias(option);
-		ib.Title = "Original: " + selected->Name;
+		ib.HelpTopic = menu.HelpTopic;
+		ib.EmptyEnabled = true;
 		if (!ib.Show())
 			continue;
 

@@ -34,6 +34,7 @@ namespace PowerShellFar.UI
 			Dialog.AddText(5, ++y, 0, "&File name");
 			Name = Dialog.AddEdit(x, y, 71, string.Empty);
 			Name.History = "NewEdit";
+			Name.IsPath = true;
 			Name.UseLastHistory = true;
 			if (filePath != null)
 				Name.Text = filePath;
