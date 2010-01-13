@@ -174,9 +174,19 @@ namespace FarNet.Forms
 		/// </summary>
 		bool Fixed { get; }
 		/// <summary>
-		/// Password edit control.
+		/// Tells that it is used for file system path input.
 		/// </summary>
-		bool Password { get; }
+		/// <remarks>
+		/// Setting this to true enables some extras, e.g. on typing: a dropdown list of matching available paths.
+		/// </remarks>
+		bool IsPath { get; set; }
+		/// <summary>
+		/// Gets true if it is used for password input.
+		/// </summary>
+		/// <remarks>
+		/// It is true if it is created by <see cref="IDialog.AddEditPassword"/>.
+		/// </remarks>
+		bool IsPassword { get; }
 		/// <summary>
 		/// History name to be used. It overrides <see cref="Mask"/> text if any.
 		/// </summary>

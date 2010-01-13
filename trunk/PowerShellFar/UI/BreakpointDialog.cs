@@ -74,6 +74,7 @@ namespace PowerShellFar.UI
 			Dialog.AddText(5, ++y, 0, "&Script");
 			Script = Dialog.AddEdit(x, y, 71, string.Empty);
 			Script.History = "PowerShellFarScript";
+			Script.IsPath = true;
 			if (script != null)
 				Script.Text = script;
 

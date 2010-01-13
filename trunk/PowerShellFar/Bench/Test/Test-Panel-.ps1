@@ -192,7 +192,7 @@ $p.add_Escaping({&{
 ### KeyPressed: shows how to process some keys
 $p.add_KeyPressed({&{
 	if (!$_.Preprocess) {
-		# case [F1]
+		# case [F1]:
 		if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
 			if (0 -eq (Show-FarMsg "[F1] has been pressed" -Choices 'Process by handler', 'Allow default action')) {
 				$_.Ignore = $true
@@ -204,13 +204,13 @@ $p.add_KeyPressed({&{
 
 ### Closing:
 <#
-Bug [_090321_165608]: how to reproduce:
+Far issue [_090321_165608]: how to reproduce:
 - set variable breakpoint:
 >: Set-PSBreakpoint -Variable DebugPanelClosing
-- open this panel and keep it active
-- invoke a trivial PowerShell command from cmdline:
+-- open this panel and keep it active
+-- invoke a trivial PowerShell command from cmdline:
 >: 1+1
-- breakpoint should be triggered because the event handler is called: this is bad!
+-- breakpoint is hit: this is bad, panel is not closing at all!
 #>
 $p.add_Closing({&{
 	$DebugPanelClosing = $true

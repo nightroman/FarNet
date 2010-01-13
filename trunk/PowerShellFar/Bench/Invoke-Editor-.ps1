@@ -15,6 +15,8 @@
 	If it fails the PowerShell is not exited, but stopped, you may work in
 	failed PowerShell session to investigate problems just in place.
 
+	*.*proj files are processed by Start-MSBuild-.ps1
+
 	If a file is .bat, .cmd, .pl, .mak, makefile, etc. then some typical action
 	is executed, mostly as demo, use your own invocation for practical tasks.
 
@@ -47,6 +49,13 @@ if ($ext -eq '.ps1') {
 "@)
 	return
 }
+
+# case MSBuild:
+if ($ext -like '.*proj') {
+	Start-MSBuild- $path
+	return
+}
+
 $arg = "`"$path`""
 
 # Cmd
