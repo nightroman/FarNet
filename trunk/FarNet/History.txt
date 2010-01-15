@@ -8,10 +8,9 @@ http://code.google.com/p/farnet/
 *) IEdit:
 -- New flag IsPath (~ Far DIF_EDITPATH).
 -- Renamed Password -> IsPassword (to be the same as in IInputBox). Technically
-this is a breaking change but hopefully you do not use this property because it
-is read only in IEdit.
+this is a breaking change but it is unlikely used (it is read only in IEdit).
 
-*) FarNet configuration: "UI culture": added [F1] help for the input box, too.
+*) FarNet configuration: "UI culture": added [F1] help for the input box.
 
 = 4.2.25 =
 
