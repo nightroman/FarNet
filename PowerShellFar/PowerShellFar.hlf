@@ -624,12 +624,13 @@ file, i.e. your changes are not lost, you can try to fix them.
 copy almost any items to an Object panel, so that an Object panel can be used
 as a collector of items for further operations.
 
-[#ShiftF5#] Copies an item or a dynamic property here with another name.
+[#ShiftF5#] Copies the current provider item, dynamic property, and etc. here
+with another name.
 
 [#F6#] Moves items or properties to another panel. You can move items to Object
 panel but it works the same as copying ([F5]).
 
-[#ShiftF6#] Renames an item or a dynamic property.
+[#ShiftF6#] Renames the current provider item, dynamic property, and etc.
 
 [#F7#] Creates a new item or a property or even a new custom object. Depending
 on a provider you may have to specify required provider item or property type
@@ -1161,7 +1162,7 @@ exits).
 output, see ~Invoking console applications~@ConsoleApplications@.
 
 
-s#OTHER NOTES#
+#OTHER NOTES#
 
 *) You can change job thread priority if it is really needed. E.g. put this
 command as the first command of a job code:

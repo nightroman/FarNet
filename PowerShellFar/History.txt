@@ -8,7 +8,7 @@ http://code.google.com/p/farnet/
 
 *) Invoke-Editor-.ps1: *.*proj files are started by Start-MSBuild-.ps1.
 
-*) Generate-Dialog-.ps1: FarNet: Password -> IsPassword.
+*) Generate-Dialog-.ps1: FarNet update: Password -> IsPassword.
 
 = 4.2.25 =
 
