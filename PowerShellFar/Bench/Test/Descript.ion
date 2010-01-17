@@ -3,7 +3,7 @@ Initialize-Test-.ps1 Initializes test environment and optional database data.
 Test-Base-.ps1 Test base features.
 Test-CallStack-.ps1 Test call stack information.
 Test-Debugger.ps1 Test debugger and breakpoints.
-Test-Descript-.ps1 Test file decription tools.
+Test-Descript-.ps1 Test Far decription tools.
 Test-Dialog+.ps1 Test unit for Test-Dialog-.ps1.
 Test-Dialog-.ps1 Test dialog controls.
 Test-Editor-.ps1 Test editor and related scripts.

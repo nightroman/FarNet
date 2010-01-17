@@ -235,6 +235,19 @@ namespace FarNet
 		/// <param name="disableOutput">Do not display processing on the screen.</param>
 		void PostKeySequence(int[] sequence, bool disableOutput);
 		/// <summary>
+		/// Posts a macro to Far.
+		/// Processing is not displayed, and keys are sent to editor plugins.
+		/// </summary>
+		/// <param name="macro">Macro text.</param>
+		void PostMacro(string macro);
+		/// <summary>
+		/// Posts a macro to Far.
+		/// </summary>
+		/// <param name="macro">Macro text.</param>
+		/// <param name="enableOutput">Enable screen output during macro playback.</param>
+		/// <param name="disablePlugins">Don't send keystrokes to editor plugins.</param>
+		void PostMacro(string macro, bool enableOutput, bool disablePlugins);
+		/// <summary>
 		/// Converts a key string representation to the internal <see cref="KeyCode"/>. Returns -1 on errors.
 		/// </summary>
 		int NameToKey(string key);
@@ -322,11 +335,13 @@ namespace FarNet
 		/// Gets the command line operator.
 		/// </summary>
 		/// <remarks>
-		/// If a plugin is called from the command line (including user menu (F2)
-		/// then command line properties and methods may not work correctly; in
-		/// this case consider to call a plugin operation from a plugin menu.
-		/// Starting from Far 1.71.2192 you can set the entire command line text
-		/// if you call a plugin from the command line (but not from a user menu).
+		/// If a plugin is called from the command line (including user menu [F2])
+		/// then command line properties and methods may not work correctly. In
+		/// this case consider to call an operation from the plugins menu [F11].
+		/// <para>
+		/// You can set the entire command line text if you call a plugin
+		/// from the command line but not from the user menu.
+		/// </para>
 		/// </remarks>
 		ILine CommandLine { get; }
 		/// <summary>
@@ -337,7 +352,6 @@ namespace FarNet
 		/// <summary>
 		/// Copies the current user screen buffer to console screen
 		/// (which is displayed when the panels are switched off).
-		/// Far 1.71.2186.
 		/// </summary>
 		void GetUserScreen();
 		/// <summary>
@@ -617,7 +631,7 @@ namespace FarNet
 		/// </summary>
 		FarMacroState MacroState { get; }
 		/// <summary>
-		/// Redraws all windows. Far 1.71.2315
+		/// Redraws all windows.
 		/// </summary>
 		/// <remarks>
 		/// Example: you open an editor (assume it is modal) from a dialog;
@@ -659,9 +673,9 @@ namespace FarNet
 		/// </remarks>
 		ILine Line { get; }
 		/// <summary>
-		/// Gets key macro operator.
+		/// Gets macro operator.
 		/// </summary>
-		IKeyMacroHost KeyMacro { get; }
+		IMacro Macro { get; }
 		/// <summary>
 		/// Returns background color of Far palette.
 		/// </summary>

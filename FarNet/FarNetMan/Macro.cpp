@@ -4,7 +4,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "KeyMacroHost.h"
+#include "Macro.h"
 #include "Far.h"
 
 namespace FarNet
@@ -23,7 +23,7 @@ static String^ GetThreeState(Object^ value1, Object^ value2)
 	return String::Empty;
 }
 
-array<String^>^ KeyMacroHost::GetNames(String^ area)
+array<String^>^ Macro::GetNames(String^ area)
 {
 	if (!area) throw gcnew ArgumentNullException("area");
 
@@ -40,7 +40,7 @@ array<String^>^ KeyMacroHost::GetNames(String^ area)
 	}
 }
 
-KeyMacroData^ KeyMacroHost::GetData(String^ area, String^ name)
+MacroData^ Macro::GetData(String^ area, String^ name)
 {
 	if (!area) throw gcnew ArgumentNullException("area");
 	if (!name) throw gcnew ArgumentNullException("name");
@@ -52,7 +52,7 @@ KeyMacroData^ KeyMacroHost::GetData(String^ area, String^ name)
 
 	try
 	{
-		KeyMacroData^ r = gcnew KeyMacroData;
+		MacroData^ r = gcnew MacroData;
 		
 		// sequence
 		Object^ value = key->GetValue("Sequence");
@@ -95,7 +95,7 @@ KeyMacroData^ KeyMacroHost::GetData(String^ area, String^ name)
 	}
 }
 
-void KeyMacroHost::Install(String^ area, String^ name, KeyMacroData^ data)
+void Macro::Install(String^ area, String^ name, MacroData^ data)
 {
 	if (!area) throw gcnew ArgumentNullException("area");
 	if (!name) throw gcnew ArgumentNullException("name");
@@ -145,7 +145,7 @@ void KeyMacroHost::Install(String^ area, String^ name, KeyMacroData^ data)
 	}
 }
 
-void KeyMacroHost::Remove(String^ area, String^ name)
+void Macro::Remove(String^ area, String^ name)
 {
 	if (!area) throw gcnew ArgumentNullException("area");
 	if (!name) throw gcnew ArgumentNullException("name");
@@ -165,7 +165,7 @@ void KeyMacroHost::Remove(String^ area, String^ name)
 	}
 }
 
-void KeyMacroHost::Load()
+void Macro::Load()
 {
 	ActlKeyMacro command;
 	command.Command = MCMD_LOADALL;
@@ -173,7 +173,7 @@ void KeyMacroHost::Load()
 		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
-void KeyMacroHost::Save()
+void Macro::Save()
 {
 	ActlKeyMacro command;
 	command.Command = MCMD_SAVEALL;
@@ -181,37 +181,14 @@ void KeyMacroHost::Save()
 		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
-void KeyMacroHost::Post(String^ macro)
-{
-	Post(macro, false, false);
-}
-
-void KeyMacroHost::Post(String^ macro, bool enableOutput, bool disablePlugins)
-{
-	if (!macro)
-		throw gcnew ArgumentNullException("macro");
-
-	PIN_NE(pin, macro);
-	ActlKeyMacro command;
-	command.Command = MCMD_POSTMACROSTRING;
-	command.Param.PlainText.SequenceText = (wchar_t*)pin;
-	command.Param.PlainText.Flags = 0;
-	if (!enableOutput)
-		command.Param.PlainText.Flags |= KSFLAGS_DISABLEOUTPUT;
-	if (disablePlugins)
-		command.Param.PlainText.Flags |= KSFLAGS_NOSENDKEYSTOPLUGINS;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
-}
-
-void KeyMacroHost::Install(array<System::Collections::IDictionary^>^ dataSet)
+void Macro::Install(array<System::Collections::IDictionary^>^ dataSet)
 {
 	Save();
 	
 	int done = 0;
 	try
 	{
-		KeyMacroData^ data = gcnew KeyMacroData;
+		MacroData^ data = gcnew MacroData;
 		String^ area;
 		String^ name;
 
@@ -221,7 +198,7 @@ void KeyMacroHost::Install(array<System::Collections::IDictionary^>^ dataSet)
 			// reset
 			if (!map)
 			{
-				data = gcnew KeyMacroData;
+				data = gcnew MacroData;
 				area = nullptr;
 				name = nullptr;
 				continue;

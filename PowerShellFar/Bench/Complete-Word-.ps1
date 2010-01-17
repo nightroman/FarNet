@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Completes the current word in the editor, command line or edit box.
+	Completes the current word in editor, command line or edit box.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -25,6 +25,7 @@
 	Complete-Word-
 #>
 
+# Autoloaded
 function global:Complete-Word-
 {
 	# get edit line
