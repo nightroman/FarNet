@@ -26,9 +26,9 @@ public:
 	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get(); }
 	virtual property IDialog^ Dialog { IDialog^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
-	virtual property IKeyMacroHost^ KeyMacro { IKeyMacroHost^ get(); }
 	virtual property ILine^ CommandLine { ILine^ get(); }
 	virtual property ILine^ Line { ILine^ get(); }
+	virtual property IMacro^ Macro { IMacro^ get(); }
 	virtual property int WindowCount { int get(); }
 	virtual property IntPtr HWnd { IntPtr get(); }
 	virtual property IPanel^ Panel { IPanel^ get(); }
@@ -91,6 +91,8 @@ public:
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(array<int>^ sequence);
 	virtual void PostKeySequence(array<int>^ sequence, bool disableOutput);
+	virtual void PostMacro(String^ macro);
+	virtual void PostMacro(String^ macro, bool enableOutput, bool disablePlugins);
 	virtual void PostStep(EventHandler^ handler);
 	virtual void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	virtual void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);

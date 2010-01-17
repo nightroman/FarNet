@@ -1,7 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.2.25</ProductVersion>
+		<ProductVersion>4.2.26</ProductVersion>
 		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>

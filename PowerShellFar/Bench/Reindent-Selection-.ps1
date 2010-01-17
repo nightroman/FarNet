@@ -18,6 +18,7 @@
 	Help: Autoloaded functions
 #>
 
+# Autoloaded function
 function global:Reindent-Selection-
 {
 	$Editor = $Psf.Editor()

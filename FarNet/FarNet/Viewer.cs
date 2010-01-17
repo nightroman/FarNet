@@ -9,32 +9,35 @@ using System.Diagnostics;
 namespace FarNet
 {
 	/// <summary>
-	/// Viewer base interface. Exposed as <see cref="IFar.AnyViewer"/>.
+	/// Any viewer operator. Exposed as <see cref="IFar.AnyViewer"/>.
 	/// </summary>
 	public interface IAnyViewer
 	{
 		/// <summary>
-		/// A file is opened in the viewer.
+		/// Called when the viewer is closed.
 		/// </summary>
 		/// <remarks>
-		/// This event can be triggered more than once for the same viewer instance,
-		/// e.g. by 'Add', 'Subtract' keys.
+		/// This event is called once for the viewer instance, even if there were several files opened in it,
+		/// e.g. on [Add], [Subtract] keys the <see cref="Opened"/> is called every time.
+		/// <para>
+		/// Don't operate on the viewer, it has really gone.
+		/// </para>
+		/// </remarks>
+		event EventHandler Closed; // [_100117_101226]
+		/// <summary>
+		/// Called when a file is opened in the viewer.
+		/// </summary>
+		/// <remarks>
+		/// This event can be called more than once for the same viewer instance,
+		/// e.g. on [Add], [Subtract] keys.
 		/// </remarks>
 		event EventHandler Opened;
 		/// <summary>
-		/// Viewer is closed. Don't operate on it, it has really gone.
-		/// </summary>
-		/// <remarks>
-		/// This event is triggered once for the viewer instance,
-		/// even if there were several files opened in it.
-		/// </remarks>
-		event EventHandler Closed;
-		/// <summary>
-		/// Viewer window has got focus. Far 1.71.2406
+		/// Called when the viewer window has got focus.
 		/// </summary>
 		event EventHandler GotFocus;
 		/// <summary>
-		/// Viewer window is losing focus. Far 1.71.2406
+		/// Called when the viewer window is losing focus.
 		/// </summary>
 		event EventHandler LosingFocus;
 		/// <summary>
@@ -44,28 +47,30 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Viewer interface. Exposed as <see cref="IFar.Viewer"/>. Created by <see cref="IFar.CreateViewer"/>.
+	/// Viewer operator. Exposed as <see cref="IFar.Viewer"/>. Created by <see cref="IFar.CreateViewer"/>.
 	/// </summary>
 	/// <remarks>
 	/// Normally this object should be created or requested, used instantly and never kept for future use.
-	/// When you need the current viewer instance next time call <see cref="IFar.Viewer"/> again to get it.
+	/// When you need the current viewer operator next time call <see cref="IFar.Viewer"/> again to get it.
 	/// </remarks>
 	public interface IViewer : IAnyViewer
 	{
 		/// <summary>
-		/// Internal ID.
+		/// Gets the internal identifier.
 		/// </summary>
 		int Id { get; }
 		/// <summary>
-		/// Option to delete a source file when the viewer is closed.
+		/// Gets or sets the option to delete the source file on exit.
 		/// </summary>
 		DeleteSource DeleteSource { get; set; }
 		/// <summary>
-		/// Switching between editor and viewer. Set it before opening.
+		/// Tells how editor\viewer switching should work on [F6].
+		/// Set it before opening.
 		/// </summary>
 		Switching Switching { get; set; }
 		/// <summary>
-		/// Do not use viewer history. Set it before opening.
+		/// Tells to not use history.
+		/// Set it before opening.
 		/// </summary>
 		bool DisableHistory { get; set; }
 		/// <summary>
@@ -74,45 +79,55 @@ namespace FarNet
 		/// </summary>
 		string FileName { get; set; }
 		/// <summary>
-		/// Code page identifier. Set it before opening.
+		/// Gets or sets the code page identifier.
 		/// </summary>
+		/// <remarks>
+		/// Before opening it sets encoding for reading a file.
+		/// After opening it only gets the current encoding.
+		/// </remarks>
 		int CodePage { get; set; }
 		/// <summary>
-		/// Window start position. Set it before opening.
+		/// Gets or sets the start window place.
+		/// Set it before opening.
 		/// </summary>
 		Place Window { get; set; }
 		/// <summary>
-		/// Current viewer window size.
+		/// Gets the current window size.
 		/// </summary>
 		Point WindowSize { get; }
 		/// <summary>
-		/// Window title. Set it before opening.
+		/// Gets or sets the window title.
+		/// Set it before opening.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
-		/// Opens the viewer using properties:
-		/// <see cref="DeleteSource"/>
-		/// <see cref="DisableHistory"/>
-		/// <see cref="Switching"/>
-		/// <see cref="FileName"/>
-		/// <see cref="Title"/>
-		/// <see cref="Window"/>
+		/// Opens the viewer.
 		/// </summary>
-		void Open(OpenMode mode);
-		/// <summary>
-		/// See <see cref="Open(OpenMode)"/> with <see cref="OpenMode.None"/>.
-		/// </summary>
+		/// <remarks>
+		/// It is the same as <see cref="Open(OpenMode)"/> with open mode <see cref="OpenMode.None"/>.
+		/// See remarks there.
+		/// </remarks>
 		void Open();
 		/// <summary>
-		/// File size.
+		/// Opens the viewer.
+		/// </summary>
+		/// <remarks>
+		/// To open a viewer you should create a viewer operator by <see cref="IFar.CreateViewer"/>,
+		/// set at least its <see cref="FileName"/> and optionally: <see cref="DeleteSource"/>,
+		/// <see cref="DisableHistory"/>, <see cref="Switching"/>, <see cref="Title"/>, and
+		/// <see cref="Window"/>. Then this method is called.
+		/// </remarks>
+		void Open(OpenMode mode);
+		/// <summary>
+		/// Gets the current file size, in symbols, not in bytes.
 		/// </summary>
 		long FileSize { get; }
 		/// <summary>
-		/// View frame.
+		/// Gets the current view frame.
 		/// </summary>
 		ViewFrame Frame { get; set; }
 		/// <summary>
-		/// Sets new viewer frame.
+		/// Sets the current view frame.
 		/// </summary>
 		/// <param name="pos">New file position (depends on options).</param>
 		/// <param name="left">New left position.</param>
@@ -128,21 +143,21 @@ namespace FarNet
 		/// </summary>
 		void Redraw();
 		/// <summary>
-		/// Sets selected block.
+		/// Selects the block in the current viewer.
 		/// </summary>
 		/// <param name="symbolStart">Selection start in charactes, not in bytes.</param>
 		/// <param name="symbolCount">Selected character count.</param>
 		void Select(long symbolStart, int symbolCount);
 		/// <summary>
-		/// Hexadecimal mode.
+		/// Gets or sets the hexadecimal mode in the current viewer (~ [F4]).
 		/// </summary>
 		bool HexMode { get; set; }
 		/// <summary>
-		/// Wrap mode. 
+		/// Gets or sets the wrap mode in the current editor (~ [F2]).
 		/// </summary>
 		bool WrapMode { get; set; }
 		/// <summary>
-		/// Word wrap mode. 
+		/// Gets or sets the word wrap mode in the current editor (~ [ShiftF2]).
 		/// </summary>
 		bool WordWrapMode { get; set; }
 	}

@@ -12,7 +12,7 @@ using FarNet.Forms;
 namespace FarNet
 {
 	/// <summary>
-	/// Editor base interface, common editor settings and tools.
+	/// Any editor operator, common editor events, options and tools.
 	/// </summary>
 	/// <remarks>
 	/// Exposed as:
@@ -23,17 +23,17 @@ namespace FarNet
 	public interface IAnyEditor
 	{
 		/// <summary>
-		/// Called when an editor is opened.
+		/// Called when the editor is closed.
+		/// </summary>
+		event EventHandler Closed;
+		/// <summary>
+		/// Called when the editor is opened.
 		/// </summary>
 		event EventHandler Opened;
 		/// <summary>
 		/// Called before saving.
 		/// </summary>
 		event EventHandler Saving;
-		/// <summary>
-		/// Called when an editor is closed.
-		/// </summary>
-		event EventHandler Closed;
 		/// <summary>
 		/// Called on redrawing.
 		/// </summary>
@@ -47,11 +47,11 @@ namespace FarNet
 		/// </summary>
 		event EventHandler<MouseEventArgs> OnMouse;
 		/// <summary>
-		/// Called when an editor has got focus.
+		/// Called when the editor has got focus.
 		/// </summary>
 		event EventHandler GotFocus;
 		/// <summary>
-		/// Called when an editor is losing focus.
+		/// Called when the editor is losing focus.
 		/// </summary>
 		event EventHandler LosingFocus;
 		/// <summary>
@@ -71,22 +71,21 @@ namespace FarNet
 		/// Gets or sets editor word delimiters.
 		/// </summary>
 		/// <remarks>
-		/// It is read only for <see cref="IFar.AnyEditor"/>.
-		/// You may get and set it only for an opened editor instance <see cref="IFar.Editor"/>.
+		/// For <see cref="IFar.AnyEditor"/> operator it is read only and depends on Far editor options.
+		/// For the current editor <see cref="IFar.Editor"/> operator it is read and write.
 		/// </remarks>
-		string WordDiv { get; set; } //! term 'WordDiv' kind of standard: used by Far and Colorer
+		string WordDiv { get; set; } //! Name 'WordDiv' is kind of standard, e.g. it is used by Far and Colorer.
 	}
 
 	/// <summary>
-	/// Editor instance interface. Exposed as <see cref="IFar.Editor"/>. Created by <see cref="IFar.CreateEditor"/>.
+	/// Editor operator. Exposed as <see cref="IFar.Editor"/>. Created by <see cref="IFar.CreateEditor"/>.
 	/// </summary>
 	/// <remarks>
 	/// Normally this object should be created or requested, used instantly and never kept for future use.
-	/// When you need the current editor instance next time call <see cref="IFar.Editor"/> again to get it.
+	/// When you need the current editor operator next time call <see cref="IFar.Editor"/> again to get it.
 	/// <para>
-	/// In fact all dynamic members operate on the current editor, not the editor associated with the instance.
-	/// Thus, if you use an instance that is not current then results may be unexpected. For performance sake
-	/// we do not check that you use the current instance.
+	/// In fact all dynamic members operate on the current editor, not on the editor associated with the instance.
+	/// Thus, if you use an operator of not current editor then results may be unexpected.
 	/// </para>
 	/// </remarks>
 	public interface IEditor : IAnyEditor
@@ -96,36 +95,33 @@ namespace FarNet
 		/// </summary>
 		int Id { get; }
 		/// <summary>
-		/// Gets or sets tab size in spaces.
-		/// Editor must be current.
+		/// Gets or sets tab size in spaces in the current editor.
 		/// </summary>
 		int TabSize { get; set; }
 		/// <summary>
-		/// Gets or sets expand tabs mode.
-		/// Editor must be current.
+		/// Gets or sets expand tabs mode in the current editor.
 		/// </summary>
 		ExpandTabsMode ExpandTabs { get; set; }
 		/// <summary>
-		/// Gets or sets an option to delete the source file on exit.
+		/// Gets or sets the option to delete the source file on exit.
 		/// </summary>
 		DeleteSource DeleteSource { get; set; }
 		/// <summary>
-		/// Gets or sets switching between editor and viewer.
+		/// Tells how editor\viewer switching should work on [F6].
 		/// Set it before opening.
 		/// </summary>
 		Switching Switching { get; set; }
 		/// <summary>
-		/// Tells to not use editor history.
+		/// Tells to not use history.
 		/// Set it before opening.
 		/// </summary>
 		bool DisableHistory { get; set; }
 		/// <summary>
-		/// Gets the dynamic current line.
-		/// Editor must be current.
+		/// Gets the current line operator.
 		/// </summary>
 		/// <remarks>
 		/// The returned object refers to the current line dynamically, it is not a copy;
-		/// when cursor moves to another line this object refers to this new current line.
+		/// when cursor moves to another line the operator works on the new current line.
 		/// </remarks>
 		ILine CurrentLine { get; }
 		/// <summary>
@@ -163,7 +159,7 @@ namespace FarNet
 		/// </remarks>
 		int CodePage { get; set; }
 		/// <summary>
-		/// Gets and sets the editor start window.
+		/// Gets or sets the start window place.
 		/// Set it before opening.
 		/// </summary>
 		Place Window { get; set; }
@@ -233,24 +229,20 @@ namespace FarNet
 		/// </summary>
 		void DeleteLine();
 		/// <summary>
-		/// Closes the editor.
-		/// Editor must be current.
+		/// Closes the current editor.
 		/// </summary>
 		void Close();
 		/// <summary>
-		/// Saves the file being edited. Exception on failure.
-		/// Editor must be current.
+		/// Saves the file in the current editor. Exception on failure.
 		/// </summary>
 		void Save();
 		/// <summary>
-		/// Saves the file being edited to <paramref name="fileName"/>. Exception on failure.
-		/// Editor must be current.
+		/// Saves the file in the current editor as the specified file. Exception on failure.
 		/// </summary>
 		/// <param name="fileName">File name to save to.</param>
 		void Save(string fileName);
 		/// <summary>
 		/// Inserts a new line at the current <see cref="Cursor"/> position.
-		/// Editor must be current.
 		/// </summary>
 		/// <remarks>
 		/// After insertion the cursor is moved to the first position in the inserted line.
@@ -271,7 +263,7 @@ namespace FarNet
 		/// </summary>
 		bool IsOpened { get; }
 		/// <summary>
-		/// Gets or sets the editor window title. Set it before opening (standard title) or after opening (temporary title).
+		/// Gets or sets the window title. Set it before opening (standard title) or after opening (temporary title).
 		/// </summary>
 		/// <remarks>
 		/// When the editor is opened the standard title will be automatically restored after the plugin call is over.
@@ -424,25 +416,28 @@ namespace FarNet
 		/// <param name="text">New text.</param>
 		void SetText(string text);
 		/// <summary>
-		/// Opens the editor using predefined properties, for example:
-		/// <see cref="DeleteSource"/>
-		/// <see cref="DisableHistory"/>
-		/// <see cref="Switching"/>
-		/// <see cref="FileName"/>
-		/// <see cref="IsNew"/>
-		/// <see cref="Title"/>
-		/// <see cref="Window"/>
+		/// Opens the editor.
 		/// </summary>
 		/// <remarks>
-		/// If the file is already opened in an editor and you select the existing editor window then
-		/// this editor object should not be used after opening because technically it is not opened.
-		/// The safe way is to request the current editor and continue work with it.
+		/// It is the same as <see cref="Open(OpenMode)"/> with open mode <see cref="OpenMode.None"/>.
+		/// See remarks there.
+		/// </remarks>
+		void Open();
+		/// <summary>
+		/// Opens the editor.
+		/// </summary>
+		/// <remarks>
+		/// To open an editor you should create an editor operator by <see cref="IFar.CreateEditor"/>,
+		/// set at least its <see cref="FileName"/> and optionally: <see cref="DeleteSource"/>,
+		/// <see cref="DisableHistory"/>, <see cref="Switching"/>, <see cref="IsNew"/>,
+		/// <see cref="Title"/>, and <see cref="Window"/>. Then this method is called.
+		/// <para>
+		/// If the file is already opened in an editor then this instance should not be used after opening
+		/// because technically an editor was not opened but reused. The safe way is to get the current
+		/// <see cref="IFar.Editor"/> after opening and work with it.
+		/// </para>
 		/// </remarks>
 		void Open(OpenMode mode);
-		/// <summary>
-		/// See <see cref="Open(OpenMode)"/> with <see cref="OpenMode.None"/> and remarks.
-		/// </summary>
-		void Open();
 		/// <summary>
 		/// Begins an undo block.
 		/// </summary>

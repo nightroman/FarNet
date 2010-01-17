@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.2.25#
+#PowerShellFar 4.2.26#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -76,8 +76,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1333
- - Plugin FarNet 4.2.25
+ - Far Manager 2.0.1344
+ - Plugin FarNet 4.2.26
  - Windows PowerShell 2.0
 
 
@@ -1931,13 +1931,13 @@ A: There are at least two options, both using macros
 example [Space] is expanded into '>: '. Space after the prefix is recommended
 for normal TabExpansion of the first word:
 
- >: $Far.KeyMacro.Install(@@{Area='Shell'; Name='Space'; Sequence="> : Space"; CommandLine='0'; Description='Easy prefix'})
+ >: $Far.Macro.Install(@@{Area='Shell'; Name='Space'; Sequence="> : Space"; CommandLine='0'; Description='Easy prefix'})
 
 2) Easy invoke: type and run without prefix using a macro associated with
 "Invoke selected code" menu command. In this example assume PowerShellFar
 hotkey in the Far plugin menu is "1" and [ShiftSpace] is the macro key:
 
- >: $Far.KeyMacro.Install(@@{Area='Shell'; Name='ShiftSpace'; Sequence='F11 1 2'; CommandLine='1'; Description='Easy invoke'})
+ >: $Far.Macro.Install(@@{Area='Shell'; Name='ShiftSpace'; Sequence='F11 1 2'; CommandLine='1'; Description='Easy invoke'})
 
 Now you can type PowerShell commands without the prefix and press [ShiftSpace]
 (or whatever you use) to execute it. There is a bonus: if a command fails, say,

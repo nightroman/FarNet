@@ -8,8 +8,8 @@ Copyright (c) 2005 FarNet Team
 #include "Dialog.h"
 #include "Editor0.h"
 #include "InputBox.h"
-#include "KeyMacroHost.h"
 #include "ListMenu.h"
+#include "Macro.h"
 #include "Menu.h"
 #include "Message.h"
 #include "Panel0.h"
@@ -589,9 +589,9 @@ void Far::RestoreScreen(int screen)
 	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
 }
 
-IKeyMacroHost^ Far::KeyMacro::get()
+IMacro^ Far::Macro::get()
 {
-	return %KeyMacroHost::_instance;
+	return gcnew FarNet::Macro();
 }
 
 ILine^ Far::Line::get()
@@ -1464,6 +1464,12 @@ void Far::ShowPanelMenu(bool showPushCommand)
 		// Close panel:
 		if ((Object^)item->Text == (Object^)sClose)
 		{
+			Panel1^ panel = (Panel1^)data;
+			
+			//?? native plugin panel: go to [0] to work around "Far does not restore panel state"
+			if (nullptr == dynamic_cast<FarNet::Panel2^>(panel))
+				panel->Redraw(0, 0);
+			
 			((Panel1^)data)->Close();
 			return;
 		}
@@ -2071,6 +2077,29 @@ CultureInfo^ Far::GetCurrentUICulture(bool update)
 
 	// fallback
 	return _currentUICulture = CultureInfo::InvariantCulture;
+}
+
+void Far::PostMacro(String^ macro)
+{
+	PostMacro(macro, false, false);
+}
+
+void Far::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
+{
+	if (!macro)
+		throw gcnew ArgumentNullException("macro");
+
+	PIN_NE(pin, macro);
+	ActlKeyMacro command;
+	command.Command = MCMD_POSTMACROSTRING;
+	command.Param.PlainText.SequenceText = (wchar_t*)pin;
+	command.Param.PlainText.Flags = 0;
+	if (!enableOutput)
+		command.Param.PlainText.Flags |= KSFLAGS_DISABLEOUTPUT;
+	if (disablePlugins)
+		command.Param.PlainText.Flags |= KSFLAGS_NOSENDKEYSTOPLUGINS;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
 }

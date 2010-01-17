@@ -969,13 +969,12 @@ namespace FarNet
 	/// </summary>
 	public class MakingDirectoryEventArgs : PanelEventArgs
 	{
-		string _name;
 		/// <param name="name">New item name.</param>
 		/// <param name="mode">Combination of the operation mode flags.</param>
 		public MakingDirectoryEventArgs(string name, OperationModes mode)
 			: base(mode)
 		{
-			_name = name;
+			Name = name;
 		}
 		/// <summary>
 		/// Gets or sets a new item name.

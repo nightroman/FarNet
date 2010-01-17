@@ -2,6 +2,13 @@ http://code.google.com/p/farnet/
 
 = 4.2.26 =
 
+*) Minor fix in MakingDirectoryEventArgs.
+
+*) Work around "Far does not restore panel state" on menu action .NET \ Close
+panel: let's set the top item current before closing.
+
+NEW FEATURES
+
 *) IInputBox:
 -- New flag IsPath (~ Far FIB_EDITPATH).
 
@@ -11,6 +18,15 @@ http://code.google.com/p/farnet/
 this is a breaking change but it is unlikely used (it is read only in IEdit).
 
 *) FarNet configuration: "UI culture": added [F1] help for the input box.
+
+REFACTORING OF MACROS
+(breaking changes for plugins using macros)
+
+-- Renamed interface IKeyMacroHost to IMacro
+-- Its methods Post() moved to IFar as PostMacro()
+-- Renamed property IFar KeyMacro to Macro
+-- Renamed class KeyMacroData to MacroData
+-- Internal: the macro operator is created only when requested.
 
 = 4.2.25 =
 
