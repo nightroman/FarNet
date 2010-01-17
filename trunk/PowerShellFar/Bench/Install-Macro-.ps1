@@ -29,7 +29,7 @@ param
 
 # Note: it is recommended to install all macros by one call of Install(). This
 # protects you from unintended installation of the same macro twice by mistake.
-$Far.KeyMacro.Install(@(
+$Far.Macro.Install(@(
 
 	### Common (all areas)
 	@{ Area = 'Common' }

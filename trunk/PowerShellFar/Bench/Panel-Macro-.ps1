@@ -91,7 +91,7 @@ $global:MacroAreas = @{
 
 ### Registry panel configured for macros
 if ($wi.Type -eq 'Panels' -and !$Name -and !$Path) {
-	$Far.KeyMacro.Save()
+	$Far.Macro.Save()
 	if (!(Test-Path "KeyMacros:\")) {
 		$null = New-PSDrive KeyMacros -PSProvider Registry -Root "HKCU:\$($Far.RootFar)\KeyMacros" -Scope Global
 	}
@@ -115,7 +115,7 @@ if ($wi.Type -eq 'Panels' -and !$Name -and !$Path) {
 		}
 	})
 	$p.add_ItemsChanged({&{
-		$Far.KeyMacro.Load()
+		$Far.Macro.Load()
 	}})
 
 	Start-FarPanel $p
@@ -159,8 +159,8 @@ if (!(Test-Path $areaPath)) {
 }
 
 # ready; save current macros, get data
-$Far.KeyMacro.Save()
-$macro = $Far.KeyMacro.GetData($Area, $Name)
+$Far.Macro.Save()
+$macro = $Far.Macro.GetData($Area, $Name)
 if (!$macro) {
 	$macro = New-Object FarNet.KeyMacroData
 }
@@ -170,8 +170,8 @@ if ($Editor -or $wi.Type -ne 'Panels') {
 	$s2 = $Far.AnyEditor.EditText($macro.Sequence, "$Area $Name").TrimEnd()
 	if ($s2 -ne $macro.Sequence) {
 		$macro.Sequence = $s2
-		$Far.KeyMacro.Install($Area, $Name, $macro)
-		$Far.KeyMacro.Load()
+		$Far.Macro.Install($Area, $Name, $macro)
+		$Far.Macro.Load()
 	}
 	return
 }
@@ -183,8 +183,8 @@ $p.Static = $true
 
 ### Saves changes
 $p.SetSave({
-	$Far.KeyMacro.Install($this.Data.Area, $this.Data.Name, $this.Value)
-	$Far.KeyMacro.Load()
+	$Far.Macro.Install($this.Data.Area, $this.Data.Name, $this.Value)
+	$Far.Macro.Load()
 	$this.Modified = $false
 	[console]::Title = 'Saved'
 })

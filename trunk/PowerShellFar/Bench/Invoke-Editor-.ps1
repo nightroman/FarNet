@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Invokes a file from the current editor
+	Invokes a file from the current editor.
 	Author: Roman Kuzmin
 
 .DESCRIPTION

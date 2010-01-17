@@ -391,8 +391,8 @@ $mapViewer = @{ ### VIEWER MAP
 function GetMacroMap($Area)
 {
 	$map = @{}
-	foreach($name in $Far.KeyMacro.GetNames($Area)) {
-		$data = $Far.KeyMacro.GetData($Area, $name)
+	foreach($name in $Far.Macro.GetNames($Area)) {
+		$data = $Far.Macro.GetData($Area, $name)
 		$desc = $data.Description
 		if (!$desc.Trim()) {
 			$desc = '({0})' -f $data.Sequence

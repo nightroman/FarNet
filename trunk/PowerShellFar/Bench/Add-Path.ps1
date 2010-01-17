@@ -6,8 +6,7 @@
 
 .DESCRIPTION
 	It is a standard PowerShell script for any host. But in the first place it
-	was designed for use in Far Manager to add the active panel path to the
-	current process paths, see the example.
+	was designed for use in Far Manager to add the active panel path to paths.
 
 .EXAMPLE
 	# Far user menu command to add the active path
