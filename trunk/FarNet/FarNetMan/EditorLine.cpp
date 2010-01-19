@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "EditorLine.h"
-#include "Utils.h"
 #include "EditorLineSelection.h"
 #include "Wrappers.h"
 
@@ -25,6 +24,11 @@ ILineSelection^ EditorLine::Selection::get()
 }
 //!! DON'T use _selection after this point
 #define _selection _selection__use_property
+
+FarNet::WindowType EditorLine::WindowType::get()
+{
+	return FarNet::WindowType::Editor;
+}
 
 ILine^ EditorLine::FullLine::get()
 {

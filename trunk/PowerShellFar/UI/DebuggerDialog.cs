@@ -24,7 +24,6 @@ namespace PowerShellFar.UI
 		IButton _Out;
 		IButton _Console;
 		IButton _Goto;
-		IButton _Stack;
 
 		public DebuggerDialog(DebuggerStopEventArgs e)
 		{
@@ -98,9 +97,8 @@ namespace PowerShellFar.UI
 			_Out = _Dialog.AddButton(0, 0, "&Out");
 			_Console = _Dialog.AddButton(0, 0, "Conso&le..");
 			_Goto = _Dialog.AddButton(0, 0, "&Goto..");
-			_Stack = _Dialog.AddButton(0, 0, "Stac&k..");
-			_Step.CenterGroup = _Over.CenterGroup = _Out.CenterGroup = _Console.CenterGroup = _Goto.CenterGroup = _Stack.CenterGroup = true;
-			_Console.NoBrackets = _Goto.NoBrackets = _Stack.NoBrackets = true;
+			_Step.CenterGroup = _Over.CenterGroup = _Out.CenterGroup = _Console.CenterGroup = _Goto.CenterGroup = true;
+			_Console.NoBrackets = _Goto.NoBrackets = true;
 
 			_Dialog.Initialized += OnInitialized;
 		}
@@ -165,12 +163,6 @@ namespace PowerShellFar.UI
 							editor.Open(OpenMode.Modal);
 						}
 					}
-					continue;
-				}
-
-				if (_Dialog.Selected == _Stack)
-				{
-					A.Psf.ShowCallStack();
 					continue;
 				}
 			}

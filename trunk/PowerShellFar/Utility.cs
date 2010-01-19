@@ -305,7 +305,10 @@ namespace My
 				fileName.EndsWith(".psd1", StringComparison.OrdinalIgnoreCase);
 		}
 
-		public static bool IsPath(string name)
+		/// <summary>
+		/// Does a string looks like a file system path?
+		/// </summary>
+		public static bool IsFSPath(string name)
 		{
 			return name.StartsWith("\\\\", StringComparison.Ordinal) || (name.Length > 3 && name[1] == ':');
 		}

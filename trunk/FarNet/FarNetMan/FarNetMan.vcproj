@@ -476,6 +476,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Line.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ListItemCollection.cpp"
 				>
 			</File>
@@ -675,6 +679,10 @@
 			</File>
 			<File
 				RelativePath=".\InputBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Line.h"
 				>
 			</File>
 			<File

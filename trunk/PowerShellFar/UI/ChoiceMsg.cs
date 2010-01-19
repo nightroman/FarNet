@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System.Collections.ObjectModel;
+using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Text;
 using FarNet;
@@ -15,7 +16,7 @@ namespace PowerShellFar.UI
 		static void ShowHelp(Collection<ChoiceDescription> choices)
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("Escape - Show the last error and the call stack.");
+			sb.AppendLine("Escape - more options, e.g. to halt the command.");
 			foreach (ChoiceDescription choice in choices)
 			{
 				int a = choice.Label.IndexOf('&');
@@ -46,15 +47,21 @@ namespace PowerShellFar.UI
 			for (; ; )
 			{
 				int answer = A.Far.Msg(message, caption, MsgOptions.LeftAligned, buttons);
+
+				// [Esc]:
 				if (answer < 0)
 				{
-					A.Psf.ShowCallStack();
+					answer = A.Far.Msg(message, caption, MsgOptions.LeftAligned, new string[] { "&Halt command", "Cancel" });
+					if (answer == 0)
+						throw new PipelineStoppedException();
 					continue;
 				}
 
+				// choise:
 				if (answer < choices.Count)
 					return answer;
 
+				// help:
 				ShowHelp(choices);
 			}
 		}

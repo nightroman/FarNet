@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/
 
+= 4.2.27 =
+
+*) Tweaks in docs and code.
+
 = 4.2.26 =
 
 *) Minor fix in MakingDirectoryEventArgs.

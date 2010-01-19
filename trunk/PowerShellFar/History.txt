@@ -1,6 +1,29 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.27 =
+
+*) Fixed unexpected effects with IsPath = true in some dialogs (4.2.26).
+
+*) At last implemented [Halt command] in core "prompt for choice" dialogs:
+-- Console host: [CtrlC] halts the command;
+-- ISE host: [Esc] halts the command;
+-- Far host: for compartibility with other hosts: [Esc] opens a dialog with
+extra options: [Halt command], [Cancel]. Example: press [Esc] after this:
+>: Remove-Variable Host -Confirm
+
+*) Removed $Psf.ShowCallStack() and calls of it. Why?
+1) In PS V2 there is a built-in cmdlet Get-PSCallStack.
+2) $Psf.ShowCallStack() is not found very useful but may have issues.
+3) It is a wrapper of a script, you can use the original script instead:
+http://code.google.com/p/farnet/source/browse/tags/4.2.26/
+PowerShellFar/Resources/Show-CallStack.ps1
+
+*) Test-CallStack-.ps1: it tells how to use the built-in cmdlet Get-PSCallStack
+instead of the removed $Psf.ShowCallStack().
+
+*) Menu-Favorites-.ps1: fix: [BS] did not work in empty submenus.
+
 = 4.2.26 =
 
 *) ETS (Extended Type System): in addition to FarDescription property: added

@@ -15,10 +15,10 @@ namespace PowerShellFar.UI
 {
 	class ExportDialog
 	{
-		IDialog Dialog;
-		IEdit Name;
-		IComboBox Encoding;
-		IEdit Depth;
+		IDialog UIDialog;
+		IEdit UIFile;
+		IComboBox UIEncoding;
+		IEdit UIDepth;
 
 		ExportDialog(string title, string filePath, bool useDepth)
 		{
@@ -26,44 +26,44 @@ namespace PowerShellFar.UI
 			if (useDepth)
 				++h;
 
-			Dialog = A.Far.CreateDialog(-1, -1, 77, h);
-			Dialog.AddBox(3, 1, 0, 0, title);
+			UIDialog = A.Far.CreateDialog(-1, -1, 77, h);
+			UIDialog.AddBox(3, 1, 0, 0, title);
 			const int x = 16;
 			int y = 1;
 
-			Dialog.AddText(5, ++y, 0, "&File name");
-			Name = Dialog.AddEdit(x, y, 71, string.Empty);
-			Name.History = "NewEdit";
-			Name.IsPath = true;
-			Name.UseLastHistory = true;
+			UIDialog.AddText(5, ++y, 0, "&File name");
+			UIFile = UIDialog.AddEdit(x, y, 71, string.Empty);
+			UIFile.History = "NewEdit";
+			UIFile.IsPath = true;
+			UIFile.UseLastHistory = true;
 			if (filePath != null)
-				Name.Text = filePath;
+				UIFile.Text = filePath;
 
-			Dialog.AddText(5, ++y, 0, "&Encoding");
-			Encoding = Dialog.AddComboBox(x, y, 71, string.Empty);
-			Encoding.DropDownList = true;
-			Encoding.Text = "Unicode";
-			Encoding.Add("Default");
-			Encoding.Add("Unicode");
-			Encoding.Add("UTF8");
-			Encoding.Add("BigEndianUnicode");
-			Encoding.Add("ASCII");
-			Encoding.Add("UTF7");
-			Encoding.Add("UTF32");
-			Encoding.Add("OEM");
+			UIDialog.AddText(5, ++y, 0, "&Encoding");
+			UIEncoding = UIDialog.AddComboBox(x, y, 71, string.Empty);
+			UIEncoding.DropDownList = true;
+			UIEncoding.Text = "Unicode";
+			UIEncoding.Add("Default");
+			UIEncoding.Add("Unicode");
+			UIEncoding.Add("UTF8");
+			UIEncoding.Add("BigEndianUnicode");
+			UIEncoding.Add("ASCII");
+			UIEncoding.Add("UTF7");
+			UIEncoding.Add("UTF32");
+			UIEncoding.Add("OEM");
 
 			if (useDepth)
 			{
-				Dialog.AddText(5, ++y, 0, "&Depth");
-				Depth = Dialog.AddEdit(x, y, 71, string.Empty);
+				UIDialog.AddText(5, ++y, 0, "&Depth");
+				UIDepth = UIDialog.AddEdit(x, y, 71, string.Empty);
 			}
 
-			Dialog.AddText(5, ++y, 0, string.Empty).Separator = 1;
+			UIDialog.AddText(5, ++y, 0, string.Empty).Separator = 1;
 
-			IButton buttonOK = Dialog.AddButton(0, ++y, "Ok");
+			IButton buttonOK = UIDialog.AddButton(0, ++y, "Ok");
 			buttonOK.CenterGroup = true;
 
-			IButton buttonCancel = Dialog.AddButton(0, y, Res.Cancel);
+			IButton buttonCancel = UIDialog.AddButton(0, y, Res.Cancel);
 			buttonCancel.CenterGroup = true;
 		}
 
@@ -72,29 +72,29 @@ namespace PowerShellFar.UI
 			ExportDialog ui = new ExportDialog("Export-Clixml", null, true);
 			for (; ; )
 			{
-				if (!ui.Dialog.Show())
+				if (!ui.UIDialog.Show())
 					return;
-				if (ui.Depth.Text.Length != 0)
+				if (ui.UIDepth.Text.Length != 0)
 				{
 					int r;
-					if (!int.TryParse(ui.Depth.Text, out r) || r <= 0)
+					if (!int.TryParse(ui.UIDepth.Text, out r) || r <= 0)
 					{
 						A.Msg("Invalid depth value");
-						ui.Dialog.Focused = ui.Depth;
+						ui.UIDialog.Focused = ui.UIDepth;
 						continue;
 					}
 				}
 				break;
 			}
-			string ext = Path.GetExtension(ui.Name.Text);
+			string ext = Path.GetExtension(ui.UIFile.Text);
 			if (ext.Length == 0)
-				ui.Name.Text += ".clixml";
+				ui.UIFile.Text += ".clixml";
 
 			try
 			{
 				using (PowerShell p = A.Psf.CreatePipeline())
 				{
-					string filePath = ui.Name.Text;
+					string filePath = ui.UIFile.Text;
 					if (!string.IsNullOrEmpty(directory) && filePath.IndexOfAny(new char[] { '\\', '/', ':' }) < 0)
 						filePath = My.PathEx.Combine(directory, filePath);
 					if (File.Exists(filePath))
@@ -105,9 +105,9 @@ namespace PowerShellFar.UI
 
 					Command c = new Command("Export-Clixml");
 					c.Parameters.Add("Path", filePath);
-					c.Parameters.Add("Encoding", ui.Encoding.Text);
-					if (ui.Depth.Text.Length > 0)
-						c.Parameters.Add("Depth", int.Parse(ui.Depth.Text, CultureInfo.InstalledUICulture));
+					c.Parameters.Add("Encoding", ui.UIEncoding.Text);
+					if (ui.UIDepth.Text.Length > 0)
+						c.Parameters.Add("Depth", int.Parse(ui.UIDepth.Text, CultureInfo.InstalledUICulture));
 					c.Parameters.Add(Prm.Force);
 					c.Parameters.Add(Prm.EAStop);
 					p.Commands.AddCommand(c);

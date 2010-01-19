@@ -17,8 +17,8 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param
 (
-	# New name. Can be [string] or [scriptblock] based on the $_ = FileSystemInfo.
-	$Name
+	# New name. Can be [string] or [scriptblock] with $_ = FileSystemInfo.
+	$Name = $(throw "Parameter -Name is missed.")
 )
 
 ### test the current file and get its FileSystemInfo item, ignore all others
