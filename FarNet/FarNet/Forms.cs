@@ -466,74 +466,83 @@ namespace FarNet.Forms
 	public interface IDialog
 	{
 		/// <summary>
-		/// Event is sent after all dialog items are initialized, but before they are displayed.
+		/// Called when all dialog items are initialized and about to be shown.
 		/// </summary>
 		event EventHandler<InitializedEventArgs> Initialized;
 		/// <summary>
-		/// Event is sent as a notification before the dialog is closed - the user wants to close the dialog.
+		/// Called when the dialog is about to be closed (normally a user closes it).
 		/// </summary>
 		/// <remarks>
 		/// This event can be used for example for input data validation before the dialog is closed.
 		/// If event argument <see cref="AnyEventArgs.Control"/> is null then the dialog is about to
-		/// be closed by [Esc] or [F10]; in this case you should not stop closing unless this is really needed.
+		/// be closed by [Esc] or [F10]; in this case normally you should not stop closing.
 		/// Otherwise you may check validity of input data.
 		/// If a user mistake is found you may show a message box (<see cref="IFar.Msg(string)"/>),
-		/// set focus to the culprit control (dialog <see cref="Focused"/>) and finally set
+		/// set focus to the control with a mistake (<see cref="Focused"/>) and finally set
 		/// event argument <see cref="ClosingEventArgs.Ignore"/> to keep the dialog running,
 		/// so that a user may correct the input or cancel the dialog.
+		/// <para>
+		/// It is not recommended to change control states during this event.
+		/// Doing so may trigger actions that may be unexpected on closing.
+		/// </para>
 		/// </remarks>
 		event EventHandler<ClosingEventArgs> Closing;
 		/// <summary>
-		/// Event is triggered periodically when a user is idle.
+		/// Called periodically when a user is idle.
 		/// </summary>
 		/// <seealso cref="IdledHandler"/>
 		event EventHandler Idled;
 		/// <summary>
-		/// Event is sent when when the mouse clicks outside the dialog or if a control does not process the click.
+		/// Called on mouse clicks outside of the dialog and on not handled clicks on the controls.
 		/// </summary>
 		/// <remarks>
 		/// Coordinates are absolute screen coordinates.
 		/// </remarks>
 		event EventHandler<MouseClickedEventArgs> MouseClicked;
 		/// <summary>
-		/// Event is sent when a key is pressed in the dialog and a control does not process the key.
+		/// Called when a key is pressed in the dialog and the active control does not handle the key.
 		/// </summary>
 		event EventHandler<KeyPressedEventArgs> KeyPressed;
 		/// <summary>
-		/// Event is sent when the console window size has changed, e.g. when [AltF9] is pressed.
+		/// Called when the console window size has changed, e.g. on [AltF9].
 		/// </summary>
 		event EventHandler<SizeEventArgs> ConsoleSizeChanged;
 		/// <summary>
-		/// "Default control" which is selected on [Enter] if the focus is not set on a button.
+		/// Gets or sets the "default control" which gets selected on [Enter] if the focus is not on a button.
 		/// </summary>
 		IControl Default { get; set; }
 		/// <summary>
-		/// Control which has focus.
+		/// Gets or sets the control which has focus.
 		/// </summary>
 		IControl Focused { get; set; }
 		/// <summary>
-		/// Selected dialog item.
+		/// Gets the selected dialog control.
 		/// </summary>
+		/// <remarks>
+		/// Normally it is a closing button or the <see cref="Default"/> control.
+		/// </remarks>
 		IControl Selected { get; }
 		/// <summary>
-		/// Sets "Warning" color scheme for the dialog.
+		/// Tells to use "Warning" dialog color scheme.
 		/// </summary>
 		bool IsWarning { get; set; }
 		/// <summary>
-		/// Allows to create dialogs with reduced border size:
-		/// for separators there is no space between dialog border and dialog double box.
+		/// Tells to create the dialog with reduced border size.
 		/// </summary>
+		/// <remarks>
+		/// In "small" dialogs there is no space between the border and the double box.
+		/// </remarks>
 		bool IsSmall { get; set; }
 		/// <summary>
-		/// Don't draw shadow under the dialog.
+		/// Tells to create the dialog with no shadow.
 		/// </summary>
 		bool NoShadow { get; set; }
 		/// <summary>
-		/// Don't draw dialog panel.
+		/// Tells to create the dialog with no panel shown.
 		/// </summary>
 		bool NoPanel { get; set; }
 		/// <summary>
-		/// Disable smart coordinates.
+		/// Tells to disable use of smart coordinates.
 		/// </summary>
 		/// <remarks>
 		/// Smart coordinates mode: not positive <c>Top</c> is subtracted from the previous control <c>Top</c>:
@@ -544,15 +553,15 @@ namespace FarNet.Forms
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
-		/// Any user data.
+		/// Gets or sets any user data.
 		/// </summary>
 		object Data { get; set; }
 		/// <summary>
-		/// Dialog rectangular.
+		/// Gets or sets the dialog window rectangular.
 		/// </summary>
 		Place Rect { get; set; }
 		/// <summary>
-		/// Dialog type ID.
+		/// Gets or sets the dialog type ID.
 		/// </summary>
 		/// <remarks>
 		/// It is normally set by the dialog creator.
@@ -560,13 +569,16 @@ namespace FarNet.Forms
 		/// </remarks>
 		Guid TypeId { get; set; }
 		/// <summary>
-		/// returns false as if a user cancels the dialog.
+		/// Gets or sets the "Cancel" button.
 		/// </summary>
+		/// <remarks>
+		/// If this button is clicked then <see cref="Show"/> returns false.
+		/// </remarks>
 		IButton Cancel { get; set; }
 		/// <summary>
-		/// Shows a dialog.
+		/// Shows the dialog.
 		/// </summary>
-		/// <returns>false if the user cancelled the dialog or clicked the button<see cref="Cancel"/>.</returns>
+		/// <returns>false if the user cancelled the dialog or clicked the <see cref="Cancel"/> button.</returns>
 		bool Show();
 		/// <summary>
 		/// Adds a double or single box control. See <see cref="NoSmartCoords"/>.
@@ -647,13 +659,13 @@ namespace FarNet.Forms
 		/// </summary>
 		void Close();
 		/// <summary>
-		/// Gets a control.
+		/// Gets a control by the ID (index).
 		/// </summary>
 		/// <param name="id">Control ID (index).</param>
 		/// <returns>Requested control or null if ID is not valid.</returns>
 		IControl GetControl(int id);
 		/// <summary>
-		/// Set focus to a control.
+		/// Sets focus to the specified control.
 		/// </summary>
 		/// <param name="id">Control ID (index).</param>
 		void SetFocus(int id);

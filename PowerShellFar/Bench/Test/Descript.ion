@@ -1,7 +1,7 @@
 ﻿About-Test.hlf Read me first.
 Initialize-Test-.ps1 Initializes test environment and optional database data.
 Test-Base-.ps1 Test base features.
-Test-CallStack-.ps1 Test call stack information.
+Test-CallStack-.ps1 Test prompt dialog and shows how to get call stack info.
 Test-Debugger.ps1 Test debugger and breakpoints.
 Test-Descript-.ps1 Test Far decription tools.
 Test-Dialog+.ps1 Test unit for Test-Dialog-.ps1.

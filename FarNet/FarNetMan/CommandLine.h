@@ -4,24 +4,23 @@ Copyright (c) 2005 FarNet Team
 */
 
 #pragma once
+#include "Line.h"
 
 namespace FarNet
 {;
-ref class CommandLine : ILine
+ref class CommandLine sealed : Line
 {
 public:
-	virtual property ILine^ FullLine { ILine^ get(); }
-	virtual property ILineSelection^ Selection { ILineSelection^ get(); }
-	virtual property int Length { int get(); }
-	virtual property int No { int get(); }
-	virtual property int Pos { int get(); void set(int value); }
-	virtual property String^ Eol { String^ get(); void set(String^ value); }
-	virtual property String^ Text { String^ get(); void set(String^ value); }
-	virtual property FarNet::WindowType WindowType { FarNet::WindowType get() { return FarNet::WindowType::Panels; } }
+	virtual property FarNet::WindowType WindowType { FarNet::WindowType get() override; }
+	virtual property ILine^ FullLine { ILine^ get() override; }
+	virtual property ILineSelection^ Selection { ILineSelection^ get() override; }
+	virtual property int Length { int get() override; }
+	virtual property int Pos { int get() override; void set(int value) override; }
+	virtual property String^ Text { String^ get() override; void set(String^ value) override; }
 public:
-	virtual void Insert(String^ text);
-	virtual void Select(int start, int end);
-	virtual void Unselect();
+	virtual void Insert(String^ text) override;
+	virtual void Select(int start, int end) override;
+	virtual void Unselect() override;
 public:
 	virtual String^ ToString() override;
 };

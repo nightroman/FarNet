@@ -13,17 +13,19 @@ namespace PowerShellFar.UI
 		static VariableAccessMode variableAccessMode = VariableAccessMode.Write;
 
 		int Type;
-		internal IDialog Dialog;
-		internal IEdit Matter;
-		internal IComboBox Mode;
-		internal IEdit Script;
+		IDialog UIDialog;
+		
+		IComboBox UIMode;
+		internal string Mode { get { return UIMode.Text; } }
 
-		IEdit Action;
-		ScriptBlock _ActionScript;
-		public ScriptBlock ActionScript
-		{
-			get { return _ActionScript; }
-		}
+		IEdit UIMatter;
+		internal string Matter { get { return UIMatter.Text; } }
+
+		IEdit UIScript;
+		internal string Script { get; private set; }
+
+		IEdit UIAction;
+		internal ScriptBlock Action { get; private set; }
 
 		public BreakpointDialog(int type, string script, int line)
 		{
@@ -34,108 +36,112 @@ namespace PowerShellFar.UI
 			if (Type == 2)
 				++h;
 
-			Dialog = A.Far.CreateDialog(-1, -1, 77, h);
-			Dialog.Closing += OnClosing;
-			Dialog.HelpTopic = A.Psf.HelpTopic + "BreakpointDialog";
+			UIDialog = A.Far.CreateDialog(-1, -1, 77, h);
+			UIDialog.Closing += OnClosing;
+			UIDialog.HelpTopic = A.Psf.HelpTopic + "BreakpointDialog";
 
 			// title
-			Dialog.AddBox(3, 1, 0, 0, typeName + " breakpoint");
+			UIDialog.AddBox(3, 1, 0, 0, typeName + " breakpoint");
 			const int x = 14;
 			int y = 1;
 
-			Dialog.AddText(5, ++y, 0, "&" + typeName);
-			Matter = Dialog.AddEdit(x, y, 71, string.Empty);
+			UIDialog.AddText(5, ++y, 0, "&" + typeName);
+			UIMatter = UIDialog.AddEdit(x, y, 71, string.Empty);
 			switch (type)
 			{
 				case 0:
 					if (line > 0)
-						Matter.Text = Kit.ToString(line);
+						UIMatter.Text = Kit.ToString(line);
 					break;
 				case 1:
-					Matter.History = "PowerShellFarCommand";
-					Matter.UseLastHistory = true;
+					UIMatter.History = "PowerShellFarCommand";
+					UIMatter.UseLastHistory = true;
 					break;
 				case 2:
-					Matter.History = "PowerShellFarVariable";
-					Matter.UseLastHistory = true;
+					UIMatter.History = "PowerShellFarVariable";
+					UIMatter.UseLastHistory = true;
 					break;
 			}
 
 			if (Type == 2)
 			{
-				Dialog.AddText(5, ++y, 0, "&Mode");
-				Mode = Dialog.AddComboBox(x, y, 71, variableAccessMode.ToString());
-				Mode.DropDownList = true;
-				Mode.Add(VariableAccessMode.Read.ToString());
-				Mode.Add(VariableAccessMode.Write.ToString());
-				Mode.Add(VariableAccessMode.ReadWrite.ToString());
+				UIDialog.AddText(5, ++y, 0, "&Mode");
+				UIMode = UIDialog.AddComboBox(x, y, 71, variableAccessMode.ToString());
+				UIMode.DropDownList = true;
+				UIMode.Add(VariableAccessMode.Read.ToString());
+				UIMode.Add(VariableAccessMode.Write.ToString());
+				UIMode.Add(VariableAccessMode.ReadWrite.ToString());
 			}
 
-			Dialog.AddText(5, ++y, 0, "&Script");
-			Script = Dialog.AddEdit(x, y, 71, string.Empty);
-			Script.History = "PowerShellFarScript";
-			Script.IsPath = true;
+			UIDialog.AddText(5, ++y, 0, "&Script");
+			UIScript = UIDialog.AddEdit(x, y, 71, string.Empty);
+			UIScript.History = "PowerShellFarScript";
+			UIScript.IsPath = true;
 			if (script != null)
-				Script.Text = script;
+				UIScript.Text = script;
 
-			Dialog.AddText(5, ++y, 0, "&Action");
-			Action = Dialog.AddEdit(x, y, 71, string.Empty);
-			Action.History = "PowerShellFarAction";
+			UIDialog.AddText(5, ++y, 0, "&Action");
+			UIAction = UIDialog.AddEdit(x, y, 71, string.Empty);
+			UIAction.History = "PowerShellFarAction";
 
-			Dialog.AddText(5, ++y, 0, string.Empty).Separator = 1;
+			UIDialog.AddText(5, ++y, 0, string.Empty).Separator = 1;
 
-			IButton buttonOK = Dialog.AddButton(0, ++y, "Ok");
+			IButton buttonOK = UIDialog.AddButton(0, ++y, "Ok");
 			buttonOK.CenterGroup = true;
 
-			IButton buttonCancel = Dialog.AddButton(0, y, Res.Cancel);
+			IButton buttonCancel = UIDialog.AddButton(0, y, Res.Cancel);
 			buttonCancel.CenterGroup = true;
 		}
 
 		public bool Show()
 		{
-			return Dialog.Show();
+			return UIDialog.Show();
 		}
 
 		void OnClosing(object sender, ClosingEventArgs e)
 		{
+			//! Do not change combo texts, , at least in Far 2.0.1345,
+			//! it triggers autocomplete that prevents closing.
+
 			if (e.Control == null)
 				return;
 
 			if (Type == 0)
 			{
 				int value;
-				if (!int.TryParse(Matter.Text, out value) || value <= 0)
+				if (!int.TryParse(UIMatter.Text, out value) || value <= 0)
 				{
 					A.Far.Msg("Invalid line number", "Line");
-					Dialog.Focused = Matter;
+					UIDialog.Focused = UIMatter;
 					e.Ignore = true;
 					return;
 				}
 
-				if (Script.Text.TrimEnd().Length == 0)
+				if (UIScript.Text.TrimEnd().Length == 0)
 				{
 					A.Far.Msg("Script has to be defined", "Script");
-					Dialog.Focused = Script;
+					UIDialog.Focused = UIScript;
 					e.Ignore = true;
 					return;
 				}
 			}
 
 			// script: trim, file may not exist
-			Script.Text = Script.Text.TrimEnd();
+			Script = UIScript.Text.TrimEnd();
 
 			// action:
-			Action.Text = Action.Text.TrimEnd();
-			if (Action.Text.Length > 0)
+			Action = null;
+			string action = UIAction.Text.TrimEnd();
+			if (action.Length > 0)
 			{
 				try
 				{
-					_ActionScript = ScriptBlock.Create(Action.Text);
+					Action = ScriptBlock.Create(action);
 				}
 				catch (RuntimeException ex)
 				{
 					A.Far.Msg(ex.Message, "Action");
-					Dialog.Focused = Action;
+					UIDialog.Focused = UIAction;
 					e.Ignore = true;
 					return;
 				}

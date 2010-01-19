@@ -70,7 +70,7 @@ namespace PowerShellFar.Commands
 					FarFile f = _enumerator.Current;
 					if (f.Name != "..")
 					{
-						if (!_realNames || !My.PathEx.IsPath(f.Name))
+						if (!_realNames || !My.PathEx.IsFSPath(f.Name))
 							_current = My.PathEx.Combine(_path, f.Name);
 						else if (_joinRealNames)
 							_current = My.PathEx.Combine(_path, My.PathEx.GetFileName(f.Name));
@@ -93,7 +93,7 @@ namespace PowerShellFar.Commands
 			if (name == "..")
 				return panel2.Path;
 
-			if (panel1.RealNames && My.PathEx.IsPath(name))
+			if (panel1.RealNames && My.PathEx.IsFSPath(name))
 			{
 				if (panel1 == panel2)
 					return name;

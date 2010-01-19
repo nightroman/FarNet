@@ -73,12 +73,9 @@ for(;;) {
 	}}
 
 	### show menu
-	if (!$menu.Show()) {
-		return
-	}
-	$$ = $menu.SelectedData
+	$menu.Show()
 
-	### go back
+	### go back (check this case always)
 	if ($menu.BreakKey -eq ([FarNet.VKeyCode]::Backspace)) {
 		if ($path -ne $path0) {
 			$goto = $path
@@ -86,6 +83,9 @@ for(;;) {
 		}
 		continue
 	}
+
+	$$ = $menu.SelectedData
+	if (!$$) { return }
 
 	### go to the item
 	if ($menu.breakKey -eq ([FarNet.VKeyCode]::Enter -bor [FarNet.VKeyMode]::Ctrl)) {

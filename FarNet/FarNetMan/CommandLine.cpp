@@ -15,6 +15,11 @@ ILine^ Far::CommandLine::get()
 	return gcnew FarNet::CommandLine;
 }
 
+FarNet::WindowType CommandLine::WindowType::get()
+{
+	return FarNet::WindowType::Panels;
+}
+
 ILine^ CommandLine::FullLine::get()
 {
 	return this;
@@ -29,20 +34,6 @@ int CommandLine::Length::get()
 {
 	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
 	return size - 1;
-}
-
-int CommandLine::No::get()
-{
-	return -1;
-}
-
-String^ CommandLine::Eol::get()
-{
-	return String::Empty;
-}
-
-void CommandLine::Eol::set(String^)
-{
 }
 
 String^ CommandLine::Text::get()

@@ -6,6 +6,7 @@ Copyright (c) 2006 Roman Kuzmin
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Management.Automation;
 using FarNet;
 
 namespace PowerShellFar.UI
@@ -61,7 +62,7 @@ namespace PowerShellFar.UI
 			{
 				foreach (KeyValuePair<FarItem, ToolOptions> kv in _pendingItems)
 					AddItem(kv.Key, kv.Value);
-				
+
 				_pendingItems = null;
 			}
 		}
@@ -117,6 +118,12 @@ namespace PowerShellFar.UI
 				menu.Lock();
 				menu.Show();
 			}
+			catch (PipelineStoppedException)
+			{
+				// Ignore this exception, a user has halted, e.g. on menu action:
+				// Remove-Variable Far -Confirm
+				// -- Confirm dialog -- press [Esc] -- click [Halt] -- we are in here
+			}
 			finally
 			{
 				A.SetCurrentDirectoryFinally(currentDirectory);
@@ -153,7 +160,7 @@ namespace PowerShellFar.UI
 				}
 				_menuDialog.Items.Add(item);
 			}
-			
+
 			if (0 < (from & ToolOptions.Editor))
 			{
 				if (_toSeparate && !_menuEditorSeparated)
@@ -163,7 +170,7 @@ namespace PowerShellFar.UI
 				}
 				_menuEditor.Items.Add(item);
 			}
-			
+
 			if (0 < (from & ToolOptions.Panels))
 			{
 				if (_toSeparate && !_menuPanelsSeparated)
@@ -173,7 +180,7 @@ namespace PowerShellFar.UI
 				}
 				_menuPanels.Items.Add(item);
 			}
-			
+
 			if (0 < (from & ToolOptions.Viewer))
 			{
 				if (_toSeparate && !_menuViewerSeparated)

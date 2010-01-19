@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.2.26#
+#PowerShellFar 4.2.27#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -76,8 +76,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1344
- - Plugin FarNet 4.2.26
+ - Far Manager 2.0.1345
+ - Plugin FarNet 4.2.27
  - Windows PowerShell 2.0
 
 
@@ -417,8 +417,8 @@ $#Debugger dialog#
 ~Contents~@Contents@
 
 This dialog is shown when one or more breakpoints are hit or you step in debug
-mode. You may step through the code, open editor console, take a look at the
-source code, view stack and error information.
+mode. You may step through the code, open command console in editor, take a
+look at the source code.
 
 
 #KEYS, BUTTONS AND ACTIONS#
@@ -445,9 +445,6 @@ See also ~Editor console~@EditorConsole@.
 line if not yet overwise opens the editor at the debugger line. You should not
 edit the script at this moment, it is only for taking a look at the code. On
 exit from the editor the same dialog is repeated.
-
-[#[Stack..]#] Shows the call stack and error records in the viewer. On exit the
-same dialog is repeated.
 
 
 #NOTES#
@@ -1273,8 +1270,7 @@ experiments the author recommends to use 'Stop' for normal work.
 'Inquire' is perhaps useful sometimes for troubleshooting:
 
 Advantages: you have a choice what to do on an error: continue; silently
-continue; break; suspend and invoke intermediate commands in Editor console;
-view call stack on error ([Esc] in error message dialogs).
+continue; break; suspend and invoke some commands in the editor console.
 
 Disadvantages: can be annoying if you simply compose a new command; not all
 scripts allow interaction, e.g. inside DB transactions (but actually in this

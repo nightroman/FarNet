@@ -7,6 +7,7 @@ Copyright (c) 2005 FarNet Team
 #include "DialogControls.h"
 #include "Dialog.h"
 #include "Far.h"
+#include "Line.h"
 #include "ListItemCollection.h"
 
 #define SET_FLAG(Var, Flag, Value) { if (Value) Var |= Flag; else Var &= ~Flag; }
@@ -107,49 +108,42 @@ private:
 
 #pragma endregion
 
-#pragma region FarEditLine
+#pragma region DialogLine
 
-ref class FarEditLine : public ILine
+ref class DialogLine sealed : Line
 {
 public:
 	virtual property ILine^ FullLine
 	{
-		ILine^ get()
+		ILine^ get() override
 		{
 			return this;
 		}
 	}
 	virtual property ILineSelection^ Selection
 	{
-		ILineSelection^ get()
+		ILineSelection^ get() override
 		{
 			return gcnew FarEditLineSelection(_hDlg, _id);
 		}
 	}
 	virtual property int Length
 	{
-		int get()
+		int get() override
 		{
 			return (int)Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
 		}
 	}
-	virtual property int No
-	{
-		int get()
-		{
-			return -1;
-		}
-	}
 	virtual property int Pos
 	{
-		int get()
+		int get() override
 		{
 			COORD c;
 			c.Y = 0;
 			Info.SendDlgMessage(_hDlg, DM_GETCURSORPOS, _id, (LONG_PTR)&c);
 			return c.X;
 		}
-		void set(int value)
+		void set(int value) override
 		{
 			if (value < 0)
 				value = (int)Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
@@ -159,23 +153,13 @@ public:
 			Info.SendDlgMessage(_hDlg, DM_SETCURSORPOS, _id, (LONG_PTR)&c);
 		}
 	}
-	virtual property String^ Eol
-	{
-		String^ get()
-		{
-			return String::Empty;
-		}
-		void set(String^)
-		{
-		}
-	}
 	virtual property String^ Text
 	{
-		String^ get()
+		String^ get() override
 		{
 			return GetText(_hDlg, _id, -1, 0);
 		}
-		void set(String^ value)
+		void set(String^ value) override
 		{
 			PIN_NE(pin, value);
 			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
@@ -183,9 +167,12 @@ public:
 	}
 	virtual property FarNet::WindowType WindowType
 	{
-		FarNet::WindowType get() { return FarNet::WindowType::Dialog; }
+		FarNet::WindowType get() override
+		{
+			return FarNet::WindowType::Dialog;
+		}
 	}
-	virtual void Insert(String^ text)
+	virtual void Insert(String^ text) override
 	{
 		if (!text) throw gcnew ArgumentNullException("text");
 
@@ -197,7 +184,7 @@ public:
 		Text = str->Substring(0, pos) + text + str->Substring(pos);
 		Pos = pos + text->Length;
 	}
-	virtual void Select(int start, int end)
+	virtual void Select(int start, int end) override
 	{
 		EditorSelect es;
 		es.BlockType = BTYPE_STREAM;
@@ -207,14 +194,14 @@ public:
 		es.BlockHeight = 1;
 		Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
 	}
-	virtual void Unselect()
+	virtual void Unselect() override
 	{
 		EditorSelect es;
 		es.BlockType = BTYPE_NONE;
 		Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
 	}
 internal:
-	FarEditLine(HANDLE hDlg, int id) : _hDlg(hDlg), _id(id)
+	DialogLine(HANDLE hDlg, int id) : _hDlg(hDlg), _id(id)
 	{}
 private:
 	HANDLE _hDlg;
@@ -622,7 +609,7 @@ void FarEdit::Free()
 ILine^ FarEdit::Line::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
-		return gcnew FarEditLine(_dialog->_hDlg, Id);
+		return gcnew DialogLine(_dialog->_hDlg, Id);
 	else
 		return nullptr;
 }
@@ -958,7 +945,7 @@ ILine^ FarComboBox::Line::get()
 	if (_dialog->_hDlg == INVALID_HANDLE_VALUE || DropDownList)
 		return nullptr;
 
-	return gcnew FarEditLine(_dialog->_hDlg, Id);
+	return gcnew DialogLine(_dialog->_hDlg, Id);
 }
 
 #pragma endregion
