@@ -9,7 +9,6 @@ Copyright (c) 2005 FarNet Team
 #include "Editor0.h"
 #include "InputBox.h"
 #include "ListMenu.h"
-#include "Macro.h"
 #include "Menu.h"
 #include "Message.h"
 #include "Panel0.h"
@@ -18,7 +17,6 @@ Copyright (c) 2005 FarNet Team
 #include "PluginInfo.h"
 #include "Shelve.h"
 #include "Viewer0.h"
-#include "Zoo.h"
 
 namespace FarNet
 {;
@@ -587,11 +585,6 @@ int Far::SaveScreen(int x1, int y1, int x2, int y2)
 void Far::RestoreScreen(int screen)
 {
 	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
-}
-
-IMacro^ Far::Macro::get()
-{
-	return gcnew FarNet::Macro();
 }
 
 ILine^ Far::Line::get()
@@ -1971,11 +1964,6 @@ ConsoleColor Far::GetPaletteForeground(PaletteColor paletteColor)
 {
 	int color = GetPaletteColor(paletteColor);
 	return ConsoleColor(color & 0xF);
-}
-
-IZoo^ Far::Zoo::get()
-{
-	return gcnew FarNet::Zoo;
 }
 
 void Far::AsProcessSynchroEvent(int type, void* /*param*/)

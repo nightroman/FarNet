@@ -181,9 +181,10 @@ namespace PowerShellFar
 			//! Thus, we don't catch anything, because this is normally async.
 			try
 			{
-				//! Bug [_090315_091325]
+				//! Bug (_090315_091325)
 				//! Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
 				//! Looks like a hack, but it works fine. Problem case: run Test-CallStack-.ps1, Esc -> the error above.
+				//! SVN tag 4.2.26
 				_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue("ExecutionContext") as EngineIntrinsics;
 
 				// new variables
@@ -864,7 +865,7 @@ Continue with this current directory?
 			{
 				// win7 Indeterminate
 				A.Far.SetProgressState(TaskbarProgressBarState.Indeterminate);
-				
+
 				// add history
 				if (addHistory)
 				{
@@ -1022,16 +1023,6 @@ Continue with this current directory?
 		public Collection<PSObject> InvokeCode(string scriptText, params object[] args)
 		{
 			return Engine.InvokeCommand.NewScriptBlock(scriptText).Invoke(args);
-		}
-
-		/// <summary>
-		/// Shows call stack and error records in the internal viewer.
-		/// </summary>
-		public void ShowCallStack()
-		{
-			//! Don't create pipeline, it hangs if, e.g.
-			//! $ErrorActionPreference = 'Inquire' + [Fail] in Test-Dialog-.ps1
-			InvokeCode(Resource.Show_CallStack);
 		}
 
 		/// <summary>

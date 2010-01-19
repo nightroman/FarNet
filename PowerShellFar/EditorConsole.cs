@@ -74,6 +74,10 @@ namespace PowerShellFar
 				name = Kit.ToString(DateTime.Now, "yyMMdd-HHmmss") + ".psfconsole";
 				editor.CodePage = Encoding.Unicode.CodePage;
 				editor.IsNew = true;
+
+				// don't add to history in silent mode, e.g. when called from [Suspend]
+				if (!prompt)
+					editor.DisableHistory = true;
 			}
 
 			// do not set code page now

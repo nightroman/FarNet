@@ -200,11 +200,13 @@ bool Menu::Show()
 		}
 	}
 
-	// exit
+	//! When nothing is selected (e.g. empty menu) break key still may work
+
+	// check selected
 	if (_selected < 0)
 		return false;
 
-	// break key
+	// check break key
 	if (_breakKey > 0)
 		return true;
 

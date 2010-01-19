@@ -170,11 +170,16 @@ namespace FarNet
 		/// <summary>
 		/// Shows the menu.
 		/// </summary>
-		/// <returns>True if a menu item is selected.</returns>
+		/// <returns>
+		/// True if any menu item is selected, false otherwise including the case of a break key hit in an empty menu.
+		/// </returns>
 		/// <remarks>
-		/// If a menu item is selected then its <see cref="FarItem.Click"/> is called.
-		/// Index of the selected item is stored in <see cref="Selected"/>.
-		/// (if the menu is shown again it is used for the current item).
+		/// If a menu item is selected and there is no break key hit then its <see cref="FarItem.Click"/> is called.
+		/// Break key cases should be processed by a caller.
+		/// <para>
+		/// Index of the selected item is kept in <see cref="Selected"/>. It is reused if the menu is shown again:
+		/// this is normally useful; if it is not then this value should be reset by a caller.
+		/// </para>
 		/// </remarks>
 		bool Show();
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>

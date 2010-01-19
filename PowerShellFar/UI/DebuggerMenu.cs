@@ -145,9 +145,9 @@ namespace PowerShellFar.UI
 
 			// set new
 			string code = "Set-PSBreakpoint -Script $args[0] -Line $args[1]";
-			if (ui.ActionScript != null)
+			if (ui.Action != null)
 				code += " -Action $args[2]";
-			A.Psf.InvokeCode(code, ui.Script.Text, ui.Matter.Text, ui.ActionScript);
+			A.Psf.InvokeCode(code, ui.Script, ui.Matter, ui.Action);
 
 			// remove the old
 			if (bpFound != null)
@@ -168,11 +168,11 @@ namespace PowerShellFar.UI
 				return;
 
 			string code = "Set-PSBreakpoint -Command $args[0]";
-			if (ui.Script.Text.Length > 0)
+			if (ui.Script.Length > 0)
 				code += " -Script $args[1]";
-			if (ui.ActionScript != null)
+			if (ui.Action != null)
 				code += " -Action $args[2]";
-			A.Psf.InvokeCode(code, ui.Matter.Text, ui.Script.Text, ui.ActionScript);
+			A.Psf.InvokeCode(code, ui.Matter, ui.Script, ui.Action);
 		}
 
 		void OnVariableBreakpoint(object sender, EventArgs e)
@@ -189,11 +189,11 @@ namespace PowerShellFar.UI
 				return;
 
 			string code = "Set-PSBreakpoint -Variable $args[0] -Mode $args[1]";
-			if (ui.Script.Text.Length > 0)
+			if (ui.Script.Length > 0)
 				code += " -Script $args[2]";
-			if (ui.ActionScript != null)
+			if (ui.Action != null)
 				code += " -Action $args[3]";
-			A.Psf.InvokeCode(code, ui.Matter.Text, ui.Mode.Text, ui.Script.Text, ui.ActionScript);
+			A.Psf.InvokeCode(code, ui.Matter, ui.Mode, ui.Script, ui.Action);
 		}
 
 		void OnDelete(object sender, MenuEventArgs e)

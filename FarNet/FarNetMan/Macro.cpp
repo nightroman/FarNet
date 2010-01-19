@@ -9,6 +9,11 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
+IMacro^ Far::Macro::get()
+{
+	return gcnew FarNet::Macro;
+}
+
 static bool ToBool(Object^ value)
 {
 	return value && ((int)value) != 0;

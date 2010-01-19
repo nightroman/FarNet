@@ -1,14 +1,18 @@
 
 <#
 .SYNOPSIS
-	Test call stack information.
+	Test prompt dialog and shows how to get call stack info.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
 	Stack information can be viewed on errors if $ErrorActionPreference is set
-	to Inquire. In this mode an error opens a PowerShell choice dialog. Such a
-	dialog (not only error) in PowerShellFar has an extra feature: [Esc] shows
-	call stack and error records in the internal viewer.
+	to Inquire. In this mode an error opens a PowerShell choice dialog. Click
+	[Suspend] and in the editor console type one of the commands:
+
+	Get-PSCallStack
+	Get-PSCallStack | Format-List
+
+	Alternatively, an editor console can be opened from the plugin menu [F11].
 #>
 
 # enable inquire dialog on errors
@@ -18,7 +22,8 @@ $ErrorActionPreference = 'Inquire'
 function FailWithZero($prm)
 {
 	if ($prm -eq 0) {
-		Remove-Variable 'fake name'
+		# Error: Cannot remove variable Far ...
+		Remove-Variable Far
 	}
 }
 
@@ -32,7 +37,7 @@ function Test($prm)
 	}
 }
 
-# use try block for test sake
+# use try block just for test sake
 try {
 	Test 2
 }

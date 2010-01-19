@@ -113,6 +113,7 @@ void Editor::Open(OpenMode mode)
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
 	//! Using Far diagnostics fires false errors, e.g.:
 	//! Test-CallStack-.ps1 \ s \ type: exit \ enter
+	//! SVN tag 4.2.26
 	if (_id == -1)
 	{
 		// - error or a file was already opened in the editor and its window is activated
@@ -307,7 +308,7 @@ ILines^ Editor::TrueLines::get()
 {
 	if (!IsOpened)
 		return nullptr;
-	
+
 	return gcnew EditorLineCollection(true);
 }
 
@@ -410,7 +411,7 @@ ISelection^ Editor::Selection::get()
 {
 	if (!IsOpened)
 		return nullptr;
-	
+
 	return gcnew SelectionCollection(this, false);
 }
 
@@ -418,7 +419,7 @@ ISelection^ Editor::TrueSelection::get()
 {
 	if (!IsOpened)
 		return nullptr;
-	
+
 	return gcnew SelectionCollection(this, true);
 }
 
@@ -788,7 +789,7 @@ void Editor::SetText(String^ text)
 		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, 0);
 		if (egs.StringLength == 0)
 			EditorControl_ECTL_INSERTSTRING(false);
-		
+
 		ei.Update();
 	}
 #endif

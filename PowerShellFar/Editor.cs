@@ -38,12 +38,15 @@ namespace PowerShellFar
 		/// </remarks>
 		public static void ExpandCode(ILine editLine)
 		{
+			// dot-source TabExpansion.ps1 once
 			if (_initTabExpansion == 0)
 			{
 				_initTabExpansion = -1;
 				string path = A.Psf.AppHome + @"\TabExpansion.ps1";
+
+				// TabExpansion.ps1 must exist
 				if (!File.Exists(path))
-					return;
+					throw new FileNotFoundException("path");
 
 				A.Psf.InvokeCode(". $args[0]", path);
 				_initTabExpansion = +1;
