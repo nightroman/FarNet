@@ -58,6 +58,7 @@
     <Compile Include="Commands\UpdateFarDescriptionCommand.cs" />
     <Compile Include="EditorConsole.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Help.cs" />
     <Compile Include="JobCommand.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Panels\AnyPanelSet.cs" />

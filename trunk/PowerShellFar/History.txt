@@ -1,6 +1,28 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.2.28 =
+
+*) "Invoke input code" dialog is now suitable for macros with plain PowerShell
+code. Namely, when a macro is in progress all histories (dropdown list and PSF
+commands) are disabled. So now we do not have to have a menu item to invoke a
+PSF command by a macro, a macro itself can contain the command. Example: put
+this macro to the Common area to exit Far from anywhere except menus:
+F11 X 1 "$Far.Quit()" Enter
+(where X is the PowerShellFar hotkey in the Far plugin menu)
+
+*) Main menu: new action "&-. Help": for the current token in any editor line
+(editor, editbox, cmdline) it gets PS help and shows output in the viewer. In
+PowerShell code editors (.ps1, .psm1, .psd1, .psfconsole, input code editboxes)
+this action is associated with [ShiftF1]. It can be also called from scripts as
+$Psf.ShowHelp().
+
+*) PowerShellFar.hrc for Colorer: added yet missed operator -bnot.
+
+?? kill?
+*) Get-Usage.ps1: replaced list of common parameters in SYNTAX with
+[<CommonParameters>] (so the original Get-Help does).
+
 = 4.2.27 =
 
 *) Fixed unexpected effects with IsPath = true in some dialogs (4.2.26).

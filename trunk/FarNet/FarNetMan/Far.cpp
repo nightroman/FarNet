@@ -2090,4 +2090,9 @@ void Far::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
+void Far::Quit()
+{
+	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);
+}
+
 }

@@ -101,7 +101,7 @@ namespace PowerShellFar
 		{
 			Check();
 			UI.InputDialog ui = new UI.InputDialog(string.Empty, Res.PowerShellFarPrompt);
-			return ui.Dialog.Show() ? ui.Edit.Text : string.Empty;
+			return ui.UIDialog.Show() ? ui.UICode.Text : string.Empty;
 		}
 
 		/// <summary>

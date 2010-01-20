@@ -713,6 +713,14 @@ namespace FarNet
 		/// <param name="update">Tells to update the internal cached value.</param>
 		/// <returns>The current UI culture (cached or updated).</returns>
 		CultureInfo GetCurrentUICulture(bool update);
+		/// <summary>
+		/// Tells Far to exit if it is possible.
+		/// </summary>
+		/// <remarks>
+		/// This method is only a request to exit. If there is an editor with not saved changes
+		/// then Far asks a user how to proceed and, in fact, a user may continue work in Far.
+		/// </remarks>
+		void Quit();
 	}
 
 	/// <summary>

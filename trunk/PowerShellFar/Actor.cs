@@ -58,11 +58,6 @@ namespace PowerShellFar
 			// new settings
 			_settings = new Settings();
 
-			// editor events: OnEditorOpened1 should be called always and first
-			// (to do Invoking() (at least for TabExpansion) and then start code (if any))
-			A.Far.AnyEditor.Opened += EditorKit.OnEditorOpened1;
-			A.Far.AnyEditor.Opened += EditorKit.OnEditorOpened2;
-
 			// preload
 			OpenRunspace(false);
 		}
@@ -598,13 +593,26 @@ Continue with this current directory?
 		/// <para>
 		/// The code is simply returned, if you want to execute it then call <see cref="InvokeInputCode"/>.
 		/// </para>
+		/// <para>
+		/// When a macro is in progress a simple input box is used instead of the dialog.
+		/// </para>
 		/// </remarks>
 		public string InputCode()
 		{
-			UI.InputDialog ui = new UI.InputDialog(Res.Name, Res.Name, "PowerShell code");
-			ui.Edit.IsPath = true;
-			ui.Edit.UseLastHistory = true;
-			return ui.Dialog.Show() ? ui.Edit.Text : null;
+			if (A.Far.MacroState == FarMacroState.None || A.Psf.Settings.Test == 100120151157)
+			{
+				// normal mode
+				UI.InputDialog ui = new UI.InputDialog(Res.Name, Res.Name, "PowerShell code");
+				ui.UICode.IsPath = true;
+				ui.UICode.UseLastHistory = true;
+				return ui.UIDialog.Show() ? ui.UICode.Text : null;
+			}
+			else
+			{
+				// macro mode
+				return A.Far.Input(null);
+			}
+			
 		}
 
 		/// <summary>
@@ -612,13 +620,17 @@ Continue with this current directory?
 		/// Called on "Invoke input code".
 		/// </summary>
 		/// <remarks>
-		/// If you want to input code without invoking then call <see cref="InputCode"/>.
+		/// When a macro is in progress a simple input box is used instead of the dialog
+		/// and invoked commands are not stored in the command history.
+		/// <para>
+		/// To input and get some code without invoking use the <see cref="InputCode"/> method.
+		/// </para>
 		/// </remarks>
 		public void InvokeInputCode()
 		{
 			string code = InputCode();
 			if (code != null)
-				InvokePipeline(code, null, true);
+				InvokePipeline(code, null, A.Far.MacroState == FarMacroState.None);
 		}
 
 		/// <summary>
@@ -773,6 +785,14 @@ Continue with this current directory?
 		{
 			UI.ErrorsMenu ui = new UI.ErrorsMenu();
 			ui.Show();
+		}
+
+		/// <summary>
+		/// Shows PowerShell help, normally for the current token in any editor line.
+		/// </summary>
+		public void ShowHelp()
+		{
+			Help.ShowHelp();
 		}
 
 		/// <summary>
