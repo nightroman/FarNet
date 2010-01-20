@@ -261,7 +261,15 @@ namespace PowerShellFar
 		/// </summary>
 		public static implicit operator Getter(Meta meta)
 		{
-			return meta.GetValue;
+			return meta.ToGetter();
+		}
+
+		/// <summary>
+		/// Converts this to a delegate.
+		/// </summary>
+		public Getter ToGetter()
+		{
+			return GetValue;
 		}
 	}
 }

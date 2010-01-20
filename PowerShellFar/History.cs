@@ -102,10 +102,10 @@ namespace PowerShellFar
 						if (m.Alternative)
 						{
 							UI.InputDialog ui = new UI.InputDialog(Res.Name, Res.Name, "PowerShell code");
-							ui.Edit.Text = code;
-							if (!ui.Dialog.Show())
+							ui.UICode.Text = code;
+							if (!ui.UIDialog.Show())
 								return;
-							code = ui.Edit.Text;
+							code = ui.UICode.Text;
 						}
 
 						A.Psf.InvokePipeline(code, null, true);

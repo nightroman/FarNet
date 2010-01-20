@@ -24,7 +24,7 @@
 param
 (
 	# PowerShellFar hotkey in the plugin commands menu.
-	$P = '1'
+	$Key = '1'
 )
 
 # Note: it is recommended to install all macros by one call of Install(). This
@@ -34,9 +34,12 @@ $Far.Macro.Install(@(
 	### Common (all areas)
 	@{ Area = 'Common' }
 
+	### Quit Far
+	@{ Name = 'CtrlShiftQ'; Description = 'PSF: Quit Far'; Sequence = "F11 $Key 1 " + '"$Far.Quit()" Enter' }
+
 	### PowerShellFar command history
 	# Also, AltF10 in panels disables questionable folder tree feature.
-	@{ Name = 'AltF10'; Description = 'PSF: Command history'; Sequence = "F11 $P 4" }
+	@{ Name = 'AltF10'; Description = 'PSF: Command history'; Sequence = "F11 $Key 4" }
 
 	### Open recent file in editor
 	# CtrlShiftF11 -> standard AltF11
@@ -45,7 +48,7 @@ $Far.Macro.Install(@(
 	@{
 		Name = 'AltF11'
 		Description = 'PSF: Edit recent file'
-		Sequence = 'F11 $if(Menu.Select("PowerShellFar", 2) > 0) Enter - e $else Esc AltF11 $end'
+		Sequence = 'F11 $if(Menu.Select("PowerShellFar", 2) > 0) Enter e $else Esc AltF11 $end'
 	}
 
 	$null
@@ -53,19 +56,19 @@ $Far.Macro.Install(@(
 	### Mixed (several areas)
 
 	### (Edit-FarDescription-.ps1) Edit file description: Shell: current item; Editor or Viewer: opened file
-	@{ Name = 'AltZ'; Sequence = "F11 $P t"; Description = 'PSF: Edit description' }
+	@{ Name = 'AltZ'; Sequence = "F11 $Key t"; Description = 'PSF: Edit description' }
 	@{ Area = 'Shell' }, @{ Area = 'Editor' }, @{ Area = 'Viewer' }
 	$null
 
 	### (Complete-Word-.ps1) Command line: from history; Editor: from file; Dialog: from edit box history
-	@{ Name = 'CtrlSpace'; Sequence = "F11 $P c"; Description = 'PSF: Complete word' }
+	@{ Name = 'CtrlSpace'; Sequence = "F11 $Key c"; Description = 'PSF: Complete word' }
 	@{ Area = 'Shell' }, @{ Area = 'Editor' }, @{ Area = 'Dialog' }
 	$null
 
 	### (Set-Selection-.ps1) Change selected text case to lower\upper in command line, editor or dialog edit box
 	@{ Description = 'PSF: Selection to lower\upper'; SelectedText = '1' }
-	@{ Name = 'CtrlU'; Sequence = "F11 $P l"; Area = 'Shell' }, @{ Area = 'Editor' }, @{ Area = 'Dialog' }
-	@{ Name = 'CtrlShiftU'; Sequence = "F11 $P u"; Area = 'Shell' }, @{ Area = 'Editor' }, @{ Area = 'Dialog' }
+	@{ Name = 'CtrlU'; Sequence = "F11 $Key l"; Area = 'Shell' }, @{ Area = 'Editor' }, @{ Area = 'Dialog' }
+	@{ Name = 'CtrlShiftU'; Sequence = "F11 $Key u"; Area = 'Shell' }, @{ Area = 'Editor' }, @{ Area = 'Dialog' }
 	$null
 
 	### Shell only
@@ -75,13 +78,13 @@ $Far.Macro.Install(@(
 	$null
 
 	### Easy invoke: type and run without prefix (Invoke selected code)
-	@{ Area = 'Shell'; Name = 'ShiftSpace'; Sequence = "F11 $P 2"; CommandLine = '1'; Description = 'PSF: Easy invoke' }
+	@{ Area = 'Shell'; Name = 'ShiftSpace'; Sequence = "F11 $Key 2"; CommandLine = '1'; Description = 'PSF: Easy invoke' }
 	$null
 
 	### Other Shell macros
 	@{ Area = 'Shell' }
 	### (Go-Head-.ps1) Go to head file item (e.g. useful after [CtrlF5] to find the newest file)
-	@{ Name = 'CtrlShiftF5'; Sequence = "F11 $P h"; Description = 'PSF: Go to panel head item' }
+	@{ Name = 'CtrlShiftF5'; Sequence = "F11 $Key h"; Description = 'PSF: Go to panel head item' }
 
 	### Open recent folder in the panel
 	### CtrlShiftF12 -> standard AltF12
@@ -90,27 +93,27 @@ $Far.Macro.Install(@(
 	@{
 		Name = 'AltF12'
 		Description = 'PSF: Open recent folder'
-		Sequence = 'F11 $if(Menu.Select("PowerShellFar", 2) > 0) Enter - n $else Esc AltF12 $end'
+		Sequence = 'F11 $if(Menu.Select("PowerShellFar", 2) > 0) Enter n $else Esc AltF12 $end'
 	}
 
 	### (Search-Regex-.ps1) Backgroung search in files with dynamic results in the panel
-	@{ Name = 'CtrlShiftF7'; Sequence = "F11 $P x"; Description = 'PSF: Search regex in files' }
+	@{ Name = 'CtrlShiftF7'; Sequence = "F11 $Key x"; Description = 'PSF: Search regex in files' }
 	$null
 
 	### Editor only
 
 	### (Indent-Selection-.ps1) Indent and outdent selected line(s)
 	@{ Area = 'Editor'; Description = 'PSF: Indent selection'; SelectedText = '1' }
-	@{ Name = 'Tab'; Sequence = "F11 $P i" }
-	@{ Name = 'ShiftTab'; Sequence = "F11 $P o" }
+	@{ Name = 'Tab'; Sequence = "F11 $Key i" }
+	@{ Name = 'ShiftTab'; Sequence = "F11 $Key o" }
 	$null
 
 	### Other Editor macros
 	@{ Area = 'Editor' }
 	### (Reindent-Selection-.ps1) Reindent selected lines or the current line
-	@{ Name = 'AltF8'; Sequence = "F11 $P r"; Description = 'PSF: Reindent selection' }
+	@{ Name = 'AltF8'; Sequence = "F11 $Key r"; Description = 'PSF: Reindent selection' }
 	### (Reformat-Selection-.ps1) Reformat selected lines or the current line
-	@{ Name = 'CtrlShiftL'; Sequence = "F11 $P f"; Description = 'PSF: Reformat selection' }
+	@{ Name = 'CtrlShiftL'; Sequence = "F11 $Key f"; Description = 'PSF: Reformat selection' }
 	$null
 
 	### Native macros

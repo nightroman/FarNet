@@ -60,6 +60,7 @@ public:
 	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor);
 	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
 	virtual CultureInfo^ GetCurrentUICulture(bool update);
+	virtual FarNet::WindowType GetWindowType(int index);
 	virtual ICollection<String^>^ GetDialogHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter);
@@ -87,6 +88,7 @@ public:
 	virtual void GetUserScreen();
 	virtual void Msg(String^ body);
 	virtual void Msg(String^ body, String^ header);
+	virtual void PostJob(EventHandler^ handler);
 	virtual void PostKeys(String^ keys);
 	virtual void PostKeys(String^ keys, bool disableOutput);
 	virtual void PostKeySequence(array<int>^ sequence);
@@ -98,6 +100,7 @@ public:
 	virtual void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
 	virtual void PostText(String^ text);
 	virtual void PostText(String^ text, bool disableOutput);
+	virtual void Quit();
 	virtual void Redraw();
 	virtual void RegisterFiler(BasePlugin^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates);
 	virtual void RegisterTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
@@ -120,8 +123,6 @@ public:
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
-	virtual FarNet::WindowType GetWindowType(int index);
-	virtual void PostJob(EventHandler^ handler);
 internal:
 	static property Far^ Instance { Far^ get() { return _instance; } }
 	static void StartFar();

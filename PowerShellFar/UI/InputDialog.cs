@@ -4,36 +4,46 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using FarNet;
 using FarNet.Forms;
 
 namespace PowerShellFar.UI
 {
 	class InputDialog
 	{
-		public IDialog Dialog;
-		public IText[] Text;
-		public IEdit Edit;
+		public IDialog UIDialog;
+		public IText[] UIPrompt;
+		public IEdit UICode;
 
 		public InputDialog(string caption, string history, params string[] prompt)
 		{
 			int w = Console.WindowWidth - 7;
 			int h = 5 + prompt.Length;
 
-			Dialog = A.Far.CreateDialog(-1, -1, w, h);
-			Dialog.AddBox(3, 1, w - 4, h - 2, caption);
-			Text = new IText[prompt.Length];
+			UIDialog = A.Far.CreateDialog(-1, -1, w, h);
+			UIDialog.AddBox(3, 1, w - 4, h - 2, caption);
+			UIPrompt = new IText[prompt.Length];
 			for (int i = 0; i < prompt.Length; ++i)
-				Text[i] = Dialog.AddText(5, -1, w - 6, prompt[i]);
-			Edit = Dialog.AddEdit(5, -1, w - 6, string.Empty);
-			Edit.History = history;
+				UIPrompt[i] = UIDialog.AddText(5, -1, w - 6, prompt[i]);
+			UICode = UIDialog.AddEdit(5, -1, w - 6, string.Empty);
 
-			Edit.KeyPressed += delegate(object sender, KeyPressedEventArgs e)
+			// history
+			UICode.History = history;
+
+			// hotkeys
+			UICode.KeyPressed += delegate(object sender, KeyPressedEventArgs e)
 			{
 				switch (e.Code)
 				{
-					case 9:
+					case KeyCode.Tab:
+						// [Tab]
 						e.Ignore = true;
 						A.Psf.ExpandCode(((IEdit)e.Control).Line);
+						return;
+					case KeyCode.F1 | KeyMode.Shift:
+						// [ShiftF1]
+						e.Ignore = true;
+						Help.ShowHelp();
 						return;
 				}
 			};

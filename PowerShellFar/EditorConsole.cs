@@ -204,7 +204,7 @@ namespace PowerShellFar
 			PowerShell = null;
 
 			// skip some keys
-			if (!e.Key.KeyDown || e.Key.CtrlAltShift != ControlKeyStates.None)
+			if (!e.Key.KeyDown)
 				return;
 
 			// skip if selected
@@ -215,161 +215,195 @@ namespace PowerShellFar
 			{
 				case VKeyCode.Enter:
 					{
-						e.Ignore = true;
-						Invoke();
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						{
+							// [Enter]
+							e.Ignore = true;
+							Invoke();
+						}
 						return;
 					}
 				case VKeyCode.Tab:
 					{
-						if (Editor.IsLastLine)
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
-							e.Ignore = true;
-							if (Runspace == null)
-								EditorKit.ExpandCode(Editor.CurrentLine);
-							else
-								ExpandCode(Editor.CurrentLine);
+							// [Tab]
+							if (Editor.IsLastLine)
+							{
+								e.Ignore = true;
+								if (Runspace == null)
+									EditorKit.ExpandCode(Editor.CurrentLine);
+								else
+									ExpandCode(Editor.CurrentLine);
 
-							Editor.Redraw();
+								Editor.Redraw();
+							}
 						}
 						return;
 					}
 				case VKeyCode.Escape:
 					{
-						if (!Editor.IsLastLine || Editor.CurrentLine.Length == 0)
-							return;
-
-						e.Ignore = true;
-						ILine line = Editor.CurrentLine;
-						line.Text = string.Empty;
-						line.Pos = 0;
-						Editor.Redraw();
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						{
+							// [Esc]
+							if (Editor.IsLastLine && Editor.CurrentLine.Length > 0)
+							{
+								e.Ignore = true;
+								ILine line = Editor.CurrentLine;
+								line.Text = string.Empty;
+								line.Pos = 0;
+								Editor.Redraw();
+							}
+						}
 						return;
 					}
 				case VKeyCode.End:
 					{
-						if (!Editor.IsLastLine)
-							return;
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						{
+							// [End]
+							if (!Editor.IsLastLine)
+								return;
 
-						ILine curr = Editor.CurrentLine;
-						if (curr.Pos != curr.Length)
-							return;
+							ILine curr = Editor.CurrentLine;
+							if (curr.Pos != curr.Length)
+								return;
 
-						string pref = curr.Text;
-						if (pref.Length > 0 && pref[0] != '*')
-							pref = "^" + Regex.Escape(pref);
-						UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(pref);
-						string code = m.Show();
-						if (code == null)
-							return;
+							string pref = curr.Text;
+							if (pref.Length > 0 && pref[0] != '*')
+								pref = "^" + Regex.Escape(pref);
+							UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(pref);
+							string code = m.Show();
+							if (code == null)
+								return;
 
-						e.Ignore = true;
-						curr.Text = code;
-						curr.Pos = -1;
-						Editor.Redraw();
+							e.Ignore = true;
+							curr.Text = code;
+							curr.Pos = -1;
+							Editor.Redraw();
+						}
 						return;
 					}
 				case VKeyCode.UpArrow:
 					goto case VKeyCode.DownArrow;
 				case VKeyCode.DownArrow:
 					{
-						if (!Editor.IsLastLine)
-							return;
-
-						string lastUsedCmd = null;
-						if (History.Cache == null)
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
-							// don't lose not empty line!
-							if (Editor.CurrentLine.Length > 0)
+							// [Up], [Down]
+							if (!Editor.IsLastLine)
 								return;
-							History.Cache = History.GetLines(0);
-							History.CacheIndex = History.Cache.Length;
-						}
-						else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
-						{
-							lastUsedCmd = History.Cache[History.CacheIndex];
-						}
-						string code;
-						if (e.Key.VirtualKeyCode == 38)
-						{
-							for (; ; )
-							{
-								if (--History.CacheIndex < 0)
-								{
-									code = string.Empty;
-									History.CacheIndex = -1;
-								}
-								else
-								{
-									code = History.Cache[History.CacheIndex];
-									if (code == lastUsedCmd)
-										continue;
-								}
-								break;
-							}
-						}
-						else
-						{
-							for (; ; )
-							{
-								if (++History.CacheIndex >= History.Cache.Length)
-								{
-									code = string.Empty;
-									History.CacheIndex = History.Cache.Length;
-								}
-								else
-								{
-									code = History.Cache[History.CacheIndex];
-									if (code == lastUsedCmd)
-										continue;
-								}
-								break;
-							}
-						}
 
-						e.Ignore = true;
-						ILine curr = Editor.CurrentLine;
-						curr.Text = code;
-						curr.Pos = -1;
-						Editor.Redraw();
+							string lastUsedCmd = null;
+							if (History.Cache == null)
+							{
+								// don't lose not empty line!
+								if (Editor.CurrentLine.Length > 0)
+									return;
+								History.Cache = History.GetLines(0);
+								History.CacheIndex = History.Cache.Length;
+							}
+							else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
+							{
+								lastUsedCmd = History.Cache[History.CacheIndex];
+							}
+							string code;
+							if (e.Key.VirtualKeyCode == 38)
+							{
+								for (; ; )
+								{
+									if (--History.CacheIndex < 0)
+									{
+										code = string.Empty;
+										History.CacheIndex = -1;
+									}
+									else
+									{
+										code = History.Cache[History.CacheIndex];
+										if (code == lastUsedCmd)
+											continue;
+									}
+									break;
+								}
+							}
+							else
+							{
+								for (; ; )
+								{
+									if (++History.CacheIndex >= History.Cache.Length)
+									{
+										code = string.Empty;
+										History.CacheIndex = History.Cache.Length;
+									}
+									else
+									{
+										code = History.Cache[History.CacheIndex];
+										if (code == lastUsedCmd)
+											continue;
+									}
+									break;
+								}
+							}
+
+							e.Ignore = true;
+							ILine curr = Editor.CurrentLine;
+							curr.Text = code;
+							curr.Pos = -1;
+							Editor.Redraw();
+						}
 						return;
 					}
 				case VKeyCode.Delete:
 					{
-						if (!Editor.IsLastLine)
-							return;
-
-						ILine curr = Editor.CurrentLine;
-						if (curr.Length > 0)
-							return;
-
-						e.Ignore = true;
-
-						Editor.Begin();
-						Point pt = Editor.Cursor;
-						for (int i = pt.Y - 1; i >= 0; --i)
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
-							string text = Editor.Lines[i].Text;
-							if (text == "<=")
-							{
-								Editor.Selection.Select(SelectionType.Stream, 0, i, -1, pt.Y);
-								Editor.Selection.Clear();
-								break;
-							}
-							if (text == "=>")
-							{
-								pt = new Point(-1, i + 1);
-								continue;
-							}
-						}
-						Editor.End();
+							// [Del]
+							if (!Editor.IsLastLine)
+								return;
 
-						Editor.Redraw();
+							ILine curr = Editor.CurrentLine;
+							if (curr.Length > 0)
+								return;
+
+							e.Ignore = true;
+
+							Editor.Begin();
+							Point pt = Editor.Cursor;
+							for (int i = pt.Y - 1; i >= 0; --i)
+							{
+								string text = Editor.Lines[i].Text;
+								if (text == "<=")
+								{
+									Editor.Selection.Select(SelectionType.Stream, 0, i, -1, pt.Y);
+									Editor.Selection.Clear();
+									break;
+								}
+								if (text == "=>")
+								{
+									pt = new Point(-1, i + 1);
+									continue;
+								}
+							}
+							Editor.End();
+
+							Editor.Redraw();
+						}
 						return;
 					}
 				case VKeyCode.F1:
 					{
-						e.Ignore = true;
-						OnF1();
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						{
+							// [F1]
+							e.Ignore = true;
+							OnF1();
+						}
+						else if (e.Key.CtrlAltShift == ControlKeyStates.ShiftPressed)
+						{
+							// [ShiftF1]
+							e.Ignore = true;
+							Help.ShowHelp();
+						}
 						return;
 					}
 				default:
