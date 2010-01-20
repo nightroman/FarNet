@@ -82,7 +82,8 @@ for($$ = 0; $$ -lt $cmds.Count; ++$$) {
 	### SYNTAX
 	''
 	'SYNTAX'
-	$cmd.Definition -split '\r?\n' | .{process{ ''; $_ }}
+	$syntax = $cmd.Definition.Replace('[-Verbose] [-Debug] [-ErrorAction <ActionPreference>] [-WarningAction <ActionPreference>] [-ErrorVariable <String>] [-WarningVariable <String>] [-OutVariable <String>] [-OutBuffer <Int32>]', '[<CommonParameters>]')
+	$syntax -split '\r?\n' | .{process{ ''; $_ }}
 
 	### PARAMETERS
 	''

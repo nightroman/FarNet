@@ -250,8 +250,8 @@ namespace PowerShellFar
 		/// </summary>
 		static void OnKeyPSFile(object sender, KeyEventArgs e)
 		{
-			// skip some keys
-			if (!e.Key.KeyDown || e.Key.CtrlAltShift != ControlKeyStates.None)
+			// skip keys up
+			if (!e.Key.KeyDown)
 				return;
 
 			// editor; skip if selected
@@ -259,24 +259,43 @@ namespace PowerShellFar
 
 			switch (e.Key.VirtualKeyCode)
 			{
+				case VKeyCode.F1:
+					{
+						if (e.Key.CtrlAltShift == ControlKeyStates.ShiftPressed)
+						{
+							// [ShiftF1]
+							e.Ignore = true;
+							Help.ShowHelp();
+						}
+						return;
+					}
 				case VKeyCode.F5:
 					{
-						InvokeScriptFromEditor(editor);
-						break;
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						{
+							// [F5]
+							e.Ignore = true;
+							InvokeScriptFromEditor(editor);
+						}
+						return;
 					}
 				case VKeyCode.Tab:
 					{
-						if (editor.Selection.Exists)
-							return;
-
-						ILine line = editor.CurrentLine;
-						string text = line.Text;
-						int pos = line.Pos - 1;
-						if (pos >= 0 && pos < line.Length && text[pos] != ' ' && text[pos] != '\t')
+						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
-							e.Ignore = true;
-							A.Psf.ExpandCode(line);
-							editor.Redraw();
+							// [Tab]
+							if (!editor.Selection.Exists)
+							{
+								ILine line = editor.CurrentLine;
+								string text = line.Text;
+								int pos = line.Pos - 1;
+								if (pos >= 0 && pos < line.Length && text[pos] != ' ' && text[pos] != '\t')
+								{
+									e.Ignore = true;
+									A.Psf.ExpandCode(line);
+									editor.Redraw();
+								}
+							}
 						}
 						return;
 					}
@@ -367,7 +386,6 @@ namespace PowerShellFar
 			if (ok && toCleanCmdLine && wt != WindowType.Editor)
 				A.Far.CommandLine.Text = string.Empty;
 		}
-
 	}
 
 	/// <summary>

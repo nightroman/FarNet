@@ -53,6 +53,11 @@ namespace PowerShellFar
 			// register menu
 			Far.RegisterTool(this, Res.Name, OnOpen, ToolOptions.F11Menus);
 
+			// editor events: OnEditorOpened1 should be called always and first
+			// to do Invoking() (at least for TabExpansion) and the startup code
+			Far.AnyEditor.Opened += EditorKit.OnEditorOpened1;
+			Far.AnyEditor.Opened += EditorKit.OnEditorOpened2;
+
 			// connect actor
 			A.Psf.Connect();
 		}

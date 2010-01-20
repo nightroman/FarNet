@@ -211,5 +211,10 @@ namespace PowerShellFar
 			}
 		}
 
+		/// <summary>
+		/// Test mode for internal use only.
+		/// </summary>
+		public long Test { get; set; }
+
 	}
 }

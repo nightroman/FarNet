@@ -10,7 +10,6 @@ Export-FarSettings.ps1 Exports Far Manager settings.
 Format-Chart.ps1 Formats output as a table with the last chart column.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
 Get-TextLink-.ps1 Gets a text link to the current editor line.
-Get-Usage.ps1 Gets command syntax description.
 Go-Head-.ps1 Goes to the head of panel files or directories.
 Go-Home-.ps1 Goes to or selects to extended home position in the editor
 Go-Selection-.ps1 Goes to the current selection start\end position
@@ -57,3 +56,4 @@ Test Tests and demos
 Update-FarManager.ps1 Updates Far Manager 2.x and standard plugins.
 Update-PowerShellFar.ps1 Updates FarNet, PowerShellFar and API help.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
+Get-Usage.ps1 Gets command syntax description.

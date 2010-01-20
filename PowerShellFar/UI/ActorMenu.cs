@@ -56,6 +56,7 @@ namespace PowerShellFar.UI
 			AddTool(Res.MenuSnapin, delegate { A.Psf.ShowModules(); }, ToolOptions.F11Menus);
 			AddTool(Res.MenuDebugger, delegate { A.Psf.ShowDebugger(); }, ToolOptions.F11Menus);
 			AddTool(Res.MenuError, delegate { A.Psf.ShowErrors(); }, ToolOptions.F11Menus);
+			AddTool(Res.MenuHelp, delegate { A.Psf.ShowHelp(); }, ToolOptions.F11Menus);
 
 			_toSeparate = true;
 			if (_pendingItems != null)

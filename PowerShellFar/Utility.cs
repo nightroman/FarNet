@@ -162,8 +162,7 @@ namespace PowerShellFar
 			MenuSnapin = "&8. Modules+...",
 			MenuDebugger = "&9. Debugger...",
 			MenuError = "&0. Errors...",
-			MenuUserMenu = "&-. User tools...",
-			MenuUserCommand = "&=. User code",
+			MenuHelp = "&-. Help",
 			// errors
 			AskSaveModified = "Would you like to save modified data?",
 			EditorConsoleCannotComplete = "Editor console can't complete the command\nbecause its window is not current at this moment.",
