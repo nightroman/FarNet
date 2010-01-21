@@ -1161,36 +1161,26 @@ output, see ~Invoking console applications~@ConsoleApplications@.
 
 #OTHER NOTES#
 
-*) You can change job thread priority if it is really needed. E.g. put this
-command as the first command of a job code:
+If you close Far safely [F10] and jobs still exist in the job list then for any
+job you are prompted to abort it, wait for its exit, view its output or discard
+all jobs and output. It is done with GUI message boxes and Notepad.exe because
+on exiting Far UI is not available.
 
-	[System.Threading.Thread]::CurrentThread.Priority = 'Lowest'
+If it is not enough then there is another way. This macro gets total control of
+[F10] in panels:
 
-*) If you close Far safely (F10) and jobs still exist in the job list then for
-any job you are prompted to abort it, wait for its exit, view its output or
-discard all jobs and output. It is done with GUI message boxes and Notepad.exe
-because on exiting Far UI is not available.
+	$Far.Macro.Install(@@{
+		Name = 'F10'
+		Area = 'Shell'
+		Description = 'PSF: Quit Far'
+		Sequence = 'F11 X 1 "if ($Psf.CanExit()) { $Far.Quit() }" Enter'
+	})
 
-If it is not enough then there is another way. Next two steps get total control
-of [F10] event:
+	(where X is the PowerShellFar hotkey in the plugins menu)
 
-	1) add a command to Far user menu (F2):
-
-		F10:  Exit
-		    >: if ($Psf.CanExit()) { $Far.PostKeys('F10', $true) } ##
-
-	2) create the following file panels macro for F10:
-
-		REGEDIT4
-		[-HKEY_CURRENT_USER\Software\Far2\KeyMacros\Shell\F10]
-		[HKEY_CURRENT_USER\Software\Far2\KeyMacros\Shell\F10]
-		"Sequence"="F2 F10"
-		"Description"="Exit"
-		"DisableOutput"=dword:00000001
-
-Now when you press F10 and there are jobs in the background Far does not exit
-but instead the job menu is shown so that you can manage your jobs or exit the
-menu and continue work in Far.
+Now when you press [F10] and there are jobs in the background Far does not exit
+but instead the job menu is shown so that you can manage your jobs or cancel
+the menu and continue work in Far.
 
 
 @Suffix
@@ -1882,15 +1872,15 @@ your PowerShell code.
 
 #Code (PowerShell):#
 
-	## load assembly (perhaps in profile if it is always used)
+	## load the assembly (perhaps in a profile if it is always used)
 	Add-Type -Path "<path>\HelloWorld.dll"
 
-	## create our class passing $Far there
-	## (note: if the code is in profile then all scripts can use $Hello)
+	## create the class sending $Far there
+	## (if the code is in a profile then all scripts see $Hello)
 	$Hello = New-Object ClassLibrary1.Class1 $Far
 
-	## use anything public from $Hello, e.g. call HelloWorld()
-	$result = $Hello.HelloWorld("This is example of parameter")
+	## use public members in $Hello, e.g. call HelloWorld()
+	$result = $Hello.HelloWorld("This is example of a parameter")
 
 
 #Advantages#
@@ -1901,18 +1891,17 @@ for other .NET plugins.
 - Simplicity: .NET assembly contains pure functionality, no extra plugin
 infrastructure.
 
-- Flexibility: now you can decide how to use it: from command line or from a
-menu or from a script or whatever. PowerShellFar provides many choices.
+- Flexibility: now you can decide how to use it: from the command line or a
+menu or a script or whatever. PowerShellFar provides many choices.
 
 - This assembly is loaded only when needed and once even if Add-Type is called
-many times.
+many times (if it is in a profile then it is always loaded, indeed).
 
 
 #Way 3 - Compile .NET code dynamically#
 
 Test-Zoo.cs defines some C## code; Test-Zoo-.ps1 shows how to compile it
-dynamically. This is also done by Add-Type, see more about this cmdlet in
-PowerShell manuals.
+dynamically. This is also done by the Add-Type cmdlet.
 
 
 @FAQ
