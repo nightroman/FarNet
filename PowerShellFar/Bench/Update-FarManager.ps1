@@ -26,9 +26,9 @@
 	the archive, e.g. user plugins and files and standard files excluded now.
 
 .EXAMPLE
-	# This command is suitable for the Far command line or the user menu. Also,
-	# it keeps the console opened, so that you can view the output.
-	start powershell -noexit Update-FarManager
+	# This command starts update in a new console and keeps it opened to view
+	# the output. Then it tells Far to exit because update will wait for this.
+	>: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()
 #>
 
 param

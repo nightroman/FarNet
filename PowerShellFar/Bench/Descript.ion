@@ -56,4 +56,3 @@ Test Tests and demos
 Update-FarManager.ps1 Updates Far Manager 2.x and standard plugins.
 Update-PowerShellFar.ps1 Updates FarNet, PowerShellFar and API help.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
-Get-Usage.ps1 Gets command syntax description.

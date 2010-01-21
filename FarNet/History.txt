@@ -2,8 +2,7 @@ http://code.google.com/p/farnet/
 
 = 4.2.28 =
 
-*) New method IFar.Quit(): Tells Far to quit. (Far 2.0.1348 ACTL_QUIT). It's a
-very useful method for automating scenarios where Far must not be running.
+*) New method IFar.Quit(): Tells Far to exit. (Far 2.0.1348 ACTL_QUIT).
 
 = 4.2.27 =
 

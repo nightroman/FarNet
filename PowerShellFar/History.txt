@@ -7,9 +7,21 @@ http://code.google.com/p/farnet/
 code. Namely, when a macro is in progress all histories (dropdown list and PSF
 commands) are disabled. So now we do not have to have a menu item to invoke a
 PSF command by a macro, a macro itself can contain the command. Example: put
-this macro to the Common area to exit Far from anywhere except menus:
+this macro to the Common area to quit Far from anywhere (except menus):
 F11 X 1 "$Far.Quit()" Enter
-(where X is the PowerShellFar hotkey in the Far plugin menu)
+(where X is the PowerShellFar hotkey in the plugins menu)
+
+*) A few tips about new FarNet method $Far.Quit(). Some update, backup, restore
+commands require that Far is not running:
+-- Update-FarManager.ps1
+-- Update-PowerShellFar.ps1
+-- Export-FarSettings.ps1
+-- Import-FarSettings.ps1
+-- ...
+
+They all can be started from the command line or the user menu like this:
+>: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()
+("-noexit" is used to keep a new console opened, it's up to you)
 
 *) Main menu: new action "&-. Help": for the current token in any editor line
 (editor, editbox, cmdline) it gets PS help and shows output in the viewer. In
@@ -17,11 +29,15 @@ PowerShell code editors (.ps1, .psm1, .psd1, .psfconsole, input code editboxes)
 this action is associated with [ShiftF1]. It can be also called from scripts as
 $Psf.ShowHelp().
 
-*) PowerShellFar.hrc for Colorer: added yet missed operator -bnot.
+*) Script Get-Usage.ps1 is replaced with internal function Get-FarHelp and
+removed. Keep or remove it yourself, later it can be downloaded from:
+http://code.google.com/p/farnet/source/browse/tags/4.2.26/
+PowerShellFar/Bench/Get-Usage.ps1
 
-?? kill?
-*) Get-Usage.ps1: replaced list of common parameters in SYNTAX with
-[<CommonParameters>] (so the original Get-Help does).
+*) TabExpansion.ps1: fixed funny problems with $Line.[Tab] and similar
+(conflict with internal variable names used by TabExpansion itself).
+
+*) PowerShellFar.hrc for Colorer: added yet missed operator -bnot.
 
 = 4.2.27 =
 
