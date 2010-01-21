@@ -37,6 +37,7 @@ namespace PowerShellFar
 				{
 					if (token.Type == PSTokenType.Command)
 					{
+						//! Call Help, not Get-Help, for Get-FarHelp fallback.
 						script = "Help $args[1] -Full > $args[0]";
 						args = new object[] { null, command };
 					}

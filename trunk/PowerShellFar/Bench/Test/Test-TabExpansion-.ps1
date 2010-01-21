@@ -26,16 +26,16 @@ Remove-Variable -Scope Global TypeCache*
 # Tag: Trick: test function returns an error message if any.
 # Result is piped to Write-Error, so that formal error is right in the line with Write-Error.
 # Compare: if we throw in a test function then error source is the test function, more tricky.
-function Test($line, $word, $assert)
+function Test($line_, $word_, $assert_)
 {
-	$_ = TabExpansion $line $word
-	if (!(. $assert)) {
+	$_ = TabExpansion $line_ $word_
+	if (!(. $assert_)) {
 		@"
 
 *** TabExpansion test failed
-line = $line
-word = $word
-assert = $assert
+line = $line_
+word = $word_
+assert = $assert_
 result:
 $($_ -join "`n")
 "@
@@ -174,6 +174,10 @@ Test '.o' '.o' { $_ -eq '.OUTPUTS' } | Write-Error
 Test '.n' '.n' { $_ -eq '.NOTES' } | Write-Error
 Test '.e' '.e' { $_ -eq '.EXAMPLE' } | Write-Error
 Test '.l' '.l' { $_ -eq '.LINK' } | Write-Error
+
+### Fix of $Line.[Tab] (name is exactly 'LINE')
+$Line = $Far.CommandLine
+Test '' '$Line.' { $_ -contains '$Line.Eol' } | Write-Error
 
 ### script parameters
 # script parameters; !! use $env:TEMP to avoid spaces in the path
