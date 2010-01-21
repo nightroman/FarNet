@@ -73,7 +73,7 @@ for(;;) {
 	}}
 
 	### show menu
-	$menu.Show()
+	$null = $menu.Show()
 
 	### go back (check this case always)
 	if ($menu.BreakKey -eq ([FarNet.VKeyCode]::Backspace)) {

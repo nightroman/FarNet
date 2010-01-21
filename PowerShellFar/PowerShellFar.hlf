@@ -202,6 +202,13 @@ See ~Modules menu~@MenuModules@.
 Shows a menu allowing you to view PowerShell errors ($Error items) as menu
 items. See ~Errors menu~@MenuErrors@.
 
+#Help#
+
+For the current token in an editor line (editor, editbox, cmdline) it gets help
+information and shows it in the viewer. In code editors (*.ps1, *.psm1, *.psd1,
+*.psfconsole, input code boxes) this action is associated with [ShiftF1]. It is
+exposed for scripting as #$Psf.ShowHelp()#.
+
 #Others#
 
 Other tools exist in the menu only if you have added them yourself, for example
@@ -554,8 +561,8 @@ $#Editor console menu#
 ~Contents~@Contents@
 ~Editor console~@EditorConsole@
 
-This menu allows to open a new editor console or one of editor consoles
-previously saved in the special directory for console files.
+The menu opens a new editor console or an editor console file previously saved
+in the console files directory.
 
 [#Enter#] Opens a new or selected existing console file in the default global
 PowerShell session. Commands are invoked synchronously in the default global
@@ -569,6 +576,9 @@ PowerShell session. Commands are invoked asynchronously in a private remote
 runspace. You are prompted to enter a computer name and a user domain\name. If
 a user name is specified then a password is also requested. See PowerShell
 about_remote* help topics for more details.
+
+[#Space#] (If the menu is opened from a file panel) Opens the console files
+directory and sets the selected file current.
 
 
 @PowerPanel

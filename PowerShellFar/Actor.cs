@@ -612,7 +612,7 @@ Continue with this current directory?
 				// macro mode
 				return A.Far.Input(null);
 			}
-			
+
 		}
 
 		/// <summary>
@@ -788,8 +788,13 @@ Continue with this current directory?
 		}
 
 		/// <summary>
-		/// Shows PowerShell help, normally for the current token in any editor line.
+		/// Shows help, normally for the current token in an editor line.
 		/// </summary>
+		/// <remarks>
+		/// For the current token in an editor line (editor, editbox, cmdline) it gets help
+		/// information and shows it in the viewer. In code editors (*.ps1, *.psm1, *.psd1,
+		/// *.psfconsole, input code boxes) this action is associated with [ShiftF1].
+		/// </remarks>
 		public void ShowHelp()
 		{
 			Help.ShowHelp();

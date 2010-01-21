@@ -1,16 +1,14 @@
 
 <#
 .SYNOPSIS
-	Installs macros for some PowerShellFar tools (template).
+	Installs macros for PowerShellFar tools (template).
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	This script installs key macros for tools mostly called from PowerShellFar
-	menu, see Profile-.ps1 for its example. This macro set is used by the
-	author and provided only for demo, you should use your own.
+	DO NOT USE THIS DIRECTLY, USE YOUR OWN MACROS! THIS IS ONLY AN EXAMPLE.
 
-	These macros covers only a part of available PowerShellFar tools. But they
-	should give an idea how to assign macros to other user tools.
+	These macros cover some available PowerShellFar tools. They give an idea
+	how to assign macros to the user tools via menus or the input code box.
 
 	For example in editor: "Go\Select to extended home" (see Go-Home-.ps1 and
 	menu) are not covered by macros, because the author uses event handler way
@@ -18,7 +16,7 @@
 	what way is better for keys: macros or events.
 
 .LINK
-	FarNet IKeyMacroHost.Install
+	FarNet.IMacro.Install
 #>
 
 param
@@ -33,6 +31,9 @@ $Far.Macro.Install(@(
 
 	### Common (all areas)
 	@{ Area = 'Common' }
+
+	### Favorites menu
+	@{ Name = 'CtrlShiftA'; Description = 'PSF: Favorites'; Sequence = "F11 $Key 1 " + '"Menu-Favorites-.ps1" Enter' }
 
 	### Quit Far
 	@{ Name = 'CtrlShiftQ'; Description = 'PSF: Quit Far'; Sequence = "F11 $Key 1 " + '"$Far.Quit()" Enter' }
