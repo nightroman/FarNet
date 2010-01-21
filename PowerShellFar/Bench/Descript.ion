@@ -17,7 +17,7 @@ Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-FarSettings.ps1 Imports Far Manager settings.
 Import-Panel-.ps1 Imports objects from files to a panel
 Indent-Selection-.ps1 Indents or outdents selected lines in the editor
-Install-Macro-.ps1 Installs macros for some PowerShellFar tools (template).
+Install-Macro-.ps1 Installs macros for PowerShellFar tools (template).
 Invoke-Editor-.ps1 Invokes a file from the current editor.
 Invoke-Environment.ps1 Invokes a command and imports its environment variables.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk) in a few ways.
