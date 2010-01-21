@@ -837,7 +837,7 @@ namespace PowerShellFar
 			m.Add("&Any objects");
 			m.Add(string.Empty).IsSeparator = true;
 			int i = 2;
-			foreach (object o in A.Psf.InvokeCode("Get-PSDrive-ForMenu"))
+			foreach (object o in A.Psf.InvokeCode("Get-PowerShellFarDriveName"))
 			{
 				++i;
 				FarItem mi = m.Add(o.ToString());

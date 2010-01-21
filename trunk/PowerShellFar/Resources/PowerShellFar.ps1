@@ -1,19 +1,22 @@
 
 <#
 .SYNOPSIS
-	PowerShellFar internal profile
+	PowerShellFar internal profile.
 	Author: Roman Kuzmin
 #>
 
 # Ignore errors
 trap { continue }
 
+# Hide 'more.com'
+Set-Alias more.com more
+
 # Add Far type extensions
 Update-TypeData "$($Psf.AppHome)\PowerShellFar.types.ps1xml" -ErrorAction 'Continue'
 
 <#
 .SYNOPSIS
-	Far friendly implementation.
+	Far friendly 'Clear-Host'.
 #>
 function Clear-Host
 {
@@ -23,7 +26,7 @@ function Clear-Host
 
 <#
 .SYNOPSIS
-	Far friendly implementation.
+	Far friendly 'more'.
 #>
 function more
 (
@@ -42,7 +45,7 @@ function more
 
 <#
 .SYNOPSIS
-	Far friendly implementation.
+	Far friendly 'Get-History'.
 #>
 function Get-History
 (
@@ -55,7 +58,7 @@ function Get-History
 
 <#
 .SYNOPSIS
-	Far friendly implementation.
+	Far friendly 'Invoke-History'.
 #>
 function Invoke-History
 {
@@ -63,14 +66,11 @@ function Invoke-History
 	$Psf.ShowHistory()
 }
 
-# Completes replacement of more
-Set-Alias more.com more
-
 <#
 .SYNOPSIS
-	Gets names for PSDrive menu
+	PSF: Gets names for the drives menu.
 #>
-function Get-PSDrive-ForMenu
+function Get-PowerShellFarDriveName
 {
 	$extra = @{}
 	foreach($d in [System.IO.DriveInfo]::GetDrives()) {
@@ -133,146 +133,147 @@ function help
 	)
 
 	$output = $null
-	try { $output = Get-Help @PSBoundParameters }
-	catch {}
+	try {
+		$output = Get-Help @PSBoundParameters
+	}
+	catch {
+	}
 
 	if ($output) {
 		$output
 	}
 	else {
-		Write-Warning 'Get-Help fails or gets nothing, Get-FarHelp is called.'
 		Get-FarHelp $Name
 	}
 }
 
 <#
 .SYNOPSIS
-	Gets command syntax description.
+	Gets command details.
 
 .DESCRIPTION
 	For cmdlets this description is brief and yet useful: it contains detailed
-	information about parameter types and properties, aliases, enum values and
-	etc. Also it works even for cmdlets with no help provided (Far cmdlets).
+	information about parameter types and properties, aliases, enums, and etc.
+	Also, it works even for cmdlets with no standard help provided.
 #>
 function Get-FarHelp
 (
 	[Parameter(Mandatory = $true, Position = 0)]
 	[Alias('Name')]
-	# Command name. Alias will be resolved.
+	# The command name. Aliases are resolved.
 	$CommandName
 )
 {
-# to exclude common parameters
-$common = @('Verbose', 'Debug', 'ErrorAction', 'ErrorVariable', 'WarningAction', 'WarningVariable', 'OutVariable', 'OutBuffer')
+	# to exclude common parameters
+	$common = @('Verbose', 'Debug', 'ErrorAction', 'ErrorVariable', 'WarningAction', 'WarningVariable', 'OutVariable', 'OutBuffer')
 
-# get command
-$cmds = @(Get-Command $CommandName -ErrorAction Continue)
-for($$ = 0; $$ -lt $cmds.Count; ++$$) {
-	$cmd = $cmds[$$]
+	# get commands
+	$cmds = @(Get-Command $CommandName -ErrorAction Continue)
+	for($$ = 0; $$ -lt $cmds.Count; ++$$) {
+		$cmd = $cmds[$$]
 
-	# resolve alias
-	if ($cmd.CommandType -eq 'Alias') {
-		$cmds += @(Get-Command $cmd.Definition)
-		continue
-	}
+		# resolve an alias, post commands
+		if ($cmd.CommandType -eq 'Alias') {
+			$cmds += @(Get-Command $cmd.Definition)
+			continue
+		}
 
-	# separator for 2+ command
-	if ($$) { '-' * 80 }
+		# header
+		'=' * 80
+		'{0} {1}' -f $cmd.CommandType, $cmd.Name
 
-	# case: not cmdlet
-	if ($cmd.CommandType -ne 'Cmdlet') {
-		$cmd | Format-List *
-		continue
-	}
+		# case: not cmdlet
+		if ($cmd.CommandType -ne 'Cmdlet') {
+			$cmd | Format-List * | Out-String -Width 9999
+			continue
+		}
 
-	# case: cmdlet
-	$cmdData = New-Object Management.Automation.CommandMetadata $cmd.ImplementingType
+		# case: cmdlet
+		$cmdData = New-Object Management.Automation.CommandMetadata $cmd.ImplementingType
 
-	## NAME
-	''
-	'NAME'
-	'    ' + $cmd.Name
-
-	## Description
-	foreach($a in $cmd.ImplementingType.GetCustomAttributes($false)) { if ($a -is [System.ComponentModel.DescriptionAttribute]) {
-		'    ' + $a.Description
-	}}
-
-	## SYNTAX
-	''
-	'SYNTAX'
-	$syntax = $cmd.Definition.Replace('[-Verbose] [-Debug] [-ErrorAction <ActionPreference>] [-WarningAction <ActionPreference>] [-ErrorVariable <String>] [-WarningVariable <String>] [-OutVariable <String>] [-OutBuffer <Int32>]', '[<CommonParameters>]')
-	$syntax -split '\r?\n' | .{process{ ''; $_ }}
-
-	## PARAMETERS
-	''
-	'PARAMETERS'
-	$cmd.ParameterSets | .{process{ $_.Parameters }} | Sort-Object { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name -Unique | .{process{if ($common -notcontains $_.Name) {
+		## NAME
 		''
+		'NAME'
+		'    ' + $cmd.Name
 
-		## Name
-		'-' + $_.Name
+		## Description
+		foreach($a in $cmd.ImplementingType.GetCustomAttributes($false)) { if ($a -is [System.ComponentModel.DescriptionAttribute]) {
+			'    ' + $a.Description
+		}}
 
-		## HelpMessage
-		if ($_.HelpMessage) {
-			'    ' + $_.HelpMessage
-		}
+		## SYNTAX
+		''
+		'SYNTAX'
+		$syntax = $cmd.Definition.Replace('[-Verbose] [-Debug] [-ErrorAction <ActionPreference>] [-WarningAction <ActionPreference>] [-ErrorVariable <String>] [-WarningVariable <String>] [-OutVariable <String>] [-OutBuffer <Int32>]', '[<CommonParameters>]')
+		$syntax -split '\r?\n' | .{process{ ''; $_ }}
 
-		## ParameterType
-		if ($_.ParameterType -ne [System.Management.Automation.SwitchParameter]) {
-			if (($_.ParameterType -match '^System\.(\w+)$') -or ($_.ParameterType -match '^System\.Management\.Automation\.(PSObject)$')) {
-				'    [' + $matches[1] + ']'
+		## PARAMETERS
+		''
+		'PARAMETERS'
+		$cmd.ParameterSets | .{process{ $_.Parameters }} | Sort-Object { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name -Unique | .{process{if ($common -notcontains $_.Name) {
+			''
+
+			## Name
+			'-' + $_.Name
+
+			## HelpMessage
+			if ($_.HelpMessage) {
+				'    ' + $_.HelpMessage
 			}
-			else {
-				'    [' + $_.ParameterType + ']'
+
+			## ParameterType
+			if ($_.ParameterType -ne [System.Management.Automation.SwitchParameter]) {
+				if (($_.ParameterType -match '^System\.(\w+)$') -or ($_.ParameterType -match '^System\.Management\.Automation\.(PSObject)$')) {
+					'    [' + $matches[1] + ']'
+				}
+				else {
+					'    [' + $_.ParameterType + ']'
+				}
 			}
-		}
 
-		## Parameter sets
-		$prmData = $cmdData.Parameters[$_.Name]
-		if ($prmData.ParameterSets) {
-			$prmSets = $prmData.ParameterSets.Keys -join ', '
-			if ($prmSets -ne '__AllParameterSets') {
-				'    - Parameter sets : ' + $prmSets
+			## Parameter sets
+			$prmData = $cmdData.Parameters[$_.Name]
+			if ($prmData.ParameterSets) {
+				$prmSets = $prmData.ParameterSets.Keys -join ', '
+				if ($prmSets -ne '__AllParameterSets') {
+					'    - Parameter sets : ' + $prmSets
+				}
 			}
-		}
 
-		## Enum values
-		if ($_.ParameterType.IsEnum) {
-			'    - Values : ' + [string][Enum]::GetValues($_.ParameterType)
-		}
+			## Enum values
+			if ($_.ParameterType.IsEnum) {
+				'    - Values : ' + [string][Enum]::GetValues($_.ParameterType)
+			}
 
-		## IsMandatory ~ required
-		if ($_.IsMandatory) {
-			'    - Required'
-		}
+			## IsMandatory ~ required
+			if ($_.IsMandatory) {
+				'    - Required'
+			}
 
-		## Position
-		if ($_.Position -ge 0) {
-			'    - Position : ' + ($_.Position + 1)
-		}
+			## Position
+			if ($_.Position -ge 0) {
+				'    - Position : ' + ($_.Position + 1)
+			}
 
-		## ValueFromPipeline
-		if ($_.ValueFromPipeline) {
-			'    - ValueFromPipeline'
-		}
+			## ValueFromPipeline
+			if ($_.ValueFromPipeline) {
+				'    - ValueFromPipeline'
+			}
 
-		## ValueFromPipelineByPropertyName
-		if ($_.ValueFromPipelineByPropertyName) {
-			'    - ValueFromPipelineByPropertyName'
-		}
+			## ValueFromPipelineByPropertyName
+			if ($_.ValueFromPipelineByPropertyName) {
+				'    - ValueFromPipelineByPropertyName'
+			}
 
-		## ValueFromRemainingArguments
-		if ($_.ValueFromRemainingArguments) {
-			'    - ValueFromRemainingArguments'
-		}
+			## ValueFromRemainingArguments
+			if ($_.ValueFromRemainingArguments) {
+				'    - ValueFromRemainingArguments'
+			}
 
-		## Aliases
-		if ($_.Aliases) {
-			'    - Aliases : ' + ($_.Aliases -join ', ')
-		}
-	}}}
-
-	''
-}
+			## Aliases
+			if ($_.Aliases) {
+				'    - Aliases : ' + ($_.Aliases -join ', ')
+			}
+		}}}
+	}
 }

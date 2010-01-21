@@ -38,13 +38,22 @@ namespace PowerShellFar
 			{
 				string[] files = Directory.GetFiles(dir, "*.psfconsole");
 				IMenu menu = A.Far.CreateMenu();
-				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Shift);
-				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Ctrl);
 				menu.AutoAssignHotkeys = true;
 				menu.Title = "Open Editor Console";
 				menu.Bottom = "[Shift+|Ctrl+]Enter";
 				menu.Add("* New console or session *");
 				menu.HelpTopic = A.Psf.HelpTopic + "EditorConsoleMenuOpen";
+
+				IPanel panel = null;
+				if ((A.Far.WindowType == WindowType.Panels) && (null != (panel = A.Far.Panel)) && (panel.Type != PanelType.File))
+					panel = null;
+				
+				// break keys
+				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Shift);
+				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Ctrl);
+				if (panel != null)
+					menu.BreakKeys.Add(VKeyCode.Spacebar);
+
 				if (files.Length > 0)
 				{
 					menu.Add("Saved Consoles").IsSeparator = true;
@@ -54,30 +63,35 @@ namespace PowerShellFar
 				if (!menu.Show())
 					return null;
 
-				switch (menu.BreakKey)
-				{
-					case (VKeyCode.Enter | VKeyMode.Shift): mode = 1; break;
-					case (VKeyCode.Enter | VKeyMode.Ctrl): mode = 2; break;
-				}
-
 				name = menu.Items[menu.Selected].Text;
 				if (name.Length > 0 && name[0] == '*')
 					name = null;
+
+				switch (menu.BreakKey)
+				{
+					case (VKeyCode.Enter | VKeyMode.Shift):
+						mode = 1;
+						break;
+					case (VKeyCode.Enter | VKeyMode.Ctrl):
+						mode = 2;
+						break;
+					case VKeyCode.Spacebar:
+						string path = name == null ? dir + "\\" : Path.Combine(dir, name);
+						panel.GoToPath(path);
+						return null;
+				}
 			}
 
 			// editor
 			IEditor editor = A.Far.CreateEditor();
 
-			// new file, generate a name, set Unicode
+			// new file, generate a name, set Unicode, don't history
 			if (name == null)
 			{
-				name = Kit.ToString(DateTime.Now, "yyMMdd-HHmmss") + ".psfconsole";
+				name = Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + ".psfconsole";
 				editor.CodePage = Encoding.Unicode.CodePage;
+				editor.DisableHistory = true;
 				editor.IsNew = true;
-
-				// don't add to history in silent mode, e.g. when called from [Suspend]
-				if (!prompt)
-					editor.DisableHistory = true;
 			}
 
 			// do not set code page now

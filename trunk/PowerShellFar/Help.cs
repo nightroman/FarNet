@@ -82,15 +82,31 @@ namespace PowerShellFar
 			if (script == null)
 				return;
 
-			args[0] = Path.GetTempFileName();
-			A.Psf.InvokeCode(script, args);
+			bool ok = false;
+			string file = Path.GetTempFileName();
+			try
+			{
+				args[0] = file;
+				A.Psf.InvokeCode(script, args);
+				ok = true;
+			}
+			catch (RuntimeException)
+			{ }
+			finally
+			{
+				if (!ok && File.Exists(file))
+					File.Delete(file);
+			}
 
-			IViewer viewer = A.Far.CreateViewer();
-			viewer.FileName = (string)args[0];
-			viewer.DeleteSource = DeleteSource.File;
-			viewer.DisableHistory = true;
-			viewer.Title = "Help";
-			viewer.Open();
+			if (ok)
+			{
+				IViewer viewer = A.Far.CreateViewer();
+				viewer.FileName = file;
+				viewer.DeleteSource = DeleteSource.File;
+				viewer.DisableHistory = true;
+				viewer.Title = "Help";
+				viewer.Open();
+			}
 		}
 	}
 

@@ -3,13 +3,16 @@ http://code.google.com/p/farnet/
 
 = 4.2.28 =
 
+NEW CONVENIENT WAY FOR PSF MACROS
+
 *) "Invoke input code" dialog is now suitable for macros with plain PowerShell
-code. Namely, when a macro is in progress all histories (dropdown list and PSF
-commands) are disabled. So now we do not have to have a menu item to invoke a
-PSF command by a macro, a macro itself can contain the command. Example: put
-this macro to the Common area to quit Far from anywhere (except menus):
+code. Namely, when a macro is in progress all histories: dropdown list and PSF
+commands, are disabled. So now it is OK to put some PSF code right to a macro.
+Example: macro in the Common area to quit Far from anywhere (except menus):
 F11 X 1 "$Far.Quit()" Enter
 (where X is the PowerShellFar hotkey in the plugins menu)
+
+NEW FEATURE: SCRIPTING FAR EXIT
 
 *) A few tips about new FarNet method $Far.Quit(). Some update, backup, restore
 commands require that Far is not running:
@@ -21,23 +24,29 @@ commands require that Far is not running:
 
 They all can be started from the command line or the user menu like this:
 >: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()
-("-noexit" is used to keep a new console opened, it's up to you)
+("-noexit" here is to keep a new console opened, it's up to you)
 
-*) Main menu: new action "&-. Help": for the current token in any editor line
-(editor, editbox, cmdline) it gets PS help and shows output in the viewer. In
-PowerShell code editors (.ps1, .psm1, .psd1, .psfconsole, input code editboxes)
-this action is associated with [ShiftF1]. It can be also called from scripts as
+POWERSHELL HELP BY F1 IN EDITORS
+
+*) Main menu: new action "&-. Help": For the current token in an editor line
+(editor, editbox, cmdline) it gets help information and shows it in the viewer.
+In code editors (*.ps1, *.psm1, *.psd1, *.psfconsole, input code boxes) this
+action is associated with [ShiftF1]. It is exposed for scripting as
 $Psf.ShowHelp().
 
 *) Script Get-Usage.ps1 is replaced with internal function Get-FarHelp and
-removed. Keep or remove it yourself, later it can be downloaded from:
+removed. Keep or remove it yourself, it can be downloaded from:
 http://code.google.com/p/farnet/source/browse/tags/4.2.26/
 PowerShellFar/Bench/Get-Usage.ps1
 
-*) TabExpansion.ps1: fixed funny problems with $Line.[Tab] and similar
-(conflict with internal variable names used by TabExpansion itself).
+TWEAKS AND FIXES
+
+*) TabExpansion.ps1: fixed funny problems. e.g. with $Line.[Tab]
+(conflicts with internal variable names used by TabExpansion itself).
 
 *) PowerShellFar.hrc for Colorer: added yet missed operator -bnot.
+
+*) Minor tweaks and new features in editor consoles UI.
 
 = 4.2.27 =
 
