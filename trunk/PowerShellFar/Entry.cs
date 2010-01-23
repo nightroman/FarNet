@@ -80,6 +80,12 @@ namespace PowerShellFar
 		}
 
 		///
+		public override bool CanExit()
+		{
+			return A.Psf.CanExit();
+		}
+
+		///
 		public override void Invoking()
 		{
 			A.Psf.Invoking();

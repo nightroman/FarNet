@@ -11,7 +11,7 @@ namespace FarNet
 {;
 IMacro^ Far::Macro::get()
 {
-	return gcnew FarNet::Macro;
+	return gcnew Macro0;
 }
 
 static bool ToBool(Object^ value)
@@ -28,7 +28,7 @@ static String^ GetThreeState(Object^ value1, Object^ value2)
 	return String::Empty;
 }
 
-array<String^>^ Macro::GetNames(String^ area)
+array<String^>^ Macro0::GetNames(String^ area)
 {
 	if (!area) throw gcnew ArgumentNullException("area");
 
@@ -45,7 +45,7 @@ array<String^>^ Macro::GetNames(String^ area)
 	}
 }
 
-MacroData^ Macro::GetData(String^ area, String^ name)
+Macro^ Macro0::GetMacro(String^ area, String^ name)
 {
 	if (!area) throw gcnew ArgumentNullException("area");
 	if (!name) throw gcnew ArgumentNullException("name");
@@ -57,7 +57,9 @@ MacroData^ Macro::GetData(String^ area, String^ name)
 
 	try
 	{
-		MacroData^ r = gcnew MacroData;
+		Macro^ r = gcnew Macro;
+		r->Area = area;
+		r->Name = name;
 		
 		// sequence
 		Object^ value = key->GetValue("Sequence");
@@ -100,57 +102,7 @@ MacroData^ Macro::GetData(String^ area, String^ name)
 	}
 }
 
-void Macro::Install(String^ area, String^ name, MacroData^ data)
-{
-	if (!area) throw gcnew ArgumentNullException("area");
-	if (!name) throw gcnew ArgumentNullException("name");
-	if (!data) throw gcnew ArgumentNullException("data");
-
-	Remove(area, name);
-
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + area + "\\" + name;
-	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
-
-	try
-	{
-		// sequence
-		array<String^>^ lines = Regex::Split(data->Sequence, "\\r\\n|\\r|\\n");
-		if (lines->Length == 1)
-			key->SetValue("Sequence", lines[0]);
-		else
-			key->SetValue("Sequence", lines);
-
-		// others
-		key->SetValue("Description", data->Description);
-		key->SetValue("DisableOutput", data->EnableOutput ? 0 : 1);
-		if (data->DisablePlugins)
-			key->SetValue("NoSendKeysToPlugins", 1);
-		if (data->RunAfterFarStart)
-			key->SetValue("RunAfterFarStart", 1);
-		if (data->CommandLine->Length)
-			key->SetValue((data->CommandLine == "1" ? "NotEmptyCommandLine" : "EmptyCommandLine"), 1);
-		if (data->SelectedText->Length)
-			key->SetValue((data->SelectedText == "1" ? "EVSelection" : "NoEVSelection"), 1);
-		if (data->SelectedItems->Length)
-			key->SetValue((data->SelectedItems == "1" ? "Selection" : "NoSelection"), 1);
-		if (data->PanelIsPlugin->Length)
-			key->SetValue((data->PanelIsPlugin == "1" ? "NoFilePanels" : "NoPluginPanels"), 1);
-		if (data->ItemIsDirectory->Length)
-			key->SetValue((data->ItemIsDirectory == "1" ? "NoFiles" : "NoFolders"), 1);
-		if (data->SelectedItems2->Length)
-			key->SetValue((data->SelectedItems2 == "1" ? "PSelection" : "NoPSelection"), 1);
-		if (data->PanelIsPlugin2->Length)
-			key->SetValue((data->PanelIsPlugin2 == "1" ? "NoFilePPanels" : "NoPluginPPanels"), 1);
-		if (data->ItemIsDirectory2->Length)
-			key->SetValue((data->ItemIsDirectory2 == "1" ? "NoPFiles" : "NoPFolders"), 1);
-	}
-	finally
-	{
-		key->Close();
-	}
-}
-
-void Macro::Remove(String^ area, String^ name)
+void Macro0::Remove(String^ area, String^ name)
 {
 	if (!area) throw gcnew ArgumentNullException("area");
 	if (!name) throw gcnew ArgumentNullException("name");
@@ -170,7 +122,7 @@ void Macro::Remove(String^ area, String^ name)
 	}
 }
 
-void Macro::Load()
+void Macro0::Load()
 {
 	ActlKeyMacro command;
 	command.Command = MCMD_LOADALL;
@@ -178,7 +130,7 @@ void Macro::Load()
 		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
-void Macro::Save()
+void Macro0::Save()
 {
 	ActlKeyMacro command;
 	command.Command = MCMD_SAVEALL;
@@ -186,71 +138,81 @@ void Macro::Save()
 		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
-void Macro::Install(array<System::Collections::IDictionary^>^ dataSet)
+void Macro0::Install(Macro^ macro)
 {
-	Save();
-	
-	int done = 0;
+	if (!macro) throw gcnew ArgumentNullException("macro");
+	if (ES(macro->Area)) throw gcnew ArgumentException("macro.Area cannot be empty.");
+	if (ES(macro->Name)) throw gcnew ArgumentException("macro.Name cannot be empty.");
+
+	Remove(macro->Area, macro->Name);
+
+	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + macro->Area + "\\" + macro->Name;
+	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
+
 	try
 	{
-		MacroData^ data = gcnew MacroData;
-		String^ area;
-		String^ name;
+		// sequence
+		array<String^>^ lines = Regex::Split(macro->Sequence, "\\r\\n|\\r|\\n");
+		if (lines->Length == 1)
+			key->SetValue("Sequence", lines[0]);
+		else
+			key->SetValue("Sequence", lines);
 
-		Dictionary<String^, bool> paths;
-		for each(System::Collections::IDictionary^ map in dataSet)
+		// others
+		key->SetValue("Description", macro->Description);
+		key->SetValue("DisableOutput", macro->EnableOutput ? 0 : 1);
+		if (macro->DisablePlugins)
+			key->SetValue("NoSendKeysToPlugins", 1);
+		if (macro->RunAfterFarStart)
+			key->SetValue("RunAfterFarStart", 1);
+		if (macro->CommandLine->Length)
+			key->SetValue((macro->CommandLine == "1" ? "NotEmptyCommandLine" : "EmptyCommandLine"), 1);
+		if (macro->SelectedText->Length)
+			key->SetValue((macro->SelectedText == "1" ? "EVSelection" : "NoEVSelection"), 1);
+		if (macro->SelectedItems->Length)
+			key->SetValue((macro->SelectedItems == "1" ? "Selection" : "NoSelection"), 1);
+		if (macro->PanelIsPlugin->Length)
+			key->SetValue((macro->PanelIsPlugin == "1" ? "NoFilePanels" : "NoPluginPanels"), 1);
+		if (macro->ItemIsDirectory->Length)
+			key->SetValue((macro->ItemIsDirectory == "1" ? "NoFiles" : "NoFolders"), 1);
+		if (macro->SelectedItems2->Length)
+			key->SetValue((macro->SelectedItems2 == "1" ? "PSelection" : "NoPSelection"), 1);
+		if (macro->PanelIsPlugin2->Length)
+			key->SetValue((macro->PanelIsPlugin2 == "1" ? "NoFilePPanels" : "NoPluginPPanels"), 1);
+		if (macro->ItemIsDirectory2->Length)
+			key->SetValue((macro->ItemIsDirectory2 == "1" ? "NoPFiles" : "NoPFolders"), 1);
+	}
+	finally
+	{
+		key->Close();
+	}
+}
+
+void Macro0::Install(array<Macro^>^ macros)
+{
+	Save();
+
+	if (!macros)
+		return;
+
+	List<String^> done;
+	try
+	{
+		for each(Macro^ macro in macros)
 		{
-			// reset
-			if (!map)
-			{
-				data = gcnew MacroData;
-				area = nullptr;
-				name = nullptr;
-				continue;
-			}
+			String^ path1 = String::Format("{0}\\{1}", macro->Area, macro->Name);
+			String^ path2 = path1->ToUpperInvariant();
+			if (done.IndexOf(path2) >= 0)
+				throw gcnew InvalidOperationException(String::Format("Macro '{0}' is defined twice.", path1));
 
-			// get data
-			for each(String^ key in map->Keys)
-			{
-				Object^ value = map[key];
-				if (EqualsOrdinal(key, "Area"))
-				{
-					area = value->ToString();
-				}
-				else if (EqualsOrdinal(key, "Name"))
-				{
-					name = value->ToString();
-				}
-				else
-				{
-					data->GetType()->InvokeMember(
-						key,
-						BindingFlags::SetProperty | BindingFlags::Public | BindingFlags::Instance | BindingFlags::IgnoreCase,
-						nullptr, data, gcnew array<Object^> { value }, CultureInfo::InvariantCulture);
-				}
-			}
-
-			// not ready?
-			if (ES(area) || ES(name) || data->Sequence->Length == 0)
-				continue;
-
-			// dupe?
-			String^ path = area + "\\" + name;
-			if (paths.ContainsKey(path))
-				throw gcnew ArgumentException("Macros '" + path + "' is defined twice.");
-			paths.Add(path, 0);
-
-			// install
-			Install(area, name, data);
-			++done;
+			done.Add(path2);
+			Install(macro);
 		}
 	}
 	finally
 	{
 		Load();
 	}
-
-	if (done == 0)
-		throw gcnew ArgumentException("No macro is defined. Ensure 'Area', 'Name' and 'Sequence'.");
 }
+
 }

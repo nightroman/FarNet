@@ -48,6 +48,15 @@ void Plugin0::UnloadPlugins()
 	_plugins.Clear();
 }
 
+bool Plugin0::CanExit()
+{
+	for each(BasePlugin^ plugin in _plugins)
+		if (!plugin->CanExit())
+			return false;
+
+	return true;
+}
+
 void Plugin0::LoadPlugins()
 {
 	ReadCache();

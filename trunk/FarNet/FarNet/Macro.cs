@@ -4,12 +4,11 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
-using System.Collections;
 
 namespace FarNet
 {
 	/// <summary>
-	/// Key macros host. Exposed as <see cref="IFar.Macro"/>.
+	/// Key macro operator. Exposed as <see cref="IFar.Macro"/>.
 	/// </summary>
 	/// <remarks>
 	/// Important: your macro changes are all in the storage,
@@ -35,12 +34,12 @@ namespace FarNet
 		/// <param name="area">Macro area or empty string.</param>
 		string[] GetNames(string area);
 		/// <summary>
-		/// Gets key macro data.
+		/// Gets key macro.
 		/// </summary>
 		/// <param name="area">Macro area.</param>
 		/// <param name="name">Macro name.</param>
 		/// <returns>Macro data or null.</returns>
-		MacroData GetData(string area, string name);
+		Macro GetMacro(string area, string name);
 		/// <summary>
 		/// Removes the specified macro.
 		/// </summary>
@@ -56,49 +55,33 @@ namespace FarNet
 		/// </remarks>
 		void Load();
 		/// <summary>
-		/// Installs one macro.
+		/// Installs one or more macros.
 		/// </summary>
-		/// <param name="area">Macro area.</param>
-		/// <param name="name">Macro name.</param>
-		/// <param name="data">Macro data.</param>
-		void Install(string area, string name, MacroData data);
-		/// <summary>
-		/// Installs several macros in batch mode using a set of macro data dictionaries.
-		/// </summary>
-		/// <param name="dataSet">Set of dictionaries providing portions of macro data incrementally.</param>
+		/// <param name="macros">Macro data.</param>
 		/// <remarks>
-		/// Any dictionary provides a portion of macro data and triggers installation if data are ready.
-		/// Data are ready when at least these three values are defined: 'Area', 'Name' and 'Sequence'.
+		/// This operation is not atomic: if there are several macros to install and it fails
+		/// in the middle then some first macros may be installed and the rest of them are not.
 		/// <para>
-		/// If a dictionary in the sequence is null then all the current data are reset,
-		/// so that the next dictionary starts a new portion of data for next macros.
-		/// </para>
-		/// <para>
-		/// Dictionary keys and values: strings 'Area' and 'Name' define macro area and name,
-		/// the others correspond to property names and values of <see cref="MacroData"/>.
-		/// You don't have to set default values. Values are active for all next entries
-		/// until a null dictionary in the sequence.
-		/// </para>
-		/// <para>
-		/// This method at first may look unusual, but it is suitable for scripting and it:
-		/// *) allows to set many macros in one shot effectively;
-		/// *) calls Save() and Load() internally, so that one this call is enough for installation;
-		/// *) makes it easy to set the same macro in several areas or several similar macros in the same area.
-		/// </para>
-		/// <para>
-		/// An exceptions is thrown if no macro is actually installed ('Area', 'Name' or 'Sequence' is never set)
-		/// or the same macro is defined more than once (the same 'Area' and 'Name' are used second time).
-		/// Note that macros installed before the exception remain installed.
+		/// This method fails if macro data are invalid or a macro with the same area and name
+		/// has be already installed by the same call of this method.
 		/// </para>
 		/// </remarks>
-		void Install(IDictionary[] dataSet);
+		void Install(params Macro[] macros);
 	}
 
 	/// <summary>
 	/// Key macro data. See <see cref="IMacro"/>.
 	/// </summary>
-	public class MacroData
+	public class Macro
 	{
+		/// <summary>
+		/// Area name.
+		/// </summary>
+		public string Area { get; set; }
+		/// <summary>
+		/// Key name.
+		/// </summary>
+		public string Name { get; set; }
 		/// <summary>
 		/// Sequence of the keystrokes and macro language elements. Multiline sequence is supported.
 		/// </summary>

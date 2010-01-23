@@ -2092,6 +2092,9 @@ void Far::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 
 void Far::Quit()
 {
+	if (!Plugin0::CanExit())
+		return;
+	
 	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);
 }
 

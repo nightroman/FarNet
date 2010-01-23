@@ -17,7 +17,7 @@ Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-FarSettings.ps1 Imports Far Manager settings.
 Import-Panel-.ps1 Imports objects from files to a panel
 Indent-Selection-.ps1 Indents or outdents selected lines in the editor
-Install-Macro-.ps1 Installs macros for PowerShellFar tools (template).
+Install-Macro-.ps1 Installs macros (example).
 Invoke-Editor-.ps1 Invokes a file from the current editor.
 Invoke-Environment.ps1 Invokes a command and imports its environment variables.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk) in a few ways.
@@ -52,7 +52,7 @@ Show-KeyMap-.ps1 Shows HTML tables with Far hotkeys/macros for various areas.
 Show-KeyName-.ps1 Shows internal Far name of pressed keys.
 Start-Far.ps1 Starts Far in /rc mode and manages start and exit current directory.
 Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project file.
-Test Tests and demos
-Update-FarManager.ps1 Updates Far Manager 2.x and standard plugins.
+Test Tests and examples
+Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-PowerShellFar.ps1 Updates FarNet, PowerShellFar and API help.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.

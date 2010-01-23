@@ -717,7 +717,8 @@ namespace FarNet
 		/// Tells Far to exit if it is possible.
 		/// </summary>
 		/// <remarks>
-		/// This method is only a request to exit. If there is an editor with not saved changes
+		/// Before sending this request to Far it calls <see cref="BasePlugin.CanExit"/> for each plugin.
+		/// If all plugins return true then Far is called. If there is an editor with not saved changes
 		/// then Far asks a user how to proceed and, in fact, a user may continue work in Far.
 		/// </remarks>
 		void Quit();

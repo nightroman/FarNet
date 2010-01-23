@@ -52,7 +52,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.2.27#
+#PowerShellFar 4.3.0#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -60,7 +60,7 @@ includes scripts for many popular Far Manager tasks and PowerShell.hrc for
 Colorer providing rich PowerShell syntax highlighting.
 
 PowerShellFar, FarNet and documentation can be updated by the included script
-Update-PowerShellFar.ps1 or downloaded manually from:
+Update-PowerShellFar.ps1 or downloaded and installed manually from:
 ~http://code.google.com/p/farnet/~@http://code.google.com/p/farnet/@
 
 #Author#
@@ -76,8 +76,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1345
- - Plugin FarNet 4.2.27
+ - Far Manager 2.0.1352
+ - Plugin FarNet 4.3.0
  - Windows PowerShell 2.0
 
 
@@ -138,9 +138,9 @@ You can reduce typing by "Easy prefix" and "Easy invoke" macros, see ~FAQ~@FAQ@.
 
 #Command history#
 
-Most of commands are added to PowerShellFar command history automatically. There
-is an exception: a command is not added if the last symbol is "##"; you may
-want to use this trick for commands in Far user menu (F2) and file
+Most of commands are added to the PowerShellFar command history automatically.
+There is an exception: a command is not added if the last symbol is "##"; you
+may want to use this trick for commands in Far user menu [F2] and file
 associations, so that they do not pollute the history.
 
 
@@ -151,8 +151,9 @@ $#Menu commands#
 #Invoke input code...#
 
 You are prompted to enter PowerShell code to be executed. Use [Tab] to complete
-the expression being typed using PowerShell TabExpansion (see also
-~TabExpansion.ps1~@TabExpansion@).
+the current token by TabExpansion. Use [ShiftF1] to view help for the current
+token. Note: this input box is suitable for using in macros.
+See also ~TabExpansion.ps1~@TabExpansion@.
 
 #Invoke selected code#
 
@@ -194,18 +195,18 @@ control in any dialog. Default TabExpansion is replaced with advanced
 #Modules+#
 
 Shows available PowerShell modules and registered PowerShell snap-ins in a menu
-which allows to import/remove them to/from the session.
+which allows to import or remove them for current the session.
 See ~Modules menu~@MenuModules@.
 
 #Errors#
 
-Shows a menu allowing you to view PowerShell errors ($Error items) as menu
-items. See ~Errors menu~@MenuErrors@.
+Shows the list of recent PowerShell errors ($Error items).
+See ~Errors menu~@MenuErrors@.
 
 #Help#
 
-For the current token in an editor line (editor, editbox, cmdline) it gets help
-information and shows it in the viewer. In code editors (*.ps1, *.psm1, *.psd1,
+For the current code token in editor, editbox, cmdline it shows in the viewer
+available help information. In code editors (*.ps1, *.psm1, *.psd1,
 *.psfconsole, input code boxes) this action is associated with [ShiftF1]. It is
 exposed for scripting as #$Psf.ShowHelp()#.
 
@@ -218,6 +219,7 @@ using a startup profile like ~Profile-.ps1~@Profile@.
 @MenuBackgroundJobs
 $#Background jobs menu#
 ~Contents~@Contents@
+~Background jobs~@BackgroundJobs@
 
 Shows the background jobs information. Job state:
 
@@ -255,14 +257,16 @@ menu has started.
 
 #KEYS AND ACTIONS#
 
-[#Enter#] Invokes the command immediately as it is. Note that history contains
-commands from all areas and the current area may be not suitable. For example
-commands that open panels should not be called from a dialog.
+[#Enter#] Invokes the command immediately as it is. Note: the history contains
+commands from all areas and the current area may be not suitable. Example: a
+command that opens a panel should not be called from a dialog.
 
-[#CtrlEnter#] Allows to edit the command before invocation. In panels: inserts
-the command text into the command line with automatically added prefix; in
-editor consoles: inserts the command text into the editor; otherwise: opens the
-"Invoke input code" dialog with the command text inserted there.
+[#CtrlEnter#] Allows to edit the command before invocation.
+*) In panels: inserts the command text into the command line with automatically
+added prefix.
+*) In editor consoles: inserts the command text into the editor.
+*) In other areas: opens the "Invoke input code" dialog with the command text
+inserted there.
 
 [#CtrlC#] Copies the command text to the clipboard.
 
@@ -295,12 +299,15 @@ selected drive.
 $#Modules menu#
 ~Contents~@Contents@
 
-This menu shows available module and registered snap-in names with descriptions
-and allows you to import/remove them to/from the session. Already imported
-modules and added snap-ins have their items checked on the left.
+This menu shows available module and registered snap-ins and allows to import
+or remove them for the current session. Already imported modules and added
+snap-ins have their items checked on the left.
 
-[#Enter#] Switches module or snap-in state: imported module or added snap-in is
-removed, otherwise it is imported/added.
+
+#KEYS AND ACTIONS#
+
+[#Enter#] Switches the module or snap-in state: the imported module or added
+snap-in is removed, otherwise it is imported/added.
 
 
 #RELATED POWERSHELL COMMANDS#
@@ -331,21 +338,24 @@ Remove from the session:
  >: Remove-PSSnapin -Name <name>
 
 You may use Import-Module and Add-PSSnapin in your profile to import/add
-favourite modules and snap-ins always when PowerShellFar starts.
+favorite modules and snap-ins always when PowerShellFar starts.
 
 
 @MenuErrors
 $#Errors menu#
 ~Contents~@Contents@
 
-This menu shows PowerShell error list, i.e. ErrorRecord objects stored in the
-global variable $Error. Menu items of error objects with source info are
-checked on the left.
+This menu shows the list of recent PowerShell errors, i.e. ErrorRecord objects
+stored in the global variable $Error. Menu items of error objects with source
+info are checked on the left.
 
-[#F4#] If source information is available (checked menu items) it opens a
+
+#KEYS AND ACTIONS#
+
+[#F4#] If source information is available (checked items) it opens a
 source file in the internal editor at the line that caused an error.
 
-[#Enter#] Shows a standard FarNet error message dialog for a selected item.
+[#Enter#] Shows the FarNet error message dialog for the selected item.
 
 [#Del#] Removes all error records and closes the menu.
 
@@ -379,8 +389,8 @@ existing breakpoint or add a new one at the same line.
 This section shows the list of available breakpoints where you can disable, enable
 or remove breakpoints.
 
-[#F4#] Opens the script in the editor for the current breakpoint if it is a
-line or breakpoint or another breakpoint assotiated with a script.
+[#F4#] Opens the source script in the editor for the current line breakpoint or
+another kind of breakpoint with a script.
 
 [#Space#] Enables or disables the current breakpoint.
 
@@ -430,14 +440,14 @@ look at the source code.
 
 #KEYS, BUTTONS AND ACTIONS#
 
-[#Esc#], [#F10#] (Continue) Continue execution.
+[#Esc#], [#F10#] (Continue) Continues execution.
 
-[#[Step]#] (Step Into) Executes the next statement. Step Into steps through the
-script one line at a time.
+[#[Step]#] (Step Into) Executes the next statement. It steps through the script
+one line at a time.
 
 [#[Over]#] (Step Over) Executes the next statement, but skips over statements
-in functions or other scripts. The functions and scripts are executed, but Step
-Over does not stop at each statement.
+in functions or other scripts. The functions and scripts are executed, but it
+does not stop at each statement.
 
 [#[Out]#] (Step Out) Runs the script until completion or the next breakpoint.
 If used while stepping through a function, it exits the function and steps to
@@ -449,43 +459,48 @@ dialog is repeated.
 See also ~Editor console~@EditorConsole@.
 
 [#[Goto..]#] Two actions: sets the current list line to the current debugger
-line if not yet overwise opens the editor at the debugger line. You should not
-edit the script at this moment, it is only for taking a look at the code. On
-exit from the editor the same dialog is repeated.
+line, if not yet, overwise opens the editor at the debugger line. You should
+not edit the script at this moment, it is only for taking a look at the code.
+On exit from the editor the same dialog is repeated.
 
 
 #NOTES#
 
 When you enter debug mode and the command being executed already has pending
 output then its output is sent to a file and external viewer is started to view
-it. It may look unusual but it allows you to see output during debugging.
+it. This looks unusual but in this way you can see the output during debugging.
 
-It is (theoretically) possible that the debugger or your actions in the debugger
-may affect the code being debugged in unusual way, especially if the code itself
-deals with Far UI that clashes against the debugger UI. Think of it when you
-are about to debug such a special code.
+It is theoretically possible that the debugger or your actions in the debugger
+may affect the code being debugged in unusual way, especially the code dealing
+with Far UI that may clash against the debugger UI. Think of it when you are
+about to debug such a special code.
 
 
 @EditorConsole
 $#Editor console#
 ~Contents~@Contents@
+~Invoking console applications~@ConsoleApplications@
 
-It is any "*.psfconsole" file opened in Far editor. It is designed for typing
+It is any *.psfconsole file opened in the Far editor. It is designed for typing
 and running PowerShell commands so that their output is directed to the same
 editor to the end. Editor console is also opened when you enter so called
 "nested prompt" mode, for example when you suspend PowerShell execution.
 
 The default console is opened from the "Editor console" menu by [Enter].
-[ShiftEnter] opens asynchronous local console sessions. [CtrlEnter] opens
-asynchronous remote console sessions. When any console is opened its [F1] menu
+[ShiftEnter] opens an asynchronous local console session. [CtrlEnter] opens an
+asynchronous remote console session. When any console is opened its [F1] menu
 allows you to change or reset the current session to default, local, or remote.
 
-An editor console works like a command console but it is still an editor window
-with some rules and special hotkeys.
+An editor console works similar to a traditional command console but it is
+still an editor window with some rules and special hotkeys.
+
 
 #RULE OF SELECTION#
 
 If any selection exists then editor always acts as a standard editor.
+
+
+#KEYS AND ACTIONS#
 
 Without selection some editor events for such a file are different:
 
@@ -507,8 +522,8 @@ previous\next command from PowerShellFar history while you press these keys.
 to the last mark <= found in the text. It is useful when you want to discard
 recent output.
 
-[#Tab#] Executes PowerShell TabExpansion procedure. See
-~TabExpansion.ps1~@TabExpansion@
+[#Tab#] Invokes PowerShell TabExpansion for the current token.
+See ~TabExpansion.ps1~@TabExpansion@
 
 [#F1#] Opens the help menu where you can change or reset the current session to
 default, local, or remote, or open this help topic.
@@ -545,15 +560,13 @@ UI should be avoided (Read-Host, Write-Progress, confirmations).
 
 #NOTES#
 
-Use PowerShell.hrc with Colorer plugin. It works not only for ".ps1", but for
-".psfconsole" files, too. In addition to PowerShell syntax editor console
-output is also highlighted (numbers, errors, warnings, and etc.).
+Use PowerShell.hrc with Colorer plugin. It works not only for standard *.ps1,
+*.psm1, *.psd1 files but for *.psfconsole files, too. In addition to standard
+PowerShell syntax special editor console output is also highlighted (numbers,
+errors, warnings, and etc.).
 
 Use word completion (e.g. "Complete-Word-.ps1"): words from output of previous
 commands often can be effectively completed in a new command being composed.
-
-See also:
- ~Invoking console applications~@ConsoleApplications@
 
 
 @EditorConsoleMenuOpen
@@ -563,6 +576,9 @@ $#Editor console menu#
 
 The menu opens a new editor console or an editor console file previously saved
 in the console files directory.
+
+
+#KEYS AND ACTIONS#
 
 [#Enter#] Opens a new or selected existing console file in the default global
 PowerShell session. Commands are invoked synchronously in the default global
@@ -1096,12 +1112,12 @@ $#Restrictions#
 
 #STOPPING RUNNING COMMANDS#
 
-You can stop the currently running interactive command by [CtrlC] (note that
-commands in the Far user menu [F2] are interactive, as if you run them from the
-command line). You can stop a background job by [Del] in the background job
-list. But running script blocks from your menu tools ($Psf.Action) and event
-handlers (e.g. in editor or panel) normally cannot be stopped, design them
-carefully.
+You can stop the currently running interactive command by [CtrlC] (note:
+commands in the Far user menu [F2] and file associations are interactive, as if
+you run them from the command line). You can stop a background job by [Del] in
+the background job list. But running script blocks from your menu tools
+($Psf.Action) and event handlers (e.g. in editor or panel) normally cannot be
+stopped, design them carefully.
 
 
 #NOT IMPLEMENTED OR SUPPORTED#
@@ -1176,21 +1192,12 @@ job you are prompted to abort it, wait for its exit, view its output or discard
 all jobs and output. It is done with GUI message boxes and Notepad.exe because
 on exiting Far UI is not available.
 
-If it is not enough then there is another way. This macro gets total control of
-[F10] in panels:
-
-	$Far.Macro.Install(@@{
-		Name = 'F10'
-		Area = 'Shell'
-		Description = 'PSF: Quit Far'
-		Sequence = 'F11 X 1 "if ($Psf.CanExit()) { $Far.Quit() }" Enter'
-	})
-
-	(where X is the PowerShellFar hotkey in the plugins menu)
-
-Now when you press [F10] and there are jobs in the background Far does not exit
-but instead the job menu is shown so that you can manage your jobs or cancel
-the menu and continue work in Far.
+If it is not enough then there is another way which allows you to choose how to
+proceed on jobs. The macro [F10] can get control of exit in panels: see "Quit
+Far" macro in Install-Macro-.ps1. With this macro installed: if [F10] is
+pressed and there are background jobs then the job menu is shown. You can
+manage your jobs one by one, or kill them all by [ShiftDel], or cancel the menu
+and continue work in Far.
 
 
 @Suffix
@@ -1922,22 +1929,22 @@ $#Frequently asked questions#
 
 A: There are at least two options, both using macros
 
-1) Easy prefix: a macro that expands the empty command line to '>: '. In this
+1) #Easy prefix#: A macro that expands the empty command line to '>: '. In this
 example [Space] is expanded into '>: '. Space after the prefix is recommended
 for normal TabExpansion of the first word:
 
- >: $Far.Macro.Install(@@{Area='Shell'; Name='Space'; Sequence="> : Space"; CommandLine='0'; Description='Easy prefix'})
+ >: New-FarMacro -Install Shell Space '> : Space' 'Easy prefix' -CommandLine 0
 
-2) Easy invoke: type and run without prefix using a macro associated with
-"Invoke selected code" menu command. In this example assume PowerShellFar
-hotkey in the Far plugin menu is "1" and [ShiftSpace] is the macro key:
+2) #Easy invoke#: Type and run without prefix using a macro associated with
+"Invoke selected code" menu command. Example ([ShiftSpace]):
 
- >: $Far.Macro.Install(@@{Area='Shell'; Name='ShiftSpace'; Sequence='F11 1 2'; CommandLine='1'; Description='Easy invoke'})
+ >: New-FarMacro -Install Shell ShiftSpace 'F11 X 2' 'Easy invoke' -CommandLine 1
+ (X is the PowerShellFar hotkey in the plugins menu)
 
-Now you can type PowerShell commands without the prefix and press [ShiftSpace]
-(or whatever you use) to execute it. There is a bonus: if a command fails, say,
-due to mistakes, its text is still in the command line, ready for correction,
-even cursor position is the same: it really helps to compose complex commands.
+Now you can type PowerShell commands without a prefix and press [ShiftSpace] to
+execute it. There is a bonus: if a command fails, say, due to mistakes, its
+text is still in the command line, ready for correction, even cursor position
+is the same: this helps to compose some commands.
 
 
 @ConsoleApplications

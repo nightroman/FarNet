@@ -158,11 +158,11 @@ if (!(Test-Path $areaPath)) {
 	}
 }
 
-# ready; save current macros, get data
+# ready; save current macros, get the macro
 $Far.Macro.Save()
-$macro = $Far.Macro.GetData($Area, $Name)
+$macro = $Far.Macro.GetMacro($Area, $Name)
 if (!$macro) {
-	$macro = New-Object FarNet.KeyMacroData
+	$macro = New-Object FarNet.Macro -Property { Area = $Area; Name = $Name }
 }
 
 ### Editor of the sequence
@@ -170,7 +170,7 @@ if ($Editor -or $wi.Type -ne 'Panels') {
 	$s2 = $Far.AnyEditor.EditText($macro.Sequence, "$Area $Name").TrimEnd()
 	if ($s2 -ne $macro.Sequence) {
 		$macro.Sequence = $s2
-		$Far.Macro.Install($Area, $Name, $macro)
+		$Far.Macro.Install($macro)
 		$Far.Macro.Load()
 	}
 	return
@@ -178,12 +178,12 @@ if ($Editor -or $wi.Type -ne 'Panels') {
 
 ### Panel to view/edit a macro
 $p = New-Object PowerShellFar.MemberPanel $macro
-$p.Data = @{ Area = $Area; Name = $Name }
+$p.ExcludeMembers = 'Area', 'Name'
 $p.Static = $true
 
 ### Saves changes
 $p.SetSave({
-	$Far.Macro.Install($this.Data.Area, $this.Data.Name, $this.Value)
+	$Far.Macro.Install($this.Value)
 	$Far.Macro.Load()
 	$this.Modified = $false
 	[console]::Title = 'Saved'
