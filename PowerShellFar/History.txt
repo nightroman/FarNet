@@ -17,7 +17,7 @@ F11 X 1 "$Far.Quit()" Enter
 (X is the PowerShellFar hotkey in the plugins menu)
 
 .. or hotkey independent version with native F10 if PSF is not installed:
-F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter 1 "$Far.Quit()" Enter $Else F10 $End
+F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter 1 "$Far.Quit()" Enter $Else Esc F10 $End
 
 NEW FEATURE: SCRIPTING FAR EXIT
 
