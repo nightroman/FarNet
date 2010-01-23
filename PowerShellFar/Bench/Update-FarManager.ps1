@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Updates Far Manager 2.x and standard plugins.
+	Updates Far Manager and standard plugins.
 	Author: Roman Kuzmin
 
 .DESCRIPTION

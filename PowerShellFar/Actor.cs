@@ -599,38 +599,65 @@ Continue with this current directory?
 		/// </remarks>
 		public string InputCode()
 		{
+			UI.InputDialog ui = new UI.InputDialog(Res.Name, Res.Name, "PowerShell code");
+			ui.UICode.IsPath = true;
+			ui.UICode.UseLastHistory = true;
+			return ui.UIDialog.Show() ? ui.UICode.Text : null;
+		}
+
+		/// <summary>
+		/// Prompts to input code and invokes it.
+		/// Called on "Invoke input code".
+		/// Suitable for macros.
+		/// </summary>
+		/// <remarks>
+		/// To input and get some code without invoking use the <see cref="InputCode"/> method.
+		/// <para>
+		/// <b>Macros with embedded commands.</b>
+		/// When a macro is in progress this method works in a special way:
+		/// </para>
+		/// <ul>
+		/// <li>an input box is used instead of the dialog;</li>
+		/// <li>commands are not stored in the history;</li>
+		/// <li>commands output is discarded.</li>
+		/// </ul>
+		/// <para>
+		/// Thus, it is fine to put some code right to a macro,
+		/// it works just like as the code is typed and invoked
+		/// but with no effects unwanted for running macros.
+		/// </para>
+		/// <para>
+		/// Commands in macros should have no output: they are "actions", not "functions".
+		/// Output, if any, is not an error but it is not recommended.
+		/// </para>
+		/// </remarks>
+		/// <example>
+		/// Simple macro [F10] (exactly!) in Panels: safe exit with background jobs check
+		/// (X is the PowerShellFar hotkey in the plugins menu):
+		/// <code>
+		/// F11 X 1 "$Far.Quit()" Enter
+		/// </code>
+		/// Advanced version does not depend on a hotkey and calls native F10 if there is no PowerShellFar:
+		/// <code>
+		/// F11 $If (Menu.Select("PowerShellFar", 2) &gt; 0) Enter 1 "$Far.Quit()" Enter $Else F10 $End
+		/// </code>
+		/// </example>
+		public void InvokeInputCode()
+		{
 			if (A.Far.MacroState == FarMacroState.None || A.Psf.Settings.Test == 100120151157)
 			{
 				// normal mode
-				UI.InputDialog ui = new UI.InputDialog(Res.Name, Res.Name, "PowerShell code");
-				ui.UICode.IsPath = true;
-				ui.UICode.UseLastHistory = true;
-				return ui.UIDialog.Show() ? ui.UICode.Text : null;
+				string code = InputCode();
+				if (code != null)
+					InvokePipeline(code, null, true);
 			}
 			else
 			{
 				// macro mode
-				return A.Far.Input(null);
+				string code = A.Far.Input(null);
+				if (code != null)
+					InvokeCode(code, null);
 			}
-
-		}
-
-		/// <summary>
-		/// Prompts to input the code and invokes it.
-		/// Called on "Invoke input code".
-		/// </summary>
-		/// <remarks>
-		/// When a macro is in progress a simple input box is used instead of the dialog
-		/// and invoked commands are not stored in the command history.
-		/// <para>
-		/// To input and get some code without invoking use the <see cref="InputCode"/> method.
-		/// </para>
-		/// </remarks>
-		public void InvokeInputCode()
-		{
-			string code = InputCode();
-			if (code != null)
-				InvokePipeline(code, null, A.Far.MacroState == FarMacroState.None);
 		}
 
 		/// <summary>

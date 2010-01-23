@@ -53,6 +53,7 @@
     <Compile Include="CodeMethods.cs" />
     <Compile Include="Commands\Find-FarFile.cs" />
     <Compile Include="Commands\GetFarFileCommand.cs" />
+    <Compile Include="Commands\NewFarMacroCommand.cs" />
     <Compile Include="Commands\StartFarJobCommand.cs" />
     <Compile Include="Commands\TraceFarCommand.cs" />
     <Compile Include="Commands\UpdateFarDescriptionCommand.cs" />

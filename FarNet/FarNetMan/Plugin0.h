@@ -16,12 +16,14 @@ ref class ToolPluginInfo;
 ref class Plugin0
 {
 public:
-	static void AddPlugin(BasePlugin^ plugin);
-	static void UnloadPlugin(BasePlugin^ plugin);
-	static void LoadPlugins();
-	static void UnloadPlugins();
-	static property IList<String^>^ AssemblyNames { IList<String^>^ get() { return _names->Keys; } }
 	static property IList<BasePlugin^>^ Plugins { IList<BasePlugin^>^ get() { return %_plugins; } }
+	static property IList<String^>^ AssemblyNames { IList<String^>^ get() { return _names->Keys; } }
+public:
+	static bool CanExit();
+	static void AddPlugin(BasePlugin^ plugin);
+	static void LoadPlugins();
+	static void UnloadPlugin(BasePlugin^ plugin);
+	static void UnloadPlugins();
 private:
 	static int AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools);
 	static void LoadFromAssembly(String^ assemblyPath, array<String^>^ classes);
