@@ -28,6 +28,7 @@ new CmdletConfigurationEntry("New-FarEditor", typeof(Commands.NewFarEditorComman
 new CmdletConfigurationEntry("New-FarFile", typeof(Commands.NewFarFileCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarItem", typeof(Commands.NewFarItemCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarList", typeof(Commands.NewFarListCommand), string.Empty),
+new CmdletConfigurationEntry("New-FarMacro", typeof(Commands.NewFarMacroCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarMenu", typeof(Commands.NewFarMenuCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarObjectPanel", typeof(Commands.NewFarObjectPanelCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarUserPanel", typeof(Commands.NewFarUserPanelCommand), string.Empty),

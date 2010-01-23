@@ -1,8 +1,36 @@
 http://code.google.com/p/farnet/
 
-= 4.2.28 =
+= 4.3.0 =
+
+NEW VERSION NUMBER
+
+Version number moves forward due to important recent changes:
+-- Localization support
+-- Quit() and CanExit()
+-- MakingDirectory
+-- Macros revison
+-- Win7 taskbar icon tools
+-- GUI message boxes (suitable for special tasks)
+-- Revision of panel mode info (more object oriented)
+-- Long paths support (note: .NET does not like long file paths)
+-- Multiple panels (true for FarNet, saved state for file panels)
+-- Async writing mode in editors (including not current editors)
+-- Code pages in editors (get\set)
+-- More info on exceptions
+-- Dialog enhancements
+
+NEW IN THIS VERSION
 
 *) New method IFar.Quit(): Tells Far to quit (Far 2.0.1348 ACTL_QUIT).
+
+*) New virtual method BasePlugin.CanExit() (called by IFar.Quit()).
+
+*) Hopefully the final revision of macros (breaking for using plugins):
+-- MacroData is replaced with Macro;
+-- IMacro methods updated for new Macro.
+The story: unusual IMacro methods with dictionaries were designed for easy use
+in PowerShell. End of story: in PowerShell V2 New-Object supports dictionaries
+itself, so that IMacro methods now can be natural and simple.
 
 = 4.2.27 =
 
