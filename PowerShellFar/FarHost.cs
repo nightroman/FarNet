@@ -37,11 +37,11 @@ namespace PowerShellFar
 		CultureInfo originalUICultureInfo = System.Threading.Thread.CurrentThread.CurrentUICulture;
 
 		/// <summary>
-		/// Not supported.
+		/// Exposes <see cref="IFar"/> instance.
 		/// </summary>
 		public override PSObject PrivateData
 		{
-			get { throw new NotSupportedException(); }
+			get { return new PSObject(A.Far); }
 		}
 
 		/// <summary>

@@ -74,6 +74,16 @@ $Far.Macro.Install($(
 	New-FarMacro Editor @m
 	New-FarMacro Viewer @m
 
+	### TabExpansion in any editor line
+	$m = @{
+		Name = 'F9'
+		Sequence = psf 7
+		Description = 'PSF: TabExpansion'
+	}
+	New-FarMacro Shell @m -CommandLine 1
+	New-FarMacro Editor @m
+	New-FarMacro Dialog @m
+
 	### (Complete-Word-.ps1) Command line: from history; Editor: from file; Dialog: from edit box history
 	$m = @{
 		Name = 'CtrlSpace'
@@ -117,6 +127,9 @@ $Far.Macro.Install($(
 	### Easy invoke: type and run without prefix (Invoke selected code)
 	New-FarMacro Shell ShiftSpace (psf 2) 'PSF: Easy invoke' -CommandLine 1
 
+	### Power panel menu
+	New-FarMacro Shell Ctrl= (psf 6) 'PSF: Power panel menu'
+
 	### (Go-Head-.ps1) Go to head file item (e.g. useful after [CtrlF5] to find the newest file)
 	New-FarMacro Shell CtrlShiftF5 (psf h) 'PSF: Go to panel head item'
 
@@ -130,6 +143,9 @@ $Far.Macro.Install($(
 	New-FarMacro Shell CtrlShiftF7 (psf x) 'PSF: Search regex in files'
 
 	### == Editor only
+
+	### (Invoke-Editor-.ps1) Invoke a file from the editor
+	New-FarMacro Editor CtrlF5 (psf '= f') 'PSF: Invoke a file from the editor'
 
 	### (Indent-Selection-.ps1) Indent selected line(s)
 	New-FarMacro Editor Tab (psf i) 'PSF: Indent selected line(s)' -SelectedText 1
