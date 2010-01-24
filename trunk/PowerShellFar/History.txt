@@ -6,6 +6,7 @@ http://code.google.com/p/farnet/
 *) Show-KeyMap-.ps1:
 -- updated for FarNet 4.3.0 changes
 -- added the dialog key map and more keys to special keys
+-- added area names to key names (useful in the large tables)
 
 = 4.3.0 =
 
