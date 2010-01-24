@@ -48,7 +48,7 @@ Set-SynopsisDescription-.ps1 Sets script file descriptions to their help synopse
 Show-History-.ps1 Shows command, folder or view history.
 Show-Hlf-.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
-Show-KeyMap-.ps1 Shows HTML tables with Far hotkeys/macros for various areas.
+Show-KeyMap-.ps1 Shows Far hotkeys and macros by areas (HTML page).
 Show-KeyName-.ps1 Shows internal Far name of pressed keys.
 Start-Far.ps1 Starts Far in /rc mode and manages start and exit current directory.
 Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project file.
