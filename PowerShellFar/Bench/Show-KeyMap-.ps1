@@ -1,28 +1,30 @@
 
 <#
 .SYNOPSIS
-	Shows HTML tables with Far hotkeys/macros for various areas.
+	Shows Far hotkeys and macros by areas (HTML page).
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	Generates and shows HTML page with Far key maps for various areas as tables
-	of 4 colums: key name, default Far action, common macro, area macro. It is
-	useful to have this data all together to avoid or resolve key conflicts. By
-	default it outputs all keys data to $env:USERPROFILE\FarKeyMaps.output.htm
+	Generates and shows an HTML page with Far keys and macros by areas. Area
+	table colums are: key name, default Far action, common macro, area macro.
+	It is useful to be able to see all keys together.
 
 .EXAMPLE
+	# Shows all keys:
 	Show-KeyMap-
+.EXAMPLE
+	# Shows specified keys:
 	Show-KeyMap- Del, ShiftDel, F8, ShiftF8
 #>
 
 param
 (
 	[string[]]
-	# Gets info only for the specified key names.
+	# Subset of keys to be shown. Default: empty, all keys are shown.
 	$Name
 	,
-	# Output HTML file path.
-	$Output = "$env:USERPROFILE\FarKeyMaps.output.htm"
+	# Output HTML file path. Default: $env:USERPROFILE\FarKeyMap.output.htm
+	$Output = "$env:USERPROFILE\FarKeyMap.output.htm"
 )
 
 # HtmlEncode
@@ -44,7 +46,6 @@ $mapShell = @{ ### SHELL MAP
 'AltF6' = 'Create file links (NTFS only)'
 'AltF7' = 'Perform find file command'
 'AltF8' = 'Display commands history'
-'AltF9' = 'Toggles the size of the Far console window'
 'AltHome' = 'Scroll long names and descriptions'
 'AltLeft' = 'Scroll long names and descriptions'
 'AltRight' = 'Scroll long names and descriptions'
@@ -57,7 +58,6 @@ $mapShell = @{ ### SHELL MAP
 'Clear' = 'View'
 'Ctrl;' = 'Insert full file name from the passive panel'
 'Ctrl[' = 'Insert path from the left panel'
-'Ctrl\' = 'Change to the root folder'
 'Ctrl]' = 'Insert path from the right panel'
 'Ctrl0' = 'L|R: Set alternative full view mode | Go to folder shortcut'
 'Ctrl1' = 'L|R: Set brief view mode | Go to folder shortcut'
@@ -76,10 +76,10 @@ $mapShell = @{ ### SHELL MAP
 'CtrlAlt]' = 'Insert network (UNC) path from the right panel'
 'CtrlAltF' = 'Insert network (UNC) file name from the active panel'
 'CtrlAltIns' = 'Copy selected network (UNC) names to the clipboard'
-'CtrlAltShift' = 'Temporarily hide both panels'
 'CtrlB' = 'Show/Hide functional key bar at the bottom line'
+'CtrlBackSlash' = 'Change to the root folder'
 'CtrlBS' = 'Delete word left'
-'CtrlClear' = 'Restore default panels width'
+'CtrlClear' = 'Set default panels width'
 'CtrlD' = 'Character right'
 'CtrlDel' = 'Delete word right'
 'CtrlDown' = 'Change panels height'
@@ -112,7 +112,6 @@ $mapShell = @{ ### SHELL MAP
 'CtrlN' = 'Toggle long/short file names view mode'
 'CtrlNum2' = 'Change panels height'
 'CtrlNum4' = 'Change panels width'
-'CtrlNum5' = 'Set default panels width'
 'CtrlNum6' = 'Change panels width'
 'CtrlNum8' = 'Change panels height'
 'CtrlO' = 'Hide/show both panels'
@@ -197,14 +196,14 @@ $mapShell = @{ ### SHELL MAP
 }
 
 $mapEditor = @{ ### EDITOR MAP
-#'Alt gray cursor keys' Select vertical block
-#'CtrlAlt gray keys' Select vertical block
 'AltBS' = 'Undo'
+'AltDown' = 'Select vertical block'
 'AltF11' = 'Display edit history'
 'AltF5' = 'Print file or selected block ("Print manager" plugin is used)'
 'AltF8' = 'Go to specified line and column'
-'AltF9' = 'Toggles the size of the Far console window'
 'AltI' = 'Shift block right'
+'AltLeft' = 'Select vertical block'
+'AltRight' = 'Select vertical block'
 'AltShiftDown' = 'Select vertical block'
 'AltShiftEnd' = 'Select vertical block'
 'AltShiftF9' = 'Call editor settings dialog'
@@ -215,6 +214,7 @@ $mapEditor = @{ ### EDITOR MAP
 'AltShiftRight' = 'Select vertical block'
 'AltShiftUp' = 'Select vertical block'
 'AltU' = 'Shift block left'
+'AltUp' = 'Select vertical block'
 'BS' = 'Delete char left'
 'Ctrl0' = 'L|R: Go to bookmark | Set a bookmark at the current position'
 'Ctrl1' = 'L|R: Go to bookmark | Set a bookmark at the current position'
@@ -228,7 +228,6 @@ $mapEditor = @{ ### EDITOR MAP
 'Ctrl9' = 'L|R: Go to bookmark | Set a bookmark at the current position'
 'CtrlA' = 'Select all text'
 'CtrlAdd' = 'Append block to clipboard'
-'CtrlAltShift' = 'Temporarily show user screen (as long as these keys are held down)'
 'CtrlB' = 'Show/Hide functional key bar at the bottom line'
 'CtrlBS' = 'Delete word left'
 'CtrlC' = 'Copy block to clipboard'
@@ -324,7 +323,6 @@ $mapViewer = @{ ### VIEWER MAP
 'AltF5' = 'Print the file ("Print manager" plugin is used)'
 'AltF7' = 'Continue search in "reverse" mode'
 'AltF8' = 'Change current position'
-'AltF9' = 'Toggles the size of the Far console window'
 'AltShiftF9' = 'Call viewer settings'
 'Clear' = 'Quit'
 'Ctrl0' = 'L|R: Go to bookmark | Set a bookmark at the current position'
@@ -337,7 +335,6 @@ $mapViewer = @{ ### VIEWER MAP
 'Ctrl7' = 'L|R: Go to bookmark | Set a bookmark at the current position'
 'Ctrl8' = 'L|R: Go to bookmark | Set a bookmark at the current position'
 'Ctrl9' = 'L|R: Go to bookmark | Set a bookmark at the current position'
-'CtrlAltShift' = 'Temporarily show user screen (as long as these keys are held down)'
 'CtrlB' = 'Show/Hide functional key bar at the bottom line'
 'CtrlC' = 'Copy the text highlighted as a result of the search to the clipboard'
 'CtrlEnd' = 'End of file'
@@ -388,11 +385,27 @@ $mapViewer = @{ ### VIEWER MAP
 'Up' = 'Line up'
 }
 
+$mapDialog = @{ ### DIALOG MAP
+'CtrlDown' = 'Open combobox and history lists'
+'CtrlEnter' = 'Close dialog'
+'CtrlF5' = 'Move dialog'
+'Down' = 'Navigation'
+'Enter' = 'Close dialog'
+'Esc' = 'Cancel dialog'
+'F1' = 'Help'
+'Left' = 'Navigation'
+'Right' = 'Navigation'
+'ShiftTab' = 'Navigation'
+'Space' = 'Select button'
+'Tab' = 'Navigation'
+'Up' = 'Navigation'
+}
+
 function GetMacroMap($Area)
 {
 	$map = @{}
 	foreach($name in $Far.Macro.GetNames($Area)) {
-		$data = $Far.Macro.GetData($Area, $name)
+		$data = $Far.Macro.GetMacro($Area, $name)
 		$desc = $data.Description
 		if (!$desc.Trim()) {
 			$desc = '({0})' -f $data.Sequence
@@ -407,6 +420,7 @@ function GetMacroMap($Area)
 
 function OutAreaTable($Area, $Default, $Common, $Macro)
 {
+	# table:
 	@'
 <h2><a name="#{0}">{0} Key Map</a></h2>
 <table width="100%">
@@ -420,12 +434,20 @@ function OutAreaTable($Area, $Default, $Common, $Macro)
 
 	foreach($k in .{ $Default.Keys; $Common.Keys; $Macro.Keys } | Sort-Object -Unique) {
 		if (!$Name -or $Name -contains $k) {
+
+			# check the key spelling (round-trip)
+			$code = $Far.NameToKey($k)
+			if ($code -lt 0) { throw "Invalid key name: '$k'" }
+			if ($Far.KeyToName($code) -cne $k) { throw "Not standard key name: replace '$k' with '$($Far.KeyToName($code))'" }
+
+			# row, data: key name
 			"<tr><td><code>$k</code></td>"
 
 			$d = $Default[$k]
 			$c = $Common[$k]
 			$m = $Macro[$k]
 
+			# data: default action
 			'<td>'
 			if ($d) {
 				$d = [System.Web.HttpUtility]::HtmlEncode($d)
@@ -438,6 +460,7 @@ function OutAreaTable($Area, $Default, $Common, $Macro)
 			}
 			'</td>'
 
+			# data: common macro
 			'<td>'
 			if ($c) {
 				$c = [System.Web.HttpUtility]::HtmlEncode($c)
@@ -450,6 +473,7 @@ function OutAreaTable($Area, $Default, $Common, $Macro)
 			}
 			'</td>'
 
+			# data: area macro
 			'<td>'
 			if ($m) {
 				[System.Web.HttpUtility]::HtmlEncode($m)
@@ -468,42 +492,62 @@ $macroCommon = GetMacroMap 'Common'
 	@'
 <html>
 <head>
-<title>Far Key Maps</title>
+<title>Far Manager Key Map</title>
 <style>
 th { padding: 4px; background-color: silver }
 td { padding: 4px; background-color: #eeeeee }
 </style>
 </head>
 <body>
-<h1>Far Key Maps</h1>
+<h1>Far Manager Key Map</h1>
 <ul>
-<li><a href="#Shell">Shell Key Map</a></li>
-<li><a href="#Editor">Editor Key Map</a></li>
-<li><a href="#Viewer">Viewer Key Map</a></li>
-<li><a href="#Special">Special Key Names</a></li>
+<li><a href="#Shell">Shell</a></li>
+<li><a href="#Editor">Editor</a></li>
+<li><a href="#Viewer">Viewer</a></li>
+<li><a href="#Dialog">Dialog</a></li>
 </ul>
+'@
+
+	### Special keys
+	@'
+<hr/>
+<h2>Special Keys</h2>
+<table>
+<tr>
+<th>Key Name</th>
+<th>Action or Explanation</th>
+</tr>
+
+<tr><td><code>AltF9</code></td><td>Toggles the console window size</td></tr>
+<tr><td><code>AltIns</code></td><td>Start screen block selection</td></tr>
+
+<tr><td><code>CtrlAltShift</code></td><td>Temporarily hide the current window</td></tr>
+<tr><td><code>CtrlShiftTab</code></td><td>Switch to the previous window</td></tr>
+<tr><td><code>CtrlTab</code></td><td>Switch to the next window</td></tr>
+<tr><td><code>CtrlW</code></td><td>Show the task list</td></tr>
+
+<tr><td><code>*Add</code></td><td>Gray +</td></tr>
+<tr><td><code>*Clear</code></td><td>Numpad 5</td></tr>
+<tr><td><code>*Multiply</code></td><td>Gray *</td></tr>
+<tr><td><code>*Subtract</code></td><td>Gray -</td></tr>
+
+</table>
 <hr/>
 '@
 
 	OutAreaTable 'Shell' $mapShell $macroCommon (GetMacroMap 'Shell')
 	OutAreaTable 'Editor' $mapEditor $macroCommon (GetMacroMap 'Editor')
 	OutAreaTable 'Viewer' $mapViewer $macroCommon  (GetMacroMap 'Viewer')
+	OutAreaTable 'Dialog' $mapDialog $macroCommon  (GetMacroMap 'Dialog')
 
-	@'
-<h2><a name="#Special">Special Key Names</a></h2>
-<table>
-<tr>
-<th>Internal</th>
-<th>Documentation</th>
-</tr>
-<tr><td>Add</td><td>Gray +</td></tr>
-<tr><td>Clear</td><td>Numpad5</td></tr>
-<tr><td>Multiply</td><td>Gray *</td></tr>
-<tr><td>Subtract</td><td>Gray -</td></tr>
-</table>
+@"
+<hr/>
+<p>
+$([DateTime]::Now) Show-KeyMap-.ps1
+</p>
 </body>
 </html>
-'@
+"@
 } > $Output
 
 Invoke-Item $Output
