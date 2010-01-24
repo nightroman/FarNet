@@ -173,7 +173,7 @@ $mapShell = @{ ### SHELL MAP
 'ShiftEnd' = 'Select/deselect file'
 'ShiftEnter' = 'Execute in the separate window'
 'ShiftF1' = 'Add files to archive'
-'ShiftF10' = 'Selects last executed menu item'
+'ShiftF10' = 'Select last executed menu item'
 'ShiftF11' = 'Use group sorting'
 'ShiftF12' = 'Show selected files first'
 'ShiftF2' = 'Extract files from archive'
@@ -432,51 +432,51 @@ function OutAreaTable($Area, $Default, $Common, $Macro)
 </tr>
 '@ -f $Area
 
-	foreach($k in .{ $Default.Keys; $Common.Keys; $Macro.Keys } | Sort-Object -Unique) {
-		if (!$Name -or $Name -contains $k) {
+	foreach($key in .{ $Default.Keys; $Common.Keys; $Macro.Keys } | Sort-Object -Unique) {
+		if (!$Name -or $Name -contains $key) {
 
 			# check the key spelling (round-trip)
-			$code = $Far.NameToKey($k)
-			if ($code -lt 0) { throw "Invalid key name: '$k'" }
-			if ($Far.KeyToName($code) -cne $k) { throw "Not standard key name: replace '$k' with '$($Far.KeyToName($code))'" }
+			$code = $Far.NameToKey($key)
+			if ($code -lt 0) { throw "Invalid key name: '$key'" }
+			if ($Far.KeyToName($code) -cne $key) { throw "Not standard key name: replace '$key' with '$($Far.KeyToName($code))'" }
 
 			# row, data: key name
-			"<tr><td><code>$k</code></td>"
+			"<tr><td><code>$Area $key</code></td>"
 
-			$d = $Default[$k]
-			$c = $Common[$k]
-			$m = $Macro[$k]
+			$defaultAction = $Default[$key]
+			$commonMacro = $Common[$key]
+			$areaMacro = $Macro[$key]
 
 			# data: default action
 			'<td>'
-			if ($d) {
-				$d = [System.Web.HttpUtility]::HtmlEncode($d)
-				if ($c -or $m) {
-					"<strike>$d</strike>"
+			if ($defaultAction) {
+				$defaultAction = [System.Web.HttpUtility]::HtmlEncode($defaultAction)
+				if ($commonMacro -or $areaMacro) {
+					"<strike>$defaultAction</strike>"
 				}
 				else {
-					$d
+					$defaultAction
 				}
 			}
 			'</td>'
 
 			# data: common macro
 			'<td>'
-			if ($c) {
-				$c = [System.Web.HttpUtility]::HtmlEncode($c)
-				if ($m) {
-					"<strike>$c</strike>"
+			if ($commonMacro) {
+				$commonMacro = [System.Web.HttpUtility]::HtmlEncode($commonMacro)
+				if ($areaMacro) {
+					"<strike>$commonMacro</strike>"
 				}
 				else {
-					$c
+					$commonMacro
 				}
 			}
 			'</td>'
 
 			# data: area macro
 			'<td>'
-			if ($m) {
-				[System.Web.HttpUtility]::HtmlEncode($m)
+			if ($areaMacro) {
+				[System.Web.HttpUtility]::HtmlEncode($areaMacro)
 			}
 			'</td>'
 
@@ -487,7 +487,6 @@ function OutAreaTable($Area, $Default, $Common, $Macro)
 }
 
 ### Output
-$macroCommon = GetMacroMap 'Common'
 .{
 	@'
 <html>
@@ -518,7 +517,7 @@ td { padding: 4px; background-color: #eeeeee }
 <th>Action or Explanation</th>
 </tr>
 
-<tr><td><code>AltF9</code></td><td>Toggles the console window size</td></tr>
+<tr><td><code>AltF9</code></td><td>Toggle the console window size</td></tr>
 <tr><td><code>AltIns</code></td><td>Start screen block selection</td></tr>
 
 <tr><td><code>CtrlAltShift</code></td><td>Temporarily hide the current window</td></tr>
@@ -535,6 +534,8 @@ td { padding: 4px; background-color: #eeeeee }
 <hr/>
 '@
 
+	# out a table for each area with a column for the common area
+	$macroCommon = GetMacroMap 'Common'
 	OutAreaTable 'Shell' $mapShell $macroCommon (GetMacroMap 'Shell')
 	OutAreaTable 'Editor' $mapEditor $macroCommon (GetMacroMap 'Editor')
 	OutAreaTable 'Viewer' $mapViewer $macroCommon  (GetMacroMap 'Viewer')
