@@ -116,9 +116,11 @@ comments for more details.
 $#Command line#
 ~Contents~@Contents@
 
-By default command prefixes are: '>' for standard commands and '>>' for
-background jobs. According to Far rules prefix and command are delimited by ':',
-so that actually you have to type '>:' and '>>:' before each command. Examples:
+PowerShellFar commands with prefixes are used in the command line, the user
+menu [F2] and the file associations. By default command prefixes are: '>:' for
+standard commands and '>>:' for background jobs. It is recommended to add an
+extra space after prefixes: commands look better and TabExpansion can expand
+the first command token correctly. Examples:
 
 #Standard commands#
 
@@ -139,9 +141,10 @@ You can reduce typing by "Easy prefix" and "Easy invoke" macros, see ~FAQ~@FAQ@.
 #Command history#
 
 Most of commands are added to the PowerShellFar command history automatically.
-There is an exception: a command is not added if the last symbol is "##"; you
-may want to use this trick for commands in Far user menu [F2] and file
-associations, so that they do not pollute the history.
+There is an exception: a command is not added if the last symbol is '##'. This
+trick is useful for commands in the user menu [F2] and the file associations,
+normally they should not pollute the history because they are not typed each
+time on invocation.
 
 
 @MenuCommands
