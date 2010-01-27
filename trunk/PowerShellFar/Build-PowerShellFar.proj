@@ -24,7 +24,7 @@
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')"/>
 		<Copy
-		SourceFiles="Modules\FarMacro\Bin\$(Configuration)\FarMacro.dll;Modules\FarMacro\FarMacro.psd1;Modules\FarMacro\FarMacro.Format.ps1xml"
+		SourceFiles="Modules\FarMacro\Bin\$(Configuration)\FarMacro.dll;Modules\FarMacro\FarMacro.psd1;Modules\FarMacro\FarMacro.psm1;Modules\FarMacro\FarMacro.Format.ps1xml"
 		DestinationFolder="$(Install)\Plugins.NET\PowerShellFar\Modules\FarMacro"
 		SkipUnchangedFiles="true"
 		/>
