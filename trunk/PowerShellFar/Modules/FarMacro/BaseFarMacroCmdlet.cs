@@ -3,30 +3,23 @@ PowerShellFar plugin for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
-using System;
-using System.ComponentModel;
 using System.Management.Automation;
 using FarNet;
 
-namespace PowerShellFar.Commands
+namespace FarMacro
 {
-	/// <summary>
-	/// New-FarMacro command.
-	/// Creates a macro and optionally installs it.
-	/// </summary>
-	[Description("Creates a macro and optionally installs it.")]
-	public sealed class NewFarMacroCommand : BaseCmdlet
+	public class BaseFarMacroCmdlet : BaseCmdlet
 	{
 		/// <summary>
 		/// See <see cref="Macro.Area"/>
 		/// </summary>
-		[Parameter(Position = 0, HelpMessage = "See Macro.Area")]
-		public string Area { get; set; }
+		[Parameter(Position = 0, Mandatory = true, HelpMessage = "See Macro.Area", ParameterSetName = "Properties")]
+		public MacroArea Area { get; set; }
 
 		/// <summary>
 		/// See <see cref="Macro.Name"/>
 		/// </summary>
-		[Parameter(Position = 1, HelpMessage = "See Macro.Name")]
+		[Parameter(Position = 1, Mandatory = true, HelpMessage = "See Macro.Name")]
 		public string Name { get; set; }
 
 		/// <summary>
@@ -107,18 +100,9 @@ namespace PowerShellFar.Commands
 		[Parameter(HelpMessage = "See Macro.ItemIsDirectory2")]
 		public string ItemIsDirectory2 { get; set; }
 
-		/// <summary>
-		/// Tells to install the new macro instead of returning it.
-		/// </summary>
-		[Parameter(HelpMessage = "Tells to install the new macro instead of returning it.")]
-		public SwitchParameter Install { get; set; }
-
 		///
-		protected override void  BeginProcessing()
+		protected Macro CreateMacro()
 		{
-			if (Stop())
-				return;
-
 			Macro macro = new Macro();
 
 			macro.Area = Area;
@@ -137,10 +121,7 @@ namespace PowerShellFar.Commands
 			macro.PanelIsPlugin2 = PanelIsPlugin2;
 			macro.ItemIsDirectory2 = ItemIsDirectory2;
 
-			if (Install)
-				A.Far.Macro.Install(macro);
-			else
-				WriteObject(macro);
+			return macro;
 		}
 	}
 }
