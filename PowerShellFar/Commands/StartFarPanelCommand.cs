@@ -151,7 +151,7 @@ namespace PowerShellFar.Commands
 		protected override void ProcessRecord()
 		{
 			// done or noop?
-			if (_done || InputObject == null || Stop())
+			if (_done || InputObject == null)
 				return;
 
 			// done

@@ -63,8 +63,6 @@ namespace PowerShellFar.Commands
 		///
 		protected override void ProcessRecord()
 		{
-			if (Stop())
-				return;
 			WriteObject(CreateEditor());
 		}
 	}

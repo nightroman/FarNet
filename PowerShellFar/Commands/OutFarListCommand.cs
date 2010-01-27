@@ -31,9 +31,6 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			if (Stop())
-				return;
-
 			_menu = Create();
 
 			if (IncrementalOptions == PatternOptions.None)
@@ -50,9 +47,6 @@ namespace PowerShellFar.Commands
 		///
 		protected override void ProcessRecord()
 		{
-			if (Stop())
-				return;
-
 			if (InputObject == null)
 				return;
 

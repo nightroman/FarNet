@@ -19,17 +19,11 @@ namespace PowerShellFar.Commands
 	{
 		///
 		[Parameter(HelpMessage = _helpModal)]
-		public SwitchParameter Modal
-		{
-			get;
-			set;
-		}
+		public SwitchParameter Modal { get; set; }
 
 		///
 		protected override void ProcessRecord()
 		{
-			if (Stop())
-				return;
 			IEditor editor = CreateEditor();
 			if (Modal)
 				editor.Open(OpenMode.Modal);

@@ -97,9 +97,6 @@ namespace PowerShellFar.Commands
 		///
 		protected override void ProcessRecord()
 		{
-			if (Stop())
-				return;
-
 			//! Skip null. 'Out-FarPanel' should open a panel with no items.
 			if (InputObject == null)
 				return;

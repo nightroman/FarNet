@@ -43,6 +43,12 @@ namespace PowerShellFar
 		string _Property;
 		ScriptBlock _Script;
 
+		internal static Meta AsMeta(object value)
+		{
+			Meta r = value as Meta;
+			return r == null ? new Meta(value) : r;
+		}
+
 		/// <summary>
 		/// Property name.
 		/// </summary>
@@ -109,6 +115,15 @@ namespace PowerShellFar
 				throw new ArgumentNullException("script");
 
 			_Script = script;
+		}
+
+		/// <summary>
+		/// From a property and column name.
+		/// </summary>
+		internal Meta(string property, string title) // no checks, until it is internal
+		{
+			_Property = property;
+			_ColumnName = title;
 		}
 
 		/// <summary>

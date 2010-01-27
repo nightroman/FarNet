@@ -19,20 +19,13 @@ namespace PowerShellFar.Commands
 	{
 		///
 		[Parameter(HelpMessage = _helpModal)]
-		public SwitchParameter Modal
-		{
-			get { return _Modal; }
-			set { _Modal = value; }
-		}
-		SwitchParameter _Modal;
+		public SwitchParameter Modal { get; set; }
 
 		///
 		protected override void ProcessRecord()
 		{
-			if (Stop())
-				return;
 			IViewer viewer = CreateViewer();
-			if (_Modal.IsPresent)
+			if (Modal)
 				viewer.Open(OpenMode.Modal);
 			else
 				viewer.Open();

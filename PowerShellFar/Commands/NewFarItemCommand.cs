@@ -69,9 +69,6 @@ namespace PowerShellFar.Commands
 		///
 		protected override void ProcessRecord()
 		{
-			if (Stop())
-				return;
-
 			FarItem item = new SetItem();
 
 			item.Text = Text;

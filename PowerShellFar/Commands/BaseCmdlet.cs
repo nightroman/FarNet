@@ -28,7 +28,6 @@ new CmdletConfigurationEntry("New-FarEditor", typeof(Commands.NewFarEditorComman
 new CmdletConfigurationEntry("New-FarFile", typeof(Commands.NewFarFileCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarItem", typeof(Commands.NewFarItemCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarList", typeof(Commands.NewFarListCommand), string.Empty),
-new CmdletConfigurationEntry("New-FarMacro", typeof(Commands.NewFarMacroCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarMenu", typeof(Commands.NewFarMenuCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarObjectPanel", typeof(Commands.NewFarObjectPanelCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarUserPanel", typeof(Commands.NewFarUserPanelCommand), string.Empty),
@@ -42,11 +41,6 @@ new CmdletConfigurationEntry("Start-FarPanel", typeof(Commands.StartFarPanelComm
 new CmdletConfigurationEntry("Start-FarViewer", typeof(Commands.StartFarViewerCommand), string.Empty),
 new CmdletConfigurationEntry("Trace-Far", typeof(Commands.TraceFarCommand), string.Empty),
 new CmdletConfigurationEntry("Update-FarDescription", typeof(Commands.UpdateFarDescriptionCommand), string.Empty)});
-		}
-		
-		internal bool Stop()
-		{
-			return Stopping;
 		}
 	}
 }

@@ -3,6 +3,7 @@ PowerShellFar plugin for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
+using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -22,12 +23,24 @@ namespace PowerShellFar
 			if (line == null)
 				return;
 
+			// line text
+			string text = line.Text;
+
+			// replace prefixes with spaces to avoid parsing problems
+			if (line.WindowType == WindowType.Panels)
+			{
+				if (text.StartsWith(Entry.Prefix1 + ":", StringComparison.OrdinalIgnoreCase))
+					text = string.Empty.PadRight(Entry.Prefix1.Length + 1) + text.Substring(Entry.Prefix1.Length + 1);
+				else if (text.StartsWith(Entry.Prefix2 + ":", StringComparison.OrdinalIgnoreCase))
+					text = string.Empty.PadRight(Entry.Prefix1.Length + 2) + text.Substring(Entry.Prefix2.Length + 1);
+			}
+
 			int pos = line.Pos;
 			string script = null;
 			string command = null;
 			object[] args = null;
 			Collection<PSParseError> errors;
-			Collection<PSToken> tokens = PSParser.Tokenize(line.Text, out errors);
+			Collection<PSToken> tokens = PSParser.Tokenize(text, out errors);
 			foreach (PSToken token in tokens)
 			{
 				if (token.Type == PSTokenType.Command)

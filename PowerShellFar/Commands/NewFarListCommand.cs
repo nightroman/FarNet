@@ -218,9 +218,6 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			if (Stop())
-				return;
-
 			IListMenu menu = Create();
 			WriteObject(menu);
 		}

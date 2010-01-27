@@ -1936,12 +1936,12 @@ A: There are at least two options, both using macros
 example [Space] is expanded into '>: '. Space after the prefix is recommended
 for normal TabExpansion of the first word:
 
- >: New-FarMacro -Install Shell Space '> : Space' 'Easy prefix' -CommandLine 0
+ >: Set-FarMacro Shell Space '> : Space' 'Easy prefix' -CommandLine 0
 
 2) #Easy invoke#: Type and run without prefix using a macro associated with
 "Invoke selected code" menu command. Example ([ShiftSpace]):
 
- >: New-FarMacro -Install Shell ShiftSpace 'F11 X 2' 'Easy invoke' -CommandLine 1
+ >: Set-FarMacro Shell ShiftSpace 'F11 X 2' 'Easy invoke' -CommandLine 1
  (X is the PowerShellFar hotkey in the plugins menu)
 
 Now you can type PowerShell commands without a prefix and press [ShiftSpace] to

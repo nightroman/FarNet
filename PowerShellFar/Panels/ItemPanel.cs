@@ -584,6 +584,11 @@ namespace PowerShellFar
 							throw new InvalidDataException("Invalid settings for '" + location.Provider.Name + "' provider: " + ex.Message);
 						}
 					}
+					else if (My.ProviderInfoEx.IsNavigation(location.Provider)) //??? $RVK
+					{
+						Columns = new object[] { new Meta("PSChildName", "Name") };
+					}
+					// else $RVK what about others by default?
 				}
 			}
 
