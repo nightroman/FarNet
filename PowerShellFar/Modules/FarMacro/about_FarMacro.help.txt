@@ -1,0 +1,42 @@
+﻿TOPIC
+	about_FarMacro
+
+SHORT DESCRIPTION
+	Far Manager macro provider and tools.
+
+LONG DESCRIPTION
+
+FARMACRO CMDLETS
+
+	The module includes cmdlets:
+
+	-- New-FarMacro
+		Creates a macro instance.
+
+	-- Set-FarMacro
+		Installs one or more macros.
+
+	Use Get-FarHelp to get more details about the cmdlets.
+
+FARMACRO PROVIDER
+
+    The module includes the FarMacro provider. The FarMacro provider lets you
+    view the macros in PowerShell as though they were on a file system drive.
+
+    The FarMacro provider exposes the FarMacro: drive. To go into the FarMacro:
+    drive, type:
+
+	Set-Location FarMacro:
+
+    To view the contents of the drive, type:
+
+	Get-ChildItem
+
+    To view the contents of the drive from another Windows PowerShell drive,
+    begin the path with the drive name. Include the colon (:). For example:
+
+	Get-ChildItem FarMacro:
+
+    To get macros in a particular area, type the drive name and the area name.
+
+	Get-ChildItem FarMacro:\Shell
