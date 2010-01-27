@@ -3,10 +3,45 @@ http://code.google.com/p/farnet/
 
 = 4.3.1 =
 
+PowerShellFar modules
+
+*) Modules are not plugins or sub-sub-plugins. They are standard PowerShell
+modules. But they are simply designed for the FarHost implemented by PSF.
+
+*) Ready to use Modules directory
+Directory "$($Psf.AppHome)\Modules" is added to $env:PSModulePath on loading,
+so that all modules in this directory are available at runtime. As usual in
+PowerShell, import them by Import-Module. In PSF there is also "Modules+".
+
+*) New (the first!) module Modules\FarMacro
+-- Cmdlet New-FarMacro moved there from the PSF core (good to keep some not
+frequently used tools like this in modules: they are loaded only when needed).
+Switch -Install is removed, instead a new cmdlet is used: Set-FarMacro.
+-- Provider FarMacro with its default drive FarMacro:\. Provider panels work
+for FarMacro automatically: edit, copy, move, rename, create, remove, and etc.
+Examples:
+dir farmacro:
+dir farmacro:\shell
+cd farmacro:\shell
+dir
+
+?? Cmdlet Get-FarMacro [-Area] [-Name]
+?? move macro scripts to this module
+?? add formatting for FarNet.Macro
+?? module manifest
+
+P.S. Source code of modules is in here: PowerShellFar\Modules (project SVN).
+
 *) Show-KeyMap-.ps1:
+?? keep it, but call the module?
 -- updated for FarNet 4.3.0 changes
 -- added the dialog key map and more keys to special keys
 -- added area names to key names (useful in the large tables)
+
+Other changes
+
+*) Menu action "Help" did not work in the cmdline with PSF prefixes. Fixed.
+*) Provider panels: improvements, especially for "unknown" providers.
 
 = 4.3.0 =
 

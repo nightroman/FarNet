@@ -1,7 +1,7 @@
 
 Plugin   : PowerShellFar
 Version  : 4.3.0
-Release  : 2010.01.23
+Release  : 2010.01.25
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com

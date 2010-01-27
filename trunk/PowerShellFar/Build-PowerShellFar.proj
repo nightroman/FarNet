@@ -14,7 +14,7 @@
 
 	<Target Name="Clean">
 		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Clean"/>
-		<RemoveDir Directories="bin;obj;Debug;Release"/>
+		<RemoveDir Directories="bin;obj;Modules\FarMacro\bin;Modules\FarMacro\obj"/>
 		<Delete Files="PowerShellFar.ncb;PowerShellFar.sln.cache;Bench\Test\Test-Zoo.clixml"/>
 	</Target>
 
@@ -23,6 +23,11 @@
 		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Install" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')"/>
+		<Copy
+		SourceFiles="Modules\FarMacro\Bin\$(Configuration)\FarMacro.dll;Modules\FarMacro\FarMacro.psd1;Modules\FarMacro\FarMacro.Format.ps1xml"
+		DestinationFolder="$(Install)\Plugins.NET\PowerShellFar\Modules\FarMacro"
+		SkipUnchangedFiles="true"
+		/>
 	</Target>
 
 	<!--Install PSF resource files-->
@@ -49,10 +54,8 @@
 		<!--Root-->
 		<Copy DestinationFolder="Tmp" SourceFiles="Readme.txt"/>
 		<!--Plugin-->
-		<CreateItem Include="$(Install)\Plugins.NET\PowerShellFar\*;History.txt;LICENSE">
-			<Output ItemName="plugin_file" TaskParameter="Include"/>
-		</CreateItem>
-		<Copy DestinationFolder="Tmp\Plugins.NET\PowerShellFar" SourceFiles="@(plugin_file)"/>
+		<Copy DestinationFolder="Tmp\Plugins.NET\PowerShellFar" SourceFiles="History.txt;LICENSE"/>
+		<Exec Command='xcopy "$(Install)\Plugins.NET\PowerShellFar" Tmp\Plugins.NET\PowerShellFar /s > nul'/>
 		<!--Bench-->
 		<CreateItem Include="Bench\**" Exclude="Bench\**\.svn\**">
 			<Output ItemName="script_file" TaskParameter="Include"/>

@@ -19,34 +19,19 @@ namespace PowerShellFar.Commands
 	{
 		///
 		[Parameter(HelpMessage = "Sets IMenu.ReverseAutoAssign")]
-		public SwitchParameter ReverseAutoAssign
-		{
-			get;
-			set;
-		}
+		public SwitchParameter ReverseAutoAssign { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Sets IMenu.ChangeConsoleTitle")]
-		public SwitchParameter ChangeConsoleTitle
-		{
-			get;
-			set;
-		}
+		public SwitchParameter ChangeConsoleTitle { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Tells to show immediately. In this case nothing is returned and all actions are done by item event handlers.")]
-		public SwitchParameter Show
-		{
-			get;
-			set;
-		}
+		public SwitchParameter Show { get; set; }
 
 		///
 		protected override void BeginProcessing()
 		{
-			if (Stop())
-				return;
-
 			IMenu menu = A.Far.CreateMenu();
 			Init(menu);
 

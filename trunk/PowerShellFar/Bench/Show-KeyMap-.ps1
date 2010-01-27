@@ -23,8 +23,8 @@ param
 	# Subset of keys to be shown. Default: empty, all keys are shown.
 	$Name
 	,
-	# Output HTML file path. Default: $env:USERPROFILE\FarKeyMap.output.htm
-	$Output = "$env:USERPROFILE\FarKeyMap.output.htm"
+	# Output HTML file path. Default: $HOME\FarKeyMap.output.htm
+	$Output = "$HOME\FarKeyMap.output.htm"
 )
 
 # HtmlEncode

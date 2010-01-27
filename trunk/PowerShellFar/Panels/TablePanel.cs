@@ -63,7 +63,7 @@ namespace PowerShellFar
 			for (int iColumn = 0; iColumn < columns.Length; ++iColumn)
 			{
 				// meta data info
-				Meta meta = new Meta(columns[iColumn]);
+				Meta meta = Meta.AsMeta(columns[iColumn]);
 				r[iColumn] = meta;
 
 				// skip not specified

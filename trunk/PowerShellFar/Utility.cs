@@ -181,6 +181,8 @@ namespace PowerShellFar
 			CtrlC = "Cancel key is pressed.",
 			// history
 			PowerShellFarPrompt = "PowerShellFarPrompt",
+			// PS names
+			PSModulePath = "PSModulePath",
 			// main name
 			Name = "PowerShellFar";
 	}

@@ -96,9 +96,6 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			if (Stop())
-				return;
-
 			if (Hidden)
 			{
 				Output = Return = false;

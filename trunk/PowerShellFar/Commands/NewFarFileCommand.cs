@@ -62,9 +62,6 @@ namespace PowerShellFar.Commands
 		///
 		protected override void ProcessRecord()
 		{
-			if (Stop())
-				return;
-
 			SetFile file = new SetFile();
 
 			file.Name = Name;

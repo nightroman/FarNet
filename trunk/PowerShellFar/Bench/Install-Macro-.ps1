@@ -28,6 +28,8 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param()
 
+Import-Module FarMacro
+
 # confirm
 if (!$pscmdlet.ShouldProcess($null)) { return }
 
