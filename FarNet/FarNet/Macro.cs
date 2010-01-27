@@ -11,56 +11,69 @@ namespace FarNet
 	/// Key macro operator. Exposed as <see cref="IFar.Macro"/>.
 	/// </summary>
 	/// <remarks>
-	/// Important: your macro changes are all in the storage,
-	/// not in memory where the current macros are loaded by Far.
-	/// Thus, when you work on macros you should normally follow this scheme:
-	/// 1) call <see cref="Save"/> (it saves memory macros to the storage);
-	/// 2) do your work on macros (remember, you operate on data in the storage);
-	/// 3) call <see cref="Load"/> after changes (it gets changes from the storage to memory).
+	/// WARNING: Methods that change macro data in the storage are not recommended
+	/// if there are other running Far instances that also change macro data.
+	/// In such cases some changes can be lost.
 	/// </remarks>
 	public interface IMacro
 	{
 		/// <summary>
-		/// Save all macros from Far memory into the storage.
+		/// Gets or sets the manual save\load mode.
 		/// </summary>
 		/// <remarks>
-		/// It is recommended to call this before your work on macros.
-		/// Otherwise you cannot get not yet saved changes of macros in memory and they can be even lost on your changes.
+		/// For batch operations on several macros you may set the manual mode,
+		/// call <see cref="Save"/>, perform operations, call <see cref="Load"/>
+		/// and restore the flag.
+		/// </remarks>
+		bool ManualSaveLoad { get; set; }
+		/// <summary>
+		/// Saves all macros from Far memory to the storage.
+		/// </summary>
+		/// <remarks>
+		/// Use it carefully or even don't use if there are more than one running Far instances.
 		/// </remarks>
 		void Save();
 		/// <summary>
-		/// Gets existing area names or macro names from the specified area.
-		/// </summary>
-		/// <param name="area">Macro area or empty string.</param>
-		string[] GetNames(string area);
-		/// <summary>
-		/// Gets key macro.
-		/// </summary>
-		/// <param name="area">Macro area.</param>
-		/// <param name="name">Macro name.</param>
-		/// <returns>Macro data or null.</returns>
-		Macro GetMacro(string area, string name);
-		/// <summary>
-		/// Removes the specified macro.
-		/// </summary>
-		/// <param name="area">Macro area.</param>
-		/// <param name="name">Macro name.</param>
-		void Remove(string area, string name);
-		/// <summary>
-		/// Loads all macros from the storage into Far memory. Previous values are erased.
+		/// Loads all macros from the storage to Far memory.
 		/// </summary>
 		/// <remarks>
-		/// It is recommended to call this when you have finished macro changes.
-		/// Otherwise your changes are not yet active and they can be even lost on future saving macros from memory.
+		/// Previous macro values in memory are erased.
 		/// </remarks>
 		void Load();
 		/// <summary>
-		/// Installs one or more macros.
+		/// Gets macro names in the area.
+		/// </summary>
+		/// <param name="area">Macro area.</param>
+		/// <returns>Macro names in the area or, if the area is <c>Root</c>, then names of existing in the storage areas.</returns>
+		string[] GetNames(MacroArea area);
+		/// <summary>
+		/// Gets the key macro.
+		/// </summary>
+		/// <param name="area">Macro area.</param>
+		/// <param name="name">Macro name.</param>
+		/// <returns>The macro or null if the name does not exist.</returns>
+		Macro GetMacro(MacroArea area, string name);
+		/// <summary>
+		/// Removes the specified macros or the empty area.
+		/// </summary>
+		/// <param name="area">Macro area.</param>
+		/// <param name="names">Macro names to be removed.</param>
+		/// <remarks>
+		/// If input names are not provided (null or empty) or there is the only empty name
+		/// then this method removes the area if it is not used, i.e. contains no macros.
+		/// Areas with macros cannot be removed.
+		/// </remarks>
+		void Remove(MacroArea area, params string[] names);
+		/// <summary>
+		/// Installs one or more macros in the storage and loads them.
 		/// </summary>
 		/// <param name="macros">Macro data.</param>
 		/// <remarks>
+		/// The method saves current macros, writes data to the storage, and reloads macros.
+		/// <para>
 		/// This operation is not atomic: if there are several macros to install and it fails
 		/// in the middle then some first macros may be installed and the rest of them are not.
+		/// </para>
 		/// <para>
 		/// This method fails if macro data are invalid or a macro with the same area and name
 		/// has be already installed by the same call of this method.
@@ -75,9 +88,9 @@ namespace FarNet
 	public class Macro
 	{
 		/// <summary>
-		/// Area name.
+		/// Area.
 		/// </summary>
-		public string Area { get; set; }
+		public MacroArea Area { get; set; }
 		/// <summary>
 		/// Key name.
 		/// </summary>
@@ -188,5 +201,80 @@ namespace FarNet
 					throw new FormatException("Valid values are: '0', '1', empty or null.");
 			}
 		}
+	}
+
+	/// <summary>
+	/// Macro areas.
+	/// </summary>
+	public enum MacroArea
+	{
+		/// <summary>
+		/// No area.
+		/// </summary>
+		Root,
+		/// <summary>
+		/// Lowest priority macros used everywhere.
+		/// </summary>
+		Common,
+		/// <summary>
+		/// Dialog boxes.
+		/// </summary>
+		Dialog,
+		/// <summary>
+		/// Drive selection menu.
+		/// </summary>
+		Disks,
+		/// <summary>
+		/// Internal file editor.
+		/// </summary>
+		Editor,
+		/// <summary>
+		/// Folder search panel.
+		/// </summary>
+		FindFolder,
+		/// <summary>
+		/// Help system.
+		/// </summary>
+		Help,
+		/// <summary>
+		/// Informational panel.
+		/// </summary>
+		Info,
+		/// <summary>
+		/// Main menu.
+		/// </summary>
+		MainMenu,
+		/// <summary>
+		/// Other menus.
+		/// </summary>
+		Menu,
+		/// <summary>
+		/// Screen capturing mode.
+		/// </summary>
+		Other,
+		/// <summary>
+		/// Quick view panel.
+		/// </summary>
+		QView,
+		/// <summary>
+		/// Quick file search.
+		/// </summary>
+		Search,
+		/// <summary>
+		/// File panels.
+		/// </summary>
+		Shell,
+		/// <summary>
+		/// Folder tree panel.
+		/// </summary>
+		Tree,
+		/// <summary>
+		/// User menu.
+		/// </summary>
+		UserMenu,
+		/// <summary>
+		/// Internal file viewer.
+		/// </summary>
+		Viewer
 	}
 }

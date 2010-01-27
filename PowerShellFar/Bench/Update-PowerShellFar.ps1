@@ -48,8 +48,8 @@ param
 	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'})
 	,
 	[string]
-	# Downloaded archives directory. Default: %USERPROFILE%.
-	$Archive = $env:USERPROFILE
+	# Downloaded archives directory. Default: $HOME.
+	$Archive = $HOME
 	,
 	[string]
 	# Version (X.Y.Z). Default: requested from the FarNet site.

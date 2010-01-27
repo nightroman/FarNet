@@ -28,11 +28,25 @@ static String^ GetThreeState(Object^ value1, Object^ value2)
 	return String::Empty;
 }
 
-array<String^>^ Macro0::GetNames(String^ area)
+void Macro0::Load()
 {
-	if (!area) throw gcnew ArgumentNullException("area");
+	ActlKeyMacro command;
+	command.Command = MCMD_LOADALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+}
 
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + area;
+void Macro0::Save()
+{
+	ActlKeyMacro command;
+	command.Command = MCMD_SAVEALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+}
+
+array<String^>^ Macro0::GetNames(MacroArea area)
+{
+	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + (area == MacroArea::Root ? "" : area.ToString());
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
 
 	try
@@ -41,16 +55,16 @@ array<String^>^ Macro0::GetNames(String^ area)
 	}
 	finally
 	{
-		key->Close();
+		if (key)
+			key->Close();
 	}
 }
 
-Macro^ Macro0::GetMacro(String^ area, String^ name)
+Macro^ Macro0::GetMacro(MacroArea area, String^ name)
 {
-	if (!area) throw gcnew ArgumentNullException("area");
 	if (!name) throw gcnew ArgumentNullException("name");
 
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + area + "\\" + name;
+	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + area.ToString() + "\\" + name;
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
 	if (!key)
 		return nullptr;
@@ -102,12 +116,9 @@ Macro^ Macro0::GetMacro(String^ area, String^ name)
 	}
 }
 
-void Macro0::Remove(String^ area, String^ name)
+void Macro0::Remove(MacroArea area, String^ name)
 {
-	if (!area) throw gcnew ArgumentNullException("area");
-	if (!name) throw gcnew ArgumentNullException("name");
-
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + area;
+	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + area.ToString();
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path, true);
 	if (!key)
 		return;
@@ -122,32 +133,45 @@ void Macro0::Remove(String^ area, String^ name)
 	}
 }
 
-void Macro0::Load()
+void Macro0::Remove(MacroArea area, array<String^>^ names)
 {
-	ActlKeyMacro command;
-	command.Command = MCMD_LOADALL;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
-}
+	if (area == MacroArea::Root)
+		throw gcnew ArgumentException("Invalid 'area'.");
 
-void Macro0::Save()
-{
-	ActlKeyMacro command;
-	command.Command = MCMD_SAVEALL;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+	if (!ManualSaveLoad)
+		Save();
+
+	if (!names || names->Length == 0 || names->Length == 1 && ES(names[0]))
+	{
+		Remove(area, String::Empty);
+		return;
+	}
+
+	try
+	{
+		for each(String^ name in names)
+			if (SS(name))
+				Remove(area, name);
+	}
+	finally
+	{
+		if (!ManualSaveLoad)
+			Load();
+	}
 }
 
 void Macro0::Install(Macro^ macro)
 {
 	if (!macro) throw gcnew ArgumentNullException("macro");
-	if (ES(macro->Area)) throw gcnew ArgumentException("macro.Area cannot be empty.");
-	if (ES(macro->Name)) throw gcnew ArgumentException("macro.Name cannot be empty.");
 
-	Remove(macro->Area, macro->Name);
+	if (SS(macro->Name))
+		Remove(macro->Area, macro->Name);
 
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + macro->Area + "\\" + macro->Name;
+	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + macro->Area.ToString() + "\\" + macro->Name;
 	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
+
+	if (ES(macro->Name))
+		return;
 
 	try
 	{
@@ -190,10 +214,11 @@ void Macro0::Install(Macro^ macro)
 
 void Macro0::Install(array<Macro^>^ macros)
 {
-	Save();
-
 	if (!macros)
 		return;
+
+	if (!ManualSaveLoad)
+		Save();
 
 	List<String^> done;
 	try
@@ -211,7 +236,8 @@ void Macro0::Install(array<Macro^>^ macros)
 	}
 	finally
 	{
-		Load();
+		if (!ManualSaveLoad)
+			Load();
 	}
 }
 

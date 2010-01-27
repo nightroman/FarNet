@@ -107,3 +107,6 @@ $Psf.Settings.IntelliAutoSelect = $false
 $Psf.Settings.IntelliMaxHeight = 0
 $Psf.Settings.IntelliNoShadow = $false
 $Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Down
+
+### Import modules
+Import-Module FarMacro

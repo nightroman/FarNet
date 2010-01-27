@@ -13,9 +13,9 @@
 	Far Manager (using 'start' command or [ShiftEnter] in the command line), in
 	this case you do not have to set the parameter FARHOME.
 
-	%USERPROFILE% directory is the destination for downloaded archives. Old
-	files are not deleted. It is recommended to keep at the last downloaded
-	archive there, the script downloads only new archives, if any.
+	$HOME directory is the destination for downloaded archives. Old files are
+	not deleted. It is recommended to keep at the last downloaded archive
+	there, the script downloads only new archives, if any.
 
 	The script gets the latest web archive name. If the file already exists the
 	script exits. Otherwise it downloads the archive and starts extraction. It
@@ -79,7 +79,7 @@ if (!$Archive) {
 
 	### exit if the archive exists
 	$Name = $matches[1]
-	$Archive = "$env:USERPROFILE\$Name"
+	$Archive = "$HOME\$Name"
 	if ([IO.File]::Exists($Archive)) {
 		Write-Host -ForegroundColor Cyan "The archive '$Archive' already exists; use the parameter -Archive to update from it."
 		return

@@ -21,20 +21,21 @@ namespace PowerShellFar.UI
 			Dialog.AddBox(3, 1, 0, 0, title);
 			int x = 11;
 
+			// use last history, it is useful
 			Dialog.AddText(5, -1, 0, "&Name");
 			Name = Dialog.AddEdit(x, 0, 71, string.Empty);
 			Name.History = "PowerPanelNames";
 			Name.UseLastHistory = true;
 
+			// do not use last history!
 			Dialog.AddText(5, -1, 0, "&Type");
 			Type = Dialog.AddEdit(x, 0, 71, string.Empty);
 			Type.History = "PowerPanelTypes";
-			Type.UseLastHistory = true;
 
+			// do not use last history!
 			Dialog.AddText(5, -1, 0, "&Value");
 			Value = Dialog.AddEdit(x, 0, 71, string.Empty);
 			Value.History = "PowerPanelValues";
-			Value.UseLastHistory = true;
 
 			Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 

@@ -16,8 +16,8 @@ namespace PowerShellFar
 	{
 		static Entry _Instance;
 
-		static String _Prefix1;
-		internal static String Prefix1 { get { return _Prefix1; } }
+		internal static String Prefix1 { get; private set; }
+		internal static String Prefix2 { get; private set; }
 
 		///
 		public Entry()
@@ -41,8 +41,8 @@ namespace PowerShellFar
 			A.Connect(new Actor(), Far);
 
 			// register prefixes
-			_Prefix1 = Far.RegisterCommand(this, "PowerShell main prefix", ">", OnCommandLine);
-			Far.RegisterCommand(this, "PowerShell jobs prefix", ">>", OnCommandLineJob);
+			Prefix1 = Far.RegisterCommand(this, "PowerShell main prefix", ">", OnCommandLine);
+			Prefix2 = Far.RegisterCommand(this, "PowerShell jobs prefix", ">>", OnCommandLineJob);
 
 			// register config
 			Far.RegisterTool(this, Res.Name, OnConfig, ToolOptions.Config);

@@ -172,6 +172,12 @@ namespace PowerShellFar
 				return;
 			}
 
+			// Add the module path.
+			// STOP: [_100127_182335 test]
+			// *) It has to be done before profile loading, so that it can load modules.
+			// *) And it has to be done after the core loading so that standard paths are added.
+			Environment.SetEnvironmentVariable(Res.PSModulePath, string.Concat(AppHome, "\\Modules;", Environment.GetEnvironmentVariable("PSModulePath")));
+
 			//! If it is async then PS catches all and adds errors to $Error.
 			//! Thus, we don't catch anything, because this is normally async.
 			try

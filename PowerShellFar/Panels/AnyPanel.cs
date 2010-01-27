@@ -800,8 +800,9 @@ namespace PowerShellFar
 		/// </summary>
 		void OnSettingDirectory(object sender, SettingDirectoryEventArgs e)
 		{
-			// Far find is not used
-			if ((e.Mode & OperationModes.Find) > 0)
+			// *) .Find: is not used, ignore
+			// *) .Silent: 100127 CtrlQ mode is not OK for folders: FarMacro: on areas Far tries to enumerate, we do not support. $RVK
+			if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) > 0)
 			{
 				e.Ignore = true;
 				return;
