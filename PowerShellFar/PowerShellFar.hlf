@@ -1848,27 +1848,26 @@ $#Using .NET assemblies#
 ~Contents~@Contents@
 
 Suppose you want to write a tool in a .NET language, not in PowerShell (perhaps
-performance is quite important or a tool is too complex for PowerShell). Be
-aware that there are at least two ways.
+performance is quite important or a tool is too complex for scripting). Be
+aware that there are many possible ways.
 
 
-#Way 1 - no PowerShell at all#
+#Way 1 - FarNet plugin#
 
-This way is straightforward but not the easiest. You create a plugin for
-FarNet, implement a plugin class, add a menu and so on.
-
-Perhaps it is a right way to go if you don't actually use PowerShell. But if you
-do then there is a much better way.
+Create a FarNet plugin, that is a .NET library dependent on FarNet. Implement
+one or more plugin classes. PowerShellFar itself is such a plugin.
 
 
-#Way 2 - PowerShell uses .NET assembly#
+#Way 2 - .NET library#
 
-Create a standard class library and a class like this:
+Create a standard class library, then load and use it from scripts. It may or
+may not be dependent on FarNet or PowerShell. If a library is dependent on
+FarNet you should connect it, send the IFar instance there. For example:
 
 #Code (C##):#
 
 	using System;
-	using FarManager;
+	using FarNet;
 	namespace ClassLibrary1
 	{
 	   public class Class1
@@ -1887,9 +1886,6 @@ Create a standard class library and a class like this:
 	   }
 	}
 
-That is all you need to do, really. The last step is to call HelloWorld() from
-your PowerShell code.
-
 #Code (PowerShell):#
 
 	## load the assembly (perhaps in a profile if it is always used)
@@ -1905,23 +1901,39 @@ your PowerShell code.
 
 #Advantages#
 
-- Functionality of this assembly is available everywhere in PowerShell code and
-for other .NET plugins.
+-- Functionality of this assembly is available everywhere in PowerShell code
+and for other .NET plugins.
 
-- Simplicity: .NET assembly contains pure functionality, no extra plugin
+-- Simplicity: .NET assembly contains pure functionality, no extra plugin
 infrastructure.
 
-- Flexibility: now you can decide how to use it: from the command line or a
+-- Flexibility: now you can decide how to use it: from the command line or a
 menu or a script or whatever. PowerShellFar provides many choices.
 
-- This assembly is loaded only when needed and once even if Add-Type is called
+-- This assembly is loaded only when needed and once even if Add-Type is called
 many times (if it is in a profile then it is always loaded, indeed).
 
 
-#Way 3 - Compile .NET code dynamically#
+#Way 3 - PowerShell module#
 
-Test-Zoo.cs defines some C## code; Test-Zoo-.ps1 shows how to compile it
-dynamically. This is also done by the Add-Type cmdlet.
+Modules depend on PowerShell and may or may not depend on FarNet. Examples:
+FarMacro uses FarNet and FarDescription does not. In the first case the
+required IFar instance is exposed as the value of
+(IFar)Host.PrivateData.BaseObject
+
+Modules let you implement PowerShell features and infrastructure. For example
+FarDescription and FarMacro modules show how to:
+
+	-- create cmdlets
+	-- create providers
+	-- use custom type formatting
+	-- add new members to existing types
+
+
+#Way 4 - Compile .NET code dynamically#
+
+The Add-Type cmdlet can compile .NET code at runtime. For example: Test-Zoo.cs
+contains some C## code; Test-Zoo-.ps1 shows how to compile and use it.
 
 
 @FAQ

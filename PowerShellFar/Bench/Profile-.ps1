@@ -54,7 +54,6 @@ $Psf.Providers = @{
 	FileSystem = @{
 		Columns = @(
 			'Name'
-			@{ Type = 'Z'; Name = 'Description'; Expression = 'FarDescription' }
 			@{ Type = 'S'; Expression = 'Length' }
 		)
 	}
@@ -109,4 +108,5 @@ $Psf.Settings.IntelliNoShadow = $false
 $Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Down
 
 ### Import modules
-Import-Module FarMacro
+#Import-Module FarDescription
+#Import-Module FarMacro
