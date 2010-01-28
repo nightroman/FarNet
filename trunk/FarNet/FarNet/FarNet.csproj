@@ -123,7 +123,7 @@
     <Compile Include="UserInput.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Plugin.cs">
+    <Compile Include="Module.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Selection.cs">

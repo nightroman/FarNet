@@ -1,10 +1,11 @@
+
 using System;
 using System.IO;
 using System.Text;
 using FarNet;
 
 // Test filer for *.test files with "TEST" header
-public class TestFiler : FilerPlugin
+public class TestFiler : ModuleFiler
 {
 	// Shows data in a message box and lines in a panel
 	public override void Invoke(object sender, FilerEventArgs e)

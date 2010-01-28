@@ -1,8 +1,9 @@
+
 using System;
 using FarNet;
 
 // Trims line ends in a saving file.
-public class TrimSaving : EditorPlugin
+public class TrimSaving : ModuleEditor
 {
 	// Called when a file is opened. It installs OnSaving().
 	public override void Invoke(object sender, EventArgs e)

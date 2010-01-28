@@ -217,7 +217,7 @@ namespace PowerShellFar
 
 			try
 			{
-				string code = A.Psf.Settings.PluginStartupEdit;
+				string code = A.Psf.Settings.StartupEdit;
 				if (!string.IsNullOrEmpty(code))
 					A.Psf.InvokeCode(code);
 			}

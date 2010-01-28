@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding='windows-1251'?>
+<?xml version="1.0" encoding='utf-8'?>
 <docs>
 <!-- /// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/> -->
 <pp name="HelpTopic">
@@ -27,7 +27,7 @@ Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
 <param name="bottom">Bottom line.</param>
 </pp>
 <pp name="Connect">
-<summary>Override this method to process plugin connection.</summary>
+<summary>Override this method to process the module connection.</summary>
 <example>
 (C#) how to register a command line prefix and a menu command.
 <code>
@@ -52,7 +52,7 @@ The <c>topic</c> parameter describes a help topic and can be in one of the follo
 <code>
 <![CDATA[
 "Topic"
-Reference to a topic in the plugins help file.
+Reference to a topic in the help file.
 
 ":Topic"
 Reference to a topic from the main Far Manager help file.
@@ -60,16 +60,16 @@ Reference to a topic from the main Far Manager help file.
 "<FullPath\>Topic"
 Reference to a topic in a help file located in a folder with full or relative
 path of FullPath. An ending backslash must be added. The reference must not be
-split on multiple lines. For example, the plugin Foo is located in folder
-"D:\Far\Plugins\Foo" and we need the topic "FooInfo" from its help file:
-"<D:\Far\Plugins\Foo\>FooInfo"
+split on multiple lines. For example, the help file is located in the folder
+"D:\Far\Plugins.NET\Foo" and we need the topic "FooInfo" from it:
+"<D:\Far\Plugins.NET\Foo\>FooInfo"
 
 "<FullModuleName>Topic"
-Reference to a topic in a help file located in the same folder as the plugin
+Reference to a topic in a help file located in the same folder as the module
 with the relative or full path of FullModuleName. The reference must not be
 split on mutiple lines. For example, we need the help topic "FooInfo" from the
-help file of the plugin Foo "D:\Far\Plugins\Foo\Foo.dll":
-"<D:\Far\Plugins\Foo\Foo.dll>FooInfo"
+help file of the module Foo "D:\Far\Plugins.NET\Foo\Foo.dll":
+"<D:\Far\Plugins.NET\Foo\Foo.dll>FooInfo"
 ]]>
 </code>
 </remarks>
@@ -85,17 +85,17 @@ Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
 If you need more input box options, use the interface directly.
 </summary>
 </pp>
-<pp name="PluginFileMask">
+<pp name="FileMask">
 <summary>
 File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
 This value is only default, actual mask may be changed by a user, so that
-if the plugin uses this mask itself then override <c>set</c> too.
+if the module uses this mask itself then override <c>set</c> too.
 </summary>
 </pp>
 <pp name="InvokeLoad">
 <para>
-If the assembly has no direct <see cref="BasePlugin"/> children
-then this plugin is normally loaded only when invoked the first time.
+If the assembly has no direct <see cref="BaseModule"/> children
+then its modules are normally loaded only when invoked the first time.
 </para>
 </pp>
 <pp name="BaseListItems">

@@ -250,7 +250,7 @@ namespace FarNet
 		/// <remarks>
 		/// Used for better performance when you call <see cref="IAnyMenu.Show"/> repeatedly
 		/// with an item set that never changes (e.g. a plugin menu with fixed command set:
-		/// it can be created once on <see cref="BasePlugin.Connect"/> and locked forever -
+		/// it can be created once on <see cref="BaseModule.Connect"/> and locked forever -
 		/// in this particular case you don't even have to call <see cref="Unlock"/>).
 		/// <para>
 		/// Don't change the menu or item set before <see cref="Unlock"/>.

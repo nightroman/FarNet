@@ -504,6 +504,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Module0.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Panel0.cpp"
 				>
 			</File>
@@ -521,10 +525,6 @@
 			</File>
 			<File
 				RelativePath=".\PanelInfo.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Plugin0.cpp"
 				>
 			</File>
 			<File
@@ -710,6 +710,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Module0.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Panel0.h"
 				>
 			</File>
@@ -731,10 +735,6 @@
 			</File>
 			<File
 				RelativePath=".\Headers.c\plugin.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Plugin0.h"
 				>
 			</File>
 			<File

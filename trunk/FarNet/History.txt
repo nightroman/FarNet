@@ -2,6 +2,19 @@ http://code.google.com/p/farnet/
 
 = 4.3.1 =
 
+TERMINOLOGY PLUGINS -> MODULES
+
+OK, it is finally decided that FarNet plugins are not called PLUGINS any more:
+in the API and in the help. From now on they are called MODULES.
+
+A few renamings because of this:
+*) BasePlugin -> BaseModule
+*) PluginException -> ModuleException
+*) CommandPlugin -> ModuleCommand
+*) EditorPlugin -> ModuleEditor
+*) FilerPlugin -> ModuleFiler
+*) ToolPlugin -> ModuleTool
+
 MACROS
 
 *) IMacro.GetNames(): fixed exceptions on missed areas.
