@@ -21,10 +21,10 @@ namespace PowerShellFar.UI
 			_Dialog.AddBox(3, 1, 0, 0, Res.Name);
 
 			_Dialog.AddText(5, -1, 0, "&Main startup code");
-			_StartupCode = _Dialog.AddEdit(x, 0, 71, A.Psf.Settings.PluginStartupCode);
+			_StartupCode = _Dialog.AddEdit(x, 0, 71, A.Psf.Settings.StartupCode);
 
 			_Dialog.AddText(5, -1, 0, "&Editor startup code");
-			_StartupEdit = _Dialog.AddEdit(x, 0, 71, A.Psf.Settings.PluginStartupEdit);
+			_StartupEdit = _Dialog.AddEdit(x, 0, 71, A.Psf.Settings.StartupEdit);
 
 			_Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 			IButton buttonOK = _Dialog.AddButton(0, -1, "Ok");
@@ -42,11 +42,11 @@ namespace PowerShellFar.UI
 				_StartupEdit.Text = _StartupEdit.Text.TrimEnd();
 
 				bool needRestart =
-					A.Psf.Settings.PluginStartupCode != _StartupCode.Text ||
-					A.Psf.Settings.PluginStartupEdit != _StartupEdit.Text;
+					A.Psf.Settings.StartupCode != _StartupCode.Text ||
+					A.Psf.Settings.StartupEdit != _StartupEdit.Text;
 
-				A.Psf.Settings.PluginStartupCode = _StartupCode.Text;
-				A.Psf.Settings.PluginStartupEdit = _StartupEdit.Text;
+				A.Psf.Settings.StartupCode = _StartupCode.Text;
+				A.Psf.Settings.StartupEdit = _StartupEdit.Text;
 				A.Psf.Settings.Save();
 
 				if (needRestart)

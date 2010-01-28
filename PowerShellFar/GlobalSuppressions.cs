@@ -1,12 +1,12 @@
-// This file is used by Code Analysis to maintain SuppressMessage 
-// attributes that are applied to this project. 
-// Project-level suppressions either have no target or are given 
-// a specific target and scoped to a namespace, type, member, etc. 
+// This file is used by Code Analysis to maintain SuppressMessage
+// attributes that are applied to this project.
+// Project-level suppressions either have no target or are given
+// a specific target and scoped to a namespace, type, member, etc.
 //
-// To add a suppression to this file, right-click the message in the 
-// Error List, point to "Suppress Message(s)", and click 
-// "In Project Suppression File". 
-// You do not need to add suppressions to this file manually. 
+// To add a suppression to this file, right-click the message in the
+// Error List, point to "Suppress Message(s)", and click
+// "In Project Suppression File".
+// You do not need to add suppressions to this file manually.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Scope = "member", Target = "PowerShellFar.Actor.#Action(System.String,System.EventHandler)")]
@@ -46,15 +46,12 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Scope = "member", Target = "PowerShellFar.ItemPanel.#HelpMenuInitItems(PowerShellFar.HelpMenuItems,PowerShellFar.PanelMenuEventArgs)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "PowerShellFar.JobUI")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.MemberPanel.#ExcludeMembers")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Plugin", Scope = "type", Target = "PowerShellFar.PluginException")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body", Scope = "member", Target = "PowerShellFar.RawUI.#GetBufferContents(System.Management.Automation.Host.Rectangle)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body", Scope = "member", Target = "PowerShellFar.RawUI.#SetBufferContents(System.Management.Automation.Host.Coordinates,System.Management.Automation.Host.BufferCell[,])")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Intelli", Scope = "member", Target = "PowerShellFar.Settings.#Intelli(FarNet.IListMenu)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Intelli", Scope = "member", Target = "PowerShellFar.Settings.#IntelliAutoSelect")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Intelli", Scope = "member", Target = "PowerShellFar.Settings.#IntelliMaxHeight")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Intelli", Scope = "member", Target = "PowerShellFar.Settings.#IntelliNoShadow")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Plugin", Scope = "member", Target = "PowerShellFar.Settings.#PluginStartupCode")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Plugin", Scope = "member", Target = "PowerShellFar.Settings.#PluginStartupEdit")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.TablePanel.#Columns")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.TablePanel.#ExcludeMembers")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.Commands.BaseMenuCmdlet.#Items")]

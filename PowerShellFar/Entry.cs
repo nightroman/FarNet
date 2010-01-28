@@ -10,9 +10,9 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// FarNet entry point for internal use.
+	/// FarNet module for internal use.
 	/// </summary>
-	public sealed class Entry : BasePlugin
+	public sealed class Entry : BaseModule
 	{
 		static Entry _Instance;
 

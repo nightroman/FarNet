@@ -267,7 +267,7 @@ namespace FarNet
 		/// Gets or sets the window title. Set it before opening (standard title) or after opening (temporary title).
 		/// </summary>
 		/// <remarks>
-		/// When the editor is opened the standard title will be automatically restored after the plugin call is over.
+		/// When the editor is opened the standard title will be automatically restored when Far gets control.
 		/// </remarks>
 		string Title { get; set; }
 		/// <summary>
@@ -384,12 +384,12 @@ namespace FarNet
 		/// Gets or sets a host operating on the editor.
 		/// </summary>
 		/// <remarks>
-		/// This property is set by a plugin in advanced scenarios when an editor is used in a very unusual way.
+		/// This property is set by a module in advanced scenarios when an editor is used in a very unusual way.
 		/// It can be set once, usually by a creator or by a handler on opening. It is not used internally, it
-		/// only helps plugins to avoid conflicts.
+		/// only helps to avoid conflicts between modules.
 		/// <para>Example scenario: <b>PowerShellFar</b> may use editors as command consoles. On opening it
 		/// attaches a host object which is subscribed to the editor events. This approach makes impossible
-		/// to attach yet another editor host and prevents advanced use of the editor from other plugins
+		/// to attach yet another editor host and prevents advanced use of the editor from other modules
 		/// (if they also follow this technique of attaching a host).
 		/// </para>
 		/// </remarks>
@@ -487,7 +487,7 @@ namespace FarNet
 		/// <ul>
 		/// <li>Nested calls of are not allowed.</li>
 		/// <li>Use this mode only when it is absolutely needed.</li>
-		/// <li>Plugin <b>PowerShellFar</b> uses this mode for asynchronous editor consoles.</li>
+		/// <li>Module <b>PowerShellFar</b> uses this mode for asynchronous editor consoles.</li>
 		/// </ul>
 		/// </remarks>
 		void BeginAsync();

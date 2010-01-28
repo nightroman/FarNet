@@ -18,16 +18,16 @@ namespace PowerShellFar
 {
 	///
 	[Serializable]
-	public class PluginException : FarNet.PluginException
+	public class ModuleException : FarNet.ModuleException
 	{
 		///
-		public PluginException() { }
+		public ModuleException() { }
 		///
-		public PluginException(string message) : base(message) { }
+		public ModuleException(string message) : base(message) { }
 		///
-		public PluginException(string message, Exception innerException) : base(message, innerException) { }
+		public ModuleException(string message, Exception innerException) : base(message, innerException) { }
 		///
-		protected PluginException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		protected ModuleException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 
 	/// <summary>

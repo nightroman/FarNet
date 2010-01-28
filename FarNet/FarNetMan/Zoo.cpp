@@ -6,7 +6,7 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Zoo.h"
 #include "Far.h"
-#include "Plugin0.h"
+#include "Module0.h"
 #include "Shelve.h"
 
 namespace FarNet

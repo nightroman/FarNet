@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 namespace FarNet
 {
 	/// <summary>
-	/// Panel interface (Far or plugin panel).
+	/// Any panel interface: Far or plugin panel.
 	/// Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 	/// </summary>
 	public interface IPanel
@@ -23,6 +23,10 @@ namespace FarNet
 		/// <summary>
 		/// Gets true if the panel is a plugin panel.
 		/// </summary>
+		/// <remarks>
+		/// Note: it is true both for standard Far panels and for FarNet <see cref="IPluginPanel"/> panels.
+		/// To distinguish between them check the panel class type.
+		/// </remarks>
 		bool IsPlugin { get; }
 		/// <summary>
 		/// Gets or sets visibility of the panel.

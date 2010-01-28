@@ -1,9 +1,10 @@
+
 using System;
 using FarNet;
 
 // A simplest command: it uses the default Prefix and Name (the class name,
 // "cmd1") and it does not care that actually used prefix can be different.
-public class Cmd1 : CommandPlugin
+public class Cmd1 : ModuleCommand
 {
 	// Command handler: this one just shows the prefix and the command.
 	public override void Invoke(object sender, CommandEventArgs e)

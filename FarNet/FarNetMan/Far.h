@@ -8,12 +8,12 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class CommandPluginInfo;
+ref class ModuleCommandInfo;
 ref class Editor;
 ref class Editor0;
-ref class EditorPluginInfo;
-ref class FilerPluginInfo;
-ref class ToolPluginInfo;
+ref class ModuleEditorInfo;
+ref class ModuleFilerInfo;
+ref class ModuleToolInfo;
 ref class Viewer;
 ref class Viewer0;
 
@@ -79,7 +79,7 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual String^ KeyToName(int key);
 	virtual String^ PasteFromClipboard();
-	virtual String^ RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler);
+	virtual String^ RegisterCommand(BaseModule^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler);
 	virtual String^ TempFolder() { return TempFolder(nullptr); }
 	virtual String^ TempFolder(String^ prefix);
 	virtual String^ TempName() { return TempName(nullptr); }
@@ -102,8 +102,8 @@ public:
 	virtual void PostText(String^ text, bool disableOutput);
 	virtual void Quit();
 	virtual void Redraw();
-	virtual void RegisterFiler(BasePlugin^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates);
-	virtual void RegisterTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
+	virtual void RegisterFiler(BaseModule^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates);
+	virtual void RegisterTool(BaseModule^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ command);
 	virtual void SetCurrentWindow(int index);
@@ -114,7 +114,7 @@ public:
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
 	virtual void ShowPanelMenu(bool showPushCommand);
-	virtual void Unregister(BasePlugin^ plugin);
+	virtual void Unregister(BaseModule^ plugin);
 	virtual void UnregisterCommand(EventHandler<CommandEventArgs^>^ handler);
 	virtual void UnregisterFiler(EventHandler<FilerEventArgs^>^ handler);
 	virtual void UnregisterTool(EventHandler<ToolEventArgs^>^ handler);
@@ -137,11 +137,11 @@ internal:
 	HANDLE AsOpenPlugin(int from, INT_PTR item);
 	void AsGetPluginInfo(PluginInfo* pi);
 	void AsProcessSynchroEvent(int type, void* param);
-	void RegisterCommands(IEnumerable<CommandPluginInfo^>^ commands);
-	void RegisterEditors(IEnumerable<EditorPluginInfo^>^ editors);
-	void RegisterFilers(IEnumerable<FilerPluginInfo^>^ filers);
-	void RegisterTool(ToolPluginInfo^ tool);
-	void RegisterTools(IEnumerable<ToolPluginInfo^>^ tools);
+	void RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands);
+	void RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors);
+	void RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers);
+	void RegisterTool(ModuleToolInfo^ tool);
+	void RegisterTools(IEnumerable<ModuleToolInfo^>^ tools);
 	Object^ GetFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue) { return GetPluginValue("FarNet\\" + keyPath, valueName, defaultValue); }
 	void SetFarNetValue(String^ keyPath, String^ valueName, Object^ value) { SetPluginValue("FarNet\\" + keyPath, valueName, value); }
 private:
@@ -152,7 +152,7 @@ private:
 	void OnConfigCommand();
 	void OnConfigEditor();
 	void OnConfigFiler();
-	void OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^ list);
+	void OnConfigTool(String^ title, ToolOptions option, List<ModuleToolInfo^>^ list);
 	void OnConfigUICulture();
 	void OpenConfig();
 	void OpenMenu(ToolOptions from);
@@ -174,15 +174,15 @@ private:
 	CStr* _pPanels;
 	CStr* _pViewer;
 	CStr* _prefixes;
-	List<CommandPluginInfo^> _registeredCommand;
-	List<EditorPluginInfo^> _registeredEditor;
-	List<FilerPluginInfo^> _registeredFiler;
-	List<ToolPluginInfo^> _toolConfig;
-	List<ToolPluginInfo^> _toolDisk;
-	List<ToolPluginInfo^> _toolDialog;
-	List<ToolPluginInfo^> _toolEditor;
-	List<ToolPluginInfo^> _toolPanels;
-	List<ToolPluginInfo^> _toolViewer;
+	List<ModuleCommandInfo^> _registeredCommand;
+	List<ModuleEditorInfo^> _registeredEditor;
+	List<ModuleFilerInfo^> _registeredFiler;
+	List<ModuleToolInfo^> _toolConfig;
+	List<ModuleToolInfo^> _toolDisk;
+	List<ModuleToolInfo^> _toolDialog;
+	List<ModuleToolInfo^> _toolEditor;
+	List<ModuleToolInfo^> _toolPanels;
+	List<ModuleToolInfo^> _toolViewer;
 private:
 	String^ _hotkey;
 	array<int>^ _hotkeys;

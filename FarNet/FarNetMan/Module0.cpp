@@ -4,20 +4,20 @@ Copyright (c) 2005 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "Plugin0.h"
+#include "Module0.h"
 #include "Far.h"
 #include "PluginInfo.h"
 
 namespace FarNet
 {;
-void Plugin0::AddPlugin(BasePlugin^ plugin)
+void Module0::AddPlugin(BaseModule^ plugin)
 {
 	if (!_plugins.Contains(plugin))
 		_plugins.Add(plugin);
 }
 
 //! Don't use Far UI
-void Plugin0::UnloadPlugin(BasePlugin^ plugin)
+void Module0::UnloadPlugin(BaseModule^ plugin)
 {
 	LOG_AUTO(3, "Unload plugin " + plugin);
 
@@ -40,7 +40,7 @@ void Plugin0::UnloadPlugin(BasePlugin^ plugin)
 }
 
 //! Don't use Far UI
-void Plugin0::UnloadPlugins()
+void Module0::UnloadPlugins()
 {
 	for(int i  = _plugins.Count; --i >= 0;)
 		UnloadPlugin(_plugins[i]);
@@ -48,16 +48,16 @@ void Plugin0::UnloadPlugins()
 	_plugins.Clear();
 }
 
-bool Plugin0::CanExit()
+bool Module0::CanExit()
 {
-	for each(BasePlugin^ plugin in _plugins)
+	for each(BaseModule^ plugin in _plugins)
 		if (!plugin->CanExit())
 			return false;
 
 	return true;
 }
 
-void Plugin0::LoadPlugins()
+void Module0::LoadPlugins()
 {
 	ReadCache();
 
@@ -73,7 +73,7 @@ void Plugin0::LoadPlugins()
 	}
 }
 
-void Plugin0::LoadFromDirectory(String^ dir)
+void Module0::LoadFromDirectory(String^ dir)
 {
 	try
 	{
@@ -100,7 +100,7 @@ void Plugin0::LoadFromDirectory(String^ dir)
 	}
 }
 
-void Plugin0::LoadFromConfig(String^ file, String^ dir)
+void Module0::LoadFromConfig(String^ file, String^ dir)
 {
 	for each(String^ line in File::ReadAllLines(file))
 	{
@@ -116,7 +116,7 @@ void Plugin0::LoadFromConfig(String^ file, String^ dir)
 	}
 }
 
-void Plugin0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
+void Module0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 {
 	// assembly name
 	String^ dllName = Path::GetFileName(assemblyPath);
@@ -129,16 +129,16 @@ void Plugin0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 		return;
 
 	// load from assembly
-	int nBasePlugin = 0;
-	List<CommandPluginInfo^> commands;
-	List<EditorPluginInfo^> editors;
-	List<FilerPluginInfo^> filers;
-	List<ToolPluginInfo^> tools;
+	int nBaseModule = 0;
+	List<ModuleCommandInfo^> commands;
+	List<ModuleEditorInfo^> editors;
+	List<ModuleFilerInfo^> filers;
+	List<ModuleToolInfo^> tools;
 	Assembly^ assembly = Assembly::LoadFrom(assemblyPath);
 	if (classes)
 	{
 		for(int i = 1; i < classes->Length; ++i)
-			nBasePlugin += AddPlugin(assembly->GetType(classes[i], true), %commands, %editors, %filers, %tools);
+			nBaseModule += AddPlugin(assembly->GetType(classes[i], true), %commands, %editors, %filers, %tools);
 	}
 	else
 	{
@@ -147,15 +147,15 @@ void Plugin0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 		{
 			if (type->IsAbstract)
 				continue;
-			if (BasePlugin::typeid->IsAssignableFrom(type))
+			if (BaseModule::typeid->IsAssignableFrom(type))
 			{
 				++nLoaded;
-				nBasePlugin += AddPlugin(type, %commands, %editors, %filers, %tools);
+				nBaseModule += AddPlugin(type, %commands, %editors, %filers, %tools);
 			}
 		}
 
 		if (nLoaded == 0)
-			throw gcnew InvalidOperationException("Assembly '" + assemblyPath + "' has no valid BasePlugin derived classes. Remove this assembly from the directory or use a .cfg file.");
+			throw gcnew InvalidOperationException("Assembly '" + assemblyPath + "' has no valid BaseModule derived classes. Remove this assembly from the directory or use a .cfg file.");
 	}
 
 	// add plugins
@@ -169,14 +169,14 @@ void Plugin0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 		Far::Instance->RegisterTools(%tools);
 
 	// write cache
-	if (nBasePlugin == 0)
+	if (nBaseModule == 0)
 		WriteCache(assemblyPath, %commands, %editors, %filers, %tools);
 }
 
-int Plugin0::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
+int Module0::AddPlugin(Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
 {
 	// create
-	BasePlugin^ instance = BasePluginInfo::CreatePlugin(type);
+	BaseModule^ instance = BaseModuleInfo::CreatePlugin(type);
 
 	LOG_AUTO(3, "Load plugin " + instance);
 
@@ -189,39 +189,39 @@ int Plugin0::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<Edit
 	}
 
 	// case: tool
-	ToolPlugin^ tool = dynamic_cast<ToolPlugin^>(instance);
+	ModuleTool^ tool = dynamic_cast<ModuleTool^>(instance);
 	if (tool)
 	{
-		ToolPluginInfo^ pt = gcnew ToolPluginInfo(tool, tool->Name, gcnew EventHandler<ToolEventArgs^>(tool, &ToolPlugin::Invoke), tool->Options);
+		ModuleToolInfo^ pt = gcnew ModuleToolInfo(tool, tool->Name, gcnew EventHandler<ToolEventArgs^>(tool, &ModuleTool::Invoke), tool->Options);
 		tools->Add(pt);
 		return 0;
 	}
 
 	// case: command
-	CommandPlugin^ command = dynamic_cast<CommandPlugin^>(instance);
+	ModuleCommand^ command = dynamic_cast<ModuleCommand^>(instance);
 	if (command)
 	{
-		CommandPluginInfo^ pc = gcnew CommandPluginInfo(command, command->Name, command->Prefix, gcnew EventHandler<CommandEventArgs^>(command, &CommandPlugin::Invoke));
+		ModuleCommandInfo^ pc = gcnew ModuleCommandInfo(command, command->Name, command->Prefix, gcnew EventHandler<CommandEventArgs^>(command, &ModuleCommand::Invoke));
 		command->Prefix = pc->Prefix;
 		commands->Add(pc);
 		return 0;
 	}
 
 	// case: editor
-	EditorPlugin^ editor = dynamic_cast<EditorPlugin^>(instance);
+	ModuleEditor^ editor = dynamic_cast<ModuleEditor^>(instance);
 	if (editor)
 	{
-		EditorPluginInfo^ pe = gcnew EditorPluginInfo(editor, editor->Name, gcnew EventHandler(editor, &EditorPlugin::Invoke), editor->Mask);
+		ModuleEditorInfo^ pe = gcnew ModuleEditorInfo(editor, editor->Name, gcnew EventHandler(editor, &ModuleEditor::Invoke), editor->Mask);
 		editor->Mask = pe->Mask;
 		editors->Add(pe);
 		return 0;
 	}
 
 	// case: filer
-	FilerPlugin^ filer = dynamic_cast<FilerPlugin^>(instance);
+	ModuleFiler^ filer = dynamic_cast<ModuleFiler^>(instance);
 	if (filer)
 	{
-		FilerPluginInfo^ pf = gcnew FilerPluginInfo(filer, filer->Name, gcnew EventHandler<FilerEventArgs^>(filer, &FilerPlugin::Invoke), filer->Mask, filer->Creates);
+		ModuleFilerInfo^ pf = gcnew ModuleFilerInfo(filer, filer->Name, gcnew EventHandler<FilerEventArgs^>(filer, &ModuleFiler::Invoke), filer->Mask, filer->Creates);
 		filer->Mask = pf->Mask;
 		filers->Add(pf);
 		return 0;
@@ -230,7 +230,7 @@ int Plugin0::AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<Edit
 	return 1;
 }
 
-void Plugin0::ReadCache()
+void Module0::ReadCache()
 {
 	RegistryKey^ keyCache;
 	try
@@ -241,10 +241,10 @@ void Plugin0::ReadCache()
 			bool ok = true;
 			RegistryKey^ keyDll;
 			RegistryKey^ keyPlugin;
-			List<CommandPluginInfo^> commands;
-			List<EditorPluginInfo^> editors;
-			List<FilerPluginInfo^> filers;
-			List<ToolPluginInfo^> tools;
+			List<ModuleCommandInfo^> commands;
+			List<ModuleEditorInfo^> editors;
+			List<ModuleFilerInfo^> filers;
+			List<ModuleToolInfo^> tools;
 			try
 			{
 				keyDll = keyCache->OpenSubKey(dllName);
@@ -277,7 +277,7 @@ void Plugin0::ReadCache()
 							if (!options)
 								throw gcnew OperationCanceledException;
 
-							ToolPluginInfo^ plugin = gcnew ToolPluginInfo(assemblyPath, className, pluginName, (ToolOptions)options);
+							ModuleToolInfo^ plugin = gcnew ModuleToolInfo(assemblyPath, className, pluginName, (ToolOptions)options);
 							tools.Add(plugin);
 						}
 						else if (type == "Command")
@@ -286,14 +286,14 @@ void Plugin0::ReadCache()
 							if (!prefix->Length)
 								throw gcnew OperationCanceledException;
 
-							CommandPluginInfo^ plugin = gcnew CommandPluginInfo(assemblyPath, className, pluginName, prefix);
+							ModuleCommandInfo^ plugin = gcnew ModuleCommandInfo(assemblyPath, className, pluginName, prefix);
 							commands.Add(plugin);
 						}
 						else if (type == "Editor")
 						{
 							String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
 
-							EditorPluginInfo^ plugin = gcnew EditorPluginInfo(assemblyPath, className, pluginName, mask);
+							ModuleEditorInfo^ plugin = gcnew ModuleEditorInfo(assemblyPath, className, pluginName, mask);
 							editors.Add(plugin);
 						}
 						else if (type == "Filer")
@@ -301,7 +301,7 @@ void Plugin0::ReadCache()
 							String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
 							int creates = (int)keyPlugin->GetValue("Creates", (Object^)-1);
 
-							FilerPluginInfo^ plugin = gcnew FilerPluginInfo(assemblyPath, className, pluginName, mask, creates != 0);
+							ModuleFilerInfo^ plugin = gcnew ModuleFilerInfo(assemblyPath, className, pluginName, mask, creates != 0);
 							filers.Add(plugin);
 						}
 						else
@@ -354,7 +354,7 @@ void Plugin0::ReadCache()
 	}
 }
 
-void Plugin0::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools)
+void Module0::WriteCache(String^ assemblyPath, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
 {
 	FileInfo fi(assemblyPath);
 	RegistryKey^ keyDll;
@@ -364,7 +364,7 @@ void Plugin0::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ command
 		keyDll->SetValue("Path", assemblyPath);
 		keyDll->SetValue("Stamp", fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture));
 
-		for each(ToolPluginInfo^ plugin in tools)
+		for each(ModuleToolInfo^ plugin in tools)
 		{
 			RegistryKey^ key = keyDll->CreateSubKey(plugin->ClassName);
 			key->SetValue("Type", "Tool");
@@ -373,7 +373,7 @@ void Plugin0::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ command
 			key->Close();
 		}
 
-		for each(CommandPluginInfo^ plugin in commands)
+		for each(ModuleCommandInfo^ plugin in commands)
 		{
 			RegistryKey^ key = keyDll->CreateSubKey(plugin->ClassName);
 			key->SetValue("Type", "Command");
@@ -382,7 +382,7 @@ void Plugin0::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ command
 			key->Close();
 		}
 
-		for each(EditorPluginInfo^ plugin in editors)
+		for each(ModuleEditorInfo^ plugin in editors)
 		{
 			RegistryKey^ key = keyDll->CreateSubKey(plugin->ClassName);
 			key->SetValue("Type", "Editor");
@@ -391,7 +391,7 @@ void Plugin0::WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ command
 			key->Close();
 		}
 
-		for each(FilerPluginInfo^ plugin in filers)
+		for each(ModuleFilerInfo^ plugin in filers)
 		{
 			RegistryKey^ key = keyDll->CreateSubKey(plugin->ClassName);
 			key->SetValue("Type", "Filer");

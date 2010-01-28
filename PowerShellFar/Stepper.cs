@@ -414,7 +414,7 @@ namespace PowerShellFar
 					}
 					catch (RuntimeException ex)
 					{
-						throw new PluginException("Step failed: " + ex.Message, ex);
+						throw new ModuleException("Step failed: " + ex.Message, ex);
 					}
 
 					// extra script, normally starts modal UI

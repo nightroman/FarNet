@@ -6,7 +6,7 @@ using System;
 using System.Text.RegularExpressions;
 using FarNet;
 
-public class Escape : ToolPlugin
+public class Escape : ModuleTool
 {
 	public override string Name
 	{
@@ -27,7 +27,7 @@ public class Escape : ToolPlugin
 	}
 }
 
-public class Unescape : ToolPlugin
+public class Unescape : ModuleTool
 {
 	public override string Name
 	{

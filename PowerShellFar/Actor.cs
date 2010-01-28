@@ -204,13 +204,13 @@ namespace PowerShellFar
 				}
 
 				// invoke user startup code, separately for better diagnostics
-				if (!string.IsNullOrEmpty(Settings.PluginStartupCode))
+				if (!string.IsNullOrEmpty(Settings.StartupCode))
 				{
 					try
 					{
 						using (Pipeline p = Runspace.CreatePipeline())
 						{
-							p.Commands.AddScript(Settings.PluginStartupCode);
+							p.Commands.AddScript(Settings.StartupCode);
 							p.Invoke();
 						}
 					}
@@ -224,7 +224,7 @@ Code (see configuration):
 
 Reason (see also $Error):
 {1}
-", Settings.PluginStartupCode, ex.Message);
+", Settings.StartupCode, ex.Message);
 						A.Far.Msg(msg, Res.Name, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
 					}
 				}
@@ -256,7 +256,7 @@ Reason (see also $Error):
 			{
 				//! emergency
 				Entry.Unregister();
-				throw new PluginException(@"
+				throw new ModuleException(@"
 PowerShell engine is not initialized due to fatal reasons and will be unloaded.
 See also the section PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
 ", _errorFatal);
