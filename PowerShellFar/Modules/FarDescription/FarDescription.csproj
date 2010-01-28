@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6223B3D5-A0CA-4DD1-9CD3-D7D394B55DA6}</ProjectGuid>
+    <ProjectGuid>{F1D6E33D-67F2-4B80-9C8C-D1AF502D1131}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FarMacro</RootNamespace>
-    <AssemblyName>FarMacro</AssemblyName>
+    <RootNamespace>FarDescription</RootNamespace>
+    <AssemblyName>FarDescription</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkSubset>
@@ -43,13 +43,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCmdlet.cs" />
-    <Compile Include="BaseFarMacroCmdlet.cs" />
-    <Compile Include="SetFarMacroCommand.cs" />
-    <Compile Include="FarMacroProvider.cs" />
-    <Compile Include="NewFarMacroCommand.cs" />
+    <Compile Include="CodeMethods.cs" />
+    <Compile Include="Description.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility.cs" />
+    <Compile Include="UpdateFarDescriptionCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\FarNet\FarNet\FarNet.csproj">

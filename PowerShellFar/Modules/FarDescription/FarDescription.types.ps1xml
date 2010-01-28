@@ -1,10 +1,4 @@
-<?xml version="1.0" encoding="windows-1251"?>
-<!--
-## NOTE: normally you should not modify the file
-## - doing this may interfere with PowerShellFar;
-## - you may lose your changes with new versions.
-## Use your own file and load it by Update-TypeData.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <Types xmlns="http://schemas.microsoft.com/PowerShell/TypeData/2007/04">
 
 	<!-- File or directory -->
@@ -16,11 +10,11 @@
 			<CodeProperty>
 				<Name>FarDescription</Name>
 				<GetCodeReference>
-					<TypeName>PowerShellFar.CodeMethods</TypeName>
+					<TypeName>FarDescription.CodeMethods</TypeName>
 					<MethodName>FileSystemInfoGetFarDescription</MethodName>
 				</GetCodeReference>
 				<SetCodeReference>
-					<TypeName>PowerShellFar.CodeMethods</TypeName>
+					<TypeName>FarDescription.CodeMethods</TypeName>
 					<MethodName>FileSystemInfoSetFarDescription</MethodName>
 				</SetCodeReference>
 			</CodeProperty>
@@ -29,7 +23,7 @@
 			<CodeMethod>
 				<Name>FarMoveTo</Name>
 				<CodeReference>
-					<TypeName>PowerShellFar.CodeMethods</TypeName>
+					<TypeName>FarDescription.CodeMethods</TypeName>
 					<MethodName>FileSystemInfoMoveTo</MethodName>
 				</CodeReference>
 			</CodeMethod>
@@ -46,7 +40,7 @@
 			<CodeMethod>
 				<Name>FarCopyTo</Name>
 				<CodeReference>
-					<TypeName>PowerShellFar.CodeMethods</TypeName>
+					<TypeName>FarDescription.CodeMethods</TypeName>
 					<MethodName>FileInfoCopyTo</MethodName>
 				</CodeReference>
 			</CodeMethod>
@@ -55,7 +49,7 @@
 			<CodeMethod>
 				<Name>FarDelete</Name>
 				<CodeReference>
-					<TypeName>PowerShellFar.CodeMethods</TypeName>
+					<TypeName>FarDescription.CodeMethods</TypeName>
 					<MethodName>FileInfoDelete</MethodName>
 				</CodeReference>
 			</CodeMethod>

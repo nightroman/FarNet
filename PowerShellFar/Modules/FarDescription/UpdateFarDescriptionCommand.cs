@@ -7,12 +7,13 @@ using System;
 using System.ComponentModel;
 using System.Management.Automation;
 
-namespace PowerShellFar.Commands
+namespace FarDescription
 {
 	/// <summary>
 	/// Update-FarDescription command.
 	/// Updates Far description file for a directory.
 	/// </summary>
+	[Cmdlet(VerbsData.Update, BaseCmdlet.Noun)]
 	[Description("Updates Far description file for a directory.")]
 	public sealed class UpdateFarDescriptionCommand : BaseCmdlet
 	{

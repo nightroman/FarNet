@@ -16,6 +16,8 @@ param
 	$Path
 )
 
+Import-Module FarDescription
+
 if (!$Path) {
 	$wi = $Far.GetWindowInfo(-1, $true)
 	$Path = $wi.Name

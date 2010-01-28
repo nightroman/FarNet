@@ -50,12 +50,10 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeMethods.cs" />
     <Compile Include="Commands\Find-FarFile.cs" />
     <Compile Include="Commands\GetFarFileCommand.cs" />
     <Compile Include="Commands\StartFarJobCommand.cs" />
     <Compile Include="Commands\TraceFarCommand.cs" />
-    <Compile Include="Commands\UpdateFarDescriptionCommand.cs" />
     <Compile Include="EditorConsole.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Help.cs" />
