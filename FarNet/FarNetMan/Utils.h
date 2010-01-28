@@ -199,15 +199,15 @@ ref class Res
 	Res() {}
 internal:
 	static ConstString
-		CommandPlugins = "Command plugins",
-		EditorPlugins = "Editor plugins",
+		ModuleCommands = "Commands",
+		ModuleEditors = "Editors",
 		PanelsTools = "Panels tools",
 		DialogTools = "Dialog tools",
 		EditorTools = "Editor tools",
 		ViewerTools = "Viewer tools",
 		DiskTools = "Disk tools",
 		ConfigTools = "Config tools",
-		FilerPlugins = "Filer plugins",
+		ModuleFilers = "Filers",
 		ErrorNoHotKey = "Ensure a FarNet hotkey (F4) in the Far plugins menu (F11) and restart Far.",
 		MenuPrefix = ".NET ";
 };

@@ -11,9 +11,9 @@ Copyright (c) 2005 FarNet Team
 #include "ListMenu.h"
 #include "Menu.h"
 #include "Message.h"
+#include "Module0.h"
 #include "Panel0.h"
 #include "Panel2.h"
-#include "Plugin0.h"
 #include "PluginInfo.h"
 #include "Shelve.h"
 #include "Viewer0.h"
@@ -36,14 +36,14 @@ void Far::Start()
 {
 	_hMutex = CreateMutex(NULL, FALSE, NULL);
 	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
-	Plugin0::LoadPlugins();
+	Module0::LoadPlugins();
 }
 
 //! Don't use Far UI
 void Far::Stop()
 {
 	CloseHandle(_hMutex);
-	Plugin0::UnloadPlugins();
+	Module0::UnloadPlugins();
 	_instance = nullptr;
 
 	delete[] _pConfig;
@@ -114,15 +114,15 @@ void Far::Free(ToolOptions options)
 	}
 }
 
-void Far::RegisterTool(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
+void Far::RegisterTool(BaseModule^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
 {
 	if (plugin && ES(name))
 		throw gcnew ArgumentException("'name' must not be empty.");
 
-	RegisterTool(gcnew ToolPluginInfo(plugin, name, handler, options));
+	RegisterTool(gcnew ModuleToolInfo(plugin, name, handler, options));
 }
 
-void Far::RegisterTool(ToolPluginInfo^ tool)
+void Far::RegisterTool(ModuleToolInfo^ tool)
 {
 	LOG_INFO("Register " + tool);
 
@@ -165,13 +165,13 @@ void Far::RegisterTool(ToolPluginInfo^ tool)
 	}
 }
 
-void Far::RegisterTools(IEnumerable<ToolPluginInfo^>^ tools)
+void Far::RegisterTools(IEnumerable<ModuleToolInfo^>^ tools)
 {
-	for each(ToolPluginInfo^ tool in tools)
+	for each(ModuleToolInfo^ tool in tools)
 		RegisterTool(tool);
 }
 
-static int RemoveByHandler(List<ToolPluginInfo^>^ list, EventHandler<ToolEventArgs^>^ handler)
+static int RemoveByHandler(List<ModuleToolInfo^>^ list, EventHandler<ToolEventArgs^>^ handler)
 {
 	int r = 0;
 	for(int i = list->Count; --i >= 0;)
@@ -222,11 +222,11 @@ void Far::UnregisterTool(EventHandler<ToolEventArgs^>^ handler)
 	}
 }
 
-String^ Far::RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler)
+String^ Far::RegisterCommand(BaseModule^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler)
 {
 	delete _prefixes;
 	_prefixes = 0;
-	CommandPluginInfo^ it = gcnew CommandPluginInfo(plugin, name, prefix, handler);
+	ModuleCommandInfo^ it = gcnew ModuleCommandInfo(plugin, name, prefix, handler);
 	_registeredCommand.Add(it);
 
 	LOG_INFO("Register " + it);
@@ -234,7 +234,7 @@ String^ Far::RegisterCommand(BasePlugin^ plugin, String^ name, String^ prefix, E
 	return it->Prefix;
 }
 
-void Far::RegisterCommands(IEnumerable<CommandPluginInfo^>^ commands)
+void Far::RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands)
 {
 	delete _prefixes;
 	_prefixes = 0;
@@ -242,7 +242,7 @@ void Far::RegisterCommands(IEnumerable<CommandPluginInfo^>^ commands)
 
 	if (Log::Switch->TraceInfo)
 	{
-		for each(CommandPluginInfo^ it in commands)
+		for each(ModuleCommandInfo^ it in commands)
 			LOG_INFO("Register " + it);
 	}
 }
@@ -262,32 +262,32 @@ void Far::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
 	}
 }
 
-void Far::RegisterFiler(BasePlugin^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates)
+void Far::RegisterFiler(BaseModule^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates)
 {
-	FilerPluginInfo^ it = gcnew FilerPluginInfo(plugin, name, handler, mask, creates);
+	ModuleFilerInfo^ it = gcnew ModuleFilerInfo(plugin, name, handler, mask, creates);
 	_registeredFiler.Add(it);
 
 	LOG_INFO("Register " + it);
 }
 
-void Far::RegisterEditors(IEnumerable<EditorPluginInfo^>^ editors)
+void Far::RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors)
 {
 	_registeredEditor.AddRange(editors);
 
 	if (Log::Switch->TraceInfo)
 	{
-		for each(EditorPluginInfo^ it in editors)
+		for each(ModuleEditorInfo^ it in editors)
 			LOG_INFO("Register " + it);
 	}
 }
 
-void Far::RegisterFilers(IEnumerable<FilerPluginInfo^>^ filers)
+void Far::RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers)
 {
 	_registeredFiler.AddRange(filers);
 
 	if (Log::Switch->TraceInfo)
 	{
-		for each(FilerPluginInfo^ it in filers)
+		for each(ModuleFilerInfo^ it in filers)
 			LOG_INFO("Register " + it);
 	}
 }
@@ -305,9 +305,9 @@ void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 	}
 }
 
-void Far::Unregister(BasePlugin^ plugin)
+void Far::Unregister(BaseModule^ plugin)
 {
-	Plugin0::UnloadPlugin(plugin);
+	Module0::UnloadPlugin(plugin);
 }
 
 void Far::Msg(String^ body)
@@ -341,7 +341,7 @@ void Far::Run(String^ command)
 	if (colon < 0)
 		return;
 
-	for each(CommandPluginInfo^ it in _registeredCommand)
+	for each(ModuleCommandInfo^ it in _registeredCommand)
 	{
 		String^ pref = it->Prefix;
 		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
@@ -350,11 +350,11 @@ void Far::Run(String^ command)
 		//! Notify before each command, because a plugin may have to set a command environment,
 		//! e.g. PowerShellFar sets the default runspace once and location always.
 		//! If there is a plugin, call it directly, else it has to be done by its handler.
-		if (it->Plugin)
+		if (it->Module)
 		{
-			LOG_AUTO(3, String::Format("{0}.Invoking", it->Plugin));
+			LOG_AUTO(3, String::Format("{0}.Invoking", it->Module));
 
-			it->Plugin->Invoking();
+			it->Module->Invoking();
 		}
 
 		// invoke
@@ -778,7 +778,7 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 		if (_prefixes == 0)
 		{
 			String^ PrefString = String::Empty;
-			for each(CommandPluginInfo^ it in _registeredCommand)
+			for each(ModuleCommandInfo^ it in _registeredCommand)
 			{
 				if (PrefString->Length > 0)
 					PrefString = String::Concat(PrefString, ":");
@@ -1193,7 +1193,7 @@ bool Far::AsConfigure(int itemIndex)
 		return true;
 	}
 
-	ToolPluginInfo^ tool = _toolConfig[itemIndex - 1];
+	ModuleToolInfo^ tool = _toolConfig[itemIndex - 1];
 	ToolEventArgs e(ToolOptions::Config);
 	tool->Handler(this, %e);
 	return e.Ignore ? false : true;
@@ -1210,7 +1210,7 @@ HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataS
 	try
 	{
 		FilerEventArgs^ e;
-		for each(FilerPluginInfo^ it in _registeredFiler)
+		for each(ModuleFilerInfo^ it in _registeredFiler)
 		{
 			// create?
 			if (!name && !it->Creates)
@@ -1272,7 +1272,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_DISKMENU");
 
-				ToolPluginInfo^ tool = _toolDisk[(int)item - 1];
+				ModuleToolInfo^ tool = _toolDisk[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Disk);
 				tool->Handler(this, %e);
 			}
@@ -1287,7 +1287,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_PLUGINSMENU");
 
-				ToolPluginInfo^ tool = _toolPanels[(int)item - 1];
+				ModuleToolInfo^ tool = _toolPanels[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Panels);
 				tool->Handler(this, %e);
 			}
@@ -1302,7 +1302,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_EDITOR");
 
-				ToolPluginInfo^ tool = _toolEditor[(int)item - 1];
+				ModuleToolInfo^ tool = _toolEditor[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Editor);
 				tool->Handler(this, %e);
 			}
@@ -1317,7 +1317,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_VIEWER");
 
-				ToolPluginInfo^ tool = _toolViewer[(int)item - 1];
+				ModuleToolInfo^ tool = _toolViewer[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Viewer);
 				tool->Handler(this, %e);
 			}
@@ -1339,7 +1339,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_DIALOG");
 
-				ToolPluginInfo^ tool = _toolDialog[index - 1];
+				ModuleToolInfo^ tool = _toolDialog[index - 1];
 				ToolEventArgs e(ToolOptions::Dialog);
 				tool->Handler(this, %e);
 			}
@@ -1553,9 +1553,9 @@ void Far::OpenConfig()
 	menu.HelpTopic = "MenuConfig";
 	menu.Title = "FarNet plugins";
 
-	menu.Add(Res::CommandPlugins + " : " + (_registeredCommand.Count));
-	menu.Add(Res::EditorPlugins + "  : " + (_registeredEditor.Count));
-	menu.Add(Res::FilerPlugins + "   : " + (_registeredFiler.Count));
+	menu.Add(Res::ModuleCommands + " : " + (_registeredCommand.Count));
+	menu.Add(Res::ModuleEditors + "  : " + (_registeredEditor.Count));
+	menu.Add(Res::ModuleFilers + "   : " + (_registeredFiler.Count));
 	menu.Add("Tools")->IsSeparator = true;
 	menu.Add(Res::PanelsTools + "    : " + (_toolPanels.Count));
 	menu.Add(Res::EditorTools + "    : " + (_toolEditor.Count));
@@ -1622,21 +1622,21 @@ void Far::OnConfigUICulture()
 	menu.AutoAssignHotkeys = true;
 
 	int width = 0;
-	for each(String^ assemblyName in Plugin0::AssemblyNames)
+	for each(String^ assemblyName in Module0::AssemblyNames)
 		if (width < assemblyName->Length)
 			width = assemblyName->Length;
 
 	for(;;)
 	{
 		menu.Items->Clear();
-		for each(String^ assemblyName in Plugin0::AssemblyNames)
+		for each(String^ assemblyName in Module0::AssemblyNames)
 			menu.Add(String::Format("{0} : {1}", assemblyName->PadRight(width), Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)));
 
 		if (!menu.Show())
 			return;
 
 		// get data to show
-		String^ assemblyName = Plugin0::AssemblyNames[menu.Selected];
+		String^ assemblyName = Module0::AssemblyNames[menu.Selected];
 		String^ cultureName = Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
 
 		// show the input box
@@ -1666,7 +1666,7 @@ void Far::OnConfigUICulture()
 				ci = Far::Instance->GetCurrentUICulture(true);
 			
 			// update plugins
-			for each(BasePlugin^ plugin in Plugin0::Plugins)
+			for each(BaseModule^ plugin in Module0::Modules)
 			{
 				String^ name = Path::GetFileName(plugin->GetType()->Assembly->Location);
 				if (String::Compare(assemblyName, name, true) == 0)
@@ -1680,19 +1680,19 @@ void Far::OnConfigUICulture()
 	}
 }
 
-void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^ list)
+void Far::OnConfigTool(String^ title, ToolOptions option, List<ModuleToolInfo^>^ list)
 {
 	Menu menu;
 	menu.Title = title;
 	menu.HelpTopic = _helpTopic + (option == ToolOptions::Disk ? "ConfigDisk" : "ConfigTool");
 
-	ToolPluginInfo^ selected;
-	List<ToolPluginInfo^> sorted(list);
+	ModuleToolInfo^ selected;
+	List<ModuleToolInfo^> sorted(list);
 	for(;;)
 	{
 		menu.Items->Clear();
-		sorted.Sort(gcnew ToolPluginAliasComparer(option));
-		for each(ToolPluginInfo^ it in sorted)
+		sorted.Sort(gcnew ModuleToolAliasComparer(option));
+		for each(ModuleToolInfo^ it in sorted)
 		{
 			if (ES(it->Name))
 				continue;
@@ -1714,7 +1714,7 @@ void Far::OnConfigTool(String^ title, ToolOptions option, List<ToolPluginInfo^>^
 			return;
 
 		FarItem^ mi = menu.Items[menu.Selected];
-		selected = (ToolPluginInfo^)mi->Data;
+		selected = (ModuleToolInfo^)mi->Data;
 
 		InputBox ib;
 		ib.Title = "Original: " + selected->Name;
@@ -1741,9 +1741,9 @@ void Far::OnConfigCommand()
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
 	menu.HelpTopic = "ConfigCommand";
-	menu.Title = Res::CommandPlugins;
+	menu.Title = Res::ModuleCommands;
 
-	for each(CommandPluginInfo^ it in _registeredCommand)
+	for each(ModuleCommandInfo^ it in _registeredCommand)
 	{
 		FarItem^ mi = menu.Add(it->Prefix->PadRight(4) + " " + it->Key);
 		mi->Data = it;
@@ -1752,7 +1752,7 @@ void Far::OnConfigCommand()
 	while(menu.Show())
 	{
 		FarItem^ mi = menu.Items[menu.Selected];
-		CommandPluginInfo^ it = (CommandPluginInfo^)mi->Data;
+		ModuleCommandInfo^ it = (ModuleCommandInfo^)mi->Data;
 
 		InputBox ib;
 		ib.EmptyEnabled = true;
@@ -1785,7 +1785,7 @@ void Far::OnConfigCommand()
 		_prefixes = 0;
 		it->Prefix = alias;
 		mi->Text = alias->PadRight(4) + " " + it->Key;
-		CommandPlugin^ command = dynamic_cast<CommandPlugin^>(it->Plugin);
+		ModuleCommand^ command = dynamic_cast<ModuleCommand^>(it->Module);
 		if (command)
 			command->Prefix = alias;
 	}
@@ -1796,9 +1796,9 @@ void Far::OnConfigEditor()
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
 	menu.HelpTopic = "ConfigEditor";
-	menu.Title = Res::EditorPlugins;
+	menu.Title = Res::ModuleEditors;
 
-	for each(EditorPluginInfo^ it in _registeredEditor)
+	for each(ModuleEditorInfo^ it in _registeredEditor)
 	{
 		FarItem^ mi = menu.Add(it->Key);
 		mi->Data = it;
@@ -1807,7 +1807,7 @@ void Far::OnConfigEditor()
 	while(menu.Show())
 	{
 		FarItem^ mi = menu.Items[menu.Selected];
-		EditorPluginInfo^ it = (EditorPluginInfo^)mi->Data;
+		ModuleEditorInfo^ it = (ModuleEditorInfo^)mi->Data;
 
 		InputBox ib;
 		ib.EmptyEnabled = true;
@@ -1827,7 +1827,7 @@ void Far::OnConfigEditor()
 
 		// set
 		it->Mask = mask;
-		EditorPlugin^ filer = dynamic_cast<EditorPlugin^>(it->Plugin);
+		ModuleEditor^ filer = dynamic_cast<ModuleEditor^>(it->Module);
 		if (filer)
 			filer->Mask = mask;
 	}
@@ -1838,9 +1838,9 @@ void Far::OnConfigFiler()
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
 	menu.HelpTopic = "ConfigFiler";
-	menu.Title = Res::FilerPlugins;
+	menu.Title = Res::ModuleFilers;
 
-	for each(FilerPluginInfo^ it in _registeredFiler)
+	for each(ModuleFilerInfo^ it in _registeredFiler)
 	{
 		FarItem^ mi = menu.Add(it->Key);
 		mi->Data = it;
@@ -1849,7 +1849,7 @@ void Far::OnConfigFiler()
 	while(menu.Show())
 	{
 		FarItem^ mi = menu.Items[menu.Selected];
-		FilerPluginInfo^ it = (FilerPluginInfo^)mi->Data;
+		ModuleFilerInfo^ it = (ModuleFilerInfo^)mi->Data;
 
 		InputBox ib;
 		ib.EmptyEnabled = true;
@@ -1869,7 +1869,7 @@ void Far::OnConfigFiler()
 
 		// set
 		it->Mask = mask;
-		FilerPlugin^ filer = dynamic_cast<FilerPlugin^>(it->Plugin);
+		ModuleFiler^ filer = dynamic_cast<ModuleFiler^>(it->Module);
 		if (filer)
 			filer->Mask = mask;
 	}
@@ -1901,7 +1901,7 @@ void Far::OnEditorOpened(FarNet::Editor^ editor)
 
 	AutoEditorInfo ei;
 
-	for each(EditorPluginInfo^ it in _registeredEditor)
+	for each(ModuleEditorInfo^ it in _registeredEditor)
 	{
 		// mask?
 		CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
@@ -2092,7 +2092,7 @@ void Far::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 
 void Far::Quit()
 {
-	if (!Plugin0::CanExit())
+	if (!Module0::CanExit())
 		return;
 	
 	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);

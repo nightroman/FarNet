@@ -1043,7 +1043,7 @@ profile (e.g. Profile-.ps1). Useful command to view/change all settings:
 Preference settings are described in .chm, permanent settings in here:
 
  #Main startup code#
- #($Psf.Settings.PluginStartupCode)#
+ #($Psf.Settings.StartupCode)#
 
 PowerShell code which is executed once in the beginning of PowerShell session.
 Normally it dot-sources a profile. See ~Profile-.ps1~@Profile@ for a demo
@@ -1067,7 +1067,7 @@ consoles, it is for the default runspace. Jobs and async consoles use their own
 runspaces.
 
  #Editor startup code#
- #($Psf.Settings.PluginStartupEdit)#
+ #($Psf.Settings.StartupEdit)#
 
 This code is executed once when an editor is opened the first time. Normally it
 adds editor event handlers ($Far.AnyEditor events). Full-fledged example is
@@ -1251,7 +1251,7 @@ It is a recommended profile to start with, but you should take only what suits
 you there. It is not enabled by default, you have to open the configuration
 dialog and set:
 
-#PluginStartupCode#
+#StartupCode#
 
 	. Profile-.ps1
 

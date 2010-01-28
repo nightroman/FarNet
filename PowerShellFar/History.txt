@@ -11,6 +11,10 @@ FarMacro.psm1
 
 = 4.3.1 =
 
+HKEY_CURRENT_USER\Software\Far2\Plugins\PowerShellFar
+PluginStartupCode StartupCode
+PluginStartupEdit StartupEdit
+
 POWERSHELL MODULES
 
 *) Modules are standard PowerShell modules, not plugins or sub-plugins. But

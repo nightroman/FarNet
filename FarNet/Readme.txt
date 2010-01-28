@@ -77,9 +77,9 @@ optional configuration file (.cfg). Each line of .cfg file is:
 
 
 *) For each folder in Plugins.NET: if a file *.cfg exists then only specified
-assemblies and their classes are loaded, else all non abstract BasePlugin
+assemblies and their classes are loaded, else all non abstract BaseModule
 children are loaded from all DLLs in the plugin folder.
-*) Excluded folders: folders "-*", e.g. "-MyPlugin", are not loaded.
+*) Excluded folders: folders "-*", e.g. "-MyModule", are not loaded.
 *) Plugin assembly names must be unique among all plugins otherwise there can be
 both .NET and FarNet problems. An assembly name defines kind of namespace for
 information stored in the registry. Directory names and assembly locations are

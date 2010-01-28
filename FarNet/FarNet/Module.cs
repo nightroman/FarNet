@@ -13,39 +13,40 @@ using System.Security.Permissions;
 namespace FarNet
 {
 	/// <summary>
-	/// Base plugin class, the bridge between a plugin and FarNet.
+	/// Base module class, the bridge between FarNet and the module tools.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This is the base class of preloadable plugins and not preloadable
-	/// <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/>, <see cref="EditorPlugin"/> and <see cref="FilerPlugin"/>.
+	/// This is the base class of preloadable modules and not preloadable
+	/// <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, <see cref="ModuleEditor"/> and <see cref="ModuleFiler"/>.
 	/// </para>
 	/// <para>
-	/// It keeps reference to <see cref="IFar"/> and provides
-	/// <see cref="Connect"/> and <see cref="Disconnect"/> methods.
-	/// Normally a direct child should implement at least <see cref="Connect"/>.
+	/// It exposes the global <see cref="Far"/> instance and provides virtual methods called by the core.
+	/// Normally a direct child implements the <see cref="Connect"/> method and registers its tools in it;
+	/// grand children (derived from <c>Module*</c>) implement their <c>Invoke</c> methods.
+	/// There are a few more optional virtual members that can be implemented when needed.
 	/// </para>
 	/// <para>
-	/// Any direct child of this class is always preloadable and makes other plugins in the same assembly preloadable as well.
+	/// Any direct child of this class is preloadable and makes other tools in the same assembly preloadable.
 	/// </para>
 	/// <para>
-	/// If a plugin implements a single operation consider to use <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> or <see cref="FilerPlugin"/>.
-	/// For a plugin that only installs editor events for specified file types consider <see cref="EditorPlugin"/>.
-	/// These plugins are normally not preloadable and slightly easier to implement.
+	/// For a module that provides a single top level operation use <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, or <see cref="ModuleFiler"/>.
+	/// For a module that only installs editor events for all or specified file types use <see cref="ModuleEditor"/>.
+	/// These modules are normally not preloadable and slightly easier to implement.
 	/// </para>
 	/// </remarks>
-	public class BasePlugin
+	public class BaseModule
 	{
 		ResourceManager Resource;
 
 		/// <summary>
-		/// Protected constructor denies instances of this class.
+		/// Denies instances of this class.
 		/// </summary>
-		protected BasePlugin()
+		protected BaseModule()
 		{ }
 
 		/// <summary>
-		/// Gets the main object which exposes FarNet methods and creates other FarNet objects.
+		/// Gets the object which exposes FarNet methods and creates other FarNet objects.
 		/// </summary>
 		/// <remarks>
 		/// This object is really the main gateway to absolutely all FarNet API.
@@ -62,7 +63,7 @@ namespace FarNet
 		{ }
 
 		/// <summary>
-		/// Override this method to process plugin disconnection.
+		/// Override this method to process module disconnection.
 		/// </summary>
 		/// <remarks>
 		/// NOTE: Don't call Far UI, it is not working on exiting.
@@ -73,11 +74,11 @@ namespace FarNet
 		{ }
 
 		/// <summary>
-		/// Gets plugin or menu item name. By default it is the plugin class name.
+		/// Gets the module or its menu item name. By default it is the module class name.
 		/// </summary>
 		/// <remarks>
-		/// If you override it (usually in <see cref="ToolPlugin"/>, <see cref="CommandPlugin"/> or <see cref="FilerPlugin"/>)
-		/// and use several plugins in the assembly then make sure that names do not clash.
+		/// If you override it (usually in <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, or <see cref="ModuleFiler"/>)
+		/// and use several module tools in the assembly then make sure that names do not clash.
 		/// </remarks>
 		public virtual string Name
 		{
@@ -123,7 +124,7 @@ namespace FarNet
 		/// Called before invoking of a command.
 		/// </summary>
 		/// <remarks>
-		/// A plugin may override it to perform some preparations before invoking.
+		/// The module may override it to perform some preparations before invoking.
 		/// Example: PowerShellFar may wait for the PowerShell engine loading to complete.
 		/// </remarks>
 		public virtual void Invoking()
@@ -137,16 +138,16 @@ namespace FarNet
 		/// <remarks>
 		/// It gets a string from .resource files depending on the <see cref="CurrentUICulture"/>.
 		/// <para>
-		/// A plugin has to provide .resources files in its directory:
+		/// The module has to provide .resources files in its directory:
 		/// </para>
 		/// <ul>
-		/// <li>PluginBaseName.resources (default, English is recommended)</li>
-		/// <li>PluginBaseName.ru.resources (Russian)</li>
-		/// <li>PluginBaseName.de.resources (German)</li>
+		/// <li>ModuleBaseName.resources (default, English is recommended)</li>
+		/// <li>ModuleBaseName.ru.resources (Russian)</li>
+		/// <li>ModuleBaseName.de.resources (German)</li>
 		/// <li>...</li>
 		/// </ul>
 		/// <para>
-		/// The file "PluginBaseName.resources" must exist. It normally contains language independent strings
+		/// The file "ModuleBaseName.resources" must exist. It normally contains language independent strings
 		/// and other strings in a default\fallback language, English more likely. Other files are optional
 		/// and can be added at any time. Note that they do not have to repeat language independent strings.
 		/// </para>
@@ -169,11 +170,11 @@ namespace FarNet
 		}
 
 		/// <summary>
-		/// Can the plugin exit now?
+		/// Can the module exit now?
 		/// </summary>
 		/// <remarks>
-		/// This method is normally called internally by <see cref="IFar.Quit"/>.
-		/// The plugin can override this to perform preliminary checks before exit.
+		/// This method is normally called internally by the <see cref="IFar.Quit"/>.
+		/// The module can override this to perform preliminary checks before exit.
 		/// Note that final exit actions should be performed in <see cref="Disconnect"/>.
 		/// <para>
 		/// It is allowed to return false but this option should be used sparingly,
@@ -181,7 +182,7 @@ namespace FarNet
 		/// The most important reason is that a user really wants that.
 		/// </para>
 		/// </remarks>
-		/// <returns>True if the plugin is ready to exit.</returns>
+		/// <returns>True if the module is ready to exit.</returns>
 		public virtual bool CanExit()
 		{
 			return true;
@@ -189,7 +190,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Plugin tool options.
+	/// Tool options.
 	/// </summary>
 	[Flags]
 	public enum ToolOptions
@@ -237,8 +238,8 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of a tool plugin event.
-	/// This event normally happens when a user selects a plugin menu item.
+	/// Arguments of a module tool event.
+	/// This event normally happens in the Far plugins menu.
 	/// </summary>
 	public sealed class ToolEventArgs : EventArgs
 	{
@@ -270,7 +271,7 @@ namespace FarNet
 	/// You may derive any number of such classes.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	public abstract class ToolPlugin : BasePlugin
+	public abstract class ModuleTool : BaseModule
 	{
 		/// <summary>
 		/// Tool handler called when its menu item is invoked.
@@ -288,7 +289,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of a command plugin event.
+	/// Arguments of a module command event.
 	/// </summary>
 	public class CommandEventArgs : EventArgs
 	{
@@ -316,7 +317,7 @@ namespace FarNet
 	/// You may derive any number of such classes.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	public abstract class CommandPlugin : BasePlugin
+	public abstract class ModuleCommand : BaseModule
 	{
 		/// <summary>
 		/// Command handler called from the command line with a prefix.
@@ -326,7 +327,7 @@ namespace FarNet
 		/// <summary>
 		/// Command prefix. By default it is the class name, override <c>get</c> for another one.
 		/// But it is only a suggestion, actual prefix may be changed by a user, so that
-		/// if the plugin uses the prefix itself then override <c>set</c> too.
+		/// if the module uses the prefix itself then override <c>set</c> too.
 		/// </summary>
 		public virtual string Prefix
 		{
@@ -379,7 +380,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class of a file based plugin.
+	/// Base class of a module filer.
 	/// </summary>
 	/// <remarks>
 	/// It is enough to implement <see cref="Invoke"/> method only.
@@ -387,19 +388,19 @@ namespace FarNet
 	/// You may derive any number of such classes.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	public abstract class FilerPlugin : BasePlugin
+	public abstract class ModuleFiler : BaseModule
 	{
 		/// <summary>
 		/// Filer handler called when a file is opened.
 		/// </summary>
 		/// <remarks>
-		/// It is up to the plugin how to process a file.
-		/// But usually file based plugins represent file data in a panel,
+		/// It is up to the module how to process a file.
+		/// Usually file based modules should represent file data in a panel,
 		/// i.e. this methods should be used to open and configure a panel (<see cref="IPluginPanel"/>).
 		/// </remarks>
 		public abstract void Invoke(object sender, FilerEventArgs e);
 
-		/// <include file='doc.xml' path='docs/pp[@name="PluginFileMask"]/*'/>
+		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
 		public virtual string Mask
 		{
 			get { return string.Empty; }
@@ -407,7 +408,7 @@ namespace FarNet
 		}
 
 		/// <summary>
-		/// Tells that the plugin also creates files.
+		/// Tells that the module also creates files.
 		/// </summary>
 		public virtual bool Creates
 		{
@@ -417,11 +418,11 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class of an editor plugin.
+	/// Base class of a module editor.
 	/// </summary>
 	/// <remarks>
-	/// This plugin works with editor events, not with menu commands in editors
-	/// (in the latter case use <see cref="ToolPlugin"/> configured for editors).
+	/// This module works with editor events, not with menu commands in editors
+	/// (in the latter case use <see cref="ModuleTool"/> configured for editors).
 	/// <para>
 	/// It is enough to implement <see cref="Invoke"/> method only.
 	/// Override other properties and methods as needed.
@@ -429,7 +430,7 @@ namespace FarNet
 	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	public abstract class EditorPlugin : BasePlugin
+	public abstract class ModuleEditor : BaseModule
 	{
 		/// <summary>
 		/// Editor <see cref="IAnyEditor.Opened"/> handler.
@@ -439,12 +440,12 @@ namespace FarNet
 		/// Normally you add your editor event handlers, then they do the jobs.
 		/// </remarks>
 		/// <example>
-		/// See <c>Plugins.NET\TrimSaving</c> plugin.
+		/// See the <c>Plugins.NET\TrimSaving</c> module.
 		/// It is not just an example, it can be used for real.
 		/// </example>
 		public abstract void Invoke(object sender, EventArgs e);
 
-		/// <include file='doc.xml' path='docs/pp[@name="PluginFileMask"]/*'/>
+		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
 		public virtual string Mask
 		{
 			get { return string.Empty; }
@@ -453,27 +454,27 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class for plugin exceptions.
+	/// Module exception.
 	/// </summary>
 	/// <remarks>
-	/// If a plugin throws exceptions then for better diagnostics it is recommended to use this or derived exceptions
-	/// in order to be able to distinguish between system, plugin, and even particular plugin exceptions.
+	/// If a module throws exceptions then for better diagnostics it is recommended to use this or derived exceptions
+	/// in order to be able to distinguish between system, module, and even particular module exceptions.
 	/// <para>
-	/// Best practice: catch an exception, wrap it by a new plugin exception with better explanation of a problem and throw the new one.
+	/// Best practice: catch an exception, wrap it by a new module exception with better explanation of a problem and throw the new one.
 	/// Wrapped inner exception is not lost: its message and stack are shown, for example by <see cref="IFar.ShowError"/>.
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class PluginException : Exception
+	public class ModuleException : Exception
 	{
 		///
-		public PluginException() { }
+		public ModuleException() { }
 		///
-		public PluginException(string message) : base(message) { }
+		public ModuleException(string message) : base(message) { }
 		///
-		public PluginException(string message, Exception innerException) : base(message, innerException) { }
+		public ModuleException(string message, Exception innerException) : base(message, innerException) { }
 		///
-		protected PluginException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		protected ModuleException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 
 }

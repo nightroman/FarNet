@@ -15,7 +15,7 @@ namespace FarNet
 	/// Main Far Manager interface which exposes main FarNet object model entries.
 	/// </summary>
 	/// <remarks>
-	/// It is exposed for plugin derived classes as property <see cref="BasePlugin.Far"/>.
+	/// It is exposed for plugin derived classes as property <see cref="BaseModule.Far"/>.
 	/// It provides access to top level Far methods and objects or creates new Far objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
 	/// Further operations are performed on that objects.
@@ -33,7 +33,7 @@ namespace FarNet
 		/// <param name="name">Tool name and also the default menu item name. Recommended to be a unique name in the assembly.</param>
 		/// <param name="handler">Tool handler.</param>
 		/// <param name="options">Tool options.</param>
-		void RegisterTool(BasePlugin plugin, string name, EventHandler<ToolEventArgs> handler, ToolOptions options);
+		void RegisterTool(BaseModule plugin, string name, EventHandler<ToolEventArgs> handler, ToolOptions options);
 		/// <summary>
 		/// Unregisters a tool handler.
 		/// </summary>
@@ -51,9 +51,9 @@ namespace FarNet
 		/// Provided <c>prefix</c> is only a default suggestion, actual prefix used by FarNet can be different,
 		/// e.g. changed by a user, so that the plugin must use the returned prefix if needed. Note: the plugin
 		/// is not notified about prefix changes during the session. If it is really important (rare) then use
-		/// <see cref="CommandPlugin"/> which can always have a fresh prefix set by a user.
+		/// <see cref="ModuleCommand"/> which can always have a fresh prefix set by a user.
 		/// </remarks>
-		string RegisterCommand(BasePlugin plugin, string name, string prefix, EventHandler<CommandEventArgs> handler);
+		string RegisterCommand(BaseModule plugin, string name, string prefix, EventHandler<CommandEventArgs> handler);
 		/// <summary>
 		/// Unregisters a command handler.
 		/// </summary>
@@ -65,9 +65,9 @@ namespace FarNet
 		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
 		/// <param name="name">Filer name and also the config menu items. Recommended to be a unique name in the assembly.</param>
 		/// <param name="handler">Filer handler.</param>
-		/// <param name="mask">File(s) mask, see <see cref="FilerPlugin.Mask"/>.</param>
+		/// <param name="mask">File(s) mask, see <see cref="ModuleFiler.Mask"/>.</param>
 		/// <param name="creates">Tells that the plugin also creates files.</param>
-		void RegisterFiler(BasePlugin plugin, string name, EventHandler<FilerEventArgs> handler, string mask, bool creates);
+		void RegisterFiler(BaseModule plugin, string name, EventHandler<FilerEventArgs> handler, string mask, bool creates);
 		/// <summary>
 		/// Unregisters a file handler.
 		/// </summary>
@@ -80,9 +80,9 @@ namespace FarNet
 		/// Normally there is no much sense in unloading a plugin because .NET assemblies are not unloaded anyway.
 		/// This method should be called only in critical cases (fatal errors and etc.).
 		/// </remarks>
-		void Unregister(BasePlugin plugin);
+		void Unregister(BaseModule plugin);
 		/// <summary>
-		/// Gets the path of the plugin directory.
+		/// Gets the path of the FarNet plugin home directory.
 		/// </summary>
 		string PluginPath { get; }
 		/// <summary>
@@ -385,7 +385,7 @@ namespace FarNet
 		/// Basically it is called internally on all exceptions not handled by plugins
 		/// but it is as well designed for direct calls by plugins.
 		/// </para>
-		/// <seealso cref="PluginException"/>
+		/// <seealso cref="ModuleException"/>
 		/// </remarks>
 		void ShowError(string title, Exception exception);
 		/// <summary>
@@ -717,7 +717,7 @@ namespace FarNet
 		/// Tells Far to exit if it is possible.
 		/// </summary>
 		/// <remarks>
-		/// Before sending this request to Far it calls <see cref="BasePlugin.CanExit"/> for each plugin.
+		/// Before sending this request to Far it calls <see cref="BaseModule.CanExit"/> for each plugin.
 		/// If all plugins return true then Far is called. If there is an editor with not saved changes
 		/// then Far asks a user how to proceed and, in fact, a user may continue work in Far.
 		/// </remarks>

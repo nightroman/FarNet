@@ -6,16 +6,16 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "PluginInfo.h"
 #include "Far.h"
-#include "Plugin0.h"
+#include "Module0.h"
 
 namespace FarNet
 {;
-#pragma region BasePluginInfo
+#pragma region BaseModuleInfo
 
-BasePlugin^ BasePluginInfo::CreatePlugin(Type^ type)
+BaseModule^ BaseModuleInfo::CreatePlugin(Type^ type)
 {
 	// create the instance
-	BasePlugin^ instance = (BasePlugin^)Activator::CreateInstance(type);
+	BaseModule^ instance = (BaseModule^)Activator::CreateInstance(type);
 
 	// get and set UI culture, if any
 	String^ assemblyName = Path::GetFileName(instance->GetType()->Assembly->Location);
@@ -28,7 +28,7 @@ BasePlugin^ BasePluginInfo::CreatePlugin(Type^ type)
 		}
 		catch(ArgumentException^ ex)
 		{
-			PluginException ex2("Invalid culture name.\rCorrect it in the configuration dialog.", ex);
+			ModuleException ex2("Invalid culture name.\rCorrect it in the configuration dialog.", ex);
 			Far::Instance->ShowError(assemblyName, %ex2);
 		}
 	}
@@ -36,32 +36,32 @@ BasePlugin^ BasePluginInfo::CreatePlugin(Type^ type)
 	return instance;
 }
 
-BasePluginInfo::BasePluginInfo(BasePlugin^ plugin, String^ name)
+BaseModuleInfo::BaseModuleInfo(BaseModule^ plugin, String^ name)
 : _Plugin(plugin)
 , _Name(name)
 {}
 
-BasePluginInfo::BasePluginInfo(String^ assemblyPath, String^ className, String^ name)
+BaseModuleInfo::BaseModuleInfo(String^ assemblyPath, String^ className, String^ name)
 : _AssemblyPath(assemblyPath), _ClassName(className), _Name(name)
 {}
 
-String^ BasePluginInfo::ToString()
+String^ BaseModuleInfo::ToString()
 {
 	//?? Do not call property 'ClassName' to avoid premature loading
 	return String::Format("{0} Name='{1}' Class='{2}'", GetType()->FullName, _Name, _ClassName);
 }
 
-String^ BasePluginInfo::AssemblyPath::get()
+String^ BaseModuleInfo::AssemblyPath::get()
 {
 	return _Plugin ? Assembly::GetAssembly(_Plugin->GetType())->Location : _AssemblyPath;
 }
 
-String^ BasePluginInfo::ClassName::get()
+String^ BaseModuleInfo::ClassName::get()
 {
 	return _Plugin ? _Plugin->GetType()->FullName : _ClassName;
 }
 
-String^ BasePluginInfo::Key::get()
+String^ BaseModuleInfo::Key::get()
 {
 	String^ path = AssemblyPath;
 	if (path)
@@ -70,7 +70,7 @@ String^ BasePluginInfo::Key::get()
 		return ">" + _Name->Replace("\\", "/");
 }
 
-void BasePluginInfo::Connect()
+void BaseModuleInfo::Connect()
 {
 	LOG_AUTO(3, String::Format("Load plugin Class='{0}' Path='{1}'", _ClassName, _AssemblyPath));
 
@@ -80,14 +80,14 @@ void BasePluginInfo::Connect()
 	// create from info
 	Assembly^ assembly = Assembly::LoadFrom(_AssemblyPath);
 	Type^ type = assembly->GetType(_ClassName, true);
-	_Plugin = BasePluginInfo::CreatePlugin(type);
+	_Plugin = BaseModuleInfo::CreatePlugin(type);
 
 	// drop info
 	_AssemblyPath = nullptr;
 	_ClassName = nullptr;
 
 	// register, attach, connect
-	Plugin0::AddPlugin(_Plugin);
+	Module0::AddPlugin(_Plugin);
 	_Plugin->Far = Far::Instance;
 	{
 		LOG_AUTO(3, String::Format("{0}.Connect", _Plugin));
@@ -98,20 +98,20 @@ void BasePluginInfo::Connect()
 
 #pragma endregion
 
-#pragma region ToolPluginInfo
+#pragma region ModuleToolInfo
 
-ToolPluginInfo::ToolPluginInfo(BasePlugin^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
-: BasePluginInfo(plugin, name)
+ModuleToolInfo::ModuleToolInfo(BaseModule^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
+: BaseModuleInfo(plugin, name)
 , _Handler(handler)
 , _Options(options)
 {}
 
-String^ ToolPluginInfo::ToString()
+String^ ModuleToolInfo::ToString()
 {
-	return String::Format("{0} Options='{1}'", BasePluginInfo::ToString(), Options);
+	return String::Format("{0} Options='{1}'", BaseModuleInfo::ToString(), Options);
 }
 
-String^ ToolPluginInfo::Alias(ToolOptions option)
+String^ ModuleToolInfo::Alias(ToolOptions option)
 {
 	if (ES(Name))
 		return String::Empty;
@@ -146,7 +146,7 @@ String^ ToolPluginInfo::Alias(ToolOptions option)
 	}
 }
 
-void ToolPluginInfo::Alias(ToolOptions option, String^ value)
+void ModuleToolInfo::Alias(ToolOptions option, String^ value)
 {
 	if (ES(value))
 		throw gcnew ArgumentException("'value' must not be empty.");
@@ -182,31 +182,31 @@ void ToolPluginInfo::Alias(ToolOptions option, String^ value)
 	}
 }
 
-void ToolPluginInfo::Invoke(Object^ sender, ToolEventArgs^ e)
+void ModuleToolInfo::Invoke(Object^ sender, ToolEventArgs^ e)
 {
 	Connect();
-	ToolPlugin^ instance = (ToolPlugin^)Plugin;
-	_Handler = gcnew EventHandler<ToolEventArgs^>(instance, &ToolPlugin::Invoke);
+	ModuleTool^ instance = (ModuleTool^)Module;
+	_Handler = gcnew EventHandler<ToolEventArgs^>(instance, &ModuleTool::Invoke);
 	instance->Invoke(sender, e);
 }
 
 #pragma endregion
 
-#pragma region CommandPluginInfo
+#pragma region ModuleCommandInfo
 
-String^ CommandPluginInfo::ToString()
+String^ ModuleCommandInfo::ToString()
 {
-	return String::Format("{0} Prefix='{1}'", BasePluginInfo::ToString(), Prefix);
+	return String::Format("{0} Prefix='{1}'", BaseModuleInfo::ToString(), Prefix);
 }
 
-String^ CommandPluginInfo::Prefix::get()
+String^ ModuleCommandInfo::Prefix::get()
 {
 	if (ES(_Prefix))
 		_Prefix = Far::Instance->GetFarNetValue(Key, "Prefix", DefaultPrefix)->ToString();
 	return _Prefix;
 }
 
-void CommandPluginInfo::Prefix::set(String^ value)
+void ModuleCommandInfo::Prefix::set(String^ value)
 {
 	if (ES(value))
 		throw gcnew ArgumentException("'value' must not be empty.");
@@ -215,46 +215,46 @@ void CommandPluginInfo::Prefix::set(String^ value)
 	_Prefix = value;
 }
 
-void CommandPluginInfo::Invoke(Object^ sender, CommandEventArgs^ e)
+void ModuleCommandInfo::Invoke(Object^ sender, CommandEventArgs^ e)
 {
 	// connect
 	Connect();
-	CommandPlugin^ instance = (CommandPlugin^)Plugin;
+	ModuleCommand^ instance = (ModuleCommand^)Module;
 
 	// notify
 	instance->Invoking();
 
 	// invoke
 	instance->Prefix = Prefix;
-	_Handler = gcnew EventHandler<CommandEventArgs^>(instance, &CommandPlugin::Invoke);
+	_Handler = gcnew EventHandler<CommandEventArgs^>(instance, &ModuleCommand::Invoke);
 	instance->Invoke(sender, e);
 }
 
 #pragma endregion
 
-#pragma region FilerPluginInfo
+#pragma region ModuleFilerInfo
 
-String^ FilerPluginInfo::ToString()
+String^ ModuleFilerInfo::ToString()
 {
-	return String::Format("{0} Mask='{1}'", BasePluginInfo::ToString(), Mask);
+	return String::Format("{0} Mask='{1}'", BaseModuleInfo::ToString(), Mask);
 }
 
-void FilerPluginInfo::Invoke(Object^ sender, FilerEventArgs^ e)
+void ModuleFilerInfo::Invoke(Object^ sender, FilerEventArgs^ e)
 {
 	Connect();
-	FilerPlugin^ instance = (FilerPlugin^)Plugin;
-	_Handler = gcnew EventHandler<FilerEventArgs^>(instance, &FilerPlugin::Invoke);
+	ModuleFiler^ instance = (ModuleFiler^)Module;
+	_Handler = gcnew EventHandler<FilerEventArgs^>(instance, &ModuleFiler::Invoke);
 	instance->Invoke(sender, e);
 }
 
-String^ FilerPluginInfo::Mask::get()
+String^ ModuleFilerInfo::Mask::get()
 {
 	if (ES(_Mask))
 		_Mask = Far::Instance->GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
 	return _Mask;
 }
 
-void FilerPluginInfo::Mask::set(String^ value)
+void ModuleFilerInfo::Mask::set(String^ value)
 {
 	if (!value) throw gcnew ArgumentNullException("value");
 
@@ -264,29 +264,29 @@ void FilerPluginInfo::Mask::set(String^ value)
 
 #pragma endregion
 
-#pragma region EditorPluginInfo
+#pragma region ModuleEditorInfo
 
-String^ EditorPluginInfo::ToString()
+String^ ModuleEditorInfo::ToString()
 {
-	return String::Format("{0} Mask='{1}'", BasePluginInfo::ToString(), Mask);
+	return String::Format("{0} Mask='{1}'", BaseModuleInfo::ToString(), Mask);
 }
 
-void EditorPluginInfo::Invoke(Object^ sender, EventArgs^ e)
+void ModuleEditorInfo::Invoke(Object^ sender, EventArgs^ e)
 {
 	Connect();
-	EditorPlugin^ instance = (EditorPlugin^)Plugin;
-	_Handler = gcnew EventHandler(instance, &EditorPlugin::Invoke);
+	ModuleEditor^ instance = (ModuleEditor^)Module;
+	_Handler = gcnew EventHandler(instance, &ModuleEditor::Invoke);
 	instance->Invoke(sender, e);
 }
 
-String^ EditorPluginInfo::Mask::get()
+String^ ModuleEditorInfo::Mask::get()
 {
 	if (ES(_Mask))
 		_Mask = Far::Instance->GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
 	return _Mask;
 }
 
-void EditorPluginInfo::Mask::set(String^ value)
+void ModuleEditorInfo::Mask::set(String^ value)
 {
 	if (!value) throw gcnew ArgumentNullException("value");
 
@@ -296,9 +296,9 @@ void EditorPluginInfo::Mask::set(String^ value)
 
 #pragma endregion
 
-#pragma region ToolPluginAliasComparer
+#pragma region ModuleToolAliasComparer
 
-int ToolPluginAliasComparer::Compare(ToolPluginInfo^ x, ToolPluginInfo^ y)
+int ModuleToolAliasComparer::Compare(ModuleToolInfo^ x, ModuleToolInfo^ y)
 {
 	return String::Compare(x->Alias(_Option), y->Alias(_Option), true, CultureInfo::InvariantCulture);
 }

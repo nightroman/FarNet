@@ -26,8 +26,8 @@ namespace PowerShellFar
 			{
 				using (RegistryKey key = keyFar.CreateSubKey("PowerShellFar"))
 				{
-					_PluginStartupCode = key.GetValue("PluginStartupCode", string.Empty).ToString();
-					_PluginStartupEdit = key.GetValue("PluginStartupEdit", string.Empty).ToString();
+					_StartupCode = key.GetValue("StartupCode", string.Empty).ToString();
+					_StartupEdit = key.GetValue("StartupEdit", string.Empty).ToString();
 				}
 			}
 		}
@@ -39,8 +39,8 @@ namespace PowerShellFar
 		{
 			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(A.Far.RootKey + "\\PowerShellFar", true))
 			{
-				key.SetValue("PluginStartupCode", _PluginStartupCode);
-				key.SetValue("PluginStartupEdit", _PluginStartupEdit);
+				key.SetValue("StartupCode", _StartupCode);
+				key.SetValue("StartupEdit", _StartupEdit);
 			}
 		}
 
@@ -67,24 +67,24 @@ namespace PowerShellFar
 			menu.UsualMargins = _ListMenuUsualMargins;
 		}
 
-		string _PluginStartupCode;
+		string _StartupCode;
 		/// <summary>
 		/// See .hlf
 		/// </summary>
-		public string PluginStartupCode
+		public string StartupCode
 		{
-			get { return _PluginStartupCode; }
-			set { _PluginStartupCode = value; }
+			get { return _StartupCode; }
+			set { _StartupCode = value; }
 		}
 
-		string _PluginStartupEdit;
+		string _StartupEdit;
 		/// <summary>
 		/// See .hlf
 		/// </summary>
-		public string PluginStartupEdit
+		public string StartupEdit
 		{
-			get { return _PluginStartupEdit; }
-			set { _PluginStartupEdit = value; }
+			get { return _StartupEdit; }
+			set { _StartupEdit = value; }
 		}
 
 		bool _IntelliAutoSelect = true;

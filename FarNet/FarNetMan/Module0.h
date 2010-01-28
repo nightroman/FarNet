@@ -7,35 +7,35 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class CommandPluginInfo;
-ref class EditorPluginInfo;
-ref class FilerPluginInfo;
-ref class ToolPluginInfo;
+ref class ModuleCommandInfo;
+ref class ModuleEditorInfo;
+ref class ModuleFilerInfo;
+ref class ModuleToolInfo;
 
-/// <summary> Plugin manager loading plugins </summary>
-ref class Plugin0
+// Plugin manager loading plugins.
+ref class Module0
 {
 public:
-	static property IList<BasePlugin^>^ Plugins { IList<BasePlugin^>^ get() { return %_plugins; } }
+	static property IList<BaseModule^>^ Modules { IList<BaseModule^>^ get() { return %_plugins; } }
 	static property IList<String^>^ AssemblyNames { IList<String^>^ get() { return _names->Keys; } }
 public:
 	static bool CanExit();
-	static void AddPlugin(BasePlugin^ plugin);
+	static void AddPlugin(BaseModule^ plugin);
 	static void LoadPlugins();
-	static void UnloadPlugin(BasePlugin^ plugin);
+	static void UnloadPlugin(BaseModule^ plugin);
 	static void UnloadPlugins();
 private:
-	static int AddPlugin(Type^ type, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools);
+	static int AddPlugin(Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools);
 	static void LoadFromAssembly(String^ assemblyPath, array<String^>^ classes);
 	static void LoadFromConfig(String^ file, String^ dir);
 	static void LoadFromDirectory(String^ dir);
 	static void ReadCache();
-	static void WriteCache(String^ assemblyPath, List<CommandPluginInfo^>^ commands, List<EditorPluginInfo^>^ editors, List<FilerPluginInfo^>^ filers, List<ToolPluginInfo^>^ tools);
+	static void WriteCache(String^ assemblyPath, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools);
 private:
 	// Static
-	Plugin0() {}
+	Module0() {}
 	// Registered plugins
-	static List<BasePlugin^> _plugins;
+	static List<BaseModule^> _plugins;
 	static SortedList<String^, Object^>^ _cache = gcnew SortedList<String^, Object^>(StringComparer::OrdinalIgnoreCase);
 	static SortedList<String^, Object^>^ _names = gcnew SortedList<String^, Object^>(StringComparer::OrdinalIgnoreCase);
 };
