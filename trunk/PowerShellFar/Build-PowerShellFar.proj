@@ -14,8 +14,15 @@
 
 	<Target Name="Clean">
 		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Clean"/>
-		<RemoveDir Directories="bin;obj;Modules\FarMacro\bin;Modules\FarMacro\obj"/>
 		<Delete Files="PowerShellFar.ncb;PowerShellFar.sln.cache;Bench\Test\Test-Zoo.clixml"/>
+		<RemoveDir Directories="
+		bin;
+		obj;
+		Modules\FarDescription\bin;
+		Modules\FarDescription\obj;
+		Modules\FarMacro\bin;
+		Modules\FarMacro\obj;
+		"/>
 	</Target>
 
 	<!--Install FarNet and PSF bin-->
@@ -25,10 +32,23 @@
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')"/>
 		<Copy
 		SourceFiles="
+		Modules\FarDescription\Bin\$(Configuration)\FarDescription.dll;
+		Modules\FarDescription\about_FarDescription.help.txt;
+		Modules\FarDescription\FarDescription.psd1;
+		Modules\FarDescription\FarDescription.psm1;
+		Modules\FarDescription\FarDescription.Types.ps1xml;
+		"
+		DestinationFolder="$(Install)\Plugins.NET\PowerShellFar\Modules\FarDescription"
+		SkipUnchangedFiles="true"
+		/>
+		<Copy
+		SourceFiles="
+		Modules\FarMacro\Bin\$(Configuration)\FarMacro.dll;
 		Modules\FarMacro\about_FarMacro.help.txt;
+		Modules\FarMacro\FarMacro.psd1;
 		Modules\FarMacro\FarMacro.psm1;
 		Modules\FarMacro\FarMacro.Format.ps1xml;
-		Modules\FarMacro\Bin\$(Configuration)\FarMacro.dll;Modules\FarMacro\FarMacro.psd1"
+		"
 		DestinationFolder="$(Install)\Plugins.NET\PowerShellFar\Modules\FarMacro"
 		SkipUnchangedFiles="true"
 		/>
@@ -37,7 +57,7 @@
 	<!--Install PSF resource files-->
 	<Target Name="Install-Res">
 		<Copy
-			SourceFiles="PowerShellFar.cfg;PowerShellFar.hlf;PowerShellFar.types.ps1xml;TabExpansion.ps1"
+			SourceFiles="PowerShellFar.cfg;PowerShellFar.hlf;TabExpansion.ps1"
 			DestinationFolder="$(Install)\Plugins.NET\PowerShellFar"
 			SkipUnchangedFiles="true"/>
 	</Target>

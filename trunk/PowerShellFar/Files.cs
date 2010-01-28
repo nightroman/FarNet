@@ -266,7 +266,11 @@ namespace PowerShellFar
 		{
 			get
 			{
-				object value = PSObject.AsPSObject(Item).Properties["FarDescription"].Value;
+				PSPropertyInfo pi = PSObject.AsPSObject(Item).Properties["FarDescription"]; //$RVK use or kill
+				if (pi == null)
+					return null;
+				
+				object value = pi.Value;
 				return value == null ? null : value.ToString();
 			}
 		}

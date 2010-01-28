@@ -22,6 +22,8 @@ param
 	$DirectoryPath = $(throw)
 )
 
+Import-Module FarDescription
+
 [System.IO.Directory]::GetFiles($DirectoryPath, '*.ps1') | .{process{
 	try {
 		$path = $_

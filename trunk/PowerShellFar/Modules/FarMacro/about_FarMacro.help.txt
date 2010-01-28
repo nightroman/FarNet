@@ -6,9 +6,9 @@ SHORT DESCRIPTION
 
 LONG DESCRIPTION
 
-FARMACRO CMDLETS
+CMDLETS
 
-	The module includes cmdlets:
+	The module includes two cmdlets:
 
 	-- New-FarMacro
 		Creates a macro instance.
@@ -18,7 +18,7 @@ FARMACRO CMDLETS
 
 	Use Get-FarHelp to get more details about the cmdlets.
 
-FARMACRO PROVIDER
+PROVIDERS
 
     The module includes the FarMacro provider. The FarMacro provider lets you
     view the macros in PowerShell as though they were on a file system drive.
@@ -33,7 +33,7 @@ FARMACRO PROVIDER
 	Get-ChildItem
 
     To view the contents of the drive from another Windows PowerShell drive,
-    begin the path with the drive name. Include the colon (:). For example:
+    begin the path with the drive name. For example:
 
 	Get-ChildItem FarMacro:
 

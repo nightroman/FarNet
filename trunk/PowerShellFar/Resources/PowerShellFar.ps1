@@ -11,9 +11,6 @@ trap { continue }
 # Hide 'more.com'
 Set-Alias more.com more
 
-# Add Far type extensions
-Update-TypeData "$($Psf.AppHome)\PowerShellFar.types.ps1xml" -ErrorAction 'Continue'
-
 <#
 .SYNOPSIS
 	Far friendly 'Clear-Host'.

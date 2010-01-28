@@ -2,9 +2,12 @@ http://code.google.com/p/farnet/
 
 = 4.3.1 =
 
+MACROS
+
 *) IMacro.GetNames(): fixed exceptions on missed areas.
 *) Macro.Area is not a string but enum MacroArea.
 *) IMacro methods use enum MacroArea.
+*) API changes, see documentation.
 
 = 4.3.0 =
 
