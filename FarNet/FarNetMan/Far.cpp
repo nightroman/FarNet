@@ -12,9 +12,9 @@ Copyright (c) 2005 FarNet Team
 #include "Menu.h"
 #include "Message.h"
 #include "Module0.h"
+#include "ModuleInfo.h"
 #include "Panel0.h"
 #include "Panel2.h"
-#include "PluginInfo.h"
 #include "Shelve.h"
 #include "Viewer0.h"
 
@@ -36,14 +36,14 @@ void Far::Start()
 {
 	_hMutex = CreateMutex(NULL, FALSE, NULL);
 	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
-	Module0::LoadPlugins();
+	Module0::LoadModules();
 }
 
 //! Don't use Far UI
 void Far::Stop()
 {
 	CloseHandle(_hMutex);
-	Module0::UnloadPlugins();
+	Module0::UnloadModules();
 	_instance = nullptr;
 
 	delete[] _pConfig;
@@ -307,7 +307,7 @@ void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 
 void Far::Unregister(BaseModule^ plugin)
 {
-	Module0::UnloadPlugin(plugin);
+	Module0::UnloadModule(plugin);
 }
 
 void Far::Msg(String^ body)

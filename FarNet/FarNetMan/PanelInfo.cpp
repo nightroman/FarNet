@@ -8,11 +8,11 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-FarPluginPanelInfo::FarPluginPanelInfo()
+FarPanelInfo::FarPanelInfo()
 : _StartViewMode(PanelViewMode::Undefined)
 {}
 
-void FarPluginPanelInfo::Make12Strings(wchar_t** dst, array<String^>^ src)
+void FarPanelInfo::Make12Strings(wchar_t** dst, array<String^>^ src)
 {
 	for(int i = 11; i >= 0; --i)
 	{
@@ -24,14 +24,14 @@ void FarPluginPanelInfo::Make12Strings(wchar_t** dst, array<String^>^ src)
 	}
 }
 
-void FarPluginPanelInfo::Free12Strings(wchar_t* const dst[12])
+void FarPanelInfo::Free12Strings(wchar_t* const dst[12])
 {
 	for(int i = 11; i >= 0; --i)
 		delete[] dst[i];
 }
 
 #define FLAG(Prop, Flag) if (Prop) r |= Flag
-int FarPluginPanelInfo::Flags()
+int FarPanelInfo::Flags()
 {
 	int r = 0;
 	FLAG(CompareFatTime, OPIF_COMPAREFATTIME);
@@ -52,7 +52,7 @@ int FarPluginPanelInfo::Flags()
 }
 #undef FLAG
 
-void FarPluginPanelInfo::CreateInfoLines()
+void FarPanelInfo::CreateInfoLines()
 {
 	if (m->InfoLines)
 	{
@@ -93,7 +93,7 @@ void FarPluginPanelInfo::CreateInfoLines()
 	}
 }
 
-void FarPluginPanelInfo::DeleteInfoLines()
+void FarPanelInfo::DeleteInfoLines()
 {
 	if (m->InfoLines)
 	{
@@ -108,7 +108,7 @@ void FarPluginPanelInfo::DeleteInfoLines()
 	}
 }
 
-PanelModeInfo^ FarPluginPanelInfo::GetMode(PanelViewMode viewMode)
+PanelModeInfo^ FarPanelInfo::GetMode(PanelViewMode viewMode)
 {
 	int i = int(viewMode);
 	if (i < 0 || i > 9)
@@ -275,7 +275,7 @@ void FreePanelMode(const ::PanelMode& d)
 	}
 }
 
-void FarPluginPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo)
+void FarPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo)
 {
 	// index
 	int i = int(viewMode);
@@ -321,7 +321,7 @@ void FarPluginPanelInfo::SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo
 	_Modes[i] = modeInfo;
 }
 
-void FarPluginPanelInfo::CreateModes()
+void FarPanelInfo::CreateModes()
 {
 	assert(m != nullptr);
 	assert(_Modes != nullptr);
@@ -341,7 +341,7 @@ void FarPluginPanelInfo::CreateModes()
 	}
 }
 
-void FarPluginPanelInfo::DeleteModes()
+void FarPanelInfo::DeleteModes()
 {
 	assert(m != nullptr);
 
@@ -361,7 +361,7 @@ void FarPluginPanelInfo::DeleteModes()
 	m->PanelModesArray = 0;
 }
 
-void FarPluginPanelInfo::InfoItems::set(array<DataItem^>^ value)
+void FarPanelInfo::InfoItems::set(array<DataItem^>^ value)
 {
 	_InfoItems = value;
 	if (m)
@@ -372,7 +372,7 @@ void FarPluginPanelInfo::InfoItems::set(array<DataItem^>^ value)
 }
 
 #define SETKEYBAR(Name, Data)\
-	void FarPluginPanelInfo::SetKeyBar##Name(array<String^>^ labels)\
+	void FarPanelInfo::SetKeyBar##Name(array<String^>^ labels)\
 {\
 	_keyBar##Name = labels;\
 	if (!m) return;\
@@ -400,7 +400,7 @@ SETKEYBAR(CtrlShift, CtrlShiftTitles)
 SETKEYBAR(Main, Titles)
 SETKEYBAR(Shift, ShiftTitles)
 
-OpenPluginInfo& FarPluginPanelInfo::Make()
+OpenPluginInfo& FarPanelInfo::Make()
 {
 	if (m)
 		return *m;
@@ -437,7 +437,7 @@ OpenPluginInfo& FarPluginPanelInfo::Make()
 	return *m;
 }
 
-void FarPluginPanelInfo::Free()
+void FarPanelInfo::Free()
 {
 	if (m)
 	{
