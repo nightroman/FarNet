@@ -12,10 +12,10 @@ using FarNet.Support;
 namespace FarNet
 {
 	/// <summary>
-	/// Main Far Manager interface which exposes main FarNet object model entries.
+	/// Main interface which exposes top entries of the FarNet object model.
 	/// </summary>
 	/// <remarks>
-	/// It is exposed for plugin derived classes as property <see cref="BaseModule.Far"/>.
+	/// It is exposed for module derived classes as the property <see cref="BaseModule.Far"/>.
 	/// It provides access to top level Far methods and objects or creates new Far objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
 	/// Further operations are performed on that objects.
@@ -27,60 +27,60 @@ namespace FarNet
 		/// </summary>
 		IZoo Zoo { get; }
 		/// <summary>
-		/// Registers a tool handler invoked from one of Far menus.
+		/// Registers the tool handler invoked from one of Far menus.
 		/// </summary>
-		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
+		/// <param name="host">The module. It can be null, but this is not recommended.</param>
 		/// <param name="name">Tool name and also the default menu item name. Recommended to be a unique name in the assembly.</param>
 		/// <param name="handler">Tool handler.</param>
 		/// <param name="options">Tool options.</param>
-		void RegisterTool(BaseModule plugin, string name, EventHandler<ToolEventArgs> handler, ToolOptions options);
+		void RegisterTool(BaseModule host, string name, EventHandler<ToolEventArgs> handler, ToolOptions options);
 		/// <summary>
-		/// Unregisters a tool handler.
+		/// Unregisters the tool handler.
 		/// </summary>
 		/// <param name="handler">Tool handler.</param>
 		void UnregisterTool(EventHandler<ToolEventArgs> handler);
 		/// <summary>
-		/// Registers a command handler invoked from the command line by its prefix.
+		/// Registers the command handler invoked from the command line by its prefix.
 		/// </summary>
-		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
+		/// <param name="host">The module. It can be null, but this is not recommended.</param>
 		/// <param name="name">Command name and also the config menu item name. Recommended to be a unique name in the assembly.</param>
 		/// <param name="prefix">Command prefix, see remarks.</param>
 		/// <param name="handler">Command handler.</param>
 		/// <returns>Actual prefix that is used by FarNet for this command.</returns>
 		/// <remarks>
 		/// Provided <c>prefix</c> is only a default suggestion, actual prefix used by FarNet can be different,
-		/// e.g. changed by a user, so that the plugin must use the returned prefix if needed. Note: the plugin
+		/// e.g. changed by a user, so that the module must use the returned prefix if needed. Note: the module
 		/// is not notified about prefix changes during the session. If it is really important (rare) then use
 		/// <see cref="ModuleCommand"/> which can always have a fresh prefix set by a user.
 		/// </remarks>
-		string RegisterCommand(BaseModule plugin, string name, string prefix, EventHandler<CommandEventArgs> handler);
+		string RegisterCommand(BaseModule host, string name, string prefix, EventHandler<CommandEventArgs> handler);
 		/// <summary>
-		/// Unregisters a command handler.
+		/// Unregisters the command handler.
 		/// </summary>
 		/// <param name="handler">Command handler.</param>
 		void UnregisterCommand(EventHandler<CommandEventArgs> handler);
 		/// <summary>
-		/// Registers a file handler invoked for a file. See <see cref="FilerEventArgs"/>.
+		/// Registers the file handler invoked for a file. See <see cref="FilerEventArgs"/>.
 		/// </summary>
-		/// <param name="plugin">Plugin instance. It can be null, but is not recommended for standard cases.</param>
+		/// <param name="host">The module. It can be null, but this is not recommended.</param>
 		/// <param name="name">Filer name and also the config menu items. Recommended to be a unique name in the assembly.</param>
 		/// <param name="handler">Filer handler.</param>
 		/// <param name="mask">File(s) mask, see <see cref="ModuleFiler.Mask"/>.</param>
-		/// <param name="creates">Tells that the plugin also creates files.</param>
-		void RegisterFiler(BaseModule plugin, string name, EventHandler<FilerEventArgs> handler, string mask, bool creates);
+		/// <param name="creates">Tells that the module also creates files.</param>
+		void RegisterFiler(BaseModule host, string name, EventHandler<FilerEventArgs> handler, string mask, bool creates);
 		/// <summary>
-		/// Unregisters a file handler.
+		/// Unregisters the file handler.
 		/// </summary>
 		/// <param name="handler">Filer handler.</param>
 		void UnregisterFiler(EventHandler<FilerEventArgs> handler);
 		/// <summary>
-		/// Unregisters a base plugin. Use it sparingly.
+		/// Unregisters the base module. Use it sparingly.
 		/// </summary>
 		/// <remarks>
-		/// Normally there is no much sense in unloading a plugin because .NET assemblies are not unloaded anyway.
+		/// Normally there is no much sense in unloading the module because .NET assemblies are not unloaded anyway.
 		/// This method should be called only in critical cases (fatal errors and etc.).
 		/// </remarks>
-		void Unregister(BaseModule plugin);
+		void Unregister(BaseModule baseModule);
 		/// <summary>
 		/// Gets the path of the FarNet plugin home directory.
 		/// </summary>
@@ -133,7 +133,7 @@ namespace FarNet
 		/// <summary>
 		/// Runs a command with a registered FarNet prefix.
 		/// </summary>
-		/// <param name="command">Command with a prefix of any FarNet plugin.</param>
+		/// <param name="command">Command with a prefix of any FarNet module.</param>
 		void Run(string command);
 		/// <summary>
 		/// Gets the Far window handle.
@@ -335,11 +335,11 @@ namespace FarNet
 		/// Gets the command line operator.
 		/// </summary>
 		/// <remarks>
-		/// If a plugin is called from the command line (including user menu [F2])
+		/// If a module is called from the command line (including user menu [F2])
 		/// then command line properties and methods may not work correctly. In
 		/// this case consider to call an operation from the plugins menu [F11].
 		/// <para>
-		/// You can set the entire command line text if you call a plugin
+		/// A module can set the entire command line text if it is called
 		/// from the command line but not from the user menu.
 		/// </para>
 		/// </remarks>
@@ -382,8 +382,8 @@ namespace FarNet
 		/// macro this method stops a macro before showing an error dialog. That is why
 		/// this method should be called only in exceptional situations.
 		/// <para>
-		/// Basically it is called internally on all exceptions not handled by plugins
-		/// but it is as well designed for direct calls by plugins.
+		/// Basically it is called internally on all exceptions not handled by modules
+		/// but it is as well designed for direct calls, too.
 		/// </para>
 		/// <seealso cref="ModuleException"/>
 		/// </remarks>
@@ -441,28 +441,28 @@ namespace FarNet
 		/// <seealso cref="IFar.GetPaletteBackground"/>
 		void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
 		/// <summary>
-		/// Gets an existing module panel with the specified host (see <see cref="IPanel.Host"/>).
+		/// Finds an existing module panel with the specified host (see <see cref="IPanel.Host"/>).
 		/// </summary>
 		/// <param name="hostType">
 		/// Type of the hosting class.
 		/// If it is null then any module panel is returned.
 		/// If it is <c>typeof(object)</c> then any module panel having a host is returned.
 		/// </param>
-		IPanel GetPanel(Type hostType);
+		IPanel FindPanel(Type hostType);
 		/// <summary>
-		/// Gets an existing module panel with the specified type ID or returns null.
+		/// Finds an existing module panel with the specified type ID or returns null.
 		/// </summary>
 		/// <param name="typeId">Panel type ID. It is normally assigned by a creator.</param>
 		/// <seealso cref="IPanel.TypeId"/>
-		IPanel GetPanel(Guid typeId);
+		IPanel FindPanel(Guid typeId);
 		/// <summary>
 		/// Creates a new panel.
 		/// </summary>
 		/// <remarks>
-		/// If the panel is opened on the same plugin call (normally it is) then consider to call
-		/// <see cref="IPanel.Open()"/> as soon as possible to be sure that it is allowed.
+		/// If the panel should be opened when Far gets control then consider to call
+		/// <see cref="IPanel.Open()"/> as soon as possible to be sure that this is allowed.
 		/// Then you may configure the panel and other data. Actual panel opening is performed
-		/// only when plugin call is over.
+		/// only when the module call is over.
 		/// </remarks>
 		IPanel CreatePanel();
 		/// <summary>
@@ -499,7 +499,7 @@ namespace FarNet
 		/// </remarks>
 		string RootFar { get; }
 		/// <summary>
-		/// Gets the registry root key path, where all plugins can save their settings.
+		/// Gets the registry root key path, where plugins normally save their settings.
 		/// </summary>
 		/// <remarks>
 		/// Do not save values directly in this key, create your own subkey here
@@ -509,18 +509,18 @@ namespace FarNet
 		/// <summary>
 		/// Gets a plugin value from the registry.
 		/// </summary>
-		/// <param name="pluginName">Plugin name (registry key).</param>
+		/// <param name="keyName">Key name.</param>
 		/// <param name="valueName">Value name.</param>
 		/// <param name="defaultValue">Default value.</param>
 		/// <returns>Found or default value.</returns>
-		object GetPluginValue(string pluginName, string valueName, object defaultValue);
+		object GetPluginValue(string keyName, string valueName, object defaultValue);
 		/// <summary>
 		/// Sets a plugin value in the registry.
 		/// </summary>
-		/// <param name="pluginName">Plugin and registry key name. The key is created if it does not exist.</param>
+		/// <param name="keyName">Key name. The key is created if it does not exist.</param>
 		/// <param name="valueName">Value name.</param>
 		/// <param name="newValue">New value to be set.</param>
-		void SetPluginValue(string pluginName, string valueName, object newValue);
+		void SetPluginValue(string keyName, string valueName, object newValue);
 		/// <summary>
 		/// Gets count of open Far windows.
 		/// </summary>
@@ -586,8 +586,8 @@ namespace FarNet
 		/// Many Far operations are executed only when Far gets control, i.e. when user code has finished.
 		/// Thus, normally you can not performs several such operations together. This method may help.
 		/// <para>
-		/// This mechanism work only when plugins menu is available ([F11]), because it is used internally for stepping.
-		/// Ensure any FarNet hotkey in the Far plugins menu. Use [F11] for plugins menu, [F4] to set a hotkey there.
+		/// This mechanism works only when the plugins menu [F11] is available, because it is used internally for stepping.
+		/// Ensure some FarNet hotkey in the plugins menu. Use [F11] for menu, [F4] to set a hotkey there.
 		/// </para>
 		/// <para>
 		/// If a step handler starts modal UI without exiting (e.g. dialog) then use <see cref="PostStepAfterStep"/>
@@ -691,8 +691,8 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// The process current directory is not related to panels paths at all (Far 2.0.1145).
-		/// and normally plugins should forget about the current directory, they should use this path.
-		/// It should be used as the default for plugin file system operations, just like Far uses it.
+		/// and normally modules should forget about the current directory, they should use this path.
+		/// It should be used as the default path for file system operations (e.g. where to create a new file).
 		/// </remarks>
 		string ActivePath { get; }
 		/// <summary>
@@ -717,8 +717,8 @@ namespace FarNet
 		/// Tells Far to exit if it is possible.
 		/// </summary>
 		/// <remarks>
-		/// Before sending this request to Far it calls <see cref="BaseModule.CanExit"/> for each plugin.
-		/// If all plugins return true then Far is called. If there is an editor with not saved changes
+		/// Before sending this request to Far it calls <see cref="BaseModule.CanExit"/> for each module.
+		/// If all modules return true then Far is called. If there is an editor with not saved changes
 		/// then Far asks a user how to proceed and, in fact, a user may continue work in Far.
 		/// </remarks>
 		void Quit();
@@ -758,7 +758,7 @@ namespace FarNet
 	public enum HelpOptions
 	{
 		/// <summary>
-		/// Assume path is Info.ModuleName and show the topic from the help file of the calling plugin (it is FarNet).
+		/// Show the topic from the help file of the calling plugin (note: it is always FarNet).
 		/// If topic begins with a colon ':', the topic from the main Far help file is shown and path is ignored.
 		/// </summary>
 		None = 0x0,
@@ -917,19 +917,19 @@ namespace FarNet
 		/// </summary>
 		None,
 		/// <summary>
-		/// A macro is in progress with plugins excluded.
+		/// Executing with plugins excluded.
 		/// </summary>
 		Executing,
 		/// <summary>
-		/// A macro is in progress with plugins included.
+		/// Executing with plugins included.
 		/// </summary>
 		ExecutingCommon,
 		/// <summary>
-		/// A macro is in been recorded with plugins excluded.
+		/// Recording with plugins excluded.
 		/// </summary>
 		Recording,
 		/// <summary>
-		/// A macro is in been recorded with plugins included.
+		/// Recording with plugins included.
 		/// </summary>
 		RecordingCommon
 	}

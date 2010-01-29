@@ -166,11 +166,11 @@ namespace FarNet.Forms
 	public interface IEdit : IControl
 	{
 		/// <summary>
-		/// Event is sent when an edit item has changed (for example, a character has been entered).
+		/// Called when an edit item has changed (for example, a character has been entered).
 		/// </summary>
 		event EventHandler<TextChangedEventArgs> TextChanged;
 		/// <summary>
-		/// Fixed size edit control.
+		/// Gets true if it is the fixed size edit control.
 		/// </summary>
 		bool Fixed { get; }
 		/// <summary>
@@ -188,48 +188,54 @@ namespace FarNet.Forms
 		/// </remarks>
 		bool IsPassword { get; }
 		/// <summary>
-		/// History name to be used. It overrides <see cref="Mask"/> text if any.
+		/// Gets or sets the history name. It overrides <see cref="Mask"/> text if any.
 		/// </summary>
 		string History { get; set; }
 		/// <summary>
-		/// Mask for fixed size mode. It overrides <see cref="History"/> text if any.
+		/// Gets or sets the mask for fixed size mode. It overrides <see cref="History"/> text if any.
 		/// </summary>
 		string Mask { get; set; }
 		/// <summary>
-		/// Sequential edit controls with this flag are grouped into a simple editor with the ability to insert and delete lines.
+		/// Tells that this is a line of a multi-line editor.
 		/// </summary>
+		/// <remarks>
+		/// Sequential edit controls with this flag are grouped into a simple editor with the ability to insert and delete lines.
+		/// </remarks>
 		bool Editor { get; set; }
 		/// <summary>
+		/// Tells to not add items to the history automatically.
+		/// </summary>
+		/// <remarks>
 		/// Specifies that items will be added to the history list of an edit box only manually, not automatically.
 		/// Must be used together with <see cref="History"/>.
-		/// </summary>
+		/// </remarks>
 		bool ManualAddHistory { get; set; }
 		/// <summary>
-		/// The initial value will be set to the last history element.
+		/// Tells to set the initial text value to the last history entry.
 		/// </summary>
 		bool UseLastHistory { get; set; }
 		/// <summary>
-		/// Expand environment variables.
+		/// Tells to expand environment variables.
 		/// </summary>
-		bool EnvExpanded { get; set; }
+		bool ExpandEnvironmentVariables { get; set; }
 		/// <summary>
-		/// Sets read-only state for the edit control.
+		/// Tells that the text is read only.
 		/// </summary>
 		bool ReadOnly { get; set; }
 		/// <summary>
-		/// Makes the edit control always select the text when it receives the focus.
+		/// Tells to select the text when it receives the focus.
 		/// </summary>
 		bool SelectOnEntry { get; set; }
 		/// <summary>
-		/// Cannot get keyboard focus, but can handle other events.
+		/// Tells that it cannot get keyboard focus, but can handle other events.
 		/// </summary>
 		bool NoFocus { get; set; }
 		/// <summary>
-		/// Disables auto completion from history.
+		/// Tells to disable auto completion from history.
 		/// </summary>
 		bool NoAutoComplete { get; set; }
 		/// <summary>
-		/// <see cref="ILine"/> interface.
+		/// Gets the editor line operator.
 		/// </summary>
 		ILine Line { get; }
 	}
@@ -401,27 +407,27 @@ namespace FarNet.Forms
 	public interface IComboBox : IBaseList
 	{
 		/// <summary>
-		/// Event is sent when an edit item has changed (for example, a character has been entered).
+		/// Called when an edit item has changed (for example, a character has been entered).
 		/// </summary>
 		event EventHandler<TextChangedEventArgs> TextChanged;
 		/// <summary>
-		/// Shows non-editable drop-down list instead of a common combo box.
+		/// Tells to show non-editable drop-down list instead of a common combo box.
 		/// </summary>
 		bool DropDownList { get; set; }
 		/// <summary>
-		/// Expand environment variables.
+		/// Tells to expand environment variables.
 		/// </summary>
-		bool EnvExpanded { get; set; }
+		bool ExpandEnvironmentVariables { get; set; }
 		/// <summary>
-		/// Sets read-only state for the edit control.
+		/// Tells that text is read only.
 		/// </summary>
 		bool ReadOnly { get; set; }
 		/// <summary>
-		/// Makes the edit control always select the text when it receives the focus.
+		/// Tells to select the text when it receives the focus.
 		/// </summary>
 		bool SelectOnEntry { get; set; }
 		/// <summary>
-		/// <see cref="ILine"/> interface.
+		/// Gets the editor line operator.
 		/// </summary>
 		ILine Line { get; }
 	}
@@ -549,7 +555,7 @@ namespace FarNet.Forms
 		/// i.e. 0: the same line, -1: next line and so on; <c>Bottom</c> value, if any, should be relative to 0.
 		/// Example: last <c>Top</c> is 5, then <c>AddBox(*, -1, *, 2, *)</c> is recalculated as <c>AddBox(*, 6, *, 8, *)</c>.
 		/// </remarks>
-		bool NoSmartCoords { get; set; }
+		bool NoSmartCoordinates { get; set; }
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
@@ -581,7 +587,7 @@ namespace FarNet.Forms
 		/// <returns>false if the user cancelled the dialog or clicked the <see cref="Cancel"/> button.</returns>
 		bool Show();
 		/// <summary>
-		/// Adds a double or single box control. See <see cref="NoSmartCoords"/>.
+		/// Adds a double or single box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <param name="text">Control text.</param>
@@ -590,67 +596,67 @@ namespace FarNet.Forms
 		/// </remarks>
 		IBox AddBox(int left, int top, int right, int bottom, string text);
 		/// <summary>
-		/// Adds a button control. See <see cref="NoSmartCoords"/>.
+		/// Adds a button control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		IButton AddButton(int left, int top, string text);
 		/// <summary>
-		/// Adds a check box control. See <see cref="NoSmartCoords"/>.
+		/// Adds a check box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		ICheckBox AddCheckBox(int left, int top, string text);
 		/// <summary>
-		/// Adds a combo box control. See <see cref="NoSmartCoords"/>.
+		/// Adds a combo box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IComboBox AddComboBox(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a standard edit control. See <see cref="NoSmartCoords"/>.
+		/// Adds a standard edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEdit(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a fixed size edit control. See <see cref="NoSmartCoords"/>.
+		/// Adds a fixed size edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEditFixed(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a password edit control. See <see cref="NoSmartCoords"/>.
+		/// Adds a password edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEditPassword(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a list box control. See <see cref="NoSmartCoords"/>.
+		/// Adds a list box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		/// <param name="title">Title.</param>
 		IListBox AddListBox(int left, int top, int right, int bottom, string title);
 		/// <summary>
-		/// Adds a radio button. See <see cref="NoSmartCoords"/>.
+		/// Adds a radio button. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
 		/// <param name="text">Control text.</param>
 		IRadioButton AddRadioButton(int left, int top, string text);
 		/// <summary>
-		/// Adds a text control. See <see cref="NoSmartCoords"/>.
+		/// Adds a text control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTR"]/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddText(int left, int top, int right, string text);
 		/// <summary>
-		/// Adds a vertical text control. See <see cref="NoSmartCoords"/>.
+		/// Adds a vertical text control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTB"]/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddVerticalText(int left, int top, int bottom, string text);
 		/// <summary>
-		/// Adds a user control. See <see cref="NoSmartCoords"/>.
+		/// Adds a user control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
 		IUserControl AddUserControl(int left, int top, int right, int bottom);

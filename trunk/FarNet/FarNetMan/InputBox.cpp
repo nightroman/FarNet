@@ -60,7 +60,7 @@ int InputBox::Flags()
 	int r = 0;
 	if (ButtonsAreVisible) r += FIB_BUTTONS;
 	if (EmptyEnabled) r += FIB_ENABLEEMPTY;
-	if (EnvExpanded) r += FIB_EXPANDENV;
+	if (ExpandEnvironmentVariables) r += FIB_EXPANDENV;
 	if (IsPath) r += FIB_EDITPATH;
 	if (IsPassword) r += FIB_PASSWORD;
 	if (NoLastHistory) r += FIB_NOUSELASTHISTORY;

@@ -54,11 +54,11 @@ public:
 	FPPI_FLAG(RealNames);
 	FPPI_FLAG(RightAligned);
 	FPPI_FLAG(ShowNamesOnly);
-	FPPI_FLAG(UseAttrHighlighting);
+	FPPI_FLAG(UseAttributeHighlighting);
 	FPPI_FLAG(UseFilter);
 	FPPI_FLAG(UseHighlighting);
 	FPPI_FLAG(UseSortGroups);
-	FPPI_PROP(bool, StartSortDesc, m->StartSortOrder = _StartSortDesc);
+	FPPI_PROP(bool, StartReverseSortOrder, m->StartSortOrder = _StartReverseSortOrder);
 	FPPI_PROP(PanelSortMode, StartSortMode, m->StartSortMode = int(_StartSortMode));
 	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
 	FPPI_TEXT(CurrentDirectory, CurDir);

@@ -245,11 +245,12 @@ namespace FarNet
 		/// </summary>
 		IList<int> BreakKeys { get; }
 		/// <summary>
-		/// Creates low level internal data of the menu from the current items. Normally you have to call <see cref="Unlock"/> after use.
+		/// Creates low level internal data of the menu from the current items.
+		/// Normally you have to call <see cref="Unlock"/> after use.
 		/// </summary>
 		/// <remarks>
 		/// Used for better performance when you call <see cref="IAnyMenu.Show"/> repeatedly
-		/// with an item set that never changes (e.g. a plugin menu with fixed command set:
+		/// with an item set that never changes (e.g. a module menu with fixed command set:
 		/// it can be created once on <see cref="BaseModule.Connect"/> and locked forever -
 		/// in this particular case you don't even have to call <see cref="Unlock"/>).
 		/// <para>

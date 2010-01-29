@@ -13,12 +13,12 @@ int Line::No::get()
 	return -1;
 }
 
-String^ Line::Eol::get()
+String^ Line::EndOfLine::get()
 {
 	return String::Empty;
 }
 
-void Line::Eol::set(String^ /*value*/)
+void Line::EndOfLine::set(String^ /*value*/)
 {
 }
 

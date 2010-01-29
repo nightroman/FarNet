@@ -28,7 +28,7 @@ namespace PowerShellFar
 		{
 			IgnoreDirectoryFlag = true; // _090810_180151
 
-			Panel.Info.UseAttrHighlighting = false;
+			Panel.Info.UseAttributeHighlighting = false;
 			Panel.Info.UseFilter = true;
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
 

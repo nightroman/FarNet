@@ -72,13 +72,13 @@ void EditorLine::Pos::set(int value)
 	EditorControl_ECTL_SETPOSITION(esp);
 }
 
-String^ EditorLine::Eol::get()
+String^ EditorLine::EndOfLine::get()
 {
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _no);
 	return gcnew String(egs.StringEOL);
 }
 
-void EditorLine::Eol::set(String^ value)
+void EditorLine::EndOfLine::set(String^ value)
 {
 	if (!value)
 		throw gcnew ArgumentNullException("value");

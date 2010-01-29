@@ -21,7 +21,7 @@ namespace PowerShellFar
 		internal ListPanel()
 		{
 			Panel.PostName(_lastCurrentName);
-			Panel.Info.UseAttrHighlighting = true;
+			Panel.Info.UseAttributeHighlighting = true;
 			Panel.Info.UseFilter = true;
 			Panel.Info.UseHighlighting = true;
 

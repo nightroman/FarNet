@@ -168,7 +168,7 @@ void FarDialog::AddItem(FarControl^ item)
 	_items->Add(item);
 
 	// done?
-	if (NoSmartCoords || item->Id == 0)
+	if (NoSmartCoordinates || item->Id == 0)
 		return;
 
 	// smart coords

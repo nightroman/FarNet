@@ -27,7 +27,7 @@ namespace PowerShellFar
 			Panel.Info.CurrentDirectory = "*";
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
 			Panel.Info.Title = "Objects";
-			Panel.Info.UseAttrHighlighting = true;
+			Panel.Info.UseAttributeHighlighting = true;
 			Panel.Info.UseFilter = true;
 			Panel.Info.UseHighlighting = true;
 

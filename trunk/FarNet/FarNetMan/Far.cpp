@@ -114,12 +114,12 @@ void Far::Free(ToolOptions options)
 	}
 }
 
-void Far::RegisterTool(BaseModule^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
+void Far::RegisterTool(BaseModule^ module, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
 {
-	if (plugin && ES(name))
+	if (module && ES(name))
 		throw gcnew ArgumentException("'name' must not be empty.");
 
-	RegisterTool(gcnew ModuleToolInfo(plugin, name, handler, options));
+	RegisterTool(gcnew ModuleToolInfo(module, name, handler, options));
 }
 
 void Far::RegisterTool(ModuleToolInfo^ tool)
@@ -1000,12 +1000,12 @@ IPanel^ Far::CreatePanel()
 	return gcnew FarNet::Panel2;
 }
 
-IPanel^ Far::GetPanel(Guid typeId)
+IPanel^ Far::FindPanel(Guid typeId)
 {
 	return Panel0::GetPanel(typeId);
 }
 
-IPanel^ Far::GetPanel(Type^ hostType)
+IPanel^ Far::FindPanel(Type^ hostType)
 {
 	return Panel0::GetPanel(hostType);
 }

@@ -16,7 +16,7 @@ public:
 	virtual property int Length { int get() = 0; }
 	virtual property int No { int get(); }
 	virtual property int Pos { int get() = 0; void set(int value) = 0; }
-	virtual property String^ Eol { String^ get(); void set(String^ value); }
+	virtual property String^ EndOfLine { String^ get(); void set(String^ value); }
 	virtual property String^ Text { String^ get() = 0; void set(String^ value) = 0; }
 public:
 	virtual void Insert(String^ text) = 0;

@@ -177,7 +177,7 @@ Test '.l' '.l' { $_ -eq '.LINK' } | Write-Error
 
 ### Fix of $Line.[Tab] (name is exactly 'LINE')
 $Line = $Far.CommandLine
-Test '' '$Line.' { $_ -contains '$Line.Eol' } | Write-Error
+Test '' '$Line.' { $_ -contains '$Line.EndOfLine' } | Write-Error
 
 ### script parameters
 # script parameters; !! use $env:TEMP to avoid spaces in the path

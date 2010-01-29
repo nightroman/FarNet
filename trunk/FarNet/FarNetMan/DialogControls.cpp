@@ -501,7 +501,7 @@ FarEdit::FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, 
 }
 
 DEF_CONTROL_FLAG(FarEdit, Editor, DIF_EDITOR);
-DEF_CONTROL_FLAG(FarEdit, EnvExpanded, DIF_EDITEXPAND);
+DEF_CONTROL_FLAG(FarEdit, ExpandEnvironmentVariables, DIF_EDITEXPAND);
 DEF_CONTROL_FLAG(FarEdit, IsPath, DIF_EDITPATH);
 DEF_CONTROL_FLAG(FarEdit, ManualAddHistory, DIF_MANUALADDHISTORY);
 DEF_CONTROL_FLAG(FarEdit, NoAutoComplete, DIF_NOAUTOCOMPLETE);
@@ -924,7 +924,7 @@ FarComboBox::FarComboBox(FarDialog^ dialog, int left, int top, int right, String
 }
 
 DEF_CONTROL_FLAG(FarComboBox, DropDownList, DIF_DROPDOWNLIST);
-DEF_CONTROL_FLAG(FarComboBox, EnvExpanded, DIF_EDITEXPAND);
+DEF_CONTROL_FLAG(FarComboBox, ExpandEnvironmentVariables, DIF_EDITEXPAND);
 DEF_CONTROL_FLAG(FarComboBox, ReadOnly, DIF_READONLY);
 DEF_CONTROL_FLAG(FarComboBox, SelectOnEntry, DIF_SELECTONENTRY);
 

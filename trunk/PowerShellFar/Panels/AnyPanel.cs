@@ -200,7 +200,7 @@ namespace PowerShellFar
 		/// <returns>Found panel or null.</returns>
 		public static AnyPanel GetPanel(bool active)
 		{
-			IPanel plug = A.Far.GetPanel(typeof(AnyPanel));
+			IPanel plug = A.Far.FindPanel(typeof(AnyPanel));
 			if (plug == null)
 				return null;
 			AnyPanel pp = plug.Host as AnyPanel;

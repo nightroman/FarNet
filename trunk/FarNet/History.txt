@@ -2,41 +2,50 @@ http://code.google.com/p/farnet/
 
 = 4.3.1 =
 
-!! This time update FarNet manually (i.e. not by Update-PowerShellFar.ps1).
+!! This time update FarNet MANUALLY (do not use Update-PowerShellFar.ps1).
 
 ANNOUNCEMENT
 
 It is discussed and decided that FarNet plugins are not called PLUGINS any more
-everywhere: API, code, and documentation. They are called MODULES.
+everywhere: API, code, and documentation. From now on they are called MODULES.
 
-We also change the folders structure, see Readme.txt or just copy from the
+We also change the folders structure, see Readme.txt or just extract from the
 archive to %FARHOME% keeping the structure. Then remove old Lib (moved to
 FarNet) and Plugins.NET (moved to FarNet\Modules).
 
 TERMINOLOGY: PLUGINS -> MODULES
 (breaking name changes)
 
-Modules:
+Classes:
 -- BasePlugin -> BaseModule
--- PluginException -> ModuleException
 -- CommandPlugin -> ModuleCommand
 -- EditorPlugin -> ModuleEditor
 -- FilerPlugin -> ModuleFiler
-?? -- ToolPlugin -> ModuleTool
+-- ToolPlugin -> ModuleTool
+-- PluginException -> ModuleException
 
-Panels:
--- IPanel -> IAnyPanel (rename this before IPluginPanel -> IPanel!)
--- IPluginPanel -> IPanel (rename this after IPanel -> IAnyPanel!)
+Interfaces:
+-- IPanel -> IAnyPanel (rename before IPluginPanel -> IPanel!)
+-- IPluginPanel -> IPanel (rename after IPanel -> IAnyPanel!)
 -- IPluginPanelInfo -> IPanelInfo
--- GetPluginPanel() -> GetPanel()
+
+Members:
+-- GetPluginPanel() -> FindPanel()
 -- CreatePluginPanel() -> CreatePanel()
+
+Let's fix the wrong name and a few spellings:
+-- StartSortDesc -> StartReverseSortOrder
+-- EnvExpanded -> ExpandEnvironmentVariables
+-- Eol -> EndOfLine
+-- NoSmartCoords -> NoSmartCoordinates
+-- UseAttrHighlighting -> UseAttribiteHighlighting
 
 OTHER CHANGES (MACROS)
 
 *) IMacro.GetNames(): fixed exceptions on missed areas.
 *) Macro.Area is not a string but enum MacroArea.
-*) IMacro methods use enum MacroArea.
-*) API changes, see documentation.
+*) IMacro methods use the enum MacroArea.
+*) API changes: see documentation.
 
 = 4.3.0 =
 

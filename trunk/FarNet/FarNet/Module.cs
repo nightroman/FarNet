@@ -239,8 +239,10 @@ namespace FarNet
 
 	/// <summary>
 	/// Arguments of a module tool event.
-	/// This event normally happens in the Far plugins menu.
 	/// </summary>
+	/// <remarks>
+	/// This event is normally called from the Far plugin menu.
+	/// </remarks>
 	public sealed class ToolEventArgs : EventArgs
 	{
 		///

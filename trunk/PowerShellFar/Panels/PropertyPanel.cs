@@ -297,7 +297,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenPropertyChanged(string itemPath)
 		{
-			PropertyPanel p = A.Far.GetPanel(typeof(PropertyPanel)).Host as PropertyPanel;
+			PropertyPanel p = A.Far.FindPanel(typeof(PropertyPanel)).Host as PropertyPanel;
 			if (p == null)
 				return;
 

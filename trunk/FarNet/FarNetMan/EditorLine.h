@@ -19,7 +19,7 @@ public:
 	virtual property int Length { int get() override; }
 	virtual property int No { int get() override; }
 	virtual property int Pos { int get() override; void set(int value) override; }
-	virtual property String^ Eol { String^ get() override; void set(String^ value) override; }
+	virtual property String^ EndOfLine { String^ get() override; void set(String^ value) override; }
 	virtual property String^ Text { String^ get() override; void set(String^ value) override; }
 public:
 	virtual void Insert(String^ text) override;
