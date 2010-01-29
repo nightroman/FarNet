@@ -17,7 +17,7 @@ namespace PowerShellFar.UI
 		public SettingsDialog()
 		{
 			_Dialog = A.Far.CreateDialog(-1, -1, 77, 8);
-			_Dialog.HelpTopic = A.Psf.HelpTopic + "PluginSettings";
+			_Dialog.HelpTopic = A.Psf.HelpTopic + "Settings";
 			_Dialog.AddBox(3, 1, 0, 0, Res.Name);
 
 			_Dialog.AddText(5, -1, 0, "&Main startup code");

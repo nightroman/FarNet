@@ -681,7 +681,7 @@ HANDLE Panel0::AddPluginPanel(Panel2^ plugin)
 			return plugin->Handle;
 		}
 	}
-	throw gcnew InvalidOperationException("Cannot add a plugin panel.");
+	throw gcnew InvalidOperationException("Cannot add a panel.");
 }
 
 // EndOpenMode() must be called after
@@ -707,7 +707,7 @@ void Panel0::OpenPluginPanel(Panel2^ plugin)
 {
 	// plugin must be called for opening
 	if (_openMode == 0)
-		throw gcnew InvalidOperationException("Cannot open a panel because a plugin is not called for opening.");
+		throw gcnew InvalidOperationException("Cannot open a panel because a module is not called for opening.");
 
 	// only one panel can be opened at a time
 	if (_panels[0] && _panels[0] != plugin)

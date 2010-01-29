@@ -190,10 +190,10 @@ namespace PowerShellFar
 
 				// new variables
 				PSVariable var1 = new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
-				var1.Description = "PowerShellFar plugin object";
+				var1.Description = "Exposes PowerShellFar.";
 				Engine.SessionState.PSVariable.Set(var1);
 				PSVariable var2 = new PSVariable("Far", A.Far, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
-				var2.Description = "Far object exposed by FarNet";
+				var2.Description = "Exposes FarNet.";
 				Engine.SessionState.PSVariable.Set(var2);
 
 				// invoke internal profile (NB: there is trap in there) and startup code

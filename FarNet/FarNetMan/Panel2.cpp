@@ -20,7 +20,7 @@ Panel2::Panel2()
 void Panel2::AssertOpen()
 {
 	if (Index <= 0)
-		throw gcnew InvalidOperationException("Expected opened plugin panel.");
+		throw gcnew InvalidOperationException("Expected opened module panel.");
 }
 
 /*
