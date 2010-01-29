@@ -4,7 +4,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "PluginInfo.h"
+#include "ModuleInfo.h"
 #include "Far.h"
 #include "Module0.h"
 
@@ -12,7 +12,7 @@ namespace FarNet
 {;
 #pragma region BaseModuleInfo
 
-BaseModule^ BaseModuleInfo::CreatePlugin(Type^ type)
+BaseModule^ BaseModuleInfo::CreateModule(Type^ type)
 {
 	// create the instance
 	BaseModule^ instance = (BaseModule^)Activator::CreateInstance(type);
@@ -36,8 +36,8 @@ BaseModule^ BaseModuleInfo::CreatePlugin(Type^ type)
 	return instance;
 }
 
-BaseModuleInfo::BaseModuleInfo(BaseModule^ plugin, String^ name)
-: _Plugin(plugin)
+BaseModuleInfo::BaseModuleInfo(BaseModule^ module, String^ name)
+: _Module(module)
 , _Name(name)
 {}
 
@@ -53,12 +53,12 @@ String^ BaseModuleInfo::ToString()
 
 String^ BaseModuleInfo::AssemblyPath::get()
 {
-	return _Plugin ? Assembly::GetAssembly(_Plugin->GetType())->Location : _AssemblyPath;
+	return _Module ? Assembly::GetAssembly(_Module->GetType())->Location : _AssemblyPath;
 }
 
 String^ BaseModuleInfo::ClassName::get()
 {
-	return _Plugin ? _Plugin->GetType()->FullName : _ClassName;
+	return _Module ? _Module->GetType()->FullName : _ClassName;
 }
 
 String^ BaseModuleInfo::Key::get()
@@ -74,25 +74,25 @@ void BaseModuleInfo::Connect()
 {
 	LOG_AUTO(3, String::Format("Load module Class='{0}' Path='{1}'", _ClassName, _AssemblyPath));
 
-	if (_Plugin)
+	if (_Module)
 		throw gcnew InvalidOperationException("Module is already connected.");
 
 	// create from info
 	Assembly^ assembly = Assembly::LoadFrom(_AssemblyPath);
 	Type^ type = assembly->GetType(_ClassName, true);
-	_Plugin = BaseModuleInfo::CreatePlugin(type);
+	_Module = BaseModuleInfo::CreateModule(type);
 
 	// drop info
 	_AssemblyPath = nullptr;
 	_ClassName = nullptr;
 
 	// register, attach, connect
-	Module0::AddPlugin(_Plugin);
-	_Plugin->Far = Far::Instance;
+	Module0::AddModule(_Module);
+	_Module->Far = Far::Instance;
 	{
-		LOG_AUTO(3, String::Format("{0}.Connect", _Plugin));
+		LOG_AUTO(3, String::Format("{0}.Connect", _Module));
 
-		_Plugin->Connect();
+		_Module->Connect();
 	}
 }
 
@@ -100,8 +100,8 @@ void BaseModuleInfo::Connect()
 
 #pragma region ModuleToolInfo
 
-ModuleToolInfo::ModuleToolInfo(BaseModule^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
-: BaseModuleInfo(plugin, name)
+ModuleToolInfo::ModuleToolInfo(BaseModule^ module, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
+: BaseModuleInfo(module, name)
 , _Handler(handler)
 , _Options(options)
 {}
