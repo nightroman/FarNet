@@ -10,19 +10,19 @@ namespace FarNet
 ref class BaseModuleInfo abstract
 {
 public:
-	static BaseModule^ CreatePlugin(Type^ type);
+	static BaseModule^ CreateModule(Type^ type);
 	virtual String^ ToString() override;
-	property BaseModule^ Module { BaseModule^ get() { return _Plugin; } }
+	property BaseModule^ Module { BaseModule^ get() { return _Module; } }
 	property String^ AssemblyPath { String^ get(); }
 	property String^ ClassName { String^ get(); }
 	property String^ Key { String^ get(); }
 	property String^ Name { String^ get() { return _Name; } }
 protected:
-	BaseModuleInfo(BaseModule^ plugin, String^ name);
+	BaseModuleInfo(BaseModule^ module, String^ name);
 	BaseModuleInfo(String^ assemblyPath, String^ className, String^ name);
 	void Connect();
 private:
-	BaseModule^ _Plugin;
+	BaseModule^ _Module;
 	String^ _AssemblyPath;
 	String^ _ClassName;
 	String^ _Name;
@@ -31,7 +31,7 @@ private:
 ref class ModuleToolInfo : BaseModuleInfo
 {
 public:
-	ModuleToolInfo(BaseModule^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
+	ModuleToolInfo(BaseModule^ module, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
 	ModuleToolInfo(String^ assemblyPath, String^ className, String^ name, ToolOptions options) : BaseModuleInfo(assemblyPath, className, name), _Options(options) { _Handler = gcnew EventHandler<ToolEventArgs^>(this, &ModuleToolInfo::Invoke); }
 	virtual String^ ToString() override;
 	String^ Alias(ToolOptions option);
@@ -55,7 +55,7 @@ private:
 ref class ModuleCommandInfo : BaseModuleInfo
 {
 public:
-	ModuleCommandInfo(BaseModule^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler) : BaseModuleInfo(plugin, name), _DefaultPrefix(prefix), _Handler(handler) {}
+	ModuleCommandInfo(BaseModule^ module, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler) : BaseModuleInfo(module, name), _DefaultPrefix(prefix), _Handler(handler) {}
 	ModuleCommandInfo(String^ assemblyPath, String^ className, String^ name, String^ prefix) : BaseModuleInfo(assemblyPath, className, name), _DefaultPrefix(prefix) { _Handler = gcnew EventHandler<CommandEventArgs^>(this, &ModuleCommandInfo::Invoke); }
 	virtual String^ ToString() override;
 public:
@@ -73,7 +73,7 @@ private:
 ref class ModuleFilerInfo : BaseModuleInfo
 {
 public:
-	ModuleFilerInfo(BaseModule^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates) : BaseModuleInfo(plugin, name), _Handler(handler), _DefaultMask(mask), _Creates(creates) {}
+	ModuleFilerInfo(BaseModule^ module, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates) : BaseModuleInfo(module, name), _Handler(handler), _DefaultMask(mask), _Creates(creates) {}
 	ModuleFilerInfo(String^ assemblyPath, String^ className, String^ name, String^ mask, bool creates) : BaseModuleInfo(assemblyPath, className, name), _DefaultMask(mask), _Creates(creates) { _Handler = gcnew EventHandler<FilerEventArgs^>(this, &ModuleFilerInfo::Invoke); }
 	virtual String^ ToString() override;
 public:
@@ -93,7 +93,7 @@ private:
 ref class ModuleEditorInfo : BaseModuleInfo
 {
 public:
-	ModuleEditorInfo(BaseModule^ plugin, String^ name, EventHandler^ handler, String^ mask) : BaseModuleInfo(plugin, name), _Handler(handler), _DefaultMask(mask) {}
+	ModuleEditorInfo(BaseModule^ module, String^ name, EventHandler^ handler, String^ mask) : BaseModuleInfo(module, name), _Handler(handler), _DefaultMask(mask) {}
 	ModuleEditorInfo(String^ assemblyPath, String^ className, String^ name, String^ mask) : BaseModuleInfo(assemblyPath, className, name), _DefaultMask(mask) { _Handler = gcnew EventHandler(this, &ModuleEditorInfo::Invoke); }
 	virtual String^ ToString() override;
 public:

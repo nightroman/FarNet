@@ -6,22 +6,22 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Module0.h"
 #include "Far.h"
-#include "PluginInfo.h"
+#include "ModuleInfo.h"
 
 namespace FarNet
 {;
-void Module0::AddPlugin(BaseModule^ plugin)
+void Module0::AddModule(BaseModule^ plugin)
 {
-	if (!_plugins.Contains(plugin))
-		_plugins.Add(plugin);
+	if (!_Modules.Contains(plugin))
+		_Modules.Add(plugin);
 }
 
 //! Don't use Far UI
-void Module0::UnloadPlugin(BaseModule^ plugin)
+void Module0::UnloadModule(BaseModule^ plugin)
 {
 	LOG_AUTO(3, "Unload module " + plugin);
 
-	_plugins.Remove(plugin);
+	_Modules.Remove(plugin);
 
 	try
 	{
@@ -40,24 +40,24 @@ void Module0::UnloadPlugin(BaseModule^ plugin)
 }
 
 //! Don't use Far UI
-void Module0::UnloadPlugins()
+void Module0::UnloadModules()
 {
-	for(int i  = _plugins.Count; --i >= 0;)
-		UnloadPlugin(_plugins[i]);
+	for(int i  = _Modules.Count; --i >= 0;)
+		UnloadModule(_Modules[i]);
 
-	_plugins.Clear();
+	_Modules.Clear();
 }
 
 bool Module0::CanExit()
 {
-	for each(BaseModule^ plugin in _plugins)
+	for each(BaseModule^ plugin in _Modules)
 		if (!plugin->CanExit())
 			return false;
 
 	return true;
 }
 
-void Module0::LoadPlugins()
+void Module0::LoadModules()
 {
 	ReadCache();
 
@@ -122,10 +122,10 @@ void Module0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 	String^ dllName = Path::GetFileName(assemblyPath);
 	
 	// add name
-	_names->Add(dllName, nullptr);
+	_Names->Add(dllName, nullptr);
 	
 	// loaded from cache?
-	if (_cache->ContainsKey(dllName))
+	if (_Cache->ContainsKey(dllName))
 		return;
 
 	// load from assembly
@@ -138,7 +138,7 @@ void Module0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 	if (classes)
 	{
 		for(int i = 1; i < classes->Length; ++i)
-			nBaseModule += AddPlugin(assembly->GetType(classes[i], true), %commands, %editors, %filers, %tools);
+			nBaseModule += AddModule(assembly->GetType(classes[i], true), %commands, %editors, %filers, %tools);
 	}
 	else
 	{
@@ -150,7 +150,7 @@ void Module0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 			if (BaseModule::typeid->IsAssignableFrom(type))
 			{
 				++nLoaded;
-				nBaseModule += AddPlugin(type, %commands, %editors, %filers, %tools);
+				nBaseModule += AddModule(type, %commands, %editors, %filers, %tools);
 			}
 		}
 
@@ -173,15 +173,15 @@ void Module0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 		WriteCache(assemblyPath, %commands, %editors, %filers, %tools);
 }
 
-int Module0::AddPlugin(Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
+int Module0::AddModule(Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
 {
 	// create
-	BaseModule^ instance = BaseModuleInfo::CreatePlugin(type);
+	BaseModule^ instance = BaseModuleInfo::CreateModule(type);
 
 	LOG_AUTO(3, "Load module " + instance);
 
 	// register, attach, connect
-	_plugins.Add(instance);
+	_Modules.Add(instance);
 	instance->Far = Far::Instance;
 	{
 		LOG_AUTO(3, String::Format("{0}.Connect", instance));
@@ -240,7 +240,7 @@ void Module0::ReadCache()
 		{
 			bool ok = true;
 			RegistryKey^ keyDll;
-			RegistryKey^ keyPlugin;
+			RegistryKey^ keyModule;
 			List<ModuleCommandInfo^> commands;
 			List<ModuleEditorInfo^> editors;
 			List<ModuleFilerInfo^> filers;
@@ -264,16 +264,16 @@ void Module0::ReadCache()
 				{
 					for each (String^ className in keyDll->GetSubKeyNames())
 					{
-						keyPlugin = keyDll->OpenSubKey(className);
+						keyModule = keyDll->OpenSubKey(className);
 
-						String^ pluginName = keyPlugin->GetValue("Name", String::Empty)->ToString();
+						String^ pluginName = keyModule->GetValue("Name", String::Empty)->ToString();
 						if (!pluginName->Length)
 							throw gcnew OperationCanceledException;
 
-						String^ type = keyPlugin->GetValue("Type", String::Empty)->ToString();
+						String^ type = keyModule->GetValue("Type", String::Empty)->ToString();
 						if (type == "Tool")
 						{
-							int options = (int)keyPlugin->GetValue("Options");
+							int options = (int)keyModule->GetValue("Options");
 							if (!options)
 								throw gcnew OperationCanceledException;
 
@@ -282,7 +282,7 @@ void Module0::ReadCache()
 						}
 						else if (type == "Command")
 						{
-							String^ prefix = keyPlugin->GetValue("Prefix", String::Empty)->ToString();
+							String^ prefix = keyModule->GetValue("Prefix", String::Empty)->ToString();
 							if (!prefix->Length)
 								throw gcnew OperationCanceledException;
 
@@ -291,15 +291,15 @@ void Module0::ReadCache()
 						}
 						else if (type == "Editor")
 						{
-							String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
+							String^ mask = keyModule->GetValue("Mask", String::Empty)->ToString();
 
 							ModuleEditorInfo^ plugin = gcnew ModuleEditorInfo(assemblyPath, className, pluginName, mask);
 							editors.Add(plugin);
 						}
 						else if (type == "Filer")
 						{
-							String^ mask = keyPlugin->GetValue("Mask", String::Empty)->ToString();
-							int creates = (int)keyPlugin->GetValue("Creates", (Object^)-1);
+							String^ mask = keyModule->GetValue("Mask", String::Empty)->ToString();
+							int creates = (int)keyModule->GetValue("Creates", (Object^)-1);
 
 							ModuleFilerInfo^ plugin = gcnew ModuleFilerInfo(assemblyPath, className, pluginName, mask, creates != 0);
 							filers.Add(plugin);
@@ -309,13 +309,13 @@ void Module0::ReadCache()
 							throw gcnew OperationCanceledException;
 						}
 
-						keyPlugin->Close();
+						keyModule->Close();
 					}
 
 					keyDll->Close();
 
 					// add dllName to dictionary and add plugins
-					_cache->Add(dllName, nullptr);
+					_Cache->Add(dllName, nullptr);
 					if (commands.Count)
 						Far::Instance->RegisterCommands(%commands);
 					if (editors.Count)
@@ -339,8 +339,8 @@ void Module0::ReadCache()
 			// error or outdated info
 			if (!ok)
 			{
-				if (keyPlugin)
-					keyPlugin->Close();
+				if (keyModule)
+					keyModule->Close();
 				if (keyDll)
 					keyDll->Close();
 				keyCache->DeleteSubKeyTree(dllName);

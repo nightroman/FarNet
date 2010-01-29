@@ -749,7 +749,7 @@ void Panel0::ReplacePluginPanel(Panel2^ oldPanel, Panel2^ newPanel)
 
 	// disconnect old panel
 	oldPanel->Handle = 0;
-	((FarPluginPanelInfo^)oldPanel->Info)->Free();
+	((FarPanelInfo^)oldPanel->Info)->Free();
 
 	// connect new panel
 	_panels[id1] = newPanel;

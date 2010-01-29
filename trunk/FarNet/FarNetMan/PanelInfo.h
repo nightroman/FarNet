@@ -37,10 +37,10 @@ public: virtual property String^ Name {\
 }}\
 private: String^ _##Name
 
-ref class FarPluginPanelInfo : IPanelInfo
+ref class FarPanelInfo : IPanelInfo
 {
 internal:
-	FarPluginPanelInfo();
+	FarPanelInfo();
 	void Free();
 	OpenPluginInfo& Make();
 public:

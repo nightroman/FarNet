@@ -68,7 +68,7 @@ internal:
 	ShelveInfoPlugin^ _Pushed;
 	bool _skipGettingData;
 	bool _voidGettingData;
-	FarPluginPanelInfo _info;
+	FarPanelInfo _info;
 	Object^ _postData;
 	FarFile^ _postFile;
 	String^ _postName;
