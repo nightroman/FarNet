@@ -7,7 +7,7 @@ C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe Build.proj /t:Build
 		<Csc
 			Sources="TestCommand.cs"
 			OutputAssembly="TestCommand.dll"
-			References="$(FARHOME)\Lib\FarNet.dll"
+			References="$(FARHOME)\FarNet\FarNet.dll"
 			TargetType="library"
 			Optimize="true"
 			/>

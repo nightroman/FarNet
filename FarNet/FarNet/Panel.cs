@@ -14,7 +14,7 @@ namespace FarNet
 	/// Any panel interface: Far or plugin panel.
 	/// Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 	/// </summary>
-	public interface IPanel
+	public interface IAnyPanel
 	{
 		/// <summary>
 		/// Gets true if the panel is active.
@@ -24,7 +24,7 @@ namespace FarNet
 		/// Gets true if the panel is a plugin panel.
 		/// </summary>
 		/// <remarks>
-		/// Note: it is true both for standard Far panels and for FarNet <see cref="IPluginPanel"/> panels.
+		/// Note: it is true both for standard Far panels and for FarNet <see cref="IPanel"/> panels.
 		/// To distinguish between them check the panel class type.
 		/// </remarks>
 		bool IsPlugin { get; }
@@ -41,7 +41,7 @@ namespace FarNet
 		/// <remarks>
 		/// If the panel is a directory tree panel then the path is the currently selected directory in the tree.
 		/// <para>
-		/// If it is a plugin panel and you set a path the action depends on <see cref="IPluginPanel.SettingDirectory"/> handler.
+		/// If it is a plugin panel and you set a path the action depends on <see cref="IPanel.SettingDirectory"/> handler.
 		/// If the panel does not have this handler and the path exists then the panel is closed and
 		/// a file panel is opened at the specified path.
 		/// </para>
@@ -390,7 +390,7 @@ namespace FarNet
 	//! DictionaryEntry is not good for this, because it is a value type.
 	//! DataItem is a reference type with some advantages.
 	/// <summary>
-	/// Named data item, e.g. an info panel item (<see cref="IPluginPanelInfo.InfoItems"/>).
+	/// Named data item, e.g. an info panel item (<see cref="IPanelInfo.InfoItems"/>).
 	/// </summary>
 	public class DataItem
 	{
@@ -415,14 +415,14 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Property set describing a plugin panel.
+	/// Property set describing a panel.
 	/// </summary>
 	/// <remarks>
 	/// This information is requested by Far for a panel very often.
 	/// For better performance FarNet caches internal native representation of these data.
 	/// After opening a panel it is recommended to avoid frequent modifications of these data.
 	/// </remarks>
-	public interface IPluginPanelInfo
+	public interface IPanelInfo
 	{
 		/// <summary>
 		/// Panel view mode to be set on panel creation.
@@ -445,7 +445,7 @@ namespace FarNet
 		/// If you set this flag then alternate names will be generated and used internally
 		/// and <see cref="FarFile.AlternateName"/> of your panel files will not be used at all
 		/// (derived from <see cref="FarFile"/> classes do not have to implement this property setter).
-		/// But this convenience is not completely free: on <see cref="IPluginPanel.GettingFiles"/> event
+		/// But this convenience is not completely free: on <see cref="IPanel.GettingFiles"/> event
 		/// you have to use alternate names from additional list <see cref="GettingFilesEventArgs.Names"/>,
 		/// not from the files.
 		/// </para>
@@ -602,7 +602,7 @@ namespace FarNet
 	/// Describes one panel view mode.
 	/// </summary>
 	/// <remarks>
-	/// Normally it is used for <see cref="IPluginPanelInfo.SetMode"/>.
+	/// Normally it is used for <see cref="IPanelInfo.SetMode"/>.
 	/// When a panel is opened you can change modes dynamically, but do not forget
 	/// to reset the list itself, changes in items are not reflected without this.
 	/// <para>
@@ -724,7 +724,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base <see cref="IPluginPanel"/> event arguments.
+	/// Base <see cref="IPanel"/> event arguments.
 	/// </summary>
 	public class PanelEventArgs : EventArgs
 	{
@@ -753,7 +753,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IPluginPanel.Executing"/> event.
+	/// Arguments of <see cref="IPanel.Executing"/> event.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
 	/// </summary>
 	public class ExecutingEventArgs : PanelEventArgs
@@ -775,7 +775,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IPluginPanel.ViewModeChanged"/> event. [FE_CHANGEVIEWMODE], [Column types].
+	/// Arguments of <see cref="IPanel.ViewModeChanged"/> event. [FE_CHANGEVIEWMODE], [Column types].
 	/// </summary>
 	public class ViewModeChangedEventArgs : EventArgs
 	{
@@ -795,7 +795,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IPluginPanel.KeyPressed"/> event.
+	/// Arguments of <see cref="IPanel.KeyPressed"/> event.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that the key has been processed internally.
 	/// </summary>
 	public class PanelKeyEventArgs : PanelEventArgs
@@ -837,7 +837,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IPluginPanel.SettingDirectory"/> event.
+	/// Arguments of <see cref="IPanel.SettingDirectory"/> event.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
 	/// <remarks>
@@ -863,7 +863,7 @@ namespace FarNet
 		/// To provide basic functionality the plugin should also process the names '..' and '\'.
 		/// For correct restoring of current directory after using "Search from the root folder" mode
 		/// in the Find file dialog, the plugin should be able to process full directory name returned
-		/// by <see cref="IPluginPanel.Info"/>. It is not necessary when "Search from the current folder"
+		/// by <see cref="IPanel.Info"/>. It is not necessary when "Search from the current folder"
 		/// mode is set in the Find file dialog.
 		/// </summary>
 		public string Name
@@ -906,7 +906,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IPluginPanel.GettingFiles"/>.
+	/// Arguments of <see cref="IPanel.GettingFiles"/>.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
 	public class GettingFilesEventArgs : FilesEventArgs
@@ -933,7 +933,7 @@ namespace FarNet
 			get { return _destination; }
 		}
 		/// <summary>
-		/// Alternate destination names (if <see cref="IPluginPanelInfo.AutoAlternateNames"/> is set) or null.
+		/// Alternate destination names (if <see cref="IPanelInfo.AutoAlternateNames"/> is set) or null.
 		/// </summary>
 		public IList<string> Names
 		{
@@ -942,7 +942,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IPluginPanel.PuttingFiles"/>.
+	/// Arguments of <see cref="IPanel.PuttingFiles"/>.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
 	public class PuttingFilesEventArgs : FilesEventArgs
@@ -968,7 +968,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IPluginPanel.MakingDirectory"/>.
+	/// Arguments of <see cref="IPanel.MakingDirectory"/>.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
 	public class MakingDirectoryEventArgs : PanelEventArgs
@@ -999,10 +999,10 @@ namespace FarNet
 	public delegate object Getter(object value);
 
 	/// <summary>
-	/// Plugin panel. It is created by <see cref="IFar.CreatePluginPanel()"/>.
+	/// Module panel. It is created by <see cref="IFar.CreatePanel"/>.
 	/// Then you set <see cref="Info"/>, add event handlers and open it.
 	/// </summary>
-	public interface IPluginPanel : IPanel
+	public interface IPanel : IAnyPanel
 	{
 		/// <summary>
 		/// Tells to open the panel when the plugin call is completed.
@@ -1027,7 +1027,7 @@ namespace FarNet
 		/// Opens a panel by replacing another opened FarNet panel.
 		/// </summary>
 		/// <param name="oldPanel">Old panel to be replaced.</param>
-		void Open(IPluginPanel oldPanel);
+		void Open(IPanel oldPanel);
 		/// <summary>
 		/// Gets true if the panel is opened.
 		/// </summary>
@@ -1043,7 +1043,7 @@ namespace FarNet
 		/// It gets any panel available, even if it belongs to another plugin.
 		/// Use <see cref="Host"/> or <see cref="TypeId"/> for identification.
 		/// </remarks>
-		IPluginPanel AnotherPanel { get; }
+		IPanel AnotherPanel { get; }
 		/// <summary>
 		/// Gets or sets a delegate providing IDs of panel file data.
 		/// </summary>
@@ -1103,7 +1103,7 @@ namespace FarNet
 		/// For better performance set its properties only when they are really changed.
 		/// Redraw the panel if you change properties from operations that do not call redraw.
 		/// </remarks>
-		IPluginPanelInfo Info { get; }
+		IPanelInfo Info { get; }
 		/// <summary>
 		/// Gets or sets the list of panel items.
 		/// </summary>
@@ -1112,7 +1112,7 @@ namespace FarNet
 		/// <para>
 		/// For performance and simplicity sake the list is not protected and it should be used carefully.
 		/// Normally it is filled on startup and then can be changed by <see cref="GettingData"/> handler.
-		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately;
+		/// If it is changed differently then <see cref="IAnyPanel.Update"/> should be called immediately;
 		/// otherwise not coherent panel and list data may cause unpredictable problems.
 		/// </para>
 		/// </remarks>
@@ -1124,7 +1124,7 @@ namespace FarNet
 		/// This property is optionally set once, normally by a creator.
 		/// It is used for distinguishing panel types when <see cref="Host"/> is not enough.
 		/// </remarks>
-		/// <seealso cref="IFar.GetPluginPanel(Guid)"/>
+		/// <seealso cref="IFar.GetPanel(Guid)"/>
 		Guid TypeId { get; set; }
 		/// <summary>
 		/// Tells to update and redraw the panel automatically when idle.
@@ -1242,7 +1242,7 @@ namespace FarNet
 		/// </para>
 		/// <para>
 		/// Remember that this is not the only way of adding items, for example you can process the same [F7] key
-		/// (or any other key) in <see cref="IPluginPanel.KeyPressed"/> event, or add items by a menu command, and etc.
+		/// (or any other key) in <see cref="IPanel.KeyPressed"/> event, or add items by a menu command, and etc.
 		/// In these cases you may want to set a new item current yourself, e.g. by calling <c>Post*()</c> methods.
 		/// </para>
 		/// <para>

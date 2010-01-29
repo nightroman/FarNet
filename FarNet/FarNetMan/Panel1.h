@@ -8,7 +8,7 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class Panel1 : public IPanel
+ref class Panel1 : public IAnyPanel
 {
 public:
 	virtual property bool Highlight { bool get(); }

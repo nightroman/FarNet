@@ -28,8 +28,8 @@
 	<!--Install FarNet and PSF bin-->
 	<Target Name="Install-Bin">
 		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Install" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
-		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\Plugins.NET\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')"/>
+		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')"/>
 		<Copy
 		SourceFiles="
 		Modules\FarDescription\Bin\$(Configuration)\FarDescription.dll;
@@ -38,7 +38,7 @@
 		Modules\FarDescription\FarDescription.psm1;
 		Modules\FarDescription\FarDescription.Types.ps1xml;
 		"
-		DestinationFolder="$(Install)\Plugins.NET\PowerShellFar\Modules\FarDescription"
+		DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarDescription"
 		SkipUnchangedFiles="true"
 		/>
 		<Copy
@@ -49,7 +49,7 @@
 		Modules\FarMacro\FarMacro.psm1;
 		Modules\FarMacro\FarMacro.Format.ps1xml;
 		"
-		DestinationFolder="$(Install)\Plugins.NET\PowerShellFar\Modules\FarMacro"
+		DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarMacro"
 		SkipUnchangedFiles="true"
 		/>
 	</Target>
@@ -58,7 +58,7 @@
 	<Target Name="Install-Res">
 		<Copy
 			SourceFiles="PowerShellFar.cfg;PowerShellFar.hlf;TabExpansion.ps1"
-			DestinationFolder="$(Install)\Plugins.NET\PowerShellFar"
+			DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar"
 			SkipUnchangedFiles="true"/>
 	</Target>
 
@@ -67,7 +67,7 @@
 
 	<Target Name="Uninstall">
 		<Error Condition="'$(Install)' == ''"/>
-		<RemoveDir Directories="$(Install)\Plugins.NET\PowerShellFar"/>
+		<RemoveDir Directories="$(Install)\FarNet\Modules\PowerShellFar"/>
 		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Uninstall"/>
 	</Target>
 
@@ -78,15 +78,15 @@
 		<!--Root-->
 		<Copy DestinationFolder="Tmp" SourceFiles="Readme.txt"/>
 		<!--Plugin-->
-		<Copy DestinationFolder="Tmp\Plugins.NET\PowerShellFar" SourceFiles="History.txt;LICENSE"/>
-		<Exec Command='xcopy "$(Install)\Plugins.NET\PowerShellFar" Tmp\Plugins.NET\PowerShellFar /s > nul'/>
+		<Copy DestinationFolder="Tmp\FarNet\Modules\PowerShellFar" SourceFiles="History.txt;LICENSE"/>
+		<Exec Command='xcopy "$(Install)\FarNet\Modules\PowerShellFar" Tmp\FarNet\Modules\PowerShellFar /s > nul'/>
 		<!--Bench-->
 		<CreateItem Include="Bench\**" Exclude="Bench\**\.svn\**">
 			<Output ItemName="script_file" TaskParameter="Include"/>
 		</CreateItem>
-		<Copy DestinationFiles="@(script_file->'Tmp\Plugins.NET\PowerShellFar\%(Identity)')" SourceFiles="@(script_file)"/>
+		<Copy DestinationFiles="@(script_file->'Tmp\FarNet\Modules\PowerShellFar\%(Identity)')" SourceFiles="@(script_file)"/>
 		<!--Extras-->
-		<Copy DestinationFolder="Tmp\Plugins.NET\PowerShellFar\Extras" SourceFiles="C:\ROM\FarDev\Draw\PowerShell.hrc;C:\ROM\FarDev\Draw\RomanConsole.hrd;C:\ROM\FarDev\Draw\RomanRainbow.hrd"/>
+		<Copy DestinationFolder="Tmp\FarNet\Modules\PowerShellFar\Extras" SourceFiles="C:\ROM\FarDev\Draw\PowerShell.hrc;C:\ROM\FarDev\Draw\RomanConsole.hrd;C:\ROM\FarDev\Draw\RomanRainbow.hrd"/>
 		<!--Archive-->
 		<Exec Command="7z a PowerShellFar.$(ProductVersion).7z .\*" WorkingDirectory="Tmp"/>
 		<Copy SourceFiles="Tmp\PowerShellFar.$(ProductVersion).7z" DestinationFolder="."/>
@@ -98,7 +98,7 @@
 		<!--Archive FarNet-->
 		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Archive"/>
 		<!--Archive API documentation-->
-		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z Plugins.NET\PowerShellFar.chm" WorkingDirectory="$(Install)"/>
+		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z FarNet\PowerShellFar.chm" WorkingDirectory="$(Install)"/>
 		<!--Copy and delete all result archives-->
 		<CreateItem Include="..\FarNet\FarNet.*.7z;PowerShellFar.*.7z;$(Install)\PowerShellFar.*.7z">
 			<Output ItemName="Archive2" TaskParameter="Include"/>

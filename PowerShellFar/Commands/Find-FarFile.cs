@@ -18,8 +18,8 @@ namespace PowerShellFar.Commands
 	/// <remarks>
 	/// If a panel file is not found the cmdlet writes an error.
 	/// </remarks>
-	/// <seealso cref="IPanel.GoToName(string)"/>
-	/// <seealso cref="IPanel.GoToName(string, bool)"/>
+	/// <seealso cref="IAnyPanel.GoToName(string)"/>
+	/// <seealso cref="IAnyPanel.GoToName(string, bool)"/>
 	[Description("Finds a panel file and sets it current.")]
 	public sealed class FindFarFileCommand : BaseCmdlet
 	{

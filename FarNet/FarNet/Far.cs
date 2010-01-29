@@ -317,20 +317,20 @@ namespace FarNet
 		/// Gets the active panel or null if Far started with /e or /v.
 		/// </summary>
 		/// <remarks>
-		/// If it is a FarNet panel it returns <see cref="IPluginPanel"/>, you can keep its reference for later use,
+		/// If it is a FarNet panel it returns <see cref="IPanel"/>, you can keep its reference for later use,
 		/// just remember that its state may change and it can be even closed.
 		/// <para>
 		/// If it is not a FarNet panel then you use this object instantly and do not keep it.
 		/// </para>
 		/// </remarks>
-		IPanel Panel { get; }
+		IAnyPanel Panel { get; }
 		/// <summary>
 		/// Gets the passive panel or null if Far started with /e or /v.
 		/// </summary>
 		/// <remarks>
 		/// See remarks for the active panel (<see cref="Panel"/>).
 		/// </remarks>
-		IPanel Panel2 { get; }
+		IAnyPanel Panel2 { get; }
 		/// <summary>
 		/// Gets the command line operator.
 		/// </summary>
@@ -441,30 +441,30 @@ namespace FarNet
 		/// <seealso cref="IFar.GetPaletteBackground"/>
 		void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
 		/// <summary>
-		/// Gets existing FarNet plugin panel with the specified host (see <see cref="IPluginPanel.Host"/>).
+		/// Gets an existing module panel with the specified host (see <see cref="IPanel.Host"/>).
 		/// </summary>
 		/// <param name="hostType">
 		/// Type of the hosting class.
-		/// If it is null then any plugin panel is returned.
-		/// If it is <c>typeof(object)</c> then any plugin panel having a host is returned.
+		/// If it is null then any module panel is returned.
+		/// If it is <c>typeof(object)</c> then any module panel having a host is returned.
 		/// </param>
-		IPluginPanel GetPluginPanel(Type hostType);
+		IPanel GetPanel(Type hostType);
 		/// <summary>
-		/// Gets existing FarNet plugin panel with the specified ID or returns null.
+		/// Gets an existing module panel with the specified type ID or returns null.
 		/// </summary>
-		/// <param name="id">Panel ID. It is normally assigned by a creator.</param>
-		/// <seealso cref="IPluginPanel.TypeId"/>
-		IPluginPanel GetPluginPanel(Guid id);
+		/// <param name="typeId">Panel type ID. It is normally assigned by a creator.</param>
+		/// <seealso cref="IPanel.TypeId"/>
+		IPanel GetPanel(Guid typeId);
 		/// <summary>
 		/// Creates a new panel.
 		/// </summary>
 		/// <remarks>
 		/// If the panel is opened on the same plugin call (normally it is) then consider to call
-		/// <see cref="IPluginPanel.Open()"/> as soon as possible to be sure that it is allowed.
+		/// <see cref="IPanel.Open()"/> as soon as possible to be sure that it is allowed.
 		/// Then you may configure the panel and other data. Actual panel opening is performed
 		/// only when plugin call is over.
 		/// </remarks>
-		IPluginPanel CreatePluginPanel();
+		IPanel CreatePanel();
 		/// <summary>
 		/// Gets confirmation settings (see Far "Confirmations" dialog).
 		/// </summary>

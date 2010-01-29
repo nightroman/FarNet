@@ -26,8 +26,8 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			IPanel panel1 = Passive ? A.Far.Panel2 : A.Far.Panel;
-			IPanel panel2 = Mirror ? (Passive ? A.Far.Panel : A.Far.Panel2) : panel1;
+			IAnyPanel panel1 = Passive ? A.Far.Panel2 : A.Far.Panel;
+			IAnyPanel panel2 = Mirror ? (Passive ? A.Far.Panel : A.Far.Panel2) : panel1;
 
 			// no panel?
 			if (panel1 == null || panel2 == null)

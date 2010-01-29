@@ -165,8 +165,6 @@ namespace FarNet.Support
 		///
 		void SetBufferContents(Place rectangle, BufferCell fill);
 		///
-		int OemCP { get; }
-		///
 		object Shelve { get; }
 		///
 		void Break();

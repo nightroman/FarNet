@@ -37,7 +37,7 @@ public: virtual property String^ Name {\
 }}\
 private: String^ _##Name
 
-ref class FarPluginPanelInfo : IPluginPanelInfo
+ref class FarPluginPanelInfo : IPanelInfo
 {
 internal:
 	FarPluginPanelInfo();

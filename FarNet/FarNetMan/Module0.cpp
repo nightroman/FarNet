@@ -61,7 +61,7 @@ void Module0::LoadPlugins()
 {
 	ReadCache();
 
-	String^ path = Environment::ExpandEnvironmentVariables(ConfigurationManager::AppSettings["FarNet.Plugins"]);
+	String^ path = Environment::ExpandEnvironmentVariables(ConfigurationManager::AppSettings["FarNet.Modules"]);
 	for each(String^ dir in Directory::GetDirectories(path))
 	{
 		// skip

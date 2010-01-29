@@ -18,7 +18,7 @@ namespace FarNet
 	/// <remarks>
 	/// <para>
 	/// This is the base class of preloadable modules and not preloadable
-	/// <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, <see cref="ModuleEditor"/> and <see cref="ModuleFiler"/>.
+	/// <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, <see cref="ModuleEditor"/>, and <see cref="ModuleFiler"/>.
 	/// </para>
 	/// <para>
 	/// It exposes the global <see cref="Far"/> instance and provides virtual methods called by the core.
@@ -165,7 +165,7 @@ namespace FarNet
 		{
 			if (Resource == null)
 				Resource = Far.Zoo.CreateFileBasedResourceManager(this);
-			
+
 			return Resource.GetString(name, CurrentUICulture);
 		}
 
@@ -338,7 +338,7 @@ namespace FarNet
 
 	/// <summary>
 	/// Arguments for a handler registered by <see cref="IFar.RegisterFiler"/>.
-	/// A handler is called to open a <see cref="IPluginPanel"/> which emulates a file system based on a file.
+	/// A handler is called to open a <see cref="IPanel"/> which emulates a file system based on a file.
 	/// If a file is unknown a handler should do nothing.
 	/// </summary>
 	public sealed class FilerEventArgs : EventArgs
@@ -354,7 +354,7 @@ namespace FarNet
 		/// <summary>
 		/// Full name of a file including the path.
 		/// If it is empty then a handler is called to create a new file [ShiftF1].
-		/// In any case a handler opens <see cref="IPluginPanel"/> or ignores this call.
+		/// In any case a handler opens <see cref="IPanel"/> or ignores this call.
 		/// </summary>
 		public string Name
 		{
@@ -396,7 +396,7 @@ namespace FarNet
 		/// <remarks>
 		/// It is up to the module how to process a file.
 		/// Usually file based modules should represent file data in a panel,
-		/// i.e. this methods should be used to open and configure a panel (<see cref="IPluginPanel"/>).
+		/// i.e. this methods should be used to open and configure a panel (<see cref="IPanel"/>).
 		/// </remarks>
 		public abstract void Invoke(object sender, FilerEventArgs e);
 
@@ -440,7 +440,7 @@ namespace FarNet
 		/// Normally you add your editor event handlers, then they do the jobs.
 		/// </remarks>
 		/// <example>
-		/// See the <c>Plugins.NET\TrimSaving</c> module.
+		/// See the <c>Modules\TrimSaving</c> module.
 		/// It is not just an example, it can be used for real.
 		/// </example>
 		public abstract void Invoke(object sender, EventArgs e);

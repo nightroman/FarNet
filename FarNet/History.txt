@@ -2,20 +2,36 @@ http://code.google.com/p/farnet/
 
 = 4.3.1 =
 
-TERMINOLOGY PLUGINS -> MODULES
+!! This time update FarNet manually (i.e. not by Update-PowerShellFar.ps1).
 
-OK, it is finally decided that FarNet plugins are not called PLUGINS any more:
-in the API and in the help. From now on they are called MODULES.
+ANNOUNCEMENT
 
-A few renamings because of this:
-*) BasePlugin -> BaseModule
-*) PluginException -> ModuleException
-*) CommandPlugin -> ModuleCommand
-*) EditorPlugin -> ModuleEditor
-*) FilerPlugin -> ModuleFiler
-*) ToolPlugin -> ModuleTool
+It is discussed and decided that FarNet plugins are not called PLUGINS any more
+everywhere: API, code, and documentation. They are called MODULES.
 
-MACROS
+We also change the folders structure, see Readme.txt or just copy from the
+archive to %FARHOME% keeping the structure. Then remove old Lib (moved to
+FarNet) and Plugins.NET (moved to FarNet\Modules).
+
+TERMINOLOGY: PLUGINS -> MODULES
+(breaking name changes)
+
+Modules:
+-- BasePlugin -> BaseModule
+-- PluginException -> ModuleException
+-- CommandPlugin -> ModuleCommand
+-- EditorPlugin -> ModuleEditor
+-- FilerPlugin -> ModuleFiler
+?? -- ToolPlugin -> ModuleTool
+
+Panels:
+-- IPanel -> IAnyPanel (rename this before IPluginPanel -> IPanel!)
+-- IPluginPanel -> IPanel (rename this after IPanel -> IAnyPanel!)
+-- IPluginPanelInfo -> IPanelInfo
+-- GetPluginPanel() -> GetPanel()
+-- CreatePluginPanel() -> CreatePanel()
+
+OTHER CHANGES (MACROS)
 
 *) IMacro.GetNames(): fixed exceptions on missed areas.
 *) Macro.Area is not a string but enum MacroArea.

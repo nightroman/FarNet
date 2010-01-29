@@ -629,12 +629,12 @@ IViewer^ Far::Viewer::get()
 	return Viewer0::GetCurrentViewer();
 }
 
-IPanel^ Far::Panel::get()
+IAnyPanel^ Far::Panel::get()
 {
 	return Panel0::GetPanel(true);
 }
 
-IPanel^ Far::Panel2::get()
+IAnyPanel^ Far::Panel2::get()
 {
 	return Panel0::GetPanel(false);
 }
@@ -995,19 +995,19 @@ void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgro
 	Console::BackgroundColor = bc;
 }
 
-IPluginPanel^ Far::CreatePluginPanel()
+IPanel^ Far::CreatePanel()
 {
 	return gcnew FarNet::Panel2;
 }
 
-IPluginPanel^ Far::GetPluginPanel(Guid id)
+IPanel^ Far::GetPanel(Guid typeId)
 {
-	return Panel0::GetPluginPanel(id);
+	return Panel0::GetPanel(typeId);
 }
 
-IPluginPanel^ Far::GetPluginPanel(Type^ hostType)
+IPanel^ Far::GetPanel(Type^ hostType)
 {
-	return Panel0::GetPluginPanel(hostType);
+	return Panel0::GetPanel(hostType);
 }
 
 String^ Far::Input(String^ prompt)
@@ -1381,7 +1381,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 		// Push/Shelve
 		if (showPushCommand)
 		{
-			IPanel^ panel = Panel;
+			IAnyPanel^ panel = Panel;
 			if (panel->IsPlugin)
 			{
 				FarNet::Panel2^ plugin = dynamic_cast<FarNet::Panel2^>(Panel);

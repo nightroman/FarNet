@@ -471,7 +471,7 @@ namespace PowerShellFar
 			if (ip2 == null)
 			{
 				// ignore plugin panel
-				IPanel panel = A.Far.Panel2;
+				IAnyPanel panel = A.Far.Panel2;
 				if (panel.IsPlugin)
 					return true;
 

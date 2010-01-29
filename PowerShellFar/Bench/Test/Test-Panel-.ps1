@@ -30,7 +30,7 @@ param
 )
 
 ### Create a panel, set its properties
-$p = $Far.CreatePluginPanel()
+$p = $Far.CreatePanel()
 $p.AddDots = !$NoDots
 $p.DotsDescription = 'Try: F7, F8, F5, F6, CtrlQ, CtrlL, CtrlB, Ctrl7, Ctrl0, Esc'
 $p.Info.Title = "Test Panel"

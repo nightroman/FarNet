@@ -28,9 +28,9 @@ internal:
 	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode);
 	static int AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode);
 	static Panel1^ GetPanel(bool active);
-	static Panel2^ GetPluginPanel(Guid id);
-	static Panel2^ GetPluginPanel(Type^ hostType);
-	static Panel2^ GetPluginPanel2(Panel2^ plugin);
+	static Panel2^ GetPanel(Guid typeId);
+	static Panel2^ GetPanel(Type^ hostType);
+	static Panel2^ GetPanel2(Panel2^ plugin);
 	static void AsClosePlugin(HANDLE hPlugin);
 	static void AsFreeFindData(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber);
 	static void AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info);
