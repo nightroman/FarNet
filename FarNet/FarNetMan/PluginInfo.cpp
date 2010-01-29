@@ -72,10 +72,10 @@ String^ BaseModuleInfo::Key::get()
 
 void BaseModuleInfo::Connect()
 {
-	LOG_AUTO(3, String::Format("Load plugin Class='{0}' Path='{1}'", _ClassName, _AssemblyPath));
+	LOG_AUTO(3, String::Format("Load module Class='{0}' Path='{1}'", _ClassName, _AssemblyPath));
 
 	if (_Plugin)
-		throw gcnew InvalidOperationException("Plugin is already connected.");
+		throw gcnew InvalidOperationException("Module is already connected.");
 
 	// create from info
 	Assembly^ assembly = Assembly::LoadFrom(_AssemblyPath);

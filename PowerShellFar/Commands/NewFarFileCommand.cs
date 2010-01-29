@@ -12,10 +12,10 @@ namespace PowerShellFar.Commands
 {
 	/// <summary>
 	/// New-FarFile command.
-	/// Creates a plugin panel file.
+	/// Creates a panel file.
 	/// </summary>
 	/// <seealso cref="FarFile"/>
-	[Description("Creates a plugin panel file.")]
+	[Description("Creates a panel file.")]
 	public sealed class NewFarFileCommand : BaseCmdlet
 	{
 		///

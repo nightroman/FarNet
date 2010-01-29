@@ -258,7 +258,7 @@ namespace PowerShellFar
 					try { A.Far.SetCurrentWindow(0); }
 					catch (InvalidOperationException e) { throw new InvalidOperationException("Cannot open a panel because panels window cannot be set current.", e); }
 
-					// 090623 PostJob may not work from the editor, for example, see "... because a plugin is not called for opening".
+					// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
 					// I tried to ignore my check - a panel did not open. In contrast, PostStep calls the plugin via the menu where
 					// a panel is opened from with no problems.
 					A.Far.PostStep(Open);
