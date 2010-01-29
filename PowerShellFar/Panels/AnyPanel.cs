@@ -20,14 +20,14 @@ namespace PowerShellFar
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This class is a host of <see cref="IPluginPanel"/>
-	/// (see <see cref="Panel"/> and <see cref="IPluginPanel.Host"/>).
+	/// This class is a host of <see cref="IPanel"/>
+	/// (see <see cref="Panel"/> and <see cref="IPanel.Host"/>).
 	/// It manages extra panel data and "items" attached to panel "files"
 	/// and implements panel event handlers for some basic panel operations.
 	/// </para>
 	/// <para>
 	/// Terminology (both for names and documentation):
-	/// "files" (<c>FarFile</c>) are elements of <see cref="IPluginPanel"/>;
+	/// "files" (<c>FarFile</c>) are elements of <see cref="IPanel"/>;
 	/// "items" (<c>PSObject</c>) are <see cref="FarFile.Data"/> attached to "files".
 	/// Note that null and ".." items are not processed (e.g. by <see cref="ShownItems"/>
 	/// and <see cref="SelectedItems"/>).
@@ -41,7 +41,7 @@ namespace PowerShellFar
 		internal AnyPanel()
 		{
 			// create a panel
-			_Panel = A.Far.CreatePluginPanel();
+			_Panel = A.Far.CreatePanel();
 
 			// set host, etc.
 			_Panel.Host = this;
@@ -96,14 +96,14 @@ namespace PowerShellFar
 			}
 		}
 
-		readonly IPluginPanel _Panel;
+		readonly IPanel _Panel;
 		/// <summary>
 		/// Gets the hosted plugin panel.
 		/// </summary>
 		/// <remarks>
-		/// The hosted panel refers to this as <see cref="IPluginPanel.Host"/>.
+		/// The hosted panel refers to this as <see cref="IPanel.Host"/>.
 		/// </remarks>
-		public IPluginPanel Panel
+		public IPanel Panel
 		{
 			get { return _Panel; }
 		}
@@ -133,7 +133,7 @@ namespace PowerShellFar
 		/// </summary>
 		/// <remarks>
 		/// Items are returned according to the current panel filter and sort order.
-		/// Thus, this set set is not the same as <see cref="IPluginPanel.Files"/>.
+		/// Thus, this set set is not the same as <see cref="IPanel.Files"/>.
 		/// <para>
 		/// WARNING: it is <c>IEnumerable</c>, not a list or an array.
 		/// </para>
@@ -200,7 +200,7 @@ namespace PowerShellFar
 		/// <returns>Found panel or null.</returns>
 		public static AnyPanel GetPanel(bool active)
 		{
-			IPluginPanel plug = A.Far.GetPluginPanel(typeof(AnyPanel));
+			IPanel plug = A.Far.GetPanel(typeof(AnyPanel));
 			if (plug == null)
 				return null;
 			AnyPanel pp = plug.Host as AnyPanel;
@@ -922,7 +922,7 @@ $_.Description
 		{
 			get
 			{
-				IPluginPanel pp = _Panel.AnotherPanel;
+				IPanel pp = _Panel.AnotherPanel;
 				if (pp != null && pp.Host is AnyPanel)
 					return pp.Host as AnyPanel;
 				return null;

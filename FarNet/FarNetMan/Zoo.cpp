@@ -256,11 +256,6 @@ void Zoo::SetBufferContents(Place rectangle, BufferCell fill)
 	}
 }
 
-int Zoo::OemCP::get()
-{
-	return ::GetOEMCP();
-}
-
 // _091007_034112
 String^ Zoo::ConsoleTitle::get()
 {

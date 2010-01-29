@@ -19,7 +19,7 @@ public class TestFiler : ModuleFiler
 			return;
 
 		// create panel
-		IPluginPanel p = Far.CreatePluginPanel();
+		IPanel p = Far.CreatePanel();
 		p.Info.HostFile = e.Name;
 		p.Info.StartSortMode = PanelSortMode.Unsorted;
 		p.Info.Title = "File lines";

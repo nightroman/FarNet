@@ -5,9 +5,9 @@ C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe Build.proj /t:Build
 
 	<Target Name="Build">
 		<Csc
-			Sources="TestFiler.cs"
-			OutputAssembly="TestFiler.dll"
-			References="$(FARHOME)\Lib\FarNet.dll"
+			Sources="Backslash.cs"
+			OutputAssembly="Backslash.dll"
+			References="$(FARHOME)\FarNet\FarNet.dll"
 			TargetType="library"
 			Optimize="true"
 			/>
@@ -15,7 +15,7 @@ C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe Build.proj /t:Build
 
 	<Target Name="Clean">
 		<Delete
-			Files="TestFiler.dll"
+			Files="Backslash.dll"
 			/>
 	</Target>
 

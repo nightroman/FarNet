@@ -64,7 +64,7 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 
 ShelveInfoPanel^ ShelveInfoPanel::CreateActiveInfo(bool modes)
 {
-	IPanel^ panel = Far::Instance->Panel;
+	IAnyPanel^ panel = Far::Instance->Panel;
 	if (!panel)
 		return nullptr;
 

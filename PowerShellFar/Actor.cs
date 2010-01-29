@@ -302,7 +302,7 @@ View the error list or the variable $Error.
 				return null;
 
 			// don't on no panels mode
-			IPanel panel = A.Far.Panel;
+			IAnyPanel panel = A.Far.Panel;
 			if (panel == null)
 				return null;
 
@@ -311,7 +311,7 @@ View the error list or the variable $Error.
 			string location = null;
 			if (panel.IsPlugin)
 			{
-				IPluginPanel plugin = panel as IPluginPanel;
+				IPanel plugin = panel as IPanel;
 				if (plugin != null)
 				{
 					ItemPanel itemPanel = plugin.Host as ItemPanel;
@@ -985,7 +985,7 @@ Continue with this current directory?
 							// count lines
 							int nNewLine = 0;
 							int nMax = Console.WindowHeight - 3;
-							IPanel p1 = A.Far.Panel;
+							IAnyPanel p1 = A.Far.Panel;
 							if (p1.IsVisible)
 							{
 								Place w = p1.Window;

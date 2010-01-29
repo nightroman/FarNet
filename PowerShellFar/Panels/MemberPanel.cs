@@ -32,7 +32,7 @@ namespace PowerShellFar
 			// check not null and not a panel related instance
 			if (instance == null)
 				throw new ArgumentNullException("instance");
-			if (instance is IPanel || instance is AnyPanel)
+			if (instance is IAnyPanel || instance is AnyPanel)
 				throw new ArgumentException("The object is a panel itself, its members can not be shown in a panel.");
 			_Value = PSObject.AsPSObject(instance);
 			if (_Value.BaseObject == null)
@@ -277,7 +277,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenMemberChanged(object instance)
 		{
-			MemberPanel p = A.Far.GetPluginPanel(typeof(MemberPanel)).Host as MemberPanel;
+			MemberPanel p = A.Far.GetPanel(typeof(MemberPanel)).Host as MemberPanel;
 			if (p == null)
 				return;
 

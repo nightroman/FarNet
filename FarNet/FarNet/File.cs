@@ -10,7 +10,7 @@ using System.IO;
 namespace FarNet
 {
 	/// <summary>
-	/// Abstract <see cref="IPanel"/> item representing a file, directory or plugin item.
+	/// Abstract panel item representing one file, directory, plugin, or module item.
 	/// </summary>
 	/// <remarks>
 	/// Plugins may implement derived classes (at least <see cref="Name"/> has to be defined)
@@ -45,14 +45,14 @@ namespace FarNet
 		/// <summary>
 		/// Alternate name, can be used as a file system name.
 		/// </summary>
-		/// <seealso cref="IPluginPanelInfo.AutoAlternateNames"/>
+		/// <seealso cref="IPanelInfo.AutoAlternateNames"/>
 		public virtual string AlternateName
 		{
 			get { return null; }
 			set { throw new NotSupportedException(); }
 		}
 		/// <summary>
-		/// User data. Only for <see cref="IPluginPanel"/>.
+		/// User data. Only for <see cref="IPanel"/>.
 		/// </summary>
 		public virtual object Data
 		{
@@ -191,7 +191,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Straightforward implementation of <see cref="FarFile"/> ready to use by <see cref="IPluginPanel"/> panels.
+	/// Straightforward implementation of <see cref="FarFile"/> ready to use by <see cref="IPanel"/> panels.
 	/// </summary>
 	/// <remarks>
 	/// It is just a set of properties where any property can be set.
@@ -259,7 +259,7 @@ namespace FarNet
 		/// <summary>
 		/// Alternate name, can be used as a file system name.
 		/// </summary>
-		/// <seealso cref="IPluginPanelInfo.AutoAlternateNames"/>
+		/// <seealso cref="IPanelInfo.AutoAlternateNames"/>
 		public override string AlternateName { get; set; }
 		/// <summary>
 		/// Creation time.
@@ -278,7 +278,7 @@ namespace FarNet
 		/// </summary>
 		public override long Length { get; set; }
 		/// <summary>
-		/// User data. Only for <see cref="IPluginPanel"/>.
+		/// User data. Only for <see cref="IPanel"/>.
 		/// </summary>
 		public override object Data { get; set; }
 		/// <summary>

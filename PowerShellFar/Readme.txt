@@ -1,8 +1,8 @@
 
-Plugin   : PowerShellFar
+Module   : FarNet.PowerShellFar
 Version  : 4.3.0
 Release  : 2010.01.25
-Category : Development
+Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
@@ -37,11 +37,10 @@ Check\change PowerShell execution policy: run standard PowerShell.exe and type
 Get-ExecutionPolicy - it should be RemoteSigned or Unrestricted. If it is not
 then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
 
-*) Install the plugin:
-Copy "Plugins.NET\PowerShellFar" to "%FARHOME%\Plugins.NET\PowerShellFar". The
-location and name can be changed but it is recommended to use exactly this way:
-for example, in order to be able to use the script Update-PowerShellFar.ps1
-with no changes in it.
+*) Install the module:
+Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
+The location can be changed but it is recommended to use exactly this way:
+at least you can use Update-PowerShellFar.ps1 for updates.
 
 *) Recommended: Install and configure Bench scripts:
 You can put scripts anywhere: all together or not, but it is highly recommended
@@ -63,6 +62,7 @@ unusable. See installation instructions in the file.
 PROBLEM
 x86 Far on x64 machines: in rare cases PowerShellFar cannot load PowerShell
 core because x86 Far disables WOW64 redirection.
+
 SOLUTION
 Theoretically the best way to avoid this problem is to use x64 Far and FarNet
 on x64 machines. Unfortunately it is not always possible in practice: plugins
@@ -70,10 +70,11 @@ may not have x64 versions or x64 Far may have not yet resolved problems. Then
 the following batch file can be used to start x86 Far:
 
 	set PATH=%WINDIR%\syswow64;%PATH%
-	"c:\program files\Far\Far.exe"
+	"C:\Program Files\Far\Far.exe"
 
 PROBLEM
 After installation Far cannot load FarNet or FarNet cannot load PowerShellFar.
+
 SOLUTION
 Read installation steps in Readme.txt (FarNet and PowerShellFar) carefully and
 ensure that you do everything correctly. Often mistake: Far.exe.config is not

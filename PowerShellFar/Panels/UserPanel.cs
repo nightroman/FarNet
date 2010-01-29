@@ -79,7 +79,7 @@ namespace PowerShellFar
 		/// Handler called to update the panel files.
 		/// </summary>
 		/// <remarks>
-		/// This handler should work on <see cref="IPluginPanel.Files"/> (recreate completely or update existing).
+		/// This handler should work on <see cref="IPanel.Files"/> (recreate completely or update existing).
 		/// <para>
 		/// One possible scenario is to clear the file list and then call <see cref="ObjectPanel.AddObjects"/> one or more times.
 		/// But <see cref="SetGetObjects"/> method is usually more convenient for this.
