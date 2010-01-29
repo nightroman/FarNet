@@ -600,7 +600,7 @@ namespace PowerShellFar
 
 			if (Location.Provider.ImplementingType == typeof(FileSystemProvider))
 			{
-				Panel.Info.UseAttrHighlighting = false;
+				Panel.Info.UseAttributeHighlighting = false;
 				Panel.Info.UseFilter = true;
 				Panel.Info.UseHighlighting = true;
 				Panel.Info.UseSortGroups = true;
@@ -610,7 +610,7 @@ namespace PowerShellFar
 			}
 			else
 			{
-				Panel.Info.UseAttrHighlighting = true;
+				Panel.Info.UseAttributeHighlighting = true;
 				Panel.Info.UseFilter = true;
 				Panel.Info.UseHighlighting = true;
 				Panel.Info.UseSortGroups = false;

@@ -25,12 +25,12 @@ namespace FarNet
 		/// <summary>
 		/// Initializes a new instance with the specified coordinates.
 		/// </summary>
-		/// <param name="y">The vertical position of the point.</param>
-		/// <param name="x">The horizontal position of the point.</param>
-		public Point(int x, int y)
+		/// <param name="column">The horizontal position of the point.</param>
+		/// <param name="row">The vertical position of the point.</param>
+		public Point(int column, int row)
 		{
-			this.x = x;
-			this.y = y;
+			this.x = column;
+			this.y = row;
 		}
 		/// <summary>
 		/// Gets or sets the x-coordinate.
@@ -82,11 +82,11 @@ namespace FarNet
 	{
 		Point _first;
 		Point _last;
-		/// <param name="x">Value.</param>
-		public Place(int x)
+		/// <param name="value">Value used for all coordinates.</param>
+		public Place(int value)
 		{
-			_first = new Point(x);
-			_last = new Point(x);
+			_first = new Point(value);
+			_last = new Point(value);
 		}
 		/// <param name="first">First point.</param>
 		/// <param name="last">Last Point.</param>

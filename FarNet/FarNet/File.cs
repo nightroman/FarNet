@@ -13,7 +13,7 @@ namespace FarNet
 	/// Abstract panel item representing one file, directory, plugin, or module item.
 	/// </summary>
 	/// <remarks>
-	/// Plugins may implement derived classes (at least <see cref="Name"/> has to be defined)
+	/// Modules may implement derived classes (at least <see cref="Name"/> has to be defined)
 	/// or they may just use the ready straightforward implementation <see cref="SetFile"/>.
 	/// </remarks>
 	public class FarFile
@@ -195,7 +195,7 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// It is just a set of properties where any property can be set.
-	/// In most cases plugin panels should just use this class for their items.
+	/// In most cases panels should just use this class for their items.
 	/// In some cases they may use custom implementations of <see cref="FarFile"/>.
 	/// </remarks>
 	public sealed class SetFile : FarFile

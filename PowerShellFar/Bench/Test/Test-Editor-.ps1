@@ -118,10 +118,10 @@ if ($Editor.GetText() -ne "Строка1`r`nLine2`r`nLine3") { throw }
 $null = $Lines.Remove($Lines[2])
 if ($Editor.GetText() -ne "Строка1`r`nLine2") { throw }
 
-### Eol
-if ($Lines[0].Eol -ne "`r`n") { throw }
-$Lines[0].Eol = "`n"
-if ($Lines[0].Eol -ne "`n") { throw }
+### EndOfLine
+if ($Lines[0].EndOfLine -ne "`r`n") { throw }
+$Lines[0].EndOfLine = "`n"
+if ($Lines[0].EndOfLine -ne "`n") { throw }
 
 ### Set all text (note preserved EOF states)
 $Editor.SetText('')

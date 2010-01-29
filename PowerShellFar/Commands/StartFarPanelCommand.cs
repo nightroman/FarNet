@@ -82,18 +82,18 @@ namespace PowerShellFar.Commands
 		bool _setOrderBy;
 
 		///
-		[Parameter(HelpMessage = "Sort in descending order.")]
-		public SwitchParameter Descending
+		[Parameter(HelpMessage = "Tells to reverse the sort order.")]
+		public SwitchParameter ReverseSortOrder
 		{
-			get { return _Descending; }
+			get { return _ReverseSortOrder; }
 			set
 			{
-				_setDescending = true;
-				_Descending = value;
+				_setReverseSortOrder = true;
+				_ReverseSortOrder = value;
 			}
 		}
-		SwitchParameter _Descending;
-		bool _setDescending;
+		SwitchParameter _ReverseSortOrder;
+		bool _setReverseSortOrder;
 
 		///
 		[Parameter(HelpMessage = "Panel view mode.")]
@@ -164,11 +164,11 @@ namespace PowerShellFar.Commands
 
 			if (_setData) panel.Data = _Data;
 			if (_setDataId) panel.Panel.DataId = _DataId;
-			if (_setDescending) panel.Panel.Info.StartSortDesc = _Descending;
-			if (_setTypeId) panel.Panel.TypeId = _TypeId;
 			if (_setIdleUpdate) panel.Panel.IdleUpdate = _IdleUpdate;
 			if (_setOrderBy) panel.Panel.Info.StartSortMode = _OrderBy;
+			if (_setReverseSortOrder) panel.Panel.Info.StartReverseSortOrder = _ReverseSortOrder;
 			if (_setTitle) panel.Panel.Info.Title = _Title;
+			if (_setTypeId) panel.Panel.TypeId = _TypeId;
 			if (_setViewMode) panel.Panel.Info.StartViewMode = _View;
 
 			// go

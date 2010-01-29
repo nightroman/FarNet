@@ -197,7 +197,7 @@ namespace FarNet
 		/// Inserts a string.
 		/// Editor must be current.
 		/// </summary>
-		/// <param name="text">The text. Supported EOL: CR, LF, CR+LF.</param>
+		/// <param name="text">The text. Supported line delimiters: CR, LF, CR+LF.</param>
 		/// <remarks>
 		/// The text is processed in the same way as it is typed.
 		/// </remarks>
@@ -558,7 +558,7 @@ namespace FarNet
 		/// </summary>
 		int Start { get; }
 		/// <summary>
-		/// End position of selection in the line. If selection includes the EOL sequence this field has a value of -1.
+		/// End position of selection in the line. If selection includes the end of line sequence this field has a value of -1.
 		/// </summary>
 		int End { get; }
 		/// <summary>
@@ -586,9 +586,9 @@ namespace FarNet
 		/// </summary>
 		string Text { get; set; }
 		/// <summary>
-		/// End-of-line characters.
+		/// End of line characters.
 		/// </summary>
-		string Eol { get; set; }
+		string EndOfLine { get; set; }
 		/// <summary>
 		/// Selected line part.
 		/// </summary>
@@ -731,12 +731,12 @@ namespace FarNet
 	public struct TextFrame
 	{
 		/// <summary>
-		/// Sets the same value x  for all members.
+		/// Sets the same value for all members.
 		/// </summary>
-		/// <param name="x">Value.</param>
-		public TextFrame(int x)
+		/// <param name="value">Value.</param>
+		public TextFrame(int value)
 		{
-			_line = _pos = _tabPos = _topLine = _leftPos = x;
+			_line = _pos = _tabPos = _topLine = _leftPos = value;
 		}
 		/// <summary>
 		/// Line index (starting with 0).

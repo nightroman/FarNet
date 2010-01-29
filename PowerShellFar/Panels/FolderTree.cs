@@ -37,7 +37,7 @@ namespace PowerShellFar
 		public FolderTree(string path)
 		{
 			// _090810_180151
-			Panel.Info.UseAttrHighlighting = false;
+			Panel.Info.UseAttributeHighlighting = false;
 			Panel.Info.UseHighlighting = true;
 			
 			// _091015_190130 Use of GettingInfo is problematic: it is called after Close()

@@ -277,7 +277,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenMemberChanged(object instance)
 		{
-			MemberPanel p = A.Far.GetPanel(typeof(MemberPanel)).Host as MemberPanel;
+			MemberPanel p = A.Far.FindPanel(typeof(MemberPanel)).Host as MemberPanel;
 			if (p == null)
 				return;
 

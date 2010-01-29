@@ -11,27 +11,27 @@ namespace FarNet
 	public interface IInputBox
 	{
 		/// <summary>
-		/// Text to be edited.
+		/// Gets or sets the text.
 		/// </summary>
 		string Text { get; set; }
 		/// <summary>
-		/// Title of the box.
+		/// Gets or sets the box title.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
-		/// Prompt text.
+		/// Gets or set the prompt text.
 		/// </summary>
 		string Prompt { get; set; }
 		/// <summary>
-		/// History string.
+		/// Gets or sets the history name.
 		/// </summary>
 		string History { get; set; }
 		/// <summary>
-		/// Maximal length of <see cref="Text"/>.
+		/// Gets or sets the max text length.
 		/// </summary>
 		int MaxLength { get; set; }
 		/// <summary>
-		/// Enabled empty input.
+		/// Tells to enable empty input permission.
 		/// </summary>
 		bool EmptyEnabled { get; set; }
 		/// <summary>
@@ -49,26 +49,26 @@ namespace FarNet
 		/// </remarks>
 		bool IsPassword { get; set; }
 		/// <summary>
-		/// Expand environment variables.
+		/// Tells to expand environment variables.
 		/// </summary>
-		bool EnvExpanded { get; set; }
+		bool ExpandEnvironmentVariables { get; set; }
 		/// <summary>
 		/// If <see cref="Text"/> is empty and <see cref="History"/> is not empty,
 		/// then do not initialize the input line from the history.
 		/// </summary>
 		bool NoLastHistory { get; set; }
 		/// <summary>
-		/// Buttons are visible.
+		/// Tells that buttons are visible.
 		/// </summary>
 		bool ButtonsAreVisible { get; set; }
 		/// <summary>
-		/// The only supported format is "&lt;FullPath\&gt;Topic", see <see cref="IFar.ShowHelp"/>.
+		/// Gets or sets the help topic; the only supported format is "&lt;FullPath\&gt;Topic", see <see cref="IFar.ShowHelp"/>.
 		/// </summary>
 		string HelpTopic { get; set; }
 		/// <summary>
-		/// Shows input box and waits until user press OK or Cancel.
+		/// Shows the input box and waits until user press OK or Cancel.
 		/// </summary>
-		/// <returns>True if OK was pressed.</returns>
+		/// <returns>True if OK is pressed.</returns>
 		bool Show();
 	}
 }
