@@ -15,12 +15,12 @@
 	</Target>
 
 	<Target Name="Install">
-		<Copy SourceFiles="@(PublishFile)" DestinationFolder="$(Install)\Lib" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(PublishFile)" DestinationFolder="$(Install)\FarNet" SkipUnchangedFiles="true"/>
 	</Target>
 
 	<Target Name="Uninstall">
 		<Error Condition="'$(Install)' == ''"/>
-		<Delete Files="$(Install)\Lib\FarNet.dll;$(Install)\Lib\FarNet.xml" TreatErrorsAsWarnings="true"/>
+		<Delete Files="$(Install)\FarNet\FarNet.dll;$(Install)\FarNet\FarNet.xml" TreatErrorsAsWarnings="true"/>
 	</Target>
 
 </Project>

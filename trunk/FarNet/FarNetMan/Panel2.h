@@ -12,7 +12,7 @@ namespace FarNet
 ref class ShelveInfoPanel;
 ref class ShelveInfoPlugin;
 
-ref class Panel2 : public Panel1, IPluginPanel
+ref class Panel2 : public Panel1, IPanel
 {
 public: // Panel1
 	virtual property bool IsPlugin { bool get() override; }
@@ -22,21 +22,21 @@ public: // Panel1
 	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get() override; }
 	virtual property String^ Path { String^ get() override; void set(String^ value) override; }
 	virtual property String^ ActivePath { String^ get(); }
-public: // IPluginPanel
+public: // IPanel
 	virtual property bool AddDots;
 	virtual property bool IdleUpdate;
 	virtual property bool IsOpened { bool get(); }
 	virtual property bool IsPushed { bool get() { return _Pushed != nullptr; } }
 	virtual property Getter^ DataId;
 	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
-	virtual property IPluginPanel^ AnotherPanel { IPluginPanel^ get(); }
-	virtual property IPluginPanelInfo^ Info { IPluginPanelInfo^ get() { return %_info; } }
+	virtual property IPanel^ AnotherPanel { IPanel^ get(); }
+	virtual property IPanelInfo^ Info { IPanelInfo^ get() { return %_info; } }
 	virtual property Object^ Data;
 	virtual property Object^ Host;
 	virtual property String^ DotsDescription;
 	virtual void Close() override;
 	virtual void Open();
-	virtual void Open(IPluginPanel^ oldPanel);
+	virtual void Open(IPanel^ oldPanel);
 	virtual void PostData(Object^ data) { _postData = data; }
 	virtual void PostFile(FarFile^ file) { _postFile = file; }
 	virtual void PostName(String^ name) { _postName = name; }

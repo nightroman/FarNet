@@ -555,7 +555,7 @@ int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	if (!pp->_PuttingFiles)
 		return 0;
 
-	Panel2^ plugin2 = GetPluginPanel2(pp);
+	Panel2^ plugin2 = GetPanel2(pp);
 	List<FarFile^>^ files;
 	if (plugin2)
 	{
@@ -616,18 +616,18 @@ Panel1^ Panel0::GetPanel(bool active)
 	return gcnew Panel1(true);
 }
 
-Panel2^ Panel0::GetPluginPanel(Guid id)
+Panel2^ Panel0::GetPanel(Guid typeId)
 {
 	for (int i = 1; i < cPanels; ++i)
 	{
 		Panel2^ p = _panels[i];
-		if (p && p->TypeId == id)
+		if (p && p->TypeId == typeId)
 			return p;
 	}
 	return nullptr;
 }
 
-Panel2^ Panel0::GetPluginPanel(Type^ hostType)
+Panel2^ Panel0::GetPanel(Type^ hostType)
 {
 	// case: any panel
 	if (hostType == nullptr)
@@ -656,7 +656,7 @@ Panel2^ Panel0::GetPluginPanel(Type^ hostType)
 	return nullptr;
 }
 
-Panel2^ Panel0::GetPluginPanel2(Panel2^ plugin)
+Panel2^ Panel0::GetPanel2(Panel2^ plugin)
 {
 	for (int i = 1; i < cPanels; ++i)
 	{

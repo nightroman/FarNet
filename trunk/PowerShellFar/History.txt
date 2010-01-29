@@ -11,6 +11,8 @@ FarMacro.psm1
 
 = 4.3.1 =
 
+!! This time update FarNet manually (i.e. not by Update-PowerShellFar.ps1).
+
 HKEY_CURRENT_USER\Software\Far2\Plugins\PowerShellFar
 PluginStartupCode StartupCode
 PluginStartupEdit StartupEdit

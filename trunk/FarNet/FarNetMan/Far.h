@@ -23,6 +23,8 @@ public:
 	virtual property FarConfirmations Confirmations { FarConfirmations get(); }
 	virtual property FarMacroState MacroState { FarMacroState get(); }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get(); }
+	virtual property IAnyPanel^ Panel { IAnyPanel^ get(); }
+	virtual property IAnyPanel^ Panel2 { IAnyPanel^ get(); }
 	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get(); }
 	virtual property IDialog^ Dialog { IDialog^ get(); }
 	virtual property IEditor^ Editor { IEditor^ get(); }
@@ -31,8 +33,6 @@ public:
 	virtual property IMacro^ Macro { IMacro^ get(); }
 	virtual property int WindowCount { int get(); }
 	virtual property IntPtr HWnd { IntPtr get(); }
-	virtual property IPanel^ Panel { IPanel^ get(); }
-	virtual property IPanel^ Panel2 { IPanel^ get(); }
 	virtual property IViewer^ Viewer { IViewer^ get(); }
 	virtual property String^ ActivePath { String^ get(); }
 	virtual property String^ PluginPath { String^ get(); }
@@ -49,7 +49,7 @@ public:
 	virtual IInputBox^ CreateInputBox();
 	virtual IListMenu^ CreateListMenu();
 	virtual IMenu^ CreateMenu();
-	virtual IPluginPanel^ CreatePluginPanel();
+	virtual IPanel^ CreatePanel();
 	virtual ISubsetForm^ CreateSubsetForm();
 	virtual IViewer^ CreateViewer();
 public:
@@ -69,8 +69,8 @@ public:
 	virtual int Msg(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
 	virtual int NameToKey(String^ key);
 	virtual int SaveScreen(int x1, int y1, int x2, int y2);
-	virtual IPluginPanel^ GetPluginPanel(Guid id);
-	virtual IPluginPanel^ GetPluginPanel(Type^ hostType);
+	virtual IPanel^ GetPanel(Guid typeId);
+	virtual IPanel^ GetPanel(Type^ hostType);
 	virtual IWindowInfo^ GetWindowInfo(int index, bool full);
 	virtual Object^ GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue);
 	virtual String^ Input(String^ prompt);

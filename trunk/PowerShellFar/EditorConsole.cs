@@ -44,7 +44,7 @@ namespace PowerShellFar
 				menu.Add("* New console or session *");
 				menu.HelpTopic = A.Psf.HelpTopic + "EditorConsoleMenuOpen";
 
-				IPanel panel = null;
+				IAnyPanel panel = null;
 				if ((A.Far.WindowType == WindowType.Panels) && (null != (panel = A.Far.Panel)) && (panel.Type != PanelType.File))
 					panel = null;
 				

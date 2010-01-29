@@ -13,11 +13,11 @@ namespace PowerShellFar.Commands
 	/// Common features of cmdlets working with panel files.
 	/// </summary>
 	/// <seealso cref="FarFile"/>
-	/// <seealso cref="IPanel"/>
+	/// <seealso cref="IAnyPanel"/>
 	public class BaseFileCmdlet : BaseCmdlet
 	{
 		/// <summary>
-		/// See <see cref="IPanel.ShownFiles"/>.
+		/// See <see cref="IAnyPanel.ShownFiles"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Get all the panel items.")]
 		public SwitchParameter All
@@ -28,7 +28,7 @@ namespace PowerShellFar.Commands
 		SwitchParameter _All;
 
 		/// <summary>
-		/// See <see cref="IPanel.SelectedFiles"/>.
+		/// See <see cref="IAnyPanel.SelectedFiles"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Get the selected panel items or the current one if none is selected.")]
 		public SwitchParameter Selected
@@ -83,7 +83,7 @@ namespace PowerShellFar.Commands
 			}
 		}
 
-		internal static string GetCurrentPath(IPanel panel1, IPanel panel2)
+		internal static string GetCurrentPath(IAnyPanel panel1, IAnyPanel panel2)
 		{
 			FarFile f = panel1.CurrentFile;
 			if (f == null)

@@ -23,13 +23,12 @@
 	thus, read History.txt on updates, you may want to remove some files.
 
 	Updated items in %FARHOME%:
-	FOLDERS
-	-- Lib
-	-- Plugins\FarNet
-	-- Plugins.NET\PowerShellFar (+ Bench and Extras)
-	FILES
 	-- Far.exe.config
-	-- Plugins.NET\PowerShellFar.chm
+	-- FarNet\FarNet.dll
+	-- FarNet\FarNet.xml
+	-- FarNet\PowerShellFar.chm
+	-- FarNet\Modules\PowerShellFar (+ Bench, Extras, Modules)
+	-- Plugins\FarNet
 
 .EXAMPLE
 	# This command starts update in a new console and keeps it opened to view
@@ -114,7 +113,7 @@ else {
 ### extract FarNet
 Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[0])'..."
 # x86
-& '7z' 'x' ($Archives[0]) "-o$FARHOME" '-aoa' 'Far.exe.config' 'Lib' 'Plugins\FarNet'
+& '7z' 'x' ($Archives[0]) "-o$FARHOME" '-aoa' 'Far.exe.config' 'FarNet\*.*' 'Plugins\FarNet'
 if ($lastexitcode) { throw "7z failed." }
 # x64
 if ($Platform -eq 'x64') {
@@ -124,7 +123,7 @@ if ($Platform -eq 'x64') {
 
 ### extract PowerShellFar
 Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[1])'..."
-& '7z' 'x' ($Archives[1]) "-o$FARHOME" '-aoa' 'Plugins.NET\PowerShellFar'
+& '7z' 'x' ($Archives[1]) "-o$FARHOME" '-aoa' 'FarNet\Modules\PowerShellFar'
 if ($lastexitcode) { throw "7z failed." }
 
 ### extract PowerShellFar.chm

@@ -11,9 +11,9 @@ Source   : http://code.google.com/p/farnet/
 	= DESCRIPTION =
 
 
-Plugin for writing Far Manager plugins in .NET languages and even PowerShell
-scripting with PowerShellFar plugin. It exposes FarNet object model covering
-and extending Far Manager native API in comfortable object oriented way.
+Far Manager .NET API and infrastructure for .NET modules. FarNet object model
+covers and extends Far Manager native API in comfortable object oriented way.
+PowerShell scripting is enabled by the PowerShellFar module.
 Home page: http://code.google.com/p/farnet/
 
 
@@ -33,69 +33,70 @@ Home page: http://code.google.com/p/farnet/
 	= INSTALLATION =
 
 
-Copy to %FARHOME%:
+Copy to %FARHOME% keeping the same directory structure:
 - Far.exe.config
-- Lib
-- Plugins\FarNet (*)
-- Plugins.NET (.NET plugins; you may copy and build optional samples)
+- FarNet\FarNet.*
+- Plugins\FarNet\FarNetMan.* (*)
+- FarNet\Modules\* (sample modules; you may copy and build some)
 
 (*) x64 installation:
-- Plugins\FarNet\FarNetMan.dll should be copied from Plugins.x64\FarNet
+- Plugins\FarNet\FarNetMan.dll must be copied from Plugins.x64\FarNet
 
-This is the default installation (recommended). You can move Lib or\and
-Plugins.NET, in this case you have to update Far.exe.config accordingly.
+This is the default and recommended installation. Still, you can change
+location of FarNet and Modules by changing the Far.exe.config configuration.
 
 IMPORTANT: Far.exe.config cannot be moved or renamed. If this file is missed in
-%FARHOME% or configured incorrectly then Far Manager fails to load FarNet and
-shows only basic failure message with no details.
+%FARHOME% or configured incorrectly then Far Manager fails to load the FarNet
+plugin and shows only basic failure message with no details.
 
 
 	= STRUCTURE =
 
 
 .\
-Far.exe.config - configuration file
-
-.\Lib\
-FarNet.dll - FarNet interfaces
-FarNet.xml - XML documentation
+Far.exe.config - the configuration file
 
 .\Plugins\FarNet\
-FarNetMan.dll - Far plugin, manager of FarNet plugins
+FarNetMan.dll - Far Manager plugin, manager of .NET modules
 FarNetMan.hlf - FarNet help
 
-.\Plugins.NET\
-Each plugin folder contains one or more assemblies (.dll) and at most one
+.\FarNet\
+FarNet.dll - FarNet interfaces for .NET modules
+FarNet.xml - XML documentation
+
+.\FarNet\Modules\
+Each module folder contains one or more assemblies (.dll) and at most one
 optional configuration file (.cfg). Each line of .cfg file is:
 	<Assembly> <Class1> <Class2> ... <ClassN>
 	where
-	<Assembly> - relative path of a plugin assembly;
-	<ClassX> - name of a plugin class to be loaded and connected.
+	<Assembly> - relative path of the module assembly;
+	<ClassX> - name of a module class to be loaded and connected.
 
 
-	= LOADING PLUGINS FROM DISK =
+	= LOADING MODULES FROM DISK =
 
 
-*) For each folder in Plugins.NET: if a file *.cfg exists then only specified
-assemblies and their classes are loaded, else all non abstract BaseModule
-children are loaded from all DLLs in the plugin folder.
+*) For each folder in Modules: if a file *.cfg exists then only specified
+assemblies and their classes are loaded, else all not abstract BaseModule
+children are loaded from all *.dll files in the module folder.
+
 *) Excluded folders: folders "-*", e.g. "-MyModule", are not loaded.
-*) Plugin assembly names must be unique among all plugins otherwise there can be
-both .NET and FarNet problems. An assembly name defines kind of namespace for
-information stored in the registry. Directory names and assembly locations are
-not important.
+
+*) Assembly names must be unique among all modules or there can be problems.
+Assembly names define kind of namespaces for information stored in the
+registry. Directory names and assembly locations are not important.
 
 
-	= LOADING PLUGINS FROM CACHE =
+	= LOADING MODULES FROM CACHE =
 
 
-FarNet plugin info registry cache:
+FarNet modules registry cache:
 HKCU\Software\Far2\Plugins\FarNet\<cache>
 
 If possible, FarNet caches information about assemblies and loads them only
 when they are really invoked. In many cases when you change, rename or move
 assemblies or classes FarNet updates the cache itself. But some changes are
-too difficult to discover (e.g. changes in config files), in these cases you
+too difficult to discover (e.g. changes in config files). In these cases you
 have to remove the registry cache manually (ditto for other cache problems).
 
 
@@ -113,13 +114,13 @@ Included XML documentation is used by other development tools like Visual
 Studio Object Browser, .NET Reflector and etc.
 
 
-	= PLUGINS HELP =
+	= MODULES HELP =
 
 
-You can add help for your plugins. It works in dialogs, menus, input and message
+You can add help for your modules. It works in dialogs, menus, input and message
 boxes (see property HelpTopic) or by IFar.ShowHelp(). Unfortunately help can not
-be automatically shown by F1 ShiftF2 because technically FarNet plugins are not
-visible to Far Manager.
+be automatically shown by F1 ShiftF2 because technically FarNet modules are not
+plugins for Far Manager.
 
 
 	= BUILDING SOURCES =
@@ -142,8 +143,9 @@ or even both operations:
 
 
 PROBLEM
-x86 Far on x64 machines: in rare cases not trivial .NET plugins cannot load
+x86 Far on x64 machines: in rare cases not trivial .NET modules cannot load
 because x86 Far disables WOW64 redirection (normally needed for loading).
+
 SOLUTION
 Theoretically the best way to avoid this problem is to use x64 Far and FarNet
 on x64 machines. Unfortunately it is not always possible in practice: plugins
@@ -151,11 +153,12 @@ may not have x64 versions or x64 Far may have not yet resolved problems. Then
 the following batch file can be used to start x86 Far:
 
 	set PATH=%WINDIR%\syswow64;%PATH%
-	"c:\program files\Far\Far.exe"
+	"C:\Program Files\Far\Far.exe"
 
 PROBLEM
-After installation Far cannot load FarNet or FarNet cannot load .NET plugins.
+After installation Far cannot load FarNet or FarNet cannot load .NET modules.
+
 SOLUTION
-Read installation steps in Readme.txt (FarNet and plugins) carefully and ensure
+Read installation steps in Readme.txt (FarNet and modules) carefully and ensure
 that you do everything correctly. Often mistake: Far.exe.config is not copied
 to the Far home directory.

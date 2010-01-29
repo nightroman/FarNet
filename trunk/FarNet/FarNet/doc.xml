@@ -61,15 +61,15 @@ Reference to a topic from the main Far Manager help file.
 Reference to a topic in a help file located in a folder with full or relative
 path of FullPath. An ending backslash must be added. The reference must not be
 split on multiple lines. For example, the help file is located in the folder
-"D:\Far\Plugins.NET\Foo" and we need the topic "FooInfo" from it:
-"<D:\Far\Plugins.NET\Foo\>FooInfo"
+"D:\Far\FarNet\Modules\Foo" and we need the topic "FooInfo" from it:
+"<D:\Far\FarNet\Modules\Foo\>FooInfo"
 
 "<FullModuleName>Topic"
 Reference to a topic in a help file located in the same folder as the module
 with the relative or full path of FullModuleName. The reference must not be
 split on mutiple lines. For example, we need the help topic "FooInfo" from the
-help file of the module Foo "D:\Far\Plugins.NET\Foo\Foo.dll":
-"<D:\Far\Plugins.NET\Foo\Foo.dll>FooInfo"
+help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
+"<D:\Far\FarNet\Modules\Foo\Foo.dll>FooInfo"
 ]]>
 </code>
 </remarks>

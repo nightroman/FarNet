@@ -10,7 +10,6 @@ namespace FarNet
 ref class Zoo : IZoo
 {
 public:
-	virtual property int OemCP { int get(); }
 	virtual property String^ ConsoleTitle { String^ get(); }
 	virtual property Object^ Shelve { Object^ get(); }
 public:

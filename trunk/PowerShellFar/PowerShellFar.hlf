@@ -87,10 +87,10 @@ Check\change PowerShell execution policy: run standard PowerShell.exe and type
 Get-ExecutionPolicy - it should be RemoteSigned or Unrestricted. If it is not
 then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
 
-Copy "Plugins.NET\PowerShellFar" to "%FARHOME%\Plugins.NET\PowerShellFar". The
-location and name can be changed but it is recommended to use exactly this way:
-for example, in order to be able to use the script Update-PowerShellFar.ps1
-with no changes in it.
+Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
+The location and name can be changed but it is recommended to use exactly this
+way: for example, in order to be able to use the script
+Update-PowerShellFar.ps1 with no changes in it.
 
 
 #Using Bench scripts#
@@ -1401,7 +1401,7 @@ full paths (if text contains slashes) (also with * and ?)
 
 	c:\p*\fa?\p
 		C:\Program Files\far\Plugins
-		C:\Program Files\far\Plugins.NET
+		C:\Program Files\far\PluginSDK
 
 file\folder names in the current folder (e.g. in Bench):
 

@@ -226,12 +226,12 @@ String^ Panel2::ActivePath::get()
 	return _ActiveInfo ? _ActiveInfo->Path : String::Empty;
 }
 
-IPluginPanel^ Panel2::AnotherPanel::get()
+IPanel^ Panel2::AnotherPanel::get()
 {
-	return Panel0::GetPluginPanel2(this);
+	return Panel0::GetPanel2(this);
 }
 
-void Panel2::Open(IPluginPanel^ oldPanel)
+void Panel2::Open(IPanel^ oldPanel)
 {
 	if (!oldPanel)
 		throw gcnew ArgumentNullException("oldPanel");

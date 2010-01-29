@@ -107,7 +107,7 @@ if ($Source -and $Destination) {
 
 ### Check opened
 [Guid]$id = 'edd13d45-281a-460b-8ab1-42f587128c67'
-$p = $Far.GetPluginPanel($id)
+$p = $Far.GetPanel($id)
 if ($p) { return }
 
 ### Create panel

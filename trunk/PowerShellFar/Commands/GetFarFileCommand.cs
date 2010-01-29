@@ -14,16 +14,16 @@ namespace PowerShellFar.Commands
 	/// Get-FarFile command.
 	/// Gets panel file(s).
 	/// </summary>
-	/// <seealso cref="IPanel.CurrentFile"/>
-	/// <seealso cref="IPanel.ShownFiles"/>
-	/// <seealso cref="IPanel.SelectedFiles"/>
+	/// <seealso cref="IAnyPanel.CurrentFile"/>
+	/// <seealso cref="IAnyPanel.ShownFiles"/>
+	/// <seealso cref="IAnyPanel.SelectedFiles"/>
 	[Description("Gets panel file(s).")]
 	public sealed class GetFarFileCommand : BaseFileCmdlet
 	{
 		///
 		protected override void BeginProcessing()
 		{
-			IPanel panel = Passive ? A.Far.Panel2 : A.Far.Panel;
+			IAnyPanel panel = Passive ? A.Far.Panel2 : A.Far.Panel;
 
 			// no panel?
 			if (panel == null)

@@ -270,7 +270,7 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 }
 
 ### Create a panel with the job object for search results
-$panel = $Far.CreatePluginPanel()
+$panel = $Far.CreatePanel()
 $panel.AddDots = $true
 $panel.Info.RealNames = $true
 $panel.Info.RightAligned = $true
