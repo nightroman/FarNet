@@ -208,7 +208,7 @@ internal:
 		DiskTools = "Disk tools",
 		ConfigTools = "Config tools",
 		ModuleFilers = "Filers",
-		ErrorNoHotKey = "Ensure a FarNet hotkey (F4) in the Far plugins menu (F11) and restart Far.",
+		ErrorNoHotKey = "Set any FarNet hotkey [F4] in the Far plugin menu [F11] and restart Far.",
 		MenuPrefix = ".NET ";
 };
 

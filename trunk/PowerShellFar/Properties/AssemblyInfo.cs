@@ -5,8 +5,8 @@ using System.Security.Permissions;
 using System;
 
 [assembly: AssemblyVersion("4.3.1.0")]
-[assembly: AssemblyTitle("PowerShellFar plugin for Far Manager")]
-[assembly: AssemblyDescription("Implements PowerShell host and automation tools in Far Manager.")]
+[assembly: AssemblyTitle("FarNet.PowerShellFar module for Far Manager")]
+[assembly: AssemblyDescription("Implements PowerShell host and UI tools in Far Manager.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PowerShellFar")]

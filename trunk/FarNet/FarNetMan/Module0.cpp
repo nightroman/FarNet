@@ -19,7 +19,7 @@ void Module0::AddPlugin(BaseModule^ plugin)
 //! Don't use Far UI
 void Module0::UnloadPlugin(BaseModule^ plugin)
 {
-	LOG_AUTO(3, "Unload plugin " + plugin);
+	LOG_AUTO(3, "Unload module " + plugin);
 
 	_plugins.Remove(plugin);
 
@@ -30,7 +30,7 @@ void Module0::UnloadPlugin(BaseModule^ plugin)
 	}
 	catch(Exception^ e)
 	{
-		String^ msg = "ERROR: plugin " + plugin->ToString() + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
+		String^ msg = "ERROR: module " + plugin->ToString() + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
 		Console::ForegroundColor = ConsoleColor::Red;
 		Console::WriteLine(msg);
 		Log::TraceError(msg);
@@ -94,7 +94,7 @@ void Module0::LoadFromDirectory(String^ dir)
 	catch(Exception^ e)
 	{
 		// Wish: no UI on loading
-		String^ msg = "ERROR: plugin " + dir + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
+		String^ msg = "ERROR: module " + dir + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
 		Far::Instance->Write(msg, ConsoleColor::Red);
 		Log::TraceError(msg);
 	}
@@ -178,7 +178,7 @@ int Module0::AddPlugin(Type^ type, List<ModuleCommandInfo^>^ commands, List<Modu
 	// create
 	BaseModule^ instance = BaseModuleInfo::CreatePlugin(type);
 
-	LOG_AUTO(3, "Load plugin " + instance);
+	LOG_AUTO(3, "Load module " + instance);
 
 	// register, attach, connect
 	_plugins.Add(instance);

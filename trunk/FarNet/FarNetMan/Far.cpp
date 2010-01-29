@@ -1551,7 +1551,7 @@ void Far::OpenConfig()
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
 	menu.HelpTopic = "MenuConfig";
-	menu.Title = "FarNet plugins";
+	menu.Title = "Modules configuration";
 
 	menu.Add(Res::ModuleCommands + " : " + (_registeredCommand.Count));
 	menu.Add(Res::ModuleEditors + "  : " + (_registeredEditor.Count));

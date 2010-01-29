@@ -17,7 +17,7 @@ $#PowerShellFar#
 	~Data panel~@DataPanel@
 	~Tree panel~@TreePanel@
 	~Global objects~@GlobalObjects@
-	~Plugin settings~@PluginSettings@
+	~Settings~@Settings@
 
 #Details#
 
@@ -1026,21 +1026,21 @@ names are 'ignored'.
 [#Ctrl1#] - view mode: tree column and description status.
 
 
-@PluginSettings
-$#Plugin settings#
+@Settings
+$#Settings#
 ~Contents~@Contents@
 
-Permanent settings (i.e. properties Plugin*) are changed interactively in the
-"Plugins configuration \ PowerShellFar" dialog or programmatically as properties
-of $Psf.Settings (if you want to apply $Psf.Settings changes permanently then
-call $Psf.Settings.Save()).
+Permanent settings are changed interactively in the [Plugins configuration] \
+[PowerShellFar] dialog or programmatically as properties of #$Psf.Settings#.
+If you want to apply #$Psf.Settings# changes permanently then call
+#$Psf.Settings.Save()#.
 
 Other settings are kind of user preferences and they are usually set in the
 profile (e.g. Profile-.ps1). Useful command to view/change all settings:
 
 	>: Start-FarPanel $Psf.Settings
 
-Preference settings are described in .chm, permanent settings in here:
+Preference settings are described in .chm. Permanent settings are:
 
  #Main startup code#
  #($Psf.Settings.StartupCode)#
@@ -1350,7 +1350,7 @@ startup code".
 
 This or your own editor profile should be invoked automatically when an editor
 is opened the first time, if you set it as "Editor startup code"
-(see ~Plugin Settings~@PluginSettings@).
+(see ~Settings~@Settings@).
 
 	Example of "Editor startup code" (mind dot and space before the name):
 	. Profile-Editor-.ps1
