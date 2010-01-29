@@ -110,7 +110,7 @@ namespace FarNet
 		/// </summary>
 		public bool EnableOutput { get; set; }
 		/// <summary>
-		/// Don't send keystrokes to the plugins during recording and executing.
+		/// Don't send keystrokes to plugins during recording and executing.
 		/// </summary>
 		public bool DisablePlugins { get; set; }
 		/// <summary>

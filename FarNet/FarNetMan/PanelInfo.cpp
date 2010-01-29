@@ -44,7 +44,7 @@ int FarPluginPanelInfo::Flags()
 	FLAG(RealNames, OPIF_REALNAMES);
 	FLAG(RightAligned, OPIF_SHOWRIGHTALIGNNAMES);
 	FLAG(ShowNamesOnly, OPIF_SHOWNAMESONLY);
-	FLAG(UseAttrHighlighting, OPIF_USEATTRHIGHLIGHTING);
+	FLAG(UseAttributeHighlighting, OPIF_USEATTRHIGHLIGHTING);
 	FLAG(UseFilter, OPIF_USEFILTER);
 	FLAG(UseHighlighting, OPIF_USEHIGHLIGHTING);
 	FLAG(UseSortGroups, OPIF_USESORTGROUPS);
@@ -411,7 +411,7 @@ OpenPluginInfo& FarPluginPanelInfo::Make()
 
 	m->Flags = Flags();
 
-	m->StartSortOrder = _StartSortDesc;
+	m->StartSortOrder = _StartReverseSortOrder;
 	m->StartSortMode = int(_StartSortMode);
 	m->StartPanelMode = int(_StartViewMode) + 0x30;
 

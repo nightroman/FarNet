@@ -79,7 +79,7 @@ function OutTrue([string]$property) { if ($c.$property) { "$vc.$property = `$tru
 			"$vc = `$dialog.AddComboBox($($r.Left), $($r.Top), $($r.Right), $text)"
 			OutTrue AutoAssignHotkeys
 			OutTrue DropDownList
-			OutTrue EnvExpanded
+			OutTrue ExpandEnvironmentVariables
 			OutTrue NoAmpersands
 			OutTrue NoClose
 			OutTrue NoFocus
@@ -108,7 +108,7 @@ function OutTrue([string]$property) { if ($c.$property) { "$vc.$property = `$tru
 				"$vc.History = '$(Esc $c.History)'"
 			}
 			OutTrue Editor
-			OutTrue EnvExpanded
+			OutTrue ExpandEnvironmentVariables
 			OutTrue ManualAddHistory
 			OutTrue NoAutoComplete
 			OutTrue ReadOnly

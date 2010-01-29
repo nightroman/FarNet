@@ -743,7 +743,7 @@ void Panel0::ReplacePluginPanel(Panel2^ oldPanel, Panel2^ newPanel)
 		throw gcnew InvalidOperationException("New panel must be not opened.");
 
 	// save old modes
-	oldPanel->Info->StartSortDesc = oldPanel->ReverseSortOrder;
+	oldPanel->Info->StartReverseSortOrder = oldPanel->ReverseSortOrder;
 	oldPanel->Info->StartSortMode = oldPanel->SortMode;
 	oldPanel->Info->StartViewMode = oldPanel->ViewMode;
 
@@ -760,7 +760,7 @@ void Panel0::ReplacePluginPanel(Panel2^ oldPanel, Panel2^ newPanel)
 		newPanel->Info->StartViewMode != oldPanel->Info->StartViewMode ||
 		newPanel->Info->StartSortMode != PanelSortMode::Default && (
 		newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode ||
-		newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc))
+		newPanel->Info->StartReverseSortOrder != oldPanel->Info->StartReverseSortOrder))
 	{
 		// set void mode for switching panel modes
 		newPanel->_voidGettingData = true;
@@ -773,8 +773,8 @@ void Panel0::ReplacePluginPanel(Panel2^ oldPanel, Panel2^ newPanel)
 		{
 			if (newPanel->Info->StartSortMode != oldPanel->Info->StartSortMode)
 				newPanel->SortMode = newPanel->Info->StartSortMode;
-			if (newPanel->Info->StartSortDesc != oldPanel->Info->StartSortDesc)
-				newPanel->ReverseSortOrder = newPanel->Info->StartSortDesc;
+			if (newPanel->Info->StartReverseSortOrder != oldPanel->Info->StartReverseSortOrder)
+				newPanel->ReverseSortOrder = newPanel->Info->StartReverseSortOrder;
 		}
 
 		// drop void mode
@@ -799,7 +799,7 @@ void Panel0::PushPluginPanel(Panel2^ plugin)
 	GetPanelInfo(plugin->Handle, pi);
 
 	// save modes
-	plugin->_info.StartSortDesc = (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
+	plugin->_info.StartReverseSortOrder = (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
 	plugin->_info.StartSortMode = (PanelSortMode)pi.SortMode;
 	plugin->_info.StartViewMode = (PanelViewMode)pi.ViewMode;
 

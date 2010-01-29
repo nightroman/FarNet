@@ -69,8 +69,8 @@ public:
 	virtual int Msg(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
 	virtual int NameToKey(String^ key);
 	virtual int SaveScreen(int x1, int y1, int x2, int y2);
-	virtual IPanel^ GetPanel(Guid typeId);
-	virtual IPanel^ GetPanel(Type^ hostType);
+	virtual IPanel^ FindPanel(Guid typeId);
+	virtual IPanel^ FindPanel(Type^ hostType);
 	virtual IWindowInfo^ GetWindowInfo(int index, bool full);
 	virtual Object^ GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue);
 	virtual String^ Input(String^ prompt);

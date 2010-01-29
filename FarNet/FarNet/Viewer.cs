@@ -9,7 +9,8 @@ using System.Diagnostics;
 namespace FarNet
 {
 	/// <summary>
-	/// Any viewer operator. Exposed as <see cref="IFar.AnyViewer"/>.
+	/// Any viewer operator.
+	/// Exposed as <see cref="IFar.AnyViewer"/>.
 	/// </summary>
 	public interface IAnyViewer
 	{

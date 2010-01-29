@@ -94,7 +94,7 @@ ref class FarEdit : public FarControl, public IEdit
 {
 public:
 	virtual property bool Editor { bool get(); void set(bool value); }
-	virtual property bool EnvExpanded { bool get(); void set(bool value); }
+	virtual property bool ExpandEnvironmentVariables { bool get(); void set(bool value); }
 	virtual property bool Fixed { bool get(); }
 	virtual property bool IsPath { bool get(); void set(bool value); }
 	virtual property bool IsPassword { bool get(); }
@@ -196,7 +196,7 @@ ref class FarComboBox : public FarBaseList, public IComboBox
 {
 public:
 	virtual property bool DropDownList { bool get(); void set(bool value); }
-	virtual property bool EnvExpanded { bool get(); void set(bool value); }
+	virtual property bool ExpandEnvironmentVariables { bool get(); void set(bool value); }
 	virtual property bool ReadOnly { bool get(); void set(bool value); }
 	virtual property bool SelectOnEntry { bool get(); void set(bool value); }
 	virtual property ILine^ Line { ILine^ get(); }

@@ -13,7 +13,7 @@ public:
 	virtual bool Show();
 	virtual property bool ButtonsAreVisible;
 	virtual property bool EmptyEnabled;
-	virtual property bool EnvExpanded;
+	virtual property bool ExpandEnvironmentVariables;
 	virtual property bool IsPath;
 	virtual property bool IsPassword;
 	virtual property bool NoLastHistory;

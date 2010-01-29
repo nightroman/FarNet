@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 namespace FarNet
 {
 	/// <summary>
-	/// Any panel interface: Far or plugin panel.
+	/// Any panel: Far, plugin, or module.
 	/// Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 	/// </summary>
 	public interface IAnyPanel
@@ -21,11 +21,11 @@ namespace FarNet
 		/// </summary>
 		bool IsActive { get; }
 		/// <summary>
-		/// Gets true if the panel is a plugin panel.
+		/// Gets true if it is a plugin panel.
 		/// </summary>
 		/// <remarks>
-		/// Note: it is true both for standard Far panels and for FarNet <see cref="IPanel"/> panels.
-		/// To distinguish between them check the panel class type.
+		/// Note: module panels (<see cref="IPanel"/>) are plugin panels because they are created by the FarNet plugin.
+		/// Plugin panels may or may not be module panels.
 		/// </remarks>
 		bool IsPlugin { get; }
 		/// <summary>
@@ -41,7 +41,7 @@ namespace FarNet
 		/// <remarks>
 		/// If the panel is a directory tree panel then the path is the currently selected directory in the tree.
 		/// <para>
-		/// If it is a plugin panel and you set a path the action depends on <see cref="IPanel.SettingDirectory"/> handler.
+		/// If it is a module panel and you set a path the action depends on <see cref="IPanel.SettingDirectory"/> handler.
 		/// If the panel does not have this handler and the path exists then the panel is closed and
 		/// a file panel is opened at the specified path.
 		/// </para>
@@ -174,14 +174,14 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// Mantis 1114: the current original panel item depends on the current plugin panel item on closing.
-		/// It is resolved for FarNet panels, the original current and even selected items should be restored.
+		/// It is resolved for module panels, the original current and even selected items should be restored.
 		/// </remarks>
 		void Close(); // _090321_210416
 		/// <summary>
 		/// Closes the plugin panel and opens a file panel with the specified path.
 		/// </summary>
 		/// <param name="path">
-		/// Name of the directory that will be set in the panel after closing the plugin (or {null|empty}).
+		/// Name of the directory that will be set in the panel after closing the panel (or {null|empty}).
 		/// If the path doesn't exist Far shows an error.
 		/// </param>
 		void Close(string path);
@@ -439,7 +439,7 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// Alternate names are used by Far for example for Quick View (CtrlQ) temp file names.
-		/// This is important because plugin files may have any names, including prohibited by
+		/// This is important because panel files may have any names, including prohibited by
 		/// the file system; in this case alternate names help.
 		/// <para>
 		/// If you set this flag then alternate names will be generated and used internally
@@ -455,17 +455,17 @@ namespace FarNet
 		/// If <see cref="StartSortMode"/> is specified, this flag tells to set sort direction.
 		/// When a panel is started it is used internally for keeping and restoring the current mode.
 		/// </summary>
-		bool StartSortDesc { get; set; }
+		bool StartReverseSortOrder { get; set; }
 		/// <summary>
-		/// Tells to use filter in the plugin panel.
+		/// Tells to use filter in the panel.
 		/// </summary>
 		bool UseFilter { get; set; }
 		/// <summary>
-		/// Tells to use sort groups in the plugin panel.
+		/// Tells to use sort groups in the panel.
 		/// </summary>
 		bool UseSortGroups { get; set; }
 		/// <summary>
-		/// Tells to use file highlighting in the plugin panel.
+		/// Tells to use file highlighting in the panel.
 		/// </summary>
 		bool UseHighlighting { get; set; }
 		/// <summary>
@@ -476,7 +476,7 @@ namespace FarNet
 		/// Color is chosen from file color groups, which have templates excluded from analysis
 		/// (i.e. option "[ ] Match file mask(s)" in file highlighting setup dialog is off).
 		/// </remarks>
-		bool UseAttrHighlighting { get; set; }
+		bool UseAttributeHighlighting { get; set; }
 		/// <summary>
 		/// Tells that folders may be selected regardless of Far settings.
 		/// </summary>
@@ -485,8 +485,8 @@ namespace FarNet
 		/// Tells that items represent real file system.
 		/// </summary>
 		/// <remarks>
-		/// Turns on the standard Far file processing mechanism if requested operation is not supported by the plugin.
-		/// If this flag is set, the items on the plugin panel should be real file names.
+		/// Turns on the standard Far file processing mechanism if requested operation is not supported by the panel.
+		/// If this flag is set, the items on the panel should be real file names.
 		/// </remarks>
 		bool RealNames { get; set; }
 		/// <summary>
@@ -505,7 +505,7 @@ namespace FarNet
 		/// Tells to convert timestamps to FAT format for the Compare folders operation.
 		/// </summary>
 		/// <remarks>
-		/// Set this flag if the plugin file system doesn't provide time accuracy necessary for standard comparison operations.
+		/// Set this flag if the panel file system doesn't provide time accuracy necessary for standard comparison operations.
 		/// </remarks>
 		bool CompareFatTime { get; set; }
 		/// <summary>
@@ -528,14 +528,14 @@ namespace FarNet
 		/// Gets or sets the base file of emulated file system.
 		/// </summary>
 		/// <remarks>
-		/// If plugin doesn't emulate a file system based on files it should be empty.
+		/// If the panel doesn't emulate a file system based on files it should be empty.
 		/// </remarks>
 		string HostFile { get; set; }
 		/// <summary>
-		/// Gets or sets the plugin panel current directory.
+		/// Gets or sets the panel current directory.
 		/// </summary>
 		/// <remarks>
-		/// If it is empty, Far closes the plugin if [Enter] is pressed on ".." item.
+		/// If it is empty, Far closes the panel if [Enter] is pressed on ".." item.
 		/// </remarks>
 		string CurrentDirectory { get; set; }
 		/// <summary>
@@ -543,7 +543,7 @@ namespace FarNet
 		/// </summary>
 		string FormatName { get; set; }
 		/// <summary>
-		/// Gets or sets the plugin panel header.
+		/// Gets or sets the panel header.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
@@ -675,46 +675,46 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Additional information about the operation a plugin if called for.
+	/// Additional information about an operation.
 	/// </summary>
 	[Flags]
 	public enum OperationModes
 	{
 		/// <summary>
-		/// Nothing.
+		/// Nothing special.
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// Plugin should minimize user requests if possible, because the called function is only a part of a more complex file operation.
+		/// An operation should minimize user requests if possible, because the called function is only a part of a more complex file operation.
 		/// </summary>
 		Silent = 0x0001,
 		/// <summary>
-		/// Plugin function is called from Find file or another directory scanning command. Screen output has to be minimized.
+		/// An operation is called from Find file or another directory scanning command. Screen output has to be minimized.
 		/// </summary>
 		Find = 0x0002,
 		/// <summary>
-		/// Plugin function is called as part of a file view operation.
+		/// An operation is a part of a file view operation.
 		/// If file is viewed on quickview panel, than both <c>View</c> and <c>QuickView</c> are set.
 		/// </summary>
 		View = 0x0004,
 		/// <summary>
-		/// Plugin function is called as part of a file edit operation.
+		/// An operation is a part of a file edit operation.
 		/// </summary>
 		Edit = 0x0008,
 		/// <summary>
-		/// All files in host file of file based plugin should be processed.
-		/// This flag is set when executing Shift-F2 and Shift-F3 Far commands outside of host file.
-		/// Passed to plugin functions files list also contains all necessary information,
-		/// so plugin can either ignore this flag or use it to speed up processing.
+		/// All files in a host file of file based panel should be processed.
+		/// This flag is set on [ShiftF2], [ShiftF3] Far commands outside of a host file.
+		/// Passed in an operation file list also contains all necessary information,
+		/// so that this flag can be either ignored or used to speed up processing.
 		/// </summary>
 		TopLevel = 0x0010,
 		/// <summary>
-		/// Plugin function is called to get or put file with file descriptions.
+		/// An operation is called to get or put file with file descriptions.
 		/// </summary>
 		Descript = 0x0020,
 		/// <summary>
-		/// Plugin function is called as part of a file view operation activated from the quick view panel
-		/// (activated by pressing Ctrl-Q in the file panels).
+		/// An operation is a part of a file view operation activated from the quick view panel
+		/// (activated by pressing [CtrlQ] in the file panels).
 		/// </summary>
 		QuickView = 0x0040,
 		/// <summary>
@@ -841,10 +841,10 @@ namespace FarNet
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
 	/// <remarks>
-	/// The plugin should be ready to process <see cref="OperationModes.Find"/> flag.
+	/// The panel should be ready to process <see cref="OperationModes.Find"/> flag.
 	/// If it is set, the event is called from Find file or another directory scanning command,
-	/// and the plugin must not perform any actions except changing directory or setting <see cref="PanelEventArgs.Ignore"/> = true
-	/// if it is impossible to change the directory. (The plugin should not try to close or update the panels,
+	/// and a handler must not perform any actions except changing directory or setting <see cref="PanelEventArgs.Ignore"/> = true
+	/// if it is impossible to change the directory. (A handler should not try to close or update the panel,
 	/// ask the user for confirmations, show messages and so on.)
 	/// </remarks>
 	public class SettingDirectoryEventArgs : PanelEventArgs
@@ -860,9 +860,9 @@ namespace FarNet
 		/// <summary>
 		/// Directory name.
 		/// Usually contains only the name, without full path.
-		/// To provide basic functionality the plugin should also process the names '..' and '\'.
+		/// To provide basic functionality a handler should also process the names '..' and '\'.
 		/// For correct restoring of current directory after using "Search from the root folder" mode
-		/// in the Find file dialog, the plugin should be able to process full directory name returned
+		/// in the Find file dialog, a handler should be able to process full directory name returned
 		/// by <see cref="IPanel.Info"/>. It is not necessary when "Search from the current folder"
 		/// mode is set in the Find file dialog.
 		/// </summary>
@@ -1005,17 +1005,17 @@ namespace FarNet
 	public interface IPanel : IAnyPanel
 	{
 		/// <summary>
-		/// Tells to open the panel when the plugin call is completed.
-		/// Only one panel can be opened during this plugin call, otherwise it throws.
+		/// Tells to open the panel when the module call is completed.
+		/// Only one panel can be opened during this module call, otherwise it throws.
 		/// </summary>
 		/// <remarks>
-		/// Normally a panel should be opened when a plugin is called from panels window
+		/// Normally a panel should be opened when a module is called from panels window
 		/// (command line, disk menu or plugins menu in panels). If panels window cannot
 		/// be set current, this method fails.
 		/// <para>
 		/// Other possible reasons of failure:
 		/// *) another panel has been already registered for opening;
-		/// *) the plugin is not called for opening, e.g. it is called to process events.
+		/// *) the module is not called for opening, e.g. it is called to process events.
 		/// </para>
 		/// <para>
 		/// It is recommended to call this as soon as possible and only then configure the panel and other data.
@@ -1037,10 +1037,10 @@ namespace FarNet
 		/// </summary>
 		bool IsPushed { get; }
 		/// <summary>
-		/// Gets another FarNet plugin panel instance or null.
+		/// Gets another module panel or null.
 		/// </summary>
 		/// <remarks>
-		/// It gets any panel available, even if it belongs to another plugin.
+		/// It gets any panel available, even if it belongs to another module.
 		/// Use <see cref="Host"/> or <see cref="TypeId"/> for identification.
 		/// </remarks>
 		IPanel AnotherPanel { get; }
@@ -1124,7 +1124,7 @@ namespace FarNet
 		/// This property is optionally set once, normally by a creator.
 		/// It is used for distinguishing panel types when <see cref="Host"/> is not enough.
 		/// </remarks>
-		/// <seealso cref="IFar.GetPanel(Guid)"/>
+		/// <seealso cref="IFar.FindPanel(Guid)"/>
 		Guid TypeId { get; set; }
 		/// <summary>
 		/// Tells to update and redraw the panel automatically when idle.
@@ -1152,7 +1152,7 @@ namespace FarNet
 		/// </remarks>
 		event EventHandler GettingInfo;
 		/// <summary>
-		/// Called to prepare <see cref="Files"/> list in the current directory of the file system emulated by the plugin.
+		/// Called to prepare <see cref="Files"/> list in the current directory of a file system emulated by the panel.
 		/// </summary>
 		/// <remarks>
 		/// If the file set is constant and may be filled once on the panel creation then this event is not needed.
@@ -1172,8 +1172,8 @@ namespace FarNet
 		/// </remarks>
 		event EventHandler<PanelEventArgs> Closing;
 		/// <summary>
-		/// Event is triggered periodically when a user is idle.
-		/// Plugins can use this event to request panel updating and redrawing.
+		/// Called periodically when a user is idle.
+		/// Modules can use this event for panel updating and redrawing.
 		/// </summary>
 		/// <seealso cref="IdleUpdate"/>
 		/// <seealso cref="IdledHandler"/>
@@ -1195,7 +1195,7 @@ namespace FarNet
 		/// Called when the panel is about to redraw.
 		/// </summary>
 		/// <remarks>
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin redraws the panel itself.
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module redraws the panel itself.
 		/// </remarks>
 		event EventHandler<PanelEventArgs> Redrawing;
 		/// <summary>
@@ -1206,15 +1206,15 @@ namespace FarNet
 		/// Called when a key is pressed.
 		/// </summary>
 		/// <remarks>
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the plugin processes the key itself.
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module processes the key itself.
 		/// </remarks>
 		event EventHandler<PanelKeyEventArgs> KeyPressed;
 		/// <summary>
-		/// Called to set the current directory in the file system emulated by the plugin.
+		/// Called to set the current directory in the file system emulated by the panel.
 		/// </summary>
 		event EventHandler<SettingDirectoryEventArgs> SettingDirectory;
 		/// <summary>
-		/// Called to delete files in the file system emulated by the plugin.
+		/// Called to delete files in the file system emulated by the panel.
 		/// </summary>
 		event EventHandler<FilesEventArgs> DeletingFiles;
 		/// <summary>
@@ -1229,7 +1229,7 @@ namespace FarNet
 		/// Called to create a new panel item on [F7] hotkey.
 		/// </summary>
 		/// <remarks>
-		/// The plugin should be ready to process <see cref="OperationModes.Silent"/> flag.
+		/// A handler should be ready to process <see cref="OperationModes.Silent"/> flag.
 		/// Set <see cref="PanelEventArgs.Ignore"/> to true if processing fails or should be ignored.
 		/// <para>
 		/// It is assumed that this method creates a new item with the <see cref="MakingDirectoryEventArgs.Name"/> name.
@@ -1290,8 +1290,8 @@ namespace FarNet
 	/// <remarks>
 	/// Column options are used by <see cref="PanelModeInfo.Columns"/> and <see cref="PanelModeInfo.StatusColumns"/>.
 	/// <para>
-	/// This class is only a base for <see cref="SetColumn"/> (recommended and ready to use by plugins)
-	/// and other classes derived by plugins (basically they are not needed).
+	/// This class is only a base for <see cref="SetColumn"/> (recommended and ready to use)
+	/// and other classes derived by modules (basically they are not needed).
 	/// </para>
 	/// </remarks>
 	public class FarColumn

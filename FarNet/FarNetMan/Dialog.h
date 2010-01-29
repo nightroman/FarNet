@@ -23,7 +23,7 @@ public:
 	virtual property bool IsWarning { bool get(); void set(bool value); }
 	virtual property bool NoPanel { bool get(); void set(bool value); }
 	virtual property bool NoShadow { bool get(); void set(bool value); }
-	virtual property bool NoSmartCoords;
+	virtual property bool NoSmartCoordinates;
 	virtual property Guid TypeId { Guid get(); void set(Guid value); }
 	virtual property IButton^ Cancel;
 	virtual property IControl^ Default { IControl^ get(); void set(IControl^ value); }
