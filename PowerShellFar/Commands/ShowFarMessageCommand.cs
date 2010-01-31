@@ -17,9 +17,9 @@ namespace PowerShellFar.Commands
 	/// If there are two or more buttons returns selected button index or -1 on escape,
 	/// otherwise nothing is returned, it is used just to display a message.
 	/// </remarks>
-	/// <seealso cref="IFar.Msg(string)"/>
+	/// <seealso cref="IFar.Message(string)"/>
 	[Description("Shows a message box.")]
-	public sealed class ShowFarMsgCommand : BaseCmdlet
+	public sealed class ShowFarMessageCommand : BaseCmdlet
 	{
 		///
 		[Parameter(Position = 0, Mandatory = true, HelpMessage = "Message text. Text with long lines or many lines is allowed, but some lines may be not shown.")]
@@ -119,7 +119,7 @@ namespace PowerShellFar.Commands
 			if (LeftAligned)
 				options |= MsgOptions.LeftAligned;
 
-			int r = A.Far.Msg(Text, Caption, options, Choices, HelpTopic);
+			int r = A.Far.Message(Text, Caption, options, Choices, HelpTopic);
 			if (Buttons != ButtonSet.Ok || Choices != null && Choices.Length > 0)
 				WriteObject(r);
 		}
