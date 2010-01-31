@@ -10,10 +10,10 @@ about FarNet folder structure changes. In short: PSF folder now is:
 REFACTORING: PLUGINS -> MODULES AND OTHER NAME FIXES
 
 *) See breaking name changes in FarNet History.txt; your scripts that use
-changed names should be updated. In PSF in addition:
+changed names should be updated. In PSF, in addition:
 -- Show-FarMsg -> Show-FarMessage
--- Removed script Debug-Msg-.ps1 at all. In fact, it became not much useful
-when the debugger was implemented.
+-- Removed script Debug-Msg-.ps1. In fact, it was not very useful since the
+debugger was implemented.
 
 *) Removed the term "plugin" from two properties\options. Rename:
 2 properties in $Psf.Settings (just in case if scripts use them) and
