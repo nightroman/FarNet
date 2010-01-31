@@ -465,7 +465,7 @@ namespace PowerShellFar
 			A.Psf.InvokePipeline(code, writer, true);
 			if (Editor != A.Far.Editor)
 			{
-				A.Far.Msg(Res.EditorConsoleCannotComplete);
+				A.Far.Message(Res.EditorConsoleCannotComplete);
 			}
 			else
 			{

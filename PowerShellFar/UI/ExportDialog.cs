@@ -99,7 +99,7 @@ namespace PowerShellFar.UI
 						filePath = My.PathEx.Combine(directory, filePath);
 					if (File.Exists(filePath))
 					{
-						if (A.Far.Msg("File " + filePath + " exists. Continue?", "Confirm", MsgOptions.YesNo) != 0)
+						if (A.Far.Message("File " + filePath + " exists. Continue?", "Confirm", MsgOptions.YesNo) != 0)
 							return;
 					}
 

@@ -50,7 +50,7 @@ namespace PowerShellFar.UI
 				A.Psf.Settings.Save();
 
 				if (needRestart)
-					A.Far.Msg("Some settings will take effect only when Far restarts.");
+					A.Far.Message("Some settings will take effect only when Far restarts.");
 
 				return true;
 			}

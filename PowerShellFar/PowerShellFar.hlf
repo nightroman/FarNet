@@ -35,7 +35,6 @@ $#PowerShellFar#
 	~Profile-Editor-.ps1~@ProfileEditor@
 	~TabExpansion.ps1~@TabExpansion@
 
-	~Debug-Msg-.ps1~@DebugMsg@
 	~Remove-EndSpace-.ps1~@RemoveEndSpace@
 	~Job-RemoveItem-.ps1~@JobRemoveItem@
 	~Search-Regex-.ps1~@SearchRegex@
@@ -165,7 +164,7 @@ selected. Thus, you can try your code just in the editor. The code is executed
 in the global scope, variables created by commands are available for other
 commands.
 
-*) In command line: execute the command line text, plugin prefix is not required
+*) In command line: execute the command line text, the prefix is not required
 (but it is not an error). The command text is kept in the command line if an
 error happens or if there is a selection. See also "Easy invoke": ~FAQ~@FAQ@.
 
@@ -1240,7 +1239,7 @@ commands, see
 
 With the associations above when you press [Enter] on scripts in the panel then
 standard scripts are started by PowerShell.exe, PowerShellFar scripts are
-started by the plugin and step units are started by the stepper.
+started by the PSF and step units are started by the stepper.
 
 
 @Profile
@@ -1289,7 +1288,7 @@ script or any other scope).
  __________
 
 	## Aliases
-	Set-Alias bp Debug-Msg-
+	Set-Alias fff Find-FarFile -Description 'Finds the panel file'
 	...
 
 the profile is a good place to define aliases. Some sample aliases are predefined.
@@ -1317,6 +1316,14 @@ details: properties Providers (Actor), Columns, ExcludeColumns, FarName
 
 Here you can set some options of $Psf.Settings, mostly UI preferences.
  __________
+
+	## Import modules
+	Import-Module FarDescription
+	Import-Module FarMacro
+
+Import some modules (or add snap-ins) that are used almost in every session, so
+that you get them always ready. Still, this is not a good idea for modules that
+are not always used, import them only when they are needed.
 
 
 @ProfileEditor
@@ -1383,8 +1390,8 @@ $#TabExpansion.ps1#
 
 This is a powerful replacement of the default PowerShell function TabExpansion.
 
-The script has to be in the plugin directory. It is loaded once and only when
-it is requested the first time. It installs the function global:TabExpansion.
+The script has to be in the PSF directory. It is loaded once and only when it
+is requested the first time. It installs the function global:TabExpansion.
 
 In fact, TabExpansion.ps1 is host independent and you can use it in standard
 PowerShell.exe console, too. All you need is to call this script once, for
@@ -1525,80 +1532,6 @@ Cached information about types in currently loaded assemblies is stored in a
 global variable $TypeCache (it is built once on the first call). If you load a
 new assembly after that its information is not yet available for tab expansion.
 Remove $TypeCache or set it to $null and the cache will be rebuilt later.
-
-
-@DebugMsg
-$#Debug-Msg-.ps1#
-~Contents~@Contents@
-
-#NOTE: new debugging features makes this script kind of obsolete, but it still can be useful.#
-
-This script shows error or any kind of information and some choices. Choices
-are:
-
-* #Close# Close the message box with no actions.
-
-* #Suspend# Open modal Editor console where you can, say, view or modify
-current variables (see below).
-
-* #Goto# Go to the source line of an error or invocation line in a file in a
-modal editor. The idea is just to glance at the source, editing is not
-recommended if the file is already open.
-
-* #Throw# Throws an error.
-
-* #Exit# Calls exit.
-
-
-#EXAMPLE#
-
-The example demonstrates a few techniques and issues:
-
-	- using "bp" (alias for Debug-Msg-) to show some information
-	- suspending and reading\writing data in editor console
-	- using "trap" for catching errors
-	- dot-source or not dot-source
-	- execution scopes and etc.
-
-Create the script (assume that alias "bp" is used for "Debug-Msg-.ps1", see
-~Profile-.ps1~@Profile@):
-
-	trap { bp $_; continue }
-	$x = 12345
-	. bp $x ## Message 1
-	1/$x ## Message 2 from trap if you have set $x = 0 in editor console
-	"x=$x"
-
-Recommended steps for this demo:
-
- Run the script.
- You see Message 1.
- Select #Suspend# and in the editor type #$x[Enter]#.
- You see #12345#, i.e. you can read current variables.
- Type #$x=0[Enter]#, press #[Esc]#, don't save a file (or save, up to you).
- You see Message 2, i.e. you have really changed #$x# when you set #$x=0#.
- Select #Suspend# again and in the editor type #$x[Enter]# again.
- You see #0#, so now you have double checked that #$x# is changed.
- Type #$x=12345[Enter]#, press #[Esc]#, don't save a file, select #Continue#.
- You see output is #x=0#, not #x=12345#.
-
- Why? Because:
-
-- the first time "bp" was "dot-sourced" (called with '. '), i.e. executed in the
-current scope.
-
-- the second time "bp" was called in a child scope where parent variables are
-read-only.
-
-But it is useful to know: you still can change variables in parent scope from
-child:
-
-	Set-Variable -Scope 1 ## for parent
-	Set-Variable -Scope 2 ## for grandparent and so on.
-
-For example in our Editor console called from "trap" try this:
-
-	Set-Variable x 12345 -Scope 2 ## 2 = 1 (trap) + 1 (bp not dot-sourced)
 
 
 @RemoveEndSpace
@@ -1852,10 +1785,10 @@ performance is quite important or a tool is too complex for scripting). Be
 aware that there are many possible ways.
 
 
-#Way 1 - FarNet plugin#
+#Way 1 - FarNet module#
 
-Create a FarNet plugin, that is a .NET library dependent on FarNet. Implement
-one or more plugin classes. PowerShellFar itself is such a plugin.
+Create a FarNet module, that is a .NET library dependent on FarNet. Implement
+one or more module classes. PowerShellFar itself is such a module.
 
 
 #Way 2 - .NET library#
@@ -1902,9 +1835,9 @@ FarNet you should connect it, send the IFar instance there. For example:
 #Advantages#
 
 -- Functionality of this assembly is available everywhere in PowerShell code
-and for other .NET plugins.
+and for other .NET modules.
 
--- Simplicity: .NET assembly contains pure functionality, no extra plugin
+-- Simplicity: .NET assembly contains pure functionality, no extra module
 infrastructure.
 
 -- Flexibility: now you can decide how to use it: from the command line or a
@@ -1954,7 +1887,7 @@ for normal TabExpansion of the first word:
 "Invoke selected code" menu command. Example ([ShiftSpace]):
 
  >: Set-FarMacro Shell ShiftSpace 'F11 X 2' 'Easy invoke' -CommandLine 1
- (X is the PowerShellFar hotkey in the plugins menu)
+ (X is the PowerShellFar hotkey in the plugin menu)
 
 Now you can type PowerShell commands without a prefix and press [ShiftSpace] to
 execute it. There is a bonus: if a command fails, say, due to mistakes, its

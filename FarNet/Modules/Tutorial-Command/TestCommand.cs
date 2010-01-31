@@ -9,7 +9,7 @@ public class Cmd1 : ModuleCommand
 	// Command handler: this one just shows the prefix and the command.
 	public override void Invoke(object sender, CommandEventArgs e)
 	{
-		Far.Msg(Prefix + ":" + e.Command, Name);
+		Far.Message(Prefix + ":" + e.Command, Name);
 	}
 }
 

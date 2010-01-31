@@ -48,7 +48,7 @@ $p.SetGetObjects({
 ### Delete jobs (stop\remove)
 $p.SetDelete({
 	$action = if ($_.Move) { 'Remove' } else { 'Stop\Remove' }
-	if ($Far.Msg("$action selected jobs?", $action, 'OkCancel') -ne 0) { return }
+	if ($Far.Message("$action selected jobs?", $action, 'OkCancel') -ne 0) { return }
 	foreach($job in ($_.Files | Select-Object -ExpandProperty Data)) {
 		if (!$_.Move -and $job.State -eq 'Running') {
 			Stop-Job -Job $job

@@ -225,7 +225,7 @@ Code (see configuration):
 Reason (see also $Error):
 {1}
 ", Settings.StartupCode, ex.Message);
-						A.Far.Msg(msg, Res.Name, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
+						A.Far.Message(msg, Res.Name, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
 					}
 				}
 			}
@@ -281,7 +281,7 @@ See also the section PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
 				ArrayList errors = Engine.SessionState.PSVariable.GetValue("Error") as ArrayList;
 				if (errors != null && errors.Count > 0)
 				{
-					A.Far.Msg(@"
+					A.Far.Message(@"
 The startup code was invoked with errors.
 View the error list or the variable $Error.
 ", "PowerShellFar startup errors", MsgOptions.Gui);
@@ -364,7 +364,7 @@ Continue with this current location?
 {1}
 ", location, currentLocation);
 
-					switch (A.Far.Msg(message, Res.Name, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
+					switch (A.Far.Message(message, Res.Name, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
 					{
 						case 1:
 							break;
@@ -410,7 +410,7 @@ Continue with this current directory?
 {1}
 ", directory, currentDirectory);
 
-					switch (A.Far.Msg(message, Res.Name, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
+					switch (A.Far.Message(message, Res.Name, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
 					{
 						case 1:
 							currentDirectory = null;

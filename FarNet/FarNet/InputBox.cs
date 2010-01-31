@@ -48,15 +48,10 @@ namespace FarNet
 		/// If it is true then asterisks are displaied instead of input characters.
 		/// </remarks>
 		bool IsPassword { get; set; }
-		/// <summary>
-		/// Tells to expand environment variables.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="ExpandEnvironmentVariables"]/*'/>
 		bool ExpandEnvironmentVariables { get; set; }
-		/// <summary>
-		/// If <see cref="Text"/> is empty and <see cref="History"/> is not empty,
-		/// then do not initialize the input line from the history.
-		/// </summary>
-		bool NoLastHistory { get; set; }
+		/// <include file='doc.xml' path='docs/pp[@name="UseLastHistory"]/*'/>
+		bool UseLastHistory { get; set; }
 		/// <summary>
 		/// Tells that buttons are visible.
 		/// </summary>

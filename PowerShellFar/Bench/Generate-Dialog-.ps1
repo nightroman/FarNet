@@ -26,7 +26,7 @@ Set-StrictMode -Version 2
 
 # Get the current dialog
 $dialog = $Far.Dialog
-if (!$dialog) { $Far.Msg("Run this from a dialog"); return }
+if (!$dialog) { $Far.Message("Run this from a dialog"); return }
 
 # escape string
 function Esc([string]$s) { $s.Replace("'", "''") }

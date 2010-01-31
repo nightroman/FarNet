@@ -134,37 +134,43 @@ namespace FarNet
 	public interface IAnyMenu
 	{
 		/// <summary>
-		/// X-position. Default: -1 (to be calculated).
+		/// Gets or sets the X-position. Default: -1 (to be calculated).
 		/// </summary>
 		int X { get; set; }
 		/// <summary>
-		/// Y-position. Default: -1 (to be calculated).
+		/// Gets or sets the Y-position. Default: -1 (to be calculated).
 		/// </summary>
 		int Y { get; set; }
 		/// <summary>
-		/// Maximal height (maximal number of visible items).
+		/// Gets or sets the max height (max number of visible items).
 		/// </summary>
 		int MaxHeight { get; set; }
 		/// <summary>
-		/// Title line text.
+		/// Gets or sets the title line text.
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
-		/// Bottom line text.
+		/// Gets or sets the bottom line text.
 		/// </summary>
 		string Bottom { get; set; }
 		/// <summary>
-		/// Menu items.
+		/// Gets the menu item list.
 		/// </summary>
+		/// <remarks>
+		/// You should add your items to this list.
+		/// </remarks>
 		IList<FarItem> Items { get; }
 		/// <summary>
+		/// Gets or sets the selected item index.
+		/// </summary>
+		/// <remarks>
 		/// Before and after <see cref="Show"/>:
 		/// before: selects the item by this index;
 		/// after: gets the selected item index or -1 on cancel.
-		/// </summary>
+		/// </remarks>
 		int Selected { get; set; }
 		/// <summary>
-		/// User data attached to the <see cref="Selected"/> item or null on cancel.
+		/// Gets user data attached to the <see cref="Selected"/> item or null on cancel.
 		/// </summary>
 		object SelectedData { get; }
 		/// <summary>
@@ -185,31 +191,34 @@ namespace FarNet
 		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
-		/// To select the last item on <see cref="Show()"/> if <see cref="Selected"/> is not set.
+		/// Tells to select the last item on <see cref="Show()"/> if <see cref="Selected"/> is not set.
 		/// </summary>
 		bool SelectLast { get; set; }
 		/// <summary>
-		/// Sender passed in <see cref="FarItem.Click"/>.
+		/// Gets or sets a sender to be passed in <see cref="FarItem.Click"/> event handlers.
 		/// </summary>
 		/// <remarks>
 		/// By default <see cref="FarItem"/> is a sender. You can provide another sender passed in.
 		/// </remarks>
 		object Sender { get; set; }
 		/// <summary>
-		/// Show ampersands in items instead of using them for accelerator characters.
+		/// Tells to show ampersands in items instead of using them as hotkey marks.
 		/// </summary>
 		bool ShowAmpersands { get; set; }
-		/// <summary>
-		/// Cursor will go to upper position if it is at downmost position and down is pressed.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="WrapCursor"]/*'/>
 		bool WrapCursor { get; set; }
-		/// <summary>
-		/// Assign hotkeys automatically.
-		/// </summary>
+		/// <include file='doc.xml' path='docs/pp[@name="AutoAssignHotkeys"]/*'/>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
-		/// A key that has closed the menu; it is virtual <see cref="VKeyCode"/> for <see cref="IMenu"/> and internal <see cref="KeyCode"/> for <see cref="IListMenu"/>.
+		/// Gets a key that has closed the menu.
 		/// </summary>
+		/// <remarks>
+		/// It is a virtual <see cref="VKeyCode"/> key for <see cref="IMenu"/>
+		/// and an internal <see cref="KeyCode"/> key for <see cref="IListMenu"/>.
+		/// <para>
+		/// Keys that break the menu should be added by a caller before the show.
+		/// </para>
+		/// </remarks>
 		int BreakKey { get; }
 		/// <summary>
 		/// Adds a new item to <see cref="Items"/> and returns it.
@@ -233,7 +242,7 @@ namespace FarNet
 	public interface IMenu : IAnyMenu, IDisposable
 	{
 		/// <summary>
-		/// Assign hotkeys automatically from bottom.
+		/// Tells to assign hotkeys automatically from bottom.
 		/// </summary>
 		bool ReverseAutoAssign { get; set; }
 		/// <summary>
@@ -241,7 +250,7 @@ namespace FarNet
 		/// </summary>
 		bool ChangeConsoleTitle { get; set; }
 		/// <summary>
-		/// List of <see cref="VKeyCode"/> codes that close the menu. See VK_* in Far API.
+		/// Gets the list of <see cref="VKeyCode"/> keys that close the menu. See VK_* in Far API.
 		/// </summary>
 		IList<int> BreakKeys { get; }
 		/// <summary>
@@ -317,17 +326,19 @@ namespace FarNet
 	public interface IListMenu : IAnyMenu
 	{
 		/// <summary>
-		/// Enables permanent filter and defines its type.
+		/// Gets or sets the type of permanent filter and enables it.
 		/// </summary>
 		PatternOptions FilterOptions { get; set; }
 		/// <summary>
-		/// Permanent filter pattern.
-		/// It does not enable filter itself, you have to set <see cref="FilterOptions"/>.
-		/// If it is empty, it is taken from history if <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set.
+		/// Gets or sets the permanent filter pattern.
 		/// </summary>
+		/// <remarks>
+		/// It does not enable filter itself, you have to set <see cref="FilterOptions"/>.
+		/// If it is empty then it is taken from the history if <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set.
+		/// </remarks>
 		string Filter { get; set; }
 		/// <summary>
-		/// Permanent filter history used by the filter input box opened by <see cref="FilterKey"/>.
+		/// Gets or sets the permanent filter history name used by the filter input box opened by <see cref="FilterKey"/>.
 		/// </summary>
 		string FilterHistory { get; set; }
 		/// <summary>
@@ -336,16 +347,18 @@ namespace FarNet
 		/// </summary>
 		bool FilterRestore { get; set; }
 		/// <summary>
-		/// Internal key code that opens a permanent filter input box. Default: [CtrlDown].
+		/// Gets or sets the internal <see cref="KeyCode"/> key that opens a permanent filter input box. Default: [CtrlDown].
 		/// </summary>
 		int FilterKey { get; set; }
 		/// <summary>
-		/// Enables specified incremental filter and related options
-		/// and disables hotkey highlighting and related options.
+		/// Gets or sets the incremental filter and related options.
 		/// </summary>
+		/// <remarks>
+		/// Incremental filter mode disables hotkey highlighting and all related options.
+		/// </remarks>
 		PatternOptions IncrementalOptions { get; set; }
 		/// <summary>
-		/// Predefined incremental filter pattern used to continue typing.
+		/// Gets or sets the predefined incremental filter pattern used to continue typing.
 		/// </summary>
 		/// <remarks>
 		/// It is not used to filter the initial list, initial list contains all items.
@@ -363,15 +376,15 @@ namespace FarNet
 		/// </summary>
 		bool AutoSelect { get; set; }
 		/// <summary>
-		/// Do not show item count information at the bottom line.
+		/// Tells to not show item count information at the bottom line.
 		/// </summary>
 		bool NoInfo { get; set; }
 		/// <summary>
-		/// Disables the dialog shadow.
+		/// Tells to not show the dialog shadow.
 		/// </summary>
 		bool NoShadow { get; set; }
 		/// <summary>
-		/// Screen margin size.
+		/// Gets or sets the screen margin size.
 		/// </summary>
 		int ScreenMargin { get; set; }
 		/// <summary>

@@ -1,14 +1,14 @@
-// This file is used by Code Analysis to maintain SuppressMessage
-// attributes that are applied to this project.
-// Project-level suppressions either have no target or are given
-// a specific target and scoped to a namespace, type, member, etc.
+// This file is used by Code Analysis to maintain SuppressMessage 
+// attributes that are applied to this project. 
+// Project-level suppressions either have no target or are given 
+// a specific target and scoped to a namespace, type, member, etc. 
 //
-// To add a suppression to this file, right-click the message in the
-// Error List, point to "Suppress Message(s)", and click
-// "In Project Suppression File".
-// You do not need to add suppressions to this file manually.
+// To add a suppression to this file, right-click the message in the 
+// Error List, point to "Suppress Message(s)", and click 
+// "In Project Suppression File". 
+// You do not need to add suppressions to this file manually. 
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Scope = "type", Target = "PowerShellFar.Actor")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Scope = "member", Target = "PowerShellFar.Actor.#Action(System.String,System.EventHandler)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Scope = "member", Target = "PowerShellFar.Actor.#Action(System.String,System.EventHandler,FarNet.ToolOptions)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Scope = "member", Target = "PowerShellFar.Actor.#AppData")]
@@ -62,7 +62,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.Commands.NewFarObjectPanelCommand.#InputObject")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.Commands.OutFarPanelCommand.#Columns")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.Commands.OutFarPanelCommand.#ExcludeColumns")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.Commands.ShowFarMsgCommand.#Choices")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "PowerShellFar.Commands.ShowFarMessageCommand.#Choices")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "Kuzmin", Scope = "resource", Target = "PowerShellFar.Resource.resources")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "Psf", Scope = "resource", Target = "PowerShellFar.Resource.resources")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "cmds", Scope = "resource", Target = "PowerShellFar.Resource.resources")]
@@ -71,5 +71,4 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "notcontains", Scope = "resource", Target = "PowerShellFar.Resource.resources")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "param", Scope = "resource", Target = "PowerShellFar.Resource.resources")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "prm", Scope = "resource", Target = "PowerShellFar.Resource.resources")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "ps", Scope = "resource", Target = "PowerShellFar.Resource.resources")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Scope = "type", Target = "PowerShellFar.Actor")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames")]

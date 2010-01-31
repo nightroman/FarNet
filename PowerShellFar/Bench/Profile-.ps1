@@ -16,7 +16,6 @@
 $ErrorActionPreference = 'Stop'
 
 ### Aliases
-Set-Alias bp Debug-Msg- -Description 'Hardcoded breakpoint'
 Set-Alias fff Find-FarFile -Description 'Finds the panel file'
 Set-Alias gff Get-FarFile -Description 'Gets the panel file(s)'
 Set-Alias gfh Get-FarHelp -Description 'Gets command details'

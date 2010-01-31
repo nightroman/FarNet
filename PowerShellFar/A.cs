@@ -35,7 +35,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(Exception error)
 		{
-			Far.Msg(error.Message, "PowerShellFar error", MsgOptions.LeftAligned);
+			Far.Message(error.Message, "PowerShellFar error", MsgOptions.LeftAligned);
 		}
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(string message)
 		{
-			Far.Msg(message, Res.Name, MsgOptions.LeftAligned);
+			Far.Message(message, Res.Name, MsgOptions.LeftAligned);
 		}
 
 		/// <summary>
@@ -208,7 +208,7 @@ namespace PowerShellFar
 			foreach (object o in ps.Streams.Error)
 				sb.AppendLine(o.ToString());
 
-			Far.Msg(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
+			Far.Message(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
 			return true;
 		}
 

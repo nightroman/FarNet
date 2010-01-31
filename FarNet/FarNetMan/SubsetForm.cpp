@@ -85,8 +85,8 @@ bool FarSubsetForm::Show()
 		return false;
 	
 	// drop items, Show() may be called several times
-	_ListBox1->Clear();
-	_ListBox2->Clear();
+	_ListBox1->Items->Clear();
+	_ListBox2->Items->Clear();
 
 	// fill both lists
 	if (_Indexes && _Indexes->Length > 0)

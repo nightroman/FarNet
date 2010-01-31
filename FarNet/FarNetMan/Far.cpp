@@ -63,19 +63,13 @@ String^ Far::ActivePath::get()
 	return gcnew String(buf);
 }
 
-String^ Far::PluginPath::get()
+String^ Far::RegistryFarPath::get()
 {
-	String^ pluginPath = gcnew String(Info.ModuleName);
-	return (gcnew FileInfo(pluginPath))->DirectoryName;
-}
-
-String^ Far::RootFar::get()
-{
-	String^ key = RootKey;
+	String^ key = RegistryPluginsPath;
 	return key->Substring(0, key->LastIndexOf('\\'));
 }
 
-String^ Far::RootKey::get()
+String^ Far::RegistryPluginsPath::get()
 {
 	return gcnew String(Info.RootKey);
 }
@@ -310,27 +304,27 @@ void Far::Unregister(BaseModule^ plugin)
 	Module0::UnloadModule(plugin);
 }
 
-void Far::Msg(String^ body)
+void Far::Message(String^ body)
 {
 	Message::Show(body, nullptr, MsgOptions::Ok, nullptr, nullptr);
 }
 
-void Far::Msg(String^ body, String^ header)
+void Far::Message(String^ body, String^ header)
 {
 	Message::Show(body, header, MsgOptions::Ok, nullptr, nullptr);
 }
 
-int Far::Msg(String^ body, String^ header, MsgOptions options)
+int Far::Message(String^ body, String^ header, MsgOptions options)
 {
 	return Message::Show(body, header, options, nullptr, nullptr);
 }
 
-int Far::Msg(String^ body, String^ header, MsgOptions options, array<String^>^ buttons)
+int Far::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons)
 {
 	return Message::Show(body, header, options, buttons, nullptr);
 }
 
-int Far::Msg(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
+int Far::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
 {
 	return Message::Show(body, header, options, buttons, helpTopic);
 }
@@ -371,7 +365,7 @@ void Far::Run(String^ command)
 	}
 }
 
-IntPtr Far::HWnd::get()
+IntPtr Far::MainWindowHandle::get()
 {
 	return (IntPtr)Info.AdvControl(Info.ModuleNumber, ACTL_GETFARHWND, nullptr);
 }
@@ -823,7 +817,7 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 {
 	List<String^>^ r = gcnew List<String^>;
 
-	String^ keyName = RootFar + "\\" + name;
+	String^ keyName = RegistryFarPath + "\\" + name;
 	RegistryKey^ key = nullptr;
 	try
 	{
@@ -891,7 +885,7 @@ void Far::ShowError(String^ title, Exception^ error)
 	String^ info = Log::TraceException(error);
 
 	// ask
-	int res = Msg(
+	int res = Message(
 		error->Message,
 		String::IsNullOrEmpty(title) ? error->GetType()->FullName : title,
 		MsgOptions::LeftAligned | MsgOptions::Warning,
@@ -1143,7 +1137,7 @@ Object^ Far::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValu
 	RegistryKey^ key;
 	try
 	{
-		key = Registry::CurrentUser->OpenSubKey(RootFar + "\\" + keyPath);
+		key = Registry::CurrentUser->OpenSubKey(RegistryFarPath + "\\" + keyPath);
 		return key ? key->GetValue(valueName, defaultValue) : defaultValue;
 	}
 	finally
@@ -1158,7 +1152,7 @@ Object^ Far::GetPluginValue(String^ pluginName, String^ valueName, Object^ defau
 	RegistryKey^ key;
 	try
 	{
-		key = Registry::CurrentUser->OpenSubKey(RootKey + "\\" + pluginName);
+		key = Registry::CurrentUser->OpenSubKey(RegistryPluginsPath + "\\" + pluginName);
 		return key ? key->GetValue(valueName, defaultValue) : defaultValue;
 	}
 	finally
@@ -1173,7 +1167,7 @@ void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue
 	RegistryKey^ key;
 	try
 	{
-		key = Registry::CurrentUser->CreateSubKey(RootKey + "\\" + pluginName);
+		key = Registry::CurrentUser->CreateSubKey(RegistryPluginsPath + "\\" + pluginName);
 		key->SetValue(valueName, newValue);
 	}
 	finally
@@ -1557,13 +1551,13 @@ void Far::OpenConfig()
 	menu.Add(Res::ModuleEditors + "  : " + (_registeredEditor.Count));
 	menu.Add(Res::ModuleFilers + "   : " + (_registeredFiler.Count));
 	menu.Add("Tools")->IsSeparator = true;
-	menu.Add(Res::PanelsTools + "    : " + (_toolPanels.Count));
-	menu.Add(Res::EditorTools + "    : " + (_toolEditor.Count));
-	menu.Add(Res::ViewerTools + "    : " + (_toolViewer.Count));
-	menu.Add(Res::DialogTools + "    : " + (_toolDialog.Count));
-	menu.Add(Res::ConfigTools + "    : " + (_toolConfig.Count));
-	menu.Add(Res::DiskTools + "      : " + (_toolDisk.Count));
-	menu.Add("Modules")->IsSeparator = true;
+	menu.Add(Res::PanelsTools + "   : " + (_toolPanels.Count));
+	menu.Add(Res::EditorTools + "   : " + (_toolEditor.Count));
+	menu.Add(Res::ViewerTools + "   : " + (_toolViewer.Count));
+	menu.Add(Res::DialogTools + "   : " + (_toolDialog.Count));
+	menu.Add(Res::ConfigTools + "   : " + (_toolConfig.Count));
+	menu.Add(Res::DiskTools + "     : " + (_toolDisk.Count));
+	menu.Add("Settings")->IsSeparator = true;
 	menu.Add("UI culture");
 
 	while(menu.Show())
@@ -1675,7 +1669,7 @@ void Far::OnConfigUICulture()
 		}
 		catch(ArgumentException^)
 		{
-			Far::Instance->Msg("Unknown culture name.");
+			Far::Instance->Message("Unknown culture name.");
 		}
 	}
 }
@@ -1767,7 +1761,7 @@ void Far::OnConfigCommand()
 			alias = ib.Text->Trim();
 			if (alias->IndexOf(" ") >= 0 || alias->IndexOf(":") >= 0)
 			{
-				Msg("Prefix must not contain ' ' or ':'.");
+				Message("Prefix must not contain ' ' or ':'.");
 				alias = nullptr;
 				continue;
 			}

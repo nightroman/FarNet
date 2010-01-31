@@ -187,7 +187,7 @@ if ($Far.WindowCount -ne 1) {
 {
 	# optionally open one more panel (by returned extra steps)
 	if ($Psf.Stepper.Ask) {
-		$answer = Show-FarMsg 'Open another panel?' -Choices 'Yes', 'No', 'Fail'
+		$answer = Show-FarMessage 'Open another panel?' -Choices 'Yes', 'No', 'Fail'
 		if ($answer -eq 2) { throw "This is a demo error." }
 		$global:TestStepperAnotherPanel = $answer -eq 0
 	}

@@ -43,7 +43,7 @@ if ($Folders) {
 		if ($_) {
 			# _090929_061740
 			if (($_.Length -lt 260) -and !([System.IO.Directory]::Exists($_))) {
-				Show-FarMsg "Directory '$_' does not exist."
+				Show-FarMessage "Directory '$_' does not exist."
 			}
 			else {
 				$Far.Panel.Path = $_

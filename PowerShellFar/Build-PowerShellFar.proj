@@ -35,7 +35,6 @@
 		Modules\FarDescription\Bin\$(Configuration)\FarDescription.dll;
 		Modules\FarDescription\about_FarDescription.help.txt;
 		Modules\FarDescription\FarDescription.psd1;
-		Modules\FarDescription\FarDescription.psm1;
 		Modules\FarDescription\FarDescription.Types.ps1xml;
 		"
 		DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarDescription"
@@ -46,7 +45,6 @@
 		Modules\FarMacro\Bin\$(Configuration)\FarMacro.dll;
 		Modules\FarMacro\about_FarMacro.help.txt;
 		Modules\FarMacro\FarMacro.psd1;
-		Modules\FarMacro\FarMacro.psm1;
 		Modules\FarMacro\FarMacro.Format.ps1xml;
 		"
 		DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarMacro"

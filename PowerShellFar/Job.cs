@@ -699,7 +699,7 @@ Ignore: discard all jobs and output
 				string title = "Background job";
 				Console.Title = title;
 
-				switch (A.Far.Msg(message, title, MsgOptions.Gui | MsgOptions.AbortRetryIgnore))
+				switch (A.Far.Message(message, title, MsgOptions.Gui | MsgOptions.AbortRetryIgnore))
 				{
 					case 0:
 						{

@@ -82,7 +82,7 @@
     <Compile Include="Commands\NewFarViewerCommand.cs" />
     <Compile Include="Commands\OutFarListCommand.cs" />
     <Compile Include="Commands\OutFarPanelCommand.cs" />
-    <Compile Include="Commands\ShowFarMsgCommand.cs" />
+    <Compile Include="Commands\ShowFarMessageCommand.cs" />
     <Compile Include="Commands\StartFarEditorCommand.cs" />
     <Compile Include="Commands\StartFarPanelCommand.cs" />
     <Compile Include="Commands\StartFarViewerCommand.cs" />

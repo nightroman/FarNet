@@ -247,7 +247,18 @@ namespace PowerShellFar
 					int iSlash = newLocation.LastIndexOf('\\');
 					if (iSlash < 0)
 					{
-						newLocation = null;
+						// no slashes, split by ::
+						int iProvider = newLocation.IndexOf("::", StringComparison.Ordinal);
+						if (iProvider > 0)
+						{
+							// FarMacro
+							Panel.PostName(newLocation.Substring(iProvider + 2));
+							newLocation = newLocation.Substring(0, iProvider + 2);
+						}
+						else
+						{
+							newLocation = null;
+						}
 					}
 					else
 					{

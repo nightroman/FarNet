@@ -8,9 +8,6 @@ using FarNet;
 
 namespace FarMacro
 {
-	/// <summary>
-	/// Base cmdlet.
-	/// </summary>
 	public class BaseCmdlet : PSCmdlet
 	{
 		internal const string Noun = "FarMacro";

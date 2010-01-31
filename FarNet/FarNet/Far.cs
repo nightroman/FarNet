@@ -82,20 +82,16 @@ namespace FarNet
 		/// </remarks>
 		void Unregister(BaseModule baseModule);
 		/// <summary>
-		/// Gets the path of the FarNet plugin home directory.
-		/// </summary>
-		string PluginPath { get; }
-		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
-		void Msg(string body);
+		void Message(string body);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
-		void Msg(string body, string header);
+		void Message(string body, string header);
 		/// <summary>
 		/// Shows a message box with options.
 		/// </summary>
@@ -103,7 +99,7 @@ namespace FarNet
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
-		int Msg(string body, string header, MsgOptions options);
+		int Message(string body, string header, MsgOptions options);
 		/// <summary>
 		/// Shows a message box with options and buttons.
 		/// </summary>
@@ -112,7 +108,7 @@ namespace FarNet
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
-		int Msg(string body, string header, MsgOptions options, string[] buttons);
+		int Message(string body, string header, MsgOptions options, string[] buttons);
 		/// <summary>
 		/// Shows a message box with options, buttons and help.
 		/// </summary>
@@ -129,16 +125,16 @@ namespace FarNet
 		/// In extreme cases when a message contains too many or too long buttons, then a message
 		/// box is converted into a listbox dialog where listbox items work as buttons.
 		/// </remarks>
-		int Msg(string body, string header, MsgOptions options, string[] buttons, string helpTopic);
+		int Message(string body, string header, MsgOptions options, string[] buttons, string helpTopic);
 		/// <summary>
 		/// Runs a command with a registered FarNet prefix.
 		/// </summary>
 		/// <param name="command">Command with a prefix of any FarNet module.</param>
 		void Run(string command);
 		/// <summary>
-		/// Gets the Far window handle.
+		/// Gets the Far main window handle.
 		/// </summary>
-		IntPtr HWnd { get; }
+		IntPtr MainWindowHandle { get; }
 		/// <summary>
 		/// Gets Far version.
 		/// </summary>
@@ -492,20 +488,20 @@ namespace FarNet
 		/// <returns>Entered text or null if cancelled.</returns>
 		string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Gets the path of the Far settings registry key.
+		/// Gets the registry path where Far keeps settings.
 		/// </summary>
 		/// <remarks>
-		/// It also takes into account a user if it is specified in the command line by parameter /u.
+		/// It takes into account a user if it is specified in the command line by parameter /u.
 		/// </remarks>
-		string RootFar { get; }
+		string RegistryFarPath { get; }
 		/// <summary>
-		/// Gets the registry root key path, where plugins normally save their settings.
+		/// Gets the registry path where plugins keep settings.
 		/// </summary>
 		/// <remarks>
-		/// Do not save values directly in this key, create your own subkey here
+		/// Do not save values directly in here, create your own subkey
 		/// or use <see cref="GetPluginValue"/> and <see cref="SetPluginValue"/>.
 		/// </remarks>
-		string RootKey { get; }
+		string RegistryPluginsPath { get; }
 		/// <summary>
 		/// Gets a plugin value from the registry.
 		/// </summary>

@@ -355,7 +355,7 @@ namespace PowerShellFar
 
 			if ((A.Far.Confirmations & FarConfirmations.Delete) != 0)
 			{
-				if (A.Far.Msg("Delete selected members (if possible)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
+				if (A.Far.Message("Delete selected members (if possible)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
 					return;
 			}
 
@@ -517,7 +517,7 @@ namespace PowerShellFar
 			// ask
 			if (!r)
 			{
-				switch (A.Far.Msg(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+				switch (A.Far.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
 				{
 					case 0:
 						InvokeScriptReturnAsIs(_Save, null);

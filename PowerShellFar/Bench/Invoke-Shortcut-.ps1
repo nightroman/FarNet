@@ -45,7 +45,7 @@ param
 )
 
 if (![IO.File]::Exists($Path)) {
-	return Show-FarMsg "File does not exist: '$Path'"
+	return Show-FarMessage "File does not exist: '$Path'"
 }
 
 # WMI does not work well with names with spaces, use WScript.Shell.
@@ -54,7 +54,7 @@ $WshShell = New-Object -ComObject WScript.Shell
 $link = $WshShell.CreateShortcut([IO.Path]::GetFullPath($Path))
 $target = $link.TargetPath
 if (!$target) {
-	return Show-FarMsg "Cannot get a target path from '$Path'.`nIs it a shortcut file?"
+	return Show-FarMessage "Cannot get a target path from '$Path'.`nIs it a shortcut file?"
 }
 
 ### Panel properties
@@ -77,7 +77,7 @@ if ([IO.Directory]::Exists($target)) {
 
 ### Test a file
 elseif (![IO.File]::Exists($target)) {
-	Show-FarMsg "Target file does not exist: '$target'"
+	Show-FarMessage "Target file does not exist: '$target'"
 }
 
 ### Edit a file

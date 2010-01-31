@@ -32,12 +32,11 @@ public:
 	virtual property ILine^ Line { ILine^ get(); }
 	virtual property IMacro^ Macro { IMacro^ get(); }
 	virtual property int WindowCount { int get(); }
-	virtual property IntPtr HWnd { IntPtr get(); }
+	virtual property IntPtr MainWindowHandle { IntPtr get(); }
 	virtual property IViewer^ Viewer { IViewer^ get(); }
 	virtual property String^ ActivePath { String^ get(); }
-	virtual property String^ PluginPath { String^ get(); }
-	virtual property String^ RootFar { String^ get(); }
-	virtual property String^ RootKey { String^ get(); }
+	virtual property String^ RegistryFarPath { String^ get(); }
+	virtual property String^ RegistryPluginsPath { String^ get(); }
 	virtual property Version^ FarVersion { System::Version^ get(); }
 	virtual property Version^ FarNetVersion { System::Version^ get(); }
 	virtual property WindowType WindowType { FarNet::WindowType get(); }
@@ -64,9 +63,9 @@ public:
 	virtual ICollection<String^>^ GetDialogHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter);
-	virtual int Msg(String^ body, String^ header, MsgOptions options);
-	virtual int Msg(String^ body, String^ header, MsgOptions options, array<String^>^ buttons);
-	virtual int Msg(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
+	virtual int Message(String^ body, String^ header, MsgOptions options);
+	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons);
+	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
 	virtual int NameToKey(String^ key);
 	virtual int SaveScreen(int x1, int y1, int x2, int y2);
 	virtual IPanel^ FindPanel(Guid typeId);
@@ -86,8 +85,8 @@ public:
 	virtual String^ TempName(String^ prefix);
 	virtual void CopyToClipboard(String^ text);
 	virtual void GetUserScreen();
-	virtual void Msg(String^ body);
-	virtual void Msg(String^ body, String^ header);
+	virtual void Message(String^ body);
+	virtual void Message(String^ body, String^ header);
 	virtual void PostJob(EventHandler^ handler);
 	virtual void PostKeys(String^ keys);
 	virtual void PostKeys(String^ keys, bool disableOutput);

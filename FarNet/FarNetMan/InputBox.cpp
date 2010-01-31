@@ -63,7 +63,7 @@ int InputBox::Flags()
 	if (ExpandEnvironmentVariables) r += FIB_EXPANDENV;
 	if (IsPath) r += FIB_EDITPATH;
 	if (IsPassword) r += FIB_PASSWORD;
-	if (NoLastHistory) r += FIB_NOUSELASTHISTORY;
+	if (!UseLastHistory) r += FIB_NOUSELASTHISTORY;
 	return r;
 }
 

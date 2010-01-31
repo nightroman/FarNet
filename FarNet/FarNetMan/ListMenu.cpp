@@ -84,6 +84,7 @@ static String^ InputFilter(String^ pattern, PatternOptions options, String^ hist
 	ib.Prompt = "Pattern (" + options.ToString() + ")";
 	ib.EmptyEnabled = true;
 	ib.History = history;
+	ib.UseLastHistory = true;
 	if (SS(pattern))
 		ib.Text = pattern;
 
@@ -174,7 +175,7 @@ void ListMenu::MakeFilter1()
 		RegistryKey^ key = nullptr;
 		try
 		{
-			key = Registry::CurrentUser->OpenSubKey(Far::Instance->RootFar + "\\SavedDialogHistory\\" + FilterHistory, false);
+			key = Registry::CurrentUser->OpenSubKey(Far::Instance->RegistryFarPath + "\\SavedDialogHistory\\" + FilterHistory, false);
 			if (key)
 			{
 				int flags = (int)key->GetValue("Flags");

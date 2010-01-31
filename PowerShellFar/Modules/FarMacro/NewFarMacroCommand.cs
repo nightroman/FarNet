@@ -9,15 +9,10 @@ using FarNet;
 
 namespace FarMacro
 {
-	/// <summary>
-	/// New-FarMacro command.
-	/// Creates a new macro instance.
-	/// </summary>
 	[Cmdlet(VerbsCommon.New, BaseCmdlet.Noun)]
-	[Description("Creates a new macro instance.")]
+	[Description("Creates a new macro. Use Set-FarMacro or $Far.Macro.Install() to save it.")]
 	public sealed class NewFarMacroCommand : BaseFarMacroCmdlet
 	{
-		///
 		protected override void BeginProcessing()
 		{
 			Macro macro = CreateMacro();

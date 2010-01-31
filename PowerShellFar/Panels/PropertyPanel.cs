@@ -357,7 +357,7 @@ namespace PowerShellFar
 					if (Kit.Compare(names[i], "(default)") == 0)
 					{
 						if ((conf & (FarConfirmations.Delete)) == 0 ||
-							A.Far.Msg("Are you sure you want to delete (default) property?", Res.Delete, MsgOptions.YesNo) == 0)
+							A.Far.Message("Are you sure you want to delete (default) property?", Res.Delete, MsgOptions.YesNo) == 0)
 							A.Psf.Engine.InvokeProvider.Property.Remove(Kit.EscapeWildcard(_itemPath), string.Empty);
 						names.RemoveAt(i);
 						break;

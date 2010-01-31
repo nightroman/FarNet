@@ -16,7 +16,7 @@ public:
 	virtual property bool ExpandEnvironmentVariables;
 	virtual property bool IsPath;
 	virtual property bool IsPassword;
-	virtual property bool NoLastHistory;
+	virtual property bool UseLastHistory;
 	virtual property int MaxLength { int get(); void set(int value); }
 	virtual property String^ HelpTopic { String^ get(); void set(String^ value); }
 	virtual property String^ History;
