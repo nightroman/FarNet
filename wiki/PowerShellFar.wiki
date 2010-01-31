@@ -1,4 +1,4 @@
-#summary PowerShell V2 host for Far Manager 2.x
+#summary Windows PowerShell V2 host for Far Manager 2.x
 
 = Introduction =
 
@@ -17,28 +17,3 @@ Windows PowerShell 2.0 was released with Windows 7 and Windows Server 2008 R2. I
   * [http://en.wikipedia.org/wiki/powershell More...]
 
 ----
-=== PowerShellFar for Far Manager 1.x ===
-(not supported by the author)
-
-The last PSF and FAR.NET versions for Far Manger 1.x are 1.1.57 and 3.3.57:
-  * http://farnet.googlecode.com/files/PowerShellFar.1.1.57.7z
-  * http://farnet.googlecode.com/files/FAR.NET.3.3.57.7z
-Current development is only for Far Manager 2.x
-
-----
-=== PowerShellFar for PowerShell V2 CTP2 ===
-(not supported by the author)
-
-The last PSF and FAR.NET versions for PowerShell V2 CTP2 are 1.1.52 and 3.3.52:
-  * http://farnet.googlecode.com/files/PowerShellFar.1.1.52.rar
-  * http://farnet.googlecode.com/files/FAR.NET.3.3.52.rar
-Some later FAR.NET versions may work with PSF 1.1.52, too, but they were not tested together.
-
-----
-=== PowerShellFar for PowerShell V1 ===
-(not supported by the author)
-
-The last PSF and FAR.NET versions for PowerShell V1 are 1.1.42 and 3.3.42:
-  * http://farnet.googlecode.com/files/PowerShellFar.1.1.42.rar
-  * http://farnet.googlecode.com/files/FAR.NET.3.3.42.rar
-Some later FAR.NET versions may work with PSF 1.1.42, too, but they were not tested together.
