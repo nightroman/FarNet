@@ -2,7 +2,10 @@
 
 = Introduction =
 
-Implements Windows PowerShell host in [http://farmanager.com Far Manager], user interface for invoking commands and scripts, and exposes underlying FarNet object model. The package includes scripts for many popular Far Manager tasks and PowerShell.hrc for [Colorer] providing rich PowerShell syntax highlighting.
+Implements Windows PowerShell host in Far Manager, user interface for invoking
+commands and scripts, and exposes underlying FarNet object model. The package
+includes scripts for many popular Far Manager tasks and PowerShell.hrc for
+Colorer providing rich PowerShell syntax highlighting.
 
 ----
 = Windows PowerShell =
