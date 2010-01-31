@@ -48,7 +48,7 @@ $p.add_MenuCreating({
 				"$($_.Name) = $($_.Value)"
 			}}
 		} | Out-String
-		$Far.Msg($text)
+		$Far.Message($text)
 	}}))
 
 	# to check that handlers have global scope: variables $tmp1 and $tmp2 are global

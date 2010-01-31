@@ -1,56 +1,116 @@
 <?xml version="1.0" encoding='utf-8'?>
 <docs>
-<!-- /// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/> -->
-<pp name="HelpTopic">
-<summary>
-Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
-</summary>
-</pp>
-<pp name="LT">
-<param name="left">Left position.</param>
-<param name="top">Top line.</param>
-</pp>
-<pp name="LTB">
-<param name="left">Left position.</param>
-<param name="top">Top line.</param>
-<param name="bottom">Bottom line.</param>
-</pp>
-<pp name="LTR">
-<param name="left">Left position.</param>
-<param name="top">Top line.</param>
-<param name="right">Right position.</param>
-</pp>
-<pp name="LTRB">
-<param name="left">Left position.</param>
-<param name="top">Top line.</param>
-<param name="right">Right position.</param>
-<param name="bottom">Bottom line.</param>
-</pp>
-<pp name="Connect">
-<summary>Override this method to process the module connection.</summary>
-<example>
-(C#) how to register a command line prefix and a menu command.
-<code>
-public override void Connect()
-{
-// register a prefix
-Far.RegisterCommand(this, [name], [prefix], [handler]);
-// register a menu command
-Far.RegisterTool(this, [name], [handler], [options]);
-...
-}
-</code>
-</example>
-</pp>
-<pp name="ShowHelp">
-<summary>Shows the specified topic from a given hlf-file.</summary>
-<param name="path">Help file location, see options.</param>
-<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
-<param name="options">Help options describing path and topic.</param>
-<remarks>
-The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
-<code>
-<![CDATA[
+	<!--
+	/// <include file='doc.xml' path='docs/pp[@name="UseLastHistory"]/*'/>
+	-->
+	<pp name='UseLastHistory'>
+		<summary>
+			Tells to use the last history as the initial text if it is not set.
+		</summary>
+	</pp>
+	<pp name='WrapCursor'>
+		<summary>
+			Tells to use the wrap cursor mode.
+		</summary>
+		<remarks>
+			In the wrap cursor mode moving the cursor up from the first element or down from the last element
+			moves the cursor to the bottom or the top.
+		</remarks>
+	</pp>
+	<pp name='AutoAssignHotkeys'>
+		<summary>
+			Tells to assigns item hotkeys automatically starting with the first item.
+		</summary>
+	</pp>
+	<pp name='SelectOnEntry'>
+		<summary>
+			Tells to select the text when the control gets focus.
+		</summary>
+	</pp>
+	<pp name='ReadOnly'>
+		<summary>
+			Tells to disable text changes for a user.
+		</summary>
+	</pp>
+	<pp name='ExpandEnvironmentVariables'>
+		<summary>
+			Tells to expand environment variables in the input text.
+		</summary>
+	</pp>
+	<pp name='ButtonClicked'>
+		<summary>
+			Called on the button clicks and similar actions.
+		</summary>
+	</pp>
+	<pp name='ShowAmpersand'>
+		<summary>
+			Tells to show ampersand symbols in the text instead of using them as hotkey marks.
+		</summary>
+	</pp>
+	<pp name='CenterGroup'>
+		<summary>
+			Tells that the control if one of the centered group.
+		</summary>
+		<remarks>
+			Sequential items having this flag set and the same vertical coordinates are centered horizontally.
+			Their horizontal coordinates are ignored.
+		</remarks>
+	</pp>
+	<pp name='NoFocus'>
+		<summary>
+			Tells that the control cannot get focus. But it still processes other events.
+		</summary>
+	</pp>
+	<pp name="HelpTopic">
+		<summary>
+			Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
+		</summary>
+	</pp>
+	<pp name="LT">
+		<param name="left">Left position.</param>
+		<param name="top">Top line.</param>
+	</pp>
+	<pp name="LTB">
+		<param name="left">Left position.</param>
+		<param name="top">Top line.</param>
+		<param name="bottom">Bottom line.</param>
+	</pp>
+	<pp name="LTR">
+		<param name="left">Left position.</param>
+		<param name="top">Top line.</param>
+		<param name="right">Right position.</param>
+	</pp>
+	<pp name="LTRB">
+		<param name="left">Left position.</param>
+		<param name="top">Top line.</param>
+		<param name="right">Right position.</param>
+		<param name="bottom">Bottom line.</param>
+	</pp>
+	<pp name="Connect">
+		<summary>Override this method to process the module connection.</summary>
+		<example>
+			(C#) how to register a command line prefix and a menu command.
+			<code>
+				public override void Connect()
+				{
+				// register a prefix
+				Far.RegisterCommand(this, [name], [prefix], [handler]);
+				// register a menu command
+				Far.RegisterTool(this, [name], [handler], [options]);
+				...
+				}
+			</code>
+		</example>
+	</pp>
+	<pp name="ShowHelp">
+		<summary>Shows the specified topic from a given hlf-file.</summary>
+		<param name="path">Help file location, see options.</param>
+		<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
+		<param name="options">Help options describing path and topic.</param>
+		<remarks>
+			The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
+			<code>
+				<![CDATA[
 "Topic"
 Reference to a topic in the help file.
 
@@ -71,65 +131,60 @@ split on mutiple lines. For example, we need the help topic "FooInfo" from the
 help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
 "<D:\Far\FarNet\Modules\Foo\Foo.dll>FooInfo"
 ]]>
-</code>
-</remarks>
-</pp>
-<pp name="Colors">
-<param name="foregroundColor">Foreground color.</param>
-<param name="backgroundColor">Background color.</param>
-</pp>
-<pp name="Include">
-<summary>
-Creates and shows <see cref="IInputBox"/>.
-Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
-If you need more input box options, use the interface directly.
-</summary>
-</pp>
-<pp name="FileMask">
-<summary>
-File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
-This value is only default, actual mask may be changed by a user, so that
-if the module uses this mask itself then override <c>set</c> too.
-</summary>
-</pp>
-<pp name="InvokeLoad">
-<para>
-If the assembly has no direct <see cref="BaseModule"/> children
-then its modules are normally loaded only when invoked the first time.
-</para>
-</pp>
-<pp name="BaseListItems">
-<summary>
-List item collection. STOP: see remarks.
-</summary>
-<remarks>
-Normally you fill the list with items and set their properties before opening a
-dialog. After opening this collection is mapped to a control dynamically, i.e.
-all operations (set, insert, remove and etc.) are displayed immediately. The
-items themselves are not mapped dynamically, so that if you change an item then
-you have to reset it explicitly, see the example.
-<para>
-Dynamic mapping is simple, useful and effective when you change (or add, remove)
-one item at a time (or just a few items). But if you actually recreate all the
-items then for better performance you have to use <see cref="DetachItems"/>
-before changes and <see cref="AttachItems"/> after changes.
-</para>
-<para>
-STOP: in rare cases (found in PowerShell, bug?), method <b>Clear()</b> cannot be
-called. If you really have this problem then call the workaround method <see cref="IBaseList.Clear"/>.
-Bug [_090208_042536]
-</para>
-</remarks>
-<example>
-(PowerShell): how to set an item checked when the dialog is running
-<code>
-# get an item
-$item = $listbox.Items[3]
-# change it
-$item.Checked = $true
-# set it!
-$listbox.Items[3] = $item
-</code>
-</example>
-</pp>
+			</code>
+		</remarks>
+	</pp>
+	<pp name="Colors">
+		<param name="foregroundColor">Foreground color.</param>
+		<param name="backgroundColor">Background color.</param>
+	</pp>
+	<pp name="Include">
+		<summary>
+			Creates and shows <see cref="IInputBox"/>.
+			Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
+			If you need more input box options, use the interface directly.
+		</summary>
+	</pp>
+	<pp name="FileMask">
+		<summary>
+			File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
+			This value is only default, actual mask may be changed by a user, so that
+			if the module uses this mask itself then override <c>set</c> too.
+		</summary>
+	</pp>
+	<pp name="InvokeLoad">
+		<para>
+			If the assembly has no direct <see cref="BaseModule"/> children
+			then its modules are normally loaded only when invoked the first time.
+		</para>
+	</pp>
+	<pp name="BaseListItems">
+		<summary>
+			List item collection. STOP: see remarks.
+		</summary>
+		<remarks>
+			Normally you fill the list with items and set their properties before opening a
+			dialog. After opening this collection is mapped to a control dynamically, i.e.
+			all operations (set, insert, remove and etc.) are displayed immediately. The
+			items themselves are not mapped dynamically, so that if you change an item then
+			you have to reset it explicitly, see the example.
+			<para>
+				Dynamic mapping is simple, useful and effective when you change (or add, remove)
+				one item at a time (or just a few items). But if you actually recreate all the
+				items then for better performance you have to use <see cref="DetachItems"/>
+				before changes and <see cref="AttachItems"/> after changes.
+			</para>
+		</remarks>
+		<example>
+			(PowerShell): how to set an item checked when the dialog is running
+			<code>
+				# get an item
+				$item = $listbox.Items[3]
+				# change it
+				$item.Checked = $true
+				# set it!
+				$listbox.Items[3] = $item
+			</code>
+		</example>
+	</pp>
 </docs>

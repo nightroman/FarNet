@@ -2,21 +2,23 @@ http://code.google.com/p/farnet/
 
 = 4.3.1 =
 
-!! This time update FarNet MANUALLY (do not use Update-PowerShellFar.ps1).
+!! This time update manually (do not use Update-PowerShellFar.ps1).
 
 ANNOUNCEMENT
 
 It is discussed and decided that FarNet plugins are not called PLUGINS any more
-everywhere: API, code, and documentation. From now on they are called MODULES.
+everywhere: in API, code, documentation. From now on they are called MODULES:
+.NET assemblies implementing one or more FarNet MODULE TOOLS.
 
-We also change the folders structure, see Readme.txt or just extract from the
-archive to %FARHOME% keeping the structure. Then remove old Lib (moved to
-FarNet) and Plugins.NET (moved to FarNet\Modules).
+The folders structure is changed, see Readme.txt or just extract from the
+archive to %FARHOME% keeping the structure. Then remove old Lib (it is now
+%FARHOME%\FarNet) and Plugins.NET (it is now %FARHOME%\FarNet\Modules).
+Do not forget to replace %FARHOME%\Far.exe.config with new one.
 
 TERMINOLOGY: PLUGINS -> MODULES
 (breaking name changes)
 
-Classes:
+Module tools:
 -- BasePlugin -> BaseModule
 -- CommandPlugin -> ModuleCommand
 -- EditorPlugin -> ModuleEditor
@@ -25,27 +27,42 @@ Classes:
 -- PluginException -> ModuleException
 
 Interfaces:
--- IPanel -> IAnyPanel (rename before IPluginPanel -> IPanel!)
--- IPluginPanel -> IPanel (rename after IPanel -> IAnyPanel!)
+-- IPanel -> IAnyPanel (rename it first, before IPluginPanel -> IPanel)
+-- IPluginPanel -> IPanel (rename it second, after IPanel -> IAnyPanel)
 -- IPluginPanelInfo -> IPanelInfo
 
 Members:
 -- GetPluginPanel() -> FindPanel()
 -- CreatePluginPanel() -> CreatePanel()
 
-Let's fix the wrong name and a few spellings:
--- StartSortDesc -> StartReverseSortOrder
+Let's also fix wrong names and bad names:
 -- EnvExpanded -> ExpandEnvironmentVariables
 -- Eol -> EndOfLine
+-- HWnd -> MainWindowHandle
+-- Msg -> Message
 -- NoSmartCoords -> NoSmartCoordinates
+-- RootFar -> RegistryFarPath
+-- RootKey -> RegistryPluginsPath
+-- StartSortDesc -> StartReverseSortOrder
 -- UseAttrHighlighting -> UseAttribiteHighlighting
 
-OTHER CHANGES (MACROS)
+Let's also fix one confusing feature:
+-- InputBox.NoLastHistory -> UseLastHistory
+a) to have the same name as the property of IEdit
+b) because by default it should be "don't use" (the least surprise)
 
-*) IMacro.GetNames(): fixed exceptions on missed areas.
-*) Macro.Area is not a string but enum MacroArea.
-*) IMacro methods use the enum MacroArea.
-*) API changes: see documentation.
+OTHER CHANGES
+
+*) Macros:
+-- IMacro.GetNames(): fixed exceptions on missed areas.
+-- Macro.Area type changed from string to enum MacroArea.
+-- IMacro methods use the enum MacroArea.
+-- API changes: see documentation.
+
+*) Issue _090208_042536. IBaseList: removed the obsolete workaround method
+.Clear(). Instead, the method .Items.Clear() should be used. If it still has
+problems, report, it will be restored ASAP. (It was a bug in PowerShell that
+looks fixed in V2 RTM).
 
 = 4.3.0 =
 

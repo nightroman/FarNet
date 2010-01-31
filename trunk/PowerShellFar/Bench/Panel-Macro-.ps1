@@ -29,7 +29,7 @@
 	Panel-Macro-
 	Panel-Macro- CtrlS
 	Panel-Macro- AltDown Shell
-	Panel-Macro- -Path "HKCU:\$($Far.RootFar)\KeyMacros\Editor\CtrlS"
+	Panel-Macro- -Path "HKCU:\$($Far.RegistryFarPath)\KeyMacros\Editor\CtrlS"
 #>
 
 param
@@ -93,7 +93,7 @@ $global:MacroAreas = @{
 if ($wi.Type -eq 'Panels' -and !$Name -and !$Path) {
 	$Far.Macro.Save()
 	if (!(Test-Path "KeyMacros:\")) {
-		$null = New-PSDrive KeyMacros -PSProvider Registry -Root "HKCU:\$($Far.RootFar)\KeyMacros" -Scope Global
+		$null = New-PSDrive KeyMacros -PSProvider Registry -Root "HKCU:\$($Far.RegistryFarPath)\KeyMacros" -Scope Global
 	}
 	$p = New-Object PowerShellFar.ItemPanel "KeyMacros:"
 	$p.Drive = "KeyMacros"
@@ -133,20 +133,20 @@ else {
 		$Name = Read-Host "Macro name"
 		if (!$Name) { return }
 	}
-	$areaPath = "HKCU:\$($Far.RootFar)\KeyMacros\$Area"
+	$areaPath = "HKCU:\$($Far.RegistryFarPath)\KeyMacros\$Area"
 	$Path = "$areaPath\$Name"
 }
 
 # test name
 if ($Far.NameToKey($Name) -eq -1) {
-	if ($Far.Msg("Key name '$Name' is not valid. Continue anyway?", "Macro", "YesNo")) {
+	if ($Far.Message("Key name '$Name' is not valid. Continue anyway?", "Macro", "YesNo")) {
 		return
 	}
 }
 
 # test area
 if (!$MacroAreas.Contains($Area)) {
-	$Far.Msg("Invalid macro area: '$Area'.`rValid values: $($MacroAreas.Keys | Sort-Object)", "Macro")
+	$Far.Message("Invalid macro area: '$Area'.`rValid values: $($MacroAreas.Keys | Sort-Object)", "Macro")
 	return
 }
 

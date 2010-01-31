@@ -42,7 +42,7 @@ switch($Format) {
 }
 
 if ($obj.Count -eq 0) {
-	$Far.Msg('No objects')
+	$Far.Message('No objects')
 }
 elseif ($obj.Count -eq 1) {
 	# show object members (MemberPanel)

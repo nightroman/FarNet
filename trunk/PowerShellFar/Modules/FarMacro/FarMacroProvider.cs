@@ -15,19 +15,48 @@ using FarNet;
 
 namespace FarMacro
 {
-	/// <summary>
-	/// FarMacro provider.
-	/// </summary>
-	[CmdletProvider("FarMacro", ProviderCapabilities.None)]
+	[CmdletProvider("FarMacro", ProviderCapabilities.ShouldProcess)]
 	public class FarMacroProvider : NavigationCmdletProvider, IContentCmdletProvider
 	{
+		#region Private
+
 		IFar Far { get { return (IFar)Host.PrivateData.BaseObject; } }
+
+		SortedList<MacroArea, AreaItem> _Areas;
+		SortedList<MacroArea, AreaItem> Areas
+		{
+			get
+			{
+				if (_Areas == null)
+				{
+					_Areas = new SortedList<MacroArea, AreaItem>();
+					_Areas.Add(MacroArea.Common, new AreaItem(MacroArea.Common, "Lowest priority macros used everywhere."));
+					_Areas.Add(MacroArea.Dialog, new AreaItem(MacroArea.Dialog, "Dialog boxes."));
+					_Areas.Add(MacroArea.Disks, new AreaItem(MacroArea.Disks, "Drive selection menu."));
+					_Areas.Add(MacroArea.Editor, new AreaItem(MacroArea.Editor, "File editor."));
+					_Areas.Add(MacroArea.FindFolder, new AreaItem(MacroArea.FindFolder, "Folder search panel."));
+					_Areas.Add(MacroArea.Help, new AreaItem(MacroArea.Help, "Help system."));
+					_Areas.Add(MacroArea.Info, new AreaItem(MacroArea.Info, "Informational panel."));
+					_Areas.Add(MacroArea.MainMenu, new AreaItem(MacroArea.MainMenu, "Main menu."));
+					_Areas.Add(MacroArea.Menu, new AreaItem(MacroArea.Menu, "Other menus."));
+					_Areas.Add(MacroArea.Other, new AreaItem(MacroArea.Other, "Screen capturing mode."));
+					_Areas.Add(MacroArea.QView, new AreaItem(MacroArea.QView, "Quick view panel."));
+					_Areas.Add(MacroArea.Search, new AreaItem(MacroArea.Search, "Quick file search."));
+					_Areas.Add(MacroArea.Shell, new AreaItem(MacroArea.Shell, "File panels."));
+					_Areas.Add(MacroArea.Tree, new AreaItem(MacroArea.Tree, "Folder tree panel."));
+					_Areas.Add(MacroArea.UserMenu, new AreaItem(MacroArea.UserMenu, "User menu."));
+					_Areas.Add(MacroArea.Viewer, new AreaItem(MacroArea.Viewer, "File viewer."));
+					_Areas.Add(MacroArea.Test, new AreaItem(MacroArea.Test, "For internal use."));
+				}
+				return _Areas;
+			}
+		}
 
 		bool IsValidName(string name)
 		{
 			if (string.IsNullOrEmpty(name))
 				return false;
-			
+
 			int code = Far.NameToKey(name);
 			if (code >= 0)
 				return true;
@@ -41,7 +70,7 @@ namespace FarMacro
 
 		bool IsValidWay(Way way)
 		{
-			if ((int)way.Area < 0 || (int)way.Area > (int)MacroArea.Viewer)
+			if ((int)way.Area < 0 || (int)way.Area > (int)MacroArea.Test)
 				return false;
 
 			if (way.Name == null)
@@ -59,37 +88,7 @@ namespace FarMacro
 			return way;
 		}
 
-		SortedList<MacroArea, AreaItem> _Areas;
-		/// <summary>
-		/// List of all area items existing or not.
-		/// </summary>
-		SortedList<MacroArea, AreaItem> Areas
-		{
-			get
-			{
-				if (_Areas == null)
-				{
-					_Areas = new SortedList<MacroArea, AreaItem>();
-					_Areas.Add(MacroArea.Common, new AreaItem(MacroArea.Common, "Lowest priority macros used everywhere."));
-					_Areas.Add(MacroArea.Dialog, new AreaItem(MacroArea.Dialog, "Dialog boxes."));
-					_Areas.Add(MacroArea.Disks, new AreaItem(MacroArea.Disks, "Drive selection menu."));
-					_Areas.Add(MacroArea.Editor, new AreaItem(MacroArea.Editor, "Internal file editor."));
-					_Areas.Add(MacroArea.FindFolder, new AreaItem(MacroArea.FindFolder, "Folder search panel."));
-					_Areas.Add(MacroArea.Help, new AreaItem(MacroArea.Help, "Help system."));
-					_Areas.Add(MacroArea.Info, new AreaItem(MacroArea.Info, "Informational panel."));
-					_Areas.Add(MacroArea.MainMenu, new AreaItem(MacroArea.MainMenu, "Main menu."));
-					_Areas.Add(MacroArea.Menu, new AreaItem(MacroArea.Menu, "Other menus."));
-					_Areas.Add(MacroArea.Other, new AreaItem(MacroArea.Other, "Screen capturing mode."));
-					_Areas.Add(MacroArea.QView, new AreaItem(MacroArea.QView, "Quick view panel."));
-					_Areas.Add(MacroArea.Search, new AreaItem(MacroArea.Search, "Quick file search."));
-					_Areas.Add(MacroArea.Shell, new AreaItem(MacroArea.Shell, "File panels."));
-					_Areas.Add(MacroArea.Tree, new AreaItem(MacroArea.Tree, "Folder tree panel."));
-					_Areas.Add(MacroArea.UserMenu, new AreaItem(MacroArea.UserMenu, "User menu."));
-					_Areas.Add(MacroArea.Viewer, new AreaItem(MacroArea.Viewer, "Internal file viewer."));
-				}
-				return _Areas;
-			}
-		}
+		#endregion
 
 		#region Drive
 
@@ -251,18 +250,7 @@ namespace FarMacro
 		// will show an extra prompt which is useles. That is why we cheat in here.
 		protected override bool HasChildItems(string path)
 		{
-#if true //???
 			return false;
-#else
-			Way way = new Way(path);
-			if (way.Area == MacroArea.Root)
-				return true;
-
-			if (way.Name != null)
-				return false;
-
-			return Far.Macro.GetNames(way.Area).Length > 0;
-#endif
 		}
 
 		protected override void NewItem(string path, string itemTypeName, object newItemValue)
@@ -303,6 +291,9 @@ namespace FarMacro
 
 			if (way.Name == null && Far.Macro.GetNames(way.Area).Length > 0)
 				throw new RuntimeException("Cannot remove an area with macros.");
+
+			if (!ShouldProcess(path, "Remove"))
+				return;
 
 			Far.Macro.Remove(way.Area, way.Name);
 		}

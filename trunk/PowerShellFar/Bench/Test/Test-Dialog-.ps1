@@ -24,7 +24,7 @@ $dialog.HelpTopic = '<' + (Split-Path $MyInvocation.MyCommand.Path) + '\>TestDia
 $uc = $dialog.AddUserControl(0, 0, 78, 19)
 $uc.NoFocus = $true
 # MouseClicked handler (emulates IDialog.MouseClicked)
-$uc.add_MouseClicked({ Show-FarMsg "UserControl.MouseClicked: $($_.Mouse)" })
+$uc.add_MouseClicked({ Show-FarMessage "UserControl.MouseClicked: $($_.Mouse)" })
 # Drawing; &{} is used to make variables local and avoid conflicts
 $uc.add_Drawing({&{
 	# absolute dialog rectangle
@@ -154,7 +154,7 @@ $dialog.add_MouseClicked({
 	$ed.Text = $_.Mouse
 	if ($_.Control -eq $null) {
 		$_.Ignore = $true
-		Show-FarMsg "Clicked outside of the dialog"
+		Show-FarMessage "Clicked outside of the dialog"
 	}
 })
 
@@ -162,7 +162,7 @@ $dialog.add_MouseClicked({
 $dialog.add_KeyPressed({
 	$log += "[Dialog: KeyPressed: {0:x}]" -f $_.Code
 	if ($_.Code -eq [FarNet.KeyCode]::F1) {
-		Show-FarMsg @'
+		Show-FarMessage @'
 We catch F1 and do not set $_.Ignore to $true,
 => default action (help) will be still called.
 '@
@@ -241,7 +241,7 @@ function TestList($box, $fast)
 	if ($fast) { $box.DetachItems() }
 
 	# remove all items
-	$box.Clear()
+	$box.Items.Clear()
 
 	# create and add new items with some random properties
 	$num = 1000

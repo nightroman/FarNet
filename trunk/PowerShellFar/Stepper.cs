@@ -386,7 +386,7 @@ namespace PowerShellFar
 						title += " Unit " + (_UnitIndex + 1) + "/" + _units.Count;
 					}
 
-					switch (A.Far.Msg(
+					switch (A.Far.Message(
 						text,
 						title,
 						MsgOptions.LeftAligned | MsgOptions.Down,

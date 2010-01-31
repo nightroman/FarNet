@@ -107,7 +107,7 @@ namespace PowerShellFar.UI
 				// found?
 				if (bpFound != null)
 				{
-					switch(A.Far.Msg("Breakpoint exists",
+					switch(A.Far.Message("Breakpoint exists",
 						"Line breakpoint",
 						MsgOptions.None,
 						new string[] {

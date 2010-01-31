@@ -26,11 +26,11 @@ if (!$TestFiler) {
 
 	# register the handler
 	$Far.RegisterFiler($null, "PSF test filer", $TestFiler, "*.test", $false)
-	Show-FarMsg "Test filer is registered. [Enter] *.test files now."
+	Show-FarMessage "Test filer is registered. [Enter] *.test files now."
 }
 else {
 	# unregister and uninstall the handler
 	$Far.UnregisterFiler($TestFiler)
 	Remove-Variable TestFiler -Scope Global
-	Show-FarMsg "Test filer is unregistered"
+	Show-FarMessage "Test filer is unregistered"
 }

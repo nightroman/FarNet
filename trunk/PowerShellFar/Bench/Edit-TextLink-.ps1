@@ -40,7 +40,7 @@ param
 if ($Text -match '\b(\w:[\\/].+?)\((\d+)\)(?::(.*))?' -or $Text -match '\b(\w:[\\/][^:]+):(\d+)') {
 	$file = $matches[1]
 	if (![IO.File]::Exists($file)) {
-		Show-FarMsg "File '$file' does not exist."
+		Show-FarMessage "File '$file' does not exist."
 	}
 	else {
 		### Create editor
@@ -82,7 +82,7 @@ if ($Text -match '\b(\w:[\\/].+?)\((\d+)\)(?::(.*))?' -or $Text -match '\b(\w:[\
 if ($Text -match '"(\w+:\\[^"]+)"' -or $Text -match '\b(\w+:\\[^\s:]+)') {
 	$file = $matches[1]
 	if (![IO.File]::Exists($file)) {
-		Show-FarMsg "File '$file' does not exist."
+		Show-FarMessage "File '$file' does not exist."
 	}
 	else {
 		Start-FarEditor -Path $file
@@ -100,7 +100,7 @@ if ($Text -match '"(\.{1,2}[\\/][^"]+)"' -or $Text -match '(?:^|\s)(\.{1,2}[\\/]
 	}
 	$file = [IO.Path]::GetFullPath([IO.Path]::Combine($dir, $matches[1]))
 	if (![IO.File]::Exists($file)) {
-		Show-FarMsg "File '$file' does not exist."
+		Show-FarMessage "File '$file' does not exist."
 	}
 	else {
 		Start-FarEditor -Path $file

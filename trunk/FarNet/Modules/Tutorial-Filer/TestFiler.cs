@@ -14,7 +14,7 @@ public class TestFiler : ModuleFiler
 		byte[] buffer = new byte[4];
 		int read = e.Data.Read(buffer, 0, 4);
 		string header = Encoding.Default.GetString(buffer, 0, read);
-		Far.Msg(header, "File header");
+		Far.Message(header, "File header");
 		if (header != "TEST")
 			return;
 

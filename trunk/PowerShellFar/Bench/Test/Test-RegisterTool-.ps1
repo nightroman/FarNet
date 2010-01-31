@@ -15,16 +15,16 @@ if (!$TestTool) {
 
 	# install the handler
 	$global:TestTool = {&{
-		Show-FarMsg ("Hello from " + $_.From)
+		Show-FarMessage ("Hello from " + $_.From)
 	}}
 
 	# register the handler
 	$null = $Far.RegisterTool($null, "PSF test tool", $TestTool, "AllAreas")
-	Show-FarMsg "Test tool is registered. Try it in [F11] menus, for example, right now."
+	Show-FarMessage "Test tool is registered. Try it in [F11] menus, for example, right now."
 }
 else {
 	# unregister and uninstall the handler
 	$Far.UnregisterTool($TestTool)
 	Remove-Variable TestTool -Scope Global
-	Show-FarMsg "Test tool is unregistered"
+	Show-FarMessage "Test tool is unregistered"
 }

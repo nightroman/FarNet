@@ -3,7 +3,6 @@ Clear-Session.ps1 Clears PowerShell session resources.
 Complete-Word-.ps1 Completes the current word in editor, command line or edit box.
 Connect-Mdb-.ps1 Connects .mdb database and optionally shows tables in a panel.
 Connect-Sdf-.ps1 Connects .sdf database and optionally shows tables in a panel.
-Debug-Msg-.ps1 Shows a message box with data and choices.
 Edit-FarDescription-.ps1 Edits pseudo multiline description in the editor.
 Edit-TextLink-.ps1 Opens a file in editor by a link at the current text.
 Export-FarSettings.ps1 Exports Far Manager settings.
@@ -29,7 +28,6 @@ Panel-Database-.ps1 Panel SQL server databases.
 Panel-DbData-.ps1 Panel DataTable rows.
 Panel-DbTable-.ps1 Panel tables for a connection.
 Panel-Job-.ps1 Panel PowerShell background jobs that are running in the current session.
-Panel-Macro-.ps1 Panel and view/edit Far key macros
 Panel-Process-.ps1 Panel current processes
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-.ps1 Main startup code (example).
@@ -56,3 +54,4 @@ Test Tests and examples
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-PowerShellFar.ps1 Updates FarNet, PowerShellFar and API help.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
+Panel-Macro-.ps1 Panel and view/edit Far key macros

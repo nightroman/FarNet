@@ -235,7 +235,7 @@ void Module0::ReadCache()
 	RegistryKey^ keyCache;
 	try
 	{
-		keyCache = Registry::CurrentUser->CreateSubKey(Far::Instance->RootKey + "\\FarNet\\<cache>");
+		keyCache = Registry::CurrentUser->CreateSubKey(Far::Instance->RegistryPluginsPath + "\\FarNet\\<cache>");
 		for each (String^ dllName in keyCache->GetSubKeyNames())
 		{
 			bool ok = true;
@@ -360,7 +360,7 @@ void Module0::WriteCache(String^ assemblyPath, List<ModuleCommandInfo^>^ command
 	RegistryKey^ keyDll;
 	try
 	{
-		keyDll = Registry::CurrentUser->CreateSubKey(Far::Instance->RootKey + "\\FarNet\\<cache>\\" + fi.Name);
+		keyDll = Registry::CurrentUser->CreateSubKey(Far::Instance->RegistryPluginsPath + "\\FarNet\\<cache>\\" + fi.Name);
 		keyDll->SetValue("Path", assemblyPath);
 		keyDll->SetValue("Stamp", fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture));
 

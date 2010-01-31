@@ -28,10 +28,10 @@
 								<PropertyName>Name</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
-								<PropertyName>Description</PropertyName>
+								<PropertyName>Sequence</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
-								<PropertyName>Sequence</PropertyName>
+								<PropertyName>Description</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>
@@ -55,10 +55,43 @@
 								<PropertyName>Name</PropertyName>
 							</ListItem>
 							<ListItem>
+								<PropertyName>Sequence</PropertyName>
+							</ListItem>
+							<ListItem>
 								<PropertyName>Description</PropertyName>
 							</ListItem>
 							<ListItem>
-								<PropertyName>Sequence</PropertyName>
+								<PropertyName>CommandLine</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>SelectedText</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>SelectedItems</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>PanelIsPlugin</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>ItemIsDirectory</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>SelectedItems2</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>PanelIsPlugin2</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>ItemIsDirectory2</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>EnableOutput</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>DisablePlugins</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>RunAfterFarStart</PropertyName>
 							</ListItem>
 						</ListItems>
 					</ListEntry>

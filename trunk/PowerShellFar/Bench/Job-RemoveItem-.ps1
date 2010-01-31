@@ -26,13 +26,13 @@ param
 
 # no items?
 if (!$item) {
-	Show-FarMsg "No items to remove."
+	Show-FarMessage "No items to remove."
 	return
 }
 
 # ask
 $jobName = "Remove: '$item'"
-if (0 -ne (Show-FarMsg $jobName -Buttons "YesNo")) {
+if (0 -ne (Show-FarMessage $jobName -Buttons "YesNo")) {
 	return
 }
 

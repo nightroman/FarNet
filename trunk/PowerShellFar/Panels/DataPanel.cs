@@ -244,7 +244,7 @@ namespace PowerShellFar
 					return true;
 			}
 
-			switch (A.Far.Msg(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+			switch (A.Far.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
 			{
 				case 0:
 					return SaveData();
@@ -269,7 +269,7 @@ namespace PowerShellFar
 			if (0 == (dr.RowState & (DataRowState.Added | DataRowState.Deleted | DataRowState.Modified)))
 				return true;
 
-			switch (A.Far.Msg(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+			switch (A.Far.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
 			{
 				case 0:
 					return SaveData();
@@ -287,7 +287,7 @@ namespace PowerShellFar
 
 			if ((A.Far.Confirmations & FarConfirmations.Delete) != 0)
 			{
-				if (A.Far.Msg("Delete selected record(s)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
+				if (A.Far.Message("Delete selected record(s)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
 					return;
 			}
 
@@ -401,7 +401,7 @@ namespace PowerShellFar
 			{
 				using (DataTable dt = Table.GetChanges())
 				{
-					if (dt != null && A.Far.Msg(Res.AskSaveModified, "Save", MsgOptions.YesNo) == 0)
+					if (dt != null && A.Far.Message(Res.AskSaveModified, "Save", MsgOptions.YesNo) == 0)
 						SaveData();
 				}
 			}

@@ -22,7 +22,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal Settings()
 		{
-			using (RegistryKey keyFar = Registry.CurrentUser.CreateSubKey(A.Far.RootKey))
+			using (RegistryKey keyFar = Registry.CurrentUser.CreateSubKey(A.Far.RegistryPluginsPath))
 			{
 				using (RegistryKey key = keyFar.CreateSubKey("PowerShellFar"))
 				{
@@ -37,7 +37,7 @@ namespace PowerShellFar
 		/// </summary>
 		public void Save()
 		{
-			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(A.Far.RootKey + "\\PowerShellFar", true))
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(A.Far.RegistryPluginsPath + "\\PowerShellFar", true))
 			{
 				key.SetValue("StartupCode", _StartupCode);
 				key.SetValue("StartupEdit", _StartupEdit);

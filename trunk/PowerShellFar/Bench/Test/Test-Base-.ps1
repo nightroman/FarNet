@@ -31,16 +31,16 @@ function Test-InputBox
 	$b.Prompt = "Enter text"
 	$b.HelpTopic = $Help
 	if ($b.Show()) {
-		Show-FarMsg "Entered: $($b.Text)"
+		Show-FarMessage "Entered: $($b.Text)"
 	}
 	else {
-		Show-FarMsg 'Cancelled'
+		Show-FarMessage 'Cancelled'
 	}
 }
 
 function Test-Message
 {
-	$null = Show-FarMsg -LeftAligned -IsWarning -HelpTopic $Help -Choices 'Button&1', 'Button&2', 'Button&3' @'
+	$null = Show-FarMessage -LeftAligned -IsWarning -HelpTopic $Help -Choices 'Button&1', 'Button&2', 'Button&3' @'
 Left aligned
 multiline
 warning message
@@ -56,7 +56,7 @@ function Test-Menu
 		New-FarItem 'Selected item'
 	)
 	$null = $menu.Show()
-	Show-FarMsg $menu.Selected
+	Show-FarMessage $menu.Selected
 }
 
 function Test-All

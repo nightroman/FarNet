@@ -6,8 +6,7 @@
 	Copyright = '(C) 2010 Roman Kuzmin. All rights reserved.'
 
 	NestedModules = 'FarMacro.dll'
-    ModuleToProcess = 'FarMacro.psm1'
-	FormatsToProcess = @('FarMacro.Format.ps1xml')
+	FormatsToProcess = 'FarMacro.Format.ps1xml'
 
 	CLRVersion = '2.0.50727'
 	PowerShellVersion = '2.0'

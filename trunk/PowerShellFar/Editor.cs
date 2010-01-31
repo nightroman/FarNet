@@ -358,7 +358,7 @@ namespace PowerShellFar
 				IEdit edit = dialog.Focused as IEdit;
 				if (edit == null)
 				{
-					A.Far.Msg("The current control has to be an edit box", Res.InvokeSelectedCode);
+					A.Far.Message("The current control has to be an edit box", Res.InvokeSelectedCode);
 					return;
 				}
 				code = edit.Line.Selection.Text;
@@ -469,7 +469,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				A.Far.Msg(ex.Message, "Setting property");
+				A.Far.Message(ex.Message, "Setting property");
 			}
 		}
 	}
