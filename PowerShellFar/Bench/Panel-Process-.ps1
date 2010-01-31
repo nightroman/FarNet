@@ -69,7 +69,7 @@ $p.SetGetFiles({
 
 ### Delete processes
 $p.SetDelete({
-	if ($Far.Msg('Kill selected process(es)?', 'Kill', 'OkCancel') -ne 0) { return }
+	if ($Far.Message('Kill selected process(es)?', 'Kill', 'OkCancel') -ne 0) { return }
 	foreach($f in $_.Files) {
 		$f.Data.Kill()
 		$this.Panel.Files.Remove($f)

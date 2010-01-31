@@ -5,9 +5,9 @@
 @Contents
 $#FarNet#
 
-#FarNet facilities#
+#FarNet menus#
 
-	~Menu~@Menu@
+	~Plugin menu~@Menu@
 	~Panels menu~@MenuPanels@
 	~Config menu~@MenuConfig@
 
@@ -22,10 +22,10 @@ $#FarNet#
 
 
 @Menu
-$#Menu#
+$#Plugin menu#
 ~Contents~@Contents@
 
-FarNet shows its menu item ".NET" in all Far plugin menus and in the disk menu.
+FarNet shows its menu item #.NET# in all Far plugin menus and in the disk menu.
 
 #Disk#
 
@@ -41,8 +41,8 @@ It shows the ~Config menu~@MenuConfig@.
 
 #Editor, Viewer, Dialog#
 
-It does nothing when selected manually, but this item is used internally for
-important feature "PostStep" which works in these areas, too.
+It shows nothing when selected manually. But this item is used internally for
+the important module feature #PostStep# which works in these areas, too.
 
 
 @MenuPanels
@@ -51,7 +51,7 @@ $#Panels menu#
 
 #Push/Shelve the panel#
 
-If the current panel is any FarNet panel then you can push it to the internal
+If the current panel is a FarNet panel then you can push it to the internal
 shelve for later use. The pushed panel is replaced with a Far file panel.
 
 If the current panel is a Far file panel then you can shelve it: to remember
@@ -68,9 +68,9 @@ switched full screen.
 
 #Close the panel#
 
-Closes the plugin panel. It can be any plugin: FarNet or native. Some plugin
-panels may not close on this command. For native plugins original Far panel
-state may be not restored on closing.
+Closes the active plugin panel. It can be any plugin: FarNet or native. Some
+plugin panels may not close on this command. For native plugins original Far
+panel state is not restored on closing.
 
 #Pop/Unshelve [Enter]#
 
@@ -93,8 +93,8 @@ ignored if the selected item is not a shelved panel.
 $#Config menu#
 ~Contents~@Contents@
 
-This menu allows to select and configure FarNet module commands, tools (by
-areas), filers, and set some module options.
+This menu allows to configure FarNet module tools:
+commands, editors, filers, menus, and to set module options.
 
 #Commands# : shows the ~Configure commands~@ConfigCommand@ menu.
 
@@ -102,17 +102,17 @@ areas), filers, and set some module options.
 
 #Filers# : shows the ~Configure filers~@ConfigFiler@ menu.
 
-#Panels tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Panels area.
+#Panels# : shows the ~Configure module tools~@ConfigTool@ menu for Panels area.
 
-#Editor tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Editor area.
+#Editor# : shows the ~Configure module tools~@ConfigTool@ menu for Editor area.
 
-#Viewer tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Viewer area.
+#Viewer# : shows the ~Configure module tools~@ConfigTool@ menu for Viewer area.
 
-#Dialog tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Dialog area.
+#Dialog# : shows the ~Configure module tools~@ConfigTool@ menu for Dialog area.
 
-#Config tools# : shows the ~Configure tool plugins~@ConfigTool@ menu for Config area.
+#Config# : shows the ~Configure module tools~@ConfigTool@ menu for Config area.
 
-#Disk tools# : shows the ~Configure disk tools~@ConfigDisk@ menu.
+#Disk# : shows the ~Configure module tools~@ConfigDisk@ menu.
 
 #UI culture# : shows the ~Module UI culture~@ConfigUICulture@ menu.
 
@@ -137,8 +137,8 @@ be restored.
 #.NET hotkeys#
 
 It is recommended to set the main .NET hotkey as usual by [F4] and to set other
-FarNet hotkeys by ampersands using this way: Options \ Plugins configuration \
- .NET \ Panels tools | Editor tools | Viewer tools.
+FarNet hotkeys by ampersands using this way:
+Options \ Plugins configuration \ .NET \ Tools.
 
 
 @ConfigCommand

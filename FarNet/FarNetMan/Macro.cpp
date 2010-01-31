@@ -46,7 +46,7 @@ void Macro0::Save()
 
 array<String^>^ Macro0::GetNames(MacroArea area)
 {
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + (area == MacroArea::Root ? "" : area.ToString());
+	String^ path = Far::Instance->RegistryFarPath + "\\KeyMacros\\" + (area == MacroArea::Root ? "" : area.ToString());
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
 
 	try
@@ -64,7 +64,7 @@ Macro^ Macro0::GetMacro(MacroArea area, String^ name)
 {
 	if (!name) throw gcnew ArgumentNullException("name");
 
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + area.ToString() + "\\" + name;
+	String^ path = Far::Instance->RegistryFarPath + "\\KeyMacros\\" + area.ToString() + "\\" + name;
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
 	if (!key)
 		return nullptr;
@@ -118,7 +118,7 @@ Macro^ Macro0::GetMacro(MacroArea area, String^ name)
 
 void Macro0::Remove(MacroArea area, String^ name)
 {
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + area.ToString();
+	String^ path = Far::Instance->RegistryFarPath + "\\KeyMacros\\" + area.ToString();
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path, true);
 	if (!key)
 		return;
@@ -167,7 +167,7 @@ void Macro0::Install(Macro^ macro)
 	if (SS(macro->Name))
 		Remove(macro->Area, macro->Name);
 
-	String^ path = Far::Instance->RootFar + "\\KeyMacros\\" + macro->Area.ToString() + "\\" + macro->Name;
+	String^ path = Far::Instance->RegistryFarPath + "\\KeyMacros\\" + macro->Area.ToString() + "\\" + macro->Name;
 	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
 
 	if (ES(macro->Name))

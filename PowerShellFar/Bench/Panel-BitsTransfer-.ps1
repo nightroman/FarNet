@@ -90,7 +90,7 @@ if ($Auto) {
 ### Start transfer
 if ($Source -and $Destination) {
 	if ($Source.Count -ne $Destination.Count) {
-		$Far.Msg("Different server and client file numbers.")
+		$Far.Message("Different server and client file numbers.")
 		return
 	}
 	if ($Source.Count -eq 1) {
@@ -99,7 +99,7 @@ if ($Source -and $Destination) {
 	else {
 		$msg = "Transfer $($Source.Count) files"
 	}
-	if ($Far.Msg($msg, "File transfer job: $DisplayName", 'OkCancel') -ne 0) {
+	if ($Far.Message($msg, "File transfer job: $DisplayName", 'OkCancel') -ne 0) {
 		return
 	}
 	$null = Start-BitsTransfer -DisplayName $DisplayName -Source $Source -Destination $Destination -Asynchronous
@@ -126,7 +126,7 @@ $p.SetGetObjects({
 
 ### Delete jobs
 $p.SetDelete({
-	if ($Far.Msg('Remove selected transfer jobs?', 'Remove', 'OkCancel') -ne 0) { return }
+	if ($Far.Message('Remove selected transfer jobs?', 'Remove', 'OkCancel') -ne 0) { return }
 	foreach($f in $_.Files) {
 		Remove-BitsTransfer -BitsJob $f.Data
 	}

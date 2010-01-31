@@ -65,7 +65,7 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 	New-FarItem -IsSeparator
 
 	# Clear session
-	New-FarItem '&c. Clear session' { Show-FarMsg (Clear-Session | Format-List | Out-String) -LeftAligned }
+	New-FarItem '&c. Clear session' { Show-FarMessage (Clear-Session | Format-List | Out-String) -LeftAligned }
 
 	# View/edit settings on a panel (note that $Psf.Settings.Save() is not called automatically)
 	New-FarItem 'Settings' { Start-FarPanel $Psf.Settings -Title 'PowerShelFar Settings' }

@@ -9,20 +9,14 @@ using System.Management.Automation;
 
 namespace FarDescription
 {
-	/// <summary>
-	/// Update-FarDescription command.
-	/// Updates Far description file for a directory.
-	/// </summary>
 	[Cmdlet(VerbsData.Update, BaseCmdlet.Noun)]
-	[Description("Updates Far description file for a directory.")]
+	[Description("Updates the description file in the directory. If the file becomes empty then it is removed.")]
 	public sealed class UpdateFarDescriptionCommand : BaseCmdlet
 	{
-		///
-		[Parameter(Position = 0, HelpMessage = "Directory path.")]
+		[Parameter(Position = 0, HelpMessage = "The directory path where the description file is. Default = empty = the process current directory.")]
 		[AllowEmptyString]
 		public string Path { get; set; }
 
-		///
 		protected override void BeginProcessing()
 		{
 			if (Path == null)

@@ -150,7 +150,7 @@ namespace PowerShellFar
 			if (_path_ == null)
 			{
 				// get path once
-				_path_ = A.Far.RootFar + "\\SavedDialogHistory\\PowerShellFarHistory";
+				_path_ = A.Far.RegistryFarPath + "\\SavedDialogHistory\\PowerShellFarHistory";
 
 				// ensure the key and reduce the history once
 				using (RegistryKey key = Registry.CurrentUser.CreateSubKey(_path_))

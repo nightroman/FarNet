@@ -10,6 +10,6 @@ public class Hello : ModuleTool
 {
 	public override void Invoke(object sender, ToolEventArgs e)
 	{
-		Far.Msg(string.Format(GetString("Format"), GetString("Hello"), GetString("World")));
+		Far.Message(string.Format(GetString("Format"), GetString("Hello"), GetString("World")));
 	}
 }

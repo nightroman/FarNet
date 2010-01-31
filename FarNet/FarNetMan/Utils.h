@@ -201,13 +201,13 @@ internal:
 	static ConstString
 		ModuleCommands = "Commands",
 		ModuleEditors = "Editors",
-		PanelsTools = "Panels tools",
-		DialogTools = "Dialog tools",
-		EditorTools = "Editor tools",
-		ViewerTools = "Viewer tools",
-		DiskTools = "Disk tools",
-		ConfigTools = "Config tools",
 		ModuleFilers = "Filers",
+		PanelsTools = "Panels",
+		DialogTools = "Dialog",
+		EditorTools = "Editor",
+		ViewerTools = "Viewer",
+		ConfigTools = "Config",
+		DiskTools = "Disk",
 		ErrorNoHotKey = "Set any FarNet hotkey [F4] in the Far plugin menu [F11] and restart Far.",
 		MenuPrefix = ".NET ";
 };

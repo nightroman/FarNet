@@ -6,9 +6,8 @@
 	Copyright = '(C) 2010 Roman Kuzmin. All rights reserved.'
 
 	NestedModules = 'FarDescription.dll'
-    ModuleToProcess = 'FarDescription.psm1'
-	TypesToProcess = @('FarDescription.Types.ps1xml')
 	RequiredAssemblies = 'FarDescription.dll'
+	TypesToProcess = @('FarDescription.Types.ps1xml')
 
 	CLRVersion = '2.0.50727'
 	PowerShellVersion = '2.0'

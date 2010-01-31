@@ -37,7 +37,7 @@ param
 	[switch]$AllText
 )
 if ($args) { throw "Unknown parameters: $args" }
-if ($Far.WindowType -ne 'Panels') { return Show-FarMsg "Run this script from panels." }
+if ($Far.WindowType -ne 'Panels') { return Show-FarMessage "Run this script from panels." }
 
 # Collect input if any
 if (!$InputObject) {
@@ -104,7 +104,7 @@ if (!$Regex) {
 		# pattern
 		$pattern = $eRegex.Text
 		if (!$pattern) {
-			$Far.Msg("Expression must not be empty.", "Invalid Expression")
+			$Far.Message("Expression must not be empty.", "Invalid Expression")
 			$dialog.Focused = $eRegex
 			continue
 		}
@@ -116,7 +116,7 @@ if (!$Regex) {
 		if ($eOptions.Text) {
 			try { $Options = [Text.RegularExpressions.RegexOptions]$eOptions.Text }
 			catch {
-				$Far.Msg($_, "Invalid Options")
+				$Far.Message($_, "Invalid Options")
 				$dialog.Focused = $eOptions
 				continue
 			}
@@ -130,7 +130,7 @@ if (!$Regex) {
 			$Regex = New-Object Regex $pattern, $Options
 		}
 		catch {
-			$Far.Msg($_, "Invalid Expression")
+			$Far.Message($_, "Invalid Expression")
 			$dialog.Focused = $eRegex
 			continue
 		}
@@ -152,10 +152,10 @@ if (!$Regex) {
 			}
 
 			$dialog.Focused = $eInput
-			$Far.Msg("There are no input files.", "Check the input")
+			$Far.Message("There are no input files.", "Check the input")
 		}
 		catch {
-			$Far.Msg($_, "Invalid Input")
+			$Far.Message($_, "Invalid Input")
 			$dialog.Focused = $eInput
 			$InputObject = $null
 		}
@@ -363,7 +363,7 @@ $panel.add_Escaping({&{
 		return
 	}
 	# not empty; ask
-	$r = Show-FarMsg "How would you like to continue?" -Caption $this.Info.Title -Choices '&Close', '&Push', 'Cancel'
+	$r = Show-FarMessage "How would you like to continue?" -Caption $this.Info.Title -Choices '&Close', '&Push', 'Cancel'
 	# close
 	if ($r -eq 0) {
 		$this.Close()

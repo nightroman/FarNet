@@ -154,7 +154,7 @@ $p.add_GettingFiles({&{
 	# other cases
 	$that = $Far.Panel2
 	if (!$that.Info -or $That.Info.Title -ne $this.Info.Title) {
-		$Far.Msg('Open another test panel for this operation.')
+		$Far.Message('Open another test panel for this operation.')
 	}
 }})
 
@@ -178,7 +178,7 @@ $p.add_Escaping({&{
 	$_.Ignore = $true
 
 	# prompt
-	switch(Show-FarMsg 'How to close this panel?' -Choices '&1:Close()', '&2:Close(ActivePath)', 'Cancel') {
+	switch(Show-FarMessage 'How to close this panel?' -Choices '&1:Close()', '&2:Close(ActivePath)', 'Cancel') {
 		0 {
 			# [_090321_210416]: Far panel current item depends on the plugin panel current item (fixed in FarNet)
 			$this.Close()
@@ -194,9 +194,9 @@ $p.add_KeyPressed({&{
 	if (!$_.Preprocess) {
 		# case [F1]:
 		if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
-			if (0 -eq (Show-FarMsg "[F1] has been pressed" -Choices 'Process by handler', 'Allow default action')) {
+			if (0 -eq (Show-FarMessage "[F1] has been pressed" -Choices 'Process by handler', 'Allow default action')) {
 				$_.Ignore = $true
-				Show-FarMsg "[F1] has been pressed and processed by the handler"
+				Show-FarMessage "[F1] has been pressed and processed by the handler"
 			}
 		}
 	}

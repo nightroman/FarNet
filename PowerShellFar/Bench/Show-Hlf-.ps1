@@ -44,7 +44,7 @@ if ($FileName) {
 # from editor?
 $editor = $Far.Editor
 if (!$editor -or $editor.FileName -notlike '*.hlf') {
-	Show-FarMsg "Run it with parameters or .hlf file in the editor."
+	Show-FarMessage "Run it with parameters or .hlf file in the editor."
 	return
 }
 

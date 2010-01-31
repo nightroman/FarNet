@@ -34,8 +34,8 @@ param
 ### resolve the project
 if (!$FilePath) {
 	$projs = @([IO.Directory]::GetFiles('.', '*.*proj'))
-	if ($projs.Count -eq 0) { return Show-FarMsg "There is no '*.*proj' in the current directory, specify -FilePath" }
-	if ($projs.Count -ge 2) { return Show-FarMsg "There are several '*.*proj' in the current directory, specify -FilePath" }
+	if ($projs.Count -eq 0) { return Show-FarMessage "There is no '*.*proj' in the current directory, specify -FilePath" }
+	if ($projs.Count -ge 2) { return Show-FarMessage "There are several '*.*proj' in the current directory, specify -FilePath" }
 	$FilePath = $projs[0]
 }
 

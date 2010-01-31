@@ -94,7 +94,7 @@ namespace PowerShellFar
 			if (Parent != null || Panel.Files.Count < 1)
 				return true;
 
-			switch (A.Far.Msg("How would you like to continue?", "Confirm", MsgOptions.None, new string[] { "Close", "Clear", Res.Cancel }))
+			switch (A.Far.Message("How would you like to continue?", "Confirm", MsgOptions.None, new string[] { "Close", "Clear", Res.Cancel }))
 			{
 				case 0:
 					return true;
@@ -111,7 +111,7 @@ namespace PowerShellFar
 		{
 			if ((A.Far.Confirmations & FarConfirmations.Delete) != 0)
 			{
-				if (A.Far.Msg("Remove object(s) from the panel?", Res.Remove, MsgOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
+				if (A.Far.Message("Remove object(s) from the panel?", Res.Remove, MsgOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
 					return;
 			}
 

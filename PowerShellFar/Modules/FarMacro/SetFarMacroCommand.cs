@@ -10,18 +10,13 @@ using FarNet;
 
 namespace FarMacro
 {
-	/// <summary>
-	/// Set-FarMacro command.
-	/// Installs one or more macros.
-	/// </summary>
 	[Cmdlet(VerbsCommon.Set, BaseCmdlet.Noun)]
-	[Description("Installs one or more macros.")]
+	[Description("Installs one (using properties) or more (using properties or macro object(s)) macros.")]
 	public sealed class SetFarMacroCommand : BaseFarMacroCmdlet
 	{
 		[Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, HelpMessage = "Input macro instances.", ParameterSetName = "Macros")]
 		public Macro InputObject { get; set; }
 
-		///
 		protected override void ProcessRecord()
 		{
 			Macro macro = InputObject == null ? CreateMacro() : InputObject;

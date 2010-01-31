@@ -106,18 +106,6 @@ namespace FarNet
 		public string Description { get { return _Description; } set { _Description = value; } }
 		string _Description = string.Empty;
 		/// <summary>
-		/// Enable screen output while executing the macro.
-		/// </summary>
-		public bool EnableOutput { get; set; }
-		/// <summary>
-		/// Don't send keystrokes to plugins during recording and executing.
-		/// </summary>
-		public bool DisablePlugins { get; set; }
-		/// <summary>
-		/// Execute macro command after Far startup. This flag is only for macros in the Shell area.
-		/// </summary>
-		public bool RunAfterFarStart { get; set; }
-		/// <summary>
 		/// Execute the macro only if: 1: command line is not empty: 0: command line is empty.
 		/// Empty string (default): execute the macro in both cases.
 		/// </summary>
@@ -166,12 +154,23 @@ namespace FarNet
 		public string ItemIsDirectory2 { get { return _ItemIsDirectory2; } set { _ItemIsDirectory2 = ToThreeState(value); } }
 		string _ItemIsDirectory2 = string.Empty;
 		/// <summary>
+		/// Enable screen output while executing the macro.
+		/// </summary>
+		public bool EnableOutput { get; set; }
+		/// <summary>
+		/// Do not send keys to plugins during recording and executing.
+		/// </summary>
+		public bool DisablePlugins { get; set; }
+		/// <summary>
+		/// Execute macro command after Far start. This flag works only for Shell macros.
+		/// </summary>
+		public bool RunAfterFarStart { get; set; }
+		/// <summary>
 		/// True if any restriction is set.
 		/// </summary>
 		public bool IsRestricted()
 		{
 			return
-				DisablePlugins ||
 				_CommandLine.Length > 0 ||
 				_SelectedText.Length > 0 ||
 				_SelectedItems.Length > 0 ||
@@ -225,7 +224,7 @@ namespace FarNet
 		/// </summary>
 		Disks,
 		/// <summary>
-		/// Internal file editor.
+		/// File editor.
 		/// </summary>
 		Editor,
 		/// <summary>
@@ -273,8 +272,12 @@ namespace FarNet
 		/// </summary>
 		UserMenu,
 		/// <summary>
-		/// Internal file viewer.
+		/// File viewer.
 		/// </summary>
-		Viewer
+		Viewer,
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		Test
 	}
 }

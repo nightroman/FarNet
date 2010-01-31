@@ -111,7 +111,7 @@ namespace PowerShellFar.UI
 				int value;
 				if (!int.TryParse(UIMatter.Text, out value) || value <= 0)
 				{
-					A.Far.Msg("Invalid line number", "Line");
+					A.Far.Message("Invalid line number", "Line");
 					UIDialog.Focused = UIMatter;
 					e.Ignore = true;
 					return;
@@ -119,7 +119,7 @@ namespace PowerShellFar.UI
 
 				if (UIScript.Text.TrimEnd().Length == 0)
 				{
-					A.Far.Msg("Script has to be defined", "Script");
+					A.Far.Message("Script has to be defined", "Script");
 					UIDialog.Focused = UIScript;
 					e.Ignore = true;
 					return;
@@ -140,7 +140,7 @@ namespace PowerShellFar.UI
 				}
 				catch (RuntimeException ex)
 				{
-					A.Far.Msg(ex.Message, "Action");
+					A.Far.Message(ex.Message, "Action");
 					UIDialog.Focused = UIAction;
 					e.Ignore = true;
 					return;

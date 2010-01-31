@@ -1,34 +1,32 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-?? Panel-Macro-.ps1
--- keep current for tests
--- make new in the module based on FarMacro
-
-?? use or kill
-FarDescription.psm1
-FarMacro.psm1
-
 = 4.3.1 =
 
-!! This time update FarNet MANUALLY (do not use Update-PowerShellFar.ps1).
+!! This time update manually, do not use Update-PowerShellFar.ps1 and read
+about FarNet folder structure changes. In short: PSF folder now is:
+%FARHOME%\FarNet\Modules\PowerShellFar
 
-FARNET REFACTORING: PLUGINS -> MODULES
+REFACTORING: PLUGINS -> MODULES AND OTHER NAME FIXES
 
-*) Removed term "plugin" in code and registry, rename:
-$Psf.Settings (2 properties)
-HKEY_CURRENT_USER\Software\Far2\Plugins\PowerShellFar (2 registry values)
+*) See breaking name changes in FarNet History.txt; your scripts that use
+changed names should be updated. In PSF in addition:
+-- Show-FarMsg -> Show-FarMessage
+-- Removed script Debug-Msg-.ps1 at all. In fact, it became not much useful
+when the debugger was implemented.
+
+*) Removed the term "plugin" from two properties\options. Rename:
+2 properties in $Psf.Settings (just in case if scripts use them) and
+2 registry values of HKEY_CURRENT_USER\Software\Far2\Plugins\PowerShellFar:
 -- PluginStartupCode -> StartupCode
 -- PluginStartupEdit -> StartupEdit
 
-*) See breaking name changes in FarNet History.txt; scripts that use changed
-names should be updated.
-
 POWERSHELL MODULES
+(Yes, modules, just like in FarNet, the same approach but for PowerShell)
 
-*) These modules are standard PowerShell modules. But they are normally
-designed for FarNet and only connected via the PSF FarHost:
-IFar Far = (IFar)Host.PrivateData.BaseObject
+*) These modules are standard PowerShell modules. But they:
+-- are normally designed for FarNet and used with the PSF FarHost;
+-- do not use PowerShellFar directly (at least this is not recommended)
 
 *) Default Modules directory
 Directory "$($Psf.AppHome)\Modules" is added to $env:PSModulePath on loading,
@@ -36,20 +34,23 @@ so that all modules in this directory are available at runtime. As usual,
 import them by Import-Module. In UI there is also the "Modules+" menu.
 
 NEW MODULE FARMACRO
-(actually the first for the FarHost)
+(Actually the first for the FarHost)
 
 Cmdlet New-FarMacro moved there from the PSF core (it's good to keep some not
 frequently used tools like this in modules: they are loaded only when needed).
 Switch -Install is removed, instead a new cmdlet is added: Set-FarMacro.
 
-New Provider FarMacro with its default drive FarMacro:\. Provider panels work
+New provider FarMacro with its default drive FarMacro:\. Provider panels work
 for FarMacro automatically: edit, copy, move, rename, create, remove, and etc.
+
+NOTE: The script Panel-Macro-.ps1 is not yet upgraded, it still works directly
+with "old" Registry provider, not yet with "modern" FarMacro. To be continued.
 
 For more details:
 >: Import-Module FarMacro; man about_FarMacro
 
 NEW MODULE FARDESCRIPTION
-(actually works for any host)
+(Actually works for any host)
 
 Though it is designed for Far it does not depend on Far or FarNet, it works in
 any PS host (i.e. you can work on descriptions using standard Console and ISE
@@ -70,6 +71,9 @@ OTHER CHANGES
 
 *) Show-KeyMap-.ps1: updated for FarNet 4.3.0 changes; added the dialog key
 map; added more special keys; added area names to key names.
+
+*) Reformat-Selection-.ps1: added detection of comments for some known file
+types of PowerShell, Perl, Python, Ruby, PHP, SQL, Lua, Cmd, Basic.
 
 = 4.3.0 =
 
