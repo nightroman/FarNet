@@ -1,11 +1,11 @@
-#summary FarNet and PowerShellFar enable .NET development and PowerShell scripting for Far Manager
+#summary SDK and tools for .NET modules and PowerShell scripts in Far Manager
 
 = Introduction =
 
 FarNet:
-Far Manager .NET API and infrastructure for .NET modules. FarNet object model
-covers and extends Far Manager native API in comfortable object oriented way.
-PowerShell scripting is enabled by the PowerShellFar module.
+.NET API and infrastructure for .NET modules in Far Manager. FarNet exposes the
+Far Manager API in comfortable object oriented way. PowerShell scripting is
+provided by the PowerShellFar module.
 
 PowerShellFar:
 Implements Windows PowerShell host in Far Manager, user interface for invoking
