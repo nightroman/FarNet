@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -10,15 +10,20 @@ using Microsoft.Win32;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Settings of the PowerShellFar plugin.
-	/// Properties <c>Plugin*</c> are permanent, they are set interactively in the plugin configuration dialog.
-	/// Other properties are this session preferences and normally set once in the profile (e.g. Profile-.ps1).
-	/// Exposed as <c>$Psf.Settings</c>.
+	/// PowerShellFar settings. Exposed as <c>$Psf.Settings</c>
 	/// </summary>
+	/// <remarks>
+	/// Properties <see cref="StartupCode"/> and <see cref="StartupEdit"/> are stored in the registry
+	/// and can be changed in the module configuration dialog.
+	/// <para>
+	/// Other properties are session preferences and normally set in the profile.
+	/// </para>
+	/// <example>Profile-.ps1</example>
+	/// </remarks>
 	public sealed class Settings
 	{
 		/// <summary>
-		/// Restores permanent settings (Plugin*).
+		/// Restores permanent settings.
 		/// </summary>
 		internal Settings()
 		{
@@ -33,7 +38,7 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Saves permanent settings (Plugin*).
+		/// Saves permanent settings.
 		/// </summary>
 		public void Save()
 		{
@@ -157,16 +162,31 @@ namespace PowerShellFar
 			set { _ListMenuUsualMargins = value; }
 		}
 
-		int _MaxHistoryCount = 400;
+		int _MaximumHistoryCount = 400;
 		/// <summary>
-		/// Number of commands kept in the registry (in fact there will be about 10% more).
+		/// Maximum number of commands kept in the registry (in fact there will be about 10% more).
 		/// </summary>
-		public int MaxHistoryCount
+		public int MaximumHistoryCount
 		{
-			get { return _MaxHistoryCount; }
-			set { _MaxHistoryCount = value; }
+			get { return _MaximumHistoryCount; }
+			set { _MaximumHistoryCount = value; }
 		}
-
+		
+		int _MaximumPanelColumnCount = 10; //????
+		/// <summary>
+		/// The maximum number of columns allowed in not configured panels.
+		/// </summary>
+		public int MaximumPanelColumnCount
+		{
+			get { return _MaximumPanelColumnCount; }
+			set
+			{
+				if (value < 3) throw new ArgumentException(Res.MaximumPanelColumnCount);
+				if (value > FarColumn.DefaultColumnTypes.Count) throw new ArgumentException(Res.MaximumPanelColumnCount);
+				_MaximumPanelColumnCount = value;
+			}
+		}
+		
 		string _ExternalViewerFileName = string.Empty;
 		/// <summary>
 		/// Gets or sets the external viewer application path.
@@ -215,6 +235,5 @@ namespace PowerShellFar
 		/// Test mode for internal use only.
 		/// </summary>
 		public long Test { get; set; }
-
 	}
 }

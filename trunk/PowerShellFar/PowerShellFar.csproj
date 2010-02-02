@@ -101,6 +101,7 @@
     <Compile Include="RawUI.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Stepper.cs" />
+    <Compile Include="Text.cs" />
     <Compile Include="UI\ActorMenu.cs" />
     <Compile Include="UI\BreakpointDialog.cs" />
     <Compile Include="UI\ChoiceMsg.cs" />

@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -297,15 +297,11 @@ namespace PowerShellFar
 			if (obj == null)
 				return null;
 
-			T it = obj as T;
-			if (it != null)
-				return it;
-
 			PSObject pso = obj as PSObject;
-			if (pso == null)
-				return null;
-
-			return pso.BaseObject as T;
+			if (pso != null)
+				return pso.BaseObject as T;
+			else
+				return obj as T;
 		}
 	}
 

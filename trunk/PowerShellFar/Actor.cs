@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -176,7 +176,7 @@ namespace PowerShellFar
 			// STOP: [_100127_182335 test]
 			// *) It has to be done before profile loading, so that it can load modules.
 			// *) And it has to be done after the core loading so that standard paths are added.
-			Environment.SetEnvironmentVariable(Res.PSModulePath, string.Concat(AppHome, "\\Modules;", Environment.GetEnvironmentVariable("PSModulePath")));
+			Environment.SetEnvironmentVariable(Word.PSModulePath, string.Concat(AppHome, "\\Modules;", Environment.GetEnvironmentVariable(Word.PSModulePath)));
 
 			//! If it is async then PS catches all and adds errors to $Error.
 			//! Thus, we don't catch anything, because this is normally async.
@@ -186,7 +186,7 @@ namespace PowerShellFar
 				//! Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
 				//! Looks like a hack, but it works fine. Problem case: run Test-CallStack-.ps1, Esc -> the error above.
 				//! SVN tag 4.2.26
-				_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue("ExecutionContext") as EngineIntrinsics;
+				_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
 
 				// new variables
 				PSVariable var1 = new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
@@ -217,7 +217,7 @@ namespace PowerShellFar
 					catch (RuntimeException ex)
 					{
 						string msg = Kit.Format(@"
-Plugin startup code failed.
+Startup code has failed.
 
 Code (see configuration):
 {0}
@@ -225,7 +225,7 @@ Code (see configuration):
 Reason (see also $Error):
 {1}
 ", Settings.StartupCode, ex.Message);
-						A.Far.Message(msg, Res.Name, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
+						A.Far.Message(msg, Res.Me, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
 					}
 				}
 			}
@@ -364,7 +364,7 @@ Continue with this current location?
 {1}
 ", location, currentLocation);
 
-					switch (A.Far.Message(message, Res.Name, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
+					switch (A.Far.Message(message, Res.Me, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
 					{
 						case 1:
 							break;
@@ -410,7 +410,7 @@ Continue with this current directory?
 {1}
 ", directory, currentDirectory);
 
-					switch (A.Far.Message(message, Res.Name, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
+					switch (A.Far.Message(message, Res.Me, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
 					{
 						case 1:
 							currentDirectory = null;
@@ -461,10 +461,10 @@ Continue with this current directory?
 		/// Gets the configuration settings and the session settings.
 		/// </summary>
 		/// <remarks>
-		/// The configuration settings (<c>.Plugin*</c>) are used see the configuration dialog.
-		/// The current session preferences are usually set in the profile.
+		/// Permanent settings are changed in the configuration dialog.
+		/// Session preferences are usually set in the profile.
 		/// <para>
-		/// See also .hlf topic [Plugin settings].
+		/// See also .hlf topic [Settings].
 		/// </para>
 		/// </remarks>
 		public PowerShellFar.Settings Settings
@@ -570,7 +570,7 @@ Continue with this current directory?
 			{
 				if (_AppData == null)
 				{
-					string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Res.Name);
+					string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Res.Me);
 					if (!Directory.Exists(path))
 						Directory.CreateDirectory(path);
 
@@ -605,7 +605,7 @@ Continue with this current directory?
 		/// </remarks>
 		public string InputCode()
 		{
-			UI.InputDialog ui = new UI.InputDialog(Res.Name, Res.Name, "PowerShell code");
+			UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.Me, "PowerShell code");
 			ui.UICode.IsPath = true;
 			ui.UICode.UseLastHistory = true;
 			return ui.UIDialog.Show() ? ui.UICode.Text : null;
@@ -639,7 +639,7 @@ Continue with this current directory?
 		/// </remarks>
 		/// <example>
 		/// Simple macro [F10] (exactly!) in Panels: safe exit with background jobs check
-		/// (X is the PowerShellFar hotkey in the plugins menu):
+		/// (X is the PowerShellFar hotkey in the plugin menu):
 		/// <code>
 		/// F11 X 1 "$Far.Quit()" Enter
 		/// </code>
@@ -841,7 +841,7 @@ Continue with this current directory?
 		/// It implements so called TabExpansion using a menu and inserting a selected text into a current line being edited.
 		/// The edit line can belong to the internal editor, the command line or a dialogs.
 		/// <para>
-		/// When it is called the first time it loads the script TabExpansion.ps1 from the plugin directory
+		/// When it is called the first time it loads the script TabExpansion.ps1 from the module directory
 		/// which installs the global function TabExpansion. After that this function is always called and
 		/// returned selected text is inserted into the edit line.
 		/// </para>

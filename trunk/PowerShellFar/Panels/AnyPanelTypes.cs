@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -15,69 +15,19 @@ using FarNet;
 
 namespace PowerShellFar
 {
-	/// <summary>
-	/// ???
-	/// </summary>
 	class HelpMenuItems
 	{
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem OpenFileAttributes { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem OpenFile { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem Copy { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem CopyHere { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem Move { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem Rename { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem Create { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem Delete { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem OpenFileMembers { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem Save { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem Exit { get; set; }
-
-		/// <summary>
-		/// ???
-		/// </summary>
 		public FarItem Help { get; set; }
 	}
 

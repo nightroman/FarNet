@@ -24,7 +24,7 @@ http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
 
- - Far Manager 2.0.1352
+ - Far Manager 2.0.1363
  - Plugin FarNet 4.3.1
  - Windows PowerShell 2.0
 
