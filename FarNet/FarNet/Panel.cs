@@ -1320,6 +1320,7 @@ namespace FarNet
 		/// Default column type sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
 		/// </summary>
 		public static ReadOnlyCollection<string> DefaultColumnTypes { get { return _DefaultColumnTypes; } }
+		// _100202_113617 If count changes update related features.
 		static readonly ReadOnlyCollection<string> _DefaultColumnTypes = new ReadOnlyCollection<string>(new string[] { "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9" });
 		/// <summary>
 		/// Only for derived classes.

@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -27,15 +27,7 @@ namespace PowerShellFar
 		/// Expands PowerShell code in an edit line.
 		/// </summary>
 		/// <param name="editLine">Editor line, command line or dialog edit box line; if null then <see cref="IFar.Line"/> is used.</param>
-		/// <remarks>
-		/// It implements so called TabExpansion using a menu and inserting a selected text into a current line being edited.
-		/// The edit line can belong to the internal editor, the command line or a dialogs.
-		/// <para>
-		/// When it is called the first time it loads the script TabExpansion.ps1 from the plugin directory
-		/// which installs the global function TabExpansion. After that this function is always called and
-		/// returned selected text is inserted into the edit line.
-		/// </para>
-		/// </remarks>
+		/// <seealso cref="Actor.ExpandCode"/>
 		public static void ExpandCode(ILine editLine)
 		{
 			// dot-source TabExpansion.ps1 once
@@ -235,7 +227,7 @@ namespace PowerShellFar
 		{
 			IEditor editor = (IEditor)sender;
 			string fileName = editor.FileName;
-			if (editor.Host == null && fileName.EndsWith(".psfconsole", StringComparison.OrdinalIgnoreCase))
+			if (editor.Host == null && fileName.EndsWith(Word.ConsoleExtension, StringComparison.OrdinalIgnoreCase))
 			{
 				editor.Host = new EditorConsole(editor);
 			}

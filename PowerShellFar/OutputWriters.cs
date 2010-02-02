@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -187,7 +187,7 @@ namespace PowerShellFar
 					{
 						A.Far.Message(
 							"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + A.Psf.Settings.ExternalViewerArguments,
-							Res.Name, MsgOptions.LeftAligned | MsgOptions.Warning);
+							Res.Me, MsgOptions.LeftAligned | MsgOptions.Warning);
 					}
 				}
 

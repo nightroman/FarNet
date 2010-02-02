@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -35,10 +35,10 @@ namespace PowerShellFar.UI
 			_menuPanels = A.Far.CreateMenu();
 			_menuViewer = A.Far.CreateMenu();
 
-			_menuDialog.Title = Res.Name;
-			_menuEditor.Title = Res.Name;
-			_menuPanels.Title = Res.Name;
-			_menuViewer.Title = Res.Name;
+			_menuDialog.Title = Res.Me;
+			_menuEditor.Title = Res.Me;
+			_menuPanels.Title = Res.Me;
+			_menuViewer.Title = Res.Me;
 
 			string helpTopic = A.Psf.HelpTopic + "MenuCommands";
 			_menuDialog.HelpTopic = helpTopic;

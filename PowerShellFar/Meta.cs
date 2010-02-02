@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -43,6 +43,9 @@ namespace PowerShellFar
 		string _Property;
 		ScriptBlock _Script;
 
+		/// <summary>
+		/// Similar to AsPSObject().
+		/// </summary>
 		internal static Meta AsMeta(object value)
 		{
 			Meta r = value as Meta;
@@ -118,12 +121,36 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// From a property and column name.
+		/// From a property and a title.
 		/// </summary>
 		internal Meta(string property, string title) // no checks, until it is internal
 		{
 			_Property = property;
-			_ColumnName = title;
+			
+			if (!string.IsNullOrEmpty(title))
+				_ColumnName = title;
+		}
+
+		/// <summary>
+		/// From format table control data.
+		/// </summary>
+		internal Meta(DisplayEntry entry, TableControlColumnHeader header) // no checks, until it is internal
+		{
+			if (entry.ValueType == DisplayEntryValueType.Property)
+				_Property = entry.Value;
+			else
+				_Script = A.Psf.Engine.InvokeCommand.NewScriptBlock(entry.Value);
+
+			if (!string.IsNullOrEmpty(header.Label))
+				_ColumnName = header.Label;
+
+			if (header.Width > 0)
+			{
+				_ColumnWidth = Kit.ToString(header.Width);
+
+				if (header.Alignment == Alignment.Right)
+					FormatString = string.Concat("{0,", _ColumnWidth, "}");
+			}
 		}
 
 		/// <summary>
@@ -151,20 +178,20 @@ namespace PowerShellFar
 					if (key.Length == 0)
 						throw new ArgumentException("Empty key value.");
 
-					if ("Name".StartsWith(key, StringComparison.OrdinalIgnoreCase) ||
-						"Label".StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					if (Word.Name.StartsWith(key, StringComparison.OrdinalIgnoreCase) ||
+						Word.Label.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
 						_ColumnName = (string)kv.Value;
 					}
-					else if ("Type".StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					else if (Word.Type.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
 						_ColumnType = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
 					}
-					else if ("Width".StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					else if (Word.Width.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
 						_ColumnWidth = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
 					}
-					else if ("Expression".StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					else if (Word.Expression.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
 						if (kv.Value is string)
 							_Property = (string)kv.Value;
@@ -215,9 +242,20 @@ namespace PowerShellFar
 			if (_Script != null)
 			{
 				A.Psf.Engine.SessionState.PSVariable.Set("_", value);
-				object r1 = _Script.InvokeReturnAsIs();
-				PSObject r2 = r1 as PSObject;
-				return r2 == null ? r1 : r2.BaseObject;
+
+				//??? suppress for now
+				// >: .{ls; ps} | op
+				// -- this with fail on processes with file scripts
+				try
+				{
+					object r1 = _Script.InvokeReturnAsIs();
+					PSObject r2 = r1 as PSObject;
+					return r2 == null ? r1 : r2.BaseObject;
+				}
+				catch (RuntimeException)
+				{
+					return null;
+				}
 			}
 
 			PSObject pso = PSObject.AsPSObject(value);

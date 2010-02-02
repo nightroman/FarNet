@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -46,7 +46,6 @@ namespace FarMacro
 					_Areas.Add(MacroArea.Tree, new AreaItem(MacroArea.Tree, "Folder tree panel."));
 					_Areas.Add(MacroArea.UserMenu, new AreaItem(MacroArea.UserMenu, "User menu."));
 					_Areas.Add(MacroArea.Viewer, new AreaItem(MacroArea.Viewer, "File viewer."));
-					_Areas.Add(MacroArea.Test, new AreaItem(MacroArea.Test, "For internal use."));
 				}
 				return _Areas;
 			}
@@ -70,7 +69,8 @@ namespace FarMacro
 
 		bool IsValidWay(Way way)
 		{
-			if ((int)way.Area < 0 || (int)way.Area > (int)MacroArea.Test)
+			// _100201_110148 to update if MacroArea has new values
+			if ((int)way.Area < 0 || (int)way.Area > (int)MacroArea.Viewer)
 				return false;
 
 			if (way.Name == null)

@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -102,6 +102,110 @@ namespace PowerShellFar
 
 			// base
 			base.Show();
+		}
+
+		internal void TryFormat(object data)
+		{
+			object value = Cast<object>.From(data);
+			if (value == null)
+				return;
+
+			TableControl table = A.FindTableControl(value.GetType().FullName, null);
+			object[] newColumns;
+			int count;
+			if (table == null)
+			{
+				if (value is System.Collections.IEnumerable)
+					return;
+
+				List<Meta> metas = new List<Meta>();
+				PSObject pso = PSObject.AsPSObject(data);
+				foreach (PSPropertyInfo pi in pso.Properties)
+				{
+					// skip PS properties
+					if (pi.Name.StartsWith("PS", StringComparison.Ordinal))
+						continue;
+					
+					metas.Add(new Meta(pi.Name));
+					if (metas.Count >= A.Psf.Settings.MaximumPanelColumnCount)
+						break;
+				}
+				count = metas.Count;
+				if (count == 0)
+					return;
+				newColumns = new object[count];
+				for (int i = 0; i < count; ++i)
+					newColumns[i] = metas[i];
+			}
+			else
+			{
+				count = Math.Min(table.Rows[0].Columns.Count, FarColumn.DefaultColumnTypes.Count);
+				newColumns = new object[count];
+				for (int i = 0; i < count; ++i)
+					newColumns[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
+			}
+
+			// heuristic N
+			if (count > 1 && SetBestType(newColumns, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
+				--count;
+
+			// heuristic Z
+			if (count > 1 && SetBestType(newColumns, "Z", Word.Description, Word.Definition))
+				--count;
+
+			// heuristic O
+			if (count > 1 && SetBestType(newColumns, "O", Word.Value, Word.Status))
+				--count;
+
+			Columns = newColumns;
+		}
+
+		static bool SetBestType(object[] columns, string type, params string[] patterns)
+		{
+			int bestRank = patterns.Length;
+			Meta bestMeta = null;
+			
+			foreach(Meta meta in columns)
+			{
+				if (meta.Type != null)
+					continue;
+
+				string name = meta.Name;
+				for (int i = 0; i < bestRank; ++i)
+				{
+					string pattern = patterns[i];
+					if (pattern[0] == '*')
+					{
+						if (name.EndsWith(patterns[i].Substring(1), StringComparison.OrdinalIgnoreCase))
+						{
+							bestRank = i;
+							bestMeta = meta;
+						}
+					}
+					else
+					{
+						if (string.Compare(name, patterns[i], StringComparison.OrdinalIgnoreCase) == 0)
+						{
+							if (i == 0)
+							{
+								meta.Type = type;
+								return true;
+							}
+
+							bestRank = i;
+							bestMeta = meta;
+						}
+					}
+				}
+			}
+
+			if (bestMeta != null)
+			{
+				bestMeta.Type = type;
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>

@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -82,29 +82,6 @@ namespace PowerShellFar
 			// update?
 			if (toUpdate && Panel.IsOpened && !IsGettingData)
 				UpdateRedraw(true);
-		}
-
-		internal override bool CanClose()
-		{
-			if (Child != null)
-				return true;
-			
-			Trace.Assert(Panel.IsOpened);
-
-			if (Parent != null || Panel.Files.Count < 1)
-				return true;
-
-			switch (A.Far.Message("How would you like to continue?", "Confirm", MsgOptions.None, new string[] { "Close", "Clear", Res.Cancel }))
-			{
-				case 0:
-					return true;
-				case 1:
-					Panel.Files.Clear();
-					UpdateRedraw(false, 0, 0);
-					return false;
-				default:
-					return false;
-			}
 		}
 
 		internal override void DeleteFiles(IList<FarFile> files, bool shift)
@@ -258,16 +235,15 @@ namespace PowerShellFar
 		/// </remarks>
 		public FarFile NewFile(object value)
 		{
-			if (Map == null)
-			{
-				FormattedObjectFile r = new FormattedObjectFile();
-				r.Data = PSObject.AsPSObject(value);
-				return r;
-			}
-			else
-			{
+			if (Map == null && Panel.Files.Count == 0)
+				TryFormat(value);
+
+			if (Map != null)
 				return new MappedObjectFile(PSObject.AsPSObject(value), Map);
-			}
+
+			FormattedObjectFile r = new FormattedObjectFile();
+			r.Data = PSObject.AsPSObject(value);
+			return r;
 		}
 
 		///

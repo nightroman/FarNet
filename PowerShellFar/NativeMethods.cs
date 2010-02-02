@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -74,7 +74,7 @@ namespace PowerShellFar
 			PSCredential credential = null;
 			if (string.IsNullOrEmpty(caption))
 			{
-				caption = Res.Name + " Credential Request";
+				caption = Res.Me + " Credential Request";
 			}
 			if (string.IsNullOrEmpty(message))
 			{

@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -23,11 +23,6 @@ namespace PowerShellFar
 		public UserPanel()
 		{
 			Panel.Info.Title = string.Empty;
-		}
-
-		internal override bool CanClose()
-		{
-			return true;
 		}
 
 		#region Delete

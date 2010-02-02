@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -595,11 +595,11 @@ namespace PowerShellFar
 							throw new InvalidDataException("Invalid settings for '" + location.Provider.Name + "' provider: " + ex.Message);
 						}
 					}
-					else if (My.ProviderInfoEx.IsNavigation(location.Provider)) //??? $RVK
+					else if (My.ProviderInfoEx.IsNavigation(location.Provider)) //???
 					{
 						Columns = new object[] { new Meta("PSChildName", "Name") };
 					}
-					// else $RVK what about others by default?
+					// else ??? what about others by default?
 				}
 			}
 

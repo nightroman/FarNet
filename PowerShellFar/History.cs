@@ -1,5 +1,5 @@
 ﻿/*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -101,7 +101,7 @@ namespace PowerShellFar
 					{
 						if (m.Alternative)
 						{
-							UI.InputDialog ui = new UI.InputDialog(Res.Name, Res.Name, "PowerShell code");
+							UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.Me, "PowerShell code");
 							ui.UICode.Text = code;
 							if (!ui.UIDialog.Show())
 								return;
@@ -156,11 +156,11 @@ namespace PowerShellFar
 				using (RegistryKey key = Registry.CurrentUser.CreateSubKey(_path_))
 				{
 					// remove old if the count is "well above" the limit
-					int nKill = key.ValueCount - A.Psf.Settings.MaxHistoryCount;
-					if (nKill > A.Psf.Settings.MaxHistoryCount / 10)
+					int nKill = key.ValueCount - A.Psf.Settings.MaximumHistoryCount;
+					if (nKill > A.Psf.Settings.MaximumHistoryCount / 10)
 					{
 						RemoveDupes(key);
-						nKill = key.ValueCount - A.Psf.Settings.MaxHistoryCount;
+						nKill = key.ValueCount - A.Psf.Settings.MaximumHistoryCount;
 						if (nKill > 0)
 						{
 							foreach (string s in key.GetValueNames())
