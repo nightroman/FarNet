@@ -11,17 +11,16 @@ Source   : http://code.google.com/p/farnet/
 	= DESCRIPTION =
 
 
-Far Manager .NET API and infrastructure for .NET modules. FarNet object model
-covers and extends Far Manager native API in comfortable object oriented way.
-PowerShell scripting is enabled by the PowerShellFar module.
-Home page: http://code.google.com/p/farnet/
+.NET API and infrastructure for .NET modules in Far Manager. FarNet exposes the
+Far Manager API in comfortable object oriented way. PowerShell scripting is
+provided by the PowerShellFar module.
 
 
 	= PREREQUISITES =
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1352
+ - Far Manager 2.0.1363
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime

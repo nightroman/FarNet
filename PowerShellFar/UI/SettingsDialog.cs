@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -18,7 +18,7 @@ namespace PowerShellFar.UI
 		{
 			_Dialog = A.Far.CreateDialog(-1, -1, 77, 8);
 			_Dialog.HelpTopic = A.Psf.HelpTopic + "Settings";
-			_Dialog.AddBox(3, 1, 0, 0, Res.Name);
+			_Dialog.AddBox(3, 1, 0, 0, Res.Me);
 
 			_Dialog.AddText(5, -1, 0, "&Main startup code");
 			_StartupCode = _Dialog.AddEdit(x, 0, 71, A.Psf.Settings.StartupCode);

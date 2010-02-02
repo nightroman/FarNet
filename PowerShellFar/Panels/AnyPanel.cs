@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -98,7 +98,7 @@ namespace PowerShellFar
 
 		readonly IPanel _Panel;
 		/// <summary>
-		/// Gets the hosted plugin panel.
+		/// Gets the hosted panel.
 		/// </summary>
 		/// <remarks>
 		/// The hosted panel refers to this as <see cref="IPanel.Host"/>.
@@ -259,7 +259,7 @@ namespace PowerShellFar
 					catch (InvalidOperationException e) { throw new InvalidOperationException("Cannot open a panel because panels window cannot be set current.", e); }
 
 					// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
-					// I tried to ignore my check - a panel did not open. In contrast, PostStep calls the plugin via the menu where
+					// I tried to ignore my check - a panel did not open. In contrast, PostStep calls via the menu where
 					// a panel is opened from with no problems.
 					A.Far.PostStep(Open);
 					return;
@@ -801,7 +801,7 @@ namespace PowerShellFar
 		void OnSettingDirectory(object sender, SettingDirectoryEventArgs e)
 		{
 			// *) .Find: is not used, ignore
-			// *) .Silent: 100127 CtrlQ mode is not OK for folders: FarMacro: on areas Far tries to enumerate, we do not support. $RVK
+			// *) .Silent: 100127 CtrlQ mode is not OK for folders: FarMacro: on areas Far tries to enumerate, we do not support. ???
 			if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) > 0)
 			{
 				e.Ignore = true;

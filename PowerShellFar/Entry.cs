@@ -1,5 +1,5 @@
 ﻿/*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -45,13 +45,13 @@ namespace PowerShellFar
 			Prefix2 = Far.RegisterCommand(this, "PowerShell jobs prefix", ">>", OnCommandLineJob);
 
 			// register config
-			Far.RegisterTool(this, Res.Name, OnConfig, ToolOptions.Config);
+			Far.RegisterTool(this, Res.Me, OnConfig, ToolOptions.Config);
 
 			// register disk
 			Far.RegisterTool(this, "Power panel", OnDisk, ToolOptions.Disk);
 
 			// register menu
-			Far.RegisterTool(this, Res.Name, OnOpen, ToolOptions.F11Menus);
+			Far.RegisterTool(this, Res.Me, OnOpen, ToolOptions.F11Menus);
 
 			// editor events: OnEditorOpened1 should be called always and first
 			// to do Invoking() (at least for TabExpansion) and the startup code

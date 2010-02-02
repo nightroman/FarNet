@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -41,9 +41,11 @@ namespace PowerShellFar
 			Columns = columns;
 		}
 
-		public object Current
+		//???? >: ls hkcu:\ | op
+		// -- column Property has all values, not "first 4"
+		public object Current // _100202_034647 Use GetString, not GetValue, else format string is not actually used
 		{
-			get { return Columns[Index].GetValue(Value); }
+			get { return Columns[Index].GetString(Value); }
 		}
 
 		public void Reset()
@@ -163,7 +165,7 @@ namespace PowerShellFar
 		public override string Name { get; set; }
 
 		public override string Description { get; set; }
-	
+
 		public override object Data { get; set; }
 	}
 

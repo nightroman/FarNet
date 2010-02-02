@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -41,8 +41,9 @@ namespace PowerShellFar
 			get { return _Columns; }
 			set
 			{
-				if (Panel.Files.Count > 0)
-					throw new InvalidOperationException("Panel must have no files.");
+				//???
+				//if (Panel.Files.Count > 0)
+				//    throw new InvalidOperationException("Panel must have no files.");
 
 				_Columns = value;
 			}

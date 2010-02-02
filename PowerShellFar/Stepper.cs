@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -49,7 +49,7 @@ namespace PowerShellFar
 	/// Invoker of steps: key sequences, script blocks and scripts returning steps.
 	/// </summary>
 	/// <remarks>
-	/// Requirement: .NET menu item must have a hotkey (set by [F4]) in the Far plugins menu [F11].
+	/// Requirement: .NET menu item must have a hotkey (set by [F4]) in the Far plugin menu [F11].
 	/// <para>
 	/// This object is exposed as <see cref="Actor.Stepper"/> to the step script block being invoked.
 	/// A step may call <c>$Psf.Stepper.Go()</c> to insert extra steps to be invoked immediately after.

@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -36,7 +36,7 @@ namespace PowerShellFar
 			string name = null;
 			if (prompt)
 			{
-				string[] files = Directory.GetFiles(dir, "*.psfconsole");
+				string[] files = Directory.GetFiles(dir, "*" + Word.ConsoleExtension);
 				IMenu menu = A.Far.CreateMenu();
 				menu.AutoAssignHotkeys = true;
 				menu.Title = "Open Editor Console";
@@ -88,7 +88,7 @@ namespace PowerShellFar
 			// new file, generate a name, set Unicode, don't history
 			if (name == null)
 			{
-				name = Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + ".psfconsole";
+				name = Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + Word.ConsoleExtension;
 				editor.CodePage = Encoding.Unicode.CodePage;
 				editor.DisableHistory = true;
 				editor.IsNew = true;
@@ -510,7 +510,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				A.Far.ShowError(Res.Name, ex);
+				A.Far.ShowError(Res.Me, ex);
 			}
 		}
 

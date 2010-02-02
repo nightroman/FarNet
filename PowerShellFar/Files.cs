@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -266,7 +266,7 @@ namespace PowerShellFar
 		{
 			get
 			{
-				PSPropertyInfo pi = PSObject.AsPSObject(Item).Properties["FarDescription"]; //$RVK use or kill
+				PSPropertyInfo pi = PSObject.AsPSObject(Item).Properties["FarDescription"]; //??? use or kill
 				if (pi == null)
 					return null;
 				

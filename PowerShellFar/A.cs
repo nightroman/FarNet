@@ -1,5 +1,5 @@
 /*
-PowerShellFar plugin for Far Manager
+PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
@@ -43,7 +43,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(string message)
 		{
-			Far.Message(message, Res.Name, MsgOptions.LeftAligned);
+			Far.Message(message, Res.Me, MsgOptions.LeftAligned);
 		}
 
 		/// <summary>
@@ -226,7 +226,7 @@ namespace PowerShellFar
 				}
 				catch (IOException ex)
 				{
-					Far.ShowError(Res.Name, ex);
+					Far.ShowError(Res.Me, ex);
 				}
 			}
 		}
@@ -259,29 +259,63 @@ namespace PowerShellFar
 			//! Microsoft.PowerShell.Commands.Internal.Format.PSObjectHelper.GetDisplayNameExpression()
 
 			PSPropertyInfo pi;
-			pi = value.Properties["Name"];
+			pi = value.Properties[Word.Name];
 			if (pi != null)
 				return pi;
-			pi = value.Properties["Id"];
+			pi = value.Properties[Word.Id];
 			if (pi != null)
 				return pi;
-			pi = value.Properties["Key"];
+			pi = value.Properties[Word.Key];
 			if (pi != null)
 				return pi;
 
 			ReadOnlyPSMemberInfoCollection<PSPropertyInfo> ppi;
-			ppi = value.Properties.Match("*Key");
+			ppi = value.Properties.Match("*" + Word.Key);
 			if (ppi.Count > 0)
 				return ppi[0];
-			ppi = value.Properties.Match("*Name");
+			ppi = value.Properties.Match("*" + Word.Name);
 			if (ppi.Count > 0)
 				return ppi[0];
-			ppi = value.Properties.Match("*Id");
+			ppi = value.Properties.Match("*" + Word.Id);
 			if (ppi.Count > 0)
 				return ppi[0];
 
 			return null;
 		}
 
+		/// <summary>
+		/// Finds available table controls.
+		/// </summary>
+		/// <param name="typeName">The type name. To be redirected for some types.</param>
+		/// <param name="tableName">Optional table name to find.</param>
+		/// <returns>Found table control or null.</returns>
+		public static TableControl FindTableControl(string typeName, string tableName)
+		{
+			// process\redirect special types
+			switch (typeName)
+			{
+				case "System.Management.Automation.PSCustomObject": return null;
+				case "System.IO.FileInfo": typeName = "FileSystemTypes"; break;
+				case "System.IO.DirectoryInfo": typeName = "FileSystemTypes"; break;
+			}
+		
+			// extended type definitions:
+			foreach(PSObject it in Psf.InvokeCode("Get-FormatData -TypeName $args[0]", typeName))
+			{
+				ExtendedTypeDefinition typeDef = it.BaseObject as ExtendedTypeDefinition;
+				foreach (FormatViewDefinition viewDef in typeDef.FormatViewDefinition)
+				{
+					if (string.IsNullOrEmpty(tableName) || Kit.Compare(tableName, viewDef.Name) == 0)
+					{
+						TableControl table = viewDef.Control as TableControl;
+						if (table != null)
+							return table;
+					}
+				}
+			}
+
+			return null;
+		}
+	
 	}
 }

@@ -83,8 +83,17 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Key macro data. See <see cref="IMacro"/>.
+	/// Key macro data used by <see cref="IMacro"/> methods.
 	/// </summary>
+	/// <remarks>
+	/// Before executing the macro Far checks the conditions in the following order:
+	/// <see cref="DisablePlugins"/>,
+	/// <see cref="CommandLine"/>,
+	/// <see cref="PanelIsPlugin"/>, <see cref="PanelIsPlugin2"/>,
+	/// <see cref="ItemIsDirectory"/>, <see cref="ItemIsDirectory2"/>,
+	/// <see cref="SelectedText"/> (in Viewer, Editor, Dialog),
+	/// <see cref="SelectedItems"/>, <see cref="SelectedItems2"/> (not in Viewer, Editor, Dialog).
+	/// </remarks>
 	public class Macro
 	{
 		/// <summary>
@@ -274,10 +283,6 @@ namespace FarNet
 		/// <summary>
 		/// File viewer.
 		/// </summary>
-		Viewer,
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		Test
+		Viewer //! this is the last; update _100201_110148 if it is not
 	}
 }
