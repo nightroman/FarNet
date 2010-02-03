@@ -12,12 +12,12 @@ LONG DESCRIPTION
 	It still uses Far Manager description settings from the registry:
 	HKEY_CURRENT_USER\Software\Far2\Descriptions
 
-CMDLETS
+EXPORTED COMMANDS
 
-	The module includes the Update-FarDescription cmdlet. For more details run:
-	Get-FarHelp Update-FarDescription
+	-- Update-FarDescription (cmdlet)
+	-- Update-FarDescriptionSynopsis (function)
 
-MEMBERS
+EXTENDED TYPES
 
 	The module adds a few members to the [System.IO.FileSystemInfo] items
 	(files or directories, items of the FileSystem provider).
@@ -44,6 +44,5 @@ MEMBERS
 
 SEE ALSO
 
-	Set-SynopsisDescription-.ps1 : sets descriptions by synopses.
 	Rename-FarFile-.ps1 : renames a file and updates its description.
 	Test-Descript-.ps1 : this script shows how to use all the features.
