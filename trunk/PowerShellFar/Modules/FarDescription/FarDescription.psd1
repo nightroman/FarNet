@@ -6,6 +6,7 @@
 	Copyright = '(C) 2010 Roman Kuzmin. All rights reserved.'
 
 	NestedModules = 'FarDescription.dll'
+	ModuleToProcess = 'FarDescription.psm1'
 	RequiredAssemblies = 'FarDescription.dll'
 	TypesToProcess = @('FarDescription.Types.ps1xml')
 

@@ -41,8 +41,8 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 	elseif ($Far.WindowType -eq 'Panels') {
 		$SelectedItems = @(Get-FarItem -Selected)
 
-		# Job: Set synopsis descriptions (called as job mostly for demonstration and testing).
-		New-FarItem "&d. Job: Set synopsis descriptions" { Start-FarJob Set-SynopsisDescription-.ps1 $Far.Panel.Path -Hidden }
+		# Update synopsis descriptions (how to use module features).
+		New-FarItem "&d. Update synopsis descriptions" { Import-Module FarDescription; Update-FarDescriptionSynopsis $Far.Panel.Path }
 
 		# Job: Remove items (can be very time consuming, really good candidate for a job).
 		if ($SelectedItems) {

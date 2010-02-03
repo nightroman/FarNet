@@ -111,6 +111,13 @@ can invoke some scripts right from the menus. Read this help and script
 comments for more details.
 
 
+#Console window width#
+
+If you work a lot with power panels then it is recommended to use console width
+at least 164, so that panel width is 80 which is the "default" console width.
+Many PowerShell type formats are designed with 80 columns in mind.
+
+
 @CommandLine
 $#Command line#
 ~Contents~@Contents@
