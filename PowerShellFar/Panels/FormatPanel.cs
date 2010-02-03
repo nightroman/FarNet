@@ -13,16 +13,12 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Abstract panel with formatting mode.
+	/// Formatted table panel.
 	/// </summary>
 	public abstract class FormatPanel : TablePanel
 	{
-		// internal so far ???
-		internal ObjectFileMap Map;
-
-		// internal ???
-		internal bool IsGettingData { get { return _IsGettingData; } }
-		bool _IsGettingData;
+		internal ObjectFileMap Map; // internal ???
+		internal bool FromGettingData { get; private set; } // internal ???
 
 		/// <summary>
 		/// Columns to include. Set it only when the panel has no files.
@@ -125,7 +121,7 @@ namespace PowerShellFar
 					// skip PS properties
 					if (pi.Name.StartsWith("PS", StringComparison.Ordinal))
 						continue;
-					
+
 					metas.Add(new Meta(pi.Name));
 					if (metas.Count >= A.Psf.Settings.MaximumPanelColumnCount)
 						break;
@@ -164,8 +160,8 @@ namespace PowerShellFar
 		{
 			int bestRank = patterns.Length;
 			Meta bestMeta = null;
-			
-			foreach(Meta meta in columns)
+
+			foreach (Meta meta in columns)
 			{
 				if (meta.Type != null)
 					continue;
@@ -321,177 +317,55 @@ namespace PowerShellFar
 		/// </summary>
 		internal override sealed void OnGettingData(PanelEventArgs e)
 		{
-			_IsGettingData = true;
+			FromGettingData = true;
 			try
 			{
 				// call the worker
-				if (OnGettingData())
-					return;
-
-				// collect data
-				IList<object> collectedData = CollectData();
+				bool done = OnGettingData();
 
 				// empty?
-				if (collectedData.Count == 0)
+				if (Panel.Files.Count == 0)
 				{
-					Panel.DotsDescription = "<empty>";
-					return;
+					PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
+					if (mode.Columns.Length == 1 && mode.Columns[0].Name == "<empty>")
+						return;
+					
+					// reuse: reset columns, keep other data current
+					SetColumn c1 = new SetColumn();
+					c1.Name = "<empty>";
+					c1.Type = "N";
+					mode.Columns = new FarColumn[] { c1 };
+					Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 				}
 
+				if (done)
+					return;
+
+				// 100202 use this always
 				// 090927 try the first object for a linear type and, if it is, use only names
-				PSObject sample = PSObject.AsPSObject(collectedData[0]);
-				if (Converter.IsLinearType(sample.BaseObject.GetType()))
-				{
-					Panel.DotsDescription = "..";
-					foreach (FarFile file in Panel.Files)
-						file.Description = file.Name;
-					return;
-				}
-
-				Panel.DotsDescription = null;
-				using (PowerShell p = A.Psf.CreatePipeline())
-				{
-					Command c;
-
-					string[] prmProperty = null;
-
-					// Select-Object -Property -ExcludeProperty
-					if (ExcludeColumns != null)
-					{
-						//! use -Property * if include is not set, e.g. cert: provider will not exclude PS*
-						// 090823 BUT it makes problems for alias: provider: ls alias: | select *
-						// I do not use -ea 0, let's it fail and users removes -ExcludeColumns.
-						// Better workaround: to filter Get-Member on my own.
-#if true
-						Collection<PSObject> members = A.Psf.InvokeCode(@"
-$args[0] |
-Get-Member -MemberType Properties |
-.{process{ $_.Name }} |
-Select-Object -Unique
-", collectedData);
-						List<string> propertyToFilter = new List<string>(members.Count);
-						foreach (PSObject o in members)
-							propertyToFilter.Add(o.ToString());
-
-						foreach (string pattern in ExcludeColumns)
-						{
-							WildcardPattern wp = new WildcardPattern(pattern, WildcardOptions.IgnoreCase);
-							for (int i = propertyToFilter.Count; --i >= 0; )
-							{
-								if (wp.IsMatch(propertyToFilter[i]))
-									propertyToFilter.RemoveAt(i);
-							}
-						}
-
-						prmProperty = new string[propertyToFilter.Count];
-						propertyToFilter.CopyTo(prmProperty);
-
-#else
-						c = new Command("Select-Object");
-						c.Parameters.Add("Property", "*");
-						c.Parameters.Add("ExcludeProperty", ExcludeColumns);
-						p.Commands.Add(c);
-#endif
-					}
-
-					// formatting width
-					int width = Panel.Window.Width - 2;
-
-					// Format-Table
-					c = new Command("Format-Table");
-					if (prmProperty != null)
-						c.Parameters.Add("Property", prmProperty);
-					//! -AutoSize is slow, but otherwise lines can be wrapped even without -Wrap: e.g. try 'ls'.
-					//! Fortunately (and funny) it looks like -Wrap:$false works fine.
-					if (AutoSize)
-						c.Parameters.Add("AutoSize", true);
-					else
-						c.Parameters.Add("Wrap", false);
-					c.Parameters.Add(Prm.EASilentlyContinue);
-					//! Trick: false grouping avoids unwanted groups, e.g. (ls -r) - groups by directory
-					c.Parameters.Add("GroupBy", " ");
-					p.Commands.AddCommand(c);
-
-					// Out-String
-					c = new Command("Out-String");
-					c.Parameters.Add("Stream");
-					c.Parameters.Add("Width", width);
-					p.Commands.AddCommand(c);
-
-					// invoke with current(!) data
-					Collection<PSObject> desc = p.Invoke(collectedData);
-					if (!A.ShowError(p))
-						FormatTableToDescriptions(desc);
-				}
-			}
-			catch (RuntimeException exception)
-			{
-				if ((e.Mode & OperationModes.FindSilent) == 0)
-					A.Msg(exception.Message);
+				foreach (FarFile file in Panel.Files)
+					file.Description = file.Name;
 			}
 			finally
 			{
-				_IsGettingData = false;
+				FromGettingData = false;
 			}
 		}
 
-		/// <summary>
-		/// Converts Format-Table output to Descriptions.
-		/// </summary>
-		bool FormatTableToDescriptionsWorker(Collection<PSObject> descriptions)
+		//???? not used
+		PanelModeInfo _EmptyMode_;
+		PanelModeInfo EmptyMode
 		{
-			// skip empty head lines
-			int i = 0;
-			while (i < descriptions.Count && descriptions[i].ToString().Length == 0)
-			{ ++i; }
-
-			// wrong line count?
-			int n = descriptions.Count;
-			if (n - i - 2 < Panel.Files.Count)
-				return false;
-
-			// tail lines must be empty
-			for (int j = i + 2 + Panel.Files.Count; j < n; ++j)
-				if (descriptions[j].ToString().Length != 0)
-					return false;
-
-			// [1] must be table separator
-			if (!Kit.RegexTableSeparator.IsMatch(descriptions[i + 1].ToString()))
-				return false;
-
-			// [0] is the header
-			Panel.DotsDescription = descriptions[i].ToString();
-
-			// rows
-			i += 2;
-			foreach (FarFile file in Panel.Files)
+			get
 			{
-				file.Description = descriptions[i].ToString();
-				++i;
+				if (_EmptyMode_ == null)
+				{
+					_EmptyMode_ = new PanelModeInfo();
+				}
+				return _EmptyMode_;
 			}
-
-			return true;
 		}
 
-		/// <summary>
-		/// Converts Format-Table output to Descriptions or just uses Name on problems.
-		/// </summary>
-		void FormatTableToDescriptions(Collection<PSObject> descriptions)
-		{
-			// try to use formatted data
-			if (FormatTableToDescriptionsWorker(descriptions))
-				return;
-
-			// we could not, show warning
-			if (AutoSize)
-				Panel.DotsDescription = "WARNING: Cannot format. Use -Columns, wider panel, similar objects.";
-			else
-				Panel.DotsDescription = "WARNING: Cannot format. Use -AutoSize, -Columns, wider panel, similar objects.";
-
-			// use just names
-			foreach (FarFile file in Panel.Files)
-				file.Description = file.Name;
-		}
 
 		internal override string HelpMenuTextOpenFileMembers { get { return "Object members"; } }
 

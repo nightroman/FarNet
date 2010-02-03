@@ -11,7 +11,7 @@
 
 .EXAMPLE
 	# Add a prefix based on LastWriteTime time:
-	Rename-FarFile- { $_.LastWriteTime.ToString('_yyMMdd_HHmmss ') + $_.Name }
+	Rename-FarFile- { $_.LastWriteTime.ToString('_yyMMdd_HHmmss_') + $_.Name }
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
@@ -20,6 +20,8 @@ param
 	# New name. Can be [string] or [scriptblock] with $_ = FileSystemInfo.
 	$Name = $(throw "Parameter -Name is missed.")
 )
+
+Import-Module FarDescription
 
 ### test the current file and get its FileSystemInfo item, ignore all others
 $private:file = Get-FarFile

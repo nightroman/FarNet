@@ -28,6 +28,7 @@ Panel-Database-.ps1 Panel SQL server databases.
 Panel-DbData-.ps1 Panel DataTable rows.
 Panel-DbTable-.ps1 Panel tables for a connection.
 Panel-Job-.ps1 Panel PowerShell background jobs that are running in the current session.
+Panel-Macro-.ps1 Panel and view/edit Far key macros
 Panel-Process-.ps1 Panel current processes
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-.ps1 Main startup code (example).
@@ -42,7 +43,6 @@ Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected
 Select-FarFile-.ps1 Selects panel files by the specified filter.
 Set-Console.ps1 Sets console window properties.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
-Set-SynopsisDescription-.ps1 Sets script file descriptions to their help synopses.
 Show-History-.ps1 Shows command, folder or view history.
 Show-Hlf-.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
@@ -54,4 +54,3 @@ Test Tests and examples
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-PowerShellFar.ps1 Updates FarNet, PowerShellFar and API help.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
-Panel-Macro-.ps1 Panel and view/edit Far key macros

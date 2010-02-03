@@ -3,10 +3,19 @@ http://code.google.com/p/farnet/
 
 = 4.3.2 =
 
-*) Object panels do not prompt for choices on [Esc] any more. [Esc] closes such
-panels just like it does in other panels, at least by default.
+*) Object panels do not prompt for choices on [Esc] any more. [Esc] closes a
+panel just like it does for other PSF panels (by default).
+
+*) Added option $Psf.Settings.MaximumPanelColumnCount (3-13, default is 10).
+Number 13 comes from possible auto-generated columns: N, Z, O, C0, ..., C9.
 
 *) Renamed $Psf.Settings.MaxHistoryCount -> MaximumHistoryCount
+
+*) Rename-FarFile-.ps1: Fix: Added import of the FarDescription module.
+
+*) Removed Set-SynopsisDescription-.ps1 because it does not depend on Far.
+Instead, use a new function Update-FarDescriptionSynopsis exposted by the
+FarDescription module (see FarDescription.psm1).
 
 = 4.3.1 =
 

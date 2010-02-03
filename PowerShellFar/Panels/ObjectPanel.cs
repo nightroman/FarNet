@@ -80,7 +80,7 @@ namespace PowerShellFar
 			bool toUpdate = AddObjectsWorker(values) > 0;
 
 			// update?
-			if (toUpdate && Panel.IsOpened && !IsGettingData)
+			if (toUpdate && Panel.IsOpened && !FromGettingData)
 				UpdateRedraw(true);
 		}
 
