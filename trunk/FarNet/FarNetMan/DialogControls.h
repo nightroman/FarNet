@@ -18,6 +18,7 @@ public:
 	virtual property int Id { int get() { return _id; } }
 	virtual property Place Rect { Place get(); void set(Place value); }
 	virtual property String^ Text { String^ get(); void set(String^ value); }
+public: DEF_EVENT_ARGS(Coloring, _Coloring, ColoringEventArgs);
 public: DEF_EVENT_ARGS(Drawing, _Drawing, DrawingEventArgs);
 public: DEF_EVENT_ARGS(GotFocus, _GotFocus, AnyEventArgs);
 public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, KeyPressedEventArgs);

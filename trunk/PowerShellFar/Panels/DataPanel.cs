@@ -138,7 +138,8 @@ namespace PowerShellFar
 			if (Columns == null)
 			{
 				// collect all table columns skipping not linear data types
-				metas = new List<Meta>(Table.Columns.Count);
+				int Count = Math.Min(Table.Columns.Count, A.Psf.Settings.MaximumPanelColumnCount);
+				metas = new List<Meta>(Count);
 				int nCollected = 0;
 				foreach (DataColumn column in Table.Columns)
 				{
@@ -148,7 +149,7 @@ namespace PowerShellFar
 						meta.Type = FarColumn.DefaultColumnTypes[nCollected];
 						metas.Add(meta);
 						++nCollected;
-						if (nCollected >= FarColumn.DefaultColumnTypes.Count)
+						if (nCollected >= Count)
 							break;
 					}
 				}

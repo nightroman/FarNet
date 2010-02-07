@@ -2,6 +2,11 @@ http://code.google.com/p/farnet/
 
 = 4.3.2 =
 
+CUSTOM COLORS OF DIALOG CONTROLS
+
+New event IControl.Coloring allows to set 1-4 custom colors depending on the
+control type. PowerShellFar script Test-Dialog-.ps1 shows a few examples.
+
 = 4.3.1 =
 
 !! This time update manually (do not use Update-PowerShellFar.ps1).

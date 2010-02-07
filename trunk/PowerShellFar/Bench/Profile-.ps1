@@ -50,18 +50,12 @@ $Psf.Action('&s. Select to extended home', { Go-Home- -Select }, 'Editor')
 
 ### Provider settings (ItemPanel)
 $Psf.Providers = @{
-	FileSystem = @{
-		Columns = @(
-			'Name'
-			@{ Type = 'S'; Expression = 'Length' }
-		)
-	}
 
 	Registry = @{
 		Columns = @(
 			@{ Type = 'Z'; Name = 'SKC'; Width = 8; Expression = 'SubKeyCount'; FormatString = '{0,8:n0}' }
 			@{ Type = 'O'; Name = 'VC'; Width = 8; Expression = 'ValueCount'; FormatString = '{0,8:n0}' }
-			@{ Type = 'N'; Name = 'Name'; Expression = 'PSChildName'  }
+			@{ Type = 'N'; Name = 'Name'; Expression = '' } # note: data source is ignored
 		)
 	}
 
@@ -89,14 +83,6 @@ $Psf.Providers = @{
 			'Description'
 			@{ Expression = 'Options'; Width = '10' }
 		)
-	}
-
-	Certificate = @{
-		ExcludeColumns = 'PS*'
-	}
-
-	FeedStore = @{
-		ExcludeColumns = 'PS*', 'Feeds', 'LocalId', 'Path', 'Parent', 'Subfolders', 'IsRoot', 'Total*'
 	}
 }
 

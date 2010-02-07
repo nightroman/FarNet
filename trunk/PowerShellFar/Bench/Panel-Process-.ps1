@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Panel current processes
+	Panel current processes.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -50,21 +50,11 @@ else {
 }
 
 ### Create panel
-$p = New-FarUserPanel
+$p = New-Object PowerShellFar.UserPanel
 
-### Panel processes
-# This method operates on panel files directly.
-$p.SetGetFiles({
-	$files = $this.Panel.Files
-	$files.Clear()
-	Get-Process $this.Data.Name -ErrorAction 0 | Where-Object $this.Data.Where | .{process{
-		# map process data to file data
-		$f = New-FarFile -Name $_.ProcessName -Data $_ -Length $_.WorkingSet
-		# special treatment is needed
-		if ($_.StartTime) { $f.LastWriteTime = $_.StartTime }
-		# add file
-		$files.Add($f)
-	}}
+### Get processes
+$p.SetGetData({
+	Get-Process $this.Data.Name -ErrorAction 0 | Where-Object $this.Data.Where
 })
 
 ### Delete processes

@@ -3,6 +3,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
+using System;
 using System.ComponentModel;
 using System.Management.Automation;
 using FarNet;
@@ -11,14 +12,11 @@ namespace PowerShellFar.Commands
 {
 	/// <summary>
 	/// Out-FarPanel command.
-	/// Sends output to a new or the current object panel.
+	/// Sends output to a new or appends to the active object panel.
 	/// </summary>
-	/// <seealso cref="NewFarObjectPanelCommand"/>
-	/// <seealso cref="StartFarPanelCommand"/>
-	[Description("Sends output to a new or the current object panel.")]
-	public sealed class OutFarPanelCommand : BaseCmdlet
+	[Description("Sends output to a new or appends to the active object panel.")]
+	public sealed class OutFarPanelCommand : BasePanelCmdlet
 	{
-		bool _isNewPanel;
 		ObjectPanel _panel;
 
 		/// <summary>
@@ -32,24 +30,12 @@ namespace PowerShellFar.Commands
 		public object[] Columns { get; set; }
 
 		///
-		[Parameter(HelpMessage = "Object(s) to be sent to a panel.", ValueFromPipeline = true)]
+		[Parameter(HelpMessage = "Object(s) to be sent to an object panel.", ValueFromPipeline = true)]
 		public PSObject InputObject { get; set; }
 
 		///
-		[Parameter(HelpMessage = "Append objects to the active opened object panel, if any.")]
+		[Parameter(HelpMessage = "Tells to append objects to the active object panel. All others options are ignored.")]
 		public SwitchParameter Append { get; set; }
-
-		/// <summary>
-		/// See <see cref="FormatPanel.FarName"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Sets FarName property.")]
-		public Meta FarName { get; set; }
-
-		/// <summary>
-		/// See <see cref="FormatPanel.ExcludeColumns"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Sets ExcludeColumns property.")]
-		public string[] ExcludeColumns { get; set; }
 
 		/// <summary>
 		/// See <see cref="FormatPanel.AutoSize"/>.
@@ -57,41 +43,38 @@ namespace PowerShellFar.Commands
 		[Parameter(HelpMessage = "Sets AutoSize property.")]
 		public SwitchParameter AutoSize { get; set; }
 
-		/// <summary>
-		/// Panel title.
-		/// </summary>
-		[Parameter(HelpMessage = "Panel title.")]
-		public string Title { get; set; }
-
 		///
 		protected override void BeginProcessing()
 		{
 			if (Append)
-				_panel = AnyPanel.GetPanel(true) as ObjectPanel;
-
-			if (_panel == null)
 			{
-				_isNewPanel = true;
+				AnyPanel panel = AnyPanel.GetPanel(true);
+				if (panel == null || panel.GetType() != typeof(ObjectPanel))
+					throw new InvalidOperationException("There is no panel able to append objects.");
+
+				_panel = (ObjectPanel)panel;
+			}
+			else
+			{
 				_panel = new ObjectPanel();
-				if (!string.IsNullOrEmpty(Title))
-					_panel.Panel.Info.Title = Title;
-				else if (!string.IsNullOrEmpty(A.Psf._myCommand))
-					_panel.Panel.Info.Title = A.Psf._myCommand;
+
+				ApplyParameters(_panel.Panel);
 
 				_panel.Columns = Columns;
-				_panel.FarName = FarName;
-				_panel.ExcludeColumns = ExcludeColumns;
 				_panel.AutoSize = AutoSize;
+
+				if (string.IsNullOrEmpty(_panel.Panel.Info.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))
+					_panel.Panel.Info.Title = A.Psf._myCommand;
 			}
 		}
 
 		///
 		protected override void EndProcessing()
 		{
-			if (_isNewPanel)
-				_panel.Show();
-			else
+			if (Append)
 				_panel.UpdateRedraw(true);
+			else
+				_panel.Show();
 		}
 
 		///
@@ -102,8 +85,8 @@ namespace PowerShellFar.Commands
 				return;
 
 			// add object(s)
-			if (InputObject.BaseObject is object[])
-				_panel.AddObjectsWorker(InputObject);
+			if (InputObject.BaseObject is object[]) //????
+				_panel.AddObjects(InputObject);
 			else
 				_panel.AddObject(InputObject);
 		}

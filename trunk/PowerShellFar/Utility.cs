@@ -98,18 +98,6 @@ namespace PowerShellFar
 		}
 		static Regex _reEscapeWildcard;
 
-		public static Regex RegexTableSeparator
-		{
-			get
-			{
-				if (_RegexTableSeparator == null)
-					//! Table separator may start with spaces if a column is right aligned.
-					_RegexTableSeparator = new Regex(@"^\s*--");
-				return _RegexTableSeparator;
-			}
-		}
-		static Regex _RegexTableSeparator;
-
 		public static void FormatMessageLines(List<string> lines, string message, int width, int height)
 		{
 			Regex format = null;

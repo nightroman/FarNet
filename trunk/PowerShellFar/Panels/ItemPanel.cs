@@ -83,11 +83,11 @@ namespace PowerShellFar
 		public event EventHandler ItemsChanged;
 
 		/// <summary>
-		/// Fixed drive name; assume the panel is customised:
-		/// <see cref="FormatPanel.FarName"/>, <see cref="TablePanel.Columns"/>,
-		/// <see cref="FormatPanel.ExcludeColumns"/>, <see cref="TablePanel.ExcludeMembers"/>
-		/// are not set to defaults.
+		/// Fixed drive name.
 		/// </summary>
+		/// <remarks>
+		/// When a drive is fixed the panel is used for some custom operations on this drive items.
+		/// </remarks>
 		public string Drive
 		{
 			get { return _Drive; }
@@ -161,58 +161,34 @@ namespace PowerShellFar
 			}
 		}
 
-		FarFile NewFile(PSObject item)
+		///
+		protected override void BuildFiles(Collection<PSObject> values)
 		{
-			// very special case: FileSystem
+			if (!My.ProviderInfoEx.IsNavigation(Location.Provider))
+			{
+				base.BuildFiles(values);
+				return;
+			}
+
+			List<FarFile> files = new List<FarFile>(values.Count);
+			Panel.Files = files;
+
 			if (Location.Provider.ImplementingType == typeof(FileSystemProvider))
 			{
-				if (Map == null)
-				{
-					SetFile r = new SetFile(item.BaseObject as FileSystemInfo, false);
-					r.Data = item;
-					return r;
-				}
-				else
-				{
-					return new FSFile(item);
-				}
+				foreach (PSObject value in values)
+					files.Add(new SystemMapFile(value, Map));
 			}
 			else
 			{
-				FarFile r;
-				if (Map == null)
-				{
-					r = new FormattedItemFile();
-					r.Name = FarName.GetString(item);
-					r.Data = item;
-				}
-				else
-				{
-					r = new MappedItemFile(item, Map);
-				}
-
-				r.IsDirectory = (bool)item.Properties["PSIsContainer"].Value;
-				return r;
+				foreach (PSObject value in values)
+					files.Add(new ItemMapFile(value, Map));
 			}
 		}
 
-		internal override bool OnGettingData()
+		internal override object GetData()
 		{
-			// reset
-			Panel.Files.Clear();
-
-			// get items
-			//! [_090408_232925]
-			Collection<PSObject> items = A.Psf.Engine.InvokeProvider.ChildItem.Get(
-				new string[] { Location.Path }, false, true, true);
-
-			if (FarName == null)
-				FarName = new Meta(My.ProviderInfoEx.IsNavigation(Location.Provider) ? "PSChildName" : "Name");
-
-			foreach (PSObject item in items)
-				Panel.Files.Add(NewFile(item));
-
-			return Map != null;
+			// get child items for the panel location
+			return A.GetChildItems(Location.Path);
 		}
 
 		//! This is normally called by Far and then Far calls OnGettingData().
@@ -579,9 +555,7 @@ namespace PowerShellFar
 				{
 					Panel.Files.Clear();
 					Columns = null;
-					ExcludeColumns = null;
 					ExcludeMembers = null;
-					FarName = null;
 
 					System.Collections.IDictionary options = A.Psf.Providers[location.Provider.Name] as System.Collections.IDictionary;
 					if (options != null)
@@ -595,11 +569,6 @@ namespace PowerShellFar
 							throw new InvalidDataException("Invalid settings for '" + location.Provider.Name + "' provider: " + ex.Message);
 						}
 					}
-					else if (My.ProviderInfoEx.IsNavigation(location.Provider)) //???
-					{
-						Columns = new object[] { new Meta("PSChildName", "Name") };
-					}
-					// else ??? what about others by default?
 				}
 			}
 

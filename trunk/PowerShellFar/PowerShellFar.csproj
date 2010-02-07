@@ -76,9 +76,7 @@
     <Compile Include="Commands\NewFarListCommand.cs" />
     <Compile Include="Commands\NewFarMenuCommand.cs" />
     <Compile Include="Commands\NewFarItemCommand.cs" />
-    <Compile Include="Commands\NewFarObjectPanelCommand.cs" />
     <Compile Include="Commands\NewFarFileCommand.cs" />
-    <Compile Include="Commands\NewFarUserPanelCommand.cs" />
     <Compile Include="Commands\NewFarViewerCommand.cs" />
     <Compile Include="Commands\OutFarListCommand.cs" />
     <Compile Include="Commands\OutFarPanelCommand.cs" />
