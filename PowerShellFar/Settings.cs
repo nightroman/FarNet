@@ -164,7 +164,7 @@ namespace PowerShellFar
 
 		int _MaximumHistoryCount = 400;
 		/// <summary>
-		/// Maximum number of commands kept in the registry (in fact there will be about 10% more).
+		/// The maximum number of history commands kept in the registry. In fact, 10% more is allowed.
 		/// </summary>
 		public int MaximumHistoryCount
 		{
@@ -172,9 +172,9 @@ namespace PowerShellFar
 			set { _MaximumHistoryCount = value; }
 		}
 		
-		int _MaximumPanelColumnCount = 10; //????
+		int _MaximumPanelColumnCount = 8;
 		/// <summary>
-		/// The maximum number of columns allowed in not configured panels.
+		/// The maximum number of columns allowed in free format panels.
 		/// </summary>
 		public int MaximumPanelColumnCount
 		{

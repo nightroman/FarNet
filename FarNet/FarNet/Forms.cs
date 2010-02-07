@@ -16,7 +16,17 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Called to draw the control.
 		/// </summary>
+		/// <remarks>
+		/// Event handlers of <see cref="IUserControl"/> controls use this event to draw them.
+		/// </remarks>
 		event EventHandler<DrawingEventArgs> Drawing;
+		/// <summary>
+		/// Called to color the control.
+		/// </summary>
+		/// <remarks>
+		/// Event handlers change the default colors provided by the event arguments.
+		/// </remarks>
+		event EventHandler<ColoringEventArgs> Coloring;
 		/// <summary>
 		/// Called when the control has got focus.
 		/// </summary>

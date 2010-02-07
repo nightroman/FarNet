@@ -13,9 +13,9 @@ using FarNet;
 
 namespace PowerShellFar
 {
-	class ObjectFileMap
+	class FileMap
 	{
-		public ObjectFileMap()
+		public FileMap()
 		{
 			Columns = new List<Meta>();
 		}
@@ -29,13 +29,13 @@ namespace PowerShellFar
 		public List<Meta> Columns { get; private set; }
 	}
 
-	class ObjectColumnEnumerator : System.Collections.IEnumerator
+	class FileColumnEnumerator : System.Collections.IEnumerator
 	{
+		int Index = -1;
 		PSObject Value;
 		List<Meta> Columns;
-		int Index = -1;
 
-		public ObjectColumnEnumerator(PSObject value, List<Meta> columns)
+		public FileColumnEnumerator(PSObject value, List<Meta> columns)
 		{
 			Value = value;
 			Columns = columns;
@@ -59,12 +59,12 @@ namespace PowerShellFar
 		}
 	}
 
-	class ObjectColumnCollection : My.SimpleCollection
+	class FileColumnCollection : My.SimpleCollection
 	{
 		PSObject Value;
 		List<Meta> Columns;
 
-		public ObjectColumnCollection(PSObject value, List<Meta> columns)
+		public FileColumnCollection(PSObject value, List<Meta> columns)
 		{
 			Value = value;
 			Columns = columns;
@@ -77,16 +77,16 @@ namespace PowerShellFar
 
 		public override System.Collections.IEnumerator GetEnumerator()
 		{
-			return new ObjectColumnEnumerator(Value, Columns);
+			return new FileColumnEnumerator(Value, Columns);
 		}
 	}
 
-	class MappedObjectFile : FarFile
+	class MapFile : FarFile
 	{
-		PSObject Value;
-		ObjectFileMap Map;
+		protected PSObject Value { get; private set; }
+		FileMap Map;
 
-		public MappedObjectFile(PSObject value, ObjectFileMap map)
+		public MapFile(PSObject value, FileMap map)
 		{
 			Value = value;
 			Map = map;
@@ -132,7 +132,7 @@ namespace PowerShellFar
 			get
 			{
 				if (Map.Columns.Count > 0)
-					return new ObjectColumnCollection(Value, Map.Columns);
+					return new FileColumnCollection(Value, Map.Columns);
 				else
 					return null;
 			}
@@ -148,32 +148,68 @@ namespace PowerShellFar
 	}
 
 	/// <summary>
-	/// Infrastructure. Object file + Attributes.
+	/// Provider item map file.
 	/// </summary>
-	class MappedItemFile : MappedObjectFile
+	sealed class ItemMapFile : MapFile
 	{
-		public override FileAttributes Attributes { get; set; }
+		public override string Name
+		{
+			get { return Value.Properties["PSChildName"].Value.ToString(); }
+		}
 
-		public MappedItemFile(PSObject value, ObjectFileMap map) : base(value, map) { }
+		public override FileAttributes Attributes
+		{
+			get { return ((bool)Value.Properties["PSIsContainer"].Value) ? FileAttributes.Directory : 0; }
+		}
+
+		public ItemMapFile(PSObject value, FileMap map) : base(value, map) { }
 	}
 
 	/// <summary>
-	/// Infrastructure. File with Name, Description and Data.
+	/// System item map file.
 	/// </summary>
-	class FormattedObjectFile : FarFile
+	sealed class SystemMapFile : MapFile
 	{
-		public override string Name { get; set; }
+		public SystemMapFile(PSObject value, FileMap map) : base(value, map) { }
 
-		public override string Description { get; set; }
+		public override string Name
+		{
+			get { return ((FileSystemInfo)Value.BaseObject).Name; }
+		}
 
-		public override object Data { get; set; }
+		public override DateTime CreationTime
+		{
+			get { return ((FileSystemInfo)Value.BaseObject).CreationTime; }
+		}
+
+		public override DateTime LastAccessTime
+		{
+			get { return ((FileSystemInfo)Value.BaseObject).LastAccessTime; }
+		}
+
+		public override DateTime LastWriteTime
+		{
+			get { return ((FileSystemInfo)Value.BaseObject).LastWriteTime; }
+		}
+
+		public override long Length
+		{
+			get
+			{
+				FileInfo file = Value.BaseObject as FileInfo;
+				return file == null ? 0 : file.Length;
+			}
+		}
+
+		public override FileAttributes Attributes
+		{
+			get { return ((FileSystemInfo)Value.BaseObject).Attributes; }
+		}
+
+		public override string ToString()
+		{
+			return Value.BaseObject.ToString();
+		}
 	}
 
-	/// <summary>
-	/// Infrastructure. File with Name, Description, Attributes and Data.
-	/// </summary>
-	class FormattedItemFile : FormattedObjectFile
-	{
-		public override FileAttributes Attributes { get; set; }
-	}
 }

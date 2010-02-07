@@ -14,7 +14,7 @@ Go-Home-.ps1 Goes to or selects to extended home position in the editor
 Go-Selection-.ps1 Goes to the current selection start\end position
 Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-FarSettings.ps1 Imports Far Manager settings.
-Import-Panel-.ps1 Imports objects from files to a panel
+Import-Panel-.ps1 Imports objects from files and sends them to an object panel.
 Indent-Selection-.ps1 Indents or outdents selected lines in the editor
 Install-Macro-.ps1 Installs macros (example).
 Invoke-Editor-.ps1 Invokes a file from the current editor.

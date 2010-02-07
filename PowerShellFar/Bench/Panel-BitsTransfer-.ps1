@@ -111,7 +111,7 @@ $p = $Far.FindPanel($id)
 if ($p) { return }
 
 ### Create panel
-$p = New-FarUserPanel
+$p = New-Object PowerShellFar.UserPanel
 $p.Columns = @(
 	@{ Type = 'N'; Expression = 'DisplayName' }
 	@{ Type = 'S'; Label = '% done'; Expression = { if ($_.BytesTotal) { 100 * $_.BytesTransferred / $_.BytesTotal } else { 100 } } }
@@ -120,7 +120,7 @@ $p.Columns = @(
 )
 
 ### Panel jobs
-$p.SetGetObjects({
+$p.SetGetData({
 	Get-BitsTransfer -ErrorAction 0
 })
 

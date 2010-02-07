@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Imports objects from files to a panel
+	Imports objects from files and sends them to an object panel.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -17,11 +17,11 @@
 param
 (
 	# Same as -Path of Import-{Clixml|Csv}.
-	$Path = $(throw "Missed parameter -Path."),
-
-	# Property name or scriptblock to be used for Name column.
-	$FarName,
-
+	$Path = $(throw "Missed parameter -Path.")
+	,
+	# Panel columns.
+	$Columns
+	,
 	# 'Clixml' or 'Csv', or files should have extensions .clixml or .csv
 	$Format
 )
@@ -50,5 +50,5 @@ elseif ($obj.Count -eq 1) {
 }
 else {
 	# show several objects (ObjectPanel)
-	$obj | New-FarObjectPanel -FarName $FarName | Start-FarPanel -Title $Path
+	$obj | Out-FarPanel -Columns $Columns -Title $Path
 }

@@ -17,17 +17,10 @@ namespace PowerShellFar
 	/// </summary>
 	public abstract class FormatPanel : TablePanel
 	{
-		internal ObjectFileMap Map; // internal ???
-		internal bool FromGettingData { get; private set; } // internal ???
+		internal FileMap Map; // internal ???
 
-		/// <summary>
-		/// Columns to include. Set it only when the panel has no files.
-		/// </summary>
-		/// <remarks>
-		/// Items are similar to <c>-Property</c> of <c>Format-Table</c>.
-		/// See more: <see cref="TablePanel.Columns"/> and <see cref="Meta"/>.
-		/// </remarks>
-		public override object[] Columns
+		/// <include file='doc.xml' path='docs/pp[@name="Columns"]/*'/>
+		public override sealed object[] Columns
 		{
 			get
 			{
@@ -39,26 +32,9 @@ namespace PowerShellFar
 				if (value == null)
 					Map = null;
 				else
-					MakeMap();
+					MakeMap(null);
 			}
 		}
-
-		/// <summary>
-		/// Name of a property for Name column.
-		/// </summary>
-		public Meta FarName { get; set; }
-
-		/// <summary>
-		/// Columns to exclude.
-		/// </summary>
-		/// <remarks>
-		/// It is ignored if <see cref="TablePanel.Columns"/> is set.
-		/// Items are the same as for <c>-ExcludeProperty</c> of <c>Select-Object</c> cmdlet.
-		/// <para>
-		/// It is not really recommended to use. Recommended way is to specify <see cref="Columns"/>.
-		/// </para>
-		/// </remarks>
-		public string[] ExcludeColumns { get; set; }
 
 		/// <summary>
 		/// Same as <c>-AutoSize</c> of <c>Format-Table</c>.
@@ -80,88 +56,89 @@ namespace PowerShellFar
 		protected FormatPanel()
 		{ }
 
-		///
-		public override void Show()
+		internal static Meta[] TryFormatByTableControl(PSObject value)
 		{
-			// done?
-			if (Panel.IsOpened)
-				return;
-
-			// 090411 Use custom Descriptions mode
-			if (Panel.Info.GetMode(PanelViewMode.AlternativeFull) == null)
-			{
-				PanelModeInfo mode = new PanelModeInfo();
-				SetColumn c1 = new SetColumn(); c1.Name = "Format-Table"; c1.Type = "Z";
-				mode.Columns = new FarColumn[] { c1 };
-				Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
-			}
-
-			// base
-			base.Show();
-		}
-
-		internal void TryFormat(object data)
-		{
-			object value = Cast<object>.From(data);
-			if (value == null)
-				return;
-
-			TableControl table = A.FindTableControl(value.GetType().FullName, null);
-			object[] newColumns;
-			int count;
+			TableControl table = A.FindTableControl(value.BaseObject.GetType().FullName, null);
 			if (table == null)
-			{
-				if (value is System.Collections.IEnumerable)
-					return;
+				return null;
 
-				List<Meta> metas = new List<Meta>();
-				PSObject pso = PSObject.AsPSObject(data);
-				foreach (PSPropertyInfo pi in pso.Properties)
-				{
-					// skip PS properties
-					if (pi.Name.StartsWith("PS", StringComparison.Ordinal))
-						continue;
-
-					metas.Add(new Meta(pi.Name));
-					if (metas.Count >= A.Psf.Settings.MaximumPanelColumnCount)
-						break;
-				}
-				count = metas.Count;
-				if (count == 0)
-					return;
-				newColumns = new object[count];
-				for (int i = 0; i < count; ++i)
-					newColumns[i] = metas[i];
-			}
-			else
-			{
-				count = Math.Min(table.Rows[0].Columns.Count, FarColumn.DefaultColumnTypes.Count);
-				newColumns = new object[count];
-				for (int i = 0; i < count; ++i)
-					newColumns[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
-			}
+			int count = Math.Min(table.Rows[0].Columns.Count, A.Psf.Settings.MaximumPanelColumnCount);
+			Meta[] metas = new Meta[count];
+			for (int i = 0; i < count; ++i)
+				metas[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
 
 			// heuristic N
-			if (count > 1 && SetBestType(newColumns, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
+			if (count > 1 && SetBestType(metas, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
 				--count;
 
 			// heuristic Z
-			if (count > 1 && SetBestType(newColumns, "Z", Word.Description, Word.Definition))
+			if (count > 1 && SetBestType(metas, "Z", Word.Description, Word.Definition))
 				--count;
 
 			// heuristic O
-			if (count > 1 && SetBestType(newColumns, "O", Word.Value, Word.Status))
+			if (count > 1 && SetBestType(metas, "O", Word.Value, Word.Status))
 				--count;
 
-			Columns = newColumns;
+			return metas;
 		}
 
-		static bool SetBestType(object[] columns, string type, params string[] patterns)
+		internal static Meta[] TryFormatByGetMember(Collection<PSObject> values)
+		{
+			Meta[] metas;
+			int count;
+
+			if (values.Count == 1) //???? need
+			{
+				List<Meta> tmp = new List<Meta>();
+				foreach (PSPropertyInfo pi in values[0].Properties)
+				{
+					tmp.Add(new Meta(pi.Name));
+					if (tmp.Count >= A.Psf.Settings.MaximumPanelColumnCount)
+						break;
+				}
+
+				count = tmp.Count;
+				if (count == 0)
+					return null;
+
+				metas = new Meta[count];
+				tmp.CopyTo(metas);
+			}
+			else
+			{
+				Collection<PSObject> members = A.Psf.InvokeCode("$args[0] | Get-Member -MemberType Property -ErrorAction 0 | Select-Object -ExpandProperty Name", values);
+				if (members.Count == 0)
+					return null;
+
+				count = Math.Min(members.Count, A.Psf.Settings.MaximumPanelColumnCount);
+				metas = new Meta[count];
+				for (int i = 0; i < count; ++i)
+					metas[i] = new Meta(members[i].ToString());
+			}
+
+			//???? dupe below
+
+			// heuristic N
+			if (count > 1 && SetBestType(metas, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
+				--count;
+
+			// heuristic Z
+			if (count > 1 && SetBestType(metas, "Z", Word.Description, Word.Definition))
+				--count;
+
+			// heuristic O
+			if (count > 1 && SetBestType(metas, "O", Word.Value, Word.Status))
+				--count;
+
+			return metas;
+		}
+
+		static bool SetBestType(Meta[] metas, string type, params string[] patterns)
 		{
 			int bestRank = patterns.Length;
 			Meta bestMeta = null;
 
-			foreach (Meta meta in columns)
+			foreach (Meta meta in metas)
 			{
 				if (meta.Type != null)
 					continue;
@@ -204,39 +181,16 @@ namespace PowerShellFar
 			return false;
 		}
 
-		/// <summary>
-		/// Sets file name if any suitable exists.
-		/// </summary>
-		internal void SetFileName(FarFile file)
-		{
-			// case: meta name
-			if (FarName != null)
-			{
-				file.Name = FarName.GetString(file.Data);
-				return;
-			}
-
-			// case: try to get display name
-			PSObject data = PSObject.AsPSObject(file.Data);
-			PSPropertyInfo pi = A.FindDisplayProperty(data);
-			if (pi != null)
-			{
-				file.Name = pi.Value == null ? "<null>" : pi.Value.ToString();
-				return;
-			}
-
-			// other: use ToString(), but skip too verbose PSCustomObject
-			if (!(data.BaseObject is PSCustomObject))
-				file.Name = data.ToString();
-		}
-
-		void MakeMap()
+		void MakeMap(Meta[] metas) //????
 		{
 			// pass 1: get metas and types and pre-process only specified default types
-			Meta[] metas = SetupColumns(Columns);
+			if (metas == null)
+				metas = SetupColumns(Columns);
+			else
+				SetupMetas(metas);
 
 			// pass 2: process all, use still available default column types
-			Map = new ObjectFileMap();
+			Map = new FileMap();
 			foreach (Meta meta in metas)
 			{
 				// type -> map:
@@ -307,65 +261,152 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Updates <see cref="FarFile.Data"/> and <see cref="FarFile.Name"/>
-		/// and returns false or updates everything itself and returns true.
+		/// Gets a list of ready files or a collection of PS objects.
 		/// </summary>
-		internal abstract bool OnGettingData();
+		internal abstract object GetData();
 
 		/// <summary>
-		/// Calls <see cref="OnGettingData()"/> and makes Description column.
+		/// Calls <see cref="GetData()"/> and then formats if needed.
 		/// </summary>
-		internal override sealed void OnGettingData(PanelEventArgs e)
+		internal override void OnGettingData(PanelEventArgs e)
 		{
-			FromGettingData = true;
+			// call the worker
+			// _090408_232925 If we throw then FarNet returns false and Far closes the panel.
+			object data;
 			try
 			{
-				// call the worker
-				bool done = OnGettingData();
+				data = GetData();
+			}
+			catch (RuntimeException ex)
+			{
+				if ((e.Mode & OperationModes.Silent) == 0)
+					A.Far.ShowError(Res.Me, ex);
+				
+				data = new List<FarFile>();
+			}
 
-				// empty?
-				if (Panel.Files.Count == 0)
-				{
-					PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
-					if (mode.Columns.Length == 1 && mode.Columns[0].Name == "<empty>")
-						return;
-					
-					// reuse: reset columns, keep other data current
-					SetColumn c1 = new SetColumn();
-					c1.Name = "<empty>";
-					c1.Type = "N";
-					mode.Columns = new FarColumn[] { c1 };
-					Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
-				}
+			// if the data are files just use them, assume all is done
+			IList<FarFile> readyFiles = data as IList<FarFile>;
+			if (readyFiles != null)
+			{
+				Panel.Files = readyFiles;
+				return;
+			}
 
-				if (done)
+			// PS objects
+			Collection<PSObject> values = (Collection<PSObject>)data;
+
+			// empty?
+			if (values.Count == 0)
+			{
+				// drop files in any case
+				Panel.Files.Clear();
+				
+				// do not change anything in the custom panel
+				if (Columns != null)
 					return;
 
-				// 100202 use this always
-				// 090927 try the first object for a linear type and, if it is, use only names
-				foreach (FarFile file in Panel.Files)
-					file.Description = file.Name;
+				// is it already <empty>?
+				PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
+				if (mode == null)
+					mode = new PanelModeInfo();
+				else if (mode.Columns.Length == 1 && mode.Columns[0].Name == "<empty>")
+					return;
+
+				// reuse the mode: reset columns, keep other data intact
+				SetColumn c1 = new SetColumn();
+				c1.Type = "N";
+				c1.Name = "<empty>";
+				mode.Columns = new FarColumn[] { c1 };
+				Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
+				return;
+			}
+
+			// not empty; values has to be removed in any case
+			try
+			{
+				// custom
+				if (Columns != null)
+				{
+					BuildFiles(values);
+					return;
+				}
+
+				// the common type
+				Type commonType = values[0].BaseObject is System.Collections.IEnumerable ? null : A.FindCommonType(values);
+
+				// use index, value, type mode
+				if (commonType == null)
+				{
+					BuildFilesMixed(values);
+					return;
+				}
+
+				Meta[] metas = null;
+
+				// try to get format
+				if (commonType != typeof(PSCustomObject))
+					metas = TryFormatByTableControl(values[0]);
+
+				// use Get-Member
+				if (metas == null)
+					metas = TryFormatByGetMember(values);
+
+				if (metas == null)
+				{
+					BuildFilesMixed(values);
+				}
+				else
+				{
+					MakeMap(metas);
+					BuildFiles(values);
+				}
 			}
 			finally
 			{
-				FromGettingData = false;
+				values.Clear();
 			}
 		}
 
-		//???? not used
-		PanelModeInfo _EmptyMode_;
-		PanelModeInfo EmptyMode
+		///
+		protected virtual void BuildFiles(Collection<PSObject> values)
 		{
-			get
-			{
-				if (_EmptyMode_ == null)
-				{
-					_EmptyMode_ = new PanelModeInfo();
-				}
-				return _EmptyMode_;
-			}
+			List<FarFile> files = new List<FarFile>(values.Count);
+			Panel.Files = files;
+
+			foreach (PSObject value in values)
+				files.Add(new MapFile(value, Map));
 		}
 
+		void BuildFilesMixed(Collection<PSObject> values)
+		{
+			List<FarFile> files = new List<FarFile>(values.Count);
+			Panel.Files = files;
+
+			PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
+			if (mode == null)
+				mode = new PanelModeInfo();
+			SetColumn c1 = new SetColumn(); c1.Type = "S"; c1.Name = "##"; // "Index" clashes to sort order mark
+			SetColumn c2 = new SetColumn(); c2.Type = "N"; c2.Name = "Value";
+			SetColumn c3 = new SetColumn(); c3.Type = "Z"; c3.Name = "Type";
+			mode.Columns = new FarColumn[] { c1, c2, c3 };
+			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
+
+			int i = 0;
+			foreach (PSObject value in values)
+			{
+				SetFile file = new SetFile();
+				file.Data = value;
+				file.Length = i++;
+				file.Description = value.BaseObject.GetType().FullName;
+				PSPropertyInfo pi = A.FindDisplayProperty(value);
+				if (pi == null)
+					file.Name = value.ToString();
+				else
+					file.Name = pi.Value.ToString();
+				files.Add(file);
+			}
+		}
 
 		internal override string HelpMenuTextOpenFileMembers { get { return "Object members"; } }
 

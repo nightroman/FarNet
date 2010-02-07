@@ -72,14 +72,16 @@ namespace PowerShellFar
 			get { return _Child; }
 		}
 
-		object _Data;
 		/// <summary>
 		/// Gets or sets user data attached to this panel.
 		/// </summary>
+		/// <remarks>
+		/// This is just a shortcut reference to <see cref="IPanel.Data"/>, not another instance.
+		/// </remarks>
 		public object Data
 		{
-			get { return _Data; }
-			set { _Data = value; }
+			get { return _Panel.Data; }
+			set { _Panel.Data = value; }
 		}
 
 		List<IDisposable> _Garbage;
@@ -96,6 +98,7 @@ namespace PowerShellFar
 			}
 		}
 
+		//! this.Data is connected to Panel.Data
 		readonly IPanel _Panel;
 		/// <summary>
 		/// Gets the hosted panel.
@@ -250,23 +253,23 @@ namespace PowerShellFar
 		/// <seealso cref="ShowAsChild"/>
 		public virtual void Show()
 		{
-			if (!_Panel.IsOpened)
+			if (_Panel.IsOpened)
+				return;
+			
+			WindowType wt = A.Far.WindowType;
+			if (wt != WindowType.Panels)
 			{
-				WindowType wt = A.Far.WindowType;
-				if (wt != WindowType.Panels)
-				{
-					try { A.Far.SetCurrentWindow(0); }
-					catch (InvalidOperationException e) { throw new InvalidOperationException("Cannot open a panel because panels window cannot be set current.", e); }
+				try { A.Far.SetCurrentWindow(0); }
+				catch (InvalidOperationException e) { throw new InvalidOperationException("Cannot open a panel because panels window cannot be set current.", e); }
 
-					// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
-					// I tried to ignore my check - a panel did not open. In contrast, PostStep calls via the menu where
-					// a panel is opened from with no problems.
-					A.Far.PostStep(Open);
-					return;
-				}
-
-				Open(null, null);
+				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
+				// I tried to ignore my check - a panel did not open. In contrast, PostStep calls via the menu where
+				// a panel is opened from with no problems.
+				A.Far.PostStep(Open);
+				return;
 			}
+
+			Open(null, null);
 		}
 
 		/// <summary>

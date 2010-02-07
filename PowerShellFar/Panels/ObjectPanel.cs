@@ -34,36 +34,13 @@ namespace PowerShellFar
 			Panel.PuttingFiles += OnPuttingFiles;
 		}
 
-		internal int AddObjectsWorker(object values)
-		{
-			int r = 0;
-			IEnumerable ie = Cast<IEnumerable>.From(values);
-			if (ie == null || ie is string)
-			{
-				Panel.Files.Add(NewFile(values));
-				++r;
-			}
-			else
-			{
-				foreach (object value in ie)
-				{
-					if (value != null)
-					{
-						Panel.Files.Add(NewFile(value));
-						++r;
-					}
-				}
-			}
-			return r;
-		}
-
 		/// <summary>
 		/// Adds a single objects to the panel as it is.
 		/// </summary>
 		public void AddObject(object value)
 		{
 			if (value != null)
-				Panel.Files.Add(NewFile(value));
+				Values.Add(PSObject.AsPSObject(value));
 		}
 
 		/// <summary>
@@ -72,16 +49,20 @@ namespace PowerShellFar
 		/// <param name="values">Objects represented by enumerable or a single object.</param>
 		public void AddObjects(object values)
 		{
-			// >: New-FarObjectPanel # example
 			if (values == null)
 				return;
 
-			// just add
-			bool toUpdate = AddObjectsWorker(values) > 0;
-
-			// update?
-			if (toUpdate && Panel.IsOpened && !FromGettingData)
-				UpdateRedraw(true);
+			IEnumerable ie = Cast<IEnumerable>.From(values);
+			if (ie == null || ie is string)
+			{
+				Values.Add(PSObject.AsPSObject(values));
+			}
+			else
+			{
+				foreach (object value in ie)
+					if (value != null)
+						Values.Add(PSObject.AsPSObject(value));
+			}
 		}
 
 		internal override void DeleteFiles(IList<FarFile> files, bool shift)
@@ -193,57 +174,75 @@ namespace PowerShellFar
 			return true;
 		}
 
+		// Prompts a user to enter a command that gets new panel objects
 		internal override void UICreate()
 		{
-			PSObject data = new PSObject();
-			FarFile file = NewFile(data);
-			Panel.Files.Add(file);
+			// prompt for a command
+			string code = A.Far.MacroState == FarMacroState.None ? A.Psf.InputCode() : A.Far.Input(null);
+			if (string.IsNullOrEmpty(code))
+				return;
 
-			Panel.PostFile(file);
+			// invoke the command
+			Collection<PSObject> values = A.Psf.InvokeCode(code);
+			if (values.Count == 0)
+				return;
+
+			// add the objects
+			AddObjects(values);
+			
+			// post the first object and update
+			Panel.PostData(values[0]);
 			UpdateRedraw(false);
+		}
 
-			MemberPanel child = new MemberPanel(data);
-			child.ShowAsChild(this);
-			child.UICreate();
+		readonly Collection<PSObject> _Values = new Collection<PSObject>();
+		internal Collection<PSObject> Values { get { return _Values; } }
+
+		internal override object GetData()
+		{
+			if (UserWants != UserAction.CtrlR && Values.Count == 0 && (Map != null || Panel.Files.Count > 0 && Panel.Files[0] is SetFile)) //???? mb it works but looks like a hack
+				return Panel.Files;
+			
+			if (Map == null || Columns == null)
+			{
+				if (Panel.Files.Count == 0)
+					return Values;
+
+				Collection<PSObject> result = new Collection<PSObject>();
+				foreach (FarFile file in Panel.Files)
+					result.Add(PSObject.AsPSObject(file.Data));
+				foreach (PSObject value in Values)
+					result.Add(value);
+				
+				Values.Clear();
+				return result;
+			}
+			
+			List<FarFile> files = new List<FarFile>(Values.Count);
+			foreach(PSObject value in Values)
+				files.Add(new MapFile(value, Map));
+
+			Values.Clear();
+			return files;
 		}
 
 		/// <summary>
-		/// Updates <see cref="FarFile.Data"/> and <see cref="FarFile.Name"/>
-		/// and returns false or updates everything itself and returns true.
+		/// Sets file name if any suitable exists.
 		/// </summary>
-		internal override bool OnGettingData()
+		static void SetFileName(FarFile file)
 		{
-			if (Map != null)
-				return true;
-
-			foreach (FarFile f in Panel.Files)
+			// case: try to get display name
+			PSObject data = PSObject.AsPSObject(file.Data);
+			PSPropertyInfo pi = A.FindDisplayProperty(data);
+			if (pi != null)
 			{
-				if (f.Data != null)
-					SetFileName(f);
+				file.Name = pi.Value == null ? "<null>" : pi.Value.ToString();
+				return;
 			}
 
-			return false;
-		}
-
-		/// <summary>
-		/// Creates a new file specific for this panel and its settings.
-		/// </summary>
-		/// <param name="value">An object to be attached to this file.</param>
-		/// <returns>New file. You should use it at once for this panel only.</returns>
-		/// <remarks>
-		/// This method may be used for example in the script set by <see cref="UserPanel.SetGetFiles"/>.
-		/// </remarks>
-		public FarFile NewFile(object value)
-		{
-			if (Map == null && Panel.Files.Count == 0)
-				TryFormat(value);
-
-			if (Map != null)
-				return new MappedObjectFile(PSObject.AsPSObject(value), Map);
-
-			FormattedObjectFile r = new FormattedObjectFile();
-			r.Data = PSObject.AsPSObject(value);
-			return r;
+			// other: use ToString(), but skip too verbose PSCustomObject
+			if (!(data.BaseObject is PSCustomObject))
+				file.Name = data.ToString();
 		}
 
 		///

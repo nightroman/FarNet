@@ -14,36 +14,18 @@ namespace PowerShellFar
 	/// </summary>
 	public abstract class TablePanel : AnyPanel
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
+		///
 		internal TablePanel()
 		{ }
 
-		/// <summary>
-		/// Members to exclude in a child <see cref="ListPanel"/>.
-		/// </summary>
-		public string[] ExcludeMembers { get; set; }
-
-		/// <summary>
-		/// Panel columns info. Set it only when the panel has no files yet.
-		/// </summary>
-		/// <remarks>
-		/// See <see cref="Meta"/> remarks about use of dictionaries as items.
-		/// <see cref="DataPanel"/> items should be mapped to properties only.
-		/// For other panels items are similar to <c>Format-Table</c> parameter <c>-Property</c>.
-		/// <para>
-		/// See <see cref="PanelModeInfo.Columns"/> about column types.
-		/// </para>
-		/// </remarks>
+		/// <include file='doc.xml' path='docs/pp[@name="Columns"]/*'/>
 		public virtual object[] Columns
 		{
 			get { return _Columns; }
 			set
 			{
-				//???
-				//if (Panel.Files.Count > 0)
-				//    throw new InvalidOperationException("Panel must have no files.");
+				if (Panel.Files.Count > 0)
+					throw new InvalidOperationException("Panel must have no files for setting columns.");
 
 				_Columns = value;
 			}
@@ -51,27 +33,40 @@ namespace PowerShellFar
 		object[] _Columns;
 
 		/// <summary>
-		/// Infrastructure. Gets meta objects for columns.
+		/// Members to exclude in a child <see cref="ListPanel"/>.
+		/// </summary>
+		public string[] ExcludeMembers { get; set; }
+
+		/// <summary>
+		/// For internal use. Gets meta objects for columns.
 		/// </summary>
 		/// <returns>Meta objects ready for column mapping.</returns>
-		public static Meta[] SetupColumns(object[] columns)
+		public static Meta[] SetupColumns(object[] columns) //???? public
 		{
-			Meta[] r = new Meta[columns.Length];
+			Meta[] metas = new Meta[columns.Length];
+			for (int iColumn = 0; iColumn < columns.Length; ++iColumn)
+				metas[iColumn] = Meta.AsMeta(columns[iColumn]);
+				
+			SetupMetas(metas);
+			return metas;
+		}
+
+		internal static void SetupMetas(Meta[] metas)
+		{
 			List<string> availableColumnTypes = new List<string>(FarColumn.DefaultColumnTypes);
 
 			// pass 1: pre-process specified default types, remove them from available
 			int iCustom = 0;
-			for (int iColumn = 0; iColumn < columns.Length; ++iColumn)
+			for (int iColumn = 0; iColumn < metas.Length; ++iColumn)
 			{
 				// meta data info
-				Meta meta = Meta.AsMeta(columns[iColumn]);
-				r[iColumn] = meta;
+				Meta meta = metas[iColumn];
 
 				// skip not specified
 				if (string.IsNullOrEmpty(meta.Type))
 					continue;
 
-				// pre-process only default types: N, O, Z, C
+				// pre-process only default types: N, Z, O, C
 				switch (meta.Type[0])
 				{
 					case 'N':
@@ -109,7 +104,7 @@ namespace PowerShellFar
 
 			// pass 2: set missed types from yet available
 			int iAvailable = 0;
-			foreach (Meta meta in r)
+			foreach (Meta meta in metas)
 			{
 				if (string.IsNullOrEmpty(meta.Type))
 				{
@@ -120,8 +115,6 @@ namespace PowerShellFar
 					++iAvailable;
 				}
 			}
-
-			return r;
 		}
 
 		internal static PanelModeInfo SetupPanelMode(IList<Meta> metas)
