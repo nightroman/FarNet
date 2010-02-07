@@ -450,17 +450,22 @@ IViewer^ Far::CreateViewer()
 
 array<int>^ Far::CreateKeySequence(String^ keys)
 {
-	if (!keys) throw gcnew ArgumentNullException("keys");
+	if (!keys)
+		throw gcnew ArgumentNullException("keys");
+	
 	array<wchar_t>^ space = {' ', '\t', '\r', '\n'};
 	array<String^>^ a = keys->Split(space, StringSplitOptions::RemoveEmptyEntries);
 	array<int>^ r = gcnew array<int>(a->Length);
+
 	for(int i = 0; i < a->Length; ++i)
 	{
 		int k = NameToKey(a[i]);
 		if (k == -1)
 			throw gcnew ArgumentException("Argument 'keys' contains invalid key: '" + a[i] + "'.");
+
 		r[i] = k;
 	}
+	
 	return r;
 }
 
@@ -1453,7 +1458,8 @@ void Far::ShowPanelMenu(bool showPushCommand)
 		{
 			Panel1^ panel = (Panel1^)data;
 			
-			//?? native plugin panel: go to [0] to work around "Far does not restore panel state"
+			//?? native plugin panel: go to the first item to work around "Far does not restore panel state",
+			// this does not restore either but is still better than unexpected current item after exit.
 			if (nullptr == dynamic_cast<FarNet::Panel2^>(panel))
 				panel->Redraw(0, 0);
 			

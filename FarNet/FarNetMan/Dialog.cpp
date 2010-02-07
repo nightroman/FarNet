@@ -562,6 +562,35 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 				}
 				return 1;
 			}
+		case DN_CTLCOLORDLGITEM:
+			{
+				FarControl^ fc = _items[param1];
+				if (fc->_Coloring)
+				{
+					ColoringEventArgs ea(fc);
+					ea.Foreground1 = ConsoleColor(param2 & 0x0000000F);
+					ea.Background1 = ConsoleColor((param2 & 0x000000F0) >> 4);
+					ea.Foreground2 = ConsoleColor((param2 & 0x00000F00) >> 8);
+					ea.Background2 = ConsoleColor((param2 & 0x0000F000) >> 12);
+					ea.Foreground3 = ConsoleColor((param2 & 0x000F0000) >> 16);
+					ea.Background3 = ConsoleColor((param2 & 0x00F00000) >> 20);
+					ea.Foreground4 = ConsoleColor((param2 & 0x0F000000) >> 24);
+					ea.Background4 = ConsoleColor((param2 & 0xF0000000) >> 28);
+
+					fc->_Coloring(this, %ea);
+					
+					return
+						(int(ea.Foreground1)) |
+						(int(ea.Background1) << 4) |
+						(int(ea.Foreground2) << 8) |
+						(int(ea.Background2) << 12) |
+						(int(ea.Foreground3) << 16) |
+						(int(ea.Background3) << 20) |
+						(int(ea.Foreground4) << 24) |
+						(int(ea.Background4) << 28);
+				}
+				break;
+			}
 		case DN_GOTFOCUS:
 			{
 				FarControl^ fc = _items[param1];

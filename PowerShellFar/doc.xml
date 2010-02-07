@@ -1,26 +1,50 @@
 <?xml version="1.0" encoding='windows-1251'?>
 <docs>
-<!--
-/// <include file='doc.xml' path='docs/pp[@name="xxx"]/*'/>
+	<!--
+/// <include file='doc.xml' path='docs/pp[@name="Columns"]/*'/>
 -->
-
-<pp name="AddLookup">
-<summary>
-Adds a lookup handler.
-</summary>
-<param name="name">Name of a <see cref="ListPanel"/> file.</param>
-<param name="handler">Handler of [Enter] on a file.</param><remarks>
-<para>
-These handles are used by <see cref="ListPanel"/> but often they are added to
-<see cref="TablePanel"/> and then internally passed in its child <see cref="ListPanel"/>.
-</para>
-<para>
-Example: if this is a <see cref="DataPanel"/> then the added handler will be called when
-[Enter] is pressed on its child <see cref="MemberPanel"/> file with the specified name.
-Normally the task of this handler is to start another table containing values to be selected
-and to set a handler triggered on [Enter] there (see <see cref="SetLookup"/>).
-Example script: <c>Test-Panel-DbNotes-.ps1</c>.
-</para>
-</remarks>
-</pp>
+	<pp name="Columns">
+		<summary>
+			Columns definitions. Set it only when the panel has no files.
+		</summary>
+		<remarks>
+			Items of this array are similar to <c>Format-Table</c> parameter <c>-Property</c> items.
+			Strings define properties and the same column names; hashtables provide more information:
+			properties or script blocks, column titles, widths, types, and format strings.
+			See <see cref="Meta"/> remarks about use of dictionaries as items
+			and <see cref="PanelModeInfo.Columns"/> about column types.
+			<para>
+				Columns of <see cref="DataPanel"/> can be mapped only to properties,
+				that is to data table fields. Script blocks are not supported.
+			</para>
+			<para>
+				Special case: 'N' column (Name) of <see cref="ItemPanel"/> is always mapped to the <c>PSChildName</c>
+				for providers with container items (e.g. Registry). For this column any custom data source is ignored.
+				But it has to be included to describe other information: position, title, width, format string.
+				Note: if column types are not specified then normally the first column is treated as 'N'.
+			</para>
+		</remarks>
+	</pp>
+	<pp name="AddLookup">
+		<summary>
+			Adds a lookup handler.
+		</summary>
+		<param name="name">
+			Name of a <see cref="ListPanel"/> file.
+		</param>
+		<param name="handler">Handler of [Enter] on a file.</param>
+		<remarks>
+			<para>
+				These handles are used by <see cref="ListPanel"/> but often they are added to
+				<see cref="TablePanel"/> and then internally passed in its child <see cref="ListPanel"/>.
+			</para>
+			<para>
+				Example: if this is a <see cref="DataPanel"/> then the added handler will be called when
+				[Enter] is pressed on its child <see cref="MemberPanel"/> file with the specified name.
+				Normally the task of this handler is to start another table containing values to be selected
+				and to set a handler triggered on [Enter] there (see <see cref="SetLookup"/>).
+				Example script: <c>Test-Panel-DbNotes-.ps1</c>.
+			</para>
+		</remarks>
+	</pp>
 </docs>

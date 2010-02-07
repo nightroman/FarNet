@@ -134,7 +134,7 @@ namespace PowerShellFar
 			TreeFile ti = sender as TreeFile;
 
 			// get
-			Collection<PSObject> items = A.Psf.Engine.InvokeProvider.ChildItem.Get(new string[] { ti.Path }, false, true, true);
+			Collection<PSObject> items = A.GetChildItems(ti.Path);
 
 			foreach (PSObject item in items)
 			{

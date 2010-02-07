@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.1#
+#PowerShellFar 4.3.2#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1363
- - Plugin FarNet 4.3.1
+ - Far Manager 2.0.1374
+ - Plugin FarNet 4.3.2
  - Windows PowerShell 2.0
 
 
@@ -664,7 +664,7 @@ panel but it works the same as copying ([F5]).
 
 [#ShiftF6#] Renames the current provider item, dynamic property, and etc.
 
-[#F7#] Creates a new item or a property or even a new custom object. Depending
+[#F7#] Creates a new item or a property or invokes similar actions. Depending
 on a provider you may have to specify required provider item or property type
 or initial value. (If you don't know what to enter then enter something and
 follow error message instructions (or read provider manuals)). In Object mode
@@ -1312,9 +1312,8 @@ macros connected to scripts via action script blocks.
 	## Provider settings
 	$Psf.Providers = ...
 
-define how provider data look in a panel (ItemPanel); see API help for more
-details: properties Providers (Actor), Columns, ExcludeColumns, FarName
-(ItemPanel).
+define how provider data look in a panel; see API help for more details:
+properties Providers (class Actor), Columns (class ItemPanel).
  __________
 
 	## Preferences

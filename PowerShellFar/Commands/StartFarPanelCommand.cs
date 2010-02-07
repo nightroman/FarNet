@@ -15,127 +15,15 @@ namespace PowerShellFar.Commands
 	/// Opens the panel.
 	/// </summary>
 	/// <remarks>
-	/// Normally it should be the last script command.
+	/// The panel is opened only when Far gets control.
 	/// Use <see cref="Stepper"/> for more complex scenarios.
 	/// </remarks>
 	[Description("Opens the panel.")]
-	public sealed class StartFarPanelCommand : BaseCmdlet
+	public sealed class StartFarPanelCommand : BasePanelCmdlet
 	{
 		///
 		[Parameter(HelpMessage = "Panel object or any object which members to be shown.", Position = 0, Mandatory = true, ValueFromPipeline = true)]
 		public PSObject InputObject { get; set; }
-
-		///
-		[Parameter(HelpMessage = "Panel type Id.")]
-		public Guid TypeId
-		{
-			get { return _TypeId; }
-			set
-			{
-				_setTypeId = true;
-				_TypeId = value;
-			}
-		}
-		Guid _TypeId;
-		bool _setTypeId;
-
-		///
-		[Parameter(HelpMessage = "Panel title.")]
-		public string Title
-		{
-			get { return _Title; }
-			set
-			{
-				_setTitle = true;
-				_Title = value;
-			}
-		}
-		string _Title;
-		bool _setTitle;
-
-		///
-		[Parameter(HelpMessage = "Any user data attached to the panel.")]
-		public PSObject Data
-		{
-			get { return _Data; }
-			set
-			{
-				_setData = true;
-				_Data = value;
-			}
-		}
-		PSObject _Data;
-		bool _setData;
-
-		///
-		[Parameter(HelpMessage = "Panel sort mode.")]
-		public PanelSortMode OrderBy
-		{
-			get { return _OrderBy; }
-			set
-			{
-				_setOrderBy = true;
-				_OrderBy = value;
-			}
-		}
-		PanelSortMode _OrderBy;
-		bool _setOrderBy;
-
-		///
-		[Parameter(HelpMessage = "Tells to reverse the sort order.")]
-		public SwitchParameter ReverseSortOrder
-		{
-			get { return _ReverseSortOrder; }
-			set
-			{
-				_setReverseSortOrder = true;
-				_ReverseSortOrder = value;
-			}
-		}
-		SwitchParameter _ReverseSortOrder;
-		bool _setReverseSortOrder;
-
-		///
-		[Parameter(HelpMessage = "Panel view mode.")]
-		public PanelViewMode View
-		{
-			get { return _View; }
-			set
-			{
-				_setViewMode = true;
-				_View = value;
-			}
-		}
-		PanelViewMode _View;
-		bool _setViewMode;
-
-		///
-		[Parameter(HelpMessage = "Tells to update data periodically when idle.")]
-		public SwitchParameter IdleUpdate
-		{
-			get { return _IdleUpdate; }
-			set
-			{
-				_setIdleUpdate = true;
-				_IdleUpdate = value;
-			}
-		}
-		SwitchParameter _IdleUpdate;
-		bool _setIdleUpdate;
-
-		///
-		[Parameter(HelpMessage = "Custom data ID to distinguish between objects.")]
-		public Meta DataId
-		{
-			get { return _DataId; }
-			set
-			{
-				_setDataId = true;
-				_DataId = value;
-			}
-		}
-		Meta _DataId;
-		bool _setDataId;
 
 		///
 		[Parameter(HelpMessage = "Start the panel as child of the current panel.")]
@@ -157,22 +45,26 @@ namespace PowerShellFar.Commands
 			// done
 			_done = true;
 
-			// object or panel?
-			AnyPanel panel = InputObject.BaseObject as AnyPanel;
-			if (panel == null)
-				panel = new MemberPanel(InputObject);
+			// what panel?
+			AnyPanel anyPanel = InputObject.BaseObject as AnyPanel;
+			if (anyPanel == null)
+			{
+				// net panel?
+				IPanel netPanel = InputObject.BaseObject as IPanel;
+				if (netPanel != null)
+				{
+					ApplyParameters(netPanel);
+					netPanel.Open();
+					return;
+				}
+				
+				// member panel
+				anyPanel = new MemberPanel(InputObject);
+			}
 
-			if (_setData) panel.Data = _Data;
-			if (_setDataId) panel.Panel.DataId = _DataId;
-			if (_setIdleUpdate) panel.Panel.IdleUpdate = _IdleUpdate;
-			if (_setOrderBy) panel.Panel.Info.StartSortMode = _OrderBy;
-			if (_setReverseSortOrder) panel.Panel.Info.StartReverseSortOrder = _ReverseSortOrder;
-			if (_setTitle) panel.Panel.Info.Title = _Title;
-			if (_setTypeId) panel.Panel.TypeId = _TypeId;
-			if (_setViewMode) panel.Panel.Info.StartViewMode = _View;
-
-			// go
-			panel.Show(_AsChild);
+			// setup and show
+			ApplyParameters(anyPanel.Panel);
+			anyPanel.Show(_AsChild);
 		}
 	}
 }

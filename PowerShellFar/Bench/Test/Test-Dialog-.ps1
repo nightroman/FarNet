@@ -47,6 +47,7 @@ $t1 = $dialog.AddText(5, -1, 0, '&Text')
 ### Edit (standard)
 $e1 = $dialog.AddEdit(5, -1, 70, '')
 $e1.History = 'PowerShellFarPrompt'
+$e1.add_Coloring({ $_.Background1 = $_.Background3 = $Far.GetPaletteBackground('PanelText') })
 
 ### Some disabled items
 $dialog.AddText(5, -1, 0, 'Disabled Text').Disabled = $true
@@ -73,7 +74,9 @@ $e2.Mask = 'AAAAAAA'
 $e3 = $dialog.AddEditPassword(63, 0, 70, 'волга')
 
 ### Box (single line)
-$dialog.AddBox(5, -1, 70, 2, '&Single Box').Single = $true
+$bs = $dialog.AddBox(5, -1, 70, 2, '&Single Box')
+$bs.Single = $true
+$bs.add_Coloring({ $_.Foreground3 = 'Red' })
 
 ### RadioButton
 $r1 = $dialog.AddRadioButton(7, -1, 'RadioButton&1')

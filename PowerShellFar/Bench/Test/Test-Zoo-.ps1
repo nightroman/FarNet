@@ -5,9 +5,8 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	Creates Test-Zoo.clixml in the same location. It is not removed after this
-	test because the file is useful as a sample of CLIXML for other tests and
-	experiments.
+	Creates Test-Zoo.clixml in $HOME. It is not removed after this test because
+	the file is useful as a sample of CLIXML for other tests and experiments.
 #>
 
 $psScriptRoot = Split-Path $MyInvocation.MyCommand.Definition
@@ -29,10 +28,10 @@ $pso = New-Object PSObject -Property @{
 }
 
 # export created data to clixml
-$dno, $pso | Export-Clixml "$psScriptRoot\Test-Zoo.clixml"
+$dno, $pso | Export-Clixml "$HOME\Test-Zoo.clixml"
 
 # import data from clixml, change names
-$zoo = Import-Clixml "$psScriptRoot\Test-Zoo.clixml"
+$zoo = Import-Clixml "$HOME\Test-Zoo.clixml"
 foreach($e in $zoo) { $e.name += ' (Imported)' }
 
 # one more object with null properties
@@ -44,4 +43,4 @@ $pso2 = New-Object PSObject -Property @{
 }
 
 # send original and deserialized data to a panel
-$dno, $pso, $zoo[0], $zoo[1], $pso2 | New-FarObjectPanel | Start-FarPanel -OrderBy 'Name'
+$dno, $pso, $zoo[0], $zoo[1], $pso2 | Out-FarPanel -SortMode 'Name'

@@ -3,19 +3,52 @@ http://code.google.com/p/farnet/
 
 = 4.3.2 =
 
-*) Object panels do not prompt for choices on [Esc] any more. [Esc] closes a
-panel just like it does for other PSF panels (by default).
+TABLE PANELS: TRUE COLUMNS AND PS FORMATS
 
-*) Added option $Psf.Settings.MaximumPanelColumnCount (3-13, default is 10).
-Number 13 comes from possible auto-generated columns: N, Z, O, C0, ..., C9.
+All table panels show data in true columns now. Pseudo-columns of Format-Table
+are not used. Columns are defined: 1) manually by property Columns; 2) auto by
+object types and related PS formats (TableControl); 3) auto by properties for
+mono type object sets; 4) three column mode for mixed type object sets: index,
+value, and type.
 
-*) Renamed $Psf.Settings.MaxHistoryCount -> MaximumHistoryCount
+PS TableControl formats are now found heuristically by object types in the
+Get-FormatData list. Next versions will allow to specify formats manually.
 
-*) Rename-FarFile-.ps1: Fix: Added import of the FarDescription module.
+Option AutoSize is not used now but it is kept for the future. Built-in PS
+formats are good only if panel width is about 80, like default console (Far
+width is about 164 with two such panels). Next versions will be able to fix
+formats for too narrow panels dynamically.
+
+*) Removed obsolete properties and parameters FarName, ExcludeColumns from
+panel classes, cmdlets and all scripts. Only Columns or PS formats are used.
+
+*) New option $Psf.Settings.MaximumPanelColumnCount (3-13, default is 8).
+
+*) UserPanel: two methods SetGet*() are replaced with one SetGetData().
+
+OTHER CHANGES
+
+*) Provider panels (ItemPanel, FolderTree) are now more robust on internal PS
+core failures. They ignore faulty items and still return other items.
+
+*) Object panels on [F7] prompt a user to enter a command that gets new panel
+objects. Old action was actually almost useless (add an empty PSCustomObject).
+
+*) Object panels do not prompt on [Esc] any more. [Esc] closes panels.
+
+*) Removed cmdlets New-FarObjectPanel and New-FarUserPanel because they do not
+add any value to New-Object PowerShellFar.ObjectPanel, PowerShellFar.UserPanel
+
+*) Start-FarPanel cmdlet: renamed confusing parameter OrderBy to SortMode and
+View to ViewMode. Added these parameters to Out-FarPanel, too.
+
+*) Renamed $Psf.Settings.MaxHistoryCount -> MaximumHistoryCount.
+
+*) Fixed Rename-FarFile-.ps1: Added import of the FarDescription module.
 
 *) Removed Set-SynopsisDescription-.ps1 because it does not depend on Far.
-Instead, use a new function Update-FarDescriptionSynopsis exposted by the
-FarDescription module (see FarDescription.psm1).
+Instead, use a new function Update-FarDescriptionSynopsis exported by the
+FarDescription module (see its definition in FarDescription.psm1).
 
 = 4.3.1 =
 

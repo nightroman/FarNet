@@ -4,7 +4,6 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
@@ -67,70 +66,31 @@ namespace PowerShellFar
 		#endregion
 
 		#region GetData
-		ScriptBlock _GetFiles;
-		ScriptBlock _GetObjects;
+		ScriptBlock _GetData;
 
 		/// <summary>
-		/// Handler called to update the panel files.
+		/// Sets the handler called to get the objects.
 		/// </summary>
 		/// <remarks>
-		/// This handler should work on <see cref="IPanel.Files"/> (recreate completely or update existing).
-		/// <para>
-		/// One possible scenario is to clear the file list and then call <see cref="ObjectPanel.AddObjects"/> one or more times.
-		/// But <see cref="SetGetObjects"/> method is usually more convenient for this.
-		/// </para>
-		/// <para>
-		/// In another scenario new files may be created and added to the list.
-		/// In this case you should create files by <see cref="ObjectPanel.NewFile"/> method.
-		/// </para>
-		/// <para>
-		/// Normally this handler should not be used together with custom <see cref="FormatPanel.Columns"/>
-		/// because it operates on files directly and performs object to file mapping itself.
-		/// </para>
-		/// </remarks>
-		/// <example>Panel-Process-.ps1</example>
-		public void SetGetFiles(ScriptBlock handler)
-		{
-			_GetFiles = handler;
-		}
-
-		/// <summary>
-		/// Handler called to get all the objects (not files).
-		/// </summary>
-		/// <remarks>
-		/// This handler simply returns all the objects to be shown in the panel.
+		/// The handler returns the objects to be shown in the panel.
 		/// It should not operate directly on existing or new panel files, it is done internally.
 		/// <para>
 		/// Normally this handler is used together with custom <see cref="FormatPanel.Columns"/>
-		/// otherwise default data formatting will not always be suitable or even possible.
+		/// otherwise default data formatting will not always be suitable.
 		/// </para>
 		/// </remarks>
-		/// <example>Panel-Job-.ps1</example>
-		public void SetGetObjects(ScriptBlock handler)
+		/// <example>Panel-Job-.ps1, Panel-Process-.ps1</example>
+		public void SetGetData(ScriptBlock handler)
 		{
-			_GetObjects = handler;
+			_GetData = handler;
 		}
 
-		internal override bool OnGettingData()
+		internal override object GetData()
 		{
-			// case: custom data update
-			if (_GetFiles != null)
-			{
-				InvokeScript(_GetFiles, null);
-				return Map != null;
-			}
-
-			// case: custom new objects
-			if (_GetObjects != null)
-			{
-				Collection<PSObject> result = InvokeScript(_GetObjects, null);
-				Panel.Files.Clear();
-				AddObjects(result);
-				return Map != null;
-			}
-
-			// case: base
-			return base.OnGettingData();
+			if (_GetData == null)
+				return base.GetData();
+			else
+				return InvokeScript(_GetData, null);
 		}
 
 		#endregion

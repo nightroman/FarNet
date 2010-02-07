@@ -30,7 +30,7 @@
 #>
 
 ### Create panel
-$p = New-FarUserPanel
+$p = New-Object PowerShellFar.UserPanel
 $p.Columns = @(
 	@{ Expression = 'Id'; Width = 6 }
 	'Name'
@@ -41,7 +41,7 @@ $p.Columns = @(
 
 ### Panel jobs
 # Sort them by Id, this is not always done by the core.
-$p.SetGetObjects({
+$p.SetGetData({
 	Get-Job | Sort-Object Id
 })
 

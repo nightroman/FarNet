@@ -6,6 +6,7 @@ Copyright (c) 2006 Roman Kuzmin
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -283,20 +284,81 @@ namespace PowerShellFar
 			return null;
 		}
 
+		public static Type FindCommonType(Collection<PSObject> values)
+		{
+			Type result = null;
+			object sample = null;
+			bool baseMode = false;
+
+			foreach (PSObject value in values)
+			{
+				// get the sample
+				if (sample == null)
+				{
+					sample = value.BaseObject;
+					result = sample.GetType();
+				}
+				// base mode: compare base types
+				else if (baseMode)
+				{
+					if (GetCommonBaseType(value.BaseObject) != result)
+						return null;
+				}
+				// mono mode: compare directly; works for mono sets
+				else if (value.BaseObject.GetType() != result)
+				{
+					// compare base types
+					result = GetCommonBaseType(sample);
+					if (GetCommonBaseType(value.BaseObject) != result)
+						return null;
+
+					// turn on
+					baseMode = true;
+				}
+			}
+
+			return result;
+		}
+
 		/// <summary>
-		/// Finds available table controls.
+		/// Gets heuristic base type suitable to be common for mixed sets.
+		/// </summary>
+		/// <remarks>
+		/// This method should be consistent with redirection in <see cref="FindTableControl"/>.
+		/// </remarks>
+		static Type GetCommonBaseType(object value)
+		{
+			if (value is System.IO.FileSystemInfo) return typeof(System.IO.FileSystemInfo);
+			if (value is CommandInfo) return typeof(CommandInfo);
+			if (value is Breakpoint) return typeof(Breakpoint);
+			if (value is PSVariable) return typeof(PSVariable);
+			return value.GetType();
+		}
+
+		/// <summary>
+		/// Finds an available table control.
 		/// </summary>
 		/// <param name="typeName">The type name. To be redirected for some types.</param>
 		/// <param name="tableName">Optional table name to find.</param>
 		/// <returns>Found table control or null.</returns>
+		/// <remarks>
+		/// Type name redirection should be consistent with <see cref="GetCommonBaseType"/>.
+		/// </remarks>
 		public static TableControl FindTableControl(string typeName, string tableName)
 		{
 			// process\redirect special types
 			switch (typeName)
 			{
 				case "System.Management.Automation.PSCustomObject": return null;
-				case "System.IO.FileInfo": typeName = "FileSystemTypes"; break;
+
+				case "System.IO.FileSystemInfo": typeName = "FileSystemTypes"; break;
 				case "System.IO.DirectoryInfo": typeName = "FileSystemTypes"; break;
+				case "System.IO.FileInfo": typeName = "FileSystemTypes"; break;
+
+				case "System.Management.Automation.Breakpoint": typeName = "BreakpointTypes"; break;
+				case "System.Management.Automation.LineBreakpoint": typeName = "BreakpointTypes"; break;
+				case "System.Management.Automation.CommandBreakpoint": typeName = "BreakpointTypes"; break;
+				case "System.Management.Automation.VariableBreakpoint": typeName = "BreakpointTypes"; break;
 			}
 		
 			// extended type definitions:
@@ -316,6 +378,32 @@ namespace PowerShellFar
 
 			return null;
 		}
-	
+
+		/// <summary>
+		/// Robust Get-ChildItem.
+		/// </summary>
+		public static Collection<PSObject> GetChildItems(string literalPath)
+		{
+			//! If InvokeProvider.ChildItem.Get() fails (e.g. hklm:) then we get nothing at all.
+			//! Get-ChildItem gets some items even on errors, that is much better than nothing.
+			//! NB: exceptions on getting data: FarNet returns false and Far closes the panel.
+
+			try
+			{
+				return A.Psf.Engine.InvokeProvider.ChildItem.Get(new string[] { literalPath }, false, true, true);
+			}
+			catch (RuntimeException)
+			{ }
+
+			try
+			{
+				return A.Psf.InvokeCode("Get-ChildItem -LiteralPath $args[0] -Force -ErrorAction 0", literalPath);
+			}
+			catch (RuntimeException)
+			{ }
+
+			return new Collection<PSObject>();
+		}
+
 	}
 }
