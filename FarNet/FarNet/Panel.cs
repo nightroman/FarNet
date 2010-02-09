@@ -1308,14 +1308,12 @@ namespace FarNet
 		/// </summary>
 		public virtual string Type { get { return null; } set { throw new NotImplementedException(); } }
 		/// <summary>
-		/// Column width (absolute or percentage).
+		/// Column width.
 		/// </summary>
 		/// <remarks>
-		/// It is a number ("30") or a number with % ("30%").
-		/// Null or empty is the same as "0" (Far decides).
-		/// See Far API [Column width].
+		/// Positive: absolute width; negative: percentage; 0: Far decides.
 		/// </remarks>
-		public virtual string Width { get { return null; } set { throw new NotImplementedException(); } }
+		public virtual int Width { get { return 0; } set { throw new NotImplementedException(); } }
 		/// <summary>
 		/// Default column type sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
 		/// </summary>
@@ -1342,7 +1340,7 @@ namespace FarNet
 		///
 		public override string Type { get; set; }
 		///
-		public override string Width { get; set; }
+		public override int Width { get; set; }
 	}
 
 }

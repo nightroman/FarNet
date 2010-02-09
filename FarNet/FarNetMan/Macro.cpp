@@ -30,17 +30,17 @@ static String^ GetThreeState(Object^ value1, Object^ value2)
 
 void Macro0::Load()
 {
-	ActlKeyMacro command;
-	command.Command = MCMD_LOADALL;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+	ActlKeyMacro args;
+	args.Command = MCMD_LOADALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
 		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
 void Macro0::Save()
 {
-	ActlKeyMacro command;
-	command.Command = MCMD_SAVEALL;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+	ActlKeyMacro args;
+	args.Command = MCMD_SAVEALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
 		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
@@ -239,6 +239,27 @@ void Macro0::Install(array<Macro^>^ macros)
 		if (!ManualSaveLoad)
 			Load();
 	}
+}
+
+MacroParseError^ Macro0::Check(String^ sequence, bool silent)
+{
+	PIN_ES(pin, sequence);
+	
+	ActlKeyMacro args;
+	args.Command = MCMD_CHECKMACRO;
+	args.Param.PlainText.SequenceText = pin;
+	args.Param.PlainText.Flags = silent ? KSFLAGS_SILENTCHECK : 0;
+
+	Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args);
+	if (args.Param.MacroResult.ErrCode == MPEC_SUCCESS)
+		return nullptr;
+	
+	MacroParseError^ r = gcnew MacroParseError;
+	r->ErrorCode = (MacroParseStatus)args.Param.MacroResult.ErrCode;
+	r->Token = gcnew String(args.Param.MacroResult.ErrSrc);
+	r->Line = args.Param.MacroResult.ErrPos.Y;
+	r->Pos = args.Param.MacroResult.ErrPos.X;
+	return r;
 }
 
 }

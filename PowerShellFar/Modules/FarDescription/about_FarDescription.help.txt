@@ -5,7 +5,6 @@ SHORT DESCRIPTION
 	Far Manager file description tools.
 
 LONG DESCRIPTION
-
 	Though this module is designed for Far Manager it does not depend on Far or
 	FarNet, it works in any PowerShell host (e.g. in Console or ISE hosts).
 
@@ -13,12 +12,10 @@ LONG DESCRIPTION
 	HKEY_CURRENT_USER\Software\Far2\Descriptions
 
 EXPORTED COMMANDS
-
 	-- Update-FarDescription (cmdlet)
 	-- Update-FarDescriptionSynopsis (function)
 
 EXTENDED TYPES
-
 	The module adds a few members to the [System.IO.FileSystemInfo] items
 	(files or directories, items of the FileSystem provider).
 
@@ -43,6 +40,5 @@ EXTENDED TYPES
 		It calls the .NET method Delete() and then deletes the description.
 
 SEE ALSO
-
 	Rename-FarFile-.ps1 : renames a file and updates its description.
 	Test-Descript-.ps1 : this script shows how to use all the features.

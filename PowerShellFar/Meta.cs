@@ -38,7 +38,7 @@ namespace PowerShellFar
 	{
 		string _ColumnName;
 		string _ColumnType;
-		string _ColumnWidth;
+		int _ColumnWidth;
 
 		string _Property;
 		ScriptBlock _Script;
@@ -79,11 +79,15 @@ namespace PowerShellFar
 		public override string Type { get { return _ColumnType; } set { _ColumnType = value; } }
 
 		///
-		public override string Width
+		public override int Width
 		{
 			get
 			{
-				return string.IsNullOrEmpty(_ColumnWidth) ? "0" : _ColumnWidth;
+				return _ColumnWidth;
+			}
+			set
+			{
+				_ColumnWidth = value;
 			}
 		}
 
@@ -121,17 +125,6 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// From a property and a title.
-		/// </summary>
-		internal Meta(string property, string title) // no checks, until it is internal
-		{
-			_Property = property;
-			
-			if (!string.IsNullOrEmpty(title))
-				_ColumnName = title;
-		}
-
-		/// <summary>
 		/// From format table control data.
 		/// </summary>
 		internal Meta(DisplayEntry entry, TableControlColumnHeader header) // no checks, until it is internal
@@ -144,11 +137,12 @@ namespace PowerShellFar
 			if (!string.IsNullOrEmpty(header.Label))
 				_ColumnName = header.Label;
 
-			if (header.Width > 0)
+			if (header.Width != 0)
 			{
-				_ColumnWidth = Kit.ToString(header.Width);
+				_ColumnWidth = header.Width;
 
-				if (header.Alignment == Alignment.Right)
+				//???? this should be done as a part of other fixes
+				if (_ColumnWidth > 0 && header.Alignment == Alignment.Right)
 					FormatString = string.Concat("{0,", _ColumnWidth, "}");
 			}
 		}
@@ -189,7 +183,7 @@ namespace PowerShellFar
 					}
 					else if (Word.Width.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
-						_ColumnWidth = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
+						_ColumnWidth = (int)LanguagePrimitives.ConvertTo(kv.Value, typeof(int), CultureInfo.InvariantCulture);
 					}
 					else if (Word.Expression.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
@@ -224,8 +218,8 @@ namespace PowerShellFar
 				sb.Append(" Type = '" + _ColumnType + "';");
 			if (_ColumnName != null)
 				sb.Append(" Label = '" + _ColumnName + "';");
-			if (_ColumnWidth != null)
-				sb.Append(" Width = '" + _ColumnWidth + "';");
+			if (_ColumnWidth != 0)
+				sb.Append(" Width = " + _ColumnWidth + ";");
 			if (_Property != null)
 				sb.Append(" Expression = '" + _Property + "';");
 			if (_Script != null)

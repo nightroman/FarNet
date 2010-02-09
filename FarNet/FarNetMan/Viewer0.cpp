@@ -117,7 +117,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 		break;
 	case VE_GOTFOCUS:
 		{
-			LOG_AUTO(3, "VE_GOTFOCUS");
+			LOG_AUTO(4, "VE_GOTFOCUS");
 
 			// get registered
 			int id = *((int*)param);
@@ -134,7 +134,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 		break;
 	case VE_KILLFOCUS:
 		{
-			LOG_AUTO(3, "VE_KILLFOCUS");
+			LOG_AUTO(4, "VE_KILLFOCUS");
 
 			// get registered
 			int id = *((int*)param);

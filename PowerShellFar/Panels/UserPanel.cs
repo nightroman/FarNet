@@ -20,9 +20,7 @@ namespace PowerShellFar
 		/// Constructor.
 		/// </summary>
 		public UserPanel()
-		{
-			Panel.Info.Title = string.Empty;
-		}
+		{ }
 
 		#region Delete
 		ScriptBlock _Delete;

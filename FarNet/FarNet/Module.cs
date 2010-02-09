@@ -121,11 +121,23 @@ namespace FarNet
 		CultureInfo _CurrentUICulture;
 
 		/// <summary>
-		/// Called before invoking of a command.
+		/// Called before invoking of any registered module tool.
 		/// </summary>
 		/// <remarks>
-		/// The module may override it to perform some preparations before invoking.
-		/// Example: PowerShellFar may wait for the PowerShell engine loading to complete.
+		/// The module may override this method to perform preparation procedures.
+		/// Normally this is not needed for a simple module with a single tool.
+		/// It is useful when a complex module registers several tools and
+		/// wants common steps to be performed by this method.
+		/// <para>
+		/// NOTE: This method is called only for module tools:
+		/// tool <c>Invoke()</c> methods and handlers registered by <c>Register*()</c> methods.
+		/// It is not called on events added by a module to editors, viewers, dialogs or panels.
+		/// </para>
+		/// <para>
+		/// Example: PowerShellFar starts loading of the PowerShell engine in a background thread on connection.
+		/// This method waits for the engine loading to complete, if needed. All registered PowerShellFar tools
+		/// simply assume that the engine is already loaded. But editor event handlers still have to care.
+		/// </para>
 		/// </remarks>
 		public virtual void Invoking()
 		{ }
