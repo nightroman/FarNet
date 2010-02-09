@@ -3,10 +3,17 @@ http://code.google.com/p/farnet/
 
 = 4.3.3 =
 
-*) FarNet: FarColumn, SetColumn: Width: 'string' to 'int'.
+*) "PowerShellFar" item was removed from the disk menu for 3 reasons:
+1) It looks like many users are not happy due to extra items in disks;
+2) This menu have some known peculiarities for opening panels;
+3) This item can be added for example from the profile script:
+$null = $Far.RegisterTool($null, "PSF panel", { $Psf.ShowPanel() }, "Disk")
 
-*) Fix: "Power panel" from the disk menu fails if it is called immediately
-after Far start as the first action. (Invoking() was not called by FarNet).
+*) Table panels: added simple procedures that "fix" built-in PS table formats
+for narrow panels, at least to make more columns visible. Right aligned data
+may look funny. Tip: use wider panels (80+) or set Columns by a script.
+
+*) FarNet: FarColumn, SetColumn: Width type changed from 'string' to 'int'.
 
 = 4.3.2 =
 

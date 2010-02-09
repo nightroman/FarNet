@@ -677,18 +677,17 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 		pi->PluginConfigStrings = (const wchar_t**)_pConfig;
 	}
 
-	// disk
+	// disk (do not add .NET item!)
 	{
-		if (!_pDisk)
+		if (!_pDisk && _toolDisk.Count > 0)
 		{
-			_pDisk = new CStr[_toolDisk.Count + 1];
-			_pDisk[0].Set(Res::MenuPrefix);
+			_pDisk = new CStr[_toolDisk.Count];
 
 			for(int i = _toolDisk.Count; --i >= 0;)
-				_pDisk[i + 1].Set(Res::MenuPrefix + _toolDisk[i]->Alias(ToolOptions::Disk));
+				_pDisk[i].Set(Res::MenuPrefix + _toolDisk[i]->Alias(ToolOptions::Disk));
 		}
 
-		pi->DiskMenuStringsNumber = _toolDisk.Count + 1;
+		pi->DiskMenuStringsNumber = _toolDisk.Count;
 		pi->DiskMenuStrings = (const wchar_t**)_pDisk;
 	}
 
@@ -1248,15 +1247,9 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 			break;
 		case OPEN_DISKMENU:
 			{
-				if (item == 0)
-				{
-					OpenMenu(ToolOptions::Disk);
-					break;
-				}
-
 				LOG_AUTO(3, "OPEN_DISKMENU");
 
-				ModuleToolInfo^ tool = _toolDisk[(int)item - 1];
+				ModuleToolInfo^ tool = _toolDisk[(int)item];
 				ToolEventArgs e(ToolOptions::Disk);
 				tool->Invoke(this, %e);
 			}
@@ -1526,9 +1519,11 @@ void Far::OpenMenu(ToolOptions from)
 		return;
 	}
 
-	// show panels menu
+	// show the panels menu or the message
 	if (from == ToolOptions::Panels)
 		ShowPanelMenu(true);
+	else
+		Message("This menu is empty but it is used internally.", "FarNet");
 }
 
 void Far::OpenConfig()
