@@ -104,6 +104,9 @@ namespace PowerShellFar
 			return false;
 		}
 
+		///
+		protected override string DefaultTitle { get { return string.IsNullOrEmpty(Table.TableName) ? "Data Table" : "Table " + Table.TableName; } }
+
 		/// <summary>
 		/// Fills data table and shows the panel.
 		/// </summary>
@@ -123,14 +126,6 @@ namespace PowerShellFar
 				Table = new DataTable();
 				Table.Locale = CultureInfo.CurrentCulture; //! FxCop
 				Fill();
-			}
-
-			// title
-			if (string.IsNullOrEmpty(Panel.Info.Title))
-			{
-				Panel.Info.Title = "Table";
-				if (!string.IsNullOrEmpty(Table.TableName))
-					Panel.Info.Title += " " + Table.TableName;
 			}
 
 			// pass 1: collect the columns
@@ -165,7 +160,7 @@ namespace PowerShellFar
 				throw new InvalidOperationException("There is no column to display.");
 
 			// pass 2: mapping
-			foreach(Meta meta in metas)
+			foreach (Meta meta in metas)
 			{
 				DataColumn column = Table.Columns[meta.Property];
 

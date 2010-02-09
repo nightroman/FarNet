@@ -84,7 +84,7 @@ $p.Adapter = $a
 # data appearance
 $p.Panel.Info.Title = 'TestNotes'
 $p.Columns = @(
-	@{ Type = 'N'; Expression = 'Note'; Width = '80%' }
+	@{ Type = 'N'; Expression = 'Note'; Width = -80 }
 	@{ Type = 'Z'; Expression = 'Category' }
 	@{ Type = 'DC'; Expression = 'Created' }
 )

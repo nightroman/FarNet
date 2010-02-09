@@ -64,10 +64,13 @@ void Panel2::SwitchFullScreen()
 			SetColumn^ column = gcnew SetColumn();
 			mode->Columns[iType] = column;
 			column->Type = types[iType];
-			if (types[iType] == "N" || types[iType] == "Z" || types[iType] == "O")
-				column->Width = "0";
+			
+			if (widths[iType]->EndsWith("%"))
+				column->Width = - int::Parse(widths[iType]->Substring(0, widths[iType]->Length - 1));
+			else if (types[iType] == "N" || types[iType] == "Z" || types[iType] == "O")
+				column->Width = 0;
 			else
-				column->Width = widths[iType];
+				column->Width = int::Parse(widths[iType]);
 		}
 	}
 

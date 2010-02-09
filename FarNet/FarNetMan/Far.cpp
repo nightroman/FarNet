@@ -170,7 +170,7 @@ static int RemoveByHandler(List<ModuleToolInfo^>^ list, EventHandler<ToolEventAr
 	int r = 0;
 	for(int i = list->Count; --i >= 0;)
 	{
-		if (list[i]->Handler == handler)
+		if (list[i]->HasHandler(handler))
 		{
 			++r;
 			list->RemoveAt(i);
@@ -245,7 +245,7 @@ void Far::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
 {
 	for(int i = _registeredCommand.Count; --i >= 0;)
 	{
-		if (_registeredCommand[i]->Handler == handler)
+		if (_registeredCommand[i]->HasHandler(handler))
 		{
 			LOG_INFO("Unregister " + _registeredCommand[i]);
 
@@ -290,7 +290,7 @@ void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 {
 	for(int i = _registeredFiler.Count; --i >= 0;)
 	{
-		if (_registeredFiler[i]->Handler == handler)
+		if (_registeredFiler[i]->HasHandler(handler))
 		{
 			LOG_INFO("Unregister " + _registeredFiler[i]);
 
@@ -341,25 +341,10 @@ void Far::Run(String^ command)
 		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
 			continue;
 
-		//! Notify before each command, because a plugin may have to set a command environment,
-		//! e.g. PowerShellFar sets the default runspace once and location always.
-		//! If there is a plugin, call it directly, else it has to be done by its handler.
-		if (it->Module)
-		{
-			LOG_AUTO(3, String::Format("{0}.Invoking", it->Module));
-
-			it->Module->Invoking();
-		}
 
 		// invoke
-		{
-			String^ code = command->Substring(colon + 1);
-
-			LOG_AUTO(3, String::Format("{0} {1}", Log::Format(it->Handler->Method), code));
-
-			CommandEventArgs e(code);
-			it->Handler(this, %e);
-		}
+		CommandEventArgs e(command->Substring(colon + 1));
+		it->Invoke(this, %e);
 
 		break;
 	}
@@ -1194,7 +1179,7 @@ bool Far::AsConfigure(int itemIndex)
 
 	ModuleToolInfo^ tool = _toolConfig[itemIndex - 1];
 	ToolEventArgs e(ToolOptions::Config);
-	tool->Handler(this, %e);
+	tool->Invoke(this, %e);
 	return e.Ignore ? false : true;
 }
 
@@ -1226,7 +1211,7 @@ HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataS
 				e->Data->Seek(0, SeekOrigin::Begin);
 
 			// invoke
-			it->Handler(this, e);
+			it->Invoke(this, e);
 
 			// open a posted panel
 			if (Panel0::PostedPanel)
@@ -1273,7 +1258,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				ModuleToolInfo^ tool = _toolDisk[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Disk);
-				tool->Handler(this, %e);
+				tool->Invoke(this, %e);
 			}
 			break;
 		case OPEN_PLUGINSMENU:
@@ -1288,7 +1273,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				ModuleToolInfo^ tool = _toolPanels[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Panels);
-				tool->Handler(this, %e);
+				tool->Invoke(this, %e);
 			}
 			break;
 		case OPEN_EDITOR:
@@ -1303,7 +1288,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				ModuleToolInfo^ tool = _toolEditor[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Editor);
-				tool->Handler(this, %e);
+				tool->Invoke(this, %e);
 			}
 			break;
 		case OPEN_VIEWER:
@@ -1318,7 +1303,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				ModuleToolInfo^ tool = _toolViewer[(int)item - 1];
 				ToolEventArgs e(ToolOptions::Viewer);
-				tool->Handler(this, %e);
+				tool->Invoke(this, %e);
 			}
 			break;
 		//! STOP: dialog case is different
@@ -1340,7 +1325,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 
 				ModuleToolInfo^ tool = _toolDialog[index - 1];
 				ToolEventArgs e(ToolOptions::Dialog);
-				tool->Handler(this, %e);
+				tool->Invoke(this, %e);
 			}
 			break;
 		}
@@ -1912,7 +1897,7 @@ void Far::OnEditorOpened(FarNet::Editor^ editor)
 		//! tradeoff: catch all to call other plugins, too
 		try
 		{
-			it->Handler(editor, nullptr);
+			it->Invoke(editor, nullptr);
 		}
 		catch(Exception^ e)
 		{

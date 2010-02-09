@@ -234,7 +234,8 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 
 void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
-	LOG_AUTO(3, "GetOpenPluginInfo");
+	//! it is called too often, lets use mode 4
+	LOG_AUTO(4, "GetOpenPluginInfo");
 
 	// plugin panel
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
@@ -353,7 +354,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_REDRAW:
 		{
-			LOG_AUTO(3, "FE_REDRAW");
+			LOG_AUTO(4, "FE_REDRAW");
 
 			// 090411 Data are shown now. Drop this flag to allow normal processing.
 			pp->_skipGettingData = false;
@@ -483,7 +484,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_GOTFOCUS:
 		{
-			LOG_AUTO(3, "FE_GOTFOCUS");
+			LOG_AUTO(4, "FE_GOTFOCUS");
 
 			if (pp->_GotFocus)
 				pp->_GotFocus(pp, nullptr);
@@ -491,7 +492,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_KILLFOCUS:
 		{
-			LOG_AUTO(3, "FE_KILLFOCUS");
+			LOG_AUTO(4, "FE_KILLFOCUS");
 
 			if (pp->_LosingFocus)
 				pp->_LosingFocus(pp, nullptr);

@@ -106,6 +106,28 @@ ModuleToolInfo::ModuleToolInfo(BaseModule^ module, String^ name, EventHandler<To
 , _Options(options)
 {}
 
+ModuleToolInfo::ModuleToolInfo(String^ assemblyPath, String^ className, String^ name, ToolOptions options)
+: BaseModuleInfo(assemblyPath, className, name)
+, _Options(options)
+{}
+
+void ModuleToolInfo::Invoke(Object^ sender, ToolEventArgs^ e)
+{
+	LOG_AUTO(3, String::Format("Invoking {0} From='{1}'", (_Handler ? Log::Format(_Handler->Method) : ClassName), e->From));
+
+	if (!_Handler)
+	{
+		Connect();
+		ModuleTool^ instance = (ModuleTool^)Module;
+		_Handler = gcnew EventHandler<ToolEventArgs^>(instance, &ModuleTool::Invoke);
+	}
+
+	if (Module)
+		Module->Invoking();
+
+	_Handler(sender, e);
+}
+
 String^ ModuleToolInfo::ToString()
 {
 	return String::Format("{0} Options='{1}'", BaseModuleInfo::ToString(), Options);
@@ -182,17 +204,20 @@ void ModuleToolInfo::Alias(ToolOptions option, String^ value)
 	}
 }
 
-void ModuleToolInfo::Invoke(Object^ sender, ToolEventArgs^ e)
-{
-	Connect();
-	ModuleTool^ instance = (ModuleTool^)Module;
-	_Handler = gcnew EventHandler<ToolEventArgs^>(instance, &ModuleTool::Invoke);
-	instance->Invoke(sender, e);
-}
-
 #pragma endregion
 
 #pragma region ModuleCommandInfo
+
+ModuleCommandInfo::ModuleCommandInfo(BaseModule^ module, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler)
+: BaseModuleInfo(module, name)
+, _DefaultPrefix(prefix)
+, _Handler(handler)
+{}
+
+ModuleCommandInfo::ModuleCommandInfo(String^ assemblyPath, String^ className, String^ name, String^ prefix)
+: BaseModuleInfo(assemblyPath, className, name)
+, _DefaultPrefix(prefix)
+{}
 
 String^ ModuleCommandInfo::ToString()
 {
@@ -217,22 +242,38 @@ void ModuleCommandInfo::Prefix::set(String^ value)
 
 void ModuleCommandInfo::Invoke(Object^ sender, CommandEventArgs^ e)
 {
-	// connect
-	Connect();
-	ModuleCommand^ instance = (ModuleCommand^)Module;
+	LOG_AUTO(3, String::Format("Invoking {0} Command='{1}'", (_Handler ? Log::Format(_Handler->Method) : ClassName), e->Command));
 
-	// notify
-	instance->Invoking();
+	if (!_Handler)
+	{
+		Connect();
+		ModuleCommand^ instance = (ModuleCommand^)Module;
+		instance->Prefix = Prefix;
+		_Handler = gcnew EventHandler<CommandEventArgs^>(instance, &ModuleCommand::Invoke);
+	}
 
-	// invoke
-	instance->Prefix = Prefix;
-	_Handler = gcnew EventHandler<CommandEventArgs^>(instance, &ModuleCommand::Invoke);
-	instance->Invoke(sender, e);
+	if (Module)
+		Module->Invoking();
+
+	_Handler(sender, e);
 }
 
 #pragma endregion
 
 #pragma region ModuleFilerInfo
+
+ModuleFilerInfo::ModuleFilerInfo(BaseModule^ module, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates)
+: BaseModuleInfo(module, name)
+, _Handler(handler)
+, _DefaultMask(mask)
+, _Creates(creates)
+{}
+
+ModuleFilerInfo::ModuleFilerInfo(String^ assemblyPath, String^ className, String^ name, String^ mask, bool creates)
+: BaseModuleInfo(assemblyPath, className, name)
+, _DefaultMask(mask)
+, _Creates(creates)
+{}
 
 String^ ModuleFilerInfo::ToString()
 {
@@ -241,10 +282,19 @@ String^ ModuleFilerInfo::ToString()
 
 void ModuleFilerInfo::Invoke(Object^ sender, FilerEventArgs^ e)
 {
-	Connect();
-	ModuleFiler^ instance = (ModuleFiler^)Module;
-	_Handler = gcnew EventHandler<FilerEventArgs^>(instance, &ModuleFiler::Invoke);
-	instance->Invoke(sender, e);
+	LOG_AUTO(3, String::Format("Invoking {0} Name='{1}' Mode='{2}'", (_Handler ? Log::Format(_Handler->Method) : ClassName), e->Name, e->Mode));
+
+	if (!_Handler)
+	{
+		Connect();
+		ModuleFiler^ instance = (ModuleFiler^)Module;
+		_Handler = gcnew EventHandler<FilerEventArgs^>(instance, &ModuleFiler::Invoke);
+	}
+
+	if (Module)
+		Module->Invoking();
+
+	_Handler(sender, e);
 }
 
 String^ ModuleFilerInfo::Mask::get()
@@ -266,6 +316,17 @@ void ModuleFilerInfo::Mask::set(String^ value)
 
 #pragma region ModuleEditorInfo
 
+ModuleEditorInfo::ModuleEditorInfo(BaseModule^ module, String^ name, EventHandler^ handler, String^ mask)
+: BaseModuleInfo(module, name)
+, _Handler(handler)
+, _DefaultMask(mask)
+{}
+
+ModuleEditorInfo::ModuleEditorInfo(String^ assemblyPath, String^ className, String^ name, String^ mask)
+: BaseModuleInfo(assemblyPath, className, name)
+, _DefaultMask(mask)
+{}
+
 String^ ModuleEditorInfo::ToString()
 {
 	return String::Format("{0} Mask='{1}'", BaseModuleInfo::ToString(), Mask);
@@ -273,10 +334,19 @@ String^ ModuleEditorInfo::ToString()
 
 void ModuleEditorInfo::Invoke(Object^ sender, EventArgs^ e)
 {
-	Connect();
-	ModuleEditor^ instance = (ModuleEditor^)Module;
-	_Handler = gcnew EventHandler(instance, &ModuleEditor::Invoke);
-	instance->Invoke(sender, e);
+	LOG_AUTO(3, String::Format("Invoking {0} FileName='{1}'", (_Handler ? Log::Format(_Handler->Method) : ClassName), ((IEditor^)sender)->FileName));
+
+	if (!_Handler)
+	{
+		Connect();
+		ModuleEditor^ instance = (ModuleEditor^)Module;
+		_Handler = gcnew EventHandler(instance, &ModuleEditor::Invoke);
+	}
+
+	if (Module)
+		Module->Invoking();
+
+	_Handler(sender, e);
 }
 
 String^ ModuleEditorInfo::Mask::get()

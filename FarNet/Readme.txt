@@ -161,3 +161,10 @@ SOLUTION
 Read installation steps in Readme.txt (FarNet and modules) carefully and ensure
 that you do everything correctly. Often mistake: Far.exe.config is not copied
 to the Far home directory.
+
+PROBLEM
+After updating of a FarNet module the module does not work or fails on loading.
+
+SOLUTION
+Try again after removing of the FarNet module cache in the registry:
+HKCU\Software\Far2\Plugins\FarNet\<cache>

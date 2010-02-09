@@ -58,11 +58,14 @@ namespace PowerShellFar.Commands
 			{
 				_panel = new ObjectPanel();
 
+				// common parameters
 				ApplyParameters(_panel.Panel);
 
+				// more parameters
 				_panel.Columns = Columns;
 				_panel.AutoSize = AutoSize;
 
+				// and title, if not yet
 				if (string.IsNullOrEmpty(_panel.Panel.Info.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))
 					_panel.Panel.Info.Title = A.Psf._myCommand;
 			}

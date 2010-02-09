@@ -63,6 +63,11 @@ namespace PowerShellFar
 			_Panel.Info.StartViewMode = PanelViewMode.AlternativeFull;
 		}
 
+		/// <summary>
+		/// Gets the default panel title to be set on show.
+		/// </summary>
+		protected virtual string DefaultTitle { get { return GetType().Name; } }
+
 		AnyPanel _Child;
 		/// <summary>
 		/// Child panel.
@@ -253,14 +258,26 @@ namespace PowerShellFar
 		/// <seealso cref="ShowAsChild"/>
 		public virtual void Show()
 		{
+			// done
 			if (_Panel.IsOpened)
 				return;
-			
+
+			// set the title to default
+			if (string.IsNullOrEmpty(_Panel.Info.Title))
+				_Panel.Info.Title = DefaultTitle;
+
+			// try to open even not from panels
 			WindowType wt = A.Far.WindowType;
 			if (wt != WindowType.Panels)
 			{
-				try { A.Far.SetCurrentWindow(0); }
-				catch (InvalidOperationException e) { throw new InvalidOperationException("Cannot open a panel because panels window cannot be set current.", e); }
+				try
+				{
+					A.Far.SetCurrentWindow(0);
+				}
+				catch (InvalidOperationException e)
+				{
+					throw new ModuleException("Cannot open a panel because panels window cannot be set current.", e);
+				}
 
 				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
 				// I tried to ignore my check - a panel did not open. In contrast, PostStep calls via the menu where

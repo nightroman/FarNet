@@ -26,13 +26,15 @@ namespace PowerShellFar
 		{
 			Panel.Info.CurrentDirectory = "*";
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
-			Panel.Info.Title = "Objects";
 			Panel.Info.UseAttributeHighlighting = true;
 			Panel.Info.UseFilter = true;
 			Panel.Info.UseHighlighting = true;
 
 			Panel.PuttingFiles += OnPuttingFiles;
 		}
+
+		///
+		protected override string DefaultTitle { get { return "Objects"; } }
 
 		/// <summary>
 		/// Adds a single objects to the panel as it is.
@@ -189,7 +191,7 @@ namespace PowerShellFar
 
 			// add the objects
 			AddObjects(values);
-			
+
 			// post the first object and update
 			Panel.PostData(values[0]);
 			UpdateRedraw(false);
@@ -202,7 +204,7 @@ namespace PowerShellFar
 		{
 			if (UserWants != UserAction.CtrlR && Values.Count == 0 && (Map != null || Panel.Files.Count > 0 && Panel.Files[0] is SetFile)) //???? mb it works but looks like a hack
 				return Panel.Files;
-			
+
 			if (Map == null || Columns == null)
 			{
 				if (Panel.Files.Count == 0)
@@ -213,13 +215,13 @@ namespace PowerShellFar
 					result.Add(PSObject.AsPSObject(file.Data));
 				foreach (PSObject value in Values)
 					result.Add(value);
-				
+
 				Values.Clear();
 				return result;
 			}
-			
+
 			List<FarFile> files = new List<FarFile>(Values.Count);
-			foreach(PSObject value in Values)
+			foreach (PSObject value in Values)
 				files.Add(new MapFile(value, Map));
 
 			Values.Clear();
