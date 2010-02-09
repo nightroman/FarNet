@@ -95,7 +95,7 @@ namespace PowerShellFar.UI
 		internal static void Show(object sender, ToolEventArgs e)
 		{
 			//! NOTE: 1) do Invoking()!; 2) do sync for item handlers
-			A.Psf.Invoking();
+			//A.Psf.Invoking(); ???? Invoking is not needed in here any more
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{

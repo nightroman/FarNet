@@ -7,7 +7,6 @@ SHORT DESCRIPTION
 LONG DESCRIPTION
 
 CMDLETS
-
 	The module includes two cmdlets:
 
 	-- New-FarMacro
@@ -19,7 +18,6 @@ CMDLETS
 	Use Get-FarHelp to get more details about the cmdlets.
 
 PROVIDERS
-
     The module includes the FarMacro provider. The FarMacro provider lets you
     view the macros in PowerShell as though they were on a file system drive.
 

@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.3.3 =
+
+*) FarColumn, SetColumn: Width: changed type from 'string' to 'int':
+Positive: absolute width; negative: percentage; 0: Far decides.
+
+*) Fix: "event" Invoking() was not always called, e.g. from the disk menu.
+
+*) IMacro: new method Check(). Far 2.0.1381+
+
+*) Tracing: too frequent events moved from mode 3 to 4 (see Far.exe.config).
+
 = 4.3.2 =
 
 CUSTOM COLORS OF DIALOG CONTROLS

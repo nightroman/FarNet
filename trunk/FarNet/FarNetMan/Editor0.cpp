@@ -139,7 +139,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		break;
 	case EE_GOTFOCUS:
 		{
-			LOG_AUTO(3, "EE_GOTFOCUS");
+			LOG_AUTO(4, "EE_GOTFOCUS");
 
 			int id = *((int*)param);
 			Editor^ editor;
@@ -159,7 +159,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		break;
 	case EE_KILLFOCUS:
 		{
-			LOG_AUTO(3, "EE_KILLFOCUS");
+			LOG_AUTO(4, "EE_KILLFOCUS");
 
 			int id = *((int*)param);
 			Editor^ ed;

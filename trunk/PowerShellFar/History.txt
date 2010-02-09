@@ -1,6 +1,13 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.3 =
+
+*) FarNet: FarColumn, SetColumn: Width: 'string' to 'int'.
+
+*) Fix: "Power panel" from the disk menu fails if it is called immediately
+after Far start as the first action. (Invoking() was not called by FarNet).
+
 = 4.3.2 =
 
 TABLE PANELS: TRUE COLUMNS AND PS FORMATS

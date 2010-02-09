@@ -80,6 +80,13 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		void Install(params Macro[] macros);
+		/// <summary>
+		/// Checks the macro sequence for syntax errors.
+		/// </summary>
+		/// <param name="sequence">The macro sequence to be checked.</param>
+		/// <param name="silent">Tells to not show an error message.</param>
+		/// <returns>Parse error or null.</returns>
+		MacroParseError Check(string sequence, bool silent);
 	}
 
 	/// <summary>
@@ -284,5 +291,61 @@ namespace FarNet
 		/// File viewer.
 		/// </summary>
 		Viewer //! this is the last; update _100201_110148 if it is not
+	}
+
+	/// <summary>
+	/// Macro parsing error codes.
+	/// </summary>
+	public enum MacroParseStatus
+	{
+		///
+		NoError = 0,
+		///
+		UnrecognizedKeyword = 1,
+		///
+		UnrecognizedFunction = 2,
+		///
+		FunctionParameter = 3,
+		///
+		NotExpectedElse = 4,
+		///
+		NotExpectedEnd = 5,
+		///
+		UnexpectedEndOfString = 6,
+		///
+		ExpectedToken = 7,
+		///
+		BadHexControlChar = 8,
+		///
+		BadControlChar = 9,
+		///
+		VariableExpected = 10,
+		///
+		ExpressionExpected = 11,
+		///
+		ZeroLengthMacro = 12,
+	}
+
+	/// <summary>
+	/// Macro syntax check error info.
+	/// </summary>
+	public class MacroParseError
+	{
+		/// <summary>
+		/// Error code.
+		/// </summary>
+		public MacroParseStatus ErrorCode { get; set; }
+		/// <summary>
+		/// Faulty piece of a macro sequence.
+		/// </summary>
+		public string Token { get; set; }
+		/// <summary>
+		/// Error line index (0 based).
+		/// </summary>
+		public int Line { get; set; }
+		/// <summary>
+		/// Position in the error line.
+		/// </summary>
+		public int Pos { get; set; }
 	}
 }

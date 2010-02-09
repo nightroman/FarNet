@@ -39,10 +39,12 @@ namespace PowerShellFar
 				throw new ArgumentNullException("instance");
 
 			// panel info
-			Panel.Info.Title = "Members: " + _Value.BaseObject.GetType().Name;
 			Panel.Info.CurrentDirectory = "*";
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
 		}
+
+		///
+		protected override string DefaultTitle { get { return "Members: " + _Value.BaseObject.GetType().Name; } }
 
 		/// <summary>
 		/// Gets or sets data modification flag.

@@ -88,8 +88,13 @@ namespace PowerShellFar
 		///
 		public override void Invoking()
 		{
-			A.Psf.Invoking();
+			if (!InvokingHasBeenCalled)
+			{
+				A.Psf.Invoking();
+				InvokingHasBeenCalled = true;
+			}
 		}
+		bool InvokingHasBeenCalled;
 
 		//! do not call Invoking(), it is done by FarNet
 		void OnCommandLine(object sender, CommandEventArgs e)

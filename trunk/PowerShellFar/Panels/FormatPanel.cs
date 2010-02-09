@@ -67,6 +67,42 @@ namespace PowerShellFar
 			for (int i = 0; i < count; ++i)
 				metas[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
 
+			{
+				//????
+				int totalWidth = A.Far.Panel.Window.Width - (metas.Length - 1); // N-1 separators and 2 borders
+				int setCount = 0;
+				int setSum = 0;
+				int setMaxValue = 0;
+				int setMaxIndex = -1;
+				for (int i = metas.Length; --i >= 0; )
+				{
+					int width = metas[i].Width;
+					if (width > 0)
+					{
+						++setCount;
+						setSum += width;
+						if (setMaxValue < width)
+						{
+							setMaxValue = width;
+							setMaxIndex = i;
+						}
+					}
+				}
+
+				// panel is too narrow, drop all positive widths
+				if (setSum + (metas.Length - setCount) * 5 > totalWidth)
+				{
+					foreach (Meta meta in metas)
+						if (meta.Width > 0)
+							meta.Width = 0;
+				}
+				// panel is too wide (e.g. for Get-Service ~ 64), drop the lagest width
+				else if (setCount == metas.Length && setSum < totalWidth)
+				{
+					metas[setMaxIndex].Width = 0;
+				}
+			}
+
 			// heuristic N
 			if (count > 1 && SetBestType(metas, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
 				--count;
@@ -281,7 +317,7 @@ namespace PowerShellFar
 			{
 				if ((e.Mode & OperationModes.Silent) == 0)
 					A.Far.ShowError(Res.Me, ex);
-				
+
 				data = new List<FarFile>();
 			}
 
@@ -301,7 +337,7 @@ namespace PowerShellFar
 			{
 				// drop files in any case
 				Panel.Files.Clear();
-				
+
 				// do not change anything in the custom panel
 				if (Columns != null)
 					return;
@@ -346,7 +382,28 @@ namespace PowerShellFar
 
 				// try to get format
 				if (commonType != typeof(PSCustomObject))
+				{
 					metas = TryFormatByTableControl(values[0]);
+#if false //???
+					if (metas != null)
+					{
+						//????int width = Panel.Window.Width - 2;
+						int countWidth = 0;
+						foreach (Meta m in metas)
+							if (!string.IsNullOrEmpty(m.Width))
+								++countWidth;
+						if (countWidth == metas.Length)
+						{
+							for (int i = metas.Length; --i >= 0; )
+								if (string.IsNullOrEmpty(metas[i].FormatString))
+								{
+									metas[i].Width = null;
+									break;
+								}
+						}
+					}
+#endif
+				}
 
 				// use Get-Member
 				if (metas == null)
