@@ -25,11 +25,7 @@ $#FarNet#
 $#Plugin menu#
 ~Contents~@Contents@
 
-FarNet shows its menu item #.NET# in all Far plugin menus and in the disk menu.
-
-#Disk#
-
-It shows the ~Panels menu~@MenuPanels@.
+FarNet shows its menu items #.NET# in all Far plugin menus [F11].
 
 #Panels#
 
@@ -41,8 +37,8 @@ It shows the ~Config menu~@MenuConfig@.
 
 #Editor, Viewer, Dialog#
 
-It shows nothing when selected manually. But this item is used internally for
-the important module feature #PostStep# which works in these areas, too.
+They do nothing when selected manually. But they are used internally and cannot
+be removed. They allow to bypass some natural limitations of Far API.
 
 
 @MenuPanels

@@ -47,9 +47,6 @@ namespace PowerShellFar
 			// register config
 			Far.RegisterTool(this, Res.Me, OnConfig, ToolOptions.Config);
 
-			// register disk
-			Far.RegisterTool(this, "Power panel", OnDisk, ToolOptions.Disk);
-
 			// register menu
 			Far.RegisterTool(this, Res.Me, OnOpen, ToolOptions.F11Menus);
 
@@ -70,7 +67,6 @@ namespace PowerShellFar
 			Far.UnregisterCommand(OnCommandLine);
 			Far.UnregisterCommand(OnCommandLineJob);
 			Far.UnregisterTool(OnConfig);
-			Far.UnregisterTool(OnDisk);
 			Far.UnregisterTool(OnOpen);
 
 			// disconnect instances
@@ -122,11 +118,6 @@ namespace PowerShellFar
 		void OnConfig(object sender, ToolEventArgs e)
 		{
 			e.Ignore = !A.Psf.ShowSettings();
-		}
-
-		void OnDisk(object sender, ToolEventArgs e)
-		{
-			A.Psf.ShowPanel();
 		}
 
 		internal void OnOpen(object sender, ToolEventArgs e)

@@ -24,6 +24,7 @@ public:
 	virtual property bool IsSaved { bool get(); }
 	virtual property bool Overtype { bool get(); void set(bool value); }
 	virtual property bool ShowWhiteSpace { bool get(); void set(bool value); }
+	virtual property bool WriteByteOrderMark { bool get(); void set(bool value); }
 	virtual property DeleteSource DeleteSource { FarNet::DeleteSource get(); void set(FarNet::DeleteSource value); }
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get(); void set(ExpandTabsMode value); }
 	virtual property ILine^ CurrentLine { ILine^ get(); }
@@ -82,6 +83,8 @@ internal:
 	void Sync();
 private:
 	void AssertClosed();
+	bool GetBoolOption(int option);
+	void SetBoolOption(int option, bool value);
 internal:
 	int _id;
 	String^ _FileName;

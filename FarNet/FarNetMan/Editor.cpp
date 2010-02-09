@@ -938,23 +938,27 @@ void Editor::Sync()
 	}
 }
 
-bool Editor::ShowWhiteSpace::get()
+bool Editor::ShowWhiteSpace::get() { return GetBoolOption(EOPT_SHOWWHITESPACE); }
+bool Editor::WriteByteOrderMark::get() { return GetBoolOption(EOPT_BOM); }
+bool Editor::GetBoolOption(int option)
 {
 	if (!IsOpened)
 		return false;
 
 	AutoEditorInfo ei;
 
-	if (ei.Options & EOPT_SHOWWHITESPACE)
+	if (ei.Options & option)
 		return true;
 	else
 		return false;
 }
 
-void Editor::ShowWhiteSpace::set(bool value)
+void Editor::ShowWhiteSpace::set(bool value) { SetBoolOption(ESPT_SHOWWHITESPACE, value); }
+void Editor::WriteByteOrderMark::set(bool value) { SetBoolOption(ESPT_SETBOM, value); }
+void Editor::SetBoolOption(int option, bool value)
 {
 	EditorSetParameter esp;
-	esp.Type = ESPT_SHOWWHITESPACE;
+	esp.Type = option;
 	esp.Param.iParam = (int)value;
 	EditorControl_ECTL_SETPARAM(esp);
 }
