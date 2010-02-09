@@ -56,6 +56,7 @@ namespace PowerShellFar
 		protected FormatPanel()
 		{ }
 
+		//! assume it is done for the active panel, it does not work well from the disk menu
 		internal static Meta[] TryFormatByTableControl(PSObject value)
 		{
 			TableControl table = A.FindTableControl(value.BaseObject.GetType().FullName, null);
@@ -382,28 +383,7 @@ namespace PowerShellFar
 
 				// try to get format
 				if (commonType != typeof(PSCustomObject))
-				{
 					metas = TryFormatByTableControl(values[0]);
-#if false //???
-					if (metas != null)
-					{
-						//????int width = Panel.Window.Width - 2;
-						int countWidth = 0;
-						foreach (Meta m in metas)
-							if (!string.IsNullOrEmpty(m.Width))
-								++countWidth;
-						if (countWidth == metas.Length)
-						{
-							for (int i = metas.Length; --i >= 0; )
-								if (string.IsNullOrEmpty(metas[i].FormatString))
-								{
-									metas[i].Width = null;
-									break;
-								}
-						}
-					}
-#endif
-				}
 
 				// use Get-Member
 				if (metas == null)

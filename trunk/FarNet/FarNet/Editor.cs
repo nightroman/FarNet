@@ -504,6 +504,10 @@ namespace FarNet
 		/// Editor must be current.
 		/// </summary>
 		bool ShowWhiteSpace { get; set; }
+		/// <summary>
+		/// Tells to write BOM on saving.
+		/// </summary>
+		bool WriteByteOrderMark { get; set; }
 	}
 
 	/// <summary>

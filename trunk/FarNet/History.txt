@@ -2,12 +2,17 @@ http://code.google.com/p/farnet/
 
 = 4.3.3 =
 
-*) FarColumn, SetColumn: Width: changed type from 'string' to 'int':
-Positive: absolute width; negative: percentage; 0: Far decides.
+*) UI: removed the ".NET" item from the disk menu. It is not used. Note: ".NET"
+items in F11 menus, even empty, are used internally and cannot be removed.
 
-*) Fix: "event" Invoking() was not always called, e.g. from the disk menu.
+*) FarColumn, SetColumn: Width: changed type from 'string' to 'int':
+positive: absolute width; negative: percentage; 0: Far decides.
+
+*) Fix: "event" Invoking() was not always called for module tools.
 
 *) IMacro: new method Check(). Far 2.0.1381+
+
+*) IEditor: new option WriteByteOrderMark. Far 2.0.1384+
 
 *) Tracing: too frequent events moved from mode 3 to 4 (see Far.exe.config).
 
