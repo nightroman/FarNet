@@ -167,12 +167,38 @@ if (!$macro) {
 
 ### Editor of the sequence
 if ($Editor -or $wi.Type -ne 'Panels') {
-	$s2 = $Far.AnyEditor.EditText($macro.Sequence, "$Area $Name").TrimEnd()
-	if ($s2 -ne $macro.Sequence) {
+	# editor loop
+	for($s1 = $macro.Sequence;;) {
+
+		# edit in the modal editor
+		$s2 = $Far.AnyEditor.EditText($s1, "$Area $Name").TrimEnd()
+
+		# exit with the original, bad or not
+		if ($s2 -ceq $macro.Sequence) {
+			return
+		}
+
+		# check the changed
+		if ($Far.Macro.Check($s2, $false) -eq $null) {
+			break
+		}
+
+		# prompt on errors
+		if (1 -eq (Show-FarMessage "The macro sequnce is not valid." -Choices 'Continue changes', 'Discard changes')) {
+			return
+		}
+
+		# continue with the last text
+		$s1 = $s2
+	}
+
+	# install and load the changed
+	if ($s2 -cne $macro.Sequence) {
 		$macro.Sequence = $s2
 		$Far.Macro.Install($macro)
 		$Far.Macro.Load()
 	}
+
 	return
 }
 
