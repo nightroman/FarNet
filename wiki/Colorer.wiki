@@ -1,4 +1,4 @@
-#summary Syntax highlighting and text parsing library and Far Manager plugin.
+#summary Syntax highlighting library and Far Manager plugin
 
 = Introduction =
 
