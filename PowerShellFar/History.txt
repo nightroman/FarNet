@@ -1,11 +1,25 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.4 =
+
+*) Panel Columns: new attribute Alignment: Alignment='Right' can be used
+together with positive column widths.
+
+*) Table panels: better adjustment of built-in table formats for narrow panels.
+For now we just drop preset widths and ignore alignments. Right aligned data
+are not funny any more after that, they are just shown as they are.
+
+*) Panel-Macro-.ps1: [F4] or "Panel-Macro- <key> <area>" (edit macro sequence
+in the editor): on exit from the editor IMacro.Check() is called to check the
+sequence, show errors and prompt to continue or discard. This is better than
+nothing. To be continued.
+
 = 4.3.3 =
 
 *) "PowerShellFar" item was removed from the disk menu for 3 reasons:
 1) It looks like many users are not happy due to extra items in disks;
-2) This menu have some known peculiarities for opening panels;
+2) This menu has some known peculiarities for opening panels;
 3) This item can be added for example from the profile script:
 $null = $Far.RegisterTool($null, "PSF panel", { $Psf.ShowPanel() }, "Disk")
 

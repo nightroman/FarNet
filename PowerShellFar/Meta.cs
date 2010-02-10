@@ -17,7 +17,7 @@ namespace PowerShellFar
 	/// </summary>
 	/// <remarks>
 	/// It is created internally from a string (property name), a script block (getting data from $_),
-	/// or a dictionary (keys: <c>Name</c>/<c>Label</c>, <c>Expression</c>, <c>Type</c>, <c>Width</c>).
+	/// or a dictionary (keys: <c>Name</c>/<c>Label</c>, <c>Expression</c>, <c>Type</c>, <c>Width</c>, and <c>Alignment</c>).
 	/// <para>
 	/// <b>Name</b> or <b>Label</b>: display name for a value from a script block or alternative name for a property.
 	/// It is used as a Far panel column title.
@@ -31,15 +31,18 @@ namespace PowerShellFar
 	/// See <see cref="PanelModeInfo.Columns"/>.
 	/// </para>
 	/// <para>
-	/// <b>Width</b>: Far column width: an integer or a string: an integer + %, e.g. "30%".
+	/// <b>Width</b>: Far column width: positive: absolute width, negative: percentage.
+	/// Positive widths are ignored if a panel is too narrow to display all columns.
+	/// </para>
+	/// <para>
+	/// <b>Alignment</b>: if the width is positive <c>Right</c> alignment can be used.
+	/// If a panel is too narrow to display all columns this option can be ignored.
 	/// </para>
 	/// </remarks>
 	public class Meta : FarColumn
 	{
 		string _ColumnName;
-		string _ColumnType;
-		int _ColumnWidth;
-
+		
 		string _Property;
 		ScriptBlock _Script;
 
@@ -76,34 +79,39 @@ namespace PowerShellFar
 		}
 
 		///
-		public override string Type { get { return _ColumnType; } set { _ColumnType = value; } }
+		public override string Type { get; set; }
 
 		///
-		public override int Width
-		{
-			get
-			{
-				return _ColumnWidth;
-			}
-			set
-			{
-				_ColumnWidth = value;
-			}
-		}
+		public override int Width { get; set; }
+
+		/// <summary>
+		/// Alignment type.
+		/// </summary>
+		/// <remarks>
+		/// Alignment type can be specified if <see cref="Width"/> is set to a positive value.
+		/// Currently only <c>Right</c> type is supported.
+		/// </remarks>
+		/// <example>
+		/// <code>
+		/// # Column 'Length': width 15, right aligned values:
+		/// Get-ChildItem | Out-FarPanel Name, @{ e='Length'; w=15; a='Right' }
+		/// </code>
+		/// </example>
+		public Alignment Alignment { get; private set; }
 
 		/// <summary>
 		/// Format string.
 		/// </summary>
 		/// <example>
-		/// This command makes a column 'Length' with width 15 and right aligned numbers with thousand separators (e.g. 3,230,649)
 		/// <code>
-		/// Get-ChildItem | Out-FarPanel Name, @{ e='Length'; f='{0,15:n0}'; w=15 }
+		/// # Column 'Length': width 15 and right aligned numbers with thousand separators (e.g. 3,230,649)
+		/// Get-ChildItem | Out-FarPanel Name, @{ e='Length'; w=15; f='{0,15:n0}' }
 		/// </code>
 		/// </example>
 		public string FormatString { get; private set; }
 
 		/// <summary>
-		/// From a property.
+		/// New from a property.
 		/// </summary>
 		public Meta(string property)
 		{
@@ -114,7 +122,7 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// From a script operating on $_.
+		/// New from a script operating on $_.
 		/// </summary>
 		public Meta(ScriptBlock script)
 		{
@@ -125,7 +133,7 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// From format table control data.
+		/// New from format table control data.
 		/// </summary>
 		internal Meta(DisplayEntry entry, TableControlColumnHeader header) // no checks, until it is internal
 		{
@@ -137,18 +145,12 @@ namespace PowerShellFar
 			if (!string.IsNullOrEmpty(header.Label))
 				_ColumnName = header.Label;
 
-			if (header.Width != 0)
-			{
-				_ColumnWidth = header.Width;
-
-				//???? this should be done as a part of other fixes
-				if (_ColumnWidth > 0 && header.Alignment == Alignment.Right)
-					FormatString = string.Concat("{0,", _ColumnWidth, "}");
-			}
+			Width = header.Width;
+			Alignment = header.Alignment;
 		}
 
 		/// <summary>
-		/// From supported types, e.g. <c>IDictionary</c>.
+		/// New from supported types: <c>string</c>, <c>ScriptBlock</c>, and <c>IDictionary</c>.
 		/// </summary>
 		public Meta(object value)
 		{
@@ -179,11 +181,15 @@ namespace PowerShellFar
 					}
 					else if (Word.Type.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
-						_ColumnType = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
+						Type = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
 					}
 					else if (Word.Width.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
-						_ColumnWidth = (int)LanguagePrimitives.ConvertTo(kv.Value, typeof(int), CultureInfo.InvariantCulture);
+						Width = (int)LanguagePrimitives.ConvertTo(kv.Value, typeof(int), CultureInfo.InvariantCulture);
+					}
+					else if (Word.Alignment.StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					{
+						Alignment = (Alignment)LanguagePrimitives.ConvertTo(kv.Value, typeof(Alignment), CultureInfo.InvariantCulture);
 					}
 					else if (Word.Expression.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
@@ -214,12 +220,14 @@ namespace PowerShellFar
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append("@{");
-			if (_ColumnType != null)
-				sb.Append(" Type = '" + _ColumnType + "';");
+			if (Type != null)
+				sb.Append(" Type = '" + Type + "';");
 			if (_ColumnName != null)
 				sb.Append(" Label = '" + _ColumnName + "';");
-			if (_ColumnWidth != 0)
-				sb.Append(" Width = " + _ColumnWidth + ";");
+			if (Width != 0)
+				sb.Append(" Width = " + Width + ";");
+			if (Alignment != 0)
+				sb.Append(" Alignment = '" + Alignment + "';");
 			if (_Property != null)
 				sb.Append(" Expression = '" + _Property + "';");
 			if (_Script != null)
@@ -276,15 +284,27 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Gets a meta value as string (actual or empty), formatted if <see cref="FormatString"/> is set.
+		/// Gets a meta value as a string, formatted if <see cref="FormatString"/> is set and
+		/// aligned if <see cref="Width"/> is positive and <see cref="Alignment"/> is <c>Right</c>.
 		/// </summary>
 		public string GetString(object value)
 		{
 			if (string.IsNullOrEmpty(FormatString))
-				return Get<string>(value);
-			else
-				return string.Format(CultureInfo.CurrentCulture, FormatString, GetValue(value));
+			{
+				if (Width <= 0 || Alignment != Alignment.Right)
+					return Get<string>(value);
 
+				string s = Get<string>(value);
+				return s == null ? null : s.PadLeft(Width);
+			}
+			else if (Width <= 0 || Alignment != Alignment.Right)
+			{
+				return string.Format(CultureInfo.CurrentCulture, FormatString, GetValue(value));
+			}
+			else
+			{
+				return string.Format(CultureInfo.CurrentCulture, FormatString, GetValue(value)).PadLeft(Width);
+			}
 		}
 
 		/// <summary>

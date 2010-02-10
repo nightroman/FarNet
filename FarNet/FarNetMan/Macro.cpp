@@ -250,6 +250,7 @@ MacroParseError^ Macro0::Check(String^ sequence, bool silent)
 	args.Param.PlainText.SequenceText = pin;
 	args.Param.PlainText.Flags = silent ? KSFLAGS_SILENTCHECK : 0;
 
+	//! it always gets ErrCode
 	Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args);
 	if (args.Param.MacroResult.ErrCode == MPEC_SUCCESS)
 		return nullptr;

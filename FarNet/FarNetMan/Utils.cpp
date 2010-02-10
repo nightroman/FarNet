@@ -423,6 +423,12 @@ bool EqualsOrdinal(String^ strA, String^ strB)
 	return StringComparer::OrdinalIgnoreCase->Equals(strA, strB);
 }
 
+int ParseInt(String^ value, int fallback)
+{
+	int result;
+	return int::TryParse(value, result) ? result : fallback;
+}
+
 namespace FarNet
 {;
 bool Config::GetBool(String^ key)
