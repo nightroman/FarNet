@@ -220,12 +220,13 @@ public:
 }
 
 // Helpers
-int Compare(String^ strA, String^ strB);
 bool EqualsOrdinal(String^ strA, String^ strB);
+int Compare(String^ strA, String^ strB);
+int ParseInt(String^ value, int fallback);
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
+Object^ Property(Object^ obj, String^ name);
 String^ JoinText(String^ head, String^ tail);
 String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();
 void DeleteSourceOptional(String^ path, DeleteSource option);
 void ValidateRect(int& x, int& w, int min, int size);
-Object^ Property(Object^ obj, String^ name);

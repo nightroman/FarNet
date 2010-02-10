@@ -54,6 +54,7 @@ namespace PowerShellFar
 	static class Word
 	{
 		public const string
+			Alignment = "Alignment",
 			ConsoleExtension = ".psfconsole",
 			Definition = "Definition",
 			Description = "Description",

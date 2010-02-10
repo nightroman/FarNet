@@ -66,11 +66,11 @@ void Panel2::SwitchFullScreen()
 			column->Type = types[iType];
 			
 			if (widths[iType]->EndsWith("%"))
-				column->Width = - int::Parse(widths[iType]->Substring(0, widths[iType]->Length - 1));
+				column->Width = - ParseInt(widths[iType]->Substring(0, widths[iType]->Length - 1), 0);
 			else if (types[iType] == "N" || types[iType] == "Z" || types[iType] == "O")
 				column->Width = 0;
 			else
-				column->Width = int::Parse(widths[iType]);
+				column->Width = ParseInt(widths[iType], 0);
 		}
 	}
 

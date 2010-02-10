@@ -68,11 +68,11 @@ namespace PowerShellFar
 			for (int i = 0; i < count; ++i)
 				metas[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
 
+			// adjust formatting to the panel width ????
 			{
-				//????
-				int totalWidth = A.Far.Panel.Window.Width - (metas.Length - 1); // N-1 separators and 2 borders
-				int setCount = 0;
+				int totalWidth = A.Far.Panel.Window.Width - (metas.Length + 1); // N columns ~ N + 1 borders
 				int setSum = 0;
+				int setCount = 0;
 				int setMaxValue = 0;
 				int setMaxIndex = -1;
 				for (int i = metas.Length; --i >= 0; )
@@ -90,32 +90,22 @@ namespace PowerShellFar
 					}
 				}
 
-				// panel is too narrow, drop all positive widths
+				// panel is too narrow (less than 5 chars for unset columns), drop all positive widths
 				if (setSum + (metas.Length - setCount) * 5 > totalWidth)
 				{
 					foreach (Meta meta in metas)
 						if (meta.Width > 0)
 							meta.Width = 0;
 				}
-				// panel is too wide (e.g. for Get-Service ~ 64), drop the lagest width
+				// panel is too wide (e.g. for Get-Service ~ 64), drop the maximum width
 				else if (setCount == metas.Length && setSum < totalWidth)
 				{
 					metas[setMaxIndex].Width = 0;
 				}
 			}
 
-			// heuristic N
-			if (count > 1 && SetBestType(metas, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
-				--count;
-
-			// heuristic Z
-			if (count > 1 && SetBestType(metas, "Z", Word.Description, Word.Definition))
-				--count;
-
-			// heuristic O
-			if (count > 1 && SetBestType(metas, "O", Word.Value, Word.Status))
-				--count;
-
+			// set heuristic types
+			SetBestTypes(metas);
 			return metas;
 		}
 
@@ -153,8 +143,15 @@ namespace PowerShellFar
 					metas[i] = new Meta(members[i].ToString());
 			}
 
-			//???? dupe below
+			// set heuristic types
+			SetBestTypes(metas);
+			return metas;
+		}
 
+		static void SetBestTypes(Meta[] metas)
+		{
+			int count = metas.Length;
+			
 			// heuristic N
 			if (count > 1 && SetBestType(metas, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
 				--count;
@@ -164,10 +161,8 @@ namespace PowerShellFar
 				--count;
 
 			// heuristic O
-			if (count > 1 && SetBestType(metas, "O", Word.Value, Word.Status))
-				--count;
-
-			return metas;
+			if (count > 1)
+				SetBestType(metas, "O", Word.Value, Word.Status);
 		}
 
 		static bool SetBestType(Meta[] metas, string type, params string[] patterns)

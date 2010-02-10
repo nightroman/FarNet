@@ -199,7 +199,7 @@ wchar_t* NewColumnWidths(IEnumerable<FarColumn^>^ columns)
 		else if (column->Width > 0)
 			sb.Append(column->Width.ToString());
 		else
-			sb.AppendFormat("{0}%", column->Width);
+			sb.AppendFormat("{0}%", - column->Width);
 	}
 	return NewChars(sb.ToString());
 }

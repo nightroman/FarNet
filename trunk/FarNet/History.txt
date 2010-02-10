@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.3.4 =
+
+*) [e]Bu$ter fixed a recent bug of FarColumn percentage (negative) widths.
+
+*) IMacro.Check() should start to work correctly in Far 2.0.1386+
+
 = 4.3.3 =
 
 *) Removed the ".NET" item from the disk menu. It is not used. Note: ".NET"
