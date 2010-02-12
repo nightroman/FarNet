@@ -17,7 +17,7 @@ ref class ModuleToolInfo;
 ref class Viewer;
 ref class Viewer0;
 
-ref class Far : public IFar
+ref class Far1 : public IFar
 {
 public:
 	virtual property FarConfirmations Confirmations { FarConfirmations get(); }
@@ -123,7 +123,6 @@ public:
 	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
 internal:
-	static property Far^ Instance { Far^ get() { return _instance; } }
 	static void StartFar();
 	void Stop();
 	void OnEditorOpened(FarNet::Editor^ editor);
@@ -141,10 +140,8 @@ internal:
 	void RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers);
 	void RegisterTool(ModuleToolInfo^ tool);
 	void RegisterTools(IEnumerable<ModuleToolInfo^>^ tools);
-	Object^ GetFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue) { return GetPluginValue("FarNet\\" + keyPath, valueName, defaultValue); }
-	void SetFarNetValue(String^ keyPath, String^ valueName, Object^ value) { SetPluginValue("FarNet\\" + keyPath, valueName, value); }
 private:
-	Far();
+	Far1();
 	Object^ GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue);
 	void AssertHotkeys();
 	void Free(ToolOptions options);
@@ -162,9 +159,6 @@ private:
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
 	static int GetPaletteColor(PaletteColor paletteColor);
 	static void VoidStep(Object^, EventArgs^) {}
-private:
-	// The instance
-	static Far^ _instance;
 private:
 	CStr* _pConfig;
 	CStr* _pDisk;
@@ -190,6 +184,8 @@ private:
 	
 	HANDLE _hMutex;
 	List<EventHandler^> _syncHandlers;
+internal:
+	static Far1 Far; //???? get rid of 'internal', hide it completely
 };
 
 }

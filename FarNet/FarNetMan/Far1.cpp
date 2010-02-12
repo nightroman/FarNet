@@ -4,11 +4,13 @@ Copyright (c) 2005 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "Far.h"
+#include "Far1.h"
+#include "CommandLine.h"
 #include "Dialog.h"
 #include "Editor0.h"
 #include "InputBox.h"
 #include "ListMenu.h"
+#include "Macro.h"
 #include "Menu.h"
 #include "Message.h"
 #include "Module0.h"
@@ -16,23 +18,25 @@ Copyright (c) 2005 FarNet Team
 #include "Panel0.h"
 #include "Panel2.h"
 #include "Shelve.h"
+#include "SubsetForm.h"
 #include "Viewer0.h"
+#include "Zoo.h"
 
 namespace FarNet
 {;
-Far::Far()
+Far1::Far1()
 {}
 
-void Far::StartFar()
+void Far1::StartFar()
 {
-	if (_instance)
+	if (Far::Host)
 		throw gcnew InvalidOperationException("Already started.");
 
-	_instance = gcnew Far;
-	_instance->Start();
+	Far::Host = %Far;
+	Far.Start();
 }
 
-void Far::Start()
+void Far1::Start()
 {
 	_hMutex = CreateMutex(NULL, FALSE, NULL);
 	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
@@ -40,11 +44,10 @@ void Far::Start()
 }
 
 //! Don't use Far UI
-void Far::Stop()
+void Far1::Stop()
 {
 	CloseHandle(_hMutex);
 	Module0::UnloadModules();
-	_instance = nullptr;
 
 	delete[] _pConfig;
 	delete[] _pDisk;
@@ -55,7 +58,7 @@ void Far::Stop()
 	delete _prefixes;
 }
 
-String^ Far::ActivePath::get()
+String^ Far1::ActivePath::get()
 {
 	DWORD size = Info.FSF->GetCurrentDirectory(0, 0);
 	CBox buf(size);
@@ -63,18 +66,18 @@ String^ Far::ActivePath::get()
 	return gcnew String(buf);
 }
 
-String^ Far::RegistryFarPath::get()
+String^ Far1::RegistryFarPath::get()
 {
 	String^ key = RegistryPluginsPath;
 	return key->Substring(0, key->LastIndexOf('\\'));
 }
 
-String^ Far::RegistryPluginsPath::get()
+String^ Far1::RegistryPluginsPath::get()
 {
 	return gcnew String(Info.RootKey);
 }
 
-void Far::Free(ToolOptions options)
+void Far1::Free(ToolOptions options)
 {
 	if (int(options & ToolOptions::Config))
 	{
@@ -108,7 +111,7 @@ void Far::Free(ToolOptions options)
 	}
 }
 
-void Far::RegisterTool(BaseModule^ module, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
+void Far1::RegisterTool(BaseModule^ module, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
 {
 	if (module && ES(name))
 		throw gcnew ArgumentException("'name' must not be empty.");
@@ -116,7 +119,7 @@ void Far::RegisterTool(BaseModule^ module, String^ name, EventHandler<ToolEventA
 	RegisterTool(gcnew ModuleToolInfo(module, name, handler, options));
 }
 
-void Far::RegisterTool(ModuleToolInfo^ tool)
+void Far1::RegisterTool(ModuleToolInfo^ tool)
 {
 	LOG_INFO("Register " + tool);
 
@@ -159,7 +162,7 @@ void Far::RegisterTool(ModuleToolInfo^ tool)
 	}
 }
 
-void Far::RegisterTools(IEnumerable<ModuleToolInfo^>^ tools)
+void Far1::RegisterTools(IEnumerable<ModuleToolInfo^>^ tools)
 {
 	for each(ModuleToolInfo^ tool in tools)
 		RegisterTool(tool);
@@ -179,7 +182,7 @@ static int RemoveByHandler(List<ModuleToolInfo^>^ list, EventHandler<ToolEventAr
 	return r;
 }
 
-void Far::UnregisterTool(EventHandler<ToolEventArgs^>^ handler)
+void Far1::UnregisterTool(EventHandler<ToolEventArgs^>^ handler)
 {
 	assert(handler != nullptr);
 	LOG_INFO(String::Format("Unregister tool {0}", Log::Format(handler->Method)));
@@ -216,7 +219,7 @@ void Far::UnregisterTool(EventHandler<ToolEventArgs^>^ handler)
 	}
 }
 
-String^ Far::RegisterCommand(BaseModule^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler)
+String^ Far1::RegisterCommand(BaseModule^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler)
 {
 	delete _prefixes;
 	_prefixes = 0;
@@ -228,7 +231,7 @@ String^ Far::RegisterCommand(BaseModule^ plugin, String^ name, String^ prefix, E
 	return it->Prefix;
 }
 
-void Far::RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands)
+void Far1::RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands)
 {
 	delete _prefixes;
 	_prefixes = 0;
@@ -241,7 +244,7 @@ void Far::RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands)
 	}
 }
 
-void Far::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
+void Far1::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
 {
 	for(int i = _registeredCommand.Count; --i >= 0;)
 	{
@@ -256,7 +259,7 @@ void Far::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
 	}
 }
 
-void Far::RegisterFiler(BaseModule^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates)
+void Far1::RegisterFiler(BaseModule^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates)
 {
 	ModuleFilerInfo^ it = gcnew ModuleFilerInfo(plugin, name, handler, mask, creates);
 	_registeredFiler.Add(it);
@@ -264,7 +267,7 @@ void Far::RegisterFiler(BaseModule^ plugin, String^ name, EventHandler<FilerEven
 	LOG_INFO("Register " + it);
 }
 
-void Far::RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors)
+void Far1::RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors)
 {
 	_registeredEditor.AddRange(editors);
 
@@ -275,7 +278,7 @@ void Far::RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors)
 	}
 }
 
-void Far::RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers)
+void Far1::RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers)
 {
 	_registeredFiler.AddRange(filers);
 
@@ -286,7 +289,7 @@ void Far::RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers)
 	}
 }
 
-void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
+void Far1::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 {
 	for(int i = _registeredFiler.Count; --i >= 0;)
 	{
@@ -299,37 +302,37 @@ void Far::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
 	}
 }
 
-void Far::Unregister(BaseModule^ plugin)
+void Far1::Unregister(BaseModule^ plugin)
 {
 	Module0::UnloadModule(plugin);
 }
 
-void Far::Message(String^ body)
+void Far1::Message(String^ body)
 {
 	Message::Show(body, nullptr, MsgOptions::Ok, nullptr, nullptr);
 }
 
-void Far::Message(String^ body, String^ header)
+void Far1::Message(String^ body, String^ header)
 {
 	Message::Show(body, header, MsgOptions::Ok, nullptr, nullptr);
 }
 
-int Far::Message(String^ body, String^ header, MsgOptions options)
+int Far1::Message(String^ body, String^ header, MsgOptions options)
 {
 	return Message::Show(body, header, options, nullptr, nullptr);
 }
 
-int Far::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons)
+int Far1::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons)
 {
 	return Message::Show(body, header, options, buttons, nullptr);
 }
 
-int Far::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
+int Far1::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
 {
 	return Message::Show(body, header, options, buttons, helpTopic);
 }
 
-void Far::Run(String^ command)
+void Far1::Run(String^ command)
 {
 	int colon = command->IndexOf(':', 1);
 	if (colon < 0)
@@ -350,66 +353,66 @@ void Far::Run(String^ command)
 	}
 }
 
-IntPtr Far::MainWindowHandle::get()
+IntPtr Far1::MainWindowHandle::get()
 {
 	return (IntPtr)Info.AdvControl(Info.ModuleNumber, ACTL_GETFARHWND, nullptr);
 }
 
-System::Version^ Far::FarVersion::get()
+System::Version^ Far1::FarVersion::get()
 {
 	DWORD vn;
 	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
 	return gcnew System::Version((vn&0x0000ff00)>>8, vn&0x000000ff, (int)((long)vn&0xffff0000)>>16);
 }
 
-System::Version^ Far::FarNetVersion::get()
+System::Version^ Far1::FarNetVersion::get()
 {
 	return Assembly::GetExecutingAssembly()->GetName()->Version;
 }
 
-IMenu^ Far::CreateMenu()
+IMenu^ Far1::CreateMenu()
 {
 	return gcnew Menu;
 }
 
-IListMenu^ Far::CreateListMenu()
+IListMenu^ Far1::CreateListMenu()
 {
 	return gcnew ListMenu;
 }
 
-FarConfirmations Far::Confirmations::get()
+FarConfirmations Far1::Confirmations::get()
 {
 	return (FarConfirmations)Info.AdvControl(Info.ModuleNumber, ACTL_GETCONFIRMATIONS, 0);
 }
 
-FarMacroState Far::MacroState::get()
+FarMacroState Far1::MacroState::get()
 {
 	ActlKeyMacro command;
 	command.Command = MCMD_GETSTATE;
 	return (FarMacroState)Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command);
 }
 
-array<IEditor^>^ Far::Editors()
+array<IEditor^>^ Far1::Editors()
 {
 	return Editor0::Editors();
 }
 
-array<IViewer^>^ Far::Viewers()
+array<IViewer^>^ Far1::Viewers()
 {
 	return Viewer0::Viewers();
 }
 
-IAnyEditor^ Far::AnyEditor::get()
+IAnyEditor^ Far1::AnyEditor::get()
 {
 	return %Editor0::_anyEditor;
 }
 
-IAnyViewer^ Far::AnyViewer::get()
+IAnyViewer^ Far1::AnyViewer::get()
 {
 	return %Viewer0::_anyViewer;
 }
 
-String^ Far::PasteFromClipboard()
+String^ Far1::PasteFromClipboard()
 {
 	wchar_t* buffer = Info.FSF->PasteFromClipboard();
 	String^ r = gcnew String(buffer);
@@ -417,23 +420,23 @@ String^ Far::PasteFromClipboard()
 	return r;
 }
 
-void Far::CopyToClipboard(String^ text)
+void Far1::CopyToClipboard(String^ text)
 {
 	PIN_NE(pin, text);
 	Info.FSF->CopyToClipboard(pin);
 }
 
-IEditor^ Far::CreateEditor()
+IEditor^ Far1::CreateEditor()
 {
 	return gcnew FarNet::Editor;
 }
 
-IViewer^ Far::CreateViewer()
+IViewer^ Far1::CreateViewer()
 {
 	return gcnew FarNet::Viewer;
 }
 
-array<int>^ Far::CreateKeySequence(String^ keys)
+array<int>^ Far1::CreateKeySequence(String^ keys)
 {
 	if (!keys)
 		throw gcnew ArgumentNullException("keys");
@@ -454,14 +457,14 @@ array<int>^ Far::CreateKeySequence(String^ keys)
 	return r;
 }
 
-void Far::PostKeySequence(array<int>^ sequence)
+void Far1::PostKeySequence(array<int>^ sequence)
 {
 	PostKeySequence(sequence, true);
 }
 
 //! [_090328_170110] KSFLAGS_NOSENDKEYSTOPLUGINS is not set,
 //! but Tab for TabExpansion is not working in .ps1 editor, why?
-void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
+void Far1::PostKeySequence(array<int>^ sequence, bool disableOutput)
 {
 	if (sequence == nullptr) throw gcnew ArgumentNullException("sequence");
 	if (sequence->Length == 0)
@@ -495,8 +498,10 @@ void Far::PostKeySequence(array<int>^ sequence, bool disableOutput)
 	}
 }
 
-// don't throw on a wrong key, it is used for validation
-int Far::NameToKey(String^ key)
+// Don't throw on a wrong key, it is used for validation.
+// See also:
+// About AltXXXXX and etc.: http://forum.farmanager.com/viewtopic.php?f=8&t=5058
+int Far1::NameToKey(String^ key)
 {
 	if (!key)
 		throw gcnew ArgumentNullException("key");
@@ -505,20 +510,21 @@ int Far::NameToKey(String^ key)
 	return Info.FSF->FarNameToKey(pin);
 }
 
-String^ Far::KeyToName(int key)
+String^ Far1::KeyToName(int key)
 {
 	wchar_t name[33];
 	if (!Info.FSF->FarKeyToName(key, name, countof(name) - 1))
 		return nullptr;
+
 	return gcnew String(name);
 }
 
-void Far::PostKeys(String^ keys)
+void Far1::PostKeys(String^ keys)
 {
 	PostKeys(keys, true);
 }
 
-void Far::PostKeys(String^ keys, bool disableOutput)
+void Far1::PostKeys(String^ keys, bool disableOutput)
 {
 	if (keys == nullptr)
 		throw gcnew ArgumentNullException("keys");
@@ -527,12 +533,12 @@ void Far::PostKeys(String^ keys, bool disableOutput)
 	PostKeySequence(CreateKeySequence(keys), disableOutput);
 }
 
-void Far::PostText(String^ text)
+void Far1::PostText(String^ text)
 {
 	PostText(text, true);
 }
 
-void Far::PostText(String^ text, bool disableOutput)
+void Far1::PostText(String^ text, bool disableOutput)
 {
 	if (text == nullptr)
 		throw gcnew ArgumentNullException("text");
@@ -561,17 +567,17 @@ void Far::PostText(String^ text, bool disableOutput)
 	PostKeys(keys.ToString(), disableOutput);
 }
 
-int Far::SaveScreen(int x1, int y1, int x2, int y2)
+int Far1::SaveScreen(int x1, int y1, int x2, int y2)
 {
 	return (int)(INT_PTR)Info.SaveScreen(x1, y1, x2, y2);
 }
 
-void Far::RestoreScreen(int screen)
+void Far1::RestoreScreen(int screen)
 {
 	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
 }
 
-ILine^ Far::Line::get()
+ILine^ Far1::Line::get()
 {
 	switch (WindowType)
 	{
@@ -603,27 +609,27 @@ ILine^ Far::Line::get()
 	return nullptr;
 }
 
-IEditor^ Far::Editor::get()
+IEditor^ Far1::Editor::get()
 {
 	return Editor0::GetCurrentEditor();
 }
 
-IViewer^ Far::Viewer::get()
+IViewer^ Far1::Viewer::get()
 {
 	return Viewer0::GetCurrentViewer();
 }
 
-IAnyPanel^ Far::Panel::get()
+IAnyPanel^ Far1::Panel::get()
 {
 	return Panel0::GetPanel(true);
 }
 
-IAnyPanel^ Far::Panel2::get()
+IAnyPanel^ Far1::Panel2::get()
 {
 	return Panel0::GetPanel(false);
 }
 
-IInputBox^ Far::CreateInputBox()
+IInputBox^ Far1::CreateInputBox()
 {
 	return gcnew InputBox;
 }
@@ -638,14 +644,8 @@ but return flags, at least preloadable flag is absolutely important as cached.
 // http://forum.farmanager.com/viewtopic.php?f=7&t=3890
 // (?? it would be nice to have ACTL_POSTCALLBACK)
 */
-void Far::AsGetPluginInfo(PluginInfo* pi)
+void Far1::AsGetPluginInfo(PluginInfo* pi)
 {
-	pi->StructSize = sizeof(PluginInfo);
-
-	pi->Flags = PF_DIALOG | PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
-	if (!_instance)
-		return;
-
 	//! STOP
 	// Do not ignore these methods even in stepping mode:
 	// *) plugins can change this during stepping and Far has to be informed;
@@ -774,35 +774,35 @@ void Far::AsGetPluginInfo(PluginInfo* pi)
 	}
 }
 
-void Far::ProcessPrefixes(INT_PTR item)
+void Far1::ProcessPrefixes(INT_PTR item)
 {
 	wchar_t* command = (wchar_t*)item;
 	Run(gcnew String(command));
 }
 
-void Far::GetUserScreen()
+void Far1::GetUserScreen()
 {
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
 }
 
-void Far::SetUserScreen()
+void Far1::SetUserScreen()
 {
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
 
-ICollection<String^>^ Far::GetDialogHistory(String^ name)
+ICollection<String^>^ Far1::GetDialogHistory(String^ name)
 {
 	return GetHistory("SavedDialogHistory\\" + name, nullptr);
 }
 
-ICollection<String^>^ Far::GetHistory(String^ name)
+ICollection<String^>^ Far1::GetHistory(String^ name)
 {
 	return GetHistory(name, nullptr);
 }
 
 //! Hack, not API.
 // Avoid exceptions, return what we can get.
-ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
+ICollection<String^>^ Far1::GetHistory(String^ name, String^ filter)
 {
 	List<String^>^ r = gcnew List<String^>;
 
@@ -851,7 +851,7 @@ ICollection<String^>^ Far::GetHistory(String^ name, String^ filter)
 	return r;
 }
 
-void Far::ShowError(String^ title, Exception^ error)
+void Far1::ShowError(String^ title, Exception^ error)
 {
 	// 091028 Do not throw on null, just ignore.
 	if (!error)
@@ -896,7 +896,7 @@ void Far::ShowError(String^ title, Exception^ error)
 	// show or clip
 	if (res == 1)
 	{
-		Far::Instance->AnyViewer->ViewText(
+		Far.AnyViewer->ViewText(
 			info,
 			error->GetType()->FullName,
 			OpenMode::Modal);
@@ -907,12 +907,12 @@ void Far::ShowError(String^ title, Exception^ error)
 	}
 }
 
-IDialog^ Far::CreateDialog(int left, int top, int right, int bottom)
+IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
 {
 	return gcnew FarDialog(left, top, right, bottom);
 }
 
-int Far::GetPaletteColor(PaletteColor paletteColor)
+int Far1::GetPaletteColor(PaletteColor paletteColor)
 {
 	INT_PTR index = (INT_PTR)paletteColor;
 	if (index < 0 || index >= COL_LASTPALETTECOLOR)
@@ -920,19 +920,19 @@ int Far::GetPaletteColor(PaletteColor paletteColor)
 	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
 }
 
-void Far::WritePalette(int left, int top, PaletteColor paletteColor, String^ text)
+void Far1::WritePalette(int left, int top, PaletteColor paletteColor, String^ text)
 {
 	PIN_NE(pin, text);
 	Info.Text(left, top, GetPaletteColor(paletteColor), pin);
 }
 
-void Far::WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
+void Far1::WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
 {
 	PIN_NE(pin, text);
 	Info.Text(left, top, int(foregroundColor)|(int(backgroundColor)<<4), pin);
 }
 
-void Far::ShowHelp(String^ path, String^ topic, HelpOptions options)
+void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
 {
 	PIN_NE(pinPath, path);
 	PIN_NS(pinTopic, topic);
@@ -941,7 +941,7 @@ void Far::ShowHelp(String^ path, String^ topic, HelpOptions options)
 }
 
 //! Console::Write writes some Unicode chars as '?'.
-void Far::Write(String^ text)
+void Far1::Write(String^ text)
 {
 	if (ES(text))
 		return;
@@ -959,7 +959,7 @@ void Far::Write(String^ text)
 	SetUserScreen();
 }
 
-void Far::Write(String^ text, ConsoleColor foregroundColor)
+void Far1::Write(String^ text, ConsoleColor foregroundColor)
 {
 	ConsoleColor fc = Console::ForegroundColor;
 	Console::ForegroundColor = foregroundColor;
@@ -967,7 +967,7 @@ void Far::Write(String^ text, ConsoleColor foregroundColor)
 	Console::ForegroundColor = fc;
 }
 
-void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
+void Far1::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
 {
 	ConsoleColor fc = Console::ForegroundColor;
 	ConsoleColor bc = Console::BackgroundColor;
@@ -978,37 +978,37 @@ void Far::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgro
 	Console::BackgroundColor = bc;
 }
 
-IPanel^ Far::CreatePanel()
+IPanel^ Far1::CreatePanel()
 {
 	return gcnew FarNet::Panel2;
 }
 
-IPanel^ Far::FindPanel(Guid typeId)
+IPanel^ Far1::FindPanel(Guid typeId)
 {
 	return Panel0::GetPanel(typeId);
 }
 
-IPanel^ Far::FindPanel(Type^ hostType)
+IPanel^ Far1::FindPanel(Type^ hostType)
 {
 	return Panel0::GetPanel(hostType);
 }
 
-String^ Far::Input(String^ prompt)
+String^ Far1::Input(String^ prompt)
 {
 	return Input(prompt, nullptr, nullptr, String::Empty);
 }
 
-String^ Far::Input(String^ prompt, String^ history)
+String^ Far1::Input(String^ prompt, String^ history)
 {
 	return Input(prompt, history, nullptr, String::Empty);
 }
 
-String^ Far::Input(String^ prompt, String^ history, String^ title)
+String^ Far1::Input(String^ prompt, String^ history, String^ title)
 {
 	return Input(prompt, history, title, String::Empty);
 }
 
-String^ Far::Input(String^ prompt, String^ history, String^ title, String^ text)
+String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text)
 {
 	InputBox ib;
 	ib.Prompt = prompt;
@@ -1071,24 +1071,24 @@ private:
 	WindowType _Type;
 };
 
-int Far::WindowCount::get()
+int Far1::WindowCount::get()
 {
 	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWCOUNT, 0);
 }
 
-IWindowInfo^ Far::GetWindowInfo(int index, bool full)
+IWindowInfo^ Far1::GetWindowInfo(int index, bool full)
 {
 	return gcnew FarWindowInfo(index, full);
 }
 
-WindowType Far::WindowType::get()
+WindowType Far1::WindowType::get()
 {
 	WindowInfo wi;
 	wi.Pos = -1;
 	return Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi) ? (FarNet::WindowType)wi.Type : FarNet::WindowType::None;
 }
 
-WindowType Far::GetWindowType(int index)
+WindowType Far1::GetWindowType(int index)
 {
 	WindowInfo wi;
 	wi.Pos = index;
@@ -1097,18 +1097,18 @@ WindowType Far::GetWindowType(int index)
 	return (FarNet::WindowType)wi.Type;
 }
 
-void Far::SetCurrentWindow(int index)
+void Far1::SetCurrentWindow(int index)
 {
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_SETCURRENTWINDOW, (void*)(INT_PTR)index))
 		throw gcnew InvalidOperationException("SetCurrentWindow:" + index + " failed.");
 }
 
-bool Far::Commit()
+bool Far1::Commit()
 {
 	return Info.AdvControl(Info.ModuleNumber, ACTL_COMMIT, 0) != 0;
 }
 
-Char Far::CodeToChar(int code)
+Char Far1::CodeToChar(int code)
 {
 	// get just the code
 	code &= KeyMode::CodeMask;
@@ -1121,7 +1121,7 @@ Char Far::CodeToChar(int code)
 	return Char(code);
 }
 
-Object^ Far::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
+Object^ Far1::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
 {
 	RegistryKey^ key;
 	try
@@ -1136,7 +1136,7 @@ Object^ Far::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValu
 	}
 }
 
-Object^ Far::GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
+Object^ Far1::GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
 {
 	RegistryKey^ key;
 	try
@@ -1151,7 +1151,7 @@ Object^ Far::GetPluginValue(String^ pluginName, String^ valueName, Object^ defau
 	}
 }
 
-void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue)
+void Far1::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue)
 {
 	RegistryKey^ key;
 	try
@@ -1168,7 +1168,7 @@ void Far::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue
 
 //::Far callbacks
 
-bool Far::AsConfigure(int itemIndex)
+bool Far1::AsConfigure(int itemIndex)
 {
 	if (itemIndex == 0)
 	{
@@ -1182,7 +1182,7 @@ bool Far::AsConfigure(int itemIndex)
 	return e.Ignore ? false : true;
 }
 
-HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
+HANDLE Far1::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
 {
 	if (_registeredFiler.Count == 0)
 		return INVALID_HANDLE_VALUE;
@@ -1228,7 +1228,7 @@ HANDLE Far::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataS
 	}
 }
 
-HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
+HANDLE Far1::AsOpenPlugin(int from, INT_PTR item)
 {
 	Panel0::BeginOpenMode();
 	ValueUserScreen userscreen;
@@ -1339,7 +1339,7 @@ HANDLE Far::AsOpenPlugin(int from, INT_PTR item)
 	}
 }
 
-void Far::ShowPanelMenu(bool showPushCommand)
+void Far1::ShowPanelMenu(bool showPushCommand)
 {
 	String^ sPushShelveThePanel = "Push/Shelve the panel";
 	String^ sSwitchFullScreen = "Switch full screen";
@@ -1453,7 +1453,7 @@ void Far::ShowPanelMenu(bool showPushCommand)
 	}
 }
 
-void Far::AssertHotkeys()
+void Far1::AssertHotkeys()
 {
 	if (!_hotkeys)
 	{
@@ -1467,7 +1467,7 @@ void Far::AssertHotkeys()
 	}
 }
 
-void Far::PostStep(EventHandler^ handler)
+void Far1::PostStep(EventHandler^ handler)
 {
 	// ensure keys
 	AssertHotkeys();
@@ -1477,7 +1477,7 @@ void Far::PostStep(EventHandler^ handler)
 	PostKeySequence(_hotkeys);
 }
 
-void Far::PostStepAfterKeys(String^ keys, EventHandler^ handler)
+void Far1::PostStepAfterKeys(String^ keys, EventHandler^ handler)
 {
 	// ensure keys
 	AssertHotkeys();
@@ -1488,7 +1488,7 @@ void Far::PostStepAfterKeys(String^ keys, EventHandler^ handler)
 	PostKeySequence(_hotkeys);
 }
 
-void Far::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
+void Far1::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
 {
 	// ensure keys
 	AssertHotkeys();
@@ -1508,7 +1508,7 @@ void Far::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
 	}
 }
 
-void Far::OpenMenu(ToolOptions from)
+void Far1::OpenMenu(ToolOptions from)
 {
 	// process and drop a posted step handler
 	if (_handler)
@@ -1526,7 +1526,7 @@ void Far::OpenMenu(ToolOptions from)
 		Message("This menu is empty but it is used internally.", "FarNet");
 }
 
-void Far::OpenConfig()
+void Far1::OpenConfig()
 {
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
@@ -1594,7 +1594,7 @@ void Far::OpenConfig()
 	}
 }
 
-void Far::OnConfigUICulture()
+void Far1::OnConfigUICulture()
 {
 	Menu menu;
 	menu.Title = "Module UI culture";
@@ -1610,14 +1610,14 @@ void Far::OnConfigUICulture()
 	{
 		menu.Items->Clear();
 		for each(String^ assemblyName in Module0::AssemblyNames)
-			menu.Add(String::Format("{0} : {1}", assemblyName->PadRight(width), Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)));
+			menu.Add(String::Format("{0} : {1}", assemblyName->PadRight(width), BaseModuleInfo::GetFarNetValue(assemblyName , "UICulture", String::Empty)));
 
 		if (!menu.Show())
 			return;
 
 		// get data to show
 		String^ assemblyName = Module0::AssemblyNames[menu.Selected];
-		String^ cultureName = Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
+		String^ cultureName = BaseModuleInfo::GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
 
 		// show the input box
 		InputBox ib;
@@ -1639,11 +1639,11 @@ void Far::OnConfigUICulture()
 			ci = CultureInfo::GetCultureInfo(cultureName);
 
 			// save the name from the culture, not from a user
-			Far::Instance->SetFarNetValue(assemblyName , "UICulture", ci->Name);
+			BaseModuleInfo::SetFarNetValue(assemblyName , "UICulture", ci->Name);
 
 			// use the current Far culture instead of invariant
 			if (ci->Name->Length == 0)
-				ci = Far::Instance->GetCurrentUICulture(true);
+				ci = Far.GetCurrentUICulture(true);
 			
 			// update plugins
 			for each(BaseModule^ plugin in Module0::Modules)
@@ -1655,12 +1655,12 @@ void Far::OnConfigUICulture()
 		}
 		catch(ArgumentException^)
 		{
-			Far::Instance->Message("Unknown culture name.");
+			Far.Message("Unknown culture name.");
 		}
 	}
 }
 
-void Far::OnConfigTool(String^ title, ToolOptions option, List<ModuleToolInfo^>^ list)
+void Far1::OnConfigTool(String^ title, ToolOptions option, List<ModuleToolInfo^>^ list)
 {
 	Menu menu;
 	menu.Title = title;
@@ -1716,7 +1716,7 @@ void Far::OnConfigTool(String^ title, ToolOptions option, List<ModuleToolInfo^>^
 	}
 }
 
-void Far::OnConfigCommand()
+void Far1::OnConfigCommand()
 {
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
@@ -1771,7 +1771,7 @@ void Far::OnConfigCommand()
 	}
 }
 
-void Far::OnConfigEditor()
+void Far1::OnConfigEditor()
 {
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
@@ -1813,7 +1813,7 @@ void Far::OnConfigEditor()
 	}
 }
 
-void Far::OnConfigFiler()
+void Far1::OnConfigFiler()
 {
 	Menu menu;
 	menu.AutoAssignHotkeys = true;
@@ -1855,7 +1855,7 @@ void Far::OnConfigFiler()
 	}
 }
 
-bool Far::CompareName(String^ mask, const wchar_t* name, bool skipPath)
+bool Far1::CompareName(String^ mask, const wchar_t* name, bool skipPath)
 {
 	for each(String^ s in mask->Split(gcnew array<Char>{',', ';'}, StringSplitOptions::RemoveEmptyEntries))
 	{
@@ -1866,7 +1866,7 @@ bool Far::CompareName(String^ mask, const wchar_t* name, bool skipPath)
 	return false;
 }
 
-bool Far::CompareNameEx(String^ mask, const wchar_t* name, bool skipPath)
+bool Far1::CompareNameEx(String^ mask, const wchar_t* name, bool skipPath)
 {
 	int i = mask->IndexOf('|');
 	if (i < 0)
@@ -1874,7 +1874,7 @@ bool Far::CompareNameEx(String^ mask, const wchar_t* name, bool skipPath)
 	return  CompareName(mask->Substring(0, i), name, skipPath) && !CompareName(mask->Substring(i + 1), name, skipPath);
 }
 
-void Far::OnEditorOpened(FarNet::Editor^ editor)
+void Far1::OnEditorOpened(FarNet::Editor^ editor)
 {
 	if (_registeredEditor.Count == 0)
 		return;
@@ -1902,12 +1902,12 @@ void Far::OnEditorOpened(FarNet::Editor^ editor)
 	}
 }
 
-void Far::Redraw()
+void Far1::Redraw()
 {
 	Info.AdvControl(Info.ModuleNumber, ACTL_REDRAWALL, 0);
 }
 
-String^ Far::TempName(String^ prefix)
+String^ Far1::TempName(String^ prefix)
 {
 	// reasonable buffer
 	PIN_NE(pin, prefix);
@@ -1922,31 +1922,31 @@ String^ Far::TempName(String^ prefix)
 	return gcnew String(box);
 }
 
-String^ Far::TempFolder(String^ prefix)
+String^ Far1::TempFolder(String^ prefix)
 {
 	String^ r = TempName(prefix);
 	Directory::CreateDirectory(r);
 	return r;
 }
 
-IDialog^ Far::Dialog::get()
+IDialog^ Far1::Dialog::get()
 {
 	return FarDialog::GetDialog();
 }
 
-ConsoleColor Far::GetPaletteBackground(PaletteColor paletteColor)
+ConsoleColor Far1::GetPaletteBackground(PaletteColor paletteColor)
 {
 	int color = GetPaletteColor(paletteColor);
 	return ConsoleColor(color >> 4);
 }
 
-ConsoleColor Far::GetPaletteForeground(PaletteColor paletteColor)
+ConsoleColor Far1::GetPaletteForeground(PaletteColor paletteColor)
 {
 	int color = GetPaletteColor(paletteColor);
 	return ConsoleColor(color & 0xF);
 }
 
-void Far::AsProcessSynchroEvent(int type, void* /*param*/)
+void Far1::AsProcessSynchroEvent(int type, void* /*param*/)
 {
 	if (type != SE_COMMONSYNCHRO)
 		return;
@@ -1973,7 +1973,7 @@ void Far::AsProcessSynchroEvent(int type, void* /*param*/)
 	}
 }
 
-void Far::PostJob(EventHandler^ handler)
+void Far1::PostJob(EventHandler^ handler)
 {
 	if (!handler)
 		throw gcnew ArgumentNullException("handler");
@@ -1999,12 +1999,12 @@ void Far::PostJob(EventHandler^ handler)
 	}
 }
 
-void Far::SetProgressState(TaskbarProgressBarState state)
+void Far1::SetProgressState(TaskbarProgressBarState state)
 {
 	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSSTATE, (void*)(INT_PTR)state);
 }
 
-void Far::SetProgressValue(int currentValue, int maximumValue)
+void Far1::SetProgressValue(int currentValue, int maximumValue)
 {
 	PROGRESSVALUE arg;
 	arg.Completed = currentValue;
@@ -2013,7 +2013,7 @@ void Far::SetProgressValue(int currentValue, int maximumValue)
 }
 
 #undef GetEnvironmentVariable
-CultureInfo^ Far::GetCurrentUICulture(bool update)
+CultureInfo^ Far1::GetCurrentUICulture(bool update)
 {
 	// get cached value
 	if (_currentUICulture && !update)
@@ -2047,12 +2047,12 @@ CultureInfo^ Far::GetCurrentUICulture(bool update)
 	return _currentUICulture = CultureInfo::InvariantCulture;
 }
 
-void Far::PostMacro(String^ macro)
+void Far1::PostMacro(String^ macro)
 {
 	PostMacro(macro, false, false);
 }
 
-void Far::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
+void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 {
 	if (!macro)
 		throw gcnew ArgumentNullException("macro");
@@ -2070,12 +2070,32 @@ void Far::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
-void Far::Quit()
+void Far1::Quit()
 {
 	if (!Module0::CanExit())
 		return;
 	
 	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);
+}
+
+IZoo^ Far1::Zoo::get()
+{
+	return gcnew FarNet::Zoo;
+}
+
+ISubsetForm^ Far1::CreateSubsetForm()
+{
+	return gcnew FarSubsetForm();
+}
+
+IMacro^ Far1::Macro::get()
+{
+	return gcnew Macro0;
+}
+
+ILine^ Far1::CommandLine::get()
+{
+	return gcnew FarNet::CommandLine;
 }
 
 }
