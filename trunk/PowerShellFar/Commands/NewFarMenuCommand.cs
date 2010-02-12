@@ -32,7 +32,7 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			IMenu menu = Far.Host.CreateMenu();
+			IMenu menu = Far.Net.CreateMenu();
 			Init(menu);
 
 			menu.ReverseAutoAssign = ReverseAutoAssign;

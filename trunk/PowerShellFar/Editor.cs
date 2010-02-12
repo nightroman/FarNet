@@ -47,7 +47,7 @@ namespace PowerShellFar
 			// hot line
 			if (editLine == null)
 			{
-				editLine = Far.Host.Line;
+				editLine = Far.Net.Line;
 				if (editLine == null)
 				{
 					A.Msg("There is no current editor line.");
@@ -93,7 +93,7 @@ namespace PowerShellFar
 			else
 			{
 				// make menu
-				IListMenu m = Far.Host.CreateListMenu();
+				IListMenu m = Far.Net.CreateListMenu();
 				m.X = Console.CursorLeft;
 				m.Y = Console.CursorTop;
 				m.Incremental = lastWord + "*";
@@ -131,10 +131,10 @@ namespace PowerShellFar
 		{
 			get
 			{
-				if (Far.Host.WindowType != WindowType.Editor)
+				if (Far.Net.WindowType != WindowType.Editor)
 					return null;
 
-				IEditor editor = Far.Host.Editor;
+				IEditor editor = Far.Net.Editor;
 				if (editor.Selection.Type == SelectionType.Stream)
 					return editor.Selection;
 				return editor.Lines;
@@ -147,9 +147,9 @@ namespace PowerShellFar
 			{
 				ILine line = null;
 
-				if (Far.Host.WindowType == WindowType.Editor)
+				if (Far.Net.WindowType == WindowType.Editor)
 				{
-					IEditor editor = Far.Host.Editor;
+					IEditor editor = Far.Net.Editor;
 					ISelection selection1 = editor.Selection;
 					if (selection1.Exists)
 						return selection1.GetText();
@@ -158,7 +158,7 @@ namespace PowerShellFar
 				}
 
 				if (line == null)
-					line = Far.Host.Line;
+					line = Far.Net.Line;
 
 				if (line == null)
 					return string.Empty;
@@ -173,9 +173,9 @@ namespace PowerShellFar
 			{
 				ILine line = null;
 
-				if (Far.Host.WindowType == WindowType.Editor)
+				if (Far.Net.WindowType == WindowType.Editor)
 				{
-					IEditor editor = Far.Host.Editor;
+					IEditor editor = Far.Net.Editor;
 					ISelection selection1 = editor.Selection;
 					if (selection1.Type == SelectionType.Rect)
 						throw new NotSupportedException("Rectangular selection is not supported.");
@@ -190,7 +190,7 @@ namespace PowerShellFar
 				}
 
 				if (line == null)
-					line = Far.Host.Line;
+					line = Far.Net.Line;
 
 				if (line == null)
 					throw new InvalidOperationException("There is no current text to set.");
@@ -219,7 +219,7 @@ namespace PowerShellFar
 			}
 			finally
 			{
-				Far.Host.AnyEditor.Opened -= OnEditorOpened1;
+				Far.Net.AnyEditor.Opened -= OnEditorOpened1;
 			}
 		}
 
@@ -335,22 +335,22 @@ namespace PowerShellFar
 		{
 			string code;
 			bool toCleanCmdLine = false;
-			WindowType wt = Far.Host.WindowType;
+			WindowType wt = Far.Net.WindowType;
 
 			if (wt == WindowType.Editor)
 			{
-				IEditor editor = Far.Host.Editor;
+				IEditor editor = Far.Net.Editor;
 				code = editor.Selection.GetText();
 				if (string.IsNullOrEmpty(code))
 					code = editor.Lines[editor.Cursor.Y].Text;
 			}
 			else if (wt == WindowType.Dialog)
 			{
-				IDialog dialog = Far.Host.Dialog;
+				IDialog dialog = Far.Net.Dialog;
 				IEdit edit = dialog.Focused as IEdit;
 				if (edit == null)
 				{
-					Far.Host.Message("The current control has to be an edit box", Res.InvokeSelectedCode);
+					Far.Net.Message("The current control has to be an edit box", Res.InvokeSelectedCode);
 					return;
 				}
 				code = edit.Line.Selection.Text;
@@ -359,11 +359,11 @@ namespace PowerShellFar
 			}
 			else
 			{
-				ILine cl = Far.Host.CommandLine;
+				ILine cl = Far.Net.CommandLine;
 				code = cl.Selection.Text.Trim();
 				if (code.Length == 0)
 				{
-					code = Far.Host.CommandLine.Text;
+					code = Far.Net.CommandLine.Text;
 					toCleanCmdLine = true;
 				}
 				code = Regex.Replace(code, @"^\s*>:\s*", "");
@@ -376,7 +376,7 @@ namespace PowerShellFar
 
 			// clean the command line if ok
 			if (ok && toCleanCmdLine && wt != WindowType.Editor)
-				Far.Host.CommandLine.Text = string.Empty;
+				Far.Net.CommandLine.Text = string.Empty;
 		}
 	}
 
@@ -392,7 +392,7 @@ namespace PowerShellFar
 		{
 			get { return _Editor; }
 		}
-		readonly IEditor _Editor = Far.Host.CreateEditor();
+		readonly IEditor _Editor = Far.Net.CreateEditor();
 
 		public DataEditor()
 		{
@@ -461,7 +461,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				Far.Host.Message(ex.Message, "Setting property");
+				Far.Net.Message(ex.Message, "Setting property");
 			}
 		}
 	}

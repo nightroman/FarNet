@@ -17,7 +17,7 @@ namespace PowerShellFar.UI
 
 		public SettingsDialog()
 		{
-			_Dialog = Far.Host.CreateDialog(-1, -1, 77, 8);
+			_Dialog = Far.Net.CreateDialog(-1, -1, 77, 8);
 			_Dialog.HelpTopic = A.Psf.HelpTopic + "Settings";
 			_Dialog.AddBox(3, 1, 0, 0, Res.Me);
 
@@ -51,7 +51,7 @@ namespace PowerShellFar.UI
 				A.Psf.Settings.Save();
 
 				if (needRestart)
-					Far.Host.Message("Some settings will take effect only when Far restarts.");
+					Far.Net.Message("Some settings will take effect only when Far restarts.");
 
 				return true;
 			}

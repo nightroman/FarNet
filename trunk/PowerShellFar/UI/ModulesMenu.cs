@@ -12,7 +12,7 @@ namespace PowerShellFar.UI
 {
 	class ModulesMenu
 	{
-		IMenu _menu = Far.Host.CreateMenu();
+		IMenu _menu = Far.Net.CreateMenu();
 
 		public ModulesMenu()
 		{

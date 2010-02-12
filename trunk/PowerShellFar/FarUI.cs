@@ -51,7 +51,7 @@ namespace PowerShellFar
 		{
 			Check();
 			if (_writers.Count == 0)
-				Far.Host.Write(value);
+				Far.Net.Write(value);
 			else
 				Writer.Append(value);
 		}
@@ -60,7 +60,7 @@ namespace PowerShellFar
 		{
 			Check();
 			if (_writers.Count == 0)
-				Far.Host.Write("\r\n");
+				Far.Net.Write("\r\n");
 			else
 				Writer.AppendLine();
 		}
@@ -69,7 +69,7 @@ namespace PowerShellFar
 		{
 			Check();
 			if (_writers.Count == 0)
-				Far.Host.Write(value + "\r\n");
+				Far.Net.Write(value + "\r\n");
 			else
 				Writer.AppendLine(value);
 		}
@@ -120,7 +120,7 @@ namespace PowerShellFar
 				Console.Title = "Done : " + record.Activity + " : " + record.StatusDescription;
 
 				// win7 NoProgress
-				Far.Host.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
+				Far.Net.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
 			
 				return;
 			}
@@ -139,7 +139,7 @@ namespace PowerShellFar
 			Console.Title = text;
 
 			// win7 %
-			Far.Host.SetProgressValue(record.PercentComplete, 100);
+			Far.Net.SetProgressValue(record.PercentComplete, 100);
 		}
 		Stopwatch _progressWatch = Stopwatch.StartNew();
 

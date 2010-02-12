@@ -95,7 +95,7 @@ void Module0::LoadFromDirectory(String^ dir)
 	{
 		// Wish: no UI on loading
 		String^ msg = "ERROR: module " + dir + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
-		Far::Host->Write(msg, ConsoleColor::Red);
+		Far::Net->Write(msg, ConsoleColor::Red);
 		Log::TraceError(msg);
 	}
 }
@@ -234,7 +234,7 @@ void Module0::ReadCache()
 	RegistryKey^ keyCache;
 	try
 	{
-		keyCache = Registry::CurrentUser->CreateSubKey(Far::Host->RegistryPluginsPath + "\\FarNet\\<cache>");
+		keyCache = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\FarNet\\<cache>");
 		for each (String^ dllName in keyCache->GetSubKeyNames())
 		{
 			bool ok = true;
@@ -359,7 +359,7 @@ void Module0::WriteCache(String^ assemblyPath, List<ModuleCommandInfo^>^ command
 	RegistryKey^ keyDll;
 	try
 	{
-		keyDll = Registry::CurrentUser->CreateSubKey(Far::Host->RegistryPluginsPath + "\\FarNet\\<cache>\\" + fi.Name);
+		keyDll = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\FarNet\\<cache>\\" + fi.Name);
 		keyDll->SetValue("Path", assemblyPath);
 		keyDll->SetValue("Stamp", fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture));
 

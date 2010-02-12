@@ -18,7 +18,7 @@ namespace PowerShellFar.UI
 
 		public NewValueDialog(string title)
 		{
-			Dialog = Far.Host.CreateDialog(-1, -1, 77, 9);
+			Dialog = Far.Net.CreateDialog(-1, -1, 77, 9);
 			Dialog.AddBox(3, 1, 0, 0, title);
 			int x = 11;
 

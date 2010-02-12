@@ -19,7 +19,7 @@ namespace PowerShellFar
 	{
 		internal static void ShowHelp()
 		{
-			ILine line = Far.Host.Line;
+			ILine line = Far.Net.Line;
 			if (line == null)
 				return;
 
@@ -113,7 +113,7 @@ namespace PowerShellFar
 
 			if (ok)
 			{
-				IViewer viewer = Far.Host.CreateViewer();
+				IViewer viewer = Far.Net.CreateViewer();
 				viewer.FileName = file;
 				viewer.DeleteSource = DeleteSource.File;
 				viewer.DisableHistory = true;

@@ -46,7 +46,7 @@ namespace PowerShellFar.Commands
 		{
 			if (Name != null)
 			{
-				bool found = Far.Host.Panel.GoToName(Name, false);
+				bool found = Far.Net.Panel.GoToName(Name, false);
 				if (!found)
 					WriteError(new ErrorRecord(
 						new FileNotFoundException("File is not found: '" + Name + "'."),
@@ -56,8 +56,8 @@ namespace PowerShellFar.Commands
 			}
 			else
 			{
-				IList<FarFile> files = Far.Host.Panel.ShownList;
-				int current = Far.Host.Panel.CurrentIndex;
+				IList<FarFile> files = Far.Net.Panel.ShownList;
+				int current = Far.Net.Panel.CurrentIndex;
 				int count = files.Count;
 
 				int step;
@@ -83,7 +83,7 @@ namespace PowerShellFar.Commands
 						SessionState.PSVariable.Set("_", files[index]);
 						if (LanguagePrimitives.IsTrue(Where.InvokeReturnAsIs(null)))
 						{
-							Far.Host.Panel.Redraw(index, -1);
+							Far.Net.Panel.Redraw(index, -1);
 							return;
 						}
 					}

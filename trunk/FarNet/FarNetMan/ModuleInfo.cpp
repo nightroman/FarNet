@@ -14,12 +14,12 @@ namespace FarNet
 
 Object^ BaseModuleInfo::GetFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue)
 {
-	return Far::Host->GetPluginValue("FarNet\\" + keyPath, valueName, defaultValue);
+	return Far::Net->GetPluginValue("FarNet\\" + keyPath, valueName, defaultValue);
 }
 
 void BaseModuleInfo::SetFarNetValue(String^ keyPath, String^ valueName, Object^ value)
 {
-	Far::Host->SetPluginValue("FarNet\\" + keyPath, valueName, value);
+	Far::Net->SetPluginValue("FarNet\\" + keyPath, valueName, value);
 }
 
 BaseModule^ BaseModuleInfo::CreateModule(Type^ type)
@@ -39,7 +39,7 @@ BaseModule^ BaseModuleInfo::CreateModule(Type^ type)
 		catch(ArgumentException^ ex)
 		{
 			ModuleException ex2("Invalid culture name.\rCorrect it in the configuration dialog.", ex);
-			Far::Host->ShowError(assemblyName, %ex2);
+			Far::Net->ShowError(assemblyName, %ex2);
 		}
 	}
 

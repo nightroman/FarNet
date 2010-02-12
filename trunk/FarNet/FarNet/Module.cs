@@ -93,7 +93,7 @@ namespace FarNet
 			get
 			{
 				if (_CurrentUICulture == null)
-					_CurrentUICulture = Far.Host.GetCurrentUICulture(false);
+					_CurrentUICulture = Far.Net.GetCurrentUICulture(false);
 
 				return _CurrentUICulture;
 			}
@@ -163,7 +163,7 @@ namespace FarNet
 		public string GetString(string name)
 		{
 			if (Resource == null)
-				Resource = Far.Host.Zoo.CreateFileBasedResourceManager(this);
+				Resource = Far.Net.Zoo.CreateFileBasedResourceManager(this);
 
 			return Resource.GetString(name, CurrentUICulture);
 		}

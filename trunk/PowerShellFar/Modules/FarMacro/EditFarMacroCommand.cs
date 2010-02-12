@@ -88,16 +88,16 @@ namespace FarMacro
 
 				// validate the key name
 				Name = Name.Replace("(Slash)", "/");
-				int code = Far.Host.NameToKey(Name);
+				int code = Far.Net.NameToKey(Name);
 				if (code >= 0)
-					Name = Far.Host.KeyToName(code);
+					Name = Far.Net.KeyToName(code);
 				else
 					throw new ArgumentException(m.InvalidKeyName);
 
 				// validate the area
 				if (Area == MacroArea.Root)
 				{
-					switch (Far.Host.WindowType)
+					switch (Far.Net.WindowType)
 					{
 						case WindowType.Dialog: Area = MacroArea.Dialog; break;
 						case WindowType.Editor: Area = MacroArea.Editor; break;
@@ -110,7 +110,7 @@ namespace FarMacro
 				// get or create the macro, if not yet
 				if (Macro == null)
 				{
-					Macro = Far.Host.Macro.GetMacro(Area, Name);
+					Macro = Far.Net.Macro.GetMacro(Area, Name);
 					if (Macro == null)
 					{
 						Macro = new Macro();
@@ -134,7 +134,7 @@ namespace FarMacro
 
 			// setup the editor
 			//! use history even in Macro mode, names are reusable
-			Editor = Far.Host.CreateEditor();
+			Editor = Far.Net.CreateEditor();
 			Editor.FileName = FileName;
 
 			// code page and the title for the macro
@@ -150,7 +150,7 @@ namespace FarMacro
 
 			// save macros
 			if (FilePath == null)
-				Far.Host.Macro.Save();
+				Far.Net.Macro.Save();
 
 			// go
 			Editor.Open();
@@ -172,7 +172,7 @@ namespace FarMacro
 		{
 			// check the macro
 			string sequence = Editor.GetText().TrimEnd();
-			Error = Far.Host.Macro.Check(sequence, false);
+			Error = Far.Net.Macro.Check(sequence, false);
 
 			// go to the error position
 			if (Error != null)
@@ -184,8 +184,8 @@ namespace FarMacro
 			{
 				//! update the macro, it can be external
 				Macro.Sequence = sequence;
-				Far.Host.Macro.Install(Macro);
-				Far.Host.Macro.Load();
+				Far.Net.Macro.Install(Macro);
+				Far.Net.Macro.Load();
 			}
 		}
 
@@ -204,13 +204,13 @@ namespace FarMacro
 			// case: error in Macro mode
 			if (FilePath == null)
 			{
-				if (1 != Far.Host.Message(m.InvalidMacro, Noun, 0, new string[] { m.ContinueChanges, m.DiscardChanges }))
+				if (1 != Far.Net.Message(m.InvalidMacro, Noun, 0, new string[] { m.ContinueChanges, m.DiscardChanges }))
 					OpenEditor();
 			}
 			// case: error in File mode
 			else
 			{
-				if (1 != Far.Host.Message(m.InvalidMacro, Noun, 0, new string[] { m.ContinueChanges, m.ExitAnyway }))
+				if (1 != Far.Net.Message(m.InvalidMacro, Noun, 0, new string[] { m.ContinueChanges, m.ExitAnyway }))
 					OpenEditor();
 			}
 		}

@@ -39,7 +39,7 @@ void Editor::Open(OpenMode mode)
 	int nPos = _frameStart.Pos >= 0 ? _frameStart.Pos + 1 : -1;
 
 	// from dialog? set modal
-	WindowType wt = Far::Host->WindowType;
+	WindowType wt = Far::Net->WindowType;
 	if (wt == WindowType::Dialog)
 		mode = OpenMode::Modal;
 
@@ -107,7 +107,7 @@ void Editor::Open(OpenMode mode)
 
 	// redraw Far
 	if (wt == WindowType::Dialog)
-		Far::Host->Redraw();
+		Far::Net->Redraw();
 
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
 	//! Using Far diagnostics fires false errors, e.g.:

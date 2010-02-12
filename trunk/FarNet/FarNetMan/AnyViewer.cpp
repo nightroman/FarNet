@@ -16,7 +16,7 @@ drop the flag for editor and propagate this option to itself.
 */
 void AnyViewer::ViewText(String^ text, String^ title, OpenMode mode)
 {
-	String^ tmpfile = Far::Host->TempName();
+	String^ tmpfile = Far::Net->TempName();
 	File::WriteAllText(tmpfile, text, Encoding::Unicode);
 
 	Viewer viewer;

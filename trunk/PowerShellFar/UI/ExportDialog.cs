@@ -26,7 +26,7 @@ namespace PowerShellFar.UI
 			if (useDepth)
 				++h;
 
-			UIDialog = Far.Host.CreateDialog(-1, -1, 77, h);
+			UIDialog = Far.Net.CreateDialog(-1, -1, 77, h);
 			UIDialog.AddBox(3, 1, 0, 0, title);
 			const int x = 16;
 			int y = 1;
@@ -99,7 +99,7 @@ namespace PowerShellFar.UI
 						filePath = My.PathEx.Combine(directory, filePath);
 					if (File.Exists(filePath))
 					{
-						if (Far.Host.Message("File " + filePath + " exists. Continue?", "Confirm", MsgOptions.YesNo) != 0)
+						if (Far.Net.Message("File " + filePath + " exists. Continue?", "Confirm", MsgOptions.YesNo) != 0)
 							return;
 					}
 

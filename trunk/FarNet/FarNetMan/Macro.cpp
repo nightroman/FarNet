@@ -40,7 +40,7 @@ void Macro0::Save()
 
 array<String^>^ Macro0::GetNames(MacroArea area)
 {
-	String^ path = Far::Host->RegistryFarPath + "\\KeyMacros\\" + (area == MacroArea::Root ? "" : area.ToString());
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + (area == MacroArea::Root ? "" : area.ToString());
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
 
 	try
@@ -61,7 +61,7 @@ Macro^ Macro0::GetMacro(MacroArea area, String^ name)
 	// _100211_140534 FarMacro workaround
 	name = name->Replace("(Slash)", "/");
 
-	String^ path = Far::Host->RegistryFarPath + "\\KeyMacros\\" + area.ToString() + "\\" + name;
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + area.ToString() + "\\" + name;
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
 	if (!key)
 		return nullptr;
@@ -115,7 +115,7 @@ Macro^ Macro0::GetMacro(MacroArea area, String^ name)
 
 void Macro0::Remove(MacroArea area, String^ name)
 {
-	String^ path = Far::Host->RegistryFarPath + "\\KeyMacros\\" + area.ToString();
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + area.ToString();
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path, true);
 	if (!key)
 		return;
@@ -175,7 +175,7 @@ void Macro0::Install(Macro^ macro)
 		Remove(macro->Area, macroName);
 	}
 
-	String^ path = Far::Host->RegistryFarPath + "\\KeyMacros\\" + macro->Area.ToString() + "\\" + macroName;
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + macro->Area.ToString() + "\\" + macroName;
 	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
 
 	if (ES(macroName))

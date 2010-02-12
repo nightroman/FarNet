@@ -49,7 +49,7 @@ namespace PowerShellFar
 
 			if (string.IsNullOrEmpty(path) || path == ".")
 			{
-				FarFile f = Far.Host.Panel.CurrentFile;
+				FarFile f = Far.Net.Panel.CurrentFile;
 				if (f != null)
 				{
 					Reset(null, f.Name);
@@ -264,9 +264,9 @@ namespace PowerShellFar
 			// open at the passive panel
 			if (provider.Name == "FileSystem")
 			{
-				Far.Host.Panel2.Path = node.Path;
-				Far.Host.Panel2.Update(false);
-				Far.Host.Panel2.Redraw();
+				Far.Net.Panel2.Path = node.Path;
+				Far.Net.Panel2.Update(false);
+				Far.Net.Panel2.Redraw();
 			}
 			// open at the same panel as child
 			else
@@ -304,7 +304,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal override void ShowHelp()
 		{
-			Far.Host.ShowHelp(A.Psf.AppHome, "FolderTree", HelpOptions.Path);
+			Far.Net.ShowHelp(A.Psf.AppHome, "FolderTree", HelpOptions.Path);
 		}
 
 	}
