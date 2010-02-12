@@ -32,7 +32,7 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 	// Let's use the active path to restore, no path (just close) is worse.
 	if (panel->Type != PanelType::File)
 	{
-		Path = Far::Host->ActivePath;
+		Path = Far::Net->ActivePath;
 		return;
 	}
 
@@ -63,7 +63,7 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 
 ShelveInfoPanel^ ShelveInfoPanel::CreateActiveInfo(bool modes)
 {
-	IAnyPanel^ panel = Far::Host->Panel;
+	IAnyPanel^ panel = Far::Net->Panel;
 	if (!panel)
 		return nullptr;
 

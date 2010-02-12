@@ -412,7 +412,7 @@ namespace PowerShellFar
 
 		internal static void ShowJobs()
 		{
-			IMenu menu = Far.Host.CreateMenu();
+			IMenu menu = Far.Net.CreateMenu();
 			menu.Title = Res.BackgroundJobs;
 			menu.ShowAmpersands = true;
 			menu.HelpTopic = A.Psf.HelpTopic + "MenuBackgroundJobs";
@@ -488,7 +488,7 @@ namespace PowerShellFar
 							break;
 
 						// file exists, view it
-						IViewer v = Far.Host.CreateViewer();
+						IViewer v = Far.Net.CreateViewer();
 						v.FileName = job.FileName;
 						v.DisableHistory = true;
 						if (menu.BreakKey == VKeyCode.F3)
@@ -513,7 +513,7 @@ namespace PowerShellFar
 		/// </summary>
 		static void AsyncTimerCallback(object state)
 		{
-			Far.Host.PostJob(WatchJobs);
+			Far.Net.PostJob(WatchJobs);
 		}
 
 		/// <summary>
@@ -564,7 +564,7 @@ namespace PowerShellFar
 					Timer = null;
 
 					// win7 NoProgress
-					Far.Host.SetProgressState(TaskbarProgressBarState.NoProgress);
+					Far.Net.SetProgressState(TaskbarProgressBarState.NoProgress);
 				}
 			}
 			else
@@ -583,8 +583,8 @@ namespace PowerShellFar
 				Console.Title = JobLastNotified.StateText + ": " + JobLastNotified.ToLine(100);
 
 				// win7
-				Far.Host.SetProgressValue(1, 1);
-				Far.Host.SetProgressState(JobLastNotified.IsSucceeded ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Error);
+				Far.Net.SetProgressValue(1, 1);
+				Far.Net.SetProgressState(JobLastNotified.IsSucceeded ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Error);
 
 				// install the timer
 				if (Timer == null)
@@ -665,7 +665,7 @@ namespace PowerShellFar
 				JobUI.Close();
 
 				// post notificator
-				Far.Host.PostJob(WatchJobs);
+				Far.Net.PostJob(WatchJobs);
 			}
 		}
 
@@ -699,7 +699,7 @@ Ignore: discard all jobs and output
 				string title = "Background job";
 				Console.Title = title;
 
-				switch (Far.Host.Message(message, title, MsgOptions.Gui | MsgOptions.AbortRetryIgnore))
+				switch (Far.Net.Message(message, title, MsgOptions.Gui | MsgOptions.AbortRetryIgnore))
 				{
 					case 0:
 						{

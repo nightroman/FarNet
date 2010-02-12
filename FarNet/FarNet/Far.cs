@@ -19,7 +19,7 @@ namespace FarNet
 		/// <summary>
 		/// The global <see cref="IFar"/> host instance.
 		/// </summary>
-		public static IFar Host
+		public static IFar Net
 		{
 			get { return _Host; }
 			set
@@ -37,7 +37,7 @@ namespace FarNet
 	/// Main interface which exposes top entries of the FarNet object model.
 	/// </summary>
 	/// <remarks>
-	/// It is exposed for modules as <see cref="Far.Host"/>.
+	/// It is exposed for modules as <see cref="Far.Net"/>.
 	/// It provides access to top level Far methods and objects or creates new Far objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
 	/// Further operations are performed on that objects.

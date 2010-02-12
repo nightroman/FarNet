@@ -69,9 +69,9 @@ namespace PowerShellFar
 
 		internal override void DeleteFiles(IList<FarFile> files, bool shift)
 		{
-			if ((Far.Host.Confirmations & FarConfirmations.Delete) != 0)
+			if ((Far.Net.Confirmations & FarConfirmations.Delete) != 0)
 			{
-				if (Far.Host.Message("Remove object(s) from the panel?", Res.Remove, MsgOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
+				if (Far.Net.Message("Remove object(s) from the panel?", Res.Remove, MsgOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
 					return;
 			}
 
@@ -180,7 +180,7 @@ namespace PowerShellFar
 		internal override void UICreate()
 		{
 			// prompt for a command
-			string code = Far.Host.MacroState == FarMacroState.None ? A.Psf.InputCode() : Far.Host.Input(null);
+			string code = Far.Net.MacroState == FarMacroState.None ? A.Psf.InputCode() : Far.Net.Input(null);
 			if (string.IsNullOrEmpty(code))
 				return;
 

@@ -37,7 +37,7 @@ namespace PowerShellFar.UI
 			if (Type == 2)
 				++h;
 
-			UIDialog = Far.Host.CreateDialog(-1, -1, 77, h);
+			UIDialog = Far.Net.CreateDialog(-1, -1, 77, h);
 			UIDialog.Closing += OnClosing;
 			UIDialog.HelpTopic = A.Psf.HelpTopic + "BreakpointDialog";
 
@@ -112,7 +112,7 @@ namespace PowerShellFar.UI
 				int value;
 				if (!int.TryParse(UIMatter.Text, out value) || value <= 0)
 				{
-					Far.Host.Message("Invalid line number", "Line");
+					Far.Net.Message("Invalid line number", "Line");
 					UIDialog.Focused = UIMatter;
 					e.Ignore = true;
 					return;
@@ -120,7 +120,7 @@ namespace PowerShellFar.UI
 
 				if (UIScript.Text.TrimEnd().Length == 0)
 				{
-					Far.Host.Message("Script has to be defined", "Script");
+					Far.Net.Message("Script has to be defined", "Script");
 					UIDialog.Focused = UIScript;
 					e.Ignore = true;
 					return;
@@ -141,7 +141,7 @@ namespace PowerShellFar.UI
 				}
 				catch (RuntimeException ex)
 				{
-					Far.Host.Message(ex.Message, "Action");
+					Far.Net.Message(ex.Message, "Action");
 					UIDialog.Focused = UIAction;
 					e.Ignore = true;
 					return;

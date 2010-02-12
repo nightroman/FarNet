@@ -769,7 +769,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 	}
 	catch(Exception^ e)
 	{
-		Far::Host->ShowError("Error in " __FUNCTION__, e);
+		Far::Net->ShowError("Error in " __FUNCTION__, e);
 	}
 
 	// default

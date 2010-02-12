@@ -18,7 +18,7 @@ namespace PowerShellFar.UI
 
 		public ErrorsMenu()
 		{
-			_menu = Far.Host.CreateMenu();
+			_menu = Far.Net.CreateMenu();
 			_menu.Title = "PowerShell errors ($Error)";
 			_menu.HelpTopic = A.Psf.HelpTopic + "MenuErrors";
 			_menu.BreakKeys.Add(VKeyCode.Delete);
@@ -73,7 +73,7 @@ namespace PowerShellFar.UI
 				{
 					if (_menu.BreakKey != 0)
 						continue;
-					Far.Host.ShowError(null, ex);
+					Far.Net.ShowError(null, ex);
 					continue;
 				}
 
@@ -84,7 +84,7 @@ namespace PowerShellFar.UI
 					{
 						if (!string.IsNullOrEmpty(er.InvocationInfo.ScriptName) && File.Exists(er.InvocationInfo.ScriptName))
 						{
-							IEditor editor = Far.Host.CreateEditor();
+							IEditor editor = Far.Net.CreateEditor();
 							editor.FileName = er.InvocationInfo.ScriptName;
 							editor.GoTo(0, er.InvocationInfo.ScriptLineNumber - 1);
 							editor.Open(OpenMode.None);
@@ -92,7 +92,7 @@ namespace PowerShellFar.UI
 						}
 					}
 
-					Far.Host.ShowError(null, er.Exception);
+					Far.Net.ShowError(null, er.Exception);
 					continue;
 				}
 			}

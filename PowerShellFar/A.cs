@@ -31,7 +31,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(Exception error)
 		{
-			Far.Host.Message(error.Message, "PowerShellFar error", MsgOptions.LeftAligned);
+			Far.Net.Message(error.Message, "PowerShellFar error", MsgOptions.LeftAligned);
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(string message)
 		{
-			Far.Host.Message(message, Res.Me, MsgOptions.LeftAligned);
+			Far.Net.Message(message, Res.Me, MsgOptions.LeftAligned);
 		}
 
 		/// <summary>
@@ -48,7 +48,7 @@ namespace PowerShellFar
 		/// <param name="filePath">Existing file to edit.</param>
 		public static IEditor CreateEditor(string filePath)
 		{
-			IEditor edit = Far.Host.CreateEditor();
+			IEditor edit = Far.Net.CreateEditor();
 			edit.FileName = filePath;
 			return edit;
 		}
@@ -59,7 +59,7 @@ namespace PowerShellFar
 		/// <param name="filePath">Existing file to view.</param>
 		public static IViewer CreateViewer(string filePath)
 		{
-			IViewer view = Far.Host.CreateViewer();
+			IViewer view = Far.Net.CreateViewer();
 			view.FileName = filePath;
 			return view;
 		}
@@ -204,7 +204,7 @@ namespace PowerShellFar
 			foreach (object o in ps.Streams.Error)
 				sb.AppendLine(o.ToString());
 
-			Far.Host.Message(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
+			Far.Net.Message(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
 			return true;
 		}
 
@@ -222,7 +222,7 @@ namespace PowerShellFar
 				}
 				catch (IOException ex)
 				{
-					Far.Host.ShowError(Res.Me, ex);
+					Far.Net.ShowError(Res.Me, ex);
 				}
 			}
 		}

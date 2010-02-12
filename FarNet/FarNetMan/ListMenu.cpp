@@ -175,7 +175,7 @@ void ListMenu::MakeFilter1()
 		RegistryKey^ key = nullptr;
 		try
 		{
-			key = Registry::CurrentUser->OpenSubKey(Far::Host->RegistryFarPath + "\\SavedDialogHistory\\" + FilterHistory, false);
+			key = Registry::CurrentUser->OpenSubKey(Far::Net->RegistryFarPath + "\\SavedDialogHistory\\" + FilterHistory, false);
 			if (key)
 			{
 				int flags = (int)key->GetValue("Flags");
@@ -420,7 +420,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 	if (e->Code == (KeyMode::Ctrl | 'C') || e->Code == (KeyMode::Ctrl | KeyCode::Ins))
 	{
 		FarListBox^ box = (FarListBox^)e->Control;
-		Far::Host->CopyToClipboard(box->Text);
+		Far::Net->CopyToClipboard(box->Text);
 		e->Ignore = true;
 		return;
 	}
@@ -465,7 +465,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 		}
 		else
 		{
-			Char c = Far::Host->CodeToChar(e->Code);
+			Char c = Far::Net->CodeToChar(e->Code);
 			if (c >= KeyCode::Space)
 			{
 				// keep and change filter

@@ -23,7 +23,7 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			IAnyPanel panel = Passive ? Far.Host.Panel2 : Far.Host.Panel;
+			IAnyPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
 
 			// no panel?
 			if (panel == null)

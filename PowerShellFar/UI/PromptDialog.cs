@@ -29,7 +29,7 @@ namespace PowerShellFar.UI
 
 			int h = 4 + lines.Count + descriptions.Count;
 
-			Dialog = Far.Host.CreateDialog(-1, -1, w, h);
+			Dialog = Far.Net.CreateDialog(-1, -1, w, h);
 			Dialog.AddBox(3, 1, w - 4, h - 2, caption);
 			foreach (string s in lines)
 				Dialog.AddText(5, -1, w - 6, s);

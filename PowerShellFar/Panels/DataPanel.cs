@@ -240,7 +240,7 @@ namespace PowerShellFar
 					return true;
 			}
 
-			switch (Far.Host.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+			switch (Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
 			{
 				case 0:
 					return SaveData();
@@ -265,7 +265,7 @@ namespace PowerShellFar
 			if (0 == (dr.RowState & (DataRowState.Added | DataRowState.Deleted | DataRowState.Modified)))
 				return true;
 
-			switch (Far.Host.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+			switch (Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
 			{
 				case 0:
 					return SaveData();
@@ -281,9 +281,9 @@ namespace PowerShellFar
 		{
 			BuildDeleteCommand();
 
-			if ((Far.Host.Confirmations & FarConfirmations.Delete) != 0)
+			if ((Far.Net.Confirmations & FarConfirmations.Delete) != 0)
 			{
-				if (Far.Host.Message("Delete selected record(s)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
+				if (Far.Net.Message("Delete selected record(s)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
 					return;
 			}
 
@@ -397,7 +397,7 @@ namespace PowerShellFar
 			{
 				using (DataTable dt = Table.GetChanges())
 				{
-					if (dt != null && Far.Host.Message(Res.AskSaveModified, "Save", MsgOptions.YesNo) == 0)
+					if (dt != null && Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNo) == 0)
 						SaveData();
 				}
 			}
@@ -426,7 +426,7 @@ namespace PowerShellFar
 
 		internal override void ShowHelp()
 		{
-			Far.Host.ShowHelp(A.Psf.AppHome, "DataPanel", HelpOptions.Path);
+			Far.Net.ShowHelp(A.Psf.AppHome, "DataPanel", HelpOptions.Path);
 		}
 
 		// Command builder

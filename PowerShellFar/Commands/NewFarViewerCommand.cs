@@ -19,7 +19,7 @@ namespace PowerShellFar.Commands
 	{
 		internal IViewer CreateViewer()
 		{
-			IViewer viewer = Far.Host.CreateViewer();
+			IViewer viewer = Far.Net.CreateViewer();
 			viewer.DeleteSource = DeleteSource;
 			viewer.DisableHistory = DisableHistory;
 			viewer.FileName = Path;

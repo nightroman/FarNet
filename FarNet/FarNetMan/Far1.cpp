@@ -29,10 +29,10 @@ Far1::Far1()
 
 void Far1::StartFar()
 {
-	if (Far::Host)
+	if (Far::Net)
 		throw gcnew InvalidOperationException("Already started.");
 
-	Far::Host = %Far;
+	Far::Net = %Far;
 	Far.Start();
 }
 
