@@ -70,13 +70,13 @@ namespace PowerShellFar
 			if (code == null)
 				return;
 
-			switch (Far.Host.WindowType)
+			switch (Far.Net.WindowType)
 			{
 				case WindowType.Panels:
 					{
-						Far.Host.CommandLine.Text = Entry.Prefix1 + ": " + code;
+						Far.Net.CommandLine.Text = Entry.Prefix1 + ": " + code;
 						if (!m.Alternative)
-							Far.Host.PostKeys("Enter", false);
+							Far.Net.PostKeys("Enter", false);
 						return;
 					}
 				case WindowType.Editor:
@@ -150,7 +150,7 @@ namespace PowerShellFar
 			if (_path_ == null)
 			{
 				// get path once
-				_path_ = Far.Host.RegistryFarPath + "\\SavedDialogHistory\\PowerShellFarHistory";
+				_path_ = Far.Net.RegistryFarPath + "\\SavedDialogHistory\\PowerShellFarHistory";
 
 				// ensure the key and reduce the history once
 				using (RegistryKey key = Registry.CurrentUser.CreateSubKey(_path_))

@@ -31,7 +31,7 @@ namespace PowerShellFar
 		internal static void Unregister()
 		{
 			if (_Instance != null)
-				Far.Host.Unregister(_Instance);
+				Far.Net.Unregister(_Instance);
 		}
 
 		///
@@ -41,19 +41,19 @@ namespace PowerShellFar
 			A.Connect(new Actor());
 
 			// register prefixes
-			Prefix1 = Far.Host.RegisterCommand(this, "PowerShell main prefix", ">", OnCommandLine);
-			Prefix2 = Far.Host.RegisterCommand(this, "PowerShell jobs prefix", ">>", OnCommandLineJob);
+			Prefix1 = Far.Net.RegisterCommand(this, "PowerShell main prefix", ">", OnCommandLine);
+			Prefix2 = Far.Net.RegisterCommand(this, "PowerShell jobs prefix", ">>", OnCommandLineJob);
 
 			// register config
-			Far.Host.RegisterTool(this, Res.Me, OnConfig, ToolOptions.Config);
+			Far.Net.RegisterTool(this, Res.Me, OnConfig, ToolOptions.Config);
 
 			// register menu
-			Far.Host.RegisterTool(this, Res.Me, OnOpen, ToolOptions.F11Menus);
+			Far.Net.RegisterTool(this, Res.Me, OnOpen, ToolOptions.F11Menus);
 
 			// editor events: OnEditorOpened1 should be called always and first
 			// to do Invoking() (at least for TabExpansion) and the startup code
-			Far.Host.AnyEditor.Opened += EditorKit.OnEditorOpened1;
-			Far.Host.AnyEditor.Opened += EditorKit.OnEditorOpened2;
+			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened1;
+			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened2;
 
 			// connect actor
 			A.Psf.Connect();
@@ -64,10 +64,10 @@ namespace PowerShellFar
 		public override void Disconnect()
 		{
 			// detach tools
-			Far.Host.UnregisterCommand(OnCommandLine);
-			Far.Host.UnregisterCommand(OnCommandLineJob);
-			Far.Host.UnregisterTool(OnConfig);
-			Far.Host.UnregisterTool(OnOpen);
+			Far.Net.UnregisterCommand(OnCommandLine);
+			Far.Net.UnregisterCommand(OnCommandLineJob);
+			Far.Net.UnregisterTool(OnConfig);
+			Far.Net.UnregisterTool(OnOpen);
 
 			// disconnect instances
 			A.Psf.Disconnect();

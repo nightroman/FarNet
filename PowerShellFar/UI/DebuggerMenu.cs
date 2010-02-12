@@ -19,7 +19,7 @@ namespace PowerShellFar.UI
 
 		public DebuggerMenu()
 		{
-			_menu = Far.Host.CreateListMenu();
+			_menu = Far.Net.CreateListMenu();
 			_menu.Title = "PowerShell debugger tools";
 			_menu.HelpTopic = A.Psf.HelpTopic + "MenuDebugger";
 			_menu.FilterOptions = PatternOptions.None;
@@ -37,8 +37,8 @@ namespace PowerShellFar.UI
 		public void Show()
 		{
 			// active editor
-			if (Far.Host.WindowType == WindowType.Editor)
-				_editor = Far.Host.Editor;
+			if (Far.Net.WindowType == WindowType.Editor)
+				_editor = Far.Net.Editor;
 
 			// menu loop
 			for (_toStop = false; ; _menu.Items.Clear())
@@ -107,7 +107,7 @@ namespace PowerShellFar.UI
 				// found?
 				if (bpFound != null)
 				{
-					switch(Far.Host.Message("Breakpoint exists",
+					switch(Far.Net.Message("Breakpoint exists",
 						"Line breakpoint",
 						MsgOptions.None,
 						new string[] {
@@ -265,7 +265,7 @@ namespace PowerShellFar.UI
 				return;
 			}
 
-			editor = Far.Host.CreateEditor();
+			editor = Far.Net.CreateEditor();
 			editor.FileName = bp.Script;
 			if (lbp != null)
 				editor.GoToLine(lbp.Line - 1);

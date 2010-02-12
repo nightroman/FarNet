@@ -119,7 +119,7 @@ namespace PowerShellFar.Commands
 			if (LeftAligned)
 				options |= MsgOptions.LeftAligned;
 
-			int r = Far.Host.Message(Text, Caption, options, Choices, HelpTopic);
+			int r = Far.Net.Message(Text, Caption, options, Choices, HelpTopic);
 			if (Buttons != ButtonSet.Ok || Choices != null && Choices.Length > 0)
 				WriteObject(r);
 		}

@@ -225,7 +225,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 	{
 		//?? .. else log error?
 		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
-			Far::Host->ShowError(__FUNCTION__, e);
+			Far::Net->ShowError(__FUNCTION__, e);
 
 		return false;
 	}
@@ -345,7 +345,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				}
 				catch(Exception^ exception)
 				{
-					Far::Host->ShowError("Event: Executing", exception);
+					Far::Net->ShowError("Event: Executing", exception);
 				}
 				return e.Ignore;
 			}
@@ -716,7 +716,7 @@ void Panel0::OpenPluginPanel(Panel2^ plugin)
 	// panels window should be current
 	try
 	{
-		Far::Host->SetCurrentWindow(0);
+		Far::Net->SetCurrentWindow(0);
 	}
 	catch(InvalidOperationException^ e)
 	{

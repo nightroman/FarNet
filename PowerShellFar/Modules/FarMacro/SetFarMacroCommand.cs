@@ -20,7 +20,7 @@ namespace FarMacro
 		protected override void ProcessRecord()
 		{
 			Macro macro = InputObject == null ? CreateMacro() : InputObject;
-			Far.Host.Macro.Install(macro);
+			Far.Net.Macro.Install(macro);
 		}
 	}
 }

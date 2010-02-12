@@ -161,7 +161,7 @@ namespace PowerShellFar
 				if (!A.TryGetPropertyValue(data, "Matches", out matches) || matches.Length == 0)
 					return;
 
-				IEditor editor = Far.Host.CreateEditor();
+				IEditor editor = Far.Net.CreateEditor();
 				editor.DisableHistory = true;
 				editor.FileName = path;
 				TextFrame frame = new TextFrame();
@@ -233,7 +233,7 @@ namespace PowerShellFar
 			}
 
 			//! use `try` to delete a tmp file, error can be at root of cert (PS bug?)
-			string tmp = Far.Host.TempName();
+			string tmp = Far.Net.TempName();
 			try
 			{
 				WriteFile(file, tmp);
@@ -273,7 +273,7 @@ namespace PowerShellFar
 				return;
 			}
 
-			string tmp = Far.Host.TempName();
+			string tmp = Far.Net.TempName();
 			try
 			{
 				A.Psf.InvokeCode("$args[0] | Format-Table -AutoSize -ea 0 | Out-File -FilePath $args[1]", ShownItems, tmp);

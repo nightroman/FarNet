@@ -54,14 +54,14 @@ namespace FarMacro
 			if (string.IsNullOrEmpty(name))
 				return false;
 
-			int code = Far.Host.NameToKey(name);
+			int code = Far.Net.NameToKey(name);
 			if (code >= 0)
 				return true;
 
 			if (name[0] != '~')
 				return false;
 
-			code = Far.Host.NameToKey(name.Substring(1));
+			code = Far.Net.NameToKey(name.Substring(1));
 			return code >= 0;
 		}
 
@@ -136,7 +136,7 @@ namespace FarMacro
 				return;
 			}
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 				throw new FileNotFoundException(path);
 
@@ -152,7 +152,7 @@ namespace FarMacro
 			if (value == null)
 				throw new ArgumentNullException("value");
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 			{
 				macro = new Macro();
@@ -161,7 +161,7 @@ namespace FarMacro
 				macro.Sequence = value.ToString();
 			}
 
-			Far.Host.Macro.Install(macro);
+			Far.Net.Macro.Install(macro);
 		}
 
 		protected override bool ItemExists(string path)
@@ -173,7 +173,7 @@ namespace FarMacro
 			if (way.Name == null)
 				return Areas.ContainsKey(way.Area);
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			return macro != null;
 		}
 
@@ -193,7 +193,7 @@ namespace FarMacro
 
 			if (way.Area == MacroArea.Root)
 			{
-				foreach (string name in Far.Host.Macro.GetNames(MacroArea.Root))
+				foreach (string name in Far.Net.Macro.GetNames(MacroArea.Root))
 				{
 					try
 					{
@@ -209,12 +209,12 @@ namespace FarMacro
 			}
 			else if (way.Name == null)
 			{
-				foreach (string name in Far.Host.Macro.GetNames(way.Area))
-					WriteItemObject(Far.Host.Macro.GetMacro(way.Area, name), way.Area + "\\" + name, false);
+				foreach (string name in Far.Net.Macro.GetNames(way.Area))
+					WriteItemObject(Far.Net.Macro.GetMacro(way.Area, name), way.Area + "\\" + name, false);
 			}
 			else
 			{
-				Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+				Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 				if (macro == null)
 					throw new FileNotFoundException(path);
 			}
@@ -226,7 +226,7 @@ namespace FarMacro
 
 			if (way.Area == MacroArea.Root)
 			{
-				foreach (string name in Far.Host.Macro.GetNames(MacroArea.Root))
+				foreach (string name in Far.Net.Macro.GetNames(MacroArea.Root))
 				{
 					try
 					{
@@ -239,7 +239,7 @@ namespace FarMacro
 			}
 			else if (way.Name == null)
 			{
-				foreach (string name in Far.Host.Macro.GetNames(way.Area))
+				foreach (string name in Far.Net.Macro.GetNames(way.Area))
 					WriteItemObject(name, path, false);
 			}
 		}
@@ -262,7 +262,7 @@ namespace FarMacro
 			if (newItemValue != null)
 				macro.Sequence = newItemValue.ToString();
 
-			Far.Host.Macro.Install(macro);
+			Far.Net.Macro.Install(macro);
 		}
 
 		protected override void CopyItem(string path, string copyPath, bool recurse)
@@ -275,25 +275,25 @@ namespace FarMacro
 			if (dst.Name != null || dst.Area == MacroArea.Root)
 				throw new InvalidOperationException("Invalid destination path.");
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 				throw new FileNotFoundException("Macro is not found: " + path);
 
 			macro.Area = dst.Area;
-			Far.Host.Macro.Install(macro);
+			Far.Net.Macro.Install(macro);
 		}
 
 		protected override void RemoveItem(string path, bool recurse)
 		{
 			Way way = new Way(path);
 
-			if (way.Name == null && Far.Host.Macro.GetNames(way.Area).Length > 0)
+			if (way.Name == null && Far.Net.Macro.GetNames(way.Area).Length > 0)
 				throw new RuntimeException("Cannot remove an area with macros.");
 
 			if (!ShouldProcess(path, "Remove"))
 				return;
 
-			Far.Host.Macro.Remove(way.Area, way.Name);
+			Far.Net.Macro.Remove(way.Area, way.Name);
 		}
 
 		#endregion
@@ -344,13 +344,13 @@ namespace FarMacro
 			if (dst.Name != null || dst.Area == MacroArea.Root)
 				throw new InvalidOperationException("Invalid destination: " + destination);
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 				throw new InvalidOperationException("Source macro is not found.");
 
 			macro.Area = dst.Area;
-			Far.Host.Macro.Install(macro);
-			Far.Host.Macro.Remove(way.Area, way.Name);
+			Far.Net.Macro.Install(macro);
+			Far.Net.Macro.Remove(way.Area, way.Name);
 		}
 
 		protected override void RenameItem(string path, string newName)
@@ -362,14 +362,14 @@ namespace FarMacro
 			if (way.Name == null)
 				throw new InvalidOperationException("Only macro items can be renamed.");
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 				throw new InvalidOperationException("Source macro is not found.");
 
 			macro.Name = newName;
-			Far.Host.Macro.Install(macro);
-			Far.Host.Macro.Remove(way.Area, way.Name);
-			Far.Host.Macro.Load();
+			Far.Net.Macro.Install(macro);
+			Far.Net.Macro.Remove(way.Area, way.Name);
+			Far.Net.Macro.Load();
 		}
 
 		#endregion Navigation
@@ -380,12 +380,12 @@ namespace FarMacro
 		{
 			Way way = new Way(path);
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 				throw new FileNotFoundException("Macro is not found: " + path);
 
 			macro.Sequence = string.Empty;
-			Far.Host.Macro.Install(macro);
+			Far.Net.Macro.Install(macro);
 		}
 
 		public object ClearContentDynamicParameters(string path)
@@ -397,7 +397,7 @@ namespace FarMacro
 		{
 			Way way = new Way(path);
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 				throw new FileNotFoundException("Macro is not found: " + path);
 
@@ -413,7 +413,7 @@ namespace FarMacro
 		{
 			Way way = new Way(path);
 
-			Macro macro = Far.Host.Macro.GetMacro(way.Area, way.Name);
+			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 				throw new FileNotFoundException("Macro is not found: " + path);
 
@@ -500,7 +500,7 @@ namespace FarMacro
 			}
 
 			Macro.Sequence = sb.ToString();
-			Far.Host.Macro.Install(Macro);
+			Far.Net.Macro.Install(Macro);
 
 			return content;
 		}

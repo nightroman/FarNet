@@ -192,7 +192,7 @@ namespace PowerShellFar
 				return;
 			string name = f.Name;
 
-			IInputBox ib = Far.Host.CreateInputBox();
+			IInputBox ib = Far.Net.CreateInputBox();
 			ib.Title = "Copy";
 			ib.Prompt = "New name";
 			ib.History = "Copy";
@@ -269,7 +269,7 @@ namespace PowerShellFar
 				return;
 			}
 
-			IInputBox ib = Far.Host.CreateInputBox();
+			IInputBox ib = Far.Net.CreateInputBox();
 			ib.Title = "Rename";
 			ib.Prompt = "New name";
 			ib.History = "Copy";
@@ -297,7 +297,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenPropertyChanged(string itemPath)
 		{
-			PropertyPanel p = Far.Host.FindPanel(typeof(PropertyPanel)).Host as PropertyPanel;
+			PropertyPanel p = Far.Net.FindPanel(typeof(PropertyPanel)).Host as PropertyPanel;
 			if (p == null)
 				return;
 
@@ -347,7 +347,7 @@ namespace PowerShellFar
 			IList<string> names = CollectNames(files);
 
 			// confirmation
-			FarConfirmations conf = Far.Host.Confirmations;
+			FarConfirmations conf = Far.Net.Confirmations;
 
 			//! Registry: workaround: (default)
 			if (_provider.ImplementingType == typeof(RegistryProvider))
@@ -357,7 +357,7 @@ namespace PowerShellFar
 					if (Kit.Compare(names[i], "(default)") == 0)
 					{
 						if ((conf & (FarConfirmations.Delete)) == 0 ||
-							Far.Host.Message("Are you sure you want to delete (default) property?", Res.Delete, MsgOptions.YesNo) == 0)
+							Far.Net.Message("Are you sure you want to delete (default) property?", Res.Delete, MsgOptions.YesNo) == 0)
 							A.Psf.Engine.InvokeProvider.Property.Remove(Kit.EscapeWildcard(_itemPath), string.Empty);
 						names.RemoveAt(i);
 						break;
@@ -407,7 +407,7 @@ namespace PowerShellFar
 			if (!pi.IsSettable)
 				A.Msg(Res.PropertyIsNotSettable);
 
-			string tmp = Far.Host.TempName();
+			string tmp = Far.Net.TempName();
 			try
 			{
 				string line = Converter.InfoToLine(pi);
@@ -478,7 +478,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				Far.Host.ShowError("Edit", ex);
+				Far.Net.ShowError("Edit", ex);
 			}
 			finally
 			{

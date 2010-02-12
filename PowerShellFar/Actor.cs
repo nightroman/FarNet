@@ -70,8 +70,8 @@ namespace PowerShellFar
 		internal void Disconnect()
 		{
 			// editor events
-			Far.Host.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
-			Far.Host.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
+			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
+			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
 
 			// kill menu
 			UI.ActorMenu.Destroy();
@@ -192,7 +192,7 @@ namespace PowerShellFar
 				PSVariable var1 = new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
 				var1.Description = "Exposes PowerShellFar.";
 				Engine.SessionState.PSVariable.Set(var1);
-				PSVariable var2 = new PSVariable("Far", Far.Host, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
+				PSVariable var2 = new PSVariable("Far", Far.Net, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
 				var2.Description = "Exposes FarNet.";
 				Engine.SessionState.PSVariable.Set(var2);
 
@@ -225,7 +225,7 @@ Code (see configuration):
 Reason (see also $Error):
 {1}
 ", Settings.StartupCode, ex.Message);
-						Far.Host.Message(msg, Res.Me, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
+						Far.Net.Message(msg, Res.Me, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
 					}
 				}
 			}
@@ -281,7 +281,7 @@ See also the section PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
 				ArrayList errors = Engine.SessionState.PSVariable.GetValue("Error") as ArrayList;
 				if (errors != null && errors.Count > 0)
 				{
-					Far.Host.Message(@"
+					Far.Net.Message(@"
 The startup code was invoked with errors.
 View the error list or the variable $Error.
 ", "PowerShellFar startup errors", MsgOptions.Gui);
@@ -302,12 +302,12 @@ View the error list or the variable $Error.
 				return null;
 
 			// don't on no panels mode
-			IAnyPanel panel = Far.Host.Panel;
+			IAnyPanel panel = Far.Net.Panel;
 			if (panel == null)
 				return null;
 
 			// at first get both paths: for the current system directory and provider location
-			string directory = Far.Host.ActivePath;
+			string directory = Far.Net.ActivePath;
 			string location = null;
 			if (panel.IsPlugin)
 			{
@@ -364,7 +364,7 @@ Continue with this current location?
 {1}
 ", location, currentLocation);
 
-					switch (Far.Host.Message(message, Res.Me, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
+					switch (Far.Net.Message(message, Res.Me, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
 					{
 						case 1:
 							break;
@@ -373,8 +373,8 @@ Continue with this current location?
 							_failedInvokingLocationOld = currentLocation;
 							break;
 						default:
-							if (Far.Host.MacroState != FarMacroState.None)
-								Far.Host.Zoo.Break();
+							if (Far.Net.MacroState != FarMacroState.None)
+								Far.Net.Zoo.Break();
 							throw;
 					}
 				}
@@ -410,7 +410,7 @@ Continue with this current directory?
 {1}
 ", directory, currentDirectory);
 
-					switch (Far.Host.Message(message, Res.Me, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
+					switch (Far.Net.Message(message, Res.Me, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
 					{
 						case 1:
 							currentDirectory = null;
@@ -421,8 +421,8 @@ Continue with this current directory?
 							_failedInvokingDirectoryOld = currentDirectory;
 							break;
 						default:
-							if (Far.Host.MacroState != FarMacroState.None)
-								Far.Host.Zoo.Break();
+							if (Far.Net.MacroState != FarMacroState.None)
+								Far.Net.Zoo.Break();
 							throw;
 					}
 				}
@@ -545,8 +545,8 @@ Continue with this current directory?
 		/// <exception cref="InvalidOperationException">Editor is not opened or its window is not current.</exception>
 		public IEditor Editor()
 		{
-			IEditor editor = Far.Host.Editor;
-			if (editor == null || Far.Host.WindowType != WindowType.Editor)
+			IEditor editor = Far.Net.Editor;
+			if (editor == null || Far.Net.WindowType != WindowType.Editor)
 				throw new InvalidOperationException(Res.NeedsEditor);
 
 			return editor;
@@ -650,7 +650,7 @@ Continue with this current directory?
 		/// </example>
 		public void InvokeInputCode()
 		{
-			if (Far.Host.MacroState == FarMacroState.None || A.Psf.Settings.Test == 100120151157)
+			if (Far.Net.MacroState == FarMacroState.None || A.Psf.Settings.Test == 100120151157)
 			{
 				// normal mode
 				string code = InputCode();
@@ -660,7 +660,7 @@ Continue with this current directory?
 			else
 			{
 				// macro mode
-				string code = Far.Host.Input(null);
+				string code = Far.Net.Input(null);
 				if (code != null)
 					InvokeCode(code, null);
 			}
@@ -922,7 +922,7 @@ Continue with this current directory?
 			try
 			{
 				// win7 Indeterminate
-				Far.Host.SetProgressState(TaskbarProgressBarState.Indeterminate);
+				Far.Net.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
 				// add history
 				if (addHistory)
@@ -954,7 +954,7 @@ Continue with this current directory?
 				timer.Dispose();
 
 				// win7 NoProgress
-				Far.Host.SetProgressState(TaskbarProgressBarState.NoProgress);
+				Far.Net.SetProgressState(TaskbarProgressBarState.NoProgress);
 
 				_myLastCommand = _myCommand;
 				_myCommand = null;
@@ -978,14 +978,14 @@ Continue with this current directory?
 					if (output.Length > 0)
 					{
 						// use log?
-						WindowType wt = Far.Host.WindowType;
+						WindowType wt = Far.Net.WindowType;
 						bool useLog = (wt != WindowType.Panels);
 						if (!useLog)
 						{
 							// count lines
 							int nNewLine = 0;
 							int nMax = Console.WindowHeight - 3;
-							IAnyPanel p1 = Far.Host.Panel;
+							IAnyPanel p1 = Far.Net.Panel;
 							if (p1.IsVisible)
 							{
 								Place w = p1.Window;
@@ -1010,7 +1010,7 @@ Continue with this current directory?
 							if (useLog)
 							{
 								// view output
-								Far.Host.AnyViewer.ViewText(output, code, OpenMode.None);
+								Far.Net.AnyViewer.ViewText(output, code, OpenMode.None);
 								output = string.Empty;
 							}
 						}
@@ -1018,7 +1018,7 @@ Continue with this current directory?
 						{
 							// write to console
 							if (output.Length > 0)
-								Far.Host.Write(output);
+								Far.Net.Write(output);
 						}
 					}
 				}

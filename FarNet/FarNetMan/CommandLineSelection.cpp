@@ -31,7 +31,7 @@ void CommandLineSelection::Text::set(String^ value)
 	if (cls.SelStart < 0)
 		throw gcnew InvalidOperationException("Cannot set selected text because there is no selection.");
 
-	String^ text = Far::Host->CommandLine->Text;
+	String^ text = Far::Net->CommandLine->Text;
 	String^ text1 = text->Substring(0, cls.SelStart);
 	String^ text2 = text->Substring(cls.SelEnd);
 	text = text1 + value + text2;
