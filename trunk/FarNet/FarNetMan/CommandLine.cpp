@@ -5,16 +5,10 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "CommandLine.h"
-#include "Far.h"
 #include "CommandLineSelection.h"
 
 namespace FarNet
 {;
-ILine^ Far::CommandLine::get()
-{
-	return gcnew FarNet::CommandLine;
-}
-
 FarNet::WindowType CommandLine::WindowType::get()
 {
 	return FarNet::WindowType::Panels;

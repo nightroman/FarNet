@@ -51,7 +51,7 @@ namespace PowerShellFar.Commands
 			}
 
 			// case: Far panel
-			IAnyPanel panel = Passive ? A.Far.Panel2 : A.Far.Panel;
+			IAnyPanel panel = Passive ? Far.Host.Panel2 : Far.Host.Panel;
 
 			// no panel?
 			if (panel == null)

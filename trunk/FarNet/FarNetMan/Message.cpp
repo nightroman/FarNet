@@ -6,7 +6,6 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Message.h"
 #include "Dialog.h"
-#include "Far.h"
 
 namespace FarNet
 {;
@@ -65,7 +64,7 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 	if (int(options & MsgOptions::GuiOnMacro) != 0)
 	{
 		// check macro
-		if (Far::Instance->MacroState != FarMacroState::None)
+		if (Far::Host->MacroState != FarMacroState::None)
 			options = options | MsgOptions::Gui;
 	}
 

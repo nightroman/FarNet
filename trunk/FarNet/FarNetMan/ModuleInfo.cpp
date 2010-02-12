@@ -5,12 +5,22 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "ModuleInfo.h"
-#include "Far.h"
 #include "Module0.h"
 
 namespace FarNet
 {;
+
 #pragma region BaseModuleInfo
+
+Object^ BaseModuleInfo::GetFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue)
+{
+	return Far::Host->GetPluginValue("FarNet\\" + keyPath, valueName, defaultValue);
+}
+
+void BaseModuleInfo::SetFarNetValue(String^ keyPath, String^ valueName, Object^ value)
+{
+	Far::Host->SetPluginValue("FarNet\\" + keyPath, valueName, value);
+}
 
 BaseModule^ BaseModuleInfo::CreateModule(Type^ type)
 {
@@ -19,7 +29,7 @@ BaseModule^ BaseModuleInfo::CreateModule(Type^ type)
 
 	// get and set UI culture, if any
 	String^ assemblyName = Path::GetFileName(instance->GetType()->Assembly->Location);
-	String^ cultureName = Far::Instance->GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
+	String^ cultureName = GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
 	if (cultureName->Length)
 	{
 		try
@@ -29,7 +39,7 @@ BaseModule^ BaseModuleInfo::CreateModule(Type^ type)
 		catch(ArgumentException^ ex)
 		{
 			ModuleException ex2("Invalid culture name.\rCorrect it in the configuration dialog.", ex);
-			Far::Instance->ShowError(assemblyName, %ex2);
+			Far::Host->ShowError(assemblyName, %ex2);
 		}
 	}
 
@@ -88,7 +98,6 @@ void BaseModuleInfo::Connect()
 
 	// register, attach, connect
 	Module0::AddModule(_Module);
-	_Module->Far = Far::Instance;
 	{
 		LOG_AUTO(3, String::Format("{0}.Connect", _Module));
 
@@ -141,27 +150,27 @@ String^ ModuleToolInfo::Alias(ToolOptions option)
 	{
 	case ToolOptions::Config:
 		if (ES(_AliasConfig))
-			_AliasConfig = Far::Instance->GetFarNetValue(Key, "Config", Name)->ToString();
+			_AliasConfig = GetFarNetValue(Key, "Config", Name)->ToString();
 		return _AliasConfig;
 	case ToolOptions::Disk:
 		if (ES(_AliasDisk))
-			_AliasDisk = Far::Instance->GetFarNetValue(Key, "Disk", Name)->ToString();
+			_AliasDisk = GetFarNetValue(Key, "Disk", Name)->ToString();
 		return _AliasDisk;
 	case ToolOptions::Editor:
 		if (ES(_AliasEditor))
-			_AliasEditor = Far::Instance->GetFarNetValue(Key, "Editor", Name)->ToString();
+			_AliasEditor = GetFarNetValue(Key, "Editor", Name)->ToString();
 		return _AliasEditor;
 	case ToolOptions::Panels:
 		if (ES(_AliasPanels))
-			_AliasPanels = Far::Instance->GetFarNetValue(Key, "Panels", Name)->ToString();
+			_AliasPanels = GetFarNetValue(Key, "Panels", Name)->ToString();
 		return _AliasPanels;
 	case ToolOptions::Viewer:
 		if (ES(_AliasViewer))
-			_AliasViewer = Far::Instance->GetFarNetValue(Key, "Viewer", Name)->ToString();
+			_AliasViewer = GetFarNetValue(Key, "Viewer", Name)->ToString();
 		return _AliasViewer;
 	case ToolOptions::Dialog:
 		if (ES(_AliasDialog))
-			_AliasDialog = Far::Instance->GetFarNetValue(Key, "Dialog", Name)->ToString();
+			_AliasDialog = GetFarNetValue(Key, "Dialog", Name)->ToString();
 		return _AliasDialog;
 	default:
 		throw gcnew InvalidOperationException("Unknown tool option.");
@@ -176,27 +185,27 @@ void ModuleToolInfo::Alias(ToolOptions option, String^ value)
 	switch(option)
 	{
 	case ToolOptions::Config:
-		Far::Instance->SetFarNetValue(Key, "Config", value);
+		SetFarNetValue(Key, "Config", value);
 		_AliasConfig = value;
 		break;
 	case ToolOptions::Disk:
-		Far::Instance->SetFarNetValue(Key, "Disk", value);
+		SetFarNetValue(Key, "Disk", value);
 		_AliasDisk = value;
 		break;
 	case ToolOptions::Editor:
-		Far::Instance->SetFarNetValue(Key, "Editor", value);
+		SetFarNetValue(Key, "Editor", value);
 		_AliasEditor = value;
 		break;
 	case ToolOptions::Panels:
-		Far::Instance->SetFarNetValue(Key, "Panels", value);
+		SetFarNetValue(Key, "Panels", value);
 		_AliasPanels = value;
 		break;
 	case ToolOptions::Viewer:
-		Far::Instance->SetFarNetValue(Key, "Viewer", value);
+		SetFarNetValue(Key, "Viewer", value);
 		_AliasViewer = value;
 		break;
 	case ToolOptions::Dialog:
-		Far::Instance->SetFarNetValue(Key, "Dialog", value);
+		SetFarNetValue(Key, "Dialog", value);
 		_AliasDialog = value;
 		break;
 	default:
@@ -227,7 +236,7 @@ String^ ModuleCommandInfo::ToString()
 String^ ModuleCommandInfo::Prefix::get()
 {
 	if (ES(_Prefix))
-		_Prefix = Far::Instance->GetFarNetValue(Key, "Prefix", DefaultPrefix)->ToString();
+		_Prefix = GetFarNetValue(Key, "Prefix", DefaultPrefix)->ToString();
 	return _Prefix;
 }
 
@@ -236,7 +245,7 @@ void ModuleCommandInfo::Prefix::set(String^ value)
 	if (ES(value))
 		throw gcnew ArgumentException("'value' must not be empty.");
 
-	Far::Instance->SetFarNetValue(Key, "Prefix", value);
+	SetFarNetValue(Key, "Prefix", value);
 	_Prefix = value;
 }
 
@@ -300,7 +309,7 @@ void ModuleFilerInfo::Invoke(Object^ sender, FilerEventArgs^ e)
 String^ ModuleFilerInfo::Mask::get()
 {
 	if (ES(_Mask))
-		_Mask = Far::Instance->GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
+		_Mask = GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
 	return _Mask;
 }
 
@@ -308,7 +317,7 @@ void ModuleFilerInfo::Mask::set(String^ value)
 {
 	if (!value) throw gcnew ArgumentNullException("value");
 
-	Far::Instance->SetFarNetValue(Key, "Mask", value);
+	SetFarNetValue(Key, "Mask", value);
 	_Mask = value;
 }
 
@@ -352,7 +361,7 @@ void ModuleEditorInfo::Invoke(Object^ sender, EventArgs^ e)
 String^ ModuleEditorInfo::Mask::get()
 {
 	if (ES(_Mask))
-		_Mask = Far::Instance->GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
+		_Mask = GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
 	return _Mask;
 }
 
@@ -360,7 +369,7 @@ void ModuleEditorInfo::Mask::set(String^ value)
 {
 	if (!value) throw gcnew ArgumentNullException("value");
 
-	Far::Instance->SetFarNetValue(Key, "Mask", value);
+	SetFarNetValue(Key, "Mask", value);
 	_Mask = value;
 }
 

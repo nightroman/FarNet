@@ -181,7 +181,7 @@ namespace PowerShellFar.Commands
 
 		internal IListMenu Create()
 		{
-			IListMenu menu = A.Far.CreateListMenu();
+			IListMenu menu = Far.Host.CreateListMenu();
 			Init(menu);
 
 			if (Intelli)

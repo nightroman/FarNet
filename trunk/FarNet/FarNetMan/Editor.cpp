@@ -9,7 +9,6 @@ Copyright (c) 2005 FarNet Team
 #include "EditorLine.h"
 #include "EditorLineCollection.h"
 #include "EditorTextWriter.h"
-#include "Far.h"
 #include "SelectionCollection.h"
 #include "Wrappers.h"
 
@@ -40,7 +39,7 @@ void Editor::Open(OpenMode mode)
 	int nPos = _frameStart.Pos >= 0 ? _frameStart.Pos + 1 : -1;
 
 	// from dialog? set modal
-	WindowType wt = Far::Instance->WindowType;
+	WindowType wt = Far::Host->WindowType;
 	if (wt == WindowType::Dialog)
 		mode = OpenMode::Modal;
 
@@ -108,7 +107,7 @@ void Editor::Open(OpenMode mode)
 
 	// redraw Far
 	if (wt == WindowType::Dialog)
-		Far::Instance->Redraw();
+		Far::Host->Redraw();
 
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
 	//! Using Far diagnostics fires false errors, e.g.:
@@ -542,35 +541,6 @@ void Editor::AssertClosed()
 		throw gcnew InvalidOperationException("This editor must not be open.");
 }
 
-String^ Editor::WordDiv::get()
-{
-	if (!IsOpened)
-		return String::Empty;
-
-	EditorSetParameter esp;
-	esp.Type = ESPT_GETWORDDIV;
-	esp.Param.wszParam = NULL;
-	esp.Size = EditorControl_ECTL_SETPARAM(esp);
-
-	CBox buf(esp.Size);
-	esp.Param.wszParam = buf;
-	EditorControl_ECTL_SETPARAM(esp);
-
-	return gcnew String(buf);
-}
-
-void Editor::WordDiv::set(String^ value)
-{
-	if (value == nullptr)
-		throw gcnew ArgumentNullException("value");
-
-	PIN_NE(pin, value);
-	EditorSetParameter esp;
-	esp.Type = ESPT_SETWORDDIV;
-	esp.Param.wszParam = (wchar_t*)pin;
-	EditorControl_ECTL_SETPARAM(esp);
-}
-
 TextFrame Editor::Frame::get()
 {
 	if (!IsOpened)
@@ -938,12 +908,48 @@ void Editor::Sync()
 	}
 }
 
-bool Editor::ShowWhiteSpace::get() { return GetBoolOption(EOPT_SHOWWHITESPACE); }
-bool Editor::WriteByteOrderMark::get() { return GetBoolOption(EOPT_BOM); }
-bool Editor::GetBoolOption(int option)
+String^ Editor::WordDiv::get()
 {
 	if (!IsOpened)
-		return false;
+		return _WordDiv ? _WordDiv : String::Empty;
+
+	EditorSetParameter esp;
+	esp.Type = ESPT_GETWORDDIV;
+	esp.Param.wszParam = NULL;
+	esp.Size = EditorControl_ECTL_SETPARAM(esp);
+
+	CBox buf(esp.Size);
+	esp.Param.wszParam = buf;
+	EditorControl_ECTL_SETPARAM(esp);
+
+	return gcnew String(buf);
+}
+
+void Editor::WordDiv::set(String^ value)
+{
+	if (value == nullptr)
+		throw gcnew ArgumentNullException("value");
+
+	if (IsOpened)
+	{
+		PIN_NE(pin, value);
+		EditorSetParameter esp;
+		esp.Type = ESPT_SETWORDDIV;
+		esp.Param.wszParam = (wchar_t*)pin;
+		EditorControl_ECTL_SETPARAM(esp);
+		return;
+	}
+
+	_WordDiv = value;
+	_WordDivSet = true;
+}
+
+bool Editor::ShowWhiteSpace::get() { return GetBoolOption(EOPT_SHOWWHITESPACE, _ShowWhiteSpace); }
+bool Editor::WriteByteOrderMark::get() { return GetBoolOption(EOPT_BOM, _WriteByteOrderMark); }
+bool Editor::GetBoolOption(int option, bool value)
+{
+	if (!IsOpened)
+		return value;
 
 	AutoEditorInfo ei;
 
@@ -953,14 +959,60 @@ bool Editor::GetBoolOption(int option)
 		return false;
 }
 
-void Editor::ShowWhiteSpace::set(bool value) { SetBoolOption(ESPT_SHOWWHITESPACE, value); }
-void Editor::WriteByteOrderMark::set(bool value) { SetBoolOption(ESPT_SETBOM, value); }
+void Editor::ShowWhiteSpace::set(bool value)
+{
+	if (IsOpened)
+	{
+		SetBoolOption(ESPT_SHOWWHITESPACE, value);
+		return;
+	}
+	
+	_ShowWhiteSpace = value;
+	_ShowWhiteSpaceSet = true;
+}
+void Editor::WriteByteOrderMark::set(bool value)
+{
+	if (IsOpened)
+	{
+		SetBoolOption(ESPT_SETBOM, value);
+		return;
+	}
+	
+	_WriteByteOrderMark = value;
+	_WriteByteOrderMarkSet = true;
+}
 void Editor::SetBoolOption(int option, bool value)
 {
 	EditorSetParameter esp;
 	esp.Type = option;
 	esp.Param.iParam = (int)value;
 	EditorControl_ECTL_SETPARAM(esp);
+}
+
+void Editor::Start(const EditorInfo& ei, bool waiting)
+{
+	// set info
+	_id = ei.EditorID;
+	CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
+	Info.EditorControl(ECTL_GETFILENAME, fileName);
+	_FileName = gcnew String(fileName);
+
+	// done? e.g. opened by Far
+	if (!waiting)
+		return;
+
+	// preset waiting runtime properties
+	if (_WordDivSet)
+		WordDiv = _WordDiv;
+	if (_ShowWhiteSpaceSet)
+		ShowWhiteSpace = _ShowWhiteSpace;
+	if (_WriteByteOrderMarkSet)
+		WriteByteOrderMark = _WriteByteOrderMark;
+}
+
+void Editor::Stop()
+{
+	_id = -2;
 }
 
 }

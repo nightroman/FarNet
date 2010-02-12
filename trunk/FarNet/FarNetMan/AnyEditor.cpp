@@ -6,7 +6,6 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "AnyEditor.h"
 #include "Editor0.h"
-#include "Far.h"
 #include "SelectionCollection.h"
 #include "EditorLine.h"
 #include "EditorLineCollection.h"
@@ -28,13 +27,13 @@ void AnyEditor::WordDiv::set(String^)
 
 String^ AnyEditor::EditText(String^ text, String^ title)
 {
-	String^ file = Far::Instance->TempName();
+	String^ file = Far::Host->TempName();
 	try
 	{
 		if (SS(text))
 			File::WriteAllText(file, text, Encoding::Default);
 		
-		IEditor^ edit = Far::Instance->CreateEditor();
+		IEditor^ edit = Far::Host->CreateEditor();
 		edit->FileName = file;
 		edit->DisableHistory = true;
 		if (SS(title))

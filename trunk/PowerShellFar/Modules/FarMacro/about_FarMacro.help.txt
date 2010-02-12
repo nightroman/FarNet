@@ -7,15 +7,37 @@ SHORT DESCRIPTION
 LONG DESCRIPTION
 
 CMDLETS
-	The module includes two cmdlets:
-
-	-- New-FarMacro
-		Creates a macro instance.
-
-	-- Set-FarMacro
-		Installs one or more macros.
-
 	Use Get-FarHelp to get more details about the cmdlets.
+    =================================================================
+
+	Edit-FarMacro
+
+	Opens the editor with the macro sequence. Syntax highlighting should work
+	if the Colorer plugin is used. On saving, if syntax is valid, the macro is
+	installed and ready to use. On syntax errors an error message is shown and
+	the cursor is set to the error position. On exit, if syntax is not valid,
+	you are prompted to continue or discard the changes. NOTE: in this way you
+	only edit the sequence, other macro options remains default for a new macro
+	and not changed for an existing.
+
+	There are three modes, depending on parameter sets:
+	-- Macro : -Macro; based on a macro object;
+	-- Name  : -Name, -Area; existing or a new macro by names;
+	-- File  : -FilePath; based on an existing or a new macro file.
+
+	The File mode simply edits the file and checks syntax on saving.
+
+    =================================================================
+
+	New-FarMacro
+
+	Creates a new macro instance with empty or default option values.
+
+    =================================================================
+
+	Set-FarMacro
+
+	Installs one or more macros.
 
 PROVIDERS
     The module includes the FarMacro provider. The FarMacro provider lets you

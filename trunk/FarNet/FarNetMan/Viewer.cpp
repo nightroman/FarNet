@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Viewer.h"
-#include "Far.h"
 #include "Utils.h"
 #include "Viewer0.h"
 
@@ -67,7 +66,7 @@ void Viewer::Open(OpenMode mode)
 	PIN_ES(pinTitle, _Title);
 
 	// from dialog? set modal
-	WindowType wt = Far::Instance->WindowType;
+	WindowType wt = Far::Host->WindowType;
 	if (wt == WindowType::Dialog)
 		flags &= ~VF_NONMODAL;
 
@@ -86,7 +85,7 @@ void Viewer::Open(OpenMode mode)
 
 	// redraw Far
 	if (wt == WindowType::Dialog)
-		Far::Instance->Redraw();
+		Far::Host->Redraw();
 
 	// errors: see editor
 	if (_id == -1)

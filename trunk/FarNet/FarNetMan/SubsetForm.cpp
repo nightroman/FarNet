@@ -6,17 +6,11 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "SubsetForm.h"
 #include "DialogControls.h"
-#include "Far.h"
 
 namespace FarNet
 {;
 #define DLG_XSIZE 78
 #define DLG_YSIZE 22
-
-ISubsetForm^ Far::CreateSubsetForm()
-{
-	return gcnew FarSubsetForm();
-}
 
 FarSubsetForm::FarSubsetForm()
 {

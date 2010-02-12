@@ -6,7 +6,6 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "DialogControls.h"
 #include "Dialog.h"
-#include "Far.h"
 #include "Line.h"
 #include "ListItemCollection.h"
 

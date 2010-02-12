@@ -30,10 +30,10 @@ namespace PowerShellFar.UI
 		{
 			Debug.Assert(_menuEditor == null);
 
-			_menuDialog = A.Far.CreateMenu();
-			_menuEditor = A.Far.CreateMenu();
-			_menuPanels = A.Far.CreateMenu();
-			_menuViewer = A.Far.CreateMenu();
+			_menuDialog = Far.Host.CreateMenu();
+			_menuEditor = Far.Host.CreateMenu();
+			_menuPanels = Far.Host.CreateMenu();
+			_menuViewer = Far.Host.CreateMenu();
 
 			_menuDialog.Title = Res.Me;
 			_menuEditor.Title = Res.Me;

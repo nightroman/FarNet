@@ -72,7 +72,7 @@ namespace PowerShellFar
 
 		internal override void ShowHelp()
 		{
-			A.Far.ShowHelp(A.Psf.AppHome, "TreePanel", HelpOptions.Path);
+			Far.Host.ShowHelp(A.Psf.AppHome, "TreePanel", HelpOptions.Path);
 		}
 
 		/// <summary>
@@ -148,7 +148,7 @@ namespace PowerShellFar
 			{
 				case VKeyCode.LeftArrow:
 					{
-						if (e.State != KeyStates.None && e.State != KeyStates.Alt || A.Far.CommandLine.Length > 0)
+						if (e.State != KeyStates.None && e.State != KeyStates.Alt || Far.Host.CommandLine.Length > 0)
 							return;
 
 						FarFile f = Panel.CurrentFile;
@@ -180,7 +180,7 @@ namespace PowerShellFar
 					}
 				case VKeyCode.RightArrow:
 					{
-						if (e.State != KeyStates.None && e.State != KeyStates.Alt || A.Far.CommandLine.Length > 0)
+						if (e.State != KeyStates.None && e.State != KeyStates.Alt || Far.Host.CommandLine.Length > 0)
 							return;
 
 						FarFile f = Panel.CurrentFile;

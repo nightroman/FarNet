@@ -49,7 +49,7 @@ namespace PowerShellFar
 			if (string.IsNullOrEmpty(path))
 			{
 				// current location, post the current name
-				FarFile f = A.Far.Panel.CurrentFile;
+				FarFile f = Far.Host.Panel.CurrentFile;
 				if (f != null)
 					Panel.PostName(f.Name);
 			}
@@ -114,7 +114,7 @@ namespace PowerShellFar
 
 			// command; confirmation, recurse
 			Command c = new Command("Remove-Item");
-			FarConfirmations confirm = A.Far.Confirmations;
+			FarConfirmations confirm = Far.Host.Confirmations;
 			if ((confirm & FarConfirmations.Delete) != 0 && (confirm & FarConfirmations.DeleteNotEmptyFolders) != 0)
 			{
 				c.Parameters.Add(Prm.Confirm);
@@ -408,7 +408,7 @@ namespace PowerShellFar
 				return;
 			string name = file.Name;
 
-			IInputBox ib = A.Far.CreateInputBox();
+			IInputBox ib = Far.Host.CreateInputBox();
 			ib.Title = "Copy";
 			ib.Prompt = "New name";
 			ib.History = "Copy";
@@ -458,7 +458,7 @@ namespace PowerShellFar
 			if (ip2 == null)
 			{
 				// ignore plugin panel
-				IAnyPanel panel = A.Far.Panel2;
+				IAnyPanel panel = Far.Host.Panel2;
 				if (panel.IsPlugin)
 					return true;
 
@@ -517,7 +517,7 @@ namespace PowerShellFar
 				return;
 			string name = f.Name;
 
-			IInputBox ib = A.Far.CreateInputBox();
+			IInputBox ib = Far.Host.CreateInputBox();
 			ib.Title = "Rename";
 			ib.Prompt = "New name";
 			ib.History = "Copy";
@@ -632,7 +632,7 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 
 			try
 			{
-				string tmp = A.Far.TempName();
+				string tmp = Far.Host.TempName();
 				try
 				{
 					// item path
@@ -704,7 +704,7 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 			}
 			catch (RuntimeException ex)
 			{
-				A.Far.ShowError("Edit", ex);
+				Far.Host.ShowError("Edit", ex);
 			}
 		}
 

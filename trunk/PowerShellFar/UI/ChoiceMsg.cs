@@ -32,7 +32,7 @@ namespace PowerShellFar.UI
 				else
 					sb.AppendLine();
 			}
-			A.Far.AnyViewer.ViewText(sb.ToString(), "Help", OpenMode.Modal);
+			Far.Host.AnyViewer.ViewText(sb.ToString(), "Help", OpenMode.Modal);
 		}
 
 		static public int Show(string caption, string message, Collection<ChoiceDescription> choices)
@@ -46,12 +46,12 @@ namespace PowerShellFar.UI
 			// show
 			for (; ; )
 			{
-				int answer = A.Far.Message(message, caption, MsgOptions.LeftAligned, buttons);
+				int answer = Far.Host.Message(message, caption, MsgOptions.LeftAligned, buttons);
 
 				// [Esc]:
 				if (answer < 0)
 				{
-					answer = A.Far.Message(message, caption, MsgOptions.LeftAligned, new string[] { "&Halt command", "Cancel" });
+					answer = Far.Host.Message(message, caption, MsgOptions.LeftAligned, new string[] { "&Halt command", "Cancel" });
 					if (answer == 0)
 						throw new PipelineStoppedException();
 					continue;

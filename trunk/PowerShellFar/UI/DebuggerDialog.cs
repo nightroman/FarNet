@@ -60,7 +60,7 @@ namespace PowerShellFar.UI
 				h1 = 2;
 			}
 
-			_Dialog = A.Far.CreateDialog(-1, -1, dw, dh);
+			_Dialog = Far.Host.CreateDialog(-1, -1, dw, dh);
 			_Dialog.HelpTopic = A.Psf.HelpTopic + "DebuggerDialog";
 			_Dialog.AddBox(3, 1, dw - 4, dh - 2, title);
 
@@ -157,7 +157,7 @@ namespace PowerShellFar.UI
 						}
 						else
 						{
-							IEditor editor = A.Far.CreateEditor();
+							IEditor editor = Far.Host.CreateEditor();
 							editor.FileName = _InvocationInfo.ScriptName;
 							editor.GoToLine(_InvocationInfo.ScriptLineNumber - 1);
 							editor.Open(OpenMode.Modal);

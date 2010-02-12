@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Shelve.h"
-#include "Far.h"
 #include "Panel2.h"
 
 namespace FarNet
@@ -33,7 +32,7 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 	// Let's use the active path to restore, no path (just close) is worse.
 	if (panel->Type != PanelType::File)
 	{
-		Path = Far::Instance->ActivePath;
+		Path = Far::Host->ActivePath;
 		return;
 	}
 
@@ -64,7 +63,7 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 
 ShelveInfoPanel^ ShelveInfoPanel::CreateActiveInfo(bool modes)
 {
-	IAnyPanel^ panel = Far::Instance->Panel;
+	IAnyPanel^ panel = Far::Host->Panel;
 	if (!panel)
 		return nullptr;
 

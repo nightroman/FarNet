@@ -3,6 +3,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
+using FarNet;
 using FarNet.Forms;
 
 namespace PowerShellFar.UI
@@ -16,7 +17,7 @@ namespace PowerShellFar.UI
 
 		public SettingsDialog()
 		{
-			_Dialog = A.Far.CreateDialog(-1, -1, 77, 8);
+			_Dialog = Far.Host.CreateDialog(-1, -1, 77, 8);
 			_Dialog.HelpTopic = A.Psf.HelpTopic + "Settings";
 			_Dialog.AddBox(3, 1, 0, 0, Res.Me);
 
@@ -50,7 +51,7 @@ namespace PowerShellFar.UI
 				A.Psf.Settings.Save();
 
 				if (needRestart)
-					A.Far.Message("Some settings will take effect only when Far restarts.");
+					Far.Host.Message("Some settings will take effect only when Far restarts.");
 
 				return true;
 			}

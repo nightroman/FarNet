@@ -14,12 +14,12 @@ public class TestFiler : ModuleFiler
 		byte[] buffer = new byte[4];
 		int read = e.Data.Read(buffer, 0, 4);
 		string header = Encoding.Default.GetString(buffer, 0, read);
-		Far.Message(header, "File header");
+		Far.Host.Message(header, "File header");
 		if (header != "TEST")
 			return;
 
 		// create panel
-		IPanel p = Far.CreatePanel();
+		IPanel p = Far.Host.CreatePanel();
 		p.Info.HostFile = e.Name;
 		p.Info.StartSortMode = PanelSortMode.Unsorted;
 		p.Info.Title = "File lines";

@@ -41,7 +41,7 @@ namespace PowerShellFar
 		internal AnyPanel()
 		{
 			// create a panel
-			_Panel = A.Far.CreatePanel();
+			_Panel = Far.Host.CreatePanel();
 
 			// set host, etc.
 			_Panel.Host = this;
@@ -208,7 +208,7 @@ namespace PowerShellFar
 		/// <returns>Found panel or null.</returns>
 		public static AnyPanel GetPanel(bool active)
 		{
-			IPanel plug = A.Far.FindPanel(typeof(AnyPanel));
+			IPanel plug = Far.Host.FindPanel(typeof(AnyPanel));
 			if (plug == null)
 				return null;
 			AnyPanel pp = plug.Host as AnyPanel;
@@ -267,12 +267,12 @@ namespace PowerShellFar
 				_Panel.Info.Title = DefaultTitle;
 
 			// try to open even not from panels
-			WindowType wt = A.Far.WindowType;
+			WindowType wt = Far.Host.WindowType;
 			if (wt != WindowType.Panels)
 			{
 				try
 				{
-					A.Far.SetCurrentWindow(0);
+					Far.Host.SetCurrentWindow(0);
 				}
 				catch (InvalidOperationException e)
 				{
@@ -282,7 +282,7 @@ namespace PowerShellFar
 				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
 				// I tried to ignore my check - a panel did not open. In contrast, PostStep calls via the menu where
 				// a panel is opened from with no problems.
-				A.Far.PostStep(Open);
+				Far.Host.PostStep(Open);
 				return;
 			}
 
@@ -363,7 +363,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal virtual void ShowHelp()
 		{
-			A.Far.ShowHelp(A.Psf.AppHome, "PowerPanel", HelpOptions.Path);
+			Far.Host.ShowHelp(A.Psf.AppHome, "PowerPanel", HelpOptions.Path);
 		}
 
 		/// <summary>
@@ -722,7 +722,7 @@ namespace PowerShellFar
 					}
 				case VKeyCode.Delete:
 					{
-						if (A.Far.CommandLine.Length > 0)
+						if (Far.Host.CommandLine.Length > 0)
 							return;
 						goto case VKeyCode.F8;
 					}
@@ -746,7 +746,7 @@ namespace PowerShellFar
 						switch (e.State)
 						{
 							case KeyStates.None:
-								if (A.Far.CommandLine.Length > 0)
+								if (Far.Host.CommandLine.Length > 0)
 									return;
 								e.Ignore = true;
 								UIEscape(false);
@@ -850,7 +850,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static string SelectDrivePrompt(string select)
 		{
-			IMenu m = A.Far.CreateMenu();
+			IMenu m = Far.Host.CreateMenu();
 			m.AutoAssignHotkeys = true;
 			m.Title = "Power panel";
 			m.HelpTopic = A.Psf.HelpTopic + "MenuPanels";
@@ -890,7 +890,7 @@ $_.Description
 }}";
 			Collection<PSObject> oo = A.Psf.InvokeCode(code, computer);
 
-			IMenu m = A.Far.CreateMenu();
+			IMenu m = Far.Host.CreateMenu();
 			m.AutoAssignHotkeys = true;
 			m.Title = computer + " shares";
 			for (int i = 0; i < oo.Count; i += 2)
@@ -994,7 +994,7 @@ $_.Description
 
 			// clean the line
 			if (e.Ignore)
-				A.Far.CommandLine.Text = string.Empty;
+				Far.Host.CommandLine.Text = string.Empty;
 		}
 
 		/// <summary>
@@ -1081,7 +1081,7 @@ $_.Description
 		IMenu HelpMenuCreate()
 		{
 			// create
-			IMenu r = A.Far.CreateMenu();
+			IMenu r = Far.Host.CreateMenu();
 			r.AutoAssignHotkeys = true;
 			r.Sender = this;
 			r.Title = "Help menu";
