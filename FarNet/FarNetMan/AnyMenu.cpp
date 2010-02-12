@@ -6,7 +6,6 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "AnyMenu.h"
 #include "Dialog.h"
-#include "Far.h"
 #include "InputBox.h"
 #include "Message.h"
 

@@ -147,7 +147,7 @@ namespace PowerShellFar
 			{
 				_StepIndex = 0;
 				InsertRange(0, steps);
-				A.Far.PostStep(Action);
+				Far.Host.PostStep(Action);
 			}
 			// in progress
 			else
@@ -178,7 +178,7 @@ namespace PowerShellFar
 					{
 						try
 						{
-							oInsert = A.Far.CreateKeySequence(s);
+							oInsert = Far.Host.CreateKeySequence(s);
 							if (_Ask)
 								oInsert = s;
 						}
@@ -250,7 +250,7 @@ namespace PowerShellFar
 			AssumeCanStep();
 
 			if (_RunningInstance == null)
-				A.Far.PostStep(Action);
+				Far.Host.PostStep(Action);
 		}
 
 		/// <summary>
@@ -355,7 +355,7 @@ namespace PowerShellFar
 					// no steps? 'continue'
 					if (steps.Count == 0)
 					{
-						A.Far.PostStep(Action);
+						Far.Host.PostStep(Action);
 						return;
 					}
 
@@ -386,7 +386,7 @@ namespace PowerShellFar
 						title += " Unit " + (_UnitIndex + 1) + "/" + _units.Count;
 					}
 
-					switch (A.Far.Message(
+					switch (Far.Host.Message(
 						text,
 						title,
 						MsgOptions.LeftAligned | MsgOptions.Down,
@@ -422,7 +422,7 @@ namespace PowerShellFar
 					if (script != null)
 					{
 						++_StepIndex;
-						A.Far.PostStepAfterStep(Wrap.EventHandler(script), Action);
+						Far.Host.PostStepAfterStep(Wrap.EventHandler(script), Action);
 						return;
 					}
 
@@ -431,7 +431,7 @@ namespace PowerShellFar
 					if (keys != null)
 					{
 						++_StepIndex;
-						A.Far.PostStepAfterKeys(keys, Action);
+						Far.Host.PostStepAfterKeys(keys, Action);
 						return;
 					}
 				}
@@ -440,7 +440,7 @@ namespace PowerShellFar
 					// post keys
 					int[] keys = Cast<int[]>.From(it);
 					if (keys == null)
-						keys = A.Far.CreateKeySequence(it.ToString());
+						keys = Far.Host.CreateKeySequence(it.ToString());
 
 					// suspend?
 					if (keys.Length == 0)
@@ -449,12 +449,12 @@ namespace PowerShellFar
 						return;
 					}
 
-					A.Far.PostKeySequence(keys);
+					Far.Host.PostKeySequence(keys);
 				}
 
 				// post
 				++_StepIndex;
-				A.Far.PostStep(Action);
+				Far.Host.PostStep(Action);
 			}
 			catch(Exception error)
 			{

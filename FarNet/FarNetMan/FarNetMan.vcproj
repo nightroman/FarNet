@@ -464,7 +464,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Far.cpp"
+				RelativePath=".\Far1.cpp"
 				>
 			</File>
 			<File
@@ -662,7 +662,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Far.h"
+				RelativePath=".\Far1.h"
 				>
 			</File>
 			<File

@@ -21,14 +21,9 @@ namespace PowerShellFar
 		public static Actor Psf { get { return _Psf_; } }
 		static Actor _Psf_;
 
-		/// <summary>FarNet factory.</summary>
-		public static IFar Far { get { return _Far_; } }
-		static IFar _Far_;
-
-		public static void Connect(Actor psf, IFar far)
+		public static void Connect(Actor psf)
 		{
 			_Psf_ = psf;
-			_Far_ = far;
 		}
 
 		/// <summary>
@@ -36,7 +31,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(Exception error)
 		{
-			Far.Message(error.Message, "PowerShellFar error", MsgOptions.LeftAligned);
+			Far.Host.Message(error.Message, "PowerShellFar error", MsgOptions.LeftAligned);
 		}
 
 		/// <summary>
@@ -44,7 +39,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(string message)
 		{
-			Far.Message(message, Res.Me, MsgOptions.LeftAligned);
+			Far.Host.Message(message, Res.Me, MsgOptions.LeftAligned);
 		}
 
 		/// <summary>
@@ -53,7 +48,7 @@ namespace PowerShellFar
 		/// <param name="filePath">Existing file to edit.</param>
 		public static IEditor CreateEditor(string filePath)
 		{
-			IEditor edit = Far.CreateEditor();
+			IEditor edit = Far.Host.CreateEditor();
 			edit.FileName = filePath;
 			return edit;
 		}
@@ -64,7 +59,7 @@ namespace PowerShellFar
 		/// <param name="filePath">Existing file to view.</param>
 		public static IViewer CreateViewer(string filePath)
 		{
-			IViewer view = Far.CreateViewer();
+			IViewer view = Far.Host.CreateViewer();
 			view.FileName = filePath;
 			return view;
 		}
@@ -209,7 +204,7 @@ namespace PowerShellFar
 			foreach (object o in ps.Streams.Error)
 				sb.AppendLine(o.ToString());
 
-			Far.Message(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
+			Far.Host.Message(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
 			return true;
 		}
 
@@ -227,7 +222,7 @@ namespace PowerShellFar
 				}
 				catch (IOException ex)
 				{
-					Far.ShowError(Res.Me, ex);
+					Far.Host.ShowError(Res.Me, ex);
 				}
 			}
 		}

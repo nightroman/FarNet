@@ -14,7 +14,7 @@ namespace PowerShellFar.UI
 
 		public CommandHistoryMenu(string filter)
 		{
-			_menu = A.Far.CreateListMenu();
+			_menu = Far.Host.CreateListMenu();
 			A.Psf.Settings.ListMenu(_menu);
 
 			_menu.HelpTopic = A.Psf.HelpTopic + "MenuCommandHistory";

@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.3.5 =
+
+*) IEditor: options WordDiv, ShowWhiteSpace, WriteByteOrderMark can be set
+before (new!) or after opening.
+?? chm this
+
 = 4.3.4 =
 
 *) [e]Bu$ter fixed a recent bug of FarColumn percentage (negative) widths.

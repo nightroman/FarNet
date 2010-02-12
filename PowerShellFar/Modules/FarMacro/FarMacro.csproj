@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BaseCmdlet.cs" />
     <Compile Include="BaseFarMacroCmdlet.cs" />
+    <Compile Include="EditFarMacroCommand.cs" />
     <Compile Include="SetFarMacroCommand.cs" />
     <Compile Include="FarMacroProvider.cs" />
     <Compile Include="NewFarMacroCommand.cs" />

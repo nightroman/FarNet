@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Panel2.h"
-#include "Far.h"
 #include "Panel0.h"
 #include "Shelve.h"
 

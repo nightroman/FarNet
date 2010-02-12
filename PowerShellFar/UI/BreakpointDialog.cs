@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System.Management.Automation;
+using FarNet;
 using FarNet.Forms;
 
 namespace PowerShellFar.UI
@@ -36,7 +37,7 @@ namespace PowerShellFar.UI
 			if (Type == 2)
 				++h;
 
-			UIDialog = A.Far.CreateDialog(-1, -1, 77, h);
+			UIDialog = Far.Host.CreateDialog(-1, -1, 77, h);
 			UIDialog.Closing += OnClosing;
 			UIDialog.HelpTopic = A.Psf.HelpTopic + "BreakpointDialog";
 
@@ -111,7 +112,7 @@ namespace PowerShellFar.UI
 				int value;
 				if (!int.TryParse(UIMatter.Text, out value) || value <= 0)
 				{
-					A.Far.Message("Invalid line number", "Line");
+					Far.Host.Message("Invalid line number", "Line");
 					UIDialog.Focused = UIMatter;
 					e.Ignore = true;
 					return;
@@ -119,7 +120,7 @@ namespace PowerShellFar.UI
 
 				if (UIScript.Text.TrimEnd().Length == 0)
 				{
-					A.Far.Message("Script has to be defined", "Script");
+					Far.Host.Message("Script has to be defined", "Script");
 					UIDialog.Focused = UIScript;
 					e.Ignore = true;
 					return;
@@ -140,7 +141,7 @@ namespace PowerShellFar.UI
 				}
 				catch (RuntimeException ex)
 				{
-					A.Far.Message(ex.Message, "Action");
+					Far.Host.Message(ex.Message, "Action");
 					UIDialog.Focused = UIAction;
 					e.Ignore = true;
 					return;

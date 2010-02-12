@@ -7,9 +7,9 @@ Copyright (c) 2005 FarNet Team
 #include "ListMenu.h"
 #include "Dialog.h"
 #include "DialogControls.h"
-#include "Far.h"
 #include "InputBox.h"
 #include "Message.h"
+#include "Far1.h"
 
 namespace FarNet
 {;
@@ -88,8 +88,8 @@ static String^ InputFilter(String^ pattern, PatternOptions options, String^ hist
 	if (SS(pattern))
 		ib.Text = pattern;
 
-	//! help; it fails without 'Far::_helpTopic' part
-	ib.HelpTopic = Far::_helpTopic + "InputFilter";
+	//! help; it fails without 'Far1::_helpTopic' part
+	ib.HelpTopic = Far1::_helpTopic + "InputFilter";
 
 	// show filter input box
 	for(;;)
@@ -175,7 +175,7 @@ void ListMenu::MakeFilter1()
 		RegistryKey^ key = nullptr;
 		try
 		{
-			key = Registry::CurrentUser->OpenSubKey(Far::Instance->RegistryFarPath + "\\SavedDialogHistory\\" + FilterHistory, false);
+			key = Registry::CurrentUser->OpenSubKey(Far::Host->RegistryFarPath + "\\SavedDialogHistory\\" + FilterHistory, false);
 			if (key)
 			{
 				int flags = (int)key->GetValue("Flags");
@@ -420,7 +420,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 	if (e->Code == (KeyMode::Ctrl | 'C') || e->Code == (KeyMode::Ctrl | KeyCode::Ins))
 	{
 		FarListBox^ box = (FarListBox^)e->Control;
-		Far::Instance->CopyToClipboard(box->Text);
+		Far::Host->CopyToClipboard(box->Text);
 		e->Ignore = true;
 		return;
 	}
@@ -465,7 +465,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 		}
 		else
 		{
-			Char c = Far::Instance->CodeToChar(e->Code);
+			Char c = Far::Host->CodeToChar(e->Code);
 			if (c >= KeyCode::Space)
 			{
 				// keep and change filter

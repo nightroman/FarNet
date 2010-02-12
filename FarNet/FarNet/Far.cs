@@ -12,10 +12,32 @@ using FarNet.Support;
 namespace FarNet
 {
 	/// <summary>
+	/// Holder of the global <see cref="IFar"/> host instance.
+	/// </summary>
+	public static class Far
+	{
+		/// <summary>
+		/// The global <see cref="IFar"/> host instance.
+		/// </summary>
+		public static IFar Host
+		{
+			get { return _Host; }
+			set
+			{
+				if (_Host == null)
+					_Host = value;
+				else
+					throw new InvalidOperationException();
+			}
+		}
+		static IFar _Host;
+	}
+
+	/// <summary>
 	/// Main interface which exposes top entries of the FarNet object model.
 	/// </summary>
 	/// <remarks>
-	/// It is exposed for module derived classes as the property <see cref="BaseModule.Far"/>.
+	/// It is exposed for modules as <see cref="Far.Host"/>.
 	/// It provides access to top level Far methods and objects or creates new Far objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
 	/// Further operations are performed on that objects.

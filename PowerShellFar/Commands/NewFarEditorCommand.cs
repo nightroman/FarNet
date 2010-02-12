@@ -49,7 +49,7 @@ namespace PowerShellFar.Commands
 		///
 		internal IEditor CreateEditor()
 		{
-			IEditor editor = A.Far.CreateEditor();
+			IEditor editor = Far.Host.CreateEditor();
 			editor.Data = _Data;
 			editor.DeleteSource = DeleteSource;
 			editor.DisableHistory = DisableHistory;

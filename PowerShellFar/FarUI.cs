@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Management.Automation;
 using System.Management.Automation.Host;
+using FarNet;
 
 namespace PowerShellFar
 {
@@ -50,7 +51,7 @@ namespace PowerShellFar
 		{
 			Check();
 			if (_writers.Count == 0)
-				A.Far.Write(value);
+				Far.Host.Write(value);
 			else
 				Writer.Append(value);
 		}
@@ -59,7 +60,7 @@ namespace PowerShellFar
 		{
 			Check();
 			if (_writers.Count == 0)
-				A.Far.Write("\r\n");
+				Far.Host.Write("\r\n");
 			else
 				Writer.AppendLine();
 		}
@@ -68,7 +69,7 @@ namespace PowerShellFar
 		{
 			Check();
 			if (_writers.Count == 0)
-				A.Far.Write(value + "\r\n");
+				Far.Host.Write(value + "\r\n");
 			else
 				Writer.AppendLine(value);
 		}
@@ -119,7 +120,7 @@ namespace PowerShellFar
 				Console.Title = "Done : " + record.Activity + " : " + record.StatusDescription;
 
 				// win7 NoProgress
-				A.Far.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
+				Far.Host.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
 			
 				return;
 			}
@@ -138,7 +139,7 @@ namespace PowerShellFar
 			Console.Title = text;
 
 			// win7 %
-			A.Far.SetProgressValue(record.PercentComplete, 100);
+			Far.Host.SetProgressValue(record.PercentComplete, 100);
 		}
 		Stopwatch _progressWatch = Stopwatch.StartNew();
 

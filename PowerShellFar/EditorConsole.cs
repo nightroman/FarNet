@@ -37,7 +37,7 @@ namespace PowerShellFar
 			if (prompt)
 			{
 				string[] files = Directory.GetFiles(dir, "*" + Word.ConsoleExtension);
-				IMenu menu = A.Far.CreateMenu();
+				IMenu menu = Far.Host.CreateMenu();
 				menu.AutoAssignHotkeys = true;
 				menu.Title = "Open Editor Console";
 				menu.Bottom = "[Shift+|Ctrl+]Enter";
@@ -45,7 +45,7 @@ namespace PowerShellFar
 				menu.HelpTopic = A.Psf.HelpTopic + "EditorConsoleMenuOpen";
 
 				IAnyPanel panel = null;
-				if ((A.Far.WindowType == WindowType.Panels) && (null != (panel = A.Far.Panel)) && (panel.Type != PanelType.File))
+				if ((Far.Host.WindowType == WindowType.Panels) && (null != (panel = Far.Host.Panel)) && (panel.Type != PanelType.File))
 					panel = null;
 				
 				// break keys
@@ -83,7 +83,7 @@ namespace PowerShellFar
 			}
 
 			// editor
-			IEditor editor = A.Far.CreateEditor();
+			IEditor editor = Far.Host.CreateEditor();
 
 			// new file, generate a name, set Unicode, don't history
 			if (name == null)
@@ -193,14 +193,14 @@ namespace PowerShellFar
 
 		void OnF1()
 		{
-			IMenu menu = A.Far.CreateMenu();
+			IMenu menu = Far.Host.CreateMenu();
 			menu.Title = "Editor Console";
 			menu.HelpTopic = A.Psf.HelpTopic + "EditorConsole";
 			if (Runspace != null)
 				menu.Add("&Global session").Click = OnGlobalSession;
 			menu.Add("New &local session").Click = delegate { OpenLocalSession(); };
 			menu.Add("New &remote session").Click = delegate { OpenRemoteSession(); };
-			menu.Add("&Help").Click = delegate { A.Far.ShowHelp(A.Psf.AppHome, "EditorConsole", HelpOptions.Path); };
+			menu.Add("&Help").Click = delegate { Far.Host.ShowHelp(A.Psf.AppHome, "EditorConsole", HelpOptions.Path); };
 			menu.Show();
 		}
 
@@ -463,9 +463,9 @@ namespace PowerShellFar
 
 			// default runspace
 			A.Psf.InvokePipeline(code, writer, true);
-			if (Editor != A.Far.Editor)
+			if (Editor != Far.Host.Editor)
 			{
-				A.Far.Message(Res.EditorConsoleCannotComplete);
+				Far.Host.Message(Res.EditorConsoleCannotComplete);
 			}
 			else
 			{
@@ -510,7 +510,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				A.Far.ShowError(Res.Me, ex);
+				Far.Host.ShowError(Res.Me, ex);
 			}
 		}
 

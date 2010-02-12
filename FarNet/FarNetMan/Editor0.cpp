@@ -6,8 +6,8 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Editor0.h"
 #include "Editor.h"
-#include "Far.h"
 #include "Wrappers.h"
+#include "Far1.h"
 
 namespace FarNet
 {;
@@ -50,35 +50,39 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		{
 			LOG_AUTO(3, "EE_READ");
 
-			// take waiting or create new
+			// pop the waiting or create new
 			Editor^ editor;
+			bool isEditorWaiting;
 			if (_editorWaiting)
 			{
 				editor = _editorWaiting;
 				_editorWaiting = nullptr;
+				isEditorWaiting = true;
 			}
 			else
 			{
 				editor = gcnew Editor;
+				isEditorWaiting = false;
 			}
 			
 			// get info
 			AutoEditorInfo ei;
 
-			// register and cache
+			// register and cache the current
 			_editors.Add(ei.EditorID, editor);
 			_editorCurrent = editor;
 
-			// set info
-			editor->_id = ei.EditorID;
-			CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
-			Info.EditorControl(ECTL_GETFILENAME, fileName);
-			editor->_FileName = gcnew String(fileName);
+			// start the editor
+			editor->Start(ei, isEditorWaiting);
 
-			// event
-			Far::Instance->OnEditorOpened(editor);
+			// 1) event for module editors, they add any or this editor handlers
+			Far1::Far.OnEditorOpened(editor);
+			
+			// 2) event for any editor handlers, they add this editor handlers
 			if (_anyEditor._Opened)
 				_anyEditor._Opened(editor, nullptr);
+
+			// 3) event for this editor handlers
 			if (editor->_Opened)
 				editor->_Opened(editor, nullptr);
 		}
@@ -90,7 +94,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// get registered, close and unregister
 			int id = *((int*)param);
 			Editor^ editor = _editors[id];
-			editor->_id = -2;
+			editor->Stop();
 			_editors.Remove(id);
 			_fastGetString = 0;
 			_editorCurrent = nullptr;
@@ -105,7 +109,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 				editor->_Closed(editor, nullptr);
 
 			// delete the file after all
-			DeleteSourceOptional(editor->_FileName, editor->DeleteSource);
+			DeleteSourceOptional(editor->FileName, editor->DeleteSource);
 		}
 		break;
 	case EE_REDRAW:

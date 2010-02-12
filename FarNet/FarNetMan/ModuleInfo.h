@@ -17,6 +17,8 @@ public:
 	property String^ ClassName { String^ get(); }
 	property String^ Key { String^ get(); }
 	property String^ Name { String^ get() { return _Name; } }
+	static Object^ GetFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue);
+	static void SetFarNetValue(String^ keyPath, String^ valueName, Object^ value);
 protected:
 	BaseModuleInfo(BaseModule^ module, String^ name);
 	BaseModuleInfo(String^ assemblyPath, String^ className, String^ name);

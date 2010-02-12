@@ -31,6 +31,8 @@ namespace FarMacro
 			if (path.Length == 0)
 				return;
 
+			path = path.Replace("/", "(Slash)");
+
 			int i = path.IndexOf('\\');
 			if (i < 0)
 			{

@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
+using FarNet;
 
 namespace PowerShellFar
 {
@@ -88,7 +89,7 @@ namespace PowerShellFar
 			bool flag = false;
 			int pfSave = Convert.ToInt32(flag);
 			structure.cbSize = Marshal.SizeOf(structure);
-			structure.hwndParent = A.Far.MainWindowHandle; //! works for conemu, too, but the effect is as if we use IntPtr.Zero
+			structure.hwndParent = Far.Host.MainWindowHandle; //! works for conemu, too, but the effect is as if we use IntPtr.Zero
 			CREDUI_FLAGS dwFlags = CREDUI_FLAGS.DO_NOT_PERSIST;
 			if ((allowedCredentialTypes & PSCredentialTypes.Domain) != PSCredentialTypes.Domain)
 			{

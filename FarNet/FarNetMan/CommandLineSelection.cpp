@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "CommandLineSelection.h"
-#include "Far.h"
 
 namespace FarNet
 {;
@@ -32,7 +31,7 @@ void CommandLineSelection::Text::set(String^ value)
 	if (cls.SelStart < 0)
 		throw gcnew InvalidOperationException("Cannot set selected text because there is no selection.");
 
-	String^ text = Far::Instance->CommandLine->Text;
+	String^ text = Far::Host->CommandLine->Text;
 	String^ text1 = text->Substring(0, cls.SelStart);
 	String^ text2 = text->Substring(cls.SelEnd);
 	text = text1 + value + text2;
