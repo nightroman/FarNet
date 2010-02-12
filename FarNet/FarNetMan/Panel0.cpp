@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Panel0.h"
-#include "Far.h"
 #include "Panel2.h"
 #include "Shelve.h"
 
@@ -226,7 +225,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 	{
 		//?? .. else log error?
 		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
-			Far::Instance->ShowError(__FUNCTION__, e);
+			Far::Host->ShowError(__FUNCTION__, e);
 
 		return false;
 	}
@@ -346,7 +345,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				}
 				catch(Exception^ exception)
 				{
-					Far::Instance->ShowError("Event: Executing", exception);
+					Far::Host->ShowError("Event: Executing", exception);
 				}
 				return e.Ignore;
 			}
@@ -717,7 +716,7 @@ void Panel0::OpenPluginPanel(Panel2^ plugin)
 	// panels window should be current
 	try
 	{
-		Far::Instance->SetCurrentWindow(0);
+		Far::Host->SetCurrentWindow(0);
 	}
 	catch(InvalidOperationException^ e)
 	{

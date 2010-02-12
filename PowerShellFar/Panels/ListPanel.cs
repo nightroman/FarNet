@@ -60,7 +60,7 @@ namespace PowerShellFar
 			if (s != null)
 			{
 				// set command line
-				ILine cl = A.Far.CommandLine;
+				ILine cl = Far.Host.CommandLine;
 				cl.Text = "=" + s;
 				cl.Select(1, s.Length + 1);
 				return;
@@ -147,7 +147,7 @@ namespace PowerShellFar
 
 		internal override void ShowHelp()
 		{
-			A.Far.ShowHelp(A.Psf.AppHome, "ListPanel", HelpOptions.Path);
+			Far.Host.ShowHelp(A.Psf.AppHome, "ListPanel", HelpOptions.Path);
 		}
 
 		/// <summary>

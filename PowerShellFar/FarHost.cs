@@ -37,14 +37,6 @@ namespace PowerShellFar
 		CultureInfo originalUICultureInfo = System.Threading.Thread.CurrentThread.CurrentUICulture;
 
 		/// <summary>
-		/// Exposes <see cref="IFar"/> instance.
-		/// </summary>
-		public override PSObject PrivateData
-		{
-			get { return new PSObject(A.Far); }
-		}
-
-		/// <summary>
 		/// The host name: FarHost
 		/// </summary>
 		public override string Name

@@ -70,7 +70,7 @@ namespace PowerShellFar
 
 			// adjust formatting to the panel width ????
 			{
-				int totalWidth = A.Far.Panel.Window.Width - (metas.Length + 1); // N columns ~ N + 1 borders
+				int totalWidth = Far.Host.Panel.Window.Width - (metas.Length + 1); // N columns ~ N + 1 borders
 				int setSum = 0;
 				int setCount = 0;
 				int setMaxValue = 0;
@@ -312,7 +312,7 @@ namespace PowerShellFar
 			catch (RuntimeException ex)
 			{
 				if ((e.Mode & OperationModes.Silent) == 0)
-					A.Far.ShowError(Res.Me, ex);
+					Far.Host.ShowError(Res.Me, ex);
 
 				data = new List<FarFile>();
 			}

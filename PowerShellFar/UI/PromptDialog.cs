@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Management.Automation;
 using System.Management.Automation.Host;
+using FarNet;
 using FarNet.Forms;
 
 namespace PowerShellFar.UI
@@ -28,7 +29,7 @@ namespace PowerShellFar.UI
 
 			int h = 4 + lines.Count + descriptions.Count;
 
-			Dialog = A.Far.CreateDialog(-1, -1, w, h);
+			Dialog = Far.Host.CreateDialog(-1, -1, w, h);
 			Dialog.AddBox(3, 1, w - 4, h - 2, caption);
 			foreach (string s in lines)
 				Dialog.AddText(5, -1, w - 6, s);

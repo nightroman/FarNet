@@ -20,7 +20,7 @@ namespace PowerShellFar.UI
 			int w = Console.WindowWidth - 7;
 			int h = 5 + prompt.Length;
 
-			UIDialog = A.Far.CreateDialog(-1, -1, w, h);
+			UIDialog = Far.Host.CreateDialog(-1, -1, w, h);
 			UIDialog.AddBox(3, 1, w - 4, h - 2, caption);
 			UIPrompt = new IText[prompt.Length];
 			for (int i = 0; i < prompt.Length; ++i)

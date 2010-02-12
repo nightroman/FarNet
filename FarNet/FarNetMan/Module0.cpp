@@ -5,8 +5,8 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Module0.h"
-#include "Far.h"
 #include "ModuleInfo.h"
+#include "Far1.h"
 
 namespace FarNet
 {;
@@ -95,7 +95,7 @@ void Module0::LoadFromDirectory(String^ dir)
 	{
 		// Wish: no UI on loading
 		String^ msg = "ERROR: module " + dir + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
-		Far::Instance->Write(msg, ConsoleColor::Red);
+		Far::Host->Write(msg, ConsoleColor::Red);
 		Log::TraceError(msg);
 	}
 }
@@ -160,13 +160,13 @@ void Module0::LoadFromAssembly(String^ assemblyPath, array<String^>^ classes)
 
 	// add plugins
 	if (commands.Count)
-		Far::Instance->RegisterCommands(%commands);
+		Far1::Far.RegisterCommands(%commands);
 	if (editors.Count)
-		Far::Instance->RegisterEditors(%editors);
+		Far1::Far.RegisterEditors(%editors);
 	if (filers.Count)
-		Far::Instance->RegisterFilers(%filers);
+		Far1::Far.RegisterFilers(%filers);
 	if (tools.Count)
-		Far::Instance->RegisterTools(%tools);
+		Far1::Far.RegisterTools(%tools);
 
 	// write cache
 	if (nBaseModule == 0)
@@ -182,7 +182,6 @@ int Module0::AddModule(Type^ type, List<ModuleCommandInfo^>^ commands, List<Modu
 
 	// register, attach, connect
 	_Modules.Add(instance);
-	instance->Far = Far::Instance;
 	{
 		LOG_AUTO(3, String::Format("{0}.Connect", instance));
 		instance->Connect();
@@ -235,7 +234,7 @@ void Module0::ReadCache()
 	RegistryKey^ keyCache;
 	try
 	{
-		keyCache = Registry::CurrentUser->CreateSubKey(Far::Instance->RegistryPluginsPath + "\\FarNet\\<cache>");
+		keyCache = Registry::CurrentUser->CreateSubKey(Far::Host->RegistryPluginsPath + "\\FarNet\\<cache>");
 		for each (String^ dllName in keyCache->GetSubKeyNames())
 		{
 			bool ok = true;
@@ -317,13 +316,13 @@ void Module0::ReadCache()
 					// add dllName to dictionary and add plugins
 					_Cache->Add(dllName, nullptr);
 					if (commands.Count)
-						Far::Instance->RegisterCommands(%commands);
+						Far1::Far.RegisterCommands(%commands);
 					if (editors.Count)
-						Far::Instance->RegisterEditors(%editors);
+						Far1::Far.RegisterEditors(%editors);
 					if (filers.Count)
-						Far::Instance->RegisterFilers(%filers);
+						Far1::Far.RegisterFilers(%filers);
 					if (tools.Count)
-						Far::Instance->RegisterTools(%tools);
+						Far1::Far.RegisterTools(%tools);
 				}
 			}
 			catch(OperationCanceledException^)
@@ -360,7 +359,7 @@ void Module0::WriteCache(String^ assemblyPath, List<ModuleCommandInfo^>^ command
 	RegistryKey^ keyDll;
 	try
 	{
-		keyDll = Registry::CurrentUser->CreateSubKey(Far::Instance->RegistryPluginsPath + "\\FarNet\\<cache>\\" + fi.Name);
+		keyDll = Registry::CurrentUser->CreateSubKey(Far::Host->RegistryPluginsPath + "\\FarNet\\<cache>\\" + fi.Name);
 		keyDll->SetValue("Path", assemblyPath);
 		keyDll->SetValue("Stamp", fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture));
 

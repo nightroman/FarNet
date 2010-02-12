@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Menu.h"
-#include "Far.h"
 
 namespace FarNet
 {;

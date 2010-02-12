@@ -6,7 +6,6 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Dialog.h"
 #include "DialogControls.h"
-#include "Far.h"
 #include "Wrappers.h"
 
 namespace FarNet
@@ -770,7 +769,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 	}
 	catch(Exception^ e)
 	{
-		Far::Instance->ShowError("Error in " __FUNCTION__, e);
+		Far::Host->ShowError("Error in " __FUNCTION__, e);
 	}
 
 	// default

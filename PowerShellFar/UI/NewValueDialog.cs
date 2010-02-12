@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using FarNet;
 using FarNet.Forms;
 
 namespace PowerShellFar.UI
@@ -17,7 +18,7 @@ namespace PowerShellFar.UI
 
 		public NewValueDialog(string title)
 		{
-			Dialog = A.Far.CreateDialog(-1, -1, 77, 9);
+			Dialog = Far.Host.CreateDialog(-1, -1, 77, 9);
 			Dialog.AddBox(3, 1, 0, 0, title);
 			int x = 11;
 

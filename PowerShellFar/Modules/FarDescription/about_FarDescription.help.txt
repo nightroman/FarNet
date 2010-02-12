@@ -19,6 +19,8 @@ EXTENDED TYPES
 	The module adds a few members to the [System.IO.FileSystemInfo] items
 	(files or directories, items of the FileSystem provider).
 
+	=================================================================
+
 	[System.IO.FileSystemInfo]
 	(files and directories)
 
@@ -29,6 +31,8 @@ EXTENDED TYPES
 	FarMoveTo() method
 		It calls the .NET method MoveTo() and then moves the description.
 
+
+	=================================================================
 
 	[System.IO.FileInfo]
 	(files only)

@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "AnyViewer.h"
-#include "Far.h"
 #include "Viewer.h"
 
 namespace FarNet
@@ -17,7 +16,7 @@ drop the flag for editor and propagate this option to itself.
 */
 void AnyViewer::ViewText(String^ text, String^ title, OpenMode mode)
 {
-	String^ tmpfile = Far::Instance->TempName();
+	String^ tmpfile = Far::Host->TempName();
 	File::WriteAllText(tmpfile, text, Encoding::Unicode);
 
 	Viewer viewer;

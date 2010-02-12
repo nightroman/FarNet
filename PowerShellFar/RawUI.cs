@@ -19,12 +19,8 @@ namespace PowerShellFar
 	/// </summary>
 	class RawUI : PSHostRawUserInterface
 	{
-		IFar _Far;
-
 		public RawUI()
-		{
-			_Far = A.Far;
-		}
+		{ }
 
 		#region Managed
 
@@ -123,7 +119,7 @@ namespace PowerShellFar
 		// _091007_034112
 		public override string WindowTitle
 		{
-			get { return A.Far.Zoo.ConsoleTitle; }
+			get { return Far.Host.Zoo.ConsoleTitle; }
 			set { Console.Title = value; }
 		}
 
@@ -157,23 +153,23 @@ namespace PowerShellFar
 
 		public override void FlushInputBuffer()
 		{
-			_Far.Zoo.FlushInputBuffer();
+			Far.Host.Zoo.FlushInputBuffer();
 		}
 
 		public override Host.KeyInfo ReadKey(Host.ReadKeyOptions options)
 		{
-			FarNet.KeyInfo k = _Far.Zoo.ReadKey((FarNet.Support.ReadKeyOptions)options);
+			FarNet.KeyInfo k = Far.Host.Zoo.ReadKey((FarNet.Support.ReadKeyOptions)options);
 			return new Host.KeyInfo(k.VirtualKeyCode, k.Character, (Host.ControlKeyStates)k.ControlKeyState, k.KeyDown);
 		}
 
 		public override void ScrollBufferContents(Rectangle source, Coordinates destination, Rectangle clip, Host.BufferCell fill)
 		{
-			_Far.Zoo.ScrollBufferContents(PlaceOf(source), PointOf(destination), PlaceOf(clip), BufferCellOf(fill));
+			Far.Host.Zoo.ScrollBufferContents(PlaceOf(source), PointOf(destination), PlaceOf(clip), BufferCellOf(fill));
 		}
 
 		public override Host.BufferCell[,] GetBufferContents(Rectangle rectangle)
 		{
-			FarNet.Support.BufferCell[,] r1 = _Far.Zoo.GetBufferContents(PlaceOf(rectangle));
+			FarNet.Support.BufferCell[,] r1 = Far.Host.Zoo.GetBufferContents(PlaceOf(rectangle));
 			Host.BufferCell[,] r2 = new Host.BufferCell[r1.GetLength(0), r1.GetLength(1)];
 			for (int i = 0; i < r1.GetLength(0); ++i)
 				for (int j = 0; j < r1.GetLength(1); ++j)
@@ -187,12 +183,12 @@ namespace PowerShellFar
 			for (int i = 0; i < contents.GetLength(0); ++i)
 				for (int j = 0; j < contents.GetLength(1); ++j)
 					r[i, j] = BufferCellOf(contents[i, j]);
-			_Far.Zoo.SetBufferContents(PointOf(origin), r);
+			Far.Host.Zoo.SetBufferContents(PointOf(origin), r);
 		}
 
 		public override void SetBufferContents(Rectangle rectangle, Host.BufferCell fill)
 		{
-			_Far.Zoo.SetBufferContents(PlaceOf(rectangle), BufferCellOf(fill));
+			Far.Host.Zoo.SetBufferContents(PlaceOf(rectangle), BufferCellOf(fill));
 		}
 
 		#endregion

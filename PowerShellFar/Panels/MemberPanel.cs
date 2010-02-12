@@ -279,7 +279,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenMemberChanged(object instance)
 		{
-			MemberPanel p = A.Far.FindPanel(typeof(MemberPanel)).Host as MemberPanel;
+			MemberPanel p = Far.Host.FindPanel(typeof(MemberPanel)).Host as MemberPanel;
 			if (p == null)
 				return;
 
@@ -355,9 +355,9 @@ namespace PowerShellFar
 			if (Parent is DataPanel)
 				return;
 
-			if ((A.Far.Confirmations & FarConfirmations.Delete) != 0)
+			if ((Far.Host.Confirmations & FarConfirmations.Delete) != 0)
 			{
-				if (A.Far.Message("Delete selected members (if possible)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
+				if (Far.Host.Message("Delete selected members (if possible)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
 					return;
 			}
 
@@ -390,7 +390,7 @@ namespace PowerShellFar
 
 			try
 			{
-				string tmp = A.Far.TempName();
+				string tmp = Far.Host.TempName();
 				try
 				{
 					// warning
@@ -449,7 +449,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				A.Far.ShowError("Edit", ex);
+				Far.Host.ShowError("Edit", ex);
 			}
 		}
 
@@ -519,7 +519,7 @@ namespace PowerShellFar
 			// ask
 			if (!r)
 			{
-				switch (A.Far.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+				switch (Far.Host.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
 				{
 					case 0:
 						InvokeScriptReturnAsIs(_Save, null);

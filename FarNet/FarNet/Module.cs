@@ -45,19 +45,6 @@ namespace FarNet
 		protected BaseModule()
 		{ }
 
-		/// <summary>
-		/// Gets the object which exposes FarNet methods and creates other FarNet objects.
-		/// </summary>
-		/// <remarks>
-		/// This object is really the main gateway to absolutely all FarNet API.
-		/// It exposes properties and methods for direct use and a few Create*
-		/// methods that create other FarNet objects with their own members.
-		/// <para>
-		/// NOTE: It is set internally once and should never be changed.
-		/// </para>
-		/// </remarks>
-		public IFar Far { get; set; }
-
 		/// <include file='doc.xml' path='docs/pp[@name="Connect"]/*'/>
 		public virtual void Connect()
 		{ }
@@ -106,7 +93,7 @@ namespace FarNet
 			get
 			{
 				if (_CurrentUICulture == null)
-					_CurrentUICulture = Far.GetCurrentUICulture(false);
+					_CurrentUICulture = Far.Host.GetCurrentUICulture(false);
 
 				return _CurrentUICulture;
 			}
@@ -176,7 +163,7 @@ namespace FarNet
 		public string GetString(string name)
 		{
 			if (Resource == null)
-				Resource = Far.Zoo.CreateFileBasedResourceManager(this);
+				Resource = Far.Host.Zoo.CreateFileBasedResourceManager(this);
 
 			return Resource.GetString(name, CurrentUICulture);
 		}

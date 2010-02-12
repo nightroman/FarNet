@@ -81,13 +81,21 @@ public:
 internal:
 	Editor();
 	void Sync();
+	void Start(const EditorInfo& ei, bool waiting);
+	void Stop();
 private:
 	void AssertClosed();
-	bool GetBoolOption(int option);
+	bool GetBoolOption(int option, bool value);
 	void SetBoolOption(int option, bool value);
-internal:
+private:
 	int _id;
 	String^ _FileName;
+	bool _ShowWhiteSpace;
+	bool _ShowWhiteSpaceSet;
+	bool _WriteByteOrderMark;
+	bool _WriteByteOrderMarkSet;
+	String^ _WordDiv;
+	bool _WordDivSet;
 private:
 	FarNet::DeleteSource _DeleteSource;
 	FarNet::Switching _Switching;
