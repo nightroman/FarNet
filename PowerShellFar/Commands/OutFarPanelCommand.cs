@@ -88,7 +88,7 @@ namespace PowerShellFar.Commands
 				return;
 
 			// add object(s)
-			if (InputObject.BaseObject is object[]) //????
+			if (InputObject.BaseObject is object[]) //???
 				_panel.AddObjects(InputObject);
 			else
 				_panel.AddObject(InputObject);
