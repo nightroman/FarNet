@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Globalization;
-using System.Resources;
 
 namespace FarNet.Support
 {
@@ -168,7 +167,5 @@ namespace FarNet.Support
 		object Shelve { get; }
 		///
 		void Break();
-		///
-		ResourceManager CreateFileBasedResourceManager(object target);
 	}
 }

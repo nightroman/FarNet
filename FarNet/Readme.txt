@@ -64,20 +64,17 @@ FarNet.dll - FarNet interfaces for .NET modules
 FarNet.xml - XML documentation
 
 .\FarNet\Modules\
-Each module folder contains one or more assemblies (.dll) and at most one
-optional configuration file (.cfg). Each line of .cfg file is:
-	<Assembly> <Class1> <Class2> ... <ClassN>
-	where
-	<Assembly> - relative path of the module assembly;
-	<ClassX> - name of a module class to be loaded and connected.
+Each module folder contains exactly one .cfg file (module manifest) or exactly
+one .dll file (module assembly). The manifest file tells what is loaded: the
+first line is the .dll path and the others are class names.
 
 
 	= LOADING MODULES FROM DISK =
 
 
-*) For each folder in Modules: if a file *.cfg exists then only specified
-assemblies and their classes are loaded, else all not abstract BaseModule
-children are loaded from all *.dll files in the module folder.
+*) For each folder in Modules: if a manifest *.cfg exists then only specified
+assembly and classes are loaded, else all not abstract BaseModule children are
+loaded from a single *.dll file.
 
 *) Excluded folders: folders "-*", e.g. "-MyModule", are not loaded.
 

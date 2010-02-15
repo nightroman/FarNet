@@ -515,7 +515,7 @@ Continue with this current directory?
 		/// </remarks>
 		public void Action(string text, EventHandler handler)
 		{
-			UI.ActorMenu.AddUserTool(text, handler, ToolOptions.None);
+			UI.ActorMenu.AddUserTool(text, handler, ModuleToolOptions.None);
 		}
 
 		/// <summary>
@@ -530,7 +530,7 @@ Continue with this current directory?
 		/// Use $null action to add a separator to menus.
 		/// </para>
 		/// </remarks>
-		public void Action(string text, EventHandler handler, ToolOptions area)
+		public void Action(string text, EventHandler handler, ModuleToolOptions area)
 		{
 			UI.ActorMenu.AddUserTool(text, handler, area);
 		}

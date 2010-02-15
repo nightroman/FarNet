@@ -39,10 +39,10 @@ namespace PowerShellFar
 	/// If a panel is too narrow to display all columns this option can be ignored.
 	/// </para>
 	/// </remarks>
-	public class Meta : FarColumn
+	public sealed class Meta : FarColumn
 	{
 		string _ColumnName;
-		
+
 		string _Property;
 		ScriptBlock _Script;
 
@@ -79,10 +79,12 @@ namespace PowerShellFar
 		}
 
 		///
-		public override string Type { get; set; }
+		public override string Type { get { return _Type; } set { _Type = value; } }
+		string _Type; //! CA
 
 		///
-		public override int Width { get; set; }
+		public override int Width { get { return _Width; } set { _Width = value; } }
+		int _Width; //! CA
 
 		/// <summary>
 		/// Alignment type.
@@ -145,7 +147,7 @@ namespace PowerShellFar
 			if (!string.IsNullOrEmpty(header.Label))
 				_ColumnName = header.Label;
 
-			Width = header.Width;
+			_Width = header.Width;
 			Alignment = header.Alignment;
 		}
 
@@ -181,11 +183,11 @@ namespace PowerShellFar
 					}
 					else if (Word.Type.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
-						Type = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
+						_Type = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
 					}
 					else if (Word.Width.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
-						Width = (int)LanguagePrimitives.ConvertTo(kv.Value, typeof(int), CultureInfo.InvariantCulture);
+						_Width = (int)LanguagePrimitives.ConvertTo(kv.Value, typeof(int), CultureInfo.InvariantCulture);
 					}
 					else if (Word.Alignment.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
@@ -220,12 +222,12 @@ namespace PowerShellFar
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append("@{");
-			if (Type != null)
-				sb.Append(" Type = '" + Type + "';");
+			if (_Type != null)
+				sb.Append(" Type = '" + _Type + "';");
 			if (_ColumnName != null)
 				sb.Append(" Label = '" + _ColumnName + "';");
-			if (Width != 0)
-				sb.Append(" Width = " + Width + ";");
+			if (_Width != 0)
+				sb.Append(" Width = " + _Width + ";");
 			if (Alignment != 0)
 				sb.Append(" Alignment = '" + Alignment + "';");
 			if (_Property != null)
@@ -291,19 +293,19 @@ namespace PowerShellFar
 		{
 			if (string.IsNullOrEmpty(FormatString))
 			{
-				if (Width <= 0 || Alignment != Alignment.Right)
+				if (_Width <= 0 || Alignment != Alignment.Right)
 					return Get<string>(value);
 
 				string s = Get<string>(value);
-				return s == null ? null : s.PadLeft(Width);
+				return s == null ? null : s.PadLeft(_Width);
 			}
-			else if (Width <= 0 || Alignment != Alignment.Right)
+			else if (_Width <= 0 || Alignment != Alignment.Right)
 			{
 				return string.Format(CultureInfo.CurrentCulture, FormatString, GetValue(value));
 			}
 			else
 			{
-				return string.Format(CultureInfo.CurrentCulture, FormatString, GetValue(value)).PadLeft(Width);
+				return string.Format(CultureInfo.CurrentCulture, FormatString, GetValue(value)).PadLeft(_Width);
 			}
 		}
 

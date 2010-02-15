@@ -464,6 +464,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Far0.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Far1.cpp"
 				>
 			</File>
@@ -504,11 +508,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Module0.cpp"
+				RelativePath=".\ModuleLoader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ModuleInfo.cpp"
+				RelativePath=".\ModuleManager.cpp"
 				>
 			</File>
 			<File
@@ -662,6 +666,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Far0.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Far1.h"
 				>
 			</File>
@@ -710,11 +718,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Module0.h"
+				RelativePath=".\ModuleLoader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ModuleInfo.h"
+				RelativePath=".\ModuleManager.h"
 				>
 			</File>
 			<File

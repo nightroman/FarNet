@@ -6,8 +6,8 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Editor0.h"
 #include "Editor.h"
+#include "Far0.h"
 #include "Wrappers.h"
-#include "Far1.h"
 
 namespace FarNet
 {;
@@ -76,7 +76,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			editor->Start(ei, isEditorWaiting);
 
 			// 1) event for module editors, they add any or this editor handlers
-			Far1::Far.OnEditorOpened(editor);
+			Far0::OnEditorOpened(editor); //????
 			
 			// 2) event for any editor handlers, they add this editor handlers
 			if (_anyEditor._Opened)
