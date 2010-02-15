@@ -606,10 +606,6 @@ namespace FarNet
 	/// When a panel is opened you can change modes dynamically, but do not forget
 	/// to reset the list itself, changes in items are not reflected without this.
 	/// <para>
-	/// Properties <c>IsAlignedExtensions</c> and <c>IsCaseConversion</c>
-	/// can be implemented in the future on demand.
-	/// </para>
-	/// <para>
 	/// WARNING: titles, types and custom columns is a sort of low level stuff;
 	/// if you use this incorrectly the Far may crash. For performance sake
 	/// FarNet does only basic sanity checks.
@@ -662,6 +658,14 @@ namespace FarNet
 		/// Otherwise, the status line displays the file name.
 		/// </remarks>
 		public bool IsDetailedStatus { get; set; }
+		/// <summary>
+		/// Tells to align file extensions.
+		/// </summary>
+		public bool IsAlignedExtensions { get; set; }
+		/// <summary>
+		/// Tells to use name case conversion.
+		/// </summary>
+		public bool IsCaseConversion { get; set; }
 		/// <summary>
 		/// Creates a new mode as a shallow copy of this.
 		/// </summary>

@@ -230,13 +230,15 @@ void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
 {
 	assert(s != nullptr);
 
-	// get type strings first, it can throw
-	String^ types1 = s->Columns ? GetColumnTypes(s->Columns) : nullptr;
-	String^ types2 = s->StatusColumns ? GetColumnTypes(s->StatusColumns) : nullptr;
-
-	// set others
+	// options
+	d.AlignExtensions = s->IsAlignedExtensions;
+	d.CaseConversion = s->IsCaseConversion;
 	d.DetailedStatus = s->IsDetailedStatus;
 	d.FullScreen = s->IsFullScreen;
+
+	// type strings, it can throw
+	String^ types1 = s->Columns ? GetColumnTypes(s->Columns) : nullptr;
+	String^ types2 = s->StatusColumns ? GetColumnTypes(s->StatusColumns) : nullptr;
 
 	if (types1)
 	{

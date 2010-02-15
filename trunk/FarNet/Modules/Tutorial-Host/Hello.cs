@@ -1,14 +1,14 @@
 
 // Lessons:
 // *) How to create a module host.
-// *) How to create a module tool called from all menu areas.
+// *) How to create a module tool called from the plugin menus.
 // *) How to build a localized module and use localized strings.
 
 using System;
 using FarNet;
 
 // Menu item "Hello" in all plugin menus.
-[ModuleTool(Name = "Hello", Options = ModuleToolOptions.AllAreas)]
+[ModuleTool(Name = "Hello", Options = ModuleToolOptions.F11Menus)]
 public class Hello : ModuleTool
 {
 	public override void Invoke(object sender, ModuleToolEventArgs e)

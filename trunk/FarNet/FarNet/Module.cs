@@ -104,36 +104,30 @@ namespace FarNet
 	public sealed class ModuleHostAttribute : Attribute
 	{
 		/// <summary>
-		/// Tells to load the module and connect the host always.
+		/// Tells always to load the module and connect the host.
 		/// </summary>
 		/// <remarks>
-		/// If the module host is the only implemented module entry then this flag is ignored
-		/// and the host is loaded and connected because otherwise it has no chances to be.
+		/// If the module host is the only implemented module entry then this flag
+		/// should be set to true. Otherwise the host has no chances to be used.
 		/// </remarks>
 		public bool Load { get; set; }
 	}
 
 	/// <summary>
-	/// Preloadable module host class. At most one public descendant can be implemented by a module.
+	/// The module host. At most one public descendant can be implemented by a module.
 	/// </summary>
 	/// <remarks>
+	/// In many cases the module tools should be implemented instead of the host
+	/// (see predefined <see cref="BaseModuleTool"/> children).
 	/// <para>
-	/// A module implementing this class is preloadable, that is its assembly is loaded together with Far
-	/// and a single instance of this class is created for the session. In most cases the module tools
-	/// should be implemented instead of this (see predefined <see cref="BaseModuleTool"/> children).
+	/// If the attribute <see cref="ModuleHostAttribute.Load"/> is true then the host is always loaded.
+	/// If it is false then the host is loaded only on the first call of any module tool.
+	/// A single instance of this class is created for the whole session.
 	/// </para>
 	/// <para>
 	/// This class provides virtual methods called by the core.
-	/// Normally the module implements the <see cref="Connect"/> method and registers its tools in it;
+	/// Normally the module implements the <see cref="Connect"/> method.
 	/// There are a few more optional virtual members that can be implemented when needed.
-	/// </para>
-	/// <para>
-	/// Any direct child of this class is preloadable and makes other tools in the same assembly preloadable.
-	/// </para>
-	/// <para>
-	/// For a module that provides a single top level operation use <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, or <see cref="ModuleFiler"/>.
-	/// For a module that only installs editor events for all or specified file types use <see cref="ModuleEditor"/>.
-	/// These modules are normally not preloadable and slightly easier to implement.
 	/// </para>
 	/// </remarks>
 	public abstract class ModuleHost : BaseModuleEntry
@@ -277,20 +271,15 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Attributes of a module tool which is shown in menus.
+	/// Module tool attributes.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ModuleToolAttribute : BaseModuleToolAttribute
 	{
 		/// <summary>
-		/// Tool options. By default the tool is shown in all plugin menus.
+		/// Tool options. For a menu tool it is mandatory to specify the menus.
 		/// </summary>
 		public ModuleToolOptions Options { get; set; }
-		///
-		public ModuleToolAttribute()
-		{
-			Options = ModuleToolOptions.F11Menus;
-		}
 	}
 
 	/// <summary>
@@ -316,6 +305,10 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
+	/// <para>
+	/// For a menu tool it is mandatory to use <see cref="ModuleToolAttribute"/>
+	/// and specify menu areas by <see cref="ModuleToolAttribute.Options"/>.
+	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
 	public abstract class ModuleTool : BaseModuleTool

@@ -14,29 +14,27 @@ public: // IModuleManager
 	virtual String^ GetString(String^ name);
 internal:
 	ModuleManager(String^ assemblyPath);
-	void Unload();
 	BaseModuleEntry^ CreateEntry(Type^ type);
-	property String^ AssemblyPath { String^ get(); }
-	property Assembly^ AssemblyInstance { Assembly^ get(); }
-internal:
 	bool HasHost() { return _ModuleHostInstance || _ModuleHostClassName || _ModuleHostClassType; }
 	ModuleHost^ GetLoadedModuleHost() { return _ModuleHostInstance; }
+	property Assembly^ AssemblyInstance { Assembly^ get(); }
+	property String^ AssemblyPath { String^ get(); }
 	String^ GetModuleHostClassName();
+	void Invoking();
 	void SetModuleHost(String^ moduleHostClassName);
 	void SetModuleHost(Type^ moduleHostClassType);
-	void Invoking();
+	void Unload();
 internal:
 	static Object^ GetFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue);
 	static void SetFarNetValue(String^ keyPath, String^ valueName, Object^ value);
 private:
 	void Connect();
-private:
-	// assembly
+private: // Assembly
 	String^ _AssemblyPath;
 	Assembly^ _AssemblyInstance;
 	CultureInfo^ _CurrentUICulture;
 	ResourceManager^ _ResourceManager;
-	// host
+private: // Module host
 	ModuleHost^ _ModuleHostInstance;
 	String^ _ModuleHostClassName;
 	Type^ _ModuleHostClassType;
@@ -58,9 +56,13 @@ protected:
 	BaseModuleToolInfo(ModuleManager^ manager, Type^ classType);
 	BaseModuleToolInfo(ModuleManager^ manager, String^ className, String^ toolName);
 private:
-	ModuleManager^ _ModuleManager;
+	// Any tool has the module manager. Handlers may or may not have it.
+	ModuleManager^ const _ModuleManager;
+	// Class name from the cache. Null for handlers and after getting the type.
 	String^ _ClassName;
+	// Type coming from the assembly reflection. Null for handlers.
 	Type^ _ClassType;
+	// UI name from cache, attributes (after getting type) or just set for handlers.
 	String^ _Name;
 };
 
