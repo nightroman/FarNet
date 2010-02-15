@@ -5,21 +5,22 @@ using System.Text;
 using FarNet;
 
 // Test filer for *.test files with "TEST" header
+[ModuleFiler(Mask = "*.test")]
 public class TestFiler : ModuleFiler
 {
 	// Shows data in a message box and lines in a panel
-	public override void Invoke(object sender, FilerEventArgs e)
+	public override void Invoke(object sender, ModuleFilerEventArgs e)
 	{
 		// read and check the header from sent data
 		byte[] buffer = new byte[4];
 		int read = e.Data.Read(buffer, 0, 4);
 		string header = Encoding.Default.GetString(buffer, 0, read);
-		Far.Host.Message(header, "File header");
+		Far.Net.Message(header, "File header");
 		if (header != "TEST")
 			return;
 
 		// create panel
-		IPanel p = Far.Host.CreatePanel();
+		IPanel p = Far.Net.CreatePanel();
 		p.Info.HostFile = e.Name;
 		p.Info.StartSortMode = PanelSortMode.Unsorted;
 		p.Info.Title = "File lines";
@@ -32,11 +33,5 @@ public class TestFiler : ModuleFiler
 			p.Files.Add(f);
 		}
 		p.Open();
-	}
-
-	// Default mask
-	public override string Mask
-	{
-		get { return "*.test"; }
 	}
 }

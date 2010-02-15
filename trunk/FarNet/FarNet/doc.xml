@@ -86,22 +86,6 @@
 		<param name="right">Right position.</param>
 		<param name="bottom">Bottom line.</param>
 	</pp>
-	<pp name="Connect">
-		<summary>Override this method to process the module connection.</summary>
-		<example>
-			(C#) how to register a command line prefix and a menu command.
-			<code>
-				public override void Connect()
-				{
-				// register a prefix
-				Far.RegisterCommand(this, [name], [prefix], [handler]);
-				// register a menu command
-				Far.RegisterTool(this, [name], [handler], [options]);
-				...
-				}
-			</code>
-		</example>
-	</pp>
 	<pp name="ShowHelp">
 		<summary>Shows the specified topic from a given hlf-file.</summary>
 		<param name="path">Help file location, see options.</param>
@@ -148,14 +132,13 @@ help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
 	<pp name="FileMask">
 		<summary>
 			File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
-			This value is only default, actual mask may be changed by a user, so that
-			if the module uses this mask itself then override <c>set</c> too.
+			This value is only the default suggestion, actual mask may be changed by a user.
 		</summary>
 	</pp>
 	<pp name="InvokeLoad">
 		<para>
-			If the assembly has no direct <see cref="BaseModule"/> children
-			then its modules are normally loaded only when invoked the first time.
+			If the module does not implement preloadable <see cref="ModuleHost"/>
+			then its assembly is normally loaded only when its tool is invoked.
 		</para>
 	</pp>
 	<pp name="BaseListItems">

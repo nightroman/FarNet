@@ -13,7 +13,7 @@ namespace PowerShellFar.UI
 {
 	static class ActorMenu
 	{
-		static List<KeyValuePair<FarItem, ToolOptions>> _pendingItems;
+		static List<KeyValuePair<FarItem, ModuleToolOptions>> _pendingItems;
 
 		static IMenu _menuDialog;
 		static IMenu _menuEditor;
@@ -46,22 +46,22 @@ namespace PowerShellFar.UI
 			_menuPanels.HelpTopic = helpTopic;
 			_menuViewer.HelpTopic = helpTopic;
 
-			AddTool(Res.MenuInvokeInputCode, delegate { A.Psf.InvokeInputCode(); }, ToolOptions.F11Menus);
-			AddTool(Res.MenuInvokeSelectedCode, delegate { A.Psf.InvokeSelectedCode(); }, ToolOptions.Editor | ToolOptions.Panels | ToolOptions.Dialog);
-			AddTool(Res.MenuBackgroundJobs, delegate { A.Psf.ShowJobs(); }, ToolOptions.F11Menus);
-			AddTool(Res.MenuCommandHistory, delegate { A.Psf.ShowHistory(); }, ToolOptions.F11Menus);
-			AddTool(Res.MenuEditorConsole, delegate { A.Psf.ShowConsole(OpenMode.None); }, ToolOptions.F11Menus);
-			AddTool(Res.MenuPowerPanel, delegate { A.Psf.ShowPanel(); }, ToolOptions.F11Menus);
-			AddTool(Res.MenuTabExpansion, delegate { A.Psf.ExpandCode(null); }, ToolOptions.Editor | ToolOptions.Panels | ToolOptions.Dialog);
-			AddTool(Res.MenuSnapin, delegate { A.Psf.ShowModules(); }, ToolOptions.F11Menus);
-			AddTool(Res.MenuDebugger, delegate { A.Psf.ShowDebugger(); }, ToolOptions.F11Menus);
-			AddTool(Res.MenuError, delegate { A.Psf.ShowErrors(); }, ToolOptions.F11Menus);
-			AddTool(Res.MenuHelp, delegate { A.Psf.ShowHelp(); }, ToolOptions.F11Menus);
+			AddTool(Res.MenuInvokeInputCode, delegate { A.Psf.InvokeInputCode(); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuInvokeSelectedCode, delegate { A.Psf.InvokeSelectedCode(); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
+			AddTool(Res.MenuBackgroundJobs, delegate { A.Psf.ShowJobs(); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuCommandHistory, delegate { A.Psf.ShowHistory(); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuEditorConsole, delegate { A.Psf.ShowConsole(OpenMode.None); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuPowerPanel, delegate { A.Psf.ShowPanel(); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuTabExpansion, delegate { A.Psf.ExpandCode(null); }, ModuleToolOptions.Editor | ModuleToolOptions.Panels | ModuleToolOptions.Dialog);
+			AddTool(Res.MenuSnapin, delegate { A.Psf.ShowModules(); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuDebugger, delegate { A.Psf.ShowDebugger(); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuError, delegate { A.Psf.ShowErrors(); }, ModuleToolOptions.F11Menus);
+			AddTool(Res.MenuHelp, delegate { A.Psf.ShowHelp(); }, ModuleToolOptions.F11Menus);
 
 			_toSeparate = true;
 			if (_pendingItems != null)
 			{
-				foreach (KeyValuePair<FarItem, ToolOptions> kv in _pendingItems)
+				foreach (KeyValuePair<FarItem, ModuleToolOptions> kv in _pendingItems)
 					AddItem(kv.Key, kv.Value);
 
 				_pendingItems = null;
@@ -92,7 +92,7 @@ namespace PowerShellFar.UI
 			_menuViewer = null;
 		}
 
-		internal static void Show(object sender, ToolEventArgs e)
+		internal static void Show(object sender, ModuleToolEventArgs e)
 		{
 			//! NOTE: do sync for item handlers
 			string currentDirectory = A.Psf.SyncPaths();
@@ -106,10 +106,10 @@ namespace PowerShellFar.UI
 
 				switch (e.From)
 				{
-					case ToolOptions.Dialog: menu = _menuDialog; break;
-					case ToolOptions.Editor: menu = _menuEditor; break;
-					case ToolOptions.Panels: menu = _menuPanels; break;
-					case ToolOptions.Viewer: menu = _menuViewer; break;
+					case ModuleToolOptions.Dialog: menu = _menuDialog; break;
+					case ModuleToolOptions.Editor: menu = _menuEditor; break;
+					case ModuleToolOptions.Panels: menu = _menuPanels; break;
+					case ModuleToolOptions.Viewer: menu = _menuViewer; break;
 					default: return;
 				}
 
@@ -141,17 +141,17 @@ namespace PowerShellFar.UI
 			return item;
 		}
 
-		static void AddTool(string text, EventHandler click, ToolOptions from)
+		static void AddTool(string text, EventHandler click, ModuleToolOptions from)
 		{
 			AddItem(NewItem(text, click), from);
 		}
 
-		static void AddItem(FarItem item, ToolOptions from)
+		static void AddItem(FarItem item, ModuleToolOptions from)
 		{
-			if (from == ToolOptions.None)
-				from = ToolOptions.F11Menus;
+			if (from == ModuleToolOptions.None)
+				from = ModuleToolOptions.F11Menus;
 
-			if (0 < (from & ToolOptions.Dialog))
+			if (0 < (from & ModuleToolOptions.Dialog))
 			{
 				if (_toSeparate && !_menuDialogSeparated)
 				{
@@ -161,7 +161,7 @@ namespace PowerShellFar.UI
 				_menuDialog.Items.Add(item);
 			}
 
-			if (0 < (from & ToolOptions.Editor))
+			if (0 < (from & ModuleToolOptions.Editor))
 			{
 				if (_toSeparate && !_menuEditorSeparated)
 				{
@@ -171,7 +171,7 @@ namespace PowerShellFar.UI
 				_menuEditor.Items.Add(item);
 			}
 
-			if (0 < (from & ToolOptions.Panels))
+			if (0 < (from & ModuleToolOptions.Panels))
 			{
 				if (_toSeparate && !_menuPanelsSeparated)
 				{
@@ -181,7 +181,7 @@ namespace PowerShellFar.UI
 				_menuPanels.Items.Add(item);
 			}
 
-			if (0 < (from & ToolOptions.Viewer))
+			if (0 < (from & ModuleToolOptions.Viewer))
 			{
 				if (_toSeparate && !_menuViewerSeparated)
 				{
@@ -192,15 +192,15 @@ namespace PowerShellFar.UI
 			}
 		}
 
-		public static void AddUserTool(string text, EventHandler click, ToolOptions from)
+		public static void AddUserTool(string text, EventHandler click, ModuleToolOptions from)
 		{
 			// case: just collect, e.g. called from profile
 			if (_menuDialog == null)
 			{
 				if (_pendingItems == null)
-					_pendingItems = new List<KeyValuePair<FarItem, ToolOptions>>();
+					_pendingItems = new List<KeyValuePair<FarItem, ModuleToolOptions>>();
 
-				_pendingItems.Add(new KeyValuePair<FarItem, ToolOptions>(NewItem(text, click), from));
+				_pendingItems.Add(new KeyValuePair<FarItem, ModuleToolOptions>(NewItem(text, click), from));
 				return;
 			}
 

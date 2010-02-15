@@ -8,15 +8,6 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class ModuleCommandInfo;
-ref class Editor;
-ref class Editor0;
-ref class ModuleEditorInfo;
-ref class ModuleFilerInfo;
-ref class ModuleToolInfo;
-ref class Viewer;
-ref class Viewer0;
-
 ref class Far1 : public IFar
 {
 public:
@@ -78,7 +69,7 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual String^ KeyToName(int key);
 	virtual String^ PasteFromClipboard();
-	virtual String^ RegisterCommand(BaseModule^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler);
+	virtual String^ RegisterCommand(BaseModuleEntry^ entry, String^ name, String^ prefix, EventHandler<ModuleCommandEventArgs^>^ handler);
 	virtual String^ TempFolder() { return TempFolder(nullptr); }
 	virtual String^ TempFolder(String^ prefix);
 	virtual String^ TempName() { return TempName(nullptr); }
@@ -101,8 +92,8 @@ public:
 	virtual void PostText(String^ text, bool disableOutput);
 	virtual void Quit();
 	virtual void Redraw();
-	virtual void RegisterFiler(BaseModule^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates);
-	virtual void RegisterTool(BaseModule^ plugin, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options);
+	virtual void RegisterFiler(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleFilerEventArgs^>^ handler, String^ mask, bool creates);
+	virtual void RegisterTool(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolOptions options);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ command);
 	virtual void SetCurrentWindow(int index);
@@ -113,79 +104,20 @@ public:
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
 	virtual void ShowPanelMenu(bool showPushCommand);
-	virtual void Unregister(BaseModule^ plugin);
-	virtual void UnregisterCommand(EventHandler<CommandEventArgs^>^ handler);
-	virtual void UnregisterFiler(EventHandler<FilerEventArgs^>^ handler);
-	virtual void UnregisterTool(EventHandler<ToolEventArgs^>^ handler);
+	virtual void Unregister(BaseModuleEntry^ entry);
+	virtual void UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler);
+	virtual void UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler);
+	virtual void UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler);
 	virtual void Write(String^ text);
 	virtual void Write(String^ text, ConsoleColor foregroundColor);
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text);
 	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
 internal:
-	static void StartFar();
-	void Stop();
-	void OnEditorOpened(FarNet::Editor^ editor);
-internal:
-	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
-	static String^ _helpTopic = "<" + _folder + "\\>";
-internal:
-	bool AsConfigure(int itemIndex);
-	HANDLE AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode);
-	HANDLE AsOpenPlugin(int from, INT_PTR item);
-	void AsGetPluginInfo(PluginInfo* pi);
-	void AsProcessSynchroEvent(int type, void* param);
-	void RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands);
-	void RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors);
-	void RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers);
-	void RegisterTool(ModuleToolInfo^ tool);
-	void RegisterTools(IEnumerable<ModuleToolInfo^>^ tools);
+	static void Connect();
 private:
-	Far1();
-	Object^ GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue);
-	void AssertHotkeys();
-	void Free(ToolOptions options);
-	void OnConfigCommand();
-	void OnConfigEditor();
-	void OnConfigFiler();
-	void OnConfigTool(String^ title, ToolOptions option, List<ModuleToolInfo^>^ list);
-	void OnConfigUICulture();
-	void OpenConfig();
-	void OpenMenu(ToolOptions from);
-	void ProcessPrefixes(INT_PTR item);
-	void Start();
-private:
-	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
-	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
-	static int GetPaletteColor(PaletteColor paletteColor);
-	static void VoidStep(Object^, EventArgs^) {}
-private:
-	CStr* _pConfig;
-	CStr* _pDisk;
-	CStr* _pDialog;
-	CStr* _pEditor;
-	CStr* _pPanels;
-	CStr* _pViewer;
-	CStr* _prefixes;
-	List<ModuleCommandInfo^> _registeredCommand;
-	List<ModuleEditorInfo^> _registeredEditor;
-	List<ModuleFilerInfo^> _registeredFiler;
-	List<ModuleToolInfo^> _toolConfig;
-	List<ModuleToolInfo^> _toolDisk;
-	List<ModuleToolInfo^> _toolDialog;
-	List<ModuleToolInfo^> _toolEditor;
-	List<ModuleToolInfo^> _toolPanels;
-	List<ModuleToolInfo^> _toolViewer;
-private:
-	String^ _hotkey;
-	array<int>^ _hotkeys;
-	EventHandler^ _handler;
-	CultureInfo^ _currentUICulture;
-	
-	HANDLE _hMutex;
-	List<EventHandler^> _syncHandlers;
-internal:
-	static Far1 Far; //???? get rid of 'internal', hide it completely
+	Far1() {}
+	static Far1 Far;
 };
 
 }

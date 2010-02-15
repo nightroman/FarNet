@@ -51,20 +51,20 @@ namespace FarNet
 		/// <summary>
 		/// Registers the tool handler invoked from one of Far menus.
 		/// </summary>
-		/// <param name="host">The module. It can be null, but this is not recommended.</param>
+		/// <param name="entry">The module entry. Null is not recommended.</param>
 		/// <param name="name">Tool name and also the default menu item name. Recommended to be a unique name in the assembly.</param>
 		/// <param name="handler">Tool handler.</param>
 		/// <param name="options">Tool options.</param>
-		void RegisterTool(BaseModule host, string name, EventHandler<ToolEventArgs> handler, ToolOptions options);
+		void RegisterTool(BaseModuleEntry entry, string name, EventHandler<ModuleToolEventArgs> handler, ModuleToolOptions options);
 		/// <summary>
 		/// Unregisters the tool handler.
 		/// </summary>
 		/// <param name="handler">Tool handler.</param>
-		void UnregisterTool(EventHandler<ToolEventArgs> handler);
+		void UnregisterTool(EventHandler<ModuleToolEventArgs> handler);
 		/// <summary>
 		/// Registers the command handler invoked from the command line by its prefix.
 		/// </summary>
-		/// <param name="host">The module. It can be null, but this is not recommended.</param>
+		/// <param name="entry">The module entry. Null is not recommended.</param>
 		/// <param name="name">Command name and also the config menu item name. Recommended to be a unique name in the assembly.</param>
 		/// <param name="prefix">Command prefix, see remarks.</param>
 		/// <param name="handler">Command handler.</param>
@@ -75,34 +75,34 @@ namespace FarNet
 		/// is not notified about prefix changes during the session. If it is really important (rare) then use
 		/// <see cref="ModuleCommand"/> which can always have a fresh prefix set by a user.
 		/// </remarks>
-		string RegisterCommand(BaseModule host, string name, string prefix, EventHandler<CommandEventArgs> handler);
+		string RegisterCommand(BaseModuleEntry entry, string name, string prefix, EventHandler<ModuleCommandEventArgs> handler);
 		/// <summary>
 		/// Unregisters the command handler.
 		/// </summary>
 		/// <param name="handler">Command handler.</param>
-		void UnregisterCommand(EventHandler<CommandEventArgs> handler);
+		void UnregisterCommand(EventHandler<ModuleCommandEventArgs> handler);
 		/// <summary>
-		/// Registers the file handler invoked for a file. See <see cref="FilerEventArgs"/>.
+		/// Registers the file handler invoked for a file. See <see cref="ModuleFilerEventArgs"/>.
 		/// </summary>
-		/// <param name="host">The module. It can be null, but this is not recommended.</param>
+		/// <param name="entry">The module entry. Null is not recommended.</param>
 		/// <param name="name">Filer name and also the config menu items. Recommended to be a unique name in the assembly.</param>
 		/// <param name="handler">Filer handler.</param>
-		/// <param name="mask">File(s) mask, see <see cref="ModuleFiler.Mask"/>.</param>
+		/// <param name="mask">File(s) mask, see <see cref="ModuleFilerAttribute.Mask"/>.</param>
 		/// <param name="creates">Tells that the module also creates files.</param>
-		void RegisterFiler(BaseModule host, string name, EventHandler<FilerEventArgs> handler, string mask, bool creates);
+		void RegisterFiler(BaseModuleEntry entry, string name, EventHandler<ModuleFilerEventArgs> handler, string mask, bool creates);
 		/// <summary>
 		/// Unregisters the file handler.
 		/// </summary>
 		/// <param name="handler">Filer handler.</param>
-		void UnregisterFiler(EventHandler<FilerEventArgs> handler);
+		void UnregisterFiler(EventHandler<ModuleFilerEventArgs> handler);
 		/// <summary>
-		/// Unregisters the base module. Use it sparingly.
+		/// Unregisters the module entry. Use it sparingly.
 		/// </summary>
 		/// <remarks>
-		/// Normally there is no much sense in unloading the module because .NET assemblies are not unloaded anyway.
+		/// Normally there is no much sense in unloading entries because .NET assemblies are not unloaded anyway.
 		/// This method should be called only in critical cases (fatal errors and etc.).
 		/// </remarks>
-		void Unregister(BaseModule baseModule);
+		void Unregister(BaseModuleEntry entry);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
@@ -735,7 +735,7 @@ namespace FarNet
 		/// Tells Far to exit if it is possible.
 		/// </summary>
 		/// <remarks>
-		/// Before sending this request to Far it calls <see cref="BaseModule.CanExit"/> for each module.
+		/// Before sending this request to Far it calls <see cref="ModuleHost.CanExit"/> for each module.
 		/// If all modules return true then Far is called. If there is an editor with not saved changes
 		/// then Far asks a user how to proceed and, in fact, a user may continue work in Far.
 		/// </remarks>

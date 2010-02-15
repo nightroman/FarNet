@@ -49,7 +49,7 @@ namespace FarMacro
 			}
 		}
 
-		bool IsValidName(string name)
+		static bool IsValidName(string name)
 		{
 			if (string.IsNullOrEmpty(name))
 				return false;
@@ -65,7 +65,7 @@ namespace FarMacro
 			return code >= 0;
 		}
 
-		bool IsValidWay(Way way)
+		static bool IsValidWay(Way way)
 		{
 			// _100201_110148 to update if MacroArea has new values
 			if ((int)way.Area < 0 || (int)way.Area > (int)MacroArea.Viewer)
@@ -77,7 +77,7 @@ namespace FarMacro
 			return IsValidName(way.Name);
 		}
 
-		Way NewWay(string path)
+		static Way NewWay(string path)
 		{
 			Way way = new Way(path);
 			if (!IsValidWay(way))

@@ -6,15 +6,15 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Far1.h"
 #include "CommandLine.h"
-#include "Dialog.h"
 #include "Editor0.h"
+#include "Far0.h"
 #include "InputBox.h"
 #include "ListMenu.h"
 #include "Macro.h"
 #include "Menu.h"
 #include "Message.h"
-#include "Module0.h"
-#include "ModuleInfo.h"
+#include "ModuleLoader.h"
+#include "ModuleManager.h"
 #include "Panel0.h"
 #include "Panel2.h"
 #include "Shelve.h"
@@ -24,38 +24,9 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-Far1::Far1()
-{}
-
-void Far1::StartFar()
+void Far1::Connect()
 {
-	if (Far::Net)
-		throw gcnew InvalidOperationException("Already started.");
-
 	Far::Net = %Far;
-	Far.Start();
-}
-
-void Far1::Start()
-{
-	_hMutex = CreateMutex(NULL, FALSE, NULL);
-	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
-	Module0::LoadModules();
-}
-
-//! Don't use Far UI
-void Far1::Stop()
-{
-	CloseHandle(_hMutex);
-	Module0::UnloadModules();
-
-	delete[] _pConfig;
-	delete[] _pDisk;
-	delete[] _pDialog;
-	delete[] _pEditor;
-	delete[] _pPanels;
-	delete[] _pViewer;
-	delete _prefixes;
 }
 
 String^ Far1::ActivePath::get()
@@ -77,234 +48,42 @@ String^ Far1::RegistryPluginsPath::get()
 	return gcnew String(Info.RootKey);
 }
 
-void Far1::Free(ToolOptions options)
+void Far1::RegisterTool(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolOptions options)
 {
-	if (int(options & ToolOptions::Config))
-	{
-		delete[] _pConfig;
-		_pConfig = 0;
-	}
-	if (int(options & ToolOptions::Disk))
-	{
-		delete[] _pDisk;
-		_pDisk = 0;
-	}
-	if (int(options & ToolOptions::Dialog))
-	{
-		delete[] _pDialog;
-		_pDialog = 0;
-	}
-	if (int(options & ToolOptions::Editor))
-	{
-		delete[] _pEditor;
-		_pEditor = 0;
-	}
-	if (int(options & ToolOptions::Panels))
-	{
-		delete[] _pPanels;
-		_pPanels = 0;
-	}
-	if (int(options & ToolOptions::Viewer))
-	{
-		delete[] _pViewer;
-		_pViewer = 0;
-	}
-}
-
-void Far1::RegisterTool(BaseModule^ module, String^ name, EventHandler<ToolEventArgs^>^ handler, ToolOptions options)
-{
-	if (module && ES(name))
+	if (ES(name))
 		throw gcnew ArgumentException("'name' must not be empty.");
 
-	RegisterTool(gcnew ModuleToolInfo(module, name, handler, options));
+	Far0::RegisterTool(gcnew ModuleToolInfo((entry ? (ModuleManager^)entry->ModuleManager : nullptr), name, handler, options));
 }
 
-void Far1::RegisterTool(ModuleToolInfo^ tool)
+void Far1::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
 {
-	LOG_INFO("Register " + tool);
-
-	ToolOptions options = tool->Options;
-	if (int(options & ToolOptions::Config))
-	{
-		delete[] _pConfig;
-		_pConfig = 0;
-		_toolConfig.Add(tool);
-	}
-	if (int(options & ToolOptions::Disk))
-	{
-		delete[] _pDisk;
-		_pDisk = 0;
-		_toolDisk.Add(tool);
-	}
-	if (int(options & ToolOptions::Dialog))
-	{
-		delete[] _pDialog;
-		_pDialog = 0;
-		_toolDialog.Add(tool);
-	}
-	if (int(options & ToolOptions::Editor))
-	{
-		delete[] _pEditor;
-		_pEditor = 0;
-		_toolEditor.Add(tool);
-	}
-	if (int(options & ToolOptions::Panels))
-	{
-		delete[] _pPanels;
-		_pPanels = 0;
-		_toolPanels.Add(tool);
-	}
-	if (int(options & ToolOptions::Viewer))
-	{
-		delete[] _pViewer;
-		_pViewer = 0;
-		_toolViewer.Add(tool);
-	}
+	Far0::UnregisterTool(handler);
 }
 
-void Far1::RegisterTools(IEnumerable<ModuleToolInfo^>^ tools)
+String^ Far1::RegisterCommand(BaseModuleEntry^ entry, String^ name, String^ prefix, EventHandler<ModuleCommandEventArgs^>^ handler)
 {
-	for each(ModuleToolInfo^ tool in tools)
-		RegisterTool(tool);
+	return Far0::RegisterCommand(entry, name, prefix, handler);
 }
 
-static int RemoveByHandler(List<ModuleToolInfo^>^ list, EventHandler<ToolEventArgs^>^ handler)
+void Far1::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
 {
-	int r = 0;
-	for(int i = list->Count; --i >= 0;)
-	{
-		if (list[i]->HasHandler(handler))
-		{
-			++r;
-			list->RemoveAt(i);
-		}
-	}
-	return r;
+	Far0::UnregisterCommand(handler);
 }
 
-void Far1::UnregisterTool(EventHandler<ToolEventArgs^>^ handler)
+void Far1::RegisterFiler(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleFilerEventArgs^>^ handler, String^ mask, bool creates)
 {
-	assert(handler != nullptr);
-	LOG_INFO(String::Format("Unregister tool {0}", Log::Format(handler->Method)));
-
-	if (RemoveByHandler(%_toolConfig, handler))
-	{
-		delete[] _pConfig;
-		_pConfig = 0;
-	}
-	if (RemoveByHandler(%_toolDisk, handler))
-	{
-		delete[] _pDisk;
-		_pDisk = 0;
-	}
-	if (RemoveByHandler(%_toolDialog, handler))
-	{
-		delete[] _pDialog;
-		_pDialog = 0;
-	}
-	if (RemoveByHandler(%_toolEditor, handler))
-	{
-		delete[] _pEditor;
-		_pEditor = 0;
-	}
-	if (RemoveByHandler(%_toolPanels, handler))
-	{
-		delete[] _pPanels;
-		_pPanels = 0;
-	}
-	if (RemoveByHandler(%_toolViewer, handler))
-	{
-		delete[] _pViewer;
-		_pViewer = 0;
-	}
+	Far0::RegisterFiler(entry, name, handler, mask, creates);
 }
 
-String^ Far1::RegisterCommand(BaseModule^ plugin, String^ name, String^ prefix, EventHandler<CommandEventArgs^>^ handler)
+void Far1::UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler)
 {
-	delete _prefixes;
-	_prefixes = 0;
-	ModuleCommandInfo^ it = gcnew ModuleCommandInfo(plugin, name, prefix, handler);
-	_registeredCommand.Add(it);
-
-	LOG_INFO("Register " + it);
-
-	return it->Prefix;
+	Far0::UnregisterFiler(handler);
 }
 
-void Far1::RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands)
+void Far1::Unregister(BaseModuleEntry^ entry)
 {
-	delete _prefixes;
-	_prefixes = 0;
-	_registeredCommand.AddRange(commands);
-
-	if (Log::Switch->TraceInfo)
-	{
-		for each(ModuleCommandInfo^ it in commands)
-			LOG_INFO("Register " + it);
-	}
-}
-
-void Far1::UnregisterCommand(EventHandler<CommandEventArgs^>^ handler)
-{
-	for(int i = _registeredCommand.Count; --i >= 0;)
-	{
-		if (_registeredCommand[i]->HasHandler(handler))
-		{
-			LOG_INFO("Unregister " + _registeredCommand[i]);
-
-			delete _prefixes;
-			_prefixes = 0;
-			_registeredCommand.RemoveAt(i);
-		}
-	}
-}
-
-void Far1::RegisterFiler(BaseModule^ plugin, String^ name, EventHandler<FilerEventArgs^>^ handler, String^ mask, bool creates)
-{
-	ModuleFilerInfo^ it = gcnew ModuleFilerInfo(plugin, name, handler, mask, creates);
-	_registeredFiler.Add(it);
-
-	LOG_INFO("Register " + it);
-}
-
-void Far1::RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors)
-{
-	_registeredEditor.AddRange(editors);
-
-	if (Log::Switch->TraceInfo)
-	{
-		for each(ModuleEditorInfo^ it in editors)
-			LOG_INFO("Register " + it);
-	}
-}
-
-void Far1::RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers)
-{
-	_registeredFiler.AddRange(filers);
-
-	if (Log::Switch->TraceInfo)
-	{
-		for each(ModuleFilerInfo^ it in filers)
-			LOG_INFO("Register " + it);
-	}
-}
-
-void Far1::UnregisterFiler(EventHandler<FilerEventArgs^>^ handler)
-{
-	for(int i = _registeredFiler.Count; --i >= 0;)
-	{
-		if (_registeredFiler[i]->HasHandler(handler))
-		{
-			LOG_INFO("Unregister " + _registeredFiler[i]);
-
-			_registeredFiler.RemoveAt(i);
-		}
-	}
-}
-
-void Far1::Unregister(BaseModule^ plugin)
-{
-	Module0::UnloadModule(plugin);
+	ModuleLoader::UnloadEntry(entry);
 }
 
 void Far1::Message(String^ body)
@@ -334,23 +113,7 @@ int Far1::Message(String^ body, String^ header, MsgOptions options, array<String
 
 void Far1::Run(String^ command)
 {
-	int colon = command->IndexOf(':', 1);
-	if (colon < 0)
-		return;
-
-	for each(ModuleCommandInfo^ it in _registeredCommand)
-	{
-		String^ pref = it->Prefix;
-		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
-			continue;
-
-
-		// invoke
-		CommandEventArgs e(command->Substring(colon + 1));
-		it->Invoke(this, %e);
-
-		break;
-	}
+	Far0::Run(command);
 }
 
 IntPtr Far1::MainWindowHandle::get()
@@ -634,152 +397,6 @@ IInputBox^ Far1::CreateInputBox()
 	return gcnew InputBox;
 }
 
-/*
-It is called frequently to get information about menu and disk commands.
-
-STOP:
-Check the instance, FarNet may be "unloaded", return empty information,
-but return flags, at least preloadable flag is absolutely important as cached.
-
-// http://forum.farmanager.com/viewtopic.php?f=7&t=3890
-// (?? it would be nice to have ACTL_POSTCALLBACK)
-*/
-void Far1::AsGetPluginInfo(PluginInfo* pi)
-{
-	//! STOP
-	// Do not ignore these methods even in stepping mode:
-	// *) plugins can change this during stepping and Far has to be informed;
-	// *) there is no more or less noticeable performance gain at all, really.
-	// We still can do that with some global flags telling that something was changed, but with
-	// not at all performance gain it would be more complexity for nothing. The code is disabled.
-
-	// get window type, this is the only known way to get the current area
-	// (?? wish to have 'from' parameter)
-	WindowInfo wi;
-	wi.Pos = -1;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
-		wi.Type = -1;
-
-	//! Do not forget to add FarNet menus first -> alloc one more and use shifted index.
-
-	// config
-	{
-		if (!_pConfig)
-		{
-			_pConfig = new CStr[_toolConfig.Count + 1];
-			_pConfig[0].Set(Res::MenuPrefix);
-
-			for(int i = _toolConfig.Count; --i >= 0;)
-				_pConfig[i + 1].Set(Res::MenuPrefix + _toolConfig[i]->Alias(ToolOptions::Config));
-		}
-
-		pi->PluginConfigStringsNumber = _toolConfig.Count + 1;
-		pi->PluginConfigStrings = (const wchar_t**)_pConfig;
-	}
-
-	// disk (do not add .NET item!)
-	{
-		if (!_pDisk && _toolDisk.Count > 0)
-		{
-			_pDisk = new CStr[_toolDisk.Count];
-
-			for(int i = _toolDisk.Count; --i >= 0;)
-				_pDisk[i].Set(Res::MenuPrefix + _toolDisk[i]->Alias(ToolOptions::Disk));
-		}
-
-		pi->DiskMenuStringsNumber = _toolDisk.Count;
-		pi->DiskMenuStrings = (const wchar_t**)_pDisk;
-	}
-
-	// type
-	switch(wi.Type)
-	{
-	case WTYPE_EDITOR:
-		{
-			if (!_pEditor)
-			{
-				_pEditor = new CStr[_toolEditor.Count + 1];
-				_pEditor[0].Set(Res::MenuPrefix);
-
-				for(int i = _toolEditor.Count; --i >= 0;)
-					_pEditor[i + 1].Set(Res::MenuPrefix + _toolEditor[i]->Alias(ToolOptions::Editor));
-			}
-
-			pi->PluginMenuStringsNumber = _toolEditor.Count + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pEditor;
-		}
-		break;
-	case WTYPE_PANELS:
-		{
-			if (!_pPanels)
-			{
-				_pPanels = new CStr[_toolPanels.Count + 1];
-				_pPanels[0].Set(Res::MenuPrefix);
-
-				for(int i = _toolPanels.Count; --i >= 0;)
-					_pPanels[i + 1].Set(Res::MenuPrefix + _toolPanels[i]->Alias(ToolOptions::Panels));
-			}
-
-			pi->PluginMenuStringsNumber = _toolPanels.Count + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pPanels;
-		}
-		break;
-	case WTYPE_VIEWER:
-		{
-			if (!_pViewer)
-			{
-				_pViewer = new CStr[_toolViewer.Count + 1];
-				_pViewer[0].Set(Res::MenuPrefix);
-
-				for(int i = _toolViewer.Count; --i >= 0;)
-					_pViewer[i + 1].Set(Res::MenuPrefix + _toolViewer[i]->Alias(ToolOptions::Viewer));
-			}
-
-			pi->PluginMenuStringsNumber = _toolViewer.Count + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pViewer;
-		}
-		break;
-	case WTYPE_DIALOG:
-		{
-			if (!_pDialog)
-			{
-				_pDialog = new CStr[_toolDialog.Count + 1];
-				_pDialog[0].Set(Res::MenuPrefix);
-
-				for(int i = _toolDialog.Count; --i >= 0;)
-					_pDialog[i + 1].Set(Res::MenuPrefix + _toolDialog[i]->Alias(ToolOptions::Dialog));
-			}
-
-			pi->PluginMenuStringsNumber = _toolDialog.Count + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pDialog;
-		}
-		break;
-	}
-
-	if (_registeredCommand.Count)
-	{
-		if (_prefixes == 0)
-		{
-			String^ PrefString = String::Empty;
-			for each(ModuleCommandInfo^ it in _registeredCommand)
-			{
-				if (PrefString->Length > 0)
-					PrefString = String::Concat(PrefString, ":");
-				PrefString = String::Concat(PrefString, it->Prefix);
-			}
-			_prefixes = new CStr(PrefString);
-		}
-
-		pi->CommandPrefix = *_prefixes;
-	}
-}
-
-void Far1::ProcessPrefixes(INT_PTR item)
-{
-	wchar_t* command = (wchar_t*)item;
-	Run(gcnew String(command));
-}
-
 void Far1::GetUserScreen()
 {
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
@@ -912,18 +529,10 @@ IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
 	return gcnew FarDialog(left, top, right, bottom);
 }
 
-int Far1::GetPaletteColor(PaletteColor paletteColor)
-{
-	INT_PTR index = (INT_PTR)paletteColor;
-	if (index < 0 || index >= COL_LASTPALETTECOLOR)
-		throw gcnew ArgumentOutOfRangeException("paletteColor");
-	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
-}
-
 void Far1::WritePalette(int left, int top, PaletteColor paletteColor, String^ text)
 {
 	PIN_NE(pin, text);
-	Info.Text(left, top, GetPaletteColor(paletteColor), pin);
+	Info.Text(left, top, Far0::GetPaletteColor(paletteColor), pin);
 }
 
 void Far1::WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
@@ -1121,21 +730,6 @@ Char Far1::CodeToChar(int code)
 	return Char(code);
 }
 
-Object^ Far1::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
-{
-	RegistryKey^ key;
-	try
-	{
-		key = Registry::CurrentUser->OpenSubKey(RegistryFarPath + "\\" + keyPath);
-		return key ? key->GetValue(valueName, defaultValue) : defaultValue;
-	}
-	finally
-	{
-		if (key)
-			key->Close();
-	}
-}
-
 Object^ Far1::GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
 {
 	RegistryKey^ key;
@@ -1166,180 +760,7 @@ void Far1::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValu
 	}
 }
 
-//::Far callbacks
-
-bool Far1::AsConfigure(int itemIndex)
-{
-	if (itemIndex == 0)
-	{
-		OpenConfig();
-		return true;
-	}
-
-	ModuleToolInfo^ tool = _toolConfig[itemIndex - 1];
-	ToolEventArgs e(ToolOptions::Config);
-	tool->Invoke(this, %e);
-	return e.Ignore ? false : true;
-}
-
-HANDLE Far1::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
-{
-	if (_registeredFiler.Count == 0)
-		return INVALID_HANDLE_VALUE;
-
-	Panel0::BeginOpenMode();
-	ValueUserScreen userscreen;
-
-	try
-	{
-		FilerEventArgs^ e;
-		for each(ModuleFilerInfo^ it in _registeredFiler)
-		{
-			// create?
-			if (!name && !it->Creates)
-				continue;
-
-			// mask?
-			if (SS(it->Mask) && !CompareNameEx(it->Mask, name, true))
-				continue;
-
-			// arguments
-			if (!e)
-				e = gcnew FilerEventArgs(gcnew String(name), gcnew UnmanagedMemoryStream((unsigned char*)data, dataSize, dataSize, FileAccess::Read), (OperationModes)opMode);
-			else
-				e->Data->Seek(0, SeekOrigin::Begin);
-
-			// invoke
-			it->Invoke(this, e);
-
-			// open a posted panel
-			if (Panel0::PostedPanel)
-			{
-				HANDLE h = Panel0::AddPluginPanel(Panel0::PostedPanel);
-				return h;
-			}
-		}
-
-		return INVALID_HANDLE_VALUE;
-	}
-	finally
-	{
-		Panel0::EndOpenMode();
-	}
-}
-
-HANDLE Far1::AsOpenPlugin(int from, INT_PTR item)
-{
-	Panel0::BeginOpenMode();
-	ValueUserScreen userscreen;
-
-	// call a plugin; it may create a panel waiting for opening
-	try
-	{
-		switch(from)
-		{
-		case OPEN_COMMANDLINE:
-			{
-				LOG_AUTO(3, "OPEN_COMMANDLINE");
-
-				ProcessPrefixes(item);
-			}
-			break;
-		case OPEN_DISKMENU:
-			{
-				LOG_AUTO(3, "OPEN_DISKMENU");
-
-				ModuleToolInfo^ tool = _toolDisk[(int)item];
-				ToolEventArgs e(ToolOptions::Disk);
-				tool->Invoke(this, %e);
-			}
-			break;
-		case OPEN_PLUGINSMENU:
-			{
-				if (item == 0)
-				{
-					OpenMenu(ToolOptions::Panels);
-					break;
-				}
-
-				LOG_AUTO(3, "OPEN_PLUGINSMENU");
-
-				ModuleToolInfo^ tool = _toolPanels[(int)item - 1];
-				ToolEventArgs e(ToolOptions::Panels);
-				tool->Invoke(this, %e);
-			}
-			break;
-		case OPEN_EDITOR:
-			{
-				if (item == 0)
-				{
-					OpenMenu(ToolOptions::Editor);
-					break;
-				}
-
-				LOG_AUTO(3, "OPEN_EDITOR");
-
-				ModuleToolInfo^ tool = _toolEditor[(int)item - 1];
-				ToolEventArgs e(ToolOptions::Editor);
-				tool->Invoke(this, %e);
-			}
-			break;
-		case OPEN_VIEWER:
-			{
-				if (item == 0)
-				{
-					OpenMenu(ToolOptions::Viewer);
-					break;
-				}
-
-				LOG_AUTO(3, "OPEN_VIEWER");
-
-				ModuleToolInfo^ tool = _toolViewer[(int)item - 1];
-				ToolEventArgs e(ToolOptions::Viewer);
-				tool->Invoke(this, %e);
-			}
-			break;
-		//! STOP: dialog case is different
-		case OPEN_DIALOG:
-			{
-				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)item;
-
-				// just to be sure, see also _091127_112807
-				FarDialog::_hDlgTop = dd->hDlg;
-
-				int index = dd->ItemNumber;
-				if (index == 0)
-				{
-					OpenMenu(ToolOptions::Dialog);
-					break;
-				}
-
-				LOG_AUTO(3, "OPEN_DIALOG");
-
-				ModuleToolInfo^ tool = _toolDialog[index - 1];
-				ToolEventArgs e(ToolOptions::Dialog);
-				tool->Invoke(this, %e);
-			}
-			break;
-		}
-
-		// open a posted panel
-		if (Panel0::PostedPanel)
-		{
-			HANDLE h = Panel0::AddPluginPanel(Panel0::PostedPanel);
-			return h;
-		}
-
-		// don't open a panel
-		return INVALID_HANDLE_VALUE;
-	}
-	finally
-	{
-		Panel0::EndOpenMode();
-	}
-}
-
-void Far1::ShowPanelMenu(bool showPushCommand)
+void Far1::ShowPanelMenu(bool showPushCommand) //???? do we need it public?
 {
 	String^ sPushShelveThePanel = "Push/Shelve the panel";
 	String^ sSwitchFullScreen = "Switch full screen";
@@ -1453,453 +874,19 @@ void Far1::ShowPanelMenu(bool showPushCommand)
 	}
 }
 
-void Far1::AssertHotkeys()
-{
-	if (!_hotkeys)
-	{
-		if (ES(_hotkey))
-			throw gcnew OperationCanceledException(Res::ErrorNoHotKey);
-
-		array<int>^ keys = gcnew array<int>(2);
-		keys[1] = NameToKey(_hotkey);
-		keys[0] = NameToKey("F11");
-		_hotkeys = keys;
-	}
-}
-
 void Far1::PostStep(EventHandler^ handler)
 {
-	// ensure keys
-	AssertHotkeys();
-
-	// post handler and keys
-	_handler = handler;
-	PostKeySequence(_hotkeys);
+	Far0::PostStep(handler);
 }
 
 void Far1::PostStepAfterKeys(String^ keys, EventHandler^ handler)
 {
-	// ensure keys
-	AssertHotkeys();
-
-	// post the handler, keys and hotkeys
-	_handler = handler;
-	PostKeys(keys);
-	PostKeySequence(_hotkeys);
+	Far0::PostStepAfterKeys(keys, handler);
 }
 
 void Far1::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
 {
-	// ensure keys
-	AssertHotkeys();
-
-	// post the second handler, keys and invoke the first handler
-	_handler = handler2;
-	PostKeySequence(_hotkeys);
-	try
-	{
-		handler1->Invoke(nullptr, nullptr);
-	}
-	catch(...)
-	{
-		//! 'F11 <hotkey>' is already posted and will trigger the menu; so, let's use a fake step
-		_handler = gcnew EventHandler(&VoidStep);
-		throw;
-	}
-}
-
-void Far1::OpenMenu(ToolOptions from)
-{
-	// process and drop a posted step handler
-	if (_handler)
-	{
-		EventHandler^ handler = _handler;
-		_handler = nullptr;
-		handler(nullptr, nullptr);
-		return;
-	}
-
-	// show the panels menu or the message
-	if (from == ToolOptions::Panels)
-		ShowPanelMenu(true);
-	else
-		Message("This menu is empty but it is used internally.", "FarNet");
-}
-
-void Far1::OpenConfig()
-{
-	Menu menu;
-	menu.AutoAssignHotkeys = true;
-	menu.HelpTopic = "MenuConfig";
-	menu.Title = "Modules configuration";
-
-	menu.Add(Res::ModuleCommands + " : " + (_registeredCommand.Count));
-	menu.Add(Res::ModuleEditors + "  : " + (_registeredEditor.Count));
-	menu.Add(Res::ModuleFilers + "   : " + (_registeredFiler.Count));
-	menu.Add("Tools")->IsSeparator = true;
-	menu.Add(Res::PanelsTools + "   : " + (_toolPanels.Count));
-	menu.Add(Res::EditorTools + "   : " + (_toolEditor.Count));
-	menu.Add(Res::ViewerTools + "   : " + (_toolViewer.Count));
-	menu.Add(Res::DialogTools + "   : " + (_toolDialog.Count));
-	menu.Add(Res::ConfigTools + "   : " + (_toolConfig.Count));
-	menu.Add(Res::DiskTools + "     : " + (_toolDisk.Count));
-	menu.Add("Settings")->IsSeparator = true;
-	menu.Add("UI culture");
-
-	while(menu.Show())
-	{
-		switch(menu.Selected)
-		{
-		case 0:
-			if (_registeredCommand.Count)
-				OnConfigCommand();
-			break;
-		case 1:
-			if (_registeredEditor.Count)
-				OnConfigEditor();
-			break;
-		case 2:
-			if (_registeredFiler.Count)
-				OnConfigFiler();
-			break;
-			// mind separator
-		case 4:
-			if (_toolPanels.Count)
-				OnConfigTool(Res::PanelsTools, ToolOptions::Panels, %_toolPanels);
-			break;
-		case 5:
-			if (_toolEditor.Count)
-				OnConfigTool(Res::EditorTools, ToolOptions::Editor, %_toolEditor);
-			break;
-		case 6:
-			if (_toolViewer.Count)
-				OnConfigTool(Res::ViewerTools, ToolOptions::Viewer, %_toolViewer);
-			break;
-		case 7:
-			if (_toolDialog.Count)
-				OnConfigTool(Res::DialogTools, ToolOptions::Dialog, %_toolDialog);
-			break;
-		case 8:
-			if (_toolConfig.Count)
-				OnConfigTool(Res::ConfigTools, ToolOptions::Config, %_toolConfig);
-			break;
-		case 9:
-			if (_toolDisk.Count)
-				OnConfigTool(Res::DiskTools, ToolOptions::Disk, %_toolDisk);
-			break;
-		case 11:
-			OnConfigUICulture();
-			break;
-		}
-	}
-}
-
-void Far1::OnConfigUICulture()
-{
-	Menu menu;
-	menu.Title = "Module UI culture";
-	menu.HelpTopic = _helpTopic + "ConfigUICulture";
-	menu.AutoAssignHotkeys = true;
-
-	int width = 0;
-	for each(String^ assemblyName in Module0::AssemblyNames)
-		if (width < assemblyName->Length)
-			width = assemblyName->Length;
-
-	for(;;)
-	{
-		menu.Items->Clear();
-		for each(String^ assemblyName in Module0::AssemblyNames)
-			menu.Add(String::Format("{0} : {1}", assemblyName->PadRight(width), BaseModuleInfo::GetFarNetValue(assemblyName , "UICulture", String::Empty)));
-
-		if (!menu.Show())
-			return;
-
-		// get data to show
-		String^ assemblyName = Module0::AssemblyNames[menu.Selected];
-		String^ cultureName = BaseModuleInfo::GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
-
-		// show the input box
-		InputBox ib;
-		ib.Title = assemblyName;
-		ib.Prompt = "Culture name (empty = the Far culture)";
-		ib.Text = cultureName;
-		ib.History = "Culture";
-		ib.HelpTopic = menu.HelpTopic;
-		ib.EmptyEnabled = true;
-		if (!ib.Show())
-			continue;
-
-		// set the culture (even the same, to refresh)
-		cultureName = ib.Text->Trim();
-		CultureInfo^ ci;
-		try
-		{
-			// get the culture by name, it may throw
-			ci = CultureInfo::GetCultureInfo(cultureName);
-
-			// save the name from the culture, not from a user
-			BaseModuleInfo::SetFarNetValue(assemblyName , "UICulture", ci->Name);
-
-			// use the current Far culture instead of invariant
-			if (ci->Name->Length == 0)
-				ci = Far.GetCurrentUICulture(true);
-			
-			// update plugins
-			for each(BaseModule^ plugin in Module0::Modules)
-			{
-				String^ name = Path::GetFileName(plugin->GetType()->Assembly->Location);
-				if (String::Compare(assemblyName, name, true) == 0)
-					plugin->CurrentUICulture = ci;
-			}
-		}
-		catch(ArgumentException^)
-		{
-			Far.Message("Unknown culture name.");
-		}
-	}
-}
-
-void Far1::OnConfigTool(String^ title, ToolOptions option, List<ModuleToolInfo^>^ list)
-{
-	Menu menu;
-	menu.Title = title;
-	menu.HelpTopic = _helpTopic + (option == ToolOptions::Disk ? "ConfigDisk" : "ConfigTool");
-
-	ModuleToolInfo^ selected;
-	List<ModuleToolInfo^> sorted(list);
-	for(;;)
-	{
-		menu.Items->Clear();
-		sorted.Sort(gcnew ModuleToolAliasComparer(option));
-		for each(ModuleToolInfo^ it in sorted)
-		{
-			if (ES(it->Name))
-				continue;
-			if (it == selected)
-				menu.Selected = menu.Items->Count;
-			FarItem^ mi = menu.Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Key);
-			mi->Data = it;
-		}
-
-		// case: disk
-		if (option == ToolOptions::Disk)
-		{
-			while(menu.Show()) {}
-			return;
-		}
-
-		// show others
-		if (!menu.Show())
-			return;
-
-		FarItem^ mi = menu.Items[menu.Selected];
-		selected = (ModuleToolInfo^)mi->Data;
-
-		InputBox ib;
-		ib.Title = "Original: " + selected->Name;
-		ib.Prompt = "New string (ampersand ~ hotkey)";
-		ib.Text = selected->Alias(option);
-		ib.HelpTopic = menu.HelpTopic;
-		ib.EmptyEnabled = true;
-		if (!ib.Show())
-			continue;
-
-		// restore the name on empty alias
-		String^ alias = ib.Text->TrimEnd();
-		if (alias->Length == 0)
-			alias = selected->Name;
-
-		// reset the alias
-		Free(option);
-		selected->Alias(option, alias);
-	}
-}
-
-void Far1::OnConfigCommand()
-{
-	Menu menu;
-	menu.AutoAssignHotkeys = true;
-	menu.HelpTopic = "ConfigCommand";
-	menu.Title = Res::ModuleCommands;
-
-	for each(ModuleCommandInfo^ it in _registeredCommand)
-	{
-		FarItem^ mi = menu.Add(it->Prefix->PadRight(4) + " " + it->Key);
-		mi->Data = it;
-	}
-
-	while(menu.Show())
-	{
-		FarItem^ mi = menu.Items[menu.Selected];
-		ModuleCommandInfo^ it = (ModuleCommandInfo^)mi->Data;
-
-		InputBox ib;
-		ib.EmptyEnabled = true;
-		ib.HelpTopic = _helpTopic + "ConfigCommand";
-		ib.Prompt = "New prefix for " + it->Name;
-		ib.Text = it->Prefix;
-		ib.Title = "Original prefix: " + it->DefaultPrefix;
-
-		String^ alias = nullptr;
-		while(ib.Show())
-		{
-			alias = ib.Text->Trim();
-			if (alias->IndexOf(" ") >= 0 || alias->IndexOf(":") >= 0)
-			{
-				Message("Prefix must not contain ' ' or ':'.");
-				alias = nullptr;
-				continue;
-			}
-			break;
-		}
-		if (!alias)
-			continue;
-
-		// restore original on empty
-		if (alias->Length == 0)
-			alias = it->DefaultPrefix;
-
-		// reset
-		delete _prefixes;
-		_prefixes = 0;
-		it->Prefix = alias;
-		mi->Text = alias->PadRight(4) + " " + it->Key;
-		ModuleCommand^ command = dynamic_cast<ModuleCommand^>(it->Module);
-		if (command)
-			command->Prefix = alias;
-	}
-}
-
-void Far1::OnConfigEditor()
-{
-	Menu menu;
-	menu.AutoAssignHotkeys = true;
-	menu.HelpTopic = "ConfigEditor";
-	menu.Title = Res::ModuleEditors;
-
-	for each(ModuleEditorInfo^ it in _registeredEditor)
-	{
-		FarItem^ mi = menu.Add(it->Key);
-		mi->Data = it;
-	}
-
-	while(menu.Show())
-	{
-		FarItem^ mi = menu.Items[menu.Selected];
-		ModuleEditorInfo^ it = (ModuleEditorInfo^)mi->Data;
-
-		InputBox ib;
-		ib.EmptyEnabled = true;
-		ib.HelpTopic = _helpTopic + "ConfigEditor";
-		ib.History = "Masks";
-		ib.Prompt = "New mask for " + it->Name;
-		ib.Text = it->Mask;
-		ib.Title = "Original mask: " + it->DefaultMask;
-
-		if (!ib.Show())
-			return;
-		String^ mask = ib.Text->Trim();
-
-		// restore original on empty
-		if (mask->Length == 0)
-			mask = it->DefaultMask;
-
-		// set
-		it->Mask = mask;
-		ModuleEditor^ filer = dynamic_cast<ModuleEditor^>(it->Module);
-		if (filer)
-			filer->Mask = mask;
-	}
-}
-
-void Far1::OnConfigFiler()
-{
-	Menu menu;
-	menu.AutoAssignHotkeys = true;
-	menu.HelpTopic = "ConfigFiler";
-	menu.Title = Res::ModuleFilers;
-
-	for each(ModuleFilerInfo^ it in _registeredFiler)
-	{
-		FarItem^ mi = menu.Add(it->Key);
-		mi->Data = it;
-	}
-
-	while(menu.Show())
-	{
-		FarItem^ mi = menu.Items[menu.Selected];
-		ModuleFilerInfo^ it = (ModuleFilerInfo^)mi->Data;
-
-		InputBox ib;
-		ib.EmptyEnabled = true;
-		ib.HelpTopic = _helpTopic + "ConfigFiler";
-		ib.History = "Masks";
-		ib.Prompt = "New mask for " + it->Name;
-		ib.Text = it->Mask;
-		ib.Title = "Original mask: " + it->DefaultMask;
-
-		if (!ib.Show())
-			return;
-		String^ mask = ib.Text->Trim();
-
-		// restore original on empty
-		if (mask->Length == 0)
-			mask = it->DefaultMask;
-
-		// set
-		it->Mask = mask;
-		ModuleFiler^ filer = dynamic_cast<ModuleFiler^>(it->Module);
-		if (filer)
-			filer->Mask = mask;
-	}
-}
-
-bool Far1::CompareName(String^ mask, const wchar_t* name, bool skipPath)
-{
-	for each(String^ s in mask->Split(gcnew array<Char>{',', ';'}, StringSplitOptions::RemoveEmptyEntries))
-	{
-		PIN_NE(pin, s);
-		if (Info.CmpName(pin, name, skipPath))
-			return true;
-	}
-	return false;
-}
-
-bool Far1::CompareNameEx(String^ mask, const wchar_t* name, bool skipPath)
-{
-	int i = mask->IndexOf('|');
-	if (i < 0)
-		return CompareName(mask, name, skipPath);
-	return  CompareName(mask->Substring(0, i), name, skipPath) && !CompareName(mask->Substring(i + 1), name, skipPath);
-}
-
-void Far1::OnEditorOpened(FarNet::Editor^ editor)
-{
-	if (_registeredEditor.Count == 0)
-		return;
-
-	AutoEditorInfo ei;
-
-	for each(ModuleEditorInfo^ it in _registeredEditor)
-	{
-		// mask?
-		CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
-		Info.EditorControl(ECTL_GETFILENAME, fileName);
-		if (SS(it->Mask) && !CompareNameEx(it->Mask, fileName, true))
-			continue;
-
-		//! tradeoff: catch all to call other plugins, too
-		try
-		{
-			it->Invoke(editor, nullptr);
-		}
-		catch(Exception^ e)
-		{
-			//! show plugin info, too
-			ShowError(it->Key, e);
-		}
-	}
+	Far0::PostStepAfterStep(handler1, handler2);
 }
 
 void Far1::Redraw()
@@ -1936,67 +923,19 @@ IDialog^ Far1::Dialog::get()
 
 ConsoleColor Far1::GetPaletteBackground(PaletteColor paletteColor)
 {
-	int color = GetPaletteColor(paletteColor);
+	int color = Far0::GetPaletteColor(paletteColor);
 	return ConsoleColor(color >> 4);
 }
 
 ConsoleColor Far1::GetPaletteForeground(PaletteColor paletteColor)
 {
-	int color = GetPaletteColor(paletteColor);
+	int color = Far0::GetPaletteColor(paletteColor);
 	return ConsoleColor(color & 0xF);
-}
-
-void Far1::AsProcessSynchroEvent(int type, void* /*param*/)
-{
-	if (type != SE_COMMONSYNCHRO)
-		return;
-
-	WaitForSingleObject(_hMutex, INFINITE);
-	try
-	{
-		//! handlers can be added during calls, don't use 'for each'
-		while(_syncHandlers.Count)
-		{
-			EventHandler^ handler = _syncHandlers[0];
-			_syncHandlers.RemoveAt(0);
-
-			LOG_AUTO(3, String::Format("AsProcessSynchroEvent: {0}", Log::Format(handler->Method)));
-
-			handler(nullptr, nullptr);
-		}
-	}
-	finally
-	{
-		_syncHandlers.Clear();
-
-		ReleaseMutex(_hMutex);
-	}
 }
 
 void Far1::PostJob(EventHandler^ handler)
 {
-	if (!handler)
-		throw gcnew ArgumentNullException("handler");
-
-	WaitForSingleObject(_hMutex, INFINITE);
-	try
-	{
-		if (_syncHandlers.IndexOf(handler) >= 0)
-		{
-			LOG_INFO(String::Format("PostJob: skip already posted {0}", Log::Format(handler->Method)));
-			return;
-		}
-
-		LOG_INFO(String::Format("PostJob: call ACTL_SYNCHRO and post {0}", Log::Format(handler->Method)));
-
-		_syncHandlers.Add(handler);
-		if (_syncHandlers.Count == 1)
-			Info.AdvControl(Info.ModuleNumber, ACTL_SYNCHRO, 0);
-	}
-	finally
-	{
-		ReleaseMutex(_hMutex);
-	}
+	Far0::PostJob(handler);
 }
 
 void Far1::SetProgressState(TaskbarProgressBarState state)
@@ -2012,39 +951,9 @@ void Far1::SetProgressValue(int currentValue, int maximumValue)
 	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSVALUE, &arg);
 }
 
-#undef GetEnvironmentVariable
 CultureInfo^ Far1::GetCurrentUICulture(bool update)
 {
-	// get cached value
-	if (_currentUICulture && !update)
-		return _currentUICulture;
-
-	// FARLANG
-	String^ lang = Environment::GetEnvironmentVariable("FARLANG");
-
-	// a few known cases
-	if (lang == "English")
-		return _currentUICulture = CultureInfo::GetCultureInfo("en");
-	if (lang == "Russian")
-		return _currentUICulture = CultureInfo::GetCultureInfo("ru");
-	if (lang == "Czech")
-		return _currentUICulture = CultureInfo::GetCultureInfo("cs");
-	if (lang == "German")
-		return _currentUICulture = CultureInfo::GetCultureInfo("de");
-	if (lang == "Hungarian")
-		return _currentUICulture = CultureInfo::GetCultureInfo("hu");
-	if (lang == "Polish")
-		return _currentUICulture = CultureInfo::GetCultureInfo("pl");
-
-	// find by name
-	for each(CultureInfo^ ci in CultureInfo::GetCultures(CultureTypes::NeutralCultures))
-	{
-		if (ci->EnglishName == lang)
-			return _currentUICulture = ci;
-	}
-
-	// fallback
-	return _currentUICulture = CultureInfo::InvariantCulture;
+	return Far0::GetCurrentUICulture(update);
 }
 
 void Far1::PostMacro(String^ macro)
@@ -2072,7 +981,7 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 
 void Far1::Quit()
 {
-	if (!Module0::CanExit())
+	if (!ModuleLoader::CanExit())
 		return;
 	
 	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);

@@ -5,7 +5,7 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Zoo.h"
-#include "Module0.h"
+#include "ModuleLoader.h"
 #include "Shelve.h"
 
 namespace FarNet
@@ -107,7 +107,7 @@ void Zoo::ScrollBufferContents(Place source, Point destination, Place clip, Buff
 		ThrowWithLastError("ScrollConsoleScreenBuffer");
 }
 
-array<BufferCell,2>^ Zoo::GetBufferContents(Place rectangle)
+array<BufferCell, 2>^ Zoo::GetBufferContents(Place rectangle)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -170,7 +170,7 @@ array<BufferCell,2>^ Zoo::GetBufferContents(Place rectangle)
 	}
 }
 
-void Zoo::SetBufferContents(Point origin, array<BufferCell,2>^ contents)
+void Zoo::SetBufferContents(Point origin, array<BufferCell, 2>^ contents)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -281,14 +281,6 @@ void Zoo::Break()
 	rec.Event.KeyEvent.dwControlKeyState = LEFT_CTRL_PRESSED;
 
 	WriteConsoleInput(::GetStdHandle(STD_INPUT_HANDLE), &rec, 1, &writeCount);
-}
-
-ResourceManager^ Zoo::CreateFileBasedResourceManager(Object^ target)
-{
-	String^ location = target->GetType()->Assembly->Location;
-	String^ baseName = Path::GetFileNameWithoutExtension(location);
-	String^ resourceDir = Path::GetDirectoryName(location);
-	return ResourceManager::CreateFileBasedResourceManager(baseName, resourceDir, nullptr);
 }
 
 }

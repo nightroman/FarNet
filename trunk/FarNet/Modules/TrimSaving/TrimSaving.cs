@@ -6,7 +6,7 @@ using FarNet;
 public class TrimSaving : ModuleEditor
 {
 	// Called when a file is opened. It installs OnSaving().
-	public override void Invoke(object sender, EventArgs e)
+	public override void Invoke(object sender, ModuleEditorEventArgs e)
 	{
 		IEditor editor = (IEditor)sender;
 		editor.Saving += OnSaving;

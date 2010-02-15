@@ -6,6 +6,7 @@ Copyright (c) 2005 FarNet Team
 #include "stdafx.h"
 #include "Dialog.h"
 #include "Editor0.h"
+#include "Far0.h"
 #include "Far1.h"
 #include "Panel0.h"
 #include "Viewer0.h"
@@ -15,7 +16,7 @@ static FarStandardFunctions FSF;
 static bool s_loaded, s_unloaded;
 
 #define __START try {
-#define __END } catch(Exception^ e) { Far1::Far.ShowError(nullptr, e); }
+#define __END } catch(Exception^ e) { Far::Net->ShowError(nullptr, e); }
 
 /*
 SetStartupInfo is normally called once when the plugin DLL has been loaded.
@@ -46,6 +47,8 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 	// load!
 	s_loaded = true;
 
+	Far1::Connect();
+
 #ifdef TRACE_MEMORY
 	StartTraceMemory();
 #endif
@@ -55,7 +58,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 	Info.FSF = &FSF;
 
 	__START;
-	Far1::Far.StartFar();
+	Far0::Start();
 	__END;
 }
 
@@ -74,7 +77,7 @@ void WINAPI ExitFARW()
 		s_unloaded = true;
 
 		// don't try/catch, Far can't help
-		Far1::Far.Stop();
+		Far0::Stop();
 
 #ifdef TRACE_MEMORY
 		StopTraceMemory();
@@ -95,7 +98,7 @@ void WINAPI GetPluginInfoW(PluginInfo* pi)
 		return;
 
 	__START;
-	Far1::Far.AsGetPluginInfo(pi);
+	Far0::AsGetPluginInfo(pi);
 	__END;
 }
 
@@ -103,7 +106,7 @@ void WINAPI GetPluginInfoW(PluginInfo* pi)
 HANDLE WINAPI OpenPluginW(int from, INT_PTR item)
 {
 	__START;
-	return Far1::Far.AsOpenPlugin(from, item);
+	return Far0::AsOpenPlugin(from, item);
 	__END;
 	return INVALID_HANDLE_VALUE;
 }
@@ -111,7 +114,7 @@ HANDLE WINAPI OpenPluginW(int from, INT_PTR item)
 int WINAPI ConfigureW(int itemIndex)
 {
 	__START;
-	return Far1::Far.AsConfigure(itemIndex);
+	return Far0::AsConfigure(itemIndex);
 	__END;
 	return false;
 }
@@ -185,7 +188,7 @@ int WINAPI MakeDirectoryW(HANDLE hPlugin, const wchar_t** name, int opMode)
 HANDLE WINAPI OpenFilePluginW(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
 {
 	__START;
-	return Far1::Far.AsOpenFilePlugin(name, data, dataSize, opMode);
+	return Far0::AsOpenFilePlugin(name, data, dataSize, opMode);
 	__END;
 	return INVALID_HANDLE_VALUE;
 }
@@ -233,7 +236,7 @@ int WINAPI ProcessKeyW(HANDLE hPlugin, int key, unsigned int controlState)
 int WINAPI ProcessSynchroEventW(int type, void* param)
 {
 	__START;
-	Far1::Far.AsProcessSynchroEvent(type, param);
+	Far0::AsProcessSynchroEvent(type, param);
 	__END;
 	return 0;
 }

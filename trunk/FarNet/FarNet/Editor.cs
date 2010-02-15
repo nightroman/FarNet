@@ -72,8 +72,9 @@ namespace FarNet
 		/// Gets or sets editor word delimiters.
 		/// </summary>
 		/// <remarks>
-		/// For <see cref="IFar.AnyEditor"/> operator it is read only and depends on Far editor options.
-		/// For the current editor <see cref="IFar.Editor"/> operator it is read and write.
+		/// For the current editor <see cref="IFar.Editor"/> operator it has read\write access.
+		/// For an editor from <see cref="IFar.CreateEditor"/> you can set it before or after opening.
+		/// For the <see cref="IFar.AnyEditor"/> operator it is read only and depends on Far editor options.
 		/// </remarks>
 		string WordDiv { get; set; } //! Name 'WordDiv' is kind of standard, e.g. it is used by Far and Colorer.
 	}
@@ -501,11 +502,12 @@ namespace FarNet
 		void EndAsync();
 		/// <summary>
 		/// Gets or sets show white space flag.
-		/// Editor must be current.
+		/// Set it before or after opening.
 		/// </summary>
 		bool ShowWhiteSpace { get; set; }
 		/// <summary>
 		/// Tells to write BOM on saving.
+		/// Set it before or after opening.
 		/// </summary>
 		bool WriteByteOrderMark { get; set; }
 	}

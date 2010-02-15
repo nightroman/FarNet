@@ -1,47 +1,29 @@
 
-// Escape and unescape \ and " in editor selection with \
-// (e.g. string values in .reg files)
+// Escapes and unescapes \ and " in editor selection with \
+// This module implements two items shown in the editor plugin menu.
 
 using System;
 using System.Text.RegularExpressions;
 using FarNet;
 
+[ModuleTool(Name = "Escape selected text", Options = ModuleToolOptions.Editor)]
 public class Escape : ModuleTool
 {
-	public override string Name
+	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
-		get { return "Escape selected text"; }
-	}
-
-	public override ToolOptions Options
-	{
-		get { return ToolOptions.Editor; }
-	}
-
-	public override void Invoke(object sender, ToolEventArgs e)
-	{
-		IEditor editor = Far.Host.Editor;
+		IEditor editor = Far.Net.Editor;
 		ISelection select = editor.Selection;
 		if (select.Exists)
 			select.SetText(Regex.Replace(select.GetText("\r"), @"([\\""])", @"\$1"));
 	}
 }
 
+[ModuleTool(Name = "Unescape selected text", Options = ModuleToolOptions.Editor)]
 public class Unescape : ModuleTool
 {
-	public override string Name
+	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
-		get { return "Unescape selected text"; }
-	}
-
-	public override ToolOptions Options
-	{
-		get { return ToolOptions.Editor; }
-	}
-
-	public override void Invoke(object sender, ToolEventArgs e)
-	{
-		IEditor editor = Far.Host.Editor;
+		IEditor editor = Far.Net.Editor;
 		ISelection select = editor.Selection;
 		if (select.Exists)
 			select.SetText(Regex.Replace(select.GetText("\r"), @"\\([\\""])", "$1"));
