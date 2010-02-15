@@ -6,75 +6,16 @@ Copyright (c) 2005 FarNet Team
 using System;
 using System.Globalization;
 using System.IO;
-using System.Resources;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
 namespace FarNet
 {
 	/// <summary>
-	/// Base module class, the bridge between FarNet and the module tools.
+	/// The module manager shared between all module entry classes.
 	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This is the base class of preloadable modules and not preloadable
-	/// <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, <see cref="ModuleEditor"/>, and <see cref="ModuleFiler"/>.
-	/// </para>
-	/// <para>
-	/// It exposes the global <see cref="Far"/> instance and provides virtual methods called by the core.
-	/// Normally a direct child implements the <see cref="Connect"/> method and registers its tools in it;
-	/// grand children (derived from <c>Module*</c>) implement their <c>Invoke</c> methods.
-	/// There are a few more optional virtual members that can be implemented when needed.
-	/// </para>
-	/// <para>
-	/// Any direct child of this class is preloadable and makes other tools in the same assembly preloadable.
-	/// </para>
-	/// <para>
-	/// For a module that provides a single top level operation use <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, or <see cref="ModuleFiler"/>.
-	/// For a module that only installs editor events for all or specified file types use <see cref="ModuleEditor"/>.
-	/// These modules are normally not preloadable and slightly easier to implement.
-	/// </para>
-	/// </remarks>
-	public class BaseModule
+	public interface IModuleManager
 	{
-		ResourceManager Resource;
-
-		/// <summary>
-		/// Denies instances of this class.
-		/// </summary>
-		protected BaseModule()
-		{ }
-
-		/// <include file='doc.xml' path='docs/pp[@name="Connect"]/*'/>
-		public virtual void Connect()
-		{ }
-
-		/// <summary>
-		/// Override this method to process module disconnection.
-		/// </summary>
-		/// <remarks>
-		/// NOTE: Don't call Far UI, it is not working on exiting.
-		/// Consider to use GUI message boxes if it is absolutely needed.
-		/// </remarks>
-		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
-		public virtual void Disconnect()
-		{ }
-
-		/// <summary>
-		/// Gets the module or its menu item name. By default it is the module class name.
-		/// </summary>
-		/// <remarks>
-		/// If you override it (usually in <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, or <see cref="ModuleFiler"/>)
-		/// and use several module tools in the assembly then make sure that names do not clash.
-		/// </remarks>
-		public virtual string Name
-		{
-			get
-			{
-				return GetType().FullName;
-			}
-		}
-
 		/// <summary>
 		/// Gets or sets the current UI culture.
 		/// </summary>
@@ -84,58 +25,32 @@ namespace FarNet
 		/// But you may want to set it yourself:
 		/// <ul>
 		/// <li>To ensure it is the same as the current Far UI culture after its changes.</li>
-		/// <li>To use the culture different from the current Far UI culture (for testing or whatever).</li>
-		/// <li>To use the culture which is not even known to Far itself (there is no such a .LNG file).</li>
+		/// <li>To use cultures different from the current Far UI culture (for testing or whatever).</li>
+		/// <li>To use cultures which are not even known to Far itself (there are no such .lng files).</li>
 		/// </ul>
 		/// </remarks>
-		public CultureInfo CurrentUICulture
-		{
-			get
-			{
-				if (_CurrentUICulture == null)
-					_CurrentUICulture = Far.Net.GetCurrentUICulture(false);
-
-				return _CurrentUICulture;
-			}
-			set
-			{
-				if (value == null)
-					throw new ArgumentNullException("value");
-
-				_CurrentUICulture = value;
-			}
-		}
-		CultureInfo _CurrentUICulture;
-
+		CultureInfo CurrentUICulture { get; set; }
 		/// <summary>
-		/// Called before invoking of any registered module tool.
+		/// The <see cref="BaseModuleEntry.GetString"/> worker.
 		/// </summary>
-		/// <remarks>
-		/// The module may override this method to perform preparation procedures.
-		/// Normally this is not needed for a simple module with a single tool.
-		/// It is useful when a complex module registers several tools and
-		/// wants common steps to be performed by this method.
-		/// <para>
-		/// NOTE: This method is called only for module tools:
-		/// tool <c>Invoke()</c> methods and handlers registered by <c>Register*()</c> methods.
-		/// It is not called on events added by a module to editors, viewers, dialogs or panels.
-		/// </para>
-		/// <para>
-		/// Example: PowerShellFar starts loading of the PowerShell engine in a background thread on connection.
-		/// This method waits for the engine loading to complete, if needed. All registered PowerShellFar tools
-		/// simply assume that the engine is already loaded. But editor event handlers still have to care.
-		/// </para>
-		/// </remarks>
-		public virtual void Invoking()
-		{ }
+		string GetString(string name);
+	}
 
+	/// <summary>
+	/// Abstract module entry. Modules implement at least one public not abstract descendant of this class.
+	/// </summary>
+	/// <remarks>
+	/// This class provides localized strings from module .resources files.
+	/// </remarks>
+	public abstract class BaseModuleEntry
+	{
 		/// <summary>
 		/// Gets a localized string from .resorces files.
 		/// </summary>
 		/// <returns>Localized string. If a best match is not possible, null is returned.</returns>
 		/// <param name="name">String name.</param>
 		/// <remarks>
-		/// It gets a string from .resource files depending on the <see cref="CurrentUICulture"/>.
+		/// It gets a string from .resource files depending on the <see cref="IModuleManager.CurrentUICulture"/>.
 		/// <para>
 		/// The module has to provide .resources files in its directory:
 		/// </para>
@@ -162,11 +77,115 @@ namespace FarNet
 		/// </remarks>
 		public string GetString(string name)
 		{
-			if (Resource == null)
-				Resource = Far.Net.Zoo.CreateFileBasedResourceManager(this);
-
-			return Resource.GetString(name, CurrentUICulture);
+			return _ModuleManager.GetString(name);
 		}
+
+		/// <summary>
+		/// The module manager.
+		/// </summary>
+		public IModuleManager ModuleManager
+		{
+			get { return _ModuleManager; }
+			set
+			{
+				if (_ModuleManager != null)
+					throw new InvalidOperationException();
+
+				_ModuleManager = value;
+			}
+		}
+		IModuleManager _ModuleManager;
+	}
+
+	/// <summary>
+	/// Module host attributes.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class ModuleHostAttribute : Attribute
+	{
+		/// <summary>
+		/// Tells to load the module and connect the host always.
+		/// </summary>
+		/// <remarks>
+		/// If the module host is the only implemented module entry then this flag is ignored
+		/// and the host is loaded and connected because otherwise it has no chances to be.
+		/// </remarks>
+		public bool Load { get; set; }
+	}
+
+	/// <summary>
+	/// Preloadable module host class. At most one public descendant can be implemented by a module.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// A module implementing this class is preloadable, that is its assembly is loaded together with Far
+	/// and a single instance of this class is created for the session. In most cases the module tools
+	/// should be implemented instead of this (see predefined <see cref="BaseModuleTool"/> children).
+	/// </para>
+	/// <para>
+	/// This class provides virtual methods called by the core.
+	/// Normally the module implements the <see cref="Connect"/> method and registers its tools in it;
+	/// There are a few more optional virtual members that can be implemented when needed.
+	/// </para>
+	/// <para>
+	/// Any direct child of this class is preloadable and makes other tools in the same assembly preloadable.
+	/// </para>
+	/// <para>
+	/// For a module that provides a single top level operation use <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, or <see cref="ModuleFiler"/>.
+	/// For a module that only installs editor events for all or specified file types use <see cref="ModuleEditor"/>.
+	/// These modules are normally not preloadable and slightly easier to implement.
+	/// </para>
+	/// </remarks>
+	public abstract class ModuleHost : BaseModuleEntry
+	{
+		/// <summary>
+		/// Override this method to process the module connection.
+		/// </summary>
+		/// <example>
+		/// (C#) how to register a command line prefix and a menu command.
+		/// <code>
+		/// // Register a prefix:
+		/// Far.Net.RegisterCommand(this, [name], [prefix], [handler]);
+		/// // Register a menu command:
+		/// Far.Net.RegisterTool(this, [name], [handler], [options]);
+		/// ...
+		/// </code>
+		/// </example>
+		public virtual void Connect()
+		{ }
+
+		/// <summary>
+		/// Override this method to process module disconnection.
+		/// </summary>
+		/// <remarks>
+		/// NOTE: Don't call Far UI, it is not working on exiting.
+		/// Consider to use GUI message boxes if it is absolutely needed.
+		/// </remarks>
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+		public virtual void Disconnect()
+		{ }
+
+		/// <summary>
+		/// Called before invoking of any module tool.
+		/// </summary>
+		/// <remarks>
+		/// The module may override this method to perform preparation procedures.
+		/// Normally this is not needed for a simple module with a single tool.
+		/// It is useful when a complex module registers several tools and
+		/// wants common steps to be performed by this method.
+		/// <para>
+		/// NOTE: This method is called only for module tools:
+		/// tool <c>Invoke()</c> methods and handlers registered by <c>Register*()</c> methods.
+		/// It is not called on events added by a module to editors, viewers, dialogs or panels.
+		/// </para>
+		/// <para>
+		/// Example: PowerShellFar starts loading of the PowerShell engine in a background thread on connection.
+		/// This method waits for the engine loading to complete, if needed. All registered PowerShellFar tools
+		/// simply assume that the engine is already loaded. But editor event handlers still have to care.
+		/// </para>
+		/// </remarks>
+		public virtual void Invoking()
+		{ }
 
 		/// <summary>
 		/// Can the module exit now?
@@ -189,10 +208,31 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Tool options.
+	/// Common attributes of any module tool.
+	/// </summary>
+	public abstract class BaseModuleToolAttribute : Attribute
+	{
+		/// <summary>
+		/// Gets the module tool name to be shown in menus. By default it is the class name.
+		/// </summary>
+		/// <remarks>
+		/// Make sure the module tools have different names.
+		/// </remarks>
+		public string Name { get; set; }
+	}
+
+	/// <summary>
+	/// Abstract parent of <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, <see cref="ModuleEditor"/>, and <see cref="ModuleFiler"/>.
+	/// </summary>
+	public abstract class BaseModuleTool : BaseModuleEntry
+	{
+	}
+
+	/// <summary>
+	/// Module tool options.
 	/// </summary>
 	[Flags]
-	public enum ToolOptions
+	public enum ModuleToolOptions
 	{
 		/// <summary>
 		/// None.
@@ -237,26 +277,34 @@ namespace FarNet
 	}
 
 	/// <summary>
+	/// Attributes of a module tool which is shown in menus.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class ModuleToolAttribute : BaseModuleToolAttribute
+	{
+		/// <summary>
+		/// Tool options. By default the tool is shown in all plugin menus.
+		/// </summary>
+		public ModuleToolOptions Options { get; set; }
+		///
+		public ModuleToolAttribute()
+		{
+			Options = ModuleToolOptions.F11Menus;
+		}
+	}
+
+	/// <summary>
 	/// Arguments of a module tool event.
 	/// </summary>
 	/// <remarks>
-	/// This event is normally called from the Far plugin menu.
+	/// This event is normally called from the Far plugin, disk or configuration menus.
 	/// </remarks>
-	public sealed class ToolEventArgs : EventArgs
+	public sealed class ModuleToolEventArgs : EventArgs
 	{
-		///
-		public ToolEventArgs(ToolOptions from)
-		{
-			_From = from;
-		}
 		/// <summary>
 		/// Where it is called from.
 		/// </summary>
-		public ToolOptions From
-		{
-			get { return _From; }
-		}
-		ToolOptions _From;
+		public ModuleToolOptions From { get; set; }
 		/// <summary>
 		/// Tells to ignore results, e.g. when configuration dialog is cancelled.
 		/// </summary>
@@ -264,132 +312,114 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base class of a tool represented by an item in Far menus.
+	/// A module tool represented by an item in Far menus.
 	/// </summary>
 	/// <remarks>
-	/// It is enough to implement <see cref="Invoke"/> method only.
-	/// Override other properties and methods as needed.
-	/// You may derive any number of such classes.
+	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	public abstract class ModuleTool : BaseModule
+	public abstract class ModuleTool : BaseModuleTool
 	{
 		/// <summary>
 		/// Tool handler called when its menu item is invoked.
 		/// </summary>
-		public abstract void Invoke(object sender, ToolEventArgs e);
+		public abstract void Invoke(object sender, ModuleToolEventArgs e);
+	}
 
+	/// <summary>
+	/// Module command attributes.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class ModuleCommandAttribute : BaseModuleToolAttribute
+	{
 		/// <summary>
-		/// Tool options. By default the tool is shown in all menus.
-		/// Override to specify only needed areas.
+		/// Command prefix. By default it is the class name.
 		/// </summary>
-		public virtual ToolOptions Options
-		{
-			get { return ToolOptions.AllAreas; }
-		}
+		/// <remarks>
+		/// This prefix is only a suggestion, the actual prefix may be changed by a user, so that
+		/// if the command uses the prefix then it should use <see cref="ModuleCommandEventArgs.Prefix"/>.
+		/// </remarks>
+		public string Prefix { get; set; }
 	}
 
 	/// <summary>
 	/// Arguments of a module command event.
 	/// </summary>
-	public class CommandEventArgs : EventArgs
+	public class ModuleCommandEventArgs : EventArgs
 	{
-		///
-		public CommandEventArgs(string command)
-		{
-			_command = command;
-		}
-		string _command;
 		/// <summary>
-		/// Command to process.
+		/// The command text to process.
 		/// </summary>
-		public string Command
-		{
-			get { return _command; }
-		}
+		public string Command { get; set; }
+		/// <summary>
+		/// The actual command prefix: the default or set by a user.
+		/// </summary>
+		public string Prefix { get; set; }
 	}
 
 	/// <summary>
-	/// Base class of a command called from the command line with a prefix.
+	/// A command called from the command line with a prefix.
 	/// </summary>
 	/// <remarks>
-	/// You have to implement <see cref="Invoke"/> and provide <see cref="Prefix"/>.
-	/// Override other properties and methods as needed.
-	/// You may derive any number of such classes.
+	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	public abstract class ModuleCommand : BaseModule
+	public abstract class ModuleCommand : BaseModuleTool
 	{
 		/// <summary>
 		/// Command handler called from the command line with a prefix.
 		/// </summary>
-		public abstract void Invoke(object sender, CommandEventArgs e);
-
-		/// <summary>
-		/// Command prefix. By default it is the class name, override <c>get</c> for another one.
-		/// But it is only a suggestion, actual prefix may be changed by a user, so that
-		/// if the module uses the prefix itself then override <c>set</c> too.
-		/// </summary>
-		public virtual string Prefix
-		{
-			get { return this.GetType().Name; }
-			set { }
-		}
+		public abstract void Invoke(object sender, ModuleCommandEventArgs e);
 	}
 
 	/// <summary>
-	/// Arguments for a handler registered by <see cref="IFar.RegisterFiler"/>.
+	/// Module filer tool attributes.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class ModuleFilerAttribute : BaseModuleToolAttribute
+	{
+		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
+		public string Mask { get; set; }
+		/// <summary>
+		/// Tells that the filer also creates files.
+		/// </summary>
+		public bool Creates { get; set; }
+	}
+
+	/// <summary>
+	/// Module filer tool event arguments.
+	/// </summary>
+	/// <remarks>
 	/// A handler is called to open a <see cref="IPanel"/> which emulates a file system based on a file.
 	/// If a file is unknown a handler should do nothing.
-	/// </summary>
-	public sealed class FilerEventArgs : EventArgs
+	/// </remarks>
+	public sealed class ModuleFilerEventArgs : EventArgs
 	{
-		///
-		public FilerEventArgs(string name, Stream data, OperationModes mode)
-		{
-			_Name = name;
-			_Data = data;
-			_Mode = mode;
-		}
-		string _Name;
 		/// <summary>
 		/// Full name of a file including the path.
 		/// If it is empty then a handler is called to create a new file [ShiftF1].
 		/// In any case a handler opens <see cref="IPanel"/> or ignores this call.
 		/// </summary>
-		public string Name
-		{
-			get { return _Name; }
-		}
-		Stream _Data;
+		public string Name { get; set; }
 		/// <summary>
 		/// Data from the beginning of the file used to detect the file type.
 		/// Use this stream in a handler only or copy the data for later use.
 		/// </summary>
-		public Stream Data
-		{
-			get { return _Data; }
-		}
-		OperationModes _Mode;
+		public Stream Data { get; set; }
 		/// <summary>
 		/// Combination of the operation mode flags.
 		/// </summary>
-		public OperationModes Mode
-		{
-			get { return _Mode; }
-		}
+		public OperationModes Mode { get; set; }
 	}
 
 	/// <summary>
-	/// Base class of a module filer.
+	/// A module filer tool.
 	/// </summary>
 	/// <remarks>
-	/// It is enough to implement <see cref="Invoke"/> method only.
-	/// Override other properties and methods as needed.
-	/// You may derive any number of such classes.
+	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	public abstract class ModuleFiler : BaseModule
+	public abstract class ModuleFiler : BaseModuleTool
 	{
 		/// <summary>
 		/// Filer handler called when a file is opened.
@@ -399,39 +429,38 @@ namespace FarNet
 		/// Usually file based modules should represent file data in a panel,
 		/// i.e. this methods should be used to open and configure a panel (<see cref="IPanel"/>).
 		/// </remarks>
-		public abstract void Invoke(object sender, FilerEventArgs e);
-
-		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
-		public virtual string Mask
-		{
-			get { return string.Empty; }
-			set { }
-		}
-
-		/// <summary>
-		/// Tells that the module also creates files.
-		/// </summary>
-		public virtual bool Creates
-		{
-			get { return false; }
-			set { }
-		}
+		public abstract void Invoke(object sender, ModuleFilerEventArgs e);
 	}
 
 	/// <summary>
-	/// Base class of a module editor.
+	/// Module editor tool attributes.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class ModuleEditorAttribute : BaseModuleToolAttribute
+	{
+		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
+		public string Mask { get; set; }
+	}
+
+	/// <summary>
+	/// Module editor tool event arguments.
+	/// </summary>
+	public class ModuleEditorEventArgs : EventArgs
+	{
+	}
+
+	/// <summary>
+	/// A module editor tool.
 	/// </summary>
 	/// <remarks>
-	/// This module works with editor events, not with menu commands in editors
+	/// This tool works with editor events, not with menu commands in editors
 	/// (in the latter case use <see cref="ModuleTool"/> configured for editors).
 	/// <para>
-	/// It is enough to implement <see cref="Invoke"/> method only.
-	/// Override other properties and methods as needed.
-	/// You may derive any number of such classes.
+	/// The <see cref="Invoke"/> method has to be implemented.
 	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
-	public abstract class ModuleEditor : BaseModule
+	public abstract class ModuleEditor : BaseModuleTool
 	{
 		/// <summary>
 		/// Editor <see cref="IAnyEditor.Opened"/> handler.
@@ -444,18 +473,11 @@ namespace FarNet
 		/// See the <c>Modules\TrimSaving</c> module.
 		/// It is not just an example, it can be used for real.
 		/// </example>
-		public abstract void Invoke(object sender, EventArgs e);
-
-		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
-		public virtual string Mask
-		{
-			get { return string.Empty; }
-			set { }
-		}
+		public abstract void Invoke(object sender, ModuleEditorEventArgs e);
 	}
 
 	/// <summary>
-	/// Module exception.
+	/// A module exception.
 	/// </summary>
 	/// <remarks>
 	/// If a module throws exceptions then for better diagnostics it is recommended to use this or derived exceptions
@@ -477,5 +499,4 @@ namespace FarNet
 		///
 		protected ModuleException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
-
 }

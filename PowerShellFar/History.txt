@@ -3,12 +3,12 @@ http://code.google.com/p/farnet/
 
 = 4.3.5 =
 
-*) Module FarMacro: New cmdlet Edit-FarMacro cmdlet allows to edit macro
-sequences in the editor with syntax coloring (Colorer, indeed) and syntax
-checks on saving ($Far.Macro.Check()). See also about_FarMacro.help.txt
+*) Module FarMacro: New cmdlet Edit-FarMacro allows to edit macro sequences in
+the editor with syntax coloring (Colorer plugin) and syntax checks on saving
+($Far.Macro.Check()). See also about_FarMacro.help.txt
 
 *) Script Panel-Macro-.ps1: it is now based on the FarModule completely. In
-particular, the -Editor mode is removed because there is the Edit-FarMacro.
+particular the -Editor mode is removed, use new Edit-FarMacro cmdlet instead.
 
 = 4.3.4 =
 

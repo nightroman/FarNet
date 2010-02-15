@@ -10,9 +10,10 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// FarNet module for internal use.
+	/// FarNet module host for internal use.
 	/// </summary>
-	public sealed class Entry : BaseModule
+	[ModuleHost(Load = true)]
+	public sealed class Entry : ModuleHost
 	{
 		static Entry _Instance;
 
@@ -45,10 +46,10 @@ namespace PowerShellFar
 			Prefix2 = Far.Net.RegisterCommand(this, "PowerShell jobs prefix", ">>", OnCommandLineJob);
 
 			// register config
-			Far.Net.RegisterTool(this, Res.Me, OnConfig, ToolOptions.Config);
+			Far.Net.RegisterTool(this, Res.Me, OnConfig, ModuleToolOptions.Config);
 
 			// register menu
-			Far.Net.RegisterTool(this, Res.Me, OnOpen, ToolOptions.F11Menus);
+			Far.Net.RegisterTool(this, Res.Me, OnOpen, ModuleToolOptions.F11Menus);
 
 			// editor events: OnEditorOpened1 should be called always and first
 			// to do Invoking() (at least for TabExpansion) and the startup code
@@ -93,7 +94,7 @@ namespace PowerShellFar
 		bool InvokingHasBeenCalled;
 
 		//! do not call Invoking(), it is done by FarNet
-		void OnCommandLine(object sender, CommandEventArgs e)
+		void OnCommandLine(object sender, ModuleCommandEventArgs e)
 		{
 			string currentDirectory = A.Psf.SyncPaths();
 			try
@@ -108,19 +109,19 @@ namespace PowerShellFar
 
 		//! do not call Invoking(), it is done by FarNet
 		//! do not sync paths for jobs
-		void OnCommandLineJob(object sender, CommandEventArgs e)
+		void OnCommandLineJob(object sender, ModuleCommandEventArgs e)
 		{
 			string code = e.Command;
 			Job job = new Job(new JobCommand(code, true), null, code, true, int.MaxValue);
 			job.StartJob();
 		}
 
-		void OnConfig(object sender, ToolEventArgs e)
+		void OnConfig(object sender, ModuleToolEventArgs e)
 		{
 			e.Ignore = !A.Psf.ShowSettings();
 		}
 
-		internal void OnOpen(object sender, ToolEventArgs e)
+		internal void OnOpen(object sender, ModuleToolEventArgs e)
 		{
 			UI.ActorMenu.Show(sender, e);
 		}

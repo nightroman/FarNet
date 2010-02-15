@@ -7,9 +7,8 @@ Copyright (c) 2005 FarNet Team
 #include "ListMenu.h"
 #include "Dialog.h"
 #include "DialogControls.h"
-#include "InputBox.h"
+#include "Far0.h"
 #include "Message.h"
-#include "Far1.h"
 
 namespace FarNet
 {;
@@ -79,30 +78,30 @@ static Regex^ CreateRegex(String^ pattern, PatternOptions options, bool* ok)
 
 static String^ InputFilter(String^ pattern, PatternOptions options, String^ history, Regex^& regex)
 {
-	InputBox ib;
-	ib.Title = "Filter";
-	ib.Prompt = "Pattern (" + options.ToString() + ")";
-	ib.EmptyEnabled = true;
-	ib.History = history;
-	ib.UseLastHistory = true;
+	IInputBox^ ib = Far::Net->CreateInputBox();
+	ib->Title = "Filter";
+	ib->Prompt = "Pattern (" + options.ToString() + ")";
+	ib->EmptyEnabled = true;
+	ib->History = history;
+	ib->UseLastHistory = true;
 	if (SS(pattern))
-		ib.Text = pattern;
+		ib->Text = pattern;
 
 	//! help; it fails without 'Far1::_helpTopic' part
-	ib.HelpTopic = Far1::_helpTopic + "InputFilter";
+	ib->HelpTopic = Far0::_helpTopic + "InputFilter";
 
 	// show filter input box
 	for(;;)
 	{
 		// cancelled
-		if (!ib.Show())
+		if (!ib->Show())
 			return nullptr;
 
 		// get regex (with UI errors)
 		bool ok;
-		regex = CreateRegex(ib.Text, options, &ok);
+		regex = CreateRegex(ib->Text, options, &ok);
 		if (ok)
-			return ib.Text;
+			return ib->Text;
 	}
 }
 
