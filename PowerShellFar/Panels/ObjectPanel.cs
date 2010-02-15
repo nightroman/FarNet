@@ -202,7 +202,8 @@ namespace PowerShellFar
 
 		internal override object GetData()
 		{
-			if (UserWants != UserAction.CtrlR && Values.Count == 0 && (Map != null || Panel.Files.Count > 0 && Panel.Files[0] is SetFile)) //???? mb it works but looks like a hack
+			//???? mb it works but looks like a hack
+			if (UserWants != UserAction.CtrlR && Values.Count == 0 && (Map != null || Panel.Files.Count > 0 && Panel.Files[0] is SetFile))
 				return Panel.Files;
 
 			if (Map == null || Columns == null)

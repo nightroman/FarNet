@@ -5,7 +5,7 @@ http://code.google.com/p/farnet/
 MAJOR ARCHITECTURE CHANGES
 
 *) Module tool classes:
--- Instances are created for each Invoke() call and not kept by FarNet.
+-- Module tool class instance is created for each call of its Invoke() method.
 -- Virtual Connect()\Disconnect() are removed. Use ModuleHost if you need them.
 -- Virtual properties are replaced with class attributes, see documentation and
 sample modules. Each class has its own attribute class: e.g. ModuleXyzAttribute
@@ -14,29 +14,36 @@ for ModuleXyz class.
 *) Simplified access to IFar host. It is now 'Far.Net' anywhere. In your code:
 -- Module classes: replace 'Far.' with 'Far.Net.';
 -- Other code: you do not have to think of exposing IFar (e.g. sending it to
-constructors or keeping it in a static variable), just use 'Far.Net.' anywhere.
+constructors or keeping it in a static variable), just use 'Far.Net' anywhere.
 
 *) Simplified module manifest files (.cfg), see Readme.txt if you use them.
 
 *) A few renamings, e.g. ToolOptions -> ModuleToolOptions, CommandEventArgs ->
-ModuleCommandEventArgs, etc. New names are better related to related classes.
+ModuleCommandEventArgs, etc. New names describe themselves better.
 
 *) These changes are breaking, indeed, and the modules should be updated.
-If you still have problems on loading after that try to drop the cache:
+If you have problems on loading after update try to drop the cache:
 HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet\<cache>
 
-MINOR ARCHITECTURE CHANGES
+MINOR RELATED CHANGES
+
+*) For a menu tool default Options value changed from 'AllMenus' to 'None'.
+Thus, it is mandatory to specify Options, otherwise an item is not shown:
+[ModuleTool(Name = "Hello", Options = ModuleToolOptions.Panels)]
 
 *) Invoke() in some module tools: sender is null now, not IFar instance. It is
 useless to send IFar because it is available as Far.Net anywhere.
 
 *) Sample module Tutorial-Tool is replaced with Tutorial-Host. It still
 contains the same sample module tool and a sample module host is added.
+This host is not preloadable. Example of preloadable host is PSF.
 
 OTHER CHANGES
 
 *) IEditor: options WordDiv, ShowWhiteSpace, WriteByteOrderMark can be set
 before (new!) or after opening the editor.
+
+*) PanelModeInfo: new properties IsAlignedExtensions, IsCaseConversion.
 
 = 4.3.4 =
 

@@ -68,7 +68,7 @@ namespace PowerShellFar
 			for (int i = 0; i < count; ++i)
 				metas[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
 
-			// adjust formatting to the panel width ????
+			// adjust formatting to the panel width ???
 			{
 				int totalWidth = Far.Net.Panel.Window.Width - (metas.Length + 1); // N columns ~ N + 1 borders
 				int setSum = 0;
@@ -114,7 +114,7 @@ namespace PowerShellFar
 			Meta[] metas;
 			int count;
 
-			if (values.Count == 1) //???? need
+			if (values.Count == 1) //??? need
 			{
 				List<Meta> tmp = new List<Meta>();
 				foreach (PSPropertyInfo pi in values[0].Properties)
@@ -213,7 +213,7 @@ namespace PowerShellFar
 			return false;
 		}
 
-		void MakeMap(Meta[] metas) //????
+		void MakeMap(Meta[] metas) //???
 		{
 			// pass 1: get metas and types and pre-process only specified default types
 			if (metas == null)

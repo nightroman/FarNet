@@ -206,6 +206,7 @@ BaseModuleTool^ BaseModuleToolInfo::GetInstance()
 
 void BaseModuleToolInfo::Invoking()
 {
+	//! may be null for handlers
 	if (_ModuleManager)
 		_ModuleManager->Invoking();
 }
