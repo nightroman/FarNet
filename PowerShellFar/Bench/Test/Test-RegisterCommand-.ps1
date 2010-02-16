@@ -19,8 +19,9 @@ if (!$TestCommand) {
 	}}
 
 	# register the handler
-	$null = $Far.RegisterCommand($null, "PSF test command", "test", $TestCommand)
-	Show-FarMessage "Command 'test' is registered, type:`ntest:<your text>[Enter]"
+	$attr = New-Object FarNet.ModuleCommandAttribute -Property @{ Name = "PSF test command"; Prefix = "test" }
+	$Far.RegisterCommand($null, $TestCommand, $attr)
+	Show-FarMessage "Command 'test' is registered, type:`n$($attr.Prefix):<text>[Enter]"
 }
 else {
 	# unregister and uninstall the handler

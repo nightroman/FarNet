@@ -35,13 +35,13 @@ public:
 public:
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static int GetPaletteColor(PaletteColor paletteColor);
-	static String^ RegisterCommand(BaseModuleEntry^ entry, String^ name, String^ prefix, EventHandler<ModuleCommandEventArgs^>^ handler);
 	static void OnEditorOpened(IEditor^ editor);
 	static void PostJob(EventHandler^ handler);
 	static void PostStep(EventHandler^ handler);
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
-	static void RegisterFiler(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleFilerEventArgs^>^ handler, String^ mask, bool creates);
+	static void RegisterCommand(IModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute);
+	static void RegisterFiler(IModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute);
 	static void Run(String^ command);
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);

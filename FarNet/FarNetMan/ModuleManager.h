@@ -45,16 +45,18 @@ ref class BaseModuleToolInfo abstract
 public:
 	void Invoking();
 	BaseModuleTool^ GetInstance();
-	BaseModuleToolAttribute^ InitFromAttribute(Type^ attrType);
 	virtual String^ ToString() override;
 	property String^ AssemblyPath { String^ get(); }
 	property String^ ClassName { String^ get(); }
 	property String^ Key { String^ get(); }
-	property String^ Name { String^ get() { return _Name; } }
+	property String^ Name { String^ get() { return _Attribute->Name; } }
 protected:
-	BaseModuleToolInfo(ModuleManager^ manager, String^ name);
-	BaseModuleToolInfo(ModuleManager^ manager, Type^ classType);
-	BaseModuleToolInfo(ModuleManager^ manager, String^ className, String^ toolName);
+	BaseModuleToolInfo(ModuleManager^ manager, BaseModuleToolAttribute^ attribute);
+	BaseModuleToolInfo(ModuleManager^ manager, Type^ classType, Type^ attributeType);
+	BaseModuleToolInfo(ModuleManager^ manager, String^ className, BaseModuleToolAttribute^ attribute);
+	BaseModuleToolAttribute^ GetAttribute() { return _Attribute; }
+private:
+	void Init();
 private:
 	// Any tool has the module manager. Handlers may or may not have it.
 	ModuleManager^ const _ModuleManager;
@@ -62,15 +64,15 @@ private:
 	String^ _ClassName;
 	// Type coming from the assembly reflection. Null for handlers.
 	Type^ _ClassType;
-	// UI name from cache, attributes (after getting type) or just set for handlers.
-	String^ _Name;
+	// Attribute. Not null.
+	BaseModuleToolAttribute^ _Attribute;
 };
 
-ref class ModuleToolInfo : BaseModuleToolInfo
+ref class ModuleToolInfo sealed : BaseModuleToolInfo
 {
 public:
-	ModuleToolInfo(ModuleManager^ manager, String^ name, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolOptions options);
-	ModuleToolInfo(ModuleManager^ manager, String^ className, String^ name, ModuleToolOptions options);
+	ModuleToolInfo(ModuleManager^ manager, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute);
+	ModuleToolInfo(ModuleManager^ manager, String^ className, ModuleToolAttribute^ attribute);
 	ModuleToolInfo(ModuleManager^ manager, Type^ classType);
 	virtual String^ ToString() override;
 	String^ Alias(ModuleToolOptions option);
@@ -78,10 +80,9 @@ public:
 	void Invoke(Object^ sender, ModuleToolEventArgs^ e);
 	bool HasHandler(EventHandler<ModuleToolEventArgs^>^ handler) { return _Handler == handler; }
 public:
-	property ModuleToolOptions Options { ModuleToolOptions get() { return _Options; } }
+	property ModuleToolAttribute^ Attribute { ModuleToolAttribute^ get() { return (ModuleToolAttribute^)GetAttribute(); } }
 private:
 	EventHandler<ModuleToolEventArgs^>^ _Handler;
-	ModuleToolOptions _Options;
 	String^ _AliasConfig;
 	String^ _AliasDisk;
 	String^ _AliasDialog;
@@ -90,61 +91,64 @@ private:
 	String^ _AliasViewer;
 };
 
-ref class ModuleCommandInfo : BaseModuleToolInfo
+ref class ModuleCommandInfo sealed : BaseModuleToolInfo
 {
 public:
-	ModuleCommandInfo(ModuleManager^ manager, String^ name, String^ prefix, EventHandler<ModuleCommandEventArgs^>^ handler);
-	ModuleCommandInfo(ModuleManager^ manager, String^ className, String^ name, String^ prefix);
+	ModuleCommandInfo(ModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute);
+	ModuleCommandInfo(ModuleManager^ manager, String^ className, ModuleCommandAttribute^ attribute);
 	ModuleCommandInfo(ModuleManager^ manager, Type^ classType);
 	virtual String^ ToString() override;
 	void Invoke(Object^ sender, ModuleCommandEventArgs^ e);
 	bool HasHandler(EventHandler<ModuleCommandEventArgs^>^ handler) { return _Handler == handler; }
 public:
+	property ModuleCommandAttribute^ Attribute { ModuleCommandAttribute^ get() { return (ModuleCommandAttribute^)GetAttribute(); } }
 	property String^ DefaultPrefix { String^ get() { return _DefaultPrefix; } }
-	property String^ Prefix { String^ get(); void set(String^ value); }
+	void SetPrefix(String^ value);
+private:
+	void Init();
 private:
 	EventHandler<ModuleCommandEventArgs^>^ _Handler;
 	String^ _DefaultPrefix;
-	String^ _Prefix;
 };
 
-ref class ModuleFilerInfo : BaseModuleToolInfo
+ref class ModuleFilerInfo sealed : BaseModuleToolInfo
 {
 public:
-	ModuleFilerInfo(ModuleManager^ manager, String^ name, EventHandler<ModuleFilerEventArgs^>^ handler, String^ mask, bool creates);
-	ModuleFilerInfo(ModuleManager^ manager, String^ className, String^ name, String^ mask, bool creates);
+	ModuleFilerInfo(ModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute);
+	ModuleFilerInfo(ModuleManager^ manager, String^ className, ModuleFilerAttribute^ attribute);
 	ModuleFilerInfo(ModuleManager^ manager, Type^ classType);
 	virtual String^ ToString() override;
 	void Invoke(Object^ sender, ModuleFilerEventArgs^ e);
 	bool HasHandler(EventHandler<ModuleFilerEventArgs^>^ handler) { return _Handler == handler; }
 public:
-	property bool Creates { bool get() { return _Creates; } }
+	property ModuleFilerAttribute^ Attribute { ModuleFilerAttribute^ get() { return (ModuleFilerAttribute^)GetAttribute(); } }
 	property String^ DefaultMask { String^ get() { return _DefaultMask; } }
-	property String^ Mask { String^ get(); void set(String^ value); }
+	void SetMask(String^ value);
 private:
+	void Init();
 private:
-	bool _Creates;
 	EventHandler<ModuleFilerEventArgs^>^ _Handler;
 	String^ _DefaultMask;
-	String^ _Mask;
 };
 
-ref class ModuleEditorInfo : BaseModuleToolInfo
+ref class ModuleEditorInfo sealed : BaseModuleToolInfo
 {
 public:
-	ModuleEditorInfo(ModuleManager^ manager, String^ name, EventHandler^ handler, String^ mask);
-	ModuleEditorInfo(ModuleManager^ manager, String^ className, String^ name, String^ mask);
+	ModuleEditorInfo(ModuleManager^ manager, EventHandler^ handler, ModuleEditorAttribute^ attribute);
+	ModuleEditorInfo(ModuleManager^ manager, String^ className, ModuleEditorAttribute^ attribute);
 	ModuleEditorInfo(ModuleManager^ manager, Type^ classType);
 	virtual String^ ToString() override;
 	void Invoke(Object^ sender, ModuleEditorEventArgs^ e);
 	bool HasHandler(EventHandler^ handler) { return _Handler == handler; }
 public:
+	property ModuleEditorAttribute^ Attribute { ModuleEditorAttribute^ get() { return (ModuleEditorAttribute^)GetAttribute(); } }
 	property String^ DefaultMask { String^ get() { return _DefaultMask; } }
-	property String^ Mask { String^ get(); void set(String^ value); }
+	void SetMask(String^ value);
+private:
+	void Init();
 private:
 	EventHandler^ _Handler;
 	String^ _DefaultMask;
-	String^ _Mask;
 };
 
 ref class ModuleToolAliasComparer : IComparer<ModuleToolInfo^>

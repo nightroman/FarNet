@@ -69,7 +69,6 @@ public:
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
 	virtual String^ KeyToName(int key);
 	virtual String^ PasteFromClipboard();
-	virtual String^ RegisterCommand(BaseModuleEntry^ entry, String^ name, String^ prefix, EventHandler<ModuleCommandEventArgs^>^ handler);
 	virtual String^ TempFolder() { return TempFolder(nullptr); }
 	virtual String^ TempFolder(String^ prefix);
 	virtual String^ TempName() { return TempName(nullptr); }
@@ -92,8 +91,9 @@ public:
 	virtual void PostText(String^ text, bool disableOutput);
 	virtual void Quit();
 	virtual void Redraw();
-	virtual void RegisterFiler(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleFilerEventArgs^>^ handler, String^ mask, bool creates);
-	virtual void RegisterTool(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolOptions options);
+	virtual void RegisterCommand(IModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute);
+	virtual void RegisterFiler(IModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute);
+	virtual void RegisterTool(IModuleManager^ manager, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ command);
 	virtual void SetCurrentWindow(int index);

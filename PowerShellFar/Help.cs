@@ -29,10 +29,10 @@ namespace PowerShellFar
 			// replace prefixes with spaces to avoid parsing problems
 			if (line.WindowType == WindowType.Panels)
 			{
-				if (text.StartsWith(Entry.Prefix1 + ":", StringComparison.OrdinalIgnoreCase))
-					text = string.Empty.PadRight(Entry.Prefix1.Length + 1) + text.Substring(Entry.Prefix1.Length + 1);
-				else if (text.StartsWith(Entry.Prefix2 + ":", StringComparison.OrdinalIgnoreCase))
-					text = string.Empty.PadRight(Entry.Prefix1.Length + 2) + text.Substring(Entry.Prefix2.Length + 1);
+				if (text.StartsWith(Entry.Command1.Prefix + ":", StringComparison.OrdinalIgnoreCase))
+					text = string.Empty.PadRight(Entry.Command1.Prefix.Length + 1) + text.Substring(Entry.Command1.Prefix.Length + 1);
+				else if (text.StartsWith(Entry.Command2.Prefix + ":", StringComparison.OrdinalIgnoreCase))
+					text = string.Empty.PadRight(Entry.Command2.Prefix.Length + 2) + text.Substring(Entry.Command2.Prefix.Length + 1);
 			}
 
 			int pos = line.Pos;

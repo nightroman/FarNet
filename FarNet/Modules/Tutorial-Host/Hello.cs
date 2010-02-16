@@ -1,5 +1,4 @@
 
-// Lessons:
 // *) How to create a module host.
 // *) How to create a module tool called from the plugin menus.
 // *) How to build a localized module and use localized strings.
@@ -8,9 +7,11 @@ using System;
 using FarNet;
 
 // Menu item "Hello" in all plugin menus.
-[ModuleTool(Name = "Hello", Options = ModuleToolOptions.F11Menus)]
+[ModuleTool(Name = Hello.Name, Options = ModuleToolOptions.F11Menus)]
 public class Hello : ModuleTool
 {
+	public const string Name = "Hello";
+
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		Far.Net.Message(string.Format(GetString("Format"), GetString("Hello"), GetString("World")));
