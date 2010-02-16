@@ -51,11 +51,10 @@ namespace FarNet
 		/// <summary>
 		/// Registers the tool handler invoked from one of Far menus.
 		/// </summary>
-		/// <param name="entry">The module entry. Null is not recommended.</param>
-		/// <param name="name">Tool name and also the default menu item name. Recommended to be a unique name in the assembly.</param>
+		/// <param name="manager">The module manager or null.</param>
 		/// <param name="handler">Tool handler.</param>
-		/// <param name="options">Tool options.</param>
-		void RegisterTool(BaseModuleEntry entry, string name, EventHandler<ModuleToolEventArgs> handler, ModuleToolOptions options);
+		/// <param name="attribute">Tool attribute.</param>
+		void RegisterTool(IModuleManager manager, EventHandler<ModuleToolEventArgs> handler, ModuleToolAttribute attribute);
 		/// <summary>
 		/// Unregisters the tool handler.
 		/// </summary>
@@ -64,18 +63,13 @@ namespace FarNet
 		/// <summary>
 		/// Registers the command handler invoked from the command line by its prefix.
 		/// </summary>
-		/// <param name="entry">The module entry. Null is not recommended.</param>
-		/// <param name="name">Command name and also the config menu item name. Recommended to be a unique name in the assembly.</param>
-		/// <param name="prefix">Command prefix, see remarks.</param>
+		/// <param name="manager">The module manager or null.</param>
 		/// <param name="handler">Command handler.</param>
-		/// <returns>Actual prefix that is used by FarNet for this command.</returns>
+		/// <param name="attribute">Command attribute.</param>
 		/// <remarks>
-		/// Provided <c>prefix</c> is only a default suggestion, actual prefix used by FarNet can be different,
-		/// e.g. changed by a user, so that the module must use the returned prefix if needed. Note: the module
-		/// is not notified about prefix changes during the session. If it is really important (rare) then use
-		/// <see cref="ModuleCommand"/> which can always have a fresh prefix set by a user.
+		/// After the call the attribute <see cref="ModuleCommandAttribute.Prefix"/> is the actually used prefix.
 		/// </remarks>
-		string RegisterCommand(BaseModuleEntry entry, string name, string prefix, EventHandler<ModuleCommandEventArgs> handler);
+		void RegisterCommand(IModuleManager manager, EventHandler<ModuleCommandEventArgs> handler, ModuleCommandAttribute attribute);
 		/// <summary>
 		/// Unregisters the command handler.
 		/// </summary>
@@ -84,12 +78,10 @@ namespace FarNet
 		/// <summary>
 		/// Registers the file handler invoked for a file. See <see cref="ModuleFilerEventArgs"/>.
 		/// </summary>
-		/// <param name="entry">The module entry. Null is not recommended.</param>
-		/// <param name="name">Filer name and also the config menu items. Recommended to be a unique name in the assembly.</param>
+		/// <param name="manager">The module manager or null.</param>
 		/// <param name="handler">Filer handler.</param>
-		/// <param name="mask">File(s) mask, see <see cref="ModuleFilerAttribute.Mask"/>.</param>
-		/// <param name="creates">Tells that the module also creates files.</param>
-		void RegisterFiler(BaseModuleEntry entry, string name, EventHandler<ModuleFilerEventArgs> handler, string mask, bool creates);
+		/// <param name="attribute">Filer attribute.</param>
+		void RegisterFiler(IModuleManager manager, EventHandler<ModuleFilerEventArgs> handler, ModuleFilerAttribute attribute);
 		/// <summary>
 		/// Unregisters the file handler.
 		/// </summary>

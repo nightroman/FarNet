@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.3.4
-Release  : 2010.02.10
+Version  : 4.3.5
+Release  : 2010.02.16
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -20,7 +20,7 @@ provided by the PowerShellFar module.
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1387
+ - Far Manager 2.0.1400
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime

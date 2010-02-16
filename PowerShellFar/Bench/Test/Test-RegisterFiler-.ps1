@@ -25,7 +25,8 @@ if (!$TestFiler) {
 	}}
 
 	# register the handler
-	$Far.RegisterFiler($null, "PSF test filer", $TestFiler, "*.test", $false)
+	$attr = New-Object FarNet.ModuleFilerAttribute -Property @{ Name = "PSF test filer"; Mask = "*.test" }
+	$Far.RegisterFiler($null, $TestFiler, $attr)
 	Show-FarMessage "Test filer is registered. [Enter] *.test files now."
 }
 else {

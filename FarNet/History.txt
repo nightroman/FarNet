@@ -10,6 +10,7 @@ MAJOR ARCHITECTURE CHANGES
 -- Virtual properties are replaced with class attributes, see documentation and
 sample modules. Each class has its own attribute class: e.g. ModuleXyzAttribute
 for ModuleXyz class.
+-- Attributes are mandatory. Empty ("default") names are not allowed any more.
 
 *) Simplified access to IFar host. It is now 'Far.Net' anywhere. In your code:
 -- Module classes: replace 'Far.' with 'Far.Net.';

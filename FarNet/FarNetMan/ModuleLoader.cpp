@@ -13,8 +13,10 @@ namespace FarNet
 // #1 Load all
 void ModuleLoader::LoadModules()
 {
+	// read modules from the cache, up-to-date modules get loaded with static info
 	ReadCache();
 
+	// read from module directories:
 	String^ path = Environment::ExpandEnvironmentVariables(ConfigurationManager::AppSettings["FarNet.Modules"]);
 	for each(String^ dir in Directory::GetDirectories(path))
 	{
@@ -89,7 +91,11 @@ void ModuleLoader::ReadCache()
 								if (!options)
 									throw gcnew OperationCanceledException;
 
-								ModuleToolInfo^ tool = gcnew ModuleToolInfo(manager, className, entryName, (ModuleToolOptions)options);
+								ModuleToolAttribute^ attribute = gcnew ModuleToolAttribute;
+								attribute->Name = entryName;
+								attribute->Options = (ModuleToolOptions)options;
+								
+								ModuleToolInfo^ tool = gcnew ModuleToolInfo(manager, className, attribute);
 								tools.Add(tool);
 							}
 							else if (entryType == "Command")
@@ -98,14 +104,22 @@ void ModuleLoader::ReadCache()
 								if (!prefix->Length)
 									throw gcnew OperationCanceledException;
 
-								ModuleCommandInfo^ tool = gcnew ModuleCommandInfo(manager, className, entryName, prefix);
+								ModuleCommandAttribute^ attribute = gcnew ModuleCommandAttribute;
+								attribute->Name = entryName;
+								attribute->Prefix = prefix;
+
+								ModuleCommandInfo^ tool = gcnew ModuleCommandInfo(manager, className, attribute);
 								commands.Add(tool);
 							}
 							else if (entryType == "Editor")
 							{
 								String^ mask = keyEntry->GetValue("Mask", String::Empty)->ToString();
 
-								ModuleEditorInfo^ tool = gcnew ModuleEditorInfo(manager, className, entryName, mask);
+								ModuleEditorAttribute^ attribute = gcnew ModuleEditorAttribute;
+								attribute->Name = entryName;
+								attribute->Mask = mask;
+
+								ModuleEditorInfo^ tool = gcnew ModuleEditorInfo(manager, className, attribute);
 								editors.Add(tool);
 							}
 							else if (entryType == "Filer")
@@ -113,7 +127,12 @@ void ModuleLoader::ReadCache()
 								String^ mask = keyEntry->GetValue("Mask", String::Empty)->ToString();
 								int creates = (int)keyEntry->GetValue("Creates", (Object^)-1);
 
-								ModuleFilerInfo^ tool = gcnew ModuleFilerInfo(manager, className, entryName, mask, creates != 0);
+								ModuleFilerAttribute^ attribute = gcnew ModuleFilerAttribute;
+								attribute->Name = entryName;
+								attribute->Mask = mask;
+								attribute->Creates = creates != 0;
+
+								ModuleFilerInfo^ tool = gcnew ModuleFilerInfo(manager, className, attribute);
 								filers.Add(tool);
 							}
 							else
@@ -156,6 +175,7 @@ void ModuleLoader::ReadCache()
 			{
 				if (keyDll)
 					keyDll->Close();
+				
 				keyCache->DeleteSubKeyTree(dllName);
 			}
 		}
@@ -182,13 +202,14 @@ void ModuleLoader::LoadFromDirectory(String^ dir)
 		if (manifests->Length > 1)
 			throw gcnew OperationCanceledException("More than one .cfg files found.");
 
-		// the assembly
+		// load the only assembly
 		array<String^>^ assemblies = Directory::GetFiles(dir, "*.dll");
-		if (assemblies->Length > 1)
-			throw gcnew OperationCanceledException("More than one .dll files found. Expected exactly one .dll file or exactly one .cfg file telling the .dll name.");
-		if (assemblies->Length < 1)
-			throw gcnew OperationCanceledException("The module folder has no .dll or .cfg files.");
-		LoadFromAssembly(assemblies[0], nullptr);
+		if (assemblies->Length == 1)
+			LoadFromAssembly(assemblies[0], nullptr);
+		else if (assemblies->Length > 1)
+			throw gcnew OperationCanceledException("More than one .dll files found. Expected exactly one .dll file or exactly one .cfg file.");
+
+		//! If the folder has no .dll or .cfg files (not yet built sources) then just ignore
 	}
 	catch(Exception^ e)
 	{
@@ -212,7 +233,7 @@ void ModuleLoader::LoadFromManifest(String^ file, String^ dir)
 		throw gcnew OperationCanceledException("Expected the module assembly name as the first line of the manifest file.");
 	path = Path::Combine(dir, path);
 	
-	// classes
+	// collect classes
 	List<String^> classes(lines->Length - 1);
 	for(int i = 1; i < lines->Length; ++i)
 	{
@@ -221,6 +242,7 @@ void ModuleLoader::LoadFromManifest(String^ file, String^ dir)
 			classes.Add(name);
 	}
 	
+	// load with classes, if any
 	LoadFromAssembly(path, %classes);
 }
 
@@ -265,7 +287,7 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 		}
 
 		if (nLoaded == 0)
-			throw gcnew InvalidOperationException("Module '" + assemblyPath + "' has no suitable entry classes.");
+			throw gcnew OperationCanceledException("Module '" + assemblyPath + "' has no suitable entry classes.");
 	}
 
 	// add tools
@@ -319,11 +341,10 @@ void ModuleLoader::AddModuleEntry(ModuleManager^ manager, Type^ type, List<Modul
 	}
 	else
 	{
-		throw gcnew InvalidOperationException();
+		throw gcnew OperationCanceledException("Unknown module class type.");
 	}
 }
 
-//! Don't use Far UI
 //! Don't use Far UI
 void ModuleLoader::UnloadEntry(BaseModuleEntry^ entry)
 {
@@ -392,7 +413,7 @@ void ModuleLoader::WriteCache(ModuleManager^ manager, List<ModuleCommandInfo^>^ 
 			RegistryKey^ key = keyDll->CreateSubKey(tool->ClassName);
 			key->SetValue("Type", "Tool");
 			key->SetValue("Name", tool->Name);
-			key->SetValue("Options", (int)tool->Options);
+			key->SetValue("Options", (int)tool->Attribute->Options);
 			key->Close();
 		}
 
@@ -420,7 +441,7 @@ void ModuleLoader::WriteCache(ModuleManager^ manager, List<ModuleCommandInfo^>^ 
 			key->SetValue("Type", "Filer");
 			key->SetValue("Name", tool->Name);
 			key->SetValue("Mask", tool->DefaultMask);
-			key->SetValue("Creates", (int)tool->Creates);
+			key->SetValue("Creates", (int)tool->Attribute->Creates);
 			key->Close();
 		}
 	}

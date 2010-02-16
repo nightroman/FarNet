@@ -17,8 +17,8 @@ namespace PowerShellFar
 	{
 		static Entry _Instance;
 
-		internal static String Prefix1 { get; private set; }
-		internal static String Prefix2 { get; private set; }
+		internal static ModuleCommandAttribute Command1 { get; private set; }
+		internal static ModuleCommandAttribute Command2 { get; private set; }
 
 		///
 		public Entry()
@@ -41,15 +41,35 @@ namespace PowerShellFar
 			// create an actor and expose main instances
 			A.Connect(new Actor());
 
-			// register prefixes
-			Prefix1 = Far.Net.RegisterCommand(this, "PowerShell main prefix", ">", OnCommandLine);
-			Prefix2 = Far.Net.RegisterCommand(this, "PowerShell jobs prefix", ">>", OnCommandLineJob);
+			// register commands with prefixes
+			{
+				Command1 = new ModuleCommandAttribute();
+				Command1.Name = "PowerShell main prefix";
+				Command1.Prefix = ">";
+				Far.Net.RegisterCommand(this.Manager, OnCommandLine, Command1);
+			}
+			{
+				Command2 = new ModuleCommandAttribute();
+				Command2.Name = "PowerShell jobs prefix";
+				Command2.Prefix = ">>";
+				Far.Net.RegisterCommand(this.Manager, OnCommandLineJob, Command2);
+			}
 
 			// register config
-			Far.Net.RegisterTool(this, Res.Me, OnConfig, ModuleToolOptions.Config);
+			{
+				ModuleToolAttribute attr = new ModuleToolAttribute();
+				attr.Name = Res.Me;
+				attr.Options = ModuleToolOptions.Config;
+				Far.Net.RegisterTool(this.Manager, OnConfig, attr);
+			}
 
 			// register menu
-			Far.Net.RegisterTool(this, Res.Me, OnOpen, ModuleToolOptions.F11Menus);
+			{
+				ModuleToolAttribute attr = new ModuleToolAttribute();
+				attr.Name = Res.Me;
+				attr.Options = ModuleToolOptions.F11Menus;
+				Far.Net.RegisterTool(this.Manager, OnOpen, attr);
+			}
 
 			// editor events: OnEditorOpened1 should be called always and first
 			// to do Invoking() (at least for TabExpansion) and the startup code
