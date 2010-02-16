@@ -6,9 +6,11 @@ using System;
 using System.Text.RegularExpressions;
 using FarNet;
 
-[ModuleTool(Name = "Escape selected text", Options = ModuleToolOptions.Editor)]
+[ModuleTool(Name = Escape.Name, Options = ModuleToolOptions.Editor)]
 public class Escape : ModuleTool
 {
+	public const string Name = "Escape selected text";
+
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		IEditor editor = Far.Net.Editor;
@@ -18,9 +20,11 @@ public class Escape : ModuleTool
 	}
 }
 
-[ModuleTool(Name = "Unescape selected text", Options = ModuleToolOptions.Editor)]
+[ModuleTool(Name = Unescape.Name, Options = ModuleToolOptions.Editor)]
 public class Unescape : ModuleTool
 {
+	public const string Name = "Unescape selected text";
+
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		IEditor editor = Far.Net.Editor;

@@ -77,28 +77,28 @@ namespace FarNet
 		/// </remarks>
 		public string GetString(string name)
 		{
-			return _ModuleManager.GetString(name);
+			return _Manager.GetString(name);
 		}
 
 		/// <summary>
 		/// The module manager.
 		/// </summary>
-		public IModuleManager ModuleManager
+		public IModuleManager Manager
 		{
-			get { return _ModuleManager; }
+			get { return _Manager; }
 			set
 			{
-				if (_ModuleManager != null)
+				if (_Manager != null)
 					throw new InvalidOperationException();
 
-				_ModuleManager = value;
+				_Manager = value;
 			}
 		}
-		IModuleManager _ModuleManager;
+		IModuleManager _Manager;
 	}
 
 	/// <summary>
-	/// Module host attributes.
+	/// Module host attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ModuleHostAttribute : Attribute
@@ -202,15 +202,25 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Common attributes of any module tool.
+	/// Common attribute parameters of any module tool.
 	/// </summary>
 	public abstract class BaseModuleToolAttribute : Attribute
 	{
 		/// <summary>
-		/// Gets the module tool name to be shown in menus. By default it is the class name.
+		/// The module tool name shown in menus. It is mandatory to specify a not empty value.
 		/// </summary>
 		/// <remarks>
 		/// Make sure the module tools have different names.
+		/// <para>
+		/// This name is also used as the registry key name to store some data.
+		/// Thus, if the name is provided try not to change it without good reasons,
+		/// on the other hand you can change the class name, it will not break stored data.
+		/// If the name is not provided then try not to change the class name, it is used as the name.
+		/// </para>
+		/// <para>
+		/// If the module uses this name itself, for example as message box titles, then define this text
+		/// as a public const string in a class, then use its name as the value of this attribute parameter.
+		/// </para>
 		/// </remarks>
 		public string Name { get; set; }
 	}
@@ -271,7 +281,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module tool attributes.
+	/// Module tool attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ModuleToolAttribute : BaseModuleToolAttribute
@@ -295,13 +305,13 @@ namespace FarNet
 		/// </summary>
 		public ModuleToolOptions From { get; set; }
 		/// <summary>
-		/// Tells to ignore results, e.g. when configuration dialog is cancelled.
+		/// Tells to ignore results, for example when a configuration dialog is cancelled.
 		/// </summary>
 		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
-	/// A module tool represented by an item in Far menus.
+	/// A module tool normally represented by an item in Far menus.
 	/// </summary>
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
@@ -320,17 +330,16 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module command attributes.
+	/// Module command attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ModuleCommandAttribute : BaseModuleToolAttribute
 	{
 		/// <summary>
-		/// Command prefix. By default it is the class name.
+		/// The command prefix. It is mandatory to specify a not empty value.
 		/// </summary>
 		/// <remarks>
-		/// This prefix is only a suggestion, the actual prefix may be changed by a user, so that
-		/// if the command uses the prefix then it should use <see cref="ModuleCommandEventArgs.Prefix"/>.
+		/// This prefix is only a suggestion, the actual prefix may be changed by a user.
 		/// </remarks>
 		public string Prefix { get; set; }
 	}
@@ -344,10 +353,6 @@ namespace FarNet
 		/// The command text to process.
 		/// </summary>
 		public string Command { get; set; }
-		/// <summary>
-		/// The actual command prefix: the default or set by a user.
-		/// </summary>
-		public string Prefix { get; set; }
 	}
 
 	/// <summary>
@@ -355,6 +360,9 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
+	/// <para>
+	/// The default prefix is defined as the parameter of <see cref="ModuleCommandAttribute"/>.
+	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
 	public abstract class ModuleCommand : BaseModuleTool
@@ -366,7 +374,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module filer tool attributes.
+	/// Module filer tool attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ModuleFilerAttribute : BaseModuleToolAttribute
@@ -410,6 +418,9 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
+	/// <para>
+	/// The default file mask is defined as the parameter of <see cref="ModuleFilerAttribute"/>.
+	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
 	public abstract class ModuleFiler : BaseModuleTool
@@ -426,7 +437,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module editor tool attributes.
+	/// Module editor tool attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ModuleEditorAttribute : BaseModuleToolAttribute
@@ -451,6 +462,9 @@ namespace FarNet
 	/// <para>
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// </para>
+	/// <para>
+	/// The default file mask is defined as the parameter of <see cref="ModuleEditorAttribute"/>.
+	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="InvokeLoad"]/*'/>
 	/// </remarks>
 	public abstract class ModuleEditor : BaseModuleTool
@@ -470,7 +484,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// A module exception.
+	/// Module exception.
 	/// </summary>
 	/// <remarks>
 	/// If a module throws exceptions then for better diagnostics it is recommended to use this or derived exceptions

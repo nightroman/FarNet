@@ -4,19 +4,21 @@ using System.IO;
 using System.Text;
 using FarNet;
 
-// Test filer for *.test files with "TEST" header
-[ModuleFiler(Mask = "*.test")]
+// Test filer for *.filer files with "FILER" header
+[ModuleFiler(Name = TestFiler.Name, Mask = "*.filer")]
 public class TestFiler : ModuleFiler
 {
+	public const string Name = "TestFiler";
+
 	// Shows data in a message box and lines in a panel
 	public override void Invoke(object sender, ModuleFilerEventArgs e)
 	{
 		// read and check the header from sent data
-		byte[] buffer = new byte[4];
-		int read = e.Data.Read(buffer, 0, 4);
+		byte[] buffer = new byte[5];
+		int read = e.Data.Read(buffer, 0, 5);
 		string header = Encoding.Default.GetString(buffer, 0, read);
 		Far.Net.Message(header, "File header");
-		if (header != "TEST")
+		if (header != "FILER")
 			return;
 
 		// create panel

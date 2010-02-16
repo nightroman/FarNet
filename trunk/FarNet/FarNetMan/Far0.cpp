@@ -73,7 +73,7 @@ void Far0::RegisterTool(ModuleToolInfo^ tool)
 {
 	LOG_INFO("Register " + tool);
 
-	ModuleToolOptions options = tool->Options;
+	ModuleToolOptions options = tool->Attribute->Options;
 	if (int(options & ModuleToolOptions::Config))
 	{
 		delete[] _pConfig;
@@ -169,16 +169,14 @@ void Far0::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
 	}
 }
 
-String^ Far0::RegisterCommand(BaseModuleEntry^ entry, String^ name, String^ prefix, EventHandler<ModuleCommandEventArgs^>^ handler)
+void Far0::RegisterCommand(IModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
 {
 	delete _prefixes;
 	_prefixes = 0;
-	ModuleCommandInfo^ it = gcnew ModuleCommandInfo((entry ? (ModuleManager^)entry->ModuleManager : nullptr), name, prefix, handler);
+	ModuleCommandInfo^ it = gcnew ModuleCommandInfo((manager ? (ModuleManager^)manager : nullptr), handler, attribute);
 	_registeredCommand.Add(it);
 
 	LOG_INFO("Register " + it);
-
-	return it->Prefix;
 }
 
 void Far0::RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands)
@@ -209,9 +207,9 @@ void Far0::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
 	}
 }
 
-void Far0::RegisterFiler(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleFilerEventArgs^>^ handler, String^ mask, bool creates)
+void Far0::RegisterFiler(IModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
 {
-	ModuleFilerInfo^ it = gcnew ModuleFilerInfo((entry ? (ModuleManager^)entry->ModuleManager : nullptr), name, handler, mask, creates);
+	ModuleFilerInfo^ it = gcnew ModuleFilerInfo((manager ? (ModuleManager^)manager : nullptr), handler, attribute);
 	_registeredFiler.Add(it);
 
 	LOG_INFO("Register " + it);
@@ -260,14 +258,13 @@ void Far0::Run(String^ command)
 
 	for each(ModuleCommandInfo^ it in _registeredCommand)
 	{
-		String^ pref = it->Prefix;
+		String^ pref = it->Attribute->Prefix;
 		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
 			continue;
 
 		// invoke
 		ModuleCommandEventArgs e;
 		e.Command = command->Substring(colon + 1);
-		e.Prefix = it->Prefix;
 		it->Invoke(nullptr, %e);
 
 		break;
@@ -405,7 +402,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			{
 				if (PrefString->Length > 0)
 					PrefString = String::Concat(PrefString, ":");
-				PrefString = String::Concat(PrefString, it->Prefix);
+				PrefString = String::Concat(PrefString, it->Attribute->Prefix);
 			}
 			_prefixes = new CStr(PrefString);
 		}
@@ -474,11 +471,11 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 		for each(ModuleFilerInfo^ it in _registeredFiler)
 		{
 			// create?
-			if (!name && !it->Creates)
+			if (!name && !it->Attribute->Creates)
 				continue;
 
 			// mask?
-			if (SS(it->Mask) && !CompareNameEx(it->Mask, name, true))
+			if (SS(it->Attribute->Mask) && !CompareNameEx(it->Attribute->Mask, name, true))
 				continue;
 
 			// arguments
@@ -897,7 +894,7 @@ void Far0::OnConfigCommand()
 
 	for each(ModuleCommandInfo^ it in _registeredCommand)
 	{
-		FarItem^ mi = menu->Add(it->Prefix->PadRight(4) + " " + it->Key);
+		FarItem^ mi = menu->Add(it->Attribute->Prefix->PadRight(4) + " " + it->Key);
 		mi->Data = it;
 	}
 
@@ -910,7 +907,7 @@ void Far0::OnConfigCommand()
 		ib->EmptyEnabled = true;
 		ib->HelpTopic = _helpTopic + "ConfigCommand";
 		ib->Prompt = "New prefix for " + it->Name;
-		ib->Text = it->Prefix;
+		ib->Text = it->Attribute->Prefix;
 		ib->Title = "Original prefix: " + it->DefaultPrefix;
 
 		String^ alias = nullptr;
@@ -935,7 +932,7 @@ void Far0::OnConfigCommand()
 		// reset
 		delete _prefixes;
 		_prefixes = 0;
-		it->Prefix = alias;
+		it->SetPrefix(alias);
 		mi->Text = alias->PadRight(4) + " " + it->Key;
 	}
 }
@@ -963,7 +960,7 @@ void Far0::OnConfigEditor()
 		ib->HelpTopic = _helpTopic + "ConfigEditor";
 		ib->History = "Masks";
 		ib->Prompt = "New mask for " + it->Name;
-		ib->Text = it->Mask;
+		ib->Text = it->Attribute->Mask;
 		ib->Title = "Original mask: " + it->DefaultMask;
 
 		if (!ib->Show())
@@ -975,7 +972,7 @@ void Far0::OnConfigEditor()
 			mask = it->DefaultMask;
 
 		// set
-		it->Mask = mask;
+		it->SetMask(mask);
 	}
 }
 
@@ -1002,7 +999,7 @@ void Far0::OnConfigFiler()
 		ib->HelpTopic = _helpTopic + "ConfigFiler";
 		ib->History = "Masks";
 		ib->Prompt = "New mask for " + it->Name;
-		ib->Text = it->Mask;
+		ib->Text = it->Attribute->Mask;
 		ib->Title = "Original mask: " + it->DefaultMask;
 
 		if (!ib->Show())
@@ -1014,7 +1011,7 @@ void Far0::OnConfigFiler()
 			mask = it->DefaultMask;
 
 		// set
-		it->Mask = mask;
+		it->SetMask(mask);
 	}
 }
 
@@ -1049,7 +1046,7 @@ void Far0::OnEditorOpened(IEditor^ editor)
 		// mask?
 		CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
 		Info.EditorControl(ECTL_GETFILENAME, fileName);
-		if (SS(it->Mask) && !CompareNameEx(it->Mask, fileName, true))
+		if (SS(it->Attribute->Mask) && !CompareNameEx(it->Attribute->Mask, fileName, true))
 			continue;
 
 		//! tradeoff: catch all to call other plugins, too

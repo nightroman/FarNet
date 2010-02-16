@@ -3,8 +3,11 @@ using System;
 using FarNet;
 
 // Trims line ends in a saving file.
+[ModuleEditor(Name = TrimSaving.Name)]
 public class TrimSaving : ModuleEditor
 {
+	public const string Name = "TrimSaving";
+
 	// Called when a file is opened. It installs OnSaving().
 	public override void Invoke(object sender, ModuleEditorEventArgs e)
 	{

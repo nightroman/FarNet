@@ -48,12 +48,16 @@ String^ Far1::RegistryPluginsPath::get()
 	return gcnew String(Info.RootKey);
 }
 
-void Far1::RegisterTool(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolOptions options)
+void Far1::RegisterTool(IModuleManager^ manager, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute)
 {
-	if (ES(name))
-		throw gcnew ArgumentException("'name' must not be empty.");
+	if (!handler)
+		throw gcnew ArgumentNullException("handler");
+	if (!attribute)
+		throw gcnew ArgumentNullException("attribute");
+	if (ES(attribute->Name))
+		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
 
-	Far0::RegisterTool(gcnew ModuleToolInfo((entry ? (ModuleManager^)entry->ModuleManager : nullptr), name, handler, options));
+	Far0::RegisterTool(gcnew ModuleToolInfo((manager ? (ModuleManager^)manager : nullptr), handler, attribute));
 }
 
 void Far1::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
@@ -61,9 +65,16 @@ void Far1::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
 	Far0::UnregisterTool(handler);
 }
 
-String^ Far1::RegisterCommand(BaseModuleEntry^ entry, String^ name, String^ prefix, EventHandler<ModuleCommandEventArgs^>^ handler)
+void Far1::RegisterCommand(IModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
 {
-	return Far0::RegisterCommand(entry, name, prefix, handler);
+	if (!handler)
+		throw gcnew ArgumentNullException("handler");
+	if (!attribute)
+		throw gcnew ArgumentNullException("attribute");
+	if (ES(attribute->Name))
+		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
+
+	return Far0::RegisterCommand(manager, handler, attribute);
 }
 
 void Far1::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
@@ -71,9 +82,16 @@ void Far1::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
 	Far0::UnregisterCommand(handler);
 }
 
-void Far1::RegisterFiler(BaseModuleEntry^ entry, String^ name, EventHandler<ModuleFilerEventArgs^>^ handler, String^ mask, bool creates)
+void Far1::RegisterFiler(IModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
 {
-	Far0::RegisterFiler(entry, name, handler, mask, creates);
+	if (!handler)
+		throw gcnew ArgumentNullException("handler");
+	if (!attribute)
+		throw gcnew ArgumentNullException("attribute");
+	if (ES(attribute->Name))
+		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
+
+	Far0::RegisterFiler(manager, handler, attribute);
 }
 
 void Far1::UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler)

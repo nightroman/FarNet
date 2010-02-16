@@ -43,7 +43,7 @@ void ModuleManager::Unload()
 void ModuleManager::SetModuleHost(String^ moduleHostClassName)
 {
 	if (HasHost())
-		throw gcnew InvalidOperationException("The module host is already set.");
+		throw gcnew OperationCanceledException("The module host is already set.");
 
 	_ModuleHostClassName = moduleHostClassName;
 }
@@ -51,7 +51,7 @@ void ModuleManager::SetModuleHost(String^ moduleHostClassName)
 void ModuleManager::SetModuleHost(Type^ moduleHostClassType)
 {
 	if (HasHost())
-		throw gcnew InvalidOperationException("The module host is already set.");
+		throw gcnew OperationCanceledException("The module host is already set.");
 
 	_ModuleHostClassType = moduleHostClassType;
 	
@@ -163,7 +163,7 @@ BaseModuleEntry^ ModuleManager::CreateEntry(Type^ type)
 	BaseModuleEntry^ instance = (BaseModuleEntry^)Activator::CreateInstance(type);
 	
 	// connect the instance
-	instance->ModuleManager = this;
+	instance->Manager = this;
 	
 	return instance;
 }
@@ -180,18 +180,39 @@ void ModuleManager::SetFarNetValue(String^ keyPath, String^ valueName, Object^ v
 
 #pragma region BaseModuleToolInfo
 
-BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, String^ name)
+BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, BaseModuleToolAttribute^ attribute)
 : _ModuleManager(manager)
-, _Name(name)
-{}
+, _Attribute(attribute)
+{
+	Init();
+}
 
-BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, Type^ classType)
-: _ModuleManager(manager), _ClassType(classType)
-{}
+BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, String^ className, BaseModuleToolAttribute^ attribute)
+: _ModuleManager(manager)
+, _ClassName(className)
+, _Attribute(attribute)
+{
+	Init();
+}
 
-BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, String^ className, String^ name)
-: _ModuleManager(manager), _ClassName(className), _Name(name)
-{}
+BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, Type^ classType, Type^ attributeType)
+: _ModuleManager(manager)
+, _ClassType(classType)
+{
+	array<Object^>^ attrs = _ClassType->GetCustomAttributes(attributeType, false);
+	if (attrs->Length == 0)
+		throw gcnew OperationCanceledException("Module class has no required Module* attribute.");
+
+	_Attribute = (BaseModuleToolAttribute^)attrs[0];
+
+	Init();
+}
+
+void BaseModuleToolInfo::Init()
+{
+	if (ES(_Attribute->Name))
+		throw gcnew OperationCanceledException("Empty module tool name is not allowed.");
+}
 
 BaseModuleTool^ BaseModuleToolInfo::GetInstance()
 {
@@ -213,7 +234,7 @@ void BaseModuleToolInfo::Invoking()
 
 String^ BaseModuleToolInfo::ToString()
 {
-	return String::Format("{0} Name='{1}' Class='{2}'", GetType()->FullName, _Name, ClassName);
+	return String::Format("{0} Name='{1}' Class='{2}'", GetType()->FullName, Name, ClassName);
 }
 
 String^ BaseModuleToolInfo::AssemblyPath::get()
@@ -230,49 +251,27 @@ String^ BaseModuleToolInfo::Key::get()
 {
 	String^ path = AssemblyPath;
 	if (path)
-		return Path::GetFileName(path) + "\\" + _Name->Replace("\\", "/");
+		return Path::GetFileName(path) + "\\" + Name->Replace("\\", "/");
 	else
-		return ">" + _Name->Replace("\\", "/");
-}
-
-BaseModuleToolAttribute^ BaseModuleToolInfo::InitFromAttribute(Type^ attrType)
-{
-	BaseModuleToolAttribute^ r;
-	array<Object^>^ attrs = _ClassType->GetCustomAttributes(attrType, false);
-	
-	if (attrs->Length == 0)
-		r = (BaseModuleToolAttribute^)Activator::CreateInstance(attrType);
-	else
-		r = (BaseModuleToolAttribute^)attrs[0];
-	
-	if (ES(r->Name))
-		r->Name = _ClassType->FullName;
-
-	_Name = r->Name;
-	return r;
+		return ">" + Name->Replace("\\", "/");
 }
 
 #pragma endregion
 
 #pragma region ModuleToolInfo
 
-ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, String^ name, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolOptions options)
-: BaseModuleToolInfo(manager, name)
+ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute)
+: BaseModuleToolInfo(manager, attribute)
 , _Handler(handler)
-, _Options(options)
 {}
 
-ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, String^ className, String^ name, ModuleToolOptions options)
-: BaseModuleToolInfo(manager, className, name)
-, _Options(options)
+ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, String^ className, ModuleToolAttribute^ attribute)
+: BaseModuleToolInfo(manager, className, attribute)
 {}
 
 ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, Type^ classType)
-: BaseModuleToolInfo(manager, classType)
-{
-	ModuleToolAttribute^ attr = (ModuleToolAttribute^)InitFromAttribute(ModuleToolAttribute::typeid);
-	_Options = attr->Options;
-}
+: BaseModuleToolInfo(manager, classType, ModuleToolAttribute::typeid)
+{}
 
 void ModuleToolInfo::Invoke(Object^ sender, ModuleToolEventArgs^ e)
 {
@@ -293,7 +292,7 @@ void ModuleToolInfo::Invoke(Object^ sender, ModuleToolEventArgs^ e)
 
 String^ ModuleToolInfo::ToString()
 {
-	return String::Format("{0} Options='{1}'", BaseModuleToolInfo::ToString(), Options);
+	return String::Format("{0} Options='{1}'", BaseModuleToolInfo::ToString(), Attribute->Options);
 }
 
 String^ ModuleToolInfo::Alias(ModuleToolOptions option)
@@ -327,7 +326,7 @@ String^ ModuleToolInfo::Alias(ModuleToolOptions option)
 			_AliasDialog = ModuleManager::GetFarNetValue(Key, "Dialog", Name)->ToString();
 		return _AliasDialog;
 	default:
-		throw gcnew InvalidOperationException("Unknown tool option.");
+		throw gcnew OperationCanceledException("Unknown tool option.");
 	}
 }
 
@@ -363,7 +362,7 @@ void ModuleToolInfo::Alias(ModuleToolOptions option, String^ value)
 		_AliasDialog = value;
 		break;
 	default:
-		throw gcnew InvalidOperationException("Unknown tool option.");
+		throw gcnew OperationCanceledException("Unknown tool option.");
 	}
 }
 
@@ -371,43 +370,46 @@ void ModuleToolInfo::Alias(ModuleToolOptions option, String^ value)
 
 #pragma region ModuleCommandInfo
 
-ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, String^ name, String^ prefix, EventHandler<ModuleCommandEventArgs^>^ handler)
-: BaseModuleToolInfo(manager, name)
-, _DefaultPrefix(prefix)
+ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
+: BaseModuleToolInfo(manager, attribute)
 , _Handler(handler)
-{}
+{
+	Init();
+}
 
-ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, String^ className, String^ name, String^ prefix)
-: BaseModuleToolInfo(manager, className, name)
-, _DefaultPrefix(prefix)
-{}
+ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, String^ className, ModuleCommandAttribute^ attribute)
+: BaseModuleToolInfo(manager, className, attribute)
+{
+	Init();
+}
 
 ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, Type^ classType)
-: BaseModuleToolInfo(manager, classType)
+: BaseModuleToolInfo(manager, classType, ModuleCommandAttribute::typeid)
 {
-	ModuleCommandAttribute^ attr = (ModuleCommandAttribute^)InitFromAttribute(ModuleCommandAttribute::typeid);
-	_DefaultPrefix = attr->Prefix ? attr->Prefix : classType->Name;
+	Init();
+}
+
+void ModuleCommandInfo::Init()
+{
+	if (ES(Attribute->Prefix))
+		throw gcnew OperationCanceledException("Empty command prefix is not allowed.");
+	
+	_DefaultPrefix = Attribute->Prefix;
+	Attribute->Prefix = ModuleManager::GetFarNetValue(Key, "Prefix", DefaultPrefix)->ToString();
 }
 
 String^ ModuleCommandInfo::ToString()
 {
-	return String::Format("{0} Prefix='{1}'", BaseModuleToolInfo::ToString(), Prefix);
+	return String::Format("{0} Prefix='{1}'", BaseModuleToolInfo::ToString(), Attribute->Prefix);
 }
 
-String^ ModuleCommandInfo::Prefix::get()
-{
-	if (ES(_Prefix))
-		_Prefix = ModuleManager::GetFarNetValue(Key, "Prefix", DefaultPrefix)->ToString();
-	return _Prefix;
-}
-
-void ModuleCommandInfo::Prefix::set(String^ value)
+void ModuleCommandInfo::SetPrefix(String^ value)
 {
 	if (ES(value))
 		throw gcnew ArgumentException("'value' must not be empty.");
 
 	ModuleManager::SetFarNetValue(Key, "Prefix", value);
-	_Prefix = value;
+	Attribute->Prefix = value;
 }
 
 void ModuleCommandInfo::Invoke(Object^ sender, ModuleCommandEventArgs^ e)
@@ -431,30 +433,34 @@ void ModuleCommandInfo::Invoke(Object^ sender, ModuleCommandEventArgs^ e)
 
 #pragma region ModuleFilerInfo
 
-ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, String^ name, EventHandler<ModuleFilerEventArgs^>^ handler, String^ mask, bool creates)
-: BaseModuleToolInfo(manager, name)
+ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
+: BaseModuleToolInfo(manager, attribute)
 , _Handler(handler)
-, _DefaultMask(mask)
-, _Creates(creates)
-{}
+{
+	Init();
+}
 
-ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, String^ className, String^ name, String^ mask, bool creates)
-: BaseModuleToolInfo(manager, className, name)
-, _DefaultMask(mask)
-, _Creates(creates)
-{}
+ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, String^ className, ModuleFilerAttribute^ attribute)
+: BaseModuleToolInfo(manager, className, attribute)
+{
+	Init();
+}
 
 ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, Type^ classType)
-: BaseModuleToolInfo(manager, classType)
+: BaseModuleToolInfo(manager, classType, ModuleFilerAttribute::typeid)
 {
-	ModuleFilerAttribute^ attr = (ModuleFilerAttribute^)InitFromAttribute(ModuleFilerAttribute::typeid);
-	_DefaultMask = attr->Mask ? attr->Mask : String::Empty;
-	_Creates = attr->Creates;
+	Init();
+}
+
+void ModuleFilerInfo::Init()
+{
+	_DefaultMask = Attribute->Mask ? Attribute->Mask : String::Empty;
+	Attribute->Mask = ModuleManager::GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
 }
 
 String^ ModuleFilerInfo::ToString()
 {
-	return String::Format("{0} Mask='{1}'", BaseModuleToolInfo::ToString(), Mask);
+	return String::Format("{0} Mask='{1}'", BaseModuleToolInfo::ToString(), Attribute->Mask);
 }
 
 void ModuleFilerInfo::Invoke(Object^ sender, ModuleFilerEventArgs^ e)
@@ -474,46 +480,47 @@ void ModuleFilerInfo::Invoke(Object^ sender, ModuleFilerEventArgs^ e)
 	}
 }
 
-String^ ModuleFilerInfo::Mask::get()
+void ModuleFilerInfo::SetMask(String^ value)
 {
-	if (ES(_Mask))
-		_Mask = ModuleManager::GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
-	return _Mask;
-}
-
-void ModuleFilerInfo::Mask::set(String^ value)
-{
-	if (!value) throw gcnew ArgumentNullException("value");
+	if (!value)
+		throw gcnew ArgumentNullException("value");
 
 	ModuleManager::SetFarNetValue(Key, "Mask", value);
-	_Mask = value;
+	Attribute->Mask = value;
 }
 
 #pragma endregion
 
 #pragma region ModuleEditorInfo
 
-ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, String^ name, EventHandler^ handler, String^ mask)
-: BaseModuleToolInfo(manager, name)
+ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, EventHandler^ handler, ModuleEditorAttribute^ attribute)
+: BaseModuleToolInfo(manager, attribute)
 , _Handler(handler)
-, _DefaultMask(mask)
-{}
+{
+	Init();
+}
 
-ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, String^ className, String^ name, String^ mask)
-: BaseModuleToolInfo(manager, className, name)
-, _DefaultMask(mask)
-{}
+ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, String^ className, ModuleEditorAttribute^ attribute)
+: BaseModuleToolInfo(manager, className, attribute)
+{
+	Init();
+}
 
 ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, Type^ classType)
-: BaseModuleToolInfo(manager, classType)
+: BaseModuleToolInfo(manager, classType, ModuleEditorAttribute::typeid)
 {
-	ModuleEditorAttribute^ attr = (ModuleEditorAttribute^)InitFromAttribute(ModuleEditorAttribute::typeid);
-	_DefaultMask = attr->Mask ? attr->Mask : String::Empty;
+	Init();
+}
+
+void ModuleEditorInfo::Init()
+{
+	_DefaultMask = Attribute->Mask ? Attribute->Mask : String::Empty;
+	Attribute->Mask = ModuleManager::GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
 }
 
 String^ ModuleEditorInfo::ToString()
 {
-	return String::Format("{0} Mask='{1}'", BaseModuleToolInfo::ToString(), Mask);
+	return String::Format("{0} Mask='{1}'", BaseModuleToolInfo::ToString(), Attribute->Mask);
 }
 
 void ModuleEditorInfo::Invoke(Object^ sender, ModuleEditorEventArgs^ e)
@@ -533,19 +540,13 @@ void ModuleEditorInfo::Invoke(Object^ sender, ModuleEditorEventArgs^ e)
 	}
 }
 
-String^ ModuleEditorInfo::Mask::get()
+void ModuleEditorInfo::SetMask(String^ value)
 {
-	if (ES(_Mask))
-		_Mask = ModuleManager::GetFarNetValue(Key, "Mask", DefaultMask)->ToString();
-	return _Mask;
-}
-
-void ModuleEditorInfo::Mask::set(String^ value)
-{
-	if (!value) throw gcnew ArgumentNullException("value");
+	if (!value)
+		throw gcnew ArgumentNullException("value");
 
 	ModuleManager::SetFarNetValue(Key, "Mask", value);
-	_Mask = value;
+	Attribute->Mask = value;
 }
 
 #pragma endregion

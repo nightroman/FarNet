@@ -2,18 +2,13 @@
 using System;
 using FarNet;
 
-// The command uses with default name and prefix, the class name "cmd1".
-public class Cmd1 : ModuleCommand
+[ModuleCommand(Name = Command.Name, Prefix = "Command")]
+public class Command : ModuleCommand
 {
-	// The command handler shows the prefix and the command
+	public const string Name = "Test command";
+
 	public override void Invoke(object sender, ModuleCommandEventArgs e)
 	{
-		Far.Net.Message(e.Prefix + ":" + e.Command);
+		Far.Net.Message(e.Command);
 	}
-}
-
-// This command provides the name and the prefix. Invoke() is the same.
-[ModuleCommand(Name = "Test command", Prefix = "cmd")]
-public class Cmd2 : Cmd1
-{
 }

@@ -19,7 +19,8 @@ if (!$TestTool) {
 	}}
 
 	# register the handler
-	$null = $Far.RegisterTool($null, "PSF test tool", $TestTool, "AllAreas")
+	$attr = New-Object FarNet.ModuleToolAttribute -Property @{ Name = "PSF test tool"; Options = "AllAreas" }
+	$Far.RegisterTool($null, $TestTool, $attr)
 	Show-FarMessage "Test tool is registered. Try it in [F11] menus, for example, right now."
 }
 else {
