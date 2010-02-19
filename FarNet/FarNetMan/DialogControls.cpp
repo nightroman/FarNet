@@ -373,6 +373,21 @@ void FarControl::Text::set(String^ value)
 	}
 }
 
+// Gets always, data is null for the native dialog control.
+Object^ FarControl::Data::get()
+{
+	return _data;
+}
+
+// Throws for the native dialog control.
+void FarControl::Data::set(Object^ value)
+{
+	if (!_dialog->_items)
+		throw gcnew NotSupportedException("Setting data is not supported for native dialogs.");
+
+	_data = value;
+}
+
 Place FarControl::Rect::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)

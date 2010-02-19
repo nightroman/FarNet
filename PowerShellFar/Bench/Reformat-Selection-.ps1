@@ -47,7 +47,8 @@ function global:Reformat-Selection-
 
 	# default right margin from the registry
 	if ($RightMargin -le 0) {
-		$RightMargin = $Far.GetPluginValue('Align', 'RightMargin', 79)
+		$RightMargin = [Microsoft.Win32.Registry]::GetValue("HKEY_CURRENT_USER\$($Far.RegistryPluginsPath)\Align", 'RightMargin', 79)
+		if (!$RightMargin) { $RightMargin = 79 }
 	}
 
 	# default tab size from the editor

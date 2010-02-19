@@ -92,49 +92,37 @@ $#Config menu#
 This menu allows to configure FarNet module tools:
 commands, editors, filers, menus, and to set module options.
 
+#Menu tools# : shows the ~Configure menu tools~@ConfigTool@ menu.
+
 #Commands# : shows the ~Configure commands~@ConfigCommand@ menu.
 
 #Editors# : shows the ~Configure editors~@ConfigEditor@ menu.
 
 #Filers# : shows the ~Configure filers~@ConfigFiler@ menu.
 
-#Panels# : shows the ~Configure module tools~@ConfigTool@ menu for Panels area.
-
-#Editor# : shows the ~Configure module tools~@ConfigTool@ menu for Editor area.
-
-#Viewer# : shows the ~Configure module tools~@ConfigTool@ menu for Viewer area.
-
-#Dialog# : shows the ~Configure module tools~@ConfigTool@ menu for Dialog area.
-
-#Config# : shows the ~Configure module tools~@ConfigTool@ menu for Config area.
-
-#Disk# : shows the ~Configure module tools~@ConfigDisk@ menu.
-
 #UI culture# : shows the ~Module UI culture~@ConfigUICulture@ menu.
 
 
 @ConfigTool
-$#Configure module tools#
+$#Configure menu tools#
 ~Contents~@Contents@
 
-This menu and the input box allow to edit FarNet module strings shown in the
-Far plugin menus [F11] in Panels, Editor, Viewer and Dialog areas.
+This menu and the input box allow to edit menu tool hotkeys.
 
 [#Enter#] (menu)
 
-Opens the input box where you can change the selected menu string.
+Opens the input box where you can set or change the hotkey.
 
 #Input box#
 
-In the input box you change the selected menu string. Use an ampersand to define
-a hotkey. If you enter an empty string then the very original menu string will
-be restored.
+Set or change the menu "hotkey". Enter an empty string to drop the hotkey.
 
-#.NET hotkeys#
+#.NET and other FarNet hotkeys#
 
 It is recommended to set the main .NET hotkey as usual by [F4] and to set other
-FarNet hotkeys by ampersands using this way:
-Options \ Plugins configuration \ .NET \ Tools.
+FarNet hotkeys not by [F4] but using this way:
+
+	#Options \ Plugins configuration \ .NET \ Menu tools#
 
 
 @ConfigCommand
@@ -185,13 +173,6 @@ Opens the input box where you can change the file mask.
 In the input box you change the file mask, see ~File masks~@:FileMasks@, exclude
 masks are supported (i.e. <include>|<exclude>). If you enter an empty string
 then the default mask is restored.
-
-
-@ConfigDisk
-$#Configure disk tools#
-~Contents~@Contents@
-
-This menu only shows the list of disk tools. There is nothing to configure.
 
 
 @ConfigUICulture

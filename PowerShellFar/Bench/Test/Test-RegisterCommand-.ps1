@@ -20,7 +20,7 @@ if (!$TestCommand) {
 
 	# register the handler
 	$attr = New-Object FarNet.ModuleCommandAttribute -Property @{ Name = "PSF test command"; Prefix = "test" }
-	$Far.RegisterCommand($null, $TestCommand, $attr)
+	$Far.RegisterCommand($null, "053a9a98-db98-415c-9c80-88eee2f336ae", $TestCommand, $attr)
 	Show-FarMessage "Command 'test' is registered, type:`n$($attr.Prefix):<text>[Enter]"
 }
 else {

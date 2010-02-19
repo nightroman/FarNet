@@ -6,7 +6,12 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "ModuleLoader.h"
 #include "Far0.h"
+#include "ModuleItems.h"
 #include "ModuleManager.h"
+
+// The cache version
+const int CacheVersion = 8;
+static bool ToCacheVersion;
 
 namespace FarNet
 {;
@@ -14,7 +19,7 @@ namespace FarNet
 void ModuleLoader::LoadModules()
 {
 	// read modules from the cache, up-to-date modules get loaded with static info
-	ReadCache();
+	ReadModuleCache();
 
 	// read from module directories:
 	String^ path = Environment::ExpandEnvironmentVariables(ConfigurationManager::AppSettings["FarNet.Modules"]);
@@ -29,154 +34,145 @@ void ModuleLoader::LoadModules()
 	}
 }
 
-// #2 Load cache
-void ModuleLoader::ReadCache()
+// #2 Read cache
+void ModuleLoader::ReadModuleCache()
 {
-	RegistryKey^ keyCache;
+	RegistryKey^ keyCache = nullptr;
 	try
 	{
-		keyCache = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\FarNet\\<cache>");
-		for each (String^ dllName in keyCache->GetSubKeyNames())
+		// open for writing, to remove obsolete data
+		String^ keyCachePath = Far::Net->RegistryPluginsPath + "\\FarNet\\<cache>";
+		keyCache = Registry::CurrentUser->OpenSubKey(keyCachePath, true);
+		if (!keyCache)
 		{
-			bool ok = true;
-			RegistryKey^ keyDll;
-			List<ModuleCommandInfo^> commands;
-			List<ModuleEditorInfo^> editors;
-			List<ModuleFilerInfo^> filers;
-			List<ModuleToolInfo^> tools;
+			ToCacheVersion = true;
+			return;
+		}
+		
+		// drop the key on version mismatch
+		String^ version = keyCache->GetValue(String::Empty, String::Empty)->ToString();
+		if (version != CacheVersion.ToString())
+		{
+			for each(String^ name in keyCache->GetValueNames())
+				keyCache->DeleteValue(name);
+
+			ToCacheVersion = true;
+			return;
+		}
+		
+		// process cache values
+		for each (String^ assemblyPath in keyCache->GetValueNames())
+		{
+			if (assemblyPath->Length == 0)
+				continue;
+			
+			bool done = false;
 			try
 			{
-				keyDll = keyCache->OpenSubKey(dllName);
+				// exists?
+				if (!File::Exists(assemblyPath))
+					throw gcnew ModuleException;
 
-				String^ assemblyPath = keyDll->GetValue("Path", String::Empty)->ToString();
-				if (!assemblyPath->Length || !File::Exists(assemblyPath))
-					throw gcnew OperationCanceledException;
+				// read data
+				System::Collections::IEnumerator^ data = ((array<String^>^)keyCache->GetValue(assemblyPath))->GetEnumerator();
 
-				String^ assemblyStamp = keyDll->GetValue("Stamp", String::Empty)->ToString();
+				// Stamp
+				String^ assemblyStamp = NextString(data);
 				FileInfo fi(assemblyPath);
+
+				// stamp mismatch: do not throw!
 				if (assemblyStamp != fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture))
+					continue;
+				
+				// new manager
+				ModuleManager^ manager = gcnew ModuleManager(assemblyPath);
+
+				// culture of cached resources
+				String^ savedCulture = NextString(data);
+				
+				// check the culture
+				if (savedCulture->Length)
 				{
-					// do not throw, it's PITA in debugging
-					ok = false;
+					// the culture changed, ignore the cache
+					if (savedCulture != manager->CurrentUICulture->Name)
+						continue;
+
+					// restore the flag
+					manager->CachedResources = true;
 				}
-				else
+				
+				List<ModuleCommandInfo^> commands;
+				List<ModuleEditorInfo^> editors;
+				List<ModuleFilerInfo^> filers;
+				List<ModuleToolInfo^> tools;
+
+				for(;;)
 				{
-					ModuleManager^ manager = gcnew ModuleManager(assemblyPath);
-					for each (String^ className in keyDll->GetSubKeyNames())
+					// Type, can be end of data
+					if (!data->MoveNext())
+						break;
+					String^ itemType = data->Current->ToString();
+
+					// case: host
+					if (itemType == "Host")
 					{
-						RegistryKey^ keyEntry = keyDll->OpenSubKey(className);
-						try
-						{
-							// get entry type
-							String^ entryType = keyEntry->GetValue("Type", String::Empty)->ToString();
-							if (!entryType->Length)
-								throw gcnew OperationCanceledException;
-
-							// host:
-							if (entryType == "Host")
-							{
-								manager->SetModuleHost(className);
-								continue;
-							}
-
-							// get entry name
-							String^ entryName = keyEntry->GetValue("Name", String::Empty)->ToString();
-							if (!entryName->Length)
-								throw gcnew OperationCanceledException;
-
-							// types:
-							if (entryType == "Tool")
-							{
-								int options = (int)keyEntry->GetValue("Options");
-								if (!options)
-									throw gcnew OperationCanceledException;
-
-								ModuleToolAttribute^ attribute = gcnew ModuleToolAttribute;
-								attribute->Name = entryName;
-								attribute->Options = (ModuleToolOptions)options;
-								
-								ModuleToolInfo^ tool = gcnew ModuleToolInfo(manager, className, attribute);
-								tools.Add(tool);
-							}
-							else if (entryType == "Command")
-							{
-								String^ prefix = keyEntry->GetValue("Prefix", String::Empty)->ToString();
-								if (!prefix->Length)
-									throw gcnew OperationCanceledException;
-
-								ModuleCommandAttribute^ attribute = gcnew ModuleCommandAttribute;
-								attribute->Name = entryName;
-								attribute->Prefix = prefix;
-
-								ModuleCommandInfo^ tool = gcnew ModuleCommandInfo(manager, className, attribute);
-								commands.Add(tool);
-							}
-							else if (entryType == "Editor")
-							{
-								String^ mask = keyEntry->GetValue("Mask", String::Empty)->ToString();
-
-								ModuleEditorAttribute^ attribute = gcnew ModuleEditorAttribute;
-								attribute->Name = entryName;
-								attribute->Mask = mask;
-
-								ModuleEditorInfo^ tool = gcnew ModuleEditorInfo(manager, className, attribute);
-								editors.Add(tool);
-							}
-							else if (entryType == "Filer")
-							{
-								String^ mask = keyEntry->GetValue("Mask", String::Empty)->ToString();
-								int creates = (int)keyEntry->GetValue("Creates", (Object^)-1);
-
-								ModuleFilerAttribute^ attribute = gcnew ModuleFilerAttribute;
-								attribute->Name = entryName;
-								attribute->Mask = mask;
-								attribute->Creates = creates != 0;
-
-								ModuleFilerInfo^ tool = gcnew ModuleFilerInfo(manager, className, attribute);
-								filers.Add(tool);
-							}
-							else
-							{
-								throw gcnew OperationCanceledException;
-							}
-						}
-						finally
-						{
-							keyEntry->Close();
-						}
+						String^ className = NextString(data);
+						manager->SetModuleHost(className);
+						continue;
 					}
 
-					keyDll->Close();
-
-					// add dllName to dictionary and add plugins
-					_ModuleManagers->Add(dllName, manager);
-					if (commands.Count)
-						Far0::RegisterCommands(%commands);
-					if (editors.Count)
-						Far0::RegisterEditors(%editors);
-					if (filers.Count)
-						Far0::RegisterFilers(%filers);
-					if (tools.Count)
-						Far0::RegisterTools(%tools);
+					// types:
+					if (itemType == "Tool")
+					{
+						ModuleToolInfo^ tool = gcnew ModuleToolInfo(manager, data);
+						tools.Add(tool);
+					}
+					else if (itemType == "Command")
+					{
+						ModuleCommandInfo^ tool = gcnew ModuleCommandInfo(manager, data);
+						commands.Add(tool);
+					}
+					else if (itemType == "Editor")
+					{
+						ModuleEditorInfo^ tool = gcnew ModuleEditorInfo(manager, data);
+						editors.Add(tool);
+					}
+					else if (itemType == "Filer")
+					{
+						ModuleFilerInfo^ tool = gcnew ModuleFilerInfo(manager, data);
+						filers.Add(tool);
+					}
+					else
+					{
+						throw gcnew ModuleException;
+					}
 				}
+
+				// add the name to dictionary and add plugins
+				_ModuleManagers->Add(Path::GetFileName(assemblyPath), manager);
+				if (commands.Count)
+					Far0::RegisterCommands(%commands);
+				if (editors.Count)
+					Far0::RegisterEditors(%editors);
+				if (filers.Count)
+					Far0::RegisterFilers(%filers);
+				if (tools.Count)
+					Far0::RegisterTools(%tools);
+
+				done = true;
 			}
-			catch(OperationCanceledException^)
+			catch(ModuleException^)
 			{
-				ok = false;
 			}
 			catch(Exception^ ex)
 			{
-				throw gcnew OperationCanceledException(
+				throw gcnew ModuleException(
 					"Error on reading the cache. Remove registry FarNet\\<cache> manually and restart Far.", ex);
 			}
-
-			// error or outdated info
-			if (!ok)
+			finally
 			{
-				if (keyDll)
-					keyDll->Close();
-				
-				keyCache->DeleteSubKeyTree(dllName);
+				if (!done)
+					keyCache->DeleteValue(assemblyPath);
 			}
 		}
 	}
@@ -200,14 +196,14 @@ void ModuleLoader::LoadFromDirectory(String^ dir)
 			return;
 		}
 		if (manifests->Length > 1)
-			throw gcnew OperationCanceledException("More than one .cfg files found.");
+			throw gcnew ModuleException("More than one .cfg files found.");
 
 		// load the only assembly
 		array<String^>^ assemblies = Directory::GetFiles(dir, "*.dll");
 		if (assemblies->Length == 1)
 			LoadFromAssembly(assemblies[0], nullptr);
 		else if (assemblies->Length > 1)
-			throw gcnew OperationCanceledException("More than one .dll files found. Expected exactly one .dll file or exactly one .cfg file.");
+			throw gcnew ModuleException("More than one .dll files found. Expected exactly one .dll file or exactly one .cfg file.");
 
 		//! If the folder has no .dll or .cfg files (not yet built sources) then just ignore
 	}
@@ -225,12 +221,12 @@ void ModuleLoader::LoadFromManifest(String^ file, String^ dir)
 {
 	array<String^>^ lines = File::ReadAllLines(file);
 	if (lines->Length == 0)
-		throw gcnew OperationCanceledException("The manifest file is empty.");
+		throw gcnew ModuleException("The manifest file is empty.");
 	
 	// assembly
 	String^ path = lines[0]->TrimEnd();
 	if (path->Length == 0)
-		throw gcnew OperationCanceledException("Expected the module assembly name as the first line of the manifest file.");
+		throw gcnew ModuleException("Expected the module assembly name as the first line of the manifest file.");
 	path = Path::Combine(dir, path);
 	
 	// collect classes
@@ -273,21 +269,11 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 	}
 	else
 	{
-		int nLoaded = 0;
 		for each(Type^ type in assembly->GetExportedTypes())
 		{
-			if (type->IsAbstract)
-				continue;
-			
-			if (BaseModuleEntry::typeid->IsAssignableFrom(type))
-			{
-				++nLoaded;
+			if (!type->IsAbstract && BaseModuleItem::typeid->IsAssignableFrom(type))
 				AddModuleEntry(manager, type, %commands, %editors, %filers, %tools);
-			}
 		}
-
-		if (nLoaded == 0)
-			throw gcnew OperationCanceledException("Module '" + assemblyPath + "' has no suitable entry classes.");
 	}
 
 	// add tools
@@ -300,9 +286,14 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 	if (tools.Count)
 		Far0::RegisterTools(%tools);
 
-	// write cache
+	// if the module has no loaded 
 	if (!manager->GetLoadedModuleHost())
-		WriteCache(manager, %commands, %editors, %filers, %tools);
+	{
+		if (0 == commands.Count + editors.Count + filers.Count + tools.Count)
+			throw gcnew ModuleException("The module should implement at least one tool class or a preloadable host class.");
+		
+		WriteModuleCache(manager, %commands, %editors, %filers, %tools);
+	}
 }
 
 // #6 Adds a module entry
@@ -341,21 +332,21 @@ void ModuleLoader::AddModuleEntry(ModuleManager^ manager, Type^ type, List<Modul
 	}
 	else
 	{
-		throw gcnew OperationCanceledException("Unknown module class type.");
+		throw gcnew ModuleException("Unknown module class type.");
 	}
 }
 
 //! Don't use Far UI
-void ModuleLoader::UnloadEntry(BaseModuleEntry^ entry)
+void ModuleLoader::UnloadModuleItem(BaseModuleItem^ item)
 {
-	LOG_AUTO(3, "Unload module entry " + entry);
+	LOG_AUTO(3, "Unload module item " + item);
 
 	// tool:
-	BaseModuleTool^ tool = dynamic_cast<BaseModuleTool^>(entry);
+	BaseModuleTool^ tool = dynamic_cast<BaseModuleTool^>(item);
 	if (tool)
 		return;
 
-	ModuleHost^ host = (ModuleHost^)entry;
+	ModuleHost^ host = (ModuleHost^)item;
 	for each(ModuleManager^ manager in _ModuleManagers->Values)
 	{
 		if (manager->GetLoadedModuleHost() == host)
@@ -389,66 +380,74 @@ bool ModuleLoader::CanExit()
 	return true;
 }
 
-void ModuleLoader::WriteCache(ModuleManager^ manager, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
+void ModuleLoader::WriteModuleCache(ModuleManager^ manager, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
 {
-	FileInfo fi(manager->AssemblyPath);
-	RegistryKey^ keyDll;
+	RegistryKey^ keyCache = nullptr;
 	try
 	{
-		keyDll = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\FarNet\\<cache>\\" + fi.Name);
-		keyDll->SetValue("Path", manager->AssemblyPath);
-		keyDll->SetValue("Stamp", fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture));
+		keyCache = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\FarNet\\<cache>");
 
-		// late host
+		// update cache version
+		if (ToCacheVersion)
+		{
+			ToCacheVersion = false;
+			keyCache->SetValue(String::Empty, CacheVersion.ToString());
+		}
+
+		FileInfo fi(manager->AssemblyPath);
+		List<String^> data;
+
+		// Stamp
+		data.Add(fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture));
+
+		// Culture
+		if (manager->CachedResources)
+			data.Add(manager->CurrentUICulture->Name);
+		else
+			data.Add(String::Empty);
+
+		// host
 		String^ hostClassName = manager->GetModuleHostClassName();
 		if (hostClassName)
 		{
-			RegistryKey^ key = keyDll->CreateSubKey(hostClassName);
-			key->SetValue("Type", "Host");
-			key->Close();
+			// Type
+			data.Add("Host");
+			// Class
+			data.Add(hostClassName);
 		}
 
 		for each(ModuleToolInfo^ tool in tools)
 		{
-			RegistryKey^ key = keyDll->CreateSubKey(tool->ClassName);
-			key->SetValue("Type", "Tool");
-			key->SetValue("Name", tool->Name);
-			key->SetValue("Options", (int)tool->Attribute->Options);
-			key->Close();
+			data.Add("Tool");
+			tool->WriteCache(%data);
 		}
 
 		for each(ModuleCommandInfo^ tool in commands)
 		{
-			RegistryKey^ key = keyDll->CreateSubKey(tool->ClassName);
-			key->SetValue("Type", "Command");
-			key->SetValue("Name", tool->Name);
-			key->SetValue("Prefix", tool->DefaultPrefix);
-			key->Close();
+			data.Add("Command");
+			tool->WriteCache(%data);
 		}
 
 		for each(ModuleEditorInfo^ tool in editors)
 		{
-			RegistryKey^ key = keyDll->CreateSubKey(tool->ClassName);
-			key->SetValue("Type", "Editor");
-			key->SetValue("Name", tool->Name);
-			key->SetValue("Mask", tool->DefaultMask);
-			key->Close();
+			data.Add("Editor");
+			tool->WriteCache(%data);
 		}
 
 		for each(ModuleFilerInfo^ tool in filers)
 		{
-			RegistryKey^ key = keyDll->CreateSubKey(tool->ClassName);
-			key->SetValue("Type", "Filer");
-			key->SetValue("Name", tool->Name);
-			key->SetValue("Mask", tool->DefaultMask);
-			key->SetValue("Creates", (int)tool->Attribute->Creates);
-			key->Close();
+			data.Add("Filer");
+			tool->WriteCache(%data);
 		}
+
+		array<String^>^ data2 = gcnew array<String^>(data.Count);
+		data.CopyTo(data2);
+		keyCache->SetValue(manager->AssemblyPath, data2);
 	}
 	finally
 	{
-		if (keyDll)
-			keyDll->Close();
+		if (keyCache)
+			keyCache->Close();
 	}
 }
 

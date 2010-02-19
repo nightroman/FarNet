@@ -482,7 +482,7 @@ void Panel1::UnselectAll()
 	SelectAll(false);
 }
 
-void Panel1::SelectNames(array<String^>^ names)
+void Panel1::SelectNames(array<String^>^ names, bool select)
 {
 	if (!names || names->Length == 0)
 		return;
@@ -503,13 +503,23 @@ void Panel1::SelectNames(array<String^>^ names)
 		{
 			int index = namesNow.IndexOf(name);
 			if (index >= 0)
-				Info.Control(_handle, FCTL_SETSELECTION, index, true);
+				Info.Control(_handle, FCTL_SETSELECTION, index, select);
 		}
 	}
 	finally
 	{
 		Info.Control(_handle, FCTL_ENDSELECTION, 0, 0);
 	}
+}
+
+void Panel1::SelectNames(array<String^>^ names)
+{
+	SelectNames(names, true);
+}
+
+void Panel1::UnselectNames(array<String^>^ names)
+{
+	SelectNames(names, false);
 }
 
 void Panel1::Update(bool keepSelection)

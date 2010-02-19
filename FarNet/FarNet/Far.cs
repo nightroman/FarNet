@@ -17,7 +17,7 @@ namespace FarNet
 	public static class Far
 	{
 		/// <summary>
-		/// The global <see cref="IFar"/> host instance.
+		/// The global <see cref="IFar"/> instance.
 		/// </summary>
 		public static IFar Net
 		{
@@ -49,27 +49,23 @@ namespace FarNet
 		/// </summary>
 		IZoo Zoo { get; }
 		/// <summary>
-		/// Registers the tool handler invoked from one of Far menus.
-		/// </summary>
-		/// <param name="manager">The module manager or null.</param>
-		/// <param name="handler">Tool handler.</param>
-		/// <param name="attribute">Tool attribute.</param>
-		void RegisterTool(IModuleManager manager, EventHandler<ModuleToolEventArgs> handler, ModuleToolAttribute attribute);
-		/// <summary>
-		/// Unregisters the tool handler.
-		/// </summary>
-		/// <param name="handler">Tool handler.</param>
-		void UnregisterTool(EventHandler<ModuleToolEventArgs> handler);
-		/// <summary>
 		/// Registers the command handler invoked from the command line by its prefix.
 		/// </summary>
 		/// <param name="manager">The module manager or null.</param>
+		/// <param name="id">Unique command ID.</param>
 		/// <param name="handler">Command handler.</param>
-		/// <param name="attribute">Command attribute.</param>
+		/// <param name="attribute">
+		/// Command attribute.
+		/// Create and use it once and do not change its data after the call.
+		/// </param>
 		/// <remarks>
+		/// NOTE: Consider to implement the <see cref="ModuleCommand"/> instead.
+		/// Dynamic registration is not recommended for standard scenarios.
+		/// <para>
 		/// After the call the attribute <see cref="ModuleCommandAttribute.Prefix"/> is the actually used prefix.
+		/// </para>
 		/// </remarks>
-		void RegisterCommand(IModuleManager manager, EventHandler<ModuleCommandEventArgs> handler, ModuleCommandAttribute attribute);
+		void RegisterCommand(IModuleManager manager, Guid id, EventHandler<ModuleCommandEventArgs> handler, ModuleCommandAttribute attribute);
 		/// <summary>
 		/// Unregisters the command handler.
 		/// </summary>
@@ -79,22 +75,50 @@ namespace FarNet
 		/// Registers the file handler invoked for a file. See <see cref="ModuleFilerEventArgs"/>.
 		/// </summary>
 		/// <param name="manager">The module manager or null.</param>
+		/// <param name="id">Unique filer ID.</param>
 		/// <param name="handler">Filer handler.</param>
-		/// <param name="attribute">Filer attribute.</param>
-		void RegisterFiler(IModuleManager manager, EventHandler<ModuleFilerEventArgs> handler, ModuleFilerAttribute attribute);
+		/// <param name="attribute">
+		/// Filer attribute.
+		/// Create and use it once and do not change its data after the call.
+		/// </param>
+		/// <remarks>
+		/// NOTE: Consider to implement the <see cref="ModuleFiler"/> instead.
+		/// Dynamic registration is not recommended for standard scenarios.
+		/// </remarks>
+		void RegisterFiler(IModuleManager manager, Guid id, EventHandler<ModuleFilerEventArgs> handler, ModuleFilerAttribute attribute);
 		/// <summary>
 		/// Unregisters the file handler.
 		/// </summary>
 		/// <param name="handler">Filer handler.</param>
 		void UnregisterFiler(EventHandler<ModuleFilerEventArgs> handler);
 		/// <summary>
-		/// Unregisters the module entry. Use it sparingly.
+		/// Registers the tool handler invoked from one of Far menus.
+		/// </summary>
+		/// <param name="manager">The module manager or null.</param>
+		/// <param name="id">Unique tool ID.</param>
+		/// <param name="handler">Tool handler.</param>
+		/// <param name="attribute">
+		/// Tool attribute.
+		/// Create and use it once and do not change its data after the call.
+		/// </param>
+		/// <remarks>
+		/// NOTE: Consider to implement the <see cref="ModuleTool"/> instead.
+		/// Dynamic registration is not recommended for standard scenarios.
+		/// </remarks>
+		void RegisterTool(IModuleManager manager, Guid id, EventHandler<ModuleToolEventArgs> handler, ModuleToolAttribute attribute);
+		/// <summary>
+		/// Unregisters the tool handler.
+		/// </summary>
+		/// <param name="handler">Tool handler.</param>
+		void UnregisterTool(EventHandler<ModuleToolEventArgs> handler);
+		/// <summary>
+		/// Unregisters the module item. Use it only in critical cases.
 		/// </summary>
 		/// <remarks>
-		/// Normally there is no much sense in unloading entries because .NET assemblies are not unloaded anyway.
+		/// Normally there is no much sense in unloading items because module assemblies are not unloaded anyway.
 		/// This method should be called only in critical cases (fatal errors and etc.).
 		/// </remarks>
-		void Unregister(BaseModuleEntry entry);
+		void Unregister(BaseModuleItem item);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
@@ -512,25 +536,13 @@ namespace FarNet
 		/// Gets the registry path where plugins keep settings.
 		/// </summary>
 		/// <remarks>
-		/// Do not save values directly in here, create your own subkey
-		/// or use <see cref="GetPluginValue"/> and <see cref="SetPluginValue"/>.
+		/// It takes into account a user if it is specified in the command line by parameter /u.
+		/// <para>
+		/// This is not recommended for modules to save data in here to avoid conflicts with Far plugins.
+		/// Instead, use <see cref="IModuleManager.OpenSubKey"/> to get and set the module values there.
+		/// </para>
 		/// </remarks>
 		string RegistryPluginsPath { get; }
-		/// <summary>
-		/// Gets a plugin value from the registry.
-		/// </summary>
-		/// <param name="keyName">Key name.</param>
-		/// <param name="valueName">Value name.</param>
-		/// <param name="defaultValue">Default value.</param>
-		/// <returns>Found or default value.</returns>
-		object GetPluginValue(string keyName, string valueName, object defaultValue);
-		/// <summary>
-		/// Sets a plugin value in the registry.
-		/// </summary>
-		/// <param name="keyName">Key name. The key is created if it does not exist.</param>
-		/// <param name="valueName">Value name.</param>
-		/// <param name="newValue">New value to be set.</param>
-		void SetPluginValue(string keyName, string valueName, object newValue);
 		/// <summary>
 		/// Gets count of open Far windows.
 		/// </summary>
