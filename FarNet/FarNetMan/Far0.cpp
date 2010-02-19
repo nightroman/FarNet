@@ -6,6 +6,7 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Far0.h"
 #include "Dialog.h"
+#include "ModuleItems.h"
 #include "ModuleLoader.h"
 #include "ModuleManager.h"
 #include "Panel0.h"
@@ -169,11 +170,11 @@ void Far0::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
 	}
 }
 
-void Far0::RegisterCommand(IModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
+void Far0::RegisterCommand(IModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
 {
 	delete _prefixes;
 	_prefixes = 0;
-	ModuleCommandInfo^ it = gcnew ModuleCommandInfo((manager ? (ModuleManager^)manager : nullptr), handler, attribute);
+	ModuleCommandInfo^ it = gcnew ModuleCommandInfo((manager ? (ModuleManager^)manager : nullptr), id, handler, attribute);
 	_registeredCommand.Add(it);
 
 	LOG_INFO("Register " + it);
@@ -207,9 +208,9 @@ void Far0::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
 	}
 }
 
-void Far0::RegisterFiler(IModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
+void Far0::RegisterFiler(IModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
 {
-	ModuleFilerInfo^ it = gcnew ModuleFilerInfo((manager ? (ModuleManager^)manager : nullptr), handler, attribute);
+	ModuleFilerInfo^ it = gcnew ModuleFilerInfo((manager ? (ModuleManager^)manager : nullptr), id, handler, attribute);
 	_registeredFiler.Add(it);
 
 	LOG_INFO("Register " + it);
@@ -307,7 +308,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			_pConfig[0].Set(Res::MenuPrefix);
 
 			for(int i = _toolConfig.Count; --i >= 0;)
-				_pConfig[i + 1].Set(Res::MenuPrefix + _toolConfig[i]->Alias(ModuleToolOptions::Config));
+				_pConfig[i + 1].Set(Res::MenuPrefix + _toolConfig[i]->GetMenuText());
 		}
 
 		pi->PluginConfigStringsNumber = _toolConfig.Count + 1;
@@ -321,7 +322,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			_pDisk = new CStr[_toolDisk.Count];
 
 			for(int i = _toolDisk.Count; --i >= 0;)
-				_pDisk[i].Set(Res::MenuPrefix + _toolDisk[i]->Alias(ModuleToolOptions::Disk));
+				_pDisk[i].Set(Res::MenuPrefix + _toolDisk[i]->GetMenuText());
 		}
 
 		pi->DiskMenuStringsNumber = _toolDisk.Count;
@@ -339,7 +340,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 				_pEditor[0].Set(Res::MenuPrefix);
 
 				for(int i = _toolEditor.Count; --i >= 0;)
-					_pEditor[i + 1].Set(Res::MenuPrefix + _toolEditor[i]->Alias(ModuleToolOptions::Editor));
+					_pEditor[i + 1].Set(Res::MenuPrefix + _toolEditor[i]->GetMenuText());
 			}
 
 			pi->PluginMenuStringsNumber = _toolEditor.Count + 1;
@@ -354,7 +355,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 				_pPanels[0].Set(Res::MenuPrefix);
 
 				for(int i = _toolPanels.Count; --i >= 0;)
-					_pPanels[i + 1].Set(Res::MenuPrefix + _toolPanels[i]->Alias(ModuleToolOptions::Panels));
+					_pPanels[i + 1].Set(Res::MenuPrefix + _toolPanels[i]->GetMenuText());
 			}
 
 			pi->PluginMenuStringsNumber = _toolPanels.Count + 1;
@@ -369,7 +370,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 				_pViewer[0].Set(Res::MenuPrefix);
 
 				for(int i = _toolViewer.Count; --i >= 0;)
-					_pViewer[i + 1].Set(Res::MenuPrefix + _toolViewer[i]->Alias(ModuleToolOptions::Viewer));
+					_pViewer[i + 1].Set(Res::MenuPrefix + _toolViewer[i]->GetMenuText());
 			}
 
 			pi->PluginMenuStringsNumber = _toolViewer.Count + 1;
@@ -384,7 +385,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 				_pDialog[0].Set(Res::MenuPrefix);
 
 				for(int i = _toolDialog.Count; --i >= 0;)
-					_pDialog[i + 1].Set(Res::MenuPrefix + _toolDialog[i]->Alias(ModuleToolOptions::Dialog));
+					_pDialog[i + 1].Set(Res::MenuPrefix + _toolDialog[i]->GetMenuText());
 			}
 
 			pi->PluginMenuStringsNumber = _toolDialog.Count + 1;
@@ -427,7 +428,7 @@ int Far0::GetPaletteColor(PaletteColor paletteColor)
 
 Object^ Far0::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
 {
-	RegistryKey^ key;
+	RegistryKey^ key = nullptr;
 	try
 	{
 		key = Registry::CurrentUser->OpenSubKey(Far::Net->RegistryFarPath + "\\" + keyPath);
@@ -699,6 +700,13 @@ void Far0::OpenMenu(ModuleToolOptions from)
 		Far::Net->Message("This menu is empty but it is used internally.", "FarNet");
 }
 
+static void AddTools(List<ModuleToolInfo^>^ destination, List<ModuleToolInfo^>^ source)
+{
+	for each(ModuleToolInfo^ it in source)
+		if (!destination->Contains(it))
+			destination->Add(it);
+}
+
 void Far0::OpenConfig()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
@@ -706,16 +714,19 @@ void Far0::OpenConfig()
 	menu->HelpTopic = "MenuConfig";
 	menu->Title = "Modules configuration";
 
-	menu->Add(Res::ModuleCommands + " : " + (_registeredCommand.Count));
-	menu->Add(Res::ModuleEditors + "  : " + (_registeredEditor.Count));
-	menu->Add(Res::ModuleFilers + "   : " + (_registeredFiler.Count));
-	menu->Add("Tools")->IsSeparator = true;
-	menu->Add(Res::PanelsTools + "   : " + (_toolPanels.Count));
-	menu->Add(Res::EditorTools + "   : " + (_toolEditor.Count));
-	menu->Add(Res::ViewerTools + "   : " + (_toolViewer.Count));
-	menu->Add(Res::DialogTools + "   : " + (_toolDialog.Count));
-	menu->Add(Res::ConfigTools + "   : " + (_toolConfig.Count));
-	menu->Add(Res::DiskTools + "     : " + (_toolDisk.Count));
+	List<ModuleToolInfo^> tools;
+	AddTools(%tools, %_toolConfig);
+	AddTools(%tools, %_toolDialog);
+	AddTools(%tools, %_toolDisk);
+	AddTools(%tools, %_toolEditor);
+	AddTools(%tools, %_toolPanels);
+	AddTools(%tools, %_toolViewer);
+
+	String^ format = "{0,-10} : {1,2}";
+	menu->Add(String::Format(format, Res::ModuleMenuTools, tools.Count));
+	menu->Add(String::Format(format, Res::ModuleCommands, _registeredCommand.Count));
+	menu->Add(String::Format(format, Res::ModuleEditors, _registeredEditor.Count));
+	menu->Add(String::Format(format, Res::ModuleFilers, _registeredFiler.Count));
 	menu->Add("Settings")->IsSeparator = true;
 	menu->Add("UI culture");
 
@@ -724,43 +735,23 @@ void Far0::OpenConfig()
 		switch(menu->Selected)
 		{
 		case 0:
+			if (tools.Count)
+				OnConfigTool(%tools);
+			break;
+		case 1:
 			if (_registeredCommand.Count)
 				OnConfigCommand();
 			break;
-		case 1:
+		case 2:
 			if (_registeredEditor.Count)
 				OnConfigEditor();
 			break;
-		case 2:
+		case 3:
 			if (_registeredFiler.Count)
 				OnConfigFiler();
 			break;
 			// mind separator
-		case 4:
-			if (_toolPanels.Count)
-				OnConfigTool(Res::PanelsTools, ModuleToolOptions::Panels, %_toolPanels);
-			break;
 		case 5:
-			if (_toolEditor.Count)
-				OnConfigTool(Res::EditorTools, ModuleToolOptions::Editor, %_toolEditor);
-			break;
-		case 6:
-			if (_toolViewer.Count)
-				OnConfigTool(Res::ViewerTools, ModuleToolOptions::Viewer, %_toolViewer);
-			break;
-		case 7:
-			if (_toolDialog.Count)
-				OnConfigTool(Res::DialogTools, ModuleToolOptions::Dialog, %_toolDialog);
-			break;
-		case 8:
-			if (_toolConfig.Count)
-				OnConfigTool(Res::ConfigTools, ModuleToolOptions::Config, %_toolConfig);
-			break;
-		case 9:
-			if (_toolDisk.Count)
-				OnConfigTool(Res::DiskTools, ModuleToolOptions::Disk, %_toolDisk);
-			break;
-		case 11:
 			OnConfigUICulture();
 			break;
 		}
@@ -783,14 +774,14 @@ void Far0::OnConfigUICulture()
 	{
 		menu->Items->Clear();
 		for each(String^ assemblyName in ModuleLoader::AssemblyNames)
-			menu->Add(String::Format("{0} : {1}", assemblyName->PadRight(width), ModuleManager::GetFarNetValue(assemblyName , "UICulture", String::Empty)));
+			menu->Add(String::Format("{0} : {1}", assemblyName->PadRight(width), ModuleManager::LoadFarNetValue(assemblyName , "UICulture", String::Empty)));
 
 		if (!menu->Show())
 			return;
 
 		// get data to show
 		String^ assemblyName = ModuleLoader::AssemblyNames[menu->Selected];
-		String^ cultureName = ModuleManager::GetFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
+		String^ cultureName = ModuleManager::LoadFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
 
 		// show the input box
 		IInputBox^ ib = Far::Net->CreateInputBox();
@@ -812,7 +803,7 @@ void Far0::OnConfigUICulture()
 			ci = CultureInfo::GetCultureInfo(cultureName);
 
 			// save the name from the culture, not from a user
-			ModuleManager::SetFarNetValue(assemblyName , "UICulture", ci->Name);
+			ModuleManager::SaveFarNetValue(assemblyName , "UICulture", ci->Name);
 
 			// use the current Far culture instead of invariant
 			if (ci->Name->Length == 0)
@@ -821,6 +812,10 @@ void Far0::OnConfigUICulture()
 			// update the module
 			ModuleManager^ manager = ModuleLoader::GetModuleManager(assemblyName);
 			manager->CurrentUICulture = ci;
+
+			// notify
+			if (manager->CachedResources)
+				Far::Net->Message("Some UI strings will be updated only when Far restarts.");
 		}
 		catch(ArgumentException^)
 		{
@@ -829,59 +824,68 @@ void Far0::OnConfigUICulture()
 	}
 }
 
-void Far0::OnConfigTool(String^ title, ModuleToolOptions option, List<ModuleToolInfo^>^ list)
+ref class ModuleToolComparer : IComparer<ModuleToolInfo^>
+{
+public:
+	virtual int Compare(ModuleToolInfo^ x, ModuleToolInfo^ y)
+	{
+		return String::Compare(x->GetMenuText(), y->GetMenuText(), true, Far::Net->GetCurrentUICulture(false));
+	}
+};
+
+void Far0::OnConfigTool(List<ModuleToolInfo^>^ tools)
 {
 	IMenu^ menu = Far::Net->CreateMenu();
-	menu->Title = title;
-	menu->HelpTopic = _helpTopic + (option == ModuleToolOptions::Disk ? "ConfigDisk" : "ConfigTool");
+	menu->Title = "Menu tools";
+	menu->HelpTopic = _helpTopic + "ConfigTool";
 
-	ModuleToolInfo^ selected;
-	List<ModuleToolInfo^> sorted(list);
+	int widthName = 0;
+	int widthAttr = 0;
+	for each(ModuleToolInfo^ it in tools)
+	{
+		if (widthName < it->Attribute->Name->Length)
+			widthName = it->Attribute->Name->Length;
+		if (widthAttr < it->Attribute->Options.ToString()->Length)
+			widthAttr = it->Attribute->Options.ToString()->Length;
+	}
+	widthName += 3;
+	String^ format = Res::MenuPrefix + "{0,-" + widthName + "} : {1,-" + widthAttr + "} : {2}";
+
 	for(;;)
 	{
+		// reset
 		menu->Items->Clear();
-		sorted.Sort(gcnew ModuleToolAliasComparer(option));
-		for each(ModuleToolInfo^ it in sorted)
+		tools->Sort(gcnew ModuleToolComparer);
+
+		// fill
+		for each(ModuleToolInfo^ it in tools)
 		{
-			if (ES(it->Name))
-				continue;
-			if (it == selected)
-				menu->Selected = menu->Items->Count;
-			FarItem^ mi = menu->Add(Res::MenuPrefix + it->Alias(option) + " : " + it->Key);
+			FarItem^ mi = menu->Add(String::Format(format, it->GetMenuText(), it->Attribute->Options, it->Key));
 			mi->Data = it;
 		}
 
-		// case: disk
-		if (option == ModuleToolOptions::Disk)
-		{
-			while(menu->Show()) {}
-			return;
-		}
-
-		// show others
+		// show
 		if (!menu->Show())
 			return;
 
-		FarItem^ mi = menu->Items[menu->Selected];
-		selected = (ModuleToolInfo^)mi->Data;
+		// the tool
+		ModuleToolInfo^ tool = (ModuleToolInfo^)menu->SelectedData;
 
+		// dialog
 		IInputBox^ ib = Far::Net->CreateInputBox();
-		ib->Title = "Original: " + selected->Name;
-		ib->Prompt = "New string (ampersand ~ hotkey)";
-		ib->Text = selected->Alias(option);
+		ib->Title = "Tool options";
+		ib->Prompt = "Hotkey";
+		ib->Text = tool->HotkeyChar == ' ' ? String::Empty : gcnew String(gcnew array<Char> { tool->HotkeyChar });
 		ib->HelpTopic = menu->HelpTopic;
 		ib->EmptyEnabled = true;
 		if (!ib->Show())
 			continue;
 
-		// restore the name on empty alias
-		String^ alias = ib->Text->TrimEnd();
-		if (alias->Length == 0)
-			alias = selected->Name;
+		// change the hotkey
+		tool->SetHotkey(ib->Text);
 
-		// reset the alias
-		Free(option);
-		selected->Alias(option, alias);
+		// reset the menus to be updated in the affected areas
+		Free(tool->Attribute->Options);
 	}
 }
 
@@ -892,48 +896,62 @@ void Far0::OnConfigCommand()
 	menu->HelpTopic = "ConfigCommand";
 	menu->Title = Res::ModuleCommands;
 
-	for each(ModuleCommandInfo^ it in _registeredCommand)
+	for(;;)
 	{
-		FarItem^ mi = menu->Add(it->Attribute->Prefix->PadRight(4) + " " + it->Key);
-		mi->Data = it;
-	}
+		int lenPref = 0;
+		int lenName = 0;
+		for each(ModuleCommandInfo^ it in _registeredCommand)
+		{
+			if (lenPref < it->Attribute->Prefix->Length)
+				lenPref = it->Attribute->Prefix->Length;
+			if (lenName < it->Attribute->Name->Length)
+				lenName = it->Attribute->Name->Length;
+		}
+		String^ format = "{0,-" + lenPref + "} : {1,-" + lenName + "} : {2}";
 
-	while(menu->Show())
-	{
+		menu->Items->Clear();
+		for each(ModuleCommandInfo^ it in _registeredCommand)
+		{
+			FarItem^ mi = menu->Add(String::Format(format, it->Attribute->Prefix, it->Attribute->Name, it->Key));
+			mi->Data = it;
+		}
+
+		if (!menu->Show())
+			return;
+
 		FarItem^ mi = menu->Items[menu->Selected];
 		ModuleCommandInfo^ it = (ModuleCommandInfo^)mi->Data;
 
 		IInputBox^ ib = Far::Net->CreateInputBox();
 		ib->EmptyEnabled = true;
 		ib->HelpTopic = _helpTopic + "ConfigCommand";
-		ib->Prompt = "New prefix for " + it->Name;
+		ib->Prompt = "New prefix for: " + it->ToolName;
 		ib->Text = it->Attribute->Prefix;
 		ib->Title = "Original prefix: " + it->DefaultPrefix;
 
-		String^ alias = nullptr;
+		String^ prefix = nullptr;
 		while(ib->Show())
 		{
-			alias = ib->Text->Trim();
-			if (alias->IndexOf(" ") >= 0 || alias->IndexOf(":") >= 0)
+			prefix = ib->Text->Trim();
+			if (prefix->IndexOf(" ") >= 0 || prefix->IndexOf(":") >= 0)
 			{
 				Far::Net->Message("Prefix must not contain ' ' or ':'.");
-				alias = nullptr;
+				prefix = nullptr;
 				continue;
 			}
 			break;
 		}
-		if (!alias)
+		if (!prefix)
 			continue;
 
 		// restore original on empty
-		if (alias->Length == 0)
-			alias = it->DefaultPrefix;
+		if (prefix->Length == 0)
+			prefix = it->DefaultPrefix;
 
 		// reset
 		delete _prefixes;
 		_prefixes = 0;
-		it->SetPrefix(alias);
-		mi->Text = alias->PadRight(4) + " " + it->Key;
+		it->SetPrefix(prefix);
 	}
 }
 
@@ -959,7 +977,7 @@ void Far0::OnConfigEditor()
 		ib->EmptyEnabled = true;
 		ib->HelpTopic = _helpTopic + "ConfigEditor";
 		ib->History = "Masks";
-		ib->Prompt = "New mask for " + it->Name;
+		ib->Prompt = "New mask for " + it->ToolName;
 		ib->Text = it->Attribute->Mask;
 		ib->Title = "Original mask: " + it->DefaultMask;
 
@@ -998,7 +1016,7 @@ void Far0::OnConfigFiler()
 		ib->EmptyEnabled = true;
 		ib->HelpTopic = _helpTopic + "ConfigFiler";
 		ib->History = "Masks";
-		ib->Prompt = "New mask for " + it->Name;
+		ib->Prompt = "New mask for " + it->ToolName;
 		ib->Text = it->Attribute->Mask;
 		ib->Title = "Original mask: " + it->DefaultMask;
 

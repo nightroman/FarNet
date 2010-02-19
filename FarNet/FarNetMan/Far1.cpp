@@ -13,6 +13,7 @@ Copyright (c) 2005 FarNet Team
 #include "Macro.h"
 #include "Menu.h"
 #include "Message.h"
+#include "ModuleItems.h"
 #include "ModuleLoader.h"
 #include "ModuleManager.h"
 #include "Panel0.h"
@@ -48,7 +49,7 @@ String^ Far1::RegistryPluginsPath::get()
 	return gcnew String(Info.RootKey);
 }
 
-void Far1::RegisterTool(IModuleManager^ manager, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute)
+void Far1::RegisterTool(IModuleManager^ manager, Guid id, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute)
 {
 	if (!handler)
 		throw gcnew ArgumentNullException("handler");
@@ -57,7 +58,7 @@ void Far1::RegisterTool(IModuleManager^ manager, EventHandler<ModuleToolEventArg
 	if (ES(attribute->Name))
 		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
 
-	Far0::RegisterTool(gcnew ModuleToolInfo((manager ? (ModuleManager^)manager : nullptr), handler, attribute));
+	Far0::RegisterTool(gcnew ModuleToolInfo((manager ? (ModuleManager^)manager : nullptr), id, handler, attribute));
 }
 
 void Far1::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
@@ -65,7 +66,7 @@ void Far1::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
 	Far0::UnregisterTool(handler);
 }
 
-void Far1::RegisterCommand(IModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
+void Far1::RegisterCommand(IModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
 {
 	if (!handler)
 		throw gcnew ArgumentNullException("handler");
@@ -74,7 +75,7 @@ void Far1::RegisterCommand(IModuleManager^ manager, EventHandler<ModuleCommandEv
 	if (ES(attribute->Name))
 		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
 
-	return Far0::RegisterCommand(manager, handler, attribute);
+	return Far0::RegisterCommand(manager, id, handler, attribute);
 }
 
 void Far1::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
@@ -82,7 +83,7 @@ void Far1::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
 	Far0::UnregisterCommand(handler);
 }
 
-void Far1::RegisterFiler(IModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
+void Far1::RegisterFiler(IModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
 {
 	if (!handler)
 		throw gcnew ArgumentNullException("handler");
@@ -91,7 +92,7 @@ void Far1::RegisterFiler(IModuleManager^ manager, EventHandler<ModuleFilerEventA
 	if (ES(attribute->Name))
 		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
 
-	Far0::RegisterFiler(manager, handler, attribute);
+	Far0::RegisterFiler(manager, id, handler, attribute);
 }
 
 void Far1::UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler)
@@ -99,9 +100,9 @@ void Far1::UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler)
 	Far0::UnregisterFiler(handler);
 }
 
-void Far1::Unregister(BaseModuleEntry^ entry)
+void Far1::Unregister(BaseModuleItem^ item)
 {
-	ModuleLoader::UnloadEntry(entry);
+	ModuleLoader::UnloadModuleItem(item);
 }
 
 void Far1::Message(String^ body)
@@ -746,36 +747,6 @@ Char Far1::CodeToChar(int code)
 
 	// convert
 	return Char(code);
-}
-
-Object^ Far1::GetPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
-{
-	RegistryKey^ key;
-	try
-	{
-		key = Registry::CurrentUser->OpenSubKey(RegistryPluginsPath + "\\" + pluginName);
-		return key ? key->GetValue(valueName, defaultValue) : defaultValue;
-	}
-	finally
-	{
-		if (key)
-			key->Close();
-	}
-}
-
-void Far1::SetPluginValue(String^ pluginName, String^ valueName, Object^ newValue)
-{
-	RegistryKey^ key;
-	try
-	{
-		key = Registry::CurrentUser->CreateSubKey(RegistryPluginsPath + "\\" + pluginName);
-		key->SetValue(valueName, newValue);
-	}
-	finally
-	{
-		if (key)
-			key->Close();
-	}
 }
 
 void Far1::ShowPanelMenu(bool showPushCommand) //???? do we need it public?

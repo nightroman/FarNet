@@ -199,15 +199,10 @@ ref class Res
 	Res() {}
 internal:
 	static ConstString
+		ModuleMenuTools = "Menu tools",
 		ModuleCommands = "Commands",
 		ModuleEditors = "Editors",
 		ModuleFilers = "Filers",
-		PanelsTools = "Panels",
-		DialogTools = "Dialog",
-		EditorTools = "Editor",
-		ViewerTools = "Viewer",
-		ConfigTools = "Config",
-		DiskTools = "Disk",
 		ErrorNoHotKey = "Set any FarNet hotkey [F4] in the Far plugin menu [F11] and restart Far.",
 		MenuPrefix = ".NET ";
 };
@@ -230,3 +225,4 @@ String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();
 void DeleteSourceOptional(String^ path, DeleteSource option);
 void ValidateRect(int& x, int& w, int min, int size);
+String^ NextString(System::Collections::IEnumerator^ data);

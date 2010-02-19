@@ -17,4 +17,11 @@ C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe Build.proj /t:Build
 		<MSBuild Projects="%(ProjFile.FullPath)" Targets="Clean"/>
 	</Target>
 
+	<Target Name="Install">
+		<Exec Command='robocopy Backslash "C:\Program Files\Far\FarNet\Modules\Backslash" *.dll /mir /xd .svn' IgnoreExitCode='true'/>
+		<Exec Command='robocopy TrimSaving "C:\Program Files\Far\FarNet\Modules\TrimSaving" *.dll /mir /xd .svn' IgnoreExitCode='true'/>
+		<Exec Command='robocopy Tutorial-Command "C:\Program Files\Far\FarNet\Modules\Tutorial-Command" *.dll /mir /xd .svn' IgnoreExitCode='true'/>
+		<Exec Command='robocopy Tutorial-Filer "C:\Program Files\Far\FarNet\Modules\Tutorial-Filer" *.dll /mir /xd .svn' IgnoreExitCode='true'/>
+		<Exec Command='robocopy Tutorial-Host "C:\Program Files\Far\FarNet\Modules\Tutorial-Host" *.dll *.resources /mir /xd .svn' IgnoreExitCode='true'/>
+	</Target>
 </Project>

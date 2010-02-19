@@ -65,18 +65,20 @@ FarNet.xml - XML documentation
 
 .\FarNet\Modules\
 Each module folder contains exactly one .cfg file (module manifest) or exactly
-one .dll file (module assembly). The manifest file tells what is loaded: the
-first line is the .dll path and the others are class names.
+one .dll file (module assembly). The manifest file tells what should be loaded:
+the first line is the .dll path and other optional lines are class names: all
+or none should be specified.
 
 
 	= LOADING MODULES FROM DISK =
 
 
 *) For each folder in Modules: if a manifest *.cfg exists then only specified
-assembly and classes are loaded, else all not abstract BaseModule children are
-loaded from a single *.dll file.
+assembly and classes are loaded, else all public not abstract BaseModuleEntry
+descendant classes are loaded from a single *.dll file.
 
-*) Excluded folders: folders "-*", e.g. "-MyModule", are not loaded.
+*) Not loaded folders: folders with names starting with '-' (-MyModule) and
+folders with no *.dll and *.cfg files are ignored.
 
 *) Assembly names must be unique among all modules or there can be problems.
 Assembly names define kind of namespaces for information stored in the

@@ -227,31 +227,57 @@ namespace FarNet
 		/// <seealso cref="GoToName(string)"/>
 		void GoToPath(string path);
 		/// <summary>
+		/// Selects all shown items.
+		/// </summary>
+		/// <remarks>
+		/// Call <see cref="Redraw()"/> after that.
+		/// </remarks>
+		void SelectAll();
+		/// <summary>
+		/// Unselects all shown items.
+		/// </summary>
+		/// <remarks>
+		/// Call <see cref="Redraw()"/> after that.
+		/// </remarks>
+		void UnselectAll();
+		/// <summary>
 		/// Selects shown items by their indexes. See <see cref="Redraw()"/>.
 		/// </summary>
 		/// <param name="indexes">Indexes of items to be selected. Null is OK.</param>
+		/// <remarks>
+		/// Call <see cref="Redraw()"/> after that.
+		/// </remarks>
 		void SelectAt(int[] indexes);
-		/// <summary>
-		/// Selects all shown items. See <see cref="Redraw()"/>.
-		/// </summary>
-		void SelectAll();
 		/// <summary>
 		/// Unselects shown items by their indexes. See <see cref="Redraw()"/>.
 		/// </summary>
 		/// <param name="indexes">Indexes of items to be unselected. Null os OK.</param>
+		/// <remarks>
+		/// Call <see cref="Redraw()"/> after that.
+		/// </remarks>
 		void UnselectAt(int[] indexes);
-		/// <summary>
-		/// Unselects all shown items. See <see cref="Redraw()"/>.
-		/// </summary>
-		void UnselectAll();
 		/// <summary>
 		/// Select panel items with specified names.
 		/// </summary>
 		/// <param name="names">Names to be selected. Null is OK.</param>
 		/// <remarks>
-		/// Input and panel names are processed as case sensitive, not found input names are ignored.
+		/// Call <see cref="Redraw()"/> after that.
+		/// <para>
+		/// Names are processed as case sensitive, not found input names are ignored.
+		/// </para>
 		/// </remarks>
 		void SelectNames(string[] names);
+		/// <summary>
+		/// Unselect panel items with specified names.
+		/// </summary>
+		/// <param name="names">Names to be selected. Null is OK.</param>
+		/// <remarks>
+		/// Call <see cref="Redraw()"/> after that.
+		/// <para>
+		/// Names are processed as case sensitive, not found input names are ignored.
+		/// </para>
+		/// </remarks>
+		void UnselectNames(string[] names);
 		/// <summary>
 		/// Pushes or puts the panel to the internal panel shelve.
 		/// </summary>

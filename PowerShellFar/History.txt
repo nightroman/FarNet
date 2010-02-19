@@ -1,6 +1,17 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.6 =
+
+*** Remove this registry key before update: ***
+HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet
+
+*) The PowerShellFar registry settings moved
+from: HKEY_CURRENT_USER\Software\Far2\Plugins\PowerShellFar
+to: HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll
+You should reset your PSF configuration settings or move the old registry
+properties, for example, using the registry provider panel.
+
 = 4.3.5 =
 
 *) Module FarMacro: New cmdlet Edit-FarMacro allows to edit macro sequences in
