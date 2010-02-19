@@ -74,10 +74,10 @@ void ModuleLoader::ReadModuleCache()
 					throw gcnew ModuleException;
 
 				// read data
-				System::Collections::IEnumerator^ data = ((array<String^>^)keyCache->GetValue(assemblyPath))->GetEnumerator();
+				ListReader reader((array<String^>^)keyCache->GetValue(assemblyPath));
 
 				// Stamp
-				String^ assemblyStamp = NextString(data);
+				String^ assemblyStamp = reader.Read();
 				FileInfo fi(assemblyPath);
 
 				// stamp mismatch: do not throw!
@@ -88,7 +88,7 @@ void ModuleLoader::ReadModuleCache()
 				ModuleManager^ manager = gcnew ModuleManager(assemblyPath);
 
 				// culture of cached resources
-				String^ savedCulture = NextString(data);
+				String^ savedCulture = reader.Read();
 				
 				// check the culture
 				if (savedCulture->Length)
@@ -109,14 +109,14 @@ void ModuleLoader::ReadModuleCache()
 				for(;;)
 				{
 					// Type, can be end of data
-					if (!data->MoveNext())
+					String^ itemType = reader.TryRead();
+					if (!itemType)
 						break;
-					String^ itemType = data->Current->ToString();
 
 					// case: host
 					if (itemType == "Host")
 					{
-						String^ className = NextString(data);
+						String^ className = reader.Read();;
 						manager->SetModuleHost(className);
 						continue;
 					}
@@ -124,23 +124,23 @@ void ModuleLoader::ReadModuleCache()
 					// types:
 					if (itemType == "Tool")
 					{
-						ModuleToolInfo^ tool = gcnew ModuleToolInfo(manager, data);
-						tools.Add(tool);
+						ModuleToolInfo^ it = gcnew ModuleToolInfo(manager, %reader);
+						tools.Add(it);
 					}
 					else if (itemType == "Command")
 					{
-						ModuleCommandInfo^ tool = gcnew ModuleCommandInfo(manager, data);
-						commands.Add(tool);
+						ModuleCommandInfo^ it = gcnew ModuleCommandInfo(manager, %reader);
+						commands.Add(it);
 					}
 					else if (itemType == "Editor")
 					{
-						ModuleEditorInfo^ tool = gcnew ModuleEditorInfo(manager, data);
-						editors.Add(tool);
+						ModuleEditorInfo^ it = gcnew ModuleEditorInfo(manager, %reader);
+						editors.Add(it);
 					}
 					else if (itemType == "Filer")
 					{
-						ModuleFilerInfo^ tool = gcnew ModuleFilerInfo(manager, data);
-						filers.Add(tool);
+						ModuleFilerInfo^ it = gcnew ModuleFilerInfo(manager, %reader);
+						filers.Add(it);
 					}
 					else
 					{
@@ -163,11 +163,12 @@ void ModuleLoader::ReadModuleCache()
 			}
 			catch(ModuleException^)
 			{
+				// ignore known issues
 			}
 			catch(Exception^ ex)
 			{
 				throw gcnew ModuleException(
-					"Error on reading the cache. Remove registry FarNet\\<cache> manually and restart Far.", ex);
+					"Error on reading the registry cache Plugins\\FarNet\\<cache>.", ex);
 			}
 			finally
 			{
@@ -265,18 +266,18 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 	if (classes && classes->Count > 0)
 	{
 		for each(String^ name in classes)
-			AddModuleEntry(manager, assembly->GetType(name, true), %commands, %editors, %filers, %tools);
+			AddModuleItem(manager, assembly->GetType(name, true), %commands, %editors, %filers, %tools);
 	}
 	else
 	{
 		for each(Type^ type in assembly->GetExportedTypes())
 		{
 			if (!type->IsAbstract && BaseModuleItem::typeid->IsAssignableFrom(type))
-				AddModuleEntry(manager, type, %commands, %editors, %filers, %tools);
+				AddModuleItem(manager, type, %commands, %editors, %filers, %tools);
 		}
 	}
 
-	// add tools
+	// add actions
 	if (commands.Count)
 		Far0::RegisterCommands(%commands);
 	if (editors.Count)
@@ -286,54 +287,38 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 	if (tools.Count)
 		Far0::RegisterTools(%tools);
 
-	// if the module has no loaded 
+	// if the module has no loaded host now then it is cached
 	if (!manager->GetLoadedModuleHost())
 	{
 		if (0 == commands.Count + editors.Count + filers.Count + tools.Count)
-			throw gcnew ModuleException("The module should implement at least one tool class or a preloadable host class.");
+			throw gcnew ModuleException("The module should implement at least one action or a preloadable host.");
 		
 		WriteModuleCache(manager, %commands, %editors, %filers, %tools);
 	}
 }
 
-// #6 Adds a module entry
-void ModuleLoader::AddModuleEntry(ModuleManager^ manager, Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
+// #6 Adds a module item
+void ModuleLoader::AddModuleItem(ModuleManager^ manager, Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
 {
-	LOG_AUTO(3, "Load module entry " + type);
+	LOG_AUTO(3, "Load module item" + type);
 
-	// host:
+	// host
 	if (ModuleHost::typeid->IsAssignableFrom(type))
-	{
 		manager->SetModuleHost(type);
-	}
-	// tool:
-	else if (ModuleTool::typeid->IsAssignableFrom(type))
-	{
-		ModuleToolInfo^ pt = gcnew ModuleToolInfo(manager, type);
-		tools->Add(pt);
-	}
-	// command:
+	// command
 	else if (ModuleCommand::typeid->IsAssignableFrom(type))
-	{
-		ModuleCommandInfo^ pc = gcnew ModuleCommandInfo(manager, type);
-		commands->Add(pc);
-	}
-	// editor:
+		commands->Add(gcnew ModuleCommandInfo(manager, type));
+	// editor
 	else if (ModuleEditor::typeid->IsAssignableFrom(type))
-	{
-		ModuleEditorInfo^ pe = gcnew ModuleEditorInfo(manager, type);
-		editors->Add(pe);
-	}
-	// case: filer
+		editors->Add(gcnew ModuleEditorInfo(manager, type));
+	// filer
 	else if (ModuleFiler::typeid->IsAssignableFrom(type))
-	{
-		ModuleFilerInfo^ pf = gcnew ModuleFilerInfo(manager, type);
-		filers->Add(pf);
-	}
+		filers->Add(gcnew ModuleFilerInfo(manager, type));
+	// tool
+	else if (ModuleTool::typeid->IsAssignableFrom(type))
+		tools->Add(gcnew ModuleToolInfo(manager, type));
 	else
-	{
 		throw gcnew ModuleException("Unknown module class type.");
-	}
 }
 
 //! Don't use Far UI
@@ -342,8 +327,8 @@ void ModuleLoader::UnloadModuleItem(BaseModuleItem^ item)
 	LOG_AUTO(3, "Unload module item " + item);
 
 	// tool:
-	BaseModuleTool^ tool = dynamic_cast<BaseModuleTool^>(item);
-	if (tool)
+	ModuleAction^ action = dynamic_cast<ModuleAction^>(item);
+	if (action)
 		return;
 
 	ModuleHost^ host = (ModuleHost^)item;
@@ -416,28 +401,28 @@ void ModuleLoader::WriteModuleCache(ModuleManager^ manager, List<ModuleCommandIn
 			data.Add(hostClassName);
 		}
 
-		for each(ModuleToolInfo^ tool in tools)
+		for each(ModuleToolInfo^ it in tools)
 		{
 			data.Add("Tool");
-			tool->WriteCache(%data);
+			it->WriteCache(%data);
 		}
 
-		for each(ModuleCommandInfo^ tool in commands)
+		for each(ModuleCommandInfo^ it in commands)
 		{
 			data.Add("Command");
-			tool->WriteCache(%data);
+			it->WriteCache(%data);
 		}
 
-		for each(ModuleEditorInfo^ tool in editors)
+		for each(ModuleEditorInfo^ it in editors)
 		{
 			data.Add("Editor");
-			tool->WriteCache(%data);
+			it->WriteCache(%data);
 		}
 
-		for each(ModuleFilerInfo^ tool in filers)
+		for each(ModuleFilerInfo^ it in filers)
 		{
 			data.Add("Filer");
-			tool->WriteCache(%data);
+			it->WriteCache(%data);
 		}
 
 		array<String^>^ data2 = gcnew array<String^>(data.Count);

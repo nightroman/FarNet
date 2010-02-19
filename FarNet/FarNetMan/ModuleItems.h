@@ -9,12 +9,34 @@ namespace FarNet
 {;
 ref class ModuleManager;
 
-ref class BaseModuleToolInfo abstract
+ref class ListReader
+{
+public:
+	ListReader(System::Collections::IEnumerable^ enumerable) : Enumerator(enumerable->GetEnumerator()) {}
+	String^ Read()
+	{
+		if (!Enumerator->MoveNext())
+			throw gcnew ModuleException("Unexpected end of the data sequence.");
+
+		return Enumerator->Current->ToString();
+	}
+	String^ TryRead()
+	{
+		if (!Enumerator->MoveNext())
+			return nullptr;
+
+		return Enumerator->Current->ToString();
+	}
+private:
+	System::Collections::IEnumerator^ Enumerator;
+};
+
+ref class ModuleActionInfo abstract
 {
 public:
 	virtual void WriteCache(List<String^>^ data);
 	void Invoking();
-	BaseModuleTool^ GetInstance();
+	ModuleAction^ GetInstance();
 	virtual String^ ToString() override;
 	property String^ AssemblyPath { String^ get(); }
 	property String^ ClassName { String^ get(); }
@@ -22,12 +44,12 @@ public:
 	property String^ ToolName { String^ get() { return _Attribute->Name; } }
 protected:
 	// reflection
-	BaseModuleToolInfo(ModuleManager^ manager, Type^ classType, Type^ attributeType);
+	ModuleActionInfo(ModuleManager^ manager, Type^ classType, Type^ attributeType);
 	// dynamic
-	BaseModuleToolInfo(ModuleManager^ manager, Guid id, BaseModuleToolAttribute^ attribute);
+	ModuleActionInfo(ModuleManager^ manager, Guid id, ModuleActionAttribute^ attribute);
 	// cache
-	BaseModuleToolInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data, BaseModuleToolAttribute^ attribute);
-	BaseModuleToolAttribute^ GetAttribute() { return _Attribute; }
+	ModuleActionInfo(ModuleManager^ manager, ListReader^ reader, ModuleActionAttribute^ attribute);
+	ModuleActionAttribute^ GetAttribute() { return _Attribute; }
 private:
 	void Init();
 private:
@@ -40,15 +62,15 @@ private:
 	// Type coming from the assembly reflection. Null for handlers.
 	Type^ _ClassType;
 	// Attribute. Not null.
-	BaseModuleToolAttribute^ _Attribute;
+	ModuleActionAttribute^ _Attribute;
 };
 
-ref class ModuleToolInfo sealed : BaseModuleToolInfo
+ref class ModuleToolInfo sealed : ModuleActionInfo
 {
 public:
 	ModuleToolInfo(ModuleManager^ manager, Type^ classType);
 	ModuleToolInfo(ModuleManager^ manager, Guid id, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute);
-	ModuleToolInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data);
+	ModuleToolInfo(ModuleManager^ manager, ListReader^ reader);
 	virtual void WriteCache(List<String^>^ data) override;
 	virtual String^ ToString() override;
 	void Invoke(Object^ sender, ModuleToolEventArgs^ e);
@@ -64,11 +86,11 @@ private:
 	Char _Hotkey;
 };
 
-ref class ModuleCommandInfo sealed : BaseModuleToolInfo
+ref class ModuleCommandInfo sealed : ModuleActionInfo
 {
 public:
 	ModuleCommandInfo(ModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute);
-	ModuleCommandInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data);
+	ModuleCommandInfo(ModuleManager^ manager, ListReader^ reader);
 	ModuleCommandInfo(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
 	virtual String^ ToString() override;
@@ -85,11 +107,11 @@ private:
 	String^ _DefaultPrefix;
 };
 
-ref class ModuleEditorInfo sealed : BaseModuleToolInfo
+ref class ModuleEditorInfo sealed : ModuleActionInfo
 {
 public:
 	ModuleEditorInfo(ModuleManager^ manager, Guid id, EventHandler^ handler, ModuleEditorAttribute^ attribute);
-	ModuleEditorInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data);
+	ModuleEditorInfo(ModuleManager^ manager, ListReader^ reader);
 	ModuleEditorInfo(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
 	virtual String^ ToString() override;
@@ -106,11 +128,11 @@ private:
 	String^ _DefaultMask;
 };
 
-ref class ModuleFilerInfo sealed : BaseModuleToolInfo
+ref class ModuleFilerInfo sealed : ModuleActionInfo
 {
 public:
 	ModuleFilerInfo(ModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute);
-	ModuleFilerInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data);
+	ModuleFilerInfo(ModuleManager^ manager, ListReader^ reader);
 	ModuleFilerInfo(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
 	virtual String^ ToString() override;

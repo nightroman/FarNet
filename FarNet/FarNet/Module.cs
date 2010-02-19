@@ -18,22 +18,22 @@ namespace FarNet
 	/// <remarks>
 	/// Any FarNet module implements at least one public not abstract descendant of this class.
 	/// <para>
-	/// Normally modules implement one or more tool classes, descendants of the <see cref="BaseModuleTool"/> class.
-	/// When such a module is just installed or updated FarNet loads it and caches the module tool attributes.
+	/// Normally modules implement one or more actions, descendants of the <see cref="ModuleAction"/> class.
+	/// When such a module is just installed or updated FarNet loads it and caches module action attributes.
 	/// Next time when FarNet starts it does not load the module, it reads the information from the cache.
 	/// This information is enough to show module menu items, register command prefixes, and etc.
-	/// The module is actually loaded only when a user invokes one of the tools.
+	/// The module is actually loaded only when a user invokes one of the actions.
 	/// </para>
 	/// <para>
-	/// FarNet creates module tool class instances and calls <c>Invoke()</c> methods every time when a user invokes the tools.
+	/// FarNet creates action class instances and calls <c>Invoke()</c> methods every time when a user invokes actions.
 	/// Thus, only their static data can be shared between calls.
 	/// These data can be initialized when the <c>Invoke()</c> or the default constructor is called the first time.
-	/// If these or other data has to be initialized even before creation of tools then the module host should be used.
+	/// If these or other data has to be initialized even before actions then the module host should be used.
 	/// </para>
 	/// The module host, descendant of the <see cref="ModuleHost"/>, can be implemented for advanced scenarios.
-	/// Unlike module tools the host class instance is created, connected and disconnected once.
+	/// Unlike module actions the host class instance is created, connected and disconnected once.
 	/// The moment of creation and call of the <see cref="ModuleHost.Connect"/> method depends on the <see cref="ModuleHostAttribute.Load"/> flag.
-	/// If it is false (default) then the host is loaded and connected only when one of the module tools is invoked.
+	/// If it is false (default) then the host is loaded and connected only when one of the module actions is invoked.
 	/// If it is true (preloaded host) then the module is loaded and the host is connected every time.
 	/// Preloaded hosts should not be used without good reasons.
 	/// </remarks>
@@ -172,11 +172,11 @@ namespace FarNet
 	/// The module host. At most one public descendant can be implemented by a module.
 	/// </summary>
 	/// <remarks>
-	/// In many cases the module tools should be implemented instead of the host
-	/// (see predefined descendants of <see cref="BaseModuleTool"/>).
+	/// In many cases the module actions should be implemented instead of the host
+	/// (see predefined descendants of <see cref="ModuleAction"/>).
 	/// <para>
 	/// If the attribute <see cref="ModuleHostAttribute.Load"/> is true then the host is always loaded.
-	/// If it is false then the host is loaded only on the first call of any module tool.
+	/// If it is false then the host is loaded only on the first call of any action.
 	/// A single instance of this class is created for the whole session.
 	/// </para>
 	/// <para>
@@ -216,21 +216,21 @@ namespace FarNet
 		{ }
 
 		/// <summary>
-		/// Called before invoking of any module tool.
+		/// Called before any module action.
 		/// </summary>
 		/// <remarks>
 		/// The module may override this method to perform preparation procedures.
-		/// Normally this is not needed for a simple module with a single tool.
-		/// It is useful when a complex module registers several tools and
+		/// Normally this is not needed for a simple module with a single action.
+		/// It is useful when a complex module provides several actions and
 		/// wants common steps to be performed by this method.
 		/// <para>
-		/// NOTE: This method is called only for module tools:
-		/// tool <c>Invoke()</c> methods and handlers registered by <c>Register*()</c> methods.
+		/// NOTE: This method is called only for module actions:
+		/// <c>Invoke()</c> methods and handlers registered by <c>Register*()</c> methods.
 		/// It is not called on events added by a module to editors, viewers, dialogs or panels.
 		/// </para>
 		/// <para>
 		/// Example: PowerShellFar starts loading of the PowerShell engine in a background thread on connection.
-		/// This method waits for the engine loading to complete, if needed. All registered PowerShellFar tools
+		/// This method waits for the engine loading to complete, if needed. Registered PowerShellFar actions
 		/// simply assume that the engine is already loaded. But editor event handlers still have to care.
 		/// </para>
 		/// </remarks>
@@ -258,12 +258,12 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Common attribute parameters of any module tool.
+	/// Any action attribute parameters.
 	/// </summary>
-	public abstract class BaseModuleToolAttribute : Attribute
+	public abstract class ModuleActionAttribute : Attribute
 	{
 		/// <summary>
-		/// The tool name shown in menus. It is mandatory to specify.
+		/// The action name shown in menus. It is mandatory to specify.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -277,7 +277,7 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// Restart Far after changing the current Far language or the module culture
-		/// to make sure that this and other tool names are updated from resources.
+		/// to make sure that this and other action names are updated from resources.
 		/// </remarks>
 		public bool Resources { get; set; }
 	}
@@ -285,7 +285,7 @@ namespace FarNet
 	/// <summary>
 	/// Abstract parent of <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, <see cref="ModuleEditor"/>, and <see cref="ModuleFiler"/>.
 	/// </summary>
-	public abstract class BaseModuleTool : BaseModuleItem
+	public abstract class ModuleAction : BaseModuleItem
 	{
 	}
 
@@ -341,7 +341,7 @@ namespace FarNet
 	/// Module command attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleCommandAttribute : BaseModuleToolAttribute
+	public sealed class ModuleCommandAttribute : ModuleActionAttribute
 	{
 		/// <summary>
 		/// The command prefix. It is mandatory to specify a not empty value.
@@ -369,12 +369,12 @@ namespace FarNet
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <para>
-	/// It is mandatory to use <see cref="ModuleCommandAttribute"/> and specify the <see cref="BaseModuleToolAttribute.Name"/>
+	/// It is mandatory to use <see cref="ModuleCommandAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
 	/// and the default command prefix <see cref="ModuleCommandAttribute.Prefix"/>.
 	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="Guid"]/*'/>
 	/// </remarks>
-	public abstract class ModuleCommand : BaseModuleTool
+	public abstract class ModuleCommand : ModuleAction
 	{
 		/// <summary>
 		/// Command handler called from the command line with a prefix.
@@ -383,38 +383,38 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module editor tool attribute.
+	/// Module editor action attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleEditorAttribute : BaseModuleToolAttribute
+	public sealed class ModuleEditorAttribute : ModuleActionAttribute
 	{
 		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
 		public string Mask { get; set; }
 	}
 
 	/// <summary>
-	/// Module editor tool event arguments.
+	/// Module editor action event arguments.
 	/// </summary>
 	public class ModuleEditorEventArgs : EventArgs
 	{
 	}
 
 	/// <summary>
-	/// A module editor tool.
+	/// A module editor action.
 	/// </summary>
 	/// <remarks>
-	/// This tool works with editor events, not with menu commands in editors
+	/// This action deals with an editor opening, not with menu commands in editors
 	/// (in the latter case use <see cref="ModuleTool"/> configured for editors).
 	/// <para>
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// </para>
 	/// <para>
-	/// It is mandatory to use <see cref="ModuleEditorAttribute"/> and specify the <see cref="BaseModuleToolAttribute.Name"/>.
+	/// It is mandatory to use <see cref="ModuleEditorAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
 	/// The optional default file mask is defined as <see cref="ModuleEditorAttribute.Mask"/>.
 	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="Guid"]/*'/>
 	/// </remarks>
-	public abstract class ModuleEditor : BaseModuleTool
+	public abstract class ModuleEditor : ModuleAction
 	{
 		/// <summary>
 		/// Editor <see cref="IAnyEditor.Opened"/> handler.
@@ -431,10 +431,10 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module filer tool attribute.
+	/// Module filer action attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleFilerAttribute : BaseModuleToolAttribute
+	public sealed class ModuleFilerAttribute : ModuleActionAttribute
 	{
 		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
 		public string Mask { get; set; }
@@ -445,7 +445,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module filer tool event arguments.
+	/// Module filer action event arguments.
 	/// </summary>
 	/// <remarks>
 	/// A handler is called to open a <see cref="IPanel"/> which emulates a file system based on a file.
@@ -471,17 +471,17 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// A module filer tool.
+	/// A module filer action.
 	/// </summary>
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <para>
-	/// It is mandatory to use <see cref="ModuleFilerAttribute"/> and specify the <see cref="BaseModuleToolAttribute.Name"/>.
+	/// It is mandatory to use <see cref="ModuleFilerAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
 	/// The optional default file mask is defined as <see cref="ModuleFilerAttribute.Mask"/>.
 	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="Guid"]/*'/>
 	/// </remarks>
-	public abstract class ModuleFiler : BaseModuleTool
+	public abstract class ModuleFiler : ModuleAction
 	{
 		/// <summary>
 		/// Filer handler called when a file is opened.
@@ -495,13 +495,13 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module tool attribute.
+	/// Module tool action attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleToolAttribute : BaseModuleToolAttribute
+	public sealed class ModuleToolAttribute : ModuleActionAttribute
 	{
 		/// <summary>
-		/// Tool options. For a menu tool it is mandatory to specify the menus.
+		/// Tool options. It is mandatory to specify at least one menu or other area.
 		/// </summary>
 		public ModuleToolOptions Options { get; set; }
 	}
@@ -530,12 +530,12 @@ namespace FarNet
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <para>
-	/// It is mandatory to use <see cref="ModuleToolAttribute"/> and specify the <see cref="BaseModuleToolAttribute.Name"/>
+	/// It is mandatory to use <see cref="ModuleToolAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
 	/// and the menu areas <see cref="ModuleToolAttribute.Options"/>.
 	/// </para>
 	/// <include file='doc.xml' path='docs/pp[@name="Guid"]/*'/>
 	/// </remarks>
-	public abstract class ModuleTool : BaseModuleTool
+	public abstract class ModuleTool : ModuleAction
 	{
 		/// <summary>
 		/// Tool handler called when its menu item is invoked.

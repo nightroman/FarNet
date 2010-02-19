@@ -429,14 +429,6 @@ int ParseInt(String^ value, int fallback)
 	return int::TryParse(value, result) ? result : fallback;
 }
 
-String^ NextString(System::Collections::IEnumerator^ data)
-{
-	if (!data->MoveNext())
-		throw gcnew ModuleException("Unexpected end of data.");
-
-	return data->Current->ToString();
-}
-
 namespace FarNet
 {;
 bool Config::GetBool(String^ key)

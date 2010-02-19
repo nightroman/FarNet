@@ -43,7 +43,7 @@ void ModuleManager::SavePluginValue(String^ pluginName, String^ valueName, Objec
 	}
 }
 
-Object^ ModuleManager::LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue) //?????
+Object^ ModuleManager::LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue)
 {
 	return LoadPluginValue("FarNet\\" + keyPath, valueName, defaultValue);
 }

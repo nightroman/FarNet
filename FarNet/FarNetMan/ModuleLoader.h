@@ -24,7 +24,7 @@ public:
 	static void UnloadModules();
 	static void UnloadModuleItem(BaseModuleItem^ item);
 private:
-	static void AddModuleEntry(ModuleManager^ manager, Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools);
+	static void AddModuleItem(ModuleManager^ manager, Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools);
 	static void LoadFromAssembly(String^ assemblyPath, List<String^>^ classes);
 	static void LoadFromManifest(String^ file, String^ dir);
 	static void LoadFromDirectory(String^ dir);
