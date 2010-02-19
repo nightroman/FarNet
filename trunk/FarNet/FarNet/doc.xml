@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding='utf-8'?>
 <docs>
 	<!--
-	/// <include file='doc.xml' path='docs/pp[@name="UseLastHistory"]/*'/>
+	/// <include file='doc.xml' path='docs/pp[@name="Guid"]/*'/>
 	-->
+	<pp name='Guid'>
+		<para>
+			It is strongly recommended to set the <see cref="System.Runtime.InteropServices.GuidAttribute"/>
+			for this class and never change it. FarNet uses this ID internally for storing and restoring data.
+		</para>
+	</pp>
 	<pp name='UseLastHistory'>
 		<summary>
 			Tells to use the last history as the initial text if it is not set.
@@ -134,12 +140,6 @@ help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
 			File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
 			This value is only the default suggestion, actual mask may be changed by a user.
 		</summary>
-	</pp>
-	<pp name="InvokeLoad">
-		<para>
-			If the module does not implement preloadable <see cref="ModuleHost"/>
-			then its assembly is normally loaded only when its tool is invoked.
-		</para>
 	</pp>
 	<pp name="BaseListItems">
 		<summary>

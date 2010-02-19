@@ -2,11 +2,13 @@
 // Escapes and unescapes \ and " in editor selection with \
 // This module implements two items shown in the editor plugin menu.
 
-using System;
-using System.Text.RegularExpressions;
 using FarNet;
+using System;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 [ModuleTool(Name = Escape.Name, Options = ModuleToolOptions.Editor)]
+[Guid("e3b6663c-d6de-4494-9991-eafb4385fba5")]
 public class Escape : ModuleTool
 {
 	public const string Name = "Escape selected text";

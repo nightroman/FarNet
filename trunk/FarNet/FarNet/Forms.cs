@@ -67,6 +67,10 @@ namespace FarNet.Forms
 		/// Gets or sets the control rectangular.
 		/// </summary>
 		Place Rect { get; set; }
+		/// <summary>
+		/// User data. It can be set only for FarNet dialog controls.
+		/// </summary>
+		object Data { get; set; }
 	}
 
 	/// <summary>

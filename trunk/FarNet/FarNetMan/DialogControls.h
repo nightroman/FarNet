@@ -18,6 +18,7 @@ public:
 	virtual property int Id { int get() { return _id; } }
 	virtual property Place Rect { Place get(); void set(Place value); }
 	virtual property String^ Text { String^ get(); void set(String^ value); }
+	virtual property Object^ Data { Object^ get(); void set(Object^ value); }
 public: DEF_EVENT_ARGS(Coloring, _Coloring, ColoringEventArgs);
 public: DEF_EVENT_ARGS(Drawing, _Drawing, DrawingEventArgs);
 public: DEF_EVENT_ARGS(GotFocus, _GotFocus, AnyEventArgs);
@@ -47,6 +48,7 @@ internal:
 	long _flags;
 	int _selected;
 	String^ _text;
+	Object^ _data;
 };
 
 ref class FarBox : public FarControl, public IBox

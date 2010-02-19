@@ -508,6 +508,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ModuleItems.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ModuleLoader.cpp"
 				>
 			</File>
@@ -715,6 +719,10 @@
 			</File>
 			<File
 				RelativePath=".\Message.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ModuleItems.h"
 				>
 			</File>
 			<File

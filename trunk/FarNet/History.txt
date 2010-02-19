@@ -1,5 +1,39 @@
 http://code.google.com/p/farnet/
 
+= 4.3.6 =
+
+UPDATE STEPS
+
+1) Remove the registry key: Far2\Plugins\FarNet
+2) Update FarNet.
+
+Make sure you do not start the old FarNet after the step 1), otherwise you will
+have some never used data in the FarNet registry key.
+
+MAIN CHANGES
+
+*) All module items (tools and hosts) should have a Guid attribute. Generate it
+once for each class or a dynamically registered item and never change. But you
+can now use any class and tool names and change them as you want: registry data
+will not be affected. [P.S. Guid attribute is not absolutely mandatory, but...]
+
+*) Module tools: new attribute property Resources. If it is true the property
+Name is the name of a resource string. The module should have .resources,
+indeed.
+
+*) How modules should keep their settings (recommendation). IFar: removed
+methods GetPluginValue(), SetPluginValue(), this place is not for modules.
+Use IModuleManager.OpenSubKey() to open the module storage subkey of:
+HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\Xyz.dll
+Then call its GetValue(), SetValue(), etc. Then Close() the key or, even
+better, use C# 'using', so that the key will be disposed automatically.
+
+OTHER CHANGES
+
+*) IControl: new property Data - user data (for FarNet controls only).
+
+*) IAnyPanel: new method UnselectNames(), opposite to SelectNames().
+
 = 4.3.5 =
 
 MAJOR ARCHITECTURE CHANGES

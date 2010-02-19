@@ -40,8 +40,8 @@ public:
 	static void PostStep(EventHandler^ handler);
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
-	static void RegisterCommand(IModuleManager^ manager, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute);
-	static void RegisterFiler(IModuleManager^ manager, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute);
+	static void RegisterCommand(IModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute);
+	static void RegisterFiler(IModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute);
 	static void Run(String^ command);
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
@@ -55,7 +55,7 @@ private:
 	static void OnConfigCommand();
 	static void OnConfigEditor();
 	static void OnConfigFiler();
-	static void OnConfigTool(String^ title, ModuleToolOptions option, List<ModuleToolInfo^>^ list);
+	static void OnConfigTool(List<ModuleToolInfo^>^ tools);
 	static void OnConfigUICulture();
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);

@@ -49,6 +49,7 @@ public:
 	virtual void SelectNames(array<String^>^ names);
 	virtual void UnselectAt(array<int>^ indexes);
 	virtual void UnselectAll();
+	virtual void UnselectNames(array<String^>^ names);
 	virtual void Update(bool keepSelection);
 public:
 	virtual String^ ToString() override;
@@ -61,6 +62,7 @@ internal:
 private:
 	void Select(array<int>^ indexes, bool select);
 	void SelectAll(bool select);
+	void SelectNames(array<String^>^ names, bool select);
 internal:
 	property HANDLE Handle { HANDLE get(); void set(HANDLE value); }
 	property int Index { int get() { return (int)(INT_PTR)_handle; } void set(int value) { _handle = (HANDLE)(INT_PTR)value; } }
