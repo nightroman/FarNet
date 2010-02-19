@@ -10,10 +10,10 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-#pragma region BaseModuleToolInfo
+#pragma region ModuleActionInfo
 
 // reflection
-BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, Type^ classType, Type^ attributeType)
+ModuleActionInfo::ModuleActionInfo(ModuleManager^ manager, Type^ classType, Type^ attributeType)
 : _ModuleManager(manager)
 , _ClassType(classType)
 , _Id(classType->GUID)
@@ -22,7 +22,7 @@ BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, Type^ classType, 
 	if (attrs->Length == 0)
 		throw gcnew ModuleException("Module class has no required Module* attribute.");
 
-	_Attribute = (BaseModuleToolAttribute^)attrs[0];
+	_Attribute = (ModuleActionAttribute^)attrs[0];
 
 	Init();
 
@@ -36,7 +36,7 @@ BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, Type^ classType, 
 }
 
 // dynamic
-BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, Guid id, BaseModuleToolAttribute^ attribute)
+ModuleActionInfo::ModuleActionInfo(ModuleManager^ manager, Guid id, ModuleActionAttribute^ attribute)
 : _ModuleManager(manager)
 , _Id(id)
 , _Attribute(attribute)
@@ -45,31 +45,31 @@ BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, Guid id, BaseModu
 }
 
 // cache
-BaseModuleToolInfo::BaseModuleToolInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data, BaseModuleToolAttribute^ attribute)
+ModuleActionInfo::ModuleActionInfo(ModuleManager^ manager, ListReader^ reader, ModuleActionAttribute^ attribute)
 : _ModuleManager(manager)
 , _Attribute(attribute)
 {
-	_ClassName = NextString(data);
-	_Attribute->Name = NextString(data);
-	String^ id = NextString(data);
+	_ClassName = reader->Read();
+	_Attribute->Name = reader->Read();
+	String^ id = reader->Read();
 
 	_Id = Guid(id);
 }
 
-void BaseModuleToolInfo::WriteCache(List<String^>^ data)
+void ModuleActionInfo::WriteCache(List<String^>^ data)
 {
 	data->Add(ClassName);
 	data->Add(ToolName);
 	data->Add(_Id.ToString());
 }
 
-void BaseModuleToolInfo::Init()
+void ModuleActionInfo::Init()
 {
 	if (ES(_Attribute->Name))
 		throw gcnew ModuleException("Empty module tool name is not allowed.");
 }
 
-BaseModuleTool^ BaseModuleToolInfo::GetInstance()
+ModuleAction^ ModuleActionInfo::GetInstance()
 {
 	if (!_ClassType)
 	{
@@ -77,32 +77,32 @@ BaseModuleTool^ BaseModuleToolInfo::GetInstance()
 		_ClassName = nullptr;
 	}
 
-	return (BaseModuleTool^)_ModuleManager->CreateEntry(_ClassType);
+	return (ModuleAction^)_ModuleManager->CreateEntry(_ClassType);
 }
 
-void BaseModuleToolInfo::Invoking()
+void ModuleActionInfo::Invoking()
 {
 	//! may be null for handlers
 	if (_ModuleManager)
 		_ModuleManager->Invoking();
 }
 
-String^ BaseModuleToolInfo::ToString()
+String^ ModuleActionInfo::ToString()
 {
 	return String::Format("{0} Name='{1}' Class='{2}'", GetType()->FullName, ToolName, ClassName);
 }
 
-String^ BaseModuleToolInfo::AssemblyPath::get()
+String^ ModuleActionInfo::AssemblyPath::get()
 {
 	return _ModuleManager ? _ModuleManager->AssemblyPath : nullptr;
 }
 
-String^ BaseModuleToolInfo::ClassName::get()
+String^ ModuleActionInfo::ClassName::get()
 {
 	return _ClassType ? _ClassType->FullName : _ClassName;
 }
 
-String^ BaseModuleToolInfo::Key::get()
+String^ ModuleActionInfo::Key::get()
 {
 	String^ path = AssemblyPath;
 	if (path)
@@ -116,25 +116,23 @@ String^ BaseModuleToolInfo::Key::get()
 #pragma region ModuleToolInfo
 
 ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, Guid id, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute)
-: BaseModuleToolInfo(manager, id, attribute)
+: ModuleActionInfo(manager, id, attribute)
 , _Handler(handler)
 {}
 
 ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, Type^ classType)
-: BaseModuleToolInfo(manager, classType, ModuleToolAttribute::typeid)
+: ModuleActionInfo(manager, classType, ModuleToolAttribute::typeid)
 {}
 
-ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data)
-: BaseModuleToolInfo(manager, data, gcnew ModuleToolAttribute)
+ModuleToolInfo::ModuleToolInfo(ModuleManager^ manager, ListReader^ reader)
+: ModuleActionInfo(manager, reader, gcnew ModuleToolAttribute)
 {
-	String^ options = NextString(data);
-
-	Attribute->Options = (ModuleToolOptions)int::Parse(options);
+	Attribute->Options = (ModuleToolOptions)int::Parse(reader->Read());
 }
 
 void ModuleToolInfo::WriteCache(List<String^>^ data)
 {
-	BaseModuleToolInfo::WriteCache(data);
+	ModuleActionInfo::WriteCache(data);
 	data->Add(((int)Attribute->Options).ToString());
 }
 
@@ -157,7 +155,7 @@ void ModuleToolInfo::Invoke(Object^ sender, ModuleToolEventArgs^ e)
 
 String^ ModuleToolInfo::ToString()
 {
-	return String::Format("{0} Options='{1}'", BaseModuleToolInfo::ToString(), Attribute->Options);
+	return String::Format("{0} Options='{1}'", ModuleActionInfo::ToString(), Attribute->Options);
 }
 
 Char ModuleToolInfo::HotkeyChar::get()
@@ -197,31 +195,29 @@ String^ ModuleToolInfo::GetMenuText()
 #pragma region ModuleCommandInfo
 
 ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
-: BaseModuleToolInfo(manager, id, attribute)
+: ModuleActionInfo(manager, id, attribute)
 , _Handler(handler)
 {
 	Init();
 }
 
 ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, Type^ classType)
-: BaseModuleToolInfo(manager, classType, ModuleCommandAttribute::typeid)
+: ModuleActionInfo(manager, classType, ModuleCommandAttribute::typeid)
 {
 	Init();
 }
 
-ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data)
-: BaseModuleToolInfo(manager, data, gcnew ModuleCommandAttribute)
+ModuleCommandInfo::ModuleCommandInfo(ModuleManager^ manager, ListReader^ reader)
+: ModuleActionInfo(manager, reader, gcnew ModuleCommandAttribute)
 {
-	String^ prefix = NextString(data);
-	
-	Attribute->Prefix = prefix;
+	Attribute->Prefix = reader->Read();
 
 	Init();
 }
 
 void ModuleCommandInfo::WriteCache(List<String^>^ data)
 {
-	BaseModuleToolInfo::WriteCache(data);
+	ModuleActionInfo::WriteCache(data);
 	data->Add(_DefaultPrefix);
 }
 
@@ -236,7 +232,7 @@ void ModuleCommandInfo::Init()
 
 String^ ModuleCommandInfo::ToString()
 {
-	return String::Format("{0} Prefix='{1}'", BaseModuleToolInfo::ToString(), Attribute->Prefix);
+	return String::Format("{0} Prefix='{1}'", ModuleActionInfo::ToString(), Attribute->Prefix);
 }
 
 void ModuleCommandInfo::SetPrefix(String^ value)
@@ -270,31 +266,29 @@ void ModuleCommandInfo::Invoke(Object^ sender, ModuleCommandEventArgs^ e)
 #pragma region ModuleEditorInfo
 
 ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, Guid id, EventHandler^ handler, ModuleEditorAttribute^ attribute)
-: BaseModuleToolInfo(manager, id, attribute)
+: ModuleActionInfo(manager, id, attribute)
 , _Handler(handler)
 {
 	Init();
 }
 
 ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, Type^ classType)
-: BaseModuleToolInfo(manager, classType, ModuleEditorAttribute::typeid)
+: ModuleActionInfo(manager, classType, ModuleEditorAttribute::typeid)
 {
 	Init();
 }
 
-ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data)
-: BaseModuleToolInfo(manager, data, gcnew ModuleEditorAttribute)
+ModuleEditorInfo::ModuleEditorInfo(ModuleManager^ manager, ListReader^ reader)
+: ModuleActionInfo(manager, reader, gcnew ModuleEditorAttribute)
 {
-	String^ mask = NextString(data);
-
-	Attribute->Mask = mask;
+	Attribute->Mask = reader->Read();
 
 	Init();
 }
 
 void ModuleEditorInfo::WriteCache(List<String^>^ data)
 {
-	BaseModuleToolInfo::WriteCache(data);
+	ModuleActionInfo::WriteCache(data);
 	data->Add(_DefaultMask);
 }
 
@@ -306,7 +300,7 @@ void ModuleEditorInfo::Init()
 
 String^ ModuleEditorInfo::ToString()
 {
-	return String::Format("{0} Mask='{1}'", BaseModuleToolInfo::ToString(), Attribute->Mask);
+	return String::Format("{0} Mask='{1}'", ModuleActionInfo::ToString(), Attribute->Mask);
 }
 
 void ModuleEditorInfo::Invoke(Object^ sender, ModuleEditorEventArgs^ e)
@@ -340,33 +334,30 @@ void ModuleEditorInfo::SetMask(String^ value)
 #pragma region ModuleFilerInfo
 
 ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
-: BaseModuleToolInfo(manager, id, attribute)
+: ModuleActionInfo(manager, id, attribute)
 , _Handler(handler)
 {
 	Init();
 }
 
 ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, Type^ classType)
-: BaseModuleToolInfo(manager, classType, ModuleFilerAttribute::typeid)
+: ModuleActionInfo(manager, classType, ModuleFilerAttribute::typeid)
 {
 	Init();
 }
 
-ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, System::Collections::IEnumerator^ data)
-: BaseModuleToolInfo(manager, data, gcnew ModuleFilerAttribute)
+ModuleFilerInfo::ModuleFilerInfo(ModuleManager^ manager, ListReader^ reader)
+: ModuleActionInfo(manager, reader, gcnew ModuleFilerAttribute)
 {
-	String^ mask = NextString(data);
-	String^ creates = NextString(data);
-
-	Attribute->Mask = mask;
-	Attribute->Creates = bool::Parse(creates);
+	Attribute->Mask = reader->Read();
+	Attribute->Creates = bool::Parse(reader->Read());
 
 	Init();
 }
 
 void ModuleFilerInfo::WriteCache(List<String^>^ data)
 {
-	BaseModuleToolInfo::WriteCache(data);
+	ModuleActionInfo::WriteCache(data);
 	data->Add(_DefaultMask);
 	data->Add(Attribute->Creates.ToString());
 }
@@ -379,7 +370,7 @@ void ModuleFilerInfo::Init()
 
 String^ ModuleFilerInfo::ToString()
 {
-	return String::Format("{0} Mask='{1}'", BaseModuleToolInfo::ToString(), Attribute->Mask);
+	return String::Format("{0} Mask='{1}'", ModuleActionInfo::ToString(), Attribute->Mask);
 }
 
 void ModuleFilerInfo::Invoke(Object^ sender, ModuleFilerEventArgs^ e)
