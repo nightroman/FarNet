@@ -225,4 +225,3 @@ String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();
 void DeleteSourceOptional(String^ path, DeleteSource option);
 void ValidateRect(int& x, int& w, int min, int size);
-String^ NextString(System::Collections::IEnumerator^ data);
