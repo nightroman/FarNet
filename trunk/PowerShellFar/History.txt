@@ -3,16 +3,16 @@ http://code.google.com/p/farnet/
 
 = 4.3.6 =
 
-UPDATE NOTES
+UPDATE STEPS
 
-Remove the registry key Far2\Plugins\FarNet and make sure you do not start old
-FarNet after that, otherwise you will have not used FarNet registry data.
+Remove the registry key "Far2\Plugins\FarNet" and make sure you do not start
+old FarNet after that, otherwise you will get never used FarNet registry data.
 
-The PowerShellFar registry settings moved
-from: HKEY_CURRENT_USER\Software\Far2\Plugins\PowerShellFar
-to: HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll
-You should reset your PSF configuration settings or move the old registry
-properties, for example, using the registry provider panel.
+The PowerShellFar registry settings moved from: "Far2\Plugins\PowerShellFar" to
+"Far2\Plugins\FarNet.Modules\PowerShellFar.dll". You should reset configuration
+or move the old registry properties, for example, using the registry panel.
+
+See FarNet History.txt for changes there, some scripts may be affected.
 
 = 4.3.5 =
 

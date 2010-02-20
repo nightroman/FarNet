@@ -212,6 +212,17 @@ ref class Config
 public:
 	static bool GetBool(String^ key);
 };
+
+ref class EnumerableReader
+{
+public:
+	EnumerableReader(System::Collections::IEnumerable^ enumerable);
+	String^ Read();
+	String^ TryRead();
+private:
+	System::Collections::IEnumerator^ Enumerator;
+};
+
 }
 
 // Helpers

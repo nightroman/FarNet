@@ -1126,5 +1126,15 @@ Continue with this current directory?
 		/// </remarks>
 		public Stepper Stepper { get { return Stepper.RunningInstance; } }
 
+		/// <summary>
+		/// FarNet module manager.
+		/// </summary>
+		/// <remarks>
+		/// It may be used to register new module actions.
+		/// </remarks>
+		public IModuleManager Manager
+		{
+			get { return Entry.Instance.Manager; }
+		}
 	}
 }

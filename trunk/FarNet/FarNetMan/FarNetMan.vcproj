@@ -508,15 +508,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ModuleItems.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ModuleLoader.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\ModuleManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ModuleProxy.cpp"
 				>
 			</File>
 			<File
@@ -722,15 +722,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ModuleItems.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ModuleLoader.h"
 				>
 			</File>
 			<File
 				RelativePath=".\ModuleManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ModuleProxy.h"
 				>
 			</File>
 			<File

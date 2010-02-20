@@ -8,10 +8,10 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class ModuleCommandInfo;
-ref class ModuleEditorInfo;
-ref class ModuleFilerInfo;
-ref class ModuleToolInfo;
+ref class ProxyCommand;
+ref class ProxyEditor;
+ref class ProxyFiler;
+ref class ProxyTool;
 
 ref class Far0
 {
@@ -21,28 +21,23 @@ public:
 	static HANDLE AsOpenPlugin(int from, INT_PTR item);
 	static void AsGetPluginInfo(PluginInfo* pi);
 	static void AsProcessSynchroEvent(int type, void* param);
-public: 
-	static void RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands);
-	static void RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors);
-	static void RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers);
-	static void RegisterTool(ModuleToolInfo^ tool);
-	static void RegisterTools(IEnumerable<ModuleToolInfo^>^ tools);
+public:
+	static void AddModuleCommandInfo(ProxyCommand^ info);
+	static void AddModuleEditorInfo(ProxyEditor^ info);
+	static void AddModuleFilerInfo(ProxyFiler^ info);
+	static void AddModuleToolInfo(ProxyTool^ info);
+	static void OnEditorOpened(IEditor^ editor);
 	static void Start();
 	static void Stop();
-	static void UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler);
-	static void UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler);
-	static void UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler);
 public:
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static int GetPaletteColor(PaletteColor paletteColor);
-	static void OnEditorOpened(IEditor^ editor);
 	static void PostJob(EventHandler^ handler);
 	static void PostStep(EventHandler^ handler);
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
-	static void RegisterCommand(IModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute);
-	static void RegisterFiler(IModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute);
 	static void Run(String^ command);
+	static void UnregisterModuleAction(Guid id);
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
@@ -55,7 +50,7 @@ private:
 	static void OnConfigCommand();
 	static void OnConfigEditor();
 	static void OnConfigFiler();
-	static void OnConfigTool(List<ModuleToolInfo^>^ tools);
+	static void OnConfigTool(List<ProxyTool^>^ tools);
 	static void OnConfigUICulture();
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
@@ -69,15 +64,15 @@ private:
 	static CStr* _pPanels;
 	static CStr* _pViewer;
 	static CStr* _prefixes;
-	static List<ModuleCommandInfo^> _registeredCommand;
-	static List<ModuleEditorInfo^> _registeredEditor;
-	static List<ModuleFilerInfo^> _registeredFiler;
-	static List<ModuleToolInfo^> _toolConfig;
-	static List<ModuleToolInfo^> _toolDisk;
-	static List<ModuleToolInfo^> _toolDialog;
-	static List<ModuleToolInfo^> _toolEditor;
-	static List<ModuleToolInfo^> _toolPanels;
-	static List<ModuleToolInfo^> _toolViewer;
+	static List<ProxyCommand^> _registeredCommand;
+	static List<ProxyEditor^> _registeredEditor;
+	static List<ProxyFiler^> _registeredFiler;
+	static List<ProxyTool^> _toolConfig;
+	static List<ProxyTool^> _toolDisk;
+	static List<ProxyTool^> _toolDialog;
+	static List<ProxyTool^> _toolEditor;
+	static List<ProxyTool^> _toolPanels;
+	static List<ProxyTool^> _toolViewer;
 private:
 	static CultureInfo^ _currentUICulture;
 	// Post

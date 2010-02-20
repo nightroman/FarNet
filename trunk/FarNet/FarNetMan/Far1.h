@@ -54,6 +54,9 @@ public:
 	virtual ICollection<String^>^ GetDialogHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name);
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter);
+	virtual IModuleCommand^ GetModuleCommand(Guid id);
+	virtual IModuleFiler^ GetModuleFiler(Guid id);
+	virtual IModuleTool^ GetModuleTool(Guid id);
 	virtual int Message(String^ body, String^ header, MsgOptions options);
 	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons);
 	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
@@ -90,9 +93,6 @@ public:
 	virtual void PostText(String^ text, bool disableOutput);
 	virtual void Quit();
 	virtual void Redraw();
-	virtual void RegisterCommand(IModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute);
-	virtual void RegisterFiler(IModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute);
-	virtual void RegisterTool(IModuleManager^ manager, Guid id, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute);
 	virtual void RestoreScreen(int screen);
 	virtual void Run(String^ command);
 	virtual void SetCurrentWindow(int index);
@@ -102,10 +102,6 @@ public:
 	virtual void ShowError(String^ title, Exception^ error);
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
 	virtual void ShowPanelMenu(bool showPushCommand);
-	virtual void Unregister(BaseModuleItem^ item);
-	virtual void UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler);
-	virtual void UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler);
-	virtual void UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler);
 	virtual void Write(String^ text);
 	virtual void Write(String^ text, ConsoleColor foregroundColor);
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);

@@ -2,27 +2,28 @@ http://code.google.com/p/farnet/
 
 = 4.3.6 =
 
-UPDATE NOTES
+UPDATE STEPS
 
-Remove the registry key Far2\Plugins\FarNet and make sure you do not start old
-FarNet after that, otherwise you will have not used FarNet registry data.
+Remove the registry key "Far2\Plugins\FarNet" and make sure you do not start
+old FarNet after that, otherwise you will get never used FarNet registry data.
 
 MAIN CHANGES
 
-*) All module items (tools and hosts) should have a Guid attribute. Generate it
-once for each class or dynamically registered tool and never change. But you
-can now use any class and tool names and change them as you want: registry data
-will not be affected. [P.S. Guid attribute is not absolutely mandatory, but...]
+*) All module items (actions and hosts) should have a Guid attribute. Generate
+it once for each class or registered action and never change. But you can now
+use any class or action names and change them as you want: registry data will
+not be affected. All sample modules use these GUIDs.
 
-*) Module tools: new attribute property Resources. If it is true the property
-Name is the name of a resource string and the module should have .resources.
+N.B. Guid attribute is not absolutely mandatory, you can play in your local
+sandbox without it. But if you publish a module, please, set these GUIDs.
 
-*) How modules should keep their settings (recommendation). IFar: removed
-methods GetPluginValue(), SetPluginValue(), this place is not for modules.
-Use IModuleManager.OpenSubKey() to open the module storage subkey of:
-HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\Xyz.dll
-Then call its GetValue(), SetValue(), etc. Then Close() the key or, even
-better, use C# 'using', so that the key is disposed automatically.
+*) Module actions: new attribute property Resources. If it is true the property
+Name is the name of a resource string from the module .resources files.
+
+*) All Register*\Unregister* methods moved from IFar to IModuleManager.
+
+*) IFar: new methods GetModuleCommand, GetModuleFiler, GetModuleTool allow to
+call an action of any module (loaded or not yet) from any other module.
 
 *) Configuration menus and dialogs were changed a little bit. For tools we now
 can set internal hotkeys (do not use standard Far hotkeys!). This is temporary,
@@ -31,9 +32,13 @@ standard Far hotkeys.
 
 OTHER CHANGES
 
-*) IControl: new property Data - user data (for FarNet controls only).
+*) IControl: new property Data: user data (for FarNet controls only).
 
 *) IAnyPanel: new method UnselectNames(), opposite to SelectNames().
+
+*) Recommendation: how modules should keep their settings. IFar: removed
+methods GetPluginValue(), SetPluginValue(), this place is not for modules.
+Use new IModuleManager.OpenSubKey().
 
 = 4.3.5 =
 
