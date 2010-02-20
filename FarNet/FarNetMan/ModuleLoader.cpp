@@ -6,8 +6,8 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "ModuleLoader.h"
 #include "Far0.h"
-#include "ModuleItems.h"
 #include "ModuleManager.h"
+#include "ModuleProxy.h"
 
 // The cache version
 const int CacheVersion = 8;
@@ -41,7 +41,7 @@ void ModuleLoader::ReadModuleCache()
 	try
 	{
 		// open for writing, to remove obsolete data
-		String^ keyCachePath = Far::Net->RegistryPluginsPath + "\\FarNet\\<cache>";
+		String^ keyCachePath = Far::Net->RegistryPluginsPath + "\\FarNet\\!Cache";
 		keyCache = Registry::CurrentUser->OpenSubKey(keyCachePath, true);
 		if (!keyCache)
 		{
@@ -74,7 +74,7 @@ void ModuleLoader::ReadModuleCache()
 					throw gcnew ModuleException;
 
 				// read data
-				ListReader reader((array<String^>^)keyCache->GetValue(assemblyPath));
+				EnumerableReader reader((array<String^>^)keyCache->GetValue(assemblyPath));
 
 				// Stamp
 				String^ assemblyStamp = reader.Read();
@@ -101,10 +101,10 @@ void ModuleLoader::ReadModuleCache()
 					manager->CachedResources = true;
 				}
 				
-				List<ModuleCommandInfo^> commands;
-				List<ModuleEditorInfo^> editors;
-				List<ModuleFilerInfo^> filers;
-				List<ModuleToolInfo^> tools;
+				List<ProxyCommand^> commands;
+				List<ProxyEditor^> editors;
+				List<ProxyFiler^> filers;
+				List<ProxyTool^> tools;
 
 				for(;;)
 				{
@@ -124,22 +124,22 @@ void ModuleLoader::ReadModuleCache()
 					// types:
 					if (itemType == "Tool")
 					{
-						ModuleToolInfo^ it = gcnew ModuleToolInfo(manager, %reader);
+						ProxyTool^ it = gcnew ProxyTool(manager, %reader);
 						tools.Add(it);
 					}
 					else if (itemType == "Command")
 					{
-						ModuleCommandInfo^ it = gcnew ModuleCommandInfo(manager, %reader);
+						ProxyCommand^ it = gcnew ProxyCommand(manager, %reader);
 						commands.Add(it);
 					}
 					else if (itemType == "Editor")
 					{
-						ModuleEditorInfo^ it = gcnew ModuleEditorInfo(manager, %reader);
+						ProxyEditor^ it = gcnew ProxyEditor(manager, %reader);
 						editors.Add(it);
 					}
 					else if (itemType == "Filer")
 					{
-						ModuleFilerInfo^ it = gcnew ModuleFilerInfo(manager, %reader);
+						ProxyFiler^ it = gcnew ProxyFiler(manager, %reader);
 						filers.Add(it);
 					}
 					else
@@ -149,15 +149,15 @@ void ModuleLoader::ReadModuleCache()
 				}
 
 				// add the name to dictionary and add plugins
-				_ModuleManagers->Add(Path::GetFileName(assemblyPath), manager);
-				if (commands.Count)
-					Far0::RegisterCommands(%commands);
-				if (editors.Count)
-					Far0::RegisterEditors(%editors);
-				if (filers.Count)
-					Far0::RegisterFilers(%filers);
-				if (tools.Count)
-					Far0::RegisterTools(%tools);
+				_Managers->Add(manager->ModuleName, manager);
+				for each(ProxyCommand^ it in commands)
+					Far0::AddModuleCommandInfo(it);
+				for each(ProxyEditor^ it in editors)
+					Far0::AddModuleEditorInfo(it);
+				for each(ProxyFiler^ it in filers)
+					Far0::AddModuleFilerInfo(it);
+				for each(ProxyTool^ it in tools)
+					Far0::AddModuleToolInfo(it);
 
 				done = true;
 			}
@@ -168,7 +168,7 @@ void ModuleLoader::ReadModuleCache()
 			catch(Exception^ ex)
 			{
 				throw gcnew ModuleException(
-					"Error on reading the registry cache Plugins\\FarNet\\<cache>.", ex);
+					"Error on reading the registry cache 'Plugins\\FarNet\\!Cache'.", ex);
 			}
 			finally
 			{
@@ -250,18 +250,18 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 	String^ assemblyName = Path::GetFileName(assemblyPath);
 
 	// already loaded (normally from cache)?
-	if (_ModuleManagers->ContainsKey(assemblyName))
+	if (_Managers->ContainsKey(assemblyName))
 		return;
 	
 	// add new module info
 	ModuleManager^ manager = gcnew ModuleManager(assemblyPath);
-	_ModuleManagers->Add(assemblyName, manager);
+	_Managers->Add(assemblyName, manager);
 
 	// load from assembly
-	List<ModuleCommandInfo^> commands;
-	List<ModuleEditorInfo^> editors;
-	List<ModuleFilerInfo^> filers;
-	List<ModuleToolInfo^> tools;
+	List<ProxyCommand^> commands;
+	List<ProxyEditor^> editors;
+	List<ProxyFiler^> filers;
+	List<ProxyTool^> tools;
 	Assembly^ assembly = manager->AssemblyInstance;
 	if (classes && classes->Count > 0)
 	{
@@ -278,14 +278,14 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 	}
 
 	// add actions
-	if (commands.Count)
-		Far0::RegisterCommands(%commands);
-	if (editors.Count)
-		Far0::RegisterEditors(%editors);
-	if (filers.Count)
-		Far0::RegisterFilers(%filers);
-	if (tools.Count)
-		Far0::RegisterTools(%tools);
+	for each(ProxyCommand^ it in commands)
+		Far0::AddModuleCommandInfo(it);
+	for each(ProxyEditor^ it in editors)
+		Far0::AddModuleEditorInfo(it);
+	for each(ProxyFiler^ it in filers)
+		Far0::AddModuleFilerInfo(it);
+	for each(ProxyTool^ it in tools)
+		Far0::AddModuleToolInfo(it);
 
 	// if the module has no loaded host now then it is cached
 	if (!manager->GetLoadedModuleHost())
@@ -298,65 +298,61 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 }
 
 // #6 Adds a module item
-void ModuleLoader::AddModuleItem(ModuleManager^ manager, Type^ type, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
+void ModuleLoader::AddModuleItem(ModuleManager^ manager, Type^ type, List<ProxyCommand^>^ commands, List<ProxyEditor^>^ editors, List<ProxyFiler^>^ filers, List<ProxyTool^>^ tools)
 {
-	LOG_AUTO(3, "Load module item" + type);
+	LOG_AUTO(3, "Load module item " + type);
 
 	// host
 	if (ModuleHost::typeid->IsAssignableFrom(type))
 		manager->SetModuleHost(type);
 	// command
 	else if (ModuleCommand::typeid->IsAssignableFrom(type))
-		commands->Add(gcnew ModuleCommandInfo(manager, type));
+		commands->Add(gcnew ProxyCommand(manager, type));
 	// editor
 	else if (ModuleEditor::typeid->IsAssignableFrom(type))
-		editors->Add(gcnew ModuleEditorInfo(manager, type));
+		editors->Add(gcnew ProxyEditor(manager, type));
 	// filer
 	else if (ModuleFiler::typeid->IsAssignableFrom(type))
-		filers->Add(gcnew ModuleFilerInfo(manager, type));
+		filers->Add(gcnew ProxyFiler(manager, type));
 	// tool
 	else if (ModuleTool::typeid->IsAssignableFrom(type))
-		tools->Add(gcnew ModuleToolInfo(manager, type));
+		tools->Add(gcnew ProxyTool(manager, type));
 	else
-		throw gcnew ModuleException("Unknown module class type.");
+		throw gcnew ModuleException("Unknown module item class type.");
 }
 
 //! Don't use Far UI
-void ModuleLoader::UnloadModuleItem(BaseModuleItem^ item)
+//! It is already disconnected
+void ModuleLoader::RemoveModuleManager(ModuleManager^ manager)
 {
-	LOG_AUTO(3, "Unload module item " + item);
+	// remove the module
+	_Managers->Remove(manager->ModuleName);
 
-	// tool:
-	ModuleAction^ action = dynamic_cast<ModuleAction^>(item);
-	if (action)
-		return;
+	// 1) find all its actions
+	List<ProxyAction^> actions;
+	for each(ProxyAction^ action in _Actions.Values)
+		if (action->Manager == manager)
+			actions.Add(action);
 
-	ModuleHost^ host = (ModuleHost^)item;
-	for each(ModuleManager^ manager in _ModuleManagers->Values)
-	{
-		if (manager->GetLoadedModuleHost() == host)
-		{
-			manager->Unload();
-			break;
-		}
-	}
+	// 2) remove found actions
+	for each(ProxyAction^ action in actions)
+		action->Unregister();
 }
 
 //! Don't use Far UI
 void ModuleLoader::UnloadModules()
 {
-	for(int i = _ModuleManagers->Count; --i >= 0;)
-	{
-		ModuleManager^ manager = _ModuleManagers->Values[i];
-		manager->Unload();
-	}
+	// unregister managers
+	while(_Managers->Count)
+		_Managers->Values[0]->Unregister();
 
-	_ModuleManagers->Clear();
+	// actions must be removed, too
+	assert(_Actions.Count == 0);
 }
 
 bool ModuleLoader::CanExit()
 {
-	for each(ModuleManager^ manager in _ModuleManagers->Values)
+	for each(ModuleManager^ manager in _Managers->Values)
 	{
 		if (manager->GetLoadedModuleHost() && !manager->GetLoadedModuleHost()->CanExit())
 			return false;
@@ -365,12 +361,12 @@ bool ModuleLoader::CanExit()
 	return true;
 }
 
-void ModuleLoader::WriteModuleCache(ModuleManager^ manager, List<ModuleCommandInfo^>^ commands, List<ModuleEditorInfo^>^ editors, List<ModuleFilerInfo^>^ filers, List<ModuleToolInfo^>^ tools)
+void ModuleLoader::WriteModuleCache(ModuleManager^ manager, List<ProxyCommand^>^ commands, List<ProxyEditor^>^ editors, List<ProxyFiler^>^ filers, List<ProxyTool^>^ tools)
 {
 	RegistryKey^ keyCache = nullptr;
 	try
 	{
-		keyCache = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\FarNet\\<cache>");
+		keyCache = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\FarNet\\!Cache");
 
 		// update cache version
 		if (ToCacheVersion)
@@ -401,29 +397,17 @@ void ModuleLoader::WriteModuleCache(ModuleManager^ manager, List<ModuleCommandIn
 			data.Add(hostClassName);
 		}
 
-		for each(ModuleToolInfo^ it in tools)
-		{
-			data.Add("Tool");
+		for each(ProxyTool^ it in tools)
 			it->WriteCache(%data);
-		}
 
-		for each(ModuleCommandInfo^ it in commands)
-		{
-			data.Add("Command");
+		for each(ProxyCommand^ it in commands)
 			it->WriteCache(%data);
-		}
 
-		for each(ModuleEditorInfo^ it in editors)
-		{
-			data.Add("Editor");
+		for each(ProxyEditor^ it in editors)
 			it->WriteCache(%data);
-		}
 
-		for each(ModuleFilerInfo^ it in filers)
-		{
-			data.Add("Filer");
+		for each(ProxyFiler^ it in filers)
 			it->WriteCache(%data);
-		}
 
 		array<String^>^ data2 = gcnew array<String^>(data.Count);
 		data.CopyTo(data2);

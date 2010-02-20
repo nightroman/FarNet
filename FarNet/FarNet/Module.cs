@@ -142,14 +142,58 @@ namespace FarNet
 		/// <param name="writable">Set to true if you need write access to the key.</param>
 		/// <returns>The requested key.</returns>
 		/// <remarks>
-		/// You should close the key after use.
-		/// The key is created if it does not exist.
+		/// The registry key or subkey is created if it does not exist (the root is <c>Far2\Plugins\FarNet.Modules\Module.dll</c>).
+		/// Use its <c>GetValue()</c> and <c>SetValue()</c> and then <c>Close()</c> after use.
+		/// You may also use C# <c>using</c> block to dispose the key automatically.
 		/// </remarks>
 		RegistryKey OpenSubKey(string name, bool writable);
 		/// <summary>
 		/// The <see cref="BaseModuleItem.GetString"/> worker.
 		/// </summary>
 		string GetString(string name);
+		/// <summary>
+		/// Unregisters the module in critical cases.
+		/// </summary>
+		/// <remarks>
+		/// This method should be called only on fatal errors and similar cases.
+		/// </remarks>
+		void Unregister();
+		/// <summary>
+		/// Registers the command handler invoked from the command line by its prefix.
+		/// </summary>
+		/// <param name="id">Unique command ID.</param>
+		/// <param name="handler">Command handler.</param>
+		/// <param name="attribute">Command attribute.</param>
+		/// <remarks>
+		/// NOTE: Consider to implement the <see cref="ModuleCommand"/> instead.
+		/// Dynamic registration is not recommended for standard scenarios.
+		/// <para>
+		/// After the call the attribute <see cref="ModuleCommandAttribute.Prefix"/> is the actually used prefix.
+		/// </para>
+		/// </remarks>
+		IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
+		/// <summary>
+		/// Registers the file handler invoked for a file. See <see cref="ModuleFilerEventArgs"/>.
+		/// </summary>
+		/// <param name="id">Unique filer ID.</param>
+		/// <param name="handler">Filer handler.</param>
+		/// <param name="attribute">Filer attribute.</param>
+		/// <remarks>
+		/// NOTE: Consider to implement the <see cref="ModuleFiler"/> instead.
+		/// Dynamic registration is not recommended for standard scenarios.
+		/// </remarks>
+		IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler);
+		/// <summary>
+		/// Registers the tool handler invoked from one of Far menus.
+		/// </summary>
+		/// <param name="id">Unique tool ID.</param>
+		/// <param name="handler">Tool handler.</param>
+		/// <param name="attribute">Tool attribute.</param>
+		/// <remarks>
+		/// NOTE: Consider to implement the <see cref="ModuleTool"/> instead.
+		/// Dynamic registration is not recommended for standard scenarios.
+		/// </remarks>
+		IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
 	}
 
 	/// <summary>
@@ -195,9 +239,9 @@ namespace FarNet
 		/// (C#) how to register a command line prefix and a menu command.
 		/// <code>
 		/// // Register a prefix:
-		/// Far.Net.RegisterCommand(this, [name], [prefix], [handler]);
+		/// Far.Net.RegisterModuleCommand(this, [name], [prefix], [handler]);
 		/// // Register a menu command:
-		/// Far.Net.RegisterTool(this, [name], [handler], [options]);
+		/// Far.Net.RegisterModuleTool(this, [name], [handler], [options]);
 		/// ...
 		/// </code>
 		/// </example>
@@ -341,15 +385,17 @@ namespace FarNet
 	/// Module command attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleCommandAttribute : ModuleActionAttribute
+	public sealed class ModuleCommandAttribute : ModuleActionAttribute, ICloneable
 	{
 		/// <summary>
 		/// The command prefix. It is mandatory to specify a not empty value.
 		/// </summary>
 		/// <remarks>
-		/// This prefix is only a suggestion, the actual prefix may be changed by a user.
+		/// This prefix is only a suggestion, the actual prefix is configured by a user.
 		/// </remarks>
 		public string Prefix { get; set; }
+		///
+		public object Clone() { return MemberwiseClone(); }
 	}
 
 	/// <summary>
@@ -434,7 +480,7 @@ namespace FarNet
 	/// Module filer action attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleFilerAttribute : ModuleActionAttribute
+	public sealed class ModuleFilerAttribute : ModuleActionAttribute, ICloneable
 	{
 		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
 		public string Mask { get; set; }
@@ -442,6 +488,8 @@ namespace FarNet
 		/// Tells that the filer also creates files.
 		/// </summary>
 		public bool Creates { get; set; }
+		///
+		public object Clone() { return MemberwiseClone(); }
 	}
 
 	/// <summary>
@@ -498,12 +546,14 @@ namespace FarNet
 	/// Module tool action attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleToolAttribute : ModuleActionAttribute
+	public sealed class ModuleToolAttribute : ModuleActionAttribute, ICloneable
 	{
 		/// <summary>
 		/// Tool options. It is mandatory to specify at least one menu or other area.
 		/// </summary>
 		public ModuleToolOptions Options { get; set; }
+		///
+		public object Clone() { return MemberwiseClone(); }
 	}
 
 	/// <summary>
@@ -541,5 +591,87 @@ namespace FarNet
 		/// Tool handler called when its menu item is invoked.
 		/// </summary>
 		public abstract void Invoke(object sender, ModuleToolEventArgs e);
+	}
+
+	/// <summary>
+	/// Module action worker.
+	/// </summary>
+	public interface IModuleAction
+	{
+		/// <summary>
+		/// Gets the action ID.
+		/// </summary>
+		Guid Id { get; }
+		/// <summary>
+		/// Gets the action name.
+		/// </summary>
+		string Name { get; }
+		/// <summary>
+		/// Gets the type name.
+		/// </summary>
+		string TypeName { get; }
+		/// <summary>
+		/// Gets the module name.
+		/// </summary>
+		string ModuleName { get; }
+		/// <summary>
+		/// Unregisters the module action dynamically.
+		/// </summary>
+		/// <remarks>
+		/// Normally it is used for temporary actions dynamically registered by <c>Register*()</c>.
+		/// <para>
+		/// Note that module hosts on disconnection does not have to unregister registered actions.
+		/// </para>
+		/// </remarks>
+		void Unregister();
+	}
+
+	/// <summary>
+	/// Module command worker.
+	/// </summary>
+	public interface IModuleCommand : IModuleAction
+	{
+		/// <summary>
+		/// Processes the command event.
+		/// </summary>
+		void Invoke(object sender, ModuleCommandEventArgs e);
+		/// <summary>
+		/// Gets the command prefix.
+		/// </summary>
+		string Prefix { get; }
+	}
+
+	/// <summary>
+	/// Module filer worker.
+	/// </summary>
+	public interface IModuleFiler : IModuleAction
+	{
+		/// <summary>
+		/// Processes the filer event.
+		/// </summary>
+		void Invoke(object sender, ModuleFilerEventArgs e);
+		/// <summary>
+		/// Gets the filer file mask.
+		/// </summary>
+		string Mask { get; }
+		/// <summary>
+		/// Gets true if the filer also creates files.
+		/// </summary>
+		bool Creates { get; }
+	}
+
+	/// <summary>
+	/// Module tool worker.
+	/// </summary>
+	public interface IModuleTool : IModuleAction
+	{
+		/// <summary>
+		/// Processes the tool event.
+		/// </summary>
+		void Invoke(object sender, ModuleToolEventArgs e);
+		/// <summary>
+		/// Gets the tool options.
+		/// </summary>
+		ModuleToolOptions Options { get; }
 	}
 }

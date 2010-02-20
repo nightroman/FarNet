@@ -439,6 +439,27 @@ bool Config::GetBool(String^ key)
 		Boolean::TryParse(value->ToString(), r);
 	return r;
 }
+
+EnumerableReader::EnumerableReader(System::Collections::IEnumerable^ enumerable)
+: Enumerator(enumerable->GetEnumerator())
+{}
+
+String^ EnumerableReader::Read()
+{
+	if (!Enumerator->MoveNext())
+		throw gcnew ModuleException("Unexpected end of the data sequence.");
+
+	return Enumerator->Current->ToString();
+}
+
+String^ EnumerableReader::TryRead()
+{
+	if (!Enumerator->MoveNext())
+		return nullptr;
+
+	return Enumerator->Current->ToString();
+}
+
 }
 
 #ifdef TRACE_MEMORY

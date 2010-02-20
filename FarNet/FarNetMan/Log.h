@@ -47,9 +47,6 @@ public:
 	// Begin log
 	void Log(String^ info)
 	{
-		assert(IndentLevel == -1); // should be called once at most
-		assert(IndentLevel >= 0 && IndentLevel <= 4);
-
 		// begin
 		IndentLevel = Log::IndentLevel;
 

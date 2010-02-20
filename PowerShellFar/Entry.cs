@@ -20,10 +20,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// For internal use.
 		/// </summary>
-		public static Entry Instance { get; private set; }
-
-		internal static ModuleCommandAttribute Command1 { get; private set; }
-		internal static ModuleCommandAttribute Command2 { get; private set; }
+		internal static Entry Instance { get; private set; }
 
 		///
 		public Entry()
@@ -37,7 +34,7 @@ namespace PowerShellFar
 		internal static void Unregister()
 		{
 			if (Instance != null)
-				Far.Net.Unregister(Instance);
+				Instance.Manager.Unregister();
 		}
 
 		///
@@ -48,16 +45,16 @@ namespace PowerShellFar
 
 			// register commands with prefixes
 			{
-				Command1 = new ModuleCommandAttribute();
-				Command1.Name = "PowerShell command";
-				Command1.Prefix = ">";
-				Far.Net.RegisterCommand(this.Manager, new Guid("60353ab6-52cb-413e-8e11-e4917099b80b"), OnCommandLine, Command1);
+				ModuleCommandAttribute attr = new ModuleCommandAttribute();
+				attr.Name = "PowerShell command";
+				attr.Prefix = ">";
+				Command1 = Manager.RegisterModuleCommand(new Guid("60353ab6-52cb-413e-8e11-e4917099b80b"), attr, OnCommandLine);
 			}
 			{
-				Command2 = new ModuleCommandAttribute();
-				Command2.Name = "PowerShellFar job command";
-				Command2.Prefix = ">>";
-				Far.Net.RegisterCommand(this.Manager, new Guid("03760876-d154-467c-bc5d-8ec39efb637d"), OnCommandLineJob, Command2);
+				ModuleCommandAttribute attr = new ModuleCommandAttribute();
+				attr.Name = "PowerShellFar job command";
+				attr.Prefix = ">>";
+				Command2 = Manager.RegisterModuleCommand(new Guid("03760876-d154-467c-bc5d-8ec39efb637d"), attr, OnCommandLineJob);
 			}
 
 			// register config
@@ -65,7 +62,7 @@ namespace PowerShellFar
 				ModuleToolAttribute attr = new ModuleToolAttribute();
 				attr.Name = Res.Me;
 				attr.Options = ModuleToolOptions.Config;
-				Far.Net.RegisterTool(this.Manager, new Guid("16160a09-ea2a-4c10-91af-c40149002057"), OnConfig, attr);
+				Manager.RegisterModuleTool(new Guid("16160a09-ea2a-4c10-91af-c40149002057"), attr, OnConfig);
 			}
 
 			// register menu
@@ -73,7 +70,7 @@ namespace PowerShellFar
 				ModuleToolAttribute attr = new ModuleToolAttribute();
 				attr.Name = Res.Me;
 				attr.Options = ModuleToolOptions.F11Menus;
-				Far.Net.RegisterTool(this.Manager, new Guid("7def4106-570a-41ab-8ecb-40605339e6f7"), OnOpen, attr);
+				Manager.RegisterModuleTool(new Guid("7def4106-570a-41ab-8ecb-40605339e6f7"), attr, OnOpen);
 			}
 
 			// editor events: OnEditorOpened1 should be called always and first
@@ -89,12 +86,6 @@ namespace PowerShellFar
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public override void Disconnect()
 		{
-			// detach tools
-			Far.Net.UnregisterCommand(OnCommandLine);
-			Far.Net.UnregisterCommand(OnCommandLineJob);
-			Far.Net.UnregisterTool(OnConfig);
-			Far.Net.UnregisterTool(OnOpen);
-
 			// disconnect instances
 			A.Psf.Disconnect();
 			A.Connect(null);
@@ -119,6 +110,7 @@ namespace PowerShellFar
 		bool InvokingHasBeenCalled;
 
 		//! do not call Invoking(), it is done by FarNet
+		internal static IModuleCommand Command1 { get; private set; }
 		void OnCommandLine(object sender, ModuleCommandEventArgs e)
 		{
 			string currentDirectory = A.Psf.SyncPaths();
@@ -134,6 +126,7 @@ namespace PowerShellFar
 
 		//! do not call Invoking(), it is done by FarNet
 		//! do not sync paths for jobs
+		internal static IModuleCommand Command2 { get; private set; }
 		void OnCommandLineJob(object sender, ModuleCommandEventArgs e)
 		{
 			string code = e.Command;

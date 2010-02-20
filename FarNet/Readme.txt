@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.3.5
-Release  : 2010.02.16
+Version  : 4.3.6
+Release  : 2010.02.20
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -20,7 +20,7 @@ provided by the PowerShellFar module.
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1400
+ - Far Manager 2.0.1412
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
@@ -33,13 +33,13 @@ provided by the PowerShellFar module.
 
 
 Copy to %FARHOME% keeping the same directory structure:
-- Far.exe.config
-- FarNet\FarNet.*
-- Plugins\FarNet\FarNetMan.* (*)
-- FarNet\Modules\* (sample modules; you may copy and build some)
+-- Far.exe.config
+-- FarNet\FarNet.*
+-- Plugins\FarNet\FarNetMan.* (*)
+-- FarNet\Modules\* (sample modules; you may copy and build some)
 
 (*) x64 installation:
-- Plugins\FarNet\FarNetMan.dll must be copied from Plugins.x64\FarNet
+-- Plugins\FarNet\FarNetMan.dll must be copied from Plugins.x64\FarNet
 
 This is the default and recommended installation. Still, you can change
 location of FarNet and Modules by changing the Far.exe.config configuration.
@@ -57,7 +57,7 @@ Far.exe.config - the configuration file
 
 .\Plugins\FarNet\
 FarNetMan.dll - Far Manager plugin, manager of .NET modules
-FarNetMan.hlf - FarNet help
+FarNetMan.hlf - FarNet UI help
 
 .\FarNet\
 FarNet.dll - FarNet interfaces for .NET modules
@@ -89,7 +89,7 @@ registry. Directory names and assembly locations are not important.
 
 
 FarNet modules registry cache:
-HKCU\Software\Far2\Plugins\FarNet\<cache>
+HKCU\Software\Far2\Plugins\FarNet\!Cache
 
 If possible, FarNet caches information about assemblies and loads them only
 when they are really invoked. In many cases when you change, rename or move
@@ -146,15 +146,14 @@ because x86 Far disables WOW64 redirection (normally needed for loading).
 
 SOLUTION
 Theoretically the best way to avoid this problem is to use x64 Far and FarNet
-on x64 machines. Unfortunately it is not always possible in practice: plugins
-may not have x64 versions or x64 Far may have not yet resolved problems. Then
-the following batch file can be used to start x86 Far:
+on x64 machines. Unfortunately this is not always possible in practice for a
+few reasons. Then the following batch file can be used to start x86 Far:
 
 	set PATH=%WINDIR%\syswow64;%PATH%
 	"C:\Program Files\Far\Far.exe"
 
 PROBLEM
-After installation Far cannot load FarNet or FarNet cannot load .NET modules.
+After installation Far cannot load FarNet or FarNet cannot load its modules.
 
 SOLUTION
 Read installation steps in Readme.txt (FarNet and modules) carefully and ensure
@@ -162,8 +161,8 @@ that you do everything correctly. Often mistake: Far.exe.config is not copied
 to the Far home directory.
 
 PROBLEM
-After updating of a FarNet module the module does not work or fails on loading.
+After updating of a FarNet module this module cannot start or works funny.
 
 SOLUTION
 Try again after removing of the FarNet module cache in the registry:
-HKCU\Software\Far2\Plugins\FarNet\<cache>
+HKCU\Software\Far2\Plugins\FarNet\!Cache
