@@ -13,6 +13,10 @@ public: // IModuleManager
 	virtual property CultureInfo^ CurrentUICulture { CultureInfo^ get(); void set(CultureInfo^ value); }
 	virtual RegistryKey^ OpenSubKey(String^ name, bool writable);
 	virtual String^ GetString(String^ name);
+	virtual void Unregister();
+	virtual IModuleCommand^ RegisterModuleCommand(Guid id, ModuleCommandAttribute^ attribute, EventHandler<ModuleCommandEventArgs^>^ handler);
+	virtual IModuleFiler^ RegisterModuleFiler(Guid id, ModuleFilerAttribute^ attribute, EventHandler<ModuleFilerEventArgs^>^ handler);
+	virtual IModuleTool^ RegisterModuleTool(Guid id, ModuleToolAttribute^ attribute, EventHandler<ModuleToolEventArgs^>^ handler);
 internal:
 	ModuleManager(String^ assemblyPath);
 	BaseModuleItem^ CreateEntry(Type^ type);
@@ -26,7 +30,6 @@ internal:
 	void Invoking();
 	void SetModuleHost(String^ moduleHostClassName);
 	void SetModuleHost(Type^ moduleHostClassType);
-	void Unload();
 internal:
 	static Object^ LoadPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue);
 	static Object^ LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue);

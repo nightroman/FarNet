@@ -49,76 +49,17 @@ namespace FarNet
 		/// </summary>
 		IZoo Zoo { get; }
 		/// <summary>
-		/// Registers the command handler invoked from the command line by its prefix.
+		/// Gets any module command by its ID.
 		/// </summary>
-		/// <param name="manager">The module manager or null.</param>
-		/// <param name="id">Unique command ID.</param>
-		/// <param name="handler">Command handler.</param>
-		/// <param name="attribute">
-		/// Command attribute.
-		/// Create and use it once and do not change its data after the call.
-		/// </param>
-		/// <remarks>
-		/// NOTE: Consider to implement the <see cref="ModuleCommand"/> instead.
-		/// Dynamic registration is not recommended for standard scenarios.
-		/// <para>
-		/// After the call the attribute <see cref="ModuleCommandAttribute.Prefix"/> is the actually used prefix.
-		/// </para>
-		/// </remarks>
-		void RegisterCommand(IModuleManager manager, Guid id, EventHandler<ModuleCommandEventArgs> handler, ModuleCommandAttribute attribute);
+		IModuleCommand GetModuleCommand(Guid id);
 		/// <summary>
-		/// Unregisters the command handler.
+		/// Gets any module filer by its ID.
 		/// </summary>
-		/// <param name="handler">Command handler.</param>
-		void UnregisterCommand(EventHandler<ModuleCommandEventArgs> handler);
+		IModuleFiler GetModuleFiler(Guid id);
 		/// <summary>
-		/// Registers the file handler invoked for a file. See <see cref="ModuleFilerEventArgs"/>.
+		/// Gets any module tool by its ID.
 		/// </summary>
-		/// <param name="manager">The module manager or null.</param>
-		/// <param name="id">Unique filer ID.</param>
-		/// <param name="handler">Filer handler.</param>
-		/// <param name="attribute">
-		/// Filer attribute.
-		/// Create and use it once and do not change its data after the call.
-		/// </param>
-		/// <remarks>
-		/// NOTE: Consider to implement the <see cref="ModuleFiler"/> instead.
-		/// Dynamic registration is not recommended for standard scenarios.
-		/// </remarks>
-		void RegisterFiler(IModuleManager manager, Guid id, EventHandler<ModuleFilerEventArgs> handler, ModuleFilerAttribute attribute);
-		/// <summary>
-		/// Unregisters the file handler.
-		/// </summary>
-		/// <param name="handler">Filer handler.</param>
-		void UnregisterFiler(EventHandler<ModuleFilerEventArgs> handler);
-		/// <summary>
-		/// Registers the tool handler invoked from one of Far menus.
-		/// </summary>
-		/// <param name="manager">The module manager or null.</param>
-		/// <param name="id">Unique tool ID.</param>
-		/// <param name="handler">Tool handler.</param>
-		/// <param name="attribute">
-		/// Tool attribute.
-		/// Create and use it once and do not change its data after the call.
-		/// </param>
-		/// <remarks>
-		/// NOTE: Consider to implement the <see cref="ModuleTool"/> instead.
-		/// Dynamic registration is not recommended for standard scenarios.
-		/// </remarks>
-		void RegisterTool(IModuleManager manager, Guid id, EventHandler<ModuleToolEventArgs> handler, ModuleToolAttribute attribute);
-		/// <summary>
-		/// Unregisters the tool handler.
-		/// </summary>
-		/// <param name="handler">Tool handler.</param>
-		void UnregisterTool(EventHandler<ModuleToolEventArgs> handler);
-		/// <summary>
-		/// Unregisters the module item. Use it only in critical cases.
-		/// </summary>
-		/// <remarks>
-		/// Normally there is no much sense in unloading items because module assemblies are not unloaded anyway.
-		/// This method should be called only in critical cases (fatal errors and etc.).
-		/// </remarks>
-		void Unregister(BaseModuleItem item);
+		IModuleTool GetModuleTool(Guid id);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>

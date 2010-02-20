@@ -5,7 +5,9 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "ModuleManager.h"
+#include "Far0.h"
 #include "ModuleLoader.h"
+#include "ModuleProxy.h"
 
 namespace FarNet
 {;
@@ -67,32 +69,6 @@ RegistryKey^ ModuleManager::OpenSubKey(String^ name, bool writable)
 		throw gcnew ModuleException("Cannot open the registry key.");
 
 	return r;
-}
-
-//! Don't use Far UI
-void ModuleManager::Unload()
-{
-	if (!_ModuleHostInstance)
-		return;
-
-	try
-	{
-		LOG_AUTO(3, String::Format("{0}.Disconnect", _ModuleHostInstance));
-		_ModuleHostInstance->Disconnect();
-	}
-	catch(Exception^ e)
-	{
-		String^ msg = "ERROR: module " + _ModuleHostInstance->ToString() + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
-		Console::ForegroundColor = ConsoleColor::Red;
-		Console::WriteLine(msg);
-		Log::TraceError(msg);
-
-		System::Threading::Thread::Sleep(1000);
-	}
-	finally
-	{
-		_ModuleHostInstance = nullptr;
-	}
 }
 
 void ModuleManager::SetModuleHost(String^ moduleHostClassName)
@@ -225,6 +201,81 @@ BaseModuleItem^ ModuleManager::CreateEntry(Type^ type)
 	instance->Manager = this;
 	
 	return instance;
+}
+
+//! Don't use Far UI
+void ModuleManager::Unregister() //???? remove actions
+{
+	LOG_AUTO(3, "Unregister module " + ModuleName);
+
+	if (!_ModuleHostInstance)
+	{
+		ModuleLoader::RemoveModuleManager(this);
+		return;
+	}
+
+	try
+	{
+		LOG_AUTO(3, String::Format("{0}.Disconnect", _ModuleHostInstance));
+		_ModuleHostInstance->Disconnect();
+	}
+	catch(Exception^ e)
+	{
+		String^ msg = "ERROR: module " + _ModuleHostInstance->ToString() + ":\n" + Log::FormatException(e) + "\n" + e->StackTrace;
+		Console::ForegroundColor = ConsoleColor::Red;
+		Console::WriteLine(msg);
+		Log::TraceError(msg);
+
+		System::Threading::Thread::Sleep(1000);
+	}
+	finally
+	{
+		_ModuleHostInstance = nullptr;
+		
+		ModuleLoader::RemoveModuleManager(this);
+	}
+}
+
+IModuleCommand^ ModuleManager::RegisterModuleCommand(Guid id, ModuleCommandAttribute^ attribute, EventHandler<ModuleCommandEventArgs^>^ handler)
+{
+	if (!handler)
+		throw gcnew ArgumentNullException("handler");
+	if (!attribute)
+		throw gcnew ArgumentNullException("attribute");
+	if (ES(attribute->Name))
+		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
+
+	ProxyCommand^ it = gcnew ProxyCommand(this, id, attribute, handler);
+	Far0::AddModuleCommandInfo(it);
+	return it;
+}
+
+IModuleFiler^ ModuleManager::RegisterModuleFiler(Guid id, ModuleFilerAttribute^ attribute, EventHandler<ModuleFilerEventArgs^>^ handler)
+{
+	if (!handler)
+		throw gcnew ArgumentNullException("handler");
+	if (!attribute)
+		throw gcnew ArgumentNullException("attribute");
+	if (ES(attribute->Name))
+		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
+
+	ProxyFiler^ it = gcnew ProxyFiler(this, id, attribute, handler);
+	Far0::AddModuleFilerInfo(it);
+	return it;
+}
+
+IModuleTool^ ModuleManager::RegisterModuleTool(Guid id, ModuleToolAttribute^ attribute, EventHandler<ModuleToolEventArgs^>^ handler)
+{
+	if (!handler)
+		throw gcnew ArgumentNullException("handler");
+	if (!attribute)
+		throw gcnew ArgumentNullException("attribute");
+	if (ES(attribute->Name))
+		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
+
+	ProxyTool^ it = gcnew ProxyTool(this, id, attribute, handler);
+	Far0::AddModuleToolInfo(it);
+	return it;
 }
 
 }

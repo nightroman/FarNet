@@ -6,9 +6,9 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Far0.h"
 #include "Dialog.h"
-#include "ModuleItems.h"
 #include "ModuleLoader.h"
 #include "ModuleManager.h"
+#include "ModuleProxy.h"
 #include "Panel0.h"
 #include "Wrappers.h"
 
@@ -70,184 +70,139 @@ void Far0::Free(ModuleToolOptions options)
 	}
 }
 
-void Far0::RegisterTool(ModuleToolInfo^ tool)
+void Far0::UnregisterModuleAction(Guid id)
 {
-	LOG_INFO("Register " + tool);
+	ProxyAction^ action;
+	if (!ModuleLoader::Actions->TryGetValue(id, action))
+		return;
 
-	ModuleToolOptions options = tool->Attribute->Options;
-	if (int(options & ModuleToolOptions::Config))
+	LOG_INFO("Unregister " + action);
+
+	ModuleLoader::Actions->Remove(id);
+
+	ProxyCommand^ command = dynamic_cast<ProxyCommand^>(action);
+	if (command)
+	{
+		_registeredCommand.Remove(command);
+		delete _prefixes;
+		_prefixes = 0;
+		return;
+	}
+
+	ProxyEditor^ editor = dynamic_cast<ProxyEditor^>(action);
+	if (editor)
+	{
+		_registeredEditor.Remove(editor);
+		return;
+	}
+
+	ProxyFiler^ filer = dynamic_cast<ProxyFiler^>(action);
+	if (filer)
+	{
+		_registeredFiler.Remove(filer);
+		return;
+	}
+
+	ProxyTool^ tool = (ProxyTool^)action;
+	if (_toolConfig.Remove(tool))
 	{
 		delete[] _pConfig;
 		_pConfig = 0;
-		_toolConfig.Add(tool);
+	}
+	if (_toolDisk.Remove(tool))
+	{
+		delete[] _pDisk;
+		_pDisk = 0;
+	}
+	if (_toolDialog.Remove(tool))
+	{
+		delete[] _pDialog;
+		_pDialog = 0;
+	}
+	if (_toolEditor.Remove(tool))
+	{
+		delete[] _pEditor;
+		_pEditor = 0;
+	}
+	if (_toolPanels.Remove(tool))
+	{
+		delete[] _pPanels;
+		_pPanels = 0;
+	}
+	if (_toolViewer.Remove(tool))
+	{
+		delete[] _pViewer;
+		_pViewer = 0;
+	}
+}
+
+void Far0::AddModuleCommandInfo(ProxyCommand^ info)
+{
+	LOG_INFO("Register " + info);
+	ModuleLoader::Actions->Add(info->Id, info);
+
+	_registeredCommand.Add(info);
+	delete _prefixes;
+	_prefixes = 0;
+}
+
+void Far0::AddModuleEditorInfo(ProxyEditor^ info)
+{
+	LOG_INFO("Register " + info);
+	ModuleLoader::Actions->Add(info->Id, info);
+
+	_registeredEditor.Add(info);
+}
+
+void Far0::AddModuleFilerInfo(ProxyFiler^ info)
+{
+	LOG_INFO("Register " + info);
+	ModuleLoader::Actions->Add(info->Id, info);
+
+	_registeredFiler.Add(info);
+}
+
+void Far0::AddModuleToolInfo(ProxyTool^ info)
+{
+	LOG_INFO("Register " + info);
+	ModuleLoader::Actions->Add(info->Id, info);
+
+	ModuleToolOptions options = info->Attribute->Options;
+	if (int(options & ModuleToolOptions::Config))
+	{
+		_toolConfig.Add(info);
+		delete[] _pConfig;
+		_pConfig = 0;
 	}
 	if (int(options & ModuleToolOptions::Disk))
 	{
+		_toolDisk.Add(info);
 		delete[] _pDisk;
 		_pDisk = 0;
-		_toolDisk.Add(tool);
 	}
 	if (int(options & ModuleToolOptions::Dialog))
 	{
+		_toolDialog.Add(info);
 		delete[] _pDialog;
 		_pDialog = 0;
-		_toolDialog.Add(tool);
 	}
 	if (int(options & ModuleToolOptions::Editor))
 	{
+		_toolEditor.Add(info);
 		delete[] _pEditor;
 		_pEditor = 0;
-		_toolEditor.Add(tool);
 	}
 	if (int(options & ModuleToolOptions::Panels))
 	{
+		_toolPanels.Add(info);
 		delete[] _pPanels;
 		_pPanels = 0;
-		_toolPanels.Add(tool);
 	}
 	if (int(options & ModuleToolOptions::Viewer))
 	{
+		_toolViewer.Add(info);
 		delete[] _pViewer;
 		_pViewer = 0;
-		_toolViewer.Add(tool);
-	}
-}
-
-void Far0::RegisterTools(IEnumerable<ModuleToolInfo^>^ tools)
-{
-	for each(ModuleToolInfo^ tool in tools)
-		RegisterTool(tool);
-}
-
-static int RemoveByHandler(List<ModuleToolInfo^>^ list, EventHandler<ModuleToolEventArgs^>^ handler)
-{
-	int r = 0;
-	for(int i = list->Count; --i >= 0;)
-	{
-		if (list[i]->HasHandler(handler))
-		{
-			++r;
-			list->RemoveAt(i);
-		}
-	}
-	return r;
-}
-
-void Far0::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
-{
-	assert(handler != nullptr);
-	LOG_INFO(String::Format("Unregister tool {0}", Log::Format(handler->Method)));
-
-	if (RemoveByHandler(%_toolConfig, handler))
-	{
-		delete[] _pConfig;
-		_pConfig = 0;
-	}
-	if (RemoveByHandler(%_toolDisk, handler))
-	{
-		delete[] _pDisk;
-		_pDisk = 0;
-	}
-	if (RemoveByHandler(%_toolDialog, handler))
-	{
-		delete[] _pDialog;
-		_pDialog = 0;
-	}
-	if (RemoveByHandler(%_toolEditor, handler))
-	{
-		delete[] _pEditor;
-		_pEditor = 0;
-	}
-	if (RemoveByHandler(%_toolPanels, handler))
-	{
-		delete[] _pPanels;
-		_pPanels = 0;
-	}
-	if (RemoveByHandler(%_toolViewer, handler))
-	{
-		delete[] _pViewer;
-		_pViewer = 0;
-	}
-}
-
-void Far0::RegisterCommand(IModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
-{
-	delete _prefixes;
-	_prefixes = 0;
-	ModuleCommandInfo^ it = gcnew ModuleCommandInfo((manager ? (ModuleManager^)manager : nullptr), id, handler, attribute);
-	_registeredCommand.Add(it);
-
-	LOG_INFO("Register " + it);
-}
-
-void Far0::RegisterCommands(IEnumerable<ModuleCommandInfo^>^ commands)
-{
-	delete _prefixes;
-	_prefixes = 0;
-	_registeredCommand.AddRange(commands);
-
-	if (Log::Switch->TraceInfo)
-	{
-		for each(ModuleCommandInfo^ it in commands)
-			LOG_INFO("Register " + it);
-	}
-}
-
-void Far0::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
-{
-	for(int i = _registeredCommand.Count; --i >= 0;)
-	{
-		if (_registeredCommand[i]->HasHandler(handler))
-		{
-			LOG_INFO("Unregister " + _registeredCommand[i]);
-
-			delete _prefixes;
-			_prefixes = 0;
-			_registeredCommand.RemoveAt(i);
-		}
-	}
-}
-
-void Far0::RegisterFiler(IModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
-{
-	ModuleFilerInfo^ it = gcnew ModuleFilerInfo((manager ? (ModuleManager^)manager : nullptr), id, handler, attribute);
-	_registeredFiler.Add(it);
-
-	LOG_INFO("Register " + it);
-}
-
-void Far0::RegisterEditors(IEnumerable<ModuleEditorInfo^>^ editors)
-{
-	_registeredEditor.AddRange(editors);
-
-	if (Log::Switch->TraceInfo)
-	{
-		for each(ModuleEditorInfo^ it in editors)
-			LOG_INFO("Register " + it);
-	}
-}
-
-void Far0::RegisterFilers(IEnumerable<ModuleFilerInfo^>^ filers)
-{
-	_registeredFiler.AddRange(filers);
-
-	if (Log::Switch->TraceInfo)
-	{
-		for each(ModuleFilerInfo^ it in filers)
-			LOG_INFO("Register " + it);
-	}
-}
-
-void Far0::UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler)
-{
-	for(int i = _registeredFiler.Count; --i >= 0;)
-	{
-		if (_registeredFiler[i]->HasHandler(handler))
-		{
-			LOG_INFO("Unregister " + _registeredFiler[i]);
-
-			_registeredFiler.RemoveAt(i);
-		}
 	}
 }
 
@@ -257,7 +212,7 @@ void Far0::Run(String^ command)
 	if (colon < 0)
 		return;
 
-	for each(ModuleCommandInfo^ it in _registeredCommand)
+	for each(ProxyCommand^ it in _registeredCommand)
 	{
 		String^ pref = it->Attribute->Prefix;
 		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
@@ -399,7 +354,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		if (_prefixes == 0)
 		{
 			String^ PrefString = String::Empty;
-			for each(ModuleCommandInfo^ it in _registeredCommand)
+			for each(ProxyCommand^ it in _registeredCommand)
 			{
 				if (PrefString->Length > 0)
 					PrefString = String::Concat(PrefString, ":");
@@ -451,7 +406,11 @@ bool Far0::AsConfigure(int itemIndex)
 		return true;
 	}
 
-	ModuleToolInfo^ tool = _toolConfig[itemIndex - 1];
+	//???? if it is called by [ShiftF9] from a plugin menu then Far uses index from plugin menu, not config
+	if (--itemIndex >= _toolConfig.Count)
+		return false;
+	
+	ProxyTool^ tool = _toolConfig[itemIndex];
 	ModuleToolEventArgs e;
 	e.From = ModuleToolOptions::Config;
 	tool->Invoke(nullptr, %e);
@@ -469,7 +428,7 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 	try
 	{
 		ModuleFilerEventArgs^ e;
-		for each(ModuleFilerInfo^ it in _registeredFiler)
+		for each(ProxyFiler^ it in _registeredFiler)
 		{
 			// create?
 			if (!name && !it->Attribute->Creates)
@@ -532,7 +491,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 			{
 				LOG_AUTO(3, "OPEN_DISKMENU");
 
-				ModuleToolInfo^ tool = _toolDisk[(int)item];
+				ProxyTool^ tool = _toolDisk[(int)item];
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Disk;
 				tool->Invoke(nullptr, %e);
@@ -548,7 +507,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_PLUGINSMENU");
 
-				ModuleToolInfo^ tool = _toolPanels[(int)item - 1];
+				ProxyTool^ tool = _toolPanels[(int)item - 1];
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Panels;
 				tool->Invoke(nullptr, %e);
@@ -564,7 +523,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_EDITOR");
 
-				ModuleToolInfo^ tool = _toolEditor[(int)item - 1];
+				ProxyTool^ tool = _toolEditor[(int)item - 1];
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Editor;
 				tool->Invoke(nullptr, %e);
@@ -580,7 +539,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_VIEWER");
 
-				ModuleToolInfo^ tool = _toolViewer[(int)item - 1];
+				ProxyTool^ tool = _toolViewer[(int)item - 1];
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Viewer;
 				tool->Invoke(nullptr, %e);
@@ -603,7 +562,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 
 				LOG_AUTO(3, "OPEN_DIALOG");
 
-				ModuleToolInfo^ tool = _toolDialog[index - 1];
+				ProxyTool^ tool = _toolDialog[index - 1];
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Dialog;
 				tool->Invoke(nullptr, %e);
@@ -700,9 +659,9 @@ void Far0::OpenMenu(ModuleToolOptions from)
 		Far::Net->Message("This menu is empty but it is used internally.", "FarNet");
 }
 
-static void AddTools(List<ModuleToolInfo^>^ destination, List<ModuleToolInfo^>^ source)
+static void AddTools(List<ProxyTool^>^ destination, List<ProxyTool^>^ source)
 {
-	for each(ModuleToolInfo^ it in source)
+	for each(ProxyTool^ it in source)
 		if (!destination->Contains(it))
 			destination->Add(it);
 }
@@ -714,7 +673,7 @@ void Far0::OpenConfig()
 	menu->HelpTopic = "MenuConfig";
 	menu->Title = "Modules configuration";
 
-	List<ModuleToolInfo^> tools;
+	List<ProxyTool^> tools;
 	AddTools(%tools, %_toolConfig);
 	AddTools(%tools, %_toolDialog);
 	AddTools(%tools, %_toolDisk);
@@ -824,16 +783,16 @@ void Far0::OnConfigUICulture()
 	}
 }
 
-ref class ModuleToolComparer : IComparer<ModuleToolInfo^>
+ref class ModuleToolComparer : IComparer<ProxyTool^>
 {
 public:
-	virtual int Compare(ModuleToolInfo^ x, ModuleToolInfo^ y)
+	virtual int Compare(ProxyTool^ x, ProxyTool^ y)
 	{
 		return String::Compare(x->GetMenuText(), y->GetMenuText(), true, Far::Net->GetCurrentUICulture(false));
 	}
 };
 
-void Far0::OnConfigTool(List<ModuleToolInfo^>^ tools)
+void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->Title = "Menu tools";
@@ -841,7 +800,7 @@ void Far0::OnConfigTool(List<ModuleToolInfo^>^ tools)
 
 	int widthName = 0;
 	int widthAttr = 0;
-	for each(ModuleToolInfo^ it in tools)
+	for each(ProxyTool^ it in tools)
 	{
 		if (widthName < it->Attribute->Name->Length)
 			widthName = it->Attribute->Name->Length;
@@ -858,7 +817,7 @@ void Far0::OnConfigTool(List<ModuleToolInfo^>^ tools)
 		tools->Sort(gcnew ModuleToolComparer);
 
 		// fill
-		for each(ModuleToolInfo^ it in tools)
+		for each(ProxyTool^ it in tools)
 		{
 			FarItem^ mi = menu->Add(String::Format(format, it->GetMenuText(), it->Attribute->Options, it->Key));
 			mi->Data = it;
@@ -869,7 +828,7 @@ void Far0::OnConfigTool(List<ModuleToolInfo^>^ tools)
 			return;
 
 		// the tool
-		ModuleToolInfo^ tool = (ModuleToolInfo^)menu->SelectedData;
+		ProxyTool^ tool = (ProxyTool^)menu->SelectedData;
 
 		// dialog
 		IInputBox^ ib = Far::Net->CreateInputBox();
@@ -900,7 +859,7 @@ void Far0::OnConfigCommand()
 	{
 		int lenPref = 0;
 		int lenName = 0;
-		for each(ModuleCommandInfo^ it in _registeredCommand)
+		for each(ProxyCommand^ it in _registeredCommand)
 		{
 			if (lenPref < it->Attribute->Prefix->Length)
 				lenPref = it->Attribute->Prefix->Length;
@@ -910,7 +869,7 @@ void Far0::OnConfigCommand()
 		String^ format = "{0,-" + lenPref + "} : {1,-" + lenName + "} : {2}";
 
 		menu->Items->Clear();
-		for each(ModuleCommandInfo^ it in _registeredCommand)
+		for each(ProxyCommand^ it in _registeredCommand)
 		{
 			FarItem^ mi = menu->Add(String::Format(format, it->Attribute->Prefix, it->Attribute->Name, it->Key));
 			mi->Data = it;
@@ -920,12 +879,12 @@ void Far0::OnConfigCommand()
 			return;
 
 		FarItem^ mi = menu->Items[menu->Selected];
-		ModuleCommandInfo^ it = (ModuleCommandInfo^)mi->Data;
+		ProxyCommand^ it = (ProxyCommand^)mi->Data;
 
 		IInputBox^ ib = Far::Net->CreateInputBox();
 		ib->EmptyEnabled = true;
 		ib->HelpTopic = _helpTopic + "ConfigCommand";
-		ib->Prompt = "New prefix for: " + it->ToolName;
+		ib->Prompt = "New prefix for: " + it->Name;
 		ib->Text = it->Attribute->Prefix;
 		ib->Title = "Original prefix: " + it->DefaultPrefix;
 
@@ -962,7 +921,7 @@ void Far0::OnConfigEditor()
 	menu->HelpTopic = "ConfigEditor";
 	menu->Title = Res::ModuleEditors;
 
-	for each(ModuleEditorInfo^ it in _registeredEditor)
+	for each(ProxyEditor^ it in _registeredEditor)
 	{
 		FarItem^ mi = menu->Add(it->Key);
 		mi->Data = it;
@@ -971,13 +930,13 @@ void Far0::OnConfigEditor()
 	while(menu->Show())
 	{
 		FarItem^ mi = menu->Items[menu->Selected];
-		ModuleEditorInfo^ it = (ModuleEditorInfo^)mi->Data;
+		ProxyEditor^ it = (ProxyEditor^)mi->Data;
 
 		IInputBox^ ib = Far::Net->CreateInputBox();
 		ib->EmptyEnabled = true;
 		ib->HelpTopic = _helpTopic + "ConfigEditor";
 		ib->History = "Masks";
-		ib->Prompt = "New mask for " + it->ToolName;
+		ib->Prompt = "New mask for " + it->Name;
 		ib->Text = it->Attribute->Mask;
 		ib->Title = "Original mask: " + it->DefaultMask;
 
@@ -1001,7 +960,7 @@ void Far0::OnConfigFiler()
 	menu->HelpTopic = "ConfigFiler";
 	menu->Title = Res::ModuleFilers;
 
-	for each(ModuleFilerInfo^ it in _registeredFiler)
+	for each(ProxyFiler^ it in _registeredFiler)
 	{
 		FarItem^ mi = menu->Add(it->Key);
 		mi->Data = it;
@@ -1010,13 +969,13 @@ void Far0::OnConfigFiler()
 	while(menu->Show())
 	{
 		FarItem^ mi = menu->Items[menu->Selected];
-		ModuleFilerInfo^ it = (ModuleFilerInfo^)mi->Data;
+		ProxyFiler^ it = (ProxyFiler^)mi->Data;
 
 		IInputBox^ ib = Far::Net->CreateInputBox();
 		ib->EmptyEnabled = true;
 		ib->HelpTopic = _helpTopic + "ConfigFiler";
 		ib->History = "Masks";
-		ib->Prompt = "New mask for " + it->ToolName;
+		ib->Prompt = "New mask for " + it->Name;
 		ib->Text = it->Attribute->Mask;
 		ib->Title = "Original mask: " + it->DefaultMask;
 
@@ -1059,7 +1018,7 @@ void Far0::OnEditorOpened(IEditor^ editor)
 
 	AutoEditorInfo ei;
 
-	for each(ModuleEditorInfo^ it in _registeredEditor)
+	for each(ProxyEditor^ it in _registeredEditor)
 	{
 		// mask?
 		CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));

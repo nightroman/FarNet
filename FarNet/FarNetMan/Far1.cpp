@@ -13,9 +13,9 @@ Copyright (c) 2005 FarNet Team
 #include "Macro.h"
 #include "Menu.h"
 #include "Message.h"
-#include "ModuleItems.h"
 #include "ModuleLoader.h"
 #include "ModuleManager.h"
+#include "ModuleProxy.h"
 #include "Panel0.h"
 #include "Panel2.h"
 #include "Shelve.h"
@@ -49,60 +49,31 @@ String^ Far1::RegistryPluginsPath::get()
 	return gcnew String(Info.RootKey);
 }
 
-void Far1::RegisterTool(IModuleManager^ manager, Guid id, EventHandler<ModuleToolEventArgs^>^ handler, ModuleToolAttribute^ attribute)
+IModuleCommand^ Far1::GetModuleCommand(Guid id)
 {
-	if (!handler)
-		throw gcnew ArgumentNullException("handler");
-	if (!attribute)
-		throw gcnew ArgumentNullException("attribute");
-	if (ES(attribute->Name))
-		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
+	ProxyAction^ action;
+	if (!ModuleLoader::Actions->TryGetValue(id, action))
+		return nullptr;
 
-	Far0::RegisterTool(gcnew ModuleToolInfo((manager ? (ModuleManager^)manager : nullptr), id, handler, attribute));
+	return (ProxyCommand^)action;
 }
 
-void Far1::UnregisterTool(EventHandler<ModuleToolEventArgs^>^ handler)
+IModuleFiler^ Far1::GetModuleFiler(Guid id)
 {
-	Far0::UnregisterTool(handler);
+	ProxyAction^ action;
+	if (!ModuleLoader::Actions->TryGetValue(id, action))
+		return nullptr;
+
+	return (ProxyFiler^)action;
 }
 
-void Far1::RegisterCommand(IModuleManager^ manager, Guid id, EventHandler<ModuleCommandEventArgs^>^ handler, ModuleCommandAttribute^ attribute)
+IModuleTool^ Far1::GetModuleTool(Guid id)
 {
-	if (!handler)
-		throw gcnew ArgumentNullException("handler");
-	if (!attribute)
-		throw gcnew ArgumentNullException("attribute");
-	if (ES(attribute->Name))
-		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
+	ProxyAction^ action;
+	if (!ModuleLoader::Actions->TryGetValue(id, action))
+		return nullptr;
 
-	return Far0::RegisterCommand(manager, id, handler, attribute);
-}
-
-void Far1::UnregisterCommand(EventHandler<ModuleCommandEventArgs^>^ handler)
-{
-	Far0::UnregisterCommand(handler);
-}
-
-void Far1::RegisterFiler(IModuleManager^ manager, Guid id, EventHandler<ModuleFilerEventArgs^>^ handler, ModuleFilerAttribute^ attribute)
-{
-	if (!handler)
-		throw gcnew ArgumentNullException("handler");
-	if (!attribute)
-		throw gcnew ArgumentNullException("attribute");
-	if (ES(attribute->Name))
-		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
-
-	Far0::RegisterFiler(manager, id, handler, attribute);
-}
-
-void Far1::UnregisterFiler(EventHandler<ModuleFilerEventArgs^>^ handler)
-{
-	Far0::UnregisterFiler(handler);
-}
-
-void Far1::Unregister(BaseModuleItem^ item)
-{
-	ModuleLoader::UnloadModuleItem(item);
+	return (ProxyTool^)action;
 }
 
 void Far1::Message(String^ body)
