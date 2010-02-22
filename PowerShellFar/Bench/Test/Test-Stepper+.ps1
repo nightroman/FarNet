@@ -85,7 +85,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: the window (panels) and item ('far.exe.config')
-	if ($Far.WindowType -ne 'Panels') { throw }
+	if ($Far.WindowKind -ne 'Panels') { throw }
 	if ((Get-FarFile).Name -ne 'far.exe.config') { throw }
 }
 
@@ -144,7 +144,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: current window is panel
-	if ($Far.WindowType -ne 'Panels') { throw }
+	if ($Far.WindowKind -ne 'Panels') { throw }
 }
 
 {
@@ -154,7 +154,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: current window is editor
-	if ($Far.WindowType -ne 'Editor') { throw }
+	if ($Far.WindowKind -ne 'Editor') { throw }
 }
 
 {
@@ -174,7 +174,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: current window is panel
-	if ($Far.WindowType -ne 'Panels') { throw }
+	if ($Far.WindowKind -ne 'Panels') { throw }
 }
 
 {
@@ -215,7 +215,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: current window is editor
-	if ($Far.WindowType -ne 'Editor') { throw }
+	if ($Far.WindowKind -ne 'Editor') { throw }
 }
 
 # exit the editor, do not save
@@ -223,7 +223,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: current window is panel
-	if ($Far.WindowType -ne 'Panels') { throw }
+	if ($Far.WindowKind -ne 'Panels') { throw }
 }
 
 # exit the plugin panel

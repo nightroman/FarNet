@@ -26,7 +26,7 @@ function global:Indent-Selection- ([switch]$Outdent)
 {
 	$Editor = $Psf.Editor()
 	$Select = $Editor.Selection
-	if ($Select.Type -ne 'Stream') { return }
+	if ($Select.Kind -ne 'Stream') { return }
 
 	$Editor.BeginUndo()
 

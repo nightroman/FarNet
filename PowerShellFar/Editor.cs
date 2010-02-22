@@ -131,11 +131,11 @@ namespace PowerShellFar
 		{
 			get
 			{
-				if (Far.Net.WindowType != WindowType.Editor)
+				if (Far.Net.WindowKind != WindowKind.Editor)
 					return null;
 
 				IEditor editor = Far.Net.Editor;
-				if (editor.Selection.Type == SelectionType.Stream)
+				if (editor.Selection.Kind == RegionKind.Stream)
 					return editor.Selection;
 				return editor.Lines;
 			}
@@ -147,7 +147,7 @@ namespace PowerShellFar
 			{
 				ILine line = null;
 
-				if (Far.Net.WindowType == WindowType.Editor)
+				if (Far.Net.WindowKind == WindowKind.Editor)
 				{
 					IEditor editor = Far.Net.Editor;
 					ISelection selection1 = editor.Selection;
@@ -173,14 +173,14 @@ namespace PowerShellFar
 			{
 				ILine line = null;
 
-				if (Far.Net.WindowType == WindowType.Editor)
+				if (Far.Net.WindowKind == WindowKind.Editor)
 				{
 					IEditor editor = Far.Net.Editor;
 					ISelection selection1 = editor.Selection;
-					if (selection1.Type == SelectionType.Rect)
+					if (selection1.Kind == RegionKind.Rect)
 						throw new NotSupportedException("Rectangular selection is not supported.");
 
-					if (selection1.Type == SelectionType.Stream)
+					if (selection1.Kind == RegionKind.Stream)
 					{
 						selection1.SetText(value);
 						return;
@@ -335,16 +335,16 @@ namespace PowerShellFar
 		{
 			string code;
 			bool toCleanCmdLine = false;
-			WindowType wt = Far.Net.WindowType;
+			WindowKind wt = Far.Net.WindowKind;
 
-			if (wt == WindowType.Editor)
+			if (wt == WindowKind.Editor)
 			{
 				IEditor editor = Far.Net.Editor;
 				code = editor.Selection.GetText();
 				if (string.IsNullOrEmpty(code))
 					code = editor.Lines[editor.Cursor.Y].Text;
 			}
-			else if (wt == WindowType.Dialog)
+			else if (wt == WindowKind.Dialog)
 			{
 				IDialog dialog = Far.Net.Dialog;
 				IEdit edit = dialog.Focused as IEdit;
@@ -372,10 +372,10 @@ namespace PowerShellFar
 				return;
 
 			// go
-			bool ok = A.Psf.InvokePipeline(code, null, wt != WindowType.Editor);
+			bool ok = A.Psf.InvokePipeline(code, null, wt != WindowKind.Editor);
 
 			// clean the command line if ok
-			if (ok && toCleanCmdLine && wt != WindowType.Editor)
+			if (ok && toCleanCmdLine && wt != WindowKind.Editor)
 				Far.Net.CommandLine.Text = string.Empty;
 		}
 	}

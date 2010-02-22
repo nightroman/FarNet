@@ -235,32 +235,31 @@ namespace FarNet
 		/// <summary>
 		/// Override this method to process the module connection.
 		/// </summary>
-		/// <example>
-		/// (C#) how to register a command line prefix and a menu command.
-		/// <code>
-		/// // Register a prefix:
-		/// Far.Net.RegisterModuleCommand(this, [name], [prefix], [handler]);
-		/// // Register a menu command:
-		/// Far.Net.RegisterModuleTool(this, [name], [handler], [options]);
-		/// ...
-		/// </code>
-		/// </example>
+		/// <remarks>
+		/// This method is called once.
+		/// For standard hosts it is called before creation of the first called module action.
+		/// For preloadable hosts it is called immediately after loading of the module assembly and registraion of its actions.
+		/// </remarks>
 		public virtual void Connect()
 		{ }
 
 		/// <summary>
-		/// Override this method to process module disconnection.
+		/// Override this method to process the module disconnection.
 		/// </summary>
 		/// <remarks>
 		/// NOTE: Don't call Far UI, it is not working on exiting.
 		/// Consider to use GUI message boxes if it is absolutely needed.
+		/// <para>
+		/// The host does not have to unregister dynamically registered actions on disconnection.
+		/// But added "global" event handlers have to be removed, for example, handlers added to the <see cref="IFar.AnyEditor"/> operator.
+		/// </para>
 		/// </remarks>
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public virtual void Disconnect()
 		{ }
 
 		/// <summary>
-		/// Called before any module action.
+		/// Called before invocation of any module action.
 		/// </summary>
 		/// <remarks>
 		/// The module may override this method to perform preparation procedures.
@@ -304,7 +303,7 @@ namespace FarNet
 	/// <summary>
 	/// Any action attribute parameters.
 	/// </summary>
-	public abstract class ModuleActionAttribute : Attribute
+	public abstract class ModuleActionAttribute : Attribute, ICloneable
 	{
 		/// <summary>
 		/// The action name shown in menus. It is mandatory to specify.
@@ -324,6 +323,8 @@ namespace FarNet
 		/// to make sure that this and other action names are updated from resources.
 		/// </remarks>
 		public bool Resources { get; set; }
+		///
+		public object Clone() { return MemberwiseClone(); }
 	}
 
 	/// <summary>
@@ -385,7 +386,7 @@ namespace FarNet
 	/// Module command attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleCommandAttribute : ModuleActionAttribute, ICloneable
+	public sealed class ModuleCommandAttribute : ModuleActionAttribute
 	{
 		/// <summary>
 		/// The command prefix. It is mandatory to specify a not empty value.
@@ -394,8 +395,6 @@ namespace FarNet
 		/// This prefix is only a suggestion, the actual prefix is configured by a user.
 		/// </remarks>
 		public string Prefix { get; set; }
-		///
-		public object Clone() { return MemberwiseClone(); }
 	}
 
 	/// <summary>
@@ -480,7 +479,7 @@ namespace FarNet
 	/// Module filer action attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleFilerAttribute : ModuleActionAttribute, ICloneable
+	public sealed class ModuleFilerAttribute : ModuleActionAttribute
 	{
 		/// <include file='doc.xml' path='docs/pp[@name="FileMask"]/*'/>
 		public string Mask { get; set; }
@@ -488,8 +487,6 @@ namespace FarNet
 		/// Tells that the filer also creates files.
 		/// </summary>
 		public bool Creates { get; set; }
-		///
-		public object Clone() { return MemberwiseClone(); }
 	}
 
 	/// <summary>
@@ -546,14 +543,12 @@ namespace FarNet
 	/// Module tool action attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleToolAttribute : ModuleActionAttribute, ICloneable
+	public sealed class ModuleToolAttribute : ModuleActionAttribute
 	{
 		/// <summary>
 		/// Tool options. It is mandatory to specify at least one menu or other area.
 		/// </summary>
 		public ModuleToolOptions Options { get; set; }
-		///
-		public object Clone() { return MemberwiseClone(); }
 	}
 
 	/// <summary>
@@ -594,6 +589,25 @@ namespace FarNet
 	}
 
 	/// <summary>
+	/// Module item kinds.
+	/// </summary>
+	public enum ModuleItemKind
+	{
+		///
+		None,
+		///
+		Host,
+		///
+		Command,
+		///
+		Editor,
+		///
+		Filer,
+		///
+		Tool
+	}
+
+	/// <summary>
 	/// Module action worker.
 	/// </summary>
 	public interface IModuleAction
@@ -607,9 +621,9 @@ namespace FarNet
 		/// </summary>
 		string Name { get; }
 		/// <summary>
-		/// Gets the type name.
+		/// Gets the action kind.
 		/// </summary>
-		string TypeName { get; }
+		ModuleItemKind Kind { get; }
 		/// <summary>
 		/// Gets the module name.
 		/// </summary>

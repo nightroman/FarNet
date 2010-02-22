@@ -1,5 +1,25 @@
 http://code.google.com/p/farnet/
 
+= 4.3.7 =
+
+REFACTORING: TERMINOLOGY AND CODE NAMES AGAIN
+
+??
+The word 'Type' in FarNet deals with .NET System.Type class only. In other
+cases the word 'Kind' is used. This should reduce confusions now and later
+and also fixes Code Analysis warnings. Code name changes:
+-- SelectionType -> RegionKind (also used more general Region)
+-- ISelection.Type -> Kind
+-- PanelType -> PanelKind
+-- IAnyPanel.Type -> Kind
+-- WindowType -> WindowKind
+
+
+OTHER CHANGES
+
+*) Optimized module loading and unloading. In particular: modules should not
+care of dynamically registered actions, they are unregistered by the core.
+
 = 4.3.6 =
 
 UPDATE STEPS

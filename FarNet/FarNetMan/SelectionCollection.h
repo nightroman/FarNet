@@ -22,7 +22,7 @@ public:
 	virtual property IStrings^ Strings { IStrings^ get(); }
 	virtual property Place Shape { Place get(); }
 	virtual property Object^ SyncRoot { Object^ get(); }
-	virtual property SelectionType Type { SelectionType get(); }
+	virtual property RegionKind Kind { RegionKind get(); }
 public:
 	virtual IEnumerator<ILine^>^ GetEnumerator() = IEnumerable<ILine^>::GetEnumerator;
 	virtual String^ GetText() { return GetText(CV::CRLF); }
@@ -34,7 +34,7 @@ public:
 	virtual void RemoveAt(int index);
 	virtual void SetText(String^ text);
 public:
-	virtual void Select(SelectionType type, int pos1, int line1, int pos2, int line2);
+	virtual void Select(RegionKind kind, int pos1, int line1, int pos2, int line2);
 	virtual void SelectAll();
 	virtual void Unselect();
 public:

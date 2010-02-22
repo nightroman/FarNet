@@ -66,8 +66,8 @@ void Viewer::Open(OpenMode mode)
 	PIN_ES(pinTitle, _Title);
 
 	// from dialog? set modal
-	WindowType wt = Far::Net->WindowType;
-	if (wt == WindowType::Dialog)
+	WindowKind wt = Far::Net->WindowKind;
+	if (wt == WindowKind::Dialog)
 		flags &= ~VF_NONMODAL;
 
 	// open: see editor
@@ -84,7 +84,7 @@ void Viewer::Open(OpenMode mode)
 		_CodePage); //?? test window values
 
 	// redraw Far
-	if (wt == WindowType::Dialog)
+	if (wt == WindowKind::Dialog)
 		Far::Net->Redraw();
 
 	// errors: see editor

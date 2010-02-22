@@ -13,7 +13,7 @@ ref class EditorLineSelection;
 ref class EditorLine sealed : Line
 {
 public:
-	virtual property FarNet::WindowType WindowType { FarNet::WindowType get() override; }
+	virtual property FarNet::WindowKind WindowKind { FarNet::WindowKind get() override; }
 	virtual property ILine^ FullLine { ILine^ get() override; }
 	virtual property ILineSelection^ Selection { ILineSelection^ get() override; }
 	virtual property int Length { int get() override; }

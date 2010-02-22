@@ -148,7 +148,7 @@ if (!$Overtype) {
 # rect selection
 $Editor.SetText("1`nHELLO`nWORLD")
 $Select.Select('Rect', 2, 1, 2, 2)
-if ($Select.Type -ne 'Rect') { throw }
+if ($Select.Kind -ne 'Rect') { throw }
 if ($Select.Count -ne 2) { throw }
 if ($Select.GetText() -ne "L`r`nR") { throw }
 if ($Select.Strings[0] -ne "L") { throw }
@@ -167,7 +167,7 @@ if ($Editor.TrueSelection.Count -ne 2) { throw }
 # stream selection (line parts)
 $Editor.SetText("1`nHELLO`nWORLD")
 $Select.Select('Stream', 3, 1, 1, 2)
-if ($Select.Type -ne 'Stream') { throw }
+if ($Select.Kind -ne 'Stream') { throw }
 if ($Select.Count -ne 2) { throw }
 if ($Select.GetText() -ne "LO`r`nWO") { throw }
 if ($Select.Strings[0] -ne "LO") { throw }

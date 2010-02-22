@@ -37,6 +37,8 @@ void ModuleLoader::LoadModules()
 // #2 Read cache
 void ModuleLoader::ReadModuleCache()
 {
+	LOG_AUTO(3, "Read module cache");
+
 	RegistryKey^ keyCache = nullptr;
 	try
 	{
@@ -49,7 +51,7 @@ void ModuleLoader::ReadModuleCache()
 			return;
 		}
 		
-		// drop the key on version mismatch
+		// different version: drop cache values
 		String^ version = keyCache->GetValue(String::Empty, String::Empty)->ToString();
 		if (version != CacheVersion.ToString())
 		{
@@ -67,6 +69,7 @@ void ModuleLoader::ReadModuleCache()
 				continue;
 			
 			bool done = false;
+			ModuleManager^ manager = nullptr;
 			try
 			{
 				// exists?
@@ -84,8 +87,9 @@ void ModuleLoader::ReadModuleCache()
 				if (assemblyStamp != fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture))
 					continue;
 				
-				// new manager
-				ModuleManager^ manager = gcnew ModuleManager(assemblyPath);
+				// new manager, add it now, remove later on errors
+				manager = gcnew ModuleManager(assemblyPath);
+				_Managers->Add(manager->ModuleName, manager);
 
 				// culture of cached resources
 				String^ savedCulture = reader.Read();
@@ -101,63 +105,35 @@ void ModuleLoader::ReadModuleCache()
 					manager->CachedResources = true;
 				}
 				
-				List<ProxyCommand^> commands;
-				List<ProxyEditor^> editors;
-				List<ProxyFiler^> filers;
-				List<ProxyTool^> tools;
-
 				for(;;)
 				{
-					// Type, can be end of data
-					String^ itemType = reader.TryRead();
-					if (!itemType)
+					// Kind, can be end of data
+					String^ kindText = reader.TryRead();
+					if (!kindText)
 						break;
-
-					// case: host
-					if (itemType == "Host")
+					
+					ModuleItemKind kind = (ModuleItemKind)Enum::Parse(ModuleItemKind::typeid, kindText);
+					switch(kind)
 					{
-						String^ className = reader.Read();;
-						manager->SetModuleHost(className);
-						continue;
-					}
-
-					// types:
-					if (itemType == "Tool")
-					{
-						ProxyTool^ it = gcnew ProxyTool(manager, %reader);
-						tools.Add(it);
-					}
-					else if (itemType == "Command")
-					{
-						ProxyCommand^ it = gcnew ProxyCommand(manager, %reader);
-						commands.Add(it);
-					}
-					else if (itemType == "Editor")
-					{
-						ProxyEditor^ it = gcnew ProxyEditor(manager, %reader);
-						editors.Add(it);
-					}
-					else if (itemType == "Filer")
-					{
-						ProxyFiler^ it = gcnew ProxyFiler(manager, %reader);
-						filers.Add(it);
-					}
-					else
-					{
+					case ModuleItemKind::Host:
+						manager->SetModuleHost(reader.Read());
+						break;
+					case ModuleItemKind::Command:
+						Far0::RegisterProxyCommand(gcnew ProxyCommand(manager, %reader));
+						break;
+					case ModuleItemKind::Editor:
+						Far0::RegisterProxyEditor(gcnew ProxyEditor(manager, %reader));
+						break;
+					case ModuleItemKind::Filer:
+						Far0::RegisterProxyFiler(gcnew ProxyFiler(manager, %reader));
+						break;
+					case ModuleItemKind::Tool:
+						Far0::RegisterProxyTool(gcnew ProxyTool(manager, %reader));
+						break;
+					default:
 						throw gcnew ModuleException;
 					}
 				}
-
-				// add the name to dictionary and add plugins
-				_Managers->Add(manager->ModuleName, manager);
-				for each(ProxyCommand^ it in commands)
-					Far0::AddModuleCommandInfo(it);
-				for each(ProxyEditor^ it in editors)
-					Far0::AddModuleEditorInfo(it);
-				for each(ProxyFiler^ it in filers)
-					Far0::AddModuleFilerInfo(it);
-				for each(ProxyTool^ it in tools)
-					Far0::AddModuleToolInfo(it);
 
 				done = true;
 			}
@@ -173,7 +149,11 @@ void ModuleLoader::ReadModuleCache()
 			finally
 			{
 				if (!done)
+				{
 					keyCache->DeleteValue(assemblyPath);
+					if (manager)
+						RemoveModuleManager(manager);
+				}
 			}
 		}
 	}
@@ -253,72 +233,76 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 	if (_Managers->ContainsKey(assemblyName))
 		return;
 	
-	// add new module info
+	// add new module manager now, it will be removed on errors
 	ModuleManager^ manager = gcnew ModuleManager(assemblyPath);
 	_Managers->Add(assemblyName, manager);
+	bool done = false;
+	try
+	{
+		LOG_AUTO(3, String::Format("Load module {0}", manager->ModuleName));
 
-	// load from assembly
-	List<ProxyCommand^> commands;
-	List<ProxyEditor^> editors;
-	List<ProxyFiler^> filers;
-	List<ProxyTool^> tools;
-	Assembly^ assembly = manager->AssemblyInstance;
-	if (classes && classes->Count > 0)
-	{
-		for each(String^ name in classes)
-			AddModuleItem(manager, assembly->GetType(name, true), %commands, %editors, %filers, %tools);
-	}
-	else
-	{
-		for each(Type^ type in assembly->GetExportedTypes())
+		int actionCount = 0;
+		Assembly^ assembly = manager->AssemblyInstance;
+		if (classes && classes->Count > 0)
 		{
-			if (!type->IsAbstract && BaseModuleItem::typeid->IsAssignableFrom(type))
-				AddModuleItem(manager, type, %commands, %editors, %filers, %tools);
+			for each(String^ name in classes)
+				actionCount += LoadClass(manager, assembly->GetType(name, true));
 		}
+		else
+		{
+			for each(Type^ type in assembly->GetExportedTypes())
+			{
+				if (!type->IsAbstract && BaseModuleItem::typeid->IsAssignableFrom(type))
+					actionCount += LoadClass(manager, type);
+			}
+		}
+
+		// if the module has the host to load then load it now, if it is not loaded then the module should be cached
+		if (!manager->LoadLoadableModuleHost())
+		{
+			if (0 == actionCount)
+				throw gcnew ModuleException("The module should implement at least one action or a preloadable host."); //????
+
+			WriteModuleCache(manager);
+		}
+
+		// done
+		done = true;
 	}
-
-	// add actions
-	for each(ProxyCommand^ it in commands)
-		Far0::AddModuleCommandInfo(it);
-	for each(ProxyEditor^ it in editors)
-		Far0::AddModuleEditorInfo(it);
-	for each(ProxyFiler^ it in filers)
-		Far0::AddModuleFilerInfo(it);
-	for each(ProxyTool^ it in tools)
-		Far0::AddModuleToolInfo(it);
-
-	// if the module has no loaded host now then it is cached
-	if (!manager->GetLoadedModuleHost())
+	finally
 	{
-		if (0 == commands.Count + editors.Count + filers.Count + tools.Count)
-			throw gcnew ModuleException("The module should implement at least one action or a preloadable host.");
-		
-		WriteModuleCache(manager, %commands, %editors, %filers, %tools);
+		if (!done)
+			RemoveModuleManager(manager);
 	}
 }
 
 // #6 Adds a module item
-void ModuleLoader::AddModuleItem(ModuleManager^ manager, Type^ type, List<ProxyCommand^>^ commands, List<ProxyEditor^>^ editors, List<ProxyFiler^>^ filers, List<ProxyTool^>^ tools)
+int ModuleLoader::LoadClass(ModuleManager^ manager, Type^ type)
 {
-	LOG_AUTO(3, "Load module item " + type);
+	LOG_AUTO(3, "Load class " + type);
 
-	// host
+	// case: host
 	if (ModuleHost::typeid->IsAssignableFrom(type))
+	{
 		manager->SetModuleHost(type);
+		return 0;
+	}
+	
 	// command
-	else if (ModuleCommand::typeid->IsAssignableFrom(type))
-		commands->Add(gcnew ProxyCommand(manager, type));
+	if (ModuleCommand::typeid->IsAssignableFrom(type))
+		Far0::RegisterProxyCommand(gcnew ProxyCommand(manager, type));
 	// editor
 	else if (ModuleEditor::typeid->IsAssignableFrom(type))
-		editors->Add(gcnew ProxyEditor(manager, type));
+		Far0::RegisterProxyEditor(gcnew ProxyEditor(manager, type));
 	// filer
 	else if (ModuleFiler::typeid->IsAssignableFrom(type))
-		filers->Add(gcnew ProxyFiler(manager, type));
+		Far0::RegisterProxyFiler(gcnew ProxyFiler(manager, type));
 	// tool
 	else if (ModuleTool::typeid->IsAssignableFrom(type))
-		tools->Add(gcnew ProxyTool(manager, type));
+		Far0::RegisterProxyTool(gcnew ProxyTool(manager, type));
 	else
-		throw gcnew ModuleException("Unknown module item class type.");
+		throw gcnew ModuleException("Unknown module class type.");
+	return 1;
 }
 
 //! Don't use Far UI
@@ -361,7 +345,7 @@ bool ModuleLoader::CanExit()
 	return true;
 }
 
-void ModuleLoader::WriteModuleCache(ModuleManager^ manager, List<ProxyCommand^>^ commands, List<ProxyEditor^>^ editors, List<ProxyFiler^>^ filers, List<ProxyTool^>^ tools)
+void ModuleLoader::WriteModuleCache(ModuleManager^ manager)
 {
 	RegistryKey^ keyCache = nullptr;
 	try
@@ -397,18 +381,12 @@ void ModuleLoader::WriteModuleCache(ModuleManager^ manager, List<ProxyCommand^>^
 			data.Add(hostClassName);
 		}
 
-		for each(ProxyTool^ it in tools)
-			it->WriteCache(%data);
+		// write actions of the manager
+		for each(ProxyAction^ it in _Actions.Values)
+			if (it->Manager == manager)
+				it->WriteCache(%data);
 
-		for each(ProxyCommand^ it in commands)
-			it->WriteCache(%data);
-
-		for each(ProxyEditor^ it in editors)
-			it->WriteCache(%data);
-
-		for each(ProxyFiler^ it in filers)
-			it->WriteCache(%data);
-
+		// write to the registry
 		array<String^>^ data2 = gcnew array<String^>(data.Count);
 		data.CopyTo(data2);
 		keyCache->SetValue(manager->AssemblyPath, data2);

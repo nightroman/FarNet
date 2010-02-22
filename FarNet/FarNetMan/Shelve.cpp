@@ -30,7 +30,7 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 {
 	// case: special panel, e.g. QView.
 	// Let's use the active path to restore, no path (just close) is worse.
-	if (panel->Type != PanelType::File)
+	if (panel->Kind != PanelKind::File)
 	{
 		Path = Far::Net->ActivePath;
 		return;

@@ -35,7 +35,7 @@ $global:TestDialogValue = $null
 # open the test dialog if not yet
 if (!$TestOpened) {
 
-	if ($Far.WindowType -eq 'Dialog') { throw "Do not run this from a dialog" }
+	if ($Far.WindowKind -eq 'Dialog') { throw "Do not run this from a dialog" }
 
 	{{
 		# run the dialog
@@ -240,7 +240,7 @@ if (!$TestOpened) {
 
 	{
 		# no dialog?
-		if ($Far.WindowType -eq 'Dialog') { throw }
+		if ($Far.WindowKind -eq 'Dialog') { throw }
 	}
 }
 

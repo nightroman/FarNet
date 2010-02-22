@@ -11,22 +11,22 @@ namespace FarNet
 	public interface ISelection : ILines
 	{
 		/// <summary>
-		/// True if selection exists.
+		/// Gets true if selection exists.
 		/// </summary>
 		bool Exists { get; }
 		/// <summary>
-		/// Type of selection.
+		/// Gets the selection kind.
 		/// </summary>
-		SelectionType Type { get; }
+		RegionKind Kind { get; }
 		/// <summary>
 		/// Selects a region.
 		/// </summary>
-		/// <param name="type">Type of selection: <see cref="SelectionType"/>.</param>
+		/// <param name="kind">Selection kind.</param>
 		/// <param name="pos1">Position 1.</param>
 		/// <param name="line1">Line 1.</param>
 		/// <param name="pos2">Position 2.</param>
 		/// <param name="line2">Line 2.</param>
-		void Select(SelectionType type, int pos1, int line1, int pos2, int line2);
+		void Select(RegionKind kind, int pos1, int line1, int pos2, int line2);
 		/// <summary>
 		/// Selects all text.
 		/// </summary>
@@ -36,7 +36,7 @@ namespace FarNet
 		/// </summary>
 		void Unselect();
 		/// <summary>
-		/// Shape of selection.
+		/// Gets the selected place.
 		/// </summary>
 		Place Shape { get; }
 		/// <summary>
@@ -53,24 +53,5 @@ namespace FarNet
 		/// </summary>
 		/// <param name="text">New text.</param>
 		void SetText(string text);
-	}
-
-	/// <summary>
-	/// Type of editor selected area.
-	/// </summary>
-	public enum SelectionType
-	{
-		/// <summary>
-		/// No selection.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// Rectangular selection.
-		/// </summary>
-		Rect = 2,
-		/// <summary>
-		/// Stream selection.
-		/// </summary>
-		Stream = 1,
 	}
 }

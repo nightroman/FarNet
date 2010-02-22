@@ -85,10 +85,19 @@ void ModuleManager::SetModuleHost(Type^ moduleHostClassType)
 		throw gcnew ModuleException("The module host is already set.");
 
 	_ModuleHostClassType = moduleHostClassType;
+}
+
+bool ModuleManager::LoadLoadableModuleHost()
+{
+	if (!_ModuleHostClassType)
+		return false;
 	
 	array<Object^>^ attrs = _ModuleHostClassType->GetCustomAttributes(ModuleHostAttribute::typeid, false);
-	if (attrs->Length > 0 && ((ModuleHostAttribute^)attrs[0])->Load)
-		Connect();
+	if (attrs->Length == 0 || !((ModuleHostAttribute^)attrs[0])->Load)
+		return false;
+
+	Connect();
+	return true;
 }
 
 void ModuleManager::Invoking()
@@ -246,7 +255,7 @@ IModuleCommand^ ModuleManager::RegisterModuleCommand(Guid id, ModuleCommandAttri
 		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
 
 	ProxyCommand^ it = gcnew ProxyCommand(this, id, attribute, handler);
-	Far0::AddModuleCommandInfo(it);
+	Far0::RegisterProxyCommand(it);
 	return it;
 }
 
@@ -260,7 +269,7 @@ IModuleFiler^ ModuleManager::RegisterModuleFiler(Guid id, ModuleFilerAttribute^ 
 		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
 
 	ProxyFiler^ it = gcnew ProxyFiler(this, id, attribute, handler);
-	Far0::AddModuleFilerInfo(it);
+	Far0::RegisterProxyFiler(it);
 	return it;
 }
 
@@ -274,7 +283,7 @@ IModuleTool^ ModuleManager::RegisterModuleTool(Guid id, ModuleToolAttribute^ att
 		throw gcnew ArgumentException("'attribute.Name' must not be empty.");
 
 	ProxyTool^ it = gcnew ProxyTool(this, id, attribute, handler);
-	Far0::AddModuleToolInfo(it);
+	Far0::RegisterProxyTool(it);
 	return it;
 }
 

@@ -25,9 +25,9 @@ ILineSelection^ EditorLine::Selection::get()
 //!! DON'T use _selection after this point
 #define _selection _selection__use_property
 
-FarNet::WindowType EditorLine::WindowType::get()
+FarNet::WindowKind EditorLine::WindowKind::get()
 {
-	return FarNet::WindowType::Editor;
+	return FarNet::WindowKind::Editor;
 }
 
 ILine^ EditorLine::FullLine::get()

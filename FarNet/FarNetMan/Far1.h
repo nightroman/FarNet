@@ -8,105 +8,105 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class Far1 : public IFar
+ref class Far1 sealed : public IFar
 {
 public:
-	virtual property FarConfirmations Confirmations { FarConfirmations get(); }
-	virtual property FarMacroState MacroState { FarMacroState get(); }
-	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get(); }
-	virtual property IAnyPanel^ Panel { IAnyPanel^ get(); }
-	virtual property IAnyPanel^ Panel2 { IAnyPanel^ get(); }
-	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get(); }
-	virtual property IDialog^ Dialog { IDialog^ get(); }
-	virtual property IEditor^ Editor { IEditor^ get(); }
-	virtual property ILine^ CommandLine { ILine^ get(); }
-	virtual property ILine^ Line { ILine^ get(); }
-	virtual property IMacro^ Macro { IMacro^ get(); }
-	virtual property int WindowCount { int get(); }
-	virtual property IntPtr MainWindowHandle { IntPtr get(); }
-	virtual property IViewer^ Viewer { IViewer^ get(); }
-	virtual property String^ ActivePath { String^ get(); }
-	virtual property String^ RegistryFarPath { String^ get(); }
-	virtual property String^ RegistryPluginsPath { String^ get(); }
-	virtual property Version^ FarVersion { System::Version^ get(); }
-	virtual property Version^ FarNetVersion { System::Version^ get(); }
-	virtual property WindowType WindowType { FarNet::WindowType get(); }
-	virtual property IZoo^ Zoo { IZoo^ get(); }
+	virtual property FarConfirmations Confirmations { FarConfirmations get() override; }
+	virtual property FarMacroState MacroState { FarMacroState get() override; }
+	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get() override; }
+	virtual property IAnyPanel^ Panel { IAnyPanel^ get() override; }
+	virtual property IAnyPanel^ Panel2 { IAnyPanel^ get() override; }
+	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get() override; }
+	virtual property IDialog^ Dialog { IDialog^ get() override; }
+	virtual property IEditor^ Editor { IEditor^ get() override; }
+	virtual property ILine^ CommandLine { ILine^ get() override; }
+	virtual property ILine^ Line { ILine^ get() override; }
+	virtual property IMacro^ Macro { IMacro^ get() override; }
+	virtual property int WindowCount { int get() override; }
+	virtual property IntPtr MainWindowHandle { IntPtr get() override; }
+	virtual property IViewer^ Viewer { IViewer^ get() override; }
+	virtual property String^ ActivePath { String^ get() override; }
+	virtual property String^ RegistryFarPath { String^ get() override; }
+	virtual property String^ RegistryPluginsPath { String^ get() override; }
+	virtual property Version^ FarVersion { System::Version^ get() override; }
+	virtual property Version^ FarNetVersion { System::Version^ get() override; }
+	virtual property FarNet::WindowKind WindowKind { FarNet::WindowKind get() override; }
+	virtual property IZoo^ Zoo { IZoo^ get() override; }
 public:
-	virtual array<int>^ CreateKeySequence(String^ keys);
-	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom);
-	virtual IEditor^ CreateEditor();
-	virtual IInputBox^ CreateInputBox();
-	virtual IListMenu^ CreateListMenu();
-	virtual IMenu^ CreateMenu();
-	virtual IPanel^ CreatePanel();
-	virtual ISubsetForm^ CreateSubsetForm();
-	virtual IViewer^ CreateViewer();
+	virtual array<int>^ CreateKeySequence(String^ keys) override;
+	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom) override;
+	virtual IEditor^ CreateEditor() override;
+	virtual IInputBox^ CreateInputBox() override;
+	virtual IListMenu^ CreateListMenu() override;
+	virtual IMenu^ CreateMenu() override;
+	virtual IPanel^ CreatePanel() override;
+	virtual ISubsetForm^ CreateSubsetForm() override;
+	virtual IViewer^ CreateViewer() override;
 public:
-	virtual array<IEditor^>^ Editors();
-	virtual array<IViewer^>^ Viewers();
-	virtual bool Commit();
-	virtual Char CodeToChar(int code);
-	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor);
-	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
-	virtual CultureInfo^ GetCurrentUICulture(bool update);
-	virtual FarNet::WindowType GetWindowType(int index);
-	virtual ICollection<String^>^ GetDialogHistory(String^ name);
-	virtual ICollection<String^>^ GetHistory(String^ name);
-	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter);
-	virtual IModuleCommand^ GetModuleCommand(Guid id);
-	virtual IModuleFiler^ GetModuleFiler(Guid id);
-	virtual IModuleTool^ GetModuleTool(Guid id);
-	virtual int Message(String^ body, String^ header, MsgOptions options);
-	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons);
-	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
-	virtual int NameToKey(String^ key);
-	virtual int SaveScreen(int x1, int y1, int x2, int y2);
-	virtual IPanel^ FindPanel(Guid typeId);
-	virtual IPanel^ FindPanel(Type^ hostType);
-	virtual IWindowInfo^ GetWindowInfo(int index, bool full);
-	virtual String^ Input(String^ prompt);
-	virtual String^ Input(String^ prompt, String^ history);
-	virtual String^ Input(String^ prompt, String^ history, String^ title);
-	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text);
-	virtual String^ KeyToName(int key);
-	virtual String^ PasteFromClipboard();
-	virtual String^ TempFolder() { return TempFolder(nullptr); }
-	virtual String^ TempFolder(String^ prefix);
-	virtual String^ TempName() { return TempName(nullptr); }
-	virtual String^ TempName(String^ prefix);
-	virtual void CopyToClipboard(String^ text);
-	virtual void GetUserScreen();
-	virtual void Message(String^ body);
-	virtual void Message(String^ body, String^ header);
-	virtual void PostJob(EventHandler^ handler);
-	virtual void PostKeys(String^ keys);
-	virtual void PostKeys(String^ keys, bool disableOutput);
-	virtual void PostKeySequence(array<int>^ sequence);
-	virtual void PostKeySequence(array<int>^ sequence, bool disableOutput);
-	virtual void PostMacro(String^ macro);
-	virtual void PostMacro(String^ macro, bool enableOutput, bool disablePlugins);
-	virtual void PostStep(EventHandler^ handler);
-	virtual void PostStepAfterKeys(String^ keys, EventHandler^ handler);
-	virtual void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
-	virtual void PostText(String^ text);
-	virtual void PostText(String^ text, bool disableOutput);
-	virtual void Quit();
-	virtual void Redraw();
-	virtual void RestoreScreen(int screen);
-	virtual void Run(String^ command);
-	virtual void SetCurrentWindow(int index);
-	virtual void SetProgressState(TaskbarProgressBarState state);
-	virtual void SetProgressValue(int currentValue, int maximumValue);
-	virtual void SetUserScreen();
-	virtual void ShowError(String^ title, Exception^ error);
-	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options);
-	virtual void ShowPanelMenu(bool showPushCommand);
-	virtual void Write(String^ text);
-	virtual void Write(String^ text, ConsoleColor foregroundColor);
-	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
-	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text);
-	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text);
+	virtual array<IEditor^>^ Editors() override;
+	virtual array<IViewer^>^ Viewers() override;
+	virtual bool Commit() override;
+	virtual Char CodeToChar(int code) override;
+	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor) override;
+	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor) override;
+	virtual CultureInfo^ GetCurrentUICulture(bool update) override;
+	virtual FarNet::WindowKind GetWindowType(int index) override;
+	virtual ICollection<String^>^ GetDialogHistory(String^ name) override;
+	virtual ICollection<String^>^ GetHistory(String^ name) override;
+	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter) override;
+	virtual IModuleCommand^ GetModuleCommand(Guid id) override;
+	virtual IModuleFiler^ GetModuleFiler(Guid id) override;
+	virtual IModuleTool^ GetModuleTool(Guid id) override;
+	virtual int Message(String^ body, String^ header, MsgOptions options) override;
+	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons) override;
+	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic) override;
+	virtual int NameToKey(String^ key) override;
+	virtual int SaveScreen(int x1, int y1, int x2, int y2) override;
+	virtual IPanel^ FindPanel(Guid typeId) override;
+	virtual IPanel^ FindPanel(Type^ hostType) override;
+	virtual IWindowInfo^ GetWindowInfo(int index, bool full) override;
+	virtual String^ Input(String^ prompt) override;
+	virtual String^ Input(String^ prompt, String^ history) override;
+	virtual String^ Input(String^ prompt, String^ history, String^ title) override;
+	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text) override;
+	virtual String^ KeyToName(int key) override;
+	virtual String^ PasteFromClipboard() override;
+	virtual String^ TempFolder() override { return TempFolder(nullptr); }
+	virtual String^ TempFolder(String^ prefix) override;
+	virtual String^ TempName() override { return TempName(nullptr); }
+	virtual String^ TempName(String^ prefix) override;
+	virtual void CopyToClipboard(String^ text) override;
+	virtual void GetUserScreen() override;
+	virtual void Message(String^ body) override;
+	virtual void Message(String^ body, String^ header) override;
+	virtual void PostJob(EventHandler^ handler) override;
+	virtual void PostKeys(String^ keys) override;
+	virtual void PostKeys(String^ keys, bool disableOutput) override;
+	virtual void PostKeySequence(array<int>^ sequence) override;
+	virtual void PostKeySequence(array<int>^ sequence, bool disableOutput) override;
+	virtual void PostMacro(String^ macro) override;
+	virtual void PostMacro(String^ macro, bool enableOutput, bool disablePlugins) override;
+	virtual void PostStep(EventHandler^ handler) override;
+	virtual void PostStepAfterKeys(String^ keys, EventHandler^ handler) override;
+	virtual void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2) override;
+	virtual void PostText(String^ text) override;
+	virtual void PostText(String^ text, bool disableOutput) override;
+	virtual void Quit() override;
+	virtual void Redraw() override;
+	virtual void RestoreScreen(int screen) override;
+	virtual void Run(String^ command) override;
+	virtual void SetCurrentWindow(int index) override;
+	virtual void SetProgressState(TaskbarProgressBarState state) override;
+	virtual void SetProgressValue(int currentValue, int maximumValue) override;
+	virtual void SetUserScreen() override;
+	virtual void ShowError(String^ title, Exception^ error) override;
+	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;
+	virtual void ShowPanelMenu(bool showPushCommand) override;
+	virtual void Write(String^ text) override;
+	virtual void Write(String^ text, ConsoleColor foregroundColor) override;
+	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) override;
+	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text) override;
+	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text) override;
 internal:
 	static void Connect();
 private:

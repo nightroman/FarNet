@@ -33,7 +33,7 @@ Collections::IEnumerator^ SelectionCollection::GetEnumeratorObject()
 
 bool SelectionCollection::Exists::get()
 {
-	return Type != SelectionType::None;
+	return Kind != RegionKind::None;
 }
 
 bool SelectionCollection::IsFixedSize::get()
@@ -86,11 +86,11 @@ Object^ SelectionCollection::SyncRoot::get()
 	return this;
 }
 
-SelectionType SelectionCollection::Type::get()
+RegionKind SelectionCollection::Kind::get()
 {
 	AutoEditorInfo ei;
 
-	return (SelectionType)ei.BlockType;
+	return (RegionKind)ei.BlockType;
 }
 
 void SelectionCollection::Add(String^ item)
@@ -158,7 +158,7 @@ void SelectionCollection::Insert(int index, String^ item)
 	AutoEditorInfo ei2;
 
 	// select inserted
-	Select(SelectionType::Stream, egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine);
+	Select(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine);
 }
 
 void SelectionCollection::RemoveAt(int index)
@@ -193,7 +193,7 @@ void SelectionCollection::RemoveAt(int index)
 		Place ss = Shape;
 		++ss.Top;
 		ss.Left = 0;
-		Select((SelectionType)ei.BlockType, ss.Left, ss.Top, ss.Right, ss.Bottom);
+		Select((RegionKind)ei.BlockType, ss.Left, ss.Top, ss.Right, ss.Bottom);
 
 		// remove selected part of line
 		ILine^ line = _editor->Lines[top];
@@ -225,7 +225,7 @@ void SelectionCollection::RemoveAt(int index)
 			_editor->Lines->RemoveAt(bottom);
 			return;
 		}
-		Select(SelectionType::Stream, egss.SelStart, ei.BlockStartLine, text->Length - 1, bottom);
+		Select(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, text->Length - 1, bottom);
 		return;
 	}
 
@@ -233,21 +233,21 @@ void SelectionCollection::RemoveAt(int index)
 	_editor->Lines->RemoveAt(bottom);
 }
 
-void SelectionCollection::Select(SelectionType type, int pos1, int line1, int pos2, int line2)
+void SelectionCollection::Select(RegionKind kind, int pos1, int line1, int pos2, int line2)
 {
 	// type
 	EditorSelect es;
-	switch(type)
+	switch(kind)
 	{
-	case SelectionType::None:
+	case RegionKind::None:
 		es.BlockType = BTYPE_NONE;
 		EditorControl_ECTL_SELECT(es);
 		return;
-	case SelectionType::Rect:
-		es.BlockType = BTYPE_COLUMN;
-		break;
-	case SelectionType::Stream:
+	case RegionKind::Stream:
 		es.BlockType = BTYPE_STREAM;
+		break;
+	case RegionKind::Rect:
+		es.BlockType = BTYPE_COLUMN;
 		break;
 	default:
 		throw gcnew ArgumentException("Unknown selection type");
@@ -273,7 +273,7 @@ void SelectionCollection::SelectAll()
 {
 	AutoEditorInfo ei;
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.TotalLines - 1);
-	Select(SelectionType::Stream, 0, 0, egs.StringLength - 1, ei.TotalLines - 1);
+	Select(RegionKind::Stream, 0, 0, egs.StringLength - 1, ei.TotalLines - 1);
 }
 
 void SelectionCollection::Unselect()
@@ -363,6 +363,6 @@ void SelectionCollection::SetText(String^ text)
 
 	// select inserted
 	ei.Update();
-	Select(SelectionType::Stream, left, top, ei.CurPos - 1, ei.CurLine);
+	Select(RegionKind::Stream, left, top, ei.CurPos - 1, ei.CurLine);
 }
 }

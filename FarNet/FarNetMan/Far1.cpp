@@ -332,18 +332,18 @@ void Far1::RestoreScreen(int screen)
 
 ILine^ Far1::Line::get()
 {
-	switch (WindowType)
+	switch (WindowKind)
 	{
-	case FarNet::WindowType::Editor:
+	case FarNet::WindowKind::Editor:
 		{
 			IEditor^ editor = Editor;
 			return editor->CurrentLine;
 		}
-	case FarNet::WindowType::Panels:
+	case FarNet::WindowKind::Panels:
 		{
 			return CommandLine;
 		}
-	case FarNet::WindowType::Dialog:
+	case FarNet::WindowKind::Dialog:
 		{
 			IDialog^ dialog = Dialog;
 			if (dialog) //?? need?
@@ -644,7 +644,7 @@ public:
 				throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
 
 			_Name = gcnew String(name);
-			_TypeName = gcnew String(typeName);
+			_KindName = gcnew String(typeName);
 #pragma pop_macro("ACTL_GETWINDOWINFO")
 		}
 		else
@@ -655,19 +655,19 @@ public:
 
 		_Current = wi.Current != 0;
 		_Modified = wi.Modified != 0;
-		_Type = (WindowType)wi.Type;
+		_Kind = (WindowKind)wi.Type;
 	}
 	virtual property bool Current { bool get() { return _Current; } }
 	virtual property bool Modified { bool get() { return _Modified; } }
 	virtual property String^ Name { String^ get() { return _Name; } }
-	virtual property String^ TypeName { String^ get() { return _TypeName; } }
-	virtual property WindowType Type { WindowType get() { return _Type; } }
+	virtual property String^ KindName { String^ get() { return _KindName; } }
+	virtual property WindowKind Kind { WindowKind get() { return _Kind; } }
 private:
 	bool _Current;
 	bool _Modified;
 	String^ _Name;
-	String^ _TypeName;
-	WindowType _Type;
+	String^ _KindName;
+	WindowKind _Kind;
 };
 
 int Far1::WindowCount::get()
@@ -680,20 +680,20 @@ IWindowInfo^ Far1::GetWindowInfo(int index, bool full)
 	return gcnew FarWindowInfo(index, full);
 }
 
-WindowType Far1::WindowType::get()
+WindowKind Far1::WindowKind::get()
 {
 	WindowInfo wi;
 	wi.Pos = -1;
-	return Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi) ? (FarNet::WindowType)wi.Type : FarNet::WindowType::None;
+	return Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi) ? (FarNet::WindowKind)wi.Type : FarNet::WindowKind::None;
 }
 
-WindowType Far1::GetWindowType(int index)
+WindowKind Far1::GetWindowType(int index)
 {
 	WindowInfo wi;
 	wi.Pos = index;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
 		throw gcnew InvalidOperationException("GetWindowType:" + index + " failed.");
-	return (FarNet::WindowType)wi.Type;
+	return (FarNet::WindowKind)wi.Type;
 }
 
 void Far1::SetCurrentWindow(int index)
@@ -759,7 +759,7 @@ void Far1::ShowPanelMenu(bool showPushCommand) //???? do we need it public?
 				mi = menu.Add(sClose);
 				mi->Data = panel;
 			}
-			else if (panel->Type == PanelType::File)
+			else if (panel->Kind == PanelKind::File)
 			{
 				FarItem^ mi = menu.Add(sPushShelveThePanel);
 				mi->Data = panel;

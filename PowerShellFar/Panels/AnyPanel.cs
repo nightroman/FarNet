@@ -267,8 +267,8 @@ namespace PowerShellFar
 				_Panel.Info.Title = DefaultTitle;
 
 			// try to open even not from panels
-			WindowType wt = Far.Net.WindowType;
-			if (wt != WindowType.Panels)
+			WindowKind wt = Far.Net.WindowKind;
+			if (wt != WindowKind.Panels)
 			{
 				try
 				{

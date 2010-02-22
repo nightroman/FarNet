@@ -14,6 +14,8 @@ ref class ProxyEditor;
 ref class ProxyFiler;
 ref class ProxyTool;
 
+//ref class ProxyActionCollection : KeyedCollection<int, OrderItem>
+
 ref class ModuleLoader
 {
 public:
@@ -26,12 +28,12 @@ public:
 	static void RemoveModuleManager(ModuleManager^ manager);
 	static void UnloadModules();
 private:
-	static void AddModuleItem(ModuleManager^ manager, Type^ type, List<ProxyCommand^>^ commands, List<ProxyEditor^>^ editors, List<ProxyFiler^>^ filers, List<ProxyTool^>^ tools);
+	static int LoadClass(ModuleManager^ manager, Type^ type);
 	static void LoadFromAssembly(String^ assemblyPath, List<String^>^ classes);
 	static void LoadFromManifest(String^ file, String^ dir);
 	static void LoadFromDirectory(String^ dir);
 	static void ReadModuleCache();
-	static void WriteModuleCache(ModuleManager^ manager, List<ProxyCommand^>^ commands, List<ProxyEditor^>^ editors, List<ProxyFiler^>^ filers, List<ProxyTool^>^ tools);
+	static void WriteModuleCache(ModuleManager^ manager); //???? review?
 private:
 	// Static
 	ModuleLoader() {}

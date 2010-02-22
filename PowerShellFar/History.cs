@@ -70,16 +70,16 @@ namespace PowerShellFar
 			if (code == null)
 				return;
 
-			switch (Far.Net.WindowType)
+			switch (Far.Net.WindowKind)
 			{
-				case WindowType.Panels:
+				case WindowKind.Panels:
 					{
 						Far.Net.CommandLine.Text = Entry.Command1.Prefix + ": " + code;
 						if (!m.Alternative)
 							Far.Net.PostKeys("Enter", false);
 						return;
 					}
-				case WindowType.Editor:
+				case WindowKind.Editor:
 					{
 						IEditor editor = A.Psf.Editor();
 

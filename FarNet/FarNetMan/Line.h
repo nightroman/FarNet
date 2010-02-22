@@ -10,7 +10,7 @@ namespace FarNet
 ref class Line abstract : ILine
 {
 public:
-	virtual property FarNet::WindowType WindowType { FarNet::WindowType get() = 0; }
+	virtual property FarNet::WindowKind WindowKind { FarNet::WindowKind get() = 0; }
 	virtual property ILine^ FullLine { ILine^ get() = 0; }
 	virtual property ILineSelection^ Selection { ILineSelection^ get() = 0; }
 	virtual property int Length { int get() = 0; }
