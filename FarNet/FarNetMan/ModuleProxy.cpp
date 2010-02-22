@@ -59,7 +59,7 @@ ProxyAction::ProxyAction(ModuleManager^ manager, EnumerableReader^ reader, Modul
 
 void ProxyAction::WriteCache(List<String^>^ data)
 {
-	data->Add(TypeName);
+	data->Add(Kind.ToString());
 	data->Add(ClassName);
 	data->Add(Name);
 	data->Add(_Id.ToString());
@@ -73,7 +73,7 @@ void ProxyAction::Init()
 
 void ProxyAction::Unregister()
 {
-	Far0::UnregisterModuleAction(_Id); //???? not effective?
+	Far0::UnregisterProxyAction(this);
 }
 
 ModuleAction^ ProxyAction::GetInstance()
@@ -94,7 +94,7 @@ void ProxyAction::Invoking()
 
 String^ ProxyAction::ToString()
 {
-	return String::Format("{0} {1} Name='{2}'", Key, TypeName, Name);
+	return String::Format("{0} {1} Name='{2}'", Key, Kind, Name);
 }
 
 String^ ProxyAction::ModuleName::get()
@@ -140,21 +140,22 @@ ProxyCommand::ProxyCommand(ModuleManager^ manager, EnumerableReader^ reader)
 void ProxyCommand::WriteCache(List<String^>^ data)
 {
 	ProxyAction::WriteCache(data);
-	data->Add(_DefaultPrefix);
+	data->Add(Attribute->Prefix);
 }
 
 void ProxyCommand::Init()
 {
+	// solid prefix!
 	if (ES(Attribute->Prefix))
 		throw gcnew ModuleException("Empty command prefix is not allowed.");
-	
-	_DefaultPrefix = Attribute->Prefix;
-	Attribute->Prefix = ModuleManager::LoadFarNetValue(Key, "Prefix", DefaultPrefix)->ToString();
+
+	// get the working prefix now, it is needed for the command registration
+	_Prefix = ModuleManager::LoadFarNetValue(Key, "Prefix", Attribute->Prefix)->ToString();
 }
 
 String^ ProxyCommand::ToString()
 {
-	return String::Format("{0} Prefix='{1}'", ProxyAction::ToString(), Attribute->Prefix);
+	return String::Format("{0} Prefix='{1}'", ProxyAction::ToString(), Prefix);
 }
 
 void ProxyCommand::SetPrefix(String^ value)
@@ -163,7 +164,7 @@ void ProxyCommand::SetPrefix(String^ value)
 		throw gcnew ArgumentException("'value' must not be empty.");
 
 	ModuleManager::SaveFarNetValue(Key, "Prefix", value);
-	Attribute->Prefix = value;
+	_Prefix = value;
 }
 
 void ProxyCommand::Invoke(Object^ sender, ModuleCommandEventArgs^ e)
@@ -201,21 +202,38 @@ ProxyEditor::ProxyEditor(ModuleManager^ manager, EnumerableReader^ reader)
 	Init();
 }
 
+void ProxyEditor::Init()
+{
+	if (!Attribute->Mask)
+		Attribute->Mask = String::Empty;
+}
+
 void ProxyEditor::WriteCache(List<String^>^ data)
 {
 	ProxyAction::WriteCache(data);
-	data->Add(_DefaultMask);
+	data->Add(Attribute->Mask);
 }
 
-void ProxyEditor::Init()
+String^ ProxyEditor::Mask::get()
 {
-	_DefaultMask = Attribute->Mask ? Attribute->Mask : String::Empty;
-	Attribute->Mask = ModuleManager::LoadFarNetValue(Key, "Mask", DefaultMask)->ToString();
+	if (!_Mask)
+		_Mask = ModuleManager::LoadFarNetValue(Key, "Mask", Attribute->Mask)->ToString();
+	
+	return _Mask;
+}
+
+void ProxyEditor::SetMask(String^ value)
+{
+	if (!value)
+		throw gcnew ArgumentNullException("value");
+
+	ModuleManager::SaveFarNetValue(Key, "Mask", value);
+	_Mask = value;
 }
 
 String^ ProxyEditor::ToString()
 {
-	return String::Format("{0} Mask='{1}'", ProxyAction::ToString(), Attribute->Mask);
+	return String::Format("{0} Mask='{1}'", ProxyAction::ToString(), Mask);
 }
 
 void ProxyEditor::Invoke(Object^ sender, ModuleEditorEventArgs^ e)
@@ -226,15 +244,6 @@ void ProxyEditor::Invoke(Object^ sender, ModuleEditorEventArgs^ e)
 
 	ModuleEditor^ instance = (ModuleEditor^)GetInstance();
 	instance->Invoke(sender, e);
-}
-
-void ProxyEditor::SetMask(String^ value)
-{
-	if (!value)
-		throw gcnew ArgumentNullException("value");
-
-	ModuleManager::SaveFarNetValue(Key, "Mask", value);
-	Attribute->Mask = value;
 }
 
 #pragma endregion
@@ -263,22 +272,39 @@ ProxyFiler::ProxyFiler(ModuleManager^ manager, EnumerableReader^ reader)
 	Init();
 }
 
+void ProxyFiler::Init()
+{
+	if (!Attribute->Mask)
+		Attribute->Mask = String::Empty;
+}
+
 void ProxyFiler::WriteCache(List<String^>^ data)
 {
 	ProxyAction::WriteCache(data);
-	data->Add(_DefaultMask);
+	data->Add(Attribute->Mask);
 	data->Add(Attribute->Creates.ToString());
 }
 
-void ProxyFiler::Init()
+String^ ProxyFiler::Mask::get()
 {
-	_DefaultMask = Attribute->Mask ? Attribute->Mask : String::Empty;
-	Attribute->Mask = ModuleManager::LoadFarNetValue(Key, "Mask", DefaultMask)->ToString();
+	if (!_Mask)
+		_Mask = ModuleManager::LoadFarNetValue(Key, "Mask", Attribute->Mask)->ToString();
+	
+	return _Mask;
+}
+
+void ProxyFiler::SetMask(String^ value)
+{
+	if (!value)
+		throw gcnew ArgumentNullException("value");
+
+	ModuleManager::SaveFarNetValue(Key, "Mask", value);
+	_Mask = value;
 }
 
 String^ ProxyFiler::ToString()
 {
-	return String::Format("{0} Mask='{1}'", ProxyAction::ToString(), Attribute->Mask);
+	return String::Format("{0} Mask='{1}'", ProxyAction::ToString(), Mask);
 }
 
 void ProxyFiler::Invoke(Object^ sender, ModuleFilerEventArgs^ e)
@@ -296,15 +322,6 @@ void ProxyFiler::Invoke(Object^ sender, ModuleFilerEventArgs^ e)
 		ModuleFiler^ instance = (ModuleFiler^)GetInstance();
 		instance->Invoke(sender, e);
 	}
-}
-
-void ProxyFiler::SetMask(String^ value)
-{
-	if (!value)
-		throw gcnew ArgumentNullException("value");
-
-	ModuleManager::SaveFarNetValue(Key, "Mask", value);
-	Attribute->Mask = value;
 }
 
 #pragma endregion

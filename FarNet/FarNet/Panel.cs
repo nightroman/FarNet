@@ -107,9 +107,9 @@ namespace FarNet
 		/// </remarks>
 		IList<FarFile> SelectedList { get; }
 		/// <summary>
-		/// Gets the panel type.
+		/// Gets the panel kind.
 		/// </summary>
-		PanelType Type { get; }
+		PanelKind Kind { get; }
 		/// <summary>
 		/// Gets or sets the panel sort mode.
 		/// </summary>
@@ -285,9 +285,9 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Type of a panel.
+	/// Far panel kind.
 	/// </summary>
-	public enum PanelType
+	public enum PanelKind
 	{
 		/// <summary>
 		/// File list.

@@ -97,12 +97,12 @@ namespace FarMacro
 				// validate the area
 				if (Area == MacroArea.Root)
 				{
-					switch (Far.Net.WindowType)
+					switch (Far.Net.WindowKind)
 					{
-						case WindowType.Dialog: Area = MacroArea.Dialog; break;
-						case WindowType.Editor: Area = MacroArea.Editor; break;
-						case WindowType.Panels: Area = MacroArea.Shell; break;
-						case WindowType.Viewer: Area = MacroArea.Viewer; break;
+						case WindowKind.Dialog: Area = MacroArea.Dialog; break;
+						case WindowKind.Editor: Area = MacroArea.Editor; break;
+						case WindowKind.Panels: Area = MacroArea.Shell; break;
+						case WindowKind.Viewer: Area = MacroArea.Viewer; break;
 						default: throw new ArgumentException(m.UndefinedArea);
 					}
 				}

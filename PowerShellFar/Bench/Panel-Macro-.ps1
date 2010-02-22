@@ -49,18 +49,18 @@ Set-StrictMode -Version 2
 # window type, set area if not yet
 $wi = $Far.GetWindowInfo(-1, $false)
 if (!$Area) {
-	switch($wi.Type) {
+	switch($wi.Kind) {
 		'Panels' { $Area = 'Shell'; break }
 		'Viewer' { $Area = 'Viewer'; break }
 		'Editor' { $Area = 'Editor'; break }
 		'Dialog' { $Area = 'Dialog'; break }
-		default { throw "Area $($w.Type) is not yet supported." }
+		default { throw "Area $($w.Kind) is not yet supported." }
 	}
 }
 $Area = [FarNet.MacroArea]$Area
 
 ### FarMacro panel configured for macros
-if ($wi.Type -eq 'Panels' -and !$Name) {
+if ($wi.Kind -eq 'Panels' -and !$Name) {
 	$p = New-Object PowerShellFar.ItemPanel "FarMacro:"
 	$p.Drive = "FarMacro"
 	### [Enter]

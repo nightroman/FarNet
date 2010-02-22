@@ -70,15 +70,11 @@ void Far0::Free(ModuleToolOptions options)
 	}
 }
 
-void Far0::UnregisterModuleAction(Guid id)
+void Far0::UnregisterProxyAction(ProxyAction^ action)
 {
-	ProxyAction^ action;
-	if (!ModuleLoader::Actions->TryGetValue(id, action))
-		return;
-
 	LOG_INFO("Unregister " + action);
 
-	ModuleLoader::Actions->Remove(id);
+	ModuleLoader::Actions->Remove(action->Id);
 
 	ProxyCommand^ command = dynamic_cast<ProxyCommand^>(action);
 	if (command)
@@ -136,7 +132,7 @@ void Far0::UnregisterModuleAction(Guid id)
 	}
 }
 
-void Far0::AddModuleCommandInfo(ProxyCommand^ info)
+void Far0::RegisterProxyCommand(ProxyCommand^ info)
 {
 	LOG_INFO("Register " + info);
 	ModuleLoader::Actions->Add(info->Id, info);
@@ -146,7 +142,7 @@ void Far0::AddModuleCommandInfo(ProxyCommand^ info)
 	_prefixes = 0;
 }
 
-void Far0::AddModuleEditorInfo(ProxyEditor^ info)
+void Far0::RegisterProxyEditor(ProxyEditor^ info)
 {
 	LOG_INFO("Register " + info);
 	ModuleLoader::Actions->Add(info->Id, info);
@@ -154,7 +150,7 @@ void Far0::AddModuleEditorInfo(ProxyEditor^ info)
 	_registeredEditor.Add(info);
 }
 
-void Far0::AddModuleFilerInfo(ProxyFiler^ info)
+void Far0::RegisterProxyFiler(ProxyFiler^ info)
 {
 	LOG_INFO("Register " + info);
 	ModuleLoader::Actions->Add(info->Id, info);
@@ -162,12 +158,12 @@ void Far0::AddModuleFilerInfo(ProxyFiler^ info)
 	_registeredFiler.Add(info);
 }
 
-void Far0::AddModuleToolInfo(ProxyTool^ info)
+void Far0::RegisterProxyTool(ProxyTool^ info)
 {
 	LOG_INFO("Register " + info);
 	ModuleLoader::Actions->Add(info->Id, info);
 
-	ModuleToolOptions options = info->Attribute->Options;
+	ModuleToolOptions options = info->Options;
 	if (int(options & ModuleToolOptions::Config))
 	{
 		_toolConfig.Add(info);
@@ -214,7 +210,7 @@ void Far0::Run(String^ command)
 
 	for each(ProxyCommand^ it in _registeredCommand)
 	{
-		String^ pref = it->Attribute->Prefix;
+		String^ pref = it->Prefix;
 		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
 			continue;
 
@@ -358,7 +354,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			{
 				if (PrefString->Length > 0)
 					PrefString = String::Concat(PrefString, ":");
-				PrefString = String::Concat(PrefString, it->Attribute->Prefix);
+				PrefString = String::Concat(PrefString, it->Prefix);
 			}
 			_prefixes = new CStr(PrefString);
 		}
@@ -431,11 +427,11 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 		for each(ProxyFiler^ it in _registeredFiler)
 		{
 			// create?
-			if (!name && !it->Attribute->Creates)
+			if (!name && !it->Creates)
 				continue;
 
 			// mask?
-			if (SS(it->Attribute->Mask) && !CompareNameEx(it->Attribute->Mask, name, true))
+			if (SS(it->Mask) && !CompareNameEx(it->Mask, name, true))
 				continue;
 
 			// arguments
@@ -802,10 +798,10 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 	int widthAttr = 0;
 	for each(ProxyTool^ it in tools)
 	{
-		if (widthName < it->Attribute->Name->Length)
-			widthName = it->Attribute->Name->Length;
-		if (widthAttr < it->Attribute->Options.ToString()->Length)
-			widthAttr = it->Attribute->Options.ToString()->Length;
+		if (widthName < it->Name->Length)
+			widthName = it->Name->Length;
+		if (widthAttr < it->Options.ToString()->Length)
+			widthAttr = it->Options.ToString()->Length;
 	}
 	widthName += 3;
 	String^ format = Res::MenuPrefix + "{0,-" + widthName + "} : {1,-" + widthAttr + "} : {2}";
@@ -819,7 +815,7 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 		// fill
 		for each(ProxyTool^ it in tools)
 		{
-			FarItem^ mi = menu->Add(String::Format(format, it->GetMenuText(), it->Attribute->Options, it->Key));
+			FarItem^ mi = menu->Add(String::Format(format, it->GetMenuText(), it->Options, it->Key));
 			mi->Data = it;
 		}
 
@@ -844,7 +840,7 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 		tool->SetHotkey(ib->Text);
 
 		// reset the menus to be updated in the affected areas
-		Free(tool->Attribute->Options);
+		Free(tool->Options);
 	}
 }
 
@@ -861,17 +857,17 @@ void Far0::OnConfigCommand()
 		int lenName = 0;
 		for each(ProxyCommand^ it in _registeredCommand)
 		{
-			if (lenPref < it->Attribute->Prefix->Length)
-				lenPref = it->Attribute->Prefix->Length;
-			if (lenName < it->Attribute->Name->Length)
-				lenName = it->Attribute->Name->Length;
+			if (lenPref < it->Prefix->Length)
+				lenPref = it->Prefix->Length;
+			if (lenName < it->Name->Length)
+				lenName = it->Name->Length;
 		}
 		String^ format = "{0,-" + lenPref + "} : {1,-" + lenName + "} : {2}";
 
 		menu->Items->Clear();
 		for each(ProxyCommand^ it in _registeredCommand)
 		{
-			FarItem^ mi = menu->Add(String::Format(format, it->Attribute->Prefix, it->Attribute->Name, it->Key));
+			FarItem^ mi = menu->Add(String::Format(format, it->Prefix, it->Name, it->Key));
 			mi->Data = it;
 		}
 
@@ -885,7 +881,7 @@ void Far0::OnConfigCommand()
 		ib->EmptyEnabled = true;
 		ib->HelpTopic = _helpTopic + "ConfigCommand";
 		ib->Prompt = "New prefix for: " + it->Name;
-		ib->Text = it->Attribute->Prefix;
+		ib->Text = it->Prefix;
 		ib->Title = "Original prefix: " + it->DefaultPrefix;
 
 		String^ prefix = nullptr;
@@ -937,7 +933,7 @@ void Far0::OnConfigEditor()
 		ib->HelpTopic = _helpTopic + "ConfigEditor";
 		ib->History = "Masks";
 		ib->Prompt = "New mask for " + it->Name;
-		ib->Text = it->Attribute->Mask;
+		ib->Text = it->Mask;
 		ib->Title = "Original mask: " + it->DefaultMask;
 
 		if (!ib->Show())
@@ -976,7 +972,7 @@ void Far0::OnConfigFiler()
 		ib->HelpTopic = _helpTopic + "ConfigFiler";
 		ib->History = "Masks";
 		ib->Prompt = "New mask for " + it->Name;
-		ib->Text = it->Attribute->Mask;
+		ib->Text = it->Mask;
 		ib->Title = "Original mask: " + it->DefaultMask;
 
 		if (!ib->Show())
@@ -1023,7 +1019,7 @@ void Far0::OnEditorOpened(IEditor^ editor)
 		// mask?
 		CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
 		Info.EditorControl(ECTL_GETFILENAME, fileName);
-		if (SS(it->Attribute->Mask) && !CompareNameEx(it->Attribute->Mask, fileName, true))
+		if (SS(it->Mask) && !CompareNameEx(it->Mask, fileName, true))
 			continue;
 
 		//! tradeoff: catch all to call other plugins, too

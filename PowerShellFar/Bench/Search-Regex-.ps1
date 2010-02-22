@@ -37,7 +37,7 @@ param
 	[switch]$AllText
 )
 if ($args) { throw "Unknown parameters: $args" }
-if ($Far.WindowType -ne 'Panels') { return Show-FarMessage "Run this script from panels." }
+if ($Far.WindowKind -ne 'Panels') { return Show-FarMessage "Run this script from panels." }
 
 # Collect input if any
 if (!$InputObject) {

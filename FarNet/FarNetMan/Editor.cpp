@@ -39,8 +39,8 @@ void Editor::Open(OpenMode mode)
 	int nPos = _frameStart.Pos >= 0 ? _frameStart.Pos + 1 : -1;
 
 	// from dialog? set modal
-	WindowType wt = Far::Net->WindowType;
-	if (wt == WindowType::Dialog)
+	WindowKind wt = Far::Net->WindowKind;
+	if (wt == WindowKind::Dialog)
 		mode = OpenMode::Modal;
 
 	// flags
@@ -106,7 +106,7 @@ void Editor::Open(OpenMode mode)
 		_CodePage); //?? test window values, make window settable
 
 	// redraw Far
-	if (wt == WindowType::Dialog)
+	if (wt == WindowKind::Dialog)
 		Far::Net->Redraw();
 
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
@@ -802,7 +802,7 @@ void Editor::SetText(String^ text)
 		if (i < last->No)
 		{
 			ISelection^ select = Selection;
-			select->Select(SelectionType::Stream, newLines[i]->Length, i, last->Length, last->No);
+			select->Select(RegionKind::Stream, newLines[i]->Length, i, last->Length, last->No);
 			select->Clear();
 		}
 
