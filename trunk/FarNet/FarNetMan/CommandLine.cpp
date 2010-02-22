@@ -9,9 +9,9 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-FarNet::WindowType CommandLine::WindowType::get()
+FarNet::WindowKind CommandLine::WindowKind::get()
 {
-	return FarNet::WindowType::Panels;
+	return FarNet::WindowKind::Panels;
 }
 
 ILine^ CommandLine::FullLine::get()

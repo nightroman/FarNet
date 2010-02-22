@@ -27,7 +27,7 @@ namespace PowerShellFar
 			string text = line.Text;
 
 			// replace prefixes with spaces to avoid parsing problems
-			if (line.WindowType == WindowType.Panels)
+			if (line.WindowKind == WindowKind.Panels)
 			{
 				if (text.StartsWith(Entry.Command1.Prefix + ":", StringComparison.OrdinalIgnoreCase))
 					text = string.Empty.PadRight(Entry.Command1.Prefix.Length + 1) + text.Substring(Entry.Command1.Prefix.Length + 1);

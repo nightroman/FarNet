@@ -164,11 +164,11 @@ public:
 			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
 		}
 	}
-	virtual property FarNet::WindowType WindowType
+	virtual property FarNet::WindowKind WindowKind
 	{
-		FarNet::WindowType get() override
+		FarNet::WindowKind get() override
 		{
-			return FarNet::WindowType::Dialog;
+			return FarNet::WindowKind::Dialog;
 		}
 	}
 	virtual void Insert(String^ text) override

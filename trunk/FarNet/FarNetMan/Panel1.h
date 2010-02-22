@@ -30,7 +30,7 @@ public:
 	virtual property int CurrentIndex { int get(); }
 	virtual property int TopIndex { int get(); }
 	virtual property PanelSortMode SortMode { PanelSortMode get(); void set(PanelSortMode value); }
-	virtual property PanelType Type { PanelType get(); }
+	virtual property PanelKind Kind { PanelKind get(); }
 	virtual property PanelViewMode ViewMode { PanelViewMode get(); void set(PanelViewMode value); }
 	virtual property Place Window { Place get(); }
 	virtual property Point Frame { Point get(); }

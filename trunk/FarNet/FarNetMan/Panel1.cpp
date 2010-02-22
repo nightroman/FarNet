@@ -227,12 +227,12 @@ FarFile^ Panel1::GetFile(int index, FileType type)
 	return ItemToFile(item.Get());
 }
 
-PanelType Panel1::Type::get()
+PanelKind Panel1::Kind::get()
 {
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	return (PanelType)pi.PanelType;
+	return (PanelKind)pi.PanelType;
 }
 
 SetFile^ Panel1::ItemToFile(const PluginPanelItem& item)

@@ -31,7 +31,7 @@ function global:Go-Selection-
 	[switch]$End
 )
 {
-	if ($Far.WindowType -eq 'Editor') {
+	if ($Far.WindowKind -eq 'Editor') {
 		$editor = $Far.Editor
 		$select = $editor.Selection
 		$shape = $select.Shape

@@ -8,6 +8,7 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
+ref class ProxyAction;
 ref class ProxyCommand;
 ref class ProxyEditor;
 ref class ProxyFiler;
@@ -22,13 +23,14 @@ public:
 	static void AsGetPluginInfo(PluginInfo* pi);
 	static void AsProcessSynchroEvent(int type, void* param);
 public:
-	static void AddModuleCommandInfo(ProxyCommand^ info);
-	static void AddModuleEditorInfo(ProxyEditor^ info);
-	static void AddModuleFilerInfo(ProxyFiler^ info);
-	static void AddModuleToolInfo(ProxyTool^ info);
+	static void RegisterProxyCommand(ProxyCommand^ info);
+	static void RegisterProxyEditor(ProxyEditor^ info);
+	static void RegisterProxyFiler(ProxyFiler^ info);
+	static void RegisterProxyTool(ProxyTool^ info);
 	static void OnEditorOpened(IEditor^ editor);
 	static void Start();
 	static void Stop();
+	static void UnregisterProxyAction(ProxyAction^ action);
 public:
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static int GetPaletteColor(PaletteColor paletteColor);
@@ -37,7 +39,6 @@ public:
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
 	static void Run(String^ command);
-	static void UnregisterModuleAction(Guid id);
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";

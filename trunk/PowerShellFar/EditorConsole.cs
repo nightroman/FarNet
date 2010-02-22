@@ -45,7 +45,7 @@ namespace PowerShellFar
 				menu.HelpTopic = A.Psf.HelpTopic + "EditorConsoleMenuOpen";
 
 				IAnyPanel panel = null;
-				if ((Far.Net.WindowType == WindowType.Panels) && (null != (panel = Far.Net.Panel)) && (panel.Type != PanelType.File))
+				if ((Far.Net.WindowKind == WindowKind.Panels) && (null != (panel = Far.Net.Panel)) && (panel.Kind != PanelKind.File))
 					panel = null;
 				
 				// break keys
@@ -388,7 +388,7 @@ namespace PowerShellFar
 								string text = Editor.Lines[i].Text;
 								if (text == "<=")
 								{
-									Editor.Selection.Select(SelectionType.Stream, 0, i, -1, pt.Y);
+									Editor.Selection.Select(RegionKind.Stream, 0, i, -1, pt.Y);
 									Editor.Selection.Clear();
 									break;
 								}

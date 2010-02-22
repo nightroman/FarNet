@@ -632,9 +632,9 @@ namespace FarNet
 		/// </summary>
 		int Length { get; }
 		/// <summary>
-		/// Parent window type (<c>Editor</c>, <c>Panels</c>, <c>Dialog</c>).
+		/// Parent window kind (<c>Editor</c>, <c>Panels</c>, <c>Dialog</c>).
 		/// </summary>
-		WindowType WindowType { get; }
+		WindowKind WindowKind { get; }
 	}
 
 	/// <summary>

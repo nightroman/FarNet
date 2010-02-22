@@ -15,7 +15,7 @@ public:
 	virtual String^ ToString() override;
 	virtual property Guid Id { Guid get() { return _Id; } }
 	virtual property String^ Name { String^ get() { return _Attribute->Name; } }
-	virtual property String^ TypeName { String^ get() = 0; }
+	virtual property ModuleItemKind Kind { ModuleItemKind get() = 0; }
 	virtual property String^ ModuleName { String^ get(); }
 	virtual void Unregister();
 internal:
@@ -26,26 +26,27 @@ internal:
 	property String^ ClassName { String^ get(); }
 	property String^ Key { String^ get(); }
 protected:
-	// reflection
+	// new reflected
 	ProxyAction(ModuleManager^ manager, Type^ classType, Type^ attributeType);
-	// dynamic
+	// new dynamic
 	ProxyAction(ModuleManager^ manager, Guid id, ModuleActionAttribute^ attribute);
-	// cache
+	// new cached
 	ProxyAction(ModuleManager^ manager, EnumerableReader^ reader, ModuleActionAttribute^ attribute);
+	// attribute
 	ModuleActionAttribute^ GetAttribute() { return _Attribute; }
 private:
 	void Init();
 private:
-	// Any action has the module manager. Not null.
+	// The only module manager shared between module items. Not null.
 	ModuleManager^ const _ModuleManager;
+	// Action attribute with default parameters. Not null.
+	ModuleActionAttribute^ _Attribute;
 	// Tool ID;
 	Guid _Id;
-	// Class name from the cache. Null for handlers and after getting the type.
+	// Class name from the cache. Null for handlers and after loading.
 	String^ _ClassName;
 	// Type coming from the assembly reflection. Null for handlers.
 	Type^ _ClassType;
-	// Attribute. Not null.
-	ModuleActionAttribute^ _Attribute;
 };
 
 ref class ProxyCommand sealed : ProxyAction, IModuleCommand
@@ -53,42 +54,46 @@ ref class ProxyCommand sealed : ProxyAction, IModuleCommand
 public:
 	virtual String^ ToString() override;
 	virtual void Invoke(Object^ sender, ModuleCommandEventArgs^ e);
-	virtual property String^ Prefix { String^ get() { return Attribute->Prefix; } }
-	virtual property String^ TypeName { String^ get() override { return gcnew String("Command"); } }
+	virtual property String^ Prefix { String^ get() { return _Prefix; } }
+	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Command; } }
 internal:
 	ProxyCommand(ModuleManager^ manager, Guid id, ModuleCommandAttribute^ attribute, EventHandler<ModuleCommandEventArgs^>^ handler);
 	ProxyCommand(ModuleManager^ manager, EnumerableReader^ reader);
 	ProxyCommand(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
 internal:
-	property ModuleCommandAttribute^ Attribute { ModuleCommandAttribute^ get() { return (ModuleCommandAttribute^)GetAttribute(); } }
-	property String^ DefaultPrefix { String^ get() { return _DefaultPrefix; } }
+	property String^ DefaultPrefix { String^ get() { return Attribute->Prefix; } }
 	void SetPrefix(String^ value);
 private:
 	void Init();
+	property ModuleCommandAttribute^ Attribute { ModuleCommandAttribute^ get() { return (ModuleCommandAttribute^)GetAttribute(); } }
 private:
+	// Working prefix.
+	String^ _Prefix;
+	// Dynamic proxy handler.
 	EventHandler<ModuleCommandEventArgs^>^ _Handler;
-	String^ _DefaultPrefix;
 };
 
 ref class ProxyEditor sealed : ProxyAction
 {
 public:
 	virtual String^ ToString() override;
-	virtual property String^ TypeName { String^ get() override { return gcnew String("Editor"); } }
+	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Editor; } }
 internal:
 	ProxyEditor(ModuleManager^ manager, EnumerableReader^ reader);
 	ProxyEditor(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
 	void Invoke(Object^ sender, ModuleEditorEventArgs^ e);
+	virtual property String^ Mask { String^ get(); }
 internal:
-	property ModuleEditorAttribute^ Attribute { ModuleEditorAttribute^ get() { return (ModuleEditorAttribute^)GetAttribute(); } }
-	property String^ DefaultMask { String^ get() { return _DefaultMask; } }
+	property String^ DefaultMask { String^ get() { return Attribute->Mask; } }
 	void SetMask(String^ value);
 private:
 	void Init();
+	property ModuleEditorAttribute^ Attribute { ModuleEditorAttribute^ get() { return (ModuleEditorAttribute^)GetAttribute(); } }
 private:
-	String^ _DefaultMask;
+	// Working mask.
+	String^ _Mask;
 };
 
 ref class ProxyFiler sealed : ProxyAction, IModuleFiler
@@ -96,23 +101,25 @@ ref class ProxyFiler sealed : ProxyAction, IModuleFiler
 public:
 	virtual String^ ToString() override;
 	virtual void Invoke(Object^ sender, ModuleFilerEventArgs^ e);
-	virtual property String^ Mask { String^ get() { return Attribute->Mask; } }
+	virtual property String^ Mask { String^ get(); }
 	virtual property bool Creates { bool get() { return Attribute->Creates; } }
-	virtual property String^ TypeName { String^ get() override { return gcnew String("Filer"); } }
+	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Filer; } }
 internal:
 	ProxyFiler(ModuleManager^ manager, Guid id, ModuleFilerAttribute^ attribute, EventHandler<ModuleFilerEventArgs^>^ handler);
 	ProxyFiler(ModuleManager^ manager, EnumerableReader^ reader);
 	ProxyFiler(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
 internal:
-	property ModuleFilerAttribute^ Attribute { ModuleFilerAttribute^ get() { return (ModuleFilerAttribute^)GetAttribute(); } }
-	property String^ DefaultMask { String^ get() { return _DefaultMask; } }
+	property String^ DefaultMask { String^ get() { return Attribute->Mask; } }
 	void SetMask(String^ value);
 private:
 	void Init();
+	property ModuleFilerAttribute^ Attribute { ModuleFilerAttribute^ get() { return (ModuleFilerAttribute^)GetAttribute(); } }
 private:
+	// Working mask.
+	String^ _Mask;
+	// Dynamic proxy handler.
 	EventHandler<ModuleFilerEventArgs^>^ _Handler;
-	String^ _DefaultMask;
 };
 
 ref class ProxyTool sealed : ProxyAction, IModuleTool
@@ -121,7 +128,7 @@ public:
 	virtual String^ ToString() override;
 	virtual void Invoke(Object^ sender, ModuleToolEventArgs^ e);
 	virtual property ModuleToolOptions Options { ModuleToolOptions get() { return Attribute->Options; } }
-	virtual property String^ TypeName { String^ get() override { return gcnew String("Tool"); } }
+	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Tool; } }
 internal:
 	ProxyTool(ModuleManager^ manager, Type^ classType);
 	ProxyTool(ModuleManager^ manager, Guid id, ModuleToolAttribute^ attribute, EventHandler<ModuleToolEventArgs^>^ handler);
@@ -131,10 +138,12 @@ internal:
 	property String^ HotkeyText { String^ get(); }
 	void SetHotkey(String^ value);
 	String^ GetMenuText();
-internal:
+private:
 	property ModuleToolAttribute^ Attribute { ModuleToolAttribute^ get() { return (ModuleToolAttribute^)GetAttribute(); } }
 private:
+	// Dynamic proxy handler.
 	EventHandler<ModuleToolEventArgs^>^ _Handler;
+	// Menu hotkey.
 	Char _Hotkey;
 };
 

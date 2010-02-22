@@ -37,7 +37,7 @@ namespace PowerShellFar.UI
 		public void Show()
 		{
 			// active editor
-			if (Far.Net.WindowType == WindowType.Editor)
+			if (Far.Net.WindowKind == WindowKind.Editor)
 				_editor = Far.Net.Editor;
 
 			// menu loop

@@ -76,7 +76,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Ordered pair of two points defining a rectangle or a stream selection in editor.
+	/// Ordered pair of two points defining a rectangle or a stream region.
 	/// </summary>
 	public struct Place
 	{
@@ -204,5 +204,25 @@ namespace FarNet
 		{
 			return point.X >= First.X && point.Y >= First.Y && point.X <= Last.X && point.Y <= Last.Y;
 		}
+	}
+
+	/// <summary>
+	/// Kinds of regions of text, screen, and etc.
+	/// </summary>
+	/// <remarks>
+	/// A standard region is completely defined if its kind and coordinates (<see cref="Place"/>) are known.
+	/// </remarks>
+	public enum RegionKind
+	{
+		///
+		None = 0,
+		/// <summary>
+		/// Stream region. Example: classic editor text selection.
+		/// </summary>
+		Stream = 1,
+		/// <summary>
+		/// Rectangle region. Example: column block editor text selection.
+		/// </summary>
+		Rect = 2,
 	}
 }

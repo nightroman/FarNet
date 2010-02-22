@@ -30,6 +30,7 @@ internal:
 	void Invoking();
 	void SetModuleHost(String^ moduleHostClassName);
 	void SetModuleHost(Type^ moduleHostClassType);
+	bool LoadLoadableModuleHost();
 internal:
 	static Object^ LoadPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue);
 	static Object^ LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue);
