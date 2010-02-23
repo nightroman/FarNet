@@ -267,12 +267,12 @@ namespace PowerShellFar
 				_Panel.Info.Title = DefaultTitle;
 
 			// try to open even not from panels
-			WindowKind wt = Far.Net.WindowKind;
+			WindowKind wt = Far.Net.Window.Kind;
 			if (wt != WindowKind.Panels)
 			{
 				try
 				{
-					Far.Net.SetCurrentWindow(0);
+					Far.Net.Window.SetCurrentAt(0);
 				}
 				catch (InvalidOperationException e)
 				{

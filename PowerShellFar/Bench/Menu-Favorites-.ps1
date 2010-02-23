@@ -53,7 +53,7 @@ for(;;) {
 	$menu.WrapCursor = $true
 	$menu.BreakKeys.Add([FarNet.VKeyCode]::Backspace)
 	$menu.BreakKeys.Add([FarNet.VKeyCode]::Spacebar)
-	if ($Far.WindowKind -eq 'Panels') {
+	if ($Far.Window.Kind -eq 'Panels') {
 		$menu.BreakKeys.Add([FarNet.VKeyCode]::Enter -bor [FarNet.VKeyMode]::Ctrl)
 	}
 
@@ -100,7 +100,7 @@ for(;;) {
 	}
 
 	### open directory shortcut
-	if ($Far.WindowKind -eq 'Panels' -and $$.Name -like '*.lnk') {
+	if ($Far.Window.Kind -eq 'Panels' -and $$.Name -like '*.lnk') {
 		$WshShell = New-Object -ComObject WScript.Shell
 		$target = $WshShell.CreateShortcut([IO.Path]::GetFullPath($$.FullName)).TargetPath
 		if ([System.IO.Directory]::Exists($target)) {

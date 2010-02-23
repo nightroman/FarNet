@@ -8,7 +8,7 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class Far1 sealed : public IFar
+ref class Far1 sealed : IFar
 {
 public:
 	virtual property FarConfirmations Confirmations { FarConfirmations get() override; }
@@ -22,16 +22,15 @@ public:
 	virtual property ILine^ CommandLine { ILine^ get() override; }
 	virtual property ILine^ Line { ILine^ get() override; }
 	virtual property IMacro^ Macro { IMacro^ get() override; }
-	virtual property int WindowCount { int get() override; }
 	virtual property IntPtr MainWindowHandle { IntPtr get() override; }
 	virtual property IViewer^ Viewer { IViewer^ get() override; }
+	virtual property IWindow^ Window { IWindow^ get() override; }
+	virtual property IZoo^ Zoo { IZoo^ get() override; }
 	virtual property String^ ActivePath { String^ get() override; }
 	virtual property String^ RegistryFarPath { String^ get() override; }
 	virtual property String^ RegistryPluginsPath { String^ get() override; }
-	virtual property Version^ FarVersion { System::Version^ get() override; }
 	virtual property Version^ FarNetVersion { System::Version^ get() override; }
-	virtual property FarNet::WindowKind WindowKind { FarNet::WindowKind get() override; }
-	virtual property IZoo^ Zoo { IZoo^ get() override; }
+	virtual property Version^ FarVersion { System::Version^ get() override; }
 public:
 	virtual array<int>^ CreateKeySequence(String^ keys) override;
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom) override;
@@ -45,12 +44,10 @@ public:
 public:
 	virtual array<IEditor^>^ Editors() override;
 	virtual array<IViewer^>^ Viewers() override;
-	virtual bool Commit() override;
 	virtual Char CodeToChar(int code) override;
 	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor) override;
 	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor) override;
 	virtual CultureInfo^ GetCurrentUICulture(bool update) override;
-	virtual FarNet::WindowKind GetWindowType(int index) override;
 	virtual ICollection<String^>^ GetDialogHistory(String^ name) override;
 	virtual ICollection<String^>^ GetHistory(String^ name) override;
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter) override;
@@ -64,7 +61,6 @@ public:
 	virtual int SaveScreen(int x1, int y1, int x2, int y2) override;
 	virtual IPanel^ FindPanel(Guid typeId) override;
 	virtual IPanel^ FindPanel(Type^ hostType) override;
-	virtual IWindowInfo^ GetWindowInfo(int index, bool full) override;
 	virtual String^ Input(String^ prompt) override;
 	virtual String^ Input(String^ prompt, String^ history) override;
 	virtual String^ Input(String^ prompt, String^ history, String^ title) override;
@@ -95,7 +91,6 @@ public:
 	virtual void Redraw() override;
 	virtual void RestoreScreen(int screen) override;
 	virtual void Run(String^ command) override;
-	virtual void SetCurrentWindow(int index) override;
 	virtual void SetProgressState(TaskbarProgressBarState state) override;
 	virtual void SetProgressValue(int currentValue, int maximumValue) override;
 	virtual void SetUserScreen() override;

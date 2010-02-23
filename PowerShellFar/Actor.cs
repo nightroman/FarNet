@@ -546,7 +546,7 @@ Continue with this current directory?
 		public IEditor Editor()
 		{
 			IEditor editor = Far.Net.Editor;
-			if (editor == null || Far.Net.WindowKind != WindowKind.Editor)
+			if (editor == null || Far.Net.Window.Kind != WindowKind.Editor)
 				throw new InvalidOperationException(Res.NeedsEditor);
 
 			return editor;
@@ -978,7 +978,7 @@ Continue with this current directory?
 					if (output.Length > 0)
 					{
 						// use log?
-						WindowKind wt = Far.Net.WindowKind;
+						WindowKind wt = Far.Net.Window.Kind;
 						bool useLog = (wt != WindowKind.Panels);
 						if (!useLog)
 						{

@@ -33,7 +33,7 @@ function Menu($Title, $Key)
 if ($Folders) {
 	### folder history
 	$filter = $null
-	if ($Far.WindowKind -eq 'Panels') {
+	if ($Far.Window.Kind -eq 'Panels') {
 		if (!$Far.Panel.IsPlugin) {
 			$filter = '0'
 		}
@@ -47,7 +47,7 @@ if ($Folders) {
 			}
 			else {
 				$Far.Panel.Path = $_
-				if ($Far.WindowKind -eq 'Dialog') {
+				if ($Far.Window.Kind -eq 'Dialog') {
 					$Far.Redraw()
 				}
 			}

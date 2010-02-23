@@ -70,7 +70,7 @@ namespace PowerShellFar
 			if (code == null)
 				return;
 
-			switch (Far.Net.WindowKind)
+			switch (Far.Net.Window.Kind)
 			{
 				case WindowKind.Panels:
 					{

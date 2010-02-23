@@ -131,7 +131,7 @@ namespace PowerShellFar
 		{
 			get
 			{
-				if (Far.Net.WindowKind != WindowKind.Editor)
+				if (Far.Net.Window.Kind != WindowKind.Editor)
 					return null;
 
 				IEditor editor = Far.Net.Editor;
@@ -147,7 +147,7 @@ namespace PowerShellFar
 			{
 				ILine line = null;
 
-				if (Far.Net.WindowKind == WindowKind.Editor)
+				if (Far.Net.Window.Kind == WindowKind.Editor)
 				{
 					IEditor editor = Far.Net.Editor;
 					ISelection selection1 = editor.Selection;
@@ -173,7 +173,7 @@ namespace PowerShellFar
 			{
 				ILine line = null;
 
-				if (Far.Net.WindowKind == WindowKind.Editor)
+				if (Far.Net.Window.Kind == WindowKind.Editor)
 				{
 					IEditor editor = Far.Net.Editor;
 					ISelection selection1 = editor.Selection;
@@ -335,7 +335,7 @@ namespace PowerShellFar
 		{
 			string code;
 			bool toCleanCmdLine = false;
-			WindowKind wt = Far.Net.WindowKind;
+			WindowKind wt = Far.Net.Window.Kind;
 
 			if (wt == WindowKind.Editor)
 			{

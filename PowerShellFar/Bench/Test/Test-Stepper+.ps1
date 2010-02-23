@@ -31,7 +31,7 @@
 # - It is also OK to return at this moment with no steps at all.
 
 # check prerequisites
-if ($Far.WindowCount -ne 1) {
+if ($Far.Window.Count -ne 1) {
 	throw "Close Far Manager internal windows before this test."
 }
 
@@ -85,7 +85,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: the window (panels) and item ('far.exe.config')
-	if ($Far.WindowKind -ne 'Panels') { throw }
+	if ($Far.Window.Kind -ne 'Panels') { throw }
 	if ((Get-FarFile).Name -ne 'far.exe.config') { throw }
 }
 
@@ -144,7 +144,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: current window is panel
-	if ($Far.WindowKind -ne 'Panels') { throw }
+	if ($Far.Window.Kind -ne 'Panels') { throw }
 }
 
 {
@@ -154,7 +154,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: current window is editor
-	if ($Far.WindowKind -ne 'Editor') { throw }
+	if ($Far.Window.Kind -ne 'Editor') { throw }
 }
 
 {
@@ -169,12 +169,12 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# go to panels
-	$Far.SetCurrentWindow(0)
+	$Far.Window.SetCurrentAt(0)
 }
 
 {
 	# test: current window is panel
-	if ($Far.WindowKind -ne 'Panels') { throw }
+	if ($Far.Window.Kind -ne 'Panels') { throw }
 }
 
 {
@@ -210,12 +210,12 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# go to editor
-	$Far.SetCurrentWindow(1)
+	$Far.Window.SetCurrentAt(1)
 }
 
 {
 	# test: current window is editor
-	if ($Far.WindowKind -ne 'Editor') { throw }
+	if ($Far.Window.Kind -ne 'Editor') { throw }
 }
 
 # exit the editor, do not save
@@ -223,7 +223,7 @@ if ($Far.WindowCount -ne 1) {
 
 {
 	# test: current window is panel
-	if ($Far.WindowKind -ne 'Panels') { throw }
+	if ($Far.Window.Kind -ne 'Panels') { throw }
 }
 
 # exit the plugin panel
