@@ -179,7 +179,7 @@ namespace PowerShellFar
 			set
 			{
 				if (value < 3) throw new ArgumentException(Res.MaximumPanelColumnCount);
-				if (value > FarColumn.DefaultColumnTypes.Count) throw new ArgumentException(Res.MaximumPanelColumnCount);
+				if (value > FarColumn.DefaultColumnKinds.Count) throw new ArgumentException(Res.MaximumPanelColumnCount);
 				_MaximumPanelColumnCount = value;
 			}
 		}

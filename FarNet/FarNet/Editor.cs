@@ -516,7 +516,7 @@ namespace FarNet
 	/// Arguments of <see cref="IAnyEditor.OnRedraw"/> event.
 	/// </summary>
 	/// <remarks>
-	/// This API is not complete and will be improved when needed.
+	/// This API is not complete, perhaps it is not needed in FarNet at all.
 	/// </remarks>
 	public sealed class RedrawEventArgs : EventArgs
 	{
@@ -536,7 +536,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// List of strings.
+	/// List of strings, see MSDN <c>IList(Of T)</c>.
 	/// </summary>
 	/// <remarks>
 	/// Usually the list is internally connected to <see cref="ILines"/>,
@@ -640,6 +640,9 @@ namespace FarNet
 	/// <summary>
 	/// List of lines. See <see cref="IEditor.Lines"/> (all editor lines), <see cref="IEditor.Selection"/> (editor selected lines\parts).
 	/// </summary>
+	/// <remarks>
+	/// Line collections have standard <c>IList(Of T)</c> members (see MSDN) and a few additional members.
+	/// </remarks>
 	public interface ILines : IList<ILine>
 	{
 		/// <summary>

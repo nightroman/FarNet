@@ -62,7 +62,7 @@ void Panel2::SwitchFullScreen()
 		{
 			SetColumn^ column = gcnew SetColumn();
 			mode->Columns[iType] = column;
-			column->Type = types[iType];
+			column->Kind = types[iType];
 			
 			if (widths[iType]->EndsWith("%"))
 				column->Width = - ParseInt(widths[iType]->Substring(0, widths[iType]->Length - 1), 0);

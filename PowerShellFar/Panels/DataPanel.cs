@@ -141,7 +141,7 @@ namespace PowerShellFar
 					if (Converter.IsLinearType(column.DataType))
 					{
 						Meta meta = new Meta(column.ColumnName);
-						meta.Type = FarColumn.DefaultColumnTypes[nCollected];
+						meta.Kind = FarColumn.DefaultColumnKinds[nCollected];
 						metas.Add(meta);
 						++nCollected;
 						if (nCollected >= Count)
@@ -164,7 +164,7 @@ namespace PowerShellFar
 			{
 				DataColumn column = Table.Columns[meta.Property];
 
-				switch (meta.Type[0])
+				switch (meta.Kind[0])
 				{
 					case 'N':
 						Map.Name = column.Ordinal;
@@ -187,10 +187,10 @@ namespace PowerShellFar
 						break;
 					case 'D':
 						{
-							if (meta.Type.Length < 2)
-								throw new InvalidOperationException("Invalid column type: D");
+							if (meta.Kind.Length < 2)
+								throw new InvalidOperationException(Res.InvalidColumnKind + "D");
 
-							switch (meta.Type[1])
+							switch (meta.Kind[1])
 							{
 								case 'C':
 									{
@@ -217,12 +217,12 @@ namespace PowerShellFar
 									}
 									break;
 								default:
-									throw new InvalidOperationException("Invalid column type: " + meta.Type);
+									throw new InvalidOperationException(Res.InvalidColumnKind + meta.Kind);
 							}
 						}
 						break;
 					default:
-						throw new InvalidOperationException("Invalid column type: " + meta.Type);
+						throw new InvalidOperationException(Res.InvalidColumnKind + meta.Kind);
 				}
 			}
 

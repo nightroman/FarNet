@@ -58,36 +58,31 @@ array<String^>^ Macro0::GetNames(MacroArea area)
 	}
 }
 
-Object^ Macro0::GetConstant(String^ name) //????? dupe
+Object^ Macro0::GetScalar(MacroArea area, String^ name)
 {
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\Consts";
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + area.ToString();
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
+	if (!key)
+		return nullptr;
 
 	try
 	{
-		return key ? key->GetValue(name) : nullptr;
+		return RegistryValueToObject(key->GetValue(name));
 	}
 	finally
 	{
-		if (key)
-			key->Close();
+		key->Close();
 	}
+}
+
+Object^ Macro0::GetConstant(String^ name)
+{
+	return GetScalar(MacroArea::Consts, name);
 }
 
 Object^ Macro0::GetVariable(String^ name)
 {
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\Vars";
-	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
-
-	try
-	{
-		return key ? key->GetValue(name) : nullptr;
-	}
-	finally
-	{
-		if (key)
-			key->Close();
-	}
+	return GetScalar(MacroArea::Vars, name);
 }
 
 Macro^ Macro0::GetMacro(MacroArea area, String^ name)
@@ -111,22 +106,7 @@ Macro^ Macro0::GetMacro(MacroArea area, String^ name)
 		// sequence
 		Object^ value = key->GetValue("Sequence");
 		if (value)
-		{
-			array<String^>^ lines = dynamic_cast<array<String^>^>(value);
-			if (lines)
-			{
-				StringBuilder sb;
-				int i;
-				for(i = 0; i < lines->Length - 1; ++i)
-					sb.AppendLine(lines[i]);
-				sb.Append(lines[i]);
-				r->Sequence = sb.ToString();
-			}
-			else
-			{
-				r->Sequence = value->ToString();
-			}
-		}
+			r->Sequence = RegistryValueToObject(value)->ToString();
 		
 		// others
 		r->Description = key->GetValue("Description", String::Empty)->ToString();
@@ -203,27 +183,48 @@ void Macro0::Remove(MacroArea area, array<String^>^ names)
 	}
 }
 
+// Converts the string array to the text; returns other objects not changed.
+Object^ Macro0::RegistryValueToObject(Object^ value)
+{
+	array<String^>^ lines = dynamic_cast<array<String^>^>(value);
+	if (!lines)
+		return value;
+	
+	StringBuilder sb;
+	int i;
+	for(i = 0; i < lines->Length - 1; ++i)
+		sb.AppendLine(lines[i]);
+	sb.Append(lines[i]);
+	return sb.ToString();
+}
+
+// Converts the text to the string array or the same string.
 Object^ Macro0::StringToRegistryValue(String^ text)
 {
 	array<String^>^ lines = Regex::Split(text, "\\r\\n|\\r|\\n");
 	if (lines->Length == 1)
-		return lines[0];
+		return text;
 	else
 		return lines;
 }
 
-void Macro0::InstallConstant(String^ name, Object^ value)
+void Macro0::InstallScalar(MacroArea area, String^ name, Object^ value)
 {
-	if (!name) throw gcnew ArgumentNullException("name");
-	if (!value) throw gcnew ArgumentNullException("value");
+	if (!name)
+		throw gcnew ArgumentNullException("name");
+	if (!value)
+		throw gcnew ArgumentNullException("value");
 
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\Consts";
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + area.ToString();
 	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
 
 	try
 	{
 		value = dynamic_cast<String^>(value) ? StringToRegistryValue(value->ToString()) : value;
 		key->SetValue(name, value);
+
+		if (!ManualSaveLoad)
+			Load();
 	}
 	finally
 	{
@@ -231,23 +232,14 @@ void Macro0::InstallConstant(String^ name, Object^ value)
 	}
 }
 
-void Macro0::InstallVariable(String^ name, Object^ value) //????? dupe
+void Macro0::InstallConstant(String^ name, Object^ value)
 {
-	if (!name) throw gcnew ArgumentNullException("name");
-	if (!value) throw gcnew ArgumentNullException("value");
+	InstallScalar(MacroArea::Consts, name, value);
+}
 
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\Vars";
-	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
-
-	try
-	{
-		value = dynamic_cast<String^>(value) ? StringToRegistryValue(value->ToString()) : value;
-		key->SetValue(name, value);
-	}
-	finally
-	{
-		key->Close();
-	}
+void Macro0::InstallVariable(String^ name, Object^ value)
+{
+	InstallScalar(MacroArea::Vars, name, value);
 }
 
 void Macro0::Install(Macro^ macro)

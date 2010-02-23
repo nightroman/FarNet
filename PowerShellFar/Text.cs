@@ -36,6 +36,7 @@ namespace PowerShellFar
 			PropertyIsNotSettableNow = "The property is not settable at this moment.",
 			CanNotClose = "Cannot close the session at this time.",
 			MaximumPanelColumnCount = "Valid maximum column count should be from 3 to 13.", // _100202_113617
+			InvalidColumnKind = "Invalid column kind: ",
 			// others
 			Cancel = "Cancel",
 			Delete = "Delete",

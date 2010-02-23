@@ -35,8 +35,8 @@ namespace PowerShellFar
 			Panel.KeyPressed += OnKeyPressedTreePanel;
 
 			// columns
-			SetColumn cO = new SetColumn(); cO.Type = "O"; cO.Name = "Name";
-			SetColumn cZ = new SetColumn(); cZ.Type = "Z"; cZ.Name = "Description";
+			SetColumn cO = new SetColumn(); cO.Kind = "O"; cO.Name = "Name";
+			SetColumn cZ = new SetColumn(); cZ.Kind = "Z"; cZ.Name = "Description";
 
 			// mode: tree and description columns
 			PanelModeInfo mode0 = new PanelModeInfo();

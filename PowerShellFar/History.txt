@@ -1,6 +1,15 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.7 =
+
+FarMacro module: added partial support of Consts and Vars areas. Only string
+values are supported for changes by commands or in the editors, other values
+are converted to strings.
+
+The cmdlet Edit-FarMacro and the script Panel-Macro-.ps1 also work with Consts
+and Vars data.
+
 = 4.3.6 =
 
 UPDATE STEPS

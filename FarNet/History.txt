@@ -13,6 +13,7 @@ and also fix Code Analysis warnings.
 Code name changes:
 -- WindowType -> WindowKind, .Type -> .Kind, .TypeName -> .KindName
 -- SelectionType -> RegionKind (also used more general Region)
+-- FarColumn, SetColumn: Type -> Kind
 -- ISelection.Type -> Kind
 -- PanelType -> PanelKind
 -- IAnyPanel.Type -> Kind
