@@ -74,8 +74,14 @@ if ($wi.Kind -eq 'Panels' -and !$Name) {
 	})
 	### [F4]
 	$p.SetEdit({
-		if ($this.Panel.Path -match '^FarMacro:\\(\w+)$') {
+		if ($_.File.Data -is [FarNet.Macro]) {
 			Edit-FarMacro -Macro $_.File.Data
+		}
+		elseif ($this.Panel.Path -match '\\Consts$') {
+			Edit-FarMacro -Area 'Consts' -Name $_.File.Name
+		}
+		elseif ($this.Panel.Path -match '\\Vars$') {
+			Edit-FarMacro -Area 'Vars' -Name $_.File.Name
 		}
 	})
 	Start-FarPanel $p

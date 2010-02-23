@@ -51,10 +51,16 @@ namespace FarMacro
 			}
 		}
 
-		static bool IsValidName(string name)
+		static bool IsValidName(MacroArea area, string name)
 		{
 			if (string.IsNullOrEmpty(name))
 				return false;
+
+			if (area == MacroArea.Consts)
+				return true;
+
+			if (area == MacroArea.Vars)
+				return name.StartsWith("%%", StringComparison.OrdinalIgnoreCase);
 
 			int code = Far.Net.NameToKey(name);
 			if (code >= 0)
@@ -76,13 +82,7 @@ namespace FarMacro
 			if (way.Name == null)
 				return true;
 
-			if (way.Area == MacroArea.Consts)
-				return true;
-
-			if (way.Area == MacroArea.Vars)
-				return way.Name.StartsWith("%%", StringComparison.OrdinalIgnoreCase);
-
-			return IsValidName(way.Name);
+			return IsValidName(way.Area, way.Name);
 		}
 
 		static Way NewWay(string path)
@@ -296,13 +296,13 @@ namespace FarMacro
 			Way way = NewWay(path);
 			object value = newItemValue ?? string.Empty;
 
-			if (way.Area == MacroArea.Consts)
+			if (way.Area == MacroArea.Consts && way.Name != null)
 			{
 				Far.Net.Macro.InstallConstant(way.Name, value);
 				return;
 			}
 
-			if (way.Area == MacroArea.Vars)
+			if (way.Area == MacroArea.Vars && way.Name != null)
 			{
 				Far.Net.Macro.InstallVariable(way.Name, value);
 				return;
@@ -323,14 +323,35 @@ namespace FarMacro
 				throw new InvalidOperationException("Areas cannot be copied.");
 
 			Way dst = new Way(copyPath);
-			if (dst.Name != null || dst.Area == MacroArea.Root)
-				throw new InvalidOperationException("Invalid destination path.");
+			if (dst.Area == MacroArea.Consts)
+			{
+				if (way.Area != MacroArea.Consts)
+					throw new InvalidOperationException(Res.InvalidDestinationPath);
+
+				Far.Net.Macro.InstallConstant(dst.Name, Far.Net.Macro.GetConstant(way.Name));
+				return;
+			}
+			else if (dst.Area == MacroArea.Vars)
+			{
+				if (way.Area != MacroArea.Vars)
+					throw new InvalidOperationException(Res.InvalidDestinationPath);
+
+				Far.Net.Macro.InstallVariable(dst.Name, Far.Net.Macro.GetVariable(way.Name));
+				return;
+			}
+			else if (dst.Area == MacroArea.Root)
+			{
+				throw new InvalidOperationException(Res.InvalidDestinationPath);
+			}
 
 			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
 				throw new FileNotFoundException("Macro is not found: " + path);
 
 			macro.Area = dst.Area;
+			if (!string.IsNullOrEmpty(dst.Name))
+				macro.Name = dst.Name;
+			
 			Far.Net.Macro.Install(macro);
 		}
 
@@ -408,11 +429,37 @@ namespace FarMacro
 		{
 			Way way = new Way(path);
 
-			if (!IsValidName(newName))
+			if (!IsValidName(way.Area, newName))
 				throw new ArgumentException("Invalid new name: " + newName);
 
 			if (way.Name == null)
-				throw new InvalidOperationException("Only macro items can be renamed.");
+				throw new InvalidOperationException("This item cannot be renamed.");
+
+			if (way.Area == MacroArea.Consts)
+			{
+				// noop if names are identical
+				if (newName == way.Name)
+					return;
+
+				//! 3 steps in exactly this order
+				object value = Far.Net.Macro.GetConstant(way.Name);
+				Far.Net.Macro.Remove(MacroArea.Consts, way.Name);
+				Far.Net.Macro.InstallConstant(newName, value);
+				return;
+			}
+
+			if (way.Area == MacroArea.Vars)
+			{
+				// noop if names are identical
+				if (newName == way.Name)
+					return;
+
+				//! 3 steps in exactly this order
+				object value = Far.Net.Macro.GetVariable(way.Name);
+				Far.Net.Macro.Remove(MacroArea.Vars, way.Name);
+				Far.Net.Macro.InstallVariable(newName, value);
+				return;
+			}
 
 			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
@@ -462,9 +509,9 @@ namespace FarMacro
 			Way way = new Way(path);
 
 			if (way.Area == MacroArea.Consts)
-				return new Reader(Far.Net.Macro.GetConstant(way.Name));
+				return new Reader(Far.Net.Macro.GetConstant(way.Name).ToString());
 			else if (way.Area == MacroArea.Vars)
-				return new Reader(Far.Net.Macro.GetVariable(way.Name));
+				return new Reader(Far.Net.Macro.GetVariable(way.Name).ToString());
 
 			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);
 			if (macro == null)
@@ -511,22 +558,6 @@ namespace FarMacro
 			Value = value;
 		}
 
-		public Reader(object value)
-		{
-			string[] array = value as string[];
-			if (array == null)
-			{
-				Value = value.ToString();
-				return;
-			}
-
-			StringBuilder sb = new StringBuilder();
-			foreach(string s in array)
-				sb.AppendLine(s);
-			
-			Value = sb.ToString().TrimEnd();
-		}
-
 		public void Close()
 		{ }
 
@@ -559,7 +590,7 @@ namespace FarMacro
 	class Writer : IContentWriter
 	{
 		Macro Macro;
-		
+
 		MacroArea Area;
 		string Name;
 

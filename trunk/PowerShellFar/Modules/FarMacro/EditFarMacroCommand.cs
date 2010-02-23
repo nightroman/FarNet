@@ -87,23 +87,26 @@ namespace FarMacro
 				}
 
 				// validate the key name
-				Name = Name.Replace("(Slash)", "/");
-				int code = Far.Net.NameToKey(Name);
-				if (code >= 0)
-					Name = Far.Net.KeyToName(code);
-				else
-					throw new ArgumentException(m.InvalidKeyName);
-
-				// validate the area
-				if (Area == MacroArea.Root)
+				if (Area != MacroArea.Consts && Area != MacroArea.Vars)
 				{
-					switch (Far.Net.Window.Kind)
+					Name = Name.Replace("(Slash)", "/");
+					int code = Far.Net.NameToKey(Name);
+					if (code >= 0)
+						Name = Far.Net.KeyToName(code);
+					else
+						throw new ArgumentException(m.InvalidKeyName);
+
+					// validate the area
+					if (Area == MacroArea.Root)
 					{
-						case WindowKind.Dialog: Area = MacroArea.Dialog; break;
-						case WindowKind.Editor: Area = MacroArea.Editor; break;
-						case WindowKind.Panels: Area = MacroArea.Shell; break;
-						case WindowKind.Viewer: Area = MacroArea.Viewer; break;
-						default: throw new ArgumentException(m.UndefinedArea);
+						switch (Far.Net.Window.Kind)
+						{
+							case WindowKind.Dialog: Area = MacroArea.Dialog; break;
+							case WindowKind.Editor: Area = MacroArea.Editor; break;
+							case WindowKind.Panels: Area = MacroArea.Shell; break;
+							case WindowKind.Viewer: Area = MacroArea.Viewer; break;
+							default: throw new ArgumentException(m.UndefinedArea);
+						}
 					}
 				}
 
@@ -128,8 +131,17 @@ namespace FarMacro
 				}
 				FileName = Path.Combine(MyAppData, Area.ToString() + "." + FileName + m.MacroFileExtension);
 
-				// write the sequence to the file
-				File.WriteAllText(FileName, Macro.Sequence, Encoding.Unicode);
+				// target text
+				string text;
+				if (Area == MacroArea.Consts)
+					text = (Far.Net.Macro.GetConstant(Name) ?? string.Empty).ToString();
+				else if (Area == MacroArea.Vars)
+					text = (Far.Net.Macro.GetVariable(Name) ?? string.Empty).ToString();
+				else
+					text = Macro.Sequence;
+
+				// write the text to the file
+				File.WriteAllText(FileName, text, Encoding.Unicode);
 			}
 
 			// setup the editor
@@ -170,9 +182,25 @@ namespace FarMacro
 
 		void OnSaving(object sender, EventArgs e)
 		{
+			// target text
+			string text = Editor.GetText().TrimEnd();
+
+			// case: Consts
+			if (Area == MacroArea.Consts)
+			{
+				Far.Net.Macro.InstallConstant(Name, text);
+				return;
+			}
+
+			// case: Vars
+			if (Area == MacroArea.Vars)
+			{
+				Far.Net.Macro.InstallVariable(Name, text);
+				return;
+			}
+			
 			// check the macro
-			string sequence = Editor.GetText().TrimEnd();
-			Error = Far.Net.Macro.Check(sequence, false);
+			Error = Far.Net.Macro.Check(text, false);
 
 			// go to the error position
 			if (Error != null)
@@ -183,9 +211,8 @@ namespace FarMacro
 			else if (FilePath == null)
 			{
 				//! update the macro, it can be external
-				Macro.Sequence = sequence;
+				Macro.Sequence = text;
 				Far.Net.Macro.Install(Macro);
-				Far.Net.Macro.Load();
 			}
 		}
 

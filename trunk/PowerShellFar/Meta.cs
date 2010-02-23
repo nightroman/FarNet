@@ -27,7 +27,7 @@ namespace PowerShellFar
 	/// <c>Name</c>/<c>Label</c> is usually needed for a script block, but it can be used with a property name, too.
 	/// </para>
 	/// <para>
-	/// <b>Type</b>: Far column type.
+	/// <b>Type</b>: Far column kind (the key name comes from PowerShell).
 	/// See <see cref="PanelModeInfo.Columns"/>.
 	/// </para>
 	/// <para>
@@ -79,8 +79,8 @@ namespace PowerShellFar
 		}
 
 		///
-		public override string Type { get { return _Type; } set { _Type = value; } }
-		string _Type; //! CA
+		public override string Kind { get { return _Kind; } set { _Kind = value; } }
+		string _Kind; //! CA
 
 		///
 		public override int Width { get { return _Width; } set { _Width = value; } }
@@ -183,7 +183,7 @@ namespace PowerShellFar
 					}
 					else if (Word.Type.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
-						_Type = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
+						_Kind = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
 					}
 					else if (Word.Width.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
@@ -222,8 +222,8 @@ namespace PowerShellFar
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.Append("@{");
-			if (_Type != null)
-				sb.Append(" Type = '" + _Type + "';");
+			if (_Kind != null)
+				sb.Append(" Type = '" + _Kind + "';");
 			if (_ColumnName != null)
 				sb.Append(" Label = '" + _ColumnName + "';");
 			if (_Width != 0)

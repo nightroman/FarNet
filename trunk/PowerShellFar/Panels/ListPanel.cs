@@ -27,8 +27,8 @@ namespace PowerShellFar
 
 			// 090411 Use custom Descriptions mode
 			PanelModeInfo mode = new PanelModeInfo();
-			SetColumn c1 = new SetColumn(); c1.Type = "N"; c1.Name = "Name";
-			SetColumn c2 = new SetColumn(); c2.Type = "Z"; c2.Name = "Value";
+			SetColumn c1 = new SetColumn(); c1.Kind = "N"; c1.Name = "Name";
+			SetColumn c2 = new SetColumn(); c2.Kind = "Z"; c2.Name = "Value";
 			mode.Columns = new FarColumn[] { c1, c2 };
 			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 		}

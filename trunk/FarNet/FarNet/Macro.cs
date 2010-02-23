@@ -55,13 +55,13 @@ namespace FarNet
 		/// Gets global constant value.
 		/// </summary>
 		/// <param name="name">Constant name.</param>
-		/// <returns>Constant value.</returns>
+		/// <returns>Constant value or null if it does not exists.</returns>
 		public abstract object GetConstant(string name);
 		/// <summary>
 		/// Gets global variable value.
 		/// </summary>
 		/// <param name="name">Variable name.</param>
-		/// <returns>Variable value.</returns>
+		/// <returns>Variable value or null if it does not exists.</returns>
 		public abstract object GetVariable(string name);
 		/// <summary>
 		/// Gets the key macro.
