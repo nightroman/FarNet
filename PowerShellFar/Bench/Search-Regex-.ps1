@@ -283,8 +283,8 @@ $panel.Data = $job
 ### Modes
 # 'Descriptions'
 $m0 = New-Object FarNet.PanelModeInfo
-$c1 = New-Object FarNet.SetColumn -Property @{ Type = 'NR'; Name = 'File' }
-$c2 = New-Object FarNet.SetColumn -Property @{ Type = 'Z'; Name = 'Match' }
+$c1 = New-Object FarNet.SetColumn -Property @{ Kind = 'NR'; Name = 'File' }
+$c2 = New-Object FarNet.SetColumn -Property @{ Kind = 'Z'; Name = 'Match' }
 $m0.Columns = $c1, $c2
 $m0.StatusColumns = $c2
 $panel.Info.SetMode('Descriptions', $m0)

@@ -151,7 +151,7 @@ namespace PowerShellFar
 		static void SetBestTypes(Meta[] metas)
 		{
 			int count = metas.Length;
-			
+
 			// heuristic N
 			if (count > 1 && SetBestType(metas, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
 				--count;
@@ -172,7 +172,7 @@ namespace PowerShellFar
 
 			foreach (Meta meta in metas)
 			{
-				if (meta.Type != null)
+				if (meta.Kind != null)
 					continue;
 
 				string name = meta.Name;
@@ -193,7 +193,7 @@ namespace PowerShellFar
 						{
 							if (i == 0)
 							{
-								meta.Type = type;
+								meta.Kind = type;
 								return true;
 							}
 
@@ -206,7 +206,7 @@ namespace PowerShellFar
 
 			if (bestMeta != null)
 			{
-				bestMeta.Type = type;
+				bestMeta.Kind = type;
 				return true;
 			}
 
@@ -226,7 +226,7 @@ namespace PowerShellFar
 			foreach (Meta meta in metas)
 			{
 				// type -> map:
-				switch (meta.Type[0])
+				switch (meta.Kind[0])
 				{
 					case 'N':
 						Map.Name = meta;
@@ -249,10 +249,10 @@ namespace PowerShellFar
 						break;
 					case 'D':
 						{
-							if (meta.Type.Length < 2)
-								throw new InvalidOperationException("Invalid column type: D");
+							if (meta.Kind.Length < 2)
+								throw new InvalidOperationException(Res.InvalidColumnKind + "D");
 
-							switch (meta.Type[1])
+							switch (meta.Kind[1])
 							{
 								case 'C':
 									{
@@ -279,12 +279,12 @@ namespace PowerShellFar
 									}
 									break;
 								default:
-									throw new InvalidOperationException("Invalid column type: " + meta.Type);
+									throw new InvalidOperationException(Res.InvalidColumnKind + meta.Kind);
 							}
 						}
 						break;
 					default:
-						throw new InvalidOperationException("Unknown column type: " + meta.Type);
+						throw new InvalidOperationException("Unknown column type: " + meta.Kind);
 				}
 			}
 
@@ -347,7 +347,7 @@ namespace PowerShellFar
 
 				// reuse the mode: reset columns, keep other data intact
 				SetColumn c1 = new SetColumn();
-				c1.Type = "N";
+				c1.Kind = "N";
 				c1.Name = "<empty>";
 				mode.Columns = new FarColumn[] { c1 };
 				Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
@@ -418,9 +418,9 @@ namespace PowerShellFar
 			PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
 			if (mode == null)
 				mode = new PanelModeInfo();
-			SetColumn c1 = new SetColumn(); c1.Type = "S"; c1.Name = "##"; // "Index" clashes to sort order mark
-			SetColumn c2 = new SetColumn(); c2.Type = "N"; c2.Name = "Value";
-			SetColumn c3 = new SetColumn(); c3.Type = "Z"; c3.Name = "Type";
+			SetColumn c1 = new SetColumn(); c1.Kind = "S"; c1.Name = "##"; // "Index" clashes to sort order mark
+			SetColumn c2 = new SetColumn(); c2.Kind = "N"; c2.Name = "Value";
+			SetColumn c3 = new SetColumn(); c3.Kind = "Z"; c3.Name = "Type";
 			mode.Columns = new FarColumn[] { c1, c2, c3 };
 			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 

@@ -39,9 +39,9 @@ $p.Info.StartViewMode = 'Descriptions'
 ### Modes
 # 'Descriptions'
 $m = New-Object FarNet.PanelModeInfo
-$cn = New-Object FarNet.SetColumn -Property @{ Type = "N"; Name = "Name (custom title)" }
-$co = New-Object FarNet.SetColumn -Property @{ Type = "O"; Name = "Owner (custom title)" }
-$cz = New-Object FarNet.SetColumn -Property @{ Type = "Z"; Name = "Description (custom title)" }
+$cn = New-Object FarNet.SetColumn -Property @{ Kind = "N"; Name = "Name (custom title)" }
+$co = New-Object FarNet.SetColumn -Property @{ Kind = "O"; Name = "Owner (custom title)" }
+$cz = New-Object FarNet.SetColumn -Property @{ Kind = "Z"; Name = "Description (custom title)" }
 $m.Columns = $cn, $co, $cz
 $m.StatusColumns = $m.Columns
 $p.Info.SetMode('Descriptions', $m)
@@ -51,8 +51,8 @@ $m.IsFullScreen = $true
 $p.Info.SetMode('LongDescriptions', $m)
 # 'Ctrl0 mode'
 $m = New-Object FarNet.PanelModeInfo
-$c0 = New-Object FarNet.SetColumn -Property @{ Type = "C0"; Name = "Custom column C0" }
-$c1 = New-Object FarNet.SetColumn -Property @{ Type = "C1"; Name = "Custom column C1" }
+$c0 = New-Object FarNet.SetColumn -Property @{ Kind = "C0"; Name = "Custom column C0" }
+$c1 = New-Object FarNet.SetColumn -Property @{ Kind = "C1"; Name = "Custom column C1" }
 $m.Columns = $cn, $c0, $c1
 $m.StatusColumns = $m.Columns
 $p.Info.SetMode(0, $m)

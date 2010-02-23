@@ -46,14 +46,14 @@ namespace PowerShellFar
 			Meta[] metas = new Meta[columns.Length];
 			for (int iColumn = 0; iColumn < columns.Length; ++iColumn)
 				metas[iColumn] = Meta.AsMeta(columns[iColumn]);
-				
+
 			SetupMetas(metas);
 			return metas;
 		}
 
 		internal static void SetupMetas(Meta[] metas)
 		{
-			List<string> availableColumnTypes = new List<string>(FarColumn.DefaultColumnTypes);
+			List<string> availableColumnTypes = new List<string>(FarColumn.DefaultColumnKinds);
 
 			// pass 1: pre-process specified default types, remove them from available
 			int iCustom = 0;
@@ -63,11 +63,11 @@ namespace PowerShellFar
 				Meta meta = metas[iColumn];
 
 				// skip not specified
-				if (string.IsNullOrEmpty(meta.Type))
+				if (string.IsNullOrEmpty(meta.Kind))
 					continue;
 
 				// pre-process only default types: N, Z, O, C
-				switch (meta.Type[0])
+				switch (meta.Kind[0])
 				{
 					case 'N':
 						{
@@ -89,13 +89,13 @@ namespace PowerShellFar
 						break;
 					case 'C':
 						{
-							if (meta.Type.Length < 2)
-								throw new InvalidOperationException("Invalid column type: C");
+							if (meta.Kind.Length < 2)
+								throw new InvalidOperationException(Res.InvalidColumnKind + "C");
 
-							if (iCustom != (int)(meta.Type[1] - '0'))
-								throw new InvalidOperationException("Invalid column type: " + meta.Type + ". Expected: C" + iCustom);
+							if (iCustom != (int)(meta.Kind[1] - '0'))
+								throw new InvalidOperationException(Res.InvalidColumnKind + meta.Kind + ". Expected: C" + iCustom);
 
-							availableColumnTypes.Remove(meta.Type.Substring(0, 2));
+							availableColumnTypes.Remove(meta.Kind.Substring(0, 2));
 							++iCustom;
 						}
 						break;
@@ -106,12 +106,12 @@ namespace PowerShellFar
 			int iAvailable = 0;
 			foreach (Meta meta in metas)
 			{
-				if (string.IsNullOrEmpty(meta.Type))
+				if (string.IsNullOrEmpty(meta.Kind))
 				{
 					if (iAvailable >= availableColumnTypes.Count)
 						throw new InvalidOperationException("Too many columns.");
 
-					meta.Type = availableColumnTypes[iAvailable];
+					meta.Kind = availableColumnTypes[iAvailable];
 					++iAvailable;
 				}
 			}

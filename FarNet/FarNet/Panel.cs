@@ -632,9 +632,8 @@ namespace FarNet
 	/// When a panel is opened you can change modes dynamically, but do not forget
 	/// to reset the list itself, changes in items are not reflected without this.
 	/// <para>
-	/// WARNING: titles, types and custom columns is a sort of low level stuff;
-	/// if you use this incorrectly the Far may crash. For performance sake
-	/// FarNet does only basic sanity checks.
+	/// WARNING: column titles, kinds and custom columns is a sort of low level stuff;
+	/// if you use this incorrectly the Far may crash.
 	/// </para>
 	/// </remarks>
 	/// <seealso cref="FarFile.Columns"/>
@@ -646,20 +645,20 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// All supported types: "N", "Z", "O", "S", "DC", "DM", "DA", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
-		/// Supported Far column type suffixes may be added to the end, e.g. NR, ST, DCB, and etc., see Far API [Column types].
+		/// All supported kinds: "N", "Z", "O", "S", "DC", "DM", "DA", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
+		/// Supported Far column kind suffixes may be added to the end, e.g. NR, ST, DCB, and etc., see Far API [Column types].
 		/// </para>
 		/// <para>
-		/// Default column type sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
-		/// It is exposed as <see cref="FarColumn.DefaultColumnTypes"/>.
+		/// Default column kind sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
+		/// It is exposed as <see cref="FarColumn.DefaultColumnKinds"/>.
 		/// </para>
 		/// <para>
-		/// Type rules:
+		/// Column kind rules:
 		/// <ul>
-		/// <li>Specify column types only when you really have to do so, especially try to avoid C0..C9, let them to be processed by default.</li>
-		/// <li>C0...C9 must be listed incrementally without gaps; but other types between them is OK. E.g. C0, C2 is bad; C0, N, C1 is OK.</li>
-		/// <li>If a type is not specified then the next available from the remaining default sequence is taken.</li>
-		/// <li>Column types should not be specified more than once.</li>
+		/// <li>Specify column kinds only when you really have to do so, especially try to avoid C0..C9, let them to be processed by default.</li>
+		/// <li>C0...C9 must be listed incrementally without gaps; but other kinds between them is OK. E.g. C0, C2 is bad; C0, N, C1 is OK.</li>
+		/// <li>If a kind is not specified then the next available from the remaining default sequence is taken.</li>
+		/// <li>Column kinds should not be specified more than once.</li>
 		/// </ul>
 		/// </para>
 		/// </remarks>
@@ -810,13 +809,13 @@ namespace FarNet
 	public class ViewModeChangedEventArgs : EventArgs
 	{
 		string _columns;
-		/// <param name="columns">Column types, e.g. N,S,D,T.</param>
+		/// <param name="columns">Column kinds, e.g. N,S,D,T.</param>
 		public ViewModeChangedEventArgs(string columns)
 		{
 			_columns = columns;
 		}
 		/// <summary>
-		/// Column types, e.g. N,S,D,T.
+		/// Column kinds, e.g. N,S,D,T.
 		/// </summary>
 		public string Columns
 		{
@@ -1334,9 +1333,9 @@ namespace FarNet
 		/// </remarks>
 		public virtual string Name { get { return null; } set { throw new NotImplementedException(); } }
 		/// <summary>
-		/// Column type. See <see cref="PanelModeInfo.Columns"/>.
+		/// Column kind. See <see cref="PanelModeInfo.Columns"/>.
 		/// </summary>
-		public virtual string Type { get { return null; } set { throw new NotImplementedException(); } }
+		public virtual string Kind { get { return null; } set { throw new NotImplementedException(); } }
 		/// <summary>
 		/// Column width.
 		/// </summary>
@@ -1345,11 +1344,11 @@ namespace FarNet
 		/// </remarks>
 		public virtual int Width { get { return 0; } set { throw new NotImplementedException(); } }
 		/// <summary>
-		/// Default column type sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
+		/// Default column kind sequence: "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
 		/// </summary>
-		public static ReadOnlyCollection<string> DefaultColumnTypes { get { return _DefaultColumnTypes; } }
+		public static ReadOnlyCollection<string> DefaultColumnKinds { get { return _DefaultColumnKinds; } }
 		// _100202_113617 If count changes update related features.
-		static readonly ReadOnlyCollection<string> _DefaultColumnTypes = new ReadOnlyCollection<string>(new string[] { "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9" });
+		static readonly ReadOnlyCollection<string> _DefaultColumnKinds = new ReadOnlyCollection<string>(new string[] { "N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9" });
 		/// <summary>
 		/// Only for derived classes.
 		/// </summary>
@@ -1368,7 +1367,7 @@ namespace FarNet
 		///
 		public override string Name { get; set; }
 		///
-		public override string Type { get; set; }
+		public override string Kind { get; set; }
 		///
 		public override int Width { get; set; }
 	}

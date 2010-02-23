@@ -50,4 +50,11 @@ namespace FarMacro
 		public MacroArea Area { get; private set; }
 		public string Name { get; private set; }
 	}
+
+	static class Res
+	{
+		public const string
+			InvalidDestinationPath = "Invalid destination path.";
+	}
+
 }

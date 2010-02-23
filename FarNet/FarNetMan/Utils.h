@@ -204,7 +204,9 @@ internal:
 		ModuleEditors = "Editors",
 		ModuleFilers = "Filers",
 		ErrorNoHotKey = "Set any FarNet hotkey [F4] in the Far plugin menu [F11] and restart Far.",
-		MenuPrefix = ".NET ";
+		MenuPrefix = ".NET ",
+		InvalidColumnKind = "Invalid column kind: ",
+		Column0IsUsedTwice = "Column '{0}' is used twice.";
 };
 
 ref class Config

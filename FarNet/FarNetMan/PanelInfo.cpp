@@ -120,56 +120,56 @@ PanelModeInfo^ FarPanelInfo::GetMode(PanelViewMode viewMode)
 	return _Modes[i];
 }
 
-String^ GetColumnTypes(IEnumerable<FarColumn^>^ columns)
+String^ GetColumnKinds(IEnumerable<FarColumn^>^ columns)
 {
-	// available types
-	List<String^> availableColumnTypes(FarColumn::DefaultColumnTypes);
+	// available kinds
+	List<String^> availableColumnKinds(FarColumn::DefaultColumnKinds);
 
-	// pass 1: pre-process specified default types, remove them from available
+	// pass 1: pre-process specified default kinds, remove them from available
 	int iCustom = 0;
 	for each(FarColumn^ column in columns)
 	{
 		// skip not specified
-		if (ES(column->Type))
+		if (ES(column->Kind))
 			continue;
 
-		// pre-process only default types: N, O, Z, C
-		switch(column->Type[0])
+		// pre-process only default kinds: N, O, Z, C
+		switch(column->Kind[0])
 		{
 		case 'N':
 			{
-				if (!availableColumnTypes.Remove("N"))
-					throw gcnew InvalidOperationException("Column 'N' is used twice.");
+				if (!availableColumnKinds.Remove("N"))
+					throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "N"));
 			}
 			break;
 		case 'O':
 			{
-				if (!availableColumnTypes.Remove("O"))
-					throw gcnew InvalidOperationException("Column 'O' is used twice.");
+				if (!availableColumnKinds.Remove("O"))
+					throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "O"));
 			}
 			break;
 		case 'Z':
 			{
-				if (!availableColumnTypes.Remove("Z"))
-					throw gcnew InvalidOperationException("Column 'Z' is used twice.");
+				if (!availableColumnKinds.Remove("Z"))
+					throw gcnew InvalidOperationException(String::Format(Res::Column0IsUsedTwice, "Z"));
 			}
 			break;
 		case 'C':
 			{
-				if (column->Type->Length < 2)
-					throw gcnew InvalidOperationException("Invalid column type: C");
+				if (column->Kind->Length < 2)
+					throw gcnew InvalidOperationException(Res::InvalidColumnKind + "C");
 
-				if (iCustom != (int)(column->Type[1] - '0'))
-					throw gcnew InvalidOperationException("Invalid column type: " + column->Type + ". Expected: C" + iCustom);
+				if (iCustom != (int)(column->Kind[1] - '0'))
+					throw gcnew InvalidOperationException(Res::InvalidColumnKind + column->Kind + ". Expected: C" + iCustom);
 
-				availableColumnTypes.Remove(column->Type->Substring(0, 2));
+				availableColumnKinds.Remove(column->Kind->Substring(0, 2));
 				++iCustom;
 			}
 			break;
 		}
 	}
 
-	// pass 2: get missed types from yet available
+	// pass 2: get missed kinds from yet available
 	int iAvailable = 0;
 	StringBuilder sb(80);
 	for each(FarColumn^ column in columns)
@@ -177,10 +177,10 @@ String^ GetColumnTypes(IEnumerable<FarColumn^>^ columns)
 		if (sb.Length)
 			sb.Append(",");
 		
-		if (SS(column->Type))
-			sb.Append(column->Type);
+		if (SS(column->Kind))
+			sb.Append(column->Kind);
 		else
-			sb.Append(availableColumnTypes[iAvailable++]);
+			sb.Append(availableColumnKinds[iAvailable++]);
 	}
 
 	return sb.ToString();
@@ -236,13 +236,13 @@ void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
 	d.DetailedStatus = s->IsDetailedStatus;
 	d.FullScreen = s->IsFullScreen;
 
-	// type strings, it can throw
-	String^ types1 = s->Columns ? GetColumnTypes(s->Columns) : nullptr;
-	String^ types2 = s->StatusColumns ? GetColumnTypes(s->StatusColumns) : nullptr;
+	// kind strings, it can throw
+	String^ kinds1 = s->Columns ? GetColumnKinds(s->Columns) : nullptr;
+	String^ kinds2 = s->StatusColumns ? GetColumnKinds(s->StatusColumns) : nullptr;
 
-	if (types1)
+	if (kinds1)
 	{
-		d.ColumnTypes = NewChars(types1);
+		d.ColumnTypes = NewChars(kinds1);
 		d.ColumnWidths = NewColumnWidths(s->Columns);
 		d.ColumnTitles = NewColumnTitles(s->Columns);
 	}
@@ -253,9 +253,9 @@ void InitPanelMode(::PanelMode& d, PanelModeInfo^ s)
 		d.ColumnTitles = NULL;
 	}
 
-	if (types2)
+	if (kinds2)
 	{
-		d.StatusColumnTypes = NewChars(types2);
+		d.StatusColumnTypes = NewChars(kinds2);
 		d.StatusColumnWidths = NewColumnWidths(s->StatusColumns);
 	}
 	else
