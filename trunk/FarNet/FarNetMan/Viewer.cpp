@@ -66,7 +66,7 @@ void Viewer::Open(OpenMode mode)
 	PIN_ES(pinTitle, _Title);
 
 	// from dialog? set modal
-	WindowKind wt = Far::Net->WindowKind;
+	WindowKind wt = Far::Net->Window->Kind;
 	if (wt == WindowKind::Dialog)
 		flags &= ~VF_NONMODAL;
 

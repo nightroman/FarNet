@@ -488,50 +488,6 @@ namespace FarNet
 		/// </remarks>
 		public abstract string RegistryPluginsPath { get; }
 		/// <summary>
-		/// Gets count of open Far windows.
-		/// </summary>
-		/// <remarks>
-		/// There is at least one window (panels, editor or viewer).
-		/// </remarks>
-		public abstract int WindowCount { get; }
-		/// <summary>
-		/// Allows to switch to a specific Far Manager window.
-		/// </summary>
-		/// <param name="index">Window index. See <see cref="WindowCount"/>.</param>
-		/// <remarks>
-		/// The switching will not occur untill <see cref="Commit"/> is called or Far receives control.
-		/// </remarks>
-		public abstract void SetCurrentWindow(int index);
-		/// <summary>
-		/// "Commits" the results of the last operation with Far windows
-		/// (e.g. <see cref="SetCurrentWindow"/>).
-		/// </summary>
-		/// <returns>true on success.</returns>
-		public abstract bool Commit();
-		/// <summary>
-		/// Returns information about a Far Manager window.
-		/// </summary>
-		/// <param name="index">Window index; -1 ~ current. See <see cref="WindowCount"/>.</param>
-		/// <param name="full">
-		/// If it is false <see>IWindowInfo.Name</see> and <see>IWindowInfo.TypeName</see> are not filled.
-		/// </param>
-		public abstract IWindowInfo GetWindowInfo(int index, bool full);
-		/// <summary>
-		/// Gets the current window kind.
-		/// </summary>
-		/// <remarks>
-		/// It is the same as the result of <see cref="GetWindowType"/> with parameter -1. //?????
-		/// </remarks>
-		public abstract WindowKind WindowKind { get; }
-		/// <summary>
-		/// Returns a type of a window specified by the index.
-		/// </summary>
-		/// <param name="index">
-		/// Window index or -1 for the current window, same as <see cref="WindowKind"/>.
-		/// See <see cref="WindowCount"/>.
-		/// </param>
-		public abstract WindowKind GetWindowType(int index);
-		/// <summary>
 		/// Converts an internal key code to a 'printable' char. <see cref="KeyCode"/>
 		/// </summary>
 		/// <remarks>
@@ -688,6 +644,10 @@ namespace FarNet
 		/// then Far asks a user how to proceed and, in fact, a user may continue work in Far.
 		/// </remarks>
 		public abstract void Quit();
+		/// <summary>
+		/// Gets the window operator.
+		/// </summary>
+		public abstract IWindow Window { get; }
 	}
 
 	/// <summary>
@@ -808,72 +768,6 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Far window kinds.
-	/// </summary>
-	public enum WindowKind
-	{
-		/// <summary>
-		/// Dummy.
-		/// </summary>
-		None,
-		/// <summary>
-		/// File panels.
-		/// </summary>
-		Panels,
-		/// <summary>
-		/// Internal viewer window.
-		/// </summary>
-		Viewer,
-		/// <summary>
-		/// Internal editor window.
-		/// </summary>
-		Editor,
-		/// <summary>
-		/// Dialog.
-		/// </summary>
-		Dialog,
-		/// <summary>
-		/// Menu.
-		/// </summary>
-		Menu,
-		/// <summary>
-		/// Help window.
-		/// </summary>
-		Help
-	}
-
-	/// <summary>
-	/// Contains information about one Far window. See <see cref="IFar.GetWindowInfo"/>.
-	/// </summary>
-	public interface IWindowInfo
-	{
-		/// <summary>
-		/// Window kind.
-		/// </summary>
-		WindowKind Kind { get; }
-		/// <summary>
-		/// Modification flag. Valid only for editor window.
-		/// </summary>
-		bool Modified { get; }
-		/// <summary>
-		/// Is the window active?
-		/// </summary>
-		bool Current { get; }
-		/// <summary>
-		/// Name of the window kind depending on the current Far language.
-		/// </summary>
-		string KindName { get; }
-		/// <summary>
-		/// Window title:
-		/// viewer, editor: the file name;
-		/// panels: selected file name;
-		/// help: .hlf file path;
-		/// menu, dialog: header.
-		/// </summary>
-		string Name { get; }
-	}
-
-	/// <summary>
 	/// States of macro processing.
 	/// </summary>
 	public enum FarMacroState
@@ -899,4 +793,5 @@ namespace FarNet
 		/// </summary>
 		RecordingCommon
 	}
+
 }

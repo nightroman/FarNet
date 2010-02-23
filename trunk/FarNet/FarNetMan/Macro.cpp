@@ -42,10 +42,46 @@ array<String^>^ Macro0::GetNames(MacroArea area)
 {
 	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + (area == MacroArea::Root ? "" : area.ToString());
 	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
+	if (!key)
+		return gcnew array<String^>(0);
 
 	try
 	{
-		return key ? key->GetSubKeyNames() : gcnew array<String^>(0);
+		if (area == MacroArea::Consts || area == MacroArea::Vars)
+			return key->GetValueNames();
+		else
+			return key->GetSubKeyNames();
+	}
+	finally
+	{
+		key->Close();
+	}
+}
+
+Object^ Macro0::GetConstant(String^ name) //????? dupe
+{
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\Consts";
+	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
+
+	try
+	{
+		return key ? key->GetValue(name) : nullptr;
+	}
+	finally
+	{
+		if (key)
+			key->Close();
+	}
+}
+
+Object^ Macro0::GetVariable(String^ name)
+{
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\Vars";
+	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
+
+	try
+	{
+		return key ? key->GetValue(name) : nullptr;
 	}
 	finally
 	{
@@ -122,10 +158,17 @@ void Macro0::Remove(MacroArea area, String^ name)
 
 	try
 	{
-		// _100211_140534 FarMacro workaround
-		name = name->Replace("(Slash)", "/");
+		if (area == MacroArea::Consts || area == MacroArea::Vars)
+		{
+			key->DeleteValue(name);
+		}
+		else
+		{
+			// _100211_140534 FarMacro workaround
+			name = name->Replace("(Slash)", "/");
 
-		key->DeleteSubKey(name, false);
+			key->DeleteSubKey(name, false);
+		}
 	}
 	finally
 	{
@@ -157,6 +200,53 @@ void Macro0::Remove(MacroArea area, array<String^>^ names)
 	{
 		if (!ManualSaveLoad)
 			Load();
+	}
+}
+
+Object^ Macro0::StringToRegistryValue(String^ text)
+{
+	array<String^>^ lines = Regex::Split(text, "\\r\\n|\\r|\\n");
+	if (lines->Length == 1)
+		return lines[0];
+	else
+		return lines;
+}
+
+void Macro0::InstallConstant(String^ name, Object^ value)
+{
+	if (!name) throw gcnew ArgumentNullException("name");
+	if (!value) throw gcnew ArgumentNullException("value");
+
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\Consts";
+	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
+
+	try
+	{
+		value = dynamic_cast<String^>(value) ? StringToRegistryValue(value->ToString()) : value;
+		key->SetValue(name, value);
+	}
+	finally
+	{
+		key->Close();
+	}
+}
+
+void Macro0::InstallVariable(String^ name, Object^ value) //????? dupe
+{
+	if (!name) throw gcnew ArgumentNullException("name");
+	if (!value) throw gcnew ArgumentNullException("value");
+
+	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\Vars";
+	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
+
+	try
+	{
+		value = dynamic_cast<String^>(value) ? StringToRegistryValue(value->ToString()) : value;
+		key->SetValue(name, value);
+	}
+	finally
+	{
+		key->Close();
 	}
 }
 

@@ -97,7 +97,7 @@ namespace FarMacro
 				// validate the area
 				if (Area == MacroArea.Root)
 				{
-					switch (Far.Net.WindowKind)
+					switch (Far.Net.Window.Kind)
 					{
 						case WindowKind.Dialog: Area = MacroArea.Dialog; break;
 						case WindowKind.Editor: Area = MacroArea.Editor; break;
