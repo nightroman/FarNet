@@ -15,7 +15,7 @@ namespace FarNet
 	/// if there are other running Far instances that also change macro data.
 	/// In such cases some changes can be lost.
 	/// </remarks>
-	public interface IMacro
+	public abstract class IMacro
 	{
 		/// <summary>
 		/// Gets or sets the manual save\load mode.
@@ -25,34 +25,51 @@ namespace FarNet
 		/// call <see cref="Save"/>, perform operations, call <see cref="Load"/>
 		/// and restore the flag.
 		/// </remarks>
-		bool ManualSaveLoad { get; set; }
+		public abstract bool ManualSaveLoad { get; set; }
 		/// <summary>
 		/// Saves all macros from Far memory to the storage.
 		/// </summary>
 		/// <remarks>
 		/// Use it carefully or even don't use if there are more than one running Far instances.
 		/// </remarks>
-		void Save();
+		public abstract void Save();
 		/// <summary>
 		/// Loads all macros from the storage to Far memory.
 		/// </summary>
 		/// <remarks>
 		/// Previous macro values in memory are erased.
 		/// </remarks>
-		void Load();
+		public abstract void Load();
 		/// <summary>
-		/// Gets macro names in the area.
+		/// Gets macro or other item names in the area.
 		/// </summary>
 		/// <param name="area">Macro area.</param>
-		/// <returns>Macro names in the area or, if the area is <c>Root</c>, then names of existing in the storage areas.</returns>
-		string[] GetNames(MacroArea area);
+		/// <returns>
+		/// *) existing area names for <c>Root</c>;
+		/// *) constant names for <c>Consts</c>;
+		/// *) variable names for <c>Vars</c>;
+		/// *) macro names in the macro area.
+		/// </returns>
+		public abstract string[] GetNames(MacroArea area);
+		/// <summary>
+		/// Gets global constant value.
+		/// </summary>
+		/// <param name="name">Constant name.</param>
+		/// <returns>Constant value.</returns>
+		public abstract object GetConstant(string name);
+		/// <summary>
+		/// Gets global variable value.
+		/// </summary>
+		/// <param name="name">Variable name.</param>
+		/// <returns>Variable value.</returns>
+		public abstract object GetVariable(string name);
 		/// <summary>
 		/// Gets the key macro.
 		/// </summary>
 		/// <param name="area">Macro area.</param>
 		/// <param name="name">Macro name.</param>
 		/// <returns>The macro or null if the name does not exist.</returns>
-		Macro GetMacro(MacroArea area, string name);
+		public abstract Macro GetMacro(MacroArea area, string name);
 		/// <summary>
 		/// Removes the specified macros or the empty area.
 		/// </summary>
@@ -63,7 +80,7 @@ namespace FarNet
 		/// then this method removes the area if it is not used, i.e. contains no macros.
 		/// Areas with macros cannot be removed.
 		/// </remarks>
-		void Remove(MacroArea area, params string[] names);
+		public abstract void Remove(MacroArea area, params string[] names);
 		/// <summary>
 		/// Installs one or more macros in the storage and loads them.
 		/// </summary>
@@ -79,14 +96,22 @@ namespace FarNet
 		/// has be already installed by the same call of this method.
 		/// </para>
 		/// </remarks>
-		void Install(params Macro[] macros);
+		public abstract void Install(params Macro[] macros);
+		/// <summary>
+		/// Installs the constant.
+		/// </summary>
+		public abstract void InstallConstant(string name, object value);
+		/// <summary>
+		/// Installs the variable.
+		/// </summary>
+		public abstract void InstallVariable(string name, object value);
 		/// <summary>
 		/// Checks the macro sequence for syntax errors.
 		/// </summary>
 		/// <param name="sequence">The macro sequence to be checked.</param>
 		/// <param name="silent">Tells to not show an error message.</param>
 		/// <returns>Parse error or null.</returns>
-		MacroParseError Check(string sequence, bool silent);
+		public abstract MacroParseError Check(string sequence, bool silent);
 	}
 
 	/// <summary>
@@ -232,6 +257,10 @@ namespace FarNet
 		/// </summary>
 		Common,
 		/// <summary>
+		/// Global constants.
+		/// </summary>
+		Consts,
+		/// <summary>
 		/// Dialog boxes.
 		/// </summary>
 		Dialog,
@@ -287,6 +316,10 @@ namespace FarNet
 		/// User menu.
 		/// </summary>
 		UserMenu,
+		/// <summary>
+		/// Global variables.
+		/// </summary>
+		Vars,
 		/// <summary>
 		/// File viewer.
 		/// </summary>

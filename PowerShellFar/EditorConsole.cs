@@ -45,7 +45,7 @@ namespace PowerShellFar
 				menu.HelpTopic = A.Psf.HelpTopic + "EditorConsoleMenuOpen";
 
 				IAnyPanel panel = null;
-				if ((Far.Net.WindowKind == WindowKind.Panels) && (null != (panel = Far.Net.Panel)) && (panel.Kind != PanelKind.File))
+				if ((Far.Net.Window.Kind == WindowKind.Panels) && (null != (panel = Far.Net.Panel)) && (panel.Kind != PanelKind.File))
 					panel = null;
 				
 				// break keys

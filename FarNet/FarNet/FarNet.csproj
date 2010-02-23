@@ -119,6 +119,7 @@
     <Compile Include="Message.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Window.cs" />
     <Compile Include="Zoo.cs" />
     <Compile Include="UserInput.cs">
       <SubType>Code</SubType>

@@ -21,6 +21,7 @@ Copyright (c) 2005 FarNet Team
 #include "Shelve.h"
 #include "SubsetForm.h"
 #include "Viewer0.h"
+#include "Window.h"
 #include "Zoo.h"
 
 namespace FarNet
@@ -332,7 +333,7 @@ void Far1::RestoreScreen(int screen)
 
 ILine^ Far1::Line::get()
 {
-	switch (WindowKind)
+	switch (Window->Kind)
 	{
 	case FarNet::WindowKind::Editor:
 		{
@@ -618,95 +619,6 @@ String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text
 	return ib.Show() ? ib.Text : nullptr;
 }
 
-//::Far Window managenent
-
-ref class FarWindowInfo : public IWindowInfo
-{
-public:
-	FarWindowInfo(int index, bool full)
-	{
-		WindowInfo wi;
-		wi.Pos = index;
-
-		if (full)
-		{
-#pragma push_macro("ACTL_GETWINDOWINFO")
-#undef ACTL_GETWINDOWINFO
-			wi.Name = wi.TypeName = NULL;
-			wi.NameSize = wi.TypeNameSize = 0;
-			if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWINFO, &wi))
-				throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
-
-			CBox name(wi.NameSize), typeName(wi.TypeNameSize);
-			wi.Name = name;
-			wi.TypeName = typeName;
-			if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWINFO, &wi))
-				throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
-
-			_Name = gcnew String(name);
-			_KindName = gcnew String(typeName);
-#pragma pop_macro("ACTL_GETWINDOWINFO")
-		}
-		else
-		{
-			if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
-				throw gcnew InvalidOperationException("GetWindowInfo:" + index + " failed.");
-		}
-
-		_Current = wi.Current != 0;
-		_Modified = wi.Modified != 0;
-		_Kind = (WindowKind)wi.Type;
-	}
-	virtual property bool Current { bool get() { return _Current; } }
-	virtual property bool Modified { bool get() { return _Modified; } }
-	virtual property String^ Name { String^ get() { return _Name; } }
-	virtual property String^ KindName { String^ get() { return _KindName; } }
-	virtual property WindowKind Kind { WindowKind get() { return _Kind; } }
-private:
-	bool _Current;
-	bool _Modified;
-	String^ _Name;
-	String^ _KindName;
-	WindowKind _Kind;
-};
-
-int Far1::WindowCount::get()
-{
-	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETWINDOWCOUNT, 0);
-}
-
-IWindowInfo^ Far1::GetWindowInfo(int index, bool full)
-{
-	return gcnew FarWindowInfo(index, full);
-}
-
-WindowKind Far1::WindowKind::get()
-{
-	WindowInfo wi;
-	wi.Pos = -1;
-	return Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi) ? (FarNet::WindowKind)wi.Type : FarNet::WindowKind::None;
-}
-
-WindowKind Far1::GetWindowType(int index)
-{
-	WindowInfo wi;
-	wi.Pos = index;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
-		throw gcnew InvalidOperationException("GetWindowType:" + index + " failed.");
-	return (FarNet::WindowKind)wi.Type;
-}
-
-void Far1::SetCurrentWindow(int index)
-{
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_SETCURRENTWINDOW, (void*)(INT_PTR)index))
-		throw gcnew InvalidOperationException("SetCurrentWindow:" + index + " failed.");
-}
-
-bool Far1::Commit()
-{
-	return Info.AdvControl(Info.ModuleNumber, ACTL_COMMIT, 0) != 0;
-}
-
 Char Far1::CodeToChar(int code)
 {
 	// get just the code
@@ -959,12 +871,17 @@ ISubsetForm^ Far1::CreateSubsetForm()
 
 IMacro^ Far1::Macro::get()
 {
-	return gcnew Macro0;
+	return %Macro0::Instance;
 }
 
 ILine^ Far1::CommandLine::get()
 {
 	return gcnew FarNet::CommandLine;
+}
+
+IWindow^ Far1::Window::get()
+{
+	return %FarNet::Window::Instance;
 }
 
 }

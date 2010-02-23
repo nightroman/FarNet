@@ -15,7 +15,7 @@
 ### Create and show the menu
 New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 	### Editor actions
-	if ($Far.WindowKind -eq 'Editor') {
+	if ($Far.Window.Kind -eq 'Editor') {
 		$editor = $Far.Editor
 		$file = $editor.FileName
 
@@ -38,7 +38,7 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 		New-FarItem '&i. Clip the link to the current line' { $Far.CopyToClipboard((Get-TextLink-)) }
 	}
 	### Panel actions
-	elseif ($Far.WindowKind -eq 'Panels') {
+	elseif ($Far.Window.Kind -eq 'Panels') {
 		$SelectedItems = @(Get-FarItem -Selected)
 
 		# Update synopsis descriptions (how to use module features).

@@ -47,7 +47,7 @@ Import-Module FarMacro
 Set-StrictMode -Version 2
 
 # window type, set area if not yet
-$wi = $Far.GetWindowInfo(-1, $false)
+$wi = $Far.Window.GetInfoAt(-1, $false)
 if (!$Area) {
 	switch($wi.Kind) {
 		'Panels' { $Area = 'Shell'; break }

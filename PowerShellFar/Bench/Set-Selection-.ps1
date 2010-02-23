@@ -36,7 +36,7 @@ param
 )
 
 # get selected text
-$wt = $Far.WindowKind
+$wt = $Far.Window.Kind
 if ($wt -eq 'Editor') {
 	$editor = $Far.Editor
 	$cursor = $editor.Cursor

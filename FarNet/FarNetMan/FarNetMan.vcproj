@@ -600,6 +600,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Window.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Wrappers.cpp"
 				>
 			</File>
@@ -783,6 +787,10 @@
 			</File>
 			<File
 				RelativePath=".\Viewer0.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Window.h"
 				>
 			</File>
 			<File

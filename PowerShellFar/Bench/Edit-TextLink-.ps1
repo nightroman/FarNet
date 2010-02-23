@@ -92,7 +92,7 @@ if ($Text -match '"(\w+:\\[^"]+)"' -or $Text -match '\b(\w+:\\[^\s:]+)') {
 
 ### Relative file system paths: quoted and simple.
 if ($Text -match '"(\.{1,2}[\\/][^"]+)"' -or $Text -match '(?:^|\s)(\.{1,2}[\\/][^\s:]+)') {
-	if ($Far.WindowKind -eq 'Editor') {
+	if ($Far.Window.Kind -eq 'Editor') {
 		$dir = [IO.Path]::GetDirectoryName($Far.Editor.FileName)
 	}
 	else {
