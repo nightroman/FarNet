@@ -20,6 +20,7 @@ namespace PowerShellFar.Commands
 		{
 			//! add cmdlets; Append() locks, so add all at once
 			configuration.Cmdlets.Append(new CmdletConfigurationEntry[] {
+new CmdletConfigurationEntry("Assert-Far", typeof(Commands.AssertFarCommand), string.Empty),
 new CmdletConfigurationEntry("Find-FarFile", typeof(Commands.FindFarFileCommand), string.Empty),
 new CmdletConfigurationEntry("Get-FarFile", typeof(Commands.GetFarFileCommand), string.Empty),
 new CmdletConfigurationEntry("Get-FarItem", typeof(Commands.GetFarItemCommand), string.Empty),

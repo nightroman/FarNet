@@ -4,10 +4,18 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Globalization;
+using System.Management.Automation;
 using FarNet;
 
 namespace FarMacro
 {
+	static class Res
+	{
+		public const string
+			InvalidDestinationPath = "Invalid destination path.";
+	}
+
 	public class AreaItem
 	{
 		public MacroArea Area { get; private set; }
@@ -51,10 +59,12 @@ namespace FarMacro
 		public string Name { get; private set; }
 	}
 
-	static class Res
+	static class Kit
 	{
-		public const string
-			InvalidDestinationPath = "Invalid destination path.";
+		public static object ConvertTo(object valueToConvert, Type resultType)
+		{
+			return LanguagePrimitives.ConvertTo(valueToConvert, resultType, CultureInfo.InvariantCulture);
+		}
 	}
 
 }

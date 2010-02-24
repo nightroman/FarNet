@@ -140,7 +140,8 @@ void Macro0::Remove(MacroArea area, String^ name)
 	{
 		if (area == MacroArea::Consts || area == MacroArea::Vars)
 		{
-			key->DeleteValue(name);
+			// do not throw on missing value
+			key->DeleteValue(name, false);
 		}
 		else
 		{
@@ -220,8 +221,10 @@ void Macro0::InstallScalar(MacroArea area, String^ name, Object^ value)
 
 	try
 	{
-		value = dynamic_cast<String^>(value) ? StringToRegistryValue(value->ToString()) : value;
-		key->SetValue(name, value);
+		if (value->GetType() == Int64::typeid)
+			key->SetValue(name, value, RegistryValueKind::QWord);
+		else
+			key->SetValue(name, (dynamic_cast<String^>(value) ? StringToRegistryValue(value->ToString()) : value));
 
 		if (!ManualSaveLoad)
 			Load();

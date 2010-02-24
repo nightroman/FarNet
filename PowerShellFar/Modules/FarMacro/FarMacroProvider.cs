@@ -12,6 +12,7 @@ using System.Management.Automation;
 using System.Management.Automation.Provider;
 using System.Text;
 using FarNet;
+using Microsoft.Win32;
 
 namespace FarMacro
 {
@@ -291,6 +292,24 @@ namespace FarMacro
 			return false;
 		}
 
+		static object ConvertItemValue(string itemTypeName, object newItemValue)
+		{
+			if (string.IsNullOrEmpty(itemTypeName))
+				return newItemValue;
+
+			switch ((RegistryValueKind)Kit.ConvertTo(itemTypeName, typeof(RegistryValueKind)))
+			{
+				case RegistryValueKind.MultiString:
+					return Kit.ConvertTo(newItemValue, typeof(string[]));
+				case RegistryValueKind.DWord:
+					return Kit.ConvertTo(newItemValue, typeof(int));
+				case RegistryValueKind.QWord:
+					return Kit.ConvertTo(newItemValue, typeof(long));
+				default:
+					throw new ModuleException("Invalid type. Valid optional types: MultiString, DWord, QWord.");
+			}
+		}
+
 		protected override void NewItem(string path, string itemTypeName, object newItemValue)
 		{
 			Way way = NewWay(path);
@@ -298,13 +317,13 @@ namespace FarMacro
 
 			if (way.Area == MacroArea.Consts && way.Name != null)
 			{
-				Far.Net.Macro.InstallConstant(way.Name, value);
+				Far.Net.Macro.InstallConstant(way.Name, ConvertItemValue(itemTypeName, value));
 				return;
 			}
 
 			if (way.Area == MacroArea.Vars && way.Name != null)
 			{
-				Far.Net.Macro.InstallVariable(way.Name, value);
+				Far.Net.Macro.InstallVariable(way.Name, ConvertItemValue(itemTypeName, value));
 				return;
 			}
 
@@ -351,7 +370,7 @@ namespace FarMacro
 			macro.Area = dst.Area;
 			if (!string.IsNullOrEmpty(dst.Name))
 				macro.Name = dst.Name;
-			
+
 			Far.Net.Macro.Install(macro);
 		}
 

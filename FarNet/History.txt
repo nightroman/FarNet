@@ -2,7 +2,19 @@ http://code.google.com/p/farnet/
 
 = 4.3.7 =
 
-REFACTORING
+PROGRESS
+
+*) Modules still may unregister dynamically registered actions but now they do
+not have to do that on disconnection: actions are unregistered automatically.
+Reminder: registered actions should be used only in preloadable modules or if
+recommended action classes do not cover some scenarios.
+
+*) IMacro: added support for Consts and Vars areas.
+
+*) Internal: optimized module loading\unloading.
+
+REFACTORING, BREAKING FOR SOME MODULES
+(better now than later or never)
 
 IFar: members GetWindowInfo, GetWindowType, SetCurrentWindow, WindowCount, and
 WindowType moved to new window operator IFar.Window (and names adapted).
@@ -10,20 +22,13 @@ WindowType moved to new window operator IFar.Window (and names adapted).
 The word 'Type' in FarNet deals with .NET System.Type class only. In other
 cases the word 'Kind' is used. This should reduce confusions now and later
 and also fix Code Analysis warnings.
-Code name changes:
--- WindowType -> WindowKind, .Type -> .Kind, .TypeName -> .KindName
--- SelectionType -> RegionKind (also used more general Region)
+Renamed:
+-- WindowType -> WindowKind, Type -> Kind, TypeName -> KindName
+-- SelectionType -> RegionKind (and used more general 'Region')
 -- FarColumn, SetColumn: Type -> Kind
 -- ISelection.Type -> Kind
 -- PanelType -> PanelKind
 -- IAnyPanel.Type -> Kind
-
-OTHER CHANGES
-
-Optimized module loading and unloading. In particular: modules should not care
-of dynamically registered actions, they are unregistered by the core.
-
-IMacro: added support for Consts and Vars areas.
 
 = 4.3.6 =
 
