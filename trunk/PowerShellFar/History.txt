@@ -3,12 +3,13 @@ http://code.google.com/p/farnet/
 
 = 4.3.7 =
 
-FarMacro module: added partial support of Consts and Vars areas. Only string
-values are supported for changes by commands or in the editors, other values
-are converted to strings.
+New cmdlet Assert-Far: testing and debugging helper.
 
-The cmdlet Edit-FarMacro and the script Panel-Macro-.ps1 also work with Consts
-and Vars data.
+FarMacro module: added support of Consts and Vars areas. Cmdlet Edit-FarMacro
+and script Panel-Macro-.ps1 also support these areas and allow to work with
+their items.
+
+See FarNet History.txt for changes there, some scripts may be affected.
 
 = 4.3.6 =
 

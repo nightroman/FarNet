@@ -44,7 +44,7 @@ if (!$TestOpened) {
 
 	{
 		# dialog?
-		if ($dialog -isnot [FarNet.Forms.IDialog]) { throw }
+		Assert-Far ($dialog -is [FarNet.Forms.IDialog])
 	}
 }
 
@@ -54,39 +54,39 @@ if (!$TestOpened) {
 'AltT Home ShiftEnd Del о к а'
 {
 	# edit?
-	if ($dialog.Focused -ne $e1) { throw }
+	Assert-Far ($dialog.Focused -eq $e1)
 	# text?
-	if ($e1.Text -ne 'ока') { throw }
+	Assert-Far ($e1.Text -eq 'ока')
 }
 
 {
 	# set and test text
 	$e1.Text = 'волга'
-	if ($e1.Text -ne 'волга') { throw }
+	Assert-Far ($e1.Text -eq 'волга')
 }
 
 {
 	# set and test text selection
 	$e1.Line.Select(1, 4)
-	if ($e1.Line.Selection.Text -ne 'олг') { throw }
+	Assert-Far ($e1.Line.Selection.Text -eq 'олг')
 }
 
 {
 	# disable and check
 	$e1.Disabled = $true
-	if (!$e1.Disabled) { throw }
+	Assert-Far ($e1.Disabled)
 }
 
 {
 	# enable and check
 	$e1.Disabled = $false
-	if ($e1.Disabled) { throw }
+	Assert-Far (!$e1.Disabled)
 }
 
 {
 	# test text and selection
-	if ($e1.Text -ne 'волга') { throw }
-	if ($e1.Line.Selection.Text -ne 'олг') { throw }
+	Assert-Far ($e1.Text -eq 'волга')
+	Assert-Far ($e1.Line.Selection.Text -eq 'олг')
 }
 
 ### CheckBox (standard)
@@ -94,7 +94,7 @@ if (!$TestOpened) {
 {
 	# go to checkbox
 	$dialog.Focused = $x1
-	if ($dialog.Focused -ne $x1) { throw }
+	Assert-Far ($dialog.Focused -eq $x1)
 
 	# keep its state
 	$global:TestDialogValue = $x1.Selected
@@ -105,7 +105,7 @@ if (!$TestOpened) {
 
 {
 	# test new checkbox state, should be different
-	if ($global:TestDialogValue -eq $x1.Selected) { throw }
+	Assert-Far ($global:TestDialogValue -ne $x1.Selected)
 }
 
 ### CheckBox (three state)
@@ -118,22 +118,22 @@ if (!$TestOpened) {
 
 {
 	# test focus and state
-	if ($dialog.Focused -ne $x2) { throw }
-	if ($x2.Selected -ne 0) { throw }
+	Assert-Far ($dialog.Focused -eq $x2)
+	Assert-Far ($x2.Selected -eq 0)
 }
 
 # switch
 'Space'
 {
 	# test state
-	if ($x2.Selected -ne 1) { throw }
+	Assert-Far ($x2.Selected -eq 1)
 }
 
 # switch
 'Space'
 {
 	# test state
-	if ($x2.Selected -ne 2) { throw }
+	Assert-Far ($x2.Selected -eq 2)
 }
 
 ### Edit (fixed)
@@ -143,8 +143,8 @@ if (!$TestOpened) {
 
 {
 	# test focus and text
-	if ($dialog.Focused -ne $e2) { throw }
-	if ($e2.Text -ne 'Text   ') { throw }
+	Assert-Far ($dialog.Focused -eq $e2)
+	Assert-Far ($e2.Text -eq 'Text   ')
 }
 
 ### Edit (password)
@@ -153,8 +153,8 @@ if (!$TestOpened) {
 
 {
 	# test focus and text
-	if ($dialog.Focused -ne $e3) { throw }
-	if ($e3.Text -ne 'Word') { throw }
+	Assert-Far ($dialog.Focused -eq $e3)
+	Assert-Far ($e3.Text -eq 'Word')
 }
 
 ### RadioButton
@@ -165,9 +165,9 @@ if (!$TestOpened) {
 	$r1.Selected = $true
 
 	# test
-	if ($dialog.Focused -ne $r1) { throw }
-	if (!$r1.Selected) { throw }
-	if ($r2.Selected) { throw }
+	Assert-Far ($dialog.Focused -eq $r1)
+	Assert-Far ($r1.Selected)
+	Assert-Far (!$r2.Selected)
 }
 
 # go to button 2 and select
@@ -175,9 +175,9 @@ if (!$TestOpened) {
 
 {
 	# test
-	if ($dialog.Focused -ne $r2) { throw }
-	if ($r1.Selected) { throw }
-	if (!$r2.Selected) { throw }
+	Assert-Far ($dialog.Focused -eq $r2)
+	Assert-Far (!$r1.Selected)
+	Assert-Far ($r2.Selected)
 }
 
 ### ListBox
@@ -187,24 +187,24 @@ if (!$TestOpened) {
 	$lb.Title = 'Title1'
 	$lb.Bottom = 'Bottom1'
 	# test
-	if ($lb.Title -ne 'Title1') { throw }
-	if ($lb.Bottom -ne 'Bottom1') { throw }
+	Assert-Far ($lb.Title -eq 'Title1')
+	Assert-Far ($lb.Bottom -eq 'Bottom1')
 }
 
 {
 	# listbox: set only title
 	$lb.Title = 'Title2'
 	# test
-	if ($lb.Title -ne 'Title2') { throw }
-	if ($lb.Bottom -ne 'Bottom1') { throw }
+	Assert-Far ($lb.Title -eq 'Title2')
+	Assert-Far ($lb.Bottom -eq 'Bottom1')
 }
 
 {
 	# listbox: set only bottom
 	$lb.Bottom = 'Bottom2'
 	# test
-	if ($lb.Title -ne 'Title2') { throw }
-	if ($lb.Bottom -ne 'Bottom2') { throw }
+	Assert-Far ($lb.Title -eq 'Title2')
+	Assert-Far ($lb.Bottom -eq 'Bottom2')
 }
 
 ### [List]: ComboBox (edit), ComboBox (list), ListBox
@@ -212,7 +212,7 @@ if (!$TestOpened) {
 {
 	# go to [List] button
 	$dialog.Focused = $list
-	if (!$dialog.Focused -eq $list) { throw }
+	Assert-Far ($dialog.Focused -eq $list)
 }
 
 # push the button 1st time
@@ -220,8 +220,8 @@ if (!$TestOpened) {
 
 {
 	# test listbox data
-	if ($lb.Title -notmatch '^Fast ') { throw }
-	if ($lb.Bottom -notmatch '^WS ') { throw }
+	Assert-Far ($lb.Title -match '^Fast ')
+	Assert-Far ($lb.Bottom -match '^WS ')
 }
 
 # push the button 2nd time
@@ -229,7 +229,7 @@ if (!$TestOpened) {
 
 {
 	# test listbox data
-	if ($lb.Title -notmatch '^Slow ') { throw }
+	Assert-Far ($lb.Title -match '^Slow ')
 }
 
 ### Exit the dialog if we have opened it
@@ -239,12 +239,12 @@ if (!$TestOpened) {
 	'Esc'
 
 	{
-		# no dialog?
-		if ($Far.Window.Kind -eq 'Dialog') { throw }
+		# no dialog
+		Assert-Far ($Far.Window.Kind -ne 'Dialog')
 	}
 }
 
 {
 	# end
-	Remove-Item Variable:\TestDialog*
+	Remove-Variable -Scope global TestDialog*
 }

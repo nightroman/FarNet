@@ -42,10 +42,19 @@ namespace FarMacro
 			HelpMessage = "The path of a file with a macro sequence to edit.")]
 		public string FilePath { get; set; }
 
+		[Parameter(
+			HelpMessage = "A panel to be updated on saving.")]
+		public IPanel Panel { get; set; }
+
 		/// <summary>
 		/// Actual file path used by the editor.
 		/// </summary>
 		string FileName;
+
+		/// <summary>
+		/// Original input scalar value.
+		/// </summary>
+		object InputScalar;
 
 		/// <summary>
 		/// The only used editor.
@@ -67,6 +76,26 @@ namespace FarMacro
 				ExitAnyway = "Exit anyway",
 				InvalidKeyName = "Invalid key name.",
 				UndefinedArea = "Parameter 'Area' has to be defined.";
+		}
+
+		/// <summary>
+		/// Keeps the input value and converts it to text.
+		/// </summary>
+		string InputScalarToText(object value)
+		{
+			InputScalar = value ?? string.Empty;
+			return InputScalar.ToString();
+		}
+
+		/// <summary>
+		/// Converts to the original input type if needed.
+		/// </summary>
+		object TextToOutputScalar(string text)
+		{
+			if (InputScalar is string)
+				return text;
+			else
+				return Kit.ConvertTo(text, InputScalar.GetType());
 		}
 
 		protected override void BeginProcessing()
@@ -129,14 +158,15 @@ namespace FarMacro
 					if (FileName.IndexOf(bad) >= 0)
 						FileName = FileName.Replace(new string(new char[] { bad }), "_" + (int)bad + "_");
 				}
-				FileName = Path.Combine(MyAppData, Area.ToString() + "." + FileName + m.MacroFileExtension);
+				string extension = Area == MacroArea.Consts ? ".tmp" : m.MacroFileExtension;
+				FileName = Path.Combine(MyAppData, Area.ToString() + "." + FileName + extension);
 
 				// target text
 				string text;
 				if (Area == MacroArea.Consts)
-					text = (Far.Net.Macro.GetConstant(Name) ?? string.Empty).ToString();
+					text = InputScalarToText(Far.Net.Macro.GetConstant(Name));
 				else if (Area == MacroArea.Vars)
-					text = (Far.Net.Macro.GetVariable(Name) ?? string.Empty).ToString();
+					text = InputScalarToText(Far.Net.Macro.GetVariable(Name));
 				else
 					text = Macro.Sequence;
 
@@ -188,32 +218,36 @@ namespace FarMacro
 			// case: Consts
 			if (Area == MacroArea.Consts)
 			{
-				Far.Net.Macro.InstallConstant(Name, text);
-				return;
+				Far.Net.Macro.InstallConstant(Name, TextToOutputScalar(text));
 			}
-
 			// case: Vars
-			if (Area == MacroArea.Vars)
+			else if (Area == MacroArea.Vars)
 			{
-				Far.Net.Macro.InstallVariable(Name, text);
-				return;
+				Far.Net.Macro.InstallVariable(Name, TextToOutputScalar(text));
 			}
-			
-			// check the macro
-			Error = Far.Net.Macro.Check(text, false);
+			else
+			{
+				// check the macro
+				Error = Far.Net.Macro.Check(text, false);
 
-			// go to the error position
-			if (Error != null)
-			{
-				Editor.GoTo(Error.Pos, Error.Line);
+				// go to the error position
+				if (Error != null)
+				{
+					Editor.GoTo(Error.Pos, Error.Line);
+					return;
+				}
+				// install the macro and load macros
+				else if (FilePath == null)
+				{
+					//! update the macro, it can be external
+					Macro.Sequence = text;
+					Far.Net.Macro.Install(Macro);
+				}
 			}
-			// install the macro and load macros
-			else if (FilePath == null)
-			{
-				//! update the macro, it can be external
-				Macro.Sequence = text;
-				Far.Net.Macro.Install(Macro);
-			}
+
+			// update the panel
+			if (Panel != null)
+				Panel.Update(true);
 		}
 
 		void OnClosed(object sender, EventArgs e)
