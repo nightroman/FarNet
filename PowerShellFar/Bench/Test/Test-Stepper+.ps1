@@ -76,8 +76,8 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: a dialog exists and there is a valid control in it
-	if (!$Far.Dialog) { throw }
-	if ($Far.Dialog.GetControl(2).Text -ne 'far.exe.config') { throw }
+	Assert-Far $Far.Dialog
+	Assert-Far ($Far.Dialog.GetControl(2).Text -eq 'far.exe.config')
 }
 
 # exit the dialog
@@ -85,8 +85,8 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: the window (panels) and item ('far.exe.config')
-	if ($Far.Window.Kind -ne 'Panels') { throw }
-	if ((Get-FarFile).Name -ne 'far.exe.config') { throw }
+	Assert-Far ($Far.Window.Kind -eq 'Panels')
+	Assert-Far ((Get-FarFile).Name -eq 'far.exe.config')
 }
 
 # HOW TO: start a modal dialog programmatically
@@ -103,8 +103,8 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: a dialog exists and there is a valid control in it
-	if (!$Far.Dialog) { throw }
-	if ($Far.Dialog.GetControl(1).Text -ne 'Sample text') { throw }
+	Assert-Far $Far.Dialog
+	Assert-Far ($Far.Dialog.GetControl(1).Text -eq 'Sample text')
 }
 
 {
@@ -114,7 +114,7 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: editbox text
-	if ($Far.Dialog.GetControl(1).Text -ne 'Another text') { throw }
+	Assert-Far ($Far.Dialog.GetControl(1).Text -eq 'Another text')
 }
 
 # exit the dialog
@@ -136,7 +136,7 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: editor text
-	if ($Far.Editor.GetText() -ne 'Modal Editor') { throw }
+	Assert-Far ($Far.Editor.GetText() -eq 'Modal Editor')
 }
 
 # exit the editor, do not save
@@ -144,7 +144,7 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: current window is panel
-	if ($Far.Window.Kind -ne 'Panels') { throw }
+	Assert-Far ($Far.Window.Kind -eq 'Panels')
 }
 
 {
@@ -154,7 +154,7 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: current window is editor
-	if ($Far.Window.Kind -ne 'Editor') { throw }
+	Assert-Far ($Far.Window.Kind -eq 'Editor')
 }
 
 {
@@ -164,7 +164,7 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: editor text
-	if ($Far.Editor.GetText() -ne 'Modeless Editor') { throw }
+	Assert-Far ($Far.Editor.GetText() -eq 'Modeless Editor')
 }
 
 {
@@ -174,7 +174,7 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: current window is panel
-	if ($Far.Window.Kind -ne 'Panels') { throw }
+	Assert-Far ($Far.Window.Kind -eq 'Panels')
 }
 
 {
@@ -215,7 +215,7 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: current window is editor
-	if ($Far.Window.Kind -ne 'Editor') { throw }
+	Assert-Far ($Far.Window.Kind -eq 'Editor')
 }
 
 # exit the editor, do not save
@@ -223,7 +223,7 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: current window is panel
-	if ($Far.Window.Kind -ne 'Panels') { throw }
+	Assert-Far ($Far.Window.Kind -eq 'Panels')
 }
 
 # exit the plugin panel
