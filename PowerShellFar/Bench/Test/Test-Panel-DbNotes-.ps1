@@ -28,7 +28,7 @@ param
 	[switch]$GenericLookup
 )
 
-if (!$DbConnection -or !$DbProviderFactory) { throw "No connection, run Initialize-Test-.ps1" }
+Assert-Far ($DbConnection -and $DbProviderFactory) "No connection, run Initialize-Test-.ps1" "Assert"
 
 # data adapter and command to select data
 $a = $DbProviderFactory.CreateDataAdapter()
