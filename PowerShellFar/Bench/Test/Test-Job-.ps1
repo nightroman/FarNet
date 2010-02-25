@@ -96,7 +96,11 @@ $res = $job.Output | %{ 2 * $_ }
 $job.Dispose()
 
 # result contains 4 numbers: 2,?,?,8
-Assert-Far ($res.Count -eq 4 -and $res[0] -eq 2 -and $res[3] -eq 8)
+Assert-Far @(
+	$res.Count -eq 4
+	$res[0] -eq 2
+	$res[3] -eq 8
+)
 
 ###############################################################################
 ### TEST: VIEW OUTPUT IN PROGRESS IN VIEWER
@@ -158,24 +162,36 @@ $job = Start-FarJob $script -Output
 $null = $job.Finished.WaitOne()
 
 # Output
-Assert-Far ($job.Output.Count -eq 1 -and $job.Output[0] -eq 'Test of Write-Output')
+Assert-Far @(
+	$job.Output.Count -eq 1
+	$job.Output[0] -eq 'Test of Write-Output'
+)
 
 # Error
-Assert-Far ($job.Error.Count -eq 3)
-Assert-Far ($job.Error[0].ToString() -eq 'Cannot invoke this function because the current host does not implement it.')
-Assert-Far ($job.Error[1].ToString() -eq 'Test of Write-Error 1')
+Assert-Far @(
+	$job.Error.Count -eq 3
+	$job.Error[0].ToString() -eq 'Cannot invoke this function because the current host does not implement it.'
+	$job.Error[1].ToString() -eq 'Test of Write-Error 1'
+)
 
 # Debug
-Assert-Far ($job.Debug.Count -eq 2)
-Assert-Far ($job.Debug[0].Message -eq 'Test of Write-Debug 1')
+Assert-Far @(
+	$job.Debug.Count -eq 2
+	$job.Debug[0].Message -eq 'Test of Write-Debug 1'
+)
 
 # Verbose
-Assert-Far ($job.Verbose.Count -eq 2)
-Assert-Far ($job.Verbose[0].Message -eq 'Test of Write-Verbose 1')
+Assert-Far @(
+	$job.Verbose.Count -eq 2
+	$job.Verbose[0].Message -eq 'Test of Write-Verbose 1'
+)
 
 # Warning
-Assert-Far ($job.Warning.Count -eq 2)
-Assert-Far ($job.Warning[0].Message -eq 'Test of Write-Warning 1')
+Assert-Far @(
+	$job.Warning.Count -eq 2
+	$job.Warning[0].Message -eq 'Test of Write-Warning 1'
+)
+
 $job.Dispose()
 
 ###############################################################################
@@ -225,6 +241,14 @@ $job.StartJob()
 $null = $job.Finished.WaitOne()
 
 # check the results of both calls
-Assert-Far ($job.Output.Count -eq 2 -and $job.Output[0] -eq 1 -and $job.Output[1] -eq 2)
-Assert-Far ($job.Warning.Count -eq 2 -and $job.Warning[0].Message -eq "Warning 1" -and $job.Warning[1].Message -eq "Warning 2")
+Assert-Far @(
+	$job.Output.Count -eq 2
+	$job.Output[0] -eq 1
+	$job.Output[1] -eq 2
+)
+Assert-Far @(
+	$job.Warning.Count -eq 2
+	$job.Warning[0].Message -eq "Warning 1"
+	$job.Warning[1].Message -eq "Warning 2"
+)
 $job.Dispose()

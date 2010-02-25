@@ -28,6 +28,7 @@
 		To search in a file text read as one string.
 #>
 
+[CmdletBinding()]
 param
 (
 	$Regex,
@@ -36,8 +37,8 @@ param
 	[switch]$Groups,
 	[switch]$AllText
 )
-if ($args) { throw "Unknown parameters: $args" }
-if ($Far.Window.Kind -ne 'Panels') { return Show-FarMessage "Run this script from panels." }
+
+Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Search-Regex"
 
 # Collect input if any
 if (!$InputObject) {

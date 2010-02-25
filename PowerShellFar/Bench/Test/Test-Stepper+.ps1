@@ -30,10 +30,8 @@
 # - Good place to check prerequisites and throw, for example.
 # - It is also OK to return at this moment with no steps at all.
 
-# check prerequisites
-if ($Far.Window.Count -ne 1) {
-	throw "Close Far Manager internal windows before this test."
-}
+# prerequisites
+Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before this test." "Assert"
 
 ### Part 2. Returned steps: returned keys and script blocks.
 
@@ -76,8 +74,10 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: a dialog exists and there is a valid control in it
-	Assert-Far $Far.Dialog
-	Assert-Far ($Far.Dialog.GetControl(2).Text -eq 'far.exe.config')
+	Assert-Far @(
+		$Far.Dialog -ne $null
+		$Far.Dialog.GetControl(2).Text -eq 'far.exe.config'
+	)
 }
 
 # exit the dialog
@@ -85,8 +85,10 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: the window (panels) and item ('far.exe.config')
-	Assert-Far ($Far.Window.Kind -eq 'Panels')
-	Assert-Far ((Get-FarFile).Name -eq 'far.exe.config')
+	Assert-Far @(
+		$Far.Window.Kind -eq 'Panels'
+		(Get-FarFile).Name -eq 'far.exe.config'
+	)
 }
 
 # HOW TO: start a modal dialog programmatically
@@ -103,8 +105,10 @@ if ($Far.Window.Count -ne 1) {
 
 {
 	# test: a dialog exists and there is a valid control in it
-	Assert-Far $Far.Dialog
-	Assert-Far ($Far.Dialog.GetControl(1).Text -eq 'Sample text')
+	Assert-Far @(
+		$Far.Dialog -ne $null
+		$Far.Dialog.GetControl(1).Text -eq 'Sample text'
+	)
 }
 
 {

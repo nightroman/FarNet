@@ -44,18 +44,14 @@ param
 	$View
 )
 
-if (![IO.File]::Exists($Path)) {
-	return Show-FarMessage "File does not exist: '$Path'"
-}
+Assert-Far ([IO.File]::Exists($Path)) "File does not exist: '$Path'" "Invoke-Shortcut-.ps1"
 
 # WMI does not work well with names with spaces, use WScript.Shell.
 # Besides, WScript.Shell also works with .url, just in case
 $WshShell = New-Object -ComObject WScript.Shell
 $link = $WshShell.CreateShortcut([IO.Path]::GetFullPath($Path))
 $target = $link.TargetPath
-if (!$target) {
-	return Show-FarMessage "Cannot get a target path from '$Path'.`nIs it a shortcut file?"
-}
+Assert-Far ([bool]$target) "Cannot get a target path from '$Path'.`nIs it a shortcut file?" "Invoke-Shortcut-.ps1"
 
 ### Panel properties
 if ($Panel) {
