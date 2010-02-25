@@ -114,14 +114,17 @@ namespace PowerShellFar.Commands
 
 			// info
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine();
-			if (Message != null)
-				sb.AppendLine(Message.ToString());
-			if (IsError)
 			{
-				if (ConditionCount > 0)
-					sb.AppendLine("Condition " + (ConditionIndex + 1) + " out of " + ConditionCount);
-				sb.AppendLine(MyInvocation.PositionMessage);
+				if (Message != null)
+					sb.AppendLine(Message.ToString());
+
+				if (IsError)
+				{
+					if (ConditionCount > 0)
+						sb.AppendLine("Condition " + (ConditionIndex + 1) + " out of " + ConditionCount);
+
+					sb.AppendLine(MyInvocation.PositionMessage);
+				}
 			}
 
 			// buttons
@@ -153,6 +156,6 @@ namespace PowerShellFar.Commands
 
 		const string
 			ButtonOk = "Ok",
-			ButtonEdit = "Edit";
+			ButtonEdit = "&Edit";
 	}
 }
