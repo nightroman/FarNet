@@ -17,7 +17,7 @@
 	Watch-Output-.ps1
 #>
 
-if (!(Get-Command Format-Chart.ps1 -ErrorAction 0)) { throw "Format-Chart.ps1 has to be in the system path." }
+Assert-Far ((Get-Command Format-Chart.ps1 -ErrorAction 0) -ne $null) "Format-Chart.ps1 is not found." "Assert"
 
 Watch-Output- -Title "EXAMPLE: COMBINED OUTPUT" {
 

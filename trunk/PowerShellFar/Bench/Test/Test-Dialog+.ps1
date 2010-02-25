@@ -35,7 +35,7 @@ $global:TestDialogValue = $null
 # open the test dialog if not yet
 if (!$TestOpened) {
 
-	if ($Far.Window.Kind -eq 'Dialog') { throw "Do not run this from a dialog" }
+	Assert-Far ($Far.Window.Kind -ne 'Dialog') "Do not run this from a dialog" "Test-Dialog+.ps1"
 
 	{{
 		# run the dialog
@@ -53,10 +53,12 @@ if (!$TestOpened) {
 # go to edit 1 (by hotkey) and type
 'AltT Home ShiftEnd Del о к а'
 {
-	# edit?
-	Assert-Far ($dialog.Focused -eq $e1)
-	# text?
-	Assert-Far ($e1.Text -eq 'ока')
+	Assert-Far @(
+		# editbox is current
+		$dialog.Focused -eq $e1
+		# its text
+		$e1.Text -eq 'ока'
+	)
 }
 
 {
@@ -85,8 +87,10 @@ if (!$TestOpened) {
 
 {
 	# test text and selection
-	Assert-Far ($e1.Text -eq 'волга')
-	Assert-Far ($e1.Line.Selection.Text -eq 'олг')
+	Assert-Far @(
+		$e1.Text -eq 'волга'
+		$e1.Line.Selection.Text -eq 'олг'
+	)
 }
 
 ### CheckBox (standard)
@@ -118,8 +122,10 @@ if (!$TestOpened) {
 
 {
 	# test focus and state
-	Assert-Far ($dialog.Focused -eq $x2)
-	Assert-Far ($x2.Selected -eq 0)
+	Assert-Far @(
+		$dialog.Focused -eq $x2
+		$x2.Selected -eq 0
+	)
 }
 
 # switch
@@ -143,8 +149,10 @@ if (!$TestOpened) {
 
 {
 	# test focus and text
-	Assert-Far ($dialog.Focused -eq $e2)
-	Assert-Far ($e2.Text -eq 'Text   ')
+	Assert-Far @(
+		$dialog.Focused -eq $e2
+		$e2.Text -eq 'Text   '
+	)
 }
 
 ### Edit (password)
@@ -153,8 +161,10 @@ if (!$TestOpened) {
 
 {
 	# test focus and text
-	Assert-Far ($dialog.Focused -eq $e3)
-	Assert-Far ($e3.Text -eq 'Word')
+	Assert-Far @(
+		$dialog.Focused -eq $e3
+		$e3.Text -eq 'Word'
+	)
 }
 
 ### RadioButton
@@ -163,21 +173,22 @@ if (!$TestOpened) {
 	# go to button 1, set selected
 	$dialog.Focused = $r1
 	$r1.Selected = $true
-
-	# test
-	Assert-Far ($dialog.Focused -eq $r1)
-	Assert-Far ($r1.Selected)
-	Assert-Far (!$r2.Selected)
+	Assert-Far @(
+		$dialog.Focused -eq $r1
+		$r1.Selected
+		!$r2.Selected
+	)
 }
 
 # go to button 2 and select
 'Right Space'
 
 {
-	# test
-	Assert-Far ($dialog.Focused -eq $r2)
-	Assert-Far (!$r1.Selected)
-	Assert-Far ($r2.Selected)
+	Assert-Far @(
+		$dialog.Focused -eq $r2
+		!$r1.Selected
+		$r2.Selected
+	)
 }
 
 ### ListBox
@@ -186,25 +197,28 @@ if (!$TestOpened) {
 	# listbox: set title and bottom
 	$lb.Title = 'Title1'
 	$lb.Bottom = 'Bottom1'
-	# test
-	Assert-Far ($lb.Title -eq 'Title1')
-	Assert-Far ($lb.Bottom -eq 'Bottom1')
+	Assert-Far @(
+		$lb.Title -eq 'Title1'
+		$lb.Bottom -eq 'Bottom1'
+	)
 }
 
 {
 	# listbox: set only title
 	$lb.Title = 'Title2'
-	# test
-	Assert-Far ($lb.Title -eq 'Title2')
-	Assert-Far ($lb.Bottom -eq 'Bottom1')
+	Assert-Far @(
+		$lb.Title -eq 'Title2'
+		$lb.Bottom -eq 'Bottom1'
+	)
 }
 
 {
 	# listbox: set only bottom
 	$lb.Bottom = 'Bottom2'
-	# test
-	Assert-Far ($lb.Title -eq 'Title2')
-	Assert-Far ($lb.Bottom -eq 'Bottom2')
+	Assert-Far @(
+		$lb.Title -eq 'Title2'
+		$lb.Bottom -eq 'Bottom2'
+	)
 }
 
 ### [List]: ComboBox (edit), ComboBox (list), ListBox
@@ -220,8 +234,10 @@ if (!$TestOpened) {
 
 {
 	# test listbox data
-	Assert-Far ($lb.Title -match '^Fast ')
-	Assert-Far ($lb.Bottom -match '^WS ')
+	Assert-Far @(
+		$lb.Title -match '^Fast '
+		$lb.Bottom -match '^WS '
+	)
 }
 
 # push the button 2nd time

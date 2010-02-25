@@ -16,13 +16,13 @@
 	Tested on: FarHost, ConsoleHost, PowerShell ISE V2 CTP3.
 #>
 
+[CmdletBinding()]
 param
 (
 	# To remove breakpoints
 	[switch]$RemoveBreakpoints
 )
 
-if ($args) { throw "Invalid arguments: $args" }
 $script = $MyInvocation.MyCommand.Definition
 
 # get my breakpoints
