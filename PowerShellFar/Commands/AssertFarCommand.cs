@@ -26,6 +26,8 @@ namespace PowerShellFar.Commands
 	[Description("Checks for the condition(s) and stops the pipeline with a message if any condition is false or not Boolean.")]
 	public sealed class AssertFarCommand : BaseCmdlet
 	{
+		internal const string MyName = "Assert-Far";
+		
 		/// <summary>
 		/// A single Boolean value or an array of Boolean values to be checked.
 		/// </summary>
@@ -72,7 +74,6 @@ namespace PowerShellFar.Commands
 		{
 			if (condition == null)
 			{
-				Message = "Expected Boolean conditions; actual input is null";
 				Title = null;
 			}
 			else
@@ -108,7 +109,8 @@ namespace PowerShellFar.Commands
 				}
 				catch (RuntimeException ex)
 				{
-					Message = "Assert-Far: error in the message script: " + ex.Message;
+					Message = "Error in the message script: " + ex.Message;
+					Title = null;
 				}
 			}
 
@@ -129,25 +131,35 @@ namespace PowerShellFar.Commands
 
 			// buttons
 			string[] buttons;
-			if (!IsError || string.IsNullOrEmpty(MyInvocation.ScriptName))
-				buttons = new string[] { ButtonOk };
+			if (!IsError)
+				buttons = new string[] { BtnBreak };
+			else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
+				buttons = new string[] { BtnBreak, BtnDebug };
 			else
-				buttons = new string[] { ButtonOk, ButtonEdit };
+				buttons = new string[] { BtnBreak, BtnDebug, BtnEdit };
 
 			// prompt
 			int result = Far.Net.Message(
 				sb.ToString(),
-				Title ?? "Assert-Far",
+				Title ?? MyName,
 				IsError ? (MsgOptions.Warning | MsgOptions.LeftAligned) : MsgOptions.None,
 				buttons);
 
 			// editor
-			if (result >= 0 && buttons[result] == ButtonEdit)
+			if (result >= 0)
 			{
-				IEditor editor = Far.Net.CreateEditor();
-				editor.FileName = MyInvocation.ScriptName;
-				editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
-				editor.Open();
+				if (buttons[result] == BtnEdit)
+				{
+					IEditor editor = Far.Net.CreateEditor();
+					editor.FileName = MyInvocation.ScriptName;
+					editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
+					editor.Open();
+				}
+				else if (buttons[result] == BtnDebug)
+				{
+					A.Psf.InvokeCode("Set-PSBreakpoint -Command " + MyName);
+					return;
+				}
 			}
 
 			// break
@@ -155,7 +167,8 @@ namespace PowerShellFar.Commands
 		}
 
 		const string
-			ButtonOk = "Ok",
-			ButtonEdit = "&Edit";
+			BtnBreak = "Break",
+			BtnDebug = "&Debug",
+			BtnEdit = "&Edit";
 	}
 }
