@@ -442,9 +442,9 @@ without changing the original source code - all depends on your fantasy.
 $#Debugger dialog#
 ~Contents~@Contents@
 
-This dialog is shown when one or more breakpoints are hit or you step in debug
-mode. You may step through the code, open command console in editor, take a
-look at the source code.
+This dialog is shown when one or more breakpoints are hit or you step through
+the code in the debugger. You may step through the code, open command console
+in editor, take a look at the source code, or stop the pipeline and debugging.
 
 
 #KEYS, BUTTONS AND ACTIONS#
@@ -467,22 +467,24 @@ you can examine or change variables, invoke commands and etc. On exit the same
 dialog is repeated.
 See also ~Editor console~@EditorConsole@.
 
-[#[Goto..]#] Two actions: sets the current list line to the current debugger
-line, if not yet, overwise opens the editor at the debugger line. You should
+[#[Edit..]#] Opens the source in the editor at the debugger line. You should
 not edit the script at this moment, it is only for taking a look at the code.
-On exit from the editor the same dialog is repeated.
+On exit from the editor the debugger dialog is repeated.
+
+[#[Goto]#] Sets the current list line to the current debugger line.
+
+[#[Break]#] Stops the running pipeline and debugging immediately.
 
 
 #NOTES#
 
-When you enter debug mode and the command being executed already has pending
+When you enter the debugger and the command being executed already has pending
 output then its output is sent to a file and external viewer is started to view
 it. This looks unusual but in this way you can see the output during debugging.
 
-It is theoretically possible that the debugger or your actions in the debugger
-may affect the code being debugged in unusual way, especially the code dealing
-with Far UI that may clash against the debugger UI. Think of it when you are
-about to debug such a special code.
+It is possible that the debugger or your actions there may affect execution
+flow in unusual way, especially if the code deals with Far UI that may clash
+against the debugger UI. Think when you are about to debug such scenarios.
 
 
 @EditorConsole

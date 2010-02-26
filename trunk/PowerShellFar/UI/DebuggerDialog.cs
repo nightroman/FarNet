@@ -23,7 +23,9 @@ namespace PowerShellFar.UI
 		IButton _Over;
 		IButton _Out;
 		IButton _Console;
+		IButton _Edit;
 		IButton _Goto;
+		IButton _Break;
 
 		public DebuggerDialog(DebuggerStopEventArgs e)
 		{
@@ -72,7 +74,11 @@ namespace PowerShellFar.UI
 			if (e.Breakpoints.Count > 0)
 			{
 				foreach (Breakpoint bp in e.Breakpoints)
-					_List1.Add(bp.ToString());
+				{
+					CommandBreakpoint bpc = bp as CommandBreakpoint;
+					if (bpc != null && Kit.Compare(bpc.Command, Commands.AssertFarCommand.MyName) == 0)
+						A.Psf.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bpc);
+				}
 			}
 			foreach (string s in e.InvocationInfo.PositionMessage.Trim().Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
 				_List1.Add(s);
@@ -92,13 +98,32 @@ namespace PowerShellFar.UI
 
 			_Dialog.AddText(0, -_List2.Rect.Height, 0, null).Separator = 1;
 
-			_Step = _Dialog.AddButton(0, -1, "&Step");
-			_Over = _Dialog.AddButton(0, 0, "O&ver");
-			_Out = _Dialog.AddButton(0, 0, "&Out");
-			_Console = _Dialog.AddButton(0, 0, "Conso&le..");
-			_Goto = _Dialog.AddButton(0, 0, "&Goto..");
-			_Step.CenterGroup = _Over.CenterGroup = _Out.CenterGroup = _Console.CenterGroup = _Goto.CenterGroup = true;
-			_Console.NoBrackets = _Goto.NoBrackets = true;
+			_Step = _Dialog.AddButton(0, -1, BtnStep);
+			_Step.CenterGroup = true;
+			
+			_Over = _Dialog.AddButton(0, 0, BtnOver);
+			_Over.CenterGroup = true;
+			
+			_Out = _Dialog.AddButton(0, 0, BtnOut);
+			_Out.CenterGroup = true;
+			
+			_Console = _Dialog.AddButton(0, 0, BtnConsole);
+			_Console.CenterGroup = true;
+			_Console.NoBrackets = true;
+
+			_Edit = _Dialog.AddButton(0, 0, BtnEdit);
+			_Edit.CenterGroup = true;
+			_Edit.NoBrackets = true;
+
+			_Goto = _Dialog.AddButton(0, 0, BtnGoto);
+			_Goto.CenterGroup = true;
+			_Goto.NoBrackets = true;
+			_Goto.NoClose = true;
+			_Goto.ButtonClicked += OnGoto;
+
+			_Break = _Dialog.AddButton(0, 0, BtnBreak);
+			_Break.CenterGroup = true;
+			_Break.NoBrackets = true;
 
 			_Dialog.Initialized += OnInitialized;
 		}
@@ -110,6 +135,13 @@ namespace PowerShellFar.UI
 		}
 
 		void OnInitialized(object sender, EventArgs e)
+		{
+			// set listbox frame
+			if (_List2.Items.Count > 0)
+				SetFrame();
+		}
+
+		void OnGoto(object sender, EventArgs e)
 		{
 			// set listbox frame
 			if (_List2.Items.Count > 0)
@@ -147,27 +179,32 @@ namespace PowerShellFar.UI
 					continue;
 				}
 
-				if (_Dialog.Selected == _Goto)
+				if (_Dialog.Selected == _Edit)
 				{
 					if (_List2.Items.Count > 0)
 					{
-						if (!_List2.Items[_List2.Selected].Checked)
-						{
-							SetFrame();
-						}
-						else
-						{
-							IEditor editor = Far.Net.CreateEditor();
-							editor.FileName = _InvocationInfo.ScriptName;
-							editor.GoToLine(_InvocationInfo.ScriptLineNumber - 1);
-							editor.Open(OpenMode.Modal);
-						}
+						IEditor editor = Far.Net.CreateEditor();
+						editor.FileName = _InvocationInfo.ScriptName;
+						editor.GoToLine(_InvocationInfo.ScriptLineNumber - 1);
+						editor.Open(OpenMode.Modal);
 					}
 					continue;
 				}
+
+				if (_Dialog.Selected == _Break)
+					throw new PipelineStoppedException();
 			}
 
 			return DebuggerResumeAction.Continue;
 		}
+	
+		const string
+			BtnStep = "&Step",
+			BtnOver = "O&ver",
+			BtnOut = "&Out",
+			BtnConsole = "Conso&le..",
+			BtnEdit = "&Edit..",
+			BtnGoto = "&Goto",
+			BtnBreak = "&Break";
 	}
 }

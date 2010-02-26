@@ -3,14 +3,23 @@ http://code.google.com/p/farnet/
 
 = 4.3.7 =
 
-New cmdlet Assert-Far: a helper for testing and debugging. If the conditions
-fail it breaks execution and prompts for choices, one is to open a script in
-the editor at the assertion fault line. With the parameter -Title it is also
-suitable for production scripts: just to show a simple message and stop.
+New cmdlet Assert-Far: the helper for testing and debugging. If the conditions
+fail it breaks execution and prompts for choices: one is to break into the PSF
+debugger (may continue) or to open a script in the editor at the assertion
+line (stops).
+
+In fact, Assert-Far $false (or just Assert-Far) is a hardcoded breakpoint.
+
+Assert-Far with the parameter -Title is also suitable for production scripts:
+it shows a simple message and stops in a friendly way without much noise.
+
+Debugger dialog:
+-- New button [Break] stops the running pipeline immediately.
+-- Replaced [Goto] with [Edit] and [Goto] buttons and fixed a [Goto] bug.
 
 FarMacro module: added support of Consts and Vars areas. Cmdlet Edit-FarMacro
-and script Panel-Macro-.ps1 also support these areas and allow to work with
-their items.
+and script Panel-Macro-.ps1 also support these areas and allow to work there.
+All standard Far data types are supported: text, dword, qword.
 
 See FarNet History.txt for changes there, some scripts may be affected.
 
