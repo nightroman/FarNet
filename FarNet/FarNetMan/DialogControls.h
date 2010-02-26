@@ -29,6 +29,7 @@ public:
 	virtual String^ ToString() override;
 protected:
 	FarControl(FarDialog^ dialog, int index);
+	void AssertOpened();
 internal:
 	FarControl(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 	bool GetFlag(int flag);
@@ -44,7 +45,7 @@ internal:
 	int _id;
 	Place _rect;
 	FarDialogItem* _item;
-	FarDialog^ _dialog;
+	FarDialog^ const _dialog;
 	long _flags;
 	int _selected;
 	String^ _text;

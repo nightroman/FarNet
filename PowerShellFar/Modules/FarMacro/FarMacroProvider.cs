@@ -57,11 +57,9 @@ namespace FarMacro
 			if (string.IsNullOrEmpty(name))
 				return false;
 
-			if (area == MacroArea.Consts)
+			// allow all names for scalars; but perhaps Vars should be like %%*
+			if (area == MacroArea.Consts || area == MacroArea.Vars)
 				return true;
-
-			if (area == MacroArea.Vars)
-				return name.StartsWith("%%", StringComparison.OrdinalIgnoreCase);
 
 			int code = Far.Net.NameToKey(name);
 			if (code >= 0)

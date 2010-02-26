@@ -222,6 +222,15 @@ FarControl::FarControl(FarDialog^ dialog, int left, int top, int right, int bott
 , _text(text)
 {}
 
+//! Info.SendDlgMessage() must be called only for the opened dialog or Far crashes.
+//! Bug case: called from a handler of a button that has just closed the dialog.
+//! Any Info.SendDlgMessage() caller has to call this or check the handle.
+void FarControl::AssertOpened()
+{
+	if (_dialog->_hDlg == INVALID_HANDLE_VALUE)
+		throw gcnew InvalidOperationException("The dialog has to be opened.");
+}
+
 String^ FarControl::ToString()
 {
 	//! do not use fields
@@ -895,8 +904,7 @@ void FarBaseList::DetachItems()
 
 void FarBaseList::AttachItems()
 {
-	if (_dialog->_hDlg == INVALID_HANDLE_VALUE)
-		throw gcnew InvalidOperationException("Dialog must be started.");
+	AssertOpened();
 
 	FreeItems();
 
@@ -1103,6 +1111,8 @@ void FarListBox::Text::set(String^ value)
 
 void FarListBox::SetFrame(int selected, int top)
 {
+	AssertOpened();
+
 	FarListPos arg;
 	arg.SelectPos = selected;
 	arg.TopPos = top;
