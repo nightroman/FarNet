@@ -31,9 +31,9 @@ namespace PowerShellFar
 
 	class FileColumnEnumerator : System.Collections.IEnumerator
 	{
+		readonly PSObject Value;
+		readonly List<Meta> Columns;
 		int Index = -1;
-		PSObject Value;
-		List<Meta> Columns;
 
 		public FileColumnEnumerator(PSObject value, List<Meta> columns)
 		{

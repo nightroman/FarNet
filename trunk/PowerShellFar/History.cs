@@ -6,7 +6,6 @@ Copyright (c) 2006 Roman Kuzmin
 using System;
 using System.Collections.Generic;
 using FarNet;
-using Microsoft.Win32;
 
 namespace PowerShellFar
 {
@@ -37,7 +36,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static string[] GetLines(int count)
 		{
-			using (RegistryKey key = Open(false))
+			using (IRegistryKey key = OpenHistoryKey(false))
 			{
 				string[] names = key.GetValueNames();
 				if (count <= 0 || count > names.Length)
@@ -45,7 +44,7 @@ namespace PowerShellFar
 
 				string[] lines = new string[count];
 				for(int s = names.Length - count, d = 0; s < names.Length; ++s, ++d)
-					lines[d] = key.GetValue(names[s]).ToString();
+					lines[d] = key.GetValue(names[s], string.Empty).ToString();
 
 				return lines;
 			}
@@ -56,7 +55,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void AddLine(string value)
 		{
-			using (RegistryKey key = Open(true))
+			using (IRegistryKey key = OpenHistoryKey(true))
 				key.SetValue(Kit.ToString(DateTime.Now.Ticks), value);
 		}
 
@@ -119,41 +118,40 @@ namespace PowerShellFar
 		/// </summary>
 		public static void RemoveDupes()
 		{
-			using (RegistryKey key = Open(true))
+			using (IRegistryKey key = OpenHistoryKey(true))
 				RemoveDupes(key);
 		}
 
 		/// <summary>
 		/// Removes duplicated history lines.
 		/// </summary>
-		static void RemoveDupes(RegistryKey key)
+		static void RemoveDupes(IRegistryKey key)
 		{
 			string[] names = key.GetValueNames();
 			Dictionary<string, object> map = new Dictionary<string, object>();
 			for (int i = names.Length; --i >= 0; )
 			{
-				string s = key.GetValue(names[i]).ToString();
+				string s = key.GetValue(names[i], string.Empty).ToString();
 				if (map.ContainsKey(s))
-					key.DeleteValue(names[i]);
+					key.SetValue(names[i], null);
 				else
 					map.Add(s, null);
 			}
 		}
 
-		static string _path_;
+		static bool _history_;
 		/// <summary>
 		/// Opens the history key for using.
 		/// </summary>
-		static RegistryKey Open(bool writable)
+		static IRegistryKey OpenHistoryKey(bool writable)
 		{
 			//! 'Console.Title' was used for progress but it can throw IOException; we better do not use it
-			if (_path_ == null)
+			if (!_history_)
 			{
-				// get path once
-				_path_ = Far.Net.RegistryFarPath + "\\SavedDialogHistory\\PowerShellFarHistory";
+				_history_ = true;
 
 				// ensure the key and reduce the history once
-				using (RegistryKey key = Registry.CurrentUser.CreateSubKey(_path_))
+				using (IRegistryKey key = Entry.Instance.Manager.OpenRegistryKey("CommandHistory", true))
 				{
 					// remove old if the count is "well above" the limit
 					int nKill = key.ValueCount - A.Psf.Settings.MaximumHistoryCount;
@@ -165,7 +163,7 @@ namespace PowerShellFar
 						{
 							foreach (string s in key.GetValueNames())
 							{
-								key.DeleteValue(s);
+								key.SetValue(s, null);
 								if (--nKill <= 0)
 									break;
 							}
@@ -174,8 +172,8 @@ namespace PowerShellFar
 				}
 			}
 			
-			// the opened key
-			return Registry.CurrentUser.OpenSubKey(_path_, writable);
+			// open
+			return Entry.Instance.Manager.OpenRegistryKey("CommandHistory", writable);
 		}
 
 	}

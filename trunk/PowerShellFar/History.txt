@@ -3,25 +3,37 @@ http://code.google.com/p/farnet/
 
 = 4.3.7 =
 
+See FarNet History.txt for changes there, some scripts may be affected.
+
+Registry: PSF command history moved from "SavedDialogHistory\PowerShellFarHistory"
+to its module data location: "Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory"
+Move\rename it using two registry provider panels (or maybe just remove the old location).
+
 New cmdlet Assert-Far: the helper for testing and debugging. If the conditions
 fail it breaks execution and prompts for choices: one is to break into the PSF
-debugger (may continue) or to open a script in the editor at the assertion
-line (stops).
+debugger (may continue), another is to open a script in the editor at the
+assertion line (stops).
 
-In fact, Assert-Far $false (or just Assert-Far) is a hardcoded breakpoint.
+In fact, "Assert-Far $false" (same as "Assert-Far") is a hardcoded breakpoint.
 
-Assert-Far with the parameter -Title is also suitable for production scripts:
-it shows a simple message and stops in a friendly way without much noise.
+Assert-Far with the parameter -Title is designed for production scripts:
+it shows a simple message and stops in a friendly way without much noise:
+Assert-Far ($Far.Window.Kind -eq 'Editor') "Run from editor!" -Title "Oops"
 
 Debugger dialog:
--- New button [Break] stops the running pipeline immediately.
+-- New button [Break] stops the pipeline (throws PipelineStoppedException).
 -- Replaced [Goto] with [Edit] and [Goto] buttons and fixed a [Goto] bug.
 
 FarMacro module: added support of Consts and Vars areas. Cmdlet Edit-FarMacro
 and script Panel-Macro-.ps1 also support these areas and allow to work there.
 All standard Far data types are supported: text, dword, qword.
 
-See FarNet History.txt for changes there, some scripts may be affected.
+ObjectPanel: fix: when it is used as a temp panel for any objects it should be
+updated on copying objects from another panel.
+
+Panels: obsolete and not used property and parameter "AutoSize" was removed
+from panels and cmdlets. There are no plans to use it in the future: default
+columns are good enough for data preview.
 
 = 4.3.6 =
 

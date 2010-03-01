@@ -12,7 +12,6 @@ using System.Management.Automation;
 using System.Management.Automation.Provider;
 using System.Text;
 using FarNet;
-using Microsoft.Win32;
 
 namespace FarMacro
 {

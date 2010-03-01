@@ -22,7 +22,6 @@
 using namespace FarNet::Forms;
 using namespace FarNet::Support;
 using namespace FarNet;
-using namespace Microsoft::Win32;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Specialized;

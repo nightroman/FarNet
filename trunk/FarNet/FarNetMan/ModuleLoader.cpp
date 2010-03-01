@@ -39,24 +39,18 @@ void ModuleLoader::ReadModuleCache()
 {
 	LOG_AUTO(3, "Read module cache");
 
-	RegistryKey^ keyCache = nullptr;
+	IRegistryKey^ keyCache = nullptr;
 	try
 	{
 		// open for writing, to remove obsolete data
-		String^ keyCachePath = Far::Net->RegistryPluginsPath + "\\FarNet\\!Cache";
-		keyCache = Registry::CurrentUser->OpenSubKey(keyCachePath, true);
-		if (!keyCache)
-		{
-			ToCacheVersion = true;
-			return;
-		}
+		keyCache = Far::Net->OpenRegistryKey("Plugins\\FarNet\\!Cache", true);
 		
 		// different version: drop cache values
 		String^ version = keyCache->GetValue(String::Empty, String::Empty)->ToString();
 		if (version != CacheVersion.ToString())
 		{
 			for each(String^ name in keyCache->GetValueNames())
-				keyCache->DeleteValue(name);
+				keyCache->SetValue(name, nullptr);
 
 			ToCacheVersion = true;
 			return;
@@ -77,7 +71,7 @@ void ModuleLoader::ReadModuleCache()
 					throw gcnew ModuleException;
 
 				// read data
-				EnumerableReader reader((array<String^>^)keyCache->GetValue(assemblyPath));
+				EnumerableReader reader((array<String^>^)keyCache->GetValue(assemblyPath, nullptr));
 
 				// Stamp
 				String^ assemblyStamp = reader.Read();
@@ -150,7 +144,7 @@ void ModuleLoader::ReadModuleCache()
 			{
 				if (!done)
 				{
-					keyCache->DeleteValue(assemblyPath);
+					keyCache->SetValue(assemblyPath, nullptr);
 					if (manager)
 						RemoveModuleManager(manager);
 				}
@@ -159,8 +153,7 @@ void ModuleLoader::ReadModuleCache()
 	}
 	finally
 	{
-		if (keyCache)
-			keyCache->Close();
+		delete keyCache;
 	}
 }
 
@@ -347,10 +340,10 @@ bool ModuleLoader::CanExit()
 
 void ModuleLoader::WriteModuleCache(ModuleManager^ manager)
 {
-	RegistryKey^ keyCache = nullptr;
+	IRegistryKey^ keyCache = nullptr;
 	try
 	{
-		keyCache = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\FarNet\\!Cache");
+		keyCache = Far::Net->OpenRegistryKey("Plugins\\FarNet\\!Cache", true);
 
 		// update cache version
 		if (ToCacheVersion)
@@ -393,8 +386,7 @@ void ModuleLoader::WriteModuleCache(ModuleManager^ manager)
 	}
 	finally
 	{
-		if (keyCache)
-			keyCache->Close();
+		delete keyCache;
 	}
 }
 

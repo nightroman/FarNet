@@ -4,23 +4,30 @@ http://code.google.com/p/farnet/
 
 PROGRESS
 
-*) Modules do not have to unregister actions on disconnection: actions are
-unregistered automatically. Note: registered actions should be used only in
-preloadable modules or if action classes do not cover some scenarios.
+*) Modules with dynamically added actions do not have to unregister them on
+disconnection: they are unregistered automatically.
 
 *) IMacro: added support for Consts and Vars areas.
 
 *) Optimized module loading, unloading, caching.
 
-*) Found and eliminated a way to crash Far from FarNet. Please, report known
-cases of Far crashes from FarNet (but be realistic, of course).
+*) Fixed crash on incorrect use of a listbox.
 
 REFACTORING, BREAKING FOR SOME MODULES
-(better now than later or never)
 
-IFar: members GetWindowInfo, GetWindowType, SetCurrentWindow, WindowCount, and
+*) Abstract registry access:
+-- Removed properties IFar .RegistryFarPath, .RegistryPluginsPath.
+-- Modules should not operate on the registry directly (though they can, of
+course). They should access data via IRegistryKey returned by OpenRegistryKey()
+of IModuleManager (normally) or IFar (only when really needed).
+-- For Far Manager IRegistryKey works with the Windows registry, it is the
+wrapper of Microsoft.Win32.RegistryKey. But modules should not rely on this.
+
+*) IFar: window members moved to the operator:
+Members GetWindowInfo, GetWindowType, SetCurrentWindow, WindowCount, and
 WindowType moved to new window operator IFar.Window (and names adapted).
 
+*) Type -> Kind:
 The word 'Type' is replaced with 'Kind' in most cases. 'Type' should deal with
 .NET System.Type class only. This change should reduce confusions and fix some
 code analysis issues.

@@ -11,7 +11,7 @@ ref class ModuleManager : public IModuleManager
 {
 public: // IModuleManager
 	virtual property CultureInfo^ CurrentUICulture { CultureInfo^ get(); void set(CultureInfo^ value); }
-	virtual RegistryKey^ OpenSubKey(String^ name, bool writable);
+	virtual IRegistryKey^ OpenRegistryKey(String^ name, bool writable);
 	virtual String^ GetString(String^ name);
 	virtual void Unregister();
 	virtual IModuleCommand^ RegisterModuleCommand(Guid id, ModuleCommandAttribute^ attribute, EventHandler<ModuleCommandEventArgs^>^ handler);
@@ -32,10 +32,8 @@ internal:
 	void SetModuleHost(Type^ moduleHostClassType);
 	bool LoadLoadableModuleHost();
 internal:
-	static Object^ LoadPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue);
 	static Object^ LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue);
 	static void SaveFarNetValue(String^ keyPath, String^ valueName, Object^ value);
-	static void SavePluginValue(String^ pluginName, String^ valueName, Object^ newValue);
 private:
 	void Connect();
 private: // Assembly

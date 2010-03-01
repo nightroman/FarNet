@@ -86,9 +86,11 @@ void WINAPI ExitFARW()
 }
 
 /*
-GetPluginInfo is called to get general plugin info.
-FarNet returns joined information about its plugins.
-STOP: exotic case: FarNet has been "unloaded", return empty information.
+It is called frequently to get plugin actions info.
+FarNet returns combined information for its modules.
+STOP:
+Exotic case: FarNet has been unloaded: return no action information,
+do return flags, preloadable flag is absolutely important as cached.
 */
 void WINAPI GetPluginInfoW(PluginInfo* pi)
 {
@@ -102,7 +104,7 @@ void WINAPI GetPluginInfoW(PluginInfo* pi)
 	__END;
 }
 
-// OpenPlugin is called to create a new plugin instance or do a job.
+// It is called for an action; action result can be a new panel.
 HANDLE WINAPI OpenPluginW(int from, INT_PTR item)
 {
 	__START;

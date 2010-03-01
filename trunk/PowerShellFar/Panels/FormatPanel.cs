@@ -36,22 +36,6 @@ namespace PowerShellFar
 			}
 		}
 
-		/// <summary>
-		/// Same as <c>-AutoSize</c> of <c>Format-Table</c>.
-		/// </summary>
-		/// <remarks>
-		/// Ignored if <see cref="Columns"/> is set.
-		/// <para>
-		/// This mode is slower but formatted data may look better.
-		/// Sometimes table formatting possible only in auto size mode.
-		/// </para>
-		/// <para>
-		/// If table formatting is not possible even in auto size mode
-		/// then you should use manually specified <see cref="TablePanel.Columns"/>.
-		/// </para>
-		/// </remarks>
-		public bool AutoSize { get; set; }
-
 		///
 		protected FormatPanel()
 		{ }

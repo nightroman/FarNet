@@ -512,9 +512,9 @@ namespace PowerShellFar
 		/// <summary>
 		/// Copy\move action.
 		/// </summary>
-		/// <returns>Processed?</returns>
+		/// <returns>True if the action is done.</returns>
 		/// <remarks>
-		/// This simply copies items to another <see cref="ObjectPanel"/> if any.
+		/// <see cref="AnyPanel"/> simply copies items to another <see cref="ObjectPanel"/>, if any.
 		/// </remarks>
 		internal virtual bool UICopyMove(bool move)
 		{
@@ -525,8 +525,12 @@ namespace PowerShellFar
 			if (op == null)
 				return false;
 
+			// _100227_073909
+			// add objects to the target object panel and update it
+			//! we allow dupes on the target panel, why not? a user is the boss
+			//! keep the selection, the temp panel keeps it; note: selection is by names, added objects may get selected
 			op.AddObjects(SelectedItems);
-			UpdateRedraw(false);
+			op.UpdateRedraw(true);
 			return true;
 		}
 
