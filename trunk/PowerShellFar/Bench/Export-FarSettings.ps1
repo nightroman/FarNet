@@ -14,12 +14,14 @@
 	(this is checked) and this script should not be already running (this is
 	not checked).
 
-	Result files:
+	Output files:
 		Far-Settings.reg
-			Result file with exported settings. If settings are not changed
+			Output file with exported settings. If settings are not changed
 			then this file is not updated.
 		Far-Settings.bak
 			Backup copy of previous FarSettings.reg, if any.
+		Far-Settings.xml
+			Output file with extra data not included into Far-Settings.reg.
 
 	Rescue files:
 		All-Settings.reg
@@ -42,21 +44,30 @@ $AllSettingsReg = Join-Path $Path All-Settings.reg
 $FarSettingsTmp = Join-Path $Path Far-Settings.tmp
 $FarSettingsReg = Join-Path $Path Far-Settings.reg
 $FarSettingsBak = Join-Path $Path Far-Settings.bak
+$FarSettingsXml = Join-Path $Path Far-Settings.xml
 
 # directory must exist
 if (![IO.Directory]::Exists($Path)) { throw "Directory '$Path' does not exist." }
 
 ### Far Manager exit
-Write-Host -ForegroundColor Cyan @"
-Waiting for Far Manager exit...
-"@
+Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit..."
 Wait-Process Far -ErrorAction 0
 
 ### export all
-Write-Host -ForegroundColor Cyan @"
-Exporting '$AllSettingsReg' (restore on failure manually)...
-"@
+Write-Host -ForegroundColor Cyan "Exporting '$AllSettingsReg' (restore on failure manually)..."
 cmd /c regedit /e $AllSettingsReg HKEY_CURRENT_USER\Software\Far2
+
+### export PSF command history
+Write-Host -ForegroundColor Cyan "Exporting '$FarSettingsXml'..."
+$history = @{}
+$regkey = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory')
+if ($regkey) {
+	foreach($name in $regkey.GetValueNames()) {
+		$history.Add($name, $regkey.GetValue($name))
+	}
+	$regkey.Close()
+}
+$history | Export-Clixml $FarSettingsXml
 
 # kill in the registry what is not exported
 Push-Location HKCU:\Software\Far2
@@ -67,6 +78,7 @@ Remove-Item -Recurse -Force -ErrorAction 0 -Path @(
 	'Panel\Left'
 	'Panel\Right'
 	'Plugins\FarNet\!Cache'
+	'Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory'
 	'PluginsCache'
 	'SavedDialogHistory'
 	'SavedFolderHistory'
@@ -80,39 +92,27 @@ Remove-ItemProperty Plugins\S_And_R -Name search, replace -ErrorAction 0
 Pop-Location
 
 ### export filtered settings to a temp file
-Write-Host -ForegroundColor Cyan @"
-Exporting '$FarSettingsTmp'...
-"@
+Write-Host -ForegroundColor Cyan "Exporting '$FarSettingsTmp'..."
 cmd /c regedit /e $FarSettingsTmp HKEY_CURRENT_USER\Software\Far2
 
 ### restore original settings
-Write-Host -ForegroundColor Cyan @"
-Importing '$AllSettingsReg'...
-"@
+Write-Host -ForegroundColor Cyan "Importing '$AllSettingsReg'..."
 cmd /c regedit /s $AllSettingsReg
 [IO.File]::Delete($AllSettingsReg)
 
 # update the file if needed
 if (![IO.File]::Exists($FarSettingsReg)) {
-	Write-Host -ForegroundColor Cyan @"
-Creating '$FarSettingsReg'...
-"@
+	Write-Host -ForegroundColor Cyan "Creating '$FarSettingsReg'..."
 	[IO.File]::Move($FarSettingsTmp, $FarSettingsReg)
 }
 elseif ([IO.File]::ReadAllText($FarSettingsTmp) -cne [IO.File]::ReadAllText($FarSettingsReg)) {
-	Write-Host -ForegroundColor Cyan @"
-Updating '$FarSettingsReg'...
-"@
+	Write-Host -ForegroundColor Cyan "Updating '$FarSettingsReg'..."
 	[IO.File]::Replace($FarSettingsTmp, $FarSettingsReg, $FarSettingsBak)
 }
 else {
-	Write-Host -ForegroundColor Cyan @"
-Removing '$FarSettingsTmp'...
-"@
+	Write-Host -ForegroundColor Cyan "Removing '$FarSettingsTmp'..."
 	[IO.File]::Delete($FarSettingsTmp)
 }
 
 # end
-Write-Host -ForegroundColor Green @"
-Export succeeded.
-"@
+Write-Host -ForegroundColor Green "Export succeeded."

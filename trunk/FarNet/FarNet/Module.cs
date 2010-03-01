@@ -335,8 +335,12 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module tool options.
+	/// Module tool options, combination of flags.
 	/// </summary>
+	/// <remarks>
+	/// Choose the flags carefully, do not include areas where the tool is not supposed to work.
+	/// Nobody wants to see their tool menus polluted by items that do not actually work.
+	/// </remarks>
 	[Flags]
 	public enum ModuleToolOptions
 	{
@@ -369,15 +373,15 @@ namespace FarNet
 		/// </summary>
 		Dialog = 1 << 5,
 		/// <summary>
-		/// Show the item in F11 menus.
+		/// Show the item in all F11 menus (Panels | Editor | Viewer | Dialog).
 		/// </summary>
 		F11Menus = Panels | Editor | Viewer | Dialog,
 		/// <summary>
-		/// Show the item in F11 menus and in the disk menu.
+		/// Show the item in F11 menus and in the disk menu (F11Menus | Disk).
 		/// </summary>
 		AllMenus = F11Menus | Disk,
 		/// <summary>
-		/// Show the item in F11 menus, the disk menu and the config menu.
+		/// Show the item in F11 menus, the disk menu and the config menu (AllMenus | Config).
 		/// </summary>
 		AllAreas = AllMenus | Config
 	}

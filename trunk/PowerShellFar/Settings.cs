@@ -165,7 +165,7 @@ namespace PowerShellFar
 			set { _ListMenuUsualMargins = value; }
 		}
 
-		int _MaximumHistoryCount = 400;
+		int _MaximumHistoryCount = 512;
 		/// <summary>
 		/// The maximum number of history commands kept in the registry. In fact, 10% more is allowed.
 		/// </summary>

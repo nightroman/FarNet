@@ -1,6 +1,12 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.8 =
+
+Export-FarSettings.ps1 and Import-FarSettings.ps1 use the file FarSettings.xml
+where PSF commands are exported to and imported from. On import commands are
+merged with existing in the registry.
+
 = 4.3.7 =
 
 See FarNet History.txt for changes there, some scripts may be affected.
