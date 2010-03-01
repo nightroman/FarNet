@@ -70,7 +70,7 @@ function global:Complete-Word-
 		}
 	}
 	# cases: source
-	switch($Line.WindowType) {
+	switch($Line.WindowKind) {
 		'Editor' {
 			$Editor = $Far.Editor
 			$Editor.Begin()
