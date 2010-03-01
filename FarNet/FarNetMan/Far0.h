@@ -45,7 +45,6 @@ public:
 private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
-	static Object^ GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue);
 	static void AssertHotkeys();
 	static void Free(ModuleToolOptions options);
 	static void OnConfigCommand();

@@ -10,6 +10,7 @@ Copyright (c) 2005 FarNet Team
 #include "ModuleManager.h"
 #include "ModuleProxy.h"
 #include "Panel0.h"
+#include "Registry.h"
 #include "Wrappers.h"
 
 namespace FarNet
@@ -17,7 +18,7 @@ namespace FarNet
 void Far0::Start()
 {
 	_hMutex = CreateMutex(NULL, FALSE, NULL);
-	_hotkey = GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
+	_hotkey = FarRegistryKey::GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
 	ModuleLoader::LoadModules();
 }
 
@@ -224,11 +225,8 @@ void Far0::Run(String^ command)
 }
 
 /*
-It is called frequently to get information about menu and disk commands.
-
-STOP:
-Check the instance, FarNet may be "unloaded", return empty information,
-but return flags, at least preloadable flag is absolutely important as cached.
+-- It is called frequently to get information about menu and disk commands.
+-- It is not called when FarNet is unloaded.
 
 // http://forum.farmanager.com/viewtopic.php?f=7&t=3890
 // (?? it would be nice to have ACTL_POSTCALLBACK)
@@ -375,21 +373,6 @@ int Far0::GetPaletteColor(PaletteColor paletteColor)
 	if (index < 0 || index >= COL_LASTPALETTECOLOR)
 		throw gcnew ArgumentOutOfRangeException("paletteColor");
 	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
-}
-
-Object^ Far0::GetFarValue(String^ keyPath, String^ valueName, Object^ defaultValue)
-{
-	RegistryKey^ key = nullptr;
-	try
-	{
-		key = Registry::CurrentUser->OpenSubKey(Far::Net->RegistryFarPath + "\\" + keyPath);
-		return key ? key->GetValue(valueName, defaultValue) : defaultValue;
-	}
-	finally
-	{
-		if (key)
-			key->Close();
-	}
 }
 
 //::Far callbacks

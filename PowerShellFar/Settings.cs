@@ -5,7 +5,6 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using FarNet;
-using Microsoft.Win32;
 
 namespace PowerShellFar
 {
@@ -22,15 +21,22 @@ namespace PowerShellFar
 	/// </remarks>
 	public sealed class Settings
 	{
+		const string
+			MyStartupCode = "StartupCode",
+			MyStartupEdit = "StartupEdit";
+
 		/// <summary>
 		/// Restores permanent settings.
 		/// </summary>
 		internal Settings()
 		{
-			using (RegistryKey key = Entry.Instance.Manager.OpenSubKey(null, false))
+			using (IRegistryKey key = Entry.Instance.Manager.OpenRegistryKey(null, false))
 			{
-				_StartupCode = key.GetValue("StartupCode", string.Empty).ToString();
-				_StartupEdit = key.GetValue("StartupEdit", string.Empty).ToString();
+				if (key != null)
+				{
+					_StartupCode = key.GetValue(MyStartupCode, string.Empty).ToString();
+					_StartupEdit = key.GetValue(MyStartupEdit, string.Empty).ToString();
+				}
 			}
 		}
 
@@ -39,10 +45,10 @@ namespace PowerShellFar
 		/// </summary>
 		public void Save()
 		{
-			using (RegistryKey key = Entry.Instance.Manager.OpenSubKey(null, true))
+			using (IRegistryKey key = Entry.Instance.Manager.OpenRegistryKey(null, true))
 			{
-				key.SetValue("StartupCode", _StartupCode);
-				key.SetValue("StartupEdit", _StartupEdit);
+				key.SetValue(MyStartupCode, _StartupCode);
+				key.SetValue(MyStartupEdit, _StartupEdit);
 			}
 		}
 
@@ -168,7 +174,7 @@ namespace PowerShellFar
 			get { return _MaximumHistoryCount; }
 			set { _MaximumHistoryCount = value; }
 		}
-		
+
 		int _MaximumPanelColumnCount = 8;
 		/// <summary>
 		/// The maximum number of columns allowed in free format panels.
@@ -183,7 +189,7 @@ namespace PowerShellFar
 				_MaximumPanelColumnCount = value;
 			}
 		}
-		
+
 		string _ExternalViewerFileName = string.Empty;
 		/// <summary>
 		/// Gets or sets the external viewer application path.

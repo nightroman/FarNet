@@ -79,6 +79,7 @@ namespace PowerShellFar
 				Panel.Files.Remove(f);
 		}
 
+		//! Update is called by the Far core.
 		void OnPuttingFiles(object sender, PuttingFilesEventArgs e)
 		{
 			AddObjects(A.Psf.InvokeCode("Get-FarItem -Selected"));

@@ -40,8 +40,7 @@ void Macro0::Save()
 
 array<String^>^ Macro0::GetNames(MacroArea area)
 {
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + (area == MacroArea::Root ? "" : area.ToString());
-	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
+	IRegistryKey^ key = Far::Net->OpenRegistryKey("KeyMacros\\" + (area == MacroArea::Root ? "" : area.ToString()), false);
 	if (!key)
 		return gcnew array<String^>(0);
 
@@ -54,24 +53,23 @@ array<String^>^ Macro0::GetNames(MacroArea area)
 	}
 	finally
 	{
-		key->Close();
+		delete key;
 	}
 }
 
 Object^ Macro0::GetScalar(MacroArea area, String^ name)
 {
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + area.ToString();
-	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
+	IRegistryKey^ key = Far::Net->OpenRegistryKey("KeyMacros\\" + area.ToString(), false);
 	if (!key)
 		return nullptr;
 
 	try
 	{
-		return RegistryValueToObject(key->GetValue(name));
+		return RegistryValueToObject(key->GetValue(name, nullptr));
 	}
 	finally
 	{
-		key->Close();
+		delete key;
 	}
 }
 
@@ -92,8 +90,7 @@ Macro^ Macro0::GetMacro(MacroArea area, String^ name)
 	// _100211_140534 FarMacro workaround
 	name = name->Replace("(Slash)", "/");
 
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + area.ToString() + "\\" + name;
-	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path);
+	IRegistryKey^ key = Far::Net->OpenRegistryKey("KeyMacros\\" + area.ToString() + "\\" + name, false);
 	if (!key)
 		return nullptr;
 
@@ -104,56 +101,52 @@ Macro^ Macro0::GetMacro(MacroArea area, String^ name)
 		r->Name = name;
 		
 		// sequence
-		Object^ value = key->GetValue("Sequence");
+		Object^ value = key->GetValue("Sequence", nullptr);
 		if (value)
 			r->Sequence = RegistryValueToObject(value)->ToString();
 		
 		// others
 		r->Description = key->GetValue("Description", String::Empty)->ToString();
 		r->EnableOutput = !ToBool(key->GetValue("DisableOutput", 1));
-		r->DisablePlugins = ToBool(key->GetValue("NoSendKeysToPlugins"));
-		r->RunAfterFarStart = ToBool(key->GetValue("RunAfterFarStart"));
-		r->CommandLine = GetThreeState(key->GetValue("NotEmptyCommandLine"), key->GetValue("EmptyCommandLine"));
-		r->SelectedText = GetThreeState(key->GetValue("EVSelection"), key->GetValue("NoEVSelection"));
-		r->SelectedItems = GetThreeState(key->GetValue("Selection"), key->GetValue("NoSelection"));
-		r->PanelIsPlugin = GetThreeState(key->GetValue("NoFilePanels"), key->GetValue("NoPluginPanels"));
-		r->ItemIsDirectory = GetThreeState(key->GetValue("NoFiles"), key->GetValue("NoFolders"));
-		r->SelectedItems2 = GetThreeState(key->GetValue("PSelection"), key->GetValue("NoPSelection"));
-		r->PanelIsPlugin2 = GetThreeState(key->GetValue("NoFilePPanels"), key->GetValue("NoPluginPPanels"));
-		r->ItemIsDirectory2 = GetThreeState(key->GetValue("NoPFiles"), key->GetValue("NoPFolders"));
+		r->DisablePlugins = ToBool(key->GetValue("NoSendKeysToPlugins", nullptr));
+		r->RunAfterFarStart = ToBool(key->GetValue("RunAfterFarStart", nullptr));
+		r->CommandLine = GetThreeState(key->GetValue("NotEmptyCommandLine", nullptr), key->GetValue("EmptyCommandLine", nullptr));
+		r->SelectedText = GetThreeState(key->GetValue("EVSelection", nullptr), key->GetValue("NoEVSelection", nullptr));
+		r->SelectedItems = GetThreeState(key->GetValue("Selection", nullptr), key->GetValue("NoSelection", nullptr));
+		r->PanelIsPlugin = GetThreeState(key->GetValue("NoFilePanels", nullptr), key->GetValue("NoPluginPanels", nullptr));
+		r->ItemIsDirectory = GetThreeState(key->GetValue("NoFiles", nullptr), key->GetValue("NoFolders", nullptr));
+		r->SelectedItems2 = GetThreeState(key->GetValue("PSelection", nullptr), key->GetValue("NoPSelection", nullptr));
+		r->PanelIsPlugin2 = GetThreeState(key->GetValue("NoFilePPanels", nullptr), key->GetValue("NoPluginPPanels", nullptr));
+		r->ItemIsDirectory2 = GetThreeState(key->GetValue("NoPFiles", nullptr), key->GetValue("NoPFolders", nullptr));
 		return r;
 	}
 	finally
 	{
-		key->Close();
+		delete key;
 	}
 }
 
 void Macro0::Remove(MacroArea area, String^ name)
 {
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + area.ToString();
-	RegistryKey^ key = Registry::CurrentUser->OpenSubKey(path, true);
-	if (!key)
-		return;
+	IRegistryKey^ key = Far::Net->OpenRegistryKey("KeyMacros\\" + area.ToString(), true);
 
 	try
 	{
-		if (area == MacroArea::Consts || area == MacroArea::Vars)
+		if ((area == MacroArea::Consts || area == MacroArea::Vars) && SS(name))
 		{
-			// do not throw on missing value
-			key->DeleteValue(name, false);
+			key->SetValue(name, nullptr);
 		}
 		else
 		{
 			// _100211_140534 FarMacro workaround
 			name = name->Replace("(Slash)", "/");
 
-			key->DeleteSubKey(name, false);
+			key->DeleteSubKey(name);
 		}
 	}
 	finally
 	{
-		key->Close();
+		delete key;
 	}
 }
 
@@ -211,27 +204,21 @@ Object^ Macro0::StringToRegistryValue(String^ text)
 
 void Macro0::InstallScalar(MacroArea area, String^ name, Object^ value)
 {
-	if (!name)
-		throw gcnew ArgumentNullException("name");
-	if (!value)
-		throw gcnew ArgumentNullException("value");
+	if (!name) throw gcnew ArgumentNullException("name");
+	if (!value) throw gcnew ArgumentNullException("value");
 
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + area.ToString();
-	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
+	IRegistryKey^ key = Far::Net->OpenRegistryKey("KeyMacros\\" + area.ToString(), true);
 
 	try
 	{
-		if (value->GetType() == Int64::typeid)
-			key->SetValue(name, value, RegistryValueKind::QWord);
-		else
-			key->SetValue(name, (dynamic_cast<String^>(value) ? StringToRegistryValue(value->ToString()) : value));
+		key->SetValue(name, (dynamic_cast<String^>(value) ? StringToRegistryValue(value->ToString()) : value));
 
 		if (!ManualSaveLoad)
 			Load();
 	}
 	finally
 	{
-		key->Close();
+		delete key;
 	}
 }
 
@@ -260,14 +247,13 @@ void Macro0::Install(Macro^ macro)
 		Remove(macro->Area, macroName);
 	}
 
-	String^ path = Far::Net->RegistryFarPath + "\\KeyMacros\\" + macro->Area.ToString() + "\\" + macroName;
-	RegistryKey^ key = Registry::CurrentUser->CreateSubKey(path);
-
-	if (ES(macroName))
-		return;
+	IRegistryKey^ key = Far::Net->OpenRegistryKey("KeyMacros\\" + macro->Area.ToString() + "\\" + macroName, true);
 
 	try
 	{
+		if (ES(macroName))
+			return;
+
 		// sequence
 		array<String^>^ lines = Regex::Split(macro->Sequence, "\\r\\n|\\r|\\n");
 		if (lines->Length == 1)
@@ -301,7 +287,7 @@ void Macro0::Install(Macro^ macro)
 	}
 	finally
 	{
-		key->Close();
+		delete key;
 	}
 #undef Name
 }

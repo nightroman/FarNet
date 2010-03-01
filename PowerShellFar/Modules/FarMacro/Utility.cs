@@ -67,4 +67,15 @@ namespace FarMacro
 		}
 	}
 
+	/// <summary>
+	/// Replacement of Win32 one.
+	/// </summary>
+	public enum RegistryValueKind
+	{
+		None,
+		DWord = 4,
+		MultiString = 7,
+		QWord = 11,
+	}
+
 }

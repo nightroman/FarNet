@@ -18,6 +18,7 @@ Copyright (c) 2005 FarNet Team
 #include "ModuleProxy.h"
 #include "Panel0.h"
 #include "Panel2.h"
+#include "Registry.h"
 #include "Shelve.h"
 #include "SubsetForm.h"
 #include "Viewer0.h"
@@ -37,17 +38,6 @@ String^ Far1::ActivePath::get()
 	CBox buf(size);
 	Info.FSF->GetCurrentDirectory(size, buf);
 	return gcnew String(buf);
-}
-
-String^ Far1::RegistryFarPath::get()
-{
-	String^ key = RegistryPluginsPath;
-	return key->Substring(0, key->LastIndexOf('\\'));
-}
-
-String^ Far1::RegistryPluginsPath::get()
-{
-	return gcnew String(Info.RootKey);
 }
 
 IModuleCommand^ Far1::GetModuleCommand(Guid id)
@@ -414,46 +404,44 @@ ICollection<String^>^ Far1::GetHistory(String^ name, String^ filter)
 {
 	List<String^>^ r = gcnew List<String^>;
 
-	String^ keyName = RegistryFarPath + "\\" + name;
-	RegistryKey^ key = nullptr;
+	IRegistryKey^ key = nullptr;
 	try
 	{
-		key = Registry::CurrentUser->OpenSubKey(keyName);
-		if (key)
+		key = Far::Net->OpenRegistryKey(name, false);
+		if (!key)
+			return r;
+
+		array<String^>^ lines = reinterpret_cast<array<String^>^>(key->GetValue(L"Lines", nullptr));
+		if (lines && lines->Length)
 		{
-			array<String^>^ lines = reinterpret_cast<array<String^>^>(key->GetValue(L"Lines", nullptr));
-			if (lines && lines->Length)
+			// capacity
+			r->Capacity = lines->Length;
+
+			String^ types = nullptr;
+			if (SS(filter))
 			{
-				// capacity
-				r->Capacity = lines->Length;
+				Object^ o = key->GetValue(L"Types", nullptr);
+				if (o)
+					types = o->ToString();
+			}
 
-				String^ types = nullptr;
-				if (SS(filter))
+			for(int i = lines->Length; --i >= 0;)
+			{
+				// filter
+				if (types && i < types->Length)
 				{
-					Object^ o = key->GetValue(L"Types", nullptr);
-					if (o)
-						types = o->ToString();
+					if (filter->IndexOf(types[i]) < 0)
+						continue;
 				}
 
-				for(int i = lines->Length; --i >= 0;)
-				{
-					// filter
-					if (types && i < types->Length)
-					{
-						if (filter->IndexOf(types[i]) < 0)
-							continue;
-					}
-
-					// add
-					r->Add(lines[i]);
-				}
+				// add
+				r->Add(lines[i]);
 			}
 		}
 	}
 	finally
 	{
-		if (key)
-			key->Close();
+		delete key;
 	}
 
 	return r;
@@ -882,6 +870,11 @@ ILine^ Far1::CommandLine::get()
 IWindow^ Far1::Window::get()
 {
 	return %FarNet::Window::Instance;
+}
+
+IRegistryKey^ Far1::OpenRegistryKey(String^ name, bool writable)
+{
+	return FarRegistryKey::OpenRegistryKey(name, writable);
 }
 
 }

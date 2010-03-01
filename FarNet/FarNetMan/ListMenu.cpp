@@ -171,21 +171,20 @@ void ListMenu::MakeFilter1()
 	// get pattern
 	if (!Filter->Length && FilterRestore && SS(FilterHistory))
 	{
-		RegistryKey^ key = nullptr;
+		IRegistryKey^ key = nullptr;
 		try
 		{
-			key = Registry::CurrentUser->OpenSubKey(Far::Net->RegistryFarPath + "\\SavedDialogHistory\\" + FilterHistory, false);
+			key = Far::Net->OpenRegistryKey("SavedDialogHistory\\" + FilterHistory, false);
 			if (key)
 			{
-				int flags = (int)key->GetValue("Flags");
+				int flags = (int)key->GetValue("Flags", nullptr);
 				if (flags)
-					Filter = key->GetValue("Line0")->ToString();
+					Filter = key->GetValue("Line0", String::Empty)->ToString();
 			}
 		}
 		finally
 		{
-			if (key)
-				key->Close();
+			delete key;
 		}
 	}
 

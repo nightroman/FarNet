@@ -540,6 +540,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Registry.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SelectionCollection.cpp"
 				>
 			</File>
@@ -759,6 +763,10 @@
 			</File>
 			<File
 				RelativePath=".\Headers.c\plugin.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Registry.h"
 				>
 			</File>
 			<File

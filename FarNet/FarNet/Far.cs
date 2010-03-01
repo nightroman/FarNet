@@ -470,24 +470,6 @@ namespace FarNet
 		/// <returns>Entered text or null if cancelled.</returns>
 		public abstract string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Gets the registry path where Far keeps settings.
-		/// </summary>
-		/// <remarks>
-		/// It takes into account a user if it is specified in the command line by parameter /u.
-		/// </remarks>
-		public abstract string RegistryFarPath { get; }
-		/// <summary>
-		/// Gets the registry path where plugins keep settings.
-		/// </summary>
-		/// <remarks>
-		/// It takes into account a user if it is specified in the command line by parameter /u.
-		/// <para>
-		/// This is not recommended for modules to save data in here to avoid conflicts with Far plugins.
-		/// Instead, use <see cref="IModuleManager.OpenSubKey"/> to get and set the module values there.
-		/// </para>
-		/// </remarks>
-		public abstract string RegistryPluginsPath { get; }
-		/// <summary>
 		/// Converts an internal key code to a 'printable' char. <see cref="KeyCode"/>
 		/// </summary>
 		/// <remarks>
@@ -648,6 +630,24 @@ namespace FarNet
 		/// Gets the window operator.
 		/// </summary>
 		public abstract IWindow Window { get; }
+		/// <summary>
+		/// Opens the virtual registry key to access the FarNet host data.
+		/// </summary>
+		/// <param name="name">Name or path of the key to open. If it is null or empty then the root key is opened.</param>
+		/// <param name="writable">Set to true if you need write access to the key.</param>
+		/// <returns>The requested key or null if the key for reading does not exist.</returns>
+		/// <remarks>
+		/// The returned key has to be disposed after use by <c>Dispose()</c>.
+		/// <para>
+		/// This method should not be used in standard cases because it operates on global data dependent on the FarNet host.
+		/// Modules should access their local data by <see cref="IModuleManager.OpenRegistryKey"/> of their module managers.
+		/// </para>
+		/// <para>
+		/// For the Far Manager host the root key in the Windows registry is <c>HKEY_CURRENT_USER\Software\Far2</c>
+		/// or <c>HKEY_CURRENT_USER\Software\Far2\Users\Xyz</c> if Far is started with the parameter /u Xyz.
+		/// </para>
+		/// </remarks>
+		public abstract IRegistryKey OpenRegistryKey(string name, bool writable);
 	}
 
 	/// <summary>

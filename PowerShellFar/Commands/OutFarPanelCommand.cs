@@ -37,12 +37,6 @@ namespace PowerShellFar.Commands
 		[Parameter(HelpMessage = "Tells to append objects to the active object panel. All others options are ignored.")]
 		public SwitchParameter Append { get; set; }
 
-		/// <summary>
-		/// See <see cref="FormatPanel.AutoSize"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Sets AutoSize property.")]
-		public SwitchParameter AutoSize { get; set; }
-
 		///
 		protected override void BeginProcessing()
 		{
@@ -63,7 +57,6 @@ namespace PowerShellFar.Commands
 
 				// more parameters
 				_panel.Columns = Columns;
-				_panel.AutoSize = AutoSize;
 
 				// and title, if not yet
 				if (string.IsNullOrEmpty(_panel.Panel.Info.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))

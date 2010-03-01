@@ -27,8 +27,6 @@ public:
 	virtual property IWindow^ Window { IWindow^ get() override; }
 	virtual property IZoo^ Zoo { IZoo^ get() override; }
 	virtual property String^ ActivePath { String^ get() override; }
-	virtual property String^ RegistryFarPath { String^ get() override; }
-	virtual property String^ RegistryPluginsPath { String^ get() override; }
 	virtual property Version^ FarNetVersion { System::Version^ get() override; }
 	virtual property Version^ FarVersion { System::Version^ get() override; }
 public:
@@ -61,6 +59,7 @@ public:
 	virtual int SaveScreen(int x1, int y1, int x2, int y2) override;
 	virtual IPanel^ FindPanel(Guid typeId) override;
 	virtual IPanel^ FindPanel(Type^ hostType) override;
+	virtual IRegistryKey^ OpenRegistryKey(String^ name, bool writable) override;
 	virtual String^ Input(String^ prompt) override;
 	virtual String^ Input(String^ prompt, String^ history) override;
 	virtual String^ Input(String^ prompt, String^ history, String^ title) override;
