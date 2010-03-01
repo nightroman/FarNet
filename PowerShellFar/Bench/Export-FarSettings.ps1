@@ -61,18 +61,20 @@ cmd /c regedit /e $AllSettingsReg HKEY_CURRENT_USER\Software\Far2
 # kill in the registry what is not exported
 Push-Location HKCU:\Software\Far2
 # kill whole keys
-Remove-Item -Recurse -Force -ErrorAction 0 -Path `
-Editor\LastPositions,
-Layout,
-Panel\Left,
-Panel\Right,
-PluginsCache,
-SavedDialogHistory,
-SavedFolderHistory,
-SavedHistory,
-SavedViewHistory,
-Users,
-Viewer\LastPositions
+Remove-Item -Recurse -Force -ErrorAction 0 -Path @(
+	'Editor\LastPositions'
+	'Layout'
+	'Panel\Left'
+	'Panel\Right'
+	'Plugins\FarNet\!Cache'
+	'PluginsCache'
+	'SavedDialogHistory'
+	'SavedFolderHistory'
+	'SavedHistory'
+	'SavedViewHistory'
+	'Users'
+	'Viewer\LastPositions'
+)
 # kill noisy properties
 Remove-ItemProperty Plugins\S_And_R -Name search, replace -ErrorAction 0
 Pop-Location

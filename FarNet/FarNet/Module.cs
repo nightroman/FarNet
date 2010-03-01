@@ -8,7 +8,6 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using Microsoft.Win32;
 
 namespace FarNet
 {
@@ -136,18 +135,6 @@ namespace FarNet
 		/// </remarks>
 		CultureInfo CurrentUICulture { get; set; }
 		/// <summary>
-		/// Opens the registry subkey where the module may keep its data.
-		/// </summary>
-		/// <param name="name">Name or path of the key to open. If it is null or empty then the root key is opened.</param>
-		/// <param name="writable">Set to true if you need write access to the key.</param>
-		/// <returns>The requested key.</returns>
-		/// <remarks>
-		/// The registry key or subkey is created if it does not exist (the root is <c>Far2\Plugins\FarNet.Modules\Module.dll</c>).
-		/// Use its <c>GetValue()</c> and <c>SetValue()</c> and then <c>Close()</c> after use.
-		/// You may also use C# <c>using</c> block to dispose the key automatically.
-		/// </remarks>
-		RegistryKey OpenSubKey(string name, bool writable);
-		/// <summary>
 		/// The <see cref="BaseModuleItem.GetString"/> worker.
 		/// </summary>
 		string GetString(string name);
@@ -194,6 +181,19 @@ namespace FarNet
 		/// Dynamic registration is not recommended for standard scenarios.
 		/// </remarks>
 		IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
+		/// <summary>
+		/// Opens the registry key where the module may keep its local data like permanent settings.
+		/// </summary>
+		/// <param name="name">Name or path of the key to open. If it is null or empty then the root key is opened.</param>
+		/// <param name="writable">Set to true if you need write access to the key.</param>
+		/// <returns>The requested key or null if the key for reading does not exist.</returns>
+		/// <remarks>
+		/// The returned key has to be disposed after use by <c>Dispose()</c>.
+		/// <para>
+		/// For the Far Manager host the root module key in the Windows registry is <c>...\Plugins\FarNet.Modules\Module.dll</c>.
+		/// </para>
+		/// </remarks>
+		IRegistryKey OpenRegistryKey(string name, bool writable);
 	}
 
 	/// <summary>

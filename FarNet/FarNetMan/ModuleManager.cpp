@@ -8,6 +8,7 @@ Copyright (c) 2005 FarNet Team
 #include "Far0.h"
 #include "ModuleLoader.h"
 #include "ModuleProxy.h"
+#include "Registry.h"
 
 namespace FarNet
 {;
@@ -15,60 +16,23 @@ ModuleManager::ModuleManager(String^ assemblyPath)
 : _AssemblyPath(assemblyPath)
 {}
 
-Object^ ModuleManager::LoadPluginValue(String^ pluginName, String^ valueName, Object^ defaultValue)
-{
-	RegistryKey^ key = nullptr;
-	try
-	{
-		key = Registry::CurrentUser->OpenSubKey(Far::Net->RegistryPluginsPath + "\\" + pluginName);
-		return key ? key->GetValue(valueName, defaultValue) : defaultValue;
-	}
-	finally
-	{
-		if (key)
-			key->Close();
-	}
-}
-
-void ModuleManager::SavePluginValue(String^ pluginName, String^ valueName, Object^ newValue)
-{
-	RegistryKey^ key = nullptr;
-	try
-	{
-		key = Registry::CurrentUser->CreateSubKey(Far::Net->RegistryPluginsPath + "\\" + pluginName);
-		key->SetValue(valueName, newValue);
-	}
-	finally
-	{
-		if (key)
-			key->Close();
-	}
-}
-
 Object^ ModuleManager::LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue)
 {
-	return LoadPluginValue("FarNet\\" + keyPath, valueName, defaultValue);
+	return FarRegistryKey::GetFarValue("Plugins\\FarNet\\" + keyPath, valueName, defaultValue);
 }
 
 void ModuleManager::SaveFarNetValue(String^ keyPath, String^ valueName, Object^ value)
 {
-	SavePluginValue("FarNet\\" + keyPath, valueName, value);
+	FarRegistryKey::SetFarValue("Plugins\\FarNet\\" + keyPath, valueName, value);
 }
 
-RegistryKey^ ModuleManager::OpenSubKey(String^ name, bool writable)
+IRegistryKey^ ModuleManager::OpenRegistryKey(String^ name, bool writable)
 {
-	String^ path = Far::Net->RegistryPluginsPath + "\\FarNet.Modules\\" + ModuleName;
+	String^ path = "Plugins\\FarNet.Modules\\" + ModuleName;
 	if (SS(name))
 		path += "\\" + name;
-	
-	RegistryKey^ r = Registry::CurrentUser->OpenSubKey(path, writable);
-	if (!r)
-		r = Registry::CurrentUser->CreateSubKey(path);
 
-	if (!r)
-		throw gcnew ModuleException("Cannot open the registry key.");
-
-	return r;
+	return FarRegistryKey::OpenRegistryKey(path, writable);
 }
 
 void ModuleManager::SetModuleHost(String^ moduleHostClassName)

@@ -6,7 +6,6 @@ Copyright (c) 2006 Roman Kuzmin
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Management.Automation;
-using System.Text;
 using FarNet;
 
 namespace PowerShellFar.Commands
@@ -114,19 +113,15 @@ namespace PowerShellFar.Commands
 				}
 			}
 
-			// info
-			StringBuilder sb = new StringBuilder();
+			// body
+			//! use "\n" as the separator, not "\r": PositionMessage starts with "\n".
+			string body = Message == null ? "Assertion failed" : Message.ToString();
+			if (IsError)
 			{
-				if (Message != null)
-					sb.AppendLine(Message.ToString());
+				if (ConditionCount > 0)
+					body = string.Concat(body, (body.Length > 0 ? "\n" : string.Empty), "Condition ", ConditionIndex + 1, " out of ", ConditionCount);
 
-				if (IsError)
-				{
-					if (ConditionCount > 0)
-						sb.AppendLine("Condition " + (ConditionIndex + 1) + " out of " + ConditionCount);
-
-					sb.AppendLine(MyInvocation.PositionMessage);
-				}
+				body = string.Concat(body, (body.Length > 0 ? "\n" : string.Empty), MyInvocation.PositionMessage);
 			}
 
 			// buttons
@@ -140,7 +135,7 @@ namespace PowerShellFar.Commands
 
 			// prompt
 			int result = Far.Net.Message(
-				sb.ToString(),
+				body,
 				Title ?? MyName,
 				IsError ? (MsgOptions.Warning | MsgOptions.LeftAligned) : MsgOptions.None,
 				buttons);
@@ -167,7 +162,7 @@ namespace PowerShellFar.Commands
 		}
 
 		const string
-			BtnBreak = "Break",
+			BtnBreak = "&Break",
 			BtnDebug = "&Debug",
 			BtnEdit = "&Edit";
 	}
