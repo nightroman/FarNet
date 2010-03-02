@@ -127,7 +127,7 @@ ref class ProxyTool sealed : ProxyAction, IModuleTool
 public:
 	virtual String^ ToString() override;
 	virtual void Invoke(Object^ sender, ModuleToolEventArgs^ e);
-	virtual property ModuleToolOptions Options { ModuleToolOptions get() { return Attribute->Options; } }
+	virtual property ModuleToolOptions Options { ModuleToolOptions get(); }
 	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Tool; } }
 internal:
 	ProxyTool(ModuleManager^ manager, Type^ classType);
@@ -138,11 +138,16 @@ internal:
 	property String^ HotkeyText { String^ get(); }
 	void SetHotkey(String^ value);
 	String^ GetMenuText();
+	property ModuleToolOptions DefaultOptions { ModuleToolOptions get() { return Attribute->Options; } }
+	void SetOptions(ModuleToolOptions value);
 private:
 	property ModuleToolAttribute^ Attribute { ModuleToolAttribute^ get() { return (ModuleToolAttribute^)GetAttribute(); } }
 private:
 	// Dynamic proxy handler.
 	EventHandler<ModuleToolEventArgs^>^ _Handler;
+	// User options.
+	ModuleToolOptions _Options;
+	bool _OptionsValid;
 	// Menu hotkey.
 	Char _Hotkey;
 };

@@ -46,7 +46,6 @@ private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
 	static void AssertHotkeys();
-	static void Free(ModuleToolOptions options);
 	static void OnConfigCommand();
 	static void OnConfigEditor();
 	static void OnConfigFiler();
@@ -56,6 +55,7 @@ private:
 	static void OpenMenu(ModuleToolOptions from);
 	static void ProcessPrefixes(INT_PTR item);
 	static void VoidStep(Object^, EventArgs^) {}
+	static void UnregisterProxyTool(ProxyTool^ tool);
 private:
 	static CStr* _pConfig;
 	static CStr* _pDisk;
