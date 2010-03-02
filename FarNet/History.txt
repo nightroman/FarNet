@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.3.8 =
+
+FarNet configuration dialog for a module tool allows to set a hotkey for the
+.NET menus (as usual) and to disable\enable the default areas where the tool
+menu items are shown (new feature). As a result, normally modules should not
+care of these configuration settings, they are common for all modules and
+configured by the core.
+
 = 4.3.7 =
 
 PROGRESS

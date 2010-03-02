@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System;
 
-[assembly: AssemblyVersion("4.3.7.0")]
+[assembly: AssemblyVersion("4.3.8.0")]
 [assembly: AssemblyTitle("FarNet.PowerShellFar module for Far Manager")]
 [assembly: AssemblyDescription("Implements PowerShell host and UI tools in Far Manager.")]
 [assembly: AssemblyConfiguration("")]

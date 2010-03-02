@@ -349,6 +349,24 @@ void ProxyTool::WriteCache(List<String^>^ data)
 	data->Add(((int)Attribute->Options).ToString());
 }
 
+ModuleToolOptions ProxyTool::Options::get()
+{
+	if (!_OptionsValid)
+	{
+		_Options = (ModuleToolOptions)ModuleManager::LoadFarNetValue(Key, "Options", Attribute->Options);
+		_OptionsValid = true;
+	}
+	
+	return _Options;
+}
+
+void ProxyTool::SetOptions(ModuleToolOptions value)
+{
+	ModuleManager::SaveFarNetValue(Key, "Options", (int)value);
+	_Options = value;
+	_OptionsValid = true;
+}
+
 void ProxyTool::Invoke(Object^ sender, ModuleToolEventArgs^ e)
 {
 	LOG_AUTO(3, String::Format("Invoking {0} From='{1}'", (_Handler ? Log::Format(_Handler->Method) : ClassName), e->From));

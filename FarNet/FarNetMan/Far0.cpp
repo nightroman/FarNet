@@ -37,42 +37,16 @@ void Far0::Stop()
 	delete _prefixes;
 }
 
-void Far0::Free(ModuleToolOptions options)
-{
-	if (int(options & ModuleToolOptions::Config))
-	{
-		delete[] _pConfig;
-		_pConfig = 0;
-	}
-	if (int(options & ModuleToolOptions::Disk))
-	{
-		delete[] _pDisk;
-		_pDisk = 0;
-	}
-	if (int(options & ModuleToolOptions::Dialog))
-	{
-		delete[] _pDialog;
-		_pDialog = 0;
-	}
-	if (int(options & ModuleToolOptions::Editor))
-	{
-		delete[] _pEditor;
-		_pEditor = 0;
-	}
-	if (int(options & ModuleToolOptions::Panels))
-	{
-		delete[] _pPanels;
-		_pPanels = 0;
-	}
-	if (int(options & ModuleToolOptions::Viewer))
-	{
-		delete[] _pViewer;
-		_pViewer = 0;
-	}
-}
-
 void Far0::UnregisterProxyAction(ProxyAction^ action)
 {
+	// case: tool
+	ProxyTool^ tool = dynamic_cast<ProxyTool^>(action);
+	if (tool)
+	{
+		UnregisterProxyTool(tool);
+		return;
+	}
+
 	LOG_INFO("Unregister " + action);
 
 	ModuleLoader::Actions->Remove(action->Id);
@@ -99,33 +73,44 @@ void Far0::UnregisterProxyAction(ProxyAction^ action)
 		_registeredFiler.Remove(filer);
 		return;
 	}
+}
 
-	ProxyTool^ tool = (ProxyTool^)action;
+void Far0::UnregisterProxyTool(ProxyTool^ tool)
+{
+	LOG_INFO("Unregister " + tool);
+
+	ModuleLoader::Actions->Remove(tool->Id);
+
 	if (_toolConfig.Remove(tool))
 	{
 		delete[] _pConfig;
 		_pConfig = 0;
 	}
-	if (_toolDisk.Remove(tool))
-	{
-		delete[] _pDisk;
-		_pDisk = 0;
-	}
+
 	if (_toolDialog.Remove(tool))
 	{
 		delete[] _pDialog;
 		_pDialog = 0;
 	}
+
+	if (_toolDisk.Remove(tool))
+	{
+		delete[] _pDisk;
+		_pDisk = 0;
+	}
+
 	if (_toolEditor.Remove(tool))
 	{
 		delete[] _pEditor;
 		_pEditor = 0;
 	}
+
 	if (_toolPanels.Remove(tool))
 	{
 		delete[] _pPanels;
 		_pPanels = 0;
 	}
+
 	if (_toolViewer.Remove(tool))
 	{
 		delete[] _pViewer;
@@ -165,36 +150,42 @@ void Far0::RegisterProxyTool(ProxyTool^ info)
 	ModuleLoader::Actions->Add(info->Id, info);
 
 	ModuleToolOptions options = info->Options;
+
 	if (int(options & ModuleToolOptions::Config))
 	{
 		_toolConfig.Add(info);
 		delete[] _pConfig;
 		_pConfig = 0;
 	}
+
 	if (int(options & ModuleToolOptions::Disk))
 	{
 		_toolDisk.Add(info);
 		delete[] _pDisk;
 		_pDisk = 0;
 	}
+
 	if (int(options & ModuleToolOptions::Dialog))
 	{
 		_toolDialog.Add(info);
 		delete[] _pDialog;
 		_pDialog = 0;
 	}
+
 	if (int(options & ModuleToolOptions::Editor))
 	{
 		_toolEditor.Add(info);
 		delete[] _pEditor;
 		_pEditor = 0;
 	}
+
 	if (int(options & ModuleToolOptions::Panels))
 	{
 		_toolPanels.Add(info);
 		delete[] _pPanels;
 		_pPanels = 0;
 	}
+
 	if (int(options & ModuleToolOptions::Viewer))
 	{
 		_toolViewer.Add(info);
@@ -771,26 +762,37 @@ public:
 	}
 };
 
+static ICheckBox^ OnConfigTool_AddOption(IDialog^ dialog, String^ text, ModuleToolOptions option, ModuleToolOptions defaultOptions, ModuleToolOptions currentOptions)
+{
+	ICheckBox^ result = dialog->AddCheckBox(5, -1, text);
+	if (0 == int(option & defaultOptions))
+		result->Disabled = true;
+	else if (int(option & currentOptions))
+		result->Selected = 1;
+	return result;
+}
+
 void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->Title = "Menu tools";
 	menu->HelpTopic = _helpTopic + "ConfigTool";
 
-	int widthName = 0;
-	int widthAttr = 0;
-	for each(ProxyTool^ it in tools)
-	{
-		if (widthName < it->Name->Length)
-			widthName = it->Name->Length;
-		if (widthAttr < it->Options.ToString()->Length)
-			widthAttr = it->Options.ToString()->Length;
-	}
-	widthName += 3;
-	String^ format = Res::MenuPrefix + "{0,-" + widthName + "} : {1,-" + widthAttr + "} : {2}";
-
 	for(;;)
 	{
+		// format
+		int widthName = 0;
+		int widthAttr = 0;
+		for each(ProxyTool^ it in tools)
+		{
+			if (widthName < it->Name->Length)
+				widthName = it->Name->Length;
+			if (widthAttr < it->Options.ToString()->Length)
+				widthAttr = it->Options.ToString()->Length;
+		}
+		widthName += 3;
+		String^ format = Res::MenuPrefix + "{0,-" + widthName + "} : {1,-" + widthAttr + "} : {2}";
+
 		// reset
 		menu->Items->Clear();
 		tools->Sort(gcnew ModuleToolComparer);
@@ -810,20 +812,56 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 		ProxyTool^ tool = (ProxyTool^)menu->SelectedData;
 
 		// dialog
-		IInputBox^ ib = Far::Net->CreateInputBox();
-		ib->Title = "Tool options";
-		ib->Prompt = "Hotkey";
-		ib->Text = tool->HotkeyChar == ' ' ? String::Empty : gcnew String(gcnew array<Char> { tool->HotkeyChar });
-		ib->HelpTopic = menu->HelpTopic;
-		ib->EmptyEnabled = true;
-		if (!ib->Show())
+		IDialog^ dialog = Far::Net->CreateDialog(-1, -1, 77, 14);
+		dialog->HelpTopic = menu->HelpTopic;
+		dialog->AddBox(3, 1, 0, 0, tool->Name);
+
+		IEdit^ edHotkey = dialog->AddEditFixed(5, -1, 5, tool->HotkeyChar == ' ' ? String::Empty : gcnew String(gcnew array<Char> { tool->HotkeyChar }));
+		dialog->AddText(7, 0, 0, "&Hotkey");
+		
+		dialog->AddText(5, -1, 0, String::Empty)->Separator = 1;
+
+		ModuleToolOptions defaultOptions = tool->DefaultOptions;
+		ModuleToolOptions currentOptions = tool->Options;
+
+		ICheckBox^ cbPanels = OnConfigTool_AddOption(dialog, "&Panels", ModuleToolOptions::Panels, defaultOptions, currentOptions);
+		ICheckBox^ cbEditor = OnConfigTool_AddOption(dialog, "&Editor", ModuleToolOptions::Editor, defaultOptions, currentOptions);
+		ICheckBox^ cbViewer = OnConfigTool_AddOption(dialog, "&Viewer", ModuleToolOptions::Viewer, defaultOptions, currentOptions);
+		ICheckBox^ cbDialog = OnConfigTool_AddOption(dialog, "&Dialog", ModuleToolOptions::Dialog, defaultOptions, currentOptions);
+		ICheckBox^ cbConfig = OnConfigTool_AddOption(dialog, "&Config", ModuleToolOptions::Config, defaultOptions, currentOptions);
+		ICheckBox^ cbDisk = OnConfigTool_AddOption(dialog, "Dis&k", ModuleToolOptions::Disk, defaultOptions, currentOptions);
+
+		dialog->AddText(5, -1, 0, String::Empty)->Separator = 1;
+
+		IButton^ buttonOK = dialog->AddButton(0, -1, "Ok");
+		buttonOK->CenterGroup = true;
+		dialog->Default = buttonOK;
+		dialog->Cancel = dialog->AddButton(0, 0, "Cancel");
+		dialog->Cancel->CenterGroup = true;
+
+		if (!dialog->Show())
 			continue;
 
-		// change the hotkey
-		tool->SetHotkey(ib->Text);
+		// new hotkey
+		tool->SetHotkey(edHotkey->Text);
+		
+		// new options
+		ModuleToolOptions newOptions = ModuleToolOptions::None;
+		if (cbPanels->Selected) newOptions = newOptions | ModuleToolOptions::Panels;
+		if (cbEditor->Selected) newOptions = newOptions | ModuleToolOptions::Editor;
+		if (cbViewer->Selected) newOptions = newOptions | ModuleToolOptions::Viewer;
+		if (cbDialog->Selected) newOptions = newOptions | ModuleToolOptions::Dialog;
+		if (cbConfig->Selected) newOptions = newOptions | ModuleToolOptions::Config;
+		if (cbDisk->Selected) newOptions = newOptions | ModuleToolOptions::Disk;
 
-		// reset the menus to be updated in the affected areas
-		Free(tool->Options);
+		// unregister the current
+		UnregisterProxyTool(tool);
+
+		// set new options
+		tool->SetOptions(newOptions);
+
+		// register new
+		RegisterProxyTool(tool);
 	}
 }
 
