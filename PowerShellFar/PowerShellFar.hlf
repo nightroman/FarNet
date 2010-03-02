@@ -1398,12 +1398,36 @@ $#TabExpansion.ps1#
 
 This is a powerful replacement of the default PowerShell function TabExpansion.
 
-The script has to be in the PSF directory. It is loaded once and only when it
-is requested the first time. It installs the function global:TabExpansion.
+The script has to be in the PowerShellFar module home directory. It is loaded
+once when it is requested the first time. It installs the main global function
+TabExpansiona and a few supportive functions.
 
-In fact, TabExpansion.ps1 is host independent and you can use it in standard
-PowerShell.exe console, too. All you need is to call this script once, for
-example from your PowerShell profile script.
+Useful to know: TabExpansion.ps1 is host independent, so that you can use it in
+any PowerShell host: standard console host, ISE host, and etc. All you need is
+to call this script once, for example from your PowerShell profile script.
+
+---------------------------------------------------------------------
+
+#TYPE NAMES EXPANSION#
+
+Cached type information from the loaded assemblies is stored in the global
+variable $TabExpansionCache. It is created on the first TabExpansion call for
+types. If you load new assemblies after that then their types are not yet
+available for expansion. In this case use artificial '*' symbols:
+
+[*...[Tab] -- global search: the type cache is not used; example: [*farmac[Tab]
+is expanded to type names with 'farmac'; it should always work after loading of
+the FarMacro module.
+
+[...*[Tab] -- '*' tells to update the global cache before expansion; example:
+[farmac*[Tab] should always work after loading of the FarMacro module; compare:
+[farmac[Tab] does not work if FarMacro is loaded after $TabExpansionCache
+creation.
+
+NOTE: remember that PowerShell allows to omit the "System." in the type names,
+so that it is OK to type [String] instead of [System.String]. PSF TabExpansion
+takes this into account and provides some more expansion candidates than one
+may expect.
 
 ---------------------------------------------------------------------
 
@@ -1506,19 +1530,19 @@ type and namespace names after '[' or 'New-Object' directly or by substring
 (starts with *):
 
 	New-Object Sy
-		System
+		System.
 		SystemException
 
 	[Sy
-		[System
+		[System.
 		[SystemException]
 
 	[System.Data.Sq
-		[System.Data.SqlClient
+		[System.Data.SqlClient.
 		...
 
 	[P
-		[PowerShellFar
+		[PowerShellFar.
 		[ParamArrayAttribute]
 		...
 
@@ -1529,17 +1553,10 @@ type and namespace names after '[' or 'New-Object' directly or by substring
 		[System.Data.CommandType]
 		[System.Management.Automation.CommandTypes]
 
-This long list of examples is not even full, more examples can be found in the
+This long list of examples is not full, much more examples can be found in the
 test script Test-TabExpansion-.ps1.
 
 ---------------------------------------------------------------------
-
-#NOTE#
-
-Cached information about types in currently loaded assemblies is stored in a
-global variable $TypeCache (it is built once on the first call). If you load a
-new assembly after that its information is not yet available for tab expansion.
-Remove $TypeCache or set it to $null and the cache will be rebuilt later.
 
 
 @RemoveEndSpace

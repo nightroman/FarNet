@@ -20,7 +20,7 @@ if ($Host.Name -eq 'FarHost') {
 }
 
 # Drop the cache
-Remove-Variable -Scope Global TypeCache*
+$global:TabExpansionCache = $null
 
 # Runs a test and returns an error message text on failure.
 # Tag: Trick: test function returns an error message if any.
@@ -135,9 +135,10 @@ Test '' '"$(test-' { $_ -contains '"$(Test-Base-.ps1' } | Write-Error
 Test '' 'Clear-H' { $_ -contains 'Clear-Host' } | Write-Error
 
 ### explicit types
-Test '' '[Sy' { [string]$_ -eq '[System [SystemException]' } | Write-Error
-Test '' '[System.da' { $_ -contains '[System.Data' } | Write-Error
-Test '' '[System.Data.sq' { $_ -contains '[System.Data.Sql' } | Write-Error
+Test '' '[Sy' { [string]$_ -eq '[System. [SystemException]' } | Write-Error
+Test '' '[Mi' { $_ -contains '[Microsoft.' } | Write-Error
+Test '' '[System.da' { $_ -contains '[System.Data.' } | Write-Error
+Test '' '[System.Data.sq' { $_ -contains '[System.Data.Sql.' } | Write-Error
 Test '' '[System.Data.SqlClient.SqlE' { $_[0] -eq '[System.Data.SqlClient.SqlError]' } | Write-Error
 
 ### wildcard types
@@ -145,8 +146,8 @@ Test '' '[*commandty' { $_ -contains '[System.Data.CommandType]' } | Write-Error
 Test '' '[*sqlcom' { $_ -contains '[System.Data.SqlClient.SqlCommand]' } | Write-Error
 
 ### types for New-Object
-Test 'NEW-OBJECT System.da' 'System.da' { $_ -contains 'System.Data' } | Write-Error
-Test 'NEW-OBJECT  -TYPENAME  System.da' 'System.da' { $_ -contains 'System.Data' } | Write-Error
+Test 'NEW-OBJECT System.da' 'System.da' { $_ -contains 'System.Data.' } | Write-Error
+Test 'NEW-OBJECT  -TYPENAME  System.da' 'System.da' { $_ -contains 'System.Data.' } | Write-Error
 Test 'NEW-OBJECT   System.Data.SqlClient.SqlE' 'System.Data.SqlClient.SqlE' { $_[0] -eq 'System.Data.SqlClient.SqlError' } | Write-Error
 
 ### WMI
@@ -194,7 +195,7 @@ Test "$tmp -" '-' { -join $_ -eq '-param0-param1-param2-param3-param4' } | Write
 Remove-Item $tmp
 
 # Drop the cache
-Remove-Variable -Scope Global TypeCache*
+Remove-Variable -Scope global TabExpansionCache
 
 # OK
 "TabExpansion test has passed for $(([DateTime]::Now - $time1).TotalSeconds) seconds."

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding='utf-8'?>
 <docs>
 	<!--
-	/// <include file='doc.xml' path='docs/pp[@name="Guid"]/*'/>
+	/// <include file='doc.xml' path='docs/pp[@name="RegisterModule"]/*'/>
 	-->
+	<pp name='RegisterModule'>
+		<para>
+			If you plan to unregister this action then keep the returned reference and call its <see cref="IModuleAction.Unregister"/> later.
+			Instead of keeping the reference you can get it by its ID by the <see cref="IFar"/>.<c>GetModule*()</c> methods.
+		</para>
+	</pp>
 	<pp name='Guid'>
 		<para>
 			It is strongly recommended to set the <see cref="System.Runtime.InteropServices.GuidAttribute"/>
