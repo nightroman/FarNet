@@ -154,9 +154,7 @@ namespace FarNet
 		/// <remarks>
 		/// NOTE: Consider to implement the <see cref="ModuleCommand"/> instead.
 		/// Dynamic registration is not recommended for standard scenarios.
-		/// <para>
-		/// After the call the attribute <see cref="ModuleCommandAttribute.Prefix"/> is the actually used prefix.
-		/// </para>
+		/// <include file='doc.xml' path='docs/pp[@name="RegisterModule"]/*'/>
 		/// </remarks>
 		IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
 		/// <summary>
@@ -168,6 +166,7 @@ namespace FarNet
 		/// <remarks>
 		/// NOTE: Consider to implement the <see cref="ModuleFiler"/> instead.
 		/// Dynamic registration is not recommended for standard scenarios.
+		/// <include file='doc.xml' path='docs/pp[@name="RegisterModule"]/*'/>
 		/// </remarks>
 		IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler);
 		/// <summary>
@@ -179,6 +178,7 @@ namespace FarNet
 		/// <remarks>
 		/// NOTE: Consider to implement the <see cref="ModuleTool"/> instead.
 		/// Dynamic registration is not recommended for standard scenarios.
+		/// <include file='doc.xml' path='docs/pp[@name="RegisterModule"]/*'/>
 		/// </remarks>
 		IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
 		/// <summary>

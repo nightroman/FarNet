@@ -167,7 +167,7 @@ function global:TabExpansion
 
 		### Types and namespaces 1
 		elseif ($lastWord_ -match '\[(.+)') {
-			GetTypeOrNamespace $matches[1] '['
+			GetTabExpansionType $matches[1] '['
 		}
 
 		### Full paths
@@ -233,7 +233,7 @@ function global:TabExpansion
 
 		### Types and namespaces 2 for New-Object
 		elseif ($line_ -match '\bNew-Object(?:\s+-TypeName)?\s+[*.\w]+$') {
-			GetTypeOrNamespace $lastWord_
+			GetTabExpansionType $lastWord_
 		}
 
 		### History: ... #<pattern>
@@ -281,70 +281,126 @@ function global:TabExpansion
 	}
 }
 
-function global:GetTypeOrNamespace($match, [string]$prefix)
+<#
+.SYNOPSIS
+	Gets type names for TabExpansion using the global cache $TabExpansionCache.
+#>
+function global:GetTabExpansionType
+(
+	# Pattern to search for matches.
+	$pattern
+	,
+	[string]
+	# Prefix used by TabExpansion.
+	$prefix
+)
 {
-	if (!$match.StartsWith('*') -and !$match.StartsWith('System.', 'OrdinalIgnoreCase')) {
-		$match = @($match, ('System.' + $match))
+	# global type search, do not use cache
+	if ($pattern.StartsWith('*')) {
+		$pattern = $pattern + '*'
+		foreach($assenbly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+			foreach($type in $assenbly.GetTypes()) {
+				if ($type.IsPublic -and $type.FullName -like $pattern) {
+					if ($prefix) {
+						$prefix + $type.FullName + ']'
+					}
+					else {
+						$type.FullName
+					}
+				}
+			}
+		}
+		return
 	}
 
-	# cache type and namespace names and levels
-	if (!($global:TypeCache)) {
-		$global:TypeCache = New-Object System.Data.DataTable
-		$null = $TypeCache.Columns.Add('Name', [string])
-		$null = $TypeCache.Columns.Add('Space', [string])
-		$null = $TypeCache.Columns.Add('Level', [int])
+	# update the cache if needed; '*' forces
+	if ($pattern.EndsWith('*') -or !$global:TabExpansionCache) {
+		$global:TabExpansionCache = @{}
 		foreach($a in [appdomain]::CurrentDomain.GetAssemblies()) {
-			foreach($t in $a.GetTypes()) {
-				if ($t.IsPublic -and $t.Namespace) {
-					$null = $TypeCache.Rows.Add($t.FullName, $t.Namespace, $t.Namespace.Split('.').Length)
+			foreach($type in $a.GetTypes()) {
+				if ($type.IsPublic -and $type.Namespace) {
+					$set1 = $global:TabExpansionCache
+					foreach($name in $type.Namespace.Split('.')) {
+						if ($set1.ContainsKey($name)) {
+							$set2 = $set1[$name]
+						}
+						else {
+							$set2 = @{}
+							$set1.Add($name, $set2)
+						}
+						$set1 = $set2
+					}
+					$set1.Add($type.Name, $null)
 				}
 			}
 		}
 	}
 
+	# add 'System.Xyz' candidate, PS lets omit 'System.'
+	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
+		$pattern = @($pattern, ('System.' + $pattern))
+	}
+
 	# expand namespace and type names
-	$ns = @{}
-	$out = { $prefix + $name }
-	foreach($r in $match) {
-		if ($r.StartsWith('*')) {
-			$selectSpace = "Space like '$r*'"
-			$selectName = "Name like '$r*'"
+	$Write = { $prefix + $args[0] }
+	foreach($r in $pattern) {
+		$names = $r.Split('.')
+		$last = $names.Length - 1
+
+		$set1 = $global:TabExpansionCache
+		$failed = $false
+		$path = ''
+
+		for($i = 0; $i -lt $last; ++$i) {
+			$name = $names[$i]
+			$set2 = $set1[$name]
+			if (!$set2) {
+				$failed = $true
+				break
+			}
+			$path += $name + '.'
+			$set1 = $set2
 		}
-		else {
-			$level = $r.Split('.').Count
-			$selectSpace = "Space like '$r*' and Level = $level"
-			$selectName = "Name like '$r*' and Level = $($level - 1)"
-		}
-		foreach($$ in $TypeCache.Select($selectSpace)) {
-			$name = $$[1]
-			if (!$ns.Contains($name)) {
-				$ns[$name] = 1
-				. $out
+
+		if (!$failed) {
+			$name = $names[$last] + '*'
+			foreach($key in $set1.Keys) {
+				if ($key -like $name) {
+					# namespace?
+					if ($set1[$key]) {
+						. $Write ($path + $key + '.')
+					}
+					# class, with prefix
+					elseif ($prefix) {
+						. $Write ($path + $key + ']')
+					}
+					# class, no prefix
+					else {
+						. $Write ($path + $key)
+					}
+				}
 			}
 		}
-		foreach($$ in $TypeCache.Select($selectName)) {
-			if ($prefix) { $name = $$[0] + ']' } else { $name = $$[0] }
-			. $out
-		}
-		$out = { $prefix + $name.Substring(7) }
+
+		$Write = { $prefix + $args[0].Substring(7) }
 	}
 }
 
 <#
 .SYNOPSIS
 	Gets parameter names of a script.
-.NOTES
+.DESCRIPTION
 	Approach (Get-Command X).Parameters does not work in V2 if scripts have
 	parameters with types defined in not yet loaded assemblies. For functions
 	we do not need this, they are loaded and Get-Command gets parameters fine.
 #>
 function global:GetScriptParameter
 (
-	# Full script path
+	# Full script path.
 	$Path,
-	# Script code (if $Path is not defined)
+	# Script code (if $Path is not defined).
 	$Script,
-	# Parameter wildcard pattern (to get a subset)
+	# Parameter wildcard pattern (to get a subset).
 	$Pattern
 )
 {

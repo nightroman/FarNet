@@ -3,9 +3,25 @@ http://code.google.com/p/farnet/
 
 = 4.3.8 =
 
+Improved TabExpansion of type and namespace names. Changed the global type
+cache $TabExpansionCache from DataTable to Hashtable. Some of improvements:
+-- more names are covered, this works now: [mi[Tab] -> [Microsoft. ...
+-- A dot is added automatically to namespace names (ready for the next [Tab])
+
+Other new TabExpansion features:
+[*...[Tab] -- global search: the type cache is not used; example: [*farmac[Tab]
+is expanded to type names with 'farmac'; it should always work after loading of
+the FarMacro module.
+[...*[Tab] -- '*' tells to update the global cache before expansion; example:
+[farmac*[Tab] should always work after loading of the FarMacro module; compare:
+[farmac[Tab] does not work if FarMacro is loaded after $TabExpansionCache
+creation.
+
 Export-FarSettings.ps1 and Import-FarSettings.ps1 use the file FarSettings.xml
-where PSF commands are exported to and imported from. On import commands are
-merged with existing in the registry.
+where PSF commands are exported to and imported from. On import PSF commands
+are merged with existing in the registry.
+
+Fix: Complete-Word-.ps1 was not updated for recent FarNet changes.
 
 = 4.3.7 =
 
