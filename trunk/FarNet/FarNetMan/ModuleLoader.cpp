@@ -254,7 +254,7 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 		if (!manager->LoadLoadableModuleHost())
 		{
 			if (0 == actionCount)
-				throw gcnew ModuleException("The module should implement at least one action or a preloadable host."); //????
+				throw gcnew ModuleException("The module must implement a public action or a preloadable host.");
 
 			WriteModuleCache(manager);
 		}
@@ -305,13 +305,13 @@ void ModuleLoader::RemoveModuleManager(ModuleManager^ manager)
 	// remove the module
 	_Managers->Remove(manager->ModuleName);
 
-	// 1) find all its actions
+	// 1) gather its actions
 	List<ProxyAction^> actions;
 	for each(ProxyAction^ action in _Actions.Values)
 		if (action->Manager == manager)
 			actions.Add(action);
 
-	// 2) remove found actions
+	// 2) unregister its actions
 	for each(ProxyAction^ action in actions)
 		action->Unregister();
 }
@@ -323,7 +323,7 @@ void ModuleLoader::UnloadModules()
 	while(_Managers->Count)
 		_Managers->Values[0]->Unregister();
 
-	// actions must be removed, too
+	// actions are removed
 	assert(_Actions.Count == 0);
 }
 
