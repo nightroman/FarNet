@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.9 =
+
+Technical build for FarNet 4.3.9.
+
 = 4.3.8 =
 
 Improved TabExpansion of type and namespace names. Changed the global type
