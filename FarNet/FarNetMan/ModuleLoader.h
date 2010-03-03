@@ -33,7 +33,7 @@ private:
 	static void LoadFromManifest(String^ file, String^ dir);
 	static void LoadFromDirectory(String^ dir);
 	static void ReadModuleCache();
-	static void WriteModuleCache(ModuleManager^ manager); //???? review?
+	static void WriteModuleCache(ModuleManager^ manager);
 private:
 	// Static
 	ModuleLoader() {}

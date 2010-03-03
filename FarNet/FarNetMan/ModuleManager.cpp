@@ -177,7 +177,7 @@ BaseModuleItem^ ModuleManager::CreateEntry(Type^ type)
 }
 
 //! Don't use Far UI
-void ModuleManager::Unregister() //???? remove actions
+void ModuleManager::Unregister()
 {
 	LOG_AUTO(3, "Unregister module " + ModuleName);
 
