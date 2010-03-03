@@ -81,38 +81,49 @@ void Far0::UnregisterProxyTool(ProxyTool^ tool)
 
 	ModuleLoader::Actions->Remove(tool->Id);
 
-	if (_toolConfig.Remove(tool))
+	InvalidateProxyTool(tool->Options);
+}
+
+void Far0::InvalidateProxyTool(ModuleToolOptions options)
+{
+	if (int(options & ModuleToolOptions::Config))
 	{
+		_toolConfig = nullptr;
 		delete[] _pConfig;
 		_pConfig = 0;
 	}
 
-	if (_toolDialog.Remove(tool))
+	if (int(options & ModuleToolOptions::Dialog))
 	{
+		_toolDialog = nullptr;
 		delete[] _pDialog;
 		_pDialog = 0;
 	}
 
-	if (_toolDisk.Remove(tool))
+	if (int(options & ModuleToolOptions::Disk))
 	{
+		_toolDisk = nullptr;
 		delete[] _pDisk;
 		_pDisk = 0;
 	}
 
-	if (_toolEditor.Remove(tool))
+	if (int(options & ModuleToolOptions::Editor))
 	{
+		_toolEditor = nullptr;
 		delete[] _pEditor;
 		_pEditor = 0;
 	}
 
-	if (_toolPanels.Remove(tool))
+	if (int(options & ModuleToolOptions::Panels))
 	{
+		_toolPanels = nullptr;
 		delete[] _pPanels;
 		_pPanels = 0;
 	}
 
-	if (_toolViewer.Remove(tool))
+	if (int(options & ModuleToolOptions::Viewer))
 	{
+		_toolViewer = nullptr;
 		delete[] _pViewer;
 		_pViewer = 0;
 	}
@@ -147,51 +158,10 @@ void Far0::RegisterProxyFiler(ProxyFiler^ info)
 void Far0::RegisterProxyTool(ProxyTool^ info)
 {
 	LOG_INFO("Register " + info);
+	
 	ModuleLoader::Actions->Add(info->Id, info);
 
-	ModuleToolOptions options = info->Options;
-
-	if (int(options & ModuleToolOptions::Config))
-	{
-		_toolConfig.Add(info);
-		delete[] _pConfig;
-		_pConfig = 0;
-	}
-
-	if (int(options & ModuleToolOptions::Disk))
-	{
-		_toolDisk.Add(info);
-		delete[] _pDisk;
-		_pDisk = 0;
-	}
-
-	if (int(options & ModuleToolOptions::Dialog))
-	{
-		_toolDialog.Add(info);
-		delete[] _pDialog;
-		_pDialog = 0;
-	}
-
-	if (int(options & ModuleToolOptions::Editor))
-	{
-		_toolEditor.Add(info);
-		delete[] _pEditor;
-		_pEditor = 0;
-	}
-
-	if (int(options & ModuleToolOptions::Panels))
-	{
-		_toolPanels.Add(info);
-		delete[] _pPanels;
-		_pPanels = 0;
-	}
-
-	if (int(options & ModuleToolOptions::Viewer))
-	{
-		_toolViewer.Add(info);
-		delete[] _pViewer;
-		_pViewer = 0;
-	}
+	InvalidateProxyTool(info->Options);
 }
 
 void Far0::Run(String^ command)
@@ -242,94 +212,104 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 
 	// config
 	{
-		if (!_pConfig)
+		if (!_toolConfig)
 		{
-			_pConfig = new CStr[_toolConfig.Count + 1];
+			_toolConfig = ModuleLoader::GetTools(ModuleToolOptions::Config);
+			_pConfig = new CStr[_toolConfig->Length + 1];
 			_pConfig[0].Set(Res::MenuPrefix);
 
-			for(int i = _toolConfig.Count; --i >= 0;)
+			for(int i = _toolConfig->Length; --i >= 0;)
 				_pConfig[i + 1].Set(Res::MenuPrefix + _toolConfig[i]->GetMenuText());
 		}
 
-		pi->PluginConfigStringsNumber = _toolConfig.Count + 1;
+		pi->PluginConfigStringsNumber = _toolConfig->Length + 1;
 		pi->PluginConfigStrings = (const wchar_t**)_pConfig;
 	}
 
 	// disk (do not add .NET item!)
 	{
-		if (!_pDisk && _toolDisk.Count > 0)
+		if (!_toolDisk)
 		{
-			_pDisk = new CStr[_toolDisk.Count];
+			_toolDisk = ModuleLoader::GetTools(ModuleToolOptions::Disk);
+			if (_toolDisk->Length > 0)
+			{
+				_pDisk = new CStr[_toolDisk->Length];
 
-			for(int i = _toolDisk.Count; --i >= 0;)
-				_pDisk[i].Set(Res::MenuPrefix + _toolDisk[i]->GetMenuText());
+				//! Use just Name, not menu text, and no prefix.
+				for(int i = _toolDisk->Length; --i >= 0;)
+					_pDisk[i].Set(_toolDisk[i]->Name);
+			}
 		}
 
-		pi->DiskMenuStringsNumber = _toolDisk.Count;
+		pi->DiskMenuStringsNumber = _toolDisk->Length;
 		pi->DiskMenuStrings = (const wchar_t**)_pDisk;
 	}
 
 	// type
 	switch(wi.Type)
 	{
+	case WTYPE_DIALOG:
+		{
+			if (!_toolDialog)
+			{
+				_toolDialog = ModuleLoader::GetTools(ModuleToolOptions::Dialog);
+				_pDialog = new CStr[_toolDialog->Length + 1];
+				_pDialog[0].Set(Res::MenuPrefix);
+
+				for(int i = _toolDialog->Length; --i >= 0;)
+					_pDialog[i + 1].Set(Res::MenuPrefix + _toolDialog[i]->GetMenuText());
+			}
+
+			pi->PluginMenuStringsNumber = _toolDialog->Length + 1;
+			pi->PluginMenuStrings = (const wchar_t**)_pDialog;
+		}
+		break;
 	case WTYPE_EDITOR:
 		{
-			if (!_pEditor)
+			if (!_toolEditor)
 			{
-				_pEditor = new CStr[_toolEditor.Count + 1];
+				_toolEditor = ModuleLoader::GetTools(ModuleToolOptions::Editor);
+				_pEditor = new CStr[_toolEditor->Length + 1];
 				_pEditor[0].Set(Res::MenuPrefix);
 
-				for(int i = _toolEditor.Count; --i >= 0;)
+				for(int i = _toolEditor->Length; --i >= 0;)
 					_pEditor[i + 1].Set(Res::MenuPrefix + _toolEditor[i]->GetMenuText());
 			}
 
-			pi->PluginMenuStringsNumber = _toolEditor.Count + 1;
+			pi->PluginMenuStringsNumber = _toolEditor->Length + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pEditor;
 		}
 		break;
 	case WTYPE_PANELS:
 		{
-			if (!_pPanels)
+			if (!_toolPanels)
 			{
-				_pPanels = new CStr[_toolPanels.Count + 1];
+				_toolPanels = ModuleLoader::GetTools(ModuleToolOptions::Panels);
+				_pPanels = new CStr[_toolPanels->Length + 1];
 				_pPanels[0].Set(Res::MenuPrefix);
 
-				for(int i = _toolPanels.Count; --i >= 0;)
+				for(int i = _toolPanels->Length; --i >= 0;)
 					_pPanels[i + 1].Set(Res::MenuPrefix + _toolPanels[i]->GetMenuText());
 			}
 
-			pi->PluginMenuStringsNumber = _toolPanels.Count + 1;
+			pi->PluginMenuStringsNumber = _toolPanels->Length + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pPanels;
 		}
 		break;
 	case WTYPE_VIEWER:
 		{
-			if (!_pViewer)
+			if (!_toolViewer)
 			{
-				_pViewer = new CStr[_toolViewer.Count + 1];
+				_toolViewer = ModuleLoader::GetTools(ModuleToolOptions::Viewer);
+				_pViewer = new CStr[_toolViewer->Length + 1];
 				_pViewer[0].Set(Res::MenuPrefix);
 
-				for(int i = _toolViewer.Count; --i >= 0;)
+				for(int i = _toolViewer->Length; --i >= 0;)
 					_pViewer[i + 1].Set(Res::MenuPrefix + _toolViewer[i]->GetMenuText());
 			}
 
-			pi->PluginMenuStringsNumber = _toolViewer.Count + 1;
+			pi->PluginMenuStringsNumber = _toolViewer->Length + 1;
 			pi->PluginMenuStrings = (const wchar_t**)_pViewer;
-		}
-		break;
-	case WTYPE_DIALOG:
-		{
-			if (!_pDialog)
-			{
-				_pDialog = new CStr[_toolDialog.Count + 1];
-				_pDialog[0].Set(Res::MenuPrefix);
-
-				for(int i = _toolDialog.Count; --i >= 0;)
-					_pDialog[i + 1].Set(Res::MenuPrefix + _toolDialog[i]->GetMenuText());
-			}
-
-			pi->PluginMenuStringsNumber = _toolDialog.Count + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pDialog;
 		}
 		break;
 	}
@@ -377,7 +357,7 @@ bool Far0::AsConfigure(int itemIndex)
 	}
 
 	//???? if it is called by [ShiftF9] from a plugin menu then Far uses index from plugin menu, not config
-	if (--itemIndex >= _toolConfig.Count)
+	if (--itemIndex >= _toolConfig->Length)
 		return false;
 	
 	ProxyTool^ tool = _toolConfig[itemIndex];
@@ -629,13 +609,6 @@ void Far0::OpenMenu(ModuleToolOptions from)
 		Far::Net->Message("This menu is empty but it is used internally.", "FarNet");
 }
 
-static void AddTools(List<ProxyTool^>^ destination, List<ProxyTool^>^ source)
-{
-	for each(ProxyTool^ it in source)
-		if (!destination->Contains(it))
-			destination->Add(it);
-}
-
 void Far0::OpenConfig()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
@@ -643,13 +616,7 @@ void Far0::OpenConfig()
 	menu->HelpTopic = "MenuConfig";
 	menu->Title = "Modules configuration";
 
-	List<ProxyTool^> tools;
-	AddTools(%tools, %_toolConfig);
-	AddTools(%tools, %_toolDialog);
-	AddTools(%tools, %_toolDisk);
-	AddTools(%tools, %_toolEditor);
-	AddTools(%tools, %_toolPanels);
-	AddTools(%tools, %_toolViewer);
+	List<ProxyTool^> tools = ModuleLoader::GetTools();
 
 	String^ format = "{0,-10} : {1,2}";
 	menu->Add(String::Format(format, Res::ModuleMenuTools, tools.Count));

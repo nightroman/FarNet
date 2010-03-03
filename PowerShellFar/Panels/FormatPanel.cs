@@ -112,8 +112,7 @@ namespace PowerShellFar
 				if (count == 0)
 					return null;
 
-				metas = new Meta[count];
-				tmp.CopyTo(metas);
+				metas = tmp.ToArray();
 			}
 			else
 			{

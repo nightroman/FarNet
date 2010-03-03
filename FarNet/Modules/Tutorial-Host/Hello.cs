@@ -7,8 +7,8 @@ using FarNet;
 using System;
 using System.Runtime.InteropServices;
 
-// Menu item "Hello" in all plugin menus.
-[ModuleTool(Name = Hello.Name, Options = ModuleToolOptions.F11Menus, Resources = true)]
+// Menu item "Hello" in all areas.
+[ModuleTool(Name = Hello.Name, Options = ModuleToolOptions.AllAreas, Resources = true)]
 [Guid("68c56c3a-b832-4e9d-983f-9922ba4e6d9d")]
 public class Hello : ModuleTool
 {

@@ -56,23 +56,24 @@ private:
 	static void ProcessPrefixes(INT_PTR item);
 	static void VoidStep(Object^, EventArgs^) {}
 	static void UnregisterProxyTool(ProxyTool^ tool);
+	static void InvalidateProxyTool(ModuleToolOptions options);
 private:
 	static CStr* _pConfig;
-	static CStr* _pDisk;
 	static CStr* _pDialog;
+	static CStr* _pDisk;
 	static CStr* _pEditor;
 	static CStr* _pPanels;
 	static CStr* _pViewer;
+	static array<ProxyTool^>^ _toolConfig;
+	static array<ProxyTool^>^ _toolDialog;
+	static array<ProxyTool^>^ _toolDisk;
+	static array<ProxyTool^>^ _toolEditor;
+	static array<ProxyTool^>^ _toolPanels;
+	static array<ProxyTool^>^ _toolViewer;
 	static CStr* _prefixes;
 	static List<ProxyCommand^> _registeredCommand;
 	static List<ProxyEditor^> _registeredEditor;
 	static List<ProxyFiler^> _registeredFiler;
-	static List<ProxyTool^> _toolConfig;
-	static List<ProxyTool^> _toolDisk;
-	static List<ProxyTool^> _toolDialog;
-	static List<ProxyTool^> _toolEditor;
-	static List<ProxyTool^> _toolPanels;
-	static List<ProxyTool^> _toolViewer;
 private:
 	static CultureInfo^ _currentUICulture;
 	// Post
