@@ -353,7 +353,8 @@ ModuleToolOptions ProxyTool::Options::get()
 {
 	if (!_OptionsValid)
 	{
-		_Options = (ModuleToolOptions)ModuleManager::LoadFarNetValue(Key, "Options", Attribute->Options);
+		//! Do '&' it with the default options, they may change, and just for sanity
+		_Options = Attribute->Options & (ModuleToolOptions)ModuleManager::LoadFarNetValue(Key, "Options", Attribute->Options);
 		_OptionsValid = true;
 	}
 	

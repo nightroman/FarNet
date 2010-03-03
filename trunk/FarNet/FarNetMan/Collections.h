@@ -7,10 +7,7 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-/// <summary>
-/// Enumerator of ILine items in IList.
-/// </summary>
-ref class LineListEnumerator : public IEnumerator<ILine^>
+ref class LineListEnumerator sealed : IEnumerator<ILine^>
 {
 public:
 	LineListEnumerator(IList<ILine^>^ list, int start, int end)

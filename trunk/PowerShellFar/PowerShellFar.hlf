@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.8#
+#PowerShellFar 4.3.9#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -76,7 +76,7 @@ $#Requirements#
 #Requirements#
 
  - Far Manager 2.0.1428
- - Plugin FarNet 4.3.8
+ - Plugin FarNet 4.3.9
  - Windows PowerShell 2.0
 
 

@@ -118,8 +118,7 @@ bool FarSubsetForm::Show()
 			break;
 		r.Add(index);
 	}
-	_Indexes = gcnew array<int>(r.Count);
-	r.CopyTo(_Indexes);
+	_Indexes = r.ToArray();
 	return true;
 }
 

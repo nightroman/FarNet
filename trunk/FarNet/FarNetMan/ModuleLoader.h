@@ -14,14 +14,14 @@ ref class ProxyEditor;
 ref class ProxyFiler;
 ref class ProxyTool;
 
-//ref class ProxyActionCollection : KeyedCollection<int, OrderItem>
-
 ref class ModuleLoader
 {
 public:
 	static property IList<String^>^ AssemblyNames { IList<String^>^ get() { return _Managers->Keys; } }
 	static property Dictionary<Guid, ProxyAction^>^ Actions { Dictionary<Guid, ProxyAction^>^ get() { return %_Actions; } }
 	static ModuleManager^ GetModuleManager(String^ moduleName) { return _Managers[moduleName]; }
+	static array<ProxyTool^>^ GetTools(ModuleToolOptions option);
+	static List<ProxyTool^>^ GetTools();
 public:
 	static bool CanExit();
 	static void LoadModules();

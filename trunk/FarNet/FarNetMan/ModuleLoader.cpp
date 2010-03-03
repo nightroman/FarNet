@@ -380,14 +380,38 @@ void ModuleLoader::WriteModuleCache(ModuleManager^ manager)
 				it->WriteCache(%data);
 
 		// write to the registry
-		array<String^>^ data2 = gcnew array<String^>(data.Count);
-		data.CopyTo(data2);
-		keyCache->SetValue(manager->AssemblyPath, data2);
+		keyCache->SetValue(manager->AssemblyPath, data.ToArray());
 	}
 	finally
 	{
 		delete keyCache;
 	}
+}
+
+array<ProxyTool^>^ ModuleLoader::GetTools(ModuleToolOptions option)
+{
+	List<ProxyTool^> list(_Actions.Count);
+	for each(ProxyAction^ action in _Actions.Values)
+	{
+		if (action->Kind != ModuleItemKind::Tool)
+			continue;
+		
+		ProxyTool^ tool = (ProxyTool^)action;
+		if (int(tool->Options & option))
+			list.Add(tool);
+	}
+	return list.ToArray();
+}
+
+List<ProxyTool^>^ ModuleLoader::GetTools()
+{
+	List<ProxyTool^>^ result = gcnew List<ProxyTool^>(_Actions.Count);
+	for each(ProxyAction^ action in _Actions.Values)
+	{
+		if (action->Kind == ModuleItemKind::Tool)
+			result->Add((ProxyTool^)action);
+	}
+	return result;
 }
 
 }

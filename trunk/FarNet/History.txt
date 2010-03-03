@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.3.9 =
+
+Fixed a few configuration bugs of FarNet 4.3.8.
+
+Disk menu: show just tool names with no .NET prefix and hotkeys.
+
+Tutorial-Host sample module: used Options=AllAreas, for demo and testing sake.
+
 = 4.3.8 =
 
 FarNet configuration dialog for a module tool allows to set a hotkey for the
