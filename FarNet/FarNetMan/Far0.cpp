@@ -158,7 +158,7 @@ void Far0::RegisterProxyFiler(ProxyFiler^ info)
 void Far0::RegisterProxyTool(ProxyTool^ info)
 {
 	LOG_INFO("Register " + info);
-	
+
 	ModuleLoader::Actions->Add(info->Id, info);
 
 	InvalidateProxyTool(info->Options);
@@ -356,10 +356,13 @@ bool Far0::AsConfigure(int itemIndex)
 		return true;
 	}
 
-	//???? if it is called by [ShiftF9] from a plugin menu then Far uses index from plugin menu, not config
+	// STOP: If it is called by [ShiftF9] from a F11-menu then Far sends the
+	// index from that menu, not from our config items. There is nothing we can
+	// do about it: the same method is called from the config menu. All we can
+	// do is to check sanity of the index and ignore invalid values.
 	if (--itemIndex >= _toolConfig->Length)
 		return false;
-	
+
 	ProxyTool^ tool = _toolConfig[itemIndex];
 	ModuleToolEventArgs e;
 	e.From = ModuleToolOptions::Config;
@@ -704,7 +707,7 @@ void Far0::OnConfigUICulture()
 			// use the current Far culture instead of invariant
 			if (ci->Name->Length == 0)
 				ci = GetCurrentUICulture(true);
-			
+
 			// update the module
 			ModuleManager^ manager = ModuleLoader::GetModuleManager(assemblyName);
 			manager->CurrentUICulture = ci;
@@ -785,7 +788,7 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 
 		IEdit^ edHotkey = dialog->AddEditFixed(5, -1, 5, tool->HotkeyChar == ' ' ? String::Empty : gcnew String(gcnew array<Char> { tool->HotkeyChar }));
 		dialog->AddText(7, 0, 0, "&Hotkey");
-		
+
 		dialog->AddText(5, -1, 0, String::Empty)->Separator = 1;
 
 		ModuleToolOptions defaultOptions = tool->DefaultOptions;
@@ -811,7 +814,7 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 
 		// new hotkey
 		tool->SetHotkey(edHotkey->Text);
-		
+
 		// new options
 		ModuleToolOptions newOptions = ModuleToolOptions::None;
 		if (cbPanels->Selected) newOptions = newOptions | ModuleToolOptions::Panels;
