@@ -57,7 +57,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 	{
 	case VE_READ:
 		{
-			LOG_AUTO(3, "VE_READ");
+			LOG_3("VE_READ");
 
 			// get info
 			ViewerInfo vi; vi.StructSize = sizeof(vi);
@@ -85,14 +85,22 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// event
 			if (_anyViewer._Opened)
+			{
+				LOG_AUTO(3, "Opened");
+				
 				_anyViewer._Opened(viewer, nullptr);
+			}
 			if (viewer->_Opened)
+			{
+				LOG_AUTO(3, "Opened");
+
 				viewer->_Opened(viewer, nullptr);
+			}
 		}
 		break;
 	case VE_CLOSE:
 		{
-			LOG_AUTO(3, "VE_CLOSE");
+			LOG_3("VE_CLOSE");
 
 			// get registered, close and unregister
 			int id = *((int*)param);
@@ -106,9 +114,17 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// event, after the above
 			if (_anyViewer._Closed)
+			{
+				LOG_AUTO(3, "Closed");
+
 				_anyViewer._Closed(viewer, nullptr);
+			}
 			if (viewer->_Closed)
+			{
+				LOG_AUTO(3, "Closed");
+				
 				viewer->_Closed(viewer, nullptr);
+			}
 
 			// delete the file after all
 			DeleteSourceOptional(viewer->_FileName, viewer->DeleteSource);
@@ -116,7 +132,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 		break;
 	case VE_GOTFOCUS:
 		{
-			LOG_AUTO(4, "VE_GOTFOCUS");
+			LOG_4("VE_GOTFOCUS");
 
 			// get registered
 			int id = *((int*)param);
@@ -126,14 +142,22 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// event
 			if (_anyViewer._GotFocus)
+			{
+				LOG_AUTO(4, "GotFocus");
+				
 				_anyViewer._GotFocus(viewer, nullptr);
+			}
 			if (viewer->_GotFocus)
+			{
+				LOG_AUTO(4, "GotFocus");
+
 				viewer->_GotFocus(viewer, nullptr);
+			}
 		}
 		break;
 	case VE_KILLFOCUS:
 		{
-			LOG_AUTO(4, "VE_KILLFOCUS");
+			LOG_4("VE_KILLFOCUS");
 
 			// get registered
 			int id = *((int*)param);
@@ -143,9 +167,17 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// event
 			if (_anyViewer._LosingFocus)
+			{
+				LOG_AUTO(4, "LosingFocus");
+				
 				_anyViewer._LosingFocus(viewer, nullptr);
+			}
 			if (viewer->_LosingFocus)
+			{
+				LOG_AUTO(4, "LosingFocus");
+				
 				viewer->_LosingFocus(viewer, nullptr);
+			}
 		}
 		break;
 	}

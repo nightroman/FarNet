@@ -4,7 +4,6 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Management.Automation;
 using System.Text;
@@ -301,11 +300,11 @@ namespace PowerShellFar
 			}
 			else if (_Width <= 0 || Alignment != Alignment.Right)
 			{
-				return string.Format(CultureInfo.CurrentCulture, FormatString, GetValue(value));
+				return Invariant.Format(FormatString, GetValue(value));
 			}
 			else
 			{
-				return string.Format(CultureInfo.CurrentCulture, FormatString, GetValue(value)).PadLeft(_Width);
+				return Invariant.Format(FormatString, GetValue(value)).PadLeft(_Width);
 			}
 		}
 

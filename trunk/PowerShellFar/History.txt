@@ -1,6 +1,14 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.10 =
+
+PanelKeyEventArgs.Preprocess was removed, see FarNet news. Affected scripts
+should be updated. Updated scripts in PSF: Search-Regex-.ps1, Test-Panel-.ps1.
+
+Test-Panel-.ps1: added demo of the new event KeyPressing ([Tab] is used).
+Compare: another event KeyPressing is never called on [Tab].
+
 = 4.3.9 =
 
 Technical build for FarNet 4.3.9.
