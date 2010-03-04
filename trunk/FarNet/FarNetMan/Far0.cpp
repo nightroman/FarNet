@@ -635,29 +635,29 @@ void Far0::OpenConfig()
 		{
 		case 0:
 			if (tools.Count)
-				OnConfigTool(%tools);
+				ConfigTool(%tools);
 			break;
 		case 1:
 			if (_registeredCommand.Count)
-				OnConfigCommand();
+				ConfigCommand();
 			break;
 		case 2:
 			if (_registeredEditor.Count)
-				OnConfigEditor();
+				ConfigEditor();
 			break;
 		case 3:
 			if (_registeredFiler.Count)
-				OnConfigFiler();
+				ConfigFiler();
 			break;
 			// mind separator
 		case 5:
-			OnConfigUICulture();
+			ConfigUICulture();
 			break;
 		}
 	}
 }
 
-void Far0::OnConfigUICulture()
+void Far0::ConfigUICulture()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->Title = "Module UI culture";
@@ -742,17 +742,19 @@ static ICheckBox^ OnConfigTool_AddOption(IDialog^ dialog, String^ text, ModuleTo
 	return result;
 }
 
-void Far0::OnConfigTool(List<ProxyTool^>^ tools)
+void Far0::ConfigTool(List<ProxyTool^>^ tools)
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->Title = "Menu tools";
 	menu->HelpTopic = _helpTopic + "ConfigTool";
 
+	ProxyTool^ tool = nullptr;
+	ModuleToolComparer comparer;
 	for(;;)
 	{
 		// format
-		int widthName = 0;
-		int widthAttr = 0;
+		int widthName = 9; // Name
+		int widthAttr = 7; // Options
 		for each(ProxyTool^ it in tools)
 		{
 			if (widthName < it->Name->Length)
@@ -765,11 +767,17 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 
 		// reset
 		menu->Items->Clear();
-		tools->Sort(gcnew ModuleToolComparer);
+		tools->Sort(%comparer);
 
 		// fill
+		menu->Add(String::Format(format, " & Name", "Options", "Module\\ID"))->Disabled = true;
 		for each(ProxyTool^ it in tools)
 		{
+			// 1) restore the current item, its index vary due to sorting with new hotkeys
+			if (tool && it == tool)
+				menu->Selected = menu->Items->Count;
+
+			// 2) add the item
 			FarItem^ mi = menu->Add(String::Format(format, it->GetMenuText(), it->Options, it->Key));
 			mi->Data = it;
 		}
@@ -779,7 +787,7 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 			return;
 
 		// the tool
-		ProxyTool^ tool = (ProxyTool^)menu->SelectedData;
+		tool = (ProxyTool^)menu->SelectedData;
 
 		// dialog
 		IDialog^ dialog = Far::Net->CreateDialog(-1, -1, 77, 14);
@@ -835,7 +843,7 @@ void Far0::OnConfigTool(List<ProxyTool^>^ tools)
 	}
 }
 
-void Far0::OnConfigCommand()
+void Far0::ConfigCommand()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->AutoAssignHotkeys = true;
@@ -901,7 +909,7 @@ void Far0::OnConfigCommand()
 	}
 }
 
-void Far0::OnConfigEditor()
+void Far0::ConfigEditor()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->AutoAssignHotkeys = true;
@@ -940,7 +948,7 @@ void Far0::OnConfigEditor()
 	}
 }
 
-void Far0::OnConfigFiler()
+void Far0::ConfigFiler()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->AutoAssignHotkeys = true;

@@ -6,8 +6,13 @@ http://code.google.com/p/farnet/
 PanelKeyEventArgs.Preprocess was removed, see FarNet news. Affected scripts
 should be updated. Updated scripts in PSF: Search-Regex-.ps1, Test-Panel-.ps1.
 
-Test-Panel-.ps1: added demo of the new event KeyPressing ([Tab] is used).
-Compare: another event KeyPressing is never called on [Tab].
+Test-Panel-.ps1: added demo handler of the new event KeyPressing.
+
+The $FormatEnumerationLimit number (standard PowerShell preference variable) is
+used for object panel columns formatting. Example: invoke this command:
+>: Get-ChildItem hkcu:\ | Out-FarPanel
+... and see that only 4 first items is shown in the Property column (4 is the
+default value of $FormatEnumerationLimit).
 
 = 4.3.9 =
 
