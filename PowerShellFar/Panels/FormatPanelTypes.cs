@@ -41,11 +41,13 @@ namespace PowerShellFar
 			Columns = columns;
 		}
 
-		//???? >: ls hkcu:\ | op
-		// -- column Property has all values, not "first 4"
-		public object Current // _100202_034647 Use GetString, not GetValue, else format string is not actually used
+		public object Current
 		{
-			get { return Columns[Index].GetString(Value); }
+			get
+			{
+				//! Use GetString(), to use format string, enumeration limit, and etc.
+				return Columns[Index].GetString(Value);
+			}
 		}
 
 		public void Reset()

@@ -58,7 +58,7 @@ namespace PowerShellFar
 	/// <seealso cref="Commands.StartFarJobCommand"/>
 	public sealed class Job : IDisposable
 	{
-		const string MenuFormatString = "{0,9} | {1,6} | {2}";
+		const string MenuFormatString = "{0,9} : {1,6} : {2}";
 		const int NotifyPeriod = 3000;
 
 		// UI job list controlled by a user
