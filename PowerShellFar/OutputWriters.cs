@@ -5,7 +5,6 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using FarNet;
@@ -175,7 +174,7 @@ namespace PowerShellFar
 				// try user defined external viewer
 				if (!string.IsNullOrEmpty(externalViewerFileName))
 				{
-					externalViewerArguments = string.Format(CultureInfo.InvariantCulture, A.Psf.Settings.ExternalViewerArguments, FileName);
+					externalViewerArguments = Invariant.Format(A.Psf.Settings.ExternalViewerArguments, FileName);
 					try
 					{
 						ProcessStartInfo info = new ProcessStartInfo(externalViewerFileName, externalViewerArguments);

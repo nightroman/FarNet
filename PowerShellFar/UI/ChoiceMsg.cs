@@ -21,7 +21,7 @@ namespace PowerShellFar.UI
 			{
 				int a = choice.Label.IndexOf('&');
 				if (a >= 0 && a + 1 < choice.Label.Length)
-					sb.Append(Kit.ToUpper(choice.Label[a + 1].ToString()));
+					sb.Append((choice.Label[a + 1].ToString()).ToUpperInvariant());
 				else
 					sb.Append(choice.Label);
 				sb.Append(" - ");

@@ -7,8 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using FarNet;
@@ -618,8 +616,6 @@ namespace PowerShellFar
 			{
 				case VKeyCode.Enter:
 					{
-						if (e.Preprocess)
-							return;
 						FarFile f = _Panel.CurrentFile;
 						if (f == null)
 							return;

@@ -216,7 +216,7 @@ namespace PowerShellFar
 					}
 					catch (RuntimeException ex)
 					{
-						string msg = Kit.Format(@"
+						string msg = Invariant.Format(@"
 Startup code has failed.
 
 Code (see configuration):
@@ -356,7 +356,7 @@ View the error list or the variable $Error.
 				// ask a user if he has not told to ignore this pair
 				if (location != _failedInvokingLocationNew || currentLocation != _failedInvokingLocationOld)
 				{
-					string message = Kit.Format(@"
+					string message = Invariant.Format(@"
 Cannot set the current location to
 {0}
 
@@ -402,7 +402,7 @@ Continue with this current location?
 				// ask a user if he has not told to ignore this pair
 				if (directory != _failedInvokingDirectoryNew || currentDirectory != _failedInvokingDirectoryOld)
 				{
-					string message = Kit.Format(@"
+					string message = Invariant.Format(@"
 Cannot set the current directory to
 {0}
 

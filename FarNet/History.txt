@@ -1,5 +1,22 @@
 http://code.google.com/p/farnet/
 
+= 4.3.10 =
+
+PANEL KEY PROCESSING CHANGES
+
+Preprocessing of panel keys is now done by the new event IPanel.KeyPressing.
+As a result:
+1) Event IPanel.KeyPressed is not called on this, KeyPressing is called;
+2) Flag PanelKeyEventArgs.Preprocess was removed, it is not needed now.
+
+Also, some misterious and\or annoying pseudo-key events are filtered out
+internally and panel key events are not called (e.g. KEY_NONE, KEY_IDLE,
+KEY_KILLFOCUS, KEY_GOTFOCUS - some of them are not yet documented).
+
+This change is breaking for panels using PanelKeyEventArgs.Preprocess. It makes
+processing of IPanel.KeyPressed simpler because in most cases panels are not
+interested in preprocessing events; now they do not have to filter them out.
+
 = 4.3.9 =
 
 Fixed a few configuration bugs of FarNet 4.3.8.

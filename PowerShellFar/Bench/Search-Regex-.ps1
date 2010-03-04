@@ -324,8 +324,6 @@ $panel.add_GettingData({&{
 
 ### KeyPressed: handles keys
 $panel.add_KeyPressed({&{
-	if ($_.Preprocess) { return }
-
 	### [Enter] opens an editor at the selected match
 	if ($_.Code -eq [FarNet.VKeyCode]::Enter -and $_.State -eq 0 -and !$Far.CommandLine.Length) {
 		$i = $this.CurrentFile
@@ -345,7 +343,6 @@ $panel.add_KeyPressed({&{
 		}
 		return
 	}
-
 	### [F1] opens Search-Regex help topic
 	if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
 		$Far.ShowHelp($Psf.AppHome, 'SearchRegex', 'Path')
