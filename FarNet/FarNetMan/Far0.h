@@ -46,11 +46,11 @@ private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
 	static void AssertHotkeys();
-	static void OnConfigCommand();
-	static void OnConfigEditor();
-	static void OnConfigFiler();
-	static void OnConfigTool(List<ProxyTool^>^ tools);
-	static void OnConfigUICulture();
+	static void ConfigCommand();
+	static void ConfigEditor();
+	static void ConfigFiler();
+	static void ConfigTool(List<ProxyTool^>^ tools);
+	static void ConfigUICulture();
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
 	static void ProcessPrefixes(INT_PTR item);
