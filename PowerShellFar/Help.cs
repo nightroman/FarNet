@@ -5,7 +5,6 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Management.Automation;
 using FarNet;
@@ -79,7 +78,7 @@ namespace PowerShellFar
 					}
 					else if (token.Type == PSTokenType.Keyword)
 					{
-						script = Kit.Format("Get-Help about_{0} > $args[0]", token.Content);
+						script = Invariant.Format("Get-Help about_{0} > $args[0]", token.Content);
 						args = new object[] { null };
 					}
 					else if (token.Type == PSTokenType.Operator)

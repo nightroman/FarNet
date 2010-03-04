@@ -7,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -428,11 +427,11 @@ namespace PowerShellFar
 					return;
 
 				menu.Items.Clear();
-				FarItem item = menu.Add(string.Format(CultureInfo.InvariantCulture, MenuFormatString, "State", "Output", "Name/Command"));
+				FarItem item = menu.Add(Invariant.Format(MenuFormatString, "State", "Output", "Name/Command"));
 				item.Disabled = true;
 				foreach (Job job in Jobs)
 				{
-					item = menu.Add(string.Format(CultureInfo.InvariantCulture, MenuFormatString, job.StateText, job.Length, job.ToLine(100)));
+					item = menu.Add(Invariant.Format(MenuFormatString, job.StateText, job.Length, job.ToLine(100)));
 					item.Data = job;
 				}
 
@@ -683,7 +682,7 @@ namespace PowerShellFar
 					continue;
 				}
 
-				string message = Kit.Format(@"
+				string message = Invariant.Format(@"
 Job:
 {0}
 

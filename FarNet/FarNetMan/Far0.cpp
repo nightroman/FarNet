@@ -47,7 +47,7 @@ void Far0::UnregisterProxyAction(ProxyAction^ action)
 		return;
 	}
 
-	LOG_INFO("Unregister " + action);
+	LOG_3("Unregister " + action);
 
 	ModuleLoader::Actions->Remove(action->Id);
 
@@ -77,7 +77,7 @@ void Far0::UnregisterProxyAction(ProxyAction^ action)
 
 void Far0::UnregisterProxyTool(ProxyTool^ tool)
 {
-	LOG_INFO("Unregister " + tool);
+	LOG_3("Unregister " + tool);
 
 	ModuleLoader::Actions->Remove(tool->Id);
 
@@ -131,7 +131,7 @@ void Far0::InvalidateProxyTool(ModuleToolOptions options)
 
 void Far0::RegisterProxyCommand(ProxyCommand^ info)
 {
-	LOG_INFO("Register " + info);
+	LOG_3("Register " + info);
 	ModuleLoader::Actions->Add(info->Id, info);
 
 	_registeredCommand.Add(info);
@@ -141,7 +141,7 @@ void Far0::RegisterProxyCommand(ProxyCommand^ info)
 
 void Far0::RegisterProxyEditor(ProxyEditor^ info)
 {
-	LOG_INFO("Register " + info);
+	LOG_3("Register " + info);
 	ModuleLoader::Actions->Add(info->Id, info);
 
 	_registeredEditor.Add(info);
@@ -149,7 +149,7 @@ void Far0::RegisterProxyEditor(ProxyEditor^ info)
 
 void Far0::RegisterProxyFiler(ProxyFiler^ info)
 {
-	LOG_INFO("Register " + info);
+	LOG_3("Register " + info);
 	ModuleLoader::Actions->Add(info->Id, info);
 
 	_registeredFiler.Add(info);
@@ -157,7 +157,7 @@ void Far0::RegisterProxyFiler(ProxyFiler^ info)
 
 void Far0::RegisterProxyTool(ProxyTool^ info)
 {
-	LOG_INFO("Register " + info);
+	LOG_3("Register " + info);
 
 	ModuleLoader::Actions->Add(info->Id, info);
 
@@ -1063,11 +1063,11 @@ void Far0::PostJob(EventHandler^ handler)
 	{
 		if (_syncHandlers.IndexOf(handler) >= 0)
 		{
-			LOG_INFO(String::Format("PostJob: skip already posted {0}", Log::Format(handler->Method)));
+			LOG_3(String::Format("PostJob: skip already posted {0}", Log::Format(handler->Method)));
 			return;
 		}
 
-		LOG_INFO(String::Format("PostJob: call ACTL_SYNCHRO and post {0}", Log::Format(handler->Method)));
+		LOG_3(String::Format("PostJob: call ACTL_SYNCHRO and post {0}", Log::Format(handler->Method)));
 
 		_syncHandlers.Add(handler);
 		if (_syncHandlers.Count == 1)

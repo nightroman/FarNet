@@ -234,7 +234,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
 	//! it is called too often, lets use mode 4
-	LOG_AUTO(4, "GetOpenPluginInfo");
+	LOG_4("GetOpenPluginInfo");
 
 	// plugin panel
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
@@ -249,7 +249,11 @@ void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 
 	// trigger - allow to update info before making it for Far
 	if (pp->_GettingInfo && !State::GetPanelInfo)
+	{
+		LOG_AUTO(4, "GettingInfo");
+
 		pp->_GettingInfo(pp, nullptr);
+	}
 
 	// make info
 	*info = pp->_info.Make();
@@ -291,40 +295,30 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	switch(id)
 	{
-	case FE_IDLE:
+	case FE_BREAK:
 		{
-			LOG_AUTO(4, "FE_IDLE");
-
-			if (pp->IdleUpdate)
+			LOG_3("FE_BREAK");
+			
+			if (pp->_CtrlBreakPressed)
 			{
-				pp->Update(true);
-				pp->Redraw();
-			}
-			if (pp->_Idled)
-				pp->_Idled(pp, nullptr);
-		}
-		break;
-	case FE_CHANGEVIEWMODE:
-		{
-			LOG_AUTO(3, "FE_CHANGEVIEWMODE");
-
-			if (pp->_ViewModeChanged)
-			{
-				ViewModeChangedEventArgs e(gcnew String((const wchar_t*)param));
-				pp->_ViewModeChanged(pp, %e);
+				LOG_AUTO(3, "CtrlBreakPressed");
+				
+				pp->_CtrlBreakPressed(pp, nullptr);
 			}
 		}
 		break;
 	case FE_CLOSE:
 		{
-			LOG_AUTO(3, "FE_CLOSE");
-
+			LOG_3("FE_CLOSE");
+			
 			//? FE_CLOSE issues:
 			// *) Bug [_090321_165608]: unwanted extra call on plugin commands entered in command line
 			// http://bugs.farmanager.com/view.php?id=602
 			// *) may not be called at all e.g. if tmp panel is opened
 			if (!pp->_Pushed && pp->_Closing)
 			{
+				LOG_AUTO(3, "Closing");
+				
 				PanelEventArgs e(OperationModes::None);
 				pp->_Closing(pp, %e);
 				return e.Ignore;
@@ -333,10 +327,12 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_COMMAND:
 		{
-			LOG_AUTO(3, "FE_COMMAND");
+			LOG_3("FE_COMMAND");
 
 			if (pp->_Executing)
 			{
+				LOG_AUTO(3, "Executing");
+				
 				//! We have to try\catch in here in order to return exactly what plugin returns.
 				ExecutingEventArgs e(gcnew String((const wchar_t*)param));
 				try
@@ -351,9 +347,67 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			}
 		}
 		break;
+	case FE_CHANGEVIEWMODE:
+		{
+			LOG_3("FE_CHANGEVIEWMODE");
+
+			if (pp->_ViewModeChanged)
+			{
+				LOG_AUTO(3, "ViewModeChanged");
+				
+				ViewModeChangedEventArgs e(gcnew String((const wchar_t*)param));
+				pp->_ViewModeChanged(pp, %e);
+			}
+		}
+		break;
+	case FE_IDLE:
+		{
+			LOG_4("FE_IDLE");
+
+			// 1) call the handler
+			if (pp->_Idled)
+			{
+				LOG_AUTO(4, "Idled");
+				
+				pp->_Idled(pp, nullptr);
+			}
+
+			// 2) update after the handler: if the panel has set both IdleUpdate and Idled
+			// then in Idled it should not care of data updates, it is done after that.
+			if (pp->IdleUpdate)
+			{
+				pp->Update(true);
+				pp->Redraw();
+			}
+		}
+		break;
+	case FE_GOTFOCUS:
+		{
+			LOG_4("FE_GOTFOCUS");
+
+			if (pp->_GotFocus)
+			{
+				LOG_AUTO(4, "GotFocus");
+				
+				pp->_GotFocus(pp, nullptr);
+			}
+		}
+		break;
+	case FE_KILLFOCUS:
+		{
+			LOG_4("FE_KILLFOCUS");
+
+			if (pp->_LosingFocus)
+			{
+				LOG_AUTO(4, "LosingFocus");
+				
+				pp->_LosingFocus(pp, nullptr);
+			}
+		}
+		break;
 	case FE_REDRAW:
 		{
-			LOG_AUTO(4, "FE_REDRAW");
+			LOG_4("FE_REDRAW");
 
 			// 090411 Data are shown now. Drop this flag to allow normal processing.
 			pp->_skipGettingData = false;
@@ -370,6 +424,8 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 			if (pp->_Redrawing)
 			{
+				LOG_AUTO(4, "Redrawing");
+				
 				PanelEventArgs e(OperationModes::None);
 				pp->_Redrawing(pp, %e);
 				if (e.Ignore)
@@ -481,48 +537,49 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			}
 		}
 		break;
-	case FE_GOTFOCUS:
-		{
-			LOG_AUTO(4, "FE_GOTFOCUS");
-
-			if (pp->_GotFocus)
-				pp->_GotFocus(pp, nullptr);
-		}
-		break;
-	case FE_KILLFOCUS:
-		{
-			LOG_AUTO(4, "FE_KILLFOCUS");
-
-			if (pp->_LosingFocus)
-				pp->_LosingFocus(pp, nullptr);
-		}
-		break;
-	case FE_BREAK:
-		{
-			LOG_AUTO(3, "FE_BREAK");
-
-			if (pp->_CtrlBreakPressed)
-				pp->_CtrlBreakPressed(pp, nullptr);
-		}
-		break;
 	}
 	return false;
 }
 
+/*
+#define INTERNAL_KEY_BASE_2 0x00030000
+KEY_NONE=INTERNAL_KEY_BASE_2+1,
+KEY_KILLFOCUS=INTERNAL_KEY_BASE_2+6,
+KEY_GOTFOCUS
+*/
 int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
-	LOG_AUTO(4, "ProcessKey");
-
-	//! mind rare case: plugin in null already (e.g. closed by AltF12\select folder)
+	// extract the key code
+	int code = key & ~PKF_PREPROCESS;
+	
+	// filter out not keys but kind of events (perhaps to make events later)
+	if (code >= INTERNAL_KEY_BASE_2)
+		return false;
+	
+	//! mind rare case: plugin in null, e.g. closed by [AltF12] + select folder
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp)
 		return false;
+
+	// preprocessing
+	if ((key & PKF_PREPROCESS) != 0)
+	{
+		// panel has no handler:
+		if (!pp->_KeyPressing)
+			return false;
+
+		// trigger the handler
+		PanelKeyEventArgs e(code, (KeyStates)controlState);
+		LOG_AUTO(4, "KeyPressing " + %e);
+		pp->_KeyPressing(pp, %e);
+		return e.Ignore;
+	}
 
 	// Escaping handler
 	if (pp->_Escaping)
 	{
 		// [Escape] is pressed:
-		if (VK_ESCAPE == key && 0 == controlState)
+		if (VK_ESCAPE == code && 0 == controlState)
 		{
 			// if cmdline is not empty then do nothing
 			int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
@@ -531,6 +588,7 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 			// trigger the handler
 			PanelEventArgs e;
+			LOG_AUTO(4, "Escaping " + %e);
 			pp->_Escaping(pp, %e);
 			if (e.Ignore)
 				return true;
@@ -542,7 +600,8 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 		return false;
 
 	// trigger the handler
-	PanelKeyEventArgs e((key & ~PKF_PREPROCESS), (KeyStates)controlState, (key & PKF_PREPROCESS) != 0);
+	PanelKeyEventArgs e(code, (KeyStates)controlState);
+	LOG_AUTO(4, "KeyPressed " + %e);
 	pp->_KeyPressed(pp, %e);
 	return e.Ignore;
 }

@@ -54,6 +54,7 @@ public: DEF_EVENT_ARGS(Executing, _Executing, ExecutingEventArgs);
 public: DEF_EVENT_ARGS(GettingData, _GettingData, PanelEventArgs);
 public: DEF_EVENT_ARGS(GettingFiles, _GettingFiles, GettingFilesEventArgs);
 public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, PanelKeyEventArgs);
+public: DEF_EVENT_ARGS(KeyPressing, _KeyPressing, PanelKeyEventArgs);
 public: DEF_EVENT_ARGS(MakingDirectory, _MakingDirectory, MakingDirectoryEventArgs);
 public: DEF_EVENT_ARGS(PuttingFiles, _PuttingFiles, PuttingFilesEventArgs);
 public: DEF_EVENT_ARGS(Redrawing, _Redrawing, PanelEventArgs);

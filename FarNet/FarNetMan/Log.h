@@ -77,4 +77,5 @@ private:
 - Do use 'if <level>' before any other expressions to avoid evaluation for nothing.
 */
 #define LOG_AUTO(LEVEL, INFO) LogAuto logAuto; if ((LEVEL) <= (int)Log::Switch->Level) logAuto.Log((INFO));
-#define LOG_INFO(INFO) if (Log::Switch->TraceInfo) Log::WriteLine((INFO));
+#define LOG_3(VALUE) if (Log::Switch->TraceInfo) Log::WriteLine((VALUE));
+#define LOG_4(VALUE) if (Log::Switch->TraceVerbose) Log::WriteLine((VALUE));

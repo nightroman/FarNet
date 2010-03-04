@@ -4,9 +4,9 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace FarNet
 {
@@ -831,16 +831,13 @@ namespace FarNet
 	{
 		int _code;
 		KeyStates _state;
-		bool _preprocess;
 		/// <param name="code"><see cref="VKeyCode"/> code.</param>
 		/// <param name="state">Indicates key states.</param>
-		/// <param name="preprocess">Preprocess flag.</param>
-		public PanelKeyEventArgs(int code, KeyStates state, bool preprocess)
+		public PanelKeyEventArgs(int code, KeyStates state)
 			: base(0)
 		{
 			_code = code;
 			_state = state;
-			_preprocess = preprocess;
 		}
 		/// <summary>
 		/// <see cref="VKeyCode"/> code.
@@ -856,12 +853,10 @@ namespace FarNet
 		{
 			get { return _state; }
 		}
-		/// <summary>
-		/// Preprocess flag.
-		/// </summary>
-		public bool Preprocess
+		///
+		public override string ToString()
 		{
-			get { return _preprocess; }
+			return Invariant.Format("State={0} Code={1}/{2}", _state, _code, (ConsoleKey)_code);
 		}
 	}
 
@@ -1236,8 +1231,30 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module processes the key itself.
+		/// <para>
+		/// The event is not called on some special keys processed internally.
+		/// Normally panels are not interested in these keys,
+		/// otherwise they should use the <see cref="KeyPressing"/> event.
+		/// </para>
+		/// <para>
+		/// In Far Manager this event is called from the <c>ProcessKeyW</c> without the <c>PKF_PREPROCESS</c> flag.
+		/// </para>
 		/// </remarks>
 		event EventHandler<PanelKeyEventArgs> KeyPressed;
+		/// <summary>
+		/// Called when a key is about to be processed.
+		/// </summary>
+		/// <remarks>
+		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module processes the key itself.
+		/// <para>
+		/// Normally panels are not interested in this event, they use <see cref="KeyPressed"/>.
+		/// This event is needed for advanced processing of some special keys.
+		/// </para>
+		/// <para>
+		/// In Far Manager this event is called from the <c>ProcessKeyW</c> with the <c>PKF_PREPROCESS</c> flag.
+		/// </para>
+		/// </remarks>
+		event EventHandler<PanelKeyEventArgs> KeyPressing;
 		/// <summary>
 		/// Called to set the current directory in the file system emulated by the panel.
 		/// </summary>

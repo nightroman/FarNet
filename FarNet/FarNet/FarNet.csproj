@@ -101,6 +101,7 @@
     </Compile>
     <Compile Include="File.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Kit.cs" />
     <Compile Include="Macro.cs" />
     <Compile Include="Panel.cs">
       <SubType>Code</SubType>

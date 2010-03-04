@@ -51,32 +51,18 @@ namespace PowerShellFar
 	static class Kit
 	{
 		/// <summary>
-		/// Formats using the current culture.
-		/// </summary>
-		public static string Format(string format, params object[] args)
-		{
-			return string.Format(CultureInfo.CurrentCulture, format, args);
-		}
-
-		/// <summary>
 		/// Converts with invariant culture.
 		/// </summary>
-		public static string ToString<T>(T value) where T : IConvertible
+		public static string ToString<T>(T value) where T : IConvertible //! IConvertible is not CLS-compliant
 		{
 			return value.ToString(CultureInfo.InvariantCulture);
 		}
-
 		/// <summary>
 		/// Converts with invariant culture.
 		/// </summary>
 		public static string ToString(DateTime value, string format)
 		{
 			return value.ToString(format, CultureInfo.InvariantCulture);
-		}
-
-		public static string ToUpper(string value)
-		{
-			return value.ToUpper(CultureInfo.InvariantCulture);
 		}
 
 		// Compares strings ignoring case.

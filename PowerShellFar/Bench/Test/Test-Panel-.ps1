@@ -76,6 +76,7 @@ $p.Data = New-Object PSObject -Property @{
 	PuttingFiles = 0
 	Total = 0
 	Panel = $p
+	KeyHandler = $null
 }
 
 ### Add an extra method that updates the panel info on events
@@ -189,18 +190,23 @@ $p.add_Escaping({&{
 	}
 }})
 
-### KeyPressed: shows how to process some keys
-$p.add_KeyPressed({&{
-	if (!$_.Preprocess) {
-		# case [F1]:
-		if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
-			if (0 -eq (Show-FarMessage "[F1] has been pressed" -Choices 'Process by handler', 'Allow default action')) {
-				$_.Ignore = $true
-				Show-FarMessage "[F1] has been pressed and processed by the handler"
-			}
+### The key handler used in KeyPressing and KeyPressed events
+# [F1] is sent to both events if KeyPressing does not handle it
+$p.Data.KeyHandler = {
+	# case [F1]:
+	if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
+		if (0 -eq (Show-FarMessage "[F1] has been pressed" $args[0] -Choices '&Handle', '&Default')) {
+			$_.Ignore = $true
+			Show-FarMessage "[F1] has been handled" $args[0]
 		}
 	}
-}})
+}
+
+### KeyPressed: processes some keys.
+$p.add_KeyPressed({ & $this.Data.KeyHandler 'KeyPressed' })
+
+### KeyPressing: pre-processes some keys.
+$p.add_KeyPressing({ & $this.Data.KeyHandler 'KeyPressing' })
 
 ### Closing:
 <#
