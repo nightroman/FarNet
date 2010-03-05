@@ -190,6 +190,29 @@ namespace PowerShellFar
 			}
 		}
 
+		int _FormatEnumerationLimit = -1;
+		/// <summary>
+		/// Determines how many enumerated items are included in a display.
+		/// </summary>
+		/// <remarks>
+		/// The default is the $FormatEnumerationLimit value, usually 4.
+		/// <para>
+		/// See PowerShell help about_Preference_Variables, $FormatEnumerationLimit.
+		/// </para>
+		/// </remarks>
+		public int FormatEnumerationLimit
+		{
+			get
+			{
+				return _FormatEnumerationLimit >= 0 ? _FormatEnumerationLimit : _FormatEnumerationLimit = A.FormatEnumerationLimit;
+			}
+			set
+			{
+				if (value >= 0)
+					_FormatEnumerationLimit = value;
+			}
+		}
+
 		string _ExternalViewerFileName = string.Empty;
 		/// <summary>
 		/// Gets or sets the external viewer application path.
@@ -234,9 +257,5 @@ namespace PowerShellFar
 			}
 		}
 
-		/// <summary>
-		/// Test mode for internal use only.
-		/// </summary>
-		public long Test { get; set; }
 	}
 }

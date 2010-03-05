@@ -10,7 +10,9 @@ Copyright (c) 2005 FarNet Team
 #include "ModuleManager.h"
 #include "ModuleProxy.h"
 #include "Panel0.h"
+#include "Panel2.h"
 #include "Registry.h"
+#include "Shelve.h"
 #include "Wrappers.h"
 
 namespace FarNet
@@ -607,7 +609,7 @@ void Far0::OpenMenu(ModuleToolOptions from)
 
 	// show the panels menu or the message
 	if (from == ModuleToolOptions::Panels)
-		Far::Net->ShowPanelMenu(true);
+		ShowPanelMenu(true);
 	else
 		Far::Net->Message("This menu is empty but it is used internally.", "FarNet");
 }
@@ -770,7 +772,7 @@ void Far0::ConfigTool(List<ProxyTool^>^ tools)
 		tools->Sort(%comparer);
 
 		// fill
-		menu->Add(String::Format(format, " & Name", "Options", "Module\\ID"))->Disabled = true;
+		menu->Add(String::Format(format, " & Name", "Options", "Address"))->Disabled = true;
 		for each(ProxyTool^ it in tools)
 		{
 			// 1) restore the current item, its index vary due to sorting with new hotkeys
@@ -1006,7 +1008,7 @@ bool Far0::CompareNameEx(String^ mask, const wchar_t* name, bool skipPath)
 	return  CompareName(mask->Substring(0, i), name, skipPath) && !CompareName(mask->Substring(i + 1), name, skipPath);
 }
 
-void Far0::OnEditorOpened(IEditor^ editor)
+void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 {
 	if (_registeredEditor.Count == 0)
 		return;
@@ -1016,19 +1018,17 @@ void Far0::OnEditorOpened(IEditor^ editor)
 	for each(ProxyEditor^ it in _registeredEditor)
 	{
 		// mask?
-		CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
-		Info.EditorControl(ECTL_GETFILENAME, fileName);
 		if (SS(it->Mask) && !CompareNameEx(it->Mask, fileName, true))
 			continue;
 
-		//! tradeoff: catch all to call other plugins, too
+		//! tradeoff: catch all to call the others, too
 		try
 		{
 			it->Invoke(editor, nullptr);
 		}
 		catch(Exception^ e)
 		{
-			//! show plugin info, too
+			//! show the address, too
 			Far::Net->ShowError(it->Key, e);
 		}
 	}
@@ -1120,6 +1120,120 @@ CultureInfo^ Far0::GetCurrentUICulture(bool update)
 
 	// fallback
 	return _currentUICulture = CultureInfo::InvariantCulture;
+}
+
+void Far0::ShowPanelMenu(bool showPushCommand)
+{
+	String^ sPushShelveThePanel = "Push/Shelve the panel";
+	String^ sSwitchFullScreen = "Switch full screen";
+	String^ sClose = "Close the panel";
+
+	IMenu^ menu = Far::Net->CreateMenu();
+	menu->AutoAssignHotkeys = true;
+	menu->HelpTopic = "MenuPanels";
+	menu->ShowAmpersands = true;
+	menu->Title = ".NET panel tools";
+	menu->BreakKeys->Add(VKeyCode::Delete);
+
+	FarItem^ mi;
+	for(;; menu->Items->Clear())
+	{
+		// Push/Shelve
+		if (showPushCommand)
+		{
+			IAnyPanel^ panel = Far::Net->Panel;
+			if (panel->IsPlugin)
+			{
+				IPanel^ plugin = dynamic_cast<IPanel^>(panel);
+				if (plugin)
+				{
+					mi = menu->Add(sPushShelveThePanel);
+					mi->Data = plugin;
+
+					mi = menu->Add(sSwitchFullScreen);
+					mi->Data = plugin;
+				}
+				else
+				{
+					showPushCommand = false;
+				}
+
+				mi = menu->Add(sClose);
+				mi->Data = panel;
+			}
+			else if (panel->Kind == PanelKind::File)
+			{
+				FarItem^ mi = menu->Add(sPushShelveThePanel);
+				mi->Data = panel;
+			}
+		}
+
+		// Pop/Unshelve
+		if (ShelveInfo::_stack.Count)
+		{
+			menu->Add("Pop/Unshelve")->IsSeparator = true;
+
+			for each(ShelveInfo^ si in ShelveInfo::_stack)
+			{
+				FarItem^ mi = menu->Add(si->Title);
+				mi->Data = si;
+			}
+		}
+
+		// go
+		if (!menu->Show())
+			return;
+
+		FarItem^ item = menu->Items[menu->Selected];
+		Object^ data = item->Data;
+
+		// [Delete]:
+		if (menu->BreakKey == VKeyCode::Delete)
+		{
+			// case: remove shelved file panel;
+			// do not remove plugin panels because of their shutdown bypassed
+			ShelveInfoPanel^ shelve = dynamic_cast<ShelveInfoPanel^>(data);
+			if (shelve)
+				ShelveInfo::_stack.Remove(shelve);
+
+			continue;
+		}
+
+		// Push/Shelve
+		if ((Object^)item->Text == (Object^)sPushShelveThePanel)
+		{
+			((IAnyPanel^)data)->Push();
+			return;
+		}
+
+		// Full screen:
+		if ((Object^)item->Text == (Object^)sSwitchFullScreen)
+		{
+			FarNet::Panel2^ pp = (FarNet::Panel2^)data;
+			pp->SwitchFullScreen();
+			return;
+		}
+
+		// Close panel:
+		if ((Object^)item->Text == (Object^)sClose)
+		{
+			Panel1^ panel = (Panel1^)data;
+
+			//?? native plugin panel: go to the first item to work around "Far does not restore panel state",
+			// this does not restore either but is still better than unexpected current item after exit.
+			if (nullptr == dynamic_cast<FarNet::Panel2^>(panel))
+				panel->Redraw(0, 0);
+
+			((Panel1^)data)->Close();
+			return;
+		}
+
+		// Pop/Unshelve
+		ShelveInfo^ shelve = (ShelveInfo^)data;
+		shelve->Unshelve();
+
+		return;
+	}
 }
 
 }

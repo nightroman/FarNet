@@ -16,6 +16,20 @@ using System.Text.RegularExpressions;
 
 namespace PowerShellFar
 {
+	/// <summary>
+	/// For internal use.
+	/// </summary>
+	public static class Zoo
+	{
+		///
+		public static bool TestInputCode { get; set; }
+		///
+		public static Meta[] TablePanelSetupColumns(object[] columns)
+		{
+			return TablePanel.SetupColumns(columns);
+		}
+	}
+
 	///
 	[Serializable]
 	public class ModuleException : FarNet.ModuleException
@@ -337,4 +351,5 @@ namespace My
 			return provider.ImplementingType.IsSubclassOf(typeof(NavigationCmdletProvider));
 		}
 	}
+
 }

@@ -95,7 +95,6 @@ public:
 	virtual void SetUserScreen() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;
-	virtual void ShowPanelMenu(bool showPushCommand) override;
 	virtual void Write(String^ text) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) override;

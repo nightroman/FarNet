@@ -400,5 +400,20 @@ namespace PowerShellFar
 			return new Collection<PSObject>();
 		}
 
+		/// <summary>
+		/// Gets the $FormatEnumerationLimit if it is sane or 4.
+		/// </summary>
+		public static int FormatEnumerationLimit
+		{
+			get
+			{
+				object value = Psf.Engine.SessionState.PSVariable.GetValue("FormatEnumerationLimit") ?? 4;
+				if (value.GetType() != typeof(int))
+					return 4;
+				else
+					return (int)value;
+			}
+		}
+	
 	}
 }

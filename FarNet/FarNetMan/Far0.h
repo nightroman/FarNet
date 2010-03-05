@@ -27,7 +27,7 @@ public:
 	static void RegisterProxyEditor(ProxyEditor^ info);
 	static void RegisterProxyFiler(ProxyFiler^ info);
 	static void RegisterProxyTool(ProxyTool^ info);
-	static void OnEditorOpened(IEditor^ editor);
+	static void InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName);
 	static void Start();
 	static void Stop();
 	static void UnregisterProxyAction(ProxyAction^ action);
@@ -39,6 +39,7 @@ public:
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
 	static void Run(String^ command);
+	static void ShowPanelMenu(bool showPushCommand);
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
