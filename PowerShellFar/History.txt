@@ -8,11 +8,12 @@ should be updated. Updated scripts in PSF: Search-Regex-.ps1, Test-Panel-.ps1.
 
 Test-Panel-.ps1: added demo handler of the new event KeyPressing.
 
-The $FormatEnumerationLimit number (standard PowerShell preference variable) is
-used for object panel columns formatting. Example: invoke this command:
+The $Psf.Settings.FormatEnumerationLimit (default is $FormatEnumerationLimit)
+is used for object panel columns and list panel values display. Example: invoke
+this command:
 >: Get-ChildItem hkcu:\ | Out-FarPanel
-... and see that only 4 first items is shown in the Property column (4 is the
-default value of $FormatEnumerationLimit).
+... and see that only 4 first items is shown in the Property column (4 is
+normally the default value).
 
 = 4.3.9 =
 

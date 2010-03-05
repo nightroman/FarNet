@@ -99,10 +99,9 @@ namespace PowerShellFar
 						file.Name = name;
 						file.IsReadOnly = !pi.IsSettable;
 						file.Data = pi;
-						if (pi.Value == null)
-							file.Description = "<null>";
-						else
-							file.Description = pi.Value.ToString();
+
+						// set its value
+						file.Description = Converter.FormatValue(pi.Value, A.Psf.Settings.FormatEnumerationLimit);
 
 						// add
 						Panel.Files.Add(file);

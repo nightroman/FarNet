@@ -650,7 +650,7 @@ Continue with this current directory?
 		/// </example>
 		public void InvokeInputCode()
 		{
-			if (Far.Net.MacroState == FarMacroState.None || A.Psf.Settings.Test == 100120151157)
+			if (Far.Net.MacroState == FarMacroState.None || Zoo.TestInputCode)
 			{
 				// normal mode
 				string code = InputCode();
@@ -1136,5 +1136,6 @@ Continue with this current directory?
 		{
 			get { return Entry.Instance.Manager; }
 		}
+
 	}
 }

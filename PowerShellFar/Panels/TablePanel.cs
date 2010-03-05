@@ -38,10 +38,10 @@ namespace PowerShellFar
 		public string[] ExcludeMembers { get; set; }
 
 		/// <summary>
-		/// For internal use. Gets meta objects for columns.
+		/// Gets meta objects for columns.
 		/// </summary>
 		/// <returns>Meta objects ready for column mapping.</returns>
-		public static Meta[] SetupColumns(object[] columns) //???? public
+		internal static Meta[] SetupColumns(object[] columns)
 		{
 			Meta[] metas = new Meta[columns.Length];
 			for (int iColumn = 0; iColumn < columns.Length; ++iColumn)

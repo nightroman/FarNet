@@ -18,6 +18,12 @@ processing of IPanel.KeyPressed simpler because in most cases panels are not
 interested in preprocessing events; now they do not have to filter them out
 (and not key events, too).
 
+OTHER CHANGES
+
+IFar: removed method ShowPanelMenu(), it is unlikely ever needed for modules.
+
+Internal: impoved management of editor opening events.
+
 = 4.3.9 =
 
 Fixed a few configuration bugs of FarNet 4.3.8.
