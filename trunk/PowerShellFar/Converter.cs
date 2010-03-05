@@ -281,6 +281,58 @@ namespace PowerShellFar
 			}
 		}
 
+		/// <summary>
+		/// Formats the enumerable as a string to show.
+		/// </summary>
+		public static string FormatEnumerable(IEnumerable value, int limit)
+		{
+			IEnumerator it = value.GetEnumerator();
+			string result = "{";
+			int count = 0;
+			while (count < limit)
+			{
+				if (!it.MoveNext())
+					break;
+
+				if (++count > 1)
+					result += ", ";
+
+				if (it.Current != null)
+					result += it.Current.ToString();
+			}
+
+			if (count >= limit && it.MoveNext())
+				result += "...}";
+			else
+				result += "}";
+
+			return result;
+		}
+
+		/// <summary>
+		/// Formats the enumerable as a string to show.
+		/// </summary>
+		public static string FormatValue(object value, int limit)
+		{
+			IEnumerable asEnumerable;
+			if (value == null || value.GetType() == typeof(DBNull))
+			{
+				return "<null>";
+			}
+			else if (value.GetType() == typeof(string))
+			{
+				return (string)value;
+			}
+			else if ((asEnumerable = value as IEnumerable) != null)
+			{
+				return Converter.FormatEnumerable(asEnumerable, limit);
+			}
+			else
+			{
+				return value.ToString();
+			}
+		}
+
 	}
 
 	/// <summary>

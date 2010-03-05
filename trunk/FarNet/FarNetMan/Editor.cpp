@@ -9,6 +9,7 @@ Copyright (c) 2005 FarNet Team
 #include "EditorLine.h"
 #include "EditorLineCollection.h"
 #include "EditorTextWriter.h"
+#include "Far0.h"
 #include "SelectionCollection.h"
 #include "Wrappers.h"
 
@@ -997,17 +998,19 @@ void Editor::Start(const EditorInfo& ei, bool waiting)
 	Info.EditorControl(ECTL_GETFILENAME, fileName);
 	_FileName = gcnew String(fileName);
 
-	// done? e.g. opened by Far
-	if (!waiting)
-		return;
-
 	// preset waiting runtime properties
-	if (_WordDivSet)
-		WordDiv = _WordDiv;
-	if (_ShowWhiteSpaceSet)
-		ShowWhiteSpace = _ShowWhiteSpace;
-	if (_WriteByteOrderMarkSet)
-		WriteByteOrderMark = _WriteByteOrderMark;
+	if (waiting)
+	{
+		if (_WordDivSet)
+			WordDiv = _WordDiv;
+		if (_ShowWhiteSpaceSet)
+			ShowWhiteSpace = _ShowWhiteSpace;
+		if (_WriteByteOrderMarkSet)
+			WriteByteOrderMark = _WriteByteOrderMark;
+	}
+
+	// now call the modules
+	Far0::InvokeModuleEditors(this, fileName);
 }
 
 void Editor::Stop()

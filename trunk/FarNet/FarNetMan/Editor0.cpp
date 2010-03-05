@@ -72,12 +72,9 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			_editors.Add(ei.EditorID, editor);
 			_editorCurrent = editor;
 
-			// start the editor
+			// 1) start the editor; it calls module editor actions, they may add handlers
 			editor->Start(ei, isEditorWaiting);
 
-			// 1) event for module editor actions, they add any or this editor handlers
-			Far0::OnEditorOpened(editor); //????
-			
 			// 2) event for any editor handlers, they add this editor handlers
 			if (_anyEditor._Opened)
 			{

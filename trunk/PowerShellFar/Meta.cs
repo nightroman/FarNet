@@ -285,18 +285,6 @@ namespace PowerShellFar
 			return (T)LanguagePrimitives.ConvertTo(v, typeof(T), CultureInfo.InvariantCulture);
 		}
 
-		int FormatEnumerationLimit //???? *) share it? *) drop it periodically?
-		{
-			get
-			{
-				if (_FormatEnumerationLimit_ < 0)
-					_FormatEnumerationLimit_ = (int)A.Psf.Engine.SessionState.PSVariable.GetValue("FormatEnumerationLimit");
-
-				return _FormatEnumerationLimit_;
-			}
-		}
-		int _FormatEnumerationLimit_ = -1;
-
 		/// <summary>
 		/// Gets a meta value as a string, formatted if <see cref="FormatString"/> is set and
 		/// aligned if <see cref="Width"/> is positive and <see cref="Alignment"/> is <c>Right</c>.
@@ -305,49 +293,30 @@ namespace PowerShellFar
 		{
 			if (string.IsNullOrEmpty(FormatString))
 			{
-				if (_Width <= 0 || Alignment != Alignment.Right)
+				// align right
+				if (_Width > 0 && Alignment == Alignment.Right)
 				{
-					object v = GetValue(value);
-					if (v == null)
-						return null;
-
-					string asString = v as string;
-					if (asString != null)
-						return asString;
-
-					IEnumerable asEnumerable = v as IEnumerable;
-					if (asEnumerable != null)
-					{
-						int FormatEnumerationLimit = this.FormatEnumerationLimit;
-						IEnumerator it = asEnumerable.GetEnumerator();
-						string commaSeparated = "{";
-						int count = 0;
-						while (count < FormatEnumerationLimit)
-						{
-							if (!it.MoveNext())
-								break;
-
-							if (++count > 1)
-								commaSeparated += ", ";
-							
-							if (it.Current != null)
-								commaSeparated += it.Current.ToString();
-						}
-
-						if (count >= FormatEnumerationLimit && it.MoveNext())
-							commaSeparated += "...}";
-						else
-							commaSeparated += "}";
-
-						return commaSeparated;
-					}
-					
-					return (string)LanguagePrimitives.ConvertTo(v, typeof(string));
+					string s = Get<string>(value);
+					return s == null ? null : s.PadLeft(_Width);
 				}
 
-				string s = Get<string>(value);
-				return s == null ? null : s.PadLeft(_Width);
+				// get, null??
+				object v = GetValue(value);
+				if (v == null)
+					return null;
 
+				// string??
+				string asString = v as string;
+				if (asString != null)
+					return asString;
+
+				// enumerable??
+				IEnumerable asEnumerable = v as IEnumerable;
+				if (asEnumerable != null)
+					return Converter.FormatEnumerable(asEnumerable, A.Psf.Settings.FormatEnumerationLimit);
+
+				// others
+				return (string)LanguagePrimitives.ConvertTo(v, typeof(string), CultureInfo.InvariantCulture);
 			}
 			else if (_Width <= 0 || Alignment != Alignment.Right)
 			{

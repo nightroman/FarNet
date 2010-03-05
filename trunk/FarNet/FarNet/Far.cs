@@ -478,11 +478,6 @@ namespace FarNet
 		/// </remarks>
 		public abstract char CodeToChar(int code);
 		/// <summary>
-		/// Shows FarNet panel menu.
-		/// </summary>
-		/// <param name="showPushCommand">Show "Push" command.</param>
-		public abstract void ShowPanelMenu(bool showPushCommand);
-		/// <summary>
 		/// Posts a handler to be invoked when user code has finished and Far gets control.
 		/// </summary>
 		/// <param name="handler">Step handler.</param>

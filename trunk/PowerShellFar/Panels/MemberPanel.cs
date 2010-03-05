@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -137,13 +138,8 @@ namespace PowerShellFar
 						if (asPSObject != null)
 							value = asPSObject.BaseObject;
 
-						//! ArrayList.ToString() catenates items' ToString() - avoid this
-						if (value == null || value.GetType() == typeof(DBNull))
-							f.Description = "<null>";
-						else if (value is System.Collections.IEnumerable && !(value is string))
-							f.Description = value.GetType().Name;
-						else
-							f.Description = value.ToString();
+						// set its value
+						f.Description = Converter.FormatValue(value, A.Psf.Settings.FormatEnumerationLimit);
 
 						f.Data = pi;
 						Panel.Files.Add(f);
