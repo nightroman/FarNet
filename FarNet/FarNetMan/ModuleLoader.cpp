@@ -10,7 +10,7 @@ Copyright (c) 2005 FarNet Team
 #include "ModuleProxy.h"
 
 // The cache version
-const int CacheVersion = 8;
+const int CacheVersion = 9;
 static bool ToCacheVersion;
 
 namespace FarNet
@@ -44,7 +44,7 @@ void ModuleLoader::ReadModuleCache()
 	{
 		// open for writing, to remove obsolete data
 		keyCache = Far::Net->OpenRegistryKey("Plugins\\FarNet\\!Cache", true);
-		
+
 		// different version: drop cache values
 		String^ version = keyCache->GetValue(String::Empty, String::Empty)->ToString();
 		if (version != CacheVersion.ToString())
@@ -55,13 +55,13 @@ void ModuleLoader::ReadModuleCache()
 			ToCacheVersion = true;
 			return;
 		}
-		
+
 		// process cache values
 		for each (String^ assemblyPath in keyCache->GetValueNames())
 		{
 			if (assemblyPath->Length == 0)
 				continue;
-			
+
 			bool done = false;
 			ModuleManager^ manager = nullptr;
 			try
@@ -80,14 +80,14 @@ void ModuleLoader::ReadModuleCache()
 				// stamp mismatch: do not throw!
 				if (assemblyStamp != fi.LastWriteTime.Ticks.ToString(CultureInfo::InvariantCulture))
 					continue;
-				
+
 				// new manager, add it now, remove later on errors
 				manager = gcnew ModuleManager(assemblyPath);
 				_Managers->Add(manager->ModuleName, manager);
 
 				// culture of cached resources
 				String^ savedCulture = reader.Read();
-				
+
 				// check the culture
 				if (savedCulture->Length)
 				{
@@ -98,14 +98,14 @@ void ModuleLoader::ReadModuleCache()
 					// restore the flag
 					manager->CachedResources = true;
 				}
-				
+
 				for(;;)
 				{
 					// Kind, can be end of data
 					String^ kindText = reader.TryRead();
 					if (!kindText)
 						break;
-					
+
 					ModuleItemKind kind = (ModuleItemKind)Enum::Parse(ModuleItemKind::typeid, kindText);
 					switch(kind)
 					{
@@ -196,13 +196,13 @@ void ModuleLoader::LoadFromManifest(String^ file, String^ dir)
 	array<String^>^ lines = File::ReadAllLines(file);
 	if (lines->Length == 0)
 		throw gcnew ModuleException("The manifest file is empty.");
-	
+
 	// assembly
 	String^ path = lines[0]->TrimEnd();
 	if (path->Length == 0)
 		throw gcnew ModuleException("Expected the module assembly name as the first line of the manifest file.");
 	path = Path::Combine(dir, path);
-	
+
 	// collect classes
 	List<String^> classes(lines->Length - 1);
 	for(int i = 1; i < lines->Length; ++i)
@@ -211,7 +211,7 @@ void ModuleLoader::LoadFromManifest(String^ file, String^ dir)
 		if (name->Length)
 			classes.Add(name);
 	}
-	
+
 	// load with classes, if any
 	LoadFromAssembly(path, %classes);
 }
@@ -225,7 +225,7 @@ void ModuleLoader::LoadFromAssembly(String^ assemblyPath, List<String^>^ classes
 	// already loaded (normally from cache)?
 	if (_Managers->ContainsKey(assemblyName))
 		return;
-	
+
 	// add new module manager now, it will be removed on errors
 	ModuleManager^ manager = gcnew ModuleManager(assemblyPath);
 	_Managers->Add(assemblyName, manager);
@@ -280,7 +280,7 @@ int ModuleLoader::LoadClass(ModuleManager^ manager, Type^ type)
 		manager->SetModuleHost(type);
 		return 0;
 	}
-	
+
 	// command
 	if (ModuleCommand::typeid->IsAssignableFrom(type))
 		Far0::RegisterProxyCommand(gcnew ProxyCommand(manager, type));
@@ -395,7 +395,7 @@ array<ProxyTool^>^ ModuleLoader::GetTools(ModuleToolOptions option)
 	{
 		if (action->Kind != ModuleItemKind::Tool)
 			continue;
-		
+
 		ProxyTool^ tool = (ProxyTool^)action;
 		if (int(tool->Options & option))
 			list.Add(tool);

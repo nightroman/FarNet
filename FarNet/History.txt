@@ -18,7 +18,14 @@ processing of IPanel.KeyPressed simpler because in most cases panels are not
 interested in preprocessing events; now they do not have to filter them out
 (and not key events, too).
 
-OTHER CHANGES
+Just in case, [e]Bu$ter's module "Windows7.Libraries" should work fine.
+
+OTHER IMPORTANT CHANGES
+
+Guid attribute is now mandatory for module action classes. Generate it, do not
+copy\paste it from some sample code :).
+
+MINOR CHANGES
 
 IFar: removed method ShowPanelMenu(), it is unlikely ever needed for modules.
 
@@ -92,9 +99,6 @@ MAIN CHANGES
 it once for each class or registered action and never change. But you can now
 use any class or action names and change them as you want: registry data will
 not be affected. All sample modules use these GUIDs.
-
-N.B. Guid attribute is not absolutely mandatory, you can play in your local
-sandbox without it. But if you publish a module, please, set these GUIDs.
 
 *) Module actions: new attribute property Resources. If it is true the property
 Name is the name of a resource string from the module .resources files.

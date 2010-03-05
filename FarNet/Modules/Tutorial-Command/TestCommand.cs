@@ -1,10 +1,9 @@
 
 using FarNet;
 using System;
-using System.Runtime.InteropServices;
 
+[System.Runtime.InteropServices.Guid("63b00e54-bcda-4fa4-b1b8-d6bebaa4f548")]
 [ModuleCommand(Name = Command.Name, Prefix = "Command")]
-[Guid("63b00e54-bcda-4fa4-b1b8-d6bebaa4f548")]
 public class Command : ModuleCommand
 {
 	public const string Name = "Test command";
