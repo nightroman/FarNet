@@ -19,9 +19,17 @@ ProxyAction::ProxyAction(ModuleManager^ manager, Type^ classType, Type^ attribut
 , _ClassType(classType)
 , _Id(classType->GUID)
 {
-	array<Object^>^ attrs = _ClassType->GetCustomAttributes(attributeType, false);
+	array<Object^>^ attrs;
+
+	// ID: we have already got it, now ensure it is explicitely set
+	attrs = _ClassType->GetCustomAttributes(System::Runtime::InteropServices::GuidAttribute::typeid, false);
 	if (attrs->Length == 0)
-		throw gcnew ModuleException("Module class has no required Module* attribute.");
+		throw gcnew ModuleException(Invariant::Format("The 'GuidAttribute' should be set for the class '{0}'.", _ClassType->Name));
+
+	// Module* attribure
+	attrs = _ClassType->GetCustomAttributes(attributeType, false);
+	if (attrs->Length == 0)
+		throw gcnew ModuleException(Invariant::Format("The '{0}' should be set for the class '{1}'.", attributeType->Name, _ClassType->Name));
 
 	_Attribute = (ModuleActionAttribute^)attrs[0];
 
@@ -353,7 +361,7 @@ ModuleToolOptions ProxyTool::Options::get()
 {
 	if (!_OptionsValid)
 	{
-		//! Do '&' it with the default options, they may change, and just for sanity
+		// merge with the default options
 		_Options = Attribute->Options & (ModuleToolOptions)ModuleManager::LoadFarNetValue(Key, "Options", Attribute->Options);
 		_OptionsValid = true;
 	}
@@ -363,7 +371,7 @@ ModuleToolOptions ProxyTool::Options::get()
 
 void ProxyTool::SetOptions(ModuleToolOptions value)
 {
-	ModuleManager::SaveFarNetValue(Key, "Options", (int)value);
+	ModuleManager::SaveFarNetValue(Key, "Options", ~(int(Attribute->Options) & (~int(value))));
 	_Options = value;
 	_OptionsValid = true;
 }
