@@ -1,10 +1,9 @@
 
 using FarNet;
 using System;
-using System.Runtime.InteropServices;
 
 // Trims line ends in a saving file.
-[Guid("7a42d03a-83d3-4c8f-b4d3-6483bf1acaf0")]
+[System.Runtime.InteropServices.Guid("7a42d03a-83d3-4c8f-b4d3-6483bf1acaf0")]
 [ModuleEditor(Name = TrimSaving.Name)]
 public class TrimSaving : ModuleEditor
 {

@@ -4,11 +4,10 @@
 
 using FarNet;
 using System;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
+[System.Runtime.InteropServices.Guid("e3b6663c-d6de-4494-9991-eafb4385fba5")]
 [ModuleTool(Name = Escape.Name, Options = ModuleToolOptions.Editor)]
-[Guid("e3b6663c-d6de-4494-9991-eafb4385fba5")]
 public class Escape : ModuleTool
 {
 	public const string Name = "Escape selected text";
@@ -22,6 +21,7 @@ public class Escape : ModuleTool
 	}
 }
 
+[System.Runtime.InteropServices.Guid("3857bfda-96fc-4e98-8203-e8d2f4c934f5")]
 [ModuleTool(Name = Unescape.Name, Options = ModuleToolOptions.Editor)]
 public class Unescape : ModuleTool
 {

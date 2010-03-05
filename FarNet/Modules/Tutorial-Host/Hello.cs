@@ -5,11 +5,10 @@
 
 using FarNet;
 using System;
-using System.Runtime.InteropServices;
 
 // Menu item "Hello" in all areas.
+[System.Runtime.InteropServices.Guid("68c56c3a-b832-4e9d-983f-9922ba4e6d9d")]
 [ModuleTool(Name = Hello.Name, Options = ModuleToolOptions.AllAreas, Resources = true)]
-[Guid("68c56c3a-b832-4e9d-983f-9922ba4e6d9d")]
 public class Hello : ModuleTool
 {
 	public const string Name = "Hello";
@@ -21,8 +20,8 @@ public class Hello : ModuleTool
 }
 
 // The host is loaded and connected only on "Hello" menus.
+[System.Runtime.InteropServices.Guid("45932afa-0eaf-448f-95d8-9433c028f268")]
 [ModuleHost(Load = false)]
-[Guid("45932afa-0eaf-448f-95d8-9433c028f268")]
 public class Host : ModuleHost
 {
 	// This is called once before the first call of "Hello".

@@ -3,11 +3,10 @@ using FarNet;
 using System;
 using System.IO;
 using System.Text;
-using System.Runtime.InteropServices;
 
 // Test filer for *.filer files with "FILER" header
+[System.Runtime.InteropServices.Guid("7465ee92-dbef-4757-a92c-7ebc82abac67")]
 [ModuleFiler(Name = TestFiler.Name, Mask = "*.filer")]
-[Guid("7465ee92-dbef-4757-a92c-7ebc82abac67")]
 public class TestFiler : ModuleFiler
 {
 	public const string Name = "TestFiler";
