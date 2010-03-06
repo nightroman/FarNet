@@ -12,8 +12,13 @@ The $Psf.Settings.FormatEnumerationLimit (default is $FormatEnumerationLimit)
 is used for object panel columns and list panel values display. Example: invoke
 this command:
 >: Get-ChildItem hkcu:\ | Out-FarPanel
-... and see that only 4 first items is shown in the Property column (4 is
-normally the default value).
+.. and see that only a few first items is shown in the Property column. Compare
+with standard PowerShell output:
+>: Get-ChildItem hkcu:\
+.. results should look more or less the same (visually, of course, panel output
+is not text output, it shows live objects in the panel, not dead text).
+
+Fix: Module FarMacro: a few issues with paths with end '\'.
 
 = 4.3.9 =
 

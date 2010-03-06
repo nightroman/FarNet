@@ -5,7 +5,6 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Security.Permissions;
-using System.Runtime.InteropServices;
 using FarNet;
 
 namespace PowerShellFar
@@ -14,7 +13,6 @@ namespace PowerShellFar
 	/// FarNet module host for internal use.
 	/// </summary>
 	[ModuleHost(Load = true)]
-	[Guid("49748a00-3141-4f5f-b1f0-126914c4e69b")]
 	public sealed class Entry : ModuleHost
 	{
 		/// <summary>

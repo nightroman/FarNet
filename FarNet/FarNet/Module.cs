@@ -228,7 +228,6 @@ namespace FarNet
 	/// Normally the module implements the <see cref="Connect"/> method.
 	/// There are a few more optional virtual members that can be implemented when needed.
 	/// </para>
-	/// <include file='doc.xml' path='docs/pp[@name="Guid"]/*'/>
 	/// </remarks>
 	public abstract class ModuleHost : BaseModuleItem
 	{
@@ -332,58 +331,6 @@ namespace FarNet
 	/// </summary>
 	public abstract class ModuleAction : BaseModuleItem
 	{
-	}
-
-	/// <summary>
-	/// Module tool options, combination of flags.
-	/// </summary>
-	/// <remarks>
-	/// Choose the flags carefully, do not include areas where the tool is not supposed to work.
-	/// Nobody wants to see their tool menus polluted by items that do not actually work.
-	/// </remarks>
-	[Flags]
-	public enum ModuleToolOptions
-	{
-		/// <summary>
-		/// None.
-		/// </summary>
-		None,
-		/// <summary>
-		/// Show the item in the config menu.
-		/// </summary>
-		Config = 1 << 0,
-		/// <summary>
-		/// Show the item in the disk menu.
-		/// </summary>
-		Disk = 1 << 1,
-		/// <summary>
-		/// Show the item in the menu called from the editor.
-		/// </summary>
-		Editor = 1 << 2,
-		/// <summary>
-		/// Show the item in the menu called from the panels.
-		/// </summary>
-		Panels = 1 << 3,
-		/// <summary>
-		/// Show the item in the menu called from the viewer.
-		/// </summary>
-		Viewer = 1 << 4,
-		/// <summary>
-		/// Show the item in the menu called from dialogs.
-		/// </summary>
-		Dialog = 1 << 5,
-		/// <summary>
-		/// Show the item in all F11 menus (Panels | Editor | Viewer | Dialog).
-		/// </summary>
-		F11Menus = Panels | Editor | Viewer | Dialog,
-		/// <summary>
-		/// Show the item in F11 menus and in the disk menu (F11Menus | Disk).
-		/// </summary>
-		AllMenus = F11Menus | Disk,
-		/// <summary>
-		/// Show the item in F11 menus, the disk menu and the config menu (AllMenus | Config).
-		/// </summary>
-		AllAreas = AllMenus | Config
 	}
 
 	/// <summary>
@@ -544,6 +491,58 @@ namespace FarNet
 	}
 
 	/// <summary>
+	/// Module tool options, combination of flags.
+	/// </summary>
+	/// <remarks>
+	/// Choose the flags carefully, do not include areas where the tool is not supposed to work.
+	/// Nobody wants to see their tool menus polluted by items that do not actually work.
+	/// </remarks>
+	[Flags]
+	public enum ModuleToolOptions
+	{
+		/// <summary>
+		/// None.
+		/// </summary>
+		None,
+		/// <summary>
+		/// Show the item in the config menu.
+		/// </summary>
+		Config = 1 << 0,
+		/// <summary>
+		/// Show the item in the disk menu.
+		/// </summary>
+		Disk = 1 << 1,
+		/// <summary>
+		/// Show the item in the menu called from the editor.
+		/// </summary>
+		Editor = 1 << 2,
+		/// <summary>
+		/// Show the item in the menu called from the panels.
+		/// </summary>
+		Panels = 1 << 3,
+		/// <summary>
+		/// Show the item in the menu called from the viewer.
+		/// </summary>
+		Viewer = 1 << 4,
+		/// <summary>
+		/// Show the item in the menu called from dialogs.
+		/// </summary>
+		Dialog = 1 << 5,
+		/// <summary>
+		/// Show the item in all F11 menus (Panels | Editor | Viewer | Dialog).
+		/// </summary>
+		F11Menus = Panels | Editor | Viewer | Dialog,
+		/// <summary>
+		/// Show the item in F11 menus and in the disk menu (F11Menus | Disk).
+		/// </summary>
+		AllMenus = F11Menus | Disk,
+		/// <summary>
+		/// Show the item in F11 menus, the disk menu and the config menu (AllMenus | Config).
+		/// </summary>
+		AllAreas = AllMenus | Config
+	}
+
+	/// <summary>
 	/// Module tool action attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
@@ -612,8 +611,16 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module action worker.
+	/// Module action runtime representation.
 	/// </summary>
+	/// <remarks>
+	/// Any registered module action has its runtime representation, one of this inderface descendants.
+	/// These representation interfaces are not directly related to action classes or handlers, they only represent them.
+	/// <para>
+	/// Action representations can be requested by their IDs by
+	/// <see cref="IFar.GetModuleCommand"/>, <see cref="IFar.GetModuleFiler"/>, and <see cref="IFar.GetModuleTool"/>.
+	/// </para>
+	/// </remarks>
 	public interface IModuleAction
 	{
 		/// <summary>
@@ -645,8 +652,12 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module command worker.
+	/// Module command runtime representation.
 	/// </summary>
+	/// <remarks>
+	/// It represents an auto registered <see cref="ModuleCommand"/> or a command registered by <see cref="IModuleManager.RegisterModuleCommand"/>.
+	/// It can be accessed by <see cref="IFar.GetModuleCommand"/> from any module.
+	/// </remarks>
 	public interface IModuleCommand : IModuleAction
 	{
 		/// <summary>
@@ -660,8 +671,12 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module filer worker.
+	/// Module filer runtime representation.
 	/// </summary>
+	/// <remarks>
+	/// It represents an auto registered <see cref="ModuleFiler"/> or a filer registered by <see cref="IModuleManager.RegisterModuleFiler"/>.
+	/// It can be accessed by <see cref="IFar.GetModuleFiler"/> from any module.
+	/// </remarks>
 	public interface IModuleFiler : IModuleAction
 	{
 		/// <summary>
@@ -679,8 +694,12 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module tool worker.
+	/// Module tool runtime representation.
 	/// </summary>
+	/// <remarks>
+	/// It represents an auto registered <see cref="ModuleTool"/> or a tool registered by <see cref="IModuleManager.RegisterModuleTool"/>.
+	/// It can be accessed by <see cref="IFar.GetModuleTool"/> from any module.
+	/// </remarks>
 	public interface IModuleTool : IModuleAction
 	{
 		/// <summary>
@@ -692,4 +711,5 @@ namespace FarNet
 		/// </summary>
 		ModuleToolOptions Options { get; }
 	}
+
 }
