@@ -2,30 +2,39 @@ http://code.google.com/p/farnet/
 
 = 4.3.10 =
 
-PANEL KEY PROCESSING CHANGES
+ACTION GUID
+
+Guid attribute is now mandatory for module action classes (tools, commands,
+editors, filers). Generate it, do not copy\paste it from some sample code :).
+
+At the same time Guid attribute is not required for module host classes. It is
+not an error to set it, it is just not used by FarNet. Each module host is well
+identified by its module name, because module names have to be unique.
+
+PANEL KEY PROCESSING
 
 Preprocessing of panel keys is now done by the new event IPanel.KeyPressing.
 As a result:
 1) Event IPanel.KeyPressed is not called on this, KeyPressing is called;
 2) Flag PanelKeyEventArgs.Preprocess was removed, it is not needed now.
 
-Also, some misterious and\or annoying pseudo-key events are filtered out
+Also, some misterious and\or annoying pseudo key events are filtered out
 internally and panel key events are not called (e.g. KEY_NONE, KEY_IDLE,
 KEY_KILLFOCUS, KEY_GOTFOCUS - some of them are not documented in Far API).
 
-This change is breaking for panels using PanelKeyEventArgs.Preprocess. It makes
-processing of IPanel.KeyPressed simpler because in most cases panels are not
-interested in preprocessing events; now they do not have to filter them out
-(and not key events, too).
+This change is breaking for panels using PanelKeyEventArgs.Preprocess. But it
+makes processing of IPanel.KeyPressed simpler because in most cases panels are
+not interested in preprocessing events. Thus, panels do not have to filter out
+noise of preprocessing keys and pseudo keys.
 
 Just in case, [e]Bu$ter's module "Windows7.Libraries" should work fine.
 
-OTHER IMPORTANT CHANGES
-
-Guid attribute is now mandatory for module action classes. Generate it, do not
-copy\paste it from some sample code :).
-
 MINOR CHANGES
+
+FarNet module tool config: minor issue: if a new version of an installed module
+tool adds new menu areas then items may be not shown there by default if a user
+had already modified the tool configuration. Fixed for new modules to come. Old
+module tool settings may be updated manually when needed.
 
 IFar: removed method ShowPanelMenu(), it is unlikely ever needed for modules.
 

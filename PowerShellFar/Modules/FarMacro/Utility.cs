@@ -39,6 +39,14 @@ namespace FarMacro
 			if (path.Length == 0)
 				return;
 
+			// -- open psfconsole
+			// ipmo farmacro
+			// cd farmacro:\shell
+			// -- type: gi[Tab]
+			// -- TabExpansion fails
+			path = path.TrimEnd('\\');
+
+			// workaround: '/' confuses PS
 			path = path.Replace("/", "(Slash)");
 
 			int i = path.IndexOf('\\');
