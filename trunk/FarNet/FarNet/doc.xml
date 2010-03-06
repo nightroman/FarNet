@@ -11,8 +11,10 @@
 	</pp>
 	<pp name='Guid'>
 		<para>
-			It is strongly recommended to set the <see cref="System.Runtime.InteropServices.GuidAttribute"/>
-			for this class and never change it. FarNet uses this ID internally for storing and restoring data.
+			It is mandatory to set the action ID by <c>System.Runtime.InteropServices.GuidAttribute</c>.
+			The ID has to be generated exactly for this class and it should never change.
+			FarNet uses this ID internally for storing and restoring data.
+			Other modules may use this ID to access and call this action.
 		</para>
 	</pp>
 	<pp name='UseLastHistory'>
@@ -167,12 +169,14 @@ help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
 		<example>
 			(PowerShell): how to set an item checked when the dialog is running
 			<code>
-				# get an item
-				$item = $listbox.Items[3]
-				# change it
-				$item.Checked = $true
-				# set it!
-				$listbox.Items[3] = $item
+				<![CDATA[
+# get an item
+$item = $listbox.Items[3]
+# change it
+$item.Checked = $true
+# set it!
+$listbox.Items[3] = $item
+]]>
 			</code>
 		</example>
 	</pp>

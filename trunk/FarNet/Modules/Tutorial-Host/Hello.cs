@@ -20,7 +20,6 @@ public class Hello : ModuleTool
 }
 
 // The host is loaded and connected only on "Hello" menus.
-[System.Runtime.InteropServices.Guid("45932afa-0eaf-448f-95d8-9433c028f268")]
 [ModuleHost(Load = false)]
 public class Host : ModuleHost
 {
