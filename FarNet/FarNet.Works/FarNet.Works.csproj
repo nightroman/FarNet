@@ -37,8 +37,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UIConfigCommand.cs" />
+    <Compile Include="ConfigCommand.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ConfigEditor.cs" />
+    <Compile Include="ConfigFiler.cs" />
+    <Compile Include="ConfigTool.cs" />
+    <Compile Include="ConfigUICulture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet.csproj">

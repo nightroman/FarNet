@@ -621,7 +621,7 @@ void Far0::OpenConfig()
 	menu->HelpTopic = "MenuConfig";
 	menu->Title = "Modules configuration";
 
-	List<ProxyTool^> tools = ModuleLoader::GetTools();
+	List<IModuleTool^> tools = ModuleLoader::GetTools();
 
 	String^ format = "{0,-10} : {1,2}";
 	menu->Add(String::Format(format, Res::ModuleMenuTools, tools.Count));
@@ -637,292 +637,24 @@ void Far0::OpenConfig()
 		{
 		case 0:
 			if (tools.Count)
-				ConfigTool(%tools);
+				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", Res::MenuPrefix, gcnew ModuleToolComparer);
 			break;
 		case 1:
 			if (_registeredCommand.Count)
-			{
-				UIConfigCommand ui;
-				ui.Show(%_registeredCommand);
-			}
+				Works::ConfigCommand::Show(%_registeredCommand, Far0::_helpTopic + "ConfigCommand");
 			break;
 		case 2:
 			if (_registeredEditor.Count)
-				ConfigEditor();
+				Works::ConfigEditor::Show(%_registeredEditor, Far0::_helpTopic + "ConfigEditor");
 			break;
 		case 3:
 			if (_registeredFiler.Count)
-				ConfigFiler();
+				Works::ConfigFiler::Show(%_registeredFiler, Far0::_helpTopic + "ConfigFiler");
 			break;
-			// mind separator
-		case 5:
-			ConfigUICulture();
+		case 5: // mind separator
+			Works::ConfigUICulture::Show(ModuleLoader::GetModuleManagers(), Far0::_helpTopic + "ConfigUICulture");
 			break;
 		}
-	}
-}
-
-void Far0::ConfigUICulture()
-{
-	IMenu^ menu = Far::Net->CreateMenu();
-	menu->Title = "Module UI culture";
-	menu->HelpTopic = _helpTopic + "ConfigUICulture";
-	menu->AutoAssignHotkeys = true;
-
-	int width = 0;
-	for each(String^ assemblyName in ModuleLoader::AssemblyNames)
-		if (width < assemblyName->Length)
-			width = assemblyName->Length;
-
-	for(;;)
-	{
-		menu->Items->Clear();
-		for each(String^ assemblyName in ModuleLoader::AssemblyNames)
-			menu->Add(String::Format("{0} : {1}", assemblyName->PadRight(width), ModuleManager::LoadFarNetValue(assemblyName , "UICulture", String::Empty)));
-
-		if (!menu->Show())
-			return;
-
-		// get data to show
-		String^ assemblyName = ModuleLoader::AssemblyNames[menu->Selected];
-		String^ cultureName = ModuleManager::LoadFarNetValue(assemblyName , "UICulture", String::Empty)->ToString();
-
-		// show the input box
-		IInputBox^ ib = Far::Net->CreateInputBox();
-		ib->Title = assemblyName;
-		ib->Prompt = "Culture name (empty = the Far culture)";
-		ib->Text = cultureName;
-		ib->History = "Culture";
-		ib->HelpTopic = menu->HelpTopic;
-		ib->EmptyEnabled = true;
-		if (!ib->Show())
-			continue;
-
-		// set the culture (even the same, to refresh)
-		cultureName = ib->Text->Trim();
-		CultureInfo^ ci;
-		try
-		{
-			// get the culture by name, it may throw
-			ci = CultureInfo::GetCultureInfo(cultureName);
-
-			// save the name from the culture, not from a user
-			ModuleManager::SaveFarNetValue(assemblyName , "UICulture", ci->Name);
-
-			// use the current Far culture instead of invariant
-			if (ci->Name->Length == 0)
-				ci = GetCurrentUICulture(true);
-
-			// update the module
-			ModuleManager^ manager = ModuleLoader::GetModuleManager(assemblyName);
-			manager->CurrentUICulture = ci;
-
-			// notify
-			if (manager->CachedResources)
-				Far::Net->Message("Some UI strings will be updated only when Far restarts.");
-		}
-		catch(ArgumentException^)
-		{
-			Far::Net->Message("Unknown culture name.");
-		}
-	}
-}
-
-ref class ModuleToolComparer : IComparer<ProxyTool^>
-{
-public:
-	virtual int Compare(ProxyTool^ x, ProxyTool^ y)
-	{
-		return String::Compare(x->GetMenuText(), y->GetMenuText(), true, Far::Net->GetCurrentUICulture(false));
-	}
-};
-
-static ICheckBox^ OnConfigTool_AddOption(IDialog^ dialog, String^ text, ModuleToolOptions option, ModuleToolOptions defaultOptions, ModuleToolOptions currentOptions)
-{
-	ICheckBox^ result = dialog->AddCheckBox(5, -1, text);
-	if (0 == int(option & defaultOptions))
-		result->Disabled = true;
-	else if (int(option & currentOptions))
-		result->Selected = 1;
-	return result;
-}
-
-void Far0::ConfigTool(List<ProxyTool^>^ tools)
-{
-	IMenu^ menu = Far::Net->CreateMenu();
-	menu->Title = "Menu tools";
-	menu->HelpTopic = _helpTopic + "ConfigTool";
-
-	ProxyTool^ tool = nullptr;
-	ModuleToolComparer comparer;
-	for(;;)
-	{
-		// format
-		int widthName = 9; // Name
-		int widthAttr = 7; // Options
-		for each(ProxyTool^ it in tools)
-		{
-			if (widthName < it->Name->Length)
-				widthName = it->Name->Length;
-			if (widthAttr < it->Options.ToString()->Length)
-				widthAttr = it->Options.ToString()->Length;
-		}
-		widthName += 3;
-		String^ format = Res::MenuPrefix + "{0,-" + widthName + "} : {1,-" + widthAttr + "} : {2}";
-
-		// reset
-		menu->Items->Clear();
-		tools->Sort(%comparer);
-
-		// fill
-		menu->Add(String::Format(format, " & Name", "Options", "Address"))->Disabled = true;
-		for each(ProxyTool^ it in tools)
-		{
-			// 1) restore the current item, its index vary due to sorting with new hotkeys
-			if (tool && it == tool)
-				menu->Selected = menu->Items->Count;
-
-			// 2) add the item
-			FarItem^ mi = menu->Add(String::Format(format, it->GetMenuText(), it->Options, it->Key));
-			mi->Data = it;
-		}
-
-		// show
-		if (!menu->Show())
-			return;
-
-		// the tool
-		tool = (ProxyTool^)menu->SelectedData;
-
-		// dialog
-		IDialog^ dialog = Far::Net->CreateDialog(-1, -1, 77, 14);
-		dialog->HelpTopic = menu->HelpTopic;
-		dialog->AddBox(3, 1, 0, 0, tool->Name);
-
-		IEdit^ edHotkey = dialog->AddEditFixed(5, -1, 5, tool->HotkeyChar == ' ' ? String::Empty : gcnew String(gcnew array<Char> { tool->HotkeyChar }));
-		dialog->AddText(7, 0, 0, "&Hotkey");
-
-		dialog->AddText(5, -1, 0, String::Empty)->Separator = 1;
-
-		ModuleToolOptions defaultOptions = tool->DefaultOptions;
-		ModuleToolOptions currentOptions = tool->Options;
-
-		ICheckBox^ cbPanels = OnConfigTool_AddOption(dialog, "&Panels", ModuleToolOptions::Panels, defaultOptions, currentOptions);
-		ICheckBox^ cbEditor = OnConfigTool_AddOption(dialog, "&Editor", ModuleToolOptions::Editor, defaultOptions, currentOptions);
-		ICheckBox^ cbViewer = OnConfigTool_AddOption(dialog, "&Viewer", ModuleToolOptions::Viewer, defaultOptions, currentOptions);
-		ICheckBox^ cbDialog = OnConfigTool_AddOption(dialog, "&Dialog", ModuleToolOptions::Dialog, defaultOptions, currentOptions);
-		ICheckBox^ cbConfig = OnConfigTool_AddOption(dialog, "&Config", ModuleToolOptions::Config, defaultOptions, currentOptions);
-		ICheckBox^ cbDisk = OnConfigTool_AddOption(dialog, "Dis&k", ModuleToolOptions::Disk, defaultOptions, currentOptions);
-
-		dialog->AddText(5, -1, 0, String::Empty)->Separator = 1;
-
-		IButton^ buttonOK = dialog->AddButton(0, -1, "Ok");
-		buttonOK->CenterGroup = true;
-		dialog->Default = buttonOK;
-		dialog->Cancel = dialog->AddButton(0, 0, "Cancel");
-		dialog->Cancel->CenterGroup = true;
-
-		if (!dialog->Show())
-			continue;
-
-		// new hotkey
-		tool->SetHotkey(edHotkey->Text);
-
-		// new options
-		ModuleToolOptions newOptions = ModuleToolOptions::None;
-		if (cbPanels->Selected) newOptions = newOptions | ModuleToolOptions::Panels;
-		if (cbEditor->Selected) newOptions = newOptions | ModuleToolOptions::Editor;
-		if (cbViewer->Selected) newOptions = newOptions | ModuleToolOptions::Viewer;
-		if (cbDialog->Selected) newOptions = newOptions | ModuleToolOptions::Dialog;
-		if (cbConfig->Selected) newOptions = newOptions | ModuleToolOptions::Config;
-		if (cbDisk->Selected) newOptions = newOptions | ModuleToolOptions::Disk;
-
-		// unregister the current
-		UnregisterProxyTool(tool);
-
-		// set new options
-		tool->SetOptions(newOptions);
-
-		// register new
-		RegisterProxyTool(tool);
-	}
-}
-
-void Far0::ConfigEditor()
-{
-	IMenu^ menu = Far::Net->CreateMenu();
-	menu->AutoAssignHotkeys = true;
-	menu->HelpTopic = "ConfigEditor";
-	menu->Title = Res::ModuleEditors;
-
-	for each(ProxyEditor^ it in _registeredEditor)
-	{
-		FarItem^ mi = menu->Add(it->Key);
-		mi->Data = it;
-	}
-
-	while(menu->Show())
-	{
-		FarItem^ mi = menu->Items[menu->Selected];
-		ProxyEditor^ it = (ProxyEditor^)mi->Data;
-
-		IInputBox^ ib = Far::Net->CreateInputBox();
-		ib->EmptyEnabled = true;
-		ib->HelpTopic = _helpTopic + "ConfigEditor";
-		ib->History = "Masks";
-		ib->Prompt = "New mask for " + it->Name;
-		ib->Text = it->Mask;
-		ib->Title = "Original mask: " + it->DefaultMask;
-
-		if (!ib->Show())
-			return;
-		String^ mask = ib->Text->Trim();
-
-		// restore original on empty
-		if (mask->Length == 0)
-			mask = it->DefaultMask;
-
-		// set
-		it->SetMask(mask);
-	}
-}
-
-void Far0::ConfigFiler()
-{
-	IMenu^ menu = Far::Net->CreateMenu();
-	menu->AutoAssignHotkeys = true;
-	menu->HelpTopic = "ConfigFiler";
-	menu->Title = Res::ModuleFilers;
-
-	for each(ProxyFiler^ it in _registeredFiler)
-	{
-		FarItem^ mi = menu->Add(it->Key);
-		mi->Data = it;
-	}
-
-	while(menu->Show())
-	{
-		FarItem^ mi = menu->Items[menu->Selected];
-		ProxyFiler^ it = (ProxyFiler^)mi->Data;
-
-		IInputBox^ ib = Far::Net->CreateInputBox();
-		ib->EmptyEnabled = true;
-		ib->HelpTopic = _helpTopic + "ConfigFiler";
-		ib->History = "Masks";
-		ib->Prompt = "New mask for " + it->Name;
-		ib->Text = it->Mask;
-		ib->Title = "Original mask: " + it->DefaultMask;
-
-		if (!ib->Show())
-			return;
-		String^ mask = ib->Text->Trim();
-
-		// restore original on empty
-		if (mask->Length == 0)
-			mask = it->DefaultMask;
-
-		// set
-		it->SetMask(mask);
 	}
 }
 

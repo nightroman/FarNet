@@ -75,20 +75,20 @@ private:
 	EventHandler<ModuleCommandEventArgs^>^ _Handler;
 };
 
-ref class ProxyEditor sealed : ProxyAction
+ref class ProxyEditor sealed : ProxyAction, IModuleEditor
 {
 public:
 	virtual String^ ToString() override;
+	virtual void Invoke(Object^ sender, ModuleEditorEventArgs^ e);
+	virtual void ResetMask(String^ value);
+public:
 	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Editor; } }
+	virtual property String^ DefaultMask { String^ get() { return Attribute->Mask; } }
+	virtual property String^ Mask { String^ get(); }
 internal:
 	ProxyEditor(ModuleManager^ manager, EnumerableReader^ reader);
 	ProxyEditor(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
-	void Invoke(Object^ sender, ModuleEditorEventArgs^ e);
-	virtual property String^ Mask { String^ get(); }
-internal:
-	property String^ DefaultMask { String^ get() { return Attribute->Mask; } }
-	void SetMask(String^ value);
 private:
 	void Init();
 	property ModuleEditorAttribute^ Attribute { ModuleEditorAttribute^ get() { return (ModuleEditorAttribute^)GetAttribute(); } }
@@ -102,17 +102,17 @@ ref class ProxyFiler sealed : ProxyAction, IModuleFiler
 public:
 	virtual String^ ToString() override;
 	virtual void Invoke(Object^ sender, ModuleFilerEventArgs^ e);
+	virtual void ResetMask(String^ value);
+public:
 	virtual property String^ Mask { String^ get(); }
 	virtual property bool Creates { bool get() { return Attribute->Creates; } }
 	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Filer; } }
+	virtual property String^ DefaultMask { String^ get() { return Attribute->Mask; } }
 internal:
 	ProxyFiler(ModuleManager^ manager, Guid id, ModuleFilerAttribute^ attribute, EventHandler<ModuleFilerEventArgs^>^ handler);
 	ProxyFiler(ModuleManager^ manager, EnumerableReader^ reader);
 	ProxyFiler(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
-internal:
-	property String^ DefaultMask { String^ get() { return Attribute->Mask; } }
-	void SetMask(String^ value);
 private:
 	void Init();
 	property ModuleFilerAttribute^ Attribute { ModuleFilerAttribute^ get() { return (ModuleFilerAttribute^)GetAttribute(); } }
@@ -128,21 +128,22 @@ ref class ProxyTool sealed : ProxyAction, IModuleTool
 public:
 	virtual String^ ToString() override;
 	virtual void Invoke(Object^ sender, ModuleToolEventArgs^ e);
+	virtual void ResetHotkey(String^ value);
+	virtual void ResetOptions(ModuleToolOptions value);
+public:
 	virtual property ModuleToolOptions Options { ModuleToolOptions get(); }
 	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Tool; } }
+	virtual property ModuleToolOptions DefaultOptions { ModuleToolOptions get() { return Attribute->Options; } }
+	virtual property String^ Hotkey { String^ get(); }
 internal:
 	ProxyTool(ModuleManager^ manager, Type^ classType);
 	ProxyTool(ModuleManager^ manager, Guid id, ModuleToolAttribute^ attribute, EventHandler<ModuleToolEventArgs^>^ handler);
 	ProxyTool(ModuleManager^ manager, EnumerableReader^ reader);
 	virtual void WriteCache(List<String^>^ data) override;
-	property Char HotkeyChar { Char get(); }
-	property String^ HotkeyText { String^ get(); }
-	void SetHotkey(String^ value);
 	String^ GetMenuText();
-	property ModuleToolOptions DefaultOptions { ModuleToolOptions get() { return Attribute->Options; } }
-	void SetOptions(ModuleToolOptions value);
 private:
 	property ModuleToolAttribute^ Attribute { ModuleToolAttribute^ get() { return (ModuleToolAttribute^)GetAttribute(); } }
+	void SetValidHotkey(String^ value);
 private:
 	// Dynamic proxy handler.
 	EventHandler<ModuleToolEventArgs^>^ _Handler;
@@ -150,7 +151,16 @@ private:
 	ModuleToolOptions _Options;
 	bool _OptionsValid;
 	// Menu hotkey.
-	Char _Hotkey;
+	String^ _Hotkey;
+};
+
+ref class ModuleToolComparer : IComparer<IModuleTool^>
+{
+public:
+	virtual int Compare(IModuleTool^ x, IModuleTool^ y)
+	{
+		return String::Compare(((ProxyTool^)x)->GetMenuText(), ((ProxyTool^)y)->GetMenuText(), true, Far::Net->GetCurrentUICulture(false));
+	}
 };
 
 }

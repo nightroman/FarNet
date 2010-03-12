@@ -61,7 +61,8 @@ FarNetMan.hlf - FarNet UI help
 
 .\FarNet\
 FarNet.dll - FarNet interfaces for .NET modules
-FarNet.xml - XML documentation
+FarNet.xml - FarNet API XML documentation
+FarNet.Works.* - FarNet internal tools
 
 .\FarNet\Modules\
 Each module folder contains exactly one .cfg file (module manifest) or exactly

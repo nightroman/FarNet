@@ -44,19 +44,15 @@ public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
 	static void InvalidateProxyCommand();
+	static void UnregisterProxyTool(ProxyTool^ tool);
 private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
 	static void AssertHotkeys();
-	static void ConfigEditor();
-	static void ConfigFiler();
-	static void ConfigTool(List<ProxyTool^>^ tools);
-	static void ConfigUICulture();
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
 	static void ProcessPrefixes(INT_PTR item);
 	static void VoidStep(Object^, EventArgs^) {}
-	static void UnregisterProxyTool(ProxyTool^ tool);
 	static void InvalidateProxyTool(ModuleToolOptions options);
 private:
 	static CStr* _pConfig;
@@ -73,8 +69,8 @@ private:
 	static array<ProxyTool^>^ _toolViewer;
 	static CStr* _prefixes;
 	static List<IModuleCommand^> _registeredCommand;
-	static List<ProxyEditor^> _registeredEditor;
-	static List<ProxyFiler^> _registeredFiler;
+	static List<IModuleEditor^> _registeredEditor;
+	static List<IModuleFiler^> _registeredFiler;
 private:
 	static CultureInfo^ _currentUICulture;
 	// Post
