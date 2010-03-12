@@ -13,7 +13,7 @@
 	</Target>
 
 	<Target Name="Clean">
-		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Clean"/>
+		<MSBuild Projects="..\FarNet\Build.proj" Targets="Clean"/>
 		<Delete Files="PowerShellFar.ncb;PowerShellFar.sln.cache"/>
 		<RemoveDir Directories="
 		bin;
@@ -50,7 +50,7 @@
 
 	<!--Install FarNet and PSF bin-->
 	<Target Name="Install-Bin">
-		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Install" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
+		<MSBuild Projects="..\FarNet\Build.proj" Targets="Install" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')"/>
 		<Copy SourceFiles="Modules\FarDescription\Bin\$(Configuration)\FarDescription.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarDescription" SkipUnchangedFiles="true"/>
@@ -63,7 +63,7 @@
 	<Target Name="Uninstall">
 		<Error Condition="'$(Install)' == ''"/>
 		<RemoveDir Directories="$(Install)\FarNet\Modules\PowerShellFar"/>
-		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Uninstall"/>
+		<MSBuild Projects="..\FarNet\Build.proj" Targets="Uninstall"/>
 	</Target>
 
 	<!--Archive PSF to distribute-->
@@ -91,7 +91,7 @@
 	<!--Archive all to distribute-->
 	<Target Name="Archive2" DependsOnTargets="Archive">
 		<!--Archive FarNet-->
-		<MSBuild Projects="..\FarNet\Build-FarNetDev.proj" Targets="Archive"/>
+		<MSBuild Projects="..\FarNet\Build.proj" Targets="Archive"/>
 		<!--Archive API documentation-->
 		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z FarNet\PowerShellFar.chm" WorkingDirectory="$(Install)"/>
 		<!--Copy and delete all result archives-->

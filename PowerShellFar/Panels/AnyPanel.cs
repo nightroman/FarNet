@@ -519,16 +519,17 @@ namespace PowerShellFar
 			if (move)
 				return false;
 
-			ObjectPanel op = AnotherPanel as ObjectPanel;
-			if (op == null)
+			ObjectPanel that = AnotherPanel as ObjectPanel;
+			if (that == null)
 				return false;
 
 			// _100227_073909
 			// add objects to the target object panel and update it
 			//! we allow dupes on the target panel, why not? a user is the boss
 			//! keep the selection, the temp panel keeps it; note: selection is by names, added objects may get selected
-			op.AddObjects(SelectedItems);
-			op.UpdateRedraw(true);
+			that.AddObjects(SelectedItems);
+			that.UpdateRedraw(true);
+			
 			return true;
 		}
 

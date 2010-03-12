@@ -5,7 +5,7 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 
-namespace FarNet.Support
+namespace FarNet.Works
 {
 	/// <summary>
 	/// For internal use.

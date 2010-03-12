@@ -126,15 +126,15 @@ plugins for Far Manager.
 
 You can use msbuild.exe to build the sources:
 
-	msbuild Build-FarNetDev.proj
+	msbuild Build.proj
 
 and then to install all the files to "C:\Program Files\Far":
 
-	msbuild Build-FarNetDev.proj /t:Install
+	msbuild Build.proj /t:Install
 
 or even both operations:
 
-	msbuild Build-FarNetDev.proj /t:Build;Install
+	msbuild Build.proj /t:Build;Install
 
 
 	= PROBLEMS AND SOLUTIONS =

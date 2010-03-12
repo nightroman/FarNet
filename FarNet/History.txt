@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.3.11 =
+
+Internal: renamed namespace FarNet.Support into Works; it contains internal
+FarNet stuff that should not be used directly from modules.
+
 = 4.3.10 =
 
 ACTION GUID

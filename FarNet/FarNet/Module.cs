@@ -665,9 +665,17 @@ namespace FarNet
 		/// </summary>
 		void Invoke(object sender, ModuleCommandEventArgs e);
 		/// <summary>
-		/// Gets the command prefix.
+		/// Gets the actual command prefix.
 		/// </summary>
 		string Prefix { get; }
+		/// <summary>
+		/// Gets the default prefix.
+		/// </summary>
+		string DefaultPrefix { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		void ResetPrefix(string value);
 	}
 
 	/// <summary>

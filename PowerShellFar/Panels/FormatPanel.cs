@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
@@ -40,160 +41,192 @@ namespace PowerShellFar
 		protected FormatPanel()
 		{ }
 
+		static Meta[] CutOffMetas(Meta[] metas)
+		{
+			if (metas.Length <= A.Psf.Settings.MaximumPanelColumnCount)
+				return metas;
+
+			Meta[] result = new Meta[A.Psf.Settings.MaximumPanelColumnCount];
+			for (int i = result.Length; --i >= 0; )
+				result[i] = metas[i];
+
+			return result;
+		}
+
 		//! assume it is done for the active panel, it does not work well from the disk menu
 		internal static Meta[] TryFormatByTableControl(PSObject value)
 		{
+			// try to find a table
 			TableControl table = A.FindTableControl(value.BaseObject.GetType().FullName, null);
 			if (table == null)
 				return null;
 
-			int count = Math.Min(table.Rows[0].Columns.Count, A.Psf.Settings.MaximumPanelColumnCount);
-			Meta[] metas = new Meta[count];
-			for (int i = 0; i < count; ++i)
+			// convert all columns to meta
+			Meta[] metas = new Meta[table.Rows[0].Columns.Count];
+			for (int i = metas.Length; --i >= 0; )
 				metas[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
 
-			// adjust formatting to the panel width ???
-			{
-				int totalWidth = Far.Net.Panel.Window.Width - (metas.Length + 1); // N columns ~ N + 1 borders
-				int setSum = 0;
-				int setCount = 0;
-				int setMaxValue = 0;
-				int setMaxIndex = -1;
-				for (int i = metas.Length; --i >= 0; )
-				{
-					int width = metas[i].Width;
-					if (width > 0)
-					{
-						++setCount;
-						setSum += width;
-						if (setMaxValue < width)
-						{
-							setMaxValue = width;
-							setMaxIndex = i;
-						}
-					}
-				}
+			// 1) set heuristic types, some columns are moved to the left
+			SetBestTypes(metas, A.Psf.Settings.MaximumPanelColumnCount);
 
-				// panel is too narrow (less than 5 chars for unset columns), drop all positive widths
-				if (setSum + (metas.Length - setCount) * 5 > totalWidth)
+			// 2) cut off too many columns
+			metas = CutOffMetas(metas);
+
+			// adjust formatting to the panel width
+			int totalWidth = Far.Net.Panel.Window.Width - (metas.Length + 1); // N columns ~ N + 1 borders
+			int setSum = 0;
+			int setCount = 0;
+			int setMaxValue = 0;
+			int setMaxIndex = -1;
+			for (int i = metas.Length; --i >= 0; )
+			{
+				int width = metas[i].Width;
+				if (width > 0)
 				{
-					foreach (Meta meta in metas)
-						if (meta.Width > 0)
-							meta.Width = 0;
-				}
-				// panel is too wide (e.g. for Get-Service ~ 64), drop the maximum width
-				else if (setCount == metas.Length && setSum < totalWidth)
-				{
-					metas[setMaxIndex].Width = 0;
+					++setCount;
+					setSum += width;
+					if (setMaxValue < width)
+					{
+						setMaxValue = width;
+						setMaxIndex = i;
+					}
 				}
 			}
 
-			// set heuristic types
-			SetBestTypes(metas);
+			// fix too wide (less than 5 chars for unset columns), drop all positive widths
+			if (setSum + (metas.Length - setCount) * 5 > totalWidth)
+			{
+				foreach (Meta meta in metas)
+					if (meta.Width > 0)
+						meta.Width = 0;
+			}
+			// fix too narrow (e.g. for Get-Service ~ 64), drop the maximum width
+			else if (setCount == metas.Length && setSum < totalWidth)
+			{
+				metas[setMaxIndex].Width = 0;
+			}
+
 			return metas;
 		}
 
-		internal static Meta[] TryFormatByGetMember(Collection<PSObject> values)
+		internal static Meta[] TryFormatByMembers(Collection<PSObject> values, bool single)
 		{
 			Meta[] metas;
-			int count;
 
-			if (values.Count == 1) //??? need
+			if (single)
 			{
-				List<Meta> tmp = new List<Meta>();
+				List<Meta> list = new List<Meta>();
 				foreach (PSPropertyInfo pi in values[0].Properties)
-				{
-					tmp.Add(new Meta(pi.Name));
-					if (tmp.Count >= A.Psf.Settings.MaximumPanelColumnCount)
-						break;
-				}
-
-				count = tmp.Count;
-				if (count == 0)
-					return null;
-
-				metas = tmp.ToArray();
+					list.Add(new Meta(pi.Name));
+				metas = list.ToArray();
 			}
 			else
 			{
 				Collection<PSObject> members = A.Psf.InvokeCode("$args[0] | Get-Member -MemberType Property -ErrorAction 0 | Select-Object -ExpandProperty Name", values);
-				if (members.Count == 0)
-					return null;
-
-				count = Math.Min(members.Count, A.Psf.Settings.MaximumPanelColumnCount);
-				metas = new Meta[count];
-				for (int i = 0; i < count; ++i)
+				metas = new Meta[members.Count];
+				for (int i = 0; i < members.Count; ++i)
 					metas[i] = new Meta(members[i].ToString());
 			}
 
-			// set heuristic types
-			SetBestTypes(metas);
-			return metas;
+			if (metas.Length == 0)
+				return null;
+
+			// 1) set heuristic types
+			SetBestTypes(metas, A.Psf.Settings.MaximumPanelColumnCount);
+
+			// 2) cut off
+			return CutOffMetas(metas);
 		}
 
-		static void SetBestTypes(Meta[] metas)
+		static void SetBestTypes(Meta[] metas, int maximum)
 		{
 			int count = metas.Length;
 
 			// heuristic N
-			if (count > 1 && SetBestType(metas, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
+			if (count > 1 && SetBestType(metas, maximum, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
 				--count;
 
 			// heuristic Z
-			if (count > 1 && SetBestType(metas, "Z", Word.Description, Word.Definition))
+			if (count > 1 && SetBestType(metas, maximum, "Z", Word.Description, Word.Definition))
 				--count;
 
 			// heuristic O
 			if (count > 1)
-				SetBestType(metas, "O", Word.Value, Word.Status);
+				SetBestType(metas, maximum, "O", Word.Value, Word.Status);
 		}
 
-		static bool SetBestType(Meta[] metas, string type, params string[] patterns)
+		static bool SetBestType(Meta[] metas, int maximum, string type, params string[] patterns)
 		{
-			int bestRank = patterns.Length;
-			Meta bestMeta = null;
+			int iBestPattern = patterns.Length;
+			int iBestMeta = -1;
 
-			foreach (Meta meta in metas)
+			for (int iMeta = 0; iMeta < metas.Length; ++iMeta)
 			{
+				Meta meta = metas[iMeta];
 				if (meta.Kind != null)
 					continue;
 
+				bool done = false;
 				string name = meta.Name;
-				for (int i = 0; i < bestRank; ++i)
+				for (int iPattern = 0; iPattern < iBestPattern; ++iPattern)
 				{
-					string pattern = patterns[i];
+					string pattern = patterns[iPattern];
 					if (pattern[0] == '*')
 					{
-						if (name.EndsWith(patterns[i].Substring(1), StringComparison.OrdinalIgnoreCase))
+						if (name.EndsWith(patterns[iPattern].Substring(1), StringComparison.OrdinalIgnoreCase))
 						{
-							bestRank = i;
-							bestMeta = meta;
+							iBestMeta = iMeta;
+							iBestPattern = iPattern;
 						}
 					}
 					else
 					{
-						if (string.Compare(name, patterns[i], StringComparison.OrdinalIgnoreCase) == 0)
+						if (string.Compare(name, patterns[iPattern], StringComparison.OrdinalIgnoreCase) == 0)
 						{
-							if (i == 0)
+							iBestMeta = iMeta;
+							if (iPattern == 0)
 							{
-								meta.Kind = type;
-								return true;
+								done = true;
+								break;
 							}
 
-							bestRank = i;
-							bestMeta = meta;
+							iBestPattern = iPattern;
 						}
 					}
 				}
+
+				if (done)
+					break;
 			}
 
-			if (bestMeta != null)
-			{
-				bestMeta.Kind = type;
+			// no candidates
+			if (iBestMeta < 0)
+				return false;
+
+			// set the column type
+			metas[iBestMeta].Kind = type;
+
+			// done for small column set
+			if (metas.Length <= maximum)
 				return true;
+
+			// move the best to the first free position
+			for (int iFree = 0; iFree < maximum; ++iFree)
+			{
+				if (metas[iFree].Kind == null)
+				{
+					if (iFree != iBestMeta)
+					{
+						Meta meta = metas[iBestMeta];
+						for (int iMove = iBestMeta; iMove > iFree; --iMove)
+							metas[iMove] = metas[iMove - 1];
+						metas[iFree] = meta;
+					}
+					break;
+				}
 			}
 
-			return false;
+			return true;
 		}
 
 		void MakeMap(Meta[] metas) //???
@@ -347,12 +380,14 @@ namespace PowerShellFar
 					return;
 				}
 
-				// the common type
-				Type commonType = values[0].BaseObject is System.Collections.IEnumerable ? null : A.FindCommonType(values);
-
-				// use index, value, type mode
-				if (commonType == null)
+				// Check some special cases and try to get the common type.
+				// ???? _100309_121508 Linear type case
+				Type theType;
+				if (Converter.IsLinearType(values[0].BaseObject.GetType()) ||
+					values[0].BaseObject is System.Collections.IEnumerable ||
+					null == (theType = A.FindCommonType(values)))
 				{
+					// use index, value, type mode
 					BuildFilesMixed(values);
 					return;
 				}
@@ -360,12 +395,12 @@ namespace PowerShellFar
 				Meta[] metas = null;
 
 				// try to get format
-				if (commonType != typeof(PSCustomObject))
+				if (theType != typeof(PSCustomObject))
 					metas = TryFormatByTableControl(values[0]);
 
-				// use Get-Member
+				// use members
 				if (metas == null)
-					metas = TryFormatByGetMember(values);
+					metas = TryFormatByMembers(values, theType != null && theType == values[0].BaseObject.GetType());
 
 				if (metas == null)
 				{
@@ -407,18 +442,29 @@ namespace PowerShellFar
 			mode.Columns = new FarColumn[] { c1, c2, c3 };
 			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 
-			int i = 0;
+			int index = 0;
 			foreach (PSObject value in values)
 			{
+				// new file
 				SetFile file = new SetFile();
 				file.Data = value;
-				file.Length = i++;
+				file.Length = index++;
 				file.Description = value.BaseObject.GetType().FullName;
-				PSPropertyInfo pi = A.FindDisplayProperty(value);
-				if (pi == null)
+
+				// discover name
+				// ???? _100309_121508 Linear type case
+				IEnumerable asIEnumerable;
+				PSPropertyInfo pi;
+				if (Converter.IsLinearType(value.BaseObject.GetType()))
 					file.Name = value.ToString();
-				else
+				else if ((asIEnumerable = value.BaseObject as IEnumerable) != null)
+					file.Name = Converter.FormatEnumerable(asIEnumerable, A.Psf.Settings.FormatEnumerationLimit);
+				else if ((pi = A.FindDisplayProperty(value)) != null)
 					file.Name = pi.Value.ToString();
+				else
+					file.Name = value.ToString();
+
+				// add
 				files.Add(file);
 			}
 		}

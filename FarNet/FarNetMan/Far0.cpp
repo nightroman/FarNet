@@ -641,7 +641,10 @@ void Far0::OpenConfig()
 			break;
 		case 1:
 			if (_registeredCommand.Count)
-				ConfigCommand();
+			{
+				UIConfigCommand ui;
+				ui.Show(%_registeredCommand);
+			}
 			break;
 		case 2:
 			if (_registeredEditor.Count)
@@ -842,72 +845,6 @@ void Far0::ConfigTool(List<ProxyTool^>^ tools)
 
 		// register new
 		RegisterProxyTool(tool);
-	}
-}
-
-void Far0::ConfigCommand()
-{
-	IMenu^ menu = Far::Net->CreateMenu();
-	menu->AutoAssignHotkeys = true;
-	menu->HelpTopic = "ConfigCommand";
-	menu->Title = Res::ModuleCommands;
-
-	for(;;)
-	{
-		int lenPref = 0;
-		int lenName = 0;
-		for each(ProxyCommand^ it in _registeredCommand)
-		{
-			if (lenPref < it->Prefix->Length)
-				lenPref = it->Prefix->Length;
-			if (lenName < it->Name->Length)
-				lenName = it->Name->Length;
-		}
-		String^ format = "{0,-" + lenPref + "} : {1,-" + lenName + "} : {2}";
-
-		menu->Items->Clear();
-		for each(ProxyCommand^ it in _registeredCommand)
-		{
-			FarItem^ mi = menu->Add(String::Format(format, it->Prefix, it->Name, it->Key));
-			mi->Data = it;
-		}
-
-		if (!menu->Show())
-			return;
-
-		FarItem^ mi = menu->Items[menu->Selected];
-		ProxyCommand^ it = (ProxyCommand^)mi->Data;
-
-		IInputBox^ ib = Far::Net->CreateInputBox();
-		ib->EmptyEnabled = true;
-		ib->HelpTopic = _helpTopic + "ConfigCommand";
-		ib->Prompt = "New prefix for: " + it->Name;
-		ib->Text = it->Prefix;
-		ib->Title = "Original prefix: " + it->DefaultPrefix;
-
-		String^ prefix = nullptr;
-		while(ib->Show())
-		{
-			prefix = ib->Text->Trim();
-			if (prefix->IndexOf(" ") >= 0 || prefix->IndexOf(":") >= 0)
-			{
-				Far::Net->Message("Prefix must not contain ' ' or ':'.");
-				prefix = nullptr;
-				continue;
-			}
-			break;
-		}
-		if (!prefix)
-			continue;
-
-		// restore original on empty
-		if (prefix->Length == 0)
-			prefix = it->DefaultPrefix;
-
-		// reset
-		delete _prefixes;
-		_prefixes = 0;
-		it->SetPrefix(prefix);
 	}
 }
 
@@ -1234,6 +1171,12 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 
 		return;
 	}
+}
+
+void Far0::InvalidateProxyCommand()
+{
+	delete _prefixes;
+	_prefixes = 0;
 }
 
 }
