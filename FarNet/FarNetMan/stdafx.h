@@ -21,7 +21,7 @@
 #define FCTL_GETSELECTEDPANELITEM stop_FCTL_GETSELECTEDPANELITEM
 
 using namespace FarNet::Forms;
-using namespace FarNet::Support;
+using namespace FarNet::Works;
 using namespace FarNet;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;

@@ -27,8 +27,8 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="msbuild Build-PowerShellFar.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
-				ReBuildCommandLine="msbuild Build-PowerShellFar.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
+				BuildCommandLine="msbuild Build.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
+				ReBuildCommandLine="msbuild Build.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
 				CleanCommandLine=""
 				Output=""
 				PreprocessorDefinitions="WIN32;_DEBUG"
@@ -47,7 +47,7 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="msbuild Build-PowerShellFar.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
+				BuildCommandLine="msbuild Build.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
 				ReBuildCommandLine=""
 				CleanCommandLine=""
 				Output=""
@@ -67,8 +67,8 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="msbuild Build-PowerShellFar.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
-				ReBuildCommandLine="msbuild Build-PowerShellFar.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
+				BuildCommandLine="msbuild Build.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
+				ReBuildCommandLine="msbuild Build.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
 				CleanCommandLine=""
 				Output=""
 				PreprocessorDefinitions="WIN32;NDEBUG"
@@ -87,7 +87,7 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="msbuild Build-PowerShellFar.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
+				BuildCommandLine="msbuild Build.proj /t:Install /p:Configuration=$(ConfigurationName) /p:Platform=$(PlatformName) /nologo"
 				ReBuildCommandLine=""
 				CleanCommandLine=""
 				Output=""

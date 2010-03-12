@@ -365,14 +365,6 @@
 		</Configuration>
 	</Configurations>
 	<References>
-		<ProjectReference
-			ReferencedProjectIdentifier="{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
-			CopyLocal="false"
-			CopyLocalDependencies="false"
-			UseDependenciesInBuild="false"
-			CopyLocalSatelliteAssemblies="false"
-			RelativePathToProject="..\FarNet\FarNet\FarNet.csproj"
-		/>
 		<AssemblyReference
 			RelativePath="mscorlib.dll"
 			AssemblyName="mscorlib, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=IA64"
@@ -387,6 +379,13 @@
 			RelativePath="System.configuration.dll"
 			AssemblyName="System.Configuration, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
 			MinFrameworkVersion="131072"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{752846B8-08B9-4D22-97B5-0F2C8020FB51}"
+			CopyLocal="false"
+			CopyLocalDependencies="false"
+			CopyLocalSatelliteAssemblies="false"
+			RelativePathToProject="..\FarNet\FarNet.Works\FarNet.Works.csproj"
 		/>
 	</References>
 	<Files>

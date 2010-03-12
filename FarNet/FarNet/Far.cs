@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using FarNet.Forms;
-using FarNet.Support;
+using FarNet.Works;
 
 namespace FarNet
 {

@@ -1,6 +1,28 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.11 =
+
+DATA PREVIEW IN PANELS
+
+Improved preview of enumerable types and some frequently used types in panels.
+
+Simplified internal procedures of column set selection from properties. Default
+column sets now may be not the same as in previous versions. Production panels
+should have manually configured Columns anyway.
+
+Default column set selection in table panels: if there are too many properties
+(more than $Psf.Settings.MaximumPanelColumnCount) then best candidates for N, Z
+and O columns are moved to the left. Example:
+>: Get-WmiObject Win32_PnPEntity | Out-FarPanel
+.. the first columns are Name, Description, Status. Compare: in the old version
+the column Name was not shown at all.
+
+OTHER CHANGES
+
+Copy objects from an object panel to another object panel: the target panel
+should be updated automatically.
+
 = 4.3.10 =
 
 PanelKeyEventArgs.Preprocess was removed, see FarNet news. Affected scripts

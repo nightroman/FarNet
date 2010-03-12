@@ -82,9 +82,10 @@ $Far.Macro.Install($(
 		Sequence = psf 7
 		Description = 'PSF: TabExpansion'
 	}
-	New-FarMacro Shell @m -CommandLine 1
 	New-FarMacro Editor @m
 	New-FarMacro Dialog @m
+	$m.Sequence = '$If (Shell||Info||QView||Tree) ' + $m.Sequence + ' $End'
+	New-FarMacro Common @m -CommandLine 1
 
 	### (Complete-Word-.ps1) Command line: from history; Editor: from file; Dialog: from edit box history
 	$m = @{
@@ -92,9 +93,10 @@ $Far.Macro.Install($(
 		Sequence = psf c
 		Description = 'PSF: Complete word'
 	}
-	New-FarMacro Shell @m
 	New-FarMacro Editor @m
 	New-FarMacro Dialog @m
+	$m.Sequence = '$If (Shell||Info||QView||Tree) ' + $m.Sequence + ' $End'
+	New-FarMacro Common @m -CommandLine 1
 
 	### (Set-Selection-.ps1) Change selected text to lower case
 	$m = @{

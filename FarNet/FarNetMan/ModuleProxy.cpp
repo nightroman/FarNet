@@ -166,11 +166,13 @@ String^ ProxyCommand::ToString()
 	return String::Format("{0} Prefix='{1}'", ProxyAction::ToString(), Prefix);
 }
 
-void ProxyCommand::SetPrefix(String^ value)
+void ProxyCommand::ResetPrefix(String^ value)
 {
 	if (ES(value))
-		throw gcnew ArgumentException("'value' must not be empty.");
+		value = DefaultPrefix;
 
+	Far0::InvalidateProxyCommand();
+	
 	ModuleManager::SaveFarNetValue(Key, "Prefix", value);
 	_Prefix = value;
 }

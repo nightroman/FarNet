@@ -54,6 +54,9 @@ ref class ProxyCommand sealed : ProxyAction, IModuleCommand
 public:
 	virtual String^ ToString() override;
 	virtual void Invoke(Object^ sender, ModuleCommandEventArgs^ e);
+	virtual void ResetPrefix(String^ value);
+public:
+	virtual property String^ DefaultPrefix { String^ get() { return Attribute->Prefix; } }
 	virtual property String^ Prefix { String^ get() { return _Prefix; } }
 	virtual property ModuleItemKind Kind { ModuleItemKind get() override { return ModuleItemKind::Command; } }
 internal:
@@ -62,8 +65,6 @@ internal:
 	ProxyCommand(ModuleManager^ manager, Type^ classType);
 	virtual void WriteCache(List<String^>^ data) override;
 internal:
-	property String^ DefaultPrefix { String^ get() { return Attribute->Prefix; } }
-	void SetPrefix(String^ value);
 private:
 	void Init();
 	property ModuleCommandAttribute^ Attribute { ModuleCommandAttribute^ get() { return (ModuleCommandAttribute^)GetAttribute(); } }

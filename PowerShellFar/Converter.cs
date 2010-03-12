@@ -41,20 +41,13 @@ namespace PowerShellFar
 		/// </summary>
 		public static bool IsPrimitiveType(Type type)
 		{
-			if (type == typeof(bool)) return true;
-			if (type == typeof(byte)) return true;
-			if (type == typeof(char)) return true;
+			// Boolean, Byte, SByte, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, Char, Double, and Single.
+			if (type.IsPrimitive)
+				return true;
+			
+			// some more
 			if (type == typeof(decimal)) return true;
-			if (type == typeof(double)) return true;
-			if (type == typeof(float)) return true;
-			if (type == typeof(int)) return true;
-			if (type == typeof(long)) return true;
-			if (type == typeof(sbyte)) return true;
-			if (type == typeof(short)) return true;
 			if (type == typeof(string)) return true;
-			if (type == typeof(uint)) return true;
-			if (type == typeof(ulong)) return true;
-			if (type == typeof(ushort)) return true;
 
 			return false;
 		}
@@ -286,6 +279,9 @@ namespace PowerShellFar
 		/// </summary>
 		public static string FormatEnumerable(IEnumerable value, int limit)
 		{
+			// see Microsoft.PowerShell.Commands.Internal.Format.PSObjectHelper.SmartToString()
+			// we use much simpler version
+			
 			IEnumerator it = value.GetEnumerator();
 			string result = "{";
 			int count = 0;
@@ -298,7 +294,12 @@ namespace PowerShellFar
 					result += ", ";
 
 				if (it.Current != null)
-					result += it.Current.ToString();
+				{
+					if (it.Current.GetType() == typeof(DictionaryEntry))
+						result += ((DictionaryEntry)it.Current).Key.ToString();
+					else
+						result += it.Current.ToString();
+				}
 			}
 
 			if (count >= limit && it.MoveNext())
