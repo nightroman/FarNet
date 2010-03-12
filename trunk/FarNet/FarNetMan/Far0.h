@@ -16,7 +16,7 @@ ref class ProxyTool;
 
 ref class Far0
 {
-public: 
+public:
 	static bool AsConfigure(int itemIndex);
 	static HANDLE AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode);
 	static HANDLE AsOpenPlugin(int from, INT_PTR item);
@@ -43,11 +43,11 @@ public:
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
+	static void InvalidateProxyCommand();
 private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
 	static void AssertHotkeys();
-	static void ConfigCommand();
 	static void ConfigEditor();
 	static void ConfigFiler();
 	static void ConfigTool(List<ProxyTool^>^ tools);
@@ -72,7 +72,7 @@ private:
 	static array<ProxyTool^>^ _toolPanels;
 	static array<ProxyTool^>^ _toolViewer;
 	static CStr* _prefixes;
-	static List<ProxyCommand^> _registeredCommand;
+	static List<IModuleCommand^> _registeredCommand;
 	static List<ProxyEditor^> _registeredEditor;
 	static List<ProxyFiler^> _registeredFiler;
 private:

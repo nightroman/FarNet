@@ -140,13 +140,13 @@ namespace PowerShellFar
 		}
 
 		// converter
-		static FarNet.Support.BufferCell BufferCellOf(Host.BufferCell cell)
+		static FarNet.Works.BufferCell BufferCellOf(Host.BufferCell cell)
 		{
-			return new FarNet.Support.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (FarNet.Support.BufferCellType)cell.BufferCellType);
+			return new FarNet.Works.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (FarNet.Works.BufferCellType)cell.BufferCellType);
 		}
 
 		// converter
-		static Host.BufferCell BufferCellOf(FarNet.Support.BufferCell cell)
+		static Host.BufferCell BufferCellOf(FarNet.Works.BufferCell cell)
 		{
 			return new Host.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (Host.BufferCellType)cell.BufferCellType);
 		}
@@ -158,7 +158,7 @@ namespace PowerShellFar
 
 		public override Host.KeyInfo ReadKey(Host.ReadKeyOptions options)
 		{
-			FarNet.KeyInfo k = Far.Net.Zoo.ReadKey((FarNet.Support.ReadKeyOptions)options);
+			FarNet.KeyInfo k = Far.Net.Zoo.ReadKey((FarNet.Works.ReadKeyOptions)options);
 			return new Host.KeyInfo(k.VirtualKeyCode, k.Character, (Host.ControlKeyStates)k.ControlKeyState, k.KeyDown);
 		}
 
@@ -169,7 +169,7 @@ namespace PowerShellFar
 
 		public override Host.BufferCell[,] GetBufferContents(Rectangle rectangle)
 		{
-			FarNet.Support.BufferCell[,] r1 = Far.Net.Zoo.GetBufferContents(PlaceOf(rectangle));
+			FarNet.Works.BufferCell[,] r1 = Far.Net.Zoo.GetBufferContents(PlaceOf(rectangle));
 			Host.BufferCell[,] r2 = new Host.BufferCell[r1.GetLength(0), r1.GetLength(1)];
 			for (int i = 0; i < r1.GetLength(0); ++i)
 				for (int j = 0; j < r1.GetLength(1); ++j)
@@ -179,7 +179,7 @@ namespace PowerShellFar
 
 		public override void SetBufferContents(Coordinates origin, Host.BufferCell[,] contents)
 		{
-			FarNet.Support.BufferCell[,] r = new FarNet.Support.BufferCell[contents.GetLength(0), contents.GetLength(1)];
+			FarNet.Works.BufferCell[,] r = new FarNet.Works.BufferCell[contents.GetLength(0), contents.GetLength(1)];
 			for (int i = 0; i < contents.GetLength(0); ++i)
 				for (int j = 0; j < contents.GetLength(1); ++j)
 					r[i, j] = BufferCellOf(contents[i, j]);

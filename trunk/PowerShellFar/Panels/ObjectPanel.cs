@@ -161,19 +161,19 @@ namespace PowerShellFar
 				Panel.PostFile(f);
 		}
 
+		// _100227_073909
 		internal override bool UICopyMove(bool move)
 		{
-			ObjectPanel op = AnotherPanel as ObjectPanel;
-			if (op == null)
+			ObjectPanel that = AnotherPanel as ObjectPanel;
+			if (that == null)
 				return false;
 
-			op.AddObjects(SelectedItems);
+			that.AddObjects(SelectedItems);
+			that.UpdateRedraw(true);
+
 			if (move)
-			{
 				UIDelete(false);
-				return true;
-			}
-			UpdateRedraw(false);
+
 			return true;
 		}
 
