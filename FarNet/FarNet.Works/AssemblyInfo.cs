@@ -16,3 +16,11 @@ using System.Security.Permissions;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]
+
+static class Res
+{
+	public const string
+		ModuleCommands = "Commands",
+		ModuleEditors = "Editors",
+		ModuleFilers = "Filers";
+}

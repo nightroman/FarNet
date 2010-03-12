@@ -21,7 +21,8 @@ public:
 	static property Dictionary<Guid, ProxyAction^>^ Actions { Dictionary<Guid, ProxyAction^>^ get() { return %_Actions; } }
 	static ModuleManager^ GetModuleManager(String^ moduleName) { return _Managers[moduleName]; }
 	static array<ProxyTool^>^ GetTools(ModuleToolOptions option);
-	static List<ProxyTool^>^ GetTools();
+	static List<IModuleManager^>^ GetModuleManagers();
+	static List<IModuleTool^>^ GetTools();
 public:
 	static bool CanExit();
 	static void LoadModules();

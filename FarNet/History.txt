@@ -2,8 +2,17 @@ http://code.google.com/p/farnet/
 
 = 4.3.11 =
 
-Internal: renamed namespace FarNet.Support into Works; it contains internal
-FarNet stuff that should not be used directly from modules.
+Mostly internal, but important for the future changes. Some public API was
+extended but this should not affect modules (and they should not use it).
+
+A new DLL is included into the FarNet package: FarNet.Works.dll. It contains
+pure .NET and host independent internal tools that should not be used by
+modules. It is used only by the Far Manager FarNet host (actual Far plugin
+FarNetMan.dll). In the future this and\or other FarNet.Works.* libraries will
+be used by other FarNet hosts.
+
+Related internal change: renamed namespace FarNet.Support into FarNet.Works; it
+contains internal FarNet stuff that should not be used directly from modules.
 
 = 4.3.10 =
 

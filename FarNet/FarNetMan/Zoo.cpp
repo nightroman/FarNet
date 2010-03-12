@@ -25,9 +25,9 @@ void Zoo::FlushInputBuffer()
 		ThrowWithLastError("FlushConsoleInputBuffer");
 }
 
-KeyInfo Zoo::ReadKey(ReadKeyOptions options)
+KeyInfo Zoo::ReadKey(Works::ReadKeyOptions options)
 {
-	if (int(options & (ReadKeyOptions::IncludeKeyDown | ReadKeyOptions::IncludeKeyUp)) == 0)
+	if (int(options & (Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp)) == 0)
 		throw gcnew ArgumentException("Argument 'options': either IncludeKeyDown, IncludeKeyUp or both must be set.");
 
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -39,9 +39,9 @@ KeyInfo Zoo::ReadKey(ReadKeyOptions options)
 		ThrowWithLastError("GetConsoleMode");
 
 	DWORD mode2 = 0;
-	if (int(options & ReadKeyOptions::NoEcho) == 0)
+	if (int(options & Works::ReadKeyOptions::NoEcho) == 0)
 		mode2 |= (ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
-	if (int(options & ReadKeyOptions::AllowCtrlC) != 0)
+	if (int(options & Works::ReadKeyOptions::AllowCtrlC) != 0)
 		mode2 |= ENABLE_PROCESSED_INPUT;
 
 	try
@@ -59,12 +59,12 @@ KeyInfo Zoo::ReadKey(ReadKeyOptions options)
 				continue;
 			if (ir.Event.KeyEvent.bKeyDown)
 			{
-				if (int(options & ReadKeyOptions::IncludeKeyDown) == 0)
+				if (int(options & Works::ReadKeyOptions::IncludeKeyDown) == 0)
 					continue;
 			}
 			else
 			{
-				if (int(options & ReadKeyOptions::IncludeKeyUp) == 0)
+				if (int(options & Works::ReadKeyOptions::IncludeKeyUp) == 0)
 					continue;
 			}
 			return KeyInfo(
@@ -80,7 +80,7 @@ KeyInfo Zoo::ReadKey(ReadKeyOptions options)
 	}
 }
 
-void Zoo::ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill)
+void Zoo::ScrollBufferContents(Place source, Point destination, Place clip, Works::BufferCell fill)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -107,7 +107,7 @@ void Zoo::ScrollBufferContents(Place source, Point destination, Place clip, Buff
 		ThrowWithLastError("ScrollConsoleScreenBuffer");
 }
 
-array<BufferCell, 2>^ Zoo::GetBufferContents(Place rectangle)
+array<Works::BufferCell, 2>^ Zoo::GetBufferContents(Place rectangle)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -140,14 +140,14 @@ array<BufferCell, 2>^ Zoo::GetBufferContents(Place rectangle)
 		const int h2 = srctReadRect.Bottom - srctReadRect.Top + 1;
 
 		// fill result padding with an empty cell
-		BufferCell empty(' ', Console::ForegroundColor, Console::BackgroundColor, BufferCellType::Complete);
-		array<BufferCell, 2>^ r = gcnew array<BufferCell, 2>(h1, w1);
+		Works::BufferCell empty(' ', Console::ForegroundColor, Console::BackgroundColor, Works::BufferCellType::Complete);
+		array<Works::BufferCell, 2>^ r = gcnew array<Works::BufferCell, 2>(h1, w1);
 		for(int i = 0, k = 0; i < h2; ++i)
 		{
 			for(int j = 0; j < w2; ++j)
 			{
 				CHAR_INFO& ci = buf[k];
-				r[i, j] = BufferCell(ci.Char.UnicodeChar, (ConsoleColor)(ci.Attributes & 0xF), (ConsoleColor)((ci.Attributes & 0xF0) >> 4), BufferCellType::Complete);
+				r[i, j] = Works::BufferCell(ci.Char.UnicodeChar, (ConsoleColor)(ci.Attributes & 0xF), (ConsoleColor)((ci.Attributes & 0xF0) >> 4), Works::BufferCellType::Complete);
 				++k;
 			}
 			for(int j = w2; j < w1; ++j)
@@ -170,7 +170,7 @@ array<BufferCell, 2>^ Zoo::GetBufferContents(Place rectangle)
 	}
 }
 
-void Zoo::SetBufferContents(Point origin, array<BufferCell, 2>^ contents)
+void Zoo::SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -196,7 +196,7 @@ void Zoo::SetBufferContents(Point origin, array<BufferCell, 2>^ contents)
 			for(int j = 0; j < bufSize.X; ++j)
 			{
 				CHAR_INFO& ci = buf[k];
-				BufferCell fill = contents[i, j];
+				Works::BufferCell fill = contents[i, j];
 				ci.Char.UnicodeChar = fill.Character;
 				ci.Attributes = COMMON_LVB_LEADING_BYTE | COMMON_LVB_TRAILING_BYTE | (WORD)fill.ForegroundColor | ((WORD)fill.BackgroundColor << 4);
 				++k;
@@ -211,7 +211,7 @@ void Zoo::SetBufferContents(Point origin, array<BufferCell, 2>^ contents)
 	}
 }
 
-void Zoo::SetBufferContents(Place rectangle, BufferCell fill)
+void Zoo::SetBufferContents(Place rectangle, Works::BufferCell fill)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)

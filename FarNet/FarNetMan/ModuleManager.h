@@ -11,6 +11,8 @@ ref class ModuleManager : public IModuleManager
 {
 public: // IModuleManager
 	virtual property CultureInfo^ CurrentUICulture { CultureInfo^ get(); void set(CultureInfo^ value); }
+	virtual property String^ ModuleName { String^ get(); }
+	virtual property String^ StoredUICulture { String^ get(); void set(String^ value); }
 	virtual IRegistryKey^ OpenRegistryKey(String^ name, bool writable);
 	virtual String^ GetString(String^ name);
 	virtual void Unregister();
@@ -25,7 +27,6 @@ internal:
 	property Assembly^ AssemblyInstance { Assembly^ get(); }
 	property bool CachedResources;
 	property String^ AssemblyPath { String^ get(); }
-	property String^ ModuleName { String^ get(); }
 	String^ GetModuleHostClassName();
 	void Invoking();
 	void SetModuleHost(String^ moduleHostClassName);

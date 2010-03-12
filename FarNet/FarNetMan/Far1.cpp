@@ -732,7 +732,7 @@ void Far1::Quit()
 	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);
 }
 
-IZoo^ Far1::Zoo::get()
+Works::IZoo^ Far1::Zoo::get()
 {
 	return gcnew FarNet::Zoo;
 }

@@ -25,10 +25,10 @@ public:
 	virtual property IntPtr MainWindowHandle { IntPtr get() override; }
 	virtual property IViewer^ Viewer { IViewer^ get() override; }
 	virtual property IWindow^ Window { IWindow^ get() override; }
-	virtual property IZoo^ Zoo { IZoo^ get() override; }
 	virtual property String^ ActivePath { String^ get() override; }
 	virtual property Version^ FarNetVersion { System::Version^ get() override; }
 	virtual property Version^ FarVersion { System::Version^ get() override; }
+	virtual property Works::IZoo^ Zoo { Works::IZoo^ get() override; }
 public:
 	virtual array<int>^ CreateKeySequence(String^ keys) override;
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom) override;
