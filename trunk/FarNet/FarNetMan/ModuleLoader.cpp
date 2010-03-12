@@ -403,14 +403,22 @@ array<ProxyTool^>^ ModuleLoader::GetTools(ModuleToolOptions option)
 	return list.ToArray();
 }
 
-List<ProxyTool^>^ ModuleLoader::GetTools()
+List<IModuleTool^>^ ModuleLoader::GetTools()
 {
-	List<ProxyTool^>^ result = gcnew List<ProxyTool^>(_Actions.Count);
+	List<IModuleTool^>^ result = gcnew List<IModuleTool^>(_Actions.Count);
 	for each(ProxyAction^ action in _Actions.Values)
 	{
 		if (action->Kind == ModuleItemKind::Tool)
 			result->Add((ProxyTool^)action);
 	}
+	return result;
+}
+
+List<IModuleManager^>^ ModuleLoader::GetModuleManagers()
+{
+	List<IModuleManager^>^ result = gcnew List<IModuleManager^>(_Managers->Count);
+	for each(ModuleManager^ it in _Managers->Values)
+		result->Add(it);
 	return result;
 }
 

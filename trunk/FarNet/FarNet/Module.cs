@@ -194,6 +194,14 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		IRegistryKey OpenRegistryKey(string name, bool writable);
+		/// <summary>
+		/// Gets the module name.
+		/// </summary>
+		string ModuleName { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		string StoredUICulture { get; set; }
 	}
 
 	/// <summary>
@@ -679,6 +687,32 @@ namespace FarNet
 	}
 
 	/// <summary>
+	/// Module editor runtime representation.
+	/// </summary>
+	/// <remarks>
+	/// It represents an auto registered <see cref="ModuleEditor"/> actions.
+	/// </remarks>
+	public interface IModuleEditor : IModuleAction
+	{
+		/// <summary>
+		/// Processes the editor event.
+		/// </summary>
+		void Invoke(object sender, ModuleEditorEventArgs e);
+		/// <summary>
+		/// Gets the actual file mask.
+		/// </summary>
+		string Mask { get; }
+		/// <summary>
+		/// Gets the default file mask.
+		/// </summary>
+		string DefaultMask { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		void ResetMask(string value);
+	}
+
+	/// <summary>
 	/// Module filer runtime representation.
 	/// </summary>
 	/// <remarks>
@@ -692,13 +726,21 @@ namespace FarNet
 		/// </summary>
 		void Invoke(object sender, ModuleFilerEventArgs e);
 		/// <summary>
-		/// Gets the filer file mask.
+		/// Gets the file mask.
 		/// </summary>
 		string Mask { get; }
 		/// <summary>
 		/// Gets true if the filer also creates files.
 		/// </summary>
 		bool Creates { get; }
+		/// <summary>
+		/// Gets the default file mask.
+		/// </summary>
+		string DefaultMask { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		void ResetMask(string value);
 	}
 
 	/// <summary>
@@ -715,9 +757,25 @@ namespace FarNet
 		/// </summary>
 		void Invoke(object sender, ModuleToolEventArgs e);
 		/// <summary>
-		/// Gets the tool options.
+		/// Gets the actual tool options.
 		/// </summary>
 		ModuleToolOptions Options { get; }
+		/// <summary>
+		/// Gets the menu hotkey.
+		/// </summary>
+		string Hotkey { get; }
+		/// <summary>
+		/// Gets the default tool options.
+		/// </summary>
+		ModuleToolOptions DefaultOptions { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		void ResetHotkey(string value);
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		void ResetOptions(ModuleToolOptions value);
 	}
 
 }

@@ -251,4 +251,14 @@ IModuleTool^ ModuleManager::RegisterModuleTool(Guid id, ModuleToolAttribute^ att
 	return it;
 }
 
+String^ ModuleManager::StoredUICulture::get()
+{
+	return ModuleManager::LoadFarNetValue(ModuleName, "UICulture", String::Empty)->ToString();
+}
+
+void ModuleManager::StoredUICulture::set(String^ value)
+{
+	ModuleManager::SaveFarNetValue(ModuleName, "UICulture", value ? value : String::Empty);
+}
+
 }

@@ -232,7 +232,7 @@ String^ ProxyEditor::Mask::get()
 	return _Mask;
 }
 
-void ProxyEditor::SetMask(String^ value)
+void ProxyEditor::ResetMask(String^ value)
 {
 	if (!value)
 		throw gcnew ArgumentNullException("value");
@@ -303,7 +303,7 @@ String^ ProxyFiler::Mask::get()
 	return _Mask;
 }
 
-void ProxyFiler::SetMask(String^ value)
+void ProxyFiler::ResetMask(String^ value)
 {
 	if (!value)
 		throw gcnew ArgumentNullException("value");
@@ -371,11 +371,17 @@ ModuleToolOptions ProxyTool::Options::get()
 	return _Options;
 }
 
-void ProxyTool::SetOptions(ModuleToolOptions value)
+void ProxyTool::ResetOptions(ModuleToolOptions value)
 {
+	// unregister the current
+	Far0::UnregisterProxyTool(this);
+
 	ModuleManager::SaveFarNetValue(Key, "Options", ~(int(Attribute->Options) & (~int(value))));
 	_Options = value;
 	_OptionsValid = true;
+
+	// register new
+	Far0::RegisterProxyTool(this);
 }
 
 void ProxyTool::Invoke(Object^ sender, ModuleToolEventArgs^ e)
@@ -400,36 +406,46 @@ String^ ProxyTool::ToString()
 	return String::Format("{0} Options='{1}'", ProxyAction::ToString(), Attribute->Options);
 }
 
-Char ProxyTool::HotkeyChar::get()
+void ProxyTool::SetValidHotkey(String^ value)
 {
-	// get once
-	if (_Hotkey == 0)
+	switch(value->Length)
+	{
+	case 0:
+		_Hotkey = " ";
+		break;
+	case 1:
+		_Hotkey = value;
+		break;
+	default:
+		_Hotkey = value->Substring(0, 1);
+		break;
+	}
+}
+
+String^ ProxyTool::Hotkey::get()
+{
+	// load once
+	if (!_Hotkey)
 	{
 		String^ value = ModuleManager::LoadFarNetValue(Key, "Hotkey", String::Empty)->ToString();
-		if (value->Length)
-			_Hotkey = value[0];
-		else
-			_Hotkey = ' ';
+		SetValidHotkey(value);
 	}
 
 	return _Hotkey;
 }
 
-// 3 chars: "&x " or "&  "
-String^ ProxyTool::HotkeyText::get()
+void ProxyTool::ResetHotkey(String^ value)
 {
-	return gcnew String(gcnew array<Char> { '&', HotkeyChar, ' ' });
-}
+	// set
+	SetValidHotkey(value);
 
-void ProxyTool::SetHotkey(String^ value)
-{
-	_Hotkey = ES(value) ? ' ' : value[0];
-	ModuleManager::SaveFarNetValue(Key, "Hotkey", _Hotkey == ' ' ? String::Empty : value->Substring(0, 1));
+	// save
+	ModuleManager::SaveFarNetValue(Key, "Hotkey", _Hotkey);
 }
 
 String^ ProxyTool::GetMenuText()
 {
-	return HotkeyText + Attribute->Name;
+	return Invariant::Format("&{0} {1}", Hotkey, Attribute->Name);
 }
 
 #pragma endregion
