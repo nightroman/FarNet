@@ -49,74 +49,7 @@ namespace FarNet.Works
 					throw new ModuleException("Cannot open the registry key.");
 			}
 
-			return r == null ? null : new FarRegistryKey(r);
-		}
-
-	}
-
-	public sealed class FarRegistryKey : IRegistryKey
-	{
-		readonly RegistryKey Key;
-
-		internal FarRegistryKey(RegistryKey key)
-		{
-			Key = key;
-		}
-
-		~FarRegistryKey()
-		{
-			Key.Close();
-		}
-
-		public void Dispose()
-		{
-			Key.Close();
-			GC.SuppressFinalize(this);
-		}
-
-		public string Name
-		{
-			get { return Key.Name; }
-		}
-
-		public int SubKeyCount
-		{
-			get { return Key.SubKeyCount; }
-		}
-
-		public int ValueCount
-		{
-			get { return Key.ValueCount; }
-		}
-
-		public void DeleteSubKey(string subkey)
-		{
-			Key.DeleteSubKey(subkey, false);
-		}
-
-		public string[] GetSubKeyNames()
-		{
-			return Key.GetSubKeyNames();
-		}
-
-		public string[] GetValueNames()
-		{
-			return Key.GetValueNames();
-		}
-
-		public object GetValue(string name, object defaultValue)
-		{
-			return Key.GetValue(name, defaultValue);
-		}
-
-		public void SetValue(string name, object value)
-		{
-			if (value == null)
-				Key.DeleteValue(name, false);
-			else if (value.GetType() == typeof(Int64))
-				Key.SetValue(name, value, RegistryValueKind.QWord);
-			else
-				Key.SetValue(name, value);
+			return r == null ? null : new WinRegistryKey(r);
 		}
 
 	}

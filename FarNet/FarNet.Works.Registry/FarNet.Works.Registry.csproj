@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="WinRegistry.cs" />
+    <Compile Include="WinRegistryKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet.csproj">
