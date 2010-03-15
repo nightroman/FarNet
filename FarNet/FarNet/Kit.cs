@@ -9,7 +9,7 @@ using System.Globalization;
 namespace FarNet
 {
 	/// <summary>
-	/// Infrastructure. Internal use only.
+	/// For internal use.
 	/// </summary>
 	public static class Invariant
 	{
