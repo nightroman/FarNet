@@ -312,25 +312,6 @@ Place SelectionPlace()
 	return r;
 }
 
-// Gets a property value by name or null
-Object^ Property(Object^ obj, String^ name)
-{
-	try
-	{
-		return obj->GetType()->InvokeMember(
-			name,
-			BindingFlags::GetProperty | BindingFlags::Public | BindingFlags::Instance,
-			nullptr,
-			obj,
-			nullptr);
-	}
-	catch(Exception^ e)
-	{
-		Log::TraceException(e);
-		return nullptr;
-	}
-}
-
 DateTime FileTimeToDateTime(FILETIME time)
 {
 	return DateTime::FromFileTime(*(Int64*)&time);
@@ -431,33 +412,22 @@ int ParseInt(String^ value, int fallback)
 
 namespace FarNet
 {;
-bool Config::GetBool(String^ key)
+bool Configuration::GetBool(String^ key)
 {
-	bool r = false;
-	Object^ value = ConfigurationManager::AppSettings[key];
-	if (value)
-		Boolean::TryParse(value->ToString(), r);
-	return r;
+	String^ value = Environment::GetEnvironmentVariable(key);
+	if (!value)
+		return false;
+
+	bool result;
+	if (!Boolean::TryParse(value->ToString(), result))
+		return false;
+	
+	return result;
 }
 
-EnumerableReader::EnumerableReader(System::Collections::IEnumerable^ enumerable)
-: Enumerator(enumerable->GetEnumerator())
-{}
-
-String^ EnumerableReader::Read()
+String^ Configuration::GetString(String^ key)
 {
-	if (!Enumerator->MoveNext())
-		throw gcnew ModuleException("Unexpected end of the data sequence.");
-
-	return Enumerator->Current->ToString();
-}
-
-String^ EnumerableReader::TryRead()
-{
-	if (!Enumerator->MoveNext())
-		return nullptr;
-
-	return Enumerator->Current->ToString();
+	return Environment::GetEnvironmentVariable(key);
 }
 
 }

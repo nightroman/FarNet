@@ -1,5 +1,9 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+	<ItemGroup>
+		<Folder Include="FarNet;FarNet.Works.Config;FarNet.Works.Macros;FarNet.Works.Manager;FarNet.Works.Registry;FarNetMan"/>
+	</ItemGroup>
+
 	<PropertyGroup>
 		<ProductVersion>4.3.10</ProductVersion>
 		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
@@ -13,20 +17,18 @@
 	</Target>
 
 	<Target Name="Clean">
-		<MSBuild Projects="FarNet\Build.proj" Targets="Clean"/>
-		<MSBuild Projects="FarNetMan\Build.proj" Targets="Clean"/>
+		<MSBuild Targets="Clean" Projects="@(Folder->'%(Identity)\Build.proj')"/>
 		<Delete Files="FarNet.ncb;FarNet.sln.cache"/>
-		<MSBuild Projects="FarNet\Build.proj;FarNet.Works\Build.proj;FarNetMan\Build.proj" Targets="Clean"/>
 	</Target>
 
 	<Target Name="Install">
-		<MSBuild Projects="FarNet\Build.proj;FarNet.Works\Build.proj;FarNetMan\Build.proj" Targets="Install" Properties="Configuration=$(Configuration)"/>
+		<MSBuild Targets="Install" Properties="Configuration=$(Configuration)" Projects="@(Folder->'%(Identity)\Build.proj')"/>
 		<Copy SourceFiles="Far.exe.config" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
 	</Target>
 
 	<Target Name="Uninstall">
+		<MSBuild Targets="Uninstall" Projects="@(Folder->'%(Identity)\Build.proj')"/>
 		<Delete Files="$(Install)\Far.exe.config"/>
-		<MSBuild Projects="FarNet\Build.proj;FarNet.Works\Build.proj;FarNetMan\Build.proj" Targets="Uninstall"/>
 	</Target>
 
 	<Target Name="Archive">
@@ -38,17 +40,42 @@
 		<Delete Files="$(OutputPath)"/>
 		<RemoveDir Directories="Tmp"/>
 		<!--Copy all files-->
-		<Copy DestinationFolder="Tmp" SourceFiles="$(FarHome)\Far.exe.config;Readme.txt"/>
-		<Copy DestinationFolder="Tmp\FarNet" SourceFiles="$(FarHome)\FarNet\FarNet.dll;$(FarHome)\FarNet\FarNet.xml;$(FarHome)\FarNet\FarNet.Works.dll"/>
-		<Copy DestinationFolder="Tmp\Plugins\FarNet" SourceFiles="$(FarHome)\Plugins\FarNet\FarNetMan.hlf;$(FarHome)\Plugins\FarNet\FarNetMan.dll;History.txt;LICENSE"/>
-		<Copy DestinationFolder="Tmp\Plugins.x64\FarNet" SourceFiles="FarNetMan\Release\x64\FarNetMan.dll"/>
+		<Copy DestinationFolder="Tmp" SourceFiles="
+$(FarHome)\Far.exe.config;
+Readme.txt"/>
+		<Copy DestinationFolder="Tmp\FarNet" SourceFiles="
+$(FarHome)\FarNet\FarNet.dll;
+$(FarHome)\FarNet\FarNet.xml;
+$(FarHome)\FarNet\FarNet.Works.Config.dll;
+$(FarHome)\FarNet\FarNet.Works.Macros.dll;
+$(FarHome)\FarNet\FarNet.Works.Manager.dll;
+$(FarHome)\FarNet\FarNet.Works.Registry.dll"/>
+		<Copy DestinationFolder="Tmp\Plugins\FarNet" SourceFiles="
+$(FarHome)\Plugins\FarNet\FarNetMan.hlf;
+$(FarHome)\Plugins\FarNet\FarNetMan.dll;
+History.txt;
+LICENSE"/>
+		<Copy DestinationFolder="Tmp\Plugins.x64\FarNet" SourceFiles="
+FarNetMan\Release\x64\FarNetMan.dll"/>
 		<MakeDir Directories="Tmp\FarNet\Modules"/>
 		<Exec Command="xcopy Modules Tmp\FarNet\Modules /s > nul"/>
 		<!--Archive-->
 		<Exec Command="7z a $(OutputPath) .\*" WorkingDirectory="Tmp"/>
 		<Copy DestinationFolder="." SourceFiles="Tmp\$(OutputPath)"/>
 		<!--Clean-->
-		<RemoveDir Directories="Tmp;FarNet\bin;FarNet\obj;FarNet.Works\bin;FarNet.Works\obj;FarNetMan\Release"/>
+		<RemoveDir Directories="
+Tmp;
+FarNet\bin;
+FarNet\obj;
+FarNet.Works.Config\bin;
+FarNet.Works.Config\obj;
+FarNet.Works.Macros\bin;
+FarNet.Works.Macros\obj;
+FarNet.Works.Manager\bin;
+FarNet.Works.Manager\obj;
+FarNet.Works.Registry\bin;
+FarNet.Works.Registry\obj;
+FarNetMan\Release"/>
 		<Delete Files="FarNet.sln.cache"/>
 	</Target>
 

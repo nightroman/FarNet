@@ -6,29 +6,103 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Far0.h"
 #include "Dialog.h"
-#include "ModuleLoader.h"
-#include "ModuleManager.h"
-#include "ModuleProxy.h"
 #include "Panel0.h"
 #include "Panel2.h"
-#include "Registry.h"
 #include "Shelve.h"
 #include "Wrappers.h"
 
 namespace FarNet
 {;
+ref class FarNetHost : Works::Host
+{
+public:
+	virtual Object^ LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue) override
+	{
+		return Works::WinRegistry::GetValue("Plugins\\FarNet\\" + keyPath, valueName, defaultValue);
+	}
+
+	virtual void SaveFarNetValue(String^ keyPath, String^ valueName, Object^ value) override
+	{
+		Works::WinRegistry::SetValue("Plugins\\FarNet\\" + keyPath, valueName, value);
+	}
+
+	virtual void RegisterProxyCommand(IModuleCommand^ info) override
+	{
+		Far0::RegisterProxyCommand(info);
+	}
+
+	virtual void RegisterProxyEditor(IModuleEditor^ info) override
+	{
+		Far0::RegisterProxyEditor(info);
+	}
+
+	virtual void RegisterProxyFiler(IModuleFiler^ info) override
+	{
+		Far0::RegisterProxyFiler(info);
+	}
+
+	virtual void RegisterProxyTool(IModuleTool^ info) override
+	{
+		Far0::RegisterProxyTool(info);
+	}
+
+	virtual void UnregisterProxyAction(IModuleAction^ action) override
+	{
+		Far0::UnregisterProxyAction(action);
+	}
+
+	virtual void UnregisterProxyTool(IModuleTool^ tool) override
+	{
+		Far0::UnregisterProxyTool(tool);
+	}
+
+	virtual void InvalidateProxyCommand() override
+	{
+		Far0::InvalidateProxyCommand();
+	}
+
+	virtual IRegistryKey^ OpenCacheKey(bool writable) override
+	{
+		String^ path = "Plugins\\FarNet\\!Cache";
+		return Works::WinRegistry::OpenKey(path, writable);
+	}
+
+	virtual IRegistryKey^ OpenModuleKey(String^ name, bool writable) override
+	{
+		String^ path = "Plugins\\FarNet.Modules\\" + name;
+		return Works::WinRegistry::OpenKey(path, writable);
+	}
+};
+
 void Far0::Start()
 {
+	// init the registry path
+	String^ path = gcnew String(Info.RootKey);
+	Works::WinRegistry::RegistryPath = path->Substring(0, path->LastIndexOf('\\'));
+
+	// init async operations
 	_hMutex = CreateMutex(NULL, FALSE, NULL);
-	_hotkey = FarRegistryKey::GetFarValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
-	ModuleLoader::LoadModules();
+
+	// init my hotkey
+	_hotkey = Works::WinRegistry::GetValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
+
+	// connect the host
+	Works::Host::Instance = gcnew FarNetHost();
+
+	// module path
+	path = Configuration::GetString(Configuration::Modules);
+	if (!path)
+		path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules"); //????
+
+	// load
+	Works::ModuleLoader::LoadModules(path);
 }
 
 //! Don't use Far UI
 void Far0::Stop()
 {
 	CloseHandle(_hMutex);
-	ModuleLoader::UnloadModules();
+	Works::ModuleLoader::UnloadModules();
 
 	delete[] _pConfig;
 	delete[] _pDisk;
@@ -39,10 +113,10 @@ void Far0::Stop()
 	delete _prefixes;
 }
 
-void Far0::UnregisterProxyAction(ProxyAction^ action)
+void Far0::UnregisterProxyAction(IModuleAction^ action)
 {
 	// case: tool
-	ProxyTool^ tool = dynamic_cast<ProxyTool^>(action);
+	IModuleTool^ tool = dynamic_cast<IModuleTool^>(action);
 	if (tool)
 	{
 		UnregisterProxyTool(tool);
@@ -51,9 +125,9 @@ void Far0::UnregisterProxyAction(ProxyAction^ action)
 
 	LOG_3("Unregister " + action);
 
-	ModuleLoader::Actions->Remove(action->Id);
+	Works::Host::Actions->Remove(action->Id);
 
-	ProxyCommand^ command = dynamic_cast<ProxyCommand^>(action);
+	IModuleCommand^ command = dynamic_cast<IModuleCommand^>(action);
 	if (command)
 	{
 		_registeredCommand.Remove(command);
@@ -62,14 +136,14 @@ void Far0::UnregisterProxyAction(ProxyAction^ action)
 		return;
 	}
 
-	ProxyEditor^ editor = dynamic_cast<ProxyEditor^>(action);
+	IModuleEditor^ editor = dynamic_cast<IModuleEditor^>(action);
 	if (editor)
 	{
 		_registeredEditor.Remove(editor);
 		return;
 	}
 
-	ProxyFiler^ filer = dynamic_cast<ProxyFiler^>(action);
+	IModuleFiler^ filer = dynamic_cast<IModuleFiler^>(action);
 	if (filer)
 	{
 		_registeredFiler.Remove(filer);
@@ -77,11 +151,11 @@ void Far0::UnregisterProxyAction(ProxyAction^ action)
 	}
 }
 
-void Far0::UnregisterProxyTool(ProxyTool^ tool)
+void Far0::UnregisterProxyTool(IModuleTool^ tool)
 {
 	LOG_3("Unregister " + tool);
 
-	ModuleLoader::Actions->Remove(tool->Id);
+	Works::Host::Actions->Remove(tool->Id);
 
 	InvalidateProxyTool(tool->Options);
 }
@@ -131,37 +205,37 @@ void Far0::InvalidateProxyTool(ModuleToolOptions options)
 	}
 }
 
-void Far0::RegisterProxyCommand(ProxyCommand^ info)
+void Far0::RegisterProxyCommand(IModuleCommand^ info)
 {
 	LOG_3("Register " + info);
-	ModuleLoader::Actions->Add(info->Id, info);
+	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredCommand.Add(info);
 	delete _prefixes;
 	_prefixes = 0;
 }
 
-void Far0::RegisterProxyEditor(ProxyEditor^ info)
+void Far0::RegisterProxyEditor(IModuleEditor^ info)
 {
 	LOG_3("Register " + info);
-	ModuleLoader::Actions->Add(info->Id, info);
+	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredEditor.Add(info);
 }
 
-void Far0::RegisterProxyFiler(ProxyFiler^ info)
+void Far0::RegisterProxyFiler(IModuleFiler^ info)
 {
 	LOG_3("Register " + info);
-	ModuleLoader::Actions->Add(info->Id, info);
+	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredFiler.Add(info);
 }
 
-void Far0::RegisterProxyTool(ProxyTool^ info)
+void Far0::RegisterProxyTool(IModuleTool^ info)
 {
 	LOG_3("Register " + info);
 
-	ModuleLoader::Actions->Add(info->Id, info);
+	Works::Host::Actions->Add(info->Id, info);
 
 	InvalidateProxyTool(info->Options);
 }
@@ -172,7 +246,7 @@ void Far0::Run(String^ command)
 	if (colon < 0)
 		return;
 
-	for each(ProxyCommand^ it in _registeredCommand)
+	for each(IModuleCommand^ it in _registeredCommand)
 	{
 		String^ pref = it->Prefix;
 		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
@@ -216,12 +290,12 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 	{
 		if (!_toolConfig)
 		{
-			_toolConfig = ModuleLoader::GetTools(ModuleToolOptions::Config);
+			_toolConfig = Works::Host::GetTools(ModuleToolOptions::Config);
 			_pConfig = new CStr[_toolConfig->Length + 1];
 			_pConfig[0].Set(Res::MenuPrefix);
 
 			for(int i = _toolConfig->Length; --i >= 0;)
-				_pConfig[i + 1].Set(Res::MenuPrefix + _toolConfig[i]->GetMenuText());
+				_pConfig[i + 1].Set(GetMenuText(_toolConfig[i]));
 		}
 
 		pi->PluginConfigStringsNumber = _toolConfig->Length + 1;
@@ -232,7 +306,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 	{
 		if (!_toolDisk)
 		{
-			_toolDisk = ModuleLoader::GetTools(ModuleToolOptions::Disk);
+			_toolDisk = Works::Host::GetTools(ModuleToolOptions::Disk);
 			if (_toolDisk->Length > 0)
 			{
 				_pDisk = new CStr[_toolDisk->Length];
@@ -254,12 +328,12 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolDialog)
 			{
-				_toolDialog = ModuleLoader::GetTools(ModuleToolOptions::Dialog);
+				_toolDialog = Works::Host::GetTools(ModuleToolOptions::Dialog);
 				_pDialog = new CStr[_toolDialog->Length + 1];
 				_pDialog[0].Set(Res::MenuPrefix);
 
 				for(int i = _toolDialog->Length; --i >= 0;)
-					_pDialog[i + 1].Set(Res::MenuPrefix + _toolDialog[i]->GetMenuText());
+					_pDialog[i + 1].Set(GetMenuText(_toolDialog[i]));
 			}
 
 			pi->PluginMenuStringsNumber = _toolDialog->Length + 1;
@@ -270,12 +344,12 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolEditor)
 			{
-				_toolEditor = ModuleLoader::GetTools(ModuleToolOptions::Editor);
+				_toolEditor = Works::Host::GetTools(ModuleToolOptions::Editor);
 				_pEditor = new CStr[_toolEditor->Length + 1];
 				_pEditor[0].Set(Res::MenuPrefix);
 
 				for(int i = _toolEditor->Length; --i >= 0;)
-					_pEditor[i + 1].Set(Res::MenuPrefix + _toolEditor[i]->GetMenuText());
+					_pEditor[i + 1].Set(GetMenuText(_toolEditor[i]));
 			}
 
 			pi->PluginMenuStringsNumber = _toolEditor->Length + 1;
@@ -286,12 +360,12 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolPanels)
 			{
-				_toolPanels = ModuleLoader::GetTools(ModuleToolOptions::Panels);
+				_toolPanels = Works::Host::GetTools(ModuleToolOptions::Panels);
 				_pPanels = new CStr[_toolPanels->Length + 1];
 				_pPanels[0].Set(Res::MenuPrefix);
 
 				for(int i = _toolPanels->Length; --i >= 0;)
-					_pPanels[i + 1].Set(Res::MenuPrefix + _toolPanels[i]->GetMenuText());
+					_pPanels[i + 1].Set(GetMenuText(_toolPanels[i]));
 			}
 
 			pi->PluginMenuStringsNumber = _toolPanels->Length + 1;
@@ -302,12 +376,12 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		{
 			if (!_toolViewer)
 			{
-				_toolViewer = ModuleLoader::GetTools(ModuleToolOptions::Viewer);
+				_toolViewer = Works::Host::GetTools(ModuleToolOptions::Viewer);
 				_pViewer = new CStr[_toolViewer->Length + 1];
 				_pViewer[0].Set(Res::MenuPrefix);
 
 				for(int i = _toolViewer->Length; --i >= 0;)
-					_pViewer[i + 1].Set(Res::MenuPrefix + _toolViewer[i]->GetMenuText());
+					_pViewer[i + 1].Set(GetMenuText(_toolViewer[i]));
 			}
 
 			pi->PluginMenuStringsNumber = _toolViewer->Length + 1;
@@ -321,7 +395,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		if (_prefixes == 0)
 		{
 			String^ PrefString = String::Empty;
-			for each(ProxyCommand^ it in _registeredCommand)
+			for each(IModuleCommand^ it in _registeredCommand)
 			{
 				if (PrefString->Length > 0)
 					PrefString = String::Concat(PrefString, ":");
@@ -365,7 +439,7 @@ bool Far0::AsConfigure(int itemIndex)
 	if (--itemIndex >= _toolConfig->Length)
 		return false;
 
-	ProxyTool^ tool = _toolConfig[itemIndex];
+	IModuleTool^ tool = _toolConfig[itemIndex];
 	ModuleToolEventArgs e;
 	e.From = ModuleToolOptions::Config;
 	tool->Invoke(nullptr, %e);
@@ -383,7 +457,7 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 	try
 	{
 		ModuleFilerEventArgs^ e;
-		for each(ProxyFiler^ it in _registeredFiler)
+		for each(IModuleFiler^ it in _registeredFiler)
 		{
 			// create?
 			if (!name && !it->Creates)
@@ -437,19 +511,23 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 		{
 		case OPEN_COMMANDLINE:
 			{
-				LOG_AUTO(3, "OPEN_COMMANDLINE");
-
-				ProcessPrefixes(item);
+				LOG_AUTO(Info, "OPEN_COMMANDLINE")
+				{
+					ProcessPrefixes(item);
+				}
+				LOG_END;
 			}
 			break;
 		case OPEN_DISKMENU:
 			{
-				LOG_AUTO(3, "OPEN_DISKMENU");
-
-				ProxyTool^ tool = _toolDisk[(int)item];
-				ModuleToolEventArgs e;
-				e.From = ModuleToolOptions::Disk;
-				tool->Invoke(nullptr, %e);
+				LOG_AUTO(Info, "OPEN_DISKMENU")
+				{
+					IModuleTool^ tool = _toolDisk[(int)item];
+					ModuleToolEventArgs e;
+					e.From = ModuleToolOptions::Disk;
+					tool->Invoke(nullptr, %e);
+				}
+				LOG_END;
 			}
 			break;
 		case OPEN_PLUGINSMENU:
@@ -460,12 +538,14 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 				}
 
-				LOG_AUTO(3, "OPEN_PLUGINSMENU");
-
-				ProxyTool^ tool = _toolPanels[(int)item - 1];
-				ModuleToolEventArgs e;
-				e.From = ModuleToolOptions::Panels;
-				tool->Invoke(nullptr, %e);
+				LOG_AUTO(Info, "OPEN_PLUGINSMENU")
+				{
+					IModuleTool^ tool = _toolPanels[(int)item - 1];
+					ModuleToolEventArgs e;
+					e.From = ModuleToolOptions::Panels;
+					tool->Invoke(nullptr, %e);
+				}
+				LOG_END;
 			}
 			break;
 		case OPEN_EDITOR:
@@ -476,12 +556,14 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 				}
 
-				LOG_AUTO(3, "OPEN_EDITOR");
-
-				ProxyTool^ tool = _toolEditor[(int)item - 1];
-				ModuleToolEventArgs e;
-				e.From = ModuleToolOptions::Editor;
-				tool->Invoke(nullptr, %e);
+				LOG_AUTO(Info, "OPEN_EDITOR")
+				{
+					IModuleTool^ tool = _toolEditor[(int)item - 1];
+					ModuleToolEventArgs e;
+					e.From = ModuleToolOptions::Editor;
+					tool->Invoke(nullptr, %e);
+				}
+				LOG_END;
 			}
 			break;
 		case OPEN_VIEWER:
@@ -492,12 +574,14 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 				}
 
-				LOG_AUTO(3, "OPEN_VIEWER");
-
-				ProxyTool^ tool = _toolViewer[(int)item - 1];
-				ModuleToolEventArgs e;
-				e.From = ModuleToolOptions::Viewer;
-				tool->Invoke(nullptr, %e);
+				LOG_AUTO(Info, "OPEN_VIEWER")
+				{
+					IModuleTool^ tool = _toolViewer[(int)item - 1];
+					ModuleToolEventArgs e;
+					e.From = ModuleToolOptions::Viewer;
+					tool->Invoke(nullptr, %e);
+				}
+				LOG_END;
 			}
 			break;
 		//! STOP: dialog case is different
@@ -515,12 +599,14 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 				}
 
-				LOG_AUTO(3, "OPEN_DIALOG");
-
-				ProxyTool^ tool = _toolDialog[index - 1];
-				ModuleToolEventArgs e;
-				e.From = ModuleToolOptions::Dialog;
-				tool->Invoke(nullptr, %e);
+				LOG_AUTO(Info, "OPEN_DIALOG")
+				{
+					IModuleTool^ tool = _toolDialog[index - 1];
+					ModuleToolEventArgs e;
+					e.From = ModuleToolOptions::Dialog;
+					tool->Invoke(nullptr, %e);
+				}
+				LOG_END;
 			}
 			break;
 		}
@@ -621,7 +707,7 @@ void Far0::OpenConfig()
 	menu->HelpTopic = "MenuConfig";
 	menu->Title = "Modules configuration";
 
-	List<IModuleTool^> tools = ModuleLoader::GetTools();
+	List<IModuleTool^> tools(Works::Host::EnumTools());
 
 	String^ format = "{0,-10} : {1,2}";
 	menu->Add(String::Format(format, Res::ModuleMenuTools, tools.Count));
@@ -637,7 +723,7 @@ void Far0::OpenConfig()
 		{
 		case 0:
 			if (tools.Count)
-				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", Res::MenuPrefix, gcnew ModuleToolComparer);
+				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", gcnew Works::GetMenuText(&Far0::GetMenuText));
 			break;
 		case 1:
 			if (_registeredCommand.Count)
@@ -652,7 +738,7 @@ void Far0::OpenConfig()
 				Works::ConfigFiler::Show(%_registeredFiler, Far0::_helpTopic + "ConfigFiler");
 			break;
 		case 5: // mind separator
-			Works::ConfigUICulture::Show(ModuleLoader::GetModuleManagers(), Far0::_helpTopic + "ConfigUICulture");
+			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::_helpTopic + "ConfigUICulture");
 			break;
 		}
 	}
@@ -684,7 +770,7 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 
 	AutoEditorInfo ei;
 
-	for each(ProxyEditor^ it in _registeredEditor)
+	for each(IModuleEditor^ it in _registeredEditor)
 	{
 		// mask?
 		if (SS(it->Mask) && !CompareNameEx(it->Mask, fileName, true))
@@ -698,7 +784,7 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 		catch(Exception^ e)
 		{
 			//! show the address, too
-			Far::Net->ShowError(it->Key, e);
+			Far::Net->ShowError(it->ModuleName, e); //???? Key
 		}
 	}
 }
@@ -717,9 +803,11 @@ void Far0::AsProcessSynchroEvent(int type, void* /*param*/)
 			EventHandler^ handler = _syncHandlers[0];
 			_syncHandlers.RemoveAt(0);
 
-			LOG_AUTO(3, String::Format("AsProcessSynchroEvent: {0}", Log::Format(handler->Method)));
-
-			handler(nullptr, nullptr);
+			LOG_AUTO(Info, String::Format("AsProcessSynchroEvent: {0}", Log::Format(handler->Method)))
+			{
+				handler(nullptr, nullptr);
+			}
+			LOG_END;
 		}
 	}
 	finally
@@ -756,7 +844,6 @@ void Far0::PostJob(EventHandler^ handler)
 	}
 }
 
-#undef GetEnvironmentVariable
 CultureInfo^ Far0::GetCurrentUICulture(bool update)
 {
 	// get cached value
@@ -909,6 +996,11 @@ void Far0::InvalidateProxyCommand()
 {
 	delete _prefixes;
 	_prefixes = 0;
+}
+
+String^ Far0::GetMenuText(IModuleTool^ tool)
+{
+	return String::Format("{0} &{1} {2}", Res::MenuPrefix, tool->Hotkey, tool->Name);
 }
 
 }

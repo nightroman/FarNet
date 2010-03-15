@@ -8,12 +8,6 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class ProxyAction;
-ref class ProxyCommand;
-ref class ProxyEditor;
-ref class ProxyFiler;
-ref class ProxyTool;
-
 ref class Far0
 {
 public:
@@ -23,14 +17,14 @@ public:
 	static void AsGetPluginInfo(PluginInfo* pi);
 	static void AsProcessSynchroEvent(int type, void* param);
 public:
-	static void RegisterProxyCommand(ProxyCommand^ info);
-	static void RegisterProxyEditor(ProxyEditor^ info);
-	static void RegisterProxyFiler(ProxyFiler^ info);
-	static void RegisterProxyTool(ProxyTool^ info);
+	static void RegisterProxyCommand(IModuleCommand^ info);
+	static void RegisterProxyEditor(IModuleEditor^ info);
+	static void RegisterProxyFiler(IModuleFiler^ info);
+	static void RegisterProxyTool(IModuleTool^ info);
 	static void InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName);
 	static void Start();
 	static void Stop();
-	static void UnregisterProxyAction(ProxyAction^ action);
+	static void UnregisterProxyAction(IModuleAction^ action);
 public:
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static int GetPaletteColor(PaletteColor paletteColor);
@@ -44,7 +38,7 @@ public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
 	static void InvalidateProxyCommand();
-	static void UnregisterProxyTool(ProxyTool^ tool);
+	static void UnregisterProxyTool(IModuleTool^ tool);
 private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
@@ -54,6 +48,7 @@ private:
 	static void ProcessPrefixes(INT_PTR item);
 	static void VoidStep(Object^, EventArgs^) {}
 	static void InvalidateProxyTool(ModuleToolOptions options);
+	static String^ GetMenuText(IModuleTool^ tool);
 private:
 	static CStr* _pConfig;
 	static CStr* _pDialog;
@@ -61,12 +56,12 @@ private:
 	static CStr* _pEditor;
 	static CStr* _pPanels;
 	static CStr* _pViewer;
-	static array<ProxyTool^>^ _toolConfig;
-	static array<ProxyTool^>^ _toolDialog;
-	static array<ProxyTool^>^ _toolDisk;
-	static array<ProxyTool^>^ _toolEditor;
-	static array<ProxyTool^>^ _toolPanels;
-	static array<ProxyTool^>^ _toolViewer;
+	static array<IModuleTool^>^ _toolConfig;
+	static array<IModuleTool^>^ _toolDialog;
+	static array<IModuleTool^>^ _toolDisk;
+	static array<IModuleTool^>^ _toolEditor;
+	static array<IModuleTool^>^ _toolPanels;
+	static array<IModuleTool^>^ _toolViewer;
 	static CStr* _prefixes;
 	static List<IModuleCommand^> _registeredCommand;
 	static List<IModuleEditor^> _registeredEditor;

@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Zoo.h"
-#include "ModuleLoader.h"
 #include "Shelve.h"
 
 namespace FarNet
@@ -281,6 +280,44 @@ void Zoo::Break()
 	rec.Event.KeyEvent.dwControlKeyState = LEFT_CTRL_PRESSED;
 
 	WriteConsoleInput(::GetStdHandle(STD_INPUT_HANDLE), &rec, 1, &writeCount);
+}
+
+MacroParseError^ Zoo::CheckMacro(String^ sequence, bool silent)
+{
+	PIN_ES(pin, sequence);
+	
+	ActlKeyMacro args;
+	args.Command = MCMD_CHECKMACRO;
+	args.Param.PlainText.SequenceText = pin;
+	args.Param.PlainText.Flags = silent ? KSFLAGS_SILENTCHECK : 0;
+
+	//! it always gets ErrCode
+	Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args);
+	if (args.Param.MacroResult.ErrCode == MPEC_SUCCESS)
+		return nullptr;
+	
+	MacroParseError^ r = gcnew MacroParseError;
+	r->ErrorCode = (MacroParseStatus)args.Param.MacroResult.ErrCode;
+	r->Token = gcnew String(args.Param.MacroResult.ErrSrc);
+	r->Line = args.Param.MacroResult.ErrPos.Y;
+	r->Pos = args.Param.MacroResult.ErrPos.X;
+	return r;
+}
+
+void Zoo::LoadMacros()
+{
+	ActlKeyMacro args;
+	args.Command = MCMD_LOADALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+}
+
+void Zoo::SaveMacros()
+{
+	ActlKeyMacro args;
+	args.Command = MCMD_SAVEALL;
+	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
+		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
 }
 
 }

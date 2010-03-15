@@ -25,7 +25,6 @@ using namespace FarNet;
 using namespace System::Collections::Generic;
 using namespace System::Collections::ObjectModel;
 using namespace System::Collections::Specialized;
-using namespace System::Configuration;
 using namespace System::Diagnostics;
 using namespace System::Globalization;
 using namespace System::IO;
@@ -34,6 +33,8 @@ using namespace System::Resources;
 using namespace System::Text::RegularExpressions;
 using namespace System::Text;
 using namespace System;
+
+#undef GetEnvironmentVariable
 
 #ifdef _DEBUG
 // remove if not found
@@ -44,3 +45,4 @@ extern PluginStartupInfo Info;
 
 #include "Log.h"
 #include "Utils.h"
+
