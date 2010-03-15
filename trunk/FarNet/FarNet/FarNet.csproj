@@ -61,8 +61,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Release\FarNet.XML</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
@@ -102,6 +101,7 @@
     <Compile Include="File.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Kit.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="Macro.cs" />
     <Compile Include="Panel.cs">
       <SubType>Code</SubType>
