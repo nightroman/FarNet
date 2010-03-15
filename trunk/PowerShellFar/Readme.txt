@@ -1,7 +1,7 @@
 
 Module   : FarNet.PowerShellFar
 Version  : 4.3.10
-Release  : 2010.03.06
+Release  : 2010.03.14
 Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com

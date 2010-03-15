@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Management.Automation;
 using FarNet;
@@ -82,6 +83,7 @@ namespace FarMacro
 	{
 		None,
 		DWord = 4,
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		MultiString = 7,
 		QWord = 11,
 	}

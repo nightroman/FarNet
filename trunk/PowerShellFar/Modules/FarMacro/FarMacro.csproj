@@ -7,7 +7,6 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6223B3D5-A0CA-4DD1-9CD3-D7D394B55DA6}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FarMacro</RootNamespace>
     <AssemblyName>FarMacro</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
@@ -34,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRules>-Microsoft.Design#CA2210</CodeAnalysisRules>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,8 +47,7 @@
     <Compile Include="SetFarMacroCommand.cs" />
     <Compile Include="FarMacroProvider.cs" />
     <Compile Include="NewFarMacroCommand.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
