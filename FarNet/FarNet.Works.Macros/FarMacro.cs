@@ -14,8 +14,13 @@ namespace FarNet.Works
 	{
 		static readonly FarMacro _Instance = new FarMacro();
 
+		/// <summary>
+		/// The only macro operator exposed by a host.
+		/// </summary>
 		public static FarMacro Instance { get { return _Instance; } }
 
+		#region override
+		
 		public override bool ManualSaveLoad { get; set; }
 
 		public override MacroParseError Check(string sequence, bool silent)
@@ -162,6 +167,10 @@ namespace FarNet.Works
 			}
 		}
 
+		#endregion
+
+		#region private
+
 		FarMacro()
 		{ }
 
@@ -300,6 +309,8 @@ namespace FarNet.Works
 
 			return string.Empty;
 		}
+
+		#endregion
 
 	}
 }

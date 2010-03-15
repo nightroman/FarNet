@@ -1,9 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-	<ItemGroup>
-		<Folder Include="FarNet;FarNet.Works.Config;FarNet.Works.Macros;FarNet.Works.Manager;FarNet.Works.Registry;FarNetMan"/>
-	</ItemGroup>
-
 	<PropertyGroup>
 		<ProductVersion>4.3.10</ProductVersion>
 		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
@@ -11,6 +7,15 @@
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<Folder Include="FarNet"/>
+		<Folder Include="FarNet.Works.Config"/>
+		<Folder Include="FarNet.Works.Macros"/>
+		<Folder Include="FarNet.Works.Manager"/>
+		<Folder Include="FarNet.Works.Registry"/>
+		<Folder Include="FarNetMan"/>
+	</ItemGroup>
 
 	<Target Name="Build">
 		<MSBuild Projects="FarNet.sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
@@ -65,17 +70,10 @@ FarNetMan\Release\x64\FarNetMan.dll"/>
 		<!--Clean-->
 		<RemoveDir Directories="
 Tmp;
-FarNet\bin;
-FarNet\obj;
-FarNet.Works.Config\bin;
-FarNet.Works.Config\obj;
-FarNet.Works.Macros\bin;
-FarNet.Works.Macros\obj;
-FarNet.Works.Manager\bin;
-FarNet.Works.Manager\obj;
-FarNet.Works.Registry\bin;
-FarNet.Works.Registry\obj;
-FarNetMan\Release"/>
+@(Folder->'%(Identity)\bin');
+@(Folder->'%(Identity)\obj');
+@(Folder->'%(Identity)\Release');
+"/>
 		<Delete Files="FarNet.sln.cache"/>
 	</Target>
 
