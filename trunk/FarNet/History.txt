@@ -2,14 +2,20 @@ http://code.google.com/p/farnet/
 
 = 4.3.11 =
 
-Mostly internal, but important for the future changes. Some public API was
-extended but this should not affect modules (and they should not use it).
+Changes are mostly internal, important for the future. They are not breaking if
+you use everything standard.
 
-A new DLL is included into the FarNet package: FarNet.Works.dll. It contains
-pure .NET and host independent internal tools that should not be used by
-modules. It is used only by the Far Manager FarNet host (actual Far plugin
-FarNetMan.dll). In the future this and\or other FarNet.Works.* libraries will
-be used by other FarNet hosts.
+FarNet host configuration: some settings in "Far.exe.config" are replaced with
+environment variables, see Readme.txt for details. But normally you should use
+default settings.
+
+New DLLs are included into the FarNet package: FarNet.Works.*.dll. They contain
+pure .NET host independent internal tools. They should not be used by modules
+directly. They are used only by the FarNet host (actual Far plugin). In the
+future they will be used by other FarNet hosts.
+
+Some public API was extended. This should not affect modules and they should
+not use it (marked "for internal use").
 
 Related internal change: renamed namespace FarNet.Support into FarNet.Works; it
 contains internal FarNet stuff that should not be used directly from modules.

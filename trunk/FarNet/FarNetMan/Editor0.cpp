@@ -78,17 +78,21 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// 2) event for any editor handlers, they add this editor handlers
 			if (_anyEditor._Opened)
 			{
-				LOG_AUTO(3, "Opened");
-				
-				_anyEditor._Opened(editor, nullptr);
+				LOG_AUTO(Info, "Opened")
+				{
+					_anyEditor._Opened(editor, nullptr);
+				}
+				LOG_END;
 			}
 
 			// 3) event for this editor handlers
 			if (editor->_Opened)
 			{
-				LOG_AUTO(3, "Opened");
-				
-				editor->_Opened(editor, nullptr);
+				LOG_AUTO(Info, "Opened")
+				{				
+					editor->_Opened(editor, nullptr);
+				}
+				LOG_END;
 			}
 		}
 		break;
@@ -110,15 +114,19 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// event, after the above
 			if (_anyEditor._Closed)
 			{
-				LOG_AUTO(3, "Closed");
-				
-				_anyEditor._Closed(editor, nullptr);
+				LOG_AUTO(Info, "Closed")
+				{				
+					_anyEditor._Closed(editor, nullptr);
+				}
+				LOG_END;
 			}
 			if (editor->_Closed)
 			{
-				LOG_AUTO(3, "Closed");
-				
-				editor->_Closed(editor, nullptr);
+				LOG_AUTO(Info, "Closed")
+				{				
+					editor->_Closed(editor, nullptr);
+				}
+				LOG_END;
 			}
 
 			// delete the file after all
@@ -132,15 +140,19 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Editor^ ed = GetCurrentEditor();
 			if (_anyEditor._Saving)
 			{
-				LOG_AUTO(3, "Saving");
-				
-				_anyEditor._Saving(ed, nullptr);
+				LOG_AUTO(Info, "Saving")
+				{				
+					_anyEditor._Saving(ed, nullptr);
+				}
+				LOG_END;
 			}
 			if (ed->_Saving)
 			{
-				LOG_AUTO(3, "Saving");
-				
-				ed->_Saving(ed, nullptr);
+				LOG_AUTO(Info, "Saving")
+				{				
+					ed->_Saving(ed, nullptr);
+				}
+				LOG_END;
 			}
 		}
 		break;
@@ -152,17 +164,21 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Editor^ ed = GetCurrentEditor();
 			if (_anyEditor._OnRedraw)
 			{
-				LOG_AUTO(4, "OnRedraw");
-				
-				RedrawEventArgs ea(mode);
-				_anyEditor._OnRedraw(ed, %ea);
+				LOG_AUTO(Verbose, "OnRedraw")
+				{				
+					RedrawEventArgs ea(mode);
+					_anyEditor._OnRedraw(ed, %ea);
+				}
+				LOG_END;
 			}
 			if (ed->_OnRedraw)
 			{
-				LOG_AUTO(4, "OnRedraw");
-				
-				RedrawEventArgs ea(mode);
-				ed->_OnRedraw(ed, %ea);
+				LOG_AUTO(Verbose, "OnRedraw")
+				{				
+					RedrawEventArgs ea(mode);
+					ed->_OnRedraw(ed, %ea);
+				}
+				LOG_END;
 			}
 		}
 		break;
@@ -182,15 +198,19 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// event
 			if (_anyEditor._GotFocus)
 			{
-				LOG_AUTO(4, "GotFocus");
-				
-				_anyEditor._GotFocus(editor, nullptr);
+				LOG_AUTO(Verbose, "GotFocus")
+				{				
+					_anyEditor._GotFocus(editor, nullptr);
+				}
+				LOG_END;
 			}
 			if (editor->_GotFocus)
 			{
-				LOG_AUTO(4, "GotFocus");
-
-				editor->_GotFocus(editor, nullptr);
+				LOG_AUTO(Verbose, "GotFocus")
+				{
+					editor->_GotFocus(editor, nullptr);
+				}
+				LOG_END;
 			}
 		}
 		break;
@@ -205,15 +225,19 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			
 			if (_anyEditor._LosingFocus)
 			{
-				LOG_AUTO(4, "LosingFocus");
-				
-				_anyEditor._LosingFocus(ed, nullptr);
+				LOG_AUTO(Verbose, "LosingFocus")
+				{				
+					_anyEditor._LosingFocus(ed, nullptr);
+				}
+				LOG_END;
 			}
 			if (ed->_LosingFocus)
 			{
-				LOG_AUTO(4, "LosingFocus");
-
-				ed->_LosingFocus(ed, nullptr);
+				LOG_AUTO(Verbose, "LosingFocus")
+				{
+					ed->_LosingFocus(ed, nullptr);
+				}
+				LOG_END;
 			}
 		}
 		break;
