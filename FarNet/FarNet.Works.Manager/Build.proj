@@ -1,25 +1,9 @@
-<Project DefaultTargets="Install" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
-		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+		<AssemblyName>FarNet.Works.Manager.dll</AssemblyName>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<PublishFile Include="Bin\$(Configuration)\FarNet.Works.Manager.dll"/>
-	</ItemGroup>
-
-	<Target Name="Clean">
-		<RemoveDir Directories="bin;obj"/>
-	</Target>
-
-	<Target Name="Install">
-		<Copy SourceFiles="@(PublishFile)" DestinationFolder="$(Install)\FarNet" SkipUnchangedFiles="true"/>
-	</Target>
-
-	<Target Name="Uninstall">
-		<Error Condition="'$(Install)' == ''"/>
-		<Delete Files="$(Install)\FarNet\FarNet.Works.Manager.dll" TreatErrorsAsWarnings="true"/>
-	</Target>
+	<Import Project="..\Build.targets"/>
 
 </Project>
