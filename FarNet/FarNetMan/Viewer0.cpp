@@ -86,15 +86,19 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			// event
 			if (_anyViewer._Opened)
 			{
-				LOG_AUTO(3, "Opened");
-				
-				_anyViewer._Opened(viewer, nullptr);
+				LOG_AUTO(Info, "Opened")
+				{
+					_anyViewer._Opened(viewer, nullptr);
+				}
+				LOG_END;
 			}
 			if (viewer->_Opened)
 			{
-				LOG_AUTO(3, "Opened");
-
-				viewer->_Opened(viewer, nullptr);
+				LOG_AUTO(Info, "Opened")
+				{
+					viewer->_Opened(viewer, nullptr);
+				}
+				LOG_END;
 			}
 		}
 		break;
@@ -115,15 +119,19 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			// event, after the above
 			if (_anyViewer._Closed)
 			{
-				LOG_AUTO(3, "Closed");
-
-				_anyViewer._Closed(viewer, nullptr);
+				LOG_AUTO(Info, "Closed")
+				{
+					_anyViewer._Closed(viewer, nullptr);
+				}
+				LOG_END;
 			}
 			if (viewer->_Closed)
 			{
-				LOG_AUTO(3, "Closed");
-				
-				viewer->_Closed(viewer, nullptr);
+				LOG_AUTO(Info, "Closed")
+				{
+					viewer->_Closed(viewer, nullptr);
+				}
+				LOG_END;
 			}
 
 			// delete the file after all
@@ -143,15 +151,19 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			// event
 			if (_anyViewer._GotFocus)
 			{
-				LOG_AUTO(4, "GotFocus");
-				
-				_anyViewer._GotFocus(viewer, nullptr);
+				LOG_AUTO(Verbose, "GotFocus")
+				{
+					_anyViewer._GotFocus(viewer, nullptr);
+				}
+				LOG_END;
 			}
 			if (viewer->_GotFocus)
 			{
-				LOG_AUTO(4, "GotFocus");
-
-				viewer->_GotFocus(viewer, nullptr);
+				LOG_AUTO(Verbose, "GotFocus")
+				{
+					viewer->_GotFocus(viewer, nullptr);
+				}
+				LOG_END;
 			}
 		}
 		break;
@@ -168,15 +180,19 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			// event
 			if (_anyViewer._LosingFocus)
 			{
-				LOG_AUTO(4, "LosingFocus");
-				
-				_anyViewer._LosingFocus(viewer, nullptr);
+				LOG_AUTO(Verbose, "LosingFocus")
+				{				
+					_anyViewer._LosingFocus(viewer, nullptr);
+				}
+				LOG_END;
 			}
 			if (viewer->_LosingFocus)
 			{
-				LOG_AUTO(4, "LosingFocus");
-				
-				viewer->_LosingFocus(viewer, nullptr);
+				LOG_AUTO(Verbose, "LosingFocus")
+				{				
+					viewer->_LosingFocus(viewer, nullptr);
+				}
+				LOG_END;
 			}
 		}
 		break;

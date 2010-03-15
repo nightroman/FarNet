@@ -204,25 +204,20 @@ internal:
 		ModuleEditors = "Editors",
 		ModuleFilers = "Filers",
 		ErrorNoHotKey = "Set any FarNet hotkey [F4] in the Far plugin menu [F11] and restart Far.",
-		MenuPrefix = ".NET ",
+		MenuPrefix = ".NET",
 		InvalidColumnKind = "Invalid column kind: ",
 		Column0IsUsedTwice = "Column '{0}' is used twice.";
 };
 
-ref class Config
+ref class Configuration
 {
+public:
+	static ConstString
+		Modules = "FarNet:FarManager:Modules",
+		DisableGui = "FarNet:FarManager:DisableGui";
 public:
 	static bool GetBool(String^ key);
-};
-
-ref class EnumerableReader
-{
-public:
-	EnumerableReader(System::Collections::IEnumerable^ enumerable);
-	String^ Read();
-	String^ TryRead();
-private:
-	System::Collections::IEnumerator^ Enumerator;
+	static String^ GetString(String^ key);
 };
 
 }
@@ -232,7 +227,6 @@ bool EqualsOrdinal(String^ strA, String^ strB);
 int Compare(String^ strA, String^ strB);
 int ParseInt(String^ value, int fallback);
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
-Object^ Property(Object^ obj, String^ name);
 String^ JoinText(String^ head, String^ tail);
 String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();

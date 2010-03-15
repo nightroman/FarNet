@@ -13,7 +13,6 @@ Copyright (c) 2005 FarNet Team
 
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
-static bool s_loaded, s_unloaded;
 
 #define __START try {
 #define __END } catch(Exception^ e) { Far::Net->ShowError(nullptr, e); }
@@ -24,65 +23,65 @@ But more calls are possible, we have to ignore them.
 */
 void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 {
-	LOG_AUTO(3, __FUNCTION__);
-
-	// case: loaded
-	if (s_loaded)
+	LOG_AUTO(Info, __FUNCTION__)
 	{
-		Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
-		Console::WriteLine("WARNING: FarNet has been already loaded.");
-		Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
-		return;
-	}
+		// deny
+		if (Works::Host::State != Works::HostState::None)
+		{
+			Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+			Console::WriteLine("WARNING: FarNet cannot be loaded twice.");
+			Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+			return;
+		}
 
-	// case: unloaded
-	if (s_unloaded)
-	{
-		Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
-		Console::WriteLine("WARNING: FarNet has been unloaded before and the second load is not supported.");
-		Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
-		return;
-	}
+		// loading
+		Works::Host::State = Works::HostState::Loading;
 
-	// load!
-	s_loaded = true;
-
-	Far1::Connect();
+		Far1::Connect();
 
 #ifdef TRACE_MEMORY
-	StartTraceMemory();
+		StartTraceMemory();
 #endif
 
-	Info = *psi;
-	FSF = *psi->FSF;
-	Info.FSF = &FSF;
+		Info = *psi;
+		FSF = *psi->FSF;
+		Info.FSF = &FSF;
 
-	__START;
-	Far0::Start();
-	__END;
+		__START;
+		Far0::Start();
+		__END;
+
+		// loaded
+		Works::Host::State = Works::HostState::Loaded;
+	}
+	LOG_END;
 }
 
 /*
-Unloads sub-plugins and the main plugin.
+Unloads modules and the plugin.
 STOP: ensure it is "loaded".
 */
 void WINAPI ExitFARW()
 {
-	LOG_AUTO(3, __FUNCTION__);
-
-	if (s_loaded)
+	LOG_AUTO(Info, __FUNCTION__)
 	{
-		// set flags
-		s_loaded = false;
-		s_unloaded = true;
+		if (Works::Host::State == Works::HostState::Loaded)
+		{
+			// unloading
+			Works::Host::State = Works::HostState::Unloading;
 
-		// don't try/catch, Far can't help
-		Far0::Stop();
+			// don't try/catch, Far can't help
+			Far0::Stop();
+
+			// unloaded
+			Works::Host::State = Works::HostState::Unloaded;
 
 #ifdef TRACE_MEMORY
-		StopTraceMemory();
+			StopTraceMemory();
 #endif
+		}
 	}
+	LOG_END;
 }
 
 /*
@@ -96,7 +95,8 @@ void WINAPI GetPluginInfoW(PluginInfo* pi)
 {
 	pi->StructSize = sizeof(PluginInfo);
 	pi->Flags = PF_DIALOG | PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
-	if (s_unloaded)
+
+	if (Works::Host::State != Works::HostState::Loaded)
 		return;
 
 	__START;

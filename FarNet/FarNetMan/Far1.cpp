@@ -10,15 +10,10 @@ Copyright (c) 2005 FarNet Team
 #include "Far0.h"
 #include "InputBox.h"
 #include "ListMenu.h"
-#include "Macro.h"
 #include "Menu.h"
 #include "Message.h"
-#include "ModuleLoader.h"
-#include "ModuleManager.h"
-#include "ModuleProxy.h"
 #include "Panel0.h"
 #include "Panel2.h"
-#include "Registry.h"
 #include "SubsetForm.h"
 #include "Viewer0.h"
 #include "Window.h"
@@ -41,29 +36,29 @@ String^ Far1::ActivePath::get()
 
 IModuleCommand^ Far1::GetModuleCommand(Guid id)
 {
-	ProxyAction^ action;
-	if (!ModuleLoader::Actions->TryGetValue(id, action))
+	IModuleAction^ action;
+	if (!Works::Host::Actions->TryGetValue(id, action))
 		return nullptr;
 
-	return (ProxyCommand^)action;
+	return (IModuleCommand^)action;
 }
 
 IModuleFiler^ Far1::GetModuleFiler(Guid id)
 {
-	ProxyAction^ action;
-	if (!ModuleLoader::Actions->TryGetValue(id, action))
+	IModuleAction^ action;
+	if (!Works::Host::Actions->TryGetValue(id, action))
 		return nullptr;
 
-	return (ProxyFiler^)action;
+	return (IModuleFiler^)action;
 }
 
 IModuleTool^ Far1::GetModuleTool(Guid id)
 {
-	ProxyAction^ action;
-	if (!ModuleLoader::Actions->TryGetValue(id, action))
+	IModuleAction^ action;
+	if (!Works::Host::Actions->TryGetValue(id, action))
 		return nullptr;
 
-	return (ProxyTool^)action;
+	return (IModuleTool^)action;
 }
 
 void Far1::Message(String^ body)
@@ -468,6 +463,30 @@ void Far1::ShowError(String^ title, Exception^ error)
 	// log
 	String^ info = Log::TraceException(error);
 
+	// case: not loaded
+	if (Works::Host::State != Works::HostState::Loaded)
+	{
+		// info to show
+		if (!info)
+			info = Log::FormatException(error);
+
+		// with title
+		info += title + "\r\n";
+
+		if (Works::Host::State == Works::HostState::Loading)
+		{
+			Far::Net->Write(info, ConsoleColor::Red);
+		}
+		else
+		{
+			Console::ForegroundColor = ConsoleColor::Red;
+			Console::WriteLine(info);
+			System::Threading::Thread::Sleep(1000);
+		}
+
+		return;
+	}
+
 	// ask
 	int res = Message(
 		error->Message,
@@ -726,7 +745,7 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 
 void Far1::Quit()
 {
-	if (!ModuleLoader::CanExit())
+	if (!Works::ModuleLoader::CanExit())
 		return;
 	
 	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);
@@ -744,7 +763,7 @@ ISubsetForm^ Far1::CreateSubsetForm()
 
 IMacro^ Far1::Macro::get()
 {
-	return %Macro0::Instance;
+	return Works::FarMacro::Instance;
 }
 
 ILine^ Far1::CommandLine::get()
@@ -759,7 +778,7 @@ IWindow^ Far1::Window::get()
 
 IRegistryKey^ Far1::OpenRegistryKey(String^ name, bool writable)
 {
-	return FarRegistryKey::OpenRegistryKey(name, writable);
+	return Works::WinRegistry::OpenKey(name, writable);
 }
 
 }

@@ -57,6 +57,7 @@
 				WarningLevel="4"
 				WarnAsError="true"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4945"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -145,6 +146,7 @@
 				WarningLevel="4"
 				WarnAsError="true"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4945"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -231,6 +233,7 @@
 				UsePrecompiledHeader="2"
 				WarningLevel="4"
 				WarnAsError="true"
+				DisableSpecificWarnings="4945"
 				EnablePREfast="false"
 			/>
 			<Tool
@@ -316,6 +319,7 @@
 				UsePrecompiledHeader="2"
 				WarningLevel="4"
 				WarnAsError="true"
+				DisableSpecificWarnings="4945"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -375,17 +379,33 @@
 			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 			MinFrameworkVersion="131072"
 		/>
-		<AssemblyReference
-			RelativePath="System.configuration.dll"
-			AssemblyName="System.Configuration, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
-			MinFrameworkVersion="131072"
-		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{752846B8-08B9-4D22-97B5-0F2C8020FB51}"
 			CopyLocal="false"
 			CopyLocalDependencies="false"
 			CopyLocalSatelliteAssemblies="false"
-			RelativePathToProject="..\FarNet\FarNet.Works\FarNet.Works.csproj"
+			RelativePathToProject="..\FarNet\FarNet.Works.Config\FarNet.Works.Config.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{B08734AC-7DF8-4326-90DD-6A4024D5CD03}"
+			CopyLocal="false"
+			CopyLocalDependencies="false"
+			CopyLocalSatelliteAssemblies="false"
+			RelativePathToProject="..\FarNet\FarNet.Works.Registry\FarNet.Works.Registry.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{516A2D89-4E77-4F24-89C2-A6D9E1C36998}"
+			CopyLocal="false"
+			CopyLocalDependencies="false"
+			CopyLocalSatelliteAssemblies="false"
+			RelativePathToProject="..\FarNet\FarNet.Works.Manager\FarNet.Works.Manager.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{5EA73F95-44BD-47F4-9E03-A9287B1716C9}"
+			CopyLocal="false"
+			CopyLocalDependencies="false"
+			CopyLocalSatelliteAssemblies="false"
+			RelativePathToProject="..\FarNet\FarNet.Works.Macros\FarNet.Works.Macros.csproj"
 		/>
 	</References>
 	<Files>
@@ -491,31 +511,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Log.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Macro.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Menu.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Message.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleLoader.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleProxy.cpp"
 				>
 			</File>
 			<File
@@ -536,10 +536,6 @@
 			</File>
 			<File
 				RelativePath=".\PanelInfo.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Registry.cpp"
 				>
 			</File>
 			<File
@@ -717,27 +713,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Macro.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Menu.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Message.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleLoader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleProxy.h"
 				>
 			</File>
 			<File
@@ -762,10 +742,6 @@
 			</File>
 			<File
 				RelativePath=".\Headers.c\plugin.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Registry.h"
 				>
 			</File>
 			<File

@@ -263,12 +263,14 @@ void Panel2::Push()
 // close and restore the shelved
 void Panel2::Close()
 {
-	LOG_AUTO(3, __FUNCTION__);
-
-	if (_ActiveInfo)
-		_ActiveInfo->Unshelve();
-	else
-		Panel1::Close();
+	LOG_AUTO(Info, __FUNCTION__)
+	{
+		if (_ActiveInfo)
+			_ActiveInfo->Unshelve();
+		else
+			Panel1::Close();
+	}
+	LOG_END;
 }
 
 }

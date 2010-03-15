@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
 Version  : 4.3.10
-Release  : 2010.03.06
+Release  : 2010.03.14
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -62,7 +62,7 @@ FarNetMan.hlf - FarNet UI help
 .\FarNet\
 FarNet.dll - FarNet interfaces for .NET modules
 FarNet.xml - FarNet API XML documentation
-FarNet.Works.* - FarNet internal tools
+FarNet.*.dll - FarNet internal tools
 
 .\FarNet\Modules\
 Each module folder contains exactly one .cfg file (module manifest) or exactly
@@ -97,6 +97,19 @@ when they are really invoked. In many cases when you change, rename or move
 assemblies or classes FarNet updates the cache itself. But some changes are
 too difficult to discover (e.g. changes in config files). In these cases you
 have to remove the registry cache manually (ditto for other cache problems).
+
+
+	= CONFIGURATION =
+
+
+It is recommended to use default settings. The following environment variables
+should be used only for advanced scenarious:
+
+	set FarNet:FarManager:Modules=path
+	-- Root of Far Manager FarNet modules. Default: %FARHOME%\FarNet\Modules
+
+	set FarNet:FarManager:DisableGui=true|false
+	--  Tells to disable special rare GUI features. Default: false
 
 
 	= API DOCUMENTATION (.CHM) =

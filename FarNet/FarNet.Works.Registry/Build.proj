@@ -1,0 +1,25 @@
+<Project DefaultTargets="Install" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PublishFile Include="Bin\$(Configuration)\FarNet.Works.Registry.dll"/>
+	</ItemGroup>
+
+	<Target Name="Clean">
+		<RemoveDir Directories="bin;obj"/>
+	</Target>
+
+	<Target Name="Install">
+		<Copy SourceFiles="@(PublishFile)" DestinationFolder="$(Install)\FarNet" SkipUnchangedFiles="true"/>
+	</Target>
+
+	<Target Name="Uninstall">
+		<Error Condition="'$(Install)' == ''"/>
+		<Delete Files="$(Install)\FarNet\FarNet.Works.Registry.dll" TreatErrorsAsWarnings="true"/>
+	</Target>
+
+</Project>
