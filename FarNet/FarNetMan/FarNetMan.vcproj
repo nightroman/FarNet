@@ -407,6 +407,13 @@
 			CopyLocalSatelliteAssemblies="false"
 			RelativePathToProject="..\FarNet\FarNet.Works.Macros\FarNet.Works.Macros.csproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{0BE8F8D1-F15A-4C53-BD71-4BC6E5005EF7}"
+			CopyLocal="false"
+			CopyLocalDependencies="false"
+			CopyLocalSatelliteAssemblies="false"
+			RelativePathToProject="..\FarNet\FarNet.Works.Dialog\FarNet.Works.Dialog.csproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -488,10 +495,6 @@
 			</File>
 			<File
 				RelativePath=".\Far1.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Form.cpp"
 				>
 			</File>
 			<File
@@ -581,10 +584,6 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\SubsetForm.cpp"
-				>
 			</File>
 			<File
 				RelativePath=".\Utils.cpp"
@@ -689,10 +688,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Form.h"
-				>
-			</File>
-			<File
 				RelativePath=".\InputBox.h"
 				>
 			</File>
@@ -754,10 +749,6 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SubsetForm.h"
 				>
 			</File>
 			<File

@@ -11,6 +11,7 @@
 	<ItemGroup>
 		<Folder Include="FarNet"/>
 		<Folder Include="FarNet.Works.Config"/>
+		<Folder Include="FarNet.Works.Dialog"/>
 		<Folder Include="FarNet.Works.Macros"/>
 		<Folder Include="FarNet.Works.Manager"/>
 		<Folder Include="FarNet.Works.Registry"/>
@@ -52,6 +53,7 @@ Readme.txt"/>
 $(FarHome)\FarNet\FarNet.dll;
 $(FarHome)\FarNet\FarNet.xml;
 $(FarHome)\FarNet\FarNet.Works.Config.dll;
+$(FarHome)\FarNet\FarNet.Works.Dialog.dll;
 $(FarHome)\FarNet\FarNet.Works.Macros.dll;
 $(FarHome)\FarNet\FarNet.Works.Manager.dll;
 $(FarHome)\FarNet\FarNet.Works.Registry.dll"/>
