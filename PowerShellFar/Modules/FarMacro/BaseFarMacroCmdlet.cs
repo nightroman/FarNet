@@ -3,6 +3,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
+using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using FarNet;
 
@@ -31,6 +32,7 @@ namespace FarMacro
 		[Parameter(HelpMessage = "See Macro.SelectedItems")]
 		public string SelectedItems { get; set; }
 
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		[Parameter(HelpMessage = "See Macro.PanelIsPlugin")]
 		public string PanelIsPlugin { get; set; }
 
@@ -40,6 +42,7 @@ namespace FarMacro
 		[Parameter(HelpMessage = "See Macro.SelectedItems2")]
 		public string SelectedItems2 { get; set; }
 
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		[Parameter(HelpMessage = "See Macro.PanelIsPlugin2")]
 		public string PanelIsPlugin2 { get; set; }
 
@@ -49,6 +52,7 @@ namespace FarMacro
 		[Parameter(HelpMessage = "See Macro.EnableOutput")]
 		public SwitchParameter EnableOutput { get; set; }
 
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		[Parameter(HelpMessage = "See Macro.DisablePlugins")]
 		public SwitchParameter DisablePlugins { get; set; }
 
