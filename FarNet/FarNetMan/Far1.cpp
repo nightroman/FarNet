@@ -6,6 +6,7 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Far1.h"
 #include "CommandLine.h"
+#include "Dialog.h"
 #include "Editor0.h"
 #include "Far0.h"
 #include "InputBox.h"
@@ -14,7 +15,6 @@ Copyright (c) 2005 FarNet Team
 #include "Message.h"
 #include "Panel0.h"
 #include "Panel2.h"
-#include "SubsetForm.h"
 #include "Viewer0.h"
 #include "Window.h"
 #include "Zoo.h"
@@ -758,7 +758,7 @@ Works::IZoo^ Far1::Zoo::get()
 
 ISubsetForm^ Far1::CreateSubsetForm()
 {
-	return gcnew FarSubsetForm();
+	return gcnew Works::SubsetForm;
 }
 
 IMacro^ Far1::Macro::get()
