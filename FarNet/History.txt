@@ -3,7 +3,7 @@ http://code.google.com/p/farnet/
 = 4.3.11 =
 
 Changes are mostly internal, important for the future. They are not breaking if
-you use everything standard.
+modules do not use something not recommended.
 
 FarNet host configuration: some settings in "Far.exe.config" are replaced with
 environment variables, see Readme.txt for details. But normally you should use
@@ -18,7 +18,7 @@ Some public API was extended. This should not affect modules and they should
 not use it (marked "for internal use").
 
 Related internal change: renamed namespace FarNet.Support into FarNet.Works; it
-contains internal FarNet stuff that should not be used directly from modules.
+contains internal FarNet stuff that should not be used by modules.
 
 = 4.3.10 =
 

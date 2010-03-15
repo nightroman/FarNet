@@ -417,7 +417,7 @@ void Far0::ProcessPrefixes(INT_PTR item)
 int Far0::GetPaletteColor(PaletteColor paletteColor)
 {
 	INT_PTR index = (INT_PTR)paletteColor;
-	if (index < 0 || index >= COL_LASTPALETTECOLOR)
+	if (index < 0 || index >= Wrap::GetEndPalette())
 		throw gcnew ArgumentOutOfRangeException("paletteColor");
 	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
 }
