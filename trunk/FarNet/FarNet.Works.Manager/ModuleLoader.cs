@@ -38,169 +38,6 @@ namespace FarNet.Works
 			}
 		}
 
-		public static bool CanExit()
-		{
-			foreach (ModuleManager manager in _Managers.Values)
-			{
-				if (manager.GetLoadedModuleHost() != null && !manager.GetLoadedModuleHost().CanExit())
-					return false;
-			}
-
-			return true;
-		}
-
-		public static IList<IModuleManager> GatherModuleManagers()
-		{
-			List<IModuleManager> result = new List<IModuleManager>(_Managers.Count);
-			foreach (ModuleManager it in _Managers.Values)
-				result.Add(it);
-			return result;
-		}
-
-		// #6 Adds a module item
-		static int LoadClass(ModuleManager manager, Type type)
-		{
-			using (Log log = Log.Switch.TraceInfo ? new Log("Load class " + type) : null)
-			{
-				// case: host
-				if (typeof(ModuleHost).IsAssignableFrom(type))
-				{
-					manager.SetModuleHost(type);
-					return 0;
-				}
-
-				// command
-				if (typeof(ModuleCommand).IsAssignableFrom(type))
-					Host.Instance.RegisterProxyCommand(new ProxyCommand(manager, type));
-				// editor
-				else if (typeof(ModuleEditor).IsAssignableFrom(type))
-					Host.Instance.RegisterProxyEditor(new ProxyEditor(manager, type));
-				// filer
-				else if (typeof(ModuleFiler).IsAssignableFrom(type))
-					Host.Instance.RegisterProxyFiler(new ProxyFiler(manager, type));
-				// tool
-				else if (typeof(ModuleTool).IsAssignableFrom(type))
-					Host.Instance.RegisterProxyTool(new ProxyTool(manager, type));
-				else
-					throw new ModuleException("Unknown module class type.");
-
-				return 1;
-			}
-		}
-
-		// #5 Loads the assembly, writes cache
-		static void LoadFromAssembly(string assemblyPath, List<string> classes)
-		{
-			// the name
-			string assemblyName = Path.GetFileName(assemblyPath);
-
-			// already loaded (normally from cache)?
-			if (_Managers.ContainsKey(assemblyName))
-				return;
-
-			// add new module manager now, it will be removed on errors
-			ModuleManager manager = new ModuleManager(assemblyPath);
-			_Managers.Add(assemblyName, manager);
-			bool done = false;
-			try
-			{
-				using (Log log = Log.Switch.TraceInfo ? new Log("Load module " + manager.ModuleName) : null)
-				{
-					int actionCount = 0;
-					Assembly assembly = manager.AssemblyInstance;
-					if (classes != null && classes.Count > 0)
-					{
-						foreach (string name in classes)
-							actionCount += LoadClass(manager, assembly.GetType(name, true));
-					}
-					else
-					{
-						foreach (Type type in assembly.GetExportedTypes())
-						{
-							if (!type.IsAbstract && typeof(BaseModuleItem).IsAssignableFrom(type))
-								actionCount += LoadClass(manager, type);
-						}
-					}
-
-					// if the module has the host to load then load it now, if it is not loaded then the module should be cached
-					if (!manager.LoadLoadableModuleHost())
-					{
-						if (0 == actionCount)
-							throw new ModuleException("The module must implement a public action or a preloadable host.");
-
-						WriteModuleCache(manager);
-					}
-
-					// done
-					done = true;
-				}
-			}
-			finally
-			{
-				if (!done)
-					RemoveModuleManager(manager);
-			}
-		}
-
-		// #3
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		static void LoadFromDirectory(string dir)
-		{
-			try
-			{
-				// the manifest
-				string[] manifests = Directory.GetFiles(dir, "*.cfg");
-				if (manifests.Length == 1)
-				{
-					LoadFromManifest(manifests[0], dir);
-					return;
-				}
-				if (manifests.Length > 1)
-					throw new ModuleException("More than one .cfg files found.");
-
-				// load the only assembly
-				string[] assemblies = Directory.GetFiles(dir, "*.dll");
-				if (assemblies.Length == 1)
-					LoadFromAssembly(assemblies[0], null);
-				else if (assemblies.Length > 1)
-					throw new ModuleException("More than one .dll files found. Expected exactly one .dll file or exactly one .cfg file.");
-
-				//! If the folder has no .dll or .cfg files (not yet built sources) then just ignore
-			}
-			catch (Exception ex)
-			{
-				// Wish: no UI on loading
-				//????? to test no UI
-				Far.Net.ShowError("ERROR: module " + dir, ex);
-			}
-		}
-
-		// #4
-		static void LoadFromManifest(string file, string dir)
-		{
-			string[] lines = File.ReadAllLines(file);
-			if (lines.Length == 0)
-				throw new ModuleException("The manifest file is empty.");
-
-			// assembly
-			string path = lines[0].TrimEnd();
-			if (path.Length == 0)
-				throw new ModuleException("Expected the module assembly name as the first line of the manifest file.");
-			path = Path.Combine(dir, path);
-
-			// collect classes
-			List<string> classes = new List<string>(lines.Length - 1);
-			for (int i = 1; i < lines.Length; ++i)
-			{
-				string name = lines[i].Trim();
-				if (name.Length > 0)
-					classes.Add(name);
-			}
-
-			// load with classes, if any
-			LoadFromAssembly(path, classes);
-		}
-
 		// #2 Read cache
 		static void ReadModuleCache()
 		{
@@ -297,11 +134,11 @@ namespace FarNet.Works
 						}
 						catch (ModuleException)
 						{
-							// ignore known issues
+							// ignore known
 						}
 						catch (Exception ex)
 						{
-							throw new ModuleException("Error on reading the registry cache 'Plugins\\FarNet\\!Cache'.", ex);
+							throw new ModuleException(Invariant.Format("Error on reading the cache from '{0}'.", cache), ex);
 						}
 						finally
 						{
@@ -317,8 +154,171 @@ namespace FarNet.Works
 			}
 		}
 
+		// #3
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		static void LoadFromDirectory(string dir)
+		{
+			try
+			{
+				// the manifest
+				string[] manifests = Directory.GetFiles(dir, "*.cfg");
+				if (manifests.Length == 1)
+				{
+					LoadFromManifest(manifests[0], dir);
+					return;
+				}
+				if (manifests.Length > 1)
+					throw new ModuleException("More than one .cfg files found.");
+
+				// load the only assembly
+				string[] assemblies = Directory.GetFiles(dir, "*.dll");
+				if (assemblies.Length == 1)
+					LoadFromAssembly(assemblies[0], null);
+				else if (assemblies.Length > 1)
+					throw new ModuleException("More than one .dll files found. Expected exactly one .dll file or exactly one .cfg file.");
+
+				//! If the folder has no .dll or .cfg files (not yet built sources) then just ignore
+			}
+			catch (Exception ex)
+			{
+				// Wish: no UI on loading
+				//????? to test no UI
+				Far.Net.ShowError("ERROR: module " + dir, ex);
+			}
+		}
+
+		// #4
+		static void LoadFromManifest(string file, string dir)
+		{
+			string[] lines = File.ReadAllLines(file);
+			if (lines.Length == 0)
+				throw new ModuleException("The manifest file is empty.");
+
+			// assembly
+			string path = lines[0].TrimEnd();
+			if (path.Length == 0)
+				throw new ModuleException("Expected the module assembly name as the first line of the manifest file.");
+			path = Path.Combine(dir, path);
+
+			// collect classes
+			List<string> classes = new List<string>(lines.Length - 1);
+			for (int i = 1; i < lines.Length; ++i)
+			{
+				string name = lines[i].Trim();
+				if (name.Length > 0)
+					classes.Add(name);
+			}
+
+			// load with classes, if any
+			LoadFromAssembly(path, classes);
+		}
+
+		// #5 Loads the assembly, writes cache
+		static void LoadFromAssembly(string assemblyPath, List<string> classes)
+		{
+			// the name
+			string assemblyName = Path.GetFileName(assemblyPath);
+
+			// already loaded (normally from cache)?
+			if (_Managers.ContainsKey(assemblyName))
+				return;
+
+			// add new module manager now, it will be removed on errors
+			ModuleManager manager = new ModuleManager(assemblyPath);
+			_Managers.Add(assemblyName, manager);
+			bool done = false;
+			try
+			{
+				using (Log log = Log.Switch.TraceInfo ? new Log("Load module " + manager.ModuleName) : null)
+				{
+					int actionCount = 0;
+					Assembly assembly = manager.AssemblyInstance;
+					if (classes != null && classes.Count > 0)
+					{
+						foreach (string name in classes)
+							actionCount += LoadClass(manager, assembly.GetType(name, true));
+					}
+					else
+					{
+						foreach (Type type in assembly.GetExportedTypes())
+						{
+							if (!type.IsAbstract && typeof(BaseModuleItem).IsAssignableFrom(type))
+								actionCount += LoadClass(manager, type);
+						}
+					}
+
+					// if the module has the host to load then load it now, if it is not loaded then the module should be cached
+					if (!manager.LoadLoadableModuleHost())
+					{
+						if (0 == actionCount)
+							throw new ModuleException("The module must implement a public action or a preloadable host.");
+
+						WriteModuleCache(manager);
+					}
+
+					// done
+					done = true;
+				}
+			}
+			finally
+			{
+				if (!done)
+					RemoveModuleManager(manager);
+			}
+		}
+
+		// #6 Adds a module item
+		static int LoadClass(ModuleManager manager, Type type)
+		{
+			using (Log log = Log.Switch.TraceInfo ? new Log("Load class " + type) : null)
+			{
+				// case: host
+				if (typeof(ModuleHost).IsAssignableFrom(type))
+				{
+					manager.SetModuleHost(type);
+					return 0;
+				}
+
+				// command
+				if (typeof(ModuleCommand).IsAssignableFrom(type))
+					Host.Instance.RegisterProxyCommand(new ProxyCommand(manager, type));
+				// editor
+				else if (typeof(ModuleEditor).IsAssignableFrom(type))
+					Host.Instance.RegisterProxyEditor(new ProxyEditor(manager, type));
+				// filer
+				else if (typeof(ModuleFiler).IsAssignableFrom(type))
+					Host.Instance.RegisterProxyFiler(new ProxyFiler(manager, type));
+				// tool
+				else if (typeof(ModuleTool).IsAssignableFrom(type))
+					Host.Instance.RegisterProxyTool(new ProxyTool(manager, type));
+				else
+					throw new ModuleException("Unknown module class type.");
+
+				return 1;
+			}
+		}
+
+		public static bool CanExit()
+		{
+			foreach (ModuleManager manager in _Managers.Values)
+			{
+				if (manager.GetLoadedModuleHost() != null && !manager.GetLoadedModuleHost().CanExit())
+					return false;
+			}
+
+			return true;
+		}
+
+		public static IList<IModuleManager> GatherModuleManagers()
+		{
+			List<IModuleManager> result = new List<IModuleManager>(_Managers.Count);
+			foreach (ModuleManager it in _Managers.Values)
+				result.Add(it);
+			return result;
+		}
+
 		//! Don't use Far UI
-		public static void RemoveModuleManager(ModuleManager manager)
+		internal static void RemoveModuleManager(ModuleManager manager)
 		{
 			// remove the module
 			_Managers.Remove(manager.ModuleName);
