@@ -146,25 +146,31 @@ namespace FarNet.Works
 	/// <summary>
 	/// For internal use.
 	/// </summary>
-	public interface IZoo
+	public abstract class IZoo
 	{
 		///
-		void FlushInputBuffer();
+		public abstract void FlushInputBuffer();
 		///
-		KeyInfo ReadKey(ReadKeyOptions options);
+		public abstract KeyInfo ReadKey(ReadKeyOptions options);
 		///
-		BufferCell[,] GetBufferContents(Place rectangle);
+		public abstract BufferCell[,] GetBufferContents(Place rectangle);
 		///
-		string ConsoleTitle { get; }
+		public abstract string ConsoleTitle { get; }
 		///
-		void ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill);
+		public abstract void ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill);
 		///
-		void SetBufferContents(Point origin, BufferCell[,] contents);
+		public abstract void SetBufferContents(Point origin, BufferCell[,] contents);
 		///
-		void SetBufferContents(Place rectangle, BufferCell fill);
+		public abstract void SetBufferContents(Place rectangle, BufferCell fill);
 		///
-		object Shelve { get; }
+		public abstract object Shelve { get; }
 		///
-		void Break();
+		public abstract void Break();
+		///
+		public abstract MacroParseError CheckMacro(string sequence, bool silent);
+		///
+		public abstract void LoadMacros();
+		///
+		public abstract void SaveMacros();
 	}
 }
