@@ -8,8 +8,7 @@ DATA PREVIEW IN PANELS
 Improved preview of enumerable types and some frequently used types in panels.
 
 Simplified internal procedures of column set selection from properties. Default
-column sets now may be not the same as in previous versions. Production panels
-should have manually configured Columns anyway.
+column sets now may be not the same as in previous versions. Preview is preview.
 
 Default column set selection in table panels: if there are too many properties
 (more than $Psf.Settings.MaximumPanelColumnCount) then best candidates for N, Z

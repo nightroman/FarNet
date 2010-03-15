@@ -5,6 +5,18 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Wrappers.h"
+#include "farcolor.hpp"
+#include "farkeys.hpp"
+
+int Wrap::GetEndKeyCode()
+{
+	return INTERNAL_KEY_BASE_2;
+}
+
+int Wrap::GetEndPalette()
+{
+	return COL_LASTPALETTECOLOR;
+}
 
 /*
 GetPanelInfo is in progress. The problem: Far calls AsGetOpenPluginInfo and plugin may have GettingInfo handler

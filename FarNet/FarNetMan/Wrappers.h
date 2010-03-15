@@ -5,6 +5,13 @@ Copyright (c) 2005 FarNet Team
 
 #pragma once
 
+ref class Wrap
+{
+public:
+	static int GetEndKeyCode();
+	static int GetEndPalette();
+};
+
 class State
 {
 public:
