@@ -6,8 +6,6 @@
 #pragma warning(push,3)
 #include <vcclr.h>
 #include "plugin.hpp"
-#include "farcolor.hpp"
-#include "farkeys.hpp"
 #pragma warning(pop)
 
 #define ACTL_GETWINDOWINFO stop_ACTL_GETWINDOWINFO

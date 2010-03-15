@@ -7,6 +7,7 @@ Copyright (c) 2005 FarNet Team
 #include "Panel0.h"
 #include "Panel2.h"
 #include "Shelve.h"
+#include "Wrappers.h"
 
 namespace FarNet
 {;
@@ -583,7 +584,7 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 	int code = key & ~PKF_PREPROCESS;
 	
 	// filter out not keys but kind of events (perhaps to make events later)
-	if (code >= INTERNAL_KEY_BASE_2)
+	if (code >= Wrap::GetEndKeyCode())
 		return false;
 	
 	//! mind rare case: plugin in null, e.g. closed by [AltF12] + select folder
