@@ -42,34 +42,26 @@ namespace PowerShellFar
 			A.Connect(new Actor());
 
 			// register commands with prefixes
-			{
-				ModuleCommandAttribute attr = new ModuleCommandAttribute();
-				attr.Name = "PowerShell command";
-				attr.Prefix = ">";
-				Command1 = Manager.RegisterModuleCommand(new Guid("60353ab6-52cb-413e-8e11-e4917099b80b"), attr, OnCommandLine);
-			}
-			{
-				ModuleCommandAttribute attr = new ModuleCommandAttribute();
-				attr.Name = "PowerShellFar job command";
-				attr.Prefix = ">>";
-				Command2 = Manager.RegisterModuleCommand(new Guid("03760876-d154-467c-bc5d-8ec39efb637d"), attr, OnCommandLineJob);
-			}
+			Command1 = Manager.RegisterModuleCommand(
+				new Guid("60353ab6-52cb-413e-8e11-e4917099b80b"),
+				new ModuleCommandAttribute() { Name = "PowerShell command", Prefix = ">" },
+				OnCommandLine);
+			Command2 = Manager.RegisterModuleCommand(
+				new Guid("03760876-d154-467c-bc5d-8ec39efb637d"),
+				new ModuleCommandAttribute() { Name = "PowerShellFar job command", Prefix = ">>" },
+				OnCommandLineJob);
 
 			// register config
-			{
-				ModuleToolAttribute attr = new ModuleToolAttribute();
-				attr.Name = Res.Me;
-				attr.Options = ModuleToolOptions.Config;
-				Manager.RegisterModuleTool(new Guid("16160a09-ea2a-4c10-91af-c40149002057"), attr, OnConfig);
-			}
+			Manager.RegisterModuleTool(
+				new Guid("16160a09-ea2a-4c10-91af-c40149002057"),
+				new ModuleToolAttribute() { Name = Res.Me, Options = ModuleToolOptions.Config },
+				OnConfig);
 
 			// register menu
-			{
-				ModuleToolAttribute attr = new ModuleToolAttribute();
-				attr.Name = Res.Me;
-				attr.Options = ModuleToolOptions.F11Menus;
-				Manager.RegisterModuleTool(new Guid("7def4106-570a-41ab-8ecb-40605339e6f7"), attr, OnOpen);
-			}
+			Manager.RegisterModuleTool(
+				new Guid("7def4106-570a-41ab-8ecb-40605339e6f7"),
+				new ModuleToolAttribute() { Name = Res.Me, Options = ModuleToolOptions.F11Menus },
+				OnOpen);
 
 			// editor events: OnEditorOpened1 should be called always and first
 			// to do Invoking() (at least for TabExpansion) and the startup code

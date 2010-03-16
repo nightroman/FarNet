@@ -14,7 +14,7 @@ namespace FarNet.Works
 	{
 		public static void Show(IList<IModuleTool> toolsIn, string helpTopic, GetMenuText getMenuText)
 		{
-			List<IModuleTool> sorted = new List<IModuleTool>(toolsIn);
+			var sorted = new List<IModuleTool>(toolsIn);
 
 			IMenu menu = Far.Net.CreateMenu();
 			menu.Title = "Menu tools";

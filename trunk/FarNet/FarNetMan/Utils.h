@@ -223,7 +223,6 @@ public:
 }
 
 // Helpers
-bool EqualsOrdinal(String^ strA, String^ strB);
 int Compare(String^ strA, String^ strB);
 int ParseInt(String^ value, int fallback);
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);

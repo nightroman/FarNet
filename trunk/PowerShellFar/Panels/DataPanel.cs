@@ -487,18 +487,18 @@ namespace PowerShellFar
 		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 		{
 			if (items.Create == null)
-			{
-				items.Create = new SetItem();
-				items.Create.Text = "&New row";
-				items.Create.Click = delegate { UICreate(); };
-			}
+				items.Create = new SetItem()
+				{
+					Text = "&New row",
+					Click = delegate { UICreate(); }
+				};
 
 			if (items.Delete == null)
-			{
-				items.Delete = new SetItem();
-				items.Delete.Text = "&Delete row(s)";
-				items.Delete.Click = delegate { UIDelete(false); };
-			}
+				items.Delete = new SetItem()
+				{
+					Text = "&Delete row(s)",
+					Click = delegate { UIDelete(false); }
+				};
 
 			base.HelpMenuInitItems(items, e);
 		}

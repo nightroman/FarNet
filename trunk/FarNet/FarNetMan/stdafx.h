@@ -32,6 +32,7 @@ using namespace System::Text::RegularExpressions;
 using namespace System::Text;
 using namespace System;
 
+#undef CreateDialog
 #undef GetEnvironmentVariable
 
 #ifdef _DEBUG

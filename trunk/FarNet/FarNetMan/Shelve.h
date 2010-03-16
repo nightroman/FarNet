@@ -10,27 +10,14 @@ namespace FarNet
 ref class Panel1;
 ref class Panel2;
 
-ref class ShelveInfo abstract
-{
-public:
-	property array<String^>^ Selected;
-public:
-	virtual property String^ Title { String^ get() = 0; }
-	virtual void Unshelve() = 0;
-protected:
-	void InitSelected(Panel1^ panel, String^ current);
-internal:
-	static List<ShelveInfo^> _stack;
-};
-
-ref class ShelveInfoPanel sealed : ShelveInfo
+ref class ShelveInfoPanel sealed : Works::ShelveInfo
 {
 public:
 	static ShelveInfoPanel^ CreateActiveInfo(bool modes);
 public:
 	ShelveInfoPanel(Panel1^ panel, bool modes);
 	virtual property String^ Title { String^ get() override { return Path; } }
-	virtual void Unshelve() override;
+	virtual void Pop() override;
 public:
 	property String^ Path;
 	property String^ Current;
@@ -41,13 +28,13 @@ private:
 	PanelViewMode _viewMode;
 };
 
-ref class ShelveInfoPlugin sealed : ShelveInfo
+ref class ShelveInfoPlugin sealed : Works::ShelveInfo
 {
 public:
 	ShelveInfoPlugin(Panel2^ plugin);
 	property Panel2^ Panel { Panel2^ get() { return _plugin; } }
 	virtual property String^ Title { String^ get() override; }
-	virtual void Unshelve() override;
+	virtual void Pop() override;
 private:
 	Panel2^ _plugin;
 };

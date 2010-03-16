@@ -108,7 +108,7 @@ namespace FarNet.Works
 				return false;
 
 			// collect and reset selected indexes
-			List<int> r = new List<int>();
+			var r = new List<int>();
 			foreach (FarItem item in _ListBox2.Items)
 			{
 				int index = (int)item.Data;

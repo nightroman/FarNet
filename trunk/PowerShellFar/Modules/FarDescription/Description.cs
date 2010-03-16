@@ -109,7 +109,7 @@ namespace FarDescription
 
 		static Dictionary<string, string> Import(string descriptionFile)
 		{
-			Dictionary<string, string> r = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			var r = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			if (!File.Exists(descriptionFile))
 				return r;
 

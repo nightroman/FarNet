@@ -69,19 +69,17 @@ namespace PowerShellFar.Commands
 		///
 		protected override void ProcessRecord()
 		{
-			FarItem item = new SetItem();
-
-			item.Text = Text;
-			item.Data = Data;
-			item.Click = Click;
-			
-			item.Checked = Checked;
-			item.Disabled = Disabled;
-			item.Grayed = Grayed;
-			item.Hidden = Hidden;
-			item.IsSeparator = IsSeparator;
-
-			WriteObject(item);
+			WriteObject(new SetItem()
+			{
+				Text = Text,
+				Data = Data,
+				Click = Click,
+				Checked = Checked,
+				Disabled = Disabled,
+				Grayed = Grayed,
+				Hidden = Hidden,
+				IsSeparator = IsSeparator
+			});
 		}
 	}
 }

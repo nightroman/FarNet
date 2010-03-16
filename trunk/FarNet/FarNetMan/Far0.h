@@ -4,7 +4,6 @@ Copyright (c) 2005 FarNet Team
 */
 
 #pragma once
-#undef CreateDialog
 
 namespace FarNet
 {;

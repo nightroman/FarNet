@@ -98,7 +98,7 @@ namespace FarMacro
 
 		protected override Collection<PSDriveInfo> InitializeDefaultDrives()
 		{
-			Collection<PSDriveInfo> r = new Collection<PSDriveInfo>();
+			var r = new Collection<PSDriveInfo>();
 			r.Add(new PSDriveInfo("FarMacro", ProviderInfo, string.Empty, "Far Manager macros", null));
 			return r;
 		}
@@ -582,7 +582,7 @@ namespace FarMacro
 			if (readCount > 0)
 				throw new NotSupportedException();
 
-			List<string> r = new List<string>(1);
+			var r = new List<string>(1);
 			if (!Done)
 			{
 				r.Add(Value);

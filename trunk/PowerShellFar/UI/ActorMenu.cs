@@ -132,8 +132,7 @@ namespace PowerShellFar.UI
 
 		static FarItem NewItem(string text, EventHandler click)
 		{
-			SetItem item = new SetItem();
-			item.Text = text;
+			SetItem item = new SetItem() { Text = text };
 			if (click == null)
 				item.IsSeparator = true;
 			else

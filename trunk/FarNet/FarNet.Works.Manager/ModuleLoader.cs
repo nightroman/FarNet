@@ -201,7 +201,7 @@ namespace FarNet.Works
 			path = Path.Combine(dir, path);
 
 			// collect classes
-			List<string> classes = new List<string>(lines.Length - 1);
+			var classes = new List<string>(lines.Length - 1);
 			for (int i = 1; i < lines.Length; ++i)
 			{
 				string name = lines[i].Trim();
@@ -311,7 +311,7 @@ namespace FarNet.Works
 
 		public static IList<IModuleManager> GatherModuleManagers()
 		{
-			List<IModuleManager> result = new List<IModuleManager>(_Managers.Count);
+			var result = new List<IModuleManager>(_Managers.Count);
 			foreach (ModuleManager it in _Managers.Values)
 				result.Add(it);
 			return result;
@@ -324,7 +324,7 @@ namespace FarNet.Works
 			_Managers.Remove(manager.ModuleName);
 
 			// 1) gather its actions
-			List<ProxyAction> actions = new List<ProxyAction>();
+			var actions = new List<ProxyAction>();
 			foreach (ProxyAction action in Host.Actions.Values)
 				if (action.Manager == manager)
 					actions.Add(action);
@@ -357,7 +357,7 @@ namespace FarNet.Works
 				}
 
 				FileInfo fi = new FileInfo(manager.AssemblyPath);
-				List<string> data = new List<string>();
+				var data = new List<string>();
 
 				// Stamp
 				data.Add(fi.LastWriteTime.Ticks.ToString(CultureInfo.InvariantCulture));

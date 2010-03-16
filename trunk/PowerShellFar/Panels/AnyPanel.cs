@@ -430,7 +430,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal IList<object> CollectData()
 		{
-			List<object> r = new List<object>();
+			var r = new List<object>();
 			r.Capacity = _Panel.Files.Count;
 			foreach (FarFile f in _Panel.Files)
 				if (f.Data != null)
@@ -443,7 +443,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static IList<string> CollectNames(IList<FarFile> files)
 		{
-			List<string> r = new List<string>();
+			var r = new List<string>();
 			r.Capacity = files.Count;
 			foreach (FarFile f in files)
 				r.Add(f.Name);
@@ -455,7 +455,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal IList<string> CollectSelectedNames()
 		{
-			List<string> r = new List<string>();
+			var r = new List<string>();
 			foreach (FarFile f in _Panel.SelectedFiles)
 				r.Add(f.Name);
 			return r;
@@ -529,7 +529,7 @@ namespace PowerShellFar
 			//! keep the selection, the temp panel keeps it; note: selection is by names, added objects may get selected
 			that.AddObjects(SelectedItems);
 			that.UpdateRedraw(true);
-			
+
 			return true;
 		}
 
@@ -1122,18 +1122,18 @@ $_.Description
 		internal virtual void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 		{
 			if (items.Exit == null)
-			{
-				items.Exit = new SetItem();
-				items.Exit.Text = "E&xit panel";
-				items.Exit.Click = delegate { Panel.Close(); };
-			}
+				items.Exit = new SetItem()
+				{
+					Text = "E&xit panel",
+					Click = delegate { Panel.Close(); }
+				};
 
 			if (items.Help == null)
-			{
-				items.Help = new SetItem();
-				items.Help.Text = "Help (F1)";
-				items.Help.Click = delegate { ShowHelp(); };
-			}
+				items.Help = new SetItem()
+				{
+					Text = "Help (F1)",
+					Click = delegate { ShowHelp(); }
+				};
 		}
 
 		/// <summary>

@@ -109,7 +109,7 @@ namespace FarNet.Works
 			if (!ManualSaveLoad)
 				Save();
 
-			List<string> done = new List<string>();
+			var done = new List<string>();
 			try
 			{
 				foreach (Macro macro in macros)
