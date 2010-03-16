@@ -12,8 +12,10 @@
 		<Folder Include="FarNet"/>
 		<Folder Include="FarNet.Works.Config"/>
 		<Folder Include="FarNet.Works.Dialog"/>
+		<Folder Include="FarNet.Works.Editor"/>
 		<Folder Include="FarNet.Works.Macros"/>
 		<Folder Include="FarNet.Works.Manager"/>
+		<Folder Include="FarNet.Works.Panels"/>
 		<Folder Include="FarNet.Works.Registry"/>
 		<Folder Include="FarNetMan"/>
 	</ItemGroup>
@@ -54,8 +56,10 @@ $(FarHome)\FarNet\FarNet.dll;
 $(FarHome)\FarNet\FarNet.xml;
 $(FarHome)\FarNet\FarNet.Works.Config.dll;
 $(FarHome)\FarNet\FarNet.Works.Dialog.dll;
+$(FarHome)\FarNet\FarNet.Works.Editor.dll;
 $(FarHome)\FarNet\FarNet.Works.Macros.dll;
 $(FarHome)\FarNet\FarNet.Works.Manager.dll;
+$(FarHome)\FarNet\FarNet.Works.Panels.dll;
 $(FarHome)\FarNet\FarNet.Works.Registry.dll"/>
 		<Copy DestinationFolder="Tmp\Plugins\FarNet" SourceFiles="
 $(FarHome)\Plugins\FarNet\FarNetMan.hlf;

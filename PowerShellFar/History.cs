@@ -128,7 +128,7 @@ namespace PowerShellFar
 		static void RemoveDupes(IRegistryKey key)
 		{
 			string[] names = key.GetValueNames();
-			Dictionary<string, object> map = new Dictionary<string, object>();
+			var map = new Dictionary<string, object>();
 			for (int i = names.Length; --i >= 0; )
 			{
 				string s = key.GetValue(names[i], string.Empty).ToString();

@@ -212,7 +212,7 @@ namespace PowerShellFar
 				if (Panel.Files.Count == 0)
 					return Values;
 
-				Collection<PSObject> result = new Collection<PSObject>();
+				var result = new Collection<PSObject>();
 				foreach (FarFile file in Panel.Files)
 					result.Add(PSObject.AsPSObject(file.Data));
 				foreach (PSObject value in Values)
@@ -222,7 +222,7 @@ namespace PowerShellFar
 				return result;
 			}
 
-			List<FarFile> files = new List<FarFile>(Values.Count);
+			var files = new List<FarFile>(Values.Count);
 			foreach (PSObject value in Values)
 				files.Add(new MapFile(value, Map));
 
@@ -253,11 +253,11 @@ namespace PowerShellFar
 		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 		{
 			if (items.Save == null)
-			{
-				items.Save = new SetItem();
-				items.Save.Text = "Export .clixml...";
-				items.Save.Click = delegate { SaveData(); };
-			}
+				items.Save = new SetItem()
+				{
+					Text = "Export .clixml...",
+					Click = delegate { SaveData(); }
+				};
 
 			base.HelpMenuInitItems(items, e);
 		}

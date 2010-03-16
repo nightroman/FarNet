@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "EditorLineSelection.h"
-#include "Utils.h"
 
 namespace FarNet
 {;

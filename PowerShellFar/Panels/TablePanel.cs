@@ -53,7 +53,7 @@ namespace PowerShellFar
 
 		internal static void SetupMetas(Meta[] metas)
 		{
-			List<string> availableColumnTypes = new List<string>(FarColumn.DefaultColumnKinds);
+			var availableColumnTypes = new List<string>(FarColumn.DefaultColumnKinds);
 
 			// pass 1: pre-process specified default types, remove them from available
 			int iCustom = 0;
@@ -135,9 +135,11 @@ namespace PowerShellFar
 		{
 			if (items.OpenFileMembers == null)
 			{
-				items.OpenFileMembers = new SetItem();
-				items.OpenFileMembers.Text = HelpMenuTextOpenFileMembers;
-				items.OpenFileMembers.Click = delegate { UIOpenFileMembers(); };
+				items.OpenFileMembers = new SetItem()
+				{
+					Text = HelpMenuTextOpenFileMembers,
+					Click = delegate { UIOpenFileMembers(); }
+				};
 			}
 
 			base.HelpMenuInitItems(items, e);

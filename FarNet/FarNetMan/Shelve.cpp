@@ -9,22 +9,6 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-// current: do provide the current name!
-void ShelveInfo::InitSelected(Panel1^ panel, String^ current)
-{
-	// get selected
-	IList<FarFile^>^ files = panel->SelectedList;
-
-	// skip the only selected which is the current
-	if (files->Count == 1 && current && current == files[0]->Name)
-		return;
-
-	// copy names
-	Selected = gcnew array<String^>(files->Count);
-	for(int i = files->Count; --i >= 0;)
-		Selected[i] = files[i]->Name;
-}
-
 ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 : _modes(modes)
 {
@@ -75,7 +59,7 @@ ShelveInfoPanel^ ShelveInfoPanel::CreateActiveInfo(bool modes)
 }
 
 // NOW: works only for the active panel.
-void ShelveInfoPanel::Unshelve()
+void ShelveInfoPanel::Pop()
 {
 	if (Path)
 	{
@@ -84,7 +68,8 @@ void ShelveInfoPanel::Unshelve()
 			throw gcnew OperationCanceledException("Cannot set panel directory: " + Path);
 	}
 
-	if (!Current && !Selected && !_modes)
+	array<String^>^ selectedNames = GetSelectedNames();
+	if (!Current && !selectedNames && !_modes)
 		return;
 
 	PanelInfo pi;
@@ -98,7 +83,7 @@ void ShelveInfoPanel::Unshelve()
 	if (Current)
 		panel.GoToName(Current);
 
-	panel.SelectNames(Selected);
+	panel.SelectNames(selectedNames);
 
 	// restore modes
 	if (_modes)
@@ -124,10 +109,10 @@ String^ ShelveInfoPlugin::Title::get()
 	return JoinText(_plugin->_info.Title, _plugin->_info.CurrentDirectory);
 }
 
-void ShelveInfoPlugin::Unshelve()
+void ShelveInfoPlugin::Pop()
 {
 	_plugin->Open();
-	_plugin->_postSelected = Selected;
+	_plugin->_postSelected = GetSelectedNames();
 }
 
 }

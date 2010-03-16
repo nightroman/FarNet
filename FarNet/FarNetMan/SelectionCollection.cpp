@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "SelectionCollection.h"
-#include "Utils.h"
 #include "EditorLine.h"
 #include "Wrappers.h"
 

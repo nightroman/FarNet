@@ -399,11 +399,6 @@ int Compare(String^ strA, String^ strB)
 	return String::Compare(strA, strB, true, CultureInfo::InvariantCulture);
 }
 
-bool EqualsOrdinal(String^ strA, String^ strB)
-{
-	return StringComparer::OrdinalIgnoreCase->Equals(strA, strB);
-}
-
 int ParseInt(String^ value, int fallback)
 {
 	int result;

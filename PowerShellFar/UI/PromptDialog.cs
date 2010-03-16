@@ -22,7 +22,7 @@ namespace PowerShellFar.UI
 		{
 			int w = Console.WindowWidth - 7;
 
-			List<string> lines = new List<string>();
+			var lines = new List<string>();
 			Kit.FormatMessageLines(lines, message, w - 10, 3);
 			while (lines.Count > 0 && lines[0].Length == 0)
 				lines.RemoveAt(0);
@@ -70,7 +70,7 @@ namespace PowerShellFar.UI
 
 		static public Dictionary<string, PSObject> Prompt(string caption, string message, ICollection<FieldDescription> descriptions)
 		{
-			Dictionary<string, PSObject> r = new Dictionary<string, PSObject>();
+			var r = new Dictionary<string, PSObject>();
 			PromptDialog ui = new PromptDialog(caption, message, descriptions);
 			for (; ; )
 			{

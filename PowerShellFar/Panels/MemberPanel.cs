@@ -90,7 +90,7 @@ namespace PowerShellFar
 					//! Idea to cache them is not good:
 					//! price: high (have to sync on exclude, add, delete, etc.)
 					//! value: low (it is UI and member number is normally small)
-					List<string> _membersToShow = new List<string>();
+					var _membersToShow = new List<string>();
 					{
 						string[] exclude;
 						if (_ExcludeMembers != null)
@@ -537,11 +537,11 @@ namespace PowerShellFar
 		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 		{
 			if (items.Save == null && (_Save != null || Parent != null && (Parent is DataPanel)))
-			{
-				items.Save = new SetItem();
-				items.Save.Text = "Save data";
-				items.Save.Click = delegate { SaveData(); };
-			}
+				items.Save = new SetItem()
+				{
+					Text = "Save data",
+					Click = delegate { SaveData(); }
+				};
 
 			base.HelpMenuInitItems(items, e);
 		}

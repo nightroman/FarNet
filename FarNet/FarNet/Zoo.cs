@@ -163,8 +163,6 @@ namespace FarNet.Works
 		///
 		public abstract void SetBufferContents(Place rectangle, BufferCell fill);
 		///
-		public abstract object Shelve { get; }
-		///
 		public abstract void Break();
 		///
 		public abstract MacroParseError CheckMacro(string sequence, bool silent);

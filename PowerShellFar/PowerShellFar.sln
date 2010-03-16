@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Macros", "..\F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Dialog", "..\FarNet\FarNet.Works.Dialog\FarNet.Works.Dialog.csproj", "{0BE8F8D1-F15A-4C53-BD71-4BC6E5005EF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Editor", "..\FarNet\FarNet.Works.Editor\FarNet.Works.Editor.csproj", "{E95736AD-A80B-42D0-BE74-095F7A558BC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Panels", "..\FarNet\FarNet.Works.Panels\FarNet.Works.Panels.csproj", "{054F6FF3-F3F6-41CA-B2AF-D791411261D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -223,6 +227,38 @@ Global
 		{0BE8F8D1-F15A-4C53-BD71-4BC6E5005EF7}.Release|Win32.Build.0 = Release|Any CPU
 		{0BE8F8D1-F15A-4C53-BD71-4BC6E5005EF7}.Release|x64.ActiveCfg = Release|Any CPU
 		{0BE8F8D1-F15A-4C53-BD71-4BC6E5005EF7}.Release|x64.Build.0 = Release|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Debug|Win32.Build.0 = Debug|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Debug|x64.Build.0 = Debug|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Release|Win32.ActiveCfg = Release|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Release|Win32.Build.0 = Release|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Release|x64.ActiveCfg = Release|Any CPU
+		{E95736AD-A80B-42D0-BE74-095F7A558BC0}.Release|x64.Build.0 = Release|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Debug|Win32.Build.0 = Debug|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Debug|x64.Build.0 = Debug|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|Win32.ActiveCfg = Release|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|Win32.Build.0 = Release|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|x64.ActiveCfg = Release|Any CPU
+		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,13 +8,30 @@ Copyright (c) 2005 FarNet Team
 #include "Editor0.h"
 #include "EditorLine.h"
 #include "EditorLineCollection.h"
-#include "EditorTextWriter.h"
 #include "Far0.h"
 #include "SelectionCollection.h"
 #include "Wrappers.h"
 
 namespace FarNet
 {;
+String^ AnyEditor::WordDiv::get()
+{
+	int size = (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, 0);
+	CBox wd(size);
+	Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, wd);
+	return gcnew String(wd);
+}
+
+void AnyEditor::WordDiv::set(String^)
+{
+	throw gcnew NotSupportedException("You may set it only for an editor instance, not globally.");
+}
+
+String^ AnyEditor::EditText(String^ text, String^ title)
+{
+	return Works::EditorTools::EditText(text, title);
+}
+
 Editor::Editor()
 : _id(-1)
 , _Title(String::Empty)
@@ -848,7 +865,7 @@ void Editor::Redo()
 
 TextWriter^ Editor::CreateWriter()
 {
-	return gcnew EditorTextWriter(this);
+	return gcnew Works::EditorTextWriter(this);
 }
 
 void Editor::BeginAsync()

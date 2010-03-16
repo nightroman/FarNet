@@ -11,7 +11,6 @@ ref class Zoo : Works::IZoo
 {
 public:
 	virtual property String^ ConsoleTitle { String^ get() override; }
-	virtual property Object^ Shelve { Object^ get() override; }
 public:
 	virtual array<Works::BufferCell, 2>^ GetBufferContents(Place rectangle) override;
 	virtual KeyInfo ReadKey(Works::ReadKeyOptions options) override;

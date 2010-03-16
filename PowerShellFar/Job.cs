@@ -465,7 +465,7 @@ namespace PowerShellFar
 					if (menu.BreakKey == (VKeyCode.Delete | VKeyMode.Shift))
 					{
 						// copy and then traverse
-						List<Job> jobsToKill = new List<Job>(Jobs);
+						var jobsToKill = new List<Job>(Jobs);
 						foreach (Job jobToKill in jobsToKill)
 						{
 							if (jobToKill.IsRunning)
@@ -525,7 +525,7 @@ namespace PowerShellFar
 		static void WatchJobs(object sender, EventArgs e)
 		{
 			// watch the jobs
-			List<Job> finished = new List<Job>(Jobs.Count);
+			var finished = new List<Job>(Jobs.Count);
 			for (int iJob = 0; iJob < Jobs.Count; ++iJob)
 			{
 				Job job = Jobs[iJob];
