@@ -115,7 +115,7 @@ namespace PowerShellFar
 
 			if (single)
 			{
-				List<Meta> list = new List<Meta>();
+				var list = new List<Meta>();
 				foreach (PSPropertyInfo pi in values[0].Properties)
 					list.Add(new Meta(pi.Name));
 				metas = list.ToArray();
@@ -362,10 +362,7 @@ namespace PowerShellFar
 					return;
 
 				// reuse the mode: reset columns, keep other data intact
-				SetColumn c1 = new SetColumn();
-				c1.Kind = "N";
-				c1.Name = "<empty>";
-				mode.Columns = new FarColumn[] { c1 };
+				mode.Columns = new FarColumn[] { new SetColumn() { Kind = "N", Name = "<empty>" } };
 				Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 				return;
 			}
@@ -421,7 +418,7 @@ namespace PowerShellFar
 		///
 		protected virtual void BuildFiles(Collection<PSObject> values)
 		{
-			List<FarFile> files = new List<FarFile>(values.Count);
+			var files = new List<FarFile>(values.Count);
 			Panel.Files = files;
 
 			foreach (PSObject value in values)
@@ -430,26 +427,30 @@ namespace PowerShellFar
 
 		void BuildFilesMixed(Collection<PSObject> values)
 		{
-			List<FarFile> files = new List<FarFile>(values.Count);
+			var files = new List<FarFile>(values.Count);
 			Panel.Files = files;
 
 			PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
 			if (mode == null)
 				mode = new PanelModeInfo();
-			SetColumn c1 = new SetColumn(); c1.Kind = "S"; c1.Name = "##"; // "Index" clashes to sort order mark
-			SetColumn c2 = new SetColumn(); c2.Kind = "N"; c2.Name = "Value";
-			SetColumn c3 = new SetColumn(); c3.Kind = "Z"; c3.Name = "Type";
-			mode.Columns = new FarColumn[] { c1, c2, c3 };
+			mode.Columns = new FarColumn[]
+			{
+				new SetColumn() { Kind = "S", Name = "##"}, // "Index" clashes to sort order mark
+				new SetColumn() { Kind = "N", Name = "Value"},
+				new SetColumn() { Kind = "Z", Name = "Type"}
+			};
 			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 
 			int index = 0;
 			foreach (PSObject value in values)
 			{
 				// new file
-				SetFile file = new SetFile();
-				file.Data = value;
-				file.Length = index++;
-				file.Description = value.BaseObject.GetType().FullName;
+				SetFile file = new SetFile()
+				{
+					Data = value,
+					Length = index++,
+					Description = value.BaseObject.GetType().FullName
+				};
 
 				// discover name
 				// ???? _100309_121508 Linear type case

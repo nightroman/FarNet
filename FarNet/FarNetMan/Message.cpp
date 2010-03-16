@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Message.h"
-#include "Dialog.h"
 
 namespace FarNet
 {;
@@ -140,21 +139,21 @@ int Message::ShowDialog(int width)
 	if (h > Console::WindowHeight - 4)
 		h = Console::WindowHeight - 4;
 
-	FarDialog dialog(-1, -1, w, h);
-	dialog.HelpTopic = _helpTopic;
-	dialog.IsWarning = (_flags & FMSG_WARNING);
-	dialog.AddBox(3, 1, w - 4, h - 2, _header);
+	IDialog^ dialog = Far::Net->CreateDialog(-1, -1, w, h);
+	dialog->HelpTopic = _helpTopic;
+	dialog->IsWarning = (_flags & FMSG_WARNING);
+	dialog->AddBox(3, 1, w - 4, h - 2, _header);
 	for(int i = 0; i < nBody; ++i)
-		dialog.AddText(5, -1, 0, _body[i]);
-	dialog.AddText(5, -1, 0, nullptr)->Separator = 1;
+		dialog->AddText(5, -1, 0, _body[i]);
+	dialog->AddText(5, -1, 0, nullptr)->Separator = 1;
 
-	IListBox^ list = dialog.AddListBox(4, -1, w - 5, h - 6 - nBody, nullptr);
+	IListBox^ list = dialog->AddListBox(4, -1, w - 5, h - 6 - nBody, nullptr);
 	list->NoAmpersands = true;
 	list->NoBox = true;
 	for each(String^ s in _buttons)
 		list->Add(s);
 
-	if (!dialog.Show())
+	if (!dialog->Show())
 		return -1;
 
 	return list->Selected;

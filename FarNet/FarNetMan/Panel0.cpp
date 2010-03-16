@@ -918,7 +918,7 @@ void Panel0::PushPluginPanel(Panel2^ plugin)
 
 	// push
 	plugin->_Pushed = gcnew ShelveInfoPlugin(plugin);
-	ShelveInfo::_stack.Add(plugin->_Pushed);
+	Works::ShelveInfo::Stack->Add(plugin->_Pushed);
 
 	// reset position, close
 	// 090411 Was: Redraw(0, 0) + Close(). New way looks more effective and perhaps avoids some Far->FarNet calls.
@@ -932,6 +932,6 @@ void Panel0::PushPluginPanel(Panel2^ plugin)
 
 void Panel0::ShelvePanel(Panel1^ panel, bool modes)
 {
-	ShelveInfo::_stack.Add(gcnew ShelveInfoPanel(panel, modes));
+	Works::ShelveInfo::Stack->Add(gcnew ShelveInfoPanel(panel, modes));
 }
 }

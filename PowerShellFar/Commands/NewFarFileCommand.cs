@@ -62,22 +62,19 @@ namespace PowerShellFar.Commands
 		///
 		protected override void ProcessRecord()
 		{
-			SetFile file = new SetFile();
-
-			file.Name = Name;
-			file.Description = Description;
-			file.AlternateName = AlternateName;
-			file.Owner = Owner;
-			file.Length = Length;
-			file.Data = Data;
-
-			file.CreationTime = CreationTime;
-			file.LastAccessTime = LastAccessTime;
-			file.LastWriteTime = LastWriteTime;
-
-			file.Columns = Columns;
-
-			WriteObject(file);
+			WriteObject(new SetFile()
+			{
+				Name = Name,
+				Description = Description,
+				AlternateName = AlternateName,
+				Owner = Owner,
+				Length = Length,
+				Data = Data,
+				CreationTime = CreationTime,
+				LastAccessTime = LastAccessTime,
+				LastWriteTime = LastWriteTime,
+				Columns = Columns
+			});
 		}
 	}
 }

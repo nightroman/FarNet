@@ -63,7 +63,7 @@ namespace FarNet.Works
 
 		public static IModuleTool[] GetTools(ModuleToolOptions option)
 		{
-			List<IModuleTool> list = new List<IModuleTool>(_Actions.Count);
+			var list = new List<IModuleTool>(_Actions.Count);
 			foreach (IModuleAction action in _Actions.Values)
 			{
 				if (action.Kind != ModuleItemKind.Tool)

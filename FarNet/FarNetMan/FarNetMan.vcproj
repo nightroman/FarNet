@@ -414,6 +414,20 @@
 			CopyLocalSatelliteAssemblies="false"
 			RelativePathToProject="..\FarNet\FarNet.Works.Dialog\FarNet.Works.Dialog.csproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{E95736AD-A80B-42D0-BE74-095F7A558BC0}"
+			CopyLocal="false"
+			CopyLocalDependencies="false"
+			CopyLocalSatelliteAssemblies="false"
+			RelativePathToProject="..\FarNet\FarNet.Works.Editor\FarNet.Works.Editor.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{054F6FF3-F3F6-41CA-B2AF-D791411261D1}"
+			CopyLocal="false"
+			CopyLocalDependencies="false"
+			CopyLocalSatelliteAssemblies="false"
+			RelativePathToProject="..\FarNet\FarNet.Works.Panels\FarNet.Works.Panels.csproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -422,15 +436,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AnyEditor.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\AnyMenu.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\AnyViewer.cpp"
 				>
 			</File>
 			<File
@@ -475,10 +481,6 @@
 			</File>
 			<File
 				RelativePath=".\EditorLineSelection.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EditorTextWriter.cpp"
 				>
 			</File>
 			<File
@@ -616,15 +618,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AnyEditor.h"
-				>
-			</File>
-			<File
 				RelativePath=".\AnyMenu.h"
-				>
-			</File>
-			<File
-				RelativePath=".\AnyViewer.h"
 				>
 			</File>
 			<File
@@ -665,10 +659,6 @@
 			</File>
 			<File
 				RelativePath=".\EditorLineSelection.h"
-				>
-			</File>
-			<File
-				RelativePath=".\EditorTextWriter.h"
 				>
 			</File>
 			<File

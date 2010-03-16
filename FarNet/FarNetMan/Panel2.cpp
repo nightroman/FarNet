@@ -249,7 +249,7 @@ void Panel2::Open()
 	Panel0::OpenPluginPanel(this);
 	if (_Pushed)
 	{
-		ShelveInfo::_stack.Remove(_Pushed);
+		Works::ShelveInfo::Stack->Remove(_Pushed);
 		_skipGettingData = true;
 		_Pushed = nullptr;
 	}
@@ -266,7 +266,7 @@ void Panel2::Close()
 	LOG_AUTO(Info, __FUNCTION__)
 	{
 		if (_ActiveInfo)
-			_ActiveInfo->Unshelve();
+			_ActiveInfo->Pop();
 		else
 			Panel1::Close();
 	}

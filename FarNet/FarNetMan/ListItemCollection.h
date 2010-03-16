@@ -4,7 +4,6 @@ Copyright (c) 2005 FarNet Team
 */
 
 #pragma once
-#include "Menu.h"
 
 namespace FarNet
 {;

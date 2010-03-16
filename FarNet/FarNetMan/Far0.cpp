@@ -925,11 +925,11 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 		}
 
 		// Pop/Unshelve
-		if (ShelveInfo::_stack.Count)
+		if (Works::ShelveInfo::Stack->Count)
 		{
 			menu->Add("Pop/Unshelve")->IsSeparator = true;
 
-			for each(ShelveInfo^ si in ShelveInfo::_stack)
+			for each(Works::ShelveInfo^ si in Works::ShelveInfo::Stack)
 			{
 				FarItem^ mi = menu->Add(si->Title);
 				mi->Data = si;
@@ -950,7 +950,7 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 			// do not remove plugin panels because of their shutdown bypassed
 			ShelveInfoPanel^ shelve = dynamic_cast<ShelveInfoPanel^>(data);
 			if (shelve)
-				ShelveInfo::_stack.Remove(shelve);
+				Works::ShelveInfo::Stack->Remove(shelve);
 
 			continue;
 		}
@@ -985,8 +985,8 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 		}
 
 		// Pop/Unshelve
-		ShelveInfo^ shelve = (ShelveInfo^)data;
-		shelve->Unshelve();
+		Works::ShelveInfo^ shelve = (Works::ShelveInfo^)data;
+		shelve->Pop();
 
 		return;
 	}

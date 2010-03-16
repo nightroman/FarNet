@@ -170,7 +170,7 @@ namespace PowerShellFar
 				return;
 			}
 
-			List<FarFile> files = new List<FarFile>(values.Count);
+			var files = new List<FarFile>(values.Count);
 			Panel.Files = files;
 
 			if (Location.Provider.ImplementingType == typeof(FileSystemProvider))
@@ -732,60 +732,60 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 		{
 			if (items.OpenFileAttributes == null && UIAttributesCan())
-			{
-				items.OpenFileAttributes = new SetItem();
-				items.OpenFileAttributes.Text = "Item &properties";
-				items.OpenFileAttributes.Click = delegate { UIAttributes(); };
-			}
+				items.OpenFileAttributes = new SetItem()
+				{
+					Text = "Item &properties",
+					Click = delegate { UIAttributes(); }
+				};
 
 			if (items.OpenFile == null)
-			{
-				items.OpenFile = new SetItem();
-				items.OpenFile.Text = "Child items";
-				items.OpenFile.Click = delegate { UIOpenFile(Panel.CurrentFile); };
-			}
+				items.OpenFile = new SetItem()
+				{
+					Text = "Child items",
+					Click = delegate { UIOpenFile(Panel.CurrentFile); }
+				};
 
 			if (items.Copy == null && UICopyMoveCan(false))
-			{
-				items.Copy = new SetItem();
-				items.Copy.Text = "&Copy item(s)";
-				items.Copy.Click = delegate { UICopyMove(false); };
-			}
+				items.Copy = new SetItem()
+				{
+					Text = "&Copy item(s)",
+					Click = delegate { UICopyMove(false); }
+				};
 
 			if (items.CopyHere == null && e.CurrentFile != null)
-			{
-				items.CopyHere = new SetItem();
-				items.CopyHere.Text = "Copy &here";
-				items.CopyHere.Click = delegate { UICopyHere(); };
-			}
+				items.CopyHere = new SetItem()
+				{
+					Text = "Copy &here",
+					Click = delegate { UICopyHere(); }
+				};
 
 			if (items.Move == null && UICopyMoveCan(true))
-			{
-				items.Move = new SetItem();
-				items.Move.Text = "&Move item(s)";
-				items.Move.Click = delegate { UICopyMove(true); };
-			}
+				items.Move = new SetItem()
+				{
+					Text = "&Move item(s)",
+					Click = delegate { UICopyMove(true); }
+				};
 
 			if (items.Rename == null)
-			{
-				items.Rename = new SetItem();
-				items.Rename.Text = "&Rename item";
-				items.Rename.Click = delegate { UIRename(); };
-			}
+				items.Rename = new SetItem()
+				{
+					Text = "&Rename item",
+					Click = delegate { UIRename(); }
+				};
 
 			if (items.Create == null)
-			{
-				items.Create = new SetItem();
-				items.Create.Text = "&New item";
-				items.Create.Click = delegate { UICreate(); };
-			}
+				items.Create = new SetItem()
+				{
+					Text = "&New item",
+					Click = delegate { UICreate(); }
+				};
 
 			if (items.Delete == null)
-			{
-				items.Delete = new SetItem();
-				items.Delete.Text = "&Delete item(s)";
-				items.Delete.Click = delegate { UIDelete(false); };
-			}
+				items.Delete = new SetItem()
+				{
+					Text = "&Delete item(s)",
+					Click = delegate { UIDelete(false); }
+				};
 
 			base.HelpMenuInitItems(items, e);
 		}

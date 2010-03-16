@@ -6,7 +6,6 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Editor0.h"
 #include "Editor.h"
-#include "Far0.h"
 #include "Wrappers.h"
 
 namespace FarNet

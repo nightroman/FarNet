@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Zoo.h"
-#include "Shelve.h"
 
 namespace FarNet
 {;
@@ -259,11 +258,6 @@ String^ Zoo::ConsoleTitle::get()
 		return gcnew String(buf);
 
 	return String::Empty;
-}
-
-Object^ Zoo::Shelve::get()
-{
-	return %ShelveInfo::_stack;
 }
 
 void Zoo::Break()

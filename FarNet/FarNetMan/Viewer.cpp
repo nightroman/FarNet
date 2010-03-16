@@ -5,11 +5,15 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "Viewer.h"
-#include "Utils.h"
 #include "Viewer0.h"
 
 namespace FarNet
 {;
+void AnyViewer::ViewText(String^ text, String^ title, OpenMode mode)
+{
+	Works::EditorTools::ViewText(text, title, mode);
+}
+
 Viewer::Viewer()
 : _id(-1)
 , _Title(String::Empty)
