@@ -10,33 +10,31 @@ using System.Text.RegularExpressions;
 
 namespace FarNet.Works
 {
-	public sealed class FarMacro : IMacro
+	/// <summary>
+	/// The only macro operator exposed by a host.
+	/// </summary>
+	/// <remarks>
+	/// A host derives from this class and implements abstracts.
+	/// On requests it gets the solid singleton or a new instance.
+	/// The singleton is set internally to the first created instance.
+	/// </remarks>
+	public abstract class FarMacro : IMacro
 	{
-		static readonly FarMacro _Instance = new FarMacro();
+		static FarMacro _Instance;
 
-		/// <summary>
-		/// The only macro operator exposed by a host.
-		/// </summary>
 		public static FarMacro Instance { get { return _Instance; } }
+
+		protected FarMacro()
+		{
+			if (_Instance != null)
+				throw new InvalidOperationException();
+
+			_Instance = this;
+		}
 
 		#region override
 		
 		public override bool ManualSaveLoad { get; set; }
-
-		public override MacroParseError Check(string sequence, bool silent)
-		{
-			return Far.Net.Zoo.CheckMacro(sequence, silent);
-		}
-
-		public override void Load()
-		{
-			Far.Net.Zoo.LoadMacros();
-		}
-
-		public override void Save()
-		{
-			Far.Net.Zoo.SaveMacros();
-		}
 
 		public override object GetConstant(string name)
 		{
@@ -170,9 +168,6 @@ namespace FarNet.Works
 		#endregion
 
 		#region private
-
-		FarMacro()
-		{ }
 
 		static void Install(Macro macro)
 		{

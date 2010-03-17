@@ -164,11 +164,5 @@ namespace FarNet.Works
 		public abstract void SetBufferContents(Place rectangle, BufferCell fill);
 		///
 		public abstract void Break();
-		///
-		public abstract MacroParseError CheckMacro(string sequence, bool silent);
-		///
-		public abstract void LoadMacros();
-		///
-		public abstract void SaveMacros();
 	}
 }

@@ -19,8 +19,5 @@ public:
 	virtual void SetBufferContents(Place rectangle, Works::BufferCell fill) override;
 	virtual void SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents) override;
 	virtual void Break() override;
-	virtual MacroParseError^ CheckMacro(String^ sequence, bool silent) override;
-	virtual void LoadMacros() override;
-	virtual void SaveMacros() override;
 };
 }
