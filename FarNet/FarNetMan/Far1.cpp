@@ -761,11 +761,6 @@ ISubsetForm^ Far1::CreateSubsetForm()
 	return gcnew Works::SubsetForm;
 }
 
-IMacro^ Far1::Macro::get()
-{
-	return Works::FarMacro::Instance;
-}
-
 ILine^ Far1::CommandLine::get()
 {
 	return gcnew FarNet::CommandLine;
@@ -779,6 +774,52 @@ IWindow^ Far1::Window::get()
 IRegistryKey^ Far1::OpenRegistryKey(String^ name, bool writable)
 {
 	return Works::WinRegistry::OpenKey(name, writable);
+}
+
+// Implementation of Far methods.
+ref class FarMacro : Works::FarMacro
+{
+public:
+	virtual MacroParseError^ Check(String^ sequence, bool silent) override
+	{
+		PIN_ES(pin, sequence);
+
+		ActlKeyMacro args;
+		args.Command = MCMD_CHECKMACRO;
+		args.Param.PlainText.SequenceText = pin;
+		args.Param.PlainText.Flags = silent ? KSFLAGS_SILENTCHECK : 0;
+
+		//! it always gets ErrCode
+		Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args);
+		if (args.Param.MacroResult.ErrCode == MPEC_SUCCESS)
+			return nullptr;
+
+		MacroParseError^ r = gcnew MacroParseError;
+		r->ErrorCode = (MacroParseStatus)args.Param.MacroResult.ErrCode;
+		r->Token = gcnew String(args.Param.MacroResult.ErrSrc);
+		r->Line = args.Param.MacroResult.ErrPos.Y;
+		r->Pos = args.Param.MacroResult.ErrPos.X;
+		return r;
+	}
+	virtual void Load() override
+	{
+		ActlKeyMacro args;
+		args.Command = MCMD_LOADALL;
+		if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
+			throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+	}
+	virtual void Save() override
+	{
+		ActlKeyMacro args;
+		args.Command = MCMD_SAVEALL;
+		if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
+			throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+	}
+};
+
+IMacro^ Far1::Macro::get()
+{
+	return Works::FarMacro::Instance ? Works::FarMacro::Instance : gcnew FarMacro();
 }
 
 }
