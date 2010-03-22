@@ -89,6 +89,13 @@ namespace FarNet
 	/// In fact all dynamic members operate on the current editor, not on the editor associated with the instance.
 	/// Thus, if you use an operator of not current editor then results may be unexpected.
 	/// </para>
+	/// <para>
+	/// Basically, the editor works like the indexed list of <see cref="ILine"/> lines. List members have "standard" names:
+	/// <see cref="Count"/> (line count), <see cref="this"/> (access by index), <see cref="RemoveAt"/> (removes by index).
+	/// </para>
+	/// <para>
+	/// Still, the editor is not a standard list. If you need a standard line list then use the <see cref="Lines"/> method.
+	/// </para>
 	/// </remarks>
 	public interface IEditor : IAnyEditor
 	{
@@ -119,30 +126,31 @@ namespace FarNet
 		/// </summary>
 		bool DisableHistory { get; set; }
 		/// <summary>
-		/// Gets the current line operator.
+		/// Gets line count. At least one line exists.
 		/// </summary>
-		/// <remarks>
-		/// The returned object refers to the current line dynamically, it is not a copy;
-		/// when cursor moves to another line the operator works on the new current line.
-		/// </remarks>
-		ILine CurrentLine { get; }
+		/// <seealso cref="this"/>
+		int Count { get; }
 		/// <summary>
-		/// Gets the list of editor lines as they are.
+		/// Gets the line by the index.
+		/// </summary>
+		/// <param name="index">Line index, -1 for the current line.</param>
+		/// <returns>The requested line.</returns>
+		/// <seealso cref="Count"/>
+		/// <seealso cref="Lines"/>
+		/// <seealso cref="SelectedLines"/>
+		ILine this[int index] { get; }
+		/// <summary>
+		/// Gets the list of editor lines.
 		/// Editor must be current.
 		/// </summary>
-		/// <remarks>
-		/// This list always contains at least one line.
-		/// </remarks>
-		ILines Lines { get; }
+		/// <param name="ignoreEmptyLast">Tells to ignore the empty last line.</param>
+		ILineCollection Lines(bool ignoreEmptyLast);
 		/// <summary>
-		/// Gets the list of editor lines with no last empty line if any.
+		/// Gets the list of selected lines and parts.
 		/// Editor must be current.
 		/// </summary>
-		/// <remarks>
-		/// The last editor line is excluded if it empty.
-		/// Thus, this list is empty when an editor has no text.
-		/// </remarks>
-		ILines TrueLines { get; }
+		/// <param name="ignoreEmptyLast">Tells to ignore the empty last line.</param>
+		ILineCollection SelectedLines(bool ignoreEmptyLast);
 		/// <summary>
 		/// Gets or sets the name of a file being or to be edited.
 		/// Set it before opening.
@@ -170,23 +178,6 @@ namespace FarNet
 		/// </summary>
 		Point WindowSize { get; }
 		/// <summary>
-		/// Gets the current selection operator as it is.
-		/// Editor must be current.
-		/// </summary>
-		/// <remarks>
-		/// It is a collection <see cref="ILines"/> of selected line parts and a few extra members.
-		/// If selection exists (<see cref="ISelection.Exists"/>) it contains at least one line.
-		/// </remarks>
-		ISelection Selection { get; }
-		/// <summary>
-		/// Gets the current selection operator with no last empty line if any.
-		/// Editor must be current.
-		/// </summary>
-		/// <remarks>
-		/// Unlike <see cref="Selection"/> it can be empty even if selection <see cref="ISelection.Exists"/>.
-		/// </remarks>
-		ISelection TrueSelection { get; }
-		/// <summary>
 		/// Tells to open a new (non-existing) file in the editor, similar to [ShiftF4].
 		/// Set it before opening.
 		/// </summary>
@@ -195,21 +186,21 @@ namespace FarNet
 		/// </remarks>
 		bool IsNew { get; set; }
 		/// <summary>
-		/// Inserts a string.
+		/// Inserts the text at the current caret position.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="text">The text. Supported line delimiters: CR, LF, CR+LF.</param>
 		/// <remarks>
 		/// The text is processed in the same way as it is typed.
 		/// </remarks>
-		void Insert(string text);
+		void InsertText(string text);
 		/// <summary>
 		/// Inserts a character.
 		/// Editor must be current.
 		/// </summary>
-		/// <param name="text">A character.</param>
+		/// <param name="text">Character to be inserted.</param>
 		/// <remarks>
-		/// The text is processed in the same way as it is typed.
+		/// The character is processed in the same way as it is typed.
 		/// </remarks>
 		void InsertChar(char text);
 		/// <summary>
@@ -221,15 +212,22 @@ namespace FarNet
 		/// </remarks>
 		void Redraw();
 		/// <summary>
-		/// Deletes a character under <see cref="Cursor"/>.
+		/// Deletes a character under the <see cref="Caret"/>.
 		/// Editor must be current.
 		/// </summary>
 		void DeleteChar();
 		/// <summary>
-		/// Deletes a line under <see cref="Cursor"/>.
+		/// Deletes the line where the <see cref="Caret"/> is.
 		/// Editor must be current.
 		/// </summary>
 		void DeleteLine();
+		/// <summary>
+		/// Deletes the selected text.
+		/// </summary>
+		/// <remarks>
+		/// To clear selection use <see cref="UnselectText"/>.
+		/// </remarks>
+		void DeleteText();
 		/// <summary>
 		/// Closes the current editor.
 		/// </summary>
@@ -244,19 +242,19 @@ namespace FarNet
 		/// <param name="fileName">File name to save to.</param>
 		void Save(string fileName);
 		/// <summary>
-		/// Inserts a new line at the current <see cref="Cursor"/> position.
+		/// Inserts a new line at the <see cref="Caret"/> position.
 		/// </summary>
 		/// <remarks>
-		/// After insertion the cursor is moved to the first position in the inserted line.
+		/// After insertion the caret is moved to the first position in the inserted line.
 		/// </remarks>
 		void InsertLine();
 		/// <summary>
-		/// Inserts a new line at the current <see cref="Cursor"/> position with optional indent.
+		/// Inserts a new line at the <see cref="Caret"/> position with optional indent.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="indent">Insert a line with indent.</param>
 		/// <remarks>
-		/// After insertion the cursor is moved to the first position in the inserted line
+		/// After insertion the caret is moved to the first position in the inserted line
 		/// or to the indented position in it. Indent is the same as on [Enter].
 		/// </remarks>
 		void InsertLine(bool indent);
@@ -292,25 +290,25 @@ namespace FarNet
 		/// </summary>
 		bool IsLocked { get; }
 		/// <summary>
-		/// Converts char position to tab position for a given line.
+		/// Converts char position to tab position for the given line.
 		/// </summary>
 		/// <param name="line">Line index, -1 for current.</param>
-		/// <param name="pos">Char posistion.</param>
-		int ConvertPosToTab(int line, int pos);
+		/// <param name="column">Column index to be converted.</param>
+		int ConvertColumnEditorToScreen(int line, int column);
 		/// <summary>
-		/// Converts tab position to char position for a given line.
+		/// Converts tab position to char position for the given line.
 		/// </summary>
 		/// <param name="line">Line index, -1 for current.</param>
-		/// <param name="tab">Tab posistion.</param>
-		int ConvertTabToPos(int line, int tab);
+		/// <param name="column">Column index to be converted.</param>
+		int ConvertColumnScreenToEditor(int line, int column);
 		/// <summary>
-		/// Converts screen coordinates to editor cursor coordinates.
+		/// Converts the point in screen coordinates to the point in editor coordinates.
 		/// </summary>
-		Point ConvertScreenToCursor(Point screen);
+		Point ConvertPointScreenToEditor(Point point);
 		/// <summary>
 		/// Gets or sets the current text frame.
 		/// </summary>
-		/// <seealso cref="Cursor"/>
+		/// <seealso cref="Caret"/>
 		TextFrame Frame { get; set; }
 		/// <summary>
 		/// Begins fast line iteration mode.
@@ -320,7 +318,7 @@ namespace FarNet
 		/// It is strongly recommended to call <see cref="End"/> after processing.
 		/// Nested calls of <b>Begin()</b> .. <b>End()</b> are allowed.
 		/// <para>
-		/// Avoid using this method together with getting <see cref="Frame"/> or <see cref="Cursor"/>,
+		/// Avoid using this method together with getting <see cref="Frame"/> or <see cref="Caret"/>,
 		/// their values are unpredictable. You have to get them before. But it is OK to set them
 		/// between <b>Begin()</b> and <b>End()</b>, directly or by <see cref="GoTo"/> methods.
 		/// </para>
@@ -334,12 +332,12 @@ namespace FarNet
 		/// </remarks>
 		void End();
 		/// <summary>
-		/// Gets or sets the current cursor position.
+		/// Gets or sets the caret position.
 		/// Editor must be current.
 		/// </summary>
 		/// <seealso cref="Frame"/>
 		/// <seealso cref="GoTo"/>
-		Point Cursor { get; set; }
+		Point Caret { get; set; }
 		/// <summary>
 		/// Gets bookmarks in the current editor.
 		/// </summary>
@@ -350,33 +348,33 @@ namespace FarNet
 		/// </remarks>
 		ICollection<TextFrame> Bookmarks();
 		/// <summary>
-		/// Goes to a new cursor position or sets it for opening.
+		/// Sets the caret position or posts it for opening.
 		/// </summary>
-		/// <param name="pos">Position.</param>
-		/// <param name="line">Line.</param>
-		/// <seealso cref="Cursor"/>
+		/// <param name="column">Column index.</param>
+		/// <param name="line">Line index.</param>
+		/// <seealso cref="Caret"/>
 		/// <seealso cref="Frame"/>
-		void GoTo(int pos, int line);
+		void GoTo(int column, int line);
 		/// <summary>
-		/// Goes to a line or sets it for opening.
+		/// Sets the current line or posts it for opening.
 		/// </summary>
-		/// <param name="line">Line.</param>
-		/// <seealso cref="Cursor"/>
+		/// <param name="line">Line index.</param>
+		/// <seealso cref="Caret"/>
 		/// <seealso cref="Frame"/>
 		void GoToLine(int line);
 		/// <summary>
-		/// Goes to a position in the current line.
+		/// Goes to a character in the current line.
 		/// </summary>
-		/// <param name="pos">Position.</param>
-		/// <seealso cref="Cursor"/>
+		/// <param name="column">Column index.</param>
+		/// <seealso cref="Caret"/>
 		/// <seealso cref="Frame"/>
-		void GoToPos(int pos);
+		void GoToColumn(int column);
 		/// <summary>
 		/// Goes to the end of text.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="addLine">Add an empty line if the last is not empty.</param>
-		void GoEnd(bool addLine);
+		void GoToEnd(bool addLine);
 		/// <summary>
 		/// Gets or sets any user data.
 		/// </summary>
@@ -460,7 +458,7 @@ namespace FarNet
 		/// Creates a writer that writes to the current position of the current editor.
 		/// </summary>
 		/// <remarks>
-		/// It is not recommended to change the <see cref="Cursor"/> position during writing,
+		/// It is not recommended to change the <see cref="Caret"/> position during writing,
 		/// but it seems to be safe to do so if you <c>Flush()</c> the writer before the change.
 		/// </remarks>
 		/// <returns>Created writer. As any writer, it has to be closed after use.</returns>
@@ -510,6 +508,57 @@ namespace FarNet
 		/// Set it before or after opening.
 		/// </summary>
 		bool WriteByteOrderMark { get; set; }
+		/// <summary>
+		/// Gets the selected text with the default line separator.
+		/// </summary>
+		string GetSelectedText();
+		/// <summary>
+		/// Gets the selected text with the specified line separator.
+		/// </summary>
+		/// <param name="separator">Line separator. null ~ CR+LF.</param>
+		string GetSelectedText(string separator);
+		/// <summary>
+		/// Sets (replaces) the selected text.
+		/// </summary>
+		/// <param name="text">New text.</param>
+		void SetSelectedText(string text);
+		/// <summary>
+		/// Selects the specified region of text.
+		/// </summary>
+		/// <param name="kind">Region kind.</param>
+		/// <param name="column1">Column 1.</param>
+		/// <param name="line1">Line 1.</param>
+		/// <param name="column2">Column 2.</param>
+		/// <param name="line2">Line 2.</param>
+		void SelectText(RegionKind kind, int column1, int line1, int column2, int line2);
+		/// <summary>
+		/// Selects all text.
+		/// </summary>
+		void SelectAllText();
+		/// <summary>
+		/// Turns the text selection off.
+		/// </summary>
+		/// <remarks>
+		/// To delete the selected text use <see cref="DeleteText"/>.
+		/// </remarks>
+		void UnselectText();
+		/// <summary>
+		/// Gets true if selection exists.
+		/// </summary>
+		bool SelectionExists { get; }
+		/// <summary>
+		/// Gets the selection kind.
+		/// </summary>
+		RegionKind SelectionKind { get; }
+		/// <summary>
+		/// Gets the selected place.
+		/// </summary>
+		Place SelectionPlace { get; }
+		/// <summary>
+		/// Removes the line by the index.
+		/// </summary>
+		/// <param name="index">Index of the line to be removed.</param>
+		void RemoveAt(int index);
 	}
 
 	/// <summary>
@@ -536,135 +585,174 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// List of strings, see MSDN <c>IList(Of T)</c>.
+	/// Line region, for example selected region of <see cref="ILine"/> line.
+	/// </summary>
+	public struct LineRegion
+	{
+		/// <summary>
+		/// Start position.
+		/// </summary>
+		public int Start { get; set; }
+		/// <summary>
+		/// End position.
+		/// </summary>
+		public int End { get; set; }
+		/// <summary>
+		/// Gets the region length.
+		/// </summary>
+		public int Length { get { return End - Start; } }
+		///
+		public override string ToString()
+		{
+			return Length < 0 ? "<none>" : Invariant.Format("{0} from {1} to {2}", Length, Start, End);
+		}
+		///
+		public static bool operator ==(LineRegion left, LineRegion right)
+		{
+			return left.Start == right.Start && left.End == right.End;
+		}
+		///
+		public static bool operator !=(LineRegion left, LineRegion right)
+		{
+			return left.Start != right.Start || left.End != right.End;
+		}
+		///
+		public override bool Equals(object obj)
+		{
+			return obj != null && obj.GetType() == typeof(LineRegion) && this == (LineRegion)obj;
+		}
+		///
+		public override int GetHashCode()
+		{
+			return Start | (End << 16);
+		}
+	}
+
+	/// <summary>
+	/// Abstract line in various text and line editors.
 	/// </summary>
 	/// <remarks>
-	/// Usually the list is internally connected to <see cref="ILines"/>,
-	/// thus, strings in the list are dependent on this source; i.e.
-	/// *) if it is <see cref="ILines.Strings"/> from <see cref="IEditor.Lines"/> then strings are lines of editor
-	/// and standard list operations affect editor text;
-	/// *) if it is <see cref="ILines.Strings"/> from <see cref="IEditor.Selection"/> then strings are selected line parts
-	/// and list operations affect only selected text.
+	/// It can be:
+	/// *) an item of <see cref="IEditor.Lines"/> or <see cref="IEditor.SelectedLines"/> in <see cref="IEditor"/>;
+	/// *) the command line <see cref="IFar.CommandLine"/>;
+	/// *) an edit box (<see cref="IEdit.Line"/>) or a combo box (<see cref="IComboBox.Line"/>) in a dialog.
 	/// </remarks>
-	public interface IStrings : IList<string>
-	{
-	}
-
-	/// <summary>
-	/// Selection in <see cref="ILine"/>.
-	/// </summary>
-	public interface ILineSelection
+	public abstract class ILine
 	{
 		/// <summary>
-		/// Text of selection. If line doesn't contain selection it is null.
+		/// Gets the line index in the source line collection.
 		/// </summary>
-		string Text { get; set; }
+		/// <remarks>
+		/// It returns -1 for the editor current line, the command line, and dialog edit lines.
+		/// </remarks>
+		public virtual int Index { get { return -1; } }
 		/// <summary>
-		/// Start position of selection in the line. If line doesn't contain selection it is -1.
+		/// Gets or sets the line text.
 		/// </summary>
-		int Start { get; }
+		public abstract string Text { get; set; }
 		/// <summary>
-		/// End position of selection in the line. If selection includes the end of line sequence this field has a value of -1.
+		/// Gets or sets (replaces) the selected text.
 		/// </summary>
-		int End { get; }
+		/// <remarks>
+		/// If there is no selection then <c>get</c> returns null, <c>set</c> throws.
+		/// </remarks>
+		public abstract string SelectedText { get; set; }
 		/// <summary>
-		/// Selection length. If line doesn't contain selection it is -1.
+		/// Gets or sets the end of line.
 		/// </summary>
-		int Length { get; }
-	}
-
-	/// <summary>
-	/// Interface of a line in various text and line editors:
-	/// *) item of <see cref="IEditor.Lines"/> or <see cref="IEditor.Selection"/> in <see cref="IEditor"/>;
-	/// *) command line <see cref="IFar.CommandLine"/>;
-	/// *) edit box (<see cref="IEdit.Line"/>) and combo box (<see cref="IComboBox.Line"/>) in <see cref="IDialog"/>.
-	/// </summary>
-	public interface ILine
-	{
+		/// <remarks>
+		/// It is used only for editor lines and normally it should be kept default.
+		/// </remarks>
+		public virtual string EndOfLine { get { return string.Empty; } set { throw new NotSupportedException(); } }
 		/// <summary>
-		/// Line number in source <see cref="IEditor"/>.
-		/// -1 for <see cref="IEditor.CurrentLine"/> and <see cref="IFar.CommandLine"/>.
+		/// Gets or sets the caret position.
 		/// </summary>
-		int No { get; }
+		/// <remarks>
+		/// Returns -1 if it is an editor line and it is not current.
+		/// Setting of a negative value moves the caret to the end.
+		/// </remarks>
+		public abstract int Caret { get; set; }
 		/// <summary>
-		/// Line text (<see cref="IEditor.Lines"/>, <see cref="IEditor.CurrentLine"/>, <see cref="IFar.CommandLine"/>)
-		/// or text of selected line part (<see cref="IEditor.Selection"/>).
-		/// </summary>
-		string Text { get; set; }
-		/// <summary>
-		/// End of line characters.
-		/// </summary>
-		string EndOfLine { get; set; }
-		/// <summary>
-		/// Selected line part.
-		/// </summary>
-		ILineSelection Selection { get; }
-		/// <summary>
-		/// Cursor position.
-		/// Returns -1 if the line is not current.
-		/// Setting of negative value moves cursor to the line end.
-		/// </summary>
-		int Pos { get; set; }
-		/// <summary>
-		/// Inserts text into the line at the current cursor position.
-		/// Editor: don't use if it is not the current line.
+		/// Inserts text into the line at the current caret position.
 		/// </summary>
 		/// <param name="text">String to insert to the line.</param>
-		void Insert(string text);
+		/// <remarks>
+		/// In the editor this method should not be used for the current line only.
+		/// </remarks>
+		public abstract void InsertText(string text);
 		/// <summary>
-		/// Selects a text fragment in the current or command line.
+		/// Selects the text fragment in the current editor line, the command line, or the dialog line.
 		/// </summary>
 		/// <param name="startPosition">Start position.</param>
 		/// <param name="endPosition">End position.</param>
-		void Select(int startPosition, int endPosition);
+		public abstract void SelectText(int startPosition, int endPosition);
 		/// <summary>
-		/// Clears selection in the current or command line.
+		/// Turns selection off in the current editor line, the command line, or the dialog line.
 		/// </summary>
-		void Unselect();
+		public abstract void UnselectText();
 		/// <summary>
 		/// Gets an instance of a full line if this line represents only a part,
-		/// (e.g. the line is from <see cref="IEditor.Selection"/>),
+		/// (e.g. the line is from <see cref="IEditor.SelectedLines"/>),
 		/// or returns this instance itself.
 		/// </summary>
-		ILine FullLine { get; }
+		public abstract ILine FullLine { get; }
 		/// <summary>
-		/// The text length.
+		/// Gets the the text length.
 		/// </summary>
-		int Length { get; }
+		/// <remarks>
+		/// It helps to avoid calls of more expensive <see cref="Text"/> in some cases when only length is needed.
+		/// </remarks>
+		public abstract int Length { get; }
 		/// <summary>
-		/// Parent window kind (<c>Editor</c>, <c>Panels</c>, <c>Dialog</c>).
+		/// Gets the parent window kind (<c>Editor</c>, <c>Panels</c>, <c>Dialog</c>).
 		/// </summary>
-		WindowKind WindowKind { get; }
+		public abstract WindowKind WindowKind { get; }
+		/// <summary>
+		/// Gets the selection info.
+		/// </summary>
+		/// <remarks>
+		/// If selection does not exists then returned position and length values are negative.
+		/// </remarks>
+		public abstract LineRegion Selection { get; }
+		/// <summary>
+		/// Returns the line <see cref="Text"/>.
+		/// </summary>
+		/// <remarks>
+		/// It gets the line text and this is not going to change, modules can rely on this.
+		/// </remarks>
+		public sealed override string ToString()
+		{
+			return Text;
+		}
 	}
 
 	/// <summary>
-	/// List of lines. See <see cref="IEditor.Lines"/> (all editor lines), <see cref="IEditor.Selection"/> (editor selected lines\parts).
+	/// Collection of editor lines.
 	/// </summary>
 	/// <remarks>
-	/// Line collections have standard <c>IList(Of T)</c> members (see MSDN) and a few additional members.
+	/// Line collections have standard <c>IList(Of T)</c> members (see MSDN) and a few additional helper members.
+	/// <para>
+	/// It is exposed as <see cref="IEditor.Lines"/> (editor lines), <see cref="IEditor.SelectedLines"/> (editor selected lines and parts).
+	/// </para>
 	/// </remarks>
-	public interface ILines : IList<ILine>
+	public interface ILineCollection : IList<ILine>
 	{
 		/// <summary>
-		/// First line.
+		/// Gets the first line.
 		/// </summary>
 		ILine First { get; }
 		/// <summary>
-		/// Last line.
+		/// Gets the last line.
 		/// </summary>
 		ILine Last { get; }
 		/// <summary>
-		/// Lines as strings.
+		/// Adds the string as a new line to the end.
 		/// </summary>
-		IStrings Strings { get; }
+		void AddText(string item);
 		/// <summary>
-		/// Add a string to the end of the list.
+		/// Inserts the string as a new line with the specified line index.
 		/// </summary>
-		void Add(string item);
-		/// <summary>
-		/// Insert a string as a new line with specified line index.
-		/// </summary>
-		void Insert(int index, string item);
+		void InsertText(int index, string item);
 	}
 
 	/// <summary>
@@ -735,7 +823,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Complete information about text frame and cursor position in an editor.
+	/// Information about the text frame and the caret position.
 	/// </summary>
 	public struct TextFrame
 	{
@@ -744,43 +832,43 @@ namespace FarNet
 		/// </summary>
 		/// <param name="value">Value.</param>
 		public TextFrame(int value)
+			: this()
 		{
-			_line = _pos = _tabPos = _topLine = _leftPos = value;
+			CaretLine = value;
+			CaretColumn = value;
+			CaretScreenColumn = value;
+			VisibleLine = value;
+			VisibleChar = value;
 		}
 		/// <summary>
-		/// Line index (starting with 0).
+		/// Caret line index.
 		/// </summary>
-		public int Line { get { return _line; } set { _line = value; } }
-		int _line;
+		public int CaretLine { get; set; }
 		/// <summary>
-		/// Position in the string (i.e. in chars).
+		/// Caret character index.
 		/// </summary>
-		public int Pos { get { return _pos; } set { _pos = value; } }
-		int _pos;
+		public int CaretColumn { get; set; }
 		/// <summary>
-		/// Position on the screen (i.e. in columns).
+		/// Caret screen column index.
 		/// </summary>
-		public int TabPos { get { return _tabPos; } set { _tabPos = value; } }
-		int _tabPos;
+		public int CaretScreenColumn { get; set; }
 		/// <summary>
 		/// First visible line index.
 		/// </summary>
-		public int TopLine { get { return _topLine; } set { _topLine = value; } }
-		int _topLine;
+		public int VisibleLine { get; set; }
 		/// <summary>
-		/// Leftmost visible position of the text on the screen.
+		/// First visible character index.
 		/// </summary>
-		public int LeftPos { get { return _leftPos; } set { _leftPos = value; } }
-		int _leftPos;
+		public int VisibleChar { get; set; }
 		///
 		public static bool operator ==(TextFrame left, TextFrame right)
 		{
 			return
-				left._line == right._line &&
-				left._pos == right._pos &&
-				left._tabPos == right._tabPos &&
-				left._topLine == right._topLine &&
-				left._leftPos == right._leftPos;
+				left.CaretLine == right.CaretLine &&
+				left.CaretColumn == right.CaretColumn &&
+				left.CaretScreenColumn == right.CaretScreenColumn &&
+				left.VisibleLine == right.VisibleLine &&
+				left.VisibleChar == right.VisibleChar;
 		}
 		///
 		public static bool operator !=(TextFrame left, TextFrame right)
@@ -790,20 +878,17 @@ namespace FarNet
 		///
 		public override bool Equals(Object obj)
 		{
-			if (obj == null || GetType() != obj.GetType())
-				return false;
-			TextFrame that = (TextFrame)obj;
-			return this == that;
+			return obj != null && obj.GetType() == typeof(TextFrame) && this == (TextFrame)obj;
 		}
 		///
 		public override string ToString()
 		{
-			return "((" + _pos + "/" + _tabPos + ", " + _line + ")(" + _leftPos + ", " + _topLine + "))";
+			return "((" + CaretColumn + "/" + CaretScreenColumn + ", " + CaretLine + ")(" + VisibleChar + ", " + VisibleLine + "))";
 		}
 		///
 		public override int GetHashCode()
 		{
-			return (_line << 16) ^ (_pos << 16) ^ _tabPos ^ _topLine ^ _leftPos;
+			return CaretLine | (CaretColumn << 16);
 		}
 	}
 }

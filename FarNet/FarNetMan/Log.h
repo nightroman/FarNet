@@ -6,8 +6,7 @@ Copyright (c) 2005 FarNet Team
 #pragma once
 
 #ifdef _DEBUG
-#define assert(e)
-//#define assert(e) Log::Assert(e) //????
+#define assert(e) Log::Assert(e)
 #else
 #define assert(e)
 #endif

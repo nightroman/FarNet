@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 #include "StdAfx.h"
 #include "CommandLine.h"
-#include "CommandLineSelection.h"
 
 namespace FarNet
 {;
@@ -17,11 +16,6 @@ FarNet::WindowKind CommandLine::WindowKind::get()
 ILine^ CommandLine::FullLine::get()
 {
 	return this;
-}
-
-ILineSelection^ CommandLine::Selection::get()
-{
-	return gcnew CommandLineSelection;
 }
 
 int CommandLine::Length::get()
@@ -48,7 +42,7 @@ void CommandLine::Text::set(String^ value)
 		throw gcnew OperationCanceledException;
 }
 
-int CommandLine::Pos::get()
+int CommandLine::Caret::get()
 {
 	int pos;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINEPOS, 0, (LONG_PTR)&pos))
@@ -56,7 +50,7 @@ int CommandLine::Pos::get()
 	return pos;
 }
 
-void CommandLine::Pos::set(int value)
+void CommandLine::Caret::set(int value)
 {
 	if (value < 0)
 		value = Length;
@@ -65,7 +59,7 @@ void CommandLine::Pos::set(int value)
 		throw gcnew OperationCanceledException;
 }
 
-void CommandLine::Insert(String^ text)
+void CommandLine::InsertText(String^ text)
 {
 	if (!text)
 		throw gcnew ArgumentNullException("text");
@@ -75,7 +69,7 @@ void CommandLine::Insert(String^ text)
 		throw gcnew OperationCanceledException;
 }
 
-void CommandLine::Select(int start, int end)
+void CommandLine::SelectText(int start, int end)
 {
 	CmdLineSelect cls;
 	cls.SelStart = start;
@@ -84,13 +78,78 @@ void CommandLine::Select(int start, int end)
 		throw gcnew OperationCanceledException;
 }
 
-void CommandLine::Unselect()
+void CommandLine::UnselectText()
 {
-	Select(-1, -1);
+	SelectText(-1, -1);
 }
 
-String^ CommandLine::ToString()
+LineRegion CommandLine::Selection::get()
 {
-	return Text;
+	CmdLineSelect cls;
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+		throw gcnew OperationCanceledException;
+
+	LineRegion result;
+	if (cls.SelStart < 0)
+	{
+		result.Start = -1;
+		result.End = -2;
+	}
+	else
+	{
+		result.Start = cls.SelStart;
+		result.End = cls.SelEnd;
+	}
+	return result;
 }
+
+String^ CommandLine::SelectedText::get()
+{
+	CmdLineSelect cls;
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+		throw gcnew OperationCanceledException;
+
+	if (cls.SelStart < 0)
+		return nullptr;
+
+	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
+	CBox buf(size);
+	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, size, (LONG_PTR)(wchar_t*)buf);
+	return gcnew String(buf, cls.SelStart, cls.SelEnd - cls.SelStart);
+}
+
+void CommandLine::SelectedText::set(String^ value)
+{
+	if (!value)
+		throw gcnew ArgumentNullException("value");
+
+	CmdLineSelect cls;
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+		throw gcnew OperationCanceledException;
+	if (cls.SelStart < 0)
+		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
+
+	// make new text
+	String^ text = Far::Net->CommandLine->Text;
+	String^ text1 = text->Substring(0, cls.SelStart);
+	String^ text2 = text->Substring(cls.SelEnd);
+	text = text1 + value + text2;
+
+	// store cursor
+	int pos = Caret;
+
+	// set new text
+	PIN_NE(pin, text);
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (LONG_PTR)pin))
+		throw gcnew OperationCanceledException;
+
+	// set new selection
+	cls.SelEnd = cls.SelStart + value->Length;
+	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+		throw gcnew OperationCanceledException;
+
+	// restore cursor
+	Caret = pos <= text->Length ? pos : text->Length;
+}
+
 }

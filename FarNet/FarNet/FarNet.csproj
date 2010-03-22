@@ -129,9 +129,6 @@
     <Compile Include="Module.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Selection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Viewer.cs" />
   </ItemGroup>
   <ItemGroup>

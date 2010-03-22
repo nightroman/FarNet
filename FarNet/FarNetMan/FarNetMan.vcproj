@@ -444,15 +444,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Collections.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CommandLine.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CommandLineSelection.cpp"
 				>
 			</File>
 			<File
@@ -480,10 +472,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\EditorLineSelection.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Export.cpp"
 				>
 			</File>
@@ -501,10 +489,6 @@
 			</File>
 			<File
 				RelativePath=".\InputBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Line.cpp"
 				>
 			</File>
 			<File
@@ -622,15 +606,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Collections.h"
-				>
-			</File>
-			<File
 				RelativePath=".\CommandLine.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CommandLineSelection.h"
 				>
 			</File>
 			<File
@@ -658,10 +634,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\EditorLineSelection.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Far0.h"
 				>
 			</File>
@@ -679,10 +651,6 @@
 			</File>
 			<File
 				RelativePath=".\InputBox.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Line.h"
 				>
 			</File>
 			<File

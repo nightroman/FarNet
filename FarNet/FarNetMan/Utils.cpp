@@ -103,23 +103,23 @@ void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm)
 // dirty global
 int _fastGetString;
 
-void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int no)
+void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index)
 {
-	if (no >= 0 && _fastGetString)
+	if (index >= 0 && _fastGetString)
 	{
 		static EditorSetPosition esp = {-1, -1, -1, -1, -1, -1};
-		esp.CurLine = no;
+		esp.CurLine = index;
 		if (!Info.EditorControl(ECTL_SETPOSITION, &esp))
-			throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + no + ". Ensure current editor and valid line number.");
+			throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + index + ". Ensure current editor and valid line number.");
 		egs.StringNumber = -1;
 		Info.EditorControl(ECTL_GETSTRING, &egs);
-		egs.StringNumber = no;
+		egs.StringNumber = index;
 	}
 	else
 	{
-		egs.StringNumber = no;
+		egs.StringNumber = index;
 		if (!Info.EditorControl(ECTL_GETSTRING, &egs))
-			throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + no + ". Ensure current editor and valid line number.");
+			throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + index + ". Ensure current editor and valid line number.");
 	}
 }
 
@@ -276,6 +276,51 @@ void Edit_SetOvertype(bool value)
 	SEditorSetPosition esp;
 	esp.Overtype = value;
 	EditorControl_ECTL_SETPOSITION(esp);
+}
+
+void Edit_RemoveAt(int index)
+{
+	if (index < 0)
+		throw gcnew ArgumentException("'index' must not be negative.");
+
+	// get info
+	AutoEditorInfo ei;
+
+	if (index >= ei.TotalLines)
+		throw gcnew ArgumentOutOfRangeException("index");
+
+	// last?
+	if (index == ei.TotalLines - 1)
+	{
+		// last
+		EditorGetString egsLast;
+		EditorControl_ECTL_GETSTRING(egsLast, ei.TotalLines - 1);
+
+		// remove if not empty
+		if (egsLast.StringLength > 0)
+		{
+			Edit_GoTo(0, index);
+			EditorControl_ECTL_DELETESTRING();
+		}
+
+		// go to the end of previous
+		if (--index < 0)
+			return;
+		
+		EditorControl_ECTL_GETSTRING(egsLast, index);
+		Edit_GoTo(egsLast.StringLength, index);
+
+		// and delete EOL
+		EditorControl_ECTL_DELETECHAR();
+	}
+	else
+	{
+		Edit_GoTo(0, index);
+		EditorControl_ECTL_DELETESTRING();
+	}
+
+	// restore
+	Edit_RestoreEditorInfo(ei);
 }
 
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m)
