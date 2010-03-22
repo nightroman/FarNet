@@ -815,9 +815,9 @@ OemClear = 254;
 			return !(left == right);
 		}
 		///
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			return obj is KeyInfo && this == (KeyInfo)obj;
+			return obj != null && obj.GetType() == typeof(KeyInfo) && this == (KeyInfo)obj;
 		}
 		///
 		public override int GetHashCode()
@@ -889,9 +889,9 @@ OemClear = 254;
 			return !(left == right);
 		}
 		///
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			return obj is MouseInfo && this == (MouseInfo)obj;
+			return obj != null && obj.GetType() == typeof(MouseInfo) && this == (MouseInfo)obj;
 		}
 		///
 		public override int GetHashCode()

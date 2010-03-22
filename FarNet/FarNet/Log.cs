@@ -5,6 +5,7 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -13,7 +14,7 @@ namespace FarNet
 	/// <summary>
 	/// For internal use.
 	/// </summary>
-	public class Log : IDisposable
+	public sealed class Log : IDisposable
 	{
 		static TraceSwitch _Switch = new TraceSwitch("FarNet.Trace", "FarNet trace switch.");
 
@@ -28,29 +29,35 @@ namespace FarNet
 		}
 
 		///
-		public static string Format(MethodInfo method)
+		public static void Assert(bool value)
 		{
-			return method.ReflectedType.FullName + "." + method.Name;
+			Trace.Assert(value);
 		}
 
 		///
-		public static string FormatException(Exception e)
+		public static string Format(MemberInfo member)
+		{
+			return member.ReflectedType.FullName + "." + member.Name;
+		}
+
+		///
+		public static string FormatException(Exception error)
 		{
 			//?? _090901_055134 Regex is used to fix bad PS V1 strings; check V2
 			Regex re = new Regex("[\r\n]+");
-			string info = e.GetType().Name + ":\r\n" + re.Replace(e.Message, "\r\n") + "\r\n";
+			string info = error.GetType().Name + ":\r\n" + re.Replace(error.Message, "\r\n") + "\r\n";
 
 			// get an error record
-			if (e.GetType().FullName.StartsWith("System.Management.Automation."))
+			if (error.GetType().FullName.StartsWith("System.Management.Automation.", StringComparison.Ordinal))
 			{
-				object errorRecord = Property(e, "ErrorRecord");
+				object errorRecord = GetPropertyValue(error, "ErrorRecord");
 				if (errorRecord != null)
 				{
 					// process the error record
-					object ii = Property(errorRecord, "InvocationInfo");
+					object ii = GetPropertyValue(errorRecord, "InvocationInfo");
 					if (ii != null)
 					{
-						object pm = Property(ii, "PositionMessage");
+						object pm = GetPropertyValue(ii, "PositionMessage");
 						if (pm != null)
 							//?? 090517 Added Trim(), because a position message starts with an empty line
 							info += re.Replace(pm.ToString().Trim(), "\r\n") + "\r\n";
@@ -58,8 +65,8 @@ namespace FarNet
 				}
 			}
 
-			if (e.InnerException != null)
-				info += "\r\n" + FormatException(e.InnerException);
+			if (error.InnerException != null)
+				info += "\r\n" + FormatException(error.InnerException);
 
 			return info;
 		}
@@ -111,14 +118,14 @@ namespace FarNet
 			Trace.WriteLine(info);
 		}
 
-		// Gets a property value by name or null
-		static object Property(object obj, string name)
+		// Gets a property value or null
+		static object GetPropertyValue(object obj, string name)
 		{
 			try
 			{
-				return obj.GetType().InvokeMember(name, BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance, null, obj, null);
+				return obj.GetType().InvokeMember(name, BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance, null, obj, null, CultureInfo.InvariantCulture);
 			}
-			catch (Exception e)
+			catch (MemberAccessException e)
 			{
 				TraceException(e);
 				return null;

@@ -181,8 +181,6 @@ namespace FarNet.Works
 			}
 			catch (Exception ex)
 			{
-				// Wish: no UI on loading
-				//????? to test no UI
 				Far.Net.ShowError("ERROR: module " + dir, ex);
 			}
 		}

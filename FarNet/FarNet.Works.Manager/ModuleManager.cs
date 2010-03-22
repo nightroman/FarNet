@@ -180,7 +180,6 @@ namespace FarNet.Works
 				}
 				catch (Exception ex)
 				{
-					// test no UI ?????
 					Far.Net.ShowError("ERROR: module " + _ModuleHostInstance, ex);
 				}
 				finally

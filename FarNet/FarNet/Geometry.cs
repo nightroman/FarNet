@@ -13,14 +13,14 @@ namespace FarNet
 	/// </summary>
 	public struct Point
 	{
-		int x;
-		int y;
 		/// <summary>
 		/// Initializes a point with the same x and y.
 		/// </summary>
 		public Point(int coordinate)
+			: this()
 		{
-			x = y = coordinate;
+			X = coordinate;
+			Y = coordinate;
 		}
 		/// <summary>
 		/// Initializes a new instance with the specified coordinates.
@@ -28,50 +28,43 @@ namespace FarNet
 		/// <param name="column">The horizontal position of the point.</param>
 		/// <param name="row">The vertical position of the point.</param>
 		public Point(int column, int row)
+			: this()
 		{
-			this.x = column;
-			this.y = row;
+			X = column;
+			Y = row;
 		}
 		/// <summary>
 		/// Gets or sets the x-coordinate.
 		/// </summary>
-		public int X
-		{
-			get { return x; }
-			set { x = value; }
-		}
+		public int X { get; set; }
 		/// <summary>
 		/// Gets or sets the y-coordinate.
 		/// </summary>
-		public int Y
-		{
-			get { return y; }
-			set { y = value; }
-		}
+		public int Y { get; set; }
 		///
 		public static bool operator ==(Point left, Point right)
 		{
-			return left.x == right.x && left.y == right.y;
+			return left.X == right.X && left.Y == right.Y;
 		}
 		///
 		public static bool operator !=(Point left, Point right)
 		{
-			return left.x != right.x || left.y != right.y;
+			return left.X != right.X || left.Y != right.Y;
 		}
 		///
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			return obj is Point && this == (Point)obj;
+			return obj != null && obj.GetType() == typeof(Point) && this == (Point)obj;
 		}
 		///
 		public override int GetHashCode()
 		{
-			return x | (y << 16);
+			return X | (Y << 16);
 		}
 		///
 		public override string ToString()
 		{
-			return "(" + x + ", " + y + ")";
+			return "(" + X + ", " + Y + ")";
 		}
 	}
 
@@ -183,9 +176,9 @@ namespace FarNet
 			return left.First != right.First || left.Last != right.Last;
 		}
 		///
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			return obj is Place && this == (Place)obj;
+			return obj != null && obj.GetType() == typeof(Place) && this == (Place)obj;
 		}
 		///
 		public override int GetHashCode()

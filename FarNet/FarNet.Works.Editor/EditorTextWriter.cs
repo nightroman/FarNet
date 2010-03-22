@@ -27,7 +27,7 @@ namespace FarNet.Works
 
 		public override void Write(string value)
 		{
-			_Editor.Insert(value);
+			_Editor.InsertText(value);
 		}
 
 		public override Encoding Encoding

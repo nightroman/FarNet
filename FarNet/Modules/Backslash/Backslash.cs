@@ -15,9 +15,8 @@ public class Escape : ModuleTool
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		IEditor editor = Far.Net.Editor;
-		ISelection select = editor.Selection;
-		if (select.Exists)
-			select.SetText(Regex.Replace(select.GetText("\r"), @"([\\""])", @"\$1"));
+		if (editor.SelectionExists)
+			editor.SetSelectedText(Regex.Replace(editor.GetSelectedText("\r"), @"([\\""])", @"\$1"));
 	}
 }
 
@@ -30,8 +29,7 @@ public class Unescape : ModuleTool
 	public override void Invoke(object sender, ModuleToolEventArgs e)
 	{
 		IEditor editor = Far.Net.Editor;
-		ISelection select = editor.Selection;
-		if (select.Exists)
-			select.SetText(Regex.Replace(select.GetText("\r"), @"\\([\\""])", "$1"));
+		if (editor.SelectionExists)
+			editor.SetSelectedText(Regex.Replace(editor.GetSelectedText("\r"), @"\\([\\""])", "$1"));
 	}
 }
