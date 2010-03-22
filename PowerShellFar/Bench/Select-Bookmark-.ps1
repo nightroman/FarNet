@@ -14,8 +14,8 @@ $Editor = $Psf.Editor()
 $i = 0
 New-FarMenu -Show 'Bookmarks' $(
 	foreach($b in $Editor.Bookmarks()) {
-		if ($b.Line -ge 1 -and $b.Line -lt $Editor.Lines.Count) {
-			New-FarItem ("&{0} {1}" -f $i, $Editor.Lines[$b.Line]) -Data $b { $Editor.Frame = $this.Data }
+		if ($b.Line -ge 1 -and $b.Line -lt $Editor.Count) {
+			New-FarItem ("&{0} {1}" -f $i, $Editor[$b.Line]) -Data $b { $Editor.Frame = $this.Data }
 		}
 		++$i
 	}

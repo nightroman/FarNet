@@ -69,8 +69,8 @@ if (!$TestOpened) {
 
 {
 	# set and test text selection
-	$e1.Line.Select(1, 4)
-	Assert-Far ($e1.Line.Selection.Text -eq 'олг')
+	$e1.Line.SelectText(1, 4)
+	Assert-Far ($e1.Line.SelectedText -eq 'олг')
 }
 
 {
@@ -89,7 +89,7 @@ if (!$TestOpened) {
 	# test text and selection
 	Assert-Far @(
 		$e1.Text -eq 'волга'
-		$e1.Line.Selection.Text -eq 'олг'
+		$e1.Line.SelectedText -eq 'олг'
 	)
 }
 

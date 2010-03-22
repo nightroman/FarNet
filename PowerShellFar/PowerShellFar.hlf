@@ -1235,7 +1235,7 @@ commands, see
 #EXAMPLES#
 
 	*) standard PowerShell scripts:
-		mask    :  *[0-~~].ps1
+		mask    :  /[^-+]\.ps1$/i
 		command :  powershell.exe -noexit ". '!\!.!'; exit"
 
 	*) PowerShellFar scripts:

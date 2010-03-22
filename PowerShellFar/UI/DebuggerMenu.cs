@@ -91,7 +91,7 @@ namespace PowerShellFar.UI
 			{
 				// location
 				file = _editor.FileName;
-				line = _editor.Cursor.Y + 1;
+				line = _editor.Caret.Y + 1;
 
 				// find
 				foreach (PSObject o in _breakpoints)

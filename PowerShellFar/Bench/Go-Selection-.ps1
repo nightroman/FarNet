@@ -33,16 +33,14 @@ function global:Go-Selection-
 {
 	if ($Far.Window.Kind -eq 'Editor') {
 		$editor = $Far.Editor
-		$select = $editor.Selection
-		$shape = $select.Shape
-		if ($shape) {
+		if ($editor.SelectionExists) {
 			if ($End) {
 				$editor.GoTo($shape.Right + 1, $shape.Bottom)
 			}
 			else {
 				$editor.GoTo($shape.Left, $shape.Top)
 			}
-			$select.Unselect()
+			$editor.UnselectText()
 		}
 	}
 	else {
@@ -50,12 +48,12 @@ function global:Go-Selection-
 		$select = $line.Selection
 		if ($line -and $select.Start -ge 0) {
 			if ($End) {
-				$line.Pos = $select.Start + $select.Length
+				$line.Caret = $select.End
 			}
 			else {
-				$line.Pos = $select.Start
+				$line.Caret = $select.Start
 			}
-			$line.Unselect()
+			$line.UnselectText()
 		}
 	}
 }

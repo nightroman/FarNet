@@ -670,7 +670,7 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 					for (; ; )
 					{
 						DateTime stamp1 = File.GetLastWriteTime(tmp);
-						Process.Start("Notepad", tmp).WaitForExit();
+						My.ProcessEx.StartNotepad(tmp).WaitForExit();
 
 						// exit if it is not modified
 						DateTime stamp2 = File.GetLastWriteTime(tmp);

@@ -42,17 +42,17 @@ namespace PowerShellFar
 		{
 			// start
 			if (++WriteCount == 1)
-				Editor.Insert("\r<=\r");
+				Editor.InsertText("\r<=\r");
 
 			// insert
-			Editor.Insert(value);
+			Editor.InsertText(value);
 		}
 
 		public override void AppendLine()
 		{
 			// start
 			if (++WriteCount == 1)
-				Editor.Insert("\r<=\r");
+				Editor.InsertText("\r<=\r");
 			else
 				Editor.InsertLine();
 		}
@@ -61,10 +61,10 @@ namespace PowerShellFar
 		{
 			// start
 			if (++WriteCount == 1)
-				Editor.Insert("\r<=\r");
+				Editor.InsertText("\r<=\r");
 
 			// insert trimmed
-			Editor.Insert(value.TrimEnd() + "\r");
+			Editor.InsertText(value.TrimEnd() + "\r");
 		}
 	}
 
@@ -177,8 +177,7 @@ namespace PowerShellFar
 					externalViewerArguments = Invariant.Format(A.Psf.Settings.ExternalViewerArguments, FileName);
 					try
 					{
-						ProcessStartInfo info = new ProcessStartInfo(externalViewerFileName, externalViewerArguments);
-						Process = Process.Start(info);
+						Process = My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 						Process.EnableRaisingEvents = true;
 						Process.Exited += OnExited;
 					}
@@ -196,8 +195,7 @@ namespace PowerShellFar
 					externalViewerFileName = Process.GetCurrentProcess().MainModule.FileName;
 					externalViewerArguments = "/m /p /v \"" + FileName + "\"";
 
-					ProcessStartInfo info = new ProcessStartInfo(externalViewerFileName, externalViewerArguments);
-					Process = Process.Start(info);
+					Process = My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 					Process.EnableRaisingEvents = true;
 					Process.Exited += OnExited;
 				}

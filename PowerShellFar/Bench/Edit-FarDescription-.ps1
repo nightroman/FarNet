@@ -42,7 +42,7 @@ $editor = New-FarEditor $edit -Title "Description: $Path" -DeleteSource 'File' -
 
 # select on open
 if ($text1 -eq $text2) {
-	$editor.add_Opened({ $this.Selection.SelectAll() })
+	$editor.add_Opened({ $this.SelectAllText() })
 }
 
 # update on save
