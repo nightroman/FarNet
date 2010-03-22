@@ -34,7 +34,7 @@ namespace PowerShellFar
 					text = string.Empty.PadRight(Entry.Command2.Prefix.Length + 2) + text.Substring(Entry.Command2.Prefix.Length + 1);
 			}
 
-			int pos = line.Pos;
+			int pos = line.Caret;
 			string script = null;
 			string command = null;
 			object[] args = null;

@@ -222,7 +222,7 @@ namespace PowerShellFar
 				return;
 
 			// skip if selected
-			if (Editor.Selection.Exists)
+			if (Editor.SelectionExists)
 				return;
 
 			switch (e.Key.VirtualKeyCode)
@@ -246,9 +246,9 @@ namespace PowerShellFar
 							{
 								e.Ignore = true;
 								if (Runspace == null)
-									EditorKit.ExpandCode(Editor.CurrentLine);
+									EditorKit.ExpandCode(Editor[-1]);
 								else
-									ExpandCode(Editor.CurrentLine);
+									ExpandCode(Editor[-1]);
 
 								Editor.Redraw();
 							}
@@ -260,12 +260,12 @@ namespace PowerShellFar
 						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
 							// [Esc]
-							if (Editor.IsLastLine && Editor.CurrentLine.Length > 0)
+							if (Editor.IsLastLine && Editor[-1].Length > 0)
 							{
 								e.Ignore = true;
-								ILine line = Editor.CurrentLine;
+								ILine line = Editor[-1];
 								line.Text = string.Empty;
-								line.Pos = 0;
+								line.Caret = 0;
 								Editor.Redraw();
 							}
 						}
@@ -279,8 +279,8 @@ namespace PowerShellFar
 							if (!Editor.IsLastLine)
 								return;
 
-							ILine curr = Editor.CurrentLine;
-							if (curr.Pos != curr.Length)
+							ILine curr = Editor[-1];
+							if (curr.Caret != curr.Length)
 								return;
 
 							string pref = curr.Text;
@@ -293,7 +293,7 @@ namespace PowerShellFar
 
 							e.Ignore = true;
 							curr.Text = code;
-							curr.Pos = -1;
+							curr.Caret = -1;
 							Editor.Redraw();
 						}
 						return;
@@ -312,7 +312,7 @@ namespace PowerShellFar
 							if (History.Cache == null)
 							{
 								// don't lose not empty line!
-								if (Editor.CurrentLine.Length > 0)
+								if (Editor[-1].Length > 0)
 									return;
 								History.Cache = History.GetLines(0);
 								History.CacheIndex = History.Cache.Length;
@@ -360,9 +360,9 @@ namespace PowerShellFar
 							}
 
 							e.Ignore = true;
-							ILine curr = Editor.CurrentLine;
+							ILine curr = Editor[-1];
 							curr.Text = code;
-							curr.Pos = -1;
+							curr.Caret = -1;
 							Editor.Redraw();
 						}
 						return;
@@ -375,21 +375,21 @@ namespace PowerShellFar
 							if (!Editor.IsLastLine)
 								return;
 
-							ILine curr = Editor.CurrentLine;
+							ILine curr = Editor[-1];
 							if (curr.Length > 0)
 								return;
 
 							e.Ignore = true;
 
 							Editor.Begin();
-							Point pt = Editor.Cursor;
+							Point pt = Editor.Caret;
 							for (int i = pt.Y - 1; i >= 0; --i)
 							{
-								string text = Editor.Lines[i].Text;
+								string text = Editor[i].Text;
 								if (text == "<=")
 								{
-									Editor.Selection.Select(RegionKind.Stream, 0, i, -1, pt.Y);
-									Editor.Selection.Clear();
+									Editor.SelectText(RegionKind.Stream, 0, i, -1, pt.Y);
+									Editor.DeleteText();
 									break;
 								}
 								if (text == "=>")
@@ -432,7 +432,7 @@ namespace PowerShellFar
 		internal void Invoke()
 		{
 			// current line and script, skip empty
-			ILine curr = Editor.CurrentLine;
+			ILine curr = Editor[-1];
 			string code = curr.Text;
 			if (code.Length == 0)
 				return;
@@ -441,14 +441,14 @@ namespace PowerShellFar
 			if (!Editor.IsLastLine)
 			{
 				// - no, copy code and exit
-				Editor.GoEnd(true);
-				Editor.Insert(code);
+				Editor.GoToEnd(true);
+				Editor.InsertText(code);
 				Editor.Redraw();
 				return;
 			}
 
 			// go end
-			curr.Pos = -1;
+			curr.Caret = -1;
 
 			// go async
 			if (Runspace != null)
@@ -470,7 +470,7 @@ namespace PowerShellFar
 			else
 			{
 				if (writer.WriteCount > 0)
-					Editor.Insert("=>\r");
+					Editor.InsertText("=>\r");
 				else
 					Editor.InsertLine();
 
@@ -538,7 +538,7 @@ namespace PowerShellFar
 			{
 				EditorOutputWriter1 writer = (EditorOutputWriter1)FarUI.PopWriter();
 				if (writer.WriteCount > 0)
-					Editor.Insert("=>\r");
+					Editor.InsertText("=>\r");
 				else
 					Editor.InsertLine();
 
@@ -578,7 +578,7 @@ namespace PowerShellFar
 
 			// line and last word
 			string text = editLine.Text;
-			string line = text.Substring(0, editLine.Pos);
+			string line = text.Substring(0, editLine.Caret);
 			Match match = Regex.Match(line, @"(?:^|\s)(\S+)$");
 			if (!match.Success)
 				return;

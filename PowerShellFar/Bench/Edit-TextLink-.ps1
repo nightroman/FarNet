@@ -55,17 +55,16 @@ if ($Text -match '\b(\w:[\\/].+?)\((\d+)\)(?::(.*))?' -or $Text -match '\b(\w:[\
 		### 'Opened' handler checks the line or searches the nearest by text
 		$line = $matches[3].Trim()
 		$Editor.add_Opened({
-			if ($Editor.CurrentLine.Text.Trim() -eq $line) { return }
+			if ($Editor[-1].Text.Trim() -eq $line) { return }
 
-			$Lines = $Editor.Lines
-			$index1 = $Editor.Cursor.Y - 1
+			$index1 = $Editor.Caret.Y - 1
 			$index2 = $index1 + 2
-			while(($index1 -ge 0) -or ($index2 -lt $Lines.Count)) {
-				if (($index1 -ge 0) -and ($Lines[$index1].Text.Trim() -eq $line)) {
+			while(($index1 -ge 0) -or ($index2 -lt $Editor.Count)) {
+				if (($index1 -ge 0) -and ($Editor[$index1].Text.Trim() -eq $line)) {
 					$Editor.GoToLine($index1)
 					return
 				}
-				if (($index2 -lt $Lines.Count) -and ($Lines[$index2].Text.Trim() -eq $line)) {
+				if (($index2 -lt $Editor.Count) -and ($Editor[$index2].Text.Trim() -eq $line)) {
 					$Editor.GoToLine($index2)
 					return
 				}

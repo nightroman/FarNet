@@ -7,6 +7,7 @@ using System;
 using System.Management.Automation.Host;
 using FarNet;
 using Host = System.Management.Automation.Host;
+using Works = FarNet.Works;
 
 // _091007_034112
 // Getting Console.Title throws an exception internally caught by PowerShell. Usually in MT scenarios.
@@ -140,13 +141,13 @@ namespace PowerShellFar
 		}
 
 		// converter
-		static FarNet.Works.BufferCell BufferCellOf(Host.BufferCell cell)
+		static Works.BufferCell BufferCellOf(Host.BufferCell cell)
 		{
-			return new FarNet.Works.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (FarNet.Works.BufferCellType)cell.BufferCellType);
+			return new Works.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (Works.BufferCellType)cell.BufferCellType);
 		}
 
 		// converter
-		static Host.BufferCell BufferCellOf(FarNet.Works.BufferCell cell)
+		static Host.BufferCell BufferCellOf(Works.BufferCell cell)
 		{
 			return new Host.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (Host.BufferCellType)cell.BufferCellType);
 		}
@@ -158,7 +159,7 @@ namespace PowerShellFar
 
 		public override Host.KeyInfo ReadKey(Host.ReadKeyOptions options)
 		{
-			FarNet.KeyInfo k = Far.Net.Zoo.ReadKey((FarNet.Works.ReadKeyOptions)options);
+			FarNet.KeyInfo k = Far.Net.Zoo.ReadKey((Works.ReadKeyOptions)options);
 			return new Host.KeyInfo(k.VirtualKeyCode, k.Character, (Host.ControlKeyStates)k.ControlKeyState, k.KeyDown);
 		}
 
@@ -169,7 +170,7 @@ namespace PowerShellFar
 
 		public override Host.BufferCell[,] GetBufferContents(Rectangle rectangle)
 		{
-			FarNet.Works.BufferCell[,] r1 = Far.Net.Zoo.GetBufferContents(PlaceOf(rectangle));
+			Works.BufferCell[,] r1 = Far.Net.Zoo.GetBufferContents(PlaceOf(rectangle));
 			Host.BufferCell[,] r2 = new Host.BufferCell[r1.GetLength(0), r1.GetLength(1)];
 			for (int i = 0; i < r1.GetLength(0); ++i)
 				for (int j = 0; j < r1.GetLength(1); ++j)
@@ -179,7 +180,7 @@ namespace PowerShellFar
 
 		public override void SetBufferContents(Coordinates origin, Host.BufferCell[,] contents)
 		{
-			FarNet.Works.BufferCell[,] r = new FarNet.Works.BufferCell[contents.GetLength(0), contents.GetLength(1)];
+			Works.BufferCell[,] r = new Works.BufferCell[contents.GetLength(0), contents.GetLength(1)];
 			for (int i = 0; i < contents.GetLength(0); ++i)
 				for (int j = 0; j < contents.GetLength(1); ++j)
 					r[i, j] = BufferCellOf(contents[i, j]);

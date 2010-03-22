@@ -10,11 +10,11 @@
 
 .EXAMPLE
 	# Remove all empty lines from editor selection:
-	Remove-EmptyString- $Far.Editor.Selection
+	Remove-EmptyString- $Far.Editor.SelectedLines($false)
 
 .EXAMPLE
 	# Remove double empty lines from editor text:
-	Remove-EmptyString- $Far.Editor.Lines 2
+	Remove-EmptyString- $Far.Editor.Lines($false) 2
 #>
 
 param

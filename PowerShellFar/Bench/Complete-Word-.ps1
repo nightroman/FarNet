@@ -35,7 +35,7 @@ function global:Complete-Word-
 	}
 
 	# current word
-	$pos = $Line.Pos
+	$pos = $Line.Caret
 	$text = $Line.Text
 	$word = $text.Substring(0, $pos)
 	if ($word -notmatch '(^|\W)(\w[-\w]*)$') {
@@ -74,7 +74,7 @@ function global:Complete-Word-
 		'Editor' {
 			$Editor = $Far.Editor
 			$Editor.Begin()
-			$Editor.Lines | CollectWords
+			$Editor.Lines($false) | CollectWords
 			$Editor.End()
 			if ($Editor.FileName -like '*.psfconsole') {
 				$Psf.GetHistory(0) | CollectWords
@@ -115,7 +115,7 @@ function global:Complete-Word-
 	}
 
 	# complete by the selected word
-	$Line.Insert($w.Substring($word.Length))
+	$Line.InsertText($w.Substring($word.Length))
 }
 
 Complete-Word-

@@ -57,11 +57,11 @@ namespace PowerShellFar
 
 			// line and last word
 			string text = editLine.Text;
-			string line = text.Substring(0, editLine.Pos);
+			string line = text.Substring(0, editLine.Caret);
 			Match match = Regex.Match(line, @"(?:^|\s)(\S+)$");
 			if (!match.Success)
 				return;
-			
+
 			text = text.Substring(line.Length);
 			string lastWord = match.Groups[1].Value;
 
@@ -124,10 +124,10 @@ namespace PowerShellFar
 			// expand last word
 			line = line.Substring(0, line.Length - lastWord.Length) + word;
 			editLine.Text = line + text;
-			editLine.Pos = line.Length;
+			editLine.Caret = line.Length;
 		}
 
-		public static ILines HotLines
+		public static ILineCollection HotLines
 		{
 			get
 			{
@@ -135,9 +135,10 @@ namespace PowerShellFar
 					return null;
 
 				IEditor editor = Far.Net.Editor;
-				if (editor.Selection.Kind == RegionKind.Stream)
-					return editor.Selection;
-				return editor.Lines;
+				if (editor.SelectionKind == RegionKind.Stream)
+					return editor.SelectedLines(false);
+
+				return editor.Lines(false);
 			}
 		}
 
@@ -150,11 +151,10 @@ namespace PowerShellFar
 				if (Far.Net.Window.Kind == WindowKind.Editor)
 				{
 					IEditor editor = Far.Net.Editor;
-					ISelection selection1 = editor.Selection;
-					if (selection1.Exists)
-						return selection1.GetText();
+					if (editor.SelectionExists)
+						return editor.GetSelectedText();
 
-					line = editor.CurrentLine;
+					line = editor[-1];
 				}
 
 				if (line == null)
@@ -163,9 +163,9 @@ namespace PowerShellFar
 				if (line == null)
 					return string.Empty;
 
-				ILineSelection selection2 = line.Selection;
-				if (selection2.Start >= 0)
-					return selection2.Text;
+				string selectedText = line.SelectedText;
+				if (!string.IsNullOrEmpty(selectedText))
+					return selectedText;
 
 				return line.Text;
 			}
@@ -176,17 +176,16 @@ namespace PowerShellFar
 				if (Far.Net.Window.Kind == WindowKind.Editor)
 				{
 					IEditor editor = Far.Net.Editor;
-					ISelection selection1 = editor.Selection;
-					if (selection1.Kind == RegionKind.Rect)
-						throw new NotSupportedException("Rectangular selection is not supported.");
-
-					if (selection1.Kind == RegionKind.Stream)
+					switch (editor.SelectionKind)
 					{
-						selection1.SetText(value);
-						return;
+						case RegionKind.Rect:
+							throw new NotSupportedException("Rectangular selection is not supported.");
+						case RegionKind.Stream:
+							editor.SetSelectedText(value);
+							return;
 					}
 
-					line = editor.CurrentLine;
+					line = editor[-1];
 				}
 
 				if (line == null)
@@ -195,9 +194,9 @@ namespace PowerShellFar
 				if (line == null)
 					throw new InvalidOperationException("There is no current text to set.");
 
-				ILineSelection selection2 = line.Selection;
+				LineRegion selection2 = line.Selection;
 				if (selection2.Start >= 0)
-					selection2.Text = value;
+					line.SelectedText = value;
 				else
 					line.Text = value;
 			}
@@ -276,11 +275,11 @@ namespace PowerShellFar
 						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
 							// [Tab]
-							if (!editor.Selection.Exists)
+							if (!editor.SelectionExists)
 							{
-								ILine line = editor.CurrentLine;
+								ILine line = editor[-1];
 								string text = line.Text;
-								int pos = line.Pos - 1;
+								int pos = line.Caret - 1;
 								if (pos >= 0 && pos < line.Length && text[pos] != ' ' && text[pos] != '\t')
 								{
 									e.Ignore = true;
@@ -321,7 +320,7 @@ namespace PowerShellFar
 			{
 				using (ExternalOutputWriter writer = new ExternalOutputWriter())
 					A.Psf.InvokePipeline(code, writer, false);
-				
+
 				Console.Title = "Done " + DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
 			}
 			catch
@@ -340,9 +339,9 @@ namespace PowerShellFar
 			if (wt == WindowKind.Editor)
 			{
 				IEditor editor = Far.Net.Editor;
-				code = editor.Selection.GetText();
+				code = editor.GetSelectedText();
 				if (string.IsNullOrEmpty(code))
-					code = editor.Lines[editor.Cursor.Y].Text;
+					code = editor[editor.Caret.Y].Text;
 			}
 			else if (wt == WindowKind.Dialog)
 			{
@@ -353,20 +352,20 @@ namespace PowerShellFar
 					Far.Net.Message("The current control has to be an edit box", Res.InvokeSelectedCode);
 					return;
 				}
-				code = edit.Line.Selection.Text;
+				code = edit.Line.SelectedText;
 				if (string.IsNullOrEmpty(code))
 					code = edit.Text;
 			}
 			else
 			{
 				ILine cl = Far.Net.CommandLine;
-				code = cl.Selection.Text.Trim();
-				if (code.Length == 0)
+				code = cl.SelectedText;
+				if (string.IsNullOrEmpty(code))
 				{
-					code = Far.Net.CommandLine.Text;
+					code = cl.Text;
 					toCleanCmdLine = true;
 				}
-				code = Regex.Replace(code, @"^\s*>:\s*", "");
+				code = Regex.Replace(code.Trim(), @"^\s*>:\s*", "");
 			}
 			if (code.Length == 0)
 				return;
@@ -441,8 +440,8 @@ namespace PowerShellFar
 			{
 				ArrayList lines = new ArrayList();
 				Editor.Begin();
-				foreach (string s in Editor.TrueLines.Strings)
-					lines.Add(s);
+				foreach (ILine line in Editor.Lines(true))
+					lines.Add(line.Text);
 				Editor.End();
 				value = lines;
 			}
@@ -493,8 +492,8 @@ namespace PowerShellFar
 				{
 					ArrayList lines = new ArrayList();
 					Editor.Begin();
-					foreach (string s in Editor.TrueLines.Strings)
-						lines.Add(s);
+					foreach (ILine line in Editor.Lines(true))
+						lines.Add(line.Text);
 					Editor.End();
 					value = lines;
 				}

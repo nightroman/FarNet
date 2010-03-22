@@ -476,7 +476,7 @@ Continue with this current directory?
 		/// Gets a list of active editor lines.
 		/// </summary>
 		/// <remarks>
-		/// Gets <see cref="IEditor.Selection"/> if stream selection exists,
+		/// Gets <see cref="IEditor.SelectedLines"/> if stream selection exists,
 		/// else <see cref="IEditor.Lines"/> if editor exists,
 		/// else null.
 		/// <para>
@@ -484,7 +484,7 @@ Continue with this current directory?
 		/// remove items and modify items (<see cref="ILine"/>).
 		/// </para>
 		/// </remarks>
-		public ILines HotLines
+		public ILineCollection HotLines
 		{
 			get { return EditorKit.HotLines; }
 		}

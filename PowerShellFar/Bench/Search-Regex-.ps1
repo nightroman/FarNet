@@ -333,12 +333,12 @@ $panel.add_KeyPressed({&{
 		$f = $e.Frame
 		$e.Open()
 		$m = $i.Data
-		$f.TopLine = $f.Line - [console]::WindowHeight/3
-		$f.Pos = $m[0] + $m[1]
+		$f.VisibleLine = $f.CaretLine - [console]::WindowHeight/3
+		$f.CaretColumn = $m[0] + $m[1]
 		$e.Frame = $f
-		$c = $e.CurrentLine # can be null if a file is already opened
+		$c = $e[-1] # can be null if a file is already opened
 		if ($m[1] -and $c) {
-			$c.Select($m[0], $f.Pos)
+			$c.SelectText($m[0], $f.CaretColumn)
 			$e.Redraw()
 		}
 		return

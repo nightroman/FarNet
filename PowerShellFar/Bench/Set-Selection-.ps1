@@ -39,15 +39,11 @@ param
 $wt = $Far.Window.Kind
 if ($wt -eq 'Editor') {
 	$editor = $Far.Editor
-	$cursor = $editor.Cursor
-	$select = $editor.Selection
-	$text = $select.GetText()
+	$text = $editor.GetSelectedText()
 }
 else {
 	$line = $Far.Line
-	$cursor = $line.Pos
-	$select = $line.Selection
-	$text = $select.Text
+	$text = $line.SelectedText
 }
 if (!$text) { return }
 
@@ -63,16 +59,10 @@ elseif ($ToUpper) {
 	$text = $text.ToUpper()
 }
 
-# set text and restore cursor for the same length
+# set new text
 if ($wt -eq 'Editor') {
-	$select.SetText($text)
-	if ($length -eq $text.Length) {
-		$editor.Cursor = $cursor
-	}
+	$editor.SetSelectedText($text)
 }
 else {
-	$select.Text = $text
-	if ($length -eq $text.Length) {
-		$line.Pos = $cursor
-	}
+	$line.SelectedText = $text
 }

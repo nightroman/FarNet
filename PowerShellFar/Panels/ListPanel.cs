@@ -64,7 +64,7 @@ namespace PowerShellFar
 				// set command line
 				ILine cl = Far.Net.CommandLine;
 				cl.Text = "=" + s;
-				cl.Select(1, s.Length + 1);
+				cl.SelectText(1, s.Length + 1);
 				return;
 			}
 

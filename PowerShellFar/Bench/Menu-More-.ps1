@@ -31,8 +31,8 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 
 		### Other editor commands
 		New-FarItem '&b. Bookmarks, go to selected' { Select-Bookmark- }
-		New-FarItem '&s. Remove end spaces (all text)' { $editor.Begin(); $editor.Lines | Remove-EndSpace-; $editor.End() }
-		New-FarItem '&d. Remove double empty lines (all text)' { Remove-EmptyString- $editor.Lines 2 }
+		New-FarItem '&s. Remove end spaces (all text)' { $editor.Begin(); $editor.Lines($false) | Remove-EndSpace-; $editor.End() }
+		New-FarItem '&d. Remove double empty lines (all text)' { Remove-EmptyString- $editor.Lines($false) 2 }
 		New-FarItem '&f. Invoke a file from editor' { Invoke-Editor- }
 		New-FarItem '&o. Open the link in the current text' { Edit-TextLink- }
 		New-FarItem '&i. Clip the link to the current line' { $Far.CopyToClipboard((Get-TextLink-)) }
