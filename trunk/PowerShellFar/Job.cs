@@ -717,10 +717,8 @@ Ignore: discard all jobs and output
 						else
 						{
 							if (job.JobUI.Length > 0)
-							{
-								Process notepad = Process.Start("notepad", "\"" + job.FileName + "\"");
-								notepad.WaitForExit();
-							}
+								My.ProcessEx.StartNotepad(job.FileName).WaitForExit();
+							
 							job.Dispose();
 							Jobs.RemoveAt(0);
 						}

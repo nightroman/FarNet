@@ -6,6 +6,7 @@ Copyright (c) 2006 Roman Kuzmin
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Management.Automation;
@@ -349,6 +350,33 @@ namespace My
 		{
 			//! 'is' does not work, because we work just on a type, not an instance
 			return provider.ImplementingType.IsSubclassOf(typeof(NavigationCmdletProvider));
+		}
+	}
+
+	static class ProcessEx
+	{
+		/// <summary>
+		/// Just a wrapper and helper to watch calls.
+		/// </summary>
+		public static Process Start(string fileName, string arguments)
+		{
+			return Process.Start(new ProcessStartInfo()
+			{
+				FileName = fileName,
+				Arguments = arguments
+			});
+		}
+
+		/// <summary>
+		/// Simple call helper. Eventually may help to use a custom editor.
+		/// </summary>
+		public static Process StartNotepad(string path)
+		{
+			return Process.Start(new ProcessStartInfo()
+			{
+				FileName = "Notepad.exe",
+				Arguments = "\"" + path + "\""
+			});
 		}
 	}
 

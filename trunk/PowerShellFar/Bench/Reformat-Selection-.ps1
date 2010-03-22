@@ -34,8 +34,9 @@ function global:Reformat-Selection-
 	[int]$TabSize
 )
 {
-	# get the editor and the prefix pattern by file type
 	$Editor = $Psf.Editor()
+
+	# get the prefix pattern by file type
 	switch -regex ([System.IO.Path]::GetExtension($Editor.FileName)) {
 		'\.(?:txt|hlf)' { $pattern = '$'; break }
 		'\.(?:ps1|psd1|psm1|pl|pls|py|pyw|pys|rb|rbw|ruby|rake|php\d?)$' { $pattern = '#+'; break }
@@ -43,6 +44,17 @@ function global:Reformat-Selection-
 		'\.(?:sql|lua)$' { $pattern = '--+'; break }
 		'\.(?:vb|vbs|bas|vbp|frm|cls)$' { $pattern = "'+"; break }
 		default { $pattern = '(?://+|;+)' }
+	}
+
+	# get the selected lines or the current line
+	[string[]]$ss = $Editor.SelectedLines($false)
+	if (!$ss) {
+		$cl = $Editor[-1]
+		$cl.SelectText(0, $cl.Length)
+		$ss = $cl.Text
+	}
+	if ($ss[0] -notmatch "^(\s*)($pattern)?(\s*)\S") {
+		return
 	}
 
 	# default right margin from the registry
@@ -60,17 +72,6 @@ function global:Reformat-Selection-
 	# default tab size from the editor
 	if ($TabSize -le 0) {
 		$TabSize = $Editor.TabSize
-	}
-
-	# get selected lines or select and get the current
-	$ss = @($Editor.Selection.Strings)
-	if (!$ss) {
-		$cl = $Editor.CurrentLine
-		$cl.Select(0, $cl.Length)
-		$ss = @($cl.Text)
-	}
-	if ($ss[0] -notmatch "^(\s*)($pattern)?(\s*)\S") {
-		return
 	}
 
 	# indents, prefix and text length
@@ -98,9 +99,8 @@ function global:Reformat-Selection-
 	}
 
 	$Editor.BeginUndo()
-	$Editor.Selection.Clear()
-	$ofs = "`r"
-	$Editor.Insert([string]$text)
+	$Editor.DeleteText()
+	$Editor.InsertText(($text -join "`r"))
 	$Editor.EndUndo()
 }
 

@@ -39,9 +39,6 @@ namespace PowerShellFar
 			_mode = value;
 		}
 
-		// RawUI object
-		RawUI _raw = new RawUI();
-
 		internal UniformUI()
 		{
 		}
@@ -85,7 +82,7 @@ namespace PowerShellFar
 
 		public override PSHostRawUserInterface RawUI
 		{
-			get { return _raw; }
+			get { return new RawUI(); }
 		}
 
 		public override string ReadLine()

@@ -88,8 +88,8 @@ namespace PowerShellFar
 							goto default;
 
 						// case: psfconsole
-						editor.GoEnd(true);
-						editor.Insert(code);
+						editor.GoToEnd(true);
+						editor.InsertText(code);
 						if (m.Alternative)
 							return;
 

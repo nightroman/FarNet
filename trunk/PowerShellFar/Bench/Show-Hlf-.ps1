@@ -53,8 +53,8 @@ if ($editor.IsModified) {
 	$editor.Save()
 }
 $editor.Begin()
-for($e = $editor.Cursor.Y; $e -ge 0; --$e) {
-	$text = $editor.Lines[$e].Text
+for($e = $editor.Caret.Y; $e -ge 0; --$e) {
+	$text = $editor[$e].Text
 	if ($text.StartsWith('@')) {
 		$Topic = $text.Substring(1)
 		break

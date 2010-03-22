@@ -61,7 +61,7 @@ $Far.AnyEditor.add_OnMouse({&{
 		### Left click
 		if ($m.Buttons -eq 'Left') {
 			if ($m.CtrlAltShift -eq 0) {
-				${Editor.Data}.LCPos = $this.ConvertScreenToCursor($m.Where)
+				${Editor.Data}.LCPos = $this.ConvertPointScreenToEditor($m.Where)
 				${Editor.Data}.LMFoo = 1
 			}
 			elseif ($m.CtrlAltShift -eq [FarNet.ControlKeyStates]::ShiftPressed) {
@@ -69,10 +69,10 @@ $Far.AnyEditor.add_OnMouse({&{
 				${Editor.Data}.LMFoo = 1
 				$p1 = ${Editor.Data}.LCPos
 				if (!$p1) {
-					$p1 = $this.Cursor
+					$p1 = $this.Caret
 				}
-				$p2 = $this.ConvertScreenToCursor($m.Where)
-				$this.Selection.Select('Stream', $p1.X, $p1.Y, $p2.X, $p2.Y)
+				$p2 = $this.ConvertPointScreenToEditor($m.Where)
+				$this.SelectText('Stream', $p1.X, $p1.Y, $p2.X, $p2.Y)
 				$this.Redraw()
 			}
 		}
@@ -80,12 +80,12 @@ $Far.AnyEditor.add_OnMouse({&{
 		elseif ($m.Buttons -eq 'Right') {
 			if ($m.CtrlAltShift -eq 0) {
 				$e.Ignore = $true
-				$editor = $this
-				$select = $this.Selection
+				$Editor = $this
+				$SelectionExists = $this.SelectionExists
 				New-FarMenu -Show -AutoAssignHotkeys -X $m.Where.X -Y $m.Where.Y -Items @(
-					New-FarItem 'Cut' { $Far.CopyToClipboard($select.GetText()); $select.Clear() } -Disabled:(!$select.Exists)
-					New-FarItem 'Copy' { $Far.CopyToClipboard($select.GetText()) } -Disabled:(!$select.Exists)
-					New-FarItem 'Paste' { if ($select.Exists) { $select.Clear() } $editor.Insert($Far.PasteFromClipboard()) }
+					New-FarItem 'Cut' { $Far.CopyToClipboard($Editor.GetSelectedText()); $Editor.DeleteText() } -Disabled:(!$SelectionExists)
+					New-FarItem 'Copy' { $Far.CopyToClipboard($Editor.GetSelectedText()) } -Disabled:(!$SelectionExists)
+					New-FarItem 'Paste' { if ($SelectionExists) { $Editor.DeleteText() } $Editor.InsertText($Far.PasteFromClipboard()) }
 				)
 			}
 		}
@@ -103,8 +103,8 @@ $Far.AnyEditor.add_OnMouse({&{
 				$p1 = ${Editor.Data}.LCPos
 				if ($p1) {
 					$e.Ignore = $true
-					$p2 = $this.ConvertScreenToCursor($m.Where)
-					$this.Selection.Select('Stream', $p1.X, $p1.Y, $p2.X, $p2.Y)
+					$p2 = $this.ConvertPointScreenToEditor($m.Where)
+					$this.SelectText('Stream', $p1.X, $p1.Y, $p2.X, $p2.Y)
 					$this.Redraw()
 				}
 			}

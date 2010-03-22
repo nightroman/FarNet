@@ -30,11 +30,11 @@ function global:Go-Home-
 )
 {
 	$Editor = $Psf.Editor()
-	$line = $Editor.CurrentLine
+	$line = $Editor[-1]
 	$text = $line.Text
 	if ($text -match '^(\s+)') {
 		$pos = $matches[1].Length
-		if ($pos -eq $line.Pos) {
+		if ($pos -eq $line.Caret) {
 			$pos = 0
 		}
 	}
@@ -43,20 +43,20 @@ function global:Go-Home-
 	}
 
 	if ($Select) {
-		$end = $line.Pos
+		$end = $line.Caret
 		if ($end -gt 0) {
 			if ($line.Selection.Start -eq $pos) {
 				$pos = 0
 			}
-			$line.Select($pos, $end)
+			$line.SelectText($pos, $end)
 		}
 		else {
-			$line.Select($end, $pos)
+			$line.SelectText($end, $pos)
 		}
 	}
 	else {
-		$line.Unselect()
-		$line.Pos = $pos
+		$line.UnselectText()
+		$line.Caret = $pos
 	}
 }
 

@@ -24,14 +24,14 @@ function global:Reindent-Selection-
 	$Editor = $Psf.Editor()
 
 	# $n1, $n2 - first (unchanged) and last lines to process
-	$Selection = $Editor.Selection
-	if ($Selection.Exists) {
-		$n2 = $Selection.Last.No
-		$n1 = $Selection.First.No
+	if ($Editor.SelectionExists) {
+		$Selection = $Editor.SelectedLines($false)
+		$n2 = $Selection.Last.Index
+		$n1 = $Selection.First.Index
 		if ($n1 -gt 0) { --$n1 }
 	}
 	else {
-		$n2 = $Editor.Cursor.Y
+		$n2 = $Editor.Caret.Y
 		$n1 = $n2 - 1
 		if ($n1 -lt 0) { return }
 	}
@@ -39,7 +39,7 @@ function global:Reindent-Selection-
 	# find indent at the first solid line
 	$found = $false
 	for($n = $n1;;) {
-		$text = $Editor.Lines[$n].Text
+		$text = $Editor[$n].Text
 		if ($text -match '^(\s*)\S') {
 			$found = $true
 			$indent = $matches[1]
@@ -58,8 +58,8 @@ function global:Reindent-Selection-
 	:lines
 	for($n = $n1; $n -le $n2; ++$n)
 	{
-		$line = $Editor.Lines[$n]
-		if ($line.Selection.Length -eq 0) { continue }
+		$line = $Editor[$n]
+		if ($line.Selection.Length -le 0) { continue }
 		$text = $line.Text
 
 		if (!$found) {

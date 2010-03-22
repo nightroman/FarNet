@@ -445,7 +445,7 @@ namespace PowerShellFar
 				{
 					// get stamp and start modal
 					DateTime stamp1 = File.GetLastWriteTime(tmp);
-					Process.Start("Notepad", tmp).WaitForExit();
+					My.ProcessEx.StartNotepad(tmp).WaitForExit();
 
 					// exit if it is a read only property
 					if (!pi.IsSettable)

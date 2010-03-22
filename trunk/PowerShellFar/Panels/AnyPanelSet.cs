@@ -141,7 +141,7 @@ namespace PowerShellFar
 			if (filePath != null)
 			{
 				if (alternative)
-					Process.Start("Notepad", filePath);
+					My.ProcessEx.StartNotepad(filePath);
 				else
 					A.CreateEditor(filePath).Open(OpenMode.None);
 				return;
@@ -165,17 +165,17 @@ namespace PowerShellFar
 				editor.DisableHistory = true;
 				editor.FileName = path;
 				TextFrame frame = new TextFrame();
-				frame.Line = lineNumber - 1;
+				frame.CaretLine = lineNumber - 1;
 				editor.Frame = frame;
 				editor.Open();
-				frame.TopLine = frame.Line - Console.WindowHeight / 3;
+				frame.VisibleLine = frame.CaretLine - Console.WindowHeight / 3;
 				editor.Frame = frame;
-				ILine line = editor.CurrentLine; // can be null if a file is already opened
+				ILine line = editor[-1]; // can be null if a file is already opened
 				if (line != null)
 				{
 					int end = matches[0].Index + matches[0].Length;
-					line.Pos = end;
-					line.Select(matches[0].Index, end);
+					line.Caret = end;
+					line.SelectText(matches[0].Index, end);
 					editor.Redraw();
 				}
 			}

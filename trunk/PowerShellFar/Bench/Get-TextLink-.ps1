@@ -16,4 +16,4 @@
 #>
 
 $Editor = $Psf.Editor()
-"{0}({1}): {2}" -f $Editor.FileName, ($Editor.Cursor.Y + 1), $Editor.CurrentLine.Text.Trim()
+"{0}({1}): {2}" -f $Editor.FileName, ($Editor.Caret.Y + 1), $Editor[-1].Text.Trim()
