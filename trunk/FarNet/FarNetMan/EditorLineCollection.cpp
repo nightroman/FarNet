@@ -10,11 +10,9 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-EditorLineCollection::EditorLineCollection(bool trueLines)
-: _trueLines(trueLines)
-{
-	_strings = gcnew EditorStringCollection(this, false);
-}
+EditorLineCollection::EditorLineCollection(bool ignoreEmptyLast)
+: IgnoreEmptyLast(ignoreEmptyLast)
+{}
 
 bool EditorLineCollection::IsFixedSize::get()
 {
@@ -50,7 +48,8 @@ int EditorLineCollection::Count::get()
 {
 	AutoEditorInfo ei;
 
-	if (_trueLines)
+	//! exclude empty last line
+	if (IgnoreEmptyLast)
 	{
 		//! mind recursion, e.g. `Last uses `Count
 		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.TotalLines - 1);
@@ -61,33 +60,28 @@ int EditorLineCollection::Count::get()
 	return ei.TotalLines;
 }
 
-IStrings^ EditorLineCollection::Strings::get()
-{
-    return _strings;
-}
-
 bool EditorLineCollection::Remove(ILine^ item)
 {
     if (item == nullptr) throw gcnew ArgumentNullException("item");
-    RemoveAt(item->No);
+    RemoveAt(item->Index);
     return true;
 }
 
 IEnumerator<ILine^>^ EditorLineCollection::GetEnumerator()
 {
-    return gcnew LineListEnumerator(this, 0, Count);
+    return gcnew Works::LineEnumerator(this, 0, Count);
 }
 
 void EditorLineCollection::Add(ILine^ item)
 {
     if (item == nullptr) throw gcnew ArgumentNullException("item");
-    Add(item->Text);
+    AddText(item->Text);
 }
 
-void EditorLineCollection::Add(String^ item)
+void EditorLineCollection::AddText(String^ item)
 {
 	// -1 avoids Count here
-	Insert(-1, item);
+	InsertText(-1, item);
 }
 
 void EditorLineCollection::Clear()
@@ -98,10 +92,10 @@ void EditorLineCollection::Clear()
 void EditorLineCollection::Insert(int index, ILine^ item)
 {
     if (item == nullptr) throw gcnew ArgumentNullException("item");
-    Insert(index, item->Text);
+    InsertText(index, item->Text);
 }
 
-void EditorLineCollection::Insert(int index, String^ item)
+void EditorLineCollection::InsertText(int index, String^ item)
 {
     if (item == nullptr) throw gcnew ArgumentNullException("item");
 
@@ -157,48 +151,12 @@ void EditorLineCollection::Insert(int index, String^ item)
 
 System::Collections::IEnumerator^ EditorLineCollection::GetEnumerator2()
 {
-    return gcnew LineListEnumerator(this, 0, Count);
+    return gcnew Works::LineEnumerator(this, 0, Count);
 }
 
 void EditorLineCollection::RemoveAt(int index)
 {
-	if (index < 0) throw gcnew ArgumentException("'index' must not be negative.");
-	int count = Count;
-	if (index >= count) throw gcnew ArgumentOutOfRangeException("index");
-
-	// keep position
-	AutoEditorInfo ei;
-
-	// last?
-	if (index == count - 1)
-	{
-		// last
-		ILine^ last = this[index];
-
-		// remove if not empty
-		if (last->Text->Length > 0)
-		{
-			Edit_GoTo(0, index);
-			EditorControl_ECTL_DELETESTRING();
-		}
-
-		// go to the end of previous
-		if (--index < 0)
-			return;
-		last = this[index];
-		Edit_GoTo(last->Text->Length, index);
-
-		// and delete EOL
-		EditorControl_ECTL_DELETECHAR();
-	}
-	else
-	{
-		Edit_GoTo(0, index);
-		EditorControl_ECTL_DELETESTRING();
-	}
-
-	// restore
-	Edit_RestoreEditorInfo(ei);
+	Edit_RemoveAt(index);
 }
 
 }

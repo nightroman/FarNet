@@ -198,8 +198,8 @@ ViewFrame Viewer::Frame::get()
 	ViewFrame r;
 	if (vi.ViewerID >= 0 && vi.ViewerID == _id)
 	{
-		r.Pos = vi.FilePos;
-		r.LeftPos = vi.LeftPos;
+		r.Offset = vi.FilePos;
+		r.Column = vi.LeftPos;
 	}
 	return r;
 }
@@ -209,8 +209,8 @@ void Viewer::Frame::set(ViewFrame value)
 	AssertCurrentViewer();
 	ViewerSetPosition vsp;
 	vsp.Flags = VSP_NORETNEWPOS;
-	vsp.LeftPos = value.LeftPos;
-	vsp.StartPos = value.Pos;
+	vsp.LeftPos = value.Column;
+	vsp.StartPos = value.Offset;
 	Info.ViewerControl(VCTL_SETPOSITION, &vsp);
 }
 

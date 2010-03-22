@@ -6,7 +6,6 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "DialogControls.h"
 #include "Dialog.h"
-#include "Line.h"
 #include "ListItemCollection.h"
 
 #define SET_FLAG(Var, Flag, Value) { if (Value) Var |= Flag; else Var &= ~Flag; }
@@ -33,83 +32,9 @@ String^ GetText(HANDLE hDlg, int id, int start, int len)
 
 #pragma endregion
 
-#pragma region FarEditLineSelection
-
-ref class FarEditLineSelection : public ILineSelection
-{
-public:
-	virtual property String^ Text
-	{
-		String^ get()
-		{
-			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
-			if (es.BlockType == BTYPE_NONE)
-				return String::Empty;
-
-			return GetText(_hDlg, _id, es.BlockStartPos, es.BlockWidth);
-		}
-		void set(String^ value)
-		{
-			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
-			if (es.BlockType == BTYPE_NONE)
-				return;
-
-			String^ text = GetText(_hDlg, _id, -1, 0);
-			text = text->Substring(0, es.BlockStartPos) + value + text->Substring(es.BlockStartPos + es.BlockWidth);
-			PIN_NE(pin, text);
-			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
-
-			es.BlockWidth = value->Length;
-			Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
-		}
-	}
-	virtual property int End
-	{
-		int get()
-		{
-			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
-			return es.BlockType == BTYPE_NONE ? -1 : es.BlockStartPos + es.BlockWidth;
-		}
-	}
-	virtual property int Length
-	{
-		int get()
-		{
-			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
-			return es.BlockType == BTYPE_NONE ? 0 : es.BlockWidth;
-		}
-	}
-	virtual property int Start
-	{
-		int get()
-		{
-			EditorSelect es;
-			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
-			return es.BlockType == BTYPE_NONE ? -1 : es.BlockStartPos;
-		}
-	}
-	virtual String^ ToString() override
-	{
-		return Text;
-	}
-internal:
-	FarEditLineSelection(HANDLE hDlg, int id) : _hDlg(hDlg), _id(id)
-	{
-	}
-private:
-	HANDLE _hDlg;
-	int _id;
-};
-
-#pragma endregion
-
 #pragma region DialogLine
 
-ref class DialogLine sealed : Line
+ref class DialogLine sealed : ILine
 {
 public:
 	virtual property ILine^ FullLine
@@ -119,13 +44,6 @@ public:
 			return this;
 		}
 	}
-	virtual property ILineSelection^ Selection
-	{
-		ILineSelection^ get() override
-		{
-			return gcnew FarEditLineSelection(_hDlg, _id);
-		}
-	}
 	virtual property int Length
 	{
 		int get() override
@@ -133,7 +51,7 @@ public:
 			return (int)Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
 		}
 	}
-	virtual property int Pos
+	virtual property int Caret
 	{
 		int get() override
 		{
@@ -164,6 +82,63 @@ public:
 			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
 		}
 	}
+	virtual property LineRegion Selection
+	{
+		LineRegion get() override
+		{
+			EditorSelect es;
+			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
+
+			LineRegion result;
+			if (es.BlockType == BTYPE_NONE)
+			{
+				result.Start = -1;
+				result.End = -2;
+			}
+			else
+			{
+				result.Start = es.BlockStartPos;
+				result.End = es.BlockStartPos + es.BlockWidth;
+			}
+
+			return result;
+		}
+	}
+	virtual property String^ SelectedText
+	{
+		String^ get() override
+		{
+			EditorSelect es;
+			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
+			if (es.BlockType == BTYPE_NONE)
+				return nullptr;
+
+			return GetText(_hDlg, _id, es.BlockStartPos, es.BlockWidth);
+		}
+		void set(String^ value) override
+		{
+			EditorSelect es;
+			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
+			if (es.BlockType == BTYPE_NONE)
+				throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
+
+			// store cursor
+			int pos = Caret;
+
+			// make and set new text
+			String^ text = GetText(_hDlg, _id, -1, 0);
+			text = text->Substring(0, es.BlockStartPos) + value + text->Substring(es.BlockStartPos + es.BlockWidth);
+			PIN_NE(pin, text);
+			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
+
+			// set selection
+			es.BlockWidth = value->Length;
+			Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
+
+			// restore cursor
+			Caret = pos <= text->Length ? pos : text->Length;
+		}
+	}
 	virtual property FarNet::WindowKind WindowKind
 	{
 		FarNet::WindowKind get() override
@@ -171,19 +146,19 @@ public:
 			return FarNet::WindowKind::Dialog;
 		}
 	}
-	virtual void Insert(String^ text) override
+	virtual void InsertText(String^ text) override
 	{
 		if (!text) throw gcnew ArgumentNullException("text");
 
 		// insert string before cursor
-		int pos = Pos;
+		int pos = Caret;
 		String^ str = Text;
 
 		// set new text and move cursor to the end of inserted part
 		Text = str->Substring(0, pos) + text + str->Substring(pos);
-		Pos = pos + text->Length;
+		Caret = pos + text->Length;
 	}
-	virtual void Select(int start, int end) override
+	virtual void SelectText(int start, int end) override
 	{
 		EditorSelect es;
 		es.BlockType = BTYPE_STREAM;
@@ -193,7 +168,7 @@ public:
 		es.BlockHeight = 1;
 		Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
 	}
-	virtual void Unselect() override
+	virtual void UnselectText() override
 	{
 		EditorSelect es;
 		es.BlockType = BTYPE_NONE;

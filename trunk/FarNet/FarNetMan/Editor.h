@@ -39,23 +39,23 @@ public:
 	virtual property bool IsOpened { bool get(); }
 	virtual property bool IsSaved { bool get(); }
 	virtual property bool Overtype { bool get(); void set(bool value); }
+	virtual property bool SelectionExists { bool get(); }
 	virtual property bool ShowWhiteSpace { bool get(); void set(bool value); }
 	virtual property bool WriteByteOrderMark { bool get(); void set(bool value); }
 	virtual property DeleteSource DeleteSource { FarNet::DeleteSource get(); void set(FarNet::DeleteSource value); }
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get(); void set(ExpandTabsMode value); }
-	virtual property ILine^ CurrentLine { ILine^ get(); }
-	virtual property ILines^ Lines { ILines^ get(); }
-	virtual property ILines^ TrueLines { ILines^ get(); }
+	virtual property ILine^ default[int] { ILine^ get(int index); }
 	virtual property int CodePage { int get(); void set(int value); }
+	virtual property int Count { int get(); }
 	virtual property int Id { int get(); }
 	virtual property int TabSize { int get(); void set(int value); }
-	virtual property ISelection^ Selection { ISelection^ get(); }
-	virtual property ISelection^ TrueSelection { ISelection^ get(); }
 	virtual property Object^ Data;
 	virtual property Object^ Host { Object^ get(); void set(Object^ value); }
+	virtual property Place SelectionPlace { Place get(); }
 	virtual property Place Window { Place get(); void set(Place value); }
-	virtual property Point Cursor { Point get(); void set(Point value); }
+	virtual property Point Caret { Point get(); void set(Point value); }
 	virtual property Point WindowSize { Point get(); }
+	virtual property RegionKind SelectionKind { RegionKind get(); }
 	virtual property String^ FileName { String^ get(); void set(String^ value); }
 	virtual property String^ Title { String^ get(); void set(String^ value); }
 	virtual property String^ WordDiv { String^ get() override; void set(String^ value) override; }
@@ -63,10 +63,14 @@ public:
 	virtual property TextFrame Frame { TextFrame get(); void set(TextFrame value); }
 public:
 	virtual ICollection<TextFrame>^ Bookmarks();
-	virtual int ConvertPosToTab(int line, int pos);
-	virtual int ConvertTabToPos(int line, int tab);
-	virtual Point ConvertScreenToCursor(Point screen);
-	virtual String^ GetText() { return GetText(CV::CRLF); }
+	virtual ILineCollection^ Lines(bool ignoreEmptyLast);
+	virtual ILineCollection^ SelectedLines(bool ignoreEmptyLast);
+	virtual int ConvertColumnEditorToScreen(int line, int column);
+	virtual int ConvertColumnScreenToEditor(int line, int column);
+	virtual Point ConvertPointScreenToEditor(Point point);
+	virtual String^ GetSelectedText();
+	virtual String^ GetSelectedText(String^ separator);
+	virtual String^ GetText();
 	virtual String^ GetText(String^ separator);
 	virtual TextWriter^ CreateWriter();
 	virtual void Begin();
@@ -75,25 +79,31 @@ public:
 	virtual void Close();
 	virtual void DeleteChar();
 	virtual void DeleteLine();
+	virtual void DeleteText();
 	virtual void End();
 	virtual void EndAsync();
 	virtual void EndUndo();
-	virtual void GoEnd(bool addLine);
-	virtual void GoTo(int pos, int line);
+	virtual void GoTo(int column, int line);
+	virtual void GoToColumn(int pos);
+	virtual void GoToEnd(bool addLine);
 	virtual void GoToLine(int line);
-	virtual void GoToPos(int pos);
-	virtual void Insert(String^ text);
 	virtual void InsertChar(Char text);
 	virtual void InsertLine();
 	virtual void InsertLine(bool indent);
+	virtual void InsertText(String^ text);
 	virtual void Open();
 	virtual void Open(OpenMode mode);
 	virtual void Redo();
 	virtual void Redraw();
+	virtual void RemoveAt(int index);
 	virtual void Save();
 	virtual void Save(String^ fileName);
+	virtual void SelectAllText();
+	virtual void SelectText(RegionKind kind, int column1, int line1, int column2, int line2);
+	virtual void SetSelectedText(String^ text);
 	virtual void SetText(String^ text);
 	virtual void Undo();
+	virtual void UnselectText();
 internal:
 	Editor();
 	void Sync();

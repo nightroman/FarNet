@@ -1,5 +1,46 @@
 http://code.google.com/p/farnet/
 
+= 4.3.12 =
+
+REFACTORING OF EDITOR AND EDITOR LINE API
+(breaking for modules working with editors)
+
+Renamed ILines to ILineCollection to follow standard .NET naming guidelines.
+
+Removed the interface IStrings and properties Strings from line collections.
+Practice shows that this feature is not really useful. Besides, this kind of
+wrapper of ILineCollection can be implemented as an external helper if this is
+really needed.
+
+Removed the interface ISelection and the property IEditor.Selection; all its
+members moved to IEditor itself. Thus, we work on selection directly from
+IEditor. Selection as a line list is still available: IEditor.SelectedLines.
+
+Renamed all methods Insert() and Add() dealing with text to InsertText() and
+AddText(). New names describe themselves much better and differ from other
+Add(), Insert() methods, e.g. in ILineCollection.
+
+Terminology: 'Caret' instead of 'Cursor'. Renamed: Cursor -> Caret (IEditor),
+Pos -> Caret (ILine), ConvertScreenToCursor -> ConvertScreenToEditor (IEditor).
+
+Renamed some properties of ViewFrame, TextFrame and IEditor. Basically the word
+'Pos' was replaced with more adequite 'Column'.
+
+Simplified and improved work on selected text of ILine instances (lines of
+editor, dialog, command line):
+*) Added new property SelectedText (string, get\set)
+*) Changed the property Selection type to LineRegion
+*) Removed not used now interface ILineSelection
+*) "Negative end position" convension is not used any more
+*) On setting of selected text the current cursor position in a line is
+preserved, if it is possible, or set to the line end otherwise.
+
+During the changes and testing of them found and fixed a few old minor bugs.
+
+OTHER CHANGES
+
+Included two more internal .NET assemblies into the FarNet package.
+
 = 4.3.11 =
 
 Changes are mostly internal, important for the future. They are not breaking if

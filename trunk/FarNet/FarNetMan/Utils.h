@@ -138,7 +138,7 @@ void EditorControl_ECTL_DELETEBLOCK();
 void EditorControl_ECTL_DELETECHAR();
 void EditorControl_ECTL_DELETESTRING();
 void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm);
-void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int no);
+void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index);
 void EditorControl_ECTL_INSERTSTRING(bool indent);
 void EditorControl_ECTL_INSERTTEXT(Char text, int overtype);
 void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype);
@@ -151,6 +151,7 @@ void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);
 // Advanced wrappers
 void Edit_Clear();
 void Edit_GoTo(int pos, int line);
+void Edit_RemoveAt(int index);
 void Edit_RestoreEditorInfo(const EditorInfo& ei);
 void Edit_SetOvertype(bool value);
 
@@ -206,7 +207,10 @@ internal:
 		ErrorNoHotKey = "Set any FarNet hotkey [F4] in the Far plugin menu [F11] and restart Far.",
 		MenuPrefix = ".NET",
 		InvalidColumnKind = "Invalid column kind: ",
-		Column0IsUsedTwice = "Column '{0}' is used twice.";
+		Column0IsUsedTwice = "Column '{0}' is used twice.",
+		CannotSetSelectedText = "Cannot set selected text because there is no selection.",
+		EditorNoSelection = "There is no selection.",
+		EditorBadSelection = "This kind of selection is not supported.";
 };
 
 ref class Configuration

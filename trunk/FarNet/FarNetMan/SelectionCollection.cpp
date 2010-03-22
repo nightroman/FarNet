@@ -10,29 +10,20 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-SelectionCollection::SelectionCollection(IEditor^ editor, bool trueLines)
+SelectionCollection::SelectionCollection(IEditor^ editor, bool ignoreEmptyLast)
 : _editor(editor)
-, _trueLines(trueLines)
-{
-	_strings = gcnew EditorStringCollection(this, true);
-}
+, IgnoreEmptyLast(ignoreEmptyLast)
+{}
 
 IEnumerator<ILine^>^ SelectionCollection::GetEnumerator()
 {
 	Place ss = SelectionPlace();
-	if (ss.Top < 0)
-		return gcnew LineListEnumerator(this, 0, 0);
-	return gcnew LineListEnumerator(this, 0, ss.Height);
+	return gcnew Works::LineEnumerator(this, 0, ss.Top < 0 ? 0 : ss.Height);
 }
 
 Collections::IEnumerator^ SelectionCollection::GetEnumeratorObject()
 {
 	return GetEnumerator();
-}
-
-bool SelectionCollection::Exists::get()
-{
-	return Kind != RegionKind::None;
 }
 
 bool SelectionCollection::IsFixedSize::get()
@@ -60,16 +51,6 @@ ILine^ SelectionCollection::Last::get()
 	return Item[Count - 1];
 }
 
-Place SelectionCollection::Shape::get()
-{
-	return SelectionPlace();
-}
-
-IStrings^ SelectionCollection::Strings::get()
-{
-	return _strings;
-}
-
 ILine^ SelectionCollection::Item::get(int index)
 {
 	AutoEditorInfo ei;
@@ -85,17 +66,10 @@ Object^ SelectionCollection::SyncRoot::get()
 	return this;
 }
 
-RegionKind SelectionCollection::Kind::get()
-{
-	AutoEditorInfo ei;
-
-	return (RegionKind)ei.BlockType;
-}
-
-void SelectionCollection::Add(String^ item)
+void SelectionCollection::AddText(String^ item)
 {
 	// -1 avoids Count here
-	Insert(-1, item);
+	InsertText(-1, item);
 }
 
 void SelectionCollection::Clear()
@@ -103,16 +77,16 @@ void SelectionCollection::Clear()
 	EditorControl_ECTL_DELETEBLOCK();
 }
 
-void SelectionCollection::Insert(int index, String^ item)
+void SelectionCollection::InsertText(int index, String^ item)
 {
 	AutoEditorInfo ei;
 
 	if (ei.BlockType == BTYPE_NONE)
-		throw gcnew InvalidOperationException("No selection shape");
+		throw gcnew InvalidOperationException(Res::EditorNoSelection);
 
 	EditorGetString egss; EditorControl_ECTL_GETSTRING(egss, ei.BlockStartLine);
 	if (ei.BlockType == BTYPE_COLUMN && egss.SelEnd < 0)
-		throw gcnew InvalidOperationException("Cannot process this selection shape");
+		throw gcnew InvalidOperationException(Res::EditorBadSelection);
 
 	// case: first
 	if (index == 0)
@@ -134,7 +108,7 @@ void SelectionCollection::Insert(int index, String^ item)
 	// case: inside
 	if (egsp.SelEnd < 0)
 	{
-		_editor->Lines->Insert(ei.BlockStartLine + index, item);
+		_editor->Lines(false)->InsertText(ei.BlockStartLine + index, item);
 		return;
 	}
 
@@ -157,7 +131,7 @@ void SelectionCollection::Insert(int index, String^ item)
 	AutoEditorInfo ei2;
 
 	// select inserted
-	Select(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine);
+	_editor->SelectText(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine);
 }
 
 void SelectionCollection::RemoveAt(int index)
@@ -165,11 +139,11 @@ void SelectionCollection::RemoveAt(int index)
 	AutoEditorInfo ei;
 
 	if (ei.BlockType == BTYPE_NONE)
-		throw gcnew InvalidOperationException("No selection shape");
+		throw gcnew InvalidOperationException(Res::EditorNoSelection);
 
 	EditorGetString egss; EditorControl_ECTL_GETSTRING(egss, ei.BlockStartLine);
 	if (ei.BlockType == BTYPE_COLUMN && egss.SelEnd < 0)
-		throw gcnew InvalidOperationException("Cannot process this selection shape");
+		throw gcnew InvalidOperationException(Res::EditorBadSelection);
 
 	if (index < 0 || egss.SelStart < 0)
 		throw gcnew ArgumentOutOfRangeException("index");
@@ -189,13 +163,13 @@ void SelectionCollection::RemoveAt(int index)
 		int left = egss.SelStart;
 
 		// change selection
-		Place ss = Shape;
+		Place ss = ::SelectionPlace();
 		++ss.Top;
 		ss.Left = 0;
-		Select((RegionKind)ei.BlockType, ss.Left, ss.Top, ss.Right, ss.Bottom);
+		_editor->SelectText((RegionKind)ei.BlockType, ss.Left, ss.Top, ss.Right, ss.Bottom);
 
 		// remove selected part of line
-		ILine^ line = _editor->Lines[top];
+		ILine^ line = _editor[top];
 		line->Text = line->Text->Substring(0, left);
 		return;
 	}
@@ -210,76 +184,26 @@ void SelectionCollection::RemoveAt(int index)
 		// remove not empty part of line
 		if (!ell)
 		{
-			ILine^ line = _editor->Lines[bottom];
+			ILine^ line = _editor[bottom];
 			line->Text = line->Text->Substring(egsi.SelEnd);
 		}
 
 		// select to the end of previous line
 		--bottom;
-		ILine^ line = _editor->Lines[bottom];
+		ILine^ line = _editor[bottom];
 		String^ text = line->Text;
 		if (text->Length == 0 && ell)
 		{
 			// prior line is empty, remove it
-			_editor->Lines->RemoveAt(bottom);
+			Edit_RemoveAt(bottom);
 			return;
 		}
-		Select(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, text->Length - 1, bottom);
+		_editor->SelectText(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, text->Length - 1, bottom);
 		return;
 	}
 
 	// remove inside
-	_editor->Lines->RemoveAt(bottom);
-}
-
-void SelectionCollection::Select(RegionKind kind, int pos1, int line1, int pos2, int line2)
-{
-	// type
-	EditorSelect es;
-	switch(kind)
-	{
-	case RegionKind::None:
-		es.BlockType = BTYPE_NONE;
-		EditorControl_ECTL_SELECT(es);
-		return;
-	case RegionKind::Stream:
-		es.BlockType = BTYPE_STREAM;
-		break;
-	case RegionKind::Rect:
-		es.BlockType = BTYPE_COLUMN;
-		break;
-	default:
-		throw gcnew ArgumentException("Unknown selection type");
-	}
-
-	// swap
-	if (line1 > line2 || line1 == line2 && pos1 > pos2)
-	{
-		int t;
-		t = pos1; pos1 = pos2; pos2 = t;
-		t = line1; line1 = line2; line2 = t;
-	}
-
-	// go
-	es.BlockStartLine = line1;
-	es.BlockStartPos = pos1;
-	es.BlockHeight = line2 - line1 + 1;
-	es.BlockWidth = pos2 - pos1 + 1;
-	EditorControl_ECTL_SELECT(es);
-}
-
-void SelectionCollection::SelectAll()
-{
-	AutoEditorInfo ei;
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.TotalLines - 1);
-	Select(RegionKind::Stream, 0, 0, egs.StringLength - 1, ei.TotalLines - 1);
-}
-
-void SelectionCollection::Unselect()
-{
-	EditorSelect es;
-	es.BlockType = BTYPE_NONE;
-	EditorControl_ECTL_SELECT(es);
+	Edit_RemoveAt(bottom);
 }
 
 int SelectionCollection::Count::get()
@@ -296,72 +220,19 @@ int SelectionCollection::Count::get()
 		EditorControl_ECTL_GETSTRING(egs, egs.StringNumber);
 		if (egs.SelStart < 0)
 			break;
+
+		//! empty last line
 		if (egs.SelEnd == 0)
 		{
-			if (!_trueLines)
+			if (!IgnoreEmptyLast)
 				++r;
 			break;
 		}
+
+		// count
 		++r;
 	}
 	return r;
 }
 
-String^ SelectionCollection::GetText(String^ separator)
-{
-	AutoEditorInfo ei;
-
-	if (ei.BlockType == BTYPE_NONE)
-		return String::Empty;
-
-	StringBuilder sb;
-
-	if (separator == nullptr)
-		separator = CV::CRLF;
-
-	EditorGetString egs; egs.StringNumber = -1;
-    SEditorSetPosition esp;
-	for(esp.CurLine = ei.BlockStartLine; esp.CurLine < ei.TotalLines; ++esp.CurLine)
-    {
-        EditorControl_ECTL_SETPOSITION(esp);
-        Info.EditorControl(ECTL_GETSTRING, &egs);
-		if (egs.SelStart < 0)
-			break;
-		if (esp.CurLine > ei.BlockStartLine)
-			sb.Append(separator);
-		int len = (egs.SelEnd < 0 ? egs.StringLength : egs.SelEnd) - egs.SelStart;
-		if (len > 0)
-			sb.Append(gcnew String(egs.StringText + egs.SelStart, 0, len)); //??
-    }
-	Edit_RestoreEditorInfo(ei);
-
-	return sb.ToString();
-}
-
-void SelectionCollection::SetText(String^ text)
-{
-	AutoEditorInfo ei;
-
-	if (ei.BlockType == BTYPE_NONE)
-		throw gcnew InvalidOperationException("No selection shape");
-
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.BlockStartLine);
-	if (ei.BlockType == BTYPE_COLUMN && egs.SelEnd < 0)
-		throw gcnew InvalidOperationException("Cannot process this selection shape.");
-
-	// delete selection
-	int top = ei.BlockStartLine;
-	int left = egs.SelStart;
-	Clear();
-
-	// move cursor to the selection start
-	_editor->GoTo(left, top);
-
-	// insert
-	EditorControl_ECTL_INSERTTEXT(text, ei.Overtype);
-
-	// select inserted
-	ei.Update();
-	Select(RegionKind::Stream, left, top, ei.CurPos - 1, ei.CurLine);
-}
 }

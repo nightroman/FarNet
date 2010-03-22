@@ -322,7 +322,7 @@ ILine^ Far1::Line::get()
 	case FarNet::WindowKind::Editor:
 		{
 			IEditor^ editor = Editor;
-			return editor->CurrentLine;
+			return editor[-1];
 		}
 	case FarNet::WindowKind::Panels:
 		{
@@ -464,8 +464,13 @@ void Far1::ShowError(String^ title, Exception^ error)
 	String^ info = Log::TraceException(error);
 
 	// case: not loaded
+	//! wish: non-stop loading
+	//! fact: no UI on unloading
 	if (Works::Host::State != Works::HostState::Loaded)
 	{
+		//! trace the full string, so that a user can report this
+		Log::TraceError(error->ToString());
+
 		// info to show
 		if (!info)
 			info = Log::FormatException(error);

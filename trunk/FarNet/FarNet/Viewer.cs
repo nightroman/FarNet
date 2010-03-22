@@ -130,11 +130,11 @@ namespace FarNet
 		/// <summary>
 		/// Sets the current view frame.
 		/// </summary>
-		/// <param name="pos">New file position (depends on options).</param>
-		/// <param name="left">New left position.</param>
+		/// <param name="offset">New file position (depends on options).</param>
+		/// <param name="column">New left position.</param>
 		/// <param name="options">Options.</param>
 		/// <returns>New actual position.</returns>
-		long SetFrame(long pos, int left, ViewFrameOptions options);
+		long SetFrame(long offset, int column, ViewFrameOptions options);
 		/// <summary>
 		/// Closes the current viewer window.
 		/// </summary>
@@ -176,11 +176,11 @@ namespace FarNet
 		/// </summary>
 		NoRedraw = 1,
 		/// <summary>
-		/// Position is defined in percents.
+		/// Offset is defined in percents.
 		/// </summary>
 		Percent = 2,
 		/// <summary>
-		/// Position is relative to the current (and can be negative).
+		/// Offset is relative to the current (and can be negative).
 		/// </summary>
 		Relative = 4
 	}
@@ -244,27 +244,26 @@ namespace FarNet
 	public struct ViewFrame
 	{
 		///
-		public ViewFrame(long pos, long left)
+		public ViewFrame(long offset, long column)
+			: this()
 		{
-			_pos = pos;
-			_leftPos = left;
+			Offset = offset;
+			Column = column;
 		}
 		/// <summary>
-		/// Position in the file.
+		/// Offset in the file.
 		/// </summary>
-		public long Pos { get { return _pos; } set { _pos = value; } }
-		long _pos;
+		public long Offset { get; set; }
 		/// <summary>
-		/// Leftmost visible position of the text on the screen.
+		/// Leftmost visible column index.
 		/// </summary>
-		public long LeftPos { get { return _leftPos; } set { _leftPos = value; } }
-		long _leftPos;
+		public long Column { get; set; }
 		///
 		public static bool operator ==(ViewFrame left, ViewFrame right)
 		{
 			return
-				left._pos == right._pos &&
-				left._leftPos == right._leftPos;
+				left.Offset == right.Offset &&
+				left.Column == right.Column;
 		}
 		///
 		public static bool operator !=(ViewFrame left, ViewFrame right)
@@ -272,22 +271,19 @@ namespace FarNet
 			return !(left == right);
 		}
 		///
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (obj == null || GetType() != obj.GetType())
-				return false;
-			ViewFrame that = (ViewFrame)obj;
-			return this == that;
+			return obj != null && obj.GetType() == typeof(ViewFrame) && this == (ViewFrame)obj;
 		}
 		///
 		public override string ToString()
 		{
-			return "(" + _pos + ", " + _leftPos + ")";
+			return "(" + Offset + ", " + Column + ")";
 		}
 		///
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
+			return (int)Offset | ((int)Column << 16);
 		}
 	}
 }

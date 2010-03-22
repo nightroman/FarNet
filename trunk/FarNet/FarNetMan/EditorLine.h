@@ -4,39 +4,32 @@ Copyright (c) 2005 FarNet Team
 */
 
 #pragma once
-#include "Line.h"
 
 namespace FarNet
 {;
-ref class EditorLineSelection;
-
-ref class EditorLine sealed : Line
+ref class EditorLine sealed : ILine
 {
 public:
 	virtual property FarNet::WindowKind WindowKind { FarNet::WindowKind get() override; }
 	virtual property ILine^ FullLine { ILine^ get() override; }
-	virtual property ILineSelection^ Selection { ILineSelection^ get() override; }
+	virtual property int Caret { int get() override; void set(int value) override; }
+	virtual property int Index { int get() override; }
 	virtual property int Length { int get() override; }
-	virtual property int No { int get() override; }
-	virtual property int Pos { int get() override; void set(int value) override; }
+	virtual property LineRegion Selection { LineRegion get() override; }
 	virtual property String^ EndOfLine { String^ get() override; void set(String^ value) override; }
 	virtual property String^ Text { String^ get() override; void set(String^ value) override; }
+	virtual property String^ SelectedText { String^ get() override; void set(String^ value) override; }
 public:
-	virtual void Insert(String^ text) override;
-	virtual void Select(int start, int end) override;
-	virtual void Unselect() override;
-public:
-	virtual String^ ToString() override;
+	virtual void InsertText(String^ text) override;
+	virtual void SelectText(int start, int end) override;
+	virtual void UnselectText() override;
 internal:
-	EditorLine(int no, bool selected);
+	EditorLine(int index);
+	EditorLine(int index, bool selected);
 private:
 	EditorSetString GetEss();
 private:
-	// Line number
-	int _no;
-	// Line is from selection
-	bool _selected;
-	// Selection; created on request
-	EditorLineSelection^ _selection;
+	const int _Index;
+	bool _Selected;
 };
 }
