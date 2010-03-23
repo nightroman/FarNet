@@ -13,11 +13,6 @@ FarNet::WindowKind CommandLine::WindowKind::get()
 	return FarNet::WindowKind::Panels;
 }
 
-ILine^ CommandLine::FullLine::get()
-{
-	return this;
-}
-
 int CommandLine::Length::get()
 {
 	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);

@@ -146,6 +146,10 @@ namespace FarNet
 		/// </summary>
 		bool NumericSort { get; set; }
 		/// <summary>
+		/// Gets or sets directories first sort flag.
+		/// </summary>
+		bool DirectoriesFirst { get; set; }
+		/// <summary>
 		/// Redraws the panel. Normally you should call it after changes to make them visible.
 		/// </summary>
 		void Redraw();
@@ -408,9 +412,21 @@ namespace FarNet
 		/// </summary>
 		CompressedSize,
 		/// <summary>
-		/// Sorted by hard link number.
+		/// Sorted by hard link count.
 		/// </summary>
-		LinksNumber,
+		LinkCount,
+		/// <summary>
+		/// Sorted by NTFS stream count.
+		/// </summary>
+		StreamCount,
+		/// <summary>
+		/// Sorted by NTFS stream data size.
+		/// </summary>
+		StreamSize,
+		/// <summary>
+		/// Sorted by full name.
+		/// </summary>
+		FullName,
 	}
 
 	//! DictionaryEntry is not good for this, because it is a value type.

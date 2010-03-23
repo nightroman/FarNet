@@ -34,9 +34,8 @@ public:
 	virtual void Insert(int, ILine^) { throw gcnew NotSupportedException("Use InsertText()."); }
 	virtual void RemoveAt(int index);
 internal:
-	SelectionCollection(IEditor^ editor, bool ignoreEmptyLast);
+	SelectionCollection(IEditor^ editor);
 private:
-	IEditor^ const _editor;
-	const bool IgnoreEmptyLast;
+	IEditor^ const _Editor;
 };
 }

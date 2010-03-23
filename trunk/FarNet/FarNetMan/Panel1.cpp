@@ -319,6 +319,19 @@ void Panel1::NumericSort::set(bool value)
 	Info.Control(_handle, FCTL_SETNUMERICSORT, (int)value, NULL);
 }
 
+bool Panel1::DirectoriesFirst::get()
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	return (pi.Flags & PFLAGS_DIRECTORIESFIRST) != 0;
+}
+
+void Panel1::DirectoriesFirst::set(bool value)
+{
+	Info.Control(_handle, FCTL_SETDIRECTORIESFIRST, (int)value, NULL);
+}
+
 bool Panel1::RealNames::get()
 {
 	PanelInfo pi;

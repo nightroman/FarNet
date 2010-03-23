@@ -11,7 +11,6 @@ ref class CommandLine sealed : ILine
 {
 public:
 	virtual property FarNet::WindowKind WindowKind { FarNet::WindowKind get() override; }
-	virtual property ILine^ FullLine { ILine^ get() override; }
 	virtual property int Caret { int get() override; void set(int value) override; }
 	virtual property int Length { int get() override; }
 	virtual property LineRegion Selection { LineRegion get() override; }

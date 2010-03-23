@@ -5,6 +5,7 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -127,7 +128,7 @@ namespace PowerShellFar
 			editLine.Caret = line.Length;
 		}
 
-		public static ILineCollection HotLines
+		public static IList<ILine> HotLines
 		{
 			get
 			{
@@ -136,9 +137,9 @@ namespace PowerShellFar
 
 				IEditor editor = Far.Net.Editor;
 				if (editor.SelectionKind == RegionKind.Stream)
-					return editor.SelectedLines(false);
+					return editor.SelectedLines;
 
-				return editor.Lines(false);
+				return editor.Lines;
 			}
 		}
 
@@ -439,10 +440,14 @@ namespace PowerShellFar
 			if (type == "System.Collections.ArrayList" || type.EndsWith("]", StringComparison.Ordinal))
 			{
 				ArrayList lines = new ArrayList();
+
 				Editor.Begin();
-				foreach (ILine line in Editor.Lines(true))
+				foreach (ILine line in Editor.Lines)
 					lines.Add(line.Text);
 				Editor.End();
+	
+				if (lines[lines.Count - 1].ToString().Length == 0)
+					lines.RemoveAt(lines.Count - 1);
 				value = lines;
 			}
 			else
@@ -491,10 +496,14 @@ namespace PowerShellFar
 				if (_info.TypeNameOfValue.EndsWith("]", StringComparison.Ordinal))
 				{
 					ArrayList lines = new ArrayList();
+
 					Editor.Begin();
-					foreach (ILine line in Editor.Lines(true))
+					foreach (ILine line in Editor.Lines)
 						lines.Add(line.Text);
 					Editor.End();
+
+					if (lines[lines.Count - 1].ToString().Length == 0)
+						lines.RemoveAt(lines.Count - 1);
 					value = lines;
 				}
 				else
