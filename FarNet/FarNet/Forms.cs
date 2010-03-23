@@ -26,7 +26,7 @@ namespace FarNet.Forms
 		/// <remarks>
 		/// Event handlers change the default colors provided by the event arguments.
 		/// </remarks>
-		event EventHandler<ColoringEventArgs> Coloring;
+		event EventHandler<ColoringEventArgs> Coloring; //! Think twice before changes (to properties), this way has advantages.
 		/// <summary>
 		/// Called when the control has got focus.
 		/// </summary>
@@ -646,7 +646,7 @@ namespace FarNet.Forms
 		/// Disables redrawing of the dialog.
 		/// </summary>
 		/// <remarks>
-		/// This method is used to prevent excessive dialog redraws when modifying multiple dialog items. 
+		/// This method is used to prevent excessive dialog redraws when modifying multiple dialog items.
 		/// <para>
 		/// It increments the internal redraw lock counter.
 		/// WARNING: you must call <see cref="EnableRedraw"/> (normally when dialog changes are done).

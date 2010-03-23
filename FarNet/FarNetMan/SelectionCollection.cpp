@@ -10,15 +10,14 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-SelectionCollection::SelectionCollection(IEditor^ editor, bool ignoreEmptyLast)
-: _editor(editor)
-, IgnoreEmptyLast(ignoreEmptyLast)
+SelectionCollection::SelectionCollection(IEditor^ editor)
+: _Editor(editor)
 {}
 
 IEnumerator<ILine^>^ SelectionCollection::GetEnumerator()
 {
-	Place ss = SelectionPlace();
-	return gcnew Works::LineEnumerator(this, 0, ss.Top < 0 ? 0 : ss.Height);
+	Place pp = Edit_SelectionPlace();
+	return Works::EditorTools::Enumerate(_Editor, pp.Top, pp.Top < 0 ? pp.Top : pp.Bottom + 1)->GetEnumerator();
 }
 
 Collections::IEnumerator^ SelectionCollection::GetEnumeratorObject()
@@ -53,12 +52,11 @@ ILine^ SelectionCollection::Last::get()
 
 ILine^ SelectionCollection::Item::get(int index)
 {
-	AutoEditorInfo ei;
-
-	if (ei.BlockType == BTYPE_NONE)
+	Point p = _Editor->SelectionPoint;
+	if (p.Y < 0)
 		throw gcnew InvalidOperationException;
 
-	return gcnew EditorLine(index + ei.BlockStartLine, true);
+	return _Editor->GetLine(p.Y + index, true);
 }
 
 Object^ SelectionCollection::SyncRoot::get()
@@ -77,6 +75,15 @@ void SelectionCollection::Clear()
 	EditorControl_ECTL_DELETEBLOCK();
 }
 
+int SelectionCollection::Count::get()
+{
+	Place pp = _Editor->SelectionPlace;
+	if (pp.Top < 0)
+		return 0;
+
+	return pp.Height;
+}
+
 void SelectionCollection::InsertText(int index, String^ item)
 {
 	AutoEditorInfo ei;
@@ -92,7 +99,7 @@ void SelectionCollection::InsertText(int index, String^ item)
 	if (index == 0)
 	{
 		// NB: both cases: first incomplete\complete
-		_editor->GoTo(egss.SelStart, ei.BlockStartLine);
+		_Editor->GoTo(egss.SelStart, ei.BlockStartLine);
 		EditorControl_ECTL_INSERTTEXT(item + CV::CR, ei.Overtype);
 		return;
 	}
@@ -108,12 +115,12 @@ void SelectionCollection::InsertText(int index, String^ item)
 	// case: inside
 	if (egsp.SelEnd < 0)
 	{
-		_editor->Lines(false)->InsertText(ei.BlockStartLine + index, item);
+		_Editor->InsertText(ei.BlockStartLine + index, item);
 		return;
 	}
 
 	// case: add (prior is actually the last)
-	_editor->GoTo(egsp.SelEnd, ip);
+	_Editor->GoTo(egsp.SelEnd, ip);
 
 	if (egsp.SelEnd == 0)
 	{
@@ -131,7 +138,7 @@ void SelectionCollection::InsertText(int index, String^ item)
 	AutoEditorInfo ei2;
 
 	// select inserted
-	_editor->SelectText(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine);
+	_Editor->SelectText(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine);
 }
 
 void SelectionCollection::RemoveAt(int index)
@@ -163,13 +170,13 @@ void SelectionCollection::RemoveAt(int index)
 		int left = egss.SelStart;
 
 		// change selection
-		Place ss = ::SelectionPlace();
-		++ss.Top;
-		ss.Left = 0;
-		_editor->SelectText((RegionKind)ei.BlockType, ss.Left, ss.Top, ss.Right, ss.Bottom);
+		Place pp = Edit_SelectionPlace();
+		++pp.Top;
+		pp.Left = 0;
+		_Editor->SelectText((RegionKind)ei.BlockType, pp.Left, pp.Top, pp.Right, pp.Bottom);
 
 		// remove selected part of line
-		ILine^ line = _editor[top];
+		ILine^ line = _Editor[top];
 		line->Text = line->Text->Substring(0, left);
 		return;
 	}
@@ -184,13 +191,13 @@ void SelectionCollection::RemoveAt(int index)
 		// remove not empty part of line
 		if (!ell)
 		{
-			ILine^ line = _editor[bottom];
+			ILine^ line = _Editor[bottom];
 			line->Text = line->Text->Substring(egsi.SelEnd);
 		}
 
 		// select to the end of previous line
 		--bottom;
-		ILine^ line = _editor[bottom];
+		ILine^ line = _Editor[bottom];
 		String^ text = line->Text;
 		if (text->Length == 0 && ell)
 		{
@@ -198,41 +205,12 @@ void SelectionCollection::RemoveAt(int index)
 			Edit_RemoveAt(bottom);
 			return;
 		}
-		_editor->SelectText(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, text->Length - 1, bottom);
+		_Editor->SelectText(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, text->Length - 1, bottom);
 		return;
 	}
 
 	// remove inside
-	Edit_RemoveAt(bottom);
-}
-
-int SelectionCollection::Count::get()
-{
-	AutoEditorInfo ei;
-
-	if (ei.BlockType == BTYPE_NONE)
-		return 0;
-
-	int r = 0;
-	EditorGetString egs;
-	for(egs.StringNumber = ei.BlockStartLine; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
-	{
-		EditorControl_ECTL_GETSTRING(egs, egs.StringNumber);
-		if (egs.SelStart < 0)
-			break;
-
-		//! empty last line
-		if (egs.SelEnd == 0)
-		{
-			if (!IgnoreEmptyLast)
-				++r;
-			break;
-		}
-
-		// count
-		++r;
-	}
-	return r;
+	_Editor->RemoveAt(bottom);
 }
 
 }

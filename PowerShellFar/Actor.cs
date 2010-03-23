@@ -484,7 +484,7 @@ Continue with this current directory?
 		/// remove items and modify items (<see cref="ILine"/>).
 		/// </para>
 		/// </remarks>
-		public ILineCollection HotLines
+		public IList<ILine> HotLines
 		{
 			get { return EditorKit.HotLines; }
 		}

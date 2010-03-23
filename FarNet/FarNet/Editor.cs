@@ -91,7 +91,8 @@ namespace FarNet
 	/// </para>
 	/// <para>
 	/// Basically, the editor works like the indexed list of <see cref="ILine"/> lines. List members have "standard" names:
-	/// <see cref="Count"/> (line count), <see cref="this"/> (access by index), <see cref="RemoveAt"/> (removes by index).
+	/// <see cref="Count"/> (line count), <see cref="this[int]"/> (access by index), <see cref="RemoveAt"/> (removes by index),
+	/// <see cref="Clear"/> (removes all).
 	/// </para>
 	/// <para>
 	/// Still, the editor is not a standard list. If you need a standard line list then use the <see cref="Lines"/> method.
@@ -128,7 +129,7 @@ namespace FarNet
 		/// <summary>
 		/// Gets line count. At least one line exists.
 		/// </summary>
-		/// <seealso cref="this"/>
+		/// <seealso cref="this[int]"/>
 		int Count { get; }
 		/// <summary>
 		/// Gets the line by the index.
@@ -138,19 +139,27 @@ namespace FarNet
 		/// <seealso cref="Count"/>
 		/// <seealso cref="Lines"/>
 		/// <seealso cref="SelectedLines"/>
+		/// <remarks>
+		/// The returned line instance should be used instantly and should never be kept for future use.
+		/// The index is permanent, the instance always points to a line at this index even if it is invalid after text changes.
+		/// This can be effectively used for the current line (index is -1): the instance always points to the line where the caret is,
+		/// after any text changes, caret movement, setting text frames, and etc.
+		/// </remarks>
 		ILine this[int index] { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		ILine GetLine(int index, bool selected);
 		/// <summary>
 		/// Gets the list of editor lines.
 		/// Editor must be current.
 		/// </summary>
-		/// <param name="ignoreEmptyLast">Tells to ignore the empty last line.</param>
-		ILineCollection Lines(bool ignoreEmptyLast);
+		IList<ILine> Lines { get; }
 		/// <summary>
 		/// Gets the list of selected lines and parts.
 		/// Editor must be current.
 		/// </summary>
-		/// <param name="ignoreEmptyLast">Tells to ignore the empty last line.</param>
-		ILineCollection SelectedLines(bool ignoreEmptyLast);
+		ILineCollection SelectedLines { get; }
 		/// <summary>
 		/// Gets or sets the name of a file being or to be edited.
 		/// Set it before opening.
@@ -194,6 +203,19 @@ namespace FarNet
 		/// The text is processed in the same way as it is typed.
 		/// </remarks>
 		void InsertText(string text);
+		/// <summary>
+		/// Inserts the text at the given line index.
+		/// Editor must be current.
+		/// </summary>
+		/// <param name="line">Line index.</param>
+		/// <param name="text">Text to be inserted.</param>
+		void InsertText(int line, string text);
+		/// <summary>
+		/// Adds the text to the end.
+		/// Editor must be current.
+		/// </summary>
+		/// <param name="text">Text to be inserted.</param>
+		void AddText(string text);
 		/// <summary>
 		/// Inserts a character.
 		/// Editor must be current.
@@ -555,10 +577,18 @@ namespace FarNet
 		/// </summary>
 		Place SelectionPlace { get; }
 		/// <summary>
+		/// Gets the selected point.
+		/// </summary>
+		Point SelectionPoint { get; }
+		/// <summary>
 		/// Removes the line by the index.
 		/// </summary>
 		/// <param name="index">Index of the line to be removed.</param>
 		void RemoveAt(int index);
+		/// <summary>
+		/// Removes all lines.
+		/// </summary>
+		void Clear();
 	}
 
 	/// <summary>
@@ -690,12 +720,6 @@ namespace FarNet
 		/// Turns selection off in the current editor line, the command line, or the dialog line.
 		/// </summary>
 		public abstract void UnselectText();
-		/// <summary>
-		/// Gets an instance of a full line if this line represents only a part,
-		/// (e.g. the line is from <see cref="IEditor.SelectedLines"/>),
-		/// or returns this instance itself.
-		/// </summary>
-		public abstract ILine FullLine { get; }
 		/// <summary>
 		/// Gets the the text length.
 		/// </summary>

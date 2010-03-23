@@ -149,6 +149,7 @@ void EditorControl_ECTL_SETSTRING(EditorSetString& ess);
 void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);
 
 // Advanced wrappers
+Place Edit_SelectionPlace();
 void Edit_Clear();
 void Edit_GoTo(int pos, int line);
 void Edit_RemoveAt(int index);
@@ -156,8 +157,6 @@ void Edit_RestoreEditorInfo(const EditorInfo& ei);
 void Edit_SetOvertype(bool value);
 
 extern int _fastGetString;
-
-Place SelectionPlace();
 
 // DateTime tools
 DateTime FileTimeToDateTime(FILETIME time);

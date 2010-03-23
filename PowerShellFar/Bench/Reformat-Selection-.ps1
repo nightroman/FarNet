@@ -47,7 +47,7 @@ function global:Reformat-Selection-
 	}
 
 	# get the selected lines or the current line
-	[string[]]$ss = $Editor.SelectedLines($false)
+	[string[]]$ss = $Editor.SelectedLines
 	if (!$ss) {
 		$cl = $Editor[-1]
 		$cl.SelectText(0, $cl.Length)

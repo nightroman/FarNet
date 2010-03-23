@@ -11,6 +11,7 @@ namespace FarNet
 ref class Panel1 : public IAnyPanel
 {
 public:
+	virtual property bool DirectoriesFirst { bool get(); void set(bool value); }
 	virtual property bool Highlight { bool get(); }
 	virtual property bool IsActive { bool get(); }
 	virtual property bool IsLeft { bool get(); }
