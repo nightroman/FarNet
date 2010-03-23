@@ -25,7 +25,7 @@ function global:Reindent-Selection-
 
 	# $n1, $n2 - first (unchanged) and last lines to process
 	if ($Editor.SelectionExists) {
-		$Selection = $Editor.SelectedLines($false)
+		$Selection = $Editor.SelectedLines
 		$n2 = $Selection.Last.Index
 		$n1 = $Selection.First.Index
 		if ($n1 -gt 0) { --$n1 }

@@ -8,10 +8,10 @@
 	Processes any input objects with string property Text, for example:
 
 	# process all lines in the current text
-	$Far.Editor.Lines($false) | Remove-EndSpace-
+	$Far.Editor.Lines | Remove-EndSpace-
 
 	# process all currently selected lines
-	$Far.Editor.SelectedLines($false) | Remove-EndSpace-
+	$Far.Editor.SelectedLines | Remove-EndSpace-
 #>
 
 process

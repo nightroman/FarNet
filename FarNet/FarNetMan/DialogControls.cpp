@@ -37,13 +37,6 @@ String^ GetText(HANDLE hDlg, int id, int start, int len)
 ref class DialogLine sealed : ILine
 {
 public:
-	virtual property ILine^ FullLine
-	{
-		ILine^ get() override
-		{
-			return this;
-		}
-	}
 	virtual property int Length
 	{
 		int get() override

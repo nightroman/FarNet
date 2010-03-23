@@ -332,7 +332,7 @@ MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m)
 		(ControlKeyStates)m.dwControlKeyState & ControlKeyStates::All);
 }
 
-Place SelectionPlace()
+Place Edit_SelectionPlace()
 {
 	AutoEditorInfo ei;
 	if (ei.BlockType == BTYPE_NONE)

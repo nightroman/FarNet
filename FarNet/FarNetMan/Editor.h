@@ -31,6 +31,9 @@ public:
 ref class Editor : public AnyEditor, public IEditor
 {
 public:
+	virtual property IList<ILine^>^ Lines { IList<ILine^>^ get(); }
+	virtual property ILineCollection^ SelectedLines { ILineCollection^ get(); }
+public:
 	virtual property bool DisableHistory { bool get(); void set(bool value); }
 	virtual property bool IsLastLine { bool get(); }
 	virtual property bool IsLocked { bool get(); }
@@ -54,6 +57,7 @@ public:
 	virtual property Place SelectionPlace { Place get(); }
 	virtual property Place Window { Place get(); void set(Place value); }
 	virtual property Point Caret { Point get(); void set(Point value); }
+	virtual property Point SelectionPoint { Point get(); }
 	virtual property Point WindowSize { Point get(); }
 	virtual property RegionKind SelectionKind { RegionKind get(); }
 	virtual property String^ FileName { String^ get(); void set(String^ value); }
@@ -63,8 +67,7 @@ public:
 	virtual property TextFrame Frame { TextFrame get(); void set(TextFrame value); }
 public:
 	virtual ICollection<TextFrame>^ Bookmarks();
-	virtual ILineCollection^ Lines(bool ignoreEmptyLast);
-	virtual ILineCollection^ SelectedLines(bool ignoreEmptyLast);
+	virtual ILine^ GetLine(int index, bool selected);
 	virtual int ConvertColumnEditorToScreen(int line, int column);
 	virtual int ConvertColumnScreenToEditor(int line, int column);
 	virtual Point ConvertPointScreenToEditor(Point point);
@@ -73,9 +76,11 @@ public:
 	virtual String^ GetText();
 	virtual String^ GetText(String^ separator);
 	virtual TextWriter^ CreateWriter();
+	virtual void AddText(String^ text);
 	virtual void Begin();
 	virtual void BeginAsync();
 	virtual void BeginUndo();
+	virtual void Clear();
 	virtual void Close();
 	virtual void DeleteChar();
 	virtual void DeleteLine();
@@ -90,6 +95,7 @@ public:
 	virtual void InsertChar(Char text);
 	virtual void InsertLine();
 	virtual void InsertLine(bool indent);
+	virtual void InsertText(int line, String^ text);
 	virtual void InsertText(String^ text);
 	virtual void Open();
 	virtual void Open(OpenMode mode);

@@ -25,15 +25,18 @@ param
 function global:Indent-Selection- ([switch]$Outdent)
 {
 	$Editor = $Psf.Editor()
-	if ($Editor.SelectionKind -ne 'Stream') { return }
+	if ($Editor.SelectionKind -ne 'Stream') {
+		return
+	}
 
-	$Select = $Editor.SelectedLines($false)
 	$Editor.BeginUndo()
 
 	$tabSize = $Editor.TabSize
-	foreach($line in $Select) {
-		$line = $line.FullLine
-		if ($line.Selection.Length -le 0) { continue }
+	foreach($line in $Editor.SelectedLines) {
+		$line = $Editor[$line.Index]
+		if ($line.Selection.Length -le 0) {
+			continue
+		}
 		$text = $line.Text
 		if ($Outdent) {
 			if ($text[0] -eq "`t") {

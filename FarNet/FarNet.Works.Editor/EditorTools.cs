@@ -3,6 +3,7 @@ FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
 
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -10,6 +11,12 @@ namespace FarNet.Works
 {
 	public static class EditorTools
 	{
+		public static IEnumerable<ILine> Enumerate(IEditor editor, int start, int end)
+		{
+			for (int i = start; i < end; ++i)
+				yield return editor[i];
+		}
+
 		public static string EditText(string text, string title)
 		{
 			var file = Far.Net.TempName();

@@ -44,9 +44,9 @@ $id = $Editor.Id
 # current editor
 $Editor = $Far.Editor
 # all editor lines
-$Lines = $Editor.Lines($false)
+$Lines = $Editor.Lines
 # selected lines
-$Parts = $Editor.SelectedLines($false)
+$Parts = $Editor.SelectedLines
 
 ### Check Id and editor collection
 Assert-Far ($Editor.Id -eq $id)
@@ -72,52 +72,52 @@ $Editor.Overtype = $Overtype
 
 ### Fun with removing the last line
 $Editor.SetText("1`r2`r")
-Assert-Far ($Lines.Count -eq 3)
-$Lines.RemoveAt(2)
+Assert-Far ($Editor.Count -eq 3)
+$Editor.RemoveAt(2)
 Assert-Far ($Editor.GetText() -eq "1`r`n2")
-$Lines.RemoveAt(1)
+$Editor.RemoveAt(1)
 Assert-Far ($Editor.GetText() -eq '1')
-$Lines.RemoveAt(0)
+$Editor.RemoveAt(0)
 Assert-Far ($Editor.GetText() -eq '')
 
 ### Line list and string list
 # clear 1: note: at least one line always exists
-$Lines.Clear()
-Assert-Far ($Editor.GetText() -eq '' -and $Lines.Count -eq 1 -and $Lines[0].Text -eq '')
+$Editor.Clear()
+Assert-Far ($Editor.GetText() -eq '' -and $Editor.Count -eq 1 -and $Editor[0].Text -eq '')
 # add lines when last line is empty
-$Lines.AddText('Строка1')
+$Editor.AddText('Строка1')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`n")
-$Lines.AddText('Line2')
+$Editor.AddText('Line2')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`n")
 # get\set lines
-$Lines[0].Text += '.'
-$Lines[1].Text += '.'
-$Lines[2].Text = 'End.'
+$Editor[0].Text += '.'
+$Editor[1].Text += '.'
+$Editor[2].Text = 'End.'
 Assert-Far ($Editor.GetText() -eq "Строка1.`r`nLine2.`r`nEnd.")
-# add lines when last line is not empty (using $Lines and $Strings)
-$Lines.Clear()
-$Lines[0].Text = 'Строка1'
-$Lines.AddText('Line2')
+# add lines when last line is not empty
+$Editor.Clear()
+$Editor[0].Text = 'Строка1'
+$Editor.AddText('Line2')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2")
-$Lines.AddText('Line3')
+$Editor.AddText('Line3')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`nLine3")
 # insert lines
-$Lines.InsertText(1, 'X')
+$Editor.InsertText(1, 'X')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nLine3")
-$Lines.InsertText(3, 'Y')
+$Editor.InsertText(3, 'Y')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nY`r`nLine3")
 # remove lines
-$Lines.RemoveAt(3)
+$Editor.RemoveAt(3)
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nLine3")
-$Lines.RemoveAt(1)
+$Editor.RemoveAt(1)
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`nLine3")
-$null = $Lines.Remove($Lines[2])
+$Editor.RemoveAt(2)
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2")
 
 ### EndOfLine
-Assert-Far ($Lines[0].EndOfLine -eq "`r`n")
-$Lines[0].EndOfLine = "`n"
-Assert-Far ($Lines[0].EndOfLine -eq "`n")
+Assert-Far ($Editor[0].EndOfLine -eq "`r`n")
+$Editor[0].EndOfLine = "`n"
+Assert-Far ($Editor[0].EndOfLine -eq "`n")
 
 ### Set all text (note preserved EOF states)
 $Editor.SetText('')
@@ -149,17 +149,15 @@ Assert-Far ($Parts.Count -eq 2)
 Assert-Far ($Editor.GetSelectedText() -eq "L`r`nR")
 Assert-Far ($Parts[0].Text -eq "L")
 Assert-Far ($Parts[1].Text -eq "R")
-$Parts.Clear()
+$Editor.DeleteText()
 Assert-Far (!$Editor.SelectionExists)
 Assert-Far ($Editor.GetText() -eq "1`r`nHELO`r`nWOLD")
 # lines vs. true lines
 $Editor.SetText("1`nHELLO`nWORLD`n")
-Assert-Far ($Lines.Count -eq 4)
-Assert-Far ($Editor.Lines($true).Count -eq 3)
+Assert-Far ($Editor.Count -eq 4)
 # selection vs. true selection
 $Editor.SelectText('Stream', 0, 0, -1, 2)
 Assert-Far ($Parts.Count -eq 3)
-Assert-Far ($Editor.SelectedLines($true).Count -eq 2)
 # stream selection (line parts)
 $Editor.SetText("1`nHELLO`nWORLD")
 $Editor.SelectText('Stream', 3, 1, 1, 2)
@@ -263,27 +261,27 @@ Set-Selection- -ToLower
 Assert-Far ($Editor.GetText() -eq $text)
 
 # remove end spaces from selected
-$Parts | Remove-EndSpace-
+$Editor.SelectedLines | Remove-EndSpace-
 Assert-Far ($Editor.GetSelectedText() -eq @"
 "йцу\кен"`r`n
 "@)
 
 # remove end spaces from all text
-$Lines | Remove-EndSpace-
+$Editor.Lines | Remove-EndSpace-
 Assert-Far ($Editor.GetText() -eq @"
 `r`n`r`n"йцу\кен"`r`n`r`n`r`n"!№;%:?*"`r`n
 "@)
 
 # remove double empty lines from selected
 $Editor.SelectText('Stream', 0, 2, -1, 6)
-Remove-EmptyString- $Parts 2
+Remove-EmptyString- $Parts 2 #?????
 Assert-Far ($Editor.GetSelectedText() -eq @"
 "йцу\кен"`r`n`r`n"!№;%:?*"`r`n
 "@)
 
 # remove empty lines from all text
 $Editor.UnselectText()
-Remove-EmptyString- $Lines
+Remove-EmptyString- $Lines #?????
 Assert-Far ($Editor.GetText() -eq @"
 "йцу\кен"`r`n"!№;%:?*"
 "@)

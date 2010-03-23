@@ -25,7 +25,7 @@ public class TrimSaving : ModuleEditor
 	{
 		IEditor editor = (IEditor)sender;
 		editor.Begin();
-		foreach(ILine line in editor.Lines(false))
+		foreach(ILine line in editor.Lines)
 		{
 			string s1 = line.Text;
 			string s2 = s1.TrimEnd();

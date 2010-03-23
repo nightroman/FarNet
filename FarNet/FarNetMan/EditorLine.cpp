@@ -22,11 +22,6 @@ FarNet::WindowKind EditorLine::WindowKind::get()
 	return FarNet::WindowKind::Editor;
 }
 
-ILine^ EditorLine::FullLine::get()
-{
-	return _Selected ? gcnew EditorLine(_Index, false) : this;
-}
-
 int EditorLine::Length::get()
 {
 	if (_Selected)
@@ -180,7 +175,7 @@ void EditorLine::SelectedText::set(String^ value)
 	// change selection
 	if (dd != 0)
 	{
-		Place pp = SelectionPlace();
+		Place pp = Edit_SelectionPlace();
 		EditorSelect es;
 		es.BlockHeight = pp.Bottom - pp.Top + 1;
 		es.BlockStartLine = pp.Top;
@@ -195,7 +190,8 @@ void EditorLine::InsertText(String^ text)
 {
 	int pos = Caret;
 	if (pos < 0)
-		throw gcnew InvalidOperationException("The line is not current");
+		throw gcnew InvalidOperationException("The line is not current.");
+	
 	EditorControl_ECTL_INSERTTEXT(text, -1);
 }
 

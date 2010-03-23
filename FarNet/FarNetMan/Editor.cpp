@@ -7,7 +7,6 @@ Copyright (c) 2005 FarNet Team
 #include "Editor.h"
 #include "Editor0.h"
 #include "EditorLine.h"
-#include "EditorLineCollection.h"
 #include "Far0.h"
 #include "SelectionCollection.h"
 #include "Wrappers.h"
@@ -305,14 +304,6 @@ void Editor::ExpandTabs::set(ExpandTabsMode value)
 	EditorControl_ECTL_SETPARAM(esp);
 }
 
-ILineCollection^ Editor::Lines(bool ignoreEmptyLast)
-{
-	if (!IsOpened)
-		return nullptr;
-
-	return gcnew EditorLineCollection(ignoreEmptyLast);
-}
-
 int Editor::Id::get()
 {
 	return _id;
@@ -406,14 +397,6 @@ void Editor::Window::set(Place value)
 {
 	AssertClosed();
 	_Window = value;
-}
-
-ILineCollection^ Editor::SelectedLines(bool ignoreEmptyLast)
-{
-	if (!IsOpened)
-		return nullptr;
-
-	return gcnew SelectionCollection(this, ignoreEmptyLast);
 }
 
 Point Editor::Caret::get()
@@ -1136,7 +1119,7 @@ bool Editor::SelectionExists::get()
 
 Place Editor::SelectionPlace::get()
 {
-	return ::SelectionPlace();
+	return Edit_SelectionPlace();
 }
 
 RegionKind Editor::SelectionKind::get()
@@ -1163,9 +1146,100 @@ ILine^ Editor::default::get(int index)
     return gcnew EditorLine(index);
 }
 
+ILine^ Editor::GetLine(int index, bool selected)
+{
+    return gcnew EditorLine(index, selected);
+}
+
 void Editor::RemoveAt(int index)
 {
 	Edit_RemoveAt(index);
+}
+
+void Editor::Clear()
+{
+	Edit_Clear();
+}
+
+Point Editor::SelectionPoint::get()
+{
+	AutoEditorInfo ei;
+	if (ei.BlockType == BTYPE_NONE)
+		return Point(-1);
+
+	EditorGetString egs;
+	EditorControl_ECTL_GETSTRING(egs, ei.BlockStartLine);
+	return Point(egs.SelStart, ei.BlockStartLine);
+}
+
+void Editor::AddText(String^ text)
+{
+	InsertText(-1, text);
+}
+
+void Editor::InsertText(int line, String^ text)
+{
+    if (text == nullptr)
+		throw gcnew ArgumentNullException("text");
+
+	AutoEditorInfo ei;
+
+	// setup
+	const int Count = ei.TotalLines;
+	if (line < 0)
+		line = Count;
+
+	// prepare text
+	text = text->Replace(CV::CRLF, CV::CR)->Replace('\n', '\r');
+
+	// add?
+	int len = 0;
+	bool newline = true;
+	if (line == Count)
+	{
+		--line;
+		ILine^ last = this[line];
+		len = last->Text->Length;
+		if (len == 0)
+		{
+			newline = false;
+			text += CV::CR;
+		}
+	}
+
+	// save pos
+	if (line <= ei.CurLine)
+	{
+		++ei.CurLine;
+		for each(Char c in text)
+			if (c == '\r')
+				++ei.CurLine;
+	}
+
+	// go to line, insert new line
+	Edit_GoTo(len, line);
+	if (newline)
+	{
+		EditorControl_ECTL_INSERTSTRING(false);
+		if (len == 0)
+			Edit_GoTo(0, line);
+	}
+
+	// insert text
+	EditorControl_ECTL_INSERTTEXT(text, ei.Overtype);
+
+	// restore
+	Edit_RestoreEditorInfo(ei);
+}
+
+IList<ILine^>^ Editor::Lines::get()
+{
+	return IsOpened ? gcnew Works::LineCollection(this) : nullptr;
+}
+
+ILineCollection^ Editor::SelectedLines::get()
+{
+	return IsOpened ? gcnew SelectionCollection(this) : nullptr;
 }
 
 }

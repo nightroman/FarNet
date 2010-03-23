@@ -468,10 +468,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\EditorLineCollection.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Export.cpp"
 				>
 			</File>
@@ -627,10 +623,6 @@
 			</File>
 			<File
 				RelativePath=".\EditorLine.h"
-				>
-			</File>
-			<File
-				RelativePath=".\EditorLineCollection.h"
 				>
 			</File>
 			<File
