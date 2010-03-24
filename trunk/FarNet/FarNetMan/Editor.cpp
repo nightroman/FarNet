@@ -8,7 +8,6 @@ Copyright (c) 2005 FarNet Team
 #include "Editor0.h"
 #include "EditorLine.h"
 #include "Far0.h"
-#include "SelectionCollection.h"
 #include "Wrappers.h"
 
 namespace FarNet
@@ -1151,11 +1150,6 @@ ILine^ Editor::default::get(int index)
     return gcnew EditorLine(index);
 }
 
-ILine^ Editor::GetLine(int index, bool selected)
-{
-    return gcnew EditorLine(index, selected);
-}
-
 void Editor::RemoveAt(int index)
 {
 	Edit_RemoveAt(index);
@@ -1177,12 +1171,12 @@ Point Editor::SelectionPoint::get()
 	return Point(egs.SelStart, ei.BlockStartLine);
 }
 
-void Editor::AddText(String^ text)
+void Editor::Add(String^ text)
 {
-	InsertText(-1, text);
+	Insert(-1, text);
 }
 
-void Editor::InsertText(int line, String^ text)
+void Editor::Insert(int line, String^ text)
 {
     if (text == nullptr)
 		throw gcnew ArgumentNullException("text");
@@ -1242,9 +1236,14 @@ IList<ILine^>^ Editor::Lines::get()
 	return IsOpened ? gcnew Works::LineCollection(this) : nullptr;
 }
 
-ILineCollection^ Editor::SelectedLines::get()
+IList<ILine^>^ Editor::SelectedLines::get()
 {
-	return IsOpened ? gcnew SelectionCollection(this) : nullptr;
+	return IsOpened ? gcnew Works::SelectionCollection(this) : nullptr;
+}
+
+IList<String^>^ Editor::Strings::get()
+{
+	return IsOpened ? gcnew Works::StringCollection(this) : nullptr;
 }
 
 }

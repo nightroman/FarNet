@@ -2,45 +2,20 @@ http://code.google.com/p/farnet/
 
 = 4.3.12 =
 
-PANELS
-
--- new property DirectoriesFirst (bool) - sorting mode
--- new PanelSortMode values: StreamCount, StreamSize, FullName
-
-REFACTORING OF EDITOR AND EDITOR LINE API
+MASSIVE REVISION OF EDITOR AND EDITOR LINES
 (breaking for modules working with editors)
 
-Renamed ILines to ILineCollection to follow standard .NET naming guidelines.
+As it was mentioned at the forum some time ago, API of editor and edit lines is
+revised in this version. There are many changes, they are not listed in here,
+everything is explained in the API documentation. Just two words: basic stuff
+and principles are the same. But some "too smart" and practically not really
+useful features were cut off. Some names were changed to be more informative.
 
-Removed the interface IStrings and properties Strings from line collections.
-Practice shows that this feature is not really useful. Besides, this kind of
-wrapper of ILineCollection can be implemented as an external helper if this is
-really needed.
+NEW PANELS FEATURES
+(new in Far API)
 
-Removed the interface ISelection and the property IEditor.Selection; all its
-members moved to IEditor itself. Thus, we work on selection directly from
-IEditor. Selection as a line list is still available: IEditor.SelectedLines.
-
-Renamed all methods Insert() and Add() dealing with text to InsertText() and
-AddText(). New names describe themselves much better and differ from other
-Add(), Insert() methods, e.g. in ILineCollection.
-
-Terminology: 'Caret' instead of 'Cursor'. Renamed: Cursor -> Caret (IEditor),
-Pos -> Caret (ILine), ConvertScreenToCursor -> ConvertScreenToEditor (IEditor).
-
-Renamed some properties of ViewFrame, TextFrame and IEditor. Basically the word
-'Pos' was replaced with more adequite 'Column'.
-
-Simplified and improved work on selected text of ILine instances (lines of
-editor, dialog, command line):
-*) Added new property SelectedText (string, get\set)
-*) Changed the property Selection type to LineRegion
-*) Removed not used now interface ILineSelection
-*) "Negative end position" convension is not used any more
-*) On setting of selected text the current cursor position in a line is
-preserved, if it is possible, or set to the line end otherwise.
-
-During the changes and testing of them found and fixed a few old minor bugs.
+*) New property DirectoriesFirst (bool) ~ new sorting mode
+*) New PanelSortMode values: StreamCount, StreamSize, FullName
 
 OTHER CHANGES
 
