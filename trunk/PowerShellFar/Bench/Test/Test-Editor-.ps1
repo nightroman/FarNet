@@ -114,11 +114,6 @@ Assert-Far ($Editor.GetText() -eq "—ÚÓÍ‡1`r`nLine2`r`nLine3")
 $Editor.RemoveAt(2)
 Assert-Far ($Editor.GetText() -eq "—ÚÓÍ‡1`r`nLine2")
 
-### EndOfLine
-Assert-Far ($Editor[0].EndOfLine -eq "`r`n")
-$Editor[0].EndOfLine = "`n"
-Assert-Far ($Editor[0].EndOfLine -eq "`n")
-
 ### Set all text (note preserved EOF states)
 $Editor.SetText('')
 Assert-Far ($Editor.GetText() -eq '')
@@ -143,8 +138,8 @@ if (!$Overtype) {
 ### Selection operations
 # rect selection
 $Editor.SetText("1`nHELLO`nWORLD")
-$Editor.SelectText('Rect', 2, 1, 2, 2)
-Assert-Far ($Editor.SelectionKind -eq 'Rect')
+$Editor.SelectText(2, 1, 2, 2, 'Column')
+Assert-Far ($Editor.SelectionKind -eq 'Column')
 Assert-Far ($Parts.Count -eq 2)
 Assert-Far ($Editor.GetSelectedText() -eq "L`r`nR")
 Assert-Far ($Parts[0].Text -eq "L")
@@ -156,11 +151,11 @@ Assert-Far ($Editor.GetText() -eq "1`r`nHELO`r`nWOLD")
 $Editor.SetText("1`nHELLO`nWORLD`n")
 Assert-Far ($Editor.Count -eq 4)
 # selection vs. true selection
-$Editor.SelectText('Stream', 0, 0, -1, 2)
+$Editor.SelectText(0, 0, -1, 2)
 Assert-Far ($Parts.Count -eq 3)
 # stream selection (line parts)
 $Editor.SetText("1`nHELLO`nWORLD")
-$Editor.SelectText('Stream', 3, 1, 1, 2)
+$Editor.SelectText(3, 1, 1, 2)
 Assert-Far ($Editor.SelectionKind -eq 'Stream')
 Assert-Far ($Parts.Count -eq 2)
 Assert-Far ($Editor.GetSelectedText() -eq "LO`r`nWO")
@@ -174,14 +169,14 @@ $Parts.RemoveAt(1)
 Assert-Far ($Editor.GetSelectedText() -eq "LO`r`nWO")
 # insert first, remove first (when first is completely selected)
 $Editor.SetText("1`nHELLO`nWORLD")
-$Editor.SelectText('Stream', 0, 1, 1, 2)
+$Editor.SelectText(0, 1, 1, 2)
 $Parts.InsertText(0, "ÌÓ‚˚È")
 Assert-Far ($Editor.GetSelectedText() -eq "ÌÓ‚˚È`r`nHELLO`r`nWO")
 $Parts.RemoveAt(0)
 Assert-Far ($Editor.GetSelectedText() -eq "HELLO`r`nWO")
 # insert first (when first is not completely selected)
 $Editor.SetText("1`nHELLO`nWORLD")
-$Editor.SelectText('Stream', 3, 1, 1, 2)
+$Editor.SelectText(3, 1, 1, 2)
 $Parts.InsertText(0, "-")
 Assert-Far ($Editor.GetSelectedText() -eq "-`r`nLO`r`nWO")
 Assert-Far ($Editor.GetText() -eq "1`r`nHEL-`r`nLO`r`nWORLD")
@@ -195,28 +190,28 @@ Assert-Far ($Editor.GetSelectedText() -eq "LO")
 Assert-Far ($Editor.GetText() -eq "1`r`nHEL`r`nLO`r`nRLD")
 # add to selection (case: empty last line)
 $Editor.SetText("11`n22`n33")
-$Editor.SelectText('Stream', 0, 1, -1, 2)
+$Editor.SelectText(0, 1, -1, 2)
 Assert-Far ($Editor.GetSelectedText() -eq "22`r`n")
 $Parts.AddText("44")
 Assert-Far ($Editor.GetSelectedText() -eq "22`r`n44`r`n")
 Assert-Far ($Editor.GetText() -eq "11`r`n22`r`n44`r`n33")
 # add to selection (case: not empty last line)
 $Editor.SetText("11`n22`n33")
-$Editor.SelectText('Stream', 0, 1, 1, 1)
+$Editor.SelectText(0, 1, 1, 1)
 Assert-Far ($Editor.GetSelectedText() -eq "22")
 $Parts.AddText("44")
 Assert-Far ($Editor.GetSelectedText() -eq "22`r`n44")
 Assert-Far ($Editor.GetText() -eq "11`r`n22`r`n4433")
 # remove one line selection
 $Editor.SetText("11`n22`n33")
-$Editor.SelectText('Stream', 0, 1, 1, 1)
+$Editor.SelectText(0, 1, 1, 1)
 Assert-Far ($Editor.GetSelectedText() -eq "22")
 $Parts.RemoveAt(0)
 Assert-Far (!$Editor.SelectionExists)
 Assert-Far ($Editor.GetText() -eq "11`r`n`r`n33")
 # set items text
 $Editor.SetText("‘‘`n€€`n……")
-$Editor.SelectText('Stream', 1, 0, 0, 2)
+$Editor.SelectText(1, 0, 0, 2)
 Assert-Far ($Editor.GetSelectedText() -eq "‘`r`n€€`r`n…")
 $Parts[0].Text = "ÿÿ"
 $Parts[1].Text = ""
@@ -230,7 +225,7 @@ Assert-Far ($Editor.GetSelectedText() -eq "ÿ`r`n€`r`n÷")
 Assert-Far ($Editor.GetText() -eq "‘ÿ`r`n€`r`n÷…")
 # test case: remove an empty line before ELL
 $Editor.SetText("11`n`n22")
-$Editor.SelectText('Stream', 0, 0, -1, 2)
+$Editor.SelectText(0, 0, -1, 2)
 Remove-EmptyString- $Parts
 Assert-Far ($Editor.GetSelectedText() -eq "11")
 Assert-Far ($Editor.GetText() -eq "11`r`n22")
@@ -242,7 +237,7 @@ $text = @"
 `t`r`n`r`n"ÈˆÛ\ÍÂÌ"`t `r`n`r`n`r`n"!π;%:?*" `r`n
 "@
 $Editor.SetText($text)
-$Editor.SelectText('Stream', 0, 2, -1, 3)
+$Editor.SelectText(0, 2, -1, 3)
 # Escape
 Set-Selection- -Replace '([\\"])', '\$1'
 Assert-Far ($Editor.GetSelectedText() -eq @"
@@ -273,7 +268,7 @@ Assert-Far ($Editor.GetText() -eq @"
 "@)
 
 # remove double empty lines from selected
-$Editor.SelectText('Stream', 0, 2, -1, 6)
+$Editor.SelectText(0, 2, -1, 6)
 Remove-EmptyString- $Parts 2 #?????
 Assert-Far ($Editor.GetSelectedText() -eq @"
 "ÈˆÛ\ÍÂÌ"`r`n`r`n"!π;%:?*"`r`n
@@ -294,7 +289,7 @@ if ($Editor.ExpandTabs -eq 'None' -and $Editor.TabSize -eq 4) {
   3
    }
 '@)
-	$Editor.SelectText('Stream', 0, 0, 0, 3)
+	$Editor.SelectText(0, 0, 0, 3)
 	Indent-Selection-
 	Assert-Far ($Editor.GetText() -eq @'
 	{

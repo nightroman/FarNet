@@ -32,8 +32,8 @@
 
 param
 (
-	# Text with embedded text links. Default: editor hot text.
-	$Text = $Psf.HotText
+	# Text with embedded text links. Default: editor active text.
+	$Text = $Psf.ActiveText
 )
 
 ### Link with a line number.

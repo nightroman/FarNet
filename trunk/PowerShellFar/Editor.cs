@@ -128,7 +128,7 @@ namespace PowerShellFar
 			editLine.Caret = line.Length;
 		}
 
-		public static IList<ILine> HotLines
+		public static IList<ILine> ActiveLines
 		{
 			get
 			{
@@ -136,70 +136,58 @@ namespace PowerShellFar
 					return null;
 
 				IEditor editor = Far.Net.Editor;
-				if (editor.SelectionKind == RegionKind.Stream)
+				if (editor.SelectionKind == PlaceKind.Stream)
 					return editor.SelectedLines;
 
 				return editor.Lines;
 			}
 		}
 
-		public static string HotText
+		public static string ActiveText
 		{
 			get
 			{
-				ILine line = null;
-
+				// case: editor
 				if (Far.Net.Window.Kind == WindowKind.Editor)
 				{
 					IEditor editor = Far.Net.Editor;
 					if (editor.SelectionExists)
 						return editor.GetSelectedText();
-
-					line = editor[-1];
+					return editor[-1].Text;
 				}
 
-				if (line == null)
-					line = Far.Net.Line;
-
+				// other lines
+				ILine line = Far.Net.Line;
 				if (line == null)
 					return string.Empty;
-
-				string selectedText = line.SelectedText;
-				if (!string.IsNullOrEmpty(selectedText))
-					return selectedText;
-
-				return line.Text;
+				else
+					return line.ActiveText;
 			}
 			set
 			{
-				ILine line = null;
-
+				// case: editor
 				if (Far.Net.Window.Kind == WindowKind.Editor)
 				{
 					IEditor editor = Far.Net.Editor;
 					switch (editor.SelectionKind)
 					{
-						case RegionKind.Rect:
+						case PlaceKind.Column:
 							throw new NotSupportedException("Rectangular selection is not supported.");
-						case RegionKind.Stream:
+						case PlaceKind.Stream:
 							editor.SetSelectedText(value);
 							return;
 					}
 
-					line = editor[-1];
+					editor[-1].Text = value;
+					return;
 				}
 
-				if (line == null)
-					line = Far.Net.Line;
-
+				// other lines
+				ILine line = Far.Net.Line;
 				if (line == null)
 					throw new InvalidOperationException("There is no current text to set.");
-
-				LineRegion selection2 = line.Selection;
-				if (selection2.Start >= 0)
-					line.SelectedText = value;
 				else
-					line.Text = value;
+					line.ActiveText = value;
 			}
 		}
 
