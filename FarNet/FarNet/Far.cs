@@ -67,13 +67,19 @@ namespace FarNet
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
-		public abstract void Message(string body);
+		public void Message(string body)
+		{
+			Message(body, null, MsgOptions.Ok, null, null);
+		}
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
-		public abstract void Message(string body, string header);
+		public void Message(string body, string header)
+		{
+			Message(body, header, MsgOptions.Ok, null, null);
+		}
 		/// <summary>
 		/// Shows a message box with options.
 		/// </summary>
@@ -81,7 +87,10 @@ namespace FarNet
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
-		public abstract int Message(string body, string header, MsgOptions options);
+		public int Message(string body, string header, MsgOptions options)
+		{
+			return Message(body, header, options, null, null);
+		}
 		/// <summary>
 		/// Shows a message box with options and buttons.
 		/// </summary>
@@ -90,7 +99,10 @@ namespace FarNet
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
-		public abstract int Message(string body, string header, MsgOptions options, string[] buttons);
+		public int Message(string body, string header, MsgOptions options, string[] buttons)
+		{
+			return Message(body, header, options, buttons, null);
+		}
 		/// <summary>
 		/// Shows a message box with options, buttons and help.
 		/// </summary>
@@ -205,7 +217,10 @@ namespace FarNet
 		/// Processing is not displayed.
 		/// </summary>
 		/// <param name="sequence">Sequence of keys.</param>
-		public abstract void PostKeySequence(int[] sequence);
+		public void PostKeySequence(int[] sequence)
+		{
+			PostKeySequence(sequence, true);
+		}
 		/// <summary>
 		/// Posts a sequence of keys to the Far keyboard queue.
 		/// </summary>
@@ -217,7 +232,10 @@ namespace FarNet
 		/// Processing is not displayed, and keys are sent to editor plugins.
 		/// </summary>
 		/// <param name="macro">Macro text.</param>
-		public abstract void PostMacro(string macro);
+		public void PostMacro(string macro)
+		{
+			PostMacro(macro, false, false);
+		}
 		/// <summary>
 		/// Posts a macro to Far.
 		/// </summary>
@@ -336,7 +354,10 @@ namespace FarNet
 		/// Returns all strings from history.
 		/// </summary>
 		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory.</param>
-		public abstract ICollection<string> GetHistory(string name);
+		public ICollection<string> GetHistory(string name)
+		{
+			return GetHistory(name, null);
+		}
 		/// <summary>
 		/// Returns strings from history by type.
 		/// </summary>
@@ -450,18 +471,27 @@ namespace FarNet
 		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
-		public abstract string Input(string prompt);
+		public string Input(string prompt)
+		{
+			return Input(prompt, null, null, string.Empty);
+		}
 		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
-		public abstract string Input(string prompt, string history);
+		public string Input(string prompt, string history)
+		{
+			return Input(prompt, history, null, string.Empty);
+		}
 		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
-		public abstract string Input(string prompt, string history, string title);
+		public string Input(string prompt, string history, string title)
+		{
+			return Input(prompt, history, title, string.Empty);
+		}
 		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
@@ -546,7 +576,10 @@ namespace FarNet
 		/// <summary>
 		/// See <see cref="TempName(string)"/>
 		/// </summary>
-		public abstract string TempName();
+		public string TempName()
+		{
+			return TempName(null);
+		}
 		/// <summary>
 		/// Creates a folder in %TEMP%.
 		/// </summary>
@@ -556,7 +589,10 @@ namespace FarNet
 		/// <summary>
 		/// See <see cref="TempFolder(string)"/>
 		/// </summary>
-		public abstract string TempFolder();
+		public string TempFolder()
+		{
+			return TempFolder(null);
+		}
 		/// <summary>
 		/// Gets the current dialog operator. Use it sparingly.
 		/// </summary>

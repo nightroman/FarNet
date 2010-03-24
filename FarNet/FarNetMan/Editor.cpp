@@ -20,11 +20,6 @@ String^ AnyEditor::WordDiv::get()
 	return gcnew String(wd);
 }
 
-void AnyEditor::WordDiv::set(String^)
-{
-	throw gcnew NotSupportedException("You may set it only for an editor instance, not globally.");
-}
-
 String^ AnyEditor::EditText(String^ text, String^ title)
 {
 	return Works::EditorTools::EditText(text, title);
@@ -306,21 +301,6 @@ void Editor::ExpandTabs::set(ExpandTabsMode value)
 int Editor::Id::get()
 {
 	return _id;
-}
-
-Object^ Editor::Host::get()
-{
-	return _Host;
-}
-
-void Editor::Host::set(Object^ value)
-{
-	if (!value)
-		throw gcnew ArgumentNullException("value");
-	if (_Host)
-		throw gcnew InvalidOperationException("Host is already set.");
-
-	_Host = value;
 }
 
 int Editor::TabSize::get()
@@ -692,11 +672,6 @@ void Editor::GoToEnd(bool addLine)
 	}
 }
 
-String^ Editor::GetText()
-{
-	return GetText(CV::CRLF);
-}
-
 String^ Editor::GetText(String^ separator)
 {
 	StringBuilder sb;
@@ -996,11 +971,6 @@ void Editor::Stop()
 	_id = -2;
 }
 
-String^ Editor::GetSelectedText()
-{
-	return GetSelectedText(CV::CRLF);
-}
-
 String^ Editor::GetSelectedText(String^ separator)
 {
 	AutoEditorInfo ei;
@@ -1057,11 +1027,6 @@ void Editor::SetSelectedText(String^ text)
 	// select inserted
 	ei.Update();
 	SelectText(left, top, ei.CurPos - 1, ei.CurLine, PlaceKind::Stream);
-}
-
-void Editor::SelectText(int column1, int line1, int column2, int line2)
-{
-	SelectText(column1, line1, column2, line2, PlaceKind::Stream); 
 }
 
 void Editor::SelectText(int column1, int line1, int column2, int line2, PlaceKind kind)
