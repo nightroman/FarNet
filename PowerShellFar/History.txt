@@ -6,6 +6,9 @@ http://code.google.com/p/farnet/
 The PSF core and several scripts were adapted to the recent FarNet refactoring
 changes in editor API. See FarNet history for details.
 
+HotLines
+HotText
+
 = 4.3.11 =
 
 DATA PREVIEW IN PANELS

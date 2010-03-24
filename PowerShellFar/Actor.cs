@@ -484,9 +484,9 @@ Continue with this current directory?
 		/// remove items and modify items (<see cref="ILine"/>).
 		/// </para>
 		/// </remarks>
-		public IList<ILine> HotLines
+		public IList<ILine> ActiveLines
 		{
-			get { return EditorKit.HotLines; }
+			get { return EditorKit.ActiveLines; }
 		}
 
 		/// <summary>
@@ -496,10 +496,10 @@ Continue with this current directory?
 		/// Gets or sets selected text if selection exists in the current editor or an editor line,
 		/// else a line text if any kind of editor line is active.
 		/// </remarks>
-		public string HotText
+		public string ActiveText
 		{
-			get { return EditorKit.HotText; }
-			set { EditorKit.HotText = value; }
+			get { return EditorKit.ActiveText; }
+			set { EditorKit.ActiveText = value; }
 		}
 
 		/// <summary>

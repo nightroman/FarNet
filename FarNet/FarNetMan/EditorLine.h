@@ -14,8 +14,7 @@ public:
 	virtual property int Caret { int get() override; void set(int value) override; }
 	virtual property int Index { int get() override; }
 	virtual property int Length { int get() override; }
-	virtual property LineRegion Selection { LineRegion get() override; }
-	virtual property String^ EndOfLine { String^ get() override; void set(String^ value) override; }
+	virtual property Span Selection { Span get() override; }
 	virtual property String^ Text { String^ get() override; void set(String^ value) override; }
 	virtual property String^ SelectedText { String^ get() override; void set(String^ value) override; }
 public:

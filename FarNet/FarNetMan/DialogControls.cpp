@@ -75,14 +75,14 @@ public:
 			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
 		}
 	}
-	virtual property LineRegion Selection
+	virtual property Span Selection
 	{
-		LineRegion get() override
+		Span get() override
 		{
 			EditorSelect es;
 			Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
 
-			LineRegion result;
+			Span result;
 			if (es.BlockType == BTYPE_NONE)
 			{
 				result.Start = -1;

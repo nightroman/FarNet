@@ -388,7 +388,7 @@ namespace PowerShellFar
 								string text = Editor[i].Text;
 								if (text == "<=")
 								{
-									Editor.SelectText(RegionKind.Stream, 0, i, -1, pt.Y);
+									Editor.SelectText(0, i, -1, pt.Y, PlaceKind.Stream);
 									Editor.DeleteText();
 									break;
 								}

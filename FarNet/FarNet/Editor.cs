@@ -195,7 +195,7 @@ namespace FarNet
 		/// </remarks>
 		bool IsNew { get; set; }
 		/// <summary>
-		/// Inserts the text at the current caret position.
+		/// Inserts the text at the caret position.
 		/// Editor must be current.
 		/// </summary>
 		/// <param name="text">The text. Supported line delimiters: CR, LF, CR+LF.</param>
@@ -545,14 +545,22 @@ namespace FarNet
 		/// <param name="text">New text.</param>
 		void SetSelectedText(string text);
 		/// <summary>
-		/// Selects the specified region of text.
+		/// Selects the specified stream of text.
 		/// </summary>
-		/// <param name="kind">Region kind.</param>
 		/// <param name="column1">Column 1.</param>
 		/// <param name="line1">Line 1.</param>
 		/// <param name="column2">Column 2.</param>
 		/// <param name="line2">Line 2.</param>
-		void SelectText(RegionKind kind, int column1, int line1, int column2, int line2);
+		void SelectText(int column1, int line1, int column2, int line2);
+		/// <summary>
+		/// Selects the specified place of text.
+		/// </summary>
+		/// <param name="column1">Column 1.</param>
+		/// <param name="line1">Line 1.</param>
+		/// <param name="column2">Column 2.</param>
+		/// <param name="line2">Line 2.</param>
+		/// <param name="kind">Selected place kind.</param>
+		void SelectText(int column1, int line1, int column2, int line2, PlaceKind kind);
 		/// <summary>
 		/// Selects all text.
 		/// </summary>
@@ -571,7 +579,7 @@ namespace FarNet
 		/// <summary>
 		/// Gets the selection kind.
 		/// </summary>
-		RegionKind SelectionKind { get; }
+		PlaceKind SelectionKind { get; }
 		/// <summary>
 		/// Gets the selected place.
 		/// </summary>
@@ -615,50 +623,6 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Line region, for example selected region of <see cref="ILine"/> line.
-	/// </summary>
-	public struct LineRegion
-	{
-		/// <summary>
-		/// Start position.
-		/// </summary>
-		public int Start { get; set; }
-		/// <summary>
-		/// End position.
-		/// </summary>
-		public int End { get; set; }
-		/// <summary>
-		/// Gets the region length.
-		/// </summary>
-		public int Length { get { return End - Start; } }
-		///
-		public override string ToString()
-		{
-			return Length < 0 ? "<none>" : Invariant.Format("{0} from {1} to {2}", Length, Start, End);
-		}
-		///
-		public static bool operator ==(LineRegion left, LineRegion right)
-		{
-			return left.Start == right.Start && left.End == right.End;
-		}
-		///
-		public static bool operator !=(LineRegion left, LineRegion right)
-		{
-			return left.Start != right.Start || left.End != right.End;
-		}
-		///
-		public override bool Equals(object obj)
-		{
-			return obj != null && obj.GetType() == typeof(LineRegion) && this == (LineRegion)obj;
-		}
-		///
-		public override int GetHashCode()
-		{
-			return Start | (End << 16);
-		}
-	}
-
-	/// <summary>
 	/// Abstract line in various text and line editors.
 	/// </summary>
 	/// <remarks>
@@ -679,6 +643,8 @@ namespace FarNet
 		/// <summary>
 		/// Gets or sets the line text.
 		/// </summary>
+		/// <seealso cref="ActiveText"/>
+		/// <seealso cref="SelectedText"/>
 		public abstract string Text { get; set; }
 		/// <summary>
 		/// Gets or sets (replaces) the selected text.
@@ -686,14 +652,9 @@ namespace FarNet
 		/// <remarks>
 		/// If there is no selection then <c>get</c> returns null, <c>set</c> throws.
 		/// </remarks>
+		/// <seealso cref="ActiveText"/>
+		/// <seealso cref="Text"/>
 		public abstract string SelectedText { get; set; }
-		/// <summary>
-		/// Gets or sets the end of line.
-		/// </summary>
-		/// <remarks>
-		/// It is used only for editor lines and normally it should be kept default.
-		/// </remarks>
-		public virtual string EndOfLine { get { return string.Empty; } set { throw new NotSupportedException(); } }
 		/// <summary>
 		/// Gets or sets the caret position.
 		/// </summary>
@@ -703,7 +664,7 @@ namespace FarNet
 		/// </remarks>
 		public abstract int Caret { get; set; }
 		/// <summary>
-		/// Inserts text into the line at the current caret position.
+		/// Inserts text at the caret position.
 		/// </summary>
 		/// <param name="text">String to insert to the line.</param>
 		/// <remarks>
@@ -711,10 +672,10 @@ namespace FarNet
 		/// </remarks>
 		public abstract void InsertText(string text);
 		/// <summary>
-		/// Selects the text fragment in the current editor line, the command line, or the dialog line.
+		/// Selects the span of text in the current editor line, the command line, or the dialog line.
 		/// </summary>
 		/// <param name="startPosition">Start position.</param>
-		/// <param name="endPosition">End position.</param>
+		/// <param name="endPosition">End position, not included into the span.</param>
 		public abstract void SelectText(int startPosition, int endPosition);
 		/// <summary>
 		/// Turns selection off in the current editor line, the command line, or the dialog line.
@@ -732,12 +693,12 @@ namespace FarNet
 		/// </summary>
 		public abstract WindowKind WindowKind { get; }
 		/// <summary>
-		/// Gets the selection info.
+		/// Gets the selection span.
 		/// </summary>
 		/// <remarks>
 		/// If selection does not exists then returned position and length values are negative.
 		/// </remarks>
-		public abstract LineRegion Selection { get; }
+		public abstract Span Selection { get; }
 		/// <summary>
 		/// Returns the line <see cref="Text"/>.
 		/// </summary>
@@ -747,6 +708,23 @@ namespace FarNet
 		public sealed override string ToString()
 		{
 			return Text;
+		}
+		/// <summary>
+		/// Gets or sets <see cref="SelectedText"/> if selection exists, otherwise gets or sets <see cref="Text"/>.
+		/// </summary>
+		public string ActiveText
+		{
+			get
+			{
+				return SelectedText ?? Text;
+			}
+			set
+			{
+				if (Selection.Length < 0)
+					Text = value;
+				else
+					SelectedText = value;
+			}
 		}
 	}
 

@@ -138,7 +138,7 @@ void SelectionCollection::InsertText(int index, String^ item)
 	AutoEditorInfo ei2;
 
 	// select inserted
-	_Editor->SelectText(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine);
+	_Editor->SelectText(egss.SelStart, ei.BlockStartLine, ei2.CurPos - 1, ei2.CurLine, PlaceKind::Stream);
 }
 
 void SelectionCollection::RemoveAt(int index)
@@ -173,7 +173,7 @@ void SelectionCollection::RemoveAt(int index)
 		Place pp = Edit_SelectionPlace();
 		++pp.Top;
 		pp.Left = 0;
-		_Editor->SelectText((RegionKind)ei.BlockType, pp.Left, pp.Top, pp.Right, pp.Bottom);
+		_Editor->SelectText(pp.Left, pp.Top, pp.Right, pp.Bottom, (PlaceKind)ei.BlockType);
 
 		// remove selected part of line
 		ILine^ line = _Editor[top];
@@ -205,7 +205,7 @@ void SelectionCollection::RemoveAt(int index)
 			Edit_RemoveAt(bottom);
 			return;
 		}
-		_Editor->SelectText(RegionKind::Stream, egss.SelStart, ei.BlockStartLine, text->Length - 1, bottom);
+		_Editor->SelectText(egss.SelStart, ei.BlockStartLine, text->Length - 1, bottom, PlaceKind::Stream);
 		return;
 	}
 

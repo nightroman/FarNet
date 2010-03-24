@@ -59,28 +59,6 @@ void EditorLine::Caret::set(int value)
 	EditorControl_ECTL_SETPOSITION(esp);
 }
 
-String^ EditorLine::EndOfLine::get()
-{
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
-	return gcnew String(egs.StringEOL);
-}
-
-void EditorLine::EndOfLine::set(String^ value)
-{
-	if (!value)
-		throw gcnew ArgumentNullException("value");
-
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
-	EditorSetString ess = GetEss();
-
-	PIN_NE(pin, value);
-	ess.StringEOL = pin;
-	ess.StringLength = egs.StringLength;
-	ess.StringText = egs.StringText;
-
-	EditorControl_ECTL_SETSTRING(ess);
-}
-
 String^ EditorLine::Text::get()
 {
 	if (_Selected)
@@ -110,9 +88,9 @@ void EditorLine::Text::set(String^ value)
 	EditorControl_ECTL_SETSTRING(ess);
 }
 
-LineRegion EditorLine::Selection::get()
+Span EditorLine::Selection::get()
 {
-	LineRegion result;
+	Span result;
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
 
 	if (egs.SelStart < 0)
