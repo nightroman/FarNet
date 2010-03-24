@@ -25,7 +25,7 @@ namespace FarNet
 		/// call <see cref="Save"/>, perform operations, call <see cref="Load"/>
 		/// and restore the flag.
 		/// </remarks>
-		public abstract bool ManualSaveLoad { get; set; }
+		public bool ManualSaveLoad { get; set; }
 		/// <summary>
 		/// Saves all macros from Far memory to the storage.
 		/// </summary>

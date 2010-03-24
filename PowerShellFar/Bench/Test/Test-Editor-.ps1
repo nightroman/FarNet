@@ -76,9 +76,9 @@ Assert-Far ($Editor.GetText() -eq '')
 $Editor.Clear()
 Assert-Far ($Editor.GetText() -eq '' -and $Editor.Count -eq 1 -and $Editor[0].Text -eq '')
 # add lines when last line is empty
-$Editor.AddText('Строка1')
+$Editor.Add('Строка1')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`n")
-$Editor.AddText('Line2')
+$Editor.Add('Line2')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`n")
 # get\set lines
 $Editor[0].Text += '.'
@@ -88,9 +88,9 @@ Assert-Far ($Editor.GetText() -eq "Строка1.`r`nLine2.`r`nEnd.")
 # add lines when last line is not empty
 $Editor.Clear()
 $Editor[0].Text = 'Строка1'
-$Editor.AddText('Line2')
+$Editor.Add('Line2')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2")
-$Editor.AddText('Line3')
+$Editor.Add('Line3')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`nLine3")
 # insert lines
 $Editor.Insert(1, 'X')

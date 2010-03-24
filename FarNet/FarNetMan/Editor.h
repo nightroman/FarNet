@@ -11,105 +11,126 @@ ref class SelectionCollection;
 ref class VisibleEditorCursor;
 ref class EditorLineCollection;
 
+#define DEF_EVENT_IMP(EventName, Handler)\
+virtual event EventHandler^ EventName {\
+void add(EventHandler^ handler) override { Handler += handler; }\
+void remove(EventHandler^ handler) override { Handler -= handler; }\
+void raise(Object^ sender, EventArgs^ e) { if (Handler != nullptr) Handler(sender, e); }\
+}\
+internal: EventHandler^ Handler;
+
+#define DEF_EVENT_ARGS_IMP(EventName, Handler, Arguments)\
+virtual event EventHandler<Arguments^>^ EventName {\
+void add(EventHandler<Arguments^>^ handler) override { Handler += handler; }\
+void remove(EventHandler<Arguments^>^ handler) override { Handler -= handler; }\
+void raise(Object^ sender, Arguments^ e) { if (Handler != nullptr) Handler(sender, e); }\
+}\
+internal: EventHandler<Arguments^>^ Handler;
+
 ref class AnyEditor : IAnyEditor
 {
-public: DEF_EVENT(Closed, _Closed);
-public: DEF_EVENT(CtrlCPressed, _CtrlCPressed);
-public: DEF_EVENT(GotFocus, _GotFocus);
-public: DEF_EVENT(Idled, _Idled);
-public: DEF_EVENT(LosingFocus, _LosingFocus);
-public: DEF_EVENT(Opened, _Opened);
-public: DEF_EVENT(Saving, _Saving);
-public: DEF_EVENT_ARGS(OnKey, _OnKey, KeyEventArgs);
-public: DEF_EVENT_ARGS(OnMouse, _OnMouse, MouseEventArgs);
-public: DEF_EVENT_ARGS(OnRedraw, _OnRedraw, RedrawEventArgs);
+public: DEF_EVENT_IMP(Closed, _Closed);
+public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
+public: DEF_EVENT_IMP(GotFocus, _GotFocus);
+public: DEF_EVENT_IMP(Idled, _Idled);
+public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
+public: DEF_EVENT_IMP(Opened, _Opened);
+public: DEF_EVENT_IMP(Saving, _Saving);
+public: DEF_EVENT_ARGS_IMP(OnKey, _OnKey, KeyEventArgs);
+public: DEF_EVENT_ARGS_IMP(OnMouse, _OnMouse, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(OnRedraw, _OnRedraw, RedrawEventArgs);
 public:
-	virtual property String^ WordDiv { String^ get(); void set(String^ value); }
-	virtual String^ EditText(String^ text, String^ title);
+	virtual property String^ WordDiv { String^ get() override; }
+	virtual String^ EditText(String^ text, String^ title) override;
 };
 
-ref class Editor : public AnyEditor, public IEditor
+ref class Editor : IEditor
 {
+public: DEF_EVENT_IMP(Closed, _Closed);
+public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
+public: DEF_EVENT_IMP(GotFocus, _GotFocus);
+public: DEF_EVENT_IMP(Idled, _Idled);
+public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
+public: DEF_EVENT_IMP(Opened, _Opened);
+public: DEF_EVENT_IMP(Saving, _Saving);
+public: DEF_EVENT_ARGS_IMP(OnKey, _OnKey, KeyEventArgs);
+public: DEF_EVENT_ARGS_IMP(OnMouse, _OnMouse, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(OnRedraw, _OnRedraw, RedrawEventArgs);
 public:
-	virtual property bool DisableHistory { bool get(); void set(bool value); }
-	virtual property bool IsLastLine { bool get(); }
-	virtual property bool IsLocked { bool get(); }
-	virtual property bool IsModified { bool get(); }
-	virtual property bool IsNew { bool get(); void set(bool value); }
-	virtual property bool IsOpened { bool get(); }
-	virtual property bool IsSaved { bool get(); }
-	virtual property bool Overtype { bool get(); void set(bool value); }
-	virtual property bool SelectionExists { bool get(); }
-	virtual property bool ShowWhiteSpace { bool get(); void set(bool value); }
-	virtual property bool WriteByteOrderMark { bool get(); void set(bool value); }
-	virtual property DeleteSource DeleteSource { FarNet::DeleteSource get(); void set(FarNet::DeleteSource value); }
-	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get(); void set(ExpandTabsMode value); }
-	virtual property ILine^ default[int] { ILine^ get(int index); }
-	virtual property IList<ILine^>^ Lines { IList<ILine^>^ get(); }
-	virtual property IList<ILine^>^ SelectedLines { IList<ILine^>^ get(); }
-	virtual property IList<String^>^ Strings { IList<String^>^ get(); }
-	virtual property int CodePage { int get(); void set(int value); }
-	virtual property int Count { int get(); }
-	virtual property int Id { int get(); }
-	virtual property int TabSize { int get(); void set(int value); }
-	virtual property Object^ Data;
-	virtual property Object^ Host { Object^ get(); void set(Object^ value); }
-	virtual property Place SelectionPlace { Place get(); }
-	virtual property Place Window { Place get(); void set(Place value); }
-	virtual property Point Caret { Point get(); void set(Point value); }
-	virtual property Point SelectionPoint { Point get(); }
-	virtual property Point WindowSize { Point get(); }
-	virtual property PlaceKind SelectionKind { PlaceKind get(); }
-	virtual property String^ FileName { String^ get(); void set(String^ value); }
-	virtual property String^ Title { String^ get(); void set(String^ value); }
+	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
+	virtual property bool IsLastLine { bool get() override; }
+	virtual property bool IsLocked { bool get() override; }
+	virtual property bool IsModified { bool get() override; }
+	virtual property bool IsNew { bool get() override; void set(bool value) override; }
+	virtual property bool IsOpened { bool get() override; }
+	virtual property bool IsSaved { bool get() override; }
+	virtual property bool Overtype { bool get() override; void set(bool value) override; }
+	virtual property bool SelectionExists { bool get() override; }
+	virtual property bool ShowWhiteSpace { bool get() override; void set(bool value) override; }
+	virtual property bool WriteByteOrderMark { bool get() override; void set(bool value) override; }
+	virtual property FarNet::DeleteSource DeleteSource { FarNet::DeleteSource get() override; void set(FarNet::DeleteSource value) override; }
+	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get() override; void set(ExpandTabsMode value) override; }
+	virtual property ILine^ default[int] { ILine^ get(int index) override; }
+	virtual property IList<ILine^>^ Lines { IList<ILine^>^ get() override; }
+	virtual property IList<ILine^>^ SelectedLines { IList<ILine^>^ get() override; }
+	virtual property IList<String^>^ Strings { IList<String^>^ get() override; }
+	virtual property int CodePage { int get() override; void set(int value) override; }
+	virtual property int Count { int get() override; }
+	virtual property int Id { int get() override; }
+	virtual property int TabSize { int get() override; void set(int value) override; }
+	virtual property Place SelectionPlace { Place get() override; }
+	virtual property Place Window { Place get() override; void set(Place value) override; }
+	virtual property Point Caret { Point get() override; void set(Point value) override; }
+	virtual property Point SelectionPoint { Point get() override; }
+	virtual property Point WindowSize { Point get() override; }
+	virtual property PlaceKind SelectionKind { PlaceKind get() override; }
+	virtual property String^ FileName { String^ get() override; void set(String^ value) override; }
+	virtual property String^ Title { String^ get() override; void set(String^ value) override; }
 	virtual property String^ WordDiv { String^ get() override; void set(String^ value) override; }
-	virtual property Switching Switching { FarNet::Switching get(); void set(FarNet::Switching value); }
-	virtual property TextFrame Frame { TextFrame get(); void set(TextFrame value); }
+	virtual property FarNet::Switching Switching { FarNet::Switching get() override; void set(FarNet::Switching value) override; }
+	virtual property TextFrame Frame { TextFrame get() override; void set(TextFrame value) override; }
 public:
-	virtual ICollection<TextFrame>^ Bookmarks();
-	virtual int ConvertColumnEditorToScreen(int line, int column);
-	virtual int ConvertColumnScreenToEditor(int line, int column);
-	virtual Point ConvertPointScreenToEditor(Point point);
-	virtual String^ GetSelectedText();
-	virtual String^ GetSelectedText(String^ separator);
-	virtual String^ GetText();
-	virtual String^ GetText(String^ separator);
-	virtual TextWriter^ CreateWriter();
-	virtual void Add(String^ text);
-	virtual void Begin();
-	virtual void BeginAsync();
-	virtual void BeginUndo();
-	virtual void Clear();
-	virtual void Close();
-	virtual void DeleteChar();
-	virtual void DeleteLine();
-	virtual void DeleteText();
-	virtual void End();
-	virtual void EndAsync();
-	virtual void EndUndo();
-	virtual void GoTo(int column, int line);
-	virtual void GoToColumn(int pos);
-	virtual void GoToEnd(bool addLine);
-	virtual void GoToLine(int line);
-	virtual void Insert(int line, String^ text);
-	virtual void InsertChar(Char text);
-	virtual void InsertLine();
-	virtual void InsertLine(bool indent);
-	virtual void InsertText(String^ text);
-	virtual void Open();
-	virtual void Open(OpenMode mode);
-	virtual void Redo();
-	virtual void Redraw();
-	virtual void RemoveAt(int index);
-	virtual void Save();
-	virtual void Save(String^ fileName);
-	virtual void SelectAllText();
-	virtual void SelectText(int column1, int line1, int column2, int line2);
-	virtual void SelectText(int column1, int line1, int column2, int line2, PlaceKind kind);
-	virtual void SetSelectedText(String^ text);
-	virtual void SetText(String^ text);
-	virtual void Undo();
-	virtual void UnselectText();
+	virtual ICollection<TextFrame>^ Bookmarks() override;
+	virtual int ConvertColumnEditorToScreen(int line, int column) override;
+	virtual int ConvertColumnScreenToEditor(int line, int column) override;
+	virtual Point ConvertPointScreenToEditor(Point point) override;
+	virtual String^ GetSelectedText(String^ separator) override;
+	virtual String^ GetText(String^ separator) override;
+	virtual TextWriter^ CreateWriter() override;
+	virtual void Add(String^ text) override;
+	virtual void Begin() override;
+	virtual void BeginAsync() override;
+	virtual void BeginUndo() override;
+	virtual void Clear() override;
+	virtual void Close() override;
+	virtual void DeleteChar() override;
+	virtual void DeleteLine() override;
+	virtual void DeleteText() override;
+	virtual void End() override;
+	virtual void EndAsync() override;
+	virtual void EndUndo() override;
+	virtual void GoTo(int column, int line) override;
+	virtual void GoToColumn(int pos) override;
+	virtual void GoToEnd(bool addLine) override;
+	virtual void GoToLine(int line) override;
+	virtual void Insert(int line, String^ text) override;
+	virtual void InsertChar(Char text) override;
+	virtual void InsertLine() override;
+	virtual void InsertLine(bool indent) override;
+	virtual void InsertText(String^ text) override;
+	virtual void Open() override;
+	virtual void Open(OpenMode mode) override;
+	virtual void Redo() override;
+	virtual void Redraw() override;
+	virtual void RemoveAt(int index) override;
+	virtual void Save() override;
+	virtual void Save(String^ fileName) override;
+	virtual void SelectAllText() override;
+	virtual void SelectText(int column1, int line1, int column2, int line2, PlaceKind kind) override;
+	virtual void SetSelectedText(String^ text) override;
+	virtual void SetText(String^ text) override;
+	virtual void Undo() override;
+	virtual void UnselectText() override;
 internal:
 	Editor();
 	void Sync();
@@ -138,7 +159,6 @@ private:
 	int _CodePage;
 	TextFrame _frameStart;
 	TextFrame _frameSaved;
-	Object^ _Host;
 internal:
 	// async stuff
 	HANDLE _hMutex;

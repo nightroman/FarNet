@@ -4,7 +4,8 @@ http://code.google.com/p/farnet/
 = 4.3.12 =
 
 The PSF core and several scripts were adapted to the recent FarNet refactoring
-changes in editor API. See FarNet history for details.
+changes in editor and editor lines API. See FarNet history for details. Scripts
+working with that API have to be updated, more likely.
 
 In addition: $Psf properties HotLines and HotText were renamed into ActiveLines
 and ActiveText (just to be more formal).

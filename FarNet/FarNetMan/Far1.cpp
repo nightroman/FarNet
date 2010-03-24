@@ -61,26 +61,6 @@ IModuleTool^ Far1::GetModuleTool(Guid id)
 	return (IModuleTool^)action;
 }
 
-void Far1::Message(String^ body)
-{
-	Message::Show(body, nullptr, MsgOptions::Ok, nullptr, nullptr);
-}
-
-void Far1::Message(String^ body, String^ header)
-{
-	Message::Show(body, header, MsgOptions::Ok, nullptr, nullptr);
-}
-
-int Far1::Message(String^ body, String^ header, MsgOptions options)
-{
-	return Message::Show(body, header, options, nullptr, nullptr);
-}
-
-int Far1::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons)
-{
-	return Message::Show(body, header, options, buttons, nullptr);
-}
-
 int Far1::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
 {
 	return Message::Show(body, header, options, buttons, helpTopic);
@@ -193,11 +173,6 @@ array<int>^ Far1::CreateKeySequence(String^ keys)
 	}
 	
 	return r;
-}
-
-void Far1::PostKeySequence(array<int>^ sequence)
-{
-	PostKeySequence(sequence, true);
 }
 
 //! [_090328_170110] KSFLAGS_NOSENDKEYSTOPLUGINS is not set,
@@ -385,11 +360,6 @@ void Far1::SetUserScreen()
 ICollection<String^>^ Far1::GetDialogHistory(String^ name)
 {
 	return GetHistory("SavedDialogHistory\\" + name, nullptr);
-}
-
-ICollection<String^>^ Far1::GetHistory(String^ name)
-{
-	return GetHistory(name, nullptr);
 }
 
 //! Hack, not API.
@@ -604,21 +574,6 @@ IPanel^ Far1::FindPanel(Type^ hostType)
 	return Panel0::GetPanel(hostType);
 }
 
-String^ Far1::Input(String^ prompt)
-{
-	return Input(prompt, nullptr, nullptr, String::Empty);
-}
-
-String^ Far1::Input(String^ prompt, String^ history)
-{
-	return Input(prompt, history, nullptr, String::Empty);
-}
-
-String^ Far1::Input(String^ prompt, String^ history, String^ title)
-{
-	return Input(prompt, history, title, String::Empty);
-}
-
 String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text)
 {
 	InputBox ib;
@@ -723,11 +678,6 @@ void Far1::SetProgressValue(int currentValue, int maximumValue)
 CultureInfo^ Far1::GetCurrentUICulture(bool update)
 {
 	return Far0::GetCurrentUICulture(update);
-}
-
-void Far1::PostMacro(String^ macro)
-{
-	PostMacro(macro, false, false);
 }
 
 void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)

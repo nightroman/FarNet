@@ -421,7 +421,7 @@ namespace FarNet
 	public abstract class ModuleEditor : ModuleAction
 	{
 		/// <summary>
-		/// Editor <see cref="IAnyEditor.Opened"/> handler.
+		/// Editor <see cref="IEditorEvents.Opened"/> handler.
 		/// </summary>
 		/// <remarks>
 		/// This method is called once on opening an editor.

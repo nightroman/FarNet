@@ -34,8 +34,6 @@ namespace FarNet.Works
 
 		#region override
 		
-		public override bool ManualSaveLoad { get; set; }
-
 		public override object GetConstant(string name)
 		{
 			return GetScalar(MacroArea.Consts, name);
