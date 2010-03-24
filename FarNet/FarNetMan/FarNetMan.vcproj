@@ -524,10 +524,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SelectionCollection.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Shelve.cpp"
 				>
 			</File>
@@ -687,10 +683,6 @@
 			</File>
 			<File
 				RelativePath=".\Headers.c\plugin.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SelectionCollection.h"
 				>
 			</File>
 			<File

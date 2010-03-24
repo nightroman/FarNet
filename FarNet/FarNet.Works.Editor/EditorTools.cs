@@ -11,10 +11,16 @@ namespace FarNet.Works
 {
 	public static class EditorTools
 	{
-		public static IEnumerable<ILine> Enumerate(IEditor editor, int start, int end)
+		public static IEnumerable<ILine> EnumerateLines(IEditor editor, int start, int end)
 		{
 			for (int i = start; i < end; ++i)
 				yield return editor[i];
+		}
+
+		public static IEnumerable<string> EnumerateStrings(IEditor editor, int start, int end)
+		{
+			for (int i = start; i < end; ++i)
+				yield return editor[i].Text;
 		}
 
 		public static string EditText(string text, string title)

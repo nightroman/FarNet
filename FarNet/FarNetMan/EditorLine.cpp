@@ -13,10 +13,6 @@ EditorLine::EditorLine(int index)
 : _Index(index)
 {}
 
-EditorLine::EditorLine(int index, bool selected)
-: _Index(index), _Selected(selected)
-{}
-
 FarNet::WindowKind EditorLine::WindowKind::get()
 {
 	return FarNet::WindowKind::Editor;
@@ -24,9 +20,6 @@ FarNet::WindowKind EditorLine::WindowKind::get()
 
 int EditorLine::Length::get()
 {
-	if (_Selected)
-		return Selection.Length;
-
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
 	return egs.StringLength;
 }
@@ -61,9 +54,6 @@ void EditorLine::Caret::set(int value)
 
 String^ EditorLine::Text::get()
 {
-	if (_Selected)
-		return SelectedText;
-
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
 	return gcnew String(egs.StringText, 0, egs.StringLength);
 }
@@ -72,12 +62,6 @@ void EditorLine::Text::set(String^ value)
 {
 	if (!value)
 		throw gcnew ArgumentNullException("value");
-
-	if (_Selected)
-	{
-		SelectedText = value;
-		return;
-	}
 
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
 	EditorSetString ess = GetEss();

@@ -25,31 +25,22 @@ param
 # setup
 Set-Location (Get-Location -PSProvider FileSystem)
 if (Test-Path $Test) { Remove-Item $Test }
-if (Test-Path 'Test.log') { Remove-Item 'Test.log' }
+$script:log = @()
 
 ### Create an editor
 $Editor = New-FarEditor $Test -Title 'TEST' -DeleteSource 'File'
 
 ### Add editor events
-$Editor.add_Opened({ 'Editor:Opened' >> Test.log })
-$Editor.add_Saving({ 'Editor:Saving' >> Test.log })
+$Editor.add_Opened({ $script:log += 'Editor:Opened' })
+$Editor.add_Saving({ $script:log += 'Editor:Saving' })
 
 ### Open the editor
 $Editor.Open()
-
-# Id tested later
 $id = $Editor.Id
-
-### Useful objects
-# current editor
 $Editor = $Far.Editor
-# all editor lines
-$Lines = $Editor.Lines
-# selected lines
-$Parts = $Editor.SelectedLines
-
-### Check Id and editor collection
 Assert-Far ($Editor.Id -eq $id)
+
+### Find Id in the editor list
 $found = $false
 foreach($e in $Far.Editors()) {
 	if ($e.Id -eq $id) {
@@ -59,7 +50,7 @@ foreach($e in $Far.Editors()) {
 }
 Assert-Far $found
 
-### Overtype
+### Overtype: test and set to the given
 $Editor.Overtype = $true
 $Editor.SetText('1234')
 $Editor.GoTo(0, 0)
@@ -102,9 +93,9 @@ Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2")
 $Editor.AddText('Line3')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nLine2`r`nLine3")
 # insert lines
-$Editor.InsertText(1, 'X')
+$Editor.Insert(1, 'X')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nLine3")
-$Editor.InsertText(3, 'Y')
+$Editor.Insert(3, 'Y')
 Assert-Far ($Editor.GetText() -eq "Строка1`r`nX`r`nLine2`r`nY`r`nLine3")
 # remove lines
 $Editor.RemoveAt(3)
@@ -135,100 +126,33 @@ if (!$Overtype) {
 	Assert-Far ($Editor.GetText() -eq ".`r`nКонец`r`nтеста`r`nTest-Editor`r`nEOF")
 }
 
-### Selection operations
-# rect selection
-$Editor.SetText("1`nHELLO`nWORLD")
+### Column selection
+
+$Editor.SetText(@'
+1
+HELLO
+WORLD
+'@)
 $Editor.SelectText(2, 1, 2, 2, 'Column')
-Assert-Far ($Editor.SelectionKind -eq 'Column')
-Assert-Far ($Parts.Count -eq 2)
-Assert-Far ($Editor.GetSelectedText() -eq "L`r`nR")
-Assert-Far ($Parts[0].Text -eq "L")
-Assert-Far ($Parts[1].Text -eq "R")
+Assert-Far @(
+	$Editor.SelectionKind -eq 'Column'
+	$Editor.GetSelectedText("`n") -eq "L`nR"
+)
+$Select = $Editor.SelectedLines
+Assert-Far ($Select.Count -eq 2)
+Assert-Far @(
+	$Select[0].Text -eq 'HELLO'
+	$Select[0].ActiveText -eq 'L'
+	$Select[0].SelectedText -eq 'L'
+	$Select[1].Text -eq 'WORLD'
+	$Select[1].ActiveText -eq 'R'
+	$Select[1].SelectedText -eq 'R'
+)
 $Editor.DeleteText()
-Assert-Far (!$Editor.SelectionExists)
-Assert-Far ($Editor.GetText() -eq "1`r`nHELO`r`nWOLD")
-# lines vs. true lines
-$Editor.SetText("1`nHELLO`nWORLD`n")
-Assert-Far ($Editor.Count -eq 4)
-# selection vs. true selection
-$Editor.SelectText(0, 0, -1, 2)
-Assert-Far ($Parts.Count -eq 3)
-# stream selection (line parts)
-$Editor.SetText("1`nHELLO`nWORLD")
-$Editor.SelectText(3, 1, 1, 2)
-Assert-Far ($Editor.SelectionKind -eq 'Stream')
-Assert-Far ($Parts.Count -eq 2)
-Assert-Far ($Editor.GetSelectedText() -eq "LO`r`nWO")
-Assert-Far ($Parts[0].Text -eq "LO")
-Assert-Far ($Parts[1].Text -eq "WO")
-# insert inside
-$Parts.InsertText(1, "новый")
-Assert-Far ($Editor.GetSelectedText() -eq "LO`r`nновый`r`nWO")
-# remove inside
-$Parts.RemoveAt(1)
-Assert-Far ($Editor.GetSelectedText() -eq "LO`r`nWO")
-# insert first, remove first (when first is completely selected)
-$Editor.SetText("1`nHELLO`nWORLD")
-$Editor.SelectText(0, 1, 1, 2)
-$Parts.InsertText(0, "новый")
-Assert-Far ($Editor.GetSelectedText() -eq "новый`r`nHELLO`r`nWO")
-$Parts.RemoveAt(0)
-Assert-Far ($Editor.GetSelectedText() -eq "HELLO`r`nWO")
-# insert first (when first is not completely selected)
-$Editor.SetText("1`nHELLO`nWORLD")
-$Editor.SelectText(3, 1, 1, 2)
-$Parts.InsertText(0, "-")
-Assert-Far ($Editor.GetSelectedText() -eq "-`r`nLO`r`nWO")
-Assert-Far ($Editor.GetText() -eq "1`r`nHEL-`r`nLO`r`nWORLD")
-# remove partially selected first
-$Parts.RemoveAt(0)
-Assert-Far ($Editor.GetSelectedText() -eq "LO`r`nWO")
-Assert-Far ($Editor.GetText() -eq "1`r`nHEL`r`nLO`r`nWORLD")
-# remove partially selected last
-$Parts.RemoveAt(1)
-Assert-Far ($Editor.GetSelectedText() -eq "LO")
-Assert-Far ($Editor.GetText() -eq "1`r`nHEL`r`nLO`r`nRLD")
-# add to selection (case: empty last line)
-$Editor.SetText("11`n22`n33")
-$Editor.SelectText(0, 1, -1, 2)
-Assert-Far ($Editor.GetSelectedText() -eq "22`r`n")
-$Parts.AddText("44")
-Assert-Far ($Editor.GetSelectedText() -eq "22`r`n44`r`n")
-Assert-Far ($Editor.GetText() -eq "11`r`n22`r`n44`r`n33")
-# add to selection (case: not empty last line)
-$Editor.SetText("11`n22`n33")
-$Editor.SelectText(0, 1, 1, 1)
-Assert-Far ($Editor.GetSelectedText() -eq "22")
-$Parts.AddText("44")
-Assert-Far ($Editor.GetSelectedText() -eq "22`r`n44")
-Assert-Far ($Editor.GetText() -eq "11`r`n22`r`n4433")
-# remove one line selection
-$Editor.SetText("11`n22`n33")
-$Editor.SelectText(0, 1, 1, 1)
-Assert-Far ($Editor.GetSelectedText() -eq "22")
-$Parts.RemoveAt(0)
-Assert-Far (!$Editor.SelectionExists)
-Assert-Far ($Editor.GetText() -eq "11`r`n`r`n33")
-# set items text
-$Editor.SetText("ФФ`nЫЫ`nЙЙ")
-$Editor.SelectText(1, 0, 0, 2)
-Assert-Far ($Editor.GetSelectedText() -eq "Ф`r`nЫЫ`r`nЙ")
-$Parts[0].Text = "ШШ"
-$Parts[1].Text = ""
-$Parts[2].Text = "ЦЦ"
-Assert-Far ($Editor.GetSelectedText() -eq "ШШ`r`n`r`nЦЦ")
-Assert-Far ($Editor.GetText() -eq "ФШШ`r`n`r`nЦЦЙ")
-$Parts[0].Text = "Ш"
-$Parts[1].Text = "Ы"
-$Parts[2].Text = "Ц"
-Assert-Far ($Editor.GetSelectedText() -eq "Ш`r`nЫ`r`nЦ")
-Assert-Far ($Editor.GetText() -eq "ФШ`r`nЫ`r`nЦЙ")
-# test case: remove an empty line before ELL
-$Editor.SetText("11`n`n22")
-$Editor.SelectText(0, 0, -1, 2)
-Remove-EmptyString- $Parts
-Assert-Far ($Editor.GetSelectedText() -eq "11")
-Assert-Far ($Editor.GetText() -eq "11`r`n22")
+Assert-Far @(
+	!$Editor.SelectionExists
+	$Editor.GetText("`n") -eq "1`nHELO`nWOLD"
+)
 
 ### Test editor scripts
 
@@ -269,14 +193,14 @@ Assert-Far ($Editor.GetText() -eq @"
 
 # remove double empty lines from selected
 $Editor.SelectText(0, 2, -1, 6)
-Remove-EmptyString- $Parts 2 #?????
+Remove-EmptyString- $Editor.SelectedLines 2
 Assert-Far ($Editor.GetSelectedText() -eq @"
 "йцу\кен"`r`n`r`n"!№;%:?*"`r`n
 "@)
 
 # remove empty lines from all text
 $Editor.UnselectText()
-Remove-EmptyString- $Lines #?????
+Remove-EmptyString- $Editor.Lines
 Assert-Far ($Editor.GetText() -eq @"
 "йцу\кен"`r`n"!№;%:?*"
 "@)
@@ -352,11 +276,13 @@ for($Editor.GoTo(0, 0); $Editor.Caret.X -lt 21; $Editor.GoToColumn($Editor.Caret
 #! don't check file is removed
 $Editor.Close()
 
-### Check logged events, remove log
+### Check logged events
 #! don't check Closed event
-$log = [string](Get-Content Test.log)
-Assert-Far ($log -eq "Editor:Opened Editor:Saving")
-Remove-Item Test.log -ErrorAction 0
+$logged = $script:log -join "`r`n"
+Assert-Far ($log -eq @'
+Editor:Opened
+Editor:Saving
+'@)
 
 ### Repeat the test with changed parameters
 if (!$Overtype) {

@@ -90,16 +90,71 @@ namespace FarNet
 	/// Thus, if you use an operator of not current editor then results may be unexpected.
 	/// </para>
 	/// <para>
-	/// Basically, the editor works like the indexed list of <see cref="ILine"/> lines. List members have "standard" names:
-	/// <see cref="Count"/> (line count), <see cref="this[int]"/> (access by index), <see cref="RemoveAt"/> (removes by index),
-	/// <see cref="Clear"/> (removes all).
+	/// The editor has members making it semantically similar to a list of <see cref="ILine"/> lines and strings.
+	/// These members are: <see cref="Count"/> (line count), <see cref="this[int]"/> (gets a line by its index),
+	/// <see cref="RemoveAt"/> (removes a line by its index), <see cref="Clear"/> (removes all lines),
+	/// <see cref="Add"/>\<see cref="Insert"/> (adds\inserts text line(s)).
 	/// </para>
 	/// <para>
-	/// Still, the editor is not a standard list. If you need a standard line list then use the <see cref="Lines"/> method.
+	/// Still, the editor is not a standard list of strings or lines.
+	/// Standard string list is <see cref="Strings"/>, it has almost full set of members except a few not really needed.
+	/// Standard line lists are <see cref="Lines"/> or <see cref="SelectedLines"/>, they have members mostly for reading.
 	/// </para>
 	/// </remarks>
 	public interface IEditor : IAnyEditor
 	{
+		#region Editor as a line list
+
+		/// <summary>
+		/// Gets line count. At least one line always exists.
+		/// </summary>
+		/// <seealso cref="this[int]"/>
+		int Count { get; }
+
+		/// <summary>
+		/// Gets the line by its index or the current line by -1.
+		/// </summary>
+		/// <param name="index">Line index, -1 for the current line.</param>
+		/// <returns>The requested line.</returns>
+		/// <seealso cref="Count"/>
+		/// <seealso cref="Lines"/>
+		/// <seealso cref="SelectedLines"/>
+		/// <remarks>
+		/// The returned line instance should be used instantly and should never be kept for future use.
+		/// The index is permanent, the instance always points to a line at this index even if it is invalid after text changes.
+		/// This can be effectively used for the current line (index is -1): the instance always points to the line where the caret is,
+		/// after any text changes, caret movement, setting text frames, and etc.
+		/// </remarks>
+		ILine this[int index] { get; }
+
+		/// <summary>
+		/// Adds the text to the end.
+		/// Editor must be current.
+		/// </summary>
+		/// <param name="text">Text to be inserted.</param>
+		void Add(string text);
+
+		/// <summary>
+		/// Removes all lines.
+		/// </summary>
+		void Clear();
+
+		/// <summary>
+		/// Inserts the text at the given line index.
+		/// Editor must be current.
+		/// </summary>
+		/// <param name="line">Line index.</param>
+		/// <param name="text">Text to be inserted.</param>
+		void Insert(int line, string text);
+
+		/// <summary>
+		/// Removes the line by its index.
+		/// </summary>
+		/// <param name="index">Index of the line to be removed.</param>
+		void RemoveAt(int index);
+
+		#endregion
+
 		/// <summary>
 		/// Gets the internal identifier.
 		/// </summary>
@@ -127,30 +182,6 @@ namespace FarNet
 		/// </summary>
 		bool DisableHistory { get; set; }
 		/// <summary>
-		/// Gets line count. At least one line exists.
-		/// </summary>
-		/// <seealso cref="this[int]"/>
-		int Count { get; }
-		/// <summary>
-		/// Gets the line by the index.
-		/// </summary>
-		/// <param name="index">Line index, -1 for the current line.</param>
-		/// <returns>The requested line.</returns>
-		/// <seealso cref="Count"/>
-		/// <seealso cref="Lines"/>
-		/// <seealso cref="SelectedLines"/>
-		/// <remarks>
-		/// The returned line instance should be used instantly and should never be kept for future use.
-		/// The index is permanent, the instance always points to a line at this index even if it is invalid after text changes.
-		/// This can be effectively used for the current line (index is -1): the instance always points to the line where the caret is,
-		/// after any text changes, caret movement, setting text frames, and etc.
-		/// </remarks>
-		ILine this[int index] { get; }
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		ILine GetLine(int index, bool selected);
-		/// <summary>
 		/// Gets the list of editor lines.
 		/// Editor must be current.
 		/// </summary>
@@ -159,7 +190,15 @@ namespace FarNet
 		/// Gets the list of selected lines and parts.
 		/// Editor must be current.
 		/// </summary>
-		ILineCollection SelectedLines { get; }
+		IList<ILine> SelectedLines { get; }
+		/// <summary>
+		/// Gets the string list representation of editor lines.
+		/// </summary>
+		/// <remarks>
+		/// See MSDN <c>IList(Of T)</c> interface for members, almost all of them are implemented.
+		/// Not implemented members are: <c>Contains(string)</c>, <c>IndexOf(string)</c>, and <c>Remove(string)</c>.
+		/// </remarks>
+		IList<string> Strings { get; }
 		/// <summary>
 		/// Gets or sets the name of a file being or to be edited.
 		/// Set it before opening.
@@ -203,19 +242,6 @@ namespace FarNet
 		/// The text is processed in the same way as it is typed.
 		/// </remarks>
 		void InsertText(string text);
-		/// <summary>
-		/// Inserts the text at the given line index.
-		/// Editor must be current.
-		/// </summary>
-		/// <param name="line">Line index.</param>
-		/// <param name="text">Text to be inserted.</param>
-		void InsertText(int line, string text);
-		/// <summary>
-		/// Adds the text to the end.
-		/// Editor must be current.
-		/// </summary>
-		/// <param name="text">Text to be inserted.</param>
-		void AddText(string text);
 		/// <summary>
 		/// Inserts a character.
 		/// Editor must be current.
@@ -588,15 +614,6 @@ namespace FarNet
 		/// Gets the selected point.
 		/// </summary>
 		Point SelectionPoint { get; }
-		/// <summary>
-		/// Removes the line by the index.
-		/// </summary>
-		/// <param name="index">Index of the line to be removed.</param>
-		void RemoveAt(int index);
-		/// <summary>
-		/// Removes all lines.
-		/// </summary>
-		void Clear();
 	}
 
 	/// <summary>
@@ -726,35 +743,6 @@ namespace FarNet
 					SelectedText = value;
 			}
 		}
-	}
-
-	/// <summary>
-	/// Collection of editor lines.
-	/// </summary>
-	/// <remarks>
-	/// Line collections have standard <c>IList(Of T)</c> members (see MSDN) and a few additional helper members.
-	/// <para>
-	/// It is exposed as <see cref="IEditor.Lines"/> (editor lines), <see cref="IEditor.SelectedLines"/> (editor selected lines and parts).
-	/// </para>
-	/// </remarks>
-	public interface ILineCollection : IList<ILine>
-	{
-		/// <summary>
-		/// Gets the first line.
-		/// </summary>
-		ILine First { get; }
-		/// <summary>
-		/// Gets the last line.
-		/// </summary>
-		ILine Last { get; }
-		/// <summary>
-		/// Adds the string as a new line to the end.
-		/// </summary>
-		void AddText(string item);
-		/// <summary>
-		/// Inserts the string as a new line with the specified line index.
-		/// </summary>
-		void InsertText(int index, string item);
 	}
 
 	/// <summary>
