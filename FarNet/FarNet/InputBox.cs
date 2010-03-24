@@ -19,7 +19,7 @@ namespace FarNet
 		/// </summary>
 		string Title { get; set; }
 		/// <summary>
-		/// Gets or set the prompt text.
+		/// Gets or sets the prompt text.
 		/// </summary>
 		string Prompt { get; set; }
 		/// <summary>

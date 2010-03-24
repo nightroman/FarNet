@@ -59,7 +59,7 @@ public:
 	virtual property Point Caret { Point get(); void set(Point value); }
 	virtual property Point SelectionPoint { Point get(); }
 	virtual property Point WindowSize { Point get(); }
-	virtual property RegionKind SelectionKind { RegionKind get(); }
+	virtual property PlaceKind SelectionKind { PlaceKind get(); }
 	virtual property String^ FileName { String^ get(); void set(String^ value); }
 	virtual property String^ Title { String^ get(); void set(String^ value); }
 	virtual property String^ WordDiv { String^ get() override; void set(String^ value) override; }
@@ -105,7 +105,8 @@ public:
 	virtual void Save();
 	virtual void Save(String^ fileName);
 	virtual void SelectAllText();
-	virtual void SelectText(RegionKind kind, int column1, int line1, int column2, int line2);
+	virtual void SelectText(int column1, int line1, int column2, int line2);
+	virtual void SelectText(int column1, int line1, int column2, int line2, PlaceKind kind);
 	virtual void SetSelectedText(String^ text);
 	virtual void SetText(String^ text);
 	virtual void Undo();

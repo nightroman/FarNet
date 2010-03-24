@@ -72,7 +72,7 @@ $Far.AnyEditor.add_OnMouse({&{
 					$p1 = $this.Caret
 				}
 				$p2 = $this.ConvertPointScreenToEditor($m.Where)
-				$this.SelectText('Stream', $p1.X, $p1.Y, $p2.X, $p2.Y)
+				$this.SelectText($p1.X, $p1.Y, $p2.X, $p2.Y)
 				$this.Redraw()
 			}
 		}
@@ -104,7 +104,7 @@ $Far.AnyEditor.add_OnMouse({&{
 				if ($p1) {
 					$e.Ignore = $true
 					$p2 = $this.ConvertPointScreenToEditor($m.Where)
-					$this.SelectText('Stream', $p1.X, $p1.Y, $p2.X, $p2.Y)
+					$this.SelectText($p1.X, $p1.Y, $p2.X, $p2.Y)
 					$this.Redraw()
 				}
 			}

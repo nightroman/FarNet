@@ -782,7 +782,7 @@ void Editor::SetText(String^ text)
 		ILine^ last = this[Count - 1];
 		if (i < last->Index)
 		{
-			SelectText(RegionKind::Stream, newLines[i]->Length, i, last->Length, last->Index);
+			SelectText(newLines[i]->Length, i, last->Length, last->Index, PlaceKind::Stream);
 			DeleteText();
 		}
 
@@ -1057,23 +1057,28 @@ void Editor::SetSelectedText(String^ text)
 
 	// select inserted
 	ei.Update();
-	SelectText(RegionKind::Stream, left, top, ei.CurPos - 1, ei.CurLine);
+	SelectText(left, top, ei.CurPos - 1, ei.CurLine, PlaceKind::Stream);
 }
 
-void Editor::SelectText(RegionKind kind, int column1, int line1, int column2, int line2)
+void Editor::SelectText(int column1, int line1, int column2, int line2)
+{
+	SelectText(column1, line1, column2, line2, PlaceKind::Stream); 
+}
+
+void Editor::SelectText(int column1, int line1, int column2, int line2, PlaceKind kind)
 {
 	// type
 	EditorSelect es;
 	switch(kind)
 	{
-	case RegionKind::None:
+	case PlaceKind::None:
 		es.BlockType = BTYPE_NONE;
 		EditorControl_ECTL_SELECT(es);
 		return;
-	case RegionKind::Stream:
+	case PlaceKind::Stream:
 		es.BlockType = BTYPE_STREAM;
 		break;
-	case RegionKind::Rect:
+	case PlaceKind::Column:
 		es.BlockType = BTYPE_COLUMN;
 		break;
 	default:
@@ -1100,7 +1105,7 @@ void Editor::SelectAllText()
 {
 	AutoEditorInfo ei;
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.TotalLines - 1);
-	SelectText(RegionKind::Stream, 0, 0, egs.StringLength - 1, ei.TotalLines - 1);
+	SelectText(0, 0, egs.StringLength - 1, ei.TotalLines - 1, PlaceKind::Stream);
 }
 
 void Editor::UnselectText()
@@ -1122,11 +1127,11 @@ Place Editor::SelectionPlace::get()
 	return Edit_SelectionPlace();
 }
 
-RegionKind Editor::SelectionKind::get()
+PlaceKind Editor::SelectionKind::get()
 {
 	AutoEditorInfo ei;
 
-	return (RegionKind)ei.BlockType;
+	return (PlaceKind)ei.BlockType;
 }
 
 void Editor::DeleteText()

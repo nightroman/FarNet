@@ -56,7 +56,7 @@ namespace FarNet.Forms
 		/// </summary>
 		string Text { get; set; }
 		/// <summary>
-		/// Gets or set the disabled state flag.
+		/// Gets or sets the disabled state flag.
 		/// </summary>
 		bool Disabled { get; set; }
 		/// <summary>

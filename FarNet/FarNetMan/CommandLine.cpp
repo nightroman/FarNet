@@ -78,13 +78,13 @@ void CommandLine::UnselectText()
 	SelectText(-1, -1);
 }
 
-LineRegion CommandLine::Selection::get()
+Span CommandLine::Selection::get()
 {
 	CmdLineSelect cls;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
 		throw gcnew OperationCanceledException;
 
-	LineRegion result;
+	Span result;
 	if (cls.SelStart < 0)
 	{
 		result.Start = -1;
