@@ -23,11 +23,9 @@ public:
 	virtual void UnselectText() override;
 internal:
 	EditorLine(int index);
-	EditorLine(int index, bool selected);
 private:
 	EditorSetString GetEss();
 private:
 	const int _Index;
-	bool _Selected;
 };
 }

@@ -8,24 +8,41 @@ using System.Collections.Generic;
 
 namespace FarNet.Works
 {
-	public sealed class LineCollection : IList<ILine>
+	public sealed class SelectionCollection : IList<ILine>
 	{
 		readonly IEditor _Editor;
 
-		public LineCollection(IEditor editor)
+		public SelectionCollection(IEditor editor)
 		{
 			_Editor = editor;
 		}
 
 		public int Count
 		{
-			get { return _Editor.Count; }
+			get
+			{
+				Place pp = _Editor.SelectionPlace;
+				if (pp.Top < 0)
+					return 0;
+				else
+					return pp.Height;
+			}
 		}
 
 		public ILine this[int index]
 		{
-			get { return _Editor[index]; }
-			set { throw new NotSupportedException(); }
+			get
+			{
+				Point pt = _Editor.SelectionPoint;
+				if (pt.Y < 0)
+					throw new InvalidOperationException();
+
+				return _Editor[pt.Y + index];
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
 		}
 
 		public bool IsFixedSize
@@ -50,17 +67,25 @@ namespace FarNet.Works
 
 		public void Clear()
 		{
-			_Editor.Clear();
+			_Editor.DeleteText();
 		}
 
 		public IEnumerator<ILine> GetEnumerator()
 		{
-			return EditorTools.EnumerateLines(_Editor, 0, _Editor.Count).GetEnumerator();
+			Place pp = _Editor.SelectionPlace;
+			if (pp.Top < 0)
+				return EditorTools.EnumerateLines(_Editor, 0, 0).GetEnumerator();
+			else
+				return EditorTools.EnumerateLines(_Editor, pp.Top, pp.Bottom + 1).GetEnumerator();
 		}
 
 		public void RemoveAt(int index)
 		{
-			_Editor.RemoveAt(index);
+			Point pt = _Editor.SelectionPoint;
+			if (pt.Y < 0)
+				throw new InvalidOperationException();
+
+			_Editor.RemoveAt(pt.Y + index);
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

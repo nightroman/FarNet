@@ -24,16 +24,16 @@ function global:Reindent-Selection-
 	$Editor = $Psf.Editor()
 
 	# $n1, $n2 - first (unchanged) and last lines to process
-	if ($Editor.SelectionExists) {
-		$Selection = $Editor.SelectedLines
-		$n2 = $Selection.Last.Index
-		$n1 = $Selection.First.Index
-		if ($n1 -gt 0) { --$n1 }
-	}
-	else {
+	$place = $Editor.SelectionPlace
+	if ($place.Top -lt 0) {
 		$n2 = $Editor.Caret.Y
 		$n1 = $n2 - 1
 		if ($n1 -lt 0) { return }
+	}
+	else {
+		$n2 = $place.Bottom
+		$n1 = $place.Top
+		if ($n1 -gt 0) { --$n1 }
 	}
 
 	# find indent at the first solid line

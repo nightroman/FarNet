@@ -31,9 +31,6 @@ public:
 ref class Editor : public AnyEditor, public IEditor
 {
 public:
-	virtual property IList<ILine^>^ Lines { IList<ILine^>^ get(); }
-	virtual property ILineCollection^ SelectedLines { ILineCollection^ get(); }
-public:
 	virtual property bool DisableHistory { bool get(); void set(bool value); }
 	virtual property bool IsLastLine { bool get(); }
 	virtual property bool IsLocked { bool get(); }
@@ -48,6 +45,9 @@ public:
 	virtual property DeleteSource DeleteSource { FarNet::DeleteSource get(); void set(FarNet::DeleteSource value); }
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get(); void set(ExpandTabsMode value); }
 	virtual property ILine^ default[int] { ILine^ get(int index); }
+	virtual property IList<ILine^>^ Lines { IList<ILine^>^ get(); }
+	virtual property IList<ILine^>^ SelectedLines { IList<ILine^>^ get(); }
+	virtual property IList<String^>^ Strings { IList<String^>^ get(); }
 	virtual property int CodePage { int get(); void set(int value); }
 	virtual property int Count { int get(); }
 	virtual property int Id { int get(); }
@@ -67,7 +67,6 @@ public:
 	virtual property TextFrame Frame { TextFrame get(); void set(TextFrame value); }
 public:
 	virtual ICollection<TextFrame>^ Bookmarks();
-	virtual ILine^ GetLine(int index, bool selected);
 	virtual int ConvertColumnEditorToScreen(int line, int column);
 	virtual int ConvertColumnScreenToEditor(int line, int column);
 	virtual Point ConvertPointScreenToEditor(Point point);
@@ -76,7 +75,7 @@ public:
 	virtual String^ GetText();
 	virtual String^ GetText(String^ separator);
 	virtual TextWriter^ CreateWriter();
-	virtual void AddText(String^ text);
+	virtual void Add(String^ text);
 	virtual void Begin();
 	virtual void BeginAsync();
 	virtual void BeginUndo();
@@ -92,10 +91,10 @@ public:
 	virtual void GoToColumn(int pos);
 	virtual void GoToEnd(bool addLine);
 	virtual void GoToLine(int line);
+	virtual void Insert(int line, String^ text);
 	virtual void InsertChar(Char text);
 	virtual void InsertLine();
 	virtual void InsertLine(bool indent);
-	virtual void InsertText(int line, String^ text);
 	virtual void InsertText(String^ text);
 	virtual void Open();
 	virtual void Open(OpenMode mode);
