@@ -20,7 +20,7 @@ namespace PowerShellFar
 	{
 		internal FileMap Map; // internal ???
 
-		/// <include file='doc.xml' path='docs/pp[@name="Columns"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="Columns"]/*'/>
 		public override sealed object[] Columns
 		{
 			get
