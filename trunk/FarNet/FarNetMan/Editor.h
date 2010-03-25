@@ -29,6 +29,13 @@ internal: EventHandler<Arguments^>^ Handler;
 
 ref class AnyEditor : IAnyEditor
 {
+public: DEF_EVENT_ARGS_IMP(KeyDown, _KeyDown, KeyEventArgs);
+public: DEF_EVENT_ARGS_IMP(KeyUp, _KeyUp, KeyEventArgs);
+public: DEF_EVENT_ARGS_IMP(MouseClick, _MouseClick, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(MouseDoubleClick, _MouseDoubleClick, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(MouseMove, _MouseMove, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(MouseWheel, _MouseWheel, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(Redrawing, _Redrawing, EditorRedrawingEventArgs);
 public: DEF_EVENT_IMP(Closed, _Closed);
 public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
 public: DEF_EVENT_IMP(GotFocus, _GotFocus);
@@ -36,9 +43,6 @@ public: DEF_EVENT_IMP(Idled, _Idled);
 public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
 public: DEF_EVENT_IMP(Saving, _Saving);
-public: DEF_EVENT_ARGS_IMP(OnKey, _OnKey, KeyEventArgs);
-public: DEF_EVENT_ARGS_IMP(OnMouse, _OnMouse, MouseEventArgs);
-public: DEF_EVENT_ARGS_IMP(OnRedraw, _OnRedraw, RedrawEventArgs);
 public:
 	virtual property String^ WordDiv { String^ get() override; }
 	virtual String^ EditText(String^ text, String^ title) override;
@@ -46,6 +50,13 @@ public:
 
 ref class Editor : IEditor
 {
+public: DEF_EVENT_ARGS_IMP(KeyDown, _KeyDown, KeyEventArgs);
+public: DEF_EVENT_ARGS_IMP(KeyUp, _KeyUp, KeyEventArgs);
+public: DEF_EVENT_ARGS_IMP(MouseClick, _MouseClick, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(MouseDoubleClick, _MouseDoubleClick, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(MouseMove, _MouseMove, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(MouseWheel, _MouseWheel, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(Redrawing, _Redrawing, EditorRedrawingEventArgs);
 public: DEF_EVENT_IMP(Closed, _Closed);
 public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
 public: DEF_EVENT_IMP(GotFocus, _GotFocus);
@@ -53,12 +64,8 @@ public: DEF_EVENT_IMP(Idled, _Idled);
 public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
 public: DEF_EVENT_IMP(Saving, _Saving);
-public: DEF_EVENT_ARGS_IMP(OnKey, _OnKey, KeyEventArgs);
-public: DEF_EVENT_ARGS_IMP(OnMouse, _OnMouse, MouseEventArgs);
-public: DEF_EVENT_ARGS_IMP(OnRedraw, _OnRedraw, RedrawEventArgs);
 public:
 	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
-	virtual property bool IsLastLine { bool get() override; }
 	virtual property bool IsLocked { bool get() override; }
 	virtual property bool IsModified { bool get() override; }
 	virtual property bool IsNew { bool get() override; void set(bool value) override; }
@@ -98,7 +105,7 @@ public:
 	virtual String^ GetText(String^ separator) override;
 	virtual TextWriter^ CreateWriter() override;
 	virtual void Add(String^ text) override;
-	virtual void Begin() override;
+	virtual void BeginAccess() override;
 	virtual void BeginAsync() override;
 	virtual void BeginUndo() override;
 	virtual void Clear() override;
@@ -106,7 +113,7 @@ public:
 	virtual void DeleteChar() override;
 	virtual void DeleteLine() override;
 	virtual void DeleteText() override;
-	virtual void End() override;
+	virtual void EndAccess() override;
 	virtual void EndAsync() override;
 	virtual void EndUndo() override;
 	virtual void GoTo(int column, int line) override;

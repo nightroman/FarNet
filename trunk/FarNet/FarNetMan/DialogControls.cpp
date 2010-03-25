@@ -75,7 +75,7 @@ public:
 			Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
 		}
 	}
-	virtual property Span Selection
+	virtual property Span SelectionSpan
 	{
 		Span get() override
 		{

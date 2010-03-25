@@ -11,6 +11,10 @@ everything is explained in the API documentation. Just two words: basic stuff
 and principles are the same. But some "too smart" and practically not really
 useful features were cut off. Some names were changed to be more informative.
 
+Also, key and mouse events are split up: OnKey -> KeyDown, KeyUp; OnMouse ->
+MouseClick, MouseDoubleClick, MouseMove, MouseWheel. Thus, now in many cases
+handles do not have to check event kinds.
+
 NEW PANELS FEATURES
 (new in Far API)
 

@@ -263,13 +263,13 @@ Assert-Far ($Editor.Caret.X -eq 2 )
 Go-Selection-
 Assert-Far ($Editor.Caret.X -eq 0)
 
-### State, Save, Redraw, event OnRedraw, Title
+### State, Save, Redraw, Redrawing, Title
 Assert-Far $Editor.IsModified
 $Editor.Title = "EDITOR TEST SUCCEEDED"
 $Editor.SetText("EDITOR TEST SUCCEEDED") #! $Editor.Title issue
 $Editor.Save()
 Assert-Far ($Editor.IsModified -and $Editor.IsSaved)
-$Editor.add_OnRedraw({ Start-Sleep -m 25 })
+$Editor.add_Redrawing({ Start-Sleep -m 25 })
 for($Editor.GoTo(0, 0); $Editor.Caret.X -lt 21; $Editor.GoToColumn($Editor.Caret.X + 1)) { $Editor.Redraw() }
 
 ### Close
