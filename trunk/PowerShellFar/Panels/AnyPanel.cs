@@ -1068,7 +1068,7 @@ $_.Description
 		}
 
 		internal Dictionary<string, EventHandler<FileEventArgs>> _LookupOpeners;
-		/// <include file='doc.xml' path='docs/pp[@name="AddLookup"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="AddLookup"]/*'/>
 		public void AddLookup(string name, EventHandler<FileEventArgs> handler)
 		{
 			if (_LookupOpeners == null)

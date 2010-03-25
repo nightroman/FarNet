@@ -188,7 +188,7 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		bool Show();
-		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="HelpTopic"]/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
 		/// Tells to select the last item on <see cref="Show()"/> if <see cref="Selected"/> is not set.
@@ -205,9 +205,9 @@ namespace FarNet
 		/// Tells to show ampersands in items instead of using them as hotkey marks.
 		/// </summary>
 		bool ShowAmpersands { get; set; }
-		/// <include file='doc.xml' path='docs/pp[@name="WrapCursor"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="WrapCursor"]/*'/>
 		bool WrapCursor { get; set; }
-		/// <include file='doc.xml' path='docs/pp[@name="AutoAssignHotkeys"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="AutoAssignHotkeys"]/*'/>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
 		/// Gets a key that has closed the menu.

@@ -18,7 +18,7 @@ namespace PowerShellFar
 		internal TablePanel()
 		{ }
 
-		/// <include file='doc.xml' path='docs/pp[@name="Columns"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="Columns"]/*'/>
 		public virtual object[] Columns
 		{
 			get { return _Columns; }

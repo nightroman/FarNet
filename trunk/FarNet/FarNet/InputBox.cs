@@ -48,9 +48,9 @@ namespace FarNet
 		/// If it is true then asterisks are displaied instead of input characters.
 		/// </remarks>
 		bool IsPassword { get; set; }
-		/// <include file='doc.xml' path='docs/pp[@name="ExpandEnvironmentVariables"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="ExpandEnvironmentVariables"]/*'/>
 		bool ExpandEnvironmentVariables { get; set; }
-		/// <include file='doc.xml' path='docs/pp[@name="UseLastHistory"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="UseLastHistory"]/*'/>
 		bool UseLastHistory { get; set; }
 		/// <summary>
 		/// Tells that buttons are visible.

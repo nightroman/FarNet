@@ -111,7 +111,7 @@ namespace FarNet
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <param name="helpTopic">
-		/// <include file='doc.xml' path='docs/pp[@name="HelpTopic"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="HelpTopic"]/*'/>
 		/// It is ignored in a GUI message.
 		/// </param>
 		/// <returns>Button index or -1 if cancelled.</returns>
@@ -255,7 +255,7 @@ namespace FarNet
 		/// Saves screen area.
 		/// You always have to call <see cref="RestoreScreen"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="LTRB"]/*'/>
 		/// <returns>A handle for restoring the screen.</returns>
 		/// <remarks>
 		/// If <c>right</c> and <c>bottom</c> are equal to -1,
@@ -391,7 +391,7 @@ namespace FarNet
 		/// Creates a new dialog.
 		/// You set its properties, add controls, event handlers and then call <see cref="IDialog.Show"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/pp[@name="LTRB"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="LTRB"]/*'/>
 		/// <remarks>
 		/// You can set <c>left</c> = -1 or <c>top</c> = -1 to be auto-calculated.
 		/// In this case <c>right</c> or <c>bottom</c> should be width and height.
@@ -401,7 +401,7 @@ namespace FarNet
 		/// Creates a dialog for selecting a subset of items.
 		/// </summary>
 		public abstract ISubsetForm CreateSubsetForm();
-		/// <include file='doc.xml' path='docs/pp[@name="ShowHelp"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="ShowHelp"]/*'/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
 		/// Writes text on the user screen (under panels).
@@ -420,21 +420,21 @@ namespace FarNet
 		/// <summary>
 		/// Writes colored text on the user screen (under panels).
 		/// </summary>
-		/// <include file='doc.xml' path='docs/pp[@name="Colors"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="Colors"]/*'/>
 		/// <param name="text">Text.</param>
 		public abstract void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 		/// <summary>
 		/// Writes a string at the specified position using Far palette colors.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="LT"]/*'/>
 		/// <param name="paletteColor">Palette color.</param>
 		/// <param name="text">Text.</param>
 		public abstract void WritePalette(int left, int top, PaletteColor paletteColor, string text);
 		/// <summary>
 		/// Writes a string at the specified position with defined colors.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/pp[@name="LT"]/*'/>
-		/// <include file='doc.xml' path='docs/pp[@name="Colors"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="LT"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="Colors"]/*'/>
 		/// <param name="text">Text.</param>
 		/// <seealso cref="IFar.GetPaletteForeground"/>
 		/// <seealso cref="IFar.GetPaletteBackground"/>
@@ -468,14 +468,14 @@ namespace FarNet
 		/// Gets confirmation settings (see Far "Confirmations" dialog).
 		/// </summary>
 		public abstract FarConfirmations Confirmations { get; }
-		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
 		public string Input(string prompt)
 		{
 			return Input(prompt, null, null, string.Empty);
 		}
-		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
@@ -483,7 +483,7 @@ namespace FarNet
 		{
 			return Input(prompt, history, null, string.Empty);
 		}
-		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
@@ -492,7 +492,7 @@ namespace FarNet
 		{
 			return Input(prompt, history, title, string.Empty);
 		}
-		/// <include file='doc.xml' path='docs/pp[@name="Include"]/*'/>
+		/// <include file='doc.xml' path='docs/m[@name="Include"]/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
