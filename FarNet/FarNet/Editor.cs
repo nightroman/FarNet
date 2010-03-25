@@ -228,11 +228,17 @@ namespace FarNet
 		/// <summary>
 		/// Gets the list of editor lines.
 		/// </summary>
+		/// <remarks>
+		/// <include file='doc.xml' path='docs/m[@name="EditorList"]/*'/>
+		/// </remarks>
 		public abstract IList<ILine> Lines { get; }
 
 		/// <summary>
 		/// Gets the list of selected lines.
 		/// </summary>
+		/// <remarks>
+		/// <include file='doc.xml' path='docs/m[@name="EditorList"]/*'/>
+		/// </remarks>
 		public abstract IList<ILine> SelectedLines { get; }
 
 		/// <summary>
