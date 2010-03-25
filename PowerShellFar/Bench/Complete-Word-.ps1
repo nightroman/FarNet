@@ -73,9 +73,9 @@ function global:Complete-Word-
 	switch($Line.WindowKind) {
 		'Editor' {
 			$Editor = $Far.Editor
-			$Editor.Begin()
+			$Editor.BeginAccess()
 			$Editor.Lines | CollectWords
-			$Editor.End()
+			$Editor.EndAccess()
 			if ($Editor.FileName -like '*.psfconsole') {
 				$Psf.GetHistory(0) | CollectWords
 			}

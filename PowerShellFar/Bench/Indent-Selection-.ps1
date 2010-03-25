@@ -33,7 +33,7 @@ function global:Indent-Selection- ([switch]$Outdent)
 
 	$tabSize = $Editor.TabSize
 	foreach($line in $Editor.SelectedLines) {
-		if ($line.Selection.Length -le 0) {
+		if ($line.SelectionSpan.Length -le 0) {
 			continue
 		}
 		$text = $line.Text

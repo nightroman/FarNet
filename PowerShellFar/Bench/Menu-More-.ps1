@@ -20,18 +20,17 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 		$file = $editor.FileName
 
 		### Commands for editor selection
-		$select = $editor.Selection
-		if ($select.Exists) {
+		if ($editor.SelectionExists) {
 			New-FarItem '&e. Escape \," with \' { Set-Selection- -Replace '([\\"])', '\$1' }
 			New-FarItem '&u. Unescape \\,\"' { Set-Selection- -Replace '\\([\\"])', '$1' }
-			New-FarItem '.. Remove end spaces in selection' { $editor.Begin(); $select | Remove-EndSpace-; $editor.End() }
-			New-FarItem '.. Remove empty lines in selection' { Remove-EmptyString- $editor.Selection }
+			New-FarItem '.. Remove end spaces in selection' { $editor.BeginAccess(); $editor.SelectedLines | Remove-EndSpace-; $editor.EndAccess() }
+			New-FarItem '.. Remove empty lines in selection' { Remove-EmptyString- $editor.SelectedLines }
 			New-FarItem -IsSeparator
 		}
 
 		### Other editor commands
 		New-FarItem '&b. Bookmarks, go to selected' { Select-Bookmark- }
-		New-FarItem '&s. Remove end spaces (all text)' { $editor.Begin(); $editor.Lines | Remove-EndSpace-; $editor.End() }
+		New-FarItem '&s. Remove end spaces (all text)' { $editor.BeginAccess(); $editor.Lines | Remove-EndSpace-; $editor.EndAccess() }
 		New-FarItem '&d. Remove double empty lines (all text)' { Remove-EmptyString- $editor.Lines 2 }
 		New-FarItem '&f. Invoke a file from editor' { Invoke-Editor- }
 		New-FarItem '&o. Open the link in the current text' { Edit-TextLink- }

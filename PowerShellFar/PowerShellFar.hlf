@@ -1569,8 +1569,7 @@ It removes white spaces from end of string property Text of any objects (note
 that they can be even not related to Far). It can be used in Far editor:
 
 	$Far.Editor.Lines | Remove-EndSpace- ## all editor lines
-	$Far.Editor.Selection | Remove-EndSpace- ## selected lines
-	$Psf.HotLines | Remove-EndSpace- ## selected (if any) or all lines
+	$Far.Editor.SelectedLines | Remove-EndSpace- ## selected lines
 
 A straightforward way of using this script is to use these commands from a menu
 (PSF menu or Far user menu).
@@ -1600,13 +1599,13 @@ Put the following code into the editor profile:
 
 	## This is a handler of Saving added to .ps1 files only in this example.
 	## It calls Remove-EndSpace- to trim lines. Performance advice: use editor
-	## methods Begin() and End() for batch line processing.
+	## methods BeginAccess() and EndAccess() for batch line processing.
 
 	function Handle-EditorSaving
 	{
-		$this.Begin()
+		$this.BeginAccess()
 		$this.Lines | Remove-EndSpace-
-		$this.End()
+		$this.EndAccess()
 	}
 
 #NOTES#

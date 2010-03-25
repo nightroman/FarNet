@@ -75,9 +75,13 @@ void Editor::Open(OpenMode mode)
 			_LosingFocus == nullptr &&
 			_Opened == nullptr &&
 			_Saving == nullptr &&
-			_OnKey == nullptr &&
-			_OnMouse == nullptr &&
-			_OnRedraw == nullptr)
+			_KeyDown == nullptr &&
+			_KeyUp == nullptr &&
+			_MouseClick == nullptr &&
+			_MouseDoubleClick == nullptr &&
+			_MouseMove == nullptr &&
+			_MouseWheel == nullptr &&
+			_Redrawing == nullptr)
 			flags |= VF_ENABLE_F6;
 		break;
 	}
@@ -180,16 +184,6 @@ void Editor::DisableHistory::set(bool value)
 {
 	AssertClosed();
 	_DisableHistory = value;
-}
-
-bool Editor::IsLastLine::get()
-{
-	if (!IsOpened)
-		return false;
-
-	AutoEditorInfo ei;
-
-	return ei.CurLine == ei.TotalLines - 1;
 }
 
 bool Editor::IsLocked::get()
@@ -607,7 +601,7 @@ Point Editor::ConvertPointScreenToEditor(Point point)
 	return point;
 }
 
-void Editor::Begin()
+void Editor::BeginAccess()
 {
 	if (_fastGetString > 0)
 	{
@@ -619,7 +613,7 @@ void Editor::Begin()
 	_fastGetString = 1;
 }
 
-void Editor::End()
+void Editor::EndAccess()
 {
 	if (_fastGetString == 1)
 		Frame = _frameSaved;
@@ -1198,17 +1192,24 @@ void Editor::Insert(int line, String^ text)
 
 IList<ILine^>^ Editor::Lines::get()
 {
-	return IsOpened ? gcnew Works::LineCollection(this) : nullptr;
-}
-
-IList<ILine^>^ Editor::SelectedLines::get()
-{
-	return IsOpened ? gcnew Works::SelectionCollection(this) : nullptr;
+	return IsOpened ? gcnew Works::LineCollection(this, 0, Count) : nullptr;
 }
 
 IList<String^>^ Editor::Strings::get()
 {
 	return IsOpened ? gcnew Works::StringCollection(this) : nullptr;
+}
+
+IList<ILine^>^ Editor::SelectedLines::get()
+{
+	if (!IsOpened)
+		return nullptr;
+	
+	Place pp = Edit_SelectionPlace();
+	if (pp.Top < 0)
+		return gcnew Works::LineCollection(this, 0, 0);
+	else
+		return gcnew Works::LineCollection(this, pp.Top, pp.Height);
 }
 
 }

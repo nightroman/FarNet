@@ -72,7 +72,7 @@ void EditorLine::Text::set(String^ value)
 	EditorControl_ECTL_SETSTRING(ess);
 }
 
-Span EditorLine::Selection::get()
+Span EditorLine::SelectionSpan::get()
 {
 	Span result;
 	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);

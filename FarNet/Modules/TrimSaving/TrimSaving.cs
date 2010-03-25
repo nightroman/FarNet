@@ -1,8 +1,9 @@
 
+// Trims line ends on saving a file.
+
 using FarNet;
 using System;
 
-// Trims line ends in a saving file.
 [System.Runtime.InteropServices.Guid("7a42d03a-83d3-4c8f-b4d3-6483bf1acaf0")]
 [ModuleEditor(Name = TrimSaving.Name)]
 public class TrimSaving : ModuleEditor
@@ -12,19 +13,18 @@ public class TrimSaving : ModuleEditor
 	// Called when a file is opened. It installs OnSaving().
 	public override void Invoke(object sender, ModuleEditorEventArgs e)
 	{
-		IEditor editor = (IEditor)sender;
-		editor.Saving += OnSaving;
+		((IEditor)sender).Saving += OnSaving;
 	}
 
 	// Trims line ends.
 	// A few editor performance tricks:
-	// *) use Begin() and End() methods for batch line operations;
+	// *) use BeginAccess() and EndAccess() for line iterations;
 	// *) do not set a line text if it is not actually changed;
 	// *) use faster (object)string comparison when possible.
 	void OnSaving(object sender, EventArgs e)
 	{
 		IEditor editor = (IEditor)sender;
-		editor.Begin();
+		editor.BeginAccess();
 		foreach(ILine line in editor.Lines)
 		{
 			string s1 = line.Text;
@@ -32,6 +32,6 @@ public class TrimSaving : ModuleEditor
 			if ((object)s1 != (object)s2)
 				line.Text = s2;
 		}
-		editor.End();
+		editor.EndAccess();
 	}
 }

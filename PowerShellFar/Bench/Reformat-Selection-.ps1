@@ -47,13 +47,13 @@ function global:Reformat-Selection-
 	}
 
 	# get the selected lines or the current line
-	[string[]]$ss = $Editor.SelectedLines
-	if (!$ss) {
-		$cl = $Editor[-1]
-		$cl.SelectText(0, $cl.Length)
-		$ss = $cl.Text
+	$lines = $Editor.SelectedLines
+	if (!$lines.Count) {
+		$line = $Editor[-1]
+		$line.SelectText(0, $line.Length)
+		$lines = @($line)
 	}
-	if ($ss[0] -notmatch "^(\s*)($pattern)?(\s*)\S") {
+	if ($lines[0] -notmatch "^(\s*)($pattern)?(\s*)\S") {
 		return
 	}
 
@@ -84,8 +84,9 @@ function global:Reformat-Selection-
 
 	# join lines removing prefixes
 	$text = ''
-	foreach($s in $ss) {
-		$s = $s.Trim()
+	foreach($line in $lines) {
+		$s = $line.SelectedText.Trim()
+		# remove the prefix
 		if ($s.StartsWith($pr)) {
 			$s = $s.Substring($pr.Length).TrimStart()
 		}
@@ -94,7 +95,7 @@ function global:Reformat-Selection-
 
 	# split, format and insert
 	$text = [Regex]::Split($text, "(.{0,$len}(?:\s|$))") | .{process{ if ($_) { $pref + $_.TrimEnd() } }}
-	if ($ss.Count -gt 1) {
+	if ($lines.Count -gt 1) {
 		$text += ''
 	}
 

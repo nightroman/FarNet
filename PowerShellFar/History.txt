@@ -7,8 +7,8 @@ The PSF core and several scripts were adapted to the recent FarNet refactoring
 changes in editor and editor lines API. See FarNet history for details. Scripts
 working with that API have to be updated, more likely.
 
-In addition: $Psf properties HotLines and HotText were renamed into ActiveLines
-and ActiveText (just to be more formal).
+In addition: $Psf property HotText was renamed into ActiveText (just to be more
+formal and to follow ILine.ActiveText).
 
 = 4.3.11 =
 

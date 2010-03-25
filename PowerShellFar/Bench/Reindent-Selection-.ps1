@@ -59,16 +59,22 @@ function global:Reindent-Selection-
 	for($n = $n1; $n -le $n2; ++$n)
 	{
 		$line = $Editor[$n]
-		if ($line.Selection.Length -le 0) { continue }
+		if ($line.SelectionSpan.Start -lt 0) {
+			continue
+		}
 		$text = $line.Text
 
 		if (!$found) {
-			if ($text -notmatch '^(\s*)\S') { continue }
+			if ($text -notmatch '^(\s*)\S') {
+				continue
+			}
 			$found = $true
 			$indent = $matches[1]
 		}
 
-		if ($text -notmatch '^\s*(.*)(\S)\s*$') { continue }
+		if ($text -notmatch '^\s*(.*)(\S)\s*$') {
+			continue
+		}
 		$body = $matches[1]
 		$tail = $matches[2]
 		if ($body) {

@@ -100,7 +100,7 @@ namespace FarNet
 		/// </summary>
 		Wheeled = 0x0004,
 		/// Masks all flags.
-		All = Moved | DoubleClick | DoubleClick
+		All = Moved | DoubleClick | Wheeled
 	}
 
 	/// <summary>
@@ -762,71 +762,82 @@ OemClear = 254;
 	/// </summary>
 	public struct KeyInfo
 	{
-		bool _keyDown;
-		char _character;
-		ControlKeyStates _controlKeyState;
-		int _virtualKeyCode;
+		bool _KeyDown;
+		char _Character;
+		int _VirtualKeyCode;
+		ControlKeyStates _ControlKeyState;
 
 		///
 		public KeyInfo(int virtualKeyCode, char character, ControlKeyStates controlKeyState, bool keyDown)
 		{
-			_virtualKeyCode = virtualKeyCode;
-			_character = character;
-			_controlKeyState = controlKeyState;
-			_keyDown = keyDown;
+			_VirtualKeyCode = virtualKeyCode;
+			_Character = character;
+			_ControlKeyState = controlKeyState;
+			_KeyDown = keyDown;
 		}
+
 		/// <summary>
 		/// <see cref="VKeyCode"/> code.
 		/// </summary>
-		public int VirtualKeyCode { get { return _virtualKeyCode; } set { _virtualKeyCode = value; } }
+		public int VirtualKeyCode { get { return _VirtualKeyCode; } set { _VirtualKeyCode = value; } }
+
 		/// <summary>
 		/// Character.
 		/// </summary>
-		public char Character { get { return _character; } set { _character = value; } }
+		public char Character { get { return _Character; } set { _Character = value; } }
+
 		/// <summary>
 		/// Gets all control key states.
 		/// </summary>
-		public ControlKeyStates ControlKeyState { get { return _controlKeyState; } set { _controlKeyState = value; } }
+		public ControlKeyStates ControlKeyState { get { return _ControlKeyState; } set { _ControlKeyState = value; } }
+
 		/// <summary>
 		/// Key down event.
 		/// </summary>
-		public bool KeyDown { get { return _keyDown; } set { _keyDown = value; } }
+		public bool KeyDown { get { return _KeyDown; } set { _KeyDown = value; } }
+
 		/// <summary>
 		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
-		public ControlKeyStates CtrlAltShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
-		///
-		public override string ToString()
-		{
-			return "Down = " + _keyDown + "; Code = " + _virtualKeyCode + "; Char = " + _character + " (" + _controlKeyState + ")";
-		}
+		public ControlKeyStates CtrlAltShift { get { return _ControlKeyState & ControlKeyStates.CtrlAltShift; } }
+
 		///
 		public static bool operator ==(KeyInfo left, KeyInfo right)
 		{
 			return
-				left._character == right._character &&
-				left._controlKeyState == right._controlKeyState &&
-				left._keyDown == right._keyDown &&
-				left._virtualKeyCode == right._virtualKeyCode;
+				left._Character == right._Character &&
+				left._ControlKeyState == right._ControlKeyState &&
+				left._KeyDown == right._KeyDown &&
+				left._VirtualKeyCode == right._VirtualKeyCode;
 		}
+
 		///
 		public static bool operator !=(KeyInfo left, KeyInfo right)
 		{
 			return !(left == right);
 		}
+
 		///
 		public override bool Equals(object obj)
 		{
 			return obj != null && obj.GetType() == typeof(KeyInfo) && this == (KeyInfo)obj;
 		}
+
 		///
 		public override int GetHashCode()
 		{
-			uint num = _keyDown ? 0x10000000u : 0;
-			num |= ((uint)_controlKeyState) << 0x10;
-			num |= (uint)_virtualKeyCode;
+			uint num = _KeyDown ? 0x10000000u : 0;
+			num |= ((uint)_ControlKeyState) << 0x10;
+			num |= (uint)_VirtualKeyCode;
 			return num.GetHashCode();
 		}
+
+		///
+		public override string ToString()
+		{
+			return "Down = " + _KeyDown + "; Code = " + _VirtualKeyCode + "; Char = " + _Character + " (" + _ControlKeyState + ")";
+		}
+
 	}
 
 	/// <summary>
@@ -845,35 +856,36 @@ OemClear = 254;
 			_action = action;
 			_controlKeyState = controlKeyState;
 		}
+
 		/// <summary>
 		/// Mouse location.
 		/// </summary>
 		public Point Where { get { return _where; } set { _where = value; } }
 		Point _where;
+
 		/// <summary>
 		/// Buttons.
 		/// </summary>
 		public MouseButtons Buttons { get { return _buttons; } set { _buttons = value; } }
 		MouseButtons _buttons;
+
 		/// <summary>
 		/// Action.
 		/// </summary>
 		public MouseAction Action { get { return _action; } set { _action = value; } }
 		MouseAction _action;
+
 		/// <summary>
 		/// Gets all control key states.
 		/// </summary>
 		public ControlKeyStates ControlKeyState { get { return _controlKeyState; } set { _controlKeyState = value; } }
 		ControlKeyStates _controlKeyState;
+
 		/// <summary>
 		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
 		public ControlKeyStates CtrlAltShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
-		///
-		public override string ToString()
-		{
-			return _where.ToString() + " " + _action + " (" + _buttons + ") (" + _controlKeyState + ")";
-		}
+
 		///
 		public static bool operator ==(MouseInfo left, MouseInfo right)
 		{
@@ -883,22 +895,32 @@ OemClear = 254;
 				left._controlKeyState == right._controlKeyState &&
 				left._where == right._where;
 		}
+
 		///
 		public static bool operator !=(MouseInfo left, MouseInfo right)
 		{
 			return !(left == right);
 		}
+
 		///
 		public override bool Equals(object obj)
 		{
 			return obj != null && obj.GetType() == typeof(MouseInfo) && this == (MouseInfo)obj;
 		}
+
 		///
 		public override int GetHashCode()
 		{
 			uint num = (uint)_action + ((uint)_buttons << 8) + ((uint)_controlKeyState << 16);
 			return num.GetHashCode() ^ _where.GetHashCode();
 		}
+
+		///
+		public override string ToString()
+		{
+			return _where.ToString() + " " + _action + " (" + _buttons + ") (" + _controlKeyState + ")";
+		}
+
 	}
 
 	/// <summary>

@@ -45,15 +45,17 @@ function global:Go-Selection-
 	}
 	else {
 		$line = $Far.Line
-		$select = $line.Selection
-		if ($line -and $select.Start -ge 0) {
-			if ($End) {
-				$line.Caret = $select.End
+		if ($line) {
+			$span = $line.SelectionSpan
+			if ($span.Start -ge 0) {
+				if ($End) {
+					$line.Caret = $span.End
+				}
+				else {
+					$line.Caret = $span.Start
+				}
+				$line.UnselectText()
 			}
-			else {
-				$line.Caret = $select.Start
-			}
-			$line.UnselectText()
 		}
 	}
 }

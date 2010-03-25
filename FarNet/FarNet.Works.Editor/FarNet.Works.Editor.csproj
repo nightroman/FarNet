@@ -42,7 +42,6 @@
     <Compile Include="EditorTextWriter.cs" />
     <Compile Include="EditorTools.cs" />
     <Compile Include="LineCollection.cs" />
-    <Compile Include="SelectionCollection.cs" />
     <Compile Include="StringCollection.cs" />
   </ItemGroup>
   <ItemGroup>

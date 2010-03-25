@@ -116,7 +116,7 @@ namespace PowerShellFar
 		public EditorConsole(IEditor editor, int mode)
 		{
 			Editor = editor;
-			Editor.OnKey += OnKey;
+			Editor.KeyDown += OnKeyDown;
 
 			switch (mode)
 			{
@@ -212,14 +212,10 @@ namespace PowerShellFar
 		/// <summary>
 		/// Called on key in psfconsole.
 		/// </summary>
-		void OnKey(object sender, KeyEventArgs e)
+		void OnKeyDown(object sender, KeyEventArgs e)
 		{
 			// drop pipeline now, if any
 			PowerShell = null;
-
-			// skip some keys
-			if (!e.Key.KeyDown)
-				return;
 
 			// skip if selected
 			if (Editor.SelectionExists)
@@ -242,7 +238,7 @@ namespace PowerShellFar
 						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
 							// [Tab]
-							if (Editor.IsLastLine)
+							if (IsLastLineCurrent)
 							{
 								e.Ignore = true;
 								if (Runspace == null)
@@ -260,7 +256,7 @@ namespace PowerShellFar
 						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
 							// [Esc]
-							if (Editor.IsLastLine && Editor[-1].Length > 0)
+							if (IsLastLineCurrent && Editor[-1].Length > 0)
 							{
 								e.Ignore = true;
 								ILine line = Editor[-1];
@@ -276,7 +272,7 @@ namespace PowerShellFar
 						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
 							// [End]
-							if (!Editor.IsLastLine)
+							if (!IsLastLineCurrent)
 								return;
 
 							ILine curr = Editor[-1];
@@ -305,7 +301,7 @@ namespace PowerShellFar
 						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
 							// [Up], [Down]
-							if (!Editor.IsLastLine)
+							if (!IsLastLineCurrent)
 								return;
 
 							string lastUsedCmd = null;
@@ -372,7 +368,7 @@ namespace PowerShellFar
 						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
 							// [Del]
-							if (!Editor.IsLastLine)
+							if (!IsLastLineCurrent)
 								return;
 
 							ILine curr = Editor[-1];
@@ -381,7 +377,7 @@ namespace PowerShellFar
 
 							e.Ignore = true;
 
-							Editor.Begin();
+							Editor.BeginAccess();
 							Point pt = Editor.Caret;
 							for (int i = pt.Y - 1; i >= 0; --i)
 							{
@@ -398,7 +394,7 @@ namespace PowerShellFar
 									continue;
 								}
 							}
-							Editor.End();
+							Editor.EndAccess();
 
 							Editor.Redraw();
 						}
@@ -438,7 +434,7 @@ namespace PowerShellFar
 				return;
 
 			// end?
-			if (!Editor.IsLastLine)
+			if (!IsLastLineCurrent)
 			{
 				// - no, copy code and exit
 				Editor.GoToEnd(true);
@@ -598,6 +594,14 @@ namespace PowerShellFar
 
 			// complete expansion
 			EditorKit.ExpandText(editLine, text, line, lastWord, words);
+		}
+
+		bool IsLastLineCurrent
+		{
+			get
+			{
+				return Editor.Caret.Y == Editor.Count - 1;
+			}
 		}
 
 	}
