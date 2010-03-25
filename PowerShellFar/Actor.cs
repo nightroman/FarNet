@@ -473,23 +473,6 @@ Continue with this current directory?
 		}
 
 		/// <summary>
-		/// Gets a list of active editor lines.
-		/// </summary>
-		/// <remarks>
-		/// Gets <see cref="IEditor.SelectedLines"/> if stream selection exists,
-		/// else <see cref="IEditor.Lines"/> if editor exists,
-		/// else null.
-		/// <para>
-		/// You can not just get line strings but add lines (as strings) to the list,
-		/// remove items and modify items (<see cref="ILine"/>).
-		/// </para>
-		/// </remarks>
-		public IList<ILine> ActiveLines
-		{
-			get { return EditorKit.ActiveLines; }
-		}
-
-		/// <summary>
 		/// Gets or sets the active text of active editor or editor line.
 		/// </summary>
 		/// <remarks>

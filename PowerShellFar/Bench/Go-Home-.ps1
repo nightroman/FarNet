@@ -45,7 +45,7 @@ function global:Go-Home-
 	if ($Select) {
 		$end = $line.Caret
 		if ($end -gt 0) {
-			if ($line.Selection.Start -eq $pos) {
+			if ($line.SelectionSpan.Start -eq $pos) {
 				$pos = 0
 			}
 			$line.SelectText($pos, $end)

@@ -78,7 +78,7 @@ void CommandLine::UnselectText()
 	SelectText(-1, -1);
 }
 
-Span CommandLine::Selection::get()
+Span CommandLine::SelectionSpan::get()
 {
 	CmdLineSelect cls;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))

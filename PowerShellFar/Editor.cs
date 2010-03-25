@@ -128,21 +128,6 @@ namespace PowerShellFar
 			editLine.Caret = line.Length;
 		}
 
-		public static IList<ILine> ActiveLines
-		{
-			get
-			{
-				if (Far.Net.Window.Kind != WindowKind.Editor)
-					return null;
-
-				IEditor editor = Far.Net.Editor;
-				if (editor.SelectionKind == PlaceKind.Stream)
-					return editor.SelectedLines;
-
-				return editor.Lines;
-			}
-		}
-
 		public static string ActiveText
 		{
 			get
@@ -221,19 +206,15 @@ namespace PowerShellFar
 			}
 			else if (My.PathEx.IsPSFile(fileName))
 			{
-				editor.OnKey += OnKeyPSFile;
+				editor.KeyDown += OnKeyDownPSFile;
 			}
 		}
 
 		/// <summary>
 		/// Called on key in *.ps1.
 		/// </summary>
-		static void OnKeyPSFile(object sender, KeyEventArgs e)
+		static void OnKeyDownPSFile(object sender, KeyEventArgs e)
 		{
-			// skip keys up
-			if (!e.Key.KeyDown)
-				return;
-
 			// editor; skip if selected
 			IEditor editor = (IEditor)sender;
 
@@ -429,10 +410,10 @@ namespace PowerShellFar
 			{
 				ArrayList lines = new ArrayList();
 
-				Editor.Begin();
+				Editor.BeginAccess();
 				foreach (ILine line in Editor.Lines)
 					lines.Add(line.Text);
-				Editor.End();
+				Editor.EndAccess();
 	
 				if (lines[lines.Count - 1].ToString().Length == 0)
 					lines.RemoveAt(lines.Count - 1);
@@ -485,10 +466,10 @@ namespace PowerShellFar
 				{
 					ArrayList lines = new ArrayList();
 
-					Editor.Begin();
+					Editor.BeginAccess();
 					foreach (ILine line in Editor.Lines)
 						lines.Add(line.Text);
-					Editor.End();
+					Editor.EndAccess();
 
 					if (lines[lines.Count - 1].ToString().Length == 0)
 						lines.RemoveAt(lines.Count - 1);

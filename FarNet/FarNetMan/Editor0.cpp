@@ -160,22 +160,16 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			LOG_4("EE_REDRAW");
 
 			int mode = (int)(INT_PTR)param;
-			Editor^ ed = GetCurrentEditor();
-			if (_anyEditor._OnRedraw)
+			Editor^ editor = GetCurrentEditor();
+			if (_anyEditor._Redrawing || editor->_Redrawing)
 			{
-				LOG_AUTO(Verbose, "OnRedraw")
+				LOG_AUTO(Verbose, "Redrawing")
 				{				
-					RedrawEventArgs ea(mode);
-					_anyEditor._OnRedraw(ed, %ea);
-				}
-				LOG_END;
-			}
-			if (ed->_OnRedraw)
-			{
-				LOG_AUTO(Verbose, "OnRedraw")
-				{				
-					RedrawEventArgs ea(mode);
-					ed->_OnRedraw(ed, %ea);
+					EditorRedrawingEventArgs ea(mode);
+					if (_anyEditor._Redrawing)
+						_anyEditor._Redrawing(editor, %ea);
+					if (editor->_Redrawing)
+						editor->_Redrawing(editor, %ea);
 				}
 				LOG_END;
 			}
@@ -248,7 +242,7 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 {
 	Editor^ editor = GetCurrentEditor();
 	while (_fastGetString > 0)
-		_editorCurrent->End();
+		_editorCurrent->EndAccess();
 
 	// async
 	if (editor->_output)
@@ -284,40 +278,92 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 	{
 	case KEY_EVENT:
 		{
+			const KEY_EVENT_RECORD& key = rec->Event.KeyEvent;
 			// idled
-			if (rec->Event.KeyEvent.wVirtualKeyCode == 0)
+			if (key.wVirtualKeyCode == 0)
 			{
 				if (_anyEditor._Idled)
 					_anyEditor._Idled(editor, nullptr);
 				if (editor->_Idled)
 					editor->_Idled(editor, nullptr);
 			}
-			// a key
-			else if (_anyEditor._OnKey || editor->_OnKey)
+			// key down
+			else if (key.bKeyDown) //???? watch, it was (bKeyDown & 0xff) != 0
 			{
-				KeyEventArgs ea(KeyInfo(
-					rec->Event.KeyEvent.wVirtualKeyCode,
-					rec->Event.KeyEvent.uChar.UnicodeChar,
-					(ControlKeyStates)rec->Event.KeyEvent.dwControlKeyState,
-					(rec->Event.KeyEvent.bKeyDown&0xff) != 0));
-				if (_anyEditor._OnKey)
-					_anyEditor._OnKey(editor, %ea);
-				if (editor->_OnKey)
-					editor->_OnKey(editor, %ea);
-				return ea.Ignore;
+				if (_anyEditor._KeyDown || editor->_KeyDown)
+				{
+					KeyEventArgs ea(KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, true));
+					if (_anyEditor._KeyDown)
+						_anyEditor._KeyDown(editor, %ea);
+					if (editor->_KeyDown)
+						editor->_KeyDown(editor, %ea);
+					return ea.Ignore;
+				}
+			}
+			// key up
+			else
+			{
+				if (_anyEditor._KeyUp || editor->_KeyUp)
+				{
+					KeyEventArgs ea(KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, false));
+					if (_anyEditor._KeyUp)
+						_anyEditor._KeyUp(editor, %ea);
+					if (editor->_KeyUp)
+						editor->_KeyUp(editor, %ea);
+					return ea.Ignore;
+				}
 			}
 			break;
 		}
 	case MOUSE_EVENT:
 		{
-			if (_anyEditor._OnMouse || editor->_OnMouse)
+			const MOUSE_EVENT_RECORD& e = rec->Event.MouseEvent;
+			switch(e.dwEventFlags)
 			{
-				MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
-				if (_anyEditor._OnMouse)
-					_anyEditor._OnMouse(editor, %ea);
-				if (editor->_OnMouse)
-					editor->_OnMouse(editor, %ea);
-				return ea.Ignore;
+			case 0:
+				if (_anyEditor._MouseClick || editor->_MouseClick)
+				{
+					MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
+					if (_anyEditor._MouseClick)
+						_anyEditor._MouseClick(editor, %ea);
+					if (editor->_MouseClick)
+						editor->_MouseClick(editor, %ea);
+					return ea.Ignore;
+				}
+				break;
+			case DOUBLE_CLICK:
+				if (_anyEditor._MouseDoubleClick || editor->_MouseDoubleClick)
+				{
+					MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
+					if (_anyEditor._MouseDoubleClick)
+						_anyEditor._MouseDoubleClick(editor, %ea);
+					if (editor->_MouseDoubleClick)
+						editor->_MouseDoubleClick(editor, %ea);
+					return ea.Ignore;
+				}
+				break;
+			case MOUSE_MOVED:
+				if (_anyEditor._MouseMove || editor->_MouseMove)
+				{
+					MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
+					if (_anyEditor._MouseMove)
+						_anyEditor._MouseMove(editor, %ea);
+					if (editor->_MouseMove)
+						editor->_MouseMove(editor, %ea);
+					return ea.Ignore;
+				}
+				break;
+			case MOUSE_WHEELED:
+				if (_anyEditor._MouseWheel || editor->_MouseWheel)
+				{
+					MouseEventArgs ea(GetMouseInfo(rec->Event.MouseEvent));
+					if (_anyEditor._MouseWheel)
+						_anyEditor._MouseWheel(editor, %ea);
+					if (editor->_MouseWheel)
+						editor->_MouseWheel(editor, %ea);
+					return ea.Ignore;
+				}
+				break;
 			}
 			break;
 		}
