@@ -90,7 +90,7 @@ namespace FarNet.Forms
 		/// Tells to align the text left.
 		/// </summary>
 		bool LeftText { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ShowAmpersand"]/*'/>
+		/// <include file='doc.xml' path='doc/ShowAmpersand/*'/>
 		bool ShowAmpersand { get; set; }
 	}
 
@@ -108,21 +108,21 @@ namespace FarNet.Forms
 	/// <seealso cref="IDialog.Cancel"/>
 	public interface IButton : IControl
 	{
-		/// <include file='doc.xml' path='docs/m[@name="ButtonClicked"]/*'/>
+		/// <include file='doc.xml' path='doc/ButtonClicked/*'/>
 		event EventHandler<ButtonClickedEventArgs> ButtonClicked;
 		/// <summary>
 		/// Tells to not close the dialog on using this button.
 		/// </summary>
 		bool NoClose { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="CenterGroup"]/*'/>
+		/// <include file='doc.xml' path='doc/CenterGroup/*'/>
 		bool CenterGroup { get; set; }
 		/// <summary>
 		/// Tells to display the button without brackets.
 		/// </summary>
 		bool NoBrackets { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="NoFocus"]/*'/>
+		/// <include file='doc.xml' path='doc/NoFocus/*'/>
 		bool NoFocus { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ShowAmpersand"]/*'/>
+		/// <include file='doc.xml' path='doc/ShowAmpersand/*'/>
 		bool ShowAmpersand { get; set; }
 	}
 
@@ -132,7 +132,7 @@ namespace FarNet.Forms
 	/// </summary>
 	public interface ICheckBox : IControl
 	{
-		/// <include file='doc.xml' path='docs/m[@name="ButtonClicked"]/*'/>
+		/// <include file='doc.xml' path='doc/ButtonClicked/*'/>
 		event EventHandler<ButtonClickedEventArgs> ButtonClicked;
 		/// <summary>
 		/// Selected state.
@@ -144,11 +144,11 @@ namespace FarNet.Forms
 		/// Tells to use three possible states: "off", "on", "undefined".
 		/// </summary>
 		bool ThreeState { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="CenterGroup"]/*'/>
+		/// <include file='doc.xml' path='doc/CenterGroup/*'/>
 		bool CenterGroup { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="NoFocus"]/*'/>
+		/// <include file='doc.xml' path='doc/NoFocus/*'/>
 		bool NoFocus { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ShowAmpersand"]/*'/>
+		/// <include file='doc.xml' path='doc/ShowAmpersand/*'/>
 		bool ShowAmpersand { get; set; }
 	}
 
@@ -204,15 +204,15 @@ namespace FarNet.Forms
 		/// It should be used together with <see cref="History"/>.
 		/// </remarks>
 		bool ManualAddHistory { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="UseLastHistory"]/*'/>
+		/// <include file='doc.xml' path='doc/UseLastHistory/*'/>
 		bool UseLastHistory { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ExpandEnvironmentVariables"]/*'/>
+		/// <include file='doc.xml' path='doc/ExpandEnvironmentVariables/*'/>
 		bool ExpandEnvironmentVariables { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ReadOnly"]/*'/>
+		/// <include file='doc.xml' path='doc/ReadOnly/*'/>
 		bool ReadOnly { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="SelectOnEntry"]/*'/>
+		/// <include file='doc.xml' path='doc/SelectOnEntry/*'/>
 		bool SelectOnEntry { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="NoFocus"]/*'/>
+		/// <include file='doc.xml' path='doc/NoFocus/*'/>
 		bool NoFocus { get; set; }
 		/// <summary>
 		/// Tells to disable auto completion from history.
@@ -230,7 +230,7 @@ namespace FarNet.Forms
 	/// </summary>
 	public interface IRadioButton : IControl
 	{
-		/// <include file='doc.xml' path='docs/m[@name="ButtonClicked"]/*'/>
+		/// <include file='doc.xml' path='doc/ButtonClicked/*'/>
 		event EventHandler<ButtonClickedEventArgs> ButtonClicked;
 		/// <summary>
 		/// Selected state.
@@ -248,11 +248,11 @@ namespace FarNet.Forms
 		/// (example: Far color selection dialog).
 		/// </remarks>
 		bool MoveSelect { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="CenterGroup"]/*'/>
+		/// <include file='doc.xml' path='doc/CenterGroup/*'/>
 		bool CenterGroup { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="NoFocus"]/*'/>
+		/// <include file='doc.xml' path='doc/NoFocus/*'/>
 		bool NoFocus { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ShowAmpersand"]/*'/>
+		/// <include file='doc.xml' path='doc/ShowAmpersand/*'/>
 		bool ShowAmpersand { get; set; }
 	}
 
@@ -266,13 +266,13 @@ namespace FarNet.Forms
 		/// Tells to use the same color as for the frame.
 		/// </summary>
 		bool BoxColor { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="CenterGroup"]/*'/>
+		/// <include file='doc.xml' path='doc/CenterGroup/*'/>
 		bool CenterGroup { get; set; }
 		/// <summary>
 		/// Tells to draw a single-line (1) or double-line (2) separator including text if any.
 		/// </summary>
 		int Separator { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ShowAmpersand"]/*'/>
+		/// <include file='doc.xml' path='doc/ShowAmpersand/*'/>
 		bool ShowAmpersand { get; set; }
 		/// <summary>
 		/// Tells to center the text (horizontally or vertically).
@@ -304,7 +304,7 @@ namespace FarNet.Forms
 	/// </remarks>
 	public interface IUserControl : IControl
 	{
-		/// <include file='doc.xml' path='docs/m[@name="NoFocus"]/*'/>
+		/// <include file='doc.xml' path='doc/NoFocus/*'/>
 		bool NoFocus { get; set; }
 	}
 
@@ -326,15 +326,15 @@ namespace FarNet.Forms
 		/// Gets or sets the selected item index.
 		/// </summary>
 		int Selected { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="AutoAssignHotkeys"]/*'/>
+		/// <include file='doc.xml' path='doc/AutoAssignHotkeys/*'/>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
 		/// Tells to not show ampersand symbols and use them as hotkey marks.
 		/// </summary>
 		bool NoAmpersands { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="WrapCursor"]/*'/>
+		/// <include file='doc.xml' path='doc/WrapCursor/*'/>
 		bool WrapCursor { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="NoFocus"]/*'/>
+		/// <include file='doc.xml' path='doc/NoFocus/*'/>
 		bool NoFocus { get; set; }
 		/// <summary>
 		/// Tells to not close the dialog on item selection.
@@ -355,7 +355,7 @@ namespace FarNet.Forms
 		/// <seealso cref="Items"/>
 		/// </summary>
 		void DetachItems();
-		/// <include file='doc.xml' path='docs/m[@name="BaseListItems"]/*'/>
+		/// <include file='doc.xml' path='doc/BaseListItems/*'/>
 		IList<FarItem> Items { get; }
 	}
 
@@ -373,11 +373,11 @@ namespace FarNet.Forms
 		/// Tells to show non-editable drop-down list instead of a common combo box.
 		/// </summary>
 		bool DropDownList { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ExpandEnvironmentVariables"]/*'/>
+		/// <include file='doc.xml' path='doc/ExpandEnvironmentVariables/*'/>
 		bool ExpandEnvironmentVariables { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="ReadOnly"]/*'/>
+		/// <include file='doc.xml' path='doc/ReadOnly/*'/>
 		bool ReadOnly { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="SelectOnEntry"]/*'/>
+		/// <include file='doc.xml' path='doc/SelectOnEntry/*'/>
 		bool SelectOnEntry { get; set; }
 		/// <summary>
 		/// Gets the editor line operator.
@@ -512,7 +512,7 @@ namespace FarNet.Forms
 		/// Example: last <c>Top</c> is 5, then <c>AddBox(*, -1, *, 2, *)</c> is recalculated as <c>AddBox(*, 6, *, 8, *)</c>.
 		/// </remarks>
 		bool NoSmartCoordinates { get; set; }
-		/// <include file='doc.xml' path='docs/m[@name="HelpTopic"]/*'/>
+		/// <include file='doc.xml' path='doc/HelpTopic/*'/>
 		string HelpTopic { get; set; }
 		/// <summary>
 		/// Gets or sets any user data.
@@ -545,7 +545,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Adds a double or single box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTRB"]/*'/>
+		/// <include file='doc.xml' path='doc/LTRB/*'/>
 		/// <param name="text">Control text.</param>
 		/// <remarks>
 		/// If <c>right</c>\<c>bottom</c> is 0 then it is calculated.
@@ -554,67 +554,67 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Adds a button control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LT"]/*'/>
+		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <param name="text">Control text.</param>
 		IButton AddButton(int left, int top, string text);
 		/// <summary>
 		/// Adds a check box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LT"]/*'/>
+		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <param name="text">Control text.</param>
 		ICheckBox AddCheckBox(int left, int top, string text);
 		/// <summary>
 		/// Adds a combo box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTR"]/*'/>
+		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
 		IComboBox AddComboBox(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a standard edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTR"]/*'/>
+		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEdit(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a fixed size edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTR"]/*'/>
+		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEditFixed(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a password edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTR"]/*'/>
+		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
 		IEdit AddEditPassword(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a list box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTRB"]/*'/>
+		/// <include file='doc.xml' path='doc/LTRB/*'/>
 		/// <param name="title">Title.</param>
 		IListBox AddListBox(int left, int top, int right, int bottom, string title);
 		/// <summary>
 		/// Adds a radio button. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LT"]/*'/>
+		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <param name="text">Control text.</param>
 		IRadioButton AddRadioButton(int left, int top, string text);
 		/// <summary>
 		/// Adds a text control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTR"]/*'/>
+		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddText(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a vertical text control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTB"]/*'/>
+		/// <include file='doc.xml' path='doc/LTB/*'/>
 		/// <param name="text">Control text.</param>
 		IText AddVerticalText(int left, int top, int bottom, string text);
 		/// <summary>
 		/// Adds a user control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
-		/// <include file='doc.xml' path='docs/m[@name="LTRB"]/*'/>
+		/// <include file='doc.xml' path='doc/LTRB/*'/>
 		IUserControl AddUserControl(int left, int top, int right, int bottom);
 		/// <summary>
 		/// Closes the dialog.

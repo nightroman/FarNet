@@ -9,46 +9,49 @@ namespace FarNet
 {;
 ref class AnyViewer : IAnyViewer
 {
-public: DEF_EVENT(Closed, _Closed);
-public: DEF_EVENT(GotFocus, _GotFocus);
-public: DEF_EVENT(LosingFocus, _LosingFocus);
-public: DEF_EVENT(Opened, _Opened);
+public: DEF_EVENT_IMP(Closed, _Closed);
+public: DEF_EVENT_IMP(GotFocus, _GotFocus);
+public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
+public: DEF_EVENT_IMP(Opened, _Opened);
 public:
-	virtual void ViewText(String^ text, String^ title, OpenMode mode);
+	virtual void ViewText(String^ text, String^ title, OpenMode mode) override;
 };
 
-ref class Viewer : public AnyViewer, public IViewer
+ref class Viewer : IViewer
 {
+public: DEF_EVENT_IMP(Closed, _Closed);
+public: DEF_EVENT_IMP(GotFocus, _GotFocus);
+public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
+public: DEF_EVENT_IMP(Opened, _Opened);
 public:
-	virtual property bool DisableHistory { bool get(); void set(bool value); }
-	virtual property bool HexMode { bool get(); void set(bool value); }
-	virtual property bool IsOpened { bool get(); }
-	virtual property bool WrapMode { bool get(); void set(bool value); }
-	virtual property bool WordWrapMode { bool get(); void set(bool value); }
-	virtual property DeleteSource DeleteSource { FarNet::DeleteSource get(); void set(FarNet::DeleteSource value); }
-	virtual property int CodePage { int get(); void set(int value); }
-	virtual property int Id { int get(); }
-	virtual property Int64 FileSize { Int64 get(); }
-	virtual property Place Window { Place get(); void set(Place value); }
-	virtual property Point WindowSize { Point get(); }
-	virtual property String^ FileName { String^ get(); void set(String^ value); }
-	virtual property String^ Title { String^ get(); void set(String^ value); }
-	virtual property Switching Switching { FarNet::Switching get(); void set(FarNet::Switching value); }
-	virtual property ViewFrame Frame { ViewFrame get(); void set(ViewFrame value); }
+	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
+	virtual property bool HexMode { bool get() override; void set(bool value) override; }
+	virtual property bool WrapMode { bool get() override; void set(bool value) override; }
+	virtual property bool WordWrapMode { bool get() override; void set(bool value) override; }
+	virtual property FarNet::DeleteSource DeleteSource { FarNet::DeleteSource get() override; void set(FarNet::DeleteSource value) override; }
+	virtual property int CodePage { int get() override; void set(int value) override; }
+	virtual property int Id { int get() override; }
+	virtual property Int64 FileSize { Int64 get() override; }
+	virtual property Place Window { Place get() override; void set(Place value) override; }
+	virtual property Point WindowSize { Point get() override; }
+	virtual property String^ FileName { String^ get() override; void set(String^ value) override; }
+	virtual property String^ Title { String^ get() override; void set(String^ value) override; }
+	virtual property FarNet::Switching Switching { FarNet::Switching get() override; void set(FarNet::Switching value) override; }
+	virtual property ViewFrame Frame { ViewFrame get() override; void set(ViewFrame value) override; }
 public:
-	virtual void Open();
-	virtual void Open(OpenMode mode);
-	virtual Int64 SetFrame(Int64 pos, int left, ViewFrameOptions options);
-	virtual void Close();
-	virtual void Redraw();
-	virtual void Select(Int64 symbolStart, int symbolCount);
+	virtual void Open(OpenMode mode) override;
+	virtual Int64 SetFrame(Int64 pos, int left, ViewFrameOptions options) override;
+	virtual void Close() override;
+	virtual void Redraw() override;
+	virtual void SelectText(Int64 symbolStart, int symbolCount) override;
 internal:
 	Viewer();
-private:
-	void AssertClosed();
 internal:
 	int _id;
 	String^ _FileName;
+private:
+	property bool IsOpened { bool get(); }
+	void AssertClosed();
 private:
 	FarNet::DeleteSource _DeleteSource;
 	FarNet::Switching _Switching;

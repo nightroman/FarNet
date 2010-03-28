@@ -1067,14 +1067,14 @@ $_.Description
 			}
 		}
 
-		internal Dictionary<string, EventHandler<FileEventArgs>> _LookupOpeners;
-		/// <include file='doc.xml' path='docs/m[@name="AddLookup"]/*'/>
+		/// <include file='doc.xml' path='doc/AddLookup/*'/>
 		public void AddLookup(string name, EventHandler<FileEventArgs> handler)
 		{
 			if (_LookupOpeners == null)
 				_LookupOpeners = new Dictionary<string, EventHandler<FileEventArgs>>();
 			_LookupOpeners.Add(name, handler);
 		}
+		internal Dictionary<string, EventHandler<FileEventArgs>> _LookupOpeners;
 
 		/// <summary>
 		/// Creates or gets existing menu.
