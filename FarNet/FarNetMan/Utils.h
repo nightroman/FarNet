@@ -47,6 +47,22 @@ void raise(Object^ sender, Arguments^ e) { if (Handler != nullptr) Handler(sende
 }\
 internal: EventHandler<Arguments^>^ Handler;
 
+#define DEF_EVENT_IMP(EventName, Handler)\
+virtual event EventHandler^ EventName {\
+void add(EventHandler^ handler) override { Handler += handler; }\
+void remove(EventHandler^ handler) override { Handler -= handler; }\
+void raise(Object^ sender, EventArgs^ e) { if (Handler != nullptr) Handler(sender, e); }\
+}\
+internal: EventHandler^ Handler;
+
+#define DEF_EVENT_ARGS_IMP(EventName, Handler, Arguments)\
+virtual event EventHandler<Arguments^>^ EventName {\
+void add(EventHandler<Arguments^>^ handler) override { Handler += handler; }\
+void remove(EventHandler<Arguments^>^ handler) override { Handler -= handler; }\
+void raise(Object^ sender, Arguments^ e) { if (Handler != nullptr) Handler(sender, e); }\
+}\
+internal: EventHandler<Arguments^>^ Handler;
+
 #define DEF_PROP_SET(Class, Type, Prop, Var)\
 Type Class::Prop::get() { return Var; }\
 void Class::Prop::set(Type value) { Var = value; }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding='windows-1251'?>
-<docs>
+<doc>
 	<!--
-/// <include file='doc.xml' path='docs/pp[@name="Columns"]/*'/>
+/// <include file='doc.xml' path='doc/Columns/*'/>
 -->
-	<pp name="Columns">
+	<Columns>
 		<summary>
 			Columns definitions. Set it only when the panel has no files.
 		</summary>
@@ -24,8 +24,8 @@
 				Note: if column types are not specified then normally the first column is treated as 'N'.
 			</para>
 		</remarks>
-	</pp>
-	<pp name="AddLookup">
+	</Columns>
+	<AddLookup>
 		<summary>
 			Adds a lookup handler.
 		</summary>
@@ -46,5 +46,5 @@
 				Example script: <c>Test-Panel-DbNotes-.ps1</c>.
 			</para>
 		</remarks>
-	</pp>
-</docs>
+	</AddLookup>
+</doc>

@@ -793,7 +793,7 @@ void Editor::Redo()
 	Info.EditorControl(ECTL_UNDOREDO, &eur);
 }
 
-TextWriter^ Editor::CreateWriter()
+TextWriter^ Editor::OpenWriter()
 {
 	return gcnew Works::EditorTextWriter(this);
 }

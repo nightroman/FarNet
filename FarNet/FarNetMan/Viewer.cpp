@@ -20,11 +20,6 @@ Viewer::Viewer()
 , _CodePage(CP_AUTODETECT)
 {}
 
-void Viewer::Open()
-{
-	Open(OpenMode::None);
-}
-
 void Viewer::Open(OpenMode mode)
 {
 	AssertClosed();
@@ -237,7 +232,7 @@ void Viewer::Redraw()
 	Info.ViewerControl(VCTL_REDRAW, 0);
 }
 
-void Viewer::Select(Int64 symbolStart, int symbolCount)
+void Viewer::SelectText(Int64 symbolStart, int symbolCount)
 {
 	AssertCurrentViewer();
 	if (symbolCount <= 0)

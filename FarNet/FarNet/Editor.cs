@@ -229,15 +229,26 @@ namespace FarNet
 		/// Gets the list of editor lines.
 		/// </summary>
 		/// <remarks>
-		/// <include file='doc.xml' path='docs/m[@name="EditorList"]/*'/>
+		/// <include file='doc.xml' path='doc/Experimental/*'/>
+		/// <include file='doc.xml' path='doc/EditorList/*'/>
 		/// </remarks>
+		/// <seealso cref="Strings"/>
+		/// <seealso cref="SelectedLines"/>
 		public abstract IList<ILine> Lines { get; }
 
 		/// <summary>
 		/// Gets the list of selected lines.
 		/// </summary>
 		/// <remarks>
-		/// <include file='doc.xml' path='docs/m[@name="EditorList"]/*'/>
+		/// <include file='doc.xml' path='doc/Experimental/*'/>
+		/// <include file='doc.xml' path='doc/EditorList/*'/>
+		/// <para>
+		/// Recommended ways to change the selected text are:
+		/// get the selected text by <see cref="GetSelectedText()"/> and operate on this string
+		/// or iterate through selected lines and build a new text, for example using a string builder.
+		/// Then use <see cref="SetSelectedText"/> if you want new text to be selected after replacement
+		/// or use <see cref="DeleteText"/> + <see cref="InsertText"/> to delete selected and insert new text.
+		/// </para>
 		/// </remarks>
 		public abstract IList<ILine> SelectedLines { get; }
 
@@ -245,8 +256,11 @@ namespace FarNet
 		/// Gets the string list representation of editor lines.
 		/// </summary>
 		/// <remarks>
+		/// <include file='doc.xml' path='doc/Experimental/*'/>
+		/// <para>
 		/// See MSDN <c>IList(Of T)</c> interface for members, almost all of them are implemented.
 		/// Not implemented members are: <c>Contains(string)</c>, <c>IndexOf(string)</c>, and <c>Remove(string)</c>.
+		/// </para>
 		/// <para>
 		/// Note that this string list is almost like any standard list but
 		/// there are three main differences. 1) Clear() does not removes all
@@ -601,14 +615,14 @@ namespace FarNet
 		public abstract void Redo();
 
 		/// <summary>
-		/// Creates a writer that writes to the current position of the current editor.
+		/// Opens and returns a writer for output text at the caret position of the current editor.
 		/// </summary>
 		/// <remarks>
 		/// It is not recommended to change the caret position during writing,
 		/// but it seems to be safe to do so if you <c>Flush()</c> the writer before the change.
 		/// </remarks>
-		/// <returns>Created writer. As any writer, it has to be closed after use.</returns>
-		public abstract TextWriter CreateWriter();
+		/// <returns>Opened writer. It has to be closed after use.</returns>
+		public abstract TextWriter OpenWriter();
 
 		/// <summary>
 		/// Begins asynchronous mode.

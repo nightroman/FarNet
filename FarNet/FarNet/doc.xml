@@ -1,36 +1,43 @@
 <?xml version="1.0" encoding='utf-8'?>
-<docs>
+<doc>
 	<!--
-	/// <include file='doc.xml' path='docs/pp[@name="EditorList"]/*'/>
+	/// <include file='doc.xml' path='doc/Experimental/*'/>
+	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
 	-->
-	<m name='EditorList'>
+	<Experimental>
+		<para>
+			WARNING: This feature should work fine but it is experimental.
+			It is not yet clear that it is needed. User feedback is welcome.
+		</para>
+	</Experimental>
+	<EditorList>
 		<para>
 			This list is only for iterations, access by indexes, and removal by
 			indexes. Accessed lines allow changes but new strings should not
 			contain line separators. Other editor changes during using this
 			list may cause unexpected results and should be avoided.
 		</para>
-	</m>
-	<m name='RegisterModule'>
+	</EditorList>
+	<RegisterModule>
 		<para>
 			If you plan to unregister this action then keep the returned reference and call its <see cref="IModuleAction.Unregister"/> later.
 			Instead of keeping the reference you can get it by its ID by the <see cref="IFar"/>.<c>GetModule*()</c> methods.
 		</para>
-	</m>
-	<m name='Guid'>
+	</RegisterModule>
+	<ActionGuid>
 		<para>
 			It is mandatory to set the action ID by <c>System.Runtime.InteropServices.GuidAttribute</c>.
 			The ID has to be generated exactly for this class and it should never change.
 			FarNet uses this ID internally for storing and restoring data.
 			Other modules may use this ID to access and call this action.
 		</para>
-	</m>
-	<m name='UseLastHistory'>
+	</ActionGuid>
+	<UseLastHistory>
 		<summary>
 			Tells to use the last history as the initial text if it is not set.
 		</summary>
-	</m>
-	<m name='WrapCursor'>
+	</UseLastHistory>
+	<WrapCursor>
 		<summary>
 			Tells to use the wrap cursor mode.
 		</summary>
@@ -38,38 +45,38 @@
 			In the wrap cursor mode moving the cursor up from the first element or down from the last element
 			moves the cursor to the bottom or the top.
 		</remarks>
-	</m>
-	<m name='AutoAssignHotkeys'>
+	</WrapCursor>
+	<AutoAssignHotkeys>
 		<summary>
 			Tells to assigns item hotkeys automatically starting with the first item.
 		</summary>
-	</m>
-	<m name='SelectOnEntry'>
+	</AutoAssignHotkeys>
+	<SelectOnEntry>
 		<summary>
 			Tells to select the text when the control gets focus.
 		</summary>
-	</m>
-	<m name='ReadOnly'>
+	</SelectOnEntry>
+	<ReadOnly>
 		<summary>
 			Tells to disable text changes for a user.
 		</summary>
-	</m>
-	<m name='ExpandEnvironmentVariables'>
+	</ReadOnly>
+	<ExpandEnvironmentVariables>
 		<summary>
 			Tells to expand environment variables in the input text.
 		</summary>
-	</m>
-	<m name='ButtonClicked'>
+	</ExpandEnvironmentVariables>
+	<ButtonClicked>
 		<summary>
 			Called on the button clicks and similar actions.
 		</summary>
-	</m>
-	<m name='ShowAmpersand'>
+	</ButtonClicked>
+	<ShowAmpersand>
 		<summary>
 			Tells to show ampersand symbols in the text instead of using them as hotkey marks.
 		</summary>
-	</m>
-	<m name='CenterGroup'>
+	</ShowAmpersand>
+	<CenterGroup>
 		<summary>
 			Tells that the control if one of the centered group.
 		</summary>
@@ -77,38 +84,38 @@
 			Sequential items having this flag set and the same vertical coordinates are centered horizontally.
 			Their horizontal coordinates are ignored.
 		</remarks>
-	</m>
-	<m name='NoFocus'>
+	</CenterGroup>
+	<NoFocus>
 		<summary>
 			Tells that the control cannot get focus. But it still processes other events.
 		</summary>
-	</m>
-	<m name="HelpTopic">
+	</NoFocus>
+	<HelpTopic>
 		<summary>
 			Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
 		</summary>
-	</m>
-	<m name="LT">
+	</HelpTopic>
+	<LT>
 		<param name="left">Left position.</param>
 		<param name="top">Top line.</param>
-	</m>
-	<m name="LTB">
+	</LT>
+	<LTB>
 		<param name="left">Left position.</param>
 		<param name="top">Top line.</param>
 		<param name="bottom">Bottom line.</param>
-	</m>
-	<m name="LTR">
+	</LTB>
+	<LTR>
 		<param name="left">Left position.</param>
 		<param name="top">Top line.</param>
 		<param name="right">Right position.</param>
-	</m>
-	<m name="LTRB">
+	</LTR>
+	<LTRB>
 		<param name="left">Left position.</param>
 		<param name="top">Top line.</param>
 		<param name="right">Right position.</param>
 		<param name="bottom">Bottom line.</param>
-	</m>
-	<m name="ShowHelp">
+	</LTRB>
+	<ShowHelp>
 		<summary>Shows the specified topic from a given hlf-file.</summary>
 		<param name="path">Help file location, see options.</param>
 		<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
@@ -139,25 +146,25 @@ help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
 ]]>
 			</code>
 		</remarks>
-	</m>
-	<m name="Colors">
+	</ShowHelp>
+	<Colors>
 		<param name="foregroundColor">Foreground color.</param>
 		<param name="backgroundColor">Background color.</param>
-	</m>
-	<m name="Include">
+	</Colors>
+	<Include>
 		<summary>
 			Creates and shows <see cref="IInputBox"/>.
 			Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
 			If you need more input box options, use the interface directly.
 		</summary>
-	</m>
-	<m name="FileMask">
+	</Include>
+	<FileMask>
 		<summary>
 			File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
 			This value is only the default suggestion, actual mask may be changed by a user.
 		</summary>
-	</m>
-	<m name="BaseListItems">
+	</FileMask>
+	<BaseListItems>
 		<summary>
 			List item collection. STOP: see remarks.
 		</summary>
@@ -187,5 +194,5 @@ $listbox.Items[3] = $item
 ]]>
 			</code>
 		</example>
-	</m>
-</docs>
+	</BaseListItems>
+</doc>

@@ -13,7 +13,7 @@ useful features were cut off. Some names were changed to be more informative.
 
 Also, key and mouse events are split up: OnKey -> KeyDown, KeyUp; OnMouse ->
 MouseClick, MouseDoubleClick, MouseMove, MouseWheel. Thus, now in many cases
-handles do not have to check event kinds.
+handlers do not have to check event kinds.
 
 NEW PANELS FEATURES
 (new in Far API)

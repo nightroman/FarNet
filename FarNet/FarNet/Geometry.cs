@@ -88,7 +88,7 @@ namespace FarNet
 			_first = first;
 			_last = last;
 		}
-		/// <include file='doc.xml' path='docs/m[@name="LTRB"]/*'/>
+		/// <include file='doc.xml' path='doc/LTRB/*'/>
 		public Place(int left, int top, int right, int bottom)
 		{
 			_first = new Point(left, top);
