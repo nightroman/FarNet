@@ -8,7 +8,7 @@ changes in editor and editor lines API. See FarNet history for details. Scripts
 working with that API have to be updated, more likely.
 
 In addition: $Psf property HotText was renamed into ActiveText (just to be more
-formal and to follow ILine.ActiveText).
+formal and to follow ILine.ActiveText). HotLines was removed as not really used.
 
 = 4.3.11 =
 

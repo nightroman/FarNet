@@ -244,25 +244,6 @@ if ($Editor.ExpandTabs -eq 'None' -and $Editor.TabSize -eq 4) {
 '@)
 }
 
-### Go-Home-, Go-Selection-
-$Editor.SetText("`t123")
-$Editor.GoToColumn(2)
-Go-Home-
-Assert-Far ($Editor.Caret.X -eq 1)
-Go-Home-
-Assert-Far ($Editor.Caret.X -eq 0)
-Go-Home- -Select
-Assert-Far ($Editor.GetSelectedText() -eq "`t")
-$Editor.UnselectText()
-$Editor.GoToColumn(2)
-Go-Home- -Select
-Assert-Far ($Editor.GetSelectedText() -eq "1")
-Go-Home- -Select
-Assert-Far ($Editor.GetSelectedText() -eq "`t1")
-Assert-Far ($Editor.Caret.X -eq 2 )
-Go-Selection-
-Assert-Far ($Editor.Caret.X -eq 0)
-
 ### State, Save, Redraw, Redrawing, Title
 Assert-Far $Editor.IsModified
 $Editor.Title = "EDITOR TEST SUCCEEDED"

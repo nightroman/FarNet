@@ -154,7 +154,7 @@ namespace FarNet
 		/// <remarks>
 		/// NOTE: Consider to implement the <see cref="ModuleCommand"/> instead.
 		/// Dynamic registration is not recommended for standard scenarios.
-		/// <include file='doc.xml' path='docs/m[@name="RegisterModule"]/*'/>
+		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 		/// </remarks>
 		IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
 		/// <summary>
@@ -166,7 +166,7 @@ namespace FarNet
 		/// <remarks>
 		/// NOTE: Consider to implement the <see cref="ModuleFiler"/> instead.
 		/// Dynamic registration is not recommended for standard scenarios.
-		/// <include file='doc.xml' path='docs/m[@name="RegisterModule"]/*'/>
+		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 		/// </remarks>
 		IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler);
 		/// <summary>
@@ -178,7 +178,7 @@ namespace FarNet
 		/// <remarks>
 		/// NOTE: Consider to implement the <see cref="ModuleTool"/> instead.
 		/// Dynamic registration is not recommended for standard scenarios.
-		/// <include file='doc.xml' path='docs/m[@name="RegisterModule"]/*'/>
+		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 		/// </remarks>
 		IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
 		/// <summary>
@@ -376,7 +376,7 @@ namespace FarNet
 	/// It is mandatory to use <see cref="ModuleCommandAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
 	/// and the default command prefix <see cref="ModuleCommandAttribute.Prefix"/>.
 	/// </para>
-	/// <include file='doc.xml' path='docs/m[@name="Guid"]/*'/>
+	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
 	/// </remarks>
 	public abstract class ModuleCommand : ModuleAction
 	{
@@ -392,7 +392,7 @@ namespace FarNet
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ModuleEditorAttribute : ModuleActionAttribute
 	{
-		/// <include file='doc.xml' path='docs/m[@name="FileMask"]/*'/>
+		/// <include file='doc.xml' path='doc/FileMask/*'/>
 		public string Mask { get; set; }
 	}
 
@@ -416,7 +416,7 @@ namespace FarNet
 	/// It is mandatory to use <see cref="ModuleEditorAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
 	/// The optional default file mask is defined as <see cref="ModuleEditorAttribute.Mask"/>.
 	/// </para>
-	/// <include file='doc.xml' path='docs/m[@name="Guid"]/*'/>
+	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
 	/// </remarks>
 	public abstract class ModuleEditor : ModuleAction
 	{
@@ -440,7 +440,7 @@ namespace FarNet
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ModuleFilerAttribute : ModuleActionAttribute
 	{
-		/// <include file='doc.xml' path='docs/m[@name="FileMask"]/*'/>
+		/// <include file='doc.xml' path='doc/FileMask/*'/>
 		public string Mask { get; set; }
 		/// <summary>
 		/// Tells that the filer also creates files.
@@ -483,7 +483,7 @@ namespace FarNet
 	/// It is mandatory to use <see cref="ModuleFilerAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
 	/// The optional default file mask is defined as <see cref="ModuleFilerAttribute.Mask"/>.
 	/// </para>
-	/// <include file='doc.xml' path='docs/m[@name="Guid"]/*'/>
+	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
 	/// </remarks>
 	public abstract class ModuleFiler : ModuleAction
 	{
@@ -589,7 +589,7 @@ namespace FarNet
 	/// It is mandatory to use <see cref="ModuleToolAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
 	/// and the menu areas <see cref="ModuleToolAttribute.Options"/>.
 	/// </para>
-	/// <include file='doc.xml' path='docs/m[@name="Guid"]/*'/>
+	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
 	/// </remarks>
 	public abstract class ModuleTool : ModuleAction
 	{

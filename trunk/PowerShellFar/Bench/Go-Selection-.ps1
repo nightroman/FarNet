@@ -9,21 +9,21 @@
 	of the selected text and drop the selection. The script does the same in
 	editor, command line and dialog edit boxes.
 
-	NOTE: since Far introduced the macro function Editor.Sel() it is more
-	effective for [Left]\[Right] macros than the script.
+	NOTE: since Far introduced the macro function Editor.Sel() macros are more
+	effective for this job. The script is kept as an example and for cases when
+	macros do not work or cannot be called.
 
 .LINK
 	Profile-.ps1 - how to add a script to the "User menu".
 	Install-Macro-.ps1 - how to add macros.
 	Help: Autoloaded functions
-
-.PARAMETER End
-		Go to selection end.
 #>
 
 param
 (
-	[switch]$End
+	[switch]
+	# Tells to go to the selection end.
+	$End
 )
 
 function global:Go-Selection-
@@ -32,29 +32,30 @@ function global:Go-Selection-
 )
 {
 	if ($Far.Window.Kind -eq 'Editor') {
-		$editor = $Far.Editor
-		if ($editor.SelectionExists) {
+		$Editor = $Far.Editor
+		$Place = $Editor.SelectionPlace
+		if ($Place.Top -ge 0) {
 			if ($End) {
-				$editor.GoTo($shape.Right + 1, $shape.Bottom)
+				$Editor.GoTo($Place.Right + 1, $Place.Bottom)
 			}
 			else {
-				$editor.GoTo($shape.Left, $shape.Top)
+				$Editor.GoTo($Place.Left, $Place.Top)
 			}
-			$editor.UnselectText()
+			$Editor.UnselectText()
 		}
 	}
 	else {
-		$line = $Far.Line
-		if ($line) {
-			$span = $line.SelectionSpan
+		$Line = $Far.Line
+		if ($Line) {
+			$span = $Line.SelectionSpan
 			if ($span.Start -ge 0) {
 				if ($End) {
-					$line.Caret = $span.End
+					$Line.Caret = $span.End
 				}
 				else {
-					$line.Caret = $span.Start
+					$Line.Caret = $span.Start
 				}
-				$line.UnselectText()
+				$Line.UnselectText()
 			}
 		}
 	}

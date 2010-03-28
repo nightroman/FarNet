@@ -7,26 +7,6 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class SelectionCollection;
-ref class VisibleEditorCursor;
-ref class EditorLineCollection;
-
-#define DEF_EVENT_IMP(EventName, Handler)\
-virtual event EventHandler^ EventName {\
-void add(EventHandler^ handler) override { Handler += handler; }\
-void remove(EventHandler^ handler) override { Handler -= handler; }\
-void raise(Object^ sender, EventArgs^ e) { if (Handler != nullptr) Handler(sender, e); }\
-}\
-internal: EventHandler^ Handler;
-
-#define DEF_EVENT_ARGS_IMP(EventName, Handler, Arguments)\
-virtual event EventHandler<Arguments^>^ EventName {\
-void add(EventHandler<Arguments^>^ handler) override { Handler += handler; }\
-void remove(EventHandler<Arguments^>^ handler) override { Handler -= handler; }\
-void raise(Object^ sender, Arguments^ e) { if (Handler != nullptr) Handler(sender, e); }\
-}\
-internal: EventHandler<Arguments^>^ Handler;
-
 ref class AnyEditor : IAnyEditor
 {
 public: DEF_EVENT_ARGS_IMP(KeyDown, _KeyDown, KeyEventArgs);
@@ -103,7 +83,7 @@ public:
 	virtual Point ConvertPointScreenToEditor(Point point) override;
 	virtual String^ GetSelectedText(String^ separator) override;
 	virtual String^ GetText(String^ separator) override;
-	virtual TextWriter^ CreateWriter() override;
+	virtual TextWriter^ OpenWriter() override;
 	virtual void Add(String^ text) override;
 	virtual void BeginAccess() override;
 	virtual void BeginAsync() override;
