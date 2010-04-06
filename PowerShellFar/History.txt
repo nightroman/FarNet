@@ -1,6 +1,34 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.13 =
+
+Table and list panels: new feature "Apply command": [CtrlG] opens an input box
+and prompts to enter a command to be invoked for each object $_ in the selected
+or the current objects in a table panel or the target object in a list panel.
+
+Table panel column meta information defined by hashtables: the key 'Type' which
+defines Far panel column kind is renamed to 'Kind', so that the name is the
+same as in the FarNet SetColumn class.
+
+List and table panels and scripts:
+*) Property ExcludeMembers (string[]) is replaced with ExcludeMemberPattern
+(string, regular expression pattern). This way is simpler and more flexible.
+*) Added new property HideMemberPattern for members to be included into the
+member list but shown with IsHidden flag set.
+
+Added parameters ExcludeMemberPattern and HideMemberPattern to the Out-FarPanel
+cmdlet (HideMemberPattern is used in the new module FarInventory to hide some
+noisy but still sometimes useful WMI properties).
+
+New module FarInventory. This is a script module with a bunch of functions. It
+contains just a few now, to be continued. See about_FarInventory.help.txt for
+details or run this:
+>: Import-Module FarInventory; help about_FarInventory
+
+Fixed: [CtrlR] in object panels with custom columns used to show an empty panel
+instead of refreshing the objects.
+
 = 4.3.12 =
 
 The PSF core and several scripts were adapted to the recent FarNet refactoring

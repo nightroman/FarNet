@@ -43,9 +43,24 @@ namespace PowerShellFar
 			PromptCode = "Enter PowerShell code",
 			Remove = "Remove",
 			CtrlC = "Cancel key is pressed.",
-			// history
-			PowerShellFarPrompt = "PowerShellFarPrompt",
-			// main name
+			UIApply = "Apply command",
+			
+			// History of main input code, general top level code
+			History = "PowerShellFar",
+			// History of "Apply command", pieces of code based on $_
+			HistoryApply = "PowerShellFarApply",
+			// History of the host prompt box, any strings
+			HistoryPrompt = "PowerShellFarPrompt",
+			// History of BP action
+			HistoryAction = "PowerShellFarAction",
+			// History of BP command, command names
+			HistoryCommand = "PowerShellFarCommand",
+			// History of BP script, any script paths
+			HistoryScript = "PowerShellFarScript",
+			// History of BP variable, variable names
+			HistoryVariable = "PowerShellFarVariable",
+			
+			// Main name
 			Me = "PowerShellFar";
 	}
 
@@ -61,13 +76,14 @@ namespace PowerShellFar
 			Description = "Description",
 			ExecutionContext = "ExecutionContext",
 			Expression = "Expression",
+			FormatString = "FormatString",
 			Id = "Id",
 			Key = "Key",
+			Kind = "Kind",
 			Name = "Name",
 			Label = "Label",
 			PSModulePath = "PSModulePath",
 			Status = "Status",
-			Type = "Type",
 			Value = "Value",
 			Width = "Width";
 	}

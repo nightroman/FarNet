@@ -55,11 +55,11 @@ namespace PowerShellFar.UI
 						UIMatter.Text = Kit.ToString(line);
 					break;
 				case 1:
-					UIMatter.History = "PowerShellFarCommand";
+					UIMatter.History = Res.HistoryCommand;
 					UIMatter.UseLastHistory = true;
 					break;
 				case 2:
-					UIMatter.History = "PowerShellFarVariable";
+					UIMatter.History = Res.HistoryVariable;
 					UIMatter.UseLastHistory = true;
 					break;
 			}
@@ -76,14 +76,14 @@ namespace PowerShellFar.UI
 
 			UIDialog.AddText(5, ++y, 0, "&Script");
 			UIScript = UIDialog.AddEdit(x, y, 71, string.Empty);
-			UIScript.History = "PowerShellFarScript";
+			UIScript.History = Res.HistoryScript;
 			UIScript.IsPath = true;
 			if (script != null)
 				UIScript.Text = script;
 
 			UIDialog.AddText(5, ++y, 0, "&Action");
 			UIAction = UIDialog.AddEdit(x, y, 71, string.Empty);
-			UIAction.History = "PowerShellFarAction";
+			UIAction.History = Res.HistoryAction;
 
 			UIDialog.AddText(5, ++y, 0, string.Empty).Separator = 1;
 

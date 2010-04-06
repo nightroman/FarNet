@@ -119,7 +119,7 @@ if (!$macro) {
 
 ### Panel to view/edit a macro
 $p = New-Object PowerShellFar.MemberPanel $macro
-$p.ExcludeMembers = 'Area', 'Name'
+$p.ExcludeMemberPattern = '^(Area|Name)$'
 $p.Static = $true
 
 ### Saves changes

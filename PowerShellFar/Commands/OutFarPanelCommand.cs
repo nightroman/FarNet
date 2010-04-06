@@ -34,6 +34,14 @@ namespace PowerShellFar.Commands
 		public PSObject InputObject { get; set; }
 
 		///
+		[Parameter(HelpMessage = "Regular expression pattern of members to be excluded in a child list panel.")]
+		public string ExcludeMemberPattern { get; set; }
+
+		///
+		[Parameter(HelpMessage = "Regular expression pattern of members to be hidden in a child list panel.")]
+		public string HideMemberPattern { get; set; }
+
+		///
 		[Parameter(HelpMessage = "Tells to append objects to the active object panel. All others options are ignored.")]
 		public SwitchParameter Append { get; set; }
 
@@ -57,6 +65,8 @@ namespace PowerShellFar.Commands
 
 				// more parameters
 				_panel.Columns = Columns;
+				_panel.ExcludeMemberPattern = ExcludeMemberPattern;
+				_panel.HideMemberPattern = HideMemberPattern;
 
 				// and title, if not yet
 				if (string.IsNullOrEmpty(_panel.Panel.Info.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))

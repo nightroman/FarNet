@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/
 
+= 4.3.13 =
+
+Technical build with some changes in the API documentation.
+
 = 4.3.12 =
 
 MASSIVE REVISION OF EDITOR AND EDITOR LINES

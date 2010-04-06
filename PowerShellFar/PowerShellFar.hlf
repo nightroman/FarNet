@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.12#
+#PowerShellFar 4.3.13#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1454
- - Plugin FarNet 4.3.12
+ - Far Manager 2.0.1482
+ - Plugin FarNet 4.3.13
  - Windows PowerShell 2.0
 
 
@@ -695,6 +695,9 @@ Example: key values of Registry provider.
 *Property you also can open its members by [CtrlPgDn] and so on. Use
 [CtrlShiftM] to switch member modes.
 
+[#CtrlG#] Apply command. Opens an input box and prompts to enter a command to
+be invoked for each object #$_# in selected in the panel.
+
 [#CtrlQ#] Quick view. Shows contents, properties and other information. Data
 may be not the same as information shown by [F3].
 
@@ -971,7 +974,7 @@ line is empty and the current property value can be represented as a single
 line of text, then [Enter] puts the value into the command line with a prefix
 =. If the command line is not empty and it starts with = then [Enter] treats
 the rest of the line as a new property value and, if it is possible, assigns
-it. See also [F4], [ShiftF8]\[ShiftDel].
+it. See also [F4], [ShiftF8]\[ShiftDel], [CtrlG].
 
 [#F3#] Opens a viewer to show property information, e.g. to find out whether a
 property is settable or not.
@@ -986,9 +989,14 @@ selected properties.
 [#ShiftF8#], [#ShiftDel#] Sets null value to selected properties (kind of
 "deletes values"). Null values are shown as #<null>#.
 
+[#CtrlG#] Apply command. Opens an input box and prompts to enter a command to
+be invoked for the target object #$_# which members or properties are shown.
+This way allows to invoke the target object methods and to assign results of
+expressions to properties.
+
 [#CtrlShiftM#] Switches panel modes: mode 1: properties and values (you can
 edit settable properties); mode 2: all public members and their information
-(read only).
+(read only but you can still use [CtrlG] to change the target object).
 
 See ~Power panel~@PowerPanel@ for other keys.
 

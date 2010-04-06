@@ -355,9 +355,9 @@ namespace PowerShellFar
 				case "System.Management.Automation.CommandBreakpoint": typeName = "BreakpointTypes"; break;
 				case "System.Management.Automation.VariableBreakpoint": typeName = "BreakpointTypes"; break;
 			}
-		
+
 			// extended type definitions:
-			foreach(PSObject it in Psf.InvokeCode("Get-FormatData -TypeName $args[0]", typeName))
+			foreach (PSObject it in Psf.InvokeCode("Get-FormatData -TypeName $args[0]", typeName))
 			{
 				ExtendedTypeDefinition typeDef = it.BaseObject as ExtendedTypeDefinition;
 				foreach (FormatViewDefinition viewDef in typeDef.FormatViewDefinition)
@@ -414,6 +414,44 @@ namespace PowerShellFar
 					return (int)value;
 			}
 		}
-	
+
+		public static void InvokePipelineForEach(IEnumerable<PSObject> input)
+		{
+			List<PSObject> items = new List<PSObject>(input);
+			if (items.Count == 0)
+				return;
+
+			// keep the _
+			PSVariable variable = A.Psf.Engine.SessionState.PSVariable.Get("_");
+
+			// set the _ to a sample for TabExpansion
+			A.Psf.Engine.SessionState.PSVariable.Set("_", items[0]);
+
+			try
+			{
+				// show the dialog, get the code
+				UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.HistoryApply, "For each $_ in " + items.Count + " selected:");
+				ui.UICode.IsPath = true;
+				ui.UICode.UseLastHistory = true;
+				if (!ui.UIDialog.Show())
+					return;
+				string code = ui.UICode.Text.Trim();
+				if (code.Length == 0)
+					return;
+
+				// invoke the pipeline using the input
+				A.Psf.Engine.SessionState.PSVariable.Set("_", items);
+				A.Psf.InvokePipeline("$_ | .{process{ " + code + " }}", null, false);
+			}
+			finally
+			{
+				// restore the _
+				if (variable == null)
+					A.Psf.Engine.SessionState.PSVariable.Remove("_");
+				else
+					A.Psf.Engine.SessionState.PSVariable.Set(variable);
+			}
+		}
+
 	}
 }
