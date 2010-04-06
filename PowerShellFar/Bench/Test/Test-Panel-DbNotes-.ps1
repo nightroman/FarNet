@@ -84,11 +84,11 @@ $p.Adapter = $a
 # data appearance
 $p.Panel.Info.Title = 'TestNotes'
 $p.Columns = @(
-	@{ Type = 'N'; Expression = 'Note'; Width = -80 }
-	@{ Type = 'Z'; Expression = 'Category' }
-	@{ Type = 'DC'; Expression = 'Created' }
+	@{ Kind = 'N'; Expression = 'Note'; Width = -80 }
+	@{ Kind = 'Z'; Expression = 'Category' }
+	@{ Kind = 'DC'; Expression = 'Created' }
 )
-$p.ExcludeMembers = 'NoteId', 'CategoryId'
+$p.ExcludeMemberPattern = '^(NoteId|CategoryId)$'
 
 # Setup lookup taking selected CategoryId (to use) and Category (to show);
 # there are two alternative examples below:

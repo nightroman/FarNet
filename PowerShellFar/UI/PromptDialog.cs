@@ -61,7 +61,7 @@ namespace PowerShellFar.UI
 
 				string value = fd.DefaultValue == null ? string.Empty : fd.DefaultValue.ToString();
 				IEdit ed = Dialog.AddEdit(x, 0, w - 6, value);
-				ed.History = Res.PowerShellFarPrompt;
+				ed.History = Res.HistoryPrompt;
 				ed.UseLastHistory = false;
 
 				Edit[i] = ed;

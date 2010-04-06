@@ -26,9 +26,10 @@ namespace PowerShellFar
 		{
 			Panel.Info.CurrentDirectory = "*";
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
-			Panel.Info.UseAttributeHighlighting = true;
 			Panel.Info.UseFilter = true;
-			Panel.Info.UseHighlighting = true;
+
+			Panel.Info.UseAttributeHighlighting = true;
+			Panel.Info.UseHighlighting = false;
 
 			Panel.PuttingFiles += OnPuttingFiles;
 		}
@@ -41,8 +42,9 @@ namespace PowerShellFar
 		/// </summary>
 		public void AddObject(object value)
 		{
+			var added = EnsureAddedValues();
 			if (value != null)
-				Values.Add(PSObject.AsPSObject(value));
+				added.Add(PSObject.AsPSObject(value));
 		}
 
 		/// <summary>
@@ -51,19 +53,21 @@ namespace PowerShellFar
 		/// <param name="values">Objects represented by enumerable or a single object.</param>
 		public void AddObjects(object values)
 		{
+			var added = EnsureAddedValues();
+
 			if (values == null)
 				return;
 
 			IEnumerable ie = Cast<IEnumerable>.From(values);
 			if (ie == null || ie is string)
 			{
-				Values.Add(PSObject.AsPSObject(values));
+				added.Add(PSObject.AsPSObject(values));
 			}
 			else
 			{
 				foreach (object value in ie)
 					if (value != null)
-						Values.Add(PSObject.AsPSObject(value));
+						added.Add(PSObject.AsPSObject(value));
 			}
 		}
 
@@ -198,36 +202,57 @@ namespace PowerShellFar
 			UpdateRedraw(false);
 		}
 
-		readonly Collection<PSObject> _Values = new Collection<PSObject>();
-		internal Collection<PSObject> Values { get { return _Values; } }
+		Collection<PSObject> _Values_;
+		Collection<PSObject> AddedValues
+		{
+			get { return _Values_; }
+		}
+		void DropAddedValues()
+		{
+			_Values_ = null;
+		}
+		Collection<PSObject> EnsureAddedValues()
+		{
+			return _Values_ ?? (_Values_ = new Collection<PSObject>());
+		}
 
 		internal override object GetData()
 		{
-			//???? mb it works but looks like a hack
-			if (UserWants != UserAction.CtrlR && Values.Count == 0 && (Map != null || Panel.Files.Count > 0 && Panel.Files[0] is SetFile))
-				return Panel.Files;
-
-			if (Map == null || Columns == null)
+			try
 			{
-				if (Panel.Files.Count == 0)
-					return Values;
+				//???? mb it works but looks like a hack
+				if (UserWants != UserAction.CtrlR && AddedValues == null && (Map != null || Panel.Files.Count > 0 && Panel.Files[0] is SetFile))
+					return Panel.Files;
 
-				var result = new Collection<PSObject>();
-				foreach (FarFile file in Panel.Files)
-					result.Add(PSObject.AsPSObject(file.Data));
-				foreach (PSObject value in Values)
-					result.Add(value);
+				if (Map == null || Columns == null)
+				{
+					if (Panel.Files.Count == 0)
+						return AddedValues ?? new Collection<PSObject>();
 
-				Values.Clear();
-				return result;
+					var result = new Collection<PSObject>();
+					foreach (FarFile file in Panel.Files)
+						result.Add(PSObject.AsPSObject(file.Data));
+					if (AddedValues != null)
+						foreach (PSObject value in AddedValues)
+							result.Add(value);
+
+					return result;
+				}
+
+				// _100330_191639 ?????
+				if (AddedValues == null)
+					return Panel.Files;
+
+				var files = new List<FarFile>(AddedValues.Count);
+				foreach (PSObject value in AddedValues)
+					files.Add(new MapFile(value, Map));
+
+				return files;
 			}
-
-			var files = new List<FarFile>(Values.Count);
-			foreach (PSObject value in Values)
-				files.Add(new MapFile(value, Map));
-
-			Values.Clear();
-			return files;
+			finally
+			{
+				DropAddedValues();
+			}
 		}
 
 		/// <summary>

@@ -507,16 +507,18 @@ namespace FarNet
 		/// </summary>
 		bool UseSortGroups { get; set; }
 		/// <summary>
-		/// Tells to use file highlighting in the panel.
-		/// </summary>
-		bool UseHighlighting { get; set; }
-		/// <summary>
-		/// Tells to use attributes only for file highlighting.
+		/// Tells to use file highlighting by names and attributes.
 		/// </summary>
 		/// <remarks>
-		/// File names are ignored.
-		/// Color is chosen from file color groups, which have templates excluded from analysis
-		/// (i.e. option "[ ] Match file mask(s)" in file highlighting setup dialog is off).
+		/// It has no effect if <see cref="UseAttributeHighlighting"/> is true.
+		/// </remarks>
+		bool UseHighlighting { get; set; }
+		/// <summary>
+		/// Tells to use file highlighting by attributes only.
+		/// </summary>
+		/// <remarks>
+		/// Colors are taken only from the file color groups with file name masks excluded from analysis
+		/// (the option "Mask" in the file highlighting setup dialog is unchecked).
 		/// </remarks>
 		bool UseAttributeHighlighting { get; set; }
 		/// <summary>

@@ -43,7 +43,7 @@ namespace PowerShellFar
 					count = names.Length;
 
 				string[] lines = new string[count];
-				for(int s = names.Length - count, d = 0; s < names.Length; ++s, ++d)
+				for (int s = names.Length - count, d = 0; s < names.Length; ++s, ++d)
 					lines[d] = key.GetValue(names[s], string.Empty).ToString();
 
 				return lines;
@@ -100,7 +100,7 @@ namespace PowerShellFar
 					{
 						if (m.Alternative)
 						{
-							UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.Me, "PowerShell code");
+							UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, "PowerShell code");
 							ui.UICode.Text = code;
 							if (!ui.UIDialog.Show())
 								return;
@@ -171,7 +171,7 @@ namespace PowerShellFar
 					}
 				}
 			}
-			
+
 			// open
 			return Entry.Instance.Manager.OpenRegistryKey("CommandHistory", writable);
 		}

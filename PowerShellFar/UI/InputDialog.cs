@@ -11,9 +11,9 @@ namespace PowerShellFar.UI
 {
 	class InputDialog
 	{
-		public IDialog UIDialog;
-		public IText[] UIPrompt;
-		public IEdit UICode;
+		public IDialog UIDialog { get; private set; }
+		public IText[] UIPrompt { get; private set; }
+		public IEdit UICode { get; private set; }
 
 		public InputDialog(string caption, string history, params string[] prompt)
 		{

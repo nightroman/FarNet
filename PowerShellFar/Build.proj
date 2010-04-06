@@ -5,7 +5,7 @@
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-		<ProductVersion>4.3.12</ProductVersion>
+		<ProductVersion>4.3.13</ProductVersion>
 	</PropertyGroup>
 
 	<Target Name="Build">
@@ -39,6 +39,11 @@
 		Modules\FarDescription\FarDescription.psd1;
 		Modules\FarDescription\FarDescription.psm1;
 		Modules\FarDescription\FarDescription.Types.ps1xml;
+		"/>
+		<Copy DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarInventory" SkipUnchangedFiles="true"
+		SourceFiles="
+		Modules\FarInventory\about_FarInventory.help.txt;
+		Modules\FarInventory\FarInventory.psm1;
 		"/>
 		<Copy DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarMacro" SkipUnchangedFiles="true"
 		SourceFiles="

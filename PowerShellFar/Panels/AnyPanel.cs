@@ -486,6 +486,9 @@ namespace PowerShellFar
 			WriteFile(file, My.PathEx.Combine(e.Destination, e.Names[0]));
 		}
 
+		/// <summary>Apply command.</summary>
+		internal virtual void UIApply() { }
+
 		/// <summary>Attributes action.</summary>
 		internal virtual void UIAttributes() { }
 
@@ -781,6 +784,15 @@ namespace PowerShellFar
 						}
 						return;
 					}
+				case VKeyCode.G:
+					switch (e.State)
+					{
+						case KeyStates.Control:
+							e.Ignore = true;
+							UIApply();
+							return;
+					}
+					return;
 				case VKeyCode.M:
 					switch (e.State)
 					{
@@ -1103,6 +1115,7 @@ $_.Description
 			if (items.OpenFile != null) r.Items.Add(items.OpenFile);
 			if (items.OpenFileMembers != null) r.Items.Add(items.OpenFileMembers);
 			if (items.OpenFileAttributes != null) r.Items.Add(items.OpenFileAttributes);
+			if (items.ApplyCommand != null) r.Items.Add(items.ApplyCommand);
 			if (items.Copy != null) r.Items.Add(items.Copy);
 			if (items.CopyHere != null) r.Items.Add(items.CopyHere);
 			if (items.Move != null) r.Items.Add(items.Move);

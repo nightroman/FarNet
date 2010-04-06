@@ -49,9 +49,9 @@ param
 	# Columns to be shown
 	$Columns,
 
-	[string[]]
-	# Fields to exclude in the child record panel.
-	$ExcludeMembers,
+	[string]
+	# Regex pattern to exclude fields in the child record panel.
+	$ExcludeMemberPattern,
 
 	# Handler triggered on Enter in the lookup table.
 	$Lookup,
@@ -96,7 +96,7 @@ if ($CloseConnection) { $p.Garbage.Add($DbConnection) }
 
 # panel settings
 $p.Columns = $Columns
-$p.ExcludeMembers = $ExcludeMembers
+$p.ExcludeMemberPattern = $ExcludeMemberPattern
 $p.Panel.Info.Title = $Title
 $p.SetLookup($Lookup)
 

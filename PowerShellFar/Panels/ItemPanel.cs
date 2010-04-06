@@ -555,7 +555,7 @@ namespace PowerShellFar
 				{
 					Panel.Files.Clear();
 					Columns = null;
-					ExcludeMembers = null;
+					ExcludeMemberPattern = null;
 
 					System.Collections.IDictionary options = A.Psf.Providers[location.Provider.Name] as System.Collections.IDictionary;
 					if (options != null)
@@ -580,20 +580,22 @@ namespace PowerShellFar
 
 			if (Location.Provider.ImplementingType == typeof(FileSystemProvider))
 			{
-				Panel.Info.UseAttributeHighlighting = false;
 				Panel.Info.UseFilter = true;
-				Panel.Info.UseHighlighting = true;
 				Panel.Info.UseSortGroups = true;
+
+				Panel.Info.UseAttributeHighlighting = false;
+				Panel.Info.UseHighlighting = true;
 
 				// _090929_061740 Before Far 2.0.1145 we used to sync the current directory to
 				// the PS location. Now it is not needed because Far does not do that any more.
 			}
 			else
 			{
-				Panel.Info.UseAttributeHighlighting = true;
 				Panel.Info.UseFilter = true;
-				Panel.Info.UseHighlighting = true;
 				Panel.Info.UseSortGroups = false;
+
+				Panel.Info.UseAttributeHighlighting = true;
+				Panel.Info.UseHighlighting = false;
 			}
 
 			if (update && Panel.IsOpened)

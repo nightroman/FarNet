@@ -27,7 +27,7 @@ namespace PowerShellFar
 	/// <c>Name</c>/<c>Label</c> is usually needed for a script block, but it can be used with a property name, too.
 	/// </para>
 	/// <para>
-	/// <b>Type</b>: Far column kind (the key name comes from PowerShell).
+	/// <b>Kind</b>: Far column kind (the key name comes from PowerShell).
 	/// See <see cref="PanelModeInfo.Columns"/>.
 	/// </para>
 	/// <para>
@@ -176,12 +176,18 @@ namespace PowerShellFar
 					if (key.Length == 0)
 						throw new ArgumentException("Empty key value.");
 
-					if (Word.Name.StartsWith(key, StringComparison.OrdinalIgnoreCase) ||
-						Word.Label.StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					if (Word.Expression.StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					{
+						if (kv.Value is string)
+							_Property = (string)kv.Value;
+						else
+							_Script = (ScriptBlock)kv.Value;
+					}
+					else if (Word.Name.StartsWith(key, StringComparison.OrdinalIgnoreCase) || Word.Label.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
 						_ColumnName = (string)kv.Value;
 					}
-					else if (Word.Type.StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					else if (Word.Kind.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
 						_Kind = (string)LanguagePrimitives.ConvertTo(kv.Value, typeof(string), CultureInfo.InvariantCulture);
 					}
@@ -193,14 +199,7 @@ namespace PowerShellFar
 					{
 						Alignment = (Alignment)LanguagePrimitives.ConvertTo(kv.Value, typeof(Alignment), CultureInfo.InvariantCulture);
 					}
-					else if (Word.Expression.StartsWith(key, StringComparison.OrdinalIgnoreCase))
-					{
-						if (kv.Value is string)
-							_Property = (string)kv.Value;
-						else
-							_Script = (ScriptBlock)kv.Value;
-					}
-					else if ("FormatString".StartsWith(key, StringComparison.OrdinalIgnoreCase))
+					else if (Word.FormatString.StartsWith(key, StringComparison.OrdinalIgnoreCase))
 					{
 						FormatString = kv.Value.ToString();
 					}
@@ -223,7 +222,7 @@ namespace PowerShellFar
 			StringBuilder sb = new StringBuilder();
 			sb.Append("@{");
 			if (_Kind != null)
-				sb.Append(" Type = '" + _Kind + "';");
+				sb.Append(" Kind = '" + _Kind + "';");
 			if (_ColumnName != null)
 				sb.Append(" Label = '" + _ColumnName + "';");
 			if (_Width != 0)

@@ -17,6 +17,7 @@ namespace PowerShellFar
 {
 	class HelpMenuItems
 	{
+		public FarItem ApplyCommand { get; set; }
 		public FarItem OpenFileAttributes { get; set; }
 		public FarItem OpenFile { get; set; }
 		public FarItem Copy { get; set; }
