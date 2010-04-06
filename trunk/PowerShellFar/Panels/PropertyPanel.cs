@@ -51,6 +51,11 @@ namespace PowerShellFar
 			Panel.Info.StartSortMode = PanelSortMode.Name;
 		}
 
+		internal override PSObject Target
+		{
+			get { return _item; }
+		}
+
 		internal override void OnGettingData(PanelEventArgs e)
 		{
 			try

@@ -21,9 +21,11 @@ namespace PowerShellFar
 		internal ListPanel()
 		{
 			Panel.PostName(_lastCurrentName);
-			Panel.Info.UseAttributeHighlighting = true;
 			Panel.Info.UseFilter = true;
-			Panel.Info.UseHighlighting = true;
+
+			// for hidden members
+			Panel.Info.UseAttributeHighlighting = true;
+			Panel.Info.UseHighlighting = false;
 
 			// 090411 Use custom Descriptions mode
 			PanelModeInfo mode = new PanelModeInfo();
@@ -34,6 +36,11 @@ namespace PowerShellFar
 			};
 			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 		}
+
+		/// <summary>
+		/// The target object.
+		/// </summary>
+		internal abstract PSObject Target { get; }
 
 		/// <summary>
 		/// Puts a value into the command line or opens a lookup panel or member panel.
@@ -172,6 +179,25 @@ namespace PowerShellFar
 					A.Msg(ex.Message);
 				}
 			}
+		}
+
+		internal override void UIApply()
+		{
+			A.InvokePipelineForEach(new PSObject[] { Target });
+		}
+
+		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
+		{
+			if (items.ApplyCommand == null)
+			{
+				items.ApplyCommand = new SetItem()
+				{
+					Text = Res.UIApply,
+					Click = delegate { UIApply(); }
+				};
+			}
+
+			base.HelpMenuInitItems(items, e);
 		}
 
 	}

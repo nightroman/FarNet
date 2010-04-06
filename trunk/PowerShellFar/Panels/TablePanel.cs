@@ -33,9 +33,14 @@ namespace PowerShellFar
 		object[] _Columns;
 
 		/// <summary>
-		/// Members to exclude in a child <see cref="ListPanel"/>.
+		/// Regular expression pattern of members to be excluded in a child <see cref="ListPanel"/>.
 		/// </summary>
-		public string[] ExcludeMembers { get; set; }
+		public string ExcludeMemberPattern { get; set; }
+
+		/// <summary>
+		/// Regular expression pattern of members to be hidden in a child <see cref="ListPanel"/>.
+		/// </summary>
+		public string HideMemberPattern { get; set; }
 
 		/// <summary>
 		/// Gets meta objects for columns.
@@ -142,8 +147,22 @@ namespace PowerShellFar
 				};
 			}
 
+			if (items.ApplyCommand == null)
+			{
+				items.ApplyCommand = new SetItem()
+				{
+					Text = Res.UIApply,
+					Click = delegate { UIApply(); }
+				};
+			}
+
 			base.HelpMenuInitItems(items, e);
 		}
 
+		internal override void UIApply()
+		{
+			A.InvokePipelineForEach(SelectedItems);
+		}
+	
 	}
 }

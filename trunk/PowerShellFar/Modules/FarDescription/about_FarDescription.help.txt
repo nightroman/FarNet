@@ -3,6 +3,7 @@
 
 SHORT DESCRIPTION
 	Far Manager file description tools.
+	Author: Roman Kuzmin
 
 LONG DESCRIPTION
 	Though this module is designed for Far Manager it does not depend on Far or

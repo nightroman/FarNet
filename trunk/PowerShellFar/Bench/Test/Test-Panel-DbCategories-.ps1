@@ -22,4 +22,4 @@ Panel-DbData- `
 -Title 'TestCategories' `
 -TableName 'TestCategories' `
 -Columns 'Category', 'Remarks' `
--ExcludeMembers 'CategoryId'
+-ExcludeMemberPattern '^CategoryId$'

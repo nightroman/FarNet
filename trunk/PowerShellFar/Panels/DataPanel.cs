@@ -25,10 +25,11 @@ namespace PowerShellFar
 		{
 			Panel.Info.CurrentDirectory = "*";
 
-			Panel.Info.UseAttributeHighlighting = true;
 			Panel.Info.UseFilter = true;
-			Panel.Info.UseHighlighting = true;
 			Panel.Info.UseSortGroups = false;
+
+			Panel.Info.UseAttributeHighlighting = true;
+			Panel.Info.UseHighlighting = false;
 
 			// modes: assume it is sorted in SELECT
 			Panel.Info.StartSortMode = PanelSortMode.Unsorted;

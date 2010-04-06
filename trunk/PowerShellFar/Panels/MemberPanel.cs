@@ -12,6 +12,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
+using System.Text.RegularExpressions;
 using FarNet;
 
 namespace PowerShellFar
@@ -47,6 +48,11 @@ namespace PowerShellFar
 		///
 		protected override string DefaultTitle { get { return "Members: " + _Value.BaseObject.GetType().Name; } }
 
+		internal override PSObject Target
+		{
+			get { return _Value; }
+		}
+
 		/// <summary>
 		/// Gets or sets data modification flag.
 		/// </summary>
@@ -76,6 +82,44 @@ namespace PowerShellFar
 		/// </summary>
 		public bool Static { get; set; }
 
+		Regex GetExcludeMemberRegex()
+		{
+			try
+			{
+				if (!string.IsNullOrEmpty(ExcludeMemberPattern))
+					return new Regex(ExcludeMemberPattern, RegexOptions.IgnoreCase);
+
+				TablePanel table = Parent as TablePanel;
+				if (table != null && !string.IsNullOrEmpty(table.ExcludeMemberPattern))
+					return new Regex(table.ExcludeMemberPattern, RegexOptions.IgnoreCase);
+
+				return null;
+			}
+			catch (Exception ex)
+			{
+				throw new ModuleException("Invalid ExcludeMemberPattern.", ex);
+			}
+		}
+
+		Regex GetHideMemberRegex()
+		{
+			try
+			{
+				if (!string.IsNullOrEmpty(HideMemberPattern))
+					return new Regex(HideMemberPattern, RegexOptions.IgnoreCase);
+
+				TablePanel table = Parent as TablePanel;
+				if (table != null && !string.IsNullOrEmpty(table.HideMemberPattern))
+					return new Regex(table.HideMemberPattern, RegexOptions.IgnoreCase);
+
+				return null;
+			}
+			catch (Exception ex)
+			{
+				throw new ModuleException("Invalid HideMemberPattern.", ex);
+			}
+		}
+
 		internal override void OnGettingData(PanelEventArgs e)
 		{
 			try
@@ -90,33 +134,23 @@ namespace PowerShellFar
 					//! Idea to cache them is not good:
 					//! price: high (have to sync on exclude, add, delete, etc.)
 					//! value: low (it is UI and member number is normally small)
-					var _membersToShow = new List<string>();
+					var membersToShow = new List<string>();
 					{
-						string[] exclude;
-						if (_ExcludeMembers != null)
-						{
-							exclude = _ExcludeMembers;
-						}
-						else
-						{
-							TablePanel table = Parent as TablePanel;
-							exclude = table != null && table.ExcludeMembers != null && table.ExcludeMembers.Length > 0 ? table.ExcludeMembers : null;
-						}
-
+						Regex exclude = GetExcludeMemberRegex();
 						string code = "Get-Member -InputObject $args[0] -MemberType Properties -ErrorAction 0";
 						foreach (PSObject o in A.Psf.InvokeCode(code, _Value))
 						{
 							string name = o.Properties["Name"].Value.ToString();
-							if (exclude != null && Array.Exists<string>(exclude, delegate(string s) { return Kit.Compare(name, s) == 0; }))
-								continue;
-							_membersToShow.Add(name);
+							if (exclude == null || !exclude.IsMatch(name))
+								membersToShow.Add(name);
 						}
 					}
 
 					// now we are ready to process properties in their original order
+					Regex hide = GetHideMemberRegex();
 					foreach (PSPropertyInfo pi in _Value.Properties)
 					{
-						if (!_membersToShow.Contains(pi.Name))
+						if (!membersToShow.Contains(pi.Name))
 							continue;
 
 						//! exceptions, e.g. exit code of running process
@@ -130,19 +164,25 @@ namespace PowerShellFar
 							continue;
 						}
 
-						SetFile f = new SetFile();
-						f.Name = pi.Name;
+						SetFile file = new SetFile()
+						{
+							Name = pi.Name,
+							Data = pi
+						};
 
-						// get the base object
+						// base object
 						PSObject asPSObject = value as PSObject;
 						if (asPSObject != null)
 							value = asPSObject.BaseObject;
 
-						// set its value
-						f.Description = Converter.FormatValue(value, A.Psf.Settings.FormatEnumerationLimit);
+						// value
+						file.Description = Converter.FormatValue(value, A.Psf.Settings.FormatEnumerationLimit);
 
-						f.Data = pi;
-						Panel.Files.Add(f);
+						// hidden
+						if (hide != null && hide.IsMatch(file.Name))
+							file.IsHidden = true;
+
+						Panel.Files.Add(file);
 					}
 				}
 				else
@@ -477,7 +517,7 @@ namespace PowerShellFar
 				else
 					//! it is tempting to avoid our parsing, but it is not that good..
 					A.SetMemberValue(info, Converter.Parse(info, value));
-				
+
 				// change is done
 				WhenMemberChanged(_Value);
 			}
@@ -487,15 +527,15 @@ namespace PowerShellFar
 			}
 		}
 
-		string[] _ExcludeMembers;
 		/// <summary>
-		/// Members to exclude.
+		/// Regular expression pattern of members to be excluded.
 		/// </summary>
-		public string[] ExcludeMembers
-		{
-			get { return _ExcludeMembers; }
-			set { _ExcludeMembers = value; }
-		}
+		public string ExcludeMemberPattern { get; set; }
+
+		/// <summary>
+		/// Regular expression pattern of members to be hidden.
+		/// </summary>
+		public string HideMemberPattern { get; set; }
 
 		/// <summary>
 		/// Sets a handler called to save modified data.

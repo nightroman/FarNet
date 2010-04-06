@@ -582,13 +582,10 @@ Continue with this current directory?
 		/// <para>
 		/// The code is simply returned, if you want to execute it then call <see cref="InvokeInputCode"/>.
 		/// </para>
-		/// <para>
-		/// When a macro is in progress a simple input box is used instead of the dialog.
-		/// </para>
 		/// </remarks>
 		public string InputCode()
 		{
-			UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.Me, "PowerShell code");
+			UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, "PowerShell code");
 			ui.UICode.IsPath = true;
 			ui.UICode.UseLastHistory = true;
 			return ui.UIDialog.Show() ? ui.UICode.Text : null;
@@ -1024,7 +1021,7 @@ Continue with this current directory?
 		/// </para>
 		/// <para>
 		/// Values are dictionaries with keys mapped to property names of <see cref="ItemPanel"/>,
-		/// e.g. <see cref="TablePanel.Columns"/>, <see cref="TablePanel.ExcludeMembers"/>, and etc.
+		/// e.g. <see cref="TablePanel.Columns"/>, <see cref="TablePanel.ExcludeMemberPattern"/>, and etc.
 		/// Their values depend on that properties, see help.
 		/// </para>
 		/// </remarks>

@@ -1,7 +1,7 @@
 
 Module   : FarNet.PowerShellFar
-Version  : 4.3.12
-Release  : 2010.03.28
+Version  : 4.3.13
+Release  : 2010.04.06
 Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -24,8 +24,8 @@ http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
 
- - Far Manager 2.0.1454
- - Plugin FarNet 4.3.12
+ - Far Manager 2.0.1482
+ - Plugin FarNet 4.3.13
  - Windows PowerShell 2.0
 
 
@@ -65,9 +65,8 @@ core because x86 Far disables WOW64 redirection.
 
 SOLUTION
 Theoretically the best way to avoid this problem is to use x64 Far and FarNet
-on x64 machines. Unfortunately it is not always possible in practice: plugins
-may not have x64 versions or x64 Far may have not yet resolved problems. Then
-the following batch file can be used to start x86 Far:
+on x64 machines. Unfortunately this is not always possible in practice for a
+few reasons. Then the following batch file can be used to start x86 Far:
 
 	set PATH=%WINDIR%\syswow64;%PATH%
 	"C:\Program Files\Far\Far.exe"

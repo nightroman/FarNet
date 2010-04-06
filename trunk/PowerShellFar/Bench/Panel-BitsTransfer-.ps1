@@ -113,10 +113,10 @@ if ($p) { return }
 ### Create panel
 $p = New-Object PowerShellFar.UserPanel
 $p.Columns = @(
-	@{ Type = 'N'; Expression = 'DisplayName' }
-	@{ Type = 'S'; Label = '% done'; Expression = { if ($_.BytesTotal) { 100 * $_.BytesTransferred / $_.BytesTotal } else { 100 } } }
-	@{ Type = 'O'; Label = 'State'; Width = 15; Expression = 'JobState' }
-	@{ Type = 'DC'; Label = 'Created'; Expression = 'CreationTime' }
+	@{ Kind = 'N'; Expression = 'DisplayName' }
+	@{ Kind = 'S'; Label = '% done'; Expression = { if ($_.BytesTotal) { 100 * $_.BytesTransferred / $_.BytesTotal } else { 100 } } }
+	@{ Kind = 'O'; Label = 'State'; Width = 15; Expression = 'JobState' }
+	@{ Kind = 'DC'; Label = 'Created'; Expression = 'CreationTime' }
 )
 
 ### Panel jobs

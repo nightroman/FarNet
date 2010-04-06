@@ -53,9 +53,9 @@ $Psf.Providers = @{
 
 	Registry = @{
 		Columns = @(
-			@{ Type = 'Z'; Name = 'SKC'; Width = 8; Expression = 'SubKeyCount'; FormatString = '{0,8:n0}' }
-			@{ Type = 'O'; Name = 'VC'; Width = 8; Expression = 'ValueCount'; FormatString = '{0,8:n0}' }
-			@{ Type = 'N'; Name = 'Name'; Expression = '' } # note: data source is ignored
+			@{ Kind = 'Z'; Name = 'SKC'; Width = 8; Expression = 'SubKeyCount'; FormatString = '{0,8:n0}' }
+			@{ Kind = 'O'; Name = 'VC'; Width = 8; Expression = 'ValueCount'; FormatString = '{0,8:n0}' }
+			@{ Kind = 'N'; Name = 'Name'; Expression = '' } # note: data source is ignored
 		)
 	}
 

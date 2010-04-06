@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.3.12
-Release  : 2010.03.28
+Version  : 4.3.13
+Release  : 2010.04.06
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -20,7 +20,7 @@ provided by the PowerShellFar module.
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1454
+ - Far Manager 2.0.1482
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
@@ -75,7 +75,7 @@ or none should be specified.
 
 
 *) For each folder in Modules: if a manifest *.cfg exists then only specified
-assembly and classes are loaded, else all public not abstract BaseModuleEntry
+assembly and classes are loaded, else all public not abstract BaseModuleItem
 descendant classes are loaded from a single *.dll file.
 
 *) Not loaded folders: folders with names starting with '-' (-MyModule) and
@@ -155,8 +155,8 @@ or even both operations:
 
 
 PROBLEM
-x86 Far on x64 machines: in rare cases not trivial .NET modules cannot load
-because x86 Far disables WOW64 redirection (normally needed for loading).
+x86 Far on x64 machines: in rare cases not trivial .NET modules cannot be
+loaded because x86 Far disables WOW64 redirection.
 
 SOLUTION
 Theoretically the best way to avoid this problem is to use x64 Far and FarNet

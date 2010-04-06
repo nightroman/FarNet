@@ -101,7 +101,7 @@ namespace PowerShellFar
 		public override string ReadLine()
 		{
 			Check();
-			UI.InputDialog ui = new UI.InputDialog(string.Empty, Res.PowerShellFarPrompt);
+			UI.InputDialog ui = new UI.InputDialog(string.Empty, Res.HistoryPrompt);
 			return ui.UIDialog.Show() ? ui.UICode.Text : string.Empty;
 		}
 
@@ -121,7 +121,7 @@ namespace PowerShellFar
 
 				// win7 NoProgress
 				Far.Net.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
-			
+
 				return;
 			}
 

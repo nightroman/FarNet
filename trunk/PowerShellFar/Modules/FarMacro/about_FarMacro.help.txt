@@ -3,6 +3,7 @@
 
 SHORT DESCRIPTION
 	Far Manager macro provider and tools.
+	Author: Roman Kuzmin
 
 LONG DESCRIPTION
 
