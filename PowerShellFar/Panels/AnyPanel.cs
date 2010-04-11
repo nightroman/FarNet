@@ -226,7 +226,7 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Saves current panel state.
+		/// Saves the panel state.
 		/// This version saves a file name; it is the least effective but:
 		/// *) indexes may change (when items added|removed)
 		/// *) panel files can be recreated on getting data.
@@ -400,12 +400,6 @@ namespace PowerShellFar
 			_Parent = null;
 		}
 
-		///
-		public override string ToString()
-		{
-			return GetType().Name;
-		}
-
 		/// <summary>
 		/// Can the panel close now?
 		/// </summary>
@@ -423,42 +417,6 @@ namespace PowerShellFar
 		internal virtual bool CanCloseChild()
 		{
 			return true;
-		}
-
-		/// <summary>
-		/// Files data: .. is excluded; same count and order.
-		/// </summary>
-		internal IList<object> CollectData()
-		{
-			var r = new List<object>();
-			r.Capacity = _Panel.Files.Count;
-			foreach (FarFile f in _Panel.Files)
-				if (f.Data != null)
-					r.Add(f.Data);
-			return r;
-		}
-
-		/// <summary>
-		/// Collects names of files.
-		/// </summary>
-		internal static IList<string> CollectNames(IList<FarFile> files)
-		{
-			var r = new List<string>();
-			r.Capacity = files.Count;
-			foreach (FarFile f in files)
-				r.Add(f.Name);
-			return r;
-		}
-
-		/// <summary>
-		/// Collects original names (selected if any or the current).
-		/// </summary>
-		internal IList<string> CollectSelectedNames()
-		{
-			var r = new List<string>();
-			foreach (FarFile f in _Panel.SelectedFiles)
-				r.Add(f.Name);
-			return r;
 		}
 
 		/// <summary>
@@ -487,10 +445,12 @@ namespace PowerShellFar
 		}
 
 		/// <summary>Apply command.</summary>
-		internal virtual void UIApply() { }
+		internal virtual void UIApply()
+		{ }
 
 		/// <summary>Attributes action.</summary>
-		internal virtual void UIAttributes() { }
+		internal virtual void UIAttributes()
+		{ }
 
 		/// <summary>Command action.</summary>
 		/// <returns>True if handled.</returns>
@@ -500,10 +460,12 @@ namespace PowerShellFar
 		}
 
 		/// <summary>Create action.</summary>
-		internal virtual void UICreate() { }
+		internal virtual void UICreate()
+		{ }
 
 		/// <summary>Copy here action.</summary>
-		internal virtual void UICopyHere() { }
+		internal virtual void UICopyHere()
+		{ }
 
 		internal virtual bool UICopyMoveCan(bool move)
 		{
@@ -594,7 +556,8 @@ namespace PowerShellFar
 		}
 
 		/// <summary>Mode action.</summary>
-		internal virtual void UIMode() { }
+		internal virtual void UIMode()
+		{ }
 
 		///
 		internal void UIOpenFileMembers()
@@ -605,7 +568,8 @@ namespace PowerShellFar
 		}
 
 		/// <summary>Rename action.</summary>
-		internal virtual void UIRename() { }
+		internal virtual void UIRename()
+		{ }
 
 		// Far handler
 		void OnIdled(object sender, EventArgs e)
@@ -856,12 +820,13 @@ namespace PowerShellFar
 		/// <summary>
 		/// Virtual event.
 		/// </summary>
-		internal virtual void OnSettingDirectory(SettingDirectoryEventArgs e) { }
+		internal virtual void OnSettingDirectory(SettingDirectoryEventArgs e)
+		{ }
 
 		/// <summary>
 		/// Returns e.g. MyDrive:
 		/// </summary>
-		internal static string SelectDrivePrompt(string select)
+		internal static string SelectDrivePrompt(string select) //????
 		{
 			IMenu m = Far.Net.CreateMenu();
 			m.AutoAssignHotkeys = true;
@@ -894,22 +859,22 @@ namespace PowerShellFar
 		/// <summary>
 		/// Select a share
 		/// </summary>
-		internal static string SelectShare(string computer)
+		internal static string SelectShare(string computer) //????
 		{
-			string code = @"
-Get-WmiObject -Class win32_share -ComputerName $args[0] | Sort-Object Name | .{process{
-$_.Name
-$_.Description
-}}";
-			Collection<PSObject> oo = A.Psf.InvokeCode(code, computer);
+			const string code = @"
+Get-WmiObject -Class Win32_Share -ComputerName $args[0] |
+Sort-Object Name |
+.{process{ $_.Name; $_.Description }}
+";
+			Collection<PSObject> values = A.Psf.InvokeCode(code, computer);
 
 			IMenu m = Far.Net.CreateMenu();
 			m.AutoAssignHotkeys = true;
 			m.Title = computer + " shares";
-			for (int i = 0; i < oo.Count; i += 2)
+			for (int i = 0; i < values.Count; i += 2)
 			{
-				string name = oo[i].ToString();
-				string desc = oo[i + 1].ToString();
+				string name = values[i].ToString();
+				string desc = values[i + 1].ToString();
 				if (desc.Length > 0)
 					name += " (" + desc + ")";
 				m.Add(name);
@@ -917,7 +882,7 @@ $_.Description
 			if (!m.Show())
 				return null;
 
-			return oo[2 * m.Selected].ToString();
+			return values[2 * m.Selected].ToString();
 		}
 
 		/// <summary>
@@ -1063,20 +1028,11 @@ $_.Description
 		/// </summary>
 		internal virtual void WriteFile(FarFile file, string path)
 		{
-			using (PowerShell p = A.Psf.CreatePipeline())
-			{
-				Command c = new Command("Format-List");
-				c.Parameters.Add("InputObject", file.Data);
-				c.Parameters.Add("Property", "*");
-				c.Parameters.Add("Expand", "Both");
-				c.Parameters.Add(Prm.EASilentlyContinue);
-				p.Commands.AddCommand(c);
-				c = new Command("Out-File");
-				c.Parameters.Add("FilePath", path);
-				c.Parameters.Add("Width", int.MaxValue);
-				p.Commands.AddCommand(c);
-				p.Invoke();
-			}
+			const string code = @"
+Format-List -InputObject $args[0] -Property * -Expand Both -ErrorAction SilentlyContinue |
+Out-File -FilePath $args[1] -Width $args[2]
+";
+			A.Psf.InvokeCode(code, file.Data, path, int.MaxValue);
 		}
 
 		/// <include file='doc.xml' path='doc/AddLookup/*'/>
@@ -1157,5 +1113,6 @@ $_.Description
 		/// </remarks>
 		/// <seealso cref="ShowMenu"/>
 		public event EventHandler<PanelMenuEventArgs> MenuCreating;
+	
 	}
 }

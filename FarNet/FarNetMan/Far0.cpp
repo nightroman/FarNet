@@ -92,7 +92,7 @@ void Far0::Start()
 	// module path
 	path = Configuration::GetString(Configuration::Modules);
 	if (!path)
-		path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules"); //????
+		path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
 
 	// load
 	Works::ModuleLoader::LoadModules(path);
@@ -641,6 +641,11 @@ void Far0::AssertHotkeys()
 	}
 }
 
+// _100411_022932 Why PostStep is better than PostJob: PostStep makes FarNet to
+// be called from OpenPlugin, so that it can open panels and do most of needed
+// tasks. PostJob does not allow to open panels, to call PostMacro, etc.
+// Workarounds (to post steps as steps or as jobs depending on X) are not neat.
+// Thus, wait for a good CallPlugin in Far or for some other new features.
 void Far0::PostStep(EventHandler^ handler)
 {
 	// ensure keys

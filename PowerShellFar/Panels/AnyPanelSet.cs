@@ -20,10 +20,18 @@ namespace PowerShellFar
 		/// </summary>
 		internal Collection<PSObject> InvokeScript(ScriptBlock script, EventArgs e)
 		{
-			PSVariableIntrinsics psvi = A.Psf.Engine.SessionState.PSVariable;
-			psvi.Set("this", this);
-			psvi.Set("_", e);
-			return script.Invoke();
+			var variable = script.Module == null ? A.Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
+			variable.Set("this", this);
+			variable.Set("_", e);
+			try
+			{
+				return script.Invoke();
+			}
+			finally
+			{
+				variable.Remove("this");
+				variable.Remove("_");
+			}
 		}
 
 		/// <summary>
@@ -31,10 +39,18 @@ namespace PowerShellFar
 		/// </summary>
 		internal object InvokeScriptReturnAsIs(ScriptBlock script, EventArgs e)
 		{
-			PSVariableIntrinsics psvi = A.Psf.Engine.SessionState.PSVariable;
-			psvi.Set("this", this);
-			psvi.Set("_", e);
-			return script.InvokeReturnAsIs();
+			var variable = script.Module == null ? A.Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
+			variable.Set("this", this);
+			variable.Set("_", e);
+			try
+			{
+				return script.InvokeReturnAsIs();
+			}
+			finally
+			{
+				variable.Remove("this");
+				variable.Remove("_");
+			}
 		}
 
 		#region Open

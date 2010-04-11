@@ -131,7 +131,7 @@ namespace PowerShellFar
 
 			// other params
 			c.Parameters.Add(Prm.Force);
-			c.Parameters.Add(Prm.EAContinue);
+			c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 
 			// go
 			try
@@ -371,7 +371,7 @@ namespace PowerShellFar
 
 						if (ui.Value.Text.Length > 0)
 							c.Parameters.Add("Value", ui.Value.Text);
-						c.Parameters.Add(Prm.EAContinue);
+						c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 						p.Commands.AddCommand(c);
 						p.Invoke();
 						if (A.ShowError(p))
@@ -487,7 +487,7 @@ namespace PowerShellFar
 			}
 			c.Parameters.Add("Destination", destination);
 			c.Parameters.Add(Prm.Confirm);
-			c.Parameters.Add(Prm.EAContinue);
+			c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 
 			using (PowerShell p = A.Psf.CreatePipeline())
 			{
@@ -641,22 +641,13 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 					string itemPath = My.PathEx.Combine(Location.Path, file.Name);
 
 					// get content
-					Collection<PSObject> gc = null;
-					using (PowerShell p = A.Psf.CreatePipeline())
-					{
-						Command c = new Command("Get-Content");
-						c.Parameters.Add("LiteralPath", itemPath);
-						c.Parameters.Add("ReadCount", 0);
-						c.Parameters.Add(Prm.EAContinue);
-						p.Commands.AddCommand(c);
-						gc = p.Invoke();
-						A.ShowError(p);
-					}
+					const string code = "Get-Content -LiteralPath $args[0] -ReadCount 0";
+					Collection<PSObject> content = A.Psf.InvokeCode(code, itemPath);
 
 					// write content
 					using (StreamWriter sw = new StreamWriter(tmp, false, Encoding.Unicode))
 					{
-						foreach (PSObject p in gc)
+						foreach (PSObject p in content)
 							sw.WriteLine(p.ToString());
 					}
 
