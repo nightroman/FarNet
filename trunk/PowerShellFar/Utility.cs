@@ -52,12 +52,9 @@ namespace PowerShellFar
 	{
 		public const string
 			Confirm = "Confirm",
+			ErrorAction = "ErrorAction",
 			Force = "Force",
 			Recurse = "Recurse";
-
-		public static CommandParameter EAContinue { get { return new CommandParameter("ErrorAction", ActionPreference.Continue); } }
-		public static CommandParameter EASilentlyContinue { get { return new CommandParameter("ErrorAction", ActionPreference.SilentlyContinue); } }
-		public static CommandParameter EAStop { get { return new CommandParameter("ErrorAction", ActionPreference.Stop); } }
 	}
 
 	/// <summary>

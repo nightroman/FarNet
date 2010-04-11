@@ -67,7 +67,7 @@ namespace PowerShellFar
 	/// </para>
 	/// </remarks>
 	/// <example>Test-Stepper-.ps1, "Test-Stepper+.ps1", "Test-Dialog+.ps1".</example>
-	public sealed class Stepper
+	public sealed class Stepper // _100411_022932
 	{
 		/// <summary>
 		/// The only allowed running instance.
@@ -437,18 +437,12 @@ namespace PowerShellFar
 				}
 				else
 				{
-					// post keys
+					// get keys
 					int[] keys = Cast<int[]>.From(it);
 					if (keys == null)
 						keys = Far.Net.CreateKeySequence(it.ToString());
 
-					// suspend?
-					if (keys.Length == 0)
-					{
-						++_StepIndex;
-						return;
-					}
-
+					// post keys
 					Far.Net.PostKeySequence(keys);
 				}
 

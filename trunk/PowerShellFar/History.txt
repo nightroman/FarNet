@@ -1,6 +1,44 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.14 =
+
+Module FarInventory
+
+*) New functions: Show-InventoryPanel, Show-LogicalDiskPanel
+
+*) Corrected Get-Uninstall for x64 machines (registry data should be taken from
+more than one key). Note that in 32 bit process Get-Uninstall does not get info
+about installed 64 bit products; in 64 bit process Get-Uninstall should get
+information about 32 and 64 products.
+
+TabExpansion
+
+*) Added expansion of WMI class names immediately after Get-WmiObject, gwmi,
+Invoke-WmiMethod, Register-WmiEvent, Remove-WmiObject, Set-WmiInstance with
+optional -Class parameter. Examples:
+gwmi win[Tab]
+Get-WmiObject -Class *process[Tab]
+
+*) Fixed some cases with expressions like this:
+(Get-WmiObject Win32_Service -Filter 'Name="Spooler"').[Tab]
+
+*) TabExpansion does not hides errors now:
+(Get-WmiObject Win32_Service -Filter 'Name="Spooler").[Tab]
+
+*) TabExpansion shows an empty list now:
+(Get-WmiObject Win32_Service -Filter 'Name="Oops"').[Tab]
+
+Others
+
+*) Fix: script block as Expression in Columns in table panels did not work from
+panels created in PS modules (e.g. FarInventory). Also, the global variable $_
+is now removed after use.
+
+*) Fix: Reindent-Selection-.ps1: initial indent size was not always correct.
+
+*) Install-Macro-.ps1: corrected Common macros for the AutoCompletion area.
+
 = 4.3.13 =
 
 Table and list panels: new feature "Apply command": [CtrlG] opens an input box

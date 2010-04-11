@@ -378,7 +378,7 @@ namespace PowerShellFar
 				}
 
 				// Check some special cases and try to get the common type.
-				// ???? _100309_121508 Linear type case
+				// _100309_121508 Linear type case
 				Type theType;
 				if (Converter.IsLinearType(values[0].BaseObject.GetType()) ||
 					values[0].BaseObject is System.Collections.IEnumerable ||
@@ -453,7 +453,7 @@ namespace PowerShellFar
 				};
 
 				// discover name
-				// ???? _100309_121508 Linear type case
+				// _100309_121508 Linear type case
 				IEnumerable asIEnumerable;
 				PSPropertyInfo pi;
 				if (Converter.IsLinearType(value.BaseObject.GetType()))

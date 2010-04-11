@@ -145,7 +145,7 @@ namespace PowerShellFar
 
 						if (ui.Value.Text.Length > 0)
 							c.Parameters.Add("Value", ui.Value.Text);
-						c.Parameters.Add(Prm.EAContinue);
+						c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 						p.Commands.AddCommand(c);
 						p.Invoke();
 						if (A.ShowError(p))
@@ -289,7 +289,7 @@ namespace PowerShellFar
 				c.Parameters.Add(new CommandParameter("Name", name));
 				c.Parameters.Add(new CommandParameter("NewName", ib.Text));
 				c.Parameters.Add(Prm.Force);
-				c.Parameters.Add(Prm.EAContinue);
+				c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 				p.Commands.AddCommand(c);
 				p.Invoke();
 				if (!A.ShowError(p))
@@ -383,7 +383,7 @@ namespace PowerShellFar
 				if ((conf & FarConfirmations.Delete) != 0)
 					c.Parameters.Add(Prm.Confirm);
 				c.Parameters.Add(Prm.Force);
-				c.Parameters.Add(Prm.EAContinue);
+				c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 				p.Commands.AddCommand(c);
 				p.Invoke();
 
@@ -419,17 +419,8 @@ namespace PowerShellFar
 				if (line == null)
 				{
 					// write by PS
-					using (PowerShell p = A.Psf.CreatePipeline())
-					{
-						//! use encoding name
-						Command c = new Command("Out-File");
-						c.Parameters.Add("FilePath", tmp);
-						c.Parameters.Add("Width", int.MaxValue);
-						c.Parameters.Add("Encoding", "Unicode");
-						c.Parameters.Add(Prm.EAStop);
-						p.Commands.AddCommand(c);
-						p.Invoke(new object[] { pi.Value });
-					}
+					//! use encoding name
+					A.Psf.InvokeCode("$args[0] | Out-File -FilePath $args[1] -Width $args[2] -Encoding Unicode -ErrorAction Stop", pi.Value, tmp, int.MaxValue);
 				}
 				else
 				{
@@ -538,6 +529,29 @@ namespace PowerShellFar
 				};
 
 			base.HelpMenuInitItems(items, e);
+		}
+
+		/// <summary>
+		/// Collects names of files.
+		/// </summary>
+		static IList<string> CollectNames(IList<FarFile> files)
+		{
+			var r = new List<string>();
+			r.Capacity = files.Count;
+			foreach (FarFile f in files)
+				r.Add(f.Name);
+			return r;
+		}
+
+		/// <summary>
+		/// Collects original names (selected if any or the current).
+		/// </summary>
+		IList<string> CollectSelectedNames()
+		{
+			var r = new List<string>();
+			foreach (FarFile f in Panel.SelectedFiles)
+				r.Add(f.Name);
+			return r;
 		}
 
 	}

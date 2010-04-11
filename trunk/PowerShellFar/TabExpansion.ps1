@@ -11,9 +11,6 @@ function global:TabExpansion
 	$lastWord_
 )
 {
-	# ignore but keep errors
-	trap { continue }
-
 	# prefix and corrected word
 	$prefWord_ = $null
 	if ($lastWord_ -match '^(.*[!;\(\{\|"'']+)(.*)$') {
@@ -25,7 +22,7 @@ function global:TabExpansion
 	$sort_ = $true
 	$expanded_ = .{
 		### Members of variables, expressions or static objects
-		if ($lastWord_ -match '(^.*?)(\$[\w\.]+|.+\)|\[[\w\.]+\]::\w+)\.(\w*)$') {
+		if ($lastWord_ -match '(^.*?)(\$[\w\.]+|\)|\[[\w\.]+\]::\w+)\.(\w*)$') {
 			$method_ = [System.Management.Automation.PSMemberTypes]'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
 			$pref_ = $matches[1]
 			$expr_ = $matches[2]
@@ -39,30 +36,28 @@ function global:TabExpansion
 			else {
 				$val_ = Invoke-Expression $expr_
 			}
-			foreach($m in Get-Member -InputObject $val_ $patt_ -View 'extended', 'adapted', 'base') {
+			foreach($m in Get-Member -InputObject $val_ $patt_ -View 'extended', 'adapted', 'base' -ErrorAction 0) {
+				# method
 				if ($m.MemberType -band $method_) {
-					# method
 					$pref_ + $expr_ + '.' + $m.name + '('
 				}
+				# property
 				else {
-					# property
 					$pref_ + $expr_ + '.' + $m.name
 				}
 			}
 		}
 
-		### Variable expansion
-		elseif ($lastWord_ -match '(^.*[$@])(global:|script:|local:)?(\w*)$') {
-			# avoid 2+ variable names in here
-			$p = $matches[1] + $matches[2]
-			.{
-				foreach ($v in (Get-Variable -Exclude '?' "$($matches[3])*")) {
-					$p + $v.name
-				}
+		### Variables
+		elseif ($lastWord_ -match '(^.*[$@](?:global:|script:|local:)?)(\w*)$') {
+			# use and exclude variables *_
+			$pref_ = $matches[1]
+			foreach($var_ in Get-Variable -Exclude '*_' "$($matches[2])*" -ErrorAction 0) {
+				$pref_ + $var_.Name
 			}
 		}
 
-		### Parameter expansion
+		### Parameters
 		elseif ($lastWord_ -match '^-([\*\?\w]*)') {
 			$patt_ = $matches[1] + '*'
 
@@ -134,14 +129,14 @@ function global:TabExpansion
 			}
 		}
 
-		### Static member expansion
+		### Static members
 		# e.g. [datetime]::F[tab]
 		elseif ($lastWord_ -match '(.*)(\[.*\])::(\w*)$') {
 			$pref_ = $matches[1]
 			$type = $matches[2]
 			$name = $matches[3]
 			$method_ = [System.Management.Automation.PSMemberTypes] 'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
-			foreach($_ in (Invoke-Expression "$type | Get-Member '$name*' -Static")) {
+			foreach($_ in (Invoke-Expression $type | Get-Member "$name*" -Static -ErrorAction 0)) {
 				if ($_.MemberType -band $method_) {
 					'{0}{1}::{2}(' -f $pref_, $type, $_.Name
 				}
@@ -222,6 +217,13 @@ function global:TabExpansion
 			}
 		}
 
+		### WMI class names for *-Wmi*
+		elseif ($line_ -match '\b(Get-WmiObject|gwmi|Invoke-WmiMethod|Register-WmiEvent|Remove-WmiObject|Set-WmiInstance)(?:\s+-Class)?\s+[*\w]+$') {
+			foreach($_ in Get-WmiObject -List "$lastWord_*") {
+				$_.Name
+			}
+		}
+
 		### Containers only for Set-Location
 		elseif ($line_ -match '\b(?:Set-Location|cd|chdir|sl)\s+[*\w]+$') {
 			foreach($_ in Get-ChildItem "$lastWord_*" -Force -ErrorAction 0) {
@@ -245,7 +247,7 @@ function global:TabExpansion
 			}
 		}
 
-		### Commands, aliases, paths and some WMI classes
+		### Commands, aliases, paths
 		else {
 			$patt_ = "$lastWord_*"
 
@@ -262,22 +264,15 @@ function global:TabExpansion
 
 			### Paths
 			Get-ChildItem . -Include $patt_ -Force -Name -ErrorAction 0
-
-			### WMI
-			if ($lastWord_ -like 'Win32*') {
-				foreach($_ in Get-WmiObject $patt_ -List) {
-					$_.__Class
-				}
-			}
 		}
 	}
 
 	### Complete
 	if ($sort_) {
-		$expanded_ | Sort-Object -Unique | .{process{ $prefWord_ + $_ }}
+		foreach($_ in ($expanded_ | Sort-Object -Unique)) { $prefWord_ + $_ }
 	}
 	else {
-		$expanded_ | .{process{ $prefWord_ + $_ }}
+		foreach($_ in $expanded_) { $prefWord_ + $_ }
 	}
 }
 
@@ -389,6 +384,7 @@ function global:GetTabExpansionType
 <#
 .SYNOPSIS
 	Gets parameter names of a script.
+
 .DESCRIPTION
 	Approach (Get-Command X).Parameters does not work in V2 if scripts have
 	parameters with types defined in not yet loaded assemblies. For functions

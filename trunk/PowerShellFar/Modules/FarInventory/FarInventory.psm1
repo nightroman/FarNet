@@ -17,12 +17,30 @@
 	Another way to get installed products is: Get-WmiObject Win32_Product. But
 	this command is usually slow and it returns only products installed by
 	Windows Installer.
+
+	x64 notes. 32 bit process: this function does not get installed 64 bit
+	products. 64 bit process: this function gets both 32 and 64 bit products.
 #>
 function Get-Uninstall
 {
-	Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |
+	# paths: x86 and x64 registry keys are different
+	if ([IntPtr]::Size -eq 4) {
+		$path = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*'
+	}
+	else {
+		$path = @(
+			'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*'
+			'HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*'
+		)
+	}
+
+	# get all data
+	Get-ItemProperty $path |
+	# use only with name and unistall information
 	.{process{ if ($_.DisplayName -and $_.UninstallString) { $_ } }} |
+	# select more or less common subset of properties
 	Select-Object DisplayName, Publisher, InstallDate, DisplayVersion, HelpLink, UninstallString |
+	# and finally sort by name
 	Sort-Object DisplayName
 }
 
@@ -52,6 +70,7 @@ function Show-UninstallPanel
 <#
 .SYNOPSIS
 	Shows services in a panel.
+
 .DESCRIPTION
 	This panel can be really useful, in particular it shows some information
 	not returned by the standard command Get-Service, for example service
@@ -75,6 +94,7 @@ function Show-ServicePanel
 <#
 .SYNOPSIS
 	Shows startup commands in a panel.
+
 .DESCRIPTION
 	The panel shows startup commands for the specified computer stored in
 	various locations: startup folders, registry run keys, and etc.
@@ -90,5 +110,67 @@ function Show-StartupCommandPanel
 		'Command'
 		'Location'
 		'User'
+	)
+}
+
+<#
+.SYNOPSIS
+	Shows local disks in a panel.
+
+.DESCRIPTION
+	The panel shows local disks and their information.
+#>
+function Show-LogicalDiskPanel
+(
+	$ComputerName = '.'
+)
+{
+	$GetDriveType = {
+		switch($_.DriveType) {
+			1 { 'No Root Directory' }
+			2 { 'Removable Disk' }
+			3 { 'Local Disk' }
+			4 { 'Network Drive' }
+			5 { 'Compact Disc' }
+			6 { 'RAM Disk' }
+			default { 'Unknown' }
+		}
+	}
+
+	Get-WmiObject Win32_LogicalDisk -ComputerName $ComputerName |
+	Out-FarPanel -HideMemberPattern '^_' @(
+		@{ Expression = 'Name'; Width = 8 }
+		'Description'
+		@{ Name = 'FS'; Expression = 'FileSystem'; Width = 8 }
+		@{ Name = 'DriveType'; Expression = $GetDriveType }
+	)
+}
+
+<#
+.SYNOPSIS
+	Shows various computer information in a panel.
+
+.DESCRIPTION
+	The panel shows various information about a computer:
+
+		Win32_ComputerSystem
+		Win32_BaseBoard
+		Win32_BIOS
+		Win32_OperatingSystem
+#>
+function Show-InventoryPanel
+(
+	$ComputerName = '.'
+)
+{
+	.{
+		Get-WmiObject Win32_ComputerSystem -ComputerName $ComputerName
+		Get-WmiObject Win32_Baseboard -ComputerName $ComputerName
+		Get-WmiObject Win32_BIOS -ComputerName $ComputerName
+		Get-WmiObject Win32_OperatingSystem -ComputerName $ComputerName
+	} |
+	Out-FarPanel -HideMemberPattern '^_' @(
+		@{ Name = 'Class'; Expression = '__CLASS' }
+		'Name'
 	)
 }

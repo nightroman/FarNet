@@ -244,20 +244,29 @@ namespace PowerShellFar
 		{
 			if (_Script != null)
 			{
-				A.Psf.Engine.SessionState.PSVariable.Set("_", value);
+				//! _100410_051915 Use module session state otherwise $_ is not visible, only $global:_ is visible
+				var session = _Script.Module == null ? A.Psf.Engine.SessionState : _Script.Module.SessionState;
+				session.PSVariable.Set("_", value);
 
 				//??? suppress for now
 				// >: .{ls; ps} | op
 				// -- this with fail on processes with file scripts
 				try
 				{
-					object r1 = _Script.InvokeReturnAsIs();
-					PSObject r2 = r1 as PSObject;
-					return r2 == null ? r1 : r2.BaseObject;
+					object result = _Script.InvokeReturnAsIs();
+					if (result == null)
+						return null;
+					else
+						return ((PSObject)result).BaseObject;
 				}
 				catch (RuntimeException)
 				{
 					return null;
+				}
+				finally
+				{
+					//! Remove $_ to avoid a leak
+					session.PSVariable.Remove("_");
 				}
 			}
 

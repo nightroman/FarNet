@@ -92,32 +92,27 @@ namespace PowerShellFar.UI
 
 			try
 			{
-				using (PowerShell p = A.Psf.CreatePipeline())
-				{
-					string filePath = ui.UIFile.Text;
-					if (!string.IsNullOrEmpty(directory) && filePath.IndexOfAny(new char[] { '\\', '/', ':' }) < 0)
-						filePath = My.PathEx.Combine(directory, filePath);
-					if (File.Exists(filePath))
-					{
-						if (Far.Net.Message("File " + filePath + " exists. Continue?", "Confirm", MsgOptions.YesNo) != 0)
-							return;
-					}
+				string filePath = ui.UIFile.Text;
+				if (!string.IsNullOrEmpty(directory) && filePath.IndexOfAny(new char[] { '\\', '/', ':' }) < 0)
+					filePath = My.PathEx.Combine(directory, filePath);
 
-					Command c = new Command("Export-Clixml");
-					c.Parameters.Add("Path", filePath);
-					c.Parameters.Add("Encoding", ui.UIEncoding.Text);
-					if (ui.UIDepth.Text.Length > 0)
-						c.Parameters.Add("Depth", int.Parse(ui.UIDepth.Text, CultureInfo.InstalledUICulture));
-					c.Parameters.Add(Prm.Force);
-					c.Parameters.Add(Prm.EAStop);
-					p.Commands.AddCommand(c);
-					p.Invoke(items);
-				}
+				if (File.Exists(filePath))
+					if (Far.Net.Message("File " + filePath + " exists. Continue?", "Confirm", MsgOptions.YesNo) != 0)
+						return;
+
+				const string code = "$args[0] | Export-Clixml -Path $args[1] -Encoding $args[2] -Force -ErrorAction Stop";
+				if (ui.UIDepth.Text.Length > 0)
+					A.Psf.InvokeCode(code + " -Depth $args[3]",
+						items, filePath, ui.UIEncoding.Text, int.Parse(ui.UIDepth.Text, CultureInfo.InvariantCulture));
+				else
+					A.Psf.InvokeCode(code,
+						items, filePath, ui.UIEncoding.Text);
 			}
 			catch (RuntimeException ex)
 			{
 				A.Msg(ex);
 			}
 		}
+	
 	}
 }

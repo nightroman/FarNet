@@ -63,7 +63,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 				editor = gcnew Editor;
 				isEditorWaiting = false;
 			}
-			
+
 			// get info
 			AutoEditorInfo ei;
 
@@ -88,7 +88,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			if (editor->_Opened)
 			{
 				LOG_AUTO(Info, "Opened")
-				{				
+				{
 					editor->_Opened(editor, nullptr);
 				}
 				LOG_END;
@@ -114,7 +114,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			if (_anyEditor._Closed)
 			{
 				LOG_AUTO(Info, "Closed")
-				{				
+				{
 					_anyEditor._Closed(editor, nullptr);
 				}
 				LOG_END;
@@ -122,7 +122,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			if (editor->_Closed)
 			{
 				LOG_AUTO(Info, "Closed")
-				{				
+				{
 					editor->_Closed(editor, nullptr);
 				}
 				LOG_END;
@@ -140,7 +140,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			if (_anyEditor._Saving)
 			{
 				LOG_AUTO(Info, "Saving")
-				{				
+				{
 					_anyEditor._Saving(ed, nullptr);
 				}
 				LOG_END;
@@ -148,7 +148,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			if (ed->_Saving)
 			{
 				LOG_AUTO(Info, "Saving")
-				{				
+				{
 					ed->_Saving(ed, nullptr);
 				}
 				LOG_END;
@@ -164,7 +164,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			if (_anyEditor._Redrawing || editor->_Redrawing)
 			{
 				LOG_AUTO(Verbose, "Redrawing")
-				{				
+				{
 					EditorRedrawingEventArgs ea(mode);
 					if (_anyEditor._Redrawing)
 						_anyEditor._Redrawing(editor, %ea);
@@ -187,12 +187,12 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// sync
 			if (editor->_output)
 				editor->Sync();
-			
+
 			// event
 			if (_anyEditor._GotFocus)
 			{
 				LOG_AUTO(Verbose, "GotFocus")
-				{				
+				{
 					_anyEditor._GotFocus(editor, nullptr);
 				}
 				LOG_END;
@@ -215,11 +215,11 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Editor^ ed;
 			if (!_editors.TryGetValue(id, ed))
 				return 0;
-			
+
 			if (_anyEditor._LosingFocus)
 			{
 				LOG_AUTO(Verbose, "LosingFocus")
-				{				
+				{
 					_anyEditor._LosingFocus(ed, nullptr);
 				}
 				LOG_END;
@@ -249,7 +249,7 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 	{
 		// sync
 		editor->Sync();
-		
+
 		// ignore most of events
 		if (editor->_hMutex)
 		{
@@ -288,7 +288,7 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 					editor->_Idled(editor, nullptr);
 			}
 			// key down
-			else if (key.bKeyDown) //???? watch, it was (bKeyDown & 0xff) != 0
+			else if (key.bKeyDown) //! it was (bKeyDown & 0xff) != 0
 			{
 				if (_anyEditor._KeyDown || editor->_KeyDown)
 				{
