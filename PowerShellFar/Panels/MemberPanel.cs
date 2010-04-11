@@ -261,6 +261,7 @@ namespace PowerShellFar
 			{
 				try
 				{
+					// get value, typed if needed
 					object value = null;
 					if (ui.Type.Text.Length == 0)
 					{
@@ -268,28 +269,15 @@ namespace PowerShellFar
 					}
 					else
 					{
-						using (PowerShell p = A.Psf.CreatePipeline())
+						foreach (PSObject o in A.Psf.InvokeCode("[" + ui.Type.Text + "]$args[0]", ui.Value.Text))
 						{
-							p.Commands.AddScript("$ErrorActionPreference = 'Stop'; [" + ui.Type.Text + "]@($input)[0]");
-							foreach (PSObject o in p.Invoke(new object[] { ui.Value.Text }))
-							{
-								value = o.BaseObject;
-								break;
-							}
+							value = o.BaseObject;
+							break;
 						}
 					}
 
-					using (PowerShell p = A.Psf.CreatePipeline())
-					{
-						Command c = new Command("Add-Member");
-						c.Parameters.Add("MemberType", "NoteProperty");
-						c.Parameters.Add("Name", ui.Name.Text);
-						c.Parameters.Add("Value", value);
-						c.Parameters.Add(Prm.Force);
-						c.Parameters.Add(Prm.EAStop);
-						p.Commands.AddCommand(c);
-						p.Invoke(new object[] { _Value });
-					}
+					// add member
+					A.Psf.InvokeCode("$args[0] | Add-Member -MemberType NoteProperty -Name $args[1] -Value $args[2] -Force -ErrorAction Stop", _Value, ui.Name.Text, value);
 
 					// update this panel with name
 					UpdateRedraw(false, ui.Name.Text);

@@ -126,19 +126,11 @@ namespace PowerShellFar
 				pi = psData.Properties["Name"];
 				if (pi != null && pi.Value != null)
 				{
-					using (PowerShell p = A.Psf.CreatePipeline())
-					{
-						Command c = new Command("Get-WmiObject");
-						c.Parameters.Add("Class", pi.Value.ToString());
-						c.Parameters.Add(Prm.EASilentlyContinue);
-						p.Commands.AddCommand(c);
-						Collection<PSObject> oo = p.Invoke();
-
-						ObjectPanel op = new ObjectPanel();
-						op.AddObjects(oo);
-						op.ShowAsChild(this);
-						return;
-					}
+					var values = A.Psf.InvokeCode("Get-WmiObject -Class $args[0] -ErrorAction SilentlyContinue", pi.Value.ToString());
+					ObjectPanel op = new ObjectPanel();
+					op.AddObjects(values);
+					op.ShowAsChild(this);
+					return;
 				}
 			}
 
@@ -220,7 +212,7 @@ namespace PowerShellFar
 		{
 			try
 			{
-				//???? mb it works but looks like a hack
+				//???? it works but looks like a hack
 				if (UserWants != UserAction.CtrlR && AddedValues == null && (Map != null || Panel.Files.Count > 0 && Panel.Files[0] is SetFile))
 					return Panel.Files;
 
@@ -239,7 +231,7 @@ namespace PowerShellFar
 					return result;
 				}
 
-				// _100330_191639 ?????
+				// _100330_191639
 				if (AddedValues == null)
 					return Panel.Files;
 
@@ -286,5 +278,19 @@ namespace PowerShellFar
 
 			base.HelpMenuInitItems(items, e);
 		}
+
+		/// <summary>
+		/// Files data: .. is excluded; same count and order.
+		/// </summary>
+		IList<object> CollectData()
+		{
+			var r = new List<object>();
+			r.Capacity = Panel.Files.Count;
+			foreach (FarFile f in Panel.Files)
+				if (f.Data != null)
+					r.Add(f.Data);
+			return r;
+		}
+
 	}
 }

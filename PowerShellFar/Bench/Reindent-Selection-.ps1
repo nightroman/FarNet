@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Reindents selected lines if any or the current line
+	Reindents selected lines or the current line.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -59,9 +59,6 @@ function global:Reindent-Selection-
 	for($n = $n1; $n -le $n2; ++$n)
 	{
 		$line = $Editor[$n]
-		if ($line.SelectionSpan.Start -lt 0) {
-			continue
-		}
 		$text = $line.Text
 
 		if (!$found) {

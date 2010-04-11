@@ -14,13 +14,16 @@
 	PowerShell provider cmdlets issues, so do not use Encoding.
 #>
 
-# Load TabExpansion because it is loaded on the first call only
+# Ensure TabExpansion is loaded
 if ($Host.Name -eq 'FarHost') {
 	. "$($Psf.AppHome)\TabExpansion.ps1"
 }
 
 # Drop the cache
 $global:TabExpansionCache = $null
+
+# Set location to this because we assume and use other files there
+Set-Location -LiteralPath (Split-Path $MyInvocation.MyCommand.Path)
 
 # Runs a test and returns an error message text on failure.
 # Tag: Trick: test function returns an error message if any.
@@ -71,6 +74,7 @@ Test '' '[system.datetime]::Now.h' { $_ -eq '[system.datetime]::Now.Hour' } | Wr
 ### members of a simple expression
 Test '(get-date).h' '(get-date).h' { $_ -eq '(get-date).Hour' } | Write-Error
 Test '(1 + 1).to' '1).to' { $_ -eq '1).ToString(' } | Write-Error
+Test "('string').le" "('string').le" { $_ -eq "('string').Length" } | Write-Error
 
 ### cmdlet parameters
 Test 'gc -p' '-p' { $_ -eq '-Path' } | Write-Error
@@ -150,9 +154,6 @@ Test 'NEW-OBJECT System.da' 'System.da' { $_ -contains 'System.Data.' } | Write-
 Test 'NEW-OBJECT  -TYPENAME  System.da' 'System.da' { $_ -contains 'System.Data.' } | Write-Error
 Test 'NEW-OBJECT   System.Data.SqlClient.SqlE' 'System.Data.SqlClient.SqlE' { $_[0] -eq 'System.Data.SqlClient.SqlError' } | Write-Error
 
-### WMI
-Test '' 'win32*sc*j' { $_ -eq 'Win32_ScheduledJob' } | Write-Error
-
 ### Module name
 Test 'IMPORT-MODULE b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
 Test 'IPMO b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
@@ -162,6 +163,10 @@ Test 'IPMO -NAME b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
 ### Process name
 Test 'GET-PROCESS f' 'f' { $_ -contains 'Far' } | Write-Error
 Test 'ps f' 'f' { $_ -contains 'Far' } | Write-Error
+
+### WMI class name
+Test 'GWMI *process' '*process' { $_ -contains 'Win32_Process' } | Write-Error
+Test 'GET-WMIOBJECT -CLASS *process' '*process' { $_ -contains 'Win32_Process' } | Write-Error
 
 ### Help comments
 Test '.' '.' { $_ -contains '.SYNOPSIS' -and $_ -contains '.LINK' } | Write-Error

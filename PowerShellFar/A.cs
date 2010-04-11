@@ -155,7 +155,7 @@ namespace PowerShellFar
 				command.Parameters.Add("LiteralPath", itemPath);
 				command.Parameters.Add("Value", text);
 				command.Parameters.Add(Prm.Force);
-				command.Parameters.Add(Prm.EAContinue);
+				command.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 				p.Commands.AddCommand(command);
 				p.Invoke();
 				if (ShowError(p))

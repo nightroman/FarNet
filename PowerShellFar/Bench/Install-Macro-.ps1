@@ -36,14 +36,17 @@ if (!$pscmdlet.ShouldProcess($null)) { return }
 # Gets a PSF menu macro sequence based on -If assuming the menu item is "...PowerShellFar".
 # If PSF is not installed (Far is loaded with /p) the macro invokes the -Else part, if any.
 # The -Else part works in the area where the macro starts, not in the plugins menu.
-function psf($If, $Else)
+function Get-PsfMacro($If, $Else)
 {
-	if ($Else) {
-		'F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter {0} $Else Esc {1} $End' -f $If, $Else
-	}
-	else {
-		'F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter {0} $End' -f $If
-	}
+	if ($Else) { $Else = 'Esc ' + $Else } else { $Else = 'Esc' }
+	'F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter {0} $Else {1} $End' -f $If, $Else
+}
+
+# Gets a sequence for the command line via a macro in the Common area,
+# the sequence at first closes the AutoCompletion list if it is shown.
+function Get-CommandLineMacro($Sequence)
+{
+	'$If (AutoCompletion) Esc $End $If (Shell||Info||QView||Tree) {0} $End' -f $Sequence
 }
 
 # install
@@ -52,15 +55,15 @@ $Far.Macro.Install($(
 	### == Common (all areas)
 
 	### Favorites menu
-	New-FarMacro Common CtrlShiftA (psf '1 "Menu-Favorites-.ps1" Enter') 'PSF: Favorites'
+	New-FarMacro Common CtrlShiftA (Get-PsfMacro '1 "Menu-Favorites-.ps1" Enter') 'PSF: Favorites'
 
 	### PowerShellFar command history
 	# Also, AltF10 in panels disables questionable folder tree feature.
-	New-FarMacro Common AltF10 (psf 4) 'PSF: Command history'
+	New-FarMacro Common AltF10 (Get-PsfMacro 4) 'PSF: Command history'
 
 	### Open recent file in editor
 	# Calls Show-History-.ps1 or fallback
-	New-FarMacro Common AltF11 (psf e AltF11) 'PSF: Edit recent file'
+	New-FarMacro Common AltF11 (Get-PsfMacro e AltF11) 'PSF: Edit recent file'
 	# CtrlShiftF11 -> standard AltF11
 	New-FarMacro Common CtrlShiftF11 AltF11 'Far: Open recent file'
 
@@ -69,7 +72,7 @@ $Far.Macro.Install($(
 	### (Edit-FarDescription-.ps1) Edit file description: Shell: current item; Editor or Viewer: opened file
 	$m = @{
 		Name = 'AltZ'
-		Sequence = psf t
+		Sequence = Get-PsfMacro t
 		Description = 'PSF: Edit description'
 	}
 	New-FarMacro Shell @m
@@ -79,29 +82,29 @@ $Far.Macro.Install($(
 	### TabExpansion in any editor line
 	$m = @{
 		Name = 'F9'
-		Sequence = psf 7
+		Sequence = Get-PsfMacro 7
 		Description = 'PSF: TabExpansion'
 	}
 	New-FarMacro Editor @m
 	New-FarMacro Dialog @m
-	$m.Sequence = '$If (Shell||Info||QView||Tree) ' + $m.Sequence + ' $End'
+	$m.Sequence = Get-CommandLineMacro $m.Sequence
 	New-FarMacro Common @m -CommandLine 1
 
 	### (Complete-Word-.ps1) Command line: from history; Editor: from file; Dialog: from edit box history
 	$m = @{
 		Name = 'CtrlSpace'
-		Sequence = psf c
+		Sequence = Get-PsfMacro c
 		Description = 'PSF: Complete word'
 	}
 	New-FarMacro Editor @m
 	New-FarMacro Dialog @m
-	$m.Sequence = '$If (Shell||Info||QView||Tree) ' + $m.Sequence + ' $End'
+	$m.Sequence = Get-CommandLineMacro $m.Sequence
 	New-FarMacro Common @m -CommandLine 1
 
 	### (Set-Selection-.ps1) Change selected text to lower case
 	$m = @{
 		Name = 'CtrlU'
-		Sequence = psf l
+		Sequence = Get-PsfMacro l
 		Description = 'PSF: Selected text to lower case'
 		SelectedText = 1
 	}
@@ -112,7 +115,7 @@ $Far.Macro.Install($(
 	### (Set-Selection-.ps1) Change selected text to upper case
 	$m = @{
 		Name = 'CtrlShiftU'
-		Sequence = psf u
+		Sequence = Get-PsfMacro u
 		Description = 'PSF: Selected text to upper case'
 		SelectedText = 1
 	}
@@ -123,45 +126,45 @@ $Far.Macro.Install($(
 	### == Shell only
 
 	### Quit Far
-	New-FarMacro Shell F10 (psf '1 "$Far.Quit()" Enter' F10) 'PSF: Quit Far'
+	New-FarMacro Shell F10 (Get-PsfMacro '1 "$Far.Quit()" Enter' F10) 'PSF: Quit Far'
 
 	### Easy prefix: space expands empty command line to '>: '
 	New-FarMacro Shell Space '> : Space' 'PSF: Easy prefix' -CommandLine 0
 
 	### Easy invoke: type and run without prefix (Invoke selected code)
-	New-FarMacro Shell ShiftSpace (psf 2) 'PSF: Easy invoke' -CommandLine 1
+	New-FarMacro Shell ShiftSpace (Get-PsfMacro 2) 'PSF: Easy invoke' -CommandLine 1
 
 	### Power panel menu
-	New-FarMacro Shell Ctrl= (psf 6) 'PSF: Power panel menu'
+	New-FarMacro Shell Ctrl= (Get-PsfMacro 6) 'PSF: Power panel menu'
 
 	### (Go-Head-.ps1) Go to head file item (e.g. useful after [CtrlF5] to find the newest file)
-	New-FarMacro Shell CtrlShiftF5 (psf h) 'PSF: Go to panel head item'
+	New-FarMacro Shell CtrlShiftF5 (Get-PsfMacro h) 'PSF: Go to panel head item'
 
 	### Open recent folder in the panel
 	# Call Show-History-.ps1 by PSF or fallback
-	New-FarMacro Shell AltF12 (psf n AltF12) 'PSF: Open recent folder'
+	New-FarMacro Shell AltF12 (Get-PsfMacro n AltF12) 'PSF: Open recent folder'
 	# CtrlShiftF12 -> standard AltF12
 	New-FarMacro Shell CtrlShiftF12 AltF12 'Far: Open recent folder'
 
 	### (Search-Regex-.ps1) Backgroung search in files with dynamic results in the panel
-	New-FarMacro Shell CtrlShiftF7 (psf x) 'PSF: Search regex in files'
+	New-FarMacro Shell CtrlShiftF7 (Get-PsfMacro x) 'PSF: Search regex in files'
 
 	### == Editor only
 
 	### (Invoke-Editor-.ps1) Invoke a file from the editor
-	New-FarMacro Editor CtrlF5 (psf '= f') 'PSF: Invoke a file from the editor'
+	New-FarMacro Editor CtrlF5 (Get-PsfMacro '= f') 'PSF: Invoke a file from the editor'
 
 	### (Indent-Selection-.ps1) Indent selected line(s)
-	New-FarMacro Editor Tab (psf i) 'PSF: Indent selected line(s)' -SelectedText 1
+	New-FarMacro Editor Tab (Get-PsfMacro i) 'PSF: Indent selected line(s)' -SelectedText 1
 
 	### (Indent-Selection-.ps1) Outdent selected line(s)
-	New-FarMacro Editor ShiftTab (psf o) 'PSF: Outdent selected line(s)' -SelectedText 1
+	New-FarMacro Editor ShiftTab (Get-PsfMacro o) 'PSF: Outdent selected line(s)' -SelectedText 1
 
 	### (Reindent-Selection-.ps1) Reindent selected\current line(s)
-	New-FarMacro Editor AltF8 (psf r) 'PSF: Reindent selected\current line(s)'
+	New-FarMacro Editor AltF8 (Get-PsfMacro r) 'PSF: Reindent selected\current line(s)'
 
 	### (Reformat-Selection-.ps1) Reformat selected\current line(s)
-	New-FarMacro Editor CtrlShiftL (psf f) 'PSF: Reformat selected\current line(s)'
+	New-FarMacro Editor CtrlShiftL (Get-PsfMacro f) 'PSF: Reformat selected\current line(s)'
 
 	### == Native (not PSF) macros
 

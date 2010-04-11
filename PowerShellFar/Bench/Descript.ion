@@ -29,12 +29,12 @@ Panel-DbData-.ps1 Panel DataTable rows.
 Panel-DbTable-.ps1 Panel tables for a connection.
 Panel-Job-.ps1 Panel PowerShell background jobs that are running in the current session.
 Panel-Macro-.ps1 Panel and view/edit Far key macros
-Panel-Process-.ps1 Panel current processes
+Panel-Process-.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-.ps1 Main startup code (example).
 Profile-Editor-.ps1 Editor startup code (example).
 Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor
-Reindent-Selection-.ps1 Reindents selected lines if any or the current line
+Reindent-Selection-.ps1 Reindents selected lines or the current line.
 Remove-EmptyString-.ps1 Removes empty strings from a list.
 Remove-EndSpace-.ps1 Removes end spaces in object Text property
 Rename-FarFile-.ps1 Renames the current panel file or directory.

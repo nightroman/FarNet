@@ -71,16 +71,23 @@ namespace PowerShellFar
 				_TabExpansion = A.Psf.Engine.InvokeCommand.NewScriptBlock("TabExpansion $args[0] $args[1]");
 
 			// invoke
-			Collection<PSObject> words = _TabExpansion.Invoke(line, lastWord);
+			try
+			{
+				// call
+				Collection<PSObject> words = _TabExpansion.Invoke(line, lastWord);
 
-			// complete expansion
-			ExpandText(editLine, text, line, lastWord, words);
+				// expand
+				ExpandText(editLine, text, line, lastWord, words);
+			}
+			catch (RuntimeException ex)
+			{
+				A.Msg(ex.Message);
+			}
 		}
 
 		public static void ExpandText(ILine editLine, string text, string line, string lastWord, Collection<PSObject> words)
 		{
-			if (words.Count == 0)
-				return;
+			bool isEmpty = words.Count == 0;
 
 			// select a word
 			string word;
@@ -94,31 +101,39 @@ namespace PowerShellFar
 			else
 			{
 				// make menu
-				IListMenu m = Far.Net.CreateListMenu();
-				m.X = Console.CursorLeft;
-				m.Y = Console.CursorTop;
-				m.Incremental = lastWord + "*";
-				m.IncrementalOptions = PatternOptions.Prefix;
-				A.Psf.Settings.Intelli(m);
+				IListMenu menu = Far.Net.CreateListMenu();
+				menu.X = Console.CursorLeft;
+				menu.Y = Console.CursorTop;
+				A.Psf.Settings.Intelli(menu);
+				if (isEmpty)
+				{
+					menu.Add("No expansion candidates").Disabled = true;
+					menu.NoInfo = true;
+					menu.Show();
+					return;
+				}
+				menu.Incremental = lastWord + "*";
+				menu.IncrementalOptions = PatternOptions.Prefix;
+				
 				foreach (PSObject o in words)
 				{
 					if (o != null)
-						m.Add(o.ToString());
+						menu.Add(o.ToString());
 				}
 
-				if (m.Items.Count == 0)
+				if (menu.Items.Count == 0)
 					return;
 
-				if (m.Items.Count == 1)
+				if (menu.Items.Count == 1)
 				{
-					word = m.Items[0].Text;
+					word = menu.Items[0].Text;
 				}
 				else
 				{
 					// show menu
-					if (!m.Show())
+					if (!menu.Show())
 						return;
-					word = m.Items[m.Selected].Text;
+					word = menu.Items[menu.Selected].Text;
 				}
 			}
 
