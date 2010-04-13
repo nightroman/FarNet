@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.3.15 =
+
+IDialog
+-- New property IEnumerable<IControl> Controls
+-- Breaking change: GetControl is replaced with indexer[int]
+
 = 4.3.14 =
 
 Technical build. API is not changed.
