@@ -48,7 +48,7 @@ namespace FarNet.Forms
 		/// </summary>
 		event EventHandler<KeyPressedEventArgs> KeyPressed;
 		/// <summary>
-		/// Gets the internal control ID.
+		/// Gets the control by its ID.
 		/// </summary>
 		int Id { get; }
 		/// <summary>
@@ -621,11 +621,22 @@ namespace FarNet.Forms
 		/// </summary>
 		void Close();
 		/// <summary>
-		/// Gets a control by the ID (index).
+		/// Gets a control by its ID.
 		/// </summary>
-		/// <param name="id">Control ID (index).</param>
+		/// <param name="id">Control ID.</param>
 		/// <returns>Requested control or null if ID is not valid.</returns>
-		IControl GetControl(int id);
+		/// <remarks>
+		/// Control IDs are indexes in the dialog control collection.
+		/// </remarks>
+		IControl this[int id] { get; }
+		/// <summary>
+		/// Gets the dialog control collection.
+		/// </summary>
+		/// <remarks>
+		/// It should be used only when control indexes are not known or not used.
+		/// Otherwise <see cref="this"/> should be used.
+		/// </remarks>
+		IEnumerable<IControl> Controls { get; }
 		/// <summary>
 		/// Sets focus to the specified control.
 		/// </summary>

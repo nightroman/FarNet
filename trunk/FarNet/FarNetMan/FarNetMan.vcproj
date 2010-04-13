@@ -428,6 +428,13 @@
 			CopyLocalSatelliteAssemblies="false"
 			RelativePathToProject="..\FarNet\FarNet.Works.Panels\FarNet.Works.Panels.csproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
+			CopyLocal="false"
+			CopyLocalDependencies="false"
+			CopyLocalSatelliteAssemblies="false"
+			RelativePathToProject="..\FarNet\FarNet\FarNet.csproj"
+		/>
 	</References>
 	<Files>
 		<Filter

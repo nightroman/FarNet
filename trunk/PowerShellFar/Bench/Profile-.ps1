@@ -92,6 +92,32 @@ $Psf.Settings.IntelliMaxHeight = 0
 $Psf.Settings.IntelliNoShadow = $false
 $Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Down
 
-### Import modules
+### Module helpers
+# Here we import some modules so that they are always loaded and ready to use.
+# Alternatively we can use proxy functions that load their modules themselves.
+
 #Import-Module FarDescription
+#Import-Module FarInventory
 #Import-Module FarMacro
+
+<#
+.SYNOPSIS
+	Show-ServicePanel proxy.
+#>
+function Show-ServicePanel
+{
+	Remove-Item Function:\Show-ServicePanel
+	Import-Module FarInventory
+	Show-ServicePanel
+}
+
+<#
+.SYNOPSIS
+	Show-UninstallPanel proxy.
+#>
+function Show-UninstallPanel
+{
+	Remove-Item Function:\Show-UninstallPanel
+	Import-Module FarInventory
+	Show-UninstallPanel
+}

@@ -1333,13 +1333,15 @@ properties Providers (class Actor), Columns (class ItemPanel).
 Here you can set some options of $Psf.Settings, mostly UI preferences.
  __________
 
-	## Import modules
+	## Module helpers
 	Import-Module FarDescription
-	Import-Module FarMacro
+	...
+	function Show-ServicePanel
+	...
 
-Import some modules (or add snap-ins) that are used almost in every session, so
-that you get them always ready. Still, this is not a good idea for modules that
-are not always used, import them only when they are needed.
+Import modules or add snap-ins that are used frequently. Occasionally used
+modules should not be loaded from a profile but it still may define some
+favorite proxy functions that load modules themselves.
 
 
 @ProfileEditor

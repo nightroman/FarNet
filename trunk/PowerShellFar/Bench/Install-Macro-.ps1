@@ -55,7 +55,7 @@ $Far.Macro.Install($(
 	### == Common (all areas)
 
 	### Favorites menu
-	New-FarMacro Common CtrlShiftA (Get-PsfMacro '1 "Menu-Favorites-.ps1" Enter') 'PSF: Favorites'
+	New-FarMacro Common CtrlShiftL (Get-PsfMacro '1 "Menu-Favorites-.ps1" Enter') 'PSF: Favorites'
 
 	### PowerShellFar command history
 	# Also, AltF10 in panels disables questionable folder tree feature.
@@ -164,7 +164,7 @@ $Far.Macro.Install($(
 	New-FarMacro Editor AltF8 (Get-PsfMacro r) 'PSF: Reindent selected\current line(s)'
 
 	### (Reformat-Selection-.ps1) Reformat selected\current line(s)
-	New-FarMacro Editor CtrlShiftL (Get-PsfMacro f) 'PSF: Reformat selected\current line(s)'
+	New-FarMacro Editor CtrlShiftF8 (Get-PsfMacro f) 'PSF: Reformat selected\current line(s)'
 
 	### == Native (not PSF) macros
 

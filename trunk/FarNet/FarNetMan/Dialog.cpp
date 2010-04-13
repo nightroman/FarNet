@@ -66,7 +66,7 @@ IControl^ FarDialog::Focused::get()
 		return _focused;
 
 	int index = (int)Info.SendDlgMessage(_hDlg, DM_GETFOCUS, 0, 0);
-	return GetControl(index);
+	return this[index];
 }
 
 void FarDialog::Focused::set(IControl^ value)
@@ -392,7 +392,7 @@ FarDialog^ FarDialog::GetDialog()
 }
 
 //! 090719 There is no way to get control count, so we allow an index to be too large - we return null in this case even for our dialog.
-IControl^ FarDialog::GetControl(int id)
+IControl^ FarDialog::default::get(int id)
 {
 	if (id < 0)
 		throw gcnew ArgumentOutOfRangeException("id");
@@ -440,6 +440,11 @@ IControl^ FarDialog::GetControl(int id)
 	default:
 		return nullptr;
 	}
+}
+
+IEnumerable<IControl^>^ FarDialog::Controls::get()
+{
+	return Works::DialogTools::GetControls(this);
 }
 
 void FarDialog::SetFocus(int id)

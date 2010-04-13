@@ -26,9 +26,11 @@ public:
 	virtual property bool NoSmartCoordinates;
 	virtual property Guid TypeId { Guid get(); void set(Guid value); }
 	virtual property IButton^ Cancel;
+	virtual property IControl^ default[int] { IControl^ get(int id); }
 	virtual property IControl^ Default { IControl^ get(); void set(IControl^ value); }
 	virtual property IControl^ Focused { IControl^ get(); void set(IControl^ value); }
 	virtual property IControl^ Selected { IControl^ get(); }
+	virtual property IEnumerable<IControl^>^ Controls { IEnumerable<IControl^>^ get(); }
 	virtual property Place Rect { Place get(); void set(Place value); }
 	virtual property String^ HelpTopic;
 	virtual property Object^ Data;
@@ -38,7 +40,6 @@ public:
 	virtual IButton^ AddButton(int left, int top, String^ text);
 	virtual ICheckBox^ AddCheckBox(int left, int top, String^ text);
 	virtual IComboBox^ AddComboBox(int left, int top, int right, String^ text);
-	virtual IControl^ GetControl(int id);
 	virtual IEdit^ AddEdit(int left, int top, int right, String^ text);
 	virtual IEdit^ AddEditFixed(int left, int top, int right, String^ text);
 	virtual IEdit^ AddEditPassword(int left, int top, int right, String^ text);

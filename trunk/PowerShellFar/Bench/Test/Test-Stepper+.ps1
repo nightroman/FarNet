@@ -76,7 +76,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	# test: a dialog exists and there is a valid control in it
 	Assert-Far @(
 		$Far.Dialog -ne $null
-		$Far.Dialog.GetControl(2).Text -eq 'far.exe.config'
+		$Far.Dialog[2].Text -eq 'far.exe.config'
 	)
 }
 
@@ -107,18 +107,18 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	# test: a dialog exists and there is a valid control in it
 	Assert-Far @(
 		$Far.Dialog -ne $null
-		$Far.Dialog.GetControl(1).Text -eq 'Sample text'
+		$Far.Dialog[1].Text -eq 'Sample text'
 	)
 }
 
 {
 	# set some text
-	$Far.Dialog.GetControl(1).Text = 'Another text'
+	$Far.Dialog[1].Text = 'Another text'
 }
 
 {
 	# test: editbox text
-	Assert-Far ($Far.Dialog.GetControl(1).Text -eq 'Another text')
+	Assert-Far ($Far.Dialog[1].Text -eq 'Another text')
 }
 
 # exit the dialog
