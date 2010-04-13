@@ -174,3 +174,20 @@ function Show-InventoryPanel
 		'Name'
 	)
 }
+
+<#
+.SYNOPSIS
+	Shows environment variables in a panel.
+#>
+function Show-EnvironmentPanel
+(
+	$ComputerName = '.'
+)
+{
+	Get-WmiObject Win32_Environment -ComputerName $ComputerName |
+	Out-FarPanel -HideMemberPattern '^_' @(
+		'Name'
+		@{ Name = 'Value'; Expression = 'VariableValue' }
+		'UserName'
+	)
+}

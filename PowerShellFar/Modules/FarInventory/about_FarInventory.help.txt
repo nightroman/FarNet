@@ -17,6 +17,7 @@ FUNCTIONS
 	Import the module and use Get-Help to get more details about the functions.
 	The module includes the following functions:
 
+		Show-EnvironmentPanel
 		Show-InventoryPanel
 		Show-LogicalDiskPanel
 		Show-ServicePanel

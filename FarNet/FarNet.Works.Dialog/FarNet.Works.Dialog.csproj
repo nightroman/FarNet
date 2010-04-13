@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DialogTools.cs" />
     <Compile Include="Form.cs" />
     <Compile Include="SubsetForm.cs" />
   </ItemGroup>

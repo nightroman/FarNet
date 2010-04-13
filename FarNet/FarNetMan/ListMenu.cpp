@@ -275,8 +275,8 @@ void ListMenu::AddKey(int key, EventHandler<MenuEventArgs^>^ handler)
 void ListMenu::MakeSizes(FarDialog^ dialog, Point size)
 {
 	// controls with text
-	IControl^ border = dialog->GetControl(0);
-	IControl^ bottom = dialog->GetControl(2);
+	IControl^ border = dialog[0];
+	IControl^ bottom = dialog[2];
 	
 	// text lengths
 	String^ borderText = border->Text;
@@ -335,7 +335,7 @@ void ListMenu::MakeSizes(FarDialog^ dialog, Point size)
 	border->Rect = Place(mx, my, dw - 1 - mx, dh - 1 - my);
 
 	// list
-	dialog->GetControl(1)->Rect = Place(1 + mx, 1 + my, dw - 2 - mx, dh - 2 - my);
+	dialog[1]->Rect = Place(1 + mx, 1 + my, dw - 2 - mx, dh - 2 - my);
 
 	// bottom
 	if (bottom)
