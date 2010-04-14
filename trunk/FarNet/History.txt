@@ -4,7 +4,11 @@ http://code.google.com/p/farnet/
 
 IDialog
 -- New property IEnumerable<IControl> Controls
--- Breaking change: GetControl is replaced with indexer[int]
+-- Breaking change: GetControl is replaced with the indexer [int]
+
+IEditor
+-- New method ChangeTitle: changes the the title permanently.
+This API may be changed or removed depending on Mantis 1334.
 
 = 4.3.14 =
 

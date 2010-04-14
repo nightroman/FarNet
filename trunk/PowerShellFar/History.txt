@@ -3,6 +3,11 @@ http://code.google.com/p/farnet/
 
 = 4.3.15 =
 
+PSF console
+-- Editor title shows extra information about the session: "Local session" for
+the local async sessions, "<ComputerName> session" for remote sessions. The
+global session editor title is just a file name, as usual.
+
 FarNet changes
 -- $dialog.GetControl($i) -> $dialog[$i]
 
