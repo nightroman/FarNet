@@ -136,6 +136,8 @@ namespace PowerShellFar
 				Runspace.Close();
 				Runspace = null;
 			}
+
+			Editor.ChangeTitle(Editor.FileName); //????
 		}
 
 		void EnsureHost()
@@ -155,6 +157,8 @@ namespace PowerShellFar
 
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, Runspace.DefaultRunspace.RunspaceConfiguration);
 			Runspace.Open();
+
+			Editor.ChangeTitle("Local session: " + Path.GetFileName(Editor.FileName)); //????
 		}
 
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
@@ -179,6 +183,8 @@ namespace PowerShellFar
 
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, connectionInfo);
 			Runspace.Open();
+
+			Editor.ChangeTitle(computerName + " session: " + Path.GetFileName(Editor.FileName)); //????
 		}
 
 		//! This method is sync and uses pipeline, that is why we must not null the pipeline async.

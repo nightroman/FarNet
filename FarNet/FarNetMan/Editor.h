@@ -88,6 +88,7 @@ public:
 	virtual void BeginAccess() override;
 	virtual void BeginAsync() override;
 	virtual void BeginUndo() override;
+	virtual void ChangeTitle(String^ title) override;
 	virtual void Clear() override;
 	virtual void Close() override;
 	virtual void DeleteChar() override;
@@ -143,6 +144,8 @@ private:
 	bool _IsNew;
 	Place _Window;
 	String^ _Title;
+	//???? pending title, watch Far API changes _100414_171618
+	bool _pendingTitle;
 	int _CodePage;
 	TextFrame _frameStart;
 	TextFrame _frameSaved;
@@ -150,5 +153,7 @@ internal:
 	// async stuff
 	HANDLE _hMutex;
 	StringBuilder^ _output;
+	//???? pending title, watch Far API changes _100414_171618
+	void ApplyPendingChanges();
 };
 }
