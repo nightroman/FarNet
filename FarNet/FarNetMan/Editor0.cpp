@@ -173,6 +173,8 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 				}
 				LOG_END;
 			}
+
+			editor->ApplyPendingChanges();
 		}
 		break;
 	case EE_GOTFOCUS:

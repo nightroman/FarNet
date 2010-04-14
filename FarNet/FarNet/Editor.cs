@@ -403,6 +403,15 @@ namespace FarNet
 		public abstract string Title { get; set; }
 
 		/// <summary>
+		/// (Experimental) Changes the editor title permanently.
+		/// </summary>
+		/// <param name="title">New title.</param>
+		/// <remarks>
+		/// This API may be changed or removed depending on Mantis 1334.
+		/// </remarks>
+		public abstract void ChangeTitle(string title);
+
+		/// <summary>
 		/// Gets or sets overtype mode.
 		/// </summary>
 		public abstract bool Overtype { get; set; }
