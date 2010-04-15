@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.3.16 =
+
+Module EditorKit
+The module TrimSaving is replaced with a new module EditorKit. It contains:
+-- TrimSaving (old) - trims line ends on saving;
+-- ExpandTabsAll (new) - sets tabs expansion mode to 'All' for some files.
+Notes:
+-- Reminder: file types are configurable via FarNet configuration UI.
+-- You may want to remove or rename this registry key:
+HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet\TrimSaving.dll
+
 = 4.3.15 =
 
 IDialog
@@ -7,7 +18,7 @@ IDialog
 -- Breaking change: GetControl is replaced with the indexer [int]
 
 IEditor
--- New method ChangeTitle: changes the the title permanently.
+-- New method ChangeTitle: changes the title permanently.
 This API may be changed or removed depending on Mantis 1334.
 
 = 4.3.14 =
