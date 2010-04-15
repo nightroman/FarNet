@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding='utf-8'?>
+<doc>
+	<!--
+	/// <include file='doc.xml' path='doc/Experimental/*'/>
+	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
+	-->
+	<Experimental>
+		<para>
+			WARNING: This feature should work fine but it is experimental.
+			It is not yet clear that it is needed. User feedback is welcome.
+		</para>
+	</Experimental>
+	<EditorList>
+		<para>
+			This list is only for iterations, access by indexes, and removal by
+			indexes. Accessed lines allow changes but new strings should not
+			contain line separators. Other editor changes during using this
+			list may cause unexpected results and should be avoided.
+		</para>
+	</EditorList>
+	<RegisterModule>
+		<para>
+			If you plan to unregister this action then keep the returned reference and call its <see cref="IModuleAction.Unregister"/> later.
+			Instead of keeping the reference you can get it by its ID by the <see cref="IFar"/>.<c>GetModule*()</c> methods.
+		</para>
+	</RegisterModule>
+	<ActionGuid>
+		<para>
+			It is mandatory to set the action ID by <c>System.Runtime.InteropServices.GuidAttribute</c>.
+			The ID has to be generated exactly for this class and it should never change.
+			FarNet uses this ID internally for storing and restoring data.
+			Other modules may use this ID to access and call this action.
+		</para>
+	</ActionGuid>
+	<UseLastHistory>
+		<summary>
+			Tells to use the last history as the initial text if it is not set.
+		</summary>
+	</UseLastHistory>
+	<WrapCursor>
+		<summary>
+			Tells to use the wrap cursor mode.
+		</summary>
+		<remarks>
+			In the wrap cursor mode moving the cursor up from the first element or down from the last element
+			moves the cursor to the bottom or the top.
+		</remarks>
+	</WrapCursor>
+	<AutoAssignHotkeys>
+		<summary>
+			Tells to assigns item hotkeys automatically starting with the first item.
+		</summary>
+	</AutoAssignHotkeys>
+	<SelectOnEntry>
+		<summary>
+			Tells to select the text when the control gets focus.
+		</summary>
+	</SelectOnEntry>
+	<ReadOnly>
+		<summary>
+			Tells to disable text changes for a user.
+		</summary>
+	</ReadOnly>
+	<ExpandEnvironmentVariables>
+		<summary>
+			Tells to expand environment variables in the input text.
+		</summary>
+	</ExpandEnvironmentVariables>
+	<ButtonClicked>
+		<summary>
+			Called on the button clicks and similar actions.
+		</summary>
+	</ButtonClicked>
+	<ShowAmpersand>
+		<summary>
+			Tells to show ampersand symbols in the text instead of using them as hotkey marks.
+		</summary>
+	</ShowAmpersand>
+	<CenterGroup>
+		<summary>
+			Tells that the control if one of the centered group.
+		</summary>
+		<remarks>
+			Sequential items having this flag set and the same vertical coordinates are centered horizontally.
+			Their horizontal coordinates are ignored.
+		</remarks>
+	</CenterGroup>
+	<NoFocus>
+		<summary>
+			Tells that the control cannot get focus. But it still processes other events.
+		</summary>
+	</NoFocus>
+	<HelpTopic>
+		<summary>
+			Describes a help topic. See <see cref="IFar.ShowHelp"/> for details.
+		</summary>
+	</HelpTopic>
+	<LT>
+		<param name="left">Left position.</param>
+		<param name="top">Top line.</param>
+	</LT>
+	<LTB>
+		<param name="left">Left position.</param>
+		<param name="top">Top line.</param>
+		<param name="bottom">Bottom line.</param>
+	</LTB>
+	<LTR>
+		<param name="left">Left position.</param>
+		<param name="top">Top line.</param>
+		<param name="right">Right position.</param>
+	</LTR>
+	<LTRB>
+		<param name="left">Left position.</param>
+		<param name="top">Top line.</param>
+		<param name="right">Right position.</param>
+		<param name="bottom">Bottom line.</param>
+	</LTRB>
+	<ShowHelp>
+		<summary>Shows the specified topic from a given hlf-file.</summary>
+		<param name="path">Help file location, see options.</param>
+		<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
+		<param name="options">Help options describing path and topic.</param>
+		<remarks>
+			The <c>topic</c> parameter describes a help topic and can be in one of the following formats:
+			<code>
+				<![CDATA[
+"Topic"
+Reference to a topic in the help file.
+
+":Topic"
+Reference to a topic from the main Far Manager help file.
+
+"<FullPath\>Topic"
+Reference to a topic in a help file located in a folder with full or relative
+path of FullPath. An ending backslash must be added. The reference must not be
+split on multiple lines. For example, the help file is located in the folder
+"D:\Far\FarNet\Modules\Foo" and we need the topic "FooInfo" from it:
+"<D:\Far\FarNet\Modules\Foo\>FooInfo"
+
+"<FullModuleName>Topic"
+Reference to a topic in a help file located in the same folder as the module
+with the relative or full path of FullModuleName. The reference must not be
+split on mutiple lines. For example, we need the help topic "FooInfo" from the
+help file of the module Foo "D:\Far\FarNet\Modules\Foo\Foo.dll":
+"<D:\Far\FarNet\Modules\Foo\Foo.dll>FooInfo"
+]]>
+			</code>
+		</remarks>
+	</ShowHelp>
+	<Colors>
+		<param name="foregroundColor">Foreground color.</param>
+		<param name="backgroundColor">Background color.</param>
+	</Colors>
+	<Include>
+		<summary>
+			Creates and shows <see cref="IInputBox"/>.
+			Note: <see cref="IInputBox.EmptyEnabled"/> is set to true.
+			If you need more input box options, use the interface directly.
+		</summary>
+	</Include>
+	<FileMask>
+		<summary>
+			File(s) mask, see Far API help topic [File masks]; format "include|exclude" is also supported.
+			This value is only the default suggestion, actual mask may be changed by a user.
+		</summary>
+	</FileMask>
+	<BaseListItems>
+		<summary>
+			List item collection. STOP: see remarks.
+		</summary>
+		<remarks>
+			Normally you fill the list with items and set their properties before opening a
+			dialog. After opening this collection is mapped to a control dynamically, i.e.
+			all operations (set, insert, remove and etc.) are displayed immediately. The
+			items themselves are not mapped dynamically, so that if you change an item then
+			you have to reset it explicitly, see the example.
+			<para>
+				Dynamic mapping is simple, useful and effective when you change (or add, remove)
+				one item at a time (or just a few items). But if you actually recreate all the
+				items then for better performance you have to use <see cref="DetachItems"/>
+				before changes and <see cref="AttachItems"/> after changes.
+			</para>
+		</remarks>
+		<example>
+			(PowerShell): how to set an item checked when the dialog is running
+			<code>
+				<![CDATA[
+# get an item
+$item = $listbox.Items[3]
+# change it
+$item.Checked = $true
+# set it!
+$listbox.Items[3] = $item
+]]>
+			</code>
+		</example>
+	</BaseListItems>
+</doc>
