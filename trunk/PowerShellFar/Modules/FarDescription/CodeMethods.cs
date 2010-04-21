@@ -31,6 +31,9 @@ namespace FarDescription
 		/// </summary>
 		public static string FileSystemInfoGetFarDescription(PSObject instance)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			FileSystemInfo info = instance.BaseObject as FileSystemInfo;
 			if (info != null)
 				return Description.Get(info.FullName);
@@ -43,6 +46,9 @@ namespace FarDescription
 		/// </summary>
 		public static void FileSystemInfoSetFarDescription(PSObject instance, string value)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			FileSystemInfo info = instance.BaseObject as FileSystemInfo;
 			if (info != null)
 				Description.Set(info.FullName, value);
@@ -57,6 +63,9 @@ namespace FarDescription
 		/// </remarks>
 		public static void FileSystemInfoMoveTo(PSObject instance, string value)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			FileSystemInfo info = instance.BaseObject as FileSystemInfo;
 			if (info == null)
 				return;
@@ -83,6 +92,9 @@ namespace FarDescription
 		/// </remarks>
 		public static FileInfo FileInfoCopyTo(PSObject instance, string value)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+			
 			FileInfo file1 = instance.BaseObject as FileInfo;
 			if (file1 == null)
 				return null;
@@ -101,6 +113,9 @@ namespace FarDescription
 		/// </remarks>
 		public static void FileInfoDelete(PSObject instance)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			FileInfo file = instance.BaseObject as FileInfo;
 			if (file == null)
 				return;

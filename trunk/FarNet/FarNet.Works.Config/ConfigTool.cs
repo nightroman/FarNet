@@ -3,6 +3,7 @@ FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
 
+using System;
 using System.Collections.Generic;
 using FarNet.Forms;
 
@@ -14,6 +15,9 @@ namespace FarNet.Works
 	{
 		public static void Show(IList<IModuleTool> toolsIn, string helpTopic, GetMenuText getMenuText)
 		{
+			if (getMenuText == null)
+				throw new ArgumentNullException("getMenuText");
+
 			var sorted = new List<IModuleTool>(toolsIn);
 
 			IMenu menu = Far.Net.CreateMenu();
@@ -119,7 +123,7 @@ namespace FarNet.Works
 		class ModuleToolComparer : IComparer<IModuleTool>
 		{
 			GetMenuText _getMenuText;
-			
+
 			public ModuleToolComparer(GetMenuText getMenuText)
 			{
 				_getMenuText = getMenuText;

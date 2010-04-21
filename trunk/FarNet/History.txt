@@ -2,6 +2,11 @@ http://code.google.com/p/farnet/
 
 = 4.3.16 =
 
+IEditor
+-- Removed the workaround method ChangeTitle because Mantis 1334 was recently
+resolved: the property .Title now changes the title permanently, null or empty
+string restores the original title.
+
 Module EditorKit
 The module TrimSaving is replaced with a new module EditorKit. It contains:
 -- TrimSaving (old) - trims line ends on saving;

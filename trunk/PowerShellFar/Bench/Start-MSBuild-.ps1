@@ -38,10 +38,13 @@ if (!$FilePath) {
 	$FilePath = $projs[0]
 }
 
-### resolve the builder
-$msbuild = "$env:windir\Microsoft.NET\Framework\v3.5\MSBuild.exe"
-if (![IO.File]::Exists("$env:windir\Microsoft.NET\Framework\v3.5\MSBuild.exe")) {
-	$msbuild = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory() + 'MSBuild.exe'
+### resolve MSBuild
+$msbuild = "$env:windir\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
+if (![IO.File]::Exists($msbuild)) {
+	$msbuild = "$env:windir\Microsoft.NET\Framework\v3.5\MSBuild.exe"
+	if (![IO.File]::Exists($msbuild)) {
+		$msbuild = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory() + 'MSBuild.exe'
+	}
 }
 
 $xml = [xml](Get-Content $FilePath)

@@ -113,6 +113,17 @@ function Show-ServicePanel
 
 <#
 .SYNOPSIS
+	Show-StartupCommandPanel proxy.
+#>
+function Show-StartupCommandPanel
+{
+	Remove-Item Function:\Show-StartupCommandPanel
+	Import-Module FarInventory
+	Show-StartupCommandPanel
+}
+
+<#
+.SYNOPSIS
 	Show-UninstallPanel proxy.
 #>
 function Show-UninstallPanel
