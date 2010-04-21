@@ -111,19 +111,19 @@ namespace PowerShellFar
 				{
 					str = pszUserName.ToString();
 				}
-				SecureString password = new SecureString();
-				for (int i = 0; i < pszPassword.Length; i++)
+
+				using (SecureString password = new SecureString())
 				{
-					password.AppendChar(pszPassword[i]);
-					pszPassword[i] = '\0';
-				}
-				if (!string.IsNullOrEmpty(str))
-				{
-					credential = new PSCredential(str, password);
-				}
-				else
-				{
-					credential = null;
+					for (int i = 0; i < pszPassword.Length; i++)
+					{
+						password.AppendChar(pszPassword[i]);
+						pszPassword[i] = '\0';
+					}
+					
+					if (!string.IsNullOrEmpty(str))
+						credential = new PSCredential(str, password);
+					else
+						credential = null;
 				}
 			}
 			else

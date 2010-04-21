@@ -361,21 +361,6 @@ void Editor::Title::set(String^ value)
 	}
 }
 
-void Editor::ChangeTitle(String^ title)
-{
-	_Title = title;
-	_pendingTitle = true;
-}
-
-void Editor::ApplyPendingChanges()
-{
-	if (_pendingTitle)
-	{
-		_pendingTitle = false;
-		Title = _Title;
-	}
-}
-
 Place Editor::Window::get()
 {
 	return _Window;

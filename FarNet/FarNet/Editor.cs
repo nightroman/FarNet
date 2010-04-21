@@ -395,21 +395,19 @@ namespace FarNet
 		public abstract bool IsOpened { get; }
 
 		/// <summary>
-		/// Gets or sets the window title. Set it before opening (standard title) or after opening (temporary title).
+		/// Gets or sets the window title. Set it before or after opening.
 		/// </summary>
 		/// <remarks>
-		/// When the editor is opened the standard title will be automatically restored when Far gets control.
+		/// For the opened editor setting the title to null or empty restores
+		/// the original title.
+		/// <para>
+		/// NOTE: Getting the title does not actually work: for an instance
+		/// opened by a module it gets the original title, not the current one;
+		/// for other instances it gets null. (Far API only allows to set the
+		/// title).
+		/// </para>
 		/// </remarks>
 		public abstract string Title { get; set; }
-
-		/// <summary>
-		/// (Experimental) Changes the editor title permanently.
-		/// </summary>
-		/// <param name="title">New title.</param>
-		/// <remarks>
-		/// This API may be changed or removed depending on Mantis 1334.
-		/// </remarks>
-		public abstract void ChangeTitle(string title);
 
 		/// <summary>
 		/// Gets or sets overtype mode.

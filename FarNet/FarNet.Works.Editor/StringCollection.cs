@@ -5,6 +5,7 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet.Works
 {
@@ -28,6 +29,7 @@ namespace FarNet.Works
 			set { _Editor[index].Text = value; }
 		}
 
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsFixedSize
 		{
 			get { return false; }
@@ -38,6 +40,7 @@ namespace FarNet.Works
 			get { return false; }
 		}
 
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSynchronized
 		{
 			get { return false; }
@@ -68,10 +71,13 @@ namespace FarNet.Works
 			return GetEnumerator();
 		}
 
-		public void CopyTo(string[] array, int start)
+		public void CopyTo(string[] array, int arrayIndex)
 		{
+			if (array == null)
+				throw new ArgumentNullException("array");
+
 			foreach (string it in EditorTools.EnumerateStrings(_Editor, 0, _Editor.Count))
-				array[start++] = it;
+				array[arrayIndex++] = it;
 		}
 
 		public void Add(string item)

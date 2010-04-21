@@ -37,12 +37,18 @@ namespace FarNet
 		///
 		public static string Format(MemberInfo member)
 		{
+			if (member == null)
+				throw new ArgumentNullException("member");
+			
 			return member.ReflectedType.FullName + "." + member.Name;
 		}
 
 		///
 		public static string FormatException(Exception error)
 		{
+			if (error == null)
+				throw new ArgumentNullException("error");
+
 			//?? _090901_055134 Regex is used to fix bad PS V1 strings; check V2
 			Regex re = new Regex("[\r\n]+");
 			string info = error.GetType().Name + ":\r\n" + re.Replace(error.Message, "\r\n") + "\r\n";

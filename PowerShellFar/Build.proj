@@ -14,14 +14,16 @@
 
 	<Target Name="Clean">
 		<MSBuild Projects="..\FarNet\Build.proj" Targets="Clean"/>
-		<Delete Files="PowerShellFar.ncb;PowerShellFar.sln.cache"/>
+		<Delete Files="
+PowerShellFar.sdf;
+"/>
 		<RemoveDir Directories="
-		bin;
-		obj;
-		Modules\FarDescription\bin;
-		Modules\FarDescription\obj;
-		Modules\FarMacro\bin;
-		Modules\FarMacro\obj;
+bin;
+obj;
+Modules\FarDescription\bin;
+Modules\FarDescription\obj;
+Modules\FarMacro\bin;
+Modules\FarMacro\obj;
 		"/>
 	</Target>
 
@@ -29,27 +31,27 @@
 	<Target Name="Install-Res">
 		<Copy DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true"
 		SourceFiles="
-		PowerShellFar.cfg;
-		PowerShellFar.hlf;
-		TabExpansion.ps1;
+PowerShellFar.cfg;
+PowerShellFar.hlf;
+TabExpansion.ps1;
 		"/>
 		<Copy DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarDescription" SkipUnchangedFiles="true"
 		SourceFiles="
-		Modules\FarDescription\about_FarDescription.help.txt;
-		Modules\FarDescription\FarDescription.psd1;
-		Modules\FarDescription\FarDescription.psm1;
-		Modules\FarDescription\FarDescription.Types.ps1xml;
+Modules\FarDescription\about_FarDescription.help.txt;
+Modules\FarDescription\FarDescription.psd1;
+Modules\FarDescription\FarDescription.psm1;
+Modules\FarDescription\FarDescription.Types.ps1xml;
 		"/>
 		<Copy DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarInventory" SkipUnchangedFiles="true"
 		SourceFiles="
-		Modules\FarInventory\about_FarInventory.help.txt;
-		Modules\FarInventory\FarInventory.psm1;
+Modules\FarInventory\about_FarInventory.help.txt;
+Modules\FarInventory\FarInventory.psm1;
 		"/>
 		<Copy DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarMacro" SkipUnchangedFiles="true"
 		SourceFiles="
-		Modules\FarMacro\about_FarMacro.help.txt;
-		Modules\FarMacro\FarMacro.psd1;
-		Modules\FarMacro\FarMacro.Format.ps1xml;
+Modules\FarMacro\about_FarMacro.help.txt;
+Modules\FarMacro\FarMacro.psd1;
+Modules\FarMacro\FarMacro.Format.ps1xml;
 		"/>
 	</Target>
 

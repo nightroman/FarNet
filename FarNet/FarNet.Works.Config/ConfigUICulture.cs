@@ -13,6 +13,9 @@ namespace FarNet.Works
 	{
 		public static void Show(IList<IModuleManager> managers, string helpTopic)
 		{
+			if (managers == null)
+				return;
+			
 			IMenu menu = Far.Net.CreateMenu();
 			menu.Title = "Module UI culture";
 			menu.HelpTopic = helpTopic;
