@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41B8AD22-D6A2-4056-92DD-7BC963D754DC}"
 	ProjectSection(SolutionItems) = preProject
 		..\FarNet\Build.proj = ..\FarNet\Build.proj
@@ -16,14 +16,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellFar", "PowerShell
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet", "..\FarNet\FarNet\FarNet.csproj", "{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FarNetMan", "..\FarNet\FarNetMan\FarNetMan.vcproj", "{A5F07EDB-2242-4A92-BFD1-48396007C625}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FarNetMan", "..\FarNet\FarNetMan\FarNetMan.vcxproj", "{A5F07EDB-2242-4A92-BFD1-48396007C625}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Build", "Build.vcproj", "{A253D0DE-1626-4E50-A3D1-8C0A533901B3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{602C5210-AF86-471A-BF19-35C0D5A71719} = {602C5210-AF86-471A-BF19-35C0D5A71719}
-		{F1D6E33D-67F2-4B80-9C8C-D1AF502D1131} = {F1D6E33D-67F2-4B80-9C8C-D1AF502D1131}
-		{6223B3D5-A0CA-4DD1-9CD3-D7D394B55DA6} = {6223B3D5-A0CA-4DD1-9CD3-D7D394B55DA6}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Build", "Build.vcxproj", "{A253D0DE-1626-4E50-A3D1-8C0A533901B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarMacro", "Modules\FarMacro\FarMacro.csproj", "{6223B3D5-A0CA-4DD1-9CD3-D7D394B55DA6}"
 EndProject

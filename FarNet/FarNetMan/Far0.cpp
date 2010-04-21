@@ -924,7 +924,7 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 			}
 			else if (panel->Kind == PanelKind::File)
 			{
-				FarItem^ mi = menu->Add(sPushShelveThePanel);
+				mi = menu->Add(sPushShelveThePanel);
 				mi->Data = panel;
 			}
 		}
@@ -936,7 +936,7 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 
 			for each(Works::ShelveInfo^ si in Works::ShelveInfo::Stack)
 			{
-				FarItem^ mi = menu->Add(si->Title);
+				mi = menu->Add(si->Title);
 				mi->Data = si;
 			}
 		}

@@ -16,7 +16,7 @@ using FarNet;
 namespace FarMacro
 {
 	[CmdletProvider("FarMacro", ProviderCapabilities.ShouldProcess)]
-	public class FarMacroProvider : NavigationCmdletProvider, IContentCmdletProvider
+	public sealed class FarMacroProvider : NavigationCmdletProvider, IContentCmdletProvider
 	{
 		#region Private
 
@@ -105,6 +105,9 @@ namespace FarMacro
 
 		protected override PSDriveInfo NewDrive(PSDriveInfo drive)
 		{
+			if (drive == null)
+				throw new ArgumentNullException("drive");
+
 			// the only drive
 			if (drive.Root.Length == 0)
 				return drive;
@@ -115,6 +118,9 @@ namespace FarMacro
 
 		protected override PSDriveInfo RemoveDrive(PSDriveInfo drive)
 		{
+			if (drive == null)
+				throw new ArgumentNullException("drive");
+
 			// the only drive
 			if (drive.Root.Length == 0)
 				return drive;
@@ -303,7 +309,9 @@ namespace FarMacro
 				case RegistryValueKind.QWord:
 					return Kit.ConvertTo(newItemValue, typeof(long));
 				default:
-					throw new ModuleException("Invalid type. Valid optional types: MultiString, DWord, QWord.");
+					throw new ModuleException(Invariant.Format(
+						"Invalid type. Valid types: {0}, {1}, {2}.",
+						RegistryValueKind.MultiString, RegistryValueKind.DWord, RegistryValueKind.QWord));
 			}
 		}
 
@@ -407,6 +415,9 @@ namespace FarMacro
 
 		protected override string GetParentPath(string path, string root)
 		{
+			if (path == null)
+				throw new ArgumentNullException("path");
+
 			// If root is specified then the path has to contain
 			// the root. If not nothing should be returned
 			if (!String.IsNullOrEmpty(root))
@@ -631,6 +642,9 @@ namespace FarMacro
 
 		public IList Write(IList content)
 		{
+			if (content == null)
+				throw new ArgumentNullException("content");
+
 			StringBuilder sb = new StringBuilder();
 			foreach (object line in content)
 			{

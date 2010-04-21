@@ -26,7 +26,9 @@
 
 	<Target Name="Clean">
 		<MSBuild Targets="Clean" Projects="@(Folder->'%(Identity)\Build.proj')"/>
-		<Delete Files="FarNet.ncb;FarNet.sln.cache"/>
+		<Delete Files="
+FarNet.sdf;
+"/>
 	</Target>
 
 	<Target Name="Install">

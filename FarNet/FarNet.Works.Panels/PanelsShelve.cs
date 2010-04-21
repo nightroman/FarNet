@@ -26,6 +26,9 @@ namespace FarNet.Works
 		// current: do provide the current name!
 		protected void InitSelected(IAnyPanel panel, string current)
 		{
+			if (panel == null)
+				throw new ArgumentNullException("panel");
+
 			// get selected
 			var files = panel.SelectedList;
 

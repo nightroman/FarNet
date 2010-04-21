@@ -11,6 +11,9 @@ namespace FarNet.Works
 	{
 		public static void Show(IList<IModuleEditor> editors, string helpTopic)
 		{
+			if (editors == null)
+				return;
+			
 			IMenu menu = Far.Net.CreateMenu();
 			menu.AutoAssignHotkeys = true;
 			menu.HelpTopic = helpTopic;

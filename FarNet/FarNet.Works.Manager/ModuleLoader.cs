@@ -161,23 +161,23 @@ namespace FarNet.Works
 			try
 			{
 				// the manifest
-				string[] manifests = Directory.GetFiles(dir, "*.cfg");
+				string[] manifests = Directory.GetFiles(dir, "*.CFG");
 				if (manifests.Length == 1)
 				{
 					LoadFromManifest(manifests[0], dir);
 					return;
 				}
 				if (manifests.Length > 1)
-					throw new ModuleException("More than one .cfg files found.");
+					throw new ModuleException("More than one .CFG files found.");
 
 				// load the only assembly
-				string[] assemblies = Directory.GetFiles(dir, "*.dll");
+				string[] assemblies = Directory.GetFiles(dir, "*.DLL");
 				if (assemblies.Length == 1)
 					LoadFromAssembly(assemblies[0], null);
 				else if (assemblies.Length > 1)
-					throw new ModuleException("More than one .dll files found. Expected exactly one .dll file or exactly one .cfg file.");
+					throw new ModuleException("More than one .DLL files found. Expected exactly one .DLL file or exactly one .CFG file.");
 
-				//! If the folder has no .dll or .cfg files (not yet built sources) then just ignore
+				//! If the folder has no .DLL or .CFG files (not yet built sources) then just ignore
 			}
 			catch (Exception ex)
 			{
@@ -249,7 +249,7 @@ namespace FarNet.Works
 					if (!manager.LoadLoadableModuleHost())
 					{
 						if (0 == actionCount)
-							throw new ModuleException("The module must implement a public action or a preloadable host.");
+							throw new ModuleException("A module must have a public action or a pre-loadable host.");
 
 						WriteModuleCache(manager);
 					}

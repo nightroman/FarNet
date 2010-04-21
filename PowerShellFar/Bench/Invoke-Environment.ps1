@@ -16,11 +16,11 @@
 
 .EXAMPLE
 	# Visual Studio environment: works even if exit code is not 0
-	Invoke-Environment 'call "%VS90COMNTOOLS%\vsvars32.bat"'
+	Invoke-Environment 'call "%VS100COMNTOOLS%\vsvars32.bat"'
 
 .EXAMPLE
 	# This command fails if vsvars32.bat exit code is not 0
-	Invoke-Environment '"%VS90COMNTOOLS%\vsvars32.bat"'
+	Invoke-Environment '"%VS100COMNTOOLS%\vsvars32.bat"'
 #>
 
 param
