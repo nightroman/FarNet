@@ -424,7 +424,7 @@ void Far1::ShowError(String^ title, Exception^ error)
 	{
 		// log
 		msgMacro = "A macro has been stopped.";
-		Log::TraceWarning(msgMacro);
+		Log::Source->TraceEvent(TraceEventType::Warning, 0, msgMacro);
 
 		// stop
 		Zoo->Break();

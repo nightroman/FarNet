@@ -23,7 +23,14 @@ But more calls are possible, we have to ignore them.
 */
 void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 {
-	LOG_AUTO(Info, __FUNCTION__)
+//! Works, use it?????
+//#ifdef _DEBUG
+//	if (!Debugger::IsAttached)
+//		Debugger::Launch();
+//#endif
+
+	Log::Source->TraceInformation(__FUNCTION__ "{");
+	try
 	{
 		// deny
 		if (Works::Host::State != Works::HostState::None)
@@ -54,7 +61,10 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 		// loaded
 		Works::Host::State = Works::HostState::Loaded;
 	}
-	LOG_END;
+	finally
+	{
+		Log::Source->TraceInformation(__FUNCTION__ "}");
+	}
 }
 
 /*
@@ -63,7 +73,8 @@ STOP: ensure it is "loaded".
 */
 void WINAPI ExitFARW()
 {
-	LOG_AUTO(Info, __FUNCTION__)
+	Log::Source->TraceInformation(__FUNCTION__ "{");
+	try
 	{
 		if (Works::Host::State == Works::HostState::Loaded)
 		{
@@ -81,7 +92,10 @@ void WINAPI ExitFARW()
 #endif
 		}
 	}
-	LOG_END;
+	finally
+	{
+		Log::Source->TraceInformation(__FUNCTION__ "}");
+	}
 }
 
 /*

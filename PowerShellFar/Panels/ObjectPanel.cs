@@ -123,7 +123,7 @@ namespace PowerShellFar
 			// case: ManagementClass
 			if (psData.BaseObject.GetType().FullName == "System.Management.ManagementClass")
 			{
-				pi = psData.Properties["Name"];
+				pi = psData.Properties[Word.Name];
 				if (pi != null && pi.Value != null)
 				{
 					var values = A.Psf.InvokeCode("Get-WmiObject -Class $args[0] -ErrorAction SilentlyContinue", pi.Value.ToString());

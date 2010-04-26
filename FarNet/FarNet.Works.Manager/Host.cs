@@ -5,6 +5,7 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace FarNet.Works
 {
@@ -31,8 +32,7 @@ namespace FarNet.Works
 			get { return _State_; }
 			set
 			{
-				if (Log.Switch.TraceInfo)
-					Log.WriteLine(Invariant.Format("Host state has changed from {0} to {1}.", _State_, value));
+				Log.Source.TraceInformation("Host state has changed from {0} to {1}", _State_, value);
 
 				_State_ = value;
 			}

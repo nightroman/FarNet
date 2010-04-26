@@ -123,7 +123,7 @@ void Far0::UnregisterProxyAction(IModuleAction^ action)
 		return;
 	}
 
-	LOG_3("Unregister " + action);
+	Log::Source->TraceInformation("Unregister {0}", action);
 
 	Works::Host::Actions->Remove(action->Id);
 
@@ -153,7 +153,7 @@ void Far0::UnregisterProxyAction(IModuleAction^ action)
 
 void Far0::UnregisterProxyTool(IModuleTool^ tool)
 {
-	LOG_3("Unregister " + tool);
+	Log::Source->TraceInformation("Unregister {0}", tool);
 
 	Works::Host::Actions->Remove(tool->Id);
 
@@ -207,7 +207,8 @@ void Far0::InvalidateProxyTool(ModuleToolOptions options)
 
 void Far0::RegisterProxyCommand(IModuleCommand^ info)
 {
-	LOG_3("Register " + info);
+	Log::Source->TraceInformation("Register {0}", info);
+
 	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredCommand.Add(info);
@@ -217,7 +218,8 @@ void Far0::RegisterProxyCommand(IModuleCommand^ info)
 
 void Far0::RegisterProxyEditor(IModuleEditor^ info)
 {
-	LOG_3("Register " + info);
+	Log::Source->TraceInformation("Register {0}", info);
+
 	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredEditor.Add(info);
@@ -225,7 +227,8 @@ void Far0::RegisterProxyEditor(IModuleEditor^ info)
 
 void Far0::RegisterProxyFiler(IModuleFiler^ info)
 {
-	LOG_3("Register " + info);
+	Log::Source->TraceInformation("Register {0}", info);
+
 	Works::Host::Actions->Add(info->Id, info);
 
 	_registeredFiler.Add(info);
@@ -233,7 +236,7 @@ void Far0::RegisterProxyFiler(IModuleFiler^ info)
 
 void Far0::RegisterProxyTool(IModuleTool^ info)
 {
-	LOG_3("Register " + info);
+	Log::Source->TraceInformation("Register {0}", info);
 
 	Works::Host::Actions->Add(info->Id, info);
 
@@ -511,23 +514,17 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 		{
 		case OPEN_COMMANDLINE:
 			{
-				LOG_AUTO(Info, "OPEN_COMMANDLINE")
-				{
-					ProcessPrefixes(item);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("OPEN_COMMANDLINE");
+				ProcessPrefixes(item);
 			}
 			break;
 		case OPEN_DISKMENU:
 			{
-				LOG_AUTO(Info, "OPEN_DISKMENU")
-				{
-					IModuleTool^ tool = _toolDisk[(int)item];
-					ModuleToolEventArgs e;
-					e.From = ModuleToolOptions::Disk;
-					tool->Invoke(nullptr, %e);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("OPEN_DISKMENU");
+				IModuleTool^ tool = _toolDisk[(int)item];
+				ModuleToolEventArgs e;
+				e.From = ModuleToolOptions::Disk;
+				tool->Invoke(nullptr, %e);
 			}
 			break;
 		case OPEN_PLUGINSMENU:
@@ -538,14 +535,12 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 				}
 
-				LOG_AUTO(Info, "OPEN_PLUGINSMENU")
-				{
-					IModuleTool^ tool = _toolPanels[(int)item - 1];
-					ModuleToolEventArgs e;
-					e.From = ModuleToolOptions::Panels;
-					tool->Invoke(nullptr, %e);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("OPEN_PLUGINSMENU");
+
+				IModuleTool^ tool = _toolPanels[(int)item - 1];
+				ModuleToolEventArgs e;
+				e.From = ModuleToolOptions::Panels;
+				tool->Invoke(nullptr, %e);
 			}
 			break;
 		case OPEN_EDITOR:
@@ -556,14 +551,11 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 				}
 
-				LOG_AUTO(Info, "OPEN_EDITOR")
-				{
-					IModuleTool^ tool = _toolEditor[(int)item - 1];
-					ModuleToolEventArgs e;
-					e.From = ModuleToolOptions::Editor;
-					tool->Invoke(nullptr, %e);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("OPEN_EDITOR");
+				IModuleTool^ tool = _toolEditor[(int)item - 1];
+				ModuleToolEventArgs e;
+				e.From = ModuleToolOptions::Editor;
+				tool->Invoke(nullptr, %e);
 			}
 			break;
 		case OPEN_VIEWER:
@@ -574,14 +566,11 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 				}
 
-				LOG_AUTO(Info, "OPEN_VIEWER")
-				{
-					IModuleTool^ tool = _toolViewer[(int)item - 1];
-					ModuleToolEventArgs e;
-					e.From = ModuleToolOptions::Viewer;
-					tool->Invoke(nullptr, %e);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("OPEN_VIEWER");
+				IModuleTool^ tool = _toolViewer[(int)item - 1];
+				ModuleToolEventArgs e;
+				e.From = ModuleToolOptions::Viewer;
+				tool->Invoke(nullptr, %e);
 			}
 			break;
 		//! STOP: dialog case is different
@@ -599,14 +588,11 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 				}
 
-				LOG_AUTO(Info, "OPEN_DIALOG")
-				{
-					IModuleTool^ tool = _toolDialog[index - 1];
-					ModuleToolEventArgs e;
-					e.From = ModuleToolOptions::Dialog;
-					tool->Invoke(nullptr, %e);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("OPEN_DIALOG");
+				IModuleTool^ tool = _toolDialog[index - 1];
+				ModuleToolEventArgs e;
+				e.From = ModuleToolOptions::Dialog;
+				tool->Invoke(nullptr, %e);
 			}
 			break;
 		}
@@ -808,11 +794,8 @@ void Far0::AsProcessSynchroEvent(int type, void* /*param*/)
 			EventHandler^ handler = _syncHandlers[0];
 			_syncHandlers.RemoveAt(0);
 
-			LOG_AUTO(Info, String::Format("AsProcessSynchroEvent: {0}", Log::Format(handler->Method)))
-			{
-				handler(nullptr, nullptr);
-			}
-			LOG_END;
+			Log::Source->TraceInformation("AsProcessSynchroEvent: {0}", gcnew LogHandler(handler));
+			handler(nullptr, nullptr);
 		}
 	}
 	finally
@@ -833,11 +816,11 @@ void Far0::PostJob(EventHandler^ handler)
 	{
 		if (_syncHandlers.IndexOf(handler) >= 0)
 		{
-			LOG_3(String::Format("PostJob: skip already posted {0}", Log::Format(handler->Method)));
+			Log::Source->TraceInformation("PostJob: skip already posted {0}", gcnew LogHandler(handler));
 			return;
 		}
 
-		LOG_3(String::Format("PostJob: call ACTL_SYNCHRO and post {0}", Log::Format(handler->Method)));
+		Log::Source->TraceInformation("PostJob: call ACTL_SYNCHRO and post {0}", gcnew LogHandler(handler));
 
 		_syncHandlers.Add(handler);
 		if (_syncHandlers.Count == 1)

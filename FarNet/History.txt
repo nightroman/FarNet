@@ -1,5 +1,18 @@
 http://code.google.com/p/farnet/
 
+= 4.3.17 =
+
+Tracing (configured via Far.exe.config or dynamically)
+-- Internal FarNet tracing uses newer TraceSource tools instead of older Trace.
+-- "Far.exe.config" enables the source "FarNet" with the switch "FarNet.Trace".
+The default switch level is "Warning". Do not forget to update the config file
+(or merge with your changes) to make sure that new tracing works.
+-- The trace listener writing to the file "C:\Far.exe.trace.log" is disabled in
+the distributed config file. Practice shows that it is useful only in special
+cases. In that cases this or other listeners should be added and configured.
+Alternatively, tracing can be watched by the Sysinternals utility DbgView.exe
+or in the attached debugger if any is available.
+
 = 4.3.16 =
 
 IEditor

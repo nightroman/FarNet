@@ -14,34 +14,11 @@ namespace FarNet
 	/// <summary>
 	/// For internal use.
 	/// </summary>
-	public sealed class Log : IDisposable
+	public static class Log
 	{
-		static TraceSwitch _Switch = new TraceSwitch("FarNet.Trace", "FarNet trace switch.");
-
 		///
-		public static TraceSwitch Switch { get { return _Switch; } }
-
-		///
-		public static int IndentLevel
-		{
-			get { return Trace.IndentLevel; }
-			set { Trace.IndentLevel = value; }
-		}
-
-		///
-		public static void Assert(bool value)
-		{
-			Trace.Assert(value);
-		}
-
-		///
-		public static string Format(MemberInfo member)
-		{
-			if (member == null)
-				throw new ArgumentNullException("member");
-			
-			return member.ReflectedType.FullName + "." + member.Name;
-		}
+		public static TraceSource Source { get { return _Source; } }
+		static readonly TraceSource _Source = new TraceSource("FarNet");
 
 		///
 		public static string FormatException(Exception error)
@@ -80,7 +57,7 @@ namespace FarNet
 		///
 		public static void TraceError(string error)
 		{
-			Trace.TraceError(error);
+			Source.TraceEvent(TraceEventType.Error, 0, error);
 		}
 
 		// return: null if not written or formatted error info
@@ -88,7 +65,7 @@ namespace FarNet
 		public static string TraceException(Exception error)
 		{
 			// no job?
-			if (null == error || !Switch.TraceError)
+			if (null == error || !Source.Switch.ShouldTrace(TraceEventType.Error))
 				return null;
 
 			// find the last dot
@@ -100,28 +77,16 @@ namespace FarNet
 			if (i >= 0 && type.Substring(0, i) == "System")
 			{
 				r = FormatException(error);
-				Trace.TraceError(r);
+				Source.TraceEvent(TraceEventType.Error, 0, r);
 			}
 			// other error: trace as warning
-			else if (Switch.TraceWarning)
+			else if (Source.Switch.ShouldTrace(TraceEventType.Warning))
 			{
 				r = FormatException(error);
-				Trace.TraceWarning(r);
+				Source.TraceEvent(TraceEventType.Warning, 0, r);
 			}
 
 			return r;
-		}
-
-		///
-		public static void TraceWarning(string info)
-		{
-			Trace.TraceWarning(info);
-		}
-
-		///
-		public static void WriteLine(string info)
-		{
-			Trace.WriteLine(info);
 		}
 
 		// Gets a property value or null
@@ -137,30 +102,26 @@ namespace FarNet
 				return null;
 			}
 		}
+	}
 
-		readonly int MyIndentLevel;
+	/// <summary>
+	/// For internal use.
+	/// </summary>
+	public sealed class LogHandler
+	{
+		EventHandler _handler;
 
 		///
-		public Log(string info)
+		public LogHandler(EventHandler handler)
 		{
-			MyIndentLevel = Log.IndentLevel;
-			Log.WriteLine(info + " {");
-			Log.IndentLevel = MyIndentLevel + 1;
+			_handler = handler;
 		}
 
 		///
-		public Log(string format, params object[] args)
+		public override string ToString()
 		{
-			MyIndentLevel = Log.IndentLevel;
-			Log.WriteLine(Invariant.Format(format, args) + " {");
-			Log.IndentLevel = MyIndentLevel + 1;
-		}
-
-		///
-		public void Dispose()
-		{
-			Log.IndentLevel = MyIndentLevel;
-			Log.WriteLine("}");
+			return _handler.Method.ReflectedType.FullName + "." + _handler.Method.Name;
 		}
 	}
+
 }

@@ -128,6 +128,7 @@ namespace PowerShellFar
 
 				if (_mode == 0)
 				{
+					//! _100426_034702
 					//! Get actual members to show:
 					//! _Value.Properties contains too much, i.e. for DataRow: HasErrors, ItemArray, RowError, RowState;
 					//! use Get-Member at first (don't use it itself, because it returns sorted data, we want unsorted).
@@ -140,7 +141,7 @@ namespace PowerShellFar
 						string code = "Get-Member -InputObject $args[0] -MemberType Properties -ErrorAction 0";
 						foreach (PSObject o in A.Psf.InvokeCode(code, _Value))
 						{
-							string name = o.Properties["Name"].Value.ToString();
+							string name = o.Properties[Word.Name].Value.ToString();
 							if (exclude == null || !exclude.IsMatch(name))
 								membersToShow.Add(name);
 						}
@@ -195,7 +196,7 @@ namespace PowerShellFar
 					foreach (PSObject o in A.Psf.InvokeCode(code, _Value))
 					{
 						SetFile f = new SetFile();
-						f.Name = o.Properties["Name"].Value.ToString();
+						f.Name = o.Properties[Word.Name].Value.ToString();
 
 						PSPropertyInfo pi;
 						pi = o.Properties["MemberType"];
@@ -238,7 +239,7 @@ namespace PowerShellFar
 			if (!memberType.EndsWith("Property", StringComparison.Ordinal)) //??
 				return null;
 
-			string name = o.Properties["Name"].Value.ToString();
+			string name = o.Properties[Word.Name].Value.ToString();
 			object instance = _Value.Properties[name].Value;
 			if (instance == null)
 				return null;

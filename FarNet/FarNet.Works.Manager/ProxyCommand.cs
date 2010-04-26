@@ -5,6 +5,7 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace FarNet.Works
 {
@@ -28,7 +29,7 @@ namespace FarNet.Works
 		}
 
 		public ProxyCommand(ModuleManager manager, Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
-			: base(manager, id, (ModuleCommandAttribute)attribute.Clone())
+			: base(manager, id, (attribute == null ? null : (ModuleCommandAttribute)attribute.Clone()))
 		{
 			_Handler = handler;
 
@@ -47,19 +48,20 @@ namespace FarNet.Works
 
 		public void Invoke(object sender, ModuleCommandEventArgs e)
 		{
-			using (Log log = Log.Switch.TraceInfo ? new Log("Invoking {0} Command='{1}'", (_Handler != null ? Log.Format(_Handler.Method) : ClassName), e.Command) : null)
-			{
-				Invoking();
+			if (e == null)
+				throw new ArgumentNullException("e");
 
-				if (_Handler != null)
-				{
-					_Handler(sender, e);
-				}
-				else
-				{
-					ModuleCommand instance = (ModuleCommand)GetInstance();
-					instance.Invoke(sender, e);
-				}
+			Log.Source.TraceInformation("Invoking {0} Command='{1}'", this, e.Command);
+			Invoking();
+
+			if (_Handler != null)
+			{
+				_Handler(sender, e);
+			}
+			else
+			{
+				ModuleCommand instance = (ModuleCommand)GetInstance();
+				instance.Invoke(sender, e);
 			}
 		}
 
