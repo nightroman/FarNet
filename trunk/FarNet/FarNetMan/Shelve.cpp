@@ -111,12 +111,9 @@ String^ ShelveInfoPlugin::Title::get()
 
 void ShelveInfoPlugin::Pop()
 {
-	LOG_AUTO(Info, __FUNCTION__)
-	{
-		_plugin->Open();
-		_plugin->_postSelected = GetSelectedNames();
-	}
-	LOG_END;
+	Log::Source->TraceInformation(__FUNCTION__);
+	_plugin->Open();
+	_plugin->_postSelected = GetSelectedNames();
 }
 
 }

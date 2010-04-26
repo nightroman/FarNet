@@ -41,7 +41,9 @@ namespace FarNet.Works
 		// #2 Read cache
 		static void ReadModuleCache()
 		{
-			using (Log log = Log.Switch.TraceInfo ? new Log("Read module cache") : null)
+			const string log = "ReadModuleCache";
+			Log.Source.TraceInformation(log + "{");
+			try
 			{
 				// open for writing, to remove obsolete data
 				using (IRegistryKey cache = Host.Instance.OpenCacheKey(true))
@@ -152,6 +154,10 @@ namespace FarNet.Works
 					}
 				}
 			}
+			finally
+			{
+				Log.Source.TraceInformation(log + "}");
+			}
 		}
 
 		// #3
@@ -227,36 +233,35 @@ namespace FarNet.Works
 			bool done = false;
 			try
 			{
-				using (Log log = Log.Switch.TraceInfo ? new Log("Load module " + manager.ModuleName) : null)
+				Log.Source.TraceInformation("Load module {0}", manager.ModuleName);
+
+				int actionCount = 0;
+				Assembly assembly = manager.AssemblyInstance;
+				if (classes != null && classes.Count > 0)
 				{
-					int actionCount = 0;
-					Assembly assembly = manager.AssemblyInstance;
-					if (classes != null && classes.Count > 0)
-					{
-						foreach (string name in classes)
-							actionCount += LoadClass(manager, assembly.GetType(name, true));
-					}
-					else
-					{
-						foreach (Type type in assembly.GetExportedTypes())
-						{
-							if (!type.IsAbstract && typeof(BaseModuleItem).IsAssignableFrom(type))
-								actionCount += LoadClass(manager, type);
-						}
-					}
-
-					// if the module has the host to load then load it now, if it is not loaded then the module should be cached
-					if (!manager.LoadLoadableModuleHost())
-					{
-						if (0 == actionCount)
-							throw new ModuleException("A module must have a public action or a pre-loadable host.");
-
-						WriteModuleCache(manager);
-					}
-
-					// done
-					done = true;
+					foreach (string name in classes)
+						actionCount += LoadClass(manager, assembly.GetType(name, true));
 				}
+				else
+				{
+					foreach (Type type in assembly.GetExportedTypes())
+					{
+						if (!type.IsAbstract && typeof(BaseModuleItem).IsAssignableFrom(type))
+							actionCount += LoadClass(manager, type);
+					}
+				}
+
+				// if the module has the host to load then load it now, if it is not loaded then the module should be cached
+				if (!manager.LoadLoadableModuleHost())
+				{
+					if (0 == actionCount)
+						throw new ModuleException("A module must have a public action or a pre-loadable host.");
+
+					WriteModuleCache(manager);
+				}
+
+				// done
+				done = true;
 			}
 			finally
 			{
@@ -268,32 +273,31 @@ namespace FarNet.Works
 		// #6 Adds a module item
 		static int LoadClass(ModuleManager manager, Type type)
 		{
-			using (Log log = Log.Switch.TraceInfo ? new Log("Load class " + type) : null)
+			Log.Source.TraceInformation("Load class {0}", type);
+
+			// case: host
+			if (typeof(ModuleHost).IsAssignableFrom(type))
 			{
-				// case: host
-				if (typeof(ModuleHost).IsAssignableFrom(type))
-				{
-					manager.SetModuleHost(type);
-					return 0;
-				}
-
-				// command
-				if (typeof(ModuleCommand).IsAssignableFrom(type))
-					Host.Instance.RegisterProxyCommand(new ProxyCommand(manager, type));
-				// editor
-				else if (typeof(ModuleEditor).IsAssignableFrom(type))
-					Host.Instance.RegisterProxyEditor(new ProxyEditor(manager, type));
-				// filer
-				else if (typeof(ModuleFiler).IsAssignableFrom(type))
-					Host.Instance.RegisterProxyFiler(new ProxyFiler(manager, type));
-				// tool
-				else if (typeof(ModuleTool).IsAssignableFrom(type))
-					Host.Instance.RegisterProxyTool(new ProxyTool(manager, type));
-				else
-					throw new ModuleException("Unknown module class type.");
-
-				return 1;
+				manager.SetModuleHost(type);
+				return 0;
 			}
+
+			// command
+			if (typeof(ModuleCommand).IsAssignableFrom(type))
+				Host.Instance.RegisterProxyCommand(new ProxyCommand(manager, type));
+			// editor
+			else if (typeof(ModuleEditor).IsAssignableFrom(type))
+				Host.Instance.RegisterProxyEditor(new ProxyEditor(manager, type));
+			// filer
+			else if (typeof(ModuleFiler).IsAssignableFrom(type))
+				Host.Instance.RegisterProxyFiler(new ProxyFiler(manager, type));
+			// tool
+			else if (typeof(ModuleTool).IsAssignableFrom(type))
+				Host.Instance.RegisterProxyTool(new ProxyTool(manager, type));
+			else
+				throw new ModuleException("Unknown module class type.");
+
+			return 1;
 		}
 
 		public static bool CanExit()

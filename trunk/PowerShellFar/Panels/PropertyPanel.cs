@@ -140,7 +140,7 @@ namespace PowerShellFar
 						//! Don't use -Force or you silently kill existing item\property (with all children, properties, etc.)
 						Command c = new Command("New-ItemProperty");
 						c.Parameters.Add("LiteralPath", _itemPath);
-						c.Parameters.Add("Name", ui.Name.Text);
+						c.Parameters.Add(Word.Name, ui.Name.Text);
 						c.Parameters.Add("PropertyType", ui.Type.Text);
 
 						if (ui.Value.Text.Length > 0)
@@ -286,7 +286,7 @@ namespace PowerShellFar
 			{
 				Command c = new Command("Rename-ItemProperty");
 				c.Parameters.Add(new CommandParameter("LiteralPath", _itemPath));
-				c.Parameters.Add(new CommandParameter("Name", name));
+				c.Parameters.Add(new CommandParameter(Word.Name, name));
 				c.Parameters.Add(new CommandParameter("NewName", ib.Text));
 				c.Parameters.Add(Prm.Force);
 				c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
@@ -379,7 +379,7 @@ namespace PowerShellFar
 			{
 				Command c = new Command("Remove-ItemProperty");
 				c.Parameters.Add("LiteralPath", _itemPath);
-				c.Parameters.Add("Name", names);
+				c.Parameters.Add(Word.Name, names);
 				if ((conf & FarConfirmations.Delete) != 0)
 					c.Parameters.Add(Prm.Confirm);
 				c.Parameters.Add(Prm.Force);

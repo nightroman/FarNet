@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.3.16.0")]
+[assembly: AssemblyVersion("4.3.17.0")]
 [assembly: AssemblyTitle("FarNet panel tools")]
 [assembly: AssemblyDescription("FarNet panel tools")]
 [assembly: AssemblyConfiguration("")]

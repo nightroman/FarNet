@@ -47,7 +47,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 	{
 	case EE_READ:
 		{
-			LOG_3("EE_READ");
+			Log::Source->TraceInformation("EE_READ");
 
 			// pop the waiting or create new
 			Editor^ editor;
@@ -77,27 +77,21 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// 2) event for any editor handlers, they add this editor handlers
 			if (_anyEditor._Opened)
 			{
-				LOG_AUTO(Info, "Opened")
-				{
-					_anyEditor._Opened(editor, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Opened");
+				_anyEditor._Opened(editor, nullptr);
 			}
 
 			// 3) event for this editor handlers
 			if (editor->_Opened)
 			{
-				LOG_AUTO(Info, "Opened")
-				{
-					editor->_Opened(editor, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Opened");
+				editor->_Opened(editor, nullptr);
 			}
 		}
 		break;
 	case EE_CLOSE:
 		{
-			LOG_3("EE_CLOSE");
+			Log::Source->TraceInformation("EE_CLOSE");
 
 			// get registered, close and unregister
 			int id = *((int*)param);
@@ -113,19 +107,13 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// event, after the above
 			if (_anyEditor._Closed)
 			{
-				LOG_AUTO(Info, "Closed")
-				{
-					_anyEditor._Closed(editor, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Closed");
+				_anyEditor._Closed(editor, nullptr);
 			}
 			if (editor->_Closed)
 			{
-				LOG_AUTO(Info, "Closed")
-				{
-					editor->_Closed(editor, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Closed");
+				editor->_Closed(editor, nullptr);
 			}
 
 			// delete the file after all
@@ -134,50 +122,41 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		break;
 	case EE_SAVE:
 		{
-			LOG_3("EE_SAVE");
+			Log::Source->TraceInformation("EE_SAVE");
 
 			Editor^ ed = GetCurrentEditor();
 			if (_anyEditor._Saving)
 			{
-				LOG_AUTO(Info, "Saving")
-				{
-					_anyEditor._Saving(ed, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Saving");
+				_anyEditor._Saving(ed, nullptr);
 			}
 			if (ed->_Saving)
 			{
-				LOG_AUTO(Info, "Saving")
-				{
-					ed->_Saving(ed, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Saving");
+				ed->_Saving(ed, nullptr);
 			}
 		}
 		break;
 	case EE_REDRAW:
 		{
-			LOG_4("EE_REDRAW");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_REDRAW");
 
 			int mode = (int)(INT_PTR)param;
 			Editor^ editor = GetCurrentEditor();
 			if (_anyEditor._Redrawing || editor->_Redrawing)
 			{
-				LOG_AUTO(Verbose, "Redrawing")
-				{
-					EditorRedrawingEventArgs ea(mode);
-					if (_anyEditor._Redrawing)
-						_anyEditor._Redrawing(editor, %ea);
-					if (editor->_Redrawing)
-						editor->_Redrawing(editor, %ea);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Redrawing");
+				EditorRedrawingEventArgs ea(mode);
+				if (_anyEditor._Redrawing)
+					_anyEditor._Redrawing(editor, %ea);
+				if (editor->_Redrawing)
+					editor->_Redrawing(editor, %ea);
 			}
 		}
 		break;
 	case EE_GOTFOCUS:
 		{
-			LOG_4("EE_GOTFOCUS");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
 
 			int id = *((int*)param);
 			Editor^ editor;
@@ -191,25 +170,19 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// event
 			if (_anyEditor._GotFocus)
 			{
-				LOG_AUTO(Verbose, "GotFocus")
-				{
-					_anyEditor._GotFocus(editor, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
+				_anyEditor._GotFocus(editor, nullptr);
 			}
 			if (editor->_GotFocus)
 			{
-				LOG_AUTO(Verbose, "GotFocus")
-				{
-					editor->_GotFocus(editor, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
+				editor->_GotFocus(editor, nullptr);
 			}
 		}
 		break;
 	case EE_KILLFOCUS:
 		{
-			LOG_4("EE_KILLFOCUS");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_KILLFOCUS");
 
 			int id = *((int*)param);
 			Editor^ ed;
@@ -218,19 +191,13 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 
 			if (_anyEditor._LosingFocus)
 			{
-				LOG_AUTO(Verbose, "LosingFocus")
-				{
-					_anyEditor._LosingFocus(ed, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
+				_anyEditor._LosingFocus(ed, nullptr);
 			}
 			if (ed->_LosingFocus)
 			{
-				LOG_AUTO(Verbose, "LosingFocus")
-				{
-					ed->_LosingFocus(ed, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
+				ed->_LosingFocus(ed, nullptr);
 			}
 		}
 		break;
