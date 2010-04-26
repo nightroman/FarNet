@@ -19,6 +19,9 @@ namespace FarNet.Works
 
 		protected ProxyAction(ModuleManager manager, EnumerableReader reader, ModuleActionAttribute attribute)
 		{
+			if (reader == null)
+				throw new ArgumentNullException("reader");
+			
 			_ModuleManager = manager;
 			_Attribute = attribute;
 
@@ -38,6 +41,11 @@ namespace FarNet.Works
 
 		protected ProxyAction(ModuleManager manager, Type classType, Type attributeType)
 		{
+			if (classType == null)
+				throw new ArgumentNullException("classType");
+			if (attributeType == null)
+				throw new ArgumentNullException("attributeType");
+
 			_ModuleManager = manager;
 			_ClassType = classType;
 			_Id = classType.GUID;

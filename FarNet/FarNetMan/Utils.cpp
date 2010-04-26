@@ -171,7 +171,7 @@ int EditorControl_ECTL_SETPARAM(const EditorSetParameter esp)
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp)
 {
 	if (!Info.EditorControl(ECTL_SETPOSITION, (EditorSetPosition*)&esp))
-		Log::TraceWarning("ECTL_SETPOSITION failed");
+		Log::Source->TraceEvent(TraceEventType::Warning, 0, "ECTL_SETPOSITION failed");
 }
 
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess)

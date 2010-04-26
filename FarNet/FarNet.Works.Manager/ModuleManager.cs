@@ -4,6 +4,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -35,8 +36,8 @@ namespace FarNet.Works
 			_ModuleHostInstance = (ModuleHost)CreateEntry(_ModuleHostClassType);
 			_ModuleHostClassType = null;
 
-			using (Log log = Log.Switch.TraceInfo ? new Log("{0}.Connect", _ModuleHostInstance) : null)
-				_ModuleHostInstance.Connect();
+			Log.Source.TraceInformation("Connect {0}", _ModuleHostInstance);
+			_ModuleHostInstance.Connect();
 		}
 
 		internal BaseModuleItem CreateEntry(Type type)
@@ -161,33 +162,34 @@ namespace FarNet.Works
 		}
 
 		//! Don't use Far UI
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+		[
+		SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"),
+		SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands"),
+		]
 		public void Unregister()
 		{
-			using (Log log = Log.Switch.TraceInfo ? new Log("Unregister module " + ModuleName) : null)
+			Log.Source.TraceInformation("Unregister module {0}", ModuleName);
+
+			if (_ModuleHostInstance == null)
 			{
-				if (_ModuleHostInstance == null)
-				{
-					ModuleLoader.RemoveModuleManager(this);
-					return;
-				}
+				ModuleLoader.RemoveModuleManager(this);
+				return;
+			}
 
-				try
-				{
-					using (Log call = Log.Switch.TraceInfo ? new Log("{0}.Disconnect", _ModuleHostInstance) : null)
-						_ModuleHostInstance.Disconnect();
-				}
-				catch (Exception ex)
-				{
-					Far.Net.ShowError("ERROR: module " + _ModuleHostInstance, ex);
-				}
-				finally
-				{
-					_ModuleHostInstance = null;
+			try
+			{
+				Log.Source.TraceInformation("Disconnect {0}", _ModuleHostInstance);
+				_ModuleHostInstance.Disconnect();
+			}
+			catch (Exception ex)
+			{
+				Far.Net.ShowError("ERROR: module " + _ModuleHostInstance, ex);
+			}
+			finally
+			{
+				_ModuleHostInstance = null;
 
-					ModuleLoader.RemoveModuleManager(this);
-				}
+				ModuleLoader.RemoveModuleManager(this);
 			}
 		}
 

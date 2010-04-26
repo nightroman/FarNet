@@ -151,6 +151,9 @@
     <Compile Include="Viewer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
     <Content Include="doc.xml" />
   </ItemGroup>
   <ItemGroup>

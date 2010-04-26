@@ -37,81 +37,73 @@ static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, List<String^>^ names
 
 void Panel0::AsClosePlugin(HANDLE hPlugin)
 {
-	LOG_AUTO(Info, "ClosePlugin")
-	{
-		// drop the lame storage
-		s_makingDirectory.Set(nullptr);
+	Log::Source->TraceInformation("ClosePlugin");
 
-		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-		pp->_info.Free();
-		_panels[(int)(INT_PTR)hPlugin] = nullptr;
-		if (!pp->_Pushed && pp->_Closed)
-			pp->_Closed(pp, nullptr);
-	}
-	LOG_END;
+	// drop the lame storage
+	s_makingDirectory.Set(nullptr);
+
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	pp->_info.Free();
+	_panels[(int)(INT_PTR)hPlugin] = nullptr;
+	if (!pp->_Pushed && pp->_Closed)
+		pp->_Closed(pp, nullptr);
 }
 
 int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
 {
-	LOG_AUTO(Info, "DeleteFiles")
-	{
-		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-		if (!pp->_DeletingFiles)
-			return false;
+	Log::Source->TraceInformation("DeleteFiles");
 
-		IList<FarFile^>^ files = ItemsToFiles(pp->Files, nullptr, panelItem, itemsNumber);
-		FilesEventArgs e(files, (OperationModes)opMode, false);
-		pp->_DeletingFiles(pp, %e);
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	if (!pp->_DeletingFiles)
+		return false;
 
-		return e.Ignore ? false : true;
-	}
-	LOG_END;
+	IList<FarFile^>^ files = ItemsToFiles(pp->Files, nullptr, panelItem, itemsNumber);
+	FilesEventArgs e(files, (OperationModes)opMode, false);
+	pp->_DeletingFiles(pp, %e);
+
+	return e.Ignore ? false : true;
 }
 
 void Panel0::AsFreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int itemsNumber)
 {
-	LOG_AUTO(Info, "FreeFindData")
+	Log::Source->TraceInformation("FreeFindData");
+
+	for(int i = itemsNumber; --i >= 0;)
 	{
-		for(int i = itemsNumber; --i >= 0;)
+		PluginPanelItem& item = panelItem[i];
+
+		delete[] item.Owner;
+		delete[] item.Description;
+		delete[] item.FindData.lpwszAlternateFileName;
+		delete[] item.FindData.lpwszFileName;
+
+		if (item.CustomColumnData)
 		{
-			PluginPanelItem& item = panelItem[i];
+			for(int j = item.CustomColumnNumber; --j >= 0;)
+				delete[] item.CustomColumnData[j];
 
-			delete[] item.Owner;
-			delete[] item.Description;
-			delete[] item.FindData.lpwszAlternateFileName;
-			delete[] item.FindData.lpwszFileName;
-
-			if (item.CustomColumnData)
-			{
-				for(int j = item.CustomColumnNumber; --j >= 0;)
-					delete[] item.CustomColumnData[j];
-
-				delete[] item.CustomColumnData;
-			}
+			delete[] item.CustomColumnData;
 		}
-
-		delete[] panelItem;
 	}
-	LOG_END;
+
+	delete[] panelItem;
 }
 
 //?? Parameter destPath can be changed, i.e. (*destPath) replaced. NYI here.
 int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode)
 {
-	LOG_AUTO(Info, "GetFiles")
-	{
-		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-		if (!pp->_GettingFiles)
-			return 0;
+	Log::Source->TraceInformation("GetFiles");
 
-		List<String^>^ names = pp->Info->AutoAlternateNames ? gcnew List<String^> : nullptr;
-		List<FarFile^>^ files = ItemsToFiles(pp->Files, names, panelItem, itemsNumber);
-		GettingFilesEventArgs e(files, names, (OperationModes)opMode, move != 0, gcnew String((*destPath)));
-		pp->_GettingFiles(pp, %e);
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	if (!pp->_GettingFiles)
+		return 0;
 
-		return e.Ignore ? false : true;
-	}
-	LOG_END;
+	List<String^>^ names = pp->Info->AutoAlternateNames ? gcnew List<String^> : nullptr;
+	List<FarFile^>^ files = ItemsToFiles(pp->Files, names, panelItem, itemsNumber);
+	GettingFilesEventArgs e(files, names, (OperationModes)opMode, move != 0, gcnew String((*destPath)));
+	pp->_GettingFiles(pp, %e);
+
+	return e.Ignore ? false : true;
 }
 
 //! 090712. Allocation by chunks was originally used. But it turns out it does not improve
@@ -119,133 +111,131 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 //! may fail due to memory fragmentation more frequently.
 int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
-	LOG_AUTO(Info, "GetFindData")
+	Log::Source->TraceInformation("GetFindData");
+
+	try
 	{
-		try
+		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+
+		// fake empty panel needed on switching modes, for example
+		if (pp->_voidGettingData)
 		{
-			Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+			(*pItemsNumber) = 0;
+			(*pPanelItem) = NULL;
+			return true;
+		}
 
-			// fake empty panel needed on switching modes, for example
-			if (pp->_voidGettingData)
+		if (pp->_GettingData && !pp->_skipGettingData)
+		{
+			PanelEventArgs e((OperationModes)opMode);
+			pp->_GettingData(pp, %e);
+			if (e.Ignore)
+				return false;
+		}
+
+		// all item number
+		int nItem = pp->Files->Count;
+		if (pp->AddDots)
+			++nItem;
+		(*pItemsNumber) = nItem;
+		if (nItem == 0)
+		{
+			(*pPanelItem) = NULL;
+			return true;
+		}
+
+		// alloc all
+		(*pPanelItem) = new PluginPanelItem[nItem];
+		memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
+
+		// add dots
+		int i = -1, fi = -1;
+		if (pp->AddDots)
+		{
+			++i;
+			wchar_t* dots = new wchar_t[3];
+			dots[0] = dots[1] = '.'; dots[2] = '\0';
+			PluginPanelItem& p = (*pPanelItem)[0];
+			p.UserData = (DWORD_PTR)(-1);
+			p.FindData.lpwszFileName = dots;
+			p.Description = NewChars(pp->DotsDescription);
+		}
+
+		// add files
+		for each(FarFile^ f in pp->Files)
+		{
+			++i;
+			++fi;
+
+			PluginPanelItem& p = (*pPanelItem)[i];
+			FAR_FIND_DATA& d = p.FindData;
+
+			// names
+			d.lpwszFileName = NewChars(f->Name);
+			p.Description = NewChars(f->Description);
+			p.Owner = NewChars(f->Owner);
+
+			// alternate name is special
+			if (pp->Info->AutoAlternateNames && opMode == 0)
 			{
-				(*pItemsNumber) = 0;
-				(*pPanelItem) = NULL;
-				return true;
+				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
+				Info.FSF->itoa(i, buf, 10);
+				int size = (int)wcslen(buf) + 1;
+				wchar_t* alternate = new wchar_t[size];
+				memcpy(alternate, buf, size * sizeof(wchar_t));
+				d.lpwszAlternateFileName = alternate;
+			}
+			else
+			{
+				d.lpwszAlternateFileName = NewChars(f->AlternateName);
 			}
 
-			if (pp->_GettingData && !pp->_skipGettingData)
+			// other
+			d.dwFileAttributes = (DWORD)f->Attributes;
+			d.nFileSize = f->Length;
+			d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
+			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
+			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
+			p.UserData = fi;
+
+			// columns
+			System::Collections::ICollection^ columns = f->Columns;
+			if (columns)
 			{
-				PanelEventArgs e((OperationModes)opMode);
-				pp->_GettingData(pp, %e);
-				if (e.Ignore)
-					return false;
-			}
-
-			// all item number
-			int nItem = pp->Files->Count;
-			if (pp->AddDots)
-				++nItem;
-			(*pItemsNumber) = nItem;
-			if (nItem == 0)
-			{
-				(*pPanelItem) = NULL;
-				return true;
-			}
-
-			// alloc all
-			(*pPanelItem) = new PluginPanelItem[nItem];
-			memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
-
-			// add dots
-			int i = -1, fi = -1;
-			if (pp->AddDots)
-			{
-				++i;
-				wchar_t* dots = new wchar_t[3];
-				dots[0] = dots[1] = '.'; dots[2] = '\0';
-				PluginPanelItem& p = (*pPanelItem)[0];
-				p.UserData = (DWORD_PTR)(-1);
-				p.FindData.lpwszFileName = dots;
-				p.Description = NewChars(pp->DotsDescription);
-			}
-
-			// add files
-			for each(FarFile^ f in pp->Files)
-			{
-				++i;
-				++fi;
-
-				PluginPanelItem& p = (*pPanelItem)[i];
-				FAR_FIND_DATA& d = p.FindData;
-
-				// names
-				d.lpwszFileName = NewChars(f->Name);
-				p.Description = NewChars(f->Description);
-				p.Owner = NewChars(f->Owner);
-
-				// alternate name is special
-				if (pp->Info->AutoAlternateNames && opMode == 0)
+				int nb = columns->Count;
+				if (nb)
 				{
-					wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
-					Info.FSF->itoa(i, buf, 10);
-					int size = (int)wcslen(buf) + 1;
-					wchar_t* alternate = new wchar_t[size];
-					memcpy(alternate, buf, size * sizeof(wchar_t));
-					d.lpwszAlternateFileName = alternate;
-				}
-				else
-				{
-					d.lpwszAlternateFileName = NewChars(f->AlternateName);
-				}
-
-				// other
-				d.dwFileAttributes = (DWORD)f->Attributes;
-				d.nFileSize = f->Length;
-				d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
-				d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
-				d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
-				p.UserData = fi;
-
-				// columns
-				System::Collections::ICollection^ columns = f->Columns;
-				if (columns)
-				{
-					int nb = columns->Count;
-					if (nb)
+					wchar_t** custom = new wchar_t*[nb];
+					p.CustomColumnNumber = nb;
+					p.CustomColumnData = custom;
+					int iColumn = 0;
+					for each(Object^ it in columns)
 					{
-						wchar_t** custom = new wchar_t*[nb];
-						p.CustomColumnNumber = nb;
-						p.CustomColumnData = custom;
-						int iColumn = 0;
-						for each(Object^ it in columns)
-						{
-							if (it)
-								custom[iColumn] = NewChars(it->ToString());
-							else
-								custom[iColumn] = 0;
-							++iColumn;
-						}
+						if (it)
+							custom[iColumn] = NewChars(it->ToString());
+						else
+							custom[iColumn] = 0;
+						++iColumn;
 					}
 				}
 			}
-			return true;
 		}
-		catch(Exception^ e)
-		{
-			//?? .. else log error?
-			if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
-				Far::Net->ShowError(__FUNCTION__, e);
-
-			return false;
-		}
+		return true;
 	}
-	LOG_END;
+	catch(Exception^ e)
+	{
+		//?? .. else log error?
+		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
+			Far::Net->ShowError(__FUNCTION__, e);
+
+		return false;
+	}
 }
 
 void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
 	//! it is called too often, lets use mode 4
-	LOG_4("GetOpenPluginInfo");
+	Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GetOpenPluginInfo");
 
 	// plugin panel
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
@@ -261,11 +251,8 @@ void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 	// trigger - allow to update info before making it for Far
 	if (pp->_GettingInfo && !State::GetPanelInfo)
 	{
-		LOG_AUTO(Verbose, "GettingInfo")
-		{
-			pp->_GettingInfo(pp, nullptr);
-		}
-		LOG_END;
+		Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GettingInfo");
+		pp->_GettingInfo(pp, nullptr);
 	}
 
 	// make info
@@ -276,32 +263,30 @@ void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 // We do not want this. http://forum.farmanager.com/viewtopic.php?p=56846#p56846
 int Panel0::AsMakeDirectory(HANDLE hPlugin, const wchar_t** name, int opMode)
 {
-	LOG_AUTO(Info, "MakeDirectory")
+	Log::Source->TraceInformation("MakeDirectory");
+
+	// handler
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	if (!pp->_MakingDirectory)
+		return -1;
+
+	// call
+	String^ nameIn = gcnew String((*name));
+	MakingDirectoryEventArgs e(nameIn, (OperationModes)opMode);
+	pp->_MakingDirectory(pp, %e);
+	if (e.Ignore)
+		return -1;
+
+	// return a new name
+	if (0 == (opMode & OPM_SILENT) && e.Name != nameIn)
 	{
-		// handler
-		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-		if (!pp->_MakingDirectory)
-			return -1;
-
-		// call
-		String^ nameIn = gcnew String((*name));
-		MakingDirectoryEventArgs e(nameIn, (OperationModes)opMode);
-		pp->_MakingDirectory(pp, %e);
-		if (e.Ignore)
-			return -1;
-
-		// return a new name
-		if (0 == (opMode & OPM_SILENT) && e.Name != nameIn)
-		{
-			// use the lame storage
-			s_makingDirectory.Set(e.Name);
-			*name = s_makingDirectory;
-		}
-
-		// done
-		return 1;
+		// use the lame storage
+		s_makingDirectory.Set(e.Name);
+		*name = s_makingDirectory;
 	}
-	LOG_END;
+
+	// done
+	return 1;
 }
 
 static bool _reenterOnRedrawing;
@@ -312,21 +297,18 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 	{
 	case FE_BREAK:
 		{
-			LOG_3("FE_BREAK");
+			Log::Source->TraceInformation("FE_BREAK");
 			
 			if (pp->_CtrlBreakPressed)
 			{
-				LOG_AUTO(Info, "CtrlBreakPressed")
-				{
-					pp->_CtrlBreakPressed(pp, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("CtrlBreakPressed");
+				pp->_CtrlBreakPressed(pp, nullptr);
 			}
 		}
 		break;
 	case FE_CLOSE:
 		{
-			LOG_3("FE_CLOSE");
+			Log::Source->TraceInformation("FE_CLOSE");
 			
 			//? FE_CLOSE issues:
 			// *) Bug [_090321_165608]: unwanted extra call on plugin commands entered in command line
@@ -334,67 +316,55 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			// *) may not be called at all e.g. if tmp panel is opened
 			if (!pp->_Pushed && pp->_Closing)
 			{
-				LOG_AUTO(Info, "Closing")
-				{
-					PanelEventArgs e(OperationModes::None);
-					pp->_Closing(pp, %e);
-					return e.Ignore;
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Closing");
+				PanelEventArgs e(OperationModes::None);
+				pp->_Closing(pp, %e);
+				return e.Ignore;
 			}
 		}
 		break;
 	case FE_COMMAND:
 		{
-			LOG_3("FE_COMMAND");
+			Log::Source->TraceInformation("FE_COMMAND");
 
 			if (pp->_Executing)
 			{
-				LOG_AUTO(Info, "Executing")
-				{				
-					//! We have to try\catch in here in order to return exactly what plugin returns.
-					ExecutingEventArgs e(gcnew String((const wchar_t*)param));
-					try
-					{
-						pp->_Executing(pp, %e);
-					}
-					catch(Exception^ exception)
-					{
-						Far::Net->ShowError("Event: Executing", exception);
-					}
-					return e.Ignore;
+				Log::Source->TraceInformation("Executing");
+				//! We have to try\catch in here in order to return exactly what plugin returns.
+				ExecutingEventArgs e(gcnew String((const wchar_t*)param));
+				try
+				{
+					pp->_Executing(pp, %e);
 				}
-				LOG_END;
+				catch(Exception^ exception)
+				{
+					Far::Net->ShowError("Event: Executing", exception);
+				}
+				return e.Ignore;
 			}
 		}
 		break;
 	case FE_CHANGEVIEWMODE:
 		{
-			LOG_3("FE_CHANGEVIEWMODE");
+			Log::Source->TraceInformation("FE_CHANGEVIEWMODE");
 
 			if (pp->_ViewModeChanged)
 			{
-				LOG_AUTO(Info, "ViewModeChanged")
-				{				
-					ViewModeChangedEventArgs e(gcnew String((const wchar_t*)param));
-					pp->_ViewModeChanged(pp, %e);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("ViewModeChanged");
+				ViewModeChangedEventArgs e(gcnew String((const wchar_t*)param));
+				pp->_ViewModeChanged(pp, %e);
 			}
 		}
 		break;
 	case FE_IDLE:
 		{
-			LOG_4("FE_IDLE");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_IDLE");
 
 			// 1) call the handler
 			if (pp->_Idled)
 			{
-				LOG_AUTO(Verbose, "Idled")
-				{				
-					pp->_Idled(pp, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Idled");
+				pp->_Idled(pp, nullptr);
 			}
 
 			// 2) update after the handler: if the panel has set both IdleUpdate and Idled
@@ -408,35 +378,29 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		break;
 	case FE_GOTFOCUS:
 		{
-			LOG_4("FE_GOTFOCUS");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_GOTFOCUS");
 
 			if (pp->_GotFocus)
 			{
-				LOG_AUTO(Verbose, "GotFocus")
-				{
-					pp->_GotFocus(pp, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
+				pp->_GotFocus(pp, nullptr);
 			}
 		}
 		break;
 	case FE_KILLFOCUS:
 		{
-			LOG_4("FE_KILLFOCUS");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_KILLFOCUS");
 
 			if (pp->_LosingFocus)
 			{
-				LOG_AUTO(Verbose, "LosingFocus")
-				{				
-					pp->_LosingFocus(pp, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
+				pp->_LosingFocus(pp, nullptr);
 			}
 		}
 		break;
 	case FE_REDRAW:
 		{
-			LOG_4("FE_REDRAW");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_REDRAW");
 
 			// 090411 Data are shown now. Drop this flag to allow normal processing.
 			pp->_skipGettingData = false;
@@ -453,14 +417,11 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 			if (pp->_Redrawing)
 			{
-				LOG_AUTO(Verbose, "Redrawing")
-				{				
-					PanelEventArgs e(OperationModes::None);
-					pp->_Redrawing(pp, %e);
-					if (e.Ignore)
-						return true;
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Redrawing");
+				PanelEventArgs e(OperationModes::None);
+				pp->_Redrawing(pp, %e);
+				if (e.Ignore)
+					return true;
 			}
 
 			int r = false;
@@ -601,12 +562,9 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 		// trigger the handler
 		PanelKeyEventArgs e(code, (KeyStates)controlState);
-		LOG_AUTO(Verbose, "KeyPressing " + %e)
-		{
-			pp->_KeyPressing(pp, %e);
-			return e.Ignore;
-		}
-		LOG_END;
+		Log::Source->TraceEvent(TraceEventType::Verbose, 0, "KeyPressing {0}", %e);
+		pp->_KeyPressing(pp, %e);
+		return e.Ignore;
 	}
 
 	// Escaping handler
@@ -622,13 +580,10 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 			// trigger the handler
 			PanelEventArgs e;
-			LOG_AUTO(Verbose, "Escaping " + %e)
-			{
-				pp->_Escaping(pp, %e);
-				if (e.Ignore)
-					return true;
-			}
-			LOG_END;
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Escaping {0}", %e);
+			pp->_Escaping(pp, %e);
+			if (e.Ignore)
+				return true;
 		}
 	}
 
@@ -638,65 +593,58 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 
 	// trigger the handler
 	PanelKeyEventArgs e(code, (KeyStates)controlState);
-	LOG_AUTO(Verbose, "KeyPressed " + %e)
-	{
-		pp->_KeyPressed(pp, %e);
-		return e.Ignore;
-	}
-	LOG_END;
+	Log::Source->TraceEvent(TraceEventType::Verbose, 0, "KeyPressed {0}", %e);
+	pp->_KeyPressed(pp, %e);
+	return e.Ignore;
 }
 
 int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode)
 {
-	LOG_AUTO(Info, "PutFiles")
+	Log::Source->TraceInformation("PutFiles");
+
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	if (!pp->_PuttingFiles)
+		return 0;
+
+	Panel2^ plugin2 = GetPanel2(pp);
+	List<FarFile^>^ files;
+	if (plugin2)
 	{
-		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-		if (!pp->_PuttingFiles)
-			return 0;
-
-		Panel2^ plugin2 = GetPanel2(pp);
-		List<FarFile^>^ files;
-		if (plugin2)
-		{
-			files = ItemsToFiles(plugin2->Files, nullptr, panelItem, itemsNumber);
-		}
-		else
-		{
-			files = gcnew List<FarFile^>(itemsNumber);
-			for(int i = 0; i < itemsNumber; ++i)
-			{
-				//! we can use transient 'NativeFile' in here, but 'transient' it is not that safe
-				files->Add(Panel1::ItemToFile(panelItem[i]));
-			}
-		}
-
-		PuttingFilesEventArgs e(files, (OperationModes)opMode, move != 0, (srcPath ? gcnew String(srcPath) : String::Empty));
-		pp->_PuttingFiles(pp, %e);
-		return e.Ignore ? false : true;
+		files = ItemsToFiles(plugin2->Files, nullptr, panelItem, itemsNumber);
 	}
-	LOG_END;
+	else
+	{
+		files = gcnew List<FarFile^>(itemsNumber);
+		for(int i = 0; i < itemsNumber; ++i)
+		{
+			//! we can use transient 'NativeFile' in here, but 'transient' it is not that safe
+			files->Add(Panel1::ItemToFile(panelItem[i]));
+		}
+	}
+
+	PuttingFilesEventArgs e(files, (OperationModes)opMode, move != 0, (srcPath ? gcnew String(srcPath) : String::Empty));
+	pp->_PuttingFiles(pp, %e);
+	return e.Ignore ? false : true;
 }
 
 int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 {
-	LOG_AUTO(Info, "SetDirectory")
+	Log::Source->TraceInformation("SetDirectory");
+
+	_inAsSetDirectory = true;
+	try
 	{
-		_inAsSetDirectory = true;
-		try
-		{
-			Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-			if (!pp->_SettingDirectory)
-				return true;
-			SettingDirectoryEventArgs e(gcnew String(dir), (OperationModes)opMode);
-			pp->_SettingDirectory(pp, %e);
-			return !e.Ignore;
-		}
-		finally
-		{
-			_inAsSetDirectory = false;
-		}
+		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+		if (!pp->_SettingDirectory)
+			return true;
+		SettingDirectoryEventArgs e(gcnew String(dir), (OperationModes)opMode);
+		pp->_SettingDirectory(pp, %e);
+		return !e.Ignore;
 	}
-	LOG_END;
+	finally
+	{
+		_inAsSetDirectory = false;
+	}
 }
 
 Panel1^ Panel0::GetPanel(bool active)

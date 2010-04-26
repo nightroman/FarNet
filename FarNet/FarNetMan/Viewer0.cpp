@@ -57,7 +57,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 	{
 	case VE_READ:
 		{
-			LOG_3("VE_READ");
+			Log::Source->TraceInformation("VE_READ");
 
 			// get info
 			ViewerInfo vi; vi.StructSize = sizeof(vi);
@@ -86,25 +86,19 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			// event
 			if (_anyViewer._Opened)
 			{
-				LOG_AUTO(Info, "Opened")
-				{
-					_anyViewer._Opened(viewer, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Opened");
+				_anyViewer._Opened(viewer, nullptr);
 			}
 			if (viewer->_Opened)
 			{
-				LOG_AUTO(Info, "Opened")
-				{
-					viewer->_Opened(viewer, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Opened");
+				viewer->_Opened(viewer, nullptr);
 			}
 		}
 		break;
 	case VE_CLOSE:
 		{
-			LOG_3("VE_CLOSE");
+			Log::Source->TraceInformation("VE_CLOSE");
 
 			// get registered, close and unregister
 			int id = *((int*)param);
@@ -119,19 +113,13 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			// event, after the above
 			if (_anyViewer._Closed)
 			{
-				LOG_AUTO(Info, "Closed")
-				{
-					_anyViewer._Closed(viewer, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Closed");
+				_anyViewer._Closed(viewer, nullptr);
 			}
 			if (viewer->_Closed)
 			{
-				LOG_AUTO(Info, "Closed")
-				{
-					viewer->_Closed(viewer, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceInformation("Closed");
+				viewer->_Closed(viewer, nullptr);
 			}
 
 			// delete the file after all
@@ -140,7 +128,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 		break;
 	case VE_GOTFOCUS:
 		{
-			LOG_4("VE_GOTFOCUS");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_GOTFOCUS");
 
 			// get registered
 			int id = *((int*)param);
@@ -151,25 +139,19 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			// event
 			if (_anyViewer._GotFocus)
 			{
-				LOG_AUTO(Verbose, "GotFocus")
-				{
-					_anyViewer._GotFocus(viewer, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
+				_anyViewer._GotFocus(viewer, nullptr);
 			}
 			if (viewer->_GotFocus)
 			{
-				LOG_AUTO(Verbose, "GotFocus")
-				{
-					viewer->_GotFocus(viewer, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GotFocus");
+				viewer->_GotFocus(viewer, nullptr);
 			}
 		}
 		break;
 	case VE_KILLFOCUS:
 		{
-			LOG_4("VE_KILLFOCUS");
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_KILLFOCUS");
 
 			// get registered
 			int id = *((int*)param);
@@ -180,19 +162,13 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			// event
 			if (_anyViewer._LosingFocus)
 			{
-				LOG_AUTO(Verbose, "LosingFocus")
-				{				
-					_anyViewer._LosingFocus(viewer, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
+				_anyViewer._LosingFocus(viewer, nullptr);
 			}
 			if (viewer->_LosingFocus)
 			{
-				LOG_AUTO(Verbose, "LosingFocus")
-				{				
-					viewer->_LosingFocus(viewer, nullptr);
-				}
-				LOG_END;
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
+				viewer->_LosingFocus(viewer, nullptr);
 			}
 		}
 		break;

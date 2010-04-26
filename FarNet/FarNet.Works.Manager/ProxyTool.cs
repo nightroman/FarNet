@@ -5,6 +5,7 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace FarNet.Works
@@ -34,19 +35,20 @@ namespace FarNet.Works
 
 		public void Invoke(object sender, ModuleToolEventArgs e)
 		{
-			using (Log log = Log.Switch.TraceInfo ? new Log("Invoking {0} From='{1}'", (_Handler != null ? Log.Format(_Handler.Method) : ClassName), e.From) : null)
-			{
-				Invoking();
+			if (e == null)
+				throw new ArgumentNullException("e");
 
-				if (_Handler != null)
-				{
-					_Handler(sender, e);
-				}
-				else
-				{
-					ModuleTool instance = (ModuleTool)GetInstance();
-					instance.Invoke(sender, e);
-				}
+			Log.Source.TraceInformation("Invoking {0} From='{1}'", this, e.From);
+			Invoking();
+
+			if (_Handler != null)
+			{
+				_Handler(sender, e);
+			}
+			else
+			{
+				ModuleTool instance = (ModuleTool)GetInstance();
+				instance.Invoke(sender, e);
 			}
 		}
 

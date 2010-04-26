@@ -109,23 +109,33 @@ namespace PowerShellFar
 			return metas;
 		}
 
-		internal static Meta[] TryFormatByMembers(Collection<PSObject> values, bool single)
+		internal static Meta[] TryFormatByMembers(Collection<PSObject> values, bool homogeneous)
 		{
 			Meta[] metas;
 
-			if (single)
+			//! homogeneous: use the first sample and the _100426_034702
+			if (homogeneous)
 			{
-				var list = new List<Meta>();
+				PSObject value = values[0];
+				var membersToShow = new List<string>();
+				{
+					string code = "Get-Member -InputObject $args[0] -MemberType Properties -ErrorAction 0";
+					foreach (PSObject o in A.Psf.InvokeCode(code, value))
+						membersToShow.Add(o.Properties[Word.Name].Value.ToString());
+				}
+				var list = new List<Meta>(membersToShow.Count);
 				foreach (PSPropertyInfo pi in values[0].Properties)
-					list.Add(new Meta(pi.Name));
+					if (membersToShow.Contains(pi.Name))
+						list.Add(new Meta(pi.Name));
 				metas = list.ToArray();
 			}
+			// heterogeneous: just get mixed properties as they are
 			else
 			{
-				Collection<PSObject> members = A.Psf.InvokeCode("$args[0] | Get-Member -MemberType Property -ErrorAction 0 | Select-Object -ExpandProperty Name", values);
+				var members = A.Psf.InvokeCode("$args[0] | Get-Member -MemberType Properties -ErrorAction 0", values);
 				metas = new Meta[members.Count];
 				for (int i = 0; i < members.Count; ++i)
-					metas[i] = new Meta(members[i].ToString());
+					metas[i] = new Meta(members[i].Properties[Word.Name].Value.ToString());
 			}
 
 			if (metas.Length == 0)
@@ -211,17 +221,15 @@ namespace PowerShellFar
 				return true;
 
 			// move the best to the first free position
-			for (int iFree = 0; iFree < maximum; ++iFree)
+			int end = Math.Min(maximum, iBestMeta);
+			for (int iFree = 0; iFree < end; ++iFree)
 			{
 				if (metas[iFree].Kind == null)
 				{
-					if (iFree != iBestMeta)
-					{
-						Meta meta = metas[iBestMeta];
-						for (int iMove = iBestMeta; iMove > iFree; --iMove)
-							metas[iMove] = metas[iMove - 1];
-						metas[iFree] = meta;
-					}
+					Meta meta = metas[iBestMeta];
+					for (int iMove = iBestMeta; iMove > iFree; --iMove)
+						metas[iMove] = metas[iMove - 1];
+					metas[iFree] = meta;
 					break;
 				}
 			}
@@ -461,7 +469,7 @@ namespace PowerShellFar
 				else if ((asIEnumerable = value.BaseObject as IEnumerable) != null)
 					file.Name = Converter.FormatEnumerable(asIEnumerable, A.Psf.Settings.FormatEnumerationLimit);
 				else if ((pi = A.FindDisplayProperty(value)) != null)
-					file.Name = pi.Value.ToString();
+					file.Name = (pi.Value ?? string.Empty).ToString();
 				else
 					file.Name = value.ToString();
 

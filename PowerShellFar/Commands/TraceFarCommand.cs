@@ -6,6 +6,7 @@ Copyright (c) 2006 Roman Kuzmin
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Management.Automation;
+using FarNet;
 
 namespace PowerShellFar.Commands
 {
@@ -17,82 +18,78 @@ namespace PowerShellFar.Commands
 	/// See <c>[System.Diagnostics.Trace]</c> for more tracing tools.
 	/// </remarks>
 	[Description("Writes messages to the trace listeners.")]
+	[CmdletBinding(DefaultParameterSetName = "Trace")]
 	public sealed class TraceFarCommand : BaseCmdlet
 	{
 		///
-		[Parameter(Position = 0, ValueFromPipeline = true, ParameterSetName = "Message", HelpMessage = "A message to write.")]
+		[Parameter(ParameterSetName = "Trace", Position = 0, Mandatory = true, ValueFromPipeline = true, HelpMessage = "A message to write.")]
 		[AllowEmptyString]
-		public string Message
-		{
-			get { return _Message; }
-			set { _Message = value; }
-		}
-		string _Message;
+		public string Message { get; set; }
 
 		///
-		[Parameter(Position = 1, HelpMessage = "A category name used to organize the output.")]
+		[Parameter(ParameterSetName = "Trace", Position = 1, HelpMessage = "A category name used to organize the output.")]
 		[AllowEmptyString]
-		public string Category
-		{
-			get { return _Category; }
-			set { _Category = value; }
-		}
-		string _Category;
+		public string Category { get; set; }
 
 		///
-		[Parameter(HelpMessage = "Writes error message.")]
-		public SwitchParameter Error
-		{
-			get { return _Error; }
-			set { _Error = value; }
-		}
-		SwitchParameter _Error;
+		[Parameter(ParameterSetName = "Trace", HelpMessage = "Writes error message.")]
+		public SwitchParameter Error { get; set; }
 
 		///
-		[Parameter(HelpMessage = "Writes warning message.")]
-		public SwitchParameter Warning
-		{
-			get { return _Warning; }
-			set { _Warning = value; }
-		}
-		SwitchParameter _Warning;
+		[Parameter(ParameterSetName = "Trace", HelpMessage = "Writes warning message.")]
+		public SwitchParameter Warning { get; set; }
 
 		///
-		[Parameter(HelpMessage = "Writes information message.")]
-		public SwitchParameter Information
-		{
-			get { return _Information; }
-			set { _Information = value; }
-		}
-		SwitchParameter _Information;
+		[Parameter(ParameterSetName = "Trace", HelpMessage = "Writes information message.")]
+		public SwitchParameter Information { get; set; }
+
+		///
+		[Parameter(ParameterSetName = "Event", Position = 0, Mandatory = true, HelpMessage = "Event ID.")]
+		public int Id { get; set; }
+
+		///
+		[Parameter(ParameterSetName = "Event", Position = 1, Mandatory = true, HelpMessage = "Event type of the trace data.")]
+		public TraceEventType EventType { get; set; }
+
+		///
+		[Parameter(ParameterSetName = "Event", Position = 2, HelpMessage = "Event message or format string with -Data.")]
+		[AllowEmptyString]
+		public string Format { get; set; }
+
+		///
+		[Parameter(ParameterSetName = "Event", Position = 3, HelpMessage = "Data for TraceEvent() or TraceData().")]
+		public object[] Data { get; set; }
 
 		///
 		protected override void ProcessRecord()
 		{
-			Process();
-		}
-
-		[ConditionalAttribute("TRACE")]
-		void Process()
-		{
-			if (_Error)
+			if (EventType != 0)
 			{
-				Trace.TraceError(_Message);
+				if (Format == null)
+					Log.Source.TraceData(EventType, Id, Data);
+				else if (Data == null)
+					Log.Source.TraceEvent(EventType, Id, Format);
+				else
+					Log.Source.TraceEvent(EventType, Id, Format, Data);
 			}
-			else if (_Warning)
+			else if (Error)
 			{
-				Trace.TraceWarning(_Message);
+				Trace.TraceError(Message);
 			}
-			else if (_Information)
+			else if (Warning)
 			{
-				Trace.TraceInformation(_Message);
+				Trace.TraceWarning(Message);
+			}
+			else if (Information)
+			{
+				Trace.TraceInformation(Message);
 			}
 			else
 			{
-				if (_Category == null)
-					Trace.WriteLine(_Message);
+				if (Category == null)
+					Trace.WriteLine(Message);
 				else
-					Trace.WriteLine(_Message, _Category);
+					Trace.WriteLine(Message, Category);
 			}
 		}
 
