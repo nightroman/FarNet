@@ -23,12 +23,6 @@ But more calls are possible, we have to ignore them.
 */
 void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 {
-//! Works, use it?????
-//#ifdef _DEBUG
-//	if (!Debugger::IsAttached)
-//		Debugger::Launch();
-//#endif
-
 	Log::Source->TraceInformation(__FUNCTION__ "{");
 	try
 	{

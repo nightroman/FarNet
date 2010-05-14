@@ -24,6 +24,12 @@ void Viewer::Open(OpenMode mode)
 {
 	AssertClosed();
 
+	if (ValueUserScreen::Get()) //????
+	{
+		ValueUserScreen::Set(false);
+		Far::Net->SaveUserScreen();
+	}
+
 	// flags
 	int flags = 0;
 	

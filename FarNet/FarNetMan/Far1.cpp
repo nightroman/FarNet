@@ -347,12 +347,12 @@ IInputBox^ Far1::CreateInputBox()
 	return gcnew InputBox;
 }
 
-void Far1::GetUserScreen()
+void Far1::ShowUserScreen()
 {
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
 }
 
-void Far1::SetUserScreen()
+void Far1::SaveUserScreen()
 {
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
@@ -521,23 +521,22 @@ void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
 	Info.ShowHelp(pinPath, pinTopic, (int)options);
 }
 
-//! Console::Write writes some Unicode chars as '?'.
+//! Console::Write() writes some Unicode chars as '?'.
+//! Used to call SaveUserScreen() in the end. It was very slow. Now it is done elsewhere in more subtle way.
 void Far1::Write(String^ text)
 {
 	if (ES(text))
 		return;
 
-	if (!ValueUserScreen::Get())
+	if (!ValueUserScreen::Get()) //?????
 	{
 		ValueUserScreen::Set(true);
-		GetUserScreen();
+		ShowUserScreen();
 	}
 
 	PIN_NE(pin, text);
 	DWORD cch = text->Length;
 	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, NULL);
-
-	SetUserScreen();
 }
 
 void Far1::Write(String^ text, ConsoleColor foregroundColor)

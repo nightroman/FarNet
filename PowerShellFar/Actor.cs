@@ -884,7 +884,7 @@ Continue with this current directory?
 		/// <param name="code">PowerShell code.</param>
 		/// <param name="writer">Output writer or null.</param>
 		/// <param name="addHistory">Add command to history.</param>
-		internal bool InvokePipeline(string code, AnyOutputWriter writer, bool addHistory)
+		internal bool InvokePipeline(string code, OutputWriter writer, bool addHistory)
 		{
 			// result
 			bool ok = true;
@@ -893,7 +893,24 @@ Continue with this current directory?
 			History.Cache = null;
 
 			// push writer
-			FarUI.PushWriter(writer ?? new StringOutputWriter());
+			bool isConsoleOutput = false;
+			if (writer != null)
+			{
+				// predefined output
+				FarUI.PushWriter(writer);
+			}
+			else if (A.Psf.Settings.OutputPreference == OutputPreference.Console && Far.Net.Window.Kind == WindowKind.Panels)
+			{
+				// use console output; write the command
+				isConsoleOutput = true;
+				FarUI.PushWriter(new ConsoleOutputWriter());
+				Far.Net.Write(string.Format("{0}:{1}\n", Entry.Command1.Prefix, code));
+			}
+			else
+			{
+				// use string output; it is shown later
+				FarUI.PushWriter(new StringOutputWriter());
+			}
 
 			// install timer
 			Timer timer = new Timer(OnTimer, null, 3000, 1000);
@@ -925,8 +942,25 @@ Continue with this current directory?
 			catch (RuntimeException reason)
 			{
 				ok = false;
-				using (PowerShell ps = CreatePipeline())
-					A.OutReason(ps, reason);
+				ConsoleColor color1 = 0;
+				try
+				{
+					if (isConsoleOutput)
+					{
+						color1 = Console.ForegroundColor;
+						Console.ForegroundColor = ConsoleColor.Red;
+					}
+
+					using (PowerShell ps = CreatePipeline())
+						A.OutReason(ps, reason);
+				}
+				finally
+				{
+					if (isConsoleOutput)
+					{
+						Console.ForegroundColor = color1;
+					}
+				}
 			}
 			finally
 			{
@@ -941,7 +975,7 @@ Continue with this current directory?
 
 				// pop writer
 				//! this method might add 'StringOutputWriter' but it might be already consumed and replaced
-				AnyOutputWriter usedWriter = FarUI.PopWriter();
+				OutputWriter usedWriter = FarUI.PopWriter();
 				StringOutputWriter myWriter = usedWriter as StringOutputWriter;
 				if (myWriter == null)
 				{
@@ -1086,7 +1120,7 @@ Continue with this current directory?
 
 				string output = writer1.Output.ToString();
 				if (output.Length > 0)
-					writer2.Append(output);
+					writer2.Write(output);
 
 				FarUI.PopWriter();
 				FarUI.PushWriter(writer2);

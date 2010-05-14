@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.17#
+#PowerShellFar 4.3.18#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1522
- - Plugin FarNet 4.3.17
+ - Far Manager 2.0.1550
+ - Plugin FarNet 4.3.18
  - Windows PowerShell 2.0
 
 
@@ -1154,6 +1154,8 @@ NotImplementedException.
 $#Commands output#
 ~Contents~@Contents@
 
+#Case: $Psf.Settings.OutputPreference = 'Default'#
+
 Normally output of a standard command including errors is collected and then,
 when a command has completed:
 
@@ -1170,6 +1172,15 @@ external viewer is started to view it.
 Output of some commands is discarded (e.g. commands from your menu tools or
 event handlers). For these commands fatal errors are shown using error message
 boxes, other errors and warnings are ignored.
+
+#Case: $Psf.Settings.OutputPreference = 'Console'#
+
+Output of commands from panels is written to the user screen (console area
+under panels). The good: output is colored (errors, warnings, etc.). The bad:
+only the tail of long output can be seen after invocation.
+
+Output can produce unwanted but harmless screen effects on commands with Far UI
+and on PowerShell debugging.
 
 
 @BackgroundJobs

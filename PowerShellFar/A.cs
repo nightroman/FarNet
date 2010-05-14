@@ -189,7 +189,7 @@ namespace PowerShellFar
 			else
 				error = asRuntimeException.ErrorRecord;
 
-			Out(ps, new object[] { "ERROR\n" + ex.GetType().Name + ":", error });
+			Out(ps, new object[] { "ERROR: " + ex.GetType().Name + ":", error });
 		}
 
 		/// <summary>

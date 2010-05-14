@@ -56,9 +56,9 @@ if (!$Regex) {
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
 	$dialog.HelpTopic = $Psf.HelpTopic + 'SearchRegex'
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')
-	$x = 16
+	$x = 13
 
-	[void]$dialog.AddText(5, -1, 0, '&Expression')
+	[void]$dialog.AddText(5, -1, 0, '&Pattern')
 	$eRegex = $dialog.AddEdit($x, 0, 71, '')
 	$eRegex.History = 'SearchText'
 	$eRegex.UseLastHistory = $true

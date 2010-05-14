@@ -81,7 +81,7 @@ namespace PowerShellFar {
         ///function Clear-Host
         ///{
         ///	[console]::Clear()
-        ///	$Far.SetUserScreen()
+        ///	$Far.SaveUserScreen()
         ///}
         ///
         ///&lt;#

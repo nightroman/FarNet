@@ -87,6 +87,7 @@ $Psf.Providers = @{
 }
 
 ### Preferences
+$Psf.Settings.OutputPreference = 'Console'
 $Psf.Settings.IntelliAutoSelect = $false
 $Psf.Settings.IntelliMaxHeight = 0
 $Psf.Settings.IntelliNoShadow = $false

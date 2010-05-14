@@ -121,7 +121,7 @@ $dialog.AddVerticalText(74, 2, 16, 'Vertical Text').Centered = $true
 ### Buttons
 $done = $dialog.AddButton(0, $cl.Rect.Top + 2, 'Done')
 $done.CenterGroup = $true
-$fail = $dialog.AddButton(0, $cl.Rect.Top + 2, '&Fail')
+$fail = $dialog.AddButton(0, 0, '&Fail')
 $fail.CenterGroup = $true
 $test = $dialog.AddButton(0, 0, 'T&est')
 $test.CenterGroup = $true

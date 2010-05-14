@@ -1,5 +1,24 @@
 http://code.google.com/p/farnet/
 
+= 4.3.18 =
+
+New module cache approach
+-- It is fine to use several Far or FarNet locations with different sets of
+modules or even different versions. Cache conflicts are resolved now.
+-- Theoretically new way of caching should work slightly faster because some
+housekeeping procedures are not performed.
+But:
+-- There is no automatic cache cleaning now. The cache may contain entries not
+used any more. It is recommended to remove the cache manually periodically, in
+particular after removing\moving\renaming modules and Far\FarNet locations:
+HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet\!Cache
+
+Renamed confusing names
+IFar.GetUserScreen -> ShowUserScreen
+IFar.SetUserScreen -> SaveUserScreen
+These methods are "low level" and it is very unlikely that many modules use
+them. Still, if a module calls them then this change is breaking, indeed.
+
 = 4.3.17 =
 
 Tracing (configured via Far.exe.config or dynamically)
