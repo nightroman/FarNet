@@ -203,16 +203,11 @@ namespace PowerShellFar
 			menu.Title = "Editor Console";
 			menu.HelpTopic = A.Psf.HelpTopic + "EditorConsole";
 			if (Runspace != null)
-				menu.Add("&Global session").Click = OnGlobalSession;
+				menu.Add("&Global session").Click = delegate { CloseSession(); };
 			menu.Add("New &local session").Click = delegate { OpenLocalSession(); };
 			menu.Add("New &remote session").Click = delegate { OpenRemoteSession(); };
 			menu.Add("&Help").Click = delegate { Far.Net.ShowHelp(A.Psf.AppHome, "EditorConsole", HelpOptions.Path); };
 			menu.Show();
-		}
-
-		void OnGlobalSession(object sender, EventArgs e)
-		{
-			CloseSession();
 		}
 
 		/// <summary>

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.3.17.0")]
+[assembly: AssemblyVersion("4.3.18.0")]
 [assembly: AssemblyTitle("FarNet Windows registry")]
 [assembly: AssemblyDescription("FarNet Windows registry")]
 [assembly: AssemblyConfiguration("")]

@@ -344,12 +344,12 @@ namespace FarNet
 		/// Copies the current screen contents to the user screen buffer
 		/// (which is displayed when the panels are switched off).
 		/// </summary>
-		public abstract void SetUserScreen();
+		public abstract void SaveUserScreen();
 		/// <summary>
 		/// Copies the current user screen buffer to console screen
 		/// (which is displayed when the panels are switched off).
 		/// </summary>
-		public abstract void GetUserScreen();
+		public abstract void ShowUserScreen();
 		/// <summary>
 		/// Returns all strings from history.
 		/// </summary>

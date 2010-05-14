@@ -257,5 +257,31 @@ namespace PowerShellFar
 			}
 		}
 
+		/// <summary>
+		/// Dictates how command output should be shown.
+		/// </summary>
+		public OutputPreference OutputPreference { get; set; }
+
+	}
+
+	/// <summary>
+	/// Dictates how command output should be shown.
+	/// </summary>
+	public enum OutputPreference
+	{
+		/// <summary>
+		/// The engine decides how to output.
+		/// </summary>
+		/// <remarks>
+		/// See PowerShellFar.hlf, section [Commands output].
+		/// </remarks>
+		Default,
+		/// <summary>
+		/// Output of commands from panels is written to the user screen (console area under panels).
+		/// </summary>
+		/// <remarks>
+		/// See PowerShellFar.hlf, section [Commands output].
+		/// </remarks>
+		Console,
 	}
 }

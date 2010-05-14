@@ -499,6 +499,8 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 	finally
 	{
 		Panel0::EndOpenMode();
+		if (userscreen.Get()) //?????
+			Far::Net->SaveUserScreen();
 	}
 }
 
@@ -610,6 +612,8 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 	finally
 	{
 		Panel0::EndOpenMode();
+		if (userscreen.Get()) //?????
+			Far::Net->SaveUserScreen();
 	}
 }
 

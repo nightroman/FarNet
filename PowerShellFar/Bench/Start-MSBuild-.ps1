@@ -38,7 +38,7 @@ if (!$FilePath) {
 	$FilePath = $projs[0]
 }
 
-### resolve MSBuild
+### get MSBuild path
 $msbuild = "$env:windir\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
 if (![IO.File]::Exists($msbuild)) {
 	$msbuild = "$env:windir\Microsoft.NET\Framework\v3.5\MSBuild.exe"

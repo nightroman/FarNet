@@ -41,6 +41,12 @@ void Editor::Open(OpenMode mode)
 {
 	AssertClosed();
 
+	if (ValueUserScreen::Get()) //????
+	{
+		ValueUserScreen::Set(false);
+		Far::Net->SaveUserScreen();
+	}
+
 	// strings
 	PIN_ES(pinFileName, _FileName);
 	PIN_ES(pinTitle, _Title);
