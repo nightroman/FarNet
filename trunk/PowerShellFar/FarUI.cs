@@ -15,63 +15,34 @@ namespace PowerShellFar
 {
 	class FarUI : UniformUI
 	{
-		internal FarUI()
-			: base()
-		{ }
+		Stack<OutputWriter> _writers = new Stack<OutputWriter>();
+		ConsoleOutputWriter _console;
 
 		/// <summary>
-		/// Current writer or null
+		/// Current writer or the fallback console writer.
 		/// </summary>
-		internal AnyOutputWriter Writer
+		internal override OutputWriter Writer
 		{
 			get
 			{
-				if (_writers.Count == 0)
-					return null;
-				return _writers.Peek();
+				if (_writers.Count > 0)
+					return _writers.Peek();
+
+				if (_console == null)
+					_console = new ConsoleOutputWriter();
+
+				return _console;
 			}
 		}
-		internal AnyOutputWriter PopWriter()
+
+		internal OutputWriter PopWriter()
 		{
-			SetMode(WriteMode.None);
 			return _writers.Pop();
 		}
-		internal void PushWriter(AnyOutputWriter writer)
+
+		internal void PushWriter(OutputWriter writer)
 		{
-			SetMode(WriteMode.None);
 			_writers.Push(writer);
-		}
-		Stack<AnyOutputWriter> _writers = new Stack<AnyOutputWriter>();
-
-		internal static void Check()
-		{
-		}
-
-		internal override void Append(string value)
-		{
-			Check();
-			if (_writers.Count == 0)
-				Far.Net.Write(value);
-			else
-				Writer.Append(value);
-		}
-
-		internal override void AppendLine()
-		{
-			Check();
-			if (_writers.Count == 0)
-				Far.Net.Write("\r\n");
-			else
-				Writer.AppendLine();
-		}
-
-		internal override void AppendLine(string value)
-		{
-			Check();
-			if (_writers.Count == 0)
-				Far.Net.Write(value + "\r\n");
-			else
-				Writer.AppendLine(value);
 		}
 
 		#region PSHostUserInterface
@@ -81,7 +52,6 @@ namespace PowerShellFar
 		/// </summary>
 		public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
 		{
-			Check();
 			return UI.PromptDialog.Prompt(caption, message, descriptions);
 		}
 
@@ -100,7 +70,6 @@ namespace PowerShellFar
 		/// </summary>
 		public override string ReadLine()
 		{
-			Check();
 			UI.InputDialog ui = new UI.InputDialog(string.Empty, Res.HistoryPrompt);
 			return ui.UIDialog.Show() ? ui.UICode.Text : string.Empty;
 		}
@@ -111,8 +80,6 @@ namespace PowerShellFar
 		/// </summary>
 		public override void WriteProgress(long sourceId, ProgressRecord record)
 		{
-			Check();
-
 			// done
 			if (record.RecordType == ProgressRecordType.Completed)
 			{

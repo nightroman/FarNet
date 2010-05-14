@@ -293,7 +293,7 @@ namespace PowerShellFar
 		/// </summary>
 		bool IsError
 		{
-			get { return JobUI != null && JobUI.IsError; }
+			get { return JobUI != null && JobUI.HasError; }
 		}
 
 		/// <summary>
@@ -400,7 +400,7 @@ namespace PowerShellFar
 			{ }
 
 			if (JobUI != null)
-				JobUI.IsError = true;
+				JobUI.HasError = true;
 		}
 
 		internal static void RemoveJob(Job job)
@@ -634,7 +634,7 @@ namespace PowerShellFar
 						// KO: make it UI
 						JobUI = new JobUI();
 						Jobs.Add(this);
-						JobUI.IsError = true;
+						JobUI.HasError = true;
 						A.WriteErrors(JobUI.GetWriter(), PowerShell.Streams.Error);
 					}
 					break;
@@ -651,7 +651,7 @@ namespace PowerShellFar
 					// UI
 					if (JobUI != null)
 					{
-						JobUI.IsError = true;
+						JobUI.HasError = true;
 						A.WriteException(JobUI.GetWriter(), PowerShell.InvocationStateInfo.Reason);
 					}
 					break;

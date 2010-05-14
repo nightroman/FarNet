@@ -9,9 +9,9 @@ using System.Management.Automation;
 
 namespace FarDescription
 {
-	[Cmdlet(VerbsData.Update, BaseCmdlet.Noun)]
+	[Cmdlet(VerbsData.Update, Res.Noun)]
 	[Description("Updates the description file in the directory. If the file becomes empty then it is removed.")]
-	public sealed class UpdateFarDescriptionCommand : BaseCmdlet
+	public sealed class UpdateFarDescriptionCommand : PSCmdlet
 	{
 		[Parameter(Position = 0, HelpMessage = "The directory path where the description file is. Default = empty = the process current directory.")]
 		[AllowEmptyString]

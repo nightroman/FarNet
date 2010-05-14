@@ -18,7 +18,7 @@ Set-Alias more.com more
 function Clear-Host
 {
 	[console]::Clear()
-	$Far.SetUserScreen()
+	$Far.SaveUserScreen()
 }
 
 <#

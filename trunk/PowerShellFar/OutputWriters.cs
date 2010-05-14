@@ -11,17 +11,187 @@ using FarNet;
 
 namespace PowerShellFar
 {
-	abstract class AnyOutputWriter
+	abstract class OutputWriter
 	{
-		public abstract void Append(string value);
-		public abstract void AppendLine();
-		public abstract void AppendLine(string value);
+		public abstract void Write(string value);
+		public abstract void WriteLine();
+		public abstract void WriteLine(string value);
+
+		public abstract void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value);
+		public abstract void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value);
+		public abstract void WriteDebugLine(string message);
+		public abstract void WriteErrorLine(string value);
+		public abstract void WriteVerboseLine(string message);
+		public abstract void WriteWarningLine(string message);
+	}
+
+	sealed class ConsoleOutputWriter : OutputWriter
+	{
+		public override void Write(string value)
+		{
+			Far.Net.Write(value);
+		}
+
+		public override void WriteLine()
+		{
+			Far.Net.Write("\r\n");
+		}
+
+		public override void WriteLine(string value)
+		{
+			Far.Net.Write(value + "\r\n");
+		}
+
+		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+		{
+			Far.Net.Write(value, foregroundColor, backgroundColor);
+		}
+
+		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+		{
+			Far.Net.Write(value + "\r\n", foregroundColor, backgroundColor);
+		}
+
+		public override void WriteDebugLine(string message)
+		{
+			Far.Net.Write("DEBUG: " + message + "\r\n", ConsoleColor.Yellow);
+		}
+
+		public override void WriteErrorLine(string value)
+		{
+			Far.Net.Write(value + "\r\n", ConsoleColor.Red);
+		}
+
+		public override void WriteVerboseLine(string message)
+		{
+			Far.Net.Write("VERBOSE: " + message + "\r\n", ConsoleColor.DarkGray);
+		}
+
+		public override void WriteWarningLine(string message)
+		{
+			Far.Net.Write("WARNING: " + message + "\r\n", ConsoleColor.Yellow);
+		}
+	}
+
+	abstract class TextOutputWriter : OutputWriter
+	{
+		WriteMode _mode;
+
+		/// <summary>
+		/// 1st of 3 actual writers.
+		/// </summary>
+		protected abstract void Append(string value);
+
+		/// <summary>
+		/// 2nd of 3 actual writers.
+		/// </summary>
+		protected abstract void AppendLine();
+
+		/// <summary>
+		/// 3rd of 3 actual writers.
+		/// </summary>
+		protected abstract void AppendLine(string value);
+
+		public sealed override void Write(string value)
+		{
+			_mode = WriteMode.None;
+			Append(value);
+		}
+
+		public sealed override void WriteLine()
+		{
+			_mode = WriteMode.None;
+			AppendLine();
+		}
+
+		public sealed override void WriteLine(string value)
+		{
+			_mode = WriteMode.None;
+			AppendLine(value);
+		}
+
+		public sealed override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+		{
+			_mode = WriteMode.None;
+			Append(value);
+		}
+
+		public sealed override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+		{
+			_mode = WriteMode.None;
+			AppendLine(value);
+		}
+
+		public sealed override void WriteDebugLine(string message)
+		{
+			if (_mode != WriteMode.Debug)
+			{
+				_mode = WriteMode.Debug;
+				AppendLine("DEBUG:");
+			}
+			AppendLine(message);
+		}
+
+		public sealed override void WriteErrorLine(string value)
+		{
+			if (_mode != WriteMode.Error)
+			{
+				_mode = WriteMode.Error;
+				AppendLine("ERROR:");
+			}
+			AppendLine(value);
+		}
+
+		public sealed override void WriteVerboseLine(string message)
+		{
+			if (_mode != WriteMode.Verbose)
+			{
+				_mode = WriteMode.Verbose;
+				AppendLine("VERBOSE:");
+			}
+			AppendLine(message);
+		}
+
+		public sealed override void WriteWarningLine(string message)
+		{
+			if (_mode != WriteMode.Warning)
+			{
+				_mode = WriteMode.Warning;
+				AppendLine("WARNING:");
+			}
+			AppendLine(message);
+		}
+	}
+
+	sealed class StreamOutputWriter : TextOutputWriter
+	{
+		StreamWriter _writer;
+		
+		public StreamOutputWriter(StreamWriter writer)
+		{
+			_writer = writer;
+		}
+
+		protected override void Append(string value)
+		{
+			_writer.Write(value);
+		}
+
+		protected override void AppendLine()
+		{
+			_writer.WriteLine();
+		}
+
+		protected override void AppendLine(string value)
+		{
+			_writer.WriteLine(value);
+		}
 	}
 
 	/// <summary>
 	/// Trivial editor writer, for example asynchronous.
 	/// </summary>
-	class EditorOutputWriter1 : AnyOutputWriter
+	class EditorOutputWriter1 : TextOutputWriter
 	{
 		/// <summary>
 		/// The editor.
@@ -38,7 +208,7 @@ namespace PowerShellFar
 			Editor = editor;
 		}
 
-		public override void Append(string value)
+		protected override void Append(string value)
 		{
 			// start
 			if (++WriteCount == 1)
@@ -48,7 +218,7 @@ namespace PowerShellFar
 			Editor.InsertText(value);
 		}
 
-		public override void AppendLine()
+		protected override void AppendLine()
 		{
 			// start
 			if (++WriteCount == 1)
@@ -57,7 +227,7 @@ namespace PowerShellFar
 				Editor.InsertLine();
 		}
 
-		public override void AppendLine(string value)
+		protected override void AppendLine(string value)
 		{
 			// start
 			if (++WriteCount == 1)
@@ -71,7 +241,7 @@ namespace PowerShellFar
 	/// <summary>
 	/// Advanced editor synchronous writer.
 	/// </summary>
-	class EditorOutputWriter2 : EditorOutputWriter1
+	sealed class EditorOutputWriter2 : EditorOutputWriter1
 	{
 		Stopwatch _stopwatch = Stopwatch.StartNew();
 
@@ -87,26 +257,26 @@ namespace PowerShellFar
 			}
 		}
 
-		public override void Append(string value)
+		protected override void Append(string value)
 		{
 			base.Append(value);
 			Redraw();
 		}
 
-		public override void AppendLine()
+		protected override void AppendLine()
 		{
 			base.AppendLine();
 			Redraw();
 		}
 
-		public override void AppendLine(string value)
+		protected override void AppendLine(string value)
 		{
 			base.AppendLine(value);
 			Redraw();
 		}
 	}
 
-	class StringOutputWriter : AnyOutputWriter
+	sealed class StringOutputWriter : TextOutputWriter
 	{
 		StringBuilder _output = new StringBuilder();
 
@@ -121,23 +291,23 @@ namespace PowerShellFar
 			get { return _output; }
 		}
 
-		public override void Append(string value)
+		protected override void Append(string value)
 		{
 			_output.Append(value);
 		}
 
-		public override void AppendLine()
+		protected override void AppendLine()
 		{
 			_output.AppendLine();
 		}
 
-		public override void AppendLine(string value)
+		protected override void AppendLine(string value)
 		{
 			_output.AppendLine(value);
 		}
 	}
 
-	class ExternalOutputWriter : AnyOutputWriter, IDisposable
+	sealed class ExternalOutputWriter : TextOutputWriter, IDisposable
 	{
 		// Output file name
 		string FileName;
@@ -229,19 +399,19 @@ namespace PowerShellFar
 			}
 		}
 
-		public override void Append(string value)
+		protected override void Append(string value)
 		{
 			Open();
 			Writer.Write(value);
 		}
 
-		public override void AppendLine()
+		protected override void AppendLine()
 		{
 			Open();
 			Writer.WriteLine();
 		}
 
-		public override void AppendLine(string value)
+		protected override void AppendLine(string value)
 		{
 			Open();
 			Writer.WriteLine(value);

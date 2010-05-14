@@ -62,7 +62,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseCmdlet.cs" />
     <Compile Include="CodeMethods.cs" />
     <Compile Include="Description.cs" />
     <Compile Include="AssemblyInfo.cs" />

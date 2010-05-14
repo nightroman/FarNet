@@ -3,6 +3,19 @@ http://code.google.com/p/farnet/
 
 = 4.3.17 =
 
+New option $Psf.Settings.OutputPreference
+-- Values: 'Default', 'Console'; it is normally set in the profile but it can
+be changed dynamically, too:
+>: $Psf.Settings.OutputPreference = ...
+Default: as it was before (the engine decides how to output);
+Console: output of commands from panels is written to the user screen. The
+good: output is colored (errors, warnings, etc.). The bad: only the tail of
+long output can be seen after invocation. Output can produce unwanted but
+harmless screen effects on commands with Far UI and on PowerShell debugging.
+
+
+= 4.3.17 =
+
 Table panels
 -- Automatic columns preserve property order for homogeneous sets
 -- Improved automatic column arrangement and fixed a bug there

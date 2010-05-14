@@ -62,7 +62,6 @@ public:
 	virtual String^ TempFolder(String^ prefix) override;
 	virtual String^ TempName(String^ prefix) override;
 	virtual void CopyToClipboard(String^ text) override;
-	virtual void GetUserScreen() override;
 	virtual void PostJob(EventHandler^ handler) override;
 	virtual void PostKeys(String^ keys) override;
 	virtual void PostKeys(String^ keys, bool disableOutput) override;
@@ -77,11 +76,12 @@ public:
 	virtual void Redraw() override;
 	virtual void RestoreScreen(int screen) override;
 	virtual void Run(String^ command) override;
+	virtual void SaveUserScreen() override;
 	virtual void SetProgressState(TaskbarProgressBarState state) override;
 	virtual void SetProgressValue(int currentValue, int maximumValue) override;
-	virtual void SetUserScreen() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;
+	virtual void ShowUserScreen() override;
 	virtual void Write(String^ text) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) override;

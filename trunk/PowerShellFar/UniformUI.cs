@@ -12,51 +12,32 @@ using System.Management.Automation.Host;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Base of PSF UI.
+	/// UI output modes.
+	/// </summary>
+	enum WriteMode
+	{
+		None,
+		Debug,
+		Error,
+		Verbose,
+		Warning
+	};
+
+	/// <summary>
+	/// Base PowerShell host user interface.
 	/// </summary>
 	/// <remarks>
-	/// Basically most of writing methods are called in here,
-	/// then they recall new virtual methods Append*.
+	/// Basically all writing methods are called in here and they recall a writer.
+	/// Writers are easy to change dynamically for the same UI instance.
+	/// For example push/pop logic is used in <see cref="FarUI"/>.
 	/// </remarks>
 	abstract class UniformUI : PSHostUserInterface
 	{
-		/// <summary>
-		/// UI output modes
-		/// </summary>
-		internal enum WriteMode
-		{
-			None,
-			Debug,
-			Error,
-			Verbose,
-			Warning
-		};
+		internal bool HasError { get; set; }
 
-		// Current mode.
-		WriteMode _mode;
-		internal void SetMode(WriteMode value)
-		{
-			_mode = value;
-		}
+		internal abstract OutputWriter Writer { get; }
 
-		internal UniformUI()
-		{
-		}
-
-		/// <summary>
-		/// 1st of 3 actual writers.
-		/// </summary>
-		internal abstract void Append(string value);
-
-		/// <summary>
-		/// 2nd of 3 actual writers.
-		/// </summary>
-		internal abstract void AppendLine();
-
-		/// <summary>
-		/// 3rd of 3 actual writers.
-		/// </summary>
-		internal abstract void AppendLine(string value);
+		protected virtual void Writing() { }
 
 		#region PSHostUserInterface
 
@@ -101,72 +82,57 @@ namespace PowerShellFar
 
 		public sealed override void Write(string value)
 		{
-			_mode = WriteMode.None;
-			Append(value);
-		}
-
-		public sealed override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
-		{
-			_mode = WriteMode.None;
-			Append(value);
-		}
-
-		public sealed override void WriteDebugLine(string message)
-		{
-			if (_mode != WriteMode.Debug)
-			{
-				_mode = WriteMode.Debug;
-				AppendLine("DEBUG:");
-			}
-			AppendLine(message);
-		}
-
-		public override void WriteErrorLine(string value)
-		{
-			if (_mode != WriteMode.Error)
-			{
-				_mode = WriteMode.Error;
-				AppendLine("ERROR:");
-			}
-			AppendLine(value);
+			Writing();
+			Writer.Write(value);
 		}
 
 		public sealed override void WriteLine()
 		{
-			_mode = WriteMode.None;
-			AppendLine();
+			Writing();
+			Writer.WriteLine();
 		}
 
 		public sealed override void WriteLine(string value)
 		{
-			_mode = WriteMode.None;
-			AppendLine(value);
+			Writing();
+			Writer.WriteLine(value);
+		}
+
+		public sealed override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
+		{
+			Writing();
+			Writer.Write(foregroundColor, backgroundColor, value);
 		}
 
 		public sealed override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
-			_mode = WriteMode.None;
-			AppendLine(value);
+			Writing();
+			Writer.WriteLine(foregroundColor, backgroundColor, value);
+		}
+
+		public sealed override void WriteDebugLine(string message)
+		{
+			Writing();
+			Writer.WriteDebugLine(message);
+		}
+
+		public sealed override void WriteErrorLine(string value)
+		{
+			HasError = true;
+			Writing();
+			Writer.WriteErrorLine(value);
 		}
 
 		public sealed override void WriteVerboseLine(string message)
 		{
-			if (_mode != WriteMode.Verbose)
-			{
-				_mode = WriteMode.Verbose;
-				AppendLine("VERBOSE:");
-			}
-			AppendLine(message);
+			Writing();
+			Writer.WriteVerboseLine(message);
 		}
 
 		public sealed override void WriteWarningLine(string message)
 		{
-			if (_mode != WriteMode.Warning)
-			{
-				_mode = WriteMode.Warning;
-				AppendLine("WARNING:");
-			}
-			AppendLine(message);
+			Writing();
+			Writer.WriteWarningLine(message);
 		}
 
 		#endregion
