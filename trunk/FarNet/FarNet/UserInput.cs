@@ -430,8 +430,8 @@ OemClear = 254;
 	/// <summary>
 	/// Palette colors used in UI.
 	/// </summary>
-	/// <seealso cref="IFar.WritePalette"/>
-	/// <seealso cref="IFar.WriteText"/>
+	/// <seealso cref="IFar.DrawColor"/>
+	/// <seealso cref="IFar.DrawPalette"/>
 	/// <seealso cref="IFar.GetPaletteForeground"/>
 	/// <seealso cref="IFar.GetPaletteBackground"/>
 	public enum PaletteColor

@@ -257,31 +257,44 @@ namespace PowerShellFar
 			}
 		}
 
-		/// <summary>
-		/// Dictates how command output should be shown.
-		/// </summary>
-		public OutputPreference OutputPreference { get; set; }
+		ConsoleColor _CommandForegroundColor = ConsoleColor.DarkGray;
+		///
+		public ConsoleColor CommandForegroundColor
+		{
+			get { return _CommandForegroundColor; }
+			set { _CommandForegroundColor = value; }
+		}
 
-	}
-
-	/// <summary>
-	/// Dictates how command output should be shown.
-	/// </summary>
-	public enum OutputPreference
-	{
-		/// <summary>
-		/// The engine decides how to output.
-		/// </summary>
-		/// <remarks>
-		/// See PowerShellFar.hlf, section [Commands output].
-		/// </remarks>
-		Default,
-		/// <summary>
-		/// Output of commands from panels is written to the user screen (console area under panels).
-		/// </summary>
-		/// <remarks>
-		/// See PowerShellFar.hlf, section [Commands output].
-		/// </remarks>
-		Console,
+		ConsoleColor _DebugForegroundColor = ConsoleColor.Magenta;
+		///
+		public ConsoleColor DebugForegroundColor
+		{
+			get { return _DebugForegroundColor; }
+			set { _DebugForegroundColor = value; }
+		}
+		
+		ConsoleColor _ErrorForegroundColor = ConsoleColor.Red;
+		///
+		public ConsoleColor ErrorForegroundColor
+		{
+			get { return _ErrorForegroundColor; }
+			set { _ErrorForegroundColor = value; }
+		}
+		
+		ConsoleColor _VerboseForegroundColor = ConsoleColor.Cyan;
+		///
+		public ConsoleColor VerboseForegroundColor
+		{
+			get { return _VerboseForegroundColor; }
+			set { _VerboseForegroundColor = value; }
+		}
+		
+		ConsoleColor _WarningForegroundColor = ConsoleColor.Yellow;
+		///
+		public ConsoleColor WarningForegroundColor
+		{
+			get { return _WarningForegroundColor; }
+			set { _WarningForegroundColor = value; }
+		}
 	}
 }

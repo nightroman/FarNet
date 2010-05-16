@@ -10,6 +10,12 @@ namespace FarNet
 {;
 bool Message::Show()
 {
+	if (ValueUserScreen::Get()) //_100514_000000
+	{
+		ValueUserScreen::Set(false);
+		Far::Net->SaveUserScreen();
+	}
+
 	//! flags: add OK if no buttons; otherwise wierd: [Esc] has no effect, [Enter] passed through, other keys too and dialog is still shown
 	int flags = _flags;
 	if ((!_buttons || _buttons->Length == 0) && (flags & (FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMSG_MB_YESNO|FMSG_MB_YESNOCANCEL|FMSG_MB_RETRYCANCEL)) == 0)

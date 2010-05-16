@@ -73,7 +73,7 @@ namespace PowerShellFar
 			{
 				case WindowKind.Panels:
 					{
-						Far.Net.CommandLine.Text = Entry.Command1.Prefix + ": " + code;
+						Far.Net.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
 						if (!m.Alternative)
 							Far.Net.PostKeys("Enter", false);
 						return;

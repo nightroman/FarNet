@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.18#
+#PowerShellFar 4.3.19#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1550
- - Plugin FarNet 4.3.18
+ - Far Manager 2.0.1556
+ - Plugin FarNet 4.3.19
  - Windows PowerShell 2.0
 
 
@@ -123,22 +123,30 @@ $#Command line#
 ~Contents~@Contents@
 
 PowerShellFar commands with prefixes are used in the command line, the user
-menu [F2] and the file associations. By default command prefixes are: '>:' for
-standard commands and '>>:' for background jobs. It is recommended to add an
-extra space after prefixes: commands look better and TabExpansion can expand
-the first command token correctly. Examples:
+menu [F2] and the file associations. By default command prefixes are: '>:'
+(console output) and '>>:' (viewer output).
 
-#Standard commands#
+It is recommended to add an extra space after prefixes: commands look better
+and TabExpansion can expand the first command token correctly.
 
- >: 3.14/3
- >: [math]::pi/3
- >: $Far.Msg("Hello world!")
- >: Get-Process | Out-FarList -Text Name | Start-FarPanel
+#Examples#
 
-#Background jobs#
+Commands with console output, prefix >:
 
- >>: MyJob.ps1
- >>: Remove-Item C:\TEMP\LargeFolder -Recurse -Force
+	>: Get-Date
+	>: 3.14 / 3
+	>: [math]::pi / 3
+
+Commands with viewer output, prefix >>:
+
+	>>: Get-Process
+	>>: Get-ChildItem C:\TEMP\LargeFolder -Recurse -Force
+
+Commands starting UI or background jobs normally use prefix >:
+
+	>: $Far.Msg("Hello world!")
+	>: Get-Process | Out-FarList -Text Name | Start-FarPanel
+	>: Start-FarJob { Remove-Item C:\TEMP\LargeFolder -Recurse -Force }
 
 #Accelerators#
 
@@ -149,8 +157,7 @@ You can reduce typing by "Easy prefix" and "Easy invoke" macros, see ~FAQ~@FAQ@.
 Most of commands are added to the PowerShellFar command history automatically.
 There is an exception: a command is not added if the last symbol is '##'. This
 trick is useful for commands in the user menu [F2] and the file associations,
-normally they should not pollute the history because they are not typed each
-time on invocation.
+normally they should not pollute the history because they are not typed manually.
 
 
 @MenuCommands
@@ -1154,41 +1161,41 @@ NotImplementedException.
 $#Commands output#
 ~Contents~@Contents@
 
-#Case: $Psf.Settings.OutputPreference = 'Default'#
+#Command lines with prefixes >:#
 
-Normally output of a standard command including errors is collected and then,
-when a command has completed:
+Output of these commands is written to the user screen (console under panels).
+The output uses different colors depending on message types (errors, warnings,
+etc.). Note: only the tail of long output can be seen after invocation.
 
-1) It is written to a user screen (under panels) if it is not too large and it
-is not interrupted by debugger. Use [CtrlUp]\[CtrlDown] to increase\decrease
-available space for output below panels.
+User screen output may have unwanted screen effects on commands with Far UI and
+on PowerShell debugging. Such commands should be invoked from the command box
+or with >>: prefixes.
 
-2) It is shown in internal viewer if it is too large for 1) or if it is started
-from editor, viewer or dialog.
+Useful hotkeys:
 
-3) In some cases (e.g. debugging) output can be redirected to a file and an
-external viewer is started to view it.
+	[CtrlAltShift] - (hold) show the user screen
+	[CtrlO], [CtrlF1], [CtrlF2] - hide or show panels
+	[CtrlUp], [CtrlDown] - change visible user screen area
 
-Output of some commands is discarded (e.g. commands from your menu tools or
-event handlers). For these commands fatal errors are shown using error message
-boxes, other errors and warnings are ignored.
+#Command lines with prefixes >>: and command box commands#
 
-#Case: $Psf.Settings.OutputPreference = 'Console'#
+Output of these commands is normally collected and then, when a command has
+completed it is shown in the internal viewer. In some cases (e.g. debugging)
+output is redirected to a file and an external viewer is started to view it.
 
-Output of commands from panels is written to the user screen (console area
-under panels). The good: output is colored (errors, warnings, etc.). The bad:
-only the tail of long output can be seen after invocation.
+#Other code output#
 
-Output can produce unwanted but harmless screen effects on commands with Far UI
-and on PowerShell debugging.
+Output of other code is discarded (e.g. commands from your menu tools or event
+handlers have no shown output). Failure messages are shown in error message
+boxes, minor errors and warnings are ignored.
 
 
 @BackgroundJobs
 $#Background jobs#
 ~Contents~@Contents@
 
-Background jobs are started from the command line by commands with the prefix
-'>>:'. You can also start jobs using Start-FarJob cmdlet, see Test-Job-.ps1
+Background jobs are started from the command line or scripts by the cmdlet
+Start-FarJob, see Test-Job-.ps1 for examples.
 
 
 #IMPORTANT RULES#

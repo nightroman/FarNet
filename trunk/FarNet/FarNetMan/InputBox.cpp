@@ -41,6 +41,12 @@ void InputBox::HelpTopic::set(String^ value)
 
 bool InputBox::Show()
 {
+	if (ValueUserScreen::Get()) //_100514_000000
+	{
+		ValueUserScreen::Set(false);
+		Far::Net->SaveUserScreen();
+	}
+
 	PIN_ES(pinTitle, Title);
 	PIN_ES(pinPrompt, Prompt);
 	PIN_ES(pinText, Text);

@@ -35,7 +35,7 @@ $uc.add_Drawing({&{
 	$x = $r1.Left + 2
 	$y = $r1.Top + $r2.Bottom
 	# write blue text on 'DialogBox' background
-	$Far.WriteText($x + 4, $y, 'Blue', $Far.GetPaletteBackground('DialogBox'), 'User control: for custom draw, for clicks on "dialog area", and etc.')
+	$Far.DrawColor($x + 4, $y, 'Blue', $Far.GetPaletteBackground('DialogBox'), 'User control: for custom draw, for clicks on "dialog area", and etc.')
 }})
 
 ### Box (double line)

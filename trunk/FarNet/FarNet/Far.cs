@@ -344,11 +344,19 @@ namespace FarNet
 		/// Copies the current screen contents to the user screen buffer
 		/// (which is displayed when the panels are switched off).
 		/// </summary>
+		/// <remarks>
+		/// Normally it is called after <see cref="ShowUserScreen"/> and direct console writing.
+		/// Note: try to avoid these low level operations.
+		/// </remarks>
 		public abstract void SaveUserScreen();
 		/// <summary>
 		/// Copies the current user screen buffer to console screen
 		/// (which is displayed when the panels are switched off).
 		/// </summary>
+		/// <remarks>
+		/// Normally it is called before direct console screen operations and <see cref="SaveUserScreen"/> has to be called after.
+		/// Note: try to avoid these low level operations.
+		/// </remarks>
 		public abstract void ShowUserScreen();
 		/// <summary>
 		/// Returns all strings from history.
@@ -408,7 +416,7 @@ namespace FarNet
 		/// </summary>
 		/// <param name="text">Text.</param>
 		/// <remarks>
-		/// Avoid <c>Console.Write*</c> methods.
+		/// Note: try to avoid all <c>Console.Write*</c> methods.
 		/// </remarks>
 		public abstract void Write(string text);
 		/// <summary>
@@ -416,29 +424,35 @@ namespace FarNet
 		/// </summary>
 		/// <param name="text">Text.</param>
 		/// <param name="foregroundColor">Text color.</param>
+		/// <remarks>
+		/// Note: try to avoid all <c>Console.Write*</c> methods.
+		/// </remarks>
 		public abstract void Write(string text, ConsoleColor foregroundColor);
 		/// <summary>
 		/// Writes colored text on the user screen (under panels).
 		/// </summary>
 		/// <include file='doc.xml' path='doc/Colors/*'/>
 		/// <param name="text">Text.</param>
+		/// <remarks>
+		/// Note: try to avoid all <c>Console.Write*</c> methods.
+		/// </remarks>
 		public abstract void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 		/// <summary>
-		/// Writes a string at the specified position using Far palette colors.
-		/// </summary>
-		/// <include file='doc.xml' path='doc/LT/*'/>
-		/// <param name="paletteColor">Palette color.</param>
-		/// <param name="text">Text.</param>
-		public abstract void WritePalette(int left, int top, PaletteColor paletteColor, string text);
-		/// <summary>
-		/// Writes a string at the specified position with defined colors.
+		/// Draws at the specified position with defined colors.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <include file='doc.xml' path='doc/Colors/*'/>
 		/// <param name="text">Text.</param>
 		/// <seealso cref="IFar.GetPaletteForeground"/>
 		/// <seealso cref="IFar.GetPaletteBackground"/>
-		public abstract void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
+		public abstract void DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
+		/// <summary>
+		/// Draws at the specified position using Far palette colors.
+		/// </summary>
+		/// <include file='doc.xml' path='doc/LT/*'/>
+		/// <param name="paletteColor">Palette color.</param>
+		/// <param name="text">Text.</param>
+		public abstract void DrawPalette(int left, int top, PaletteColor paletteColor, string text);
 		/// <summary>
 		/// Finds an existing module panel with the specified host (see <see cref="IPanel.Host"/>).
 		/// </summary>

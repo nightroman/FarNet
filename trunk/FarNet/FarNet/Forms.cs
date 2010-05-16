@@ -293,7 +293,7 @@ namespace FarNet.Forms
 	/// </summary>
 	/// <remarks>
 	/// Use <see cref="IControl.Drawing"/> event to draw this control by
-	/// <see cref="IFar.WritePalette"/> or <see cref="IFar.WriteText"/>
+	/// <see cref="IFar.DrawPalette"/> or <see cref="IFar.DrawColor"/>
 	/// with <see cref="IFar.GetPaletteForeground"/> and <see cref="IFar.GetPaletteBackground"/>.
 	/// Also usually you should at first calculate absolute coordinates using
 	/// absolute dialog <see cref="IDialog.Rect"/> and relative control <see cref="IControl.Rect"/>.
