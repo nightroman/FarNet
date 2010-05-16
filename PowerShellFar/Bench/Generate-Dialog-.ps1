@@ -67,6 +67,9 @@ function OutTrue([string]$property) { if ($c.$property) { "$vc.$property = `$tru
 			OutTrue NoBrackets
 			OutTrue NoClose
 			OutTrue ShowAmpersand
+			if ($dialog.Default -eq $c) {
+				"`$dialog.Default = $vc"
+			}
 		}
 		elseif ($c -is [FarNet.Forms.ICheckBox]) {
 			"$vc = `$dialog.AddCheckBox($($r.Left), $($r.Top), $text)"
