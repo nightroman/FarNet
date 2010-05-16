@@ -43,7 +43,7 @@ function OutTrue([string]$property) { if ($c.$property) { "$vc.$property = `$tru
 	# Get controls
 	for($e = 0;; ++$e) {
 
-		$c = $dialog.GetControl($e)
+		$c = $dialog[$e]
 		if (!$c) { break }
 		''
 		$r = $c.Rect

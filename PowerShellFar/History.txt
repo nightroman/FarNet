@@ -1,8 +1,12 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-= 4.3.19 =
+= 4.3.20 =
 
+*) Generate-Dialog-.ps1
+-- fix: replaced GetControl() with $dialog[]
+
+= 4.3.19 =
 
 *) Commands output
 -- command line commands with prefixes '>:' write to the console;
