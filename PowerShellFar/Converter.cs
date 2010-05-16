@@ -216,7 +216,7 @@ namespace PowerShellFar
 
 					// enum
 					if (info.Value != null && info.Value.GetType().IsEnum)
-						return Enum.Parse(info.Value.GetType(), s);
+						return Enum.Parse(info.Value.GetType(), s, true);
 				}
 
 				IList list = value as IList;

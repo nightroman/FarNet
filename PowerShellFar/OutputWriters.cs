@@ -27,49 +27,76 @@ namespace PowerShellFar
 
 	sealed class ConsoleOutputWriter : OutputWriter
 	{
+		string _command;
+		
+		public ConsoleOutputWriter() { }
+
+		public ConsoleOutputWriter(string command)
+		{
+			_command = command;
+		}
+
+		void Writing()
+		{
+			if (_command != null)
+			{
+				Far.Net.Write(string.Format("{0}:{1}\n", Entry.CommandInvoke1.Prefix, _command), A.Psf.Settings.CommandForegroundColor);
+				_command = null;
+			}
+		}
+
 		public override void Write(string value)
 		{
+			Writing();
 			Far.Net.Write(value);
 		}
 
 		public override void WriteLine()
 		{
+			Writing();
 			Far.Net.Write("\r\n");
 		}
 
 		public override void WriteLine(string value)
 		{
+			Writing();
 			Far.Net.Write(value + "\r\n");
 		}
 
 		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
+			Writing();
 			Far.Net.Write(value, foregroundColor, backgroundColor);
 		}
 
 		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
+			Writing();
 			Far.Net.Write(value + "\r\n", foregroundColor, backgroundColor);
 		}
 
 		public override void WriteDebugLine(string message)
 		{
-			Far.Net.Write("DEBUG: " + message + "\r\n", ConsoleColor.Yellow);
+			Writing();
+			Far.Net.Write("DEBUG: " + message + "\r\n", A.Psf.Settings.DebugForegroundColor);
 		}
 
 		public override void WriteErrorLine(string value)
 		{
-			Far.Net.Write(value + "\r\n", ConsoleColor.Red);
+			Writing();
+			Far.Net.Write(value + "\r\n", A.Psf.Settings.ErrorForegroundColor);
 		}
 
 		public override void WriteVerboseLine(string message)
 		{
-			Far.Net.Write("VERBOSE: " + message + "\r\n", ConsoleColor.DarkGray);
+			Writing();
+			Far.Net.Write("VERBOSE: " + message + "\r\n", A.Psf.Settings.VerboseForegroundColor);
 		}
 
 		public override void WriteWarningLine(string message)
 		{
-			Far.Net.Write("WARNING: " + message + "\r\n", ConsoleColor.Yellow);
+			Writing();
+			Far.Net.Write("WARNING: " + message + "\r\n", A.Psf.Settings.WarningForegroundColor);
 		}
 	}
 
@@ -78,17 +105,17 @@ namespace PowerShellFar
 		WriteMode _mode;
 
 		/// <summary>
-		/// 1st of 3 actual writers.
+		/// 1 of 3 actual writers.
 		/// </summary>
 		protected abstract void Append(string value);
 
 		/// <summary>
-		/// 2nd of 3 actual writers.
+		/// 2 of 3 actual writers.
 		/// </summary>
 		protected abstract void AppendLine();
 
 		/// <summary>
-		/// 3rd of 3 actual writers.
+		/// 3 of 3 actual writers.
 		/// </summary>
 		protected abstract void AppendLine(string value);
 
@@ -278,17 +305,14 @@ namespace PowerShellFar
 
 	sealed class StringOutputWriter : TextOutputWriter
 	{
-		StringBuilder _output = new StringBuilder();
-
-		public StringOutputWriter()
-		{ }
+		readonly StringBuilder _output = new StringBuilder();
 
 		/// <summary>
-		/// Output builder
+		/// Collected output.
 		/// </summary>
-		internal StringBuilder Output
+		internal string Output
 		{
-			get { return _output; }
+			get { return _output.ToString(); }
 		}
 
 		protected override void Append(string value)
@@ -312,13 +336,31 @@ namespace PowerShellFar
 		// Output file name
 		string FileName;
 
-		// Outer process
+		// Outer viewer
 		Process Process;
 
-		// Output writer
+		// The writer
 		StreamWriter Writer;
 
-		void Open()
+		protected override void Append(string value)
+		{
+			Writing();
+			Writer.Write(value);
+		}
+
+		protected override void AppendLine()
+		{
+			Writing();
+			Writer.WriteLine();
+		}
+
+		protected override void AppendLine(string value)
+		{
+			Writing();
+			Writer.WriteLine(value);
+		}
+
+		void Writing()
 		{
 			// new writer
 			if (Writer == null)
@@ -330,7 +372,7 @@ namespace PowerShellFar
 				Writer.AutoFlush = true;
 			}
 
-			//! start after opening a writer when BOM is already written
+			//! start after opening a writer when BOM is already there
 			StartViewer();
 		}
 
@@ -397,24 +439,6 @@ namespace PowerShellFar
 				catch (IOException) { }
 				catch (UnauthorizedAccessException) { }
 			}
-		}
-
-		protected override void Append(string value)
-		{
-			Open();
-			Writer.Write(value);
-		}
-
-		protected override void AppendLine()
-		{
-			Open();
-			Writer.WriteLine();
-		}
-
-		protected override void AppendLine(string value)
-		{
-			Open();
-			Writer.WriteLine(value);
 		}
 	}
 }

@@ -455,7 +455,7 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 		return INVALID_HANDLE_VALUE;
 
 	Panel0::BeginOpenMode();
-	ValueUserScreen userscreen;
+	ValueUserScreen userscreen; //_100514_000000
 
 	try
 	{
@@ -499,7 +499,7 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 	finally
 	{
 		Panel0::EndOpenMode();
-		if (userscreen.Get()) //?????
+		if (userscreen.Get()) //_100514_000000
 			Far::Net->SaveUserScreen();
 	}
 }
@@ -507,7 +507,7 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 {
 	Panel0::BeginOpenMode();
-	ValueUserScreen userscreen;
+	ValueUserScreen userscreen; //_100514_000000
 
 	// call a plugin; it may create a panel waiting for opening
 	try
@@ -612,7 +612,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 	finally
 	{
 		Panel0::EndOpenMode();
-		if (userscreen.Get()) //?????
+		if (userscreen.Get()) //_100514_000000
 			Far::Net->SaveUserScreen();
 	}
 }

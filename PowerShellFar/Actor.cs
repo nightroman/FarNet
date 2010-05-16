@@ -893,18 +893,10 @@ Continue with this current directory?
 			History.Cache = null;
 
 			// push writer
-			bool isConsoleOutput = false;
 			if (writer != null)
 			{
 				// predefined output
 				FarUI.PushWriter(writer);
-			}
-			else if (A.Psf.Settings.OutputPreference == OutputPreference.Console && Far.Net.Window.Kind == WindowKind.Panels)
-			{
-				// use console output; write the command
-				isConsoleOutput = true;
-				FarUI.PushWriter(new ConsoleOutputWriter());
-				Far.Net.Write(string.Format("{0}:{1}\n", Entry.Command1.Prefix, code));
 			}
 			else
 			{
@@ -942,21 +934,24 @@ Continue with this current directory?
 			catch (RuntimeException reason)
 			{
 				ok = false;
-				ConsoleColor color1 = 0;
+				ConsoleColor color1 = ConsoleColor.Black;
 				try
 				{
-					if (isConsoleOutput)
+					// push console color
+					if (writer is ConsoleOutputWriter)
 					{
 						color1 = Console.ForegroundColor;
-						Console.ForegroundColor = ConsoleColor.Red;
+						Console.ForegroundColor = Settings.ErrorForegroundColor;
 					}
 
+					// write the reson
 					using (PowerShell ps = CreatePipeline())
 						A.OutReason(ps, reason);
 				}
 				finally
 				{
-					if (isConsoleOutput)
+					// pop console color
+					if (color1 != ConsoleColor.Black)
 					{
 						Console.ForegroundColor = color1;
 					}
@@ -985,56 +980,12 @@ Continue with this current directory?
 				}
 				else
 				{
-					// show output
-					string output = myWriter.Output.ToString();
+					// get collected output
+					string output = myWriter.Output;
 
 					// show results
 					if (output.Length > 0)
-					{
-						// use log?
-						WindowKind wt = Far.Net.Window.Kind;
-						bool useLog = (wt != WindowKind.Panels);
-						if (!useLog)
-						{
-							// count lines
-							int nNewLine = 0;
-							int nMax = Console.WindowHeight - 3;
-							IAnyPanel p1 = Far.Net.Panel;
-							if (p1.IsVisible)
-							{
-								Place w = p1.Window;
-								nMax -= w.Bottom;
-							}
-							foreach (char c in output)
-							{
-								if (c == '\n')
-								{
-									if (++nNewLine > nMax)
-									{
-										useLog = true;
-										break;
-									}
-								}
-							}
-						}
-
-						try
-						{
-							// use log file
-							if (useLog)
-							{
-								// view output
-								Far.Net.AnyViewer.ViewText(output, code, OpenMode.None);
-								output = string.Empty;
-							}
-						}
-						finally
-						{
-							// write to console
-							if (output.Length > 0)
-								Far.Net.Write(output);
-						}
-					}
+						Far.Net.AnyViewer.ViewText(output, code, OpenMode.None);
 				}
 
 				// notify host
@@ -1118,7 +1069,7 @@ Continue with this current directory?
 			{
 				ExternalOutputWriter writer2 = new ExternalOutputWriter();
 
-				string output = writer1.Output.ToString();
+				string output = writer1.Output;
 				if (output.Length > 0)
 					writer2.Write(output);
 
@@ -1144,7 +1095,7 @@ Continue with this current directory?
 		/// FarNet module manager.
 		/// </summary>
 		/// <remarks>
-		/// It may be used to register new module actions.
+		/// It is used to register new module actions.
 		/// </remarks>
 		public IModuleManager Manager
 		{

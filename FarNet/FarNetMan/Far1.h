@@ -62,6 +62,8 @@ public:
 	virtual String^ TempFolder(String^ prefix) override;
 	virtual String^ TempName(String^ prefix) override;
 	virtual void CopyToClipboard(String^ text) override;
+	virtual void DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text) override;
+	virtual void DrawPalette(int left, int top, PaletteColor paletteColor, String^ text) override;
 	virtual void PostJob(EventHandler^ handler) override;
 	virtual void PostKeys(String^ keys) override;
 	virtual void PostKeys(String^ keys, bool disableOutput) override;
@@ -85,8 +87,6 @@ public:
 	virtual void Write(String^ text) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor) override;
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) override;
-	virtual void WritePalette(int left, int top, PaletteColor paletteColor, String^ text) override;
-	virtual void WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text) override;
 internal:
 	static void Connect();
 private:

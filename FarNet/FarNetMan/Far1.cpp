@@ -501,16 +501,16 @@ IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
 	return gcnew FarDialog(left, top, right, bottom);
 }
 
-void Far1::WritePalette(int left, int top, PaletteColor paletteColor, String^ text)
-{
-	PIN_NE(pin, text);
-	Info.Text(left, top, Far0::GetPaletteColor(paletteColor), pin);
-}
-
-void Far1::WriteText(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
+void Far1::DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
 {
 	PIN_NE(pin, text);
 	Info.Text(left, top, int(foregroundColor)|(int(backgroundColor)<<4), pin);
+}
+
+void Far1::DrawPalette(int left, int top, PaletteColor paletteColor, String^ text)
+{
+	PIN_NE(pin, text);
+	Info.Text(left, top, Far0::GetPaletteColor(paletteColor), pin);
 }
 
 void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
@@ -522,13 +522,13 @@ void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
 }
 
 //! Console::Write() writes some Unicode chars as '?'.
-//! Used to call SaveUserScreen() in the end. It was very slow. Now it is done elsewhere in more subtle way.
+//! Used to call SaveUserScreen() in the end. It was very slow. Now it is done in many places, see _100514_000000.
 void Far1::Write(String^ text)
 {
 	if (ES(text))
 		return;
 
-	if (!ValueUserScreen::Get()) //?????
+	if (!ValueUserScreen::Get()) //_100514_000000
 	{
 		ValueUserScreen::Set(true);
 		ShowUserScreen();
