@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.3.18.0")]
+[assembly: AssemblyVersion("4.3.19.0")]
 [assembly: AssemblyTitle("FarNet macro manager")]
 [assembly: AssemblyDescription("FarNet macro manager")]
 [assembly: AssemblyConfiguration("")]

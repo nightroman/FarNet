@@ -42,14 +42,14 @@ namespace PowerShellFar
 			A.Connect(new Actor());
 
 			// register commands with prefixes
-			Command1 = Manager.RegisterModuleCommand(
+			CommandInvoke1 = Manager.RegisterModuleCommand(
 				new Guid("60353ab6-52cb-413e-8e11-e4917099b80b"),
-				new ModuleCommandAttribute() { Name = "PowerShell command", Prefix = ">" },
-				OnCommandLine);
-			Command2 = Manager.RegisterModuleCommand(
+				new ModuleCommandAttribute() { Name = "PowerShell command (console output)", Prefix = ">" },
+				OnCommandInvoke1);
+			CommandInvoke2 = Manager.RegisterModuleCommand(
 				new Guid("03760876-d154-467c-bc5d-8ec39efb637d"),
-				new ModuleCommandAttribute() { Name = "PowerShellFar job command", Prefix = ">>" },
-				OnCommandLineJob);
+				new ModuleCommandAttribute() { Name = "PowerShell command (viewer output)", Prefix = ">>" },
+				OnCommandInvoke2);
 
 			// register config
 			Manager.RegisterModuleTool(
@@ -100,8 +100,23 @@ namespace PowerShellFar
 		bool InvokingHasBeenCalled;
 
 		//! do not call Invoking(), it is done by FarNet
-		internal static IModuleCommand Command1 { get; private set; }
-		void OnCommandLine(object sender, ModuleCommandEventArgs e)
+		internal static IModuleCommand CommandInvoke1 { get; private set; }
+		void OnCommandInvoke1(object sender, ModuleCommandEventArgs e)
+		{
+			string currentDirectory = A.Psf.SyncPaths();
+			try
+			{
+				A.Psf.InvokePipeline(e.Command, new ConsoleOutputWriter(e.Command), true);
+			}
+			finally
+			{
+				A.SetCurrentDirectoryFinally(currentDirectory);
+			}
+		}
+
+		//! do not call Invoking(), it is done by FarNet
+		internal static IModuleCommand CommandInvoke2 { get; private set; }
+		void OnCommandInvoke2(object sender, ModuleCommandEventArgs e)
 		{
 			string currentDirectory = A.Psf.SyncPaths();
 			try
@@ -112,16 +127,6 @@ namespace PowerShellFar
 			{
 				A.SetCurrentDirectoryFinally(currentDirectory);
 			}
-		}
-
-		//! do not call Invoking(), it is done by FarNet
-		//! do not sync paths for jobs
-		internal static IModuleCommand Command2 { get; private set; }
-		void OnCommandLineJob(object sender, ModuleCommandEventArgs e)
-		{
-			string code = e.Command;
-			Job job = new Job(new JobCommand(code, true), null, code, true, int.MaxValue);
-			job.StartJob();
 		}
 
 		void OnConfig(object sender, ModuleToolEventArgs e)

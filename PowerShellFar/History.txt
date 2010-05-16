@@ -1,7 +1,39 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-= 4.3.17 =
+= 4.3.19 =
+
+
+*) Commands output
+-- command line commands with prefixes '>:' write to the console;
+-- command line commands with prefixes '>>:' show output in viewers;
+-- command box commands always show output in viewers;
+-- removed $Psf.Settings.OutputPreference, there is nothing to configure;
+(Reminder: user menu and file association are command line commands, too)
+
+*) Console output
+-- fixed screen defects on UI in the middle of execution with output;
+-- added configurable output colors: $Psf.Settings.*ForegroundColor;
+-- echo commands using colors, do not echo commands with no output.
+
+Demo of new console output with all colors and message types:
+>: .\Test-Write.ps1
+
+*) Background jobs
+Starting jobs by prefix >>: was not really useful. The prefix is now reused for
+commands with viewer output (see above). Jobs should be started by usual prefix
+>: and the cmdlet Start-FarJob. Start-FarJob allows to specify arguments and
+switches; that is why job command prefixes are not enough.
+
+Note: you can define your own prefixes and commands and do whatever you want,
+see Test-RegisterCommand-.ps1 for the example. In particular you can define a
+prefix for invoking jobs, just like it was before. In contrast: features like
+>: and >>: cannot be defined from scripts.
+
+*) Member panel
+-- issue: input enum values should be case insensitive.
+
+= 4.3.18 =
 
 New option $Psf.Settings.OutputPreference
 -- Values: 'Default', 'Console'; it is normally set in the profile but it can
@@ -12,7 +44,6 @@ Console: output of commands from panels is written to the user screen. The
 good: output is colored (errors, warnings, etc.). The bad: only the tail of
 long output can be seen after invocation. Output can produce unwanted but
 harmless screen effects on commands with Far UI and on PowerShell debugging.
-
 
 = 4.3.17 =
 

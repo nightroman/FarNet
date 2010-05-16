@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.3.19 =
+
+Internal changes dealing with the user screen operations. Automatic calls of
+SaveUserScreen before showing Far UI after ShowUserScreen and console writing.
+NOTE: direct use of these methods and console writing is not recommended.
+
+IFar
+Renamed WriteText and WritePalette to DrawColor and DrawPalette in order to
+distinguish them from low level Write* methods. In contrast to Write* family
+Draw* methods are for normal use, for example for custom dialog controls.
+
 = 4.3.18 =
 
 New module cache approach
