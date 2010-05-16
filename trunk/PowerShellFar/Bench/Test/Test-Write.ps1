@@ -6,7 +6,9 @@
 
 .DESCRIPTION
 	Some commands are duplicated in order to see how subsequent calls are
-	processed internally and looks in formatted output (depends on mode).
+	processed and how the output looks like depending on modes >: and >>:
+
+	This script should work in other PowerShell hosts.
 #>
 
 Write-Host 'Test of Write-Host'
