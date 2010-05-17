@@ -27,8 +27,8 @@ String^ GetText(HANDLE hDlg, int id, int start, int len)
 	else
 		return gcnew String(sz);
 }
-#define DM_GETTEXT use_GetText
-#define DM_GETTEXTPTR use_GetText
+//????#define DM_GETTEXT use_GetText
+//????#define DM_GETTEXTPTR use_GetText
 
 #pragma endregion
 
@@ -439,6 +439,22 @@ DEF_CONTROL_FLAG(FarButton, ShowAmpersand, DIF_SHOWAMPERSAND);
 void FarButton::Starting(FarDialogItem& item)
 {
 	Init(item, DI_BUTTON);
+}
+
+//! Default one gets text with [] and {}
+String^ FarButton::Text::get()
+{
+	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
+	{
+		int len = (int)Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, 0);
+		CBox buf(len);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, (LONG_PTR)(wchar_t*)buf);
+		return gcnew String(buf);
+	}
+	else
+	{
+		return _text;
+	}
 }
 
 #pragma endregion

@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.3.20 =
+
+IButton
+-- fix: .Text should return the real text, i.e. without brackets.
+
 = 4.3.19 =
 
 Internal changes dealing with the user screen operations. Automatic calls of

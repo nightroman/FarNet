@@ -4,7 +4,8 @@ http://code.google.com/p/farnet/
 = 4.3.20 =
 
 *) Generate-Dialog-.ps1
--- fix: replaced GetControl() with $dialog[]
+-- update: replaced GetControl() with $dialog[]
+-- FarNet fix: generated button text should not have brackets
 
 = 4.3.19 =
 
