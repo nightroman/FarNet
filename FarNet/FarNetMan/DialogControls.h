@@ -72,6 +72,7 @@ public:
 	virtual property bool NoClose { bool get(); void set(bool value); }
 	virtual property bool NoFocus { bool get(); void set(bool value); }
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
+	virtual property String^ Text { String^ get() override; }
 public: DEF_EVENT_ARGS(ButtonClicked, _ButtonClicked, ButtonClickedEventArgs);
 internal:
 	FarButton(FarDialog^ dialog, int index);
