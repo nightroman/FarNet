@@ -57,6 +57,7 @@ namespace PowerShellFar.Commands
 		public string Format { get; set; }
 
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(ParameterSetName = "Event", Position = 3, HelpMessage = "Data for TraceEvent() or TraceData().")]
 		public object[] Data { get; set; }
 

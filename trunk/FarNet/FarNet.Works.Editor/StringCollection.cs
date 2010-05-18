@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet.Works
 {
@@ -29,7 +28,7 @@ namespace FarNet.Works
 			set { _Editor[index].Text = value; }
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsFixedSize
 		{
 			get { return false; }
@@ -40,7 +39,7 @@ namespace FarNet.Works
 			get { return false; }
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSynchronized
 		{
 			get { return false; }

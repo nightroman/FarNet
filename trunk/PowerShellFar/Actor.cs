@@ -257,8 +257,8 @@ Reason (see also $Error):
 				//! emergency
 				Entry.Unregister();
 				throw new ModuleException(@"
-PowerShell engine is not initialized due to fatal reasons and will be unloaded.
-See also the section PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
+The engine is not initialized due to fatal reasons and will be unloaded.
+See PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
 ", _errorFatal);
 			}
 
@@ -1061,6 +1061,7 @@ Continue with this current directory?
 			EditorKit.InvokeScriptFromEditor(null);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		void OnDebuggerStop(object sender, DebuggerStopEventArgs e)
 		{
 			// replace writer to external

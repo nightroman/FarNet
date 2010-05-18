@@ -189,7 +189,8 @@ namespace PowerShellFar
 		{
 			// lookup data panel (should be checked, user could use another)
 			DataPanel dp = sender as DataPanel;
-			if (dp == null) throw new InvalidOperationException("Event sender is not a 'DataPanel'.");
+			if (dp == null)
+				throw new InvalidOperationException("Event sender is not a data panel object.");
 
 			// destination row (should be valid, checked on creation by us)
 			DataRow drSet = (DataRow)((MemberPanel)dp.Parent).Value.BaseObject;

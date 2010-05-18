@@ -20,6 +20,7 @@ namespace PowerShellFar.UI
 		IComboBox UIEncoding;
 		IEdit UIDepth;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "BigEndianUnicode")]
 		ExportDialog(string title, string filePath, bool useDepth)
 		{
 			int h = 8;

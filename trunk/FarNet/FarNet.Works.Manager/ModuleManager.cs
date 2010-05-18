@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -163,8 +162,8 @@ namespace FarNet.Works
 
 		//! Don't use Far UI
 		[
-		SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"),
-		SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands"),
+		System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"),
+		System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands"),
 		]
 		public void Unregister()
 		{
@@ -193,7 +192,7 @@ namespace FarNet.Works
 			}
 		}
 
-		[SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods")]
 		internal Assembly AssemblyInstance
 		{
 			get

@@ -92,6 +92,9 @@ namespace PowerShellFar
 		/// </summary>
 		public virtual void OpenFile(FarFile file)
 		{
+			if (file == null)
+				throw new ArgumentNullException("file");
+			
 			if (file.Data == null)
 				return;
 

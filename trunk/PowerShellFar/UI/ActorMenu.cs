@@ -26,6 +26,7 @@ namespace PowerShellFar.UI
 		static bool _menuPanelsSeparated;
 		static bool _menuViewerSeparated;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "TabExpansion")]
 		static void Create()
 		{
 			Debug.Assert(_menuEditor == null);

@@ -117,15 +117,15 @@ namespace PowerShellFar
 				return;
 
 			if (Table == null && Adapter == null)
-				throw new RuntimeException("Both Table and Adapter are null.");
+				throw new RuntimeException("The table and the adapter are null.");
 			if (Table == null && Adapter.SelectCommand == null)
-				throw new RuntimeException("Both Table and Adapter.SelectCommand are null.");
+				throw new RuntimeException("The table and the adapter select command are null.");
 
 			// create and fill table
 			if (Table == null)
 			{
 				Table = new DataTable();
-				Table.Locale = CultureInfo.CurrentCulture; //! FxCop
+				Table.Locale = CultureInfo.CurrentCulture; // CA
 				Fill();
 			}
 

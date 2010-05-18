@@ -180,6 +180,9 @@ namespace PowerShellFar
 
 		public override void SetBufferContents(Coordinates origin, Host.BufferCell[,] contents)
 		{
+			if (contents == null)
+				throw new ArgumentNullException("contents");
+			
 			Works.BufferCell[,] r = new Works.BufferCell[contents.GetLength(0), contents.GetLength(1)];
 			for (int i = 0; i < contents.GetLength(0); ++i)
 				for (int j = 0; j < contents.GetLength(1); ++j)

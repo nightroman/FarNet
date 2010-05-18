@@ -48,8 +48,9 @@ namespace PowerShellFar.Commands
 				WriteObject(GetCurrentPath(panel1, panel2));
 				return;
 			}
-			while (it.MoveNext())
-				WriteObject(it.Current);
+			using (it)
+				while (it.MoveNext())
+					WriteObject(it.Current);
 		}
 
 	}
