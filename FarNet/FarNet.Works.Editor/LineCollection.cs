@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet.Works
 {
@@ -55,12 +54,12 @@ namespace FarNet.Works
 		public IEnumerator<ILine> GetEnumerator() { return EditorTools.EnumerateLines(_Editor, _Start, _Start + _Count).GetEnumerator(); }
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsFixedSize { get { return false; } }
 		
 		public bool IsReadOnly { get { return false; } }
 
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSynchronized { get { return false; } }
 		
 		public object SyncRoot { get { return this; } }

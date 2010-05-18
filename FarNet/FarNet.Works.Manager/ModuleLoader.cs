@@ -6,7 +6,6 @@ Copyright (c) 2005 FarNet Team
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -41,7 +40,7 @@ namespace FarNet.Works
 		/// <remarks>
 		/// Directories with no .CFG or .DLL files (not yet built sources) are simply ignored.
 		/// </remarks>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		static void LoadDirectory(string directoryPath)
 		{
 			Log.Source.TraceInformation("Load directory {0}", directoryPath);

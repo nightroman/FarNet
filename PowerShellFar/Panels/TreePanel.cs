@@ -56,6 +56,9 @@ namespace PowerShellFar
 		public TreePanel(TreeFile root)
 			: this()
 		{
+			if (root == null)
+				throw new ArgumentNullException("root");
+			
 			RootFiles.Add(root);
 			root.Expand();
 		}

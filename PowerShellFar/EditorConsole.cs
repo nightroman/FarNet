@@ -213,6 +213,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Called on key in psfconsole.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		void OnKeyDown(object sender, KeyEventArgs e)
 		{
 			// drop pipeline now, if any

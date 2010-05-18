@@ -47,6 +47,9 @@ namespace PowerShellFar
 		/// </summary>
 		public override void OpenFile(FarFile file)
 		{
+			if (file == null)
+				throw new ArgumentNullException("file");
+			
 			PSPropertyInfo pi = file.Data as PSPropertyInfo;
 
 			// e.g. visible mode: sender is MemberDefinition

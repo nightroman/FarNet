@@ -357,7 +357,10 @@ namespace PowerShellFar
 		/// </summary>
 		public static implicit operator Getter(Meta meta)
 		{
-			return meta.ToGetter();
+			if (meta == null)
+				return x => null;
+			else
+				return meta.ToGetter();
 		}
 
 		/// <summary>

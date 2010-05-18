@@ -38,9 +38,10 @@ namespace PowerShellFar
 
 		void Writing()
 		{
+			// echo the command and drop it
 			if (_command != null)
 			{
-				Far.Net.Write(string.Format("{0}:{1}\n", Entry.CommandInvoke1.Prefix, _command), A.Psf.Settings.CommandForegroundColor);
+				Far.Net.Write(string.Concat(Entry.CommandInvoke1.Prefix, ":", _command, "\n"), A.Psf.Settings.CommandForegroundColor);
 				_command = null;
 			}
 		}

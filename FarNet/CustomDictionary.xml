@@ -2,11 +2,10 @@
 <Dictionary>
 	<Words>
 		<Recognized>
+			<Word>clixml</Word>
 			<Word>Kuzmin</Word>
 			<Word>Plugin</Word>
 			<Word>Plugins</Word>
-			<Word>PowerShell</Word>
-			<Word>PowerShellFar</Word>
 		</Recognized>
 	</Words>
 </Dictionary>
