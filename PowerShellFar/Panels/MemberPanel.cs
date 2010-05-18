@@ -97,7 +97,7 @@ namespace PowerShellFar
 			}
 			catch (Exception ex)
 			{
-				throw new ModuleException("Invalid ExcludeMemberPattern.", ex);
+				throw new ModuleException("Invalid exclude member pattern.", ex);
 			}
 		}
 
@@ -116,7 +116,7 @@ namespace PowerShellFar
 			}
 			catch (Exception ex)
 			{
-				throw new ModuleException("Invalid HideMemberPattern.", ex);
+				throw new ModuleException("Invalid hide member pattern.", ex);
 			}
 		}
 
@@ -352,9 +352,14 @@ namespace PowerShellFar
 		/// </remarks>
 		public EventHandler<FileEventArgs> CreateDataLookup(string[] namePairs)
 		{
-			if (Cast<DataRow>.From(_Value) == null) throw new InvalidOperationException("Data lookup is designed only for DataRow.");
-			if (namePairs == null || namePairs.Length == 0) throw new ArgumentException("Argument 'namePairs' must not be null or empty.");
-			if (namePairs.Length % 2 != 0) throw new ArgumentException("Argument 'namePairs' must contain even number of items.");
+			if (Cast<DataRow>.From(_Value) == null)
+				throw new InvalidOperationException("Data lookup is designed only for data row objects.");
+			
+			if (namePairs == null || namePairs.Length == 0)
+				throw new ArgumentException("'namePairs' must not be null or empty.");
+			
+			if (namePairs.Length % 2 != 0)
+				throw new ArgumentException("'namePairs' must contain even number of items.");
 
 			return (new DataLookup(namePairs)).Invoke;
 		}

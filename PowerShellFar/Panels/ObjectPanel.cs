@@ -94,6 +94,9 @@ namespace PowerShellFar
 		/// </summary>
 		public override void OpenFile(FarFile file)
 		{
+			if (file == null)
+				throw new ArgumentNullException("file");
+
 			PSObject psData = PSObject.AsPSObject(file.Data);
 
 			// case: linear type: do not enter, there is no much sense

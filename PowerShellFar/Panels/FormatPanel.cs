@@ -424,7 +424,7 @@ namespace PowerShellFar
 		}
 
 		///
-		protected virtual void BuildFiles(Collection<PSObject> values)
+		internal virtual void BuildFiles(Collection<PSObject> values)
 		{
 			var files = new List<FarFile>(values.Count);
 			Panel.Files = files;

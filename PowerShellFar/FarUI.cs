@@ -80,6 +80,9 @@ namespace PowerShellFar
 		/// </summary>
 		public override void WriteProgress(long sourceId, ProgressRecord record)
 		{
+			if (record == null)
+				throw new ArgumentNullException("record");
+			
 			// done
 			if (record.RecordType == ProgressRecordType.Completed)
 			{

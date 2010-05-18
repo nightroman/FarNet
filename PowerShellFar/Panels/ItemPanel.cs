@@ -162,7 +162,7 @@ namespace PowerShellFar
 		}
 
 		///
-		protected override void BuildFiles(Collection<PSObject> values)
+		internal override void BuildFiles(Collection<PSObject> values)
 		{
 			if (!My.ProviderInfoEx.IsNavigation(Location.Provider))
 			{

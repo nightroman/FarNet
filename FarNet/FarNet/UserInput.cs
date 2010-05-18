@@ -4,7 +4,6 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace FarNet
 {
@@ -81,7 +80,7 @@ namespace FarNet
 	/// <summary>
 	/// Mouse action.
 	/// </summary>
-	[SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
 	public enum MouseAction
 	{
 		/// <summary>

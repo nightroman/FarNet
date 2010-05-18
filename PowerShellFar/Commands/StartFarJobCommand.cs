@@ -94,6 +94,7 @@ namespace PowerShellFar.Commands
 		public int KeepSeconds { get; set; }
 
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		protected override void BeginProcessing()
 		{
 			if (Hidden)

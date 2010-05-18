@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	PowerShellFar internal profile.
+	The internal profile.
 	Author: Roman Kuzmin
 #>
 

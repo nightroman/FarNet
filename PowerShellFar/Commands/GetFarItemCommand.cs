@@ -79,8 +79,8 @@ namespace PowerShellFar.Commands
 			if (filesToProcess.Count > 0)
 			{
 				//! @($args[0])
-				IEnumerator<string> it = new PathEnumerator(filesToProcess, panel.Path, panel.RealNames, false);
-				WriteObject(InvokeCommand.NewScriptBlock("Get-Item -LiteralPath @($args[0]) -Force -ErrorAction 0").Invoke(it), true);
+				using(IEnumerator<string> it = new PathEnumerator(filesToProcess, panel.Path, panel.RealNames, false))
+					WriteObject(InvokeCommand.NewScriptBlock("Get-Item -LiteralPath @($args[0]) -Force -ErrorAction 0").Invoke(it), true);
 			}
 		}
 
