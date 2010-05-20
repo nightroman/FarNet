@@ -7,6 +7,14 @@ using System.Collections.Generic;
 
 namespace FarNet.Works
 {
+	static class Kit
+	{
+		internal static string FormatConfigMenu(IModuleAction action)
+		{
+			return Invariant.Format("{0} {1}\\{2}", action.Name, action.ModuleName, action.Id);
+		}
+	}
+	
 	public static class ConfigEditor
 	{
 		public static void Show(IList<IModuleEditor> editors, string helpTopic)
@@ -20,7 +28,7 @@ namespace FarNet.Works
 			menu.Title = Res.ModuleEditors;
 
 			foreach(IModuleEditor it in editors)
-				menu.Add(it.ModuleName + "\\" + it.Id).Data = it;
+				menu.Add(Kit.FormatConfigMenu(it)).Data = it;
 
 			while(menu.Show())
 			{
@@ -34,9 +42,9 @@ namespace FarNet.Works
 				ib.Prompt = "New mask for " + editor.Name;
 				ib.Text = editor.Mask;
 				ib.Title = "Default mask: " + editor.DefaultMask;
-
 				if (!ib.Show())
-					return;
+					continue;
+
 				string mask = ib.Text.Trim();
 
 				// restore original on empty
