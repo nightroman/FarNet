@@ -20,7 +20,7 @@ namespace FarNet.Works
 			menu.Title = Res.ModuleFilers;
 
 			foreach(IModuleFiler it in filers)
-				menu.Add(it.ModuleName + "\\" + it.Id).Data = it;
+				menu.Add(Kit.FormatConfigMenu(it)).Data = it;
 
 			while(menu.Show())
 			{
@@ -34,9 +34,9 @@ namespace FarNet.Works
 				ib.Prompt = "New mask for " + filer.Name;
 				ib.Text = filer.Mask;
 				ib.Title = "Default mask: " + filer.DefaultMask;
-
 				if (!ib.Show())
-					return;
+					continue ;
+				
 				string mask = ib.Text.Trim();
 
 				// restore original on empty
