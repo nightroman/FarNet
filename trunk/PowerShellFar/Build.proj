@@ -9,14 +9,12 @@
 	</PropertyGroup>
 
 	<Target Name="Build">
-		<MSBuild Projects="PowerShellFar.sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
+		<MSBuild Projects="..\FarNet.sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
 	</Target>
 
 	<Target Name="Clean">
 		<MSBuild Projects="..\FarNet\Build.proj" Targets="Clean"/>
-		<Delete Files="
-PowerShellFar.sdf;
-"/>
+		<Delete Files="..\FarNet.sdf"/>
 		<RemoveDir Directories="
 bin;
 obj;
