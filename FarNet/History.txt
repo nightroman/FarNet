@@ -5,6 +5,9 @@ http://code.google.com/p/farnet/
 IButton
 -- fix: .Text should return the real text, i.e. without brackets.
 
+Module configuration
+-- fixes in editor and filer module config tools.
+
 = 4.3.19 =
 
 Internal changes dealing with the user screen operations. Automatic calls of
