@@ -108,47 +108,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Editor.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Far.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Editor.cs" />
+    <Compile Include="Far.cs" />
     <Compile Include="File.cs" />
+    <Compile Include="Forms.cs" />
+    <Compile Include="FormsEvents.cs" />
+    <Compile Include="Geometry.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="InputBox.cs" />
     <Compile Include="Kit.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Macro.cs" />
-    <Compile Include="Panel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms.cs" />
-    <Compile Include="FormsEvents.cs" />
-    <Compile Include="Geometry.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="InputBox.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Menu.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Message.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Menu.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="Panel.cs" />
     <Compile Include="Registry.cs" />
+    <Compile Include="UserInput.cs" />
+    <Compile Include="Viewer.cs" />
     <Compile Include="Window.cs" />
     <Compile Include="Zoo.cs" />
-    <Compile Include="UserInput.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Module.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Viewer.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
