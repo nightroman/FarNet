@@ -3,6 +3,12 @@ http://code.google.com/p/farnet/
 
 = 4.3.20 =
 
+NOTE: this time update manually (not by Update-PowerShellFar.ps1) because the
+FarNet package has slightly changed.
+
+*) Update-PowerShellFar.ps1
+-- Adapted to the changed FarNet package.
+
 *) Generate-Dialog-.ps1
 -- update: replaced GetControl() with $dialog[]
 -- FarNet fix: generated button text should not have brackets
