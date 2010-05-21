@@ -82,7 +82,6 @@ Tmp;
 @(Folder->'%(Identity)\obj');
 @(Folder->'%(Identity)\Release');
 "/>
-		<Delete Files="FarNet.sln.cache"/>
 	</Target>
 
 </Project>

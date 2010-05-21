@@ -1,0 +1,41 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<ProductVersion>4.3.19</ProductVersion>
+		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Folder Include="FarNet"/>
+		<Folder Include="PowerShellFar"/>
+	</ItemGroup>
+
+	<Target Name="Archive">
+		<MSBuild Targets="Archive" Projects="@(Folder->'%(Identity)\Build.proj')"/>
+
+		<!--Archive API documentation-->
+		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z FarNet\PowerShellFar.chm" WorkingDirectory="$(Install)"/>
+
+		<!--Copy and delete all result archives-->
+		<CreateItem Include="FarNet\FarNet.*.7z;PowerShellFar\PowerShellFar.*.7z;$(Install)\PowerShellFar.*.7z">
+			<Output ItemName="Archive" TaskParameter="Include"/>
+		</CreateItem>
+		<Copy SourceFiles="@(Archive)" DestinationFolder="$(USERPROFILE)"/>
+		<Delete Files="@(Archive)"/>
+	</Target>
+
+	<Target Name="Clean">
+		<MSBuild Targets="Clean" Projects="@(Folder->'%(Identity)\Build.proj')"/>
+		<Delete Files="FarNetAccord.sdf"/>
+	</Target>
+
+	<Target Name="Install">
+		<MSBuild Targets="Install" Projects="@(Folder->'%(Identity)\Build.proj')" Properties="Configuration=$(Configuration)"/>
+	</Target>
+
+	<Target Name="Uninstall">
+		<MSBuild Targets="Uninstall" Projects="@(Folder->'%(Identity)\Build.proj')"/>
+	</Target>
+
+</Project>
