@@ -1121,7 +1121,7 @@ documentation.
 #$Psf#
 
 The instance of PowerShellFar.Actor class exposing PowerShellFar features
-additional to FarNet features. See PowerShellFar.chm documentation. Note that
+additional to FarNet features. See FarNetAccord.chm documentation. Note that
 PowerShellFar namespace provides public classes that can be created directly by
 New-Object.
 

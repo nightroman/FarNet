@@ -26,7 +26,7 @@
 	-- Far.exe.config
 	-- FarNet\FarNet.dll
 	-- FarNet\FarNet.xml
-	-- FarNet\PowerShellFar.chm
+	-- FarNet\FarNetAccord.chm
 	-- FarNet\Modules\PowerShellFar (+ Bench, Extras, Modules)
 	-- Plugins\FarNet
 
@@ -81,7 +81,7 @@ if (!$Version) {
 }
 
 ### download missed archives
-$Names = @("FarNet.$Version.7z", "PowerShellFar.$Version.7z", "PowerShellFar.doc.$Version.7z")
+$Names = @("FarNet.$Version.7z", "FarNetAccord.$Version.7z", "PowerShellFar.$Version.7z")
 $Archives = @("$Archive\$($Names[0])", "$Archive\$($Names[1])", "$Archive\$($Names[2])")
 $done = 0
 for($$ = 0; $$ -lt 3; ++$$) {
@@ -126,7 +126,7 @@ Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[1])'..."
 & '7z' 'x' ($Archives[1]) "-o$FARHOME" '-aoa' 'FarNet\Modules\PowerShellFar'
 if ($lastexitcode) { throw "7z failed." }
 
-### extract PowerShellFar.chm
+### extract FarNetAccord.chm
 Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[2])'..."
 & '7z' 'x' ($Archives[2]) "-o$FARHOME" '-aoa'
 if ($lastexitcode) { throw "7z failed." }
