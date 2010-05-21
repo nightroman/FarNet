@@ -2,10 +2,17 @@ http://code.google.com/p/farnet/
 
 = 4.3.20 =
 
-IButton
+NOTE: this time update manually (not by Update-PowerShellFar.ps1) because the
+FarNet package has slightly changed.
+
+*) Renamed documentation
+Renamed PowerShellFar.chm to FarNetAccord.chm: it is about FarNet in the first
+place but it also includes some related docs, PowerShellFar API for now.
+
+*) IButton
 -- fix: .Text should return the real text, i.e. without brackets.
 
-Module configuration
+*) Module configuration
 -- fixes in editor and filer module config tools.
 
 = 4.3.19 =
