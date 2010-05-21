@@ -2,19 +2,13 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
+		<ProductVersion>4.3.19</ProductVersion>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-		<ProductVersion>4.3.19</ProductVersion>
 	</PropertyGroup>
 
-	<Target Name="Build">
-		<MSBuild Projects="..\FarNet.sln" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
-	</Target>
-
 	<Target Name="Clean">
-		<MSBuild Projects="..\FarNet\Build.proj" Targets="Clean"/>
-		<Delete Files="..\FarNet.sdf"/>
 		<RemoveDir Directories="
 bin;
 obj;
@@ -55,7 +49,6 @@ Modules\FarMacro\FarMacro.Format.ps1xml;
 
 	<!--Install FarNet and PSF bin-->
 	<Target Name="Install-Bin">
-		<MSBuild Projects="..\FarNet\Build.proj" Targets="Install" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')"/>
 		<Copy SourceFiles="Modules\FarDescription\Bin\$(Configuration)\FarDescription.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarDescription" SkipUnchangedFiles="true"/>
@@ -68,7 +61,6 @@ Modules\FarMacro\FarMacro.Format.ps1xml;
 	<Target Name="Uninstall">
 		<Error Condition="'$(Install)' == ''"/>
 		<RemoveDir Directories="$(Install)\FarNet\Modules\PowerShellFar"/>
-		<MSBuild Projects="..\FarNet\Build.proj" Targets="Uninstall"/>
 	</Target>
 
 	<!--Archive PSF to distribute-->
@@ -91,20 +83,6 @@ Modules\FarMacro\FarMacro.Format.ps1xml;
 		<Exec Command="7z a PowerShellFar.$(ProductVersion).7z .\*" WorkingDirectory="Tmp"/>
 		<Copy SourceFiles="Tmp\PowerShellFar.$(ProductVersion).7z" DestinationFolder="."/>
 		<RemoveDir Directories="Tmp"/>
-	</Target>
-
-	<!--Archive all to distribute-->
-	<Target Name="Archive2" DependsOnTargets="Archive">
-		<!--Archive FarNet-->
-		<MSBuild Projects="..\FarNet\Build.proj" Targets="Archive"/>
-		<!--Archive API documentation-->
-		<Exec Command="7z a PowerShellFar.doc.$(ProductVersion).7z FarNet\PowerShellFar.chm" WorkingDirectory="$(Install)"/>
-		<!--Copy and delete all result archives-->
-		<CreateItem Include="..\FarNet\FarNet.*.7z;PowerShellFar.*.7z;$(Install)\PowerShellFar.*.7z">
-			<Output ItemName="Archive2" TaskParameter="Include"/>
-		</CreateItem>
-		<Copy SourceFiles="@(Archive2)" DestinationFolder="$(USERPROFILE)"/>
-		<Delete Files="@(Archive2)"/>
 	</Target>
 
 </Project>
