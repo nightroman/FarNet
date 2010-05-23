@@ -28,7 +28,7 @@ namespace PowerShellFar
 	sealed class ConsoleOutputWriter : OutputWriter
 	{
 		string _command;
-		
+
 		public ConsoleOutputWriter() { }
 
 		public ConsoleOutputWriter(string command)
@@ -41,8 +41,11 @@ namespace PowerShellFar
 			// echo the command and drop it
 			if (_command != null)
 			{
-				Far.Net.Write(string.Concat(Entry.CommandInvoke1.Prefix, ":", _command, "\n"), A.Psf.Settings.CommandForegroundColor);
+				string header = string.Concat(Entry.CommandInvoke1.Prefix, ":", _command, "\r\n");
+				Far.Net.Write(header, A.Psf.Settings.CommandForegroundColor);
 				_command = null;
+
+				A.Psf.Transcript.WriteLine("\r\n" + header);
 			}
 		}
 
@@ -50,54 +53,63 @@ namespace PowerShellFar
 		{
 			Writing();
 			Far.Net.Write(value);
+			A.Psf.Transcript.Write(value);
 		}
 
 		public override void WriteLine()
 		{
 			Writing();
 			Far.Net.Write("\r\n");
+			A.Psf.Transcript.WriteLine();
 		}
 
 		public override void WriteLine(string value)
 		{
 			Writing();
 			Far.Net.Write(value + "\r\n");
+			A.Psf.Transcript.WriteLine(value);
 		}
 
 		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
 			Far.Net.Write(value, foregroundColor, backgroundColor);
+			A.Psf.Transcript.Write(value);
 		}
 
 		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
 			Far.Net.Write(value + "\r\n", foregroundColor, backgroundColor);
+			A.Psf.Transcript.WriteLine(value);
 		}
 
 		public override void WriteDebugLine(string message)
 		{
 			Writing();
 			Far.Net.Write("DEBUG: " + message + "\r\n", A.Psf.Settings.DebugForegroundColor);
+			A.Psf.Transcript.WriteDebugLine(message);
 		}
 
 		public override void WriteErrorLine(string value)
 		{
 			Writing();
 			Far.Net.Write(value + "\r\n", A.Psf.Settings.ErrorForegroundColor);
+			A.Psf.Transcript.WriteErrorLine(value);
 		}
 
 		public override void WriteVerboseLine(string message)
 		{
 			Writing();
 			Far.Net.Write("VERBOSE: " + message + "\r\n", A.Psf.Settings.VerboseForegroundColor);
+			A.Psf.Transcript.WriteVerboseLine(message);
 		}
 
 		public override void WriteWarningLine(string message)
 		{
 			Writing();
 			Far.Net.Write("WARNING: " + message + "\r\n", A.Psf.Settings.WarningForegroundColor);
+			A.Psf.Transcript.WriteWarningLine(message);
 		}
 	}
 
@@ -194,7 +206,7 @@ namespace PowerShellFar
 	sealed class StreamOutputWriter : TextOutputWriter
 	{
 		StreamWriter _writer;
-		
+
 		public StreamOutputWriter(StreamWriter writer)
 		{
 			_writer = writer;
@@ -212,6 +224,79 @@ namespace PowerShellFar
 
 		protected override void AppendLine(string value)
 		{
+			_writer.WriteLine(value);
+		}
+	}
+
+	sealed class TranscriptOutputWriter : TextOutputWriter
+	{
+		static int _fileNameCount;
+		StreamWriter _writer;
+		string _fileName;
+
+		public string FileName { get { return _fileName; } }
+
+		public void Close()
+		{
+			if (_writer != null)
+			{
+				_writer.Close();
+				_writer = null;
+			}
+		}
+
+		string NewFileName()
+		{
+			// Tried to use the Personal folder (like PS does). For some reasons
+			// some files are not deleted due to UnauthorizedAccessException.
+			// It might be a virus scanner or an indexing service. Enough, the
+			// files are temporary, use the Temp path. It's better to have not
+			// deleted files there than in Personal.
+			string directory = Path.GetTempPath();
+			
+			if (this == A.Psf.Transcript)
+			{
+				// the only session transcript
+				return Path.Combine(
+					directory,
+					Invariant.Format("PowerShell_transcript.{0:yyyyMMddHHmmss}.txt", DateTime.Now));
+			}
+			else
+			{
+				// next instant transcript
+				++_fileNameCount;
+				int process = Process.GetCurrentProcess().Id;
+				return Path.Combine(
+					directory,
+					Invariant.Format("PowerShell_transcript.{0:yyyyMMddHHmmss}.{1}.{2}.txt", DateTime.Now, process, _fileNameCount));
+			}
+		}
+
+		void Writing()
+		{
+			if (_writer == null)
+			{
+				_fileName = NewFileName();
+				_writer = new StreamWriter(_fileName, false, Encoding.Unicode);
+				_writer.AutoFlush = true;
+			}
+		}
+
+		protected override void Append(string value)
+		{
+			Writing();
+			_writer.Write(value);
+		}
+
+		protected override void AppendLine()
+		{
+			Writing();
+			_writer.WriteLine();
+		}
+
+		protected override void AppendLine(string value)
+		{
+			Writing();
 			_writer.WriteLine(value);
 		}
 	}
@@ -304,35 +389,7 @@ namespace PowerShellFar
 		}
 	}
 
-	sealed class StringOutputWriter : TextOutputWriter
-	{
-		readonly StringBuilder _output = new StringBuilder();
-
-		/// <summary>
-		/// Collected output.
-		/// </summary>
-		internal string Output
-		{
-			get { return _output.ToString(); }
-		}
-
-		protected override void Append(string value)
-		{
-			_output.Append(value);
-		}
-
-		protected override void AppendLine()
-		{
-			_output.AppendLine();
-		}
-
-		protected override void AppendLine(string value)
-		{
-			_output.AppendLine(value);
-		}
-	}
-
-	sealed class ExternalOutputWriter : TextOutputWriter, IDisposable
+	sealed class ExternalOutputWriter : TextOutputWriter, IDisposable //????? need?
 	{
 		// Output file name
 		string FileName;
@@ -381,37 +438,9 @@ namespace PowerShellFar
 		{
 			if (Process == null || Process.HasExited)
 			{
-				string externalViewerFileName = A.Psf.Settings.ExternalViewerFileName;
-				string externalViewerArguments;
-
-				// try user defined external viewer
-				if (!string.IsNullOrEmpty(externalViewerFileName))
-				{
-					externalViewerArguments = Invariant.Format(A.Psf.Settings.ExternalViewerArguments, FileName);
-					try
-					{
-						Process = My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
-						Process.EnableRaisingEvents = true;
-						Process.Exited += OnExited;
-					}
-					catch (Exception)
-					{
-						Far.Net.Message(
-							"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + A.Psf.Settings.ExternalViewerArguments,
-							Res.Me, MsgOptions.LeftAligned | MsgOptions.Warning);
-					}
-				}
-
-				// use default external viewer
-				if (Process == null || Process.HasExited)
-				{
-					externalViewerFileName = Process.GetCurrentProcess().MainModule.FileName;
-					externalViewerArguments = "/m /p /v \"" + FileName + "\"";
-
-					Process = My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
-					Process.EnableRaisingEvents = true;
-					Process.Exited += OnExited;
-				}
+				Process = Zoo.StartExternalViewer(FileName);
+				Process.EnableRaisingEvents = true;
+				Process.Exited += OnExited;
 			}
 		}
 

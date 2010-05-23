@@ -274,3 +274,17 @@ function Get-FarHelp
 		}}}
 	}
 }
+
+<#
+.SYNOPSIS
+	Shows transcribed command console output in a viewer.
+#>
+function Show-FarTranscript
+(
+	[switch]
+	# Tells to use an external viewer.
+	$External
+)
+{
+	[PowerShellFar.Zoo]::ShowTranscript($External)
+}

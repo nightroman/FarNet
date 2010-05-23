@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.19#
+#PowerShellFar 4.3.20#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1556
- - Plugin FarNet 4.3.19
+ - Far Manager 2.0.1567
+ - Plugin FarNet 4.3.20
  - Windows PowerShell 2.0
 
 
@@ -485,13 +485,13 @@ On exit from the editor the debugger dialog is repeated.
 
 #NOTES#
 
-When you enter the debugger and the command being executed already has pending
-output then its output is sent to a file and external viewer is started to view
-it. This looks unusual but in this way you can see the output during debugging.
-
 It is possible that the debugger or your actions there may affect execution
 flow in unusual way, especially if the code deals with Far UI that may clash
 against the debugger UI. Think when you are about to debug such scenarios.
+
+When you debug commands with output it may be useful to open an external viewer
+of transcribed output before you start debugging (Show-FarTranscript
+-External). In this way you can see the output during debugging.
 
 
 @EditorConsole
@@ -1165,7 +1165,8 @@ $#Commands output#
 
 Output of these commands is written to the user screen (console under panels).
 The output uses different colors depending on message types (errors, warnings,
-etc.). Note: only the tail of long output can be seen after invocation.
+etc.). The whole session output is transcribed and can be opened in a viewer
+at any time during the session by Show-FarTranscript.
 
 User screen output may have unwanted screen effects on commands with Far UI and
 on PowerShell debugging. Such commands should be invoked from the command box
@@ -1188,6 +1189,22 @@ output is redirected to a file and an external viewer is started to view it.
 Output of other code is discarded (e.g. commands from your menu tools or event
 handlers have no shown output). Failure messages are shown in error message
 boxes, minor errors and warnings are ignored.
+
+#Transcription of command output#
+
+Output of >: commands is written to the user screen and to the current session
+transcription file. The transcription file is in the %TEMP% directory, its name
+is "PowerShell_transcript.<timestamp>.txt"
+
+The transcription file is lazy opened, kept opened until the end of the session
+and deleted if Far exits normally.
+
+Use Show-FarTranscript [-External] to view the transcribed session output. Note
+that external show is especially useful on script debugging.
+
+Output of >>: commands is written to files:
+"PowerShell_transcript.<timestamp>.<pid>.<counter>.txt".
+Their life is shorter: they are deleted as soon as their viewers are closed.
 
 
 @BackgroundJobs

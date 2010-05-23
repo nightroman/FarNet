@@ -6,12 +6,34 @@ http://code.google.com/p/farnet/
 NOTE: this time update manually (not by Update-PowerShellFar.ps1) because the
 FarNet package has slightly changed.
 
+*) Transcription of command output
+
+Output of >: commands is written to the user screen and to the current session
+transcription file. The transcription file is in the %TEMP% directory, its name
+is "PowerShell_transcript.<timestamp>.txt"
+
+The transcription file is lazy opened, kept opened until the end of the session
+and deleted if Far exits normally.
+
+Use Show-FarTranscript [-External] to view the transcribed session output. Note
+that external show is especially useful on script debugging.
+
+Output of >>: commands is written to files:
+"PowerShell_transcript.<timestamp>.<pid>.<counter>.txt".
+Their life is shorter: they are deleted as soon as their viewers are closed.
+
 *) Update-PowerShellFar.ps1
 -- Adapted to the changed FarNet package.
 
 *) Generate-Dialog-.ps1
 -- update: replaced GetControl() with $dialog[]
 -- FarNet fix: generated button text should not have brackets
+
+*) PowerShell.hrc (Colorer)
+-- Added $Transcript to special PS variables (see Start-Transcript, -Path)
+
+*) Start-Far.ps1
+-- Start Far with /w, not /rc switch (Far 2.0.1566)
 
 = 4.3.19 =
 
