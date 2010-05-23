@@ -6,14 +6,17 @@ NOTE: this time update manually (not by Update-PowerShellFar.ps1) because the
 FarNet package has slightly changed.
 
 *) Renamed documentation
-Renamed PowerShellFar.chm to FarNetAccord.chm: it is about FarNet in the first
-place but it also includes some related docs, PowerShellFar API for now.
+Renamed PowerShellFar.chm to FarNetAccord.chm. It includes PowerShellFar API
+but it is about FarNet in the first place, so the new name is less confusing.
 
 *) IButton
 -- fix: .Text should return the real text, i.e. without brackets.
 
 *) Module configuration
 -- fixes in editor and filer module config tools.
+
+*) Misc
+-- fix of console colors of error messages on exit.
 
 = 4.3.19 =
 
