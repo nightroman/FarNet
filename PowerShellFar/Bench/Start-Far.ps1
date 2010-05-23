@@ -1,19 +1,19 @@
 
 <#
 .SYNOPSIS
-	Starts Far in /rc mode and manages start and exit current directory.
+	Starts Far and manages start and exit current directory.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	It is a helper for running Far in the current PowerShell console in /rc
-	mode (restore console on exit). On exit from Far it sets the last panel
-	directory current and updates the current PowerShell location.
+	It helps to run Far Manager in the current PowerShell console. On exit from
+	Far it sets the last panel directory current and updates the current
+	PowerShell location.
 
-	All arguments are passed in Far, but do not confuse PowerShell - use '/',
-	not '-' for switches. Also mind other PowerShell rules different from Cmd.
+	All arguments are passed in Far. Do not confuse PowerShell: use '/', not
+	'-' for switches. Mind other PowerShell parsing rules different from Cmd.
 
 .EXAMPLE
-	# Let's use alias 'far'; we still can call Far directly by 'far.exe'
+	# Use alias 'far'; we still can call Far directly by 'far.exe'
 	Set-Alias far Start-Far
 
 	# Start Far with the current directory on the active and passive panels
@@ -26,8 +26,8 @@
 # sync location
 [Environment]::CurrentDirectory = (Get-Location -PSProvider FileSystem).ProviderPath
 
-# run in /rc mode
-far.exe /rc $args
+# run
+far.exe /w $args
 
 # sync location
 if (($args -notcontains '/e') -and ($args -notcontains '/v')) {

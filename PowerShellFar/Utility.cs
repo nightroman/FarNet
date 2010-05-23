@@ -11,23 +11,73 @@ using System.Globalization;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Provider;
-using System.Management.Automation.Runspaces;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using FarNet;
 
 namespace PowerShellFar
 {
 	/// <summary>
-	/// For internal use.
+	/// For internal use and testing.
 	/// </summary>
 	public static class Zoo
 	{
 		///
 		public static bool TestInputCode { get; set; }
+		
 		///
 		public static Meta[] TablePanelSetupColumns(object[] columns)
 		{
 			return TablePanel.SetupColumns(columns);
+		}
+
+		internal static Process StartExternalViewer(string fileName)
+		{
+			string externalViewerFileName = A.Psf.Settings.ExternalViewerFileName;
+			string externalViewerArguments;
+
+			// try the user defined viewer
+			if (!string.IsNullOrEmpty(externalViewerFileName))
+			{
+				externalViewerArguments = Invariant.Format(A.Psf.Settings.ExternalViewerArguments, fileName);
+				try
+				{
+					return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
+				}
+				catch (Exception)
+				{
+					Far.Net.Message(
+						"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + A.Psf.Settings.ExternalViewerArguments,
+						Res.Me, MsgOptions.LeftAligned | MsgOptions.Warning);
+				}
+			}
+
+			// use default external viewer
+			externalViewerFileName = Process.GetCurrentProcess().MainModule.FileName;
+			externalViewerArguments = "/m /p /v \"" + fileName + "\"";
+			return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
+		}
+
+		///
+		public static void ShowTranscript(bool external)
+		{
+			// ensure the file exists, we may want to open a viewer before output
+			if (A.Psf.Transcript.FileName == null)
+				A.Psf.Transcript.Write(string.Empty);
+
+			// open external or internal
+			if (external)
+			{
+				StartExternalViewer(A.Psf.Transcript.FileName);
+			}
+			else
+			{
+				var viewer = Far.Net.CreateViewer();
+				viewer.Title = Path.GetFileName(A.Psf.Transcript.FileName);
+				viewer.FileName = A.Psf.Transcript.FileName;
+				viewer.CodePage = 1200;
+				viewer.Open();
+			}
 		}
 	}
 
@@ -239,6 +289,26 @@ namespace PowerShellFar
 
 namespace My
 {
+	static class FileEx
+	{
+		public static void TryDelete(string fileName)
+		{
+			try
+			{
+				File.Delete(fileName);
+			}
+			catch (IOException)
+			{
+				// in use by another process; it's OK
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				// virus scanner, indexing service; it's bad
+				Log.TraceException(ex);
+			}
+		}
+	}
+
 	/// <summary>
 	/// My System.IO.Path extensions.
 	/// </summary>

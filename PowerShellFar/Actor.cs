@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -100,6 +101,11 @@ namespace PowerShellFar
 					Runspace = null;
 				}
 			}
+
+			// clean the transcript
+			_transcript.Close();
+			if (_transcript.FileName != null)
+				My.FileEx.TryDelete(_transcript.FileName);
 		}
 
 		void OpenRunspace(bool sync)
@@ -900,8 +906,8 @@ Continue with this current directory?
 			}
 			else
 			{
-				// use string output; it is shown later
-				FarUI.PushWriter(new StringOutputWriter());
+				// use own output to be shown later
+				FarUI.PushWriter(new TranscriptOutputWriter());
 			}
 
 			// install timer
@@ -969,23 +975,23 @@ Continue with this current directory?
 				_myCommand = null;
 
 				// pop writer
-				//! this method might add 'StringOutputWriter' but it might be already consumed and replaced
 				OutputWriter usedWriter = FarUI.PopWriter();
-				StringOutputWriter myWriter = usedWriter as StringOutputWriter;
-				if (myWriter == null)
+				if (writer == null)
 				{
-					ExternalOutputWriter externalWriter = usedWriter as ExternalOutputWriter;
-					if (externalWriter != null)
-						externalWriter.Dispose();
-				}
-				else
-				{
-					// get collected output
-					string output = myWriter.Output;
-
-					// show results
-					if (output.Length > 0)
-						Far.Net.AnyViewer.ViewText(output, code, OpenMode.None);
+					// it is the writer created locally;
+					// view its file, if any
+					var myWriter = (TranscriptOutputWriter)usedWriter;
+					myWriter.Close();
+					if (myWriter.FileName != null)
+					{
+						var viewer = Far.Net.CreateViewer();
+						viewer.Title = code;
+						viewer.FileName = myWriter.FileName;
+						viewer.DeleteSource = DeleteSource.File;
+						viewer.DisableHistory = true;
+						viewer.CodePage = 1200;
+						viewer.Open();
+					}
 				}
 
 				// notify host
@@ -1064,19 +1070,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		void OnDebuggerStop(object sender, DebuggerStopEventArgs e)
 		{
-			// replace writer to external
-			StringOutputWriter writer1 = FarUI.Writer as StringOutputWriter;
-			if (writer1 != null)
-			{
-				ExternalOutputWriter writer2 = new ExternalOutputWriter();
-
-				string output = writer1.Output;
-				if (output.Length > 0)
-					writer2.Write(output);
-
-				FarUI.PopWriter();
-				FarUI.PushWriter(writer2);
-			}
+			//????? used to replace a writer and push ExternalOutputWriter; review this
 
 			// show debug dialog
 			UI.DebuggerDialog ui = new UI.DebuggerDialog(e);
@@ -1103,5 +1097,10 @@ Continue with this current directory?
 			get { return Entry.Instance.Manager; }
 		}
 
+		/// <summary>
+		/// Transcript writer, ready to write.
+		/// </summary>
+		internal TranscriptOutputWriter Transcript { get { return _transcript; } }
+		readonly TranscriptOutputWriter _transcript = new TranscriptOutputWriter();
 	}
 }

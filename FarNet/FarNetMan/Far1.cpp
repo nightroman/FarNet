@@ -454,9 +454,12 @@ void Far1::ShowError(String^ title, Exception^ error)
 		}
 		else
 		{
+			ConsoleColor color1 = Console::ForegroundColor;
 			Console::ForegroundColor = ConsoleColor::Red;
 			Console::WriteLine(info);
-			System::Threading::Thread::Sleep(1000);
+			Console::ForegroundColor = color1;
+			
+			System::Threading::Thread::Sleep(2000);
 		}
 
 		return;
