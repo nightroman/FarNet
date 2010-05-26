@@ -21,6 +21,28 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
+Place FarRawUI::WindowPlace::get()
+{
+	SMALL_RECT rect;
+	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARRECT, &rect);
+	return Place(rect.Left, rect.Top, rect.Right, rect.Bottom);
+}
+
+Point FarRawUI::WindowCursor::get()
+{
+	COORD pos;
+	Info.AdvControl(Info.ModuleNumber, ACTL_GETCURSORPOS, &pos);
+	return Point(pos.X, pos.Y);
+}
+
+void FarRawUI::WindowCursor::set(Point value)
+{
+	COORD pos;
+	pos.X = (SHORT)value.X;
+	pos.Y = (SHORT)value.Y;
+	Info.AdvControl(Info.ModuleNumber, ACTL_SETCURSORPOS, &pos);
+}
+
 void Far1::Connect()
 {
 	Far::Net = %Far;
@@ -777,6 +799,11 @@ public:
 IMacro^ Far1::Macro::get()
 {
 	return Works::FarMacro::Instance ? Works::FarMacro::Instance : gcnew FarMacro();
+}
+
+IRawUI^ Far1::RawUI::get()
+{
+	return %FarRawUI::Instance;
 }
 
 }

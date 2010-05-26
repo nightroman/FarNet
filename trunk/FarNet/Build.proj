@@ -1,7 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.3.20</ProductVersion>
+		<ProductVersion>4.3.21</ProductVersion>
 		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
@@ -52,7 +52,9 @@ FarNet.sdf;
 		<!--Copy all files-->
 		<Copy DestinationFolder="Tmp" SourceFiles="
 $(FarHome)\Far.exe.config;
-Readme.txt"/>
+Readme.txt;
+Install.txt;
+"/>
 		<Copy DestinationFolder="Tmp\FarNet" SourceFiles="
 $(FarHome)\FarNet\FarNet.dll;
 $(FarHome)\FarNet\FarNet.xml;
@@ -62,14 +64,17 @@ $(FarHome)\FarNet\FarNet.Works.Editor.dll;
 $(FarHome)\FarNet\FarNet.Works.Macros.dll;
 $(FarHome)\FarNet\FarNet.Works.Manager.dll;
 $(FarHome)\FarNet\FarNet.Works.Panels.dll;
-$(FarHome)\FarNet\FarNet.Works.Registry.dll"/>
+$(FarHome)\FarNet\FarNet.Works.Registry.dll;
+"/>
 		<Copy DestinationFolder="Tmp\Plugins\FarNet" SourceFiles="
 $(FarHome)\Plugins\FarNet\FarNetMan.hlf;
 $(FarHome)\Plugins\FarNet\FarNetMan.dll;
 History.txt;
-LICENSE"/>
+LICENSE;
+"/>
 		<Copy DestinationFolder="Tmp\Plugins.x64\FarNet" SourceFiles="
-FarNetMan\Release\x64\FarNetMan.dll"/>
+FarNetMan\Release\x64\FarNetMan.dll;
+"/>
 		<MakeDir Directories="Tmp\FarNet\Modules"/>
 		<Exec Command="xcopy Modules Tmp\FarNet\Modules /s > nul"/>
 		<!--Archive-->

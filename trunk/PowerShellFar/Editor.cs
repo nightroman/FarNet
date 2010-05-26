@@ -102,8 +102,9 @@ namespace PowerShellFar
 			{
 				// make menu
 				IListMenu menu = Far.Net.CreateListMenu();
-				menu.X = Console.CursorLeft;
-				menu.Y = Console.CursorTop;
+				var cursor = Far.Net.RawUI.WindowCursor;
+				menu.X = cursor.X;
+				menu.Y = cursor.Y;
 				A.Psf.Settings.Intelli(menu);
 				if (isEmpty)
 				{
@@ -114,7 +115,7 @@ namespace PowerShellFar
 				}
 				menu.Incremental = lastWord + "*";
 				menu.IncrementalOptions = PatternOptions.Prefix;
-				
+
 				foreach (PSObject o in words)
 				{
 					if (o != null)
@@ -251,7 +252,7 @@ namespace PowerShellFar
 						{
 							// [F5]
 							e.Ignore = true;
-							InvokeScriptFromEditor(editor);
+							InvokeScriptBeingEdited(editor);
 						}
 						return;
 					}
@@ -278,7 +279,7 @@ namespace PowerShellFar
 			}
 		}
 
-		public static void InvokeScriptFromEditor(IEditor editor)
+		public static void InvokeScriptBeingEdited(IEditor editor)
 		{
 			// editor
 			if (editor == null)
@@ -303,9 +304,7 @@ namespace PowerShellFar
 			Console.Title = "Running...";
 			try
 			{
-				using (ExternalOutputWriter writer = new ExternalOutputWriter())
-					A.Psf.InvokePipeline(code, writer, false);
-
+				A.Psf.InvokePipeline(code, null, false);
 				Console.Title = "Done " + DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
 			}
 			catch
@@ -429,7 +428,7 @@ namespace PowerShellFar
 				foreach (ILine line in Editor.Lines)
 					lines.Add(line.Text);
 				Editor.EndAccess();
-	
+
 				if (lines[lines.Count - 1].ToString().Length == 0)
 					lines.RemoveAt(lines.Count - 1);
 				value = lines;

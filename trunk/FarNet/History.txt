@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.3.21 =
+
+NOTE: update manually (not by Update-PowerShellFar.ps1).
+
+*) IFar
+-- New property RawUI.
+
+*) IRawUI
+-- Low level UI operator; properties so far: WindowCursor, WindowPlace
+(Far 2.0.1573: ACTL_GETFARRECT, ACTL_GETCURSORPOS, ACTL_SETCURSORPOS).
+
 = 4.3.20 =
 
 NOTE: this time update manually (not by Update-PowerShellFar.ps1) because the

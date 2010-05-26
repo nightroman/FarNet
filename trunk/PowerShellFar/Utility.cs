@@ -24,7 +24,7 @@ namespace PowerShellFar
 	{
 		///
 		public static bool TestInputCode { get; set; }
-		
+
 		///
 		public static Meta[] TablePanelSetupColumns(object[] columns)
 		{
@@ -291,21 +291,16 @@ namespace My
 {
 	static class FileEx
 	{
-		public static void TryDelete(string fileName)
+		public static void DeleteIgnoreError(string fileName)
 		{
 			try
 			{
 				File.Delete(fileName);
 			}
-			catch (IOException)
-			{
-				// in use by another process; it's OK
-			}
-			catch (UnauthorizedAccessException ex)
-			{
-				// virus scanner, indexing service; it's bad
-				Log.TraceException(ex);
-			}
+			// in use by another process, often opened by a user, it's fine
+			catch (IOException) { }
+			// virus scanner, indexing service, it's bad but what can we do?
+			catch (UnauthorizedAccessException) { }
 		}
 	}
 
