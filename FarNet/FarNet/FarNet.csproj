@@ -124,6 +124,7 @@
     <Compile Include="Message.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Panel.cs" />
+    <Compile Include="RawUI.cs" />
     <Compile Include="Registry.cs" />
     <Compile Include="UserInput.cs" />
     <Compile Include="Viewer.cs" />

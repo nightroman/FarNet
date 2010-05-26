@@ -104,11 +104,12 @@ function global:Complete-Word-
 	}
 	else {
 		# select 1 word from list
+		$cursor = $Far.RawUI.WindowCursor
 		$w = .{
 			$words.GetEnumerator() | .{process{ if ($_.Value) { $_.Key } }} | Sort-Object
 			$words.GetEnumerator() | .{process{ if (!$_.Value) { $_.Key } }} | Sort-Object
 		} |
-		Out-FarList -Intelli -IncrementalOptions 'Prefix' -Incremental "$word*" -X ([console]::CursorLeft) -Y ([console]::CursorTop)
+		Out-FarList -Intelli -IncrementalOptions 'Prefix' -Incremental "$word*" -X $cursor.X -Y $cursor.Y
 		if (!$w) {
 			return
 		}

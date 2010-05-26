@@ -31,13 +31,16 @@
 	>: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()
 #>
 
+[CmdletBinding()]
 param
 (
-	[Parameter()][string]
+	[string]
+	[ValidateScript({[System.IO.Directory]::Exists($_)})]
 	# Far directory; needed if %FARHOME% is not defined and its location is not standard.
 	$FARHOME = $(if ($env:FARHOME) {$env:FARHOME} else {"C:\Program Files\Far"})
 	,
 	[string]
+	[ValidateSet('x86', 'x64')]
 	# Target platform: x86 or x64. Default: depends on the current process.
 	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'})
 	,
@@ -50,11 +53,9 @@ param
 	$Stable
 )
 
-if ($Host.Name -ne 'ConsoleHost') { throw "Please, invoke by the console host." }
-if (![IO.Directory]::Exists($FARHOME)) { throw "Directory not found: '$FARHOME'." }
-if (@('x86', 'x64') -notcontains $Platform) { throw "Invalid platform value: '$Platform'." }
-$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
+$ErrorActionPreference = 'Stop'
+if ($Host.Name -ne 'ConsoleHost') { throw "Please, invoke by the console host." }
 
 ### download if not yet
 <#

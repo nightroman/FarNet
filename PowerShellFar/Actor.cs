@@ -105,7 +105,7 @@ namespace PowerShellFar
 			// clean the transcript
 			_transcript.Close();
 			if (_transcript.FileName != null)
-				My.FileEx.TryDelete(_transcript.FileName);
+				My.FileEx.DeleteIgnoreError(_transcript.FileName);
 		}
 
 		void OpenRunspace(bool sync)
@@ -1055,25 +1055,48 @@ Continue with this current directory?
 		}
 
 		/// <summary>
-		/// Invokes a script from the current editor.
+		/// Invokes the script opened in the current editor.
 		/// </summary>
 		/// <remarks>
-		/// Output, if any, is written into a tmp file and an external viewer is started to view it.
-		/// Why external: to be able to view output and at the same time perform some modal operations
-		/// e.g. debugging. You can set your external viewer, see <see cref="PowerShellFar.Settings"/>.
+		/// If the file is modified then it is saved.
+		/// The action is the same as to invoke the script from the input command box.
 		/// </remarks>
 		public void InvokeScriptFromEditor()
 		{
-			EditorKit.InvokeScriptFromEditor(null);
+			EditorKit.InvokeScriptBeingEdited(null);
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		void OnDebuggerStop(object sender, DebuggerStopEventArgs e)
 		{
-			//????? used to replace a writer and push ExternalOutputWriter; review this
-
 			// show debug dialog
 			UI.DebuggerDialog ui = new UI.DebuggerDialog(e);
+			if (FarUI.Writer is ConsoleOutputWriter || FarUI.Writer is TranscriptOutputWriter)
+			{
+				ui.OnView = delegate
+				{
+					// | console
+					{
+						var writer = FarUI.Writer as ConsoleOutputWriter;
+						if (writer != null)
+						{
+							Zoo.ShowTranscript(true);
+							return;
+						}
+					}
+					// | viewer
+					{
+						var writer = FarUI.Writer as TranscriptOutputWriter;
+						if (writer != null)
+						{
+							if (writer.FileName == null)
+								writer.Write(string.Empty);
+
+							Zoo.StartExternalViewer(writer.FileName);
+							return;
+						}
+					}
+				};
+			}
 			e.ResumeAction = ui.Show();
 		}
 
@@ -1102,5 +1125,6 @@ Continue with this current directory?
 		/// </summary>
 		internal TranscriptOutputWriter Transcript { get { return _transcript; } }
 		readonly TranscriptOutputWriter _transcript = new TranscriptOutputWriter();
+
 	}
 }

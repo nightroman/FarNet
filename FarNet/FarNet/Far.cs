@@ -693,6 +693,10 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		public abstract IRegistryKey OpenRegistryKey(string name, bool writable);
+		/// <summary>
+		/// "Low level" UI operator.
+		/// </summary>
+		public abstract IRawUI RawUI { get; }
 	}
 
 	/// <summary>

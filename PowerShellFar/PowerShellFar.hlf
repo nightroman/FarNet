@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.20#
+#PowerShellFar 4.3.21#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1567
- - Plugin FarNet 4.3.20
+ - Far Manager 2.0.1573
+ - Plugin FarNet 4.3.21
  - Windows PowerShell 2.0
 
 
@@ -469,14 +469,17 @@ does not stop at each statement.
 If used while stepping through a function, it exits the function and steps to
 the next statement.
 
-[#[Console..]#] Opens an editor console (in other words, nested prompt) where
+[#[Console]#] Opens an editor console (in other words, nested prompt) where
 you can examine or change variables, invoke commands and etc. On exit the same
 dialog is repeated.
 See also ~Editor console~@EditorConsole@.
 
-[#[Edit..]#] Opens the source in the editor at the debugger line. You should
+[#[Edit]#] Opens the source in the editor at the debugger line. You should
 not edit the script at this moment, it is only for taking a look at the code.
 On exit from the editor the debugger dialog is repeated.
+
+[#[View]#] Opens an external viewer to view the running command output. This
+action is not available for some commands, e.g. for editor console commands.
 
 [#[Goto]#] Sets the current list line to the current debugger line.
 

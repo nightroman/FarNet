@@ -15,7 +15,11 @@ namespace PowerShellFar.UI
 	class DebuggerDialog
 	{
 		static DebuggerResumeAction _LastAction = DebuggerResumeAction.StepInto;
+
+		public EventHandler<ButtonClickedEventArgs> OnView { get; set; }
+
 		InvocationInfo _InvocationInfo;
+
 		IDialog _Dialog;
 		IListBox _List1;
 		IListBox _List2;
@@ -24,12 +28,14 @@ namespace PowerShellFar.UI
 		IButton _Out;
 		IButton _Console;
 		IButton _Edit;
+		IButton _View;
 		IButton _Goto;
 		IButton _Break;
 
 		public DebuggerDialog(DebuggerStopEventArgs e)
 		{
 			_InvocationInfo = e.InvocationInfo;
+
 			int maxLine = 0;
 			string[] lines = null;
 			if (!string.IsNullOrEmpty(e.InvocationInfo.ScriptName) && File.Exists(e.InvocationInfo.ScriptName))
@@ -115,6 +121,12 @@ namespace PowerShellFar.UI
 			_Edit.CenterGroup = true;
 			_Edit.NoBrackets = true;
 
+			// to be completed on show
+			_View = _Dialog.AddButton(0, 0, BtnView);
+			_View.CenterGroup = true;
+			_View.NoBrackets = true;
+			_View.NoClose = true;
+
 			_Goto = _Dialog.AddButton(0, 0, BtnGoto);
 			_Goto.CenterGroup = true;
 			_Goto.NoBrackets = true;
@@ -150,6 +162,11 @@ namespace PowerShellFar.UI
 
 		public DebuggerResumeAction Show()
 		{
+			if (OnView == null)
+				_View.Disabled = true;
+			else
+				_View.ButtonClicked += OnView;
+
 			switch (_LastAction)
 			{
 				case DebuggerResumeAction.StepInto: _Dialog.Focused = _Step; break;
@@ -202,8 +219,9 @@ namespace PowerShellFar.UI
 			BtnStep = "&Step",
 			BtnOver = "O&ver",
 			BtnOut = "&Out",
-			BtnConsole = "Conso&le..",
-			BtnEdit = "&Edit..",
+			BtnConsole = "Conso&le",
+			BtnEdit = "&Edit",
+			BtnView = "V&iew",
 			BtnGoto = "&Goto",
 			BtnBreak = "&Break";
 	}

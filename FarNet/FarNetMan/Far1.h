@@ -7,6 +7,15 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
+ref class FarRawUI sealed : IRawUI
+{
+public:
+	virtual property Place WindowPlace { Place get() override; }
+	virtual property Point WindowCursor { Point get() override; void set(Point value) override; }
+internal:
+	static FarRawUI Instance;
+};
+
 ref class Far1 sealed : IFar
 {
 public:
@@ -22,6 +31,7 @@ public:
 	virtual property ILine^ Line { ILine^ get() override; }
 	virtual property IMacro^ Macro { IMacro^ get() override; }
 	virtual property IntPtr MainWindowHandle { IntPtr get() override; }
+	virtual property IRawUI^ RawUI { IRawUI^ get() override; }
 	virtual property IViewer^ Viewer { IViewer^ get() override; }
 	virtual property IWindow^ Window { IWindow^ get() override; }
 	virtual property String^ ActivePath { String^ get() override; }

@@ -252,7 +252,7 @@ function global:TabExpansion
 			$patt_ = "$lastWord_*"
 
 			### Commands
-			foreach($_ in Get-Command $patt_ -CommandType 'Cmdlet,Function,ExternalScript') {
+			foreach($_ in Get-Command $patt_ -CommandType 'Application,Cmdlet,Function,ExternalScript') {
 				$_.Name
 			}
 
