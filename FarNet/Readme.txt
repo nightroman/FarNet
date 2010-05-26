@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.3.20
-Release  : 2010.05.23
+Version  : 4.3.21
+Release  : 2010.05.26
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -20,7 +20,7 @@ provided by the PowerShellFar module.
 
 
  - .NET Framework 2.0
- - Far Manager 2.0.1567
+ - Far Manager 2.0.1573
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
@@ -32,17 +32,17 @@ provided by the PowerShellFar module.
 	= INSTALLATION =
 
 
-Copy to %FARHOME% keeping the same directory structure:
--- Far.exe.config
--- FarNet\FarNet.*
--- Plugins\FarNet\FarNetMan.* (*)
--- FarNet\Modules\* (sample modules; you may copy and build some)
+The file Install.txt shows what has to be copied to %FARHOME% keeping the same
+directory structure (see (*) about x64).
 
 (*) x64 installation:
--- Plugins\FarNet\FarNetMan.dll must be copied from Plugins.x64\FarNet
+-- Plugins\FarNet\FarNetMan.dll has to be copied from Plugins.x64\FarNet
 
-This is the default and recommended installation. Still, you can change
-location of FarNet and Modules by changing the Far.exe.config configuration.
+Optional:
+-- FarNet\Modules\* (sample modules; you may copy and build some)
+
+Far.exe.config allows to change the proposed locations of FarNet and Modules
+but this scenario is not tested on development.
 
 IMPORTANT: Far.exe.config cannot be moved or renamed. If this file is missed in
 %FARHOME% or configured incorrectly then Far Manager fails to load the FarNet

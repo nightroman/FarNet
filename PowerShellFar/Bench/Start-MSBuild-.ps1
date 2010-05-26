@@ -58,15 +58,20 @@ $edit.History = '-MSBuild'
 $edit.UseLastHistory = $true
 
 ### target list
-$targets = $dialog.AddListBox(5, -1, 71, 7, 'Target : Depends on targets')
+$targets = $dialog.AddListBox(5, -1, 71, 7, 'Target : Related targets')
 $targets.NoClose = $true
 foreach($target in $xml.Project.Target) {
+	$text = $target.Name
 	if ($target.DependsOnTargets) {
-		[void]$targets.Add($target.Name + ' : ' + $target.DependsOnTargets)
+		$text += ' : depends on ' + $target.DependsOnTargets
 	}
-	else {
-		[void]$targets.Add($target.Name)
+	if ($target.AfterTargets) {
+		$text += ' : after ' + $target.AfterTargets
 	}
+	if ($target.BeforeTargets) {
+		$text += ' : before ' + $target.BeforeTargets
+	}
+	[void]$targets.Add($text)
 }
 
 ### properties list

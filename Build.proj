@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.3.20</ProductVersion>
+		<ProductVersion>4.3.21</ProductVersion>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
@@ -14,11 +14,15 @@
 	<Target Name="Archive">
 		<MSBuild Targets="Archive" Projects="@(Folder->'%(Identity)\Build.proj')"/>
 
-		<!--Archive API documentation-->
-		<Exec Command="7z a FarNetAccord.$(ProductVersion).7z FarNet\FarNetAccord.chm" WorkingDirectory="$(Install)"/>
+		<!--Archive Accord-->
+		<RemoveDir Directories="Tmp"/>
+		<Copy DestinationFolder="Tmp" SourceFiles="Install.txt"/>
+		<Copy DestinationFolder="Tmp\FarNet" SourceFiles="$(Install)\FarNet\FarNetAccord.chm"/>
+		<Exec Command="7z a ..\FarNetAccord.$(ProductVersion).7z .\*" WorkingDirectory="Tmp"/>
+		<RemoveDir Directories="Tmp"/>
 
 		<!--Copy and delete all result archives-->
-		<CreateItem Include="FarNet\FarNet.*.7z;PowerShellFar\PowerShellFar.*.7z;$(Install)\FarNetAccord.*.7z">
+		<CreateItem Include="FarNetAccord.*.7z;FarNet\FarNet.*.7z;PowerShellFar\PowerShellFar.*.7z">
 			<Output ItemName="Archive" TaskParameter="Include"/>
 		</CreateItem>
 		<Copy SourceFiles="@(Archive)" DestinationFolder="$(USERPROFILE)"/>

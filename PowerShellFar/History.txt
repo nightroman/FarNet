@@ -1,6 +1,32 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.21 =
+
+NOTE: update manually (not by Update-PowerShellFar.ps1). This script and its
+parameters are redesigned to be less sensitive to future changes in archive
+list and archive contents.
+
+*) Far /w mode
+-- Fixed TabExpansion and Complete-Word-.ps1 menu position.
+
+*) TabExpansion
+-- Applications are also added to candidates (gcm * -type application). It's a
+little bit noisy, perhaps (that's why it was not done), but it looks like we
+better have these candidates in the list, too.
+
+*) Script debugging dialog
+-- New button [View]: Opens an external viewer to view the running command
+output. This action is not available for some commands, e.g. editor console
+commands.
+
+*) Command output (continued)
+-- The command "Invoke script from editor" ([F5] in the editor with .ps1 file)
+has the same effect as if it is invoked from the input command box (similar to
+>>: commands from the command line). Output, if any, is shown in the internal
+viewer when the command is done. External viewer is used only on debugging via
+[View], see above.
+
 = 4.3.20 =
 
 NOTE: this time update manually (not by Update-PowerShellFar.ps1) because the

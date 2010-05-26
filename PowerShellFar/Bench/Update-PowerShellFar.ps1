@@ -20,15 +20,9 @@
 
 	On updating from the archives the script simply extracts files and replace
 	the same existing with no warnings. Existing extra files are not deleted:
-	thus, read History.txt on updates, you may want to remove some files.
+	thus, read History.txt on updates, you may want to remove some old files.
 
-	Updated items in %FARHOME%:
-	-- Far.exe.config
-	-- FarNet\FarNet.dll
-	-- FarNet\FarNet.xml
-	-- FarNet\FarNetAccord.chm
-	-- FarNet\Modules\PowerShellFar (+ Bench, Extras, Modules)
-	-- Plugins\FarNet
+	<Archive>\Install.txt files show what is updated from <Archive>.
 
 .EXAMPLE
 	# This command starts update in a new console and keeps it opened to view
@@ -36,62 +30,60 @@
 	>: Start-Process powershell.exe "-noexit Update-PowerShellFar"; $Far.Quit()
 #>
 
+[CmdletBinding()]
 param
 (
-	[Parameter()][string]
+	[string]
+	[ValidateScript({[System.IO.Directory]::Exists($_)})]
 	# Far directory; needed if %FARHOME% is not defined and its location is not standard.
 	$FARHOME = $(if ($env:FARHOME) {$env:FARHOME} else {"C:\Program Files\Far"})
 	,
 	[string]
+	[ValidateSet('x86', 'x64')]
 	# Target platform: x86 or x64. Default: depends on the current process.
 	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'})
 	,
 	[string]
+	[ValidateScript({[System.IO.Directory]::Exists($_)})]
 	# Downloaded archives directory. Default: $HOME.
-	$Archive = $HOME
+	$ArchiveHome = $HOME
 	,
-	[string]
-	# Version (X.Y.Z). Default: requested from the FarNet site.
-	$Version
+	[string[]]
+	# Archive names. Default: latest from the site.
+	$ArchiveNames
 	,
 	[switch]
 	# Tells to update from already downloaded archives.
 	$Force
 )
 
-if ($Host.Name -ne 'ConsoleHost') { throw "Please, invoke by the console host." }
-if (![IO.Directory]::Exists($FARHOME)) { throw "Directory not found: '$FARHOME'." }
-if (![IO.Directory]::Exists($Archive)) { throw "Directory not found: '$Archive'." }
-if (@('x86', 'x64') -notcontains $Platform) { throw "Invalid platform value: '$Platform'." }
-$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
+$ErrorActionPreference = 'Stop'
+if ($Host.Name -ne 'ConsoleHost') { throw "Please, invoke by the console host." }
 
 ### to download if not yet
-# see notes in Update-FarManager.ps1
+# see Update-FarManager.ps1
 $wc = New-Object Net.WebClient
 
-### request version
-if (!$Version) {
-	# download Readme.txt, get version
-	$URL = "http://farnet.googlecode.com/svn/trunk/PowerShellFar/Readme.txt"
+### download the archive names
+if (!$ArchiveNames) {
+	$URL = "http://farnet.googlecode.com/svn/trunk/Get-Version.ps1"
 	Write-Host -ForegroundColor Cyan "Getting version from '$URL'..."
 	$initext = $wc.DownloadString($URL)
-	if ($initext -notmatch 'Version\s+:\s+(\d+\.\d+\.\d+)') { throw "Cannot get version from '$ini'." }
-	$Version = $matches[1]
+	Invoke-Expression $initext
 }
 
-### download missed archives
-$Names = @("FarNet.$Version.7z", "FarNetAccord.$Version.7z", "PowerShellFar.$Version.7z")
-$Archives = @("$Archive\$($Names[0])", "$Archive\$($Names[1])", "$Archive\$($Names[2])")
+### download missing archives
 $done = 0
-for($$ = 0; $$ -lt 3; ++$$) {
-	if ([IO.File]::Exists($Archives[$$])) {
-		Write-Host -ForegroundColor Cyan "The archive '$($Archives[$$])' already exists."
+foreach($name in $ArchiveNames) {
+	$path = "$ArchiveHome\$name"
+	if ([IO.File]::Exists($path)) {
+		Write-Host -ForegroundColor Cyan "The archive '$path' already exists."
 	}
 	else {
-		$URL = "http://farnet.googlecode.com/files/$($Names[$$])"
-		Write-Host -ForegroundColor Cyan "Downloading '$($Archives[$$])' from $URL..."
-		$wc.DownloadFile($URL, $Archives[$$])
+		$URL = "http://farnet.googlecode.com/files/$name"
+		Write-Host -ForegroundColor Cyan "Downloading '$name' from $URL..."
+		$wc.DownloadFile($URL, $path)
 		++$done
 	}
 }
@@ -101,35 +93,39 @@ if (!$Force -and $done -eq 0) {
 }
 
 ### exit running; use remoting for UNC
-if ($FARHOME -match '^\\\\([^\\/]+)') {
-	Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit: $($matches[1])..."
-	Invoke-Command -ComputerName ($matches[1]) { Wait-Process Far -ErrorAction 0 }
-}
-else {
-	Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit..."
-	Wait-Process Far -ErrorAction 0
+if (Test-Path "$FARHOME\Far.exe") {
+	if ($FARHOME -match '^\\\\([^\\/]+)') {
+		Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit: $($matches[1])..."
+		Invoke-Command -ComputerName ($matches[1]) { Wait-Process Far -ErrorAction 0 }
+	}
+	else {
+		Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit..."
+		Wait-Process Far -ErrorAction 0
+	}
 }
 
-### extract FarNet
-Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[0])'..."
-# x86
-& '7z' 'x' ($Archives[0]) "-o$FARHOME" '-aoa' 'Far.exe.config' 'FarNet\*.*' 'Plugins\FarNet'
-if ($lastexitcode) { throw "7z failed." }
-# x64
-if ($Platform -eq 'x64') {
-	& '7z' 'e' ($Archives[0]) "-o$FARHOME\Plugins\FarNet" '-aoa' 'Plugins.x64\FarNet\FarNetMan.dll'
+### extract from archives
+foreach($name in $ArchiveNames) {
+	# the archive
+	$path = "$ArchiveHome\$name"
+	Write-Host -ForegroundColor Cyan "Extracting from '$path'..."
+
+	# extract the install list
+	& '7z' 'e' $path "-o$($env:TEMP)" '-aoa' 'Install.txt'
 	if ($lastexitcode) { throw "7z failed." }
+
+	# extract using the install list
+	$install = "$($env:TEMP)\Install.txt"
+	& '7z' 'x' $path "-o$FARHOME" '-aoa' "@$install"
+	if ($lastexitcode) { throw "7z failed." }
+	[System.IO.File]::Delete($install)
+
+	# x64 FarNet
+	if ($Platform -eq 'x64' -and $name -like 'FarNet.*') {
+		& '7z' 'e' $path "-o$FARHOME\Plugins\FarNet" '-aoa' 'Plugins.x64\FarNet\FarNetMan.dll'
+		if ($lastexitcode) { throw "7z failed." }
+	}
 }
-
-### extract PowerShellFar
-Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[1])'..."
-& '7z' 'x' ($Archives[1]) "-o$FARHOME" '-aoa' 'FarNet\Modules\PowerShellFar'
-if ($lastexitcode) { throw "7z failed." }
-
-### extract FarNetAccord.chm
-Write-Host -ForegroundColor Cyan "Extracting from '$($Archives[2])'..."
-& '7z' 'x' ($Archives[2]) "-o$FARHOME" '-aoa'
-if ($lastexitcode) { throw "7z failed." }
 
 ### done
 Write-Host -ForegroundColor Green "Update succeeded."
