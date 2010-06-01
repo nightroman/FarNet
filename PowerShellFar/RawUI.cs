@@ -6,193 +6,159 @@ Copyright (c) 2006 Roman Kuzmin
 using System;
 using System.Management.Automation.Host;
 using FarNet;
-using Host = System.Management.Automation.Host;
-using Works = FarNet.Works;
-
-// _091007_034112
-// Getting Console.Title throws an exception internally caught by PowerShell. Usually in MT scenarios.
-// It does not make problems but it is noisy. So we use a native call with no exceptions.
+using FN = FarNet.Works;
+using PS = System.Management.Automation.Host;
 
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Implementation of the PSHostRawUserInterface for FarHost
+	/// Implements PSHostRawUserInterface.
 	/// </summary>
 	class RawUI : PSHostRawUserInterface
 	{
-		public RawUI()
-		{ }
-
-		#region Managed
-
-		/// <summary>
-		/// Get and set the background color of text ro be written.
-		/// This maps directly onto the corresponding .NET Console property.
-		/// </summary>
-		public override ConsoleColor BackgroundColor
-		{
-			get { return Console.BackgroundColor; }
-			set { Console.BackgroundColor = value; }
-		}
-
-		/// <summary>
-		/// Return the host buffer size adapted from on the .NET Console buffer size.
-		/// </summary>
-		public override Size BufferSize
-		{
-			get { return new Size(Console.BufferWidth, Console.BufferHeight); }
-			set { Console.SetBufferSize(value.Width, value.Height); }
-		}
-
-		/// <summary>
-		/// Cursor position.
-		/// </summary>
-		public override Coordinates CursorPosition
-		{
-			get { return new Coordinates(Console.CursorLeft, Console.CursorTop); }
-			set { Console.SetCursorPosition(value.X, value.Y); }
-		}
-
-		/// <summary>
-		/// Return the cursor size taken directly from the .NET Console cursor size.
-		/// </summary>
-		public override int CursorSize
-		{
-			get { return Console.CursorSize; }
-			set { Console.CursorSize = value; }
-		}
-
-		/// <summary>
-		/// Get and set the foreground color of text ro be written.
-		/// This maps directly onto the corresponding .NET Console property.
-		/// </summary>
-		public override ConsoleColor ForegroundColor
-		{
-			get { return Console.ForegroundColor; }
-			set { Console.ForegroundColor = value; }
-		}
-
-		/// <summary>
-		/// Map directly to the corresponding .NET Console property.
-		/// </summary>
-		public override bool KeyAvailable
-		{
-			get { return Console.KeyAvailable; }
-		}
-
-		/// <summary>
-		/// Return the MaxPhysicalWindowSize size adapted from the .NET Console
-		/// </summary>
-		public override Size MaxPhysicalWindowSize
-		{
-			get { return new Size(Console.LargestWindowWidth, Console.LargestWindowHeight); }
-		}
-
-		/// <summary>
-		/// Return the MaxWindowSize size adapted from the .NET Console
-		/// </summary>
-		public override Size MaxWindowSize
-		{
-			get { return new Size(Console.LargestWindowWidth, Console.LargestWindowHeight); }
-		}
-
-		/// <summary>
-		/// Return the window position adapted from the Console window position information.
-		/// </summary>
-		public override Coordinates WindowPosition
-		{
-			get { return new Coordinates(Console.WindowLeft, Console.WindowTop); }
-			set { Console.SetWindowPosition(value.X, value.Y); }
-		}
-
-		/// <summary>
-		/// Return the window size adapted from the corresponding .NET Console calls.
-		/// </summary>
-		public override Size WindowSize
-		{
-			get { return new Size(Console.WindowWidth, Console.WindowHeight); }
-			set { Console.SetWindowSize(value.Width, value.Height); }
-		}
-
-		/// <summary>
-		/// Console.Title property.
-		/// </summary>
-		// _091007_034112
 		public override string WindowTitle
 		{
-			get { return Far.Net.Zoo.ConsoleTitle; }
-			set { Console.Title = value; }
+			get { return Far.Net.UI.WindowTitle; }
+			set { Far.Net.UI.WindowTitle = value; }
 		}
 
-		#endregion
-
-		#region Native
-
-		// converter
-		static Place PlaceOf(Rectangle rectangle)
+		public override int CursorSize
 		{
-			return new Place(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
+			get { return Far.Net.UI.CursorSize; }
+			set { Far.Net.UI.CursorSize = value; }
 		}
 
-		// converter
-		static Point PointOf(Coordinates coordinates)
+		public override Coordinates CursorPosition
 		{
-			return new Point(coordinates.X, coordinates.Y);
+			get { return ToCoordinates(Far.Net.UI.BufferCursor); }
+			set { Far.Net.UI.BufferCursor = ToPoint(value); }
 		}
 
-		// converter
-		static Works.BufferCell BufferCellOf(Host.BufferCell cell)
+		public override ConsoleColor BackgroundColor
 		{
-			return new Works.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (Works.BufferCellType)cell.BufferCellType);
+			get { return Far.Net.UI.BackgroundColor; }
+			set { Far.Net.UI.BackgroundColor = value; }
 		}
 
-		// converter
-		static Host.BufferCell BufferCellOf(Works.BufferCell cell)
+		public override ConsoleColor ForegroundColor
 		{
-			return new Host.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (Host.BufferCellType)cell.BufferCellType);
+			get { return Far.Net.UI.ForegroundColor; }
+			set { Far.Net.UI.ForegroundColor = value; }
+		}
+
+		public override Size BufferSize
+		{
+			get { return ToSize(Far.Net.UI.BufferSize); }
+			set { Far.Net.UI.BufferSize = ToPoint(value); }
+		}
+
+		public override bool KeyAvailable
+		{
+			get { return Far.Net.UI.KeyAvailable; }
 		}
 
 		public override void FlushInputBuffer()
 		{
-			Far.Net.Zoo.FlushInputBuffer();
+			Far.Net.UI.FlushInputBuffer();
 		}
 
-		public override Host.KeyInfo ReadKey(Host.ReadKeyOptions options)
+		public override PS.KeyInfo ReadKey(PS.ReadKeyOptions options)
 		{
-			FarNet.KeyInfo k = Far.Net.Zoo.ReadKey((Works.ReadKeyOptions)options);
-			return new Host.KeyInfo(k.VirtualKeyCode, k.Character, (Host.ControlKeyStates)k.ControlKeyState, k.KeyDown);
+			FarNet.KeyInfo k = Far.Net.UI.ReadKey((FN.ReadKeyOptions)options);
+			return new PS.KeyInfo(k.VirtualKeyCode, k.Character, (PS.ControlKeyStates)k.ControlKeyState, k.KeyDown);
 		}
 
-		public override void ScrollBufferContents(Rectangle source, Coordinates destination, Rectangle clip, Host.BufferCell fill)
+		public override Size MaxPhysicalWindowSize
 		{
-			Far.Net.Zoo.ScrollBufferContents(PlaceOf(source), PointOf(destination), PlaceOf(clip), BufferCellOf(fill));
+			get { return MaxWindowSize; }
 		}
 
-		public override Host.BufferCell[,] GetBufferContents(Rectangle rectangle)
+		public override Size MaxWindowSize
 		{
-			Works.BufferCell[,] r1 = Far.Net.Zoo.GetBufferContents(PlaceOf(rectangle));
-			Host.BufferCell[,] r2 = new Host.BufferCell[r1.GetLength(0), r1.GetLength(1)];
+			get { return ToSize(Far.Net.UI.MaxWindowSize); }
+		}
+
+		public override Coordinates WindowPosition
+		{
+			get { return ToCoordinates(Far.Net.UI.WindowPoint); }
+			set { Far.Net.UI.WindowPoint = ToPoint(value); }
+		}
+
+		public override Size WindowSize
+		{
+			get { return ToSize(Far.Net.UI.WindowSize); }
+			set { Far.Net.UI.WindowSize = ToPoint(value); }
+		}
+
+		public override void ScrollBufferContents(Rectangle source, Coordinates destination, Rectangle clip, PS.BufferCell fill)
+		{
+			Far.Net.UI.ScrollBufferContents(ToPlace(source), ToPoint(destination), ToPlace(clip), ToBufferCell(fill));
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
+		public override PS.BufferCell[,] GetBufferContents(Rectangle rectangle)
+		{
+			FN.BufferCell[,] r1 = Far.Net.UI.GetBufferContents(ToPlace(rectangle));
+			PS.BufferCell[,] r2 = new PS.BufferCell[r1.GetLength(0), r1.GetLength(1)];
 			for (int i = 0; i < r1.GetLength(0); ++i)
 				for (int j = 0; j < r1.GetLength(1); ++j)
-					r2[i, j] = BufferCellOf(r1[i, j]);
+					r2[i, j] = ToBufferCell(r1[i, j]);
 			return r2;
 		}
 
-		public override void SetBufferContents(Coordinates origin, Host.BufferCell[,] contents)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
+		public override void SetBufferContents(Coordinates origin, PS.BufferCell[,] contents)
 		{
 			if (contents == null)
 				throw new ArgumentNullException("contents");
-			
-			Works.BufferCell[,] r = new Works.BufferCell[contents.GetLength(0), contents.GetLength(1)];
+
+			FN.BufferCell[,] r = new FN.BufferCell[contents.GetLength(0), contents.GetLength(1)];
 			for (int i = 0; i < contents.GetLength(0); ++i)
 				for (int j = 0; j < contents.GetLength(1); ++j)
-					r[i, j] = BufferCellOf(contents[i, j]);
-			Far.Net.Zoo.SetBufferContents(PointOf(origin), r);
+					r[i, j] = ToBufferCell(contents[i, j]);
+			Far.Net.UI.SetBufferContents(ToPoint(origin), r);
 		}
 
-		public override void SetBufferContents(Rectangle rectangle, Host.BufferCell fill)
+		public override void SetBufferContents(Rectangle rectangle, PS.BufferCell fill)
 		{
-			Far.Net.Zoo.SetBufferContents(PlaceOf(rectangle), BufferCellOf(fill));
+			Far.Net.UI.SetBufferContents(ToPlace(rectangle), ToBufferCell(fill));
+		}
+
+		#region Converters
+
+		static Coordinates ToCoordinates(Point point)
+		{
+			return new Coordinates(point.X, point.Y);
+		}
+
+		static FN.BufferCell ToBufferCell(PS.BufferCell cell)
+		{
+			return new FN.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (FN.BufferCellType)cell.BufferCellType);
+		}
+
+		static PS.BufferCell ToBufferCell(FN.BufferCell cell)
+		{
+			return new PS.BufferCell(cell.Character, cell.ForegroundColor, cell.BackgroundColor, (PS.BufferCellType)cell.BufferCellType);
+		}
+
+		static Place ToPlace(Rectangle rectangle)
+		{
+			return new Place(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
+		}
+
+		static Point ToPoint(Coordinates coordinates)
+		{
+			return new Point(coordinates.X, coordinates.Y);
+		}
+
+		static Point ToPoint(Size size)
+		{
+			return new Point(size.Width, size.Height);
+		}
+
+		static Size ToSize(Point point)
+		{
+			return new Size(point.X, point.Y);
 		}
 
 		#endregion

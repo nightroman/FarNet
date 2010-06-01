@@ -44,7 +44,7 @@ bool InputBox::Show()
 	if (ValueUserScreen::Get()) //_100514_000000
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->SaveUserScreen();
+		Far::Net->UI->SaveUserScreen();
 	}
 
 	PIN_ES(pinTitle, Title);

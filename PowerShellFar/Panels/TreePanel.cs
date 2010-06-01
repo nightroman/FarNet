@@ -74,7 +74,7 @@ namespace PowerShellFar
 
 		internal override void ShowHelp()
 		{
-			Far.Net.ShowHelp(A.Psf.AppHome, "TreePanel", HelpOptions.Path);
+			Help.ShowTopic("TreePanel");
 		}
 
 		/// <summary>

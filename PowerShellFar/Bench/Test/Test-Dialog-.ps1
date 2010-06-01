@@ -35,7 +35,7 @@ $uc.add_Drawing({&{
 	$x = $r1.Left + 2
 	$y = $r1.Top + $r2.Bottom
 	# write blue text on 'DialogBox' background
-	$Far.DrawColor($x + 4, $y, 'Blue', $Far.GetPaletteBackground('DialogBox'), 'User control: for custom draw, for clicks on "dialog area", and etc.')
+	$Far.UI.DrawColor($x + 4, $y, 'Blue', $Far.UI.GetPaletteBackground('DialogBox'), 'User control: for custom draw, for clicks on "dialog area", and etc.')
 }})
 
 ### Box (double line)
@@ -47,7 +47,7 @@ $t1 = $dialog.AddText(5, -1, 0, '&Text')
 ### Edit (standard)
 $e1 = $dialog.AddEdit(5, -1, 70, '')
 $e1.History = 'PowerShellFarPrompt'
-$e1.add_Coloring({ $_.Background1 = $_.Background3 = $Far.GetPaletteBackground('PanelText') })
+$e1.add_Coloring({ $_.Background1 = $_.Background3 = $Far.UI.GetPaletteBackground('PanelText') })
 
 ### Some disabled items
 $dialog.AddText(5, -1, 0, 'Disabled Text').Disabled = $true
@@ -148,7 +148,7 @@ $dialog.add_Initialized({
 
 ### Idled: how to use custom frequency (show time in the console title every 2 seconds)
 $dialog.add_Idled([FarNet.IdledHandler]::Create(2, {
-	[console]::Title = [datetime]::Now
+	$Host.UI.RawUI.WindowTitle = [datetime]::Now
 }))
 
 ### MouseClicked: how to get not processed mouse event and out-of-dialog mouse events

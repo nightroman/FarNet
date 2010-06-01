@@ -323,6 +323,7 @@
     <ClCompile Include="Panel2.cpp" />
     <ClCompile Include="PanelFileCollection.cpp" />
     <ClCompile Include="PanelInfo.cpp" />
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="Shelve.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -335,7 +336,6 @@
     <ClCompile Include="Viewer0.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Wrappers.cpp" />
-    <ClCompile Include="Zoo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Export.def" />
@@ -364,6 +364,7 @@
     <ClInclude Include="PanelFileCollection.h" />
     <ClInclude Include="PanelInfo.h" />
     <ClInclude Include="Headers.c\plugin.hpp" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="Shelve.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Utils.h" />
@@ -371,7 +372,6 @@
     <ClInclude Include="Viewer0.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Wrappers.h" />
-    <ClInclude Include="Zoo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

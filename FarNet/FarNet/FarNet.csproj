@@ -115,7 +115,6 @@
     <Compile Include="Forms.cs" />
     <Compile Include="FormsEvents.cs" />
     <Compile Include="Geometry.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="InputBox.cs" />
     <Compile Include="Kit.cs" />
     <Compile Include="Log.cs" />
@@ -124,7 +123,7 @@
     <Compile Include="Message.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Panel.cs" />
-    <Compile Include="RawUI.cs" />
+    <Compile Include="UI.cs" />
     <Compile Include="Registry.cs" />
     <Compile Include="UserInput.cs" />
     <Compile Include="Viewer.cs" />

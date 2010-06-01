@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<AssemblyName>FarNet.Works.Panels.dll</AssemblyName>
+		<AssemblyName>FarNet.Works.Panels</AssemblyName>
 	</PropertyGroup>
 
 	<Import Project="..\Build.targets"/>

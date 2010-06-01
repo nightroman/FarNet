@@ -21,12 +21,35 @@ namespace PowerShellFar.Commands
 	/// If the message <see cref="Title"/> is provided then just a simple message is shown on failures,
 	/// all the assertion details are omitted. This configuration is designed for production scripts.
 	/// </para>
+	/// <example>
+	/// <code>
+	/// # Hardcoded breakpoint:
+	/// Assert-Far
+	/// 
+	/// # Single checks:
+	/// Assert-Far -Panels
+	/// Assert-Far -Plugin
+	/// Assert-Far ($Far.Window.Kind -eq 'Panels')
+	/// 
+	/// # Combined checks:
+	/// Assert-Far -Panels -Plugin
+	/// Assert-Far -Panels ($Far.Panel.IsPlugin)
+	/// Assert-Far @(
+	///     $Far.Window.Kind -eq 'Panels'
+	///     $Far.Panel.IsPlugin
+	/// )
+	/// 
+	/// # User friendly error message. Mind use of -Message and -Title with switches:
+	/// Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
+	/// Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Search-Regex"
+	/// </code>
+	/// </example>
 	/// </remarks>
 	[Description("Checks for the condition(s) and stops the pipeline with a message if any condition is false or not Boolean.")]
 	public sealed class AssertFarCommand : BaseCmdlet
 	{
 		internal const string MyName = "Assert-Far";
-		
+
 		/// <summary>
 		/// A single Boolean value or an array of Boolean values to be checked.
 		/// </summary>
@@ -45,6 +68,54 @@ namespace PowerShellFar.Commands
 		[Parameter(Position = 2, HelpMessage = "The title of a simple message designed for production scripts.")]
 		public string Title { get; set; }
 
+		/// <summary>
+		/// Checks the current window is dialog.
+		/// </summary>
+		[Parameter(HelpMessage = "Checks the current window is dialog.")]
+		public SwitchParameter Dialog { get; set; }
+
+		/// <summary>
+		/// Checks the current window is editor.
+		/// </summary>
+		[Parameter(HelpMessage = "Checks the current window is editor.")]
+		public SwitchParameter Editor { get; set; }
+
+		/// <summary>
+		/// Checks the current window is panels.
+		/// </summary>
+		[Parameter(HelpMessage = "Checks the current window is panels.")]
+		public SwitchParameter Panels { get; set; }
+
+		/// <summary>
+		/// Checks the current window is viewer.
+		/// </summary>
+		[Parameter(HelpMessage = "Checks the current window is viewer.")]
+		public SwitchParameter Viewer { get; set; }
+
+		/// <summary>
+		/// Checks the active panel is plugin.
+		/// </summary>
+		[Parameter(HelpMessage = "Checks the active panel is plugin.")]
+		public SwitchParameter Plugin { get; set; }
+
+		/// <summary>
+		/// Checks the passive panel is plugin.
+		/// </summary>
+		[Parameter(HelpMessage = "Checks the passive panel is plugin.")]
+		public SwitchParameter Plugin2 { get; set; }
+
+		/// <summary>
+		/// Checks the active panel is native (not plugin).
+		/// </summary>
+		[Parameter(HelpMessage = "Checks the active panel is native (not plugin).")]
+		public SwitchParameter Native { get; set; }
+
+		/// <summary>
+		/// Checks the passive panel is native (not plugin).
+		/// </summary>
+		[Parameter(HelpMessage = "Checks the passive panel is native (not plugin).")]
+		public SwitchParameter Native2 { get; set; }
+
 		bool IsError
 		{
 			get { return Title == null; }
@@ -54,8 +125,49 @@ namespace PowerShellFar.Commands
 		int ConditionIndex;
 
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		protected override void BeginProcessing()
 		{
+			// to be false on extra checks
+			bool fail = true;
+
+			// check dialog
+			if (Dialog && (fail = Far.Net.Window.Kind != WindowKind.Dialog))
+				Fail(Message ?? "The current window is expected to be dialog.");
+
+			// check editor
+			if (Editor && (fail = Far.Net.Window.Kind != WindowKind.Editor))
+				Fail(Message ?? "The current window is expected to be editor.");
+
+			// check panels
+			if (Panels && (fail = Far.Net.Window.Kind != WindowKind.Panels))
+				Fail(Message ?? "The current window is expected to be panels.");
+
+			// check viewer
+			if (Viewer && (fail = Far.Net.Window.Kind != WindowKind.Viewer))
+				Fail(Message ?? "The current window is expected to be viewer.");
+
+			// check plugin
+			if (Plugin && (fail = !Far.Net.Panel.IsPlugin))
+				Fail(Message ?? "The active panel is expected to be plugin.");
+
+			// check plugin 2
+			if (Plugin2 && (fail = !Far.Net.Panel2.IsPlugin))
+				Fail(Message ?? "The passive panel is expected to be plugin.");
+
+			// check native
+			if (Native && (fail = Far.Net.Panel.IsPlugin))
+				Fail(Message ?? "The active panel is expected to be native.");
+
+			// check native 2
+			if (Native2 && (fail = Far.Net.Panel2.IsPlugin))
+				Fail(Message ?? "The passive panel is expected to be native.");
+
+			// at least one check is done and there are no conditions
+			if (fail == false && Conditions == null)
+				return;
+
+			// check conditions
 			object[] array = Conditions as object[];
 			if (array == null)
 			{
@@ -93,24 +205,36 @@ namespace PowerShellFar.Commands
 				}
 			}
 
+			Fail(null);
+		}
+
+		void Fail(object message)
+		{
 			// break a macro
 			FarMacroState macroState = Far.Net.MacroState;
 			if (macroState == FarMacroState.Executing || macroState == FarMacroState.ExecutingCommon)
-				Far.Net.Zoo.Break();
+				Far.Net.UI.Break();
 
 			// get the message
-			ScriptBlock messageScript = Cast<ScriptBlock>.From(Message);
-			if (messageScript != null)
+			if (message == null)
 			{
-				try
+				ScriptBlock messageScript = Cast<ScriptBlock>.From(Message);
+				if (messageScript != null)
 				{
-					Message = messageScript.InvokeReturnAsIs();
+					try
+					{
+						Message = messageScript.InvokeReturnAsIs();
+					}
+					catch (RuntimeException ex)
+					{
+						Message = "Error in the message script: " + ex.Message;
+						Title = null;
+					}
 				}
-				catch (RuntimeException ex)
-				{
-					Message = "Error in the message script: " + ex.Message;
-					Title = null;
-				}
+			}
+			else
+			{
+				Message = message;
 			}
 
 			// body

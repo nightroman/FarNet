@@ -127,7 +127,7 @@ $p.SetSave({
 	$Far.Macro.Install($this.Value)
 	$Far.Macro.Load()
 	$this.Modified = $false
-	[console]::Title = 'Saved'
+	$Host.UI.RawUI.WindowTitle = 'Saved'
 })
 
 # Go!

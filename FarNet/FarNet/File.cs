@@ -94,6 +94,7 @@ namespace FarNet
 		/// <summary>
 		/// Custom columns. See <see cref="PanelModeInfo"/>.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection Columns
 		{
 			get { return null; }
@@ -288,6 +289,7 @@ namespace FarNet
 		/// <summary>
 		/// Custom columns. See <see cref="PanelModeInfo"/>.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public override ICollection Columns { get; set; }
 	}
 }

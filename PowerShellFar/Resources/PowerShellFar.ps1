@@ -13,17 +13,16 @@ Set-Alias more.com more
 
 <#
 .SYNOPSIS
-	Far friendly 'Clear-Host'.
+	FarNet 'Clear-Host'.
 #>
 function Clear-Host
 {
-	[console]::Clear()
-	$Far.SaveUserScreen()
+	$Far.UI.Clear()
 }
 
 <#
 .SYNOPSIS
-	Far friendly 'more'.
+	FarNet 'more'.
 #>
 function more
 (
@@ -165,13 +164,13 @@ function Get-FarHelp
 	$common = @('Verbose', 'Debug', 'ErrorAction', 'ErrorVariable', 'WarningAction', 'WarningVariable', 'OutVariable', 'OutBuffer')
 
 	# get commands
-	$cmds = @(Get-Command $CommandName -ErrorAction Continue)
-	for($$ = 0; $$ -lt $cmds.Count; ++$$) {
-		$cmd = $cmds[$$]
+	$commands = @(Get-Command $CommandName -ErrorAction Continue)
+	for($$ = 0; $$ -lt $commands.Count; ++$$) {
+		$cmd = $commands[$$]
 
 		# resolve an alias, post commands
 		if ($cmd.CommandType -eq 'Alias') {
-			$cmds += @(Get-Command $cmd.Definition)
+			$commands += @(Get-Command $cmd.Definition)
 			continue
 		}
 
@@ -229,11 +228,11 @@ function Get-FarHelp
 			}
 
 			## Parameter sets
-			$prmData = $cmdData.Parameters[$_.Name]
-			if ($prmData.ParameterSets) {
-				$prmSets = $prmData.ParameterSets.Keys -join ', '
-				if ($prmSets -ne '__AllParameterSets') {
-					'    - Parameter sets : ' + $prmSets
+			$paramData = $cmdData.Parameters[$_.Name]
+			if ($paramData.ParameterSets) {
+				$paramSets = $paramData.ParameterSets.Keys -join ', '
+				if ($paramSets -ne '__AllParameterSets') {
+					'    - Parameter sets : ' + $paramSets
 				}
 			}
 

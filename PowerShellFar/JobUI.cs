@@ -9,6 +9,7 @@ using System.Text;
 
 namespace PowerShellFar
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	class JobUI : UniformUI
 	{
 		object _lock = new object();

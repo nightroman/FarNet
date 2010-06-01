@@ -15,34 +15,12 @@ Copyright (c) 2005 FarNet Team
 #include "Message.h"
 #include "Panel0.h"
 #include "Panel2.h"
+#include "UI.h"
 #include "Viewer0.h"
 #include "Window.h"
-#include "Zoo.h"
 
 namespace FarNet
 {;
-Place FarRawUI::WindowPlace::get()
-{
-	SMALL_RECT rect;
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARRECT, &rect);
-	return Place(rect.Left, rect.Top, rect.Right, rect.Bottom);
-}
-
-Point FarRawUI::WindowCursor::get()
-{
-	COORD pos;
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETCURSORPOS, &pos);
-	return Point(pos.X, pos.Y);
-}
-
-void FarRawUI::WindowCursor::set(Point value)
-{
-	COORD pos;
-	pos.X = (SHORT)value.X;
-	pos.Y = (SHORT)value.Y;
-	Info.AdvControl(Info.ModuleNumber, ACTL_SETCURSORPOS, &pos);
-}
-
 void Far1::Connect()
 {
 	Far::Net = %Far;
@@ -91,11 +69,6 @@ int Far1::Message(String^ body, String^ header, MsgOptions options, array<String
 void Far1::Run(String^ command)
 {
 	Far0::Run(command);
-}
-
-IntPtr Far1::MainWindowHandle::get()
-{
-	return (IntPtr)Info.AdvControl(Info.ModuleNumber, ACTL_GETFARHWND, nullptr);
 }
 
 System::Version^ Far1::FarVersion::get()
@@ -302,16 +275,6 @@ void Far1::PostText(String^ text, bool disableOutput)
 	PostKeys(keys.ToString(), disableOutput);
 }
 
-int Far1::SaveScreen(int x1, int y1, int x2, int y2)
-{
-	return (int)(INT_PTR)Info.SaveScreen(x1, y1, x2, y2);
-}
-
-void Far1::RestoreScreen(int screen)
-{
-	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
-}
-
 ILine^ Far1::Line::get()
 {
 	switch (Window->Kind)
@@ -367,16 +330,6 @@ IAnyPanel^ Far1::Panel2::get()
 IInputBox^ Far1::CreateInputBox()
 {
 	return gcnew InputBox;
-}
-
-void Far1::ShowUserScreen()
-{
-	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
-}
-
-void Far1::SaveUserScreen()
-{
-	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
 
 ICollection<String^>^ Far1::GetDialogHistory(String^ name)
@@ -449,15 +402,15 @@ void Far1::ShowError(String^ title, Exception^ error)
 		Log::Source->TraceEvent(TraceEventType::Warning, 0, msgMacro);
 
 		// stop
-		Zoo->Break();
+		UI->Break();
 	}
 
 	// log
 	String^ info = Log::TraceException(error);
 
 	// case: not loaded
-	//! wish: non-stop loading
-	//! fact: no UI on unloading
+	//! non-stop loading
+	//! no UI on unloading
 	if (Works::Host::State != Works::HostState::Loaded)
 	{
 		//! trace the full string, so that a user can report this
@@ -471,18 +424,9 @@ void Far1::ShowError(String^ title, Exception^ error)
 		info += title + "\r\n";
 
 		if (Works::Host::State == Works::HostState::Loading)
-		{
-			Far::Net->Write(info, ConsoleColor::Red);
-		}
+			Far::Net->UI->Write(info, ConsoleColor::Red);
 		else
-		{
-			ConsoleColor color1 = Console::ForegroundColor;
-			Console::ForegroundColor = ConsoleColor::Red;
-			Console::WriteLine(info);
-			Console::ForegroundColor = color1;
-			
-			System::Threading::Thread::Sleep(2000);
-		}
+			Far::Net->Message(info + "\r\n" + error->ToString(), title, (MsgOptions::Gui | MsgOptions::Warning));
 
 		return;
 	}
@@ -526,61 +470,12 @@ IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
 	return gcnew FarDialog(left, top, right, bottom);
 }
 
-void Far1::DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
-{
-	PIN_NE(pin, text);
-	Info.Text(left, top, int(foregroundColor)|(int(backgroundColor)<<4), pin);
-}
-
-void Far1::DrawPalette(int left, int top, PaletteColor paletteColor, String^ text)
-{
-	PIN_NE(pin, text);
-	Info.Text(left, top, Far0::GetPaletteColor(paletteColor), pin);
-}
-
 void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
 {
 	PIN_NE(pinPath, path);
 	PIN_NS(pinTopic, topic);
 
 	Info.ShowHelp(pinPath, pinTopic, (int)options);
-}
-
-//! Console::Write() writes some Unicode chars as '?'.
-//! Used to call SaveUserScreen() in the end. It was very slow. Now it is done in many places, see _100514_000000.
-void Far1::Write(String^ text)
-{
-	if (ES(text))
-		return;
-
-	if (!ValueUserScreen::Get()) //_100514_000000
-	{
-		ValueUserScreen::Set(true);
-		ShowUserScreen();
-	}
-
-	PIN_NE(pin, text);
-	DWORD cch = text->Length;
-	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, NULL);
-}
-
-void Far1::Write(String^ text, ConsoleColor foregroundColor)
-{
-	ConsoleColor fc = Console::ForegroundColor;
-	Console::ForegroundColor = foregroundColor;
-	Write(text);
-	Console::ForegroundColor = fc;
-}
-
-void Far1::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
-{
-	ConsoleColor fc = Console::ForegroundColor;
-	ConsoleColor bc = Console::BackgroundColor;
-	Console::ForegroundColor = foregroundColor;
-	Console::BackgroundColor = backgroundColor;
-	Write(text);
-	Console::ForegroundColor = fc;
-	Console::BackgroundColor = bc;
 }
 
 IPanel^ Far1::CreatePanel()
@@ -637,11 +532,6 @@ void Far1::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
 	Far0::PostStepAfterStep(handler1, handler2);
 }
 
-void Far1::Redraw()
-{
-	Info.AdvControl(Info.ModuleNumber, ACTL_REDRAWALL, 0);
-}
-
 String^ Far1::TempName(String^ prefix)
 {
 	// reasonable buffer
@@ -669,34 +559,9 @@ IDialog^ Far1::Dialog::get()
 	return FarDialog::GetDialog();
 }
 
-ConsoleColor Far1::GetPaletteBackground(PaletteColor paletteColor)
-{
-	int color = Far0::GetPaletteColor(paletteColor);
-	return ConsoleColor(color >> 4);
-}
-
-ConsoleColor Far1::GetPaletteForeground(PaletteColor paletteColor)
-{
-	int color = Far0::GetPaletteColor(paletteColor);
-	return ConsoleColor(color & 0xF);
-}
-
 void Far1::PostJob(EventHandler^ handler)
 {
 	Far0::PostJob(handler);
-}
-
-void Far1::SetProgressState(TaskbarProgressBarState state)
-{
-	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSSTATE, (void*)(INT_PTR)state);
-}
-
-void Far1::SetProgressValue(int currentValue, int maximumValue)
-{
-	PROGRESSVALUE arg;
-	arg.Completed = currentValue;
-	arg.Total = maximumValue;
-	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSVALUE, &arg);
 }
 
 CultureInfo^ Far1::GetCurrentUICulture(bool update)
@@ -728,11 +593,6 @@ void Far1::Quit()
 		return;
 	
 	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);
-}
-
-Works::IZoo^ Far1::Zoo::get()
-{
-	return gcnew FarNet::Zoo;
 }
 
 ISubsetForm^ Far1::CreateSubsetForm()
@@ -801,9 +661,9 @@ IMacro^ Far1::Macro::get()
 	return Works::FarMacro::Instance ? Works::FarMacro::Instance : gcnew FarMacro();
 }
 
-IRawUI^ Far1::RawUI::get()
+IUserInterface^ Far1::UI::get()
 {
-	return %FarRawUI::Instance;
+	return %FarUI::Instance;
 }
 
 }

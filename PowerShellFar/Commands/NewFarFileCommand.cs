@@ -56,6 +56,7 @@ namespace PowerShellFar.Commands
 		public DateTime LastWriteTime { get; set; }
 
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		[Parameter(HelpMessage = "Sets FarFile.Columns")]
 		public System.Collections.ICollection Columns { get; set; }
 

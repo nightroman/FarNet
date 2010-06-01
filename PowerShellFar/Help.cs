@@ -16,22 +16,32 @@ namespace PowerShellFar
 	/// </summary>
 	static class Help
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		internal static void ShowHelp()
 		{
 			ILine line = Far.Net.Line;
 			if (line == null)
+			{
+				ShowAreaHelp();
 				return;
+			}
 
-			// line text
+			// line text, replace prefixes with spaces to avoid parsing problems
 			string text = line.Text;
-
-			// replace prefixes with spaces to avoid parsing problems
 			if (line.WindowKind == WindowKind.Panels)
 			{
 				if (text.StartsWith(Entry.CommandInvoke1.Prefix + ":", StringComparison.OrdinalIgnoreCase))
 					text = string.Empty.PadRight(Entry.CommandInvoke1.Prefix.Length + 1) + text.Substring(Entry.CommandInvoke1.Prefix.Length + 1);
 				else if (text.StartsWith(Entry.CommandInvoke2.Prefix + ":", StringComparison.OrdinalIgnoreCase))
 					text = string.Empty.PadRight(Entry.CommandInvoke2.Prefix.Length + 1) + text.Substring(Entry.CommandInvoke2.Prefix.Length + 1);
+			}
+
+			// trim end and process the empty case
+			text = text.TrimEnd();
+			if (text.Length == 0)
+			{
+				ShowAreaHelp();
+				return;
 			}
 
 			int pos = line.Caret;
@@ -92,7 +102,10 @@ namespace PowerShellFar
 			}
 
 			if (script == null)
+			{
+				Far.Net.Message("No help targets found at the editor caret position.", Res.Me);
 				return;
+			}
 
 			bool ok = false;
 			string file = Path.GetTempFileName();
@@ -120,6 +133,23 @@ namespace PowerShellFar
 				viewer.Open();
 			}
 		}
-	}
 
+		static internal void ShowTopic(string topic)
+		{
+			Far.Net.ShowHelp(A.Psf.AppHome, topic, HelpOptions.Path);
+		}
+
+		static void ShowAreaHelp()
+		{
+			switch (Far.Net.Window.Kind)
+			{
+				case WindowKind.Panels:
+					ShowTopic("CommandLine");
+					return;
+				default:
+					ShowTopic("Contents");
+					return;
+			}
+		}
+	}
 }

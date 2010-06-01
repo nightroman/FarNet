@@ -20,7 +20,7 @@ namespace PowerShellFar.UI
 		//?? F1, to use FieldDescription.HelpMessage
 		public PromptDialog(string caption, string message, ICollection<FieldDescription> descriptions)
 		{
-			int w = Console.WindowWidth - 7;
+			int w = Far.Net.UI.WindowSize.X - 7;
 
 			var lines = new List<string>();
 			Kit.FormatMessageLines(lines, message, w - 10, 3);
