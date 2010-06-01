@@ -27,6 +27,7 @@ namespace FarNet
 		/// <summary>
 		/// Retrieves the count of subkeys of the current key.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
 		int SubKeyCount { get; }
 		/// <summary>
 		/// Retrieves the count of values in the key.
@@ -46,6 +47,7 @@ namespace FarNet
 		/// <summary>
 		/// Retrieves an array of strings that contains all the subkey names.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
 		string[] GetSubKeyNames();
 		/// <summary>
 		/// Retrieves an array of strings that contains all the value names associated with this key.
@@ -59,6 +61,7 @@ namespace FarNet
 		/// *) The subkey with its own subkeys cannot be deleted.
 		/// *) It is OK if the specified subkey does not exit.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
 		void DeleteSubKey(string subkey);
 	}
 }

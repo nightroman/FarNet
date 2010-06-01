@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.21#
+#PowerShellFar 4.3.22#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1573
- - Plugin FarNet 4.3.21
+ - Far Manager 2.0.1576
+ - Plugin FarNet 4.3.22
  - Windows PowerShell 2.0
 
 
@@ -1447,8 +1447,8 @@ $#TabExpansion.ps1#
 This is a powerful replacement of the default PowerShell function TabExpansion.
 
 The script has to be in the PowerShellFar module home directory. It is loaded
-once when it is requested the first time. It installs the main global function
-TabExpansiona and a few supportive functions.
+once on the first call. It installs the main global function TabExpansion and
+some supportive functions.
 
 Useful to know: TabExpansion.ps1 is host independent, so that you can use it in
 any PowerShell host: standard console host, ISE host, and etc. All you need is
@@ -1476,6 +1476,25 @@ NOTE: remember that PowerShell allows to omit the "System." in the type names,
 so that it is OK to type [String] instead of [System.String]. PSF TabExpansion
 takes this into account and provides some more expansion candidates than one
 may expect.
+
+---------------------------------------------------------------------
+
+#CUSTOM ##-PATTERNS#
+
+{##|##xyz|xyz##}[Tab] are expanded into custom patterns from the
+TabExpansion##.txt in the PSF home directory. Patterns are basically any
+strings, one per line. ## in patterns is treated as the caret insertion
+point after expansion. These patterns can effectively cover not standard
+or rare but still useful cases.
+
+Examples:
+ ##[Tab] -> all patterns
+ ##*null -> [AllowNull()], [ValidateNotNull()], ...
+ $##[Tab] -> $LastExitCode, $MyInvocation.MyCommand.Definition, ...
+ [Al##[Tab] -> [Alias('##')], ## is removed and the caret is set there
+
+If TabExpansion.ps1 is used in other hosts then this feature is used to expand
+command history entries there.
 
 ---------------------------------------------------------------------
 

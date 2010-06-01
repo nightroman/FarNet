@@ -85,6 +85,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Tells to create the single line box.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		bool Single { get; set; }
 		/// <summary>
 		/// Tells to align the text left.
@@ -209,6 +210,7 @@ namespace FarNet.Forms
 		/// <include file='doc.xml' path='doc/ExpandEnvironmentVariables/*'/>
 		bool ExpandEnvironmentVariables { get; set; }
 		/// <include file='doc.xml' path='doc/ReadOnly/*'/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		bool ReadOnly { get; set; }
 		/// <include file='doc.xml' path='doc/SelectOnEntry/*'/>
 		bool SelectOnEntry { get; set; }
@@ -293,8 +295,8 @@ namespace FarNet.Forms
 	/// </summary>
 	/// <remarks>
 	/// Use <see cref="IControl.Drawing"/> event to draw this control by
-	/// <see cref="IFar.DrawPalette"/> or <see cref="IFar.DrawColor"/>
-	/// with <see cref="IFar.GetPaletteForeground"/> and <see cref="IFar.GetPaletteBackground"/>.
+	/// <see cref="IUserInterface.DrawPalette"/> or <see cref="IUserInterface.DrawColor"/>
+	/// with <see cref="IUserInterface.GetPaletteForeground"/> and <see cref="IUserInterface.GetPaletteBackground"/>.
 	/// Also usually you should at first calculate absolute coordinates using
 	/// absolute dialog <see cref="IDialog.Rect"/> and relative control <see cref="IControl.Rect"/>.
 	/// <para>
@@ -376,6 +378,7 @@ namespace FarNet.Forms
 		/// <include file='doc.xml' path='doc/ExpandEnvironmentVariables/*'/>
 		bool ExpandEnvironmentVariables { get; set; }
 		/// <include file='doc.xml' path='doc/ReadOnly/*'/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		bool ReadOnly { get; set; }
 		/// <include file='doc.xml' path='doc/SelectOnEntry/*'/>
 		bool SelectOnEntry { get; set; }
@@ -472,6 +475,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Gets or sets the "default control" which gets selected on [Enter] if the focus is not on a button.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		IControl Default { get; set; }
 		/// <summary>
 		/// Gets or sets the control which has focus.
@@ -702,10 +706,12 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Gets or sets the items to select from.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		object[] Items { get; set; }
 		/// <summary>
 		/// Gets or sets indexes of the selected items.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		int[] Indexes { get; set; }
 		/// <summary>
 		/// Gets or sets an optional converter of items to strings.

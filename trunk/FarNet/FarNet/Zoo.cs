@@ -142,27 +142,4 @@ namespace FarNet.Works
 			return Invariant.Format("'{0}' {1} {2} {3}", new object[] { this.Character, this.ForegroundColor, this.BackgroundColor, this.BufferCellType });
 		}
 	}
-
-	/// <summary>
-	/// For internal use.
-	/// </summary>
-	public abstract class IZoo
-	{
-		///
-		public abstract void FlushInputBuffer();
-		///
-		public abstract KeyInfo ReadKey(ReadKeyOptions options);
-		///
-		public abstract BufferCell[,] GetBufferContents(Place rectangle);
-		///
-		public abstract string ConsoleTitle { get; }
-		///
-		public abstract void ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill);
-		///
-		public abstract void SetBufferContents(Point origin, BufferCell[,] contents);
-		///
-		public abstract void SetBufferContents(Place rectangle, BufferCell fill);
-		///
-		public abstract void Break();
-	}
 }

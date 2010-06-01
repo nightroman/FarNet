@@ -26,12 +26,10 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 	Log::Source->TraceInformation(__FUNCTION__ "{");
 	try
 	{
-		// deny
+		// deny 2+ load
 		if (Works::Host::State != Works::HostState::None)
 		{
-			Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
-			Console::WriteLine("WARNING: FarNet cannot be loaded twice.");
-			Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+			Far::Net->Message("FarNet cannot be loaded twice.", "FarNet", MsgOptions::Warning);
 			return;
 		}
 

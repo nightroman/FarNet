@@ -501,6 +501,7 @@ namespace FarNet
 		/// <param name="line">Line index.</param>
 		/// <seealso cref="Caret"/>
 		/// <seealso cref="Frame"/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		public abstract void GoTo(int column, int line);
 
 		/// <summary>

@@ -417,14 +417,6 @@ void Far0::ProcessPrefixes(INT_PTR item)
 	Run(gcnew String(command));
 }
 
-int Far0::GetPaletteColor(PaletteColor paletteColor)
-{
-	INT_PTR index = (INT_PTR)paletteColor;
-	if (index < 0 || index >= Wrap::GetEndPalette())
-		throw gcnew ArgumentOutOfRangeException("paletteColor");
-	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
-}
-
 //::Far callbacks
 
 bool Far0::AsConfigure(int itemIndex)
@@ -500,7 +492,7 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 	{
 		Panel0::EndOpenMode();
 		if (userscreen.Get()) //_100514_000000
-			Far::Net->SaveUserScreen();
+			Far::Net->UI->SaveUserScreen();
 	}
 }
 
@@ -613,7 +605,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 	{
 		Panel0::EndOpenMode();
 		if (userscreen.Get()) //_100514_000000
-			Far::Net->SaveUserScreen();
+			Far::Net->UI->SaveUserScreen();
 	}
 }
 

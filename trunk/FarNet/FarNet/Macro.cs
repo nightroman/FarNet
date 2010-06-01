@@ -259,6 +259,7 @@ namespace FarNet
 		/// <summary>
 		/// Global constants.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		Consts,
 		/// <summary>
 		/// Dialog boxes.

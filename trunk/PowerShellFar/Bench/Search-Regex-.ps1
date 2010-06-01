@@ -38,11 +38,11 @@ param
 	[switch]$AllText
 )
 
-Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Search-Regex"
+Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
 
 # Collect input if any
 if (!$InputObject) {
-	[console]::Title = 'Collecting input...'
+	$Host.UI.RawUI.WindowTitle = 'Collecting input...'
 	$InputObject = @($input)
 }
 
@@ -146,7 +146,7 @@ if (!$Regex) {
 		}
 
 		try {
-			[console]::Title = 'Evaluating input...'
+			$Host.UI.RawUI.WindowTitle = 'Evaluating input...'
 			$InputObject = Invoke-Expression $eInput.Text
 			if ($InputObject) {
 				break
@@ -333,7 +333,7 @@ $panel.add_KeyPressed({&{
 		$f = $e.Frame
 		$e.Open()
 		$m = $i.Data
-		$f.VisibleLine = $f.CaretLine - [console]::WindowHeight/3
+		$f.VisibleLine = $f.CaretLine - $Host.UI.RawUI.WindowSize.Height / 3
 		$f.CaretColumn = $m[0] + $m[1]
 		$e.Frame = $f
 		$c = $e[-1] # can be null if a file is already opened

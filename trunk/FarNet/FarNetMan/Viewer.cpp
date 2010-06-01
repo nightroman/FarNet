@@ -27,7 +27,7 @@ void Viewer::Open(OpenMode mode)
 	if (ValueUserScreen::Get()) //????
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->SaveUserScreen();
+		Far::Net->UI->SaveUserScreen();
 	}
 
 	// flags
@@ -90,7 +90,7 @@ void Viewer::Open(OpenMode mode)
 
 	// redraw Far
 	if (wt == WindowKind::Dialog)
-		Far::Net->Redraw();
+		Far::Net->UI->Redraw();
 
 	// errors: see editor
 	if (_id == -1)

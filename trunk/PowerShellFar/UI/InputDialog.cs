@@ -17,7 +17,7 @@ namespace PowerShellFar.UI
 
 		public InputDialog(string caption, string history, params string[] prompt)
 		{
-			int w = Console.WindowWidth - 7;
+			int w = Far.Net.UI.WindowSize.X - 7;
 			int h = 5 + prompt.Length;
 
 			UIDialog = Far.Net.CreateDialog(-1, -1, w, h);

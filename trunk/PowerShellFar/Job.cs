@@ -563,7 +563,7 @@ namespace PowerShellFar
 					Timer = null;
 
 					// win7 NoProgress
-					Far.Net.SetProgressState(TaskbarProgressBarState.NoProgress);
+					Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 				}
 			}
 			else
@@ -579,11 +579,11 @@ namespace PowerShellFar
 					JobLastNotified.KeepStopwatch = Stopwatch.StartNew();
 
 				// notify
-				Console.Title = JobLastNotified.StateText + ": " + JobLastNotified.ToLine(100);
+				Far.Net.UI.WindowTitle = JobLastNotified.StateText + ": " + JobLastNotified.ToLine(100);
 
 				// win7
-				Far.Net.SetProgressValue(1, 1);
-				Far.Net.SetProgressState(JobLastNotified.IsSucceeded ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Error);
+				Far.Net.UI.SetProgressValue(1, 1);
+				Far.Net.UI.SetProgressState(JobLastNotified.IsSucceeded ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Error);
 
 				// install the timer
 				if (Timer == null)
@@ -696,7 +696,7 @@ Ignore: discard all jobs and output
 ", job.ToLine(100), job.StateText, job.Length);
 
 				string title = "Background job";
-				Console.Title = title;
+				Far.Net.UI.WindowTitle = title;
 
 				switch (Far.Net.Message(message, title, MsgOptions.Gui | MsgOptions.AbortRetryIgnore))
 				{
@@ -711,7 +711,7 @@ Ignore: discard all jobs and output
 					case 1:
 						if (job.IsRunning)
 						{
-							Console.Title = "Waiting for a background job...";
+							Far.Net.UI.WindowTitle = "Waiting for a background job...";
 							job.Finished.WaitOne();
 						}
 						else

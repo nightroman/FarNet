@@ -176,6 +176,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Converts a value to a another value using property info.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		internal static object Parse(PSPropertyInfo info, object value)
 		{
 			try

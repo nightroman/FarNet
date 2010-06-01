@@ -52,7 +52,7 @@ namespace PowerShellFar.UI
 				catch (IOException) { }
 			}
 
-			int dw = Math.Max(Math.Min(Console.WindowWidth - 7, maxLine + 12), 73);
+			int dw = Math.Max(Math.Min(Far.Net.UI.WindowSize.X - 7, maxLine + 12), 73);
 			int dh = 22;
 
 			string title;

@@ -26,6 +26,7 @@ namespace PowerShellFar.Commands
 		/// Use property names to specify columns or hashtables to describe columns in details,
 		/// see <see cref="Meta"/> about hashtables and <see cref="PanelModeInfo.Columns"/> about column types.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(HelpMessage = "Sets Columns property.", Position = 0)]
 		public object[] Columns { get; set; }
 

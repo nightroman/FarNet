@@ -5,6 +5,7 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
@@ -12,6 +13,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Provider;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 using System.Text.RegularExpressions;
 using FarNet;
 
@@ -31,6 +33,7 @@ namespace PowerShellFar
 			return TablePanel.SetupColumns(columns);
 		}
 
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal static Process StartExternalViewer(string fileName)
 		{
 			string externalViewerFileName = A.Psf.Settings.ExternalViewerFileName;
@@ -44,7 +47,7 @@ namespace PowerShellFar
 				{
 					return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 				}
-				catch (Exception)
+				catch (Win32Exception)
 				{
 					Far.Net.Message(
 						"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + A.Psf.Settings.ExternalViewerArguments,
@@ -59,6 +62,7 @@ namespace PowerShellFar
 		}
 
 		///
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static void ShowTranscript(bool external)
 		{
 			// ensure the file exists, we may want to open a viewer before output
@@ -421,6 +425,7 @@ namespace My
 		/// <summary>
 		/// Just a wrapper and helper to watch calls.
 		/// </summary>
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static Process Start(string fileName, string arguments)
 		{
 			return Process.Start(new ProcessStartInfo()

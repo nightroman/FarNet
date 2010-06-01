@@ -44,7 +44,7 @@ void Editor::Open(OpenMode mode)
 	if (ValueUserScreen::Get()) //????
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->SaveUserScreen();
+		Far::Net->UI->SaveUserScreen();
 	}
 
 	// strings
@@ -128,7 +128,7 @@ void Editor::Open(OpenMode mode)
 
 	// redraw Far
 	if (wt == WindowKind::Dialog)
-		Far::Net->Redraw();
+		Far::Net->UI->Redraw();
 
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
 	//! Using Far diagnostics fires false errors, e.g.:

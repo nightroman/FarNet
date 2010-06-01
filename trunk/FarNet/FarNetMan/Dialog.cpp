@@ -38,15 +38,19 @@ FarDialog::FarDialog(int left, int top, int right, int bottom)
 , _rect(left, top, right, bottom)
 , _items(gcnew List<FarControl^>)
 {
-	if (left < 0)
+	if (left < 0 || top < 0)
 	{
-		_rect.Left = (Console::WindowWidth - right) / 2;
-		_rect.Right = _rect.Left + right - 1;
-	}
-	if (top < 0)
-	{
-		_rect.Top = (Console::WindowHeight - bottom) / 2;
-		_rect.Bottom = _rect.Top + bottom - 1;
+		Point size = Far::Net->UI->WindowSize;
+		if (left < 0)
+		{
+			_rect.Left = (size.X - right) / 2;
+			_rect.Right = _rect.Left + right - 1;
+		}
+		if (top < 0)
+		{
+			_rect.Top = (size.Y - bottom) / 2;
+			_rect.Bottom = _rect.Top + bottom - 1;
+		}
 	}
 }
 
@@ -275,7 +279,7 @@ bool FarDialog::Show()
 	if (ValueUserScreen::Get()) //_100514_000000
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->SaveUserScreen();
+		Far::Net->UI->SaveUserScreen();
 	}
 
 	FarDialogItem* items = new FarDialogItem[_items->Count];

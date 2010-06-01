@@ -15,6 +15,7 @@ namespace PowerShellFar.UI
 		IEdit _StartupCode;
 		IEdit _StartupEdit;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
 		public SettingsDialog()
 		{
 			_Dialog = Far.Net.CreateDialog(-1, -1, 77, 8);

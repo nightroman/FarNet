@@ -104,7 +104,7 @@ function global:Complete-Word-
 	}
 	else {
 		# select 1 word from list
-		$cursor = $Far.RawUI.WindowCursor
+		$cursor = $Far.UI.WindowCursor
 		$w = .{
 			$words.GetEnumerator() | .{process{ if ($_.Value) { $_.Key } }} | Sort-Object
 			$words.GetEnumerator() | .{process{ if (!$_.Value) { $_.Key } }} | Sort-Object

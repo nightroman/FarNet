@@ -159,7 +159,7 @@ namespace PowerShellFar
 
 		internal override void ShowHelp()
 		{
-			Far.Net.ShowHelp(A.Psf.AppHome, "ListPanel", HelpOptions.Path);
+			Help.ShowTopic("ListPanel");
 		}
 
 		/// <summary>

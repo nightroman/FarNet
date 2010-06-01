@@ -47,6 +47,7 @@ namespace PowerShellFar.Commands
 		}
 
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(HelpMessage = "User defined choice buttons. On too many choices a message box internally may be converted into a dialog.")]
 		public string[] Choices
 		{

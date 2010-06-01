@@ -62,6 +62,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// For Actor.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
 		public static void ShowHistory()
 		{
 			UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(string.Empty);
@@ -145,7 +146,7 @@ namespace PowerShellFar
 		/// </summary>
 		static IRegistryKey OpenHistoryKey(bool writable)
 		{
-			//! 'Console.Title' was used for progress but it can throw IOException; we better do not use it
+			//! Window title was used for progress but it can throw IOException; we better do not use it
 			if (!_history_)
 			{
 				_history_ = true;

@@ -42,7 +42,7 @@ namespace PowerShellFar
 			if (_command != null)
 			{
 				string header = string.Concat(Entry.CommandInvoke1.Prefix, ":", _command, "\r\n");
-				Far.Net.Write(header, A.Psf.Settings.CommandForegroundColor);
+				Far.Net.UI.Write(header, A.Psf.Settings.CommandForegroundColor);
 				_command = null;
 
 				A.Psf.Transcript.WriteLine("\r\n" + header);
@@ -52,63 +52,63 @@ namespace PowerShellFar
 		public override void Write(string value)
 		{
 			Writing();
-			Far.Net.Write(value);
+			Far.Net.UI.Write(value);
 			A.Psf.Transcript.Write(value);
 		}
 
 		public override void WriteLine()
 		{
 			Writing();
-			Far.Net.Write("\r\n");
+			Far.Net.UI.Write("\r\n");
 			A.Psf.Transcript.WriteLine();
 		}
 
 		public override void WriteLine(string value)
 		{
 			Writing();
-			Far.Net.Write(value + "\r\n");
+			Far.Net.UI.Write(value + "\r\n");
 			A.Psf.Transcript.WriteLine(value);
 		}
 
 		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
-			Far.Net.Write(value, foregroundColor, backgroundColor);
+			Far.Net.UI.Write(value, foregroundColor, backgroundColor);
 			A.Psf.Transcript.Write(value);
 		}
 
 		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
-			Far.Net.Write(value + "\r\n", foregroundColor, backgroundColor);
+			Far.Net.UI.Write(value + "\r\n", foregroundColor, backgroundColor);
 			A.Psf.Transcript.WriteLine(value);
 		}
 
 		public override void WriteDebugLine(string message)
 		{
 			Writing();
-			Far.Net.Write("DEBUG: " + message + "\r\n", A.Psf.Settings.DebugForegroundColor);
+			Far.Net.UI.Write("DEBUG: " + message + "\r\n", A.Psf.Settings.DebugForegroundColor);
 			A.Psf.Transcript.WriteDebugLine(message);
 		}
 
 		public override void WriteErrorLine(string value)
 		{
 			Writing();
-			Far.Net.Write(value + "\r\n", A.Psf.Settings.ErrorForegroundColor);
+			Far.Net.UI.Write(value + "\r\n", A.Psf.Settings.ErrorForegroundColor);
 			A.Psf.Transcript.WriteErrorLine(value);
 		}
 
 		public override void WriteVerboseLine(string message)
 		{
 			Writing();
-			Far.Net.Write("VERBOSE: " + message + "\r\n", A.Psf.Settings.VerboseForegroundColor);
+			Far.Net.UI.Write("VERBOSE: " + message + "\r\n", A.Psf.Settings.VerboseForegroundColor);
 			A.Psf.Transcript.WriteVerboseLine(message);
 		}
 
 		public override void WriteWarningLine(string message)
 		{
 			Writing();
-			Far.Net.Write("WARNING: " + message + "\r\n", A.Psf.Settings.WarningForegroundColor);
+			Far.Net.UI.Write("WARNING: " + message + "\r\n", A.Psf.Settings.WarningForegroundColor);
 			A.Psf.Transcript.WriteWarningLine(message);
 		}
 	}
@@ -228,6 +228,7 @@ namespace PowerShellFar
 		}
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	sealed class TranscriptOutputWriter : TextOutputWriter
 	{
 		static int _fileNameCount;
