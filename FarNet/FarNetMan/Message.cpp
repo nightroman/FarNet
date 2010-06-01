@@ -13,7 +13,7 @@ bool Message::Show()
 	if (ValueUserScreen::Get()) //_100514_000000
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->SaveUserScreen();
+		Far::Net->UI->SaveUserScreen();
 	}
 
 	//! flags: add OK if no buttons; otherwise wierd: [Esc] has no effect, [Enter] passed through, other keys too and dialog is still shown
@@ -89,7 +89,7 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 	m._flags = (int)options;
 
 	// text width
-	int width = Console::WindowWidth - 16;
+	int width = Far::Net->UI->WindowSize.X - 16;
 
 	// header
 	if (!String::IsNullOrEmpty(header))
@@ -100,7 +100,7 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 	}
 
 	// body
-	int height = Console::WindowHeight - 9;
+	int height = Far::Net->UI->WindowSize.Y - 9;
 	FormatMessageLines(%m._body, body, width, height);
 
 	// buttons? dialog?
@@ -140,10 +140,11 @@ int Message::ShowDialog(int width)
 		}
 	}
 	w += 10;
-	int nBody = Math::Min(_body.Count, Console::WindowHeight / 3);
+	Point size = Far::Net->UI->WindowSize;
+	int nBody = Math::Min(_body.Count, size.Y / 3);
 	int h = 5 + nBody + _buttons->Length;
-	if (h > Console::WindowHeight - 4)
-		h = Console::WindowHeight - 4;
+	if (h > size.Y - 4)
+		h = size.Y - 4;
 
 	IDialog^ dialog = Far::Net->CreateDialog(-1, -1, w, h);
 	dialog->HelpTopic = _helpTopic;

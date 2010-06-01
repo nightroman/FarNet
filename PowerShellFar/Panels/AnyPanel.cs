@@ -361,7 +361,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal virtual void ShowHelp()
 		{
-			Far.Net.ShowHelp(A.Psf.AppHome, "PowerPanel", HelpOptions.Path);
+			Help.ShowTopic("PowerPanel");
 		}
 
 		/// <summary>
@@ -576,6 +576,7 @@ namespace PowerShellFar
 		{ }
 
 		// Far handler
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		void OnKeyPressed(object sender, PanelKeyEventArgs e)
 		{
 			_UserWants = UserAction.None;

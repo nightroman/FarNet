@@ -60,6 +60,54 @@ namespace PowerShellFar {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///&lt;#
+        ///.SYNOPSIS
+        ///	The internal profile.
+        ///	Author: Roman Kuzmin
+        ///#&gt;
+        ///
+        ///# Ignore errors
+        ///trap { continue }
+        ///
+        ///# Hide &apos;more.com&apos;
+        ///Set-Alias more.com more
+        ///
+        ///&lt;#
+        ///.SYNOPSIS
+        ///	FarNet &apos;Clear-Host&apos;.
+        ///#&gt;
+        ///function Clear-Host
+        ///{
+        ///	$Far.UI.Clear()
+        ///}
+        ///
+        ///&lt;#
+        ///.SYNOPSIS
+        ///	FarNet &apos;more&apos;.
+        ///#&gt;
+        ///function more
+        ///(
+        ///	[string[]]$paths
+        ///)
+        ///{
+        ///	if ($paths -and $paths.length -ne 0)  {
+        ///		foreach ($file in $paths) {
+        ///			Get-Content $file
+        ///		}
+        ///	}
+        ///	else {
+        ///		$input
+        ///	}
+        ///}
+        ///
+        ///&lt;#
+        ///.SYNOPSIS
+        ///	Far friendly &apos;Get-History&apos;.
+        ///#&gt;
+        ///function  [rest of string was truncated]&quot;;.
+        /// </summary>
         internal static string PowerShellFar {
             get {
                 return ResourceManager.GetString("PowerShellFar", resourceCulture);

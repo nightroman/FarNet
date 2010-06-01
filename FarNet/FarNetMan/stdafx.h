@@ -8,6 +8,7 @@
 #include "plugin.hpp"
 #pragma warning(pop)
 
+#define Console stop_Console
 #define ACTL_GETWINDOWINFO stop_ACTL_GETWINDOWINFO
 #define DM_ENABLEREDRAW stop_DM_ENABLEREDRAW
 #define DM_GETDLGITEM stop_DM_GETDLGITEM

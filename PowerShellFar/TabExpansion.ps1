@@ -21,8 +21,23 @@ function global:TabExpansion
 	### Expand
 	$sort_ = $true
 	$expanded_ = .{
+		### #<pattern>: custom patterns in FarHost or history
+		if (($lastWord_.EndsWith('#') -and ($lastWord_ -match '^(.*)#$')) -or ($lastWord_.StartsWith('#') -and ($lastWord_ -match '^#(.*)$'))) {
+			if ($Host.Name -eq 'FarHost') {
+				$patt_ = $matches[1].Replace('[', '`[').Replace(']', '`]') + '*'
+				@(Get-Content -LiteralPath ('{0}\{1}' -f $Psf.AppHome, 'TabExpansion#.txt')) -like $patt_
+			}
+			else {
+				$sort_ = $false
+				$cmds_ = @(Get-History -Count 32767) -like "*$($matches[1])*"
+				for($$ = $cmds_.Count - 1; $$ -ge 0; --$$) {
+					$cmds_[$$]
+				}
+			}
+		}
+
 		### Members of variables, expressions or static objects
-		if ($lastWord_ -match '(^.*?)(\$[\w\.]+|\)|\[[\w\.]+\]::\w+)\.(\w*)$') {
+		elseif ($lastWord_ -match '(^.*?)(\$[\w\.]+|\)|\[[\w\.]+\]::\w+)\.(\w*)$') {
 			$method_ = [System.Management.Automation.PSMemberTypes]'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
 			$pref_ = $matches[1]
 			$expr_ = $matches[2]
@@ -236,15 +251,6 @@ function global:TabExpansion
 		### Types and namespaces 2 for New-Object
 		elseif ($line_ -match '\bNew-Object(?:\s+-TypeName)?\s+[*.\w]+$') {
 			GetTabExpansionType $lastWord_
-		}
-
-		### History: ... #<pattern>
-		elseif ($line_ -match '(?:^|\s)#(\S*)$') {
-			$sort_ = $false
-			$cmds = @(Get-History -Count 32767) -like "*$($matches[1])*"
-			for($$ = $cmds.Count - 1; $$ -ge 0; --$$) {
-				$cmds[$$]
-			}
 		}
 
 		### Commands, aliases, paths

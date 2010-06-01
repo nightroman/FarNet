@@ -111,6 +111,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Fills data table and shows the panel.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override void Show()
 		{
 			if (Panel.IsOpened)
@@ -427,7 +428,7 @@ namespace PowerShellFar
 
 		internal override void ShowHelp()
 		{
-			Far.Net.ShowHelp(A.Psf.AppHome, "DataPanel", HelpOptions.Path);
+			Help.ShowTopic("DataPanel");
 		}
 
 		// Command builder

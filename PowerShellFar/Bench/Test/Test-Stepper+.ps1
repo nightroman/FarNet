@@ -148,7 +148,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# test: current window is panel
-	Assert-Far ($Far.Window.Kind -eq 'Panels')
+	Assert-Far -Panels
 }
 
 {
@@ -158,7 +158,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# test: current window is editor
-	Assert-Far ($Far.Window.Kind -eq 'Editor')
+	Assert-Far -Editor
 }
 
 {
@@ -178,7 +178,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# test: current window is panel
-	Assert-Far ($Far.Window.Kind -eq 'Panels')
+	Assert-Far -Panels
 }
 
 {
@@ -219,7 +219,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# test: current window is editor
-	Assert-Far ($Far.Window.Kind -eq 'Editor')
+	Assert-Far -Editor
 }
 
 # exit the editor, do not save
@@ -227,7 +227,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# test: current window is panel
-	Assert-Far ($Far.Window.Kind -eq 'Panels')
+	Assert-Far -Panels
 }
 
 # exit the plugin panel

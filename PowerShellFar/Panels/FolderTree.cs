@@ -304,7 +304,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal override void ShowHelp()
 		{
-			Far.Net.ShowHelp(A.Psf.AppHome, "FolderTree", HelpOptions.Path);
+			Help.ShowTopic("FolderTree");
 		}
 
 	}

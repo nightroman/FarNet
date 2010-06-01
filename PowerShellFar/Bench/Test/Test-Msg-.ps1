@@ -6,7 +6,8 @@
 #>
 
 $ofs = "`r"
-$long = [math]::Max([Console]::WindowWidth, [Console]::WindowHeight)
+$size = $Host.UI.RawUI.WindowSize
+$long = [math]::Max($size.Width, $size.Height)
 $choices = @(
 	'&' + '1' * $long
 	'&' + '2' * $long

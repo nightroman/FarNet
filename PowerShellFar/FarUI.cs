@@ -87,10 +87,10 @@ namespace PowerShellFar
 			if (record.RecordType == ProgressRecordType.Completed)
 			{
 				// title
-				Console.Title = "Done : " + record.Activity + " : " + record.StatusDescription;
+				Far.Net.UI.WindowTitle = "Done : " + record.Activity + " : " + record.StatusDescription;
 
 				// win7 NoProgress
-				Far.Net.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
+				Far.Net.UI.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
 
 				return;
 			}
@@ -106,10 +106,10 @@ namespace PowerShellFar
 				text = string.Empty + record.PercentComplete + "% " + text;
 			if (record.SecondsRemaining > 0)
 				text = string.Empty + record.SecondsRemaining + " sec. " + text;
-			Console.Title = text;
+			Far.Net.UI.WindowTitle = text;
 
 			// win7 %
-			Far.Net.SetProgressValue(record.PercentComplete, 100);
+			Far.Net.UI.SetProgressValue(record.PercentComplete, 100);
 		}
 		Stopwatch _progressWatch = Stopwatch.StartNew();
 

@@ -597,6 +597,7 @@ namespace FarNet
 		/// If you get it and change items then set it again after changes.
 		/// Without that individual item changes will have no effect.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		DataItem[] InfoItems { get; set; }
 		/// <summary>
 		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
@@ -680,6 +681,7 @@ namespace FarNet
 		/// </ul>
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public FarColumn[] Columns { get; set; }
 		/// <summary>
 		/// Status columns info.
@@ -688,6 +690,7 @@ namespace FarNet
 		/// Use it for status columns in the same way as <see cref="Columns"/> is used.
 		/// Column names are ignored.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public FarColumn[] StatusColumns { get; set; }
 		/// <summary>
 		/// Tells to resize panel to fill the entire window (instead of a half).
@@ -1158,6 +1161,7 @@ namespace FarNet
 		/// otherwise not coherent panel and list data may cause unpredictable problems.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		IList<FarFile> Files { get; set; }
 		/// <summary>
 		/// Gets or sets the panel type ID.

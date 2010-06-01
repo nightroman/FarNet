@@ -38,6 +38,7 @@ namespace PowerShellFar
 	/// Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { $Far.Msg('See you', 'Exit', 'Gui') }
 	/// </code>
 	/// </example>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
 	public sealed class Actor
 	{
 		// protector
@@ -380,7 +381,7 @@ Continue with this current location?
 							break;
 						default:
 							if (Far.Net.MacroState != FarMacroState.None)
-								Far.Net.Zoo.Break();
+								Far.Net.UI.Break();
 							throw;
 					}
 				}
@@ -428,7 +429,7 @@ Continue with this current directory?
 							break;
 						default:
 							if (Far.Net.MacroState != FarMacroState.None)
-								Far.Net.Zoo.Break();
+								Far.Net.UI.Break();
 							throw;
 					}
 				}
@@ -448,10 +449,10 @@ Continue with this current directory?
 			if (Pipeline == null)
 				return;
 
-			while (Console.KeyAvailable)
+			while (Far.Net.UI.KeyAvailable)
 			{
-				ConsoleKeyInfo k = Console.ReadKey(true);
-				if (k.Key == ConsoleKey.C || k.Modifiers == ConsoleModifiers.Control)
+				var k = Far.Net.UI.ReadKey(FarNet.Works.ReadKeyOptions.AllowCtrlC | FarNet.Works.ReadKeyOptions.IncludeKeyDown | FarNet.Works.ReadKeyOptions.IncludeKeyUp | FarNet.Works.ReadKeyOptions.NoEcho);
+				if (k.VirtualKeyCode == VKeyCode.C && k.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
 					Pipeline.BeginStop(AsyncStop, Pipeline);
 			}
 		}
@@ -485,6 +486,7 @@ Continue with this current directory?
 		/// Gets or sets selected text if selection exists in the current editor or an editor line,
 		/// else a line text if any kind of editor line is active.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string ActiveText
 		{
 			get { return EditorKit.ActiveText; }
@@ -502,6 +504,7 @@ Continue with this current directory?
 		/// Use $null action to add a separator to menus.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void Action(string text, EventHandler handler)
 		{
 			UI.ActorMenu.AddUserTool(text, handler, ModuleToolOptions.None);
@@ -519,6 +522,7 @@ Continue with this current directory?
 		/// Use $null action to add a separator to menus.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void Action(string text, EventHandler handler, ModuleToolOptions area)
 		{
 			UI.ActorMenu.AddUserTool(text, handler, area);
@@ -532,6 +536,7 @@ Continue with this current directory?
 		/// It just helps to avoid boring checks in many editor scripts.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Editor is not opened or its window is not current.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IEditor Editor()
 		{
 			IEditor editor = Far.Net.Editor;
@@ -544,6 +549,7 @@ Continue with this current directory?
 		/// <summary>
 		/// Returns PowerShellFar home path. Designed for internal use.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string AppHome
 		{
 			get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); }
@@ -553,6 +559,7 @@ Continue with this current directory?
 		/// <summary>
 		/// Returns PowerShellFar data path and ensures once that the directory exists.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string AppData
 		{
 			get
@@ -589,6 +596,8 @@ Continue with this current directory?
 		/// The code is simply returned, if you want to execute it then call <see cref="InvokeInputCode"/>.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string InputCode()
 		{
 			UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, "PowerShell code");
@@ -656,6 +665,7 @@ Continue with this current directory?
 		/// Invokes the selected text or the current line text in the editor or the command line.
 		/// Called on "Invoke selected code".
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void InvokeSelectedCode()
 		{
 			EditorKit.InvokeSelectedCode();
@@ -673,6 +683,7 @@ Continue with this current directory?
 		/// It can be used to prevent closing of Far by [F10] with existing background jobs.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool CanExit()
 		{
 			return Job.CanExit();
@@ -691,6 +702,7 @@ Continue with this current directory?
 		/// </para>
 		/// </remarks>
 		/// <param name="count">Number of last commands to be returned. 0: all commands.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IList<string> GetHistory(int count)
 		{
 			return History.GetLines(count);
@@ -701,6 +713,7 @@ Continue with this current directory?
 		/// Called on selection of the plugin config item.
 		/// </summary>
 		/// <seealso cref="Settings"/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool ShowSettings()
 		{
 			return (new UI.SettingsDialog()).Show();
@@ -713,6 +726,7 @@ Continue with this current directory?
 		/// This method opens a modal editor console, it can be called in the middle of something to perform actions manually
 		/// and then to continue interrupted execution on exit. Basically it is so called PowerShell nested prompt.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowConsole()
 		{
 			EditorConsole console = EditorConsole.CreateConsole(true);
@@ -724,6 +738,7 @@ Continue with this current directory?
 		/// Shows a new editor console in specified mode.
 		/// Called on "Editor console".
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowConsole(OpenMode mode)
 		{
 			EditorConsole console = EditorConsole.CreateConsole(true);
@@ -735,6 +750,7 @@ Continue with this current directory?
 		/// Shows a menu of available PowerShellFar panels to open.
 		/// Called on "Power panel".
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowPanel()
 		{
 			string currentDirectory = A.Psf.SyncPaths();
@@ -763,6 +779,7 @@ Continue with this current directory?
 		/// Shows the background job list.
 		/// Called on "Background jobs" and by <see cref="CanExit"/>.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowJobs()
 		{
 			Job.ShowJobs();
@@ -773,6 +790,7 @@ Continue with this current directory?
 		/// Called on "Command history".
 		/// </summary>
 		/// <seealso cref="GetHistory"/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowHistory()
 		{
 			History.ShowHistory();
@@ -782,6 +800,7 @@ Continue with this current directory?
 		/// Shows a menu with available modules and registered snap-ins.
 		/// Called on "Module+".
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowModules()
 		{
 			UI.ModulesMenu ui = new PowerShellFar.UI.ModulesMenu();
@@ -791,6 +810,7 @@ Continue with this current directory?
 		/// <summary>
 		/// Shows PowerShell debugger tools menu.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowDebugger()
 		{
 			UI.DebuggerMenu ui = new UI.DebuggerMenu();
@@ -800,6 +820,7 @@ Continue with this current directory?
 		/// <summary>
 		/// Shows PowerShell errors.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowErrors()
 		{
 			UI.ErrorsMenu ui = new UI.ErrorsMenu();
@@ -807,13 +828,14 @@ Continue with this current directory?
 		}
 
 		/// <summary>
-		/// Shows help, normally for the current token in an editor line.
+		/// Shows help, normally for the current command or parameter in an editor line.
 		/// </summary>
 		/// <remarks>
 		/// For the current token in an editor line (editor, editbox, cmdline) it gets help
 		/// information and shows it in the viewer. In code editors (*.ps1, *.psm1, *.psd1,
 		/// *.psfconsole, input code boxes) this action is associated with [ShiftF1].
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowHelp()
 		{
 			Help.ShowHelp();
@@ -832,6 +854,7 @@ Continue with this current directory?
 		/// returned selected text is inserted into the edit line.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ExpandCode(ILine editLine)
 		{
 			EditorKit.ExpandCode(editLine);
@@ -917,7 +940,7 @@ Continue with this current directory?
 			try
 			{
 				// win7 Indeterminate
-				Far.Net.SetProgressState(TaskbarProgressBarState.Indeterminate);
+				Far.Net.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
 				// add history
 				if (addHistory)
@@ -946,8 +969,8 @@ Continue with this current directory?
 					// push console color
 					if (writer is ConsoleOutputWriter)
 					{
-						color1 = Console.ForegroundColor;
-						Console.ForegroundColor = Settings.ErrorForegroundColor;
+						color1 = Far.Net.UI.ForegroundColor;
+						Far.Net.UI.ForegroundColor = Settings.ErrorForegroundColor;
 					}
 
 					// write the reson
@@ -959,7 +982,7 @@ Continue with this current directory?
 					// pop console color
 					if (color1 != ConsoleColor.Black)
 					{
-						Console.ForegroundColor = color1;
+						Far.Net.UI.ForegroundColor = color1;
 					}
 				}
 			}
@@ -969,7 +992,7 @@ Continue with this current directory?
 				timer.Dispose();
 
 				// win7 NoProgress
-				Far.Net.SetProgressState(TaskbarProgressBarState.NoProgress);
+				Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 
 				_myLastCommand = _myCommand;
 				_myCommand = null;
@@ -1016,6 +1039,7 @@ Continue with this current directory?
 		/// Their values depend on that properties, see help.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public IDictionary Providers
 		{
 			get { return _Providers; }
@@ -1040,6 +1064,7 @@ Continue with this current directory?
 		/// Having done this we can press enter on "*+.ps1" files and their steps will be invoked.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void Go(object[] steps)
 		{
 			Stepper stepper = new Stepper();
@@ -1061,6 +1086,7 @@ Continue with this current directory?
 		/// If the file is modified then it is saved.
 		/// The action is the same as to invoke the script from the input command box.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void InvokeScriptFromEditor()
 		{
 			EditorKit.InvokeScriptBeingEdited(null);
@@ -1107,6 +1133,7 @@ Continue with this current directory?
 		/// It is designed mosttly for use from a step script block being processed.
 		/// It's fine to use this in order to check stepping mode by not null result.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public Stepper Stepper { get { return Stepper.RunningInstance; } }
 
 		/// <summary>
@@ -1115,6 +1142,7 @@ Continue with this current directory?
 		/// <remarks>
 		/// It is used to register new module actions.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IModuleManager Manager
 		{
 			get { return Entry.Instance.Manager; }

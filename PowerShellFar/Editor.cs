@@ -88,6 +88,7 @@ namespace PowerShellFar
 		public static void ExpandText(ILine editLine, string text, string line, string lastWord, Collection<PSObject> words)
 		{
 			bool isEmpty = words.Count == 0;
+			int hashMode = lastWord[0] == '#' ? 1 : lastWord[lastWord.Length - 1] == '#' ? 2 : 0;
 
 			// select a word
 			string word;
@@ -102,7 +103,7 @@ namespace PowerShellFar
 			{
 				// make menu
 				IListMenu menu = Far.Net.CreateListMenu();
-				var cursor = Far.Net.RawUI.WindowCursor;
+				var cursor = Far.Net.UI.WindowCursor;
 				menu.X = cursor.X;
 				menu.Y = cursor.Y;
 				A.Psf.Settings.Intelli(menu);
@@ -113,7 +114,7 @@ namespace PowerShellFar
 					menu.Show();
 					return;
 				}
-				menu.Incremental = lastWord + "*";
+				menu.Incremental = (hashMode == 1 ? lastWord.Substring(1) : hashMode == 2 ? lastWord.Substring(0, lastWord.Length - 1) : lastWord) + "*";
 				menu.IncrementalOptions = PatternOptions.Prefix;
 
 				foreach (PSObject o in words)
@@ -139,9 +140,28 @@ namespace PowerShellFar
 			}
 
 			// expand last word
-			line = line.Substring(0, line.Length - lastWord.Length) + word;
-			editLine.Text = line + text;
-			editLine.Caret = line.Length;
+
+			// head before the last word
+			line = line.Substring(0, line.Length - lastWord.Length);
+			
+			// #-pattern
+			int index, caret = -1;
+			if (hashMode != 0 && (index = word.IndexOf('#')) >= 0)
+			{
+				word = word.Substring(0, index) + word.Substring(index + 1);
+				caret = line.Length + index;
+			}
+			// standard
+			else
+			{
+				caret = line.Length + word.Length;
+			}
+
+			// set new text = old head + expanded + old tail
+			editLine.Text = line + word + text;
+
+			// set caret
+			editLine.Caret = caret;
 		}
 
 		public static string ActiveText
@@ -301,15 +321,15 @@ namespace PowerShellFar
 			string code = "& '" + editor.FileName.Replace("'", "''") + "'";
 
 			// invoke
-			Console.Title = "Running...";
+			Far.Net.UI.WindowTitle = "Running...";
 			try
 			{
 				A.Psf.InvokePipeline(code, null, false);
-				Console.Title = "Done " + DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
+				Far.Net.UI.WindowTitle = "Done " + DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
 			}
 			catch
 			{
-				Console.Title = "Failed";
+				Far.Net.UI.WindowTitle = "Failed";
 				throw;
 			}
 		}

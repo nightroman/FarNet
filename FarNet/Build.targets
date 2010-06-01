@@ -6,7 +6,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PublishFile Include="Bin\$(Configuration)\$(AssemblyName)"/>
+		<PublishFile Include="Bin\$(Configuration)\$(AssemblyName).dll"/>
 	</ItemGroup>
 
 	<Target Name="Clean">
@@ -18,8 +18,7 @@
 	</Target>
 
 	<Target Name="Uninstall">
-		<Error Condition="'$(Install)' == ''"/>
-		<Delete Files="$(Install)\$(AssemblyName)" TreatErrorsAsWarnings="true"/>
+		<Delete Files="$(Install)\$(AssemblyName).dll" TreatErrorsAsWarnings="true"/>
 	</Target>
 
 </Project>

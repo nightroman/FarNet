@@ -1,6 +1,34 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.22 =
+
+*) FarNet raw UI moved to $Far.UI
+-- PSF core and scripts now use this API and $Host.UI.RawUI, not Console.
+-- Your affected scripts may have to be updated. Also, do not call Console
+methods directly; instead, use FarNet or PSF APIs ($Far.UI or $Host.UI.RawUI).
+
+*) TabExpansion #-patterns
+{#|#xyz|xyz#}[Tab] patterns are expanded into custom patterns from the
+TabExpansion#.txt in the PSF home directory. Patterns are basically any
+strings, one per line. # in patterns is treated as the caret insertion
+point after expansion. These patterns can effectively cover not standard
+or rare but still useful cases.
+
+Examples:
+  #[Tab] -> all patterns
+  #*null -> [AllowNull()], [ValidateNotNull()], ...
+  $#[Tab] -> $LastExitCode, $MyInvocation.MyCommand.Definition, ...
+  [Al#[Tab] -> [Alias('#')], # is removed and the caret is set there
+
+If TabExpansion.ps1 is used in other hosts then this feature is used to expand
+command history entries there.
+
+*) Other changes
+-- PowerShell.hrc for Colorer -- Added operator ::.
+-- Assert-Far -- Added a few helper switches.
+-- Help -- Minor improvements.
+
 = 4.3.21 =
 
 NOTE: update manually (not by Update-PowerShellFar.ps1). This script and its

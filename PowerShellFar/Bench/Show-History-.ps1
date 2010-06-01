@@ -48,7 +48,7 @@ if ($Folders) {
 			else {
 				$Far.Panel.Path = $_
 				if ($Far.Window.Kind -eq 'Dialog') {
-					$Far.Redraw()
+					$Far.UI.Redraw()
 				}
 			}
 		}

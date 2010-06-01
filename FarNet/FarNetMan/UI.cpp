@@ -4,16 +4,121 @@ Copyright (c) 2005 FarNet Team
 */
 
 #include "StdAfx.h"
-#include "Zoo.h"
+#include "UI.h"
+#include "Wrappers.h"
+
+// Here only we use Console
+#undef Console
 
 namespace FarNet
 {;
-void ThrowWithLastError(String^ msg)
+static void ThrowWithLastError(String^ message)
 {
-	throw gcnew OperationCanceledException(msg + " error code: " + GetLastError());
+	throw gcnew OperationCanceledException(message + " error code: " + GetLastError());
 }
 
-void Zoo::FlushInputBuffer()
+static int GetFarPaletteColor(PaletteColor paletteColor)
+{
+	INT_PTR index = (INT_PTR)paletteColor;
+	if (index < 0 || index >= Wrap::GetEndPalette())
+		throw gcnew ArgumentOutOfRangeException("paletteColor");
+	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
+}
+
+int FarUI::CursorSize::get()
+{
+	return Console::CursorSize;
+}
+void FarUI::CursorSize::set(int value)
+{
+	Console::CursorSize = value;
+}
+
+ConsoleColor FarUI::BackgroundColor::get()
+{
+	return Console::BackgroundColor;
+}
+void FarUI::BackgroundColor::set(ConsoleColor value)
+{
+	Console::BackgroundColor = value;
+}
+
+ConsoleColor FarUI::ForegroundColor::get()
+{
+	return Console::ForegroundColor;
+}
+void FarUI::ForegroundColor::set(ConsoleColor value)
+{
+	Console::ForegroundColor = value;
+}
+
+Place FarUI::WindowPlace::get()
+{
+	SMALL_RECT rect;
+	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARRECT, &rect);
+	return Place(rect.Left, rect.Top, rect.Right, rect.Bottom);
+}
+
+Point FarUI::WindowPoint::get()
+{
+	SMALL_RECT rect;
+	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARRECT, &rect);
+	return Point(rect.Left, rect.Top);
+}
+void FarUI::WindowPoint::set(Point value)
+{
+	Console::SetWindowPosition(value.X, value.Y);
+}
+
+Point FarUI::WindowSize::get()
+{
+	SMALL_RECT rect;
+	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARRECT, &rect);
+	return Point(rect.Right - rect.Left + 1, rect.Bottom - rect.Top + 1);
+}
+void FarUI::WindowSize::set(Point value)
+{
+	Console::SetWindowSize(value.X, value.Y);
+}
+
+Point FarUI::BufferCursor::get()
+{
+	return Point(Console::CursorLeft, Console::CursorTop);
+}
+void FarUI::BufferCursor::set(Point value)
+{
+	Console::SetCursorPosition(value.X, value.Y);
+}
+
+Point FarUI::BufferSize::get()
+{
+	return Point(Console::BufferWidth, Console::BufferHeight);
+}
+void FarUI::BufferSize::set(Point value)
+{
+	Console::SetBufferSize(value.X, value.Y);
+}
+
+Point FarUI::WindowCursor::get()
+{
+	COORD pos;
+	Info.AdvControl(Info.ModuleNumber, ACTL_GETCURSORPOS, &pos);
+	return Point(pos.X, pos.Y);
+}
+void FarUI::WindowCursor::set(Point value)
+{
+	COORD pos;
+	pos.X = (SHORT)value.X;
+	pos.Y = (SHORT)value.Y;
+	Info.AdvControl(Info.ModuleNumber, ACTL_SETCURSORPOS, &pos);
+}
+
+bool FarUI::KeyAvailable::get()
+{
+	return Console::KeyAvailable;
+}
+
+void FarUI::FlushInputBuffer()
 {
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
 	if (hStdin == INVALID_HANDLE_VALUE)
@@ -23,7 +128,7 @@ void Zoo::FlushInputBuffer()
 		ThrowWithLastError("FlushConsoleInputBuffer");
 }
 
-KeyInfo Zoo::ReadKey(Works::ReadKeyOptions options)
+KeyInfo FarUI::ReadKey(Works::ReadKeyOptions options)
 {
 	if (int(options & (Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp)) == 0)
 		throw gcnew ArgumentException("Argument 'options': either IncludeKeyDown, IncludeKeyUp or both must be set.");
@@ -78,7 +183,31 @@ KeyInfo Zoo::ReadKey(Works::ReadKeyOptions options)
 	}
 }
 
-void Zoo::ScrollBufferContents(Place source, Point destination, Place clip, Works::BufferCell fill)
+// _091007_034112
+// Getting console Title throws an exception internally caught by PowerShell. Usually in MT scenarios.
+// It does not make problems but it is noisy. So we use a native call with no exceptions.
+String^ FarUI::WindowTitle::get()
+{
+	// .NET uses buf[0x5fb5] size
+	// CA: C6262: Function uses '49008' bytes of stack: exceeds /analyze:stacksize'16384'. Consider moving some data to heap.
+	wchar_t buf[4096];
+	if (::GetConsoleTitle(buf, countof(buf)))
+		return gcnew String(buf);
+
+	return String::Empty;
+}
+
+void FarUI::WindowTitle::set(String^ value)
+{
+	Console::Title = value;
+}
+
+Point FarUI::MaxWindowSize::get()
+{
+	return Point(Console::LargestWindowWidth, Console::LargestWindowHeight);
+}
+
+void FarUI::ScrollBufferContents(Place source, Point destination, Place clip, Works::BufferCell fill)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -105,7 +234,7 @@ void Zoo::ScrollBufferContents(Place source, Point destination, Place clip, Work
 		ThrowWithLastError("ScrollConsoleScreenBuffer");
 }
 
-array<Works::BufferCell, 2>^ Zoo::GetBufferContents(Place rectangle)
+array<Works::BufferCell, 2>^ FarUI::GetBufferContents(Place rectangle)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -168,7 +297,7 @@ array<Works::BufferCell, 2>^ Zoo::GetBufferContents(Place rectangle)
 	}
 }
 
-void Zoo::SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents)
+void FarUI::SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -209,7 +338,7 @@ void Zoo::SetBufferContents(Point origin, array<Works::BufferCell, 2>^ contents)
 	}
 }
 
-void Zoo::SetBufferContents(Place rectangle, Works::BufferCell fill)
+void FarUI::SetBufferContents(Place rectangle, Works::BufferCell fill)
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdout == INVALID_HANDLE_VALUE)
@@ -248,19 +377,7 @@ void Zoo::SetBufferContents(Place rectangle, Works::BufferCell fill)
 	}
 }
 
-// _091007_034112
-String^ Zoo::ConsoleTitle::get()
-{
-	// .NET uses buf[0x5fb5] size
-	// CA: C6262: Function uses '49008' bytes of stack: exceeds /analyze:stacksize'16384'. Consider moving some data to heap.
-	wchar_t buf[4096];
-	if (::GetConsoleTitle(buf, countof(buf)))
-		return gcnew String(buf);
-
-	return String::Empty;
-}
-
-void Zoo::Break()
+void FarUI::Break()
 {
 	INPUT_RECORD rec;
 	DWORD writeCount;
@@ -274,6 +391,116 @@ void Zoo::Break()
 	rec.Event.KeyEvent.dwControlKeyState = LEFT_CTRL_PRESSED;
 
 	WriteConsoleInput(::GetStdHandle(STD_INPUT_HANDLE), &rec, 1, &writeCount);
+}
+
+//! Console Write() writes some Unicode chars as '?'.
+//! Used to call SaveUserScreen() in the end. It was very slow. Now it is done in many places, see _100514_000000.
+void FarUI::Write(String^ text)
+{
+	if (ES(text))
+		return;
+
+	if (!ValueUserScreen::Get()) //_100514_000000
+	{
+		ValueUserScreen::Set(true);
+		ShowUserScreen();
+	}
+
+	PIN_NE(pin, text);
+	DWORD cch = text->Length;
+	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, NULL);
+}
+
+void FarUI::Write(String^ text, ConsoleColor foregroundColor)
+{
+	ConsoleColor fc = Console::ForegroundColor;
+	Console::ForegroundColor = foregroundColor;
+	Write(text);
+	Console::ForegroundColor = fc;
+}
+
+void FarUI::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
+{
+	ConsoleColor fc = Console::ForegroundColor;
+	ConsoleColor bc = Console::BackgroundColor;
+	Console::ForegroundColor = foregroundColor;
+	Console::BackgroundColor = backgroundColor;
+	Write(text);
+	Console::ForegroundColor = fc;
+	Console::BackgroundColor = bc;
+}
+
+void FarUI::ShowUserScreen()
+{
+	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+}
+
+void FarUI::SaveUserScreen()
+{
+	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+}
+
+void FarUI::SetProgressState(TaskbarProgressBarState state)
+{
+	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSSTATE, (void*)(INT_PTR)state);
+}
+
+void FarUI::SetProgressValue(int currentValue, int maximumValue)
+{
+	PROGRESSVALUE arg;
+	arg.Completed = currentValue;
+	arg.Total = maximumValue;
+	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSVALUE, &arg);
+}
+
+int FarUI::SaveScreen(int x1, int y1, int x2, int y2)
+{
+	return (int)(INT_PTR)Info.SaveScreen(x1, y1, x2, y2);
+}
+
+void FarUI::RestoreScreen(int screen)
+{
+	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
+}
+
+void FarUI::DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
+{
+	PIN_NE(pin, text);
+	Info.Text(left, top, int(foregroundColor)|(int(backgroundColor)<<4), pin);
+}
+
+void FarUI::DrawPalette(int left, int top, PaletteColor paletteColor, String^ text)
+{
+	PIN_NE(pin, text);
+	Info.Text(left, top, ::GetFarPaletteColor(paletteColor), pin);
+}
+
+ConsoleColor FarUI::GetPaletteBackground(PaletteColor paletteColor)
+{
+	int color = ::GetFarPaletteColor(paletteColor);
+	return ConsoleColor(color >> 4);
+}
+
+ConsoleColor FarUI::GetPaletteForeground(PaletteColor paletteColor)
+{
+	int color = ::GetFarPaletteColor(paletteColor);
+	return ConsoleColor(color & 0xF);
+}
+
+IntPtr FarUI::MainWindowHandle::get()
+{
+	return (IntPtr)Info.AdvControl(Info.ModuleNumber, ACTL_GETFARHWND, nullptr);
+}
+
+void FarUI::Clear()
+{
+	Console::Clear();
+	SaveUserScreen();
+}
+
+void FarUI::Redraw()
+{
+	Info.AdvControl(Info.ModuleNumber, ACTL_REDRAWALL, 0);
 }
 
 }

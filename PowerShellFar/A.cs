@@ -415,6 +415,7 @@ namespace PowerShellFar
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
 		public static void InvokePipelineForEach(IEnumerable<PSObject> input)
 		{
 			List<PSObject> items = new List<PSObject>(input);

@@ -1,5 +1,17 @@
 http://code.google.com/p/farnet/
 
+= 4.3.22 =
+
+(Update by Update-PowerShellFar.ps1 should work fine)
+
+*) Raw UI methods moved to a separate interface
+-- Renamed recently added property IFar.RawUI to UI.
+-- Added a few UI members to hide direct calls to System.Console.
+-- Moved raw UI members from IFar to IFar.UI: DrawColor, DrawPalette,
+GetPaletteBackground, GetPaletteForeground, MainWindowHandle, RestoreScreen,
+SaveScreen, SaveUserScreen, ShowUserScreen, SetProgressState, SetProgressValue,
+Redraw, and Write.
+
 = 4.3.21 =
 
 NOTE: update manually (not by Update-PowerShellFar.ps1).

@@ -94,9 +94,10 @@ if (!$Force -and $done -eq 0) {
 
 ### exit running; use remoting for UNC
 if (Test-Path "$FARHOME\Far.exe") {
-	if ($FARHOME -match '^\\\\([^\\/]+)') {
-		Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit: $($matches[1])..."
-		Invoke-Command -ComputerName ($matches[1]) { Wait-Process Far -ErrorAction 0 }
+	$uri = [System.Uri]$FARHOME
+	if ($uri.IsUnc) {
+		Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit: $($uri.Host)..."
+		Invoke-Command -ComputerName $uri.Host { Wait-Process Far -ErrorAction 0 }
 	}
 	else {
 		Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit..."

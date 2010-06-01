@@ -26,7 +26,6 @@ public:
 	static void UnregisterProxyAction(IModuleAction^ action);
 public:
 	static CultureInfo^ GetCurrentUICulture(bool update);
-	static int GetPaletteColor(PaletteColor paletteColor);
 	static void PostJob(EventHandler^ handler);
 	static void PostStep(EventHandler^ handler);
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);

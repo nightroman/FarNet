@@ -199,6 +199,12 @@ $notparam
 Test "$tmp -" '-' { -join $_ -eq '-param0-param1-param2-param3-param4' } | Write-Error
 Remove-Item $tmp
 
+### #-pattern
+Test '' '$#' { ($_ -contains '$LASTEXITCODE') -and ($_ -notcontains '$Error') } | Write-Error
+Test '' '#$' { ($_ -contains '$LASTEXITCODE') -and ($_ -notcontains '$Error') } | Write-Error
+Test '' '#[val' { $_ -contains '[ValidateCount(#, )]' } | Write-Error
+Test '' '#val' { $_ -contains 'ValueFromPipeline = $true' -and $_ -notcontains '[ValidateCount(#, )]' } | Write-Error
+
 # Drop the cache
 Remove-Variable -Scope global TabExpansionCache
 

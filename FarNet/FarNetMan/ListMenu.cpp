@@ -562,7 +562,7 @@ bool ListMenu::Show()
 		_box->_ii = _ii;
 
 		// now we are ready to make sizes
-		MakeSizes(%dialog, Point(Console::WindowWidth, Console::WindowHeight));
+		MakeSizes(%dialog, Far::Net->UI->WindowSize);
 
 		// handlers
 		dialog._ConsoleSizeChanged += gcnew EventHandler<SizeEventArgs^>(this, &ListMenu::OnConsoleSizeChanged);

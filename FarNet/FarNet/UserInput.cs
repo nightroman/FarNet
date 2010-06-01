@@ -26,6 +26,7 @@ namespace FarNet
 		/// <summary>Shift.</summary>
 		ShiftPressed = 0x0010,
 		/// <summary>NumLock.</summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		NumLockOn = 0x0020,
 		/// <summary>ScrollLock.</summary>
 		ScrollLockOn = 0x0040,
@@ -158,6 +159,9 @@ namespace FarNet
 	public static class KeyCode
 	{
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
 		public const int
 BS = 8,
 Tab = 9,
@@ -279,6 +283,8 @@ Shift = 4 << 16;
 	public static class VKeyCode
 	{
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 		public const int
 Backspace = 8,
 Tab = 9,
@@ -429,10 +435,10 @@ OemClear = 254;
 	/// <summary>
 	/// Palette colors used in UI.
 	/// </summary>
-	/// <seealso cref="IFar.DrawColor"/>
-	/// <seealso cref="IFar.DrawPalette"/>
-	/// <seealso cref="IFar.GetPaletteForeground"/>
-	/// <seealso cref="IFar.GetPaletteBackground"/>
+	/// <seealso cref="IUserInterface.DrawColor"/>
+	/// <seealso cref="IUserInterface.DrawPalette"/>
+	/// <seealso cref="IUserInterface.GetPaletteForeground"/>
+	/// <seealso cref="IUserInterface.GetPaletteBackground"/>
 	public enum PaletteColor
 	{
 		///

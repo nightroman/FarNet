@@ -187,7 +187,7 @@ namespace PowerShellFar
 				frame.CaretLine = lineNumber - 1;
 				editor.Frame = frame;
 				editor.Open();
-				frame.VisibleLine = frame.CaretLine - Console.WindowHeight / 3;
+				frame.VisibleLine = frame.CaretLine - Far.Net.UI.WindowSize.Y / 3;
 				editor.Frame = frame;
 				ILine line = editor[-1]; // can be null if a file is already opened
 				if (line != null)

@@ -206,7 +206,7 @@ namespace PowerShellFar
 				menu.Add("&Global session").Click = delegate { CloseSession(); };
 			menu.Add("New &local session").Click = delegate { OpenLocalSession(); };
 			menu.Add("New &remote session").Click = delegate { OpenRemoteSession(); };
-			menu.Add("&Help").Click = delegate { Far.Net.ShowHelp(A.Psf.AppHome, "EditorConsole", HelpOptions.Path); };
+			menu.Add("&Help").Click = delegate { Help.ShowTopic("EditorConsole"); };
 			menu.Show();
 		}
 

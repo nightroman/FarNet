@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.3.21</ProductVersion>
+		<ProductVersion>4.3.22</ProductVersion>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
@@ -26,6 +26,7 @@ Modules\FarMacro\obj;
 PowerShellFar.cfg;
 PowerShellFar.hlf;
 TabExpansion.ps1;
+TabExpansion#.txt;
 "/>
 		<Copy DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarDescription" SkipUnchangedFiles="true"
 		SourceFiles="

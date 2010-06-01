@@ -121,7 +121,7 @@ void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* titl
 	int y = _y;
 	if (y != -1)
 	{
-		int yMax = Console::WindowHeight - Math::Max(_items->Count, MaxHeight) - 4;
+		int yMax = Far::Net->UI->WindowSize.Y - Math::Max(_items->Count, MaxHeight) - 4;
 		if (y > yMax)
 			y = yMax;
 		if (y < 0)

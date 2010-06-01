@@ -48,10 +48,6 @@ namespace FarNet
 	public abstract class IFar
 	{
 		/// <summary>
-		/// For internal use.
-		/// </summary>
-		public abstract IZoo Zoo { get; }
-		/// <summary>
 		/// Gets any module command by its ID.
 		/// </summary>
 		public abstract IModuleCommand GetModuleCommand(Guid id);
@@ -125,10 +121,6 @@ namespace FarNet
 		/// </summary>
 		/// <param name="command">Command with a prefix of any FarNet module.</param>
 		public abstract void Run(string command);
-		/// <summary>
-		/// Gets the Far main window handle.
-		/// </summary>
-		public abstract IntPtr MainWindowHandle { get; }
 		/// <summary>
 		/// Gets Far version.
 		/// </summary>
@@ -252,32 +244,6 @@ namespace FarNet
 		/// </summary>
 		public abstract string KeyToName(int key);
 		/// <summary>
-		/// Saves screen area.
-		/// You always have to call <see cref="RestoreScreen"/>.
-		/// </summary>
-		/// <include file='doc.xml' path='doc/LTRB/*'/>
-		/// <returns>A handle for restoring the screen.</returns>
-		/// <remarks>
-		/// If <c>right</c> and <c>bottom</c> are equal to -1,
-		/// they are replaced with screen right and bottom coordinates.
-		/// So <c>SaveScreen(0,0,-1,-1)</c> will save the entire screen.
-		/// </remarks>
-		public abstract int SaveScreen(int left, int top, int right, int bottom);
-		/// <summary>
-		/// Restores previously saved by <see cref="SaveScreen"/> screen area.
-		/// </summary>
-		/// <param name="screen">
-		/// A handle received from <c>SaveScreen</c>.
-		/// This handle is no longer usable after calling.
-		/// </param>
-		/// <remarks>
-		/// For performance sake it redraws only the modified screen area.
-		/// But if there was screen output produced by an external program,
-		/// it can't calculate this area correctly. In that case you have to
-		/// call it with <c>screen</c> = 0 and then with an actual screen handle.
-		/// </remarks>
-		public abstract void RestoreScreen(int screen);
-		/// <summary>
 		/// Gets the current editor or null if none.
 		/// </summary>
 		/// <remarks>
@@ -341,24 +307,6 @@ namespace FarNet
 		/// </remarks>
 		public abstract ILine CommandLine { get; }
 		/// <summary>
-		/// Copies the current screen contents to the user screen buffer
-		/// (which is displayed when the panels are switched off).
-		/// </summary>
-		/// <remarks>
-		/// Normally it is called after <see cref="ShowUserScreen"/> and direct console writing.
-		/// Note: try to avoid these low level operations.
-		/// </remarks>
-		public abstract void SaveUserScreen();
-		/// <summary>
-		/// Copies the current user screen buffer to console screen
-		/// (which is displayed when the panels are switched off).
-		/// </summary>
-		/// <remarks>
-		/// Normally it is called before direct console screen operations and <see cref="SaveUserScreen"/> has to be called after.
-		/// Note: try to avoid these low level operations.
-		/// </remarks>
-		public abstract void ShowUserScreen();
-		/// <summary>
 		/// Returns all strings from history.
 		/// </summary>
 		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory.</param>
@@ -411,48 +359,6 @@ namespace FarNet
 		public abstract ISubsetForm CreateSubsetForm();
 		/// <include file='doc.xml' path='doc/ShowHelp/*'/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
-		/// <summary>
-		/// Writes text on the user screen (under panels).
-		/// </summary>
-		/// <param name="text">Text.</param>
-		/// <remarks>
-		/// Note: try to avoid all <c>Console.Write*</c> methods.
-		/// </remarks>
-		public abstract void Write(string text);
-		/// <summary>
-		/// Writes colored text on the user screen (under panels).
-		/// </summary>
-		/// <param name="text">Text.</param>
-		/// <param name="foregroundColor">Text color.</param>
-		/// <remarks>
-		/// Note: try to avoid all <c>Console.Write*</c> methods.
-		/// </remarks>
-		public abstract void Write(string text, ConsoleColor foregroundColor);
-		/// <summary>
-		/// Writes colored text on the user screen (under panels).
-		/// </summary>
-		/// <include file='doc.xml' path='doc/Colors/*'/>
-		/// <param name="text">Text.</param>
-		/// <remarks>
-		/// Note: try to avoid all <c>Console.Write*</c> methods.
-		/// </remarks>
-		public abstract void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
-		/// <summary>
-		/// Draws at the specified position with defined colors.
-		/// </summary>
-		/// <include file='doc.xml' path='doc/LT/*'/>
-		/// <include file='doc.xml' path='doc/Colors/*'/>
-		/// <param name="text">Text.</param>
-		/// <seealso cref="IFar.GetPaletteForeground"/>
-		/// <seealso cref="IFar.GetPaletteBackground"/>
-		public abstract void DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
-		/// <summary>
-		/// Draws at the specified position using Far palette colors.
-		/// </summary>
-		/// <include file='doc.xml' path='doc/LT/*'/>
-		/// <param name="paletteColor">Palette color.</param>
-		/// <param name="text">Text.</param>
-		public abstract void DrawPalette(int left, int top, PaletteColor paletteColor, string text);
 		/// <summary>
 		/// Finds an existing module panel with the specified host (see <see cref="IPanel.Host"/>).
 		/// </summary>
@@ -574,14 +480,6 @@ namespace FarNet
 		/// </summary>
 		public abstract FarMacroState MacroState { get; }
 		/// <summary>
-		/// Redraws all windows.
-		/// </summary>
-		/// <remarks>
-		/// Example: you open an editor (assume it is modal) from a dialog;
-		/// when you exit the editor you have to call this, otherwise only the dialog area is refreshed by Far.
-		/// </remarks>
-		public abstract void Redraw();
-		/// <summary>
 		/// Generates full path for a temp file or directory in %TEMP% (nothing is created).
 		/// </summary>
 		/// <param name="prefix">If empty "FTMP" is generated otherwise at most 4 first characters are used and padded by "0".</param>
@@ -626,16 +524,6 @@ namespace FarNet
 		/// </summary>
 		public abstract IMacro Macro { get; }
 		/// <summary>
-		/// Returns background color of Far palette.
-		/// </summary>
-		/// <param name="paletteColor">Palette color.</param>
-		public abstract ConsoleColor GetPaletteBackground(PaletteColor paletteColor);
-		/// <summary>
-		/// Returns foreground color of Far palette.
-		/// </summary>
-		/// <param name="paletteColor">Palette color.</param>
-		public abstract ConsoleColor GetPaletteForeground(PaletteColor paletteColor);
-		/// <summary>
 		/// Gets the internal active path.
 		/// </summary>
 		/// <remarks>
@@ -644,18 +532,6 @@ namespace FarNet
 		/// It should be used as the default path for file system operations (e.g. where to create a new file).
 		/// </remarks>
 		public abstract string ActivePath { get; }
-		/// <summary>
-		/// Sets the type and state of the progress indicator displayed on a taskbar button of the main application window.
-		/// </summary>
-		/// <param name="state">Progress state of the progress button.</param>
-		public abstract void SetProgressState(TaskbarProgressBarState state);
-		/// <summary>
-		/// Displays or updates a progress bar hosted in a taskbar button of the main application window
-		/// to show the specific percentage completed of the full operation.
-		/// </summary>
-		/// <param name="currentValue">Indicates the proportion of the operation that has been completed.</param>
-		/// <param name="maximumValue">Specifies the value <c>currentValue</c> will have when the operation is complete.</param>
-		public abstract void SetProgressValue(int currentValue, int maximumValue);
 		/// <summary>
 		/// Returns the current UI culture.
 		/// </summary>
@@ -694,14 +570,15 @@ namespace FarNet
 		/// </remarks>
 		public abstract IRegistryKey OpenRegistryKey(string name, bool writable);
 		/// <summary>
-		/// "Low level" UI operator.
+		/// Low level UI operator.
 		/// </summary>
-		public abstract IRawUI RawUI { get; }
+		public abstract IUserInterface UI { get; }
 	}
 
 	/// <summary>
 	/// Represents the thumbnail progress bar state.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
 	public enum TaskbarProgressBarState
 	{
 		/// <summary>
@@ -729,6 +606,7 @@ namespace FarNet
 	/// <summary>
 	/// Options for <see cref="IFar.ShowHelp"/>.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2217:DoNotMarkEnumsWithFlags")]
 	[Flags]
 	public enum HelpOptions
 	{

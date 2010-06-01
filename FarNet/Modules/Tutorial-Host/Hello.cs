@@ -32,6 +32,6 @@ public class Host : ModuleHost
 	// This is called once on Far exit. UI is not allowed.
 	public override void Disconnect()
 	{
-		Console.Title = "Disconnect()";
+		Far.Net.UI.WindowTitle = "Disconnect()";
 	}
 }

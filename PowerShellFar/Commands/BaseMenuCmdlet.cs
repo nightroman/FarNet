@@ -15,48 +15,24 @@ namespace PowerShellFar.Commands
 	{
 		///
 		[Parameter(Position = 0, HelpMessage = "Sets IAnyMenu.Title")]
-		public string Title
-		{
-			get { return _Title; }
-			set { _Title = value; }
-		}
-		string _Title;
+		public string Title { get; set; }
 
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(Position = 1, HelpMessage = "Items to add to IAnyMenu.Items")]
-		public FarItem[] Items
-		{
-			get { return _Items; }
-			set { _Items = value; }
-		}
-		FarItem[] _Items;
+		public FarItem[] Items { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Sets IAnyMenu.AutoAssignHotkeys")]
-		public SwitchParameter AutoAssignHotkeys
-		{
-			get { return _AutoAssignHotkeys; }
-			set { _AutoAssignHotkeys = value; }
-		}
-		SwitchParameter _AutoAssignHotkeys;
+		public SwitchParameter AutoAssignHotkeys { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Sets IAnyMenu.Bottom")]
-		public string Bottom
-		{
-			get { return _Bottom; }
-			set { _Bottom = value; }
-		}
-		string _Bottom;
+		public string Bottom { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Sets IAnyMenu.HelpTopic")]
-		public string HelpTopic
-		{
-			get { return _HelpTopic; }
-			set { _HelpTopic = value; }
-		}
-		string _HelpTopic;
+		public string HelpTopic { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Sets IAnyMenu.Selected")]
@@ -74,30 +50,15 @@ namespace PowerShellFar.Commands
 
 		///
 		[Parameter(HelpMessage = "Sets IAnyMenu.SelectLast")]
-		public SwitchParameter SelectLast
-		{
-			get { return _SelectLast; }
-			set { _SelectLast = value; }
-		}
-		SwitchParameter _SelectLast;
+		public SwitchParameter SelectLast { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Sets IAnyMenu.ShowAmpersands")]
-		public SwitchParameter ShowAmpersands
-		{
-			get { return _ShowAmpersands; }
-			set { _ShowAmpersands = value; }
-		}
-		SwitchParameter _ShowAmpersands;
+		public SwitchParameter ShowAmpersands { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Sets IAnyMenu.WrapCursor")]
-		public SwitchParameter WrapCursor
-		{
-			get { return _WrapCursor; }
-			set { _WrapCursor = value; }
-		}
-		SwitchParameter _WrapCursor;
+		public SwitchParameter WrapCursor { get; set; }
 
 		///
 		[Parameter(HelpMessage = "Sets IAnyMenu.X")]
@@ -130,9 +91,9 @@ namespace PowerShellFar.Commands
 		///
 		internal void Init(IAnyMenu menu)
 		{
-			menu.Title = _Title;
-			menu.Bottom = _Bottom;
-			menu.HelpTopic = _HelpTopic;
+			menu.Title = Title;
+			menu.Bottom = Bottom;
+			menu.HelpTopic = HelpTopic;
 			if (_setSelected)
 				menu.Selected = _Selected;
 			if (_setX)
@@ -140,14 +101,14 @@ namespace PowerShellFar.Commands
 			if (_setY)
 				menu.Y = _Y;
 
-			menu.AutoAssignHotkeys = _AutoAssignHotkeys;
-			menu.SelectLast = _SelectLast;
-			menu.ShowAmpersands = _ShowAmpersands;
-			menu.WrapCursor = _WrapCursor;
+			menu.AutoAssignHotkeys = AutoAssignHotkeys;
+			menu.SelectLast = SelectLast;
+			menu.ShowAmpersands = ShowAmpersands;
+			menu.WrapCursor = WrapCursor;
 
-			if (_Items != null)
+			if (Items != null)
 			{
-				foreach (FarItem item in _Items)
+				foreach (FarItem item in Items)
 					menu.Items.Add(item);
 			}
 		}

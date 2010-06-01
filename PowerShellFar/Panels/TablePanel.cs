@@ -19,6 +19,7 @@ namespace PowerShellFar
 		{ }
 
 		/// <include file='doc.xml' path='doc/Columns/*'/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public virtual object[] Columns
 		{
 			get { return _Columns; }

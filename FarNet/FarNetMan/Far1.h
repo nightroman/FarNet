@@ -7,15 +7,6 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class FarRawUI sealed : IRawUI
-{
-public:
-	virtual property Place WindowPlace { Place get() override; }
-	virtual property Point WindowCursor { Point get() override; void set(Point value) override; }
-internal:
-	static FarRawUI Instance;
-};
-
 ref class Far1 sealed : IFar
 {
 public:
@@ -30,14 +21,12 @@ public:
 	virtual property ILine^ CommandLine { ILine^ get() override; }
 	virtual property ILine^ Line { ILine^ get() override; }
 	virtual property IMacro^ Macro { IMacro^ get() override; }
-	virtual property IntPtr MainWindowHandle { IntPtr get() override; }
-	virtual property IRawUI^ RawUI { IRawUI^ get() override; }
+	virtual property IUserInterface^ UI { IUserInterface^ get() override; }
 	virtual property IViewer^ Viewer { IViewer^ get() override; }
 	virtual property IWindow^ Window { IWindow^ get() override; }
 	virtual property String^ ActivePath { String^ get() override; }
 	virtual property Version^ FarNetVersion { System::Version^ get() override; }
 	virtual property Version^ FarVersion { System::Version^ get() override; }
-	virtual property Works::IZoo^ Zoo { Works::IZoo^ get() override; }
 public:
 	virtual array<int>^ CreateKeySequence(String^ keys) override;
 	virtual IDialog^ CreateDialog(int left, int top, int right, int bottom) override;
@@ -52,8 +41,6 @@ public:
 	virtual array<IEditor^>^ Editors() override;
 	virtual array<IViewer^>^ Viewers() override;
 	virtual Char CodeToChar(int code) override;
-	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor) override;
-	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor) override;
 	virtual CultureInfo^ GetCurrentUICulture(bool update) override;
 	virtual ICollection<String^>^ GetDialogHistory(String^ name) override;
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter) override;
@@ -62,7 +49,6 @@ public:
 	virtual IModuleTool^ GetModuleTool(Guid id) override;
 	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic) override;
 	virtual int NameToKey(String^ key) override;
-	virtual int SaveScreen(int x1, int y1, int x2, int y2) override;
 	virtual IPanel^ FindPanel(Guid typeId) override;
 	virtual IPanel^ FindPanel(Type^ hostType) override;
 	virtual IRegistryKey^ OpenRegistryKey(String^ name, bool writable) override;
@@ -72,8 +58,6 @@ public:
 	virtual String^ TempFolder(String^ prefix) override;
 	virtual String^ TempName(String^ prefix) override;
 	virtual void CopyToClipboard(String^ text) override;
-	virtual void DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text) override;
-	virtual void DrawPalette(int left, int top, PaletteColor paletteColor, String^ text) override;
 	virtual void PostJob(EventHandler^ handler) override;
 	virtual void PostKeys(String^ keys) override;
 	virtual void PostKeys(String^ keys, bool disableOutput) override;
@@ -85,18 +69,9 @@ public:
 	virtual void PostText(String^ text) override;
 	virtual void PostText(String^ text, bool disableOutput) override;
 	virtual void Quit() override;
-	virtual void Redraw() override;
-	virtual void RestoreScreen(int screen) override;
 	virtual void Run(String^ command) override;
-	virtual void SaveUserScreen() override;
-	virtual void SetProgressState(TaskbarProgressBarState state) override;
-	virtual void SetProgressValue(int currentValue, int maximumValue) override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;
-	virtual void ShowUserScreen() override;
-	virtual void Write(String^ text) override;
-	virtual void Write(String^ text, ConsoleColor foregroundColor) override;
-	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) override;
 internal:
 	static void Connect();
 private:
