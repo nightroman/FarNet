@@ -1,8 +1,20 @@
 http://code.google.com/p/farnet/
 
-= 4.3.22 =
+= 4.3.23 =
 
-(Update by Update-PowerShellFar.ps1 should work fine)
+*) Update-FarNet.ps1 (new script for selective update of FarNet packages)
+http://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarNet.ps1
+
+Its goal is selective update of various FarNet packages. In particular it
+updates FarNet. You may skip any packages.
+
+You can download the script directly from the above URL (do not forget to
+unblock the script) or take it together with the PowerShellFar package.
+
+*) Raw UI
+Minor changes and fixes.
+
+= 4.3.22 =
 
 *) Raw UI methods moved to a separate interface
 -- Renamed recently added property IFar.RawUI to UI.
@@ -14,8 +26,6 @@ Redraw, and Write.
 
 = 4.3.21 =
 
-NOTE: update manually (not by Update-PowerShellFar.ps1).
-
 *) IFar
 -- New property RawUI.
 
@@ -24,9 +34,6 @@ NOTE: update manually (not by Update-PowerShellFar.ps1).
 (Far 2.0.1573: ACTL_GETFARRECT, ACTL_GETCURSORPOS, ACTL_SETCURSORPOS).
 
 = 4.3.20 =
-
-NOTE: this time update manually (not by Update-PowerShellFar.ps1) because the
-FarNet package has slightly changed.
 
 *) Renamed documentation
 Renamed PowerShellFar.chm to FarNetAccord.chm. It includes PowerShellFar API
@@ -109,10 +116,6 @@ IDialog
 IEditor
 -- New method ChangeTitle: changes the title permanently.
 This API may be changed or removed depending on Mantis 1334.
-
-= 4.3.14 =
-
-Technical build. API is not changed.
 
 = 4.3.13 =
 
@@ -371,8 +374,6 @@ New event IControl.Coloring allows to set 1-4 custom colors depending on the
 control type. PowerShellFar script Test-Dialog-.ps1 shows a few examples.
 
 = 4.3.1 =
-
-!! This time update manually (do not use Update-PowerShellFar.ps1).
 
 ANNOUNCEMENT
 
@@ -902,10 +903,6 @@ custom call frequency.
 *) Forms.IDialog.Idled changed from EventHandler<AnyEventArgs> to the simple
 EventHandler for 2 reasons: a) arguments were not used anyway; b) to follow
 common Idled events scheme, which allows use of IdledHandler, for example.
-
-= 4.1.2 =
-
-Technical build.
 
 = 4.1.1 =
 
@@ -1712,18 +1709,10 @@ collection of IMenuItem's. If you used IListItem directly, just rename it.
 - Removed IMenu.OnClick - it turned out that it was declared but not really
 implemented or used. Looks like it was declared by mistake.
 
-= 3.3.29 =
-
-This is mostly a technical build for PowerShellFar.
-
 = 3.3.28 =
 
 - Added property IMenu.Sender:object; this object is passed in event handler as
 a sender. By default IMenuItem is a sender.
-
-= 3.3.27 =
-
-This is mostly a technical build for PowerShellFar.
 
 = 3.3.26 =
 
@@ -1786,14 +1775,6 @@ there; the subkey is created if it does not exist even if you only get a value.
 
 - Fixed most (all?) of x64 issues. Sources are ready for x64. Currently binaries
 are provided for x32 only, sorry for inconvenience.
-
-= 3.3.21 =
-
-This is mostly a technical build for PowerShellFar.
-
-= 3.3.20 =
-
-This is mostly a technical build for PowerShellFar.
 
 = 3.3.19 =
 

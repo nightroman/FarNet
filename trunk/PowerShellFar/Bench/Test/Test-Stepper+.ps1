@@ -85,10 +85,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# test: the window (panels) and item ('far.exe.config')
-	Assert-Far @(
-		$Far.Window.Kind -eq 'Panels'
-		(Get-FarFile).Name -eq 'far.exe.config'
-	)
+	Assert-Far -Panels ((Get-FarFile).Name -eq 'far.exe.config')
 }
 
 # HOW TO: start a modal dialog programmatically

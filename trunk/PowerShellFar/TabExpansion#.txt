@@ -6,6 +6,9 @@ $PSBoundParameters
 $PSCmdlet
 $PSCmdlet.ShouldProcess(#)
 $PSScriptRoot
+$PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
+&{process{#}}
+.{process{#}}
 @PSBoundParameters
 [Alias('#')]
 [AllowEmptyCollection()]

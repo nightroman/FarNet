@@ -324,7 +324,7 @@ namespace PowerShellFar
 			Far.Net.UI.WindowTitle = "Running...";
 			try
 			{
-				A.Psf.InvokePipeline(code, null, false);
+				A.Psf.Act(code, null, false);
 				Far.Net.UI.WindowTitle = "Done " + DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
 			}
 			catch
@@ -375,7 +375,7 @@ namespace PowerShellFar
 				return;
 
 			// go
-			bool ok = A.Psf.InvokePipeline(code, null, wt != WindowKind.Editor);
+			bool ok = A.Psf.Act(code, null, wt != WindowKind.Editor);
 
 			// clean the command line if ok
 			if (ok && toCleanCmdLine && wt != WindowKind.Editor)
