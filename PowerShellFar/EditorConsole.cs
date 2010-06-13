@@ -460,7 +460,7 @@ namespace PowerShellFar
 			Editor.BeginUndo();
 
 			// default runspace
-			A.Psf.InvokePipeline(code, writer, true);
+			A.Psf.Act(code, writer, true);
 			if (Editor != Far.Net.Editor)
 			{
 				Far.Net.Message(Res.EditorConsoleCannotComplete);

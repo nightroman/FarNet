@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Opens a file in editor by a link at the current text.
+	Opens a file in editor by a text link under the caret.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -9,16 +9,16 @@
 	line for a link to another file and opens it in the editor. Recognised text
 	link types: Visual Studio, PowerShell, full and relative file system paths.
 
-	Visual Studio links may include the original line text after a column:
-	<file path>(<line number>):<line text>
-
-	In this case after opening the editor the script compares the text with the
-	target line and, if it is different, tries to find the nearest line with
-	the same text. Thus, the link may work "correctly" in more cases even if
-	some lines were added or removed before the target line.
+	"Visual Studio" links may include the original line text after a column:
+	<File>(<Line>):<Text>. In this case after opening the editor the script
+	compares the text with the target line and, if it is different, tries to
+	find the nearest line with the same text. Thus, such links are corrected
+	dynamically in many cases when target lines are not changed.
 
 	TEXT LINK EXAMPLES
 	C:\Program Files\Far\FarEng.lng(55): "Warning"
+	C:\Program Files\Far\FarEng.lng:36 char:22
+	C:\Program Files\Far\FarEng.lng(36,22)
 	C:\Program Files\Far\FarEng.lng(32)
 	C:\Program Files\Far\FarEng.lng:32
 	"C:\Program Files\Far\FarEng.lng"
@@ -26,7 +26,7 @@
 	"..\Read Me.txt"
 	.\ReadMe.txt
 
-	SEE ALSO
+.LINK
 	Get-TextLink-.ps1
 #>
 
@@ -36,44 +36,50 @@ param
 	$Text = $Psf.ActiveText
 )
 
-### Link with a line number.
-if ($Text -match '\b(\w:[\\/].+?)\((\d+)\)(?::(.*))?' -or $Text -match '\b(\w:[\\/][^:]+):(\d+)') {
-	$file = $matches[1]
+### Link with a position
+if ($Text -match '\b(?<File>\w:[\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::(?<Text>.*))?' -or $Text -match '\b(?<File>\w:[\\/][^:]+):(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?') {
+	$file = $matches.File
 	if (![IO.File]::Exists($file)) {
 		Show-FarMessage "File '$file' does not exist."
+		return
+	}
+
+	### Create editor
+	$Editor = $Far.CreateEditor()
+	$Editor.FileName = $file
+	$iLine = ([int]$matches.Line) - 1
+	if ($matches.Char) {
+		$Editor.GoTo((([int]$matches.Char) - 1), $iLine)
 	}
 	else {
-		### Create editor
-		$Editor = $Far.CreateEditor()
-		$Editor.FileName = $file
-		$Editor.GoToLine(([int]$matches[2]) - 1)
-		if (!$matches[3] -or !$matches[3].Trim()) {
-			$Editor.Open()
-			return
-		}
-
-		### 'Opened' handler checks the line or searches the nearest by text
-		$line = $matches[3].Trim()
-		$Editor.add_Opened({
-			if ($Editor[-1].Text.Trim() -eq $line) { return }
-
-			$index1 = $Editor.Caret.Y - 1
-			$index2 = $index1 + 2
-			while(($index1 -ge 0) -or ($index2 -lt $Editor.Count)) {
-				if (($index1 -ge 0) -and ($Editor[$index1].Text.Trim() -eq $line)) {
-					$Editor.GoToLine($index1)
-					return
-				}
-				if (($index2 -lt $Editor.Count) -and ($Editor[$index2].Text.Trim() -eq $line)) {
-					$Editor.GoToLine($index2)
-					return
-				}
-				--$index1
-				++$index2
-			}
-		})
-		$Editor.Open()
+		$Editor.GoToLine($iLine)
 	}
+	if (!$matches.Text -or !$matches.Text.Trim()) {
+		$Editor.Open()
+		return
+	}
+
+	### 'Opened' handler checks the line or searches the nearest by text
+	$line = $matches.Text.Trim()
+	$Editor.add_Opened({
+		if ($Editor[-1].Text.Trim() -eq $line) { return }
+
+		$index1 = $Editor.Caret.Y - 1
+		$index2 = $index1 + 2
+		while(($index1 -ge 0) -or ($index2 -lt $Editor.Count)) {
+			if (($index1 -ge 0) -and ($Editor[$index1].Text.Trim() -eq $line)) {
+				$Editor.GoToLine($index1)
+				return
+			}
+			if (($index2 -lt $Editor.Count) -and ($Editor[$index2].Text.Trim() -eq $line)) {
+				$Editor.GoToLine($index2)
+				return
+			}
+			--$index1
+			++$index2
+		}
+	})
+	$Editor.Open()
 	return
 }
 

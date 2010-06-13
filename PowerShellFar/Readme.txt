@@ -1,7 +1,7 @@
 
 Module   : FarNet.PowerShellFar
-Version  : 4.3.22
-Release  : 2010.06.01
+Version  : 4.3.23
+Release  : 2010.06.13
 Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -17,15 +17,15 @@ includes scripts for many popular Far Manager tasks and PowerShell.hrc for
 Colorer providing rich PowerShell syntax highlighting.
 
 PowerShellFar, FarNet and documentation can be updated by the included script
-Update-PowerShellFar.ps1 or downloaded manually from:
+Update-FarNet.ps1 or downloaded manually from:
 http://code.google.com/p/farnet/
 
 
 	= PREREQUISITES =
 
 
- - Far Manager 2.0.1576
- - Plugin FarNet 4.3.22
+ - Far Manager 2.0.1588
+ - Plugin FarNet 4.3.23
  - Windows PowerShell 2.0
 
 
@@ -40,7 +40,7 @@ then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
 *) Install the module:
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
 The location can be changed but it is recommended to use exactly this way:
-at least you can use Update-PowerShellFar.ps1 for updates.
+at least you can use Update-FarNet.ps1 for updates.
 
 *) Recommended: Install and configure Bench scripts:
 You can put scripts anywhere: all together or not, but it is highly recommended

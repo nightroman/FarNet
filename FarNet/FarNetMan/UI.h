@@ -18,6 +18,7 @@ public:
 	virtual property Place WindowPlace { Place get() override; }
 	virtual property Point BufferCursor { Point get() override; void set(Point value) override; }
 	virtual property Point BufferSize { Point get() override; void set(Point value) override; }
+	virtual property Point MaxPhysicalWindowSize { Point get() override; }
 	virtual property Point MaxWindowSize { Point get() override; }
 	virtual property Point WindowCursor { Point get() override; void set(Point value) override; }
 	virtual property Point WindowPoint { Point get() override; void set(Point value) override; }

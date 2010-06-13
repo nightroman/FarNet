@@ -1,25 +1,25 @@
 
 <#
 .SYNOPSIS
-	Updates FarNet, PowerShellFar and API help.
+	Updates FarNet products selectively from the project site.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
 	Command 7z has to be available, e.g. 7z.exe in the system path.
 
 	If Far Manager is running the script prompts you to exit running instances
-	and waits until this is done. That is why you should not run the script in
-	Far Manager. On the other hand it is still useful to start the script from
+	and waits until this is done. That is why you should not run the script IN
+	Far Manager. On the other hand it is still useful to start the script FROM
 	Far Manager (using 'start' command or [ShiftEnter] in the command line), in
 	this case you do not have to set the parameter -FARHOME. If -FARHOME is UNC
 	then that machine has to be configured for PS remoting.
 
-	-Archive directory is the destination for downloaded archives. Old files
-	are not deleted. Keep the last downloaded archives there, the script
-	downloads only new archives.
+	-ArchiveHome is the destination for downloaded archives. Old files are not
+	deleted. Keep the last downloaded archives there, the script downloads only
+	new archives.
 
 	On updating from the archives the script simply extracts files and replace
-	the same existing with no warnings. Existing extra files are not deleted:
+	existing same files with no warnings. Existing extra files are not deleted:
 	thus, read History.txt on updates, you may want to remove some old files.
 
 	<Archive>\Install.txt files show what is updated from <Archive>.
@@ -27,10 +27,10 @@
 .EXAMPLE
 	# This command starts update in a new console and keeps it opened to view
 	# the output. Then it tells Far to exit because update will wait for this.
-	>: Start-Process powershell.exe "-noexit Update-PowerShellFar"; $Far.Quit()
+	>: Start-Process powershell.exe "-noexit Update-FarNet"; $Far.Quit()
 #>
 
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param
 (
 	[string]
@@ -73,6 +73,13 @@ if (!$ArchiveNames) {
 	Invoke-Expression $initext
 }
 
+### confirm each archive name
+$ArchiveNames = foreach($name in $ArchiveNames) {
+	if ($PSCmdlet.ShouldProcess($name, "Download and/or update")) {
+		$name
+	}
+}
+
 ### download missing archives
 $done = 0
 foreach($name in $ArchiveNames) {
@@ -87,6 +94,7 @@ foreach($name in $ArchiveNames) {
 		++$done
 	}
 }
+
 if (!$Force -and $done -eq 0) {
 	Write-Host -ForegroundColor Cyan "All the archives already exist, use -Force to update from them."
 	return

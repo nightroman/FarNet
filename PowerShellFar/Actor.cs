@@ -650,7 +650,7 @@ Continue with this current directory?
 				// normal mode
 				string code = InputCode();
 				if (code != null)
-					InvokePipeline(code, null, true);
+					Act(code, null, true);
 			}
 			else
 			{
@@ -908,12 +908,12 @@ Continue with this current directory?
 		internal string _myLastCommand;
 
 		/// <summary>
-		/// Invokes PowerShell code with pipeline.
+		/// Invokes PowerShell command with pipeline.
 		/// </summary>
 		/// <param name="code">PowerShell code.</param>
 		/// <param name="writer">Output writer or null.</param>
 		/// <param name="addHistory">Add command to history.</param>
-		internal bool InvokePipeline(string code, OutputWriter writer, bool addHistory)
+		internal bool Act(string code, OutputWriter writer, bool addHistory)
 		{
 			// result
 			bool ok = true;
@@ -1011,6 +1011,7 @@ Continue with this current directory?
 						viewer.Title = code;
 						viewer.FileName = myWriter.FileName;
 						viewer.DeleteSource = DeleteSource.File;
+						viewer.Switching = Switching.Enabled;
 						viewer.DisableHistory = true;
 						viewer.CodePage = 1200;
 						viewer.Open();
@@ -1020,6 +1021,7 @@ Continue with this current directory?
 				// notify host
 				FarHost.NotifyEndApplication();
 			}
+			
 			return ok;
 		}
 

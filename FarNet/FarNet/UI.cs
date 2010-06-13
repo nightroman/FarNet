@@ -62,7 +62,11 @@ namespace FarNet
 		/// </summary>
 		public abstract Point WindowSize { get; set; }
 		/// <summary>
-		/// Gets the maximum possible window size.
+		/// Gets the maximum physical window size.
+		/// </summary>
+		public abstract Point MaxPhysicalWindowSize { get; }
+		/// <summary>
+		/// Gets the maximum window size.
 		/// </summary>
 		public abstract Point MaxWindowSize { get; }
 		/// <summary>
