@@ -108,7 +108,7 @@ namespace PowerShellFar
 							code = ui.UICode.Text;
 						}
 
-						A.Psf.InvokePipeline(code, null, true);
+						A.Psf.Act(code, null, true);
 						return;
 					}
 			}

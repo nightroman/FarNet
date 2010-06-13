@@ -70,7 +70,7 @@ namespace PowerShellFar
 
 		public override Size MaxPhysicalWindowSize
 		{
-			get { return MaxWindowSize; }
+			get { return ToSize(Far.Net.UI.MaxPhysicalWindowSize); }
 		}
 
 		public override Size MaxWindowSize

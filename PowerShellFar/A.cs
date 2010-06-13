@@ -442,7 +442,7 @@ namespace PowerShellFar
 
 				// invoke the pipeline using the input
 				A.Psf.Engine.SessionState.PSVariable.Set("_", items);
-				A.Psf.InvokePipeline("$_ | .{process{ " + code + " }}", null, false);
+				A.Psf.Act("$_ | .{process{ " + code + " }}", null, false);
 			}
 			finally
 			{

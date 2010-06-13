@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.22#
+#PowerShellFar 4.3.23#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -59,7 +59,7 @@ includes scripts for many popular Far Manager tasks and PowerShell.hrc for
 Colorer providing rich PowerShell syntax highlighting.
 
 PowerShellFar, FarNet and documentation can be updated by the included script
-Update-PowerShellFar.ps1 or downloaded and installed manually from:
+Update-FarNet.ps1 or downloaded and installed manually from:
 ~http://code.google.com/p/farnet/~@http://code.google.com/p/farnet/@
 
 #Author#
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1576
- - Plugin FarNet 4.3.22
+ - Far Manager 2.0.1588
+ - Plugin FarNet 4.3.23
  - Windows PowerShell 2.0
 
 
@@ -88,8 +88,8 @@ then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
 
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
 The location and name can be changed but it is recommended to use exactly this
-way: for example, in order to be able to use the script
-Update-PowerShellFar.ps1 with no changes in it.
+way: for example, in order to be able to use the script Update-FarNet.ps1 with
+no changes in it.
 
 
 #Using Bench scripts#
@@ -125,6 +125,9 @@ $#Command line#
 PowerShellFar commands with prefixes are used in the command line, the user
 menu [F2] and the file associations. By default command prefixes are: '>:'
 (console output) and '>>:' (viewer output).
+
+Console output is also transcribed in a temporary file which can be opened in a
+viewer at any time by the command #Show-FarTranscript [-External]#.
 
 It is recommended to add an extra space after prefixes: commands look better
 and TabExpansion can expand the first command token correctly.

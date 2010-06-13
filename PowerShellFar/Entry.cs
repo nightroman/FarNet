@@ -106,7 +106,7 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				A.Psf.InvokePipeline(e.Command, new ConsoleOutputWriter(e.Command), true);
+				A.Psf.Act(e.Command, new ConsoleOutputWriter(e.Command), true);
 			}
 			finally
 			{
@@ -121,7 +121,7 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				A.Psf.InvokePipeline(e.Command, null, true);
+				A.Psf.Act(e.Command, null, true);
 			}
 			finally
 			{

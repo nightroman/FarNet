@@ -202,9 +202,16 @@ void FarUI::WindowTitle::set(String^ value)
 	Console::Title = value;
 }
 
-Point FarUI::MaxWindowSize::get()
+Point FarUI::MaxPhysicalWindowSize::get()
 {
 	return Point(Console::LargestWindowWidth, Console::LargestWindowHeight);
+}
+
+Point FarUI::MaxWindowSize::get()
+{
+	return Point(
+		Math::Min(Console::LargestWindowWidth, Console::BufferWidth),
+		Math::Min(Console::LargestWindowHeight, Console::BufferHeight));
 }
 
 void FarUI::ScrollBufferContents(Place source, Point destination, Place clip, Works::BufferCell fill)
