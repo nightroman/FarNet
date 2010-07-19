@@ -97,7 +97,7 @@ namespace PowerShellFar.UI
 				foreach (PSObject o in _breakpoints)
 				{
 					LineBreakpoint lbp = o.BaseObject as LineBreakpoint;
-					if (lbp != null && lbp.Action == null && line == lbp.Line && 0 == Kit.Compare(file, lbp.Script))
+					if (lbp != null && lbp.Action == null && line == lbp.Line && Kit.Equals(file, lbp.Script))
 					{
 						bpFound = lbp;
 						break;
@@ -253,7 +253,7 @@ namespace PowerShellFar.UI
 			LineBreakpoint lbp = bp as LineBreakpoint;
 
 			// the target script is opened now
-			if (editor != null && Kit.Compare(editor.FileName, bp.Script) == 0)
+			if (editor != null && Kit.Equals(editor.FileName, bp.Script))
 			{
 				// it is a line breakpoint, go to line
 				if (lbp != null)

@@ -131,10 +131,10 @@ namespace PowerShellFar
 			return value.ToString(format, CultureInfo.InvariantCulture);
 		}
 
-		// Compares strings ignoring case.
-		public static int Compare(string strA, string strB)
+		// Compares strings OrdinalIgnoreCase.
+		public static bool Equals(string strA, string strB)
 		{
-			return string.Compare(strA, strB, StringComparison.OrdinalIgnoreCase);
+			return string.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
 		}
 
 		// Escapes a literal string to be used as a wildcard.

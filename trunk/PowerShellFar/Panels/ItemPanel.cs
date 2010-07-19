@@ -545,7 +545,7 @@ namespace PowerShellFar
 		internal void SetLocation(PowerPath location, bool update)
 		{
 			// fixed drive?
-			if (Drive.Length > 0 && Kit.Compare(Drive, location.Drive.Name) != 0)
+			if (Drive.Length > 0 && !Kit.Equals(Drive, location.Drive.Name))
 				return;
 
 			// customise if not yet

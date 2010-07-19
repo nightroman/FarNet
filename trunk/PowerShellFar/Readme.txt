@@ -1,7 +1,7 @@
 
 Module   : FarNet.PowerShellFar
-Version  : 4.3.23
-Release  : 2010.06.13
+Version  : 4.3.24
+Release  : 2010.07.19
 Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -24,8 +24,8 @@ http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
 
- - Far Manager 2.0.1588
- - Plugin FarNet 4.3.23
+ - Far Manager 2.0.1622
+ - Plugin FarNet 4.3.24
  - Windows PowerShell 2.0
 
 

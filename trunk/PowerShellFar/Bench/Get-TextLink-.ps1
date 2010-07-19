@@ -8,7 +8,7 @@
 	It gets a Visual Studio style text link to the current editor line.
 
 .LINK
-	Edit-TextLink-.ps1
+	Open-TextLink-.ps1
 
 .EXAMPLE
 	# Get and copy to clipboard the current line link

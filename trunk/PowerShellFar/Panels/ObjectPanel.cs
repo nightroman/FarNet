@@ -58,16 +58,41 @@ namespace PowerShellFar
 			if (values == null)
 				return;
 
-			IEnumerable ie = Cast<IEnumerable>.From(values);
-			if (ie == null || ie is string)
+			IEnumerable enumerable = Cast<IEnumerable>.From(values);
+			if (enumerable == null || enumerable is string)
 			{
 				added.Add(PSObject.AsPSObject(values));
 			}
 			else
 			{
-				foreach (object value in ie)
-					if (value != null)
-						added.Add(PSObject.AsPSObject(value));
+				int maximumFileCount = A.Psf.Settings.MaximumPanelFileCount;
+				int fileCount = 0;
+				foreach (object value in enumerable)
+				{
+					if (value == null)
+						continue;
+
+					// ask to cancel
+					if (fileCount >= maximumFileCount && maximumFileCount > 0)
+					{
+						int res = ShowTooManyFiles(maximumFileCount, enumerable);
+						
+						// abort, show what we have got
+						if (res == 0)
+							break;
+						
+						if (res == 1)
+							// retry with a larger number
+							maximumFileCount *= 2;
+						else
+							// ignore the limit
+							maximumFileCount = 0;
+					}
+
+					// add
+					added.Add(PSObject.AsPSObject(value));
+					++fileCount;
+				}
 			}
 		}
 
@@ -293,6 +318,16 @@ namespace PowerShellFar
 				if (f.Data != null)
 					r.Add(f.Data);
 			return r;
+		}
+
+		static int ShowTooManyFiles(int maximumFileCount, IEnumerable enumerable)
+		{
+			ICollection collection = enumerable as ICollection;
+			string message = collection == null ?
+				Invariant.Format("There are more than {0} panel files.", maximumFileCount) :
+				Invariant.Format("There are {0} panel files, the limit is {1}.", collection.Count, maximumFileCount);
+
+			return Far.Net.Message(message, "$Psf.Settings.MaximumPanelFileCount", MsgOptions.AbortRetryIgnore);
 		}
 
 	}

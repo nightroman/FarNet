@@ -7,6 +7,11 @@
 .DESCRIPTION
 	Uses existing SQL server connection or opens a new connection assuming SQL
 	Server Express ".\sqlexpress" instance.
+
+.NOTES
+	sp_helpdb may fail on the first call after reboot if there is a missing
+	database. "SELECT * FROM sys.databases" works fine and shows problem
+	databases, too. Besides, it gets more database info (but size).
 #>
 
 if (!$DbProviderFactory -or !$DbConnection) {
@@ -16,7 +21,7 @@ if (!$DbProviderFactory -or !$DbConnection) {
 	$DbConnection.Open()
 }
 
-$p = Panel-DbData- -NoShow -SelectCommand 'sp_helpdb'
+$p = Panel-DbData- -NoShow -SelectCommand 'SELECT * FROM sys.databases' -Columns 'name', 'database_id', 'state_desc', 'create_date'
 $p.SetOpen({
 	$DbProviderFactory = [Data.SqlClient.SqlClientFactory]::Instance
 	$DbConnection = $DbProviderFactory.CreateConnection()

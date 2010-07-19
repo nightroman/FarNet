@@ -1,6 +1,25 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.24 =
+
+*) $Psf.Settings.MaximumPanelFileCount sets the limit for panel files to be
+shown in an object panel without confirmation. Default is 1000, should be
+enough for data preview in most cases. Try:
+>: 1..10000 | Out-FarPanel
+
+*) Edit-TextLink-.ps1 is renamed to Open-TextLink-.ps1 and:
+-- Recognizes and opens URL addresses (by Start-Process, like Windows Run);
+-- Supports Select-String output format links: <File>:<Line>:<Text>
+(You may remove the old file Edit-TextLink-.ps1)
+
+*) Menu-More-.ps1: commands "Edit text link" and "Copy text link" moved to main
+PSF menu (see Profile-.ps1).
+
+*) Panel-Database-.ps1
+-- Uses sys.databases instead of sp_helpdb (it gets more useful info and shows
+some problem databases, too).
+
 = 4.3.23 =
 
 *) Update-FarNet.ps1

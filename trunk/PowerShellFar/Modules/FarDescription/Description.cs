@@ -166,7 +166,7 @@ namespace FarDescription
 					return string.Empty;
 
 				// update the cache
-				if (cache == null || string.Compare(directory, cache.Directory, StringComparison.OrdinalIgnoreCase) != 0 || File.GetLastWriteTime(descriptionFile) != cache.Timestamp)
+				if (cache == null || !string.Equals(directory, cache.Directory, StringComparison.OrdinalIgnoreCase) || File.GetLastWriteTime(descriptionFile) != cache.Timestamp)
 				{
 					cache = new DescriptionMap(directory, File.GetLastWriteTime(descriptionFile), Import(descriptionFile));
 					WeakCache.Target = cache;

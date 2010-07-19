@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/
 
+= 4.3.24 =
+
+Technical build with no API changes.
+
 = 4.3.23 =
 
 *) Update-FarNet.ps1 (new script for selective update of FarNet packages)
