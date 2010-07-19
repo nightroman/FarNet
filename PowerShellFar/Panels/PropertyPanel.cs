@@ -268,7 +268,7 @@ namespace PowerShellFar
 			string name = f.Name;
 
 			//! Registry: workaround: (default)
-			if (Kit.Compare(name, "(default)") == 0 && _provider.ImplementingType == typeof(RegistryProvider))
+			if (Kit.Equals(name, "(default)") && _provider.ImplementingType == typeof(RegistryProvider))
 			{
 				A.Msg("Cannot rename this property.");
 				return;
@@ -359,7 +359,7 @@ namespace PowerShellFar
 			{
 				for (int i = names.Count; --i >= 0; )
 				{
-					if (Kit.Compare(names[i], "(default)") == 0)
+					if (Kit.Equals(names[i], "(default)"))
 					{
 						if ((conf & (FarConfirmations.Delete)) == 0 ||
 							Far.Net.Message("Are you sure you want to delete (default) property?", Res.Delete, MsgOptions.YesNo) == 0)
