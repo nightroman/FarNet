@@ -4,6 +4,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Management.Automation;
 using FarNet;
@@ -75,14 +76,8 @@ namespace PowerShellFar.Commands
 			}
 		}
 
-		///
-		protected override void EndProcessing()
-		{
-			if (Append)
-				_panel.UpdateRedraw(true);
-			else
-				_panel.Show();
-		}
+		// Use collector to control count of finaly added to the panel.
+		List<object> _Collector = new List<object>();
 
 		///
 		protected override void ProcessRecord()
@@ -92,10 +87,25 @@ namespace PowerShellFar.Commands
 				return;
 
 			// add object(s)
-			if (InputObject.BaseObject is object[]) //???
-				_panel.AddObjects(InputObject);
+			if (InputObject.BaseObject is object[])
+				_Collector.AddRange(InputObject.BaseObject as object[]);
 			else
-				_panel.AddObject(InputObject);
+				_Collector.Add(InputObject);
 		}
+
+		///
+		protected override void EndProcessing()
+		{
+			if (_Collector.Count == 1)
+				_panel.AddObject(_Collector[0]);
+			else
+				_panel.AddObjects(_Collector);
+			
+			if (Append)
+				_panel.UpdateRedraw(true);
+			else
+				_panel.Show();
+		}
+
 	}
 }

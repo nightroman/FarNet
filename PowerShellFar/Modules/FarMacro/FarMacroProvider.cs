@@ -28,24 +28,24 @@ namespace FarMacro
 				if (_Areas == null)
 				{
 					_Areas = new SortedList<MacroArea, AreaItem>();
-					_Areas.Add(MacroArea.Common, new AreaItem(MacroArea.Common, "Lowest priority macros used everywhere."));
-					_Areas.Add(MacroArea.Consts, new AreaItem(MacroArea.Consts, "Global constants."));
-					_Areas.Add(MacroArea.Dialog, new AreaItem(MacroArea.Dialog, "Dialog boxes."));
-					_Areas.Add(MacroArea.Disks, new AreaItem(MacroArea.Disks, "Drive selection menu."));
-					_Areas.Add(MacroArea.Editor, new AreaItem(MacroArea.Editor, "File editor."));
-					_Areas.Add(MacroArea.FindFolder, new AreaItem(MacroArea.FindFolder, "Folder search panel."));
-					_Areas.Add(MacroArea.Help, new AreaItem(MacroArea.Help, "Help system."));
-					_Areas.Add(MacroArea.Info, new AreaItem(MacroArea.Info, "Informational panel."));
-					_Areas.Add(MacroArea.MainMenu, new AreaItem(MacroArea.MainMenu, "Main menu."));
-					_Areas.Add(MacroArea.Menu, new AreaItem(MacroArea.Menu, "Other menus."));
-					_Areas.Add(MacroArea.Other, new AreaItem(MacroArea.Other, "Screen capturing mode."));
-					_Areas.Add(MacroArea.QView, new AreaItem(MacroArea.QView, "Quick view panel."));
-					_Areas.Add(MacroArea.Search, new AreaItem(MacroArea.Search, "Quick file search."));
-					_Areas.Add(MacroArea.Shell, new AreaItem(MacroArea.Shell, "File panels."));
-					_Areas.Add(MacroArea.Tree, new AreaItem(MacroArea.Tree, "Folder tree panel."));
-					_Areas.Add(MacroArea.UserMenu, new AreaItem(MacroArea.UserMenu, "User menu."));
-					_Areas.Add(MacroArea.Vars, new AreaItem(MacroArea.Vars, "Global variables."));
-					_Areas.Add(MacroArea.Viewer, new AreaItem(MacroArea.Viewer, "File viewer."));
+					_Areas.Add(MacroArea.Common, new AreaItem(MacroArea.Common, "Lowest priority macros used everywhere"));
+					_Areas.Add(MacroArea.Consts, new AreaItem(MacroArea.Consts, "Global constants"));
+					_Areas.Add(MacroArea.Dialog, new AreaItem(MacroArea.Dialog, "Dialog boxes"));
+					_Areas.Add(MacroArea.Disks, new AreaItem(MacroArea.Disks, "Drive selection menu"));
+					_Areas.Add(MacroArea.Editor, new AreaItem(MacroArea.Editor, "File editor"));
+					_Areas.Add(MacroArea.FindFolder, new AreaItem(MacroArea.FindFolder, "Folder search panel"));
+					_Areas.Add(MacroArea.Help, new AreaItem(MacroArea.Help, "Help system"));
+					_Areas.Add(MacroArea.Info, new AreaItem(MacroArea.Info, "Informational panel"));
+					_Areas.Add(MacroArea.MainMenu, new AreaItem(MacroArea.MainMenu, "Main menu"));
+					_Areas.Add(MacroArea.Menu, new AreaItem(MacroArea.Menu, "Other menus"));
+					_Areas.Add(MacroArea.Other, new AreaItem(MacroArea.Other, "Screen capturing mode"));
+					_Areas.Add(MacroArea.QView, new AreaItem(MacroArea.QView, "Quick view panel"));
+					_Areas.Add(MacroArea.Search, new AreaItem(MacroArea.Search, "Quick file search"));
+					_Areas.Add(MacroArea.Shell, new AreaItem(MacroArea.Shell, "File panels"));
+					_Areas.Add(MacroArea.Tree, new AreaItem(MacroArea.Tree, "Folder tree panel"));
+					_Areas.Add(MacroArea.UserMenu, new AreaItem(MacroArea.UserMenu, "User menu"));
+					_Areas.Add(MacroArea.Vars, new AreaItem(MacroArea.Vars, "Global variables"));
+					_Areas.Add(MacroArea.Viewer, new AreaItem(MacroArea.Viewer, "File viewer"));
 				}
 				return _Areas;
 			}

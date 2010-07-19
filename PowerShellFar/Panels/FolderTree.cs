@@ -117,7 +117,7 @@ namespace PowerShellFar
 			{
 				foreach (TreeFile t in ti.ChildFiles)
 				{
-					if (Kit.Compare(t.Name, current) == 0)
+					if (Kit.Equals(t.Name, current))
 					{
 						Panel.PostFile(t);
 						break;

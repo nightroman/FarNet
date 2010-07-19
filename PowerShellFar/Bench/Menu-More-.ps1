@@ -33,8 +33,6 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 		New-FarItem '&s. Remove end spaces (all text)' { $editor.BeginAccess(); $editor.Lines | Remove-EndSpace-; $editor.EndAccess() }
 		New-FarItem '&d. Remove double empty lines (all text)' { Remove-EmptyString- $editor.Lines 2 }
 		New-FarItem '&f. Invoke a file from editor' { Invoke-Editor- }
-		New-FarItem '&o. Open the link in the current text' { Edit-TextLink- }
-		New-FarItem '&i. Clip the link to the current line' { $Far.CopyToClipboard((Get-TextLink-)) }
 	}
 	### Panel actions
 	elseif ($Far.Window.Kind -eq 'Panels') {

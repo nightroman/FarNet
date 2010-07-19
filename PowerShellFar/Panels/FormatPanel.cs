@@ -191,7 +191,7 @@ namespace PowerShellFar
 					}
 					else
 					{
-						if (string.Compare(name, patterns[iPattern], StringComparison.OrdinalIgnoreCase) == 0)
+						if (string.Equals(name, patterns[iPattern], StringComparison.OrdinalIgnoreCase))
 						{
 							iBestMeta = iMeta;
 							if (iPattern == 0)

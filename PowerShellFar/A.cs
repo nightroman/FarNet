@@ -362,7 +362,7 @@ namespace PowerShellFar
 				ExtendedTypeDefinition typeDef = it.BaseObject as ExtendedTypeDefinition;
 				foreach (FormatViewDefinition viewDef in typeDef.FormatViewDefinition)
 				{
-					if (string.IsNullOrEmpty(tableName) || Kit.Compare(tableName, viewDef.Name) == 0)
+					if (string.IsNullOrEmpty(tableName) || Kit.Equals(tableName, viewDef.Name))
 					{
 						TableControl table = viewDef.Control as TableControl;
 						if (table != null)

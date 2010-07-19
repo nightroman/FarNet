@@ -82,7 +82,7 @@ namespace PowerShellFar.UI
 				foreach (Breakpoint bp in e.Breakpoints)
 				{
 					CommandBreakpoint bpc = bp as CommandBreakpoint;
-					if (bpc != null && Kit.Compare(bpc.Command, Commands.AssertFarCommand.MyName) == 0)
+					if (bpc != null && Kit.Equals(bpc.Command, Commands.AssertFarCommand.MyName))
 						A.Psf.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bpc);
 				}
 			}

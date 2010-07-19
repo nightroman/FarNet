@@ -190,6 +190,16 @@ namespace PowerShellFar
 			}
 		}
 
+		int _MaximumPanelFileCount = 1000;
+		/// <summary>
+		/// The maximum number of files to show before confirmation in some panels.
+		/// </summary>
+		public int MaximumPanelFileCount
+		{
+			get { return _MaximumPanelFileCount; }
+			set { _MaximumPanelFileCount = value; }
+		}
+
 		int _FormatEnumerationLimit = -1;
 		/// <summary>
 		/// Determines how many enumerated items are included in a display.
@@ -296,5 +306,6 @@ namespace PowerShellFar
 			get { return _WarningForegroundColor; }
 			set { _WarningForegroundColor = value; }
 		}
+
 	}
 }
