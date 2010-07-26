@@ -20,13 +20,11 @@ public class TrimSaving : ModuleEditor
 
 	// Trims line ends.
 	// A few editor performance tricks:
-	// *) use BeginAccess() and EndAccess() for line iterations;
 	// *) do not set a line text if it is not actually changed;
 	// *) use faster (object)string comparison when possible.
 	void OnSaving(object sender, EventArgs e)
 	{
 		IEditor editor = (IEditor)sender;
-		editor.BeginAccess();
 		foreach(ILine line in editor.Lines)
 		{
 			string s1 = line.Text;
@@ -34,7 +32,6 @@ public class TrimSaving : ModuleEditor
 			if ((object)s1 != (object)s2)
 				line.Text = s2;
 		}
-		editor.EndAccess();
 	}
 }
 

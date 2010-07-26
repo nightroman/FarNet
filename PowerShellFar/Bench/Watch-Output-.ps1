@@ -41,9 +41,7 @@ $editor.add_Idled([FarNet.IdledHandler]::Create($Seconds, {
 	$frame = $this.Frame
 	# undo to avoid memory "leak"
 	$this.Undo()
-	$this.BeginAccess()
 	$this.SetText((& $this.Data | Out-String))
-	$this.EndAccess()
 	# restore the old frame
 	$this.Frame = $frame
 	# show the changes

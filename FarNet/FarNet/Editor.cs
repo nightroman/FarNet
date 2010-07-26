@@ -455,29 +455,6 @@ namespace FarNet
 		public abstract TextFrame Frame { get; set; }
 
 		/// <summary>
-		/// Begins fast line access mode.
-		/// </summary>
-		/// <remarks>
-		/// Call this method before iterating of large amount of lines, performance can be improved.
-		/// It is strongly recommended to call <see cref="EndAccess"/> after processing.
-		/// Nested calls of <c>BeginAccess()</c> .. <c>EndAccess()</c> are allowed.
-		/// <para>
-		/// Important: do not request text frames or the caret position when this mode is turned on,
-		/// their values are unpredictable. You have to get them before. But it is fine to set them
-		/// between <c>BeginAccess()</c> and <c>EndAccess()</c>.
-		/// </para>
-		/// </remarks>
-		public abstract void BeginAccess();
-
-		/// <summary>
-		/// Ends fast line access mode.
-		/// </summary>
-		/// <remarks>
-		/// Call it after any <see cref="BeginAccess"/> when editor lines processing is done.
-		/// </remarks>
-		public abstract void EndAccess();
-
-		/// <summary>
 		/// Gets or sets the caret position.
 		/// </summary>
 		/// <seealso cref="Frame"/>

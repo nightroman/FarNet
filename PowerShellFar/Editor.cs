@@ -444,10 +444,8 @@ namespace PowerShellFar
 			{
 				ArrayList lines = new ArrayList();
 
-				Editor.BeginAccess();
 				foreach (ILine line in Editor.Lines)
 					lines.Add(line.Text);
-				Editor.EndAccess();
 
 				if (lines[lines.Count - 1].ToString().Length == 0)
 					lines.RemoveAt(lines.Count - 1);
@@ -500,10 +498,8 @@ namespace PowerShellFar
 				{
 					ArrayList lines = new ArrayList();
 
-					Editor.BeginAccess();
 					foreach (ILine line in Editor.Lines)
 						lines.Add(line.Text);
-					Editor.EndAccess();
 
 					if (lines[lines.Count - 1].ToString().Length == 0)
 						lines.RemoveAt(lines.Count - 1);

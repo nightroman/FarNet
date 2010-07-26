@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.3.24.0")]
+[assembly: AssemblyVersion("4.3.25.0")]
 [assembly: AssemblyTitle("FarNet configuration")]
 [assembly: AssemblyDescription("FarNet configuration")]
 [assembly: AssemblyConfiguration("")]
