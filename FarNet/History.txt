@@ -1,8 +1,17 @@
 http://code.google.com/p/farnet/
 
-= 4.3.24 =
+= 4.3.25 =
 
-Technical build with no API changes.
+*) IEditor
+-- Very good news: workaround methods BeginAccess/EndAccess for faster line
+iterations are not needed anymore (Far 2.1623+) and removed. Breaking change,
+modules using them should be updated.
+-- If EditorKit module is used then it has to be rebuilt.
+
+*) Documentation
+-- It is adapted for and built by the latest Sandcastle. Documentation style is
+changed from "Prototype" to "VS2005" because "Prototype" is declared obsolete.
+("VS2005" style is better, basically)
 
 = 4.3.23 =
 

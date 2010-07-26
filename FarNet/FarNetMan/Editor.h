@@ -85,7 +85,6 @@ public:
 	virtual String^ GetText(String^ separator) override;
 	virtual TextWriter^ OpenWriter() override;
 	virtual void Add(String^ text) override;
-	virtual void BeginAccess() override;
 	virtual void BeginAsync() override;
 	virtual void BeginUndo() override;
 	virtual void Clear() override;
@@ -93,7 +92,6 @@ public:
 	virtual void DeleteChar() override;
 	virtual void DeleteLine() override;
 	virtual void DeleteText() override;
-	virtual void EndAccess() override;
 	virtual void EndAsync() override;
 	virtual void EndUndo() override;
 	virtual void GoTo(int column, int line) override;
@@ -145,7 +143,6 @@ private:
 	String^ _Title;
 	int _CodePage;
 	TextFrame _frameStart;
-	TextFrame _frameSaved;
 internal:
 	// async stuff
 	HANDLE _hMutex;

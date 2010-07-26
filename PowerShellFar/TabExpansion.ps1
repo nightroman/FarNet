@@ -299,8 +299,8 @@ function global:GetTabExpansionType
 	# global type search, do not use cache
 	if ($pattern.StartsWith('*')) {
 		$pattern = $pattern + '*'
-		foreach($assenbly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-			foreach($type in $assenbly.GetTypes()) {
+		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+			foreach($type in $assembly.GetTypes()) {
 				if ($type.IsPublic -and $type.FullName -like $pattern) {
 					if ($prefix) {
 						$prefix + $type.FullName + ']'
@@ -317,7 +317,7 @@ function global:GetTabExpansionType
 	# update the cache if needed; '*' forces
 	if ($pattern.EndsWith('*') -or !$global:TabExpansionCache) {
 		$global:TabExpansionCache = @{}
-		foreach($a in [appdomain]::CurrentDomain.GetAssemblies()) {
+		foreach($a in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
 			foreach($type in $a.GetTypes()) {
 				if ($type.IsPublic -and $type.Namespace) {
 					$set1 = $global:TabExpansionCache
@@ -345,7 +345,7 @@ function global:GetTabExpansionType
 	# expand namespace and type names
 	$Write = { $prefix + $args[0] }
 	foreach($r in $pattern) {
-		$names = $r.Split('.')
+		$names = $r.Split('.', ([System.StringSplitOptions]::RemoveEmptyEntries))
 		$last = $names.Length - 1
 
 		$set1 = $global:TabExpansionCache
