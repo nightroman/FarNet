@@ -1,6 +1,14 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.25 =
+
+*) See FarNet: IEditor.BeginAccess/EndAccess are removed. PSF core and all the
+scripts are updated accordingly.
+
+*) TabExpansion.ps1
+-- fixed minor issues on type/namespace expansion
+
 = 4.3.24 =
 
 *) $Psf.Settings.MaximumPanelFileCount sets the limit for panel files to be

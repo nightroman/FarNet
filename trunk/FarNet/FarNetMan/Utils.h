@@ -172,8 +172,6 @@ void Edit_RemoveAt(int index);
 void Edit_RestoreEditorInfo(const EditorInfo& ei);
 void Edit_SetOvertype(bool value);
 
-extern int _fastGetString;
-
 // DateTime tools
 DateTime FileTimeToDateTime(FILETIME time);
 FILETIME DateTimeToFileTime(DateTime time);

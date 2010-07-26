@@ -32,7 +32,6 @@ Panel-Macro-.ps1 Panel and view/edit Far key macros
 Panel-Process-.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-.ps1 Main startup code (example).
-Profile-Editor-.ps1 Editor startup code (example).
 Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor
 Reindent-Selection-.ps1 Reindents selected lines or the current line.
 Remove-EmptyString-.ps1 Removes empty strings from a list.
@@ -54,3 +53,4 @@ Test Tests and examples
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
+Profile-Editor-.ps1 Editor startup code (example).

@@ -502,9 +502,6 @@ TextFrame Editor::Frame::get()
 	if (!IsOpened)
 		return _frameStart;
 
-	if (_fastGetString > 0)
-		return _frameSaved;
-
 	AutoEditorInfo ei;
 
 	TextFrame r;
@@ -536,9 +533,6 @@ void Editor::Frame::set(TextFrame value)
 	if (value.VisibleChar >= 0)
 		esp.LeftPos = value.VisibleChar;
     EditorControl_ECTL_SETPOSITION(esp);
-
-	if (_fastGetString > 0)
-		_frameSaved = Frame;
 }
 
 ICollection<TextFrame>^ Editor::Bookmarks()
@@ -607,26 +601,6 @@ Point Editor::ConvertPointScreenToEditor(Point point)
 	return point;
 }
 
-void Editor::BeginAccess()
-{
-	if (_fastGetString > 0)
-	{
-		++_fastGetString;
-		return;
-	}
-
-	_frameSaved = Frame;
-	_fastGetString = 1;
-}
-
-void Editor::EndAccess()
-{
-	if (_fastGetString == 1)
-		Frame = _frameSaved;
-	if (--_fastGetString < 0)
-		_fastGetString = 0;
-}
-
 void Editor::GoTo(int column, int line)
 {
 	TextFrame f(-1);
@@ -680,6 +654,17 @@ String^ Editor::GetText(String^ separator)
 
     AutoEditorInfo ei;
 
+#if 1 //?????
+   	EditorGetString egs;
+	for(egs.StringNumber = 0; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
+    {
+        Info.EditorControl(ECTL_GETSTRING, &egs);
+		if (egs.StringNumber > 0)
+			sb.Append(separator);
+		if (egs.StringLength > 0)
+			sb.Append(gcnew String(egs.StringText, 0, egs.StringLength));
+    }
+#else
    	EditorGetString egs; egs.StringNumber = -1;
 	SEditorSetPosition esp;
 	for(esp.CurLine = 0; esp.CurLine < ei.TotalLines; ++esp.CurLine)
@@ -692,6 +677,7 @@ String^ Editor::GetText(String^ separator)
 			sb.Append(gcnew String(egs.StringText, 0, egs.StringLength));
     }
     Edit_RestoreEditorInfo(ei);
+#endif
 
 	return sb.ToString();
 }
@@ -983,6 +969,20 @@ String^ Editor::GetSelectedText(String^ separator)
 	if (separator == nullptr)
 		separator = CV::CRLF;
 
+#if 1 //?????
+	EditorGetString egs;
+	for(egs.StringNumber = ei.BlockStartLine; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
+    {
+        Info.EditorControl(ECTL_GETSTRING, &egs);
+		if (egs.SelStart < 0)
+			break;
+		if (egs.StringNumber > ei.BlockStartLine)
+			sb.Append(separator);
+		int len = (egs.SelEnd < 0 ? egs.StringLength : egs.SelEnd) - egs.SelStart;
+		if (len > 0)
+			sb.Append(gcnew String(egs.StringText + egs.SelStart, 0, len)); //??
+    }
+#else
 	EditorGetString egs; egs.StringNumber = -1;
     SEditorSetPosition esp;
 	for(esp.CurLine = ei.BlockStartLine; esp.CurLine < ei.TotalLines; ++esp.CurLine)
@@ -998,6 +998,7 @@ String^ Editor::GetSelectedText(String^ separator)
 			sb.Append(gcnew String(egs.StringText + egs.SelStart, 0, len)); //??
     }
 	Edit_RestoreEditorInfo(ei);
+#endif
 
 	return sb.ToString();
 }

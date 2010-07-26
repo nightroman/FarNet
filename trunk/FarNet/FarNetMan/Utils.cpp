@@ -100,27 +100,11 @@ void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm)
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 }
 
-// dirty global
-int _fastGetString;
-
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index)
 {
-	if (index >= 0 && _fastGetString)
-	{
-		static EditorSetPosition esp = {-1, -1, -1, -1, -1, -1};
-		esp.CurLine = index;
-		if (!Info.EditorControl(ECTL_SETPOSITION, &esp))
-			throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + index + ". Ensure current editor and valid line number.");
-		egs.StringNumber = -1;
-		Info.EditorControl(ECTL_GETSTRING, &egs);
-		egs.StringNumber = index;
-	}
-	else
-	{
-		egs.StringNumber = index;
-		if (!Info.EditorControl(ECTL_GETSTRING, &egs))
-			throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + index + ". Ensure current editor and valid line number.");
-	}
+	egs.StringNumber = index;
+	if (!Info.EditorControl(ECTL_GETSTRING, &egs))
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + index + ". Ensure current editor and valid line number.");
 }
 
 void EditorControl_ECTL_INSERTSTRING(bool indent)

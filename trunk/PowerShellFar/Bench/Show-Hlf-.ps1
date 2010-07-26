@@ -52,7 +52,6 @@ if (!$editor -or $editor.FileName -notlike '*.hlf') {
 if ($editor.IsModified) {
 	$editor.Save()
 }
-$editor.BeginAccess()
 for($e = $editor.Caret.Y; $e -ge 0; --$e) {
 	$text = $editor[$e].Text
 	if ($text.StartsWith('@')) {
@@ -60,5 +59,4 @@ for($e = $editor.Caret.Y; $e -ge 0; --$e) {
 		break
 	}
 }
-$editor.EndAccess()
 $Far.ShowHelp($editor.FileName, $Topic, 'File')

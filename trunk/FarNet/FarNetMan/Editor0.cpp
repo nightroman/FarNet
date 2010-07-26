@@ -98,7 +98,6 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Editor^ editor = _editors[id];
 			editor->Stop();
 			_editors.Remove(id);
-			_fastGetString = 0;
 			_editorCurrent = nullptr;
 
 			// end async
@@ -208,8 +207,6 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 {
 	Editor^ editor = GetCurrentEditor();
-	while (_fastGetString > 0)
-		_editorCurrent->EndAccess();
 
 	// async
 	if (editor->_output)

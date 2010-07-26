@@ -379,7 +379,6 @@ namespace PowerShellFar
 
 							e.Ignore = true;
 
-							Editor.BeginAccess();
 							Point pt = Editor.Caret;
 							for (int i = pt.Y - 1; i >= 0; --i)
 							{
@@ -396,7 +395,6 @@ namespace PowerShellFar
 									continue;
 								}
 							}
-							Editor.EndAccess();
 
 							Editor.Redraw();
 						}
