@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.26 =
+
+*) TabExpansion.ps1
+-- undone the last change and fixed that problem properly
+
 = 4.3.25 =
 
 *) See FarNet: IEditor.BeginAccess/EndAccess are removed. PSF core and all the

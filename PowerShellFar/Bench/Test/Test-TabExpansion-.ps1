@@ -138,21 +138,31 @@ Test '' '"$(test-' { $_ -contains '"$(Test-Base-.ps1' } | Write-Error
 ### function
 Test '' 'Clear-H' { $_ -contains 'Clear-Host' } | Write-Error
 
-### explicit types
+### namespace and type names
+
+# drop the cache and add used types before the tests
+$global:TabExpansionCache = $null
+Add-Type -AssemblyName System.Windows.Forms
+
+# explicit namespace and type names
 Test '' '[Sy' { [string]$_ -eq '[System. [SystemException]' } | Write-Error
 Test '' '[Mi' { $_ -contains '[Microsoft.' } | Write-Error
 Test '' '[System.da' { $_ -contains '[System.Data.' } | Write-Error
 Test '' '[System.Data.sq' { $_ -contains '[System.Data.Sql.' } | Write-Error
 Test '' '[System.Data.SqlClient.SqlE' { $_[0] -eq '[System.Data.SqlClient.SqlError]' } | Write-Error
 
-### wildcard types
+# wildcard namespace and type names
 Test '' '[*commandty' { $_ -contains '[System.Data.CommandType]' } | Write-Error
 Test '' '[*sqlcom' { $_ -contains '[System.Data.SqlClient.SqlCommand]' } | Write-Error
 
-### types for New-Object
+# New-Object namespace and type names
 Test 'NEW-OBJECT System.da' 'System.da' { $_ -contains 'System.Data.' } | Write-Error
 Test 'NEW-OBJECT  -TYPENAME  System.da' 'System.da' { $_ -contains 'System.Data.' } | Write-Error
 Test 'NEW-OBJECT   System.Data.SqlClient.SqlE' 'System.Data.SqlClient.SqlE' { $_[0] -eq 'System.Data.SqlClient.SqlError' } | Write-Error
+Test 'New-Object System.Data.SqlClient.' 'System.Data.SqlClient.' { $_.Count -gt 1 } | Write-Error
+#_100728_121000
+# Weird: $set1.Keys is kind of $null for System.Windows.Forms.[Tab], so we use there GetEnumerator()
+Test 'New-Object System.Windows.Forms.' 'System.Windows.Forms.' { $_.Count -gt 1 } | Write-Error
 
 ### Module name
 Test 'IMPORT-MODULE b' 'b' { $_ -contains 'BitsTransfer' } | Write-Error
