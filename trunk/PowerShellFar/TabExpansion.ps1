@@ -345,7 +345,7 @@ function global:GetTabExpansionType
 	# expand namespace and type names
 	$Write = { $prefix + $args[0] }
 	foreach($r in $pattern) {
-		$names = $r.Split('.', ([System.StringSplitOptions]::RemoveEmptyEntries))
+		$names = $r.Split('.')
 		$last = $names.Length - 1
 
 		$set1 = $global:TabExpansionCache
@@ -365,19 +365,20 @@ function global:GetTabExpansionType
 
 		if (!$failed) {
 			$name = $names[$last] + '*'
-			foreach($key in $set1.Keys) {
-				if ($key -like $name) {
+			#_100728_121000
+			foreach($kv in $set1.GetEnumerator()) {
+				if ($kv.Key -like $name) {
 					# namespace?
-					if ($set1[$key]) {
-						. $Write ($path + $key + '.')
+					if ($kv.Value) {
+						. $Write ($path + $kv.Key + '.')
 					}
-					# class, with prefix
+					# type, with prefix
 					elseif ($prefix) {
-						. $Write ($path + $key + ']')
+						. $Write ($path + $kv.Key + ']')
 					}
-					# class, no prefix
+					# type, no prefix
 					else {
-						. $Write ($path + $key)
+						. $Write ($path + $kv.Key)
 					}
 				}
 			}

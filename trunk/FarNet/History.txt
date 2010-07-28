@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.3.26 =
+
+*) Documentation
+-- Improved index panel: added sub-indexes for types, joined indexes for
+members with same names + full names view in the "Topics found" dialog.
+
 = 4.3.25 =
 
 *) IEditor
