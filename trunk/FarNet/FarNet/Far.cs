@@ -353,10 +353,6 @@ namespace FarNet
 		/// In this case <c>right</c> or <c>bottom</c> should be width and height.
 		/// </remarks>
 		public abstract IDialog CreateDialog(int left, int top, int right, int bottom);
-		/// <summary>
-		/// Creates a dialog for selecting a subset of items.
-		/// </summary>
-		public abstract ISubsetForm CreateSubsetForm();
 		/// <include file='doc.xml' path='doc/ShowHelp/*'/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>

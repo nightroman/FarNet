@@ -4,7 +4,18 @@ http://code.google.com/p/farnet/
 = 4.3.26 =
 
 *) TabExpansion.ps1
--- undone the last change and fixed that problem properly
+-- Undone the previous change and fixed the original issues properly.
+
+*) New library FarNet.Tools.dll (see FarNet)
+These tools are created and used directly, not via $Far methods. For example to
+create a SubsetForm add the library and then call New-Object:
+  Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
+  $form = New-Object FarNet.Tools.SubsetForm
+  ...
+
+*) New test/demo Test-ProgressForm-.ps1
+It demonstrates typical use cases of the new FarNet tool ProgressForm and
+explains in code comments the common 4-steps scenario.
 
 = 4.3.25 =
 

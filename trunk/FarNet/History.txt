@@ -2,7 +2,20 @@ http://code.google.com/p/farnet/
 
 = 4.3.26 =
 
+*) New utility library FarNet.Tools.dll (and its FarNet.Tools.xml)
+It will contain tools that are not FarNet API or Far Manager API but extra
+FarNet utilities designed for all modules. If a module uses these tools then
+FarNet.Tools.dll should be added to its references together with FarNet.dll.
+-- moved SubsetForm from FarNet to FarNet.Tools;
+-- added new utility form ProgressForm; examples: Test-ProgressForm-.ps1 in
+PowerShellFar and the separately distributed module FolderChart.
+
+*) Utility forms moved from FarNet to FarNet.Tools
+-- removed IFar.CreateSubsetForm() method;
+-- removed interfaces IForm and ISubsetForm.
+
 *) Documentation
+-- Added documentation of new FarNet.Tools types.
 -- Improved index panel: added sub-indexes for types, joined indexes for
 members with same names + full names view in the "Topics found" dialog.
 

@@ -595,11 +595,6 @@ void Far1::Quit()
 	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);
 }
 
-ISubsetForm^ Far1::CreateSubsetForm()
-{
-	return gcnew Works::SubsetForm;
-}
-
 ILine^ Far1::CommandLine::get()
 {
 	return gcnew FarNet::CommandLine;

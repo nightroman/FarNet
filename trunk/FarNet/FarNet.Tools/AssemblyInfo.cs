@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
 [assembly: AssemblyVersion("4.3.26.0")]
-[assembly: AssemblyTitle("FarNet interfaces")]
-[assembly: AssemblyDescription("FarNet interfaces")]
+[assembly: AssemblyTitle("FarNet utility dialogs")]
+[assembly: AssemblyDescription("FarNet utility dialogs")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
 [assembly: AssemblyProduct("FarNet")]

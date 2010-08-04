@@ -368,7 +368,8 @@ bool FarDialog::Show()
 
 void FarDialog::Close()
 {
-	Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
+	if (_hDlg != INVALID_HANDLE_VALUE)
+		Info.SendDlgMessage(_hDlg, DM_CLOSE, -1, 0);
 }
 
 void FarDialog::DisableRedraw()

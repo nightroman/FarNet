@@ -19,6 +19,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FarNetMan", "FarNet\FarNetMan\FarNetMan.vcxproj", "{A5F07EDB-2242-4A92-BFD1-48396007C625}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Build", "Build.vcxproj", "{A253D0DE-1626-4E50-A3D1-8C0A533901B3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1} = {3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarMacro", "PowerShellFar\Modules\FarMacro\FarMacro.csproj", "{6223B3D5-A0CA-4DD1-9CD3-D7D394B55DA6}"
 EndProject
@@ -37,6 +40,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Editor", "FarNet\FarNet.Works.Editor\FarNet.Works.Editor.csproj", "{E95736AD-A80B-42D0-BE74-095F7A558BC0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Panels", "FarNet\FarNet.Works.Panels\FarNet.Works.Panels.csproj", "{054F6FF3-F3F6-41CA-B2AF-D791411261D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Tools", "FarNet\FarNet.Tools\FarNet.Tools.csproj", "{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,6 +155,14 @@ Global
 		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|Win32.Build.0 = Release|Any CPU
 		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|x64.ActiveCfg = Release|Any CPU
 		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|x64.Build.0 = Release|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Debug|Win32.Build.0 = Debug|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Debug|x64.Build.0 = Debug|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|Win32.ActiveCfg = Release|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|Win32.Build.0 = Release|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|x64.ActiveCfg = Release|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
