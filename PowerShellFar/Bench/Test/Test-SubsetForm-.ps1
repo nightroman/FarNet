@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Tests subset forms (ISubsetForm).
+	Tests FarNet.Tools.SubsetForm.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -9,8 +9,11 @@
 	sorting selected items.
 #>
 
+# add the tools
+Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
+
 # create and setup the form
-$form = $Far.CreateSubsetForm()
+$form = New-Object FarNet.Tools.SubsetForm
 $form.Title = "TEST SUBSET FORM"
 
 # set items to select from

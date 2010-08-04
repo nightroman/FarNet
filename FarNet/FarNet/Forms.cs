@@ -677,45 +677,4 @@ namespace FarNet.Forms
 		/// </remarks>
 		void EnableRedraw();
 	}
-
-	/// <summary>
-	/// Custom dialog (form).
-	/// </summary>
-	public interface IForm
-	{
-		/// <summary>
-		/// Gets or sets the form title.
-		/// </summary>
-		string Title { get; set; }
-		/// <summary>
-		/// Shows the form.
-		/// </summary>
-		/// <returns>False if the form was cancelled.</returns>
-		bool Show();
-	}
-
-	/// <summary>
-	/// Form for selecting an ordered subset of a given set of items.
-	/// </summary>
-	/// <remarks>
-	/// Create it by <see cref="IFar.CreateSubsetForm"/>, set its <see cref="Items"/>
-	/// and initial <see cref="Indexes"/>, call <see cref="IForm.Show"/>, get result <see cref="Indexes"/>.
-	/// </remarks>
-	public interface ISubsetForm : IForm
-	{
-		/// <summary>
-		/// Gets or sets the items to select from.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-		object[] Items { get; set; }
-		/// <summary>
-		/// Gets or sets indexes of the selected items.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-		int[] Indexes { get; set; }
-		/// <summary>
-		/// Gets or sets an optional converter of items to strings.
-		/// </summary>
-		Converter<object, string> ItemToString { get; set; }
-	}
 }

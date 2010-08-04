@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Editor", "FarN
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Works.Panels", "FarNet.Works.Panels\FarNet.Works.Panels.csproj", "{054F6FF3-F3F6-41CA-B2AF-D791411261D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarNet.Tools", "FarNet.Tools\FarNet.Tools.csproj", "{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -98,6 +100,14 @@ Global
 		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|Win32.Build.0 = Release|Any CPU
 		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|x64.ActiveCfg = Release|Any CPU
 		{054F6FF3-F3F6-41CA-B2AF-D791411261D1}.Release|x64.Build.0 = Release|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Debug|Win32.Build.0 = Debug|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Debug|x64.Build.0 = Debug|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|Win32.ActiveCfg = Release|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|Win32.Build.0 = Release|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|x64.ActiveCfg = Release|Any CPU
+		{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
