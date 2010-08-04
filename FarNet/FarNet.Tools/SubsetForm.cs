@@ -1,26 +1,50 @@
-﻿/*
-FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+﻿
+/*
+FarNet.Tools library for FarNet
+Copyright (c) 2010 Roman Kuzmin
 */
 
 using System;
 using System.Collections.Generic;
 using FarNet.Forms;
 
-namespace FarNet.Works
+namespace FarNet.Tools
 {
-	public sealed class SubsetForm : Form, ISubsetForm
+	/// <summary>
+	/// A form to select an ordered subset from a set of input items.
+	/// </summary>
+	/// <remarks>
+	/// Create the form, set its <see cref="Items"/> and initial <see cref="Indexes"/>,
+	/// call <see cref="Show"/>, get result <see cref="Indexes"/>.
+	/// </remarks>
+	public sealed class SubsetForm : Form
 	{
 		const int DLG_XSIZE = 78;
 		const int DLG_YSIZE = 22;
 
+		/// <summary>
+		/// Gets or sets indexes of the selected items.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public int[] Indexes { get; set; }
+
+		/// <summary>
+		/// Gets or sets the items to select from.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public object[] Items { get; set; }
+
+		/// <summary>
+		/// Gets or sets an optional converter of items to strings.
+		/// </summary>
 		public Converter<object, string> ItemToString { get; set; }
 
 		IListBox _ListBox1;
 		IListBox _ListBox2;
 
+		/// <summary>
+		/// New subset form.
+		/// </summary>
 		public SubsetForm()
 		{
 			Title = "Select";
@@ -70,6 +94,9 @@ namespace FarNet.Works
 			Dialog.Cancel = button;
 		}
 
+		/// <summary>
+		/// Shows the subset form.
+		/// </summary>
 		public override bool Show()
 		{
 			// no job

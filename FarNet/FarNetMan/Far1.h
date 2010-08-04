@@ -35,7 +35,6 @@ public:
 	virtual IListMenu^ CreateListMenu() override;
 	virtual IMenu^ CreateMenu() override;
 	virtual IPanel^ CreatePanel() override;
-	virtual ISubsetForm^ CreateSubsetForm() override;
 	virtual IViewer^ CreateViewer() override;
 public:
 	virtual array<IEditor^>^ Editors() override;

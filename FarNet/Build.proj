@@ -1,7 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.3.25</ProductVersion>
+		<ProductVersion>4.3.26</ProductVersion>
 		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
@@ -10,6 +10,7 @@
 
 	<ItemGroup>
 		<Folder Include="FarNet"/>
+		<Folder Include="FarNet.Tools"/>
 		<Folder Include="FarNet.Works.Config"/>
 		<Folder Include="FarNet.Works.Dialog"/>
 		<Folder Include="FarNet.Works.Editor"/>
@@ -33,6 +34,7 @@ FarNet.sdf;
 
 	<Target Name="Install">
 		<MSBuild Targets="Install" Properties="Configuration=$(Configuration)" Projects="@(Folder->'%(Identity)\Build.proj')"/>
+		<Copy SourceFiles="FarNet.Tools\bin\Release\FarNet.Tools.xml" DestinationFolder="$(Install)\FarNet"/>
 		<Copy SourceFiles="Far.exe.config" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
 	</Target>
 
@@ -58,6 +60,8 @@ Install.txt;
 		<Copy DestinationFolder="Tmp\FarNet" SourceFiles="
 $(FarHome)\FarNet\FarNet.dll;
 $(FarHome)\FarNet\FarNet.xml;
+$(FarHome)\FarNet\FarNet.Tools.dll;
+$(FarHome)\FarNet\FarNet.Tools.xml;
 $(FarHome)\FarNet\FarNet.Works.Config.dll;
 $(FarHome)\FarNet\FarNet.Works.Dialog.dll;
 $(FarHome)\FarNet\FarNet.Works.Editor.dll;

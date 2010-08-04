@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.3.25</ProductVersion>
+		<ProductVersion>4.3.26</ProductVersion>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
@@ -50,8 +50,10 @@ Modules\FarMacro\FarMacro.Format.ps1xml;
 
 	<!--Install FarNet and PSF bin-->
 	<Target Name="Install-Bin">
-		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="Bin\$(Configuration)\PowerShellFar.xml" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true" Condition="'$(Configuration)' == 'Release' and Exists('Bin\$(Configuration)\PowerShellFar.xml')"/>
+		<Copy DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar" SkipUnchangedFiles="true" SourceFiles="
+Bin\$(Configuration)\PowerShellFar.dll;
+Bin\$(Configuration)\PowerShellFar.xml;
+"/>
 		<Copy SourceFiles="Modules\FarDescription\Bin\$(Configuration)\FarDescription.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarDescription" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="Modules\FarMacro\Bin\$(Configuration)\FarMacro.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarMacro" SkipUnchangedFiles="true"/>
 	</Target>
