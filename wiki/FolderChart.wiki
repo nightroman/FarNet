@@ -1,0 +1,20 @@
+#summary Shows folder item sizes as a chart with some interaction.
+
+= Introduction =
+
+For the current panel directory this tool calculates file and directory sizes and shows the results as a chart in a modal window with some interaction.
+
+= Details =
+
+Features:
+
+  * click on a file shown in the panel sets it current;
+  * click on a folder opens it in the current panel;
+  * clicks in other areas switch the chart modes;
+  * chart tooltips show approximate sizes.
+
+Pictures of two modes (pie and bars):
+
+[http://farnet.googlecode.com/svn/trunk/FolderChart/demo1-pie.PNG]
+
+[http://farnet.googlecode.com/svn/trunk/FolderChart/demo2-bar.PNG]
