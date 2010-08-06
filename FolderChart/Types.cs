@@ -11,7 +11,7 @@ using System.Windows.Forms;
 class FolderItem
 {
 	public string Name { get; set; }
-	public double Size { get; set; }
+	public long Size { get; set; }
 }
 
 class WindowWrapper : IWin32Window
