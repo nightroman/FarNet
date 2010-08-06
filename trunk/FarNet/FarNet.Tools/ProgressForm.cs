@@ -69,6 +69,9 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Gets or sets the current activity description.
 		/// </summary>
+		/// <remarks>
+		/// This property is designed for jobs in addition to the <see cref="SetProgressValue"/>.
+		/// </remarks>
 		public string Activity { get; set; }
 
 		/// <summary>

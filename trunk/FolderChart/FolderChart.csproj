@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
@@ -58,6 +60,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!---->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="Bin\$(Configuration)\FolderChart.dll" DestinationFolder="C:\Program Files\Far\FarNet\Modules\FolderChart" SkipUnchangedFiles="true" />
+    <Copy DestinationFolder="C:\Program Files\Far\FarNet\Modules\FolderChart" SkipUnchangedFiles="true" SourceFiles="
+Bin\$(Configuration)\FolderChart.dll;
+Readme.txt;
+LICENSE;
+"/>
   </Target>
 </Project>

@@ -19,9 +19,6 @@ static class FolderChartForm
 		{
 			series.ChartType = SeriesChartType.Pie;
 			series.SmartLabelStyle.Enabled = true;
-			series["CollectedColor"] = "White";
-			series["CollectedThreshold"] = "1";
-			series["CollectedLabel"] = series["CollectedToolTip"] = "...";
 
 			foreach (var it in data)
 			{
@@ -29,8 +26,6 @@ static class FolderChartForm
 				point.Label = it.Name;
 				point.ToolTip = it.Name + " ~ " + Kit.FormatSize(it.Size);
 			}
-
-			series.Sort(PointSortOrder.Ascending);
 
 			using (var chart = new Chart())
 			{
@@ -51,10 +46,13 @@ static class FolderChartForm
 						// Pick the result folder or switch charts
 						chart.MouseClick += (sender, e) =>
 						{
+							if (e.Button != MouseButtons.Left)
+								return;
+							
 							var hit = chart.HitTest(e.X, e.Y);
 							if (hit.ChartElementType == ChartElementType.DataPoint)
 							{
-								if (hit.PointIndex >= 0)
+								if (hit.PointIndex >= 0 && series.Points[hit.PointIndex].Label.Length > 0)
 								{
 									form.Close();
 									result = series.Points[hit.PointIndex].Label;

@@ -57,7 +57,7 @@ class SizeRun
 	void DoFolder(string folder, Action<string> activity)
 	{
 		Check();
-		double size = CalculateFolderSize(folder, activity);
+		var size = CalculateFolderSize(folder, activity);
 		_Result.Add(new FolderItem() { Name = Path.GetFileName(folder), Size = size });
 	}
 
@@ -86,15 +86,12 @@ class SizeRun
 			if (files.Count > 0)
 			{
 				progress.Activity = "Computing file sizes";
-				var max = _Result.Count > 0 ? _Result.Max((x) => x.Size) : 0.0;
 				foreach (var file in files)
 				{
 					try
 					{
 						var info = new FileInfo(file);
-						var size = info.Length;
-						if (size > max / 100)
-							_Result.Add(new FolderItem() { Name = Path.GetFileName(file), Size = size });
+						_Result.Add(new FolderItem() { Name = info.Name, Size = info.Length });
 					}
 					catch (Exception ex)
 					{
