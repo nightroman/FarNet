@@ -14,7 +14,7 @@ static class FolderChartForm
 	public static string Show(string title, IEnumerable<FolderItem> data, IWin32Window window)
 	{
 		string result = null;
-		
+
 		using (var series = new Series())
 		{
 			series.ChartType = SeriesChartType.Pie;
@@ -38,36 +38,48 @@ static class FolderChartForm
 
 					using (var form = new Form())
 					{
+						form.Text = title;
 						form.Size = new Size(600, 600);
 						form.StartPosition = FormStartPosition.CenterParent;
-						form.Text = title;
+
 						form.Controls.Add(chart);
 
-						// Pick the result folder or switch charts
+						// mouse click
 						chart.MouseClick += (sender, e) =>
 						{
-							if (e.Button != MouseButtons.Left)
-								return;
-							
 							var hit = chart.HitTest(e.X, e.Y);
-							if (hit.ChartElementType == ChartElementType.DataPoint)
+
+							// pick a result item or switch chart modes
+							if (e.Button == MouseButtons.Left)
 							{
-								if (hit.PointIndex >= 0 && series.Points[hit.PointIndex].Label.Length > 0)
+								if (hit.ChartElementType == ChartElementType.DataPoint)
 								{
-									form.Close();
-									result = series.Points[hit.PointIndex].Label;
+									if (hit.PointIndex >= 0 && series.Points[hit.PointIndex].Label.Length > 0)
+									{
+										form.Close();
+										result = series.Points[hit.PointIndex].Label;
+									}
+								}
+								else
+								{
+									if (series.ChartType == SeriesChartType.Pie)
+										series.ChartType = SeriesChartType.Bar;
+									else
+										series.ChartType = SeriesChartType.Pie;
 								}
 							}
-							else
+							// remove an item from the chart
+							else if (e.Button == MouseButtons.Right)
 							{
-								if (series.ChartType == SeriesChartType.Pie)
-									series.ChartType = SeriesChartType.Bar;
-								else
-									series.ChartType = SeriesChartType.Pie;
+								if (hit.ChartElementType == ChartElementType.DataPoint)
+								{
+									if (hit.PointIndex >= 0)
+										series.Points.RemoveAt(hit.PointIndex);
+								}
 							}
 						};
 
-						// Highlight the active folder
+						// mouse move: highlight an item
 						chart.MouseMove += (sender, e) =>
 						{
 							var hit = chart.HitTest(e.X, e.Y);
