@@ -8,9 +8,18 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FarNet.Tools;
+
+// CONCURRENT COLLECTORS INSTEAD OF PARALLEL AGGREGATION
+// With no progress we would use aggregation of the results. It was tried and
+// it worked. But in this case if we report progress from the final step of
+// aggregation then with, say, 2 cores progress is too late. With 1 core it is
+// probably not updated at all. And if we report progress on each step then we
+// should use locks in steps and aggregation does not help to reduce locks.
+// Thus, in this particular task for the sake of progress we do not use
+// aggregation, we use concurrent collectors.
 
 class SizeRun
 {
@@ -20,6 +29,7 @@ class SizeRun
 	ConcurrentBag<FolderItem> _Result = new ConcurrentBag<FolderItem>();
 	ConcurrentBag<Exception> _Errors = new ConcurrentBag<Exception>();
 
+	ProgressForm _progress = new ProgressForm();
 	CancellationToken _cancel;
 
 	void Check()
@@ -28,22 +38,21 @@ class SizeRun
 	}
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-	long CalculateFolderSize(string folder, Action<string> activity)
+	long CalculateFolderSize(string folder)
 	{
 		long size = 0;
 		try
 		{
-			activity(folder);
+			_progress.Activity = folder;
 
 			foreach (var dir in Directory.EnumerateDirectories(folder))
 			{
 				Check();
-				size += CalculateFolderSize(dir, activity);
+				size += CalculateFolderSize(dir);
 			}
 
 			foreach (var file in Directory.EnumerateFiles(folder))
 			{
-				Check();
 				size += (new FileInfo(file)).Length;
 			}
 		}
@@ -54,17 +63,9 @@ class SizeRun
 		return size;
 	}
 
-	void DoFolder(string folder, Action<string> activity)
-	{
-		Check();
-		var size = CalculateFolderSize(folder, activity);
-		_Result.Add(new FolderItem() { Name = Path.GetFileName(folder), Size = size });
-	}
-
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 	public bool Run(IList<string> folders, IList<string> files)
 	{
-		var progress = new FarNet.Tools.ProgressForm();
 		var cancellation = new CancellationTokenSource();
 		_cancel = cancellation.Token;
 
@@ -73,10 +74,12 @@ class SizeRun
 			// do folders (parallel)
 			if (folders.Count > 0)
 			{
+				//! do not use aggregation, see file remarks
 				Parallel.ForEach(folders, new ParallelOptions() { CancellationToken = _cancel }, folder =>
 				{
-					DoFolder(folder, (activity) => { progress.Activity = activity; });
-					progress.SetProgressValue(_Result.Count, folders.Count);
+					Check();
+					_Result.Add(new FolderItem() { Name = Path.GetFileName(folder), Size = CalculateFolderSize(folder) });
+					_progress.SetProgressValue(_Result.Count, folders.Count);
 				});
 			}
 
@@ -85,7 +88,7 @@ class SizeRun
 			// do files (serial)
 			if (files.Count > 0)
 			{
-				progress.Activity = "Computing file sizes";
+				_progress.Activity = "Computing file sizes";
 				foreach (var file in files)
 				{
 					try
@@ -103,18 +106,18 @@ class SizeRun
 			Check();
 
 			// done
-			progress.Complete();
-		}))
+			_progress.Complete();
+		}, _cancel))
 		{
 			if (!task.Wait(750))
 			{
-				progress.Title = "Computing sizes";
-				progress.Cancelled += delegate
+				_progress.Title = "Computing sizes";
+				_progress.Cancelled += delegate
 				{
 					cancellation.Cancel(true);
 				};
-				progress.CanCancel = true;
-				progress.Show();
+				_progress.CanCancel = true;
+				_progress.Show();
 			}
 
 			try
@@ -124,7 +127,7 @@ class SizeRun
 			catch (AggregateException)
 			{ }
 
-			return task.Status == TaskStatus.RanToCompletion && !_cancel.IsCancellationRequested;
+			return task.Status == TaskStatus.RanToCompletion;
 		}
 	}
 }
