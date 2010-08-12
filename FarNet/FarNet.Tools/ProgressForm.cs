@@ -24,7 +24,7 @@ namespace FarNet.Tools
 	/// The form can be shown once and cannot be reused after closing.
 	/// </para>
 	/// <para>
-	/// Typical scenario:
+	/// The standard scenario:
 	/// <ul>
 	/// <li>create a progress form but do not show yet;</li>
 	/// <li>start a job in another thread and give it this form;</li>
@@ -32,6 +32,7 @@ namespace FarNet.Tools
 	/// <li>show the form; the progress form is shown if a job is not yet done.</li>
 	/// </ul>
 	/// </para>
+	/// There is yet another simpler scenario using the <see cref="Invoke"/>, see remarks there.
 	/// </remarks>
 	public sealed class ProgressForm : Form
 	{
@@ -50,6 +51,9 @@ namespace FarNet.Tools
 		readonly Thread _mainThread;
 		int _percentage = -1;
 		Stopwatch _stopwatch;
+
+		Thread _jobThread;
+		Exception _jobError;
 
 		IText _textActivity;
 		IText _textProgress;
@@ -135,6 +139,9 @@ namespace FarNet.Tools
 					return;
 
 				_isClosed = true;
+
+				if (_jobThread != null)
+					_jobThread.Abort();
 
 				//! mind another thread
 				if (Thread.CurrentThread == _mainThread)
@@ -237,6 +244,116 @@ namespace FarNet.Tools
 			}
 		}
 
+		/// <summary>
+		/// Sets the progress <c>long</c> values. See the <see cref="SetProgressValue"/>.
+		/// </summary>
+		public void SetProgressInt64(long currentValue, long maximumValue)
+		{
+			if (currentValue <= 0)
+			{
+				_percentage = 0;
+			}
+			else if (maximumValue <= 0 || currentValue >= maximumValue)
+			{
+				_percentage = 100;
+			}
+			else
+			{
+				_percentage = (int)(currentValue * 100 / maximumValue);
+			}
+		}
+
+		void OnInitialized(object sender, InitializedEventArgs e)
+		{
+			// do not show the form if it is already closed
+			if (_isClosed)
+				e.Ignore = true;
+		}
+
+		void OnClose(object sender, EventArgs e)
+		{
+			if (Cancelled != null)
+				Cancelled(this, null);
+
+			Close();
+		}
+
+		void OnClosing(object sender, ClosingEventArgs e)
+		{
+			// allow the dialog to close if the form is closed
+			if (_isClosed)
+				return;
+
+			// do not close if the form cannot cancel
+			if (!CanCancel)
+			{
+				e.Ignore = true;
+				return;
+			}
+
+			// abort
+			if (_jobThread != null)
+				_jobThread.Abort();
+
+			// notify
+			if (Cancelled != null)
+				Cancelled(this, null);
+		}
+
+		void OnIdled(object sender, EventArgs e)
+		{
+			// if the form is closed and the dialog is still alive the closed the dialog directly
+			if (_isClosed)
+			{
+				Dialog.Close();
+				return;
+			}
+
+			// show activity
+			{
+				var activity = Activity ?? string.Empty;
+				if (activity.Length > TEXT_WIDTH)
+					activity = activity.Substring(0, TEXT_WIDTH - 3) + "...";
+				_textActivity.Text = activity;
+			}
+
+			// show percentage or elapsed time
+			if (_percentage >= 0)
+			{
+				// number of chars to fill
+				int n = PROGRESS_WIDTH * _percentage / 100;
+
+				// do not fill too much
+				if (n > PROGRESS_WIDTH)
+				{
+					n = PROGRESS_WIDTH;
+				}
+				// leave 1 not filled
+				else if (n == PROGRESS_WIDTH)
+				{
+					if (_percentage < 100)
+						--n;
+				}
+				// fill at least 1
+				else if (n == 0)
+				{
+					if (_percentage > 0)
+						n = 1;
+				}
+
+				_textProgress.Text = new string(SOLID_BLOCK, n) + new string(EMPTY_BLOCK, PROGRESS_WIDTH - n);
+				_textPercent.Text = string.Format(CultureInfo.InvariantCulture, "{0,3}%", _percentage);
+
+				Far.Net.UI.SetProgressValue(_percentage, 100);
+			}
+			else
+			{
+				// use new TimeSpan with 'int' number of seconds, i.e. get 00:00:11, not 00:00:11.123456
+				_textProgress.Text = (new TimeSpan(0, 0, (int)_stopwatch.Elapsed.TotalSeconds)).ToString();
+				_textPercent.Text = string.Empty;
+			}
+		}
+
 		void Init()
 		{
 			SetSize(FORM_WIDTH, (CanCancel ? 8 : 6));
@@ -250,99 +367,77 @@ namespace FarNet.Tools
 			{
 				Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 
-				IButton button = Dialog.AddButton(0, -1, "Cancel");
+				IButton button = Dialog.AddButton(0, -1, _jobThread == null ? "Cancel" : "Abort");
 				button.CenterGroup = true;
 				Dialog.Default = button;
 
-				button.ButtonClicked += delegate
-				{
-					if (Cancelled != null) //????
-						Cancelled(this, null);
-					Close();
-				};
+				button.ButtonClicked += OnClose;
 			}
 
-			Dialog.Initialized += (sender, e) =>
+			Dialog.Initialized += OnInitialized;
+			Dialog.Closing += OnClosing;
+			Dialog.Idled += OnIdled;
+		}
+
+		/// <summary>
+		/// Invokes the job in a new thread (simplified scenario with optional job thread abortion by a user).
+		/// </summary>
+		/// <param name="job">The job action delegate to be invoked in a new thread. It should either complete or throw any exception.</param>
+		/// <returns>Null if the job has completed or an exception thrown by the job or the <see cref="OperationCanceledException"/>.</returns>
+		/// <remarks>
+		/// This way is much simpler than the standard 4-steps scenario and it is recommended for not abortable jobs.
+		/// <para>
+		/// If the <see cref="CanCancel"/> is true then on user cancellation the job thread is aborted.
+		/// It many cases this seems to be fine but the job has to be carefully designed for that.
+		/// In particular the <see cref="ThreadAbortException"/> can be thrown at any moment.
+		/// If there are potential unwanted effects of job abortion then do not use this way.
+		/// </para>
+		/// <para>
+		/// This way is not suitable for PowerShell scripts in any case.
+		/// Scripts should use the standard 4-steps scenario with standard PowerShell or simple PowerShellFar background jobs.
+		/// </para>
+		/// </remarks>
+		public Exception Invoke(ThreadStart job)
+		{
+			// share the new thread and start it
+			_jobThread = new Thread(() => Job(job));
+			_jobThread.Start();
+
+			// wait a little bit
+			Thread.Sleep(500);
+			
+			// show the form and return null if it is completed
+			if (Show())
+				return null;
+
+			// get the error
+			return _jobError ?? new OperationCanceledException();
+		}
+
+		void Job(ThreadStart job)
+		{
+			try
 			{
-				// do not show the form if it is already closed
-				if (_isClosed)
-				{
-					e.Ignore = true;
-					return;
-				}
-			};
-
-			Dialog.Closing += (sender, e) =>
+				// do the job in this thread
+				job();
+				
+				// done, complete and return
+				Complete();
+				return;
+			}
+			catch (ThreadAbortException)
 			{
-				// allow the dialog to close if the form is closed
-				if (_isClosed)
-					return;
-
-				// do not close if the form cannot cancel
-				if (!CanCancel)
-				{
-					e.Ignore = true;
-					return;
-				}
-
-				// notify
-				if (Cancelled != null)
-					Cancelled(this, null);
-			};
-
-			Dialog.Idled += (sender, e) =>
+				// convert to cancelled
+				_jobError = new OperationCanceledException();
+			}
+			catch (Exception ex)
 			{
-				// if the form is closed and the dialog is still alive the closed the dialog directly
-				if (_isClosed)
-				{
-					Dialog.Close();
-					return;
-				}
-
-				// show activity
-				{
-					var activity = Activity ?? string.Empty;
-					if (activity.Length > TEXT_WIDTH)
-						activity = activity.Substring(0, TEXT_WIDTH - 3) + "...";
-					_textActivity.Text = activity;
-				}
-
-				// show percentage or elapsed time
-				if (_percentage >= 0)
-				{
-					// number of chars to fill
-					int n = PROGRESS_WIDTH * _percentage / 100;
-
-					// do not fill too much
-					if (n > PROGRESS_WIDTH)
-					{
-						n = PROGRESS_WIDTH;
-					}
-					// leave 1 not filled
-					else if (n == PROGRESS_WIDTH)
-					{
-						if (_percentage < 100)
-							--n;
-					}
-					// fill at least 1
-					else if (n == 0)
-					{
-						if (_percentage > 0)
-							n = 1;
-					}
-
-					_textProgress.Text = new string(SOLID_BLOCK, n) + new string(EMPTY_BLOCK, PROGRESS_WIDTH - n);
-					_textPercent.Text = string.Format(CultureInfo.InvariantCulture, "{0,3}%", _percentage);
-
-					Far.Net.UI.SetProgressValue(_percentage, 100);
-				}
-				else
-				{
-					// use new TimeSpan with 'int' number of seconds, i.e. get 00:00:11, not 00:00:11.123456
-					_textProgress.Text = (new TimeSpan(0, 0, (int)_stopwatch.Elapsed.TotalSeconds)).ToString();
-					_textPercent.Text = string.Empty;
-				}
-			};
+				// to be returned by Invoke()
+				_jobError = ex;
+			}
+			
+			// close on errors
+			Close();
 		}
 
 	}
