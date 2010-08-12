@@ -24,6 +24,7 @@ namespace PowerShellFar.Commands
 		///
 		[Parameter(Position = 0, Mandatory = true, HelpMessage = "Message text. Text with long lines or many lines is allowed, but some lines may be not shown.")]
 		[AllowEmptyString]
+		[AllowNull]
 		public string Text
 		{
 			get;
@@ -120,7 +121,7 @@ namespace PowerShellFar.Commands
 			if (LeftAligned)
 				options |= MsgOptions.LeftAligned;
 
-			int r = Far.Net.Message(Text, Caption, options, Choices, HelpTopic);
+			int r = Far.Net.Message(Text ?? string.Empty, Caption, options, Choices, HelpTopic);
 			if (Buttons != ButtonSet.Ok || Choices != null && Choices.Length > 0)
 				WriteObject(r);
 		}

@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.27 =
+
+*) Show-FarMessage cmdlet
+Allow null as the input test (show an empty message)
+
 = 4.3.26 =
 
 *) TabExpansion.ps1
