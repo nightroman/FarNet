@@ -15,8 +15,13 @@ Source   : http://code.google.com/p/farnet/
 	= DESCRIPTION =
 
 This editor tool alters default editor actions on Ctrl-Left/Right and
-Ctrl-Shift-Left/Right: go to or select up to the next or previous word bound.
+Ctrl-Shift-Left/Right: go to or select up to the next or previous word/edge.
 
+New actions are similar to what many popular editors do on stepping
+(Ctrl-Left/Right) or selecting (Ctrl-Shift-Left/Right) by words.
+
+The word "Right" in the name "RightControl" means "correct", it has nothing to
+do with the right side Ctrl key :)
 
 	= HISTORY =
 
