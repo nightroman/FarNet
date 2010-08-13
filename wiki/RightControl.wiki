@@ -6,7 +6,7 @@ This editor tool alters default editor actions on Ctrl-Left/Right and Ctrl-Shift
 
 The word “Right” in the name “RightControl” rather means “correct”, it has nothing to do with the right side Ctrl key :)
 
-Иначе говоря, ходим (Ctrl-Left/Right) и выделяем (Ctrl-Shift-Left/Right) по словам примерно так, так это делает Visual Studio или Word/WordPad (только последние считают символ _ разделителем слов, а студия – нет; RightControl тоже не считает это разделителем).
+Иначе говоря, ходим (Ctrl-Left/Right) и выделяем (Ctrl-Shift-Left/Right) по словам примерно так, так это делает Visual Studio или Word/WordPad (только последние считают символ "подчеркивание" разделителем слов, а студия – нет; RightControl тоже не считает это разделителем).
 
 ----
 [http://forum.farmanager.com/viewtopic.php?f=5&t=5622 Обсуждение на форуме]
