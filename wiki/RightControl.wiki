@@ -1,0 +1,5 @@
+#summary Alters editor actions on Ctrl[-Shift]-Left/Right
+
+= Introduction =
+
+This editor tool alters default editor actions on Ctrl-Left/Right and Ctrl-Shift-Left/Right: go to or select up to the next or previous word bound. New actions are similar to what many popular editors do.
