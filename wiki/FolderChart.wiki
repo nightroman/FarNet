@@ -1,4 +1,4 @@
-#summary Shows folder item sizes as a chart with some interaction.
+#summary Shows folder item sizes as a chart with some interaction
 
 = Introduction =
 
@@ -18,6 +18,10 @@ For the current panel directory this tool calculates file and directory sizes an
  * Right click hides an item in the chart;
  * Chart tooltips show approximate sizes.
 
+----
+[http://forum.farmanager.com/viewtopic.php?f=5&t=5623 Обсуждение на форуме]
+
+----
 Pictures of two modes (pie and bars):
 
 [http://farnet.googlecode.com/svn/trunk/FolderChart/demo1-pie.PNG]
