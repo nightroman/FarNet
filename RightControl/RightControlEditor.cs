@@ -4,9 +4,6 @@ FarNet module RightControl
 Copyright (c) 2010 Roman Kuzmin
 */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using FarNet;
 
