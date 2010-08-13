@@ -20,5 +20,8 @@ Ctrl-Shift-Left/Right: go to or select up to the next or previous word bound.
 
 	= HISTORY =
 
+1.0.2
+ * Drop existing selection on Ctrl-Left/Right
+
 1.0.1
  * Flip selection on Ctrl-Shift-{Left then Right | Right then Left}
