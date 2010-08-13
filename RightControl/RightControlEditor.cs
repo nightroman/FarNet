@@ -118,17 +118,23 @@ namespace RightControl
 						// vanish selection
 						first = last = new Point(-1, -1);
 					}
-					else if (caretOld == place.First)
+					else if (caretOld != place.First)
 					{
-						// reduce selection (first)
-						first = caretNew;
-						last = place.Last;
-					}
-					else
-					{
-						// expand selection (last)
+						// expand selection
 						first = place.First;
 						last = new Point(caretNew.X - 1, caretNew.Y);
+					}
+					else if (caretNew.Y > place.Last.Y || caretNew.Y == place.Last.Y && caretNew.X > place.Last.X)
+					{
+						// invert selection
+						first = new Point(place.Last.X + 1, place.Last.Y);
+						last = new Point(caretNew.X - 1, caretNew.Y);
+					}
+					else 
+					{
+						// reduce selection
+						first = caretNew;
+						last = place.Last;
 					}
 				}
 				else
@@ -138,17 +144,23 @@ namespace RightControl
 						// vanish selection
 						first = last = new Point(-1, -1);
 					}
-					else if (place.Last == new Point(caretOld.X - 1, caretOld.Y))
+					else if (place.Last != new Point(caretOld.X - 1, caretOld.Y))
 					{
-						// reduce selection (last)
-						first = place.First;
-						last = new Point(caretNew.X - 1, caretNew.Y);
+						// expand selection
+						first = caretNew;
+						last = place.Last;
+					}
+					else if (caretNew.Y < place.First.Y || caretNew.Y == place.First.Y && caretNew.X < place.First.X)
+					{
+						// invert selection
+						first = caretNew;
+						last = new Point(place.First.X - 1, place.First.Y);
 					}
 					else
 					{
-						// expand selection (first)
-						first = caretNew;
-						last = place.Last;
+						// reduce selection
+						first = place.First;
+						last = new Point(caretNew.X - 1, caretNew.Y);
 					}
 				}
 			}

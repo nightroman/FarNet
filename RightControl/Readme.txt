@@ -16,3 +16,9 @@ Source   : http://code.google.com/p/farnet/
 
 This editor tool alters default editor actions on Ctrl-Left/Right and
 Ctrl-Shift-Left/Right: go to or select up to the next or previous word bound.
+
+
+	= HISTORY =
+
+1.0.1
+ * Flip selection on Ctrl-Shift-{Left then Right | Right then Left}
