@@ -3,3 +3,6 @@
 = Introduction =
 
 This editor tool alters default editor actions on Ctrl-Left/Right and Ctrl-Shift-Left/Right: go to or select up to the next or previous word bound. New actions are similar to what many popular editors do.
+
+----
+[http://forum.farmanager.com/viewtopic.php?f=5&t=5622 Обсуждение на форуме]
