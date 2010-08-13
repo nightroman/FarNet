@@ -78,11 +78,14 @@ namespace RightControl
 				{
 					if (select)
 					{
+						// select
 						Select(editor, right, caret, new Point(newX, iLine));
 					}
 					else
 					{
+						// set the caret and drop selection
 						editor.GoTo(newX, iLine);
+						editor.UnselectText();
 						editor.Redraw();
 					}
 					return;
