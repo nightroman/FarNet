@@ -1,10 +1,16 @@
-#summary Alters editor actions on Ctrl[-Shift]-Left/Right
+#summary Step/Select/Delete by words in the editor
 
 = Introduction =
 
-This editor tool alters default editor actions on Ctrl-Left/Right and Ctrl-Shift-Left/Right: go to or select up to the next or previous word bound. New actions are similar to what many popular editors do on stepping (Ctrl-Left/Right) or selecting (Ctrl-Shift-Left/Right) by words.
+This tool alters editor actions on Ctrl-Left/Right, Ctrl-Shift-Left/Right,
+Ctrl-Backspace/Delete (step/select/delete by words left or right).
 
-The word “Right” in the name “RightControl” rather means “correct”, it has nothing to do with the right side Ctrl key :)
+New actions are similar to what many popular editors do on stepping
+(Ctrl-Left/Right), selecting (Ctrl-Shift-Left/Right) or deleting
+(Ctrl-Backspace/Delete) by words. Example: Visual Studio editor.
+
+Note:
+RightControl has nothing to do with the right Ctrl key: "right" means "proper".
 
 Иначе говоря, ходим (Ctrl-Left/Right) и выделяем (Ctrl-Shift-Left/Right) по словам примерно так, так это делает Visual Studio или Word/WordPad (только последние считают символ "подчеркивание" разделителем слов, а студия – нет; RightControl тоже не считает это разделителем).
 
