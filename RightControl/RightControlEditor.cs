@@ -14,7 +14,7 @@ namespace RightControl
 	[ModuleEditor(Name = "RightControl")]
 	public class RightControlEditor : ModuleEditor
 	{
-		const string DefaultPattern = @"^ | $ | \b[^\s] | (?<=\s)\S";
+		const string DefaultPattern = @"^ | $ | (?<=\b|\s)\S";
 		static Regex _regex;
 
 		public override void Invoke(object sender, ModuleEditorEventArgs e)

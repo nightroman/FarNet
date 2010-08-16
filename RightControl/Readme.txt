@@ -41,24 +41,22 @@ EXAMPLES
 
 Default pattern with breaks similar to Visual Studio:
 
-^ | $ | \b[^\s] | (?<=\s)\S
+^ | $ | (?<=\b|\s)\S
 
 Pattern with two more breaks: letter case and number breaks:
 
-^ | $ | \b[^\s] | (?<=\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\s\d]
+^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\s\d]
 
 The same pattern written with inline comments. All the text below is a valid
 regular expression pattern that can be stored as a multi-line registry value:
 
-^ | $ # line start or end
+^ | $ # start or end of line
 |
-\b[^\s] # word bound followed by anything but space
+(?<=\b|\s)\S # not a space with a word bound or a space before
 |
-(?<=\s)\S # not space symbol with a space before it
+(?<=\p{Ll})\p{Lu} # an upper case letter with a lower case letter before
 |
-(?<=\p{Ll})\p{Lu} # an upper case letter with a lower case letter before it
-|
-(?<=\D)\d | (?<=\d)[^\s\d] # digit/not-digit with a not-digit/digit before it
+(?<=\D)\d | (?<=\d)[^\s\d] # a digit/not-digit with a not-digit/digit before
 
 
 	= HISTORY =
