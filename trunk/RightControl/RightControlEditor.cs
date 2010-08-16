@@ -4,6 +4,7 @@ FarNet module RightControl
 Copyright (c) 2010 Roman Kuzmin
 */
 
+using System;
 using System.Text.RegularExpressions;
 using FarNet;
 
@@ -13,39 +14,92 @@ namespace RightControl
 	[ModuleEditor(Name = "RightControl")]
 	public class RightControlEditor : ModuleEditor
 	{
+		const string DefaultPattern = @"^ | $ | \b[^\s] | (?<=\s)\S";
+		static Regex _regex;
+
 		public override void Invoke(object sender, ModuleEditorEventArgs e)
 		{
+			InitRegex();
 			((IEditor)sender).KeyDown += OnKeyDown;
 		}
 
-		void OnKeyDown(object sender, KeyEventArgs e)
+		void InitRegex()
+		{
+			if (_regex != null)
+				return;
+
+			string pattern = DefaultPattern;
+			using (var key = Manager.OpenRegistryKey(null, false))
+			{
+				if (key != null)
+				{
+					object value = key.GetValue("Regex", DefaultPattern);
+					if (value is string[])
+						pattern = string.Join(Environment.NewLine, (string[])value);
+					else
+						pattern = value.ToString();
+				}
+			}
+
+			try
+			{
+				_regex = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
+			}
+			catch (Exception e)
+			{
+				Far.Net.Message("Error on parsing the regular expression:\r" + e.Message, "RightControl", MsgOptions.LeftAligned | MsgOptions.Warning);
+				_regex = new Regex(DefaultPattern, RegexOptions.IgnorePatternWhitespace);
+			}
+		}
+
+		static void OnKeyDown(object sender, KeyEventArgs e)
 		{
 			switch (e.Key.VirtualKeyCode)
 			{
 				case VKeyCode.LeftArrow:
 					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-						Run((IEditor)sender, false, false);
+						Run((IEditor)sender, Operation.Step, false);
 					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
-						Run((IEditor)sender, false, true);
+						Run((IEditor)sender, Operation.Select, false);
 					else
 						return;
 					e.Ignore = true;
 					break;
 				case VKeyCode.RightArrow:
 					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-						Run((IEditor)sender, true, false);
+						Run((IEditor)sender, Operation.Step, true);
 					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
-						Run((IEditor)sender, true, true);
+						Run((IEditor)sender, Operation.Select, true);
 					else
 						return;
 					e.Ignore = true;
 					break;
+				case VKeyCode.Backspace:
+					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
+					{
+						Run((IEditor)sender, Operation.Delete, false);
+						e.Ignore = true;
+					}
+					break;
+				case VKeyCode.Delete:
+					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
+					{
+						Run((IEditor)sender, Operation.Delete, true);
+						e.Ignore = true;
+					}
+					break;
 			}
 		}
 
-		static void Run(IEditor editor, bool right, bool select)
+		enum Operation
 		{
-			Regex re = new Regex(@"^|$|\b[^\s]|(?<=\s)\S");
+			Step,
+			Select,
+			Delete
+		}
+
+		static void Run(IEditor editor, Operation operation, bool right)
+		{
 			Point caret = editor.Caret;
 			int iColumn = caret.X;
 			int iLine = caret.Y;
@@ -55,7 +109,7 @@ namespace RightControl
 				var text = line.Text;
 
 				int newX = -1;
-				foreach (Match match in re.Matches(text))
+				foreach (Match match in _regex.Matches(text))
 				{
 					if (right)
 					{
@@ -76,10 +130,23 @@ namespace RightControl
 
 				if (newX >= 0)
 				{
-					if (select)
+					if (operation == Operation.Select)
 					{
 						// select
 						Select(editor, right, caret, new Point(newX, iLine));
+					}
+					else if (operation == Operation.Delete)
+					{
+						// delete
+						if (!editor.SelectionExists)
+						{
+							if (right)
+								editor.SelectText(caret.X, caret.Y, newX - 1, iLine);
+							else
+								editor.SelectText(newX, iLine, caret.X - 1, caret.Y);
+						}
+						editor.DeleteText();
+						editor.Redraw();
 					}
 					else
 					{
@@ -133,7 +200,7 @@ namespace RightControl
 						first = new Point(place.Last.X + 1, place.Last.Y);
 						last = new Point(caretNew.X - 1, caretNew.Y);
 					}
-					else 
+					else
 					{
 						// reduce selection
 						first = caretNew;
