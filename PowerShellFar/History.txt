@@ -4,7 +4,7 @@ http://code.google.com/p/farnet/
 = 4.3.27 =
 
 *) Show-FarMessage cmdlet
-Allow null as the input test (show an empty message)
+Allow null as the input text (show an empty message, do not fail).
 
 = 4.3.26 =
 

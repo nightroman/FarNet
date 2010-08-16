@@ -3,11 +3,11 @@ http://code.google.com/p/farnet/
 = 4.3.27 =
 
 *) FarNet.Tools.ProgressForm
+-- New helper method SetProgressInt64() for long integer values.
 -- New method Invoke() invokes the specified job action delegate in a new
 thread. This is a simple scenario with optional job thread abortion.
--- New helper method SetProgressInt64().
-P.S. New features were tried/tested in the MultiHasher module and will be
-proposed to the author, watch its news.
+-- New features were tried/tested in the MultiHasher module and will be
+proposed to the author. Watch the MultiHasher announcements.
 
 = 4.3.26 =
 
