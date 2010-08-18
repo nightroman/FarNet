@@ -11,7 +11,7 @@ or deleting by words. Example: Visual Studio editor, Word, WordPad, etc.
 Note:
 RightControl has nothing to do with the right Ctrl key: "right" means "proper".
 
-Иначе говоря, ходим (Ctrl-Left/Right) и выделяем (Ctrl-Shift-Left/Right) по словам примерно так, так это делает Visual Studio или Word/WordPad (только последние считают символ "подчеркивание" разделителем слов, а студия – нет; RightControl по умолчанию тоже не считает это разделителем, но можно настроить).
+Иначе говоря, ходим и выделяем по словам примерно так, так это делает Visual Studio или Word/WordPad (только последние считают символ "подчеркивание" разделителем слов, а студия – нет; RightControl по умолчанию тоже не считает это разделителем, но можно настроить).
 
 ----
 [http://forum.farmanager.com/viewtopic.php?f=5&t=5622 Обсуждение на форуме]
