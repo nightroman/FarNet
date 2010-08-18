@@ -11,9 +11,10 @@ Source   : http://code.google.com/p/farnet/
 	= DESCRIPTION =
 
 
-.NET API and infrastructure for .NET modules in Far Manager. FarNet exposes the
-Far Manager API in comfortable object oriented way. PowerShell scripting is
-provided by the PowerShellFar module.
+This is the Far Manager .NET API and runtime infrastructure for .NET modules.
+It exposes the Far Manager API in comfortable object oriented way and does most
+of the low level routine jobs for its modules. Modules contain only tiny pieces
+of boilerplate framework code.
 
 
 	= PREREQUISITES =

@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D1B2B8DF-E3C9-4849-BC34-E798F5B4B928}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>RightControl</RootNamespace>
+    <RootNamespace>FarNet.RightControl</RootNamespace>
     <AssemblyName>RightControl</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -6,9 +6,8 @@ Copyright (c) 2010 Roman Kuzmin
 
 using System;
 using System.Text.RegularExpressions;
-using FarNet;
 
-namespace RightControl
+namespace FarNet.RightControl
 {
 	[System.Runtime.InteropServices.Guid("65c2c1ec-cb83-446b-bddc-1e6ac8c2436b")]
 	[ModuleEditor(Name = "RightControl")]
@@ -58,18 +57,22 @@ namespace RightControl
 			{
 				case VKeyCode.LeftArrow:
 					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-						Run((IEditor)sender, Operation.Step, false);
+						Run((IEditor)sender, Operation.Step, false, false);
 					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
-						Run((IEditor)sender, Operation.Select, false);
+						Run((IEditor)sender, Operation.Select, false, false);
+					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.LeftAltPressed))
+						Run((IEditor)sender, Operation.Select, false, true);
 					else
 						return;
 					e.Ignore = true;
 					break;
 				case VKeyCode.RightArrow:
 					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-						Run((IEditor)sender, Operation.Step, true);
+						Run((IEditor)sender, Operation.Step, true, false);
 					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
-						Run((IEditor)sender, Operation.Select, true);
+						Run((IEditor)sender, Operation.Select, true, false);
+					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.LeftAltPressed))
+						Run((IEditor)sender, Operation.Select, true, true);
 					else
 						return;
 					e.Ignore = true;
@@ -77,14 +80,14 @@ namespace RightControl
 				case VKeyCode.Backspace:
 					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
 					{
-						Run((IEditor)sender, Operation.Delete, false);
+						Run((IEditor)sender, Operation.Delete, false, false);
 						e.Ignore = true;
 					}
 					break;
 				case VKeyCode.Delete:
 					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
 					{
-						Run((IEditor)sender, Operation.Delete, true);
+						Run((IEditor)sender, Operation.Delete, true, false);
 						e.Ignore = true;
 					}
 					break;
@@ -98,7 +101,7 @@ namespace RightControl
 			Delete
 		}
 
-		static void Run(IEditor editor, Operation operation, bool right)
+		static void Run(IEditor editor, Operation operation, bool right, bool alt)
 		{
 			Point caret = editor.Caret;
 			int iColumn = caret.X;
@@ -133,7 +136,10 @@ namespace RightControl
 					if (operation == Operation.Select)
 					{
 						// select
-						Select(editor, right, caret, new Point(newX, iLine));
+						if (alt)
+							SelectColumn(editor, right, iLine, caret.X, newX);
+						else
+							SelectStream(editor, right, caret, new Point(newX, iLine));
 					}
 					else if (operation == Operation.Delete)
 					{
@@ -158,6 +164,9 @@ namespace RightControl
 					return;
 				}
 
+				if (alt)
+					return;
+
 				if (right)
 				{
 					if (++iLine >= editor.Count)
@@ -175,7 +184,7 @@ namespace RightControl
 			}
 		}
 
-		static void Select(IEditor editor, bool right, Point caretOld, Point caretNew)
+		static void SelectStream(IEditor editor, bool right, Point caretOld, Point caretNew)
 		{
 			Point first, last;
 			if (editor.SelectionExists)
@@ -257,5 +266,90 @@ namespace RightControl
 			editor.GoTo(caretNew.X, caretNew.Y);
 			editor.Redraw();
 		}
+
+		static void SelectColumn(IEditor editor, bool right, int line, int caretOld, int caretNew)
+		{
+			int x1, y1, x2, y2;
+			if (editor.SelectionExists)
+			{
+				if (editor.SelectionKind != PlaceKind.Column)
+					return;
+				
+				// editor selection
+				var place = editor.SelectionPlace;
+				y1 = place.First.Y;
+				y2 = place.Last.Y;
+				
+				// screen selection and carets
+				int select1 = editor.ConvertColumnEditorToScreen(y1, place.First.X);
+				int select2 = editor.ConvertColumnEditorToScreen(y2, place.Last.X);
+				int caret1 = editor.ConvertColumnEditorToScreen(line, caretOld);
+				int caret2 = editor.ConvertColumnEditorToScreen(line, caretNew);
+				
+				if (right)
+				{
+					if (caret1 < select2 && caret2 > select2)
+					{
+						// invert selection
+						x1 = select2 + 1;
+						x2 = caret2 - 1;
+					}
+					else if (caret1 != select1)
+					{
+						// expand selection
+						x1 = select1;
+						x2 = caret2 - 1;
+					}
+					else
+					{
+						// reduce selection
+						x1 = caret2;
+						x2 = select2;
+					}
+				}
+				else
+				{
+					if (caret2 >= select1)
+					{
+						// reduce selection
+						x1 = select1;
+						x2 = caret2 - 1;
+					}
+					else if (caret1 > select1)
+					{
+						// invert selection
+						x1 = caret2;
+						x2 = select1 - 1;
+					}
+					else
+					{
+						// expand selection
+						x1 = caret2;
+						x2 = select2;
+					}
+				}
+			}
+			else
+			{
+				// start selection
+				y1 = y2 = line;
+				if (right)
+				{
+					x1 = editor.ConvertColumnEditorToScreen(y1, caretOld);
+					x2 = editor.ConvertColumnEditorToScreen(y1, caretNew - 1);
+				}
+				else
+				{
+					x1 = editor.ConvertColumnEditorToScreen(y1, caretNew);
+					x2 = editor.ConvertColumnEditorToScreen(y1, caretOld - 1);
+				}
+			}
+
+			// set/drop selection and set the caret
+			editor.SelectText(x1, y1, x2, y2, PlaceKind.Column);
+			editor.GoTo(caretNew, line);
+			editor.Redraw();
+		}
+	
 	}
 }
