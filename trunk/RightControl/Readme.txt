@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightControl
-Release  : 2010.08.16
+Release  : 2010.08.18
 Category : Editor
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,20 +10,18 @@ Source   : http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
 
- * Far Manager 2.0.1641+
- * Plugin FarNet 4.3.26+
- * .NET Framework 2.0+
+ * Far Manager 2.0.1641
+ * Plugin FarNet 4.3.26
 
 
 	= DESCRIPTION =
 
 
-This tool alters editor actions on Ctrl-Left/Right, Ctrl-Shift-Left/Right,
+This tool alters editor actions on Ctrl-Left/Right, Ctrl-Shift/Alt-Left/Right,
 Ctrl-Backspace/Delete (step/select/delete by words left or right).
 
-New actions are similar to what many popular editors do on stepping
-(Ctrl-Left/Right), selecting (Ctrl-Shift-Left/Right) or deleting
-(Ctrl-Backspace/Delete) by words. Example: Visual Studio editor.
+New actions are similar to what many popular editors do on stepping, selecting,
+or deleting by words. Example: Visual Studio editor, Word, WordPad, etc.
 
 Note:
 RightControl has nothing to do with the right Ctrl key: "right" means "proper".
@@ -39,13 +37,17 @@ HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\RightControl.dll
 
 EXAMPLES
 
-Default pattern with breaks similar to Visual Studio:
+Default pattern; breaks are very similar to Visual Studio:
 
 ^ | $ | (?<=\b|\s)\S
 
-Pattern with two more breaks: letter case and number breaks:
+Pattern with breaks similar to Word/WordPad; _ breaks, too:
 
-^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\s\d]
+^ | $ | (?<=\b|\s)\S | (?<=[^_])_ | (?<=_)[^_\s]
+
+Default pattern with two more breaks: letter case and number breaks:
+
+^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\d\s]
 
 The same pattern written with inline comments. All the text below is a valid
 regular expression pattern that can be stored as a multi-line registry value:
@@ -56,11 +58,14 @@ regular expression pattern that can be stored as a multi-line registry value:
 |
 (?<=\p{Ll})\p{Lu} # an upper case letter with a lower case letter before
 |
-(?<=\D)\d | (?<=\d)[^\s\d] # a digit/not-digit with a not-digit/digit before
+(?<=\D)\d | (?<=\d)[^\d\s] # a digit/not-digit with a not-digit/digit before
 
 
 	= HISTORY =
 
+
+1.0.4
+ * Ctrl-Alt-Left/Right support (select vertical blocks by words)
 
 1.0.3
  * Ctrl-Backspace/Delete (delete by words) use the same rules as step/select
