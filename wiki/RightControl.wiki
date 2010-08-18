@@ -2,7 +2,7 @@
 
 = Introduction =
 
-This tool alters editor actions on Ctrl-Left/Right, Ctrl-Shift-Left/Right,
+This tool alters editor actions on Ctrl-Left/Right, Ctrl-Shift/Alt-Left/Right,
 Ctrl-Backspace/Delete (step/select/delete by words left or right).
 
 New actions are similar to what many popular editors do on stepping
