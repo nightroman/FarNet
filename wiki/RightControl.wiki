@@ -2,14 +2,15 @@
 
 = Introduction =
 
-This tool alters editor actions on Ctrl-Left/Right, Ctrl-Shift/Alt-Left/Right,
-Ctrl-Backspace/Delete (step/select/delete by words left or right).
+This tool allows to alter operations Step/Select/Delete by words in editors,
+edit controls, and the command line. New actions are similar to what many
+popular editors do on stepping, selecting, or deleting by words. Example:
+Visual Studio editor, Word, WordPad, etc.
 
-New actions are similar to what many popular editors do on stepping, selecting,
-or deleting by words. Example: Visual Studio editor, Word, WordPad, etc.
-
-Note:
-RightControl has nothing to do with the right Ctrl key: "right" means "proper".
+The module shows its menu items in Editor, Dialog, and Panel menus. These menus
+can be used for key macros. The included script Install-RightControlMacro-.ps1
+(requires PowerShellFar) installs the typical six macros in the common area and
+two editor only macros.
 
 Иначе говоря, ходим и выделяем по словам примерно так, так это делает Visual Studio или Word/WordPad (только последние считают символ "подчеркивание" разделителем слов, а студия – нет; RightControl по умолчанию тоже не считает это разделителем, но можно настроить).
 
