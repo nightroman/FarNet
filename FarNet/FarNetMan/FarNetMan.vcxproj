@@ -307,6 +307,7 @@
     <ClCompile Include="CommandLine.cpp" />
     <ClCompile Include="Dialog.cpp" />
     <ClCompile Include="DialogControls.cpp" />
+    <ClCompile Include="DialogLine.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="Editor0.cpp" />
     <ClCompile Include="EditorLine.cpp" />
@@ -345,6 +346,7 @@
     <ClInclude Include="CommandLine.h" />
     <ClInclude Include="Dialog.h" />
     <ClInclude Include="DialogControls.h" />
+    <ClInclude Include="DialogLine.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="Editor0.h" />
     <ClInclude Include="EditorLine.h" />

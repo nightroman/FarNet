@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+= 4.3.28 =
+
+*) IEdit, IComboBox
+Added property IsTouched (~ DM_EDITUNCHANGEDFLAG).
+
+*) New interface IEditable
+IEdit and IComboBox now share the same base interface IEditable.
+(It's unlikely breaking, but probability is not zero)
+
 = 4.3.27 =
 
 *) FarNet.Tools.ProgressForm

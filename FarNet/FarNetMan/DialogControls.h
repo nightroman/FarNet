@@ -36,6 +36,8 @@ internal:
 	void SetFlag(int flag, bool value);
 	int GetSelected();
 	void SetSelected(int value);
+	bool GetChanged();
+	void SetChanged(bool value);
 	virtual void Init(FarDialogItem& item, int type);
 	virtual void Starting(FarDialogItem& item) = 0;
 	virtual void Started() {}
@@ -103,6 +105,7 @@ public:
 	virtual property bool Fixed { bool get(); }
 	virtual property bool IsPath { bool get(); void set(bool value); }
 	virtual property bool IsPassword { bool get(); }
+	virtual property bool IsTouched { bool get(); void set(bool value); }
 	virtual property bool ManualAddHistory { bool get(); void set(bool value); }
 	virtual property bool NoAutoComplete { bool get(); void set(bool value); }
 	virtual property bool NoFocus { bool get(); void set(bool value); }
@@ -201,6 +204,7 @@ ref class FarComboBox : public FarBaseList, public IComboBox
 public:
 	virtual property bool DropDownList { bool get(); void set(bool value); }
 	virtual property bool ExpandEnvironmentVariables { bool get(); void set(bool value); }
+	virtual property bool IsTouched { bool get(); void set(bool value); }
 	virtual property bool ReadOnly { bool get(); void set(bool value); }
 	virtual property bool SelectOnEntry { bool get(); void set(bool value); }
 	virtual property ILine^ Line { ILine^ get(); }
