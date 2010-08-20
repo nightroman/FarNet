@@ -6,20 +6,72 @@ Copyright (c) 2010 Roman Kuzmin
 
 using System;
 using System.Text.RegularExpressions;
+using FarNet.Forms;
 
 namespace FarNet.RightControl
 {
-	[System.Runtime.InteropServices.Guid("65c2c1ec-cb83-446b-bddc-1e6ac8c2436b")]
-	[ModuleEditor(Name = "RightControl")]
-	public class RightControlEditor : ModuleEditor
+	[System.Runtime.InteropServices.Guid("cb0fd385-474d-41de-ad42-c6d4d0d65b3d")]
+	[ModuleTool(Name = "RightControl", Options = ModuleToolOptions.Editor | ModuleToolOptions.Dialog | ModuleToolOptions.Panels)]
+	public class RightControlTool : ModuleTool
 	{
 		const string DefaultPattern = @"^ | $ | (?<=\b|\s)\S";
 		static Regex _regex;
+		static IMenu _menu;
 
-		public override void Invoke(object sender, ModuleEditorEventArgs e)
+		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			InitRegex();
-			((IEditor)sender).KeyDown += OnKeyDown;
+
+			ILine line = null;
+			IEditor editor = null;
+			if (e.From == ModuleToolOptions.Editor)
+			{
+				editor = Far.Net.Editor;
+			}
+			else
+			{
+				line = Far.Net.Line;
+				if (line == null)
+					return;
+			}
+
+			if (_menu == null)
+			{
+				_menu = Far.Net.CreateMenu();
+				_menu.Title = "RightControl";
+				_menu.Add("&1. step left");
+				_menu.Add("&2. step right");
+				_menu.Add("&3. select left");
+				_menu.Add("&4. select right");
+				_menu.Add("&5. delete left");
+				_menu.Add("&6. delete right");
+				_menu.Add("&7. vertical left");
+				_menu.Add("&8. vertical right");
+				_menu.Lock();
+			}
+
+			_menu.Show();
+			switch (_menu.Selected)
+			{
+				case 0: Run(editor, line, Operation.Step, false, false); break;
+				case 1: Run(editor, line, Operation.Step, true, false); break;
+				case 2: Run(editor, line, Operation.Select, false, false); break;
+				case 3: Run(editor, line, Operation.Select, true, false); break;
+				case 4: Run(editor, line, Operation.Delete, false, false); break;
+				case 5: Run(editor, line, Operation.Delete, true, false); break;
+				case 6:
+					if (editor == null)
+						SelectWorkaround(line, false);
+					else
+						Run(editor, line, Operation.Select, false, true);
+					break;
+				case 7:
+					if (editor == null)
+						SelectWorkaround(line, true);
+					else
+						Run(editor, line, Operation.Select, true, true);
+					break;
+			}
 		}
 
 		void InitRegex()
@@ -51,49 +103,6 @@ namespace FarNet.RightControl
 			}
 		}
 
-		static void OnKeyDown(object sender, KeyEventArgs e)
-		{
-			switch (e.Key.VirtualKeyCode)
-			{
-				case VKeyCode.LeftArrow:
-					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-						Run((IEditor)sender, Operation.Step, false, false);
-					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
-						Run((IEditor)sender, Operation.Select, false, false);
-					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.LeftAltPressed))
-						Run((IEditor)sender, Operation.Select, false, true);
-					else
-						return;
-					e.Ignore = true;
-					break;
-				case VKeyCode.RightArrow:
-					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-						Run((IEditor)sender, Operation.Step, true, false);
-					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
-						Run((IEditor)sender, Operation.Select, true, false);
-					else if (e.Key.CtrlAltShift == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.LeftAltPressed))
-						Run((IEditor)sender, Operation.Select, true, true);
-					else
-						return;
-					e.Ignore = true;
-					break;
-				case VKeyCode.Backspace:
-					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-					{
-						Run((IEditor)sender, Operation.Delete, false, false);
-						e.Ignore = true;
-					}
-					break;
-				case VKeyCode.Delete:
-					if (e.Key.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-					{
-						Run((IEditor)sender, Operation.Delete, true, false);
-						e.Ignore = true;
-					}
-					break;
-			}
-		}
-
 		enum Operation
 		{
 			Step,
@@ -101,15 +110,16 @@ namespace FarNet.RightControl
 			Delete
 		}
 
-		static void Run(IEditor editor, Operation operation, bool right, bool alt)
+		static void Run(IEditor editor, ILine line, Operation operation, bool right, bool alt)
 		{
-			Point caret = editor.Caret;
+			Point caret = line == null ? editor.Caret : new Point(line.Caret, 0);
 			int iColumn = caret.X;
 			int iLine = caret.Y;
+
 			for (; ; )
 			{
-				ILine line = editor[iLine];
-				var text = line.Text;
+				ILine currentLine = line ?? editor[iLine];
+				var text = currentLine.Text;
 
 				int newX = -1;
 				foreach (Match match in _regex.Matches(text))
@@ -131,19 +141,70 @@ namespace FarNet.RightControl
 					}
 				}
 
-				if (newX >= 0)
+				// :: new position is not found in the line
+				if (newX < 0)
 				{
-					if (operation == Operation.Select)
+					if (alt || line != null)
+						return;
+
+					if (right)
 					{
-						// select
-						if (alt)
-							SelectColumn(editor, right, iLine, caret.X, newX);
-						else
-							SelectStream(editor, right, caret, new Point(newX, iLine));
+						if (++iLine >= editor.Count)
+							return;
+
+						iColumn = -1;
 					}
-					else if (operation == Operation.Delete)
+					else
 					{
-						// delete
+						if (--iLine < 0)
+							return;
+
+						iColumn = int.MaxValue;
+					}
+
+					continue;
+				}
+
+				if (operation == Operation.Step)
+				{
+					// :: step
+					if (line == null)
+					{
+						editor.GoTo(newX, iLine);
+						editor.UnselectText();
+						editor.Redraw();
+					}
+					else
+					{
+						//_100819_142053 Workaround
+						if (line.WindowKind == WindowKind.Dialog)
+						{
+							IDialog dialog = Far.Net.Dialog;
+							if (dialog != null)
+							{
+								var control = dialog.Focused as IEditable;
+								if (control != null)
+									control.IsTouched = true;
+							}
+						}
+						
+						line.UnselectText();
+						line.Caret = newX;
+					}
+				}
+				else if (operation == Operation.Select)
+				{
+					// :: select
+					if (alt)
+						SelectColumn(editor, right, iLine, caret.X, newX);
+					else
+						SelectStream(editor, line, right, caret, new Point(newX, iLine));
+				}
+				else
+				{
+					// :: delete
+					if (line == null)
+					{
 						if (!editor.SelectionExists)
 						{
 							if (right)
@@ -156,40 +217,39 @@ namespace FarNet.RightControl
 					}
 					else
 					{
-						// set the caret and drop selection
-						editor.GoTo(newX, iLine);
-						editor.UnselectText();
-						editor.Redraw();
+						if (line.SelectionSpan.Length <= 0)
+						{
+							if (right)
+								line.SelectText(caret.X, newX);
+							else
+								line.SelectText(newX, caret.X);
+						}
+						newX = line.SelectionSpan.Start;
+						line.SelectedText = string.Empty;
+						line.Caret = newX;
 					}
-					return;
 				}
-
-				if (alt)
-					return;
-
-				if (right)
-				{
-					if (++iLine >= editor.Count)
-						return;
-
-					iColumn = -1;
-				}
-				else
-				{
-					if (--iLine < 0)
-						return;
-
-					iColumn = int.MaxValue;
-				}
+				
+				return;
 			}
 		}
 
-		static void SelectStream(IEditor editor, bool right, Point caretOld, Point caretNew)
+		static void SelectStream(IEditor editor, ILine line, bool right, Point caretOld, Point caretNew)
 		{
 			Point first, last;
-			if (editor.SelectionExists)
+			if (editor != null && editor.SelectionExists || line != null && line.SelectionSpan.Length > 0)
 			{
-				var place = editor.SelectionPlace;
+				Place place;
+				if (line == null)
+				{
+					place = editor.SelectionPlace;
+				}
+				else
+				{
+					var span = line.SelectionSpan;
+					place = new Place(span.Start, 0, span.Start + span.Length - 1, 0);
+				}
+
 				if (right)
 				{
 					if (place.Last == new Point(caretNew.X - 1, caretNew.Y))
@@ -259,12 +319,23 @@ namespace FarNet.RightControl
 			}
 
 			// set/drop selection and set the caret
-			if (first.Y >= 0)
-				editor.SelectText(first.X, first.Y, last.X, last.Y);
+			if (line == null)
+			{
+				if (first.Y >= 0)
+					editor.SelectText(first.X, first.Y, last.X, last.Y);
+				else
+					editor.UnselectText();
+				editor.GoTo(caretNew.X, caretNew.Y);
+				editor.Redraw();
+			}
 			else
-				editor.UnselectText();
-			editor.GoTo(caretNew.X, caretNew.Y);
-			editor.Redraw();
+			{
+				line.Caret = caretNew.X;
+				if (first.Y >= 0)
+					line.SelectText(first.X, last.X + 1);
+				else
+					line.UnselectText();
+			}
 		}
 
 		static void SelectColumn(IEditor editor, bool right, int line, int caretOld, int caretNew)
@@ -274,18 +345,18 @@ namespace FarNet.RightControl
 			{
 				if (editor.SelectionKind != PlaceKind.Column)
 					return;
-				
+
 				// editor selection
 				var place = editor.SelectionPlace;
 				y1 = place.First.Y;
 				y2 = place.Last.Y;
-				
+
 				// screen selection and carets
 				int select1 = editor.ConvertColumnEditorToScreen(y1, place.First.X);
 				int select2 = editor.ConvertColumnEditorToScreen(y2, place.Last.X);
 				int caret1 = editor.ConvertColumnEditorToScreen(line, caretOld);
 				int caret2 = editor.ConvertColumnEditorToScreen(line, caretNew);
-				
+
 				if (right)
 				{
 					if (caret1 < select2 && caret2 > select2)
@@ -350,6 +421,27 @@ namespace FarNet.RightControl
 			editor.GoTo(caretNew, line);
 			editor.Redraw();
 		}
-	
+
+		// This should be removed when Mantis 1465 is resolved.
+		void SelectWorkaround(ILine line, bool right)
+		{
+			int oldX = line.Caret;
+			int newX;
+			if (right)
+			{
+				newX = oldX + 1;
+				if (newX > line.Length)
+					return;
+			}
+			else
+			{
+				newX = oldX - 1;
+				if (newX < 0)
+					return;
+			}
+
+			SelectStream(null, line, right, new Point(oldX, 0), new Point(newX, 0));
+		}
+
 	}
 }

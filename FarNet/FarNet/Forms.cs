@@ -74,6 +74,36 @@ namespace FarNet.Forms
 	}
 
 	/// <summary>
+	/// An editable dialog item.
+	/// </summary>
+	public interface IEditable
+	{
+		/// <summary>
+		/// Called when the text has changed (say, on typing).
+		/// </summary>
+		event EventHandler<TextChangedEventArgs> TextChanged;
+		/// <summary>
+		/// Gets the editor line operator.
+		/// </summary>
+		ILine Line { get; }
+		/// <summary>
+		/// Tells to disable text changes for a user.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+		bool ReadOnly { get; set; }
+		/// <summary>
+		/// Tells to select the text when the control gets focus.
+		/// </summary>
+		bool SelectOnEntry { get; set; }
+		/// <summary>
+		/// Gets or sets the touched state.
+		/// </summary>
+		bool IsTouched { get; set; }
+		/// <include file='doc.xml' path='doc/ExpandEnvironmentVariables/*'/>
+		bool ExpandEnvironmentVariables { get; set; }
+	}
+
+	/// <summary>
 	/// Double line or single line box control.
 	/// It is created and added to a dialog by <see cref="IDialog.AddBox"/>.
 	/// </summary>
@@ -158,12 +188,8 @@ namespace FarNet.Forms
 	/// It is created and added to a dialog by:
 	/// <see cref="IDialog.AddEdit"/>, <see cref="IDialog.AddEditFixed"/>, <see cref="IDialog.AddEditPassword"/>.
 	/// </summary>
-	public interface IEdit : IControl
+	public interface IEdit : IControl, IEditable
 	{
-		/// <summary>
-		/// Called when the text has changed (for example on typing).
-		/// </summary>
-		event EventHandler<TextChangedEventArgs> TextChanged;
 		/// <summary>
 		/// Gets true if it is the fixed size edit control.
 		/// </summary>
@@ -207,23 +233,12 @@ namespace FarNet.Forms
 		bool ManualAddHistory { get; set; }
 		/// <include file='doc.xml' path='doc/UseLastHistory/*'/>
 		bool UseLastHistory { get; set; }
-		/// <include file='doc.xml' path='doc/ExpandEnvironmentVariables/*'/>
-		bool ExpandEnvironmentVariables { get; set; }
-		/// <include file='doc.xml' path='doc/ReadOnly/*'/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-		bool ReadOnly { get; set; }
-		/// <include file='doc.xml' path='doc/SelectOnEntry/*'/>
-		bool SelectOnEntry { get; set; }
 		/// <include file='doc.xml' path='doc/NoFocus/*'/>
 		bool NoFocus { get; set; }
 		/// <summary>
 		/// Tells to disable auto completion from history.
 		/// </summary>
 		bool NoAutoComplete { get; set; }
-		/// <summary>
-		/// Gets the editor line operator.
-		/// </summary>
-		ILine Line { get; }
 	}
 
 	/// <summary>
@@ -365,27 +380,12 @@ namespace FarNet.Forms
 	/// Combo box control.
 	/// It is created and added to a dialog by <see cref="IDialog.AddComboBox"/>.
 	/// </summary>
-	public interface IComboBox : IBaseList
+	public interface IComboBox : IBaseList, IEditable
 	{
-		/// <summary>
-		/// Called when an edit item has changed (for example, a character has been entered).
-		/// </summary>
-		event EventHandler<TextChangedEventArgs> TextChanged;
 		/// <summary>
 		/// Tells to show non-editable drop-down list instead of a common combo box.
 		/// </summary>
 		bool DropDownList { get; set; }
-		/// <include file='doc.xml' path='doc/ExpandEnvironmentVariables/*'/>
-		bool ExpandEnvironmentVariables { get; set; }
-		/// <include file='doc.xml' path='doc/ReadOnly/*'/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-		bool ReadOnly { get; set; }
-		/// <include file='doc.xml' path='doc/SelectOnEntry/*'/>
-		bool SelectOnEntry { get; set; }
-		/// <summary>
-		/// Gets the editor line operator.
-		/// </summary>
-		ILine Line { get; }
 	}
 
 	/// <summary>

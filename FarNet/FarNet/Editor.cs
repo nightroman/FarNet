@@ -676,6 +676,7 @@ namespace FarNet
 		/// Sets (replaces) the selected text.
 		/// </summary>
 		/// <param name="text">New text.</param>
+		/// <seealso cref="UnselectText"/>
 		public abstract void SetSelectedText(string text);
 
 		/// <summary>
@@ -685,6 +686,7 @@ namespace FarNet
 		/// <param name="line1">Line 1.</param>
 		/// <param name="column2">Column 2.</param>
 		/// <param name="line2">Line 2.</param>
+		/// <seealso cref="UnselectText"/>
 		public void SelectText(int column1, int line1, int column2, int line2)
 		{
 			SelectText(column1, line1, column2, line2, PlaceKind.Stream);
@@ -698,6 +700,12 @@ namespace FarNet
 		/// <param name="column2">Column 2.</param>
 		/// <param name="line2">Line 2.</param>
 		/// <param name="kind">Selected place kind.</param>
+		/// <remarks>
+		/// Columns are given in editor coordinates for stream selection
+		/// and in screen coordinates for column selection.
+		/// </remarks>
+		/// <seealso cref="ConvertColumnEditorToScreen"/>
+		/// <seealso cref="UnselectText"/>
 		public abstract void SelectText(int column1, int line1, int column2, int line2, PlaceKind kind);
 
 		/// <summary>
@@ -726,6 +734,10 @@ namespace FarNet
 		/// <summary>
 		/// Gets the selected place.
 		/// </summary>
+		/// <remarks>
+		/// The returned columns are given in editor coordinates for any kind of selection.
+		/// </remarks>
+		/// <seealso cref="ConvertColumnEditorToScreen"/>
 		public abstract Place SelectionPlace { get; }
 
 		/// <summary>
@@ -774,7 +786,7 @@ namespace FarNet
 	/// It can be:
 	/// *) an item of <see cref="IEditor.Lines"/> or <see cref="IEditor.SelectedLines"/> in <see cref="IEditor"/>;
 	/// *) the command line <see cref="IFar.CommandLine"/>;
-	/// *) an edit box (<see cref="IEdit.Line"/>) or a combo box (<see cref="IComboBox.Line"/>) in a dialog.
+	/// *) <see cref="IEditable.Line"/> of <see cref="IEdit"/>) or <see cref="IComboBox"/> in a dialog.
 	/// </remarks>
 	public abstract class ILine
 	{
