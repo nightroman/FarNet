@@ -1,6 +1,6 @@
 #summary Windows PowerShell V2 host for Far Manager 2.x
 
-= Introduction =
+== Introduction ==
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -8,7 +8,7 @@ includes scripts for many popular Far Manager tasks and PowerShell.hrc for
 Colorer providing rich PowerShell syntax highlighting.
 
 ----
-= Windows PowerShell =
+== Windows PowerShell ==
 
 Windows PowerShell is an extensible automation engine from Microsoft, consisting of a command-line shell and associated scripting language. Codenamed "Monad", it was first shown publicly at the Professional Developers Conference in September 2003. Version 1.0 was released in 2006 and is currently available for Windows XP SP2/SP3, Windows Server 2003, Windows Vista, and is included in Windows Server 2008 as an optional feature.
 
