@@ -1,8 +1,8 @@
-#summary SDK and tools for .NET modules and PowerShell scripts in Far Manager
+#summary Far Manager SDK for .NET modules and Windows PowerShell scripts
 
 = Introduction =
 
-This is the Far Manager .NET API and runtime infrastructure for .NET modules. It exposes the Far Manager API in comfortable object oriented way and does most of the low level routine jobs for its modules. Modules contain only tiny pieces of boilerplate framework code.
+FarNet is Far Manager .NET API and runtime infrastructure for .NET modules. It exposes the Far Manager API in comfortable object oriented way and does most of the low level routine jobs for its modules. Modules normally contain only tiny pieces of boilerplate framework code.
 
 The important member of the FarNet family is the PowerShellFar module.
 It implements Windows PowerShell host in Far Manager, user interface for invoking
