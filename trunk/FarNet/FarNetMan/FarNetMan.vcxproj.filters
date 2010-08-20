@@ -98,6 +98,9 @@
     <ClCompile Include="UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DialogLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Export.def">
@@ -196,6 +199,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogLine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

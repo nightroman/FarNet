@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.28 =
+
+*) Test-Dialog+.ps1
+Added test of IsTouched property of edit-boxes and combo-edits.
+
 = 4.3.27 =
 
 *) Show-FarMessage cmdlet

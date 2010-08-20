@@ -93,6 +93,19 @@ if (!$TestOpened) {
 	)
 }
 
+{
+	# test IsTouched and flip
+	Assert-Far ($e1.IsTouched)
+	$e1.IsTouched = $false
+}
+
+{
+	# test IsTouched and flip
+	Assert-Far (!$e1.IsTouched)
+	$e1.IsTouched = $true
+	Assert-Far ($e1.IsTouched)
+}
+
 ### CheckBox (standard)
 
 {
@@ -222,6 +235,19 @@ if (!$TestOpened) {
 }
 
 ### [List]: ComboBox (edit), ComboBox (list), ListBox
+
+{
+	# test IsTouched and flip
+	Assert-Far (!$ce.IsTouched)
+	$ce.IsTouched = $true
+}
+
+{
+	# test IsTouched and flip
+	Assert-Far ($ce.IsTouched)
+	$ce.IsTouched = $false
+	Assert-Far (!$ce.IsTouched)
+}
 
 {
 	# go to [List] button

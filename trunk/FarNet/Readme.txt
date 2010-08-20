@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.3.27
-Release  : 2010.08.16
+Version  : 4.3.28
+Release  : 2010.08.20
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -21,7 +21,7 @@ of boilerplate framework code.
 
 
  - .NET Framework 2.0+
- - Far Manager 2.0.1641
+ - Far Manager 2.0.1648
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime

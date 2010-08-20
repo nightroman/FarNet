@@ -1,7 +1,7 @@
 
 Module   : FarNet.RightControl
-Release  : 2010.08.18
-Category : Editor
+Release  : 2010.08.19
+Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
@@ -16,15 +16,21 @@ Source   : http://code.google.com/p/farnet/
 
 	= DESCRIPTION =
 
+This tool allows to alter operations Step/Select/Delete by words in editors,
+edit controls, and the command line. New actions are similar to what many
+popular editors do on stepping, selecting, or deleting by words. Example:
+Visual Studio editor, Word, WordPad, etc.
 
-This tool alters editor actions on Ctrl-Left/Right, Ctrl-Shift/Alt-Left/Right,
-Ctrl-Backspace/Delete (step/select/delete by words left or right).
+The module shows its menu items in Editor, Dialog, and Panel menus. These menus
+can be used for key macros. The included script Install-RightControlMacro-.ps1
+(requires PowerShellFar) installs the typical six macros in the common area and
+two editor only macros.
 
-New actions are similar to what many popular editors do on stepping, selecting,
-or deleting by words. Example: Visual Studio editor, Word, WordPad, etc.
-
-Note:
-RightControl has nothing to do with the right Ctrl key: "right" means "proper".
+Known issue and workaround:
+Until the issue Mantis 1465 is resolved Shift+Left/Right work funny in dialogs
+and the cmdline when selection is set by the module. Workaround: use macros
+ShiftLeft/Right (not in editor!) and bind them to commands 7 and 8.
+(Install-RightControlMacro-.ps1 installs that macros, too).
 
 
 	= OPTIONS =
@@ -63,6 +69,15 @@ regular expression pattern that can be stored as a multi-line registry value:
 
 	= HISTORY =
 
+1.0.6.
+ * Workaround: CtrlLeft/Right in dialogs should drop 'unchanged' state (FarNet 4.3.28)
+ * Workaround: ShiftLeft/Right in dialog and cmdline (until Mantis 1465 is resolved)
+ * Install-RightControlMacro-.ps1 install that ShiftLeft/Right macros, too.
+
+1.0.5
+ * Added support for dialog edit boxes and the command line via menus/macros
+ * Actions in the editor are also provided only via the menu and macros
+ * Included PowerShellFar script Install-RightControlMacro-.ps1
 
 1.0.4
  * Ctrl-Alt-Left/Right support (select vertical blocks by words)

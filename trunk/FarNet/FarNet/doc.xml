@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding='utf-8'?>
 <doc>
 	<!--
-	/// <include file='doc.xml' path='doc/Experimental/*'/>
+	/// <include file='doc.xml' path='doc/IsTouched/*'/>
 	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
 	-->
 	<Experimental>
@@ -51,16 +51,6 @@
 			Tells to assigns item hotkeys automatically starting with the first item.
 		</summary>
 	</AutoAssignHotkeys>
-	<SelectOnEntry>
-		<summary>
-			Tells to select the text when the control gets focus.
-		</summary>
-	</SelectOnEntry>
-	<ReadOnly>
-		<summary>
-			Tells to disable text changes for a user.
-		</summary>
-	</ReadOnly>
 	<ExpandEnvironmentVariables>
 		<summary>
 			Tells to expand environment variables in the input text.

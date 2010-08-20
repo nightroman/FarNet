@@ -5,18 +5,15 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	This demo shows progress forms for background jobs of different durations
-	(from 9 to 0 seconds) until one of these forms is cancelled by a user.
-
-	The code demonstrates the typical scenario of 4 steps:
+	The code demonstrates the typical ProgressForm scenario of 4 steps:
 	1) create a progress form
 	2) start a background job
 	3) wait a little bit
 	4) show the progress
 
 	The code also shows different kinds of progresses:
-	1) with progress bars or elapsed times
-	2) cancellable or not cancellable
+	1) progress bar / elapsed time
+	2) cancellable / not cancellable
 #>
 
 param
@@ -62,8 +59,8 @@ Start-FarJob -Hidden -Parameters $Progress, $JobSeconds, $JobSteps {
 }
 
 ### 3) wait a little bit to allow fast jobs to complete
-# - in practice: let this thread sleep for a small time
 # - in this test: show another demo progress form
+# - in real life: simply call Start-Sleep ...
 if ($WaitSeconds -gt 0) {
 	$Progress2 = New-Object FarNet.Tools.ProgressForm
 	$Progress2.Title = "Waiting for $WaitSeconds seconds"
