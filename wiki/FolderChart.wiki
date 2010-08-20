@@ -1,16 +1,16 @@
 #summary Shows folder item sizes as a chart with some interaction
 
-= Introduction =
+== Introduction ==
 
 For the current panel directory this tool calculates file and directory sizes and shows the results as a chart in a modal window with some interaction. It helps to find unwanted disk space consumers.
 
-= Prerequisites =
+== Prerequisites ==
 
  * Far Manager 2.0.1634+
  * Plugin FarNet 4.3.26+ (cancellable progress form)
  * .NET Framework 4.0 (charting and parallel processing)
 
-= Features =
+== Features ==
 
  * Left click on a file shown in the panel sets it current;
  * Left click on a folder opens it in the current panel;
