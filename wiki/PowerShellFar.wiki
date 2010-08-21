@@ -10,9 +10,9 @@ Colorer providing rich PowerShell syntax highlighting.
 ----
 == Windows PowerShell ==
 
-Windows PowerShell is an extensible automation engine from Microsoft, consisting of a command-line shell and associated scripting language. Codenamed "Monad", it was first shown publicly at the Professional Developers Conference in September 2003. Version 1.0 was released in 2006 and is currently available for Windows XP SP2/SP3, Windows Server 2003, Windows Vista, and is included in Windows Server 2008 as an optional feature.
+Windows PowerShell is Microsoft's task automation framework, consisting of a command-line shell and associated scripting language built on top of, and integrated with, the .NET Framework. PowerShell provides full access to COM and WMI, enabling administrators to perform administrative tasks on both local and remote Windows systems.
 
-Windows PowerShell 2.0 was released with Windows 7 and Windows Server 2008 R2. It has also been released for older platforms, i.e. Windows XP SP3, Windows Server 2003 SP2, Windows Vista SP1 and Windows Server 2008.
+Version 2.0 is integrated with Windows 7 and Windows Server 2008 R2 and is released for Windows XP with Service Pack 3, Windows Server 2003 with Service Pack 2, Windows Vista with Service Pack 1, and Windows Server 2008.
 
   * [http://en.wikipedia.org/wiki/powershell More...]
 
