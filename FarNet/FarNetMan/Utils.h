@@ -243,7 +243,6 @@ public:
 int Compare(String^ strA, String^ strB);
 int ParseInt(String^ value, int fallback);
 MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
-String^ GetDialogControlText(HANDLE hDlg, int id, int start, int len);
 String^ JoinText(String^ head, String^ tail);
 String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();

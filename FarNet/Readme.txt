@@ -11,10 +11,10 @@ Source   : http://code.google.com/p/farnet/
 	= DESCRIPTION =
 
 
-This is the Far Manager .NET API and runtime infrastructure for .NET modules.
-It exposes the Far Manager API in comfortable object oriented way and does most
-of the low level routine jobs for its modules. Modules contain only tiny pieces
-of boilerplate framework code.
+FarNet is Far Manager .NET API and runtime infrastructure for .NET modules. It
+exposes Far Manager API in comfortable object oriented way and does most of the
+low level routine jobs for its modules. Modules normally contain only tiny
+pieces of boilerplate framework code.
 
 
 	= PREREQUISITES =

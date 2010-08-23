@@ -88,3 +88,5 @@ private:
 
 void GetPanelInfo(HANDLE handle, PanelInfo& info);
 bool TryPanelInfo(HANDLE handle, PanelInfo& info);
+
+String^ GetDialogControlText(HANDLE hDlg, int id, int start, int len);
