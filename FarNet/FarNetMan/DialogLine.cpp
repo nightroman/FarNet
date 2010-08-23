@@ -6,6 +6,7 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "DialogLine.h"
 #include "Dialog.h"
+#include "Wrappers.h"
 
 namespace FarNet
 {;

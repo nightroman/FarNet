@@ -91,3 +91,13 @@ bool TryPanelInfo(HANDLE handle, PanelInfo& info)
 
 	return Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&info) ? true : false;
 }
+
+// Gets dialog control text of any length
+String^ GetDialogControlText(HANDLE hDlg, int id, int start, int len)
+{
+	const wchar_t* sz = (const wchar_t*)Info.SendDlgMessage(hDlg, DM_GETCONSTTEXTPTR, id, 0);
+	if (start >= 0)
+		return gcnew String(sz, start, len);
+	else
+		return gcnew String(sz);
+}

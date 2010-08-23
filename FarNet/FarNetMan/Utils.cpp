@@ -434,16 +434,6 @@ int ParseInt(String^ value, int fallback)
 	return int::TryParse(value, result) ? result : fallback;
 }
 
-// Gets dialog control text of any length
-String^ GetDialogControlText(HANDLE hDlg, int id, int start, int len)
-{
-	const wchar_t* sz = (const wchar_t*)Info.SendDlgMessage(hDlg, DM_GETCONSTTEXTPTR, id, 0);
-	if (start >= 0)
-		return gcnew String(sz, start, len);
-	else
-		return gcnew String(sz);
-}
-
 namespace FarNet
 {;
 bool Configuration::GetBool(String^ key)
