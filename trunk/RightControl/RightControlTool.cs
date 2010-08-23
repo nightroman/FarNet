@@ -205,14 +205,24 @@ namespace FarNet.RightControl
 					// :: delete
 					if (line == null)
 					{
-						if (!editor.SelectionExists)
+						if (!right && newX == 0 && caret.X > 0 && currentLine.Length == 0)
 						{
-							if (right)
-								editor.SelectText(caret.X, caret.Y, newX - 1, iLine);
-							else
-								editor.SelectText(newX, iLine, caret.X - 1, caret.Y);
+							// "Cursor beyond end of line" and the line is empty
+							editor.UnselectText();
+							editor.GoToColumn(0);
 						}
-						editor.DeleteText();
+						else
+						{
+							// select the step text and delete it
+							if (!editor.SelectionExists)
+							{
+								if (right)
+									editor.SelectText(caret.X, caret.Y, newX - 1, iLine);
+								else
+									editor.SelectText(newX, iLine, caret.X - 1, caret.Y);
+							}
+							editor.DeleteText();
+						}
 						editor.Redraw();
 					}
 					else
