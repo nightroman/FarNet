@@ -1,6 +1,14 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.29 =
+
+*) Search-Regex-.ps1
+It calls new $Far.UI.SetProgressFlash() when it is done.
+
+*) Import-Panel-.ps1
+Added support for the Txt format (tab delimited data files).
+
 = 4.3.28 =
 
 *) Test-Dialog+.ps1

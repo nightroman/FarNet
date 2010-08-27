@@ -311,7 +311,10 @@ $panel.add_Idled({&{
 			$this.Info.Title = $title
 			$this.Redraw()
 		}
-		$data.Done = $this.Data.JobStateInfo.State -ne 'Running'
+		if ($this.Data.JobStateInfo.State -ne 'Running') {
+			$data.Done = $true
+			$Far.UI.SetProgressFlash()
+		}
 	}
 }})
 
