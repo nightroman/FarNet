@@ -211,6 +211,7 @@ namespace FarNet.Tools
 			finally
 			{
 				Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+				Far.Net.UI.SetProgressFlash();
 			}
 		}
 

@@ -38,6 +38,7 @@ public:
 	virtual void Redraw() override;
 	virtual void RestoreScreen(int screen) override;
 	virtual void SaveUserScreen() override;
+	virtual void SetProgressFlash() override;
 	virtual void SetProgressState(TaskbarProgressBarState state) override;
 	virtual void SetProgressValue(int currentValue, int maximumValue) override;
 	virtual void ScrollBufferContents(Place source, Point destination, Place clip, Works::BufferCell fill) override;

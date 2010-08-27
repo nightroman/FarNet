@@ -1,28 +1,28 @@
 
 <#
 .SYNOPSIS
-	Imports objects from files and sends them to an object panel.
+	Imports objects from files and shows them in a panel.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	A single object is opened in Member panel, two and more objects are opened
-	in Object panel.
+	A single object is opened in a Member panel, two and more objects are
+	opened in an Object panel.
 
 .EXAMPLE
-	Far Commands|File associations:
-	Mask: *.clixml
+	Far Commands | File associations:
+	Mask: *.clixml;*.csv
 	Command: >: Import-Panel- (Get-FarPath) #
 #>
 
 param
 (
-	# Same as -Path of Import-{Clixml|Csv}.
+	# Same as the -Path parameter of Import-{Clixml|Csv} cmdlets.
 	$Path = $(throw "Missed parameter -Path.")
 	,
 	# Panel columns.
 	$Columns
 	,
-	# 'Clixml' or 'Csv', or files should have extensions .clixml or .csv
+	# Clixml|Csv|Txt, or files should have extensions .clixml|.csv|.txt
 	$Format
 )
 if ($args) { throw "Unknown parameters: $args" }
@@ -31,13 +31,15 @@ if (!$Format) {
 	switch -regex ($Path) {
 		'\.clixml$' { $Format = 'Clixml'; break }
 		'\.csv$' { $Format = 'Csv'; break }
-		default { throw "Unknown file extension and missed parameter -Format." }
+		'\.txt$' { $Format = 'Txt'; break }
+		default { throw "Unknown file extension. Use the -Format parameter." }
 	}
 }
 
 switch($Format) {
 	'Clixml' { $obj = @(Import-Clixml -Path $Path); break }
 	'Csv' { $obj = @(Import-Csv -Path $Path); break }
+	'Txt' { $obj = @(Import-Csv -Path $Path -Delimiter "`t"); break }
 	default { throw "Parameter -Format: unknown value: $Format." }
 }
 

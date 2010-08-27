@@ -129,7 +129,7 @@ Guid FarDialog::TypeId::get()
 		return _typeId;
 
 	// request
-	DialogInfo arg;
+	DialogInfo arg = { sizeof(DialogInfo) };
 	if (Info.SendDlgMessage(_hDlg, DM_GETDIALOGINFO, 0, (LONG_PTR)&arg))
 	{
 		// _091126_135929 Save it so that next time we do not try.
@@ -758,7 +758,6 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 			{
 				// get my dialog info
 				DialogInfo& di = *(DialogInfo*)param2;
-				di.StructSize = sizeof(DialogInfo);
 
 				// copy type ID
 				array<unsigned char>^ bytes = _typeId.ToByteArray();
