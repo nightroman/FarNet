@@ -7,7 +7,7 @@ New method SetProgressFlash() (Far 2.0.1660, ACTL_PROGRESSNOTIFY).
 
 *) FarNet.Tools.ProgressForm
 The progress form calls SetProgressFlash() after show. As a result, such
-modules as RightControl, MultiHasher have this new feature automatically.
+modules as FolderChart, MultiHasher have this new feature automatically.
 NB: the toolbar icon flashes only if the window is not active.
 
 *) IDialog
