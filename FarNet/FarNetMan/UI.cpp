@@ -447,6 +447,11 @@ void FarUI::SaveUserScreen()
 	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
 
+void FarUI::SetProgressFlash()
+{
+	Info.AdvControl(Info.ModuleNumber, ACTL_PROGRESSNOTIFY, 0);
+}
+
 void FarUI::SetProgressState(TaskbarProgressBarState state)
 {
 	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSSTATE, (void*)(INT_PTR)state);

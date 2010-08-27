@@ -181,6 +181,14 @@ namespace FarNet
 		/// <param name="text">Text.</param>
 		public abstract void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
 		/// <summary>
+		/// Tells the icon of not active window to flash.
+		/// </summary>
+		/// <remarks>
+		/// It is normally used to show that an operation is complete.
+		/// If the window is not active the icon flashes a few times and then remains highlighted until the window gets focus.
+		/// </remarks>
+		public abstract void SetProgressFlash();
+		/// <summary>
 		/// Sets the type and state of the progress indicator displayed on a taskbar button of the main application window.
 		/// </summary>
 		/// <param name="state">Progress state of the progress button.</param>

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.3.28.0")]
+[assembly: AssemblyVersion("4.3.29.0")]
 [assembly: AssemblyTitle("FarNet dialog tools")]
 [assembly: AssemblyDescription("FarNet dialog tools")]
 [assembly: AssemblyConfiguration("")]
