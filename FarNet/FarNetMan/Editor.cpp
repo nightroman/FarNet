@@ -6,6 +6,7 @@ Copyright (c) 2005 FarNet Team
 #include "StdAfx.h"
 #include "Editor.h"
 #include "Editor0.h"
+#include "EditorBookmark.h"
 #include "EditorLine.h"
 #include "Far0.h"
 #include "Wrappers.h"
@@ -150,14 +151,14 @@ void Editor::Open(OpenMode mode)
 				return;
 			}
 		}
-		throw gcnew OperationCanceledException("Cannot open the file '" + (FileName ? FileName : "<null>") + "'");
+		throw gcnew InvalidOperationException("Cannot open the file '" + (FileName ? FileName : "<null>") + "'");
 	}
 }
 
 void Editor::Close()
 {
 	if (!Info.EditorControl(ECTL_QUIT, 0))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 }
 
 DeleteSource Editor::DeleteSource::get()
@@ -470,7 +471,7 @@ void Editor::DeleteLine()
 void Editor::Save()
 {
 	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
-		throw gcnew OperationCanceledException("Cannot save the editor file.");
+		throw gcnew InvalidOperationException("Cannot save the editor file.");
 }
 
 void Editor::Save(String^ fileName)
@@ -488,7 +489,7 @@ void Editor::Save(String^ fileName)
 	esf.CodePage = ei.CodePage;
 
 	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
-		throw gcnew OperationCanceledException("Cannot save the editor file as: " + fileName);
+		throw gcnew InvalidOperationException("Cannot save the editor file as: " + fileName);
 }
 
 void Editor::AssertClosed()
@@ -533,46 +534,6 @@ void Editor::Frame::set(TextFrame value)
 	if (value.VisibleChar >= 0)
 		esp.LeftPos = value.VisibleChar;
     EditorControl_ECTL_SETPOSITION(esp);
-}
-
-ICollection<TextFrame>^ Editor::Bookmarks()
-{
-	AutoEditorInfo ei;
-
-	List<TextFrame>^ r = gcnew List<TextFrame>();
-	if (ei.BookMarkCount > 0)
-	{
-		EditorBookMarks ebm;
-		ebm.Cursor = new long[ei.BookMarkCount];
-		ebm.LeftPos = new long[ei.BookMarkCount];
-		ebm.Line = new long[ei.BookMarkCount];
-		ebm.ScreenLine = new long[ei.BookMarkCount];
-		try
-		{
-			EditorControl_ECTL_GETBOOKMARKS(ebm);
-
-			r->Capacity = ei.BookMarkCount;
-			for(int i = 0; i < ei.BookMarkCount; ++i)
-			{
-				TextFrame f;
-				f.CaretLine = ebm.Line[i];
-				f.CaretColumn = ebm.Cursor[i];
-				f.CaretScreenColumn = -1;
-				f.VisibleLine = f.CaretLine - ebm.ScreenLine[i];
-				f.VisibleChar = ebm.LeftPos[i];
-				r->Add(f);
-			}
-		}
-		finally
-		{
-			delete ebm.Cursor;
-			delete ebm.LeftPos;
-			delete ebm.Line;
-			delete ebm.ScreenLine;
-		}
-	}
-
-	return r;
 }
 
 int Editor::ConvertColumnEditorToScreen(int line, int column)
@@ -1184,6 +1145,11 @@ IList<ILine^>^ Editor::SelectedLines::get()
 		return gcnew Works::LineCollection(this, 0, 0);
 	else
 		return gcnew Works::LineCollection(this, pp.Top, pp.Height);
+}
+
+IEditorBookmark^ Editor::Bookmark::get()
+{
+	return %EditorBookmark::Instance;
 }
 
 }

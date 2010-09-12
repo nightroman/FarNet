@@ -39,7 +39,7 @@ if (!$pscmdlet.ShouldProcess($null)) { return }
 function Get-PsfMacro($If, $Else)
 {
 	if ($Else) { $Else = 'Esc ' + $Else } else { $Else = 'Esc' }
-	'F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter {0} $Else {1} $End' -f $If, $Else
+	'F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter {0} $Else {1} $End' -f $If, $Else
 }
 
 # Gets a sequence for the command line via a macro in the Common area,
@@ -165,6 +165,12 @@ $Far.Macro.Install($(
 
 	### (Reformat-Selection-.ps1) Reformat selected\current line(s)
 	New-FarMacro Editor CtrlShiftF8 (Get-PsfMacro f) 'PSF: Reformat selected\current line(s)'
+
+	### Bookmarks
+	New-FarMacro Editor Ctrl- 'bm.prev()' 'Go to the previous stack bookmark'
+	New-FarMacro Editor CtrlShift- 'bm.next()' 'Go to the next stack bookmark'
+	New-FarMacro Editor Ctrl= (Get-PsfMacro '1 print("Select-Bookmark-") Enter') 'Show bookmarks'
+	New-FarMacro Editor CtrlShift= 'bm.add()' 'Add a new stack bookmark'
 
 	### == Native (not PSF) macros
 

@@ -614,7 +614,7 @@ void Far0::AssertHotkeys()
 	if (!_hotkeys)
 	{
 		if (ES(_hotkey))
-			throw gcnew OperationCanceledException(Res::ErrorNoHotKey);
+			throw gcnew InvalidOperationException(Res::ErrorNoHotKey);
 
 		array<int>^ keys = gcnew array<int>(2);
 		keys[1] = Far::Net->NameToKey(_hotkey);

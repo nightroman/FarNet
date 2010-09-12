@@ -310,6 +310,7 @@
     <ClCompile Include="DialogLine.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="Editor0.cpp" />
+    <ClCompile Include="EditorBookmark.cpp" />
     <ClCompile Include="EditorLine.cpp" />
     <ClCompile Include="Export.cpp" />
     <ClCompile Include="Far0.cpp" />
@@ -349,6 +350,7 @@
     <ClInclude Include="DialogLine.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="Editor0.h" />
+    <ClInclude Include="EditorBookmark.h" />
     <ClInclude Include="EditorLine.h" />
     <ClInclude Include="Far0.h" />
     <ClInclude Include="Far1.h" />

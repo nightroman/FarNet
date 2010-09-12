@@ -129,7 +129,7 @@ namespace PowerShellFar
 			else
 			{
 				if (codes != CredUIReturnCodes.ERROR_CANCELLED)
-					throw new OperationCanceledException("Getting credentials error: " + codes.ToString());
+					throw new InvalidOperationException("Getting credentials error: " + codes.ToString());
 
 				credential = null;
 			}
