@@ -171,7 +171,7 @@ void Panel1::Path::set(String^ value)
 
 	PIN_NE(pin, value);
 	if (!Info.Control(_handle, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
-		throw gcnew OperationCanceledException("Cannot set panel directory: " + value);
+		throw gcnew InvalidOperationException("Cannot set panel directory: " + value);
 }
 
 String^ Panel1::ToString()

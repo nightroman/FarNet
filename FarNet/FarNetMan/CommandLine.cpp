@@ -34,14 +34,14 @@ void CommandLine::Text::set(String^ value)
 
 	PIN_NE(pin, value);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (LONG_PTR)pin))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 }
 
 int CommandLine::Caret::get()
 {
 	int pos;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINEPOS, 0, (LONG_PTR)&pos))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 	return pos;
 }
 
@@ -51,7 +51,7 @@ void CommandLine::Caret::set(int value)
 		value = Length;
 
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINEPOS, value, 0))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 }
 
 void CommandLine::InsertText(String^ text)
@@ -61,7 +61,7 @@ void CommandLine::InsertText(String^ text)
 
 	PIN_NE(pin, text);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, 0, (LONG_PTR)pin))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 }
 
 void CommandLine::SelectText(int start, int end)
@@ -70,7 +70,7 @@ void CommandLine::SelectText(int start, int end)
 	cls.SelStart = start;
 	cls.SelEnd = end;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, (LONG_PTR)&cls))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 }
 
 void CommandLine::UnselectText()
@@ -82,7 +82,7 @@ Span CommandLine::SelectionSpan::get()
 {
 	CmdLineSelect cls;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 
 	Span result;
 	if (cls.SelStart < 0)
@@ -102,7 +102,7 @@ String^ CommandLine::SelectedText::get()
 {
 	CmdLineSelect cls;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 
 	if (cls.SelStart < 0)
 		return nullptr;
@@ -120,7 +120,7 @@ void CommandLine::SelectedText::set(String^ value)
 
 	CmdLineSelect cls;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 	if (cls.SelStart < 0)
 		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
 
@@ -136,12 +136,12 @@ void CommandLine::SelectedText::set(String^ value)
 	// set new text
 	PIN_NE(pin, text);
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (LONG_PTR)pin))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 
 	// set new selection
 	cls.SelEnd = cls.SelStart + value->Length;
 	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, (LONG_PTR)&cls))
-		throw gcnew OperationCanceledException;
+		throw gcnew InvalidOperationException;
 
 	// restore cursor
 	Caret = pos <= text->Length ? pos : text->Length;

@@ -197,7 +197,7 @@ void Far1::PostKeySequence(array<int>^ sequence, bool disableOutput)
 	try
 	{
 		if (!Info.AdvControl(Info.ModuleNumber, ACTL_POSTKEYSEQUENCE, &keySequence))
-			throw gcnew OperationCanceledException;
+			throw gcnew InvalidOperationException;
 	}
 	finally
 	{
@@ -584,7 +584,7 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 	if (disablePlugins)
 		command.Param.PlainText.Flags |= KSFLAGS_NOSENDKEYSTOPLUGINS;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
-		throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
 void Far1::Quit()
@@ -640,14 +640,14 @@ public:
 		ActlKeyMacro args;
 		args.Command = MCMD_LOADALL;
 		if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
-			throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+			throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 	}
 	virtual void Save() override
 	{
 		ActlKeyMacro args;
 		args.Command = MCMD_SAVEALL;
 		if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
-			throw gcnew OperationCanceledException(__FUNCTION__ " failed.");
+			throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 	}
 };
 

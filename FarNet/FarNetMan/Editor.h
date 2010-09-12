@@ -28,7 +28,7 @@ public:
 	virtual String^ EditText(String^ text, String^ title) override;
 };
 
-ref class Editor : IEditor
+ref class Editor sealed : IEditor
 {
 public: DEF_EVENT_ARGS_IMP(KeyDown, _KeyDown, KeyEventArgs);
 public: DEF_EVENT_ARGS_IMP(KeyUp, _KeyUp, KeyEventArgs);
@@ -57,6 +57,7 @@ public:
 	virtual property bool WriteByteOrderMark { bool get() override; void set(bool value) override; }
 	virtual property FarNet::DeleteSource DeleteSource { FarNet::DeleteSource get() override; void set(FarNet::DeleteSource value) override; }
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get() override; void set(ExpandTabsMode value) override; }
+	virtual property IEditorBookmark^ Bookmark { IEditorBookmark^ get() override; }
 	virtual property ILine^ default[int] { ILine^ get(int index) override; }
 	virtual property IList<ILine^>^ Lines { IList<ILine^>^ get() override; }
 	virtual property IList<ILine^>^ SelectedLines { IList<ILine^>^ get() override; }
@@ -77,7 +78,6 @@ public:
 	virtual property FarNet::Switching Switching { FarNet::Switching get() override; void set(FarNet::Switching value) override; }
 	virtual property TextFrame Frame { TextFrame get() override; void set(TextFrame value) override; }
 public:
-	virtual ICollection<TextFrame>^ Bookmarks() override;
 	virtual int ConvertColumnEditorToScreen(int line, int column) override;
 	virtual int ConvertColumnScreenToEditor(int line, int column) override;
 	virtual Point ConvertPointScreenToEditor(Point point) override;

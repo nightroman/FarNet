@@ -14,7 +14,7 @@ namespace FarNet
 {;
 static void ThrowWithLastError(String^ message)
 {
-	throw gcnew OperationCanceledException(message + " error code: " + GetLastError());
+	throw gcnew InvalidOperationException(message + " error code: " + GetLastError());
 }
 
 static int GetFarPaletteColor(PaletteColor paletteColor)
