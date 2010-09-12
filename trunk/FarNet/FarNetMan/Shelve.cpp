@@ -65,7 +65,7 @@ void ShelveInfoPanel::Pop()
 	{
 		PIN_NE(pin, Path);
 		if (!Info.Control(PANEL_ACTIVE, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
-			throw gcnew OperationCanceledException("Cannot set panel directory: " + Path);
+			throw gcnew InvalidOperationException("Cannot set panel directory: " + Path);
 	}
 
 	array<String^>^ selectedNames = GetSelectedNames();

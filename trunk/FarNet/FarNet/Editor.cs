@@ -87,7 +87,6 @@ namespace FarNet
 		/// Called on redrawing.
 		/// </summary>
 		public abstract event EventHandler<EditorRedrawingEventArgs> Redrawing;
-
 	}
 
 	/// <summary>
@@ -111,7 +110,6 @@ namespace FarNet
 		/// Gets editor word delimiters global option.
 		/// </summary>
 		public abstract string WordDiv { get; } //_100324_160008 Name 'WordDiv' is standard, it is used by Far and Colorer.
-
 	}
 
 	/// <summary>
@@ -462,16 +460,6 @@ namespace FarNet
 		public abstract Point Caret { get; set; }
 
 		/// <summary>
-		/// Gets bookmarks in the current editor.
-		/// </summary>
-		/// <remarks>
-		/// Bookmarks are defined as <see cref="TextFrame"/>.
-		/// Negative <c>Line</c> means undefined bookmark.
-		/// To go to a bookmark set <see cref="Frame"/>.
-		/// </remarks>
-		public abstract ICollection<TextFrame> Bookmarks();
-
-		/// <summary>
 		/// Sets the caret position or posts it for opening.
 		/// </summary>
 		/// <param name="column">Column index.</param>
@@ -751,6 +739,67 @@ namespace FarNet
 		/// </summary>
 		public abstract string WordDiv { get; set; } //! see _100324_160008
 
+		/// <summary>
+		/// Gets the bookmark operator.
+		/// </summary>
+		public abstract IEditorBookmark Bookmark { get; }
+	}
+
+	/// <summary>
+	/// Editor bookmark operator.
+	/// </summary>
+	/// <remarks>
+	/// It operates on standard (permanent) and stack (temporary) bookmarks in the current editor.
+	/// </remarks>
+	public abstract class IEditorBookmark
+	{
+		/// <summary>
+		/// Gets permanent bookmarks in the current editor.
+		/// </summary>
+		/// <remarks>
+		/// Bookmarks are defined as <see cref="TextFrame"/>.
+		/// Negative <see cref="TextFrame.CaretLine"/> means undefined bookmark.
+		/// To go to a bookmark set the editor <see cref="IEditor.Frame"/>.
+		/// </remarks>
+		public abstract ICollection<TextFrame> Bookmarks();
+
+		/// <summary>
+		/// Gets stack bookmarks in the current editor.
+		/// </summary>
+		/// <remarks>
+		/// Bookmarks are defined as <see cref="TextFrame"/>.
+		/// To go to a bookmark set the editor <see cref="IEditor.Frame"/>.
+		/// </remarks>
+		public abstract ICollection<TextFrame> StackBookmarks();
+
+		/// <summary>
+		/// Adds a new stack bookmark at the current bookmark stack position.
+		/// </summary>
+		/// <remarks>
+		/// Bookmarks after the current position, if any, are removed.
+		/// </remarks>
+		public abstract void AddStackBookmark();
+
+		/// <summary>
+		/// Clears the bookmark stack.
+		/// </summary>
+		public abstract void ClearStackBookmarks();
+
+		/// <summary>
+		/// Removes the specified stack bookmark.
+		/// </summary>
+		/// <param name="index">Bookmark index or -1 for the current stack position.</param>
+		public abstract void RemoveStackBookmarkAt(int index);
+
+		/// <summary>
+		/// Navigates to the next stack bookmark, if any.
+		/// </summary>
+		public abstract void GoToNextStackBookmark();
+		
+		/// <summary>
+		/// Navigates to the previous stack bookmark, if any.
+		/// </summary>
+		public abstract void GoToPreviousStackBookmark();
 	}
 
 	/// <summary>
@@ -776,7 +825,6 @@ namespace FarNet
 		{
 			get { return _mode; }
 		}
-
 	}
 
 	/// <summary>
@@ -891,7 +939,6 @@ namespace FarNet
 		{
 			return Text;
 		}
-
 	}
 
 	/// <summary>
@@ -918,7 +965,6 @@ namespace FarNet
 		/// Ignore event.
 		/// </summary>
 		public bool Ignore { get; set; }
-
 	}
 
 	/// <summary>
@@ -945,7 +991,6 @@ namespace FarNet
 		/// Ignore event.
 		/// </summary>
 		public bool Ignore { get; set; }
-
 	}
 
 	/// <summary>
@@ -967,7 +1012,6 @@ namespace FarNet
 		/// Only new tabs are replaced with spaces.
 		/// </summary>
 		New
-
 	}
 
 	/// <summary>
@@ -1048,6 +1092,5 @@ namespace FarNet
 		{
 			return "((" + CaretColumn + "/" + CaretScreenColumn + ", " + CaretLine + ")(" + VisibleChar + ", " + VisibleLine + "))";
 		}
-
 	}
 }

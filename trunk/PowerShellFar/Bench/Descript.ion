@@ -39,7 +39,7 @@ Remove-EmptyString-.ps1 Removes empty strings from a list.
 Remove-EndSpace-.ps1 Removes end spaces in object Text property
 Rename-FarFile-.ps1 Renames the current panel file or directory.
 Search-Regex-.ps1 Searches for a regex in files and work on results in a panel
-Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected
+Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected one
 Select-FarFile-.ps1 Selects panel files by the specified filter.
 Set-Console.ps1 Sets console window properties.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.

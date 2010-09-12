@@ -1,5 +1,21 @@
 http://code.google.com/p/farnet/
 
+= 4.3.30 =
+
+*) IEditor
+-- New property Bookmark gets the bookmark operator.
+-- Method Bookmarks() moved to the IEditorBookmark.
+
+*) New interface IEditorBookmark
+Operates on the standard and stack (new!) editor bookmarks.
+
+*) Exceptions on Far call failures
+InvalidOperationException is used for internal issues, e.g. Far call failures,
+instead of OperationCanceledException. Modules may be affected if they used to
+catch/check OperationCanceledException.
+
+NB: for correct work with bookmarks use Far 2.0.1667+
+
 = 4.3.29 =
 
 *) Far.Net.UI

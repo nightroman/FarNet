@@ -84,7 +84,7 @@ void FarDialog::Focused::set(IControl^ value)
 		if (control->_dialog->_hDlg != this->_hDlg)
 			throw gcnew ArgumentException("'value': the control does not belong to this dialog.");
 		if (!Info.SendDlgMessage(_hDlg, DM_SETFOCUS, control->Id, 0))
-			throw gcnew OperationCanceledException("Cannot set focus to this control.");
+			throw gcnew InvalidOperationException("Cannot set focus to this control.");
 	}
 	else
 	{
@@ -463,7 +463,7 @@ void FarDialog::SetFocus(int id)
 	if (_hDlg != INVALID_HANDLE_VALUE)
 	{
 		if (!Info.SendDlgMessage(_hDlg, DM_SETFOCUS, id, 0))
-			throw gcnew OperationCanceledException("Cannot set focus.");
+			throw gcnew InvalidOperationException("Cannot set focus.");
 	}
 	else
 	{

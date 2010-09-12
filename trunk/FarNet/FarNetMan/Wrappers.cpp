@@ -57,7 +57,7 @@ AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, FileType type
 	try
 	{
 		if (!Info.Control(handle, type, index, (LONG_PTR)m))
-			throw gcnew OperationCanceledException("Cannot get panel item; index: " + index);
+			throw gcnew InvalidOperationException("Cannot get panel item; index: " + index);
 	}
 	catch(...)
 	{
@@ -81,7 +81,7 @@ void GetPanelInfo(HANDLE handle, PanelInfo& info)
 	SetState<bool> state(State::GetPanelInfo, true);
 
 	if (!Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&info))
-		throw gcnew OperationCanceledException("Cannot get panel information.");
+		throw gcnew InvalidOperationException("Cannot get panel information.");
 }
 
 //! Steps: open a panel; Tab; CtrlL; $Far.Panel used to fail

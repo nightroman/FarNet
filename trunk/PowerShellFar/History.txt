@@ -1,6 +1,19 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.30 =
+
+*) Select-Bookmark-.ps1
+-- Updated for changes in Far 4.3.30
+-- Stack bookmarks are included, too
+-- Fixed an old bug
+
+*) Install-Macro-.ps1
+Added a few utility macros working with editor bookmarks including the call to
+Select-Bookmark-.ps1
+
+NB: for correct work with bookmarks use Far 2.0.1667+
+
 = 4.3.29 =
 
 *) Search-Regex-.ps1

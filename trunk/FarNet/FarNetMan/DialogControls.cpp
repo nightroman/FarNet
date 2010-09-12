@@ -240,7 +240,7 @@ void FarControl::Rect::set(Place value)
 	{
 		SMALL_RECT arg = { (SHORT)value.Left, (SHORT)value.Top, (SHORT)value.Right, (SHORT)value.Bottom };
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_SETITEMPOSITION, Id, (LONG_PTR)&arg))
-			throw gcnew OperationCanceledException;
+			throw gcnew InvalidOperationException;
 	}
 	else
 	{
@@ -769,7 +769,7 @@ void FarBaseList::AttachItems()
 	try
 	{
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSET, Id, (LONG_PTR)&arg))
-			throw gcnew OperationCanceledException();
+			throw gcnew InvalidOperationException();
 	}
 	finally
 	{
@@ -949,7 +949,7 @@ String^ FarListBox::Text::get()
 		FarListGetItem list;
 		list.ItemIndex = (int)Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETCURPOS, Id, 0);
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETITEM, Id, (LONG_PTR)&list))
-			throw gcnew OperationCanceledException;
+			throw gcnew InvalidOperationException;
 
 		return gcnew String(list.Item.Text);
 	}

@@ -94,7 +94,7 @@ void Viewer::Open(OpenMode mode)
 
 	// errors: see editor
 	if (_id == -1)
-		throw gcnew OperationCanceledException("Cannot open the file '" + FileName + "'");
+		throw gcnew InvalidOperationException("Cannot open the file '" + FileName + "'");
 }
 
 int Viewer::Id::get()
