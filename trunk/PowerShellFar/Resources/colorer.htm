@@ -1,0 +1,264 @@
+<html><body style='color:#000000; background:#ffffff; '><pre>
+
+<span style='color:#008000; '>&lt;#</span>
+<span style='color:#808080; '>.SYNOPSIS</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    Demo script for testing PowerShell.hrc with Colorer.</span>
+<span style='color:#808080; '>.DESCRIPTION</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    It is weird but valid PowerShell code covering various syntax cases.</span>
+<span style='color:#808080; '>.PARAMETER</span><span style='color:#008000; '> </span><span style='color:#ff0000; '>Foo</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    Parameter description.</span>
+<span style='color:#808080; '>.INPUTS</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    No input.</span>
+<span style='color:#808080; '>.OUTPUTS</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    No output.</span>
+<span style='color:#808080; '>.NOTES</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    Not yet used:</span>
+<span style='color:#008000; '>    COMPONENT, FUNCTIONALITY, ROLE</span>
+<span style='color:#008000; '>    FORWARDHELPTARGETNAME .., FORWARDHELPCATEGORY .., REMOTEHELPRUNSPACE .., EXTERNALHELP ..</span>
+<span style='color:#808080; '>.EXAMPLE</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    No example.</span>
+<span style='color:#808080; '>.LINK</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    about_Comment_Based_Help</span>
+<span style='color:#008000; '>#></span>
+
+<span style='color:#0000ff; '>param</span>
+<span style='color:#0000ff; '>(</span>
+    <span style='color:#ff0000; '>$Foo</span>
+<span style='color:#0000ff; '>)</span>
+
+<span style='color:#0000ff; '>{</span><span style='color:#008000; '> # block begin (test 'Match pair' in FAR editor)</span>
+
+<span style='color:#008000; '>### Numbers</span>
+
+<span style='color:#800080; '>.88</span>, <span style='color:#800080; '>.88D</span>, <span style='color:#800080; '>.88L</span>, <span style='color:#800080; '>.88Mb</span>, <span style='color:#800080; '>.88Lmb</span>, <span style='color:#800080; '>.88e-88</span>, <span style='color:#800080; '>.88kb</span>, <span style='color:#800080; '>.88lmb</span><span style='color:#008000; '> # floats with start dot</span>
+<span style='color:#800080; '>88.</span>, <span style='color:#800080; '>88.D</span>, <span style='color:#800080; '>88.L</span>, <span style='color:#800080; '>88.gb</span>, <span style='color:#800080; '>88.lmb</span><span style='color:#008000; '> # floats with end dot</span>
+<span style='color:#800080; '>8e-8</span>, <span style='color:#800080; '>8e-8L</span>, <span style='color:#800080; '>8e-8lmb</span><span style='color:#008000; '> # floats with no dot</span>
+<span style='color:#800080; '>8.8</span>, <span style='color:#800080; '>8.8e-8L</span>, <span style='color:#800080; '>8.8e-8mb</span>,<span style='color:#008000; '> # other floats</span>
+<span style='color:#800080; '>0xF</span>, <span style='color:#800080; '>0xfl</span>, <span style='color:#800080; '>0xFmb</span>, <span style='color:#800080; '>0xFlmb</span><span style='color:#008000; '> # hex numbers</span>
+<span style='color:#800080; '>8</span>, <span style='color:#800080; '>8d</span>, <span style='color:#800080; '>8l</span>, <span style='color:#800080; '>8mb</span>, <span style='color:#800080; '>8lmb</span><span style='color:#008000; '> # dec numbers</span>
+<span style='color:#800080; '>1</span>..<span style='color:#800080; '>111</span><span style='color:#008000; '> # range</span>
+<span style='color:#800080; '>5tb</span>, <span style='color:#800080; '>5pb</span><span style='color:#008000; '> # V2</span>
+
+<span style='color:#008000; '>### Variables</span>
+
+<span style='color:#808000; '>$FALSE</span>, <span style='color:#808000; '>$Null</span>, <span style='color:#808000; '>$true</span><span style='color:#008000; '> # system constants</span>
+<span style='color:#ff00ff; '>$ERROR</span>, <span style='color:#ff00ff; '>$Home</span>, <span style='color:#ff00ff; '>$profile</span><span style='color:#008000; '> # system variables</span>
+<span style='color:#0000ff; '>{</span> <span style='color:#000000; '>Call-Me</span> <span style='color:#ff00ff; '>@PSBoundParameters</span> <span style='color:#0000ff; '>}</span><span style='color:#008000; '> # parameter variables</span>
+<span style='color:#ff0000; '>$var</span>, <span style='color:#ff0000; '>${2b</span><span style='color:#ff00ff; '>`}</span><span style='color:#ff0000; '> | </span><span style='color:#ff00ff; '>`{</span><span style='color:#ff0000; '>!2b}</span><span style='color:#008000; '> # variable with normal and complex name</span>
+@(<span style='color:#ff0000; '>$global:var</span>, <span style='color:#ff0000; '>$env:var</span>)<span style='color:#008000; '> # array with scoped/provider variables</span>
+<span style='color:#ff0000; '>$e</span><span style='color:#0000ff; '>=</span><span style='color:#800080; '>3.14</span>;<span style='color:#ff0000; '>$e</span><span style='color:#0000ff; '>=</span><span style='color:#800000; '>'1234'</span>;<span style='color:#ff0000; '>$e</span><span style='color:#0000ff; '>=</span><span style='color:#800000; '>"1234"</span>;<span style='color:#ff0000; '>$e</span><span style='color:#0000ff; '>=</span>@(<span style='color:#800080; '>1</span>..<span style='color:#800080; '>9</span>)<span style='color:#008000; '> # variable=value</span>
+
+<span style='color:#008000; '>### Escaped, Expanded, Strings</span>
+
+<span style='color:#ff00ff; '>`G</span><span style='color:#000000; '>et-</span><span style='color:#ff00ff; '>`I</span><span style='color:#000000; '>tem</span> <span style='color:#0000ff; '>*</span>
+<span style='color:#ff0000; '>$x</span> <span style='color:#0000ff; '>=</span> <span style='color:#ff0000; '>$(</span><span style='color:#0000ff; '>if</span> <span style='color:#0000ff; '>(Get-Item</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{</span><span style='color:#800000; '>"xx"</span><span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>else</span> <span style='color:#0000ff; '>{</span><span style='color:#800000; '>"yy"</span><span style='color:#0000ff; '>}</span><span style='color:#ff0000; '>)</span>
+&amp; <span style='color:#0000ff; '>{</span><span style='color:#800000; '>'8;$x;,Get-Item|-eq x $($env:X; `"ps`" -eq 12kb | kb; mb, Get-Item) </span><span style='color:#ff00ff; '>''</span><span style='color:#800000; '> `` `" `n`t ${2b|!2b} gb}}{{ '</span>, <span style='color:#ff0000; '>$e</span><span style='color:#0000ff; '>}</span>
+&amp; <span style='color:#0000ff; '>{</span><span style='color:#800000; '>"8;</span><span style='color:#ff0000; '>$x</span><span style='color:#800000; '>;,Get-Item|-eq x </span><span style='color:#ff0000; '>$($env:X</span><span style='color:#800000; '>; </span><span style='color:#ff00ff; '>`"</span><span style='color:#000000; '>ps</span><span style='color:#ff00ff; '>`"</span><span style='color:#800000; '> </span><span style='color:#0000ff; '>-eq</span><span style='color:#800000; '> </span><span style='color:#800080; '>12kb</span><span style='color:#800000; '> </span><span style='color:#0000ff; background:#c0c0c0; '>|</span><span style='color:#800000; '> </span><span style='color:#000000; '>kb</span><span style='color:#800000; '>; </span><span style='color:#000000; '>mb</span><span style='color:#800000; '>, </span><span style='color:#0000ff; '>Get-Item</span><span style='color:#ff0000; '>)</span><span style='color:#800000; '> '' </span><span style='color:#ff00ff; '>``</span><span style='color:#800000; '> </span><span style='color:#ff00ff; '>`"</span><span style='color:#800000; '> </span><span style='color:#ff00ff; '>`n`t</span><span style='color:#800000; '> </span><span style='color:#ff0000; '>${2b|!2b}</span><span style='color:#800000; '> gb}}{{ "</span>, <span style='color:#ff0000; '>$e</span><span style='color:#0000ff; '>}</span>
+
+<span style='color:#ff0000; '>$x</span> <span style='color:#0000ff; '>=</span> <span style='color:#800000; '>@'</span>
+<span style='color:#800000; '>$($env:var; "xxx" -like 1; x, Get-Item # not expandable here-string</span>
+<span style='color:#800000; '>) ' `" $var }} </span><span style='color:#ff00ff; '>''</span><span style='color:#800000; '> `' `" this is a text in both strings</span>
+<span style='color:#800000; '>`n ${2b | !2b} {{ `n "</span>
+<span style='color:#800000; '>'@</span> <span style='color:#0000ff; '>+</span> <span style='color:#0000ff; '>(Get-Item</span> <span style='color:#000000; '>L</span>, <span style='color:#800080; '>1L</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>+</span> <span style='color:#ff0000; '>$var</span>
+
+<span style='color:#ff0000; '>$x</span> <span style='color:#0000ff; '>=</span> <span style='color:#800000; '>@"</span>
+<span style='color:#ff0000; '>$($env:var</span><span style='color:#800000; '>; "xxx"</span><span style='color:#800000; '> </span><span style='color:#0000ff; '>-like</span><span style='color:#800000; '> </span><span style='color:#800080; '>1</span><span style='color:#800000; '>; </span><span style='color:#000000; '>x</span><span style='color:#800000; '>, </span><span style='color:#0000ff; '>Get-Item</span><span style='color:#008000; '> # expandable here-string</span><span style='color:#800000; '></span>
+<span style='color:#ff0000; '>)</span><span style='color:#800000; '> ' </span><span style='color:#ff00ff; '>`"</span><span style='color:#800000; '> </span><span style='color:#ff0000; '>$var</span><span style='color:#800000; '> }} '' </span><span style='color:#ff00ff; '>`'</span><span style='color:#800000; '> </span><span style='color:#ff00ff; '>`"</span><span style='color:#800000; '> this is a text in both strings</span>
+<span style='color:#ff00ff; '>`n</span><span style='color:#800000; '> </span><span style='color:#ff0000; '>${2b | !2b}</span><span style='color:#800000; '> {{ </span><span style='color:#ff00ff; '>`n</span><span style='color:#800000; '> "</span>
+<span style='color:#800000; '>"@</span> <span style='color:#0000ff; '>+</span> <span style='color:#0000ff; '>(Get-Item</span> <span style='color:#000000; '>L</span>, <span style='color:#800080; '>1L</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>+</span> <span style='color:#ff0000; '>$var</span>
+
+<span style='color:#008000; '>### Types and indices: mind case, dot, {}, []</span>
+
+<span style='color:#008080; '>[int]</span>; <span style='color:#008080; '>[INT[]]</span>; <span style='color:#008080; '>[system.datetime]</span>; <span style='color:#008080; '>[SYSTEM.DATETIME[]]</span>; <span style='color:#008080; '>[Environment+SpecialFolder]</span>
+&amp; <span style='color:#0000ff; '>{</span>
+    <span style='color:#ff0000; '>$a</span> <span style='color:#0000ff; '>=</span> <span style='color:#008080; '>[int[]]</span> <span style='color:#800080; '>0</span>
+    <span style='color:#ff0000; '>$a</span><span style='color:#0000ff; '>[</span><span style='color:#ff0000; '>$a</span><span style='color:#0000ff; '>[</span><span style='color:#ff0000; '>$a</span><span style='color:#0000ff; '>[</span><span style='color:#800080; '>0</span><span style='color:#0000ff; '>]]</span><span style='color:#0000ff; '>]</span>
+<span style='color:#0000ff; '>}</span>
+
+<span style='color:#008000; '>### Filters and functions</span>
+
+<span style='color:#0000ff; '>FILTER</span> <span style='color:#000000; '>f1</span><span style='color:#0000ff; '>(</span><span style='color:#008080; '>[string]</span><span style='color:#ff0000; '>$s</span>, <span style='color:#008080; '>[int[]]</span><span style='color:#ff0000; '>$ai</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{}</span> <span style='color:#0000ff; '>filter</span> <span style='color:#000000; '>f2</span><span style='color:#0000ff; '>()</span> <span style='color:#0000ff; '>{}</span> <span style='color:#ff0000; '>$(</span><span style='color:#0000ff; '>filter</span> <span style='color:#000000; '>f3</span><span style='color:#0000ff; '>()</span> <span style='color:#0000ff; '>{}</span><span style='color:#ff0000; '>)</span>; <span style='color:#0000ff; '>filter</span> <span style='color:#000000; '>f4</span> <span style='color:#0000ff; '>{filter</span> <span style='color:#000000; '>f5</span><span style='color:#0000ff; '>()</span> <span style='color:#0000ff; '>{}</span><span style='color:#0000ff; '>}</span>
+<span style='color:#0000ff; '>FUNCTION</span> <span style='color:#000000; '>fn1</span>
+<span style='color:#0000ff; '>{</span>
+    <span style='color:#0000ff; '>function</span> <span style='color:#000000; '>fn2</span> <span style='color:#0000ff; '>{}</span>
+    ; <span style='color:#0000ff; '>function</span> <span style='color:#000000; '>fn3</span><span style='color:#0000ff; '>(</span><span style='color:#ff0000; '>$x</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{}</span>
+<span style='color:#0000ff; '>}</span>
+
+<span style='color:#008000; '>### Operators and parameters: parameter names and values are not keywords</span>
+<span style='color:#800080; '>1</span> <span style='color:#0000ff; '>-eq</span> <span style='color:#800080; '>1</span>; <span style='color:#800080; '>1</span> <span style='color:#0000ff; '>-and</span> <span style='color:#800080; '>1</span>
+<span style='color:#000000; '>x</span> -<span style='color:#000000; '>Prm1</span><span style='color:#0000ff; '>(</span><span style='color:#800080; '>123</span><span style='color:#0000ff; '>)</span> -<span style='color:#000000; '>Prm2</span><span style='color:#800000; '>'123'</span> -<span style='color:#000000; '>Prm3</span>:<span style='color:#800080; '>123</span> -<span style='color:#000000; '>Prm4</span>:<span style='color:#800000; '>'123'</span>
+<span style='color:#000000; '>x</span> -<span style='color:#000000; '>param</span> -<span style='color:#000000; '>else</span> -<span style='color:#000000; '>filter</span> <span style='color:#000000; '>if</span> -<span style='color:#000000; '>function</span> <span style='color:#000000; '>filter</span> -<span style='color:#000000; '>if</span> <span style='color:#000000; '>while</span> -<span style='color:#000000; '>until</span> <span style='color:#000000; '>until</span> -<span style='color:#000000; '>elseif</span> <span style='color:#000000; '>elseif</span>
+<span style='color:#000000; '>x</span> <span style='color:#000000; '>begin</span> <span style='color:#000000; '>break</span> <span style='color:#000000; '>default</span> <span style='color:#000000; '>do</span> <span style='color:#000000; '>else</span> <span style='color:#000000; '>end</span> <span style='color:#000000; '>exit</span> <span style='color:#000000; '>finally</span> <span style='color:#000000; '>param</span> <span style='color:#000000; '>process</span> <span style='color:#000000; '>return</span> <span style='color:#000000; '>switch</span> <span style='color:#000000; '>throw</span> <span style='color:#000000; '>trap</span>
+<span style='color:#0000ff; '>Get-Item</span> <span style='color:#000000; '>x</span> -<span style='color:#000000; '>ea</span> <span style='color:#000000; '>continue</span>
+<span style='color:#0000ff; '>while(</span><span style='color:#0000ff; '>--</span><span style='color:#ff0000; '>$xx</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{</span> <span style='color:#0000ff; '>continue</span> <span style='color:#0000ff; '>}</span>
+<span style='color:#000000; '>x</span> <span style='color:#0000ff; '>in</span><span style='color:#008000; '> ### TODO: 'in' is not a keyword</span>
+
+<span style='color:#008000; '>### Redirection operators</span>
+
+<span style='color:#008000; '># uncomment the end of line to see 2 errors</span>
+<span style='color:#800080; '>1</span> <span style='color:#0000ff; background:#c0c0c0; '>></span> <span style='color:#808000; '>$null</span>; <span style='color:#800080; '>1</span> <span style='color:#0000ff; background:#c0c0c0; '>>></span> <span style='color:#808000; '>$null</span>; <span style='color:#800080; '>1</span> <span style='color:#0000ff; background:#c0c0c0; '>2></span> <span style='color:#808000; '>$null</span>; <span style='color:#800080; '>1</span> <span style='color:#0000ff; background:#c0c0c0; '>2>></span> <span style='color:#808000; '>$null</span>; <span style='color:#800080; '>1</span> <span style='color:#0000ff; background:#c0c0c0; '>2>&amp;1</span><span style='color:#008000; '> # 1 &lt; $null; 1 1>&amp;2 $null</span>
+
+<span style='color:#008000; '>### Hashes</span>
+
+@{<span style='color:#000000; '>key1</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>11</span>; <span style='color:#800000; '>'key2'</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>22</span>}
+@{
+<span style='color:#000000; '>key1</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>11</span>
+<span style='color:#800000; '>"key2"</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>22</span>
+}
+
+<span style='color:#008000; '>### Loops and not loops</span>
+
+<span style='color:#0000ff; '>for(</span>;;<span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # for is a keyword</span>
+<span style='color:#0000ff; '>while(</span><span style='color:#800080; '>1</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # while is a keyword</span>
+<span style='color:#0000ff; '>foreach</span> <span style='color:#0000ff; '>(</span><span style='color:#ff0000; '>$x</span> <span style='color:#0000ff; '>in</span> <span style='color:#ff0000; '>$y</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # foreach is a keyword</span>
+<span style='color:#000000; '>:label</span> <span style='color:#0000ff; '>for(</span>;;<span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # for is a keyword</span>
+<span style='color:#000000; '>:label</span> <span style='color:#0000ff; '>while(</span><span style='color:#800080; '>1</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{</span> <span style='color:#0000ff; '>continue</span> <span style='color:#000000; '>label</span> <span style='color:#0000ff; '>}</span><span style='color:#008000; '> # while is a keyword</span>
+<span style='color:#000000; '>:label</span> <span style='color:#0000ff; '>foreach(</span><span style='color:#ff0000; '>$e</span> <span style='color:#0000ff; '>in</span> <span style='color:#0000ff; '>(</span><span style='color:#000000; '>ls</span><span style='color:#0000ff; '>))</span> <span style='color:#0000ff; '>{</span> <span style='color:#0000ff; '>break</span> <span style='color:#000000; '>label</span> <span style='color:#0000ff; '>}</span><span style='color:#008000; '> # foreach is a keyword</span>
+<span style='color:#800080; '>1</span> <span style='color:#0000ff; background:#c0c0c0; '>|</span> <span style='color:#000000; '>for</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # for is not a keyword</span>
+<span style='color:#800080; '>1</span> <span style='color:#0000ff; background:#c0c0c0; '>|</span> <span style='color:#000000; '>while</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # while is not a keyword</span>
+<span style='color:#800080; '>1</span> <span style='color:#0000ff; background:#c0c0c0; '>|</span> <span style='color:#000000; '>foreach</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # foreach is not a keyword</span>
+
+<span style='color:#008000; '>### Cmdlets and not cmdlets</span>
+
+<span style='color:#ff0000; '>$x</span><span style='color:#0000ff; '>=Get-Item</span>;  <span style='color:#ff0000; '>$y</span><span style='color:#0000ff; background:#c0c0c0; '>|</span><span style='color:#0000ff; '>Get-Item</span> <span style='color:#008000; '> # are keywords</span>
+<span style='color:#ff0000; '>$x</span><span style='color:#0000ff; '>=</span><span style='color:#000000; '>Get-Item-</span>; <span style='color:#ff0000; '>$y</span><span style='color:#0000ff; background:#c0c0c0; '>|</span><span style='color:#000000; '>Get-Item-</span><span style='color:#008000; '> # are not keywords</span>
+<span style='color:#800000; '>"</span><span style='color:#ff0000; '>$x</span><span style='color:#800000; '>=Get-Item; </span><span style='color:#ff0000; '>$y</span><span style='color:#800000; '>|Get-Item"</span><span style='color:#008000; '> # are not keywords</span>
+
+<span style='color:#008000; '>### Regex in operands</span>
+
+<span style='color:#800000; '>"ab11* 'foo\'"</span> <span style='color:#0000ff; '>-notmatch</span> <span style='color:#800000; '>'</span><span style='color:#0000ff; '>^</span><span style='color:#800000; '>ab</span><span style='color:#0000ff; '>[</span><span style='color:#800000; '>0</span><span style='color:#0000ff; '>-</span><span style='color:#800000; '>2</span><span style='color:#0000ff; '>](</span><span style='color:#ff0000; '>\d</span><span style='color:#0000ff; '>+)</span><span style='color:#ff00ff; '>\*</span><span style='color:#ff0000; '>\s</span><span style='color:#0000ff; '>+</span><span style='color:#ff00ff; '>''</span><span style='color:#0000ff; '>(</span><span style='color:#ff0000; '>\w</span><span style='color:#0000ff; '>+)</span><span style='color:#ff00ff; '>\\''</span><span style='color:#800000; '>'</span>
+<span style='color:#800000; '>'ab11* "foo\"'</span> <span style='color:#0000ff; '>-match</span> <span style='color:#800000; '>"</span><span style='color:#0000ff; '>^</span><span style='color:#800000; '>ab</span><span style='color:#0000ff; '>[</span><span style='color:#800000; '>0</span><span style='color:#0000ff; '>-</span><span style='color:#800000; '>2</span><span style='color:#0000ff; '>]</span><span style='color:#ff0000; '>$(</span><span style='color:#800080; '>2</span><span style='color:#800000; '> </span><span style='color:#0000ff; '>-</span><span style='color:#800000; '> </span><span style='color:#800080; '>1</span><span style='color:#ff0000; '>)</span><span style='color:#ff00ff; '>\*</span><span style='color:#ff0000; '>\s</span><span style='color:#0000ff; '>+</span><span style='color:#ff0000; '>$(</span><span style='color:#808000; '>$null</span><span style='color:#ff0000; '>)</span><span style='color:#808000; '>$null</span><span style='color:#ff00ff; '>`"</span><span style='color:#800000; '>foo</span><span style='color:#ff00ff; '>\\`"</span><span style='color:#800000; '>"</span>
+<span style='color:#800000; '>'2007-9-23'</span> <span style='color:#0000ff; '>-replace</span> <span style='color:#800000; '>'</span><span style='color:#0000ff; '>\b(</span><span style='color:#ff0000; '>\d</span><span style='color:#0000ff; '>{</span><span style='color:#800080; '>2,4</span><span style='color:#0000ff; '>})</span><span style='color:#800000; '>-</span><span style='color:#0000ff; '>([</span><span style='color:#800000; '>01</span><span style='color:#0000ff; '>]?</span><span style='color:#ff0000; '>\d</span><span style='color:#0000ff; '>)</span><span style='color:#800000; '>-</span><span style='color:#0000ff; '>([</span><span style='color:#800000; '>012</span><span style='color:#0000ff; '>]?</span><span style='color:#ff0000; '>\d</span><span style='color:#0000ff; '>)\b</span><span style='color:#800000; '>'</span>, <span style='color:#800000; '>'$3/$2/$1'</span>
+
+<span style='color:#008000; '>### Regex in here strings</span>
+
+<span style='color:#ff0000; '>$re</span> <span style='color:#0000ff; '>=</span> <span style='color:#800000; '>@'</span>
+<span style='color:#008000; '>#REGEX Id and Name</span><span style='color:#800000; '></span>
+<span style='color:#ff00ff; '>\#</span><span style='color:#0000ff; '>(?</span><span style='color:#800000; '>&lt;Id></span><span style='color:#ff0000; '>\d</span><span style='color:#0000ff; '>+)</span><span style='color:#008000; '>           # #number</span><span style='color:#800000; '></span>
+<span style='color:#ff0000; '>\s</span><span style='color:#0000ff; '>+</span><span style='color:#008000; '>                    # spaces</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>(?</span><span style='color:#800000; '>&lt;Name></span><span style='color:#0000ff; '>[</span><span style='color:#800000; '>_a</span><span style='color:#0000ff; '>-</span><span style='color:#800000; '>zA</span><span style='color:#0000ff; '>-</span><span style='color:#800000; '>Z</span><span style='color:#0000ff; '>]</span><span style='color:#ff0000; '>\w</span><span style='color:#0000ff; '>*)</span><span style='color:#008000; '>  # name</span><span style='color:#800000; '></span>
+<span style='color:#800000; '>'@</span>
+
+<span style='color:#ff0000; '>$re</span> <span style='color:#0000ff; '>=</span> <span style='color:#800000; '>@"</span>
+<span style='color:#008000; '>#REGEX Id and Name</span><span style='color:#800000; '></span>
+<span style='color:#ff00ff; '>\#</span><span style='color:#0000ff; '>(?</span><span style='color:#800000; '>&lt;Id></span><span style='color:#ff0000; '>\d</span><span style='color:#0000ff; '>+)</span><span style='color:#008000; '>           # #number</span><span style='color:#800000; '></span>
+<span style='color:#ff0000; '>\s</span><span style='color:#0000ff; '>+</span><span style='color:#008000; '>                    # spaces</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>(?</span><span style='color:#800000; '>&lt;Name></span><span style='color:#0000ff; '>[</span><span style='color:#800000; '>_a</span><span style='color:#0000ff; '>-</span><span style='color:#800000; '>zA</span><span style='color:#0000ff; '>-</span><span style='color:#800000; '>Z</span><span style='color:#0000ff; '>]</span><span style='color:#ff0000; '>\w</span><span style='color:#0000ff; '>*)</span><span style='color:#008000; '>  # name</span><span style='color:#800000; '></span>
+<span style='color:#800000; '>"@</span>
+
+<span style='color:#008000; '># how to use such a pattern:</span>
+<span style='color:#0000ff; '>New-Object</span> <span style='color:#000000; '>Regex</span> <span style='color:#ff0000; '>$re</span>, <span style='color:#800000; '>'IgnorePatternWhitespace'</span>
+
+<span style='color:#008000; '>### SQL in here strings</span>
+
+<span style='color:#800000; '>@'</span>
+<span style='color:#008000; '>--SQL single quoted</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>SELECT</span><span style='color:#800000; '> </span><span style='color:#000000; '>Data1</span><span style='color:#0000ff; '>,</span><span style='color:#800000; '> </span><span style='color:#0000ff; background:#c0c0c0; '>COUNT</span><span style='color:#0000ff; '>(</span><span style='color:#800080; '>1</span><span style='color:#0000ff; '>)</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>FROM</span><span style='color:#800000; '> </span><span style='color:#000000; '>Table1</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>WHERE</span><span style='color:#800000; '> </span><span style='color:#000000; '>Data1</span><span style='color:#800000; '> </span><span style='color:#0000ff; '>=</span><span style='color:#800000; '> '$literal'</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>GROUP</span><span style='color:#800000; '> </span><span style='color:#0000ff; '>BY</span><span style='color:#800000; '> </span><span style='color:#000000; '>Data1</span><span style='color:#800000; '></span>
+<span style='color:#800000; '>'@</span>
+
+<span style='color:#800000; '>@"</span>
+<span style='color:#008000; '>--SQL double quoted</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>SELECT</span><span style='color:#800000; '> </span><span style='color:#000000; '>Data1</span><span style='color:#0000ff; '>,</span><span style='color:#800000; '> </span><span style='color:#0000ff; background:#c0c0c0; '>COUNT</span><span style='color:#0000ff; '>(</span><span style='color:#800080; '>1</span><span style='color:#0000ff; '>)</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>FROM</span><span style='color:#800000; '> </span><span style='color:#ff0000; '>$Table</span><span style='color:#800000; '></span>
+<span style='color:#0000ff; '>WHERE</span><span style='color:#800000; '> </span><span style='color:#ff0000; '>$x</span><span style='color:#800000; '> </span><span style='color:#0000ff; '>=</span><span style='color:#800000; '> '</span><span style='color:#ff0000; '>$variable</span><span style='color:#800000; '>'</span>
+<span style='color:#0000ff; '>GROUP</span><span style='color:#800000; '> </span><span style='color:#0000ff; '>BY</span><span style='color:#800000; '> </span><span style='color:#000000; '>Data1</span><span style='color:#800000; '></span>
+<span style='color:#800000; '>"@</span>
+
+<span style='color:#008000; '>### V2 CTP2</span>
+
+<span style='color:#008000; '># new operators</span>
+<span style='color:#0000ff; '>-join</span> @(<span style='color:#800000; '>'a'</span>, <span style='color:#800000; '>'b'</span>, <span style='color:#800000; '>'c'</span>)
+@(<span style='color:#800000; '>'a'</span>, <span style='color:#800000; '>'b'</span>, <span style='color:#800000; '>'c'</span>) <span style='color:#0000ff; '>-join</span> <span style='color:#800000; '>', '</span>
+<span style='color:#0000ff; '>-split</span> <span style='color:#800000; '>'a b c'</span>
+<span style='color:#800000; '>'a b c'</span> <span style='color:#0000ff; '>-split</span> <span style='color:#800000; '>' '</span>
+
+<span style='color:#008000; '># V2 variables</span>
+<span style='color:#ff00ff; '>$PSBoundParameters</span>
+<span style='color:#ff00ff; '>$PSCmdlet</span>
+<span style='color:#ff00ff; '>$PSCulture</span>
+<span style='color:#ff00ff; '>$PSUICulture</span>
+<span style='color:#ff00ff; '>$PSVersionTable</span>
+
+<span style='color:#008000; '># V2 features</span>
+
+<span style='color:#0000ff; '>data</span> <span style='color:#000000; '>Name</span> <span style='color:#0000ff; '>{</span> <span style='color:#800000; '>"Hi"</span> <span style='color:#0000ff; '>}</span>
+
+<span style='color:#0000ff; '>function</span> <span style='color:#000000; '>Verb-Noun</span>
+<span style='color:#0000ff; '>{</span>
+    <span style='color:#008000; '>&lt;#</span>
+<span style='color:#808080; '>    .Synopsis</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    This is a function.</span>
+<span style='color:#008000; '>    </span><span style='color:#808080; '>.Parameter</span><span style='color:#008000; '> </span><span style='color:#ff0000; '>Parameter1</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    Parameter description.</span>
+<span style='color:#008000; '>    #></span>
+    <span style='color:#0000ff; '>[</span><span style='color:#000000; '>CmdletBinding</span><span style='color:#0000ff; '>(</span><span style='color:#000000; '>SupportsShouldProcess</span> <span style='color:#0000ff; '>=</span> <span style='color:#808000; '>$true</span><span style='color:#0000ff; '>)]</span>
+    <span style='color:#0000ff; '>param(</span><span style='color:#0000ff; '>[</span><span style='color:#000000; '>parameter</span><span style='color:#0000ff; '>()</span><span style='color:#0000ff; '>]</span><span style='color:#ff0000; '>$Parameter1</span>, <span style='color:#ff0000; '>$Parameter2</span><span style='color:#0000ff; '>)</span>
+    <span style='color:#0000ff; '>begin</span> <span style='color:#0000ff; '>{</span> <span style='color:#800080; '>1</span> <span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>process</span> <span style='color:#0000ff; '>{</span> <span style='color:#800080; '>2</span> <span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>end</span> <span style='color:#0000ff; '>{</span> <span style='color:#800080; '>3</span> <span style='color:#0000ff; '>}</span>
+<span style='color:#0000ff; '>}</span>
+
+<span style='color:#008000; '># hash key names fix</span>
+<span style='color:#ff0000; '>$hash</span> <span style='color:#0000ff; '>=</span> @{ <span style='color:#000000; '>begin</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>1</span>; <span style='color:#000000; '>cmdlet</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>1</span>; <span style='color:#000000; '>data</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>1</span>; <span style='color:#000000; '>function</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>1</span>; <span style='color:#000000; '>param</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>1</span> }
+<span style='color:#0000ff; '>function</span> <span style='color:#000000; '>F</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # one char name is still a name</span>
+<span style='color:#000000; '>function</span> <span style='color:#0000ff; '>*</span> <span style='color:#0000ff; '>{}</span><span style='color:#008000; '> # trade-off: this should not be a name</span>
+
+<span style='color:#008000; '># try\catch\finally</span>
+<span style='color:#0000ff; '>try</span> <span style='color:#0000ff; '>{</span> <span style='color:#800080; '>1</span>; <span style='color:#800080; '>1</span><span style='color:#0000ff; '>/</span><span style='color:#808000; '>$null</span>; <span style='color:#800080; '>2</span> <span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>catch</span> <span style='color:#0000ff; '>{</span> <span style='color:#ff00ff; '>$_</span> <span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>finally</span> <span style='color:#0000ff; '>{</span> <span style='color:#800000; '>'yes'</span> <span style='color:#0000ff; '>}</span>
+<span style='color:#0000ff; '>try</span> <span style='color:#0000ff; '>{</span> <span style='color:#800080; '>1</span><span style='color:#0000ff; '>/</span><span style='color:#808000; '>$null</span> <span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>catch</span> <span style='color:#008080; '>[IO.IOException]</span> <span style='color:#0000ff; '>{</span> <span style='color:#800000; '>'no'</span> <span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>catch</span> <span style='color:#008080; '>[Management.Automation.RuntimeException]</span> <span style='color:#0000ff; '>{</span> <span style='color:#800000; '>'yes'</span> <span style='color:#0000ff; '>}</span>
+
+<span style='color:#008000; '>### V2 RC</span>
+
+<span style='color:#008000; '>### Assignment of statements</span>
+
+<span style='color:#ff0000; '>$1</span> <span style='color:#0000ff; '>=</span> <span style='color:#0000ff; '>if</span> <span style='color:#0000ff; '>(</span><span style='color:#800080; '>1</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{</span><span style='color:#800080; '>1</span><span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>else</span> <span style='color:#0000ff; '>{</span><span style='color:#800080; '>0</span><span style='color:#0000ff; '>}</span>
+<span style='color:#ff0000; '>$2</span> <span style='color:#0000ff; '>=</span> <span style='color:#0000ff; '>for(</span><span style='color:#ff0000; '>$e</span> <span style='color:#0000ff; '>=</span> <span style='color:#800080; '>0</span>; <span style='color:#ff0000; '>$e</span> <span style='color:#0000ff; '>-lt</span> <span style='color:#800080; '>3</span>; <span style='color:#0000ff; '>++</span><span style='color:#ff0000; '>$e</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{</span> <span style='color:#ff0000; '>$e</span> <span style='color:#0000ff; '>}</span>
+<span style='color:#ff0000; '>$3</span> <span style='color:#0000ff; '>=</span> <span style='color:#0000ff; '>while(</span><span style='color:#0000ff; '>--</span><span style='color:#ff0000; '>$e</span> <span style='color:#0000ff; '>-ge</span> <span style='color:#800080; '>0</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>{</span> <span style='color:#ff0000; '>$e</span> <span style='color:#0000ff; '>}</span>
+<span style='color:#ff0000; '>$4</span> <span style='color:#0000ff; '>=</span> <span style='color:#0000ff; '>do</span> <span style='color:#0000ff; '>{</span> <span style='color:#ff0000; '>$e</span> <span style='color:#0000ff; '>}</span> <span style='color:#0000ff; '>while</span> <span style='color:#0000ff; '>(++</span><span style='color:#ff0000; '>$e</span> <span style='color:#0000ff; '>-lt</span> <span style='color:#800080; '>3</span><span style='color:#0000ff; '>)</span>
+
+<span style='color:#008000; '>### More help comments</span>
+
+<span style='color:#008000; '>&lt;#</span>
+<span style='color:#808080; '>.COMPONENT</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    COMPONENT</span>
+<span style='color:#808080; '>.ROLE</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    ROLE</span>
+<span style='color:#808080; '>.FUNCTIONALITY</span><span style='color:#008000; '></span>
+<span style='color:#008000; '>    FUNCTIONALITY</span>
+<span style='color:#808080; '>.EXTERNALHELP</span><span style='color:#008000; '> </span><span style='color:#ff0000; '>&lt;XML Help File Path></span><span style='color:#008000; '></span>
+<span style='color:#808080; '>.FORWARDHELPCATEGORY</span><span style='color:#008000; '> </span><span style='color:#ff0000; '>&lt;Category></span><span style='color:#008000; '></span>
+<span style='color:#808080; '>.FORWARDHELPTARGETNAME</span><span style='color:#008000; '> </span><span style='color:#ff0000; '>&lt;Command-Name></span><span style='color:#008000; '></span>
+<span style='color:#808080; '>.REMOTEHELPRUNSPACE</span><span style='color:#008000; '> </span><span style='color:#ff0000; '>&lt;PSSession-variable></span><span style='color:#008000; '></span>
+<span style='color:#008000; '>.</span>
+<span style='color:#008000; '>#></span>
+<span style='color:#0000ff; '>function</span> <span style='color:#000000; '>f1</span> <span style='color:#0000ff; '>{}</span>
+
+<span style='color:#008000; '>### operator ::</span>
+<span style='color:#008000; '># enum values</span>
+<span style='color:#008080; '>[System.ConsoleColor]</span><span style='color:#0000ff; '>::</span><span style='color:#000000; '>Yellow</span>
+<span style='color:#ff0000; '>$type</span> <span style='color:#0000ff; '>=</span> <span style='color:#008080; '>[System.ConsoleColor]</span>
+<span style='color:#ff0000; '>$type</span><span style='color:#0000ff; '>::</span><span style='color:#000000; '>Yellow</span>
+<span style='color:#008000; '># static members</span>
+<span style='color:#008080; '>[System.Console]</span><span style='color:#0000ff; '>::</span><span style='color:#000000; '>WriteLine</span><span style='color:#0000ff; '>(</span><span style='color:#800000; '>'Hi'</span><span style='color:#0000ff; '>)</span>
+<span style='color:#008080; '>[System.Console]</span><span style='color:#0000ff; '>::</span><span style='color:#000000; '>CursorTop</span>
+<span style='color:#ff0000; '>$type</span> <span style='color:#0000ff; '>=</span> <span style='color:#008080; '>[System.Console]</span>
+<span style='color:#ff0000; '>$type</span><span style='color:#0000ff; '>::</span><span style='color:#000000; '>WriteLine</span><span style='color:#0000ff; '>(</span><span style='color:#800000; '>'Hi'</span><span style='color:#0000ff; '>)</span>
+<span style='color:#ff0000; '>$type</span><span style='color:#0000ff; '>::</span><span style='color:#000000; '>CursorTop</span>
+
+<span style='color:#008000; '>### FIXED ISSUES (DON'T CHANGE!)</span>
+
+<span style='color:#ff0000; '>$x</span>.<span style='color:#000000; '>Prop</span><span style='color:#0000ff; '>/</span><span style='color:#800080; '>2</span>
+<span style='color:#800000; '>"</span><span style='color:#ff0000; '>$(</span><span style='color:#ff00ff; '>$_</span><span style='color:#800000; '>.</span><span style='color:#000000; '>Name</span><span style='color:#ff0000; '>)</span><span style='color:#800000; '>=</span><span style='color:#ff0000; '>$(</span><span style='color:#ff00ff; '>$_</span><span style='color:#800000; '>.</span><span style='color:#000000; '>Value</span><span style='color:#ff0000; '>)</span><span style='color:#800000; '>"</span>
+<span style='color:#0000ff; '>{</span>
+    <span style='color:#ff0000; '>$e</span>, <span style='color:#800000; '>''</span>, <span style='color:#ff0000; '>$e</span>
+    <span style='color:#ff0000; '>$e</span>, <span style='color:#800000; '>""</span>, <span style='color:#ff0000; '>$e</span>
+    <span style='color:#ff0000; '>$e</span>, <span style='color:#800000; '>'</span><span style='color:#ff00ff; '>''</span><span style='color:#800000; '>'</span>, <span style='color:#ff0000; '>$e</span>
+    <span style='color:#ff0000; '>$e</span>, <span style='color:#800000; '>" </span><span style='color:#ff00ff; '>``</span><span style='color:#800000; '> </span><span style='color:#ff00ff; '>`a</span><span style='color:#800000; '> </span><span style='color:#ff00ff; '>`n</span><span style='color:#800000; '> </span><span style='color:#ff00ff; '>`N</span><span style='color:#800000; '>ight "</span>, <span style='color:#ff0000; '>$e</span>
+<span style='color:#0000ff; '>}</span>
+
+<span style='color:#800000; '>"text </span><span style='color:#808000; '>$true</span><span style='color:#800000; '> </span><span style='color:#ff00ff; '>$this</span><span style='color:#800000; '> </span><span style='color:#ff0000; '>$user</span><span style='color:#800000; '>"</span><span style='color:#008000; '> # constants and auto and user variables should be different</span>
+
+<span style='color:#0000ff; '>}</span><span style='color:#008000; '> # block end (test 'Match pair' in FAR editor)</span>
+
+</pre></body></html>
