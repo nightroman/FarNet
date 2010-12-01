@@ -10,14 +10,11 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-//! Values.CopyTo() is not used because of different return type.
+//! CopyTo() is not used because of different return type.
+//! But ToArray() seems to work.
 array<IEditor^>^ Editor0::Editors()
 {
-	array<IEditor^>^ r = gcnew array<IEditor^>(_editors.Count);
-	int i = 0;
-	for each(Editor^ it in _editors.Values)
-		r[i++] = it;
-	return r;
+	return _editors.ToArray();
 }
 
 //! For exturnal use.
@@ -25,20 +22,13 @@ Editor^ Editor0::GetCurrentEditor()
 {
 	AutoEditorInfo ei(true);
 
-	// get current ID
-	if (ei.EditorID < 0)
+	for(int i = 0; i < _editors.Count; ++i)
 	{
-		_editorCurrent = nullptr;
-		return nullptr;
+		if (_editors[i]->Id == ei.EditorID)
+			return _editors[i];
 	}
 
-	// take the cached editor
-	if (_editorCurrent && _editorCurrent->Id == ei.EditorID)
-		return _editorCurrent;
-
-	// get registered, cache it, return
-	_editorCurrent = _editors[ei.EditorID];
-	return _editorCurrent;
+	return nullptr;
 }
 
 int Editor0::AsProcessEditorEvent(int type, void* param)
@@ -67,9 +57,8 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// get info
 			AutoEditorInfo ei;
 
-			// register and cache the current
-			_editors.Add(ei.EditorID, editor);
-			_editorCurrent = editor;
+			// register
+			_editors.Insert(0, editor);
 
 			// 1) start the editor; it calls module editor actions, they may add handlers
 			editor->Start(ei, isEditorWaiting);
@@ -93,12 +82,19 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		{
 			Log::Source->TraceInformation("EE_CLOSE");
 
-			// get registered, close and unregister
+			// get registered, stop, unregister 
 			int id = *((int*)param);
-			Editor^ editor = _editors[id];
-			editor->Stop();
-			_editors.Remove(id);
-			_editorCurrent = nullptr;
+			Editor^ editor = nullptr;
+			for(int i = 0; i < _editors.Count; ++i)
+			{
+				if (_editors[i]->Id == id)
+				{
+					editor = _editors[i];
+					_editors.RemoveAt(i);
+					editor->Stop();
+					break;
+				}
+			}
 
 			// end async
 			editor->EndAsync();
@@ -124,6 +120,8 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Log::Source->TraceInformation("EE_SAVE");
 
 			Editor^ ed = GetCurrentEditor();
+			ed->_TimeOfSave = DateTime::Now;
+			
 			if (_anyEditor._Saving)
 			{
 				Log::Source->TraceInformation("Saving");
@@ -158,9 +156,20 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
 
 			int id = *((int*)param);
-			Editor^ editor;
-			if (!_editors.TryGetValue(id, editor))
-				return 0;
+			Editor^ editor = nullptr;
+			for(int i = 0; i < _editors.Count; ++i)
+			{
+				if (_editors[i]->Id == id)
+				{
+					editor = _editors[i];
+					if (i > 0)
+					{
+						_editors.RemoveAt(i);
+						_editors.Insert(0, editor);
+					}
+					break;
+				}
+			}
 
 			// sync
 			if (editor->_output)
@@ -184,19 +193,25 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_KILLFOCUS");
 
 			int id = *((int*)param);
-			Editor^ ed;
-			if (!_editors.TryGetValue(id, ed))
-				return 0;
+			Editor^ editor = nullptr;
+			for(int i = 0; i < _editors.Count; ++i)
+			{
+				if (_editors[i]->Id == id)
+				{
+					editor = _editors[i];
+					break;
+				}
+			}
 
 			if (_anyEditor._LosingFocus)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
-				_anyEditor._LosingFocus(ed, nullptr);
+				_anyEditor._LosingFocus(editor, nullptr);
 			}
-			if (ed->_LosingFocus)
+			if (editor->_LosingFocus)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
-				ed->_LosingFocus(ed, nullptr);
+				editor->_LosingFocus(editor, nullptr);
 			}
 		}
 		break;
@@ -254,6 +269,7 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 			// key down
 			else if (key.bKeyDown) //! it was (bKeyDown & 0xff) != 0
 			{
+				++editor->_KeyCount;
 				if (_anyEditor._KeyDown || editor->_KeyDown)
 				{
 					KeyEventArgs ea(KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, true));

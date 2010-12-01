@@ -196,6 +196,17 @@ namespace FarNet
 		/// </summary>
 		public abstract bool WordWrapMode { get; set; }
 
+		/// <summary>
+		/// Gets the opening time of the instance.
+		/// </summary>
+		public abstract DateTime TimeOfOpen { get; }
+
+		/// <summary>
+		/// Makes the instance window active.
+		/// </summary>
+		/// <remarks>It may throw if the window cannot be activated.</remarks>
+		public abstract void Activate();
+
 	}
 
 	/// <summary>

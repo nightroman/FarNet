@@ -335,4 +335,25 @@ void Viewer::CodePage::set(int value)
 	_CodePage = value;
 }
 
+DateTime Viewer::TimeOfOpen::get()
+{
+	return _TimeOfOpen;
+}
+
+void Viewer::Activate()
+{
+	int nWindow = Far::Net->Window->Count;
+	for(int i = 0; i < nWindow; ++i)
+	{
+		IWindowInfo^ info = Far::Net->Window->GetInfoAt(i, true);
+		if (info->Kind == WindowKind::Viewer && info->Name == _FileName)
+		{
+			Far::Net->Window->SetCurrentAt(i);
+			Far::Net->Window->Commit(); //?????
+			return;
+		}
+	}
+	throw gcnew InvalidOperationException("Cannot find the window by name.");
+}
+
 }

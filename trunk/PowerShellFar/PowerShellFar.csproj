@@ -75,7 +75,6 @@
     <Compile Include="Commands\Find-FarFile.cs" />
     <Compile Include="Commands\GetFarFileCommand.cs" />
     <Compile Include="Commands\StartFarJobCommand.cs" />
-    <Compile Include="Commands\TraceFarCommand.cs" />
     <Compile Include="EditorConsole.cs" />
     <Compile Include="Help.cs" />
     <Compile Include="JobCommand.cs" />

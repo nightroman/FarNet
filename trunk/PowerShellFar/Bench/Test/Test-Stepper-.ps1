@@ -11,16 +11,12 @@
 	and invokes the next step. This scenario allows to perform quite tricky
 	operations impossible during normal continuous code flow.
 
-	This approach is also useful for automated testing and this script is an
+	Also, this approach is useful for automated testing; this script is an
 	example of a simple test monitor: it adds test units, starts processing,
-	watches stepper events and writes information into a log file.
+	watches and traces stepper events.
 
 	For demo sake by default it shows a confirmation dialog before each step,
 	so that you can see steps in progress. Use -Auto to disable.
-
-.NOTES
-	The script uses Trace-Far for some demo tracing. Trace listeners normally
-	should be added in "Far.exe.config".
 #>
 
 param
@@ -45,30 +41,30 @@ $stepper.PostUnit("$myFolder\Test-Dialog+.ps1")
 # Add a handler to watch stepping progress
 $stepper.add_StateChanged({
 
-	# trace any change
-	Trace-Far "Unit: '$($this.CurrentUnit)' $($this.State)..."
+	# trace any state change
+	[Diagnostics.Trace]::TraceInformation("Unit: '$($this.CurrentUnit)' $($this.State)...")
 
 	# trace error on Failed
 	if ($this.State -eq 'Failed') {
-		Trace-Far $this.Error -Error
+		[Diagnostics.Trace]::TraceError($this.Error)
 	}
 
 	# case Completed or Failed:
 	if ($this.State -eq 'Completed' -or $this.State -eq 'Failed') {
 
 		# trace summary
-		Trace-Far @"
+		[Diagnostics.Trace]::TraceInformation(@"
 $(Get-Date) Stepper stopped.
 Processed steps: $($this.StepCount)
-"@
+"@)
 
 		# end
 		Remove-Item Variable:\Stepper*
 	}
 })
 
-### Trace using Trace-Far
-Trace-Far "$(Get-Date) Stepper started."
+# Trace
+[Diagnostics.Trace]::TraceInformation("$(Get-Date) Stepper started.")
 
 # Go! Normally this should be the last script command.
 $stepper.Go()

@@ -1,7 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.3.30</ProductVersion>
+		<ProductVersion>4.3.31</ProductVersion>
 		<OutputPath>FarNet.$(ProductVersion).7z</OutputPath>
 		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
 		<Platform Condition="'$(Platform)' == ''">Win32</Platform>
@@ -34,8 +34,9 @@ FarNet.sdf;
 
 	<Target Name="Install">
 		<MSBuild Targets="Install" Properties="Configuration=$(Configuration)" Projects="@(Folder->'%(Identity)\Build.proj')"/>
-		<Copy SourceFiles="FarNet.Tools\bin\Release\FarNet.Tools.xml" DestinationFolder="$(Install)\FarNet"/>
 		<Copy SourceFiles="Far.exe.config" DestinationFolder="$(Install)" SkipUnchangedFiles="true"/>
+		<!--It may fail in Debug...-->
+		<Copy SourceFiles="FarNet.Tools\bin\Release\FarNet.Tools.xml" DestinationFolder="$(Install)\FarNet" Condition="'$(Configuration)'=='Release'"/>
 	</Target>
 
 	<Target Name="Uninstall">

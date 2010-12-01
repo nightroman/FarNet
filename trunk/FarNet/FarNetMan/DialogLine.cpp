@@ -39,7 +39,7 @@ void DialogLine::Caret::set(int value)
 	Info.SendDlgMessage(_hDlg, DM_SETCURSORPOS, _id, (LONG_PTR)&c);
 
 	//_100819_142053 Mantis 1464. ?? For now drop 'unchanged' manually.
-	//????? Wait! It affects $TestLine.SelectedText = '12345' @ "Test-Line+.ps1"
+	//???? Wait! It affects $TestLine.SelectedText = '12345' @ "Test-Line+.ps1"
 	//Info.SendDlgMessage(_hDlg, DM_EDITUNCHANGEDFLAG, _id, (LONG_PTR)0);
 }
 

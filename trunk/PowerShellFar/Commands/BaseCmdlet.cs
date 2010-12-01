@@ -38,7 +38,7 @@ new CmdletConfigurationEntry("Start-FarEditor", typeof(Commands.StartFarEditorCo
 new CmdletConfigurationEntry("Start-FarJob", typeof(Commands.StartFarJobCommand), string.Empty),
 new CmdletConfigurationEntry("Start-FarPanel", typeof(Commands.StartFarPanelCommand), string.Empty),
 new CmdletConfigurationEntry("Start-FarViewer", typeof(Commands.StartFarViewerCommand), string.Empty),
-new CmdletConfigurationEntry("Trace-Far", typeof(Commands.TraceFarCommand), string.Empty)});
+			});
 		}
 	}
 }

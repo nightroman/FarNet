@@ -35,8 +35,8 @@ if ($path -like '*-.ps1') {
 	return
 }
 
-# Save modified
-if ($editor.IsModified) { $editor.Save() }
+# Commit
+$editor.Save()
 
 # Extension
 $ext = [IO.Path]::GetExtension($path)

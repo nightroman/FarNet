@@ -12,18 +12,15 @@ namespace FarNet
 //! See Editor0::Editors().
 array<IViewer^>^ Viewer0::Viewers()
 {
-	array<IViewer^>^ r = gcnew array<IViewer^>(_viewers.Count);
-	int i = 0;
-	for each(Viewer^ it in _viewers.Values)
-		r[i++] = it;
-	return r;
+	return _viewers.ToArray();
 }
 
 // Viewer must not be registered yet
 void Viewer0::Register(Viewer^ viewer, const ViewerInfo& vi)
 {
-	_viewers.Add(vi.ViewerID, viewer);
+	_viewers.Insert(0, viewer);
 	viewer->_id = vi.ViewerID;
+	viewer->_TimeOfOpen = DateTime::Now;
 	viewer->_FileName = gcnew String(vi.FileName);
 }
 
@@ -36,18 +33,20 @@ Viewer^ Viewer0::GetCurrentViewer()
 		return nullptr;
 
 	// get viewer by ID
-	//! It may be not yet registered: CtrlQ panel started with Far or CtrlQ of folder (there was no VE_READ event)
-	Viewer^ viewer;
-	if (!_viewers.TryGetValue(vi.ViewerID, viewer))
+	for(int i = 0; i < _viewers.Count; ++i)
 	{
-		// CtrlQ of folder
-		if (vi.FileName[0] == 0)
-			return nullptr;
-
-		// create and register
-		viewer = gcnew Viewer;
-		Register(viewer, vi);
+		if (_viewers[i]->_id == vi.ViewerID)
+			return _viewers[i];
 	}
+
+	//! It may be not yet registered: CtrlQ panel started with Far or CtrlQ of folder (there was no VE_READ event)
+	// CtrlQ of folder
+	if (vi.FileName[0] == 0)
+		return nullptr;
+
+	// create and register
+	Viewer^ viewer = gcnew Viewer;
+	Register(viewer, vi);
 	return viewer;
 }
 
@@ -65,24 +64,35 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// take waiting, existing or create new
 			//! It really may exist on 'Add', 'Subtract' in a viewer open a file in the *same* viewer.
-			Viewer^ viewer;
+			Viewer^ viewer = nullptr;
 			if (_viewerWaiting)
 			{
 				viewer = _viewerWaiting;
 				_viewerWaiting = nullptr;
 				Register(viewer, vi);
 			}
-			else if (!_viewers.TryGetValue(vi.ViewerID, viewer))
-			{
-				viewer = gcnew Viewer;
-				Register(viewer, vi);
-			}
 			else
 			{
-				// new file is opened in the same viewer -- update file name
-				viewer->_FileName = gcnew String(vi.FileName);
-			}
+				// find registered
+				for(int i = 0; i < _viewers.Count; ++i)
+				{
+					if (_viewers[i]->_id == vi.ViewerID)
+					{
+						// new file is opened in the same viewer -- update file name
+						viewer = _viewers[i];
+						viewer->_FileName = gcnew String(vi.FileName);
+						break;
+					}
+				}
 
+				// not yet
+				if (viewer == nullptr)
+				{
+					viewer = gcnew Viewer;
+					Register(viewer, vi);
+				}
+			}
+			
 			// event
 			if (_anyViewer._Opened)
 			{
@@ -102,14 +112,23 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// get registered, close and unregister
 			int id = *((int*)param);
-			Viewer^ viewer;
+			Viewer^ viewer = nullptr;
+			for(int i = 0; i < _viewers.Count; ++i)
+			{
+				if (_viewers[i]->_id == id)
+				{
+					viewer = _viewers[i];
+					viewer->_id = -2;
+					_viewers.RemoveAt(i);
+					break;
+				}
+			}
+
 			//! not found if CtrlQ on dots is closed (because READ was not called)
 			//! fixed in 1.71.2335 but let it stay for a while. ??
-			if (!_viewers.TryGetValue(id, viewer))
+			if (viewer == nullptr)
 				break;
-			viewer->_id = -2;
-			_viewers.Remove(id);
-
+			
 			// event, after the above
 			if (_anyViewer._Closed)
 			{
@@ -132,8 +151,22 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// get registered
 			int id = *((int*)param);
-			Viewer^ viewer;
-			if (!_viewers.TryGetValue(id, viewer))
+			Viewer^ viewer = nullptr;
+			for(int i = 0; i < _viewers.Count; ++i)
+			{
+				if (_viewers[i]->_id == id)
+				{
+					viewer = _viewers[i];
+					if (i > 0)
+					{
+						_viewers.RemoveAt(i);
+						_viewers.Insert(0, viewer);
+					}
+					break;
+				}
+			}
+
+			if (viewer == nullptr)
 				break;
 
 			// event
@@ -155,8 +188,17 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// get registered
 			int id = *((int*)param);
-			Viewer^ viewer;
-			if (!_viewers.TryGetValue(id, viewer))
+			Viewer^ viewer = nullptr;
+			for(int i = 0; i < _viewers.Count; ++i)
+			{
+				if (_viewers[i]->_id == id)
+				{
+					viewer = _viewers[i];
+					break;
+				}
+			}
+
+			if (viewer == nullptr)
 				break;
 
 			// event

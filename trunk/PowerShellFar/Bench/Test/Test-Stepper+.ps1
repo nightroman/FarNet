@@ -9,10 +9,9 @@
 	returned by this script. This script should not be invoked directly.
 	Instead, use a stepper to invoke it, see Test-Stepper-.ps1
 
-	For simplicity this script has Part 1 and 2. This scheme is optional: a
-	script is invoked as normal, it may or may not do some job itself (Part 1).
-	But it normally should return steps (Part 2). If it returns no steps - it's
-	fine, but in this case it should return nothing at all.
+	A step unit contains two parts: standard code and script blocks. A unit is
+	invoked as a normal script, it may or may not do some job itself (Part 1).
+	Normally it returns steps (Part 2). But it is fine to return nothing.
 
 	Steps may add extra steps by $Psf.Stepper.Go(). Extra steps are inserted
 	into the queue after the current. This is useful when all steps are not
@@ -20,17 +19,17 @@
 
 	Note that you have to use global variables to share data between steps
 	because steps are invoked in different scopes and local variables of
-	processed steps do not exist.
+	previous steps do not exist.
 
-	The script also shows how to start modal UI and continue steps in modal
-	mode (dialogs started by keys or commands, modal editors and etc.).
+	The script also shows how to enter modal mode and continue steps in it:
+	dialogs started by keys or commands, modal editors, and etc.
 #>
 
 ### Part 1. Optional code to be invoked before steps.
-# - Good place to check prerequisites and throw, for example.
-# - It is also OK to return at this moment with no steps at all.
+# - Good place to check prerequisites and throw on errors.
+# - It is also fine to return with no steps returned at all.
 
-# prerequisites
+# check prerequisites and throw on errors
 Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before this test." "Assert"
 
 ### Part 2. Returned steps: returned keys and script blocks.
@@ -68,7 +67,6 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	# open the attributes dialog; it is modal, but the step sequence
 	# is not stopped because keys are RETURNED BY THE CURRENT STEP
 	# and the stepper knows how to process this case correctly
-	Trace-Far "Attribute dialog..."
 	'CtrlA'
 }
 
@@ -93,7 +91,6 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	# this command starts a modal dialog, but the step sequence
 	# is not stopped because the command is RETURNED (by {{..}})
 	# and the stepper knows how to process this case correctly
-	Trace-Far "Read-Host dialog..."
 	Read-Host
 }}
 
@@ -126,7 +123,6 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	# this command starts a modal editor, but the step sequence
 	# is not stopped because the command is RETURNED (by {{..}})
 	# and the stepper knows how to process this case correctly
-	Trace-Far "Modal editor..."
 	Start-FarEditor 'Test' -Modal -DisableHistory
 }}
 
@@ -248,6 +244,5 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# last step, do final jobs and cleaning
-	Trace-Far "Cleaning..."
 	Remove-Item Variable:\TestStepper*
 }

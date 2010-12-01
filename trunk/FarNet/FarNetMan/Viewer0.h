@@ -24,6 +24,6 @@ private:
 	static void Register(Viewer^ viewer, const ViewerInfo& vi);
 private:
 	// Registered opened viewers
-	static SortedList<int, Viewer^> _viewers;
+	static List<Viewer^> _viewers;
 };
 }

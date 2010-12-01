@@ -8,7 +8,7 @@ $#FarNet#
 #FarNet menus#
 
 	~Plugin menu~@Menu@
-	~Panels menu~@MenuPanels@
+	~Panels menu~@MenuMain@
 	~Config menu~@MenuConfig@
 
 #User interface features#
@@ -27,23 +27,29 @@ $#Plugin menu#
 
 FarNet shows its menu items #.NET# in all Far plugin menus [F11].
 
-#Panels#
+#Panels, Editor, Viewer#
 
-It shows the ~Panels menu~@MenuPanels@.
+It shows the ~.NET tools menu~@MenuMain@.
 
 #Config#
 
 It shows the ~Config menu~@MenuConfig@.
 
-#Editor, Viewer, Dialog#
+#Dialog#
 
-They do nothing when selected manually. But they are used internally and cannot
-be removed. They allow to bypass some natural limitations of Far API.
+It does nothing when selected manually. It is used internally and cannot be
+removed, it allows to bypass some natural limitations of Far API.
 
 
-@MenuPanels
-$#Panels menu#
+@MenuMain
+$#.NET tools menu#
 ~Contents~@Contents@
+
+#Editors/Viewers...#
+
+These menus show the lists of opened editors/viewers sorted by the most recent
+activity. E.g. the first item is the current editor/viewer, the second item is
+the previously active and so on.
 
 #Push/Shelve the panel#
 

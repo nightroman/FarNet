@@ -5,8 +5,8 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	This test is for PowerShellFar in the first place. But it can be used for
-	other hosts, too. Use -ErrorAction to control failures.
+	This test is for the PowerShellFar development environment. It may fail in
+	a different environment. But with adjustments most of the test should work.
 
 .NOTES
 	(Get-Content -e --> -Encoding) may fail depending on the current provider,
@@ -19,10 +19,7 @@ if ($Host.Name -eq 'FarHost') {
 	. "$($Psf.AppHome)\TabExpansion.ps1"
 }
 
-# Drop the cache
-$global:TabExpansionCache = $null
-
-# Set location to this because we assume and use other files there
+# Set location in here, we assume and use some files
 Set-Location -LiteralPath (Split-Path $MyInvocation.MyCommand.Path)
 
 # Runs a test and returns an error message text on failure.

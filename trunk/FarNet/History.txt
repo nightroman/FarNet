@@ -1,5 +1,29 @@
 http://code.google.com/p/farnet/
 
+= 4.3.31 =
+
+*) UI: new .NET menu items
+Added two new menu items "Editors..." and "Viewers..." that show the editor or
+viewer list sorted by recent activity. This is experimental but it looks like a
+useful addition to the native Far menu Screens.
+
+*) Editor & Viewer
+-- New methods Activate() to make the instance window active.
+-- Improved internal management of editor and viewer lists. Useful side effect:
+IFar methods Editors() and Viewers() return instances sorted by last activity.
+
+*) IEditor
+-- New properties KeyCount, TimeOfOpen, TimeOfSave (for statistics, AI, etc.)
+-- Changed Save(): it saves only on changes. This is shorter than often used
+"if (!editor.IsSaved) Save();" and helps to avoid misuse of the IsModified.
+-- New method Save(bool) allows to save even not changed file.
+
+NB: change of Save() is unlikely breaking but you may want to review your calls
+and remove not needed checks.
+
+*) IViewer
+-- New property TimeOfOpen (similar to IEditor).
+
 = 4.3.30 =
 
 *) IEditor
