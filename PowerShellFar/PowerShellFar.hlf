@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.30#
+#PowerShellFar 4.3.31#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -66,7 +66,7 @@ Update-FarNet.ps1 or downloaded and installed manually from:
 
  #Roman Kuzmin#
  ~nightroman@@gmail.com~@mailto:nightroman@@gmail.com@
- ~http://nightroman.spaces.live.com~@http://nightroman.spaces.live.com@
+ ~http://nightroman.wordpress.com/~@http://nightroman.wordpress.com/@
 
 
 @Requirements
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1667
- - Plugin FarNet 4.3.30
+ - Far Manager 2.0.1736
+ - Plugin FarNet 4.3.31
  - Windows PowerShell 2.0
 
 
@@ -159,8 +159,8 @@ You can reduce typing by "Easy prefix" and "Easy invoke" macros, see ~FAQ~@FAQ@.
 
 Most of commands are added to the PowerShellFar command history automatically.
 There is an exception: a command is not added if the last symbol is '##'. This
-trick is useful for commands in the user menu [F2] and the file associations,
-normally they should not pollute the history because they are not typed manually.
+trick is useful for commands in the user menu [F2] and the file associations.
+We do not what them to pollute the history because they are not typed manually.
 
 
 @MenuCommands

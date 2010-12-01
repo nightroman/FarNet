@@ -7,8 +7,8 @@ using System;
 using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
-using System.Management.Automation.Runspaces;
 using System.Reflection;
+using System.Threading;
 using FarNet;
 
 namespace PowerShellFar
@@ -19,7 +19,7 @@ namespace PowerShellFar
 	class FarHost : PSHost
 	{
 		// UI object
-		PSHostUserInterface _ui;
+		PSHostUserInterface _UI;
 
 		/// <summary>
 		/// Construct an instance of this PSHost implementation.
@@ -28,13 +28,10 @@ namespace PowerShellFar
 		/// <param name="ui">Host UI.</param>
 		internal FarHost(PSHostUserInterface ui)
 		{
-			_ui = ui;
+			_UI = ui;
 		}
 
 		#region PSHost
-
-		CultureInfo originalCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
-		CultureInfo originalUICultureInfo = System.Threading.Thread.CurrentThread.CurrentUICulture;
 
 		/// <summary>
 		/// The host name: FarHost
@@ -45,29 +42,48 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// The culture information to use.
+		/// Gets the current culture to use.
 		/// </summary>
-		public override System.Globalization.CultureInfo CurrentCulture
+		public override CultureInfo CurrentCulture
 		{
-			get { return originalCultureInfo; }
+			get { return _CurrentCulture; }
 		}
+		CultureInfo _CurrentCulture = Thread.CurrentThread.CurrentCulture;
+
 
 		/// <summary>
-		/// UI culture info to use.
+		/// Gets the current UI culture to use.
 		/// </summary>
-		public override System.Globalization.CultureInfo CurrentUICulture
+		public override CultureInfo CurrentUICulture
 		{
-			get { return originalUICultureInfo; }
+			get { return _CurrentUICulture; }
 		}
+		CultureInfo _CurrentUICulture = Thread.CurrentThread.CurrentUICulture;
 
 		/// <summary>
-		/// Return the GUID allocated at instantiation time for the InstanceId.
+		/// Gets the GUID generated once.
 		/// </summary>
 		public override Guid InstanceId
 		{
-			get { return myId; }
+			get { return _InstanceId; }
 		}
-		static Guid myId = Guid.NewGuid();
+		static Guid _InstanceId = Guid.NewGuid();
+
+		/// <summary>
+		/// Gets the UI instance.
+		/// </summary>
+		public override PSHostUserInterface UI
+		{
+			get { return _UI; }
+		}
+
+		/// <summary>
+		/// Gets the assembly version.
+		/// </summary>
+		public override Version Version
+		{
+			get { return Assembly.GetExecutingAssembly().GetName().Version; }
+		}
 
 		/// <summary>
 		/// Instructs the host to interrupt the currently running pipeline and start a new nested input loop.
@@ -144,22 +160,6 @@ namespace PowerShellFar
 		/// </summary>
 		public override void SetShouldExit(int exitCode)
 		{
-		}
-
-		/// <summary>
-		/// UI implementation.
-		/// </summary>
-		public override PSHostUserInterface UI
-		{
-			get { return _ui; }
-		}
-
-		/// <summary>
-		/// Application version.
-		/// </summary>
-		public override Version Version
-		{
-			get { return Assembly.GetExecutingAssembly().GetName().Version; }
 		}
 
 		#endregion

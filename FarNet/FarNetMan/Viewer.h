@@ -28,6 +28,7 @@ public:
 	virtual property bool HexMode { bool get() override; void set(bool value) override; }
 	virtual property bool WrapMode { bool get() override; void set(bool value) override; }
 	virtual property bool WordWrapMode { bool get() override; void set(bool value) override; }
+	virtual property DateTime TimeOfOpen { DateTime get() override; }
 	virtual property FarNet::DeleteSource DeleteSource { FarNet::DeleteSource get() override; void set(FarNet::DeleteSource value) override; }
 	virtual property int CodePage { int get() override; void set(int value) override; }
 	virtual property int Id { int get() override; }
@@ -39,6 +40,7 @@ public:
 	virtual property FarNet::Switching Switching { FarNet::Switching get() override; void set(FarNet::Switching value) override; }
 	virtual property ViewFrame Frame { ViewFrame get() override; void set(ViewFrame value) override; }
 public:
+	virtual void Activate() override;
 	virtual void Open(OpenMode mode) override;
 	virtual Int64 SetFrame(Int64 pos, int left, ViewFrameOptions options) override;
 	virtual void Close() override;
@@ -49,6 +51,7 @@ internal:
 internal:
 	int _id;
 	String^ _FileName;
+	DateTime _TimeOfOpen;
 private:
 	property bool IsOpened { bool get(); }
 	void AssertClosed();

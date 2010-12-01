@@ -356,12 +356,24 @@ namespace FarNet
 		/// <summary>
 		/// Closes the current editor.
 		/// </summary>
+		/// <remarks>
+		/// Changes, if any, are lost. Call <see cref="Save()"/> to save them.
+		/// </remarks>
 		public abstract void Close();
 
 		/// <summary>
-		/// Saves the file in the current editor. Exception on failure.
+		/// Saves changes, if any. Exception on failure.
 		/// </summary>
+		/// <remarks>
+		/// This method does nothing if there are no changes to save (<see cref="IsSaved"/> gets true).
+		/// </remarks>
 		public abstract void Save();
+
+		/// <summary>
+		/// Saves the file in the current editor even with no changes. Exception on failure.
+		/// </summary>
+		/// <param name="force">Tells to write the file even if there are no changes.</param>
+		public abstract void Save(bool force);
 
 		/// <summary>
 		/// Saves the file in the current editor as the specified file. Exception on failure.
@@ -396,13 +408,10 @@ namespace FarNet
 		/// Gets or sets the window title. Set it before or after opening.
 		/// </summary>
 		/// <remarks>
-		/// For the opened editor setting the title to null or empty restores
-		/// the original title.
+		/// For the current editor setting the title to null or empty restores the original title.
 		/// <para>
-		/// NOTE: Getting the title does not actually work: for an instance
-		/// opened by a module it gets the original title, not the current one;
-		/// for other instances it gets null. (Far API only allows to set the
-		/// title).
+		/// NOTE: Far API only allows to set the title.
+		/// Thus, the title just gets the last value set by a module, if any, not the actual title.
 		/// </para>
 		/// </remarks>
 		public abstract string Title { get; set; }
@@ -413,13 +422,23 @@ namespace FarNet
 		public abstract bool Overtype { get; set; }
 
 		/// <summary>
-		/// Gets true if the editor text is modified.
+		/// Gets true if the text is modified in the current editor (see remarks).
 		/// </summary>
+		/// <remarks>
+		/// It gets true if the text is modified at least once and these changes are not undone.
+		/// Note that in this case it will get true even after saving. Use <see cref="IsSaved"/>
+		/// in order to check for not saved changes.
+		/// </remarks>
+		/// <seealso cref="TimeOfSave"/>
 		public abstract bool IsModified { get; }
 
 		/// <summary>
-		/// Gets true if the editor text is saved.
+		/// Gets true if there are no changes to save in the current editor (see remarks).
 		/// </summary>
+		/// <remarks>
+		/// It is true when the editor is just opened or saved.
+		/// Use <see cref="TimeOfSave"/> to check whether it was saved at least once.
+		/// </remarks>
 		public abstract bool IsSaved { get; }
 
 		/// <summary>
@@ -743,12 +762,38 @@ namespace FarNet
 		/// Gets the bookmark operator.
 		/// </summary>
 		public abstract IEditorBookmark Bookmark { get; }
+
+		/// <summary>
+		/// Gets the opening time of the instance.
+		/// </summary>
+		public abstract DateTime TimeOfOpen { get; }
+
+		/// <summary>
+		/// Gets the saving time of the instance.
+		/// </summary>
+		/// <remarks>
+		/// If the editor has not been saved at least once then it is equal to <c>DateTime.MinValue</c>.
+		/// </remarks>
+		public abstract DateTime TimeOfSave { get; }
+
+		/// <summary>
+		/// Gets count of key events.
+		/// </summary>
+		public abstract int KeyCount { get; }
+
+		/// <summary>
+		/// Makes the instance window active.
+		/// </summary>
+		/// <remarks>It may throw if the window cannot be activated.</remarks>
+		public abstract void Activate();
+
 	}
 
 	/// <summary>
 	/// Editor bookmark operator.
 	/// </summary>
 	/// <remarks>
+	/// It is exposed as <see cref="IEditor.Bookmark"/>.
 	/// It operates on standard (permanent) and stack (temporary) bookmarks in the current editor.
 	/// </remarks>
 	public abstract class IEditorBookmark
@@ -795,7 +840,7 @@ namespace FarNet
 		/// Navigates to the next stack bookmark, if any.
 		/// </summary>
 		public abstract void GoToNextStackBookmark();
-		
+
 		/// <summary>
 		/// Navigates to the previous stack bookmark, if any.
 		/// </summary>

@@ -23,8 +23,6 @@ internal:
 	static AnyEditor _anyEditor;
 private:
 	// Registered opened editors
-	static SortedList<int, Editor^> _editors;
-	// Cached current editor
-	static Editor^ _editorCurrent;
+	static List<Editor^> _editors;
 };
 }

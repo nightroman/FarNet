@@ -433,32 +433,43 @@ namespace PowerShellFar
 				files.Add(new MapFile(value, Map));
 		}
 
+		// _101125_173951 Out-GridView approach:
+		// show Index (##), Value, Type columns for mixed types and the only 'TypeName' column for the same type.
 		void BuildFilesMixed(Collection<PSObject> values)
 		{
 			var files = new List<FarFile>(values.Count);
 			Panel.Files = files;
 
-			PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
-			if (mode == null)
-				mode = new PanelModeInfo();
-			mode.Columns = new FarColumn[]
-			{
-				new SetColumn() { Kind = "S", Name = "##"}, // "Index" clashes to sort order mark
-				new SetColumn() { Kind = "N", Name = "Value"},
-				new SetColumn() { Kind = "Z", Name = "Type"}
-			};
-			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
-
-			int index = 0;
+			int index = -1;
+			string sameType = null;
 			foreach (PSObject value in values)
 			{
+				++index;
+
 				// new file
-				SetFile file = new SetFile()
+				SetFile file = new SetFile() { Data = value, Length = index };
+
+				// description: watch the same type to choose the panel columns and to reuse same type string
+				string newType = value.BaseObject.GetType().FullName;
+				if (index == 0)
 				{
-					Data = value,
-					Length = index++,
-					Description = value.BaseObject.GetType().FullName
-				};
+					sameType = newType;
+					file.Description = newType;
+				}
+				else if (sameType == null)
+				{
+					file.Description = newType;
+				}
+				else if (sameType == newType)
+				{
+					// use the same reference
+					file.Description = sameType;
+				}
+				else
+				{
+					sameType = null;
+					file.Description = newType;
+				}
 
 				// discover name
 				// _100309_121508 Linear type case
@@ -476,6 +487,31 @@ namespace PowerShellFar
 				// add
 				files.Add(file);
 			}
+
+			PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
+			if (mode == null)
+				mode = new PanelModeInfo();
+
+			// choose columns
+			if (sameType == null)
+			{
+				//! The long "Index" clashes to sort order mark, use the short "##"
+				mode.Columns = new FarColumn[]
+				{
+				new SetColumn() { Kind = "S", Name = "##"},
+				new SetColumn() { Kind = "N", Name = "Value"},
+				new SetColumn() { Kind = "Z", Name = "Type"}
+				};
+			}
+			else
+			{
+				mode.Columns = new FarColumn[]
+				{
+				new SetColumn() { Kind = "N", Name = sameType }
+				};
+			}
+
+			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
 		}
 
 		internal override string HelpMenuTextOpenFileMembers { get { return "Object members"; } }

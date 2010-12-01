@@ -55,6 +55,8 @@ public:
 	virtual property bool SelectionExists { bool get() override; }
 	virtual property bool ShowWhiteSpace { bool get() override; void set(bool value) override; }
 	virtual property bool WriteByteOrderMark { bool get() override; void set(bool value) override; }
+	virtual property DateTime TimeOfOpen { DateTime get() override; }
+	virtual property DateTime TimeOfSave { DateTime get() override; }
 	virtual property FarNet::DeleteSource DeleteSource { FarNet::DeleteSource get() override; void set(FarNet::DeleteSource value) override; }
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get() override; void set(ExpandTabsMode value) override; }
 	virtual property IEditorBookmark^ Bookmark { IEditorBookmark^ get() override; }
@@ -65,6 +67,7 @@ public:
 	virtual property int CodePage { int get() override; void set(int value) override; }
 	virtual property int Count { int get() override; }
 	virtual property int Id { int get() override; }
+	virtual property int KeyCount { int get() override; }
 	virtual property int TabSize { int get() override; void set(int value) override; }
 	virtual property Place SelectionPlace { Place get() override; }
 	virtual property Place Window { Place get() override; void set(Place value) override; }
@@ -84,6 +87,7 @@ public:
 	virtual String^ GetSelectedText(String^ separator) override;
 	virtual String^ GetText(String^ separator) override;
 	virtual TextWriter^ OpenWriter() override;
+	virtual void Activate() override;
 	virtual void Add(String^ text) override;
 	virtual void BeginAsync() override;
 	virtual void BeginUndo() override;
@@ -109,6 +113,7 @@ public:
 	virtual void Redraw() override;
 	virtual void RemoveAt(int index) override;
 	virtual void Save() override;
+	virtual void Save(bool force) override;
 	virtual void Save(String^ fileName) override;
 	virtual void SelectAllText() override;
 	virtual void SelectText(int column1, int line1, int column2, int line2, PlaceKind kind) override;
@@ -128,6 +133,7 @@ private:
 private:
 	int _id;
 	String^ _FileName;
+	DateTime _TimeOfOpen;
 	bool _ShowWhiteSpace;
 	bool _ShowWhiteSpaceSet;
 	bool _WriteByteOrderMark;
@@ -144,6 +150,8 @@ private:
 	int _CodePage;
 	TextFrame _frameStart;
 internal:
+	DateTime _TimeOfSave;
+	int _KeyCount;
 	// async stuff
 	HANDLE _hMutex;
 	StringBuilder^ _output;

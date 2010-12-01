@@ -143,7 +143,7 @@ namespace PowerShellFar
 
 			// head before the last word
 			line = line.Substring(0, line.Length - lastWord.Length);
-			
+
 			// #-pattern
 			int index, caret = -1;
 			if (hashMode != 0 && (index = word.IndexOf('#')) >= 0)
@@ -305,9 +305,8 @@ namespace PowerShellFar
 			if (editor == null)
 				editor = A.Psf.Editor();
 
-			// modified? save
-			if (editor.IsModified)
-				editor.Save();
+			// commit
+			editor.Save();
 
 			// sync location to file
 			string dir = Path.GetDirectoryName(editor.FileName);
