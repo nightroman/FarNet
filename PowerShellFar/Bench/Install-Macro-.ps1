@@ -61,7 +61,7 @@ $Far.Macro.Install($(
 	# Also, AltF10 in panels disables questionable folder tree feature.
 	New-FarMacro Common AltF10 (Get-PsfMacro 4) 'PSF: Command history'
 
-	### Open recent file in editor
+	### Open recent file in editor (history)
 	# Calls Show-History-.ps1 or fallback
 	New-FarMacro Common AltF11 (Get-PsfMacro e AltF11) 'PSF: Edit recent file'
 	# CtrlShiftF11 -> standard AltF11

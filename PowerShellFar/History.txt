@@ -1,6 +1,29 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.31 =
+
+*) PowerShell.hrc for Colorer
+Outlined: improved for functions, added for variables $global:X and $script:X
+(with prefix). This allows to insert functions and variable names from the
+outliner menu.
+
+*) Object panel columns a la Out-GridView in some cases:
+- Same primitive types: 1 column (TypeName)
+- Mixed types: 3 columns (##, Value, Type)
+Compare these two panels:
+>: '42', 'foo' | Out-FarPanel
+>: 42, 'foo' | Out-FarPanel
+
+*) Minor fix: removed misused IEditor.IsModified from editor scripts.
+
+*) Removed cmdlet Trace-Far
+It is not proven to be useful. Just call [Diagnostics.Trace]::Trace* methods
+directly (see Test-Stepper-.ps1) or use more advanced .NET TraceSource class.
+As a result:
+- Test-Stepper+.ps1 does not trace (too much for a demo)
+- Test-Stepper-.ps1 shows use of standard .NET tracing
+
 = 4.3.30 =
 
 *) Select-Bookmark-.ps1

@@ -48,10 +48,10 @@ if (!$editor -or $editor.FileName -notlike '*.hlf') {
 	return
 }
 
+# commit
+$editor.Save()
+
 # open a file from editor with the current topic
-if ($editor.IsModified) {
-	$editor.Save()
-}
 for($e = $editor.Caret.Y; $e -ge 0; --$e) {
 	$text = $editor[$e].Text
 	if ($text.StartsWith('@')) {

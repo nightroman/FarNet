@@ -362,10 +362,7 @@ void Editor::Title::set(String^ value)
 		PIN_NE(pin, value);
 		Info.EditorControl(ECTL_SETTITLE, (wchar_t*)pin);
 	}
-	else
-	{
-		_Title = value;
-	}
+	_Title = value;
 }
 
 Place Editor::Window::get()
@@ -470,6 +467,18 @@ void Editor::DeleteLine()
 //! 090926 Mantis 921. Fixed in 1142
 void Editor::Save()
 {
+	if (IsSaved)
+		return;
+
+	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
+		throw gcnew InvalidOperationException("Cannot save the editor file.");
+}
+
+void Editor::Save(bool force)
+{
+	if (!force && IsSaved)
+		return;
+
 	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
 		throw gcnew InvalidOperationException("Cannot save the editor file.");
 }
@@ -877,10 +886,12 @@ void Editor::SetBoolOption(int option, bool value)
 
 void Editor::Start(const EditorInfo& ei, bool waiting)
 {
-	// set info
-	_id = ei.EditorID;
 	CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
 	Info.EditorControl(ECTL_GETFILENAME, fileName);
+
+	// set info
+	_id = ei.EditorID;
+	_TimeOfOpen = DateTime::Now;
 	_FileName = gcnew String(fileName);
 
 	// preset waiting runtime properties
@@ -1150,6 +1161,37 @@ IList<ILine^>^ Editor::SelectedLines::get()
 IEditorBookmark^ Editor::Bookmark::get()
 {
 	return %EditorBookmark::Instance;
+}
+
+DateTime Editor::TimeOfOpen::get()
+{
+	return _TimeOfOpen;
+}
+
+DateTime Editor::TimeOfSave::get()
+{
+	return _TimeOfSave;
+}
+
+int Editor::KeyCount::get()
+{
+	return _KeyCount;
+}
+
+void Editor::Activate()
+{
+	int nWindow = Far::Net->Window->Count;
+	for(int i = 0; i < nWindow; ++i)
+	{
+		IWindowInfo^ info = Far::Net->Window->GetInfoAt(i, true);
+		if (info->Kind == WindowKind::Editor && info->Name == _FileName)
+		{
+			Far::Net->Window->SetCurrentAt(i);
+			Far::Net->Window->Commit(); //?????
+			return;
+		}
+	}
+	throw gcnew InvalidOperationException("Cannot find the window by name.");
 }
 
 }

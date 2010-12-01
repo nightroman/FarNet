@@ -289,6 +289,7 @@ $mapEditor = @{ ### EDITOR MAP
 'F10' = 'Quit'
 'F11' = 'Show the plugin commands menu'
 'F2' = 'Save file'
+'F4' = 'Quit'
 'F6' = 'Switch to viewer'
 'F7' = 'Search'
 'F8' = 'Toggle DOS/Windows text'

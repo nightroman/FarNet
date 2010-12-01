@@ -680,11 +680,8 @@ void Far0::OpenMenu(ModuleToolOptions from)
 		return;
 	}
 
-	// show the panels menu or the message
-	if (from == ModuleToolOptions::Panels)
-		ShowPanelMenu(true);
-	else
-		Far::Net->Message("This menu is empty but it is used internally.", "FarNet");
+	// show the menu or the message
+	ShowMenu(from, true);
 }
 
 void Far0::OpenConfig()
@@ -862,24 +859,35 @@ CultureInfo^ Far0::GetCurrentUICulture(bool update)
 	return _currentUICulture = CultureInfo::InvariantCulture;
 }
 
-void Far0::ShowPanelMenu(bool showPushCommand)
+void Far0::ShowMenu(ModuleToolOptions from, bool showPushCommand)
 {
+	if (from == ModuleToolOptions::Dialog)
+	{
+		Far::Net->Message("This menu is empty but it is used internally.", "FarNet");
+		return;
+	}
+
+	String^ sEditors = "Editors...";
+	String^ sViewers = "Viewers...";
 	String^ sPushShelveThePanel = "Push/Shelve the panel";
 	String^ sSwitchFullScreen = "Switch full screen";
 	String^ sClose = "Close the panel";
 
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->AutoAssignHotkeys = true;
-	menu->HelpTopic = "MenuPanels";
+	menu->HelpTopic = "MenuMain";
 	menu->ShowAmpersands = true;
-	menu->Title = ".NET panel tools";
-	menu->BreakKeys->Add(VKeyCode::Delete);
+	menu->Title = ".NET tools";
 
 	FarItem^ mi;
 	for(;; menu->Items->Clear())
 	{
+		// Editors/Viewers
+		menu->Add(sEditors);
+		menu->Add(sViewers);
+
 		// Push/Shelve
-		if (showPushCommand)
+		if (from == ModuleToolOptions::Panels && showPushCommand)
 		{
 			IAnyPanel^ panel = Far::Net->Panel;
 			if (panel->IsPlugin)
@@ -909,8 +917,11 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 		}
 
 		// Pop/Unshelve
-		if (Works::ShelveInfo::Stack->Count)
+		if (from == ModuleToolOptions::Panels && Works::ShelveInfo::Stack->Count)
 		{
+			// to remove
+			menu->BreakKeys->Add(VKeyCode::Delete);
+
 			menu->Add("Pop/Unshelve")->IsSeparator = true;
 
 			for each(Works::ShelveInfo^ si in Works::ShelveInfo::Stack)
@@ -937,6 +948,18 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 				Works::ShelveInfo::Stack->Remove(shelve);
 
 			continue;
+		}
+
+		// Editors/Viewers
+		if ((Object^)item->Text == (Object^)sEditors)
+		{
+			ShowEditorsMenu();
+			return;
+		}
+		if ((Object^)item->Text == (Object^)sViewers)
+		{
+			ShowViewersMenu();
+			return;
 		}
 
 		// Push/Shelve
@@ -974,6 +997,50 @@ void Far0::ShowPanelMenu(bool showPushCommand)
 
 		return;
 	}
+}
+
+void Far0::ShowEditorsMenu() //?????
+{
+	IMenu^ menu = Far::Net->CreateMenu();
+	menu->Title = "Editors";
+
+	int index = -1;
+	String^ hotkeys = "0123456789abcdefghijklmnopqrstuvwxyz";
+	for each(IEditor^ it in Far::Net->Editors())
+	{
+		++index;
+		String^ name = String::Format("&{0}. {1}", (index < hotkeys->Length ? hotkeys->Substring(index, 1) : " "), it->FileName);
+		FarItem^ mi = menu->Add(name);
+		mi->Data = it;
+	}
+
+	if (!menu->Show())
+		return;
+
+	IEditor^ it = (IEditor^)menu->SelectedData;
+	it->Activate();
+}
+
+void Far0::ShowViewersMenu() //?????
+{
+	IMenu^ menu = Far::Net->CreateMenu();
+	menu->Title = "Viewers";
+
+	int index = -1;
+	String^ hotkeys = "0123456789abcdefghijklmnopqrstuvwxyz";
+	for each(IViewer^ it in Far::Net->Viewers())
+	{
+		++index;
+		String^ name = String::Format("&{0}. {1}", (index < hotkeys->Length ? hotkeys->Substring(index, 1) : " "), it->FileName);
+		FarItem^ mi = menu->Add(name);
+		mi->Data = it;
+	}
+
+	if (!menu->Show())
+		return;
+
+	IViewer^ it = (IViewer^)menu->SelectedData;
+	it->Activate();
 }
 
 void Far0::InvalidateProxyCommand()
