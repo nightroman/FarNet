@@ -47,6 +47,8 @@ namespace FarNet.RightControl
 				_menu.Add("&6. delete right");
 				_menu.Add("&7. vertical left");
 				_menu.Add("&8. vertical right");
+				_menu.Add("&h. go to smart home");
+				_menu.Add("&s. select to smart home");
 				_menu.Lock();
 			}
 
@@ -71,6 +73,8 @@ namespace FarNet.RightControl
 					else
 						Run(editor, line, Operation.Select, true, true);
 					break;
+				case 8: Home(editor, line, false); break;
+				case 9: Home(editor, line, true); break;
 			}
 		}
 
@@ -187,7 +191,7 @@ namespace FarNet.RightControl
 									control.IsTouched = true;
 							}
 						}
-						
+
 						line.UnselectText();
 						line.Caret = newX;
 					}
@@ -239,7 +243,7 @@ namespace FarNet.RightControl
 						line.Caret = newX;
 					}
 				}
-				
+
 				return;
 			}
 		}
@@ -451,6 +455,85 @@ namespace FarNet.RightControl
 			}
 
 			SelectStream(null, line, right, new Point(oldX, 0), new Point(newX, 0));
+		}
+
+		void Home(IEditor editor, ILine line, bool select)
+		{
+			if (editor != null)
+				line = editor[-1];
+
+			int home = 0;
+			int caret = line.Caret;
+			string text = line.Text;
+			Match match = Regex.Match(text, @"^(\s+)");
+			if (match.Success)
+				home = match.Groups[1].Length;
+
+			if (select)
+			{
+				var span = line.SelectionSpan;
+				if (span.Start < 0)
+				{
+					if (caret < home)
+					{
+						line.SelectText(caret, home);
+						line.Caret = home;
+					}
+					else if (caret > home)
+					{
+						line.SelectText(home, caret);
+						line.Caret = home;
+					}
+					else
+					{
+						line.SelectText(0, home);
+						line.Caret = 0;
+					}
+				}
+				else if (span.Start == 0 && span.End == home)
+				{
+					line.UnselectText();
+					if (caret == 0)
+						line.Caret = home;
+					else
+						line.Caret = 0;
+				}
+				else if (span.Start > 0 && span.End == home)
+				{
+					line.SelectText(0, span.Start);
+					line.Caret = 0;
+				}
+				else if (span.Start == 0 && span.End < home)
+				{
+					line.SelectText(span.End, home);
+					line.Caret = home;
+				}
+				else if (span.Start > 0 && span.End < home)
+				{
+					if (caret == span.Start)
+						line.SelectText(span.End, home);
+					else
+						line.SelectText(span.Start, home);
+					line.Caret = home;
+				}
+				else
+				{
+					if (home == caret)
+						home = 0;
+
+					line.SelectText(home, span.End);
+					line.Caret = home;
+				}
+			}
+			else
+			{
+				// go to smart home
+				line.UnselectText();
+				line.Caret = caret == home ? 0 : home;
+			}
+
+			if (editor != null)
+				editor.Redraw();
 		}
 
 	}
