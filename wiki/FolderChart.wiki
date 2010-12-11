@@ -24,6 +24,6 @@ For the current panel directory this tool calculates file and directory sizes an
 ----
 Pictures of two modes (pie and bars):
 
-[http://farnet.googlecode.com/svn/trunk/FolderChart/demo1-pie.PNG]
+[http://farnet.googlecode.com/svn-history/r475/trunk/FolderChart/demo1-pie.PNG]
 
-[http://farnet.googlecode.com/svn/trunk/FolderChart/demo2-bar.PNG]
+[http://farnet.googlecode.com/svn-history/r475/trunk/FolderChart/demo2-bar.PNG]
