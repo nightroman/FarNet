@@ -1,6 +1,17 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.32 =
+
+*) Removed Go-Home-.ps1
+The code and commands are moved to FarNet.RightControl module. Updated
+Profile-.ps1 and Profile-Editor-.ps1.
+
+*) Install-Macro-.ps1
+-- Added CtrlShiftD, CtrlShiftI for FarNet Decrease/Increase font size.
+-- Common\AltF11 is not used (to be used by a FarNet module).
+-- Shell\CtrlC to copy selected text.
+
 = 4.3.31 =
 
 *) PowerShell.hrc for Colorer
@@ -19,7 +30,7 @@ Compare these two panels:
 
 *) Removed cmdlet Trace-Far
 It is not proven to be useful. Just call [Diagnostics.Trace]::Trace* methods
-directly (see Test-Stepper-.ps1) or use more advanced .NET TraceSource class.
+directly (see Test-Stepper-.ps1) or use advanced .NET class TraceSource.
 As a result:
 - Test-Stepper+.ps1 does not trace (too much for a demo)
 - Test-Stepper-.ps1 shows use of standard .NET tracing

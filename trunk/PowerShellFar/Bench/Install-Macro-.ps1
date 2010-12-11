@@ -10,9 +10,8 @@
 	The script shows how to assign macros to the user tools via menus or the
 	PowerShellFar input code box.
 
-	For the editor there is another way: event handlers. For example actions
-	"Extended home" (see Go-Home-.ps1) can be assigned to some keys in the
-	editor startup code (see Profile-Editor-.ps1).
+	For the editor there is another way: event handlers installed in the editor
+	startup code; example: Profile-Editor-.ps1.
 
 .NOTES
 	-- It is recommended to install all macros by one call of Install() to make
@@ -54,6 +53,10 @@ $Far.Macro.Install($(
 
 	### == Common (all areas)
 
+	### Decrease/Increase font size
+	New-FarMacro Common CtrlShiftD 'F11 $If (Menu.Select(".NET") == 0) Enter c d $End' 'FarNet: Decrease font size'
+	New-FarMacro Common CtrlShiftI 'F11 $If (Menu.Select(".NET") == 0) Enter c i $End' 'FarNet: Increase font size'
+
 	### Favorites menu
 	New-FarMacro Common CtrlShiftL (Get-PsfMacro '1 "Menu-Favorites-.ps1" Enter') 'PSF: Favorites'
 
@@ -62,8 +65,10 @@ $Far.Macro.Install($(
 	New-FarMacro Common AltF10 (Get-PsfMacro 4) 'PSF: Command history'
 
 	### Open recent file in editor (history)
+	<# 2010-12-08 FarNet.Vessel will do this
 	# Calls Show-History-.ps1 or fallback
 	New-FarMacro Common AltF11 (Get-PsfMacro e AltF11) 'PSF: Edit recent file'
+	#>
 	# CtrlShiftF11 -> standard AltF11
 	New-FarMacro Common CtrlShiftF11 AltF11 'Far: Open recent file'
 
@@ -139,6 +144,9 @@ $Far.Macro.Install($(
 
 	### (Go-Head-.ps1) Go to head file item (e.g. useful after [CtrlF5] to find the newest file)
 	New-FarMacro Shell CtrlShiftF5 (Get-PsfMacro h) 'PSF: Go to panel head item'
+
+	### CtrlC to copy selected text
+	New-FarMacro Shell CtrlC 'CtrlIns' 'Copy selected text' -SelectedText 1
 
 	### Open recent folder in the panel
 	# Call Show-History-.ps1 by PSF or fallback

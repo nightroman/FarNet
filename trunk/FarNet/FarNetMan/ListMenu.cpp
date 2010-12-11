@@ -177,7 +177,7 @@ void ListMenu::MakeFilter1()
 			key = Far::Net->OpenRegistryKey("SavedDialogHistory\\" + FilterHistory, false);
 			if (key)
 			{
-				int flags = (int)key->GetValue("Flags", nullptr);
+				int flags = (int)key->GetValue("Flags", (Object^)0);
 				if (flags)
 					Filter = key->GetValue("Line0", String::Empty)->ToString();
 			}

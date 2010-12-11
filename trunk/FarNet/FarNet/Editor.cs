@@ -556,9 +556,12 @@ namespace FarNet
 		public abstract string GetText(string separator);
 
 		/// <summary>
-		/// Sets text.
+		/// Sets the new text.
 		/// </summary>
 		/// <param name="text">New text.</param>
+		/// <remarks>
+		/// There is no selection after this.
+		/// </remarks>
 		public abstract void SetText(string text);
 
 		/// <summary>

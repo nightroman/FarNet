@@ -648,6 +648,10 @@ void Editor::SetText(String^ text)
 
 	AutoEditorInfo ei;
 
+	//_101210_142325 drop selection
+	if (ei.BlockType != BTYPE_NONE)
+		UnselectText();
+
 	// workaround: Watch-Output-.ps1, missed the first empty line of the first output;
 	// 090617 disabled this workaround because I cannot see any problem (I do not remember what it was)
 #if 0
@@ -936,7 +940,17 @@ String^ Editor::GetSelectedText(String^ separator)
 			sb.Append(separator);
 		int len = (egs.SelEnd < 0 ? egs.StringLength : egs.SelEnd) - egs.SelStart;
 		if (len > 0)
-			sb.Append(gcnew String(egs.StringText + egs.SelStart, 0, len)); //??
+		{
+			// _101210_192119
+			if (ei.BlockType != BTYPE_COLUMN || egs.SelStart + len <= egs.StringLength)
+			{
+				sb.Append(gcnew String(egs.StringText + egs.SelStart, 0, len));
+			}
+			else
+			{
+				sb.Append((gcnew String(egs.StringText + egs.SelStart))->PadRight(len));
+			}
+		}
     }
 
 	return sb.ToString();

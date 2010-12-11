@@ -46,8 +46,6 @@ $Psf.Action('&i. Indent selection', { Indent-Selection- }, 'Editor')
 $Psf.Action('&o. Outdent selection', { Indent-Selection- -Outdent }, 'Editor')
 $Psf.Action('&r. Reindent selection', { Reindent-Selection- }, 'Editor')
 $Psf.Action('&f. Reformat selection', { Reformat-Selection- }, 'Editor')
-$Psf.Action('&h. Go to extended home', { Go-Home- }, 'Editor')
-$Psf.Action('&s. Select to extended home', { Go-Home- -Select }, 'Editor')
 $Psf.Action('&]. Copy text link', { $Far.CopyToClipboard((Get-TextLink-)) }, 'Editor')
 
 ### Provider settings (ItemPanel)

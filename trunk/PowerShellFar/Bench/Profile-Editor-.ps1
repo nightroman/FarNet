@@ -19,21 +19,7 @@ New-Variable Editor.Data @{} -Scope Global -Option ReadOnly -Description 'Editor
 $Far.AnyEditor.add_KeyDown({&{
 	$e = $_
 	if ($e.Key.ControlKeyState -band [FarNet.ControlKeyStates]::EnhancedKey) {
-		# keys:
-		if ($e.Key.VirtualKeyCode -eq [FarNet.VKeyCode]::Home) {
-			### Go to extended home
-			if ($e.Key.CtrlAltShift -eq 0) {
-				$e.Ignore = $true
-				Go-Home-
-				$this.Redraw()
-			}
-			### Select to extended Home
-			elseif ($e.Key.CtrlAltShift -eq [FarNet.ControlKeyStates]::ShiftPressed) {
-				$e.Ignore = $true
-				Go-Home- -Select
-				$this.Redraw()
-			}
-		}
+		# navigation keys (not used now)
 	}
 	else {
 		### F1

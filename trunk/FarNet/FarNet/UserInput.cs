@@ -856,12 +856,14 @@ OemClear = 254;
 		/// <param name="action">Mouse action.</param>
 		/// <param name="buttons">Mouse buttons.</param>
 		/// <param name="controlKeyState">Control keys.</param>
-		public MouseInfo(Point where, MouseAction action, MouseButtons buttons, ControlKeyStates controlKeyState)
+		/// <param name="delta">?????</param>
+		public MouseInfo(Point where, MouseAction action, MouseButtons buttons, ControlKeyStates controlKeyState, int delta)
 		{
 			_where = where;
 			_buttons = buttons;
 			_action = action;
 			_controlKeyState = controlKeyState;
+			_delta = delta;
 		}
 
 		/// <summary>
@@ -892,6 +894,12 @@ OemClear = 254;
 		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
 		public ControlKeyStates CtrlAltShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
+
+		/// <summary>
+		/// Delta value.
+		/// </summary>
+		public int Delta { get { return _delta; } set { _delta = value; } }
+		int _delta;
 
 		///
 		public static bool operator ==(MouseInfo left, MouseInfo right)

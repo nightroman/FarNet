@@ -1399,7 +1399,7 @@ editor event handlers then it is better to call more tools from them.
 
 The author himself deliberately uses this editor profile to set editor event
 handlers even for keys, where macros might be used instead. This is done at
-least in order to be sure that handlers work fine - yes, they do.
+least in order to be sure that handlers work fine.
 
 - Don't use it together with HlfViewer: disable HlfViewer or remove F1 code from
 the script.
@@ -1515,7 +1515,7 @@ full paths (if text contains slashes) (also with * and ?)
 file\folder names in the current folder (e.g. in Bench):
 
 	go
-		Go-Home-.ps1
+		Go-Head-.ps1
 		Go-Selection-.ps1
 
 static members of .NET types:
@@ -1843,13 +1843,13 @@ or you can just invoke standard help commands, for example:
 $#Autoloaded functions#
 ~Contents~@Contents@
 
-Some scripts: Go-Home-.ps1, Complete-Word-.ps1 and others designed for frequent
-use are implemented as "autoloaded global functions". Take a look at Go-Home-:
-on the first call of Go-Home- (with no extension!) from any code the script
-Go-Home-.ps1 is invoked. It takes its parameters, installs the global function
-Go-Home- (the same name!) and calls it with all the parameters passed in. From
-now on Go-Home- calls the installed function, not the source script. Note: you
-can simply resend all the parameters using @@PSBoundParameters.
+Some scripts (Complete-Word-.ps1) designed for frequent use are implemented as
+autoloaded global functions. Take a look at Complete-Word-: on the first call
+of Complete-Word- (with no extension!) from any code the script is invoked. It
+installs the global function Complete-Word- (the same name!) and calls it (with
+the parameters passed in, if any). From now on Complete-Word- is resolved to
+the function, not the source script. Note: use @@PSBoundParameters to resend
+all the parameters, if any.
 
 
 #Two rules of using this technique#

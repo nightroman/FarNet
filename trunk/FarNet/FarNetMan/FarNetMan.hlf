@@ -7,8 +7,7 @@ $#FarNet#
 
 #FarNet menus#
 
-	~Plugin menu~@Menu@
-	~Panels menu~@MenuMain@
+	~Plugin menu~@MenuMain@
 	~Config menu~@MenuConfig@
 
 #User interface features#
@@ -21,37 +20,26 @@ $#FarNet#
     ~PowerShellFar~@<..\..\FarNet\Modules\PowerShellFar\>Contents@
 
 
-@Menu
+@MenuMain
 $#Plugin menu#
 ~Contents~@Contents@
 
-FarNet shows its menu items #.NET# in all Far plugin menus [F11].
+	#Console...#
+		#Decrease font size#
+		#Increase font size#
 
-#Panels, Editor, Viewer#
+Commands operating on the console window, namely to decrease and increase the
+current console font and window size.
 
-It shows the ~.NET tools menu~@MenuMain@.
-
-#Config#
-
-It shows the ~Config menu~@MenuConfig@.
-
-#Dialog#
-
-It does nothing when selected manually. It is used internally and cannot be
-removed, it allows to bypass some natural limitations of Far API.
-
-
-@MenuMain
-$#.NET tools menu#
-~Contents~@Contents@
-
-#Editors/Viewers...#
+	#Editors...#
+	#Viewers...#
 
 These menus show the lists of opened editors/viewers sorted by the most recent
 activity. E.g. the first item is the current editor/viewer, the second item is
 the previously active and so on.
 
-#Push/Shelve the panel#
+	#Panels...#
+		#Push/Shelve the panel#
 
 If the current panel is a FarNet panel then you can push it to the internal
 shelve for later use. The pushed panel is replaced with a Far file panel.
@@ -62,19 +50,22 @@ remains current.
 
 You can push/shelve any number of panels and pop/unshelve them later.
 
-#Switch full screen#
+	#Panels...#
+		#Switch full screen#
 
 This command switches the full screen mode for any view mode of any FarNet
 panel. Thus, you may actually use 20 modes = 10 as usual + 10 the same with
 switched full screen.
 
-#Close the panel#
+	#Panels...#
+		#Close the panel#
 
 Closes the active plugin panel. It can be any plugin: FarNet or native. Some
 plugin panels may not close on this command. For native plugins original Far
 panel state is not restored on closing.
 
-#Pop/Unshelve [Enter]#
+	#Panels...#
+		#Pop/Unshelve [Enter]#
 
 If there are previously pushed/shelved panels then this menu shows titles of
 these panels. When you select one then the selected panel is restored and its
@@ -85,7 +76,8 @@ Pushed FarNet panels are popped, i.e. removed from the internal shelve. Shelved
 Far panels are unshelved, i.e. not removed from the shelve, they are kind of
 panel bookmarks that can be used several times.
 
-#Pop/Unshelve [Del]#
+	#Panels...#
+		#Pop/Unshelve [Del]#
 
 Removes the selected shelved panel information from the internal shelve. It is
 ignored if the selected item is not a shelved panel.
