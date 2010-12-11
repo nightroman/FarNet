@@ -15,12 +15,22 @@ namespace FarNet.RightControl
 	public class RightControlTool : ModuleTool
 	{
 		const string DefaultPattern = @"^ | $ | (?<=\b|\s)\S";
-		static Regex _regex;
+		static Regex _regex_;
 		static IMenu _menu;
+
+		static Regex Regex
+		{
+			get
+			{
+				if (_regex_ == null)
+					InitRegex(null);
+				return _regex_;
+			}
+		}
 
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
-			InitRegex();
+			InitRegex(Manager);
 
 			ILine line = null;
 			IEditor editor = null;
@@ -78,43 +88,57 @@ namespace FarNet.RightControl
 			}
 		}
 
-		void InitRegex()
+		static void InitRegex(IModuleManager manager)
 		{
-			if (_regex != null)
+			if (_regex_ != null)
 				return;
 
 			string pattern = DefaultPattern;
-			using (var key = Manager.OpenRegistryKey(null, false))
+			if (manager != null)
 			{
-				if (key != null)
+				using (var key = manager.OpenRegistryKey(null, false))
 				{
-					object value = key.GetValue("Regex", DefaultPattern);
-					if (value is string[])
-						pattern = string.Join(Environment.NewLine, (string[])value);
-					else
-						pattern = value.ToString();
+					if (key != null)
+					{
+						object value = key.GetValue("Regex", DefaultPattern);
+						if (value is string[])
+							pattern = string.Join(Environment.NewLine, (string[])value);
+						else
+							pattern = value.ToString();
+					}
 				}
 			}
 
 			try
 			{
-				_regex = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
+				_regex_ = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
 			}
 			catch (Exception e)
 			{
 				Far.Net.Message("Error on parsing the regular expression:\r" + e.Message, "RightControl", MsgOptions.LeftAligned | MsgOptions.Warning);
-				_regex = new Regex(DefaultPattern, RegexOptions.IgnorePatternWhitespace);
+				_regex_ = new Regex(DefaultPattern, RegexOptions.IgnorePatternWhitespace);
 			}
 		}
 
-		enum Operation
+		/// <summary>
+		/// Operation kind.
+		/// </summary>
+		public enum Operation
 		{
 			Step,
 			Select,
 			Delete
 		}
 
-		static void Run(IEditor editor, ILine line, Operation operation, bool right, bool alt)
+		/// <summary>
+		/// Runs the specified operation.
+		/// </summary>
+		/// <param name="editor">The active editor or null.</param>
+		/// <param name="line">The active line or null.</param>
+		/// <param name="operation">The operation to run.</param>
+		/// <param name="right">True for right, false for left.</param>
+		/// <param name="alt">True for the alternative operation.</param>
+		public static void Run(IEditor editor, ILine line, Operation operation, bool right, bool alt)
 		{
 			Point caret = line == null ? editor.Caret : new Point(line.Caret, 0);
 			int iColumn = caret.X;
@@ -126,7 +150,7 @@ namespace FarNet.RightControl
 				var text = currentLine.Text;
 
 				int newX = -1;
-				foreach (Match match in _regex.Matches(text))
+				foreach (Match match in Regex.Matches(text))
 				{
 					if (right)
 					{
@@ -457,7 +481,17 @@ namespace FarNet.RightControl
 			SelectStream(null, line, right, new Point(oldX, 0), new Point(newX, 0));
 		}
 
-		void Home(IEditor editor, ILine line, bool select)
+		/// <summary>
+		/// Moves the caret or selects the text to the smart line home.
+		/// </summary>
+		/// <param name="editor">The current editor or null.</param>
+		/// <param name="line">The active line or null.</param>
+		/// <param name="select">True for selection, false for move.</param>
+		/// <remarks>
+		/// Smart line home is the first not white space line position
+		/// if the caret is not there or the standard line home otherwise.
+		/// </remarks>
+		public static void Home(IEditor editor, ILine line, bool select)
 		{
 			if (editor != null)
 				line = editor[-1];
