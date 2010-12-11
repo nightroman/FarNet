@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
 	Invokes a command and imports its environment variables.
-	Author: Roman Kuzmin
+	Author: Roman Kuzmin (inspired by Lee Holmes's script)
 
 .DESCRIPTION
 	It invokes any cmd shell command (normally a configuration batch file) and

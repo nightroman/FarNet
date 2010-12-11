@@ -313,7 +313,8 @@ MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m)
 		Point(m.dwMousePosition.X, m.dwMousePosition.Y),
 		(MouseAction)m.dwEventFlags & MouseAction::All,
 		(MouseButtons)m.dwButtonState & MouseButtons::All,
-		(ControlKeyStates)m.dwControlKeyState & ControlKeyStates::All);
+		(ControlKeyStates)m.dwControlKeyState & ControlKeyStates::All,
+		HIWORD(m.dwButtonState));
 }
 
 Place Edit_SelectionPlace()

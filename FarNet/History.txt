@@ -1,5 +1,22 @@
 http://code.google.com/p/farnet/
 
+= 4.3.32 =
+
+*) .NET menu
+-- All panel menu commands and items moved to the new submenu "Panels...".
+-- Added the submenu "Console...". There are two commands there: decrease and
+increase console font size. This menu is available in all menus F11\.NET
+NOTES:
+-- increasing fonts too much leads to appearance of the console scroll bars;
+-- some fonts are not suitable for this kind of interactive resizing.
+
+*) IEditor
+-- SetText() now drops selection, if any; this looks more intuitive.
+-- Fixed GetSelectedText() for column selection.
+
+*) IListMenu
+Fixed the permanent filter.
+
 = 4.3.31 =
 
 *) UI: new .NET menu items
