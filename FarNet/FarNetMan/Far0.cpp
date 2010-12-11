@@ -680,8 +680,8 @@ void Far0::OpenMenu(ModuleToolOptions from)
 		return;
 	}
 
-	// show the menu or the message
-	ShowMenu(from, true);
+	// menu
+	ShowMenu(from);
 }
 
 void Far0::OpenConfig()
@@ -859,16 +859,80 @@ CultureInfo^ Far0::GetCurrentUICulture(bool update)
 	return _currentUICulture = CultureInfo::InvariantCulture;
 }
 
-void Far0::ShowMenu(ModuleToolOptions from, bool showPushCommand)
+void Far0::InvalidateProxyCommand()
 {
-	if (from == ModuleToolOptions::Dialog)
-	{
-		Far::Net->Message("This menu is empty but it is used internally.", "FarNet");
+	delete _prefixes;
+	_prefixes = 0;
+}
+
+String^ Far0::GetMenuText(IModuleTool^ tool)
+{
+	return String::Format("{0} &{1} {2}", Res::MenuPrefix, tool->Hotkey, tool->Name);
+}
+
+void Far0::ChangeFontSize(bool increase)
+{
+	CONSOLE_FONT_INFOEX font = { sizeof(CONSOLE_FONT_INFOEX) };
+	if (!GetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
 		return;
+	
+	SHORT height = font.dwFontSize.Y;
+	for(SHORT delta = 1; delta < 10; ++delta)
+	{
+		font.dwFontSize.X = 0;
+		font.dwFontSize.Y = height + (increase ? delta : -delta);
+		if (!SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
+			continue;
+		if (!GetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
+			return;
+		if (height != font.dwFontSize.Y)
+			return;
+	}
+}
+
+void Far0::ShowMenu(ModuleToolOptions from)
+{
+	String^ sPanels = "&Panels...";
+	String^ sEditors = "&Editors...";
+	String^ sViewers = "&Viewers...";
+	String^ sConsole = "&Console...";
+
+	IMenu^ menu = Far::Net->CreateMenu();
+	menu->HelpTopic = "MenuMain";
+	menu->Title = ".NET tools";
+
+	// Panels
+	if (from == ModuleToolOptions::Panels)
+		menu->Add(sPanels);
+
+	// Editors
+	// Viewers
+	if (from != ModuleToolOptions::Dialog)
+	{
+		menu->Add(sEditors);
+		menu->Add(sViewers);
 	}
 
-	String^ sEditors = "Editors...";
-	String^ sViewers = "Viewers...";
+	// Console
+	menu->Add(sConsole);
+
+	if (!menu->Show())
+		return;
+
+	String^ text = menu->Items[menu->Selected]->Text;
+
+	if (Object::ReferenceEquals(text, sPanels))
+		ShowPanelsMenu();
+	else if (Object::ReferenceEquals(text, sEditors))
+		ShowEditorsMenu();
+	else if (Object::ReferenceEquals(text, sViewers))
+		ShowViewersMenu();
+	else
+		ShowConsoleMenu();
+}
+
+void Far0::ShowPanelsMenu()
+{
 	String^ sPushShelveThePanel = "Push/Shelve the panel";
 	String^ sSwitchFullScreen = "Switch full screen";
 	String^ sClose = "Close the panel";
@@ -877,17 +941,13 @@ void Far0::ShowMenu(ModuleToolOptions from, bool showPushCommand)
 	menu->AutoAssignHotkeys = true;
 	menu->HelpTopic = "MenuMain";
 	menu->ShowAmpersands = true;
-	menu->Title = ".NET tools";
+	menu->Title = "Panels";
 
 	FarItem^ mi;
+	bool showPushCommand = true;
 	for(;; menu->Items->Clear())
 	{
-		// Editors/Viewers
-		menu->Add(sEditors);
-		menu->Add(sViewers);
-
 		// Push/Shelve
-		if (from == ModuleToolOptions::Panels && showPushCommand)
 		{
 			IAnyPanel^ panel = Far::Net->Panel;
 			if (panel->IsPlugin)
@@ -917,7 +977,7 @@ void Far0::ShowMenu(ModuleToolOptions from, bool showPushCommand)
 		}
 
 		// Pop/Unshelve
-		if (from == ModuleToolOptions::Panels && Works::ShelveInfo::Stack->Count)
+		if (Works::ShelveInfo::Stack->Count)
 		{
 			// to remove
 			menu->BreakKeys->Add(VKeyCode::Delete);
@@ -931,7 +991,6 @@ void Far0::ShowMenu(ModuleToolOptions from, bool showPushCommand)
 			}
 		}
 
-		// go
 		if (!menu->Show())
 			return;
 
@@ -950,35 +1009,23 @@ void Far0::ShowMenu(ModuleToolOptions from, bool showPushCommand)
 			continue;
 		}
 
-		// Editors/Viewers
-		if ((Object^)item->Text == (Object^)sEditors)
-		{
-			ShowEditorsMenu();
-			return;
-		}
-		if ((Object^)item->Text == (Object^)sViewers)
-		{
-			ShowViewersMenu();
-			return;
-		}
-
 		// Push/Shelve
-		if ((Object^)item->Text == (Object^)sPushShelveThePanel)
+		if (Object::ReferenceEquals(item->Text, sPushShelveThePanel))
 		{
 			((IAnyPanel^)data)->Push();
 			return;
 		}
 
-		// Full screen:
-		if ((Object^)item->Text == (Object^)sSwitchFullScreen)
+		// Full screen
+		if (Object::ReferenceEquals(item->Text, sSwitchFullScreen))
 		{
 			FarNet::Panel2^ pp = (FarNet::Panel2^)data;
 			pp->SwitchFullScreen();
 			return;
 		}
 
-		// Close panel:
-		if ((Object^)item->Text == (Object^)sClose)
+		// Close panel
+		if (Object::ReferenceEquals(item->Text, sClose))
 		{
 			Panel1^ panel = (Panel1^)data;
 
@@ -994,7 +1041,6 @@ void Far0::ShowMenu(ModuleToolOptions from, bool showPushCommand)
 		// Pop/Unshelve
 		Works::ShelveInfo^ shelve = (Works::ShelveInfo^)data;
 		shelve->Pop();
-
 		return;
 	}
 }
@@ -1002,6 +1048,7 @@ void Far0::ShowMenu(ModuleToolOptions from, bool showPushCommand)
 void Far0::ShowEditorsMenu() //?????
 {
 	IMenu^ menu = Far::Net->CreateMenu();
+	menu->HelpTopic = "MenuMain";
 	menu->Title = "Editors";
 
 	int index = -1;
@@ -1024,6 +1071,7 @@ void Far0::ShowEditorsMenu() //?????
 void Far0::ShowViewersMenu() //?????
 {
 	IMenu^ menu = Far::Net->CreateMenu();
+	menu->HelpTopic = "MenuMain";
 	menu->Title = "Viewers";
 
 	int index = -1;
@@ -1043,15 +1091,26 @@ void Far0::ShowViewersMenu() //?????
 	it->Activate();
 }
 
-void Far0::InvalidateProxyCommand()
+void Far0::ShowConsoleMenu()
 {
-	delete _prefixes;
-	_prefixes = 0;
-}
+	IMenu^ menu = Far::Net->CreateMenu();
+	menu->HelpTopic = "MenuMain";
+	menu->Title = "Console";
 
-String^ Far0::GetMenuText(IModuleTool^ tool)
-{
-	return String::Format("{0} &{1} {2}", Res::MenuPrefix, tool->Hotkey, tool->Name);
+	menu->Add("&Decrease font size");
+	menu->Add("&Increase font size");
+
+	menu->Show();
+
+	switch(menu->Selected)
+	{
+	case 0:
+		ChangeFontSize(false);
+		return;
+	case 1:
+		ChangeFontSize(true);
+		return;
+	}
 }
 
 }

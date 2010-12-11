@@ -9,7 +9,6 @@ Format-Chart.ps1 Formats output as a table with the last chart column.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
 Get-TextLink-.ps1 Gets a text link to the current editor line.
 Go-Head-.ps1 Goes to the head of panel files or directories.
-Go-Home-.ps1 Goes to or selects to extended home position in the editor
 Go-Selection-.ps1 Goes to the current selection start\end position
 Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-FarSettings.ps1 Imports Far Manager settings.

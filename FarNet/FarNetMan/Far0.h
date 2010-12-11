@@ -31,9 +31,12 @@ public:
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
 	static void Run(String^ command);
-	static void ShowMenu(ModuleToolOptions from, bool showPushCommand);
+	static void ShowMenu(ModuleToolOptions from);
 	static void ShowEditorsMenu();
 	static void ShowViewersMenu();
+	static void ShowConsoleMenu();
+	static void ShowPanelsMenu();
+	static void ChangeFontSize(bool increase);
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
