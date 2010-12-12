@@ -14,6 +14,9 @@ NOTES:
 -- SetText() now drops selection, if any; this looks more intuitive.
 -- Fixed GetSelectedText() for column selection.
 
+*) MouseInfo
+-- New property Value (normally wheel value for MouseWheel event).
+
 *) IListMenu
 Fixed the permanent filter.
 

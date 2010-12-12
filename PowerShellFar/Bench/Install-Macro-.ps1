@@ -54,8 +54,8 @@ $Far.Macro.Install($(
 	### == Common (all areas)
 
 	### Decrease/Increase font size
-	New-FarMacro Common CtrlShiftD 'F11 $If (Menu.Select(".NET") == 0) Enter c d $End' 'FarNet: Decrease font size'
-	New-FarMacro Common CtrlShiftI 'F11 $If (Menu.Select(".NET") == 0) Enter c i $End' 'FarNet: Increase font size'
+	New-FarMacro Common CtrlShiftD 'F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End' 'FarNet: Decrease font size'
+	New-FarMacro Common CtrlShiftI 'F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End' 'FarNet: Increase font size'
 
 	### Favorites menu
 	New-FarMacro Common CtrlShiftL (Get-PsfMacro '1 "Menu-Favorites-.ps1" Enter') 'PSF: Favorites'
