@@ -97,18 +97,3 @@ $Far.AnyEditor.add_MouseMove({&{
 		}
 	}
 }})
-
-### Mouse wheel handler
-$Far.AnyEditor.add_MouseWheel({&{
-	$m = $_.Mouse
-	if ($m.CtrlAltShift -eq 'LeftCtrlPressed') {
-		### LeftCtrl+Wheel: Decrease/Increase the console font (via .NET menu)
-		$_.Ignore = $true
-		if ($m.Value -lt 0) {
-			$Far.PostMacro('F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End')
-		}
-		else {
-			$Far.PostMacro('F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End')
-		}
-	}
-}})
