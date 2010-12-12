@@ -314,7 +314,7 @@ MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m)
 		(MouseAction)m.dwEventFlags & MouseAction::All,
 		(MouseButtons)m.dwButtonState & MouseButtons::All,
 		(ControlKeyStates)m.dwControlKeyState & ControlKeyStates::All,
-		HIWORD(m.dwButtonState));
+		(int)(short)HIWORD(m.dwButtonState));
 }
 
 Place Edit_SelectionPlace()
