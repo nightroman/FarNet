@@ -12,10 +12,6 @@ Profile-.ps1 and Profile-Editor-.ps1 accordingly.
 -- Common\AltF11 is not used (to be used by another FarNet module).
 -- Shell\CtrlC to copy selected text.
 
-*) Profile-Editor-.ps1
-Shows how to add the MouseWheel event handler for LeftCtrl+Wheel:
-Decrease/Increase the console font (via .NET menu).
-
 = 4.3.31 =
 
 *) PowerShell.hrc for Colorer
