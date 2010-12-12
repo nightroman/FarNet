@@ -853,21 +853,21 @@ OemClear = 254;
 	public struct MouseInfo
 	{
 		/// <param name="where">Position.</param>
-		/// <param name="action">Mouse action.</param>
-		/// <param name="buttons">Mouse buttons.</param>
-		/// <param name="controlKeyState">Control keys.</param>
-		/// <param name="delta">?????</param>
-		public MouseInfo(Point where, MouseAction action, MouseButtons buttons, ControlKeyStates controlKeyState, int delta)
+		/// <param name="action">Action.</param>
+		/// <param name="buttons">Buttons.</param>
+		/// <param name="controls">Control keys.</param>
+		/// <param name="value">Wheel value.</param>
+		public MouseInfo(Point where, MouseAction action, MouseButtons buttons, ControlKeyStates controls, int value)
 		{
 			_where = where;
 			_buttons = buttons;
 			_action = action;
-			_controlKeyState = controlKeyState;
-			_delta = delta;
+			_controls = controls;
+			_value = value;
 		}
 
 		/// <summary>
-		/// Mouse location.
+		/// Mouse positon.
 		/// </summary>
 		public Point Where { get { return _where; } set { _where = value; } }
 		Point _where;
@@ -887,19 +887,23 @@ OemClear = 254;
 		/// <summary>
 		/// Gets all control key states.
 		/// </summary>
-		public ControlKeyStates ControlKeyState { get { return _controlKeyState; } set { _controlKeyState = value; } }
-		ControlKeyStates _controlKeyState;
+		public ControlKeyStates ControlKeyState { get { return _controls; } set { _controls = value; } }
+		ControlKeyStates _controls;
 
 		/// <summary>
 		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
-		public ControlKeyStates CtrlAltShift { get { return _controlKeyState & ControlKeyStates.CtrlAltShift; } }
+		public ControlKeyStates CtrlAltShift { get { return _controls & ControlKeyStates.CtrlAltShift; } }
 
 		/// <summary>
-		/// Delta value.
+		/// Wheel value.
 		/// </summary>
-		public int Delta { get { return _delta; } set { _delta = value; } }
-		int _delta;
+		/// <remarks>
+		/// It is positive or negative depending on the wheel direction.
+		/// The value is normally 120*X but it depends on the mouse driver.
+		/// </remarks>
+		public int Value { get { return _value; } set { _value = value; } }
+		int _value;
 
 		///
 		public static bool operator ==(MouseInfo left, MouseInfo right)
@@ -907,7 +911,7 @@ OemClear = 254;
 			return
 				left._action == right._action &&
 				left._buttons == right._buttons &&
-				left._controlKeyState == right._controlKeyState &&
+				left._controls == right._controls &&
 				left._where == right._where;
 		}
 
@@ -926,14 +930,14 @@ OemClear = 254;
 		///
 		public override int GetHashCode()
 		{
-			uint num = (uint)_action + ((uint)_buttons << 8) + ((uint)_controlKeyState << 16);
+			uint num = (uint)_action + ((uint)_buttons << 8) + ((uint)_controls << 16);
 			return num.GetHashCode() ^ _where.GetHashCode();
 		}
 
 		///
 		public override string ToString()
 		{
-			return _where.ToString() + " " + _action + " (" + _buttons + ") (" + _controlKeyState + ")";
+			return _where.ToString() + " " + _action + " (" + _buttons + ") (" + _controls + ")";
 		}
 
 	}

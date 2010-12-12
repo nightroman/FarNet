@@ -7,13 +7,18 @@
 .DESCRIPTION
 	This is an example of configuration "Editor startup code" which is invoked
 	when an editor is opened the first time. It installs some key and mouse
-	handles. Read help "Profile-Editor-.ps1" before using.
+	handles. Before using read help "Profile-Editor-.ps1" and the code.
 #>
 
 $ErrorActionPreference = 'Stop'
 
 ### Editor data; this line also denies the second call of this script
 New-Variable Editor.Data @{} -Scope Global -Option ReadOnly -Description 'Editor handlers data.'
+
+### GotFocus handler; it resets old data
+$Far.AnyEditor.add_GotFocus({&{
+	${Editor.Data}.Clear()
+}})
 
 ### Key down handler
 $Far.AnyEditor.add_KeyDown({&{
@@ -93,7 +98,17 @@ $Far.AnyEditor.add_MouseMove({&{
 	}
 }})
 
-### GotFocus handler; it resets old data
-$Far.AnyEditor.add_GotFocus({&{
-	${Editor.Data}.Clear()
+### Mouse wheel handler
+$Far.AnyEditor.add_MouseWheel({&{
+	$m = $_.Mouse
+	if ($m.CtrlAltShift -eq 'LeftCtrlPressed') {
+		### LeftCtrl+Wheel: Decrease/Increase the console font (via .NET menu)
+		$_.Ignore = $true
+		if ($m.Value -lt 0) {
+			$Far.PostMacro('F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End')
+		}
+		else {
+			$Far.PostMacro('F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End')
+		}
+	}
 }})
