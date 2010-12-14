@@ -39,7 +39,7 @@ function global:Reformat-Selection-
 	# get the prefix pattern by file type
 	switch -regex ([System.IO.Path]::GetExtension($Editor.FileName)) {
 		'\.(?:txt|hlf)' { $pattern = '$'; break }
-		'\.(?:ps1|psd1|psm1|pl|pls|py|pyw|pys|rb|rbw|ruby|rake|php\d?)$' { $pattern = '#+'; break }
+		'\.(?:ps1|psd1|psm1|pl|pls|py|pyw|pys|R|rb|rbw|ruby|rake|php\d?)$' { $pattern = '#+'; break }
 		'\.(?:bat|cmd)$' { $pattern = '::+|rem\s'; break }
 		'\.(?:sql|lua)$' { $pattern = '--+'; break }
 		'\.(?:vb|vbs|bas|vbp|frm|cls)$' { $pattern = "'+"; break }

@@ -870,26 +870,6 @@ String^ Far0::GetMenuText(IModuleTool^ tool)
 	return String::Format("{0} &{1} {2}", Res::MenuPrefix, tool->Hotkey, tool->Name);
 }
 
-void Far0::ChangeFontSize(bool increase)
-{
-	CONSOLE_FONT_INFOEX font = { sizeof(CONSOLE_FONT_INFOEX) };
-	if (!GetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
-		return;
-	
-	SHORT height = font.dwFontSize.Y;
-	for(SHORT delta = 1; delta < 10; ++delta)
-	{
-		font.dwFontSize.X = 0;
-		font.dwFontSize.Y = height + (increase ? delta : -delta);
-		if (!SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
-			continue;
-		if (!GetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
-			return;
-		if (height != font.dwFontSize.Y)
-			return;
-	}
-}
-
 void Far0::ShowMenu(ModuleToolOptions from)
 {
 	String^ sPanels = "&Panels...";
@@ -1110,6 +1090,37 @@ void Far0::ShowConsoleMenu()
 	case 1:
 		ChangeFontSize(true);
 		return;
+	}
+}
+
+typedef BOOL (WINAPI *PGetCurrentConsoleFontEx)(__in HANDLE hConsoleOutput, __in BOOL bMaximumWindow, __out PCONSOLE_FONT_INFOEX lpConsoleCurrentFontEx);
+typedef BOOL (WINAPI *PSetCurrentConsoleFontEx)(__in HANDLE hConsoleOutput, __in BOOL bMaximumWindow, __out PCONSOLE_FONT_INFOEX lpConsoleCurrentFontEx);
+#define GetCurrentConsoleFontEx DoNotUseDueToXP
+#define SetCurrentConsoleFontEx DoNotUseDueToXP
+void Far0::ChangeFontSize(bool increase)
+{
+	static PGetCurrentConsoleFontEx fnGetCurrentConsoleFontEx = (PGetCurrentConsoleFontEx)GetProcAddress(GetModuleHandle(L"kernel32.dll"), "GetCurrentConsoleFontEx");
+	static PSetCurrentConsoleFontEx fnSetCurrentConsoleFontEx = (PSetCurrentConsoleFontEx)GetProcAddress(GetModuleHandle(L"kernel32.dll"), "SetCurrentConsoleFontEx");
+
+	// XP or something else is wrong
+	if (!fnGetCurrentConsoleFontEx || !fnSetCurrentConsoleFontEx)
+		return;
+
+	CONSOLE_FONT_INFOEX font = { sizeof(CONSOLE_FONT_INFOEX) };
+	if (!fnGetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
+		return;
+	
+	SHORT height = font.dwFontSize.Y;
+	for(SHORT delta = 1; delta < 10; ++delta)
+	{
+		font.dwFontSize.X = 0;
+		font.dwFontSize.Y = height + (increase ? delta : -delta);
+		if (!fnSetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
+			continue;
+		if (!fnGetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
+			return;
+		if (height != font.dwFontSize.Y)
+			return;
 	}
 }
 
