@@ -531,8 +531,10 @@ td { padding: 4px; background-color: #eeeeee }
 <tr><td><code>*Clear</code></td><td>Numpad 5</td></tr>
 <tr><td><code>*Multiply</code></td><td>Gray *</td></tr>
 <tr><td><code>*Subtract</code></td><td>Gray -</td></tr>
-<tr><td><code>MsWheelDown</code></td><td>Mouse wheels down</td></tr>
-<tr><td><code>MsWheelUp</code></td><td>Mouse wheels up</td></tr>
+<tr><td><code>*MsLClick</code></td><td>Mouse left click</td></tr>
+<tr><td><code>*MsRClick</code></td><td>Mouse right click</td></tr>
+<tr><td><code>*MsWheelDown</code></td><td>Mouse wheels down</td></tr>
+<tr><td><code>*MsWheelUp</code></td><td>Mouse wheels up</td></tr>
 
 </table>
 <hr/>
