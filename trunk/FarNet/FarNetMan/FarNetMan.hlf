@@ -28,8 +28,9 @@ $#Plugin menu#
 		#Decrease font size#
 		#Increase font size#
 
-Commands operating on the console window, namely to decrease and increase the
-current console font and window size.
+Note: this feature works only in Windows Vista and above. Commands operating on
+the console window, namely to decrease and increase the current console font
+and window size.
 
 	#Editors...#
 	#Viewers...#

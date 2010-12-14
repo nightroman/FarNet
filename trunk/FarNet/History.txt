@@ -1,5 +1,15 @@
 http://code.google.com/p/farnet/
 
+= 4.3.33 =
+
+*) Menu	Console...
+Commands Decrease/Increase font size: this feature works only in Windows Vista
+and above. But it should not make problems in XP.
+
+*) MouseWheel event in editor
+It turns out this event is  not yet supported by Far. The issue is being
+investigated, the event is not removed from FarNet but it does not work.
+
 = 4.3.32 =
 
 *) .NET menu
@@ -7,7 +17,7 @@ http://code.google.com/p/farnet/
 -- Added the submenu "Console...". There are two commands there: decrease and
 increase console font size. This menu is available in all menus F11\.NET
 
-Mouse macros for the Common area:
+Example mouse macros for the Common area:
 -- CtrlMsWheelDown (FarNet: Decrease font size):
 F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End
 -- CtrlMsWheelUp (FarNet: Increase font size):
