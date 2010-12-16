@@ -68,9 +68,9 @@ $Far.Macro.Install($(
 	<# 2010-12-08 FarNet.Vessel will do this
 	# Calls Show-History-.ps1 or fallback
 	New-FarMacro Common AltF11 (Get-PsfMacro e AltF11) 'PSF: Edit recent file'
-	#>
 	# CtrlShiftF11 -> standard AltF11
 	New-FarMacro Common CtrlShiftF11 AltF11 'Far: Open recent file'
+	#>
 
 	### == Mixed (several areas)
 
