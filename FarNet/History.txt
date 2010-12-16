@@ -7,7 +7,7 @@ Commands Decrease/Increase font size: this feature works only in Windows Vista
 and above. But it should not make problems in XP.
 
 *) MouseWheel event in editor
-It turns out this event is  not yet supported by Far. The issue is being
+It turns out this event is  not yet supported by Far API. The issue is being
 investigated, the event is not removed from FarNet but it does not work.
 
 = 4.3.32 =
