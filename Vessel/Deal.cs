@@ -139,13 +139,13 @@ namespace FarNet.Vessel
 			Write(store, Read(store).Where(x => !x.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToList());
 		}
 
-		public static IEnumerable<Info> GetHistory(string store, DateTime now, double factor)
+		public static IEnumerable<Info> GetHistory(string store, DateTime now, float factor)
 		{
 			var algo = new Algo(store);
 			return algo.GetHistory(now, factor);
 		}
 
-		public static Stat[] Qualify(string store, int days, double[] factors)
+		public static Stat[] Qualify(string store, int days, float[] factors)
 		{
 			if (days < 1)
 				days = int.MaxValue;

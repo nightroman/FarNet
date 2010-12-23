@@ -8,7 +8,7 @@ namespace FarNet.Vessel
 {
 	public class Stat
 	{
-		public double Factor { get; set; }
+		public float Factor { get; set; }
 		public int UpCount { get; set; }
 		public int DownCount { get; set; }
 		public int SameCount { get; set; }
@@ -16,23 +16,7 @@ namespace FarNet.Vessel
 		public int DownSum { get; set; }
 		public int TotalSum { get; set; }
 
-		public float UpAverage
-		{
-			get
-			{
-				return UpCount == 0 ? 0 : (float)UpSum / UpCount;
-			}
-		}
-
-		public float DownAverage
-		{
-			get
-			{
-				return DownCount == 0 ? 0 : (float)DownSum / DownCount;
-			}
-		}
-
-		public float TotalAverage
+		public float ChangeAverage
 		{
 			get
 			{

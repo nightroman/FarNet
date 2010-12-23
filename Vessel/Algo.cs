@@ -41,8 +41,7 @@ namespace FarNet.Vessel
 		/// </summary>
 		/// <param name="now">The time to generate the list for, normally the current.</param>
 		/// <param name="factor">2+: smart history order; otherwise: plain history order.</param>
-		/// <returns></returns>
-		public IEnumerable<Info> GetHistory(DateTime now, double factor)
+		public IEnumerable<Info> GetHistory(DateTime now, float factor)
 		{
 			// collect
 			var infos = CollectInfo(now);
@@ -91,6 +90,27 @@ namespace FarNet.Vessel
 		}
 
 		/// <summary>
+		/// Collects not empty info for each deal at the deal's time.
+		/// </summary>
+		public IEnumerable<Info> CollectOpenInfo()
+		{
+			for (int iDeal = 0; iDeal < _deals.Count; ++iDeal)
+			{
+				var deal = _deals[iDeal];
+
+				// init info
+				var info = new Info() { Path = deal.Path };
+
+				// get the rest
+				CollectFileInfo(info, iDeal + 1, deal.Time);
+
+				// return not empty
+				if (info.UseCount > 0)
+					yield return info;
+			}
+		}
+
+		/// <summary>
 		/// Collects the history info for the file.
 		/// </summary>
 		void CollectFileInfo(Info info, int start, DateTime now)
@@ -120,41 +140,28 @@ namespace FarNet.Vessel
 				// sum keys
 				info.KeyCount += deal.Keys;
 
-				// recent activity
-				if ((now - deal.Time).TotalHours < 12)
-					++info.Activity;
-
 				// different days
 				if (info.Head.Date != deal.Time.Date)
+				{
 					++info.DayCount;
 
-				// cases after the idle
-				if (info.Head - deal.Time > info.Idle)
+					// Why 2 is the best for all deals so far, 3..4 are so so, and 5 is bad?
+					// NB
+					// Factor 4 gives values 0..4 (max is used); factors 5..6 still give 0..4 (max is not used).
+					// Should we just use 4 or should we dig the max factor value M which gives values 0..M?
+					// NB
+					// With 2 and Idle > X Activity is rare/never actually equal to 2.
+					if ((now - deal.Time).TotalDays < 2)
+						++info.Activity;
+				}
+
+				// cases of idle larger than the current idle
+				var idle = info.Head - deal.Time;
+				if (idle > info.Idle)
 					++info.Frequency;
 
 				// now save the deal time
 				info.Head = deal.Time;
-			}
-		}
-
-		/// <summary>
-		/// Collects not empty info for each deal at the deal's time.
-		/// </summary>
-		public IEnumerable<Info> CollectOpenInfo()
-		{
-			for (int iDeal = 0; iDeal < _deals.Count; ++iDeal)
-			{
-				var deal = _deals[iDeal];
-
-				// init info
-				var info = new Info() { Path = deal.Path };
-
-				// get the rest
-				CollectFileInfo(info, iDeal + 1, deal.Time);
-
-				// return not empty
-				if (info.UseCount > 0)
-					yield return info;
 			}
 		}
 

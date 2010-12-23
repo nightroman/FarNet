@@ -11,9 +11,9 @@ namespace FarNet.Vessel
 {
 	class InfoComparer : IComparer<Info>
 	{
-		double _factor;
+		float _factor;
 
-		public InfoComparer(double factor)
+		public InfoComparer(float factor)
 		{
 			_factor = factor;
 		}
@@ -28,47 +28,54 @@ namespace FarNet.Vessel
 			if (recency1 > recency2)
 				return 1;
 
-			// both fresh, compare times
+			// most recent
 			if (recency1 < 1)
 			{
-				if (recency1 == 0)
-				{
-					int activity1 = left.Activity;
-					int activity2 = right.Activity;
-					if (activity1 < activity2)
-						return 1;
-					if (activity1 > activity2)
-						return -1;
-				}
+				// times
 				return left.Idle.CompareTo(right.Idle);
 			}
 
+			// activity
 			{
-				int activity1 = left.Activity;
-				int activity2 = right.Activity;
-				if (activity1 < activity2)
-					return 1;
-				if (activity1 > activity2)
+				int x = left.Activity;
+				int y = right.Activity;
+				if (x > y)
 					return -1;
+				if (x < y)
+					return 1;
 			}
 
 			// days
-			int days1 = left.DayCount;
-			int days2 = right.DayCount;
-			if (days1 < days2)
-				return 1;
-			if (days1 > days2)
-				return -1;
+			{
+				int x = left.DayCount;
+				int y = right.DayCount;
+				if (x > y)
+					return -1;
+				if (x < y)
+					return 1;
+			}
 
 			// frequency
-			int frequency1 = left.Frequency;
-			int frequency2 = right.Frequency;
-			if (frequency1 < frequency2)
-				return 1;
-			if (frequency1 > frequency2)
-				return -1;
+			{
+				int x = left.Frequency > 0 ? 1 : 0;
+				int y = right.Frequency > 0 ? 1 : 0;
+				if (x > y)
+					return -1;
+				if (x < y)
+					return 1;
+			}
 
-			// compare times
+			// keys
+			{
+				int x = (int)Math.Log((float)left.KeyCount + 1, 2);
+				int y = (int)Math.Log((float)right.KeyCount + 1, 2);
+				if (x > y)
+					return -1;
+				if (x < y)
+					return 1;
+			}
+
+			// times
 			return left.Idle.CompareTo(right.Idle);
 		}
 	}

@@ -45,7 +45,7 @@ namespace FarNet.Vessel
 
 		void OnQualify(object sender, EventArgs e)
 		{
-			var factors = new double[28];
+			var factors = new float[28];
 			for (int i = 0; i < factors.Length; ++i)
 				factors[i] = i + 2;
 
@@ -54,10 +54,16 @@ namespace FarNet.Vessel
 			// Maximize (Up - 2 * Down), not (Up - Down), i.e. put more penalty on Down.
 			// (Up - Down) maximum is often found at 25: it is usually only a bit better
 			// than at small factors but it makes the list very different from the plain.
-			var target = stats.Max(x => x.UpSum - 2 * x.DownSum);
-			var stat = stats.First(x => x.UpSum - 2 * x.DownSum == target);
+			// 2010-12-19 Factor 25 is not the case anymore. Don't use the extra penalty.
+#if false
+			var target = stats.Max(x => x.UpCount - x.DownCount);
+			var stat = stats.First(x => x.UpCount - x.DownCount == target);
+#else
+			var target = stats.Max(x => x.UpSum - x.DownSum);
+			var stat = stats.First(x => x.UpSum - x.DownSum == target);
+#endif
 
-			double factor = stat.TotalAverage > 0 ? stat.Factor : 0;
+			float factor = stat.ChangeAverage > 0 ? stat.Factor : 0;
 			VesselHost.Factor = factor;
 
 			var text = string.Format(@"
@@ -70,10 +76,8 @@ Up sum         : {4,6}
 Down sum       : {5,6}
 Total sum      : {6,6}
 
-Up average     : {7,6:n2}
-Down average   : {8,6:n2}
-Total average  : {9,6:n2}
-Global average : {10,6:n2}
+Change average : {7,6:n2}
+Global average : {8,6:n2}
 ",
  stat.Factor,
  stat.UpCount,
@@ -82,9 +86,7 @@ Global average : {10,6:n2}
  stat.UpSum,
  stat.DownSum,
  stat.TotalSum,
- stat.UpAverage,
- stat.DownAverage,
- stat.TotalAverage,
+ stat.ChangeAverage,
  stat.GlobalAverage);
 
 			Far.Net.Message(text, "Training results", MsgOptions.LeftAligned);
@@ -96,7 +98,7 @@ Global average : {10,6:n2}
 			Far.Net.Message(text, "Update", MsgOptions.LeftAligned);
 		}
 
-		void ShowHistory(double factor)
+		void ShowHistory(float factor)
 		{
 			IListMenu menu = Far.Net.CreateListMenu();
 			menu.Title = string.Format("File history (factor {0})", factor);
