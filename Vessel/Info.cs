@@ -34,6 +34,16 @@ namespace FarNet.Vessel
 		public int UseCount { get; set; }
 
 		/// <summary>
+		/// Recent activity factor.
+		/// </summary>
+		public int Activity { get; set; }
+
+		/// <summary>
+		/// Count of days of use.
+		/// </summary>
+		public int DayCount { get; set; }
+
+		/// <summary>
 		/// Count of typed keys.
 		/// </summary>
 		public int KeyCount { get; set; }
@@ -44,16 +54,6 @@ namespace FarNet.Vessel
 		public TimeSpan Idle { get; set; }
 
 		/// <summary>
-		/// Recent activity rank.
-		/// </summary>
-		public int Activity { get; set; }
-
-		/// <summary>
-		/// Count of days of use.
-		/// </summary>
-		public int DayCount { get; set; }
-
-		/// <summary>
 		/// Frequency rank with 0 as the least used.
 		/// </summary>
 		public int Frequency { get; set; }
@@ -61,14 +61,13 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Recency rank (the least is the most recent).
 		/// </summary>
-		public int Recency(double factor)
+		public int Recency(float factor)
 		{
 			var h = Idle.TotalHours;
-			if (h >= factor)
-				return (int)(Math.Log(h, factor));
-			if (h > factor / 1.5) //??
+			if (h < factor)
 				return 0;
-			return -1;
+			else
+				return (int)(Math.Log((float)h, factor));
 		}
 
 	}
