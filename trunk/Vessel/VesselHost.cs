@@ -43,8 +43,8 @@ namespace FarNet.Vessel
 			Far.Net.AnyEditor.Closed += OnEditorClosed;
 		}
 
-		static double _Factor_ = -1;
-		public static double Factor
+		static float _Factor_ = -1;
+		public static float Factor
 		{
 			get
 			{
@@ -52,7 +52,7 @@ namespace FarNet.Vessel
 				{
 					using (var key = Instance.Manager.OpenRegistryKey(null, false))
 						if (key != null)
-							_Factor_ = double.Parse((string)key.GetValue(REG_FACTOR, "0"));
+							_Factor_ = float.Parse((string)key.GetValue(REG_FACTOR, "0"));
 				}
 				return _Factor_;
 			}
