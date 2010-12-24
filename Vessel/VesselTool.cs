@@ -55,13 +55,8 @@ namespace FarNet.Vessel
 			// (Up - Down) maximum is often found at 25: it is usually only a bit better
 			// than at small factors but it makes the list very different from the plain.
 			// 2010-12-19 Factor 25 is not the case anymore. Don't use the extra penalty.
-#if false
-			var target = stats.Max(x => x.UpCount - x.DownCount);
-			var stat = stats.First(x => x.UpCount - x.DownCount == target);
-#else
 			var target = stats.Max(x => x.UpSum - x.DownSum);
 			var stat = stats.First(x => x.UpSum - x.DownSum == target);
-#endif
 
 			float factor = stat.ChangeAverage > 0 ? stat.Factor : 0;
 			VesselHost.Factor = factor;
