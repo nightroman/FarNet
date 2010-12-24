@@ -154,11 +154,10 @@ namespace FarNet.Vessel
 			for (int i = 0; i < factors.Length; ++i)
 				result[i] = new Stat() { Factor = factors[i] };
 
-			var algo = new Algo(store);
-
 			DateTime lastDate = DateTime.MaxValue;
 			int dayCount = 0;
 
+			var algo = new Algo(store);
 			foreach (var deal in algo.Deals)
 			{
 				if (lastDate != deal.Time.Date)
@@ -169,19 +168,30 @@ namespace FarNet.Vessel
 					lastDate = deal.Time.Date;
 				}
 
-				// collect, step back 1 tick
+				// collect (step back 1 tick) and sort by Idle
 				var infos = algo.CollectInfo(deal.Time - new TimeSpan(1)).OrderBy(x => x.Idle).ToList();
 
-				// plain rank (same for all other ranks)
+				// get the plain rank (it is the same for all other ranks)
 				int rankPlain = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
+
+				// not found means it is the first history record for the file, skip it
 				if (rankPlain < 0)
 					continue;
 
 				// sort with factors, get smart rank
+				var info = infos[rankPlain];
 				foreach (var r in result)
 				{
+					if (info.Recency(r.Factor) == 0)
+					{
+						++r.SameCount;
+						continue;
+					}
+
 					infos.Sort(new InfoComparer(r.Factor));
 					int rankSmart = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
+					if (rankSmart < 0)
+						throw new InvalidOperationException("ERROR_101224_015624");
 
 					int win = rankPlain - rankSmart;
 					r.TotalSum += win;

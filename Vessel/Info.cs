@@ -59,15 +59,19 @@ namespace FarNet.Vessel
 		public int Frequency { get; set; }
 
 		/// <summary>
-		/// Recency rank (the least is the most recent).
+		/// Recency rank: 0 is the most recent to be sorted by time.
 		/// </summary>
 		public int Recency(float factor)
 		{
 			var h = Idle.TotalHours;
-			if (h < factor)
+			const double recent = 2;
+			if (h < recent)
 				return 0;
+			h -= recent;
+			if (h < factor)
+				return 1;
 			else
-				return (int)(Math.Log((float)h, factor));
+				return 1 + (int)(Math.Log((float)h, factor));
 		}
 
 	}

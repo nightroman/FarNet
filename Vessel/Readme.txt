@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2010-12-23
+Release  : 2010-12-24
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -47,3 +47,8 @@ well (factor 0) if there are no better ranked lists.
 * Key counts are used in ranking.
 * Improved ranking model and training.
 * Expected extra gain is more than 20%.
+
+1.0.2
+* Training is 2-4 times faster.
+* Fixed recent time is 2 hours.
+* Expected extra gain is about 15%.

@@ -28,12 +28,9 @@ namespace FarNet.Vessel
 			if (recency1 > recency2)
 				return 1;
 
-			// most recent
-			if (recency1 < 1)
-			{
-				// times
+			// recent times
+			if (recency1 == 0)
 				return left.Idle.CompareTo(right.Idle);
-			}
 
 			// activity
 			{
@@ -45,7 +42,7 @@ namespace FarNet.Vessel
 					return 1;
 			}
 
-			// days
+			// day counts
 			{
 				int x = left.DayCount;
 				int y = right.DayCount;
@@ -65,7 +62,7 @@ namespace FarNet.Vessel
 					return 1;
 			}
 
-			// keys
+			// key counts
 			{
 				int x = (int)Math.Log((float)left.KeyCount + 1, 2);
 				int y = (int)Math.Log((float)right.KeyCount + 1, 2);
