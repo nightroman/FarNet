@@ -35,8 +35,8 @@ namespace FarNet.Vessel
 			IMenu menu = Far.Net.CreateMenu();
 			menu.Title = "Vessel";
 			menu.HelpTopic = HelpTopic + "MenuCommands";
-			menu.Add("&1. Smart file history").Click += delegate { ShowHistory(VesselHost.Factor, VesselHost.Factor2); };
-			menu.Add("&2. Plain file history").Click += delegate { ShowHistory(0, 0); };
+			menu.Add("&1. Smart file history").Click += delegate { ShowHistory(true); };
+			menu.Add("&2. Plain file history").Click += delegate { ShowHistory(false); };
 			menu.Add("&3. Train smart history").Click += OnTrain;
 			menu.Add("&0. Update history file").Click += OnUpdate;
 
@@ -56,7 +56,7 @@ namespace FarNet.Vessel
 			VesselHost.SetFactors(factor1, result.Factor2);
 
 			var text = string.Format(@"
-Factor         : {0,6}
+Factors        : {0,6}
 Up count       : {1,6}
 Down count     : {2,6}
 Same count     : {3,6}
@@ -87,16 +87,16 @@ Global average : {8,6:n2}
 			Far.Net.Message(text, "Update", MsgOptions.LeftAligned);
 		}
 
-		void ShowHistory(int factor1, int factor2)
+		void ShowHistory(bool smart)
 		{
 			IListMenu menu = Far.Net.CreateListMenu();
 			menu.HelpTopic = HelpTopic + "FileHistory";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
-			if (factor1 < 0)
-				menu.Title = "File history";
+			if (smart)
+				menu.Title = string.Format("File history ({0}/{1}/{2})", VesselHost.Limit0, VesselHost.Factor1, VesselHost.Factor2);
 			else
-				menu.Title = string.Format("File history (factor {0}/{1})", factor1, factor2);
+				menu.Title = "File history";
 
 			menu.FilterHistory = "RegexFileHistory";
 			menu.FilterRestore = true;
@@ -115,12 +115,12 @@ Global average : {8,6:n2}
 			for (; ; menu.Items.Clear())
 			{
 				int recency = -1;
-				foreach (var it in Deal.GetHistory(null, DateTime.Now, factor1, factor2))
+				foreach (var it in Deal.GetHistory(null, DateTime.Now, (smart ? VesselHost.Factor1 : -1), VesselHost.Factor2))
 				{
 					// separator
-					if (factor1 > 0)
+					if (smart)
 					{
-						int recency2 = it.Recency(factor1, factor2);
+						int recency2 = it.Recency(VesselHost.Factor1, VesselHost.Factor2);
 						if (recency != recency2)
 						{
 							if (recency >= 0)
