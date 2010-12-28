@@ -37,6 +37,9 @@
       <HintPath>..\..\..\..\Program Files\Far\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="FarNet.Tools">
+      <HintPath>..\..\..\..\Program Files\Far\FarNet\FarNet.Tools.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
