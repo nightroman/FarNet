@@ -61,17 +61,20 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Recency rank: 0 is the most recent to be sorted by time.
 		/// </summary>
-		public int Recency(float factor)
+		public int Recency(int factor1, int factor2)
 		{
-			var h = Idle.TotalHours;
-			const double recent = 2;
-			if (h < recent)
+			var hours = Idle.TotalHours;
+			
+			if (hours < VesselHost.Limit0)
 				return 0;
-			h -= recent;
-			if (h < factor)
+
+			if (hours < factor1)
 				return 1;
-			else
-				return 1 + (int)(Math.Log((float)h, factor));
+
+			if (Idle.TotalDays < factor2)
+				return 2;
+
+			return 3;
 		}
 
 	}

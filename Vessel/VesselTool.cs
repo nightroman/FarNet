@@ -35,31 +35,25 @@ namespace FarNet.Vessel
 			IMenu menu = Far.Net.CreateMenu();
 			menu.Title = "Vessel";
 			menu.HelpTopic = HelpTopic + "MenuCommands";
-			menu.Add("&1. Smart file history").Click += delegate { ShowHistory(VesselHost.Factor); };
-			menu.Add("&2. Plain file history").Click += delegate { ShowHistory(0); };
-			menu.Add("&3. Train smart history").Click += OnQualify;
+			menu.Add("&1. Smart file history").Click += delegate { ShowHistory(VesselHost.Factor, VesselHost.Factor2); };
+			menu.Add("&2. Plain file history").Click += delegate { ShowHistory(0, 0); };
+			menu.Add("&3. Train smart history").Click += OnTrain;
 			menu.Add("&0. Update history file").Click += OnUpdate;
 
 			menu.Show();
 		}
 
-		void OnQualify(object sender, EventArgs e)
+		void OnTrain(object sender, EventArgs e)
 		{
-			var factors = new float[28];
-			for (int i = 0; i < factors.Length; ++i)
-				factors[i] = i + 2;
+			Result result = null;
+			var algo = new Algo();
+			algo.Progress = new Tools.ProgressForm();
+			algo.Progress.Title = "Training";
+			algo.Progress.Invoke(new System.Threading.ThreadStart(delegate { result = algo.Train(VesselHost.Limit1, VesselHost.Limit2); }));
 
-			var stats = Deal.Qualify(null, 0, factors);
-
-			// Maximize (Up - 2 * Down), not (Up - Down), i.e. put more penalty on Down.
-			// (Up - Down) maximum is often found at 25: it is usually only a bit better
-			// than at small factors but it makes the list very different from the plain.
-			// 2010-12-19 Factor 25 is not the case anymore. Don't use the extra penalty.
-			var target = stats.Max(x => x.UpSum - x.DownSum);
-			var stat = stats.First(x => x.UpSum - x.DownSum == target);
-
-			float factor = stat.ChangeAverage > 0 ? stat.Factor : 0;
-			VesselHost.Factor = factor;
+			// save factors
+			int factor1 = result.Target > 0 ? result.Factor1 : -1;
+			VesselHost.SetFactors(factor1, result.Factor2);
 
 			var text = string.Format(@"
 Factor         : {0,6}
@@ -74,15 +68,15 @@ Total sum      : {6,6}
 Change average : {7,6:n2}
 Global average : {8,6:n2}
 ",
- stat.Factor,
- stat.UpCount,
- stat.DownCount,
- stat.SameCount,
- stat.UpSum,
- stat.DownSum,
- stat.TotalSum,
- stat.ChangeAverage,
- stat.GlobalAverage);
+ result.Factor1.ToString() + "/" + result.Factor2.ToString(),
+ result.UpCount,
+ result.DownCount,
+ result.SameCount,
+ result.UpSum,
+ result.DownSum,
+ result.TotalSum,
+ result.ChangeAverage,
+ result.GlobalAverage);
 
 			Far.Net.Message(text, "Training results", MsgOptions.LeftAligned);
 		}
@@ -93,13 +87,16 @@ Global average : {8,6:n2}
 			Far.Net.Message(text, "Update", MsgOptions.LeftAligned);
 		}
 
-		void ShowHistory(float factor)
+		void ShowHistory(int factor1, int factor2)
 		{
 			IListMenu menu = Far.Net.CreateListMenu();
-			menu.Title = string.Format("File history (factor {0})", factor);
 			menu.HelpTopic = HelpTopic + "FileHistory";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
+			if (factor1 < 0)
+				menu.Title = "File history";
+			else
+				menu.Title = string.Format("File history (factor {0}/{1})", factor1, factor2);
 
 			menu.FilterHistory = "RegexFileHistory";
 			menu.FilterRestore = true;
@@ -117,8 +114,24 @@ Global average : {8,6:n2}
 
 			for (; ; menu.Items.Clear())
 			{
-				foreach (var it in Deal.GetHistory(null, DateTime.Now, factor))
+				int recency = -1;
+				foreach (var it in Deal.GetHistory(null, DateTime.Now, factor1, factor2))
+				{
+					// separator
+					if (factor1 > 0)
+					{
+						int recency2 = it.Recency(factor1, factor2);
+						if (recency != recency2)
+						{
+							if (recency >= 0)
+								menu.Add("").IsSeparator = true;
+							recency = recency2;
+						}
+					}
+
+					// item
 					menu.Add(it.Path).Checked = it.Frequency > 0;
+				}
 
 			show:
 

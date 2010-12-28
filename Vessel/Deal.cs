@@ -6,7 +6,6 @@ Copyright (c) 2010 Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -139,80 +138,10 @@ namespace FarNet.Vessel
 			Write(store, Read(store).Where(x => !x.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToList());
 		}
 
-		public static IEnumerable<Info> GetHistory(string store, DateTime now, float factor)
+		public static IEnumerable<Info> GetHistory(string store, DateTime now, int factor1, int factor2)
 		{
 			var algo = new Algo(store);
-			return algo.GetHistory(now, factor);
-		}
-
-		public static Stat[] Qualify(string store, int days, float[] factors)
-		{
-			if (days < 1)
-				days = int.MaxValue;
-
-			var result = new Stat[factors.Length];
-			for (int i = 0; i < factors.Length; ++i)
-				result[i] = new Stat() { Factor = factors[i] };
-
-			DateTime lastDate = DateTime.MaxValue;
-			int dayCount = 0;
-
-			var algo = new Algo(store);
-			foreach (var deal in algo.Deals)
-			{
-				if (lastDate != deal.Time.Date)
-				{
-					if (++dayCount > days)
-						break;
-
-					lastDate = deal.Time.Date;
-				}
-
-				// collect (step back 1 tick) and sort by Idle
-				var infos = algo.CollectInfo(deal.Time - new TimeSpan(1)).OrderBy(x => x.Idle).ToList();
-
-				// get the plain rank (it is the same for all other ranks)
-				int rankPlain = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
-
-				// not found means it is the first history record for the file, skip it
-				if (rankPlain < 0)
-					continue;
-
-				// sort with factors, get smart rank
-				var info = infos[rankPlain];
-				foreach (var r in result)
-				{
-					if (info.Recency(r.Factor) == 0)
-					{
-						++r.SameCount;
-						continue;
-					}
-
-					infos.Sort(new InfoComparer(r.Factor));
-					int rankSmart = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
-					if (rankSmart < 0)
-						throw new InvalidOperationException("ERROR_101224_015624");
-
-					int win = rankPlain - rankSmart;
-					r.TotalSum += win;
-					if (win < 0)
-					{
-						++r.DownCount;
-						r.DownSum -= win;
-					}
-					else if (win > 0)
-					{
-						++r.UpCount;
-						r.UpSum += win;
-					}
-					else
-					{
-						++r.SameCount;
-					}
-				}
-			}
-
-			return result;
+			return algo.GetHistory(now, factor1, factor2);
 		}
 
 	}
