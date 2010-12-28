@@ -53,11 +53,12 @@ namespace FarNet.Vessel
 			{
 				if (key == null)
 				{
-					_Factor1_ = 0;
+					_Factor1_ = -1;
+					_Factor2_ = -1;
 				}
 				else
 				{
-					var data = ((string)key.GetValue(REG_FACTOR, "0/0")).Split(new char[] { '/' });
+					var data = ((string)key.GetValue(REG_FACTOR, "-1/0")).Split(new char[] { '/' });
 					_Factor1_ = int.Parse(data[0]);
 					_Factor2_ = data.Length > 1 ? int.Parse(data[1]) : 0;
 				}

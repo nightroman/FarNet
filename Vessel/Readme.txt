@@ -82,3 +82,7 @@ Maximum span 2 in days. Training finds the best value (factor 2).
 
 1.0.4
 * Fixed the plain history list and minor defects in 1.0.3.
+
+1.0.5
+* Fix: plain history should be used on negative training results. Negative
+results are often possible when the collected history is not long enough.

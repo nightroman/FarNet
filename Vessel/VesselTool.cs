@@ -56,19 +56,18 @@ namespace FarNet.Vessel
 			VesselHost.SetFactors(factor1, result.Factor2);
 
 			var text = string.Format(@"
-Factors        : {0,6}
-Up count       : {1,6}
-Down count     : {2,6}
-Same count     : {3,6}
+Up count       : {0,6}
+Down count     : {1,6}
+Same count     : {2,6}
 
-Up sum         : {4,6}
-Down sum       : {5,6}
-Total sum      : {6,6}
+Up sum         : {3,6}
+Down sum       : {4,6}
+Total sum      : {5,6}
 
-Change average : {7,6:n2}
-Global average : {8,6:n2}
+Change average : {6,6:n2}
+Global average : {7,6:n2}
+Factors        : {8}/{9}/{10}
 ",
- result.Factor1.ToString() + "/" + result.Factor2.ToString(),
  result.UpCount,
  result.DownCount,
  result.SameCount,
@@ -76,7 +75,10 @@ Global average : {8,6:n2}
  result.DownSum,
  result.TotalSum,
  result.ChangeAverage,
- result.GlobalAverage);
+ result.GlobalAverage,
+ VesselHost.Limit0,
+ result.Factor1,
+ result.Factor2);
 
 			Far.Net.Message(text, "Training results", MsgOptions.LeftAligned);
 		}
@@ -89,6 +91,10 @@ Global average : {8,6:n2}
 
 		void ShowHistory(bool smart)
 		{
+			// drop smart for the negative factor
+			if (smart && VesselHost.Factor1 < 0)
+				smart = false;
+			
 			IListMenu menu = Far.Net.CreateListMenu();
 			menu.HelpTopic = HelpTopic + "FileHistory";
 			menu.SelectLast = true;
@@ -96,7 +102,7 @@ Global average : {8,6:n2}
 			if (smart)
 				menu.Title = string.Format("File history ({0}/{1}/{2})", VesselHost.Limit0, VesselHost.Factor1, VesselHost.Factor2);
 			else
-				menu.Title = "File history";
+				menu.Title = "File history (plain)";
 
 			menu.FilterHistory = "RegexFileHistory";
 			menu.FilterRestore = true;
