@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2010-12-25
+Release  : 2010-12-28
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -39,7 +39,7 @@ How training works. For every file record it builds the plain history list and
 several ranked lists with different factors. The list with the file nearest to
 the top wins. Finally the factor that maximizes the total difference between
 the plain and ranked lists for all records is taken. The plain list may win as
-well (factor 0) if there are no better ranked lists.
+well if there are no better ranked lists.
 
 	= OPTIONS =
 
@@ -79,3 +79,6 @@ Maximum span 2 in days. Training finds the best value (factor 2).
 * Ranking model is based on two factors instead of one. As a result:
 - Training is slow but factors can live longer without re-training.
 - Expected about 10% more total gain.
+
+1.0.4
+* Fixed the plain history list and minor defects in 1.0.3.

@@ -72,7 +72,7 @@ namespace FarNet.Vessel
 				key.SetValue(VesselHost.REG_FACTOR, factor1.ToString() + "/" + factor2.ToString());
 		}
 
-		public static int Factor
+		public static int Factor1
 		{
 			get
 			{
