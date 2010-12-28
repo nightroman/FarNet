@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2010-12-24
+Release  : 2010-12-25
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -41,6 +41,24 @@ the top wins. Finally the factor that maximizes the total difference between
 the plain and ranked lists for all records is taken. The plain list may win as
 well (factor 0) if there are no better ranked lists.
 
+	= OPTIONS =
+
+Registry key:
+HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\Vessel.dll
+
+String value: Limits="Limit0/Limit1/Limit2"
+Default, slower training, best results: "2/200/30"
+Faster training and still good results: "2/100/15"
+
+Limit0
+Span 0 in hours. It defines the most recent files to be sorted by times.
+
+Limit1
+Maximum span 1 in hours. Training finds the best value (factor 1).
+
+Limit2
+Maximum span 2 in days. Training finds the best value (factor 2).
+
 	= HISTORY =
 
 1.0.1
@@ -52,3 +70,12 @@ well (factor 0) if there are no better ranked lists.
 * Training is 2-4 times faster.
 * Fixed recent time is 2 hours.
 * Expected extra gain is about 15%.
+
+1.0.3
+* Use of closing time instead of opening time is better for a few reasons.
+* Smart history list shows separators of the groups defined by factors.
+* Trainig shows the progress form.
+* Option Limits (see Readme.txt).
+* Ranking model is based on two factors instead of one. As a result:
+- Training is slow but factors can live longer without re-training.
+- Expected about 10% more total gain.
