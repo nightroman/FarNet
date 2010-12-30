@@ -38,4 +38,4 @@ background and it is very fast (~50 times faster than full training).
 ----
 Visual image of full smart history training results from one machine (produced in R, not by the module). Numbers are differences between the plain and smart history lists.
 
-[http://farnet.googlecode.com/files/_101230_194229_Vessel.GIF]
+[http://farnet.googlecode.com/files/_101230_232610_Vessel.GIF]
