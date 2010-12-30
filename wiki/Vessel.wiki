@@ -35,3 +35,7 @@ background and it is very fast (~50 times faster than full training).
 
 ----
 [http://forum.farmanager.com/viewtopic.php?f=5&t=5975 Обсуждение на форуме]
+
+----
+
+[http://farnet.googlecode.com/files/_101230_123010_Vessel.GIF]
