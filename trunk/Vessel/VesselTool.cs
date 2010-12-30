@@ -5,11 +5,8 @@ Copyright (c) 2010 Roman Kuzmin
 */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 
 namespace FarNet.Vessel
@@ -30,7 +27,7 @@ namespace FarNet.Vessel
 
 		static string AppHome { get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); } }
 		static string HelpTopic { get { return "<" + AppHome + "\\>"; } }
-		
+
 		static string _TrainingReport;
 		internal static int TrainingRecordCount { get; set; }
 		internal static int TrainingRecordIndex { get; set; }
@@ -65,13 +62,13 @@ namespace FarNet.Vessel
 			{
 				//! snapshot
 				var value = _TrainingReport;
-				
+
 				if (value == null)
 					return TrainingState.None;
-				
+
 				if (value.Length == 0)
 					return TrainingState.Started;
-				
+
 				return TrainingState.Completed;
 			}
 		}
@@ -108,18 +105,29 @@ Factors      : {7}/{8}/{9}
 			_TrainingReport = null;
 		}
 
+		static void SaveFactors(Result result)
+		{
+			if (result.Target > 0)
+			{
+				if (result.Factor1 != VesselHost.Factor1 || result.Factor2 != VesselHost.Factor2)
+					VesselHost.SetFactors(result.Factor1, result.Factor2);
+			}
+			else
+			{
+				if (VesselHost.Factor1 >= 0)
+					VesselHost.SetFactors(-1, -1);
+			}
+		}
+
 		static void TrainWorkerFull()
 		{
 			// post started
 			_TrainingReport = string.Empty;
 
-			// train
+			// train/save
 			var algo = new Algo();
 			var result = algo.Train(VesselHost.Limit1, VesselHost.Limit2);
-
-			// save factors
-			int factor1 = result.Target > 0 ? result.Factor1 : -1;
-			VesselHost.SetFactors(factor1, result.Factor2);
+			SaveFactors(result);
 
 			// post done
 			_TrainingReport = ResultText(result);
@@ -136,13 +144,10 @@ Factors      : {7}/{8}/{9}
 			// post started
 			_TrainingReport = string.Empty;
 
-			// train
+			// train/save
 			var algo = new Algo();
 			var result = algo.TrainFast();
-
-			// save factors
-			if (result.Target > 0 && (result.Factor1 != VesselHost.Factor1 || result.Factor2 != VesselHost.Factor2))
-				VesselHost.SetFactors(result.Factor1, result.Factor2);
+			SaveFactors(result);
 
 			// post done
 			_TrainingReport = ResultText(result);
@@ -161,7 +166,7 @@ Factors      : {7}/{8}/{9}
 
 			// retrain
 			StartFastTraining();
-			
+
 			// show update info
 			Far.Net.Message(text.TrimEnd(), "Update", MsgOptions.LeftAligned);
 		}
