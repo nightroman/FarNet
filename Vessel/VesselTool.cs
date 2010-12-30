@@ -125,7 +125,7 @@ Factors      : {7}/{8}/{9}
 			_TrainingReport = string.Empty;
 
 			// train/save
-			var algo = new Algo();
+			var algo = new Actor();
 			var result = algo.Train(VesselHost.Limit1, VesselHost.Limit2);
 			SaveFactors(result);
 
@@ -145,7 +145,7 @@ Factors      : {7}/{8}/{9}
 			_TrainingReport = string.Empty;
 
 			// train/save
-			var algo = new Algo();
+			var algo = new Actor();
 			var result = algo.TrainFast();
 			SaveFactors(result);
 
@@ -209,7 +209,7 @@ Factors      : {7}/{8}/{9}
 					// separator
 					if (smart)
 					{
-						int recency2 = it.Recency(VesselHost.Factor1, VesselHost.Factor2);
+						int recency2 = it.RecentRank(VesselHost.Factor1, VesselHost.Factor2);
 						if (recency != recency2)
 						{
 							if (recency >= 0)

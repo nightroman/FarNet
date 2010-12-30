@@ -4,6 +4,7 @@ FarNet module Vessel
 Copyright (c) 2010 Roman Kuzmin
 */
 
+using System;
 using System.Collections.Generic;
 
 namespace FarNet.Vessel
@@ -21,9 +22,12 @@ namespace FarNet.Vessel
 
 		public int Compare(Info left, Info right)
 		{
+			if (left == null) throw new ArgumentNullException("left");
+			if (right == null) throw new ArgumentNullException("right");
+			
 			// recency
-			var recency1 = left.Recency(_factor1, _factor2);
-			var recency2 = right.Recency(_factor1, _factor2);
+			var recency1 = left.RecentRank(_factor1, _factor2);
+			var recency2 = right.RecentRank(_factor1, _factor2);
 			if (recency1 < recency2)
 				return -1;
 			if (recency1 > recency2)

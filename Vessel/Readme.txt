@@ -37,9 +37,8 @@ calculated by training.
 
 How training works. For every file record it builds the plain history list and
 several ranked lists with different factors. The list with the file nearest to
-the top wins. Finally the factor that maximizes the total difference between
-the plain and ranked lists for all records is taken. The plain list may win as
-well if there are no better ranked lists.
+the top wins. Finally the factors that maximize the total difference between
+the plain and ranked lists for all records are taken.
 
 Automatic fast training starts after updating the history file from the menu
 and after opening not recent files from the smart history. It works in the
@@ -108,3 +107,7 @@ background and it is very fast (~50 times faster than full training).
 
 Training result numbers do not include openings below Limit0: they are not
 really important because they are the same as in the classic plain history.
+
+1.0.7
+
+Minor improvement of training performance.
