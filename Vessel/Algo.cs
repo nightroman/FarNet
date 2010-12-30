@@ -7,6 +7,7 @@ Copyright (c) 2010 Roman Kuzmin
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 
 namespace FarNet.Vessel
@@ -166,15 +167,10 @@ namespace FarNet.Vessel
 		}
 
 		/// <summary>
-		/// Gets or sets the progress form.
-		/// </summary>
-		internal Tools.ProgressForm Progress { get; set; }
-		
-		/// <summary>
 		/// Gets all the training results.
 		/// </summary>
-		public Result[,] TrainingResults { get { return _TrainingResults; } }
-		Result[,] _TrainingResults;
+		public IList<Result> TrainingResults { get { return _TrainingResults; } }
+		List<Result> _TrainingResults;
 
 		/// <summary>
 		/// Trains the ranking model based on factors.
@@ -184,24 +180,23 @@ namespace FarNet.Vessel
 		/// <returns>The best result found on training.</returns>
 		public Result Train(int limit1, int limit2)
 		{
-			++limit1;
-			++limit2;
+			_TrainingResults = new List<Result>((limit1 + 1) * (limit2 + 1));
+			for (int i = 0; i <= limit1; ++i)
+				for (int j = 0; j <= limit2; ++j)
+					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
 
-			_TrainingResults = new Result[limit1, limit2];
-			for (int i = 0; i < limit1; ++i)
-				for (int j = 0; j < limit2; ++j)
-					_TrainingResults[i, j] = new Result() { Factor1 = i, Factor2 = j };
+			return Train();
+		}
 
-			int recordCount = 0;
+		Result Train()
+		{
+			// process records
+			VesselTool.TrainingRecordCount = Deals.Count;
+			VesselTool.TrainingRecordIndex = 0;
 			foreach (var deal in Deals)
 			{
-				++recordCount;
-				if (Progress != null)
-				{
-					Progress.Activity = "Record " + recordCount + " out of " + Deals.Count;
-					Progress.SetProgressValue(recordCount, Deals.Count);
-				}
-				
+				++VesselTool.TrainingRecordIndex;
+
 				// collect (step back 1 tick) and sort by Idle
 				var infos = CollectInfo(deal.Time - new TimeSpan(1)).OrderBy(x => x.Idle).ToList();
 
@@ -212,49 +207,43 @@ namespace FarNet.Vessel
 				if (rankPlain < 0)
 					continue;
 
-				// sort with factors, get smart rank
+				// skip the most recent
 				var info = infos[rankPlain];
-				for (int i = 0; i < limit1; ++i)
+				if (info.Idle.TotalHours < VesselHost.Limit0)
+					continue;
+
+				// sort with factors, get smart rank
+				foreach (var r in _TrainingResults)
 				{
-					for (int j = 0; j < limit2; ++j)
+					infos.Sort(new InfoComparer(r.Factor1, r.Factor2));
+					int rankSmart = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
+					if (rankSmart < 0)
+						throw new InvalidOperationException("ERROR_101224_015624");
+
+					int win = rankPlain - rankSmart;
+					if (win < 0)
 					{
-						var r = _TrainingResults[i, j];
-						if (info.Recency(r.Factor1, r.Factor2) == 0)
-						{
-							++r.SameCount;
-							continue;
-						}
-
-						infos.Sort(new InfoComparer(r.Factor1, r.Factor2));
-						int rankSmart = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
-						if (rankSmart < 0)
-							throw new InvalidOperationException("ERROR_101224_015624");
-
-						int win = rankPlain - rankSmart;
-						if (win < 0)
-						{
-							++r.DownCount;
-							r.DownSum -= win;
-						}
-						else if (win > 0)
-						{
-							++r.UpCount;
-							r.UpSum += win;
-						}
-						else
-						{
-							++r.SameCount;
-						}
+						++r.DownCount;
+						r.DownSum -= win;
+					}
+					else if (win > 0)
+					{
+						++r.UpCount;
+						r.UpSum += win;
+					}
+					else
+					{
+						++r.SameCount;
 					}
 				}
 			}
 
 			// return the best result
 			Result result = null;
-			int maxTarget = int.MinValue;
+			var maxTarget = float.MinValue;
 			foreach (var it in _TrainingResults)
 			{
-				int target = it.Target;
+				var target = it.Target;
 				if (maxTarget < target)
 				{
 					result = it;
@@ -263,6 +252,68 @@ namespace FarNet.Vessel
 			}
 
 			return result;
+		}
+
+		const int xRadius = 5;
+		const int yRadius = 2;
+
+		Result TrainFast(int factor1, int factor2)
+		{
+			const int xStep = 20;
+			const int yStep = 4;
+
+			int x1 = Math.Max(0, factor1 - xRadius);
+			int y1 = Math.Max(0, factor2 - yRadius);
+			int x2 = Math.Min(VesselHost.Limit1, factor1 + xRadius);
+			int y2 = Math.Min(VesselHost.Limit2, factor2 + yRadius);
+
+			_TrainingResults = new List<Result>((x2 - x1 + 1) * (y2 - y1 + 1) + (VesselHost.Limit1 / xStep + 1) * (VesselHost.Limit2 / yStep + 1));
+
+			for (int i = x1; i <= x2; ++i)
+				for (int j = y1; j <= y2; ++j)
+					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
+
+			var random = new Random();
+			int xStart = random.Next(xStep);
+			int yStart = random.Next(yStep);
+			for (int i = xStart; i <= VesselHost.Limit1; i += xStep)
+			{
+				for (int j = yStart; j <= VesselHost.Limit2; j += yStep)
+					if (i < x1 || i > x2 || j < y1 || j > y2)
+						_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
+			}
+
+			Logger.Source.TraceInformation("Training: Capacity {0}; Count {1}; Starts {2}/{3}",
+				_TrainingResults.Capacity,
+				_TrainingResults.Count,
+				xStart,
+				yStart);
+
+			var result = Train();
+
+			return result;
+		}
+
+		internal Result TrainFast()
+		{
+			var sw = Stopwatch.StartNew();
+			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Training {0}", DateTime.Now);
+
+			for (int factor1 = VesselHost.Factor1, factor2 = VesselHost.Factor2; ; )
+			{
+				var result = TrainFast(factor1, factor2);
+				Logger.Source.TraceInformation("Training: Target {0}; Factors {1}/{2}", result.Target, result.Factor1, result.Factor2);
+
+				if (Math.Abs(factor1 - result.Factor1) > xRadius || Math.Abs(factor2 - result.Factor2) > yRadius)
+				{
+					factor1 = result.Factor1;
+					factor2 = result.Factor2;
+					continue;
+				}
+
+				Logger.Source.TraceEvent(TraceEventType.Stop, 0, "Training {0}", sw.Elapsed);
+				return result;
+			}
 		}
 
 	}

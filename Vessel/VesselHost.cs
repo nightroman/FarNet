@@ -22,6 +22,11 @@ namespace FarNet.Vessel
 		/// </summary>
 		public static bool IsDisabled { get; set; }
 
+		/// <summary>
+		/// Tells to train on closing
+		/// </summary>
+		internal static string PathToTrain { get; set; }
+
 		static string _LogPath;
 		internal static string LogPath
 		{
@@ -199,6 +204,12 @@ namespace FarNet.Vessel
 				return;
 
 			Deal.Write(_LogPath, time, keys, what, path);
+
+			if (path.Equals(PathToTrain, StringComparison.OrdinalIgnoreCase))
+			{
+				PathToTrain = null;
+				VesselTool.StartFastTraining();
+			}
 		}
 
 	}
