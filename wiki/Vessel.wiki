@@ -29,5 +29,9 @@ the top wins. Finally the factor that maximizes the total difference between
 the plain and ranked lists for all records is taken. The plain list may win as
 well if there are no better ranked lists.
 
+Automatic fast training starts after updating the history file from the menu
+and after opening not recent files from the smart history. It works in the
+background and it is very fast (~50 times faster than full training).
+
 ----
 [http://forum.farmanager.com/viewtopic.php?f=5&t=5975 Обсуждение на форуме]
