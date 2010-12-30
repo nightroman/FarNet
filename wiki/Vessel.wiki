@@ -25,8 +25,8 @@ calculated by training.
 
 How training works. For every file record it builds the plain history list and
 several ranked lists with different factors. The list with the file nearest to
-the top wins. Finally the factor that maximizes the total difference between
-the plain and ranked lists for all records is taken. The plain list may win as
+the top wins. Finally the factors that maximizes the total difference between
+the plain and ranked lists for all records are taken. The plain list may win as
 well if there are no better ranked lists.
 
 Automatic fast training starts after updating the history file from the menu
@@ -37,5 +37,6 @@ background and it is very fast (~50 times faster than full training).
 [http://forum.farmanager.com/viewtopic.php?f=5&t=5975 Обсуждение на форуме]
 
 ----
+Visual image of full smart history training results from one machine (produced in R, not by the module). Numbers are differences between the plain and smart history lists.
 
 [http://farnet.googlecode.com/files/_101230_123010_Vessel.GIF]
