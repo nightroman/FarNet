@@ -31,14 +31,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
       <HintPath>..\..\..\..\Program Files\Far\FarNet\FarNet.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="FarNet.Tools">
-      <HintPath>..\..\..\..\Program Files\Far\FarNet\FarNet.Tools.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -50,6 +48,7 @@
     <Compile Include="Info.cs" />
     <Compile Include="InfoComparer.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="VesselHost.cs" />
     <Compile Include="AssemblyInfo.cs" />

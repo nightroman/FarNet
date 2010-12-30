@@ -47,15 +47,20 @@ Opens the plain file history list. The files are sorted by their last open
 times, just like in the standard Far [AltF11] file history.
 See ~File history~@FileHistory@
 
-#Train smart history#
+#Background training#
 
-Runs smart history training, shows the results, and stores the best found
-factor for later smart history ranking.
+Starts smart history training in the background. When it is done the results
+can be shown by the #Training results# menu command.
+
+#Training results#
+
+Shows the last full or fast training results. The menu item is only shown when
+training has completed and until it is not visited once.
 
 #Update history file#
 
 Removes missing files and too old records from the history log file. Records of
-the last 30 recorded days are kept.
+the last 30 recorded days are kept. This command also triggers fast training.
 
 
 @FileHistory
