@@ -4,7 +4,6 @@ FarNet module Vessel
 Copyright (c) 2010 Roman Kuzmin
 */
 
-using System;
 using System.Collections.Generic;
 
 namespace FarNet.Vessel

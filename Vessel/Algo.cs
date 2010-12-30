@@ -299,7 +299,14 @@ namespace FarNet.Vessel
 			var sw = Stopwatch.StartNew();
 			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Training {0}", DateTime.Now);
 
-			for (int factor1 = VesselHost.Factor1, factor2 = VesselHost.Factor2; ; )
+			int factor1 = VesselHost.Factor1, factor2 = VesselHost.Factor2;
+			if (factor1 < 0)
+			{
+				factor1 = xRadius;
+				factor2 = yRadius;
+			}
+
+			for (; ; )
 			{
 				var result = TrainFast(factor1, factor2);
 				Logger.Source.TraceInformation("Training: Target {0}; Factors {1}/{2}", result.Target, result.Factor1, result.Factor2);

@@ -41,10 +41,9 @@ the top wins. Finally the factor that maximizes the total difference between
 the plain and ranked lists for all records is taken. The plain list may win as
 well if there are no better ranked lists.
 
-When there is enough history collected and the smart history is activated by
-training then automatic fast training starts to work. It is triggered on the
-update menu command and on opening not recent files from the smart history
-list. It works in the background and it is very fast.
+Automatic fast training starts after updating the history file from the menu
+and after opening not recent files from the smart history. It works in the
+background and it is very fast (~50 times faster than full training).
 
 	= OPTIONS =
 
@@ -103,10 +102,9 @@ Training is now done in the background. When training has completed the menu
 shows the "Training results" item until it is not visited once. This item is
 also shown after automatic fast training.
 
-When there is enough history collected and the smart history is activated by
-training then automatic fast training starts to work. It is triggered on the
-update menu command and on opening not recent files from the smart history
-list. It works in the background and it is very fast.
+Automatic fast training starts after updating the history file from the menu
+and after opening not recent files from the smart history. It works in the
+background and it is very fast (~50 times faster than full training).
 
 Training result numbers do not include openings below Limit0: they are not
 really important because they are the same as in the classic plain history.

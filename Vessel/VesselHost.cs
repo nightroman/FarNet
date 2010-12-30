@@ -63,7 +63,7 @@ namespace FarNet.Vessel
 				}
 				else
 				{
-					var data = ((string)key.GetValue(REG_FACTOR, "-1/0")).Split(new char[] { '/' });
+					var data = ((string)key.GetValue(REG_FACTOR, "-1/-1")).Split(new char[] { '/' });
 					_Factor1_ = int.Parse(data[0]);
 					_Factor2_ = data.Length > 1 ? int.Parse(data[1]) : 0;
 				}
