@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2010-12-28
+Release  : 2010-12-30
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -41,6 +41,11 @@ the top wins. Finally the factor that maximizes the total difference between
 the plain and ranked lists for all records is taken. The plain list may win as
 well if there are no better ranked lists.
 
+When there is enough history collected and the smart history is activated by
+training then automatic fast training starts to work. It is triggered on the
+update menu command and on opening not recent files from the smart history
+list. It works in the background and it is very fast.
+
 	= OPTIONS =
 
 Registry key:
@@ -62,16 +67,19 @@ Maximum span 2 in days. Training finds the best value (factor 2).
 	= HISTORY =
 
 1.0.1
+
 * Key counts are used in ranking.
 * Improved ranking model and training.
 * Expected extra gain is more than 20%.
 
 1.0.2
+
 * Training is 2-4 times faster.
 * Fixed recent time is 2 hours.
 * Expected extra gain is about 15%.
 
 1.0.3
+
 * Use of closing time instead of opening time is better for a few reasons.
 * Smart history list shows separators of the groups defined by factors.
 * Trainig shows the progress form.
@@ -81,8 +89,24 @@ Maximum span 2 in days. Training finds the best value (factor 2).
 - Expected about 10% more total gain.
 
 1.0.4
-* Fixed the plain history list and minor defects in 1.0.3.
+
+Fixed the plain history list and minor defects in 1.0.3.
 
 1.0.5
-* Fix: plain history should be used on negative training results. Negative
+
+Fix: plain history should be used on negative training results. Negative
 results are often possible when the collected history is not long enough.
+
+1.0.6
+
+Training is now done in the background. When training has completed the menu
+shows the "Training results" item until it is not visited once. This item is
+also shown after automatic fast training.
+
+When there is enough history collected and the smart history is activated by
+training then automatic fast training starts to work. It is triggered on the
+update menu command and on opening not recent files from the smart history
+list. It works in the background and it is very fast.
+
+Training result numbers do not include openings below Limit0: they are not
+really important because they are the same as in the classic plain history.

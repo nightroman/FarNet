@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace FarNet.Vessel
 {
@@ -29,6 +30,10 @@ namespace FarNet.Vessel
 
 		static string AppHome { get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); } }
 		static string HelpTopic { get { return "<" + AppHome + "\\>"; } }
+		
+		static string _TrainingReport;
+		internal static int TrainingRecordCount { get; set; }
+		internal static int TrainingRecordIndex { get; set; }
 
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
@@ -37,36 +42,53 @@ namespace FarNet.Vessel
 			menu.HelpTopic = HelpTopic + "MenuCommands";
 			menu.Add("&1. Smart file history").Click += delegate { ShowHistory(true); };
 			menu.Add("&2. Plain file history").Click += delegate { ShowHistory(false); };
-			menu.Add("&3. Train smart history").Click += OnTrain;
-			menu.Add("&0. Update history file").Click += OnUpdate;
+			switch (TrainingStatus)
+			{
+				case TrainingState.None:
+					menu.Add("&3. Background training").Click += delegate { TrainFull(); };
+					break;
+				case TrainingState.Started:
+					menu.Add("Training: record " + TrainingRecordIndex + "/" + TrainingRecordCount).Disabled = true;
+					break;
+				case TrainingState.Completed:
+					menu.Add("&3. Training results").Click += delegate { ShowResults(); };
+					break;
+			}
+			menu.Add("&0. Update history file").Click += delegate { Update(); };
 
 			menu.Show();
 		}
 
-		void OnTrain(object sender, EventArgs e)
+		static TrainingState TrainingStatus
 		{
-			Result result = null;
-			var algo = new Algo();
-			algo.Progress = new Tools.ProgressForm();
-			algo.Progress.Title = "Training";
-			algo.Progress.Invoke(new System.Threading.ThreadStart(delegate { result = algo.Train(VesselHost.Limit1, VesselHost.Limit2); }));
+			get
+			{
+				//! snapshot
+				var value = _TrainingReport;
+				
+				if (value == null)
+					return TrainingState.None;
+				
+				if (value.Length == 0)
+					return TrainingState.Started;
+				
+				return TrainingState.Completed;
+			}
+		}
 
-			// save factors
-			int factor1 = result.Target > 0 ? result.Factor1 : -1;
-			VesselHost.SetFactors(factor1, result.Factor2);
+		static string ResultText(Result result)
+		{
+			return string.Format(@"
+Up count     : {0,6}
+Down count   : {1,6}
+Same count   : {2,6}
 
-			var text = string.Format(@"
-Up count       : {0,6}
-Down count     : {1,6}
-Same count     : {2,6}
+Up sum       : {3,6}
+Down sum     : {4,6}
+Total sum    : {5,6}
 
-Up sum         : {3,6}
-Down sum       : {4,6}
-Total sum      : {5,6}
-
-Change average : {6,6:n2}
-Global average : {7,6:n2}
-Factors        : {8}/{9}/{10}
+Average gain : {6,6:n2}
+Factors      : {7}/{8}/{9}
 ",
  result.UpCount,
  result.DownCount,
@@ -74,27 +96,82 @@ Factors        : {8}/{9}/{10}
  result.UpSum,
  result.DownSum,
  result.TotalSum,
- result.ChangeAverage,
- result.GlobalAverage,
+ result.AverageGain,
  VesselHost.Limit0,
  result.Factor1,
  result.Factor2);
-
-			Far.Net.Message(text, "Training results", MsgOptions.LeftAligned);
 		}
 
-		void OnUpdate(object sender, EventArgs e)
+		static void ShowResults()
 		{
-			var text = Deal.Update(VesselHost.LogPath);
-			Far.Net.Message(text, "Update", MsgOptions.LeftAligned);
+			Far.Net.Message(_TrainingReport, "Training results", MsgOptions.LeftAligned);
+			_TrainingReport = null;
 		}
 
-		void ShowHistory(bool smart)
+		static void TrainWorkerFull()
+		{
+			// post started
+			_TrainingReport = string.Empty;
+
+			// train
+			var algo = new Algo();
+			var result = algo.Train(VesselHost.Limit1, VesselHost.Limit2);
+
+			// save factors
+			int factor1 = result.Target > 0 ? result.Factor1 : -1;
+			VesselHost.SetFactors(factor1, result.Factor2);
+
+			// post done
+			_TrainingReport = ResultText(result);
+		}
+
+		static void TrainFull()
+		{
+			var thread = new Thread(TrainWorkerFull);
+			thread.Start();
+		}
+
+		static void TrainWorkerFast()
+		{
+			// post started
+			_TrainingReport = string.Empty;
+
+			// train
+			var algo = new Algo();
+			var result = algo.TrainFast();
+
+			// save factors
+			if (result.Target > 0 && (result.Factor1 != VesselHost.Factor1 || result.Factor2 != VesselHost.Factor2))
+				VesselHost.SetFactors(result.Factor1, result.Factor2);
+
+			// post done
+			_TrainingReport = ResultText(result);
+		}
+
+		public static void StartFastTraining()
+		{
+			var thread = new Thread(TrainWorkerFast);
+			thread.Start();
+		}
+
+		static void Update()
+		{
+			// update
+			var text = Deal.Update(VesselHost.LogPath);
+
+			// retrain
+			StartFastTraining();
+			
+			// show update info
+			Far.Net.Message(text.TrimEnd(), "Update", MsgOptions.LeftAligned);
+		}
+
+		static void ShowHistory(bool smart)
 		{
 			// drop smart for the negative factor
 			if (smart && VesselHost.Factor1 < 0)
 				smart = false;
-			
+
 			IListMenu menu = Far.Net.CreateListMenu();
 			menu.HelpTopic = HelpTopic + "FileHistory";
 			menu.SelectLast = true;
@@ -121,6 +198,7 @@ Factors        : {8}/{9}/{10}
 			for (; ; menu.Items.Clear())
 			{
 				int recency = -1;
+				int indexLimit0 = int.MaxValue;
 				foreach (var it in Deal.GetHistory(null, DateTime.Now, (smart ? VesselHost.Factor1 : -1), VesselHost.Factor2))
 				{
 					// separator
@@ -130,7 +208,11 @@ Factors        : {8}/{9}/{10}
 						if (recency != recency2)
 						{
 							if (recency >= 0)
+							{
 								menu.Add("").IsSeparator = true;
+								if (recency2 == 0)
+									indexLimit0 = menu.Items.Count;
+							}
 							recency = recency2;
 						}
 					}
@@ -152,7 +234,8 @@ Factors        : {8}/{9}/{10}
 				}
 
 				// the file
-				string path = menu.Items[menu.Selected].Text;
+				int indexSelected = menu.Selected;
+				string path = menu.Items[indexSelected].Text;
 
 				// delete:
 				if (menu.BreakKey == KeyDiscard)
@@ -188,6 +271,10 @@ Factors        : {8}/{9}/{10}
 					}
 
 					viewer.Open();
+
+					// post fast training
+					if (smart && indexSelected < indexLimit0)
+						VesselHost.PathToTrain = path;
 				}
 				// edit:
 				else
@@ -206,6 +293,10 @@ Factors        : {8}/{9}/{10}
 
 					if (menu.BreakKey == KeyEditAdd)
 						goto show;
+
+					// post fast training
+					if (smart && indexSelected < indexLimit0)
+						VesselHost.PathToTrain = path;
 				}
 
 				return;
