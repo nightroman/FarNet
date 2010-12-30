@@ -34,7 +34,7 @@ namespace FarNet.Vessel
 		public int UseCount { get; set; }
 
 		/// <summary>
-		/// Recent activity factor.
+		/// Recent activity rank.
 		/// </summary>
 		public int Activity { get; set; }
 
@@ -61,7 +61,7 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Recency rank: 0 is the most recent to be sorted by time.
 		/// </summary>
-		public int Recency(int factor1, int factor2)
+		public int RecentRank(int factor1, int factor2)
 		{
 			var hours = Idle.TotalHours;
 			

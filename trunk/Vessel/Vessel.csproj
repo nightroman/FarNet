@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algo.cs" />
+    <Compile Include="Actor.cs" />
     <Compile Include="Deal.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="InfoComparer.cs" />
