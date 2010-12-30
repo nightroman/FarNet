@@ -91,6 +91,7 @@ namespace FarNet.Vessel
 				writer.WriteLine(LINE_FORMAT, time, keys, what, path);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public static string Update(string store)
 		{
 			var sb = new StringBuilder();
@@ -140,7 +141,7 @@ namespace FarNet.Vessel
 
 		public static IEnumerable<Info> GetHistory(string store, DateTime now, int factor1, int factor2)
 		{
-			var algo = new Algo(store);
+			var algo = new Actor(store);
 			return algo.GetHistory(now, factor1, factor2);
 		}
 

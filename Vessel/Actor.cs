@@ -12,20 +12,20 @@ using System.Linq;
 
 namespace FarNet.Vessel
 {
-	public class Algo
+	public class Actor
 	{
 		readonly List<Deal> _deals;
 
 		/// <summary>
 		/// Creates the instance with data from the default storage.
 		/// </summary>
-		public Algo() : this(null) { }
+		public Actor() : this(null) { }
 
 		/// <summary>
 		/// Creates the instance with data ready for analyses.
 		/// </summary>
 		/// <param name="store">The store path. Empty/null is for the default.</param>
-		public Algo(string store)
+		public Actor(string store)
 		{
 			_deals = Deal.Read(store).ToList();
 			_deals.Reverse();
@@ -45,7 +45,7 @@ namespace FarNet.Vessel
 		public IEnumerable<Info> GetHistory(DateTime now, int factor1, int factor2)
 		{
 			// collect
-			var infos = CollectInfo(now);
+			var infos = CollectInfo(now, false);
 
 			// order
 			if (factor1 < 0)
@@ -57,7 +57,7 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Collects the unordered history info.
 		/// </summary>
-		public IEnumerable<Info> CollectInfo(DateTime now)
+		public IEnumerable<Info> CollectInfo(DateTime now, bool excludeRecent)
 		{
 			var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			for (int iDeal = 0; iDeal < _deals.Count; ++iDeal)
@@ -71,13 +71,18 @@ namespace FarNet.Vessel
 				if (!set.Add(deal.Path))
 					continue;
 
+				// skip recent
+				var idle = now - deal.Time;
+				if (excludeRecent && idle.TotalHours < VesselHost.Limit0)
+					continue;
+
 				// init info
 				var info = new Info()
 				{
 					Path = deal.Path,
 					Head = deal.Time,
 					Tail = deal.Time,
-					Idle = now - deal.Time,
+					Idle = idle,
 					KeyCount = deal.Keys,
 					DayCount = 1,
 					UseCount = 1,
@@ -197,8 +202,8 @@ namespace FarNet.Vessel
 			{
 				++VesselTool.TrainingRecordIndex;
 
-				// collect (step back 1 tick) and sort by Idle
-				var infos = CollectInfo(deal.Time - new TimeSpan(1)).OrderBy(x => x.Idle).ToList();
+				// collect (step back 1 tick, ask to exclude recent) and sort by Idle
+				var infos = CollectInfo(deal.Time - new TimeSpan(1), true).OrderBy(x => x.Idle).ToList();
 
 				// get the plain rank (it is the same for all other ranks)
 				int rankPlain = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
@@ -207,18 +212,11 @@ namespace FarNet.Vessel
 				if (rankPlain < 0)
 					continue;
 
-				// skip the most recent
-				var info = infos[rankPlain];
-				if (info.Idle.TotalHours < VesselHost.Limit0)
-					continue;
-
 				// sort with factors, get smart rank
 				foreach (var r in _TrainingResults)
 				{
 					infos.Sort(new InfoComparer(r.Factor1, r.Factor2));
 					int rankSmart = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
-					if (rankSmart < 0)
-						throw new InvalidOperationException("ERROR_101224_015624");
 
 					int win = rankPlain - rankSmart;
 					if (win < 0)
