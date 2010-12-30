@@ -36,6 +36,6 @@ background and it is very fast (~50 times faster than full training).
 [http://forum.farmanager.com/viewtopic.php?f=5&t=5975 Обсуждение на форуме]
 
 ----
-Visual image of full smart history training results from one machine (produced in R, not by the module). Numbers are differences between the plain and smart history lists.
+Image of smart history training results from one machine (produced in R, not by the module). Numbers are differences between the plain and smart history lists depending on two factors.
 
 [http://farnet.googlecode.com/files/_101230_232610_Vessel.GIF]
