@@ -28,9 +28,6 @@ param
 	$TestOpened
 )
 
-# skip x64 - bug???
-if ([IntPtr]::Size -eq 8) { return }
-
 # this code is invoked before steps as usual code
 $global:TestDialogScript = Join-Path (Split-Path $MyInvocation.MyCommand.Path) 'Test-Dialog-.ps1'
 $global:TestDialogValue = $null

@@ -82,7 +82,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		{
 			Log::Source->TraceInformation("EE_CLOSE");
 
-			// get registered, stop, unregister 
+			// get registered, stop, unregister
 			int id = *((int*)param);
 			Editor^ editor = nullptr;
 			for(int i = 0; i < _editors.Count; ++i)
@@ -121,7 +121,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 
 			Editor^ ed = GetCurrentEditor();
 			ed->_TimeOfSave = DateTime::Now;
-			
+
 			if (_anyEditor._Saving)
 			{
 				Log::Source->TraceInformation("Saving");
@@ -269,7 +269,10 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 			// key down
 			else if (key.bKeyDown) //! it was (bKeyDown & 0xff) != 0
 			{
-				++editor->_KeyCount;
+				// count solid keys
+				if (key.uChar.UnicodeChar > 32 && 0 == (key.dwControlKeyState & (ENHANCED_KEY | LEFT_ALT_PRESSED | LEFT_CTRL_PRESSED | RIGHT_ALT_PRESSED | RIGHT_CTRL_PRESSED)))
+					++editor->_KeyCount;
+
 				if (_anyEditor._KeyDown || editor->_KeyDown)
 				{
 					KeyEventArgs ea(KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, true));

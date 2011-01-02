@@ -58,6 +58,7 @@ void FarControl::Init(FarDialogItem& item, int type)
 	item.X2 = _rect.Right;
 	item.Y2 = _rect.Bottom;
 	item.Focus = 0;
+	item.History = NULL; // zero the union: http://code.google.com/p/farnet/issues/detail?id=3
 	item.Selected = _selected;
 	item.Flags = _flags;
 	item.DefaultButton = 0;
