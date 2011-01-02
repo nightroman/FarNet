@@ -32,6 +32,14 @@ Note: this feature works only in Windows Vista and above. Commands operating on
 the console window, namely to decrease and increase the current console font
 and window size.
 
+Example mouse macros for the Common area:
+
+ [CtrlMsWheelDown] FarNet: Decrease font size:
+ F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End
+
+ [CtrlMsWheelUp] FarNet: Increase font size:
+ F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End
+
 	#Editors...#
 	#Viewers...#
 
