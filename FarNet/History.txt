@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.3.34 =
+
+*) x64: Fixed crashes in dialogs. Thanks to signatov2000.
+
+*) IEditor.KeyCount
+It is mostly designed for the Vessel module, not for public use. Most of not
+significant keys are excluded (navigation, Ctrl and Alt combinations, etc.)
+
 = 4.3.33 =
 
 *) Menu	Console...

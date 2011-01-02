@@ -780,8 +780,14 @@ namespace FarNet
 		public abstract DateTime TimeOfSave { get; }
 
 		/// <summary>
-		/// Gets count of key events.
+		/// Gets count of some key events.
 		/// </summary>
+		/// <remarks>
+		/// It is designed for the Vessel module and not recommended for public use.
+		/// <para>
+		/// Most of not significant keys are excluded (navigation keys, Ctrl and Alt combinations, and etc.).
+		/// </para>
+		/// </remarks>
 		public abstract int KeyCount { get; }
 
 		/// <summary>
