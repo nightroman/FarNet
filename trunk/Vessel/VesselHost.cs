@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2010 Roman Kuzmin
+Copyright (c) 2011 Roman Kuzmin
 */
 
 using System;
@@ -42,7 +42,7 @@ namespace FarNet.Vessel
 			// ensure the log
 			_LogPath = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), LOG_FILE);
 			if (!File.Exists(_LogPath))
-				Deal.CreateLogFile(_LogPath);
+				Record.CreateLogFile(_LogPath);
 
 			// subscribe
 			Far.Net.AnyViewer.Closed += OnViewerClosed;
@@ -203,7 +203,7 @@ namespace FarNet.Vessel
 			if (path.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
 				return;
 
-			Deal.Write(_LogPath, time, keys, what, path);
+			Record.Write(_LogPath, time, keys, what, path);
 
 			if (path.Equals(PathToTrain, StringComparison.OrdinalIgnoreCase))
 			{

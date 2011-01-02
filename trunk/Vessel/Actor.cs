@@ -1,20 +1,25 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2010 Roman Kuzmin
+Copyright (c) 2011 Roman Kuzmin
 */
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace FarNet.Vessel
 {
 	public class Actor
 	{
-		readonly List<Deal> _deals;
+		const int MAX_DAYS = 30;
+		const int MAX_FILES = 512;
+
+		readonly string _store;
+		readonly List<Record> _records;
 
 		/// <summary>
 		/// Creates the instance with data from the default storage.
@@ -27,14 +32,15 @@ namespace FarNet.Vessel
 		/// <param name="store">The store path. Empty/null is for the default.</param>
 		public Actor(string store)
 		{
-			_deals = Deal.Read(store).ToList();
-			_deals.Reverse();
+			_store = store;
+			_records = Record.Read(store).ToList();
+			_records.Reverse();
 		}
 
 		/// <summary>
-		/// Gets deals from the most recent to old.
+		/// Gets records from the most recent to old.
 		/// </summary>
-		public ReadOnlyCollection<Deal> Deals { get { return new ReadOnlyCollection<Deal>(_deals); } }
+		public ReadOnlyCollection<Record> Records { get { return new ReadOnlyCollection<Record>(_records); } }
 
 		/// <summary>
 		/// Gets the ordered history info list.
@@ -60,55 +66,55 @@ namespace FarNet.Vessel
 		public IEnumerable<Info> CollectInfo(DateTime now, bool excludeRecent)
 		{
 			var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			for (int iDeal = 0; iDeal < _deals.Count; ++iDeal)
+			for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
 			{
 				// skip data from the future
-				var deal = _deals[iDeal];
-				if (deal.Time > now)
+				var record = _records[iRecord];
+				if (record.Time > now)
 					continue;
 
 				// add, skip existing
-				if (!set.Add(deal.Path))
+				if (!set.Add(record.Path))
 					continue;
 
 				// skip recent
-				var idle = now - deal.Time;
+				var idle = now - record.Time;
 				if (excludeRecent && idle.TotalHours < VesselHost.Limit0)
 					continue;
 
 				// init info
 				var info = new Info()
 				{
-					Path = deal.Path,
-					Head = deal.Time,
-					Tail = deal.Time,
+					Path = record.Path,
+					Head = record.Time,
+					Tail = record.Time,
 					Idle = idle,
-					KeyCount = deal.Keys,
+					KeyCount = record.Keys,
 					DayCount = 1,
 					UseCount = 1,
 				};
 
 				// get the rest
-				CollectFileInfo(info, iDeal + 1, now);
+				CollectFileInfo(info, iRecord + 1, now);
 
 				yield return info;
 			}
 		}
 
 		/// <summary>
-		/// Collects not empty info for each deal at the deal's time.
+		/// Collects not empty info for each record at the record's time.
 		/// </summary>
 		public IEnumerable<Info> CollectOpenInfo()
 		{
-			for (int iDeal = 0; iDeal < _deals.Count; ++iDeal)
+			for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
 			{
-				var deal = _deals[iDeal];
+				var record = _records[iRecord];
 
 				// init info
-				var info = new Info() { Path = deal.Path };
+				var info = new Info() { Path = record.Path };
 
 				// get the rest
-				CollectFileInfo(info, iDeal + 1, deal.Time);
+				CollectFileInfo(info, iRecord + 1, record.Time);
 
 				// return not empty
 				if (info.UseCount > 0)
@@ -121,53 +127,53 @@ namespace FarNet.Vessel
 		/// </summary>
 		void CollectFileInfo(Info info, int start, DateTime now)
 		{
-			for (int iDeal = start; iDeal < _deals.Count; ++iDeal)
+			for (int iRecord = start; iRecord < _records.Count; ++iRecord)
 			{
 				// skip data from the future
-				var deal = _deals[iDeal];
-				if (deal.Time > now)
+				var record = _records[iRecord];
+				if (record.Time > now)
 					continue;
 
 				// skip alien
-				if (!deal.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase))
+				if (!record.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase))
 					continue;
 
 				// count cases, init if not yet
 				if (++info.UseCount == 1)
 				{
-					info.Head = deal.Time;
-					info.Tail = deal.Time;
-					info.Idle = now - deal.Time;
-					info.KeyCount = deal.Keys;
+					info.Head = record.Time;
+					info.Tail = record.Time;
+					info.Idle = now - record.Time;
+					info.KeyCount = record.Keys;
 					info.DayCount = 1;
 					continue;
 				}
 
 				// sum keys
-				info.KeyCount += deal.Keys;
+				info.KeyCount += record.Keys;
 
 				// different days
-				if (info.Head.Date != deal.Time.Date)
+				if (info.Head.Date != record.Time.Date)
 				{
 					++info.DayCount;
 
-					// Why 2 is the best for all deals so far, 3..4 are so so, and 5 is bad?
+					// Why 2 is the best for all records so far, 3..4 are so so, and 5 is bad?
 					// NB
 					// Factor 4 gives values 0..4 (max is used); factors 5..6 still give 0..4 (max is not used).
 					// Should we just use 4 or should we dig the max factor value M which gives values 0..M?
 					// NB
 					// With 2 and Idle > X Activity is rare/never actually equal to 2.
-					if ((now - deal.Time).TotalDays < 2)
+					if ((now - record.Time).TotalDays < 2)
 						++info.Activity;
 				}
 
 				// cases of idle larger than the current idle
-				var idle = info.Head - deal.Time;
+				var idle = info.Head - record.Time;
 				if (idle > info.Idle)
 					++info.Frequency;
 
-				// now save the deal time
-				info.Head = deal.Time;
+				// now save the record time
+				info.Head = record.Time;
 			}
 		}
 
@@ -177,36 +183,20 @@ namespace FarNet.Vessel
 		public IList<Result> TrainingResults { get { return _TrainingResults; } }
 		List<Result> _TrainingResults;
 
-		/// <summary>
-		/// Trains the ranking model based on factors.
-		/// </summary>
-		/// <param name="limit1">Hours of the period 1.</param>
-		/// <param name="limit2">Days of the period 2.</param>
-		/// <returns>The best result found on training.</returns>
-		public Result Train(int limit1, int limit2)
-		{
-			_TrainingResults = new List<Result>((limit1 + 1) * (limit2 + 1));
-			for (int i = 0; i <= limit1; ++i)
-				for (int j = 0; j <= limit2; ++j)
-					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
-
-			return Train();
-		}
-
 		Result Train()
 		{
 			// process records
-			VesselTool.TrainingRecordCount = Deals.Count;
+			VesselTool.TrainingRecordCount = Records.Count;
 			VesselTool.TrainingRecordIndex = 0;
-			foreach (var deal in Deals)
+			foreach (var record in Records)
 			{
 				++VesselTool.TrainingRecordIndex;
 
 				// collect (step back 1 tick, ask to exclude recent) and sort by Idle
-				var infos = CollectInfo(deal.Time - new TimeSpan(1), true).OrderBy(x => x.Idle).ToList();
+				var infos = CollectInfo(record.Time - new TimeSpan(1), true).OrderBy(x => x.Idle).ToList();
 
 				// get the plain rank (it is the same for all other ranks)
-				int rankPlain = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
+				int rankPlain = infos.FindIndex(x => x.Path.Equals(record.Path, StringComparison.OrdinalIgnoreCase));
 
 				// not found means it is the first history record for the file, skip it
 				if (rankPlain < 0)
@@ -216,7 +206,7 @@ namespace FarNet.Vessel
 				foreach (var r in _TrainingResults)
 				{
 					infos.Sort(new InfoComparer(r.Factor1, r.Factor2));
-					int rankSmart = infos.FindIndex(x => x.Path.Equals(deal.Path, StringComparison.OrdinalIgnoreCase));
+					int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, StringComparison.OrdinalIgnoreCase));
 
 					int win = rankPlain - rankSmart;
 					if (win < 0)
@@ -255,7 +245,7 @@ namespace FarNet.Vessel
 		const int xRadius = 5;
 		const int yRadius = 2;
 
-		Result TrainFast(int factor1, int factor2)
+		Result TrainFastEpoch(int factor1, int factor2)
 		{
 			const int xStep = 20;
 			const int yStep = 4;
@@ -292,12 +282,33 @@ namespace FarNet.Vessel
 			return result;
 		}
 
-		internal Result TrainFast()
+		/// <summary>
+		/// Trains the model using all factors.
+		/// </summary>
+		/// <param name="limit1">Limit 1 in hours.</param>
+		/// <param name="limit2">Limit 2 in days.</param>
+		/// <returns>The best training result.</returns>
+		public Result TrainFull(int limit1, int limit2)
+		{
+			_TrainingResults = new List<Result>((limit1 + 1) * (limit2 + 1));
+			for (int i = 0; i <= limit1; ++i)
+				for (int j = 0; j <= limit2; ++j)
+					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
+
+			return Train();
+		}
+
+		/// <summary>
+		/// Trains the model using the old factors.
+		/// </summary>
+		/// <param name="factor1">Old factor 1.</param>
+		/// <param name="factor2">Old factor 2.</param>
+		/// <returns>The best training result.</returns>
+		public Result TrainFast(int factor1, int factor2)
 		{
 			var sw = Stopwatch.StartNew();
 			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Training {0}", DateTime.Now);
 
-			int factor1 = VesselHost.Factor1, factor2 = VesselHost.Factor2;
 			if (factor1 < 0)
 			{
 				factor1 = xRadius;
@@ -306,7 +317,7 @@ namespace FarNet.Vessel
 
 			for (; ; )
 			{
-				var result = TrainFast(factor1, factor2);
+				var result = TrainFastEpoch(factor1, factor2);
 				Logger.Source.TraceInformation("Training: Target {0}; Factors {1}/{2}", result.Target, result.Factor1, result.Factor2);
 
 				if (Math.Abs(factor1 - result.Factor1) > xRadius || Math.Abs(factor2 - result.Factor2) > yRadius)
@@ -319,6 +330,92 @@ namespace FarNet.Vessel
 				Logger.Source.TraceEvent(TraceEventType.Stop, 0, "Training {0}", sw.Elapsed);
 				return result;
 			}
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public string Update()
+		{
+			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", DateTime.Now);
+			int recordCount = _records.Count;
+
+			// collect and sort by idle
+			var infos = CollectInfo(DateTime.Now, false).OrderBy(x => x.Idle).ToList();
+
+			// step 1: remove missing file info and records
+			int missingFiles = 0;
+			foreach (var path in infos.Select(x => x.Path).ToArray())
+			{
+				// skip existing or unknown files
+				try
+				{
+					if (!File.Exists(path))
+					{
+						infos.RemoveAll(x => x.Path == path);
+						int removed = _records.RemoveAll(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+						Logger.Source.TraceInformation("Missing: {0}: {1}", removed, path);
+						++missingFiles;
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Source.TraceEvent(TraceEventType.Error, 0, "Error: {0}: {1}", path, ex.Message);
+				}
+			}
+
+			// step 2: remove the most idle exceeding files
+			int exceedingFiles = 0;
+			while (infos.Count > MAX_FILES)
+			{
+				var info = infos[infos.Count - 1];
+				infos.RemoveAt(infos.Count - 1);
+				int removed = _records.RemoveAll(x => x.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase));
+				Logger.Source.TraceInformation("Exceeding: {0}: {1}", removed, info.Path);
+				++exceedingFiles;
+			}
+
+			// step 3: cound days excluding today and remove aged records
+			int agedRecords = 0;
+			var today = DateTime.Today;
+			var days = _records.Select(x => x.Time.Date).Where(x => x != today).Distinct().OrderByDescending(x => x).ToArray();
+			if (days.Length > MAX_DAYS)
+			{
+				var headDate = days[MAX_DAYS - 1];
+				Logger.Source.TraceInformation("Head date: {0}", headDate);
+				
+				foreach (var info in infos)
+				{
+					if (info.UseCount > 1 && info.Head < headDate)
+					{
+						// remove all but the last
+						int removed = _records.RemoveAll(x => x.Time < headDate && x.Time != info.Tail);
+						
+						// find and make the last aged record less important;
+						// null is rare in not standard cases, e.g. manual changes
+						var record = _records.FirstOrDefault(x => x.Time == info.Tail);
+						if (record != null && record.Time < headDate)
+							record.SetAged();
+						
+						Logger.Source.TraceInformation("Aged: {0}: {1}", removed, info.Path);
+						agedRecords += removed;
+
+					}
+				}
+			}
+
+			// save sorted by time
+			Record.Write(_store, _records.Reverse<Record>().OrderBy(x => x.Time));
+
+			Logger.Source.TraceEvent(TraceEventType.Stop, 0, "Update");
+			return string.Format(@"
+Records         : {0,4}
+Aged records    : {1,4}
+Missing files   : {2,4}
+Exceeding files : {3,4}
+",
+ _records.Count,
+ agedRecords,
+ missingFiles,
+ exceedingFiles);
 		}
 
 	}
