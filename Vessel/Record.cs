@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2010 Roman Kuzmin
+Copyright (c) 2011 Roman Kuzmin
 */
 
 using System;
@@ -12,7 +12,7 @@ using System.Text;
 
 namespace FarNet.Vessel
 {
-	public class Deal
+	public class Record
 	{
 		const string LINE_HEADER = "Time\tKeys\tWhat\tPath";
 		const string LINE_FORMAT = "{0:yyyy-MM-dd HH:mm:ss}\t{1}\t{2}\t{3}";
@@ -22,12 +22,18 @@ namespace FarNet.Vessel
 		public string What { get; private set; }
 		public string Path { get; private set; }
 
-		Deal(DateTime time, int keys, string what, string path)
+		Record(DateTime time, int keys, string what, string path)
 		{
 			Time = time;
 			Keys = keys;
 			What = what;
 			Path = path;
+		}
+
+		public void SetAged()
+		{
+			Keys = 0;
+			What = "view";
 		}
 
 		/// <summary>
@@ -48,7 +54,7 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Reads history records from the store.
 		/// </summary>
-		public static IEnumerable<Deal> Read(string store)
+		public static IEnumerable<Record> Read(string store)
 		{
 			if (string.IsNullOrEmpty(store))
 				store = VesselHost.LogPath;
@@ -66,7 +72,7 @@ namespace FarNet.Vessel
 						continue;
 
 					var values = line.Split(sep);
-					yield return new Deal(
+					yield return new Record(
 						DateTime.Parse(values[0].Trim(trim)),
 						int.Parse(values[1].Trim(trim)),
 						values[2].Trim(trim),
@@ -75,12 +81,12 @@ namespace FarNet.Vessel
 			}
 		}
 
-		static void Write(string store, IEnumerable<Deal> deals)
+		internal static void Write(string store, IEnumerable<Record> records)
 		{
 			using (StreamWriter writer = new StreamWriter(store, false, Encoding.Unicode))
 			{
 				writer.WriteLine(LINE_HEADER);
-				foreach (var log in deals)
+				foreach (var log in records)
 					writer.WriteLine(LINE_FORMAT, log.Time, log.Keys, log.What, log.Path);
 			}
 		}
@@ -89,49 +95,6 @@ namespace FarNet.Vessel
 		{
 			using (StreamWriter writer = new StreamWriter(store, true, Encoding.Unicode))
 				writer.WriteLine(LINE_FORMAT, time, keys, what, path);
-		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public static string Update(string store)
-		{
-			var sb = new StringBuilder();
-
-			var deals = Read(store).ToList();
-
-			// cound days and remove old records
-			var days = deals.Select(x => x.Time.Date).Distinct().OrderBy(x => x).ToList();
-			sb.AppendLine("Total days: " + days.Count);
-			int daysToDiscard = days.Count - 30;
-			if (daysToDiscard > 0)
-			{
-				sb.AppendLine("Discarded days: " + daysToDiscard);
-				for (int i = 0; i < daysToDiscard; ++i)
-					deals.RemoveAll(x => x.Time.Date == days[i]);
-			}
-
-			// find and remove missing file records
-			foreach (var path in deals.Select(x => x.Path).Distinct(StringComparer.OrdinalIgnoreCase).ToList())
-			{
-				// skip existing or unknown files
-				try
-				{
-					if (!File.Exists(path))
-					{
-						sb.AppendLine("Missing: " + path);
-						deals.RemoveAll(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
-					}
-				}
-				catch (Exception ex)
-				{
-					sb.AppendLine("Error: " + path + ": " + ex.Message);
-				}
-			}
-
-			// save sorted by date
-			Write(store, deals.OrderBy(x => x.Time));
-
-			// result info
-			return sb.ToString();
 		}
 
 		public static void Remove(string store, string path)

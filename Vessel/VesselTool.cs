@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2010 Roman Kuzmin
+Copyright (c) 2011 Roman Kuzmin
 */
 
 using System;
@@ -76,16 +76,16 @@ namespace FarNet.Vessel
 		static string ResultText(Result result)
 		{
 			return string.Format(@"
-Up count     : {0,6}
-Down count   : {1,6}
-Same count   : {2,6}
+Up count     : {0,8}
+Down count   : {1,8}
+Same count   : {2,8}
 
-Up sum       : {3,6}
-Down sum     : {4,6}
-Total sum    : {5,6}
+Up sum       : {3,8}
+Down sum     : {4,8}
+Total sum    : {5,8}
 
-Average gain : {6,6:n2}
-Factors      : {7}/{8}/{9}
+Average gain : {6,8:n2}
+Factors      : {7,8}
 ",
  result.UpCount,
  result.DownCount,
@@ -94,9 +94,7 @@ Factors      : {7}/{8}/{9}
  result.DownSum,
  result.TotalSum,
  result.AverageGain,
- VesselHost.Limit0,
- result.Factor1,
- result.Factor2);
+ VesselHost.Limit0.ToString() + "/" + result.Factor1 + "/" + result.Factor2);
 		}
 
 		static void ShowResults()
@@ -126,7 +124,7 @@ Factors      : {7}/{8}/{9}
 
 			// train/save
 			var algo = new Actor();
-			var result = algo.Train(VesselHost.Limit1, VesselHost.Limit2);
+			var result = algo.TrainFull(VesselHost.Limit1, VesselHost.Limit2);
 			SaveFactors(result);
 
 			// post done
@@ -146,7 +144,7 @@ Factors      : {7}/{8}/{9}
 
 			// train/save
 			var algo = new Actor();
-			var result = algo.TrainFast();
+			var result = algo.TrainFast(VesselHost.Factor1, VesselHost.Factor2);
 			SaveFactors(result);
 
 			// post done
@@ -162,13 +160,14 @@ Factors      : {7}/{8}/{9}
 		static void Update()
 		{
 			// update
-			var text = Deal.Update(VesselHost.LogPath);
+			var algo = new Actor(VesselHost.LogPath);
+			var text = algo.Update();
 
 			// retrain
 			StartFastTraining();
 
 			// show update info
-			Far.Net.Message(text.TrimEnd(), "Update", MsgOptions.LeftAligned);
+			Far.Net.Message(text, "Update", MsgOptions.LeftAligned);
 		}
 
 		static void ShowHistory(bool smart)
@@ -204,7 +203,7 @@ Factors      : {7}/{8}/{9}
 			{
 				int recency = -1;
 				int indexLimit0 = int.MaxValue;
-				foreach (var it in Deal.GetHistory(null, DateTime.Now, (smart ? VesselHost.Factor1 : -1), VesselHost.Factor2))
+				foreach (var it in Record.GetHistory(null, DateTime.Now, (smart ? VesselHost.Factor1 : -1), VesselHost.Factor2))
 				{
 					// separator
 					if (smart)
@@ -234,7 +233,8 @@ Factors      : {7}/{8}/{9}
 				// update:
 				if (menu.BreakKey == KeyUpdate)
 				{
-					Deal.Update(VesselHost.LogPath);
+					var algo = new Actor(VesselHost.LogPath);
+					algo.Update();
 					continue;
 				}
 
@@ -247,7 +247,7 @@ Factors      : {7}/{8}/{9}
 				{
 					if (0 == Far.Net.Message("Discard " + path, "Confirm", MsgOptions.OkCancel))
 					{
-						Deal.Remove(VesselHost.LogPath, path);
+						Record.Remove(VesselHost.LogPath, path);
 						continue;
 					}
 

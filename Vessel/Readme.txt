@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2010-12-30
+Release  : 2011-01-01
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -9,7 +9,7 @@ Source   : http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
  * Far Manager 2.0.1767
- * Plugin FarNet 4.3.33
+ * Plugin FarNet 4.3.34
  * .NET Framework 3.5+
 
 	= DESCRIPTION =
@@ -54,7 +54,7 @@ Default, slower training, best results: "2/200/30"
 Faster training and still good results: "2/100/15"
 
 Limit0
-Span 0 in hours. It defines the most recent files to be sorted by times.
+Span 0 in hours. It defines the most recent files sorted only by times.
 
 Limit1
 Maximum span 1 in hours. Training finds the best value (factor 1).
@@ -92,8 +92,7 @@ Fixed the plain history list and minor defects in 1.0.3.
 
 1.0.5
 
-Fix: plain history should be used on negative training results. Negative
-results are often possible when the collected history is not long enough.
+Fix: plain history should be used on negative training results.
 
 1.0.6
 
@@ -109,5 +108,11 @@ Training result numbers do not include openings below Limit0: they are not
 really important because they are the same as in the classic plain history.
 
 1.0.7
+
+Recommended FarNet 4.3.34
+
+Update removes old records but keeps the last one for each file, so that files
+are still in the list. If file count exceeds 512 all records of old exceeding
+files are discarded. (512 is the default history limit in Far)
 
 Minor improvement of training performance.
