@@ -341,20 +341,19 @@ namespace FarNet.Vessel
 			// collect and sort by idle
 			var infos = CollectInfo(DateTime.Now, false).OrderBy(x => x.Idle).ToList();
 
-			// step 1: remove missing file info and records
+			// step 1: remove missing file data from infos and records
 			int missingFiles = 0;
 			foreach (var path in infos.Select(x => x.Path).ToArray())
 			{
-				// skip existing or unknown files
 				try
 				{
-					if (!File.Exists(path))
-					{
-						infos.RemoveAll(x => x.Path == path);
-						int removed = _records.RemoveAll(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
-						Logger.Source.TraceInformation("Missing: {0}: {1}", removed, path);
-						++missingFiles;
-					}
+					if (File.Exists(path))
+						continue;
+
+					infos.RemoveAll(x => x.Path == path);
+					int removed = _records.RemoveAll(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+					Logger.Source.TraceInformation("Missing: {0}: {1}", removed, path);
+					++missingFiles;
 				}
 				catch (Exception ex)
 				{
@@ -362,41 +361,41 @@ namespace FarNet.Vessel
 				}
 			}
 
-			// step 2: remove the most idle exceeding files
-			int exceedingFiles = 0;
+			// step 2: remove the most idle extra files
+			int extraFiles = 0;
 			while (infos.Count > MAX_FILES)
 			{
 				var info = infos[infos.Count - 1];
 				infos.RemoveAt(infos.Count - 1);
 				int removed = _records.RemoveAll(x => x.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase));
-				Logger.Source.TraceInformation("Exceeding: {0}: {1}", removed, info.Path);
-				++exceedingFiles;
+				Logger.Source.TraceInformation("Extra: {0}: {1}", removed, info.Path);
+				++extraFiles;
 			}
 
 			// step 3: cound days excluding today and remove aged records
-			int agedRecords = 0;
+			int oldRecords = 0;
 			var today = DateTime.Today;
 			var days = _records.Select(x => x.Time.Date).Where(x => x != today).Distinct().OrderByDescending(x => x).ToArray();
 			if (days.Length > MAX_DAYS)
 			{
-				var headDate = days[MAX_DAYS - 1];
-				Logger.Source.TraceInformation("Head date: {0}", headDate);
-				
+				var zeroDate = days[MAX_DAYS - 1];
+				Logger.Source.TraceInformation("Zero: {0}", zeroDate);
+
 				foreach (var info in infos)
 				{
-					if (info.UseCount > 1 && info.Head < headDate)
+					if (info.UseCount > 1 && info.Head < zeroDate)
 					{
 						// remove all but the last
-						int removed = _records.RemoveAll(x => x.Time < headDate && x.Time != info.Tail);
-						
+						int removed = _records.RemoveAll(x => x.Time < zeroDate && x.Time != info.Tail && x.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase));
+
 						// find and make the last aged record less important;
 						// null is rare in not standard cases, e.g. manual changes
 						var record = _records.FirstOrDefault(x => x.Time == info.Tail);
-						if (record != null && record.Time < headDate)
+						if (record != null && record.Time < zeroDate)
 							record.SetAged();
-						
+
 						Logger.Source.TraceInformation("Aged: {0}: {1}", removed, info.Path);
-						agedRecords += removed;
+						oldRecords += removed;
 
 					}
 				}
@@ -407,15 +406,15 @@ namespace FarNet.Vessel
 
 			Logger.Source.TraceEvent(TraceEventType.Stop, 0, "Update");
 			return string.Format(@"
-Records         : {0,4}
-Aged records    : {1,4}
-Missing files   : {2,4}
-Exceeding files : {3,4}
+Missing files : {0,4}
+Extra files   : {1,4}
+Old records   : {2,4}
+Records       : {3,4}
 ",
- _records.Count,
- agedRecords,
- missingFiles,
- exceedingFiles);
+			missingFiles,
+			extraFiles,
+			oldRecords,
+			_records.Count);
 		}
 
 	}
