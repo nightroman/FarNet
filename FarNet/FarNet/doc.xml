@@ -106,7 +106,7 @@
 		<param name="bottom">Bottom line.</param>
 	</LTRB>
 	<ShowHelp>
-		<summary>Shows the specified topic from a given hlf-file.</summary>
+		<summary>Shows the specified topic from a given .hlf file.</summary>
 		<param name="path">Help file location, see options.</param>
 		<param name="topic">Help topic. If this parameter is empty, then the topic "Contents" is used.</param>
 		<param name="options">Help options describing path and topic.</param>

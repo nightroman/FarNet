@@ -120,27 +120,31 @@ namespace FarDescription
 				string line;
 				while ((line = sr.ReadLine()) != null)
 				{
-					string name, description;
+					int i;
+					string name;
 					if (line.StartsWith("\"", StringComparison.Ordinal))
 					{
-						int i = line.IndexOf('"', 1);
+						i = line.IndexOf('"', 1);
 						if (i < 0)
 							continue;
 
 						name = line.Substring(1, i - 1);
-						description = line.Substring(i + 1).Trim();
+						i += 2;
 					}
 					else
 					{
-						int i = line.IndexOf(' ');
+						i = line.IndexOf(' ');
 						if (i < 0)
 							continue;
 
 						name = line.Substring(0, i);
-						description = line.Substring(i + 1).Trim();
+						++i;
 					}
 
-					r.Add(name, description);
+					if (i >= line.Length)
+						continue;
+					
+					r.Add(name, line.Substring(i).TrimEnd());
 				}
 			}
 

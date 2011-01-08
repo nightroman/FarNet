@@ -609,56 +609,30 @@ Continue with this current directory?
 		/// <summary>
 		/// Prompts to input code and invokes it.
 		/// Called on "Invoke input code".
-		/// Suitable for macros.
 		/// </summary>
 		/// <remarks>
-		/// To input and get some code without invoking use the <see cref="InputCode"/> method.
+		/// If it is called during a macro then commands are not added to the history.
+		/// Note that use of [Alt1] in the module menu is normally more effective for macros.
 		/// <para>
-		/// <b>Macros with embedded commands.</b>
-		/// When a macro is in progress this method works in a special way:
-		/// </para>
-		/// <ul>
-		/// <li>an input box is used instead of the dialog;</li>
-		/// <li>commands are not stored in the history;</li>
-		/// <li>commands output is discarded.</li>
-		/// </ul>
-		/// <para>
-		/// Thus, it is fine to put some code right to a macro,
-		/// it works just like as the code is typed and invoked
-		/// but with no effects unwanted for running macros.
-		/// </para>
-		/// <para>
-		/// Commands in macros should have no output: they are "actions", not "functions".
-		/// Output, if any, is not an error but it is not recommended.
+		/// In order to input and get the code without invoking use the <see cref="InputCode"/> method.
 		/// </para>
 		/// </remarks>
-		/// <example>
-		/// Simple macro [F10] (exactly!) in Panels: safe exit with background jobs check
-		/// (X is the PowerShellFar hotkey in the plugin menu):
-		/// <code>
-		/// F11 X 1 "$Far.Quit()" Enter
-		/// </code>
-		/// Advanced version does not depend on a hotkey and calls native F10 if there is no PowerShellFar:
-		/// <code>
-		/// F11 $If (Menu.Select("PowerShellFar", 2) &gt; 0) Enter 1 "$Far.Quit()" Enter $Else F10 $End
-		/// </code>
-		/// </example>
 		public void InvokeInputCode()
 		{
-			if (Far.Net.MacroState == FarMacroState.None || Zoo.TestInputCode)
-			{
-				// normal mode
-				string code = InputCode();
-				if (code != null)
-					Act(code, null, true);
-			}
-			else
-			{
-				// macro mode
-				string code = Far.Net.Input(null);
-				if (code != null)
-					InvokeCode(code, null);
-			}
+			string code = InputCode();
+			if (code != null)
+				Act(code, null, Far.Net.MacroState == FarMacroState.None);
+		}
+
+		/// <summary>
+		/// Prompts to input code and invokes it with no output.
+		/// Called on [Alt1] and designed for macros.
+		/// </summary>
+		internal void InvokeFromMacro()
+		{
+			string code = Far.Net.Input(null);
+			if (code != null)
+				InvokeCode(code, null);
 		}
 
 		/// <summary>
@@ -1021,7 +995,7 @@ Continue with this current directory?
 				// notify host
 				FarHost.NotifyEndApplication();
 			}
-			
+
 			return ok;
 		}
 
@@ -1085,8 +1059,12 @@ Continue with this current directory?
 		/// Invokes the script opened in the current editor.
 		/// </summary>
 		/// <remarks>
-		/// If the file is modified then it is saved.
-		/// The action is the same as to invoke the script from the input command box.
+		/// [F5] is the hardcoded shortcut. A different key can be used with a macro:
+		/// the example macro in the .hlf file shows how to do that.
+		/// <para>
+		/// The action is the same as to invoke the script from the input command box
+		/// but if the file is modified then it is saved before invoking.
+		/// </para>
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void InvokeScriptFromEditor()
