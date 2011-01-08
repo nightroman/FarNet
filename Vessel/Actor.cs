@@ -15,11 +15,22 @@ namespace FarNet.Vessel
 {
 	public class Actor
 	{
-		const int MAX_DAYS = 30;
-		const int MAX_FILES = 512;
-
 		readonly string _store;
 		readonly List<Record> _records;
+
+		/// <summary>
+		/// Gets or sets the random number generator.
+		/// </summary>
+		/// <remarks>
+		/// It is designed to be set from tests in order to repeat the same random sequences.
+		/// If it is not set then a time based instance is created internally.
+		/// </remarks>
+		public Random Random
+		{
+			get { return _Random_ ?? (_Random_ = new Random()); }
+			set { _Random_ = value; }
+		}
+		Random _Random_;
 
 		/// <summary>
 		/// Creates the instance with data from the default storage.
@@ -63,7 +74,7 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Collects the unordered history info.
 		/// </summary>
-		public IEnumerable<Info> CollectInfo(DateTime now, bool excludeRecent)
+		public IEnumerable<Info> CollectInfo(DateTime now, bool reduced)
 		{
 			var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
@@ -77,9 +88,9 @@ namespace FarNet.Vessel
 				if (!set.Add(record.Path))
 					continue;
 
-				// skip recent
+				// skip recent and too old
 				var idle = now - record.Time;
-				if (excludeRecent && idle.TotalHours < VesselHost.Limit0)
+				if (reduced && (idle.TotalHours < VesselHost.Limit0 || record.What == Record.AGED))
 					continue;
 
 				// init info
@@ -104,7 +115,7 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Collects not empty info for each record at the record's time.
 		/// </summary>
-		public IEnumerable<Info> CollectOpenInfo()
+		public IEnumerable<Info> CollectOpenInfo(bool reduced)
 		{
 			for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
 			{
@@ -115,6 +126,8 @@ namespace FarNet.Vessel
 
 				// get the rest
 				CollectFileInfo(info, iRecord + 1, record.Time);
+				if (reduced && info.Idle.TotalHours < VesselHost.Limit0)
+					continue;
 
 				// return not empty
 				if (info.UseCount > 0)
@@ -123,7 +136,7 @@ namespace FarNet.Vessel
 		}
 
 		/// <summary>
-		/// Collects the history info for the file.
+		/// Collects info for a file.
 		/// </summary>
 		void CollectFileInfo(Info info, int start, DateTime now)
 		{
@@ -183,6 +196,9 @@ namespace FarNet.Vessel
 		public IList<Result> TrainingResults { get { return _TrainingResults; } }
 		List<Result> _TrainingResults;
 
+		/// <summary>
+		/// Makes training.
+		/// </summary>
 		Result Train()
 		{
 			// process records
@@ -261,9 +277,8 @@ namespace FarNet.Vessel
 				for (int j = y1; j <= y2; ++j)
 					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
 
-			var random = new Random();
-			int xStart = random.Next(xStep);
-			int yStart = random.Next(yStep);
+			int xStart = Random.Next(xStep);
+			int yStart = Random.Next(yStep);
 			for (int i = xStart; i <= VesselHost.Limit1; i += xStep)
 			{
 				for (int j = yStart; j <= VesselHost.Limit2; j += yStep)
@@ -363,7 +378,8 @@ namespace FarNet.Vessel
 
 			// step 2: remove the most idle extra files
 			int extraFiles = 0;
-			while (infos.Count > MAX_FILES)
+			int maxFiles = VesselHost.MaximumFileCount;
+			while (infos.Count > maxFiles)
 			{
 				var info = infos[infos.Count - 1];
 				infos.RemoveAt(infos.Count - 1);
@@ -373,30 +389,41 @@ namespace FarNet.Vessel
 			}
 
 			// step 3: cound days excluding today and remove aged records
+			int agedFiles = 0;
 			int oldRecords = 0;
 			var today = DateTime.Today;
 			var days = _records.Select(x => x.Time.Date).Where(x => x != today).Distinct().OrderByDescending(x => x).ToArray();
-			if (days.Length > MAX_DAYS)
+			int maxDays = VesselHost.MaximumDayCount;
+			if (days.Length > maxDays)
 			{
-				var zeroDate = days[MAX_DAYS - 1];
-				Logger.Source.TraceInformation("Zero: {0}", zeroDate);
+				var zero = days[maxDays - 1];
+				Logger.Source.TraceInformation("Zero: {0}", zero);
 
 				foreach (var info in infos)
 				{
-					if (info.UseCount > 1 && info.Head < zeroDate)
+					// skip single or positive
+					if (info.UseCount < 2 || info.Head >= zero)
+						continue;
+
+					// remove all aged records but the tail
+					int removed = _records.RemoveAll(x =>
+						x.Time < zero && x.Time != info.Tail && x.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase));
+
+					Logger.Source.TraceInformation("Aged records: {0}: {1}", removed, info.Path);
+					oldRecords += removed;
+				}
+
+				// set negative records to zero
+				foreach (var record in _records)
+				{
+					if (record.Time < zero)
 					{
-						// remove all but the last
-						int removed = _records.RemoveAll(x => x.Time < zeroDate && x.Time != info.Tail && x.Path.Equals(info.Path, StringComparison.OrdinalIgnoreCase));
-
-						// find and make the last aged record less important;
-						// null is rare in not standard cases, e.g. manual changes
-						var record = _records.FirstOrDefault(x => x.Time == info.Tail);
-						if (record != null && record.Time < zeroDate)
+						++agedFiles;
+						if (record.What != Record.AGED)
+						{
 							record.SetAged();
-
-						Logger.Source.TraceInformation("Aged: {0}: {1}", removed, info.Path);
-						oldRecords += removed;
-
+							Logger.Source.TraceInformation("Aged file: {0}", record.Path);
+						}
 					}
 				}
 			}
@@ -409,11 +436,16 @@ namespace FarNet.Vessel
 Missing files : {0,4}
 Extra files   : {1,4}
 Old records   : {2,4}
-Records       : {3,4}
+
+Aged files    : {3,4}
+Used files    : {4,4}
+Records       : {5,4}
 ",
 			missingFiles,
 			extraFiles,
 			oldRecords,
+			agedFiles,
+			infos.Count - agedFiles,
 			_records.Count);
 		}
 

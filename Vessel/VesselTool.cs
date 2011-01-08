@@ -76,16 +76,16 @@ namespace FarNet.Vessel
 		static string ResultText(Result result)
 		{
 			return string.Format(@"
-Up count     : {0,8}
-Down count   : {1,8}
-Same count   : {2,8}
+Up count   : {0,8}
+Down count : {1,8}
+Same count : {2,8}
 
-Up sum       : {3,8}
-Down sum     : {4,8}
-Total sum    : {5,8}
+Up sum     : {3,8}
+Down sum   : {4,8}
+Total sum  : {5,8}
 
-Average gain : {6,8:n2}
-Factors      : {7,8}
+Average    : {6,8:n2}
+Factors    : {7,8}
 ",
  result.UpCount,
  result.DownCount,
@@ -93,7 +93,7 @@ Factors      : {7,8}
  result.UpSum,
  result.DownSum,
  result.TotalSum,
- result.AverageGain,
+ result.Average,
  VesselHost.Limit0.ToString() + "/" + result.Factor1 + "/" + result.Factor2);
 		}
 

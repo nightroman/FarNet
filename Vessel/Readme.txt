@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2011-01-01
+Release  : 2011-01-08
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -9,7 +9,7 @@ Source   : http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
  * Far Manager 2.0.1767
- * Plugin FarNet 4.3.34
+ * Plugin FarNet 4.3.35
  * .NET Framework 3.5+
 
 	= DESCRIPTION =
@@ -49,7 +49,18 @@ background and it is very fast (~50 times faster than full training).
 Registry key:
 HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\Vessel.dll
 
-String value: Limits="Limit0/Limit1/Limit2"
+	DWORD value: MaximumDayCount
+
+Maximum number of recorded days to keep the records for.
+The default is 30.
+
+	DWORD value: MaximumFileCount
+
+Maximum number of files to keep the records for.
+The default is 512.
+
+	String value: Limits="Limit0/Limit1/Limit2"
+
 Default, slower training, best results: "2/200/30"
 Faster training and still good results: "2/100/15"
 
@@ -109,10 +120,12 @@ really important because they are the same as in the classic plain history.
 
 1.0.7
 
-Recommended FarNet 4.3.34
+Use FarNet 4.3.35: key counts reflect actual changes better. This is quite
+important statistics for Vessel.
 
-Update removes old records but keeps the last one for each file, so that files
-are still in the list. If file count exceeds 512 all records of old exceeding
-files are discarded. (512 is the default history limit in Far)
+Update removes from the history records of missing files, oldest files
+exceeding the limit, and old records keeping at least one per file.
 
-Minor improvement of training performance.
+Added the registry options MaximumDayCount and MaximumFileCount.
+
+Minor improvements of UI and training performance.

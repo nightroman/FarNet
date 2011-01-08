@@ -13,9 +13,14 @@ namespace FarNet.Vessel
 	[ModuleHost(Load = true)]
 	public class VesselHost : ModuleHost
 	{
-		const string LOG_FILE = "VesselHistory.log";
-		internal const string REG_FACTOR = "Factor";
-		internal const string REG_LIMITS = "Limits";
+		const int DefaultMaximumDayCount = 30;
+		const int DefaultMaximumFileCount = 512;
+
+		const string NameLogFile = "VesselHistory.log";
+		internal const string NameFactor = "Factor";
+		internal const string NameLimits = "Limits";
+		internal const string NameMaximumDayCount = "MaximumDayCount";
+		internal const string NameMaximumFileCount = "MaximumFileCount";
 
 		/// <summary>
 		/// Gets or sets the disabled flag.
@@ -40,7 +45,7 @@ namespace FarNet.Vessel
 			Instance = this;
 
 			// ensure the log
-			_LogPath = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), LOG_FILE);
+			_LogPath = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), NameLogFile);
 			if (!File.Exists(_LogPath))
 				Record.CreateLogFile(_LogPath);
 
@@ -48,6 +53,24 @@ namespace FarNet.Vessel
 			Far.Net.AnyViewer.Closed += OnViewerClosed;
 			Far.Net.AnyEditor.Closed += OnEditorClosed;
 		}
+
+		static int GetInt(string propertyName, int defaultValue)
+		{
+			using (var key = Instance.Manager.OpenRegistryKey(null, false))
+			{
+				if (key == null)
+					return defaultValue;
+
+				var data = key.GetValue(propertyName, null);
+				if (data == null)
+					return defaultValue;
+
+				return int.Parse(data.ToString());
+			}
+		}
+
+		public static int MaximumDayCount { get { return GetInt(NameMaximumDayCount, DefaultMaximumDayCount); } }
+		public static int MaximumFileCount { get { return GetInt(NameMaximumFileCount, DefaultMaximumFileCount); } }
 
 		static int? _Factor1_;
 		static int? _Factor2_;
@@ -63,7 +86,7 @@ namespace FarNet.Vessel
 				}
 				else
 				{
-					var data = ((string)key.GetValue(REG_FACTOR, "-1/-1")).Split(new char[] { '/' });
+					var data = ((string)key.GetValue(NameFactor, "-1/-1")).Split(new char[] { '/' });
 					_Factor1_ = int.Parse(data[0]);
 					_Factor2_ = data.Length > 1 ? int.Parse(data[1]) : 0;
 				}
@@ -75,7 +98,7 @@ namespace FarNet.Vessel
 			_Factor1_ = factor1;
 			_Factor2_ = factor2;
 			using (var key = Instance.Manager.OpenRegistryKey(null, true))
-				key.SetValue(VesselHost.REG_FACTOR, factor1.ToString() + "/" + factor2.ToString());
+				key.SetValue(VesselHost.NameFactor, factor1.ToString() + "/" + factor2.ToString());
 		}
 
 		public static int Factor1
@@ -110,7 +133,7 @@ namespace FarNet.Vessel
 			using (var key = Instance.Manager.OpenRegistryKey(null, false))
 			{
 				if (key != null)
-					text = (string)key.GetValue(REG_LIMITS, null);
+					text = (string)key.GetValue(NameLimits, null);
 			}
 
 			if (text == null)
