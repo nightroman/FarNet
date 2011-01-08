@@ -34,11 +34,9 @@ $#Menu commands#
 
 #Smart file history#
 
-Opens the smart file history list. It should be trained periodically in order
-to make better file ranking. The files are sorted by ranks based on last open
-time, frequency, and other factors. Note that the most recent files are sorted
-as usual, just by time; ranking is used only for files that are recorded and
-not used after that for some time.
+Opens the smart file history list. The most recent files are sorted by time,
+other files are sorted by ranks. Rank is based on last open time, frequency,
+and factors calculated by training.
 See ~File history~@FileHistory@
 
 #Plain file history#
@@ -49,8 +47,8 @@ See ~File history~@FileHistory@
 
 #Background training#
 
-Starts smart history training in the background. When it is done the results
-can be shown by the #Training results# menu command.
+Starts full smart history training in the background. When it is done the
+results can be viewed by the #Training results# menu command.
 
 #Training results#
 
@@ -59,8 +57,9 @@ training has completed and until it is not visited once.
 
 #Update history file#
 
-Removes missing files and too old records from the history log file. Records of
-the last 30 recorded days are kept. This command also triggers fast training.
+Removes from the history records of missing files, oldest files exceeding the
+limit, and too old records keeping at least one per file. This command also
+starts fast training.
 
 
 @FileHistory
@@ -86,4 +85,5 @@ $#File history#
 
 [#ShiftDel#] Discards the history of the current file.
 
-[#CtrlR#] Updates the history file by removing missing and old file records.
+[#CtrlR#] Updates the history file. Unlike the menu command it only removes
+missing/extra/old records from the history and does not start fast training.

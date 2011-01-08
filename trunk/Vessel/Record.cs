@@ -14,6 +14,7 @@ namespace FarNet.Vessel
 {
 	public class Record
 	{
+		internal const string AGED = "aged";
 		const string LINE_HEADER = "Time\tKeys\tWhat\tPath";
 		const string LINE_FORMAT = "{0:yyyy-MM-dd HH:mm:ss}\t{1}\t{2}\t{3}";
 
@@ -33,7 +34,7 @@ namespace FarNet.Vessel
 		public void SetAged()
 		{
 			Keys = 0;
-			What = "view";
+			What = AGED;
 		}
 
 		/// <summary>

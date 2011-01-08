@@ -21,7 +21,7 @@ namespace FarNet.Vessel
 			get { return UpSum - DownSum; }
 		}
 
-		public float AverageGain
+		public float Average
 		{
 			get
 			{
