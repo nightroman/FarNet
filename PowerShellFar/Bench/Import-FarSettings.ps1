@@ -46,6 +46,10 @@ if ($regkey) {
 	$regkey.Close()
 }
 
+### keep Vessel data
+$Vessel = 'HKCU:\Software\Far2\Plugins\FarNet.Modules\Vessel.dll'
+$VesselFactor = Get-ItemProperty $Vessel -Name Factor -ErrorAction 0
+
 # kill in the registry some data being imported
 Push-Location HKCU:\Software\Far2
 Remove-Item -Recurse -ErrorAction 0 -Path `
@@ -74,6 +78,10 @@ foreach($name in ($history.Keys | Sort-Object)) {
 	$regkey.SetValue($name, $history[$name])
 }
 $regkey.Close()
+
+# merge Vessel data
+if ($VesselFactor) { Set-ItemProperty $Vessel -Name Factor -Value $VesselFactor.Factor -ErrorAction 0 }
+else { Remove-ItemProperty $Vessel -Name Factor -ErrorAction 0 }
 
 # end
 Write-Host -ForegroundColor Green "Import succeeded."

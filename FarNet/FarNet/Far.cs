@@ -617,7 +617,7 @@ namespace FarNet
 		/// </summary>
 		Far = 1 << 0,
 		/// <summary>
-		/// Assume path specifies full path to a hlf-file (c:\path\filename).
+		/// Assume path specifies full path to a .hlf file (c:\path\filename).
 		/// </summary>
 		File = 1 << 1,
 		/// <summary>

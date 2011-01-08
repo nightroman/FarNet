@@ -211,10 +211,16 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Gets or sets the history name. It overrides <see cref="Mask"/> text if any.
 		/// </summary>
+		/// <remarks>
+		/// Setting after opening is not yet implemented, this can be done when needed.
+		/// </remarks>
 		string History { get; set; }
 		/// <summary>
 		/// Gets or sets the mask for fixed size mode. It overrides <see cref="History"/> text if any.
 		/// </summary>
+		/// <remarks>
+		/// Setting after opening is not supported.
+		/// </remarks>
 		string Mask { get; set; }
 		/// <summary>
 		/// Tells that this is a line of a multi-line group.

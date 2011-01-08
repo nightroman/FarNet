@@ -117,14 +117,13 @@ void FarDialog::Rect::set(Place value)
 	}
 }
 
-// _091126_135929 $Far.Dialog.TypeId is empty or null (how can it be null?!).
-// Try at least to reduce problem cases...
+// _091126_135929
 Guid FarDialog::TypeId::get()
 {
 	if (_hDlg == INVALID_HANDLE_VALUE)
 		return _typeId;
 
-	// _091126_135929 At least FarNet dialogs work fine in this way.
+	// shortcut
 	if (_typeId != Guid::Empty)
 		return _typeId;
 
@@ -132,7 +131,7 @@ Guid FarDialog::TypeId::get()
 	DialogInfo arg = { sizeof(DialogInfo) };
 	if (Info.SendDlgMessage(_hDlg, DM_GETDIALOGINFO, 0, (LONG_PTR)&arg))
 	{
-		// _091126_135929 Save it so that next time we do not try.
+		// get and save it to reuse
 		_typeId = Guid(
 		arg.Id.Data1,
 		arg.Id.Data2,
@@ -154,7 +153,7 @@ Guid FarDialog::TypeId::get()
 void FarDialog::TypeId::set(Guid value)
 {
 	if (_hDlg != INVALID_HANDLE_VALUE)
-		throw gcnew InvalidOperationException("Cannot set type ID.");
+		throw gcnew InvalidOperationException("Cannot set after opening.");
 	else
 		_typeId = value;
 }
