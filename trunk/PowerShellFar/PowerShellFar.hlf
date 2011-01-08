@@ -26,7 +26,7 @@ $#PowerShellFar#
 	~Background jobs~@BackgroundJobs@
 	~Debugger dialog~@DebuggerDialog@
 	~Frequently asked questions~@FAQ@
-	~PowerShellFar command examples~@Examples@
+	~Command and macro examples~@Examples@
 
 #Scripts#
 
@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.34#
+#PowerShellFar 4.3.35#
 
 Implements Windows PowerShell host in Far Manager, user interface for invoking
 commands and scripts, and exposes underlying FarNet object model. The package
@@ -75,8 +75,8 @@ $#Requirements#
 
 #Requirements#
 
- - Far Manager 2.0.1768
- - Plugin FarNet 4.3.34
+ - Far Manager 2.0.1776
+ - Plugin FarNet 4.3.35
  - Windows PowerShell 2.0
 
 
@@ -132,6 +132,10 @@ viewer at any time by the command #Show-FarTranscript [-External]#.
 It is recommended to add an extra space after prefixes: commands look better
 and TabExpansion can expand the first command token correctly.
 
+Note: scripts opened in the editor can be invoked in the current session by the
+[F5] shortcut. It is hardcoded but a different key still can be used.
+See ~Command and macro examples~@Examples@.
+
 #Examples#
 
 Commands with console output, prefix >:
@@ -171,8 +175,16 @@ $#Menu commands#
 
 You are prompted to enter PowerShell code to be executed. Use [Tab] to complete
 the current token by TabExpansion. Use [ShiftF1] to view help for the current
-token. Note: this input box is suitable for using in macros.
-See also ~TabExpansion.ps1~@TabExpansion@.
+token. Note: in macros [Alt1] is better than this for actions with no output.
+See also ~TabExpansion.ps1~@TabExpansion@, ~Command and macro examples~@Examples@.
+
+#[Alt1]#
+
+Similar to #Invoke input code...# but designed for macros. For better macro
+performance the input box is absolutely bare and has no features that make no
+sense in macros. Typed commands are assumed to be pure actions for side
+effects, output is not expected and discarded.
+See also ~Command and macro examples~@Examples@.
 
 #Invoke selected code#
 
@@ -1297,7 +1309,7 @@ commands, see
 
 With the associations above when you press [Enter] on scripts in the panel then
 standard scripts are started by PowerShell.exe, PowerShellFar scripts are
-started by the PSF and step units are started by the stepper.
+started by PowerShellFar and step units are started by the stepper.
 
 
 @Profile
@@ -2001,13 +2013,15 @@ especially important for asynchronous editor consoles and background jobs.
 
 
 @Examples
-$#PowerShellFar command examples#
+$#Command and macro examples#
 ~Contents~@Contents@
 
-Some examples are just demos, but some of them may be practically useful as Far
+#Command examples#
+
+Some examples are just demos but some of them may be practically useful as Far
 user menu commands (do not forget to add space and ## to the end if you do not
-want a command to be added to PSF history). Examples with panels should be run
-from panels, but for the others it is not a requirement.
+want a command to be added to the history). Examples with panels should be run
+from panels.
 
 Show three versions: Far, FarNet, PowerShellFar:
 
@@ -2040,5 +2054,37 @@ Show list of names and command lines of running processes and then show the sele
 
 Show available scripts and their help synopsis in description column
  >: Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -Columns Name, Synopsis
+
+#Macro examples#
+
+PowerShell commands are invoked from macros via the main menu hotkey [Alt1]
+(with empty or ignored output) or [1] (with output to be shown in the viewer).
+The hotkey opens an input box where a macro "types" a command.
+
+Simple macro [F10] in the Panels area: safe exit with PowerShellFar background
+jobs check (X is the PowerShellFar hotkey in the plugin menu):
+
+ F11 X Alt1 "$Far.Quit()" Enter
+
+Advanced macro does not depend on a hotkey and calls native [F10] if there is
+no PowerShellFar installed on a particular machine:
+
+ F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter Alt1 "$Far.Quit()" Enter $Else Esc F10 $End
+
+This macro in the Common area calls the script Menu-Favorites-.ps1 from where
+[F11] and PowerShellFar menus are available:
+
+ F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter Alt1 "Menu-Favorites-.ps1" Enter $Else Esc $End
+
+This macro invokes the script Clear-Session.ps1 with output shown in the
+viewer. That is why it uses the hotkey [1]:
+
+ F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter 1 "Clear-Session.ps1 -Verbose" Enter $Else Esc $End
+
+Scripts opened in the editor can be invoked in the current session by the [F5]
+shortcut. It is hardcoded but a different key still can be used. This macros
+allows to use a different key for the same job:
+
+ F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter 1 "$Psf.InvokeScriptFromEditor()" Enter $Else Esc $End
 
 ===

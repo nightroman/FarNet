@@ -25,9 +25,6 @@ namespace PowerShellFar
 	public static class Zoo
 	{
 		///
-		public static bool TestInputCode { get; set; }
-
-		///
 		public static Meta[] TablePanelSetupColumns(object[] columns)
 		{
 			return TablePanel.SetupColumns(columns);

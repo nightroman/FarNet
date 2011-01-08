@@ -1,7 +1,7 @@
 
-$Build = '34'
-$Date = '2011-01-02'
-$FarVersion = '2.0.1768'
+$Build = '35'
+$Date = '2011-01-08'
+$FarVersion = '2.0.1776'
 $FarNetVersion = "4.3.$Build"
 $FarNetAccordVersion = "4.3.$Build"
 $PowerShellFarVersion = "4.3.$Build"

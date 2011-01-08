@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.3.35 =
+
+*) IEditor.KeyCount
+Corrected to count actual changes. (Reminder: it is not for public use)
+
 = 4.3.34 =
 
 *) x64: Fixed crashes in dialogs. Thanks to signatov2000.

@@ -58,7 +58,7 @@ $Far.Macro.Install($(
 	New-FarMacro Common CtrlMsWheelUp   'F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End' 'FarNet: Increase font size'
 
 	### Favorites menu
-	New-FarMacro Common CtrlShiftL (Get-PsfMacro '1 "Menu-Favorites-.ps1" Enter') 'PSF: Favorites'
+	New-FarMacro Common CtrlShiftL (Get-PsfMacro 'Alt1 "Menu-Favorites-.ps1" Enter') 'PSF: Favorites'
 
 	### PowerShellFar command history
 	# Also, AltF10 in panels disables questionable folder tree feature.
@@ -131,7 +131,7 @@ $Far.Macro.Install($(
 	### == Shell only
 
 	### Quit Far
-	New-FarMacro Shell F10 (Get-PsfMacro '1 "$Far.Quit()" Enter' F10) 'PSF: Quit Far'
+	New-FarMacro Shell F10 (Get-PsfMacro 'Alt1 "$Far.Quit()" Enter' F10) 'PSF: Quit Far'
 
 	### Easy prefix: space expands empty command line to '>: '
 	New-FarMacro Shell Space '> : Space' 'PSF: Easy prefix' -CommandLine 0
@@ -177,7 +177,7 @@ $Far.Macro.Install($(
 	### Bookmarks
 	New-FarMacro Editor Ctrl- 'bm.prev()' 'Go to the previous stack bookmark'
 	New-FarMacro Editor CtrlShift- 'bm.next()' 'Go to the next stack bookmark'
-	New-FarMacro Editor Ctrl= (Get-PsfMacro '1 print("Select-Bookmark-") Enter') 'Show bookmarks'
+	New-FarMacro Editor Ctrl= (Get-PsfMacro 'Alt1 print("Select-Bookmark-") Enter') 'Show bookmarks'
 	New-FarMacro Editor CtrlShift= 'bm.add()' 'Add a new stack bookmark'
 
 	### == Native (not PSF) macros

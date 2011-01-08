@@ -1,9 +1,23 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-= 4.3.34 =
+= 4.3.35 =
 
-Technical build for the fixes in FarNet 4.3.34.
+*) Added the [Atl1] hotkey to the PSF menus
+- Bare dialog to input and invoke code. It is designed for macros.
+- Install-Macro-.ps1 uses the hotkey [Alt1] instead of [1].
+- "F11 <PSF> Alt1" discards command output, if any.
+- "F11 <PSF> 1" may be used for macros with output.
+- See help "Command and macro examples".
+
+*) FarDescription module
+- Do not trim leading white spaces.
+- Test-Descript-.ps1 covers this change.
+
+*) Import-FarSettings.ps1
+Preserves some local data of the Vessel module.
+
+= 4.3.34 =
 
 *) Test-Dialog+.ps1
 Enabled for x64, too.

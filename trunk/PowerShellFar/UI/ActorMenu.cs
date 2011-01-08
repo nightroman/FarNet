@@ -13,6 +13,8 @@ namespace PowerShellFar.UI
 {
 	static class ActorMenu
 	{
+		const int KeyInvokeFromMacro = VKeyMode.Alt | VKeyCode.D1;
+
 		static List<KeyValuePair<FarItem, ModuleToolOptions>> _pendingItems;
 
 		static IMenu _menuDialog;
@@ -40,6 +42,11 @@ namespace PowerShellFar.UI
 			_menuEditor.Title = Res.Me;
 			_menuPanels.Title = Res.Me;
 			_menuViewer.Title = Res.Me;
+
+			_menuDialog.BreakKeys.Add(KeyInvokeFromMacro);
+			_menuEditor.BreakKeys.Add(KeyInvokeFromMacro);
+			_menuPanels.BreakKeys.Add(KeyInvokeFromMacro);
+			_menuViewer.BreakKeys.Add(KeyInvokeFromMacro);
 
 			string helpTopic = A.Psf.HelpTopic + "MenuCommands";
 			_menuDialog.HelpTopic = helpTopic;
@@ -118,6 +125,10 @@ namespace PowerShellFar.UI
 				menu.Selected = -1;
 				menu.Lock();
 				menu.Show();
+
+				// process the key
+				if (menu.BreakKey == KeyInvokeFromMacro)
+					A.Psf.InvokeFromMacro();
 			}
 			catch (PipelineStoppedException)
 			{

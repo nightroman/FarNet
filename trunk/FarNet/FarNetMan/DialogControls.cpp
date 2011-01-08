@@ -417,9 +417,10 @@ void FarEdit::History::set(String^ value)
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		//! the code is not correct: the string has to be allocated; problem: to free //??
+		//! the code is not correct: the string has to be allocated; problem: to free.
 		//if (!Info.SendDlgMessage(_dialog->_hDlg, DM_SETHISTORY, Id, (LONG_PTR)(char*)..))
 		//	throw gcnew InvalidOperationException("Cannot set history.");
+		//! UPD: Far 2.0.1776 presumably copies the data, so this can be implemented.
 		throw gcnew NotImplementedException;
 	}
 	else
@@ -447,7 +448,7 @@ void FarEdit::Mask::set(String^ value)
 		throw gcnew NotImplementedException();
 
 	if (_type != DI_FIXEDIT)
-		throw gcnew InvalidOperationException("You can set this only for fixed size edit control.");
+		throw gcnew InvalidOperationException("The mask is supported only by fixed size edit controls.");
 
 	_history = value;
 	_flags &= ~DIF_HISTORY;
