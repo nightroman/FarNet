@@ -20,22 +20,30 @@ namespace FarNet.Vessel
 			_factor2 = factor2;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public int Compare(Info left, Info right)
 		{
-			if (left == null) throw new ArgumentNullException("left");
-			if (right == null) throw new ArgumentNullException("right");
-			
-			// recency
-			var recency1 = left.RecentRank(_factor1, _factor2);
-			var recency2 = right.RecentRank(_factor1, _factor2);
-			if (recency1 < recency2)
-				return -1;
-			if (recency1 > recency2)
-				return 1;
+			// group or recent time
+			{
+				var x = left.Group(_factor1, _factor2);
+				var y = right.Group(_factor1, _factor2);
+				if (x < y)
+					return -1;
+				if (x > y)
+					return 1;
+				if (x == 0)
+					return left.Idle.CompareTo(right.Idle);
+			}
 
-			// recent times
-			if (recency1 == 0)
-				return left.Idle.CompareTo(right.Idle);
+			// evidence
+			{
+				var x = left.Evidence;
+				var y = right.Evidence;
+				if (x > y)
+					return -1;
+				if (x < y)
+					return 1;
+			}
 
 			// activity
 			{
@@ -47,7 +55,7 @@ namespace FarNet.Vessel
 					return 1;
 			}
 
-			// day counts
+			// days
 			{
 				int x = left.DayCount;
 				int y = right.DayCount;
@@ -57,20 +65,10 @@ namespace FarNet.Vessel
 					return 1;
 			}
 
-			// frequency
+			// keys
 			{
-				int x = left.Frequency > 0 ? 1 : 0;
-				int y = right.Frequency > 0 ? 1 : 0;
-				if (x > y)
-					return -1;
-				if (x < y)
-					return 1;
-			}
-
-			// key counts
-			{
-				int x = Mat.Factor(left.KeyCount, 2);
-				int y = Mat.Factor(right.KeyCount, 2);
+				int x = Mat.Span(left.KeyCount, 2);
+				int y = Mat.Span(right.KeyCount, 2);
 				if (x > y)
 					return -1;
 				if (x < y)

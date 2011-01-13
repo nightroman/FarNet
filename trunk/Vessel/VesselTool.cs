@@ -201,33 +201,34 @@ Factors    : {7,8}
 
 			for (; ; menu.Items.Clear())
 			{
-				int recency = -1;
+				int group1 = -1;
 				int indexLimit0 = int.MaxValue;
 				foreach (var it in Record.GetHistory(null, DateTime.Now, (smart ? VesselHost.Factor1 : -1), VesselHost.Factor2))
 				{
 					// separator
 					if (smart)
 					{
-						int recency2 = it.RecentRank(VesselHost.Factor1, VesselHost.Factor2);
-						if (recency != recency2)
+						int group2 = it.Group(VesselHost.Factor1, VesselHost.Factor2);
+						if (group1 != group2)
 						{
-							if (recency >= 0)
+							if (group1 >= 0)
 							{
 								menu.Add("").IsSeparator = true;
-								if (recency2 == 0)
+								if (group2 == 0)
 									indexLimit0 = menu.Items.Count;
 							}
-							recency = recency2;
+							group1 = group2;
 						}
 					}
 
 					// item
-					menu.Add(it.Path).Checked = it.Frequency > 0;
+					menu.Add(it.Path).Checked = it.Evidence > 0;
 				}
 
 			show:
 
-				if (!menu.Show() || menu.Selected < 0)
+				menu.Show();
+				if (menu.Selected < 0)
 					return;
 
 				// update:

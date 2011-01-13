@@ -9,10 +9,14 @@ using System;
 namespace FarNet.Vessel
 {
 	/// <summary>
-	/// File summary information.
+	/// Collected file information.
 	/// </summary>
 	public class Info
 	{
+		// scale 2: 10 ~ 42 days
+		public const int SpanCount = 11;
+		public const int SpanScale = 2;
+
 		/// <summary>
 		/// File path.
 		/// </summary>
@@ -54,14 +58,14 @@ namespace FarNet.Vessel
 		public TimeSpan Idle { get; set; }
 
 		/// <summary>
-		/// Frequency rank with 0 as the least used.
+		/// Kind of probability in percents.
 		/// </summary>
-		public int Frequency { get; set; }
+		public int Evidence { get; set; }
 
 		/// <summary>
-		/// Recency rank: 0 is the most recent to be sorted by time.
+		/// Recency group: 0 is the most recent to be sorted by time.
 		/// </summary>
-		public int RecentRank(int factor1, int factor2)
+		public int Group(int factor1, int factor2)
 		{
 			var hours = Idle.TotalHours;
 			
@@ -78,4 +82,5 @@ namespace FarNet.Vessel
 		}
 
 	}
+
 }

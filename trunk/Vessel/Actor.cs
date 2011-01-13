@@ -18,6 +18,27 @@ namespace FarNet.Vessel
 		readonly string _store;
 		readonly List<Record> _records;
 
+		private int _FastStep1 = 20;
+		private int _FastStep2 = 4;
+
+		/// <summary>
+		/// Gets or sets the fast training step 1.
+		/// </summary>
+		public int FastStep1
+		{
+			get { return _FastStep1; }
+			set { _FastStep1 = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the fast training step 2.
+		/// </summary>
+		public int FastStep2
+		{
+			get { return _FastStep2; }
+			set { _FastStep2 = value; }
+		}
+
 		/// <summary>
 		/// Gets or sets the random number generator.
 		/// </summary>
@@ -67,16 +88,20 @@ namespace FarNet.Vessel
 			// order
 			if (factor1 < 0)
 				return infos.OrderByDescending(x => x.Idle);
-			else
-				return infos.OrderByDescending(x => x, new InfoComparer(factor1, factor2));
+
+			// evidences
+			SetEvidences(infos, CollectEvidences());
+			return infos.OrderByDescending(x => x, new InfoComparer(factor1, factor2));
 		}
 
 		/// <summary>
 		/// Collects the unordered history info.
 		/// </summary>
-		public IEnumerable<Info> CollectInfo(DateTime now, bool reduced)
+		public IList<Info> CollectInfo(DateTime now, bool reduced)
 		{
+			var result = new List<Info>();
 			var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			
 			for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
 			{
 				// skip data from the future
@@ -108,15 +133,72 @@ namespace FarNet.Vessel
 				// get the rest
 				CollectFileInfo(info, iRecord + 1, now);
 
-				yield return info;
+				result.Add(info);
+			}
+
+			return result;
+		}
+
+		public Dictionary<string, SpanSet> CollectEvidences()
+		{
+			var result = new Dictionary<string, SpanSet>(StringComparer.OrdinalIgnoreCase);
+			var set1 = new SpanSet();
+
+			foreach (var record in _records)
+			{
+				SpanSet set2;
+				if (!result.TryGetValue(record.Path, out set2))
+				{
+					set2 = new SpanSet() { Time = record.Time };
+					result.Add(record.Path, set2);
+					continue;
+				}
+
+				var idle = set2.Time - record.Time;
+				set2.Time = record.Time;
+
+				int span = Mat.EvidenceSpan(idle.TotalHours, Info.SpanScale);
+				if (span < Info.SpanCount)
+				{
+					++set1.Spans[span];
+					++set2.Spans[span];
+				}
+			}
+
+			result.Add(string.Empty, set1);
+			return result;
+		}
+
+		/// <summary>
+		/// Sets info evidences from collected data.
+		/// </summary>
+		static void SetEvidences(IEnumerable<Info> infos, Dictionary<string, SpanSet> map)
+		{
+			var spans = map[string.Empty].Spans;
+			foreach (var info in infos)
+			{
+				int span = Mat.EvidenceSpan(info.Idle.TotalHours, Info.SpanScale);
+				if (span >= Info.SpanCount)
+					continue;
+
+				// avoid overfitting: do not count singles, use at least two cases
+				int count = map[info.Path].Spans[span];
+				if (count < 2)
+					continue;
+
+				// set evidence, at least 1%
+				info.Evidence = 100 * count / spans[span];
+				if (info.Evidence == 0)
+					info.Evidence = 1;
 			}
 		}
 
 		/// <summary>
 		/// Collects not empty info for each record at the record's time.
 		/// </summary>
-		public IEnumerable<Info> CollectOpenInfo(bool reduced)
+		public IEnumerable<Info> CollectOpenInfo()
 		{
+			var result = new List<Info>();
 			for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
 			{
 				var record = _records[iRecord];
@@ -126,13 +208,15 @@ namespace FarNet.Vessel
 
 				// get the rest
 				CollectFileInfo(info, iRecord + 1, record.Time);
-				if (reduced && info.Idle.TotalHours < VesselHost.Limit0)
+				if (info.Idle.TotalHours < VesselHost.Limit0)
 					continue;
 
 				// return not empty
 				if (info.UseCount > 0)
-					yield return info;
+					result.Add(info);
 			}
+			SetEvidences(result, CollectEvidences());
+			return result;
 		}
 
 		/// <summary>
@@ -180,11 +264,6 @@ namespace FarNet.Vessel
 						++info.Activity;
 				}
 
-				// cases of idle larger than the current idle
-				var idle = info.Head - record.Time;
-				if (idle > info.Idle)
-					++info.Frequency;
-
 				// now save the record time
 				info.Head = record.Time;
 			}
@@ -201,6 +280,9 @@ namespace FarNet.Vessel
 		/// </summary>
 		Result Train()
 		{
+			// evidences once
+			var map = CollectEvidences();
+
 			// process records
 			VesselTool.TrainingRecordCount = Records.Count;
 			VesselTool.TrainingRecordIndex = 0;
@@ -217,6 +299,9 @@ namespace FarNet.Vessel
 				// not found means it is the first history record for the file, skip it
 				if (rankPlain < 0)
 					continue;
+
+				// evidences
+				SetEvidences(infos, map);
 
 				// sort with factors, get smart rank
 				foreach (var r in _TrainingResults)
@@ -263,25 +348,22 @@ namespace FarNet.Vessel
 
 		Result TrainFastEpoch(int factor1, int factor2)
 		{
-			const int xStep = 20;
-			const int yStep = 4;
-
 			int x1 = Math.Max(0, factor1 - xRadius);
 			int y1 = Math.Max(0, factor2 - yRadius);
 			int x2 = Math.Min(VesselHost.Limit1, factor1 + xRadius);
 			int y2 = Math.Min(VesselHost.Limit2, factor2 + yRadius);
 
-			_TrainingResults = new List<Result>((x2 - x1 + 1) * (y2 - y1 + 1) + (VesselHost.Limit1 / xStep + 1) * (VesselHost.Limit2 / yStep + 1));
+			_TrainingResults = new List<Result>((x2 - x1 + 1) * (y2 - y1 + 1) + (VesselHost.Limit1 / _FastStep1 + 1) * (VesselHost.Limit2 / _FastStep2 + 1));
 
 			for (int i = x1; i <= x2; ++i)
 				for (int j = y1; j <= y2; ++j)
 					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
 
-			int xStart = Random.Next(xStep);
-			int yStart = Random.Next(yStep);
-			for (int i = xStart; i <= VesselHost.Limit1; i += xStep)
+			int xStart = Random.Next(_FastStep1);
+			int yStart = Random.Next(_FastStep2);
+			for (int i = xStart; i <= VesselHost.Limit1; i += _FastStep1)
 			{
-				for (int j = yStart; j <= VesselHost.Limit2; j += yStep)
+				for (int j = yStart; j <= VesselHost.Limit2; j += _FastStep2)
 					if (i < x1 || i > x2 || j < y1 || j > y2)
 						_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
 			}
@@ -307,7 +389,7 @@ namespace FarNet.Vessel
 		{
 			_TrainingResults = new List<Result>((limit1 + 1) * (limit2 + 1));
 			for (int i = 0; i <= limit1; ++i)
-				for (int j = 0; j <= limit2; ++j)
+				for (int j = i / 24; j <= limit2; ++j)
 					_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
 
 			return Train();
