@@ -129,3 +129,8 @@ exceeding the limit, and old records keeping at least one per file.
 Added the registry options MaximumDayCount and MaximumFileCount.
 
 Minor improvements of UI and training performance.
+
+1.0.8
+
+Improved predictivity of the model by taking into account evidences of openings
+for idle periods. The test set shows 30-40% more gain for long enough histories.
