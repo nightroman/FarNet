@@ -657,7 +657,13 @@ namespace FarNet
 		public abstract void EndAsync();
 
 		/// <summary>
-		/// Gets or sets show white space flag.
+		/// Tells to enable or disable the caret position beyond end of lines.
+		/// Set it before or after opening.
+		/// </summary>
+		public abstract bool IsVirtualSpace { get; set; }
+
+		/// <summary>
+		/// Tells to show or hide white spaces.
 		/// Set it before or after opening.
 		/// </summary>
 		public abstract bool ShowWhiteSpace { get; set; }

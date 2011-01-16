@@ -2,6 +2,9 @@ http://code.google.com/p/farnet/
 
 = 4.3.36 =
 
+*) IEditor
+Added yet missed property IsVirtualSpace (EOPT_CURSORBEYONDEOL in Far API).
+
 *) IAnyPanel
 New method SelectedIndexes().
 
