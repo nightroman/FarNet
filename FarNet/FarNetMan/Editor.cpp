@@ -843,6 +843,7 @@ void Editor::WordDiv::set(String^ value)
 	_WordDivSet = true;
 }
 
+bool Editor::IsVirtualSpace::get() { return GetBoolOption(EOPT_CURSORBEYONDEOL, _IsVirtualSpace); }
 bool Editor::ShowWhiteSpace::get() { return GetBoolOption(EOPT_SHOWWHITESPACE, _ShowWhiteSpace); }
 bool Editor::WriteByteOrderMark::get() { return GetBoolOption(EOPT_BOM, _WriteByteOrderMark); }
 bool Editor::GetBoolOption(int option, bool value)
@@ -858,6 +859,17 @@ bool Editor::GetBoolOption(int option, bool value)
 		return false;
 }
 
+void Editor::IsVirtualSpace::set(bool value)
+{
+	if (IsOpened)
+	{
+		SetBoolOption(ESPT_CURSORBEYONDEOL, value);
+		return;
+	}
+	
+	_IsVirtualSpace = value;
+	_IsVirtualSpaceSet = true;
+}
 void Editor::ShowWhiteSpace::set(bool value)
 {
 	if (IsOpened)
@@ -903,6 +915,9 @@ void Editor::Start(const EditorInfo& ei, bool waiting)
 	{
 		if (_WordDivSet)
 			WordDiv = _WordDiv;
+		
+		if (_IsVirtualSpaceSet)
+			IsVirtualSpace = _IsVirtualSpace;
 		if (_ShowWhiteSpaceSet)
 			ShowWhiteSpace = _ShowWhiteSpace;
 		if (_WriteByteOrderMarkSet)
