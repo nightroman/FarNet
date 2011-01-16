@@ -286,6 +286,14 @@ namespace FarNet
 		/// Pushes or puts the panel to the internal panel shelve.
 		/// </summary>
 		void Push();
+		/// <summary>
+		/// Gets indexes of selected items.
+		/// </summary>
+		/// <remarks>
+		/// The indexes are valid only for the <see cref="ShownList"/> items.
+		/// Unlike the <see cref="SelectedFiles"/> this list is empty if none is selected.
+		/// </remarks>
+		int[] SelectedIndexes();
 	}
 
 	/// <summary>

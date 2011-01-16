@@ -73,7 +73,7 @@ internal:
 	Object^ _postData;
 	FarFile^ _postFile;
 	String^ _postName;
-	array<String^>^ _postSelected;
+	array<int>^ _postSelected;
 	ShelveInfoPanel^ _ActiveInfo;
 private:
 	Guid _TypeId;

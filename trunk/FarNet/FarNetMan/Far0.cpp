@@ -1025,7 +1025,7 @@ void Far0::ShowPanelsMenu()
 	}
 }
 
-void Far0::ShowEditorsMenu() //?????
+void Far0::ShowEditorsMenu()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->HelpTopic = "MenuMain";
@@ -1048,7 +1048,7 @@ void Far0::ShowEditorsMenu() //?????
 	it->Activate();
 }
 
-void Far0::ShowViewersMenu() //?????
+void Far0::ShowViewersMenu()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->HelpTopic = "MenuMain";
