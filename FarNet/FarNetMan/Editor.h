@@ -51,6 +51,7 @@ public:
 	virtual property bool IsNew { bool get() override; void set(bool value) override; }
 	virtual property bool IsOpened { bool get() override; }
 	virtual property bool IsSaved { bool get() override; }
+	virtual property bool IsVirtualSpace { bool get() override; void set(bool value) override; }
 	virtual property bool Overtype { bool get() override; void set(bool value) override; }
 	virtual property bool SelectionExists { bool get() override; }
 	virtual property bool ShowWhiteSpace { bool get() override; void set(bool value) override; }
@@ -134,12 +135,10 @@ private:
 	int _id;
 	String^ _FileName;
 	DateTime _TimeOfOpen;
-	bool _ShowWhiteSpace;
-	bool _ShowWhiteSpaceSet;
-	bool _WriteByteOrderMark;
-	bool _WriteByteOrderMarkSet;
-	String^ _WordDiv;
-	bool _WordDivSet;
+	bool _IsVirtualSpace; bool _IsVirtualSpaceSet;
+	bool _ShowWhiteSpace; bool _ShowWhiteSpaceSet;
+	bool _WriteByteOrderMark; bool _WriteByteOrderMarkSet;
+	String^ _WordDiv; bool _WordDivSet;
 private:
 	FarNet::DeleteSource _DeleteSource;
 	FarNet::Switching _Switching;

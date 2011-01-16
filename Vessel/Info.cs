@@ -9,7 +9,7 @@ using System;
 namespace FarNet.Vessel
 {
 	/// <summary>
-	/// Collected file information.
+	/// Collected file summary information.
 	/// </summary>
 	public class Info
 	{
@@ -23,17 +23,17 @@ namespace FarNet.Vessel
 		public string Path { get; set; }
 
 		/// <summary>
-		/// The head time.
+		/// The first recorded time.
 		/// </summary>
 		public DateTime Head { get; set; }
 
 		/// <summary>
-		/// The tail time.
+		/// The last recorded time.
 		/// </summary>
 		public DateTime Tail { get; set; }
 
 		/// <summary>
-		/// Count of use cases.
+		/// Count of records.
 		/// </summary>
 		public int UseCount { get; set; }
 
@@ -53,7 +53,7 @@ namespace FarNet.Vessel
 		public int KeyCount { get; set; }
 
 		/// <summary>
-		/// Idle time from the last use.
+		/// Idle span since the last use.
 		/// </summary>
 		public TimeSpan Idle { get; set; }
 
@@ -82,5 +82,4 @@ namespace FarNet.Vessel
 		}
 
 	}
-
 }

@@ -43,7 +43,7 @@ namespace FarNet.Vessel
 		/// Gets or sets the random number generator.
 		/// </summary>
 		/// <remarks>
-		/// It is designed to be set from tests in order to repeat the same random sequences.
+		/// It is designed for tests in order to repeat the same sequences.
 		/// If it is not set then a time based instance is created internally.
 		/// </remarks>
 		public Random Random
