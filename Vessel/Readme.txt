@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2011-01-08
+Release  : 2011-01-13
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -134,3 +134,5 @@ Minor improvements of UI and training performance.
 
 Improved predictivity of the model by taking into account evidences of openings
 for idle periods. The test set shows 30-40% more gain for long enough histories.
+
+1.0.9
