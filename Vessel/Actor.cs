@@ -174,22 +174,20 @@ namespace FarNet.Vessel
 		/// </summary>
 		static void SetEvidences(IEnumerable<Info> infos, Dictionary<string, SpanSet> map)
 		{
+			// total counts
 			var spans = map[string.Empty].Spans;
+
+			// calculate evidences for idle times
 			foreach (var info in infos)
 			{
 				int span = Mat.EvidenceSpan(info.Idle.TotalHours, Info.SpanScale);
 				if (span >= Info.SpanCount)
 					continue;
 
-				// avoid overfitting: do not count singles, use at least two cases
+				// skip singles, use at least two cases, or we get huge overfitting
 				int count = map[info.Path].Spans[span];
-				if (count < 2)
-					continue;
-
-				// set evidence, at least 1%
-				info.Evidence = 100 * count / spans[span];
-				if (info.Evidence == 0)
-					info.Evidence = 1;
+				if (count >= 2)
+					info.Evidence = 100 * count / spans[span];
 			}
 		}
 
