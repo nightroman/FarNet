@@ -133,7 +133,7 @@ It is recommended to add an extra space after prefixes: commands look better
 and TabExpansion can expand the first command token correctly.
 
 Note: scripts opened in the editor can be invoked in the current session by the
-[F5] shortcut. It is hardcoded but a different key still can be used.
+[F5] hotkey. It is hardcoded but a different key still can be used.
 See ~Command and macro examples~@Examples@.
 
 #Examples#
@@ -1995,7 +1995,7 @@ for normal TabExpansion of the first word:
 Now you can type PowerShell commands without a prefix and press [ShiftSpace] to
 execute it. There is a bonus: if a command fails, say, due to mistakes, its
 text is still in the command line, ready for correction, even cursor position
-is the same: this helps to compose some commands.
+is the same: this helps to compose some lengthy commands.
 
 
 @ConsoleApplications
@@ -2057,9 +2057,9 @@ Show available scripts and their help synopsis in description column
 
 #Macro examples#
 
-PowerShell commands are invoked from macros via the main menu hotkey [Alt1]
-(with empty or ignored output) or [1] (with output to be shown in the viewer).
-The hotkey opens an input box where a macro "types" a command.
+PowerShell commands are invoked from macros via the menu hotkey [Alt1] (with
+empty or ignored output) or [1] (with output to be shown in the viewer). A
+hotkey opens an input box where macros type commands.
 
 Simple macro [F10] in the Panels area: safe exit with PowerShellFar background
 jobs check (X is the PowerShellFar hotkey in the plugin menu):
@@ -2067,23 +2067,23 @@ jobs check (X is the PowerShellFar hotkey in the plugin menu):
  F11 X Alt1 "$Far.Quit()" Enter
 
 Advanced macro does not depend on a hotkey and calls native [F10] if there is
-no PowerShellFar installed on a particular machine:
+no PowerShellFar installed:
 
  F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter Alt1 "$Far.Quit()" Enter $Else Esc F10 $End
 
-This macro in the Common area calls the script Menu-Favorites-.ps1 from where
+This macro in the Common area calls the Menu-Favorites-.ps1 script from where
 [F11] and PowerShellFar menus are available:
 
  F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter Alt1 "Menu-Favorites-.ps1" Enter $Else Esc $End
 
-This macro invokes the script Clear-Session.ps1 with output shown in the
-viewer. That is why it uses the hotkey [1]:
+This macro invokes the Clear-Session.ps1 script. The macro uses the hotkey [1]
+in order to show command output in the viewer:
 
  F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter 1 "Clear-Session.ps1 -Verbose" Enter $Else Esc $End
 
 Scripts opened in the editor can be invoked in the current session by the [F5]
-shortcut. It is hardcoded but a different key still can be used. This macros
-allows to use a different key for the same job:
+hotkey. It is hardcoded but a different key still can be used for the same job
+with this macro:
 
  F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter 1 "$Psf.InvokeScriptFromEditor()" Enter $Else Esc $End
 

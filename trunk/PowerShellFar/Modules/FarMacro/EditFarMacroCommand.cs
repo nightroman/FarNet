@@ -159,7 +159,7 @@ namespace FarMacro
 						FileName = FileName.Replace(new string(new char[] { bad }), "_" + (int)bad + "_");
 				}
 				string extension = Area == MacroArea.Consts ? ".tmp" : m.MacroFileExtension;
-				FileName = Path.Combine(MyAppData, Area.ToString() + "." + FileName + extension);
+				FileName = Path.Combine(GetTempPath(), Area.ToString() + "." + FileName + extension);
 
 				// target text
 				string text;
@@ -175,7 +175,7 @@ namespace FarMacro
 			}
 
 			// setup the editor
-			//! use history even in Macro mode, names are reusable
+			//! allow history even in Macro mode, names are reusable
 			Editor = Far.Net.CreateEditor();
 			Editor.FileName = FileName;
 
