@@ -13,19 +13,18 @@ namespace FarMacro
 	public class BaseCmdlet : PSCmdlet
 	{
 		internal const string Noun = "FarMacro";
+		const string TempName = Noun;
 
-		protected static string MyAppData
+		/// <summary>
+		/// Gets existing fixed path for the temporary files.
+		/// </summary>
+		/// <returns></returns>
+		protected static string GetTempPath()
 		{
-			get
-			{
-				if (_MyAppData == null)
-				{
-					_MyAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Noun);
-					Directory.CreateDirectory(_MyAppData);
-				}
-				return _MyAppData;
-			}
+			var path = Path.Combine(Path.GetTempPath(), TempName);
+			if (!Directory.Exists(path))
+				Directory.CreateDirectory(path);
+			return path;
 		}
-		static string _MyAppData;
 	}
 }
