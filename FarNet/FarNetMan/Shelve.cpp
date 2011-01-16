@@ -29,7 +29,7 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 		Current = file->Name;
 
 	// selected names
-	InitSelected(panel, Current);
+	InitSelectedNames(panel, Current);
 
 	// modes
 	if (!modes)
@@ -100,8 +100,7 @@ void ShelveInfoPanel::Pop()
 ShelveInfoPlugin::ShelveInfoPlugin(Panel2^ plugin)
 : _plugin(plugin)
 {
-	FarFile^ file = plugin->CurrentFile;
-	InitSelected(plugin, file ? file->Name : nullptr);
+	InitSelectedIndexes(plugin);
 }
 
 String^ ShelveInfoPlugin::Title::get()
@@ -113,7 +112,7 @@ void ShelveInfoPlugin::Pop()
 {
 	Log::Source->TraceInformation(__FUNCTION__);
 	_plugin->Open();
-	_plugin->_postSelected = GetSelectedNames();
+	_plugin->_postSelected = GetSelectedIndexes();
 }
 
 }

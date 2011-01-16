@@ -441,7 +441,7 @@ void Panel1::Select(array<int>^ indexes, bool select)
 	//! ignore null, e.g. empty PS pipeline output
 	if (!indexes || indexes->Length == 0)
 		return;
-	
+
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
@@ -544,4 +544,21 @@ void Panel1::Push()
 {
 	Panel0::ShelvePanel(this, true);
 }
+
+array<int>^ Panel1::SelectedIndexes()
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	List<int> list(pi.SelectedItemsNumber);
+	for(int i = 0; i < pi.ItemsNumber; ++i)
+	{
+		AutoPluginPanelItem item(_handle, i, ShownFile);
+		if (0 != (item.Get().Flags & PPIF_SELECTED))
+			list.Add(i);
+	}
+
+	return list.ToArray();
+}
+
 }

@@ -63,6 +63,7 @@ namespace FarNet
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
+		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
 		public void Message(string body)
 		{
 			Message(body, null, MsgOptions.Ok, null, null);
@@ -72,6 +73,7 @@ namespace FarNet
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
+		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
 		public void Message(string body, string header)
 		{
 			Message(body, header, MsgOptions.Ok, null, null);
@@ -83,6 +85,7 @@ namespace FarNet
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
+		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
 		public int Message(string body, string header, MsgOptions options)
 		{
 			return Message(body, header, options, null, null);
@@ -95,6 +98,7 @@ namespace FarNet
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
+		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
 		public int Message(string body, string header, MsgOptions options, string[] buttons)
 		{
 			return Message(body, header, options, buttons, null);
@@ -114,6 +118,9 @@ namespace FarNet
 		/// <remarks>
 		/// In extreme cases when a message contains too many or too long buttons, then a message
 		/// box is converted into a listbox dialog where listbox items work as buttons.
+		/// <para>
+		/// The message shows the OK button if there are no buttons provided by the parameters.
+		/// </para>
 		/// </remarks>
 		public abstract int Message(string body, string header, MsgOptions options, string[] buttons, string helpTopic);
 		/// <summary>

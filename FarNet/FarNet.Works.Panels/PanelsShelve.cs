@@ -19,12 +19,16 @@ namespace FarNet.Works
 		public string[] GetSelectedNames() { return _SelectedNames; }
 		string[] _SelectedNames;
 
+		//! PSF test. //?????
+		public int[] GetSelectedIndexes() { return _SelectedIndexes; }
+		int[] _SelectedIndexes;
+
 		public abstract string Title { get; }
 
 		public abstract void Pop();
 
 		// current: do provide the current name!
-		protected void InitSelected(IAnyPanel panel, string current)
+		protected void InitSelectedNames(IAnyPanel panel, string current)
 		{
 			if (panel == null)
 				throw new ArgumentNullException("panel");
@@ -40,6 +44,15 @@ namespace FarNet.Works
 			_SelectedNames = new string[files.Count];
 			for (int i = files.Count; --i >= 0; )
 				_SelectedNames[i] = files[i].Name;
+		}
+
+		protected void InitSelectedIndexes(IAnyPanel panel)
+		{
+			if (panel == null)
+				throw new ArgumentNullException("panel");
+
+			// get selected
+			_SelectedIndexes = panel.SelectedIndexes();
 		}
 
 	}

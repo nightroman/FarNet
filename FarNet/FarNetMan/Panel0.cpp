@@ -429,9 +429,9 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			// post selection
 			if (pp->_postSelected)
 			{
-				array<String^>^ selected = pp->_postSelected;
+				array<int>^ selected = pp->_postSelected;
 				pp->_postSelected = nullptr;
-				pp->SelectNames(selected);
+				pp->SelectAt(selected);
 			}
 
 			// case: use data matcher
