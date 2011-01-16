@@ -16,7 +16,9 @@ bool Message::Show()
 		Far::Net->UI->SaveUserScreen();
 	}
 
-	//! flags: add OK if no buttons; otherwise wierd: [Esc] has no effect, [Enter] passed through, other keys too and dialog is still shown
+	//! flags: add at least one OK button; otherwise it works as a special progress-like message
+	// ([Esc] has no effect, [Enter] passed through, other keys too and dialog is still shown);
+	// for now we do not use this
 	int flags = _flags;
 	if ((!_buttons || _buttons->Length == 0) && (flags & (FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMSG_MB_YESNO|FMSG_MB_YESNOCANCEL|FMSG_MB_RETRYCANCEL)) == 0)
 		flags |= FMSG_MB_OK;
@@ -65,7 +67,7 @@ CStr* Message::CreateBlock(int& outNbItems)
 
 int Message::Show(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
 {
-	// GUI on macro
+	// GUI on macro?
 	if (int(options & MsgOptions::GuiOnMacro) != 0)
 	{
 		// check macro
@@ -73,7 +75,7 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 			options = options | MsgOptions::Gui;
 	}
 
-	// GUI
+	// case: GUI message
 	if (int(options & MsgOptions::Gui) != 0)
 	{
 		if (buttons)
@@ -83,7 +85,7 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 			return ShowGui(body, header, options);
 	}
 
-	// object
+	// standard message box
 	Message m;
 	m._helpTopic = helpTopic;
 	m._flags = (int)options;

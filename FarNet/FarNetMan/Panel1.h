@@ -38,6 +38,7 @@ public:
 	virtual property String^ Path { String^ get(); void set(String^ value); }
 public:
 	virtual bool GoToName(String^ name, bool fail);
+	virtual array<int>^ SelectedIndexes();
 	virtual void Close();
 	virtual void Close(String^ path);
 	virtual void GoToName(String^ name);

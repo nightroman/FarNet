@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.3.36 =
+
+*) IAnyPanel
+New method SelectedIndexes().
+
+*) Shelve/Unshelve FarNet panels
+These actions use SelectedIndexes() and keep/restore selection by indexes, not
+names. This is more effective and allows to restore selection with same names
+(rare but still possible use case, e.g. process list). NB: Push/Pop of native
+panels still use names because indexes might change if files changed.
+
 = 4.3.35 =
 
 *) IEditor.KeyCount

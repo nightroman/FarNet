@@ -349,7 +349,7 @@ void Viewer::Activate()
 		if (info->Kind == WindowKind::Viewer && info->Name == _FileName)
 		{
 			Far::Net->Window->SetCurrentAt(i);
-			Far::Net->Window->Commit(); //?????
+			Far::Net->Window->Commit();
 			return;
 		}
 	}
