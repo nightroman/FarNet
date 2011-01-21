@@ -2,7 +2,7 @@
 
 == Introduction ==
 
-One of the most useful FarNet modules is PowerShellFar. It combines the rich console based user interface of Far Manager with full power of Windows PowerShell perfectly integrated into this original and text friendly environment. 
+One of the most useful FarNet modules is PowerShellFar. It combines the rich console based user interface of Far Manager with full power of Windows PowerShell perfectly integrated into this original text friendly environment. 
 
 It implements the Windows PowerShell host in Far Manager, exposes the FarNet
 object model, and provides several ways for invoking commands and viewing the
