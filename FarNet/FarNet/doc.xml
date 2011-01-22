@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding='utf-8'?>
 <doc>
 	<!--
-	/// <include file='doc.xml' path='doc/IsTouched/*'/>
+	/// <include file='doc.xml' path='doc/Data/*'/>
 	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
 	-->
+	<Data>
+		<summary>
+			Gets the user data key/value table.
+		</summary>
+		<remarks>
+			Any user data can be attached by one or more external tools.
+			Keys should be chosen carefully in order to avoid conflicts.
+			When in doubts generate and use <c>Guid</c> based keys.
+		</remarks>
+	</Data>
 	<Experimental>
 		<para>
 			WARNING: This feature should work fine but it is experimental.

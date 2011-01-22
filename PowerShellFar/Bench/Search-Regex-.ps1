@@ -279,7 +279,7 @@ $panel.Info.StartSortMode = 'Unsorted'
 $panel.Info.StartViewMode = 'Descriptions'
 $panel.Info.Title = 'Searching...'
 $panel.Info.UseHighlighting = $true
-$panel.Data = $job
+$panel.Host = $job
 
 ### Modes
 # 'Descriptions'
@@ -296,23 +296,24 @@ $panel.Info.SetMode('LongDescriptions', $m1)
 
 ### Closed: disposes the job
 $panel.add_Closed({
-	$this.Data.Dispose()
+	$job = $this.Host
+	$job.Dispose()
 })
 
 ### Idled: checks new data and updates
 $panel.add_Idled({&{
-	$data = $this.Data.Parameters
-	if (!$data.Done) {
-		if ($this.Data.Output.Count) {
+	$job = $this.Host
+	if (!$job.Parameters.Done) {
+		if ($job.Output.Count) {
 			$this.Update($false)
 		}
-		$title = '{0}: {1} lines in {2} files' -f $this.Data.JobStateInfo.State, $this.Files.Count, $this.Data.Parameters.Total
+		$title = '{0}: {1} lines in {2} files' -f $job.JobStateInfo.State, $this.Files.Count, $job.Parameters.Total
 		if ($this.Info.Title -ne $title) {
 			$this.Info.Title = $title
 			$this.Redraw()
 		}
-		if ($this.Data.JobStateInfo.State -ne 'Running') {
-			$data.Done = $true
+		if ($job.JobStateInfo.State -ne 'Running') {
+			$job.Parameters.Done = $true
 			$Far.UI.SetProgressFlash()
 		}
 	}
@@ -320,7 +321,8 @@ $panel.add_Idled({&{
 
 ### GettingData: reads found (with wrapper - workaround Find mode)
 $panel.add_GettingData({&{
-	foreach($e in $this.Data.Output.ReadAll()) {
+	$job = $this.Host
+	foreach($e in $job.Output.ReadAll()) {
 		$this.Files.Add($e)
 	}
 }})

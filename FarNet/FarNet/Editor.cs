@@ -4,6 +4,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -511,11 +512,6 @@ namespace FarNet
 		public abstract void GoToEnd(bool addLine);
 
 		/// <summary>
-		/// Gets or sets any user data.
-		/// </summary>
-		public object Data { get; set; }
-
-		/// <summary>
 		/// Gets or sets a host operating on the editor.
 		/// </summary>
 		/// <remarks>
@@ -799,6 +795,9 @@ namespace FarNet
 		/// <remarks>It may throw if the window cannot be activated.</remarks>
 		public abstract void Activate();
 
+		/// <include file='doc.xml' path='doc/Data/*'/>
+		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
+		Hashtable _Data;
 	}
 
 	/// <summary>

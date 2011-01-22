@@ -50,15 +50,13 @@ namespace PowerShellFar
 		}
 		CultureInfo _CurrentCulture = Thread.CurrentThread.CurrentCulture;
 
-
 		/// <summary>
 		/// Gets the current UI culture to use.
 		/// </summary>
 		public override CultureInfo CurrentUICulture
 		{
-			get { return _CurrentUICulture; }
+			get { return A.Psf.Manager.CurrentUICulture; }
 		}
-		CultureInfo _CurrentUICulture = Thread.CurrentThread.CurrentUICulture;
 
 		/// <summary>
 		/// Gets the GUID generated once.

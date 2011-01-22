@@ -69,7 +69,7 @@ $p.Info.InfoItems = @(
 )
 
 ### Create and keep user data - an object with properties that will be used when the panel is shown
-$p.Data = New-Object PSObject -Property @{
+$p.Host = New-Object PSObject -Property @{
 	MakingDirectory = 0
 	DeletingFiles = 0
 	GettingFiles = 0
@@ -80,7 +80,7 @@ $p.Data = New-Object PSObject -Property @{
 }
 
 ### Add an extra method that updates the panel info on events
-$p.Data | Add-Member ScriptMethod UpdateInfo {
+$p.Host | Add-Member ScriptMethod UpdateInfo {
 
 	++$this.Total
 
@@ -109,10 +109,11 @@ $p.Data | Add-Member ScriptMethod UpdateInfo {
 
 ### MakingDirectory: called on [F7]
 $p.add_MakingDirectory({&{
+	$data = $this.Host
 
 	# count events and update the info
-	$n = ++$this.Data.MakingDirectory
-	$this.Data.UpdateInfo()
+	$n = ++$data.MakingDirectory
+	$data.UpdateInfo()
 
 	# ignore silent mode in this demo
 	if ($_.Mode -band [FarNet.OperationModes]::Silent) {
@@ -127,10 +128,11 @@ $p.add_MakingDirectory({&{
 
 ### DeletingFiles: called on [F8]
 $p.add_DeletingFiles({&{
+	$data = $this.Host
 
 	# count events and update the info
-	++$this.Data.DeletingFiles
-	$this.Data.UpdateInfo()
+	++$data.DeletingFiles
+	$data.UpdateInfo()
 
 	# remove input files
 	foreach($f in $_.Files) {
@@ -140,10 +142,11 @@ $p.add_DeletingFiles({&{
 
 ### GettingFiles: called on [F5], [CtrlQ]
 $p.add_GettingFiles({&{
+	$data = $this.Host
 
 	# count events and update the info
-	++$this.Data.GettingFiles
-	$this.Data.UpdateInfo()
+	++$data.GettingFiles
+	$data.UpdateInfo()
 
 	# case: [CtrlQ]
 	if ($_.Mode -band [FarNet.OperationModes]::QuickView) {
@@ -161,10 +164,11 @@ $p.add_GettingFiles({&{
 
 ### PuttingFiles: called on [F6]
 $p.add_PuttingFiles({&{
+	$data = $this.Host
 
 	# count events and update the info
-	++$this.Data.PuttingFiles
-	$this.Data.UpdateInfo()
+	++$data.PuttingFiles
+	$data.UpdateInfo()
 
 	# process input files: just add them in this demo
 	foreach($f1 in $_.Files) {
@@ -192,7 +196,7 @@ $p.add_Escaping({&{
 
 ### The key handler used in KeyPressing and KeyPressed events
 # [F1] is sent to both events if KeyPressing does not handle it
-$p.Data.KeyHandler = {
+$p.Host.KeyHandler = {
 	# case [F1]:
 	if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
 		if (0 -eq (Show-FarMessage "[F1] has been pressed" $args[0] -Choices '&Handle', '&Default')) {
@@ -203,10 +207,10 @@ $p.Data.KeyHandler = {
 }
 
 ### KeyPressed: processes some keys.
-$p.add_KeyPressed({ & $this.Data.KeyHandler 'KeyPressed' })
+$p.add_KeyPressed({ & $this.Host.KeyHandler 'KeyPressed' })
 
 ### KeyPressing: pre-processes some keys.
-$p.add_KeyPressing({ & $this.Data.KeyHandler 'KeyPressing' })
+$p.add_KeyPressing({ & $this.Host.KeyHandler 'KeyPressing' })
 
 ### Closing:
 <#

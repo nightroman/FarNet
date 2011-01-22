@@ -53,10 +53,15 @@ $#About#
 
 #PowerShellFar 4.3.36#
 
-Implements Windows PowerShell host in Far Manager, user interface for invoking
-commands and scripts, and exposes underlying FarNet object model. The package
-includes scripts for many popular Far Manager tasks and PowerShell.hrc for
-Colorer providing rich PowerShell syntax highlighting.
+One of the most useful FarNet modules is PowerShellFar. It combines the rich
+console based user interface of Far Manager with full power of Windows
+PowerShell perfectly integrated into this original text friendly environment.
+
+It implements the Windows PowerShell host in Far Manager, exposes the FarNet
+object model, and provides several ways for invoking commands and viewing the
+results. The package includes cmdlets, modules and scripts for many popular Far
+Manager tasks and PowerShell.hrc for Colorer providing rich PowerShell syntax
+highlighting.
 
 PowerShellFar, FarNet and documentation can be updated by the included script
 Update-FarNet.ps1 or downloaded and installed manually from:
@@ -175,16 +180,8 @@ $#Menu commands#
 
 You are prompted to enter PowerShell code to be executed. Use [Tab] to complete
 the current token by TabExpansion. Use [ShiftF1] to view help for the current
-token. Note: in macros [Alt1] is better than this for actions with no output.
+token.
 See also ~TabExpansion.ps1~@TabExpansion@, ~Command and macro examples~@Examples@.
-
-#[Alt1]#
-
-Similar to #Invoke input code...# but designed for macros. For better macro
-performance the input box is absolutely bare and has no features that make no
-sense in macros. Typed commands are assumed to be pure actions for side
-effects, output is not expected and discarded.
-See also ~Command and macro examples~@Examples@.
 
 #Invoke selected code#
 
@@ -2057,34 +2054,27 @@ Show available scripts and their help synopsis in description column
 
 #Macro examples#
 
-PowerShell commands are invoked from macros via the menu hotkey [Alt1] (with
-empty or ignored output) or [1] (with output to be shown in the viewer). A
-hotkey opens an input box where macros type commands.
+PowerShell commands are normally invoked from macros via the #callplugin#
+function. The first argument is the FarNet system ID: #0xcd#. The second
+argument is the module prefix and command.
 
-Simple macro [F10] in the Panels area: safe exit with PowerShellFar background
-jobs check (X is the PowerShellFar hotkey in the plugin menu):
+[F10] in the Panels area: safe exit with PowerShellFar background jobs check:
 
- F11 X Alt1 "$Far.Quit()" Enter
+ $If (callplugin(0xcd, ">: $Far.Quit()")) $Else F10 $End
 
-Advanced macro does not depend on a hotkey and calls native [F10] if there is
-no PowerShellFar installed:
+This macro in the Common area calls the Menu-Favorites-.ps1:
 
- F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter Alt1 "$Far.Quit()" Enter $Else Esc F10 $End
+ callplugin(0xcd, ">: Menu-Favorites-.ps1")
 
-This macro in the Common area calls the Menu-Favorites-.ps1 script from where
-[F11] and PowerShellFar menus are available:
+This macro invokes the Clear-Session.ps1 script. The macro uses the command
+prefix #>># in order to show command output in the viewer:
 
- F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter Alt1 "Menu-Favorites-.ps1" Enter $Else Esc $End
-
-This macro invokes the Clear-Session.ps1 script. The macro uses the hotkey [1]
-in order to show command output in the viewer:
-
- F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter 1 "Clear-Session.ps1 -Verbose" Enter $Else Esc $End
+ callplugin(0xcd, ">>: Clear-Session.ps1 -Verbose")
 
 Scripts opened in the editor can be invoked in the current session by the [F5]
 hotkey. It is hardcoded but a different key still can be used for the same job
 with this macro:
 
- F11 $If (Menu.Select("PowerShellFar", 3) > 0) Enter 1 "$Psf.InvokeScriptFromEditor()" Enter $Else Esc $End
+ callplugin(0xcd, ">>: $Psf.InvokeScriptFromEditor()")
 
 ===

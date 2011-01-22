@@ -124,11 +124,6 @@ namespace FarNet
 		/// </remarks>
 		public abstract int Message(string body, string header, MsgOptions options, string[] buttons, string helpTopic);
 		/// <summary>
-		/// Runs a command with a registered FarNet prefix.
-		/// </summary>
-		/// <param name="command">Command with a prefix of any FarNet module.</param>
-		public abstract void Run(string command);
-		/// <summary>
 		/// Gets Far version.
 		/// </summary>
 		public abstract Version FarVersion { get; }

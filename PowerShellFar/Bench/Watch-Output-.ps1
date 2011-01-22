@@ -35,13 +35,14 @@ param
 	$Seconds = 1.0
 )
 
-$editor = New-FarEditor $Far.TempName() -Title $Title -DisableHistory -Data $Command
+$editor = New-FarEditor $Far.TempName() -Title $Title -DisableHistory -Host $Command
 $editor.add_Idled([FarNet.IdledHandler]::Create($Seconds, {
 	# keep the frame because Undo will change it
 	$frame = $this.Frame
 	# undo to avoid memory "leak"
 	$this.Undo()
-	$this.SetText((& $this.Data | Out-String))
+	# invoke the script block
+	$this.SetText((& $this.Host | Out-String))
 	# restore the old frame
 	$this.Frame = $frame
 	# show the changes

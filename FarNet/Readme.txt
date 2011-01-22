@@ -8,16 +8,16 @@ E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
 
 
-	= DESCRIPTION =
+= DESCRIPTION =
 
 
-FarNet is Far Manager .NET API and runtime infrastructure for .NET modules. It
-exposes Far Manager API in comfortable object oriented way and does most of the
-low level routine jobs for its modules. Modules normally contain only tiny
-pieces of boilerplate framework code.
+FarNet provides the .NET API for Far Manager and the runtime infrastructure for
+.NET modules. The API is exposed in comfortable object oriented way and most of
+tedious programming job is done internally. User modules normally contain only
+tiny pieces of boilerplate framework code.
 
 
-	= PREREQUISITES =
+= PREREQUISITES =
 
 
  - .NET Framework 2.0+
@@ -30,7 +30,7 @@ pieces of boilerplate framework code.
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (x64)
 
 
-	= INSTALLATION =
+= INSTALLATION =
 
 
 The file Install.txt shows what has to be copied to %FARHOME% keeping the same
@@ -50,14 +50,14 @@ IMPORTANT: Far.exe.config cannot be moved or renamed. If this file is missed in
 plugin and shows only basic failure message with no details.
 
 
-	= STRUCTURE =
+= FILE STRUCTURE =
 
 
 .\
 Far.exe.config - the configuration file
 
 .\Plugins\FarNet\
-FarNetMan.dll - Far Manager plugin, manager of .NET modules
+FarNetMan.dll - Far Manager plugin and FarNet module manager
 FarNetMan.hlf - FarNet UI help
 
 .\FarNet\
@@ -72,7 +72,7 @@ the first line is the .dll path and other optional lines are class names: all
 or none should be specified.
 
 
-	= LOADING MODULES FROM DISK =
+= LOADING MODULES FROM DISK =
 
 
 *) For each folder in Modules: if a manifest *.cfg exists then only specified
@@ -87,7 +87,7 @@ Assembly names define kind of namespaces for information stored in the
 registry. Directory names and assembly locations are not important.
 
 
-	= LOADING MODULES FROM CACHE =
+= LOADING MODULES FROM CACHE =
 
 
 FarNet modules registry cache:
@@ -100,7 +100,7 @@ too difficult to discover (e.g. changes in config files). In these cases you
 have to remove the registry cache manually (ditto for other cache problems).
 
 
-	= CONFIGURATION =
+= CONFIGURATION =
 
 
 It is recommended to use default settings. The following environment variables
@@ -113,21 +113,36 @@ should be used only for advanced scenarious:
 	--  Tells to disable special rare GUI features. Default: false
 
 
-	= API DOCUMENTATION (.CHM) =
+= MODULE COMMANDS AND MACROS =
+
+
+If a FarNet module provides commands invoked by prefixes then these commands
+can be called from macros by callplugin(). The first argument is the FarNet
+system ID: 0xcd. The second argument is the module prefix and command.
+
+Example (RightControl and PowerShellFar commands):
+
+	callplugin(0xcd, "RightControl:step-left")
+	callplugin(0xcd, ">: Menu-Favorites-.ps1")
+
+Mnemonic for 0xcd: eXecute CommanD
+
+
+= API DOCUMENTATION (.CHM) =
 
 
 Download the latest version from: http://code.google.com/p/farnet/
 It includes PowerShellFar API documentation.
 
 
-	= API DOCUMENTATION (.XML) =
+= API DOCUMENTATION (.XML) =
 
 
 Included XML documentation is used by other development tools like Visual
 Studio Object Browser, .NET Reflector and etc.
 
 
-	= MODULES HELP =
+= MODULES HELP =
 
 
 You can add help for your modules. It works in dialogs, menus, input and message
@@ -136,7 +151,7 @@ be automatically shown by F1 ShiftF2 because technically FarNet modules are not
 plugins for Far Manager.
 
 
-	= BUILDING SOURCES =
+= BUILDING SOURCES =
 
 
 You can use msbuild.exe to build the sources:
@@ -152,7 +167,7 @@ or even both operations:
 	msbuild Build.proj /t:Build;Install
 
 
-	= PROBLEMS AND SOLUTIONS =
+= PROBLEMS AND SOLUTIONS =
 
 
 PROBLEM

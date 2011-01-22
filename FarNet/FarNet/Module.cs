@@ -362,9 +362,35 @@ namespace FarNet
 	public class ModuleCommandEventArgs : EventArgs
 	{
 		/// <summary>
-		/// The command text to process.
+		/// The command text to be processed by the module.
 		/// </summary>
 		public string Command { get; set; }
+		/// <summary>
+		/// Tells whether the command is called from a macro.
+		/// </summary>
+		/// <remarks>
+		/// Macros call commands via the <c>callplugin</c> function.
+		/// The first argument is the FarNet system ID: <c>0xcd</c>.
+		/// The second argument is the module command prefix and text.
+		/// Example macro: <c>callplugin(0xcd, "Prefix:Command")</c>
+		/// </remarks>
+		public bool IsMacro { get; set; }
+		/// <summary>
+		/// Tells to ignore the call and allows alternative actions.
+		/// </summary>
+		/// <remarks>
+		/// This flag is used when the command is called from macros.
+		/// <para>
+		/// A handler sets this to true to tell that nothing is done and
+		/// it makes sense for a caller to perfom an alternative action.
+		/// </para>
+		/// <para>
+		/// Note: this is not the case when processing has started and failed;
+		/// the handler should either throw an exception or keep this value as false:
+		/// fallback actions make no sense, the problems have to be resolved instead.
+		/// </para>
+		/// </remarks>
+		public bool Ignore { get; set; }
 	}
 
 	/// <summary>
