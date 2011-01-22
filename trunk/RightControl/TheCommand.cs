@@ -10,13 +10,14 @@ using FarNet.Forms;
 
 namespace FarNet.RightControl
 {
-	[System.Runtime.InteropServices.Guid("cb0fd385-474d-41de-ad42-c6d4d0d65b3d")]
-	[ModuleTool(Name = "RightControl", Options = ModuleToolOptions.Editor | ModuleToolOptions.Dialog | ModuleToolOptions.Panels)]
-	public class RightControlTool : ModuleTool
+	[System.Runtime.InteropServices.Guid("1b42c03e-40c4-45db-a3ce-eb0825fe16d1")]
+	[ModuleCommand(Name = TheCommand.Name, Prefix = TheCommand.Name)]
+	public class TheCommand : ModuleCommand
 	{
+		const string Name = "RightControl";
 		const string DefaultPattern = @"^ | $ | (?<=\b|\s)\S";
+
 		static Regex _regex_;
-		static IMenu _menu;
 
 		static Regex Regex
 		{
@@ -28,13 +29,14 @@ namespace FarNet.RightControl
 			}
 		}
 
-		public override void Invoke(object sender, ModuleToolEventArgs e)
+		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
 			InitRegex(Manager);
 
 			ILine line = null;
 			IEditor editor = null;
-			if (e.From == ModuleToolOptions.Editor)
+			var kind = Far.Net.Window.Kind;
+			if (kind == WindowKind.Editor)
 			{
 				editor = Far.Net.Editor;
 			}
@@ -45,46 +47,19 @@ namespace FarNet.RightControl
 					return;
 			}
 
-			if (_menu == null)
+			switch (e.Command.Trim())
 			{
-				_menu = Far.Net.CreateMenu();
-				_menu.Title = "RightControl";
-				_menu.Add("&1. step left");
-				_menu.Add("&2. step right");
-				_menu.Add("&3. select left");
-				_menu.Add("&4. select right");
-				_menu.Add("&5. delete left");
-				_menu.Add("&6. delete right");
-				_menu.Add("&7. vertical left");
-				_menu.Add("&8. vertical right");
-				_menu.Add("&h. go to smart home");
-				_menu.Add("&s. select to smart home");
-				_menu.Lock();
-			}
-
-			_menu.Show();
-			switch (_menu.Selected)
-			{
-				case 0: Run(editor, line, Operation.Step, false, false); break;
-				case 1: Run(editor, line, Operation.Step, true, false); break;
-				case 2: Run(editor, line, Operation.Select, false, false); break;
-				case 3: Run(editor, line, Operation.Select, true, false); break;
-				case 4: Run(editor, line, Operation.Delete, false, false); break;
-				case 5: Run(editor, line, Operation.Delete, true, false); break;
-				case 6:
-					if (editor == null)
-						SelectWorkaround(line, false);
-					else
-						Run(editor, line, Operation.Select, false, true);
-					break;
-				case 7:
-					if (editor == null)
-						SelectWorkaround(line, true);
-					else
-						Run(editor, line, Operation.Select, true, true);
-					break;
-				case 8: Home(editor, line, false); break;
-				case 9: Home(editor, line, true); break;
+				case "step-left": Run(editor, line, Operation.Step, false, false); break;
+				case "step-right": Run(editor, line, Operation.Step, true, false); break;
+				case "select-left": Run(editor, line, Operation.Select, false, false); break;
+				case "select-right": Run(editor, line, Operation.Select, true, false); break;
+				case "delete-left": Run(editor, line, Operation.Delete, false, false); break;
+				case "delete-right": Run(editor, line, Operation.Delete, true, false); break;
+				case "vertical-left": if (editor == null) SelectWorkaround(line, false); else Run(editor, line, Operation.Select, false, true); break;
+				case "vertical-right": if (editor == null) SelectWorkaround(line, true); else Run(editor, line, Operation.Select, true, true); break;
+				case "go-to-smart-home": Home(editor, line, false); break;
+				case "select-to-smart-home": Home(editor, line, true); break;
+				default: throw new ModuleException("Unknown command: " + e.Command);
 			}
 		}
 
