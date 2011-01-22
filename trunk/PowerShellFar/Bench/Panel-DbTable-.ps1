@@ -73,7 +73,7 @@ else {
 $p = New-Object PowerShellFar.UserPanel
 $p.Panel.Info.Title = "$($DbConnection.Database) Tables"
 $p.Columns = $columns
-$p.Data = @{ DbProviderFactory = $DbProviderFactory; DbConnection = $DbConnection }
+$p.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1'] = @{ DbProviderFactory = $DbProviderFactory; DbConnection = $DbConnection }
 
 # garbage
 $p.Garbage.Add($table)
@@ -81,7 +81,7 @@ if ($CloseConnection) { $p.Garbage.Add($DbConnection) }
 
 ### set [Enter] handler ([CtrlPgDn] is for members)
 $p.SetOpen({
-	$pd = $this.Data
+	$pd = $this.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1']
 	$fd = $_.File.Data
 	$table = $fd.TABLE_NAME
 	# Npgsql: quote table names to include tables with case sensitive names

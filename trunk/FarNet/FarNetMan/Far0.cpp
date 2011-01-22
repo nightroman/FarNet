@@ -243,27 +243,6 @@ void Far0::RegisterProxyTool(IModuleTool^ info)
 	InvalidateProxyTool(info->Options);
 }
 
-void Far0::Run(String^ command)
-{
-	int colon = command->IndexOf(':', 1);
-	if (colon < 0)
-		return;
-
-	for each(IModuleCommand^ it in _registeredCommand)
-	{
-		String^ pref = it->Prefix;
-		if (colon != pref->Length || !command->StartsWith(pref, StringComparison::OrdinalIgnoreCase))
-			continue;
-
-		// invoke
-		ModuleCommandEventArgs e;
-		e.Command = command->Substring(colon + 1);
-		it->Invoke(nullptr, %e);
-
-		break;
-	}
-}
-
 /*
 -- It is called frequently to get information about menu and disk commands.
 -- It is not called when FarNet is unloaded.
@@ -273,6 +252,9 @@ void Far0::Run(String^ command)
 */
 void Far0::AsGetPluginInfo(PluginInfo* pi)
 {
+	// _110118_073431 SysID for callplugin. Not quite legal but there is no better effective way.
+	pi->Reserved = 0xcd;
+
 	//! STOP
 	// Do not ignore these methods even in stepping mode:
 	// *) plugins can change this during stepping and Far has to be informed;
@@ -411,12 +393,6 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 	}
 }
 
-void Far0::ProcessPrefixes(INT_PTR item)
-{
-	wchar_t* command = (wchar_t*)item;
-	Run(gcnew String(command));
-}
-
 //::Far callbacks
 
 bool Far0::AsConfigure(int itemIndex)
@@ -506,10 +482,22 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 	{
 		switch(from)
 		{
+		default:
+			{
+				// _110118_073431
+				const int OPEN_FROMMACROSTRING = 0; //?????
+				if ((from & (OPEN_FROMMACRO | OPEN_FROMMACROSTRING)) == (OPEN_FROMMACRO | OPEN_FROMMACROSTRING))
+				{
+					Log::Source->TraceInformation("OPEN_FROMMACRO");
+					if (!InvokeCommand((const wchar_t*)item, true))
+						return 0;
+				}
+			}
+			break;
 		case OPEN_COMMANDLINE:
 			{
 				Log::Source->TraceInformation("OPEN_COMMANDLINE");
-				ProcessPrefixes(item);
+				InvokeCommand((const wchar_t*)item, false);
 			}
 			break;
 		case OPEN_DISKMENU:
@@ -1109,7 +1097,7 @@ void Far0::ChangeFontSize(bool increase)
 	CONSOLE_FONT_INFOEX font = { sizeof(CONSOLE_FONT_INFOEX) };
 	if (!fnGetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
 		return;
-	
+
 	SHORT height = font.dwFontSize.Y;
 	for(SHORT delta = 1; delta < 10; ++delta)
 	{
@@ -1122,6 +1110,34 @@ void Far0::ChangeFontSize(bool increase)
 		if (height != font.dwFontSize.Y)
 			return;
 	}
+}
+
+bool Far0::InvokeCommand(const wchar_t* command, bool macro)
+{
+	// find the colon
+	const wchar_t* colon = wcschr(command, ':');
+
+	// missing colon is possible on callplugin
+	if (!colon)
+		throw gcnew InvalidOperationException("Invalid module command syntax.");
+
+	// get the prefix, find and invoke the command handler
+	String^ prefix = gcnew String(command, 0, (int)(colon - command));
+	for each(IModuleCommand^ it in _registeredCommand)
+	{
+		if (!prefix->Equals(it->Prefix, StringComparison::OrdinalIgnoreCase))
+			continue;
+
+		ModuleCommandEventArgs e;
+		e.Command = gcnew String(colon + 1);
+		e.IsMacro = macro;
+		it->Invoke(nullptr, %e);
+		return e.Ignore ? false : true;
+	}
+
+	// A missing prefix is not a fatal error, e.g. a module is not istalled.
+	// The calling macro should be able to recover. Thus, just return false.
+	return false;
 }
 
 }

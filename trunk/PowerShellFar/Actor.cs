@@ -612,7 +612,7 @@ Continue with this current directory?
 		/// </summary>
 		/// <remarks>
 		/// If it is called during a macro then commands are not added to the history.
-		/// Note that use of [Alt1] in the module menu is normally more effective for macros.
+		/// Note: use of <c>callplugin()</c> is normally better for macros.
 		/// <para>
 		/// In order to input and get the code without invoking use the <see cref="InputCode"/> method.
 		/// </para>
@@ -622,17 +622,6 @@ Continue with this current directory?
 			string code = InputCode();
 			if (code != null)
 				Act(code, null, Far.Net.MacroState == FarMacroState.None);
-		}
-
-		/// <summary>
-		/// Prompts to input code and invokes it with no output.
-		/// Called on [Alt1] and designed for macros.
-		/// </summary>
-		internal void InvokeFromMacro()
-		{
-			string code = Far.Net.Input(null);
-			if (code != null)
-				InvokeCode(code, null);
 		}
 
 		/// <summary>
@@ -1117,10 +1106,14 @@ Continue with this current directory?
 		public Stepper Stepper { get { return Stepper.RunningInstance; } }
 
 		/// <summary>
-		/// FarNet module manager.
+		/// FarNet module manager of the PowerShellFar module.
 		/// </summary>
 		/// <remarks>
-		/// It is used to register new module actions.
+		/// It may be used in scripts in order to register new module actions, get/set the current UI culture, and etc.
+		/// <para>
+		/// In order to just get the current UI culture better use the standard PowerShell way:
+		/// <c>$PSUICulture</c> or <c>$Host.CurrentUICulture</c>
+		/// </para>
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IModuleManager Manager

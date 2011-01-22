@@ -1,6 +1,35 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.37 =
+
+*** THIS CHANGE BREAKS MACROS: F11 <PSF> Alt1 ... ***
+*) Main menu
+Removed the hotkey [Alt1]. Use the callplugin(), see FarNet's Readme.txt.
+Update affected macros (and do not forget documentation/comments, too!).
+
+*) Install-Macro-.ps1
+Macros use callplugin() instead of the [Alt1] menu hotkey.
+
+*) Better UI culture support, e.g. for scripts localization
+$PSUICulture and $Host.CurrentUICulture are internally connected to the currect
+culture of the PSF module. Thus, e.g. Import-LocalizedData may work with the
+current culture by default (it uses $PSUICulture).
+
+*) Cmdlet New-FarEditor
+Replaced parameter Data with Host. As far as the cmdlet creates the editor, it
+is OK to consume the Host property: it is simpler to use than the Data.
+
+*) Cmdlets Out-FarPanel, Start-FarPanel
+Parameter Data is now IDictionary, not Object (due to FarNet changes).
+
+*) New role of FarNet IEditor.Data, IPanel.Data:
+Edit-FarDescription-.ps1, Panel-DbTable-.ps1, Search-Regex-.ps1,
+Watch-Output-.ps1
+
+*) Profile-.ps1
+Removed menu action 'Edit recent file' (it's done by Vessel, if used).
+
 = 4.3.36 =
 
 *) FarMacro module

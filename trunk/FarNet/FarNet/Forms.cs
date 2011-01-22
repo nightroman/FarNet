@@ -4,6 +4,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FarNet.Forms
@@ -434,12 +435,12 @@ namespace FarNet.Forms
 	/// Event <see cref="Closing"/> can be used for input data validation without closing the dialog.
 	/// </para>
 	/// </remarks>
-	public interface IDialog
+	public abstract class IDialog
 	{
 		/// <summary>
 		/// Called when all dialog items are initialized and about to be shown.
 		/// </summary>
-		event EventHandler<InitializedEventArgs> Initialized;
+		public abstract event EventHandler<InitializedEventArgs> Initialized;
 		/// <summary>
 		/// Called when the dialog is about to be closed (normally a user closes it).
 		/// </summary>
@@ -457,62 +458,62 @@ namespace FarNet.Forms
 		/// Doing so may trigger actions that may be unexpected on closing.
 		/// </para>
 		/// </remarks>
-		event EventHandler<ClosingEventArgs> Closing;
+		public abstract event EventHandler<ClosingEventArgs> Closing;
 		/// <summary>
 		/// Called periodically when a user is idle.
 		/// </summary>
 		/// <seealso cref="IdledHandler"/>
-		event EventHandler Idled;
+		public abstract event EventHandler Idled;
 		/// <summary>
 		/// Called on mouse clicks outside of the dialog and on not handled clicks on the controls.
 		/// </summary>
 		/// <remarks>
 		/// Mouse coordinates are absolute screen coordinates.
 		/// </remarks>
-		event EventHandler<MouseClickedEventArgs> MouseClicked;
+		public abstract event EventHandler<MouseClickedEventArgs> MouseClicked;
 		/// <summary>
 		/// Called when a key is pressed in the dialog and the active control does not handle the key.
 		/// </summary>
-		event EventHandler<KeyPressedEventArgs> KeyPressed;
+		public abstract event EventHandler<KeyPressedEventArgs> KeyPressed;
 		/// <summary>
 		/// Called when the console window size has changed, e.g. on [AltF9].
 		/// </summary>
-		event EventHandler<SizeEventArgs> ConsoleSizeChanged;
+		public abstract event EventHandler<SizeEventArgs> ConsoleSizeChanged;
 		/// <summary>
 		/// Gets or sets the "default control" which gets selected on [Enter] if the focus is not on a button.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-		IControl Default { get; set; }
+		public abstract IControl Default { get; set; }
 		/// <summary>
 		/// Gets or sets the control which has focus.
 		/// </summary>
-		IControl Focused { get; set; }
+		public abstract IControl Focused { get; set; }
 		/// <summary>
 		/// Gets the selected dialog control.
 		/// </summary>
 		/// <remarks>
 		/// Normally it is a closing button or the <see cref="Default"/> control.
 		/// </remarks>
-		IControl Selected { get; }
+		public abstract IControl Selected { get; }
 		/// <summary>
 		/// Tells to use "Warning" dialog color scheme.
 		/// </summary>
-		bool IsWarning { get; set; }
+		public abstract bool IsWarning { get; set; }
 		/// <summary>
 		/// Tells to create the dialog with reduced border size.
 		/// </summary>
 		/// <remarks>
 		/// In "small" dialogs there is no space between the border and the double box.
 		/// </remarks>
-		bool IsSmall { get; set; }
+		public abstract bool IsSmall { get; set; }
 		/// <summary>
 		/// Tells to create the dialog with no shadow.
 		/// </summary>
-		bool NoShadow { get; set; }
+		public abstract bool NoShadow { get; set; }
 		/// <summary>
 		/// Tells to create the dialog with no panel shown.
 		/// </summary>
-		bool NoPanel { get; set; }
+		public abstract bool NoPanel { get; set; }
 		/// <summary>
 		/// Tells to disable use of smart coordinates.
 		/// </summary>
@@ -521,17 +522,13 @@ namespace FarNet.Forms
 		/// i.e. 0: the same line, -1: next line and so on; <c>Bottom</c> value, if any, should be relative to 0.
 		/// Example: last <c>Top</c> is 5, then <c>AddBox(*, -1, *, 2, *)</c> is recalculated as <c>AddBox(*, 6, *, 8, *)</c>.
 		/// </remarks>
-		bool NoSmartCoordinates { get; set; }
+		public abstract bool NoSmartCoordinates { get; set; }
 		/// <include file='doc.xml' path='doc/HelpTopic/*'/>
-		string HelpTopic { get; set; }
-		/// <summary>
-		/// Gets or sets any user data.
-		/// </summary>
-		object Data { get; set; }
+		public abstract string HelpTopic { get; set; }
 		/// <summary>
 		/// Gets or sets the dialog window rectangular.
 		/// </summary>
-		Place Rect { get; set; }
+		public abstract Place Rect { get; set; }
 		/// <summary>
 		/// Gets or sets the dialog type ID.
 		/// </summary>
@@ -539,19 +536,19 @@ namespace FarNet.Forms
 		/// It is normally set by the dialog creator.
 		/// It cannot be changed for running dialogs.
 		/// </remarks>
-		Guid TypeId { get; set; }
+		public abstract Guid TypeId { get; set; }
 		/// <summary>
 		/// Gets or sets the "Cancel" button.
 		/// </summary>
 		/// <remarks>
 		/// If this button is clicked then <see cref="Show"/> returns false.
 		/// </remarks>
-		IButton Cancel { get; set; }
+		public abstract IButton Cancel { get; set; }
 		/// <summary>
 		/// Shows the dialog.
 		/// </summary>
 		/// <returns>false if the user cancelled the dialog or clicked the <see cref="Cancel"/> button.</returns>
-		bool Show();
+		public abstract bool Show();
 		/// <summary>
 		/// Adds a double or single box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
@@ -560,76 +557,76 @@ namespace FarNet.Forms
 		/// <remarks>
 		/// If <c>right</c>\<c>bottom</c> is 0 then it is calculated.
 		/// </remarks>
-		IBox AddBox(int left, int top, int right, int bottom, string text);
+		public abstract IBox AddBox(int left, int top, int right, int bottom, string text);
 		/// <summary>
 		/// Adds a button control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <param name="text">Control text.</param>
-		IButton AddButton(int left, int top, string text);
+		public abstract IButton AddButton(int left, int top, string text);
 		/// <summary>
 		/// Adds a check box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <param name="text">Control text.</param>
-		ICheckBox AddCheckBox(int left, int top, string text);
+		public abstract ICheckBox AddCheckBox(int left, int top, string text);
 		/// <summary>
 		/// Adds a combo box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
-		IComboBox AddComboBox(int left, int top, int right, string text);
+		public abstract IComboBox AddComboBox(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a standard edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
-		IEdit AddEdit(int left, int top, int right, string text);
+		public abstract IEdit AddEdit(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a fixed size edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
-		IEdit AddEditFixed(int left, int top, int right, string text);
+		public abstract IEdit AddEditFixed(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a password edit control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
-		IEdit AddEditPassword(int left, int top, int right, string text);
+		public abstract IEdit AddEditPassword(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a list box control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTRB/*'/>
 		/// <param name="title">Title.</param>
-		IListBox AddListBox(int left, int top, int right, int bottom, string title);
+		public abstract IListBox AddListBox(int left, int top, int right, int bottom, string title);
 		/// <summary>
 		/// Adds a radio button. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <param name="text">Control text.</param>
-		IRadioButton AddRadioButton(int left, int top, string text);
+		public abstract IRadioButton AddRadioButton(int left, int top, string text);
 		/// <summary>
 		/// Adds a text control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
-		IText AddText(int left, int top, int right, string text);
+		public abstract IText AddText(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a vertical text control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTB/*'/>
 		/// <param name="text">Control text.</param>
-		IText AddVerticalText(int left, int top, int bottom, string text);
+		public abstract IText AddVerticalText(int left, int top, int bottom, string text);
 		/// <summary>
 		/// Adds a user control. See <see cref="NoSmartCoordinates"/>.
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTRB/*'/>
-		IUserControl AddUserControl(int left, int top, int right, int bottom);
+		public abstract IUserControl AddUserControl(int left, int top, int right, int bottom);
 		/// <summary>
 		/// Closes the dialog.
 		/// </summary>
-		void Close();
+		public abstract void Close();
 		/// <summary>
 		/// Gets a control by its ID.
 		/// </summary>
@@ -638,7 +635,7 @@ namespace FarNet.Forms
 		/// <remarks>
 		/// Control IDs are indexes in the dialog control collection.
 		/// </remarks>
-		IControl this[int id] { get; }
+		public abstract IControl this[int id] { get; }
 		/// <summary>
 		/// Gets the dialog control collection.
 		/// </summary>
@@ -646,23 +643,23 @@ namespace FarNet.Forms
 		/// It should be used only when control indexes are not known or not used.
 		/// Otherwise <see cref="this"/> should be used.
 		/// </remarks>
-		IEnumerable<IControl> Controls { get; }
+		public abstract IEnumerable<IControl> Controls { get; }
 		/// <summary>
 		/// Sets focus to the specified control.
 		/// </summary>
 		/// <param name="id">Control ID (index).</param>
-		void SetFocus(int id);
+		public abstract void SetFocus(int id);
 		/// <summary>
 		/// Moves the dialog window to a new position.
 		/// </summary>
 		/// <param name="point">Absolute point or relative shift.</param>
 		/// <param name="absolute">true: point is absolute (use -1 to center the dialog); false: point is relative.</param>
-		void Move(Point point, bool absolute);
+		public abstract void Move(Point point, bool absolute);
 		/// <summary>
 		/// Resizes the dialog window.
 		/// </summary>
 		/// <param name="size">New size.</param>
-		void Resize(Point size);
+		public abstract void Resize(Point size);
 		/// <summary>
 		/// Disables redrawing of the dialog.
 		/// </summary>
@@ -673,7 +670,7 @@ namespace FarNet.Forms
 		/// WARNING: you must call <see cref="EnableRedraw"/> (normally when dialog changes are done).
 		/// </para>
 		/// </remarks>
-		void DisableRedraw();
+		public abstract void DisableRedraw();
 		/// <summary>
 		/// Enables redrawing of the dialog.
 		/// </summary>
@@ -681,6 +678,9 @@ namespace FarNet.Forms
 		/// It decrements the internal redraw lock counter; when it is equal to 0 the dialog gets drawn.
 		/// WARNING: it must be called after any call of <see cref="DisableRedraw"/>.
 		/// </remarks>
-		void EnableRedraw();
+		public abstract void EnableRedraw();
+		/// <include file='doc.xml' path='doc/Data/*'/>
+		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
+		Hashtable _Data;
 	}
 }

@@ -9,8 +9,8 @@ namespace FarNet
 {;
 #define FPPI_FLAG(Name)\
 public: virtual property bool Name {\
-	bool get() { return _##Name; }\
-	void set(bool value) {\
+	bool get() override { return _##Name; }\
+	void set(bool value) override {\
 	_##Name = value;\
 	if (m) m->Flags = Flags();\
 }}\
@@ -18,8 +18,8 @@ private: bool _##Name
 
 #define FPPI_PROP(Type, Name, Set)\
 public: virtual property Type Name {\
-	Type get() { return _##Name; }\
-	void set(Type value) {\
+	Type get() override { return _##Name; }\
+	void set(Type value) override {\
 	_##Name = value;\
 	if (m) { Set; }\
 }}\
@@ -27,8 +27,8 @@ private: Type _##Name
 
 #define FPPI_TEXT(Name, Data)\
 public: virtual property String^ Name {\
-	String^ get() { return _##Name; }\
-	void set(String^ value) {\
+	String^ get() override { return _##Name; }\
+	void set(String^ value) override {\
 	_##Name = value;\
 	if (m) {\
 	delete[] m->Data;\
@@ -37,7 +37,7 @@ public: virtual property String^ Name {\
 }}\
 private: String^ _##Name
 
-ref class FarPanelInfo : IPanelInfo
+ref class FarPanelInfo sealed : IPanelInfo
 {
 internal:
 	FarPanelInfo();
@@ -66,17 +66,16 @@ public:
 	FPPI_TEXT(HostFile, HostFile);
 	FPPI_TEXT(Title, PanelTitle);
 public:
-	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() { return _InfoItems; } void set(array<DataItem^>^ value); }
-	virtual property bool AutoAlternateNames;
-	virtual PanelModeInfo^ GetMode(PanelViewMode viewMode);
-	virtual void SetKeyBarAlt(array<String^>^ labels);
-	virtual void SetKeyBarAltShift(array<String^>^ labels);
-	virtual void SetKeyBarCtrl(array<String^>^ labels);
-	virtual void SetKeyBarCtrlAlt(array<String^>^ labels);
-	virtual void SetKeyBarCtrlShift(array<String^>^ labels);
-	virtual void SetKeyBarMain(array<String^>^ labels);
-	virtual void SetKeyBarShift(array<String^>^ labels);
-	virtual void SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo);
+	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() override { return _InfoItems; } void set(array<DataItem^>^ value) override; }
+	virtual PanelModeInfo^ GetMode(PanelViewMode viewMode) override;
+	virtual void SetKeyBarAlt(array<String^>^ labels) override;
+	virtual void SetKeyBarAltShift(array<String^>^ labels) override;
+	virtual void SetKeyBarCtrl(array<String^>^ labels) override;
+	virtual void SetKeyBarCtrlAlt(array<String^>^ labels) override;
+	virtual void SetKeyBarCtrlShift(array<String^>^ labels) override;
+	virtual void SetKeyBarMain(array<String^>^ labels) override;
+	virtual void SetKeyBarShift(array<String^>^ labels) override;
+	virtual void SetMode(PanelViewMode viewMode, PanelModeInfo^ modeInfo) override;
 private:
 	int Flags();
 	void CreateInfoLines();

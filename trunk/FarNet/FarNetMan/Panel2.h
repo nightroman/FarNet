@@ -31,9 +31,9 @@ public: // IPanel
 	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
 	virtual property IPanel^ AnotherPanel { IPanel^ get(); }
 	virtual property IPanelInfo^ Info { IPanelInfo^ get() { return %_info; } }
-	virtual property Object^ Data;
 	virtual property Object^ Host;
 	virtual property String^ DotsDescription;
+	virtual property System::Collections::Hashtable^ Data { System::Collections::Hashtable^ get(); }
 	virtual void Close() override;
 	virtual void Open();
 	virtual void Open(IPanel^ oldPanel);
@@ -78,5 +78,6 @@ internal:
 private:
 	Guid _TypeId;
 	IList<FarFile^>^ _files;
+	System::Collections::Hashtable^ _Data;
 };
 }

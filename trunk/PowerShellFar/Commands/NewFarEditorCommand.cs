@@ -19,7 +19,9 @@ namespace PowerShellFar.Commands
 	[Description("Creates an editor for other settings before opening.")]
 	public class NewFarEditorCommand : BaseTextCmdlet
 	{
-		///
+		/// <summary>
+		/// Line number to open the editor at. The first is 1.
+		/// </summary>
 		[Parameter(Position = 1, ValueFromPipelineByPropertyName = true, HelpMessage = "Line number to open the editor at. The first is 1.")]
 		public int LineNumber
 		{
@@ -28,7 +30,9 @@ namespace PowerShellFar.Commands
 		}
 		int _LineNumber;
 
-		///
+		/// <summary>
+		/// Character number in the line to open the editor at. The first is 1.
+		/// </summary>
 		[Parameter(Position = 2, HelpMessage = "Character number in the line to open the editor at. The first is 1.")]
 		public int CharNumber
 		{
@@ -37,26 +41,23 @@ namespace PowerShellFar.Commands
 		}
 		int _CharNumber;
 
-		///
-		[Parameter(HelpMessage = "Any user data not used internally.")]
-		public object Data
-		{
-			get { return _Data; }
-			set { _Data = value; }
-		}
-		object _Data;
+		/// <summary>
+		/// The host instance. See <see cref="IEditor.Host"/>.
+		/// </summary>
+		[Parameter(HelpMessage = "The host instance.")]
+		public new PSObject Host { get; set; }
 
-		///
 		internal IEditor CreateEditor()
 		{
 			IEditor editor = Far.Net.CreateEditor();
-			editor.Data = _Data;
 			editor.DeleteSource = DeleteSource;
 			editor.DisableHistory = DisableHistory;
 			editor.FileName = Path;
+			editor.Host = Host;
 			editor.Switching = Switching;
 			editor.Title = Title;
 			editor.GoTo(_CharNumber - 1, _LineNumber - 1);
+
 			return editor;
 		}
 

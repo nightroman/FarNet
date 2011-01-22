@@ -19,7 +19,7 @@ namespace FarNet.Works
 		public string[] GetSelectedNames() { return _SelectedNames; }
 		string[] _SelectedNames;
 
-		//! PSF test. //?????
+		//! PSF test.
 		public int[] GetSelectedIndexes() { return _SelectedIndexes; }
 		int[] _SelectedIndexes;
 

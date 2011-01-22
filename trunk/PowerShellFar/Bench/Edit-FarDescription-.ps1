@@ -38,7 +38,7 @@ $edit = $Far.TempName()
 [System.IO.File]::WriteAllText($edit, $text2, [System.Text.Encoding]::Unicode)
 
 # setup editor
-$editor = New-FarEditor $edit -Title "Description: $Path" -DeleteSource 'File' -DisableHistory -Data $item
+$editor = New-FarEditor $edit -Title "Description: $Path" -DeleteSource 'File' -DisableHistory -Host $item
 
 # select on open
 if ($text1 -eq $text2) {
@@ -46,7 +46,7 @@ if ($text1 -eq $text2) {
 }
 
 # update on save
-$editor.add_Saving({ $this.Data.FarDescription = $this.GetText("`r") })
+$editor.add_Saving({ $this.Host.FarDescription = $this.GetText("`r") })
 
 # open editor
 $editor.Open()
