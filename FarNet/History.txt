@@ -1,5 +1,32 @@
 http://code.google.com/p/farnet/
 
+= 4.3.37 =
+
+MODULE COMMANDS AND MACROS (described in Readme.txt)
+
+If a FarNet module provides commands invoked by prefixes then these commands
+can be called from macros by callplugin(). The first argument is the FarNet
+system ID: 0xcd. The second argument is the module prefix and command.
+
+Example (RightControl and PowerShellFar commands):
+
+	callplugin(0xcd, "RightControl:step-left")
+	callplugin(0xcd, ">: Menu-Favorites-.ps1")
+
+Mnemonic for 0xcd: eXecute CommanD
+
+*) IEditor, IDialog, IPanel
+Property object Data {get;set;} is replaced with Hashtable Data {get;}. This
+change allows more than one user to attach data without conflicts. Table keys
+should be unique, indeed (e.g. a unique reference, Guid, etc.).
+
+*) IFar
+Removed the Run method. Use more effective way: GetModuleCommand + Invoke.
+
+*) ModuleCommandEventArgs
+New property IsMacro tells that a command is invoked via callplugin().
+New property Ignore to tell it is not done (e.g. to use another way).
+
 = 4.3.36 =
 
 *) IEditor

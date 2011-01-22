@@ -4,6 +4,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -14,7 +15,7 @@ namespace FarNet
 	/// Any panel: Far, plugin, or module.
 	/// Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 	/// </summary>
-	public interface IAnyPanel
+	public interface IAnyPanel //! think twice when convert to abstract class (see Panel2 : Panel1, IPanel)
 	{
 		/// <summary>
 		/// Gets true if the panel is active.
@@ -472,18 +473,8 @@ namespace FarNet
 	/// For better performance FarNet caches internal native representation of these data.
 	/// After opening a panel it is recommended to avoid frequent modifications of these data.
 	/// </remarks>
-	public interface IPanelInfo
+	public abstract class IPanelInfo
 	{
-		/// <summary>
-		/// Panel view mode to be set on panel creation.
-		/// When a panel is started it is used internally for keeping and restoring the current mode.
-		/// </summary>
-		PanelViewMode StartViewMode { get; set; }
-		/// <summary>
-		/// Panel sort mode to be set on panel creation.
-		/// When a panel is started it is used internally for keeping and restoring the current mode.
-		/// </summary>
-		PanelSortMode StartSortMode { get; set; }
 		/// <summary>
 		/// Tells to generate and use alternate names internally.
 		/// </summary>
@@ -500,27 +491,38 @@ namespace FarNet
 		/// not from the files.
 		/// </para>
 		/// </remarks>
-		bool AutoAlternateNames { get; set; }
+		public bool AutoAlternateNames { get; set; }
+		/// <summary>
+		/// Panel view mode to be set on panel creation.
+		/// When a panel is started it is used internally for keeping and restoring the current mode.
+		/// </summary>
+		public abstract PanelViewMode StartViewMode { get; set; }
+		/// <summary>
+		/// Panel sort mode to be set on panel creation.
+		/// When a panel is started it is used internally for keeping and restoring the current mode.
+		/// </summary>
+		public abstract PanelSortMode StartSortMode { get; set; }
+
 		/// <summary>
 		/// If <see cref="StartSortMode"/> is specified, this flag tells to set sort direction.
 		/// When a panel is started it is used internally for keeping and restoring the current mode.
 		/// </summary>
-		bool StartReverseSortOrder { get; set; }
+		public abstract bool StartReverseSortOrder { get; set; }
 		/// <summary>
 		/// Tells to use filter in the panel.
 		/// </summary>
-		bool UseFilter { get; set; }
+		public abstract bool UseFilter { get; set; }
 		/// <summary>
 		/// Tells to use sort groups in the panel.
 		/// </summary>
-		bool UseSortGroups { get; set; }
+		public abstract bool UseSortGroups { get; set; }
 		/// <summary>
 		/// Tells to use file highlighting by names and attributes.
 		/// </summary>
 		/// <remarks>
 		/// It has no effect if <see cref="UseAttributeHighlighting"/> is true.
 		/// </remarks>
-		bool UseHighlighting { get; set; }
+		public abstract bool UseHighlighting { get; set; }
 		/// <summary>
 		/// Tells to use file highlighting by attributes only.
 		/// </summary>
@@ -528,11 +530,11 @@ namespace FarNet
 		/// Colors are taken only from the file color groups with file name masks excluded from analysis
 		/// (the option "Mask" in the file highlighting setup dialog is unchecked).
 		/// </remarks>
-		bool UseAttributeHighlighting { get; set; }
+		public abstract bool UseAttributeHighlighting { get; set; }
 		/// <summary>
 		/// Tells that folders may be selected regardless of Far settings.
 		/// </summary>
-		bool RawSelection { get; set; }
+		public abstract bool RawSelection { get; set; }
 		/// <summary>
 		/// Tells that items represent real file system.
 		/// </summary>
@@ -540,64 +542,64 @@ namespace FarNet
 		/// Turns on the standard Far file processing mechanism if requested operation is not supported by the panel.
 		/// If this flag is set, the items on the panel should be real file names.
 		/// </remarks>
-		bool RealNames { get; set; }
+		public abstract bool RealNames { get; set; }
 		/// <summary>
 		/// Tells to show file names without paths by default.
 		/// </summary>
-		bool ShowNamesOnly { get; set; }
+		public abstract bool ShowNamesOnly { get; set; }
 		/// <summary>
 		/// Tells to show file names right-aligned by default in all panel display modes.
 		/// </summary>
-		bool RightAligned { get; set; }
+		public abstract bool RightAligned { get; set; }
 		/// <summary>
 		/// Tells to show file names using original case regardless of Far settings.
 		/// </summary>
-		bool PreserveCase { get; set; }
+		public abstract bool PreserveCase { get; set; }
 		/// <summary>
 		/// Tells to convert timestamps to FAT format for the Compare folders operation.
 		/// </summary>
 		/// <remarks>
 		/// Set this flag if the panel file system doesn't provide time accuracy necessary for standard comparison operations.
 		/// </remarks>
-		bool CompareFatTime { get; set; }
+		public abstract bool CompareFatTime { get; set; }
 		/// <summary>
 		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
 		/// </summary>
-		bool ExternalGet { get; set; }
+		public abstract bool ExternalGet { get; set; }
 		/// <summary>
 		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
 		/// </summary>
-		bool ExternalPut { get; set; }
+		public abstract bool ExternalPut { get; set; }
 		/// <summary>
 		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
 		/// </summary>
-		bool ExternalDelete { get; set; }
+		public abstract bool ExternalDelete { get; set; }
 		/// <summary>
 		/// Used with <see cref="RealNames"/> only. Forces usage of corresponding internal Far function.
 		/// </summary>
-		bool ExternalMakeDirectory { get; set; }
+		public abstract bool ExternalMakeDirectory { get; set; }
 		/// <summary>
 		/// Gets or sets the base file of emulated file system.
 		/// </summary>
 		/// <remarks>
 		/// If the panel doesn't emulate a file system based on files it should be empty.
 		/// </remarks>
-		string HostFile { get; set; }
+		public abstract string HostFile { get; set; }
 		/// <summary>
 		/// Gets or sets the panel current directory.
 		/// </summary>
 		/// <remarks>
 		/// If it is empty, Far closes the panel if [Enter] is pressed on ".." item.
 		/// </remarks>
-		string CurrentDirectory { get; set; }
+		public abstract string CurrentDirectory { get; set; }
 		/// <summary>
 		/// Gets or sets the format name (shown in the file copy dialog).
 		/// </summary>
-		string FormatName { get; set; }
+		public abstract string FormatName { get; set; }
 		/// <summary>
 		/// Gets or sets the panel header.
 		/// </summary>
-		string Title { get; set; }
+		public abstract string Title { get; set; }
 		/// <summary>
 		/// Gets or sets info panel item array.
 		/// </summary>
@@ -606,35 +608,35 @@ namespace FarNet
 		/// Without that individual item changes will have no effect.
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-		DataItem[] InfoItems { get; set; }
+		public abstract DataItem[] InfoItems { get; set; }
 		/// <summary>
 		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
-		void SetKeyBarMain(string[] labels);
+		public abstract void SetKeyBarMain(string[] labels);
 		/// <summary>
 		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
-		void SetKeyBarCtrl(string[] labels);
+		public abstract void SetKeyBarCtrl(string[] labels);
 		/// <summary>
 		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
-		void SetKeyBarAlt(string[] labels);
+		public abstract void SetKeyBarAlt(string[] labels);
 		/// <summary>
 		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
-		void SetKeyBarShift(string[] labels);
+		public abstract void SetKeyBarShift(string[] labels);
 		/// <summary>
 		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
-		void SetKeyBarCtrlShift(string[] labels);
+		public abstract void SetKeyBarCtrlShift(string[] labels);
 		/// <summary>
 		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
-		void SetKeyBarAltShift(string[] labels);
+		public abstract void SetKeyBarAltShift(string[] labels);
 		/// <summary>
 		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
 		/// </summary>
-		void SetKeyBarCtrlAlt(string[] labels);
+		public abstract void SetKeyBarCtrlAlt(string[] labels);
 		/// <summary>
 		/// Gets panel mode information or null if it is not set.
 		/// </summary>
@@ -642,13 +644,13 @@ namespace FarNet
 		/// <returns>
 		/// Mode information. If you change it for opened panel then call <see cref="SetMode"/>.
 		/// </returns>
-		PanelModeInfo GetMode(PanelViewMode viewMode);
+		public abstract PanelModeInfo GetMode(PanelViewMode viewMode);
 		/// <summary>
 		/// Sets panel mode information.
 		/// </summary>
 		/// <param name="viewMode">View mode to set information for.</param>
 		/// <param name="modeInfo">Mode information.</param>
-		void SetMode(PanelViewMode viewMode, PanelModeInfo modeInfo);
+		public abstract void SetMode(PanelViewMode viewMode, PanelModeInfo modeInfo);
 	}
 
 	/// <summary>
@@ -1131,10 +1133,6 @@ namespace FarNet
 		/// </remarks>
 		string DotsDescription { get; set; }
 		/// <summary>
-		/// Gets or sets any user data not used internally.
-		/// </summary>
-		object Data { get; set; }
-		/// <summary>
 		/// Gets or sets a user object that is normally a host of the panel.
 		/// </summary>
 		/// <remarks>
@@ -1358,6 +1356,8 @@ namespace FarNet
 		/// Posts a file name to be used to find and set the current file.
 		/// </summary>
 		void PostName(string name);
+		/// <include file='doc.xml' path='doc/Data/*'/>
+		Hashtable Data { get; }
 	}
 
 	/// <summary>

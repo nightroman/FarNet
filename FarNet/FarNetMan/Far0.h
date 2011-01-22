@@ -16,27 +16,27 @@ public:
 	static void AsGetPluginInfo(PluginInfo* pi);
 	static void AsProcessSynchroEvent(int type, void* param);
 public:
+	static void InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName);
 	static void RegisterProxyCommand(IModuleCommand^ info);
 	static void RegisterProxyEditor(IModuleEditor^ info);
 	static void RegisterProxyFiler(IModuleFiler^ info);
 	static void RegisterProxyTool(IModuleTool^ info);
-	static void InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName);
 	static void Start();
 	static void Stop();
 	static void UnregisterProxyAction(IModuleAction^ action);
 public:
+	static bool InvokeCommand(const wchar_t* command, bool macro);
 	static CultureInfo^ GetCurrentUICulture(bool update);
+	static void ChangeFontSize(bool increase);
 	static void PostJob(EventHandler^ handler);
 	static void PostStep(EventHandler^ handler);
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
-	static void Run(String^ command);
-	static void ShowMenu(ModuleToolOptions from);
-	static void ShowEditorsMenu();
-	static void ShowViewersMenu();
 	static void ShowConsoleMenu();
+	static void ShowEditorsMenu();
+	static void ShowMenu(ModuleToolOptions from);
 	static void ShowPanelsMenu();
-	static void ChangeFontSize(bool increase);
+	static void ShowViewersMenu();
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
@@ -48,7 +48,6 @@ private:
 	static void AssertHotkeys();
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
-	static void ProcessPrefixes(INT_PTR item);
 	static void VoidStep(Object^, EventArgs^) {}
 	static void InvalidateProxyTool(ModuleToolOptions options);
 	static String^ GetMenuText(IModuleTool^ tool);

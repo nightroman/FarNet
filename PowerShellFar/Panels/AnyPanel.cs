@@ -76,15 +76,14 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Gets or sets user data attached to this panel.
+		/// Gets user data attached to this panel.
 		/// </summary>
 		/// <remarks>
 		/// This is just a shortcut reference to <see cref="IPanel.Data"/>, not another instance.
 		/// </remarks>
-		public object Data
+		public Hashtable Data
 		{
 			get { return _Panel.Data; }
-			set { _Panel.Data = value; }
 		}
 
 		List<IDisposable> _Garbage;
@@ -800,6 +799,7 @@ namespace PowerShellFar
 		{
 			// *) .Find: is not used, ignore
 			// *) .Silent: 100127 CtrlQ mode is not OK for folders: FarMacro: on areas Far tries to enumerate, we do not support. ???
+			//????? _110121_150249 Time to do this has come.
 			if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) > 0)
 			{
 				e.Ignore = true;

@@ -39,10 +39,26 @@ void raise(Object^ sender, EventArgs^ e) { if (Handler != nullptr) Handler(sende
 }\
 internal: EventHandler^ Handler;
 
+#define DEF_EVENT2(EventName, Handler)\
+virtual event EventHandler^ EventName {\
+void add(EventHandler^ handler) override { Handler += handler; }\
+void remove(EventHandler^ handler) override { Handler -= handler; }\
+void raise(Object^ sender, EventArgs^ e) { if (Handler != nullptr) Handler(sender, e); }\
+}\
+internal: EventHandler^ Handler;
+
 #define DEF_EVENT_ARGS(EventName, Handler, Arguments)\
 virtual event EventHandler<Arguments^>^ EventName {\
 void add(EventHandler<Arguments^>^ handler) { Handler += handler; }\
 void remove(EventHandler<Arguments^>^ handler) { Handler -= handler; }\
+void raise(Object^ sender, Arguments^ e) { if (Handler != nullptr) Handler(sender, e); }\
+}\
+internal: EventHandler<Arguments^>^ Handler;
+
+#define DEF_EVENT_ARGS2(EventName, Handler, Arguments)\
+virtual event EventHandler<Arguments^>^ EventName {\
+void add(EventHandler<Arguments^>^ handler) override { Handler += handler; }\
+void remove(EventHandler<Arguments^>^ handler) override { Handler -= handler; }\
 void raise(Object^ sender, Arguments^ e) { if (Handler != nullptr) Handler(sender, e); }\
 }\
 internal: EventHandler<Arguments^>^ Handler;

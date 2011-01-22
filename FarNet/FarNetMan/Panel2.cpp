@@ -270,4 +270,12 @@ void Panel2::Close()
 		Panel1::Close();
 }
 
+System::Collections::Hashtable^ Panel2::Data::get()
+{
+	if (!_Data)
+		_Data = gcnew System::Collections::Hashtable();
+
+	return _Data;
+}
+
 }

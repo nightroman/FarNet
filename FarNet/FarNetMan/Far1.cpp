@@ -66,11 +66,6 @@ int Far1::Message(String^ body, String^ header, MsgOptions options, array<String
 	return Message::Show(body, header, options, buttons, helpTopic);
 }
 
-void Far1::Run(String^ command)
-{
-	Far0::Run(command);
-}
-
 System::Version^ Far1::FarVersion::get()
 {
 	DWORD vn;

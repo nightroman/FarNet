@@ -68,7 +68,6 @@ public:
 	virtual void PostText(String^ text) override;
 	virtual void PostText(String^ text, bool disableOutput) override;
 	virtual void Quit() override;
-	virtual void Run(String^ command) override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;
 internal:

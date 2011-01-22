@@ -11,10 +11,15 @@ Source   : http://code.google.com/p/farnet/
 	= DESCRIPTION =
 
 
-Implements Windows PowerShell host in Far Manager, user interface for invoking
-commands and scripts, and exposes underlying FarNet object model. The package
-includes scripts for many popular Far Manager tasks and PowerShell.hrc for
-Colorer providing rich PowerShell syntax highlighting.
+One of the most useful FarNet modules is PowerShellFar. It combines the rich
+console based user interface of Far Manager with full power of Windows
+PowerShell perfectly integrated into this original text friendly environment.
+
+It implements the Windows PowerShell host in Far Manager, exposes the FarNet
+object model, and provides several ways for invoking commands and viewing the
+results. The package includes cmdlets, modules and scripts for many popular Far
+Manager tasks and PowerShell.hrc for Colorer providing rich PowerShell syntax
+highlighting.
 
 PowerShellFar, FarNet and documentation can be updated by the included script
 Update-FarNet.ps1 or downloaded manually from:
