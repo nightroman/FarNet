@@ -227,8 +227,9 @@ Factors    : {7,8}
 
 			show:
 
-				menu.Show();
-				if (menu.Selected < 0)
+				//! show and check the result or after Esc index may be > 0
+				//! e.g. ShiftDel the last record + Esc == index out of range
+				if (!menu.Show() || menu.Selected < 0)
 					return;
 
 				// update:
