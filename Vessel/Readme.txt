@@ -136,3 +136,7 @@ Improved predictivity of the model by taking into account evidences of openings
 for idle periods. The test set shows 30-40% more gain for long enough histories.
 
 1.0.9
+
+Fixed an error message in the list on ShiftDel + Esc.
+
+Minor tweaks in ranking.
