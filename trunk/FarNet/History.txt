@@ -2,8 +2,7 @@ http://code.google.com/p/farnet/
 
 = 4.3.37 =
 
-MODULE COMMANDS AND MACROS (described in Readme.txt)
-
+*) MODULE COMMANDS AND MACROS
 If a FarNet module provides commands invoked by prefixes then these commands
 can be called from macros by callplugin(). The first argument is the FarNet
 system ID: 0xcd. The second argument is the module prefix and command.
@@ -15,7 +14,11 @@ Example (RightControl and PowerShellFar commands):
 
 Mnemonic for 0xcd: eXecute CommanD
 
-*) IEditor, IDialog, IPanel
+*) Search in FarNet panels
+Search by name pattern and F3/CtrlQ on folders work. Note that module panels
+should do this properly. E.g. built-in PSF panels do not support this, yet.
+
+*) IEditor, IPanel, IDialog
 Property object Data {get;set;} is replaced with Hashtable Data {get;}. This
 change allows more than one user to attach data without conflicts. Table keys
 should be unique, indeed (e.g. a unique reference, Guid, etc.).

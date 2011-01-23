@@ -484,9 +484,8 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 		{
 		default:
 			{
-				// _110118_073431
-				const int OPEN_FROMMACROSTRING = 0; //?????
-				if ((from & (OPEN_FROMMACRO | OPEN_FROMMACROSTRING)) == (OPEN_FROMMACRO | OPEN_FROMMACROSTRING))
+				//????? _110118_073431 to use (OPEN_FROMMACRO | OPEN_FROMMACROSTRING) when ready
+				if ((from & (OPEN_FROMMACRO)) == (OPEN_FROMMACRO))
 				{
 					Log::Source->TraceInformation("OPEN_FROMMACRO");
 					if (!InvokeCommand((const wchar_t*)item, true))
