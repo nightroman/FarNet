@@ -125,16 +125,49 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 			return true;
 		}
 
+		// the Find mode
+		const bool isFind = 0 != (opMode & OPM_FIND);
+
+		//_110121_150249 ?????
+		// the files to use to return data; now it keeps the old files to be restored on find
+		IList<FarFile^>^ files = pp->Files;
+
+		// get the new files
 		if (pp->_GettingData && !pp->_skipGettingData)
 		{
 			PanelEventArgs e((OperationModes)opMode);
-			pp->_GettingData(pp, %e);
+
+			// drop the original files for the Find mode
+			if (isFind)
+				pp->Files = gcnew List<FarFile^>();
+
+			// get files
+			try
+			{
+				pp->_GettingData(pp, %e);
+			}
+			finally
+			{
+				if (isFind)
+				{
+					// use new files, restore old
+					IList<FarFile^>^ tmp = pp->Files;
+					pp->Files = files;
+					files = tmp;
+				}
+				else
+				{
+					// use new files, forget old
+					files = pp->Files;
+				}
+			}
+			
 			if (e.Ignore)
 				return false;
 		}
 
 		// all item number
-		int nItem = pp->Files->Count;
+		int nItem = files->Count;
 		if (pp->AddDots)
 			++nItem;
 		(*pItemsNumber) = nItem;
@@ -149,10 +182,10 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
 
 		// add dots
-		int i = -1, fi = -1;
+		int itemIndex = -1, fileIndex = -1;
 		if (pp->AddDots)
 		{
-			++i;
+			++itemIndex;
 			wchar_t* dots = new wchar_t[3];
 			dots[0] = dots[1] = '.'; dots[2] = '\0';
 			PluginPanelItem& p = (*pPanelItem)[0];
@@ -162,12 +195,12 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		}
 
 		// add files
-		for each(FarFile^ f in pp->Files)
+		for each(FarFile^ f in files)
 		{
-			++i;
-			++fi;
+			++itemIndex;
+			++fileIndex;
 
-			PluginPanelItem& p = (*pPanelItem)[i];
+			PluginPanelItem& p = (*pPanelItem)[itemIndex];
 			FAR_FIND_DATA& d = p.FindData;
 
 			// names
@@ -179,7 +212,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 			if (pp->Info->AutoAlternateNames && opMode == 0)
 			{
 				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
-				Info.FSF->itoa(i, buf, 10);
+				Info.FSF->itoa(itemIndex, buf, 10);
 				int size = (int)wcslen(buf) + 1;
 				wchar_t* alternate = new wchar_t[size];
 				memcpy(alternate, buf, size * sizeof(wchar_t));
@@ -196,7 +229,8 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 			d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
 			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
 			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
-			p.UserData = fi;
+			// _110121_150249 Set -1 in the Find mode
+			p.UserData = isFind ? -1 : fileIndex;
 
 			// columns
 			System::Collections::ICollection^ columns = f->Columns;
