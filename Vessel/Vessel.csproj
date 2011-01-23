@@ -34,10 +34,7 @@
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FarNet">
-      <HintPath>..\..\..\..\Program Files\Far\FarNet\FarNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="FarNet" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -61,6 +58,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="@(Content);Bin\$(Configuration)\Vessel.dll" DestinationFolder="C:\Program Files\Far\FarNet\Modules\Vessel" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
   </Target>
 </Project>
