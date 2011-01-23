@@ -47,8 +47,8 @@ typical macros, see its comments.
 Known issue/workaround:
 Until the issue Mantis 1465 is resolved Shift+Left/Right work funny in dialogs
 and the cmdline when selection is set by the module. Workaround: use macros
-ShiftLeft/Right (not in editor!) and bind them to the commands 7 and 8.
-(Install-RightControlMacro-.ps1 installs that macros, too).
+ShiftLeft/Right (not in editor!) and bind them to the commands vertical-left
+and vertical-right. (Install-RightControlMacro-.ps1 does this, too).
 
 
 = OPTIONS =
