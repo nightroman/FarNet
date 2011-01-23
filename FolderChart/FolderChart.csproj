@@ -33,12 +33,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FarNet">
-      <HintPath>..\..\..\..\Program Files\Far\FarNet\FarNet.dll</HintPath>
-    </Reference>
-    <Reference Include="FarNet.Tools">
-      <HintPath>..\..\..\..\Program Files\Far\FarNet\FarNet.Tools.dll</HintPath>
-    </Reference>
+    <Reference Include="FarNet" />
+    <Reference Include="FarNet.Tools" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -57,13 +53,14 @@
     <Compile Include="SizeRun.cs" />
     <Compile Include="Types.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Readme.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!---->
   <Target Name="AfterBuild">
-    <Copy DestinationFolder="C:\Program Files\Far\FarNet\Modules\FolderChart" SkipUnchangedFiles="true" SourceFiles="
-Bin\$(Configuration)\FolderChart.dll;
-Readme.txt;
-LICENSE;
-"/>
+    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
   </Target>
 </Project>
