@@ -17,17 +17,8 @@ namespace FarNet.RightControl
 		const string Name = "RightControl";
 		const string DefaultPattern = @"^ | $ | (?<=\b|\s)\S";
 
-		static Regex _regex_;
-
-		static Regex Regex
-		{
-			get
-			{
-				if (_regex_ == null)
-					InitRegex(null);
-				return _regex_;
-			}
-		}
+		static Regex Regex { get { if (_Regex_ == null) InitRegex(null); return _Regex_; } }
+		static Regex _Regex_;
 
 		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
@@ -65,7 +56,7 @@ namespace FarNet.RightControl
 
 		static void InitRegex(IModuleManager manager)
 		{
-			if (_regex_ != null)
+			if (_Regex_ != null)
 				return;
 
 			string pattern = DefaultPattern;
@@ -86,19 +77,19 @@ namespace FarNet.RightControl
 
 			try
 			{
-				_regex_ = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
+				_Regex_ = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
 			}
 			catch (Exception e)
 			{
 				Far.Net.Message("Error on parsing the regular expression:\r" + e.Message, "RightControl", MsgOptions.LeftAligned | MsgOptions.Warning);
-				_regex_ = new Regex(DefaultPattern, RegexOptions.IgnorePatternWhitespace);
+				_Regex_ = new Regex(DefaultPattern, RegexOptions.IgnorePatternWhitespace);
 			}
 		}
 
 		/// <summary>
 		/// Operation kind.
 		/// </summary>
-		public enum Operation
+		enum Operation
 		{
 			Step,
 			Select,
@@ -113,7 +104,7 @@ namespace FarNet.RightControl
 		/// <param name="operation">The operation to run.</param>
 		/// <param name="right">True for right, false for left.</param>
 		/// <param name="alt">True for the alternative operation.</param>
-		public static void Run(IEditor editor, ILine line, Operation operation, bool right, bool alt)
+		static void Run(IEditor editor, ILine line, Operation operation, bool right, bool alt)
 		{
 			Point caret = line == null ? editor.Caret : new Point(line.Caret, 0);
 			int iColumn = caret.X;
@@ -466,7 +457,7 @@ namespace FarNet.RightControl
 		/// Smart line home is the first not white space line position
 		/// if the caret is not there or the standard line home otherwise.
 		/// </remarks>
-		public static void Home(IEditor editor, ILine line, bool select)
+		static void Home(IEditor editor, ILine line, bool select)
 		{
 			if (editor != null)
 				line = editor[-1];

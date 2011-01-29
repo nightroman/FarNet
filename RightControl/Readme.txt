@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightControl
-Release  : 2011-01-18
+Release  : 2011-01-24
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,8 +10,8 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
 
- * Far Manager 2.0.1791
- * Plugin FarNet 4.3.37
+ * Far Manager 2.0.1802
+ * Plugin FarNet 4.3.38
 
 
 = DESCRIPTION =
@@ -137,3 +137,7 @@ All the menus are removed. Performance is perfect now. See Readme.txt for the
 list of commands.
 
 Install-RightControlMacro-.ps1 installs macros that use callplugin().
+
+1.0.10
+
+Removed not needed public API.
