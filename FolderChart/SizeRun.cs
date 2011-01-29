@@ -79,7 +79,7 @@ class SizeRun
 				{
 					Check();
 					_Result.Add(new FolderItem() { Name = Path.GetFileName(folder), Size = CalculateFolderSize(folder) });
-					_progress.SetProgress(_Result.Count, folders.Count);
+					_progress.SetProgressValue(_Result.Count, folders.Count);
 				});
 			}
 
