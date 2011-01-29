@@ -110,10 +110,10 @@ namespace FarNet.Works
 			{
 				foreach (Macro macro in macros)
 				{
-					string path1 = Invariant.Format("{0}\\{1}", macro.Area, macro.Name);
+					string path1 = string.Format(null, "{0}\\{1}", macro.Area, macro.Name);
 					string path2 = path1.ToUpperInvariant();
 					if (done.Contains(path2))
-						throw new InvalidOperationException(Invariant.Format("Macro '{0}' is defined twice.", path1));
+						throw new InvalidOperationException(string.Format(null, "Macro '{0}' is defined twice.", path1));
 
 					done.Add(path2);
 					Install(macro);
@@ -189,7 +189,7 @@ namespace FarNet.Works
 					return;
 
 				// sequence
-				string[] lines = Regex.Split(macro.Sequence, "\\r\\n|\\r|\\n");
+				string[] lines = Regex.Split(macro.Sequence, Kit.SplitLinePattern);
 				if (lines.Length == 1)
 					key.SetValue("Sequence", lines[0]);
 				else
@@ -280,7 +280,7 @@ namespace FarNet.Works
 		// Converts the text to the string array or the same string.
 		static object StringToRegistryValue(string text)
 		{
-			string[] lines = Regex.Split(text, "\\r\\n|\\r|\\n");
+			string[] lines = Regex.Split(text, Kit.SplitLinePattern);
 			if (lines.Length == 1)
 				return text;
 			else

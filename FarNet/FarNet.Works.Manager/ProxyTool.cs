@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace FarNet.Works
@@ -92,7 +91,7 @@ namespace FarNet.Works
 
 		public sealed override string ToString()
 		{
-			return Invariant.Format("{0} Options='{1}'", base.ToString(), Attribute.Options);
+			return string.Format(null, "{0} Options='{1}'", base.ToString(), Attribute.Options);
 		}
 
 		internal sealed override void WriteCache(List<string> data)

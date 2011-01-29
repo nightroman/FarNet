@@ -7,11 +7,11 @@ using System.Collections.Generic;
 
 namespace FarNet.Works
 {
-	static class Kit
+	static class Utility
 	{
 		internal static string FormatConfigMenu(IModuleAction action)
 		{
-			return Invariant.Format("{0} {1}\\{2}", action.Name, action.ModuleName, action.Id);
+			return string.Format(null, "{0} {1}\\{2}", action.Name, action.ModuleName, action.Id);
 		}
 	}
 	
@@ -28,7 +28,7 @@ namespace FarNet.Works
 			menu.Title = Res.ModuleEditors;
 
 			foreach(IModuleEditor it in editors)
-				menu.Add(Kit.FormatConfigMenu(it)).Data = it;
+				menu.Add(Utility.FormatConfigMenu(it)).Data = it;
 
 			while(menu.Show())
 			{

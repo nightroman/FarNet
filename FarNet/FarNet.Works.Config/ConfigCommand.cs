@@ -33,9 +33,9 @@ namespace FarNet.Works
 				string format = "{0,-" + widthPref + "} : {1,-" + widthName + "} : {2}";
 
 				menu.Items.Clear();
-				menu.Add(Invariant.Format(format, "Prefix", "Name", "Address")).Disabled = true;
+				menu.Add(string.Format(null, format, "Prefix", "Name", "Address")).Disabled = true;
 				foreach (IModuleCommand it in commands)
-					menu.Add(Invariant.Format(format, it.Prefix, it.Name, it.ModuleName + "\\" + it.Id)).Data = it;
+					menu.Add(string.Format(null, format, it.Prefix, it.Name, it.ModuleName + "\\" + it.Id)).Data = it;
 
 				if (!menu.Show())
 					return;

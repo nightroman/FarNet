@@ -4,7 +4,6 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -39,7 +38,7 @@ namespace PowerShellFar
 			// try the user defined viewer
 			if (!string.IsNullOrEmpty(externalViewerFileName))
 			{
-				externalViewerArguments = Invariant.Format(A.Psf.Settings.ExternalViewerArguments, fileName);
+				externalViewerArguments = string.Format(null, A.Psf.Settings.ExternalViewerArguments, fileName);
 				try
 				{
 					return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
@@ -114,18 +113,19 @@ namespace PowerShellFar
 	static class Kit
 	{
 		/// <summary>
-		/// Converts with invariant culture.
+		/// Converts with culture.
 		/// </summary>
 		public static string ToString<T>(T value) where T : IConvertible //! IConvertible is not CLS-compliant
 		{
-			return value.ToString(CultureInfo.InvariantCulture);
+			return value.ToString(CultureInfo.CurrentCulture);
 		}
+		
 		/// <summary>
-		/// Converts with invariant culture.
+		/// Converts with culture.
 		/// </summary>
 		public static string ToString(DateTime value, string format)
 		{
-			return value.ToString(format, CultureInfo.InvariantCulture);
+			return value.ToString(format, CultureInfo.CurrentCulture);
 		}
 
 		// Compares strings OrdinalIgnoreCase.
@@ -146,35 +146,6 @@ namespace PowerShellFar
 			return _reEscapeWildcard.Replace(literal, "`$1");
 		}
 		static Regex _reEscapeWildcard;
-
-		public static void FormatMessageLines(List<string> lines, string message, int width, int height)
-		{
-			Regex format = null;
-			foreach (string s1 in Regex.Split(message.Replace('\t', ' '), "\r\n|\r|\n"))
-			{
-				if (s1.Length <= width)
-				{
-					lines.Add(s1);
-				}
-				else
-				{
-					if (format == null)
-						format = new Regex("(.{0," + width + "}(?:\\s|$))");
-					string[] s3 = format.Split(s1);
-					foreach (string s2 in s3)
-					{
-						if (s2.Length > 0)
-						{
-							lines.Add(s2);
-							if (lines.Count >= height)
-								return;
-						}
-					}
-				}
-				if (lines.Count >= height)
-					return;
-			}
-		}
 
 		//?? _090901_055134 Check in V2 (bad for viewer and notepad)
 		/// <summary>

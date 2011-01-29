@@ -55,12 +55,12 @@ namespace FarNet.Works
 			// ID: we have already got it, now ensure it is explicitely set
 			attrs = _ClassType.GetCustomAttributes(typeof(GuidAttribute), false);
 			if (attrs.Length == 0)
-				throw new ModuleException(Invariant.Format("The 'GuidAttribute' should be set for the class '{0}'.", _ClassType.Name));
+				throw new ModuleException(string.Format(null, "The Guid attribute should be set for the class '{0}'.", _ClassType.Name));
 
 			// Module* attribure
 			attrs = _ClassType.GetCustomAttributes(attributeType, false);
 			if (attrs.Length == 0)
-				throw new ModuleException(Invariant.Format("The '{0}' should be set for the class '{1}'.", attributeType.Name, _ClassType.Name));
+				throw new ModuleException(string.Format(null, "The '{0}' should be set for the class '{1}'.", attributeType.Name, _ClassType.Name));
 
 			_Attribute = (ModuleActionAttribute)attrs[0];
 
@@ -104,7 +104,7 @@ namespace FarNet.Works
 
 		public override string ToString()
 		{
-			return Invariant.Format("{0} {1} Name='{2}'", Key, Kind, Name);
+			return string.Format(null, "{0} {1} Name='{2}'", Key, Kind, Name);
 		}
 
 		public virtual void Unregister()

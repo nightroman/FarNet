@@ -8,6 +8,8 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
+const int ALL_BUTTONS = FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMSG_MB_YESNO|FMSG_MB_YESNOCANCEL|FMSG_MB_RETRYCANCEL;
+
 bool Message::Show()
 {
 	if (ValueUserScreen::Get()) //_100514_000000
@@ -16,12 +18,14 @@ bool Message::Show()
 		Far::Net->UI->SaveUserScreen();
 	}
 
-	//! flags: add at least one OK button; otherwise it works as a special progress-like message
-	// ([Esc] has no effect, [Enter] passed through, other keys too and dialog is still shown);
-	// for now we do not use this
+	// process the draw flag
 	int flags = _flags;
-	if ((!_buttons || _buttons->Length == 0) && (flags & (FMSG_MB_OK|FMSG_MB_OKCANCEL|FMSG_MB_ABORTRETRYIGNORE|FMSG_MB_YESNO|FMSG_MB_YESNOCANCEL|FMSG_MB_RETRYCANCEL)) == 0)
-		flags |= FMSG_MB_OK;
+	if ((flags & (int)MsgOptions::Draw) == 0)
+	{
+		// add at least one button
+		if ((flags & ALL_BUTTONS) == 0 && (!_buttons || _buttons->Length == 0))
+			flags |= FMSG_MB_OK;
+	}
 
 	int nbItems;
 	CStr* items = CreateBlock(nbItems);
@@ -67,6 +71,15 @@ CStr* Message::CreateBlock(int& outNbItems)
 
 int Message::Show(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
 {
+	// Draw mode?
+	if (int(options & MsgOptions::Draw))
+	{
+		if (int(options & (MsgOptions::Gui | MsgOptions::GuiOnMacro)))
+			throw gcnew ArgumentException("Draw and GUI options cannot be used together.");
+		if ((int(options) & ALL_BUTTONS) || (buttons && buttons->Length))
+			throw gcnew ArgumentException("Buttons cannot be used in drawn messages.");
+	}
+
 	// GUI on macro?
 	if (int(options & MsgOptions::GuiOnMacro) != 0)
 	{
@@ -103,7 +116,7 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 
 	// body
 	int height = Far::Net->UI->WindowSize.Y - 9;
-	FormatMessageLines(%m._body, body, width, height);
+	FarNet::Works::Kit::FormatMessage(%m._body, body, width, height, FarNet::Works::FormatMessageMode::Word);
 
 	// buttons? dialog?
 	if (buttons)
@@ -166,34 +179,6 @@ int Message::ShowDialog(int width)
 		return -1;
 
 	return list->Selected;
-}
-
-void Message::FormatMessageLines(List<String^>^ lines, String^ message, int width, int height)
-{
-	Regex^ format = nullptr;
-	for each(String^ line in Regex::Split(message->Replace('\t', ' '), "\r\n|\r|\n"))
-	{
-		if (line->Length <= width)
-		{
-			lines->Add(line);
-		}
-		else
-		{
-			if (format == nullptr)
-				format = gcnew Regex("(.{0," + width + "}(?:\\s|$))");
-			for each (String^ split in format->Split(line))
-			{
-				if (split->Length > 0)
-				{
-					lines->Add(split);
-					if (lines->Count >= height)
-						return;
-				}
-			}
-		}
-		if (lines->Count >= height)
-			return;
-	}
 }
 
 int Message::ShowGui(String^ body, String^ header, MsgOptions options)

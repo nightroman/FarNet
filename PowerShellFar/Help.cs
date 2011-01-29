@@ -88,7 +88,7 @@ namespace PowerShellFar
 					}
 					else if (token.Type == PSTokenType.Keyword)
 					{
-						script = Invariant.Format("Get-Help about_{0} > $args[0]", token.Content);
+						script = string.Format(null, "Get-Help about_{0} > $args[0]", token.Content);
 						args = new object[] { null };
 					}
 					else if (token.Type == PSTokenType.Operator)

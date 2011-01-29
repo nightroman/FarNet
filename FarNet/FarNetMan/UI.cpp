@@ -113,11 +113,6 @@ void FarUI::WindowCursor::set(Point value)
 	Info.AdvControl(Info.ModuleNumber, ACTL_SETCURSORPOS, &pos);
 }
 
-bool FarUI::KeyAvailable::get()
-{
-	return Console::KeyAvailable;
-}
-
 void FarUI::FlushInputBuffer()
 {
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -126,6 +121,11 @@ void FarUI::FlushInputBuffer()
 
 	if (!FlushConsoleInputBuffer(hStdin))
 		ThrowWithLastError("FlushConsoleInputBuffer");
+}
+
+bool FarUI::KeyAvailable::get()
+{
+	return Console::KeyAvailable;
 }
 
 KeyInfo FarUI::ReadKey(Works::ReadKeyOptions options)
@@ -475,6 +475,11 @@ void FarUI::RestoreScreen(int screen)
 	Info.RestoreScreen((HANDLE)(INT_PTR)screen);
 }
 
+void FarUI::Draw()
+{
+	Info.Text(0, 0, 0, NULL);
+}
+
 void FarUI::DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
 {
 	PIN_NE(pin, text);
@@ -513,6 +518,34 @@ void FarUI::Clear()
 void FarUI::Redraw()
 {
 	Info.AdvControl(Info.ModuleNumber, ACTL_REDRAWALL, 0);
+}
+
+int FarUI::ReadKeys(array<int>^ virtualKeyCodes)
+{
+	while (KeyAvailable)
+	{
+		KeyInfo key = ReadKey(Works::ReadKeyOptions::AllowCtrlC | Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp | Works::ReadKeyOptions::NoEcho);
+		
+		int code = key.VirtualKeyCode;
+		if (int(key.ControlKeyState & (ControlKeyStates::LeftAltPressed | ControlKeyStates::RightAltPressed)))
+			code |= VKeyMode::Alt;
+		if (int(key.ControlKeyState & (ControlKeyStates::LeftCtrlPressed | ControlKeyStates::RightCtrlPressed)))
+			code |= VKeyMode::Ctrl;
+		if (int(key.ControlKeyState & ControlKeyStates::ShiftPressed))
+			code |= VKeyMode::Shift;
+		
+		for each(int it in virtualKeyCodes)
+		{
+			if (it == code)
+			{
+				FlushInputBuffer();
+				return it;
+			}
+		}
+	}
+	
+	FlushInputBuffer();
+	return 0;
 }
 
 }

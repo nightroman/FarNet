@@ -426,6 +426,10 @@ void Far1::ShowError(String^ title, Exception^ error)
 		return;
 	}
 
+	// quiet: CtrlBreak in a dialog
+	if (error->GetType()->FullName == "System.Management.Automation.PipelineStoppedException") //_110128_075844
+		return;
+
 	// ask
 	int res = Message(
 		error->Message,

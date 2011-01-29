@@ -5,7 +5,6 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace FarNet.Works
 {
@@ -78,7 +77,7 @@ namespace FarNet.Works
 
 		public sealed override string ToString()
 		{
-			return Invariant.Format("{0} Prefix='{1}'", base.ToString(), Prefix);
+			return string.Format(null, "{0} Prefix='{1}'", base.ToString(), Prefix);
 		}
 
 		internal sealed override void WriteCache(List<string> data)

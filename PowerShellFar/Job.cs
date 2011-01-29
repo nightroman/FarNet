@@ -427,11 +427,11 @@ namespace PowerShellFar
 					return;
 
 				menu.Items.Clear();
-				FarItem item = menu.Add(Invariant.Format(MenuFormatString, "State", "Output", "Name/Command"));
+				FarItem item = menu.Add(string.Format(null, MenuFormatString, "State", "Output", "Name/Command"));
 				item.Disabled = true;
 				foreach (Job job in Jobs)
 				{
-					item = menu.Add(Invariant.Format(MenuFormatString, job.StateText, job.Length, job.ToLine(100)));
+					item = menu.Add(string.Format(null, MenuFormatString, job.StateText, job.Length, job.ToLine(100)));
 					item.Data = job;
 				}
 
@@ -682,7 +682,7 @@ namespace PowerShellFar
 					continue;
 				}
 
-				string message = Invariant.Format(@"
+				string message = string.Format(null, @"
 Job:
 {0}
 

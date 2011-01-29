@@ -130,6 +130,7 @@ namespace PowerShellFar.Commands
 		/// <summary>
 		/// Attached user data. See <see cref="IPanel.Data"/>.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		[Parameter(HelpMessage = "Attached user data.")]
 		public IDictionary Data { get; set; }
 

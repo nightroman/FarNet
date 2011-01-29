@@ -484,8 +484,8 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 		{
 		default:
 			{
-				//????? _110118_073431 to use (OPEN_FROMMACRO | OPEN_FROMMACROSTRING) when ready
-				if ((from & (OPEN_FROMMACRO)) == (OPEN_FROMMACRO))
+				// _110118_073431
+				if ((from & (OPEN_FROMMACRO | OPEN_FROMMACROSTRING)) == (OPEN_FROMMACRO | OPEN_FROMMACROSTRING))
 				{
 					Log::Source->TraceInformation("OPEN_FROMMACRO");
 					if (!InvokeCommand((const wchar_t*)item, true))
@@ -842,7 +842,7 @@ CultureInfo^ Far0::GetCurrentUICulture(bool update)
 			return _currentUICulture = ci;
 	}
 
-	// fallback
+	// fallback to invariant
 	return _currentUICulture = CultureInfo::InvariantCulture;
 }
 

@@ -1,5 +1,32 @@
 http://code.google.com/p/farnet/
 
+= 4.3.38 =
+
+*) IFar.Message
+New option Draw to draw message-like boxes.
+
+*) IFar.UI (IUserInterface)
+New method Draw(): actually draws the job done by DrawColor & DrawPalette
+(it's more natuaral than also working DrawXXX(.., null)).
+
+*) New interface FarNet.Tools.IProgress.
+
+*) New class FarNet.Tools.ProgressBox : IProgress
+Draws a simple message box with progress information.
+PSF script Test-ProgressForm-.ps1 shows how to use it.
+
+*) ProgressForm implements IProgress
+- SetProgressValue() now works with double's, not int's.
+- SetProgressInt64() is OBSOLETE AND WILL BE REMOVED.
+
+Modules with ProgressForm:
+- Multihasher should work fine;
+- FolderChart has to be updated;
+- Rebuild other (personal) modules.
+
+*) ProgressBox & ProgressForm
+Support of multiline text (see LineCount).
+
 = 4.3.37 =
 
 *) MODULE COMMANDS AND MACROS
