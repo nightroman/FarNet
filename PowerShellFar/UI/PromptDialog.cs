@@ -23,7 +23,7 @@ namespace PowerShellFar.UI
 			int w = Far.Net.UI.WindowSize.X - 7;
 
 			var lines = new List<string>();
-			Kit.FormatMessageLines(lines, message, w - 10, 3);
+			FarNet.Works.Kit.FormatMessage(lines, message, w - 10, 3, FarNet.Works.FormatMessageMode.Word);
 			while (lines.Count > 0 && lines[0].Length == 0)
 				lines.RemoveAt(0);
 

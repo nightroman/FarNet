@@ -75,5 +75,9 @@ namespace FarNet
 		/// For internal use (normally). GUI message on a macro in progress.
 		/// </summary>
 		GuiOnMacro = 0x00000080,
+		/// <summary>
+		/// Tells to draw the message box with no buttons and continue.
+		/// </summary>
+		Draw = 0x00000100,
 	}
 }

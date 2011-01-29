@@ -480,11 +480,6 @@ namespace FarNet.Forms
 		/// </summary>
 		public abstract event EventHandler<SizeEventArgs> ConsoleSizeChanged;
 		/// <summary>
-		/// Gets or sets the "default control" which gets selected on [Enter] if the focus is not on a button.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-		public abstract IControl Default { get; set; }
-		/// <summary>
 		/// Gets or sets the control which has focus.
 		/// </summary>
 		public abstract IControl Focused { get; set; }
@@ -542,8 +537,17 @@ namespace FarNet.Forms
 		/// </summary>
 		/// <remarks>
 		/// If this button is clicked then <see cref="Show"/> returns false.
+		/// NOTE: the opposite is not always true, see <see cref="IButton.ButtonClicked"/> remarks.
 		/// </remarks>
 		public abstract IButton Cancel { get; set; }
+		/// <summary>
+		/// Gets or sets the default control: it gets selected on [Enter] if the focus is not on a button.
+		/// </summary>
+		/// <remarks>
+		/// NOTE: "selected" and "clicked" are different events, see <see cref="IButton.ButtonClicked"/> remarks.
+		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+		public abstract IControl Default { get; set; }
 		/// <summary>
 		/// Shows the dialog.
 		/// </summary>

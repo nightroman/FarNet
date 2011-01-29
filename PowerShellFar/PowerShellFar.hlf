@@ -8,7 +8,8 @@ $#PowerShellFar#
 #General#
 
 	~About~@About@
-	~Requirements~@Requirements@
+	~Installation~@Installation@
+	~Run commands~@RunCommands@
 	~Command line~@CommandLine@
 	~Menu commands~@MenuCommands@
 	~Editor console~@EditorConsole@
@@ -21,7 +22,6 @@ $#PowerShellFar#
 
 #Details#
 
-	~Restrictions~@Restrictions@
 	~Commands output~@CommandsOutput@
 	~Background jobs~@BackgroundJobs@
 	~Debugger dialog~@DebuggerDialog@
@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.3.37#
+#PowerShellFar 4.3.38#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -62,6 +62,11 @@ object model, and provides several ways for invoking commands and viewing the
 results. The package includes cmdlets, modules and scripts for many popular Far
 Manager tasks and PowerShell.hrc for Colorer providing rich PowerShell syntax
 highlighting.
+
+Most of PowerShell features are fully supported. There is nothing really
+serious not implemented, normally you won't even notice that something is
+missing or works partially. Still, a few PowerShell cmdlets and host methods
+(mostly designed for plain console UI) are not supported.
 
 PowerShellFar, FarNet and documentation can be updated by the included script
 Update-FarNet.ps1 or downloaded and installed manually from:
@@ -74,53 +79,125 @@ Update-FarNet.ps1 or downloaded and installed manually from:
  ~http://nightroman.wordpress.com/~@http://nightroman.wordpress.com/@
 
 
-@Requirements
-$#Requirements#
+@Installation
+$#Installation#
 ~Contents~@Contents@
 
 #Requirements#
 
- - Far Manager 2.0.1798
- - Plugin FarNet 4.3.37
+ - Far Manager 2.0.1802
+ - Plugin FarNet 4.3.38
  - Windows PowerShell 2.0
 
 
 #Installation#
 
-Check\change PowerShell execution policy: run standard PowerShell.exe and type
-Get-ExecutionPolicy - it should be RemoteSigned or Unrestricted. If it is not
-then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
+Check the local PowerShell execution policy: start PowerShell.exe and type
+Get-ExecutionPolicy. If it is not RemoteSigned or Unrestricted then invoke
+Set-ExecutionPolicy with RemoteSigned or Unrestricted argument.
 
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
-The location and name can be changed but it is recommended to use exactly this
-way: for example, in order to be able to use the script Update-FarNet.ps1 with
-no changes in it.
+The location and name can be changed but it is recommended to use this way:
+some tools assume this path by default, e.g. Update-FarNet.ps1.
 
 
 #Using Bench scripts#
 
 Included Bench scripts are ready to use handy tools for various tasks. There are
-also tests and demos for learning PowerShellFar and PowerShell. But nothing is
-enabled by default. If you are going to use these scripts directly from Bench
-then:
+also tests and demos for learning PowerShellFar and PowerShell. In order to to
+use these scripts directly from Bench:
 
 *) Include directory Bench into the system path.
 
-*) In addition, if you are a new PowerShellFar user then it is recommended to
-set the following configuration properties:
+*) New users may want to configure the module with the predefined profile:
 
 	#Startup code#   . Profile-.ps1
 
-This enables for you many features including additional menu tools, so that you
-can invoke some scripts right from the menus. Read this help and script
-comments for more details.
+This enables many features including additional menu tools, so that you can
+invoke some scripts right from the menus. Read this help and script comments
+for more details.
 
 
 #Console window width#
 
-If you work a lot with power panels then it is recommended to use console width
-at least 164, so that panel width is 80 which is the "default" console width.
+If you work a lot with power panels then it is recommended to set console width
+at least 164, so that panels width is 80 which is the default console width.
 Many PowerShell type formats are designed with 80 columns in mind.
+
+
+@RunCommands
+$#Run commands#
+~Contents~@Contents@
+
+PowerShellFar is all about running PowerShell commands in the text friendly UI
+of Far Manager. There are many ways and literally you can run a command at any
+momement from almost any UI context.
+
+^***
+
+#WAYS TO INVOKE COMMANDS#
+
+#Command box#. The command input box can be opened from almost any UI context:
+#[F11] \ PowerShellFar \ Invoke input code...#.
+See ~Menu commands~@MenuCommands@.
+
+#Selected code#. Selected text in any editor including the command line and
+dialog edit boxes can be invoked as PowerShell code:
+#[F11] \ PowerShellFar \ Invoke selected code#.
+See ~Menu commands~@MenuCommands@.
+
+#Command line#. In the panels mode use the command line to type and invoke
+commands with prefixes: #>:# and #>>:# by default.
+See ~Command line~@CommandLine@.
+
+#Far user menu and file associations#. The Far user menu (#[F2]#) and file
+associations (#[F9] \ Commands \ File associations#) may include PowerShell
+commands with prefixes. See Far Manager help for details.
+
+#Editor consoles#. Global, local, or remote editor consoles can be opened at
+any moment: #[F11] \ PowerShellFar \ Editor console#. The editor is modal if it
+is started from modal context and modeless otherwise. Local and remote consoles
+run commands asynchronously in their own PowerShell sessions.
+See ~Editor console~@EditorConsole@.
+
+#Script editor#. A script opened in the current editor can be invoked in the
+global session by pressing [F5] in the editor. It is the same as to invoke the
+script without parameters from the command line or command box.
+
+#Far Manager macros#. Macro associate key combinations in the current UI area
+with pieces of macro code that may invoke PowerShell commands in a few ways.
+See ~Command and macro examples~@Examples@.
+
+#Menu actions and event handlers#. Custom predefined actions can event handlers
+can be added using the profiles.
+See ~Profile-.ps1~@Profile@ and ~Profile-Editor-.ps1~@ProfileEditor@.
+
+^***
+
+#STOPPING RUNNING COMMANDS#
+
+#First of all: think twice before stopping running commands#. There are must be
+good reasons for doing this and this should be presumably safe, i.e. you know
+that this does not make something broken or you know it is easy to recover.
+
+[#CtrlBreak#] stops synchronous commands, i.e. commands invoked from:
+
+	- command line
+	- command input box
+	- global editor console
+	- script editor by [F5]
+	- Far user menu [F2]
+	- Far file associations
+
+[#CtrlC#] stops asynchronous commands, i.e. commands invoked from:
+
+	- local editor console
+	- remote editor console
+
+[#Del#] in the background job list stops running background jobs.
+
+It is not normally possible to stop commands started from event handlers (e.g.
+editor and panel events or $Psf.Action handlers). Design such code carefully.
 
 
 @CommandLine
@@ -557,6 +634,10 @@ recent output.
 
 [#Tab#] Invokes PowerShell TabExpansion for the current token.
 See ~TabExpansion.ps1~@TabExpansion@
+
+[#CtrlBreak#] Stops running synchronous commands in the global console.
+
+[#CtrlC#] Stops running asynchronous commands in the local or remote console.
 
 [#F1#] Opens the help menu where you can change or reset the current session to
 default, local, or remote, or open this help topic.
@@ -1145,32 +1226,6 @@ New-Object.
 The PowerShell host instance. It is not that useful in PowerShellFar. You may
 check the property $Host.Name, it is "FarHost" in PowerShellFar. The script may
 choose how to work depending on a host.
-
-
-@Restrictions
-$#Restrictions#
-~Contents~@Contents@
-
-#STOPPING RUNNING COMMANDS#
-
-You can stop the currently running interactive command by [CtrlC] (note:
-commands in the Far user menu [F2] and file associations are interactive, as if
-you run them from the command line). You can stop a background job by [Del] in
-the background job list. But running script blocks from your menu tools
-($Psf.Action) and event handlers (e.g. in editor or panel) normally cannot be
-stopped, design them carefully.
-
-
-#NOT IMPLEMENTED OR SUPPORTED#
-
-There is nothing really serious not implemented, normally you won't even notice
-that something is missed or works partially.
-
-Still, a few PowerShell cmdlets and host methods are not supported, normally
-designed for real plain console UI. Some of these commands may not work
-silently, some may work partially (Write-Progress), some commands throw
-NotImplementedException.
-
 
 @CommandsOutput
 $#Commands output#

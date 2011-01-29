@@ -328,11 +328,11 @@ namespace PowerShellFar
 			}
 			else if (_Width <= 0 || Alignment != Alignment.Right)
 			{
-				return Invariant.Format(FormatString, GetValue(value));
+				return string.Format(null, FormatString, GetValue(value));
 			}
 			else
 			{
-				return Invariant.Format(FormatString, GetValue(value)).PadLeft(_Width);
+				return string.Format(null, FormatString, GetValue(value)).PadLeft(_Width);
 			}
 		}
 

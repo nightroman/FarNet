@@ -104,20 +104,30 @@ namespace FarNet
 		/// </summary>
 		public abstract void Break();
 		/// <summary>
-		/// Draws at the specified position with defined colors.
+		/// Draws the changes done by the <see cref="DrawColor"/> and <see cref="DrawPalette"/>.
+		/// </summary>
+		public abstract void Draw();
+		/// <summary>
+		/// Draws at the specified position with defined colors (in the internal buffer).
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <include file='doc.xml' path='doc/Colors/*'/>
 		/// <param name="text">Text.</param>
 		/// <seealso cref="GetPaletteForeground"/>
 		/// <seealso cref="GetPaletteBackground"/>
+		/// <remarks>
+		/// When all drawing operations are done call the <see cref="Draw"/>.
+		/// </remarks>
 		public abstract void DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string text);
 		/// <summary>
-		/// Draws at the specified position using Far palette colors.
+		/// Draws at the specified position using Far palette colors (in the internal buffer).
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LT/*'/>
 		/// <param name="paletteColor">Palette color.</param>
 		/// <param name="text">Text.</param>
+		/// <remarks>
+		/// When all drawing operations are done call the <see cref="Draw"/>.
+		/// </remarks>
 		public abstract void DrawPalette(int left, int top, PaletteColor paletteColor, string text);
 		/// <summary>
 		/// Restores previously saved by <see cref="SaveScreen"/> screen area.
@@ -222,5 +232,13 @@ namespace FarNet
 		/// even those that are normally not, e.g. panels under opened dialogs.
 		/// </remarks>
 		public abstract void Redraw();
+		/// <summary>
+		/// Reads all keys from the input buffer and finds one of the given.
+		/// </summary>
+		/// <returns>Virtual key code of the first found key or 0.</returns>
+		/// <remarks>
+		/// The input buffer is empty after the call.
+		/// </remarks>
+		public abstract int ReadKeys(params int[] virtualKeyCodes);
 	}
 }

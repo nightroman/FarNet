@@ -68,8 +68,15 @@
 	</ExpandEnvironmentVariables>
 	<ButtonClicked>
 		<summary>
-			Called on the button clicks and similar actions.
+			Called on the button clicks and similar actions: [Enter] when focused or the hotkey at any time.
 		</summary>
+		<remarks>
+			NOTE: even if this is the default control (<see cref="IDialog.Default"/>) or
+			the cancel button (<see cref="IDialog.Cancel"/>) the event is not triggered
+			if the button is not explicitly clicked or a similar action is performed.
+			Thus, [CtrlEnter] (accept the dialog) and [Esc] (cancel the dialog)
+			do not trigger this event.
+		</remarks>
 	</ButtonClicked>
 	<ShowAmpersand>
 		<summary>

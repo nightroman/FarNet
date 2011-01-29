@@ -46,7 +46,7 @@ namespace FarNet.Works
 				sorted.Sort(new ModuleToolComparer(getMenuText));
 
 				// fill
-				menu.Add(Invariant.Format(format, "Title& ", "Options", "Address")).Disabled = true;
+				menu.Add(string.Format(null, format, "Title& ", "Options", "Address")).Disabled = true;
 				foreach (IModuleTool it in sorted)
 				{
 					// 1) restore the current item, its index vary due to sorting with new hotkeys
@@ -54,7 +54,7 @@ namespace FarNet.Works
 						menu.Selected = menu.Items.Count;
 
 					// 2) add the item
-					menu.Add(Invariant.Format(format, getMenuText(it), it.Options, it.ModuleName + "\\" + it.Id)).Data = it;
+					menu.Add(string.Format(null, format, getMenuText(it), it.Options, it.ModuleName + "\\" + it.Id)).Data = it;
 				}
 
 				// show

@@ -13,7 +13,6 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Reflection;
 using System.Security.Permissions;
-using System.Threading;
 using FarNet;
 
 namespace PowerShellFar
@@ -41,9 +40,30 @@ namespace PowerShellFar
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
 	public sealed class Actor
 	{
-		// protector
+		// guard
 		internal Actor()
 		{ }
+
+		/// <summary>
+		/// Stops the running pipeline.
+		/// </summary>
+		void CancelKeyPress(object sender, ConsoleCancelEventArgs e) //_110128_075844
+		{
+			if (e.SpecialKey != ConsoleSpecialKey.ControlBreak)
+				return;
+
+			//! copy
+			var pipe = Pipeline;
+			if (pipe == null)
+				return;
+
+			pipe.BeginStop(AsyncStop, pipe);
+		}
+
+		void AsyncStop(IAsyncResult ar) //_110128_075844
+		{
+			(ar.AsyncState as PowerShell).EndStop(ar);
+		}
 
 		#region Life
 
@@ -62,6 +82,13 @@ namespace PowerShellFar
 
 			// preload
 			OpenRunspace(false);
+
+			// subscribe
+			// editor events: OnEditorOpened1 should be called always and first
+			// do Invoking() (at least for TabExpansion) and the startup code
+			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened1;
+			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened2;
+			Console.CancelKeyPress += CancelKeyPress; //_110128_075844
 		}
 
 		/// <summary>
@@ -71,9 +98,10 @@ namespace PowerShellFar
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal void Disconnect()
 		{
-			// editor events
-			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
+			// unsubscribe
+			Console.CancelKeyPress -= CancelKeyPress; //_110128_075844
 			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
+			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
 
 			// kill menu
 			UI.ActorMenu.Destroy();
@@ -125,7 +153,7 @@ namespace PowerShellFar
 			// >: Update-TypeData "$($Psf.AppHome)\PowerShellFar.types.ps1xml"
 			// configuration.Types.Append(new TypeConfigurationEntry(Path.Combine(AppHome, "PowerShellFar.types.ps1xml")));
 
-			// runspace
+			// open/start runspace
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, configuration);
 			Runspace.StateChanged += OnRunspaceStateEvent;
 			if (sync)
@@ -223,7 +251,7 @@ namespace PowerShellFar
 					}
 					catch (RuntimeException ex)
 					{
-						string msg = Invariant.Format(@"
+						string msg = string.Format(null, @"
 Startup code has failed.
 
 Code (see configuration):
@@ -363,7 +391,7 @@ View the error list or the variable $Error.
 				// ask a user if he has not told to ignore this pair
 				if (location != _failedInvokingLocationNew || currentLocation != _failedInvokingLocationOld)
 				{
-					string message = Invariant.Format(@"
+					string message = string.Format(null, @"
 Cannot set the current location to
 {0}
 
@@ -409,7 +437,7 @@ Continue with this current location?
 				// ask a user if he has not told to ignore this pair
 				if (directory != _failedInvokingDirectoryNew || currentDirectory != _failedInvokingDirectoryOld)
 				{
-					string message = Invariant.Format(@"
+					string message = string.Format(null, @"
 Cannot set the current directory to
 {0}
 
@@ -442,24 +470,6 @@ Continue with this current directory?
 		string _failedInvokingDirectoryOld;
 		string _failedInvokingLocationNew;
 		string _failedInvokingLocationOld;
-
-		// Installed before interactive invocation to watch [CtrlC] for stopping.
-		void OnTimer(object state)
-		{
-			if (Pipeline == null)
-				return;
-
-			while (Far.Net.UI.KeyAvailable)
-			{
-				var k = Far.Net.UI.ReadKey(FarNet.Works.ReadKeyOptions.AllowCtrlC | FarNet.Works.ReadKeyOptions.IncludeKeyDown | FarNet.Works.ReadKeyOptions.IncludeKeyUp | FarNet.Works.ReadKeyOptions.NoEcho);
-				if (k.VirtualKeyCode == VKeyCode.C && k.CtrlAltShift == ControlKeyStates.LeftCtrlPressed)
-					Pipeline.BeginStop(AsyncStop, Pipeline);
-			}
-		}
-		void AsyncStop(IAsyncResult ar)
-		{
-			(ar.AsyncState as PowerShell).EndStop(ar);
-		}
 
 		#endregion
 
@@ -896,9 +906,6 @@ Continue with this current directory?
 				FarUI.PushWriter(new TranscriptOutputWriter());
 			}
 
-			// install timer
-			Timer timer = new Timer(OnTimer, null, 3000, 1000);
-
 			// invoke
 			try
 			{
@@ -951,9 +958,6 @@ Continue with this current directory?
 			}
 			finally
 			{
-				// stop timer
-				timer.Dispose();
-
 				// win7 NoProgress
 				Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 

@@ -887,7 +887,7 @@ namespace FarNet
 		///
 		public override string ToString()
 		{
-			return Invariant.Format("State={0} Code={1}/{2}", _state, _code, (ConsoleKey)_code);
+			return string.Format(null, "State={0} Code={1}/{2}", _state, _code, (ConsoleKey)_code);
 		}
 	}
 
