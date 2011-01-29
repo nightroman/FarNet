@@ -28,10 +28,12 @@ public:
 	virtual array<Works::BufferCell, 2>^ GetBufferContents(Place rectangle) override;
 	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor) override;
 	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor) override;
+	virtual int ReadKeys(array<int>^ virtualKeyCodes) override;
 	virtual int SaveScreen(int x1, int y1, int x2, int y2) override;
 	virtual KeyInfo ReadKey(Works::ReadKeyOptions options) override;
 	virtual void Break() override;
 	virtual void Clear() override;
+	virtual void Draw() override;
 	virtual void DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text) override;
 	virtual void DrawPalette(int left, int top, PaletteColor paletteColor, String^ text) override;
 	virtual void FlushInputBuffer() override;

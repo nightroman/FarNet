@@ -7,9 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using FarNet;
 
 namespace PowerShellFar
@@ -324,8 +322,8 @@ namespace PowerShellFar
 		{
 			ICollection collection = enumerable as ICollection;
 			string message = collection == null ?
-				Invariant.Format("There are more than {0} panel files.", maximumFileCount) :
-				Invariant.Format("There are {0} panel files, the limit is {1}.", collection.Count, maximumFileCount);
+				string.Format(null, "There are more than {0} panel files.", maximumFileCount) :
+				string.Format(null, "There are {0} panel files, the limit is {1}.", collection.Count, maximumFileCount);
 
 			return Far.Net.Message(message, "$Psf.Settings.MaximumPanelFileCount", MsgOptions.AbortRetryIgnore);
 		}

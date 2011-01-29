@@ -5,9 +5,7 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
@@ -324,7 +322,7 @@ namespace PowerShellFar
 			try
 			{
 				A.Psf.Act(code, null, false);
-				Far.Net.UI.WindowTitle = "Done " + DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
+				Far.Net.UI.WindowTitle = "Done " + DateTime.Now;
 			}
 			catch
 			{

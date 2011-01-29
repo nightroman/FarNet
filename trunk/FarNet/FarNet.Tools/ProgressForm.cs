@@ -5,21 +5,25 @@ Copyright (c) 2010 Roman Kuzmin
 */
 
 using System;
-using System.Diagnostics;
-using System.Globalization;
 using System.Threading;
 using FarNet.Forms;
 
 namespace FarNet.Tools
 {
 	/// <summary>
-	/// A form to show progress or activity of potentially long background jobs.
+	/// Andvanced form to show progress of potentially long background jobs.
 	/// </summary>
 	/// <remarks>
+	/// <para>
+	/// Consider to use much simpler <see cref="ProgressBox"/>.
+	/// This form is useful in cases that allow job thread abortion.
+	/// </para>
+	/// <para>
 	/// This form should be created and shown in the main thread.
 	/// Some members are designed for use in other threads, for example:
-	/// normal cases: <see cref="SetProgressValue"/>, <see cref="Activity"/>, <see cref="Complete"/>;
+	/// normal cases: <see cref="Activity"/>, <see cref="SetProgressValue"/>, <see cref="Complete"/>;
 	/// cancellation cases: <see cref="Close"/>, <see cref="IsClosed"/>, <see cref="Cancelled"/>.
+	/// </para>
 	/// <para>
 	/// The form can be shown once and cannot be reused after closing.
 	/// </para>
@@ -34,30 +38,21 @@ namespace FarNet.Tools
 	/// </para>
 	/// There is yet another simpler scenario using the <see cref="Invoke"/>, see remarks there.
 	/// </remarks>
-	public sealed class ProgressForm : Form
+	public sealed class ProgressForm : Form, IProgress
 	{
-		const char EMPTY_BLOCK = '\x2591';
-		const char SOLID_BLOCK = '\x2588';
-
-		const int FORM_WIDTH = 76;
-		const int TEXT_WIDTH = FORM_WIDTH - 10;
-		const int PERCENT_WIDTH = 4;
-		const int PROGRESS_WIDTH = TEXT_WIDTH - PERCENT_WIDTH;
-
 		object _lock = new object();
+		int _LineCount = 1;
 		bool _isCompleted;
 		bool _isClosed;
 
+		readonly Progress _progress = new Progress();
 		readonly Thread _mainThread;
-		int _percentage = -1;
-		Stopwatch _stopwatch;
 
 		Thread _jobThread;
 		Exception _jobError;
 
-		IText _textActivity;
+		IText[] _textActivity;
 		IText _textProgress;
-		IText _textPercent;
 
 		/// <summary>
 		/// New progress form.
@@ -71,12 +66,21 @@ namespace FarNet.Tools
 		}
 
 		/// <summary>
-		/// Gets or sets the current activity description.
+		/// Gets or sets text line count.
 		/// </summary>
 		/// <remarks>
-		/// This property is designed for jobs in addition to the <see cref="SetProgressValue"/>.
+		/// It should be set before the show.
+		/// The default is 1.
 		/// </remarks>
-		public string Activity { get; set; }
+		public int LineCount
+		{
+			get { return _LineCount; }
+			set
+			{
+				if (value < 1 || value > Progress.TEXT_HEIGHT) throw new ArgumentOutOfRangeException("value");
+				_LineCount = value;
+			}
+		}
 
 		/// <summary>
 		/// Tells to show the <b>Cancel</b> button.
@@ -199,8 +203,6 @@ namespace FarNet.Tools
 			if (_isClosed)
 				return _isCompleted;
 
-			_stopwatch = Stopwatch.StartNew();
-
 			Init();
 
 			try
@@ -212,55 +214,6 @@ namespace FarNet.Tools
 			{
 				Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 				Far.Net.UI.SetProgressFlash();
-			}
-		}
-
-		/// <summary>
-		/// Sets the progress values.
-		/// </summary>
-		/// <remarks>
-		/// This method is thread safe and designed for jobs.
-		/// <para>
-		/// While this method is not called the form displays the elapsed time.
-		/// Once this is called then the progress bar and percentage are shown.
-		/// </para>
-		/// <para>
-		/// It is fine to call this frequently.
-		/// The form is updated only periodically.
-		/// </para>
-		/// </remarks>
-		public void SetProgressValue(int currentValue, int maximumValue)
-		{
-			if (currentValue <= 0)
-			{
-				_percentage = 0;
-			}
-			else if (maximumValue <= 0 || currentValue >= maximumValue)
-			{
-				_percentage = 100;
-			}
-			else
-			{
-				_percentage = currentValue * 100 / maximumValue;
-			}
-		}
-
-		/// <summary>
-		/// Sets the progress <c>long</c> values. See the <see cref="SetProgressValue"/>.
-		/// </summary>
-		public void SetProgressInt64(long currentValue, long maximumValue)
-		{
-			if (currentValue <= 0)
-			{
-				_percentage = 0;
-			}
-			else if (maximumValue <= 0 || currentValue >= maximumValue)
-			{
-				_percentage = 100;
-			}
-			else
-			{
-				_percentage = (int)(currentValue * 100 / maximumValue);
 			}
 		}
 
@@ -310,59 +263,22 @@ namespace FarNet.Tools
 				return;
 			}
 
-			// show activity
-			{
-				var activity = Activity ?? string.Empty;
-				if (activity.Length > TEXT_WIDTH)
-					activity = activity.Substring(0, TEXT_WIDTH - 3) + "...";
-				_textActivity.Text = activity;
-			}
-
-			// show percentage or elapsed time
-			if (_percentage >= 0)
-			{
-				// number of chars to fill
-				int n = PROGRESS_WIDTH * _percentage / 100;
-
-				// do not fill too much
-				if (n > PROGRESS_WIDTH)
-				{
-					n = PROGRESS_WIDTH;
-				}
-				// leave 1 not filled
-				else if (n == PROGRESS_WIDTH)
-				{
-					if (_percentage < 100)
-						--n;
-				}
-				// fill at least 1
-				else if (n == 0)
-				{
-					if (_percentage > 0)
-						n = 1;
-				}
-
-				_textProgress.Text = new string(SOLID_BLOCK, n) + new string(EMPTY_BLOCK, PROGRESS_WIDTH - n);
-				_textPercent.Text = string.Format(CultureInfo.InvariantCulture, "{0,3}%", _percentage);
-
-				Far.Net.UI.SetProgressValue(_percentage, 100);
-			}
-			else
-			{
-				// use new TimeSpan with 'int' number of seconds, i.e. get 00:00:11, not 00:00:11.123456
-				_textProgress.Text = (new TimeSpan(0, 0, (int)_stopwatch.Elapsed.TotalSeconds)).ToString();
-				_textPercent.Text = string.Empty;
-			}
+			// show
+			string progress;
+			var lines = _progress.Build(out progress, _textActivity.Length, false);
+			for (int iLine = 0; iLine < _LineCount && iLine < lines.Count; ++iLine)
+				_textActivity[iLine].Text = lines[iLine];
+			_textProgress.Text = progress;
 		}
 
 		void Init()
 		{
-			SetSize(FORM_WIDTH, (CanCancel ? 8 : 6));
+			SetSize(Progress.FORM_WIDTH, (CanCancel ? 7 : 5) + _LineCount);
 
-			_textActivity = Dialog.AddText(5, -1, 5 + TEXT_WIDTH - 1, Activity ?? string.Empty);
-			_textProgress = Dialog.AddText(5, -1, 5 + PROGRESS_WIDTH - 1, string.Empty);
-			int x = _textProgress.Rect.Right + 1;
-			_textPercent = Dialog.AddText(x, 0, x + (PERCENT_WIDTH - 1), string.Empty);
+			_textActivity = new IText[_LineCount];
+			for(int iLine = 0; iLine < _LineCount; ++iLine)
+				_textActivity[iLine] = Dialog.AddText(5, -1, 5 + Progress.TEXT_WIDTH - 1, string.Empty);
+			_textProgress = Dialog.AddText(5, -1, 5 + Progress.TEXT_WIDTH - 1, string.Empty);
 
 			if (CanCancel)
 			{
@@ -406,7 +322,7 @@ namespace FarNet.Tools
 
 			// wait a little bit
 			Thread.Sleep(500);
-			
+
 			// show the form and return null if it is completed
 			if (Show())
 				return null;
@@ -421,7 +337,7 @@ namespace FarNet.Tools
 			{
 				// do the job in this thread
 				job();
-				
+
 				// done, complete and return
 				Complete();
 				return;
@@ -436,10 +352,49 @@ namespace FarNet.Tools
 				// to be returned by Invoke()
 				_jobError = ex;
 			}
-			
+
 			// close on errors
 			Close();
 		}
 
+		///
+		[Obsolete("Use SetProgressValue()")]
+		public void SetProgressInt64(long currentValue, long maximumValue)
+		{
+			_progress.SetProgressValue(currentValue, maximumValue);
+		}
+
+
+		#region IProgress
+
+		/// <summary>
+		/// Gets or sets the current activity description.
+		/// </summary>
+		public string Activity
+		{
+			get { return _progress.Activity; }
+			set { _progress.Activity = value; }
+		}
+
+		/// <summary>
+		/// Sets the progress information.
+		/// </summary>
+		/// <param name="currentValue">Progress current value.</param>
+		/// <param name="maximumValue">Progress maximum value.</param>
+		/// <remarks>
+		/// This method is thread safe and designed for jobs.
+		/// </remarks>
+		public void SetProgressValue(double currentValue, double maximumValue)
+		{
+			_progress.SetProgressValue(currentValue, maximumValue);
+		}
+
+		/// <summary>
+		/// It is not used directly.
+		/// </summary>
+		public void ShowProgress()
+		{ }
+
+		#endregion
 	}
 }

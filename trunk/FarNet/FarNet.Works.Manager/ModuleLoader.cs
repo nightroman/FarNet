@@ -201,7 +201,7 @@ namespace FarNet.Works
 
 					// Stamp
 					string assemblyStamp = reader.Read();
-					if (assemblyStamp != fileInfo.LastWriteTime.Ticks.ToString(CultureInfo.InvariantCulture))
+					if (long.Parse(assemblyStamp, CultureInfo.InvariantCulture) != fileInfo.LastWriteTime.Ticks)
 						return false;
 
 					// new manager, add it now, remove later on errors
@@ -256,7 +256,7 @@ namespace FarNet.Works
 				}
 				catch (Exception ex)
 				{
-					throw new ModuleException(Invariant.Format("Error on reading the cache from '{0}'.", cache), ex);
+					throw new ModuleException(string.Format(null, "Error on reading the cache from '{0}'.", cache), ex);
 				}
 				finally
 				{

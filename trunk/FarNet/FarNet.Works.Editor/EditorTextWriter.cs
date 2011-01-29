@@ -14,7 +14,7 @@ namespace FarNet.Works
 		readonly IEditor _Editor;
 
 		public EditorTextWriter(IEditor editor)
-			: base(CultureInfo.InvariantCulture)
+			: base(CultureInfo.CurrentCulture)
 		{
 			_Editor = editor;
 			NewLine = "\r";

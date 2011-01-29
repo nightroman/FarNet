@@ -309,7 +309,7 @@ namespace FarMacro
 				case RegistryValueKind.QWord:
 					return Kit.ConvertTo(newItemValue, typeof(long));
 				default:
-					throw new ModuleException(Invariant.Format(
+					throw new ModuleException(string.Format(null,
 						"Invalid type. Valid types: {0}, {1}, {2}.",
 						RegistryValueKind.MultiString, RegistryValueKind.DWord, RegistryValueKind.QWord));
 			}

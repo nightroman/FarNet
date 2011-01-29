@@ -4,10 +4,8 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System.Collections;
-using System.Globalization;
 using System.IO;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using FarNet;
 using FarNet.Forms;
 
@@ -104,7 +102,7 @@ namespace PowerShellFar.UI
 				const string code = "$args[0] | Export-Clixml -Path $args[1] -Encoding $args[2] -Force -ErrorAction Stop";
 				if (ui.UIDepth.Text.Length > 0)
 					A.Psf.InvokeCode(code + " -Depth $args[3]",
-						items, filePath, ui.UIEncoding.Text, int.Parse(ui.UIDepth.Text, CultureInfo.InvariantCulture));
+						items, filePath, ui.UIEncoding.Text, int.Parse(ui.UIDepth.Text, null));
 				else
 					A.Psf.InvokeCode(code,
 						items, filePath, ui.UIEncoding.Text);

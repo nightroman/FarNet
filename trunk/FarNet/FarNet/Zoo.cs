@@ -139,7 +139,7 @@ namespace FarNet.Works
 		///
 		public override string ToString()
 		{
-			return Invariant.Format("'{0}' {1} {2} {3}", new object[] { this.Character, this.ForegroundColor, this.BackgroundColor, this.BufferCellType });
+			return string.Format(null, "'{0}' {1} {2} {3}", new object[] { this.Character, this.ForegroundColor, this.BackgroundColor, this.BufferCellType });
 		}
 	}
 }

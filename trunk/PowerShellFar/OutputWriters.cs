@@ -260,7 +260,7 @@ namespace PowerShellFar
 				// the only session transcript
 				return Path.Combine(
 					directory,
-					Invariant.Format("PowerShell_transcript.{0:yyyyMMddHHmmss}.txt", DateTime.Now));
+					string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.txt", DateTime.Now));
 			}
 			else
 			{
@@ -269,7 +269,7 @@ namespace PowerShellFar
 				int process = Process.GetCurrentProcess().Id;
 				return Path.Combine(
 					directory,
-					Invariant.Format("PowerShell_transcript.{0:yyyyMMddHHmmss}.{1}.{2}.txt", DateTime.Now, process, _fileNameCount));
+					string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.{1}.{2}.txt", DateTime.Now, process, _fileNameCount));
 			}
 		}
 

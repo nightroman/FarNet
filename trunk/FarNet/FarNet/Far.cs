@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using FarNet.Forms;
-using FarNet.Works;
 
 namespace FarNet
 {
@@ -112,14 +111,22 @@ namespace FarNet
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <param name="helpTopic">
 		/// <include file='doc.xml' path='doc/HelpTopic/*'/>
-		/// It is ignored in a GUI message.
+		/// It is ignored in GUI and drawn messages.
 		/// </param>
-		/// <returns>Button index or -1 if cancelled.</returns>
+		/// <returns>Button index or -1 if cancelled, or 0 in the drawn message.</returns>
 		/// <remarks>
-		/// In extreme cases when a message contains too many or too long buttons, then a message
-		/// box is converted into a listbox dialog where listbox items work as buttons.
 		/// <para>
-		/// The message shows the OK button if there are no buttons provided by the parameters.
+		/// If the <see cref="MsgOptions.Draw"/> option is set then GUI or buttons are not allowed.
+		/// A message box with no buttons is simply drawn and the execution continues immediately.
+		/// The caller has to remove the message by redrawing or restoring the screen.
+		/// </para>
+		/// <para>
+		/// If the <see cref="MsgOptions.Draw"/> option is not set then the message is modal and
+		/// it shows at least the OK button if there are no buttons provided by the parameters.
+		/// </para>
+		/// <para>
+		/// In extreme cases when a message contains too many or too long buttons
+		/// a listbox dialog is used where the listbox items work as buttons.
 		/// </para>
 		/// </remarks>
 		public abstract int Message(string body, string header, MsgOptions options, string[] buttons, string helpTopic);

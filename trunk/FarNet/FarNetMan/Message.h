@@ -17,7 +17,6 @@ private:
 	bool Show();
 	int ShowDialog(int width);
 	CStr* CreateBlock(int& outNbItems);
-	static void FormatMessageLines(List<String^>^ lines, String^ message, int width, int height);
 private:
 	int _flags;
 	int _selected;

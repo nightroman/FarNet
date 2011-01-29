@@ -1,6 +1,6 @@
 
 Module   : FarNet.PowerShellFar
-Version  : 4.3.37
+Version  : 4.3.38
 Release  : 2010-09-12
 Category : Scripting
 Author   : Roman Kuzmin
@@ -8,7 +8,7 @@ E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
 
 
-	= DESCRIPTION =
+= DESCRIPTION =
 
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
@@ -29,23 +29,23 @@ http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
 
- - Far Manager 2.0.1798
- - Plugin FarNet 4.3.37
+ - Far Manager 2.0.1802
+ - Plugin FarNet 4.3.38
  - Windows PowerShell 2.0
 
 
-	= INSTALLATION =
+= INSTALLATION =
 
 
 *) Configure PowerShell:
-Check\change PowerShell execution policy: run standard PowerShell.exe and type
-Get-ExecutionPolicy - it should be RemoteSigned or Unrestricted. If it is not
-then run Set-ExecutionPolicy with RemoteSigned or Unrestricted parameter.
+Check the local PowerShell execution policy: start PowerShell.exe and type
+Get-ExecutionPolicy. If it is not RemoteSigned or Unrestricted then invoke
+Set-ExecutionPolicy with RemoteSigned or Unrestricted argument.
 
 *) Install the module:
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
-The location can be changed but it is recommended to use exactly this way:
-at least you can use Update-FarNet.ps1 for updates.
+The location and name can be changed but it is recommended to use this way:
+some tools assume this path by default, e.g. Update-FarNet.ps1.
 
 *) Recommended: Install and configure Bench scripts:
 You can put scripts anywhere: all together or not, but it is highly recommended

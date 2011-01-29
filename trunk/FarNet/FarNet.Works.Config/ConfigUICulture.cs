@@ -33,7 +33,7 @@ namespace FarNet.Works
 				menu.Items.Clear();
 				{
 					foreach (IModuleManager it in managers)
-						menu.Add(Invariant.Format("{0} : {1}", it.ModuleName.PadRight(width), it.StoredUICulture)).Data = it;
+						menu.Add(string.Format(null, "{0} : {1}", it.ModuleName.PadRight(width), it.StoredUICulture)).Data = it;
 				}
 
 				if (!menu.Show())

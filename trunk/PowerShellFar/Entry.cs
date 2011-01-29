@@ -63,11 +63,6 @@ namespace PowerShellFar
 				new ModuleToolAttribute() { Name = Res.Me, Options = ModuleToolOptions.F11Menus },
 				OnOpen);
 
-			// editor events: OnEditorOpened1 should be called always and first
-			// to do Invoking() (at least for TabExpansion) and the startup code
-			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened1;
-			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened2;
-
 			// connect actor
 			A.Psf.Connect();
 		}

@@ -20,7 +20,7 @@ namespace FarNet.Works
 			menu.Title = Res.ModuleFilers;
 
 			foreach(IModuleFiler it in filers)
-				menu.Add(Kit.FormatConfigMenu(it)).Data = it;
+				menu.Add(Utility.FormatConfigMenu(it)).Data = it;
 
 			while(menu.Show())
 			{

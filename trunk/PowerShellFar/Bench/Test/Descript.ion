@@ -17,7 +17,7 @@ Test-Panel-Job-.ps1 Test panel with PowerShell core jobs.
 Test-Panel-Lookup-.ps1 Test panel lookup actions
 Test-Panel-Menu-.ps1 Test panel with demo menu called on [ShiftF3]
 Test-Panel-Tree-.ps1 Test panel mixed items on TreePanel
-Test-ProgressForm-.ps1 Test ProgressForm use cases.
+Test-ProgressForm-.ps1 Test progress tools.
 Test-RegisterCommand-.ps1 Shows how to register commands dynamically.
 Test-RegisterFiler-.ps1 Test a filer handler.
 Test-RegisterTool-.ps1 Test a tool handler.

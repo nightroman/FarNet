@@ -1,6 +1,19 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.38 =
+
+*) Breaking synchronous commands
+[CtrlBreak] is used instead of [CtrlC] in order to break synchronous commands
+(including started from the global editor console). Asynchronous commands in
+local and remote editor consoles are still stopped by [CtrlC].
+
+*) Cmdlet Show-FarMessage
+New switch -Draw to draw message-like boxes.
+
+*) Test-ProgressForm-.ps1
+Added ProgressBox examples.
+
 = 4.3.37 =
 
 *) Removed the hotkey [Alt1] from the main menu
@@ -1186,7 +1199,7 @@ different (location, commands, variables, and etc.).
 
 = 2.2.4 =
 
-EDITOR CONSOLES WITH NEW LOCAL OR REMOTE ASYNCHRONOUS SESSIONS
+EDITOR CONSOLES WITH NEW LOCAL OR REMOTE SESSIONS
 
 #Enter# (As usual)
 Opens a new or selected existing console file in the default global PowerShell
@@ -1208,7 +1221,7 @@ MAIN ASYNCHRONOUS CONSOLE FEATURES
 An async console opens a separate runspace with its private session state:
 provider locations, variables, aliases, and many other settings.
 
-Commands are invoked asyncronously in background threads, so that console
+Commands are invoked asynchronously in background threads, so that console
 editors and Far itself are not blocked: you can switch to panels or other
 editors while a command is running. Moreover, you can open several async
 consoles, invoke parallel commands and still continue other work in Far.

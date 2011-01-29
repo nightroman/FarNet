@@ -65,6 +65,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Form.cs" />
+    <Compile Include="Progress.cs" />
+    <Compile Include="ProgressBox.cs" />
     <Compile Include="ProgressForm.cs" />
     <Compile Include="SubsetForm.cs" />
   </ItemGroup>

@@ -1,11 +1,16 @@
 
 <#
 .SYNOPSIS
-	Test ProgressForm use cases.
+	Test progress tools.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	The code demonstrates the typical ProgressForm scenario of 4 steps:
+	It shows how to use simple progress boxes and advanced progress forms.
+
+	The first ProgressBox shows only its activity text, the second also shows
+	the percentage. Both of them can be stopped by pressing the [Esc] key.
+
+	The typical ProgressForm scenario consists of 4 steps:
 	1) create a progress form
 	2) start a background job
 	3) wait a little bit
@@ -19,60 +24,95 @@
 param
 (
 	# Job duration
-	$JobSeconds = 10,
-
+	$JobSeconds = 10
+	,
 	# Job step count
-	$JobSteps = 10,
-
+	$JobSteps = 10
+	,
 	# Waiting time
-	$WaitSeconds = 2,
-
+	$WaitSeconds = 2
+	,
+	# Test set
+	$Test = @('Box', 'Form')
+	,
 	[switch]
-	# Not cancellable
 	$NoCancel
 )
+
+function TestProgressBox
+{
+	### a) simple progress box showing activity description
+	$Progress = [FarNet.Tools.ProgressBox]'ProgressBox: activity text only'
+	# ideally, we should do: try {...} finally {dispose}
+	for($$ = 1; $$ -le $JobSteps; ++$$) {
+		if ($Far.UI.ReadKeys([FarNet.VKeyCode]::Escape)) { break }
+		$Progress.Activity = "Step $$ of $JobSteps`nMore`nInfo`n"
+		$Progress.ShowProgress()
+		Start-Sleep -Milliseconds $Delay
+	}
+	$Progress.Dispose()
+
+	### b) simple progress box showing activity and percentage
+	$Progress = [FarNet.Tools.ProgressBox]'ProgressBox: activity and percentage'
+	# ideally, we should do: try {...} finally {dispose}
+	for($$ = 1; $$ -le $JobSteps; ++$$) {
+		if ($Far.UI.ReadKeys([FarNet.VKeyCode]::Escape)) { break }
+		$Progress.Activity = "Step $$ of $JobSteps`nMore`nInfo`n"
+		$Progress.SetProgressValue($$, $JobSteps)
+		$Progress.ShowProgress()
+		Start-Sleep -Milliseconds $Delay
+	}
+	$Progress.Dispose()
+}
+
+function TestProgressForm
+{
+	### 1) create the advanced progress form; do not show it now
+	$Progress = New-Object FarNet.Tools.ProgressForm
+	$Progress.Title = "ProgressForm: CanCancel=$(!$NoCancel)"
+	$Progress.CanCancel = !$NoCancel
+	$Progress.LineCount = 4
+
+	### 2) start the job; it will Complete() the progress
+	Start-FarJob -Hidden -Parameters $Progress, $JobSeconds, $JobSteps, $Delay {
+		param($Progress, $JobSeconds, $JobSteps, $Delay)
+		for($$ = 1; $$ -le $JobSteps; ++$$) {
+			# if the progress IsClosed (cancelled) then exit
+			if ($Progress.IsClosed) {
+				return
+			}
+			# update progress data
+			$Progress.Activity = "Step $$ of $JobSteps`nMore`nInfo"
+			$Progress.SetProgressValue($$, $JobSteps)
+			Start-Sleep -Milliseconds $Delay
+		}
+		# the job is done, call Complete() to stop the progress
+		$Progress.Complete()
+	}
+
+	### 3) wait a little bit to allow fast jobs to complete
+	# - in this demo: show another progress form
+	# - in real life: use Start-Sleep
+	if ($WaitSeconds -gt 0) {
+		$Progress2 = New-Object FarNet.Tools.ProgressForm
+		$Progress2.Title = "Waiting for $WaitSeconds seconds"
+		Start-FarJob -Hidden -Parameters $Progress2, $WaitSeconds {
+			Start-Sleep -Milliseconds ($args[1] * 1000)
+			$args[0].Close()
+		}
+		$done = $Progress2.Show()
+		Assert-Far ($done -eq $false) # $false because of Close()
+	}
+
+	### 4) show the progress form
+	# - it is not actually shown if a fast job is already done
+	# - it returns $true/$false if the job is done/cancelled
+	$Progress.Show()
+}
 
 # add the tools
 Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
 
-### 1) create the progress form but do not show it now
-$Progress = New-Object FarNet.Tools.ProgressForm
-$Progress.Title = "Job of $JobSteps steps"
-$Progress.CanCancel = !$NoCancel
-
-### 2) start the job; it will Complete() the progress
-Start-FarJob -Hidden -Parameters $Progress, $JobSeconds, $JobSteps {
-	param($Progress, $JobSeconds, $JobSteps)
-	for($$ = 1; $$ -le $JobSteps; ++$$) {
-		# if the progress IsClosed (cancelled) then exit
-		if ($Progress.IsClosed) {
-			return
-		}
-		# update the progress values
-		$Progress.Activity = "Step $$"
-		$Progress.SetProgressValue($$, $JobSteps)
-		# simulate some job
-		Start-Sleep -Milliseconds ($JobSeconds * 1000 / $JobSteps)
-	}
-	# the job is done, call Complete() to stop the progress
-	$Progress.Complete()
-}
-
-### 3) wait a little bit to allow fast jobs to complete
-# - in this test: show another demo progress form
-# - in real life: simply call Start-Sleep ...
-if ($WaitSeconds -gt 0) {
-	$Progress2 = New-Object FarNet.Tools.ProgressForm
-	$Progress2.Title = "Waiting for $WaitSeconds seconds"
-	Start-FarJob -Hidden -Parameters $Progress2, $WaitSeconds {
-		Start-Sleep -Milliseconds ($args[1] * 1000)
-		$args[0].Close()
-	}
-	$done = $Progress2.Show()
-	Assert-Far ($done -eq $false) # $false because of Close()
-}
-
-### 4) show the progress form
-# - it is not actually shown if a fast job is already done
-# - it returns $true/$false if the job is done/cancelled
-$Progress.Show()
+$Delay = $JobSeconds * 1000 / $JobSteps
+if ($Test -contains 'Box') { TestProgressBox }
+if ($Test -contains 'Form') { TestProgressForm }

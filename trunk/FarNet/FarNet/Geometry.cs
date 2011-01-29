@@ -3,9 +3,6 @@ FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
 
-using System;
-using System.Diagnostics;
-
 namespace FarNet
 {
 	/// <summary>
@@ -259,7 +256,7 @@ namespace FarNet
 		///
 		public override string ToString()
 		{
-			return Length < 0 ? "<none>" : Invariant.Format("{0} from {1} to {2}", Length, Start, End);
+			return Length < 0 ? "<none>" : string.Format(null, "{0} from {1} to {2}", Length, Start, End);
 		}
 	}
 
