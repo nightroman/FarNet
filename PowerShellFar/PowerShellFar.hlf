@@ -2109,27 +2109,27 @@ Show available scripts and their help synopsis in description column
 
 #Macro examples#
 
-PowerShell commands are normally invoked from macros via the #callplugin#
+PowerShell commands are normally invoked from macros via the #CallPlugin#
 function. The first argument is the FarNet system ID: #0xcd#. The second
 argument is the module prefix and command.
 
 [F10] in the Panels area: safe exit with PowerShellFar background jobs check:
 
- $If (callplugin(0xcd, ">: $Far.Quit()")) $Else F10 $End
+ $If (CallPlugin(0xcd, ">: $Far.Quit()")) $Else F10 $End
 
 This macro in the Common area calls the Menu-Favorites-.ps1:
 
- callplugin(0xcd, ">: Menu-Favorites-.ps1")
+ CallPlugin(0xcd, ">: Menu-Favorites-.ps1")
 
 This macro invokes the Clear-Session.ps1 script. The macro uses the command
 prefix #>># in order to show command output in the viewer:
 
- callplugin(0xcd, ">>: Clear-Session.ps1 -Verbose")
+ CallPlugin(0xcd, ">>: Clear-Session.ps1 -Verbose")
 
 Scripts opened in the editor can be invoked in the current session by the [F5]
 hotkey. It is hardcoded but a different key still can be used for the same job
 with this macro:
 
- callplugin(0xcd, ">>: $Psf.InvokeScriptFromEditor()")
+ CallPlugin(0xcd, ">>: $Psf.InvokeScriptFromEditor()")
 
 ===

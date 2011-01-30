@@ -622,7 +622,7 @@ Continue with this current directory?
 		/// </summary>
 		/// <remarks>
 		/// If it is called during a macro then commands are not added to the history.
-		/// Note: use of <c>callplugin()</c> is normally better for macros.
+		/// Note: use of <c>CallPlugin()</c> is normally better for macros.
 		/// <para>
 		/// In order to input and get the code without invoking use the <see cref="InputCode"/> method.
 		/// </para>

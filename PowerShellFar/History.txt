@@ -3,11 +3,9 @@ http://code.google.com/p/farnet/
 
 = 4.3.39 =
 
-Technical build for FarNet 4.3.39
-
 *) Cmdlets Out-FarPanel, Start-FarPanel
 - Removed the ReverseSortOrder switch.
-- The SortMode parameter now includes *Reveresed values.
+- The SortMode parameter now includes *Reversed values.
 
 = 4.3.38 =
 
@@ -26,7 +24,7 @@ Added ProgressBox examples.
 
 *) Removed the hotkey [Alt1] from the main menu
 - THIS CHANGE BREAKS MACROS: F11 <PSF> Alt1 ...
-- Use the callplugin() instead, see FarNet's Readme.txt. Update affected macros
+- Use the CallPlugin() instead, see FarNet's Readme.txt. Update affected macros
 (and do not forget documentation/comments, too).
 - Updated Install-Macro-.ps1
 
