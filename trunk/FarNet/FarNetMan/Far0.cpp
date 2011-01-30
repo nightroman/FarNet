@@ -252,7 +252,7 @@ void Far0::RegisterProxyTool(IModuleTool^ info)
 */
 void Far0::AsGetPluginInfo(PluginInfo* pi)
 {
-	// _110118_073431 SysID for callplugin. Not quite legal but there is no better effective way.
+	// _110118_073431 SysID for CallPlugin. Not quite legal but there is no better effective way.
 	pi->Reserved = 0xcd;
 
 	//! STOP
@@ -1116,7 +1116,7 @@ bool Far0::InvokeCommand(const wchar_t* command, bool macro)
 	// find the colon
 	const wchar_t* colon = wcschr(command, ':');
 
-	// missing colon is possible on callplugin
+	// missing colon is possible on CallPlugin
 	if (!colon)
 		throw gcnew InvalidOperationException("Invalid module command syntax.");
 

@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
 Version  : 4.3.39
-Release  : 2010-09-12
+Release  : 2011-01-29
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -117,15 +117,19 @@ should be used only for advanced scenarious:
 
 
 If a FarNet module provides commands invoked by prefixes then these commands
-can be called from macros by callplugin(). The first argument is the FarNet
+can be called from macros by CallPlugin(). The first argument is the FarNet
 system ID: 0xcd. The second argument is the module prefix and command.
 
 Example (RightControl and PowerShellFar commands):
 
-	callplugin(0xcd, "RightControl:step-left")
-	callplugin(0xcd, ">: Menu-Favorites-.ps1")
+	CallPlugin(0xcd, "RightControl:step-left")
+	CallPlugin(0xcd, ">: Menu-Favorites-.ps1")
 
 Mnemonic for 0xcd: eXecute CommanD
+
+NOTE:
+- Module panels cannot be opened by CallPlugin.
+- Macros and some features do not work in modal UI started by CallPlugin.
 
 
 = API DOCUMENTATION (.CHM) =
