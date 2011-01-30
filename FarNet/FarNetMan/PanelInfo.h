@@ -58,8 +58,6 @@ public:
 	FPPI_FLAG(UseFilter);
 	FPPI_FLAG(UseHighlighting);
 	FPPI_FLAG(UseSortGroups);
-	FPPI_PROP(bool, StartReverseSortOrder, m->StartSortOrder = _StartReverseSortOrder);
-	FPPI_PROP(PanelSortMode, StartSortMode, m->StartSortMode = int(_StartSortMode));
 	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
 	FPPI_TEXT(CurrentDirectory, CurDir);
 	FPPI_TEXT(FormatName, Format);
@@ -67,6 +65,7 @@ public:
 	FPPI_TEXT(Title, PanelTitle);
 public:
 	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() override { return _InfoItems; } void set(array<DataItem^>^ value) override; }
+	virtual property PanelSortMode StartSortMode { PanelSortMode get() override; void set(PanelSortMode value) override; }
 	virtual PanelModeInfo^ GetMode(PanelViewMode viewMode) override;
 	virtual void SetKeyBarAlt(array<String^>^ labels) override;
 	virtual void SetKeyBarAltShift(array<String^>^ labels) override;
@@ -86,6 +85,8 @@ private:
 	static void Make12Strings(wchar_t** dst, array<String^>^ src);
 private:
 	OpenPluginInfo* m;
+	int _FarStartSortMode;
+	bool _FarStartSortOrder;
 	array<DataItem^>^ _InfoItems;
 	array<PanelModeInfo^>^ _Modes;
 	array<String^>^ _keyBarAlt;

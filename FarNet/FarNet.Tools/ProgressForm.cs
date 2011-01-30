@@ -357,14 +357,6 @@ namespace FarNet.Tools
 			Close();
 		}
 
-		///
-		[Obsolete("Use SetProgressValue()")]
-		public void SetProgressInt64(long currentValue, long maximumValue)
-		{
-			_progress.SetProgressValue(currentValue, maximumValue);
-		}
-
-
 		#region IProgress
 
 		/// <summary>
@@ -377,10 +369,10 @@ namespace FarNet.Tools
 		}
 
 		/// <summary>
-		/// Sets the progress information.
+		/// Sets the current progress information.
 		/// </summary>
-		/// <param name="currentValue">Progress current value.</param>
-		/// <param name="maximumValue">Progress maximum value.</param>
+		/// <param name="currentValue">Progress current value, from 0 to the maximum.</param>
+		/// <param name="maximumValue">Progress maximum value, positive or 0.</param>
 		/// <remarks>
 		/// This method is thread safe and designed for jobs.
 		/// </remarks>

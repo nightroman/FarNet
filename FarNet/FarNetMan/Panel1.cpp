@@ -123,19 +123,6 @@ Point Panel1::Frame::get()
 	return pi.ItemsNumber ? Point(pi.CurrentItem, pi.TopPanelItem) : Point(-1, -1);
 }
 
-PanelSortMode Panel1::SortMode::get()
-{
-	PanelInfo pi;
-	GetPanelInfo(_handle, pi);
-
-	return (PanelSortMode)pi.SortMode;
-}
-
-void Panel1::SortMode::set(PanelSortMode value)
-{
-	Info.Control(_handle, FCTL_SETSORTMODE, (int)value, NULL);
-}
-
 PanelViewMode Panel1::ViewMode::get()
 {
 	PanelInfo pi;
@@ -277,19 +264,6 @@ bool Panel1::Highlight::get()
 	return (pi.Flags & PFLAGS_HIGHLIGHT) != 0;
 }
 
-bool Panel1::ReverseSortOrder::get()
-{
-	PanelInfo pi;
-	GetPanelInfo(_handle, pi);
-
-	return (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
-}
-
-void Panel1::ReverseSortOrder::set(bool value)
-{
-	Info.Control(_handle, FCTL_SETSORTORDER, (int)value, NULL);
-}
-
 bool Panel1::UseSortGroups::get()
 {
 	PanelInfo pi;
@@ -317,6 +291,19 @@ bool Panel1::NumericSort::get()
 void Panel1::NumericSort::set(bool value)
 {
 	Info.Control(_handle, FCTL_SETNUMERICSORT, (int)value, NULL);
+}
+
+bool Panel1::CaseSensitiveSort::get()
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	return (pi.Flags & PFLAGS_CASESENSITIVESORT) != 0;
+}
+
+void Panel1::CaseSensitiveSort::set(bool value)
+{
+	Info.Control(_handle, FCTL_SETCASESENSITIVESORT, (int)value, NULL);
 }
 
 bool Panel1::DirectoriesFirst::get()
@@ -559,6 +546,34 @@ array<int>^ Panel1::SelectedIndexes()
 	}
 
 	return list.ToArray();
+}
+
+PanelSortMode Panel1::SortMode::get()
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	bool reversed = (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
+	return (PanelSortMode)(reversed ? -pi.SortMode : pi.SortMode);
+}
+
+void Panel1::SortMode::set(PanelSortMode value)
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	int mode = (int)value;
+	bool reversed = mode < 0;
+	if (reversed)
+		mode = -mode;
+
+	//! first
+	if (mode != pi.SortMode)
+		Info.Control(_handle, FCTL_SETSORTMODE, (int)mode, NULL);
+
+	//! second
+	if (reversed != ((pi.Flags & PFLAGS_REVERSESORTORDER) != 0))
+		Info.Control(_handle, FCTL_SETSORTORDER, (int)reversed, NULL);
 }
 
 }

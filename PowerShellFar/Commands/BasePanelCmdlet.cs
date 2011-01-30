@@ -64,22 +64,6 @@ namespace PowerShellFar.Commands
 		bool _setSortMode;
 
 		/// <summary>
-		/// Tells to reverse the sort order. See <see cref="IAnyPanel.ReverseSortOrder"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Tells to reverse the sort order.")]
-		public SwitchParameter ReverseSortOrder
-		{
-			get { return _ReverseSortOrder; }
-			set
-			{
-				_setReverseSortOrder = true;
-				_ReverseSortOrder = value;
-			}
-		}
-		SwitchParameter _ReverseSortOrder;
-		bool _setReverseSortOrder;
-
-		/// <summary>
 		/// Panel view mode. See <see cref="IAnyPanel.ViewMode"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Panel view mode.")]
@@ -145,7 +129,6 @@ namespace PowerShellFar.Commands
 
 			// info
 			if (_setSortMode) panel.Info.StartSortMode = _SortMode;
-			if (_setReverseSortOrder) panel.Info.StartReverseSortOrder = _ReverseSortOrder;
 			if (_setTitle) panel.Info.Title = _Title;
 			if (_setTypeId) panel.TypeId = _TypeId;
 			if (_setViewMode) panel.Info.StartViewMode = _ViewMode;

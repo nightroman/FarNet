@@ -17,10 +17,66 @@ namespace FarNet
 	/// </summary>
 	public interface IAnyPanel //! think twice when convert to abstract class (see Panel2 : Panel1, IPanel)
 	{
+		#region Settable modes
+		/// <summary>
+		/// Gets or sets the case sensitive sort flag.
+		/// </summary>
+		bool CaseSensitiveSort { get; set; }
+		/// <summary>
+		/// Gets or sets the directories first sort flag.
+		/// </summary>
+		bool DirectoriesFirst { get; set; }
+		/// <summary>
+		/// Gets or sets the numeric sort flag.
+		/// </summary>
+		bool NumericSort { get; set; }
+		#endregion
+		#region Read only modes
+		/// <summary>
+		/// Gets the file highlighting flag.
+		/// </summary>
+		bool Highlight { get; }
+		/// <summary>
+		/// Gets the real file system names flag.
+		/// </summary>
+		/// <remarks>
+		/// If this flag is set then panel item names are related to real file system names.
+		/// </remarks>
+		bool RealNames { get; }
+		/// <summary>
+		/// Gets the show selected files first flag.
+		/// </summary>
+		bool SelectedFirst { get; }
+		/// <summary>
+		/// Gets true if hidden and system files are shown.
+		/// </summary>
+		bool ShowHidden { get; }
+		/// <summary>
+		/// Gets the use sort groups flags.
+		/// </summary>
+		bool UseSortGroups { get; }
+		#endregion
+		#region Properties
+		/// <summary>
+		/// Gets the current file.
+		/// </summary>
+		FarFile CurrentFile { get; }
+		/// <summary>
+		/// Gets the current file index in the <see cref="ShownList"/> files.
+		/// </summary>
+		/// <remarks>
+		/// This is the index of the current file in the <see cref="ShownList"/> files.
+		/// It is not directly related to other panel file collections.
+		/// </remarks>
+		int CurrentIndex { get; }
 		/// <summary>
 		/// Gets true if the panel is active.
 		/// </summary>
 		bool IsActive { get; }
+		/// <summary>
+		/// Gets true if the panel is the left panel.
+		/// </summary>
+		bool IsLeft { get; }
 		/// <summary>
 		/// Gets true if it is a plugin panel.
 		/// </summary>
@@ -36,6 +92,10 @@ namespace FarNet
 		/// Setting takes effect only when Far gets control.
 		/// </remarks>
 		bool IsVisible { get; set; }
+		/// <summary>
+		/// Gets the panel kind.
+		/// </summary>
+		PanelKind Kind { get; }
 		/// <summary>
 		/// Gets or sets the panel path.
 		/// </summary>
@@ -57,25 +117,20 @@ namespace FarNet
 		/// <seealso cref="GoToPath"/>
 		string Path { get; set; }
 		/// <summary>
-		/// Gets the current file.
-		/// </summary>
-		FarFile CurrentFile { get; }
-		/// <summary>
-		/// Gets the current file index in the <see cref="ShownList"/> files.
+		/// Gets all selected panel files at once or the current file if none is selected.
 		/// </summary>
 		/// <remarks>
-		/// This is the index of the current file in the <see cref="ShownList"/> files.
-		/// It is not directly related to other panel file collections.
+		/// In contrast to <see cref="SelectedList"/> this list is a snapshot of files,
+		/// it can be used even after changes in the panel.
 		/// </remarks>
-		int CurrentIndex { get; }
+		IList<FarFile> SelectedFiles { get; }
 		/// <summary>
-		/// Gets the first visible file index.
+		/// Gets all selected panel files or the current file if none is selected.
 		/// </summary>
-		int TopIndex { get; }
-		/// <summary>
-		/// Gets or sets the panel view mode.
-		/// </summary>
-		PanelViewMode ViewMode { get; set; }
+		/// <remarks>
+		/// In contrast to <see cref="SelectedFiles"/> you must not change panel items while using this list.
+		/// </remarks>
+		IList<FarFile> SelectedList { get; }
 		/// <summary>
 		/// Gets all shown panel files at once. File ".." is excluded.
 		/// </summary>
@@ -85,14 +140,6 @@ namespace FarNet
 		/// </remarks>
 		IList<FarFile> ShownFiles { get; }
 		/// <summary>
-		/// Gets all selected panel files at once or the current file if none is selected.
-		/// </summary>
-		/// <remarks>
-		/// In contrast to <see cref="SelectedList"/> this list is a snapshot of files,
-		/// it can be used even after changes in the panel.
-		/// </remarks>
-		IList<FarFile> SelectedFiles { get; }
-		/// <summary>
 		/// Gets all shown panel files including "..".
 		/// </summary>
 		/// <remarks>
@@ -101,55 +148,23 @@ namespace FarNet
 		/// </remarks>
 		IList<FarFile> ShownList { get; }
 		/// <summary>
-		/// Gets all selected panel files or the current file if none is selected.
+		/// Gets the first visible file index.
 		/// </summary>
-		/// <remarks>
-		/// In contrast to <see cref="SelectedFiles"/> you must not change panel items while using this list.
-		/// </remarks>
-		IList<FarFile> SelectedList { get; }
-		/// <summary>
-		/// Gets the panel kind.
-		/// </summary>
-		PanelKind Kind { get; }
+		int TopIndex { get; }
 		/// <summary>
 		/// Gets or sets the panel sort mode.
 		/// </summary>
 		PanelSortMode SortMode { get; set; }
 		/// <summary>
-		/// Gets visibility of hidden and system files.
+		/// Gets or sets the panel view mode.
 		/// </summary>
-		bool ShowHidden { get; }
+		PanelViewMode ViewMode { get; set; }
 		/// <summary>
-		/// Gets file highlighting flag.
+		/// Gets the panel window position.
 		/// </summary>
-		bool Highlight { get; }
-		/// <summary>
-		/// Gets or sets reverse sort order flag.
-		/// </summary>
-		bool ReverseSortOrder { get; set; }
-		/// <summary>
-		/// Gets sort groups flags.
-		/// </summary>
-		bool UseSortGroups { get; }
-		/// <summary>
-		/// Gets show selected files first flag.
-		/// </summary>
-		bool SelectedFirst { get; }
-		/// <summary>
-		/// Gets real file system names flag.
-		/// </summary>
-		/// <remarks>
-		/// If this flag is set then panel item names are related to real file system names.
-		/// </remarks>
-		bool RealNames { get; }
-		/// <summary>
-		/// Gets or sets numeric sort flag.
-		/// </summary>
-		bool NumericSort { get; set; }
-		/// <summary>
-		/// Gets or sets directories first sort flag.
-		/// </summary>
-		bool DirectoriesFirst { get; set; }
+		Place Window { get; }
+		#endregion
+		#region Methods
 		/// <summary>
 		/// Redraws the panel. Normally you should call it after changes to make them visible.
 		/// </summary>
@@ -171,10 +186,6 @@ namespace FarNet
 		/// </summary>
 		Point Frame { get; }
 		/// <summary>
-		/// Gets the panel window position.
-		/// </summary>
-		Place Window { get; }
-		/// <summary>
 		/// Closes the plugin panel and opens the original file panel.
 		/// </summary>
 		/// <remarks>
@@ -190,10 +201,6 @@ namespace FarNet
 		/// If the path doesn't exist Far shows an error.
 		/// </param>
 		void Close(string path);
-		/// <summary>
-		/// Gets true if the panel is the left panel.
-		/// </summary>
-		bool IsLeft { get; }
 		/// <summary>
 		/// Sets the specified item current by name, if it exists.
 		/// </summary>
@@ -295,6 +302,7 @@ namespace FarNet
 		/// Unlike the <see cref="SelectedFiles"/> this list is empty if none is selected.
 		/// </remarks>
 		int[] SelectedIndexes();
+		#endregion
 	}
 
 	/// <summary>
@@ -436,6 +444,70 @@ namespace FarNet
 		/// Sorted by full name.
 		/// </summary>
 		FullName,
+		/// <summary>
+		/// Sorted by time of any change.
+		/// </summary>
+		ChangeTime,
+		/// <summary>
+		/// Unsorted mode.
+		/// </summary>
+		UnsortedReversed = -Unsorted,
+		/// <summary>
+		/// Sorted by name.
+		/// </summary>
+		NameReversed = -Name,
+		/// <summary>
+		/// Sorted by extension.
+		/// </summary>
+		ExtensionReversed = -Extension,
+		/// <summary>
+		/// Sorted by modification time.
+		/// </summary>
+		LastWriteTimeReversed = -LastWriteTime,
+		/// <summary>
+		/// Sorted by creation time.
+		/// </summary>
+		CreationTimeReversed = -CreationTime,
+		/// <summary>
+		/// Sorted by access time.
+		/// </summary>
+		LastAccessTimeReversed = -LastAccessTime,
+		/// <summary>
+		/// Sorted by length.
+		/// </summary>
+		LengthReversed = -Length,
+		/// <summary>
+		/// Sorted by description.
+		/// </summary>
+		DescriptionReversed = -Description,
+		/// <summary>
+		/// Sorted by owner.
+		/// </summary>
+		OwnerReversed = -Owner,
+		/// <summary>
+		/// Sorted by compressed size.
+		/// </summary>
+		CompressedSizeReversed = -CompressedSize,
+		/// <summary>
+		/// Sorted by hard link count.
+		/// </summary>
+		LinkCountReversed = -LinkCount,
+		/// <summary>
+		/// Sorted by NTFS stream count.
+		/// </summary>
+		StreamCountReversed = -StreamCount,
+		/// <summary>
+		/// Sorted by NTFS stream data size.
+		/// </summary>
+		StreamSizeReversed = -StreamSize,
+		/// <summary>
+		/// Sorted by full name.
+		/// </summary>
+		FullNameReversed = -FullName,
+		/// <summary>
+		/// Sorted by time of any change.
+		/// </summary>
+		ChangeTimeReversed = -ChangeTime
 	}
 
 	//! DictionaryEntry is not good for this, because it is a value type.
@@ -503,11 +575,6 @@ namespace FarNet
 		/// </summary>
 		public abstract PanelSortMode StartSortMode { get; set; }
 
-		/// <summary>
-		/// If <see cref="StartSortMode"/> is specified, this flag tells to set sort direction.
-		/// When a panel is started it is used internally for keeping and restoring the current mode.
-		/// </summary>
-		public abstract bool StartReverseSortOrder { get; set; }
 		/// <summary>
 		/// Tells to use filter in the panel.
 		/// </summary>
@@ -896,11 +963,11 @@ namespace FarNet
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
 	/// <remarks>
-	/// The panel should be ready to process <see cref="OperationModes.Find"/> flag.
-	/// If it is set, the event is called from Find file or another directory scanning command,
+	/// The panel should be ready to process the <see cref="OperationModes.Find"/> flag.
+	/// If it is set, the event is called from search or directory scanning commands,
 	/// and a handler must not perform any actions except changing directory or setting <see cref="PanelEventArgs.Ignore"/> = true
-	/// if it is impossible to change the directory. (A handler should not try to close or update the panel,
-	/// ask the user for confirmations, show messages and so on.)
+	/// if it is impossible to change the directory.
+	/// A handler must not close or update the panel, ask user confirmations, show messages and so on.
 	/// </remarks>
 	public class SettingDirectoryEventArgs : PanelEventArgs
 	{
@@ -913,13 +980,13 @@ namespace FarNet
 			_name = name;
 		}
 		/// <summary>
-		/// Directory name.
+		/// Gets the directory name.
 		/// Usually contains only the name, without full path.
 		/// To provide basic functionality a handler should also process the names '..' and '\'.
 		/// For correct restoring of current directory after using "Search from the root folder" mode
 		/// in the Find file dialog, a handler should be able to process full directory name returned
-		/// by <see cref="IPanel.Info"/>. It is not necessary when "Search from the current folder"
-		/// mode is set in the Find file dialog.
+		/// by <see cref="IPanelInfo.CurrentDirectory"/>.
+		/// It is not necessary when "Search from the current folder" mode is set in the Find file dialog.
 		/// </summary>
 		public string Name
 		{
@@ -1284,8 +1351,12 @@ namespace FarNet
 		/// </remarks>
 		event EventHandler<PanelKeyEventArgs> KeyPressing;
 		/// <summary>
-		/// Called to set the current directory in the file system emulated by the panel.
+		/// Called to set the current directory in the virtual file system.
 		/// </summary>
+		/// <remarks>
+		/// This method is vitally important for navigation in the virtual file system, especially for find and scan operations.
+		/// Design it carefully, read all the remarks for <see cref="SettingDirectoryEventArgs"/> and its members.
+		/// </remarks>
 		event EventHandler<SettingDirectoryEventArgs> SettingDirectory;
 		/// <summary>
 		/// Called to delete files in the file system emulated by the panel.
