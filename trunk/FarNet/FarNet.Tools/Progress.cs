@@ -16,15 +16,15 @@ namespace FarNet.Tools
 	public interface IProgress
 	{
 		/// <summary>
-		/// Gets or sets the activity description.
+		/// Gets or sets the current activity description.
 		/// </summary>
 		string Activity { get; set; }
 
 		/// <summary>
-		/// Sets the progress information.
+		/// Sets the current progress information.
 		/// </summary>
-		/// <param name="currentValue">Progress current value.</param>
-		/// <param name="maximumValue">Progress maximum value.</param>
+		/// <param name="currentValue">Progress current value, from 0 to the maximum.</param>
+		/// <param name="maximumValue">Progress maximum value, positive or 0.</param>
 		void SetProgressValue(double currentValue, double maximumValue);
 
 		/// <summary>
@@ -33,9 +33,6 @@ namespace FarNet.Tools
 		void ShowProgress();
 	}
 
-	/// <summary>
-	/// Progress helper.
-	/// </summary>
 	class Progress
 	{
 		const char EMPTY_BLOCK = '\x2591';
@@ -52,9 +49,6 @@ namespace FarNet.Tools
 		int _percentage = -1;
 		Stopwatch _stopwatch = Stopwatch.StartNew();
 
-		/// <summary>
-		/// Gets or sets the activity description.
-		/// </summary>
 		public string Activity
 		{
 			get { return _Activity; }
@@ -69,11 +63,6 @@ namespace FarNet.Tools
 			}
 		}
 
-		/// <summary>
-		/// Sets the progress information.
-		/// </summary>
-		/// <param name="currentValue">Progress current value.</param>
-		/// <param name="maximumValue">Progress maximum value.</param>
 		public void SetProgressValue(double currentValue, double maximumValue)
 		{
 			if (currentValue <= 0)
@@ -133,9 +122,6 @@ namespace FarNet.Tools
 			return _Lines;
 		}
 
-		/// <summary>
-		/// Formats thermometer + percentage string.
-		/// </summary>
 		static string FormatProgress(int percentage)
 		{
 			// number of chars to fill

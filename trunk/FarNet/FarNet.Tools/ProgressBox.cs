@@ -89,10 +89,10 @@ namespace FarNet.Tools
 		}
 
 		/// <summary>
-		/// Sets the progress information.
+		/// Sets the current progress information.
 		/// </summary>
-		/// <param name="currentValue">Progress current value.</param>
-		/// <param name="maximumValue">Progress maximum value.</param>
+		/// <param name="currentValue">Progress current value, from 0 to the maximum.</param>
+		/// <param name="maximumValue">Progress maximum value, positive or 0.</param>
 		public void SetProgressValue(double currentValue, double maximumValue)
 		{
 			_progress.SetProgressValue(currentValue, maximumValue);

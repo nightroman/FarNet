@@ -394,10 +394,14 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// A command called from the command line with a prefix.
+	/// A command called by its prefix from command lines and macros.
 	/// </summary>
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
+	/// <para>
+	/// Commands are called by their prefixes from command lines: the panel command line and user menu and file association commands.
+	/// Macros call commands using the <c>callplugin</c> macro function, see FarNet Readme.txt for details.
+	/// </para>
 	/// <para>
 	/// It is mandatory to use <see cref="ModuleCommandAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
 	/// and the default command prefix <see cref="ModuleCommandAttribute.Prefix"/>.

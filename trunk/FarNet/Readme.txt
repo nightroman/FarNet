@@ -1,6 +1,6 @@
 
 Plugin   : FarNet
-Version  : 4.3.38
+Version  : 4.3.39
 Release  : 2010-09-12
 Category : Development
 Author   : Roman Kuzmin

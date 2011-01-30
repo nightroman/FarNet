@@ -405,6 +405,32 @@ SETKEYBAR(CtrlShift, CtrlShiftTitles)
 SETKEYBAR(Main, Titles)
 SETKEYBAR(Shift, ShiftTitles)
 
+PanelSortMode FarPanelInfo::StartSortMode::get()
+{
+	return (PanelSortMode)(_FarStartSortOrder ? -_FarStartSortMode : _FarStartSortMode);
+}
+
+void FarPanelInfo::StartSortMode::set(PanelSortMode value)
+{
+	int mode = (int)value;
+	if (mode < 0)
+	{
+		_FarStartSortMode = -mode;
+		_FarStartSortOrder = true;
+	}
+	else
+	{
+		_FarStartSortMode = mode;
+		_FarStartSortOrder = false;
+	}
+
+	if (m)
+	{
+		m->StartSortMode = _FarStartSortMode;
+		m->StartSortOrder = _FarStartSortOrder;
+	}
+}
+
 OpenPluginInfo& FarPanelInfo::Make()
 {
 	if (m)
@@ -416,8 +442,8 @@ OpenPluginInfo& FarPanelInfo::Make()
 
 	m->Flags = Flags();
 
-	m->StartSortOrder = _StartReverseSortOrder;
-	m->StartSortMode = int(_StartSortMode);
+	m->StartSortMode = _FarStartSortMode;
+	m->StartSortOrder = _FarStartSortOrder;
 	m->StartPanelMode = int(_StartViewMode) + 0x30;
 
 	m->CurDir = NewChars(_CurrentDirectory);

@@ -1,5 +1,28 @@
 http://code.google.com/p/farnet/
 
+= 4.3.39 =
+
+*) API documentation FarNetAccord.chm
+Used the patch for the help builder. There are many fixes. The most important
+perhaps is the fix of missing enum values descriptions.
+
+*) ProgressForm
+- Removed obsolete SetProgressInt64(). Use SetProgressValue().
+- If you use the MultiHasher module: take 0.2.1 or later.
+
+*) IAnyPanel
+New property bool CaseSensitiveSort { get; set; }
+
+*) PanelSortMode
+New value ChangeTime (~ SM_CHTIME).
+
+*) Revision of the PanelSortMode enum and related panel properties
+Added all the same values with the 'Reversed' suffix, e.g. added 'NameReversed'
+for 'Name', etc. Thus, all *SortMode properties in panels now get/set the sort
+mode and direction in one shot. This approach seems to be easy, intuitive, and
+helps to avoid some mistakes. This change is breaking if a module uses removed
+*ReverseSortOrder properties.
+
 = 4.3.38 =
 
 *) IFar.Message
