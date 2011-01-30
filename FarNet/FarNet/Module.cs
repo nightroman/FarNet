@@ -369,10 +369,10 @@ namespace FarNet
 		/// Tells whether the command is called from a macro.
 		/// </summary>
 		/// <remarks>
-		/// Macros call commands via the <c>callplugin</c> function.
+		/// Macros call commands via the <c>CallPlugin</c> function.
 		/// The first argument is the FarNet system ID: <c>0xcd</c>.
 		/// The second argument is the module command prefix and text.
-		/// Example macro: <c>callplugin(0xcd, "Prefix:Command")</c>
+		/// Example macro: <c>CallPlugin(0xcd, "Prefix:Command")</c>
 		/// </remarks>
 		public bool IsMacro { get; set; }
 		/// <summary>
@@ -400,7 +400,7 @@ namespace FarNet
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <para>
 	/// Commands are called by their prefixes from command lines: the panel command line and user menu and file association commands.
-	/// Macros call commands using the <c>callplugin</c> macro function, see FarNet Readme.txt for details.
+	/// Macros call commands using the <c>CallPlugin</c> macro function, see FarNet Readme.txt for details.
 	/// </para>
 	/// <para>
 	/// It is mandatory to use <see cref="ModuleCommandAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>

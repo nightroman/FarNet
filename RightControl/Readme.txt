@@ -22,7 +22,7 @@ command line. They are: Step/Select/Delete by words, Go/Select to smart home.
 New actions are similar to what many popular editors do on stepping, selecting,
 deleting by words, and etc. Example: Visual Studio editor, Word, WordPad, etc.
 
-All the module commands work via the macro function callplugin().
+All the module commands work via the macro function CallPlugin().
 
 Word commands:
 	step-left
@@ -39,7 +39,7 @@ Smart home commands:
 	select-to-smart-home
 
 Example macro for the Editor area:
-	callplugin(0xcd, "RightControl:go-to-smart-home")
+	CallPlugin(0xcd, "RightControl:go-to-smart-home")
 
 The included PowerShellFar script Install-RightControlMacro-.ps1 installs the
 typical macros, see its comments.
@@ -132,11 +132,11 @@ Fixed CtrlBS for an empty line and "Cursor beyond end of line" mode.
 
 1.0.9
 
-Use FarNet 4.3.37. The module works only via the macro function callplugin().
+Use FarNet 4.3.37. The module works only via the macro function CallPlugin().
 All the menus are removed. Performance is perfect now. See Readme.txt for the
 list of commands.
 
-Install-RightControlMacro-.ps1 installs macros that use callplugin().
+Install-RightControlMacro-.ps1 installs macros that use CallPlugin().
 
 1.0.10
 

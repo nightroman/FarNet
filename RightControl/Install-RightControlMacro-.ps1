@@ -25,7 +25,7 @@ Import-Module FarMacro
 function Get-EditorMacro($command)
 {
 @'
-callplugin(0xcd, "RightControl:
+CallPlugin(0xcd, "RightControl:
 '@ + $command + @'
 ")
 '@
@@ -38,7 +38,7 @@ $If (AutoCompletion)
 	Esc
 $End
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	callplugin(0xcd, "RightControl:
+	CallPlugin(0xcd, "RightControl:
 '@ + $command + @'
 ")
 $Else
@@ -54,7 +54,7 @@ $If (AutoCompletion)
 	Esc
 $End
 $If (Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	callplugin(0xcd, "RightControl:
+	CallPlugin(0xcd, "RightControl:
 '@ + $command + @'
 ")
 $Else
