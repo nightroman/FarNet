@@ -11,6 +11,7 @@ namespace FarNet
 ref class Panel1 : public IAnyPanel
 {
 public:
+	virtual property bool CaseSensitiveSort { bool get(); void set(bool value); }
 	virtual property bool DirectoriesFirst { bool get(); void set(bool value); }
 	virtual property bool Highlight { bool get(); }
 	virtual property bool IsActive { bool get(); }
@@ -19,7 +20,6 @@ public:
 	virtual property bool IsVisible { bool get(); void set(bool value); }
 	virtual property bool NumericSort { bool get(); void set(bool value); }
 	virtual property bool RealNames { bool get(); }
-	virtual property bool ReverseSortOrder { bool get(); void set(bool value); }
 	virtual property bool SelectedFirst { bool get(); }
 	virtual property bool ShowHidden { bool get(); }
 	virtual property bool UseSortGroups { bool get(); }

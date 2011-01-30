@@ -40,8 +40,8 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 	GetPanelInfo(panel->Handle, pi);
 
 	// store modes
-	_sortDesc = (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
-	_sortMode = (PanelSortMode)pi.SortMode;
+	bool reversed = (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
+	_sortMode = (PanelSortMode)(reversed ? -pi.SortMode : pi.SortMode);
 	_viewMode = (PanelViewMode)pi.ViewMode;
 }
 
@@ -90,10 +90,11 @@ void ShelveInfoPanel::Pop()
 	{
 		if (_viewMode != (PanelViewMode)pi.ViewMode)
 			panel.ViewMode = _viewMode;
-		if (_sortMode != (PanelSortMode)pi.SortMode)
+		
+		bool reversed = (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
+		PanelSortMode sortMode = (PanelSortMode)(reversed ? -pi.SortMode : pi.SortMode);
+		if (_sortMode != sortMode)
 			panel.SortMode = _sortMode;
-		if (_sortDesc != ((pi.Flags & PFLAGS_REVERSESORTORDER) != 0))
-			panel.ReverseSortOrder = _sortDesc;
 	}
 }
 

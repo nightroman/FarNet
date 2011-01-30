@@ -23,7 +23,6 @@ public:
 	property String^ Current;
 private:
 	bool _modes;
-	bool _sortDesc;
 	PanelSortMode _sortMode;
 	PanelViewMode _viewMode;
 };

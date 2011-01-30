@@ -1,6 +1,14 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.39 =
+
+Technical build for FarNet 4.3.39
+
+*) Cmdlets Out-FarPanel, Start-FarPanel
+- Removed the ReverseSortOrder switch.
+- The SortMode parameter now includes *Reveresed values.
+
 = 4.3.38 =
 
 *) Breaking synchronous commands
