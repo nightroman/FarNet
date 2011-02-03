@@ -125,7 +125,6 @@ $p.Static = $true
 ### Saves changes
 $p.SetSave({
 	$Far.Macro.Install($this.Value)
-	$Far.Macro.Load()
 	$this.Modified = $false
 	$Host.UI.RawUI.WindowTitle = 'Saved'
 })

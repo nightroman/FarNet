@@ -84,7 +84,7 @@ int Message::Show(String^ body, String^ header, MsgOptions options, array<String
 	if (int(options & MsgOptions::GuiOnMacro) != 0)
 	{
 		// check macro
-		if (Far::Net->MacroState != FarMacroState::None)
+		if (Far::Net->MacroState != MacroState::None)
 			options = options | MsgOptions::Gui;
 	}
 

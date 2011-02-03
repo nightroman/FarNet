@@ -76,7 +76,7 @@ namespace PowerShellFar
 					{
 						Far.Net.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
 						if (!m.Alternative)
-							Far.Net.PostKeys("Enter", false);
+							Far.Net.PostKeys("Enter", true);
 						return;
 					}
 				case WindowKind.Editor:

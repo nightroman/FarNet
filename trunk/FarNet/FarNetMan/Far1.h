@@ -11,7 +11,8 @@ ref class Far1 sealed : IFar
 {
 public:
 	virtual property FarConfirmations Confirmations { FarConfirmations get() override; }
-	virtual property FarMacroState MacroState { FarMacroState get() override; }
+	virtual property FarNet::MacroArea MacroArea { FarNet::MacroArea get() override; }
+	virtual property FarNet::MacroState MacroState { FarNet::MacroState get() override; }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get() override; }
 	virtual property IAnyPanel^ Panel { IAnyPanel^ get() override; }
 	virtual property IAnyPanel^ Panel2 { IAnyPanel^ get() override; }
@@ -58,15 +59,13 @@ public:
 	virtual String^ TempName(String^ prefix) override;
 	virtual void CopyToClipboard(String^ text) override;
 	virtual void PostJob(EventHandler^ handler) override;
-	virtual void PostKeys(String^ keys) override;
-	virtual void PostKeys(String^ keys, bool disableOutput) override;
-	virtual void PostKeySequence(array<int>^ sequence, bool disableOutput) override;
+	virtual void PostKeys(String^ keys, bool enableOutput) override;
+	virtual void PostKeySequence(array<int>^ sequence, bool enableOutput) override;
 	virtual void PostMacro(String^ macro, bool enableOutput, bool disablePlugins) override;
 	virtual void PostStep(EventHandler^ handler) override;
 	virtual void PostStepAfterKeys(String^ keys, EventHandler^ handler) override;
 	virtual void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2) override;
-	virtual void PostText(String^ text) override;
-	virtual void PostText(String^ text, bool disableOutput) override;
+	virtual void PostText(String^ text, bool enableOutput) override;
 	virtual void Quit() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;

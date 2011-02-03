@@ -488,7 +488,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 				if ((from & (OPEN_FROMMACRO | OPEN_FROMMACROSTRING)) == (OPEN_FROMMACRO | OPEN_FROMMACROSTRING))
 				{
 					Log::Source->TraceInformation("OPEN_FROMMACRO");
-					if (!InvokeCommand((const wchar_t*)item, true))
+					if (!InvokeCommand((const wchar_t*)item, (MacroArea)(1 + (from & OPEN_FROM_MASK)))) //_100201_110148
 						return 0;
 				}
 			}
@@ -496,7 +496,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 		case OPEN_COMMANDLINE:
 			{
 				Log::Source->TraceInformation("OPEN_COMMANDLINE");
-				InvokeCommand((const wchar_t*)item, false);
+				InvokeCommand((const wchar_t*)item, MacroArea::None);
 			}
 			break;
 		case OPEN_DISKMENU:
@@ -1111,8 +1111,32 @@ void Far0::ChangeFontSize(bool increase)
 	}
 }
 
-bool Far0::InvokeCommand(const wchar_t* command, bool macro)
+ref class CommandJob
 {
+	IModuleCommand^ _proxyCommand;
+	ModuleCommandEventArgs^ _args;
+public:
+	CommandJob(IModuleCommand^ proxyCommand, ModuleCommandEventArgs^ args)
+	{
+		_proxyCommand = proxyCommand;
+		_args = args;
+	}
+	void Invoke(Object^, EventArgs^)
+	{
+		_proxyCommand->Invoke(nullptr, _args);
+	}
+};
+
+bool Far0::InvokeCommand(const wchar_t* command, MacroArea area)
+{
+	// asynchronous command
+	bool isAsync = command[0] == ':';
+	if (isAsync)
+		++command;
+	bool isAsync2 = command[0] == ':';
+	if (isAsync2)
+		++command;
+
 	// find the colon
 	const wchar_t* colon = wcschr(command, ':');
 
@@ -1127,15 +1151,28 @@ bool Far0::InvokeCommand(const wchar_t* command, bool macro)
 		if (!prefix->Equals(it->Prefix, StringComparison::OrdinalIgnoreCase))
 			continue;
 
-		ModuleCommandEventArgs e;
-		e.Command = gcnew String(colon + 1);
-		e.IsMacro = macro;
-		it->Invoke(nullptr, %e);
-		return e.Ignore ? false : true;
+		ModuleCommandEventArgs^ e = gcnew ModuleCommandEventArgs();
+		e->Command = gcnew String(colon + 1);
+		e->MacroArea = area;
+
+		// invoke later
+		if (isAsync)
+		{
+			EventHandler^ handler = gcnew EventHandler(gcnew CommandJob(it, e), &CommandJob::Invoke);
+			if (isAsync2)
+				Far::Net->PostJob(handler);
+			else
+				Far::Net->PostStep(handler);
+			return true;
+		}
+
+		// invoke now
+		it->Invoke(nullptr, e);
+		return e->Ignore ? false : true;
 	}
 
 	// A missing prefix is not a fatal error, e.g. a module is not istalled.
-	// The calling macro should be able to recover. Thus, just return false.
+	// The calling macro should be able to recover on 0 result, so return false.
 	return false;
 }
 

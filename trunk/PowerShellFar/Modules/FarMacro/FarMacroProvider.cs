@@ -27,25 +27,29 @@ namespace FarMacro
 			{
 				if (_Areas == null)
 				{
+					//_100201_110148 ~ MacroArea add/remove
 					_Areas = new SortedList<MacroArea, AreaItem>();
-					_Areas.Add(MacroArea.Common, new AreaItem(MacroArea.Common, "Lowest priority macros used everywhere"));
+					// fake areas
+					_Areas.Add(MacroArea.Vars, new AreaItem(MacroArea.Vars, "Global variables"));
 					_Areas.Add(MacroArea.Consts, new AreaItem(MacroArea.Consts, "Global constants"));
-					_Areas.Add(MacroArea.Dialog, new AreaItem(MacroArea.Dialog, "Dialog boxes"));
-					_Areas.Add(MacroArea.Disks, new AreaItem(MacroArea.Disks, "Drive selection menu"));
+					_Areas.Add(MacroArea.Common, new AreaItem(MacroArea.Common, "Lowest priority macros used everywhere"));
+					// proper areas
+					_Areas.Add(MacroArea.Other, new AreaItem(MacroArea.Other, "Screen capturing mode"));
+					_Areas.Add(MacroArea.Shell, new AreaItem(MacroArea.Shell, "File panels"));
+					_Areas.Add(MacroArea.Viewer, new AreaItem(MacroArea.Viewer, "File viewer"));
 					_Areas.Add(MacroArea.Editor, new AreaItem(MacroArea.Editor, "File editor"));
-					_Areas.Add(MacroArea.FindFolder, new AreaItem(MacroArea.FindFolder, "Folder search panel"));
-					_Areas.Add(MacroArea.Help, new AreaItem(MacroArea.Help, "Help system"));
-					_Areas.Add(MacroArea.Info, new AreaItem(MacroArea.Info, "Informational panel"));
+					_Areas.Add(MacroArea.Dialog, new AreaItem(MacroArea.Dialog, "Dialog boxes"));
+					_Areas.Add(MacroArea.Search, new AreaItem(MacroArea.Search, "Quick file search"));
+					_Areas.Add(MacroArea.Disks, new AreaItem(MacroArea.Disks, "Drive selection menu"));
 					_Areas.Add(MacroArea.MainMenu, new AreaItem(MacroArea.MainMenu, "Main menu"));
 					_Areas.Add(MacroArea.Menu, new AreaItem(MacroArea.Menu, "Other menus"));
-					_Areas.Add(MacroArea.Other, new AreaItem(MacroArea.Other, "Screen capturing mode"));
+					_Areas.Add(MacroArea.Help, new AreaItem(MacroArea.Help, "Help system"));
+					_Areas.Add(MacroArea.Info, new AreaItem(MacroArea.Info, "Informational panel"));
 					_Areas.Add(MacroArea.QView, new AreaItem(MacroArea.QView, "Quick view panel"));
-					_Areas.Add(MacroArea.Search, new AreaItem(MacroArea.Search, "Quick file search"));
-					_Areas.Add(MacroArea.Shell, new AreaItem(MacroArea.Shell, "File panels"));
 					_Areas.Add(MacroArea.Tree, new AreaItem(MacroArea.Tree, "Folder tree panel"));
+					_Areas.Add(MacroArea.FindFolder, new AreaItem(MacroArea.FindFolder, "Folder search panel"));
 					_Areas.Add(MacroArea.UserMenu, new AreaItem(MacroArea.UserMenu, "User menu"));
-					_Areas.Add(MacroArea.Vars, new AreaItem(MacroArea.Vars, "Global variables"));
-					_Areas.Add(MacroArea.Viewer, new AreaItem(MacroArea.Viewer, "File viewer"));
+					_Areas.Add(MacroArea.AutoCompletion, new AreaItem(MacroArea.AutoCompletion, "Lowest priority macros used everywhere"));
 				}
 				return _Areas;
 			}
@@ -73,8 +77,8 @@ namespace FarMacro
 
 		static bool IsValidWay(Way way)
 		{
-			// _100201_110148 to update if MacroArea has new values
-			if ((int)way.Area < 0 || (int)way.Area > (int)MacroArea.Viewer)
+			// _100201_110148 ~ MacroArea min/max change
+			if ((int)way.Area < (int)MacroArea.Vars || (int)way.Area > (int)MacroArea.AutoCompletion)
 				return false;
 
 			if (way.Name == null)
@@ -136,7 +140,7 @@ namespace FarMacro
 		{
 			Way way = new Way(path);
 
-			if (way.Area == MacroArea.Root)
+			if (way.Area == MacroArea.None)
 			{
 				WriteItemObject(PSDriveInfo, path, true);
 				return;
@@ -191,7 +195,7 @@ namespace FarMacro
 		protected override bool ItemExists(string path)
 		{
 			Way way = new Way(path);
-			if (way.Area == MacroArea.Root)
+			if (way.Area == MacroArea.None)
 				return true;
 
 			if (way.Name == null)
@@ -221,9 +225,9 @@ namespace FarMacro
 		{
 			Way way = new Way(path);
 
-			if (way.Area == MacroArea.Root)
+			if (way.Area == MacroArea.None)
 			{
-				foreach (string name in Far.Net.Macro.GetNames(MacroArea.Root))
+				foreach (string name in Far.Net.Macro.GetNames(MacroArea.None))
 				{
 					try
 					{
@@ -268,9 +272,9 @@ namespace FarMacro
 		{
 			Way way = new Way(path);
 
-			if (way.Area == MacroArea.Root)
+			if (way.Area == MacroArea.None)
 			{
-				foreach (string name in Far.Net.Macro.GetNames(MacroArea.Root))
+				foreach (string name in Far.Net.Macro.GetNames(MacroArea.None))
 				{
 					try
 					{
@@ -363,7 +367,7 @@ namespace FarMacro
 				Far.Net.Macro.InstallVariable(dst.Name, Far.Net.Macro.GetVariable(way.Name));
 				return;
 			}
-			else if (dst.Area == MacroArea.Root)
+			else if (dst.Area == MacroArea.None)
 			{
 				throw new InvalidOperationException(Res.InvalidDestinationPath);
 			}
@@ -405,7 +409,7 @@ namespace FarMacro
 		protected override string GetChildName(string path)
 		{
 			Way way = new Way(path);
-			if (way.Area == MacroArea.Root)
+			if (way.Area == MacroArea.None)
 				return string.Empty;
 			else if (way.Name == null)
 				return way.Area.ToString();
@@ -425,7 +429,7 @@ namespace FarMacro
 					return null;
 
 			Way way = new Way(path);
-			if (way.Area == MacroArea.Root)
+			if (way.Area == MacroArea.None)
 				return null;
 			else if (way.Name == null)
 				return string.Empty;
@@ -440,7 +444,7 @@ namespace FarMacro
 				throw new InvalidOperationException("The item cannot be moved.");
 
 			Way dst = new Way(destination);
-			if (dst.Name != null || dst.Area == MacroArea.Root || dst.Area == MacroArea.Consts || dst.Area == MacroArea.Vars)
+			if (dst.Name != null || dst.Area == MacroArea.None || dst.Area == MacroArea.Consts || dst.Area == MacroArea.Vars)
 				throw new InvalidOperationException("Invalid destination: " + destination);
 
 			Macro macro = Far.Net.Macro.GetMacro(way.Area, way.Name);

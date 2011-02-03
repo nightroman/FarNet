@@ -63,7 +63,7 @@ namespace FarNet.Works
 
 				// others
 				r.Description = key.GetValue("Description", string.Empty).ToString();
-				r.EnableOutput = !ToBool(key.GetValue("DisableOutput", 1));
+				r.EnableOutput = !ToBool(key.GetValue("DisableOutput", 0));
 				r.DisablePlugins = ToBool(key.GetValue("NoSendKeysToPlugins", null));
 				r.RunAfterFarStart = ToBool(key.GetValue("RunAfterFarStart", null));
 				r.CommandLine = GetThreeState(key.GetValue("NotEmptyCommandLine", null), key.GetValue("EmptyCommandLine", null));
@@ -80,7 +80,7 @@ namespace FarNet.Works
 
 		public override string[] GetNames(MacroArea area)
 		{
-			using (IRegistryKey key = Far.Net.OpenRegistryKey("KeyMacros\\" + (area == MacroArea.Root ? "" : area.ToString()), false))
+			using (IRegistryKey key = Far.Net.OpenRegistryKey("KeyMacros\\" + (area == MacroArea.None ? "" : area.ToString()), false))
 			{
 				if (null == key)
 					return new string[0];
@@ -138,7 +138,7 @@ namespace FarNet.Works
 
 		public override void Remove(MacroArea area, string[] names)
 		{
-			if (area == MacroArea.Root)
+			if (area == MacroArea.None)
 				throw new ArgumentException("Invalid 'area'.");
 
 			if (!ManualSaveLoad)
@@ -197,7 +197,8 @@ namespace FarNet.Works
 
 				// others
 				key.SetValue("Description", macro.Description);
-				key.SetValue("DisableOutput", macro.EnableOutput ? 0 : 1);
+				if (!macro.EnableOutput)
+					key.SetValue("DisableOutput", 1);
 				if (macro.DisablePlugins)
 					key.SetValue("NoSendKeysToPlugins", 1);
 				if (macro.RunAfterFarStart)

@@ -265,14 +265,16 @@ namespace FarNet.Tools
 
 			// show
 			string progress;
-			var lines = _progress.Build(out progress, _textActivity.Length, false);
-			for (int iLine = 0; iLine < _LineCount && iLine < lines.Count; ++iLine)
+			var lines = _progress.Build(out progress, _textActivity.Length);
+			for (int iLine = 0; iLine < _LineCount && iLine < lines.Length; ++iLine)
 				_textActivity[iLine].Text = lines[iLine];
 			_textProgress.Text = progress;
 		}
 
 		void Init()
 		{
+			Dialog.KeepWindowTitle = true;
+
 			SetSize(Progress.FORM_WIDTH, (CanCancel ? 7 : 5) + _LineCount);
 
 			_textActivity = new IText[_LineCount];
