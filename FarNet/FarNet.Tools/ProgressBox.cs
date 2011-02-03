@@ -107,12 +107,12 @@ namespace FarNet.Tools
 			_savedScreen = Far.Net.UI.SaveScreen(0, 0, -1, -1);
 
 			string progress;
-			var lines = _progress.Build(out progress, LineCount, true);
+			var lines = _progress.Build(out progress, LineCount);
 			string text;
-			if (lines.Count == 1)
+			if (lines.Length == 1)
 				text = lines[0] + "\r" + progress;
 			else
-				text = string.Join("\r", lines.ToArray()) + "\r" + progress;
+				text = string.Join("\r", lines) + "\r" + progress;
 
 			Far.Net.Message(text, Title, MsgOptions.Draw | MsgOptions.LeftAligned);
 		}

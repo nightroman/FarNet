@@ -1029,8 +1029,10 @@ namespace FarNet
 
 	/// <summary>
 	/// Arguments of <see cref="IPanel.GettingFiles"/>.
-	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
+	/// <remarks>
+	/// If the operation fails the set <see cref="PanelEventArgs.Ignore"/> = true .
+	/// </remarks>
 	public class GettingFilesEventArgs : FilesEventArgs
 	{
 		string _destination;
@@ -1363,11 +1365,20 @@ namespace FarNet
 		/// </summary>
 		event EventHandler<FilesEventArgs> DeletingFiles;
 		/// <summary>
-		/// Called to get files on copy\move operation.
+		/// Called to get files on copy or move operations. Edit and view also use this.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This event is not called if <see cref="IPanelInfo.RealNames"/> is true,
+		/// Far Manager performs the operations itself.
+		/// </para>
+		/// <para>
+		/// The module has to process its virtual directories itself.
+		/// </para>
+		/// </remarks>
 		event EventHandler<GettingFilesEventArgs> GettingFiles;
 		/// <summary>
-		/// Called to put files on copy\move operation.
+		/// Called to put files on copy or move operations.
 		/// </summary>
 		event EventHandler<PuttingFilesEventArgs> PuttingFiles;
 		/// <summary>

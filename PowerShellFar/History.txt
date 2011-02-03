@@ -1,6 +1,13 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.3.40 =
+
+Technical build for FarNet 4.3.40
+
+*) Panel-Macro-.ps1
+Removed not needed call of Load().
+
 = 4.3.39 =
 
 *) Cmdlets Out-FarPanel, Start-FarPanel

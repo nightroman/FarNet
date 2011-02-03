@@ -47,14 +47,21 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 
 ShelveInfoPanel^ ShelveInfoPanel::CreateActiveInfo(bool modes)
 {
+	// any panel
 	IAnyPanel^ panel = Far::Net->Panel;
 	if (!panel)
 		return nullptr;
 
-	Panel2^ plugin = dynamic_cast<Panel2^>(panel); 
-	if (plugin)
-		return plugin->_ActiveInfo;
+	// FarNet panel
+	Panel2^ panelFarNet = dynamic_cast<Panel2^>(panel); 
+	if (panelFarNet)
+		return panelFarNet->_ActiveInfo;
+
+	// native plugin panel; it is closed if another panel is opened
+	if (panel->IsPlugin) //_110201_111328
+		return nullptr;
 	
+	// must be a file system panel
 	return gcnew ShelveInfoPanel((Panel1^)panel, modes);
 }
 

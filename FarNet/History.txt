@@ -1,5 +1,37 @@
 http://code.google.com/p/farnet/
 
+= 4.3.40 =
+
+*** Use Far 2.0.1807 ***
+
+*) CallPlugin(0xcd, ..) properly opens modal UI and even panels!
+CallPlugin supports asynchronous commands (steps and jobs). Asynchronous
+commands are suitable for opening dialogs, modal editor/viewers, and even
+panels. See Readme.txt for the details, examples, and a known issue, too.
+
+*) IFar
+New property MacroArea.
+
+*) ModuleCommandEventArgs
+New property MacroArea (instead of IsMacro).
+
+*) IDialog
+New property KeepWindowTitle (Far 2.0.1805). As a result, ProgressForm is now
+able to show progress information in the console title, as ProgressBox does.
+
+*) Housekeeping (BREAKING if a module is affected)
+- Renamed FarMacroState to MacroState ("Far" is rather useless in here);
+- PostKeys(, bool), PostText(, bool), PostKeySequence(, bool) - inverted the
+second parameter: disableOutput -> enableOutput for consistency with PostMacro,
+and Macro.EnableOutput. Also, this follows the rule of "default false". The
+change is not breaking but may cause unwanted effects. Review these calls.
+
+*) BUGS
+- Fixed a minor issue in Macro.EnableOutput.
+- Fixed a multithreading issue in ProgressForm.
+- Fixed an error message on closing a module panel which is opened over a
+native plugin panel.
+
 = 4.3.39 =
 
 *) API documentation FarNetAccord.chm

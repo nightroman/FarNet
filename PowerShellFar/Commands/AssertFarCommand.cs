@@ -211,8 +211,8 @@ namespace PowerShellFar.Commands
 		void Fail(object message)
 		{
 			// break a macro
-			FarMacroState macroState = Far.Net.MacroState;
-			if (macroState == FarMacroState.Executing || macroState == FarMacroState.ExecutingCommon)
+			MacroState macroState = Far.Net.MacroState;
+			if (macroState == MacroState.Executing || macroState == MacroState.ExecutingCommon)
 				Far.Net.UI.Break();
 
 			// get the message

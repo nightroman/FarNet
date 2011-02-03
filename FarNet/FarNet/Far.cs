@@ -63,20 +63,14 @@ namespace FarNet
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
-		public void Message(string body)
-		{
-			Message(body, null, MsgOptions.Ok, null, null);
-		}
+		public void Message(string body) { Message(body, null, MsgOptions.Ok, null, null); }
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
 		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
-		public void Message(string body, string header)
-		{
-			Message(body, header, MsgOptions.Ok, null, null);
-		}
+		public void Message(string body, string header) { Message(body, header, MsgOptions.Ok, null, null); }
 		/// <summary>
 		/// Shows a message box with options.
 		/// </summary>
@@ -85,10 +79,7 @@ namespace FarNet
 		/// <param name="options">Message options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
 		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
-		public int Message(string body, string header, MsgOptions options)
-		{
-			return Message(body, header, options, null, null);
-		}
+		public int Message(string body, string header, MsgOptions options) { return Message(body, header, options, null, null); }
 		/// <summary>
 		/// Shows a message box with options and buttons.
 		/// </summary>
@@ -98,10 +89,7 @@ namespace FarNet
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <returns>Button index or -1 if cancelled.</returns>
 		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
-		public int Message(string body, string header, MsgOptions options, string[] buttons)
-		{
-			return Message(body, header, options, buttons, null);
-		}
+		public int Message(string body, string header, MsgOptions options, string[] buttons) { return Message(body, header, options, buttons, null); }
 		/// <summary>
 		/// Shows a message box with options, buttons and help.
 		/// </summary>
@@ -191,57 +179,49 @@ namespace FarNet
 		/// Posts keys to the Far keyboard queue. Processing is not displayed.
 		/// </summary>
 		/// <param name="keys">String of keys.</param>
-		public abstract void PostKeys(string keys);
+		public void PostKeys(string keys) { PostKeys(keys, false); }
 		/// <summary>
 		/// Posts keys to the Far keyboard queue.
 		/// </summary>
 		/// <param name="keys">String of keys.</param>
-		/// <param name="disableOutput">Do not display processing on the screen.</param>
-		public abstract void PostKeys(string keys, bool disableOutput);
+		/// <param name="enableOutput">Tells to display processing.</param>
+		public abstract void PostKeys(string keys, bool enableOutput);
 		/// <summary>
 		/// Posts literal text to the Far keyboard queue. Processing is not displayed.
 		/// </summary>
 		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
-		public abstract void PostText(string text);
+		public void PostText(string text) { PostText(text, false); }
 		/// <summary>
 		/// Posts literal text to the Far keyboard queue.
 		/// </summary>
 		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
-		/// <param name="disableOutput">Do not display processing on the screen.</param>
-		public abstract void PostText(string text, bool disableOutput);
+		/// <param name="enableOutput">Tells to display processing.</param>
+		public abstract void PostText(string text, bool enableOutput);
 		/// <summary>
 		/// Creates a sequence of key codes from a string of keys.
 		/// </summary>
 		public abstract int[] CreateKeySequence(string keys);
 		/// <summary>
-		/// Posts a sequence of keys to the Far keyboard queue.
-		/// Processing is not displayed.
+		/// Posts a sequence of keys to the Far keyboard queue. Processing is not displayed.
 		/// </summary>
 		/// <param name="sequence">Sequence of keys.</param>
-		public void PostKeySequence(int[] sequence)
-		{
-			PostKeySequence(sequence, true);
-		}
+		public void PostKeySequence(int[] sequence) { PostKeySequence(sequence, false); }
 		/// <summary>
 		/// Posts a sequence of keys to the Far keyboard queue.
 		/// </summary>
 		/// <param name="sequence">Sequence of keys.</param>
-		/// <param name="disableOutput">Do not display processing on the screen.</param>
-		public abstract void PostKeySequence(int[] sequence, bool disableOutput);
+		/// <param name="enableOutput">Tells to display processing.</param>
+		public abstract void PostKeySequence(int[] sequence, bool enableOutput);
 		/// <summary>
-		/// Posts a macro to Far.
-		/// Processing is not displayed, and keys are sent to editor plugins.
+		/// Posts a macro to Far. Processing is not displayed. Keys are sent to editor plugins.
 		/// </summary>
 		/// <param name="macro">Macro text.</param>
-		public void PostMacro(string macro)
-		{
-			PostMacro(macro, false, false);
-		}
+		public void PostMacro(string macro) { PostMacro(macro, false, false); }
 		/// <summary>
 		/// Posts a macro to Far.
 		/// </summary>
 		/// <param name="macro">Macro text.</param>
-		/// <param name="enableOutput">Enable screen output during macro playback.</param>
+		/// <param name="enableOutput">Tells to display processing.</param>
 		/// <param name="disablePlugins">Don't send keystrokes to editor plugins.</param>
 		public abstract void PostMacro(string macro, bool enableOutput, bool disablePlugins);
 		/// <summary>
@@ -319,10 +299,7 @@ namespace FarNet
 		/// Returns all strings from history.
 		/// </summary>
 		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory.</param>
-		public ICollection<string> GetHistory(string name)
-		{
-			return GetHistory(name, null);
-		}
+		public ICollection<string> GetHistory(string name) { return GetHistory(name, null); }
 		/// <summary>
 		/// Returns strings from history by type.
 		/// </summary>
@@ -396,27 +373,18 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
-		public string Input(string prompt)
-		{
-			return Input(prompt, null, null, string.Empty);
-		}
+		public string Input(string prompt) { return Input(prompt, null, null, string.Empty); }
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
-		public string Input(string prompt, string history)
-		{
-			return Input(prompt, history, null, string.Empty);
-		}
+		public string Input(string prompt, string history) { return Input(prompt, history, null, string.Empty); }
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
 		/// <returns>Entered text or null if cancelled.</returns>
-		public string Input(string prompt, string history, string title)
-		{
-			return Input(prompt, history, title, string.Empty);
-		}
+		public string Input(string prompt, string history, string title) { return Input(prompt, history, title, string.Empty); }
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
@@ -481,9 +449,13 @@ namespace FarNet
 		/// </remarks>
 		public abstract void PostJob(EventHandler handler);
 		/// <summary>
+		/// Gets the current macro area.
+		/// </summary>
+		public abstract MacroArea MacroArea { get; }
+		/// <summary>
 		/// Gets the current macro state.
 		/// </summary>
-		public abstract FarMacroState MacroState { get; }
+		public abstract MacroState MacroState { get; }
 		/// <summary>
 		/// Generates full path for a temp file or directory in %TEMP% (nothing is created).
 		/// </summary>
@@ -702,7 +674,7 @@ namespace FarNet
 	/// <summary>
 	/// States of macro processing.
 	/// </summary>
-	public enum FarMacroState
+	public enum MacroState
 	{
 		/// <summary>
 		/// No processing.

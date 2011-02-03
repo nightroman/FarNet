@@ -93,11 +93,18 @@ FarConfirmations Far1::Confirmations::get()
 	return (FarConfirmations)Info.AdvControl(Info.ModuleNumber, ACTL_GETCONFIRMATIONS, 0);
 }
 
-FarMacroState Far1::MacroState::get()
+FarNet::MacroArea Far1::MacroArea::get()
+{
+	ActlKeyMacro command;
+	command.Command = MCMD_GETAREA;
+	return (FarNet::MacroArea)(1 + Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command));
+}
+
+FarNet::MacroState Far1::MacroState::get()
 {
 	ActlKeyMacro command;
 	command.Command = MCMD_GETSTATE;
-	return (FarMacroState)Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command);
+	return (FarNet::MacroState)Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command);
 }
 
 array<IEditor^>^ Far1::Editors()
@@ -167,7 +174,7 @@ array<int>^ Far1::CreateKeySequence(String^ keys)
 
 //! [_090328_170110] KSFLAGS_NOSENDKEYSTOPLUGINS is not set,
 //! but Tab for TabExpansion is not working in .ps1 editor, why?
-void Far1::PostKeySequence(array<int>^ sequence, bool disableOutput)
+void Far1::PostKeySequence(array<int>^ sequence, bool enableOutput)
 {
 	if (sequence == nullptr) throw gcnew ArgumentNullException("sequence");
 	if (sequence->Length == 0)
@@ -179,7 +186,7 @@ void Far1::PostKeySequence(array<int>^ sequence, bool disableOutput)
 
 	KeySequence keySequence;
 	keySequence.Count = sequence->Length;
-	keySequence.Flags = disableOutput ? KSFLAGS_DISABLEOUTPUT : 0;
+	keySequence.Flags = enableOutput ? 0 : KSFLAGS_DISABLEOUTPUT;
 
 	DWORD* cur = keySequence.Count <= smallCount ? keys : new DWORD[keySequence.Count];
 	keySequence.Sequence = cur;
@@ -222,26 +229,16 @@ String^ Far1::KeyToName(int key)
 	return gcnew String(name);
 }
 
-void Far1::PostKeys(String^ keys)
-{
-	PostKeys(keys, true);
-}
-
-void Far1::PostKeys(String^ keys, bool disableOutput)
+void Far1::PostKeys(String^ keys, bool enableOutput)
 {
 	if (keys == nullptr)
 		throw gcnew ArgumentNullException("keys");
 
 	keys = keys->Trim();
-	PostKeySequence(CreateKeySequence(keys), disableOutput);
+	PostKeySequence(CreateKeySequence(keys), enableOutput);
 }
 
-void Far1::PostText(String^ text)
-{
-	PostText(text, true);
-}
-
-void Far1::PostText(String^ text, bool disableOutput)
+void Far1::PostText(String^ text, bool enableOutput)
 {
 	if (text == nullptr)
 		throw gcnew ArgumentNullException("text");
@@ -267,7 +264,7 @@ void Far1::PostText(String^ text, bool disableOutput)
 			break;
 		}
 	}
-	PostKeys(keys.ToString(), disableOutput);
+	PostKeys(keys.ToString(), enableOutput);
 }
 
 ILine^ Far1::Line::get()
@@ -389,8 +386,8 @@ void Far1::ShowError(String^ title, Exception^ error)
 
 	// stop a running macro
 	String^ msgMacro = nullptr;
-	FarMacroState macro = MacroState;
-	if (macro == FarMacroState::Executing || macro == FarMacroState::ExecutingCommon)
+	FarNet::MacroState macro = MacroState;
+	if (macro == FarNet::MacroState::Executing || macro == FarNet::MacroState::ExecutingCommon)
 	{
 		// log
 		msgMacro = "A macro has been stopped.";

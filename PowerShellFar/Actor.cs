@@ -408,7 +408,7 @@ Continue with this current location?
 							_failedInvokingLocationOld = currentLocation;
 							break;
 						default:
-							if (Far.Net.MacroState != FarMacroState.None)
+							if (Far.Net.MacroState != MacroState.None)
 								Far.Net.UI.Break();
 							throw;
 					}
@@ -456,7 +456,7 @@ Continue with this current directory?
 							_failedInvokingDirectoryOld = currentDirectory;
 							break;
 						default:
-							if (Far.Net.MacroState != FarMacroState.None)
+							if (Far.Net.MacroState != MacroState.None)
 								Far.Net.UI.Break();
 							throw;
 					}
@@ -622,7 +622,7 @@ Continue with this current directory?
 		/// </summary>
 		/// <remarks>
 		/// If it is called during a macro then commands are not added to the history.
-		/// Note: use of <c>CallPlugin()</c> is normally better for macros.
+		/// Note: use of <c>CallPlugin()</c> (see FarNet Readme.txt) is often better for macros.
 		/// <para>
 		/// In order to input and get the code without invoking use the <see cref="InputCode"/> method.
 		/// </para>
@@ -631,7 +631,7 @@ Continue with this current directory?
 		{
 			string code = InputCode();
 			if (code != null)
-				Act(code, null, Far.Net.MacroState == FarMacroState.None);
+				Act(code, null, Far.Net.MacroState == MacroState.None);
 		}
 
 		/// <summary>

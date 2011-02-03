@@ -126,7 +126,7 @@ namespace FarMacro
 						throw new ArgumentException(m.InvalidKeyName);
 
 					// validate the area
-					if (Area == MacroArea.Root)
+					if (Area == MacroArea.None)
 					{
 						switch (Far.Net.Window.Kind)
 						{

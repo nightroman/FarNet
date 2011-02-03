@@ -21,6 +21,7 @@ public: DEF_EVENT_ARGS2(MouseClicked, _MouseClicked, MouseClickedEventArgs);
 public:
 	virtual property bool IsSmall { bool get() override; void set(bool value) override; }
 	virtual property bool IsWarning { bool get() override; void set(bool value) override; }
+	virtual property bool KeepWindowTitle { bool get() override; void set(bool value) override; }
 	virtual property bool NoPanel { bool get() override; void set(bool value) override; }
 	virtual property bool NoShadow { bool get() override; void set(bool value) override; }
 	virtual property bool NoSmartCoordinates { bool get() override { return _NoSmartCoordinates; } void set(bool value) override { _NoSmartCoordinates = value; } }
