@@ -32,6 +32,8 @@ namespace FarMacro
 	{
 		public Way(string path)
 		{
+			Area = MacroArea.None;
+
 			if (path == null)
 				return;
 

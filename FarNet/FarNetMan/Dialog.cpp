@@ -24,6 +24,7 @@ LONG_PTR WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, LONG_PTR param2)
 // Flags properties
 DEF_PROP_FLAG(FarDialog, IsSmall, FDLG_SMALLDIALOG);
 DEF_PROP_FLAG(FarDialog, IsWarning, FDLG_WARNING);
+DEF_PROP_FLAG(FarDialog, KeepWindowTitle, FDLG_KEEPCONSOLETITLE);
 DEF_PROP_FLAG(FarDialog, NoPanel, FDLG_NODRAWPANEL);
 DEF_PROP_FLAG(FarDialog, NoShadow, FDLG_NODRAWSHADOW);
 

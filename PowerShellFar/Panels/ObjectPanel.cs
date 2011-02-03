@@ -203,7 +203,7 @@ namespace PowerShellFar
 		internal override void UICreate()
 		{
 			// prompt for a command
-			string code = Far.Net.MacroState == FarMacroState.None ? A.Psf.InputCode() : Far.Net.Input(null);
+			string code = Far.Net.MacroState == MacroState.None ? A.Psf.InputCode() : Far.Net.Input(null);
 			if (string.IsNullOrEmpty(code))
 				return;
 

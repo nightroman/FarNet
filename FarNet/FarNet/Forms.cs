@@ -502,6 +502,14 @@ namespace FarNet.Forms
 		/// </remarks>
 		public abstract bool IsSmall { get; set; }
 		/// <summary>
+		/// Tells to keep the window title instead of setting it to the first control text.
+		/// </summary>
+		/// <remarks>
+		/// Text of the first control added to the dialog is normally used as the main window title.
+		/// Set this flag to true in order to keep the window title intact.
+		/// </remarks>
+		public abstract bool KeepWindowTitle { get; set; }
+		/// <summary>
 		/// Tells to create the dialog with no shadow.
 		/// </summary>
 		public abstract bool NoShadow { get; set; }

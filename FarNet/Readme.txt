@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.3.39
-Release  : 2011-01-29
+Version  : 4.3.40
+Release  : 2011-02-02
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -21,7 +21,7 @@ tiny pieces of boilerplate framework code.
 
 
  - .NET Framework 2.0+
- - Far Manager 2.0.1802
+ - Far Manager 2.0.1807
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
  (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
@@ -113,23 +113,74 @@ should be used only for advanced scenarious:
 	--  Tells to disable special rare GUI features. Default: false
 
 
-= MODULE COMMANDS AND MACROS =
+= MODULE COMMANDS IN MACROS =
 
 
 If a FarNet module provides commands invoked by prefixes then these commands
 can be called from macros by CallPlugin(). The first argument is the FarNet
-system ID: 0xcd. The second argument is the module prefix and command.
-
-Example (RightControl and PowerShellFar commands):
-
-	CallPlugin(0xcd, "RightControl:step-left")
-	CallPlugin(0xcd, ">: Menu-Favorites-.ps1")
+system ID: 0xcd. The second argument is the module prefix, colon and command.
+For asynchronous steps and jobs the argument should start with one and two
+colons respectively.
 
 Mnemonic for 0xcd: eXecute CommanD
 
-NOTE:
-- Module panels cannot be opened by CallPlugin.
-- Macros and some features do not work in modal UI started by CallPlugin.
+SYNTAX AND DETAILS
+
+	Synchronous command:
+
+		CallPlugin(0xcd, "Prefix:Command")
+			- It is called from all macro areas
+			- It can but should not use modal UI
+			- It cannot open panels
+
+	Asynchronous step (IFar.PostStep)
+
+		CallPlugin(0xcd, ":Prefix:Command")
+			- It is called from areas where the plugin menu is available
+			- FarNet itself must have a hotkey in the plugin menu
+			- It can use modal UI as usual
+			- It can open panels
+
+	Asynchronous job (IFar.PostJob)
+
+		CallPlugin(0xcd, "::Prefix:Command")
+			- It is called from all macro areas
+			- It can use modal UI as usual
+			- It cannot open panels
+
+	- Synchronous calls are for simple actions with no or tiny interaction;
+	- An asynchronous CallPlugin normally should be the last macro command;
+	- Asynchronous jobs are good for starting modal dialogs, editors, etc.;
+	- Asynchronous steps are used to open any UI including module panels.
+
+CAUTION
+
+It is recommended to use asynchronous steps, not jobs. Steps are basically the
+same as calls from the plugin menu, this is the most stable approach. Jobs may
+reveal scenarios not quite expected by Far Manager. The CallPlugin feature is
+powerful but still experimental, it can be even replaced in the future.
+
+EXAMPLES
+
+	Synchronous (RightControl and PowerShellFar commands):
+
+		CallPlugin(0xcd, "RightControl:step-left")
+		CallPlugin(0xcd, ">: Menu-Favorites-.ps1")
+
+	Asynchronous step (PowerShellFar command opens the panel):
+
+		CallPlugin(0xcd, ":>: Get-Process | Out-FarPanel")
+
+	Asynchronous job (PowerShellFar command opens the dialog):
+
+		CallPlugin(0xcd, "::>: $Psf.InvokeInputCode()")
+
+KNOWN ISSUE AND WORKAROUND
+
+An asynchronous step opens the plugin menu internally. This menu is actually
+shown for a moment if a macro has its option "Disable screen output" checked.
+The workaround is very funny: uncheck this macro option, i.e. allow screen
+output. The effect is the opposite: the unwanted menu is not shown anymore.
 
 
 = API DOCUMENTATION (.CHM) =

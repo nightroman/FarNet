@@ -53,20 +53,20 @@ $Far.Macro.Install($(
 
 	### == Common (all areas)
 
-	### Decrease/Increase font size
+	### Decrease/Increase font size [CtrlMsWheelDown] [CtrlMsWheelUp]
 	New-FarMacro Common CtrlMsWheelDown 'F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End' 'FarNet: Decrease font size'
 	New-FarMacro Common CtrlMsWheelUp   'F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End' 'FarNet: Increase font size'
 
-	### Favorites menu
+	### Favorites menu [CtrlShiftL]
 	New-FarMacro Common CtrlShiftL 'CallPlugin(0xcd, ">: Menu-Favorites-.ps1")' 'PSF: Favorites'
 
-	### PowerShellFar command history
-	# Also, AltF10 in panels disables questionable folder tree feature.
-	New-FarMacro Common AltF10 (Get-PsfMacro 4) 'PSF: Command history'
+	### PowerShellFar command history [AltF10]
+	# AltF10 in panels disables questionable folder tree.
+	New-FarMacro Common AltF10 'CallPlugin(0xcd, ":>: $Psf.ShowHistory()")' 'PSF: Command history' -EnableOutput
 
 	### == Mixed (several areas)
 
-	### (Edit-FarDescription-.ps1) Edit file description: Shell: current item; Editor or Viewer: opened file
+	### (Edit-FarDescription-.ps1) Edit file description: Shell: current item; Editor or Viewer: opened file [AltZ]
 	$m = @{
 		Name = 'AltZ'
 		Sequence = Get-PsfMacro t
@@ -76,7 +76,7 @@ $Far.Macro.Install($(
 	New-FarMacro Editor @m
 	New-FarMacro Viewer @m
 
-	### TabExpansion in any editor line
+	### TabExpansion in any editor line [F9]
 	$m = @{
 		Name = 'F9'
 		Sequence = Get-PsfMacro 7
@@ -87,7 +87,7 @@ $Far.Macro.Install($(
 	$m.Sequence = Get-CommandLineMacro $m.Sequence
 	New-FarMacro Common @m -CommandLine 1
 
-	### (Complete-Word-.ps1) Command line: from history; Editor: from file; Dialog: from edit box history
+	### (Complete-Word-.ps1) Command line: from history; Editor: from file; Dialog: from edit box history [CtrlSpace]
 	$m = @{
 		Name = 'CtrlSpace'
 		Sequence = Get-PsfMacro c
@@ -98,7 +98,7 @@ $Far.Macro.Install($(
 	$m.Sequence = Get-CommandLineMacro $m.Sequence
 	New-FarMacro Common @m -CommandLine 1
 
-	### (Set-Selection-.ps1) Change selected text to lower case
+	### (Set-Selection-.ps1) Change selected text to lower case [CtrlU]
 	$m = @{
 		Name = 'CtrlU'
 		Sequence = Get-PsfMacro l
@@ -109,7 +109,7 @@ $Far.Macro.Install($(
 	New-FarMacro Editor @m
 	New-FarMacro Dialog @m
 
-	### (Set-Selection-.ps1) Change selected text to upper case
+	### (Set-Selection-.ps1) Change selected text to upper case [CtrlShiftU]
 	$m = @{
 		Name = 'CtrlShiftU'
 		Sequence = Get-PsfMacro u
@@ -122,74 +122,74 @@ $Far.Macro.Install($(
 
 	### == Shell only
 
-	### Quit Far
+	### Quit Far [F10]
 	New-FarMacro Shell F10 '$If (CallPlugin(0xcd, ">: $Far.Quit()")) $Else F10 $End' 'PSF: Quit Far'
 
-	### Easy prefix: space expands empty command line to '>: '
-	New-FarMacro Shell Space '> : Space' 'PSF: Easy prefix' -CommandLine 0
-
-	### Easy invoke: type and run without prefix (Invoke selected code)
+	### Easy invoke: type and run without prefix (Invoke selected code) [ShiftSpace]
 	New-FarMacro Shell ShiftSpace (Get-PsfMacro 2) 'PSF: Easy invoke' -CommandLine 1
 
-	### Power panel menu
+	### Power panel menu [Ctrl=]
 	New-FarMacro Shell Ctrl= (Get-PsfMacro 6) 'PSF: Power panel menu'
 
-	### (Go-Head-.ps1) Go to head file item (e.g. useful after [CtrlF5] to find the newest file)
+	### (Go-Head-.ps1) Go to head file item (e.g. useful after [CtrlF5] to find the newest file) [CtrlShiftF5]
 	New-FarMacro Shell CtrlShiftF5 (Get-PsfMacro h) 'PSF: Go to panel head item'
 
-	### CtrlC to copy selected text
-	New-FarMacro Shell CtrlC 'CtrlIns' 'Copy selected text' -SelectedText 1
-
-	### Open recent folder in the panel
+	### Open recent folder in the panel [AltF12] [CtrlShiftF12]
 	# Call Show-History-.ps1 by PSF or fallback
 	New-FarMacro Shell AltF12 (Get-PsfMacro n AltF12) 'PSF: Open recent folder'
 	# CtrlShiftF12 -> standard AltF12
 	New-FarMacro Shell CtrlShiftF12 AltF12 'Far: Open recent folder'
 
-	### (Search-Regex-.ps1) Backgroung search in files with dynamic results in the panel
+	### (Search-Regex-.ps1) Backgroung search in files with dynamic results in the panel [CtrlShiftF7]
 	New-FarMacro Shell CtrlShiftF7 (Get-PsfMacro x) 'PSF: Search regex in files'
 
 	### == Editor only
 
-	### (Invoke-Editor-.ps1) Invoke a file from the editor
+	### (Invoke-Editor-.ps1) Invoke a file from the editor [CtrlF5]
 	New-FarMacro Editor CtrlF5 (Get-PsfMacro '= f') 'PSF: Invoke a file from the editor'
 
-	### (Indent-Selection-.ps1) Indent selected line(s)
+	### (Indent-Selection-.ps1) Indent selected line(s) [Tab]
 	New-FarMacro Editor Tab (Get-PsfMacro i) 'PSF: Indent selected line(s)' -SelectedText 1
 
-	### (Indent-Selection-.ps1) Outdent selected line(s)
+	### (Indent-Selection-.ps1) Outdent selected line(s) [ShiftTab]
 	New-FarMacro Editor ShiftTab (Get-PsfMacro o) 'PSF: Outdent selected line(s)' -SelectedText 1
 
-	### (Reindent-Selection-.ps1) Reindent selected\current line(s)
+	### (Reindent-Selection-.ps1) Reindent selected\current line(s) [AltF8]
 	New-FarMacro Editor AltF8 (Get-PsfMacro r) 'PSF: Reindent selected\current line(s)'
 
-	### (Reformat-Selection-.ps1) Reformat selected\current line(s)
+	### (Reformat-Selection-.ps1) Reformat selected\current line(s) [CtrlShiftF8]
 	New-FarMacro Editor CtrlShiftF8 (Get-PsfMacro f) 'PSF: Reformat selected\current line(s)'
 
-	### Bookmarks
-	New-FarMacro Editor Ctrl- 'bm.prev()' 'Go to the previous stack bookmark'
-	New-FarMacro Editor CtrlShift- 'bm.next()' 'Go to the next stack bookmark'
+	### Bookmarks [Ctrl=] [CtrlShift=] [Ctrl-] [CtrlShift-]
 	New-FarMacro Editor Ctrl= 'CallPlugin(0xcd, ">: Select-Bookmark-")' 'Show bookmarks'
 	New-FarMacro Editor CtrlShift= 'bm.add()' 'Add a new stack bookmark'
+	New-FarMacro Editor Ctrl- 'bm.prev()' 'Go to the previous stack bookmark'
+	New-FarMacro Editor CtrlShift- 'bm.next()' 'Go to the next stack bookmark'
 
-	### == Native (not PSF) macros
+	### == Native Far Manager macros
 
-	### Go to text selection left edge
+	### Easy prefix: space expands empty command line to '>: ' [Space]
+	New-FarMacro Shell Space '> : Space' 'PSF: Easy prefix' -CommandLine 0
+
+	### CtrlC to copy selected text [CtrlC]
+	New-FarMacro Shell CtrlC 'CtrlIns' 'Copy selected text' -SelectedText 1
+
+	### Go to text selection left edge [Left]
 	$m = @{
 		Name = 'Left'
 		Sequence = "Editor.Sel(1,0) Editor.Sel(4)"
-		Description = 'Go to text selection left edge'
+		Description = 'Go to text selection start'
 		SelectedText = 1
 	}
 	New-FarMacro Shell @m
 	New-FarMacro Editor @m
 	New-FarMacro Dialog @m
 
-	### Go to text selection right edge
+	### Go to text selection right edge [Right]
 	$m = @{
 		Name = 'Right'
 		Sequence = "Editor.Sel(1,1) Editor.Sel(4)"
-		Description = 'Go to text selection right edge'
+		Description = 'Go to text selection end'
 		SelectedText = 1
 	}
 	New-FarMacro Shell @m

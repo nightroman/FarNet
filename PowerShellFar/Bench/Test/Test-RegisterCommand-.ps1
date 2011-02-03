@@ -20,7 +20,7 @@ if (!$command) {
 	$command = $Psf.Manager.RegisterModuleCommand(
 		"053a9a98-db98-415c-9c80-88eee2f336ae",
 		(New-Object FarNet.ModuleCommandAttribute -Property @{ Name = "PSF test command"; Prefix = "test" }),
-		{ Show-FarMessage $_.Command "PSF test command" }
+		{ Show-FarMessage ($_ | Format-List | Out-String).Trim() "PSF test command" -LeftAligned }
 	)
 	Show-FarMessage "Command 'test' is registered, type:`n$($command.Prefix):<text>[Enter]"
 }

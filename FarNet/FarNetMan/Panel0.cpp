@@ -64,9 +64,10 @@ int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsN
 	return e.Ignore ? false : true;
 }
 
-void Panel0::AsFreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int itemsNumber)
+void Panel0::AsFreeFindData(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber)
 {
-	Log::Source->TraceInformation("FreeFindData");
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin]; //????? need? can it be static managed by Address -> Data map including Panel2^
+	Log::Source->TraceInformation("FreeFindData Address='{0:x}' CurrentDirectory='{1}'", (INT_PTR)panelItem, pp->Info->CurrentDirectory);
 
 	for(int i = itemsNumber; --i >= 0;)
 	{
@@ -89,7 +90,8 @@ void Panel0::AsFreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int 
 	delete[] panelItem;
 }
 
-//?? Parameter destPath can be changed, i.e. (*destPath) replaced. NYI here.
+//?? NYI: Parameter destPath can be changed, i.e. (*destPath) replaced.
+//?? NYI: Not used return value -1 (stopped by a user).
 int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode)
 {
 	Log::Source->TraceInformation("GetFiles");
@@ -103,7 +105,7 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	GettingFilesEventArgs e(files, names, (OperationModes)opMode, move != 0, gcnew String((*destPath)));
 	pp->_GettingFiles(pp, %e);
 
-	return e.Ignore ? false : true;
+	return e.Ignore ? 0 : 1;
 }
 
 //! 090712. Allocation by chunks was originally used. But it turns out it does not improve
@@ -111,8 +113,6 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 //! may fail due to memory fragmentation more frequently.
 int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
-	Log::Source->TraceInformation("GetFindData");
-
 	try
 	{
 		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
@@ -120,6 +120,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		// fake empty panel needed on switching modes, for example
 		if (pp->_voidGettingData)
 		{
+			Log::Source->TraceInformation("GetFindData fake empty panel");
 			(*pItemsNumber) = 0;
 			(*pPanelItem) = NULL;
 			return true;
@@ -128,7 +129,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		// the Find mode
 		const bool isFind = 0 != (opMode & OPM_FIND);
 
-		//_110121_150249 ?????
+		//_110121_150249
 		// the files to use to return data; now it keeps the old files to be restored on find
 		IList<FarFile^>^ files = pp->Files;
 
@@ -136,6 +137,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		if (pp->_GettingData && !pp->_skipGettingData)
 		{
 			PanelEventArgs e((OperationModes)opMode);
+			Log::Source->TraceInformation("GetFindData Mode='{0}' CurrentDirectory='{1}'", e.Mode, pp->Info->CurrentDirectory);
 
 			// drop the original files for the Find mode
 			if (isFind)
@@ -161,7 +163,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 					files = pp->Files;
 				}
 			}
-			
+
 			if (e.Ignore)
 				return false;
 		}
@@ -180,6 +182,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		// alloc all
 		(*pPanelItem) = new PluginPanelItem[nItem];
 		memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
+		Log::Source->TraceInformation("GetFindData Address='{0:x}'", (INT_PTR)(*pPanelItem));
 
 		// add dots
 		int itemIndex = -1, fileIndex = -1;
@@ -229,7 +232,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 			d.ftCreationTime = DateTimeToFileTime(f->CreationTime);
 			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
 			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
-			// _110121_150249 Set -1 in the Find mode
+			//_110121_150249 Set -1 in the Find mode
 			p.UserData = isFind ? -1 : fileIndex;
 
 			// columns
@@ -332,7 +335,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 	case FE_BREAK:
 		{
 			Log::Source->TraceInformation("FE_BREAK");
-			
+
 			if (pp->_CtrlBreakPressed)
 			{
 				Log::Source->TraceInformation("CtrlBreakPressed");
@@ -343,7 +346,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 	case FE_CLOSE:
 		{
 			Log::Source->TraceInformation("FE_CLOSE");
-			
+
 			//? FE_CLOSE issues:
 			// *) Bug [_090321_165608]: unwanted extra call on plugin commands entered in command line
 			// http://bugs.farmanager.com/view.php?id=602
@@ -473,7 +476,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			{
 				Object^ data = pp->_postData ? pp->_postData : pp->_postFile->Data;
 				Object^ dataId = pp->DataId(data);
-				
+
 				pp->_postFile = nullptr;
 				pp->_postData = nullptr;
 				pp->_postName = nullptr;
@@ -577,11 +580,11 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
 	// extract the key code
 	int code = key & ~PKF_PREPROCESS;
-	
+
 	// filter out not keys but kind of events (perhaps to make events later)
 	if (code >= Wrap::GetEndKeyCode())
 		return false;
-	
+
 	//! mind rare case: plugin in null, e.g. closed by [AltF12] + select folder
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp)
@@ -663,17 +666,21 @@ int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 
 int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 {
-	Log::Source->TraceInformation("SetDirectory");
-
 	_inAsSetDirectory = true;
 	try
 	{
 		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 		if (!pp->_SettingDirectory)
-			return true;
+		{
+			Log::Source->TraceInformation("SetDirectory no handler");
+			return 1;
+		}
+
 		SettingDirectoryEventArgs e(gcnew String(dir), (OperationModes)opMode);
+		Log::Source->TraceInformation("SetDirectory Mode='{0}' Name='{1}'", e.Mode, e.Name);
+		
 		pp->_SettingDirectory(pp, %e);
-		return !e.Ignore;
+		return e.Ignore ? 0 : 1;
 	}
 	finally
 	{

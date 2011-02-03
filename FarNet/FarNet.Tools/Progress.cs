@@ -44,7 +44,7 @@ namespace FarNet.Tools
 		const int PROGRESS_WIDTH = TEXT_WIDTH - 4;
 
 		string _Activity = string.Empty;
-		readonly List<string> _Lines = new List<string>(TEXT_HEIGHT);
+		string[] _Lines;
 
 		int _percentage = -1;
 		Stopwatch _stopwatch = Stopwatch.StartNew();
@@ -57,7 +57,7 @@ namespace FarNet.Tools
 				// only new value drops old data
 				if (_Activity != value)
 				{
-					_Lines.Clear();
+					_Lines = null;
 					_Activity = value ?? string.Empty;
 				}
 			}
@@ -72,36 +72,44 @@ namespace FarNet.Tools
 			_percentage = (int)(currentValue * 100 / maximumValue);
 		}
 
-		internal List<string> Build(out string progress, int height, bool title)
+		internal string[] Build(out string progress, int height)
 		{
 			// format activity if not yet
-			if (_Lines.Count == 0)
+			var result = _Lines; //! work with copy, the source is shared
+			if (result == null)
 			{
-				// format with limited height
 				bool useHeight = height > 0 && height <= TEXT_HEIGHT;
+				int maxHeight = useHeight ? height : TEXT_HEIGHT;
+				var lines = new List<string>(maxHeight);
+				
+				// format with limited height
 				FarNet.Works.Kit.FormatMessage(
-					_Lines,
+					lines,
 					_Activity,
 					TEXT_WIDTH,
-					useHeight ? height : TEXT_HEIGHT,
+					maxHeight,
 					FarNet.Works.FormatMessageMode.Cut);
 				
 				// pad by empty lines
 				if (useHeight)
 				{
-					while (_Lines.Count < height)
-						_Lines.Add(string.Empty);
+					while (lines.Count < height)
+						lines.Add(string.Empty);
 				}
+
+				// keep result for later
+				result = lines.ToArray();
+				_Lines = result;
 			}
 
+			string title;
 			if (_percentage < 0)
 			{
 				// time span, mind unwanted milliseconds
 				progress = (new TimeSpan(0, 0, (int)_stopwatch.Elapsed.TotalSeconds)).ToString();
 				
 				// 1) window title
-				if (title)
-					Far.Net.UI.WindowTitle = progress + " " + _Lines[0];
+				title = progress + " " + result[0];
 				
 				// 2) ensure fixed box width
 				progress = progress.PadRight(TEXT_WIDTH);
@@ -115,11 +123,14 @@ namespace FarNet.Tools
 				Far.Net.UI.SetProgressValue(_percentage, 100);
 
 				// window title
-				if (title)
-					Far.Net.UI.WindowTitle = string.Format(null, "{0}% {1}", _percentage, _Lines[0]);
+				title = string.Format(null, "{0}% {1}", _percentage, result[0]);
 			}
 
-			return _Lines;
+			// window title
+			Far.Net.UI.WindowTitle = title;
+
+			// the copy
+			return result;
 		}
 
 		static string FormatProgress(int percentage)

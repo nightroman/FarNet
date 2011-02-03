@@ -246,85 +246,59 @@ namespace FarNet
 	/// <summary>
 	/// Macro areas.
 	/// </summary>
+	/// <remarks>
+	/// Names are mostly the same as in macros (and as the registry key names).
+	/// Positive values are real areas, the others are for internal use.
+	/// </remarks>
 	public enum MacroArea
 	{
-		/// <summary>
-		/// No area.
-		/// </summary>
-		Root,
+		/// <summary>No area.</summary>
+		None, 
+		/// <summary>Screen grabbing mode ([AltIns]).</summary>
+		Other,
+		/// <summary>File panels.</summary>
+		Shell,
+		/// <summary>File viewer.</summary>
+		Viewer,
+		/// <summary>File editor.</summary>
+		Editor,
+		/// <summary>Dialog window.</summary>
+		Dialog,
+		/// <summary>Quick file search ([AltLetter]).</summary>
+		Search,
+		/// <summary>Drive menu.</summary>
+		Disks,
+		/// <summary>Main menu.</summary>
+		MainMenu,
+		/// <summary>Other menus.</summary>
+		Menu,
+		/// <summary>Help window.</summary>
+		Help,
+		/// <summary>Information panel.</summary>
+		Info,
+		/// <summary>Quick view panel.</summary>
+		QView,
+		/// <summary>Folder tree panel.</summary>
+		Tree,
+		/// <summary>Folder search panel.</summary>
+		FindFolder,
+		/// <summary>User menu.</summary>
+		UserMenu,
+		/// <summary>Auto completion menu.</summary>
+		AutoCompletion, //_100201_110148 max
 		/// <summary>
 		/// Lowest priority macros used everywhere.
 		/// </summary>
-		Common,
+		Common = -1,
 		/// <summary>
 		/// Global constants.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-		Consts,
-		/// <summary>
-		/// Dialog boxes.
-		/// </summary>
-		Dialog,
-		/// <summary>
-		/// Drive selection menu.
-		/// </summary>
-		Disks,
-		/// <summary>
-		/// File editor.
-		/// </summary>
-		Editor,
-		/// <summary>
-		/// Folder search panel.
-		/// </summary>
-		FindFolder,
-		/// <summary>
-		/// Help system.
-		/// </summary>
-		Help,
-		/// <summary>
-		/// Informational panel.
-		/// </summary>
-		Info,
-		/// <summary>
-		/// Main menu.
-		/// </summary>
-		MainMenu,
-		/// <summary>
-		/// Other menus.
-		/// </summary>
-		Menu,
-		/// <summary>
-		/// Screen capturing mode.
-		/// </summary>
-		Other,
-		/// <summary>
-		/// Quick view panel.
-		/// </summary>
-		QView,
-		/// <summary>
-		/// Quick file search.
-		/// </summary>
-		Search,
-		/// <summary>
-		/// File panels.
-		/// </summary>
-		Shell,
-		/// <summary>
-		/// Folder tree panel.
-		/// </summary>
-		Tree,
-		/// <summary>
-		/// User menu.
-		/// </summary>
-		UserMenu,
+		Consts = -2,
 		/// <summary>
 		/// Global variables.
 		/// </summary>
-		Vars,
-		/// <summary>
-		/// File viewer.
-		/// </summary>
-		Viewer //! this is the last; update _100201_110148 if it is not
+		Vars = -3, //_100201_110148 min
 	}
 
 	/// <summary>
