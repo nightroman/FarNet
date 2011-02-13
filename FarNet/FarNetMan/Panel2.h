@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -5,79 +6,140 @@ Copyright (c) 2005 FarNet Team
 
 #pragma once
 #include "Panel1.h"
-#include "PanelInfo.h"
+
+#define FPPI_FLAG(Name)\
+public: virtual property bool Name {\
+	bool get() { return _##Name; }\
+	void set(bool value) {\
+	_##Name = value;\
+	if (m) m->Flags = Flags();\
+}}\
+private: bool _##Name
+
+#define FPPI_PROP(Type, Name, Set)\
+public: virtual property Type Name {\
+	Type get() { return _##Name; }\
+	void set(Type value) {\
+	_##Name = value;\
+	if (m) { Set; }\
+}}\
+private: Type _##Name
+
+#define FPPI_TEXT(Name, Data)\
+public: virtual property String^ Name {\
+	String^ get() { return _##Name; }\
+	void set(String^ value) {\
+	_##Name = value;\
+	if (m) {\
+	delete[] m->Data;\
+	m->Data = NewChars(value);\
+	}\
+}}\
+private: String^ _##Name
 
 namespace FarNet
 {;
-ref class ShelveInfoPanel;
-ref class ShelveInfoPlugin;
+ref class ShelveInfoNative;
+ref class ShelveInfoModule;
 
-ref class Panel2 : public Panel1, IPanel
+ref class Panel2 : public Panel1, Works::IPanelWorks
 {
-public: // Panel1
-	virtual property bool IsPlugin { bool get() override; }
-	virtual property Guid TypeId { Guid get(); void set(Guid value); }
-	virtual property FarFile^ CurrentFile { FarFile^ get() override; }
-	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get() override; }
-	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get() override; }
-	virtual property String^ Path { String^ get() override; void set(String^ value) override; }
-	virtual property String^ ActivePath { String^ get(); }
+internal:
+	void Free();
+	OpenPluginInfo& Make();
 public: // IPanel
-	virtual property bool AddDots;
-	virtual property bool IdleUpdate;
-	virtual property bool IsOpened { bool get(); }
-	virtual property bool IsPushed { bool get() { return _Pushed != nullptr; } }
-	virtual property Getter^ DataId;
-	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
-	virtual property IPanel^ AnotherPanel { IPanel^ get(); }
-	virtual property IPanelInfo^ Info { IPanelInfo^ get() { return %_info; } }
-	virtual property Object^ Host;
-	virtual property String^ DotsDescription;
-	virtual property System::Collections::Hashtable^ Data { System::Collections::Hashtable^ get(); }
+	virtual property bool RealNames { bool get() override; void set(bool value) override; }
+	virtual property bool UseSortGroups { bool get() override; void set(bool value) override; }
+	virtual property FarFile^ CurrentFile { FarFile^ get() override; }
+	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get() override; }
+	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get() override; }
+	virtual property PanelSortMode SortMode { PanelSortMode get() override; void set(PanelSortMode value) override; }
+	virtual property PanelViewMode ViewMode { PanelViewMode get() override; void set(PanelViewMode value) override; }
+	virtual property String^ CurrentDirectory { String^ get() override; void set(String^ value) override; }
+	virtual property String^ StartDirectory { String^ get(); }
 	virtual void Close() override;
+	virtual void Push() override;
+public: // IPanelWorks
+	FPPI_FLAG(CompareFatTime);
+	FPPI_FLAG(PreserveCase);
+	FPPI_FLAG(RawSelection);
+	FPPI_FLAG(RealNamesDeleteFiles);
+	FPPI_FLAG(RealNamesExportFiles);
+	FPPI_FLAG(RealNamesImportFiles);
+	FPPI_FLAG(RealNamesMakeDirectory);
+	FPPI_FLAG(RightAligned);
+	FPPI_FLAG(ShowNamesOnly);
+	FPPI_FLAG(UseFilter);
+	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
+	FPPI_TEXT(FormatName, Format);
+	FPPI_TEXT(HostFile, HostFile);
+	FPPI_TEXT(PanelDirectory, CurDir);
+	FPPI_TEXT(Title, PanelTitle);
+public:
+	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() { return _InfoItems; } void set(array<DataItem^>^ value); }
+	virtual property PanelHighlighting Highlighting { PanelHighlighting get(); void set(PanelHighlighting value); }
+	virtual property bool IsOpened { bool get() { return Index > 0; } }
+	virtual property bool IsPushed { bool get() { return _Pushed != nullptr; } }
+	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
+	virtual property int WorksId { int get() { return Index; } }
+	virtual property Panel^ AnotherPanel { Panel^ get(); }
 	virtual void Open();
-	virtual void Open(IPanel^ oldPanel);
+	virtual void OpenReplace(Panel^ current);
 	virtual void PostData(Object^ data) { _postData = data; }
 	virtual void PostFile(FarFile^ file) { _postFile = file; }
 	virtual void PostName(String^ name) { _postName = name; }
-	virtual void Push() override;
-public: DEF_EVENT(Closed, _Closed);
-public: DEF_EVENT(CtrlBreakPressed, _CtrlBreakPressed);
-public: DEF_EVENT(GettingInfo, _GettingInfo);
-public: DEF_EVENT(GotFocus, _GotFocus);
-public: DEF_EVENT(Idled, _Idled);
-public: DEF_EVENT(LosingFocus, _LosingFocus);
-public: DEF_EVENT_ARGS(Closing, _Closing, PanelEventArgs);
-public: DEF_EVENT_ARGS(DeletingFiles, _DeletingFiles, FilesEventArgs);
-public: DEF_EVENT_ARGS(Escaping, _Escaping, PanelEventArgs);
-public: DEF_EVENT_ARGS(Executing, _Executing, ExecutingEventArgs);
-public: DEF_EVENT_ARGS(GettingData, _GettingData, PanelEventArgs);
-public: DEF_EVENT_ARGS(GettingFiles, _GettingFiles, GettingFilesEventArgs);
-public: DEF_EVENT_ARGS(KeyPressed, _KeyPressed, PanelKeyEventArgs);
-public: DEF_EVENT_ARGS(KeyPressing, _KeyPressing, PanelKeyEventArgs);
-public: DEF_EVENT_ARGS(MakingDirectory, _MakingDirectory, MakingDirectoryEventArgs);
-public: DEF_EVENT_ARGS(PuttingFiles, _PuttingFiles, PuttingFilesEventArgs);
-public: DEF_EVENT_ARGS(Redrawing, _Redrawing, PanelEventArgs);
-public: DEF_EVENT_ARGS(SettingDirectory, _SettingDirectory, SettingDirectoryEventArgs);
-public: DEF_EVENT_ARGS(ViewModeChanged, _ViewModeChanged, ViewModeChangedEventArgs);
+	virtual PanelPlan^ GetPlan(PanelViewMode mode);
+	virtual void SetKeyBar(array<String^>^ labels);
+	virtual void SetKeyBarAlt(array<String^>^ labels);
+	virtual void SetKeyBarAltShift(array<String^>^ labels);
+	virtual void SetKeyBarCtrl(array<String^>^ labels);
+	virtual void SetKeyBarCtrlAlt(array<String^>^ labels);
+	virtual void SetKeyBarCtrlShift(array<String^>^ labels);
+	virtual void SetKeyBarShift(array<String^>^ labels);
+	virtual void SetPlan(PanelViewMode mode, PanelPlan^ plan);
 internal:
-	Panel2();
+	Panel2(Panel^ panel);
+	bool HasDots();
 	void AssertOpen();
 	void SwitchFullScreen();
 	virtual FarFile^ GetFile(int index, FileType type) override;
 internal:
-	ShelveInfoPlugin^ _Pushed;
-	bool _skipGettingData;
-	bool _voidGettingData;
-	FarPanelInfo _info;
+	property PanelSortMode StartSortMode { PanelSortMode get(); void set(PanelSortMode value); }
+internal:
+	Panel^ const Host;
+	ShelveInfoModule^ _Pushed;
+	bool _skipUpdateFiles;
+	bool _voidUpdateFiles;
 	Object^ _postData;
 	FarFile^ _postFile;
 	String^ _postName;
 	array<int>^ _postSelected;
-	ShelveInfoPanel^ _ActiveInfo;
+	ShelveInfoNative^ _ActiveInfo;
 private:
-	Guid _TypeId;
-	IList<FarFile^>^ _files;
-	System::Collections::Hashtable^ _Data;
+	IList<FarFile^>^ _Files;
+private:
+	int Flags();
+	void CreateInfoLines();
+	void CreateModes();
+	void DeleteInfoLines();
+	void DeleteModes();
+	static void Free12Strings(wchar_t* const dst[12]);
+	static void Make12Strings(wchar_t** dst, array<String^>^ src);
+private:
+	OpenPluginInfo* m;
+	bool _FarStartSortOrder;
+	bool _RealNames;
+	bool _UseSortGroups;
+	int _FarStartSortMode;
+	PanelHighlighting _Highlighting;
+	array<DataItem^>^ _InfoItems;
+	array<PanelPlan^>^ _Plans;
+	array<String^>^ _keyBar;
+	array<String^>^ _keyBarAlt;
+	array<String^>^ _keyBarAltShift;
+	array<String^>^ _keyBarCtrl;
+	array<String^>^ _keyBarCtrlAlt;
+	array<String^>^ _keyBarCtrlShift;
+	array<String^>^ _keyBarShift;
 };
 }

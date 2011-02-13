@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -178,7 +179,7 @@ bool IsCurrentViewer()
 	// not panels
 	if (wi.Type != WTYPE_PANELS)
 		return false;
-	
+
 	// qview
 	//! Verified for Far 2.0.843:
 	//! QView panel creates a viewer, it gets read and close events, but not focus.
@@ -290,7 +291,7 @@ void Edit_RemoveAt(int index)
 		// go to the end of previous
 		if (--index < 0)
 			return;
-		
+
 		EditorControl_ECTL_GETSTRING(egsLast, index);
 		Edit_GoTo(egsLast.StringLength, index);
 
@@ -365,7 +366,7 @@ String^ Wildcard(String^ pattern)
 	{
 		if (pattern[i] != '\\')
 			continue;
-		
+
 		if (pattern[i + 1] == '*')
 			pattern = pattern->Substring(0, i) + ".*" + pattern->Substring(i + 2);
 		if (pattern[i + 1] == '?')
@@ -446,7 +447,7 @@ bool Configuration::GetBool(String^ key)
 	bool result;
 	if (!Boolean::TryParse(value->ToString(), result))
 		return false;
-	
+
 	return result;
 }
 

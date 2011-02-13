@@ -26,16 +26,16 @@ param
 (
 	[System.Data.Common.DbProviderFactory]
 	# Data provider factory instance. Default: variable $DbProviderFactory is expected.
-	$DbProviderFactory = $DbProviderFactory,
-
+	$DbProviderFactory = $DbProviderFactory
+	,
 	[System.Data.Common.DbConnection]
 	# Database connection. Default: variable $DbConnection is expected.
-	$DbConnection = $DbConnection,
-
+	$DbConnection = $DbConnection
+	,
 	[switch]
 	# Show the panel as a child panel of the current panel.
-	$AsChild,
-
+	$AsChild
+	,
 	[switch]
 	# Tells to close the connection.
 	$CloseConnection
@@ -70,17 +70,17 @@ else {
 }
 
 ### create and configure a user panel for table objects
-$p = New-Object PowerShellFar.UserPanel
-$p.Panel.Info.Title = "$($DbConnection.Database) Tables"
-$p.Columns = $columns
-$p.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1'] = @{ DbProviderFactory = $DbProviderFactory; DbConnection = $DbConnection }
+$Panel = New-Object PowerShellFar.UserPanel
+$Panel.Title = "$($DbConnection.Database) Tables"
+$Panel.Columns = $columns
+$Panel.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1'] = @{ DbProviderFactory = $DbProviderFactory; DbConnection = $DbConnection }
 
 # garbage
-$p.Garbage.Add($table)
-if ($CloseConnection) { $p.Garbage.Add($DbConnection) }
+$Panel.Garbage.Add($table)
+if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
 
 ### set [Enter] handler ([CtrlPgDn] is for members)
-$p.SetOpen({
+$Panel.SetOpen({
 	$pd = $this.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1']
 	$fd = $_.File.Data
 	$table = $fd.TABLE_NAME
@@ -101,5 +101,5 @@ $p.SetOpen({
 })
 
 # go!
-$p.AddObjects(($table.Rows | Sort-Object 'TABLE_NAME'))
-$p.Show($AsChild)
+$Panel.AddObjects(($table.Rows | Sort-Object 'TABLE_NAME'))
+$Panel.Open($AsChild)

@@ -324,7 +324,6 @@
     <ClCompile Include="Panel1.cpp" />
     <ClCompile Include="Panel2.cpp" />
     <ClCompile Include="PanelFileCollection.cpp" />
-    <ClCompile Include="PanelInfo.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="Shelve.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -366,7 +365,6 @@
     <ClInclude Include="Panel1.h" />
     <ClInclude Include="Panel2.h" />
     <ClInclude Include="PanelFileCollection.h" />
-    <ClInclude Include="PanelInfo.h" />
     <ClInclude Include="Headers.c\plugin.hpp" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Shelve.h" />

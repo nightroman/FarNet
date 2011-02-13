@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -718,7 +719,7 @@ Ignore: discard all jobs and output
 						{
 							if (job.JobUI.Length > 0)
 								My.ProcessEx.StartNotepad(job.FileName).WaitForExit();
-							
+
 							job.Dispose();
 							Jobs.RemoveAt(0);
 						}

@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -18,7 +19,7 @@ namespace FarNet.Works
 				IControl control = dialog[i];
 				if (control == null)
 					break;
-				
+
 				yield return control;
 			}
 		}

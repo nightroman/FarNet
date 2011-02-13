@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -46,6 +47,10 @@ namespace FarNet
 	/// </remarks>
 	public abstract class IFar
 	{
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		public abstract Works.IPanelWorks WorksPanel(Panel panel);
 		/// <summary>
 		/// Gets any module command by its ID.
 		/// </summary>
@@ -268,20 +273,20 @@ namespace FarNet
 		/// Gets the active panel or null if Far started with /e or /v.
 		/// </summary>
 		/// <remarks>
-		/// If it is a FarNet panel it returns <see cref="IPanel"/>, you can keep its reference for later use,
+		/// If it is a module panel it returns <see cref="Panel"/>, you can keep its reference for later use,
 		/// just remember that its state may change and it can be even closed.
 		/// <para>
 		/// If it is not a FarNet panel then you use this object instantly and do not keep it.
 		/// </para>
 		/// </remarks>
-		public abstract IAnyPanel Panel { get; }
+		public abstract IPanel Panel { get; }
 		/// <summary>
 		/// Gets the passive panel or null if Far started with /e or /v.
 		/// </summary>
 		/// <remarks>
 		/// See remarks for the active panel (<see cref="Panel"/>).
 		/// </remarks>
-		public abstract IAnyPanel Panel2 { get; }
+		public abstract IPanel Panel2 { get; }
 		/// <summary>
 		/// Gets the command line operator.
 		/// </summary>
@@ -342,30 +347,19 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/ShowHelp/*'/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
-		/// Finds an existing module panel with the specified host (see <see cref="IPanel.Host"/>).
+		/// Finds an opened module panel by its type or gets null.
 		/// </summary>
-		/// <param name="hostType">
-		/// Type of the hosting class.
+		/// <param name="type">
+		/// The panel class type.
 		/// If it is null then any module panel is returned.
-		/// If it is <c>typeof(object)</c> then any module panel having a host is returned.
+		/// If it is <c>typeof(object)</c> then a module panel of that type is returned.
 		/// </param>
-		public abstract IPanel FindPanel(Type hostType);
+		public abstract Panel FindPanel(Type type);
 		/// <summary>
-		/// Finds an existing module panel with the specified type ID or returns null.
+		/// Finds an opened module panel by the specified type ID or returns null.
 		/// </summary>
 		/// <param name="typeId">Panel type ID. It is normally assigned by a creator.</param>
-		/// <seealso cref="IPanel.TypeId"/>
-		public abstract IPanel FindPanel(Guid typeId);
-		/// <summary>
-		/// Creates a new panel.
-		/// </summary>
-		/// <remarks>
-		/// If the panel should be opened when Far gets control then consider to call
-		/// <see cref="IPanel.Open()"/> as soon as possible to be sure that this is allowed.
-		/// Then you may configure the panel and other data. Actual panel opening is performed
-		/// only when the module call is over.
-		/// </remarks>
-		public abstract IPanel CreatePanel();
+		public abstract Panel FindPanel(Guid typeId);
 		/// <summary>
 		/// Gets confirmation settings (see Far "Confirmations" dialog).
 		/// </summary>
@@ -501,14 +495,14 @@ namespace FarNet
 		/// </summary>
 		public abstract IMacro Macro { get; }
 		/// <summary>
-		/// Gets the internal active path.
+		/// Gets the internal current directory.
 		/// </summary>
 		/// <remarks>
 		/// The process current directory is not related to panels paths at all (Far 2.0.1145).
 		/// and normally modules should forget about the current directory, they should use this path.
 		/// It should be used as the default path for file system operations (e.g. where to create a new file).
 		/// </remarks>
-		public abstract string ActivePath { get; }
+		public abstract string CurrentDirectory { get; }
 		/// <summary>
 		/// Returns the current UI culture.
 		/// </summary>
@@ -550,6 +544,13 @@ namespace FarNet
 		/// Low level UI operator.
 		/// </summary>
 		public abstract IUserInterface UI { get; }
+		/// <summary>
+		/// Gets true if the string matches the pattern compatible with the core file masks.
+		/// </summary>
+		/// <param name="input">Input string.</param>
+		/// <param name="pattern">The pattern: "include-wildcard|exclude-wildcard" or "/regex/".</param>
+		/// <returns></returns>
+		public abstract bool MatchPattern(string input, string pattern);
 	}
 
 	/// <summary>

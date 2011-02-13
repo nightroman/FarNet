@@ -21,8 +21,8 @@ if (!$DbProviderFactory -or !$DbConnection) {
 	$DbConnection.Open()
 }
 
-$p = Panel-DbData- -NoShow -SelectCommand 'SELECT * FROM sys.databases' -Columns 'name', 'database_id', 'state_desc', 'create_date'
-$p.SetOpen({
+$Panel = Panel-DbData- -NoShow -SelectCommand 'SELECT * FROM sys.databases' -Columns 'name', 'database_id', 'state_desc', 'create_date'
+$Panel.SetOpen({
 	$DbProviderFactory = [Data.SqlClient.SqlClientFactory]::Instance
 	$DbConnection = $DbProviderFactory.CreateConnection()
 	$DbConnection.ConnectionString = "Data Source=.\sqlexpress;Initial Catalog=$($_.File.Name);Integrated Security=SSPI;"
@@ -30,5 +30,5 @@ $p.SetOpen({
 	Panel-DbTable- -AsChild -Title $_.File.Name
 })
 
-if ($local:DbConnection) { $p.Garbage.Add($DbConnection) }
-Start-FarPanel $p -Title "Databases"
+if ($local:DbConnection) { $Panel.Garbage.Add($DbConnection) }
+Start-FarPanel $Panel -Title "Databases"

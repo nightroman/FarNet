@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -36,16 +37,12 @@ namespace PowerShellFar
 		/// </summary>
 		public FolderTree(string path)
 		{
-			// _090810_180151
-			Panel.Info.UseAttributeHighlighting = false;
-			Panel.Info.UseHighlighting = true;
-			
-			// _091015_190130 Use of GettingInfo is problematic: it is called after Close()
+			// _091015_190130 Use of UpdateInfo is problematic: it is called after Close()
 			// and somehow Close() may not work. To watch this in future Far versions.
 			// For now use Redrawing event, it looks working fine.
 
 			// For updating the panel path.
-			Panel.Redrawing += Updating;
+			Redrawing += Updating;
 
 			if (string.IsNullOrEmpty(path) || path == ".")
 			{
@@ -64,7 +61,7 @@ namespace PowerShellFar
 		{
 			string dir = string.Empty;
 
-			FarFile file = Panel.CurrentFile;
+			FarFile file = CurrentFile;
 			if (file != null)
 			{
 				TreeFile node = (TreeFile)file;
@@ -77,15 +74,15 @@ namespace PowerShellFar
 
 			if (dir.Length > 0)
 			{
-				Panel.Info.Title = "Tree: " + dir;
+				Title = "Tree: " + dir;
 			}
 			else
 			{
-				Panel.Info.Title = "Tree";
+				Title = "Tree";
 				dir = "."; // to avoid empty (Far closes on dots or CtrlPgUp)
 			}
 
-			Panel.Info.CurrentDirectory = dir;
+			PanelDirectory = dir;
 		}
 
 		void Reset(string path, string current)
@@ -119,14 +116,14 @@ namespace PowerShellFar
 				{
 					if (Kit.Equals(t.Name, current))
 					{
-						Panel.PostFile(t);
+						PostFile(t);
 						break;
 					}
 				}
 			}
 
 			// panel info
-			Panel.Info.CurrentDirectory = ti.Path;
+			PanelDirectory = ti.Path;
 		}
 
 		void Fill(object sender, EventArgs e)
@@ -165,7 +162,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Navigation.
 		/// </summary>
-		internal override void OnSettingDirectory(SettingDirectoryEventArgs e)
+		internal override void OnSetDirectory(SetDirectoryEventArgs e)
 		{
 			// done
 			e.Ignore = true;
@@ -196,7 +193,7 @@ namespace PowerShellFar
 					{
 						//! Issue with names like z:|z - Far doesn't set cursor on it
 						if (newLocation.Length > i + 2 && newLocation[i + 2] == ':')
-							Panel.PostName(newLocation.Substring(i + 1));
+							PostName(newLocation.Substring(i + 1));
 
 						newLocation = newLocation.Substring(0, i);
 						if (newLocation.StartsWith("\\\\", StringComparison.Ordinal)) //HACK network path
@@ -240,7 +237,7 @@ namespace PowerShellFar
 
 			//! use null as parent: this panel can be not open now
 			MemberPanel r = new MemberPanel(t.Data);
-			r.ShowAsChild(null);
+			r.OpenChild(null);
 			return r;
 		}
 
@@ -264,7 +261,7 @@ namespace PowerShellFar
 			// open at the passive panel
 			if (provider.Name == "FileSystem")
 			{
-				Far.Net.Panel2.Path = node.Path;
+				Far.Net.Panel2.CurrentDirectory = node.Path;
 				Far.Net.Panel2.Update(false);
 				Far.Net.Panel2.Redraw();
 			}
@@ -272,13 +269,13 @@ namespace PowerShellFar
 			else
 			{
 				ItemPanel panel = new ItemPanel(node.Path);
-				panel.ShowAsChild(this);
+				panel.OpenChild(this);
 			}
 		}
 
 		internal override void UIAttributes()
 		{
-			FarFile file = Panel.CurrentFile;
+			FarFile file = CurrentFile;
 			if (file == null)
 				return;
 
@@ -296,7 +293,7 @@ namespace PowerShellFar
 			}
 
 			// show property panel
-			(new PropertyPanel(node.Path)).ShowAsChild(this);
+			(new PropertyPanel(node.Path)).OpenChild(this);
 		}
 
 		/// <summary>

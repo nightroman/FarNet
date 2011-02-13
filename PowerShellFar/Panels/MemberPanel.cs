@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -34,15 +35,15 @@ namespace PowerShellFar
 			// check not null and not a panel related instance
 			if (instance == null)
 				throw new ArgumentNullException("instance");
-			if (instance is IAnyPanel || instance is AnyPanel)
+			if (instance is IPanel || instance is AnyPanel)
 				throw new ArgumentException("The object is a panel itself, its members can not be shown in a panel.");
 			_Value = PSObject.AsPSObject(instance);
 			if (_Value.BaseObject == null)
 				throw new ArgumentNullException("instance");
 
 			// panel info
-			Panel.Info.CurrentDirectory = "*";
-			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
+			PanelDirectory = "*";
+			SortMode = PanelSortMode.Unsorted;
 		}
 
 		///
@@ -120,11 +121,11 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void OnGettingData(PanelEventArgs e)
+		internal override void OnUpdateFiles(PanelEventArgs e)
 		{
 			try
 			{
-				Panel.Files.Clear();
+				Files.Clear();
 
 				if (_mode == 0)
 				{
@@ -183,7 +184,7 @@ namespace PowerShellFar
 						if (hide != null && hide.IsMatch(file.Name))
 							file.IsHidden = true;
 
-						Panel.Files.Add(file);
+						Files.Add(file);
 					}
 				}
 				else
@@ -206,13 +207,13 @@ namespace PowerShellFar
 						f.Description += " " + pi.Value.ToString();
 
 						f.Data = o;
-						Panel.Files.Add(f);
+						Files.Add(f);
 					}
 				}
 			}
 			catch (RuntimeException exception)
 			{
-				if ((e.Mode & OperationModes.FindSilent) == 0)
+				if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) == 0)
 					A.Msg(exception.Message);
 			}
 		}
@@ -221,14 +222,14 @@ namespace PowerShellFar
 		/// This method is called only because there is no parent,
 		/// thus, it opens a new object panel with this one object.
 		/// </summary>
-		internal override void OnSettingDirectory(SettingDirectoryEventArgs e)
+		internal override void OnSetDirectory(SetDirectoryEventArgs e)
 		{
 			if (ObjectPanelOnDots)
 			{
 				e.Ignore = true;
 				ObjectPanel op = new ObjectPanel();
 				op.AddObjects(new object[] { _Value });
-				op.Show();
+				op.Open();
 			}
 		}
 
@@ -245,7 +246,7 @@ namespace PowerShellFar
 				return null;
 
 			MemberPanel r = new MemberPanel(instance);
-			r.ShowAsChild(this);
+			r.OpenChild(this);
 			return r;
 		}
 
@@ -304,7 +305,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenMemberChanged(object instance)
 		{
-			MemberPanel p = Far.Net.FindPanel(typeof(MemberPanel)).Host as MemberPanel;
+			MemberPanel p = Far.Net.FindPanel(typeof(MemberPanel)) as MemberPanel;
 			if (p == null)
 				return;
 
@@ -354,17 +355,17 @@ namespace PowerShellFar
 		{
 			if (Cast<DataRow>.From(_Value) == null)
 				throw new InvalidOperationException("Data lookup is designed only for data row objects.");
-			
+
 			if (namePairs == null || namePairs.Length == 0)
 				throw new ArgumentException("'namePairs' must not be null or empty.");
-			
+
 			if (namePairs.Length % 2 != 0)
 				throw new ArgumentException("'namePairs' must contain even number of items.");
 
 			return (new DataLookup(namePairs)).Invoke;
 		}
 
-		internal override void DeleteFiles(IList<FarFile> files, bool shift)
+		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
 		{
 			// skip "all members" mode
 			if (_mode != 0)
@@ -373,7 +374,7 @@ namespace PowerShellFar
 			// delete value = enter null
 			if (shift)
 			{
-				base.DeleteFiles(files, false);
+				base.DeleteFiles2(files, false);
 				return;
 			}
 
@@ -492,7 +493,7 @@ namespace PowerShellFar
 		{
 			if (_Save != null)
 			{
-				InvokeScriptReturnAsIs(_Save, null);
+				A.InvokeScriptReturnAsIs(_Save, this, null);
 				return !Modified;
 			}
 
@@ -541,7 +542,8 @@ namespace PowerShellFar
 		}
 		ScriptBlock _Save;
 
-		internal override bool CanClose()
+		///??
+		protected override bool CanClose()
 		{
 			// can?
 			bool r = !Modified || _Save == null;
@@ -552,7 +554,7 @@ namespace PowerShellFar
 				switch (Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
 				{
 					case 0:
-						InvokeScriptReturnAsIs(_Save, null);
+						A.InvokeScriptReturnAsIs(_Save, this, null);
 						break;
 					case 1:
 						Modified = false;

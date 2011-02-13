@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -20,21 +21,19 @@ namespace PowerShellFar
 
 		internal ListPanel()
 		{
-			Panel.PostName(_lastCurrentName);
-			Panel.Info.UseFilter = true;
-
-			// for hidden members
-			Panel.Info.UseAttributeHighlighting = true;
-			Panel.Info.UseHighlighting = false;
+			PostName(_lastCurrentName);
+			UseFilter = true;
 
 			// 090411 Use custom Descriptions mode
-			PanelModeInfo mode = new PanelModeInfo();
-			mode.Columns = new FarColumn[]
+			PanelPlan plan = new PanelPlan();
+			plan.Columns = new FarColumn[]
 			{
 				new SetColumn() { Kind = "N", Name = "Name" },
 				new SetColumn() { Kind = "Z", Name = "Value" }
 			};
-			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
+			SetPlan(PanelViewMode.AlternativeFull, plan);
+
+			InvokingCommand += OnInvokingCommand;
 		}
 
 		/// <summary>
@@ -49,7 +48,7 @@ namespace PowerShellFar
 		{
 			if (file == null)
 				throw new ArgumentNullException("file");
-			
+
 			PSPropertyInfo pi = file.Data as PSPropertyInfo;
 
 			// e.g. visible mode: sender is MemberDefinition
@@ -84,7 +83,7 @@ namespace PowerShellFar
 			{
 				ObjectPanel op = new ObjectPanel();
 				op.AddObjects(ie);
-				op.ShowAsChild(this);
+				op.OpenChild(this);
 				return;
 			}
 
@@ -100,7 +99,7 @@ namespace PowerShellFar
 			if (pi.Value == null)
 				return null;
 			MemberPanel r = new MemberPanel(pi.Value);
-			r.ShowAsChild(this);
+			r.OpenChild(this);
 			return r;
 		}
 
@@ -114,20 +113,26 @@ namespace PowerShellFar
 		/// <summary>
 		/// Calls base or assigns a value to the current property.
 		/// </summary>
-		internal override bool UICommand(string code)
+		void OnInvokingCommand(object sender, CommandLineEventArgs e)
 		{
 			// base
-			code = code.TrimStart();
+			string code = e.Command.TrimStart();
 			if (!code.StartsWith("=", StringComparison.Ordinal))
-				return base.UICommand(code);
+			{
+				base.WorksInvokingCommand(e);
+				return;
+			}
+
+			// we do
+			e.Ignore = true;
 
 			// skip empty
-			FarFile f = Panel.CurrentFile;
+			FarFile f = CurrentFile;
 			if (f == null)
-				return true;
+				return;
 			PSPropertyInfo pi = f.Data as PSPropertyInfo;
 			if (pi == null)
-				return true;
+				return;
 
 			try
 			{
@@ -138,17 +143,15 @@ namespace PowerShellFar
 			{
 				A.Msg(ex.Message);
 			}
-
-			return true;
 		}
 
-		// Must be called last
-		internal override bool CanClose()
+		///?? Must be called last
+		protected override bool CanClose()
 		{
 			if (Child != null)
 				return true;
 
-			FarFile f = Panel.CurrentFile;
+			FarFile f = CurrentFile;
 			if (f == null)
 				_lastCurrentName = null;
 			else
@@ -165,7 +168,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// It "deletes" property values = assigns null values.
 		/// </summary>
-		internal override void DeleteFiles(IList<FarFile> files, bool shift)
+		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
 		{
 			foreach (FarFile file in files)
 			{

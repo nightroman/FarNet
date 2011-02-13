@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -143,7 +144,7 @@ namespace FarDescription
 
 					if (i >= line.Length)
 						continue;
-					
+
 					r.Add(name, line.Substring(i).TrimEnd());
 				}
 			}
@@ -187,7 +188,7 @@ namespace FarDescription
 		{
 			//! trim '\': FullName may have it after MoveTo() for directories
 			path = path.TrimEnd('\\');
-			
+
 			lock (WeakCache)
 			{
 				// get data and set new value

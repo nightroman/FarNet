@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -44,7 +45,7 @@ namespace PowerShellFar
 			// Boolean, Byte, SByte, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, Char, Double, and Single.
 			if (type.IsPrimitive)
 				return true;
-			
+
 			// some more
 			if (type == typeof(decimal)) return true;
 			if (type == typeof(string)) return true;
@@ -187,7 +188,7 @@ namespace PowerShellFar
 					// primitive
 					switch (info.TypeNameOfValue)
 					{
-						// popular 
+						// popular
 						case "System.String": return s;
 						case "System.Boolean": return ParseBoolean(s);
 						case "System.DateTime": return System.DateTime.Parse(s, CultureInfo.CurrentCulture);
@@ -282,7 +283,7 @@ namespace PowerShellFar
 		{
 			// see Microsoft.PowerShell.Commands.Internal.Format.PSObjectHelper.SmartToString()
 			// we use much simpler version
-			
+
 			IEnumerator it = value.GetEnumerator();
 			string result = "{";
 			int count = 0;

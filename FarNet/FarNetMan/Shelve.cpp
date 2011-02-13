@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -9,19 +10,19 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
+ShelveInfoNative::ShelveInfoNative(Panel1^ panel, bool modes)
 : _modes(modes)
 {
 	// case: special panel, e.g. QView.
 	// Let's use the active path to restore, no path (just close) is worse.
 	if (panel->Kind != PanelKind::File)
 	{
-		Path = Far::Net->ActivePath;
+		Path = Far::Net->CurrentDirectory;
 		return;
 	}
 
 	// file panel, path
-	Path = panel->Path;
+	Path = panel->CurrentDirectory;
 
 	// current name
 	FarFile^ file = panel->CurrentFile;
@@ -45,10 +46,10 @@ ShelveInfoPanel::ShelveInfoPanel(Panel1^ panel, bool modes)
 	_viewMode = (PanelViewMode)pi.ViewMode;
 }
 
-ShelveInfoPanel^ ShelveInfoPanel::CreateActiveInfo(bool modes)
+ShelveInfoNative^ ShelveInfoNative::CreateActiveInfo(bool modes)
 {
 	// any panel
-	IAnyPanel^ panel = Far::Net->Panel;
+	IPanel^ panel = Far::Net->Panel;
 	if (!panel)
 		return nullptr;
 
@@ -62,11 +63,11 @@ ShelveInfoPanel^ ShelveInfoPanel::CreateActiveInfo(bool modes)
 		return nullptr;
 	
 	// must be a file system panel
-	return gcnew ShelveInfoPanel((Panel1^)panel, modes);
+	return gcnew ShelveInfoNative((Panel1^)panel, modes);
 }
 
 // NOW: works only for the active panel.
-void ShelveInfoPanel::Pop()
+void ShelveInfoNative::Pop()
 {
 	if (Path)
 	{
@@ -105,22 +106,22 @@ void ShelveInfoPanel::Pop()
 	}
 }
 
-ShelveInfoPlugin::ShelveInfoPlugin(Panel2^ plugin)
-: _plugin(plugin)
+ShelveInfoModule::ShelveInfoModule(Panel2^ panel)
+: _panel(panel)
 {
-	InitSelectedIndexes(plugin);
+	InitSelectedIndexes(panel);
 }
 
-String^ ShelveInfoPlugin::Title::get()
+String^ ShelveInfoModule::Title::get()
 {
-	return JoinText(_plugin->_info.Title, _plugin->_info.CurrentDirectory);
+	return JoinText(_panel->Title, _panel->PanelDirectory);
 }
 
-void ShelveInfoPlugin::Pop()
+void ShelveInfoModule::Pop()
 {
 	Log::Source->TraceInformation(__FUNCTION__);
-	_plugin->Open();
-	_plugin->_postSelected = GetSelectedIndexes();
+	_panel->Open();
+	_panel->_postSelected = GetSelectedIndexes();
 }
 
 }

@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -28,7 +29,7 @@ namespace PowerShellFar
 	/// </para>
 	/// <para>
 	/// <b>Kind</b>: Far column kind (the key name comes from PowerShell).
-	/// See <see cref="PanelModeInfo.Columns"/>.
+	/// See <see cref="PanelPlan.Columns"/>.
 	/// </para>
 	/// <para>
 	/// <b>Width</b>: Far column width: positive: absolute width, negative: percentage.

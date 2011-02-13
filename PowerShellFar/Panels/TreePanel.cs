@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -28,25 +29,25 @@ namespace PowerShellFar
 		{
 			IgnoreDirectoryFlag = true; // _090810_180151
 
-			Panel.Info.UseFilter = true;
-			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
+			UseFilter = true;
+			SortMode = PanelSortMode.Unsorted;
 
-			Panel.KeyPressed += OnKeyPressedTreePanel;
+			KeyPressed += OnKeyPressedTreePanel;
 
 			// columns
 			SetColumn cO = new SetColumn() { Kind = "O", Name = "Name" };
 			SetColumn cZ = new SetColumn() { Kind = "Z", Name = "Description" };
 
 			// mode: tree and description columns
-			PanelModeInfo mode0 = new PanelModeInfo();
-			mode0.Columns = new FarColumn[] { cO, cZ };
-			Panel.Info.SetMode((PanelViewMode)0, mode0);
+			PanelPlan plan0 = new PanelPlan();
+			plan0.Columns = new FarColumn[] { cO, cZ };
+			SetPlan((PanelViewMode)0, plan0);
 
 			// mode: tree column and description status
-			PanelModeInfo mode1 = new PanelModeInfo();
-			mode1.Columns = new FarColumn[] { cO };
-			mode1.StatusColumns = new FarColumn[] { cZ };
-			Panel.Info.SetMode((PanelViewMode)1, mode1);
+			PanelPlan plan1 = new PanelPlan();
+			plan1.Columns = new FarColumn[] { cO };
+			plan1.StatusColumns = new FarColumn[] { cZ };
+			SetPlan((PanelViewMode)1, plan1);
 		}
 
 		/// <summary>
@@ -58,7 +59,7 @@ namespace PowerShellFar
 		{
 			if (root == null)
 				throw new ArgumentNullException("root");
-			
+
 			RootFiles.Add(root);
 			root.Expand();
 		}
@@ -126,7 +127,7 @@ namespace PowerShellFar
 
 			item.Owner = nodePrefix + item.Name;
 
-			Panel.Files.Add(item);
+			Files.Add(item);
 
 			if (item._State == 1)
 			{
@@ -135,11 +136,11 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void OnGettingData(PanelEventArgs e)
+		internal override void OnUpdateFiles(PanelEventArgs e)
 		{
-			bool showHidden = Panel.ShowHidden;
+			bool showHidden = ShowHidden;
 
-			Panel.Files.Clear();
+			Files.Clear();
 			foreach (TreeFile ti in _RootFiles)
 				AddFileFromTreeItem(ti, showHidden);
 		}
@@ -153,7 +154,7 @@ namespace PowerShellFar
 						if (e.State != KeyStates.None && e.State != KeyStates.Alt || Far.Net.CommandLine.Length > 0)
 							return;
 
-						FarFile f = Panel.CurrentFile;
+						FarFile f = CurrentFile;
 						if (f == null)
 							return;
 						TreeFile ti = (TreeFile)f;
@@ -175,8 +176,8 @@ namespace PowerShellFar
 						}
 						else if (ti.Parent != null)
 						{
-							Panel.PostFile(ti.Parent);
-							Panel.Redraw();
+							PostFile(ti.Parent);
+							Redraw();
 						}
 						return;
 					}
@@ -185,7 +186,7 @@ namespace PowerShellFar
 						if (e.State != KeyStates.None && e.State != KeyStates.Alt || Far.Net.CommandLine.Length > 0)
 							return;
 
-						FarFile f = Panel.CurrentFile;
+						FarFile f = CurrentFile;
 						if (f == null)
 							return;
 
@@ -206,7 +207,7 @@ namespace PowerShellFar
 						else
 						{
 							// go to next
-							Panel.Redraw(Panel.CurrentIndex + 1, -1);
+							Redraw(CurrentIndex + 1, -1);
 						}
 						return;
 					}

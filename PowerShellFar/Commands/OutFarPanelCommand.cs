@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -25,7 +26,7 @@ namespace PowerShellFar.Commands
 		/// </summary>
 		/// <remarks>
 		/// Use property names to specify columns or hashtables to describe columns in details,
-		/// see <see cref="Meta"/> about hashtables and <see cref="PanelModeInfo.Columns"/> about column types.
+		/// see <see cref="Meta"/> about hashtables and <see cref="PanelPlan.Columns"/> about column types.
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(HelpMessage = "Sets Columns property.", Position = 0)]
@@ -52,7 +53,7 @@ namespace PowerShellFar.Commands
 		{
 			if (Append)
 			{
-				AnyPanel panel = AnyPanel.GetPanel(true);
+				var panel = Panel.FindPanel(true);
 				if (panel == null || panel.GetType() != typeof(ObjectPanel))
 					throw new InvalidOperationException("There is no panel able to append objects.");
 
@@ -63,7 +64,7 @@ namespace PowerShellFar.Commands
 				_panel = new ObjectPanel();
 
 				// common parameters
-				ApplyParameters(_panel.Panel);
+				ApplyParameters(_panel);
 
 				// more parameters
 				_panel.Columns = Columns;
@@ -71,8 +72,8 @@ namespace PowerShellFar.Commands
 				_panel.HideMemberPattern = HideMemberPattern;
 
 				// and title, if not yet
-				if (string.IsNullOrEmpty(_panel.Panel.Info.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))
-					_panel.Panel.Info.Title = A.Psf._myCommand;
+				if (string.IsNullOrEmpty(_panel.Title) && !string.IsNullOrEmpty(A.Psf._myCommand))
+					_panel.Title = A.Psf._myCommand;
 			}
 		}
 
@@ -100,11 +101,11 @@ namespace PowerShellFar.Commands
 				_panel.AddObject(_Collector[0]);
 			else
 				_panel.AddObjects(_Collector);
-			
+
 			if (Append)
 				_panel.UpdateRedraw(true);
 			else
-				_panel.Show();
+				_panel.Open();
 		}
 
 	}

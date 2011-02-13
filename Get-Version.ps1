@@ -1,10 +1,10 @@
 
-$Build = '40'
-$Date = '2011-02-02'
+$Build = '0'
+$Date = '2011-02-13'
 $FarVersion = '2.0.1807'
-$FarNetVersion = "4.3.$Build"
-$FarNetAccordVersion = "4.3.$Build"
-$PowerShellFarVersion = "4.3.$Build"
+$FarNetVersion = "4.4.$Build"
+$FarNetAccordVersion = "4.4.$Build"
+$PowerShellFarVersion = "4.4.$Build"
 
 $ArchiveNames = @(
 	"FarNet.$FarNetVersion.7z"

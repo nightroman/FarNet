@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -14,18 +15,18 @@ public:
 	virtual property FarNet::MacroArea MacroArea { FarNet::MacroArea get() override; }
 	virtual property FarNet::MacroState MacroState { FarNet::MacroState get() override; }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get() override; }
-	virtual property IAnyPanel^ Panel { IAnyPanel^ get() override; }
-	virtual property IAnyPanel^ Panel2 { IAnyPanel^ get() override; }
 	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get() override; }
 	virtual property IDialog^ Dialog { IDialog^ get() override; }
 	virtual property IEditor^ Editor { IEditor^ get() override; }
 	virtual property ILine^ CommandLine { ILine^ get() override; }
 	virtual property ILine^ Line { ILine^ get() override; }
 	virtual property IMacro^ Macro { IMacro^ get() override; }
+	virtual property IPanel^ Panel { IPanel^ get() override; }
+	virtual property IPanel^ Panel2 { IPanel^ get() override; }
 	virtual property IUserInterface^ UI { IUserInterface^ get() override; }
 	virtual property IViewer^ Viewer { IViewer^ get() override; }
 	virtual property IWindow^ Window { IWindow^ get() override; }
-	virtual property String^ ActivePath { String^ get() override; }
+	virtual property String^ CurrentDirectory { String^ get() override; }
 	virtual property Version^ FarNetVersion { System::Version^ get() override; }
 	virtual property Version^ FarVersion { System::Version^ get() override; }
 public:
@@ -35,13 +36,16 @@ public:
 	virtual IInputBox^ CreateInputBox() override;
 	virtual IListMenu^ CreateListMenu() override;
 	virtual IMenu^ CreateMenu() override;
-	virtual IPanel^ CreatePanel() override;
 	virtual IViewer^ CreateViewer() override;
+	virtual Works::IPanelWorks^ WorksPanel(FarNet::Panel^ panel) override;
 public:
 	virtual array<IEditor^>^ Editors() override;
 	virtual array<IViewer^>^ Viewers() override;
+	virtual bool MatchPattern(String^ input, String^ pattern) override;
 	virtual Char CodeToChar(int code) override;
 	virtual CultureInfo^ GetCurrentUICulture(bool update) override;
+	virtual FarNet::Panel^ FindPanel(Guid typeId) override;
+	virtual FarNet::Panel^ FindPanel(Type^ type) override;
 	virtual ICollection<String^>^ GetDialogHistory(String^ name) override;
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter) override;
 	virtual IModuleCommand^ GetModuleCommand(Guid id) override;
@@ -49,8 +53,6 @@ public:
 	virtual IModuleTool^ GetModuleTool(Guid id) override;
 	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic) override;
 	virtual int NameToKey(String^ key) override;
-	virtual IPanel^ FindPanel(Guid typeId) override;
-	virtual IPanel^ FindPanel(Type^ hostType) override;
 	virtual IRegistryKey^ OpenRegistryKey(String^ name, bool writable) override;
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text) override;
 	virtual String^ KeyToName(int key) override;

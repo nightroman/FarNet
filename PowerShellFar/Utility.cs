@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -119,7 +120,7 @@ namespace PowerShellFar
 		{
 			return value.ToString(CultureInfo.CurrentCulture);
 		}
-		
+
 		/// <summary>
 		/// Converts with culture.
 		/// </summary>

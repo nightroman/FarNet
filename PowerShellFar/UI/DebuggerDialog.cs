@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -40,7 +41,7 @@ namespace PowerShellFar.UI
 			string[] lines = null;
 			if (!string.IsNullOrEmpty(e.InvocationInfo.ScriptName) && File.Exists(e.InvocationInfo.ScriptName))
 			{
-				try 
+				try
 				{
 					lines = File.ReadAllLines(e.InvocationInfo.ScriptName, Encoding.Default);
 					foreach (string s in lines)
@@ -106,13 +107,13 @@ namespace PowerShellFar.UI
 
 			_Step = _Dialog.AddButton(0, -1, BtnStep);
 			_Step.CenterGroup = true;
-			
+
 			_Over = _Dialog.AddButton(0, 0, BtnOver);
 			_Over.CenterGroup = true;
-			
+
 			_Out = _Dialog.AddButton(0, 0, BtnOut);
 			_Out.CenterGroup = true;
-			
+
 			_Console = _Dialog.AddButton(0, 0, BtnConsole);
 			_Console.CenterGroup = true;
 			_Console.NoBrackets = true;
@@ -214,7 +215,7 @@ namespace PowerShellFar.UI
 
 			return DebuggerResumeAction.Continue;
 		}
-	
+
 		const string
 			BtnStep = "&Step",
 			BtnOver = "O&ver",

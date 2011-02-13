@@ -27,13 +27,13 @@ $myObject = 1 | Select-Object Any, Item, Process
 
 # create a panel to show and change $myObject properties
 $p = New-Object PowerShellFar.MemberPanel $myObject
-$p.Panel.Info.Title = 'Press [Enter] on properties'
+$p.Title = 'Press [Enter] on properties'
 
 # property 'Any' has to be a value from the fixed set
 $p.AddLookup('Any', {&{
 	$p = New-Object PowerShellFar.UserPanel
-	$p.Panel.Info.Title = 'Press [Enter] on a value'
-	$p.Panel.Info.StartViewMode = 'Medium'
+	$p.Title = 'Press [Enter] on a value'
+	$p.ViewMode = 'Medium'
 	$p.AddObjects(@(
 		'String1'
 		'String2'
@@ -43,29 +43,29 @@ $p.AddLookup('Any', {&{
 	$p.SetLookup({
 		$this.Parent.Value.Any = $_.File.Data
 	})
-	$p.ShowAsChild($this)
+	$p.OpenChild($this)
 }})
 
 # property 'Item' has to be a selected file or folder
 $p.AddLookup('Item', {&{
 	$p = New-Object PowerShellFar.UserPanel
-	$p.Panel.Info.Title = 'Press [Enter] on an item'
+	$p.Title = 'Press [Enter] on an item'
 	$p.AddObjects((Get-ChildItem $env:FARHOME))
 	$p.SetLookup({
 		$this.Parent.Value.Item = $_.File.Data
 	})
-	$p.ShowAsChild($this)
+	$p.OpenChild($this)
 }})
 
 # property 'Process' has to be a selected process
 $p.AddLookup('Process', {&{
 	$p = New-Object PowerShellFar.UserPanel
-	$p.Panel.Info.Title = 'Press [Enter] on a process'
+	$p.Title = 'Press [Enter] on a process'
 	$p.AddObjects((Get-Process))
 	$p.SetLookup({
 		$this.Parent.Value.Process = $_.File.Data.Name
 	})
-	$p.ShowAsChild($this)
+	$p.OpenChild($this)
 }})
 
 # return?
@@ -74,4 +74,4 @@ if ($NoShow) {
 }
 
 # Go!
-$p.Show()
+$p.Open()

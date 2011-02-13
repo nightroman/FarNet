@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
@@ -65,7 +66,7 @@ namespace PowerShellFar.UI
 						string text = bp.ToString();
 						if (n <= 9)
 							text = "&" + Kit.ToString(n) + " " + text;
-						
+
 						FarItem mi = _menu.Add(text);
 						mi.Checked = bp.Enabled;
 						mi.Data = bp;
@@ -158,7 +159,7 @@ namespace PowerShellFar.UI
 		{
 			if (_menu.BreakKey != 0)
 				return;
-			
+
 			string file = null;
 			if (_editor != null)
 				file = _editor.FileName;

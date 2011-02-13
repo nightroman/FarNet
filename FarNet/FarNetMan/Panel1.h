@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -8,7 +9,7 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-ref class Panel1 : public IAnyPanel
+ref class Panel1 : public IPanel
 {
 public:
 	virtual property bool CaseSensitiveSort { bool get(); void set(bool value); }
@@ -19,10 +20,10 @@ public:
 	virtual property bool IsPlugin { bool get(); }
 	virtual property bool IsVisible { bool get(); void set(bool value); }
 	virtual property bool NumericSort { bool get(); void set(bool value); }
-	virtual property bool RealNames { bool get(); }
+	virtual property bool RealNames { bool get(); void set(bool value); }
 	virtual property bool SelectedFirst { bool get(); }
 	virtual property bool ShowHidden { bool get(); }
-	virtual property bool UseSortGroups { bool get(); }
+	virtual property bool UseSortGroups { bool get(); void set(bool value); }
 	virtual property FarFile^ CurrentFile { FarFile^ get(); }
 	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get(); }
 	virtual property IList<FarFile^>^ SelectedFiles { IList<FarFile^>^ get(); }
@@ -35,7 +36,7 @@ public:
 	virtual property PanelViewMode ViewMode { PanelViewMode get(); void set(PanelViewMode value); }
 	virtual property Place Window { Place get(); }
 	virtual property Point Frame { Point get(); }
-	virtual property String^ Path { String^ get(); void set(String^ value); }
+	virtual property String^ CurrentDirectory { String^ get(); void set(String^ value); }
 public:
 	virtual bool GoToName(String^ name, bool fail);
 	virtual array<int>^ SelectedIndexes();

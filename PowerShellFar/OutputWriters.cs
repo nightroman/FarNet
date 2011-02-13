@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -254,7 +255,7 @@ namespace PowerShellFar
 			// files are temporary, use the Temp path. It's better to have not
 			// deleted files there than in Personal.
 			string directory = Path.GetTempPath();
-			
+
 			if (this == A.Psf.Transcript)
 			{
 				// the only session transcript

@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -10,12 +11,12 @@ namespace FarNet
 ref class Panel1;
 ref class Panel2;
 
-ref class ShelveInfoPanel sealed : Works::ShelveInfo
+ref class ShelveInfoNative sealed : Works::ShelveInfo
 {
 public:
-	static ShelveInfoPanel^ CreateActiveInfo(bool modes);
+	static ShelveInfoNative^ CreateActiveInfo(bool modes);
 public:
-	ShelveInfoPanel(Panel1^ panel, bool modes);
+	ShelveInfoNative(Panel1^ panel, bool modes);
 	virtual property String^ Title { String^ get() override { return Path; } }
 	virtual void Pop() override;
 public:
@@ -27,14 +28,14 @@ private:
 	PanelViewMode _viewMode;
 };
 
-ref class ShelveInfoPlugin sealed : Works::ShelveInfo
+ref class ShelveInfoModule sealed : Works::ShelveInfo
 {
 public:
-	ShelveInfoPlugin(Panel2^ plugin);
-	property Panel2^ Panel { Panel2^ get() { return _plugin; } }
+	ShelveInfoModule(Panel2^ panel);
+	property Panel2^ Panel { Panel2^ get() { return _panel; } }
 	virtual property String^ Title { String^ get() override; }
 	virtual void Pop() override;
 private:
-	Panel2^ _plugin;
+	Panel2^ _panel;
 };
 }

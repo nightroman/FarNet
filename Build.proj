@@ -1,8 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.3.40</ProductVersion>
-		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
+		<ProductVersion>4.4.0</ProductVersion>
+		<Install Condition="'$(Install)' == ''">$(FARHOME)</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
 

@@ -104,7 +104,7 @@ for(;;) {
 		$WshShell = New-Object -ComObject WScript.Shell
 		$target = $WshShell.CreateShortcut([IO.Path]::GetFullPath($$.FullName)).TargetPath
 		if ([System.IO.Directory]::Exists($target)) {
-			$Far.Panel.Path = $target
+			$Far.Panel.CurrentDirectory = $target
 			return
 		}
 	}

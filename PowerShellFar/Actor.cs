@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -337,28 +338,28 @@ View the error list or the variable $Error.
 				return null;
 
 			// don't on no panels mode
-			IAnyPanel panel = Far.Net.Panel;
+			IPanel panel = Far.Net.Panel;
 			if (panel == null)
 				return null;
 
 			// at first get both paths: for the current system directory and provider location
-			string directory = Far.Net.ActivePath;
+			string directory = Far.Net.CurrentDirectory;
 			string location = null;
 			if (panel.IsPlugin)
 			{
-				IPanel plugin = panel as IPanel;
+				Panel plugin = panel as Panel;
 				if (plugin != null)
 				{
-					ItemPanel itemPanel = plugin.Host as ItemPanel;
+					ItemPanel itemPanel = plugin as ItemPanel;
 					if (itemPanel != null)
 					{
 						location = itemPanel.Location.Path;
 					}
 					else
 					{
-						FolderTree folderTree = plugin.Host as FolderTree;
+						FolderTree folderTree = plugin as FolderTree;
 						if (folderTree != null)
-							location = panel.Path;
+							location = panel.CurrentDirectory;
 						else
 							location = directory;
 					}
@@ -740,7 +741,7 @@ Continue with this current directory?
 					ap = new ObjectPanel();
 				else
 					ap = new ItemPanel(drive);
-				ap.Show();
+				ap.Open();
 			}
 			finally
 			{

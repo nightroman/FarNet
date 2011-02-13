@@ -1,9 +1,27 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-= 4.3.40 =
+= 4.4.0 =
 
-Technical build for FarNet 4.3.40
+*) Revision of FarNet panels
+The PSF core and all the scripts are updated according to the new panel API.
+There are many small changes in all panel scripts, mostly renaming-like.
+
+*) PowerExplorer
+PowerExplorer is the fully functional explorer designed for scripts. Interface
+methods have related script block properties. Each method calls its script.
+
+Test-Explorer-.ps1 shows a complex data tree with different kinds of explorers.
+
+*) New-FarFile
+Accepts System.IO FileInfo and DirectoryInfo as input and attaches it as Data.
+All other properties are set automatically except Description.
+
+*) PowerShell.hrc for Colorer
+Arrays @() and hashtables @{} use the same style as (), {} blocks. It is now
+easier to see orphan symbols without matching pairs, that is, syntax mistakes.
+
+= 4.3.40 =
 
 *) Panel-Macro-.ps1
 Removed not needed call of Load().

@@ -39,7 +39,7 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 		$SelectedItems = @(Get-FarItem -Selected)
 
 		# Update synopsis descriptions (how to use module features).
-		New-FarItem "&d. Update synopsis descriptions" { Import-Module FarDescription; Update-FarDescriptionSynopsis $Far.Panel.Path }
+		New-FarItem "&d. Update synopsis descriptions" { Import-Module FarDescription; Update-FarDescriptionSynopsis $Far.Panel.CurrentDirectory }
 
 		# Job: Remove items (can be very time consuming, really good candidate for a job).
 		if ($SelectedItems) {

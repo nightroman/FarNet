@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -120,7 +121,7 @@ void ListMenu::Incremental::set(String^ value)
 	_Incremental_ = value;
 	_filter2 = value;
 	_re2 = nullptr;
-} 
+}
 
 String^ ListMenu::Filter::get() { return _filter1_; }
 void ListMenu::Filter::set(String^ value)
@@ -277,7 +278,7 @@ void ListMenu::MakeSizes(FarDialog^ dialog, Point size)
 	// controls with text
 	IControl^ border = dialog[0];
 	IControl^ bottom = dialog[2];
-	
+
 	// text lengths
 	String^ borderText = border->Text;
 	int borderTextLength = borderText ? borderText->Length : 0;

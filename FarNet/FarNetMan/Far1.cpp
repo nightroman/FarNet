@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -26,7 +27,7 @@ void Far1::Connect()
 	Far::Net = %Far;
 }
 
-String^ Far1::ActivePath::get()
+String^ Far1::CurrentDirectory::get()
 {
 	DWORD size = Info.FSF->GetCurrentDirectory(0, 0);
 	CBox buf(size);
@@ -309,12 +310,12 @@ IViewer^ Far1::Viewer::get()
 	return Viewer0::GetCurrentViewer();
 }
 
-IAnyPanel^ Far1::Panel::get()
+IPanel^ Far1::Panel::get()
 {
 	return Panel0::GetPanel(true);
 }
 
-IAnyPanel^ Far1::Panel2::get()
+IPanel^ Far1::Panel2::get()
 {
 	return Panel0::GetPanel(false);
 }
@@ -474,19 +475,21 @@ void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
 	Info.ShowHelp(pinPath, pinTopic, (int)options);
 }
 
-IPanel^ Far1::CreatePanel()
+Works::IPanelWorks^ Far1::WorksPanel(FarNet::Panel^ panel)
 {
-	return gcnew FarNet::Panel2;
+	return gcnew FarNet::Panel2(panel);
 }
 
-IPanel^ Far1::FindPanel(Guid typeId)
+Panel^ Far1::FindPanel(Guid typeId)
 {
-	return Panel0::GetPanel(typeId);
+	FarNet::Panel2^ p = Panel0::GetPanel(typeId);
+	return p ? p->Host : nullptr;
 }
 
-IPanel^ Far1::FindPanel(Type^ hostType)
+Panel^ Far1::FindPanel(Type^ type)
 {
-	return Panel0::GetPanel(hostType);
+	FarNet::Panel2^ p = Panel0::GetPanel(type);
+	return p ? p->Host : nullptr;
 }
 
 String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text)
@@ -655,6 +658,23 @@ IMacro^ Far1::Macro::get()
 IUserInterface^ Far1::UI::get()
 {
 	return %FarUI::Instance;
+}
+
+bool Far1::MatchPattern(String^ input, String^ pattern)
+{
+	if (!input) throw gcnew ArgumentNullException("input");
+	
+	// empty
+	if (ES(pattern))
+		return true;
+
+	// regex
+	if (pattern->StartsWith("/") && pattern->EndsWith("/"))
+		return Regex::IsMatch(input, pattern->Substring(1, pattern->Length - 2), RegexOptions::IgnoreCase);
+
+	// wildcard
+	PIN_NE(pin, input);
+	return Far0::CompareNameExclude(pattern, pin, false);
 }
 
 }

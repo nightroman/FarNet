@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -25,7 +26,7 @@ namespace PowerShellFar
 			get { return _Columns; }
 			set
 			{
-				if (Panel.Files.Count > 0)
+				if (Files.Count > 0)
 					throw new InvalidOperationException("Panel must have no files for setting columns.");
 
 				_Columns = value;
@@ -123,9 +124,9 @@ namespace PowerShellFar
 			}
 		}
 
-		internal static PanelModeInfo SetupPanelMode(IList<Meta> metas)
+		internal static PanelPlan SetupPanelMode(IList<Meta> metas)
 		{
-			PanelModeInfo r = new PanelModeInfo();
+			PanelPlan r = new PanelPlan();
 
 			r.Columns = new FarColumn[metas.Count];
 			for (int i = 0; i < metas.Count; ++i)
@@ -164,6 +165,6 @@ namespace PowerShellFar
 		{
 			A.InvokePipelineForEach(SelectedItems);
 		}
-	
+
 	}
 }

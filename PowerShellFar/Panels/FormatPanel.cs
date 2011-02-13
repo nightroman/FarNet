@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -312,8 +313,8 @@ namespace PowerShellFar
 				}
 			}
 
-			// pass 3: set panel mode
-			Panel.Info.SetMode(PanelViewMode.AlternativeFull, SetupPanelMode(metas));
+			// pass 3: set plan
+			SetPlan(PanelViewMode.AlternativeFull, SetupPanelMode(metas));
 		}
 
 		/// <summary>
@@ -324,7 +325,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Calls <see cref="GetData()"/> and then formats if needed.
 		/// </summary>
-		internal override void OnGettingData(PanelEventArgs e)
+		internal override void OnUpdateFiles(PanelEventArgs e)
 		{
 			// call the worker
 			// _090408_232925 If we throw then FarNet returns false and Far closes the panel.
@@ -345,7 +346,7 @@ namespace PowerShellFar
 			IList<FarFile> readyFiles = data as IList<FarFile>;
 			if (readyFiles != null)
 			{
-				Panel.Files = readyFiles;
+				Files = readyFiles;
 				return;
 			}
 
@@ -356,22 +357,22 @@ namespace PowerShellFar
 			if (values.Count == 0)
 			{
 				// drop files in any case
-				Panel.Files.Clear();
+				Files.Clear();
 
 				// do not change anything in the custom panel
 				if (Columns != null)
 					return;
 
 				// is it already <empty>?
-				PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
-				if (mode == null)
-					mode = new PanelModeInfo();
-				else if (mode.Columns.Length == 1 && mode.Columns[0].Name == "<empty>")
+				PanelPlan plan = GetPlan(PanelViewMode.AlternativeFull);
+				if (plan == null)
+					plan = new PanelPlan();
+				else if (plan.Columns.Length == 1 && plan.Columns[0].Name == "<empty>")
 					return;
 
 				// reuse the mode: reset columns, keep other data intact
-				mode.Columns = new FarColumn[] { new SetColumn() { Kind = "N", Name = "<empty>" } };
-				Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
+				plan.Columns = new FarColumn[] { new SetColumn() { Kind = "N", Name = "<empty>" } };
+				SetPlan(PanelViewMode.AlternativeFull, plan);
 				return;
 			}
 
@@ -427,7 +428,7 @@ namespace PowerShellFar
 		internal virtual void BuildFiles(Collection<PSObject> values)
 		{
 			var files = new List<FarFile>(values.Count);
-			Panel.Files = files;
+			Files = files;
 
 			foreach (PSObject value in values)
 				files.Add(new MapFile(value, Map));
@@ -438,7 +439,7 @@ namespace PowerShellFar
 		void BuildFilesMixed(Collection<PSObject> values)
 		{
 			var files = new List<FarFile>(values.Count);
-			Panel.Files = files;
+			Files = files;
 
 			int index = -1;
 			string sameType = null;
@@ -488,15 +489,15 @@ namespace PowerShellFar
 				files.Add(file);
 			}
 
-			PanelModeInfo mode = Panel.Info.GetMode(PanelViewMode.AlternativeFull);
-			if (mode == null)
-				mode = new PanelModeInfo();
+			PanelPlan plan = GetPlan(PanelViewMode.AlternativeFull);
+			if (plan == null)
+				plan = new PanelPlan();
 
 			// choose columns
 			if (sameType == null)
 			{
 				//! The long "Index" clashes to sort order mark, use the short "##"
-				mode.Columns = new FarColumn[]
+				plan.Columns = new FarColumn[]
 				{
 				new SetColumn() { Kind = "S", Name = "##"},
 				new SetColumn() { Kind = "N", Name = "Value"},
@@ -505,13 +506,13 @@ namespace PowerShellFar
 			}
 			else
 			{
-				mode.Columns = new FarColumn[]
+				plan.Columns = new FarColumn[]
 				{
 				new SetColumn() { Kind = "N", Name = sameType }
 				};
 			}
 
-			Panel.Info.SetMode(PanelViewMode.AlternativeFull, mode);
+			SetPlan(PanelViewMode.AlternativeFull, plan);
 		}
 
 		internal override string HelpMenuTextOpenFileMembers { get { return "Object members"; } }

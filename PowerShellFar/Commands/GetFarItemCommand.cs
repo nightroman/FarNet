@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -21,7 +22,7 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			AnyPanel ap = AnyPanel.GetPanel(!Passive);
+			var ap = Panel.FindPanel(!Passive) as AnyPanel;
 
 			// case: PSF panel
 			if (ap != null)
@@ -51,7 +52,7 @@ namespace PowerShellFar.Commands
 			}
 
 			// case: Far panel
-			IAnyPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
+			IPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
 
 			// no panel?
 			if (panel == null)
@@ -79,7 +80,7 @@ namespace PowerShellFar.Commands
 			if (filesToProcess.Count > 0)
 			{
 				//! @($args[0])
-				using(IEnumerator<string> it = new PathEnumerator(filesToProcess, panel.Path, panel.RealNames, false))
+				using(IEnumerator<string> it = new PathEnumerator(filesToProcess, panel.CurrentDirectory, panel.RealNames, false))
 					WriteObject(InvokeCommand.NewScriptBlock("Get-Item -LiteralPath @($args[0]) -Force -ErrorAction 0").Invoke(it), true);
 			}
 		}

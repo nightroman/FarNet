@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -50,21 +51,21 @@ namespace PowerShellFar.Commands
 			if (anyPanel == null)
 			{
 				// net panel?
-				IPanel netPanel = InputObject.BaseObject as IPanel;
+				var netPanel = InputObject.BaseObject as Panel;
 				if (netPanel != null)
 				{
 					ApplyParameters(netPanel);
 					netPanel.Open();
 					return;
 				}
-				
+
 				// member panel
 				anyPanel = new MemberPanel(InputObject);
 			}
 
 			// setup and show
-			ApplyParameters(anyPanel.Panel);
-			anyPanel.Show(_AsChild);
+			ApplyParameters(anyPanel);
+			anyPanel.Open(_AsChild);
 		}
 	}
 }

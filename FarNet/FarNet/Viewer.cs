@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -24,7 +25,6 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		public abstract event EventHandler Closed; // [_100117_101226]
-
 		/// <summary>
 		/// Called when a file is opened in the viewer.
 		/// </summary>
@@ -33,17 +33,14 @@ namespace FarNet
 		/// e.g. on [Add], [Subtract] keys.
 		/// </remarks>
 		public abstract event EventHandler Opened;
-
 		/// <summary>
 		/// Called when the viewer window has got focus.
 		/// </summary>
 		public abstract event EventHandler GotFocus;
-
 		/// <summary>
 		/// Called when the viewer window is losing focus.
 		/// </summary>
 		public abstract event EventHandler LosingFocus;
-
 	}
 
 	/// <summary>
@@ -56,7 +53,6 @@ namespace FarNet
 		/// Opens a viewer to view some text.
 		/// </summary>
 		public abstract void ViewText(string text, string title, OpenMode mode);
-
 	}
 
 	/// <summary>
@@ -72,30 +68,25 @@ namespace FarNet
 		/// Gets the internal identifier.
 		/// </summary>
 		public abstract int Id { get; }
-
 		/// <summary>
 		/// Gets or sets the option to delete the source file on exit.
 		/// </summary>
 		public abstract DeleteSource DeleteSource { get; set; }
-
 		/// <summary>
 		/// Tells how editor\viewer switching should work on [F6].
 		/// Set it before opening.
 		/// </summary>
 		public abstract Switching Switching { get; set; }
-
 		/// <summary>
 		/// Tells to not use history.
 		/// Set it before opening.
 		/// </summary>
 		public abstract bool DisableHistory { get; set; }
-
 		/// <summary>
 		/// Name of a file being viewed. Set it before opening.
 		/// On opening it can be corrected, e.g. converted into full path.
 		/// </summary>
 		public abstract string FileName { get; set; }
-
 		/// <summary>
 		/// Gets or sets the code page identifier.
 		/// </summary>
@@ -104,24 +95,20 @@ namespace FarNet
 		/// After opening it only gets the current encoding.
 		/// </remarks>
 		public abstract int CodePage { get; set; }
-
 		/// <summary>
 		/// Gets or sets the start window place.
 		/// Set it before opening.
 		/// </summary>
 		public abstract Place Window { get; set; }
-
 		/// <summary>
 		/// Gets the current window size.
 		/// </summary>
 		public abstract Point WindowSize { get; }
-
 		/// <summary>
 		/// Gets or sets the window title.
 		/// Set it before opening.
 		/// </summary>
 		public abstract string Title { get; set; }
-
 		/// <summary>
 		/// Opens the viewer.
 		/// </summary>
@@ -133,7 +120,6 @@ namespace FarNet
 		{
 			Open(OpenMode.None);
 		}
-
 		/// <summary>
 		/// Opens the viewer.
 		/// </summary>
@@ -144,17 +130,14 @@ namespace FarNet
 		/// <see cref="Window"/>. Then this method is called.
 		/// </remarks>
 		public abstract void Open(OpenMode mode);
-
 		/// <summary>
 		/// Gets the current file size, in symbols, not in bytes.
 		/// </summary>
 		public abstract long FileSize { get; }
-
 		/// <summary>
 		/// Gets the current view frame.
 		/// </summary>
 		public abstract ViewFrame Frame { get; set; }
-
 		/// <summary>
 		/// Sets the current view frame.
 		/// </summary>
@@ -163,50 +146,41 @@ namespace FarNet
 		/// <param name="options">Options.</param>
 		/// <returns>New actual position.</returns>
 		public abstract long SetFrame(long offset, int column, ViewFrameOptions options);
-
 		/// <summary>
 		/// Closes the current viewer window.
 		/// </summary>
 		public abstract void Close();
-
 		/// <summary>
 		/// Redraws the current viewer window.
 		/// </summary>
 		public abstract void Redraw();
-
 		/// <summary>
 		/// Selects the block of text in the current viewer.
 		/// </summary>
 		/// <param name="symbolStart">Selection start in charactes, not in bytes.</param>
 		/// <param name="symbolCount">Selected character count.</param>
 		public abstract void SelectText(long symbolStart, int symbolCount);
-
 		/// <summary>
 		/// Gets or sets the hexadecimal mode in the current viewer (~ [F4]).
 		/// </summary>
 		public abstract bool HexMode { get; set; }
-
 		/// <summary>
 		/// Gets or sets the wrap mode in the current editor (~ [F2]).
 		/// </summary>
 		public abstract bool WrapMode { get; set; }
-
 		/// <summary>
 		/// Gets or sets the word wrap mode in the current editor (~ [ShiftF2]).
 		/// </summary>
 		public abstract bool WordWrapMode { get; set; }
-
 		/// <summary>
 		/// Gets the opening time of the instance.
 		/// </summary>
 		public abstract DateTime TimeOfOpen { get; }
-
 		/// <summary>
 		/// Makes the instance window active.
 		/// </summary>
 		/// <remarks>It may throw if the window cannot be activated.</remarks>
 		public abstract void Activate();
-
 	}
 
 	/// <summary>
@@ -217,22 +191,18 @@ namespace FarNet
 	{
 		///
 		None,
-
 		/// <summary>
 		/// Don't redraw.
 		/// </summary>
 		NoRedraw = 1,
-
 		/// <summary>
 		/// Offset is defined in percents.
 		/// </summary>
 		Percent = 2,
-
 		/// <summary>
 		/// Offset is relative to the current (and can be negative).
 		/// </summary>
 		Relative = 4,
-
 	}
 
 	/// <summary>
@@ -244,17 +214,14 @@ namespace FarNet
 		/// Tells to open not modal editor or viewer and return immediately.
 		/// </summary>
 		None,
-
 		/// <summary>
 		/// Tells to open not modal editor or viewer and wait for exit.
 		/// </summary>
 		Wait,
-
 		/// <summary>
 		/// Tells to open modal editor or viewer.
 		/// </summary>
 		Modal,
-
 	}
 
 	/// <summary>
@@ -266,19 +233,16 @@ namespace FarNet
 		/// Default action: do not delete a file.
 		/// </summary>
 		None,
-
 		/// <summary>
 		/// Try to delete a file always. It is not recommended if editor\viewer switching is enabled (F6).
 		/// You may set it at any time, i.e. before or after opening.
 		/// </summary>
 		File,
-
 		/// <summary>
 		/// The same as <see cref="File"/> plus delete its folder if it is empty.
 		/// You may set it at any time, i.e. before or after opening.
 		/// </summary>
 		Folder,
-
 		/// <summary>
 		/// Delete a file if it was not used. The file is used if:
 		/// *) it was saved;
@@ -287,13 +251,11 @@ namespace FarNet
 		/// You should set it before opening.
 		/// </summary>
 		UnusedFile,
-
 		/// <summary>
 		/// The same as <see cref="UnusedFile"/> plus delete its folder if it is empty.
 		/// You should set it before opening.
 		/// </summary>
 		UnusedFolder,
-
 	}
 
 	/// <summary>
@@ -308,17 +270,14 @@ namespace FarNet
 			Offset = offset;
 			Column = column;
 		}
-
 		/// <summary>
 		/// Offset in the file.
 		/// </summary>
 		public long Offset { get; set; }
-
 		/// <summary>
 		/// Leftmost visible column index.
 		/// </summary>
 		public long Column { get; set; }
-
 		///
 		public static bool operator ==(ViewFrame left, ViewFrame right)
 		{
@@ -326,30 +285,26 @@ namespace FarNet
 				left.Offset == right.Offset &&
 				left.Column == right.Column;
 		}
-
 		///
 		public static bool operator !=(ViewFrame left, ViewFrame right)
 		{
 			return !(left == right);
 		}
-
 		///
 		public override bool Equals(object obj)
 		{
 			return obj != null && obj.GetType() == typeof(ViewFrame) && this == (ViewFrame)obj;
 		}
-
 		///
 		public override int GetHashCode()
 		{
 			return (int)Offset | ((int)Column << 16);
 		}
-
 		///
 		public override string ToString()
 		{
 			return "(" + Offset + ", " + Column + ")";
 		}
-
 	}
+
 }

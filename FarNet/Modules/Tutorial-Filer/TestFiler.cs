@@ -23,18 +23,18 @@ public class TestFiler : ModuleFiler
 			return;
 
 		// create panel
-		IPanel p = Far.Net.CreatePanel();
-		p.Info.HostFile = e.Name;
-		p.Info.StartSortMode = PanelSortMode.Unsorted;
-		p.Info.Title = "File lines";
+		Panel panel = new Panel();
+		panel.HostFile = e.Name;
+		panel.Title = "File lines";
+		panel.SortMode = PanelSortMode.Unsorted;
 
 		// read lines
 		foreach (string s in File.ReadAllLines(e.Name))
 		{
 			SetFile f = new SetFile();
 			f.Name = s;
-			p.Files.Add(f);
+			panel.Files.Add(f);
 		}
-		p.Open();
+		panel.Open();
 	}
 }

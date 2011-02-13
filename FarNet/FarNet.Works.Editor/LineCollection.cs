@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -56,26 +57,26 @@ namespace FarNet.Works
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsFixedSize { get { return false; } }
-		
+
 		public bool IsReadOnly { get { return false; } }
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSynchronized { get { return false; } }
-		
+
 		public object SyncRoot { get { return this; } }
 
 		public void Add(ILine item) { throw new NotSupportedException(); }
-		
+
 		public void Clear() { throw new NotSupportedException(); }
-		
+
 		public bool Contains(ILine item) { throw new NotSupportedException(); }
 
 		public void CopyTo(ILine[] array, int arrayIndex) { throw new NotSupportedException(); }
-		
+
 		public int IndexOf(ILine item) { throw new NotSupportedException(); }
-		
+
 		public void Insert(int index, ILine item) { throw new NotSupportedException(); }
-		
+
 		public bool Remove(ILine item) { throw new NotSupportedException(); }
 	}
 }

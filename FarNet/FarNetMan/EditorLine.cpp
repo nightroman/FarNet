@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -133,7 +134,7 @@ void EditorLine::SelectedText::set(String^ value)
 	ess.StringNumber = _Index;
 	ess.StringText = pin;
 	EditorControl_ECTL_SETSTRING(ess);
-	
+
 	// change selection
 	if (dd != 0)
 	{
@@ -153,7 +154,7 @@ void EditorLine::InsertText(String^ text)
 	int pos = Caret;
 	if (pos < 0)
 		throw gcnew InvalidOperationException("The line is not current.");
-	
+
 	EditorControl_ECTL_INSERTTEXT(text, -1);
 }
 

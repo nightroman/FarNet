@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -40,11 +41,11 @@ public:
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
+	static bool CompareNameExclude(String^ mask, const wchar_t* name, bool skipPath);
 	static void InvalidateProxyCommand();
 	static void UnregisterProxyTool(IModuleTool^ tool);
 private:
 	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
-	static bool CompareNameEx(String^ mask, const wchar_t* name, bool skipPath);
 	static void AssertHotkeys();
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
