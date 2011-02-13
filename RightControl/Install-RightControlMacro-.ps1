@@ -20,12 +20,14 @@
 	editors where text normally does not start with spaces.
 #>
 
+# import the module and install the FarNet constant
 Import-Module FarMacro
+$Far.Macro.InstallConstant('FarNet', 0xcd)
 
 function Get-EditorMacro($command)
 {
 @'
-CallPlugin(0xcd, "RightControl:
+CallPlugin(FarNet, "RightControl:
 '@ + $command + @'
 ")
 '@
@@ -38,7 +40,7 @@ $If (AutoCompletion)
 	Esc
 $End
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin(0xcd, "RightControl:
+	CallPlugin(FarNet, "RightControl:
 '@ + $command + @'
 ")
 $Else
@@ -54,7 +56,7 @@ $If (AutoCompletion)
 	Esc
 $End
 $If (Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin(0xcd, "RightControl:
+	CallPlugin(FarNet, "RightControl:
 '@ + $command + @'
 ")
 $Else
