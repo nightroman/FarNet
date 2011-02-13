@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -44,7 +45,7 @@ namespace PowerShellFar
 			Remove = "Remove",
 			CtrlC = "Cancel key is pressed.",
 			UIApply = "Apply command",
-			
+
 			// History of main input code, general top level code
 			History = "PowerShellFar",
 			// History of "Apply command", pieces of code based on $_
@@ -59,7 +60,7 @@ namespace PowerShellFar
 			HistoryScript = "PowerShellFarScript",
 			// History of BP variable, variable names
 			HistoryVariable = "PowerShellFarVariable",
-			
+
 			// Main name
 			Me = "PowerShellFar";
 	}

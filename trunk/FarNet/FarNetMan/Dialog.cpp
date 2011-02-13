@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -108,7 +109,7 @@ void FarDialog::Rect::set(Place value)
 	if (_hDlg != INVALID_HANDLE_VALUE)
 	{
 		AutoStopDialogRedraw autoStopDialogRedraw(_hDlg);
-		
+
 		Move(value.First, true);
 		Resize(value.Size);
 	}
@@ -288,7 +289,7 @@ bool FarDialog::Show()
 		// setup items
 		for(int i = _items->Count; --i >= 0;)
 			_items[i]->Starting(items[i]);
-		
+
 		// set default
 		if (_default)
 		{
@@ -354,7 +355,7 @@ bool FarDialog::Show()
 			_hDlg = INVALID_HANDLE_VALUE;
 		}
 
-		//! now is safe to delete our data 
+		//! now is safe to delete our data
 		if (items)
 		{
 			for(int i = _items->Count; --i >= 0;)
@@ -593,7 +594,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 					ea.Background4 = ConsoleColor((param2 & 0xF0000000) >> 28);
 
 					fc->_Coloring(this, %ea);
-					
+
 					return
 						(int(ea.Foreground1)) |
 						(int(ea.Background1) << 4) |
@@ -763,7 +764,7 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 				array<unsigned char>^ bytes = _typeId.ToByteArray();
 				for(int i = 0; i < 16; ++i)
 					((unsigned char*)&di.Id)[i] = bytes[i];
-				
+
 				// done
 				return true;
 			}

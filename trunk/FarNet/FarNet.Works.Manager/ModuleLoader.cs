@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -44,7 +45,7 @@ namespace FarNet.Works
 		static void LoadDirectory(string directoryPath)
 		{
 			Log.Source.TraceInformation("Load directory {0}", directoryPath);
-			
+
 			try
 			{
 				// use the manifest if any
@@ -54,7 +55,7 @@ namespace FarNet.Works
 					LoadManifest(manifests[0], directoryPath);
 					return;
 				}
-				
+
 				// fail on 2+ manifest files
 				if (manifests.Length > 1)
 					throw new ModuleException("More than one .CFG files found.");
@@ -264,7 +265,7 @@ namespace FarNet.Works
 					{
 						// remove cached data
 						cache.SetValue(fileInfo.FullName, null);
-						
+
 						// remove the manager
 						if (manager != null)
 							RemoveModuleManager(manager);

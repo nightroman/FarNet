@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -14,14 +15,14 @@ namespace FarNet.Works
 			return string.Format(null, "{0} {1}\\{2}", action.Name, action.ModuleName, action.Id);
 		}
 	}
-	
+
 	public static class ConfigEditor
 	{
 		public static void Show(IList<IModuleEditor> editors, string helpTopic)
 		{
 			if (editors == null)
 				return;
-			
+
 			IMenu menu = Far.Net.CreateMenu();
 			menu.AutoAssignHotkeys = true;
 			menu.HelpTopic = helpTopic;

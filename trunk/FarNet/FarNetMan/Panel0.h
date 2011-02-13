@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -27,19 +28,21 @@ internal:
 	static int AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState);
 	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode);
 	static int AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode);
-	static Panel1^ GetPanel(bool active);
+	static IPanel^ GetPanel(bool active);
 	static Panel2^ GetPanel(Guid typeId);
-	static Panel2^ GetPanel(Type^ hostType);
+	static Panel2^ GetPanel(Type^ type);
 	static Panel2^ GetPanel2(Panel2^ plugin);
 	static void AsClosePlugin(HANDLE hPlugin);
 	static void AsFreeFindData(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber);
 	static void AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info);
-	static void OpenPluginPanel(Panel2^ plugin);
-	static void PushPluginPanel(Panel2^ plugin);
-	static void ReplacePluginPanel(Panel2^ oldPanel, Panel2^ newPanel);
+	static void OpenPanel(Panel2^ plugin);
+	static void PushPanel(Panel2^ plugin);
+	static void ReplacePanel(Panel2^ oldPanel, Panel2^ newPanel);
 	static void ShelvePanel(Panel1^ panel, bool modes);
+	static Panel2^ GetPanel(int worksId) { return _panels[worksId]; }
 private:
 	Panel0() {}
+	static void ReplaceExplorer(Panel^ panel, Explorer^ explorer); 
 private:
 	// Posted [0] and opened [1..3] panels; i.e. size is 4, see AddPluginPanel().
 	static array<Panel2^>^ _panels = gcnew array<Panel2^>(cPanels);

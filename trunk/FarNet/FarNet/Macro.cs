@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -253,7 +254,7 @@ namespace FarNet
 	public enum MacroArea
 	{
 		/// <summary>No area.</summary>
-		None, 
+		None,
 		/// <summary>Screen grabbing mode ([AltIns]).</summary>
 		Other,
 		/// <summary>File panels.</summary>

@@ -10,7 +10,7 @@
 
 .EXAMPLE
 	# Far user menu command to add the active path
-	>: Add-Path $Far.ActivePath #
+	>: Add-Path $Far.CurrentDirectory #
 
 	# Add the Bench scripts path, if not yet
 	>: Add-Path "$($Psf.AppHome)\Bench"

@@ -24,12 +24,12 @@ else {
 		(New-Object FarNet.ModuleFilerAttribute -Property @{ Name = "PSF test filer"; Mask = "*.test" }),
 		{&{
 			# get and show all lines in a panel
-			$p = New-Object PowerShellFar.UserPanel
-			$p.Panel.Info.Title = $_.Name
-			$p.Panel.Info.HostFile = $_.Name
-			$p.Panel.Info.StartSortMode = 'Unsorted'
-			$p.AddObjects([IO.File]::ReadAllLines($_.Name))
-			$p.Show()
+			$Panel = New-Object PowerShellFar.UserPanel
+			$Panel.Title = $_.Name
+			$Panel.HostFile = $_.Name
+			$Panel.SortMode = 'Unsorted'
+			$Panel.AddObjects([IO.File]::ReadAllLines($_.Name))
+			$Panel.Open()
 		}}
 	)
 	Show-FarMessage "Test filer is registered. [Enter] *.test files now."

@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -171,7 +172,7 @@ namespace PowerShellFar
 		/// <param name="input">Input objects.</param>
 		public static void Out(PowerShell ps, IEnumerable input)
 		{
-			ps.Commands.AddCommand(A.OutCommand);
+			ps.Commands.AddCommand(OutCommand);
 			ps.Invoke(input);
 		}
 
@@ -385,14 +386,14 @@ namespace PowerShellFar
 
 			try
 			{
-				return A.Psf.Engine.InvokeProvider.ChildItem.Get(new string[] { literalPath }, false, true, true);
+				return Psf.Engine.InvokeProvider.ChildItem.Get(new string[] { literalPath }, false, true, true);
 			}
 			catch (RuntimeException)
 			{ }
 
 			try
 			{
-				return A.Psf.InvokeCode("Get-ChildItem -LiteralPath $args[0] -Force -ErrorAction 0", literalPath);
+				return Psf.InvokeCode("Get-ChildItem -LiteralPath $args[0] -Force -ErrorAction 0", literalPath);
 			}
 			catch (RuntimeException)
 			{ }
@@ -423,10 +424,10 @@ namespace PowerShellFar
 				return;
 
 			// keep the _
-			PSVariable variable = A.Psf.Engine.SessionState.PSVariable.Get("_");
+			PSVariable variable = Psf.Engine.SessionState.PSVariable.Get("_");
 
 			// set the _ to a sample for TabExpansion
-			A.Psf.Engine.SessionState.PSVariable.Set("_", items[0]);
+			Psf.Engine.SessionState.PSVariable.Set("_", items[0]);
 
 			try
 			{
@@ -441,16 +442,60 @@ namespace PowerShellFar
 					return;
 
 				// invoke the pipeline using the input
-				A.Psf.Engine.SessionState.PSVariable.Set("_", items);
-				A.Psf.Act("$_ | .{process{ " + code + " }}", null, false);
+				Psf.Engine.SessionState.PSVariable.Set("_", items);
+				Psf.Act("$_ | .{process{ " + code + " }}", null, false);
 			}
 			finally
 			{
 				// restore the _
 				if (variable == null)
-					A.Psf.Engine.SessionState.PSVariable.Remove("_");
+					Psf.Engine.SessionState.PSVariable.Remove("_");
 				else
-					A.Psf.Engine.SessionState.PSVariable.Set(variable);
+					Psf.Engine.SessionState.PSVariable.Set(variable);
+			}
+		}
+
+		/// <summary>
+		/// Invokes the handler-like script and returns the result collection.
+		/// </summary>
+		/// <param name="script">The script block to invoke.</param>
+		/// <param name="sender">The object for $this.</param>
+		/// <param name="e">The object for $_.</param>
+		internal static Collection<PSObject> InvokeScript(ScriptBlock script, object sender, object e)
+		{
+			var variable = script.Module == null ? Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
+			variable.Set("this", sender);
+			variable.Set("_", e);
+			try
+			{
+				return script.Invoke();
+			}
+			finally
+			{
+				variable.Remove("this");
+				variable.Remove("_");
+			}
+		}
+
+		/// <summary>
+		/// Invokes the handler-like script and returns the result as it is.
+		/// </summary>
+		/// <param name="script">The script block to invoke.</param>
+		/// <param name="sender">The object for $this.</param>
+		/// <param name="e">The object for $_.</param>
+		internal static object InvokeScriptReturnAsIs(ScriptBlock script, object sender, object e)
+		{
+			var variable = script.Module == null ? Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
+			variable.Set("this", sender);
+			variable.Set("_", e);
+			try
+			{
+				return script.InvokeReturnAsIs();
+			}
+			finally
+			{
+				variable.Remove("this");
+				variable.Remove("_");
 			}
 		}
 

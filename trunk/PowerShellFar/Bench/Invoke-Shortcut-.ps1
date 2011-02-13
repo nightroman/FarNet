@@ -56,18 +56,18 @@ Assert-Far ([bool]$target) "Cannot get a target path from '$Path'.`nIs it a shor
 ### Panel properties
 if ($Panel) {
 	$p = New-Object PowerShellFar.MemberPanel $link
-	$p.Panel.Info.Title = "Shortcut $Path"
+	$p.Panel.Title = "Shortcut $Path"
 	$p.SetSave({
 		$this.Value.Save()
 		$this.Modified = $false
 	})
-	$p.Show()
+	$p.Open()
 	return
 }
 
 ### Go to directory
 if ([IO.Directory]::Exists($target)) {
-	$Far.Panel.Path = $target
+	$Far.Panel.CurrentDirectory = $target
 	$Far.Panel.Redraw()
 }
 

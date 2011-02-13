@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -435,7 +436,7 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 				continue;
 
 			// mask?
-			if (SS(it->Mask) && !CompareNameEx(it->Mask, name, true))
+			if (SS(it->Mask) && !CompareNameExclude(it->Mask, name, true))
 				continue;
 
 			// arguments
@@ -720,13 +721,13 @@ bool Far0::CompareName(String^ mask, const wchar_t* name, bool skipPath)
 	for each(String^ s in mask->Split(gcnew array<Char>{',', ';'}, StringSplitOptions::RemoveEmptyEntries))
 	{
 		PIN_NE(pin, s);
-		if (Info.CmpName(pin, name, skipPath))
+		if (Info.FSF->ProcessName(pin, (wchar_t*)name, 0, skipPath ? (PN_CMPNAME | PN_SKIPPATH) : (PN_CMPNAME)))
 			return true;
 	}
 	return false;
 }
 
-bool Far0::CompareNameEx(String^ mask, const wchar_t* name, bool skipPath)
+bool Far0::CompareNameExclude(String^ mask, const wchar_t* name, bool skipPath)
 {
 	int i = mask->IndexOf('|');
 	if (i < 0)
@@ -744,7 +745,7 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 	for each(IModuleEditor^ it in _registeredEditor)
 	{
 		// mask?
-		if (SS(it->Mask) && !CompareNameEx(it->Mask, fileName, true))
+		if (SS(it->Mask) && !CompareNameExclude(it->Mask, fileName, true))
 			continue;
 
 		//! tradeoff: catch all to call the others, too
@@ -916,10 +917,10 @@ void Far0::ShowPanelsMenu()
 	{
 		// Push/Shelve
 		{
-			IAnyPanel^ panel = Far::Net->Panel;
+			IPanel^ panel = Far::Net->Panel;
 			if (panel->IsPlugin)
 			{
-				IPanel^ plugin = dynamic_cast<IPanel^>(panel);
+				Panel^ plugin = dynamic_cast<Panel^>(panel);
 				if (plugin)
 				{
 					mi = menu->Add(sPushShelveThePanel);
@@ -969,7 +970,7 @@ void Far0::ShowPanelsMenu()
 		{
 			// case: remove shelved file panel;
 			// do not remove plugin panels because of their shutdown bypassed
-			ShelveInfoPanel^ shelve = dynamic_cast<ShelveInfoPanel^>(data);
+			ShelveInfoNative^ shelve = dynamic_cast<ShelveInfoNative^>(data);
 			if (shelve)
 				Works::ShelveInfo::Stack->Remove(shelve);
 
@@ -979,7 +980,7 @@ void Far0::ShowPanelsMenu()
 		// Push/Shelve
 		if (Object::ReferenceEquals(item->Text, sPushShelveThePanel))
 		{
-			((IAnyPanel^)data)->Push();
+			((IPanel^)data)->Push();
 			return;
 		}
 

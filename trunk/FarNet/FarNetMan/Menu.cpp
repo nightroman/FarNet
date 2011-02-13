@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -65,7 +66,7 @@ void Menu::Lock()
 
 	_createdItems = CreateItems();
 	_createdBreaks = CreateBreakKeys();
-	
+
 	_help = NewChars(HelpTopic);
 	_title = NewChars(Title);
 	_bottom = NewChars(Bottom);

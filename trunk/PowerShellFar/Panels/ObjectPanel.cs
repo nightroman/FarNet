@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -22,14 +23,11 @@ namespace PowerShellFar
 		/// </summary>
 		public ObjectPanel()
 		{
-			Panel.Info.CurrentDirectory = "*";
-			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
-			Panel.Info.UseFilter = true;
+			PanelDirectory = "*";
+			SortMode = PanelSortMode.Unsorted;
+			UseFilter = true;
 
-			Panel.Info.UseAttributeHighlighting = true;
-			Panel.Info.UseHighlighting = false;
-
-			Panel.PuttingFiles += OnPuttingFiles;
+			ImportFiles += OnImportFiles;
 		}
 
 		///
@@ -74,11 +72,11 @@ namespace PowerShellFar
 					if (fileCount >= maximumFileCount && maximumFileCount > 0)
 					{
 						int res = ShowTooManyFiles(maximumFileCount, enumerable);
-						
+
 						// abort, show what we have got
 						if (res == 0)
 							break;
-						
+
 						if (res == 1)
 							// retry with a larger number
 							maximumFileCount *= 2;
@@ -94,7 +92,7 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void DeleteFiles(IList<FarFile> files, bool shift)
+		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
 		{
 			if ((Far.Net.Confirmations & FarConfirmations.Delete) != 0)
 			{
@@ -103,11 +101,11 @@ namespace PowerShellFar
 			}
 
 			foreach (FarFile f in files)
-				Panel.Files.Remove(f);
+				Files.Remove(f);
 		}
 
 		//! Update is called by the Far core.
-		void OnPuttingFiles(object sender, PuttingFilesEventArgs e)
+		void OnImportFiles(object sender, ImportFilesEventArgs e)
 		{
 			AddObjects(A.Psf.InvokeCode("Get-FarItem -Selected"));
 		}
@@ -132,7 +130,7 @@ namespace PowerShellFar
 			{
 				ObjectPanel op = new ObjectPanel();
 				op.AddObjects(ie);
-				op.ShowAsChild(this);
+				op.OpenChild(this);
 				return;
 			}
 
@@ -142,7 +140,7 @@ namespace PowerShellFar
 			{
 				ObjectPanel op = new ObjectPanel();
 				op.AddObjects(pi.Value as IEnumerable);
-				op.ShowAsChild(this);
+				op.OpenChild(this);
 				return;
 			}
 
@@ -155,7 +153,7 @@ namespace PowerShellFar
 					var values = A.Psf.InvokeCode("Get-WmiObject -Class $args[0] -ErrorAction SilentlyContinue", pi.Value.ToString());
 					ObjectPanel op = new ObjectPanel();
 					op.AddObjects(values);
-					op.ShowAsChild(this);
+					op.OpenChild(this);
 					return;
 				}
 			}
@@ -169,18 +167,18 @@ namespace PowerShellFar
 		/// </summary>
 		public override bool SaveData()
 		{
-			UI.ExportDialog.ExportClixml(CollectData(), Panel.ActivePath);
+			UI.ExportDialog.ExportClixml(CollectData(), StartDirectory);
 			return true;
 		}
 
 		/// <summary>
 		/// Keeps current panel file.
 		/// </summary>
-		internal override void SaveState()
+		protected override void SaveState()
 		{
-			FarFile f = Panel.CurrentFile;
+			FarFile f = CurrentFile;
 			if (f != null)
-				Panel.PostFile(f);
+				PostFile(f);
 		}
 
 		// _100227_073909
@@ -216,7 +214,7 @@ namespace PowerShellFar
 			AddObjects(values);
 
 			// post the first object and update
-			Panel.PostData(values[0]);
+			PostData(values[0]);
 			UpdateRedraw(false);
 		}
 
@@ -239,16 +237,16 @@ namespace PowerShellFar
 			try
 			{
 				//???? it works but looks like a hack
-				if (UserWants != UserAction.CtrlR && AddedValues == null && (Map != null || Panel.Files.Count > 0 && Panel.Files[0] is SetFile))
-					return Panel.Files;
+				if (UserWants != UserAction.CtrlR && AddedValues == null && (Map != null || Files.Count > 0 && Files[0] is SetFile))
+					return Files;
 
 				if (Map == null || Columns == null)
 				{
-					if (Panel.Files.Count == 0)
+					if (Files.Count == 0)
 						return AddedValues ?? new Collection<PSObject>();
 
 					var result = new Collection<PSObject>();
-					foreach (FarFile file in Panel.Files)
+					foreach (FarFile file in Files)
 						result.Add(PSObject.AsPSObject(file.Data));
 					if (AddedValues != null)
 						foreach (PSObject value in AddedValues)
@@ -259,7 +257,7 @@ namespace PowerShellFar
 
 				// _100330_191639
 				if (AddedValues == null)
-					return Panel.Files;
+					return Files;
 
 				var files = new List<FarFile>(AddedValues.Count);
 				foreach (PSObject value in AddedValues)
@@ -311,8 +309,8 @@ namespace PowerShellFar
 		IList<object> CollectData()
 		{
 			var r = new List<object>();
-			r.Capacity = Panel.Files.Count;
-			foreach (FarFile f in Panel.Files)
+			r.Capacity = Files.Count;
+			foreach (FarFile f in Files)
 				if (f.Data != null)
 					r.Add(f.Data);
 			return r;

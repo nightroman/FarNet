@@ -30,57 +30,57 @@ param
 )
 
 ### Create a panel, set its properties
-$p = $Far.CreatePanel()
-$p.AddDots = !$NoDots
-$p.DotsDescription = 'Try: F7, F8, F5, F6, CtrlQ, CtrlL, CtrlB, Ctrl7, Ctrl0, Esc'
-$p.Info.Title = "Test Panel"
-$p.Info.StartViewMode = 'Descriptions'
+$Panel = New-Object FarNet.Panel
+$Panel.DotsMode = if ($NoDots) { 'Off' } else { 'Dots' }
+$Panel.DotsDescription = 'Try: F7, F8, F5, F6, CtrlQ, CtrlL, CtrlB, Ctrl7, Ctrl0, Esc'
+$Panel.Title = "Test Panel"
+$Panel.ViewMode = 'Descriptions'
 
 ### Modes
 # 'Descriptions'
-$m = New-Object FarNet.PanelModeInfo
+$Mode = New-Object FarNet.PanelPlan
 $cn = New-Object FarNet.SetColumn -Property @{ Kind = "N"; Name = "Name (custom title)" }
 $co = New-Object FarNet.SetColumn -Property @{ Kind = "O"; Name = "Owner (custom title)" }
 $cz = New-Object FarNet.SetColumn -Property @{ Kind = "Z"; Name = "Description (custom title)" }
-$m.Columns = $cn, $co, $cz
-$m.StatusColumns = $m.Columns
-$p.Info.SetMode('Descriptions', $m)
+$Mode.Columns = $cn, $co, $cz
+$Mode.StatusColumns = $Mode.Columns
+$Panel.SetPlan('Descriptions', $Mode)
 # 'LongDescriptions'
-$m = $m.Clone()
-$m.IsFullScreen = $true
-$p.Info.SetMode('LongDescriptions', $m)
+$Mode = $Mode.Clone()
+$Mode.IsFullScreen = $true
+$Panel.SetPlan('LongDescriptions', $Mode)
 # 'Ctrl0 mode'
-$m = New-Object FarNet.PanelModeInfo
+$Mode = New-Object FarNet.PanelPlan
 $c0 = New-Object FarNet.SetColumn -Property @{ Kind = "C0"; Name = "Custom column C0" }
 $c1 = New-Object FarNet.SetColumn -Property @{ Kind = "C1"; Name = "Custom column C1" }
-$m.Columns = $cn, $c0, $c1
-$m.StatusColumns = $m.Columns
-$p.Info.SetMode(0, $m)
+$Mode.Columns = $cn, $c0, $c1
+$Mode.StatusColumns = $Mode.Columns
+$Panel.SetPlan(0, $Mode)
 
 ### Info items
 # This test: use info items for event statistics
-$p.Info.InfoItems = @(
+$Panel.InfoItems = @(
 	New-Object FarNet.DataItem 'Test Panel Events', $null
-	New-Object FarNet.DataItem 'MakingDirectory', 0
-	New-Object FarNet.DataItem 'DeletingFiles', 0
-	New-Object FarNet.DataItem 'GettingFiles', 0
-	New-Object FarNet.DataItem 'PuttingFiles', 0
+	New-Object FarNet.DataItem 'MakeDirectory', 0
+	New-Object FarNet.DataItem 'DeleteFiles', 0
+	New-Object FarNet.DataItem 'ExportFiles', 0
+	New-Object FarNet.DataItem 'ImportFiles', 0
 	New-Object FarNet.DataItem 'Last Event', ''
 )
 
 ### Create and keep user data - an object with properties that will be used when the panel is shown
-$p.Host = New-Object PSObject -Property @{
-	MakingDirectory = 0
-	DeletingFiles = 0
-	GettingFiles = 0
-	PuttingFiles = 0
+$Panel.Data.Host = New-Object PSObject -Property @{
+	MakeDirectory = 0
+	DeleteFiles = 0
+	ExportFiles = 0
+	ImportFiles = 0
 	Total = 0
-	Panel = $p
+	Panel = $Panel
 	KeyHandler = $null
 }
 
 ### Add an extra method that updates the panel info on events
-$p.Host | Add-Member ScriptMethod UpdateInfo {
+$Panel.Data.Host | Add-Member ScriptMethod UpdateInfo {
 
 	++$this.Total
 
@@ -88,31 +88,30 @@ $p.Host | Add-Member ScriptMethod UpdateInfo {
 	function Make12($s) { for($i = 1; $i -le 12; ++$i) { "$i $s $($this.Total)" } }
 
 	# generate new key labels
-	$pi = $this.Panel.Info
-	$pi.SetKeyBarAlt((Make12 Alt))
-	$pi.SetKeyBarAltShift((Make12 AltShift))
-	$pi.SetKeyBarCtrl((Make12 Ctrl))
-	$pi.SetKeyBarCtrlAlt((Make12 CtrlAlt))
-	$pi.SetKeyBarCtrlShift((Make12 CtrlShift))
-	$pi.SetKeyBarMain((Make12 Main))
-	$pi.SetKeyBarShift((Make12 Shift))
+	$this.Panel.SetKeyBar((Make12 Main))
+	$this.Panel.SetKeyBarAlt((Make12 Alt))
+	$this.Panel.SetKeyBarAltShift((Make12 AltShift))
+	$this.Panel.SetKeyBarCtrl((Make12 Ctrl))
+	$this.Panel.SetKeyBarCtrlAlt((Make12 CtrlAlt))
+	$this.Panel.SetKeyBarCtrlShift((Make12 CtrlShift))
+	$this.Panel.SetKeyBarShift((Make12 Shift))
 
 	# update event counters and reset the property
-	$InfoItems = $this.Panel.Info.InfoItems
-	$InfoItems[1].Data = $this.MakingDirectory
-	$InfoItems[2].Data = $this.DeletingFiles
-	$InfoItems[3].Data = $this.GettingFiles
-	$InfoItems[4].Data = $this.PuttingFiles
+	$InfoItems = $this.Panel.InfoItems
+	$InfoItems[1].Data = $this.MakeDirectory
+	$InfoItems[2].Data = $this.DeleteFiles
+	$InfoItems[3].Data = $this.ExportFiles
+	$InfoItems[4].Data = $this.ImportFiles
 	$InfoItems[5].Data = Get-Date
-	$this.Panel.Info.InfoItems = $InfoItems
+	$this.Panel.InfoItems = $InfoItems
 }
 
-### MakingDirectory: called on [F7]
-$p.add_MakingDirectory({&{
-	$data = $this.Host
+### MakeDirectory: called on [F7]
+$Panel.add_MakeDirectory({&{
+	$data = $this.Data.Host
 
 	# count events and update the info
-	$n = ++$data.MakingDirectory
+	$n = ++$data.MakeDirectory
 	$data.UpdateInfo()
 
 	# ignore silent mode in this demo
@@ -126,12 +125,12 @@ $p.add_MakingDirectory({&{
 	$this.Files.Add((New-FarFile $_.Name -Owner "Value$n" -Description "Description$n" -Columns "custom[0]=$n", "custom[1]=$n"))
 }})
 
-### DeletingFiles: called on [F8]
-$p.add_DeletingFiles({&{
-	$data = $this.Host
+### DeleteFiles: called on [F8]
+$Panel.add_DeleteFiles({&{
+	$data = $this.Data.Host
 
 	# count events and update the info
-	++$data.DeletingFiles
+	++$data.DeleteFiles
 	$data.UpdateInfo()
 
 	# remove input files
@@ -140,12 +139,12 @@ $p.add_DeletingFiles({&{
 	}
 }})
 
-### GettingFiles: called on [F5], [CtrlQ]
-$p.add_GettingFiles({&{
-	$data = $this.Host
+### ExportFiles: called on [F5], [CtrlQ]
+$Panel.add_ExportFiles({&{
+	$data = $this.Data.Host
 
 	# count events and update the info
-	++$data.GettingFiles
+	++$data.ExportFiles
 	$data.UpdateInfo()
 
 	# case: [CtrlQ]
@@ -157,17 +156,17 @@ $p.add_GettingFiles({&{
 
 	# other cases
 	$that = $Far.Panel2
-	if (!$that.Info -or $That.Info.Title -ne $this.Info.Title) {
+	if ($That.Title -ne $this.Title) {
 		$Far.Message('Open another test panel for this operation.')
 	}
 }})
 
-### PuttingFiles: called on [F6]
-$p.add_PuttingFiles({&{
-	$data = $this.Host
+### ImportFiles: called on [F6]
+$Panel.add_ImportFiles({&{
+	$data = $this.Data.Host
 
 	# count events and update the info
-	++$data.PuttingFiles
+	++$data.ImportFiles
 	$data.UpdateInfo()
 
 	# process input files: just add them in this demo
@@ -177,26 +176,26 @@ $p.add_PuttingFiles({&{
 }})
 
 ### Escaping: closes the panel
-$p.add_Escaping({&{
+$Panel.add_Escaping({&{
 
 	# set processed
 	$_.Ignore = $true
 
 	# prompt
-	switch(Show-FarMessage 'How to close this panel?' -Choices '&1:Close()', '&2:Close(ActivePath)', 'Cancel') {
+	switch(Show-FarMessage 'How to close this panel?' -Choices '&1:Close()', '&2:Close(StartDirectory)', 'Cancel') {
 		0 {
 			# [_090321_210416]: Far panel current item depends on the plugin panel current item (fixed in FarNet)
 			$this.Close()
 		}
 		1 {
-			$this.Close($this.ActivePath)
+			$this.Close($this.StartDirectory)
 		}
 	}
 }})
 
 ### The key handler used in KeyPressing and KeyPressed events
 # [F1] is sent to both events if KeyPressing does not handle it
-$p.Host.KeyHandler = {
+$Panel.Data.Host.KeyHandler = {
 	# case [F1]:
 	if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
 		if (0 -eq (Show-FarMessage "[F1] has been pressed" $args[0] -Choices '&Handle', '&Default')) {
@@ -207,10 +206,10 @@ $p.Host.KeyHandler = {
 }
 
 ### KeyPressed: processes some keys.
-$p.add_KeyPressed({ & $this.Host.KeyHandler 'KeyPressed' })
+$Panel.add_KeyPressed({ & $this.Data.Host.KeyHandler 'KeyPressed' })
 
 ### KeyPressing: pre-processes some keys.
-$p.add_KeyPressing({ & $this.Host.KeyHandler 'KeyPressing' })
+$Panel.add_KeyPressing({ & $this.Data.Host.KeyHandler 'KeyPressing' })
 
 ### Closing:
 <#
@@ -222,9 +221,9 @@ Far issue [_090321_165608]: how to reproduce:
 >: 1+1
 -- breakpoint is hit: this is bad, panel is not closing at all!
 #>
-$p.add_Closing({&{
+$Panel.add_Closing({&{
 	$DebugPanelClosing = $true
 }})
 
 # Go!
-$p.Open()
+$Panel.Open()

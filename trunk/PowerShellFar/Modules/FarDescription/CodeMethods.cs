@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -94,7 +95,7 @@ namespace FarDescription
 		{
 			if (instance == null)
 				throw new ArgumentNullException("instance");
-			
+
 			FileInfo file1 = instance.BaseObject as FileInfo;
 			if (file1 == null)
 				return null;

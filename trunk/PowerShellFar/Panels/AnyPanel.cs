@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -8,7 +9,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using FarNet;
 
 namespace PowerShellFar
@@ -18,111 +18,31 @@ namespace PowerShellFar
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This class is a host of <see cref="IPanel"/>
-	/// (see <see cref="Panel"/> and <see cref="IPanel.Host"/>).
-	/// It manages extra panel data and "items" attached to panel "files"
-	/// and implements panel event handlers for some basic panel operations.
-	/// </para>
-	/// <para>
 	/// Terminology (both for names and documentation):
-	/// "files" (<c>FarFile</c>) are elements of <see cref="IPanel"/>;
+	/// "files" (<c>FarFile</c>) are elements of <see cref="Panel"/>;
 	/// "items" (<c>PSObject</c>) are <see cref="FarFile.Data"/> attached to "files".
 	/// Note that null and ".." items are not processed (e.g. by <see cref="ShownItems"/>
 	/// and <see cref="SelectedItems"/>).
 	/// </para>
 	/// </remarks>
-	public abstract partial class AnyPanel
+	public abstract partial class AnyPanel : Panel
 	{
 		/// <summary>
 		/// Default panel.
 		/// </summary>
 		internal AnyPanel()
 		{
-			// create a panel
-			_Panel = Far.Net.CreatePanel();
-
-			// set host, etc.
-			_Panel.Host = this;
-			_Panel.AddDots = true;
+			// settings
+			DotsMode = PanelDotsMode.Dots;
 
 			// add event handlers
-			_Panel.Closed += OnClosed;
-			_Panel.Executing += OnExecuting;
-			_Panel.GettingData += OnGettingData;
-			_Panel.GettingFiles += OnGettingFiles;
-			_Panel.Idled += OnIdled;
-			_Panel.KeyPressed += OnKeyPressed;
-			_Panel.SettingDirectory += OnSettingDirectory;
-
-			// auto names
-			_Panel.Info.AutoAlternateNames = true;
+			UpdateFiles += OnUpdateFiles;
+			ExportFiles += OnExportFiles;
+			KeyPressed += OnKeyPressed;
+			SetPanelDirectory += OnSetDirectory;
 
 			// start mode
-			_Panel.Info.StartViewMode = PanelViewMode.AlternativeFull;
-		}
-
-		/// <summary>
-		/// Gets the default panel title to be set on show.
-		/// </summary>
-		protected virtual string DefaultTitle { get { return GetType().Name; } }
-
-		AnyPanel _Child;
-		/// <summary>
-		/// Child panel.
-		/// </summary>
-		internal AnyPanel Child
-		{
-			get { return _Child; }
-		}
-
-		/// <summary>
-		/// Gets user data attached to this panel.
-		/// </summary>
-		/// <remarks>
-		/// This is just a shortcut reference to <see cref="IPanel.Data"/>, not another instance.
-		/// </remarks>
-		public Hashtable Data
-		{
-			get { return _Panel.Data; }
-		}
-
-		List<IDisposable> _Garbage;
-		/// <summary>
-		/// Gets the list of user objects that have to be disposed when the panel is closed.
-		/// </summary>
-		public IList<IDisposable> Garbage
-		{
-			get
-			{
-				if (_Garbage == null)
-					_Garbage = new List<IDisposable>();
-				return _Garbage;
-			}
-		}
-
-		//! this.Data is connected to Panel.Data
-		readonly IPanel _Panel;
-		/// <summary>
-		/// Gets the hosted panel.
-		/// </summary>
-		/// <remarks>
-		/// The hosted panel refers to this as <see cref="IPanel.Host"/>.
-		/// </remarks>
-		public IPanel Panel
-		{
-			get { return _Panel; }
-		}
-
-		AnyPanel _Parent;
-		/// <summary>
-		/// Gets the parent panel.
-		/// </summary>
-		/// <remarks>
-		/// The parent panel is null if this panel is not a child panel.
-		/// </remarks>
-		public AnyPanel Parent
-		{
-			get { return _Parent; }
+			ViewMode = PanelViewMode.AlternativeFull;
 		}
 
 		static PSObject ConvertFileToItem(FarFile file)
@@ -138,7 +58,7 @@ namespace PowerShellFar
 		/// </summary>
 		/// <remarks>
 		/// Items are returned according to the current panel filter and sort order.
-		/// Thus, this set set is not the same as <see cref="IPanel.Files"/>.
+		/// Thus, this set set is not the same as <see cref="Panel.Files"/>.
 		/// <para>
 		/// WARNING: it is <c>IEnumerable</c>, not a list or an array.
 		/// </para>
@@ -165,7 +85,7 @@ namespace PowerShellFar
 		{
 			get
 			{
-				foreach (FarFile file in _Panel.ShownFiles)
+				foreach (FarFile file in ShownFiles)
 					yield return ConvertFileToItem(file);
 			}
 		}
@@ -177,7 +97,7 @@ namespace PowerShellFar
 		{
 			get
 			{
-				foreach (FarFile file in _Panel.SelectedFiles)
+				foreach (FarFile file in SelectedFiles)
 					yield return ConvertFileToItem(file);
 			}
 		}
@@ -189,7 +109,7 @@ namespace PowerShellFar
 		{
 			get
 			{
-				return ConvertFileToItem(_Panel.CurrentFile);
+				return ConvertFileToItem(CurrentFile);
 			}
 		}
 
@@ -198,161 +118,25 @@ namespace PowerShellFar
 		/// </summary>
 		internal bool IgnoreDirectoryFlag { get; set; } // _090810_180151
 
-		/// <summary>
-		/// Gets active or passive PowerShellFar panel if any.
-		/// </summary>
-		/// <param name="active">Active or passive panel.</param>
-		/// <returns>Found panel or null.</returns>
-		public static AnyPanel GetPanel(bool active)
+		///
+		protected override bool OpenChildBegin(Panel parent)
 		{
-			IPanel plug = Far.Net.FindPanel(typeof(AnyPanel));
-			if (plug == null)
-				return null;
-			AnyPanel pp = plug.Host as AnyPanel;
-			if (pp._Panel.IsActive == active)
-				return pp;
-			return pp.AnotherPanel;
-		}
-
-		/// <summary>
-		/// It is called to save data.
-		/// By default it just returns true.
-		/// </summary>
-		/// <returns>true if there is no more data to save.</returns>
-		public virtual bool SaveData()
-		{
-			return true;
-		}
-
-		/// <summary>
-		/// Saves the panel state.
-		/// This version saves a file name; it is the least effective but:
-		/// *) indexes may change (when items added|removed)
-		/// *) panel files can be recreated on getting data.
-		/// </summary>
-		internal virtual void SaveState()
-		{
-			FarFile f = _Panel.CurrentFile;
-			if (f != null)
-				_Panel.PostName(f.Name);
-		}
-
-		// actual show
-		void Open(object sender, EventArgs e)
-		{
-			if (_Parent == null)
-				_Panel.Open();
-			else
-				_Panel.Open(_Parent._Panel);
-		}
-
-		/// <summary>
-		/// Tells to shows the panel. It is OK to call it more than once.
-		/// The panel is actually shown only when Far gets control.
-		/// Don't call from a modal dialog, editor or viewer.
-		/// </summary>
-		/// <seealso cref="Show(bool)"/>
-		/// <seealso cref="ShowAsChild"/>
-		public virtual void Show()
-		{
-			// done
-			if (_Panel.IsOpened)
-				return;
-
-			// set the title to default
-			if (string.IsNullOrEmpty(_Panel.Info.Title))
-				_Panel.Info.Title = DefaultTitle;
-
-			// try to open even not from panels
-			WindowKind wt = Far.Net.Window.Kind;
-			if (wt != WindowKind.Panels)
-			{
-				try
-				{
-					Far.Net.Window.SetCurrentAt(0);
-				}
-				catch (InvalidOperationException e)
-				{
-					throw new ModuleException("Cannot open a panel because panels window cannot be set current.", e);
-				}
-
-				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
-				// I tried to ignore my check - a panel did not open. In contrast, PostStep calls via the menu where
-				// a panel is opened from with no problems.
-				Far.Net.PostStep(Open);
-				return;
-			}
-
-			Open(null, null);
-		}
-
-		/// <summary>
-		/// Calls <see cref="Show()"/> or <see cref="ShowAsChild"/> (child of the active panel) depending on a parameter.
-		/// </summary>
-		public void Show(bool child)
-		{
-			if (child)
-				ShowAsChild(null);
-			else
-				Show();
-		}
-
-		/// <summary>
-		/// Shows this panel as a child of a parent panel.
-		/// It sets parent/child relation and calls <see cref="Show()"/>.
-		/// </summary>
-		/// <param name="parent">
-		/// Parent panel (must be shown at this moment).
-		/// Null tells to use the active PSF panel, if any.
-		/// </param>
-		/// <remarks>
-		/// When this panel is shown as a child of its parent panel, the parent
-		/// panel is not closed and normally it is shown again later when the
-		/// child is closed.
-		/// </remarks>
-		public void ShowAsChild(AnyPanel parent)
-		{
-			// resolve 'null' parent
-			if (parent == null)
-			{
-				// use the active as parent
-				parent = GetPanel(true);
-
-				// 091103 Do not try to use the passive panel and do not throw, why? Show as normal.
-				if (parent == null)
-				{
-					// go
-					Show();
-					return;
-				}
-			}
-
-			// sanity
-			if (_Panel.IsOpened || _Parent != null)
-				throw new InvalidOperationException();
-
+			if (parent == null) throw new ArgumentNullException("parent");
+			
+			if (_LookupCloser == null)
+				return true;
+			
 			// lookup: try to post the current
-			if (_LookupCloser != null)
+			// 090809 ??? perhaps I have to rethink
+			TablePanel tp = this as TablePanel;
+			if (tp != null)
 			{
-				// 090809 ??? perhaps I have to rethink
-				TablePanel tp = this as TablePanel;
-				if (tp != null)
-				{
-					// assume parent Description = child Name
-					string value = parent._Panel.CurrentFile.Description;
-					_Panel.PostName(value);
-				}
+				// assume parent Description = child Name
+				string value = parent.CurrentFile.Description;
+				PostName(value);
 			}
 
-			// link
-			_Parent = parent;
-			_Parent._Child = this;
-
-			// begin
-			_Parent.SaveState();
-
-			// go
-			Show();
+			return true;
 		}
 
 		/// <summary>
@@ -378,59 +162,18 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Shows a parent panel and closes this.
-		/// </summary>
-		internal void ShowParent()
-		{
-			if (_Parent == null)
-				throw new InvalidOperationException("Parent is null.");
-
-			if (!CanClose())
-				return;
-
-			if (_Parent != null && !_Parent.CanCloseChild())
-				return;
-
-			// open parent
-			_Parent._Panel.Open(_Panel);
-
-			// unlink
-			_Parent._Child = null;
-			_Parent = null;
-		}
-
-		/// <summary>
-		/// Can the panel close now?
-		/// </summary>
-		/// <remarks>
-		/// NOTE: it can be called from a child; in this case the panel is offline.
-		/// </remarks>
-		internal virtual bool CanClose()
-		{
-			return true;
-		}
-
-		/// <summary>
-		/// Can the parent panel close its child?
-		/// </summary>
-		internal virtual bool CanCloseChild()
-		{
-			return true;
-		}
-
-		/// <summary>
 		/// Far handler.
 		/// </summary>
-		internal abstract void OnGettingData(PanelEventArgs e);
-		void OnGettingData(object sender, PanelEventArgs e)
+		internal abstract void OnUpdateFiles(PanelEventArgs e);
+		void OnUpdateFiles(object sender, PanelEventArgs e)
 		{
-			OnGettingData(e);
+			OnUpdateFiles(e);
 		}
 
 		/// <summary>
 		/// Far handler. Actually used only for quick view of a file.
 		/// </summary>
-		void OnGettingFiles(object sender, GettingFilesEventArgs e)
+		void OnExportFiles(object sender, ExportFilesEventArgs e)
 		{
 			if ((e.Mode & OperationModes.QuickView) == 0 || e.Files.Count != 1)
 				return;
@@ -439,7 +182,7 @@ namespace PowerShellFar
 			if (file.Data == null)
 				return;
 
-			//! file.AlternateName must be null as we auto them
+			//! file.Alias must be null as we auto them
 			WriteFile(file, My.PathEx.Combine(e.Destination, e.Names[0]));
 		}
 
@@ -450,13 +193,6 @@ namespace PowerShellFar
 		/// <summary>Attributes action.</summary>
 		internal virtual void UIAttributes()
 		{ }
-
-		/// <summary>Command action.</summary>
-		/// <returns>True if handled.</returns>
-		internal virtual bool UICommand(string code)
-		{
-			return false;
-		}
 
 		/// <summary>Create action.</summary>
 		internal virtual void UICreate()
@@ -500,42 +236,12 @@ namespace PowerShellFar
 		/// <summary>Delete action.</summary>
 		internal void UIDelete(bool shift)
 		{
-			IList<FarFile> ff = _Panel.SelectedFiles;
+			IList<FarFile> ff = SelectedFiles;
 			if (ff.Count == 0)
 				return;
 
-			DeleteFiles(ff, shift);
+			DeleteFiles2(ff, shift);
 			UpdateRedraw(false);
-		}
-
-		/// <summary>
-		/// Escape handler.
-		/// </summary>
-		internal virtual void UIEscape(bool all)
-		{
-			if (!CanClose())
-				return;
-
-			if (all || _Parent == null)
-			{
-				// _090321_210416 We do not call Redraw(0, 0) to reset cursor to 0 any more.
-				// See Mantis 1114: why it was needed. Now FarNet panels restore original state.
-
-				// ask parents
-				if (all)
-				{
-					for (AnyPanel parent = _Parent; parent != null; parent = parent._Parent)
-						if (!parent.CanClose())
-							return;
-				}
-
-				// close
-				_Panel.Close();
-			}
-			else
-			{
-				ShowParent();
-			}
 		}
 
 		/// <summary>
@@ -561,17 +267,13 @@ namespace PowerShellFar
 		///
 		internal void UIOpenFileMembers()
 		{
-			FarFile f = _Panel.CurrentFile;
+			FarFile f = CurrentFile;
 			if (f != null)
 				OpenFileMembers(f);
 		}
 
 		/// <summary>Rename action.</summary>
 		internal virtual void UIRename()
-		{ }
-
-		// Far handler
-		void OnIdled(object sender, EventArgs e)
 		{ }
 
 		// Far handler
@@ -584,7 +286,7 @@ namespace PowerShellFar
 			{
 				case VKeyCode.Enter:
 					{
-						FarFile f = _Panel.CurrentFile;
+						FarFile f = CurrentFile;
 						if (f == null)
 							return;
 						switch (e.State)
@@ -638,11 +340,11 @@ namespace PowerShellFar
 						{
 							case KeyStates.None:
 								e.Ignore = true;
-								UIEditFile(_Panel.CurrentFile, false);
+								UIEditFile(CurrentFile, false);
 								return;
 							case KeyStates.Alt:
 								e.Ignore = true;
-								UIEditFile(_Panel.CurrentFile, true);
+								UIEditFile(CurrentFile, true);
 								return;
 						}
 						return;
@@ -705,23 +407,6 @@ namespace PowerShellFar
 							case KeyStates.Shift:
 								e.Ignore = true;
 								UIDelete(true);
-								return;
-						}
-						return;
-					}
-				case VKeyCode.Escape:
-					{
-						switch (e.State)
-						{
-							case KeyStates.None:
-								if (Far.Net.CommandLine.Length > 0)
-									return;
-								e.Ignore = true;
-								UIEscape(false);
-								return;
-							case KeyStates.Shift:
-								e.Ignore = true;
-								UIEscape(true);
 								return;
 						}
 						return;
@@ -795,11 +480,11 @@ namespace PowerShellFar
 		/// <summary>
 		/// Far event.
 		/// </summary>
-		void OnSettingDirectory(object sender, SettingDirectoryEventArgs e)
+		void OnSetDirectory(object sender, SetDirectoryEventArgs e)
 		{
 			// *) .Find: is not used, ignore
 			// *) .Silent: 100127 CtrlQ mode is not OK for folders: FarMacro: on areas Far tries to enumerate, we do not support. ???
-			//????? _110121_150249 Time to do this has come.
+			//???? _110121_150249 Time to do this has come.
 			if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) > 0)
 			{
 				e.Ignore = true;
@@ -810,18 +495,18 @@ namespace PowerShellFar
 			if (Parent != null && (e.Name == ".." || e.Name == "\\"))
 			{
 				e.Ignore = true;
-				ShowParent();
+				CloseChild();
 				return;
 			}
 
 			// recall
-			OnSettingDirectory(e);
+			OnSetDirectory(e);
 		}
 
 		/// <summary>
 		/// Virtual event.
 		/// </summary>
-		internal virtual void OnSettingDirectory(SettingDirectoryEventArgs e)
+		internal virtual void OnSetDirectory(SetDirectoryEventArgs e)
 		{ }
 
 		/// <summary>
@@ -891,8 +576,8 @@ Sort-Object Name |
 		/// </summary>
 		internal void UpdateRedraw(bool keepSelection)
 		{
-			_Panel.Update(keepSelection);
-			_Panel.Redraw();
+			Update(keepSelection);
+			Redraw();
 		}
 
 		/// <summary>
@@ -900,8 +585,8 @@ Sort-Object Name |
 		/// </summary>
 		internal void UpdateRedraw(bool keepSelection, int current, int top)
 		{
-			_Panel.Update(keepSelection);
-			_Panel.Redraw(current, top);
+			Update(keepSelection);
+			Redraw(current, top);
 		}
 
 		/// <summary>
@@ -909,77 +594,15 @@ Sort-Object Name |
 		/// </summary>
 		internal void UpdateRedraw(bool keepSelection, string setName)
 		{
-			_Panel.Update(keepSelection);
-			_Panel.PostName(setName);
-			_Panel.Redraw();
-		}
-
-		/// <summary>
-		/// Gets another started Power panel or null. Assume 'this' is a started panel.
-		/// </summary>
-		internal AnyPanel AnotherPanel
-		{
-			get
-			{
-				IPanel pp = _Panel.AnotherPanel;
-				if (pp != null && pp.Host is AnyPanel)
-					return pp.Host as AnyPanel;
-				return null;
-			}
-		}
-
-		/// <summary>
-		/// Far handler.
-		/// </summary>
-		void OnClosed(object sender, EventArgs e)
-		{
-			// notify the parent firstly
-			if (_Parent != null)
-			{
-				_Parent.OnClosed();
-				_Parent._Child = null;
-				_Parent = null;
-			}
-
-			// notify this (child)
-			OnClosed();
-
-			// garbage
-			if (_Garbage != null)
-			{
-				foreach (IDisposable o in _Garbage)
-					o.Dispose();
-				_Garbage = null;
-			}
-		}
-
-		/// <summary>
-		/// Called by Far handler.
-		/// </summary>
-		internal virtual void OnClosed()
-		{
-			// notify the parents
-			if (_Parent != null)
-				_Parent.OnClosed();
-		}
-
-		/// <summary>
-		/// Far handler.
-		/// </summary>
-		void OnExecuting(object sender, ExecutingEventArgs e)
-		{
-			// invoke virtual
-			e.Ignore = UICommand(e.Command);
-
-			// clean the line
-			if (e.Ignore)
-				Far.Net.CommandLine.Text = string.Empty;
+			Update(keepSelection);
+			PostName(setName);
+			Redraw();
 		}
 
 		/// <summary>
 		/// Called to delete the files.
 		/// </summary>
-		internal virtual void DeleteFiles(IList<FarFile> files, bool shift) { }
+		internal virtual void DeleteFiles2(IList<FarFile> files, bool shift) { }
 
 		EventHandler<FileEventArgs> _LookupCloser;
 		/// <summary>
@@ -1011,7 +634,7 @@ Sort-Object Name |
 			MemberPanel r = new MemberPanel(it);
 			r._LookupOpeners = _LookupOpeners;
 			//! use null as parent: this panel can be not open now
-			r.ShowAsChild(null);
+			r.OpenChild(null);
 			return r;
 		}
 
@@ -1058,7 +681,7 @@ Out-File -FilePath $args[1] -Width $args[2]
 			r.BreakKeys.Add(VKeyCode.F1);
 
 			// args
-			PanelMenuEventArgs e = new PanelMenuEventArgs(r, Panel.CurrentFile, Panel.SelectedList);
+			PanelMenuEventArgs e = new PanelMenuEventArgs(r, CurrentFile, SelectedList);
 
 			// event
 			if (MenuCreating != null)
@@ -1095,7 +718,7 @@ Out-File -FilePath $args[1] -Width $args[2]
 				items.Exit = new SetItem()
 				{
 					Text = "E&xit panel",
-					Click = delegate { Panel.Close(); }
+					Click = delegate { Close(); }
 				};
 
 			if (items.Help == null)
@@ -1114,6 +737,6 @@ Out-File -FilePath $args[1] -Width $args[2]
 		/// </remarks>
 		/// <seealso cref="ShowMenu"/>
 		public event EventHandler<PanelMenuEventArgs> MenuCreating;
-	
+
 	}
 }

@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -25,12 +26,12 @@ namespace PowerShellFar.Commands
 	/// <code>
 	/// # Hardcoded breakpoint:
 	/// Assert-Far
-	/// 
+	///
 	/// # Single checks:
 	/// Assert-Far -Panels
 	/// Assert-Far -Plugin
 	/// Assert-Far ($Far.Window.Kind -eq 'Panels')
-	/// 
+	///
 	/// # Combined checks:
 	/// Assert-Far -Panels -Plugin
 	/// Assert-Far -Panels ($Far.Panel.IsPlugin)
@@ -38,7 +39,7 @@ namespace PowerShellFar.Commands
 	///     $Far.Window.Kind -eq 'Panels'
 	///     $Far.Panel.IsPlugin
 	/// )
-	/// 
+	///
 	/// # User friendly error message. Mind use of -Message and -Title with switches:
 	/// Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
 	/// Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Search-Regex"

@@ -15,47 +15,47 @@
 param
 (
 	# Command to select data; it is a command text or a command object.
-	$SelectCommand,
-
+	$SelectCommand
+	,
 	[string]
 	# Name of a database table. If empty -SelectCommand is used.
-	$TableName,
-
+	$TableName
+	,
 	[System.Data.Common.DbProviderFactory]
 	# Data provider factory instance. Default: variable $DbProviderFactory is expected.
-	$DbProviderFactory = $DbProviderFactory,
-
+	$DbProviderFactory = $DbProviderFactory
+	,
 	[System.Data.Common.DbConnection]
 	# Database connection. Default: variable $DbConnection is expected.
-	$DbConnection = $DbConnection,
-
+	$DbConnection = $DbConnection
+	,
 	[System.Data.Common.DbDataAdapter]
 	# Data adapter used for data manipulations (depends on connection).
-	$DbDataAdapter,
-
+	$DbDataAdapter
+	,
 	[switch]
 	# To close the connection when a panel exits.
-	$CloseConnection,
-
+	$CloseConnection
+	,
 	[switch]
 	# Show this panel as a child panel (can be omitted if -Lookup is used).
-	$AsChild,
-
+	$AsChild
+	,
 	[string]
 	# Panel title.
-	$Title,
-
+	$Title
+	,
 	[string[]]
 	# Columns to be shown
-	$Columns,
-
+	$Columns
+	,
 	[string]
 	# Regex pattern to exclude fields in the child record panel.
-	$ExcludeMemberPattern,
-
+	$ExcludeMemberPattern
+	,
 	# Handler triggered on Enter in the lookup table.
-	$Lookup,
-
+	$Lookup
+	,
 	[switch]
 	# Create and return a panel for later use.
 	$NoShow
@@ -66,8 +66,8 @@ if (!$DbProviderFactory) { throw "Provider factory is not defined." }
 if (!$DbConnection) { throw "Connection is not defined." }
 
 # create a panel
-$p = New-Object PowerShellFar.DataPanel
-$p.Factory = $DbProviderFactory
+$Panel = New-Object PowerShellFar.DataPanel
+$Panel.Factory = $DbProviderFactory
 
 # create adapter
 if (!$DbDataAdapter) {
@@ -91,19 +91,19 @@ elseif ($DbDataAdapter.SelectCommand -eq $null) {
 }
 
 # set adapter and objects to be disposed
-$p.Adapter = $DbDataAdapter
-if ($CloseConnection) { $p.Garbage.Add($DbConnection) }
+$Panel.Adapter = $DbDataAdapter
+if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
 
 # panel settings
-$p.Columns = $Columns
-$p.ExcludeMemberPattern = $ExcludeMemberPattern
-$p.Panel.Info.Title = $Title
-$p.SetLookup($Lookup)
+$Panel.Columns = $Columns
+$Panel.ExcludeMemberPattern = $ExcludeMemberPattern
+$Panel.Title = $Title
+$Panel.SetLookup($Lookup)
 
 # go!
 if ($NoShow) {
-	$p
+	$Panel
 }
 else {
-	$p.Show($AsChild -or $Lookup)
+	$Panel.Open($AsChild -or $Lookup)
 }

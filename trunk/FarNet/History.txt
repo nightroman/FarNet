@@ -1,8 +1,45 @@
 http://code.google.com/p/farnet/
 
-= 4.3.40 =
+= 4.4.0 =
 
-*** Use Far 2.0.1807 ***
+*** Massive revision of panel API and the first step to "file explorers" ***
+
+All module panels have to be adapted to the new infrastructure.
+Modules accessing changed panel members have to be updated, too.
+
+*) Classes and interfaces
+- Panel replaces IPanel
+- IAnyPanel becomes IPanel (any panel: native, plugin, module)
+- Removed IPanelInfo (Info property), its data moved to the class.
+- Removed AlternateName from files, it is generated and used internally.
+
+Module panel interface (old IPanel) is combined with the Panel class. The Panel
+class (or derived) holds the panel data, event handlers, extra members, etc.
+The Host property was removed.
+
+*) New class Explorer
+Experimental data provider dealing with FarFile. Explorers are panel helpers
+but they can be used without panels for pure data operations including testing.
+
+The PowerShellFar script Test-Explorer-.ps1 shows how various explorers work.
+
+To be continued. All panel methods operating on its virtual file system will be
+moved to explorers soon. Panels should be for pure UI classes.
+
+*) Renamed/changed quite a number of lame names/things; just some of them:
+- IPanel.Path -> CurrentDirectory
+- IPanel.ActivePath -> StartDirectory
+- IFar.ActivePath -> CurrentDirectory
+- Use*Highlighting -> Highlighting (3 states)
+- AddDots -> DotsMode:PanelDotsMode (3 states)
+- Some flags were renamed, e.g. related to RealNames mode.
+- Events: UpdateFiles, ExportFiles, ImportFiles, MakeDirectory, and
+SetPanelDirectory (should set PanelDirectory, not CurrentDirectory).
+
+*) IFar
+New method MatchPattern() compatible with the core file masks.
+
+= 4.3.40 =
 
 *) CallPlugin(0xcd, ..) properly opens modal UI and even panels!
 CallPlugin supports asynchronous commands (steps and jobs). Asynchronous

@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -32,10 +33,10 @@ void Viewer::Open(OpenMode mode)
 
 	// flags
 	int flags = 0;
-	
+
 	if (_DisableHistory)
 		flags |= VF_DISABLEHISTORY;
-	
+
 	switch(_Switching)
 	{
 	case FarNet::Switching::Enabled:
@@ -50,7 +51,7 @@ void Viewer::Open(OpenMode mode)
 			flags |= VF_ENABLE_F6;
 		break;
 	}
-	
+
 	switch(mode)
 	{
 	case OpenMode::None:
@@ -58,7 +59,7 @@ void Viewer::Open(OpenMode mode)
 	case OpenMode::Wait:
 		flags |= VF_NONMODAL; break;
 	}
-	
+
 	switch(_DeleteSource)
 	{
 	case FarNet::DeleteSource::UnusedFile:

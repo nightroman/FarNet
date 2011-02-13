@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -23,16 +24,15 @@ namespace PowerShellFar
 		/// </summary>
 		public DataPanel()
 		{
-			Panel.Info.CurrentDirectory = "*";
+			PanelDirectory = "*";
 
-			Panel.Info.UseFilter = true;
-			Panel.Info.UseSortGroups = false;
-
-			Panel.Info.UseAttributeHighlighting = true;
-			Panel.Info.UseHighlighting = false;
+			UseFilter = true;
+			UseSortGroups = false;
 
 			// modes: assume it is sorted in SELECT
-			Panel.Info.StartSortMode = PanelSortMode.Unsorted;
+			SortMode = PanelSortMode.Unsorted;
+
+			Closed += OnClosed;
 		}
 
 		/// <summary>
@@ -112,9 +112,9 @@ namespace PowerShellFar
 		/// Fills data table and shows the panel.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		public override void Show()
+		public override void Open()
 		{
-			if (Panel.IsOpened)
+			if (IsOpened)
 				return;
 
 			if (Table == null && Adapter == null)
@@ -228,13 +228,14 @@ namespace PowerShellFar
 				}
 			}
 
-			// pass 3: set panel mode
-			Panel.Info.SetMode(PanelViewMode.AlternativeFull, SetupPanelMode(metas));
+			// pass 3: set plan
+			SetPlan(PanelViewMode.AlternativeFull, SetupPanelMode(metas));
 
-			base.Show();
+			base.Open();
 		}
 
-		internal override bool CanClose()
+		///??
+		protected override bool CanClose()
 		{
 			using (DataTable dt = Table.GetChanges())
 			{
@@ -254,7 +255,8 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override bool CanCloseChild()
+		///??
+		protected override bool CanCloseChild()
 		{
 			MemberPanel mp = Child as MemberPanel;
 			if (mp == null)
@@ -279,7 +281,7 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void DeleteFiles(IList<FarFile> files, bool shift)
+		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
 		{
 			BuildDeleteCommand();
 
@@ -296,7 +298,7 @@ namespace PowerShellFar
 				DataRow dr = f.Data as DataRow;
 				if (dr == null)
 				{
-					Panel.Files.Remove(f);
+					Files.Remove(f);
 					continue;
 				}
 
@@ -316,7 +318,7 @@ namespace PowerShellFar
 					if (!ok)
 					{
 						dr.RejectChanges();
-						Panel.PostData(dr);
+						PostData(dr);
 					}
 				}
 				if (!ok)
@@ -331,7 +333,7 @@ namespace PowerShellFar
 			set { __toUpdateData = value; }
 		}
 
-		internal override void OnGettingData(PanelEventArgs e)
+		internal override void OnUpdateFiles(PanelEventArgs e)
 		{
 			// refill
 			if (UserWants == UserAction.CtrlR && Adapter != null)
@@ -348,13 +350,13 @@ namespace PowerShellFar
 				return;
 
 			// refresh data
-			for (int iFile = Panel.Files.Count; --iFile >= 0; )
+			for (int iFile = Files.Count; --iFile >= 0; )
 			{
-				FarFile f = Panel.Files[iFile];
+				FarFile f = Files[iFile];
 				DataRow Row = f.Data as DataRow;
 				if (Row == null || Row.RowState == DataRowState.Deleted || Row.RowState == DataRowState.Detached)
 				{
-					Panel.Files.RemoveAt(iFile);
+					Files.RemoveAt(iFile);
 					continue;
 				}
 			}
@@ -374,26 +376,26 @@ namespace PowerShellFar
 		/// <summary>
 		/// Saves current panel file reference.
 		/// </summary>
-		internal override void SaveState()
+		protected override void SaveState()
 		{
-			FarFile f = Panel.CurrentFile;
+			FarFile f = CurrentFile;
 			if (f != null)
-				Panel.PostData(f.Data);
+				PostData(f.Data);
 		}
 
 		void Fill()
 		{
 			Adapter.Fill(Table);
 
-			Panel.Files = new List<FarFile>(Table.Rows.Count + 1);
+			Files = new List<FarFile>(Table.Rows.Count + 1);
 			foreach (DataRow dr in Table.Rows)
-				Panel.Files.Add(new DataRowFile(dr, Map));
+				Files.Add(new DataRowFile(dr, Map));
 		}
 
 		/// <summary>
-		/// Saves modified data, disposes objects.
+		/// Core handler.
 		/// </summary>
-		internal override void OnClosed()
+		void OnClosed(object sender, EventArgs e)
 		{
 			if (Adapter != null)
 			{
@@ -404,7 +406,6 @@ namespace PowerShellFar
 				}
 			}
 			Dispose();
-			base.OnClosed();
 		}
 
 		internal override void UICreate()
@@ -417,8 +418,8 @@ namespace PowerShellFar
 
 			// add new file to the panel and go to it
 			DataRowFile f = new DataRowFile(dr, Map);
-			Panel.Files.Add(f);
-			Panel.PostFile(f);
+			Files.Add(f);
+			PostFile(f);
 			ToUpdateData = true;
 			UpdateRedraw(true);
 

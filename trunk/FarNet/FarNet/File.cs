@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -43,16 +44,7 @@ namespace FarNet
 			set { throw new NotSupportedException(); }
 		}
 		/// <summary>
-		/// Alternate name, can be used as a file system name.
-		/// </summary>
-		/// <seealso cref="IPanelInfo.AutoAlternateNames"/>
-		public virtual string AlternateName
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-		/// <summary>
-		/// User data. Only for <see cref="IPanel"/>.
+		/// User data. Only for <see cref="Panel"/>.
 		/// </summary>
 		public virtual object Data
 		{
@@ -92,7 +84,7 @@ namespace FarNet
 			set { throw new NotSupportedException(); }
 		}
 		/// <summary>
-		/// Custom columns. See <see cref="PanelModeInfo"/>.
+		/// Custom columns. See <see cref="PanelPlan"/>.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection Columns
@@ -192,7 +184,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Straightforward implementation of <see cref="FarFile"/> ready to use by <see cref="IPanel"/> panels.
+	/// Straightforward implementation of <see cref="FarFile"/> ready to use by module panels.
 	/// </summary>
 	/// <remarks>
 	/// It is just a set of properties where any property can be set.
@@ -215,7 +207,6 @@ namespace FarNet
 			if (file == null)
 				throw new ArgumentNullException("file");
 
-			AlternateName = file.AlternateName;
 			Attributes = file.Attributes;
 			CreationTime = file.CreationTime;
 			Data = file.Data;
@@ -258,11 +249,6 @@ namespace FarNet
 		/// </summary>
 		public override string Owner { get; set; }
 		/// <summary>
-		/// Alternate name, can be used as a file system name.
-		/// </summary>
-		/// <seealso cref="IPanelInfo.AutoAlternateNames"/>
-		public override string AlternateName { get; set; }
-		/// <summary>
 		/// Creation time.
 		/// </summary>
 		public override DateTime CreationTime { get; set; }
@@ -279,7 +265,7 @@ namespace FarNet
 		/// </summary>
 		public override long Length { get; set; }
 		/// <summary>
-		/// User data. Only for <see cref="IPanel"/>.
+		/// User data. Only for <see cref="Panel"/>.
 		/// </summary>
 		public override object Data { get; set; }
 		/// <summary>
@@ -287,7 +273,7 @@ namespace FarNet
 		/// </summary>
 		public override FileAttributes Attributes { get; set; }
 		/// <summary>
-		/// Custom columns. See <see cref="PanelModeInfo"/>.
+		/// Custom columns. See <see cref="PanelPlan"/>.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public override ICollection Columns { get; set; }

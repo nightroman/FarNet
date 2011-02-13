@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -33,11 +34,11 @@ namespace PowerShellFar
 			_Delete = handler;
 		}
 
-		internal override void DeleteFiles(IList<FarFile> files, bool shift)
+		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
 		{
 			//! do not call base which removes items
 			if (_Delete != null)
-				InvokeScriptReturnAsIs(_Delete, new FilesEventArgs(files, OperationModes.None, shift));
+				A.InvokeScriptReturnAsIs(_Delete, this, new FilesEventArgs() { Files = files, Move = shift });
 		}
 
 		#endregion
@@ -58,7 +59,7 @@ namespace PowerShellFar
 			if (_Write == null)
 				base.WriteFile(file, path);
 			else
-				InvokeScriptReturnAsIs(_Write, new WriteEventArgs(file, path));
+				A.InvokeScriptReturnAsIs(_Write, this, new WriteEventArgs(file, path));
 		}
 
 		#endregion
@@ -88,7 +89,7 @@ namespace PowerShellFar
 			if (_GetData == null)
 				return base.GetData();
 			else
-				return InvokeScript(_GetData, null);
+				return A.InvokeScript(_GetData, this, null);
 		}
 
 		#endregion

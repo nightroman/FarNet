@@ -15,10 +15,10 @@
 
 # create a panel (use another test panel)
 $script = Join-Path (Split-Path $MyInvocation.MyCommand.Path) 'Test-Panel-Lookup-'
-$p = & $script -NoShow
+$Panel = & $script -NoShow
 
 # called on creation of a menu; we may add our items
-$p.add_MenuCreating({
+$Panel.add_MenuCreating({
 
 	# to set data; mind Update and Redraw
 	$_.Menu.Items.Add((New-FarItem -Text '1. Set default values' -Click {&{
@@ -26,8 +26,8 @@ $p.add_MenuCreating({
 		$v.Any = 'String 1'
 		$v.Item = Get-Item "$env:FARHOME\Far.exe"
 		$v.Process = Get-Process -Id $pid
-		$this.Panel.Update($true)
-		$this.Panel.Redraw()
+		$this.Update($true)
+		$this.Redraw()
 	}}))
 
 	# to process current and selected items
@@ -59,4 +59,4 @@ $p.add_MenuCreating({
 })
 
 # Go!
-$p.Show()
+$Panel.Open()

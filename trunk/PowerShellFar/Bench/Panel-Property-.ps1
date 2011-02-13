@@ -35,4 +35,4 @@ else {
 }
 if (!$item) { throw "No items found." }
 
-(New-Object PowerShellFar.PropertyPanel $item[0].PSPath).Show()
+(New-Object PowerShellFar.PropertyPanel $item[0].PSPath).Open()

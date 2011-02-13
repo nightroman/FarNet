@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -282,7 +283,7 @@ namespace PowerShellFar
 			get { return _DebugForegroundColor; }
 			set { _DebugForegroundColor = value; }
 		}
-		
+
 		ConsoleColor _ErrorForegroundColor = ConsoleColor.Red;
 		///
 		public ConsoleColor ErrorForegroundColor
@@ -290,7 +291,7 @@ namespace PowerShellFar
 			get { return _ErrorForegroundColor; }
 			set { _ErrorForegroundColor = value; }
 		}
-		
+
 		ConsoleColor _VerboseForegroundColor = ConsoleColor.Cyan;
 		///
 		public ConsoleColor VerboseForegroundColor
@@ -298,7 +299,7 @@ namespace PowerShellFar
 			get { return _VerboseForegroundColor; }
 			set { _VerboseForegroundColor = value; }
 		}
-		
+
 		ConsoleColor _WarningForegroundColor = ConsoleColor.Yellow;
 		///
 		public ConsoleColor WarningForegroundColor

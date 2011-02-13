@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -136,7 +137,7 @@ void Panel1::ViewMode::set(PanelViewMode value)
 	Info.Control(_handle, FCTL_SETVIEWMODE, (int)value, NULL);
 }
 
-String^ Panel1::Path::get()
+String^ Panel1::CurrentDirectory::get()
 {
 	int size = Info.Control(_handle, FCTL_GETPANELDIR, 0, NULL);
 	CBox buf(size);
@@ -148,7 +149,7 @@ String^ Panel1::Path::get()
 // Directory::Exists gets false for paths >= 260. But we have to check at least short, because FCTL_SETPANELDIR
 // shows unwanted dialog on failure. So, let it works with no breaks at least for normal paths.
 // See also Mantis #1087: before Far 2.0.1187 it used to get true always.
-void Panel1::Path::set(String^ value)
+void Panel1::CurrentDirectory::set(String^ value)
 {
 	if (value == nullptr)
 		throw gcnew ArgumentNullException("value");
@@ -163,7 +164,7 @@ void Panel1::Path::set(String^ value)
 
 String^ Panel1::ToString()
 {
-	return Path;
+	return CurrentDirectory;
 }
 
 IList<FarFile^>^ Panel1::ShownFiles::get()
@@ -227,7 +228,6 @@ SetFile^ Panel1::ItemToFile(const PluginPanelItem& item)
 	SetFile^ file = gcnew SetFile;
 
 	file->Name = gcnew String(item.FindData.lpwszFileName);
-	file->AlternateName = gcnew String(item.FindData.lpwszAlternateFileName);
 	file->Description = gcnew String(item.Description);
 	file->Owner = gcnew String(item.Owner);
 
@@ -270,6 +270,10 @@ bool Panel1::UseSortGroups::get()
 	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_USESORTGROUPS) != 0;
+}
+void Panel1::UseSortGroups::set(bool)
+{
+	throw gcnew NotSupportedException();
 }
 
 bool Panel1::SelectedFirst::get()
@@ -325,6 +329,10 @@ bool Panel1::RealNames::get()
 	GetPanelInfo(_handle, pi);
 
 	return (pi.Flags & PFLAGS_REALNAMES) != 0;
+}
+void Panel1::RealNames::set(bool)
+{
+	throw gcnew NotSupportedException();
 }
 
 int Panel1::GetShownFileCount()
@@ -389,16 +397,16 @@ void Panel1::GoToPath(String^ path)
 		throw gcnew ArgumentNullException("path");
 
 	//! can be nullptr, e.g. for '\'
-	String^ dir = IO::Path::GetDirectoryName(path);
+	String^ dir = Path::GetDirectoryName(path);
 	if (!dir && (path->StartsWith("\\") || path->StartsWith("/")))
 		dir = "\\";
 	if (dir && dir->Length)
 	{
-		Path = dir;
+		CurrentDirectory = dir;
 		Redraw();
 	}
 
-	String^ name = IO::Path::GetFileName(path);
+	String^ name = Path::GetFileName(path);
 	if (name->Length > 0)
 		GoToName(name);
 }

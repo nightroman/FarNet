@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -19,10 +20,10 @@ int Wrap::GetEndPalette()
 }
 
 /*
-GetPanelInfo is in progress. The problem: Far calls AsGetOpenPluginInfo and plugin may have GettingInfo handler
+GetPanelInfo is in progress. The problem: Far calls AsGetOpenPluginInfo and plugin may have UpdateInfo handler
 where it may call panel properties, i.e. GetPanelInfo again. Far resolves recursion fine, but there are issues.
-E.g. GettingInfo asks the current file; GettingData removes items and asks view mode - the latter triggers
-GettingInfo and returned current file info is inconsistent with the actual items.
+E.g. UpdateInfo asks the current file; UpdateFiles removes items and asks view mode - the latter triggers
+UpdateInfo and returned current file info is inconsistent with the actual items.
 NOTE: Far design flaw.
 */
 bool State::GetPanelInfo;

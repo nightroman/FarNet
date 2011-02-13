@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -62,7 +63,7 @@ void FarControl::Init(FarDialogItem& item, int type)
 	item.Selected = _selected;
 	item.Flags = _flags;
 	item.DefaultButton = 0;
-	
+
 	item.MaxLen = 0;
 	if (Text)
 		item.PtrData = NewChars(Text);

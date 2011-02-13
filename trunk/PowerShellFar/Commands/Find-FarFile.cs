@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -18,8 +19,8 @@ namespace PowerShellFar.Commands
 	/// <remarks>
 	/// If a panel file is not found the cmdlet writes an error.
 	/// </remarks>
-	/// <seealso cref="IAnyPanel.GoToName(string)"/>
-	/// <seealso cref="IAnyPanel.GoToName(string, bool)"/>
+	/// <seealso cref="IPanel.GoToName(string)"/>
+	/// <seealso cref="IPanel.GoToName(string, bool)"/>
 	[Description("Finds a panel file and sets it current.")]
 	public sealed class FindFarFileCommand : BaseCmdlet
 	{

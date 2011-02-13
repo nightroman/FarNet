@@ -18,7 +18,7 @@
 
 # New TreePanel
 $panel = New-Object PowerShellFar.TreePanel
-$panel.Panel.Info.Title = 'Test-Panel-Tree-.ps1'
+$panel.Title = 'Test-Panel-Tree-.ps1'
 
 # Add a root for services (not yet expanded)
 $r = $panel.RootFiles.Add()

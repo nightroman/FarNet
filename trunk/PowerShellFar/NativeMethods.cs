@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -119,7 +120,7 @@ namespace PowerShellFar
 						password.AppendChar(pszPassword[i]);
 						pszPassword[i] = '\0';
 					}
-					
+
 					if (!string.IsNullOrEmpty(str))
 						credential = new PSCredential(str, password);
 					else

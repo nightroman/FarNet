@@ -117,6 +117,7 @@
     <Compile Include="Meta.cs" />
     <Compile Include="OutputWriters.cs" />
     <Compile Include="RawUI.cs" />
+    <Compile Include="PowerExplorer.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Stepper.cs" />
     <Compile Include="Text.cs" />

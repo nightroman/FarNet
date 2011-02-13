@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -28,7 +29,7 @@ namespace FarNet.Works
 		public abstract void Pop();
 
 		// current: do provide the current name!
-		protected void InitSelectedNames(IAnyPanel panel, string current)
+		protected void InitSelectedNames(IPanel panel, string current)
 		{
 			if (panel == null)
 				throw new ArgumentNullException("panel");
@@ -46,7 +47,7 @@ namespace FarNet.Works
 				_SelectedNames[i] = files[i].Name;
 		}
 
-		protected void InitSelectedIndexes(IAnyPanel panel)
+		protected void InitSelectedIndexes(IPanel panel)
 		{
 			if (panel == null)
 				throw new ArgumentNullException("panel");

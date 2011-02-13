@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -46,9 +47,9 @@ namespace PowerShellFar
 			if (_provider == null || !My.ProviderInfoEx.HasProperty(_provider))
 				throw new InvalidOperationException(Res.NotSupportedByProvider);
 
-			Panel.Info.Title = "Properties: " + _itemPath;
-			Panel.Info.CurrentDirectory = _itemPath + ".*"; //??
-			Panel.Info.StartSortMode = PanelSortMode.Name;
+			Title = "Properties: " + _itemPath;
+			PanelDirectory = _itemPath + ".*"; //??
+			SortMode = PanelSortMode.Name;
 		}
 
 		internal override PSObject Target
@@ -56,12 +57,12 @@ namespace PowerShellFar
 			get { return _item; }
 		}
 
-		internal override void OnGettingData(PanelEventArgs e)
+		internal override void OnUpdateFiles(PanelEventArgs e)
 		{
 			try
 			{
 				// reset
-				Panel.Files.Clear();
+				Files.Clear();
 
 				//! get properties
 				// - Using -LiteralPath is a problem, e.g. Registry: returns nothing.
@@ -110,13 +111,13 @@ namespace PowerShellFar
 						};
 
 						// add
-						Panel.Files.Add(file);
+						Files.Add(file);
 					}
 				}
 			}
 			catch (RuntimeException error)
 			{
-				if ((e.Mode & OperationModes.FindSilent) == 0)
+				if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) == 0)
 					A.Msg(error.Message);
 			}
 		}
@@ -192,7 +193,7 @@ namespace PowerShellFar
 				return;
 			}
 
-			FarFile f = Panel.CurrentFile;
+			FarFile f = CurrentFile;
 			if (f == null)
 				return;
 			string name = f.Name;
@@ -262,7 +263,7 @@ namespace PowerShellFar
 
 		internal override void UIRename()
 		{
-			FarFile f = Panel.CurrentFile;
+			FarFile f = CurrentFile;
 			if (f == null)
 				return;
 			string name = f.Name;
@@ -302,7 +303,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenPropertyChanged(string itemPath)
 		{
-			PropertyPanel p = Far.Net.FindPanel(typeof(PropertyPanel)).Host as PropertyPanel;
+			PropertyPanel p = Far.Net.FindPanel(typeof(PropertyPanel)) as PropertyPanel;
 			if (p == null)
 				return;
 
@@ -333,12 +334,12 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void DeleteFiles(IList<FarFile> files, bool shift)
+		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
 		{
 			// delete value = enter null
 			if (shift)
 			{
-				base.DeleteFiles(files, false);
+				base.DeleteFiles2(files, false);
 				return;
 			}
 
@@ -391,11 +392,11 @@ namespace PowerShellFar
 				// Remove-ItemProperty : Property X does not exist at path HKEY_CURRENT_USER\Y
 				// There is no workaround added yet. Submitted: MS Connect #484664.
 				if (A.ShowError(p))
-					Panel.Update(true);
+					Update(true);
 				else
-					Panel.Update(false);
+					Update(false);
 
-				Panel.Redraw();
+				Redraw();
 
 				PropertyPanel pp2 = AnotherPanel as PropertyPanel;
 				if (pp2 != null)
@@ -549,7 +550,7 @@ namespace PowerShellFar
 		IList<string> CollectSelectedNames()
 		{
 			var r = new List<string>();
-			foreach (FarFile f in Panel.SelectedFiles)
+			foreach (FarFile f in SelectedFiles)
 				r.Add(f.Name);
 			return r;
 		}

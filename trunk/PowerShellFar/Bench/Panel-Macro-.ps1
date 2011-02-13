@@ -33,11 +33,11 @@
 param
 (
 	# Key name; if none, you may be prompted to enter.
-	$Name,
-
+	$Name
+	,
 	# Macro area; if none, the current area.
-	$Area,
-
+	$Area
+	,
 	[switch]
 	# Show as a child panel.
 	$AsChild
@@ -65,7 +65,7 @@ if ($wi.Kind -eq 'Panels' -and !$Name) {
 	$p.Drive = "FarMacro"
 	### [Enter]
 	$p.SetOpen({
-		if ($this.Panel.Path -match '^FarMacro:\\(\w+)$') {
+		if ($this.CurrentDirectory -match '^FarMacro:\\(\w+)$') {
 			Panel-Macro- -Name $_.File.Name -Area $matches[1] -AsChild
 		}
 		else {
@@ -75,13 +75,13 @@ if ($wi.Kind -eq 'Panels' -and !$Name) {
 	### [F4]
 	$p.SetEdit({
 		if ($_.File.Data -is [FarNet.Macro]) {
-			Edit-FarMacro -Macro $_.File.Data -Panel $this.Panel
+			Edit-FarMacro -Macro $_.File.Data -Panel $this
 		}
-		elseif ($this.Panel.Path -match '\\Consts$') {
-			Edit-FarMacro -Area 'Consts' -Name $_.File.Name -Panel $this.Panel
+		elseif ($this.CurrentDirectory -match '\\Consts$') {
+			Edit-FarMacro -Area 'Consts' -Name $_.File.Name -Panel $this
 		}
-		elseif ($this.Panel.Path -match '\\Vars$') {
-			Edit-FarMacro -Area 'Vars' -Name $_.File.Name -Panel $this.Panel
+		elseif ($this.CurrentDirectory -match '\\Vars$') {
+			Edit-FarMacro -Area 'Vars' -Name $_.File.Name -Panel $this
 		}
 	})
 	Start-FarPanel $p

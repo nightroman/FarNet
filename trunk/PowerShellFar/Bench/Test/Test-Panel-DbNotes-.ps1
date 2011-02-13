@@ -78,17 +78,17 @@ WHERE NoteId = @NoteId
 . $Created
 
 # create a panel, set adapter
-$p = New-Object PowerShellFar.DataPanel
-$p.Adapter = $a
+$Panel = New-Object PowerShellFar.DataPanel
+$Panel.Adapter = $a
 
 # data appearance
-$p.Panel.Info.Title = 'TestNotes'
-$p.Columns = @(
+$Panel.Title = 'TestNotes'
+$Panel.Columns = @(
 	@{ Kind = 'N'; Expression = 'Note'; Width = -80 }
 	@{ Kind = 'Z'; Expression = 'Category' }
 	@{ Kind = 'DC'; Expression = 'Created' }
 )
-$p.ExcludeMemberPattern = '^(NoteId|CategoryId)$'
+$Panel.ExcludeMemberPattern = '^(NoteId|CategoryId)$'
 
 # Setup lookup taking selected CategoryId (to use) and Category (to show);
 # there are two alternative examples below:
@@ -105,7 +105,7 @@ $p.ExcludeMemberPattern = '^(NoteId|CategoryId)$'
 # $this.CreateDataLookup() returns a helper handler that makes all the generic job.
 
 if ($GenericLookup) {
-	$p.AddLookup('Category', {
+	$Panel.AddLookup('Category', {
 		Test-Panel-DbCategories- -Lookup {&{
 			$r1 = $this.Parent.Value
 			$r2 = $_.File.Data
@@ -115,10 +115,10 @@ if ($GenericLookup) {
 	})
 }
 else {
-	$p.AddLookup('Category', {
+	$Panel.AddLookup('Category', {
 		Test-Panel-DbCategories- -Lookup $this.CreateDataLookup(@('Category', 'Category', 'CategoryId', 'CategoryId'))
 	})
 }
 
 # go!
-$p.Show()
+$Panel.Open()

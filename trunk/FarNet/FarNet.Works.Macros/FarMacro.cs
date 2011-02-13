@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -33,7 +34,7 @@ namespace FarNet.Works
 		}
 
 		#region override
-		
+
 		public override object GetConstant(string name)
 		{
 			return GetScalar(MacroArea.Consts, name);
@@ -274,7 +275,7 @@ namespace FarNet.Works
 			for (i = 0; i < lines.Length - 1; ++i)
 				sb.AppendLine(lines[i]);
 			sb.Append(lines[i]);
-			
+
 			return sb.ToString();
 		}
 
