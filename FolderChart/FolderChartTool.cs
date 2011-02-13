@@ -29,7 +29,7 @@ namespace FolderChart
 			if (panel.IsPlugin || panel.Kind != PanelKind.File)
 				return;
 
-			var path = panel.Path;
+			var path = panel.CurrentDirectory;
 
 			var run = new SizeRun();
 			if (!run.Run(Directory.GetDirectories(path), Directory.GetFiles(path)))
@@ -67,7 +67,7 @@ namespace FolderChart
 			var path2 = Path.Combine(path, result);
 			if (Directory.Exists(path2))
 			{
-				panel.Path = path2;
+				panel.CurrentDirectory = path2;
 			}
 			else if (File.Exists(path2))
 			{
