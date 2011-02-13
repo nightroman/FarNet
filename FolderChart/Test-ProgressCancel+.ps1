@@ -17,7 +17,7 @@
 #>
 
 {
-	$Far.Panel.Path = "c:\"
+	$Far.Panel.CurrentDirectory = "c:\"
 	$Far.Panel.Redraw()
 }
 
