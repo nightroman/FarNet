@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2011-01-13
+Release  : 2011-02-13
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -8,8 +8,8 @@ Source   : http://code.google.com/p/farnet/
 
 	= PREREQUISITES =
 
- * Far Manager 2.0.1767
- * Plugin FarNet 4.3.35
+ * Far Manager 2.0.1807
+ * Plugin FarNet 4.4.0
  * .NET Framework 3.5+
 
 	= DESCRIPTION =
@@ -137,6 +137,8 @@ for idle periods. The test set shows 30-40% more gain for long enough histories.
 
 1.0.9
 
-Fixed an error message in the list on ShiftDel + Esc.
+Updated for FarNet 4.4.0
 
 Minor tweaks in ranking.
+
+Fixed an error message in the list on ShiftDel + Esc.
