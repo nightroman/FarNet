@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -44,7 +45,7 @@ namespace FarMacro
 
 		[Parameter(
 			HelpMessage = "A panel to be updated on saving.")]
-		public IPanel Panel { get; set; }
+		public Panel Panel { get; set; }
 
 		/// <summary>
 		/// Actual file path used by the editor.
@@ -261,7 +262,7 @@ namespace FarMacro
 
 				return;
 			}
-			
+
 			// case: error in Macro mode
 			if (FilePath == null)
 			{

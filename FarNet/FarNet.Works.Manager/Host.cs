@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -26,7 +27,7 @@ namespace FarNet.Works
 			}
 		}
 		static Host _Instance_;
-		
+
 		public static HostState State
 		{
 			get { return _State_; }
@@ -38,7 +39,7 @@ namespace FarNet.Works
 			}
 		}
 		static HostState _State_;
-		
+
 		public abstract object LoadFarNetValue(string keyPath, string valueName, object defaultValue);
 		public abstract void SaveFarNetValue(string keyPath, string valueName, object value);
 		public abstract IRegistryKey OpenModuleKey(string name, bool writable);

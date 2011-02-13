@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -525,7 +526,7 @@ int FarUI::ReadKeys(array<int>^ virtualKeyCodes)
 	while (KeyAvailable)
 	{
 		KeyInfo key = ReadKey(Works::ReadKeyOptions::AllowCtrlC | Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp | Works::ReadKeyOptions::NoEcho);
-		
+
 		int code = key.VirtualKeyCode;
 		if (int(key.ControlKeyState & (ControlKeyStates::LeftAltPressed | ControlKeyStates::RightAltPressed)))
 			code |= VKeyMode::Alt;
@@ -533,7 +534,7 @@ int FarUI::ReadKeys(array<int>^ virtualKeyCodes)
 			code |= VKeyMode::Ctrl;
 		if (int(key.ControlKeyState & ControlKeyStates::ShiftPressed))
 			code |= VKeyMode::Shift;
-		
+
 		for each(int it in virtualKeyCodes)
 		{
 			if (it == code)
@@ -543,7 +544,7 @@ int FarUI::ReadKeys(array<int>^ virtualKeyCodes)
 			}
 		}
 	}
-	
+
 	FlushInputBuffer();
 	return 0;
 }

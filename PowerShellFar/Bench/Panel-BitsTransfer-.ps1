@@ -26,7 +26,7 @@
 	Note: commands may take some time in the background before you can see
 	changes in the panel.
 
-	[Delete]
+	[Del]
 	Clears the selected jobs and their temporary files.
 
 	Others keys are standard object panel keys, for example [CtrlPgDn] opens
@@ -63,16 +63,16 @@ param
 (
 	[string[]]
 	# Names of the files to transfer at the server. The names are paired with the corresponding client file names by indices.
-	$Source,
-
+	$Source
+	,
 	[string[]]
 	# Existing destination directory or names of the files to transfer at the client. The names are paired with the corresponding server file names by indices.
-	$Destination,
-
+	$Destination
+	,
 	[string]
 	# Display name of the transfer job. Default: current date and time.
-	$DisplayName = ([DateTime]::Now.ToString('s')),
-
+	$DisplayName = ([DateTime]::Now.ToString('s'))
+	,
 	[switch]
 	# Starts a new job where the server files are the selected files on the active panel and the destination directory is the passive panel path.
 	$Auto
@@ -107,12 +107,18 @@ if ($Source -and $Destination) {
 
 ### Check opened
 [Guid]$id = 'edd13d45-281a-460b-8ab1-42f587128c67'
-$p = $Far.FindPanel($id)
-if ($p) { return }
+$Panel = $Far.FindPanel($id)
+if ($Panel) { return }
+
+# Drop selection
+if ($Auto) {
+	$Far.Panel.UnselectAll()
+	$Far.Panel.Redraw()
+}
 
 ### Create panel
-$p = New-Object PowerShellFar.UserPanel
-$p.Columns = @(
+$Panel = New-Object PowerShellFar.UserPanel
+$Panel.Columns = @(
 	@{ Kind = 'N'; Expression = 'DisplayName' }
 	@{ Kind = 'S'; Label = '% done'; Expression = { if ($_.BytesTotal) { 100 * $_.BytesTransferred / $_.BytesTotal } else { 100 } } }
 	@{ Kind = 'O'; Label = 'State'; Width = 15; Expression = 'JobState' }
@@ -120,12 +126,12 @@ $p.Columns = @(
 )
 
 ### Panel jobs
-$p.SetGetData({
+$Panel.SetGetData({
 	Get-BitsTransfer -ErrorAction 0
 })
 
 ### Delete jobs
-$p.SetDelete({
+$Panel.SetDelete({
 	if ($Far.Message('Remove selected transfer jobs?', 'Remove', 'OkCancel') -ne 0) { return }
 	foreach($f in $_.Files) {
 		Remove-BitsTransfer -BitsJob $f.Data
@@ -133,7 +139,7 @@ $p.SetDelete({
 })
 
 ### Open a job
-$p.SetOpen({
+$Panel.SetOpen({
 	$job = $_.File.Data
 
 	New-FarMenu -Show "Job: $($job.DisplayName)" $(
@@ -157,9 +163,9 @@ $p.SetOpen({
 		}
 	)
 
-	$this.Panel.Update($true)
-	$this.Panel.Redraw()
+	$this.Update($true)
+	$this.Redraw()
 })
 
 # Go
-Start-FarPanel $p -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -IdleUpdate
+Start-FarPanel $Panel -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -IdleUpdate

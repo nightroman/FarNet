@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -55,7 +56,7 @@ ICollection<TextFrame>^ EditorBookmark::Bookmarks()
 ICollection<TextFrame>^ EditorBookmark::StackBookmarks()
 {
 	List<TextFrame>^ r = gcnew List<TextFrame>();
-	
+
 	int count = Info.EditorControl(ECTL_GETSTACKBOOKMARKS, NULL);
 	if (count <= 0)
 		return r;

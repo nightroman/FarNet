@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -14,16 +15,16 @@ namespace PowerShellFar.Commands
 	/// Get-FarFile command.
 	/// Gets panel file(s).
 	/// </summary>
-	/// <seealso cref="IAnyPanel.CurrentFile"/>
-	/// <seealso cref="IAnyPanel.ShownFiles"/>
-	/// <seealso cref="IAnyPanel.SelectedFiles"/>
+	/// <seealso cref="IPanel.CurrentFile"/>
+	/// <seealso cref="IPanel.ShownFiles"/>
+	/// <seealso cref="IPanel.SelectedFiles"/>
 	[Description("Gets panel file(s).")]
 	public sealed class GetFarFileCommand : BaseFileCmdlet
 	{
 		///
 		protected override void BeginProcessing()
 		{
-			IAnyPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
+			IPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
 
 			// no panel?
 			if (panel == null)
@@ -44,7 +45,7 @@ namespace PowerShellFar.Commands
 				WriteObject(panel.CurrentFile);
 				return;
 			}
-			
+
 			foreach(FarFile file in files)
 				WriteObject(file);
 		}

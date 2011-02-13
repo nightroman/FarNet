@@ -27,7 +27,9 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param()
 
+# import the module and install the FarNet constant
 Import-Module FarMacro
+$Far.Macro.InstallConstant('FarNet', 0xcd)
 
 # confirm
 if (!$pscmdlet.ShouldProcess($null)) { return }
@@ -58,11 +60,11 @@ $Far.Macro.Install($(
 	New-FarMacro Common CtrlMsWheelUp   'F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End' 'FarNet: Increase font size'
 
 	### Favorites menu [CtrlShiftL]
-	New-FarMacro Common CtrlShiftL 'CallPlugin(0xcd, ">: Menu-Favorites-.ps1")' 'PSF: Favorites'
+	New-FarMacro Common CtrlShiftL 'CallPlugin(FarNet, ">: Menu-Favorites-.ps1")' 'PSF: Favorites'
 
 	### PowerShellFar command history [AltF10]
 	# AltF10 in panels disables questionable folder tree.
-	New-FarMacro Common AltF10 'CallPlugin(0xcd, ":>: $Psf.ShowHistory()")' 'PSF: Command history' -EnableOutput
+	New-FarMacro Common AltF10 'CallPlugin(FarNet, ":>: $Psf.ShowHistory()")' 'PSF: Command history' -EnableOutput
 
 	### == Mixed (several areas)
 
@@ -123,7 +125,7 @@ $Far.Macro.Install($(
 	### == Shell only
 
 	### Quit Far [F10]
-	New-FarMacro Shell F10 '$If (CallPlugin(0xcd, ">: $Far.Quit()")) $Else F10 $End' 'PSF: Quit Far'
+	New-FarMacro Shell F10 '$If (CallPlugin(FarNet, ">: $Far.Quit()")) $Else F10 $End' 'PSF: Quit Far'
 
 	### Easy invoke: type and run without prefix (Invoke selected code) [ShiftSpace]
 	New-FarMacro Shell ShiftSpace (Get-PsfMacro 2) 'PSF: Easy invoke' -CommandLine 1
@@ -161,7 +163,7 @@ $Far.Macro.Install($(
 	New-FarMacro Editor CtrlShiftF8 (Get-PsfMacro f) 'PSF: Reformat selected\current line(s)'
 
 	### Bookmarks [Ctrl=] [CtrlShift=] [Ctrl-] [CtrlShift-]
-	New-FarMacro Editor Ctrl= 'CallPlugin(0xcd, ">: Select-Bookmark-")' 'Show bookmarks'
+	New-FarMacro Editor Ctrl= 'CallPlugin(FarNet, ">: Select-Bookmark-")' 'Show bookmarks'
 	New-FarMacro Editor CtrlShift= 'bm.add()' 'Add a new stack bookmark'
 	New-FarMacro Editor Ctrl- 'bm.prev()' 'Go to the previous stack bookmark'
 	New-FarMacro Editor CtrlShift- 'bm.next()' 'Go to the next stack bookmark'

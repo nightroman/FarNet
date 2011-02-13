@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -63,7 +64,7 @@ void PanelFileCollection::CopyTo(array<FarFile^>^ array, int arrayIndex)
 {
 	if (!array)
 		throw gcnew ArgumentNullException("array");
-	
+
 	for(int i = 0; i < _Count; ++i)
 		array[arrayIndex + i] = this[i];
 }

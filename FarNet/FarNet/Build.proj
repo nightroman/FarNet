@@ -1,7 +1,7 @@
 <Project DefaultTargets="Install" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<Install Condition="'$(Install)' == ''">C:\Program Files\Far</Install>
+		<Install Condition="'$(Install)' == ''">$(FARHOME)</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>
 

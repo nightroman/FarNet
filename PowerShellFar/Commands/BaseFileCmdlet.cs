@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -13,11 +14,11 @@ namespace PowerShellFar.Commands
 	/// Common features of cmdlets working with panel files.
 	/// </summary>
 	/// <seealso cref="FarFile"/>
-	/// <seealso cref="IAnyPanel"/>
+	/// <seealso cref="IPanel"/>
 	public class BaseFileCmdlet : BaseCmdlet
 	{
 		/// <summary>
-		/// See <see cref="IAnyPanel.ShownFiles"/>.
+		/// See <see cref="IPanel.ShownFiles"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Get all the panel items.")]
 		public SwitchParameter All
@@ -28,7 +29,7 @@ namespace PowerShellFar.Commands
 		SwitchParameter _All;
 
 		/// <summary>
-		/// See <see cref="IAnyPanel.SelectedFiles"/>.
+		/// See <see cref="IPanel.SelectedFiles"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Get the selected panel items or the current one if none is selected.")]
 		public SwitchParameter Selected
@@ -83,25 +84,25 @@ namespace PowerShellFar.Commands
 			}
 		}
 
-		internal static string GetCurrentPath(IAnyPanel panel1, IAnyPanel panel2)
+		internal static string GetCurrentPath(IPanel panel1, IPanel panel2)
 		{
 			FarFile f = panel1.CurrentFile;
 			if (f == null)
-				return panel2.Path;
+				return panel2.CurrentDirectory;
 
 			string name = f.Name;
 			if (name == "..")
-				return panel2.Path;
+				return panel2.CurrentDirectory;
 
 			if (panel1.RealNames && My.PathEx.IsFSPath(name))
 			{
 				if (panel1 == panel2)
 					return name;
 
-				return My.PathEx.Combine(panel2.Path, My.PathEx.GetFileName(name));
+				return My.PathEx.Combine(panel2.CurrentDirectory, My.PathEx.GetFileName(name));
 			}
 
-			return My.PathEx.Combine(panel2.Path, name);
+			return My.PathEx.Combine(panel2.CurrentDirectory, name);
 		}
 
 	}

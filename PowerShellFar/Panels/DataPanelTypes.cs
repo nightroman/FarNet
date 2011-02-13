@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -90,7 +91,7 @@ namespace PowerShellFar
 	{
 		DataRow Row;
 		DataRowFileMap Map;
-		
+
 		public DataRowFile(DataRow row, DataRowFileMap map)
 		{
 			Row = row;

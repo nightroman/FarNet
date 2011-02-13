@@ -31,8 +31,8 @@ param
 (
 	[string[]]
 	# Process name(s). Same as -Name of Get-Process.
-	$Name = '*',
-
+	$Name = '*'
+	,
 	[scriptblock]
 	# Advanced filter script. Example: { $_.ws -gt 10Mb } - processes with working sets greater than 10Mb.
 	$Where
@@ -62,7 +62,7 @@ $p.SetDelete({
 	if ($Far.Message('Kill selected process(es)?', 'Kill', 'OkCancel') -ne 0) { return }
 	foreach($f in $_.Files) {
 		$f.Data.Kill()
-		$this.Panel.Files.Remove($f)
+		$this.Files.Remove($f)
 	}
 })
 

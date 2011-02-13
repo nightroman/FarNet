@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -15,44 +16,6 @@ namespace PowerShellFar
 {
 	public abstract partial class AnyPanel
 	{
-		/// <summary>
-		/// Invokes a handler script and returns the result collection.
-		/// </summary>
-		internal Collection<PSObject> InvokeScript(ScriptBlock script, EventArgs e)
-		{
-			var variable = script.Module == null ? A.Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
-			variable.Set("this", this);
-			variable.Set("_", e);
-			try
-			{
-				return script.Invoke();
-			}
-			finally
-			{
-				variable.Remove("this");
-				variable.Remove("_");
-			}
-		}
-
-		/// <summary>
-		/// Invokes a handler script and returns the result as is.
-		/// </summary>
-		internal object InvokeScriptReturnAsIs(ScriptBlock script, EventArgs e)
-		{
-			var variable = script.Module == null ? A.Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
-			variable.Set("this", this);
-			variable.Set("_", e);
-			try
-			{
-				return script.InvokeReturnAsIs();
-			}
-			finally
-			{
-				variable.Remove("this");
-				variable.Remove("_");
-			}
-		}
-
 		#region Open
 		ScriptBlock _Open;
 
@@ -84,7 +47,7 @@ namespace PowerShellFar
 			if (_Open == null)
 				OpenFile(file);
 			else
-				InvokeScriptReturnAsIs(_Open, new FileEventArgs(file));
+				A.InvokeScriptReturnAsIs(_Open, this, new FileEventArgs(file));
 		}
 
 		/// <summary>
@@ -94,7 +57,7 @@ namespace PowerShellFar
 		{
 			if (file == null)
 				throw new ArgumentNullException("file");
-			
+
 			if (file.Data == null)
 				return;
 
@@ -131,7 +94,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Opens a file (handler, virtual method).
 		/// </summary>
-		void UIEditFile(FarFile file, bool alternative)
+		void UIEditFile(FarFile file, bool alternative) //???? use base?
 		{
 			if (file == null)
 				return;
@@ -139,7 +102,7 @@ namespace PowerShellFar
 			if (_Edit == null)
 				EditFile(file, alternative);
 			else
-				InvokeScriptReturnAsIs(_Edit, new FileEventArgs(file, alternative));
+				A.InvokeScriptReturnAsIs(_Edit, this, new FileEventArgs(file, alternative));
 		}
 
 		/// <summary>
@@ -218,7 +181,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal void UIView()
 		{
-			FarFile file = _Panel.CurrentFile;
+			FarFile file = CurrentFile;
 			if (file == null)
 			{
 				UIViewAll();
@@ -231,7 +194,7 @@ namespace PowerShellFar
 			if (_View == null)
 				ViewFile(file);
 			else
-				InvokeScriptReturnAsIs(_View, new FileEventArgs(file));
+				A.InvokeScriptReturnAsIs(_View, this, new FileEventArgs(file));
 		}
 
 		/// <summary>
@@ -264,7 +227,7 @@ namespace PowerShellFar
 			}
 			finally
 			{
-				File.Delete(tmp);
+				File.Delete(tmp); //???? bad: open 1, don't close, then open 2: TempName() gets the same name --> cannot open 2
 			}
 		}
 
@@ -288,7 +251,7 @@ namespace PowerShellFar
 		{
 			if (_ViewAll != null)
 			{
-				InvokeScriptReturnAsIs(_ViewAll, null);
+				A.InvokeScriptReturnAsIs(_ViewAll, this, null);
 				return;
 			}
 
@@ -299,7 +262,7 @@ namespace PowerShellFar
 
 				IViewer v = A.CreateViewer(tmp);
 				v.DisableHistory = true;
-				v.Title = _Panel.Path;
+				v.Title = CurrentDirectory;
 				v.Open(OpenMode.None);
 			}
 			finally

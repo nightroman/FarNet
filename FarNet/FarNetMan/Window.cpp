@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -81,7 +82,7 @@ WindowKind Window::GetKindAt(int index)
 	wi.Pos = index;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
 		throw gcnew InvalidOperationException("GetWindowType:" + index + " failed.");
-	
+
 	return (FarNet::WindowKind)wi.Type;
 }
 

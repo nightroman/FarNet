@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -13,7 +14,7 @@ namespace PowerShellFar
 	class JobUI : UniformUI
 	{
 		object _lock = new object();
-		
+
 		// Output writers
 		StreamWriter _writer;
 		StreamOutputWriter _output;

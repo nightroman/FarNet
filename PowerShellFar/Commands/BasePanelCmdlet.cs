@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -16,7 +17,7 @@ namespace PowerShellFar.Commands
 	public class BasePanelCmdlet : BaseCmdlet
 	{
 		/// <summary>
-		/// Panel type Id. See <see cref="IPanel.TypeId"/>
+		/// Panel type Id. See <see cref="Panel.TypeId"/>
 		/// </summary>
 		[Parameter(HelpMessage = "Panel type Id.")]
 		public Guid TypeId
@@ -32,7 +33,7 @@ namespace PowerShellFar.Commands
 		bool _setTypeId;
 
 		/// <summary>
-		/// Panel title. See <see cref="IPanelInfo.Title"/>.
+		/// Panel title. See <see cref="Panel.Title"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Panel title.")]
 		public string Title
@@ -48,7 +49,7 @@ namespace PowerShellFar.Commands
 		bool _setTitle;
 
 		/// <summary>
-		/// Panel sort mode. See <see cref="IAnyPanel.SortMode"/>.
+		/// Panel sort mode. See <see cref="IPanel.SortMode"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Panel sort mode.")]
 		public PanelSortMode SortMode
@@ -64,7 +65,7 @@ namespace PowerShellFar.Commands
 		bool _setSortMode;
 
 		/// <summary>
-		/// Panel view mode. See <see cref="IAnyPanel.ViewMode"/>.
+		/// Panel view mode. See <see cref="IPanel.ViewMode"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Panel view mode.")]
 		public PanelViewMode ViewMode
@@ -80,7 +81,7 @@ namespace PowerShellFar.Commands
 		bool _setViewMode;
 
 		/// <summary>
-		/// Tells to update data periodically when idle. See <see cref="IPanel.IdleUpdate"/>.
+		/// Tells to update data periodically when idle. See <see cref="Panel.IdleUpdate"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Tells to update data periodically when idle.")]
 		public SwitchParameter IdleUpdate
@@ -96,7 +97,7 @@ namespace PowerShellFar.Commands
 		bool _setIdleUpdate;
 
 		/// <summary>
-		/// Custom data ID to distinguish between objects. See <see cref="IPanel.DataId"/>.
+		/// Custom data ID to distinguish between objects. See <see cref="Panel.DataId"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Custom data ID to distinguish between objects.")]
 		public Meta DataId
@@ -112,13 +113,13 @@ namespace PowerShellFar.Commands
 		bool _setDataId;
 
 		/// <summary>
-		/// Attached user data. See <see cref="IPanel.Data"/>.
+		/// Attached user data. See <see cref="Panel.Data"/>.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		[Parameter(HelpMessage = "Attached user data.")]
 		public IDictionary Data { get; set; }
 
-		internal void ApplyParameters(IPanel panel)
+		internal void ApplyParameters(Panel panel)
 		{
 			// panel
 			if (_setDataId) panel.DataId = _DataId;
@@ -128,10 +129,10 @@ namespace PowerShellFar.Commands
 					panel.Data.Add(kv.Key, kv.Value);
 
 			// info
-			if (_setSortMode) panel.Info.StartSortMode = _SortMode;
-			if (_setTitle) panel.Info.Title = _Title;
+			if (_setSortMode) panel.SortMode = _SortMode;
+			if (_setTitle) panel.Title = _Title;
 			if (_setTypeId) panel.TypeId = _TypeId;
-			if (_setViewMode) panel.Info.StartViewMode = _ViewMode;
+			if (_setViewMode) panel.ViewMode = _ViewMode;
 		}
 
 	}

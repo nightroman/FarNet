@@ -271,45 +271,39 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 }
 
 ### Create a panel with the job object for search results
-$panel = $Far.CreatePanel()
-$panel.AddDots = $true
-$panel.Info.RealNames = $true
-$panel.Info.RightAligned = $true
-$panel.Info.StartSortMode = 'Unsorted'
-$panel.Info.StartViewMode = 'Descriptions'
-$panel.Info.Title = 'Searching...'
-$panel.Info.UseHighlighting = $true
-$panel.Host = $job
+$Panel = New-Object FarNet.Panel
+$Panel.RealNames = $true
+$Panel.RightAligned = $true
+$Panel.Highlighting = 'Full'
+$Panel.SortMode = 'Unsorted'
+$Panel.ViewMode = 'Descriptions'
+$Panel.Title = 'Searching...'
+$Panel.Data.Host = $job
+$Panel.Garbage.Add($job)
 
 ### Modes
 # 'Descriptions'
-$m0 = New-Object FarNet.PanelModeInfo
+$m0 = New-Object FarNet.PanelPlan
 $c1 = New-Object FarNet.SetColumn -Property @{ Kind = 'NR'; Name = 'File' }
 $c2 = New-Object FarNet.SetColumn -Property @{ Kind = 'Z'; Name = 'Match' }
 $m0.Columns = $c1, $c2
 $m0.StatusColumns = $c2
-$panel.Info.SetMode('Descriptions', $m0)
+$Panel.SetPlan('Descriptions', $m0)
 # 'LongDescriptions'
 $m1 = $m0.Clone()
 $m1.IsFullScreen = $true
-$panel.Info.SetMode('LongDescriptions', $m1)
-
-### Closed: disposes the job
-$panel.add_Closed({
-	$job = $this.Host
-	$job.Dispose()
-})
+$Panel.SetPlan('LongDescriptions', $m1)
 
 ### Idled: checks new data and updates
-$panel.add_Idled({&{
-	$job = $this.Host
+$Panel.add_Idled({&{
+	$job = $this.Data.Host
 	if (!$job.Parameters.Done) {
 		if ($job.Output.Count) {
 			$this.Update($false)
 		}
 		$title = '{0}: {1} lines in {2} files' -f $job.JobStateInfo.State, $this.Files.Count, $job.Parameters.Total
-		if ($this.Info.Title -ne $title) {
-			$this.Info.Title = $title
+		if ($this.Title -ne $title) {
+			$this.Title = $title
 			$this.Redraw()
 		}
 		if ($job.JobStateInfo.State -ne 'Running') {
@@ -319,16 +313,16 @@ $panel.add_Idled({&{
 	}
 }})
 
-### GettingData: reads found (with wrapper - workaround Find mode)
-$panel.add_GettingData({&{
-	$job = $this.Host
+### UpdateFiles: reads found (with wrapper - workaround Find mode)
+$Panel.add_UpdateFiles({&{
+	$job = $this.Data.Host
 	foreach($e in $job.Output.ReadAll()) {
 		$this.Files.Add($e)
 	}
 }})
 
 ### KeyPressed: handles keys
-$panel.add_KeyPressed({&{
+$Panel.add_KeyPressed({&{
 	### [Enter] opens an editor at the selected match
 	if ($_.Code -eq [FarNet.VKeyCode]::Enter -and $_.State -eq 0 -and !$Far.CommandLine.Length) {
 		$i = $this.CurrentFile
@@ -357,7 +351,7 @@ $panel.add_KeyPressed({&{
 }})
 
 ### Escaping: ask for exit
-$panel.add_Escaping({&{
+$Panel.add_Escaping({&{
 	# processed
 	$_.Ignore = $true
 	# close if empty:
@@ -366,7 +360,7 @@ $panel.add_Escaping({&{
 		return
 	}
 	# not empty; ask
-	$r = Show-FarMessage "How would you like to continue?" -Caption $this.Info.Title -Choices '&Close', '&Push', 'Cancel'
+	$r = Show-FarMessage "How would you like to continue?" -Caption $this.Title -Choices '&Close', '&Push', 'Cancel'
 	# close
 	if ($r -eq 0) {
 		$this.Close()
@@ -378,4 +372,4 @@ $panel.add_Escaping({&{
 }})
 
 ### Go!
-$panel.Open()
+$Panel.Open()

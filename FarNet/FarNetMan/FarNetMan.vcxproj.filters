@@ -71,9 +71,6 @@
     <ClCompile Include="PanelFileCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PanelInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Shelve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -172,9 +169,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PanelFileCollection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PanelInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers.c\plugin.hpp">

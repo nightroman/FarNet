@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -866,7 +867,7 @@ void Editor::IsVirtualSpace::set(bool value)
 		SetBoolOption(ESPT_CURSORBEYONDEOL, value);
 		return;
 	}
-	
+
 	_IsVirtualSpace = value;
 	_IsVirtualSpaceSet = true;
 }
@@ -877,7 +878,7 @@ void Editor::ShowWhiteSpace::set(bool value)
 		SetBoolOption(ESPT_SHOWWHITESPACE, value);
 		return;
 	}
-	
+
 	_ShowWhiteSpace = value;
 	_ShowWhiteSpaceSet = true;
 }
@@ -888,7 +889,7 @@ void Editor::WriteByteOrderMark::set(bool value)
 		SetBoolOption(ESPT_SETBOM, value);
 		return;
 	}
-	
+
 	_WriteByteOrderMark = value;
 	_WriteByteOrderMarkSet = true;
 }
@@ -915,7 +916,7 @@ void Editor::Start(const EditorInfo& ei, bool waiting)
 	{
 		if (_WordDivSet)
 			WordDiv = _WordDiv;
-		
+
 		if (_IsVirtualSpaceSet)
 			IsVirtualSpace = _IsVirtualSpace;
 		if (_ShowWhiteSpaceSet)
@@ -1179,7 +1180,7 @@ IList<ILine^>^ Editor::SelectedLines::get()
 {
 	if (!IsOpened)
 		return nullptr;
-	
+
 	Place pp = Edit_SelectionPlace();
 	if (pp.Top < 0)
 		return gcnew Works::LineCollection(this, 0, 0);

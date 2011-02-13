@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -44,10 +45,10 @@ namespace PowerShellFar
 				menu.Add("* New console or session *");
 				menu.HelpTopic = A.Psf.HelpTopic + "EditorConsoleMenuOpen";
 
-				IAnyPanel panel = null;
+				IPanel panel = null;
 				if ((Far.Net.Window.Kind == WindowKind.Panels) && (null != (panel = Far.Net.Panel)) && (panel.Kind != PanelKind.File))
 					panel = null;
-				
+
 				// break keys
 				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Shift);
 				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Ctrl);

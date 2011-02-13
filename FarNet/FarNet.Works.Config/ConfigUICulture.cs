@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -15,7 +16,7 @@ namespace FarNet.Works
 		{
 			if (managers == null)
 				return;
-			
+
 			IMenu menu = Far.Net.CreateMenu();
 			menu.Title = "Module UI culture";
 			menu.HelpTopic = helpTopic;

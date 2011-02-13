@@ -36,7 +36,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# keep some data, use global variables!
-	$global:TestStepperPath = $Far.Panel.Path
+	$global:TestStepperPath = $Far.Panel.CurrentDirectory
 	$global:TestStepperIndex = $Far.Panel.CurrentIndex
 }
 
@@ -176,9 +176,9 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# open a user panel with some objects
-	$p = New-Object PowerShellFar.UserPanel
-	$p.AddObjects((Get-ChildItem))
-	$p.Show()
+	$Panel = New-Object PowerShellFar.UserPanel
+	$Panel.AddObjects((Get-ChildItem))
+	$Panel.Open()
 }
 
 {
@@ -196,9 +196,9 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 			'Tab'
 			{
 				# this step was added dynamically to open yet another panel
-				$p = New-Object PowerShellFar.UserPanel
-				$p.AddObjects((Get-ChildItem))
-				$p.Show()
+				$Panel = New-Object PowerShellFar.UserPanel
+				$Panel.AddObjects((Get-ChildItem))
+				$Panel.Open()
 			}
 			'Tab'
 		))
@@ -238,7 +238,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# restore original panel path and item
-	$Far.Panel.Path = $global:TestStepperPath
+	$Far.Panel.CurrentDirectory = $global:TestStepperPath
 	$Far.Panel.Redraw($global:TestStepperIndex, 0)
 }
 

@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -82,7 +83,7 @@ namespace PowerShellFar
 		{
 			if (record == null)
 				throw new ArgumentNullException("record");
-			
+
 			// done
 			if (record.RecordType == ProgressRecordType.Completed)
 			{

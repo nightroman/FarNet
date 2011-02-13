@@ -46,7 +46,7 @@ if ($Folders) {
 				Show-FarMessage "Directory '$_' does not exist."
 			}
 			else {
-				$Far.Panel.Path = $_
+				$Far.Panel.CurrentDirectory = $_
 				if ($Far.Window.Kind -eq 'Dialog') {
 					$Far.UI.Redraw()
 				}

@@ -1,9 +1,10 @@
+
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.3.40.0")]
+[assembly: AssemblyVersion("4.4.0.0")]
 [assembly: AssemblyTitle("FarNet interfaces")]
 [assembly: AssemblyDescription("FarNet interfaces")]
 [assembly: AssemblyConfiguration("")]

@@ -1,3 +1,4 @@
+
 /*
 PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
@@ -51,7 +52,7 @@ namespace PowerShellFar
 				// current location, post the current name
 				FarFile f = Far.Net.Panel.CurrentFile;
 				if (f != null)
-					Panel.PostName(f.Name);
+					PostName(f.Name);
 			}
 			else
 			{
@@ -107,7 +108,7 @@ namespace PowerShellFar
 			get { return _location_; }
 		}
 
-		internal override void DeleteFiles(IList<FarFile> files, bool shift)
+		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
 		{
 			// go
 			A.SetLocation(Location.Path);
@@ -142,11 +143,11 @@ namespace PowerShellFar
 					p.Invoke(SelectedItems);
 
 					if (A.ShowError(p))
-						Panel.Update(true);
+						Update(true);
 					else
-						Panel.Update(false);
+						Update(false);
 
-					Panel.Redraw();
+					Redraw();
 
 					ItemPanel pp2 = AnotherPanel as ItemPanel;
 					if (pp2 != null)
@@ -171,7 +172,7 @@ namespace PowerShellFar
 			}
 
 			var files = new List<FarFile>(values.Count);
-			Panel.Files = files;
+			Files = files;
 
 			if (Location.Provider.ImplementingType == typeof(FileSystemProvider))
 			{
@@ -191,9 +192,9 @@ namespace PowerShellFar
 			return A.GetChildItems(Location.Path);
 		}
 
-		//! This is normally called by Far and then Far calls OnGettingData().
+		//! This is normally called by Far and then Far calls OnUpdateFiles().
 		//! If you call this then you call UpdateRedraw(false, 0, 0) yourself.
-		internal override void OnSettingDirectory(SettingDirectoryEventArgs e)
+		internal override void OnSetDirectory(SetDirectoryEventArgs e)
 		{
 			string newLocation = e.Name;
 			if (newLocation == "..")
@@ -228,7 +229,7 @@ namespace PowerShellFar
 						if (iProvider > 0)
 						{
 							// FarMacro
-							Panel.PostName(newLocation.Substring(iProvider + 2));
+							PostName(newLocation.Substring(iProvider + 2));
 							newLocation = newLocation.Substring(0, iProvider + 2);
 						}
 						else
@@ -240,7 +241,7 @@ namespace PowerShellFar
 					{
 						//! Issue with names z:|z, Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER - Far doesn't set cursor there
 						if (newLocation.Length > iSlash + 2)
-							Panel.PostName(newLocation.Substring(iSlash + 1));
+							PostName(newLocation.Substring(iSlash + 1));
 
 						newLocation = newLocation.Substring(0, iSlash);
 						if (newLocation.StartsWith("\\\\", StringComparison.Ordinal)) //HACK network path
@@ -276,7 +277,7 @@ namespace PowerShellFar
 				//! Make full path, else we can't step into e.g. Registry key z:|z
 				if (UserWants == UserAction.Enter)
 				{
-					FarFile file = Panel.CurrentFile;
+					FarFile file = CurrentFile;
 					newLocation = My.PathEx.Combine(Location.Path, file.Name);
 				}
 			}
@@ -302,7 +303,7 @@ namespace PowerShellFar
 				if (newLocation == "&Any objects")
 				{
 					ObjectPanel op = new ObjectPanel();
-					op.Panel.Open(Panel);
+					op.OpenInstead(this);
 					return;
 				}
 			}
@@ -321,7 +322,7 @@ namespace PowerShellFar
 				e.Ignore = true;
 
 				// show
-				if ((e.Mode & OperationModes.FindSilent) == 0)
+				if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) == 0)
 					A.Msg(exception.Message);
 			}
 		}
@@ -346,8 +347,8 @@ namespace PowerShellFar
 			A.SetLocation(Location.Path);
 
 			// new mode
-			FarFile f = Panel.CurrentFile;
-			(new PropertyPanel(f == null ? Location.Path : My.PathEx.Combine(Location.Path, f.Name))).ShowAsChild(this);
+			FarFile f = CurrentFile;
+			(new PropertyPanel(f == null ? Location.Path : My.PathEx.Combine(Location.Path, f.Name))).OpenChild(this);
 		}
 
 		internal override void UICreate()
@@ -403,7 +404,7 @@ namespace PowerShellFar
 
 		internal override void UICopyHere()
 		{
-			FarFile file = Panel.CurrentFile;
+			FarFile file = CurrentFile;
 			if (file == null)
 				return;
 			string name = file.Name;
@@ -458,17 +459,17 @@ namespace PowerShellFar
 			if (ip2 == null)
 			{
 				// ignore plugin panel
-				IAnyPanel panel = Far.Net.Panel2;
+				IPanel panel = Far.Net.Panel2;
 				if (panel.IsPlugin)
 					return true;
 
 				// standard panel path
-				destination = panel.Path;
+				destination = panel.CurrentDirectory;
 			}
 			else
 			{
 				// item panel path
-				destination = ip2.Panel.Path;
+				destination = ip2.CurrentDirectory;
 			}
 
 			// go
@@ -512,7 +513,7 @@ namespace PowerShellFar
 
 		internal override void UIRename()
 		{
-			FarFile f = Panel.CurrentFile;
+			FarFile f = CurrentFile;
 			if (f == null)
 				return;
 			string name = f.Name;
@@ -553,7 +554,7 @@ namespace PowerShellFar
 			{
 				if (string.IsNullOrEmpty(Drive))
 				{
-					Panel.Files.Clear();
+					Files.Clear();
 					Columns = null;
 					ExcludeMemberPattern = null;
 
@@ -575,30 +576,26 @@ namespace PowerShellFar
 			_location_ = location;
 
 			//! path is used for Set-Location on Invoking()
-			Panel.Info.Title = "Items: " + Location.Path;
-			Panel.Info.CurrentDirectory = Location.Path;
+			Title = "Items: " + Location.Path;
+			PanelDirectory = Location.Path;
 
 			if (Location.Provider.ImplementingType == typeof(FileSystemProvider))
 			{
-				Panel.Info.UseFilter = true;
-				Panel.Info.UseSortGroups = true;
-
-				Panel.Info.UseAttributeHighlighting = false;
-				Panel.Info.UseHighlighting = true;
+				UseFilter = true;
+				UseSortGroups = true;
+				Highlighting = PanelHighlighting.Full;
 
 				// _090929_061740 Before Far 2.0.1145 we used to sync the current directory to
 				// the PS location. Now it is not needed because Far does not do that any more.
 			}
 			else
 			{
-				Panel.Info.UseFilter = true;
-				Panel.Info.UseSortGroups = false;
-
-				Panel.Info.UseAttributeHighlighting = true;
-				Panel.Info.UseHighlighting = false;
+				UseFilter = true;
+				UseSortGroups = false;
+				Highlighting = PanelHighlighting.Default;
 			}
 
-			if (update && Panel.IsOpened)
+			if (update && IsOpened)
 				UpdateRedraw(false);
 		}
 
@@ -713,7 +710,7 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 
 			if (file.IsDirectory)
 			{
-				OnSettingDirectory(new SettingDirectoryEventArgs(file.Name, OperationModes.None));
+				OnSetDirectory(new SetDirectoryEventArgs() { Name = file.Name });
 				UpdateRedraw(false, 0, 0);
 				return;
 			}
@@ -735,7 +732,7 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 				items.OpenFile = new SetItem()
 				{
 					Text = "Child items",
-					Click = delegate { UIOpenFile(Panel.CurrentFile); }
+					Click = delegate { UIOpenFile(CurrentFile); }
 				};
 
 			if (items.Copy == null && UICopyMoveCan(false))

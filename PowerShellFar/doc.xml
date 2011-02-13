@@ -12,7 +12,7 @@
 			Strings define properties and the same column names; hashtables provide more information:
 			properties or script blocks, column titles, widths, types, and format strings.
 			See <see cref="Meta"/> remarks about use of dictionaries as items
-			and <see cref="PanelModeInfo.Columns"/> about column types.
+			and <see cref="PanelPlan.Columns"/> about column types.
 			<para>
 				Columns of <see cref="DataPanel"/> can be mapped only to properties,
 				that is to data table fields. Script blocks are not supported.

@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -92,7 +93,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 					Register(viewer, vi);
 				}
 			}
-			
+
 			// event
 			if (_anyViewer._Opened)
 			{
@@ -128,7 +129,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			//! fixed in 1.71.2335 but let it stay for a while. ??
 			if (viewer == nullptr)
 				break;
-			
+
 			// event, after the above
 			if (_anyViewer._Closed)
 			{

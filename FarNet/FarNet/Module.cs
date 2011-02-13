@@ -1,3 +1,4 @@
+
 /*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
@@ -476,7 +477,7 @@ namespace FarNet
 	/// Module filer action event arguments.
 	/// </summary>
 	/// <remarks>
-	/// A handler is called to open a <see cref="IPanel"/> which emulates a file system based on a file.
+	/// A handler is called to open a <see cref="Panel"/> which emulates a file system based on a file.
 	/// If a file is unknown a handler should do nothing.
 	/// </remarks>
 	public sealed class ModuleFilerEventArgs : EventArgs
@@ -484,7 +485,7 @@ namespace FarNet
 		/// <summary>
 		/// Full name of a file including the path.
 		/// If it is empty then a handler is called to create a new file [ShiftF1].
-		/// In any case a handler opens <see cref="IPanel"/> or ignores this call.
+		/// In any case a handler opens <see cref="Panel"/> or ignores this call.
 		/// </summary>
 		public string Name { get; set; }
 		/// <summary>
@@ -517,7 +518,7 @@ namespace FarNet
 		/// <remarks>
 		/// It is up to the module how to process a file.
 		/// But usually filers represent file data in a panel,
-		/// so that this method is used to open and configure a panel (<see cref="IPanel"/>).
+		/// so that this method is used to open and configure a panel (<see cref="Panel"/>).
 		/// </remarks>
 		public abstract void Invoke(object sender, ModuleFilerEventArgs e);
 	}

@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.3.40
-Release  : 2011-02-02
+Version  : 4.4.0
+Release  : 2011-02-13
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -122,20 +122,28 @@ system ID: 0xcd. The second argument is the module prefix, colon and command.
 For asynchronous steps and jobs the argument should start with one and two
 colons respectively.
 
-Mnemonic for 0xcd: eXecute CommanD
+Create and use in macros the macro constant FarNet:
+
+	use the PowerShellFar command:
+		>: $Far.Macro.InstallConstant('FarNet', 0xcd)
+
+	or use the .reg file:
+		Windows Registry Editor Version 5.00
+		[HKEY_CURRENT_USER\Software\Far2\KeyMacros\Consts]
+		"FarNet"=dword:000000cd
 
 SYNTAX AND DETAILS
 
 	Synchronous command:
 
-		CallPlugin(0xcd, "Prefix:Command")
+		CallPlugin(FarNet, "Prefix:Command")
 			- It is called from all macro areas
 			- It can but should not use modal UI
 			- It cannot open panels
 
 	Asynchronous step (IFar.PostStep)
 
-		CallPlugin(0xcd, ":Prefix:Command")
+		CallPlugin(FarNet, ":Prefix:Command")
 			- It is called from areas where the plugin menu is available
 			- FarNet itself must have a hotkey in the plugin menu
 			- It can use modal UI as usual
@@ -143,7 +151,7 @@ SYNTAX AND DETAILS
 
 	Asynchronous job (IFar.PostJob)
 
-		CallPlugin(0xcd, "::Prefix:Command")
+		CallPlugin(FarNet, "::Prefix:Command")
 			- It is called from all macro areas
 			- It can use modal UI as usual
 			- It cannot open panels
@@ -164,16 +172,16 @@ EXAMPLES
 
 	Synchronous (RightControl and PowerShellFar commands):
 
-		CallPlugin(0xcd, "RightControl:step-left")
-		CallPlugin(0xcd, ">: Menu-Favorites-.ps1")
+		CallPlugin(FarNet, "RightControl:step-left")
+		CallPlugin(FarNet, ">: Menu-Favorites-.ps1")
 
 	Asynchronous step (PowerShellFar command opens the panel):
 
-		CallPlugin(0xcd, ":>: Get-Process | Out-FarPanel")
+		CallPlugin(FarNet, ":>: Get-Process | Out-FarPanel")
 
 	Asynchronous job (PowerShellFar command opens the dialog):
 
-		CallPlugin(0xcd, "::>: $Psf.InvokeInputCode()")
+		CallPlugin(FarNet, "::>: $Psf.InvokeInputCode()")
 
 KNOWN ISSUE AND WORKAROUND
 

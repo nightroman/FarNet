@@ -1,4 +1,5 @@
-﻿/*
+﻿
+/*
 FarNet plugin for Far Manager
 Copyright (c) 2005 FarNet Team
 */
@@ -13,7 +14,7 @@ namespace FarNet.Works
 		{
 			if (filers == null)
 				return;
-			
+
 			IMenu menu = Far.Net.CreateMenu();
 			menu.AutoAssignHotkeys = true;
 			menu.HelpTopic = helpTopic;
@@ -36,7 +37,7 @@ namespace FarNet.Works
 				ib.Title = "Default mask: " + filer.DefaultMask;
 				if (!ib.Show())
 					continue ;
-				
+
 				string mask = ib.Text.Trim();
 
 				// restore original on empty
