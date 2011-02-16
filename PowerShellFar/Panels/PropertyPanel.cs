@@ -334,12 +334,13 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
+		internal override void DoDeleteFiles(FilesEventArgs args)
 		{
 			// delete value = enter null
-			if (shift)
+			if (args.Move)
 			{
-				base.DeleteFiles2(files, false);
+				args.Move = false;
+				base.DoDeleteFiles(args);
 				return;
 			}
 
@@ -350,7 +351,7 @@ namespace PowerShellFar
 				return;
 			}
 
-			IList<string> names = CollectNames(files);
+			IList<string> names = CollectNames(args.Files);
 
 			// confirmation
 			FarConfirmations conf = Far.Net.Confirmations;
@@ -404,8 +405,11 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void EditFile(FarFile file, bool alternative)
+		internal override void DoEditFile(FarFile file)
 		{
+			if (file == null)
+				return;
+
 			PSPropertyInfo pi = file.Data as PSPropertyInfo;
 			if (pi == null)
 				return;
@@ -413,74 +417,29 @@ namespace PowerShellFar
 			if (!pi.IsSettable)
 				A.Msg(Res.PropertyIsNotSettable);
 
-			string tmp = Far.Net.TempName();
 			try
 			{
+				string temp = Far.Net.TempName();
 				string line = Converter.InfoToLine(pi);
 				if (line == null)
 				{
 					// write by PS
 					//! use encoding name
-					A.Psf.InvokeCode("$args[0] | Out-File -FilePath $args[1] -Width $args[2] -Encoding Unicode -ErrorAction Stop", pi.Value, tmp, int.MaxValue);
+					A.Psf.InvokeCode("$args[0] | Out-File -FilePath $args[1] -Width $args[2] -Encoding Unicode -ErrorAction Stop", pi.Value, temp, int.MaxValue);
 				}
 				else
 				{
-					File.WriteAllText(tmp, line, Encoding.Unicode);
+					File.WriteAllText(temp, line, Encoding.Unicode);
 				}
 
-				// internal editor:
-				if (!alternative)
-				{
-					PropertyEditor edit = new PropertyEditor();
-					edit.Open(tmp, true, _itemPath, pi);
-					tmp = null;
-					return;
-				}
+				// editor
+				PropertyEditor edit = new PropertyEditor();
+				edit.Open(temp, true, _itemPath, pi);
 
-				// notepad:
-				for (; ; )
-				{
-					// get stamp and start modal
-					DateTime stamp1 = File.GetLastWriteTime(tmp);
-					My.ProcessEx.StartNotepad(tmp).WaitForExit();
-
-					// exit if it is a read only property
-					if (!pi.IsSettable)
-						return;
-
-					// exit if it is not modified
-					DateTime stamp2 = File.GetLastWriteTime(tmp);
-					if (stamp2 <= stamp1)
-						return;
-
-					try
-					{
-						//! Use ReadAllLines() to allow PS convertion into array.
-						//! Avoid unwanted invisible changes of property types.
-						object value;
-						if (pi.TypeNameOfValue.EndsWith("]", StringComparison.Ordinal))
-							value = File.ReadAllLines(tmp, Encoding.Unicode);
-						else
-							value = File.ReadAllText(tmp, Encoding.Unicode).TrimEnd();
-
-						A.SetPropertyValue(_itemPath, pi.Name, Converter.Parse(pi, value));
-						WhenPropertyChanged(_itemPath);
-						break;
-					}
-					catch (RuntimeException ex)
-					{
-						A.Msg(ex);
-					}
-				}
 			}
 			catch (RuntimeException ex)
 			{
 				Far.Net.ShowError("Edit", ex);
-			}
-			finally
-			{
-				if (tmp != null)
-					File.Delete(tmp);
 			}
 		}
 

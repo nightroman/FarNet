@@ -1,6 +1,26 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.1 =
+
+*) Test-Explorer-.ps1
+It shows how just added search in explorer panels works (see FarNet History.txt)
+
+*) Housekeeping (the core)
+Removed use of Notepad on [ShiftF4] in panels. It was introduced and needed in
+Far 1.x for Unicode data. Now it is useless, besides it is modal. [F4] rules.
+
+*) Housekeeping (scripts)
+AnyPanel
+- SetDelete -> AsDeleteFiles
+- SetEdit -> AsEditFile
+- SetOpen -> AsOpenFile
+- SetView -> AsViewFile
+- SetViewAll -> AsViewAll
+UserPanel
+- SetGetData -> AsFiles
+- SetWrite -> AsWriteFile
+
 = 4.4.0 =
 
 *) Revision of FarNet panels

@@ -233,31 +233,12 @@ namespace PowerShellFar
 			return true;
 		}
 
-		/// <summary>Delete action.</summary>
-		internal void UIDelete(bool shift)
-		{
-			IList<FarFile> ff = SelectedFiles;
-			if (ff.Count == 0)
-				return;
-
-			DeleteFiles2(ff, shift);
-			UpdateRedraw(false);
-		}
-
 		/// <summary>
 		/// Shows help or the panel menu.
 		/// </summary>
 		internal void UIHelp()
 		{
 			ShowMenu();
-		}
-
-		/// <summary>
-		/// Inserts text into the command line.
-		/// </summary>
-		internal virtual bool UIInsert()
-		{
-			return false;
 		}
 
 		/// <summary>Mode action.</summary>
@@ -276,7 +257,7 @@ namespace PowerShellFar
 		internal virtual void UIRename()
 		{ }
 
-		// Far handler
+		// Event handler is called before the Panel processing, so do not care about the base
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		void OnKeyPressed(object sender, PanelKeyEventArgs e)
 		{
@@ -286,6 +267,7 @@ namespace PowerShellFar
 			{
 				case VKeyCode.Enter:
 					{
+						//! [CtrlEnter] is taken: insert the file name into the command line
 						FarFile f = CurrentFile;
 						if (f == null)
 							return;
@@ -293,13 +275,10 @@ namespace PowerShellFar
 						{
 							case KeyStates.None:
 								_UserWants = UserAction.Enter;
-								if ((!IgnoreDirectoryFlag && f.IsDirectory) && _Open == null)
+								if ((!IgnoreDirectoryFlag && f.IsDirectory) && AsOpenFile == null)
 									return;
 								e.Ignore = true;
 								UIOpenFile(f);
-								return;
-							case KeyStates.Control:
-								e.Ignore = UIInsert();
 								return;
 							case KeyStates.Shift:
 								e.Ignore = true;
@@ -324,27 +303,15 @@ namespace PowerShellFar
 						switch (e.State)
 						{
 							case KeyStates.None:
-								e.Ignore = true;
-								UIView();
+								if (CurrentFile == null)
+								{
+									e.Ignore = true;
+									UIViewAll();
+								}
 								return;
 							case KeyStates.Shift:
 								e.Ignore = true;
 								ShowMenu();
-								return;
-						}
-						return;
-					}
-				case VKeyCode.F4:
-					{
-						switch (e.State)
-						{
-							case KeyStates.None:
-								e.Ignore = true;
-								UIEditFile(CurrentFile, false);
-								return;
-							case KeyStates.Alt:
-								e.Ignore = true;
-								UIEditFile(CurrentFile, true);
 								return;
 						}
 						return;
@@ -386,27 +353,6 @@ namespace PowerShellFar
 							case KeyStates.None:
 								e.Ignore = true;
 								UICreate();
-								return;
-						}
-						return;
-					}
-				case VKeyCode.Delete:
-					{
-						if (Far.Net.CommandLine.Length > 0)
-							return;
-						goto case VKeyCode.F8;
-					}
-				case VKeyCode.F8:
-					{
-						switch (e.State)
-						{
-							case KeyStates.None:
-								e.Ignore = true;
-								UIDelete(false);
-								return;
-							case KeyStates.Shift:
-								e.Ignore = true;
-								UIDelete(true);
 								return;
 						}
 						return;
@@ -602,7 +548,7 @@ Sort-Object Name |
 		/// <summary>
 		/// Called to delete the files.
 		/// </summary>
-		internal virtual void DeleteFiles2(IList<FarFile> files, bool shift) { }
+		internal virtual void DoDeleteFiles(FilesEventArgs args) { }
 
 		EventHandler<FileEventArgs> _LookupCloser;
 		/// <summary>

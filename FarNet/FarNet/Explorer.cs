@@ -15,13 +15,20 @@ namespace FarNet
 	/// <remarks>
 	/// <para>
 	/// Explorers are used for virtual file system navigation and operations on files.
-	/// They provide files and other explorers for that files.
+	/// They provide files and other new explorers for that files.
 	/// </para>
 	/// <para>
 	/// Explorers are designed for panels and they normally implement at least one of the panel methods.
 	/// But panels are not required for file operations, explorers can be used for pure file management.
 	/// Explorers can but do not have to create, configure, and update panels.
 	/// The core creates default panels for files when needed.
+	/// </para>
+	/// <para>
+	/// On requests explorers have to create and return new explorers or return null.
+	/// They should never return themselves because the core assumes that each explorer
+	/// is responsible for its own virtual directory that never change. In other words,
+	/// once created an explorer should always return absolutely the same data, of
+	/// course, if these data do not change in the virtual file system.
 	/// </para>
 	/// </remarks>
 	public abstract class Explorer
@@ -58,7 +65,7 @@ namespace FarNet
 		/// </remarks>
 		public abstract IList<FarFile> Explore(ExplorerArgs args);
 		/// <summary>
-		/// Returns the file explorer or null.
+		/// Returns a new file explorer or null. It must not return itself.
 		/// </summary>
 		/// <remarks>
 		/// It is called when a user enters a file, on search, and scan.
@@ -66,11 +73,11 @@ namespace FarNet
 		/// </remarks>
 		public virtual Explorer ExploreFile(ExploreFileArgs args) { return null; }
 		/// <summary>
-		/// Returns the root explorer or null.
+		/// Returns a new root explorer or null. It must not return itself.
 		/// </summary>
 		public virtual Explorer ExploreRoot(ExplorerArgs args) { return null; }
 		/// <summary>
-		/// Returns the parent explorer or null.
+		/// Returns a new parent explorer or null. It must not return itself.
 		/// </summary>
 		public virtual Explorer ExploreParent(ExplorerArgs args) { return null; }
 		/// <summary>
@@ -100,6 +107,17 @@ namespace FarNet
 		/// The base method returns true.
 		/// </remarks>
 		public virtual bool CanImportFile(FarFile file) { return true; }
+		/// <summary>
+		/// Deletes files.
+		/// </summary>
+		public virtual void DeleteFiles(DeleteFilesArgs args) { }
+		/// <summary>
+		/// Gets true if files can be deleted.
+		/// </summary>
+		/// <remarks>
+		/// The base method returns true.
+		/// </remarks>
+		public virtual bool CanDeleteFiles(DeleteFilesArgs args) { return true; }
 		/// <summary>
 		/// Creates a panel or returns the current to reuse or returns null to use a default panel.
 		/// </summary>

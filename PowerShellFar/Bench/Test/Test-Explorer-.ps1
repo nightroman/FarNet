@@ -51,11 +51,15 @@ function global:New-TestFlatExplorer
 		}
 		# Allows to edit, view and [CtrlQ] the function definition
 		AsExportFile = {
-			[IO.File]::WriteAllText($_.FileName, $_.File.Data.Definition)
+			Set-Content -LiteralPath $_.FileName $_.File.Data.Definition -Encoding Unicode
 		}
 		# Updates the function definition when it is edited and saved
 		AsImportFile = {
 			Set-Content "Function:\$($_.File.Name)" ([IO.File]::ReadAllText($_.FileName))
+		}
+		# Removes the functions
+		AsDeleteFiles = {
+			$_.Files | Remove-Item -LiteralPath { "Function:\$($_.Name)" }
 		}
 	}
 }
@@ -75,7 +79,9 @@ function global:New-TestTreeExplorer($Path)
 		}
 		# Gets another explorer for the requested directory
 		AsExploreFile = {
-			New-TestTreeExplorer $_.File.Data.FullName
+			if ($_.File.IsDirectory) {
+				New-TestTreeExplorer $_.File.Data.FullName
+			}
 		}
 		# Just sets the panel title once
 		AsSetupPanel = {
@@ -98,7 +104,9 @@ function global:New-TestPathExplorer($Path)
 		}
 		# Gets another explorer for the requested directory
 		AsExploreFile = {
-			New-TestPathExplorer $_.File.Data.FullName
+			if ($_.File.IsDirectory) {
+				New-TestPathExplorer $_.File.Data.FullName
+			}
 		}
 		# Gets the root explorer
 		AsExploreRoot = {
