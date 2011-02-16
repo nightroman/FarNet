@@ -256,12 +256,10 @@ void Panel2::ViewMode::set(PanelViewMode value)
 		StartViewMode = value;
 }
 
+//! Do not call Panel1::RealNames even when IsOpened, it is not working
 bool Panel2::RealNames::get()
 {
-	if (IsOpened)
-		return Panel1::RealNames;
-	else
-		return _RealNames;
+	return _RealNames;
 }
 void Panel2::RealNames::set(bool value)
 {

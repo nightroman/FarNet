@@ -1,5 +1,21 @@
 http://code.google.com/p/farnet/
 
+= 4.4.1 =
+
+Module panel revision, continued
+(changes are unlikely breaking for the most of users)
+
+- Fixed a few bugs in the Panel class
+- ExplorerResult -> JobResult (to be used elsewhere)
+- Panel.UI{View/Edit}CurrentFile -> UI{View/Edit}File
+- Added to explorers the DeleteFiles method and its infrastructure
+
+Concept proof: the first version of universal search in explorer panels:
+[ShiftF7] (hardcoded so far). There is no dialog yet, it finds all items and
+shows them in a new search result panel. [Enter] on found items opens their
+original panels as child panels of the search. If an item (its explorer)
+supports Export/Import then you can view/edit it in the result panel.
+
 = 4.4.0 =
 
 *** Massive revision of panel API and the first step to "file explorers" ***

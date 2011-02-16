@@ -365,16 +365,17 @@ namespace PowerShellFar
 			return (new DataLookup(namePairs)).Invoke;
 		}
 
-		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
+		internal override void DoDeleteFiles(FilesEventArgs args)
 		{
 			// skip "all members" mode
 			if (_mode != 0)
 				return;
 
 			// delete value = enter null
-			if (shift)
+			if (args.Move)
 			{
-				base.DeleteFiles2(files, false);
+				args.Move = false;
+				base.DoDeleteFiles(args);
 				return;
 			}
 
@@ -394,7 +395,7 @@ namespace PowerShellFar
 
 			try
 			{
-				foreach (FarFile f in files)
+				foreach (FarFile f in args.Files)
 				{
 					PSPropertyInfo pi = f.Data as PSPropertyInfo;
 					if (pi == null)
@@ -409,79 +410,29 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void EditFile(FarFile file, bool alternative)
+		internal override void DoEditFile(FarFile file)
 		{
+			if (file == null)
+				return;
+
 			PSPropertyInfo pi = Cast<PSPropertyInfo>.From(file.Data);
 			if (pi == null)
 				return;
 
+			// text
 			string text = Converter.InfoToText(pi);
 			if (text == null)
 				return;
 
-			try
-			{
-				string tmp = Far.Net.TempName();
-				try
-				{
-					// warning
-					if (!pi.IsSettable)
-						A.Msg(Res.PropertyIsNotSettable);
+			// warning //???? better add it on save
+			if (!pi.IsSettable)
+				A.Msg(Res.PropertyIsNotSettable);
 
-					// internal editor:
-					if (!alternative)
-					{
-						File.WriteAllText(tmp, text, Encoding.Unicode);
-						MemberEditor edit = new MemberEditor();
-						edit.Open(tmp, true, _Value, pi);
-						tmp = null;
-						return;
-					}
-
-					// notepad:
-					for (; ; )
-					{
-						File.WriteAllText(tmp, text, Encoding.Unicode);
-						DateTime stamp1 = File.GetLastWriteTime(tmp);
-						My.ProcessEx.StartNotepad(tmp).WaitForExit();
-
-						// exit if it is a read only property
-						if (file.IsReadOnly)
-							return;
-
-						// exit if it is not modified
-						DateTime stamp2 = File.GetLastWriteTime(tmp);
-						if (stamp2 <= stamp1)
-							return;
-
-						try
-						{
-							object value;
-							if (pi.TypeNameOfValue.EndsWith("]", StringComparison.Ordinal))
-								value = File.ReadAllLines(tmp, Encoding.Unicode);
-							else
-								value = File.ReadAllText(tmp, Encoding.Unicode);
-
-							A.SetMemberValue(pi, Converter.Parse(pi, value));
-							WhenMemberChanged(_Value);
-							break;
-						}
-						catch (RuntimeException ex)
-						{
-							A.Msg(ex);
-						}
-					}
-				}
-				finally
-				{
-					if (tmp != null)
-						File.Delete(tmp);
-				}
-			}
-			catch (RuntimeException ex)
-			{
-				Far.Net.ShowError("Edit", ex);
-			}
+			// editor
+			string temp = Far.Net.TempName();
+			File.WriteAllText(temp, text, Encoding.Unicode);
+			MemberEditor edit = new MemberEditor();
+			edit.Open(temp, true, _Value, pi);
 		}
 
 		/// <summary>

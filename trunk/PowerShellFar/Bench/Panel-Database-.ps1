@@ -22,13 +22,13 @@ if (!$DbProviderFactory -or !$DbConnection) {
 }
 
 $Panel = Panel-DbData- -NoShow -SelectCommand 'SELECT * FROM sys.databases' -Columns 'name', 'database_id', 'state_desc', 'create_date'
-$Panel.SetOpen({
+$Panel.AsOpenFile = {
 	$DbProviderFactory = [Data.SqlClient.SqlClientFactory]::Instance
 	$DbConnection = $DbProviderFactory.CreateConnection()
 	$DbConnection.ConnectionString = "Data Source=.\sqlexpress;Initial Catalog=$($_.File.Name);Integrated Security=SSPI;"
 	$DbConnection.Open()
 	Panel-DbTable- -AsChild -Title $_.File.Name
-})
+}
 
 if ($local:DbConnection) { $Panel.Garbage.Add($DbConnection) }
 Start-FarPanel $Panel -Title "Databases"

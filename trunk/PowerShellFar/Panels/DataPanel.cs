@@ -281,7 +281,7 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
+		internal override void DoDeleteFiles(FilesEventArgs args)
 		{
 			BuildDeleteCommand();
 
@@ -293,7 +293,7 @@ namespace PowerShellFar
 
 			ToUpdateData = true;
 
-			foreach (FarFile f in files)
+			foreach (FarFile f in args.Files)
 			{
 				DataRow dr = f.Data as DataRow;
 				if (dr == null)

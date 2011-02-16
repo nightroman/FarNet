@@ -80,7 +80,7 @@ $Panel.Garbage.Add($table)
 if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
 
 ### set [Enter] handler ([CtrlPgDn] is for members)
-$Panel.SetOpen({
+$Panel.AsOpenFile = {
 	$pd = $this.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1']
 	$fd = $_.File.Data
 	$table = $fd.TABLE_NAME
@@ -98,7 +98,7 @@ $Panel.SetOpen({
 	}
 	# open child table data panel
 	Panel-DbData- -AsChild -SelectCommand $select -Title $table -DbProviderFactory $pd.DbProviderFactory -DbConnection $pd.DbConnection
-})
+}
 
 # go!
 $Panel.AddObjects(($table.Rows | Sort-Object 'TABLE_NAME'))

@@ -92,7 +92,7 @@ namespace PowerShellFar
 			}
 		}
 
-		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
+		internal override void DoDeleteFiles(FilesEventArgs args)
 		{
 			if ((Far.Net.Confirmations & FarConfirmations.Delete) != 0)
 			{
@@ -100,7 +100,7 @@ namespace PowerShellFar
 					return;
 			}
 
-			foreach (FarFile f in files)
+			foreach (FarFile f in args.Files)
 				Files.Remove(f);
 		}
 

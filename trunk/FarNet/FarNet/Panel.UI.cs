@@ -11,8 +11,56 @@ using System.IO;
 
 namespace FarNet
 {
-	public partial class Panel : IPanel
+	public partial class Panel
 	{
+		/// <summary>
+		/// Delete action.
+		/// </summary>
+		public void UIDelete(bool shift)
+		{
+			if (Explorer != null)
+			{
+				var args = new DeleteFilesArgs();
+				args.Files = SelectedFiles;
+
+				if (!Explorer.CanDeleteFiles(args))
+					return;
+
+				Explorer.DeleteFiles(args);
+				if (args.Result == JobResult.Ignore)
+					return;
+
+				Update(false); //???? selection if not all deleted
+				Redraw();
+			}
+			else
+			{
+				var args = new FilesEventArgs();
+				args.Files = SelectedFiles;
+				args.Move = shift;
+				if (args.Files.Count == 0)
+					return;
+
+				if (DeleteFiles != null)
+				{
+					DeleteFiles(this, args);
+					return; //???? Until DeleteFiles exists and defined then UIDeleteFiles is not used.
+				}
+
+				UIDeleteFiles(args);
+
+				Update(false); //???? selection if not all deleted
+				Redraw();
+			}
+		}
+		/// <summary>
+		/// Deletes the files.
+		/// </summary>
+		public virtual void UIDeleteFiles(FilesEventArgs args)
+		{
+			if (args != null)
+				args.Ignore = true; //????
+		}
 		/// <summary>
 		/// Called before <see cref="UIEscape"/>.
 		/// </summary>
@@ -28,7 +76,7 @@ namespace FarNet
 		/// By default it closes the the panel itself or with all parent panels.
 		/// The panel may override this method or use the <see cref="Escaping"/> event.
 		/// </remarks>
-		public virtual void UIEscape(bool all)
+		public void UIEscape(bool all)
 		{
 			if (!CanClose())
 				return;
@@ -55,17 +103,19 @@ namespace FarNet
 			}
 		}
 		/// <summary>
-		/// Opens the current file in the editor.
+		/// Opens the file in the editor.
 		/// </summary>
 		/// <remarks>
 		/// The default method calls <see cref="FarNet.Explorer.ExportFile"/>  to get a temporary file to edit
 		/// and <see cref="FarNet.Explorer.ImportFile"/> to save changes when the editor closes.
 		/// The explorer should have at least export implemented.
 		/// </remarks>
-		public virtual void UIEditCurrentFile()
+		public virtual void UIEditFile(FarFile file)
 		{
-			var file = CurrentFile;
 			if (file == null)
+				return;
+
+			if (Explorer == null) //???? kill when explorer is mandatory
 				return;
 
 			if (!Explorer.CanExportFile(file))
@@ -81,7 +131,7 @@ namespace FarNet
 
 			Log.Source.TraceInformation("ExportFile");
 			Explorer.ExportFile(args);
-			if (args.Result != ExplorerResult.Done)
+			if (args.Result != JobResult.Done)
 				return;
 
 			var editor = Far.Net.CreateEditor();
@@ -89,7 +139,7 @@ namespace FarNet
 			editor.FileName = args.FileName;
 			editor.Title = file.Name;
 
-			if (Explorer.CanExportFile(file))
+			if (Explorer.CanImportFile(file))
 			{
 				editor.Closed += delegate //???? to use Saved (Far 3), update docs.
 				{
@@ -115,16 +165,19 @@ namespace FarNet
 			editor.Open();
 		}
 		/// <summary>
-		/// Opens the current file in the viewer.
+		/// Opens the file in the viewer.
 		/// </summary>
+		/// <returns>True if it's done.</returns>
 		/// <remarks>
 		/// The default method calls <see cref="FarNet.Explorer.ExportFile"/> to get a temporary file to view.
 		/// The explorer should have it implemented.
 		/// </remarks>
-		public virtual void UIViewCurrentFile()
+		public virtual void UIViewFile(FarFile file)
 		{
-			var file = CurrentFile;
 			if (file == null)
+				return;
+
+			if (Explorer == null) //???? kill when explorer is mandatory
 				return;
 
 			if (!Explorer.CanExportFile(file))
@@ -138,7 +191,7 @@ namespace FarNet
 
 			Log.Source.TraceInformation("Explorer.ExportFile");
 			Explorer.ExportFile(args);
-			if (args.Result != ExplorerResult.Done)
+			if (args.Result != JobResult.Done)
 				return;
 
 			var viewer = Far.Net.CreateViewer();
@@ -181,17 +234,64 @@ namespace FarNet
 				case VKeyCode.F3:
 					if (e.State == KeyStates.None)
 					{
-						e.Ignore = true;
-						UIViewCurrentFile();
+						if (RealNames)
+							return;
+
+						var file = CurrentFile;
+						if (file != null)
+						{
+							e.Ignore = true;
+							UIViewFile(file);
+						}
 					}
 					break;
 				case VKeyCode.F4:
 					if (e.State == KeyStates.None)
 					{
-						e.Ignore = true;
-						UIEditCurrentFile();
+						if (RealNames)
+							return;
+
+						var file = CurrentFile;
+						if (file != null)
+						{
+							e.Ignore = true;
+							UIEditFile(file);
+						}
 					}
 					break;
+				case VKeyCode.Delete:
+					{
+						if (Far.Net.CommandLine.Length > 0)
+							return;
+						goto case VKeyCode.F8;
+					}
+				case VKeyCode.F7:
+					{
+						if (e.State == KeyStates.Shift) // Alt is not called
+						{
+							if (Explorer == null)
+								return;
+
+							e.Ignore = true;
+							SearchExplorer.Start(this);
+						}
+						return;
+					}
+				case VKeyCode.F8:
+					{
+						if (e.State == KeyStates.None || e.State == KeyStates.Shift)
+						{
+							if (DeleteFiles != null) //???? to replace by explorers
+								return;
+
+							if (RealNames && RealNamesDeleteFiles)
+								return;
+
+							e.Ignore = true;
+							UIDelete(e.State == KeyStates.Shift);
+						}
+						return;
+					}
 				case VKeyCode.Escape:
 					if ((e.State == KeyStates.None || e.State == KeyStates.Shift) && Far.Net.CommandLine.Length == 0)
 					{

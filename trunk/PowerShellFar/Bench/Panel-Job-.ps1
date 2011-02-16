@@ -30,8 +30,8 @@
 #>
 
 ### Create panel
-$p = New-Object PowerShellFar.UserPanel
-$p.Columns = @(
+$Panel = New-Object PowerShellFar.UserPanel
+$Panel.Columns = @(
 	@{ Expression = 'Id'; Width = 6 }
 	'Name'
 	@{ Expression = 'State'; Width = 10 }
@@ -41,12 +41,12 @@ $p.Columns = @(
 
 ### Panel jobs
 # Sort them by Id, this is not always done by the core.
-$p.SetGetData({
+$Panel.AsFiles = {
 	Get-Job | Sort-Object Id
-})
+}
 
 ### Delete jobs (stop\remove)
-$p.SetDelete({
+$Panel.AsDeleteFiles = {
 	$action = if ($_.Move) { 'Remove' } else { 'Stop\Remove' }
 	if ($Far.Message("$action selected jobs?", $action, 'OkCancel') -ne 0) { return }
 	foreach($job in ($_.Files | Select-Object -ExpandProperty Data)) {
@@ -57,12 +57,12 @@ $p.SetDelete({
 			Remove-Job -Job $job -Force
 		}
 	}
-})
+}
 
 ### Write job data (for [F3], [CtrlQ])
-$p.SetWrite({
+$Panel.AsWriteFile = {
 	Receive-Job -Job $_.File.Data -Keep > $_.Path
-})
+}
 
 ### Go
-Start-FarPanel $p -Title "PowerShell Jobs" -DataId 'Id' -IdleUpdate
+Start-FarPanel $Panel -Title "PowerShell Jobs" -DataId 'Id' -IdleUpdate

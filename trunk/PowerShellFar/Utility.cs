@@ -337,10 +337,7 @@ namespace My
 		/// </summary>
 		/// <param name="value">Any object, e.g. FileInfo, String.</param>
 		/// <returns>Existing file path or null.</returns>
-		/// <remarks>
-		/// _091202_073429
-		/// </remarks>
-		public static string TryGetFilePath(object value)
+		public static string TryGetFilePath(object value) //_091202_073429
 		{
 			FileInfo fi = PowerShellFar.Cast<FileInfo>.From(value);
 			if (fi != null)
