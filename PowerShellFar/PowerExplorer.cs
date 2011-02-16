@@ -27,7 +27,6 @@ namespace PowerShellFar
 		/// Gets or sets user data.
 		/// </summary>
 		public PSObject Data { get; set; }
-		#region Explorer
 		/// <summary>
 		/// <see cref="Explorer.Explore"/> worker. It must be set.
 		/// </summary>
@@ -95,8 +94,6 @@ namespace PowerShellFar
 		{
 			return InvokeExplorerScript(AsExploreParent, args);
 		}
-		#endregion
-		#region Panel
 		/// <summary>
 		/// <see cref="Explorer.MakePanel"/> worker.
 		/// </summary>
@@ -112,7 +109,7 @@ namespace PowerShellFar
 			if (args == null) throw new ArgumentNullException("args");
 			if (AsMakePanel == null)
 			{
-				args.Result = ExplorerResult.Default;
+				args.Result = JobResult.Default;
 				return null;
 			}
 
@@ -136,7 +133,7 @@ namespace PowerShellFar
 		{
 			if (args == null) throw new ArgumentNullException("args");
 			if (AsSetupPanel == null)
-				args.Result = ExplorerResult.Default;
+				args.Result = JobResult.Default;
 			else
 				A.InvokeScriptReturnAsIs(AsSetupPanel, this, args);
 		}
@@ -154,12 +151,10 @@ namespace PowerShellFar
 		{
 			if (args == null) throw new ArgumentNullException("args");
 			if (AsUpdatePanel == null)
-				args.Result = ExplorerResult.Default;
+				args.Result = JobResult.Default;
 			else
 				A.InvokeScriptReturnAsIs(AsUpdatePanel, this, args);
 		}
-		#endregion
-		#region File
 		/// <summary>
 		/// <see cref="Explorer.ExportFile"/> worker.
 		/// </summary>
@@ -174,7 +169,7 @@ namespace PowerShellFar
 		{
 			if (args == null) throw new ArgumentNullException("args");
 			if (AsExportFile == null)
-				args.Result = ExplorerResult.Default;
+				args.Result = JobResult.Default;
 			else
 				A.InvokeScriptReturnAsIs(AsExportFile, this, args);
 		}
@@ -209,7 +204,7 @@ namespace PowerShellFar
 		{
 			if (args == null) throw new ArgumentNullException("args");
 			if (AsImportFile == null)
-				args.Result = ExplorerResult.Default;
+				args.Result = JobResult.Default;
 			else
 				A.InvokeScriptReturnAsIs(AsImportFile, this, args);
 		}
@@ -230,13 +225,44 @@ namespace PowerShellFar
 
 			return (bool)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCanImportFile, this, file), typeof(bool), null);
 		}
-		#endregion
+		/// <summary>
+		/// <see cref="Explorer.DeleteFiles"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="DeleteFilesArgs"/>.
+		/// </remarks>
+		public ScriptBlock AsDeleteFiles { get; set; }
+		/// <summary>
+		/// Calls <see cref="AsDeleteFiles"/>.
+		/// </summary>
+		public override void DeleteFiles(DeleteFilesArgs args)
+		{
+			if (AsDeleteFiles != null)
+				A.InvokeScriptReturnAsIs(AsDeleteFiles, this, args);
+		}
+		/// <summary>
+		/// <see cref="Explorer.CanDeleteFiles"/> worker.
+		/// </summary>
+		public ScriptBlock AsCanDeleteFiles { get; set; }
+		/// <summary>
+		/// Calls <see cref="AsCanDeleteFiles"/>.
+		/// </summary>
+		public override bool CanDeleteFiles(DeleteFilesArgs args)
+		{
+			if (AsDeleteFiles == null)
+				return false;
+
+			if (AsCanDeleteFiles == null)
+				return true;
+
+			return (bool)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCanDeleteFiles, this, args), typeof(bool), null);
+		}
 		///
 		internal Explorer InvokeExplorerScript(ScriptBlock script, ExplorerArgs args)
 		{
 			if (script == null)
 			{
-				args.Result = ExplorerResult.Default;
+				args.Result = JobResult.Default;
 				return null;
 			}
 

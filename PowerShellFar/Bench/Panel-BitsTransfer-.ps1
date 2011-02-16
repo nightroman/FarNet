@@ -126,20 +126,20 @@ $Panel.Columns = @(
 )
 
 ### Panel jobs
-$Panel.SetGetData({
+$Panel.AsFiles = {
 	Get-BitsTransfer -ErrorAction 0
-})
+}
 
 ### Delete jobs
-$Panel.SetDelete({
+$Panel.AsDeleteFiles = {
 	if ($Far.Message('Remove selected transfer jobs?', 'Remove', 'OkCancel') -ne 0) { return }
 	foreach($f in $_.Files) {
 		Remove-BitsTransfer -BitsJob $f.Data
 	}
-})
+}
 
 ### Open a job
-$Panel.SetOpen({
+$Panel.AsOpenFile = {
 	$job = $_.File.Data
 
 	New-FarMenu -Show "Job: $($job.DisplayName)" $(
@@ -165,7 +165,7 @@ $Panel.SetOpen({
 
 	$this.Update($true)
 	$this.Redraw()
-})
+}
 
 # Go
 Start-FarPanel $Panel -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -IdleUpdate

@@ -272,12 +272,12 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 
 ### Create a panel with the job object for search results
 $Panel = New-Object FarNet.Panel
+$Panel.Highlighting = 'Full'
 $Panel.RealNames = $true
 $Panel.RightAligned = $true
-$Panel.Highlighting = 'Full'
 $Panel.SortMode = 'Unsorted'
-$Panel.ViewMode = 'Descriptions'
 $Panel.Title = 'Searching...'
+$Panel.ViewMode = 'Descriptions'
 $Panel.Data.Host = $job
 $Panel.Garbage.Add($job)
 

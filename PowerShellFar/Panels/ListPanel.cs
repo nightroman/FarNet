@@ -61,7 +61,7 @@ namespace PowerShellFar
 				EventHandler<FileEventArgs> handler;
 				if (_LookupOpeners.TryGetValue(file.Name, out handler))
 				{
-					handler(this, new FileEventArgs(file));
+					handler(this, new FileEventArgs() { File = file });
 					return;
 				}
 			}
@@ -168,9 +168,9 @@ namespace PowerShellFar
 		/// <summary>
 		/// It "deletes" property values = assigns null values.
 		/// </summary>
-		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
+		internal override void DoDeleteFiles(FilesEventArgs args)
 		{
-			foreach (FarFile file in files)
+			foreach (FarFile file in args.Files)
 			{
 				PSPropertyInfo pi = file.Data as PSPropertyInfo;
 				if (pi == null)

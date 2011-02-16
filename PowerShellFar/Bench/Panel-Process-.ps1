@@ -50,24 +50,24 @@ else {
 }
 
 ### Create panel
-$p = New-Object PowerShellFar.UserPanel
+$Panel = New-Object PowerShellFar.UserPanel
 
 ### Get processes
-$p.SetGetData({
+$Panel.AsFiles = {
 	Get-Process $this.Data.Name -ErrorAction 0 | Where-Object $this.Data.Where
-})
+}
 
 ### Delete processes
-$p.SetDelete({
+$Panel.AsDeleteFiles = {
 	if ($Far.Message('Kill selected process(es)?', 'Kill', 'OkCancel') -ne 0) { return }
 	foreach($f in $_.Files) {
 		$f.Data.Kill()
 		$this.Files.Remove($f)
 	}
-})
+}
 
 ### Open: show menu
-$p.SetOpen({
+$Panel.AsOpenFile = {
 	$process = $_.File.Data
 	if ($process.HasExited) {
 		return
@@ -84,7 +84,7 @@ $p.SetOpen({
 			$null = [NativeMethods]::Activate($process.MainWindowHandle)
 		}
 	)
-})
+}
 
 ### Import native tools
 Add-Type @'
@@ -112,4 +112,4 @@ public static class NativeMethods
 '@
 
 # Go!
-Start-FarPanel $p -Title $title -Data $data -DataId 'Id' -IdleUpdate
+Start-FarPanel $Panel -Title $title -Data $data -DataId 'Id' -IdleUpdate

@@ -22,76 +22,55 @@ namespace PowerShellFar
 		/// </summary>
 		public UserPanel()
 		{ }
-
-		#region Delete
-		ScriptBlock _Delete;
-
+		//! Do nothing instead of removing objects. A script is used to do the job. 
+		internal override void DoDeleteFiles(FilesEventArgs args)
+		{
+			args.Ignore = true;
+		}
+		#region WriteFile
 		/// <summary>
-		/// Handler to delete files. $_ = <see cref="FilesEventArgs"/>
+		/// Gets or sets the script to write a file.
+		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="WriteEventArgs"/>.
 		/// </summary>
-		public void SetDelete(ScriptBlock handler)
-		{
-			_Delete = handler;
-		}
-
-		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
-		{
-			//! do not call base which removes items
-			if (_Delete != null)
-				A.InvokeScriptReturnAsIs(_Delete, this, new FilesEventArgs() { Files = files, Move = shift });
-		}
-
-		#endregion
-
-		#region Write
-		ScriptBlock _Write;
-
+		public ScriptBlock AsWriteFile { get; set; }
 		/// <summary>
-		/// Handler to write an object data to a file. $_ = <see cref="WriteEventArgs"/>
+		/// Writes the file using <see cref="AsWriteFile"/> or the default method.
 		/// </summary>
-		public void SetWrite(ScriptBlock handler)
-		{
-			_Write = handler;
-		}
-
 		internal override void WriteFile(FarFile file, string path)
 		{
-			if (_Write == null)
-				base.WriteFile(file, path);
-			else
-				A.InvokeScriptReturnAsIs(_Write, this, new WriteEventArgs(file, path));
+			if (AsWriteFile != null)
+			{
+				var args = new WriteEventArgs() { File = file, Path = path };
+				A.InvokeScriptReturnAsIs(AsWriteFile, this, args);
+				if (args.Result != JobResult.Default)
+					return;
+			}
+			
+			base.WriteFile(file, path);
 		}
-
 		#endregion
-
-		#region GetData
-		ScriptBlock _GetData;
-
+		#region AsFiles
 		/// <summary>
-		/// Sets the handler called to get the objects.
+		/// Gets or sets the script called to get the objects to be wrapped by files.
+		/// Variables: <c>$this</c> is this panel.
 		/// </summary>
 		/// <remarks>
-		/// The handler returns the objects to be shown in the panel.
+		/// The script returns the objects to be shown in the panel as files.
 		/// It should not operate directly on existing or new panel files, it is done internally.
 		/// <para>
 		/// Normally this handler is used together with custom <see cref="FormatPanel.Columns"/>
-		/// otherwise default data formatting will not always be suitable.
+		/// otherwise default data formatting is not always suitable.
 		/// </para>
 		/// </remarks>
 		/// <example>Panel-Job-.ps1, Panel-Process-.ps1</example>
-		public void SetGetData(ScriptBlock handler)
-		{
-			_GetData = handler;
-		}
-
+		public ScriptBlock AsFiles { get; set; }
 		internal override object GetData()
 		{
-			if (_GetData == null)
+			if (AsFiles == null)
 				return base.GetData();
 			else
-				return A.InvokeScript(_GetData, this, null);
+				return A.InvokeScript(AsFiles, this, null);
 		}
-
 		#endregion
 	}
 
@@ -100,37 +79,14 @@ namespace PowerShellFar
 	/// </summary>
 	public class FileEventArgs : EventArgs
 	{
-		///
-		public FileEventArgs(FarFile file)
-		{
-			_File = file;
-		}
-
-		///
-		public FileEventArgs(FarFile file, bool alternative)
-		{
-			_File = file;
-			_Alternative = alternative;
-		}
-
-		FarFile _File;
+		/// <summary>
+		/// Job result.
+		/// </summary>
+		public JobResult Result { get; set; }
 		/// <summary>
 		/// Panel file instance being processed.
 		/// </summary>
-		public FarFile File
-		{
-			get { return _File; }
-		}
-
-		bool _Alternative;
-		/// <summary>
-		/// Alternative action flag.
-		/// </summary>
-		public bool Alternative
-		{
-			get { return _Alternative; }
-			set { _Alternative = value; }
-		}
+		public FarFile File { get; set; }
 	}
 
 	/// <summary>
@@ -138,21 +94,10 @@ namespace PowerShellFar
 	/// </summary>
 	public class WriteEventArgs : FileEventArgs
 	{
-		///
-		public WriteEventArgs(FarFile file, string path)
-			: base(file)
-		{
-			_path = path;
-		}
-
-		string _path;
 		/// <summary>
 		/// File system path where data are written to.
 		/// </summary>
-		public string Path
-		{
-			get { return _path; }
-		}
+		public string Path { get; set; }
 	}
 
 }

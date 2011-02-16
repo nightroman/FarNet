@@ -56,11 +56,27 @@ void Panel0::AsClosePlugin(HANDLE hPlugin)
 	pp->Host->WorksClosed(true);
 }
 
+//! It is called on move, too? I.e. is Move = Copy + Delete?
 int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
 {
 	Log::Source->TraceInformation("DeleteFiles");
 
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+
+	Explorer^ explorer = pp->Host->Explorer;
+	if (explorer)
+	{
+		DeleteFilesArgs args;
+		args.Mode = (OperationModes)opMode;
+		args.Files = ItemsToFiles(pp->Files, nullptr, panelItem, itemsNumber);
+
+		if (!explorer->CanDeleteFiles(%args))
+			return 0;
+
+		explorer->DeleteFiles(%args);
+		return args.Result == JobResult::Ignore ? 0 : 1;
+	}
+
 	if (!pp->Host->WorksDeleteFiles(nullptr))
 		return 0;
 
@@ -106,6 +122,27 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 
+#if 1 //?????
+	if (pp->Host->Explorer)
+	{
+		ExportFilesEventArgs e;
+		e.Mode = (OperationModes)opMode;
+		e.Names = gcnew List<String^>;
+		e.Files = ItemsToFiles(pp->Files, e.Names, panelItem, itemsNumber);
+		e.Move = move != 0;
+		e.Destination = gcnew String((*destPath));
+			
+		for(int i = 0; i < itemsNumber; ++i)
+		{
+			ExportFileArgs args;
+			args.File = e.Files[i];
+			args.FileName = Path::Combine(e.Destination, e.Names[i]);
+			pp->Host->Explorer->ExportFile(%args);
+		}
+			
+		return 1;
+	}
+#else
 	if (pp->Host->Explorer && (opMode & (OPM_VIEW | OPM_QUICKVIEW | OPM_EDIT))) //???? limited modes; later we need this only for QView or *modal* requirement
 	{
 		ExportFilesEventArgs e;
@@ -125,6 +162,7 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 			
 		return 1;
 	}
+#endif
 
 	if (!pp->Host->WorksExportFiles(nullptr))
 		return 0;
@@ -687,17 +725,19 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 		String^ directory = gcnew String(dir);
 
-		if (pp->Host->Explorer) //???? eventually use only explorers and disable Find for all
+		Explorer^ explorer1 = pp->Host->Explorer;
+		if (explorer1) //???? eventually use only explorers and disable Find for all
 		{
 			if (0 != (opMode & OPM_FIND))
 				return 0;
 			
-			Explorer^ explorer;
+			Explorer^ explorer2;
+			String^ postName;
 			if (directory == "\\")
 			{
 				ExplorerArgs args;
-				explorer = pp->Host->Explorer->ExploreRoot(%args);
-				if (!explorer)
+				explorer2 = explorer1->ExploreRoot(%args);
+				if (!explorer2)
 				{
 					Panel^ mp = pp->Host;
 					if (!mp->Parent)
@@ -715,8 +755,8 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 			else if (directory == "..")
 			{
 				ExplorerArgs args;
-				explorer = pp->Host->Explorer->ExploreParent(%args);
-				if (!explorer)
+				explorer2 = explorer1->ExploreParent(%args);
+				if (!explorer2)
 				{
 					if (!pp->Host->Parent)
 						return 0;
@@ -729,13 +769,16 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 			{
 				ExploreFileArgs args;
 				args.File = pp->Host->CurrentFile;
-				explorer = pp->Host->Explorer->ExploreFile(%args);
+				explorer2 = explorer1->ExploreFile(%args);
+				if (args.ToPostName)
+					postName = args.File->Name;
 			}
 					
-			if (!explorer)
+			if (!explorer2)
 				return 0;
 
-			ReplaceExplorer(pp->Host, explorer);
+			ReplaceExplorer(pp->Host, explorer2, postName);
+			
 			return 1;
 		}
 
@@ -992,8 +1035,12 @@ void Panel0::ShelvePanel(Panel1^ panel, bool modes)
 }
 
 // Module panel method candidate
-void Panel0::ReplaceExplorer(Panel^ panel, Explorer^ explorer)
+void Panel0::ReplaceExplorer(Panel^ panel, Explorer^ explorer, String^ postName)
 {
+	// explorers must get new explorers
+	if ((Object^)explorer == (Object^)panel->Explorer)
+		throw gcnew InvalidOperationException("The same explorer object is not expected.");
+	
 	// make the panel
 	Panel^ newPanel = nullptr;
 	{
@@ -1007,7 +1054,7 @@ void Panel0::ReplaceExplorer(Panel^ panel, Explorer^ explorer)
 	// attach the explorer
 	newPanel->Explorer = explorer;
 	String^ location = explorer->Location;
-	if (SS(location))
+	if (location->Length)
 		newPanel->PanelDirectory = location;
 	else
 		newPanel->PanelDirectory = "*"; //????
@@ -1032,6 +1079,7 @@ void Panel0::ReplaceExplorer(Panel^ panel, Explorer^ explorer)
 	}
 
 	// open as child
+	newPanel->PostName(postName); //????? not only names needed
 	newPanel->OpenChild(panel);
 }
 

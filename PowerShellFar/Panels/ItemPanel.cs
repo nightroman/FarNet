@@ -108,7 +108,7 @@ namespace PowerShellFar
 			get { return _location_; }
 		}
 
-		internal override void DeleteFiles2(IList<FarFile> files, bool shift)
+		internal override void DoDeleteFiles(FilesEventArgs args)
 		{
 			// go
 			A.SetLocation(Location.Path);
@@ -611,8 +611,11 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 ", file.Data, path);
 		}
 
-		internal override void EditFile(FarFile file, bool alternative)
+		internal override void DoEditFile(FarFile file)
 		{
+			if (file == null)
+				return;
+
 			if (!My.ProviderInfoEx.HasContent(Location.Provider))
 			{
 				A.Msg(Res.NotSupportedByProvider);
@@ -625,72 +628,29 @@ Out-File -FilePath $args[1] -Width ([int]::MaxValue)
 			FileInfo fi = Cast<FileInfo>.From(file.Data);
 			if (fi != null)
 			{
-				base.EditFile(file, alternative);
+				base.UIEditFile(file);
 				return;
 			}
 
 			try
 			{
-				string tmp = Far.Net.TempName();
-				try
+				// item path
+				string itemPath = My.PathEx.Combine(Location.Path, file.Name);
+
+				// get content
+				const string code = "Get-Content -LiteralPath $args[0] -ReadCount 0";
+				Collection<PSObject> content = A.Psf.InvokeCode(code, itemPath);
+
+				// write content
+				string temp = Far.Net.TempName();
+				using (StreamWriter sw = new StreamWriter(temp, false, Encoding.Unicode))
 				{
-					// item path
-					string itemPath = My.PathEx.Combine(Location.Path, file.Name);
-
-					// get content
-					const string code = "Get-Content -LiteralPath $args[0] -ReadCount 0";
-					Collection<PSObject> content = A.Psf.InvokeCode(code, itemPath);
-
-					// write content
-					using (StreamWriter sw = new StreamWriter(tmp, false, Encoding.Unicode))
-					{
-						foreach (PSObject p in content)
-							sw.WriteLine(p.ToString());
-					}
-
-					if (!alternative)
-					{
-						ItemEditor edit = new ItemEditor();
-						edit.Open(tmp, true, itemPath, this);
-						tmp = null;
-						return;
-					}
-
-					// notepad:
-					for (; ; )
-					{
-						DateTime stamp1 = File.GetLastWriteTime(tmp);
-						My.ProcessEx.StartNotepad(tmp).WaitForExit();
-
-						// exit if it is not modified
-						DateTime stamp2 = File.GetLastWriteTime(tmp);
-						if (stamp2 <= stamp1)
-							return;
-
-						try
-						{
-							// read
-							string text = File.ReadAllText(tmp, Encoding.Unicode).TrimEnd();
-
-							// set
-							if (!A.SetContentUI(itemPath, text))
-								continue;
-
-							// done
-							UpdateRedraw(false);
-							break;
-						}
-						catch (RuntimeException ex)
-						{
-							A.Msg(ex.Message);
-						}
-					}
+					foreach (PSObject p in content)
+						sw.WriteLine(p.ToString());
 				}
-				finally
-				{
-					if (tmp != null)
-						File.Delete(tmp);
-				}
+
+				ItemEditor edit = new ItemEditor();
+				edit.Open(temp, true, itemPath, this);
 			}
 			catch (RuntimeException ex)
 			{

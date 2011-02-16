@@ -5,6 +5,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -16,19 +17,14 @@ namespace PowerShellFar
 {
 	public abstract partial class AnyPanel
 	{
-		#region Open
-		ScriptBlock _Open;
-
+		#region OpenFile
 		/// <summary>
-		/// Handler to open a file (e.g. on [Enter]). $_ = <see cref="FileEventArgs"/>.
+		/// Gets or sets the script to open a file (e.g. on [Enter]).
+		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="FileEventArgs"/>.
 		/// </summary>
-		public void SetOpen(ScriptBlock handler)
-		{
-			_Open = handler;
-		}
-
+		public ScriptBlock AsOpenFile { get; set; }
 		/// <summary>
-		/// Opens a file (lookup, handler, virtual method).
+		/// Opens the file using <see cref="AsOpenFile"/> or the default method.
 		/// </summary>
 		internal void UIOpenFile(FarFile file)
 		{
@@ -38,18 +34,17 @@ namespace PowerShellFar
 			// lookup closer?
 			if (UserWants == UserAction.Enter && _LookupCloser != null)
 			{
-				_LookupCloser(this, new FileEventArgs(file));
+				_LookupCloser(this, new FileEventArgs() { File = file });
 				UIEscape(false);
 				return;
 			}
 
 			// default or external action
-			if (_Open == null)
+			if (AsOpenFile == null)
 				OpenFile(file);
 			else
-				A.InvokeScriptReturnAsIs(_Open, this, new FileEventArgs(file));
+				A.InvokeScriptReturnAsIs(AsOpenFile, this, new FileEventArgs() { File = file });
 		}
-
 		/// <summary>
 		/// Opens a file.
 		/// </summary>
@@ -77,55 +72,66 @@ namespace PowerShellFar
 				A.Msg(ex);
 			}
 		}
-
 		#endregion
-
-		#region Edit
-		ScriptBlock _Edit;
-
+		#region DeleteFiles
 		/// <summary>
-		/// Handler to edit a file (e.g. on [F4]). $_ = <see cref="FileEventArgs"/>.
+		/// Gets or sets the script to delete files (e.g. on [F8]).
+		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="FilesEventArgs"/>.
 		/// </summary>
-		public void SetEdit(ScriptBlock value)
+		public ScriptBlock AsDeleteFiles { get; set; }
+		/// <summary>
+		/// Deletes files using <see cref="AsDeleteFiles"/> or the default method.
+		/// </summary>
+		public override sealed void UIDeleteFiles(FilesEventArgs args)
 		{
-			_Edit = value;
-		}
+			if (args == null)
+				return;
 
+			if (AsDeleteFiles != null)
+			{
+				A.InvokeScriptReturnAsIs(AsDeleteFiles, this, args);
+				if (args.Ignore)
+					return;
+			}
+
+			DoDeleteFiles(args);
+		}
+		#endregion
+		#region EditFile
 		/// <summary>
-		/// Opens a file (handler, virtual method).
+		/// Gets or sets the script to edit a file (e.g. on [F4]).
+		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="FileEventArgs"/>.
 		/// </summary>
-		void UIEditFile(FarFile file, bool alternative) //???? use base?
+		public ScriptBlock AsEditFile { get; set; }
+		/// <summary>
+		/// Opens the file in the editor using <see cref="AsEditFile"/> or the default method.
+		/// </summary>
+		public override sealed void UIEditFile(FarFile file) //_091202_073429 NB: Data can be wrapped by PSObject.
 		{
 			if (file == null)
 				return;
 
-			if (_Edit == null)
-				EditFile(file, alternative);
-			else
-				A.InvokeScriptReturnAsIs(_Edit, this, new FileEventArgs(file, alternative));
-		}
+			if (AsEditFile != null)
+			{
+				var args = new FileEventArgs() { File = file };
+				A.InvokeScriptReturnAsIs(AsEditFile, this, args);
+				if (args.Result != JobResult.Default)
+					return;
+			}
 
-		/// <summary>
-		/// Edits a file.
-		/// </summary>
-		/// <remarks>
-		/// NB: <c>Data</c> can be wrapped by <c>PSObject</c>.
-		/// _091202_073429
-		/// </remarks>
-		internal virtual void EditFile(FarFile file, bool alternative)
+			DoEditFile(file);
+		}
+		internal virtual void DoEditFile(FarFile file)
 		{
 			// no data, no job
 			if (file.Data == null)
 				return;
 
-			// get file and open in internal\external editor
+			// get file and open in internal/external editor
 			string filePath = My.PathEx.TryGetFilePath(file.Data);
 			if (filePath != null)
 			{
-				if (alternative)
-					My.ProcessEx.StartNotepad(filePath);
-				else
-					A.CreateEditor(filePath).Open(OpenMode.None);
+				A.CreateEditor(filePath).Open(OpenMode.None); //???? use explorer?
 				return;
 			}
 
@@ -162,49 +168,29 @@ namespace PowerShellFar
 				}
 			}
 		}
-
 		#endregion
-
-		#region View
-		ScriptBlock _View;
-
+		#region ViewFile
 		/// <summary>
-		/// Handler to view a file (e.g. on [F3]). $_ = <see cref="FileEventArgs"/>.
+		/// Gets or sets the script to view a file (e.g. on [F3]).
+		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="FileEventArgs"/>.
 		/// </summary>
-		public void SetView(ScriptBlock value)
-		{
-			_View = value;
-		}
-
+		public ScriptBlock AsViewFile { get; set; }
 		/// <summary>
-		/// View action (view all, handler, virtual method).
+		/// Opens the file in the viewer using <see cref="AsViewFile"/> or the default method.
 		/// </summary>
-		internal void UIView()
+		public override sealed void UIViewFile(FarFile file) //_091202_073429
 		{
-			FarFile file = CurrentFile;
 			if (file == null)
-			{
-				UIViewAll();
 				return;
+
+			if (AsViewFile != null)
+			{
+				var args = new FileEventArgs() { File = file };
+				A.InvokeScriptReturnAsIs(AsViewFile, this, args);
+				if (args.Result != JobResult.Default)
+					return;
 			}
 
-			if (file.Data == null) //???
-				return;
-
-			if (_View == null)
-				ViewFile(file);
-			else
-				A.InvokeScriptReturnAsIs(_View, this, new FileEventArgs(file));
-		}
-
-		/// <summary>
-		/// Viewer of a file.
-		/// </summary>
-		/// <remarks>
-		/// _091202_073429
-		/// </remarks>
-		void ViewFile(FarFile file)
-		{
 			// get file path and open in internal viewer
 			string filePath = My.PathEx.TryGetFilePath(file.Data);
 			if (filePath != null)
@@ -230,28 +216,21 @@ namespace PowerShellFar
 				File.Delete(tmp); //???? bad: open 1, don't close, then open 2: TempName() gets the same name --> cannot open 2
 			}
 		}
-
 		#endregion
-
 		#region ViewAll
-		ScriptBlock _ViewAll;
-
 		/// <summary>
-		/// Handler to view all files (e.g. [F3] on "..").
+		/// Gets or sets the script to show all files information (e.g. on [F3] on the dots).
+		/// Variables: <c>$this</c> is this panel.
 		/// </summary>
-		public void SetViewAll(ScriptBlock handler)
-		{
-			_ViewAll = handler;
-		}
-
+		public ScriptBlock AsViewAll { get; set; }
 		/// <summary>
-		/// View all files.
+		/// Shows all files information using <see cref="AsViewAll"/> or the default method.
 		/// </summary>
 		void UIViewAll()
 		{
-			if (_ViewAll != null)
+			if (AsViewAll != null)
 			{
-				A.InvokeScriptReturnAsIs(_ViewAll, this, null);
+				A.InvokeScriptReturnAsIs(AsViewAll, this, null);
 				return;
 			}
 
@@ -270,7 +249,6 @@ namespace PowerShellFar
 				File.Delete(tmp);
 			}
 		}
-
 		#endregion
 	}
 }

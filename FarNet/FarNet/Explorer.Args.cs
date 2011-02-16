@@ -10,9 +10,9 @@ using System.Collections.Generic;
 namespace FarNet
 {
 	/// <summary>
-	/// Explorer method result.
+	/// Result of a job.
 	/// </summary>
-	public enum ExplorerResult
+	public enum JobResult
 	{
 		/// <summary>
 		/// The job is done.
@@ -38,9 +38,13 @@ namespace FarNet
 	public class ExplorerArgs
 	{
 		/// <summary>
+		/// Operation mode.
+		/// </summary>
+		public OperationModes Mode { get; set; }
+		/// <summary>
 		/// Method call result.
 		/// </summary>
-		public ExplorerResult Result { get; set; }
+		public JobResult Result { get; set; }
 	}
 
 	/// <summary>
@@ -52,6 +56,10 @@ namespace FarNet
 		/// The file to explore.
 		/// </summary>
 		public FarFile File { get; set; }
+		/// <summary>
+		/// Test only.
+		/// </summary>
+		public bool ToPostName { get; set; }
 	}
 
 	/// <summary>
@@ -73,15 +81,13 @@ namespace FarNet
 	/// Export file arguments.
 	/// </summary>
 	public class ExportFileArgs : IOFileArgs
-	{
-	}
+	{ }
 
 	/// <summary>
 	/// Import file arguments.
 	/// </summary>
 	public class ImportFileArgs : IOFileArgs
-	{
-	}
+	{ }
 
 	/// <summary>
 	/// Common arguments of panel maker methods.
@@ -93,5 +99,26 @@ namespace FarNet
 		/// </summary>
 		public Panel Panel { get; set; }
 	}
+
+	/// <summary>
+	/// Common arguments of batch file methods.
+	/// </summary>
+	public abstract class FilesArgs : ExplorerArgs
+	{
+		/// <summary>
+		/// Files to be processed.
+		/// </summary>
+		/// <remarks>
+		/// The list is not read only but it should not be changed unless this is allowed.
+		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		public IList<FarFile> Files { get; set; }
+	}
+
+	/// <summary>
+	/// Delete files arguments.
+	/// </summary>
+	public class DeleteFilesArgs : FilesArgs
+	{ }
 
 }

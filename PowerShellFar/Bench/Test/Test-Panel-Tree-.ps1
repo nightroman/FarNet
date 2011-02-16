@@ -85,9 +85,9 @@ $r.Expand()
 
 # On <Enter>: open a child member panel for a current object
 # This is the same as [CtrlPgDn], we do it for testing only.
-$panel.SetOpen({
+$panel.AsOpenFile = {
 	$_.File | Start-FarPanel -Title "$($_.File.Name) opened by [Enter]" -AsChild
-})
+}
 
 # Go!
 Start-FarPanel $panel
