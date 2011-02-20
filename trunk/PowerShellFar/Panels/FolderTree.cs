@@ -168,7 +168,7 @@ namespace PowerShellFar
 			e.Ignore = true;
 
 			// e.g. [CtrlQ]
-			if ((e.Mode & OperationModes.Silent) != 0)
+			if ((e.Mode & ExplorerModes.Silent) != 0)
 				return;
 
 			string newLocation = e.Name;

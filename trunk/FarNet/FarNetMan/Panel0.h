@@ -42,7 +42,7 @@ internal:
 	static Panel2^ GetPanel(int worksId) { return _panels[worksId]; }
 private:
 	Panel0() {}
-	static void ReplaceExplorer(Panel^ panel, Explorer^ explorer, String^ postName); 
+	static void ReplaceExplorer(Panel^ panel, Explorer^ explorer); 
 private:
 	// Posted [0] and opened [1..3] panels; i.e. size is 4, see AddPluginPanel().
 	static array<Panel2^>^ _panels = gcnew array<Panel2^>(cPanels);

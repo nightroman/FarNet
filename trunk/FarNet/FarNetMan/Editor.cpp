@@ -194,16 +194,6 @@ void Editor::DisableHistory::set(bool value)
 	_DisableHistory = value;
 }
 
-bool Editor::IsLocked::get()
-{
-	if (!IsOpened)
-		return false;
-
-	AutoEditorInfo ei;
-
-	return (ei.CurState & ECSTATE_LOCKED) != 0;
-}
-
 bool Editor::IsModified::get()
 {
 	if (!IsOpened)
@@ -827,71 +817,49 @@ String^ Editor::WordDiv::get()
 
 void Editor::WordDiv::set(String^ value)
 {
-	if (value == nullptr)
-		throw gcnew ArgumentNullException("value");
-
-	if (IsOpened)
-	{
-		PIN_NE(pin, value);
-		EditorSetParameter esp;
-		esp.Type = ESPT_SETWORDDIV;
-		esp.Param.wszParam = (wchar_t*)pin;
-		EditorControl_ECTL_SETPARAM(esp);
-		return;
-	}
+	if (value == nullptr) throw gcnew ArgumentNullException("value");
 
 	_WordDiv = value;
-	_WordDivSet = true;
+	if (!IsOpened)
+		return;
+	
+	PIN_NE(pin, value);
+	EditorSetParameter esp;
+	esp.Type = ESPT_SETWORDDIV;
+	esp.Param.wszParam = (wchar_t*)pin;
+	EditorControl_ECTL_SETPARAM(esp);
 }
 
 bool Editor::IsVirtualSpace::get() { return GetBoolOption(EOPT_CURSORBEYONDEOL, _IsVirtualSpace); }
 bool Editor::ShowWhiteSpace::get() { return GetBoolOption(EOPT_SHOWWHITESPACE, _ShowWhiteSpace); }
 bool Editor::WriteByteOrderMark::get() { return GetBoolOption(EOPT_BOM, _WriteByteOrderMark); }
-bool Editor::GetBoolOption(int option, bool value)
+bool Editor::GetBoolOption(int option, Nullable<bool> value)
 {
 	if (!IsOpened)
-		return value;
+		return value.HasValue ? value.Value : false;
 
 	AutoEditorInfo ei;
 
-	if (ei.Options & option)
-		return true;
-	else
-		return false;
+	return (ei.Options & option) != 0;
 }
 
 void Editor::IsVirtualSpace::set(bool value)
 {
-	if (IsOpened)
-	{
-		SetBoolOption(ESPT_CURSORBEYONDEOL, value);
-		return;
-	}
-
 	_IsVirtualSpace = value;
-	_IsVirtualSpaceSet = true;
+	if (IsOpened)
+		SetBoolOption(ESPT_CURSORBEYONDEOL, value);
 }
 void Editor::ShowWhiteSpace::set(bool value)
 {
-	if (IsOpened)
-	{
-		SetBoolOption(ESPT_SHOWWHITESPACE, value);
-		return;
-	}
-
 	_ShowWhiteSpace = value;
-	_ShowWhiteSpaceSet = true;
+	if (IsOpened)
+		SetBoolOption(ESPT_SHOWWHITESPACE, value);
 }
 void Editor::WriteByteOrderMark::set(bool value)
 {
-	if (IsOpened)
-	{
-		SetBoolOption(ESPT_SETBOM, value);
-		return;
-	}
-
 	_WriteByteOrderMark = value;
-	_WriteByteOrderMarkSet = true;
+	if (IsOpened)
+		SetBoolOption(ESPT_SETBOM, value);
 }
 void Editor::SetBoolOption(int option, bool value)
 {
@@ -914,15 +882,17 @@ void Editor::Start(const EditorInfo& ei, bool waiting)
 	// preset waiting runtime properties
 	if (waiting)
 	{
-		if (_WordDivSet)
+		//! Property = Field
+		if (_WordDiv)
 			WordDiv = _WordDiv;
-
-		if (_IsVirtualSpaceSet)
-			IsVirtualSpace = _IsVirtualSpace;
-		if (_ShowWhiteSpaceSet)
-			ShowWhiteSpace = _ShowWhiteSpace;
-		if (_WriteByteOrderMarkSet)
-			WriteByteOrderMark = _WriteByteOrderMark;
+		if (_IsLocked.HasValue)
+			IsLocked = _IsLocked.Value;
+		if (_IsVirtualSpace.HasValue)
+			IsVirtualSpace = _IsVirtualSpace.Value;
+		if (_ShowWhiteSpace.HasValue)
+			ShowWhiteSpace = _ShowWhiteSpace.Value;
+		if (_WriteByteOrderMark.HasValue)
+			WriteByteOrderMark = _WriteByteOrderMark.Value;
 	}
 
 	// now call the modules
@@ -1222,6 +1192,22 @@ void Editor::Activate()
 		}
 	}
 	throw gcnew InvalidOperationException("Cannot find the window by name.");
+}
+
+bool Editor::IsLocked::get()
+{
+	if (!IsOpened)
+		return _IsLocked.HasValue ? _IsLocked.Value : false;
+
+	AutoEditorInfo ei;
+
+	return (ei.CurState & ECSTATE_LOCKED) != 0;
+}
+void Editor::IsLocked::set(bool value)
+{
+	_IsLocked = value;
+	if (IsOpened)
+		SetBoolOption(ESPT_LOCKMODE, value);
 }
 
 }

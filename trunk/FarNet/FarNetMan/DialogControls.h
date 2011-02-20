@@ -18,6 +18,7 @@ public:
 	virtual property bool Hidden { bool get(); void set(bool value); }
 	virtual property int Id { int get() { return _id; } }
 	virtual property Place Rect { Place get(); void set(Place value); }
+	virtual property String^ Name;
 	virtual property String^ Text { String^ get(); void set(String^ value); }
 	virtual property Object^ Data { Object^ get(); void set(Object^ value); }
 public: DEF_EVENT_ARGS(Coloring, _Coloring, ColoringEventArgs);
@@ -75,7 +76,7 @@ public:
 	virtual property bool NoClose { bool get(); void set(bool value); }
 	virtual property bool NoFocus { bool get(); void set(bool value); }
 	virtual property bool ShowAmpersand { bool get(); void set(bool value); }
-	virtual property String^ Text { String^ get() override; }
+	virtual property String^ Text { String^ get() override; void set(String^ value) override; }
 public: DEF_EVENT_ARGS(ButtonClicked, _ButtonClicked, ButtonClickedEventArgs);
 internal:
 	FarButton(FarDialog^ dialog, int index);

@@ -9,8 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		FarNet\Far.exe.config = FarNet\Far.exe.config
 		FarNet\FarNetMan\FarNetMan.hlf = FarNet\FarNetMan\FarNetMan.hlf
 		FarNet\FarNet\Panel.cs = FarNet\FarNet\Panel.cs
+		FarNet\FarNetMan\Panel0.cpp = FarNet\FarNetMan\Panel0.cpp
 		PowerShellFar\PowerExplorer.cs = PowerShellFar\PowerExplorer.cs
 		PowerShellFar\Resources\PowerShellFar.ps1 = PowerShellFar\Resources\PowerShellFar.ps1
+		FarNet\FarNet.Tools\SearchExplorer.cs = FarNet\FarNet.Tools\SearchExplorer.cs
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellFar", "PowerShellFar\PowerShellFar.csproj", "{602C5210-AF86-471A-BF19-35C0D5A71719}"

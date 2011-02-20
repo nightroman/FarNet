@@ -75,6 +75,7 @@
     <Compile Include="Commands\Find-FarFile.cs" />
     <Compile Include="Commands\GetFarFileCommand.cs" />
     <Compile Include="Commands\StartFarJobCommand.cs" />
+    <Compile Include="Commands\StartFarSearchCommand.cs" />
     <Compile Include="EditorConsole.cs" />
     <Compile Include="Help.cs" />
     <Compile Include="JobCommand.cs" />
@@ -174,6 +175,10 @@
     <Content Include="doc.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FarNet\FarNet.Tools\FarNet.Tools.csproj">
+      <Project>{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}</Project>
+      <Name>FarNet.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">
       <Project>{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}</Project>
       <Name>FarNet</Name>

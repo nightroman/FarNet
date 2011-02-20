@@ -653,51 +653,6 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Additional information about an operation.
-	/// </summary>
-	[Flags]
-	public enum OperationModes
-	{
-		/// <summary>
-		/// Nothing special.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// An operation should minimize user requests if possible, because the called function is only a part of a more complex file operation.
-		/// </summary>
-		Silent = 0x0001,
-		/// <summary>
-		/// An operation is called from Find file or another directory scanning command. Screen output has to be minimized.
-		/// </summary>
-		Find = 0x0002,
-		/// <summary>
-		/// An operation is a part of a file view operation.
-		/// If file is viewed on quickview panel, than both <c>View</c> and <c>QuickView</c> are set.
-		/// </summary>
-		View = 0x0004,
-		/// <summary>
-		/// An operation is a part of a file edit operation.
-		/// </summary>
-		Edit = 0x0008,
-		/// <summary>
-		/// All files in a host file of file based panel should be processed.
-		/// This flag is set on [ShiftF2], [ShiftF3] Far commands outside of a host file.
-		/// Passed in an operation file list also contains all necessary information,
-		/// so that this flag can be either ignored or used to speed up processing.
-		/// </summary>
-		TopLevel = 0x0010,
-		/// <summary>
-		/// An operation is called to get or put file with file descriptions.
-		/// </summary>
-		Descript = 0x0020,
-		/// <summary>
-		/// An operation is a part of a file view operation activated from the quick view panel
-		/// (activated by pressing [CtrlQ] in the file panels).
-		/// </summary>
-		QuickView = 0x0040,
-	}
-
-	/// <summary>
 	/// Base <see cref="Panel"/> event arguments.
 	/// </summary>
 	public class PanelEventArgs : EventArgs
@@ -705,7 +660,7 @@ namespace FarNet
 		/// <summary>
 		/// Combination of the operation mode flags.
 		/// </summary>
-		public OperationModes Mode { get; set; }
+		public ExplorerModes Mode { get; set; }
 		/// <summary>
 		/// Set true to tell that action has to be ignored; exact meaning depends on an event.
 		/// </summary>
@@ -761,7 +716,7 @@ namespace FarNet
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
 	/// </summary>
 	/// <remarks>
-	/// The panel should be ready to process the <see cref="OperationModes.Find"/> flag.
+	/// The panel should be ready to process the <see cref="ExplorerModes.Find"/> flag.
 	/// If it is set, the event is called from search or directory scanning commands,
 	/// and a handler must not perform any actions except changing directory or setting <see cref="PanelEventArgs.Ignore"/> = true
 	/// if it is impossible to change the directory.

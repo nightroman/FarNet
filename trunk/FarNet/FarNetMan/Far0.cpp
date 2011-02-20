@@ -444,7 +444,7 @@ HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int data
 			{
 				e = gcnew ModuleFilerEventArgs;
 				e->Name = gcnew String(name);
-				e->Mode = (OperationModes)opMode;
+				e->Mode = (ExplorerModes)opMode;
 				e->Data = gcnew UnmanagedMemoryStream((unsigned char*)data, dataSize, dataSize, FileAccess::Read);
 			}
 			else

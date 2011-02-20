@@ -115,7 +115,7 @@ $Panel.add_MakeDirectory({&{
 	$data.UpdateInfo()
 
 	# ignore silent mode in this demo
-	if ($_.Mode -band [FarNet.OperationModes]::Silent) {
+	if ($_.Mode -band [FarNet.ExplorerModes]::Silent) {
 		$_.Ignore = $true
 		return
 	}
@@ -148,7 +148,7 @@ $Panel.add_ExportFiles({&{
 	$data.UpdateInfo()
 
 	# case: [CtrlQ]
-	if ($_.Mode -band [FarNet.OperationModes]::QuickView) {
+	if ($_.Mode -band [FarNet.ExplorerModes]::QuickView) {
 		$name = $_.Files[0].Name
 		[IO.File]::WriteAllText("$($_.Destination)\$name", "Hello from $name")
 		return

@@ -1,7 +1,7 @@
 
 Module   : FarNet.PowerShellFar
-Version  : 4.4.1
-Release  : 2011-02-16
+Version  : 4.4.2
+Release  : 2011-02-20
 Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -30,7 +30,7 @@ http://code.google.com/p/farnet/
 
 
  - Far Manager 2.0.1807
- - Plugin FarNet 4.4.1
+ - Plugin FarNet 4.4.2
  - Windows PowerShell 2.0
 
 

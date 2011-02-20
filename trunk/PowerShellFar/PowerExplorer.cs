@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Text;
 using FarNet;
 
@@ -19,16 +20,21 @@ namespace PowerShellFar
 	public sealed class PowerExplorer : Explorer
 	{
 		/// <summary>
-		/// New explorer.
+		/// New explorer with its type ID.
 		/// </summary>
-		/// <param name="location">The assigned location (path, current directory, etc.)</param>
-		public PowerExplorer(string location) : base(location) {}
+		public PowerExplorer(Guid typeId) : base(typeId) { }
 		/// <summary>
-		/// Gets or sets user data.
+		/// Gets or sets the user data object.
 		/// </summary>
+		/// <remarks>
+		/// Normally it should be set on creation to describe the assigned explorer location,
+		/// so that other explorer methods can use this information. There is no much sense
+		/// to change these data later (note: each explorer deals with one fixed location).
+		/// But it is fine to cache files in here and refresh them when needed.
+		/// </remarks>
 		public PSObject Data { get; set; }
 		/// <summary>
-		/// <see cref="Explorer.Explore"/> worker. It must be set.
+		/// <see cref="Explorer.Explore"/> worker. It must be set in a script.
 		/// </summary>
 		/// <remarks>
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerArgs"/>.
@@ -42,6 +48,9 @@ namespace PowerShellFar
 			if (AsExplore == null)
 				throw new InvalidOperationException("Explore script is not set.");
 
+			if (Runspace.DefaultRunspace == null)
+				Runspace.DefaultRunspace = A.Psf.Runspace;
+			
 			var result = new List<FarFile>();
 			foreach (var it in A.InvokeScript(AsExplore, this, args))
 			{
@@ -53,32 +62,32 @@ namespace PowerShellFar
 			return result;
 		}
 		/// <summary>
-		/// <see cref="Explorer.ExploreFile"/> worker.
+		/// <see cref="Explorer.ExploreDirectory"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreFileArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreDirectoryArgs"/>.
 		/// </remarks>
-		public ScriptBlock AsExploreFile { get; set; }
+		public ScriptBlock AsExploreDirectory { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsExploreFile"/>.
+		/// Calls <see cref="AsExploreDirectory"/>.
 		/// </summary>
-		public override Explorer ExploreFile(ExploreFileArgs args)
+		public override Explorer ExploreDirectory(ExploreDirectoryArgs args)
 		{
-			return InvokeExplorerScript(AsExploreFile, args);
+			return InvokeExplorerScript(AsExploreDirectory, args);
 		}
 		/// <summary>
-		/// <see cref="Explorer.ExploreRoot"/> worker.
+		/// <see cref="Explorer.ExploreLocation"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreLocationArgs"/>.
 		/// </remarks>
-		public ScriptBlock AsExploreRoot { get; set; }
+		public ScriptBlock AsExploreLocation { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsExploreRoot"/>.
+		/// Calls <see cref="AsExploreLocation"/>.
 		/// </summary>
-		public override Explorer ExploreRoot(ExplorerArgs args)
+		public override Explorer ExploreLocation(ExploreLocationArgs args)
 		{
-			return InvokeExplorerScript(AsExploreRoot, args);
+			return InvokeExplorerScript(AsExploreLocation, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ExploreParent"/> worker.
@@ -95,65 +104,18 @@ namespace PowerShellFar
 			return InvokeExplorerScript(AsExploreParent, args);
 		}
 		/// <summary>
-		/// <see cref="Explorer.MakePanel"/> worker.
+		/// <see cref="Explorer.ExploreRoot"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="PanelMakerArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerArgs"/>.
 		/// </remarks>
-		public ScriptBlock AsMakePanel { get; set; }
+		public ScriptBlock AsExploreRoot { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsMakePanel"/>.
+		/// Calls <see cref="AsExploreRoot"/>.
 		/// </summary>
-		public override Panel MakePanel(PanelMakerArgs args)
+		public override Explorer ExploreRoot(ExplorerArgs args)
 		{
-			if (args == null) throw new ArgumentNullException("args");
-			if (AsMakePanel == null)
-			{
-				args.Result = JobResult.Default;
-				return null;
-			}
-
-			var data = A.InvokeScript(AsMakePanel, this, args);
-			if (data.Count == 0)
-				return null;
-
-			return (Panel)LanguagePrimitives.ConvertTo(data[0], typeof(Panel), null);
-		}
-		/// <summary>
-		/// <see cref="Explorer.SetupPanel"/> worker.
-		/// </summary>
-		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="PanelMakerArgs"/>.
-		/// </remarks>
-		public ScriptBlock AsSetupPanel { get; set; }
-		/// <summary>
-		/// Calls <see cref="AsSetupPanel"/>.
-		/// </summary>
-		public override void SetupPanel(PanelMakerArgs args)
-		{
-			if (args == null) throw new ArgumentNullException("args");
-			if (AsSetupPanel == null)
-				args.Result = JobResult.Default;
-			else
-				A.InvokeScriptReturnAsIs(AsSetupPanel, this, args);
-		}
-		/// <summary>
-		/// <see cref="Explorer.UpdatePanel"/> worker.
-		/// </summary>
-		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="PanelMakerArgs"/>.
-		/// </remarks>
-		public ScriptBlock AsUpdatePanel { get; set; }
-		/// <summary>
-		/// Calls <see cref="AsUpdatePanel"/>.
-		/// </summary>
-		public override void UpdatePanel(PanelMakerArgs args)
-		{
-			if (args == null) throw new ArgumentNullException("args");
-			if (AsUpdatePanel == null)
-				args.Result = JobResult.Default;
-			else
-				A.InvokeScriptReturnAsIs(AsUpdatePanel, this, args);
+			return InvokeExplorerScript(AsExploreRoot, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ExportFile"/> worker.
@@ -174,23 +136,6 @@ namespace PowerShellFar
 				A.InvokeScriptReturnAsIs(AsExportFile, this, args);
 		}
 		/// <summary>
-		/// <see cref="Explorer.CanExportFile"/> worker.
-		/// </summary>
-		public ScriptBlock AsCanExportFile { get; set; }
-		/// <summary>
-		/// Calls <see cref="AsCanExportFile"/>.
-		/// </summary>
-		public override bool CanExportFile(FarFile file)
-		{
-			if (AsExportFile == null)
-				return false;
-
-			if (AsCanExportFile == null)
-				return true;
-
-			return (bool)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCanExportFile, this, file), typeof(bool), null);
-		}
-		/// <summary>
 		/// <see cref="Explorer.ImportFile"/> worker.
 		/// </summary>
 		/// <remarks>
@@ -209,23 +154,6 @@ namespace PowerShellFar
 				A.InvokeScriptReturnAsIs(AsImportFile, this, args);
 		}
 		/// <summary>
-		/// <see cref="Explorer.CanImportFile"/> worker.
-		/// </summary>
-		public ScriptBlock AsCanImportFile { get; set; }
-		/// <summary>
-		/// Calls <see cref="AsCanImportFile"/>.
-		/// </summary>
-		public override bool CanImportFile(FarFile file)
-		{
-			if (AsImportFile == null)
-				return false;
-
-			if (AsCanImportFile == null)
-				return true;
-
-			return (bool)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCanImportFile, this, file), typeof(bool), null);
-		}
-		/// <summary>
 		/// <see cref="Explorer.DeleteFiles"/> worker.
 		/// </summary>
 		/// <remarks>
@@ -241,21 +169,40 @@ namespace PowerShellFar
 				A.InvokeScriptReturnAsIs(AsDeleteFiles, this, args);
 		}
 		/// <summary>
-		/// <see cref="Explorer.CanDeleteFiles"/> worker.
+		/// <see cref="Explorer.CreatePanel"/> worker.
 		/// </summary>
-		public ScriptBlock AsCanDeleteFiles { get; set; }
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer.
+		/// </remarks>
+		public ScriptBlock AsCreatePanel { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsCanDeleteFiles"/>.
+		/// Calls <see cref="AsCreatePanel"/>.
 		/// </summary>
-		public override bool CanDeleteFiles(DeleteFilesArgs args)
+		public override Panel CreatePanel()
 		{
-			if (AsDeleteFiles == null)
-				return false;
+			if (AsCreatePanel == null)
+				return null;
 
-			if (AsCanDeleteFiles == null)
-				return true;
+			var data = A.InvokeScript(AsCreatePanel, this, null);
+			if (data.Count == 0)
+				return null;
 
-			return (bool)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCanDeleteFiles, this, args), typeof(bool), null);
+			return (Panel)LanguagePrimitives.ConvertTo(data[0], typeof(Panel), null);
+		}
+		/// <summary>
+		/// <see cref="Explorer.UpdatePanel"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is the <see cref="Panel"/> to be updated.
+		/// </remarks>
+		public ScriptBlock AsUpdatePanel { get; set; }
+		/// <summary>
+		/// Calls <see cref="AsUpdatePanel"/>.
+		/// </summary>
+		public override void UpdatePanel(Panel panel)
+		{
+			if (AsUpdatePanel != null)
+				A.InvokeScriptReturnAsIs(AsUpdatePanel, this, panel);
 		}
 		///
 		internal Explorer InvokeExplorerScript(ScriptBlock script, ExplorerArgs args)
@@ -265,6 +212,9 @@ namespace PowerShellFar
 				args.Result = JobResult.Default;
 				return null;
 			}
+
+			if (Runspace.DefaultRunspace == null)
+				Runspace.DefaultRunspace = A.Psf.Runspace;
 
 			var data = A.InvokeScript(script, this, args);
 			if (data.Count == 0)
