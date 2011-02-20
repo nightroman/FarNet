@@ -336,7 +336,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				if ((e.Mode & OperationModes.Silent) == 0)
+				if ((e.Mode & ExplorerModes.Silent) == 0)
 					Far.Net.ShowError(Res.Me, ex);
 
 				data = new List<FarFile>();

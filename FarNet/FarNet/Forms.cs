@@ -70,9 +70,15 @@ namespace FarNet.Forms
 		/// </summary>
 		Place Rect { get; set; }
 		/// <summary>
-		/// User data. It can be set only for FarNet dialog controls.
+		/// Gets or set any data (not used by the core).
+		/// It is settable in FarNet dialogs.
 		/// </summary>
 		object Data { get; set; }
+		/// <summary>
+		/// Gets or sets a name (not used by the core).
+		/// It is settable in FarNet dialogs.
+		/// </summary>
+		string Name { get; set; }
 	}
 
 	/// <summary>

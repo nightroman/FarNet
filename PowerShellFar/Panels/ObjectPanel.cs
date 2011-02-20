@@ -28,6 +28,8 @@ namespace PowerShellFar
 			UseFilter = true;
 
 			ImportFiles += OnImportFiles;
+
+			FileComparer = new FileDataComparer();
 		}
 
 		///
@@ -169,16 +171,6 @@ namespace PowerShellFar
 		{
 			UI.ExportDialog.ExportClixml(CollectData(), StartDirectory);
 			return true;
-		}
-
-		/// <summary>
-		/// Keeps current panel file.
-		/// </summary>
-		protected override void SaveState()
-		{
-			FarFile f = CurrentFile;
-			if (f != null)
-				PostFile(f);
 		}
 
 		// _100227_073909

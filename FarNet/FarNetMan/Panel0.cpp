@@ -15,7 +15,7 @@ namespace FarNet
 // lame storage of new name
 static CStr s_makingDirectory;
 
-static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, IList<String^>^ names, PluginPanelItem* panelItem, int itemsNumber)
+static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, IList<String^>^ names, PluginPanelItem* panelItem, int itemsNumber)
 {
 	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
 
@@ -23,6 +23,15 @@ static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, IList<String^>^ name
 	if (itemsNumber == 1 && panelItem[0].UserData == 0 && wcscmp(panelItem[0].FindData.lpwszFileName, L"..") == 0)
 		return r;
 
+	// pure case
+	if (pureFiles)
+	{
+		for(int i = 0; i < itemsNumber; ++i)
+			r->Add(Panel1::ItemToFile(panelItem[i]));
+		return r;
+	}
+
+	// data case
 	for(int i = 0; i < itemsNumber; ++i)
 	{
 		int fi = (int)(INT_PTR)panelItem[i].UserData;
@@ -33,164 +42,28 @@ static List<FarFile^>^ ItemsToFiles(IList<FarFile^>^ files, IList<String^>^ name
 				names->Add(gcnew String(panelItem[i].FindData.lpwszAlternateFileName));
 		}
 	}
+	
 	return r;
 }
 
-void Panel0::AsClosePlugin(HANDLE hPlugin)
-{
-	Log::Source->TraceInformation("ClosePlugin");
-
-	// drop the lame storage
-	s_makingDirectory.Set(nullptr);
-
-	// disconnect
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	pp->Free();
-	_panels[(int)(INT_PTR)hPlugin] = nullptr;
-	
-	// done for pushed
-	if (pp->_Pushed)
-		return;
-
-	// clean all
-	pp->Host->WorksClosed(true);
-}
-
-//! It is called on move, too? I.e. is Move = Copy + Delete?
-int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
-{
-	Log::Source->TraceInformation("DeleteFiles");
-
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-
-	Explorer^ explorer = pp->Host->Explorer;
-	if (explorer)
-	{
-		DeleteFilesArgs args;
-		args.Mode = (OperationModes)opMode;
-		args.Files = ItemsToFiles(pp->Files, nullptr, panelItem, itemsNumber);
-
-		if (!explorer->CanDeleteFiles(%args))
-			return 0;
-
-		explorer->DeleteFiles(%args);
-		return args.Result == JobResult::Ignore ? 0 : 1;
-	}
-
-	if (!pp->Host->WorksDeleteFiles(nullptr))
-		return 0;
-
-	FilesEventArgs e;
-	e.Mode = (OperationModes)opMode;
-	e.Files = ItemsToFiles(pp->Files, nullptr, panelItem, itemsNumber);
-
-	pp->Host->WorksDeleteFiles(%e);
-	return e.Ignore ? 0 : 1;
-}
-
-void Panel0::AsFreeFindData(HANDLE /*hPlugin*/, PluginPanelItem* panelItem, int itemsNumber)
-{
-	//Panel2^ pp = _panels[(int)(INT_PTR)hPlugin]; //???? need? can it be static managed by Address -> Data map including Panel2^
-	//Log::Source->TraceInformation("FreeFindData Address='{0:x}' CurrentDirectory='{1}'", (INT_PTR)panelItem, pp->Info->CurrentDirectory);
-
-	for(int i = itemsNumber; --i >= 0;)
-	{
-		PluginPanelItem& item = panelItem[i];
-
-		delete[] item.Owner;
-		delete[] item.Description;
-		delete[] item.FindData.lpwszAlternateFileName;
-		delete[] item.FindData.lpwszFileName;
-
-		if (item.CustomColumnData)
-		{
-			for(int j = item.CustomColumnNumber; --j >= 0;)
-				delete[] item.CustomColumnData[j];
-
-			delete[] item.CustomColumnData;
-		}
-	}
-
-	delete[] panelItem;
-}
-
-//?? NYI: Parameter destPath can be changed, i.e. (*destPath) replaced.
-//?? NYI: Not used return value -1 (stopped by a user).
-int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode)
-{
-	Log::Source->TraceInformation("ExportFiles");
-
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-
-#if 1 //?????
-	if (pp->Host->Explorer)
-	{
-		ExportFilesEventArgs e;
-		e.Mode = (OperationModes)opMode;
-		e.Names = gcnew List<String^>;
-		e.Files = ItemsToFiles(pp->Files, e.Names, panelItem, itemsNumber);
-		e.Move = move != 0;
-		e.Destination = gcnew String((*destPath));
-			
-		for(int i = 0; i < itemsNumber; ++i)
-		{
-			ExportFileArgs args;
-			args.File = e.Files[i];
-			args.FileName = Path::Combine(e.Destination, e.Names[i]);
-			pp->Host->Explorer->ExportFile(%args);
-		}
-			
-		return 1;
-	}
-#else
-	if (pp->Host->Explorer && (opMode & (OPM_VIEW | OPM_QUICKVIEW | OPM_EDIT))) //???? limited modes; later we need this only for QView or *modal* requirement
-	{
-		ExportFilesEventArgs e;
-		e.Mode = (OperationModes)opMode;
-		e.Names = gcnew List<String^>;
-		e.Files = ItemsToFiles(pp->Files, e.Names, panelItem, itemsNumber);
-		e.Move = move != 0;
-		e.Destination = gcnew String((*destPath));
-			
-		for(int i = 0; i < itemsNumber; ++i)
-		{
-			ExportFileArgs args;
-			args.File = e.Files[i];
-			args.FileName = Path::Combine(e.Destination, e.Names[i]);
-			pp->Host->Explorer->ExportFile(%args);
-		}
-			
-		return 1;
-	}
-#endif
-
-	if (!pp->Host->WorksExportFiles(nullptr))
-		return 0;
-
-	ExportFilesEventArgs e;
-	e.Mode = (OperationModes)opMode;
-	e.Names = gcnew List<String^>;
-	e.Files = ItemsToFiles(pp->Files, e.Names, panelItem, itemsNumber);
-	e.Move = move != 0;
-	e.Destination = gcnew String((*destPath));
-
-	pp->Host->WorksExportFiles(%e);
-	return e.Ignore ? 0 : 1;
-}
-
+// This is the very first called method
 //! 090712. Allocation by chunks was originally used. But it turns out it does not improve
 //! performance much (tested for 200000+ files). On the other hand allocation of large chunks
 //! may fail due to memory fragmentation more frequently.
 int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
 {
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	ExplorerModes mode = (ExplorerModes)opMode;
+	const bool IsExploreLocation = pp->IsExploreLocation;
+
+	Log::Source->TraceInformation("GetFindDataW Mode='{0}' Location='{1}'", mode, pp->PanelDirectory);
+
 	try
 	{
-		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-
 		// fake empty panel needed on switching modes, for example
 		if (pp->_voidUpdateFiles)
 		{
-			Log::Source->TraceInformation("UpdateFiles fake empty panel");
+			Log::Source->TraceInformation("GetFindDataW fake empty panel");
 			(*pItemsNumber) = 0;
 			(*pPanelItem) = NULL;
 			return 1;
@@ -198,7 +71,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 
 		// the Find mode
 		const bool isFind = 0 != (opMode & OPM_FIND);
-		if (isFind && pp->Host->Explorer) //???? eventually to disable for all
+		if (isFind && !IsExploreLocation && pp->Host->Explorer) //???? eventually to disable for all
 			return 0;
 
 		//_110121_150249
@@ -213,19 +86,20 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 				pp->Files = gcnew List<FarFile^>();
 
 			// get files
-			PanelEventArgs e;
-			e.Mode = (OperationModes)opMode;
-			Log::Source->TraceInformation("UpdateFiles Mode='{0}' Directory='{1}'", e.Mode, pp->PanelDirectory);
 			try
 			{
 				if (pp->Host->Explorer)
 				{
-					ExplorerArgs args;
+					ExplorerArgs args(mode);
 					pp->Files = pp->Host->Explorer->Explore(%args);
 				}
 				else
 				{
+					PanelEventArgs e;
+					e.Mode = mode;
 					pp->Host->WorksUpdateFiles(%e);
+					if (e.Ignore)
+						return 0;
 				}
 			}
 			finally
@@ -243,13 +117,11 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 					files = pp->Files;
 				}
 			}
-			if (e.Ignore)
-				return false;
 		}
 
 		// all item number
 		int nItem = files->Count;
-		if (pp->HasDots())
+		if (pp->HasDots)
 			++nItem;
 		(*pItemsNumber) = nItem;
 		if (nItem == 0)
@@ -261,11 +133,11 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		// alloc all
 		(*pPanelItem) = new PluginPanelItem[nItem];
 		memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
-		//????Log::Source->TraceInformation("UpdateFiles Address='{0:x}'", (INT_PTR)(*pPanelItem));
+		Log::Source->TraceInformation("GetFindDataW Address='{0:x}'", (long)(*pPanelItem));
 
 		// add dots
 		int itemIndex = -1, fileIndex = -1;
-		if (pp->HasDots())
+		if (pp->HasDots)
 		{
 			++itemIndex;
 			wchar_t* dots = new wchar_t[3];
@@ -291,7 +163,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 			p.Owner = NewChars(f->Owner);
 
 			// alternate names are for QView and this is important
-			if (opMode == 0)
+			if (opMode == 0 && !IsExploreLocation)
 			{
 				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
 				Info.FSF->itoa(fileIndex, buf, 10);
@@ -312,7 +184,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 			d.ftLastWriteTime = DateTimeToFileTime(f->LastWriteTime);
 			d.ftLastAccessTime = DateTimeToFileTime(f->LastAccessTime);
 			//_110121_150249 Set -1 in the Find mode
-			p.UserData = isFind ? -1 : fileIndex;
+			p.UserData = (isFind || IsExploreLocation) ? -1 : fileIndex;
 
 			// columns
 			System::Collections::ICollection^ columns = f->Columns;
@@ -336,6 +208,11 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 				}
 			}
 		}
+
+		// drop pure files
+		if (IsExploreLocation)
+			pp->Files = nullptr;
+
 		return true;
 	}
 	catch(Exception^ e)
@@ -348,10 +225,289 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 	}
 }
 
+void Panel0::AsFreeFindData(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber)
+{
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin]; //???? need? can it be static managed by Address -> Data map including Panel2^
+	Log::Source->TraceInformation("FreeFindDataW Address='{0:x}' Location='{1}'", (long)panelItem, pp->PanelDirectory);
+
+	for(int i = itemsNumber; --i >= 0;)
+	{
+		PluginPanelItem& item = panelItem[i];
+
+		delete[] item.Owner;
+		delete[] item.Description;
+		delete[] item.FindData.lpwszAlternateFileName;
+		delete[] item.FindData.lpwszFileName;
+
+		if (item.CustomColumnData)
+		{
+			for(int j = item.CustomColumnNumber; --j >= 0;)
+				delete[] item.CustomColumnData[j];
+
+			delete[] item.CustomColumnData;
+		}
+	}
+
+	delete[] panelItem;
+}
+
+int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
+{
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	ExplorerModes mode = (ExplorerModes)opMode;
+	String^ directory = gcnew String(dir);
+
+	Log::Source->TraceInformation("SetDirectoryW Mode='{0}' Name='{1}'", mode, directory);
+
+	_inAsSetDirectory = true;
+	try
+	{
+		Explorer^ explorer1 = pp->Host->Explorer;
+		const bool IsExploreLocation = pp->IsExploreLocation;
+		if (explorer1) //???? eventually use only explorers and disable Find for all
+		{
+			if (!IsExploreLocation && 0 != (opMode & OPM_FIND))
+				return 0;
+			
+			Explorer^ explorer2;
+			if (directory == "\\")
+			{
+				ExplorerArgs args(mode);
+				explorer2 = explorer1->ExploreRoot(%args);
+				if (!explorer2)
+				{
+					Panel^ mp = pp->Host;
+					if (!mp->Parent)
+						return 0;
+
+					while(mp->Parent)
+					{
+						Panel^ parent = mp->Parent;
+						mp->CloseChild();
+						mp = parent;
+					}
+					
+					return 1;
+				}
+			}
+			else if (directory == "..")
+			{
+				ExplorerArgs args(mode);
+				explorer2 = explorer1->ExploreParent(%args);
+				if (!explorer2)
+				{
+					if (!pp->Host->Parent)
+						return 0;
+
+					pp->Host->CloseChild();
+					return 1;
+				}
+			}
+			else if (IsExploreLocation)
+			{
+				ExploreLocationArgs args(mode, directory);
+				explorer2 = explorer1->ExploreLocation(%args);
+			}
+			else
+			{
+				ExploreDirectoryArgs args(mode, pp->Host->CurrentFile);
+				explorer2 = explorer1->ExploreDirectory(%args);
+			}
+					
+			if (!explorer2)
+				return 0;
+
+			ReplaceExplorer(pp->Host, explorer2);
+			
+			return 1;
+		}
+
+		if (!pp->Host->WorksSetPanelDirectory(nullptr))
+			return 1;
+		
+		SetDirectoryEventArgs e;
+		e.Mode = mode;
+		e.Name = directory;
+		
+		pp->Host->WorksSetPanelDirectory(%e);
+		return e.Ignore ? 0 : 1;
+	}
+	finally
+	{
+		_inAsSetDirectory = false;
+	}
+}
+
+//?? NYI: Parameter destPath can be changed, i.e. (*destPath) replaced.
+//?? NYI: Not used return value -1 (stopped by a user).
+int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode)
+{
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	ExplorerModes mode = (ExplorerModes)opMode;
+
+	Log::Source->TraceInformation("GetFilesW Mode='{0}'", mode);
+
+	//????? && (opMode & (OPM_VIEW | OPM_QUICKVIEW | OPM_EDIT)) limited modes; need only for QView or *modal* requirement?
+	// MB needed for Copy to native plugins or FS. But how to be with names: use a flag SystemNames? Call a virtual method?
+	// SystemNames looks good. If names are bad, it's a big issue for exchange via FS anyway.
+	// And if SystemNames is ON then we do not generate aliases internally. Think.
+	Explorer^ explorer = pp->Host->Explorer;
+	if (explorer)
+	{
+		ExportFilesEventArgs e;
+		e.Mode = mode;
+		if (!pp->IsExploreLocation)
+			e.Names = gcnew List<String^>; //1
+		e.Files = ItemsToFiles(pp->IsExploreLocation, pp->Files, e.Names, panelItem, itemsNumber); //2
+		e.Move = move != 0;
+		e.Destination = gcnew String((*destPath));
+			
+		for(int i = 0; i < itemsNumber; ++i)
+		{
+			String^ fileName = pp->IsExploreLocation
+				? Path::Combine(e.Destination, e.Files[i]->Name)
+				: Path::Combine(e.Destination, e.Names[i]);
+			ExportFileArgs args(mode, e.Files[i], fileName);
+			pp->Host->Explorer->ExportFile(%args);
+		}
+			
+		return 1;
+	}
+
+	if (!pp->Host->WorksExportFiles(nullptr))
+		return 0;
+
+	ExportFilesEventArgs e;
+	e.Mode = mode;
+	e.Names = gcnew List<String^>;
+	e.Files = ItemsToFiles(false, pp->Files, e.Names, panelItem, itemsNumber);
+	e.Move = move != 0;
+	e.Destination = gcnew String((*destPath));
+
+	pp->Host->WorksExportFiles(%e);
+	return e.Ignore ? 0 : 1;
+}
+
+int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode)
+{
+	Panel2^ pp1 = _panels[(int)(INT_PTR)hPlugin];
+	ExplorerModes mode = (ExplorerModes)opMode;
+	
+	Log::Source->TraceInformation("PutFilesW Mode='{0}'", mode);
+
+	Panel2^ pp2 = GetPanel2(pp1);
+	List<FarFile^>^ files;
+	if (pp2 && !pp2->IsExploreLocation)
+	{
+		files = ItemsToFiles(false, pp2->Files, nullptr, panelItem, itemsNumber);
+	}
+	else
+	{
+		files = gcnew List<FarFile^>(itemsNumber);
+		for(int i = 0; i < itemsNumber; ++i)
+			files->Add(Panel1::ItemToFile(panelItem[i]));
+	}
+
+	if (!pp1->Host->WorksImportFiles(nullptr))
+		return 0;
+
+	ImportFilesEventArgs e;
+	e.Mode = mode;
+	e.Files = files;
+	e.Move = move != 0;
+	e.Source = srcPath ? gcnew String(srcPath) : String::Empty;
+	
+	pp1->Host->WorksImportFiles(%e);
+	return e.Ignore ? 0 : 1;
+}
+
+//! It is called on move, too? I.e. is Move = Copy + Delete?
+int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
+{
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	ExplorerModes mode = (ExplorerModes)opMode;
+
+	Log::Source->TraceInformation("DeleteFilesW Mode='{0}'", mode);
+
+	Explorer^ explorer = pp->Host->Explorer;
+	if (explorer)
+	{
+		if (!int(explorer->Function & ExplorerFunctions::DeleteFiles))
+			return 0;
+
+		DeleteFilesArgs args(mode, ItemsToFiles(pp->IsExploreLocation, pp->Files, nullptr, panelItem, itemsNumber));
+		explorer->DeleteFiles(%args);
+		return args.Result == JobResult::Ignore ? 0 : 1;
+	}
+
+	if (!pp->Host->WorksDeleteFiles(nullptr))
+		return 0;
+
+	FilesEventArgs e;
+	e.Mode = mode;
+	e.Files = ItemsToFiles(false, pp->Files, nullptr, panelItem, itemsNumber);
+
+	pp->Host->WorksDeleteFiles(%e);
+	return e.Ignore ? 0 : 1;
+}
+
+// Return values are 0, 1, -1. If 0 is returned Far shows a message "Cannot create".
+// We do not want this. http://forum.farmanager.com/viewtopic.php?p=56846#p56846
+int Panel0::AsMakeDirectory(HANDLE hPlugin, const wchar_t** name, int opMode)
+{
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	ExplorerModes mode = (ExplorerModes)opMode;
+
+	Log::Source->TraceInformation("MakeDirectoryW Mode='{0}'", mode);
+
+	if (!pp->Host->WorksMakeDirectory(nullptr))
+		return -1;
+
+	String^ name1 = gcnew String((*name));
+	MakeDirectoryEventArgs e;
+	e.Mode = mode;
+	e.Name = name1;
+	
+	pp->Host->WorksMakeDirectory(%e);
+	if (e.Ignore)
+		return -1;
+
+	// return a new name
+	if (0 == (opMode & OPM_SILENT) && e.Name != name1)
+	{
+		// use the lame storage
+		s_makingDirectory.Set(e.Name);
+		*name = s_makingDirectory;
+	}
+
+	// done
+	return 1;
+}
+
+void Panel0::AsClosePlugin(HANDLE hPlugin)
+{
+	Log::Source->TraceInformation("ClosePluginW");
+
+	// drop the lame storage
+	s_makingDirectory.Set(nullptr);
+
+	// disconnect
+	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	pp->Free();
+	_panels[(int)(INT_PTR)hPlugin] = nullptr;
+	
+	// done for pushed
+	if (pp->_Pushed)
+		return;
+
+	// clean all
+	pp->Host->WorksClosed(true);
+}
+
+//! It is called too often, log Verbose
 void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 {
-	//! it is called too often, lets use mode 4
-	Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GetOpenPluginInfo");
+	Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GetOpenPluginInfoW");
 
 	// plugin panel
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
@@ -373,37 +529,6 @@ void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 
 	// make info
 	*info = pp->Make();
-}
-
-// Return values are 0, 1, -1. If 0 is returned Far shows a message "Cannot create".
-// We do not want this. http://forum.farmanager.com/viewtopic.php?p=56846#p56846
-int Panel0::AsMakeDirectory(HANDLE hPlugin, const wchar_t** name, int opMode)
-{
-	Log::Source->TraceInformation("MakeDirectory");
-
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	if (!pp->Host->WorksMakeDirectory(nullptr))
-		return -1;
-
-	String^ name1 = gcnew String((*name));
-	MakeDirectoryEventArgs e;
-	e.Mode = (OperationModes)opMode;
-	e.Name = name1;
-	
-	pp->Host->WorksMakeDirectory(%e);
-	if (e.Ignore)
-		return -1;
-
-	// return a new name
-	if (0 == (opMode & OPM_SILENT) && e.Name != name1)
-	{
-		// use the lame storage
-		s_makingDirectory.Set(e.Name);
-		*name = s_makingDirectory;
-	}
-
-	// done
-	return 1;
 }
 
 static bool _reenterOnRedrawing;
@@ -529,8 +654,6 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			if (e.Ignore)
 				return 1;
 
-			int r = 0;
-
 			// post selection
 			if (pp->_postSelected)
 			{
@@ -539,99 +662,72 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 				pp->SelectAt(selected);
 			}
 
-			// case: use data matcher
-			if (pp->Host->DataId && (pp->_postData || pp->_postFile && pp->_postFile->Data))
-			{
-				Object^ data = pp->_postData ? pp->_postData : pp->_postFile->Data;
-				Object^ dataId = pp->Host->DataId(data);
-
-				pp->_postFile = nullptr;
-				pp->_postData = nullptr;
-				pp->_postName = nullptr;
-
-				if (dataId)
-				{
-					int i = pp->HasDots() ? 0 : -1;
-					for each (FarFile^ f in pp->ShownFiles)
-					{
-						++i;
-						if (dataId->Equals(pp->Host->DataId(f->Data)))
-						{
-							_reenterOnRedrawing = true;
-							pp->Redraw(i, -1);
-							r = true;
-							break;
-						}
-					}
-				}
-
-				return r;
-			}
-
-			// case: check posted data
+			// case 1: find posted data
 			if (pp->_postData)
 			{
-				pp->_postFile = nullptr;
-				pp->_postName = nullptr;
-
-				int i = pp->HasDots() ? 0 : -1;
-				for each (FarFile^ f in pp->ShownFiles)
-				{
-					++i;
-					if (pp->_postData == f->Data)
-					{
-						_reenterOnRedrawing = true;
-						pp->Redraw(i, -1);
-						r = true;
-						break;
-					}
-				}
+				Object^ data = pp->_postData;
 
 				pp->_postData = nullptr;
-				return r;
-			}
-
-			// case: check posted file
-			if (pp->_postFile)
-			{
+				pp->_postFile = nullptr;
 				pp->_postName = nullptr;
 
-				int i = pp->HasDots() ? 0 : -1;
-				for each (FarFile^ f in pp->ShownFiles)
+				IList<FarFile^>^ files = pp->ShownList;
+				for(int n = files->Count, i = pp->HasDots ? 1 : 0; i < n; ++i)
 				{
-					++i;
-					if (pp->_postFile == f)
+					if (data == files[i]->Data)
 					{
 						_reenterOnRedrawing = true;
 						pp->Redraw(i, -1);
-						r = true;
-						break;
+						return 1;
 					}
 				}
-
-				pp->_postFile = nullptr;
-				return r;
+				
+				return 0;
 			}
 
-			// case: check posted name
+			// case 2: find posted name
 			if (pp->_postName)
 			{
-				int i = pp->HasDots() ? 0 : -1;
-				for each (FarFile^ f in pp->ShownFiles)
+				String^ name = pp->_postName;
+
+				pp->_postFile = nullptr;
+				pp->_postName = nullptr;
+				
+				IList<FarFile^>^ files = pp->ShownList;
+				for(int n = files->Count, i = pp->HasDots ? 1 : 0; i < n; ++i)
 				{
-					++i;
-					if (String::Compare(pp->_postName, f->Name, true, CultureInfo::InvariantCulture) == 0)
+					if (name == files[i]->Name)
 					{
 						_reenterOnRedrawing = true;
 						pp->Redraw(i, -1);
-						r = true;
-						break;
+						return 1;
 					}
 				}
-
-				pp->_postName = nullptr;
-				return r;
+				
+				return 0;
 			}
+
+			// else: find posted file
+			if (!pp->_postFile)
+				return 0;
+			IEqualityComparer<FarFile^>^ comparer = pp->Host->Explorer ? pp->Host->Explorer->FileComparer : pp->Host->FileComparer;
+			FarFile^ file = pp->_postFile;
+			pp->_postFile = nullptr;
+			if (comparer)
+			{
+				IList<FarFile^>^ files = pp->ShownList;
+				for(int n = files->Count, i = pp->HasDots ? 1 : 0; i < n; ++i)
+				{
+					if (comparer->Equals(file, files[i]))
+					{
+						_reenterOnRedrawing = true;
+						pp->Redraw(i, -1);
+						return 1;
+					}
+				}
+			}
+			
+			return 0;
 		}
 		break;
 	}
@@ -680,123 +776,6 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 	
 	pp->Host->UIKeyPressed(%e);
 	return e.Ignore ? 1 : 0;
-}
-
-int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode)
-{
-	Log::Source->TraceInformation("ImportFiles");
-
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	
-	Panel2^ plugin2 = GetPanel2(pp);
-	List<FarFile^>^ files;
-	if (plugin2)
-	{
-		files = ItemsToFiles(plugin2->Files, nullptr, panelItem, itemsNumber);
-	}
-	else
-	{
-		files = gcnew List<FarFile^>(itemsNumber);
-		for(int i = 0; i < itemsNumber; ++i)
-		{
-			//! we can use transient 'NativeFile' in here, but 'transient' it is not that safe
-			files->Add(Panel1::ItemToFile(panelItem[i]));
-		}
-	}
-
-	if (!pp->Host->WorksImportFiles(nullptr))
-		return 0;
-
-	ImportFilesEventArgs e;
-	e.Mode = (OperationModes)opMode;
-	e.Files = files;
-	e.Move = move != 0;
-	e.Source = srcPath ? gcnew String(srcPath) : String::Empty;
-	
-	pp->Host->WorksImportFiles(%e);
-	return e.Ignore ? 0 : 1;
-}
-
-int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
-{
-	_inAsSetDirectory = true;
-	try
-	{
-		Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-		String^ directory = gcnew String(dir);
-
-		Explorer^ explorer1 = pp->Host->Explorer;
-		if (explorer1) //???? eventually use only explorers and disable Find for all
-		{
-			if (0 != (opMode & OPM_FIND))
-				return 0;
-			
-			Explorer^ explorer2;
-			String^ postName;
-			if (directory == "\\")
-			{
-				ExplorerArgs args;
-				explorer2 = explorer1->ExploreRoot(%args);
-				if (!explorer2)
-				{
-					Panel^ mp = pp->Host;
-					if (!mp->Parent)
-						return 0;
-
-					while(mp->Parent)
-					{
-						Panel^ parent = mp->Parent;
-						mp->CloseChild();
-						mp = parent;
-					}
-					return 1;
-				}
-			}
-			else if (directory == "..")
-			{
-				ExplorerArgs args;
-				explorer2 = explorer1->ExploreParent(%args);
-				if (!explorer2)
-				{
-					if (!pp->Host->Parent)
-						return 0;
-
-					pp->Host->CloseChild();
-					return 1;
-				}
-			}
-			else
-			{
-				ExploreFileArgs args;
-				args.File = pp->Host->CurrentFile;
-				explorer2 = explorer1->ExploreFile(%args);
-				if (args.ToPostName)
-					postName = args.File->Name;
-			}
-					
-			if (!explorer2)
-				return 0;
-
-			ReplaceExplorer(pp->Host, explorer2, postName);
-			
-			return 1;
-		}
-
-		if (!pp->Host->WorksSetPanelDirectory(nullptr))
-			return 1;
-		
-		SetDirectoryEventArgs e;
-		e.Mode = (OperationModes)opMode;
-		e.Name = directory;
-		Log::Source->TraceInformation("SetDirectory Mode='{0}' Name='{1}'", e.Mode, e.Name);
-		
-		pp->Host->WorksSetPanelDirectory(%e);
-		return e.Ignore ? 0 : 1;
-	}
-	finally
-	{
-		_inAsSetDirectory = false;
-	}
 }
 
 IPanel^ Panel0::GetPanel(bool active)
@@ -933,10 +912,8 @@ void Panel0::OpenPanel(Panel2^ plugin)
 void Panel0::ReplacePanel(Panel2^ oldPanel, Panel2^ newPanel)
 {
 	// check
-	if (!oldPanel)
-		throw gcnew ArgumentNullException("oldPanel");
-	if (!newPanel)
-		throw gcnew ArgumentNullException("newPanel");
+	if (!oldPanel) throw gcnew ArgumentNullException("oldPanel");
+	if (!newPanel) throw gcnew ArgumentNullException("newPanel");
 
 	int id1 = oldPanel->Index;
 	if (id1 < 1)
@@ -1035,18 +1012,25 @@ void Panel0::ShelvePanel(Panel1^ panel, bool modes)
 }
 
 // Module panel method candidate
-void Panel0::ReplaceExplorer(Panel^ panel, Explorer^ explorer, String^ postName)
+void Panel0::ReplaceExplorer(Panel^ panel, Explorer^ explorer)
 {
 	// explorers must get new explorers
 	if ((Object^)explorer == (Object^)panel->Explorer)
 		throw gcnew InvalidOperationException("The same explorer object is not expected.");
-	
+
 	// make the panel
 	Panel^ newPanel = nullptr;
+
+	// reuse or make
+	if (panel->ExplorerTypeId == explorer->TypeId)
 	{
-		PanelMakerArgs args;
-		args.Panel = panel;
-		newPanel = explorer->MakePanel(%args);
+		// reuse
+		newPanel = panel;
+	}
+	else
+	{
+		// make custom or default
+		newPanel = explorer->CreatePanel();
 		if (!newPanel)
 			newPanel = gcnew Panel();
 	}
@@ -1062,24 +1046,18 @@ void Panel0::ReplaceExplorer(Panel^ panel, Explorer^ explorer, String^ postName)
 	// same panel? update and reuse
 	if (newPanel == panel)
 	{
-		PanelMakerArgs args;
-		args.Panel = newPanel;
-		explorer->UpdatePanel(%args);
+		explorer->UpdatePanel(newPanel);
 		return;
 	}
 
 	// setup and update the panel
 	{
-		PanelMakerArgs args;
-		args.Panel = newPanel;
-		explorer->SetupPanel(%args);
-		explorer->UpdatePanel(%args);
+		explorer->UpdatePanel(newPanel);
 		if (ES(newPanel->PanelDirectory))
 			newPanel->PanelDirectory = "*"; //???? chain of explorer names?
 	}
 
-	// open as child
-	newPanel->PostName(postName); //????? not only names needed
+	// open new as child
 	newPanel->OpenChild(panel);
 }
 

@@ -23,68 +23,55 @@ namespace FarNet
 		/// Called when the editor is closed.
 		/// </summary>
 		public abstract event EventHandler Closed;
-
 		/// <summary>
 		/// Called when the editor is opened.
 		/// </summary>
 		public abstract event EventHandler Opened;
-
 		/// <summary>
 		/// Called before saving.
 		/// </summary>
 		public abstract event EventHandler Saving;
-
 		/// <summary>
 		/// Called on a key pressed.
 		/// </summary>
 		public abstract event EventHandler<KeyEventArgs> KeyDown;
-
 		/// <summary>
 		/// Called on a key pressed.
 		/// </summary>
 		public abstract event EventHandler<KeyEventArgs> KeyUp;
-
 		/// <summary>
 		/// Occurs when a mouse button is clicked.
 		/// </summary>
 		public abstract event EventHandler<MouseEventArgs> MouseClick;
-
 		/// <summary>
 		/// Occurs when a mouse button is clicked two times.
 		/// </summary>
 		public abstract event EventHandler<MouseEventArgs> MouseDoubleClick;
-
 		/// <summary>
 		/// Occurs when the mouse pointer moves.
 		/// </summary>
 		public abstract event EventHandler<MouseEventArgs> MouseMove;
-
 		/// <summary>
 		/// Occurs when the mouse wheel is rotated.
 		/// </summary>
 		public abstract event EventHandler<MouseEventArgs> MouseWheel;
-
 		/// <summary>
 		/// Called when the editor has got focus.
 		/// </summary>
 		public abstract event EventHandler GotFocus;
-
 		/// <summary>
 		/// Called when the editor is losing focus.
 		/// </summary>
 		public abstract event EventHandler LosingFocus;
-
 		/// <summary>
 		/// Called periodically when a user is idle.
 		/// </summary>
 		/// <seealso cref="IdledHandler"/>
 		public abstract event EventHandler Idled;
-
 		/// <summary>
 		/// Called on [CtrlC] in asynchronous mode, see <see cref="IEditor.BeginAsync"/>.
 		/// </summary>
 		public abstract event EventHandler CtrlCPressed;
-
 		/// <summary>
 		/// Called on redrawing.
 		/// </summary>
@@ -107,7 +94,6 @@ namespace FarNet
 		/// Opens a modal temporary editor to edit the given text.
 		/// </summary>
 		public abstract string EditText(string text, string title);
-
 		/// <summary>
 		/// Gets editor word delimiters global option.
 		/// </summary>
@@ -192,39 +178,32 @@ namespace FarNet
 		public abstract void RemoveAt(int index);
 
 		#endregion
-
 		/// <summary>
 		/// Gets the internal identifier.
 		/// </summary>
 		public abstract int Id { get; }
-
 		/// <summary>
 		/// Gets or sets tab size in spaces in the current editor.
 		/// </summary>
 		public abstract int TabSize { get; set; }
-
 		/// <summary>
 		/// Gets or sets expand tabs mode in the current editor.
 		/// </summary>
 		public abstract ExpandTabsMode ExpandTabs { get; set; }
-
 		/// <summary>
 		/// Gets or sets the option to delete the source file on exit.
 		/// </summary>
 		public abstract DeleteSource DeleteSource { get; set; }
-
 		/// <summary>
 		/// Tells how editor\viewer switching should work on [F6].
 		/// Set it before opening.
 		/// </summary>
 		public abstract Switching Switching { get; set; }
-
 		/// <summary>
 		/// Tells to not use history.
 		/// Set it before opening.
 		/// </summary>
 		public abstract bool DisableHistory { get; set; }
-
 		/// <summary>
 		/// Gets the list of editor lines.
 		/// </summary>
@@ -235,7 +214,6 @@ namespace FarNet
 		/// <seealso cref="Strings"/>
 		/// <seealso cref="SelectedLines"/>
 		public abstract IList<ILine> Lines { get; }
-
 		/// <summary>
 		/// Gets the list of selected lines.
 		/// </summary>
@@ -251,7 +229,6 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		public abstract IList<ILine> SelectedLines { get; }
-
 		/// <summary>
 		/// Gets the string list representation of editor lines.
 		/// </summary>
@@ -271,7 +248,6 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		public abstract IList<string> Strings { get; }
-
 		/// <summary>
 		/// Gets or sets the name of a file being or to be edited.
 		/// Set it before opening.
@@ -281,7 +257,6 @@ namespace FarNet
 		/// For an opened editor it gets the file being edited.
 		/// </remarks>
 		public abstract string FileName { get; set; }
-
 		/// <summary>
 		/// Gets or sets the code page identifier.
 		/// </summary>
@@ -290,18 +265,15 @@ namespace FarNet
 		/// After opening it gets and sets the current encoding.
 		/// </remarks>
 		public abstract int CodePage { get; set; }
-
 		/// <summary>
 		/// Gets or sets the start window place.
 		/// Set it before opening.
 		/// </summary>
 		public abstract Place Window { get; set; }
-
 		/// <summary>
 		/// Gets the current window size.
 		/// </summary>
 		public abstract Point WindowSize { get; }
-
 		/// <summary>
 		/// Tells to open a new (non-existing) file in the editor, similar to [ShiftF4].
 		/// Set it before opening.
@@ -310,7 +282,6 @@ namespace FarNet
 		/// Perhaps this option in not actually used (Far 2.0.1302).
 		/// </remarks>
 		public abstract bool IsNew { get; set; }
-
 		/// <summary>
 		/// Inserts the text at the caret position.
 		/// </summary>
@@ -319,7 +290,6 @@ namespace FarNet
 		/// The text is processed in the same way as it is typed.
 		/// </remarks>
 		public abstract void InsertText(string text);
-
 		/// <summary>
 		/// Inserts a character at the caret position.
 		/// </summary>
@@ -328,7 +298,6 @@ namespace FarNet
 		/// The character is processed in the same way as it is typed.
 		/// </remarks>
 		public abstract void InsertChar(char text);
-
 		/// <summary>
 		/// Redraws the editor window.
 		/// </summary>
@@ -336,17 +305,14 @@ namespace FarNet
 		/// Normally it should be called when changes are done to make them visible immediately.
 		/// </remarks>
 		public abstract void Redraw();
-
 		/// <summary>
 		/// Deletes a character under the caret.
 		/// </summary>
 		public abstract void DeleteChar();
-
 		/// <summary>
 		/// Deletes the line where the caret is.
 		/// </summary>
 		public abstract void DeleteLine();
-
 		/// <summary>
 		/// Deletes the selected text.
 		/// </summary>
@@ -354,7 +320,6 @@ namespace FarNet
 		/// To clear selection use <see cref="UnselectText"/>.
 		/// </remarks>
 		public abstract void DeleteText();
-
 		/// <summary>
 		/// Closes the current editor.
 		/// </summary>
@@ -362,7 +327,6 @@ namespace FarNet
 		/// Changes, if any, are lost. Call <see cref="Save()"/> to save them.
 		/// </remarks>
 		public abstract void Close();
-
 		/// <summary>
 		/// Saves changes, if any. Exception on failure.
 		/// </summary>
@@ -370,19 +334,16 @@ namespace FarNet
 		/// This method does nothing if there are no changes to save (<see cref="IsSaved"/> gets true).
 		/// </remarks>
 		public abstract void Save();
-
 		/// <summary>
 		/// Saves the file in the current editor even with no changes. Exception on failure.
 		/// </summary>
 		/// <param name="force">Tells to write the file even if there are no changes.</param>
 		public abstract void Save(bool force);
-
 		/// <summary>
 		/// Saves the file in the current editor as the specified file. Exception on failure.
 		/// </summary>
 		/// <param name="fileName">File name to save to.</param>
 		public abstract void Save(string fileName);
-
 		/// <summary>
 		/// Inserts a new line at the caret position.
 		/// </summary>
@@ -390,7 +351,6 @@ namespace FarNet
 		/// After insertion the caret is moved to the first position in the inserted line.
 		/// </remarks>
 		public abstract void InsertLine();
-
 		/// <summary>
 		/// Inserts a new line at the caret position with optional indent.
 		/// </summary>
@@ -400,12 +360,10 @@ namespace FarNet
 		/// or to the indented position in it. Indent is the same as on [Enter].
 		/// </remarks>
 		public abstract void InsertLine(bool indent);
-
 		/// <summary>
 		/// Gets true if the editor is opened.
 		/// </summary>
 		public abstract bool IsOpened { get; }
-
 		/// <summary>
 		/// Gets or sets the window title. Set it before or after opening.
 		/// </summary>
@@ -417,12 +375,10 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		public abstract string Title { get; set; }
-
 		/// <summary>
 		/// Gets or sets overtype mode.
 		/// </summary>
 		public abstract bool Overtype { get; set; }
-
 		/// <summary>
 		/// Gets true if the text is modified in the current editor (see remarks).
 		/// </summary>
@@ -433,7 +389,6 @@ namespace FarNet
 		/// </remarks>
 		/// <seealso cref="TimeOfSave"/>
 		public abstract bool IsModified { get; }
-
 		/// <summary>
 		/// Gets true if there are no changes to save in the current editor (see remarks).
 		/// </summary>
@@ -442,44 +397,40 @@ namespace FarNet
 		/// Use <see cref="TimeOfSave"/> to check whether it was saved at least once.
 		/// </remarks>
 		public abstract bool IsSaved { get; }
-
 		/// <summary>
-		/// Gets true if the file is locked (by [CtrlL]).
+		/// Gets or sets the lock mode ([CtrlL]).
 		/// </summary>
-		public abstract bool IsLocked { get; }
-
+		/// <remarks>
+		/// Set it before or after opening.
+		/// </remarks>
+		public abstract bool IsLocked { get; set; }
 		/// <summary>
 		/// Converts char position to tab position for the given line.
 		/// </summary>
 		/// <param name="line">Line index, -1 for current.</param>
 		/// <param name="column">Column index to be converted.</param>
 		public abstract int ConvertColumnEditorToScreen(int line, int column);
-
 		/// <summary>
 		/// Converts tab position to char position for the given line.
 		/// </summary>
 		/// <param name="line">Line index, -1 for current.</param>
 		/// <param name="column">Column index to be converted.</param>
 		public abstract int ConvertColumnScreenToEditor(int line, int column);
-
 		/// <summary>
 		/// Converts the point in screen coordinates to the point in editor coordinates.
 		/// </summary>
 		public abstract Point ConvertPointScreenToEditor(Point point);
-
 		/// <summary>
 		/// Gets or sets the current text frame.
 		/// </summary>
 		/// <seealso cref="Caret"/>
 		public abstract TextFrame Frame { get; set; }
-
 		/// <summary>
 		/// Gets or sets the caret position.
 		/// </summary>
 		/// <seealso cref="Frame"/>
 		/// <seealso cref="GoTo"/>
 		public abstract Point Caret { get; set; }
-
 		/// <summary>
 		/// Sets the caret position or posts it for opening.
 		/// </summary>
@@ -489,7 +440,6 @@ namespace FarNet
 		/// <seealso cref="Frame"/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		public abstract void GoTo(int column, int line);
-
 		/// <summary>
 		/// Sets the current line or posts it for opening.
 		/// </summary>
@@ -497,7 +447,6 @@ namespace FarNet
 		/// <seealso cref="Caret"/>
 		/// <seealso cref="Frame"/>
 		public abstract void GoToLine(int line);
-
 		/// <summary>
 		/// Goes to a character in the current line.
 		/// </summary>
@@ -505,13 +454,11 @@ namespace FarNet
 		/// <seealso cref="Caret"/>
 		/// <seealso cref="Frame"/>
 		public abstract void GoToColumn(int column);
-
 		/// <summary>
 		/// Goes to the end of text.
 		/// </summary>
 		/// <param name="addLine">Add an empty line if the last is not empty.</param>
 		public abstract void GoToEnd(bool addLine);
-
 		/// <summary>
 		/// Gets or sets a host operating on the editor.
 		/// </summary>
@@ -537,7 +484,6 @@ namespace FarNet
 			}
 		}
 		object _Host;
-
 		/// <summary>
 		/// Gets text with the default line separator.
 		/// </summary>
@@ -545,13 +491,11 @@ namespace FarNet
 		{
 			return GetText(Environment.NewLine);
 		}
-
 		/// <summary>
 		/// Gets text with the specified line separator.
 		/// </summary>
 		/// <param name="separator">Line separator. null ~ default.</param>
 		public abstract string GetText(string separator);
-
 		/// <summary>
 		/// Sets the new text.
 		/// </summary>
@@ -560,7 +504,6 @@ namespace FarNet
 		/// There is no selection after this.
 		/// </remarks>
 		public abstract void SetText(string text);
-
 		/// <summary>
 		/// Opens the editor.
 		/// </summary>
@@ -569,7 +512,6 @@ namespace FarNet
 		/// See remarks there.
 		/// </remarks>
 		public abstract void Open();
-
 		/// <summary>
 		/// Opens the editor.
 		/// </summary>
@@ -585,27 +527,22 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		public abstract void Open(OpenMode mode);
-
 		/// <summary>
 		/// Begins an undo block.
 		/// </summary>
 		public abstract void BeginUndo();
-
 		/// <summary>
 		/// Ends an undo block.
 		/// </summary>
 		public abstract void EndUndo();
-
 		/// <summary>
 		/// Invokes undo.
 		/// </summary>
 		public abstract void Undo();
-
 		/// <summary>
 		/// Invokes redo.
 		/// </summary>
 		public abstract void Redo();
-
 		/// <summary>
 		/// Opens and returns a writer for output text at the caret position of the current editor.
 		/// </summary>
@@ -615,7 +552,6 @@ namespace FarNet
 		/// </remarks>
 		/// <returns>Opened writer. It has to be closed after use.</returns>
 		public abstract TextWriter OpenWriter();
-
 		/// <summary>
 		/// Begins asynchronous mode.
 		/// </summary>
@@ -643,7 +579,6 @@ namespace FarNet
 		/// </ul>
 		/// </remarks>
 		public abstract void BeginAsync();
-
 		/// <summary>
 		/// Ends asynchronous mode.
 		/// </summary>
@@ -652,25 +587,21 @@ namespace FarNet
 		/// Note: it is OK to call it when asynchronous mode is already stopped or even was not started.
 		/// </remarks>
 		public abstract void EndAsync();
-
 		/// <summary>
 		/// Tells to enable or disable the caret position beyond end of lines.
 		/// Set it before or after opening.
 		/// </summary>
 		public abstract bool IsVirtualSpace { get; set; }
-
 		/// <summary>
 		/// Tells to show or hide white spaces.
 		/// Set it before or after opening.
 		/// </summary>
 		public abstract bool ShowWhiteSpace { get; set; }
-
 		/// <summary>
 		/// Tells to write BOM on saving.
 		/// Set it before or after opening.
 		/// </summary>
 		public abstract bool WriteByteOrderMark { get; set; }
-
 		/// <summary>
 		/// Gets the selected text with the default line separator.
 		/// </summary>
@@ -678,20 +609,17 @@ namespace FarNet
 		{
 			return GetSelectedText(Environment.NewLine);
 		}
-
 		/// <summary>
 		/// Gets the selected text with the specified line separator.
 		/// </summary>
 		/// <param name="separator">Line separator. null ~ default.</param>
 		public abstract string GetSelectedText(string separator);
-
 		/// <summary>
 		/// Sets (replaces) the selected text.
 		/// </summary>
 		/// <param name="text">New text.</param>
 		/// <seealso cref="UnselectText"/>
 		public abstract void SetSelectedText(string text);
-
 		/// <summary>
 		/// Selects the specified stream of text.
 		/// </summary>
@@ -704,7 +632,6 @@ namespace FarNet
 		{
 			SelectText(column1, line1, column2, line2, PlaceKind.Stream);
 		}
-
 		/// <summary>
 		/// Selects the specified place of text.
 		/// </summary>
@@ -720,12 +647,10 @@ namespace FarNet
 		/// <seealso cref="ConvertColumnEditorToScreen"/>
 		/// <seealso cref="UnselectText"/>
 		public abstract void SelectText(int column1, int line1, int column2, int line2, PlaceKind kind);
-
 		/// <summary>
 		/// Selects all text.
 		/// </summary>
 		public abstract void SelectAllText();
-
 		/// <summary>
 		/// Turns the text selection off.
 		/// </summary>
@@ -733,17 +658,14 @@ namespace FarNet
 		/// To delete the selected text use <see cref="DeleteText"/>.
 		/// </remarks>
 		public abstract void UnselectText();
-
 		/// <summary>
 		/// Gets true if selection exists.
 		/// </summary>
 		public abstract bool SelectionExists { get; }
-
 		/// <summary>
 		/// Gets the selection kind.
 		/// </summary>
 		public abstract PlaceKind SelectionKind { get; }
-
 		/// <summary>
 		/// Gets the selected place.
 		/// </summary>
@@ -752,28 +674,23 @@ namespace FarNet
 		/// </remarks>
 		/// <seealso cref="ConvertColumnEditorToScreen"/>
 		public abstract Place SelectionPlace { get; }
-
 		/// <summary>
 		/// Gets the selected point.
 		/// </summary>
 		public abstract Point SelectionPoint { get; }
-
 		/// <summary>
 		/// Gets or sets editor word delimiters.
 		/// Set it before or after opening.
 		/// </summary>
 		public abstract string WordDiv { get; set; } //! see _100324_160008
-
 		/// <summary>
 		/// Gets the bookmark operator.
 		/// </summary>
 		public abstract IEditorBookmark Bookmark { get; }
-
 		/// <summary>
 		/// Gets the opening time of the instance.
 		/// </summary>
 		public abstract DateTime TimeOfOpen { get; }
-
 		/// <summary>
 		/// Gets the saving time of the instance.
 		/// </summary>
@@ -781,7 +698,6 @@ namespace FarNet
 		/// If the editor has not been saved at least once then it is equal to <c>DateTime.MinValue</c>.
 		/// </remarks>
 		public abstract DateTime TimeOfSave { get; }
-
 		/// <summary>
 		/// Gets count of changes.
 		/// </summary>
@@ -789,13 +705,11 @@ namespace FarNet
 		/// It is designed for the Vessel module and not recommended for public use.
 		/// </remarks>
 		public abstract int KeyCount { get; }
-
 		/// <summary>
 		/// Makes the instance window active.
 		/// </summary>
 		/// <remarks>It may throw if the window cannot be activated.</remarks>
 		public abstract void Activate();
-
 		/// <include file='doc.xml' path='doc/Data/*'/>
 		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
 		Hashtable _Data;
@@ -819,7 +733,6 @@ namespace FarNet
 		/// To go to a bookmark set the editor <see cref="IEditor.Frame"/>.
 		/// </remarks>
 		public abstract ICollection<TextFrame> Bookmarks();
-
 		/// <summary>
 		/// Gets stack bookmarks in the current editor.
 		/// </summary>
@@ -828,7 +741,6 @@ namespace FarNet
 		/// To go to a bookmark set the editor <see cref="IEditor.Frame"/>.
 		/// </remarks>
 		public abstract ICollection<TextFrame> StackBookmarks();
-
 		/// <summary>
 		/// Adds a new stack bookmark at the current bookmark stack position.
 		/// </summary>
@@ -836,23 +748,19 @@ namespace FarNet
 		/// Bookmarks after the current position, if any, are removed.
 		/// </remarks>
 		public abstract void AddStackBookmark();
-
 		/// <summary>
 		/// Clears the bookmark stack.
 		/// </summary>
 		public abstract void ClearStackBookmarks();
-
 		/// <summary>
 		/// Removes the specified stack bookmark.
 		/// </summary>
 		/// <param name="index">Bookmark index or -1 for the current stack position.</param>
 		public abstract void RemoveStackBookmarkAt(int index);
-
 		/// <summary>
 		/// Navigates to the next stack bookmark, if any.
 		/// </summary>
 		public abstract void GoToNextStackBookmark();
-
 		/// <summary>
 		/// Navigates to the previous stack bookmark, if any.
 		/// </summary>
@@ -868,13 +776,11 @@ namespace FarNet
 	public sealed class EditorRedrawingEventArgs : EventArgs
 	{
 		int _mode;
-
 		/// <param name="mode">See <see cref="Mode"/>.</param>
 		public EditorRedrawingEventArgs(int mode)
 		{
 			_mode = mode;
 		}
-
 		/// <summary>
 		/// Parameter of Far EE_REDRAW event, see Far API, ProcessEditorEvent.
 		/// </summary>
@@ -902,14 +808,12 @@ namespace FarNet
 		/// It returns -1 for the editor current line, the command line, and dialog edit lines.
 		/// </remarks>
 		public virtual int Index { get { return -1; } }
-
 		/// <summary>
 		/// Gets or sets the line text.
 		/// </summary>
 		/// <seealso cref="ActiveText"/>
 		/// <seealso cref="SelectedText"/>
 		public abstract string Text { get; set; }
-
 		/// <summary>
 		/// Gets or sets (replaces) the selected text.
 		/// </summary>
@@ -919,7 +823,6 @@ namespace FarNet
 		/// <seealso cref="ActiveText"/>
 		/// <seealso cref="Text"/>
 		public abstract string SelectedText { get; set; }
-
 		/// <summary>
 		/// Gets or sets the caret position.
 		/// </summary>
@@ -928,7 +831,6 @@ namespace FarNet
 		/// Setting of a negative value moves the caret to the end.
 		/// </remarks>
 		public abstract int Caret { get; set; }
-
 		/// <summary>
 		/// Inserts text at the caret position.
 		/// </summary>
@@ -937,19 +839,16 @@ namespace FarNet
 		/// In the editor this method should not be used for the current line only.
 		/// </remarks>
 		public abstract void InsertText(string text);
-
 		/// <summary>
 		/// Selects the span of text in the current editor line, the command line, or the dialog line.
 		/// </summary>
 		/// <param name="startPosition">Start position.</param>
 		/// <param name="endPosition">End position, not included into the span.</param>
 		public abstract void SelectText(int startPosition, int endPosition);
-
 		/// <summary>
 		/// Turns selection off in the current editor line, the command line, or the dialog line.
 		/// </summary>
 		public abstract void UnselectText();
-
 		/// <summary>
 		/// Gets the the text length.
 		/// </summary>
@@ -957,12 +856,10 @@ namespace FarNet
 		/// It helps to avoid calls of more expensive <see cref="Text"/> in some cases when only length is needed.
 		/// </remarks>
 		public abstract int Length { get; }
-
 		/// <summary>
 		/// Gets the parent window kind (<c>Editor</c>, <c>Panels</c>, <c>Dialog</c>).
 		/// </summary>
 		public abstract WindowKind WindowKind { get; }
-
 		/// <summary>
 		/// Gets the selection span.
 		/// </summary>
@@ -970,7 +867,6 @@ namespace FarNet
 		/// If selection does not exists then returned position and length values are negative.
 		/// </remarks>
 		public abstract Span SelectionSpan { get; }
-
 		/// <summary>
 		/// Gets or sets <see cref="SelectedText"/> if any, otherwise gets or sets <see cref="Text"/>.
 		/// </summary>
@@ -988,7 +884,6 @@ namespace FarNet
 					SelectedText = value;
 			}
 		}
-
 		/// <summary>
 		/// Returns the line text.
 		/// </summary>
@@ -1008,7 +903,6 @@ namespace FarNet
 		{
 			_key = key;
 		}
-
 		/// <summary>
 		/// Key data.
 		/// </summary>
@@ -1017,7 +911,6 @@ namespace FarNet
 			get { return _key; }
 		}
 		KeyInfo _key;
-
 		/// <summary>
 		/// Ignore event.
 		/// </summary>
@@ -1034,7 +927,6 @@ namespace FarNet
 		{
 			_mouse = mouse;
 		}
-
 		/// <summary>
 		/// Mouse data.
 		/// </summary>
@@ -1043,7 +935,6 @@ namespace FarNet
 			get { return _mouse; }
 		}
 		MouseInfo _mouse;
-
 		/// <summary>
 		/// Ignore event.
 		/// </summary>
@@ -1059,12 +950,10 @@ namespace FarNet
 		/// Tabs are not replaced with spaces.
 		/// </summary>
 		None,
-
 		/// <summary>
 		/// All tabs are replaced with spaces.
 		/// </summary>
 		All,
-
 		/// <summary>
 		/// Only new tabs are replaced with spaces.
 		/// </summary>
@@ -1089,32 +978,26 @@ namespace FarNet
 			VisibleLine = value;
 			VisibleChar = value;
 		}
-
 		/// <summary>
 		/// Caret line index.
 		/// </summary>
 		public int CaretLine { get; set; }
-
 		/// <summary>
 		/// Caret character index.
 		/// </summary>
 		public int CaretColumn { get; set; }
-
 		/// <summary>
 		/// Caret screen column index.
 		/// </summary>
 		public int CaretScreenColumn { get; set; }
-
 		/// <summary>
 		/// First visible line index.
 		/// </summary>
 		public int VisibleLine { get; set; }
-
 		/// <summary>
 		/// First visible character index.
 		/// </summary>
 		public int VisibleChar { get; set; }
-
 		///
 		public static bool operator ==(TextFrame left, TextFrame right)
 		{
@@ -1125,25 +1008,21 @@ namespace FarNet
 				left.VisibleLine == right.VisibleLine &&
 				left.VisibleChar == right.VisibleChar;
 		}
-
 		///
 		public static bool operator !=(TextFrame left, TextFrame right)
 		{
 			return !(left == right);
 		}
-
 		///
 		public override bool Equals(Object obj)
 		{
 			return obj != null && obj.GetType() == typeof(TextFrame) && this == (TextFrame)obj;
 		}
-
 		///
 		public override int GetHashCode()
 		{
 			return CaretLine | (CaretColumn << 16);
 		}
-
 		///
 		public override string ToString()
 		{

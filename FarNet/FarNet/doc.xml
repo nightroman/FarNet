@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding='utf-8'?>
 <doc>
 	<!--
-	/// <include file='doc.xml' path='doc/Data/*'/>
+	/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
 	-->
+	<ExplorerModes>
+		<para>
+			In the "Find" mode the method may be called from a background thread, most of FarNet API is not allowed.
+			In the "Silent" mode any user interactions including error messages are not allowed.
+		</para>
+	</ExplorerModes>
 	<Data>
 		<summary>
 			Gets the user data key/value table.

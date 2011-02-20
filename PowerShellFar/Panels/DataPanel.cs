@@ -33,6 +33,8 @@ namespace PowerShellFar
 			SortMode = PanelSortMode.Unsorted;
 
 			Closed += OnClosed;
+
+			FileComparer  = new FileDataComparer();
 		}
 
 		/// <summary>
@@ -371,16 +373,6 @@ namespace PowerShellFar
 		public override void OpenFile(FarFile file)
 		{
 			OpenFileMembers(file);
-		}
-
-		/// <summary>
-		/// Saves current panel file reference.
-		/// </summary>
-		protected override void SaveState()
-		{
-			FarFile f = CurrentFile;
-			if (f != null)
-				PostData(f.Data);
 		}
 
 		void Fill()

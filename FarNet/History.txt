@@ -1,10 +1,43 @@
 http://code.google.com/p/farnet/
 
+= 4.4.2 =
+
+*) Module panel revision, continued
+(changes are unlikely breaking for the most of users)
+
+Experimental search command moved to the new module Explore. But the search
+core moved to FarNet.Tools - the idea is that any module can make its own
+custom search using the tools. There are two consumers so far:
+- the FarNet module Explore;
+- the Start-FarSearch cmdlet in PowerShellFar.
+
+Corrections/changes/etc. in panels and explorers:
+- Renamed OperationModes -> ExplorerModes.
+- CanX() methods are replaced with Function flags.
+- MakePanel(args) -> CreatePanel(): now it has to create or get null.
+- Removed SetupPanel() as redundant, CreatePanel() should do this job.
+- CanImport is used in ExportFileArgs to let the core to [not] lock the editor.
+- Panel.DataId is replaced with more flexible FileComparer approach/property.
+- IPanel.TempFileExtension -> ExportFileArgs.FileNameExtension (search panel
+can now Export/Edit files with the proper extensions + extensions may now be
+different for different files).
+
+Explorers/panels have TypeId and ExplorerTypeId - simple way to tell the core
+to reuse the panel with several explorers of the same type.
+
+New explorer type/method ExploreLocation - it works with pure paths and files
+with no data. Advantage: standard Far search [AltF7] and [F3], [CtrlQ] work.
+
+*) Editor
+- IsLocked is settable (before opening, too).
+
+*) Dialog
+- IButton.Text - added internal setter (reflection issue).
+- Added IControl.Name (not used by the core) in addition to Data.
+
 = 4.4.1 =
 
 Module panel revision, continued
-(changes are unlikely breaking for the most of users)
-
 - Fixed a few bugs in the Panel class
 - ExplorerResult -> JobResult (to be used elsewhere)
 - Panel.UI{View/Edit}CurrentFile -> UI{View/Edit}File

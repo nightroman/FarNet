@@ -175,7 +175,7 @@ namespace PowerShellFar
 		/// </summary>
 		void OnExportFiles(object sender, ExportFilesEventArgs e)
 		{
-			if ((e.Mode & OperationModes.QuickView) == 0 || e.Files.Count != 1)
+			if ((e.Mode & ExplorerModes.QuickView) == 0 || e.Files.Count != 1)
 				return;
 
 			FarFile file = e.Files[0];
@@ -431,7 +431,7 @@ namespace PowerShellFar
 			// *) .Find: is not used, ignore
 			// *) .Silent: 100127 CtrlQ mode is not OK for folders: FarMacro: on areas Far tries to enumerate, we do not support. ???
 			//???? _110121_150249 Time to do this has come.
-			if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) > 0)
+			if ((e.Mode & (ExplorerModes.Find | ExplorerModes.Silent)) > 0)
 			{
 				e.Ignore = true;
 				return;

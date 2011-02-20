@@ -322,7 +322,7 @@ namespace PowerShellFar
 				e.Ignore = true;
 
 				// show
-				if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) == 0)
+				if ((e.Mode & (ExplorerModes.Find | ExplorerModes.Silent)) == 0)
 					A.Msg(exception.Message);
 			}
 		}

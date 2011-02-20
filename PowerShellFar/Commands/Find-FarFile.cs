@@ -29,19 +29,16 @@ namespace PowerShellFar.Commands
 		/// </summary>
 		[Parameter(Position = 0, Mandatory = true, ParameterSetName = "Name", HelpMessage = "File name to find.")]
 		public string Name { get; set; }
-
 		/// <summary>
 		/// Boolean scriptblock operating on $_ ~ <see cref="FarFile"/>.
 		/// </summary>
 		[Parameter(Position = 0, Mandatory = true, ParameterSetName = "Where", HelpMessage = "Boolean scriptblock operating on $_ ~ FarFile.")]
 		public ScriptBlock Where { get; set; }
-
 		/// <summary>
 		/// Tells to search up, not down.
 		/// </summary>
 		[Parameter(ParameterSetName = "Where", HelpMessage = "Tells to search up, not down.")]
 		public SwitchParameter Up { get; set; }
-
 		///
 		protected override void BeginProcessing()
 		{
@@ -97,6 +94,5 @@ namespace PowerShellFar.Commands
 					Where));
 			}
 		}
-
 	}
 }

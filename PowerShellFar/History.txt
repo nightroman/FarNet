@@ -1,6 +1,28 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.2 =
+
+*) New cmdlet Start-FarSearch
+See help:
+>>: Get-FarHelp Start-FarSearch
+
+Run Test-Explorer-.ps1 and try Start-FarSearch:
+
+# Invoke from Flat or use -Recurse from Root:
+>: Start-FarSearch { $_.Data.Definition -match 'throw' }
+
+# Invoke from Root
+>: Start-FarSearch { $_.Name -like 'PowerShellFar.*' } -Recurse -Directory
+
+*) Test-Explorer-.ps1
+- "Tree" test case: use HKCU:\Software\Far2\Plugins as the root.
+- "Path" test case: use of TypeId and ExplorerTypeId on panel creation.
+- New test case "Location": example of an explorer with 'ExploreLocation'.
+
+*) MemberPanel, PropertyPanel
+- Replaced warnings on editing read only members with editor locks.
+
 = 4.4.1 =
 
 *) Test-Explorer-.ps1
