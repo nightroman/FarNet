@@ -85,9 +85,9 @@ public:
 	virtual property Panel^ AnotherPanel { Panel^ get(); }
 	virtual void Open();
 	virtual void OpenReplace(Panel^ current);
-	virtual void PostData(Object^ data) { _postData = data; }
-	virtual void PostFile(FarFile^ file) { _postFile = file; }
-	virtual void PostName(String^ name) { _postName = name; }
+	virtual void PostData(Object^ data);
+	virtual void PostFile(FarFile^ file);
+	virtual void PostName(String^ name);
 	virtual PanelPlan^ GetPlan(PanelViewMode mode);
 	virtual void SetKeyBar(array<String^>^ labels);
 	virtual void SetKeyBarAlt(array<String^>^ labels);
@@ -99,7 +99,8 @@ public:
 	virtual void SetPlan(PanelViewMode mode, PanelPlan^ plan);
 internal:
 	Panel2(Panel^ panel);
-	bool HasDots();
+	property bool HasDots { bool get(); }
+	property bool IsExploreLocation { bool get(); }
 	void AssertOpen();
 	void SwitchFullScreen();
 	virtual FarFile^ GetFile(int index, FileType type) override;

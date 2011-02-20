@@ -49,6 +49,13 @@ namespace FarNet
 		/// But the core normally changes panel explorers on navigation.
 		/// </remarks>
 		public virtual Explorer Explorer { get; set; }
+		/// <summary>
+		/// Gets or sets the explorer type ID.
+		/// </summary>
+		/// <remarks>
+		/// If it is not empty then the panel is reused by several explorers of this type.
+		/// </remarks>
+		public Guid ExplorerTypeId { get; set; }
 		///
 		public int WorksId { get { return _Panel.WorksId; } }
 		/// <include file='doc.xml' path='doc/Data/*'/>
@@ -247,15 +254,18 @@ namespace FarNet
 		public Panel AnotherPanel { get { return _Panel.AnotherPanel; } }
 		/// <summary>
 		/// Saves the panel state.
-		/// This version saves a file name; it is the least effective but:
-		/// *) indexes may change (when items added|removed)
-		/// *) panel files can be recreated on getting data.
 		/// </summary>
+		/// <remarks>
+		/// It is called when the panel is about to be offline (pushed or replaced by a child panel).
+		/// The panel UI state is saved by the core (view and sort modes, etc.).
+		/// The base method posts the current file to be restored as current.
+		/// It is important to have a proper <see cref="FileComparer"/> set.
+		/// </remarks>
 		protected virtual void SaveState()
 		{
-			FarFile f = CurrentFile;
-			if (f != null)
-				PostName(f.Name);
+			FarFile file = CurrentFile;
+			if (file != null)
+				PostFile(file);
 		}
 		/// <summary>
 		/// Closes this child panel and opens the parent panel if both panels are ready.
@@ -337,27 +347,6 @@ namespace FarNet
 		/// </remarks>
 		public string DotsDescription { get; set; }
 		/// <summary>
-		/// Gets or sets a delegate providing IDs of panel file data.
-		/// </summary>
-		/// <remarks>
-		/// When a panel opens a child panel for the current item it is normally expected that on return
-		/// the current item will be the same. Methods <see cref="PostData"/>, <see cref="PostFile"/>
-		/// and <see cref="PostName"/> are designed to post an item to be restored as current.
-		/// But in some cases with not trivial equality this delegate is needed in addition.
-		/// <para>
-		/// Example: a panel shows some frequently changed data like current system processes.
-		/// On update it simply recreates the list. In this case it cannot just use <c>PostFile</c>,
-		/// because they are changed. It cannot just use <c>PostData</c> because process objects may be
-		/// not equal even if they represent the same process. Finally, it cannot just use <c>PostName</c>
-		/// because there may be more than one process with the same name. Solution: a delegate that
-		/// returns process IDs.
-		/// </para>
-		/// <para>
-		/// How to use <b>PowerShellFar</b>: see <see cref="Getter"/> remarks.
-		/// </para>
-		/// </remarks>
-		public Getter DataId { get; set; } //???? think to move this to explorer
-		/// <summary>
 		/// Gets true if the panel is opened.
 		/// </summary>
 		public bool IsOpened { get { return _Panel.IsOpened; } }
@@ -387,16 +376,19 @@ namespace FarNet
 		#endregion
 		#region Work Methods
 		/// <summary>
-		/// Posts file data to be used to find and set the current file.
+		/// Posts the <see cref="FarFile.Data"/> to be used to find a file and set it current on redrawing.
 		/// </summary>
-		/// <seealso cref="DataId"/>
 		public void PostData(object data) { _Panel.PostData(data); }
 		/// <summary>
-		/// Posts a file to be found and set the current.
+		/// Posts the file to be found and set current on redrawing.
 		/// </summary>
+		/// <remarks>
+		/// The posted file is ignored if <see cref="PostData"/> or <see cref="PostName"/> were called.
+		/// The <seealso cref="FileComparer"/> is used in order to find the file.
+		/// </remarks>
 		public void PostFile(FarFile file) { _Panel.PostFile(file); }
 		/// <summary>
-		/// Posts a file name to be used to find and set the current file.
+		/// Posts the file name to be used to find a file and set it current on redrawing.
 		/// </summary>
 		public void PostName(string name) { _Panel.PostName(name); }
 		#endregion
@@ -993,11 +985,11 @@ namespace FarNet
 		/// Called to create a new panel item on [F7] hotkey.
 		/// </summary>
 		/// <remarks>
-		/// A handler should be ready to process <see cref="OperationModes.Silent"/> flag.
+		/// A handler should be ready to process <see cref="ExplorerModes.Silent"/> flag.
 		/// Set <see cref="PanelEventArgs.Ignore"/> to true if processing fails or should be ignored.
 		/// <para>
 		/// It is assumed that this method creates a new item with the <see cref="MakeDirectoryEventArgs.Name"/> name.
-		/// If the <see cref="PanelEventArgs.Mode"/> has no <see cref="OperationModes.Silent"/> flag you are supposed
+		/// If the <see cref="PanelEventArgs.Mode"/> has no <see cref="ExplorerModes.Silent"/> flag you are supposed
 		/// to return (set) a new item name, so that this item will be current after panel update and redraw.
 		/// </para>
 		/// <para>
@@ -1118,11 +1110,17 @@ namespace FarNet
 		/// </remarks>
 		public string PanelDirectory { get { return _Panel.PanelDirectory; } set { _Panel.PanelDirectory = value; } }
 		/// <summary>
-		/// Gets or sets the extension of temporary files.
+		/// Gets or sets the file comparer. See <see cref="FarNet.Explorer.FileComparer"/>.
 		/// </summary>
-		/// <remarks>
-		/// This might be useful in order to get proper syntax highlighting by the <i>Colorer</i> plugin.
-		/// </remarks>
-		public string TempFileExtension { get; set; }
+		public IEqualityComparer<FarFile> FileComparer
+		{
+			get { return _FileComparer ?? (_FileComparer = new FileNameComparer()); }
+			set
+			{
+				if (value == null) throw new ArgumentNullException("value");
+				_FileComparer = value;
+			}
+		}
+		IEqualityComparer<FarFile> _FileComparer;
 	}
 }

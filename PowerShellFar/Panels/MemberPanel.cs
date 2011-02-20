@@ -213,7 +213,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException exception)
 			{
-				if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) == 0)
+				if ((e.Mode & (ExplorerModes.Find | ExplorerModes.Silent)) == 0)
 					A.Msg(exception.Message);
 			}
 		}
@@ -424,15 +424,17 @@ namespace PowerShellFar
 			if (text == null)
 				return;
 
-			// warning //???? better add it on save
-			if (!pi.IsSettable)
-				A.Msg(Res.PropertyIsNotSettable);
-
 			// editor
 			string temp = Far.Net.TempName();
 			File.WriteAllText(temp, text, Encoding.Unicode);
-			MemberEditor edit = new MemberEditor();
-			edit.Open(temp, true, _Value, pi);
+			MemberEditor editor = new MemberEditor();
+			
+			// to lock
+			if (!pi.IsSettable)
+				editor.Editor.IsLocked = true;
+
+			// go
+			editor.Open(temp, true, _Value, pi);
 		}
 
 		/// <summary>

@@ -30,7 +30,6 @@ namespace PowerShellFar.Commands
 			set { _LineNumber = value; }
 		}
 		int _LineNumber;
-
 		/// <summary>
 		/// Character number in the line to open the editor at. The first is 1.
 		/// </summary>
@@ -41,13 +40,11 @@ namespace PowerShellFar.Commands
 			set { _CharNumber = value; }
 		}
 		int _CharNumber;
-
 		/// <summary>
 		/// The host instance. See <see cref="IEditor.Host"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "The host instance.")]
 		public new PSObject Host { get; set; }
-
 		internal IEditor CreateEditor()
 		{
 			IEditor editor = Far.Net.CreateEditor();
@@ -61,7 +58,6 @@ namespace PowerShellFar.Commands
 
 			return editor;
 		}
-
 		///
 		protected override void ProcessRecord()
 		{

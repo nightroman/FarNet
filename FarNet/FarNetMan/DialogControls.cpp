@@ -312,6 +312,11 @@ String^ FarButton::Text::get()
 		return _text;
 	}
 }
+//! for reflection to see the setter, too
+void FarButton::Text::set(String^ value)
+{
+	FarControl::Text = value;
+}
 
 #pragma endregion
 

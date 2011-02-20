@@ -68,6 +68,7 @@
     <Compile Include="Progress.cs" />
     <Compile Include="ProgressBox.cs" />
     <Compile Include="ProgressForm.cs" />
+    <Compile Include="SearchExplorer.cs" />
     <Compile Include="SubsetForm.cs" />
   </ItemGroup>
   <ItemGroup>

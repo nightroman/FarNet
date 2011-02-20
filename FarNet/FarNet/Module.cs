@@ -496,7 +496,7 @@ namespace FarNet
 		/// <summary>
 		/// Combination of the operation mode flags.
 		/// </summary>
-		public OperationModes Mode { get; set; }
+		public ExplorerModes Mode { get; set; }
 	}
 
 	/// <summary>

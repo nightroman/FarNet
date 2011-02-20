@@ -25,6 +25,7 @@ Set-Alias op Out-FarPanel -Description 'Send objects to an object panel'
 Set-Alias pd Panel-DbData- -Description 'Panel SQL SELECT or table data'
 Set-Alias pp Panel-Property- -Description 'Panel provider item properties'
 Set-Alias sff Select-FarFile- -Description 'Select panel files'
+Set-Alias sfs Start-FarSearch -Description 'Search in explorer panels.'
 
 ### Actions
 $Psf.Action('&m. Macro(s)...', { Panel-Macro- })

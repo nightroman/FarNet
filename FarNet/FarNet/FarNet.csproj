@@ -127,7 +127,6 @@
     <Compile Include="Panel.Works.cs" />
     <Compile Include="Panel.Api.cs" />
     <Compile Include="Panel.cs" />
-    <Compile Include="SearchExplorer.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="Registry.cs" />
     <Compile Include="UserInput.cs" />

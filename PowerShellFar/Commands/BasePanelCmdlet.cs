@@ -22,31 +22,16 @@ namespace PowerShellFar.Commands
 		[Parameter(HelpMessage = "Panel type Id.")]
 		public Guid TypeId
 		{
-			get { return _TypeId; }
-			set
-			{
-				_setTypeId = true;
-				_TypeId = value;
-			}
+			get { return _TypeId.GetValueOrDefault(); }
+			set { _TypeId = value; }
 		}
-		Guid _TypeId;
-		bool _setTypeId;
+		Guid? _TypeId;
 
 		/// <summary>
 		/// Panel title. See <see cref="Panel.Title"/>.
 		/// </summary>
 		[Parameter(HelpMessage = "Panel title.")]
-		public string Title
-		{
-			get { return _Title; }
-			set
-			{
-				_setTitle = true;
-				_Title = value;
-			}
-		}
-		string _Title;
-		bool _setTitle;
+		public string Title { get; set; }
 
 		/// <summary>
 		/// Panel sort mode. See <see cref="IPanel.SortMode"/>.
@@ -54,15 +39,10 @@ namespace PowerShellFar.Commands
 		[Parameter(HelpMessage = "Panel sort mode.")]
 		public PanelSortMode SortMode
 		{
-			get { return _SortMode; }
-			set
-			{
-				_setSortMode = true;
-				_SortMode = value;
-			}
+			get { return _SortMode.GetValueOrDefault(); }
+			set { _SortMode = value; }
 		}
-		PanelSortMode _SortMode;
-		bool _setSortMode;
+		PanelSortMode? _SortMode;
 
 		/// <summary>
 		/// Panel view mode. See <see cref="IPanel.ViewMode"/>.
@@ -70,15 +50,10 @@ namespace PowerShellFar.Commands
 		[Parameter(HelpMessage = "Panel view mode.")]
 		public PanelViewMode ViewMode
 		{
-			get { return _ViewMode; }
-			set
-			{
-				_setViewMode = true;
-				_ViewMode = value;
-			}
+			get { return _ViewMode.GetValueOrDefault(); }
+			set { _ViewMode = value; }
 		}
-		PanelViewMode _ViewMode;
-		bool _setViewMode;
+		PanelViewMode? _ViewMode;
 
 		/// <summary>
 		/// Tells to update data periodically when idle. See <see cref="Panel.IdleUpdate"/>.
@@ -86,31 +61,16 @@ namespace PowerShellFar.Commands
 		[Parameter(HelpMessage = "Tells to update data periodically when idle.")]
 		public SwitchParameter IdleUpdate
 		{
-			get { return _IdleUpdate; }
-			set
-			{
-				_setIdleUpdate = true;
-				_IdleUpdate = value;
-			}
+			get { return _IdleUpdate.GetValueOrDefault(); }
+			set { _IdleUpdate = value; }
 		}
-		SwitchParameter _IdleUpdate;
-		bool _setIdleUpdate;
+		SwitchParameter? _IdleUpdate;
 
 		/// <summary>
-		/// Custom data ID to distinguish between objects. See <see cref="Panel.DataId"/>.
+		/// Custom data ID to distinguish files by data. See <see cref="Panel.FileComparer"/>.
 		/// </summary>
-		[Parameter(HelpMessage = "Custom data ID to distinguish between objects.")]
-		public Meta DataId
-		{
-			get { return _DataId; }
-			set
-			{
-				_setDataId = true;
-				_DataId = value;
-			}
-		}
-		Meta _DataId;
-		bool _setDataId;
+		[Parameter(HelpMessage = "Custom data ID to distinguish files by data.")]
+		public Meta DataId { get; set; }
 
 		/// <summary>
 		/// Attached user data. See <see cref="Panel.Data"/>.
@@ -122,17 +82,17 @@ namespace PowerShellFar.Commands
 		internal void ApplyParameters(Panel panel)
 		{
 			// panel
-			if (_setDataId) panel.DataId = _DataId;
-			if (_setIdleUpdate) panel.IdleUpdate = _IdleUpdate;
+			if (DataId != null) panel.FileComparer = new FileMetaComparer(DataId);
+			if (_IdleUpdate.HasValue && _IdleUpdate.Value) panel.IdleUpdate = true;
 			if (Data != null)
-				foreach(DictionaryEntry kv in Data)
+				foreach (DictionaryEntry kv in Data)
 					panel.Data.Add(kv.Key, kv.Value);
 
 			// info
-			if (_setSortMode) panel.SortMode = _SortMode;
-			if (_setTitle) panel.Title = _Title;
-			if (_setTypeId) panel.TypeId = _TypeId;
-			if (_setViewMode) panel.ViewMode = _ViewMode;
+			if (_SortMode.HasValue) panel.SortMode = _SortMode.Value;
+			if (_TypeId.HasValue) panel.TypeId = _TypeId.Value;
+			if (_ViewMode.HasValue) panel.ViewMode = _ViewMode.Value;
+			if (Title != null) panel.Title = Title;
 		}
 
 	}

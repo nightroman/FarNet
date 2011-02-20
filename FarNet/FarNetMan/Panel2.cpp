@@ -22,11 +22,17 @@ Panel2::Panel2(Panel^ panel)
 IList<FarFile^>^ Panel2::Files::get() { return _Files; }
 void Panel2::Files::set(IList<FarFile^>^ value)
 {
-	if (!value) gcnew ArgumentNullException("value");
+	if (!value && !IsExploreLocation) gcnew ArgumentNullException("value"); //????
 	_Files = value;
 }
 
-bool Panel2::HasDots()
+void Panel2::AssertOpen()
+{
+	if (Index <= 0)
+		throw gcnew InvalidOperationException("Expected opened module panel.");
+}
+
+bool Panel2::HasDots::get()
 {
 	switch(Host->DotsMode)
 	{
@@ -36,10 +42,10 @@ bool Panel2::HasDots()
 	}
 }
 
-void Panel2::AssertOpen()
+bool Panel2::IsExploreLocation::get()
 {
-	if (Index <= 0)
-		throw gcnew InvalidOperationException("Expected opened module panel.");
+	Explorer^ explorer = Host->Explorer;
+	return explorer && bool(explorer->Function & ExplorerFunctions::ExploreLocation);
 }
 
 /*
@@ -106,6 +112,9 @@ FarFile^ Panel2::CurrentFile::get()
 {
 	AssertOpen();
 
+	if (IsExploreLocation)
+		return Panel1::CurrentFile;
+
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
@@ -132,6 +141,9 @@ IList<FarFile^>^ Panel2::ShownFiles::get()
 {
 	AssertOpen();
 
+	if (IsExploreLocation)
+		return Panel1::ShownFiles;
+
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
@@ -151,6 +163,9 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 {
 	AssertOpen();
 
+	if (IsExploreLocation)
+		return Panel1::SelectedFiles;
+
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
@@ -166,15 +181,16 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 	return r;
 }
 
+//! It works for both: module and and no-data files
 FarFile^ Panel2::GetFile(int index, FileType type)
 {
 	AutoPluginPanelItem item(Handle, index, type);
 	int fi = (int)(INT_PTR)item.Get().UserData;
 	if (fi >= 0)
-		// plugin file
+		// module file
 		return _Files[fi];
 	else
-		// 090823 dots, not null
+		// dots or no-data module file
 		return ItemToFile(item.Get());
 }
 
@@ -810,6 +826,21 @@ void Panel2::CurrentDirectory::set(String^ value)
 		Update(false);
 		Redraw();
 	}
+}
+
+void Panel2::PostData(Object^ data)
+{
+	_postData = data;
+}
+
+void Panel2::PostFile(FarFile^ file)
+{
+	_postFile = file;
+}
+
+void Panel2::PostName(String^ name)
+{
+	_postName = name;
 }
 
 }

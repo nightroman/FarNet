@@ -47,7 +47,7 @@ public: DEF_EVENT_IMP(Opened, _Opened);
 public: DEF_EVENT_IMP(Saving, _Saving);
 public:
 	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
-	virtual property bool IsLocked { bool get() override; }
+	virtual property bool IsLocked { bool get() override; void set(bool value) override; }
 	virtual property bool IsModified { bool get() override; }
 	virtual property bool IsNew { bool get() override; void set(bool value) override; }
 	virtual property bool IsOpened { bool get() override; }
@@ -130,16 +130,17 @@ internal:
 	void Stop();
 private:
 	void AssertClosed();
-	bool GetBoolOption(int option, bool value);
+	bool GetBoolOption(int option, Nullable<bool> value);
 	void SetBoolOption(int option, bool value);
 private:
 	int _id;
 	String^ _FileName;
 	DateTime _TimeOfOpen;
-	bool _IsVirtualSpace; bool _IsVirtualSpaceSet;
-	bool _ShowWhiteSpace; bool _ShowWhiteSpaceSet;
-	bool _WriteByteOrderMark; bool _WriteByteOrderMarkSet;
-	String^ _WordDiv; bool _WordDivSet;
+	String^ _WordDiv; // null = none
+	Nullable<bool> _IsLocked;
+	Nullable<bool> _IsVirtualSpace;
+	Nullable<bool> _ShowWhiteSpace;
+	Nullable<bool> _WriteByteOrderMark;
 private:
 	FarNet::DeleteSource _DeleteSource;
 	FarNet::Switching _Switching;

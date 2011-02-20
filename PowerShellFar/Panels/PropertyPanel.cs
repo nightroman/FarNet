@@ -117,7 +117,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException error)
 			{
-				if ((e.Mode & (OperationModes.Find | OperationModes.Silent)) == 0)
+				if ((e.Mode & (ExplorerModes.Find | ExplorerModes.Silent)) == 0)
 					A.Msg(error.Message);
 			}
 		}
@@ -414,8 +414,6 @@ namespace PowerShellFar
 			if (pi == null)
 				return;
 
-			if (!pi.IsSettable)
-				A.Msg(Res.PropertyIsNotSettable);
 
 			try
 			{
@@ -433,9 +431,14 @@ namespace PowerShellFar
 				}
 
 				// editor
-				PropertyEditor edit = new PropertyEditor();
-				edit.Open(temp, true, _itemPath, pi);
+				PropertyEditor editor = new PropertyEditor();
 
+				// to lock
+				if (!pi.IsSettable)
+					editor.Editor.IsLocked = true;
+				
+				// go
+				editor.Open(temp, true, _itemPath, pi);
 			}
 			catch (RuntimeException ex)
 			{

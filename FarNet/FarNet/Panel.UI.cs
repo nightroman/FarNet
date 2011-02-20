@@ -20,12 +20,10 @@ namespace FarNet
 		{
 			if (Explorer != null)
 			{
-				var args = new DeleteFilesArgs();
-				args.Files = SelectedFiles;
-
-				if (!Explorer.CanDeleteFiles(args))
+				if (0 == (Explorer.Function & ExplorerFunctions.DeleteFiles))
 					return;
 
+				var args = new DeleteFilesArgs(ExplorerModes.None, SelectedFiles);
 				Explorer.DeleteFiles(args);
 				if (args.Result == JobResult.Ignore)
 					return;
@@ -118,50 +116,52 @@ namespace FarNet
 			if (Explorer == null) //???? kill when explorer is mandatory
 				return;
 
-			if (!Explorer.CanExportFile(file))
+			if (0 == (Explorer.Function & ExplorerFunctions.ExportFile))
 				return;
 
 			var temp = Far.Net.TempName();
-			if (TempFileExtension != null)
-				temp += TempFileExtension;
 
-			var args = new ExportFileArgs();
-			args.File = file;
-			args.FileName = temp;
-
+			// export
 			Log.Source.TraceInformation("ExportFile");
-			Explorer.ExportFile(args);
-			if (args.Result != JobResult.Done)
+			var argsExport = new ExportFileArgs(ExplorerModes.Edit, file, temp);
+			Explorer.ExportFile(argsExport);
+			if (argsExport.Result != JobResult.Done)
 				return;
 
+			// rename
+			if (!string.IsNullOrEmpty(argsExport.FileNameExtension))
+			{
+				string temp2 = temp + argsExport.FileNameExtension;
+				File.Move(temp, temp2);
+				temp = temp2;
+			}
+
+			// editor
 			var editor = Far.Net.CreateEditor();
 			editor.DeleteSource = DeleteSource.File;
-			editor.FileName = args.FileName;
+			editor.FileName = temp;
 			editor.Title = file.Name;
 
-			if (Explorer.CanImportFile(file))
+			// future
+			if (argsExport.CanImport)
 			{
 				editor.Closed += delegate //???? to use Saved (Far 3), update docs.
 				{
 					if (editor.TimeOfSave == DateTime.MinValue)
 						return;
 
-					var args2 = new ImportFileArgs();
-					args2.File = file;
-					args2.FileName = temp;
-
+					var argsImport = new ImportFileArgs(ExplorerModes.Edit, file, temp);
 					Log.Source.TraceInformation("ImportFile");
-					Explorer.ImportFile(args2);
+					Explorer.ImportFile(argsImport);
 				};
 			}
 			else
 			{
-				editor.Saving += delegate
-				{
-					Far.Net.Message(string.Format(null, "Saving to the file to be deleted:\r{0}", temp), "Warning");
-				};
+				// to lock
+				editor.IsLocked = true;
 			}
 
+			// go
 			editor.Open();
 		}
 		/// <summary>
@@ -180,15 +180,12 @@ namespace FarNet
 			if (Explorer == null) //???? kill when explorer is mandatory
 				return;
 
-			if (!Explorer.CanExportFile(file))
+			if (0 == (Explorer.Function & ExplorerFunctions.ExportFile))
 				return;
 
 			var temp = Far.Net.TempName();
 
-			var args = new ExportFileArgs();
-			args.File = file;
-			args.FileName = temp;
-
+			var args = new ExportFileArgs(ExplorerModes.View, file, temp);
 			Log.Source.TraceInformation("Explorer.ExportFile");
 			Explorer.ExportFile(args);
 			if (args.Result != JobResult.Done)
@@ -218,6 +215,7 @@ namespace FarNet
 		/// <summary>
 		/// Called when a key is pressed. See <see cref="KeyPressed"/>.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public virtual void UIKeyPressed(PanelKeyEventArgs e)
 		{
 			if (e == null) throw new ArgumentNullException("e");
@@ -238,7 +236,7 @@ namespace FarNet
 							return;
 
 						var file = CurrentFile;
-						if (file != null)
+						if (file != null && !file.IsDirectory)
 						{
 							e.Ignore = true;
 							UIViewFile(file);
@@ -252,7 +250,7 @@ namespace FarNet
 							return;
 
 						var file = CurrentFile;
-						if (file != null)
+						if (file != null && !file.IsDirectory)
 						{
 							e.Ignore = true;
 							UIEditFile(file);
@@ -264,18 +262,6 @@ namespace FarNet
 						if (Far.Net.CommandLine.Length > 0)
 							return;
 						goto case VKeyCode.F8;
-					}
-				case VKeyCode.F7:
-					{
-						if (e.State == KeyStates.Shift) // Alt is not called
-						{
-							if (Explorer == null)
-								return;
-
-							e.Ignore = true;
-							SearchExplorer.Start(this);
-						}
-						return;
 					}
 				case VKeyCode.F8:
 					{

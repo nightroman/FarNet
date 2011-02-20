@@ -6,6 +6,7 @@ Copyright (c) 2005 FarNet Team
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace FarNet
@@ -278,4 +279,154 @@ namespace FarNet
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public override ICollection Columns { get; set; }
 	}
+	/// <summary>
+	/// A file associated with its explorer.
+	/// </summary>
+	public class ExplorerFile : FarFile
+	{
+		/// <summary>
+		/// Gets the file's explorer.
+		/// </summary>
+		public Explorer Explorer { get; private set; }
+		/// <summary>
+		/// Gets the original file.
+		/// </summary>
+		public FarFile File { get; private set; }
+		/// <summary>
+		/// New explorer file.
+		/// </summary>
+		public ExplorerFile(Explorer explorer, FarFile file)
+		{
+			if (explorer == null) throw new ArgumentNullException("explorer");
+			if (file == null) throw new ArgumentNullException("file");
+
+			Explorer = explorer;
+			File = file;
+		}
+		///
+		public override string Name { get { return File.Name; } }
+		///
+		public override string Description { get { return File.Description; } }
+		///
+		public override string Owner { get { return File.Owner; } }
+		///
+		public override object Data { get { return File.Data; } }
+		///
+		public override DateTime CreationTime { get { return File.CreationTime; } }
+		///
+		public override DateTime LastAccessTime { get { return File.LastAccessTime; } }
+		///
+		public override DateTime LastWriteTime { get { return File.LastWriteTime; } }
+		///
+		public override long Length { get { return File.Length; } }
+		///
+		public override ICollection Columns { get { return File.Columns; } }
+		///
+		public override FileAttributes Attributes { get { return File.Attributes; } }
+	}
+
+	/// <summary>
+	/// Compares files by their references.
+	/// </summary>
+	public sealed class FileFileComparer : EqualityComparer<FarFile>
+	{
+		///
+		public override bool Equals(FarFile x, FarFile y)
+		{
+			return object.Equals(x, y);
+		}
+		///
+		public override int GetHashCode(FarFile obj)
+		{
+			return obj == null ? 0 : obj.GetHashCode();
+		}
+	}
+
+	/// <summary>
+	/// Compares files by their <see cref="FarFile.Data"/> references.
+	/// </summary>
+	public sealed class FileDataComparer : EqualityComparer<FarFile>
+	{
+		///
+		public override bool Equals(FarFile x, FarFile y)
+		{
+			if (x == null || y == null)
+				return x == null && y == null;
+			else
+				return object.ReferenceEquals(x.Data, y.Data);
+		}
+		///
+		public override int GetHashCode(FarFile obj)
+		{
+			return obj == null || obj.Data == null ? 0 : obj.Data.GetHashCode();
+		}
+	}
+
+	/// <summary>
+	/// Compares files by their names.
+	/// </summary>
+	public sealed class FileNameComparer : EqualityComparer<FarFile>
+	{
+		readonly StringComparer _comparer;
+		/// <summary>
+		/// New comparer with the <c>OrdinalIgnoreCase</c> string comparer.
+		/// </summary>
+		public FileNameComparer()
+		{
+			_comparer = StringComparer.OrdinalIgnoreCase;
+		}
+		/// <summary>
+		/// New comparer with the specified string comparer.
+		/// </summary>
+		public FileNameComparer(StringComparer comparer)
+		{
+			if (comparer == null) throw new ArgumentNullException("comparer");
+			_comparer = comparer;
+		}
+		///
+		public override bool Equals(FarFile x, FarFile y)
+		{
+			if (x == null || y == null)
+				return x == null && y == null;
+			else
+				return _comparer.Equals(x.Name, y.Name);
+		}
+		///
+		public override int GetHashCode(FarFile obj)
+		{
+			return obj == null || obj.Name == null ? 0 : obj.Name.GetHashCode();
+		}
+	}
+
+	/// <summary>
+	/// Compares files by values requested from their <see cref="FarFile.Data"/>.
+	/// </summary>
+	public sealed class FileMetaComparer : EqualityComparer<FarFile>
+	{
+		readonly Getter _getter;
+		///
+		public FileMetaComparer(Getter getter)
+		{
+			if (getter == null) throw new ArgumentNullException("getter");
+			_getter = getter;
+		}
+		///
+		public override bool Equals(FarFile x, FarFile y)
+		{
+			if (x == null || y == null)
+				return x == null && y == null;
+			else
+				return object.Equals(_getter(x.Data), _getter(y.Data));
+		}
+		///
+		public override int GetHashCode(FarFile obj)
+		{
+			if (obj == null || obj.Data == null)
+				return 0;
+			
+			var value = _getter(obj.Data);
+			return value == null ? 0 : value.GetHashCode();
+		}
+	}
+
 }
