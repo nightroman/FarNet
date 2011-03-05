@@ -43,10 +43,8 @@ namespace PowerShellFar
 	public sealed class Meta : FarColumn
 	{
 		string _ColumnName;
-
 		string _Property;
 		ScriptBlock _Script;
-
 		/// <summary>
 		/// Similar to AsPSObject().
 		/// </summary>
@@ -55,17 +53,14 @@ namespace PowerShellFar
 			Meta r = value as Meta;
 			return r == null ? new Meta(value) : r;
 		}
-
 		/// <summary>
 		/// Property name.
 		/// </summary>
 		public string Property { get { return _Property; } }
-
 		/// <summary>
 		/// Script block operating on $_.
 		/// </summary>
 		public ScriptBlock Script { get { return _Script; } }
-
 		///
 		public override string Name
 		{
@@ -78,15 +73,12 @@ namespace PowerShellFar
 					string.Empty;
 			}
 		}
-
 		///
 		public override string Kind { get { return _Kind; } set { _Kind = value; } }
 		string _Kind; //! CA
-
 		///
 		public override int Width { get { return _Width; } set { _Width = value; } }
 		int _Width; //! CA
-
 		/// <summary>
 		/// Alignment type.
 		/// </summary>
@@ -101,7 +93,6 @@ namespace PowerShellFar
 		/// </code>
 		/// </example>
 		public Alignment Alignment { get; private set; }
-
 		/// <summary>
 		/// Format string.
 		/// </summary>
@@ -112,7 +103,6 @@ namespace PowerShellFar
 		/// </code>
 		/// </example>
 		public string FormatString { get; private set; }
-
 		/// <summary>
 		/// New from a property.
 		/// </summary>
@@ -123,7 +113,6 @@ namespace PowerShellFar
 
 			_Property = property;
 		}
-
 		/// <summary>
 		/// New from a script operating on $_.
 		/// </summary>
@@ -134,7 +123,6 @@ namespace PowerShellFar
 
 			_Script = script;
 		}
-
 		/// <summary>
 		/// New from format table control data.
 		/// </summary>
@@ -151,7 +139,6 @@ namespace PowerShellFar
 			_Width = header.Width;
 			Alignment = header.Alignment;
 		}
-
 		/// <summary>
 		/// New from supported types: <c>string</c>, <c>ScriptBlock</c>, and <c>IDictionary</c>.
 		/// </summary>
@@ -214,7 +201,6 @@ namespace PowerShellFar
 
 			throw new NotSupportedException("Not supported type: " + value.GetType().ToString());
 		}
-
 		/// <summary>
 		/// Gets PowerShell code.
 		/// </summary>
@@ -237,7 +223,6 @@ namespace PowerShellFar
 			sb.Append(" }");
 			return sb.ToString();
 		}
-
 		/// <summary>
 		/// Gets a meta value.
 		/// </summary>
@@ -278,7 +263,6 @@ namespace PowerShellFar
 
 			return pi.Value;
 		}
-
 		/// <summary>
 		/// Gets a meta value of specified type (actual or default).
 		/// CA: not recommended to be public in this form.
@@ -293,7 +277,6 @@ namespace PowerShellFar
 				return (T)v;
 			return (T)LanguagePrimitives.ConvertTo(v, typeof(T), CultureInfo.InvariantCulture);
 		}
-
 		/// <summary>
 		/// Gets a meta value as a string, formatted if <see cref="FormatString"/> is set and
 		/// aligned if <see cref="Width"/> is positive and <see cref="Alignment"/> is <c>Right</c>.
@@ -336,7 +319,6 @@ namespace PowerShellFar
 				return string.Format(null, FormatString, GetValue(value)).PadLeft(_Width);
 			}
 		}
-
 		/// <summary>
 		/// Gets meta value as Int64 (actual or 0).
 		/// </summary>
@@ -344,32 +326,12 @@ namespace PowerShellFar
 		{
 			return Get<Int64>(value);
 		}
-
 		/// <summary>
 		/// Gets a meta value as DateTime (actual or default).
 		/// </summary>
 		public DateTime EvaluateDateTime(object value)
 		{
 			return Get<DateTime>(value);
-		}
-
-		/// <summary>
-		/// Converts a <see cref="Meta"/> object to a delegate.
-		/// </summary>
-		public static implicit operator Getter(Meta meta)
-		{
-			if (meta == null)
-				return x => null;
-			else
-				return meta.ToGetter();
-		}
-
-		/// <summary>
-		/// Converts this to a delegate.
-		/// </summary>
-		public Getter ToGetter()
-		{
-			return GetValue;
 		}
 	}
 }

@@ -10,7 +10,7 @@ Test-Editor-.ps1 Test editor and related scripts.
 Test-Explorer-.ps1 Test scripted explorers with panels.
 Test-Job-.ps1 Test background jobs.
 Test-Msg-.ps1 Test extreme message boxes.
-Test-Panel-.ps1 Test pure FarNet panels.
+Test-Panel-.ps1 Test simple panels.
 Test-Panel-DbCategories-.ps1 Test panel with simple table TestCategories.
 Test-Panel-DbNotes-.ps1 Test panel with joined table TestNotes with lookup
 Test-Panel-DbText-.ps1 Test panel with data from .CSV files

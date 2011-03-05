@@ -18,8 +18,8 @@ namespace PowerShellFar
 	public abstract class ListPanel : AnyPanel
 	{
 		static string _lastCurrentName;
-
-		internal ListPanel()
+		internal ListPanel(Explorer explorer)
+			: base(explorer)
 		{
 			PostName(_lastCurrentName);
 			UseFilter = true;
@@ -35,12 +35,10 @@ namespace PowerShellFar
 
 			InvokingCommand += OnInvokingCommand;
 		}
-
 		/// <summary>
 		/// The target object.
 		/// </summary>
 		internal abstract PSObject Target { get; }
-
 		/// <summary>
 		/// Puts a value into the command line or opens a lookup panel or member panel.
 		/// </summary>
@@ -58,10 +56,10 @@ namespace PowerShellFar
 			// lookup opener?
 			if (_LookupOpeners != null)
 			{
-				EventHandler<FileEventArgs> handler;
+				ScriptHandler<FileEventArgs> handler;
 				if (_LookupOpeners.TryGetValue(file.Name, out handler))
 				{
-					handler(this, new FileEventArgs() { File = file });
+					handler.Invoke(this, new FileEventArgs(file));
 					return;
 				}
 			}
@@ -90,7 +88,6 @@ namespace PowerShellFar
 			// open members
 			OpenFileMembers(file);
 		}
-
 		internal override MemberPanel OpenFileMembers(FarFile file)
 		{
 			PSPropertyInfo pi = file.Data as PSPropertyInfo;
@@ -98,18 +95,16 @@ namespace PowerShellFar
 				return null;
 			if (pi.Value == null)
 				return null;
-			MemberPanel r = new MemberPanel(pi.Value);
+			MemberPanel r = new MemberPanel(new MemberExplorer(pi.Value));
 			r.OpenChild(this);
 			return r;
 		}
-
 		/// <summary>
 		/// Sets new value.
 		/// </summary>
 		/// <param name="info">Property info.</param>
 		/// <param name="value">New value.</param>
 		internal abstract void SetUserValue(PSPropertyInfo info, string value);
-
 		/// <summary>
 		/// Calls base or assigns a value to the current property.
 		/// </summary>
@@ -118,10 +113,7 @@ namespace PowerShellFar
 			// base
 			string code = e.Command.TrimStart();
 			if (!code.StartsWith("=", StringComparison.Ordinal))
-			{
-				base.WorksInvokingCommand(e);
 				return;
-			}
 
 			// we do
 			e.Ignore = true;
@@ -141,10 +133,9 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				A.Msg(ex.Message);
+				A.Message(ex.Message);
 			}
 		}
-
 		///?? Must be called last
 		protected override bool CanClose()
 		{
@@ -159,39 +150,14 @@ namespace PowerShellFar
 
 			return true;
 		}
-
 		internal override void ShowHelp()
 		{
 			Help.ShowTopic("ListPanel");
 		}
-
-		/// <summary>
-		/// It "deletes" property values = assigns null values.
-		/// </summary>
-		internal override void DoDeleteFiles(FilesEventArgs args)
-		{
-			foreach (FarFile file in args.Files)
-			{
-				PSPropertyInfo pi = file.Data as PSPropertyInfo;
-				if (pi == null)
-					continue;
-				try
-				{
-					SetUserValue(pi, null);
-					UpdateRedraw(true);
-				}
-				catch (RuntimeException ex)
-				{
-					A.Msg(ex.Message);
-				}
-			}
-		}
-
 		internal override void UIApply()
 		{
 			A.InvokePipelineForEach(new PSObject[] { Target });
 		}
-
 		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 		{
 			if (items.ApplyCommand == null)
@@ -205,6 +171,50 @@ namespace PowerShellFar
 
 			base.HelpMenuInitItems(items, e);
 		}
+		/// <summary>
+		/// It deletes property values = assigns nulls.
+		/// </summary>
+		internal void UISetNulls()
+		{
+			foreach (FarFile file in SelectedFiles)
+			{
+				PSPropertyInfo pi = file.Data as PSPropertyInfo;
+				if (pi == null)
+					continue;
 
+				try
+				{
+					SetUserValue(pi, null);
+					UpdateRedraw(true);
+				}
+				catch (RuntimeException ex)
+				{
+					A.Message(ex.Message);
+				}
+			}
+		}
+		///
+		public override bool UIKeyPressed(int code, KeyStates state)
+		{
+			switch (code)
+			{
+				case VKeyCode.Delete:
+					
+					goto case VKeyCode.F8;
+				
+				case VKeyCode.F8:
+					
+					if (state == KeyStates.Shift)
+					{
+						UISetNulls();
+						return true;
+					}
+					
+					break;
+			}
+			
+			// base
+			return base.UIKeyPressed(code, state);
+		}
 	}
 }

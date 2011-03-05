@@ -24,7 +24,7 @@ else {
 		(New-Object FarNet.ModuleFilerAttribute -Property @{ Name = "PSF test filer"; Mask = "*.test" }),
 		{&{
 			# get and show all lines in a panel
-			$Panel = New-Object PowerShellFar.UserPanel
+			$Panel = New-Object PowerShellFar.ObjectPanel
 			$Panel.Title = $_.Name
 			$Panel.HostFile = $_.Name
 			$Panel.SortMode = 'Unsorted'

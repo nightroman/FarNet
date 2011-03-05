@@ -19,36 +19,32 @@ namespace PowerShellFar
 	/// </summary>
 	public sealed class DataPanel : TablePanel, IDisposable
 	{
+		///
+		new DataExplorer Explorer { get { return (DataExplorer)base.Explorer; } }
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		public DataPanel()
+			: base(new DataExplorer())
 		{
-			PanelDirectory = "*";
+			Explorer.Panel = this;
 
+			SortMode = PanelSortMode.Unsorted; // assume it is sorted in SELECT
 			UseFilter = true;
 			UseSortGroups = false;
 
-			// modes: assume it is sorted in SELECT
-			SortMode = PanelSortMode.Unsorted;
-
 			Closed += OnClosed;
-
-			FileComparer  = new FileDataComparer();
 		}
-
 		/// <summary>
 		/// Database provider factory instance.
 		/// See <b>System.Data.Common.DbProviderFactories</b> methods <b>GetFactoryClasses</b>, <b>GetFactory</b>.
 		/// </summary>
 		public DbProviderFactory Factory { get; set; }
-
 		/// <summary>
 		/// Data adapter.
 		/// You have to set it and configure at least its <c>SelectCommand</c>.
 		/// </summary>
 		public DbDataAdapter Adapter { get; set; }
-
 		/// <summary>
 		/// A table which records are used as panel items.
 		/// </summary>
@@ -57,7 +53,6 @@ namespace PowerShellFar
 		/// An external table is possible but this scenario is mostly reserved for the future.
 		/// </remarks>
 		public DataTable Table { get; set; }
-
 		/// <summary>
 		/// Connection.
 		/// </summary>
@@ -65,9 +60,7 @@ namespace PowerShellFar
 		{
 			get { return Adapter == null || Adapter.SelectCommand == null ? null : Adapter.SelectCommand.Connection; }
 		}
-
 		readonly DataRowFileMap Map = new DataRowFileMap();
-
 		/// <summary>
 		/// Disposes internal data. Normally it is called internally.
 		/// </summary>
@@ -79,7 +72,6 @@ namespace PowerShellFar
 			if (Table != null)
 				Table.Dispose();
 		}
-
 		/// <summary>
 		/// Calls <c>Adapter.Update()</c>.
 		/// </summary>
@@ -106,10 +98,8 @@ namespace PowerShellFar
 			}
 			return false;
 		}
-
 		///
 		protected override string DefaultTitle { get { return string.IsNullOrEmpty(Table.TableName) ? "Data Table" : "Table " + Table.TableName; } }
-
 		/// <summary>
 		/// Fills data table and shows the panel.
 		/// </summary>
@@ -156,7 +146,7 @@ namespace PowerShellFar
 			else
 			{
 				// setup user defined columns
-				metas = SetupColumns(Columns);
+				metas = Format.SetupColumns(Columns);
 			}
 
 			// at least one column
@@ -231,11 +221,10 @@ namespace PowerShellFar
 			}
 
 			// pass 3: set plan
-			SetPlan(PanelViewMode.AlternativeFull, SetupPanelMode(metas));
+			SetPlan(PanelViewMode.AlternativeFull, Format.SetupPanelMode(metas));
 
 			base.Open();
 		}
-
 		///??
 		protected override bool CanClose()
 		{
@@ -256,7 +245,6 @@ namespace PowerShellFar
 					return false;
 			}
 		}
-
 		///??
 		protected override bool CanCloseChild()
 		{
@@ -282,25 +270,25 @@ namespace PowerShellFar
 					return false;
 			}
 		}
-
-		internal override void DoDeleteFiles(FilesEventArgs args)
+		internal void DoDeleteFiles(DeleteFilesEventArgs args) //????? to explorer
 		{
+			var Files = Explorer.Cache;
 			BuildDeleteCommand();
 
-			if ((Far.Net.Confirmations & FarConfirmations.Delete) != 0)
+			if (args.UI && 0 != (Far.Net.Confirmations & FarConfirmations.Delete))
 			{
-				if (Far.Net.Message("Delete selected record(s)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
+				if (0 != Far.Net.Message("Delete selected record(s)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }))
 					return;
 			}
 
 			ToUpdateData = true;
 
-			foreach (FarFile f in args.Files)
+			foreach (var file in args.Files)
 			{
-				DataRow dr = f.Data as DataRow;
+				var dr = file.Data as DataRow;
 				if (dr == null)
 				{
-					Files.Remove(f);
+					Files.Remove(file);
 					continue;
 				}
 
@@ -327,16 +315,17 @@ namespace PowerShellFar
 					break;
 			}
 		}
-
 		bool __toUpdateData = true;
 		bool ToUpdateData
 		{
 			get { return __toUpdateData; }
 			set { __toUpdateData = value; }
 		}
-
-		internal override void OnUpdateFiles(PanelEventArgs e)
+		internal IList<FarFile> Explore(ExplorerEventArgs args)
 		{
+			if (args == null) return null;
+			var Files = Explorer.Cache;
+			
 			// refill
 			if (UserWants == UserAction.CtrlR && Adapter != null)
 			{
@@ -349,7 +338,7 @@ namespace PowerShellFar
 
 			// no job?
 			if (!ToUpdateData && UserWants != UserAction.CtrlR)
-				return;
+				return Files;
 
 			// refresh data
 			for (int iFile = Files.Count; --iFile >= 0; )
@@ -365,25 +354,25 @@ namespace PowerShellFar
 
 			// prevent next job
 			ToUpdateData = false;
+			return Files;
 		}
-
 		/// <summary>
 		/// Opens a member panel to edit the record.
 		/// </summary>
 		public override void OpenFile(FarFile file)
 		{
-			OpenFileMembers(file);
+			var memberPanel = OpenFileMembers(file);
+			memberPanel.Explorer.CanDeleteFiles = false;
 		}
-
 		void Fill()
 		{
 			Adapter.Fill(Table);
 
-			Files = new List<FarFile>(Table.Rows.Count + 1);
+			var Files = Explorer.Cache;
+			Files.Clear();
 			foreach (DataRow dr in Table.Rows)
 				Files.Add(new DataRowFile(dr, Map));
 		}
-
 		/// <summary>
 		/// Core handler.
 		/// </summary>
@@ -399,34 +388,12 @@ namespace PowerShellFar
 			}
 			Dispose();
 		}
-
-		internal override void UICreate()
-		{
-			BuildInsertCommand();
-
-			// add new row to the table
-			DataRow dr = Table.NewRow();
-			Table.Rows.Add(dr);
-
-			// add new file to the panel and go to it
-			DataRowFile f = new DataRowFile(dr, Map);
-			Files.Add(f);
-			PostFile(f);
-			ToUpdateData = true;
-			UpdateRedraw(true);
-
-			// open the record panel
-			OpenFile(f);
-		}
-
 		internal override void ShowHelp()
 		{
 			Help.ShowTopic("DataPanel");
 		}
-
 		// Command builder
 		DbCommandBuilder _Builder;
-
 		void EnsureBuilder()
 		{
 			if (_Builder != null)
@@ -441,7 +408,6 @@ namespace PowerShellFar
 			_Builder = Factory.CreateCommandBuilder();
 			_Builder.DataAdapter = Adapter;
 		}
-
 		/// <summary>
 		/// Builds DELETE command.
 		/// </summary>
@@ -453,7 +419,6 @@ namespace PowerShellFar
 			EnsureBuilder();
 			Adapter.DeleteCommand = _Builder.GetDeleteCommand();
 		}
-
 		/// <summary>
 		/// Builds INSERT command.
 		/// </summary>
@@ -465,7 +430,6 @@ namespace PowerShellFar
 			EnsureBuilder();
 			Adapter.InsertCommand = _Builder.GetInsertCommand();
 		}
-
 		/// <summary>
 		/// Builds UPDATE command.
 		/// </summary>
@@ -477,7 +441,6 @@ namespace PowerShellFar
 			EnsureBuilder();
 			Adapter.UpdateCommand = _Builder.GetUpdateCommand();
 		}
-
 		///
 		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 		{
@@ -498,6 +461,23 @@ namespace PowerShellFar
 			base.HelpMenuInitItems(items, e);
 		}
 		internal override string HelpMenuTextOpenFileMembers { get { return "Edit row data"; } }
+		internal void DoCreateFile()
+		{
+			BuildInsertCommand();
 
+			// add new row to the table
+			DataRow dr = Table.NewRow();
+			Table.Rows.Add(dr);
+
+			// add new file to the panel and go to it
+			DataRowFile file = new DataRowFile(dr, Map);
+			Explorer.Cache.Add(file);
+			PostFile(file);
+			ToUpdateData = true;
+			UpdateRedraw(true);
+
+			// open the record panel
+			OpenFile(file);
+		}
 	}
 }

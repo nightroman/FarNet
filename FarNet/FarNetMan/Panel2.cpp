@@ -11,9 +11,10 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
-Panel2::Panel2(Panel^ panel)
+Panel2::Panel2(Panel^ panel, Explorer^ explorer)
 : Panel1(true)
 , Host(panel)
+, _MyExplorer(explorer)
 , _Files(gcnew List<FarFile^>())
 , _StartViewMode(PanelViewMode::Undefined)
 , _ActiveInfo(ShelveInfoNative::CreateActiveInfo(false))
@@ -22,7 +23,6 @@ Panel2::Panel2(Panel^ panel)
 IList<FarFile^>^ Panel2::Files::get() { return _Files; }
 void Panel2::Files::set(IList<FarFile^>^ value)
 {
-	if (!value && !IsExploreLocation) gcnew ArgumentNullException("value"); //????
 	_Files = value;
 }
 
@@ -40,12 +40,6 @@ bool Panel2::HasDots::get()
 	case PanelDotsMode::Off: return false;
 	default: return Host->Parent != nullptr;
 	}
-}
-
-bool Panel2::IsExploreLocation::get()
-{
-	Explorer^ explorer = Host->Explorer;
-	return explorer && bool(explorer->Function & ExplorerFunctions::ExploreLocation);
 }
 
 /*
@@ -112,7 +106,7 @@ FarFile^ Panel2::CurrentFile::get()
 {
 	AssertOpen();
 
-	if (IsExploreLocation)
+	if (Host->Explorer->CanExploreLocation)
 		return Panel1::CurrentFile;
 
 	PanelInfo pi;
@@ -141,7 +135,7 @@ IList<FarFile^>^ Panel2::ShownFiles::get()
 {
 	AssertOpen();
 
-	if (IsExploreLocation)
+	if (Host->Explorer->CanExploreLocation)
 		return Panel1::ShownFiles;
 
 	PanelInfo pi;
@@ -163,7 +157,7 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 {
 	AssertOpen();
 
-	if (IsExploreLocation)
+	if (Host->Explorer->CanExploreLocation)
 		return Panel1::SelectedFiles;
 
 	PanelInfo pi;
@@ -199,7 +193,7 @@ String^ Panel2::StartDirectory::get()
 	return _ActiveInfo ? _ActiveInfo->Path : String::Empty;
 }
 
-Panel^ Panel2::AnotherPanel::get()
+Panel^ Panel2::TargetPanel::get()
 {
 	Panel2^ p = Panel0::GetPanel2(this);
 	return p ? p->Host : nullptr;
@@ -746,7 +740,7 @@ OpenPluginInfo& Panel2::Make()
 	m->StartSortOrder = _FarStartSortOrder;
 	m->StartPanelMode = int(_StartViewMode) + 0x30;
 
-	m->CurDir = NewChars(_PanelDirectory);
+	m->CurDir = NewChars(_CurrentLocation);
 	m->Format = NewChars(_FormatName);
 	m->HostFile = NewChars(_HostFile);
 	m->PanelTitle = NewChars(_Title);
@@ -797,37 +791,6 @@ void Panel2::Free()
 	}
 }
 
-String^ Panel2::CurrentDirectory::get()
-{
-	return _PanelDirectory;
-}
-
-void Panel2::CurrentDirectory::set(String^ value)
-{
-	if (value == nullptr)
-		throw gcnew ArgumentNullException("value");
-
-	if (!Host->WorksSetPanelDirectory(nullptr))
-	{
-		// _090929_061740 Directory::Exists gets false for long paths
-		if (value->Length < 260 && !Directory::Exists(value))
-			throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
-		
-		Close(value);
-		return;
-	}
-
-	SetDirectoryEventArgs e;
-	e.Name = value;
-	
-	Host->WorksSetPanelDirectory(%e);
-	if (!e.Ignore)
-	{
-		Update(false);
-		Redraw();
-	}
-}
-
 void Panel2::PostData(Object^ data)
 {
 	_postData = data;
@@ -841,6 +804,12 @@ void Panel2::PostFile(FarFile^ file)
 void Panel2::PostName(String^ name)
 {
 	_postName = name;
+}
+
+void Panel2::ReplaceExplorer(Explorer^ explorer)
+{
+	_MyExplorer = explorer;
+	explorer->UpdatePanel(Host);
 }
 
 }

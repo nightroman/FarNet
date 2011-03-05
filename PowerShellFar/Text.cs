@@ -37,6 +37,7 @@ namespace PowerShellFar
 			CanNotClose = "Cannot close the session at this time.",
 			MaximumPanelColumnCount = "Valid maximum column count should be from 3 to 13.", // _100202_113617
 			InvalidColumnKind = "Invalid column kind: ",
+			UnknownFileSource = "The file source is unknown or not supported.",
 			// others
 			Cancel = "Cancel",
 			Delete = "Delete",

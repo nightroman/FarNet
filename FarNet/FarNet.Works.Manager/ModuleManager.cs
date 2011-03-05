@@ -284,35 +284,5 @@ namespace FarNet.Works
 
 			return _ResourceManager.GetString(name, CurrentUICulture);
 		}
-
-#if false
-public: // IModuleManager
-		public void Unregister()
-		{
-			Host.Instance.Unregister();
-		}
-
-	virtual IModuleCommand^ RegisterModuleCommand(Guid id, ModuleCommandAttribute^ attribute, EventHandler<ModuleCommandEventArgs^>^ handler);
-	virtual IModuleFiler^ RegisterModuleFiler(Guid id, ModuleFilerAttribute^ attribute, EventHandler<ModuleFilerEventArgs^>^ handler);
-	virtual IModuleTool^ RegisterModuleTool(Guid id, ModuleToolAttribute^ attribute, EventHandler<ModuleToolEventArgs^>^ handler);
-internal:
-	ModuleManager(String^ assemblyPath);
-	BaseModuleItem^ CreateEntry(Type^ type);
-	bool HasHost() { return _ModuleHostInstance || _ModuleHostClassName || _ModuleHostClassType; }
-	ModuleHost^ GetLoadedModuleHost() { return _ModuleHostInstance; }
-	property Assembly^ AssemblyInstance { Assembly^ get(); }
-	property bool CachedResources;
-	property String^ AssemblyPath { String^ get(); }
-	String^ GetModuleHostClassName();
-	void Invoking();
-	void SetModuleHost(String^ moduleHostClassName);
-	void SetModuleHost(Type^ moduleHostClassType);
-	bool LoadLoadableModuleHost();
-internal:
-	static Object^ LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue);
-	static void SaveFarNetValue(String^ keyPath, String^ valueName, Object^ value);
-private:
-	void Connect();
-#endif
 	}
 }

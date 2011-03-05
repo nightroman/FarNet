@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding='utf-8'?>
 <doc>
 	<!--
-	/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
+	/// <include file='doc.xml' path='doc/CurrentDirectory/*'/>
 	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
 	-->
+	<CurrentDirectory>
+		<summary>
+			Gets the panel directory or sets a new directory and opens its native file panel.
+		</summary>
+		<remarks>
+			If it is a directory tree panel then the path is the currently selected directory in the tree.
+			If it is a module panel then it normally returns <see cref="FarNet.Explorer.Location"/>
+			or the value assigned to the <see cref="Panel.CurrentLocation"/>.
+			<para>
+				It throws on setting if a directory path is not valid or does not exist.
+			</para>
+			<para>
+				Call <see cref="Redraw()"/> after changing the directory in order to show changes immediately.
+			</para>
+		</remarks>
+		<seealso cref="GoToName(string)"/>
+		<seealso cref="GoToPath"/>
+	</CurrentDirectory>
 	<ExplorerModes>
 		<para>
 			In the "Find" mode the method may be called from a background thread, most of FarNet API is not allowed.

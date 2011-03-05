@@ -55,7 +55,6 @@ public: // IPanel
 	virtual property IList<FarFile^>^ ShownFiles { IList<FarFile^>^ get() override; }
 	virtual property PanelSortMode SortMode { PanelSortMode get() override; void set(PanelSortMode value) override; }
 	virtual property PanelViewMode ViewMode { PanelViewMode get() override; void set(PanelViewMode value) override; }
-	virtual property String^ CurrentDirectory { String^ get() override; void set(String^ value) override; }
 	virtual property String^ StartDirectory { String^ get(); }
 	virtual void Close() override;
 	virtual void Push() override;
@@ -71,24 +70,25 @@ public: // IPanelWorks
 	FPPI_FLAG(ShowNamesOnly);
 	FPPI_FLAG(UseFilter);
 	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
+	FPPI_TEXT(CurrentLocation, CurDir);
 	FPPI_TEXT(FormatName, Format);
 	FPPI_TEXT(HostFile, HostFile);
-	FPPI_TEXT(PanelDirectory, CurDir);
 	FPPI_TEXT(Title, PanelTitle);
 public:
 	virtual property array<DataItem^>^ InfoItems { array<DataItem^>^ get() { return _InfoItems; } void set(array<DataItem^>^ value); }
-	virtual property PanelHighlighting Highlighting { PanelHighlighting get(); void set(PanelHighlighting value); }
 	virtual property bool IsOpened { bool get() { return Index > 0; } }
 	virtual property bool IsPushed { bool get() { return _Pushed != nullptr; } }
+	virtual property Explorer^ MyExplorer { Explorer^ get() { return _MyExplorer; } }
 	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
 	virtual property int WorksId { int get() { return Index; } }
-	virtual property Panel^ AnotherPanel { Panel^ get(); }
+	virtual property Panel^ TargetPanel { Panel^ get(); }
+	virtual property PanelHighlighting Highlighting { PanelHighlighting get(); void set(PanelHighlighting value); }
+	virtual PanelPlan^ GetPlan(PanelViewMode mode);
 	virtual void Open();
 	virtual void OpenReplace(Panel^ current);
 	virtual void PostData(Object^ data);
 	virtual void PostFile(FarFile^ file);
 	virtual void PostName(String^ name);
-	virtual PanelPlan^ GetPlan(PanelViewMode mode);
 	virtual void SetKeyBar(array<String^>^ labels);
 	virtual void SetKeyBarAlt(array<String^>^ labels);
 	virtual void SetKeyBarAltShift(array<String^>^ labels);
@@ -98,14 +98,13 @@ public:
 	virtual void SetKeyBarShift(array<String^>^ labels);
 	virtual void SetPlan(PanelViewMode mode, PanelPlan^ plan);
 internal:
-	Panel2(Panel^ panel);
+	Panel2(Panel^ panel, Explorer^ explorer);
 	property bool HasDots { bool get(); }
-	property bool IsExploreLocation { bool get(); }
+	property PanelSortMode StartSortMode { PanelSortMode get(); void set(PanelSortMode value); }
 	void AssertOpen();
+	void ReplaceExplorer(Explorer^ explorer);
 	void SwitchFullScreen();
 	virtual FarFile^ GetFile(int index, FileType type) override;
-internal:
-	property PanelSortMode StartSortMode { PanelSortMode get(); void set(PanelSortMode value); }
 internal:
 	Panel^ const Host;
 	ShelveInfoModule^ _Pushed;
@@ -127,6 +126,7 @@ private:
 	static void Free12Strings(wchar_t* const dst[12]);
 	static void Make12Strings(wchar_t** dst, array<String^>^ src);
 private:
+	Explorer^ _MyExplorer;
 	OpenPluginInfo* m;
 	bool _FarStartSortOrder;
 	bool _RealNames;

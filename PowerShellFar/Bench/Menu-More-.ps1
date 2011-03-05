@@ -65,7 +65,7 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 	New-FarItem '&c. Clear session' { Show-FarMessage (Clear-Session | Format-List | Out-String) -LeftAligned }
 
 	# View/edit settings on a panel (note that $Psf.Settings.Save() is not called automatically)
-	New-FarItem 'Settings' { Start-FarPanel $Psf.Settings -Title 'PowerShelFar Settings' }
+	New-FarItem 'Settings' { Open-FarPanel $Psf.Settings -Title 'PowerShelFar Settings' }
 
 	# Show global variables
 	New-FarItem 'Show global variables' { Get-Variable -Scope global | Sort-Object Name | Format-Table -Auto | Out-Host }

@@ -161,7 +161,7 @@ namespace PowerShellFar
 				if (Map.CreationTime >= 0)
 				{
 					object v = Row[Map.CreationTime];
-					if (v != null)
+					if (v != DBNull.Value)
 						return (DateTime)v;
 				}
 				return new DateTime();
@@ -175,7 +175,7 @@ namespace PowerShellFar
 				if (Map.LastWriteTime >= 0)
 				{
 					object v = Row[Map.LastWriteTime];
-					if (v != null)
+					if (v != DBNull.Value)
 						return (DateTime)v;
 				}
 				return new DateTime();
@@ -189,7 +189,7 @@ namespace PowerShellFar
 				if (Map.LastAccessTime >= 0)
 				{
 					object v = Row[Map.LastAccessTime];
-					if (v != null)
+					if (v != DBNull.Value)
 						return (DateTime)v;
 				}
 				return new DateTime();

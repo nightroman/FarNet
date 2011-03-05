@@ -11,12 +11,12 @@ using FarNet;
 namespace PowerShellFar.Commands
 {
 	/// <summary>
-	/// Start-FarViewer command.
+	/// Open-FarViewer command.
 	/// Creates and opens a viewer.
 	/// </summary>
 	/// <seealso cref="NewFarViewerCommand"/>
 	[Description("Creates and opens a viewer.")]
-	public sealed class StartFarViewerCommand : NewFarViewerCommand
+	public sealed class OpenFarViewerCommand : NewFarViewerCommand
 	{
 		///
 		[Parameter(HelpMessage = _helpModal)]

@@ -58,20 +58,7 @@ namespace FarNet
 		bool UseSortGroups { get; set; }
 		#endregion
 		#region Properties
-		/// <summary>
-		/// Gets or sets the panel current directory.
-		/// </summary>
-		/// <remarks>
-		/// If the panel is a directory tree panel then the path is the currently selected directory in the tree.
-		/// <para>
-		/// It throws on setting if a directory path is not valid or does not exist.
-		/// </para>
-		/// <para>
-		/// Call <see cref="Redraw()"/> after changing the directory in order to show changes immediately.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="GoToName(string)"/>
-		/// <seealso cref="GoToPath"/>
+		/// <include file='doc.xml' path='doc/CurrentDirectory/*'/>
 		string CurrentDirectory { get; set; }
 		/// <summary>
 		/// Gets the current file.
@@ -249,7 +236,7 @@ namespace FarNet
 		/// </remarks>
 		void UnselectAll();
 		/// <summary>
-		/// Selects shown items by their indexes. See <see cref="Redraw()"/>.
+		/// Selects shown items by their indexes.
 		/// </summary>
 		/// <param name="indexes">Indexes of items to be selected. Null is OK.</param>
 		/// <remarks>
@@ -295,9 +282,13 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// The indexes are valid only for the <see cref="ShownList"/> items.
-		/// Unlike the <see cref="SelectedFiles"/> this list is empty if none is selected.
+		/// Unlike the <see cref="SelectedFiles"/> or <see cref="SelectedList"/> this list is empty if none is selected.
 		/// </remarks>
 		int[] SelectedIndexes();
+		/// <summary>
+		/// Gets true if selection exists.
+		/// </summary>
+		bool SelectionExists { get; }
 		#endregion
 	}
 
@@ -653,16 +644,16 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Base <see cref="Panel"/> event arguments.
+	/// Panel event arguments.
 	/// </summary>
 	public class PanelEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Combination of the operation mode flags.
 		/// </summary>
-		public ExplorerModes Mode { get; set; }
+		public ExplorerModes Mode { get; set; } //????? to go
 		/// <summary>
-		/// Set true to tell that action has to be ignored; exact meaning depends on an event.
+		/// Tells that a job is done or an action has to be ignored, it depends on the event.
 		/// </summary>
 		public bool Ignore { get; set; }
 	}
@@ -671,142 +662,51 @@ namespace FarNet
 	/// Arguments of <see cref="Panel.WorksInvokingCommand"/>.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that command has been processed internally.
 	/// </summary>
-	public class CommandLineEventArgs : PanelEventArgs
+	public sealed class CommandLineEventArgs : PanelEventArgs
 	{
+		///
+		public CommandLineEventArgs(string command) { Command = command; }
 		/// <summary>
-		/// Command to be processed.
+		/// Gets the command to be processed.
 		/// </summary>
-		public string Command { get; set; }
+		public string Command { get; private set; }
 	}
 
 	/// <summary>
 	/// Arguments of <see cref="Panel.ViewChanged"/> event. [FE_CHANGEVIEWMODE], [Column types].
 	/// </summary>
-	public class ViewChangedEventArgs : PanelEventArgs
+	public sealed class ViewChangedEventArgs : PanelEventArgs
 	{
+		///
+		public ViewChangedEventArgs(string columns) { Columns = columns; }
 		/// <summary>
-		/// Column kinds, e.g. N,S,D,T.
+		/// Gets column kinds, e.g. N,S,D,T.
 		/// </summary>
-		public string Columns { get; set; }
+		public string Columns { get; private set; }
 	}
 
 	/// <summary>
 	/// Arguments of <see cref="Panel.KeyPressed"/> event.
 	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that the key has been processed internally.
 	/// </summary>
-	public class PanelKeyEventArgs : PanelEventArgs
+	public sealed class PanelKeyEventArgs : PanelEventArgs
 	{
+		///
+		public PanelKeyEventArgs(int code, KeyStates state) { Code = code; State = state; }
 		/// <summary>
-		/// <see cref="VKeyCode"/> code.
+		/// Gets the <see cref="VKeyCode"/> value.
 		/// </summary>
-		public int Code { get; set; }
+		public int Code { get; private set; }
 		/// <summary>
-		/// Indicates key states.
+		/// Gets the key state flags.
 		/// </summary>
-		public KeyStates State { get; set; }
+		public KeyStates State { get; private set; }
 		///
 		public override string ToString()
 		{
 			return string.Format(null, "State={0} Code={1}/{2}", State, Code, (ConsoleKey)Code);
 		}
 	}
-
-	/// <summary>
-	/// Arguments of <see cref="Panel.SetPanelDirectory"/> event.
-	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
-	/// </summary>
-	/// <remarks>
-	/// The panel should be ready to process the <see cref="ExplorerModes.Find"/> flag.
-	/// If it is set, the event is called from search or directory scanning commands,
-	/// and a handler must not perform any actions except changing directory or setting <see cref="PanelEventArgs.Ignore"/> = true
-	/// if it is impossible to change the directory.
-	/// A handler must not close or update the panel, ask user confirmations, show messages and so on.
-	/// </remarks>
-	public class SetDirectoryEventArgs : PanelEventArgs
-	{
-		/// <summary>
-		/// Gets the directory name.
-		/// Usually contains only the name, without its full path.
-		/// To provide basic functionality a handler should also process the names '..' and '\'.
-		/// For correct restoring of current directory after using "Search from the root folder" mode
-		/// in the Find file dialog, a handler should be able to process full directory name returned
-		/// by <see cref="Panel.CurrentDirectory"/>.
-		/// It is not necessary when "Search from the current folder" mode is set in the Find file dialog.
-		/// </summary>
-		public string Name { get; set; }
-	}
-
-	/// <summary>
-	/// Arguments of file events (copy, move, delete, etc).
-	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
-	/// </summary>
-	public class FilesEventArgs : PanelEventArgs
-	{
-		/// <summary>
-		/// Files to process.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public IList<FarFile> Files { get; set; }
-		/// <summary>
-		/// Files are being moved on copy operations or deleted in alternative way on delete operations.
-		/// </summary>
-		public bool Move { get; set; }
-	}
-
-	/// <summary>
-	/// Arguments of <see cref="Panel.ExportFiles"/>.
-	/// </summary>
-	/// <remarks>
-	/// If the operation fails the set <see cref="PanelEventArgs.Ignore"/> = true .
-	/// </remarks>
-	public class ExportFilesEventArgs : FilesEventArgs
-	{
-		/// <summary>
-		/// Destination directory path.
-		/// </summary>
-		public string Destination { get; set; }
-		/// <summary>
-		/// Destination names, valid file system names, not virtual file names.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public IList<string> Names { get; set; }
-	}
-
-	/// <summary>
-	/// Arguments of <see cref="Panel.ImportFiles"/>.
-	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
-	/// </summary>
-	public class ImportFilesEventArgs : FilesEventArgs
-	{
-		/// <summary>
-		/// Source directory path.
-		/// </summary>
-		public string Source { get; set; }
-	}
-
-	/// <summary>
-	/// Arguments of <see cref="Panel.MakeDirectory"/>.
-	/// Set <see cref="PanelEventArgs.Ignore"/> = true if the operation fails.
-	/// </summary>
-	public class MakeDirectoryEventArgs : PanelEventArgs
-	{
-		/// <summary>
-		/// Gets or sets a new item name.
-		/// </summary>
-		public string Name { get; set; }
-	}
-
-	/// <summary>
-	/// Gets data of an input object.
-	/// </summary>
-	/// <param name="value">Input object.</param>
-	/// <returns>Result data.</returns>
-	/// <remarks>
-	/// To get this delegate in <b>PowerShellFar</b> scripts use the helper class <c>PowerShellFar.Meta</c>,
-	/// for example: <c>$panel.DataId = New-Object PowerShellFar.Meta 'Id'</c>
-	/// or even shorter: <c>$panel.DataId = [PowerShellFar.Meta]'Id'</c>.
-	/// </remarks>
-	public delegate object Getter(object value);
 
 	/// <summary>
 	/// Panel column options (abstract).

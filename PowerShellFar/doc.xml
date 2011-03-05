@@ -42,7 +42,7 @@
 				Example: if this is a <see cref="DataPanel"/> then the added handler will be called when
 				[Enter] is pressed on its child <see cref="MemberPanel"/> file with the specified name.
 				Normally the task of this handler is to start another table containing values to be selected
-				and to set a handler triggered on [Enter] there (see <see cref="SetLookup"/>).
+				and to set a handler triggered on [Enter] there (see <see cref="Lookup"/>).
 				Example script: <c>Test-Panel-DbNotes-.ps1</c>.
 			</para>
 		</remarks>

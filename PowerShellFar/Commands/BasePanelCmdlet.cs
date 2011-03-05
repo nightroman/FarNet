@@ -67,7 +67,7 @@ namespace PowerShellFar.Commands
 		SwitchParameter? _IdleUpdate;
 
 		/// <summary>
-		/// Custom data ID to distinguish files by data. See <see cref="Panel.FileComparer"/>.
+		/// Custom data ID getter to distinguish files by data.
 		/// </summary>
 		[Parameter(HelpMessage = "Custom data ID to distinguish files by data.")]
 		public Meta DataId { get; set; }
@@ -82,7 +82,7 @@ namespace PowerShellFar.Commands
 		internal void ApplyParameters(Panel panel)
 		{
 			// panel
-			if (DataId != null) panel.FileComparer = new FileMetaComparer(DataId);
+			if (DataId != null) panel.Explorer.FileComparer = new FileMetaComparer(DataId);
 			if (_IdleUpdate.HasValue && _IdleUpdate.Value) panel.IdleUpdate = true;
 			if (Data != null)
 				foreach (DictionaryEntry kv in Data)

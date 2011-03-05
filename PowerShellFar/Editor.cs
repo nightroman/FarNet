@@ -50,7 +50,7 @@ namespace PowerShellFar
 				editLine = Far.Net.Line;
 				if (editLine == null)
 				{
-					A.Msg("There is no current editor line.");
+					A.Message("There is no current editor line.");
 					return;
 				}
 			}
@@ -80,7 +80,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				A.Msg(ex.Message);
+				A.Message(ex.Message);
 			}
 		}
 
@@ -378,183 +378,6 @@ namespace PowerShellFar
 			// clean the command line if ok
 			if (ok && toCleanCmdLine && wt != WindowKind.Editor)
 				Far.Net.CommandLine.Text = string.Empty;
-		}
-	}
-
-	/// <summary>
-	/// Non-modal data editor with assumed post-processing on saving.
-	/// </summary>
-	class DataEditor
-	{
-		/// <summary>
-		/// Editor interface.
-		/// </summary>
-		public IEditor Editor
-		{
-			get { return _Editor; }
-		}
-		readonly IEditor _Editor = Far.Net.CreateEditor();
-
-		public DataEditor()
-		{
-			_Editor.CodePage = 1200;
-			_Editor.DeleteSource = DeleteSource.File;
-			_Editor.DisableHistory = true;
-			_Editor.IsNew = true;
-		}
-	}
-
-	class MemberEditor : DataEditor
-	{
-		object _instance;
-		PSPropertyInfo _info;
-
-		public void Open(string filePath, bool delete, object instance, PSPropertyInfo info)
-		{
-			_instance = instance;
-			_info = info;
-
-			Editor.DeleteSource = delete ? DeleteSource.File : DeleteSource.None;
-			Editor.FileName = filePath;
-			Editor.Title = _info.Name;
-			Editor.Saving += Saving;
-
-			Editor.Open(OpenMode.None);
-		}
-
-		void Saving(object sender, EventArgs e)
-		{
-			bool isPSObject;
-			object value;
-			string type;
-			if (_info.Value is PSObject && (_info.Value as PSObject).BaseObject != null)
-			{
-				isPSObject = true;
-				type = (_info.Value as PSObject).BaseObject.GetType().FullName;
-			}
-			else
-			{
-				isPSObject = false;
-				type = _info.TypeNameOfValue;
-			}
-
-			if (type == "System.Collections.ArrayList" || type.EndsWith("]", StringComparison.Ordinal))
-			{
-				ArrayList lines = new ArrayList();
-
-				foreach (ILine line in Editor.Lines)
-					lines.Add(line.Text);
-
-				if (lines[lines.Count - 1].ToString().Length == 0)
-					lines.RemoveAt(lines.Count - 1);
-				value = lines;
-			}
-			else
-			{
-				value = Editor.GetText().TrimEnd();
-			}
-
-			if (isPSObject)
-				value = PSObject.AsPSObject(value);
-
-			try
-			{
-				A.SetMemberValue(_info, value);
-				MemberPanel.WhenMemberChanged(_instance);
-			}
-			catch (RuntimeException ex)
-			{
-				Far.Net.Message(ex.Message, "Setting property");
-			}
-		}
-	}
-
-	class PropertyEditor : DataEditor
-	{
-		string _itemPath;
-		PSPropertyInfo _info;
-
-		public void Open(string filePath, bool delete, string itemPath, PSPropertyInfo info)
-		{
-			_itemPath = itemPath;
-			_info = info;
-
-			Editor.DeleteSource = delete ? DeleteSource.File : DeleteSource.None;
-			Editor.FileName = filePath;
-			Editor.Title = _itemPath + "." + _info.Name;
-			Editor.Saving += Saving;
-
-			Editor.Open(OpenMode.None);
-		}
-
-		void Saving(object sender, EventArgs e)
-		{
-			try
-			{
-				object value;
-				if (_info.TypeNameOfValue.EndsWith("]", StringComparison.Ordinal))
-				{
-					ArrayList lines = new ArrayList();
-
-					foreach (ILine line in Editor.Lines)
-						lines.Add(line.Text);
-
-					if (lines[lines.Count - 1].ToString().Length == 0)
-						lines.RemoveAt(lines.Count - 1);
-					value = lines;
-				}
-				else
-				{
-					value = Editor.GetText().TrimEnd();
-				}
-
-				A.SetPropertyValue(_itemPath, _info.Name, Converter.Parse(_info, value));
-				PropertyPanel.WhenPropertyChanged(_itemPath);
-			}
-			catch (RuntimeException ex)
-			{
-				A.Msg(ex);
-			}
-		}
-	}
-
-	class ItemEditor : DataEditor
-	{
-		string _itemPath;
-		AnyPanel _panel;
-
-		public void Open(string filePath, bool delete, string itemPath, AnyPanel panel)
-		{
-			_itemPath = itemPath;
-			_panel = panel;
-
-			Editor.DeleteSource = delete ? DeleteSource.File : DeleteSource.None;
-			Editor.FileName = filePath;
-			Editor.Title = _itemPath;
-			Editor.Saving += Saving;
-
-			Editor.Open(OpenMode.None);
-		}
-
-		void Saving(object sender, EventArgs e)
-		{
-			try
-			{
-				// read
-				string text = Editor.GetText().TrimEnd();
-
-				// set
-				if (!A.SetContentUI(_itemPath, text))
-					return;
-
-				// update a panel
-				if (_panel != null)
-					_panel.UpdateRedraw(false);
-			}
-			catch (RuntimeException ex)
-			{
-				A.Msg(ex.Message);
-			}
 		}
 	}
 

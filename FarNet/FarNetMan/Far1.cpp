@@ -433,7 +433,7 @@ void Far1::ShowError(String^ title, Exception^ error)
 		error->Message,
 		String::IsNullOrEmpty(title) ? error->GetType()->FullName : title,
 		MsgOptions::LeftAligned | MsgOptions::Warning,
-		gcnew array<String^>{"Ok", "View info", "Copy info"});
+		gcnew array<String^>{"Ok", "More"});
 	if (res < 1)
 		return;
 
@@ -448,18 +448,8 @@ void Far1::ShowError(String^ title, Exception^ error)
 	// add verbose information
 	info += "\r\n" + error->ToString();
 
-	// show or clip
-	if (res == 1)
-	{
-		Far.AnyViewer->ViewText(
-			info,
-			error->GetType()->FullName,
-			OpenMode::Modal);
-	}
-	else
-	{
-		CopyToClipboard(info);
-	}
+	// locked editor
+	Works::EditorTools::EditText(info, error->GetType()->FullName, true);
 }
 
 IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
@@ -475,21 +465,19 @@ void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
 	Info.ShowHelp(pinPath, pinTopic, (int)options);
 }
 
-Works::IPanelWorks^ Far1::WorksPanel(FarNet::Panel^ panel)
+Works::IPanelWorks^ Far1::WorksPanel(FarNet::Panel^ panel, Explorer^ explorer)
 {
-	return gcnew FarNet::Panel2(panel);
+	return gcnew FarNet::Panel2(panel, explorer);
 }
 
-Panel^ Far1::FindPanel(Guid typeId)
+array<Panel^>^ Far1::Panels(Guid typeId)
 {
-	FarNet::Panel2^ p = Panel0::GetPanel(typeId);
-	return p ? p->Host : nullptr;
+	return Panel0::PanelsByGuid(typeId);
 }
 
-Panel^ Far1::FindPanel(Type^ type)
+array<Panel^>^ Far1::Panels(Type^ type)
 {
-	FarNet::Panel2^ p = Panel0::GetPanel(type);
-	return p ? p->Host : nullptr;
+	return Panel0::PanelsByType(type);
 }
 
 String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text)

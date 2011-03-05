@@ -65,13 +65,11 @@ if ([IO.File]::Exists($Path) -or [IO.Directory]::Exists($Path)) {
 }
 
 ### Get items, convert some paths
-if ($Path -like 'HKEY_*') {
-	$Path = 'Registry::' + $Path
-}
-$items = @(Get-Item $Path -Force -ErrorAction 0)
-if (!$items) {
-	return
-}
+if ($Path -like 'HKEY_*') { $Path = 'Registry::' + $Path }
+$paths = @(Resolve-Path $Path -ErrorAction 0)
+if (!$paths) { return }
+$items = @(Get-Item -LiteralPath $paths -Force -ErrorAction 0)
+if (!$items) { return }
 
 ### FileSystem items
 if ($items[0].PSProvider.Name -eq 'FileSystem') {
@@ -95,14 +93,12 @@ if ($items[0].PSProvider.Name -eq 'FileSystem') {
 }
 ### Provider items
 else {
-	if ($items.Count -eq 1) {
-		$item = $items[0]
+	if ($paths.Count -eq 1) {
+		$thePath = $paths[0]
 	}
 	else {
-		$item = $items | Out-FarList -Title 'Go to'
-		if (!$item) {
-			return
-		}
+		$thePath = $paths | Out-FarList -Title 'Go to'
+		if (!$thePath) { return }
 	}
-	New-Object PowerShellFar.ItemPanel $item.PSPath | Start-FarPanel
+	New-Object PowerShellFar.ItemPanel $thePath | Open-FarPanel
 }

@@ -107,8 +107,7 @@ if ($Source -and $Destination) {
 
 ### Check opened
 [Guid]$id = 'edd13d45-281a-460b-8ab1-42f587128c67'
-$Panel = $Far.FindPanel($id)
-if ($Panel) { return }
+if ($Far.Panels($id)) { return }
 
 # Drop selection
 if ($Auto) {
@@ -116,56 +115,52 @@ if ($Auto) {
 	$Far.Panel.Redraw()
 }
 
-### Create panel
-$Panel = New-Object PowerShellFar.UserPanel
-$Panel.Columns = @(
-	@{ Kind = 'N'; Expression = 'DisplayName' }
-	@{ Kind = 'S'; Label = '% done'; Expression = { if ($_.BytesTotal) { 100 * $_.BytesTransferred / $_.BytesTotal } else { 100 } } }
-	@{ Kind = 'O'; Label = 'State'; Width = 15; Expression = 'JobState' }
-	@{ Kind = 'DC'; Label = 'Created'; Expression = 'CreationTime' }
-)
-
-### Panel jobs
-$Panel.AsFiles = {
-	Get-BitsTransfer -ErrorAction 0
-}
-
-### Delete jobs
-$Panel.AsDeleteFiles = {
-	if ($Far.Message('Remove selected transfer jobs?', 'Remove', 'OkCancel') -ne 0) { return }
-	foreach($f in $_.Files) {
-		Remove-BitsTransfer -BitsJob $f.Data
+### Explorer
+$Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
+	### Get jobs
+	AsGetData = {
+		Get-BitsTransfer -ErrorAction 0
+	}
+	### Delete jobs
+	AsDeleteFiles = {
+		if (0 -eq $Far.Message('Remove selected transfer jobs?', 'Remove', 'OkCancel')) {
+			$_.FilesData | Remove-BitsTransfer
+		}
 	}
 }
 
-### Open a job
-$Panel.AsOpenFile = {
-	$job = $_.File.Data
-
-	New-FarMenu -Show "Job: $($job.DisplayName)" $(
-		if ($job.JobState -eq 'Transferred') {
-			New-FarItem 'Complete' {
-				Complete-BitsTransfer -BitsJob $job -Confirm
-			}
-		}
-		if ($job.JobState -eq 'Transferring') {
-			New-FarItem 'Suspend' {
-				Suspend-BitsTransfer -BitsJob $job -Confirm
-			}
-		}
-		if ($job.JobState -eq 'Suspended') {
-			New-FarItem 'Resume' {
-				Resume-BitsTransfer -BitsJob $job -Confirm -Asynchronous
-			}
-		}
-		New-FarItem 'Remove' {
-			Remove-BitsTransfer -BitsJob $job -Confirm
-		}
+### Panel
+New-Object PowerShellFar.ObjectPanel $Explorer -Property @{
+	Columns = @(
+		@{ Kind = 'N'; Expression = 'DisplayName' }
+		@{ Kind = 'S'; Label = '% done'; Expression = { if ($_.BytesTotal) { 100 * $_.BytesTransferred / $_.BytesTotal } else { 100 } } }
+		@{ Kind = 'O'; Label = 'State'; Width = 15; Expression = 'JobState' }
+		@{ Kind = 'DC'; Label = 'Created'; Expression = 'CreationTime' }
 	)
-
-	$this.Update($true)
-	$this.Redraw()
-}
-
-# Go
-Start-FarPanel $Panel -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -IdleUpdate
+	### Open a job
+	AsOpenFile = {
+		$job = $_.File.Data
+		New-FarMenu -Show "Job: $($job.DisplayName)" $(
+			if ($job.JobState -eq 'Transferred') {
+				New-FarItem 'Complete' {
+					Complete-BitsTransfer -BitsJob $job -Confirm
+				}
+			}
+			if ($job.JobState -eq 'Transferring') {
+				New-FarItem 'Suspend' {
+					Suspend-BitsTransfer -BitsJob $job -Confirm
+				}
+			}
+			if ($job.JobState -eq 'Suspended') {
+				New-FarItem 'Resume' {
+					Resume-BitsTransfer -BitsJob $job -Confirm -Asynchronous
+				}
+			}
+			New-FarItem 'Remove' {
+				Remove-BitsTransfer -BitsJob $job -Confirm
+			}
+		)
+		$this.Update($true)
+		$this.Redraw()
+	}
+} | Open-FarPanel -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -IdleUpdate
