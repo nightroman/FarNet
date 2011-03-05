@@ -46,9 +46,16 @@ Command syntax
 	usual. [Esc] returns to the search result panel.
 
 [F3]/[F4]
-	on a found file opens not modal viewer/editor if the original panels
+	on a found file opens not modal viewer/editor if the original explorer
 	supports file export. If file import is supported then the files can be
-	edited. Now import is called not on saving but when the editor closes.
+	edited. For now import is called not on saving but when an editor exits.
 
 [Del]
 	deletes the selected items if their explorers support this operation.
+
+
+= HISTORY =
+
+1.0.1
+
+Use FarNet 4.4.3
