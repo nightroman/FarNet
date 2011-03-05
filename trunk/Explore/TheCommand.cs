@@ -15,15 +15,15 @@ namespace FarNet.Explore
 	{
 		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
-			Panel mpanel;
-			if ((mpanel = Far.Net.Panel as Panel) == null || mpanel.Explorer == null)
+			Panel panel = Far.Net.Panel as Panel;
+			if (panel == null)
 			{
-				Far.Net.Message("This is not an explorer panel.");
+				Far.Net.Message("This is not a module panel.");
 				return;
 			}
 
 			// the search
-			var search = new FileSearchExplorer(mpanel.Explorer);
+			var search = new FileSearchExplorer(panel.Explorer);
 
 			// parse command, setup the search
 			var command = e.Command.Trim();
@@ -58,8 +58,7 @@ namespace FarNet.Explore
 				return;
 
 			// panel
-			var newPanel = search.CreatePanel();
-			newPanel.OpenChild(mpanel);
+			search.OpenPanelChild(panel);
 		}
 	}
 }
