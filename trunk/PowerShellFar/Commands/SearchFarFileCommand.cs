@@ -12,15 +12,23 @@ using FarNet.Tools;
 namespace PowerShellFar.Commands
 {
 	/// <summary>
-	/// Starts search in the explorer panel and opens the result panel.
+	/// Search-FarFile command.
+	/// Searches files in the panel opens the result panel.
 	/// </summary>
-	[Description("Starts search in the explorer panel and opens the result panel.")]
-	public class StartFarSearchCommand : BaseCmdlet
+	[Description("Searches files in the panel opens the result panel.")]
+	public class SearchFarFileCommand : BaseCmdlet
 	{
+		/// <summary>
+		/// Classic Far Manager file mask including exclude and regex forms.
+		/// </summary>
+		[Parameter(Position = 0, ParameterSetName = "Mask",
+			HelpMessage = "Classic Far Manager file mask including exclude and regex forms.")]
+		public string Mask { get; set; }
 		/// <summary>
 		/// Search script. Variables: <c>$this</c> is the explorer providing the file, <c>$_</c> is the file.
 		/// </summary>
-		[Parameter(Position = 0, HelpMessage = "Search script. Variables: $this is the explorer providing the file, $_ is the file.")]
+		[Parameter(Position = 0, ParameterSetName = "Script",
+			HelpMessage = "Search script. Variables: $this is the explorer providing the file, $_ is the file.")]
 		public ScriptBlock Script { get; set; }
 		/// <summary>
 		/// Tells to include directories into the search process and results.
@@ -35,18 +43,25 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			Panel mpanel;
-			if ((mpanel = Far.Net.Panel as Panel) == null || mpanel.Explorer == null)
+			Panel panel = Far.Net.Panel as Panel;
+			if (panel == null)
 			{
-				WriteWarning("This is not an explorer panel.");
+				WriteWarning("This is not a module panel.");
 				return;
 			}
 
 			// setup the search
-			var search = new FileSearchExplorer(mpanel.Explorer);
+			var search = new FileSearchExplorer(panel.Explorer);
 			search.Directory = Directory;
 			search.Recurse = Recurse;
-			if (Script != null)
+			if (Mask != null)
+			{
+				search.Process = delegate(Explorer explorer, FarFile file)
+				{
+					return Far.Net.MatchPattern(file.Name, Mask);
+				};
+			}
+			else if (Script != null)
 			{
 				search.Process = delegate(Explorer explorer, FarFile file)
 				{
@@ -60,8 +75,7 @@ namespace PowerShellFar.Commands
 				return;
 
 			// panel
-			var newPanel = search.CreatePanel();
-			newPanel.OpenChild(mpanel);
+			search.OpenPanelChild(panel);
 		}
 	}
 }

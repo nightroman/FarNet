@@ -15,14 +15,19 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Scripted explorer of a virtual file system directory.
+	/// Explorer designed for PowerShell scripts.
 	/// </summary>
-	public sealed class PowerExplorer : Explorer
+	public class PowerExplorer : Explorer
 	{
 		/// <summary>
 		/// New explorer with its type ID.
 		/// </summary>
 		public PowerExplorer(Guid typeId) : base(typeId) { }
+		/// <summary>
+		/// Gets the collection ready to use as the file cache, if needed.
+		/// </summary>
+		public IList<FarFile> Cache { get { return _Cache; } internal set { _Cache = value ?? new List<FarFile>(); } }
+		IList<FarFile> _Cache = new List<FarFile>();
 		/// <summary>
 		/// Gets or sets the user data object.
 		/// </summary>
@@ -34,25 +39,38 @@ namespace PowerShellFar
 		/// </remarks>
 		public PSObject Data { get; set; }
 		/// <summary>
-		/// <see cref="Explorer.Explore"/> worker. It must be set in a script.
+		/// <see cref="Explorer.GetFiles"/> worker.
+		/// </summary>
+		public virtual IList<FarFile> DoGetFiles(ExplorerEventArgs args) { return Cache; }
+		/// <summary>
+		/// <see cref="Explorer.GetFiles"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
+		/// <para>
+		/// The script outputs files or nothing. In the latter case the predefined <see cref="Cache"/> list is used.
+		/// </para>
 		/// </remarks>
-		public ScriptBlock AsExplore { get; set; }
+		public ScriptBlock AsGetFiles { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsExplore"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override IList<FarFile> Explore(ExplorerArgs args)
+		public sealed override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
-			if (AsExplore == null)
-				throw new InvalidOperationException("Explore script is not set.");
+			if (AsGetFiles == null)
+				return DoGetFiles(args);
 
 			if (Runspace.DefaultRunspace == null)
 				Runspace.DefaultRunspace = A.Psf.Runspace;
-			
+
+			// nothing, use the predefined file list
+			var output = A.InvokeScript(AsGetFiles, this, args);
+			if (output.Count == 0)
+				return Cache;
+
+			// convert the output to files
 			var result = new List<FarFile>();
-			foreach (var it in A.InvokeScript(AsExplore, this, args))
+			foreach (var it in output)
 			{
 				FarFile file = (FarFile)LanguagePrimitives.ConvertTo(it, typeof(FarFile), null);
 				if (file != null)
@@ -64,110 +82,238 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.ExploreDirectory"/> worker.
 		/// </summary>
+		public virtual Explorer DoExploreDirectory(ExploreDirectoryEventArgs args) { return null; }
+		/// <summary>
+		/// <see cref="Explorer.ExploreDirectory"/> worker.
+		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreDirectoryArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreDirectoryEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreDirectory { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsExploreDirectory"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override Explorer ExploreDirectory(ExploreDirectoryArgs args)
+		public sealed override Explorer ExploreDirectory(ExploreDirectoryEventArgs args)
 		{
-			return InvokeExplorerScript(AsExploreDirectory, args);
+			if (AsExploreDirectory == null)
+				return DoExploreDirectory(args);
+			else
+				return InvokeExplorerScript(AsExploreDirectory, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ExploreLocation"/> worker.
 		/// </summary>
+		public virtual Explorer DoExploreLocation(ExploreLocationEventArgs args) { return null; }
+		/// <summary>
+		/// <see cref="Explorer.ExploreLocation"/> worker.
+		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreLocationArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreLocationEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreLocation { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsExploreLocation"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override Explorer ExploreLocation(ExploreLocationArgs args)
+		public sealed override Explorer ExploreLocation(ExploreLocationEventArgs args)
 		{
-			return InvokeExplorerScript(AsExploreLocation, args);
+			if (AsExploreLocation == null)
+				return DoExploreLocation(args);
+			else
+				return InvokeExplorerScript(AsExploreLocation, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ExploreParent"/> worker.
 		/// </summary>
+		public virtual Explorer DoExploreParent(ExploreParentEventArgs args) { return null; }
+		/// <summary>
+		/// <see cref="Explorer.ExploreParent"/> worker.
+		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreParent { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsExploreParent"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override Explorer ExploreParent(ExplorerArgs args)
+		public sealed override Explorer ExploreParent(ExploreParentEventArgs args)
 		{
-			return InvokeExplorerScript(AsExploreParent, args);
+			if (AsExploreParent == null)
+				return DoExploreParent(args);
+			else
+				return InvokeExplorerScript(AsExploreParent, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ExploreRoot"/> worker.
 		/// </summary>
+		public virtual Explorer DoExploreRoot(ExploreRootEventArgs args) { return null; }
+		/// <summary>
+		/// <see cref="Explorer.ExploreRoot"/> worker.
+		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreRoot { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsExploreRoot"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override Explorer ExploreRoot(ExplorerArgs args)
+		public sealed override Explorer ExploreRoot(ExploreRootEventArgs args)
 		{
-			return InvokeExplorerScript(AsExploreRoot, args);
+			if (AsExploreRoot == null)
+				return DoExploreRoot(args);
+			else
+				return InvokeExplorerScript(AsExploreRoot, args);
+		}
+		/// <summary>
+		/// <see cref="Explorer.CreateFile"/> worker.
+		/// </summary>
+		public virtual void DoCreateFile(CreateFileEventArgs args) { base.CreateFile(args); }
+		/// <summary>
+		/// <see cref="Explorer.CreateFile"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="CreateFileEventArgs"/>.
+		/// </remarks>
+		public ScriptBlock AsCreateFile { get; set; }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void CreateFile(CreateFileEventArgs args)
+		{
+			if (AsCreateFile == null)
+				DoCreateFile(args);
+			else
+				A.InvokeScriptReturnAsIs(AsCreateFile, this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ExportFile"/> worker.
 		/// </summary>
+		public virtual void DoExportFile(ExportFileEventArgs args) { base.ExportFile(args); }
+		/// <summary>
+		/// <see cref="Explorer.ExportFile"/> worker.
+		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExportFileArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExportFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExportFile { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsExportFile"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override void ExportFile(ExportFileArgs args)
+		public sealed override void ExportFile(ExportFileEventArgs args)
 		{
-			if (args == null) throw new ArgumentNullException("args");
 			if (AsExportFile == null)
-				args.Result = JobResult.Default;
+				DoExportFile(args);
 			else
 				A.InvokeScriptReturnAsIs(AsExportFile, this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.ImportFile"/> worker.
 		/// </summary>
+		public virtual void DoImportFile(ImportFileEventArgs args) { base.ImportFile(args); }
+		/// <summary>
+		/// <see cref="Explorer.ImportFile"/> worker.
+		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ImportFileArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ImportFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsImportFile { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsImportFile"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override void ImportFile(ImportFileArgs args)
+		public sealed override void ImportFile(ImportFileEventArgs args)
 		{
-			if (args == null) throw new ArgumentNullException("args");
 			if (AsImportFile == null)
-				args.Result = JobResult.Default;
+				DoImportFile(args);
 			else
 				A.InvokeScriptReturnAsIs(AsImportFile, this, args);
 		}
 		/// <summary>
+		/// <see cref="Explorer.ImportText"/> worker.
+		/// </summary>
+		public virtual void DoImportText(ImportTextEventArgs args) { base.ImportText(args); }
+		/// <summary>
+		/// <see cref="Explorer.ImportText"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ImportTextEventArgs"/>.
+		/// </remarks>
+		public ScriptBlock AsImportText { get; set; }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void ImportText(ImportTextEventArgs args)
+		{
+			if (AsImportText == null)
+				DoImportText(args);
+			else
+				A.InvokeScriptReturnAsIs(AsImportText, this, args);
+		}
+		/// <summary>
+		/// <see cref="Explorer.AcceptFiles"/> worker.
+		/// </summary>
+		public virtual void DoAcceptFiles(AcceptFilesEventArgs args) { base.AcceptFiles(args); }
+		/// <summary>
+		/// <see cref="Explorer.AcceptFiles"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="AcceptFilesEventArgs"/>.
+		/// </remarks>
+		public ScriptBlock AsAcceptFiles { get; set; }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void AcceptFiles(AcceptFilesEventArgs args)
+		{
+			if (AsAcceptFiles == null)
+				DoAcceptFiles(args);
+			else
+				A.InvokeScriptReturnAsIs(AsAcceptFiles, this, args);
+		}
+		/// <summary>
+		/// <see cref="Explorer.AcceptOther"/> worker.
+		/// </summary>
+		public virtual void DoAcceptOther(AcceptOtherEventArgs args) { base.AcceptOther(args); }
+		/// <summary>
+		/// <see cref="Explorer.AcceptOther"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="AcceptOtherEventArgs"/>.
+		/// </remarks>
+		public ScriptBlock AsAcceptOther { get; set; }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void AcceptOther(AcceptOtherEventArgs args)
+		{
+			if (AsAcceptOther == null)
+				DoAcceptOther(args);
+			else
+				A.InvokeScriptReturnAsIs(AsAcceptOther, this, args);
+		}
+		/// <summary>
+		/// <see cref="Explorer.DeleteFiles"/> worker.
+		/// </summary>
+		public virtual void DoDeleteFiles(DeleteFilesEventArgs args) { base.DeleteFiles(args); }
+		/// <summary>
 		/// <see cref="Explorer.DeleteFiles"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="DeleteFilesArgs"/>.
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="DeleteFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsDeleteFiles { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsDeleteFiles"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override void DeleteFiles(DeleteFilesArgs args)
+		public sealed override void DeleteFiles(DeleteFilesEventArgs args)
 		{
-			if (AsDeleteFiles != null)
+			if (AsDeleteFiles == null)
+				DoDeleteFiles(args);
+			else
 				A.InvokeScriptReturnAsIs(AsDeleteFiles, this, args);
 		}
+		/// <summary>
+		/// <see cref="Explorer.CreatePanel"/> worker.
+		/// </summary>
+		public virtual Panel DoCreatePanel() { return base.CreatePanel(); }
 		/// <summary>
 		/// <see cref="Explorer.CreatePanel"/> worker.
 		/// </summary>
@@ -176,19 +322,19 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsCreatePanel { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsCreatePanel"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override Panel CreatePanel()
+		public sealed override Panel CreatePanel()
 		{
 			if (AsCreatePanel == null)
-				return null;
-
-			var data = A.InvokeScript(AsCreatePanel, this, null);
-			if (data.Count == 0)
-				return null;
-
-			return (Panel)LanguagePrimitives.ConvertTo(data[0], typeof(Panel), null);
+				return DoCreatePanel();
+			else
+				return (Panel)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCreatePanel, this, null), typeof(Panel), null);
 		}
+		/// <summary>
+		/// <see cref="Explorer.UpdatePanel"/> worker.
+		/// </summary>
+		public virtual void DoUpdatePanel(Panel panel) { base.UpdatePanel(panel); }
 		/// <summary>
 		/// <see cref="Explorer.UpdatePanel"/> worker.
 		/// </summary>
@@ -197,22 +343,17 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsUpdatePanel { get; set; }
 		/// <summary>
-		/// Calls <see cref="AsUpdatePanel"/>.
+		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public override void UpdatePanel(Panel panel)
+		public sealed override void UpdatePanel(Panel panel)
 		{
-			if (AsUpdatePanel != null)
+			if (AsUpdatePanel == null)
+				DoUpdatePanel(panel);
+			else
 				A.InvokeScriptReturnAsIs(AsUpdatePanel, this, panel);
 		}
-		///
-		internal Explorer InvokeExplorerScript(ScriptBlock script, ExplorerArgs args)
+		internal Explorer InvokeExplorerScript(ScriptBlock script, ExplorerEventArgs args)
 		{
-			if (script == null)
-			{
-				args.Result = JobResult.Default;
-				return null;
-			}
-
 			if (Runspace.DefaultRunspace == null)
 				Runspace.DefaultRunspace = A.Psf.Runspace;
 

@@ -19,18 +19,17 @@ internal:
 internal:
 	static void BeginOpenMode();
 	static void EndOpenMode();
+	static array<Panel^>^ PanelsByGuid(Guid typeId);
+	static array<Panel^>^ PanelsByType(Type^ type);
 	static HANDLE AddPluginPanel(Panel2^ plugin);
 	static int AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode);
 	static int AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode);
 	static int AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode);
-	static int AsMakeDirectory(HANDLE hPlugin, const wchar_t** name, int opMode);
 	static int AsProcessEvent(HANDLE hPlugin, int id, void* param);
 	static int AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState);
 	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode);
 	static int AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode);
 	static IPanel^ GetPanel(bool active);
-	static Panel2^ GetPanel(Guid typeId);
-	static Panel2^ GetPanel(Type^ type);
 	static Panel2^ GetPanel2(Panel2^ plugin);
 	static void AsClosePlugin(HANDLE hPlugin);
 	static void AsFreeFindData(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber);
@@ -42,7 +41,7 @@ internal:
 	static Panel2^ GetPanel(int worksId) { return _panels[worksId]; }
 private:
 	Panel0() {}
-	static void ReplaceExplorer(Panel^ panel, Explorer^ explorer); 
+	static void OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ args);
 private:
 	// Posted [0] and opened [1..3] panels; i.e. size is 4, see AddPluginPanel().
 	static array<Panel2^>^ _panels = gcnew array<Panel2^>(cPanels);

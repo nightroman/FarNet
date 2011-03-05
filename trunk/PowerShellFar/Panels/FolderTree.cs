@@ -11,10 +11,7 @@ _090810_180151
 */
 
 using System;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using FarNet;
 
 namespace PowerShellFar
@@ -28,14 +25,9 @@ namespace PowerShellFar
 	public sealed class FolderTree : TreePanel
 	{
 		/// <summary>
-		/// At the current location.
+		/// New folder tree with the explorer.
 		/// </summary>
-		public FolderTree() : this(null) { }
-
-		/// <summary>
-		/// At the given location.
-		/// </summary>
-		public FolderTree(string path)
+		public FolderTree(FolderExplorer explorer) : base(explorer)
 		{
 			// _091015_190130 Use of UpdateInfo is problematic: it is called after Close()
 			// and somehow Close() may not work. To watch this in future Far versions.
@@ -43,25 +35,31 @@ namespace PowerShellFar
 
 			// For updating the panel path.
 			Redrawing += Updating;
-
+		}
+		/// <summary>
+		/// New folder tree at the given location.
+		/// </summary>
+		public FolderTree(string path)
+			: this(new FolderExplorer(path))
+		{
+			// post name
 			if (string.IsNullOrEmpty(path) || path == ".")
 			{
-				FarFile f = Far.Net.Panel.CurrentFile;
-				if (f != null)
-				{
-					Reset(null, f.Name);
-					return;
-				}
+				FarFile currentFile = Far.Net.Panel.CurrentFile;
+				if (currentFile != null)
+					PostName(currentFile.Name);
 			}
-
-			Reset(path, null);
 		}
-
+		/// <summary>
+		/// New folder tree at the current location.
+		/// </summary>
+		public FolderTree()
+			: this((string)null) { }
 		void Updating(object sender, EventArgs e)
 		{
 			string dir = string.Empty;
 
-			FarFile file = CurrentFile;
+			var file = CurrentFile;
 			if (file != null)
 			{
 				TreeFile node = (TreeFile)file;
@@ -79,151 +77,12 @@ namespace PowerShellFar
 			else
 			{
 				Title = "Tree";
-				dir = "."; // to avoid empty (Far closes on dots or CtrlPgUp)
+				dir = "*"; // to avoid empty (Far closes on dots or CtrlPgUp)
 			}
 
-			PanelDirectory = dir;
+			//! panel directory is not the same as the explorer location
+			CurrentLocation = dir;
 		}
-
-		void Reset(string path, string current)
-		{
-			// set location
-			if (!string.IsNullOrEmpty(path) && path != ".")
-				A.Psf.Engine.SessionState.Path.SetLocation(path);
-
-			// get location
-			PowerPath location = new PowerPath(A.Psf.Engine.SessionState.Path.CurrentLocation);
-			if (!My.ProviderInfoEx.IsNavigation(location.Provider))
-				throw new RuntimeException("Provider '" + location.Provider + "' does not support navigation.");
-
-			// get root item
-			Collection<PSObject> items = A.Psf.Engine.SessionState.InvokeProvider.Item.Get(new string[] { "." }, true, true);
-			PSObject data = items[0];
-
-			// reset roots
-			RootFiles.Clear();
-			TreeFile ti = new TreeFile();
-			ti.Name = location.Path; // special case name for the root
-			ti.Fill = Fill;
-			ti.Data = data;
-			RootFiles.Add(ti);
-			ti.Expand();
-
-			// set current
-			if (current != null)
-			{
-				foreach (TreeFile t in ti.ChildFiles)
-				{
-					if (Kit.Equals(t.Name, current))
-					{
-						PostFile(t);
-						break;
-					}
-				}
-			}
-
-			// panel info
-			PanelDirectory = ti.Path;
-		}
-
-		void Fill(object sender, EventArgs e)
-		{
-			TreeFile ti = sender as TreeFile;
-
-			// get
-			Collection<PSObject> items = A.GetChildItems(ti.Path);
-
-			foreach (PSObject item in items)
-			{
-				if (!(bool)item.Properties["PSIsContainer"].Value)
-					continue;
-
-				TreeFile t = ti.ChildFiles.Add();
-
-				// name
-				t.Data = item;
-				t.Name = (string)item.Properties["PSChildName"].Value;
-				t.Fill = Fill;
-
-				// description
-				PSPropertyInfo pi = item.Properties["FarDescription"];
-				if (pi != null && pi.Value != null)
-					t.Description = pi.Value.ToString();
-
-				// attributes _090810_180151
-				FileSystemInfo fsi = item.BaseObject as FileSystemInfo;
-				if (fsi != null)
-					t.Attributes = fsi.Attributes;
-				else
-					t.Attributes = FileAttributes.Directory;
-			}
-		}
-
-		/// <summary>
-		/// Navigation.
-		/// </summary>
-		internal override void OnSetDirectory(SetDirectoryEventArgs e)
-		{
-			// done
-			e.Ignore = true;
-
-			// e.g. [CtrlQ]
-			if ((e.Mode & ExplorerModes.Silent) != 0)
-				return;
-
-			string newLocation = e.Name;
-			string toSetCurrent = null;
-			TreeFile root = RootFiles[0];
-			if (newLocation == ".." && RootFiles.Count == 1) //???
-			{
-				//??? dupe from ItemPanel
-				newLocation = root.Path;
-				if (newLocation.EndsWith("\\", StringComparison.Ordinal))
-				{
-					newLocation = null;
-				}
-				else
-				{
-					int i = newLocation.LastIndexOf('\\');
-					if (i < 0)
-					{
-						newLocation = null;
-					}
-					else
-					{
-						//! Issue with names like z:|z - Far doesn't set cursor on it
-						if (newLocation.Length > i + 2 && newLocation[i + 2] == ':')
-							PostName(newLocation.Substring(i + 1));
-
-						newLocation = newLocation.Substring(0, i);
-						if (newLocation.StartsWith("\\\\", StringComparison.Ordinal)) //HACK network path
-						{
-							i = newLocation.LastIndexOf('\\');
-							if (i <= 1)
-							{
-								// show computer shares menu
-								string computer = newLocation.Substring(2);
-								string share = SelectShare(computer);
-								if (share == null)
-									newLocation = null;
-								else
-									newLocation += "\\" + share;
-							}
-						}
-
-						// add \, else we can't step to the root from level 1
-						if (newLocation != null)
-							newLocation += "\\";
-					}
-				}
-
-				toSetCurrent = My.PathEx.GetFileName(root.Name);
-			}
-
-			if (newLocation != null)
-				Reset(newLocation, toSetCurrent);
-		}
-
 		/// <summary>
 		/// Opens <see cref="MemberPanel"/> for a file.
 		/// File <c>Data</c> must not be null.
@@ -236,11 +95,10 @@ namespace PowerShellFar
 				return null;
 
 			//! use null as parent: this panel can be not open now
-			MemberPanel r = new MemberPanel(t.Data);
+			MemberPanel r = new MemberPanel(new MemberExplorer(t.Data));
 			r.OpenChild(null);
 			return r;
 		}
-
 		/// <summary>
 		/// Opens path on another panel (FileSystem) or ItemPanel for other providers.
 		/// </summary>
@@ -272,7 +130,6 @@ namespace PowerShellFar
 				panel.OpenChild(this);
 			}
 		}
-
 		internal override void UIAttributes()
 		{
 			FarFile file = CurrentFile;
@@ -288,14 +145,13 @@ namespace PowerShellFar
 			ProviderInfo provider = (ProviderInfo)data.Properties["PSProvider"].Value;
 			if (!My.ProviderInfoEx.HasProperty(provider))
 			{
-				A.Msg(Res.NotSupportedByProvider);
+				A.Message(Res.NotSupportedByProvider);
 				return;
 			}
 
 			// show property panel
-			(new PropertyPanel(node.Path)).OpenChild(this);
+			(new PropertyExplorer(node.Path)).OpenPanelChild(this);
 		}
-
 		/// <summary>
 		/// Shows help.
 		/// </summary>
@@ -303,6 +159,5 @@ namespace PowerShellFar
 		{
 			Help.ShowTopic("FolderTree");
 		}
-
 	}
 }

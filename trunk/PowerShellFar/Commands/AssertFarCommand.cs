@@ -4,6 +4,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
+using System;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Management.Automation;
@@ -50,81 +51,82 @@ namespace PowerShellFar.Commands
 	public sealed class AssertFarCommand : BaseCmdlet
 	{
 		internal const string MyName = "Assert-Far";
-
 		/// <summary>
 		/// A single Boolean value or an array of Boolean values to be checked.
 		/// </summary>
 		[Parameter(Position = 0, HelpMessage = "A Boolean value or an array of Boolean values to be checked.")]
 		public object Conditions { get; set; }
-
 		/// <summary>
 		/// The message to display on failure or a script block to invoke and get the message.
 		/// </summary>
 		[Parameter(Position = 1, HelpMessage = "The message to display on failure or a script block to invoke and get the message.")]
 		public object Message { get; set; }
-
 		/// <summary>
 		/// The title of a simple message designed for production scripts.
 		/// </summary>
 		[Parameter(Position = 2, HelpMessage = "The title of a simple message designed for production scripts.")]
 		public string Title { get; set; }
-
+		/// <summary>
+		/// Asserts the current file description.
+		/// </summary>
+		[Parameter(HelpMessage = "Asserts the current file description.")]
+		public string FileDescription { get; set; }
+		/// <summary>
+		/// Asserts the current file name.
+		/// </summary>
+		[Parameter(HelpMessage = "Asserts the current file name.")]
+		public string FileName { get; set; }
+		/// <summary>
+		/// Asserts the current file owner.
+		/// </summary>
+		[Parameter(HelpMessage = "Asserts the current file owner.")]
+		public string FileOwner { get; set; }
 		/// <summary>
 		/// Checks the current window is dialog.
 		/// </summary>
 		[Parameter(HelpMessage = "Checks the current window is dialog.")]
 		public SwitchParameter Dialog { get; set; }
-
 		/// <summary>
 		/// Checks the current window is editor.
 		/// </summary>
 		[Parameter(HelpMessage = "Checks the current window is editor.")]
 		public SwitchParameter Editor { get; set; }
-
 		/// <summary>
 		/// Checks the current window is panels.
 		/// </summary>
 		[Parameter(HelpMessage = "Checks the current window is panels.")]
 		public SwitchParameter Panels { get; set; }
-
 		/// <summary>
 		/// Checks the current window is viewer.
 		/// </summary>
 		[Parameter(HelpMessage = "Checks the current window is viewer.")]
 		public SwitchParameter Viewer { get; set; }
-
 		/// <summary>
 		/// Checks the active panel is plugin.
 		/// </summary>
 		[Parameter(HelpMessage = "Checks the active panel is plugin.")]
 		public SwitchParameter Plugin { get; set; }
-
 		/// <summary>
 		/// Checks the passive panel is plugin.
 		/// </summary>
 		[Parameter(HelpMessage = "Checks the passive panel is plugin.")]
 		public SwitchParameter Plugin2 { get; set; }
-
 		/// <summary>
 		/// Checks the active panel is native (not plugin).
 		/// </summary>
 		[Parameter(HelpMessage = "Checks the active panel is native (not plugin).")]
 		public SwitchParameter Native { get; set; }
-
 		/// <summary>
 		/// Checks the passive panel is native (not plugin).
 		/// </summary>
 		[Parameter(HelpMessage = "Checks the passive panel is native (not plugin).")]
 		public SwitchParameter Native2 { get; set; }
-
 		bool IsError
 		{
 			get { return Title == null; }
 		}
-
 		int ConditionCount;
 		int ConditionIndex;
-
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		protected override void BeginProcessing()
@@ -164,6 +166,26 @@ namespace PowerShellFar.Commands
 			if (Native2 && (fail = Far.Net.Panel2.IsPlugin))
 				Fail(Message ?? "The passive panel is expected to be native.");
 
+			// check file data
+			if (FileDescription != null || FileName != null || FileOwner != null)
+			{
+				var file = Far.Net.Panel.CurrentFile;
+				if (file == null)
+					Fail(Message ?? "Expected the current panel file.");
+
+				//1
+				if (FileName != null && (fail = FileName != file.Name))
+					Fail(Message ?? "Unexpected current file name.");
+
+				//2
+				if (FileDescription != null && (fail = FileDescription != file.Description))
+					Fail(Message ?? "Unexpected current file description.");
+
+				//3
+				if (FileOwner != null && (fail = FileOwner != file.Owner))
+					Fail(Message ?? "Unexpected current file owner.");
+			}
+
 			// at least one check is done and there are no conditions
 			if (fail == false && Conditions == null)
 				return;
@@ -181,7 +203,6 @@ namespace PowerShellFar.Commands
 					Assert(array[ConditionIndex]);
 			}
 		}
-
 		void Assert(object condition)
 		{
 			if (condition == null)
@@ -208,7 +229,6 @@ namespace PowerShellFar.Commands
 
 			Fail(null);
 		}
-
 		void Fail(object message)
 		{
 			// break a macro
@@ -285,7 +305,6 @@ namespace PowerShellFar.Commands
 			// break
 			throw new PipelineStoppedException();
 		}
-
 		const string
 			BtnBreak = "&Break",
 			BtnDebug = "&Debug",

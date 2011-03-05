@@ -12,6 +12,8 @@ namespace FarNet.Works
 	///
 	public interface IPanelWorks : IPanel
 	{
+		///
+		Explorer MyExplorer { get; }
 		#region Properties
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -27,7 +29,7 @@ namespace FarNet.Works
 		///
 		int WorksId { get; }
 		///
-		Panel AnotherPanel { get; }
+		Panel TargetPanel { get; }
 		#endregion
 		#region Core
 		///
@@ -93,6 +95,6 @@ namespace FarNet.Works
 		///
 		void SetPlan(PanelViewMode mode, PanelPlan plan);
 		///
-		string PanelDirectory { get; set; }
+		string CurrentLocation { get; set; }
 	}
 }

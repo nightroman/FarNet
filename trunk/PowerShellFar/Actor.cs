@@ -89,6 +89,8 @@ namespace PowerShellFar
 			// do Invoking() (at least for TabExpansion) and the startup code
 			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened1;
 			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened2;
+
+			//! subscribe only _110301_164313
 			Console.CancelKeyPress += CancelKeyPress; //_110128_075844
 		}
 
@@ -99,8 +101,10 @@ namespace PowerShellFar
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal void Disconnect()
 		{
+			//! do not unsubscribe _110301_164313
+			//Console.CancelKeyPress -= CancelKeyPress; //_110128_075844
+			
 			// unsubscribe
-			Console.CancelKeyPress -= CancelKeyPress; //_110128_075844
 			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
 			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
 
@@ -350,10 +354,10 @@ View the error list or the variable $Error.
 				Panel plugin = panel as Panel;
 				if (plugin != null)
 				{
-					ItemPanel itemPanel = plugin as ItemPanel;
+					var itemPanel = plugin as ItemPanel;
 					if (itemPanel != null)
 					{
-						location = itemPanel.Location.Path;
+						location = itemPanel.Explorer.Location;
 					}
 					else
 					{
@@ -730,7 +734,7 @@ Continue with this current directory?
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				string drive = AnyPanel.SelectDrivePrompt(null);
+				string drive = UI.SelectMenu.SelectDrive(null, true);
 				if (drive == null)
 					return;
 

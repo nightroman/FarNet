@@ -48,7 +48,7 @@ if ($obj.Count -eq 0) {
 }
 elseif ($obj.Count -eq 1) {
 	# show object members (MemberPanel)
-	Start-FarPanel $obj[0] -Title $Path
+	Open-FarPanel $obj[0] -Title $Path
 }
 else {
 	# show several objects (ObjectPanel)

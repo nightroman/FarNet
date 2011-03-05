@@ -97,7 +97,7 @@ if ($Text -match '"(\w+:\\[^"]+)"' -or $Text -match '\b(\w+:\\[^\s:]+)') {
 		Show-FarMessage "File '$file' does not exist."
 	}
 	else {
-		Start-FarEditor -Path $file
+		Open-FarEditor -Path $file
 	}
 	return
 }
@@ -115,7 +115,7 @@ if ($Text -match '"(\.{1,2}[\\/][^"]+)"' -or $Text -match '(?:^|\s)(\.{1,2}[\\/]
 		Show-FarMessage "File '$file' does not exist."
 	}
 	else {
-		Start-FarEditor -Path $file
+		Open-FarEditor -Path $file
 	}
 	return
 }

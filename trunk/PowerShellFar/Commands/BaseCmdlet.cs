@@ -32,14 +32,14 @@ new CmdletConfigurationEntry("New-FarItem", typeof(Commands.NewFarItemCommand), 
 new CmdletConfigurationEntry("New-FarList", typeof(Commands.NewFarListCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarMenu", typeof(Commands.NewFarMenuCommand), string.Empty),
 new CmdletConfigurationEntry("New-FarViewer", typeof(Commands.NewFarViewerCommand), string.Empty),
+new CmdletConfigurationEntry("Open-FarEditor", typeof(Commands.OpenFarEditorCommand), string.Empty),
+new CmdletConfigurationEntry("Open-FarPanel", typeof(Commands.OpenFarPanelCommand), string.Empty),
+new CmdletConfigurationEntry("Open-FarViewer", typeof(Commands.OpenFarViewerCommand), string.Empty),
 new CmdletConfigurationEntry("Out-FarList", typeof(Commands.OutFarListCommand), string.Empty),
 new CmdletConfigurationEntry("Out-FarPanel", typeof(Commands.OutFarPanelCommand), string.Empty),
+new CmdletConfigurationEntry("Search-FarFile", typeof(Commands.SearchFarFileCommand), string.Empty),
 new CmdletConfigurationEntry("Show-FarMessage", typeof(Commands.ShowFarMessageCommand), string.Empty),
-new CmdletConfigurationEntry("Start-FarEditor", typeof(Commands.StartFarEditorCommand), string.Empty),
 new CmdletConfigurationEntry("Start-FarJob", typeof(Commands.StartFarJobCommand), string.Empty),
-new CmdletConfigurationEntry("Start-FarPanel", typeof(Commands.StartFarPanelCommand), string.Empty),
-new CmdletConfigurationEntry("Start-FarSearch", typeof(Commands.StartFarSearchCommand), string.Empty),
-new CmdletConfigurationEntry("Start-FarViewer", typeof(Commands.StartFarViewerCommand), string.Empty),
 			});
 		}
 	}

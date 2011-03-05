@@ -270,38 +270,50 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 	}}
 }
 
-### Create a panel with the job object for search results
-$Panel = New-Object FarNet.Panel
-$Panel.Highlighting = 'Full'
-$Panel.RealNames = $true
-$Panel.RightAligned = $true
-$Panel.SortMode = 'Unsorted'
-$Panel.Title = 'Searching...'
-$Panel.ViewMode = 'Descriptions'
-$Panel.Data.Host = $job
+### Explorer with the job for search results
+$Explorer = New-Object PowerShellFar.PowerExplorer '7ef0bbec-9509-4223-a452-ea928ac9846c' -Property @{
+	Data = $job
+	### GetFiles: read found items
+	AsGetFiles = {
+		$job = $this.Data
+		foreach($e in $job.Output.ReadAll()) {
+			$this.Cache.Add($e)
+		}
+	}
+}
+
+### Panel with the explorer
+$Panel = New-Object FarNet.Panel $Explorer -Property @{
+	Highlighting = 'Full'
+	RealNames = $true
+	RightAligned = $true
+	SortMode = 'Unsorted'
+	Title = 'Searching...'
+	ViewMode = 'Descriptions'
+}
 $Panel.Garbage.Add($job)
 
-### Modes
+### Plan
+
 # 'Descriptions'
-$m0 = New-Object FarNet.PanelPlan
-$c1 = New-Object FarNet.SetColumn -Property @{ Kind = 'NR'; Name = 'File' }
-$c2 = New-Object FarNet.SetColumn -Property @{ Kind = 'Z'; Name = 'Match' }
-$m0.Columns = $c1, $c2
-$m0.StatusColumns = $c2
-$Panel.SetPlan('Descriptions', $m0)
+$col1 = New-Object FarNet.SetColumn -Property @{ Kind = 'NR'; Name = 'File' }
+$col2 = New-Object FarNet.SetColumn -Property @{ Kind = 'Z'; Name = 'Match' }
+$plan = New-Object FarNet.PanelPlan -Property @{ Columns = $col1, $col2; StatusColumns = $col2 }
+$Panel.SetPlan('Descriptions', $plan)
+
 # 'LongDescriptions'
-$m1 = $m0.Clone()
-$m1.IsFullScreen = $true
-$Panel.SetPlan('LongDescriptions', $m1)
+$plan = $plan.Clone()
+$plan.IsFullScreen = $true
+$Panel.SetPlan('LongDescriptions', $plan)
 
 ### Idled: checks new data and updates
 $Panel.add_Idled({&{
-	$job = $this.Data.Host
+	$job = $this.Explorer.Data
 	if (!$job.Parameters.Done) {
 		if ($job.Output.Count) {
 			$this.Update($false)
 		}
-		$title = '{0}: {1} lines in {2} files' -f $job.JobStateInfo.State, $this.Files.Count, $job.Parameters.Total
+		$title = '{0}: {1} lines in {2} files' -f $job.JobStateInfo.State, $this.Cache.Count, $job.Parameters.Total
 		if ($this.Title -ne $title) {
 			$this.Title = $title
 			$this.Redraw()
@@ -313,32 +325,26 @@ $Panel.add_Idled({&{
 	}
 }})
 
-### UpdateFiles: reads found (with wrapper - workaround Find mode)
-$Panel.add_UpdateFiles({&{
-	$job = $this.Data.Host
-	foreach($e in $job.Output.ReadAll()) {
-		$this.Files.Add($e)
-	}
-}})
-
 ### KeyPressed: handles keys
 $Panel.add_KeyPressed({&{
 	### [Enter] opens an editor at the selected match
 	if ($_.Code -eq [FarNet.VKeyCode]::Enter -and $_.State -eq 0 -and !$Far.CommandLine.Length) {
-		$i = $this.CurrentFile
-		if (!$i -or $i.Description -notmatch '^\s*(\d+):') { return }
+		$file = $this.CurrentFile
+		if (!$file -or $file.Description -notmatch '^\s*(\d+):') {
+			return
+		}
 		$_.Ignore = $true
-		$e = New-FarEditor $i.Name ($matches[1]) -DisableHistory
-		$f = $e.Frame
-		$e.Open()
-		$m = $i.Data
-		$f.VisibleLine = $f.CaretLine - $Host.UI.RawUI.WindowSize.Height / 3
-		$f.CaretColumn = $m[0] + $m[1]
-		$e.Frame = $f
-		$c = $e[-1] # can be null if a file is already opened
-		if ($m[1] -and $c) {
-			$c.SelectText($m[0], $f.CaretColumn)
-			$e.Redraw()
+		$editor = New-FarEditor $file.Name ($matches[1]) -DisableHistory
+		$frame = $editor.Frame
+		$editor.Open()
+		$match = $file.Data
+		$frame.CaretColumn = $match[0] + $match[1]
+		$frame.VisibleLine = $frame.CaretLine - $Host.UI.RawUI.WindowSize.Height / 3
+		$editor.Frame = $frame
+		$line = $editor[-1] # can be null if a file is already opened
+		if ($match[1] -and $line) {
+			$line.SelectText($match[0], $frame.CaretColumn)
+			$editor.Redraw()
 		}
 		return
 	}
@@ -355,7 +361,7 @@ $Panel.add_Escaping({&{
 	# processed
 	$_.Ignore = $true
 	# close if empty:
-	if (!$this.Files.Count) {
+	if (!$this.Explorer.Cache.Count) {
 		$this.Close()
 		return
 	}

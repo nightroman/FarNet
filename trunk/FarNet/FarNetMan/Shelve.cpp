@@ -30,7 +30,7 @@ ShelveInfoNative::ShelveInfoNative(Panel1^ panel, bool modes)
 		Current = file->Name;
 
 	// selected names
-	InitSelectedNames(panel, Current);
+	InitSelectedNames(panel);
 
 	// modes
 	if (!modes)
@@ -114,7 +114,7 @@ ShelveInfoModule::ShelveInfoModule(Panel2^ panel)
 
 String^ ShelveInfoModule::Title::get()
 {
-	return JoinText(_panel->Title, _panel->PanelDirectory);
+	return JoinText(_panel->Title, _panel->CurrentLocation);
 }
 
 void ShelveInfoModule::Pop()

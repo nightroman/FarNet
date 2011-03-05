@@ -17,14 +17,16 @@ namespace FarNet.Works
 			for (int i = start; i < end; ++i)
 				yield return editor[i];
 		}
-
 		public static IEnumerable<string> EnumerateStrings(IEditor editor, int start, int end)
 		{
 			for (int i = start; i < end; ++i)
 				yield return editor[i].Text;
 		}
-
 		public static string EditText(string text, string title)
+		{
+			return EditText(text, title, false);
+		}
+		public static string EditText(string text, string title, bool locked)
 		{
 			var file = Far.Net.TempName();
 			try
@@ -32,12 +34,20 @@ namespace FarNet.Works
 				if (!string.IsNullOrEmpty(text))
 					File.WriteAllText(file, text, Encoding.Unicode);
 
-				var edit = Far.Net.CreateEditor();
-				edit.FileName = file;
-				edit.DisableHistory = true;
+				var editor = Far.Net.CreateEditor();
+				editor.FileName = file;
+				editor.DisableHistory = true;
 				if (!string.IsNullOrEmpty(title))
-					edit.Title = title;
-				edit.Open(OpenMode.Modal);
+					editor.Title = title;
+				if (locked)
+					editor.IsLocked = true;
+				
+				editor.Open(OpenMode.Modal);
+				if (locked)
+				{
+					File.Delete(file);
+					return null;
+				}
 
 				if (File.Exists(file))
 				{
@@ -64,7 +74,6 @@ namespace FarNet.Works
 				File.Delete(file);
 			}
 		}
-
 		/*
 		Issue [_090219_121638] On switching to editor the temp file is not deleted;
 		?? Editor in READ event can check existing viewer with DeleteSource::File,

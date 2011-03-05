@@ -65,10 +65,6 @@ if ($args) { throw "Unknown parameters: $args" }
 if (!$DbProviderFactory) { throw "Provider factory is not defined." }
 if (!$DbConnection) { throw "Connection is not defined." }
 
-# create a panel
-$Panel = New-Object PowerShellFar.DataPanel
-$Panel.Factory = $DbProviderFactory
-
 # create adapter
 if (!$DbDataAdapter) {
 	$DbDataAdapter = $DbProviderFactory.CreateDataAdapter()
@@ -90,20 +86,24 @@ elseif ($DbDataAdapter.SelectCommand -eq $null) {
 	throw "You have to set -TableName or -SelectCommand or SelectCommand in -Adapter"
 }
 
-# set adapter and objects to be disposed
-$Panel.Adapter = $DbDataAdapter
-if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
+# create a panel
+$Panel = New-Object PowerShellFar.DataPanel -Property @{
+	# data
+	Factory = $DbProviderFactory
+	Adapter = $DbDataAdapter
+	Lookup = $Lookup
+	# view
+	Title = $Title
+	Columns = $Columns
+	ExcludeMemberPattern = $ExcludeMemberPattern
+}
 
-# panel settings
-$Panel.Columns = $Columns
-$Panel.ExcludeMemberPattern = $ExcludeMemberPattern
-$Panel.Title = $Title
-$Panel.SetLookup($Lookup)
+# objects to be disposed
+if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
 
 # go!
 if ($NoShow) {
 	$Panel
-}
-else {
+} else {
 	$Panel.Open($AsChild -or $Lookup)
 }

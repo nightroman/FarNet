@@ -1,6 +1,34 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.3 =
+
+*) Revised panels
+- Panels are based on explorers (but not all is used/enabled yet).
+- Lots of changes for the new engine not mentioned in here.
+- Removed UserPanel, use ObjectPanel instead.
+- Removed ObjectPanelOnDots, it's not useful.
+- SetSave() -> AsSaveData
+- SetLookup() -> LookupScript and LookupHandler
+- Fixed stack overflow on command line events
+
+*) Adapted scripts
+- Adapted all scripts that create panels to the new panel engine.
+
+*) Renamed cmdlets to follow guidelines, hopefully
+Start-FarPanel -> Open-FarPanel
+Start-FarEditor -> Open-FarEditor
+Start-FarViewer -> Open-FarViewer
+Start-FarSearch -> Search-FarFile
+
+= 4.4.2 =
+
+*) Start-FarSearch cmdlet
+Added parameter -Mask: classic Far mask including exclude and regex forms.
+-Mask is for simple searches by name(s). -Script can search by anything.
+See help:
+>>: Get-FarHelp Start-FarSearch
+
 = 4.4.2 =
 
 *) New cmdlet Start-FarSearch

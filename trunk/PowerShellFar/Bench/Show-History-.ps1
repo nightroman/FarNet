@@ -59,7 +59,7 @@ elseif ($View) {
 	#! do not make unique, not trivial, we need latest dupes
 	$path = $Far.GetHistory('SavedViewHistory', '01') |
 	Menu 'Files history' 'SavedViewHistory' |
-	Start-FarEditor
+	Open-FarEditor
 }
 else {
 	### command history

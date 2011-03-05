@@ -55,12 +55,13 @@ Assert-Far ([bool]$target) "Cannot get a target path from '$Path'.`nIs it a shor
 
 ### Panel properties
 if ($Panel) {
-	$p = New-Object PowerShellFar.MemberPanel $link
-	$p.Panel.Title = "Shortcut $Path"
-	$p.SetSave({
-		$this.Value.Save()
-		$this.Modified = $false
-	})
+	$p = New-Object PowerShellFar.MemberPanel $link -Property @{
+		Title = "Shortcut $Path"
+		AsSaveData = {
+			$this.Value.Save()
+			$this.Modified = $false
+		}
+	}
 	$p.Open()
 	return
 }
@@ -78,12 +79,12 @@ elseif (![IO.File]::Exists($target)) {
 
 ### Edit a file
 elseif ($Edit) {
-	Start-FarEditor $target
+	Open-FarEditor $target
 }
 
 ### View a file
 elseif ($View) {
-	Start-FarViewer $target
+	Open-FarViewer $target
 }
 
 ### Goto a file

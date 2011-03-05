@@ -50,7 +50,7 @@ namespace FarNet
 		/// <summary>
 		/// For internal use.
 		/// </summary>
-		public abstract Works.IPanelWorks WorksPanel(Panel panel);
+		public abstract Works.IPanelWorks WorksPanel(Panel panel, Explorer explorer);
 		/// <summary>
 		/// Gets any module command by its ID.
 		/// </summary>
@@ -347,19 +347,15 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/ShowHelp/*'/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
-		/// Finds an opened module panel by its type or gets null.
+		/// Returns opened module panels having optionally specified type.
 		/// </summary>
-		/// <param name="type">
-		/// The panel class type.
-		/// If it is null then any module panel is returned.
-		/// If it is <c>typeof(object)</c> then a module panel of that type is returned.
-		/// </param>
-		public abstract Panel FindPanel(Type type);
+		/// <param name="type">The panel class type. Use null for any module panel.</param>
+		public abstract Panel[] Panels(Type type);
 		/// <summary>
-		/// Finds an opened module panel by the specified type ID or returns null.
+		/// Returns opened module panels having specified type ID.
 		/// </summary>
-		/// <param name="typeId">Panel type ID. It is normally assigned by a creator.</param>
-		public abstract Panel FindPanel(Guid typeId);
+		/// <param name="typeId">The panel type ID (normally assigned on creation).</param>
+		public abstract Panel[] Panels(Guid typeId);
 		/// <summary>
 		/// Gets confirmation settings (see Far "Confirmations" dialog).
 		/// </summary>

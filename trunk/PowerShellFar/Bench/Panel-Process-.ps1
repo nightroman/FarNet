@@ -30,61 +30,68 @@
 param
 (
 	[string[]]
-	# Process name(s). Same as -Name of Get-Process.
+	# Process name(s). See Get-Process -Name.
 	$Name = '*'
 	,
 	[scriptblock]
-	# Advanced filter script. Example: { $_.ws -gt 10Mb } - processes with working sets greater than 10Mb.
+	# Filter script. Example: { $_.WS -gt 10Mb } ~ where working set is greater than 10Mb.
 	$Where
 )
 
-### Panel data
+### Data
 $data = @{ Name = $Name }
 if ($Where) {
 	$data.Where = $Where
-	$title = 'Processes where ' + $Where
+	$data.Title = 'Processes where ' + $Where
 }
 else {
 	$data.Where = { $true }
-	$title = 'Processes'
+	$data.Title = 'Processes'
 }
 
-### Create panel
-$Panel = New-Object PowerShellFar.UserPanel
-
-### Get processes
-$Panel.AsFiles = {
-	Get-Process $this.Data.Name -ErrorAction 0 | Where-Object $this.Data.Where
-}
-
-### Delete processes
-$Panel.AsDeleteFiles = {
-	if ($Far.Message('Kill selected process(es)?', 'Kill', 'OkCancel') -ne 0) { return }
-	foreach($f in $_.Files) {
-		$f.Data.Kill()
-		$this.Files.Remove($f)
+### Explorer
+New-Object PowerShellFar.ObjectExplorer -Property @{
+	FileComparer = [PowerShellFar.FileMetaComparer]'Id'
+	Data = $data
+	### Get processes
+	AsGetData = {
+		Get-Process $this.Data.Name -ErrorAction 0 | Where-Object $this.Data.Where
 	}
-}
-
-### Open: show menu
-$Panel.AsOpenFile = {
-	$process = $_.File.Data
-	if ($process.HasExited) {
-		return
-	}
-
-	New-FarMenu -Show "Process: $($process.Name)" -AutoAssignHotkeys @(
-		New-FarItem 'Show WMI properties' {
-			$wmi = @(Get-WmiObject -Query "select * from Win32_Process where Handle=$($process.Id)")
-			if ($wmi.Count -eq 1) {
-				Start-FarPanel -InputObject ($wmi[0]) -AsChild
+	### Delete processes
+	AsDeleteFiles = {
+		if (0 -eq $Far.Message('Kill selected process(es)?', 'Kill', 'OkCancel')) {
+			foreach($file in $_.Files) {
+				$file.Data.Kill()
+				$this.Cache.Remove($file)
 			}
 		}
-		New-FarItem	'Activate main window' {
-			$null = [NativeMethods]::Activate($process.MainWindowHandle)
+	}
+	### Create panel
+	AsCreatePanel = {
+		New-Object PowerShellFar.ObjectPanel $this -Property @{
+			Title = $this.Data.Title
+			IdleUpdate = $true
+			### Open: show menu
+			AsOpenFile = {
+				$process = $_.File.Data
+				if ($process.HasExited) {
+					return
+				}
+				New-FarMenu -Show "Process: $($process.Name)" -AutoAssignHotkeys @(
+					New-FarItem 'Show WMI properties' {
+						$wmi = @(Get-WmiObject -Query "select * from Win32_Process where Handle=$($process.Id)")
+						if ($wmi.Count -eq 1) {
+							$wmi[0] | Open-FarPanel -AsChild
+						}
+					}
+					New-FarItem	'Activate main window' {
+						$null = [NativeMethods]::Activate($process.MainWindowHandle)
+					}
+				)
+			}
 		}
-	)
-}
+	}
+} | Open-FarPanel
 
 ### Import native tools
 Add-Type @'
@@ -111,5 +118,3 @@ public static class NativeMethods
 }
 '@
 
-# Go!
-Start-FarPanel $Panel -Title $title -Data $data -DataId 'Id' -IdleUpdate

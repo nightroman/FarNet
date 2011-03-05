@@ -186,14 +186,6 @@ int WINAPI DeleteFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNum
 	return false;
 }
 
-int WINAPI MakeDirectoryW(HANDLE hPlugin, const wchar_t** name, int opMode)
-{
-	__START;
-	return Panel0::AsMakeDirectory(hPlugin, name, opMode);
-	__END;
-	return 0;
-}
-
 HANDLE WINAPI OpenFilePluginW(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
 {
 	__START;

@@ -556,6 +556,18 @@ array<int>^ Panel1::SelectedIndexes()
 	return list.ToArray();
 }
 
+bool Panel1::SelectionExists::get()
+{
+	PanelInfo pi;
+	GetPanelInfo(_handle, pi);
+
+	if (pi.SelectedItemsNumber != 1)
+		return pi.SelectedItemsNumber > 0;
+
+	AutoPluginPanelItem item(_handle, 0, SelectedFile);
+	return (0 != (item.Get().Flags & PPIF_SELECTED));
+}
+
 PanelSortMode Panel1::SortMode::get()
 {
 	PanelInfo pi;

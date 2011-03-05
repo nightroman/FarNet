@@ -37,15 +37,15 @@ public:
 	virtual IListMenu^ CreateListMenu() override;
 	virtual IMenu^ CreateMenu() override;
 	virtual IViewer^ CreateViewer() override;
-	virtual Works::IPanelWorks^ WorksPanel(FarNet::Panel^ panel) override;
+	virtual Works::IPanelWorks^ WorksPanel(FarNet::Panel^ panel, Explorer^ explorer) override;
 public:
+	virtual array<FarNet::Panel^>^ Panels(Guid typeId) override;
+	virtual array<FarNet::Panel^>^ Panels(Type^ type) override;
 	virtual array<IEditor^>^ Editors() override;
 	virtual array<IViewer^>^ Viewers() override;
 	virtual bool MatchPattern(String^ input, String^ pattern) override;
 	virtual Char CodeToChar(int code) override;
 	virtual CultureInfo^ GetCurrentUICulture(bool update) override;
-	virtual FarNet::Panel^ FindPanel(Guid typeId) override;
-	virtual FarNet::Panel^ FindPanel(Type^ type) override;
 	virtual ICollection<String^>^ GetDialogHistory(String^ name) override;
 	virtual ICollection<String^>^ GetHistory(String^ name, String^ filter) override;
 	virtual IModuleCommand^ GetModuleCommand(Guid id) override;

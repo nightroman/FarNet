@@ -70,7 +70,7 @@ else {
 }
 
 ### create and configure a user panel for table objects
-$Panel = New-Object PowerShellFar.UserPanel
+$Panel = New-Object PowerShellFar.ObjectPanel
 $Panel.Title = "$($DbConnection.Database) Tables"
 $Panel.Columns = $columns
 $Panel.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1'] = @{ DbProviderFactory = $DbProviderFactory; DbConnection = $DbConnection }

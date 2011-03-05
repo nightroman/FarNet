@@ -33,7 +33,10 @@ namespace FarNet.Works
 		/// <summary>
 		/// For internal use.
 		/// </summary>
-		public const string SplitLinePattern = "\r\n|[\r\n]";
+		public static string[] SplitLines(string value)
+		{
+			return Regex.Split(value, "\r\n|[\r\n]");
+		}
 
 		/// <summary>
 		/// For internal use.
@@ -52,7 +55,7 @@ namespace FarNet.Works
 			if (message == null) throw new ArgumentNullException("message");
 
 			Regex format = null;
-			foreach (string line in Regex.Split(message.Replace('\t', ' '), SplitLinePattern))
+			foreach (var line in Kit.SplitLines(message.Replace('\t', ' ')))
 			{
 				if (line.Length <= width)
 				{

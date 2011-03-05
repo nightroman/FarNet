@@ -14,27 +14,26 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Panel exploring any .NET objects.
+	/// .NET objects panel.
 	/// </summary>
 	public class ObjectPanel : FormatPanel
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public ObjectPanel()
+		///
+		public new ObjectExplorer Explorer { get { return (ObjectExplorer)base.Explorer; } }
+		///
+		public ObjectPanel(ObjectExplorer explorer)
+			: base(explorer)
 		{
-			PanelDirectory = "*";
+			Explorer.Panel = this; //??????
+
+			CurrentLocation = "*";
 			SortMode = PanelSortMode.Unsorted;
 			UseFilter = true;
-
-			ImportFiles += OnImportFiles;
-
-			FileComparer = new FileDataComparer();
 		}
-
+		///
+		public ObjectPanel() : this(new ObjectExplorer()) { }
 		///
 		protected override string DefaultTitle { get { return "Objects"; } }
-
 		/// <summary>
 		/// Adds a single objects to the panel as it is.
 		/// </summary>
@@ -44,7 +43,6 @@ namespace PowerShellFar
 			if (value != null)
 				added.Add(PSObject.AsPSObject(value));
 		}
-
 		/// <summary>
 		/// Adds objects to the panel.
 		/// </summary>
@@ -93,25 +91,6 @@ namespace PowerShellFar
 				}
 			}
 		}
-
-		internal override void DoDeleteFiles(FilesEventArgs args)
-		{
-			if ((Far.Net.Confirmations & FarConfirmations.Delete) != 0)
-			{
-				if (Far.Net.Message("Remove object(s) from the panel?", Res.Remove, MsgOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
-					return;
-			}
-
-			foreach (FarFile f in args.Files)
-				Files.Remove(f);
-		}
-
-		//! Update is called by the Far core.
-		void OnImportFiles(object sender, ImportFilesEventArgs e)
-		{
-			AddObjects(A.Psf.InvokeCode("Get-FarItem -Selected"));
-		}
-
 		/// <summary>
 		/// Opens a member panel or another panel.
 		/// </summary>
@@ -163,7 +142,6 @@ namespace PowerShellFar
 			// open members
 			OpenFileMembers(file);
 		}
-
 		/// <summary>
 		/// Exports objects to Clixml file.
 		/// </summary>
@@ -172,44 +150,6 @@ namespace PowerShellFar
 			UI.ExportDialog.ExportClixml(CollectData(), StartDirectory);
 			return true;
 		}
-
-		// _100227_073909
-		internal override bool UICopyMove(bool move)
-		{
-			ObjectPanel that = AnotherPanel as ObjectPanel;
-			if (that == null)
-				return false;
-
-			that.AddObjects(SelectedItems);
-			that.UpdateRedraw(true);
-
-			if (move)
-				UIDelete(false);
-
-			return true;
-		}
-
-		// Prompts a user to enter a command that gets new panel objects
-		internal override void UICreate()
-		{
-			// prompt for a command
-			string code = Far.Net.MacroState == MacroState.None ? A.Psf.InputCode() : Far.Net.Input(null);
-			if (string.IsNullOrEmpty(code))
-				return;
-
-			// invoke the command
-			Collection<PSObject> values = A.Psf.InvokeCode(code);
-			if (values.Count == 0)
-				return;
-
-			// add the objects
-			AddObjects(values);
-
-			// post the first object and update
-			PostData(values[0]);
-			UpdateRedraw(false);
-		}
-
 		Collection<PSObject> _Values_;
 		Collection<PSObject> AddedValues
 		{
@@ -223,16 +163,19 @@ namespace PowerShellFar
 		{
 			return _Values_ ?? (_Values_ = new Collection<PSObject>());
 		}
-
 		internal override object GetData()
 		{
+			if (Explorer.AsGetData != null)
+				return A.InvokeScript(Explorer.AsGetData, Explorer, null);
+			
+			var Files = Explorer.Cache;
 			try
 			{
 				//???? it works but looks like a hack
-				if (UserWants != UserAction.CtrlR && AddedValues == null && (Map != null || Files.Count > 0 && Files[0] is SetFile))
+				if (UserWants != UserAction.CtrlR && AddedValues == null && (Explorer.Map != null || Files.Count > 0 && Files[0] is SetFile))
 					return Files;
 
-				if (Map == null || Columns == null)
+				if (Explorer.Map == null || Columns == null)
 				{
 					if (Files.Count == 0)
 						return AddedValues ?? new Collection<PSObject>();
@@ -251,9 +194,10 @@ namespace PowerShellFar
 				if (AddedValues == null)
 					return Files;
 
+				var map = Explorer.Map;
 				var files = new List<FarFile>(AddedValues.Count);
 				foreach (PSObject value in AddedValues)
-					files.Add(new MapFile(value, Map));
+					files.Add(new MapFile(value, map));
 
 				return files;
 			}
@@ -262,7 +206,6 @@ namespace PowerShellFar
 				DropAddedValues();
 			}
 		}
-
 		/// <summary>
 		/// Sets file name if any suitable exists.
 		/// </summary>
@@ -281,7 +224,6 @@ namespace PowerShellFar
 			if (!(data.BaseObject is PSCustomObject))
 				file.Name = data.ToString();
 		}
-
 		///
 		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
 		{
@@ -294,12 +236,12 @@ namespace PowerShellFar
 
 			base.HelpMenuInitItems(items, e);
 		}
-
 		/// <summary>
 		/// Files data: .. is excluded; same count and order.
 		/// </summary>
 		IList<object> CollectData()
 		{
+			var Files = Explorer.Cache;
 			var r = new List<object>();
 			r.Capacity = Files.Count;
 			foreach (FarFile f in Files)
@@ -307,7 +249,6 @@ namespace PowerShellFar
 					r.Add(f.Data);
 			return r;
 		}
-
 		static int ShowTooManyFiles(int maximumFileCount, IEnumerable enumerable)
 		{
 			ICollection collection = enumerable as ICollection;
@@ -317,6 +258,9 @@ namespace PowerShellFar
 
 			return Far.Net.Message(message, "$Psf.Settings.MaximumPanelFileCount", MsgOptions.AbortRetryIgnore);
 		}
-
+		internal void DoAcceptFiles(AcceptFilesEventArgs args) // _100227_073909
+		{
+			AddObjects(args.FilesData);
+		}
 	}
 }

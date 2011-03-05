@@ -61,30 +61,30 @@ $Area = [FarNet.MacroArea]$Area
 
 ### FarMacro panel configured for macros
 if ($wi.Kind -eq 'Panels' -and !$Name) {
-	$p = New-Object PowerShellFar.ItemPanel "FarMacro:"
-	$p.Drive = "FarMacro"
-	### [Enter]
-	$p.AsOpenFile = {
-		if ($this.CurrentDirectory -match '^FarMacro:\\(\w+)$') {
-			Panel-Macro- -Name $_.File.Name -Area $matches[1] -AsChild
+	New-Object PowerShellFar.ItemPanel "FarMacro:" -Property @{
+		Drive = "FarMacro"
+		### [Enter]
+		AsOpenFile = {
+			if ($this.CurrentDirectory -match '^FarMacro:\\(\w+)$') {
+				Panel-Macro- -Name $_.File.Name -Area $matches[1] -AsChild
+			}
+			else {
+				$this.OpenFile($_.File)
+			}
 		}
-		else {
-			$this.OpenFile($_.File)
+		### [F4]
+		AsEditFile = {
+			if ($_.Data -is [FarNet.Macro]) {
+				Edit-FarMacro -Macro $_.Data -Panel $this
+			}
+			elseif ($this.CurrentDirectory -match '\\Consts$') {
+				Edit-FarMacro -Area 'Consts' -Name $_.Name -Panel $this
+			}
+			elseif ($this.CurrentDirectory -match '\\Vars$') {
+				Edit-FarMacro -Area 'Vars' -Name $_.Name -Panel $this
+			}
 		}
-	}
-	### [F4]
-	$p.AsEditFile = {
-		if ($_.File.Data -is [FarNet.Macro]) {
-			Edit-FarMacro -Macro $_.File.Data -Panel $this
-		}
-		elseif ($this.CurrentDirectory -match '\\Consts$') {
-			Edit-FarMacro -Area 'Consts' -Name $_.File.Name -Panel $this
-		}
-		elseif ($this.CurrentDirectory -match '\\Vars$') {
-			Edit-FarMacro -Area 'Vars' -Name $_.File.Name -Panel $this
-		}
-	}
-	Start-FarPanel $p
+	} | Open-FarPanel
 	return
 }
 
@@ -117,17 +117,17 @@ if (!$macro) {
 	$macro = New-Object FarNet.Macro -Property { Area = $Area; Name = $Name }
 }
 
-### Panel to view/edit a macro
-$p = New-Object PowerShellFar.MemberPanel $macro
-$p.ExcludeMemberPattern = '^(Area|Name)$'
-$p.Static = $true
-
-### Saves changes
-$p.SetSave({
-	$Far.Macro.Install($this.Value)
-	$this.Modified = $false
-	$Host.UI.RawUI.WindowTitle = 'Saved'
-})
-
-# Go!
-Start-FarPanel $p -AsChild -Title ("$Area $Name")
+### Open a panel to view/edit the macro
+$Explorer = New-Object PowerShellFar.MemberExplorer $macro -Property @{
+	ExcludeMemberPattern = '^(Area|Name)$'
+	CanDeleteFiles = $false
+}
+$Panel = New-Object PowerShellFar.MemberPanel $Explorer -Property @{
+	Title = "$Area $Name"
+	AsSaveData = {
+		$Far.Macro.Install($this.Value)
+		$this.Modified = $false
+		$Host.UI.RawUI.WindowTitle = 'Saved'
+	}
+}
+$Panel.OpenChild($null)
