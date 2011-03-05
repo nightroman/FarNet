@@ -22,6 +22,7 @@ public:
 	virtual property bool NumericSort { bool get(); void set(bool value); }
 	virtual property bool RealNames { bool get(); void set(bool value); }
 	virtual property bool SelectedFirst { bool get(); }
+	virtual property bool SelectionExists { bool get(); }
 	virtual property bool ShowHidden { bool get(); }
 	virtual property bool UseSortGroups { bool get(); void set(bool value); }
 	virtual property FarFile^ CurrentFile { FarFile^ get(); }

@@ -31,4 +31,4 @@ $Panel.AsOpenFile = {
 }
 
 if ($local:DbConnection) { $Panel.Garbage.Add($DbConnection) }
-Start-FarPanel $Panel -Title "Databases"
+Open-FarPanel $Panel -Title "Databases"

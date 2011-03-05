@@ -24,8 +24,8 @@ Set-Alias ip Import-Panel- -Description 'Import objects from files to a panel'
 Set-Alias op Out-FarPanel -Description 'Send objects to an object panel'
 Set-Alias pd Panel-DbData- -Description 'Panel SQL SELECT or table data'
 Set-Alias pp Panel-Property- -Description 'Panel provider item properties'
-Set-Alias sff Select-FarFile- -Description 'Select panel files'
-Set-Alias sfs Start-FarSearch -Description 'Search in explorer panels.'
+Set-Alias scff Select-FarFile- -Description 'Select files in the panel'
+Set-Alias srff Search-FarFile -Description 'Search files in the panel'
 
 ### Actions
 $Psf.Action('&m. Macro(s)...', { Panel-Macro- })

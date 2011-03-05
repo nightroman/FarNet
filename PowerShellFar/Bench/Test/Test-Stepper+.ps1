@@ -123,7 +123,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	# this command starts a modal editor, but the step sequence
 	# is not stopped because the command is RETURNED (by {{..}})
 	# and the stepper knows how to process this case correctly
-	Start-FarEditor 'Test' -Modal -DisableHistory
+	Open-FarEditor 'Test' -Modal -DisableHistory
 }}
 
 {
@@ -146,7 +146,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# open modeless editor
-	Start-FarEditor 'Test' -DisableHistory
+	Open-FarEditor 'Test' -DisableHistory
 }
 
 {
@@ -176,7 +176,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# open a user panel with some objects
-	$Panel = New-Object PowerShellFar.UserPanel
+	$Panel = New-Object PowerShellFar.ObjectPanel
 	$Panel.AddObjects((Get-ChildItem))
 	$Panel.Open()
 }
@@ -196,7 +196,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 			'Tab'
 			{
 				# this step was added dynamically to open yet another panel
-				$Panel = New-Object PowerShellFar.UserPanel
+				$Panel = New-Object PowerShellFar.ObjectPanel
 				$Panel.AddObjects((Get-ChildItem))
 				$Panel.Open()
 			}

@@ -58,9 +58,73 @@ namespace FarNet
 		string _Location;
 		/// <summary>
 		/// Gets or sets the explorer function flags.
-		/// It is set on creation and should not change.
+		/// It is normally set on creation and should not change.
 		/// </summary>
-		public ExplorerFunctions Function { get; set; }
+		public ExplorerFunctions Functions { get; set; }
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanExploreLocation
+		{
+			get { return (Functions & ExplorerFunctions.ExploreLocation) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.ExploreLocation) : (Functions & ~ExplorerFunctions.ExploreLocation); }
+		}
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanAcceptFiles
+		{
+			get { return (Functions & ExplorerFunctions.AcceptFiles) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.AcceptFiles) : (Functions & ~ExplorerFunctions.AcceptFiles); }
+		}
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanAcceptOther
+		{
+			get { return (Functions & ExplorerFunctions.AcceptOther) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.AcceptOther) : (Functions & ~ExplorerFunctions.AcceptOther); }
+		}
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanDeleteFiles
+		{
+			get { return (Functions & ExplorerFunctions.DeleteFiles) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.DeleteFiles) : (Functions & ~ExplorerFunctions.DeleteFiles); }
+		}
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanCreateFile
+		{
+			get { return (Functions & ExplorerFunctions.CreateFile) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.CreateFile) : (Functions & ~ExplorerFunctions.CreateFile); }
+		}
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanExportFile
+		{
+			get { return (Functions & ExplorerFunctions.ExportFile) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.ExportFile) : (Functions & ~ExplorerFunctions.ExportFile); }
+		}
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanImportFile
+		{
+			get { return (Functions & ExplorerFunctions.ImportFile) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.ImportFile) : (Functions & ~ExplorerFunctions.ImportFile); }
+		}
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanImportText
+		{
+			get { return (Functions & ExplorerFunctions.ImportText) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.ImportText) : (Functions & ~ExplorerFunctions.ImportText); }
+		}
 		/// <summary>
 		/// Returns the files.
 		/// </summary>
@@ -75,73 +139,120 @@ namespace FarNet
 		/// </para>
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
-		public abstract IList<FarFile> Explore(ExplorerArgs args);
+		public abstract IList<FarFile> GetFiles(GetFilesEventArgs args);
 		/// <summary>
 		/// Returns a new directory explorer or null. It must not return itself.
 		/// </summary>
 		/// <remarks>
-		/// It is not called if <see cref="Function"/> contains the <see cref="ExploreLocation"/> flag.
+		/// It is not called if <see cref="Functions"/> contains the <see cref="ExploreLocation"/> flag.
 		/// <para>
 		/// It is called when a user enters a directory, on search, and scan.
 		/// It should just get another explorer with a new location and do nothing else.
 		/// </para>
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
-		public virtual Explorer ExploreDirectory(ExploreDirectoryArgs args) { return null; }
+		public virtual Explorer ExploreDirectory(ExploreDirectoryEventArgs args) { return null; }
 		/// <summary>
 		/// Returns a new location explorer or null. It must not return itself.
 		/// </summary>
 		/// <remarks>
-		/// It is called only if <see cref="Function"/> contains the <see cref="ExploreLocation"/> flag.
+		/// It is called only if <see cref="Functions"/> contains the <see cref="ExploreLocation"/> flag.
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
-		public virtual Explorer ExploreLocation(ExploreLocationArgs args) { return null; }
+		public virtual Explorer ExploreLocation(ExploreLocationEventArgs args) { return null; }
 		/// <summary>
 		/// Returns a new parent explorer or null. It must not return itself.
 		/// </summary>
 		/// <remarks>
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
-		public virtual Explorer ExploreParent(ExplorerArgs args) { return null; }
+		public virtual Explorer ExploreParent(ExploreParentEventArgs args) { return null; }
 		/// <summary>
 		/// Returns a new root explorer or null. It must not return itself.
 		/// </summary>
 		/// <remarks>
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
-		public virtual Explorer ExploreRoot(ExplorerArgs args) { return null; }
+		public virtual Explorer ExploreRoot(ExploreRootEventArgs args) { return null; }
+		/// <summary>
+		/// Accepts module files from another explorer, normally from another module panel.
+		/// </summary>
+		/// <remarks>
+		/// Read carefully all about <see cref="AcceptFilesEventArgs"/> and all its members.
+		/// <para>
+		/// The source explorer can be any explorer of any module panel, not even from this module.
+		/// The method should check the source type or type ID and ignore unknown or not supported.
+		/// </para>
+		/// </remarks>
+		public virtual void AcceptFiles(AcceptFilesEventArgs args) { if (args != null) args.Result = JobResult.Ignore; }
+		/// <summary>
+		/// Accepts other files, i.e. files from native and plugin panels, not module panels.
+		/// </summary>
+		public virtual void AcceptOther(AcceptOtherEventArgs args) { if (args != null) args.Result = JobResult.Ignore; }
+		/// <summary>
+		/// Deletes the files.
+		/// </summary>
+		public virtual void DeleteFiles(DeleteFilesEventArgs args) { if (args != null) args.Result = JobResult.Ignore; }
+		/// <summary>
+		/// Creates a new file or directory.
+		/// </summary>
+		/// <remarks>
+		/// It is normally called by the core on [F7] if the explorer has its flag <see cref="CanCreateFile"/> set.
+		/// If the explorer creates something then it may also want to set one of the <c>Post*</c>,
+		/// so that the specified file, normally just created, is set current.
+		/// </remarks>
+		public virtual void CreateFile(CreateFileEventArgs args) { if (args != null) args.Result = JobResult.Ignore; }
 		/// <summary>
 		/// Exports the file.
 		/// </summary>
 		/// <remarks>
-		/// If the file can be also imported later back then set <see cref="ExportFileArgs.CanImport"/>.
+		/// It is normally called by the core on [F3], [F4], [CtrlQ], and in some cases on [F5]
+		/// if the explorer has its flag <see cref="CanExportFile"/> set.
+		/// If the file can be imported later back then this method should set <see cref="ExportFileEventArgs.CanImport"/>,
+		/// this is used on [F4]: if the flag is not set then the editor will be opened in the locked mode.
+		/// <para>
+		/// There are three ways to export file data.
+		/// <ol>
+		/// <li>Assign the text or line collection to the <see cref="ExportFileEventArgs.UseText"/>.</li>
+		/// <li>Copy data to the temporary file with the provided <see cref="ExportFileEventArgs.FileName"/>.</li>
+		/// <li>If there is an actual system file then its path can be assigned to the <see cref="ExportFileEventArgs.UseFileName"/>.</li>
+		/// </ol>
+		/// </para>
 		/// </remarks>
-		public virtual void ExportFile(ExportFileArgs args) { }
+		public virtual void ExportFile(ExportFileEventArgs args) { if (args != null) args.Result = JobResult.Default; }
 		/// <summary>
-		/// Imports the file.
+		/// Updates the file.
 		/// </summary>
 		/// <remarks>
+		/// If this method is implemented then <see cref="Functions"/> should has the <see cref="ExplorerFunctions.ImportFile"/> flag.
+		/// <para>
 		/// The method can be called "offline".
 		/// Example: a file is being saved in the editor after closing its source panel.
 		/// If the explorer is not supposed to work then it should be able to ignore the call.
+		/// </para>
 		/// </remarks>
-		public virtual void ImportFile(ImportFileArgs args) { }
+		public virtual void ImportFile(ImportFileEventArgs args) { if (args != null) args.Result = JobResult.Default; }
 		/// <summary>
-		/// Deletes the files.
-		/// </summary>
-		public virtual void DeleteFiles(DeleteFilesArgs args) { }
-		/// <summary>
-		/// Creates a custom panel or returns null to allow the core to create a default panel.
+		/// Updates the text.
 		/// </summary>
 		/// <remarks>
-		/// This method should be implemented in two cases:
-		/// 1) the explorer uses a custom panel, e.g. a subclass of the base panel;
-		/// 2) on navigation the explorer wants to reuse the same panel for all explorers of the same type,
-		/// then it creates a panel and sets its <see cref="Panel.ExplorerTypeId"/> to its own <see cref="TypeId"/>.
+		/// If this method is implemented then <see cref="Functions"/> should has the <see cref="ExplorerFunctions.ImportText"/> flag.
+		/// <para>
+		/// The method can be called "offline".
+		/// Example: a file is being saved in the editor after closing its source panel.
+		/// If the explorer is not supposed to work then it should be able to ignore the call.
+		/// </para>
 		/// </remarks>
-		public virtual Panel CreatePanel() { return null; }
+		public virtual void ImportText(ImportTextEventArgs args) { if (args != null) args.Result = JobResult.Default; }
 		/// <summary>
-		/// Updates the panel, e.g. when the explorer has changed.
+		/// Creates a panel to show the explorer files.
+		/// </summary>
+		/// <remarks>
+		/// The base method creates a new default panel.
+		/// </remarks>
+		public virtual Panel CreatePanel() { return new Panel(this); }
+		/// <summary>
+		/// Updates the panel when this explorer gets assigned to it.
 		/// </summary>
 		public virtual void UpdatePanel(Panel panel) { }
 		/// <summary>
@@ -155,7 +266,7 @@ namespace FarNet
 		/// <see cref="FileNameComparer"/> is used by default, i.e. files are compared by names (<c>OrdinalIgnoreCase</c>).
 		/// <see cref="FileFileComparer"/> is used when an explorer caches its files and always returns the same file objects.
 		/// <see cref="FileDataComparer"/> is used when an explorer caches its data and always gets the same data attached to files.
-		/// <see cref="FileMetaComparer"/> covers other cases with a helper delegate (in particular it is useful in PowerShell scripts).
+		/// <c>FileMetaComparer</c> is used in PowerShell scripts.
 		/// Alternatively, an explorer may implement and use any custom file comparer.
 		/// </para>
 		/// <para>
@@ -170,12 +281,25 @@ namespace FarNet
 		public IEqualityComparer<FarFile> FileComparer
 		{
 			get { return _FileComparer ?? (_FileComparer = new FileNameComparer()); }
-			set
-			{
-				if (value == null) throw new ArgumentNullException("value");
-				_FileComparer = value;
-			}
+			set { if (value == null) throw new ArgumentNullException("value"); _FileComparer = value; }
 		}
 		IEqualityComparer<FarFile> _FileComparer;
+		/// <summary>
+		/// Opens the explorer in a panel.
+		/// </summary>
+		public void OpenPanel()
+		{
+			var panel = CreatePanel();
+			panel.Open();
+		}
+		/// <summary>
+		/// Opens the explorer in a panel that is a child of the specified panel.
+		/// </summary>
+		public void OpenPanelChild(Panel parent)
+		{
+			if (parent == null) throw new ArgumentNullException("parent");
+			var panel = CreatePanel();
+			panel.OpenChild(parent);
+		}
 	}
 }

@@ -32,9 +32,9 @@ namespace PowerShellFar
 				return;
 
 			// lookup closer?
-			if (UserWants == UserAction.Enter && _LookupCloser != null)
+			if (UserWants == UserAction.Enter && Lookup != null)
 			{
-				_LookupCloser(this, new FileEventArgs() { File = file });
+				Lookup.Invoke(this, new FileEventArgs(file));
 				UIEscape(false);
 				return;
 			}
@@ -43,7 +43,7 @@ namespace PowerShellFar
 			if (AsOpenFile == null)
 				OpenFile(file);
 			else
-				A.InvokeScriptReturnAsIs(AsOpenFile, this, new FileEventArgs() { File = file });
+				A.InvokeScriptReturnAsIs(AsOpenFile, this, new FileEventArgs(file));
 		}
 		/// <summary>
 		/// Opens a file.
@@ -73,148 +73,46 @@ namespace PowerShellFar
 			}
 		}
 		#endregion
-		#region DeleteFiles
-		/// <summary>
-		/// Gets or sets the script to delete files (e.g. on [F8]).
-		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="FilesEventArgs"/>.
-		/// </summary>
-		public ScriptBlock AsDeleteFiles { get; set; }
-		/// <summary>
-		/// Deletes files using <see cref="AsDeleteFiles"/> or the default method.
-		/// </summary>
-		public override sealed void UIDeleteFiles(FilesEventArgs args)
-		{
-			if (args == null)
-				return;
-
-			if (AsDeleteFiles != null)
-			{
-				A.InvokeScriptReturnAsIs(AsDeleteFiles, this, args);
-				if (args.Ignore)
-					return;
-			}
-
-			DoDeleteFiles(args);
-		}
-		#endregion
 		#region EditFile
 		/// <summary>
-		/// Gets or sets the script to edit a file (e.g. on [F4]).
-		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="FileEventArgs"/>.
+		/// <see cref="UIEditFile"/> worker.
+		/// Variables: <c>$this</c> is this panel, <c>$_</c> is the <see cref="FarFile"/>.
 		/// </summary>
 		public ScriptBlock AsEditFile { get; set; }
 		/// <summary>
-		/// Opens the file in the editor using <see cref="AsEditFile"/> or the default method.
+		/// <see cref="UIEditFile"/> worker.
 		/// </summary>
-		public override sealed void UIEditFile(FarFile file) //_091202_073429 NB: Data can be wrapped by PSObject.
+		public void DoEditFile(FarFile file) { base.UIEditFile(file); }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void UIEditFile(FarFile file) //_091202_073429 NB: Data can be wrapped by PSObject.
 		{
-			if (file == null)
-				return;
-
 			if (AsEditFile != null)
-			{
-				var args = new FileEventArgs() { File = file };
-				A.InvokeScriptReturnAsIs(AsEditFile, this, args);
-				if (args.Result != JobResult.Default)
-					return;
-			}
-
-			DoEditFile(file);
-		}
-		internal virtual void DoEditFile(FarFile file)
-		{
-			// no data, no job
-			if (file.Data == null)
-				return;
-
-			// get file and open in internal/external editor
-			string filePath = My.PathEx.TryGetFilePath(file.Data);
-			if (filePath != null)
-			{
-				A.CreateEditor(filePath).Open(OpenMode.None); //???? use explorer?
-				return;
-			}
-
-			// source info
-			PSObject data = PSObject.AsPSObject(file.Data);
-			if (data.BaseObject.GetType().Name == "MatchInfo")
-			{
-				string path;
-				if (!A.TryGetPropertyValue(data, "Path", out path))
-					return;
-				int lineNumber;
-				if (!A.TryGetPropertyValue(data, "LineNumber", out lineNumber))
-					return;
-				Match[] matches;
-				if (!A.TryGetPropertyValue(data, "Matches", out matches) || matches.Length == 0)
-					return;
-
-				IEditor editor = Far.Net.CreateEditor();
-				editor.DisableHistory = true;
-				editor.FileName = path;
-				TextFrame frame = new TextFrame();
-				frame.CaretLine = lineNumber - 1;
-				editor.Frame = frame;
-				editor.Open();
-				frame.VisibleLine = frame.CaretLine - Far.Net.UI.WindowSize.Y / 3;
-				editor.Frame = frame;
-				ILine line = editor[-1]; // can be null if a file is already opened
-				if (line != null)
-				{
-					int end = matches[0].Index + matches[0].Length;
-					line.Caret = end;
-					line.SelectText(matches[0].Index, end);
-					editor.Redraw();
-				}
-			}
+				A.InvokeScriptReturnAsIs(AsEditFile, this, file);
+			else
+				DoEditFile(file);
 		}
 		#endregion
 		#region ViewFile
 		/// <summary>
-		/// Gets or sets the script to view a file (e.g. on [F3]).
-		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="FileEventArgs"/>.
+		/// <see cref="UIViewFile"/> worker.
+		/// Variables: <c>$this</c> is this panel, <c>$_</c> is the <see cref="FarFile"/>.
 		/// </summary>
 		public ScriptBlock AsViewFile { get; set; }
 		/// <summary>
-		/// Opens the file in the viewer using <see cref="AsViewFile"/> or the default method.
+		/// <see cref="UIViewFile"/> worker.
 		/// </summary>
-		public override sealed void UIViewFile(FarFile file) //_091202_073429
+		public void DoViewFile(FarFile file) { base.UIViewFile(file); }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void UIViewFile(FarFile file) //_091202_073429
 		{
-			if (file == null)
-				return;
-
 			if (AsViewFile != null)
-			{
-				var args = new FileEventArgs() { File = file };
-				A.InvokeScriptReturnAsIs(AsViewFile, this, args);
-				if (args.Result != JobResult.Default)
-					return;
-			}
-
-			// get file path and open in internal viewer
-			string filePath = My.PathEx.TryGetFilePath(file.Data);
-			if (filePath != null)
-			{
-				IViewer view = A.CreateViewer(filePath);
-				view.Open(OpenMode.None);
-				return;
-			}
-
-			//! use `try` to delete a tmp file, error can be at root of cert (PS bug?)
-			string tmp = Far.Net.TempName();
-			try
-			{
-				WriteFile(file, tmp);
-
-				IViewer v = A.CreateViewer(tmp);
-				v.DisableHistory = true;
-				v.Title = file.Name;
-				v.Open(OpenMode.None);
-			}
-			finally
-			{
-				File.Delete(tmp); //???? bad: open 1, don't close, then open 2: TempName() gets the same name --> cannot open 2
-			}
+				A.InvokeScriptReturnAsIs(AsViewFile, this, file);
+			else
+				DoViewFile(file);
 		}
 		#endregion
 		#region ViewAll

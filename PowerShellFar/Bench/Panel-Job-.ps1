@@ -29,40 +29,44 @@
 	be processed later by scripts.
 #>
 
-### Create panel
-$Panel = New-Object PowerShellFar.UserPanel
-$Panel.Columns = @(
-	@{ Expression = 'Id'; Width = 6 }
-	'Name'
-	@{ Expression = 'State'; Width = 10 }
-	@{ Label = 'Data'; Expression = 'HasMoreData'; Width = 5 }
-	@{ Label = 'Command'; Expression = { $_.Command.ToString().TrimStart() } }
-)
-
-### Panel jobs
-# Sort them by Id, this is not always done by the core.
-$Panel.AsFiles = {
-	Get-Job | Sort-Object Id
-}
-
-### Delete jobs (stop\remove)
-$Panel.AsDeleteFiles = {
-	$action = if ($_.Move) { 'Remove' } else { 'Stop\Remove' }
-	if ($Far.Message("$action selected jobs?", $action, 'OkCancel') -ne 0) { return }
-	foreach($job in ($_.Files | Select-Object -ExpandProperty Data)) {
-		if (!$_.Move -and $job.State -eq 'Running') {
-			Stop-Job -Job $job
+$Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
+	FileComparer = [PowerShellFar.FileMetaComparer]'Id'
+	### GetData: panel jobs, sort by Id, this is not always done by the core.
+	AsGetData = {
+		Get-Job | Sort-Object Id
+	}
+	### Delete jobs (stop\remove)
+	AsDeleteFiles = {
+		$action = if ($_.Force) { 'Remove' } else { 'Stop\Remove' }
+		if ($Far.Message("$action selected jobs?", $action, 'OkCancel') -ne 0) {
+			return
 		}
-		else {
-			Remove-Job -Job $job -Force
+		foreach($job in $_.FilesData) {
+			if (!$_.Force -and $job.State -eq 'Running') {
+				Stop-Job -Job $job
+			}
+			else {
+				Remove-Job -Job $job -Force
+			}
 		}
+	}
+	### Write job data (for [F3], [CtrlQ])
+	AsExportFile = {
+		Receive-Job -Job $_.File.Data -Keep > $_.FileName
+	}
+	### Panel
+	AsCreatePanel = {
 	}
 }
 
-### Write job data (for [F3], [CtrlQ])
-$Panel.AsWriteFile = {
-	Receive-Job -Job $_.File.Data -Keep > $_.Path
-}
-
-### Go
-Start-FarPanel $Panel -Title "PowerShell Jobs" -DataId 'Id' -IdleUpdate
+New-Object PowerShellFar.ObjectPanel $Explorer -Property @{
+	Title = "PowerShell Jobs"
+	IdleUpdate = $true
+	Columns = @(
+		@{ Expression = 'Id'; Width = 6 }
+		'Name'
+		@{ Expression = 'State'; Width = 10 }
+		@{ Label = 'Data'; Expression = 'HasMoreData'; Width = 5 }
+		@{ Label = 'Command'; Expression = { $_.Command.ToString().TrimStart() } }
+	)
+} | Open-FarPanel

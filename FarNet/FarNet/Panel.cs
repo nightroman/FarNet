@@ -25,10 +25,11 @@ namespace FarNet
 	/// After opening a panel it is recommended to avoid excessive modifications of data.
 	/// </para>
 	/// <para>
-	/// Properties often configured before opening are:
+	/// Some settings often configured before opening:
 	/// <see cref="Title"/>,
 	/// <see cref="SortMode"/>,
-	/// <see cref="ViewMode"/>.
+	/// <see cref="ViewMode"/>,
+	/// <see cref="SetPlan"/>.
 	/// </para>
 	/// </remarks>
 	public partial class Panel : IPanel
@@ -37,25 +38,22 @@ namespace FarNet
 		Panel _Parent;
 		Panel _Child;
 		/// <summary>
-		/// New module panel.
+		/// New module panel with its file explorer.
 		/// </summary>
-		public Panel() { _Panel = Far.Net.WorksPanel(this); }
+		public Panel(Explorer explorer)
+		{
+			if (explorer == null) throw new ArgumentNullException("explorer");
+			_Panel = Far.Net.WorksPanel(this, explorer);
+		}
 		/// <summary>
-		/// Gets or sets the attached file explorer.
+		/// Gets the file explorer.
 		/// </summary>
 		/// <remarks>
 		/// An explorer should be attached only to a just created and not yet opened panel.
 		/// Once the panel is opened its explorer should never be changed directly.
 		/// But the core normally changes panel explorers on navigation.
 		/// </remarks>
-		public virtual Explorer Explorer { get; set; }
-		/// <summary>
-		/// Gets or sets the explorer type ID.
-		/// </summary>
-		/// <remarks>
-		/// If it is not empty then the panel is reused by several explorers of this type.
-		/// </remarks>
-		public Guid ExplorerTypeId { get; set; }
+		public Explorer Explorer { get { return _Panel.MyExplorer; } }
 		///
 		public int WorksId { get { return _Panel.WorksId; } }
 		/// <include file='doc.xml' path='doc/Data/*'/>
@@ -83,6 +81,11 @@ namespace FarNet
 		// Opening worker, including a posted step
 		void Open(object sender, EventArgs e)
 		{
+			// the first update
+			if (Explorer != null)
+				Explorer.UpdatePanel(this);
+
+			// go
 			if (_Parent == null)
 				_Panel.Open();
 			else
@@ -165,7 +168,7 @@ namespace FarNet
 			if (parent == null)
 			{
 				// try to use the active as parent; do not use the passive, show as normal
-				parent = FindPanel(true);
+				parent = Far.Net.Panel as Panel;
 				if (parent == null)
 				{
 					// go
@@ -209,49 +212,9 @@ namespace FarNet
 		/// </remarks>
 		protected virtual bool OpenChildBegin(Panel parent) { return true; }
 		/// <summary>
-		/// Opens the panel by replacing another panel.
+		/// Gets the opposite opened module panel, the target for dual operations, or null.
 		/// </summary>
-		/// <param name="current">The current panel to be replaced.</param>
-		/// <remarks>
-		/// Opening instead of the already opened panel may have some advantages:
-		/// *) there are less core restrictions than for opening a new panel;
-		/// *) the new panel inherits and keeps alive the parent panels.
-		/// <para>
-		/// If the current panel is not ready (see <see cref="CanClose()"/>) then this call has no effect.
-		/// </para>
-		/// </remarks>
-		public void OpenInstead(Panel current)
-		{
-			if (current == null) throw new ArgumentNullException("current");
-
-			// ask
-			if (!current.CanClose())
-				return;
-
-			// clean current
-			current.WorksClosed(false);
-
-			// replace
-			_Panel.OpenReplace(current);
-		}
-		/// <summary>
-		/// Gets the active or passive module panel if any.
-		/// </summary>
-		/// <param name="active">Active or passive panel.</param>
-		/// <returns>Found panel or null.</returns>
-		public static Panel FindPanel(bool active)
-		{
-			Panel panel = Far.Net.FindPanel(typeof(Panel));
-			if (panel == null)
-				return null;
-			if (panel.IsActive == active)
-				return panel;
-			return panel.AnotherPanel;
-		}
-		/// <summary>
-		/// Gets another started module panel or null. Assume this panel is shown.
-		/// </summary>
-		public Panel AnotherPanel { get { return _Panel.AnotherPanel; } }
+		public Panel TargetPanel { get { return _Panel.TargetPanel; } }
 		/// <summary>
 		/// Saves the panel state.
 		/// </summary>
@@ -259,7 +222,7 @@ namespace FarNet
 		/// It is called when the panel is about to be offline (pushed or replaced by a child panel).
 		/// The panel UI state is saved by the core (view and sort modes, etc.).
 		/// The base method posts the current file to be restored as current.
-		/// It is important to have a proper <see cref="FileComparer"/> set.
+		/// It is important to have the proper <see cref="FarNet.Explorer.FileComparer"/>.
 		/// </remarks>
 		protected virtual void SaveState()
 		{
@@ -371,10 +334,16 @@ namespace FarNet
 		/// This property is optionally set once, normally by a creator.
 		/// It is used for distinguishing panel types when a class type is not enough.
 		/// </remarks>
-		/// <seealso cref="IFar.FindPanel(Guid)"/>
+		/// <seealso cref="IFar.Panels(Guid)"/>
 		public Guid TypeId { get; set; }
 		#endregion
 		#region Work Methods
+		void Post(ExplorerEventArgs args)
+		{
+			if (args.PostData != null) PostData(args.PostData);
+			if (args.PostFile != null) PostFile(args.PostFile);
+			if (args.PostName != null) PostName(args.PostName);
+		}
 		/// <summary>
 		/// Posts the <see cref="FarFile.Data"/> to be used to find a file and set it current on redrawing.
 		/// </summary>
@@ -384,7 +353,7 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// The posted file is ignored if <see cref="PostData"/> or <see cref="PostName"/> were called.
-		/// The <seealso cref="FileComparer"/> is used in order to find the file.
+		/// The <see cref="FarNet.Explorer.FileComparer"/> is used in order to find the file.
 		/// </remarks>
 		public void PostFile(FarFile file) { _Panel.PostFile(file); }
 		/// <summary>
@@ -473,17 +442,16 @@ namespace FarNet
 		/// Gets file kind always.
 		/// </summary>
 		public PanelKind Kind { get { return PanelKind.File; } }
+		/// <include file='doc.xml' path='doc/CurrentDirectory/*'/>
+		public string CurrentDirectory { get { return _Panel.CurrentDirectory; } set { _Panel.CurrentDirectory = value; } }
 		/// <summary>
-		/// Gets or sets the panel current directory.
+		/// Gets or sets the path which is or going to be the <see cref="CurrentDirectory"/>.
 		/// </summary>
 		/// <remarks>
-		/// Changing of the current directory depends on <see cref="SetPanelDirectory"/> handler.
-		/// If the handler is missing and the directory exists in the core file system
-		/// then the module panel is closed and a file panel is opened instead.
+		/// It should be set only when the directory is not the same as the explorer location, this is a rare case.
+		/// If it is empty then the core closes the panel when [Enter] is pressed on the dots item.
 		/// </remarks>
-		/// <seealso cref="GoToName(string)"/>
-		/// <seealso cref="GoToPath"/>
-		public string CurrentDirectory { get { return _Panel.CurrentDirectory; } set { _Panel.CurrentDirectory = value; } }
+		public string CurrentLocation { get { return _Panel.CurrentLocation; } set { _Panel.CurrentLocation = value; } }
 		/// <summary>
 		/// Gets all selected panel files at once or the current file if none is selected.
 		/// </summary>
@@ -549,19 +517,19 @@ namespace FarNet
 		/// </summary>
 		public bool RawSelection { get { return _Panel.RawSelection; } set { _Panel.RawSelection = value; } }
 		/// <summary>
-		/// Tells to use the core method instead of <see cref="Panel.DeleteFiles"/> if <see cref="RealNames"/> = true.
+		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
 		/// </summary>
-		public bool RealNamesDeleteFiles { get { return _Panel.RealNamesDeleteFiles; } set { _Panel.RealNamesDeleteFiles = value; } }
+		public bool RealNamesDeleteFiles { get { return _Panel.RealNamesDeleteFiles; } set { _Panel.RealNamesDeleteFiles = value; } } //????? to explorer?
 		/// <summary>
-		/// Tells to use the core method instead of <see cref="Panel.ExportFiles"/> if <see cref="RealNames"/> = true.
+		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
 		/// </summary>
 		public bool RealNamesExportFiles { get { return _Panel.RealNamesExportFiles; } set { _Panel.RealNamesExportFiles = value; } }
 		/// <summary>
-		/// Tells to use the core method instead of <see cref="Panel.ImportFiles"/> if <see cref="RealNames"/> = true.
+		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
 		/// </summary>
 		public bool RealNamesImportFiles { get { return _Panel.RealNamesImportFiles; } set { _Panel.RealNamesImportFiles = value; } }
 		/// <summary>
-		/// Tells to use the core method instead of <see cref="Panel.MakeDirectory"/> if <see cref="RealNames"/> = true.
+		/// Tells to use the core method instead of explorer if <see cref="RealNames"/> is true.
 		/// </summary>
 		public bool RealNamesMakeDirectory { get { return _Panel.RealNamesMakeDirectory; } set { _Panel.RealNamesMakeDirectory = value; } }
 		/// <summary>
@@ -666,7 +634,7 @@ namespace FarNet
 		/// </remarks>
 		public void UnselectAll() { _Panel.UnselectAll(); }
 		/// <summary>
-		/// Selects shown items by their indexes. See <see cref="Redraw()"/>.
+		/// Selects shown items by their indexes.
 		/// </summary>
 		/// <param name="indexes">Indexes of items to be selected. Null is OK.</param>
 		/// <remarks>
@@ -712,24 +680,14 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// The indexes are valid only for the <see cref="ShownList"/> items.
-		/// Unlike the <see cref="SelectedFiles"/> this list is empty if none is selected.
+		/// Unlike the <see cref="SelectedFiles"/> or <see cref="SelectedList"/> this list is empty if none is selected.
 		/// </remarks>
 		public int[] SelectedIndexes() { return _Panel.SelectedIndexes(); }
-		#endregion
 		/// <summary>
-		/// Gets or sets the list of panel items.
+		/// Gets true if selection exists.
 		/// </summary>
-		/// <remarks>
-		/// This is the main member of the panel: its items.
-		/// <para>
-		/// For performance and simplicity sake the list is not protected and it should be used carefully.
-		/// Normally it is filled on startup and then can be changed by <see cref="UpdateFiles"/> handler.
-		/// If it is changed differently then <see cref="IPanel.Update"/> should be called immediately;
-		/// otherwise not coherent panel and list data may cause unpredictable problems.
-		/// </para>
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public IList<FarFile> Files { get { return _Panel.Files; } set { _Panel.Files = value; } }
+		public bool SelectionExists { get { return _Panel.SelectionExists; } }
+		#endregion
 		#region Core Events
 		/// <summary>
 		/// Called periodically when a user is idle.
@@ -809,22 +767,6 @@ namespace FarNet
 				UpdateInfo(this, null);
 		}
 		/// <summary>
-		/// Called to prepare <see cref="Files"/> list in the current directory of a file system emulated by the panel.
-		/// </summary>
-		/// <remarks>
-		/// If the file set is constant and may be filled once on the panel creation then this event is not needed.
-		/// </remarks>
-		public event EventHandler<PanelEventArgs> UpdateFiles;
-		///
-		public bool WorksUpdateFiles(PanelEventArgs e)
-		{
-			if (UpdateFiles == null)
-				return false;
-			if (e != null)
-				UpdateFiles(this, e);
-			return true;
-		}
-		/// <summary>
 		/// Called when a panel is about to be closed.
 		/// </summary>
 		/// <remarks>
@@ -883,138 +825,6 @@ namespace FarNet
 				return false;
 			if (e != null)
 				ViewChanged(this, e);
-			return true;
-		}
-		/// <summary>
-		/// Called when a key is about to be processed.
-		/// </summary>
-		/// <remarks>
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module processes the key itself.
-		/// <para>
-		/// Normally panels are not interested in this event, they use <see cref="KeyPressed"/>.
-		/// This event is needed for advanced processing of some special keys.
-		/// </para>
-		/// <para>
-		/// In Far Manager this event is called from the <c>ProcessKeyW</c> with the <c>PKF_PREPROCESS</c> flag.
-		/// </para>
-		/// </remarks>
-		public event EventHandler<PanelKeyEventArgs> KeyPressing;
-		///
-		public bool WorksKeyPressing(PanelKeyEventArgs e)
-		{
-			if (KeyPressing == null)
-				return false;
-			if (e != null)
-				KeyPressing(this, e);
-			return true;
-		}
-		/// <summary>
-		/// Called in order to set the <see cref="PanelDirectory"/> in the virtual file system.
-		/// If all is fine it becomes the <see cref="CurrentDirectory"/>.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// *) This method is not called if the <see cref="Explorer"/> is not null.
-		/// *) It is recommended to use the explorer approach.
-		/// *) This event presumably will be removed.
-		/// </para>
-		/// <para>
-		/// This method is vitally important for navigation in the virtual file system, especially for find and scan operations.
-		/// Design it carefully, read all the remarks for <see cref="SetDirectoryEventArgs"/> and its members.
-		/// </para>
-		/// </remarks>
-		public event EventHandler<SetDirectoryEventArgs> SetPanelDirectory;
-		///
-		public bool WorksSetPanelDirectory(SetDirectoryEventArgs e)
-		{
-			if (SetPanelDirectory == null)
-				return false;
-			if (e != null)
-				SetPanelDirectory(this, e);
-			return true;
-		}
-		/// <summary>
-		/// Called to delete files in the file system emulated by the panel.
-		/// </summary>
-		public event EventHandler<FilesEventArgs> DeleteFiles;
-		///
-		public bool WorksDeleteFiles(FilesEventArgs e)
-		{
-			if (DeleteFiles == null)
-				return false;
-			if (e != null)
-				DeleteFiles(this, e);
-			return true;
-		}
-		/// <summary>
-		/// Called to export files on copy, move, edit, and view operations.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This event is not called if <see cref="Panel.RealNames"/> is true,
-		/// Far Manager performs the operations itself.
-		/// </para>
-		/// <para>
-		/// The module has to process its virtual directories itself.
-		/// </para>
-		/// </remarks>
-		public event EventHandler<ExportFilesEventArgs> ExportFiles;
-		///
-		public bool WorksExportFiles(ExportFilesEventArgs e)
-		{
-			if (ExportFiles == null)
-				return false;
-			if (e != null)
-				ExportFiles(this, e);
-			return true;
-		}
-		/// <summary>
-		/// Called to import files to the panel on copy and move operations.
-		/// </summary>
-		public event EventHandler<ImportFilesEventArgs> ImportFiles;
-		///
-		public bool WorksImportFiles(ImportFilesEventArgs e)
-		{
-			if (ImportFiles == null)
-				return false;
-			if (e != null)
-				ImportFiles(this, e);
-			return true;
-		}
-		/// <summary>
-		/// Called to create a new panel item on [F7] hotkey.
-		/// </summary>
-		/// <remarks>
-		/// A handler should be ready to process <see cref="ExplorerModes.Silent"/> flag.
-		/// Set <see cref="PanelEventArgs.Ignore"/> to true if processing fails or should be ignored.
-		/// <para>
-		/// It is assumed that this method creates a new item with the <see cref="MakeDirectoryEventArgs.Name"/> name.
-		/// If the <see cref="PanelEventArgs.Mode"/> has no <see cref="ExplorerModes.Silent"/> flag you are supposed
-		/// to return (set) a new item name, so that this item will be current after panel update and redraw.
-		/// </para>
-		/// <para>
-		/// Don't be confused by the method's name, it is given historically due to associated [F7] hotkey.
-		/// In fact, you can create panel items of any kind, directories (containers) or files (leaves).
-		/// </para>
-		/// <para>
-		/// Remember that this is not the only way of adding items, for example you can process the same [F7] key
-		/// (or any other key) in <see cref="KeyPressed"/> event, or add items by a menu command, and etc.
-		/// In these cases you may want to set a new item current yourself, e.g. by calling <c>Post*()</c> methods.
-		/// </para>
-		/// <para>
-		/// Main reasons to use alternative ways of creating items:
-		/// *) an operation is started not by pressing [F7];
-		/// *) item names are not unique in a panel.
-		/// </para>
-		/// </remarks>
-		public event EventHandler<MakeDirectoryEventArgs> MakeDirectory;
-		///
-		public bool WorksMakeDirectory(MakeDirectoryEventArgs e)
-		{
-			if (MakeDirectory == null)
-				return false;
-			if (e != null)
-				MakeDirectory(this, e);
 			return true;
 		}
 		/// <summary>
@@ -1103,24 +913,44 @@ namespace FarNet
 		/// <param name="plan">The plan.</param>
 		public void SetPlan(PanelViewMode mode, PanelPlan plan) { _Panel.SetPlan(mode, plan); }
 		/// <summary>
-		/// Gets or sets the panel directory of the virtual file system.
+		/// Selects the specified panel files.
 		/// </summary>
+		/// <param name="files">Collection of <see cref="FarFile"/> files to be selected.</param>
+		/// <param name="comparer">The file comparer or null for the panel comparer.</param>
 		/// <remarks>
-		/// If it is empty then the core closes the panel when [Enter] is pressed on the dots item.
+		/// Call <see cref="Redraw()"/> after that.
 		/// </remarks>
-		public string PanelDirectory { get { return _Panel.PanelDirectory; } set { _Panel.PanelDirectory = value; } }
-		/// <summary>
-		/// Gets or sets the file comparer. See <see cref="FarNet.Explorer.FileComparer"/>.
-		/// </summary>
-		public IEqualityComparer<FarFile> FileComparer
+		public void SelectFiles(IEnumerable files, IEqualityComparer<FarFile> comparer)
 		{
-			get { return _FileComparer ?? (_FileComparer = new FileNameComparer()); }
-			set
+			// no job?
+			if (files == null)
+				return;
+
+			// hash the files using the proper comparer, ignore dupes
+			var hash = new Dictionary<FarFile, bool>(comparer ?? Explorer.FileComparer);
+			foreach (FarFile file in files)
 			{
-				if (value == null) throw new ArgumentNullException("value");
-				_FileComparer = value;
+				try { hash.Add(file, false); }
+				catch (ArgumentException) { }
 			}
+			
+			// empty
+			if (hash.Count == 0)
+				return;
+
+			// indexes of files found in the hash
+			int index = -1;
+			var indexes = new List<int>();
+			foreach (var file in ShownList)
+			{
+				++index;
+				if (hash.ContainsKey(file))
+					indexes.Add(index);
+			}
+
+			// select by indexes
+			if (indexes.Count > 0)
+				SelectAt(indexes.ToArray());
 		}
-		IEqualityComparer<FarFile> _FileComparer;
 	}
 }

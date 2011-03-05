@@ -174,4 +174,4 @@ function OutTrue([string]$property) { if ($c.$property) { "$vc.$property = `$tru
 } > $OutputPath
 
 # open in editor
-Start-FarEditor $OutputPath
+Open-FarEditor $OutputPath

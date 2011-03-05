@@ -16,7 +16,7 @@ namespace PowerShellFar.Commands
 	/// </summary>
 	/// <seealso cref="IEditor"/>
 	/// <seealso cref="IFar.CreateEditor"/>
-	/// <seealso cref="StartFarEditorCommand"/>
+	/// <seealso cref="OpenFarEditorCommand"/>
 	[Description("Creates an editor for other settings before opening.")]
 	public class NewFarEditorCommand : BaseTextCmdlet
 	{

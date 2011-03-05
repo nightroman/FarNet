@@ -11,12 +11,12 @@ using FarNet;
 namespace PowerShellFar.Commands
 {
 	/// <summary>
-	/// Start-FarEditor command.
+	/// Open-FarEditor command.
 	/// Creates and opens an editor.
 	/// </summary>
 	/// <seealso cref="NewFarEditorCommand"/>
 	[Description("Creates and opens an editor.")]
-	public sealed class StartFarEditorCommand : NewFarEditorCommand
+	public sealed class OpenFarEditorCommand : NewFarEditorCommand
 	{
 		///
 		[Parameter(HelpMessage = _helpModal)]

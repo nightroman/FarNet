@@ -27,9 +27,8 @@ namespace PowerShellFar
 		///
 		public static Meta[] TablePanelSetupColumns(object[] columns)
 		{
-			return TablePanel.SetupColumns(columns);
+			return Format.SetupColumns(columns);
 		}
-
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal static Process StartExternalViewer(string fileName)
 		{
@@ -57,7 +56,6 @@ namespace PowerShellFar
 			externalViewerArguments = "/m /p /v \"" + fileName + "\"";
 			return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 		}
-
 		///
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static void ShowTranscript(bool external)
@@ -120,7 +118,6 @@ namespace PowerShellFar
 		{
 			return value.ToString(CultureInfo.CurrentCulture);
 		}
-
 		/// <summary>
 		/// Converts with culture.
 		/// </summary>
@@ -128,13 +125,11 @@ namespace PowerShellFar
 		{
 			return value.ToString(format, CultureInfo.CurrentCulture);
 		}
-
 		// Compares strings OrdinalIgnoreCase.
 		public static bool Equals(string strA, string strB)
 		{
 			return string.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
 		}
-
 		// Escapes a literal string to be used as a wildcard.
 		//! It is a workaround:
 		// 1) Rename-Item has no -LiteralPath --> we have to escape wildcards (anyway it fails e.g. "name`$][").
@@ -147,7 +142,6 @@ namespace PowerShellFar
 			return _reEscapeWildcard.Replace(literal, "`$1");
 		}
 		static Regex _reEscapeWildcard;
-
 		//?? _090901_055134 Check in V2 (bad for viewer and notepad)
 		/// <summary>
 		/// Formats a position message.
@@ -160,12 +154,31 @@ namespace PowerShellFar
 
 	class PowerPath
 	{
-		readonly PathInfo _p;
-		public PowerPath(PathInfo p)
+		readonly PathInfo _PathInfo;
+		internal PowerPath(PathInfo pathInfo)
 		{
-			_p = p;
+			_PathInfo = pathInfo;
 		}
-
+		///
+		public PowerPath(string path)
+		{
+			var core = A.Psf.Engine.SessionState.Path;
+			if (string.IsNullOrEmpty(path) || path == ".")
+			{
+				_PathInfo = core.CurrentLocation;
+				return;
+			}
+			
+			core.PushCurrentLocation(null);
+			try
+			{
+				_PathInfo = core.SetLocation(Kit.EscapeWildcard(path));
+			}
+			finally
+			{
+				core.PopLocation(null);
+			}
+		}
 		string _Path;
 		/// <summary>
 		/// System friendly path.
@@ -176,38 +189,40 @@ namespace PowerShellFar
 			{
 				if (_Path == null)
 				{
-					_Path = _p.ProviderPath;
+					_Path = _PathInfo.ProviderPath; //????? or Path?
 					if (!_Path.StartsWith("\\\\", StringComparison.Ordinal))
 					{
-						_Path = _p.Path;
+						_Path = _PathInfo.Path;
 						if (_Path.Length == 0 || _Path == "\\")
-							_Path = _p.Drive.Name + ":";
+							_Path = _PathInfo.Drive.Name + ":"; //????? last \
 					}
 				}
 				return _Path;
 			}
 		}
-
 		public ProviderInfo Provider
 		{
-			get { return _p.Provider; }
+			get { return _PathInfo.Provider; }
 		}
-
-		public PSDriveInfo Drive
+		/// <summary>
+		/// Gets the drive name or null.
+		/// </summary>
+		public string DriveName //! 110227 PathInfo.Drive can be null even if a drive exists
 		{
-			get { return _p.Drive; }
+			get
+			{
+				return _PathInfo.Drive == null ? null : _PathInfo.Drive.Name;
+			}
 		}
 	}
 
 	class DataLookup
 	{
 		string[] _namePairs;
-
 		public DataLookup(string[] namePairs)
 		{
 			_namePairs = namePairs;
 		}
-
 		public void Invoke(object sender, FileEventArgs e)
 		{
 			// lookup data panel (should be checked, user could use another)
@@ -292,7 +307,6 @@ namespace My
 				fileName.EndsWith(".psm1", StringComparison.OrdinalIgnoreCase) ||
 				fileName.EndsWith(".psd1", StringComparison.OrdinalIgnoreCase);
 		}
-
 		/// <summary>
 		/// Does a string looks like a file system path?
 		/// </summary>
@@ -300,7 +314,6 @@ namespace My
 		{
 			return name.StartsWith("\\\\", StringComparison.Ordinal) || (name.Length > 3 && name[1] == ':');
 		}
-
 		public static string Combine(string path, string file)
 		{
 			if (path == null)
@@ -313,7 +326,6 @@ namespace My
 			else
 				return path + "\\" + file;
 		}
-
 		public static string GetFileName(string path)
 		{
 			int i = path.LastIndexOf('\\');
@@ -322,7 +334,6 @@ namespace My
 
 			return path.Substring(i + 1);
 		}
-
 		public static string GetDirectoryName(string path)
 		{
 			int i = path.LastIndexOf('\\');
@@ -331,7 +342,6 @@ namespace My
 
 			return path.Substring(0, i);
 		}
-
 		/// <summary>
 		/// Tries to recognize an existing file path by an object.
 		/// </summary>
@@ -356,7 +366,6 @@ namespace My
 
 			return null;
 		}
-
 	}
 
 	/// <summary>
@@ -368,17 +377,14 @@ namespace My
 		{
 			return provider.ImplementingType.GetInterface("IContentCmdletProvider") != null;
 		}
-
 		public static bool HasDynamicProperty(ProviderInfo provider)
 		{
 			return provider.ImplementingType.GetInterface("IDynamicPropertyCmdletProvider") != null;
 		}
-
 		public static bool HasProperty(ProviderInfo provider)
 		{
 			return provider.ImplementingType.GetInterface("IPropertyCmdletProvider") != null;
 		}
-
 		public static bool IsNavigation(ProviderInfo provider)
 		{
 			//! 'is' does not work, because we work just on a type, not an instance
@@ -400,7 +406,6 @@ namespace My
 				Arguments = arguments
 			});
 		}
-
 		/// <summary>
 		/// Simple call helper. Eventually may help to use a custom editor.
 		/// </summary>

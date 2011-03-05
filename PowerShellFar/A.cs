@@ -38,20 +38,9 @@ namespace PowerShellFar
 		/// <summary>
 		/// Shows a message.
 		/// </summary>
-		public static void Msg(string message)
+		public static void Message(string message)
 		{
 			Far.Net.Message(message, Res.Me, MsgOptions.LeftAligned);
-		}
-
-		/// <summary>
-		/// Creates standard Far editor ready for opening (F4)
-		/// </summary>
-		/// <param name="filePath">Existing file to edit.</param>
-		public static IEditor CreateEditor(string filePath)
-		{
-			IEditor edit = Far.Net.CreateEditor();
-			edit.FileName = filePath;
-			return edit;
 		}
 
 		/// <summary>
@@ -66,15 +55,6 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Sets an object member value.
-		/// </summary>
-		public static void SetMemberValue(PSPropertyInfo info, object value)
-		{
-			//! SetValueInvocationException (RuntimeException is its ancestor)
-			info.Value = value;
-		}
-
-		/// <summary>
 		/// Sets an item property value as it is.
 		/// </summary>
 		public static void SetPropertyValue(string itemPath, string propertyName, object value)
@@ -85,6 +65,7 @@ namespace PowerShellFar
 				itemPath, propertyName, value);
 		}
 
+#if false //????
 		/// <summary>
 		/// Tries to get a property value.
 		/// </summary>
@@ -98,12 +79,15 @@ namespace PowerShellFar
 
 			return LanguagePrimitives.TryConvertTo<T>(pi.Value, out value);
 		}
+#endif
 
+#if false //????
 		// Sets location (with workaround)
 		public static void SetLocation(string path)
 		{
 			Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(path));
 		}
+#endif
 
 		/// <summary>
 		/// Writes invocation errors.
@@ -499,5 +483,70 @@ namespace PowerShellFar
 			}
 		}
 
+		internal static void SetPropertyFromTextUI(object target, PSPropertyInfo pi, string text)
+		{
+			bool isPSObject;
+			object value;
+			string type;
+			if (pi.Value is PSObject && (pi.Value as PSObject).BaseObject != null)
+			{
+				isPSObject = true;
+				type = (pi.Value as PSObject).BaseObject.GetType().FullName;
+			}
+			else
+			{
+				isPSObject = false;
+				type = pi.TypeNameOfValue;
+			}
+
+			if (type == "System.Collections.ArrayList" || type.EndsWith("]", StringComparison.Ordinal))
+			{
+				ArrayList lines = new ArrayList();
+				foreach (var line in FarNet.Works.Kit.SplitLines(text))
+					lines.Add(line);
+				value = lines;
+			}
+			else
+			{
+				value = text;
+			}
+
+			if (isPSObject)
+				value = PSObject.AsPSObject(value);
+
+			try
+			{
+				pi.Value = value;
+				MemberPanel.WhenMemberChanged(target);
+			}
+			catch (RuntimeException ex)
+			{
+				Far.Net.Message(ex.Message, "Setting property");
+			}
+		}
+
+		/// <summary>
+		/// Collects names of files.
+		/// </summary>
+		internal static List<string> FileNameList(IList<FarFile> files)
+		{
+			var r = new List<string>();
+			r.Capacity = files.Count;
+			foreach (FarFile f in files)
+				r.Add(f.Name);
+			return r;
+		}
+
+		/// <summary>
+		/// Writes Format-List output to a file.
+		/// </summary>
+		internal static void WriteFormatList(object data, string fileName)
+		{
+			const string code = @"
+Format-List -InputObject $args[0] -Property * -Expand Both -ErrorAction 0 |
+Out-File -FilePath $args[1] -Width $args[2] -Encoding Unicode
+";
+			Psf.InvokeCode(code, data, fileName, int.MaxValue);
+		}
 	}
 }

@@ -398,35 +398,4 @@ namespace FarNet
 		}
 	}
 
-	/// <summary>
-	/// Compares files by values requested from their <see cref="FarFile.Data"/>.
-	/// </summary>
-	public sealed class FileMetaComparer : EqualityComparer<FarFile>
-	{
-		readonly Getter _getter;
-		///
-		public FileMetaComparer(Getter getter)
-		{
-			if (getter == null) throw new ArgumentNullException("getter");
-			_getter = getter;
-		}
-		///
-		public override bool Equals(FarFile x, FarFile y)
-		{
-			if (x == null || y == null)
-				return x == null && y == null;
-			else
-				return object.Equals(_getter(x.Data), _getter(y.Data));
-		}
-		///
-		public override int GetHashCode(FarFile obj)
-		{
-			if (obj == null || obj.Data == null)
-				return 0;
-			
-			var value = _getter(obj.Data);
-			return value == null ? 0 : value.GetHashCode();
-		}
-	}
-
 }

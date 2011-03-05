@@ -190,7 +190,7 @@ namespace FarNet.Works
 					return;
 
 				// sequence
-				string[] lines = Regex.Split(macro.Sequence, Kit.SplitLinePattern);
+				string[] lines = Kit.SplitLines(macro.Sequence);
 				if (lines.Length == 1)
 					key.SetValue("Sequence", lines[0]);
 				else
@@ -282,7 +282,7 @@ namespace FarNet.Works
 		// Converts the text to the string array or the same string.
 		static object StringToRegistryValue(string text)
 		{
-			string[] lines = Regex.Split(text, Kit.SplitLinePattern);
+			string[] lines = Kit.SplitLines(text);
 			if (lines.Length == 1)
 				return text;
 			else

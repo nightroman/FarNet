@@ -1,9 +1,30 @@
 http://code.google.com/p/farnet/
 
-= 4.4.2 =
+= 4.4.3 =
 
 *) Module panel revision, continued
 (changes are unlikely breaking for the most of users)
+
+*) Explorer
+- Added quite a number of new methods, changed some existing.
+
+*) Panels revision
+- All module panels are based on explorers now. A lots of stuff moved to the
+Explorer class. To be continued.
+
+*) Panels new
+- Method SelectFiles().
+- Property SelectionExists.
+
+*) IFar
+- FindPanel() ~ one panel -> Panels() ~ all panels
+
+*) Misc
+- Error message box: removed [Copy], [More] shows details in the locked editor.
+
+= 4.4.2 =
+
+*) Module panel revision, continued
 
 Experimental search command moved to the new module Explore. But the search
 core moved to FarNet.Tools - the idea is that any module can make its own

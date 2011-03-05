@@ -1,7 +1,7 @@
 
 <#
 .SYNOPSIS
-	Test pure FarNet panels.
+	Test simple panels.
 	Author: Roman Kuzmin
 
 .DESCRIPTION
@@ -29,12 +29,111 @@ param
 	[switch]$NoDots
 )
 
+### User data: an object with members that will be used when the panel works
+$Data = New-Object PSObject -Property @{
+	AcceptFiles = 0
+	DeleteFiles = 0
+	CreateFile = 0
+	ExportFile = 0
+	Total = 0
+}
+
+### Add a method that updates the panel info on events
+$Data | Add-Member ScriptMethod UpdateInfo {
+	++$this.Total
+	$Panel = $Far.Panel
+	if ($Panel -isnot [FarNet.Panel]) { return }
+
+	# generator of new key labels
+	function Make12($s) { for($i = 1; $i -le 12; ++$i) { "$i $s $($this.Total)" } }
+
+	# generate new key labels
+	$Panel.SetKeyBar((Make12 Main))
+	$Panel.SetKeyBarCtrl((Make12 Ctrl))
+	$Panel.SetKeyBarCtrlAlt((Make12 CtrlAlt))
+	$Panel.SetKeyBarCtrlShift((Make12 CtrlShift))
+	$Panel.SetKeyBarAlt((Make12 Alt))
+	$Panel.SetKeyBarAltShift((Make12 AltShift))
+	$Panel.SetKeyBarShift((Make12 Shift))
+
+	# update event counters and reset the property
+	$InfoItems = $Panel.InfoItems
+	$InfoItems[1].Data = $this.AcceptFiles
+	$InfoItems[2].Data = $this.DeleteFiles
+	$InfoItems[3].Data = $this.CreateFile
+	$InfoItems[4].Data = $this.ExportFile
+	$InfoItems[5].Data = Get-Date
+	$Panel.InfoItems = $InfoItems
+}
+
+### Explorer
+# It does not need the AsGetFiles, it uses the predefined Files list.
+$Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83ba66b9bb' -Property @{
+	Functions = 'AcceptFiles, AcceptOther, DeleteFiles, CreateFile, ExportFile'
+	Data = $Data
+	### AcceptFiles: called on [F5], [F6]
+	AsAcceptFiles = {
+		# count events, update info
+		$data = $this.Data
+		++$data.AcceptFiles
+		$data.UpdateInfo()
+
+		# just add input files
+		$_.Files | %{ $this.Cache.Add($_) }
+
+		# the core deletes on move
+		$_.Delete = $true
+	}
+	### AcceptOther: [F5], [F6] from a native panel
+	AsAcceptOther = {
+		# just add input files
+		$_.Files | %{ $this.Cache.Add($_) }
+	}
+	### DeleteFiles: called on [F8]
+	AsDeleteFiles = {
+		# count events, update info
+		$data = $this.Data
+		++$data.DeleteFiles
+		$data.UpdateInfo()
+
+		# remove input files
+		$_.Files | % { $this.Cache.Remove($_) }
+	}
+	### CreateFile: called on [F7]
+	AsCreateFile = {
+		# count events, update info
+		$data = $this.Data
+		$n = ++$data.CreateFile
+		$data.UpdateInfo()
+
+		# get and post a new name, add a new item
+		$newName = "Item$n"
+		$_.PostName = $newName
+		$this.Cache.Add((
+			New-FarFile $newName -Owner "Value$n" -Description "Description$n" -Columns "custom[0]=$n", "custom[1]=$n"
+		))
+	}
+	### ExportFile: called on [CtrlQ]
+	AsExportFile = {
+		# count events, update info
+		$data = $this.Data
+		++$data.ExportFile
+		$data.UpdateInfo()
+
+		# [CtrlQ]
+		if ($_.Mode -band [FarNet.ExplorerModes]::QuickView) {
+			[IO.File]::WriteAllText($_.FileName, "Hello from $($_.File.Name)")
+		}
+	}
+}
+
 ### Create a panel, set its properties
-$Panel = New-Object FarNet.Panel
-$Panel.DotsMode = if ($NoDots) { 'Off' } else { 'Dots' }
-$Panel.DotsDescription = 'Try: F7, F8, F5, F6, CtrlQ, CtrlL, CtrlB, Ctrl7, Ctrl0, Esc'
-$Panel.Title = "Test Panel"
-$Panel.ViewMode = 'Descriptions'
+$Panel = New-Object FarNet.Panel $Explorer -Property @{
+	DotsMode = if ($NoDots) { 'Off' } else { 'Dots' }
+	DotsDescription = 'Try: F7, F8, F5, F6, CtrlQ, CtrlL, CtrlB, Ctrl7, Ctrl0, Esc'
+	Title = "Test Panel"
+	ViewMode = 'Descriptions'
+}
 
 ### Modes
 # 'Descriptions'
@@ -61,119 +160,12 @@ $Panel.SetPlan(0, $Mode)
 # This test: use info items for event statistics
 $Panel.InfoItems = @(
 	New-Object FarNet.DataItem 'Test Panel Events', $null
-	New-Object FarNet.DataItem 'MakeDirectory', 0
+	New-Object FarNet.DataItem 'AcceptFiles', 0
 	New-Object FarNet.DataItem 'DeleteFiles', 0
-	New-Object FarNet.DataItem 'ExportFiles', 0
-	New-Object FarNet.DataItem 'ImportFiles', 0
+	New-Object FarNet.DataItem 'CreateFile', 0
+	New-Object FarNet.DataItem 'ExportFile', 0
 	New-Object FarNet.DataItem 'Last Event', ''
 )
-
-### Create and keep user data - an object with properties that will be used when the panel is shown
-$Panel.Data.Host = New-Object PSObject -Property @{
-	MakeDirectory = 0
-	DeleteFiles = 0
-	ExportFiles = 0
-	ImportFiles = 0
-	Total = 0
-	Panel = $Panel
-	KeyHandler = $null
-}
-
-### Add an extra method that updates the panel info on events
-$Panel.Data.Host | Add-Member ScriptMethod UpdateInfo {
-
-	++$this.Total
-
-	# generator of new key labels
-	function Make12($s) { for($i = 1; $i -le 12; ++$i) { "$i $s $($this.Total)" } }
-
-	# generate new key labels
-	$this.Panel.SetKeyBar((Make12 Main))
-	$this.Panel.SetKeyBarAlt((Make12 Alt))
-	$this.Panel.SetKeyBarAltShift((Make12 AltShift))
-	$this.Panel.SetKeyBarCtrl((Make12 Ctrl))
-	$this.Panel.SetKeyBarCtrlAlt((Make12 CtrlAlt))
-	$this.Panel.SetKeyBarCtrlShift((Make12 CtrlShift))
-	$this.Panel.SetKeyBarShift((Make12 Shift))
-
-	# update event counters and reset the property
-	$InfoItems = $this.Panel.InfoItems
-	$InfoItems[1].Data = $this.MakeDirectory
-	$InfoItems[2].Data = $this.DeleteFiles
-	$InfoItems[3].Data = $this.ExportFiles
-	$InfoItems[4].Data = $this.ImportFiles
-	$InfoItems[5].Data = Get-Date
-	$this.Panel.InfoItems = $InfoItems
-}
-
-### MakeDirectory: called on [F7]
-$Panel.add_MakeDirectory({&{
-	$data = $this.Data.Host
-
-	# count events and update the info
-	$n = ++$data.MakeDirectory
-	$data.UpdateInfo()
-
-	# ignore silent mode in this demo
-	if ($_.Mode -band [FarNet.ExplorerModes]::Silent) {
-		$_.Ignore = $true
-		return
-	}
-
-	# get and return a new item name, add a new item
-	$_.Name = "Item$n"
-	$this.Files.Add((New-FarFile $_.Name -Owner "Value$n" -Description "Description$n" -Columns "custom[0]=$n", "custom[1]=$n"))
-}})
-
-### DeleteFiles: called on [F8]
-$Panel.add_DeleteFiles({&{
-	$data = $this.Data.Host
-
-	# count events and update the info
-	++$data.DeleteFiles
-	$data.UpdateInfo()
-
-	# remove input files
-	foreach($f in $_.Files) {
-		$this.Files.Remove($f)
-	}
-}})
-
-### ExportFiles: called on [F5], [CtrlQ]
-$Panel.add_ExportFiles({&{
-	$data = $this.Data.Host
-
-	# count events and update the info
-	++$data.ExportFiles
-	$data.UpdateInfo()
-
-	# case: [CtrlQ]
-	if ($_.Mode -band [FarNet.ExplorerModes]::QuickView) {
-		$name = $_.Files[0].Name
-		[IO.File]::WriteAllText("$($_.Destination)\$name", "Hello from $name")
-		return
-	}
-
-	# other cases
-	$that = $Far.Panel2
-	if ($That.Title -ne $this.Title) {
-		$Far.Message('Open another test panel for this operation.')
-	}
-}})
-
-### ImportFiles: called on [F6]
-$Panel.add_ImportFiles({&{
-	$data = $this.Data.Host
-
-	# count events and update the info
-	++$data.ImportFiles
-	$data.UpdateInfo()
-
-	# process input files: just add them in this demo
-	foreach($f1 in $_.Files) {
-		$this.Files.Add((New-FarFile -Name $f1.Name))
-	}
-}})
 
 ### Escaping: closes the panel
 $Panel.add_Escaping({&{
@@ -193,9 +185,9 @@ $Panel.add_Escaping({&{
 	}
 }})
 
-### The key handler used in KeyPressing and KeyPressed events
+### KeyPressing & KeyPressed events
 # [F1] is sent to both events if KeyPressing does not handle it
-$Panel.Data.Host.KeyHandler = {
+function global:TestPanelKeyHandler {
 	# case [F1]:
 	if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
 		if (0 -eq (Show-FarMessage "[F1] has been pressed" $args[0] -Choices '&Handle', '&Default')) {
@@ -204,12 +196,8 @@ $Panel.Data.Host.KeyHandler = {
 		}
 	}
 }
-
-### KeyPressed: processes some keys.
-$Panel.add_KeyPressed({ & $this.Data.Host.KeyHandler 'KeyPressed' })
-
-### KeyPressing: pre-processes some keys.
-$Panel.add_KeyPressing({ & $this.Data.Host.KeyHandler 'KeyPressing' })
+$Panel.add_KeyPressed({ TestPanelKeyHandler 'KeyPressed' })
+$Panel.add_KeyPressing({ TestPanelKeyHandler 'KeyPressing' })
 
 ### Closing:
 <#

@@ -79,7 +79,7 @@ namespace PowerShellFar.UI
 					int r;
 					if (!int.TryParse(ui.UIDepth.Text, out r) || r <= 0)
 					{
-						A.Msg("Invalid depth value");
+						A.Message("Invalid depth value");
 						ui.UIDialog.Focused = ui.UIDepth;
 						continue;
 					}

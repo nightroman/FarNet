@@ -657,7 +657,7 @@ void Editor::SetText(String^ text)
 #endif
 
 	// split: the fact: this way is much faster than clear\insert all text
-	array<String^>^ newLines = Regex::Split(text, FarNet::Works::Kit::SplitLinePattern);
+	array<String^>^ newLines = FarNet::Works::Kit::SplitLines(text);
 
 	const bool overtype = ei.Overtype != 0;
 	try

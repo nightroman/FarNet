@@ -47,8 +47,12 @@ namespace FarNet.Tools
 			: base(new System.Guid("7d503b37-23a0-4ebd-878b-226e972b0b9d"))
 		{
 			// base
-			Function = ExplorerFunctions.DeleteFiles | ExplorerFunctions.ExportFile | ExplorerFunctions.ImportFile;
 			FileComparer = new FileFileComparer();
+			Functions =
+				ExplorerFunctions.DeleteFiles |
+				ExplorerFunctions.ExportFile |
+				ExplorerFunctions.ImportFile |
+				ExplorerFunctions.ImportText;
 
 			// this
 			_RootExplorer = root;
@@ -68,8 +72,8 @@ namespace FarNet.Tools
 			while (queue.Count > 0)
 			{
 				var explorer = queue.Dequeue();
-				var args = new ExplorerArgs(ExplorerModes.None);
-				foreach (var file in explorer.Explore(args))
+				var args = new GetFilesEventArgs(null, ExplorerModes.Find);
+				foreach (var file in explorer.GetFiles(args))
 				{
 					// process and add
 					bool add = Directory || !file.IsDirectory;
@@ -90,21 +94,20 @@ namespace FarNet.Tools
 		}
 		static Explorer ExploreExplorerFile(Explorer explorer, FarFile file)
 		{
-			if ((explorer.Function & ExplorerFunctions.ExploreLocation) != 0)
-				return explorer.ExploreLocation(new ExploreLocationArgs(ExplorerModes.None, file.Name));
+			if (explorer.CanExploreLocation)
+				return explorer.ExploreLocation(new ExploreLocationEventArgs(null, ExplorerModes.None, file.Name));
 			else
-				return explorer.ExploreDirectory(new ExploreDirectoryArgs(ExplorerModes.None, file));
+				return explorer.ExploreDirectory(new ExploreDirectoryEventArgs(null, ExplorerModes.None, file));
 		}
 		/// <summary>
 		/// Creates the search result panel.
 		/// </summary>
-		/// <returns></returns>
-		public override Panel CreatePanel()
+		public override Panel CreatePanel() //????? panel plan?
 		{
-			var panel = new Panel();
-			panel.Explorer = this;
-			panel.PanelDirectory = "*";
-			panel.Title = "Found in " + _RootExplorer.Location;
+			var panel = new Panel(this);
+
+			panel.CurrentLocation = "*";
+			panel.Title = _RootExplorer.Location.Length == 0 ? "Found" : "Found in " + _RootExplorer.Location;
 
 			panel.KeyPressed += OnKeyPressed;
 
@@ -117,65 +120,44 @@ namespace FarNet.Tools
 				case VKeyCode.PageUp:
 					if (e.State == KeyStates.Control)
 					{
-						var file = (ExplorerFile)((Panel)sender).CurrentFile;
+						var senderPanel = (Panel)sender;
+						var file = (ExplorerFile)senderPanel.CurrentFile;
 						if (file == null)
 							return;
 
 						e.Ignore = true;
 
-						var panel = file.Explorer.CreatePanel() ?? new Panel();
-						file.Explorer.UpdatePanel(panel);
-
-						panel.Explorer = file.Explorer; //????? this has to be denied (need a method)
+						var panel = file.Explorer.CreatePanel();
 						panel.PostFile(file);
-
-						if (string.IsNullOrEmpty(panel.PanelDirectory))
-							panel.PanelDirectory = "*"; //?????
-
-						panel.OpenChild(((Panel)sender));
+						panel.OpenChild(senderPanel);
 					}
 					return;
 			}
 		}
 		///
-		public override IList<FarFile> Explore(ExplorerArgs args)
+		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			return _Files;
 		}
 		///
-		public override Explorer ExploreDirectory(ExploreDirectoryArgs args)
+		public override Explorer ExploreDirectory(ExploreDirectoryEventArgs args)
 		{
+			if (args == null) return null;
+
 			var xFile = (ExplorerFile)args.File;
 			return ExploreExplorerFile(xFile.Explorer, xFile.File);
 		}
 		///
-		public override void ExportFile(ExportFileArgs args)
+		public override void DeleteFiles(DeleteFilesEventArgs args) //????? to check Incomplete
 		{
-			// call
-			var file2 = (ExplorerFile)args.File;
-			var argsExport = new ExportFileArgs(args.Mode, file2.File, args.FileName);
-			file2.Explorer.ExportFile(argsExport);
+			if (args == null) return;
 
-			// results
-			args.Result = argsExport.Result;
-			args.CanImport = argsExport.CanImport;
-			args.FileNameExtension = argsExport.FileNameExtension;
-		}
-		///
-		public override void ImportFile(ImportFileArgs args)
-		{
-			var file2 = (ExplorerFile)args.File;
-			var argsImport = new ImportFileArgs(args.Mode, file2.File, args.FileName);
-			file2.Explorer.ImportFile(argsImport);
-
-			args.Result = argsImport.Result;
-		}
-		///
-		public override void DeleteFiles(DeleteFilesArgs args)
-		{
 			var dicTypeId = new Dictionary<Guid, Dictionary<Explorer, List<ExplorerFile>>>();
 			foreach (ExplorerFile file in args.Files)
 			{
+				if (!file.Explorer.CanDeleteFiles)
+					continue;
+
 				Dictionary<Explorer, List<ExplorerFile>> dicExplorer;
 				if (!dicTypeId.TryGetValue(file.Explorer.TypeId, out dicExplorer))
 				{
@@ -205,7 +187,7 @@ namespace FarNet.Tools
 
 					// delete, mind co-data
 					Log.Source.TraceInformation("DeleteFiles Count='{0}' Location='{1}'", files.Count, xExplorer.Key.Location);
-					var argsDelete = new DeleteFilesArgs(args.Mode, files);
+					var argsDelete = new DeleteFilesEventArgs(null, args.Mode, files, args.Force);
 					argsDelete.Data = dataForTypeId;
 					xExplorer.Key.DeleteFiles(argsDelete);
 					dataForTypeId = argsDelete.Data;
@@ -215,6 +197,66 @@ namespace FarNet.Tools
 						_Files.Remove(file);
 				}
 			}
+		}
+		///
+		public override void ExportFile(ExportFileEventArgs args)
+		{
+			if (args == null) return;
+
+			// check
+			var file2 = (ExplorerFile)args.File;
+			if (!file2.Explorer.CanExportFile)
+			{
+				args.Result = JobResult.Default;
+				return;
+			}
+
+			// call
+			var argsExport = new ExportFileEventArgs(null, args.Mode, file2.File, args.FileName);
+			file2.Explorer.ExportFile(argsExport);
+
+			// results
+			args.Result = argsExport.Result;
+			args.UseText = argsExport.UseText;
+			args.CanImport = argsExport.CanImport;
+			args.UseFileName = argsExport.UseFileName;
+			args.UseFileExtension = argsExport.UseFileExtension;
+		}
+		///
+		public override void ImportFile(ImportFileEventArgs args)
+		{
+			if (args == null) return;
+
+			// call
+			var file2 = (ExplorerFile)args.File;
+			if (!file2.Explorer.CanImportFile)
+			{
+				args.Result = JobResult.Default;
+				return;
+			}
+			var argsImport = new ImportFileEventArgs(null, args.Mode, file2.File, args.FileName);
+			file2.Explorer.ImportFile(argsImport);
+
+			// result
+			args.Result = argsImport.Result;
+		}
+		///
+		public override void ImportText(ImportTextEventArgs args)
+		{
+			if (args == null) return;
+
+			// call
+			var file2 = (ExplorerFile)args.File;
+			if (!file2.Explorer.CanImportText)
+			{
+				args.Result = JobResult.Default;
+				return;
+			}
+			var argsImport = new ImportTextEventArgs(null, args.Mode, file2.File, args.Text);
+			file2.Explorer.ImportText(argsImport);
+
+			// result
+			args.Result = argsImport.Result;
 		}
 	}
 }

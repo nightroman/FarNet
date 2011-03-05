@@ -9,7 +9,6 @@ EXPORTS
 	GetFindDataW
 	GetOpenPluginInfoW
 	GetPluginInfoW
-	MakeDirectoryW
 	OpenFilePluginW
 	OpenPluginW
 	ProcessDialogEventW

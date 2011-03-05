@@ -22,9 +22,12 @@ namespace PowerShellFar.Commands
 		///
 		protected override void BeginProcessing()
 		{
-			var ap = Panel.FindPanel(!Passive) as AnyPanel;
+			IPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
+			if (panel == null)
+				return;
 
 			// case: PSF panel
+			var ap = panel as AnyPanel;
 			if (ap != null)
 			{
 				IEnumerable<PSObject> items;
@@ -50,13 +53,6 @@ namespace PowerShellFar.Commands
 
 				return;
 			}
-
-			// case: Far panel
-			IPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
-
-			// no panel?
-			if (panel == null)
-				return;
 
 			// get and convert paths to items
 			IList<FarFile> filesToProcess;
