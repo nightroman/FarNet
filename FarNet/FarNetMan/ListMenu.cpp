@@ -94,7 +94,7 @@ static String^ InputFilter(String^ pattern, PatternOptions options, String^ hist
 	// show filter input box
 	for(;;)
 	{
-		// cancelled
+		// canceled
 		if (!ib->Show())
 			return nullptr;
 

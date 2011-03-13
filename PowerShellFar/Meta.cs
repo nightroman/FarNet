@@ -261,7 +261,16 @@ namespace PowerShellFar
 			if (pi == null)
 				return null;
 
-			return pi.Value;
+			// Exception case: cert provider, search all
+			try
+			{
+				return pi.Value;
+			}
+			catch (RuntimeException e)
+			{
+				FarNet.Log.TraceException(e);
+				return null;
+			}
 		}
 		/// <summary>
 		/// Gets a meta value of specified type (actual or default).

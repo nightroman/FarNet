@@ -5,6 +5,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -37,7 +38,6 @@ namespace FarNet.Works
 		{
 			return Regex.Split(value, "\r\n|[\r\n]");
 		}
-
 		/// <summary>
 		/// For internal use.
 		/// </summary>
@@ -84,6 +84,25 @@ namespace FarNet.Works
 					return;
 			}
 		}
-
+		/// <summary>
+		/// For internal use. Hashes the files using the comparer, counts dupes.
+		/// </summary>
+		public static Dictionary<FarFile, int> HashFiles(IEnumerable files, IEqualityComparer<FarFile> comparer)
+		{
+			// 
+			var hash = new Dictionary<FarFile, int>(comparer);
+			foreach (FarFile file in files)
+			{
+				try
+				{
+					hash.Add(file, 1);
+				}
+				catch (ArgumentException)
+				{
+					++hash[file];
+				}
+			}
+			return hash;
+		}
 	}
 }

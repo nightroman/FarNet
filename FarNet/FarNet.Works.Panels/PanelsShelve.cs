@@ -22,7 +22,8 @@ namespace FarNet.Works
 		public int[] GetSelectedIndexes() { return _SelectedIndexes; }
 		int[] _SelectedIndexes;
 		public abstract string Title { get; }
-		public abstract void Pop();
+		public abstract void Pop(bool active);
+		public void Pop() { Pop(true); }
 		protected void InitSelectedNames(IPanel panel)
 		{
 			if (panel == null) throw new ArgumentNullException("panel");

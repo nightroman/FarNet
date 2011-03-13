@@ -27,17 +27,14 @@ namespace FarNet.Tools
 		int _savedScreen;
 		readonly Progress _progress = new Progress();
 		readonly string _title = Far.Net.UI.WindowTitle;
-
 		/// <summary>
 		/// Gets or sets the progress box title.
 		/// </summary>
 		public string Title { get; set; }
-
 		/// <summary>
 		/// New progress box.
 		/// </summary>
 		public ProgressBox() { }
-
 		/// <summary>
 		/// New progress box with the title.
 		/// </summary>
@@ -46,7 +43,6 @@ namespace FarNet.Tools
 		{
 			Title = title;
 		}
-
 		/// <summary>
 		/// Gets or sets text line count.
 		/// </summary>
@@ -55,7 +51,6 @@ namespace FarNet.Tools
 		/// The default is 0 (automatic line count).
 		/// </remarks>
 		public int LineCount { get; set; }
-
 		/// <summary>
 		/// Disposes the resources and hides the message box after use.
 		/// </summary>
@@ -64,7 +59,6 @@ namespace FarNet.Tools
 			Hide();
 			Far.Net.UI.WindowTitle = _title;
 		}
-
 		void Hide()
 		{
 			if (_savedScreen != 0)
@@ -73,9 +67,7 @@ namespace FarNet.Tools
 				_savedScreen = 0;
 			}
 		}
-
 		#region IProgress
-
 		/// <summary>
 		/// Gets or sets the current activity description.
 		/// </summary>
@@ -87,7 +79,6 @@ namespace FarNet.Tools
 			get { return _progress.Activity; }
 			set { _progress.Activity = value; }
 		}
-
 		/// <summary>
 		/// Sets the current progress information.
 		/// </summary>
@@ -97,7 +88,6 @@ namespace FarNet.Tools
 		{
 			_progress.SetProgressValue(currentValue, maximumValue);
 		}
-
 		/// <summary>
 		/// Tells to update the progress.
 		/// </summary>
@@ -115,9 +105,24 @@ namespace FarNet.Tools
 				text = string.Join("\r", lines) + "\r" + progress;
 
 			Far.Net.Message(text, Title, MsgOptions.Draw | MsgOptions.LeftAligned);
+
+			_lastShow = _progress.Elapsed;
 		}
-
+		/// <summary>
+		/// Gets the time elapsed from the last show.
+		/// </summary>
+		public TimeSpan ElapsedFromShow
+		{
+			get { return _progress.Elapsed - _lastShow; }
+		}
+		/// <summary>
+		/// Gets the time elapsed from the start.
+		/// </summary>
+		public TimeSpan ElapsedFromStart
+		{
+			get { return _progress.Elapsed; }
+		}
+		TimeSpan _lastShow;
 		#endregion
-
 	}
 }

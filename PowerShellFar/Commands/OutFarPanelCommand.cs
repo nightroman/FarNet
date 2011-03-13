@@ -20,7 +20,6 @@ namespace PowerShellFar.Commands
 	public sealed class OutFarPanelCommand : BasePanelCmdlet
 	{
 		ObjectPanel _panel;
-
 		/// <summary>
 		/// Custom columns (names or special hashtables).
 		/// </summary>
@@ -31,23 +30,18 @@ namespace PowerShellFar.Commands
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(HelpMessage = "Sets Columns property.", Position = 0)]
 		public object[] Columns { get; set; }
-
 		///
 		[Parameter(HelpMessage = "Object(s) to be sent to an object panel.", ValueFromPipeline = true)]
 		public PSObject InputObject { get; set; }
-
 		///
 		[Parameter(HelpMessage = "Regular expression pattern of members to be excluded in a child list panel.")]
 		public string ExcludeMemberPattern { get; set; }
-
 		///
 		[Parameter(HelpMessage = "Regular expression pattern of members to be hidden in a child list panel.")]
 		public string HideMemberPattern { get; set; }
-
 		///
 		[Parameter(HelpMessage = "Tells to append objects to the active object panel. All others options are ignored.")]
 		public SwitchParameter Append { get; set; }
-
 		///
 		protected override void BeginProcessing()
 		{
@@ -76,10 +70,8 @@ namespace PowerShellFar.Commands
 					_panel.Title = A.Psf._myCommand;
 			}
 		}
-
 		// Use collector to control count of finaly added to the panel.
 		List<object> _Collector = new List<object>();
-
 		///
 		protected override void ProcessRecord()
 		{
@@ -93,7 +85,6 @@ namespace PowerShellFar.Commands
 			else
 				_Collector.Add(InputObject);
 		}
-
 		///
 		protected override void EndProcessing()
 		{
@@ -107,6 +98,5 @@ namespace PowerShellFar.Commands
 			else
 				_panel.Open();
 		}
-
 	}
 }

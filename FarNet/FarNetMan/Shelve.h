@@ -18,7 +18,7 @@ public:
 public:
 	ShelveInfoNative(Panel1^ panel, bool modes);
 	virtual property String^ Title { String^ get() override { return Path; } }
-	virtual void Pop() override;
+	virtual void Pop(bool active) override;
 public:
 	property String^ Path;
 	property String^ Current;
@@ -34,7 +34,7 @@ public:
 	ShelveInfoModule(Panel2^ panel);
 	property Panel2^ Panel { Panel2^ get() { return _panel; } }
 	virtual property String^ Title { String^ get() override; }
-	virtual void Pop() override;
+	virtual void Pop(bool active) override;
 private:
 	Panel2^ _panel;
 };

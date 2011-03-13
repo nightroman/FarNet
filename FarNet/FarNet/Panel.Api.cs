@@ -649,10 +649,6 @@ namespace FarNet
 	public class PanelEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Combination of the operation mode flags.
-		/// </summary>
-		public ExplorerModes Mode { get; set; } //????? to go
-		/// <summary>
 		/// Tells that a job is done or an action has to be ignored, it depends on the event.
 		/// </summary>
 		public bool Ignore { get; set; }

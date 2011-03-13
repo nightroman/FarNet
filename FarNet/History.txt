@@ -1,5 +1,43 @@
 http://code.google.com/p/farnet/
 
+= 4.4.4 =
+
+*) File search
+- Uses the progress box with some info and [Esc] key stopping the search.
+- Results are shown as Name/Owner where Owner values are explorer locations.
+- Can be performed in the background with the new switch -Asynchronous of the
+Explore module "explore:" command. Results are added to the panel dynamically.
+NOTE: Asynchronous mode is very cool but vulnerable, some module panels are not
+suitable for this, it all depends on how they and their dependencies work.
+- On [Esc] you are prompted to Close or Push the result panel. Push can be done
+even if the search process is still in progress. Use the FarNet menu to pop the
+panel later (perhaps with more results).
+- Added -Depth parameter to the explore: command.
+
+*) Super panel, analogue of the temporary panel
+
+Unlike the temporary panel the super panel deals with files from module panels,
+including mixed. It knows how to view / edit / copy / move / delete and etc.
+its files because any super file keeps the reference to its source explorer
+that actually performs that operations on files, the super panel simply
+dispatches operations and files.
+
+It is opened by the empty "explore:" command (i.e. without parameters).
+
+It is also used for search results in both sync and async modes.
+
+*) Opening files (on [Enter])
+Added methods OpenFile() and UIOpenFile() to explorer and panels. As a result,
+files are opened "as usual" from super/search panels if an explorer can do.
+
+*) ProgressBox
+- New properties ElapsedFromShow (used to avoid too frequent shows),
+ElapsedFromStart (useful for statistics, performance measurement, etc.)
+
+*) ProgressForm
+uses "safe" abort, if possible. The idea/code is from:
+http://www.codeproject.com/KB/threads/AbortIfSafe.aspx
+
 = 4.4.3 =
 
 *) Module panel revision, continued

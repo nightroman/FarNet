@@ -126,6 +126,14 @@ namespace FarNet
 			set { Functions = value ? (Functions | ExplorerFunctions.ImportText) : (Functions & ~ExplorerFunctions.ImportText); }
 		}
 		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
+		public bool CanOpenFile
+		{
+			get { return (Functions & ExplorerFunctions.OpenFile) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.OpenFile) : (Functions & ~ExplorerFunctions.OpenFile); }
+		}
+		/// <summary>
 		/// Returns the files.
 		/// </summary>
 		/// <remarks>
@@ -245,6 +253,10 @@ namespace FarNet
 		/// </remarks>
 		public virtual void ImportText(ImportTextEventArgs args) { if (args != null) args.Result = JobResult.Default; }
 		/// <summary>
+		/// Opens the file.
+		/// </summary>
+		public virtual void OpenFile(OpenFileEventArgs args) { }
+		/// <summary>
 		/// Creates a panel to show the explorer files.
 		/// </summary>
 		/// <remarks>
@@ -254,7 +266,7 @@ namespace FarNet
 		/// <summary>
 		/// Updates the panel when this explorer gets assigned to it.
 		/// </summary>
-		public virtual void UpdatePanel(Panel panel) { }
+		public virtual void EnterPanel(Panel panel) { }
 		/// <summary>
 		/// Gets or sets the file comparer.
 		/// </summary>
@@ -297,7 +309,6 @@ namespace FarNet
 		/// </summary>
 		public void OpenPanelChild(Panel parent)
 		{
-			if (parent == null) throw new ArgumentNullException("parent");
 			var panel = CreatePanel();
 			panel.OpenChild(parent);
 		}

@@ -65,9 +65,9 @@ namespace PowerShellFar
 		///
 		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
+			if (args == null) return null;
+			
 			var result = new List<FarFile>();
-			if (args == null) return result;
-
 			try
 			{
 				if (MemberMode == 0)
@@ -82,7 +82,7 @@ namespace PowerShellFar
 					var membersToShow = new List<string>();
 					{
 						string code = "Get-Member -InputObject $args[0] -MemberType Properties -ErrorAction 0";
-						foreach (PSObject o in A.Psf.InvokeCode(code, Value))
+						foreach (PSObject o in A.InvokeCode(code, Value))
 						{
 							string name = o.Properties[Word.Name].Value.ToString();
 							if (_ExcludeMemberRegex == null || !_ExcludeMemberRegex.IsMatch(name))
@@ -135,7 +135,7 @@ namespace PowerShellFar
 						code = "Get-Member -InputObject $args[0] -ErrorAction 0 -View All";
 					else
 						code = "Get-Member -InputObject $args[0] -ErrorAction 0 -View All -Static";
-					foreach (PSObject o in A.Psf.InvokeCode(code, Value))
+					foreach (PSObject o in A.InvokeCode(code, Value))
 					{
 						SetFile f = new SetFile();
 						f.Name = o.Properties[Word.Name].Value.ToString();
@@ -247,7 +247,9 @@ namespace PowerShellFar
 		///
 		public override void CreateFile(CreateFileEventArgs args)
 		{
-			// it does all itself //?????
+			if (args == null) return;
+
+			// all done
 			args.Result = JobResult.Ignore;
 			
 			var panel = args.Panel as MemberPanel;
@@ -270,7 +272,7 @@ namespace PowerShellFar
 					}
 					else
 					{
-						foreach (PSObject o in A.Psf.InvokeCode("[" + ui.Type.Text + "]$args[0]", ui.Value.Text))
+						foreach (PSObject o in A.InvokeCode("[" + ui.Type.Text + "]$args[0]", ui.Value.Text))
 						{
 							value = o.BaseObject;
 							break;
@@ -278,9 +280,9 @@ namespace PowerShellFar
 					}
 
 					// add member
-					A.Psf.InvokeCode(
+					A.InvokeCode(
 						"$args[0] | Add-Member -MemberType NoteProperty -Name $args[1] -Value $args[2] -Force -ErrorAction Stop",
-						panel.Target, ui.Name.Text, value);
+						Value, ui.Name.Text, value);
 
 					// update this panel with name
 					panel.UpdateRedraw(false, ui.Name.Text);

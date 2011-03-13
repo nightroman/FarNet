@@ -297,7 +297,7 @@ namespace PowerShellFar.Commands
 				}
 				else if (buttons[result] == BtnDebug)
 				{
-					A.Psf.InvokeCode("Set-PSBreakpoint -Command " + MyName);
+					A.InvokeCode("Set-PSBreakpoint -Command " + MyName);
 					return;
 				}
 			}

@@ -26,10 +26,10 @@ namespace PowerShellFar.UI
 		public void Show()
 		{
 			// available modules
-			Collection<PSObject> modules1 = A.Psf.InvokeCode("Get-Module -ListAvailable");
+			Collection<PSObject> modules1 = A.InvokeCode("Get-Module -ListAvailable");
 			if (modules1.Count > 0)
 			{
-				Collection<PSObject> modules2 = A.Psf.InvokeCode("Get-Module");
+				Collection<PSObject> modules2 = A.InvokeCode("Get-Module");
 				foreach (PSObject o1 in modules1)
 				{
 					PSModuleInfo info1 = (PSModuleInfo)o1.BaseObject;
@@ -49,10 +49,10 @@ namespace PowerShellFar.UI
 			}
 
 			// registered snapins
-			Collection<PSObject> snapins1 = A.Psf.InvokeCode("Get-PSSnapin -Registered");
+			Collection<PSObject> snapins1 = A.InvokeCode("Get-PSSnapin -Registered");
 			if (snapins1.Count > 0)
 			{
-				Collection<PSObject> snapins2 = A.Psf.InvokeCode("Get-PSSnapin");
+				Collection<PSObject> snapins2 = A.InvokeCode("Get-PSSnapin");
 				foreach (PSObject o1 in snapins1)
 				{
 					PSSnapInInfo info1 = (PSSnapInInfo)o1.BaseObject;
@@ -80,9 +80,9 @@ namespace PowerShellFar.UI
 				{
 					// remove/import
 					if (item.Checked)
-						A.Psf.InvokeCode("Remove-Module -ModuleInfo $args[0]", module);
+						A.InvokeCode("Remove-Module -ModuleInfo $args[0]", module);
 					else
-						A.Psf.InvokeCode("Import-Module -ModuleInfo $args[0]", module);
+						A.InvokeCode("Import-Module -ModuleInfo $args[0]", module);
 				}
 				else
 				{
