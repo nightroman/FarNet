@@ -102,10 +102,10 @@ namespace PowerShellFar.UI
 
 				const string code = "$args[0] | Export-Clixml -Path $args[1] -Encoding $args[2] -Force -ErrorAction Stop";
 				if (ui.UIDepth.Text.Length > 0)
-					A.Psf.InvokeCode(code + " -Depth $args[3]",
+					A.InvokeCode(code + " -Depth $args[3]",
 						items, filePath, ui.UIEncoding.Text, int.Parse(ui.UIDepth.Text, null));
 				else
-					A.Psf.InvokeCode(code,
+					A.InvokeCode(code,
 						items, filePath, ui.UIEncoding.Text);
 			}
 			catch (RuntimeException ex)

@@ -18,8 +18,8 @@ namespace PowerShellFar
 	/// </summary>
 	public abstract class FormatExplorer : TableExplorer
 	{
-		internal FormatPanel Panel { get; set; }
-		internal FileMap Map; // internal ???
+		internal FileMap Map { get; private set; } // internal ???
+		internal Meta[] Metas { get; private set; } // internal ???
 		///
 		protected FormatExplorer(Guid typeId) : base(typeId) { }
 		/// <include file='doc.xml' path='doc/Columns/*'/>
@@ -32,6 +32,7 @@ namespace PowerShellFar
 			set
 			{
 				base.Columns = value;
+				Metas = null;
 				if (value == null)
 					Map = null;
 				else
@@ -43,20 +44,23 @@ namespace PowerShellFar
 			//1 make map
 			Map = Format.MakeMap(ref metas, Columns);
 
-			// set plan
-			Panel.SetPlan(PanelViewMode.AlternativeFull, Format.SetupPanelMode(metas)); //????? this prevents setting Columns in explorer
+			// keep metas for panels to set plan
+			Metas = metas;
 		}
+		internal abstract object GetData(ExplorerEventArgs args);
 		///
 		public override IList<FarFile> DoGetFiles(ExplorerEventArgs args)
 		{
 			if (args == null) return null;
-			
+
+			var panel = args.Panel as FormatPanel;
+
 			// call the worker
 			// _090408_232925 If we throw then FarNet returns false and Far closes the panel.
 			object data;
 			try
 			{
-				data = Panel.GetData();
+				data = GetData(args);
 			}
 			catch (RuntimeException ex)
 			{
@@ -83,12 +87,16 @@ namespace PowerShellFar
 				// drop files in any case
 				Cache.Clear();
 
-				// do not change anything in the custom panel
+				// no panel, no job
+				if (panel == null)
+					return Cache;
+
+				// respect custom columns
 				if (Columns != null)
 					return Cache;
 
 				// is it already <empty>?
-				PanelPlan plan = Panel.GetPlan(PanelViewMode.AlternativeFull);
+				PanelPlan plan = panel.GetPlan(PanelViewMode.AlternativeFull);
 				if (plan == null)
 					plan = new PanelPlan();
 				else if (plan.Columns.Length == 1 && plan.Columns[0].Name == "<empty>")
@@ -96,7 +104,7 @@ namespace PowerShellFar
 
 				// reuse the mode: reset columns, keep other data intact
 				plan.Columns = new FarColumn[] { new SetColumn() { Kind = "N", Name = "<empty>" } };
-				Panel.SetPlan(PanelViewMode.AlternativeFull, plan);
+				panel.SetPlan(PanelViewMode.AlternativeFull, plan);
 				return Cache;
 			}
 
@@ -118,7 +126,8 @@ namespace PowerShellFar
 					null == (theType = A.FindCommonType(values)))
 				{
 					// use index, value, type mode
-					Panel.BuildPlan(Format.BuildFilesMixed(Cache, values));
+					if (panel != null)
+						panel.BuildPlan(Format.BuildFilesMixed(Cache, values));
 					return Cache;
 				}
 
@@ -126,7 +135,7 @@ namespace PowerShellFar
 
 				// try to get format
 				if (theType != typeof(PSCustomObject))
-					metas = Format.TryFormatByTableControl(values[0]);
+					metas = Format.TryFormatByTableControl(values[0], panel == null ? 80 : panel.Window.Width); //???? avoid formatting at all
 
 				// use members
 				if (metas == null)
@@ -134,11 +143,15 @@ namespace PowerShellFar
 
 				if (metas == null)
 				{
-					Panel.BuildPlan(Format.BuildFilesMixed(Cache, values));
+					if (panel != null)
+						panel.BuildPlan(Format.BuildFilesMixed(Cache, values));
 				}
 				else
 				{
 					MakeMap(metas);
+					if (panel != null)
+						panel.SetPlan(PanelViewMode.AlternativeFull, Format.SetupPanelMode(Metas));
+					
 					BuildFiles(values);
 				}
 			}

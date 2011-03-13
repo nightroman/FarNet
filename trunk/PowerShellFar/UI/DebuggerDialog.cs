@@ -84,7 +84,7 @@ namespace PowerShellFar.UI
 				{
 					CommandBreakpoint bpc = bp as CommandBreakpoint;
 					if (bpc != null && Kit.Equals(bpc.Command, Commands.AssertFarCommand.MyName))
-						A.Psf.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bpc);
+						A.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bpc);
 				}
 			}
 			foreach (string s in e.InvocationInfo.PositionMessage.Trim().Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))

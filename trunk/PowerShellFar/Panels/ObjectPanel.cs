@@ -24,8 +24,6 @@ namespace PowerShellFar
 		public ObjectPanel(ObjectExplorer explorer)
 			: base(explorer)
 		{
-			Explorer.Panel = this; //??????
-
 			CurrentLocation = "*";
 			SortMode = PanelSortMode.Unsorted;
 			UseFilter = true;
@@ -39,9 +37,8 @@ namespace PowerShellFar
 		/// </summary>
 		public void AddObject(object value)
 		{
-			var added = EnsureAddedValues();
 			if (value != null)
-				added.Add(PSObject.AsPSObject(value));
+				Explorer.AddedValues.Add(PSObject.AsPSObject(value));
 		}
 		/// <summary>
 		/// Adds objects to the panel.
@@ -49,10 +46,10 @@ namespace PowerShellFar
 		/// <param name="values">Objects represented by enumerable or a single object.</param>
 		public void AddObjects(object values)
 		{
-			var added = EnsureAddedValues();
-
 			if (values == null)
 				return;
+
+			var added = Explorer.AddedValues;
 
 			IEnumerable enumerable = Cast<IEnumerable>.From(values);
 			if (enumerable == null || enumerable is string)
@@ -92,119 +89,12 @@ namespace PowerShellFar
 			}
 		}
 		/// <summary>
-		/// Opens a member panel or another panel.
-		/// </summary>
-		public override void OpenFile(FarFile file)
-		{
-			if (file == null)
-				throw new ArgumentNullException("file");
-
-			PSObject psData = PSObject.AsPSObject(file.Data);
-
-			// case: linear type: do not enter, there is no much sense
-			if (Converter.IsLinearType(psData.BaseObject.GetType()))
-				return;
-
-			// case: enumerable (string is excluded by linear type case)
-			IEnumerable ie = Cast<IEnumerable>.From(file.Data);
-			if (ie != null)
-			{
-				ObjectPanel op = new ObjectPanel();
-				op.AddObjects(ie);
-				op.OpenChild(this);
-				return;
-			}
-
-			// case: group
-			PSPropertyInfo pi = psData.Properties["Group"];
-			if (pi != null && pi.Value is IEnumerable && !(pi.Value is string))
-			{
-				ObjectPanel op = new ObjectPanel();
-				op.AddObjects(pi.Value as IEnumerable);
-				op.OpenChild(this);
-				return;
-			}
-
-			// case: ManagementClass
-			if (psData.BaseObject.GetType().FullName == "System.Management.ManagementClass")
-			{
-				pi = psData.Properties[Word.Name];
-				if (pi != null && pi.Value != null)
-				{
-					var values = A.Psf.InvokeCode("Get-WmiObject -Class $args[0] -ErrorAction SilentlyContinue", pi.Value.ToString());
-					ObjectPanel op = new ObjectPanel();
-					op.AddObjects(values);
-					op.OpenChild(this);
-					return;
-				}
-			}
-
-			// open members
-			OpenFileMembers(file);
-		}
-		/// <summary>
 		/// Exports objects to Clixml file.
 		/// </summary>
 		public override bool SaveData()
 		{
 			UI.ExportDialog.ExportClixml(CollectData(), StartDirectory);
 			return true;
-		}
-		Collection<PSObject> _Values_;
-		Collection<PSObject> AddedValues
-		{
-			get { return _Values_; }
-		}
-		void DropAddedValues()
-		{
-			_Values_ = null;
-		}
-		Collection<PSObject> EnsureAddedValues()
-		{
-			return _Values_ ?? (_Values_ = new Collection<PSObject>());
-		}
-		internal override object GetData()
-		{
-			if (Explorer.AsGetData != null)
-				return A.InvokeScript(Explorer.AsGetData, Explorer, null);
-			
-			var Files = Explorer.Cache;
-			try
-			{
-				//???? it works but looks like a hack
-				if (UserWants != UserAction.CtrlR && AddedValues == null && (Explorer.Map != null || Files.Count > 0 && Files[0] is SetFile))
-					return Files;
-
-				if (Explorer.Map == null || Columns == null)
-				{
-					if (Files.Count == 0)
-						return AddedValues ?? new Collection<PSObject>();
-
-					var result = new Collection<PSObject>();
-					foreach (FarFile file in Files)
-						result.Add(PSObject.AsPSObject(file.Data));
-					if (AddedValues != null)
-						foreach (PSObject value in AddedValues)
-							result.Add(value);
-
-					return result;
-				}
-
-				// _100330_191639
-				if (AddedValues == null)
-					return Files;
-
-				var map = Explorer.Map;
-				var files = new List<FarFile>(AddedValues.Count);
-				foreach (PSObject value in AddedValues)
-					files.Add(new MapFile(value, map));
-
-				return files;
-			}
-			finally
-			{
-				DropAddedValues();
-			}
 		}
 		/// <summary>
 		/// Sets file name if any suitable exists.
@@ -257,10 +147,6 @@ namespace PowerShellFar
 				string.Format(null, "There are {0} panel files, the limit is {1}.", collection.Count, maximumFileCount);
 
 			return Far.Net.Message(message, "$Psf.Settings.MaximumPanelFileCount", MsgOptions.AbortRetryIgnore);
-		}
-		internal void DoAcceptFiles(AcceptFilesEventArgs args) // _100227_073909
-		{
-			AddObjects(args.FilesData);
 		}
 	}
 }

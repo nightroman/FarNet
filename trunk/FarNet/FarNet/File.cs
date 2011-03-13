@@ -279,30 +279,23 @@ namespace FarNet
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public override ICollection Columns { get; set; }
 	}
-	/// <summary>
-	/// A file associated with its explorer.
-	/// </summary>
-	public class ExplorerFile : FarFile
-	{
-		/// <summary>
-		/// Gets the file's explorer.
-		/// </summary>
-		public Explorer Explorer { get; private set; }
-		/// <summary>
-		/// Gets the original file.
-		/// </summary>
-		public FarFile File { get; private set; }
-		/// <summary>
-		/// New explorer file.
-		/// </summary>
-		public ExplorerFile(Explorer explorer, FarFile file)
-		{
-			if (explorer == null) throw new ArgumentNullException("explorer");
-			if (file == null) throw new ArgumentNullException("file");
 
-			Explorer = explorer;
-			File = file;
+	/// <summary>
+	/// File that wraps another file.
+	/// </summary>
+	public class WrapFile : FarFile
+	{
+		///
+		public WrapFile(FarFile file)
+		{
+			if (file == null) throw new ArgumentNullException("file");
+			_File = file;
 		}
+		/// <summary>
+		/// Gets the source file.
+		/// </summary>
+		public FarFile File { get { return _File; } }
+		readonly FarFile _File;
 		///
 		public override string Name { get { return File.Name; } }
 		///
@@ -324,7 +317,7 @@ namespace FarNet
 		///
 		public override FileAttributes Attributes { get { return File.Attributes; } }
 	}
-
+	
 	/// <summary>
 	/// Compares files by their references.
 	/// </summary>

@@ -40,7 +40,7 @@ namespace PowerShellFar
 				if (!File.Exists(path))
 					throw new FileNotFoundException("path");
 
-				A.Psf.InvokeCode(". $args[0]", path);
+				A.InvokeCode(". $args[0]", path);
 				_initTabExpansion = +1;
 			}
 
@@ -219,7 +219,7 @@ namespace PowerShellFar
 			{
 				string code = A.Psf.Settings.StartupEdit;
 				if (!string.IsNullOrEmpty(code))
-					A.Psf.InvokeCode(code);
+					A.InvokeCode(code);
 			}
 			catch (RuntimeException ex)
 			{

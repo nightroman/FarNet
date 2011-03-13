@@ -231,7 +231,7 @@ void Panel2::Close()
 {
 	Log::Source->TraceInformation(__FUNCTION__);
 	if (_ActiveInfo)
-		_ActiveInfo->Pop();
+		_ActiveInfo->Pop(IsActive);
 	else
 		Panel1::Close();
 }
@@ -808,8 +808,10 @@ void Panel2::PostName(String^ name)
 
 void Panel2::ReplaceExplorer(Explorer^ explorer)
 {
+	ExplorerEnteredEventArgs args(_MyExplorer);
 	_MyExplorer = explorer;
-	explorer->UpdatePanel(Host);
+	explorer->EnterPanel(Host);
+	Host->UIExplorerEntered(%args);
 }
 
 }

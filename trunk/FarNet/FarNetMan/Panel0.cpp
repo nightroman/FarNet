@@ -219,15 +219,16 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 
 	Log::Source->TraceInformation("SetDirectoryW Mode='{0}' Name='{1}'", mode, directory);
 
+	Explorer^ explorer1 = pp->Host->Explorer;
+	const bool canExploreLocation = pp->Host->Explorer->CanExploreLocation;
+
+	// Silent but not Find is on CtrlQ
+	if (!canExploreLocation && 0 != (opMode & (OPM_FIND | OPM_SILENT)))
+		return 0;
+
 	_inAsSetDirectory = true;
 	try
 	{
-		Explorer^ explorer1 = pp->Host->Explorer;
-		const bool IsExploreLocation = pp->Host->Explorer->CanExploreLocation;
-
-		if (!IsExploreLocation && 0 != (opMode & OPM_FIND))
-			return 0;
-
 		Explorer^ explorer2;
 		ExploreEventArgs^ args2;
 		if (directory == "\\")
@@ -265,7 +266,7 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 			}
 			args2 = args;
 		}
-		else if (IsExploreLocation)
+		else if (canExploreLocation)
 		{
 			ExploreLocationEventArgs^ args = gcnew ExploreLocationEventArgs(pp->Host, mode, directory);
 			explorer2 = explorer1->ExploreLocation(args);
@@ -293,7 +294,7 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 
 //?? NYI: Parameter destPath can be changed, i.e. (*destPath) replaced.
 //?? NYI: Not used return value -1 (stopped by a user).
-int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int /*move*/, const wchar_t** destPath, int opMode) //????? move?
+int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int /*move*/, const wchar_t** destPath, int opMode) //???? move?
 {
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	ExplorerModes mode = (ExplorerModes)opMode;
@@ -497,7 +498,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_IDLE");
 
 			// 1) call
-			pp->Host->WorksIdled();
+			pp->Host->UIIdle();
 
 			// 2) update after the handler: if the panel has set both IdleUpdate and Idled
 			// then in Idled it should not care of data updates, it is done after that.
@@ -913,7 +914,7 @@ void Panel0::ShelvePanel(Panel1^ panel, bool modes)
 }
 
 // Explorer enters to the panel
-void Panel0::OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ args) //????? review all
+void Panel0::OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ args)
 {
 	Panel^ oldPanel = core->Host;
 
@@ -925,9 +926,9 @@ void Panel0::OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ ar
 	Panel^ newPanel = nullptr;
 
 	// make or reuse
-	if (args->NewPanel || explorer->TypeId != oldPanel->Explorer->TypeId) //????? + EnterExitPanel(newExpxlorer, oldExplorer)
+	if (args->NewPanel || explorer->TypeId != oldPanel->Explorer->TypeId)
 	{
-		// make new, do not update ?????
+		// make a new panel
 		newPanel = explorer->CreatePanel();
 	}
 	else

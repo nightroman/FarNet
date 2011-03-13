@@ -24,12 +24,12 @@ namespace PowerShellFar
 	/// and <see cref="SelectedItems"/>).
 	/// </para>
 	/// </remarks>
-	public abstract partial class AnyPanel : Panel
+	public partial class AnyPanel : Panel
 	{
 		/// <summary>
 		/// Default panel.
 		/// </summary>
-		internal AnyPanel(Explorer explorer)
+		public AnyPanel(Explorer explorer)
 			: base(explorer)
 		{
 			// settings
@@ -220,6 +220,9 @@ namespace PowerShellFar
 		/// <summary>
 		/// Opens the file member panel.
 		/// </summary>
+		/// <remarks>
+		/// The base method propagates lookup openers.
+		/// </remarks>
 		internal virtual MemberPanel OpenFileMembers(FarFile file)
 		{
 			//??? _090610_071700, + $panel.SetOpen({ @ Test-Panel-Tree-.ps1

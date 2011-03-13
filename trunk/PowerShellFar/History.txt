@@ -1,6 +1,20 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.4 =
+
+*) ItemPanel (PS providers)
+- It supports explorer features completely. As a result, search works fine.
+- Improved performance of explorers in search mode.
+
+*) Search-FarFile
+- Added -Depth parameter.
+- Added -Asynchronous switch: Tells to performs the search in the background and
+to open the result panel immediately. Found items are added dynamically.
+
+*) Scripts
+A numbers of small changes dealing with changed or new explorer/panel features.
+
 = 4.4.3 =
 
 *) Revised panels
@@ -9,7 +23,7 @@ http://code.google.com/p/farnet/
 - Removed UserPanel, use ObjectPanel instead.
 - Removed ObjectPanelOnDots, it's not useful.
 - SetSave() -> AsSaveData
-- SetLookup() -> LookupScript and LookupHandler
+- SetLookup() -> Lookup (combined)
 - Fixed stack overflow on command line events
 
 *) Adapted scripts

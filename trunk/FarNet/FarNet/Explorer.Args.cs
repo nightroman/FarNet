@@ -50,6 +50,10 @@ namespace FarNet
 		/// It implements <see cref="Explorer.ImportText"/>.
 		/// </summary>
 		ImportText = 1 << 7,
+		/// <summary>
+		/// It implements <see cref="Explorer.OpenFile"/>.
+		/// </summary>
+		OpenFile = 1 << 8,
 	}
 
 	/// <summary>
@@ -129,8 +133,12 @@ namespace FarNet
 		///
 		protected ExplorerEventArgs(Panel panel, ExplorerModes mode) { Panel = panel; Mode = mode; }
 		/// <summary>
-		/// Gets the explorer panel or null if it is called without a panel.
+		/// Gets the calling panel or null if it is called without a panel.
 		/// </summary>
+		/// <remarks>
+		/// An explorer should never assume that this is its own panel or even any known panel.
+		/// The panel can be null, a search result panel, a super panel, and etc.
+		/// </remarks>
 		public Panel Panel { get; private set; }
 		/// <summary>
 		/// Gets the explorer mode.
@@ -256,6 +264,15 @@ namespace FarNet
 	}
 
 	/// <summary>
+	/// Open file arguments.
+	/// </summary>
+	public sealed class OpenFileEventArgs : ExplorerFileEventArgs
+	{
+		///
+		public OpenFileEventArgs(Panel panel, ExplorerModes mode, FarFile file) : base(panel, mode, file) { }
+	}
+
+	/// <summary>
 	/// Export file arguments.
 	/// </summary>
 	public class ExportFileEventArgs : ExplorerFileEventArgs
@@ -349,6 +366,14 @@ namespace FarNet
 		/// Gets the force mode, e.g. on [ShiftDel] instead of [Del].
 		/// </summary>
 		public bool Force { get; private set; }
+		/// <summary>
+		/// Gets the list of files from <see cref="ExplorerFilesEventArgs.Files"/> to stay selected if the job is incomplete.
+		/// </summary>
+		/// <remarks>
+		/// If the job is incomplete and this list is empty then the core recovers selection itself but this is less effective.
+		/// </remarks>
+		public IList<FarFile> FilesToStay { get { return _FailedFiles; } }
+		readonly List<FarFile> _FailedFiles = new List<FarFile>();
 	}
 
 	/// <summary>
@@ -426,7 +451,7 @@ namespace FarNet
 	/// <summary>
 	/// File event arguments.
 	/// </summary>
-	public class FileEventArgs : EventArgs
+	public class FileEventArgs : EventArgs //????? similar to OpenFileEventArgs
 	{
 		///
 		public FileEventArgs(FarFile file) { File = file; }
@@ -438,6 +463,19 @@ namespace FarNet
 		/// File to be processed.
 		/// </summary>
 		public FarFile File { get; private set; }
+	}
+
+	/// <summary>
+	/// Arguments of the <see cref="Panel.UIExplorerEntered"/> method and the <see cref="Panel.ExplorerEntered"/> event.
+	/// </summary>
+	public sealed class ExplorerEnteredEventArgs : EventArgs
+	{
+		///
+		public ExplorerEnteredEventArgs(Explorer explorer) { Explorer = explorer; }
+		/// <summary>
+		/// The old explorer replaced by the new just entered <see cref="Panel.Explorer"/>.
+		/// </summary>
+		public Explorer Explorer { get; private set; }
 	}
 
 }

@@ -164,20 +164,10 @@ namespace PowerShellFar
 		{
 			var core = A.Psf.Engine.SessionState.Path;
 			if (string.IsNullOrEmpty(path) || path == ".")
-			{
 				_PathInfo = core.CurrentLocation;
-				return;
-			}
-			
-			core.PushCurrentLocation(null);
-			try
-			{
-				_PathInfo = core.SetLocation(Kit.EscapeWildcard(path));
-			}
-			finally
-			{
-				core.PopLocation(null);
-			}
+			else
+				// 3 times faster than push/set/pop location; NB: it is slow anyway
+				_PathInfo = core.GetResolvedPSPathFromPSPath(Kit.EscapeWildcard(path))[0];
 		}
 		string _Path;
 		/// <summary>

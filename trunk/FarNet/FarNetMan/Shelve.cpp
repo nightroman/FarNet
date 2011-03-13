@@ -66,13 +66,14 @@ ShelveInfoNative^ ShelveInfoNative::CreateActiveInfo(bool modes)
 	return gcnew ShelveInfoNative((Panel1^)panel, modes);
 }
 
-// NOW: works only for the active panel.
-void ShelveInfoNative::Pop()
+// _110313_054719 Now works for passive, too.
+void ShelveInfoNative::Pop(bool active)
 {
+	HANDLE handle = active ? PANEL_ACTIVE : PANEL_PASSIVE;
 	if (Path)
 	{
 		PIN_NE(pin, Path);
-		if (!Info.Control(PANEL_ACTIVE, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
+		if (!Info.Control(handle, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
 			throw gcnew InvalidOperationException("Cannot set panel directory: " + Path);
 	}
 
@@ -81,28 +82,28 @@ void ShelveInfoNative::Pop()
 		return;
 
 	PanelInfo pi;
-	GetPanelInfo(PANEL_ACTIVE, pi);
+	GetPanelInfo(handle, pi);
 	if (pi.Plugin || pi.PanelType != PTYPE_FILEPANEL)
 		//! do not throw, sometimes a panel just cannot close
 		return;
 
-	Panel1 panel(true);
+	Panel1 native(active);
 
 	if (Current)
-		panel.GoToName(Current);
+		native.GoToName(Current);
 
-	panel.SelectNames(selectedNames);
+	native.SelectNames(selectedNames);
 
 	// restore modes
 	if (_modes)
 	{
 		if (_viewMode != (PanelViewMode)pi.ViewMode)
-			panel.ViewMode = _viewMode;
+			native.ViewMode = _viewMode;
 		
 		bool reversed = (pi.Flags & PFLAGS_REVERSESORTORDER) != 0;
 		PanelSortMode sortMode = (PanelSortMode)(reversed ? -pi.SortMode : pi.SortMode);
 		if (_sortMode != sortMode)
-			panel.SortMode = _sortMode;
+			native.SortMode = _sortMode;
 	}
 }
 
@@ -117,9 +118,12 @@ String^ ShelveInfoModule::Title::get()
 	return JoinText(_panel->Title, _panel->CurrentLocation);
 }
 
-void ShelveInfoModule::Pop()
+// _110313_054719 Still does not support passive.
+void ShelveInfoModule::Pop(bool active)
 {
 	Log::Source->TraceInformation(__FUNCTION__);
+	if (!active) throw gcnew NotSupportedException("Passive panel is not supported");
+	
 	_panel->Open();
 	_panel->_postSelected = GetSelectedIndexes();
 }

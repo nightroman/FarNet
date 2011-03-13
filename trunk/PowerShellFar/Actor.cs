@@ -1046,14 +1046,6 @@ Continue with this current directory?
 		}
 
 		/// <summary>
-		/// For internal use and development experiments.
-		/// </summary>
-		public Collection<PSObject> InvokeCode(string scriptText, params object[] args)
-		{
-			return Engine.InvokeCommand.NewScriptBlock(scriptText).Invoke(args);
-		}
-
-		/// <summary>
 		/// Invokes the script opened in the current editor.
 		/// </summary>
 		/// <remarks>

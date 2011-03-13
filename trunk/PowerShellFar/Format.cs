@@ -27,7 +27,7 @@ namespace PowerShellFar
 			return result;
 		}
 		//! assume it is done for the active panel, it does not work well from the disk menu
-		internal static Meta[] TryFormatByTableControl(PSObject value)
+		internal static Meta[] TryFormatByTableControl(PSObject value, int formatWidth)
 		{
 			// try to find a table
 			TableControl table = A.FindTableControl(value.BaseObject.GetType().FullName, null);
@@ -46,7 +46,7 @@ namespace PowerShellFar
 			metas = CutOffMetas(metas);
 
 			// adjust formatting to the panel width
-			int totalWidth = Far.Net.Panel.Window.Width - (metas.Length + 1); // N columns ~ N + 1 borders
+			int totalWidth = formatWidth - (metas.Length + 1); // N columns ~ N + 1 borders
 			int setSum = 0;
 			int setCount = 0;
 			int setMaxValue = 0;
@@ -92,7 +92,7 @@ namespace PowerShellFar
 				var membersToShow = new List<string>();
 				{
 					string code = "Get-Member -InputObject $args[0] -MemberType Properties -ErrorAction 0";
-					foreach (PSObject o in A.Psf.InvokeCode(code, value))
+					foreach (PSObject o in A.InvokeCode(code, value))
 						membersToShow.Add(o.Properties[Word.Name].Value.ToString());
 				}
 				var list = new List<Meta>(membersToShow.Count);
@@ -104,7 +104,7 @@ namespace PowerShellFar
 			// heterogeneous: just get mixed properties as they are
 			else
 			{
-				var members = A.Psf.InvokeCode("$args[0] | Get-Member -MemberType Properties -ErrorAction 0", values);
+				var members = A.InvokeCode("$args[0] | Get-Member -MemberType Properties -ErrorAction 0", values);
 				metas = new Meta[members.Count];
 				for (int i = 0; i < members.Count; ++i)
 					metas[i] = new Meta(members[i].Properties[Word.Name].Value.ToString());

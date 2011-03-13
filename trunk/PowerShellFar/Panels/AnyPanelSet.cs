@@ -15,7 +15,7 @@ using FarNet;
 
 namespace PowerShellFar
 {
-	public abstract partial class AnyPanel
+	public partial class AnyPanel
 	{
 		#region OpenFile
 		/// <summary>
@@ -26,7 +26,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Opens the file using <see cref="AsOpenFile"/> or the default method.
 		/// </summary>
-		internal void UIOpenFile(FarFile file)
+		public sealed override void UIOpenFile(FarFile file)
 		{
 			if (file == null)
 				return;
@@ -39,11 +39,22 @@ namespace PowerShellFar
 				return;
 			}
 
-			// default or external action
-			if (AsOpenFile == null)
-				OpenFile(file);
-			else
+			// script
+			if (AsOpenFile != null)
+			{
 				A.InvokeScriptReturnAsIs(AsOpenFile, this, new FileEventArgs(file));
+				return;
+			}
+
+			// base
+			if (Explorer.CanOpenFile)
+			{
+				base.UIOpenFile(file);
+				return;
+			}
+
+			// PSF
+			OpenFile(file);
 		}
 		/// <summary>
 		/// Opens a file.
@@ -63,7 +74,7 @@ namespace PowerShellFar
 				FileSystemInfo fi = Cast<FileSystemInfo>.From(file.Data);
 				if (fi != null)
 				{
-					A.Psf.InvokeCode("Invoke-Item -LiteralPath $args[0] -ErrorAction Stop", fi.FullName);
+					A.InvokeCode("Invoke-Item -LiteralPath $args[0] -ErrorAction Stop", fi.FullName);
 					return;
 				}
 			}
@@ -135,7 +146,7 @@ namespace PowerShellFar
 			string tmp = Far.Net.TempName();
 			try
 			{
-				A.Psf.InvokeCode("$args[0] | Format-Table -AutoSize -ea 0 | Out-File -FilePath $args[1]", ShownItems, tmp);
+				A.InvokeCode("$args[0] | Format-Table -AutoSize -ea 0 | Out-File -FilePath $args[1]", ShownItems, tmp);
 
 				IViewer v = A.CreateViewer(tmp);
 				v.DisableHistory = true;

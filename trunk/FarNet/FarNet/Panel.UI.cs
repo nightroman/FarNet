@@ -14,6 +14,21 @@ namespace FarNet
 {
 	public partial class Panel
 	{
+		/// <summary>
+		/// Called by <see cref="UIExplorerEntered"/>.
+		/// </summary>
+		public event EventHandler<ExplorerEnteredEventArgs> ExplorerEntered;
+		/// <summary>
+		/// It is called when a new explorer has been attached after one of the explore methods.
+		/// </summary>
+		/// <remarks>
+		/// The base method triggers the <see cref="ExplorerEntered"/> event.
+		/// </remarks>
+		public virtual void UIExplorerEntered(ExplorerEnteredEventArgs args)
+		{
+			if (ExplorerEntered != null)
+				ExplorerEntered(this, args);
+		}
 		///
 		public static ExportFileEventArgs WorksExportExplorerFile(Explorer explorer, Panel panel, ExplorerModes mode, FarFile file, string fileName)
 		{
@@ -63,7 +78,7 @@ namespace FarNet
 		/// The source and target panel are module panels.
 		/// The target panel explorer accepts the selected files.
 		/// </remarks>
-		public void UICopyMove(bool move)
+		public virtual void UICopyMove(bool move)
 		{
 			// target
 			var that = TargetPanel;
@@ -146,7 +161,7 @@ namespace FarNet
 
 			// call
 			var argsDelete = new DeleteFilesEventArgs(this, ExplorerModes.Silent, filesToDelete, false);
-			this.UIDeleteWorker(argsDelete, false);
+			this.UIDeleteWithRecover(argsDelete, false);
 			if (isIncomplete)
 				SelectFiles(args.FilesToStay, null);
 
@@ -190,12 +205,12 @@ namespace FarNet
 				return;
 
 			// call
-			UIDeleteWorker(args, true);
+			UIDeleteWithRecover(args, true);
 		}
 		/// <summary>
 		/// Deletes files, heals selection.
 		/// </summary>
-		void UIDeleteWorker(DeleteFilesEventArgs args, bool redraw)
+		void UIDeleteWithRecover(DeleteFilesEventArgs args, bool redraw)
 		{
 			// call
 			Explorer.DeleteFiles(args);
@@ -210,7 +225,12 @@ namespace FarNet
 
 			// recover selection
 			if (recover)
-				SelectFiles(args.Files, null);
+			{
+				if (args.FilesToStay.Count > 0)
+					SelectFiles(args.FilesToStay, null);
+				else
+					SelectFiles(args.Files, null);
+			}
 
 			// done
 			if (redraw)
@@ -348,7 +368,6 @@ namespace FarNet
 		/// <summary>
 		/// Opens the file in the viewer.
 		/// </summary>
-		/// <returns>True if it's done.</returns>
 		/// <remarks>
 		/// The default method calls <see cref="FarNet.Explorer.ExportFile"/> to get a temporary file to view.
 		/// The explorer should have it implemented.
@@ -383,6 +402,52 @@ namespace FarNet
 			viewerTemp.FileName = temp;
 			viewerTemp.Title = file.Name;
 			viewerTemp.Open();
+		}
+		/// <summary>
+		/// Opens the file.
+		/// </summary>
+		/// <remarks>
+		/// It is called for the current file when [Enter] is pressed.
+		/// The base method just calls <see cref="FarNet.Explorer.OpenFile"/> if the explorer can open files.
+		/// </remarks>
+		public virtual void UIOpenFile(FarFile file)
+		{
+			if (file == null)
+				return;
+
+			if (!Explorer.CanOpenFile)
+				return;
+
+			var args = new OpenFileEventArgs(this, ExplorerModes.None, file);
+			Explorer.OpenFile(args);
+		}
+		/// <summary>
+		/// Tells to update and redraw the panel automatically when idle.
+		/// </summary>
+		/// <remarks>
+		/// If it is set the panel is updated automatically every few seconds when idle.
+		/// This is suitable only for panels with very frequently changed data,
+		/// otherwise it results in expensive updates for nothing.
+		/// </remarks>
+		/// <seealso cref="Idled"/>
+		public bool IdleUpdate { get; set; }
+		/// <summary>
+		/// Called periodically when a user is idle.
+		/// </summary>
+		/// <seealso cref="IdleUpdate"/>
+		/// <seealso cref="IdledHandler"/>
+		public event EventHandler Idled;
+		/// <summary>
+		/// Called periodically when idle.
+		/// </summary>
+		/// <remarks>
+		/// It is used for panel updating and redrawing if data have changed.
+		/// The base method triggers the <see cref="Idled"/> event.
+		/// </remarks>
+		public virtual void UIIdle()
+		{
+			if (Idled != null)
+				Idled(this, null);
 		}
 		/// <summary>
 		/// Called when a key is about to be processed.
@@ -446,6 +511,23 @@ namespace FarNet
 		{
 			switch (code)
 			{
+				case VKeyCode.Enter:
+
+					switch (state)
+					{
+						case KeyStates.None:
+							if (RealNames)
+								break;
+
+							var file = CurrentFile;
+							if (file == null || file.IsDirectory)
+								break;
+
+							UIOpenFile(file);
+							return true;
+					}
+					break;
+
 				case VKeyCode.F3:
 
 					switch (state)

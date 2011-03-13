@@ -37,18 +37,15 @@ namespace FarNet.Tools
 	{
 		const char EMPTY_BLOCK = '\x2591';
 		const char SOLID_BLOCK = '\x2588';
-
 		internal const int FORM_WIDTH = 76;
 		internal const int TEXT_HEIGHT = 10;
 		internal const int TEXT_WIDTH = FORM_WIDTH - 10;
 		const int PROGRESS_WIDTH = TEXT_WIDTH - 4;
-
 		string _Activity = string.Empty;
 		string[] _Lines;
-
 		int _percentage = -1;
 		Stopwatch _stopwatch = Stopwatch.StartNew();
-
+		internal TimeSpan Elapsed { get { return _stopwatch.Elapsed; } }
 		public string Activity
 		{
 			get { return _Activity; }
@@ -62,7 +59,6 @@ namespace FarNet.Tools
 				}
 			}
 		}
-
 		public void SetProgressValue(double currentValue, double maximumValue)
 		{
 			if (currentValue <= 0)
@@ -71,7 +67,6 @@ namespace FarNet.Tools
 				_percentage = 100;
 			_percentage = (int)(currentValue * 100 / maximumValue);
 		}
-
 		internal string[] Build(out string progress, int height)
 		{
 			// format activity if not yet
@@ -132,7 +127,6 @@ namespace FarNet.Tools
 			// the copy
 			return result;
 		}
-
 		static string FormatProgress(int percentage)
 		{
 			// number of chars to fill
@@ -158,7 +152,6 @@ namespace FarNet.Tools
 
 			return new string(SOLID_BLOCK, n) + new string(EMPTY_BLOCK, PROGRESS_WIDTH - n) + string.Format(null, "{0,3}%", percentage);
 		}
-
 	}
 
 }

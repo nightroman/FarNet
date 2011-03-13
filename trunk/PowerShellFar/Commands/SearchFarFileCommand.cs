@@ -31,6 +31,11 @@ namespace PowerShellFar.Commands
 			HelpMessage = "Search script. Variables: $this is the explorer providing the file, $_ is the file.")]
 		public ScriptBlock Script { get; set; }
 		/// <summary>
+		/// Search depth. 0: ignored; negative: unlimited.
+		/// </summary>
+		[Parameter(HelpMessage = "Search depth. 0: ignored; negative: unlimited.")]
+		public int Depth { get; set; }
+		/// <summary>
 		/// Tells to include directories into the search process and results.
 		/// </summary>
 		[Parameter(HelpMessage = "Tells to include directories into the search process and results.")]
@@ -40,6 +45,11 @@ namespace PowerShellFar.Commands
 		/// </summary>
 		[Parameter(HelpMessage = "Tells to search through all directories and sub-directories.")]
 		public SwitchParameter Recurse { get; set; }
+		/// <summary>
+		/// Tells to performs the search in the background and to open the result panel immediately.
+		/// </summary>
+		[Parameter(HelpMessage = "Tells to performs the search in the background and to open the result panel immediately.")]
+		public SwitchParameter Asynchronous { get; set; }
 		///
 		protected override void BeginProcessing()
 		{
@@ -51,31 +61,30 @@ namespace PowerShellFar.Commands
 			}
 
 			// setup the search
-			var search = new FileSearchExplorer(panel.Explorer);
-			search.Directory = Directory;
+			var search = new SearchFileCommand(panel.Explorer);
+			search.Depth = Depth;
 			search.Recurse = Recurse;
+			search.Directory = Directory;
 			if (Mask != null)
 			{
-				search.Process = delegate(Explorer explorer, FarFile file)
+				search.Filter = delegate(Explorer explorer, FarFile file)
 				{
 					return Far.Net.MatchPattern(file.Name, Mask);
 				};
 			}
 			else if (Script != null)
 			{
-				search.Process = delegate(Explorer explorer, FarFile file)
+				search.Filter = delegate(Explorer explorer, FarFile file)
 				{
 					return LanguagePrimitives.IsTrue(A.InvokeScriptReturnAsIs(Script, explorer, file));
 				};
 			}
 			
 			// go
-			search.Invoke();
-			if (search.ResultFiles.Count == 0)
-				return;
-
-			// panel
-			search.OpenPanelChild(panel);
+			if (Asynchronous)
+				search.InvokeAsync(panel);
+			else
+				search.Invoke(panel);
 		}
 	}
 }
