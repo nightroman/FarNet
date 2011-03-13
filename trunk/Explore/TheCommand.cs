@@ -15,6 +15,15 @@ namespace FarNet.Explore
 	{
 		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
+			// open the empty panel
+			var command = e.Command.Trim();
+			if (command.Length == 0)
+			{
+				(new SuperExplorer()).OpenPanel();
+				return;
+			}
+
+			// the module panel
 			Panel panel = Far.Net.Panel as Panel;
 			if (panel == null)
 			{
@@ -23,14 +32,20 @@ namespace FarNet.Explore
 			}
 
 			// the search
-			var search = new FileSearchExplorer(panel.Explorer);
+			var search = new SearchFileCommand(panel.Explorer);
 
 			// parse command, setup the search
-			var command = e.Command.Trim();
 			var tokens = command.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-			foreach (var token in tokens)
+			bool async = false;
+			for (int iToken = 0; iToken < tokens.Length; ++iToken)
 			{
-				if (token.Equals("-Directory", StringComparison.OrdinalIgnoreCase))
+				var token = tokens[iToken];
+				if (token.Equals("-Depth", StringComparison.OrdinalIgnoreCase))
+				{
+					if (++iToken >= token.Length) throw new InvalidOperationException("Invalid depth.");
+					search.Depth = int.Parse(tokens[iToken]);
+				}
+				else if (token.Equals("-Directory", StringComparison.OrdinalIgnoreCase))
 				{
 					search.Directory = true;
 				}
@@ -38,14 +53,18 @@ namespace FarNet.Explore
 				{
 					search.Recurse = true;
 				}
-				else if (search.Process != null)
+				else if (token.Equals("-Asynchronous", StringComparison.OrdinalIgnoreCase))
+				{
+					async = true;
+				}
+				else if (search.Filter != null)
 				{
 					throw new InvalidOperationException("Invalid command line.");
 				}
 				else
 				{
 					var pattern = token;
-					search.Process = delegate(Explorer explorer, FarFile file)
+					search.Filter = delegate(Explorer explorer, FarFile file)
 					{
 						return Far.Net.MatchPattern(file.Name, pattern);
 					};
@@ -53,12 +72,10 @@ namespace FarNet.Explore
 			}
 
 			// go
-			search.Invoke();
-			if (search.ResultFiles.Count == 0)
-				return;
-
-			// panel
-			search.OpenPanelChild(panel);
+			if (async)
+				search.InvokeAsync(panel);
+			else
+				search.Invoke(panel);
 		}
 	}
 }
