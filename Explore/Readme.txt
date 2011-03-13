@@ -1,6 +1,6 @@
 
 Module   : FarNet.Explore
-Release  : 2011-02-18
+Release  : 2011-03-09
 Category : Panels
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -11,7 +11,7 @@ Source   : http://code.google.com/p/farnet/
 
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.2
+ * Plugin FarNet 4.4.4
 
 
 = DESCRIPTION =
@@ -22,7 +22,7 @@ The tool searches in FarNet explorer panels and opens the result panel.
 It is invoked from the command line by the 'Explore' prefix.
 
 Command syntax
-	Explore: [<Mask>] [-Directory] [-Recurse]
+	Explore: [<Mask>] [-Directory] [-Recurse] [Depth <N>] [-Asynchronous]
 	<Mask>
 		Classic Far Manager file name mask including exclude and regex forms.
 		So far masks do not support spaces.
@@ -30,6 +30,12 @@ Command syntax
 		Tells to include directories into the search process and results.
 	-Recurse
 		Tells to search through all directories and sub-directories.
+	-Depth <N>
+		N: 0: ignored; negative: unlimited; positive: search depth, -Recurse is
+		ignored. Note: order of -Depth and -Recurse results may be different.
+	-Asynchronous
+		Tells to performs the search in the background and to open the result
+		panel immediately. Results are added dynamically when the panel is idle.
 
 
 = RESULT PANEL KEYS AND OPERATIONS =
@@ -39,6 +45,9 @@ Command syntax
 	on a found directory opens this directory in its explorer panel as if
 	[Enter] is pressed in the original panel. The opened panel works as the
 	original. [Esc] (or more than one) returns to the search result panel.
+
+[Enter]
+	on a found file opens it if its explorer supports file opening.
 
 [CtrlPgUp]
 	on a found directory or file opens its parent directory in its original
@@ -50,8 +59,18 @@ Command syntax
 	supports file export. If file import is supported then the files can be
 	edited. For now import is called not on saving but when an editor exits.
 
-[Del]
+[F5/F6]
+	copies/moves the selected items to their explorer panels.
+
+[F7]
+	just removes the selected items from the result panel.
+
+[F8/Del]
 	deletes the selected items if their explorers support this operation.
+
+[Esc]
+	prompts to choose: [Close] or [Push] the result panel, or [Stop] the
+	search if it is still in progress in the background.
 
 
 = HISTORY =
@@ -59,3 +78,15 @@ Command syntax
 1.0.1
 
 Use FarNet 4.4.3
+
+1.0.2
+
+Use FarNet 4.4.4
+
+Added -Asynchronous switch: Tells to performs the search in the background and
+to open the result panel immediately.
+
+Added -Depth parameter.
+
+New result panel (actually super-panel) features: [Enter] on a found file,
+[F5/F6], [F7], and [Esc] choices.
