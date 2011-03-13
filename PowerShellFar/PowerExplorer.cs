@@ -60,9 +60,6 @@ namespace PowerShellFar
 			if (AsGetFiles == null)
 				return DoGetFiles(args);
 
-			if (Runspace.DefaultRunspace == null)
-				Runspace.DefaultRunspace = A.Psf.Runspace;
-
 			// nothing, use the predefined file list
 			var output = A.InvokeScript(AsGetFiles, this, args);
 			if (output.Count == 0)
@@ -248,6 +245,27 @@ namespace PowerShellFar
 				A.InvokeScriptReturnAsIs(AsImportText, this, args);
 		}
 		/// <summary>
+		/// <see cref="Explorer.OpenFile"/> worker.
+		/// </summary>
+		public virtual void DoOpenFile(OpenFileEventArgs args) { base.OpenFile(args); }
+		/// <summary>
+		/// <see cref="Explorer.OpenFile"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="OpenFileEventArgs"/>.
+		/// </remarks>
+		public ScriptBlock AsOpenFile { get; set; }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void OpenFile(OpenFileEventArgs args)
+		{
+			if (AsOpenFile == null)
+				DoOpenFile(args);
+			else
+				A.InvokeScriptReturnAsIs(AsOpenFile, this, args);
+		}
+		/// <summary>
 		/// <see cref="Explorer.AcceptFiles"/> worker.
 		/// </summary>
 		public virtual void DoAcceptFiles(AcceptFilesEventArgs args) { base.AcceptFiles(args); }
@@ -332,31 +350,28 @@ namespace PowerShellFar
 				return (Panel)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCreatePanel, this, null), typeof(Panel), null);
 		}
 		/// <summary>
-		/// <see cref="Explorer.UpdatePanel"/> worker.
+		/// <see cref="Explorer.EnterPanel"/> worker.
 		/// </summary>
-		public virtual void DoUpdatePanel(Panel panel) { base.UpdatePanel(panel); }
+		public virtual void DoEnterPanel(Panel panel) { base.EnterPanel(panel); }
 		/// <summary>
-		/// <see cref="Explorer.UpdatePanel"/> worker.
+		/// <see cref="Explorer.EnterPanel"/> worker.
 		/// </summary>
 		/// <remarks>
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is the <see cref="Panel"/> to be updated.
 		/// </remarks>
-		public ScriptBlock AsUpdatePanel { get; set; }
+		public ScriptBlock AsEnterPanel { get; set; }
 		/// <summary>
 		/// Calls As-Script or Do-Method.
 		/// </summary>
-		public sealed override void UpdatePanel(Panel panel)
+		public sealed override void EnterPanel(Panel panel)
 		{
-			if (AsUpdatePanel == null)
-				DoUpdatePanel(panel);
+			if (AsEnterPanel == null)
+				DoEnterPanel(panel);
 			else
-				A.InvokeScriptReturnAsIs(AsUpdatePanel, this, panel);
+				A.InvokeScriptReturnAsIs(AsEnterPanel, this, panel);
 		}
 		internal Explorer InvokeExplorerScript(ScriptBlock script, ExplorerEventArgs args)
 		{
-			if (Runspace.DefaultRunspace == null)
-				Runspace.DefaultRunspace = A.Psf.Runspace;
-
 			var data = A.InvokeScript(script, this, args);
 			if (data.Count == 0)
 				return null;

@@ -55,6 +55,10 @@ param
 	[switch]
 	# Tells to update from already downloaded archives.
 	$Force
+	,
+	[switch]
+	# Tells to update all.
+	$All
 )
 
 Set-StrictMode -Version 2
@@ -75,7 +79,7 @@ if (!$ArchiveNames) {
 
 ### confirm each archive name
 $ArchiveNames = foreach($name in $ArchiveNames) {
-	if ($PSCmdlet.ShouldProcess($name, "Download and/or update")) {
+	if ($All -or $PSCmdlet.ShouldProcess($name, "Download and/or update")) {
 		$name
 	}
 }

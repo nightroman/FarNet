@@ -82,7 +82,7 @@ namespace FarNet
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
-		/// <returns>Button index or -1 if cancelled.</returns>
+		/// <returns>Button index or -1 if canceled.</returns>
 		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
 		public int Message(string body, string header, MsgOptions options) { return Message(body, header, options, null, null); }
 		/// <summary>
@@ -92,7 +92,7 @@ namespace FarNet
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
-		/// <returns>Button index or -1 if cancelled.</returns>
+		/// <returns>Button index or -1 if canceled.</returns>
 		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
 		public int Message(string body, string header, MsgOptions options, string[] buttons) { return Message(body, header, options, buttons, null); }
 		/// <summary>
@@ -106,7 +106,7 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/HelpTopic/*'/>
 		/// It is ignored in GUI and drawn messages.
 		/// </param>
-		/// <returns>Button index or -1 if cancelled, or 0 in the drawn message.</returns>
+		/// <returns>Button index or -1 if canceled, or 0 in the drawn message.</returns>
 		/// <remarks>
 		/// <para>
 		/// If the <see cref="MsgOptions.Draw"/> option is set then GUI or buttons are not allowed.
@@ -362,25 +362,25 @@ namespace FarNet
 		public abstract FarConfirmations Confirmations { get; }
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
-		/// <returns>Entered text or null if cancelled.</returns>
+		/// <returns>Entered text or null if canceled.</returns>
 		public string Input(string prompt) { return Input(prompt, null, null, string.Empty); }
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
-		/// <returns>Entered text or null if cancelled.</returns>
+		/// <returns>Entered text or null if canceled.</returns>
 		public string Input(string prompt, string history) { return Input(prompt, history, null, string.Empty); }
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
-		/// <returns>Entered text or null if cancelled.</returns>
+		/// <returns>Entered text or null if canceled.</returns>
 		public string Input(string prompt, string history, string title) { return Input(prompt, history, title, string.Empty); }
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <param name="history">History string.</param>
 		/// <param name="title">Title of the box.</param>
 		/// <param name="text">Text to be edited.</param>
-		/// <returns>Entered text or null if cancelled.</returns>
+		/// <returns>Entered text or null if canceled.</returns>
 		public abstract string Input(string prompt, string history, string title, string text);
 		/// <summary>
 		/// Converts an internal key code to a 'printable' char. <see cref="KeyCode"/>

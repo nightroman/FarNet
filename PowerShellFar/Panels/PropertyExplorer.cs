@@ -148,7 +148,7 @@ namespace PowerShellFar
 				if (args.UseText == null)
 				{
 					// write by PS
-					var output = A.Psf.InvokeCode("$args[0] | Out-String -Width $args[1] -ErrorAction Stop", pi.Value, int.MaxValue);
+					var output = A.InvokeCode("$args[0] | Out-String -Width $args[1] -ErrorAction Stop", pi.Value, int.MaxValue);
 					if (output.Count != 1) throw new InvalidOperationException("TODO");
 					args.UseText = output[0].ToString();
 				}
@@ -260,11 +260,6 @@ namespace PowerShellFar
 					if (args.UI)
 						A.ShowError(ps);
 				}
-
-				//?????
-				//PropertyPanel pp2 = TargetPanel as PropertyPanel;
-				//if (pp2 != null)
-				//    pp2.UpdateRedraw(true);
 			}
 		}
 		///
@@ -312,7 +307,9 @@ namespace PowerShellFar
 		///
 		public override void CreateFile(CreateFileEventArgs args)
 		{
-			// it does all itself //?????
+			if (args == null) return;
+
+			// all done
 			args.Result = JobResult.Ignore;
 
 			var panel = args.Panel as PropertyPanel;

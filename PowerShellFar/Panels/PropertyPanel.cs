@@ -35,7 +35,7 @@ namespace PowerShellFar
 			CurrentLocation = Explorer.ThePath + ".*"; //??
 			SortMode = PanelSortMode.Name;
 		}
-		internal override PSObject Target
+		internal sealed override PSObject Target
 		{
 			get { return Explorer.TheItem; }
 		}

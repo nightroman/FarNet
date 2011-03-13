@@ -77,7 +77,7 @@ function TestProgressForm
 	Start-FarJob -Hidden -Parameters $Progress, $JobSeconds, $JobSteps, $Delay {
 		param($Progress, $JobSeconds, $JobSteps, $Delay)
 		for($$ = 1; $$ -le $JobSteps; ++$$) {
-			# if the progress IsClosed (cancelled) then exit
+			# if the progress IsClosed (canceled) then exit
 			if ($Progress.IsClosed) {
 				return
 			}
@@ -106,7 +106,7 @@ function TestProgressForm
 
 	### 4) show the progress form
 	# - it is not actually shown if a fast job is already done
-	# - it returns $true/$false if the job is done/cancelled
+	# - it returns $true/$false if the job is done/canceled
 	$Progress.Show()
 }
 

@@ -46,14 +46,16 @@ namespace PowerShellFar
 		///
 		public override void DoCreateFile(CreateFileEventArgs args)
 		{
+			if (args == null) return;
+			
 			args.Result = JobResult.Ignore;
 			Panel.DoCreateFile();
 		}
 		///
-		public override void DoExportFile(ExportFileEventArgs args) //????? move to base
+		public override void DoExportFile(ExportFileEventArgs args)
 		{
 			if (args == null) return;
-			A.WriteFormatList(args.File.Data, args.FileName);
+			args.UseText = A.InvokeFormatList(args.File.Data);
 		}
 	}
 }

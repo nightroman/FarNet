@@ -60,7 +60,7 @@ namespace PowerShellFar
 		public static void SetPropertyValue(string itemPath, string propertyName, object value)
 		{
 			//! setting PSPropertyInfo.Value is not working, so do use Set-ItemProperty
-			Psf.InvokeCode(
+			InvokeCode(
 				"Set-ItemProperty -LiteralPath $args[0] -Name $args[1] -Value $args[2] -ErrorAction Stop",
 				itemPath, propertyName, value);
 		}
@@ -342,7 +342,7 @@ namespace PowerShellFar
 			}
 
 			// extended type definitions:
-			foreach (PSObject it in Psf.InvokeCode("Get-FormatData -TypeName $args[0]", typeName))
+			foreach (PSObject it in InvokeCode("Get-FormatData -TypeName $args[0]", typeName))
 			{
 				ExtendedTypeDefinition typeDef = it.BaseObject as ExtendedTypeDefinition;
 				foreach (FormatViewDefinition viewDef in typeDef.FormatViewDefinition)
@@ -372,15 +372,19 @@ namespace PowerShellFar
 			{
 				return Psf.Engine.InvokeProvider.ChildItem.Get(new string[] { literalPath }, false, true, true);
 			}
-			catch (RuntimeException)
-			{ }
+			catch (RuntimeException e)
+			{
+				FarNet.Log.TraceException(e);
+			}
 
 			try
 			{
-				return Psf.InvokeCode("Get-ChildItem -LiteralPath $args[0] -Force -ErrorAction 0", literalPath);
+				return InvokeCode("Get-ChildItem -LiteralPath $args[0] -Force -ErrorAction 0", literalPath);
 			}
-			catch (RuntimeException)
-			{ }
+			catch (RuntimeException e)
+			{
+				FarNet.Log.TraceException(e);
+			}
 
 			return new Collection<PSObject>();
 		}
@@ -440,6 +444,17 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
+		/// Invokes the script code.
+		/// </summary>
+		internal static Collection<PSObject> InvokeCode(string code, params object[] args)
+		{
+			if (Runspace.DefaultRunspace == null)
+				Runspace.DefaultRunspace = A.Psf.Runspace;
+
+			return Psf.Engine.InvokeCommand.NewScriptBlock(code).Invoke(args);
+		}
+
+		/// <summary>
 		/// Invokes the handler-like script and returns the result collection.
 		/// </summary>
 		/// <param name="script">The script block to invoke.</param>
@@ -447,6 +462,9 @@ namespace PowerShellFar
 		/// <param name="e">The object for $_.</param>
 		internal static Collection<PSObject> InvokeScript(ScriptBlock script, object sender, object e)
 		{
+			if (Runspace.DefaultRunspace == null)
+				Runspace.DefaultRunspace = Psf.Runspace;
+			
 			var variable = script.Module == null ? Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
 			variable.Set("this", sender);
 			variable.Set("_", e);
@@ -469,6 +487,9 @@ namespace PowerShellFar
 		/// <param name="e">The object for $_.</param>
 		internal static object InvokeScriptReturnAsIs(ScriptBlock script, object sender, object e)
 		{
+			if (Runspace.DefaultRunspace == null)
+				Runspace.DefaultRunspace = Psf.Runspace;
+
 			var variable = script.Module == null ? Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
 			variable.Set("this", sender);
 			variable.Set("_", e);
@@ -538,15 +559,15 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Writes Format-List output to a file.
+		/// Invokes Format-List with output to string.
 		/// </summary>
-		internal static void WriteFormatList(object data, string fileName)
+		internal static string InvokeFormatList(object data)
 		{
 			const string code = @"
 Format-List -InputObject $args[0] -Property * -Expand Both -ErrorAction 0 |
-Out-File -FilePath $args[1] -Width $args[2] -Encoding Unicode
+Out-String -Width $args[1]
 ";
-			Psf.InvokeCode(code, data, fileName, int.MaxValue);
+			return InvokeCode(code, data, int.MaxValue)[0].ToString();
 		}
 	}
 }

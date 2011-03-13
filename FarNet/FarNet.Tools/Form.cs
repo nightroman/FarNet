@@ -4,6 +4,7 @@ FarNet.Tools library for FarNet
 Copyright (c) 2010 Roman Kuzmin
 */
 
+using System;
 using FarNet.Forms;
 
 namespace FarNet.Tools
@@ -45,6 +46,8 @@ namespace FarNet.Tools
 		/// </summary>
 		protected void SetSize(int width, int height)
 		{
+			if (width <= 4 || height <= 2) throw new ArgumentException("Too small value.");
+			
 			Dialog.Rect = new Place(-1, -1, width, height);
 			Box.Rect = new Place(3, 1, width - 4, height - 2);
 		}
@@ -52,7 +55,7 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Shows the form.
 		/// </summary>
-		/// <returns>False if the form was cancelled.</returns>
+		/// <returns>False if the form was canceled.</returns>
 		public virtual bool Show()
 		{
 			return Dialog.Show();

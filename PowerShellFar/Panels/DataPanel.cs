@@ -270,7 +270,7 @@ namespace PowerShellFar
 					return false;
 			}
 		}
-		internal void DoDeleteFiles(DeleteFilesEventArgs args) //????? to explorer
+		internal void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
 			var Files = Explorer.Cache;
 			BuildDeleteCommand();

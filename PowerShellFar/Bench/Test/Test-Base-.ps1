@@ -34,7 +34,7 @@ function Test-InputBox
 		Show-FarMessage "Entered: $($b.Text)"
 	}
 	else {
-		Show-FarMessage 'Cancelled'
+		Show-FarMessage 'Canceled'
 	}
 }
 

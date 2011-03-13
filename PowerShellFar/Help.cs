@@ -113,7 +113,7 @@ namespace PowerShellFar
 			try
 			{
 				args[0] = file;
-				A.Psf.InvokeCode(script, args);
+				A.InvokeCode(script, args);
 				ok = true;
 			}
 			catch (RuntimeException)

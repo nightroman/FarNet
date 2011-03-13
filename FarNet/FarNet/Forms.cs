@@ -566,7 +566,7 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Shows the dialog.
 		/// </summary>
-		/// <returns>false if the user cancelled the dialog or clicked the <see cref="Cancel"/> button.</returns>
+		/// <returns>False if the user canceled the dialog or clicked the <see cref="Cancel"/> button.</returns>
 		public abstract bool Show();
 		/// <summary>
 		/// Adds a double or single box control. See <see cref="NoSmartCoordinates"/>.

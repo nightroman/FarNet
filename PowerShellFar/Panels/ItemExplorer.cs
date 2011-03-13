@@ -15,50 +15,41 @@ namespace PowerShellFar
 	sealed class ItemExplorer : FormatExplorer
 	{
 		const string TypeIdString = "07e4dde7-e113-4622-b2e9-81cf3cda927a";
-		internal readonly PowerPath ThePath;
-		public ItemExplorer(string path)
+		public ItemExplorer(string location)
 			: base(new Guid(TypeIdString))
 		{
-			// location and position
-			if (!string.IsNullOrEmpty(path))
-			{
-				// resolve a share for a computer
-				if (path.StartsWith("\\\\", StringComparison.Ordinal))
-				{
-					string computer = path.Substring(2);
-					while (computer.EndsWith("\\", StringComparison.Ordinal))
-						computer = computer.Substring(0, computer.Length - 1);
-					if (computer.IndexOf('\\') < 0)
-					{
-						string share = UI.SelectMenu.SelectShare(computer);
-						if (share == null)
-							path = ".";
-						else
-							path = "\\\\" + computer + "\\" + share;
-					}
-				}
-			}
-
-			ThePath = new PowerPath(path);
-			Location = ThePath.Path;
+			Location = location;
 			Functions =
 				ExplorerFunctions.AcceptFiles |
 				ExplorerFunctions.DeleteFiles |
 				ExplorerFunctions.CreateFile |
 				ExplorerFunctions.ExportFile |
 				ExplorerFunctions.ImportText;
-
 		}
-		///
-		public override Panel DoCreatePanel() //?????
+		internal ItemExplorer(PowerPath info)
+			: this(info.Path)
 		{
-			throw new ModuleException("Panel is not yet supported.");
+			_Info_ = info;
+		}
+		//! Very slow operation, that is why we propagate the provider on exploring.
+		internal PowerPath Info() { return _Info_ ?? (_Info_ = new PowerPath(Location)); }
+		PowerPath _Info_;
+		internal ProviderInfo Provider
+		{
+			get { return _Provider_ ?? (_Provider_ = Info().Provider); }
+			private set { _Provider_ = value; }
+		}
+		ProviderInfo _Provider_;
+		///
+		public override Panel DoCreatePanel()
+		{
+			return new ItemPanel(this);
 		}
 		///
 		public override void DoAcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (args == null) return;
-			
+
 			// that source
 			var that = args.Explorer as ItemExplorer;
 			if (that == null)
@@ -69,7 +60,7 @@ namespace PowerShellFar
 			}
 
 			// this target
-			if (!My.ProviderInfoEx.IsNavigation(ThePath.Provider))
+			if (!My.ProviderInfoEx.IsNavigation(Provider))
 			{
 				//! Actually e.g. functions can be copied, see UICopyHere
 				if (args.UI) A.Message(Res.NotSupportedByProvider);
@@ -91,7 +82,7 @@ namespace PowerShellFar
 				c.Parameters.Add(Prm.Recurse);
 			}
 			// -Destination
-			c.Parameters.Add("Destination", this.ThePath.Path);
+			c.Parameters.Add("Destination", this.Location);
 			// -Confirm
 			c.Parameters.Add(Prm.Confirm);
 			// -ErrorAction
@@ -122,9 +113,11 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
+			var panel = args.Panel as ItemPanel;
+
 			// Remove-Item
 			Command c = new Command("Remove-Item");
-			
+
 			// -Confirm -Recurse
 			FarConfirmations confirm = Far.Net.Confirmations;
 			if ((confirm & FarConfirmations.Delete) != 0 && (confirm & FarConfirmations.DeleteNotEmptyFolders) != 0)
@@ -143,7 +136,7 @@ namespace PowerShellFar
 
 			// -Force
 			c.Parameters.Add(Prm.Force);
-			
+
 			// -ErrorAction
 			c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 
@@ -153,7 +146,7 @@ namespace PowerShellFar
 				using (PowerShell ps = A.Psf.CreatePipeline())
 				{
 					ps.Commands.AddCommand(c);
-					ps.Invoke(Panel.SelectedItems);
+					ps.Invoke(args.FilesData);
 
 					if (ps.Streams.Error.Count > 0)
 					{
@@ -162,9 +155,12 @@ namespace PowerShellFar
 							A.ShowError(ps);
 					}
 
-					ItemPanel pp2 = Panel.TargetPanel as ItemPanel;
-					if (pp2 != null)
-						pp2.UpdateRedraw(true);
+					if (panel != null)
+					{
+						ItemPanel pp2 = panel.TargetPanel as ItemPanel;
+						if (pp2 != null)
+							pp2.UpdateRedraw(true);
+					}
 				}
 			}
 			catch
@@ -175,7 +171,8 @@ namespace PowerShellFar
 			finally
 			{
 				// fire
-				((ItemPanel)Panel).DoItemsChanged();
+				if (panel != null)
+					panel.DoItemsChanged();
 			}
 		}
 		///
@@ -183,7 +180,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			if (!My.ProviderInfoEx.HasContent(ThePath.Provider))
+			if (!My.ProviderInfoEx.HasContent(Provider))
 			{
 				args.Result = JobResult.Ignore;
 				if (args.UI)
@@ -207,11 +204,11 @@ namespace PowerShellFar
 			try
 			{
 				// item path
-				string itemPath = My.PathEx.Combine(ThePath.Path, args.File.Name);
+				string itemPath = My.PathEx.Combine(Location, args.File.Name);
 
 				// get content
 				const string code = "Get-Content -LiteralPath $args[0] -ReadCount 0";
-				args.UseText = A.Psf.InvokeCode(code, itemPath);
+				args.UseText = A.InvokeCode(code, itemPath);
 			}
 			catch (RuntimeException ex)
 			{
@@ -227,7 +224,7 @@ namespace PowerShellFar
 			try
 			{
 				// item path
-				string itemPath = My.PathEx.Combine(ThePath.Path, args.File.Name);
+				string itemPath = My.PathEx.Combine(Location, args.File.Name);
 
 				// read
 				string text = args.Text.TrimEnd();
@@ -236,8 +233,13 @@ namespace PowerShellFar
 				if (!A.SetContentUI(itemPath, text))
 					return;
 
-				// update a panel
-				Panel.UpdateRedraw(true); //?????
+				// update a panel after edit
+				if (0 != (args.Mode & ExplorerModes.Edit)) //???? in 99% it is not needed, think to avoi
+				{
+					var panel = args.Panel as ItemPanel;
+					if (panel != null)
+						panel.UpdateRedraw(true);
+				}
 			}
 			catch (RuntimeException ex)
 			{
@@ -250,10 +252,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return null;
 
-			if (!args.UI) //?????
-				return null;
-			
-			return ExplorePath(My.PathEx.Combine(ThePath.Path, args.File.Name));
+			return Explore(My.PathEx.Combine(Location, args.File.Name), args);
 		}
 		///
 		public override Explorer DoExploreParent(ExploreParentEventArgs args)
@@ -270,10 +269,10 @@ namespace PowerShellFar
 			cd Plugins/Brackets/Brackets.dll
 			[..] --> error; it is rather PS issue though...
 			*/
-			var path = ThePath.Path;
+			var path = Location;
 			// 090814 use ":\\" instead of "\\", [_090814_130836]
 			if (path.EndsWith(":\\", StringComparison.Ordinal))
-				return ExplorePath(null);
+				return Explore(null, args);
 
 			// 090814 [_090814_130836] PS V2 may get paths with extra '\' in the end
 			path = path.TrimEnd(new char[] { '\\' });
@@ -294,7 +293,7 @@ namespace PowerShellFar
 				{
 					path = null;
 				}
-				return ExplorePath(path);
+				return Explore(path, args);
 			}
 
 			//! Issue with names z:|z, Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER - Far doesn't set cursor there
@@ -318,78 +317,72 @@ namespace PowerShellFar
 			}
 
 			// add \, else we can't step to the root from level 1
-			if (path != null)
+			if (path != null && path.EndsWith(":", StringComparison.Ordinal))
 				path += "\\";
 
-			return ExplorePath(path);
+			return Explore(path, args);
 		}
 		///
 		public override Explorer DoExploreRoot(ExploreRootEventArgs args)
 		{
-			string driveName = ThePath.DriveName;
+			string driveName = Info().DriveName;
 			if (string.IsNullOrEmpty(driveName))
 				return null;
 
-			return ExplorePath(driveName + ":\\");
+			return Explore(driveName + ":\\", args);
 		}
-		Explorer ExplorePath(string path)
+		Explorer Explore(string location, ExplorerEventArgs args)
 		{
-			// no location, show drive menu
-			if (path == null)
+			// new explorer
+			ItemExplorer newExplorer;
+
+			// no location, show the drive menu
+			if (location == null)
 			{
-				// fixed drive?
-				if (((ItemPanel)Panel).Drive.Length > 0)
+				var panel = args.Panel as ItemPanel;
+
+				// silent
+				if (panel == null || !args.UI)
+					return null;
+
+				// custom columns or drive
+				if (panel.Columns != null || panel.Drive.Length > 0)
 					return null;
 
 				// menu
-				path = UI.SelectMenu.SelectDrive(ThePath.DriveName, false);
-				if (path == null)
+				location = UI.SelectMenu.SelectDrive(Info().DriveName, false);
+				if (location == null)
 					return null;
-			}
 
-			var explorer = new ItemExplorer(path);
-			//1
-			explorer.Panel = Panel;
-			//2
-			explorer.Columns = Columns; //?????? yes but need for the same provider only; when create a panel, do set plan.
-			((ItemPanel)Panel).ChangeLocation(ThePath, explorer.ThePath);
-
-			return explorer;
-		}
-		internal override void BuildFiles(Collection<PSObject> values)
-		{
-			if (!My.ProviderInfoEx.IsNavigation(ThePath.Provider))
-			{
-				base.BuildFiles(values);
-				return;
-			}
-
-			Cache.Clear();
-			if (ThePath.Provider.ImplementingType == typeof(FileSystemProvider))
-			{
-				foreach (PSObject value in values)
-					Cache.Add(new SystemMapFile(value, Map));
+				// unknown
+				newExplorer = new ItemExplorer(location);
 			}
 			else
 			{
-				foreach (PSObject value in values)
-					Cache.Add(new ItemMapFile(value, Map));
+				//! propagate the provider, or performance sucks
+				newExplorer = new ItemExplorer(location);
+				newExplorer.Provider = Provider;
+				newExplorer.Columns = Columns;
 			}
+
+			return newExplorer;
 		}
 		///
 		public override void DoCreateFile(CreateFileEventArgs args)
 		{
-			// it does all itself //?????
-			args.Result = JobResult.Ignore;
+			if (args == null) return;
 			
+			// all done
+			args.Result = JobResult.Ignore;
+
 			var panel = args.Panel as ItemPanel;
 			if (panel == null)
 			{
 				args.Result = JobResult.Ignore;
 				return;
 			}
-			
-			UI.NewValueDialog ui = new UI.NewValueDialog("New " + ThePath.Provider.Name + " item");
+
+			UI.NewValueDialog ui = new UI.NewValueDialog("New " + Provider.Name + " item");
 			while (ui.Dialog.Show())
 			{
 				try
@@ -400,7 +393,7 @@ namespace PowerShellFar
 						//! Don't use -Force or you silently kill existing item\property (with all children, properties, etc.)
 						Command c = new Command("New-Item");
 						// -Path (it is literal)
-						c.Parameters.Add("Path", My.PathEx.Combine(ThePath.Path, ui.Name.Text));
+						c.Parameters.Add("Path", My.PathEx.Combine(Location, ui.Name.Text));
 						// -ItemType
 						if (ui.Type.Text.Length > 0)
 							c.Parameters.Add("ItemType", ui.Type.Text);
@@ -423,7 +416,7 @@ namespace PowerShellFar
 
 					// update that panel if the path is the same
 					ItemPanel pp2 = panel.TargetPanel as ItemPanel;
-					if (pp2 != null && pp2.Explorer.ThePath.Path == ThePath.Path)
+					if (pp2 != null && pp2.Explorer.Location == Location)
 						pp2.UpdateRedraw(true);
 
 					// exit the loop
@@ -435,6 +428,41 @@ namespace PowerShellFar
 					continue;
 				}
 			}
+		}
+		internal override void BuildFiles(Collection<PSObject> values)
+		{
+			if (!My.ProviderInfoEx.IsNavigation(Provider))
+			{
+				base.BuildFiles(values);
+				return;
+			}
+
+			Cache.Clear();
+			if (Provider.ImplementingType == typeof(FileSystemProvider))
+			{
+				foreach (PSObject value in values)
+					Cache.Add(new SystemMapFile(value, Map));
+			}
+			else
+			{
+				foreach (PSObject value in values)
+					Cache.Add(new ItemMapFile(value, Map));
+			}
+		}
+		internal override object GetData(ExplorerEventArgs args)
+		{
+			// get child items for the panel location
+			var items = A.GetChildItems(Location);
+			
+			// standard
+			if (0 == (args.Mode & ExplorerModes.Find) || !My.ProviderInfoEx.IsNavigation(Provider))
+				return items;
+
+			// faster
+			Cache.Clear();
+			foreach (PSObject value in items)
+				Cache.Add(new ItemFile(value));
+			return Cache;
 		}
 	}
 }

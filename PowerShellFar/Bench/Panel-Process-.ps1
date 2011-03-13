@@ -66,29 +66,29 @@ New-Object PowerShellFar.ObjectExplorer -Property @{
 			}
 		}
 	}
+	### Open: show menu
+	AsOpenFile = {
+		$process = $_.File.Data
+		if ($process.HasExited) {
+			return
+		}
+		New-FarMenu -Show "Process: $($process.Name)" -AutoAssignHotkeys @(
+			New-FarItem 'Show WMI properties' {
+				$wmi = @(Get-WmiObject -Query "select * from Win32_Process where Handle=$($process.Id)")
+				if ($wmi.Count -eq 1) {
+					$wmi[0] | Open-FarPanel -AsChild
+				}
+			}
+			New-FarItem	'Activate main window' {
+				$null = [NativeMethods]::Activate($process.MainWindowHandle)
+			}
+		)
+	}
 	### Create panel
 	AsCreatePanel = {
 		New-Object PowerShellFar.ObjectPanel $this -Property @{
 			Title = $this.Data.Title
 			IdleUpdate = $true
-			### Open: show menu
-			AsOpenFile = {
-				$process = $_.File.Data
-				if ($process.HasExited) {
-					return
-				}
-				New-FarMenu -Show "Process: $($process.Name)" -AutoAssignHotkeys @(
-					New-FarItem 'Show WMI properties' {
-						$wmi = @(Get-WmiObject -Query "select * from Win32_Process where Handle=$($process.Id)")
-						if ($wmi.Count -eq 1) {
-							$wmi[0] | Open-FarPanel -AsChild
-						}
-					}
-					New-FarItem	'Activate main window' {
-						$null = [NativeMethods]::Activate($process.MainWindowHandle)
-					}
-				)
-			}
 		}
 	}
 } | Open-FarPanel
@@ -117,4 +117,3 @@ public static class NativeMethods
 	}
 }
 '@
-

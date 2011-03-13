@@ -11,7 +11,7 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Table panel base class.
+	/// Abstract table panel.
 	/// </summary>
 	public abstract class TablePanel : AnyPanel
 	{

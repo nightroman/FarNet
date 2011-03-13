@@ -22,7 +22,7 @@ namespace FarNet.Tools
 	/// This form should be created and shown in the main thread.
 	/// Some members are designed for use in other threads, for example:
 	/// normal cases: <see cref="Activity"/>, <see cref="SetProgressValue"/>, <see cref="Complete"/>;
-	/// cancellation cases: <see cref="Close"/>, <see cref="IsClosed"/>, <see cref="Cancelled"/>.
+	/// cancellation cases: <see cref="Close"/>, <see cref="IsClosed"/>, <see cref="Canceled"/>.
 	/// </para>
 	/// <para>
 	/// The form can be shown once and cannot be reused after closing.
@@ -91,23 +91,23 @@ namespace FarNet.Tools
 		/// <para>
 		/// True: a user can cancel the progress form.
 		/// A job has to support this: it should check the <see cref="IsClosed"/> periodically
-		/// or listen to the <see cref="Cancelled"/> event; if any of these happens the job
+		/// or listen to the <see cref="Canceled"/> event; if any of these happens the job
 		/// has to exit as soon as possible.
 		/// </para>
 		/// </remarks>
 		public bool CanCancel { get; set; }
 
 		/// <summary>
-		/// Called when the form is cancelled by a user or closed by the <see cref="Close"/>.
+		/// Called when the form is canceled by a user or closed by the <see cref="Close"/>.
 		/// </summary>
-		public event EventHandler Cancelled;
+		public event EventHandler Canceled;
 
 		/// <summary>
-		/// Gets true if a closing method has been called or a user has cancelled the form.
+		/// Gets true if a closing method has been called or a user has canceled the form.
 		/// </summary>
 		/// <remarks>
 		/// Jobs may check this property periodically and exit as soon as it is true.
-		/// Alternatively, they may listen to the <see cref="Cancelled"/> event.
+		/// Alternatively, they may listen to the <see cref="Canceled"/> event.
 		/// </remarks>
 		public bool IsClosed
 		{
@@ -126,7 +126,7 @@ namespace FarNet.Tools
 		}
 
 		/// <summary>
-		/// Closes the form and triggers the <see cref="Cancelled"/> event.
+		/// Closes the form and triggers the <see cref="Canceled"/> event.
 		/// </summary>
 		/// <remarks>
 		/// This method is thread safe and can be called from jobs.
@@ -226,8 +226,8 @@ namespace FarNet.Tools
 
 		void OnClose(object sender, EventArgs e)
 		{
-			if (Cancelled != null)
-				Cancelled(this, null);
+			if (Canceled != null)
+				Canceled(this, null);
 
 			Close();
 		}
@@ -247,11 +247,11 @@ namespace FarNet.Tools
 
 			// abort
 			if (_jobThread != null)
-				_jobThread.Abort();
+				Pfz.Threading.SafeAbort.Abort(_jobThread, 4000, 2000, 1000, true);
 
 			// notify
-			if (Cancelled != null)
-				Cancelled(this, null);
+			if (Canceled != null)
+				Canceled(this, null);
 		}
 
 		void OnIdled(object sender, EventArgs e)
@@ -333,6 +333,7 @@ namespace FarNet.Tools
 			return _jobError ?? new OperationCanceledException();
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void Job(ThreadStart job)
 		{
 			try
@@ -346,7 +347,7 @@ namespace FarNet.Tools
 			}
 			catch (ThreadAbortException)
 			{
-				// convert to cancelled
+				// convert to canceled
 				_jobError = new OperationCanceledException();
 			}
 			catch (Exception ex)

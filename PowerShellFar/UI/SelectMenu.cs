@@ -29,7 +29,7 @@ namespace PowerShellFar.UI
 			}
 
 			int i = extras ? 2 : -1;
-			foreach (object o in A.Psf.InvokeCode("Get-PowerShellFarDriveName"))
+			foreach (object o in A.InvokeCode("Get-PowerShellFarDriveName"))
 			{
 				++i;
 				FarItem mi = m.Add(o.ToString());
@@ -58,7 +58,7 @@ Get-WmiObject -Class Win32_Share -ComputerName $args[0] |
 Sort-Object Name |
 .{process{ $_.Name; $_.Description }}
 ";
-			Collection<PSObject> values = A.Psf.InvokeCode(code, computer);
+			Collection<PSObject> values = A.InvokeCode(code, computer);
 
 			IMenu m = Far.Net.CreateMenu();
 			m.AutoAssignHotkeys = true;

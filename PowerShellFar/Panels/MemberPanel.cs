@@ -34,7 +34,7 @@ namespace PowerShellFar
 		public new MemberExplorer Explorer { get { return (MemberExplorer)base.Explorer; } }
 		///
 		protected override string DefaultTitle { get { return "Members: " + Target.BaseObject.GetType().Name; } }
-		internal override PSObject Target
+		internal sealed override PSObject Target
 		{
 			get { return Explorer.Value; }
 		}

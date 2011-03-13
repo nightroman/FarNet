@@ -600,7 +600,7 @@ namespace FarNet
 		/// </summary>
 		public ModuleToolOptions From { get; set; }
 		/// <summary>
-		/// Tells to ignore results, for example when a configuration dialog is cancelled.
+		/// Tells to ignore results, for example when a configuration dialog is canceled.
 		/// </summary>
 		public bool Ignore { get; set; }
 	}

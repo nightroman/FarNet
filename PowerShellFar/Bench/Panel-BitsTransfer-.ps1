@@ -117,6 +117,7 @@ if ($Auto) {
 
 ### Explorer
 $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
+	Location = 'BITS Jobs'
 	### Get jobs
 	AsGetData = {
 		Get-BitsTransfer -ErrorAction 0
@@ -125,22 +126,14 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 	AsDeleteFiles = {
 		if (0 -eq $Far.Message('Remove selected transfer jobs?', 'Remove', 'OkCancel')) {
 			$_.FilesData | Remove-BitsTransfer
+		} else {
+			$_.Result = 'Ignore'
 		}
 	}
-}
-
-### Panel
-New-Object PowerShellFar.ObjectPanel $Explorer -Property @{
-	Columns = @(
-		@{ Kind = 'N'; Expression = 'DisplayName' }
-		@{ Kind = 'S'; Label = '% done'; Expression = { if ($_.BytesTotal) { 100 * $_.BytesTransferred / $_.BytesTotal } else { 100 } } }
-		@{ Kind = 'O'; Label = 'State'; Width = 15; Expression = 'JobState' }
-		@{ Kind = 'DC'; Label = 'Created'; Expression = 'CreationTime' }
-	)
-	### Open a job
+	### Open a job, show the menu
 	AsOpenFile = {
 		$job = $_.File.Data
-		New-FarMenu -Show "Job: $($job.DisplayName)" $(
+		$menu = New-FarMenu "Job: $($job.DisplayName)" $(
 			if ($job.JobState -eq 'Transferred') {
 				New-FarItem 'Complete' {
 					Complete-BitsTransfer -BitsJob $job -Confirm
@@ -160,7 +153,19 @@ New-Object PowerShellFar.ObjectPanel $Explorer -Property @{
 				Remove-BitsTransfer -BitsJob $job -Confirm
 			}
 		)
-		$this.Update($true)
-		$this.Redraw()
+		if ($menu.Show() -and $_.Panel) {
+			$_.Panel.Update($true)
+			$_.Panel.Redraw()
+		}
 	}
+}
+
+### Panel
+New-Object PowerShellFar.ObjectPanel $Explorer -Property @{
+	Columns = @(
+		@{ Kind = 'N'; Expression = 'DisplayName' }
+		@{ Kind = 'S'; Label = '% done'; Expression = { if ($_.BytesTotal) { 100 * $_.BytesTransferred / $_.BytesTotal } else { 100 } } }
+		@{ Kind = 'O'; Label = 'State'; Width = 15; Expression = 'JobState' }
+		@{ Kind = 'DC'; Label = 'Created'; Expression = 'CreationTime' }
+	)
 } | Open-FarPanel -TypeId $id -Title 'BITS Jobs' -DataId 'JobId' -IdleUpdate

@@ -83,7 +83,7 @@ namespace FarNet
 		{
 			// the first update
 			if (Explorer != null)
-				Explorer.UpdatePanel(this);
+				Explorer.EnterPanel(this);
 
 			// go
 			if (_Parent == null)
@@ -317,16 +317,6 @@ namespace FarNet
 		/// Gets true if the panel is pushed.
 		/// </summary>
 		public bool IsPushed { get { return _Panel.IsPushed; } }
-		/// <summary>
-		/// Tells to update and redraw the panel automatically when idle.
-		/// </summary>
-		/// <remarks>
-		/// If it is set the panel is updated automatically every few seconds when idle.
-		/// This is suitable only for panels with very frequently changed data,
-		/// otherwise it may cause overhead job for nothing.
-		/// </remarks>
-		/// <seealso cref="Idled"/>
-		public bool IdleUpdate { get; set; }
 		/// <summary>
 		/// Gets or sets the panel type ID.
 		/// </summary>
@@ -690,19 +680,6 @@ namespace FarNet
 		#endregion
 		#region Core Events
 		/// <summary>
-		/// Called periodically when a user is idle.
-		/// Modules can use this event for panel updating and redrawing.
-		/// </summary>
-		/// <seealso cref="IdleUpdate"/>
-		/// <seealso cref="IdledHandler"/>
-		public event EventHandler Idled;
-		///
-		public void WorksIdled()
-		{
-			if (Idled != null)
-				Idled(this, null);
-		}
-		/// <summary>
 		/// Called when a panel has been closed.
 		/// </summary>
 		/// <remarks>
@@ -927,13 +904,8 @@ namespace FarNet
 				return;
 
 			// hash the files using the proper comparer, ignore dupes
-			var hash = new Dictionary<FarFile, bool>(comparer ?? Explorer.FileComparer);
-			foreach (FarFile file in files)
-			{
-				try { hash.Add(file, false); }
-				catch (ArgumentException) { }
-			}
-			
+			var hash = Works.Kit.HashFiles(files, comparer ?? Explorer.FileComparer);
+
 			// empty
 			if (hash.Count == 0)
 				return;

@@ -158,7 +158,7 @@ function global:New-TestPathExplorer($Path)
 			$_.UseFileName = Join-Path $this.Location $_.File.Name
 		}
 		# Updates the panel title when explorers change
-		AsUpdatePanel = {
+		AsEnterPanel = {
 			$_.Title = "Path: $($this.Location)"
 		}
 	}
@@ -195,7 +195,7 @@ function global:New-TestLocationExplorer($Path)
 			New-TestLocationExplorer ([IO.Path]::GetPathRoot($this.Location))
 		}
 		# Updates the panel title when explorers change
-		AsUpdatePanel = {
+		AsEnterPanel = {
 			$_.Title = "Location: $($this.Location)"
 		}
 	}
