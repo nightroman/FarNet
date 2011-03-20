@@ -4,8 +4,6 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
-using System;
-using System.Collections.Generic;
 using FarNet;
 
 namespace PowerShellFar

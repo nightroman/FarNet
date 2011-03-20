@@ -15,6 +15,26 @@ namespace FarNet
 	public partial class Panel
 	{
 		/// <summary>
+		/// Called when files of another module panel have been changed.
+		/// </summary>
+		/// <remarks>
+		/// This panel may want to be updated if it contains data related to that panel.
+		/// </remarks>
+		public virtual void OnThatFileChanged(Panel that, EventArgs args)
+		{ }
+		/// <summary>
+		/// Called when files of this panel have been changed.
+		/// </summary>
+		/// <remarks>
+		/// The base method calls <see cref="OnThatFileChanged"/>.
+		/// </remarks>
+		public virtual void OnThisFileChanged(EventArgs args)
+		{
+			var that = TargetPanel as Panel;
+			if (that != null)
+				that.OnThatFileChanged(this, args);
+		}
+		/// <summary>
 		/// Called by <see cref="UIExplorerEntered"/>.
 		/// </summary>
 		public event EventHandler<ExplorerEnteredEventArgs> ExplorerEntered;
@@ -30,17 +50,18 @@ namespace FarNet
 				ExplorerEntered(this, args);
 		}
 		///
-		public static ExportFileEventArgs WorksExportExplorerFile(Explorer explorer, Panel panel, ExplorerModes mode, FarFile file, string fileName)
+		public static GetContentEventArgs WorksExportExplorerFile(Explorer explorer, Panel panel, ExplorerModes mode, FarFile file, string fileName)
 		{
 			if (explorer == null) throw new ArgumentNullException("explorer");
+			if (panel == null) throw new ArgumentNullException("panel");
 
-			if (!explorer.CanExportFile)
+			if (!explorer.CanGetContent)
 				return null;
 
 			// export file
 			Log.Source.TraceInformation("ExportFile");
-			var args = new ExportFileEventArgs(panel, mode, file, fileName);
-			explorer.ExportFile(args);
+			var args = new GetContentEventArgs(mode, file, fileName);
+			panel.UIGetContent(args);
 			if (args.Result != JobResult.Done)
 				return null;
 
@@ -82,34 +103,64 @@ namespace FarNet
 		{
 			// target
 			var that = TargetPanel;
+
+			// commit
 			if (that == null)
+			{
+				// can?
+				if (!Explorer.CanExportFiles)
+					return;
+
+				// target?
+				var native = Far.Net.Panel2;
+				if (native.IsPlugin || native.Kind != PanelKind.File)
+					return;
+
+				// args
+				var argsExport = new ExportFilesEventArgs(ExplorerModes.None, SelectedFiles, move, native.CurrentDirectory);
+				if (argsExport.Files.Count == 0)
+					return;
+
+				// call
+				UIExportFiles(argsExport);
+				if (argsExport.Result == JobResult.Ignore)
+					return;
+
+				// complete
+				UICopyMoveComplete(argsExport);
 				return;
+			}
 
 			// can?
 			if (!that.Explorer.CanAcceptFiles)
 				return;
 
 			// args
-			var args = new AcceptFilesEventArgs(that, ExplorerModes.None, this.SelectedFiles, this.Explorer, move);
-			if (args.Files.Count == 0)
+			var argsAccept = new AcceptFilesEventArgs(ExplorerModes.None, this.SelectedFiles, move, this.Explorer);
+			if (argsAccept.Files.Count == 0)
 				return;
 
 			// call
-			that.Explorer.AcceptFiles(args);
-			if (args.Result == JobResult.Ignore)
+			that.UIAcceptFiles(argsAccept);
+			if (argsAccept.Result == JobResult.Ignore)
 				return;
 
 			// the target may have new files, update, keep selection
-			that.Post(args);
+			that.Post(argsAccept);
 			that.Update(true);
 			that.Redraw();
 
+			// complete
+			UICopyMoveComplete(argsAccept);
+		}
+		void UICopyMoveComplete(CopyFilesEventArgs args)
+		{
 			// info
 			bool isIncomplete = args.Result == JobResult.Incomplete;
 			bool isAllToStay = isIncomplete && args.FilesToStay.Count == 0;
 
 			// Copy: do not update the source, files are the same
-			if (!move)
+			if (!args.Move)
 			{
 				// keep it as it is
 				if (isAllToStay || !SelectionExists)
@@ -128,7 +179,7 @@ namespace FarNet
 			}
 
 			// Move: no need to delete or all to stay or cannot delete
-			if (!args.Delete || isAllToStay || !this.Explorer.CanDeleteFiles)
+			if (!args.ToDeleteFiles || isAllToStay || !this.Explorer.CanDeleteFiles)
 			{
 				// the source may have some files deleted, update, drop selection
 				this.Update(false);
@@ -153,14 +204,14 @@ namespace FarNet
 			var filesToDelete = args.Files;
 			if (isIncomplete)
 			{
-				var files = new List<FarFile>(filesToDelete);
+				var filesToDelete2 = new List<FarFile>(filesToDelete);
 				foreach (var file in args.FilesToStay)
-					files.Remove(file);
-				filesToDelete = files;
+					filesToDelete2.Remove(file);
+				filesToDelete = filesToDelete2;
 			}
 
 			// call
-			var argsDelete = new DeleteFilesEventArgs(this, ExplorerModes.Silent, filesToDelete, false);
+			var argsDelete = new DeleteFilesEventArgs(ExplorerModes.Silent, filesToDelete, false);
 			this.UIDeleteWithRecover(argsDelete, false);
 			if (isIncomplete)
 				SelectFiles(args.FilesToStay, null);
@@ -178,8 +229,8 @@ namespace FarNet
 				return;
 
 			// call
-			var args = new CreateFileEventArgs(this, ExplorerModes.None);
-			Explorer.CreateFile(args);
+			var args = new CreateFileEventArgs(ExplorerModes.None);
+			UICreateFile(args);
 			if (args.Result != JobResult.Done)
 				return;
 
@@ -200,7 +251,7 @@ namespace FarNet
 				return;
 
 			// args
-			var args = new DeleteFilesEventArgs(this, ExplorerModes.None, SelectedFiles, force);
+			var args = new DeleteFilesEventArgs(ExplorerModes.None, SelectedFiles, force);
 			if (args.Files.Count == 0)
 				return;
 
@@ -213,7 +264,7 @@ namespace FarNet
 		void UIDeleteWithRecover(DeleteFilesEventArgs args, bool redraw)
 		{
 			// call
-			Explorer.DeleteFiles(args);
+			UIDeleteFiles(args);
 			if (args.Result == JobResult.Ignore)
 				return;
 
@@ -287,8 +338,8 @@ namespace FarNet
 		/// Opens the file in the editor.
 		/// </summary>
 		/// <remarks>
-		/// The default method calls <see cref="FarNet.Explorer.ExportFile"/>  to get a temporary file to edit
-		/// and <see cref="FarNet.Explorer.ImportFile"/> to save changes when the editor closes.
+		/// The default method calls <see cref="FarNet.Explorer.GetContent"/>  to get a temporary file to edit
+		/// and <see cref="FarNet.Explorer.SetFile"/> to save changes when the editor closes.
 		/// The explorer should have at least export implemented.
 		/// </remarks>
 		public virtual void UIEditFile(FarFile file)
@@ -305,13 +356,13 @@ namespace FarNet
 				return;
 
 			// case: actual file exists
-			var asExportFileEventArgs = xExportArgs as ExportFileEventArgs;
+			var asExportFileEventArgs = xExportArgs as GetContentEventArgs;
 			if (asExportFileEventArgs != null && !string.IsNullOrEmpty(asExportFileEventArgs.UseFileName))
 			{
 				var editorActual = Far.Net.CreateEditor();
 				editorActual.FileName = asExportFileEventArgs.UseFileName;
 				editorActual.Title = file.Name;
-				if (!asExportFileEventArgs.CanImport)
+				if (!asExportFileEventArgs.CanSet)
 					editorActual.IsLocked = true;
 				editorActual.Open();
 				return;
@@ -332,15 +383,15 @@ namespace FarNet
 			editorTemp.Title = file.Name;
 
 			// future
-			if (xExportArgs.CanImport)
+			if (xExportArgs.CanSet)
 			{
-				if (Explorer.CanImportText)
+				if (Explorer.CanSetText)
 				{
 					editorTemp.Saving += delegate
 					{
-						var xImportTextArgs = new ImportTextEventArgs(this, ExplorerModes.Edit, file, editorTemp.GetText());
+						var xImportTextArgs = new SetTextEventArgs(ExplorerModes.Edit, file, editorTemp.GetText());
 						Log.Source.TraceInformation("ImportText");
-						Explorer.ImportText(xImportTextArgs);
+						UISetText(xImportTextArgs);
 					};
 				}
 				else
@@ -350,9 +401,9 @@ namespace FarNet
 						if (editorTemp.TimeOfSave == DateTime.MinValue)
 							return;
 
-						var xImportFileArgs = new ImportFileEventArgs(this, ExplorerModes.Edit, file, temp);
+						var xImportFileArgs = new SetFileEventArgs(ExplorerModes.Edit, file, temp);
 						Log.Source.TraceInformation("ImportFile");
-						Explorer.ImportFile(xImportFileArgs);
+						UISetFile(xImportFileArgs);
 					};
 				}
 			}
@@ -369,7 +420,7 @@ namespace FarNet
 		/// Opens the file in the viewer.
 		/// </summary>
 		/// <remarks>
-		/// The default method calls <see cref="FarNet.Explorer.ExportFile"/> to get a temporary file to view.
+		/// The default method calls <see cref="FarNet.Explorer.GetContent"/> to get a temporary file to view.
 		/// The explorer should have it implemented.
 		/// </remarks>
 		public virtual void UIViewFile(FarFile file)
@@ -386,7 +437,7 @@ namespace FarNet
 				return;
 
 			// case: actual file exists
-			var asExportFileEventArgs = xExportArgs as ExportFileEventArgs;
+			var asExportFileEventArgs = xExportArgs as GetContentEventArgs;
 			if (asExportFileEventArgs != null && !string.IsNullOrEmpty(asExportFileEventArgs.UseFileName))
 			{
 				var viewerActual = Far.Net.CreateViewer();
@@ -408,7 +459,7 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// It is called for the current file when [Enter] is pressed.
-		/// The base method just calls <see cref="FarNet.Explorer.OpenFile"/> if the explorer can open files.
+		/// The base method just calls <see cref="FarNet.Explorer.OpenFile"/> if the explorer supports it.
 		/// </remarks>
 		public virtual void UIOpenFile(FarFile file)
 		{
@@ -418,8 +469,47 @@ namespace FarNet
 			if (!Explorer.CanOpenFile)
 				return;
 
-			var args = new OpenFileEventArgs(this, ExplorerModes.None, file);
-			Explorer.OpenFile(args);
+			var args = new OpenFileEventArgs(file);
+			var explorer = UIOpenFile(args);
+			if (explorer != null)
+				explorer.OpenPanelChild(this);
+		}
+		/// <summary>
+		/// Rename action.
+		/// </summary>
+		/// <remarks>
+		/// It is called for the current item when [ShiftF6] is pressed.
+		/// If the explorer supports renaming then the method prompts to input a new name and then calls <see cref="UIRenameFile"/>.
+		/// </remarks>
+		public void UIRename()
+		{
+			if (!Explorer.CanRenameFile)
+				return;
+
+			var file = CurrentFile;
+			if (file == null)
+				return;
+
+			// new name
+			IInputBox input = Far.Net.CreateInputBox();
+			input.Title = "Rename";
+			input.Prompt = "New name";
+			input.History = "Copy";
+			input.Text = file.Name;
+			if (!input.Show() || input.Text == file.Name)
+				return;
+
+			// call
+			var args = new RenameFileEventArgs(ExplorerModes.None, file, input.Text);
+			UIRenameFile(args);
+			if (args.Result != JobResult.Done)
+				return;
+
+			if (args.PostData == null && args.PostFile == null)
+				args.PostName = input.Text;
+
+			Update(true);
+			Redraw();
 		}
 		/// <summary>
 		/// Tells to update and redraw the panel automatically when idle.
@@ -567,10 +657,6 @@ namespace FarNet
 					switch (state)
 					{
 						case KeyStates.None:
-							var target = TargetPanel;
-							if (target == null)
-								break;
-
 							UICopyMove(false);
 							return true;
 					}
@@ -581,11 +667,12 @@ namespace FarNet
 					switch (state)
 					{
 						case KeyStates.None:
-							var target = TargetPanel;
-							if (target == null)
-								break;
-
 							UICopyMove(true);
+							return true;
+
+						case KeyStates.Shift: //???? if (RealNames) ?
+							//! return true even if the file is dots
+							UIRename();
 							return true;
 					}
 					break;

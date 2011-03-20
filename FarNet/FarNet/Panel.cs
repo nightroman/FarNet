@@ -12,7 +12,7 @@ using System.IO;
 namespace FarNet
 {
 	/// <summary>
-	/// Module panel. Create it directly or a derived class instance,
+	/// Module panel. Create it or a derived class instance directly,
 	/// set properties, add event handlers and open it.
 	/// </summary>
 	/// <remarks>
@@ -20,8 +20,8 @@ namespace FarNet
 	/// Exposed as <see cref="IFar.Panel"/> and <see cref="IFar.Panel2"/>.
 	/// </para>
 	/// <para>
-	/// Properties of this class are requested by the core for a panel very often.
-	/// For better performance it caches internal native representation of these data.
+	/// Properties of this class are requested by the core quite frequently.
+	/// For better performance the core caches internal representation of these data.
 	/// After opening a panel it is recommended to avoid excessive modifications of data.
 	/// </para>
 	/// <para>
@@ -30,6 +30,17 @@ namespace FarNet
 	/// <see cref="SortMode"/>,
 	/// <see cref="ViewMode"/>,
 	/// <see cref="SetPlan"/>.
+	/// </para>
+	/// <para>
+	/// After opening changing of panel state properties normally does not cause immediate visual effects.
+	/// When all changes are done call one of the redraw methods in order to make the changes shown.
+	/// </para>
+	/// <para>
+	/// Most of <c>UI*</c> methods should not be called directly, they are called by the core on user interaction.
+	/// Many of them can be overriden in derived classes but this should be done only if explorer methods are not enough.
+	/// </para>
+	/// <para>
+	/// All <c>Works*</c> members are for internal use only.
 	/// </para>
 	/// </remarks>
 	public partial class Panel : IPanel
@@ -46,12 +57,13 @@ namespace FarNet
 			_Panel = Far.Net.WorksPanel(this, explorer);
 		}
 		/// <summary>
-		/// Gets the file explorer.
+		/// Gets the current file explorer.
 		/// </summary>
 		/// <remarks>
-		/// An explorer should be attached only to a just created and not yet opened panel.
-		/// Once the panel is opened its explorer should never be changed directly.
-		/// But the core normally changes panel explorers on navigation.
+		/// An explorer is set on creation and it cannot be changed directly.
+		/// But the panel should not assume that its explorer is the same,
+		/// the core normally changes panel explorers on navigation.
+		/// See <see cref="ExplorerEntered"/>.
 		/// </remarks>
 		public Explorer Explorer { get { return _Panel.MyExplorer; } }
 		///

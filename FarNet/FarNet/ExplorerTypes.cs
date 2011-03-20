@@ -27,33 +27,41 @@ namespace FarNet
 		/// </summary>
 		AcceptFiles = 1 << 1,
 		/// <summary>
-		/// It implements <see cref="Explorer.AcceptOther"/>.
+		/// It implements <see cref="Explorer.ImportFiles"/>.
 		/// </summary>
-		AcceptOther = 1 << 2,
+		ImportFiles = 1 << 2,
+		/// <summary>
+		/// It implements <see cref="Explorer.ExportFiles"/>.
+		/// </summary>
+		ExportFiles = 1 << 3,
 		/// <summary>
 		/// It implements <see cref="Explorer.DeleteFiles"/>.
 		/// </summary>
-		DeleteFiles = 1 << 3,
+		DeleteFiles = 1 << 4,
 		/// <summary>
 		/// It implements <see cref="Explorer.CreateFile"/>.
 		/// </summary>
-		CreateFile = 1 << 4,
+		CreateFile = 1 << 5,
 		/// <summary>
-		/// It implements <see cref="Explorer.ExportFile"/>.
+		/// It implements <see cref="Explorer.GetContent"/>.
 		/// </summary>
-		ExportFile = 1 << 5,
+		GetContent = 1 << 6,
 		/// <summary>
-		/// It implements <see cref="Explorer.ImportFile"/>.
+		/// It implements <see cref="Explorer.SetFile"/>.
 		/// </summary>
-		ImportFile = 1 << 6,
+		SetFile = 1 << 7,
 		/// <summary>
-		/// It implements <see cref="Explorer.ImportText"/>.
+		/// It implements <see cref="Explorer.SetText"/>.
 		/// </summary>
-		ImportText = 1 << 7,
+		SetText = 1 << 8,
 		/// <summary>
 		/// It implements <see cref="Explorer.OpenFile"/>.
 		/// </summary>
-		OpenFile = 1 << 8,
+		OpenFile = 1 << 9,
+		/// <summary>
+		/// It implements <see cref="Explorer.RenameFile"/>.
+		/// </summary>
+		RenameFile = 1 << 10,
 	}
 
 	/// <summary>
@@ -131,19 +139,15 @@ namespace FarNet
 	public abstract class ExplorerEventArgs : EventArgs
 	{
 		///
-		protected ExplorerEventArgs(Panel panel, ExplorerModes mode) { Panel = panel; Mode = mode; }
-		/// <summary>
-		/// Gets the calling panel or null if it is called without a panel.
-		/// </summary>
-		/// <remarks>
-		/// An explorer should never assume that this is its own panel or even any known panel.
-		/// The panel can be null, a search result panel, a super panel, and etc.
-		/// </remarks>
-		public Panel Panel { get; private set; }
+		protected ExplorerEventArgs(ExplorerModes mode) { Mode = mode; }
 		/// <summary>
 		/// Gets the explorer mode.
 		/// </summary>
 		public ExplorerModes Mode { get; private set; }
+		/// <summary>
+		/// Gets or sets the parameter to be used by the explorer.
+		/// </summary>
+		public object Parameter { get; set; }
 		/// <summary>
 		/// Gets or sets the job result.
 		/// </summary>
@@ -173,6 +177,15 @@ namespace FarNet
 		/// Tells whether user interaction is allowed.
 		/// </summary>
 		public bool UI { get { return 0 == (Mode & (ExplorerModes.Find | ExplorerModes.Silent)); } }
+		/// <summary>
+		/// Casts the not null <see cref="Parameter"/> to the specified type or creates and returns a new instance.
+		/// </summary>
+		/// <typeparam name="T">The type of the parameter to be created or converted to.</typeparam>
+		/// <exception cref="InvalidCastException">The parameter cannot be converted to the specified type.</exception>
+		public T ParameterOrDefault<T>() where T : class, new()
+		{
+			return Parameter == null ? new T() : (T)Parameter;
+		}
 	}
 
 	/// <summary>
@@ -181,7 +194,7 @@ namespace FarNet
 	public class GetFilesEventArgs : ExplorerEventArgs
 	{
 		///
-		public GetFilesEventArgs(Panel panel, ExplorerModes mode) : base(panel, mode) { }
+		public GetFilesEventArgs(ExplorerModes mode) : base(mode) { }
 	}
 
 	/// <summary>
@@ -190,7 +203,7 @@ namespace FarNet
 	public class CreateFileEventArgs : ExplorerEventArgs
 	{
 		///
-		public CreateFileEventArgs(Panel panel, ExplorerModes mode) : base(panel, mode) { }
+		public CreateFileEventArgs(ExplorerModes mode) : base(mode) { }
 	}
 
 	/// <summary>
@@ -199,7 +212,7 @@ namespace FarNet
 	public class ExploreEventArgs : ExplorerEventArgs
 	{
 		///
-		public ExploreEventArgs(Panel panel, ExplorerModes mode) : base(panel, mode) { }
+		public ExploreEventArgs(ExplorerModes mode) : base(mode) { }
 		/// <summary>
 		/// Tells to create a new panel even if the new explorer has the same type as the current.
 		/// </summary>
@@ -212,7 +225,7 @@ namespace FarNet
 	public sealed class ExploreDirectoryEventArgs : ExploreEventArgs
 	{
 		///
-		public ExploreDirectoryEventArgs(Panel panel, ExplorerModes mode, FarFile file) : base(panel, mode) { File = file; }
+		public ExploreDirectoryEventArgs(ExplorerModes mode, FarFile file) : base(mode) { File = file; }
 		/// <summary>
 		/// Gets the directory file to explore.
 		/// </summary>
@@ -225,7 +238,7 @@ namespace FarNet
 	public sealed class ExploreLocationEventArgs : ExploreEventArgs
 	{
 		///
-		public ExploreLocationEventArgs(Panel panel, ExplorerModes mode, string location) : base(panel, mode) { Location = location; }
+		public ExploreLocationEventArgs(ExplorerModes mode, string location) : base(mode) { Location = location; }
 		/// <summary>
 		/// Gets the location.
 		/// </summary>
@@ -238,7 +251,7 @@ namespace FarNet
 	public sealed class ExploreParentEventArgs : ExploreEventArgs
 	{
 		///
-		public ExploreParentEventArgs(Panel panel, ExplorerModes mode) : base(panel, mode) { }
+		public ExploreParentEventArgs(ExplorerModes mode) : base(mode) { }
 	}
 
 	/// <summary>
@@ -247,7 +260,7 @@ namespace FarNet
 	public sealed class ExploreRootEventArgs : ExploreEventArgs
 	{
 		///
-		public ExploreRootEventArgs(Panel panel, ExplorerModes mode) : base(panel, mode) { }
+		public ExploreRootEventArgs(ExplorerModes mode) : base(mode) { }
 	}
 
 	/// <summary>
@@ -256,7 +269,7 @@ namespace FarNet
 	public abstract class ExplorerFileEventArgs : ExplorerEventArgs
 	{
 		///
-		protected ExplorerFileEventArgs(Panel panel, ExplorerModes mode, FarFile file) : base(panel, mode) { File = file; }
+		protected ExplorerFileEventArgs(ExplorerModes mode, FarFile file) : base(mode) { File = file; }
 		/// <summary>
 		/// Gets the file to be processed.
 		/// </summary>
@@ -269,16 +282,29 @@ namespace FarNet
 	public sealed class OpenFileEventArgs : ExplorerFileEventArgs
 	{
 		///
-		public OpenFileEventArgs(Panel panel, ExplorerModes mode, FarFile file) : base(panel, mode, file) { }
+		public OpenFileEventArgs(FarFile file) : base(ExplorerModes.None, file) { }
+	}
+
+	/// <summary>
+	/// Rename file arguments.
+	/// </summary>
+	public sealed class RenameFileEventArgs : ExplorerFileEventArgs
+	{
+		///
+		public RenameFileEventArgs(ExplorerModes mode, FarFile file, string newName) : base(mode, file) { NewName = newName; }
+		/// <summary>
+		/// Gets the new name.
+		/// </summary>
+		public string NewName { get; private set; }
 	}
 
 	/// <summary>
 	/// Export file arguments.
 	/// </summary>
-	public class ExportFileEventArgs : ExplorerFileEventArgs
+	public class GetContentEventArgs : ExplorerFileEventArgs
 	{
 		///
-		public ExportFileEventArgs(Panel panel, ExplorerModes mode, FarFile file, string fileName) : base(panel, mode, file) { FileName = fileName; }
+		public GetContentEventArgs(ExplorerModes mode, FarFile file, string fileName) : base(mode, file) { FileName = fileName; }
 		/// <summary>
 		/// Gets the destination file path.
 		/// </summary>
@@ -290,10 +316,14 @@ namespace FarNet
 		/// Use case. The core opens the file in the editor. By default the editor is locked:
 		/// the core assumes the changes will be lost. This flag tells to not lock the editor.
 		/// </remarks>
-		public bool CanImport { get; set; }
+		public bool CanSet { get; set; }
 		/// <summary>
-		/// Gets or set the exported text (an object or a collection to be converted).
+		/// Gets or set the exported text.
 		/// </summary>
+		/// <remarks>
+		/// It can be a string or an object to be converted by <c>ToString</c>
+		/// or a collection of objects to be converted to lines by <c>ToString</c>.
+		/// </remarks>
 		public object UseText { get; set; }
 		/// <summary>
 		/// Gets or set the actual source file name to be used instead.
@@ -312,10 +342,10 @@ namespace FarNet
 	/// <summary>
 	/// Update file from file arguments.
 	/// </summary>
-	public class ImportFileEventArgs : ExplorerFileEventArgs
+	public class SetFileEventArgs : ExplorerFileEventArgs
 	{
 		///
-		public ImportFileEventArgs(Panel panel, ExplorerModes mode, FarFile file, string fileName) : base(panel, mode, file) { FileName = fileName; }
+		public SetFileEventArgs(ExplorerModes mode, FarFile file, string fileName) : base(mode, file) { FileName = fileName; }
 		/// <summary>
 		/// Gets the source file path.
 		/// </summary>
@@ -325,10 +355,10 @@ namespace FarNet
 	/// <summary>
 	/// Update file from text arguments.
 	/// </summary>
-	public class ImportTextEventArgs : ExplorerFileEventArgs
+	public class SetTextEventArgs : ExplorerFileEventArgs
 	{
 		///
-		public ImportTextEventArgs(Panel panel, ExplorerModes mode, FarFile file, string text) : base(panel, mode, file) { Text = text; }
+		public SetTextEventArgs(ExplorerModes mode, FarFile file, string text) : base(mode, file) { Text = text; }
 		/// <summary>
 		/// Gets the text to be imported.
 		/// </summary>
@@ -341,7 +371,7 @@ namespace FarNet
 	public abstract class ExplorerFilesEventArgs : ExplorerEventArgs
 	{
 		///
-		protected ExplorerFilesEventArgs(Panel panel, ExplorerModes mode, IList<FarFile> files) : base(panel, mode) { Files = files; }
+		protected ExplorerFilesEventArgs(ExplorerModes mode, IList<FarFile> files) : base(mode) { Files = files; }
 		/// <summary>
 		/// Gets the files to be processed.
 		/// </summary>
@@ -361,7 +391,7 @@ namespace FarNet
 	public class DeleteFilesEventArgs : ExplorerFilesEventArgs
 	{
 		///
-		public DeleteFilesEventArgs(Panel panel, ExplorerModes mode, IList<FarFile> files, bool force) : base(panel, mode, files) { Force = force; }
+		public DeleteFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool force) : base(mode, files) { Force = force; }
 		/// <summary>
 		/// Gets the force mode, e.g. on [ShiftDel] instead of [Del].
 		/// </summary>
@@ -377,39 +407,60 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Accept files arguments.
+	/// Import files arguments.
 	/// </summary>
-	public sealed class AcceptFilesEventArgs : ExplorerFilesEventArgs
+	public sealed class ImportFilesEventArgs : ExplorerFilesEventArgs
 	{
 		///
-		public AcceptFilesEventArgs(Panel panel, ExplorerModes mode, IList<FarFile> files, Explorer explorer, bool move)
-			: base(panel, mode, files)
+		public ImportFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move, string directoryName)
+			: base(mode, files)
 		{
-			Explorer = explorer;
 			Move = move;
+			DirectoryName = directoryName;
 		}
 		/// <summary>
-		/// Gets the source file explorer.
+		/// Tells that the files are moved.
 		/// </summary>
-		public Explorer Explorer { get; private set; }
+		public bool Move { get; private set; }
+		/// <summary>
+		/// The source directory name.
+		/// </summary>
+		public string DirectoryName { get; private set; }
+	}
+
+	/// <summary>
+	/// Copy files arguments.
+	/// </summary>
+	public abstract class CopyFilesEventArgs : ExplorerFilesEventArgs
+	{
+		///
+		public CopyFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move)
+			: base(mode, files)
+		{
+			Move = move;
+		}
 		/// <summary>
 		/// Tells that the files are moved.
 		/// </summary>
 		/// <remarks>
-		/// On Move an explorer may do only the Copy part of the action and set the <see cref="Delete"/> flag.
+		/// On Move an explorer may do only the Copy part of the action and set the <see cref="ToDeleteFiles"/> flag.
 		/// In that case the core calls <see cref="FarNet.Explorer.DeleteFiles"/> of the source explorer.
 		/// </remarks>
 		public bool Move { get; private set; }
 		/// <summary>
-		/// Tells the core to delete the source files on Move because only the Copy part has been done.
+		/// Tells the core to delete the source files on move.
 		/// </summary>
-		public bool Delete { get; set; }
+		/// <remarks>
+		/// On move the explorer may only copy files and tell the core to delete the source files.
+		/// The core does not delete itself, it calls <see cref="FarNet.Explorer.DeleteFiles"/> of the source explorer.
+		/// </remarks>
+		public bool ToDeleteFiles { get; set; }
 		/// <summary>
 		/// Gets the list of source files to stay selected and not deleted on move if the job is incomplete.
 		/// </summary>
 		/// <remarks>
 		/// If the job is <see cref="JobResult.Incomplete"/> then not processed files should normally stay selected
-		/// and not deleted on Move if <see cref="Delete"/> flag is set. Such files have to added to this list.
+		/// and not deleted on Move if <see cref="ToDeleteFiles"/> flag is set. Such files have to added to this list.
 		/// <para>
 		/// If the list is empty and the job is incomplete then all input files
 		/// that still exist in the source stay selected and not deleted.
@@ -427,42 +478,37 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Accept native/plugin files arguments.
+	/// Accept files arguments.
 	/// </summary>
-	public sealed class AcceptOtherEventArgs : ExplorerFilesEventArgs
+	public sealed class AcceptFilesEventArgs : CopyFilesEventArgs
 	{
 		///
-		public AcceptOtherEventArgs(Panel panel, ExplorerModes mode, IList<FarFile> files, string directoryName, bool move)
-			: base(panel, mode, files)
+		public AcceptFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move, Explorer explorer)
+			: base(mode, files, move)
 		{
-			DirectoryName = directoryName;
-			Move = move;
+			Explorer = explorer;
 		}
 		/// <summary>
-		/// The source directory name.
+		/// Gets the source file explorer.
 		/// </summary>
-		public string DirectoryName { get; private set; }
-		/// <summary>
-		/// Tells that the files are moved.
-		/// </summary>
-		public bool Move { get; private set; }
+		public Explorer Explorer { get; private set; }
 	}
 
 	/// <summary>
-	/// File event arguments.
+	/// Export files arguments.
 	/// </summary>
-	public class FileEventArgs : EventArgs //????? similar to OpenFileEventArgs
+	public sealed class ExportFilesEventArgs : CopyFilesEventArgs
 	{
 		///
-		public FileEventArgs(FarFile file) { File = file; }
+		public ExportFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move, string directoryName)
+			: base(mode, files, move)
+		{
+			DirectoryName = directoryName;
+		}
 		/// <summary>
-		/// Job result.
+		/// The target directory name.
 		/// </summary>
-		public JobResult Result { get; set; }
-		/// <summary>
-		/// File to be processed.
-		/// </summary>
-		public FarFile File { get; private set; }
+		public string DirectoryName { get; private set; }
 	}
 
 	/// <summary>

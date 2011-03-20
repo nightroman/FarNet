@@ -17,7 +17,7 @@
 
 	Try other commands:
 	- [F5], [F6] - 'Copy', 'Move'
-	- [CtrlQ] - shows quick view of panel items
+	- [CtrlQ], [F3], [F4] - quick view, view, edit
 	- [CtrlL] - shows event statistics in the info panel
 	- [CtrlB] - shows changed key bar labels on each event
 	- [Ctrl7], [Ctrl0] - other panel view modes, [Ctrl0] shows custom columns
@@ -34,15 +34,17 @@ $Data = New-Object PSObject -Property @{
 	AcceptFiles = 0
 	DeleteFiles = 0
 	CreateFile = 0
-	ExportFile = 0
+	GetContent = 0
 	Total = 0
 }
 
 ### Add a method that updates the panel info on events
 $Data | Add-Member ScriptMethod UpdateInfo {
 	++$this.Total
+
+	# panel, skip alien
 	$Panel = $Far.Panel
-	if ($Panel -isnot [FarNet.Panel]) { return }
+	if ($Panel.Explorer.TypeId -ne 'd797d742-3b57-4bfd-a997-da83ba66b9bb') { return }
 
 	# generator of new key labels
 	function Make12($s) { for($i = 1; $i -le 12; ++$i) { "$i $s $($this.Total)" } }
@@ -61,7 +63,7 @@ $Data | Add-Member ScriptMethod UpdateInfo {
 	$InfoItems[1].Data = $this.AcceptFiles
 	$InfoItems[2].Data = $this.DeleteFiles
 	$InfoItems[3].Data = $this.CreateFile
-	$InfoItems[4].Data = $this.ExportFile
+	$InfoItems[4].Data = $this.GetContent
 	$InfoItems[5].Data = Get-Date
 	$Panel.InfoItems = $InfoItems
 }
@@ -69,7 +71,7 @@ $Data | Add-Member ScriptMethod UpdateInfo {
 ### Explorer
 # It does not need the AsGetFiles, it uses the predefined Files list.
 $Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83ba66b9bb' -Property @{
-	Functions = 'AcceptFiles, AcceptOther, DeleteFiles, CreateFile, ExportFile'
+	Functions = 'AcceptFiles, DeleteFiles, ExportFiles, ImportFiles, GetContent, CreateFile'
 	Data = $Data
 	### AcceptFiles: called on [F5], [F6]
 	AsAcceptFiles = {
@@ -82,12 +84,7 @@ $Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83
 		$_.Files | %{ $this.Cache.Add($_) }
 
 		# the core deletes on move
-		$_.Delete = $true
-	}
-	### AcceptOther: [F5], [F6] from a native panel
-	AsAcceptOther = {
-		# just add input files
-		$_.Files | %{ $this.Cache.Add($_) }
+		$_.ToDeleteFiles = $true
 	}
 	### DeleteFiles: called on [F8]
 	AsDeleteFiles = {
@@ -98,6 +95,35 @@ $Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83
 
 		# remove input files
 		$_.Files | % { $this.Cache.Remove($_) }
+	}
+	### ExportFiles: [F5], [F6] to a native panel
+	AsExportFiles = {
+		# allow delete on move
+		$_.ToDeleteFiles = $true
+		# make some fake files and simulate incomplete results
+		foreach($file in $_.Files) {
+			$path = Join-Path $_.DirectoryName $file.Name
+			$file | Format-List | Out-File $path -Confirm
+			if (![IO.File]::Exists($path)) {
+				$_.Result = 'Incomplete'
+				$_.FilesToStay.Add($file)
+			}
+		}
+	}
+	### ImportFiles: [F5], [F6] from a native panel
+	AsImportFiles = {
+		# just add input files
+		$_.Files | %{ $this.Cache.Add($_) }
+	}
+	### GetContent: called on [F3], [F4], [CtrlQ]
+	AsGetContent = {
+		# count events, update info
+		$data = $this.Data
+		++$data.GetContent
+		$data.UpdateInfo()
+
+		# write content to the file
+		[IO.File]::WriteAllText($_.FileName, "Hello from $($_.File.Name)")
 	}
 	### CreateFile: called on [F7]
 	AsCreateFile = {
@@ -112,18 +138,6 @@ $Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83
 		$this.Cache.Add((
 			New-FarFile $newName -Owner "Value$n" -Description "Description$n" -Columns "custom[0]=$n", "custom[1]=$n"
 		))
-	}
-	### ExportFile: called on [CtrlQ]
-	AsExportFile = {
-		# count events, update info
-		$data = $this.Data
-		++$data.ExportFile
-		$data.UpdateInfo()
-
-		# [CtrlQ]
-		if ($_.Mode -band [FarNet.ExplorerModes]::QuickView) {
-			[IO.File]::WriteAllText($_.FileName, "Hello from $($_.File.Name)")
-		}
 	}
 }
 
@@ -163,7 +177,7 @@ $Panel.InfoItems = @(
 	New-Object FarNet.DataItem 'AcceptFiles', 0
 	New-Object FarNet.DataItem 'DeleteFiles', 0
 	New-Object FarNet.DataItem 'CreateFile', 0
-	New-Object FarNet.DataItem 'ExportFile', 0
+	New-Object FarNet.DataItem 'GetContent', 0
 	New-Object FarNet.DataItem 'Last Event', ''
 )
 

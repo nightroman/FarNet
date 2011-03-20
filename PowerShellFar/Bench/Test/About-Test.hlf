@@ -29,8 +29,9 @@ You can run script Test-Panel-DbText-.ps1 without any preparations. See the
 script comments for details.
 
 *) Other scripts are designed for and tested with SQL Server Express (instance
-'.\sqlexpress', e.g. installed with Visual Studio 2005) and SQL Server Compact
-(e.g. installed with Visual Studio 2008).
+'.\sqlexpress', e.g. installed with Visual Studio 2005), SQL Server Compact
+(installed with Visual Studio 2008, 2010), and SQLite
+(http://sourceforge.net/projects/sqlite-dotnet2).
 
 *) If your SQL Server is different, change the connection string in
 Initialize-Test-.ps1, line $DbConnection.ConnectionString = ..

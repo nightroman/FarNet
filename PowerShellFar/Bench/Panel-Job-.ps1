@@ -51,11 +51,8 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 		}
 	}
 	### Write job data (for [F3], [CtrlQ])
-	AsExportFile = {
+	AsGetContent = {
 		Receive-Job -Job $_.File.Data -Keep > $_.FileName
-	}
-	### Panel
-	AsCreatePanel = {
 	}
 }
 

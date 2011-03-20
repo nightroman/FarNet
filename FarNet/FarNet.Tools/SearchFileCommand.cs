@@ -258,7 +258,7 @@ namespace FarNet.Tools
 					progress.ShowProgress();
 				}
 
-				var args = new GetFilesEventArgs(null, ExplorerModes.Find);
+				var args = new GetFilesEventArgs(ExplorerModes.Find);
 				foreach (var file in explorer.GetFiles(args))
 				{
 					// stop?
@@ -302,7 +302,7 @@ namespace FarNet.Tools
 				progress.ShowProgress();
 			}
 
-			var args = new GetFilesEventArgs(null, ExplorerModes.Find);
+			var args = new GetFilesEventArgs(ExplorerModes.Find);
 			foreach (var file in explorer.GetFiles(args))
 			{
 				// stop?

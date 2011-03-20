@@ -4,17 +4,8 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Text;
 using FarNet;
-using Microsoft.PowerShell.Commands;
 
 namespace PowerShellFar
 {
@@ -31,20 +22,20 @@ namespace PowerShellFar
 		public PropertyPanel(PropertyExplorer explorer)
 			: base(explorer)
 		{
-			Title = "Properties: " + Explorer.ThePath;
-			CurrentLocation = Explorer.ThePath + ".*"; //??
+			Title = "Properties: " + Explorer.ItemPath;
+			CurrentLocation = Explorer.ItemPath + ".*"; //??
 			SortMode = PanelSortMode.Name;
 		}
 		internal sealed override PSObject Target
 		{
-			get { return Explorer.TheItem; }
+			get { return A.Psf.Engine.InvokeProvider.Item.Get(new string[] { Explorer.ItemPath }, true, true)[0]; }
 		}
 		internal override void SetUserValue(PSPropertyInfo info, string value)
 		{
 			try
 			{
-				A.SetPropertyValue(Explorer.ThePath, info.Name, Converter.Parse(info, value));
-				WhenPropertyChanged(Explorer.ThePath);
+				A.SetPropertyValue(Explorer.ItemPath, info.Name, Converter.Parse(info, value));
+				WhenPropertyChanged(Explorer.ItemPath);
 			}
 			catch (RuntimeException ex)
 			{
@@ -72,46 +63,10 @@ namespace PowerShellFar
 			if (!ib.Show() || ib.Text == name)
 				return;
 
-			string src = Kit.EscapeWildcard(Explorer.ThePath);
+			string src = Kit.EscapeWildcard(Explorer.ItemPath);
 			A.Psf.Engine.InvokeProvider.Property.Copy(src, name, src, ib.Text);
 
 			UpdateRedraw(false, ib.Text);
-		}
-		internal override void UIRename()
-		{
-			FarFile f = CurrentFile;
-			if (f == null)
-				return;
-			string name = f.Name;
-
-			//! Registry: workaround: (default)
-			if (Kit.Equals(name, "(default)") && Explorer.Provider.ImplementingType == typeof(RegistryProvider))
-			{
-				A.Message("Cannot rename this property.");
-				return;
-			}
-
-			IInputBox ib = Far.Net.CreateInputBox();
-			ib.Title = "Rename";
-			ib.Prompt = "New name";
-			ib.History = "Copy";
-			ib.Text = name;
-			if (!ib.Show() || ib.Text == name)
-				return;
-
-			using (PowerShell p = A.Psf.CreatePipeline())
-			{
-				Command c = new Command("Rename-ItemProperty");
-				c.Parameters.Add(new CommandParameter("LiteralPath", Explorer.ThePath));
-				c.Parameters.Add(new CommandParameter(Word.Name, name));
-				c.Parameters.Add(new CommandParameter("NewName", ib.Text));
-				c.Parameters.Add(Prm.Force);
-				c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
-				p.Commands.AddCommand(c);
-				p.Invoke();
-				if (!A.ShowError(p))
-					UpdateRedraw(true, ib.Text);
-			}
 		}
 		/// <summary>
 		/// Should be called when an item property is changed.
@@ -119,7 +74,7 @@ namespace PowerShellFar
 		internal static void WhenPropertyChanged(string itemPath)
 		{
 			foreach (PropertyPanel p in Far.Net.Panels(typeof(PropertyPanel)))
-				if (p.Explorer.ThePath == itemPath)
+				if (p.Explorer.ItemPath == itemPath)
 					p.UpdateRedraw(true);
 		}
 		///
@@ -146,7 +101,7 @@ namespace PowerShellFar
 					Click = delegate { UICopyMove(true); }
 				};
 
-			if (items.Rename == null)
+			if (items.Rename == null && e.CurrentFile != null && Explorer.CanRenameFile)
 				items.Rename = new SetItem()
 				{
 					Text = "&Rename property",
@@ -168,6 +123,21 @@ namespace PowerShellFar
 				};
 
 			base.HelpMenuInitItems(items, e);
+		}
+		///
+		public override void UICreateFile(CreateFileEventArgs args)
+		{
+			if (args == null) return;
+
+			// call
+			Explorer.CreateFile(args);
+			if (args.Result != JobResult.Done)
+				return;
+			
+			// update that panel if the path is the same
+			PropertyPanel that = TargetPanel as PropertyPanel;
+			if (that != null && that.Explorer.ItemPath == Explorer.ItemPath)
+				that.UpdateRedraw(true);
 		}
 	}
 }

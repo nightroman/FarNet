@@ -29,6 +29,7 @@ namespace PowerShellFar
 		{
 			Explorer.Panel = this;
 
+			CurrentLocation = "*";
 			SortMode = PanelSortMode.Unsorted; // assume it is sorted in SELECT
 			UseFilter = true;
 			UseSortGroups = false;
@@ -321,7 +322,7 @@ namespace PowerShellFar
 			get { return __toUpdateData; }
 			set { __toUpdateData = value; }
 		}
-		internal IList<FarFile> Explore(ExplorerEventArgs args)
+		internal IList<FarFile> Explore(GetFilesEventArgs args)
 		{
 			if (args == null) return null;
 			var Files = Explorer.Cache;

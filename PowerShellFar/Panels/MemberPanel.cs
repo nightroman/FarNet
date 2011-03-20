@@ -6,9 +6,7 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Data;
-using System.IO;
 using System.Management.Automation;
-using System.Text;
 using FarNet;
 
 namespace PowerShellFar
@@ -122,7 +120,7 @@ namespace PowerShellFar
 		/// Example script: <c>Test-Panel-DbNotes-.ps1</c>.
 		/// </para>
 		/// </remarks>
-		public EventHandler<FileEventArgs> CreateDataLookup(string[] namePairs)
+		public EventHandler<OpenFileEventArgs> CreateDataLookup(string[] namePairs)
 		{
 			if (Cast<DataRow>.From(Target) == null)
 				throw new InvalidOperationException("Data lookup is designed only for data row objects.");
@@ -214,6 +212,28 @@ namespace PowerShellFar
 				};
 
 			base.HelpMenuInitItems(items, e);
+		}
+		///
+		public override void UICreateFile(CreateFileEventArgs args)
+		{
+			if (args == null) return;
+
+			// skip data panel
+			if (Parent is DataPanel)
+			{
+				args.Result = JobResult.Ignore;
+				return;
+			}
+
+			// call
+			Explorer.CreateFile(args);
+			if (args.Result != JobResult.Done)
+				return;
+
+			// update that panel if the instance is the same
+			MemberPanel that = TargetPanel as MemberPanel;
+			if (that != null && that.Target == Target)
+				that.UpdateRedraw(true);
 		}
 	}
 }

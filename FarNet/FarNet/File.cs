@@ -18,7 +18,7 @@ namespace FarNet
 	/// Modules may implement derived classes (at least <see cref="Name"/> has to be defined)
 	/// or they may just use the ready straightforward implementation <see cref="SetFile"/>.
 	/// </remarks>
-	public class FarFile
+	public abstract class FarFile
 	{
 		/// <summary>
 		/// File name.

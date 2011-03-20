@@ -46,7 +46,10 @@ namespace FarNet.Tools
 			// target
 			var that = TargetPanel;
 			if (that == null)
+			{
+				base.UICopyMove(move);
 				return;
+			}
 
 			// can?
 			if (!that.Explorer.CanAcceptFiles)
