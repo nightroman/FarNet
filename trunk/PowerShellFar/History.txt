@@ -1,6 +1,27 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.5 =
+
+*) Updates for FarNet changes.
+
+*) Search-Regex-.ps1
+Fixed shown count of found matches.
+
+*) PowerShell.hrc
+Fix  http://code.google.com/p/farnet/issues/detail?id=5
+
+*) SQLite database support
+- Uses SQLite ADO.NET provider: http://sourceforge.net/projects/sqlite-dotnet2
+- New script Connect-SQLite-.ps1 allows to connect to a database and optionally
+to open it in the panel (assume Panel-DbData-.ps1 and Panel-DbTable-.ps1 are in
+the system path). The panel is not just a viewer, it allows to add, delete and
+edit database records.
+- Initialize-Test-.ps1 allows to create a test DB Tempdb.sqlite in %TEMP%.
+Then the command:
+>: Connect-SQLite-.ps1 -Panel $env:TEMP\Tempdb.sqlite
+.. opens the DB in the panel with two test tables ready to view or change data.
+
 = 4.4.4 =
 
 *) ItemPanel (PS providers)

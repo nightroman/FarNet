@@ -27,7 +27,7 @@ if ($NoDb) { return }
 if (!$DbProviderName) {
 	# find supported data provider classes and ask to select one
 	$DbProviderName = [Data.Common.DbProviderFactories]::GetFactoryClasses() | .{process{
-		if ($_.InvariantName -eq 'System.Data.SqlClient' -or $_.InvariantName -eq 'System.Data.SqlServerCe.3.5') {
+		if (($_.InvariantName -eq 'System.Data.SqlClient') -or ($_.InvariantName -eq 'System.Data.SqlServerCe.3.5') -or ($_.InvariantName -eq 'System.Data.SQLite')) {
 			$_.InvariantName
 		}
 	}} |
@@ -78,14 +78,67 @@ function SetupSqlServerCe
 	$DbConnection.Open()
 }
 
+# SQLite setup
+function SetupSQLite
+{
+	$DbPath = Join-Path $env:TEMP Tempdb.sqlite
+	$ConnectionString = "Data Source=`"$DbPath`"; FailIfMissing=False"
+	if (Test-Path $DbPath) { Remove-Item $DbPath }
+
+	# open the database connection
+	$global:DbConnection = $DbProviderFactory.CreateConnection()
+	$DbConnection.ConnectionString = $ConnectionString
+	$DbConnection.Open()
+}
+
 ### setup and open connection; this step depends on a provider
 switch($DbProviderName) {
 	'System.Data.SqlClient' { SetupSqlClient; break }
 	'System.Data.SqlServerCe.3.5' { SetupSqlServerCe; break }
+	'System.Data.SQLite' { SetupSQLite; break }
 }
 
 ### create tables and add some data; this step is common
 $commands = @( # command set
+
+if ($DbProviderName -eq 'System.Data.SQLite') { ### SQLite commands
+
+'PRAGMA foreign_keys = ON'
+
+# create table TestCategories
+@'
+CREATE TABLE [TestCategories]
+(
+[CategoryId] INTEGER PRIMARY KEY,
+[Category] [nvarchar](100) NOT NULL,
+[Remarks] [ntext] NULL
+)
+'@
+
+# add some records
+"INSERT INTO TestCategories (CategoryId, Category, Remarks) VALUES (NULL, 'Task', 'Task remarks')"
+"INSERT INTO TestCategories (CategoryId, Category, Remarks) VALUES (NULL, 'Warning', 'Warning remarks')"
+"INSERT INTO TestCategories (CategoryId, Category, Remarks) VALUES (NULL, 'Information', 'Information remarks')"
+
+# create table TestNotes
+@'
+CREATE TABLE [TestNotes]
+(
+[NoteId] INTEGER PRIMARY KEY,
+[CategoryId] INTEGER NOT NULL,
+[Note] [ntext] NOT NULL,
+[Created] [datetime] NULL,
+FOREIGN KEY(CategoryId) REFERENCES TestCategories(CategoryId) ON DELETE RESTRICT
+)
+'@
+
+# add some records
+"INSERT INTO TestNotes (NoteId, CategoryId, Note, Created) VALUES (NULL, 1, 'Try to modify, insert and delete records.', datetime('now'))"
+"INSERT INTO TestNotes (NoteId, CategoryId, Note, Created) VALUES (NULL, 2, 'Do <CtrR> before using of just inserted records.', datetime('now'))"
+"INSERT INTO TestNotes (NoteId, CategoryId, Note, Created) VALUES (NULL, 3, '<Enter> on Category field opens TestCategories.', datetime('now'))"
+"INSERT INTO TestNotes (NoteId, CategoryId, Note, Created) VALUES (NULL, 3, 'Run Initialize-Test-.ps1 again for initial test data.', datetime('now'))"
+
+} else { ### SQL commands
 
 # create table TestCategories
 @'
@@ -123,10 +176,12 @@ CONSTRAINT [PK_TestNotes] PRIMARY KEY ([NoteId])
 "INSERT TestNotes (CategoryId, Note, Created) VALUES (2, 'Do <CtrR> before using of just inserted records.', GETDATE())"
 "INSERT TestNotes (CategoryId, Note, Created) VALUES (3, '<Enter> on Category field opens TestCategories.', GETDATE())"
 "INSERT TestNotes (CategoryId, Note, Created) VALUES (3, 'Run Initialize-Test-.ps1 again for initial test data.', GETDATE())"
+}
 )
 
 ### execute commands (*)
 foreach($CommandText in $commands) {
+	Write-Host $CommandText
 	$c = $DbConnection.CreateCommand()
 	$c.CommandText = $CommandText
 	$null = $c.ExecuteNonQuery()

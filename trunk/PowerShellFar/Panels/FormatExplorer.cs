@@ -49,11 +49,11 @@ namespace PowerShellFar
 		}
 		internal abstract object GetData(ExplorerEventArgs args);
 		///
-		public override IList<FarFile> DoGetFiles(ExplorerEventArgs args)
+		public override IList<FarFile> DoGetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;
 
-			var panel = args.Panel as FormatPanel;
+			var panel = args.Parameter as FormatPanel;
 
 			// call the worker
 			// _090408_232925 If we throw then FarNet returns false and Far closes the panel.

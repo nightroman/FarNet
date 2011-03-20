@@ -69,7 +69,7 @@ namespace PowerShellFar
 				A.Psf.Engine.SessionState.Path.SetLocation(path);
 
 			// get location
-			PowerPath location = new PowerPath(A.Psf.Engine.SessionState.Path.CurrentLocation);
+			PathInfoEx location = new PathInfoEx(A.Psf.Engine.SessionState.Path.CurrentLocation);
 			if (!My.ProviderInfoEx.IsNavigation(location.Provider))
 				throw new RuntimeException("Provider '" + location.Provider + "' does not support navigation.");
 

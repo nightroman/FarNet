@@ -10,6 +10,10 @@ using FarNet;
 
 namespace PowerShellFar
 {
+	class TreeExplorerGetFilesParameter
+	{
+		public bool ShowHidden { get; set; }
+	}
 	/// <summary>
 	/// Explorer of a tree.
 	/// </summary>
@@ -40,11 +44,10 @@ namespace PowerShellFar
 
 			_Files.Clear();
 
-			var panel = args.Panel as TreePanel;
-			bool showHidden = panel != null && panel.ShowHidden;
+			var parameter = args.ParameterOrDefault<TreeExplorerGetFilesParameter>();
 
 			foreach (TreeFile ti in _RootFiles)
-				AddFileFromTreeItem(ti, showHidden);
+				AddFileFromTreeItem(ti, parameter.ShowHidden);
 
 			return _Files;
 		}

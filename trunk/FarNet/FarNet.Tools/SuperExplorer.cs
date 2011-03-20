@@ -32,9 +32,10 @@ namespace FarNet.Tools
 			Functions =
 				ExplorerFunctions.AcceptFiles |
 				ExplorerFunctions.DeleteFiles |
-				ExplorerFunctions.ExportFile |
-				ExplorerFunctions.ImportFile |
-				ExplorerFunctions.ImportText |
+				ExplorerFunctions.ExportFiles |
+				ExplorerFunctions.GetContent |
+				ExplorerFunctions.SetFile |
+				ExplorerFunctions.SetText |
 				ExplorerFunctions.OpenFile;
 
 			// this
@@ -46,9 +47,9 @@ namespace FarNet.Tools
 			try
 			{
 				if (explorer.CanExploreLocation)
-					return explorer.ExploreLocation(new ExploreLocationEventArgs(null, mode, file.Name));
+					return explorer.ExploreLocation(new ExploreLocationEventArgs(mode, file.Name));
 				else
-					return explorer.ExploreDirectory(new ExploreDirectoryEventArgs(null, mode, file));
+					return explorer.ExploreDirectory(new ExploreDirectoryEventArgs(mode, file));
 			}
 			catch (Exception ex)
 			{
@@ -87,21 +88,23 @@ namespace FarNet.Tools
 			return ExploreSuperDirectory(xfile.Explorer, args.Mode, xfile.File);
 		}
 		///
-		public override void OpenFile(OpenFileEventArgs args)
+		public override Explorer OpenFile(OpenFileEventArgs args)
 		{
-			if (args == null) return;
+			if (args == null) return null;
 
+			// can?
 			var xfile = (SuperFile)args.File;
 			if (!xfile.Explorer.CanOpenFile)
 			{
 				args.Result = JobResult.Ignore;
-				return;
+				return null;
 			}
 
-			var argsOpen = new OpenFileEventArgs(args.Panel, ExplorerModes.None, xfile.File);
-			xfile.Explorer.OpenFile(argsOpen);
-
-			args.Result = argsOpen.Result;
+			// call
+			var args2 = new OpenFileEventArgs(xfile.File);
+			var explorer = xfile.Explorer.OpenFile(args2);
+			args.Result = args2.Result;
+			return explorer;
 		}
 		///
 		public override void AcceptFiles(AcceptFilesEventArgs args)
@@ -110,79 +113,79 @@ namespace FarNet.Tools
 
 			foreach (var file in args.Files)
 			{
-				var efile = file as SuperFile;
-				if (efile == null)
+				var xfile = file as SuperFile;
+				if (xfile == null)
 					Cache.Add(new SuperFile(args.Explorer, file));
 				else
-					Cache.Add(efile);
+					Cache.Add(xfile);
 			}
 		}
 		///
-		public override void ExportFile(ExportFileEventArgs args)
+		public override void GetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
 
 			// check
-			var file2 = (SuperFile)args.File;
-			if (!file2.Explorer.CanExportFile)
+			var xfile = (SuperFile)args.File;
+			if (!xfile.Explorer.CanGetContent)
 			{
 				args.Result = JobResult.Default;
 				return;
 			}
 
 			// call
-			var argsExport = new ExportFileEventArgs(null, args.Mode, file2.File, args.FileName);
-			file2.Explorer.ExportFile(argsExport);
+			var argsExport = new GetContentEventArgs(args.Mode, xfile.File, args.FileName);
+			xfile.Explorer.GetContent(argsExport);
 
 			// results
 			args.Result = argsExport.Result;
 			args.UseText = argsExport.UseText;
-			args.CanImport = argsExport.CanImport;
+			args.CanSet = argsExport.CanSet;
 			args.UseFileName = argsExport.UseFileName;
 			args.UseFileExtension = argsExport.UseFileExtension;
 		}
 		///
-		public override void ImportFile(ImportFileEventArgs args)
+		public override void SetFile(SetFileEventArgs args)
 		{
 			if (args == null) return;
 
 			// call
-			var file2 = (SuperFile)args.File;
-			if (!file2.Explorer.CanImportFile)
+			var xfile = (SuperFile)args.File;
+			if (!xfile.Explorer.CanSetFile)
 			{
 				args.Result = JobResult.Default;
 				return;
 			}
-			var argsImport = new ImportFileEventArgs(null, args.Mode, file2.File, args.FileName);
-			file2.Explorer.ImportFile(argsImport);
+			var argsImport = new SetFileEventArgs(args.Mode, xfile.File, args.FileName);
+			xfile.Explorer.SetFile(argsImport);
 
 			// result
 			args.Result = argsImport.Result;
 		}
 		///
-		public override void ImportText(ImportTextEventArgs args)
+		public override void SetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
 
 			// call
-			var file2 = (SuperFile)args.File;
-			if (!file2.Explorer.CanImportText)
+			var xfile = (SuperFile)args.File;
+			if (!xfile.Explorer.CanSetText)
 			{
 				args.Result = JobResult.Default;
 				return;
 			}
-			var argsImport = new ImportTextEventArgs(null, args.Mode, file2.File, args.Text);
-			file2.Explorer.ImportText(argsImport);
+			var argsImport = new SetTextEventArgs(args.Mode, xfile.File, args.Text);
+			xfile.Explorer.SetText(argsImport);
 
 			// result
 			args.Result = argsImport.Result;
 		}
-		static Dictionary<Guid, Dictionary<Explorer, List<SuperFile>>> GroupFiles(IList<FarFile> files, bool toDelete)
+		static Dictionary<Guid, Dictionary<Explorer, List<SuperFile>>> GroupFiles(IList<FarFile> files, ExplorerFunctions function)
 		{
 			var result = new Dictionary<Guid, Dictionary<Explorer, List<SuperFile>>>();
 			foreach (SuperFile file in files)
 			{
-				if (toDelete && !file.Explorer.CanDeleteFiles)
+				if (function != ExplorerFunctions.None && 0 == (file.Explorer.Functions & function))
 					continue;
 
 				Dictionary<Explorer, List<SuperFile>> dicExplorer;
@@ -208,38 +211,9 @@ namespace FarNet.Tools
 				_Cache.Remove(file);
 		}
 		///
-		public override void DeleteFiles(DeleteFilesEventArgs args)
-		{
-			if (args == null) return;
-
-			var dicTypeId = GroupFiles(args.Files, true);
-
-			int nDone = 0;
-			int nIncomplete = 0;
-			foreach (var xTypeId in dicTypeId)
-			{
-				Log.Source.TraceInformation("DeleteFiles TypeId='{0}'", xTypeId.Key);
-				object codata = null;
-				foreach (var kv in xTypeId.Value)
-				{
-					var result = DeleteFilesOfExplorer(kv.Key, kv.Value, args.FilesToStay, args.Mode, args.Force, ref codata);
-					if (result == JobResult.Done)
-						++nDone;
-					else if (result == JobResult.Incomplete)
-						++nIncomplete;
-				}
-			}
-
-			// my result
-			if (nIncomplete > 0)
-				args.Result = JobResult.Incomplete;
-			else if (nDone == 0)
-				args.Result = JobResult.Ignore;
-		}
-		///
 		internal void CommitFiles(SuperPanel source, Panel target, IList<FarFile> files, bool move)
 		{
-			var dicTypeId = GroupFiles(files, false);
+			var dicTypeId = GroupFiles(files, ExplorerFunctions.None);
 
 			bool SelectionExists = source.SelectionExists;
 			var xfilesToStay = new List<FarFile>();
@@ -260,9 +234,9 @@ namespace FarNet.Tools
 
 					// accept, mind co-data
 					Log.Source.TraceInformation("AcceptFiles Count='{0}' Location='{1}'", filesToAccept.Count, explorer.Location);
-					var argsAccept = new AcceptFilesEventArgs(null, ExplorerModes.None, filesToAccept, explorer, move);
+					var argsAccept = new AcceptFilesEventArgs(ExplorerModes.None, filesToAccept, move, explorer);
 					argsAccept.Data = codata;
-					target.Explorer.AcceptFiles(argsAccept);
+					target.UIAcceptFiles(argsAccept);
 					codata = argsAccept.Data;
 
 					// info
@@ -274,7 +248,12 @@ namespace FarNet.Tools
 					{
 						// keep it as it is
 						if (isAllToStay || !SelectionExists)
+						{
+							if (isAllToStay && SelectionExists)
+								foreach(var file in xfiles)
+									xfilesToStay.Add(file);
 							continue;
+						}
 
 						// drop selection
 						toUnselect = true;
@@ -287,7 +266,7 @@ namespace FarNet.Tools
 					}
 
 					// Move: no need to delete or all to stay or cannot delete
-					if (!argsAccept.Delete || isAllToStay || !explorer.CanDeleteFiles)
+					if (!argsAccept.ToDeleteFiles || isAllToStay || !explorer.CanDeleteFiles)
 					{
 						// the source may have some files deleted, update
 						toUpdate = true;
@@ -345,7 +324,7 @@ namespace FarNet.Tools
 
 			// delete, mind co-data
 			Log.Source.TraceInformation("DeleteFiles Count='{0}' Location='{1}'", efilesToDelete.Count, explorer.Location);
-			var argsDelete = new DeleteFilesEventArgs(null, mode, efilesToDelete, force);
+			var argsDelete = new DeleteFilesEventArgs(mode, efilesToDelete, force);
 			argsDelete.Data = codata;
 			explorer.DeleteFiles(argsDelete);
 			codata = argsDelete.Data;
@@ -364,7 +343,7 @@ namespace FarNet.Tools
 					// recover that files to stay
 					if (argsDelete.FilesToStay.Count == 0)
 					{
-						var filesAfterDelete = explorer.GetFiles(new GetFilesEventArgs(null, ExplorerModes.Silent));
+						var filesAfterDelete = explorer.GetFiles(new GetFilesEventArgs(ExplorerModes.Silent));
 						var hashAfterDelete = Works.Kit.HashFiles(filesAfterDelete, explorer.FileComparer);
 						foreach (var file in efilesToDelete)
 							if (hashAfterDelete.ContainsKey(file))
@@ -386,6 +365,121 @@ namespace FarNet.Tools
 				_Cache.Remove(file);
 
 			return argsDelete.Result;
+		}
+		///
+		public override void DeleteFiles(DeleteFilesEventArgs args)
+		{
+			if (args == null) return;
+
+			var dicTypeId = GroupFiles(args.Files, ExplorerFunctions.DeleteFiles);
+
+			int nDone = 0;
+			int nIncomplete = 0;
+			foreach (var xTypeId in dicTypeId)
+			{
+				Log.Source.TraceInformation("DeleteFiles TypeId='{0}'", xTypeId.Key);
+				object codata = null;
+				foreach (var kv in xTypeId.Value)
+				{
+					var result = DeleteFilesOfExplorer(kv.Key, kv.Value, args.FilesToStay, args.Mode, args.Force, ref codata);
+					if (result == JobResult.Done)
+						++nDone;
+					else if (result == JobResult.Incomplete)
+						++nIncomplete;
+				}
+			}
+
+			// my result
+			if (nIncomplete > 0)
+				args.Result = JobResult.Incomplete;
+			else if (nDone == 0)
+				args.Result = JobResult.Ignore;
+		}
+		///
+		public override void ExportFiles(ExportFilesEventArgs args)
+		{
+			if (args == null) return;
+			
+			var dicTypeId = GroupFiles(args.Files, ExplorerFunctions.ExportFiles);
+
+			foreach (var xTypeId in dicTypeId)
+			{
+				Log.Source.TraceInformation("ExportFiles TypeId='{0}'", xTypeId.Key);
+				object codata = null;
+				foreach (var kv in xTypeId.Value)
+				{
+					// explorer and its files
+					var explorer = kv.Key;
+					var xfiles = kv.Value;
+					var filesToExport = new List<FarFile>(xfiles.Count);
+					foreach (var file in xfiles)
+						filesToExport.Add(file.File);
+
+					// export, mind co-data
+					Log.Source.TraceInformation("ExportFiles Count='{0}' Location='{1}' DirectoryName='{2}'", filesToExport.Count, explorer.Location, args.DirectoryName);
+					var argsExport = new ExportFilesEventArgs(ExplorerModes.None, filesToExport, args.Move, args.DirectoryName);
+					argsExport.Data = codata;
+					explorer.ExportFiles(argsExport);
+					codata = argsExport.Data;
+
+					// info
+					bool isIncomplete = argsExport.Result == JobResult.Incomplete;
+					bool isAllToStay = isIncomplete && argsExport.FilesToStay.Count == 0;
+					if (isIncomplete)
+						args.Result = JobResult.Incomplete;
+
+					// Copy: do not update the source, files are the same
+					if (!args.Move)
+					{
+						// keep it as it is
+						if (isAllToStay)
+						{
+							foreach (var file in xfiles)
+								args.FilesToStay.Add(file);
+							continue;
+						}
+
+						// recover
+						if (isIncomplete)
+							foreach(var file in SuperFile.SuperFilesOfExplorerFiles(xfiles, argsExport.FilesToStay, explorer.FileComparer))
+								args.FilesToStay.Add(file);
+						
+						continue;
+					}
+
+					// Move: no need to delete or all to stay or cannot delete
+					if (!argsExport.ToDeleteFiles || isAllToStay || !explorer.CanDeleteFiles)
+					{
+						// recover selection
+						if (isIncomplete)
+						{
+							var filesToStay = isAllToStay ? argsExport.Files : argsExport.FilesToStay;
+							foreach(var file in SuperFile.SuperFilesOfExplorerFiles(xfiles, filesToStay, explorer.FileComparer))
+								args.FilesToStay.Add(file);
+						}
+
+						continue;
+					}
+
+					// Move: delete is requested, delete the source files
+
+					// exclude this files to stay from to be deleted
+					if (isIncomplete)
+					{
+						foreach (SuperFile xfile in SuperFile.SuperFilesOfExplorerFiles(xfiles, argsExport.FilesToStay, explorer.FileComparer))
+						{
+							xfiles.Remove(xfile);
+							args.FilesToStay.Add(xfile);
+						}
+					}
+
+					// call delete on remaining files
+					object codata2 = null;
+					var result = DeleteFilesOfExplorer(explorer, xfiles, args.FilesToStay, ExplorerModes.Silent, false, ref codata2);
+					if (result == JobResult.Incomplete)
+						args.Result = JobResult.Incomplete;
+				}
+			}
 		}
 	}
 }

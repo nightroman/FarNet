@@ -16,7 +16,6 @@ _090929_061740 Far 2.0.1145 does not sync the current directory with the panel p
 using System;
 using System.IO;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using FarNet;
 using Microsoft.PowerShell.Commands;
 
@@ -39,7 +38,7 @@ namespace PowerShellFar
 		/// </summary>
 		/// <param name="path">Path to start at.</param>
 		public ItemPanel(string path)
-			: this(new ItemExplorer(new PowerPath(path)))
+			: this(new ItemExplorer(new PathInfoEx(path)))
 		{
 			// current location, post the current name
 			if (string.IsNullOrEmpty(path))
@@ -53,15 +52,6 @@ namespace PowerShellFar
 		/// Creates a panel for provider items at the current location.
 		/// </summary>
 		public ItemPanel() : this((string)null) { }
-		/// <summary>
-		/// It is fired when items are changed.
-		/// </summary>
-		public event EventHandler ItemsChanged;
-		internal void DoItemsChanged()
-		{
-			if (ItemsChanged != null)
-				ItemsChanged(this, null);
-		}
 		/// <summary>
 		/// Fixed drive name.
 		/// </summary>
@@ -121,11 +111,10 @@ namespace PowerShellFar
 			string target = My.PathEx.Combine(Explorer.Location, ib.Text);
 			A.Psf.Engine.InvokeProvider.Item.Copy(source, target, false, CopyContainers.CopyTargetContainer);
 
-			// fire
-			if (ItemsChanged != null)
-				ItemsChanged(this, null);
-
 			UpdateRedraw(false, ib.Text);
+
+			// event
+			OnThisFileChanged(null);
 		}
 		internal override bool UICopyMoveCan(bool move)
 		{
@@ -135,34 +124,11 @@ namespace PowerShellFar
 			//! Actually e.g. functions can be copied, see UICopyHere
 			return My.ProviderInfoEx.IsNavigation(Explorer.Provider);
 		}
-		internal override void UIRename()
-		{
-			FarFile f = CurrentFile;
-			if (f == null)
-				return;
-			string name = f.Name;
-
-			IInputBox ib = Far.Net.CreateInputBox();
-			ib.Title = "Rename";
-			ib.Prompt = "New name";
-			ib.History = "Copy";
-			ib.Text = name;
-			if (!ib.Show() || ib.Text == name)
-				return;
-
-			// workaround; Rename-Item has no -LiteralPath; e.g. z`z[z.txt is a big problem
-			string src = Kit.EscapeWildcard(My.PathEx.Combine(Explorer.Location, name));
-			A.Psf.Engine.InvokeProvider.Item.Rename(src, ib.Text);
-
-			// fire
-			if (ItemsChanged != null)
-				ItemsChanged(this, null);
-
-			UpdateRedraw(false, ib.Text);
-		}
 		///
 		public override void UIExplorerEntered(ExplorerEnteredEventArgs args)
 		{
+			if (args == null) return;
+			
 			base.UIExplorerEntered(args);
 			DoExplored((ItemExplorer)args.Explorer);
 		}
@@ -259,7 +225,7 @@ namespace PowerShellFar
 					Click = delegate { UICopyMove(true); }
 				};
 
-			if (items.Rename == null)
+			if (items.Rename == null && e.CurrentFile != null && Explorer.CanRenameFile)
 				items.Rename = new SetItem()
 				{
 					Text = "&Rename item",
@@ -281,6 +247,33 @@ namespace PowerShellFar
 				};
 
 			base.HelpMenuInitItems(items, e);
+		}
+		///
+		public override void UISetText(SetTextEventArgs args)
+		{
+			if (args == null) return;
+			
+			// call
+			base.UISetText(args);
+			if (args.Result != JobResult.Done)
+				return;
+
+			// update after edit
+			if (0 != (args.Mode & ExplorerModes.Edit)) //????? in many cases it is not needed, think to avoid/do effectively
+				UpdateRedraw(true);
+		}
+		///
+		public override void OnThatFileChanged(Panel that, EventArgs args)
+		{
+			var panel = that as ItemPanel;
+			if (panel == null)
+				return;
+
+			if (panel.Explorer.Location != Explorer.Location)
+				return;
+
+			Update(true);
+			Redraw();
 		}
 	}
 }

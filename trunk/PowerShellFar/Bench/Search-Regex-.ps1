@@ -313,7 +313,7 @@ $Panel.add_Idled({&{
 		if ($job.Output.Count) {
 			$this.Update($false)
 		}
-		$title = '{0}: {1} lines in {2} files' -f $job.JobStateInfo.State, $this.Cache.Count, $job.Parameters.Total
+		$title = '{0}: {1} lines in {2} files' -f $job.JobStateInfo.State, $this.Explorer.Cache.Count, $job.Parameters.Total
 		if ($this.Title -ne $title) {
 			$this.Title = $title
 			$this.Redraw()

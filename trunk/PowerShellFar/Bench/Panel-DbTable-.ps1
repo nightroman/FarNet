@@ -9,9 +9,9 @@
 	$DbConnection.
 
 	Theoretically it should work for any ADO.NET data provider. But it was
-	tested only for SQL Server, SQL Server Compact, MS Access, PostgreSQL.
-	Still, it may not work for some providers with not standard SQL syntax.
-	Please, report such cases.
+	tested only with SQL Server, SQL Server Compact, SQLite, MS Access, and
+	PostgreSQL. It may not work for some providers with not standard SQL
+	syntax or features. Please, report such cases.
 
 	PANEL ACTIONS
 
@@ -45,7 +45,7 @@ if (!$DbProviderFactory) { throw "Provider factory is not defined." }
 if (!$DbConnection) { throw "Connection is not defined." }
 
 # get table of tables
-if ($DbProviderFactory -is [System.Data.OleDb.OleDbFactory]) {
+if ($DbProviderFactory -is [System.Data.OleDb.OleDbFactory] -or $DbProviderFactory.GetType().Name -eq 'SQLiteFactory') {
 	$table = $DbConnection.GetSchema('Tables')
 }
 else {

@@ -171,13 +171,10 @@ namespace PowerShellFar
 		///
 		internal void UIOpenFileMembers()
 		{
-			FarFile f = CurrentFile;
-			if (f != null)
-				OpenFileMembers(f);
+			FarFile file = CurrentFile;
+			if (file != null)
+				OpenFileMembers(file);
 		}
-		/// <summary>Rename action.</summary>
-		internal virtual void UIRename()
-		{ }
 		/// <summary>
 		/// Updates Far data and redraws.
 		/// </summary>
@@ -216,7 +213,7 @@ namespace PowerShellFar
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="MemberPanel.CreateDataLookup"/>
-		public ScriptHandler<FileEventArgs> Lookup { get; set; }
+		public ScriptHandler<OpenFileEventArgs> Lookup { get; set; }
 		/// <summary>
 		/// Opens the file member panel.
 		/// </summary>
@@ -247,9 +244,9 @@ namespace PowerShellFar
 		public void AddLookup(string name, object handler)
 		{
 			if (_LookupOpeners == null)
-				_LookupOpeners = new Dictionary<string, ScriptHandler<FileEventArgs>>();
+				_LookupOpeners = new Dictionary<string, ScriptHandler<OpenFileEventArgs>>();
 
-			_LookupOpeners.Add(name, new ScriptHandler<FileEventArgs>(handler));
+			_LookupOpeners.Add(name, new ScriptHandler<OpenFileEventArgs>(handler));
 		}
 		/// <summary>
 		/// Adds name/handler pairs to the lookup collection.
@@ -260,7 +257,7 @@ namespace PowerShellFar
 				foreach (DictionaryEntry it in lookups)
 					AddLookup(it.Key.ToString(), it.Value);
 		}
-		internal Dictionary<string, ScriptHandler<FileEventArgs>> _LookupOpeners;
+		internal Dictionary<string, ScriptHandler<OpenFileEventArgs>> _LookupOpeners;
 		/// <summary>
 		/// Creates or gets existing menu.
 		/// </summary>
@@ -396,17 +393,6 @@ namespace PowerShellFar
 						{
 							case KeyStates.Shift:
 								UICopyHere();
-								return true;
-						}
-
-						break;
-
-					case VKeyCode.F6:
-
-						switch (state)
-						{
-							case KeyStates.Shift:
-								UIRename();
 								return true;
 						}
 

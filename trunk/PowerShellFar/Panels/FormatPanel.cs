@@ -4,11 +4,7 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006 Roman Kuzmin
 */
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Management.Automation;
 using FarNet;
 
 namespace PowerShellFar
@@ -63,6 +59,15 @@ namespace PowerShellFar
 				SetPlan(PanelViewMode.AlternativeFull, Format.SetupPanelMode(Explorer.Metas));
 
 			base.Open();
+		}
+		///
+		public override IList<FarFile> UIGetFiles(GetFilesEventArgs args)
+		{
+			if (args == null) return null;
+
+			args.Parameter = this;
+			
+			return base.UIGetFiles(args);
 		}
 	}
 }

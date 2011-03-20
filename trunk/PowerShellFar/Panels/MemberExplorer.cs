@@ -54,8 +54,8 @@ namespace PowerShellFar
 			Functions =
 				ExplorerFunctions.DeleteFiles |
 				ExplorerFunctions.CreateFile |
-				ExplorerFunctions.ExportFile |
-				ExplorerFunctions.ImportText;
+				ExplorerFunctions.GetContent |
+				ExplorerFunctions.SetText;
 		}
 		///
 		public override Panel CreatePanel()
@@ -66,7 +66,7 @@ namespace PowerShellFar
 		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;
-			
+
 			var result = new List<FarFile>();
 			try
 			{
@@ -157,14 +157,14 @@ namespace PowerShellFar
 				if (args.UI)
 					A.Message(exception.Message);
 			}
-			
+
 			return result;
 		}
 		///
-		public override void ExportFile(ExportFileEventArgs args)
+		public override void GetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
-			
+
 			// info
 			PSPropertyInfo pi = Cast<PSPropertyInfo>.From(args.File.Data);
 			if (pi == null)
@@ -181,13 +181,13 @@ namespace PowerShellFar
 				return;
 			}
 
-			args.CanImport = pi.IsSettable;
+			args.CanSet = pi.IsSettable;
 		}
 		///
-		public override void ImportText(ImportTextEventArgs args)
+		public override void SetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
-			
+
 			PSPropertyInfo pi = Cast<PSPropertyInfo>.From(args.File.Data);
 			if (pi == null)
 				args.Result = JobResult.Ignore;
@@ -234,7 +234,7 @@ namespace PowerShellFar
 				int count2 = 0;
 				foreach (var it in Value.Properties)
 					++count2;
-				
+
 				if (count1 - args.Files.Count != count2)
 					args.Result = JobResult.Incomplete;
 			}
@@ -249,55 +249,33 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			// all done
 			args.Result = JobResult.Ignore;
-			
-			var panel = args.Panel as MemberPanel;
-			if (panel == null)
-				return;
-			
-			if (panel.Parent is DataPanel) //?????
-				return;
 
 			UI.NewValueDialog ui = new UI.NewValueDialog("New property");
 			while (ui.Dialog.Show())
 			{
 				try
 				{
-					// get value, typed if needed
-					object value = null;
+					// call value
+					object value;
 					if (ui.Type.Text.Length == 0)
-					{
 						value = ui.Value.Text;
-					}
 					else
-					{
-						foreach (PSObject o in A.InvokeCode("[" + ui.Type.Text + "]$args[0]", ui.Value.Text))
-						{
-							value = o.BaseObject;
-							break;
-						}
-					}
+						value = A.InvokeCode("[" + ui.Type.Text + "]$args[0]", ui.Value.Text)[0].BaseObject;
 
-					// add member
+					// call Add-Member
 					A.InvokeCode(
 						"$args[0] | Add-Member -MemberType NoteProperty -Name $args[1] -Value $args[2] -Force -ErrorAction Stop",
 						Value, ui.Name.Text, value);
 
-					// update this panel with name
-					panel.UpdateRedraw(false, ui.Name.Text);
-
-					// update that panel if the instance is the same
-					MemberPanel pp2 = panel.TargetPanel as MemberPanel;
-					if (pp2 != null && pp2.Target == panel.Target)
-						pp2.UpdateRedraw(true);
-
-					// exit the loop
+					// done, post name
+					args.Result = JobResult.Done;
+					args.PostName = ui.Name.Text;
 					return;
 				}
-				catch (RuntimeException exception)
+				catch (RuntimeException ex)
 				{
-					A.Message(exception.Message);
+					A.Message(ex.Message);
 					continue;
 				}
 			}

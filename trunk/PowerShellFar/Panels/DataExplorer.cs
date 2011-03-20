@@ -26,7 +26,7 @@ namespace PowerShellFar
 			Functions =
 				ExplorerFunctions.DeleteFiles |
 				ExplorerFunctions.CreateFile |
-				ExplorerFunctions.ExportFile;
+				ExplorerFunctions.GetContent;
 		}
 		///
 		public override Panel DoCreatePanel()
@@ -34,7 +34,7 @@ namespace PowerShellFar
 			throw new ModuleException("Data panel is not yet supported.");
 		}
 		///
-		public override IList<FarFile> DoGetFiles(ExplorerEventArgs args)
+		public override IList<FarFile> DoGetFiles(GetFilesEventArgs args)
 		{
 			return Panel.Explore(args);
 		}
@@ -52,7 +52,7 @@ namespace PowerShellFar
 			Panel.DoCreateFile();
 		}
 		///
-		public override void DoExportFile(ExportFileEventArgs args)
+		public override void DoGetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
 			args.UseText = A.InvokeFormatList(args.File.Data);
