@@ -26,10 +26,10 @@ namespace PowerShellFar
 			FileComparer = new FileDataComparer();
 			Functions =
 				ExplorerFunctions.AcceptFiles |
-				ExplorerFunctions.AcceptOther |
+				ExplorerFunctions.ImportFiles |
 				ExplorerFunctions.DeleteFiles |
 				ExplorerFunctions.CreateFile |
-				ExplorerFunctions.ExportFile |
+				ExplorerFunctions.GetContent |
 				ExplorerFunctions.OpenFile;
 		}
 		///
@@ -41,12 +41,8 @@ namespace PowerShellFar
 		public override void DoAcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (args == null) return;
-			
-			var panel = args.Panel as ObjectPanel;
-			if (panel == null)
-				args.Result = JobResult.Ignore;
-			else
-				panel.AddObjects(args.FilesData);
+
+			AddObjects(args.FilesData);
 		}
 		///
 		public override void DoDeleteFiles(DeleteFilesEventArgs args)
@@ -66,7 +62,7 @@ namespace PowerShellFar
 				Cache.Remove(file);
 		}
 		///
-		public override void DoExportFile(ExportFileEventArgs args)
+		public override void DoGetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
 
@@ -75,26 +71,20 @@ namespace PowerShellFar
 			if (filePath != null)
 			{
 				args.UseFileName = filePath;
-				args.CanImport = true;
+				args.CanSet = true;
 				return;
 			}
-			
+
 			// text
 			args.UseText = A.InvokeFormatList(args.File.Data);
 		}
 		///
-		public override void DoAcceptOther(AcceptOtherEventArgs args)
+		public override void DoImportFiles(ImportFilesEventArgs args)
 		{
 			if (args == null) return;
-			
-			var panel = args.Panel as ObjectPanel;
-			if (panel == null || panel.IsActive)
-			{
-				args.Result = JobResult.Ignore;
-				return;
-			}
-			
-			panel.AddObjects(A.InvokeCode("Get-FarItem -Selected")); //????? crap. but...
+
+			//! Assume this is the passive panel, so call the active
+			AddObjects(A.InvokeCode("Get-FarItem -Selected")); //????? crap. but...
 		}
 		/// <summary>
 		/// Gets or sets the script getting raw file data objects.
@@ -110,46 +100,12 @@ namespace PowerShellFar
 		/// </remarks>
 		/// <example>Panel-Job-.ps1, Panel-Process-.ps1</example>
 		public ScriptBlock AsGetData { get; set; }
-		///
-		public override void DoCreateFile(CreateFileEventArgs args)
-		{
-			if (args == null) return;
-			
-			var panel = args.Panel as ObjectPanel;
-			if (panel == null)
-			{
-				args.Result = JobResult.Ignore;
-				return;
-			}
-
-			// prompt for a command
-			string code = Far.Net.MacroState == MacroState.None ? A.Psf.InputCode() : Far.Net.Input(null);
-			if (string.IsNullOrEmpty(code))
-			{
-				args.Result = JobResult.Ignore;
-				return;
-			}
-
-			// invoke the command
-			Collection<PSObject> values = A.InvokeCode(code);
-			if (values.Count == 0)
-			{
-				args.Result = JobResult.Ignore;
-				return;
-			}
-
-			// add the objects
-			panel.AddObjects(values);
-
-			// post the first object
-			args.PostData = values[0];
-		}
 		internal override object GetData(ExplorerEventArgs args)
 		{
 			if (AsGetData != null)
 				return A.InvokeScript(AsGetData, this, args);
 
-			var panel = args.Panel as ObjectPanel;
+			var panel = args.Parameter as ObjectPanel;
 			var Files = Cache;
 			try
 			{
@@ -197,61 +153,129 @@ namespace PowerShellFar
 			get { return _AddedValues ?? (_AddedValues = new Collection<PSObject>()); }
 		}
 		///
-		public override void DoOpenFile(OpenFileEventArgs args)
+		public override Explorer DoOpenFile(OpenFileEventArgs args)
 		{
-			if (args == null) return;
+			if (args == null) return null;
 
 			PSObject psData = PSObject.AsPSObject(args.File.Data);
 
-			// case: linear type: do not enter, there is no much sense
+			// case: linear type: ignore, it is useless to open
 			if (Converter.IsLinearType(psData.BaseObject.GetType()))
-				return;
+			{
+				args.Result = JobResult.Ignore;
+				return null;
+			}
 
 			// case: enumerable (string is excluded by linear type case)
-			IEnumerable ie = Cast<IEnumerable>.From(args.File.Data);
-			if (ie != null)
+			IEnumerable asIEnumerable = Cast<IEnumerable>.From(args.File.Data);
+			if (asIEnumerable != null)
 			{
-				ObjectPanel op = new ObjectPanel();
-				op.AddObjects(ie);
-				op.OpenChild(args.Panel);
-				return;
+				var explorer = new ObjectExplorer();
+				explorer.AddObjects(asIEnumerable);
+				return explorer;
 			}
 
 			// case: group
 			PSPropertyInfo pi = psData.Properties["Group"];
 			if (pi != null && pi.Value is IEnumerable && !(pi.Value is string))
 			{
-				ObjectPanel op = new ObjectPanel();
-				op.AddObjects(pi.Value as IEnumerable);
-				op.OpenChild(args.Panel);
-				return;
+				var explorer = new ObjectExplorer();
+				explorer.AddObjects(pi.Value);
+				return explorer; 
 			}
 
-			// case: ManagementClass
+			// case: WMI
 			if (psData.BaseObject.GetType().FullName == "System.Management.ManagementClass")
 			{
 				pi = psData.Properties[Word.Name];
 				if (pi != null && pi.Value != null)
 				{
 					var values = A.InvokeCode("Get-WmiObject -Class $args[0] -ErrorAction SilentlyContinue", pi.Value.ToString());
-					ObjectPanel op = new ObjectPanel();
-					op.AddObjects(values);
-					op.OpenChild(args.Panel);
-					return;
+					var explorer = new ObjectExplorer();
+					explorer.AddObjects(values);
+					return explorer;
 				}
 			}
 
-			// open lookup/members
-			var panel = args.Panel as ObjectPanel;
-			if (panel != null)
-			{
-				panel.OpenFileMembers(args.File);
-				return;
-			}
-
 			// open members
-			var explorer = new MemberExplorer(args.File.Data);
-			explorer.OpenPanelChild(args.Panel);
+			return new MemberExplorer(args.File.Data);
+		}
+		internal void AddObjects(object values)
+		{
+			if (values == null)
+				return;
+
+			var added = AddedValues;
+
+			IEnumerable enumerable = Cast<IEnumerable>.From(values);
+			if (enumerable == null || enumerable is string)
+			{
+				added.Add(PSObject.AsPSObject(values));
+			}
+			else
+			{
+				int maximumFileCount = A.Psf.Settings.MaximumPanelFileCount;
+				int fileCount = 0;
+				foreach (object value in enumerable)
+				{
+					if (value == null)
+						continue;
+
+					// ask to cancel
+					if (fileCount >= maximumFileCount && maximumFileCount > 0)
+					{
+						int res = ShowTooManyFiles(maximumFileCount, enumerable);
+
+						// abort, show what we have got
+						if (res == 0)
+							break;
+
+						if (res == 1)
+							// retry with a larger number
+							maximumFileCount *= 2;
+						else
+							// ignore the limit
+							maximumFileCount = 0;
+					}
+
+					// add
+					added.Add(PSObject.AsPSObject(value));
+					++fileCount;
+				}
+			}
+		}
+		static int ShowTooManyFiles(int maximumFileCount, IEnumerable enumerable)
+		{
+			ICollection collection = enumerable as ICollection;
+			string message = collection == null ?
+				string.Format(null, "There are more than {0} panel files.", maximumFileCount) :
+				string.Format(null, "There are {0} panel files, the limit is {1}.", collection.Count, maximumFileCount);
+
+			return Far.Net.Message(message, "$Psf.Settings.MaximumPanelFileCount", MsgOptions.AbortRetryIgnore);
+		}
+		///
+		public override void DoCreateFile(CreateFileEventArgs args)
+		{
+			if (args == null) return;
+
+			args.Result = JobResult.Ignore;
+
+			// prompt for a command
+			string code = Far.Net.MacroState == MacroState.None ? A.Psf.InputCode() : Far.Net.Input(null);
+			if (string.IsNullOrEmpty(code))
+				return;
+
+			// invoke the command
+			Collection<PSObject> values = A.InvokeCode(code);
+			if (values.Count == 0)
+				return;
+
+			// add the objects
+			AddObjects(values);
+
+			// done, post the first object
+			args.PostData = values[0];
+			args.Result = JobResult.Done;
 		}
 	}
 }

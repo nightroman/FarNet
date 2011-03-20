@@ -153,10 +153,6 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 				Remove-BitsTransfer -BitsJob $job -Confirm
 			}
 		)
-		if ($menu.Show() -and $_.Panel) {
-			$_.Panel.Update($true)
-			$_.Panel.Redraw()
-		}
 	}
 }
 

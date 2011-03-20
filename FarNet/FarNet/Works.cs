@@ -89,7 +89,8 @@ namespace FarNet.Works
 		/// </summary>
 		public static Dictionary<FarFile, int> HashFiles(IEnumerable files, IEqualityComparer<FarFile> comparer)
 		{
-			// 
+			if (files == null) throw new ArgumentNullException("files");
+			
 			var hash = new Dictionary<FarFile, int>(comparer);
 			foreach (FarFile file in files)
 			{

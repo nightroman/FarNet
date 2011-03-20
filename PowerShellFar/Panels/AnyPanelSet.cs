@@ -20,7 +20,7 @@ namespace PowerShellFar
 		#region OpenFile
 		/// <summary>
 		/// Gets or sets the script to open a file (e.g. on [Enter]).
-		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="FileEventArgs"/>.
+		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="OpenFileEventArgs"/>.
 		/// </summary>
 		public ScriptBlock AsOpenFile { get; set; }
 		/// <summary>
@@ -34,7 +34,7 @@ namespace PowerShellFar
 			// lookup closer?
 			if (UserWants == UserAction.Enter && Lookup != null)
 			{
-				Lookup.Invoke(this, new FileEventArgs(file));
+				Lookup.Invoke(this, new OpenFileEventArgs(file));
 				UIEscape(false);
 				return;
 			}
@@ -42,7 +42,7 @@ namespace PowerShellFar
 			// script
 			if (AsOpenFile != null)
 			{
-				A.InvokeScriptReturnAsIs(AsOpenFile, this, new FileEventArgs(file));
+				A.InvokeScriptReturnAsIs(AsOpenFile, this, new OpenFileEventArgs(file));
 				return;
 			}
 

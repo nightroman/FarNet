@@ -6,7 +6,6 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Management.Automation;
 using FarNet;
 
@@ -56,10 +55,10 @@ namespace PowerShellFar
 			// lookup opener?
 			if (_LookupOpeners != null)
 			{
-				ScriptHandler<FileEventArgs> handler;
+				ScriptHandler<OpenFileEventArgs> handler;
 				if (_LookupOpeners.TryGetValue(file.Name, out handler))
 				{
-					handler.Invoke(this, new FileEventArgs(file));
+					handler.Invoke(this, new OpenFileEventArgs(file));
 					return;
 				}
 			}

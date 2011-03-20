@@ -5,6 +5,7 @@ Copyright (c) 2006 Roman Kuzmin
 */
 
 using System;
+using System.Collections.Generic;
 using FarNet;
 
 namespace PowerShellFar
@@ -144,6 +145,15 @@ namespace PowerShellFar
 
 			// base
 			return base.UIKeyPressed(code, state);
+		}
+		///
+		public override IList<FarFile> UIGetFiles(GetFilesEventArgs args)
+		{
+			if (args == null) return null;
+
+			args.Parameter = new TreeExplorerGetFilesParameter() { ShowHidden = ShowHidden };
+			
+			return base.UIGetFiles(args);
 		}
 	}
 }

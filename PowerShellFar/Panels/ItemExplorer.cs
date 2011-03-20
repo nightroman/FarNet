@@ -23,17 +23,18 @@ namespace PowerShellFar
 				ExplorerFunctions.AcceptFiles |
 				ExplorerFunctions.DeleteFiles |
 				ExplorerFunctions.CreateFile |
-				ExplorerFunctions.ExportFile |
-				ExplorerFunctions.ImportText;
+				ExplorerFunctions.GetContent |
+				ExplorerFunctions.SetText |
+				ExplorerFunctions.RenameFile;
 		}
-		internal ItemExplorer(PowerPath info)
+		internal ItemExplorer(PathInfoEx info)
 			: this(info.Path)
 		{
 			_Info_ = info;
 		}
 		//! Very slow operation, that is why we propagate the provider on exploring.
-		internal PowerPath Info() { return _Info_ ?? (_Info_ = new PowerPath(Location)); }
-		PowerPath _Info_;
+		internal PathInfoEx Info() { return _Info_ ?? (_Info_ = new PathInfoEx(Location)); }
+		PathInfoEx _Info_;
 		internal ProviderInfo Provider
 		{
 			get { return _Provider_ ?? (_Provider_ = Info().Provider); }
@@ -102,18 +103,11 @@ namespace PowerShellFar
 						A.ShowError(ps);
 				}
 			}
-
-			// event
-			var panel = args.Panel as ItemPanel;
-			if (panel != null)
-				panel.DoItemsChanged();
 		}
 		///
 		public override void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (args == null) return;
-
-			var panel = args.Panel as ItemPanel;
 
 			// Remove-Item
 			Command c = new Command("Remove-Item");
@@ -154,13 +148,6 @@ namespace PowerShellFar
 						if (args.UI)
 							A.ShowError(ps);
 					}
-
-					if (panel != null)
-					{
-						ItemPanel pp2 = panel.TargetPanel as ItemPanel;
-						if (pp2 != null)
-							pp2.UpdateRedraw(true);
-					}
 				}
 			}
 			catch
@@ -168,15 +155,9 @@ namespace PowerShellFar
 				args.Result = JobResult.Incomplete;
 				throw;
 			}
-			finally
-			{
-				// fire
-				if (panel != null)
-					panel.DoItemsChanged();
-			}
 		}
 		///
-		public override void DoExportFile(ExportFileEventArgs args)
+		public override void DoGetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
 
@@ -191,7 +172,7 @@ namespace PowerShellFar
 			if (args.File.IsDirectory)
 				return;
 
-			args.CanImport = true;
+			args.CanSet = true;
 
 			// actual file
 			string filePath = My.PathEx.TryGetFilePath(args.File.Data);
@@ -214,37 +195,6 @@ namespace PowerShellFar
 			{
 				if (args.UI)
 					Far.Net.ShowError("Edit", ex);
-			}
-		}
-		///
-		public override void DoImportText(ImportTextEventArgs args)
-		{
-			if (args == null) return;
-
-			try
-			{
-				// item path
-				string itemPath = My.PathEx.Combine(Location, args.File.Name);
-
-				// read
-				string text = args.Text.TrimEnd();
-
-				// set
-				if (!A.SetContentUI(itemPath, text))
-					return;
-
-				// update a panel after edit
-				if (0 != (args.Mode & ExplorerModes.Edit)) //???? in 99% it is not needed, think to avoi
-				{
-					var panel = args.Panel as ItemPanel;
-					if (panel != null)
-						panel.UpdateRedraw(true);
-				}
-			}
-			catch (RuntimeException ex)
-			{
-				if (args.UI)
-					A.Message(ex.Message);
 			}
 		}
 		///
@@ -272,7 +222,7 @@ namespace PowerShellFar
 			var path = Location;
 			// 090814 use ":\\" instead of "\\", [_090814_130836]
 			if (path.EndsWith(":\\", StringComparison.Ordinal))
-				return Explore(null, args);
+				return null;
 
 			// 090814 [_090814_130836] PS V2 may get paths with extra '\' in the end
 			path = path.TrimEnd(new char[] { '\\' });
@@ -288,12 +238,12 @@ namespace PowerShellFar
 					// FarMacro
 					args.PostName = path.Substring(iProvider + 2);
 					path = path.Substring(0, iProvider + 2);
+					return Explore(path, args);
 				}
 				else
 				{
-					path = null;
+					return null;
 				}
-				return Explore(path, args);
 			}
 
 			//! Issue with names z:|z, Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER - Far doesn't set cursor there
@@ -308,9 +258,9 @@ namespace PowerShellFar
 				{
 					// show computer shares menu
 					string computer = path.Substring(2);
-					string share = UI.SelectMenu.SelectShare(computer);
+					string share = UI.SelectMenu.SelectShare(computer); //???? kill?
 					if (share == null)
-						path = null;
+						return null;
 					else
 						path += "\\" + share;
 				}
@@ -333,54 +283,62 @@ namespace PowerShellFar
 		}
 		Explorer Explore(string location, ExplorerEventArgs args)
 		{
-			// new explorer
-			ItemExplorer newExplorer;
-
-			// no location, show the drive menu
-			if (location == null)
+			//! propagate the provider, or performance sucks
+			ItemExplorer newExplorer = new ItemExplorer(location);
+			newExplorer.Provider = Provider;
+			newExplorer.Columns = Columns;
+			return newExplorer;
+		}
+		internal override void BuildFiles(Collection<PSObject> values)
+		{
+			if (!My.ProviderInfoEx.IsNavigation(Provider))
 			{
-				var panel = args.Panel as ItemPanel;
+				base.BuildFiles(values);
+				return;
+			}
 
-				// silent
-				if (panel == null || !args.UI)
-					return null;
-
-				// custom columns or drive
-				if (panel.Columns != null || panel.Drive.Length > 0)
-					return null;
-
-				// menu
-				location = UI.SelectMenu.SelectDrive(Info().DriveName, false);
-				if (location == null)
-					return null;
-
-				// unknown
-				newExplorer = new ItemExplorer(location);
+			Cache.Clear();
+			if (Provider.ImplementingType == typeof(FileSystemProvider))
+			{
+				foreach (PSObject value in values)
+					Cache.Add(new SystemMapFile(value, Map));
 			}
 			else
 			{
-				//! propagate the provider, or performance sucks
-				newExplorer = new ItemExplorer(location);
-				newExplorer.Provider = Provider;
-				newExplorer.Columns = Columns;
+				foreach (PSObject value in values)
+					Cache.Add(new ItemMapFile(value, Map));
 			}
+		}
+		internal override object GetData(ExplorerEventArgs args)
+		{
+			// get child items for the panel location
+			var items = A.GetChildItems(Location);
 
-			return newExplorer;
+			// standard
+			if (0 == (args.Mode & ExplorerModes.Find) || !My.ProviderInfoEx.IsNavigation(Provider))
+				return items;
+
+			// faster
+			Cache.Clear();
+			foreach (PSObject value in items)
+				Cache.Add(new ItemFile(value));
+			return Cache;
+		}
+		///
+		public override void DoRenameFile(RenameFileEventArgs args)
+		{
+			if (args == null) return;
+
+			// workaround; Rename-Item has no -LiteralPath; e.g. z`z[z.txt is a big problem
+			string src = Kit.EscapeWildcard(My.PathEx.Combine(Location, args.File.Name));
+			A.Psf.Engine.InvokeProvider.Item.Rename(src, args.NewName);
 		}
 		///
 		public override void DoCreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;
-			
-			// all done
-			args.Result = JobResult.Ignore;
 
-			var panel = args.Panel as ItemPanel;
-			if (panel == null)
-			{
-				args.Result = JobResult.Ignore;
-				return;
-			}
+			args.Result = JobResult.Ignore;
 
 			UI.NewValueDialog ui = new UI.NewValueDialog("New " + Provider.Name + " item");
 			while (ui.Dialog.Show())
@@ -408,61 +366,40 @@ namespace PowerShellFar
 							continue;
 					}
 
-					// fire
-					panel.DoItemsChanged();
-
-					// update this panel with name
-					panel.UpdateRedraw(false, ui.Name.Text);
-
-					// update that panel if the path is the same
-					ItemPanel pp2 = panel.TargetPanel as ItemPanel;
-					if (pp2 != null && pp2.Explorer.Location == Location)
-						pp2.UpdateRedraw(true);
-
-					// exit the loop
+					// done
+					args.Result = JobResult.Done;
+					args.PostName = ui.Name.Text;
 					return;
 				}
-				catch (RuntimeException exception)
+				catch (RuntimeException ex)
 				{
-					A.Message(exception.Message);
+					A.Message(ex.Message);
 					continue;
 				}
 			}
 		}
-		internal override void BuildFiles(Collection<PSObject> values)
+		///
+		public override void DoSetText(SetTextEventArgs args)
 		{
-			if (!My.ProviderInfoEx.IsNavigation(Provider))
-			{
-				base.BuildFiles(values);
-				return;
-			}
+			if (args == null) return;
 
-			Cache.Clear();
-			if (Provider.ImplementingType == typeof(FileSystemProvider))
+			try
 			{
-				foreach (PSObject value in values)
-					Cache.Add(new SystemMapFile(value, Map));
-			}
-			else
-			{
-				foreach (PSObject value in values)
-					Cache.Add(new ItemMapFile(value, Map));
-			}
-		}
-		internal override object GetData(ExplorerEventArgs args)
-		{
-			// get child items for the panel location
-			var items = A.GetChildItems(Location);
-			
-			// standard
-			if (0 == (args.Mode & ExplorerModes.Find) || !My.ProviderInfoEx.IsNavigation(Provider))
-				return items;
+				// path
+				string path = My.PathEx.Combine(Location, args.File.Name);
 
-			// faster
-			Cache.Clear();
-			foreach (PSObject value in items)
-				Cache.Add(new ItemFile(value));
-			return Cache;
+				// read
+				string text = args.Text.TrimEnd();
+
+				// set
+				if (!A.SetContentUI(path, text))
+					return;
+			}
+			catch (RuntimeException ex)
+			{
+				if (args.UI)
+					A.Message(ex.Message);
+			}
 		}
 	}
 }

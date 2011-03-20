@@ -21,12 +21,9 @@ namespace PowerShellFar
 	public sealed class PropertyExplorer : Explorer
 	{
 		const string TypeIdString = "19f5261b-4f82-4a0a-93c0-1741f6715752";
-		readonly string _ThePath;
-		internal string ThePath { get { return _ThePath; } }
-		readonly PSObject _TheItem;
-		internal PSObject TheItem { get { return _TheItem; } }
-		readonly ProviderInfo _Provider;
-		internal ProviderInfo Provider { get { return _Provider; } }
+		readonly PathInfoEx _ThePath;
+		internal string ItemPath { get { return _ThePath.Path; } }
+		internal ProviderInfo Provider { get { return _ThePath.Provider; } }
 		/// <summary>
 		/// New property explorer with a provider item path.
 		/// </summary>
@@ -36,27 +33,15 @@ namespace PowerShellFar
 		{
 			if (itemPath == null) throw new ArgumentNullException("itemPath");
 
+			// the path
+			_ThePath = new PathInfoEx(itemPath);
+
 			Functions =
-				ExplorerFunctions.AcceptFiles |
-				ExplorerFunctions.DeleteFiles |
-				ExplorerFunctions.CreateFile |
-				ExplorerFunctions.ExportFile |
-				ExplorerFunctions.ImportText;
+				ExplorerFunctions.GetContent |
+				ExplorerFunctions.SetText;
 
-			_ThePath = itemPath;
-
-			// get item; 090409
-			_TheItem = A.Psf.Engine.InvokeProvider.Item.Get(new string[] { itemPath }, true, true)[0];
-			_ThePath = itemPath;
-
-			// get its provider
-			PSPropertyInfo pi = _TheItem.Properties["PSProvider"];
-			if (pi == null)
-				throw new InvalidOperationException();
-
-			_Provider = pi.Value as ProviderInfo;
-			if (_Provider == null || !My.ProviderInfoEx.HasProperty(_Provider))
-				throw new InvalidOperationException(Res.NotSupportedByProvider);
+			if (My.ProviderInfoEx.HasDynamicProperty(Provider))
+				Functions |= (ExplorerFunctions.AcceptFiles | ExplorerFunctions.DeleteFiles | ExplorerFunctions.CreateFile | ExplorerFunctions.RenameFile);
 		}
 		///
 		public override Panel CreatePanel()
@@ -79,7 +64,7 @@ namespace PowerShellFar
 				// so, don't add, they are noisy anyway (even if marked system or hidden).
 
 				// get property bag 090409
-				Collection<PSObject> bag = A.Psf.Engine.InvokeProvider.Property.Get(Kit.EscapeWildcard(_ThePath), null);
+				Collection<PSObject> bag = A.Psf.Engine.InvokeProvider.Property.Get(Kit.EscapeWildcard(ItemPath), null);
 
 				// filter
 				var filter = new List<string>(5);
@@ -131,7 +116,7 @@ namespace PowerShellFar
 			return result;
 		}
 		///
-		public override void ExportFile(ExportFileEventArgs args)
+		public override void GetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
 
@@ -144,16 +129,10 @@ namespace PowerShellFar
 
 			try
 			{
+				args.CanSet = pi.IsSettable;
 				args.UseText = Converter.InfoToLine(pi);
 				if (args.UseText == null)
-				{
-					// write by PS
-					var output = A.InvokeCode("$args[0] | Out-String -Width $args[1] -ErrorAction Stop", pi.Value, int.MaxValue);
-					if (output.Count != 1) throw new InvalidOperationException("TODO");
-					args.UseText = output[0].ToString();
-				}
-
-				args.CanImport = pi.IsSettable;
+					args.UseText = A.InvokeCode("$args[0] | Out-String -Width $args[1] -ErrorAction Stop", pi.Value, int.MaxValue)[0].ToString();
 			}
 			catch (RuntimeException ex)
 			{
@@ -161,7 +140,7 @@ namespace PowerShellFar
 			}
 		}
 		///
-		public override void ImportText(ImportTextEventArgs args)
+		public override void SetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
 
@@ -188,8 +167,8 @@ namespace PowerShellFar
 					value = text;
 				}
 
-				A.SetPropertyValue(_ThePath, pi.Name, Converter.Parse(pi, value));
-				PropertyPanel.WhenPropertyChanged(_ThePath);
+				A.SetPropertyValue(ItemPath, pi.Name, Converter.Parse(pi, value));
+				PropertyPanel.WhenPropertyChanged(ItemPath);
 			}
 			catch (RuntimeException ex)
 			{
@@ -202,15 +181,6 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			// not supported?
-			if (!My.ProviderInfoEx.HasDynamicProperty(_Provider))
-			{
-				args.Result = JobResult.Ignore;
-				if (args.UI)
-					A.Message(Res.NotSupportedByProvider);
-				return;
-			}
-
 			// to ask
 			bool confirm = args.UI && (Far.Net.Confirmations & FarConfirmations.Delete) != 0;
 
@@ -218,7 +188,7 @@ namespace PowerShellFar
 			List<string> names = A.FileNameList(args.Files);
 
 			//! Registry: workaround: (default)
-			if (_Provider.ImplementingType == typeof(RegistryProvider))
+			if (Provider.ImplementingType == typeof(RegistryProvider))
 			{
 				for (int i = names.Count; --i >= 0; )
 				{
@@ -226,7 +196,7 @@ namespace PowerShellFar
 					{
 						// remove or not
 						if (!confirm || 0 == Far.Net.Message("Delete the (default) property", Res.Delete, MsgOptions.YesNo))
-							A.Psf.Engine.InvokeProvider.Property.Remove(Kit.EscapeWildcard(_ThePath), string.Empty);
+							A.Psf.Engine.InvokeProvider.Property.Remove(Kit.EscapeWildcard(ItemPath), string.Empty);
 
 						// remove from the list in any case
 						names.RemoveAt(i);
@@ -242,7 +212,7 @@ namespace PowerShellFar
 			using (PowerShell ps = A.Psf.CreatePipeline())
 			{
 				Command command = new Command("Remove-ItemProperty");
-				command.Parameters.Add("LiteralPath", _ThePath);
+				command.Parameters.Add("LiteralPath", ItemPath);
 				command.Parameters.Add(Word.Name, names);
 				if (confirm)
 					command.Parameters.Add(Prm.Confirm);
@@ -266,20 +236,12 @@ namespace PowerShellFar
 		public override void AcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (args == null) return;
-			
+
 			// that source
 			var that = args.Explorer as PropertyExplorer;
 			if (that == null)
 			{
 				if (args.UI) A.Message(Res.UnknownFileSource);
-				args.Result = JobResult.Ignore;
-				return;
-			}
-
-			// this target
-			if (!My.ProviderInfoEx.HasDynamicProperty(_Provider)) //????? do that on init, drop the flag
-			{
-				if (args.UI) A.Message(Res.NotSupportedByProvider);
 				args.Result = JobResult.Ignore;
 				return;
 			}
@@ -291,8 +253,8 @@ namespace PowerShellFar
 			//! *) -Name takes a single string only? (help: yes (copy), no (move) - odd!)
 			//! *) Names can't be pipelined (help says they can)
 			//! so, use provider directly (no confirmation)
-			string source = Kit.EscapeWildcard(that.ThePath);
-			string target = Kit.EscapeWildcard(this.ThePath);
+			string source = Kit.EscapeWildcard(that.ItemPath);
+			string target = Kit.EscapeWildcard(this.ItemPath);
 			if (args.Move)
 			{
 				foreach (string name in names)
@@ -305,22 +267,43 @@ namespace PowerShellFar
 			}
 		}
 		///
-		public override void CreateFile(CreateFileEventArgs args)
+		public override void RenameFile(RenameFileEventArgs args)
 		{
 			if (args == null) return;
 
-			// all done
-			args.Result = JobResult.Ignore;
-
-			var panel = args.Panel as PropertyPanel;
-			if (panel == null)
-				return;
-
-			if (!My.ProviderInfoEx.HasDynamicProperty(Provider))
+			//! Registry: workaround: (default)
+			if (Kit.Equals(args.File.Name, "(default)") && Provider.ImplementingType == typeof(RegistryProvider))
 			{
-				A.Message(Res.NotSupportedByProvider);
+				args.Result = JobResult.Ignore;
+				if (args.UI)
+					A.Message("Cannot rename this property.");
 				return;
 			}
+
+			using (PowerShell ps = A.Psf.CreatePipeline())
+			{
+				Command c = new Command("Rename-ItemProperty");
+				c.Parameters.Add(new CommandParameter("LiteralPath", ItemPath));
+				c.Parameters.Add(new CommandParameter(Word.Name, args.File.Name));
+				c.Parameters.Add(new CommandParameter("NewName", args.NewName));
+				c.Parameters.Add(Prm.Force);
+				c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
+				ps.Commands.AddCommand(c);
+				ps.Invoke();
+
+				if (ps.Streams.Error.Count > 0)
+				{
+					args.Result = JobResult.Ignore;
+					if (args.UI)
+						A.ShowError(ps);
+				}
+			}
+		}
+		///
+		public override void CreateFile(CreateFileEventArgs args)
+		{
+			if (args == null) return;
+			args.Result = JobResult.Ignore;
 
 			UI.NewValueDialog ui = new UI.NewValueDialog("New property");
 			while (ui.Dialog.Show())
@@ -332,7 +315,7 @@ namespace PowerShellFar
 						//! Don't use Value if it is empty (e.g. to avoid (default) property at new key in Registry).
 						//! Don't use -Force or you silently kill existing item\property (with all children, properties, etc.)
 						Command c = new Command("New-ItemProperty");
-						c.Parameters.Add("LiteralPath", ThePath);
+						c.Parameters.Add("LiteralPath", ItemPath);
 						c.Parameters.Add(Word.Name, ui.Name.Text);
 						c.Parameters.Add("PropertyType", ui.Type.Text);
 
@@ -345,15 +328,9 @@ namespace PowerShellFar
 							continue;
 					}
 
-					// update this panel with name
-					panel.UpdateRedraw(false, ui.Name.Text);
-
-					// update that panel if the path is the same
-					PropertyPanel pp2 = panel.TargetPanel as PropertyPanel;
-					if (pp2 != null && pp2.Explorer.ThePath == ThePath)
-						pp2.UpdateRedraw(true);
-
-					// exit the loop
+					// done
+					args.Result = JobResult.Done;
+					args.PostName = ui.Name.Text;
 					return;
 				}
 				catch (RuntimeException exception)

@@ -1,5 +1,24 @@
 http://code.google.com/p/farnet/
 
+= 4.4.5 =
+
+*) Explorer arguments
+Removed the Panel property. Instead, most of explorer methods are called via
+virtual panel methods, so that panels have a chance to do something before or
+after. There is also the Parameter property, explorers and callers may use it.
+
+*) Explorer methods
+- Renamed a few methods (see the forum discussion)
+- AcceptFilesEventArgs: Delete -> ToDeleteFiles
+
+*) Explorers and panels
+- Added RenameFile() to rename a file
+- Added ExportFiles() to copy/move module files to native destinations
+- Super panel supports ExportFiles (actually it depends on explorers of files)
+
+*) Misc
+- FarFile class is abstract
+
 = 4.4.4 =
 
 *) File search
@@ -41,7 +60,6 @@ http://www.codeproject.com/KB/threads/AbortIfSafe.aspx
 = 4.4.3 =
 
 *) Module panel revision, continued
-(changes are unlikely breaking for the most of users)
 
 *) Explorer
 - Added quite a number of new methods, changed some existing.

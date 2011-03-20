@@ -53,3 +53,4 @@ Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
 Panel-Job-.ps1 Panel PowerShell background jobs that are running in the current session.
+Connect-SQLite-.ps1 Connects .sdf database and optionally shows tables in a panel.

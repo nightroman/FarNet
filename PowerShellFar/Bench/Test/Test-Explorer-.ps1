@@ -59,12 +59,12 @@ function global:New-TestRootExplorer
 
 # Flat data explorer. It is designed to show just one panel with some files,
 # that is why it does not have the AsExploreX scripts.
-# *) It allows to edit, view, and [CtrlQ] by AsExportFile and AsImportFile.
+# *) It allows to edit, view, and [CtrlQ] by AsGetContent and AsSetText.
 # *) Editors/viewers are not modal and work even when the panel has closed.
 function global:New-TestFlatExplorer
 {
 	New-Object PowerShellFar.PowerExplorer '0024d0b7-c96d-443b-881a-d7f221182386' -Property @{
-		Functions = 'DeleteFiles, ExportFile, ImportText'
+		Functions = 'DeleteFiles, GetContent, SetText'
 		Location = 'Flat'
 		# Files are PowerShell functions
 		AsGetFiles = {
@@ -75,13 +75,13 @@ function global:New-TestFlatExplorer
 			$_.Files | Remove-Item -LiteralPath { "Function:\$($_.Name)" }
 		}
 		# Allows to edit, view and [CtrlQ] the function definition
-		AsExportFile = {
-			$_.CanImport = $this.AsImportText -ne $null # for testing
+		AsGetContent = {
+			$_.CanSet = $this.AsSetText -ne $null # for testing
 			$_.UseText = $_.File.Data.Definition
 			$_.UseFileExtension = '.ps1'
 		}
 		# Updates the function when it is edited
-		AsImportText = {
+		AsSetText = {
 			Set-Content "Function:\$($_.File.Name)" ($_.Text.TrimEnd())
 		}
 		# The panel
@@ -131,7 +131,7 @@ function global:New-TestTreeExplorer($Path)
 function global:New-TestPathExplorer($Path)
 {
 	New-Object PowerShellFar.PowerExplorer 'fd00a7cc-5ec1-4279-b659-541bbb5b2a00' -Property @{
-		Functions = 'ExportFile, ImportFile'
+		Functions = 'GetContent'
 		Location = $Path
 		# The files represent file system directories and files
 		AsGetFiles = {
@@ -153,8 +153,8 @@ function global:New-TestPathExplorer($Path)
 			}
 		}
 		# Allows to edit, view and [CtrlQ]
-		AsExportFile = {
-			$_.CanImport = $true
+		AsGetContent = {
+			$_.CanSet = $true
 			$_.UseFileName = Join-Path $this.Location $_.File.Name
 		}
 		# Updates the panel title when explorers change

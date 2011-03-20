@@ -74,9 +74,9 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		// get the files
 		if (!pp->_skipUpdateFiles)
 		{
-			GetFilesEventArgs args(pp->Host, mode);
-			pp->Files = pp->Host->Explorer->GetFiles(%args);
-			if (int(args.Result))
+			GetFilesEventArgs args(mode);
+			pp->Files = pp->Host->UIGetFiles(%args);
+			if (args.Result != JobResult::Done)
 				return 0;
 		}
 
@@ -219,10 +219,9 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 
 	Log::Source->TraceInformation("SetDirectoryW Mode='{0}' Name='{1}'", mode, directory);
 
-	Explorer^ explorer1 = pp->Host->Explorer;
 	const bool canExploreLocation = pp->Host->Explorer->CanExploreLocation;
 
-	// Silent but not Find is on CtrlQ
+	//! Silent but not Find is possible on CtrlQ scan
 	if (!canExploreLocation && 0 != (opMode & (OPM_FIND | OPM_SILENT)))
 		return 0;
 
@@ -233,8 +232,8 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 		ExploreEventArgs^ args2;
 		if (directory == "\\")
 		{
-			ExploreRootEventArgs^ args = gcnew ExploreRootEventArgs(pp->Host, mode);
-			explorer2 = explorer1->ExploreRoot(args);
+			ExploreRootEventArgs^ args = gcnew ExploreRootEventArgs(mode);
+			explorer2 = pp->Host->UIExploreRoot(args);
 			if (!explorer2)
 			{
 				Panel^ mp = pp->Host;
@@ -254,8 +253,8 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 		}
 		else if (directory == "..")
 		{
-			ExploreParentEventArgs^ args = gcnew ExploreParentEventArgs(pp->Host, mode);
-			explorer2 = explorer1->ExploreParent(args);
+			ExploreParentEventArgs^ args = gcnew ExploreParentEventArgs(mode);
+			explorer2 = pp->Host->UIExploreParent(args);
 			if (!explorer2)
 			{
 				if (!pp->Host->Parent)
@@ -268,14 +267,14 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 		}
 		else if (canExploreLocation)
 		{
-			ExploreLocationEventArgs^ args = gcnew ExploreLocationEventArgs(pp->Host, mode, directory);
-			explorer2 = explorer1->ExploreLocation(args);
+			ExploreLocationEventArgs^ args = gcnew ExploreLocationEventArgs(mode, directory);
+			explorer2 = pp->Host->UIExploreLocation(args);
 			args2 = args;
 		}
 		else
 		{
-			ExploreDirectoryEventArgs^ args = gcnew ExploreDirectoryEventArgs(pp->Host, mode, pp->Host->CurrentFile);
-			explorer2 = explorer1->ExploreDirectory(args);
+			ExploreDirectoryEventArgs^ args = gcnew ExploreDirectoryEventArgs(mode, pp->Host->CurrentFile);
+			explorer2 = pp->Host->UIExploreDirectory(args);
 			args2 = args;
 		}
 
@@ -306,7 +305,7 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	// SystemNames looks good. If names are bad, it's a big issue for exchange via FS anyway.
 	// And if SystemNames is ON then we do not generate aliases internally. Think.
 	Explorer^ explorer = pp->Host->Explorer;
-	if (!explorer->CanExportFile)
+	if (!explorer->CanGetContent)
 		return 0;
 	const bool canExploreLocation = explorer->CanExploreLocation;
 
@@ -322,12 +321,12 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 			? Path::Combine(destination, files[i]->Name)
 			: Path::Combine(destination, names[i]);
 
-		ExportFileEventArgs^ argsJob = Panel::WorksExportExplorerFile(explorer, pp->Host, mode, files[i], fileName);
+		GetContentEventArgs^ argsJob = Panel::WorksExportExplorerFile(explorer, pp->Host, mode, files[i], fileName);
 		if (argsJob && argsJob->Result == JobResult::Done) //???? not tested
 		{
-			ExportFileEventArgs^ asExportFileEventArgs = dynamic_cast<ExportFileEventArgs^>(argsJob);
-			if (asExportFileEventArgs && SS(asExportFileEventArgs->UseFileName))
-				File::Copy(asExportFileEventArgs->UseFileName, fileName);
+			GetContentEventArgs^ asGetContentEventArgs = dynamic_cast<GetContentEventArgs^>(argsJob);
+			if (asGetContentEventArgs && SS(asGetContentEventArgs->UseFileName))
+				File::Copy(asGetContentEventArgs->UseFileName, fileName);
 		}
 	}
 
@@ -342,22 +341,20 @@ int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	
 	Log::Source->TraceInformation("PutFilesW Mode='{0}'", mode);
 
-	Explorer^ explorer = pp->Host->Explorer;
-	if (!explorer->CanAcceptOther)
+	if (!pp->Host->Explorer->CanImportFiles)
 		return 0;
 
 	List<FarFile^>^ files = gcnew List<FarFile^>(itemsNumber);
 	for(int i = 0; i < itemsNumber; ++i)
 		files->Add(Panel1::ItemToFile(panelItem[i]));
 
-	AcceptOtherEventArgs args(
-		pp->Host,
+	ImportFilesEventArgs args(
 		mode,
 		files,
-		srcPath ? gcnew String(srcPath) : String::Empty,
-		move != 0);
+		move != 0,
+		srcPath ? gcnew String(srcPath) : String::Empty);
 
-	explorer->AcceptOther(%args);
+	pp->Host->UIImportFiles(%args);
 	
 	return args.Result == JobResult::Done ? 1 : 0;
 }
@@ -374,8 +371,8 @@ int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsN
 	if (!explorer->CanDeleteFiles)
 		return 0;
 
-	DeleteFilesEventArgs args(pp->Host, mode, ItemsToFiles(pp->Host->Explorer->CanExploreLocation, pp->Files, nullptr, panelItem, itemsNumber), false);
-	explorer->DeleteFiles(%args);
+	DeleteFilesEventArgs args(mode, ItemsToFiles(pp->Host->Explorer->CanExploreLocation, pp->Files, nullptr, panelItem, itemsNumber), false);
+	pp->Host->UIDeleteFiles(%args);
 	
 	return args.Result == JobResult::Ignore ? 0 : 1;
 }

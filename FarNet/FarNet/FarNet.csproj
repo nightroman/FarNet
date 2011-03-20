@@ -110,7 +110,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Editor.cs" />
-    <Compile Include="Explorer.Args.cs" />
+    <Compile Include="ExplorerTypes.cs" />
     <Compile Include="Explorer.cs" />
     <Compile Include="Far.cs" />
     <Compile Include="File.cs" />
@@ -124,8 +124,9 @@
     <Compile Include="Message.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Panel.UI.cs" />
+    <Compile Include="Panel.UIExplorer.cs" />
     <Compile Include="Panel.Works.cs" />
-    <Compile Include="Panel.Api.cs" />
+    <Compile Include="PanelTypes.cs" />
     <Compile Include="Panel.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="Registry.cs" />
