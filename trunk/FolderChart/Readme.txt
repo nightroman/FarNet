@@ -1,6 +1,6 @@
 
 Module   : FarNet.FolderChart
-Release  : 2011-02-13
+Release  : 2011-03-27
 Category : File system
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -11,7 +11,7 @@ Source   : http://code.google.com/p/farnet/
 
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.0
+ * Plugin FarNet 4.4.6
  * .NET Framework 4.0
 
 
@@ -48,3 +48,7 @@ Updated for FarNet 4.3.38
 1.0.4
 
 Updated for FarNet 4.4.0
+
+1.0.5
+
+Updated for FarNet 4.4.6

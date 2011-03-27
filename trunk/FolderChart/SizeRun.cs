@@ -112,7 +112,7 @@ class SizeRun
 			if (!task.Wait(750))
 			{
 				_progress.Title = "Computing sizes";
-				_progress.Cancelled += delegate
+				_progress.Canceled += delegate
 				{
 					cancellation.Cancel(true);
 				};
