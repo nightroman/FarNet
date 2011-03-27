@@ -7,7 +7,7 @@ For the current panel directory this tool calculates file and directory sizes an
 == Prerequisites ==
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.0
+ * Plugin FarNet (use the latest version)
  * .NET Framework 4.0 (charting and parallel processing)
 
 == Features ==
