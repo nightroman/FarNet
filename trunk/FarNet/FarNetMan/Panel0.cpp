@@ -355,8 +355,30 @@ int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 		srcPath ? gcnew String(srcPath) : String::Empty);
 
 	pp->Host->UIImportFiles(%args);
+
+	// done:
+	if (args.Result == JobResult::Done)
+		return 1;
+
+	// failed:
+	if (args.Result != JobResult::Incomplete || args.FilesToStay->Count == 0)
+		return 0;
 	
-	return args.Result == JobResult::Done ? 1 : 0;
+	// incomplete:
+
+	// drop selection flags
+	for(int i = itemsNumber; --i >= 0;)
+		panelItem[i].Flags &= ~PPIF_SELECTED;
+
+	// restore selection flags
+	for each(FarFile^ file in args.FilesToStay)
+	{
+		int index = args.Files->IndexOf(file);
+		if (index >= 0 && index < itemsNumber)
+			panelItem[index].Flags |= PPIF_SELECTED;
+	}
+
+	return -1;
 }
 
 //! It is called on move, too? I.e. is Move = Copy + Delete?

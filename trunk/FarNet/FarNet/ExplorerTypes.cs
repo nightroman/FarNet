@@ -59,9 +59,13 @@ namespace FarNet
 		/// </summary>
 		OpenFile = 1 << 9,
 		/// <summary>
+		/// It implements <see cref="Explorer.CloneFile"/>.
+		/// </summary>
+		CloneFile = 1 << 10,
+		/// <summary>
 		/// It implements <see cref="Explorer.RenameFile"/>.
 		/// </summary>
-		RenameFile = 1 << 10,
+		RenameFile = 1 << 11,
 	}
 
 	/// <summary>
@@ -198,9 +202,9 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// <see cref="Explorer.CreateFile"/> arguments.
+	/// Create file arguments.
 	/// </summary>
-	public class CreateFileEventArgs : ExplorerEventArgs
+	public sealed class CreateFileEventArgs : ExplorerEventArgs
 	{
 		///
 		public CreateFileEventArgs(ExplorerModes mode) : base(mode) { }
@@ -286,16 +290,21 @@ namespace FarNet
 	}
 
 	/// <summary>
+	/// Clone file arguments.
+	/// </summary>
+	public sealed class CloneFileEventArgs : ExplorerFileEventArgs
+	{
+		///
+		public CloneFileEventArgs(ExplorerModes mode, FarFile file) : base(mode, file) { }
+	}
+
+	/// <summary>
 	/// Rename file arguments.
 	/// </summary>
 	public sealed class RenameFileEventArgs : ExplorerFileEventArgs
 	{
 		///
-		public RenameFileEventArgs(ExplorerModes mode, FarFile file, string newName) : base(mode, file) { NewName = newName; }
-		/// <summary>
-		/// Gets the new name.
-		/// </summary>
-		public string NewName { get; private set; }
+		public RenameFileEventArgs(ExplorerModes mode, FarFile file) : base(mode, file) { }
 	}
 
 	/// <summary>
@@ -383,6 +392,26 @@ namespace FarNet
 		/// Gets data attached to <see cref="Files"/>.
 		/// </summary>
 		public IEnumerable FilesData { get { foreach (var it in Files) yield return it.Data; } }
+		/// <summary>
+		/// Gets the list of source files to stay selected and not deleted on move if the job is incomplete.
+		/// </summary>
+		/// <remarks>
+		/// If the job is <see cref="JobResult.Incomplete"/> then not processed files should normally stay selected
+		/// and not deleted on move if the core is told to delete files. Such files have to added to this list.
+		/// <para>
+		/// If the list is empty and the job is incomplete then all input files
+		/// that still exist in the source stay selected and not deleted.
+		/// </para>
+		/// <para>
+		/// It is important that the files added to this list must be taken from the input file list.
+		/// </para>
+		/// <para>
+		/// Choose a proper <see cref="FarNet.Explorer.FileComparer"/> otherwise source files that should stay
+		/// may lose selection or even may be deleted because the comparer does not help to find or exclude them.
+		/// </para>
+		/// </remarks>
+		public IList<FarFile> FilesToStay { get { return _FilesToStay; } }
+		readonly List<FarFile> _FilesToStay = new List<FarFile>();
 	}
 
 	/// <summary>
@@ -396,14 +425,6 @@ namespace FarNet
 		/// Gets the force mode, e.g. on [ShiftDel] instead of [Del].
 		/// </summary>
 		public bool Force { get; private set; }
-		/// <summary>
-		/// Gets the list of files from <see cref="ExplorerFilesEventArgs.Files"/> to stay selected if the job is incomplete.
-		/// </summary>
-		/// <remarks>
-		/// If the job is incomplete and this list is empty then the core recovers selection itself but this is less effective.
-		/// </remarks>
-		public IList<FarFile> FilesToStay { get { return _FailedFiles; } }
-		readonly List<FarFile> _FailedFiles = new List<FarFile>();
 	}
 
 	/// <summary>
@@ -434,7 +455,7 @@ namespace FarNet
 	public abstract class CopyFilesEventArgs : ExplorerFilesEventArgs
 	{
 		///
-		public CopyFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move)
+		protected CopyFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move)
 			: base(mode, files)
 		{
 			Move = move;
@@ -455,26 +476,6 @@ namespace FarNet
 		/// The core does not delete itself, it calls <see cref="FarNet.Explorer.DeleteFiles"/> of the source explorer.
 		/// </remarks>
 		public bool ToDeleteFiles { get; set; }
-		/// <summary>
-		/// Gets the list of source files to stay selected and not deleted on move if the job is incomplete.
-		/// </summary>
-		/// <remarks>
-		/// If the job is <see cref="JobResult.Incomplete"/> then not processed files should normally stay selected
-		/// and not deleted on Move if <see cref="ToDeleteFiles"/> flag is set. Such files have to added to this list.
-		/// <para>
-		/// If the list is empty and the job is incomplete then all input files
-		/// that still exist in the source stay selected and not deleted.
-		/// </para>
-		/// <para>
-		/// It is important that the files added to this list must be taken from the input file list.
-		/// </para>
-		/// <para>
-		/// Choose a proper <see cref="FarNet.Explorer.FileComparer"/> otherwise source files that should stay
-		/// may lose selection or even may be deleted because the comparer does not help to find or exclude them.
-		/// </para>
-		/// </remarks>
-		public IList<FarFile> FilesToStay { get { return _FailedFiles; } }
-		readonly List<FarFile> _FailedFiles = new List<FarFile>();
 	}
 
 	/// <summary>

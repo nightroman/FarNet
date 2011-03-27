@@ -26,17 +26,19 @@ namespace PowerShellFar
 			MenuDebugger = "&9. Debugger...",
 			MenuError = "&0. Errors...",
 			MenuHelp = "&-. Help",
-			// errors
+			// ask
 			AskSaveModified = "Would you like to save modified data?",
+			// errors
+			CanNotClose = "Cannot close the session at this time.",
 			EditorConsoleCannotComplete = "Editor console can't complete the command\nbecause its window is not current at this moment.",
+			InvalidColumnKind = "Invalid column kind: ",
 			LogError = "Cannot write to the log; ensure the path is valid and the file is not busy.",
+			MaximumPanelColumnCount = "Valid maximum column count should be from 3 to 13.", // _100202_113617
 			NeedsEditor = "Editor is not opened or its window is not current.",
 			NotSupportedByProvider = "Operation is not supported by the provider.",
 			NoUserMenu = "You did not define your user menu $Psf.UserMenu.\nPlease, see help and example script Profile-.ps1",
+			ParameterString = "Parameter must be a string.",
 			PropertyIsNotSettableNow = "The property is not settable at this moment.",
-			CanNotClose = "Cannot close the session at this time.",
-			MaximumPanelColumnCount = "Valid maximum column count should be from 3 to 13.", // _100202_113617
-			InvalidColumnKind = "Invalid column kind: ",
 			UnknownFileSource = "The file source is unknown or not supported.",
 			// others
 			Cancel = "Cancel",

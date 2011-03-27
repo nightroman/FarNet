@@ -1,9 +1,46 @@
 <?xml version="1.0" encoding='utf-8'?>
 <doc>
 	<!--
-	/// <include file='doc.xml' path='doc/CurrentDirectory/*'/>
+	/// <include file='doc.xml' path='doc/UnselectNames/*'/>
 	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
 	-->
+	<SelectNames>
+		<summary>
+			Select panel items with specified names.
+		</summary>
+		<param name="names">
+			Names to be selected or objects converted to strings by <c>ToString()</c>. Null is OK.
+		</param>
+		<remarks>
+			Call <see cref="Redraw()"/> after that.
+			<para>
+				Names are processed as case sensitive, not found input names are ignored.
+			</para>
+		</remarks>
+	</SelectNames>
+	<UnselectNames>
+		<summary>
+			Unselect panel items with specified names.
+		</summary>
+		<param name="names">
+			Names to be unselected or objects converted to strings by <c>ToString()</c>. Null is OK.
+		</param>
+		<remarks>
+			Call <see cref="Redraw()"/> after that.
+			<para>
+				Names are processed as case sensitive, not found input names are ignored.
+			</para>
+		</remarks>
+	</UnselectNames>
+	<ViewPlan>
+		<summary>
+			Gets the current view plan.
+		</summary>
+		<remarks>
+			This plan info is incomplete, for example column names are empty.
+		</remarks>
+		<seealso cref="Panel.GetPlan"/>
+	</ViewPlan>
 	<CurrentDirectory>
 		<summary>
 			Gets the panel directory or sets a new directory and opens its native file panel.

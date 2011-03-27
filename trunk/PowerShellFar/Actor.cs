@@ -50,14 +50,16 @@ namespace PowerShellFar
 		/// </summary>
 		void CancelKeyPress(object sender, ConsoleCancelEventArgs e) //_110128_075844
 		{
+			// ControlBreak?
 			if (e.SpecialKey != ConsoleSpecialKey.ControlBreak)
 				return;
 
-			//! copy
+			//! use copy
 			var pipe = Pipeline;
-			if (pipe == null)
+			if (pipe == null || pipe.InvocationStateInfo.State != PSInvocationState.Running)
 				return;
 
+			// stop; it still can be bad but chances are low after the above checks
 			pipe.BeginStop(AsyncStop, pipe);
 		}
 

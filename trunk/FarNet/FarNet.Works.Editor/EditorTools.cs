@@ -92,5 +92,43 @@ namespace FarNet.Works
 			viewer.Title = title;
 			viewer.Open(mode);
 		}
+		#region Menus
+		const string MenuHotkeys = "0123456789abcdefghijklmnopqrstuvwxyz";
+		const string MenuItemFormat = "&{0}. {1}";
+		public static void ShowEditorsMenu()
+		{
+			var menu = Far.Net.CreateMenu();
+			menu.HelpTopic = "MenuEditors";
+			menu.Title = "Editors";
+
+			int index = -1;
+			foreach (var it in Far.Net.Editors())
+			{
+				++index;
+				var name = string.Format(null, MenuItemFormat, (index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " "), it.FileName);
+				menu.Add(name).Data = it;
+			}
+
+			if (menu.Show())
+				((IEditor)menu.SelectedData).Activate();
+		}
+		public static void ShowViewersMenu()
+		{
+			var menu = Far.Net.CreateMenu();
+			menu.HelpTopic = "MenuViewers";
+			menu.Title = "Viewers";
+
+			int index = -1;
+			foreach (var it in Far.Net.Viewers())
+			{
+				++index;
+				var name = string.Format(null, MenuItemFormat, (index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " "), it.FileName);
+				menu.Add(name).Data = it;
+			}
+
+			if (menu.Show())
+				((IViewer)menu.SelectedData).Activate();
+		}
+		#endregion
 	}
 }

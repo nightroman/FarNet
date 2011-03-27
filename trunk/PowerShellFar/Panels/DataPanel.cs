@@ -115,7 +115,7 @@ namespace PowerShellFar
 			if (Table == null && Adapter.SelectCommand == null)
 				throw new RuntimeException("The table and the adapter select command are null.");
 
-			// create and fill table
+			// fill table
 			if (Table == null)
 			{
 				Table = new DataTable();
@@ -326,7 +326,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return null;
 			var Files = Explorer.Cache;
-			
+
 			// refill
 			if (UserWants == UserAction.CtrlR && Adapter != null)
 			{
@@ -365,9 +365,11 @@ namespace PowerShellFar
 			var memberPanel = OpenFileMembers(file);
 			memberPanel.Explorer.CanDeleteFiles = false;
 		}
+		int RecordStartIndex;
+		int RecordMaximumCount = A.Psf.Settings.MaximumPanelFileCount;
 		void Fill()
 		{
-			Adapter.Fill(Table);
+			Adapter.Fill(RecordStartIndex, RecordMaximumCount, Table);
 
 			var Files = Explorer.Cache;
 			Files.Clear();
@@ -442,26 +444,6 @@ namespace PowerShellFar
 			EnsureBuilder();
 			Adapter.UpdateCommand = _Builder.GetUpdateCommand();
 		}
-		///
-		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
-		{
-			if (items.Create == null)
-				items.Create = new SetItem()
-				{
-					Text = "&New row",
-					Click = delegate { UICreate(); }
-				};
-
-			if (items.Delete == null)
-				items.Delete = new SetItem()
-				{
-					Text = "&Delete row(s)",
-					Click = delegate { UIDelete(false); }
-				};
-
-			base.HelpMenuInitItems(items, e);
-		}
-		internal override string HelpMenuTextOpenFileMembers { get { return "Edit row data"; } }
 		internal void DoCreateFile()
 		{
 			BuildInsertCommand();
@@ -480,5 +462,114 @@ namespace PowerShellFar
 			// open the record panel
 			OpenFile(file);
 		}
+		void OnRangeNext()
+		{
+			if (Table.Rows.Count < RecordMaximumCount)
+				return;
+
+			RecordStartIndex += RecordMaximumCount;
+
+			UserWants = UserAction.CtrlR;
+			UpdateRedraw(true);
+		}
+		void OnRangePrevious()
+		{
+			if (RecordStartIndex == 0)
+				return;
+
+			RecordStartIndex -= RecordMaximumCount;
+			if (RecordStartIndex < 0)
+				RecordStartIndex = 0;
+
+			UserWants = UserAction.CtrlR;
+			UpdateRedraw(true);
+		}
+		///
+		public override bool UIKeyPressed(int code, KeyStates state) //????? docs
+		{
+			switch (code)
+			{
+				case VKeyCode.PageDown:
+					switch (state)
+					{
+						case KeyStates.Control | KeyStates.Shift:
+							OnRangeNext();
+							return true;
+					}
+					break;
+				case VKeyCode.PageUp:
+					switch (state)
+					{
+						case KeyStates.Control | KeyStates.Shift:
+							OnRangePrevious();
+							return true;
+					}
+					break;
+			}
+			return base.UIKeyPressed(code, state);
+		}
+		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
+		{
+			e.Menu.Add("Next range").Click = delegate { OnRangeNext(); };
+
+			e.Menu.Add("Previous range").Click = delegate { OnRangePrevious(); };
+
+			e.Menu.Add("Record start number").Click = delegate
+			{
+				var text = Far.Net.Input("Record start number", "DataRecordStartNumber", "Data Panel", (RecordStartIndex + 1).ToString());
+				if (string.IsNullOrEmpty(text))
+					return;
+
+				int value;
+				if (!int.TryParse(text, out value) || value < 1)
+				{
+					A.Message("Invalid number");
+					return;
+				}
+
+				RecordStartIndex = value - 1;
+
+				UserWants = UserAction.CtrlR;
+				UpdateRedraw(true);
+			};
+
+			e.Menu.Add("Record maximum count").Click = delegate
+			{
+				var text = Far.Net.Input("Record maximum count", "DataRecordMaximumCount", "Data Panel", RecordMaximumCount.ToString());
+				if (string.IsNullOrEmpty(text))
+					return;
+
+				int value;
+				if (!int.TryParse(text, out value) || value < 1)
+				{
+					A.Message("Invalid number");
+					return;
+				}
+
+				RecordMaximumCount = value;
+
+				UserWants = UserAction.CtrlR;
+				UpdateRedraw(true);
+			};
+			
+			e.Menu.Add(string.Empty).IsSeparator = true;
+
+			if (items.Create == null)
+				items.Create = new SetItem()
+				{
+					Text = "&New row",
+					Click = delegate { UICreate(); }
+				};
+
+			if (items.Delete == null)
+				items.Delete = new SetItem()
+				{
+					Text = "&Delete row(s)",
+					Click = delegate { UIDelete(false); }
+				};
+
+			base.HelpMenuInitItems(items, e);
+		}
+		internal override string HelpMenuTextOpenFileMembers { get { return "Edit row data"; } }
 	}
 }

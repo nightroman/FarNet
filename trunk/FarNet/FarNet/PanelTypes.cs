@@ -146,6 +146,8 @@ namespace FarNet
 		/// Gets or sets the panel view mode.
 		/// </summary>
 		PanelViewMode ViewMode { get; set; }
+		/// <include file='doc.xml' path='doc/ViewPlan/*'/>
+		PanelPlan ViewPlan { get; }
 		/// <summary>
 		/// Gets the panel window position.
 		/// </summary>
@@ -251,28 +253,10 @@ namespace FarNet
 		/// Call <see cref="Redraw()"/> after that.
 		/// </remarks>
 		void UnselectAt(int[] indexes);
-		/// <summary>
-		/// Select panel items with specified names.
-		/// </summary>
-		/// <param name="names">Names to be selected. Null is OK.</param>
-		/// <remarks>
-		/// Call <see cref="Redraw()"/> after that.
-		/// <para>
-		/// Names are processed as case sensitive, not found input names are ignored.
-		/// </para>
-		/// </remarks>
-		void SelectNames(string[] names);
-		/// <summary>
-		/// Unselect panel items with specified names.
-		/// </summary>
-		/// <param name="names">Names to be selected. Null is OK.</param>
-		/// <remarks>
-		/// Call <see cref="Redraw()"/> after that.
-		/// <para>
-		/// Names are processed as case sensitive, not found input names are ignored.
-		/// </para>
-		/// </remarks>
-		void UnselectNames(string[] names);
+		/// <include file='doc.xml' path='doc/SelectNames/*'/>
+		void SelectNames(IEnumerable names);
+		/// <include file='doc.xml' path='doc/UnselectNames/*'/>
+		void UnselectNames(IEnumerable names);
 		/// <summary>
 		/// Pushes or puts the panel to the internal panel shelve.
 		/// </summary>

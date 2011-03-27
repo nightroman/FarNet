@@ -62,7 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="PanelsShelve.cs" />
+    <Compile Include="PanelTools.cs" />
+    <Compile Include="ShelveInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet.csproj">

@@ -42,65 +42,6 @@ bool Panel2::HasDots::get()
 	}
 }
 
-/*
-?? It works only for panels that have the current mode defined,
-because Far does not provide this info and we do not want to hack
-Far:\Panel\ViewModes\ModeX, though it should work, more likely.
-For now we just do nothing for not defined modes.
-To submit a wish?
-*/
-void Panel2::SwitchFullScreen()
-{
-	// get
-	PanelViewMode iViewMode = ViewMode;
-	PanelPlan^ plan = GetPlan(iViewMode);
-	if (!plan)
-	{
-		String^ sColumnTypes;
-		{
-			int size = ::Info.Control(Handle, FCTL_GETCOLUMNTYPES, 0, NULL);
-			CBox buf(size);
-			::Info.Control(Handle, FCTL_GETCOLUMNTYPES, size, (LONG_PTR)(wchar_t*)buf);
-			sColumnTypes = gcnew String(buf);
-		}
-		String^ sColumnWidths;
-		{
-			int size = ::Info.Control(Handle, FCTL_GETCOLUMNWIDTHS, 0, NULL);
-			CBox buf(size);
-			::Info.Control(Handle, FCTL_GETCOLUMNWIDTHS, size, (LONG_PTR)(wchar_t*)buf);
-			sColumnWidths = gcnew String(buf);
-		}
-
-		array<String^>^ types = sColumnTypes->Split(',');
-		array<String^>^ widths = sColumnWidths->Split(',');
-		if (types->Length != widths->Length)
-			throw gcnew InvalidOperationException("Different numbers of column types and widths.");
-
-		plan = gcnew PanelPlan;
-		plan->Columns = gcnew array<FarColumn^>(types->Length);
-		for(int iType = 0; iType < types->Length; ++iType)
-		{
-			SetColumn^ column = gcnew SetColumn();
-			plan->Columns[iType] = column;
-			column->Kind = types[iType];
-			
-			if (widths[iType]->EndsWith("%"))
-				column->Width = - ParseInt(widths[iType]->Substring(0, widths[iType]->Length - 1), 0);
-			else if (types[iType] == "N" || types[iType] == "Z" || types[iType] == "O")
-				column->Width = 0;
-			else
-				column->Width = ParseInt(widths[iType], 0);
-		}
-	}
-
-	// switch
-	plan->IsFullScreen = !plan->IsFullScreen;
-
-	// set
-	SetPlan(iViewMode, plan);
-	Redraw();
-}
-
 //! see remark for Panel1::CurrentFile::get()
 FarFile^ Panel2::CurrentFile::get()
 {
@@ -204,7 +145,7 @@ void Panel2::OpenReplace(Panel^ current)
 	if (!current)
 		throw gcnew ArgumentNullException("current");
 
-	Panel0::ReplacePanel(Panel0::GetPanel(current->WorksId), this);
+	Panel0::ReplacePanel((Panel2^)current->WorksPanel, this);
 }
 
 void Panel2::Open()
@@ -318,10 +259,10 @@ PanelPlan^ Panel2::GetPlan(PanelViewMode mode)
 	if (i < 0 || i > 9)
 		throw gcnew ArgumentException("mode");
 
-	if (!_Plans)
+	if (_Plans)
+		return _Plans[i];
+	else
 		return nullptr;
-
-	return _Plans[i];
 }
 
 #define SETKEYBAR(Name, Data) void Panel2::SetKeyBar##Name(array<String^>^ labels)\
@@ -812,6 +753,13 @@ void Panel2::ReplaceExplorer(Explorer^ explorer)
 	_MyExplorer = explorer;
 	explorer->EnterPanel(Host);
 	Host->UIExplorerEntered(%args);
+}
+
+void Panel2::Navigate(Explorer^ explorer)
+{
+	ReplaceExplorer(explorer);
+	Update(false);
+	Redraw();
 }
 
 }

@@ -34,10 +34,7 @@ public:
 	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
 	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
 	static void ShowConsoleMenu();
-	static void ShowEditorsMenu();
 	static void ShowMenu(ModuleToolOptions from);
-	static void ShowPanelsMenu();
-	static void ShowViewersMenu();
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";

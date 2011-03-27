@@ -34,6 +34,7 @@ public:
 	virtual property int TopIndex { int get(); }
 	virtual property PanelSortMode SortMode { PanelSortMode get(); void set(PanelSortMode value); }
 	virtual property PanelKind Kind { PanelKind get(); }
+	virtual property PanelPlan^ ViewPlan { PanelPlan^ get(); }
 	virtual property PanelViewMode ViewMode { PanelViewMode get(); void set(PanelViewMode value); }
 	virtual property Place Window { Place get(); }
 	virtual property Point Frame { Point get(); }
@@ -50,10 +51,10 @@ public:
 	virtual void Redraw(int current, int top);
 	virtual void SelectAt(array<int>^ indexes);
 	virtual void SelectAll();
-	virtual void SelectNames(array<String^>^ names);
+	virtual void SelectNames(System::Collections::IEnumerable^ names);
 	virtual void UnselectAt(array<int>^ indexes);
 	virtual void UnselectAll();
-	virtual void UnselectNames(array<String^>^ names);
+	virtual void UnselectNames(System::Collections::IEnumerable^ names);
 	virtual void Update(bool keepSelection);
 public:
 	virtual String^ ToString() override;
@@ -66,7 +67,7 @@ internal:
 private:
 	void Select(array<int>^ indexes, bool select);
 	void SelectAll(bool select);
-	void SelectNames(array<String^>^ names, bool select);
+	void SelectNames(System::Collections::IEnumerable^ names, bool select);
 internal:
 	property HANDLE Handle { HANDLE get(); void set(HANDLE value); }
 	property int Index { int get() { return (int)(INT_PTR)_handle; } void set(int value) { _handle = (HANDLE)(INT_PTR)value; } }
