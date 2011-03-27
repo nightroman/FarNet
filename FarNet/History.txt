@@ -1,5 +1,32 @@
 http://code.google.com/p/farnet/
 
+= 4.4.6 =
+
+*) Panels & explorers
+- ImportFiles supports the FilesToStay list and selection recovery.
+- ExportFiles: target panel is updated to show new items without a delay.
+- New *CloneFile* family of methods for [ShiftF5] in panels.
+- New method Navigate(), only for the same type explorers ~ same virtual FS.
+- Removed the dialog from UIRename() and NewName from RenameFileEventArgs, it
+is completely up to panels and explorers what they do and show on operations.
+- Select|UnselectNames parameter is IEnumerable now (and ToString() is used).
+
+*) UI menu: .NET \ Panels
+- New commands "Decrease left column", "Increase left column" work for module
+panel if its current view has two columns. The vertical column separator is
+moved left and right on these commands. Use [Space] to repeat the menu.
+- For example it works in super panels, including search result panels.
+- They are candidates for macros, e.g. for CtrlAltLeft/Right.
+
+*) UI menu: .NET \ Console \ Decrease|Increase font size
+- [Space] is used to invoke commands and repeat the menu.
+
+*) Misc
+- New property IPanel.ViewPlan - info about column kinds and widths.
+
+*) Bugs
+- Native panel state was not restored in some cases.
+
 = 4.4.5 =
 
 *) Explorer arguments

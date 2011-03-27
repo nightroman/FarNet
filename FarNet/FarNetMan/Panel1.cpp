@@ -490,9 +490,9 @@ void Panel1::UnselectAll()
 	SelectAll(false);
 }
 
-void Panel1::SelectNames(array<String^>^ names, bool select)
+void Panel1::SelectNames(System::Collections::IEnumerable^ names, bool select)
 {
-	if (!names || names->Length == 0)
+	if (!names)
 		return;
 
 	PanelInfo pi;
@@ -507,11 +507,14 @@ void Panel1::SelectNames(array<String^>^ names, bool select)
 	Info.Control(_handle, FCTL_BEGINSELECTION, 0, 0);
 	try
 	{
-		for each(String^ name in names)
+		for each(Object^ it in names)
 		{
-			int index = namesNow.IndexOf(name);
-			if (index >= 0)
-				Info.Control(_handle, FCTL_SETSELECTION, index, select);
+			if (it)
+			{
+				int index = namesNow.IndexOf(it->ToString());
+				if (index >= 0)
+					Info.Control(_handle, FCTL_SETSELECTION, index, select);
+			}
 		}
 	}
 	finally
@@ -520,12 +523,12 @@ void Panel1::SelectNames(array<String^>^ names, bool select)
 	}
 }
 
-void Panel1::SelectNames(array<String^>^ names)
+void Panel1::SelectNames(System::Collections::IEnumerable^ names)
 {
 	SelectNames(names, true);
 }
 
-void Panel1::UnselectNames(array<String^>^ names)
+void Panel1::UnselectNames(System::Collections::IEnumerable^ names)
 {
 	SelectNames(names, false);
 }
@@ -594,6 +597,45 @@ void Panel1::SortMode::set(PanelSortMode value)
 	//! second
 	if (reversed != ((pi.Flags & PFLAGS_REVERSESORTORDER) != 0))
 		Info.Control(_handle, FCTL_SETSORTORDER, (int)reversed, NULL);
+}
+
+PanelPlan^ Panel1::ViewPlan::get()
+{
+	String^ sColumnTypes;
+	{
+		int size = ::Info.Control(Handle, FCTL_GETCOLUMNTYPES, 0, NULL);
+		CBox buf(size);
+		::Info.Control(Handle, FCTL_GETCOLUMNTYPES, size, (LONG_PTR)(wchar_t*)buf);
+		sColumnTypes = gcnew String(buf);
+	}
+	String^ sColumnWidths;
+	{
+		int size = ::Info.Control(Handle, FCTL_GETCOLUMNWIDTHS, 0, NULL);
+		CBox buf(size);
+		::Info.Control(Handle, FCTL_GETCOLUMNWIDTHS, size, (LONG_PTR)(wchar_t*)buf);
+		sColumnWidths = gcnew String(buf);
+	}
+
+	array<String^>^ types = sColumnTypes->Split(',');
+	array<String^>^ widths = sColumnWidths->Split(',');
+	if (types->Length != widths->Length)
+		throw gcnew InvalidOperationException("Different numbers of column types and widths.");
+
+	PanelPlan^ plan = gcnew PanelPlan;
+	plan->Columns = gcnew array<FarColumn^>(types->Length);
+	for(int iType = 0; iType < types->Length; ++iType)
+	{
+		SetColumn^ column = gcnew SetColumn();
+		plan->Columns[iType] = column;
+		column->Kind = types[iType];
+			
+		if (widths[iType]->EndsWith("%"))
+			column->Width = - ParseInt(widths[iType]->Substring(0, widths[iType]->Length - 1), 0);
+		else
+			column->Width = ParseInt(widths[iType], 0);
+	}
+
+	return plan;
 }
 
 }

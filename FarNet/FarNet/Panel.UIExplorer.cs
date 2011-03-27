@@ -129,6 +129,18 @@ namespace FarNet
 				OnThisFileChanged(args);
 		}
 		/// <summary>
+		/// Calls <see cref="FarNet.Explorer.CloneFile"/> and <see cref="OnThisFileChanged"/>.
+		/// </summary>
+		public virtual void UICloneFile(CloneFileEventArgs args)
+		{
+			if (args == null) return;
+
+			Explorer.CloneFile(args);
+
+			if (args.Result != JobResult.Ignore)
+				OnThisFileChanged(args);
+		}
+		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.CreateFile"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
 		public virtual void UICreateFile(CreateFileEventArgs args)

@@ -80,10 +80,10 @@ public:
 	virtual property bool IsPushed { bool get() { return _Pushed != nullptr; } }
 	virtual property Explorer^ MyExplorer { Explorer^ get() { return _MyExplorer; } }
 	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
-	virtual property int WorksId { int get() { return Index; } }
 	virtual property Panel^ TargetPanel { Panel^ get(); }
 	virtual property PanelHighlighting Highlighting { PanelHighlighting get(); void set(PanelHighlighting value); }
 	virtual PanelPlan^ GetPlan(PanelViewMode mode);
+	virtual void Navigate(Explorer^ explorer);
 	virtual void Open();
 	virtual void OpenReplace(Panel^ current);
 	virtual void PostData(Object^ data);
@@ -103,7 +103,6 @@ internal:
 	property PanelSortMode StartSortMode { PanelSortMode get(); void set(PanelSortMode value); }
 	void AssertOpen();
 	void ReplaceExplorer(Explorer^ explorer);
-	void SwitchFullScreen();
 	virtual FarFile^ GetFile(int index, FileType type) override;
 internal:
 	Panel^ const Host;

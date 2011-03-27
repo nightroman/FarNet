@@ -890,194 +890,40 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	String^ text = menu->Items[menu->Selected]->Text;
 
 	if (Object::ReferenceEquals(text, sPanels))
-		ShowPanelsMenu();
+		Works::PanelTools::ShowPanelsMenu();
 	else if (Object::ReferenceEquals(text, sEditors))
-		ShowEditorsMenu();
+		Works::EditorTools::ShowEditorsMenu();
 	else if (Object::ReferenceEquals(text, sViewers))
-		ShowViewersMenu();
+		Works::EditorTools::ShowViewersMenu();
 	else
 		ShowConsoleMenu();
-}
-
-void Far0::ShowPanelsMenu()
-{
-	String^ sPushShelveThePanel = "Push/Shelve the panel";
-	String^ sSwitchFullScreen = "Switch full screen";
-	String^ sClose = "Close the panel";
-
-	IMenu^ menu = Far::Net->CreateMenu();
-	menu->AutoAssignHotkeys = true;
-	menu->HelpTopic = "MenuMain";
-	menu->ShowAmpersands = true;
-	menu->Title = "Panels";
-
-	FarItem^ mi;
-	bool showPushCommand = true;
-	for(;; menu->Items->Clear())
-	{
-		// Push/Shelve
-		{
-			IPanel^ panel = Far::Net->Panel;
-			if (panel->IsPlugin)
-			{
-				Panel^ plugin = dynamic_cast<Panel^>(panel);
-				if (plugin)
-				{
-					mi = menu->Add(sPushShelveThePanel);
-					mi->Data = plugin;
-
-					mi = menu->Add(sSwitchFullScreen);
-					mi->Data = plugin;
-				}
-				else
-				{
-					showPushCommand = false;
-				}
-
-				mi = menu->Add(sClose);
-				mi->Data = panel;
-			}
-			else if (panel->Kind == PanelKind::File)
-			{
-				mi = menu->Add(sPushShelveThePanel);
-				mi->Data = panel;
-			}
-		}
-
-		// Pop/Unshelve
-		if (Works::ShelveInfo::Stack->Count)
-		{
-			// to remove
-			menu->BreakKeys->Add(VKeyCode::Delete);
-
-			menu->Add("Pop/Unshelve")->IsSeparator = true;
-
-			for each(Works::ShelveInfo^ si in Works::ShelveInfo::Stack)
-			{
-				mi = menu->Add(si->Title);
-				mi->Data = si;
-			}
-		}
-
-		if (!menu->Show())
-			return;
-
-		FarItem^ item = menu->Items[menu->Selected];
-		Object^ data = item->Data;
-
-		// [Delete]:
-		if (menu->BreakKey == VKeyCode::Delete)
-		{
-			// case: remove shelved file panel;
-			// do not remove plugin panels because of their shutdown bypassed
-			ShelveInfoNative^ shelve = dynamic_cast<ShelveInfoNative^>(data);
-			if (shelve)
-				Works::ShelveInfo::Stack->Remove(shelve);
-
-			continue;
-		}
-
-		// Push/Shelve
-		if (Object::ReferenceEquals(item->Text, sPushShelveThePanel))
-		{
-			((IPanel^)data)->Push();
-			return;
-		}
-
-		// Full screen
-		if (Object::ReferenceEquals(item->Text, sSwitchFullScreen))
-		{
-			FarNet::Panel2^ pp = (FarNet::Panel2^)data;
-			pp->SwitchFullScreen();
-			return;
-		}
-
-		// Close panel
-		if (Object::ReferenceEquals(item->Text, sClose))
-		{
-			Panel1^ panel = (Panel1^)data;
-
-			//?? native plugin panel: go to the first item to work around "Far does not restore panel state",
-			// this does not restore either but is still better than unexpected current item after exit.
-			if (nullptr == dynamic_cast<FarNet::Panel2^>(panel))
-				panel->Redraw(0, 0);
-
-			((Panel1^)data)->Close();
-			return;
-		}
-
-		// Pop/Unshelve
-		Works::ShelveInfo^ shelve = (Works::ShelveInfo^)data;
-		shelve->Pop();
-		return;
-	}
-}
-
-void Far0::ShowEditorsMenu()
-{
-	IMenu^ menu = Far::Net->CreateMenu();
-	menu->HelpTopic = "MenuMain";
-	menu->Title = "Editors";
-
-	int index = -1;
-	String^ hotkeys = "0123456789abcdefghijklmnopqrstuvwxyz";
-	for each(IEditor^ it in Far::Net->Editors())
-	{
-		++index;
-		String^ name = String::Format("&{0}. {1}", (index < hotkeys->Length ? hotkeys->Substring(index, 1) : " "), it->FileName);
-		FarItem^ mi = menu->Add(name);
-		mi->Data = it;
-	}
-
-	if (!menu->Show())
-		return;
-
-	IEditor^ it = (IEditor^)menu->SelectedData;
-	it->Activate();
-}
-
-void Far0::ShowViewersMenu()
-{
-	IMenu^ menu = Far::Net->CreateMenu();
-	menu->HelpTopic = "MenuMain";
-	menu->Title = "Viewers";
-
-	int index = -1;
-	String^ hotkeys = "0123456789abcdefghijklmnopqrstuvwxyz";
-	for each(IViewer^ it in Far::Net->Viewers())
-	{
-		++index;
-		String^ name = String::Format("&{0}. {1}", (index < hotkeys->Length ? hotkeys->Substring(index, 1) : " "), it->FileName);
-		FarItem^ mi = menu->Add(name);
-		mi->Data = it;
-	}
-
-	if (!menu->Show())
-		return;
-
-	IViewer^ it = (IViewer^)menu->SelectedData;
-	it->Activate();
 }
 
 void Far0::ShowConsoleMenu()
 {
 	IMenu^ menu = Far::Net->CreateMenu();
-	menu->HelpTopic = "MenuMain";
+	menu->HelpTopic = "MenuConsole";
 	menu->Title = "Console";
 
 	menu->Add("&Decrease font size");
 	menu->Add("&Increase font size");
 
-	menu->Show();
-
-	switch(menu->Selected)
+	menu->BreakKeys->Add(VKeyCode::Spacebar);
+	
+	while(menu->Show())
 	{
-	case 0:
-		ChangeFontSize(false);
-		return;
-	case 1:
-		ChangeFontSize(true);
-		return;
+		switch(menu->Selected)
+		{
+		case 0:
+			ChangeFontSize(false);
+			break;
+		case 1:
+			ChangeFontSize(true);
+			break;
+		}
+		
+		if (menu->BreakKey != VKeyCode::Spacebar)
+			return;
 	}
 }
 

@@ -49,21 +49,21 @@ ShelveInfoNative::ShelveInfoNative(Panel1^ panel, bool modes)
 ShelveInfoNative^ ShelveInfoNative::CreateActiveInfo(bool modes)
 {
 	// any panel
-	IPanel^ panel = Far::Net->Panel;
-	if (!panel)
+	IPanel^ native = Far::Net->Panel;
+	if (!native)
 		return nullptr;
 
-	// FarNet panel
-	Panel2^ panelFarNet = dynamic_cast<Panel2^>(panel); 
-	if (panelFarNet)
-		return panelFarNet->_ActiveInfo;
+	// module panel
+	Panel^ module = dynamic_cast<Panel^>(native); 
+	if (module)
+		return ((Panel2^)module->WorksPanel)->_ActiveInfo;
 
 	// native plugin panel; it is closed if another panel is opened
-	if (panel->IsPlugin) //_110201_111328
+	if (native->IsPlugin) //_110201_111328
 		return nullptr;
 	
 	// must be a file system panel
-	return gcnew ShelveInfoNative((Panel1^)panel, modes);
+	return gcnew ShelveInfoNative((Panel1^)native, modes);
 }
 
 // _110313_054719 Now works for passive, too.

@@ -6,6 +6,7 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Collections;
+using System.Data;
 using System.Management.Automation;
 using FarNet;
 
@@ -183,7 +184,12 @@ namespace PowerShellFar
 
 				try
 				{
-					SetUserValue(pi, null);
+					//_110326_150007 Setting null fails for DataRow with value types, use DBNull
+					if (Target.BaseObject is DataRow)
+						pi.Value = DBNull.Value;
+					else
+						SetUserValue(pi, null);
+					
 					UpdateRedraw(true);
 				}
 				catch (RuntimeException ex)
@@ -198,20 +204,18 @@ namespace PowerShellFar
 			switch (code)
 			{
 				case VKeyCode.Delete:
-					
 					goto case VKeyCode.F8;
-				
+
 				case VKeyCode.F8:
-					
-					if (state == KeyStates.Shift)
+					switch (state)
 					{
-						UISetNulls();
-						return true;
+						case KeyStates.Shift:
+							UISetNulls();
+							return true;
 					}
-					
 					break;
 			}
-			
+
 			// base
 			return base.UIKeyPressed(code, state);
 		}

@@ -12,9 +12,13 @@ using Microsoft.PowerShell.Commands;
 
 namespace PowerShellFar
 {
-	sealed class ItemExplorer : FormatExplorer
+	/// <summary>
+	/// PowerShell provider item explorer.
+	/// </summary>
+	public sealed class ItemExplorer : FormatExplorer
 	{
 		const string TypeIdString = "07e4dde7-e113-4622-b2e9-81cf3cda927a";
+		///
 		public ItemExplorer(string location)
 			: base(new Guid(TypeIdString))
 		{
@@ -22,6 +26,7 @@ namespace PowerShellFar
 			Functions =
 				ExplorerFunctions.AcceptFiles |
 				ExplorerFunctions.DeleteFiles |
+				ExplorerFunctions.CloneFile |
 				ExplorerFunctions.CreateFile |
 				ExplorerFunctions.GetContent |
 				ExplorerFunctions.SetText |
@@ -329,9 +334,13 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
+			var newName = args.Parameter as string;
+			if (newName == null)
+				throw new InvalidOperationException(Res.ParameterString);
+
 			// workaround; Rename-Item has no -LiteralPath; e.g. z`z[z.txt is a big problem
 			string src = Kit.EscapeWildcard(My.PathEx.Combine(Location, args.File.Name));
-			A.Psf.Engine.InvokeProvider.Item.Rename(src, args.NewName);
+			A.Psf.Engine.InvokeProvider.Item.Rename(src, newName);
 		}
 		///
 		public override void DoCreateFile(CreateFileEventArgs args)
@@ -400,6 +409,21 @@ namespace PowerShellFar
 				if (args.UI)
 					A.Message(ex.Message);
 			}
+		}
+		///
+		public override void DoCloneFile(CloneFileEventArgs args)
+		{
+			if (args == null) return;
+
+			var newName = args.Parameter as string;
+			if (newName == null)
+				throw new InvalidOperationException(Res.ParameterString);
+
+			string source = Kit.EscapeWildcard(My.PathEx.Combine(Location, args.File.Name));
+			string target = My.PathEx.Combine(Location, newName);
+			A.Psf.Engine.InvokeProvider.Item.Copy(source, target, false, CopyContainers.CopyTargetContainer);
+
+			args.PostName = newName;
 		}
 	}
 }

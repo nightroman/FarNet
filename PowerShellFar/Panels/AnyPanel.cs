@@ -151,10 +151,7 @@ namespace PowerShellFar
 		/// <summary>Attributes action.</summary>
 		internal virtual void UIAttributes()
 		{ }
-		/// <summary>Copy here action.</summary>
-		internal virtual void UICopyHere()
-		{ }
-		internal virtual bool UICopyMoveCan(bool move)
+		internal virtual bool UICopyMoveCan(bool move) //?????
 		{
 			return !move && TargetPanel is ObjectPanel;
 		}
@@ -232,14 +229,10 @@ namespace PowerShellFar
 			panel.OpenChild(null);
 			return panel;
 		}
-		UserAction _UserWants;
 		/// <summary>
 		/// The last user action.
 		/// </summary>
-		internal UserAction UserWants
-		{
-			get { return _UserWants; }
-		}
+		internal UserAction UserWants { get; set; }
 		/// <include file='doc.xml' path='doc/AddLookup/*'/>
 		public void AddLookup(string name, object handler)
 		{
@@ -329,7 +322,7 @@ namespace PowerShellFar
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override bool UIKeyPressed(int code, KeyStates state)
 		{
-			_UserWants = UserAction.None;
+			UserWants = UserAction.None;
 			try
 			{
 				switch (code)
@@ -343,7 +336,7 @@ namespace PowerShellFar
 								if (file == null)
 									break;
 
-								_UserWants = UserAction.Enter;
+								UserWants = UserAction.Enter;
 
 								if (file.IsDirectory && !IgnoreDirectoryFlag)
 									break;
@@ -382,17 +375,6 @@ namespace PowerShellFar
 
 							case KeyStates.Shift:
 								ShowMenu();
-								return true;
-						}
-
-						break;
-
-					case VKeyCode.F5:
-
-						switch (state)
-						{
-							case KeyStates.Shift:
-								UICopyHere();
 								return true;
 						}
 
@@ -441,7 +423,7 @@ namespace PowerShellFar
 					case VKeyCode.R:
 
 						if (state == KeyStates.Control)
-							_UserWants = UserAction.CtrlR;
+							UserWants = UserAction.CtrlR;
 
 						break;
 
@@ -461,9 +443,58 @@ namespace PowerShellFar
 			}
 			finally
 			{
-				if (_UserWants != UserAction.CtrlR)
-					_UserWants = UserAction.None;
+				if (UserWants != UserAction.CtrlR)
+					UserWants = UserAction.None;
 			}
+		}
+		///
+		public override void UICloneFile(CloneFileEventArgs args)
+		{
+			if (args == null) return;
+
+			// prompt
+			IInputBox input = Far.Net.CreateInputBox();
+			input.EmptyEnabled = true;
+			input.Title = "Copy";
+			input.Prompt = "New name";
+			input.History = "Copy";
+			input.Text = args.File.Name;
+			if (!input.Show())
+			{
+				args.Result = JobResult.Ignore;
+				return;
+			}
+
+			// new name
+			args.Parameter = input.Text;
+
+			// base
+			base.UICloneFile(args);
+		}
+		///
+		public override void UIRenameFile(RenameFileEventArgs args)
+		{
+			if (args == null) return;
+
+			// prompt
+			IInputBox input = Far.Net.CreateInputBox();
+			input.EmptyEnabled = true;
+			input.Title = "Rename";
+			input.Prompt = "New name";
+			input.History = "Copy";
+			input.Text = args.File.Name;
+			if (!input.Show() || input.Text == args.File.Name)
+			{
+				args.Result = JobResult.Ignore;
+				return;
+			}
+
+			// set new name and post it
+			args.Parameter = input.Text;
+			args.PostName = input.Text;
+
+			// base
+			base.UIRenameFile(args);
 		}
 	}
 }

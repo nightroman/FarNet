@@ -124,6 +124,30 @@ $Far.Macro.Install($(
 
 	### == Shell only
 
+	### Decrease/Increase left column [CtrlAltLeft] [CtrlAltRight]
+	New-FarMacro Shell CtrlAltLeft -Description 'FarNet: Decrease left column' @'
+F11
+$If (Menu.Select(".NET", 2) > 0)
+	Enter P
+	$If (Menu.Select("Decrease left column", 0) > 0)
+		Enter
+	$Else
+		Esc
+	$End
+$End
+'@
+	New-FarMacro Shell CtrlAltRight -Description 'FarNet: Increase left column' @'
+F11
+$If (Menu.Select(".NET", 2) > 0)
+	Enter P
+	$If (Menu.Select("Increase left column", 0) > 0)
+		Enter
+	$Else
+		Esc
+	$End
+$End
+'@
+
 	### Quit Far [F10]
 	New-FarMacro Shell F10 '$If (CallPlugin(FarNet, ">: $Far.Quit()")) $Else F10 $End' 'PSF: Quit Far'
 

@@ -21,6 +21,7 @@ namespace FarNet.Works
 		//! PSF test.
 		public int[] GetSelectedIndexes() { return _SelectedIndexes; }
 		int[] _SelectedIndexes;
+		public abstract bool CanRemove { get; }
 		public abstract string Title { get; }
 		public abstract void Pop(bool active);
 		public void Pop() { Pop(true); }
