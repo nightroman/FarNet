@@ -38,7 +38,6 @@ internal:
 	static void PushPanel(Panel2^ plugin);
 	static void ReplacePanel(Panel2^ oldPanel, Panel2^ newPanel);
 	static void ShelvePanel(Panel1^ panel, bool modes);
-	static Panel2^ GetPanel(int worksId) { return _panels[worksId]; }
 private:
 	Panel0() {}
 	static void OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ args);

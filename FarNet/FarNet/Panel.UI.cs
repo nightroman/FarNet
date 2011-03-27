@@ -126,6 +126,10 @@ namespace FarNet
 				if (argsExport.Result == JobResult.Ignore)
 					return;
 
+				// show
+				native.Update(true);
+				native.Redraw();
+
 				// complete
 				UICopyMoveComplete(argsExport);
 				return;
@@ -220,8 +224,15 @@ namespace FarNet
 			Redraw();
 		}
 		/// <summary>
-		/// Creates a new file or directory. It is called on [F7].
+		/// Creates a new file or directory.
 		/// </summary>
+		/// <remarks>
+		/// It is normally called on [F7].
+		/// It calls <see cref="UICreateFile"/> if the explorer supports it.
+		/// <para>
+		/// Current file after the operation is defined by <c>Post*</c> in the arguments.
+		/// </para>
+		/// </remarks>
 		public void UICreate()
 		{
 			// can?
@@ -475,39 +486,70 @@ namespace FarNet
 				explorer.OpenPanelChild(this);
 		}
 		/// <summary>
-		/// Rename action.
+		/// Clone action.
 		/// </summary>
 		/// <remarks>
-		/// It is called for the current item when [ShiftF6] is pressed.
-		/// If the explorer supports renaming then the method prompts to input a new name and then calls <see cref="UIRenameFile"/>.
+		/// It is called for the current item when [ShiftF5] is pressed.
+		/// It calls <see cref="UICloneFile"/> if the explorer supports it.
+		/// <para>
+		/// Current file after the operation is defined by <c>Post*</c> in the arguments.
+		/// </para>
 		/// </remarks>
-		public void UIRename()
+		public void UIClone()
 		{
-			if (!Explorer.CanRenameFile)
+			// can?
+			if (!Explorer.CanCloneFile)
 				return;
 
+			// file
 			var file = CurrentFile;
 			if (file == null)
 				return;
 
-			// new name
-			IInputBox input = Far.Net.CreateInputBox();
-			input.Title = "Rename";
-			input.Prompt = "New name";
-			input.History = "Copy";
-			input.Text = file.Name;
-			if (!input.Show() || input.Text == file.Name)
+			// call
+			var args = new CloneFileEventArgs(ExplorerModes.None, file);
+			UICloneFile(args);
+			if (args.Result != JobResult.Done)
+				return;
+
+			// post
+			Post(args);
+
+			// show
+			Update(true);
+			Redraw();
+		}
+		/// <summary>
+		/// Rename action.
+		/// </summary>
+		/// <remarks>
+		/// It is called for the current item when [ShiftF6] is pressed.
+		/// It calls <see cref="UIRenameFile"/> if the explorer supports it.
+		/// <para>
+		/// Current file after the operation is defined by <c>Post*</c> in the arguments.
+		/// </para>
+		/// </remarks>
+		public void UIRename()
+		{
+			// can?
+			if (!Explorer.CanRenameFile)
+				return;
+
+			// file
+			var file = CurrentFile;
+			if (file == null)
 				return;
 
 			// call
-			var args = new RenameFileEventArgs(ExplorerModes.None, file, input.Text);
+			var args = new RenameFileEventArgs(ExplorerModes.None, file);
 			UIRenameFile(args);
 			if (args.Result != JobResult.Done)
 				return;
 
-			if (args.PostData == null && args.PostFile == null)
-				args.PostName = input.Text;
+			// post
+			Post(args);
 
+			// show
 			Update(true);
 			Redraw();
 		}
@@ -658,6 +700,11 @@ namespace FarNet
 					{
 						case KeyStates.None:
 							UICopyMove(false);
+							return true;
+
+						case KeyStates.Shift: //???? if (RealNames) ?
+							//! return true even if the file is dots
+							UIClone();
 							return true;
 					}
 					break;

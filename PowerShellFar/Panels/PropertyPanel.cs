@@ -42,32 +42,6 @@ namespace PowerShellFar
 				A.Message(ex.Message);
 			}
 		}
-		internal override void UICopyHere()
-		{
-			if (!My.ProviderInfoEx.HasDynamicProperty(Explorer.Provider))
-			{
-				A.Message(Res.NotSupportedByProvider);
-				return;
-			}
-
-			FarFile f = CurrentFile;
-			if (f == null)
-				return;
-			string name = f.Name;
-
-			IInputBox ib = Far.Net.CreateInputBox();
-			ib.Title = "Copy";
-			ib.Prompt = "New name";
-			ib.History = "Copy";
-			ib.Text = name;
-			if (!ib.Show() || ib.Text == name)
-				return;
-
-			string src = Kit.EscapeWildcard(Explorer.ItemPath);
-			A.Psf.Engine.InvokeProvider.Property.Copy(src, name, src, ib.Text);
-
-			UpdateRedraw(false, ib.Text);
-		}
 		/// <summary>
 		/// Should be called when an item property is changed.
 		/// </summary>
@@ -87,11 +61,11 @@ namespace PowerShellFar
 					Click = delegate { UICopyMove(false); }
 				};
 
-			if (items.CopyHere == null)
+			if (items.CopyHere == null && Explorer.CanCloneFile)
 				items.CopyHere = new SetItem()
 				{
 					Text = "Copy &here",
-					Click = delegate { UICopyHere(); }
+					Click = delegate { UIClone(); }
 				};
 
 			if (items.Move == null)

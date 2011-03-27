@@ -12,6 +12,9 @@
 	creates result variables $DbConnection and $DbProviderFactory in the
 	current scope. $DbConnection is used and closed by a caller.
 
+	If -Panel is specified and -Options is empty then it prompts for options.
+	This might be needed for example in order to set "DateTimeFormat=Ticks".
+
 	File accosiation to open the panel:
 	SQLite database file
 	Mask: *.sqlite;*.db3;*.db
@@ -40,6 +43,11 @@ param
 	# To show tables in a panel.
 	$Panel
 )
+
+# ask for options
+if ($Panel -and !$Options) {
+	$Options = $Far.Input("Options", "Connection.SQLite", "SQLite connection")
+}
 
 # create and open connection
 $DbProviderFactory = [System.Data.Common.DbProviderFactories]::GetFactory($ProviderName)

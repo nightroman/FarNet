@@ -161,27 +161,6 @@ namespace PowerShellFar
 				return InvokeExplorerScript(AsExploreRoot, args);
 		}
 		/// <summary>
-		/// <see cref="Explorer.CreateFile"/> worker.
-		/// </summary>
-		public virtual void DoCreateFile(CreateFileEventArgs args) { base.CreateFile(args); }
-		/// <summary>
-		/// <see cref="Explorer.CreateFile"/> worker.
-		/// </summary>
-		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="CreateFileEventArgs"/>.
-		/// </remarks>
-		public ScriptBlock AsCreateFile { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
-		public sealed override void CreateFile(CreateFileEventArgs args)
-		{
-			if (AsCreateFile == null)
-				DoCreateFile(args);
-			else
-				A.InvokeScriptReturnAsIs(AsCreateFile, this, args);
-		}
-		/// <summary>
 		/// <see cref="Explorer.GetContent"/> worker.
 		/// </summary>
 		public virtual void DoGetContent(GetContentEventArgs args) { base.GetContent(args); }
@@ -243,6 +222,48 @@ namespace PowerShellFar
 				DoSetText(args);
 			else
 				A.InvokeScriptReturnAsIs(AsSetText, this, args);
+		}
+		/// <summary>
+		/// <see cref="Explorer.CloneFile"/> worker.
+		/// </summary>
+		public virtual void DoCloneFile(CloneFileEventArgs args) { base.CloneFile(args); }
+		/// <summary>
+		/// <see cref="Explorer.CloneFile"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="CloneFileEventArgs"/>.
+		/// </remarks>
+		public ScriptBlock AsCloneFile { get; set; }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void CloneFile(CloneFileEventArgs args)
+		{
+			if (AsCloneFile == null)
+				DoCloneFile(args);
+			else
+				A.InvokeScriptReturnAsIs(AsCloneFile, this, args);
+		}
+		/// <summary>
+		/// <see cref="Explorer.CreateFile"/> worker.
+		/// </summary>
+		public virtual void DoCreateFile(CreateFileEventArgs args) { base.CreateFile(args); }
+		/// <summary>
+		/// <see cref="Explorer.CreateFile"/> worker.
+		/// </summary>
+		/// <remarks>
+		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="CreateFileEventArgs"/>.
+		/// </remarks>
+		public ScriptBlock AsCreateFile { get; set; }
+		/// <summary>
+		/// Calls As-Script or Do-Method.
+		/// </summary>
+		public sealed override void CreateFile(CreateFileEventArgs args)
+		{
+			if (AsCreateFile == null)
+				DoCreateFile(args);
+			else
+				A.InvokeScriptReturnAsIs(AsCreateFile, this, args);
 		}
 		/// <summary>
 		/// <see cref="Explorer.OpenFile"/> worker.

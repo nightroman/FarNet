@@ -14,6 +14,8 @@ namespace FarNet.Works
 	{
 		///
 		Explorer MyExplorer { get; }
+		///
+		void Navigate(Explorer explorer);
 		#region Properties
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -26,8 +28,6 @@ namespace FarNet.Works
 		string StartDirectory { get; }
 		///
 		string Title { get; set; }
-		///
-		int WorksId { get; }
 		///
 		Panel TargetPanel { get; }
 		#endregion

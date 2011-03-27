@@ -148,6 +148,14 @@ namespace FarNet
 		/// <summary>
 		/// Gets or sets the flag in the <see cref="Functions"/>.
 		/// </summary>
+		public bool CanCloneFile
+		{
+			get { return (Functions & ExplorerFunctions.CloneFile) != 0; }
+			set { Functions = value ? (Functions | ExplorerFunctions.CloneFile) : (Functions & ~ExplorerFunctions.CloneFile); }
+		}
+		/// <summary>
+		/// Gets or sets the flag in the <see cref="Functions"/>.
+		/// </summary>
 		public bool CanRenameFile
 		{
 			get { return (Functions & ExplorerFunctions.RenameFile) != 0; }
@@ -257,6 +265,13 @@ namespace FarNet
 		/// Imports files from a native source.
 		/// </summary>
 		public virtual void ImportFiles(ImportFilesEventArgs args) { if (args != null) args.Result = JobResult.Ignore; }
+		/// <summary>
+		/// Clones the file.
+		/// </summary>
+		/// <remarks>
+		/// It is normally called for the current item in a panel on [ShiftF5].
+		/// </remarks>
+		public virtual void CloneFile(CloneFileEventArgs args) { }
 		/// <summary>
 		/// Creates a new directory/file.
 		/// </summary>

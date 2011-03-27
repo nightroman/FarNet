@@ -1,6 +1,26 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.6 =
+
+*) Connect-SQLite-.ps1
+If -Panel is specified and -Options is empty then it prompts for options.
+This might be needed for example in order to set "DateTimeFormat=Ticks".
+
+*) DataPanel
+- Number of shown records is limited now, real life tables can be huge.
+- Added help menu ([F1]) commands: Next range, Previous range, Record start
+number, Record maximum count (default is $Psf.Settings.MaximumPanelFileCount).
+
+*) FarNet menu: .NET \ Panels \ Decrease|Increase left column
+- In PSF it works in all list panels (MemberPanel, PropertyPanel),
+ObjectPanel-s and DataPanel-s with two columns, Search-FarFile and
+Search-Regex-.ps1 panels and etc. Use via macros or by pressing [Space].
+
+*) Bugs
+- Crash on stopping a script by CtrlBreak in some cases.
+- Could not enter nulls by [Shift{F8|Del}] in the list panel in some cases.
+
 = 4.4.5 =
 
 *) Updates for FarNet changes.

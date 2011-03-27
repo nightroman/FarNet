@@ -90,32 +90,6 @@ namespace PowerShellFar
 			FarFile file = CurrentFile;
 			(new PropertyExplorer(file == null ? Explorer.Location : My.PathEx.Combine(Explorer.Location, file.Name))).OpenPanelChild(this);
 		}
-		internal override void UICopyHere()
-		{
-			FarFile file = CurrentFile;
-			if (file == null)
-				return;
-			string name = file.Name;
-
-			// ask
-			IInputBox ib = Far.Net.CreateInputBox();
-			ib.Title = "Copy";
-			ib.Prompt = "New name";
-			ib.History = "Copy";
-			ib.Text = name;
-			if (!ib.Show() || ib.Text == name)
-				return;
-
-			// copy
-			string source = Kit.EscapeWildcard(My.PathEx.Combine(Explorer.Location, name));
-			string target = My.PathEx.Combine(Explorer.Location, ib.Text);
-			A.Psf.Engine.InvokeProvider.Item.Copy(source, target, false, CopyContainers.CopyTargetContainer);
-
-			UpdateRedraw(false, ib.Text);
-
-			// event
-			OnThisFileChanged(null);
-		}
 		internal override bool UICopyMoveCan(bool move)
 		{
 			if (base.UICopyMoveCan(move))
@@ -215,7 +189,7 @@ namespace PowerShellFar
 				items.CopyHere = new SetItem()
 				{
 					Text = "Copy &here",
-					Click = delegate { UICopyHere(); }
+					Click = delegate { UIClone(); }
 				};
 
 			if (items.Move == null && UICopyMoveCan(true))

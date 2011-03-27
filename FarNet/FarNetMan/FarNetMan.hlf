@@ -24,31 +24,21 @@ $#FarNet#
 $#Plugin menu#
 ~Contents~@Contents@
 
-	#Console...#
-		#Decrease font size#
-		#Increase font size#
+The main plugin menu shows the following menus:
 
-Note: this feature works only in Windows Vista and above. Commands operating on
-the console window, namely to decrease and increase the current console font
-and window size.
+	~Panels menu~@MenuPanels@
+	~Editors menu~@MenuEditors@
+	~Viewers menu~@MenuViewers@
+	~Console menu~@MenuConsole@
 
-Example mouse macros for the Common area:
 
- [CtrlMsWheelDown] FarNet: Decrease font size:
- F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End
+@MenuPanels
+$#Panels menu#
+~Contents~@Contents@
 
- [CtrlMsWheelUp] FarNet: Increase font size:
- F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End
+The panels menu shows commands dealing with the panel.
 
-	#Editors...#
-	#Viewers...#
-
-These menus show the lists of opened editors/viewers sorted by the most recent
-activity. E.g. the first item is the current editor/viewer, the second item is
-the previously active and so on.
-
-	#Panels...#
-		#Push/Shelve the panel#
+	#Push/Shelve the panel#
 
 If the current panel is a FarNet panel then you can push it to the internal
 shelve for later use. The pushed panel is replaced with a Far file panel.
@@ -59,22 +49,26 @@ remains current.
 
 You can push/shelve any number of panels and pop/unshelve them later.
 
-	#Panels...#
-		#Switch full screen#
+	#Decrease left column# ([Space] to repeat)
+	#Increase left column# ([Space] to repeat)
+
+If the module panel has two columns then these commands to move the vertical
+column separator left and right. Use [Space] to repeat the menu after the
+command.
+
+	#Switch full screen# ([Space] to repeat)
 
 This command switches the full screen mode for any view mode of any FarNet
 panel. Thus, you may actually use 20 modes = 10 as usual + 10 the same with
-switched full screen.
+switched full screen. Use [Space] to invoke the command and repeat the menu.
 
-	#Panels...#
-		#Close the panel#
+	#Close the panel#
 
 Closes the active plugin panel. It can be any plugin: FarNet or native. Some
 plugin panels may not close on this command. For native plugins original Far
 panel state is not restored on closing.
 
-	#Panels...#
-		#Pop/Unshelve [Enter]#
+	#Pop/Unshelve [Enter]#
 
 If there are previously pushed/shelved panels then this menu shows titles of
 these panels. When you select one then the selected panel is restored and its
@@ -85,11 +79,50 @@ Pushed FarNet panels are popped, i.e. removed from the internal shelve. Shelved
 Far panels are unshelved, i.e. not removed from the shelve, they are kind of
 panel bookmarks that can be used several times.
 
-	#Panels...#
-		#Pop/Unshelve [Del]#
+	#Pop/Unshelve [Del]#
 
 Removes the selected shelved panel information from the internal shelve. It is
 ignored if the selected item is not a shelved panel.
+
+
+@MenuConsole
+$#Console menu#
+~Contents~@Contents@
+
+The console menu shows commands dealing with the console window.
+
+	#Decrease font size# ([Space] to repeat)
+	#Increase font size# ([Space] to repeat)
+
+These commands work only in Windows Vista and above. They decrease and increase
+the current console font and window size. Use [Space] to repeat the menu after
+commands in order to perform several steps, or use these commands via macros.
+
+Example mouse macros for the Common area:
+
+ [CtrlMsWheelDown] FarNet: Decrease font size:
+ F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End
+
+ [CtrlMsWheelUp] FarNet: Increase font size:
+ F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End
+
+
+@MenuEditors
+$#Editors menu#
+~Contents~@Contents@
+
+This menu shows the list of opened editors sorted by the most recent activity.
+E.g. the first item is the current editor, the second item is the previously
+active and so on.
+
+
+@MenuViewers
+$#Viewers menu#
+~Contents~@Contents@
+
+This menu shows the list of opened viewers sorted by the most recent activity.
+E.g. the first item is the current viewer, the second item is the previously
+active and so on.
 
 
 @MenuConfig

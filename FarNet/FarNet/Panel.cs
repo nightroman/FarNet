@@ -43,6 +43,7 @@ namespace FarNet
 	/// All <c>Works*</c> members are for internal use only.
 	/// </para>
 	/// </remarks>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
 	public partial class Panel : IPanel
 	{
 		readonly Works.IPanelWorks _Panel;
@@ -66,8 +67,21 @@ namespace FarNet
 		/// See <see cref="ExplorerEntered"/>.
 		/// </remarks>
 		public Explorer Explorer { get { return _Panel.MyExplorer; } }
+		/// <summary>
+		/// Navigates to a virtual file system location specified by the explorer and updates the panel.
+		/// </summary>
+		/// <remarks>
+		/// A new explorer must have the same <see cref="FarNet.Explorer.TypeId"/> as the current one.
+		/// </remarks>
+		public virtual void Navigate(Explorer explorer)
+		{
+			if (explorer == null) throw new ArgumentNullException("explorer");
+			if (explorer.TypeId != Explorer.TypeId) throw new ArgumentException("New explorer is not compatible with the current.");
+			
+			_Panel.Navigate(explorer);
+		}
 		///
-		public int WorksId { get { return _Panel.WorksId; } }
+		public Works.IPanelWorks WorksPanel { get { return _Panel; } }
 		/// <include file='doc.xml' path='doc/Data/*'/>
 		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
 		Hashtable _Data;
@@ -94,8 +108,7 @@ namespace FarNet
 		void Open(object sender, EventArgs e)
 		{
 			// the first update
-			if (Explorer != null)
-				Explorer.EnterPanel(this);
+			Explorer.EnterPanel(this);
 
 			// go
 			if (_Parent == null)
@@ -497,6 +510,8 @@ namespace FarNet
 		/// Gets or sets the panel view mode. It works before and after opening.
 		/// </summary>
 		public PanelViewMode ViewMode { get { return _Panel.ViewMode; } set { _Panel.ViewMode = value; } }
+		/// <include file='doc.xml' path='doc/ViewPlan/*'/>
+		public PanelPlan ViewPlan { get { return _Panel.ViewPlan; } }
 		/// <summary>
 		/// Gets the panel window position.
 		/// </summary>
@@ -651,28 +666,10 @@ namespace FarNet
 		/// Call <see cref="Redraw()"/> after that.
 		/// </remarks>
 		public void UnselectAt(int[] indexes) { _Panel.UnselectAt(indexes); }
-		/// <summary>
-		/// Select panel items with specified names.
-		/// </summary>
-		/// <param name="names">Names to be selected. Null is OK.</param>
-		/// <remarks>
-		/// Call <see cref="Redraw()"/> after that.
-		/// <para>
-		/// Names are processed as case sensitive, not found input names are ignored.
-		/// </para>
-		/// </remarks>
-		public void SelectNames(string[] names) { _Panel.SelectNames(names); }
-		/// <summary>
-		/// Unselect panel items with specified names.
-		/// </summary>
-		/// <param name="names">Names to be selected. Null is OK.</param>
-		/// <remarks>
-		/// Call <see cref="Redraw()"/> after that.
-		/// <para>
-		/// Names are processed as case sensitive, not found input names are ignored.
-		/// </para>
-		/// </remarks>
-		public void UnselectNames(string[] names) { _Panel.UnselectNames(names); }
+		/// <include file='doc.xml' path='doc/SelectNames/*'/>
+		public void SelectNames(IEnumerable names) { _Panel.SelectNames(names); }
+		/// <include file='doc.xml' path='doc/UnselectNames/*'/>
+		public void UnselectNames(IEnumerable names) { _Panel.UnselectNames(names); }
 		/// <summary>
 		/// Pushes or puts the panel to the internal panel shelve.
 		/// </summary>
@@ -892,7 +889,7 @@ namespace FarNet
 		/// </summary>
 		/// <param name="mode">View mode to get the plan for.</param>
 		/// <returns>
-		/// The view plan. If you change it for opened panel then call <see cref="SetPlan"/>.
+		/// The view plan. If you change it for the opened panel then call <see cref="SetPlan"/> even with the same object.
 		/// </returns>
 		public PanelPlan GetPlan(PanelViewMode mode) { return _Panel.GetPlan(mode); }
 		/// <summary>

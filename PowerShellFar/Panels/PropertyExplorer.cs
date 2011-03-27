@@ -41,7 +41,12 @@ namespace PowerShellFar
 				ExplorerFunctions.SetText;
 
 			if (My.ProviderInfoEx.HasDynamicProperty(Provider))
-				Functions |= (ExplorerFunctions.AcceptFiles | ExplorerFunctions.DeleteFiles | ExplorerFunctions.CreateFile | ExplorerFunctions.RenameFile);
+				Functions |= (
+					ExplorerFunctions.AcceptFiles |
+					ExplorerFunctions.DeleteFiles |
+					ExplorerFunctions.CloneFile |
+					ExplorerFunctions.CreateFile |
+					ExplorerFunctions.RenameFile);
 		}
 		///
 		public override Panel CreatePanel()
@@ -271,6 +276,10 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
+			var newName = args.Parameter as string;
+			if (newName == null)
+				throw new InvalidOperationException(Res.ParameterString);
+
 			//! Registry: workaround: (default)
 			if (Kit.Equals(args.File.Name, "(default)") && Provider.ImplementingType == typeof(RegistryProvider))
 			{
@@ -285,7 +294,7 @@ namespace PowerShellFar
 				Command c = new Command("Rename-ItemProperty");
 				c.Parameters.Add(new CommandParameter("LiteralPath", ItemPath));
 				c.Parameters.Add(new CommandParameter(Word.Name, args.File.Name));
-				c.Parameters.Add(new CommandParameter("NewName", args.NewName));
+				c.Parameters.Add(new CommandParameter("NewName", newName));
 				c.Parameters.Add(Prm.Force);
 				c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 				ps.Commands.AddCommand(c);
@@ -339,6 +348,20 @@ namespace PowerShellFar
 					continue;
 				}
 			}
+		}
+		///
+		public override void CloneFile(CloneFileEventArgs args)
+		{
+			if (args == null) return;
+
+			var newName = args.Parameter as string;
+			if (newName == null)
+				throw new InvalidOperationException(Res.ParameterString);
+			
+			string src = Kit.EscapeWildcard(ItemPath);
+			A.Psf.Engine.InvokeProvider.Property.Copy(src, args.File.Name, src, newName);
+
+			args.PostName = newName;
 		}
 	}
 }
