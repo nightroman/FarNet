@@ -1,6 +1,27 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.7 =
+
+*) DataPanel
+- [F1] menu: "Record limit", "Record offset" (offset N tells to skip N records).
+- [F3]/[CtrlQ]: noisy data members are excluded, only record fields are shown.
+- Fixed: [F7] + [Esc] + [No] used to show an error and close the panel.
+
+*) Panel-DbTable-.ps1
+
+For SQLite databases it now shows views in addition to tables.
+
+[Enter] on a table shows the input box with the select command to be used. As a
+result, you can: 1) cancel (why not?); 2) change the command; 3) execute other
+SQL command -- only SELECT commands are recommended, but if your command is
+"DROP TABLE X" then it is executed as well, IT'S YOUR CHOICE.
+
+Example (useful for SQLite): the table name is Files and the default command is
+"SELECT * FROM [Files]". If Files does not have an explicit key column then the
+opened table cannot be modified. This command: "SELECT rowid, * FROM [Files]"
+allows to add/delete/modify records (SQLite tables always have the rowid).
+
 = 4.4.6 =
 
 *) Connect-SQLite-.ps1

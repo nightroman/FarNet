@@ -561,13 +561,19 @@ namespace PowerShellFar
 		/// <summary>
 		/// Invokes Format-List with output to string.
 		/// </summary>
-		internal static string InvokeFormatList(object data)
+		internal static string InvokeFormatList(object data, bool full)
 		{
-			const string code = @"
-Format-List -InputObject $args[0] -Property * -Expand Both -ErrorAction 0 |
+			// suitable for DataRow, noisy data are excluded
+			const string codeMain = @"
+Format-List -InputObject $args[0] -ErrorAction 0 |
 Out-String -Width $args[1]
 ";
-			return InvokeCode(code, data, int.MaxValue)[0].ToString();
+			// suitable for Object, gets maximum information
+			const string codeFull = @"
+Format-List -InputObject $args[0] -Property * -Force -Expand Both -ErrorAction 0 |
+Out-String -Width $args[1]
+";
+			return InvokeCode((full ? codeFull : codeMain), data, int.MaxValue)[0].ToString();
 		}
 	}
 }

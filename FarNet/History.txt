@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/
 
+= 4.4.7 =
+
+*) Panel
+Converted some more internal methods & events into public virtual:
+- WorksClosed -> UIClosed
+- WorksClosing -> UIClosing
+NOTE: UIClosing is useful but buggy:
+http://bugs.farmanager.com/view.php?id=602
+
 = 4.4.6 =
 
 *) Panels & explorers
