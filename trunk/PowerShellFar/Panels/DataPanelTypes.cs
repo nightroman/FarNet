@@ -39,13 +39,11 @@ namespace PowerShellFar
 		DataRow Row;
 		List<int> Indexes;
 		int Index = -1;
-
 		public DataColumnEnumerator(DataRow row, List<int> indexes)
 		{
 			Row = row;
 			Indexes = indexes;
 		}
-
 		public object Current
 		{
 			get
@@ -53,12 +51,10 @@ namespace PowerShellFar
 				return Row[Indexes[Index]];
 			}
 		}
-
 		public void Reset()
 		{
 			Index = -1;
 		}
-
 		public bool MoveNext()
 		{
 			return ++Index < Indexes.Count;
@@ -69,18 +65,15 @@ namespace PowerShellFar
 	{
 		DataRow Row;
 		List<int> Indexes;
-
 		public DataColumnCollection(DataRow row, List<int> indexes)
 		{
 			Row = row;
 			Indexes = indexes;
 		}
-
 		public override int Count
 		{
 			get { return Indexes.Count; }
 		}
-
 		public override System.Collections.IEnumerator GetEnumerator()
 		{
 			return new DataColumnEnumerator(Row, Indexes);
@@ -91,13 +84,11 @@ namespace PowerShellFar
 	{
 		DataRow Row;
 		DataRowFileMap Map;
-
 		public DataRowFile(DataRow row, DataRowFileMap map)
 		{
 			Row = row;
 			Map = map;
 		}
-
 		public override string Name
 		{
 			get
@@ -111,7 +102,6 @@ namespace PowerShellFar
 				return null;
 			}
 		}
-
 		public override string Owner
 		{
 			get
@@ -125,7 +115,6 @@ namespace PowerShellFar
 				return null;
 			}
 		}
-
 		public override string Description
 		{
 			get
@@ -139,7 +128,6 @@ namespace PowerShellFar
 				return null;
 			}
 		}
-
 		public override long Length
 		{
 			get
@@ -153,7 +141,6 @@ namespace PowerShellFar
 				return 0;
 			}
 		}
-
 		public override DateTime CreationTime
 		{
 			get
@@ -167,7 +154,6 @@ namespace PowerShellFar
 				return new DateTime();
 			}
 		}
-
 		public override DateTime LastWriteTime
 		{
 			get
@@ -181,7 +167,6 @@ namespace PowerShellFar
 				return new DateTime();
 			}
 		}
-
 		public override DateTime LastAccessTime
 		{
 			get
@@ -195,7 +180,6 @@ namespace PowerShellFar
 				return new DateTime();
 			}
 		}
-
 		public override System.Collections.ICollection Columns
 		{
 			get
@@ -206,7 +190,6 @@ namespace PowerShellFar
 					return null;
 			}
 		}
-
 		public override object Data
 		{
 			get

@@ -55,7 +55,7 @@ namespace PowerShellFar
 		public override void DoGetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
-			args.UseText = A.InvokeFormatList(args.File.Data);
+			args.UseText = A.InvokeFormatList(args.File.Data, false);
 		}
 	}
 }

@@ -412,8 +412,18 @@ void Panel0::AsClosePlugin(HANDLE hPlugin)
 	if (pp->_Pushed)
 		return;
 
-	// clean all
-	pp->Host->WorksClosed(true);
+	// clean the whole panel stack
+	for(Panel^ panel = pp->Host; panel; panel = panel->Parent)
+	{
+		try
+		{
+			panel->UIClosed();
+		}
+		catch(Exception^ ex)
+		{
+			Far::Net->ShowError("UIClosed", ex);
+		}
+	}
 }
 
 //! It is called too often, log Verbose
@@ -460,15 +470,11 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		{
 			Log::Source->TraceInformation("FE_CLOSE");
 
-			//? FE_CLOSE issues:
-			// *) Bug [_090321_165608]: unwanted extra call on plugin commands entered in command line
-			// http://bugs.farmanager.com/view.php?id=602
-			// *) may not be called at all e.g. if tmp panel is opened
+			//_090321_165608 FE_CLOSE issues
 			if (!pp->_Pushed)
 			{
-				Log::Source->TraceInformation("Closing");
 				PanelEventArgs e;
-				pp->Host->WorksClosing(%e);
+				pp->Host->UIClosing(%e);
 				return e.Ignore;
 			}
 		}

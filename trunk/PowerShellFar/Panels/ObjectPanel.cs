@@ -81,7 +81,7 @@ namespace PowerShellFar
 			base.HelpMenuInitItems(items, e);
 		}
 		/// <summary>
-		/// Files data: .. is excluded; same count and order.
+		/// Files data.
 		/// </summary>
 		IList<object> CollectData()
 		{
