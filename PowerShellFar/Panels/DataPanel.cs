@@ -33,8 +33,6 @@ namespace PowerShellFar
 			SortMode = PanelSortMode.Unsorted; // assume it is sorted in SELECT
 			UseFilter = true;
 			UseSortGroups = false;
-
-			Closed += OnClosed;
 		}
 		/// <summary>
 		/// Database provider factory instance.
@@ -246,31 +244,6 @@ namespace PowerShellFar
 					return false;
 			}
 		}
-		///??
-		protected override bool CanCloseChild()
-		{
-			MemberPanel mp = Child as MemberPanel;
-			if (mp == null)
-				return true;
-
-			DataRow dr = mp.Value.BaseObject as DataRow;
-			if (dr == null)
-				return true;
-
-			if (0 == (dr.RowState & (DataRowState.Added | DataRowState.Deleted | DataRowState.Modified)))
-				return true;
-
-			switch (Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
-			{
-				case 0:
-					return SaveData();
-				case 1:
-					dr.RejectChanges();
-					return true;
-				default:
-					return false;
-			}
-		}
 		internal void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
 			var Files = Explorer.Cache;
@@ -365,31 +338,17 @@ namespace PowerShellFar
 			var memberPanel = OpenFileMembers(file);
 			memberPanel.Explorer.CanDeleteFiles = false;
 		}
-		int RecordStartIndex;
-		int RecordMaximumCount = A.Psf.Settings.MaximumPanelFileCount;
+		int RecordLimit = A.Psf.Settings.MaximumPanelFileCount;
+		// 0-based internally and in UI: 'offset' means "skip 'offset' records"
+		int RecordOffset;
 		void Fill()
 		{
-			Adapter.Fill(RecordStartIndex, RecordMaximumCount, Table);
+			Adapter.Fill(RecordOffset, RecordLimit, Table);
 
 			var Files = Explorer.Cache;
 			Files.Clear();
 			foreach (DataRow dr in Table.Rows)
 				Files.Add(new DataRowFile(dr, Map));
-		}
-		/// <summary>
-		/// Core handler.
-		/// </summary>
-		void OnClosed(object sender, EventArgs e)
-		{
-			if (Adapter != null)
-			{
-				using (DataTable dt = Table.GetChanges())
-				{
-					if (dt != null && Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNo) == 0)
-						SaveData();
-				}
-			}
-			Dispose();
 		}
 		internal override void ShowHelp()
 		{
@@ -444,42 +403,24 @@ namespace PowerShellFar
 			EnsureBuilder();
 			Adapter.UpdateCommand = _Builder.GetUpdateCommand();
 		}
-		internal void DoCreateFile()
-		{
-			BuildInsertCommand();
-
-			// add new row to the table
-			DataRow dr = Table.NewRow();
-			Table.Rows.Add(dr);
-
-			// add new file to the panel and go to it
-			DataRowFile file = new DataRowFile(dr, Map);
-			Explorer.Cache.Add(file);
-			PostFile(file);
-			ToUpdateData = true;
-			UpdateRedraw(true);
-
-			// open the record panel
-			OpenFile(file);
-		}
 		void OnRangeNext()
 		{
-			if (Table.Rows.Count < RecordMaximumCount)
+			if (Table.Rows.Count < RecordLimit)
 				return;
 
-			RecordStartIndex += RecordMaximumCount;
+			RecordOffset += RecordLimit;
 
 			UserWants = UserAction.CtrlR;
 			UpdateRedraw(true);
 		}
 		void OnRangePrevious()
 		{
-			if (RecordStartIndex == 0)
+			if (RecordOffset == 0)
 				return;
 
-			RecordStartIndex -= RecordMaximumCount;
-			if (RecordStartIndex < 0)
-				RecordStartIndex = 0;
+			RecordOffset -= RecordLimit;
+			if (RecordOffset < 0)
+				RecordOffset = 0;
 
 			UserWants = UserAction.CtrlR;
 			UpdateRedraw(true);
@@ -514,9 +455,9 @@ namespace PowerShellFar
 
 			e.Menu.Add("Previous range").Click = delegate { OnRangePrevious(); };
 
-			e.Menu.Add("Record start number").Click = delegate
+			e.Menu.Add("Record limit").Click = delegate
 			{
-				var text = Far.Net.Input("Record start number", "DataRecordStartNumber", "Data Panel", (RecordStartIndex + 1).ToString());
+				var text = Far.Net.Input("Record limit", "DataRecordLimit", "Data Panel", RecordLimit.ToString());
 				if (string.IsNullOrEmpty(text))
 					return;
 
@@ -527,31 +468,31 @@ namespace PowerShellFar
 					return;
 				}
 
-				RecordStartIndex = value - 1;
+				RecordLimit = value;
 
 				UserWants = UserAction.CtrlR;
 				UpdateRedraw(true);
 			};
 
-			e.Menu.Add("Record maximum count").Click = delegate
+			e.Menu.Add("Record offset").Click = delegate
 			{
-				var text = Far.Net.Input("Record maximum count", "DataRecordMaximumCount", "Data Panel", RecordMaximumCount.ToString());
+				var text = Far.Net.Input("Record offset", "DataRecordOffset", "Data Panel", RecordOffset.ToString());
 				if (string.IsNullOrEmpty(text))
 					return;
 
 				int value;
-				if (!int.TryParse(text, out value) || value < 1)
+				if (!int.TryParse(text, out value) || value < 0)
 				{
 					A.Message("Invalid number");
 					return;
 				}
 
-				RecordMaximumCount = value;
+				RecordOffset = value;
 
 				UserWants = UserAction.CtrlR;
 				UpdateRedraw(true);
 			};
-			
+
 			e.Menu.Add(string.Empty).IsSeparator = true;
 
 			if (items.Create == null)
@@ -571,5 +512,80 @@ namespace PowerShellFar
 			base.HelpMenuInitItems(items, e);
 		}
 		internal override string HelpMenuTextOpenFileMembers { get { return "Edit row data"; } }
+		internal void DoCreateFile()
+		{
+			BuildInsertCommand();
+
+			// add new row to the table
+			DataRow dr = Table.NewRow();
+			Table.Rows.Add(dr);
+
+			// new dummy file, do not add, it can be canceled
+			DataRowFile file = new DataRowFile(dr, Map); //_110330_175246
+
+			// open the record panel
+			OpenFile(file);
+		}
+		///
+		protected override bool CanCloseChild()
+		{
+			MemberPanel mp = Child as MemberPanel;
+			if (mp == null)
+				return true;
+
+			DataRow dr = mp.Value.BaseObject as DataRow;
+			if (dr == null)
+				return true;
+
+			var xRowState = dr.RowState;
+			if (0 == (xRowState & (DataRowState.Added | DataRowState.Deleted | DataRowState.Modified)))
+				return true;
+
+			switch (Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+			{
+				case 0:
+					// save data, update the table
+					var result = SaveData();
+
+					// now we can add a new file for the new record
+					if (xRowState == DataRowState.Added) //_110330_175246
+					{
+						DataRowFile file = new DataRowFile(dr, Map);
+						Explorer.Cache.Add(file);
+						PostFile(file);
+						ToUpdateData = true;
+					}
+
+					return result;
+
+				case 1:
+					dr.RejectChanges();
+					return true;
+
+				default:
+					return false;
+			}
+		}
+		///
+		public override void UIClosed()
+		{
+			try
+			{
+				if (Adapter != null)
+				{
+					using (var dt = Table.GetChanges())
+					{
+						if (dt != null && Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNo) == 0)
+							SaveData();
+					}
+				}
+
+				Dispose();
+			}
+			finally
+			{
+				base.UIClosed();
+			}
+		}
 	}
 }

@@ -76,7 +76,7 @@ namespace PowerShellFar
 			}
 
 			// text
-			args.UseText = A.InvokeFormatList(args.File.Data);
+			args.UseText = A.InvokeFormatList(args.File.Data, true);
 		}
 		///
 		public override void DoImportFiles(ImportFilesEventArgs args)

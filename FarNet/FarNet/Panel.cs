@@ -277,8 +277,8 @@ namespace FarNet
 
 			try
 			{
-				// clean this
-				WorksClosed(false);
+				// clean
+				UIClosed();
 			}
 			finally
 			{
@@ -689,30 +689,58 @@ namespace FarNet
 		#endregion
 		#region Core Events
 		/// <summary>
-		/// Called when a panel has been closed.
+		/// Called by <see cref="UIClosed"/>.
+		/// </summary>
+		public event EventHandler Closed;
+		/// <summary>
+		/// Called when the panel has been closed.
 		/// </summary>
 		/// <remarks>
-		/// The handler should clean the panel resources and do nothing else.
+		/// The method releases panel resources. It should not do anything else, the panel has gone.
+		/// <para>
+		/// Overriden methods must call the base. Consider to use try/finally and call the base from finally.
+		/// </para>
+		/// <para>
+		/// The base method triggers the <see cref="Closed"/> event and then disposes the <see cref="Garbage"/>.
+		/// </para>
 		/// </remarks>
-		public event EventHandler Closed;
-		///
-		public void WorksClosed(bool all)
+		public virtual void UIClosed()
 		{
-			// 1) event
-			if (Closed != null)
-				Closed(this, null);
-
-			// 2) garbage
-			if (_Garbage != null)
+			try
 			{
-				foreach (var it in _Garbage)
-					it.Dispose();
-				_Garbage = null;
+				if (Closed != null)
+					Closed(this, null);
 			}
-
-			// 3) parents
-			if (all && _Parent != null)
-				_Parent.WorksClosed(true);
+			finally
+			{
+				if (_Garbage != null)
+				{
+					foreach (var it in _Garbage)
+						it.Dispose();
+					
+					_Garbage = null;
+				}
+			}
+		}
+		/// <summary>
+		/// Called by <see cref="UIClosing"/>.
+		/// </summary>
+		public event EventHandler<PanelEventArgs> Closing;
+		/// <summary>
+		/// Called when the panel is about to be closed.
+		/// </summary>
+		/// <remarks>
+		/// There are issues:  http://bugs.farmanager.com/view.php?id=602
+		/// <para>
+		/// Far calls this unexpectedly on plugin commands invoked from the command line
+		/// even if a new panel is not going to be opened and the current one closed.
+		/// Thus, it can be called more than once.
+		/// </para>
+		/// </remarks>
+		public virtual void UIClosing(PanelEventArgs e) //_090321_165608
+		{
+			if (Closing != null)
+				Closing(this, e);
 		}
 		/// <summary>
 		/// Called on invoking a command from the command line.
@@ -751,24 +779,6 @@ namespace FarNet
 		{
 			if (UpdateInfo != null)
 				UpdateInfo(this, null);
-		}
-		/// <summary>
-		/// Called when a panel is about to be closed.
-		/// </summary>
-		/// <remarks>
-		/// Bug [_090321_165608].
-		/// Unfortunately Far triggers this also on plugin commands from command line
-		/// even if a new panel is not going to be opened and the current one closed.
-		/// </remarks>
-		public event EventHandler<PanelEventArgs> Closing;
-		///
-		public bool WorksClosing(PanelEventArgs e)
-		{
-			if (Closing == null)
-				return false;
-			if (e != null)
-				Closing(this, e);
-			return true;
 		}
 		/// <summary>
 		/// Called when [CtrlBreak] is pressed.
