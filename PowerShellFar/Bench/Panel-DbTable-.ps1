@@ -72,7 +72,7 @@ function Table($Sql) {
 
 ### Get the table of table and view records
 $cname = $DbConnection.GetType().Name
-if ($cname -eq 'OleDbConnection') {
+if ($cname -eq 'OdbcConnection' -or $cname -eq 'OleDbConnection') {
 	$table = $DbConnection.GetSchema('Tables')
 }
 elseif ($cname -eq 'SQLiteConnection') {
@@ -104,7 +104,6 @@ $Panel.Columns = $columns
 $Panel.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1'] = @{ DbProviderFactory = $DbProviderFactory; DbConnection = $DbConnection }
 
 # garbage
-$Panel.Garbage.Add($table)
 if ($CloseConnection) { $Panel.Garbage.Add($DbConnection) }
 
 # go

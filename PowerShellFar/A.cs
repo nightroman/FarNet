@@ -421,11 +421,11 @@ namespace PowerShellFar
 			{
 				// show the dialog, get the code
 				UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.HistoryApply, "For each $_ in " + items.Count + " selected:");
-				ui.UICode.IsPath = true;
-				ui.UICode.UseLastHistory = true;
+				ui.UIEdit.IsPath = true;
+				ui.UIEdit.UseLastHistory = true;
 				if (!ui.UIDialog.Show())
 					return;
-				string code = ui.UICode.Text.Trim();
+				string code = ui.UIEdit.Text.Trim();
 				if (code.Length == 0)
 					return;
 

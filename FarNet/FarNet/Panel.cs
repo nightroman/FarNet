@@ -760,55 +760,61 @@ namespace FarNet
 			return true;
 		}
 		/// <summary>
-		/// Called on panel properties request. Use it only when it is absolutely needed.
+		/// Called by <see cref="UIUpdateInfo"/>.
+		/// </summary>
+		public event EventHandler UpdateInfo;
+		/// <summary>
+		/// Called by the core to get the panel info. Use it only when it is absolutely needed.
 		/// </summary>
 		/// <remarks>
-		/// Normally you should not use this event. It is not recommended for many reasons:
-		/// *) it is called very frequently;
-		/// *) it is expensive due to internal technical details;
+		/// Normally you should not use this. It is not recommended for many reasons:
+		/// *) it is called frequently and can be very expensive;
 		/// *) it may have problems if panel data are accessed, even for reading.
 		/// <para>
-		/// Try to update the panel info only from other panel handlers. Even if this panel
-		/// info depends on external data that are changed outside, consider to update the info
-		/// in <see cref="Redrawing"/> event handler.
+		/// Consider to update the panel info in other methods.
+		/// As the last resort use <see cref="UIRedrawing"/>.
 		/// </para>
 		/// </remarks>
-		public event EventHandler UpdateInfo;
-		///
-		public void WorksUpdateInfo()
+		public virtual void UIUpdateInfo()
 		{
 			if (UpdateInfo != null)
 				UpdateInfo(this, null);
 		}
 		/// <summary>
-		/// Called when [CtrlBreak] is pressed.
+		/// Called by <see cref="UICtrlBreak"/>.
+		/// </summary>
+		public event EventHandler CtrlBreak;
+		/// <summary>
+		/// Called when [CtrlBreak] is pressed, normally from a separate thread.
 		/// </summary>
 		/// <remarks>
-		/// Processing is performed in a separate thread,
-		/// so be careful, use only thread safe approaches.
+		/// Processing is performed in a separate thread, use only approved API and thread safe techniques.
+		/// <para>
+		/// The base method triggers the <see cref="CtrlBreak"/> event.
+		/// </para>
 		/// </remarks>
-		public event EventHandler CtrlBreak;
-		///
-		public void WorksCtrlBreak()
+		public virtual void UICtrlBreak()
 		{
 			if (CtrlBreak != null)
 				CtrlBreak(this, null);
 		}
 		/// <summary>
+		/// Called by <see cref="UIRedrawing"/>.
+		/// </summary>
+		public event EventHandler<PanelEventArgs> Redrawing;
+		/// <summary>
 		/// Called when the panel is about to redraw.
 		/// </summary>
 		/// <remarks>
 		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module redraws the panel itself.
+		/// <para>
+		/// The base method triggers the <see cref="Redrawing"/> event.
+		/// </para>
 		/// </remarks>
-		public event EventHandler<PanelEventArgs> Redrawing;
-		///
-		public bool WorksRedrawing(PanelEventArgs e)
+		public virtual void UIRedrawing(PanelEventArgs e)
 		{
-			if (Redrawing == null)
-				return false;
-			if (e != null)
+			if (Redrawing != null)
 				Redrawing(this, e);
-			return true;
 		}
 		/// <summary>
 		/// Called when panel view mode is changed.
@@ -824,21 +830,31 @@ namespace FarNet
 			return true;
 		}
 		/// <summary>
-		/// Called when the panel has got focus.
+		/// Called by <see cref="UIGotFocus"/>.
 		/// </summary>
 		public event EventHandler GotFocus;
-		///
-		public void WorksGotFocus()
+		/// <summary>
+		/// Called when the panel has got focus.
+		/// </summary>
+		/// <remarks>
+		/// The base method triggers the <see cref="GotFocus"/> event.
+		/// </remarks>
+		public virtual void UIGotFocus()
 		{
 			if (GotFocus != null)
 				GotFocus(this, null);
 		}
 		/// <summary>
-		/// Called when the panel is losing focus.
+		/// Called by <see cref="UILosingFocus"/>.
 		/// </summary>
 		public event EventHandler LosingFocus;
-		///
-		public void WorksLosingFocus()
+		/// <summary>
+		/// Called when the panel is losing focus.
+		/// </summary>
+		/// <remarks>
+		/// The base method triggers the <see cref="LosingFocus"/> event.
+		/// </remarks>
+		public virtual void UILosingFocus()
 		{
 			if (LosingFocus != null)
 				LosingFocus(this, null);

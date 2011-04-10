@@ -141,6 +141,7 @@
     <Compile Include="UI\DebuggerMenu.cs" />
     <Compile Include="UI\ErrorsMenu.cs" />
     <Compile Include="UI\ExportDialog.cs" />
+    <Compile Include="UI\InputBoxEx.cs" />
     <Compile Include="UI\InputDialog.cs" />
     <Compile Include="UI\NewValueDialog.cs" />
     <Compile Include="UI\PromptDialog.cs" />
@@ -182,7 +183,9 @@
     <CodeAnalysisDictionary Include="..\FarNet\CustomDictionary.xml">
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
-    <Content Include="doc.xml" />
+    <Content Include="doc.xml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet.Tools\FarNet.Tools.csproj">

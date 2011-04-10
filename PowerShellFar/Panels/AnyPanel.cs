@@ -225,6 +225,16 @@ namespace PowerShellFar
 			MemberPanel panel = new MemberPanel(new MemberExplorer(target));
 			panel._LookupOpeners = _LookupOpeners;
 
+			var tablePanel = Far.Net.Panel as TablePanel;
+			if (tablePanel != null)
+			{
+				if (!string.IsNullOrEmpty(tablePanel.ExcludeMemberPattern))
+					panel.Explorer.ExcludeMemberPattern = tablePanel.ExcludeMemberPattern;
+
+				if (!string.IsNullOrEmpty(tablePanel.HideMemberPattern))
+					panel.Explorer.HideMemberPattern = tablePanel.HideMemberPattern;
+			}
+
 			//! use null as parent: this panel can be not open now
 			panel.OpenChild(null);
 			return panel;

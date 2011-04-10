@@ -47,6 +47,7 @@ namespace PowerShellFar
 			Remove = "Remove",
 			CtrlC = "Cancel key is pressed.",
 			UIApply = "Apply command",
+			Empty = "Empty",
 
 			// History of main input code, general top level code
 			History = "PowerShellFar",

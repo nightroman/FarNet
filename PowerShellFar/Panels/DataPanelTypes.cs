@@ -135,7 +135,7 @@ namespace PowerShellFar
 				if (Map.Length >= 0)
 				{
 					object v = Row[Map.Length];
-					if (v != null)
+					if (v != DBNull.Value)
 						return (long)v;
 				}
 				return 0;

@@ -72,7 +72,7 @@ namespace PowerShellFar
 		public override string ReadLine()
 		{
 			UI.InputDialog ui = new UI.InputDialog(string.Empty, Res.HistoryPrompt);
-			return ui.UIDialog.Show() ? ui.UICode.Text : string.Empty;
+			return ui.UIDialog.Show() ? ui.UIEdit.Text : string.Empty;
 		}
 
 		/// <summary>

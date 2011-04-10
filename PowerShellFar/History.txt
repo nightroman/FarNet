@@ -3,6 +3,36 @@ http://code.google.com/p/farnet/
 
 = 4.4.7 =
 
+*) DataPanel class, scripts, etc.
+
+[F1] menu
+- New Sort command; syntax is similar to ORDER BY in SELECT.
+- New Filter command with a logical expression, see Expression Syntax:
+http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression
+- Sort and Filter input boxes provide TabExpansion of columns, functions, etc.
+
+Raw DataTable support
+- Data are not from a database, they are in-memory data or imported from and
+exported to XML files. Constructors: DataPanel(DataTable), DataPanel(xmlFile),
+DataPanel(xmlSchema, xmlData).
+
+*) New script Open-TODO-.ps1
+
+This is a toy script but it can be useful, too, as it is or with changes.
+The goal is to show how to use:
+- DataTable with data stored in XML files;
+- DataPanel in order to view and modify that data.
+
+Example of Far Manager file association:
+- Mask: *TODO.xml
+- Command: >: Open-TODO- (Get-FarPath) #
+
+*) Out-FarPanel cmdlet
+If it is opened when a module panel is active then this panel is restored on
+the output panel exit (it used to be closed when the output panel starts).
+
+= 4.4.7 =
+
 *) DataPanel
 - [F1] menu: "Record limit", "Record offset" (offset N tells to skip N records).
 - [F3]/[CtrlQ]: noisy data members are excluded, only record fields are shown.

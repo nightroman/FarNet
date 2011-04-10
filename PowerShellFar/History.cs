@@ -103,10 +103,10 @@ namespace PowerShellFar
 						if (m.Alternative)
 						{
 							UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, "PowerShell code");
-							ui.UICode.Text = code;
+							ui.UIEdit.Text = code;
 							if (!ui.UIDialog.Show())
 								return;
-							code = ui.UICode.Text;
+							code = ui.UIEdit.Text;
 						}
 
 						A.Psf.Act(code, null, true);
