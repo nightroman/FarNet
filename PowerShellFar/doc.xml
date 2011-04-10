@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding='windows-1251'?>
 <doc>
 	<!--
-/// <include file='doc.xml' path='doc/Columns/*'/>
+/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 -->
+	<ScriptFork>
+		<summary>
+			Calls the As.. script if any or the Do.. method.
+		</summary>
+	</ScriptFork>
 	<Columns>
 		<summary>
 			Columns definitions. Set it only when the panel has no files.

@@ -1,9 +1,19 @@
 http://code.google.com/p/farnet/
 
+= 4.4.8 =
+
+*) Panel
+Converted some more internal methods into public virtual:
+- WorksCtrlBreak -> UICtrlBreak
+- WorksGotFocus -> UIGotFocus
+- WorksLosingFocus -> UILosingFocus
+- WorksRedrawing -> UIRedrawing
+- WorksUpdateInfo -> UIUpdateInfo
+
 = 4.4.7 =
 
 *) Panel
-Converted some more internal methods & events into public virtual:
+Converted some more internal methods into public virtual:
 - WorksClosed -> UIClosed
 - WorksClosing -> UIClosing
 NOTE: UIClosing is useful but buggy:

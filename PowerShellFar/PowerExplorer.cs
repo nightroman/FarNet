@@ -52,9 +52,7 @@ namespace PowerShellFar
 		/// </para>
 		/// </remarks>
 		public ScriptBlock AsGetFiles { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (AsGetFiles == null)
@@ -87,9 +85,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreDirectoryEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreDirectory { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override Explorer ExploreDirectory(ExploreDirectoryEventArgs args)
 		{
 			if (AsExploreDirectory == null)
@@ -108,9 +104,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreLocationEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreLocation { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override Explorer ExploreLocation(ExploreLocationEventArgs args)
 		{
 			if (AsExploreLocation == null)
@@ -129,9 +123,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreParent { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override Explorer ExploreParent(ExploreParentEventArgs args)
 		{
 			if (AsExploreParent == null)
@@ -150,9 +142,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreRoot { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override Explorer ExploreRoot(ExploreRootEventArgs args)
 		{
 			if (AsExploreRoot == null)
@@ -171,9 +161,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="GetContentEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsGetContent { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void GetContent(GetContentEventArgs args)
 		{
 			if (AsGetContent == null)
@@ -192,9 +180,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="SetFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsSetFile { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void SetFile(SetFileEventArgs args)
 		{
 			if (AsSetFile == null)
@@ -213,9 +199,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="SetTextEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsSetText { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void SetText(SetTextEventArgs args)
 		{
 			if (AsSetText == null)
@@ -234,9 +218,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="CloneFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsCloneFile { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void CloneFile(CloneFileEventArgs args)
 		{
 			if (AsCloneFile == null)
@@ -255,9 +237,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="CreateFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsCreateFile { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void CreateFile(CreateFileEventArgs args)
 		{
 			if (AsCreateFile == null)
@@ -276,9 +256,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="OpenFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsOpenFile { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override Explorer OpenFile(OpenFileEventArgs args)
 		{
 			if (AsOpenFile == null)
@@ -297,9 +275,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="RenameFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsRenameFile { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void RenameFile(RenameFileEventArgs args)
 		{
 			if (AsRenameFile == null)
@@ -318,9 +294,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="AcceptFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsAcceptFiles { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void AcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (AsAcceptFiles == null)
@@ -339,9 +313,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ImportFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsImportFiles { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void ImportFiles(ImportFilesEventArgs args)
 		{
 			if (AsImportFiles == null)
@@ -360,9 +332,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExportFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExportFiles { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void ExportFiles(ExportFilesEventArgs args)
 		{
 			if (AsExportFiles == null)
@@ -381,9 +351,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="DeleteFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsDeleteFiles { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void DeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (AsDeleteFiles == null)
@@ -402,9 +370,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer.
 		/// </remarks>
 		public ScriptBlock AsCreatePanel { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override Panel CreatePanel()
 		{
 			if (AsCreatePanel == null)
@@ -423,9 +389,7 @@ namespace PowerShellFar
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is the <see cref="Panel"/> to be updated.
 		/// </remarks>
 		public ScriptBlock AsEnterPanel { get; set; }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void EnterPanel(Panel panel)
 		{
 			if (AsEnterPanel == null)

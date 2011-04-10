@@ -96,7 +96,7 @@ namespace PowerShellFar.Commands
 			if (Append)
 				_panel.UpdateRedraw(true);
 			else
-				_panel.Open();
+				_panel.OpenChild(null);
 		}
 	}
 }

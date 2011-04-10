@@ -1,6 +1,6 @@
 
-$Build = '7'
-$Date = '2011-04-03'
+$Build = '8'
+$Date = '2011-04-10'
 $FarVersion = '2.0.1807'
 $FarNetVersion = "4.4.$Build"
 $FarNetAccordVersion = "4.4.$Build"

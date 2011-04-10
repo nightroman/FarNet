@@ -446,7 +446,7 @@ void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 	if (!State::GetPanelInfo)
 	{
 		Log::Source->TraceEvent(TraceEventType::Verbose, 0, "UpdateInfo");
-		pp->Host->WorksUpdateInfo();
+		pp->Host->UIUpdateInfo();
 	}
 
 	// make info
@@ -463,7 +463,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		{
 			Log::Source->TraceInformation("FE_BREAK");
 
-			pp->Host->WorksCtrlBreak();
+			pp->Host->UICtrlBreak();
 		}
 		break;
 	case FE_CLOSE:
@@ -538,14 +538,14 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_GOTFOCUS");
 
-			pp->Host->WorksGotFocus();
+			pp->Host->UIGotFocus();
 		}
 		break;
 	case FE_KILLFOCUS:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "FE_KILLFOCUS");
 
-			pp->Host->WorksLosingFocus();
+			pp->Host->UILosingFocus();
 		}
 		break;
 	case FE_REDRAW:
@@ -566,7 +566,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			}
 
 			PanelEventArgs e;
-			pp->Host->WorksRedrawing(%e);
+			pp->Host->UIRedrawing(%e);
 			if (e.Ignore)
 				return 1;
 

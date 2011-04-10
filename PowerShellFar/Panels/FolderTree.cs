@@ -31,10 +31,7 @@ namespace PowerShellFar
 		{
 			// _091015_190130 Use of UpdateInfo is problematic: it is called after Close()
 			// and somehow Close() may not work. To watch this in future Far versions.
-			// For now use Redrawing event, it looks working fine.
-
-			// For updating the panel path.
-			Redrawing += Updating;
+			// For now use redrawing, it looks working fine.
 		}
 		/// <summary>
 		/// New folder tree at the given location.
@@ -55,8 +52,11 @@ namespace PowerShellFar
 		/// </summary>
 		public FolderTree()
 			: this((string)null) { }
-		void Updating(object sender, EventArgs e)
+		///
+		public override void UIRedrawing(PanelEventArgs e)
 		{
+			base.UIRedrawing(e);
+			
 			string dir = string.Empty;
 
 			var file = CurrentFile;

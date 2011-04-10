@@ -22,7 +22,6 @@ namespace PowerShellFar
 	{
 		static int _initTabExpansion;
 		static ScriptBlock _TabExpansion;
-
 		/// <summary>
 		/// Expands PowerShell code in an edit line.
 		/// </summary>
@@ -83,8 +82,7 @@ namespace PowerShellFar
 				A.Message(ex.Message);
 			}
 		}
-
-		public static void ExpandText(ILine editLine, string text, string line, string lastWord, Collection<PSObject> words)
+		public static void ExpandText(ILine editLine, string text, string line, string lastWord, IList words)
 		{
 			bool isEmpty = words.Count == 0;
 			int hashMode = lastWord[0] == '#' ? 1 : lastWord[lastWord.Length - 1] == '#' ? 2 : 0;
@@ -108,7 +106,7 @@ namespace PowerShellFar
 				A.Psf.Settings.Intelli(menu);
 				if (isEmpty)
 				{
-					menu.Add("No expansion candidates").Disabled = true;
+					menu.Add(Res.Empty).Disabled = true;
 					menu.NoInfo = true;
 					menu.Show();
 					return;
@@ -116,10 +114,10 @@ namespace PowerShellFar
 				menu.Incremental = (hashMode == 1 ? lastWord.Substring(1) : hashMode == 2 ? lastWord.Substring(0, lastWord.Length - 1) : lastWord) + "*";
 				menu.IncrementalOptions = PatternOptions.Prefix;
 
-				foreach (PSObject o in words)
+				foreach (var it in words)
 				{
-					if (o != null)
-						menu.Add(o.ToString());
+					if (it != null)
+						menu.Add(it.ToString());
 				}
 
 				if (menu.Items.Count == 0)
@@ -162,7 +160,6 @@ namespace PowerShellFar
 			// set caret
 			editLine.Caret = caret;
 		}
-
 		public static string ActiveText
 		{
 			get
@@ -210,7 +207,6 @@ namespace PowerShellFar
 					line.ActiveText = value;
 			}
 		}
-
 		public static void OnEditorOpened1(object sender, EventArgs e)
 		{
 			A.Psf.Invoking();
@@ -230,7 +226,6 @@ namespace PowerShellFar
 				Far.Net.AnyEditor.Opened -= OnEditorOpened1;
 			}
 		}
-
 		public static void OnEditorOpened2(object sender, EventArgs e)
 		{
 			IEditor editor = (IEditor)sender;
@@ -244,7 +239,6 @@ namespace PowerShellFar
 				editor.KeyDown += OnKeyDownPSFile;
 			}
 		}
-
 		/// <summary>
 		/// Called on key in *.ps1.
 		/// </summary>
@@ -297,7 +291,6 @@ namespace PowerShellFar
 					}
 			}
 		}
-
 		public static void InvokeScriptBeingEdited(IEditor editor)
 		{
 			// editor
@@ -331,7 +324,6 @@ namespace PowerShellFar
 				throw;
 			}
 		}
-
 		public static void InvokeSelectedCode()
 		{
 			string code;
@@ -380,5 +372,4 @@ namespace PowerShellFar
 				Far.Net.CommandLine.Text = string.Empty;
 		}
 	}
-
 }

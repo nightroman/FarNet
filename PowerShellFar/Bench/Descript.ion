@@ -23,6 +23,7 @@ Job-RemoveItem-.ps1 Job: remove the specified provider item(s).
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
 Menu-More-.ps1 Demo menu script, e.g. called on "More...", see Profile-.ps1.
 Open-TextLink-.ps1 Opens a text link contained in the text.
+Open-TODO-.ps1 TODO notes in XML files.
 Panel-BitsTransfer-.ps1 Starts or manages file transfer jobs in a panel.
 Panel-Database-.ps1 Panel SQL server databases.
 Panel-DbData-.ps1 Panel DataTable rows.
