@@ -14,7 +14,7 @@ namespace PowerShellFar.UI
 	{
 		public IDialog UIDialog { get; private set; }
 		public IText[] UIPrompt { get; private set; }
-		public IEdit UICode { get; private set; }
+		public IEdit UIEdit { get; private set; }
 
 		public InputDialog(string caption, string history, params string[] prompt)
 		{
@@ -26,20 +26,20 @@ namespace PowerShellFar.UI
 			UIPrompt = new IText[prompt.Length];
 			for (int i = 0; i < prompt.Length; ++i)
 				UIPrompt[i] = UIDialog.AddText(5, -1, w - 6, prompt[i]);
-			UICode = UIDialog.AddEdit(5, -1, w - 6, string.Empty);
+			UIEdit = UIDialog.AddEdit(5, -1, w - 6, string.Empty);
 
 			// history
-			UICode.History = history;
+			UIEdit.History = history;
 
 			// hotkeys
-			UICode.KeyPressed += delegate(object sender, KeyPressedEventArgs e)
+			UIEdit.KeyPressed += delegate(object sender, KeyPressedEventArgs e)
 			{
 				switch (e.Code)
 				{
 					case KeyCode.Tab:
 						// [Tab]
 						e.Ignore = true;
-						A.Psf.ExpandCode(((IEdit)e.Control).Line);
+						EditorKit.ExpandCode(UIEdit.Line);
 						return;
 					case KeyCode.F1 | KeyMode.Shift:
 						// [ShiftF1]

@@ -94,9 +94,7 @@ namespace PowerShellFar
 		/// <see cref="UIEditFile"/> worker.
 		/// </summary>
 		public void DoEditFile(FarFile file) { base.UIEditFile(file); }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void UIEditFile(FarFile file) //_091202_073429 NB: Data can be wrapped by PSObject.
 		{
 			if (AsEditFile != null)
@@ -115,9 +113,7 @@ namespace PowerShellFar
 		/// <see cref="UIViewFile"/> worker.
 		/// </summary>
 		public void DoViewFile(FarFile file) { base.UIViewFile(file); }
-		/// <summary>
-		/// Calls As-Script or Do-Method.
-		/// </summary>
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void UIViewFile(FarFile file) //_091202_073429
 		{
 			if (AsViewFile != null)

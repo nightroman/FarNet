@@ -35,10 +35,68 @@ namespace PowerShellFar
 			UseSortGroups = false;
 		}
 		/// <summary>
+		/// Gets or sets the source XML file.
+		/// </summary>
+		readonly string _XmlFile;
+		readonly string _XmlSchema;
+		/// <summary>
+		/// Attaches the data table to work with.
+		/// </summary>
+		/// <remarks>
+		/// If the data are going to be changed the use <see cref="AsSaveData"/> script.
+		/// </remarks>
+		public DataPanel(DataTable table)
+			: this()
+		{
+			Table = table;
+		}
+		/// <summary>
+		/// Reads XML schema and data into the data table from the specified file.
+		/// </summary>
+		/// <remarks>
+		/// If the data are changed then they are saved to the source file together with the schema.
+		/// </remarks>
+		public DataPanel(string xmlFile)
+			: this()
+		{
+			Table = new DataTable();
+			Table.ReadXml(xmlFile);
+			Table.AcceptChanges();
+
+			_XmlFile = xmlFile;
+		}
+		/// <summary>
+		/// Reads XML schema and data into the table from the specified files.
+		/// </summary>
+		/// <remarks>
+		/// If the data are changed then they are saved to the source data file.
+		/// </remarks>
+		public DataPanel(string xmlSchema, string xmlData)
+			: this()
+		{
+			Table = new DataTable();
+			Table.ReadXmlSchema(xmlSchema);
+			if (!string.IsNullOrEmpty(xmlData))
+			{
+				Table.ReadXml(xmlData);
+				Table.AcceptChanges();
+			}
+
+			_XmlFile = xmlData;
+			_XmlSchema = xmlSchema;
+		}
+		/// <summary>
 		/// Database provider factory instance.
 		/// See <b>System.Data.Common.DbProviderFactories</b> methods <b>GetFactoryClasses</b>, <b>GetFactory</b>.
 		/// </summary>
 		public DbProviderFactory Factory { get; set; }
+		/// <summary>
+		/// Connection.
+		/// </summary>
+		public DbConnection Connection
+		{
+			get { return Adapter == null || Adapter.SelectCommand == null ? null : Adapter.SelectCommand.Connection; }
+		}
 		/// <summary>
 		/// Data adapter.
 		/// You have to set it and configure at least its <c>SelectCommand</c>.
@@ -52,13 +110,6 @@ namespace PowerShellFar
 		/// An external table is possible but this scenario is mostly reserved for the future.
 		/// </remarks>
 		public DataTable Table { get; set; }
-		/// <summary>
-		/// Connection.
-		/// </summary>
-		public DbConnection Connection
-		{
-			get { return Adapter == null || Adapter.SelectCommand == null ? null : Adapter.SelectCommand.Connection; }
-		}
 		readonly DataRowFileMap Map = new DataRowFileMap();
 		/// <summary>
 		/// Disposes internal data. Normally it is called internally.
@@ -71,20 +122,38 @@ namespace PowerShellFar
 			if (Table != null)
 				Table.Dispose();
 		}
-		/// <summary>
-		/// Calls <c>Adapter.Update()</c>.
-		/// </summary>
-		public override bool SaveData()
+		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		public sealed override bool SaveData()
 		{
-			// Build commands
-			BuildDeleteCommand();
-			BuildInsertCommand();
-			BuildUpdateCommand();
-
+			if (AsSaveData != null)
+				return LanguagePrimitives.IsTrue(A.InvokeScriptReturnAsIs(AsSaveData, this, null));
+			else
+				return DoSaveData();
+		}
+		/// <summary>
+		/// Called by <see cref="SaveData"/>.
+		/// </summary>
+		public ScriptBlock AsSaveData { get; set; }
+		/// <summary>
+		/// Called by <see cref="SaveData"/>.
+		/// </summary>
+		public bool DoSaveData()
+		{
 			try
 			{
 				ToUpdateData = true;
-				Adapter.Update(Table);
+
+				if (Adapter != null)
+				{
+					Adapter.Update(Table);
+				}
+				else if (_XmlFile != null)
+				{
+					var mode = _XmlSchema == null ? XmlWriteMode.WriteSchema : XmlWriteMode.IgnoreSchema;
+					Table.WriteXml(_XmlFile, mode);
+					Table.AcceptChanges();
+				}
+
 				return true;
 			}
 			catch (DBConcurrencyException ex)
@@ -118,8 +187,8 @@ namespace PowerShellFar
 			{
 				Table = new DataTable();
 				Table.Locale = CultureInfo.CurrentCulture; // CA
-				Fill();
 			}
+			Fill();
 
 			// pass 1: collect the columns
 			IList<Meta> metas;
@@ -246,8 +315,9 @@ namespace PowerShellFar
 		}
 		internal void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
-			var Files = Explorer.Cache;
 			BuildDeleteCommand();
+
+			var Files = Explorer.Cache;
 
 			if (args.UI && 0 != (Far.Net.Confirmations & FarConfirmations.Delete))
 			{
@@ -301,11 +371,12 @@ namespace PowerShellFar
 			var Files = Explorer.Cache;
 
 			// refill
-			if (UserWants == UserAction.CtrlR && Adapter != null)
+			if (UserWants == UserAction.CtrlR)
 			{
 				if (CanClose())
 				{
-					Table.Clear();
+					if (Adapter != null)
+						Table.Clear();
 					Fill();
 				}
 			}
@@ -335,20 +406,32 @@ namespace PowerShellFar
 		/// </summary>
 		public override void OpenFile(FarFile file)
 		{
-			var memberPanel = OpenFileMembers(file);
-			memberPanel.Explorer.CanDeleteFiles = false;
+			BuildUpdateCommand();
+
+			OpenFileActor(file);
 		}
 		int RecordLimit = A.Psf.Settings.MaximumPanelFileCount;
 		// 0-based internally and in UI: 'offset' means "skip 'offset' records"
 		int RecordOffset;
 		void Fill()
 		{
-			Adapter.Fill(RecordOffset, RecordLimit, Table);
+			if (Adapter != null)
+				Adapter.Fill(RecordOffset, RecordLimit, Table);
 
 			var Files = Explorer.Cache;
 			Files.Clear();
-			foreach (DataRow dr in Table.Rows)
-				Files.Add(new DataRowFile(dr, Map));
+
+			if (string.IsNullOrEmpty(Table.DefaultView.RowFilter) && string.IsNullOrEmpty(Table.DefaultView.Sort))
+			{
+				foreach (DataRow dr in Table.Rows)
+					Files.Add(new DataRowFile(dr, Map));
+			}
+			else
+			{
+				foreach (DataRowView drv in Table.DefaultView)
+					Files.Add(new DataRowFile(drv.Row, Map));
+			}
+
 		}
 		internal override void ShowHelp()
 		{
@@ -375,7 +458,7 @@ namespace PowerShellFar
 		/// </summary>
 		public void BuildDeleteCommand()
 		{
-			if (Adapter != null && Adapter.DeleteCommand != null)
+			if (Adapter == null || Adapter.DeleteCommand != null)
 				return;
 
 			EnsureBuilder();
@@ -386,7 +469,7 @@ namespace PowerShellFar
 		/// </summary>
 		public void BuildInsertCommand()
 		{
-			if (Adapter != null && Adapter.InsertCommand != null)
+			if (Adapter == null || Adapter.DeleteCommand != null)
 				return;
 
 			EnsureBuilder();
@@ -397,7 +480,7 @@ namespace PowerShellFar
 		/// </summary>
 		public void BuildUpdateCommand()
 		{
-			if (Adapter != null && Adapter.UpdateCommand != null)
+			if (Adapter == null || Adapter.DeleteCommand != null)
 				return;
 
 			EnsureBuilder();
@@ -449,68 +532,6 @@ namespace PowerShellFar
 			}
 			return base.UIKeyPressed(code, state);
 		}
-		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
-		{
-			e.Menu.Add("Next range").Click = delegate { OnRangeNext(); };
-
-			e.Menu.Add("Previous range").Click = delegate { OnRangePrevious(); };
-
-			e.Menu.Add("Record limit").Click = delegate
-			{
-				var text = Far.Net.Input("Record limit", "DataRecordLimit", "Data Panel", RecordLimit.ToString());
-				if (string.IsNullOrEmpty(text))
-					return;
-
-				int value;
-				if (!int.TryParse(text, out value) || value < 1)
-				{
-					A.Message("Invalid number");
-					return;
-				}
-
-				RecordLimit = value;
-
-				UserWants = UserAction.CtrlR;
-				UpdateRedraw(true);
-			};
-
-			e.Menu.Add("Record offset").Click = delegate
-			{
-				var text = Far.Net.Input("Record offset", "DataRecordOffset", "Data Panel", RecordOffset.ToString());
-				if (string.IsNullOrEmpty(text))
-					return;
-
-				int value;
-				if (!int.TryParse(text, out value) || value < 0)
-				{
-					A.Message("Invalid number");
-					return;
-				}
-
-				RecordOffset = value;
-
-				UserWants = UserAction.CtrlR;
-				UpdateRedraw(true);
-			};
-
-			e.Menu.Add(string.Empty).IsSeparator = true;
-
-			if (items.Create == null)
-				items.Create = new SetItem()
-				{
-					Text = "&New row",
-					Click = delegate { UICreate(); }
-				};
-
-			if (items.Delete == null)
-				items.Delete = new SetItem()
-				{
-					Text = "&Delete row(s)",
-					Click = delegate { UIDelete(false); }
-				};
-
-			base.HelpMenuInitItems(items, e);
-		}
 		internal override string HelpMenuTextOpenFileMembers { get { return "Edit row data"; } }
 		internal void DoCreateFile()
 		{
@@ -524,7 +545,7 @@ namespace PowerShellFar
 			DataRowFile file = new DataRowFile(dr, Map); //_110330_175246
 
 			// open the record panel
-			OpenFile(file);
+			OpenFileActor(file);
 		}
 		///
 		protected override bool CanCloseChild()
@@ -586,6 +607,169 @@ namespace PowerShellFar
 			{
 				base.UIClosed();
 			}
+		}
+		void OpenFileActor(FarFile file)
+		{
+			var memberPanel = OpenFileMembers(file);
+			memberPanel.Explorer.CanDeleteFiles = false;
+		}
+		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
+		{
+			e.Menu.Add("Sort").Click = delegate
+			{
+				GetValues getWords = delegate
+				{
+					var list = new List<string>();
+					foreach (DataColumn c in Table.Columns)
+						list.Add(c.ColumnName);
+					return list;
+				};
+
+				for (; ; )
+				{
+					var ui = new UI.InputBoxEx()
+					{
+						Title = "Sort",
+						Prompt = "Sort column list: [Tab] to complete, comma to separate",
+						Text = Table.DefaultView.Sort ?? string.Empty,
+						History = "DataRecordSort",
+						GetWords = getWords
+					};
+					if (!ui.Show())
+						return;
+
+					var text = ui.Text;
+					if (text == Table.DefaultView.Sort)
+						return;
+
+					try
+					{
+						Table.DefaultView.Sort = text;
+						break;
+					}
+					catch (Exception ex)
+					{
+						A.Message(ex.Message);
+						continue;
+					}
+				}
+
+				UserWants = UserAction.CtrlR;
+				UpdateRedraw(true);
+			};
+
+			e.Menu.Add("Filter").Click = delegate
+			{
+				GetValues getWords = delegate
+				{
+					var list = new List<string>();
+					foreach (DataColumn c in Table.Columns)
+						list.Add(c.ColumnName);
+
+					list.AddRange(new string[] {
+"","and","avg","between","child","convert","count","false","iif","in","is","isnull","len","like","max","min","not","null","or","parent","stdev","substring","sum","trim","true","var",
+});
+
+					return list;
+				};
+
+				for (; ; )
+				{
+					var ui = new UI.InputBoxEx()
+					{
+						Title = "Filter",
+						Prompt = "Filter expression: [Tab] to complete",
+						Text = Table.DefaultView.Sort ?? string.Empty,
+						History = "DataRecordFilter",
+						GetWords = getWords
+					};
+					if (!ui.Show())
+						return;
+
+					var text = ui.Text;
+					if (text == Table.DefaultView.RowFilter)
+						return;
+
+					try
+					{
+						Table.DefaultView.RowFilter = text;
+						break;
+					}
+					catch (Exception ex)
+					{
+						A.Message(ex.Message);
+						continue;
+					}
+				}
+
+				UserWants = UserAction.CtrlR;
+				UpdateRedraw(true);
+			};
+
+			e.Menu.Add(string.Empty).IsSeparator = true;
+
+			if (Adapter != null)
+			{
+				e.Menu.Add("Next range").Click = delegate { OnRangeNext(); };
+
+				e.Menu.Add("Previous range").Click = delegate { OnRangePrevious(); };
+
+				e.Menu.Add("Record limit").Click = delegate
+				{
+					var text = Far.Net.Input("Record limit", "DataRecordLimit", "Data Panel", RecordLimit.ToString());
+					if (string.IsNullOrEmpty(text))
+						return;
+
+					int value;
+					if (!int.TryParse(text, out value) || value < 1)
+					{
+						A.Message("Invalid number");
+						return;
+					}
+
+					RecordLimit = value;
+
+					UserWants = UserAction.CtrlR;
+					UpdateRedraw(true);
+				};
+
+				e.Menu.Add("Record offset").Click = delegate
+				{
+					var text = Far.Net.Input("Record offset", "DataRecordOffset", "Data Panel", RecordOffset.ToString());
+					if (string.IsNullOrEmpty(text))
+						return;
+
+					int value;
+					if (!int.TryParse(text, out value) || value < 0)
+					{
+						A.Message("Invalid number");
+						return;
+					}
+
+					RecordOffset = value;
+
+					UserWants = UserAction.CtrlR;
+					UpdateRedraw(true);
+				};
+
+				e.Menu.Add(string.Empty).IsSeparator = true;
+			}
+
+			if (items.Create == null)
+				items.Create = new SetItem()
+				{
+					Text = "&New row",
+					Click = delegate { UICreate(); }
+				};
+
+			if (items.Delete == null)
+				items.Delete = new SetItem()
+				{
+					Text = "&Delete row(s)",
+					Click = delegate { UIDelete(false); }
+				};
+
+			base.HelpMenuInitItems(items, e);
 		}
 	}
 }

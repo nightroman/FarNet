@@ -181,7 +181,6 @@ CONSTRAINT [PK_TestNotes] PRIMARY KEY ([NoteId])
 
 ### execute commands (*)
 foreach($CommandText in $commands) {
-	Write-Host $CommandText
 	$c = $DbConnection.CreateCommand()
 	$c.CommandText = $CommandText
 	$null = $c.ExecuteNonQuery()
