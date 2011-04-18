@@ -183,10 +183,6 @@ namespace PowerShellFar
 		{
 			get { return ((FileSystemInfo)Value.BaseObject).Attributes; }
 		}
-		public override string ToString()
-		{
-			return Value.BaseObject.ToString();
-		}
 	}
 
 	/// <summary>

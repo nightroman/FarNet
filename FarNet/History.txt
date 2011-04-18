@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 4.4.9 =
+
+*) Panel
+Converted one more internal method into public virtual:
+- WorksViewChanged -> UIViewChanged
+
 = 4.4.8 =
 
 *) Panel

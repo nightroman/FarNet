@@ -511,11 +511,8 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		{
 			Log::Source->TraceInformation("FE_CHANGEVIEWMODE");
 
-			if (pp->Host->WorksViewChanged(nullptr))
-			{
-				ViewChangedEventArgs e(gcnew String((const wchar_t*)param));
-				pp->Host->WorksViewChanged(%e);
-			}
+			ViewChangedEventArgs e(gcnew String((const wchar_t*)param));
+			pp->Host->UIViewChanged(%e);
 		}
 		break;
 	case FE_IDLE:

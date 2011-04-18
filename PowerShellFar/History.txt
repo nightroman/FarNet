@@ -1,7 +1,30 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-= 4.4.7 =
+= 4.4.9 =
+
+*) DataPanel
+- New properties ViewSort, ViewRowFilter allow to set predefined sort/filter.
+- XML data may have 2+ tables, use TableName or choose a table from a menu.
+- New properties XmlFile, XmlReadMode, XmlSchema, XmlWriteMode, TableName.
+- Added control of the source XML file time in order to detect conflicts.
+- Hidden not calculated columns are excluded by default in the table panel.
+- Hidden, calculated, autoincrement fields are hidden in the member panel.
+- Removed redundant constructors, only the default is left.
+- Fix: [F1]\Filter: fixed default text in the input box.
+
+*) Connect-SQLite-.ps1
+Improved discovery of the SQLite assembly or provider. In particular, it is
+fine simply to have System.Data.SQLite.dll in the FarNet home directory (no
+installation and/or registration is needed in this case). Starting with 1.0.69
+(released a few days ago) SQLite.Interop.dll is also needed.
+
+*) Open-TODO-.ps1
+- Changed column/field names: Text -> Name, Memo -> Text, M -> T.
+- [F4] in the table opens the editor to edit Name and Text values together.
+If the result editor text is empty then the record is deleted.
+
+= 4.4.8 =
 
 *) DataPanel class, scripts, etc.
 

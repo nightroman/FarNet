@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using System.IO;
 using System.Management.Automation;
 using FarNet;
 
@@ -34,56 +35,57 @@ namespace PowerShellFar
 			UseFilter = true;
 			UseSortGroups = false;
 		}
+		DateTime _XmlFileTime;
 		/// <summary>
-		/// Gets or sets the source XML file.
+		/// Gets or sets the XML data source file.
 		/// </summary>
-		readonly string _XmlFile;
-		readonly string _XmlSchema;
-		/// <summary>
-		/// Attaches the data table to work with.
-		/// </summary>
-		/// <remarks>
-		/// If the data are going to be changed the use <see cref="AsSaveData"/> script.
-		/// </remarks>
-		public DataPanel(DataTable table)
-			: this()
+		public string XmlFile
 		{
-			Table = table;
+			get { return _XmlFile; }
+			set { _XmlFile = string.IsNullOrEmpty(value) ? null : Path.GetFullPath(value); }
 		}
+		string _XmlFile;
 		/// <summary>
-		/// Reads XML schema and data into the data table from the specified file.
+		/// Gets or sets the XML schema definition file.
 		/// </summary>
-		/// <remarks>
-		/// If the data are changed then they are saved to the source file together with the schema.
-		/// </remarks>
-		public DataPanel(string xmlFile)
-			: this()
+		public string XmlSchema
 		{
-			Table = new DataTable();
-			Table.ReadXml(xmlFile);
-			Table.AcceptChanges();
-
-			_XmlFile = xmlFile;
+			get { return _XmlSchema; }
+			set { _XmlSchema = string.IsNullOrEmpty(value) ? null : Path.GetFullPath(value); }
 		}
+		string _XmlSchema;
 		/// <summary>
-		/// Reads XML schema and data into the table from the specified files.
+		/// Gets or sets the table name.
 		/// </summary>
-		/// <remarks>
-		/// If the data are changed then they are saved to the source data file.
-		/// </remarks>
-		public DataPanel(string xmlSchema, string xmlData)
-			: this()
+		public string TableName { get; set; }
+		/// <summary>
+		/// Gets or sets the XML reading mode. 
+		/// </summary>
+		public XmlReadMode XmlReadMode { get; set; }
+		/// <summary>
+		/// Gets or sets the XML writing mode. 
+		/// </summary>
+		public XmlWriteMode XmlWriteMode { get; set; }
+		static DataTable GetTable(DataSet dataSet, string tableName)
 		{
-			Table = new DataTable();
-			Table.ReadXmlSchema(xmlSchema);
-			if (!string.IsNullOrEmpty(xmlData))
-			{
-				Table.ReadXml(xmlData);
-				Table.AcceptChanges();
-			}
+			if (dataSet.Tables.Count == 0)
+				throw new InvalidOperationException("Empty data set.");
 
-			_XmlFile = xmlData;
-			_XmlSchema = xmlSchema;
+			if (!string.IsNullOrEmpty(tableName))
+				return dataSet.Tables[tableName];
+
+			if (dataSet.Tables.Count == 1)
+				return dataSet.Tables[0];
+
+			var menu = Far.Net.CreateListMenu();
+			menu.Title = "Tables";
+			menu.UsualMargins = true;
+
+			foreach (DataTable table in dataSet.Tables)
+				menu.Add(table.TableName);
+
+			int index = menu.Show() ? menu.Selected : 0;
+			return dataSet.Tables[index];
 		}
 		/// <summary>
 		/// Database provider factory instance.
@@ -107,7 +109,7 @@ namespace PowerShellFar
 		/// </summary>
 		/// <remarks>
 		/// Normally this table is created, assigned and filled internally.
-		/// An external table is possible but this scenario is mostly reserved for the future.
+		/// If an external table is set then <see cref="XmlFile"/> or <see cref="AsSaveData"/> might be useful.
 		/// </remarks>
 		public DataTable Table { get; set; }
 		readonly DataRowFileMap Map = new DataRowFileMap();
@@ -147,10 +149,25 @@ namespace PowerShellFar
 				{
 					Adapter.Update(Table);
 				}
-				else if (_XmlFile != null)
+				else if (!string.IsNullOrEmpty(_XmlFile))
 				{
-					var mode = _XmlSchema == null ? XmlWriteMode.WriteSchema : XmlWriteMode.IgnoreSchema;
-					Table.WriteXml(_XmlFile, mode);
+					// conflict?
+					if (_XmlFileTime != DateTime.MinValue && File.Exists(_XmlFile) && _XmlFileTime != File.GetLastWriteTime(_XmlFile))
+					{
+						Far.Net.Message("Cannot save because the source file is modified.", "Conflict");
+						return false;
+					}
+
+					// write
+					if (Table.DataSet == null) //! user Table.DataSet can be null
+						Table.WriteXml(_XmlFile, XmlWriteMode);
+					else
+						Table.DataSet.WriteXml(_XmlFile, XmlWriteMode);
+					
+					// stamp
+					_XmlFileTime = File.GetLastWriteTime(_XmlFile);
+
+					// clear
 					Table.AcceptChanges();
 				}
 
@@ -177,38 +194,67 @@ namespace PowerShellFar
 			if (IsOpened)
 				return;
 
-			if (Table == null && Adapter == null)
-				throw new RuntimeException("The table and the adapter are null.");
-			if (Table == null && Adapter.SelectCommand == null)
-				throw new RuntimeException("The table and the adapter select command are null.");
-
-			// fill table
+			// make table
 			if (Table == null)
 			{
-				Table = new DataTable();
-				Table.Locale = CultureInfo.CurrentCulture; // CA
+				if (Adapter == null)
+				{
+					if (string.IsNullOrEmpty(_XmlFile)) throw new RuntimeException("Table, adapter, or file is not defined.");
+
+					// dataset
+					var ds = new DataSet();
+					
+					// read schema
+					if (!string.IsNullOrEmpty(XmlSchema))
+						ds.ReadXmlSchema(XmlSchema);
+				
+					// read data
+					ds.ReadXml(_XmlFile, XmlReadMode);
+					_XmlFileTime = _XmlFileTime = File.GetLastWriteTime(_XmlFile);
+					
+					// accept data
+					ds.AcceptChanges();
+
+					// table
+					Table = GetTable(ds, TableName);
+				}
+				else
+				{
+					if (Adapter.SelectCommand == null) throw new RuntimeException("Adapter select command is null.");
+
+					Table = new DataTable();
+					Table.Locale = CultureInfo.CurrentCulture; // CA
+				}
 			}
+			
+			// fill table
 			Fill();
 
 			// pass 1: collect the columns
 			IList<Meta> metas;
 			if (Columns == null)
 			{
-				// collect all table columns skipping not linear data types
+				// collect/filter table columns to be shown
 				int Count = Math.Min(Table.Columns.Count, A.Psf.Settings.MaximumPanelColumnCount);
 				metas = new List<Meta>(Count);
 				int nCollected = 0;
 				foreach (DataColumn column in Table.Columns)
 				{
-					if (Converter.IsLinearType(column.DataType))
-					{
-						Meta meta = new Meta(column.ColumnName);
-						meta.Kind = FarColumn.DefaultColumnKinds[nCollected];
-						metas.Add(meta);
-						++nCollected;
-						if (nCollected >= Count)
-							break;
-					}
+					// skip hidden not calculated columns
+					if (column.ColumnMapping == MappingType.Hidden && column.Expression.Length == 0)
+						continue;
+					
+					// skip not linear data
+					if (!Converter.IsLinearType(column.DataType))
+						continue;
+
+					// infer column meta data
+					Meta meta = new Meta(column.ColumnName);
+					meta.Kind = FarColumn.DefaultColumnKinds[nCollected];
+					metas.Add(meta);
+					++nCollected;
+					if (nCollected >= Count)
+						break;
 				}
 			}
 			else
@@ -421,7 +467,14 @@ namespace PowerShellFar
 			var Files = Explorer.Cache;
 			Files.Clear();
 
-			if (string.IsNullOrEmpty(Table.DefaultView.RowFilter) && string.IsNullOrEmpty(Table.DefaultView.Sort))
+			//! Propagate sort and filter to the default view (which is reset on some events).
+			if (ViewSort != null && Table.DefaultView.Sort != ViewSort)
+				Table.DefaultView.Sort = ViewSort;
+			if (ViewRowFilter != null && Table.DefaultView.RowFilter != ViewRowFilter)
+				Table.DefaultView.RowFilter = ViewRowFilter;
+
+			// table rows or view rows on sort or filter
+			if (Table.DefaultView.RowFilter.Length == 0 && Table.DefaultView.Sort.Length == 0)
 			{
 				foreach (DataRow dr in Table.Rows)
 					Files.Add(new DataRowFile(dr, Map));
@@ -431,7 +484,6 @@ namespace PowerShellFar
 				foreach (DataRowView drv in Table.DefaultView)
 					Files.Add(new DataRowFile(drv.Row, Map));
 			}
-
 		}
 		internal override void ShowHelp()
 		{
@@ -631,7 +683,7 @@ namespace PowerShellFar
 					{
 						Title = "Sort",
 						Prompt = "Sort column list: [Tab] to complete, comma to separate",
-						Text = Table.DefaultView.Sort ?? string.Empty,
+						Text = ViewSort ?? string.Empty,
 						History = "DataRecordSort",
 						GetWords = getWords
 					};
@@ -639,12 +691,12 @@ namespace PowerShellFar
 						return;
 
 					var text = ui.Text;
-					if (text == Table.DefaultView.Sort)
+					if (text == ViewSort)
 						return;
 
 					try
 					{
-						Table.DefaultView.Sort = text;
+						ViewSort = text;
 						break;
 					}
 					catch (Exception ex)
@@ -679,7 +731,7 @@ namespace PowerShellFar
 					{
 						Title = "Filter",
 						Prompt = "Filter expression: [Tab] to complete",
-						Text = Table.DefaultView.Sort ?? string.Empty,
+						Text = ViewRowFilter ?? string.Empty,
 						History = "DataRecordFilter",
 						GetWords = getWords
 					};
@@ -687,12 +739,12 @@ namespace PowerShellFar
 						return;
 
 					var text = ui.Text;
-					if (text == Table.DefaultView.RowFilter)
+					if (text == ViewRowFilter)
 						return;
 
 					try
 					{
-						Table.DefaultView.RowFilter = text;
+						ViewRowFilter = text;
 						break;
 					}
 					catch (Exception ex)
@@ -771,5 +823,13 @@ namespace PowerShellFar
 
 			base.HelpMenuInitItems(items, e);
 		}
+		/// <summary>
+		/// Gets or sets the sort column or columns, and sort order. See <see cref="DataView.Sort"/>.
+		/// </summary>
+		public string ViewSort { get; set; }
+		/// <summary>
+		/// Gets or sets the expression used to filter which rows are viewed. See <see cref="DataView.RowFilter"/>.
+		/// </summary>
+		public string ViewRowFilter { get; set; }
 	}
 }
