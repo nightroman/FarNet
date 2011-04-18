@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.4.8#
+#PowerShellFar 4.4.9#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -86,7 +86,7 @@ $#Installation#
 #Requirements#
 
  - Far Manager 2.0.1807
- - Plugin FarNet 4.4.8
+ - Plugin FarNet 4.4.9
  - Windows PowerShell 2.0
 
 
@@ -234,7 +234,7 @@ Commands with viewer output, prefix >>:
 Commands starting UI or background jobs normally use prefix >:
 
 	>: $Far.Msg("Hello world!")
-	>: Get-Process | Out-FarList -Text Name | Start-FarPanel
+	>: Get-Process | Out-FarList -Text Name | Open-FarPanel
 	>: Start-FarJob { Remove-Item C:\TEMP\LargeFolder -Recurse -Force }
 
 #Accelerators#
@@ -1157,7 +1157,7 @@ If you want to apply #$Psf.Settings# changes permanently then call
 Other settings are kind of user preferences and they are usually set in the
 profile (e.g. Profile-.ps1). Useful command to view/change all settings:
 
-	>: Start-FarPanel $Psf.Settings
+	>: Open-FarPanel $Psf.Settings
 
 Preference settings are described in .chm. Permanent settings are:
 
@@ -2036,11 +2036,13 @@ A: There are at least two options, both using macros
 example [Space] is expanded into '>: '. Space after the prefix is recommended
 for normal TabExpansion of the first word:
 
+ >: Import-Module FarMacro
  >: Set-FarMacro Shell Space '> : Space' 'Easy prefix' -CommandLine 0
 
 2) #Easy invoke#: Type and run without prefix using a macro associated with
 "Invoke selected code" menu command. Example ([ShiftSpace]):
 
+ >: Import-Module FarMacro
  >: Set-FarMacro Shell ShiftSpace 'F11 X 2' 'Easy invoke' -CommandLine 1
  (X is the PowerShellFar hotkey in the plugin menu)
 
@@ -2099,10 +2101,10 @@ the selected line (guess why these commands are the same):
  >: Get-Item *.ps1 | Select-String alias | Out-FarList | %{ Start-FarEditor $_.Path $_.LineNumber }
 
 Show PSF settings in the member panel
- >: Start-FarPanel $Psf.Settings
+ >: Open-FarPanel $Psf.Settings
 
 Show list of names and command lines of running processes and then show the selected process member panel (WMI)
- >: Get-WmiObject Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Start-FarPanel
+ >: Get-WmiObject Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Open-FarPanel
 
 Show available scripts and their help synopsis in description column
  >: Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -Columns Name, Synopsis

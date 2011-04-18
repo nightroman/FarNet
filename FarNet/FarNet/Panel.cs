@@ -817,17 +817,19 @@ namespace FarNet
 				Redrawing(this, e);
 		}
 		/// <summary>
-		/// Called when panel view mode is changed.
+		/// Called by <see cref="UIViewChanged"/>.
 		/// </summary>
 		public event EventHandler<ViewChangedEventArgs> ViewChanged;
-		///
-		public bool WorksViewChanged(ViewChangedEventArgs e)
+		/// <summary>
+		/// Called when panel view mode is changed.
+		/// </summary>
+		/// <remarks>
+		/// The base method triggers the <see cref="ViewChanged"/> event.
+		/// </remarks>
+		public void UIViewChanged(ViewChangedEventArgs e)
 		{
-			if (ViewChanged == null)
-				return false;
-			if (e != null)
+			if (ViewChanged != null)
 				ViewChanged(this, e);
-			return true;
 		}
 		/// <summary>
 		/// Called by <see cref="UIGotFocus"/>.

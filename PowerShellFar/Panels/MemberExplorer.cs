@@ -6,6 +6,7 @@ Copyright (c) 2006 Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 using FarNet;
@@ -90,6 +91,9 @@ namespace PowerShellFar
 						}
 					}
 
+					// to check hidden columns
+					var datarow = Value.BaseObject as DataRow;
+
 					// now we are ready to process properties in their original order
 					foreach (PSPropertyInfo pi in Value.Properties)
 					{
@@ -121,9 +125,17 @@ namespace PowerShellFar
 						// value
 						file.Description = Converter.FormatValue(value, A.Psf.Settings.FormatEnumerationLimit);
 
-						// hidden
+						// hidden by user
 						if (_HideMemberRegex != null && _HideMemberRegex.IsMatch(file.Name))
 							file.IsHidden = true;
+						
+						// hidden due to column features
+						if (!file.IsHidden && datarow != null)
+						{
+							var column = datarow.Table.Columns[file.Name];
+							if (column.AutoIncrement || column.ColumnMapping == MappingType.Hidden || column.Expression.Length > 0)
+								file.IsHidden = true;
+						}
 
 						result.Add(file);
 					}
