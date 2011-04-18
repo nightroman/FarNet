@@ -715,7 +715,7 @@ namespace FarNet
 		/// Column width.
 		/// </summary>
 		/// <remarks>
-		/// Positive: absolute width; negative: percentage; 0: Far decides.
+		/// Positive: absolute width; negative: percentage; 0: variable.
 		/// </remarks>
 		public virtual int Width { get { return 0; } set { throw new NotImplementedException(); } }
 		/// <summary>

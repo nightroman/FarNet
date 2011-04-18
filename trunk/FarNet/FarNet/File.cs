@@ -177,8 +177,10 @@ namespace FarNet
 			get { return (Attributes & FileAttributes.Encrypted) != 0; }
 			set { Attributes = value ? (Attributes | FileAttributes.Encrypted) : (Attributes & ~FileAttributes.Encrypted); }
 		}
-		///
-		public override string ToString()
+		/// <summary>
+		/// Returns the <see cref="Name"/>.
+		/// </summary>
+		public sealed override string ToString()
 		{
 			return Name;
 		}

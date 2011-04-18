@@ -10,6 +10,12 @@
 	- DataTable with data stored in XML files;
 	- DataPanel in order to view and modify that data.
 
+	[F7] adds a new record and opens the panel to edit its fields. Use [Enter]
+	and command line to enter one line values or [F4] to edit in the editor.
+
+	[F4] in the table opens the editor to edit Name and Text values together.
+	If the result editor text is empty then the record is deleted.
+
 	Example of Far Manager file association:
 	- Mask: *TODO.xml
 	- Command: >: Open-TODO- (Get-FarPath) #
@@ -26,8 +32,11 @@ if (![IO.File]::Exists($Path)) {
 	# new table
 	$t = [System.Data.DataTable]'TODO'
 
-	# Text: TODO subject
-	$c = $t.Columns.Add('Text', [string])
+	# Name: TODO name
+	$null = $t.Columns.Add('Name')
+
+	# Text: TODO text
+	$null = $t.Columns.Add('Text')
 
 	# Rank: to be used to sort
 	# 'Attribute': save as XML attribute
@@ -39,32 +48,99 @@ if (![IO.File]::Exists($Path)) {
 	$c = $t.Columns.Add('Date', [datetime])
 	$c.ColumnMapping = 'Attribute'
 
-	# Memo: TODO description
-	$c = $t.Columns.Add('Memo', [string])
-
-	# M: calculated column, sign of Memo
+	# T: calculated column, sign of Text
 	# 'Hidden': tells to not save in XML
-	$c = $t.Columns.Add('M', [string])
+	$c = $t.Columns.Add('T')
 	$c.ColumnMapping = 'Hidden'
-	$c.Expression = "iif((Memo is null), '', '+')"
+	$c.Expression = "iif((Text is null), '', '+')"
 
-	# save the schema now
+	# save the schema
 	$t.WriteXml($Path, [Data.XmlWriteMode]::WriteSchema)
 }
 
-### Open the data panel with data imported from the file
-$panel = [PowerShellFar.DataPanel]$Path
+### Open the data panel with data from the file
+$panel = New-Object PowerShellFar.DataPanel
+$panel.XmlFile = $Path
 
 # setup columns
 $panel.Columns = @(
-	@{ Expression = 'M'; Kind = 'Z'; Width = 1 }
-	@{ Expression = 'Text'; Kind = 'N' }
+	@{ Expression = 'T'; Kind = 'Z'; Width = 1 }
+	@{ Expression = 'Name'; Kind = 'N' }
 	@{ Expression = 'Rank'; Kind = 'S' }
-	@{ Expression = 'Date'; Kind = 'DC' }
+	@{ Expression = 'Date'; Kind = 'DM' }
 )
 
+# [F4] - edit the current record text
+$panel.AsEditFile = {
+	$name, $text = Edit-NameText $_.Data.Name $_.Data.Text 'TODO'
+	if ($name -eq $null) { return }
+
+	if ($name) {
+		$_.Data.Name = $name
+		$_.Data.Text = if ($text) { $text } else { $null }
+	}
+	else {
+		$_.Data.Delete()
+	}
+
+	$this.SaveData()
+	$this.Update(0)
+	$this.Redraw()
+}
+
 # exclude calculated column from members
-$panel.ExcludeMemberPattern = '^M$'
+$panel.ExcludeMemberPattern = '^T$'
+
+# sorting
+$panel.ViewSort = 'Rank desc, Date desc'
 
 # go
 $panel.Open()
+
+<#
+.SYNOPSIS
+	Edits name and text together.
+
+.DESCRIPTION
+	The name is the first not empty line. The text is all the lines after.
+
+	Output. If the text is not saved then the output is null. Otherwise two
+	strings are returned: name and text with trimmed ends. Both can be empty.
+#>
+function global:Edit-NameText
+(
+	$Name
+	,
+	$Text
+	,
+	$Title
+)
+{
+	$FileName = [IO.Path]::GetTempPath() + [guid]::NewGuid() + '.txt'
+	[IO.File]::WriteAllText($FileName, "$Name`n$Text", [Text.Encoding]::Unicode)
+
+	$editor = $Far.CreateEditor()
+	$editor.Title = "$Title $Name"
+	$editor.FileName = $FileName
+	$editor.DisableHistory = $true
+	$editor.Open('Modal')
+
+	if ($editor.TimeOfSave -ne [datetime]::MinValue) {
+		$lines = [IO.File]::ReadAllLines($FileName, [Text.Encoding]::Unicode)
+		for($$ = 0; $$ -lt $lines.Count; ++$$) {
+			$Name = $lines[$$].TrimEnd()
+			if ($Name) {
+				$Name
+				break
+			}
+		}
+		if ($$ -lt $lines.Count) {
+			($(for(++$$; $$ -lt $lines.Count; ++$$) { $lines[$$].TrimEnd() }) -join "`r`n").TrimEnd()
+		}
+		else {
+			('', '')
+		}
+	}
+
+	[IO.File]::Delete($FileName)
+}
