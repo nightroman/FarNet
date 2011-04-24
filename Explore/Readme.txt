@@ -1,6 +1,6 @@
 
 Module   : FarNet.Explore
-Release  : 2011-03-09
+Release  : 2011-04-24
 Category : Panels
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -11,7 +11,7 @@ Source   : http://code.google.com/p/farnet/
 
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.4
+ * Plugin FarNet 4.4.10
 
 
 = DESCRIPTION =
@@ -19,23 +19,38 @@ Source   : http://code.google.com/p/farnet/
 
 The tool searches in FarNet explorer panels and opens the result panel.
 
-It is invoked from the command line by the 'Explore' prefix.
+It is invoked from the command line with the 'Explore:' prefix.
 
 Command syntax
-	Explore: [<Mask>] [-Directory] [-Recurse] [Depth <N>] [-Asynchronous]
+
+	Explore: [<Mask>] [-Directory] [-Recurse] [-Depth <N>] [-Asynchronous] [-XFile <File>] [-XPath <Expr>]
+
 	<Mask>
 		Classic Far Manager file name mask including exclude and regex forms.
-		So far masks do not support spaces.
+		Use '"' to enclose a mask with spaces.
+
 	-Directory
 		Tells to include directories into the search process and results.
+
 	-Recurse
 		Tells to search through all directories and sub-directories.
+
 	-Depth <N>
 		N: 0: ignored; negative: unlimited; positive: search depth, -Recurse is
 		ignored. Note: order of -Depth and -Recurse results may be different.
+
 	-Asynchronous
 		Tells to performs the search in the background and to open the result
 		panel immediately. Results are added dynamically when the panel is idle.
+
+	-XFile <File>
+		Tells to read the XPath expression from the <File> file. Use the .xq
+		extension for files (Colorer processes them as xquery, it works fine).
+
+	-XPath <Expr>
+		The XPath has to be the last parameter because the rest of the command
+		line is used as the XPath expression. The Mask can be used with XPath.
+		Recurse and Depth parameters are nor used with XPath or XFile.
 
 
 = RESULT PANEL KEYS AND OPERATIONS =
@@ -73,6 +88,62 @@ Command syntax
 	search if it is still in progress in the background.
 
 
+= EXAMPLES =
+
+
+All examples are for the FileSystem provider panel of the PowerShellFar module.
+
+EXAMPLE
+
+	Find directories and files with names containing "far" recursively
+
+		Explore: -Directory -Recurse *far*
+
+EXAMPLE
+
+	Mixed filter (mask and XPath expression with file attributes)
+
+		Explore: *.dll;*.xml -XPath //File[compare(@LastWriteTime, '2011-04-23') = 1 and @Length > 100000]
+
+	NOTE: compare() is a helper function added by FarNet.
+
+EXAMPLE
+
+	Find empty directories excluding .svn stuff
+
+		Explore: -XPath //Directory[not(Directory | File) and not((../.. | ../../..)/*[@Name = '.svn'])]
+
+	or
+
+		Explore: -XFile empty-directory.xq
+
+	where the empty-directory.xq file may look like this
+
+		//Directory
+		[
+			not(Directory | File)
+			and
+			not((../.. | ../../..)/*[@Name = '.svn'])
+		]
+
+EXAMPLE
+
+	Find .sln files with .csproj files in the same directory
+
+		Explore: -XFile sln-with-csproj.xq
+
+	sln-with-csproj.xq
+
+		//File
+		[
+			is-match(@Name, '(?i)\.sln$')
+			and
+			../File[is-match(@Name, '(?i)\.csproj$')]
+		]
+
+	NOTE: is-match() is a helper function added by FarNet.
+
+
 = HISTORY =
 
 1.0.1
@@ -90,3 +161,13 @@ Added -Depth parameter.
 
 New result panel (actually super-panel) features: [Enter] on a found file,
 [F5/F6], [F7], and [Esc] choices.
+
+1.0.3
+
+Use FarNet 4.4.10 (XPath support)
+
+Support of partial parameter names.
+
+Masks with spaces are allowed (enclosed by '"').
+
+New parameters -XFile and -XPath extend filters with XPath expressions.

@@ -15,9 +15,11 @@ namespace FarNet.Explore
 	{
 		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
+			// tokenize
+			var tokens = Parser.Tokenize(e.Command, "-XPath");
+
 			// open the empty panel
-			var command = e.Command.Trim();
-			if (command.Length == 0)
+			if (tokens.Count == 0)
 			{
 				(new SuperExplorer()).OpenPanel();
 				return;
@@ -34,40 +36,75 @@ namespace FarNet.Explore
 			// the search
 			var search = new SearchFileCommand(panel.Explorer);
 
-			// parse command, setup the search
-			var tokens = command.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+			// parameters
+			var parameters = new string[]
+			{
+				"-Asynchronous",
+				"-Depth",
+				"-Directory",
+				"-Recurse",
+				"-XFile",
+				"-XPath",
+			};
+
+			// parse, setup the search
 			bool async = false;
-			for (int iToken = 0; iToken < tokens.Length; ++iToken)
+			for (int iToken = 0; iToken < tokens.Count; ++iToken)
 			{
 				var token = tokens[iToken];
-				if (token.Equals("-Depth", StringComparison.OrdinalIgnoreCase))
+				var parameter = Parser.ResolveName(token, parameters);
+
+				// mask
+				if (parameter == null)
 				{
-					if (++iToken >= token.Length) throw new InvalidOperationException("Invalid depth.");
-					search.Depth = int.Parse(tokens[iToken]);
-				}
-				else if (token.Equals("-Directory", StringComparison.OrdinalIgnoreCase))
-				{
-					search.Directory = true;
-				}
-				else if (token.Equals("-Recurse", StringComparison.OrdinalIgnoreCase))
-				{
-					search.Recurse = true;
-				}
-				else if (token.Equals("-Asynchronous", StringComparison.OrdinalIgnoreCase))
-				{
-					async = true;
-				}
-				else if (search.Filter != null)
-				{
-					throw new InvalidOperationException("Invalid command line.");
-				}
-				else
-				{
+					if (search.Filter != null)
+						throw new InvalidOperationException("Invalid command line.");
+
 					var pattern = token;
 					search.Filter = delegate(Explorer explorer, FarFile file)
 					{
 						return Far.Net.MatchPattern(file.Name, pattern);
 					};
+					continue;
+				}
+
+				switch (parameter)
+				{
+					case "-XPath":
+						{
+							search.XPath = tokens[iToken + 1];
+							if (search.XPath.Length == 0)
+								throw new InvalidOperationException("Invalid -XPath.");
+							iToken = tokens.Count;
+							break;
+						}
+					case "-XFile":
+						{
+							if (++iToken >= token.Length) throw new InvalidOperationException("Invalid -XFile.");
+							search.XFile = tokens[iToken];
+							break;
+						}
+					case "-Depth":
+						{
+							if (++iToken >= token.Length) throw new InvalidOperationException("Invalid -Depth.");
+							search.Depth = int.Parse(tokens[iToken]);
+							break;
+						}
+					case "-Directory":
+						{
+							search.Directory = true;
+							break;
+						}
+					case "-Recurse":
+						{
+							search.Recurse = true;
+							break;
+						}
+					case "-Asynchronous":
+						{
+							async = true;
+							break;
+						}
 				}
 			}
 
