@@ -315,6 +315,9 @@ namespace PowerShellFar
 			return value.GetType();
 		}
 
+		//! Get-FormatData is very expensive (~50% on search), use cache.
+		static Dictionary<string, TableControl> _CacheTableControl;
+
 		/// <summary>
 		/// Finds an available table control.
 		/// </summary>
@@ -341,21 +344,40 @@ namespace PowerShellFar
 				case "System.Management.Automation.VariableBreakpoint": typeName = "BreakpointTypes"; break;
 			}
 
-			// extended type definitions:
-			foreach (PSObject it in InvokeCode("Get-FormatData -TypeName $args[0]", typeName))
+			// make/try cache
+			string cacheKey = typeName + "|" + tableName;
+			if (_CacheTableControl == null)
 			{
-				ExtendedTypeDefinition typeDef = it.BaseObject as ExtendedTypeDefinition;
-				foreach (FormatViewDefinition viewDef in typeDef.FormatViewDefinition)
+				_CacheTableControl = new Dictionary<string, TableControl>();
+			}
+			else
+			{
+				TableControl result;
+				if (_CacheTableControl.TryGetValue(cacheKey, out result))
+					return result;
+			}
+
+			// extended type definitions:
+			foreach (var pso in InvokeCode("Get-FormatData -TypeName $args[0]", typeName))
+			{
+				var typeDef = (ExtendedTypeDefinition)pso.BaseObject;
+				foreach (var viewDef in typeDef.FormatViewDefinition)
 				{
-					if (string.IsNullOrEmpty(tableName) || Kit.Equals(tableName, viewDef.Name))
+					if (string.IsNullOrEmpty(tableName) || string.Equals(tableName, viewDef.Name, StringComparison.OrdinalIgnoreCase))
 					{
 						TableControl table = viewDef.Control as TableControl;
 						if (table != null)
+						{
+							// cache and return the table
+							_CacheTableControl.Add(cacheKey, table);
 							return table;
+						}
 					}
 				}
 			}
 
+			// nothing, cache anyway, and return null
+			_CacheTableControl.Add(cacheKey, null);
 			return null;
 		}
 

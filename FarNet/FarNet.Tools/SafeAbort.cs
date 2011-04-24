@@ -197,7 +197,7 @@ namespace Pfz.Threading
 									var handler = Validating;
 									if (handler != null)
 									{
-										SafeAbortEventArgs args = new SafeAbortEventArgs(thread, stack, frames);
+										SafeAbortEventArgs args = new SafeAbortEventArgs();
 										handler(null, args);
 
 										// The args by default has its CanAbort set to true. But, if any handler changed it, we will not be able to abort.

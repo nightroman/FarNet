@@ -12,13 +12,23 @@ using System.IO;
 namespace FarNet
 {
 	/// <summary>
+	/// Not yet public.
+	/// </summary>
+	public interface IXmlInfo
+	{
+		///
+		string XmlNodeName();
+		///
+		IEnumerable<DictionaryEntry> XmlAttributes();
+	}
+	/// <summary>
 	/// Abstract panel item representing one file, directory, plugin, or module item.
 	/// </summary>
 	/// <remarks>
 	/// Modules may implement derived classes (at least <see cref="Name"/> has to be defined)
 	/// or they may just use the ready straightforward implementation <see cref="SetFile"/>.
 	/// </remarks>
-	public abstract class FarFile
+	public abstract class FarFile : IXmlInfo
 	{
 		/// <summary>
 		/// File name.
@@ -184,6 +194,58 @@ namespace FarNet
 		{
 			return Name;
 		}
+		/// <summary>
+		/// Not yet public.
+		/// </summary>
+		public virtual string XmlNodeName()
+		{
+			return IsDirectory ? "Directory" : "File";
+		}
+		/// <summary>
+		/// Not yet public.
+		/// </summary>
+		public virtual IEnumerable<DictionaryEntry> XmlAttributes()
+		{
+			yield return new DictionaryEntry("Name", Name);
+
+			yield return new DictionaryEntry("Length", Length);
+
+			if (Attributes != 0 && Attributes != FileAttributes.Directory)
+			{
+				if (IsReadOnly)
+					yield return new DictionaryEntry("ReadOnly", true);
+
+				if (IsHidden)
+					yield return new DictionaryEntry("Hidden", true);
+
+				if (IsSystem)
+					yield return new DictionaryEntry("System", true);
+
+				if (IsArchive)
+					yield return new DictionaryEntry("Archive", true);
+
+				if (IsCompressed)
+					yield return new DictionaryEntry("Compressed", true);
+
+				if (IsReparsePoint)
+					yield return new DictionaryEntry("ReparsePoint", true);
+			}
+
+			if (CreationTime != DateTime.MinValue)
+				yield return new DictionaryEntry("CreationTime", CreationTime);
+
+			if (LastAccessTime != DateTime.MinValue)
+				yield return new DictionaryEntry("LastAccessTime", LastAccessTime);
+
+			if (LastWriteTime != DateTime.MinValue)
+				yield return new DictionaryEntry("LastWriteTime", LastWriteTime);
+
+			if (!string.IsNullOrEmpty(Owner))
+				yield return new DictionaryEntry("Owner", Owner);
+
+			if (!string.IsNullOrEmpty(Description)) //????? make it elem?
+				yield return new DictionaryEntry("Description", Description);
+		}
 	}
 
 	/// <summary>
@@ -319,7 +381,7 @@ namespace FarNet
 		///
 		public override FileAttributes Attributes { get { return File.Attributes; } }
 	}
-	
+
 	/// <summary>
 	/// Compares files by their references.
 	/// </summary>
