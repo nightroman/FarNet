@@ -316,18 +316,8 @@ namespace PowerShellFar
 		}
 		internal override object GetData(ExplorerEventArgs args)
 		{
-			// get child items for the panel location
-			var items = A.GetChildItems(Location);
-
-			// standard
-			if (0 == (args.Mode & ExplorerModes.Find) || !My.ProviderInfoEx.IsNavigation(Provider))
-				return items;
-
-			// faster
-			Cache.Clear();
-			foreach (PSObject value in items)
-				Cache.Add(new ItemFile(value));
-			return Cache;
+			// get items for the location
+			return A.GetChildItems(Location);
 		}
 		///
 		public override void DoRenameFile(RenameFileEventArgs args)

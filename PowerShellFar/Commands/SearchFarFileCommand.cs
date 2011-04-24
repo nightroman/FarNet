@@ -31,6 +31,16 @@ namespace PowerShellFar.Commands
 			HelpMessage = "Search script. Variables: $this is the explorer providing the file, $_ is the file.")]
 		public ScriptBlock Script { get; set; }
 		/// <summary>
+		/// XPath expression text.
+		/// </summary>
+		[Parameter(HelpMessage = "XPath expression text.")]
+		public string XPath { get; set; }
+		/// <summary>
+		/// XPath expression file.
+		/// </summary>
+		[Parameter(HelpMessage = "XPath expression file.")]
+		public string XFile { get; set; }
+		/// <summary>
 		/// Search depth. 0: ignored; negative: unlimited.
 		/// </summary>
 		[Parameter(HelpMessage = "Search depth. 0: ignored; negative: unlimited.")]
@@ -62,6 +72,8 @@ namespace PowerShellFar.Commands
 
 			// setup the search
 			var search = new SearchFileCommand(panel.Explorer);
+			search.XPath = XPath;
+			search.XFile = XFile;
 			search.Depth = Depth;
 			search.Recurse = Recurse;
 			search.Directory = Directory;
