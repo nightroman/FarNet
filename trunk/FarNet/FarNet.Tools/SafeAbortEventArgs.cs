@@ -37,27 +37,12 @@ namespace Pfz.Threading
 	/// </summary>
 	class SafeAbortEventArgs : EventArgs
 	{
-		internal SafeAbortEventArgs(Thread thread, StackTrace stackTrace, StackFrame[] stackFrames)
+		internal SafeAbortEventArgs()
 		{
-			Thread = thread;
-			StackTrace = stackTrace;
-			StackFrames = new ReadOnlyCollection<StackFrame>(stackFrames);
 			CanAbort = true;
 		}
 		/// <summary>
-		/// Gets the Thread that is about to be aborted.
-		/// </summary>
-		public Thread Thread { get; private set; }
-		/// <summary>
-		/// Gets the StackTrace of the thread about to be aborted.
-		/// </summary>
-		public StackTrace StackTrace { get; private set; }
-		/// <summary>
-		/// Get the StackFrames of the thread to be aborted.
-		/// </summary>
-		public ReadOnlyCollection<StackFrame> StackFrames { get; private set; }
-		/// <summary>
-		/// Gets or sets a value indicating if the thread can be aborted.
+		/// Tells that the thread can be aborted.
 		/// </summary>
 		public bool CanAbort { get; set; }
 	}

@@ -5,10 +5,11 @@ Copyright (c) 2010 Roman Kuzmin
 */
 
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
+using System.Xml.XPath;
 
 namespace FarNet.Tools
 {
@@ -26,19 +27,30 @@ namespace FarNet.Tools
 	{
 		readonly Explorer _RootExplorer;
 		/// <summary>
+		/// XPath expression file.
+		/// </summary>
+		public string XFile { get; set; }
+		/// <summary>
+		/// XPath expression text.
+		/// </summary>
+		public string XPath { get; set; }
+		/// <summary>
 		/// Search depth. 0: ignored; negative: unlimited.
+		/// Ignored in XPath searches.
 		/// </summary>
 		public int Depth { get; set; }
 		/// <summary>
 		/// Tells to include directories into the search process and results.
+		/// Ignored in XPath searches with no filter.
 		/// </summary>
 		public bool Directory { get; set; }
 		/// <summary>
 		/// Tells to search through all directories and sub-directories.
+		/// Ignored in XPath searches.
 		/// </summary>
 		public bool Recurse { get; set; }
 		/// <summary>
-		/// Gets or sets the search file filter.
+		/// Gets or sets the search filter.
 		/// </summary>
 		public ExplorerFilePredicate Filter { get; set; }
 		/// <summary>
@@ -223,16 +235,25 @@ namespace FarNet.Tools
 			Stopping = true;
 			return true;
 		}
+		/// <summary>
+		/// Invokes the command.
+		/// </summary>
+		public IEnumerable<FarFile> Invoke()
+		{
+			return DoInvoke(null);
+		}
 		//! It returns immediately and then only iterates, do not try/catch in here.
 		IEnumerable<FarFile> DoInvoke(ProgressBox progress)
 		{
 			FoundFileCount = 0;
 			ProcessedDirectoryCount = 0;
 
-			if (Depth != 0)
-				return DoInvokeDeep(progress, _RootExplorer, 0);
-			else
+			if (!string.IsNullOrEmpty(XFile) || !string.IsNullOrEmpty(XPath))
+				return DoInvokeXPath(progress);
+			else if (Depth == 0)
 				return DoInvokeWide(progress);
+			else
+				return DoInvokeDeep(progress, _RootExplorer, 0);
 		}
 		IEnumerable<FarFile> DoInvokeWide(ProgressBox progress)
 		{
@@ -329,6 +350,77 @@ namespace FarNet.Tools
 
 				foreach (var file2 in DoInvokeDeep(progress, explorer2, depth + 1))
 					yield return file2;
+			}
+		}
+		IEnumerable<FarFile> DoInvokeXPath(ProgressBox progress)
+		{
+			string xpath;
+			if (string.IsNullOrEmpty(XFile))
+				xpath = XPath;
+			else
+				xpath = File.ReadAllText(XFile, Encoding.Default);
+
+			var expression = XPathExpression.Compile(xpath);
+			if (expression.ReturnType != XPathResultType.NodeSet)
+				throw new InvalidOperationException("Invalid expression return type.");
+
+			++ProcessedDirectoryCount;
+
+			var context = new ObjectXPathContext()
+			{
+				Filter = this.Filter,
+				IncrementDirectoryCount = delegate(int count)
+				{
+					ProcessedDirectoryCount += count;
+					if (progress == null)
+						return;
+
+					var directoryPerSecond = ProcessedDirectoryCount / progress.ElapsedFromStart.TotalSeconds;
+					progress.Activity = string.Format(null, Res.SearchActivityDeep,
+						FoundFileCount, ProcessedDirectoryCount, directoryPerSecond);
+					progress.ShowProgress();
+				},
+				Stopping = delegate
+				{
+					return Stopping || progress != null && UIUserStop();
+				}
+			};
+
+			expression.SetContext(new SearchFileContext(context.NameTable));
+
+			var args = new GetFilesEventArgs(ExplorerModes.Find);
+			foreach (var file in _RootExplorer.GetFiles(args))
+			{
+				// stop?
+				if (Stopping || progress != null && UIUserStop()) //?????? progress to navigator
+					break;
+
+				// filter out a leaf
+				if (Filter != null && !file.IsDirectory && !Filter(_RootExplorer, file))
+					continue;
+
+				var xfile = new SuperFile(_RootExplorer, file);
+				var navigator = new ObjectXPathNavigator(xfile, context);
+				var iterator = navigator.Select(expression);
+				while (iterator.MoveNext())
+				{
+					// stop?
+					if (Stopping || progress != null && UIUserStop()) //?????? progress to navigator
+						break;
+
+					// found file or directory, ignore anything else
+					var current = ((ObjectXPathNavigator)iterator.Current).UnderlyingObject as SuperFile;
+					if (current == null)
+						continue;
+
+					// filter out directory, it is already done for files
+					if (Filter != null && current.IsDirectory && (!Directory || !Filter(current.Explorer, current.File)))
+						continue;
+
+					// add
+					yield return current;
+					++FoundFileCount;
+				}
 			}
 		}
 	}

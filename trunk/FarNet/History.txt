@@ -1,5 +1,19 @@
 http://code.google.com/p/farnet/
 
+= 4.4.10 =
+
+*) XPath queries in file searches and related tools
+- Added parameters XFile, XPath to the Explore module 'explore:' command.
+- Extended the XPath engine with custom helper functions:
+* equals(p1, p2) : string.Equals(p1, p2, StringComparison.OrdinalIgnoreCase)
+* compare(p1, p2) : string.string.CompareOrdinal(p1, p2)
+* is-match(p1, p2) : Regex.IsMatch(p1, p2)
+
+See some examples of XPath queries in Readme.txt of the Explore module.
+
+HINT: use .xq extensions for files with XPath expressions, so that Colorer
+processes them as xquery. This is not the same, indeed, but it's quite fine.
+
 = 4.4.9 =
 
 *) Panel

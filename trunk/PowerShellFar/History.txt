@@ -1,6 +1,14 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.10 =
+
+*) Search-FarFile cmdlet
+- Added parameters XFile and XPath, see FarNet history for details.
+
+*) FormatPanel (base of ObjectPanel and ItemPanel)
+- Better performance (avoided expesive repetitive calls of Get-FormatData).
+
 = 4.4.9 =
 
 *) DataPanel
