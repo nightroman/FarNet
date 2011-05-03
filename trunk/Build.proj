@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<ProductVersion>4.4.10</ProductVersion>
+		<ProductVersion>4.4.11</ProductVersion>
 		<Install Condition="'$(Install)' == ''">$(FARHOME)</Install>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 	</PropertyGroup>

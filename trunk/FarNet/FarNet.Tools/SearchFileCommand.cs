@@ -6,8 +6,6 @@ Copyright (c) 2010 Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading;
 using System.Xml.XPath;
 
@@ -27,14 +25,6 @@ namespace FarNet.Tools
 	{
 		readonly Explorer _RootExplorer;
 		/// <summary>
-		/// XPath expression file.
-		/// </summary>
-		public string XFile { get; set; }
-		/// <summary>
-		/// XPath expression text.
-		/// </summary>
-		public string XPath { get; set; }
-		/// <summary>
 		/// Search depth. 0: ignored; negative: unlimited.
 		/// Ignored in XPath searches.
 		/// </summary>
@@ -53,6 +43,22 @@ namespace FarNet.Tools
 		/// Gets or sets the search filter.
 		/// </summary>
 		public ExplorerFilePredicate Filter { get; set; }
+		/// <summary>
+		/// XPath expression file.
+		/// </summary>
+		public string XFile { get; set; }
+		/// <summary>
+		/// XPath expression text.
+		/// </summary>
+		public string XPath { get; set; }
+		/// <summary>
+		/// XPath variables.
+		/// </summary>
+		public Dictionary<string, object> XVariables
+		{
+			get { return _XVariables ?? (_XVariables = new Dictionary<string, object>()); }
+		}
+		Dictionary<string, object> _XVariables;
 		/// <summary>
 		/// New command with the search root.
 		/// </summary>
@@ -354,19 +360,8 @@ namespace FarNet.Tools
 		}
 		IEnumerable<FarFile> DoInvokeXPath(ProgressBox progress)
 		{
-			string xpath;
-			if (string.IsNullOrEmpty(XFile))
-				xpath = XPath;
-			else
-				xpath = File.ReadAllText(XFile, Encoding.Default);
-
-			var expression = XPathExpression.Compile(xpath);
-			if (expression.ReturnType != XPathResultType.NodeSet)
-				throw new InvalidOperationException("Invalid expression return type.");
-
-			++ProcessedDirectoryCount;
-
-			var context = new ObjectXPathContext()
+			// object context
+			var objectContext = new XPathObjectContext()
 			{
 				Filter = this.Filter,
 				IncrementDirectoryCount = delegate(int count)
@@ -386,8 +381,33 @@ namespace FarNet.Tools
 				}
 			};
 
-			expression.SetContext(new SearchFileContext(context.NameTable));
+			var xsltContext = new XPathXsltContext(objectContext.NameTable);
+			if (_XVariables != null)
+			{
+				foreach (var kv in _XVariables)
+					xsltContext.AddVariable(kv.Key, kv.Value);
+			}
 
+			// XPath text
+			string xpath;
+			if (string.IsNullOrEmpty(XFile))
+			{
+				xpath = XPath;
+			}
+			else
+			{
+				var input = XPathInput.ParseFile(XFile);
+				xpath = input.Expression;
+				foreach (var kv in input.Variables)
+					xsltContext.AddVariable(kv.Key, kv.Value);
+			}
+
+			var expression = XPathExpression.Compile(xpath);
+			if (expression.ReturnType != XPathResultType.NodeSet)
+				throw new InvalidOperationException("Invalid expression return type.");
+			expression.SetContext(xsltContext);
+
+			++ProcessedDirectoryCount;
 			var args = new GetFilesEventArgs(ExplorerModes.Find);
 			foreach (var file in _RootExplorer.GetFiles(args))
 			{
@@ -400,7 +420,7 @@ namespace FarNet.Tools
 					continue;
 
 				var xfile = new SuperFile(_RootExplorer, file);
-				var navigator = new ObjectXPathNavigator(xfile, context);
+				var navigator = new XPathObjectNavigator(xfile, objectContext);
 				var iterator = navigator.Select(expression);
 				while (iterator.MoveNext())
 				{
@@ -409,16 +429,16 @@ namespace FarNet.Tools
 						break;
 
 					// found file or directory, ignore anything else
-					var current = ((ObjectXPathNavigator)iterator.Current).UnderlyingObject as SuperFile;
-					if (current == null)
+					var currentFile = iterator.Current.UnderlyingObject as SuperFile;
+					if (currentFile == null)
 						continue;
 
 					// filter out directory, it is already done for files
-					if (Filter != null && current.IsDirectory && (!Directory || !Filter(current.Explorer, current.File)))
+					if (Filter != null && currentFile.IsDirectory && (!Directory || !Filter(currentFile.Explorer, currentFile.File)))
 						continue;
 
 					// add
-					yield return current;
+					yield return currentFile;
 					++FoundFileCount;
 				}
 			}

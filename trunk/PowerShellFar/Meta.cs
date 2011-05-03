@@ -131,7 +131,7 @@ namespace PowerShellFar
 			if (entry.ValueType == DisplayEntryValueType.Property)
 				_Property = entry.Value;
 			else
-				_Script = A.Psf.Engine.InvokeCommand.NewScriptBlock(entry.Value);
+				_Script = A.Psf.Engine.InvokeCommand.NewScriptBlock(entry.Value); //?????? performance critical: 15% on XPath
 
 			if (!string.IsNullOrEmpty(header.Label))
 				_ColumnName = header.Label;

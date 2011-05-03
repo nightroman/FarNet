@@ -10,22 +10,21 @@ using System.Xml.XPath;
 namespace FarNet.Tools
 {
 	///
-	public class ObjectXPathNavigator : XPathNavigator
+	public class XPathObjectNavigator : XPathNavigator
 	{
-		ObjectXPathContext _context;
-		ObjectXPathProxy _root;
-		ObjectXPathProxy _node;
+		XPathObjectContext _context;
+		XPathObjectNode _root;
+		XPathObjectNode _node;
 		XPathNodeType _type;
-		IList _data;
 		int _index = -1;
 		///
-		internal ObjectXPathNavigator(object root, ObjectXPathContext context)
+		internal XPathObjectNavigator(object root, XPathObjectContext context)
 		{
 			if (root == null) throw new ArgumentNullException("root");
 			if (context == null) throw new ArgumentNullException("context");
 
 			_context = context;
-			_root = new ObjectXPathProxy(root, context);
+			_root = new XPathObjectNode(context, root);
 
 			//?????? fails without it
 			var type = root.GetType();
@@ -35,25 +34,23 @@ namespace FarNet.Tools
 			_root.AddSpecialName("type", name);
 		}
 		///
-		public ObjectXPathNavigator(object root) : this(root, new ObjectXPathContext()) { }
-		ObjectXPathNavigator(ObjectXPathNavigator that)
+		public XPathObjectNavigator(object root) : this(root, new XPathObjectContext()) { }
+		XPathObjectNavigator(XPathObjectNavigator that)
 		{
 			_context = that._context;
 			_root = that._root;
 			_node = that._node;
 			_type = that._type;
-			_data = that._data;
 			_index = that._index;
 		}
-		void MoveNavigator(ObjectXPathProxy that)
+		void MoveNavigator(XPathObjectNode that)
 		{
 			_node = that;
 			_type = XPathNodeType.Element;
-			_data = (IList)that.Elements;
 			_index = -1;
 		}
 		///
-		public override object UnderlyingObject { get { return _node.Binding; } }
+		public override object UnderlyingObject { get { return _node.UnderlyingObject; } }
 		///
 		public override string BaseURI
 		{
@@ -117,9 +114,10 @@ namespace FarNet.Tools
 						return _node.Name;
 
 					case XPathNodeType.Attribute:
-						if (_index >= 0 && _index < _data.Count)
+						var attrs = _node.Attributes;
+						if (_index >= 0 && _index < attrs.Count)
 						{
-							var data = _data[_index].ToString();
+							var data = attrs[_index].Name;
 
 							if (data[0] == '*')
 								data = data.Substring(1);
@@ -139,9 +137,10 @@ namespace FarNet.Tools
 				switch (_type)
 				{
 					case XPathNodeType.Attribute:
-						if (_index >= 0 && _index < _data.Count)
+						var attrs = _node.Attributes;
+						if (_index >= 0 && _index < attrs.Count)
 						{
-							string data = _data[_index].ToString();
+							string data = attrs[_index].Name;
 
 							if (data[0] == '*')
 								return "urn:ObjectXPathNavigator";
@@ -169,9 +168,10 @@ namespace FarNet.Tools
 				switch (_type)
 				{
 					case XPathNodeType.Attribute:
-						if (_index >= 0 && _index < _data.Count)
+						var attrs = _node.Attributes;
+						if (_index >= 0 && _index < attrs.Count)
 						{
-							string data = _data[_index].ToString();
+							string data = attrs[_index].Name;
 
 							if (data[0] == '*')
 								return "oxp";
@@ -189,8 +189,12 @@ namespace FarNet.Tools
 				switch (_type)
 				{
 					case XPathNodeType.Attribute:
-						if (_index >= 0 && _index < _data.Count)
-							return _node.GetAttributeValue(_data[_index].ToString());
+						var attrs = _node.Attributes;
+						if (_index >= 0 && _index < attrs.Count)
+						{
+							var info = attrs[_index];
+							return XPathObjectNode.CultureSafeToString(info.Getter(UnderlyingObject)) ?? string.Empty;
+						}
 						break;
 
 					case XPathNodeType.Element:
@@ -211,7 +215,7 @@ namespace FarNet.Tools
 		///
 		public override XPathNavigator Clone()
 		{
-			return new ObjectXPathNavigator(this);
+			return new XPathObjectNavigator(this);
 		}
 		///
 		public override string GetAttribute(string localName, string namespaceURI)
@@ -232,7 +236,7 @@ namespace FarNet.Tools
 		///
 		public override bool IsDescendant(XPathNavigator nav)
 		{
-			var that = nav as ObjectXPathNavigator;
+			var that = nav as XPathObjectNavigator;
 			if (that == null)
 				return false;
 
@@ -265,7 +269,7 @@ namespace FarNet.Tools
 		///
 		public override bool IsSamePosition(XPathNavigator other)
 		{
-			var that = other as ObjectXPathNavigator;
+			var that = other as XPathObjectNavigator;
 			if (that == null)
 				return false;
 
@@ -290,7 +294,7 @@ namespace FarNet.Tools
 		///
 		public override bool MoveTo(XPathNavigator other)
 		{
-			var that = other as ObjectXPathNavigator;
+			var that = other as XPathObjectNavigator;
 			if (that == null)
 				return false;
 
@@ -298,7 +302,6 @@ namespace FarNet.Tools
 			_root = that._root;
 			_node = that._node;
 			_type = that._type;
-			_data = that._data;
 			_index = that._index;
 
 			return true;
@@ -310,10 +313,10 @@ namespace FarNet.Tools
 				return false;
 
 			int index = -1;
-			foreach (string name in _node.AttributeKeys)
+			foreach (var it in _node.Attributes)
 			{
 				++index;
-				if (name == localName)
+				if (it.Name == localName)
 				{
 					_type = XPathNodeType.Attribute;
 					_index = index;
@@ -349,7 +352,6 @@ namespace FarNet.Tools
 				return false;
 
 			_type = XPathNodeType.Attribute;
-			_data = (IList)_node.AttributeKeys;
 			_index = 0;
 
 			return true;
@@ -371,17 +373,16 @@ namespace FarNet.Tools
 			if (_node.HasText)
 			{
 				_type = XPathNodeType.Text;
-				_data = null;
 				_index = -1;
 
 				return true;
 			}
 
 			// drop down to the first element (if any)
-			var coll = _node.Elements;
-			if (coll.Count > 0)
+			var elems = _node.Elements;
+			if (elems.Count > 0)
 			{
-				MoveNavigator((ObjectXPathProxy)coll[0]);
+				MoveNavigator(elems[0]);
 				return true;
 			}
 
@@ -408,25 +409,17 @@ namespace FarNet.Tools
 			if (_type != XPathNodeType.Element)
 				return false;
 
-			ObjectXPathProxy parent = _node.Parent;
+			XPathObjectNode parent = _node.Parent;
 			if (parent == null)
 				return false;
 
-			bool found = false;
+			var elems = parent.Elements;
+			int next = _node.Index + 1;
+			if (next >= elems.Count)
+				return false;
 
-			foreach (var sib in parent.Elements)
-			{
-				if (found)
-				{
-					MoveNavigator(sib);
-					return true;
-				}
-
-				if (_node == sib)
-					found = true;
-			}
-
-			return false;
+			MoveNavigator(elems[next]);
+			return true;
 		}
 		///
 		public override bool MoveToNextAttribute()
@@ -434,7 +427,7 @@ namespace FarNet.Tools
 			if (_type != XPathNodeType.Attribute)
 				return false;
 
-			if (_index + 1 >= _data.Count)
+			if (_index + 1 >= _node.Attributes.Count)
 				return false;
 
 			++_index;
@@ -458,7 +451,7 @@ namespace FarNet.Tools
 				return true;
 			}
 
-			ObjectXPathProxy parent = _node.Parent;
+			XPathObjectNode parent = _node.Parent;
 			if (parent == null)
 				return false;
 
@@ -474,35 +467,24 @@ namespace FarNet.Tools
 			if (_type != XPathNodeType.Element)
 				return false;
 
-			ObjectXPathProxy parent = _node.Parent;
+			XPathObjectNode parent = _node.Parent;
 
 			if (parent == null)
 				return false;
 
-			ObjectXPathProxy previous = null;
-			foreach (var sib in parent.Elements)
-			{
-				if (sib == _node)
-				{
-					if (previous == null)
-						break;
+			var elems = parent.Elements;
+			int prev = _node.Index - 1;
+			if (prev < 0)
+				return false;
 
-					MoveNavigator(previous);
-
-					return true;
-				}
-
-				previous = sib;
-			}
-
-			return false;
+			MoveNavigator(elems[prev]);
+			return true;
 		}
 		///
 		public override void MoveToRoot()
 		{
 			_type = XPathNodeType.Root;
 			_node = null;
-			_data = null;
 			_index = -1;
 		}
 	}

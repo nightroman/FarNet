@@ -5,6 +5,7 @@ Copyright (c) 2010 Roman Kuzmin
 */
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -13,8 +14,84 @@ using System.Xml.Xsl;
 
 namespace FarNet.Tools
 {
+	/// <summary>
+	/// Represents a variable during dynamic expression execution.
+	/// </summary>
+	class XsltContextVariable : IXsltContextVariable
+	{
+		string _name;
+		object _value;
+		/// <summary>
+		/// Initializes a new instance of the class.
+		/// </summary>
+		/// <param name="name">The name of the variable.</param>
+		/// <param name="value">The value of the variable.</param>
+		public XsltContextVariable(string name, object value)
+		{
+			_name = name;
+			_value = value;
+
+			if (value is String)
+				_type = XPathResultType.String;
+			else if (value is bool)
+				_type = XPathResultType.Boolean;
+			else if (value is XPathNavigator)
+				_type = XPathResultType.Navigator;
+			else if (value is XPathNodeIterator)
+				_type = XPathResultType.NodeSet;
+			else
+			{
+				// Try to convert to double (native XPath numeric type)
+				if (value is double)
+				{
+					_type = XPathResultType.Number;
+				}
+				else
+				{
+					if (value is IConvertible)
+					{
+						try
+						{
+							_value = Convert.ToDouble(value);
+							// We suceeded, so it's a number.
+							_type = XPathResultType.Number;
+						}
+						catch (FormatException)
+						{
+							_type = XPathResultType.Any;
+						}
+						catch (OverflowException)
+						{
+							_type = XPathResultType.Any;
+						}
+					}
+					else
+					{
+						_type = XPathResultType.Any;
+					}
+				}
+			}
+		}
+		public XPathResultType VariableType
+		{
+			get { return _type; }
+		}
+		XPathResultType _type;
+		public object Evaluate(XsltContext context)
+		{
+			return _value;
+		}
+		public bool IsLocal
+		{
+			get { return false; }
+		}
+		public bool IsParam
+		{
+			get { return false; }
+		}
+	}
 	///
-	class ObjectXPathContext
+	class XPathObjectContext
 	{
 		readonly NameTable _nameTable = new NameTable();
 		///
@@ -102,13 +179,9 @@ namespace FarNet.Tools
 		protected override string Invoke(string value) { return value.ToUpper(CultureInfo.InvariantCulture); }
 	}
 #endif
-	class SearchFileContext : XsltContext
+	class XPathXsltContext : XsltContext
 	{
-		public SearchFileContext(NameTable nt) : base(nt) { }
-		public override IXsltContextVariable ResolveVariable(string prefix, string name)
-		{
-			return null;
-		}
+		public XPathXsltContext(NameTable nt) : base(nt) { }
 		public override bool Whitespace
 		{
 			get { return true; }
@@ -133,6 +206,24 @@ namespace FarNet.Tools
 #endif
 			}
 			return null;
+		}
+		Dictionary<string, XsltContextVariable> _variables;
+		public override IXsltContextVariable ResolveVariable(string prefix, string name)
+		{
+			XsltContextVariable variable;
+			if (!string.IsNullOrEmpty(prefix))
+				return null;
+			else if (_variables.TryGetValue(name, out variable))
+				return variable;
+			else
+				return null;
+		}
+		public void AddVariable(string name, object value)
+		{
+			if (_variables == null)
+				_variables = new Dictionary<string, XsltContextVariable>();
+
+			_variables.Add(name, new XsltContextVariable(name, value));
 		}
 	}
 }

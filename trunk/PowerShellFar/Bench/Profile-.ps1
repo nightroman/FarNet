@@ -103,33 +103,33 @@ $Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Dow
 
 <#
 .SYNOPSIS
-	Show-ServicePanel proxy.
+	Open-ServicePanel proxy.
 #>
-function Show-ServicePanel
+function Open-ServicePanel
 {
-	Remove-Item Function:\Show-ServicePanel
+	Remove-Item Function:\Open-ServicePanel
 	Import-Module FarInventory
-	Show-ServicePanel
+	Open-ServicePanel
 }
 
 <#
 .SYNOPSIS
-	Show-StartupCommandPanel proxy.
+	Open-StartupCommandPanel proxy.
 #>
-function Show-StartupCommandPanel
+function Open-StartupCommandPanel
 {
-	Remove-Item Function:\Show-StartupCommandPanel
+	Remove-Item Function:\Open-StartupCommandPanel
 	Import-Module FarInventory
-	Show-StartupCommandPanel
+	Open-StartupCommandPanel
 }
 
 <#
 .SYNOPSIS
-	Show-UninstallPanel proxy.
+	Open-UninstallPanel proxy.
 #>
-function Show-UninstallPanel
+function Open-UninstallPanel
 {
-	Remove-Item Function:\Show-UninstallPanel
+	Remove-Item Function:\Open-UninstallPanel
 	Import-Module FarInventory
-	Show-UninstallPanel
+	Open-UninstallPanel
 }
