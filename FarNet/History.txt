@@ -1,5 +1,20 @@
 http://code.google.com/p/farnet/
 
+= 4.4.11 =
+
+*) XPath searches
+- Optimized the XPath navigator (performance gain is about 30%).
+- Changed File and Directory attributes: boolean flags (ReadOnly, Archive, ...)
+always exist, their values are 0 (false) and 1 (true).
+- XPath files (.xq) can contain comments and variable declarations with defined
+values or external. In the latter case an input box is shown in order to input
+values. All this stuff has to be placed before the XPath expression.
+Demo XPath file:
+http://farnet.googlecode.com/files/_110428_160407_Demo-XFile.xq.htm
+
+*) SearchFileCommand
+- New property XVariables allow to perform XPath queries with variables.
+
 = 4.4.10 =
 
 *) XPath queries in file searches and related tools

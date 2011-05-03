@@ -36,7 +36,11 @@ namespace FarNet.Works
 		/// </summary>
 		public static string[] SplitLines(string value)
 		{
-			return Regex.Split(value, "\r\n|[\r\n]");
+			if (value == null)
+				return new string[] { string.Empty };
+
+			//! Regex is twice slower
+			return value.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 		}
 		/// <summary>
 		/// For internal use.
@@ -90,7 +94,7 @@ namespace FarNet.Works
 		public static Dictionary<FarFile, int> HashFiles(IEnumerable files, IEqualityComparer<FarFile> comparer)
 		{
 			if (files == null) throw new ArgumentNullException("files");
-			
+
 			var hash = new Dictionary<FarFile, int>(comparer);
 			foreach (FarFile file in files)
 			{

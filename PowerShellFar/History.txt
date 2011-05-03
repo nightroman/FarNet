@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.11 =
+
+*) FarInventory module
+- Renamed Show-*Panel -> Open-*Panel
+
 = 4.4.10 =
 
 *) Search-FarFile cmdlet

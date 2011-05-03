@@ -7,10 +7,39 @@ Copyright (c) 2005 FarNet Team
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 
 namespace FarNet
 {
+	/// <summary>
+	/// ??????
+	/// </summary>
+	public delegate object XmlAttributeGetter(object value);
+	/// <summary>
+	/// ??????
+	/// </summary>
+	public class XmlAttributeInfo
+	{
+		/// <summary>
+		/// ??????
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="getter"></param>
+		public XmlAttributeInfo(string name, XmlAttributeGetter getter)
+		{
+			Name = name;
+			Getter = getter;
+		}
+		/// <summary>
+		/// ??????
+		/// </summary>
+		public string Name { get; private set; }
+		/// <summary>
+		/// ??????
+		/// </summary>
+		public XmlAttributeGetter Getter { get; private set; }
+	}
 	/// <summary>
 	/// Not yet public.
 	/// </summary>
@@ -19,7 +48,7 @@ namespace FarNet
 		///
 		string XmlNodeName();
 		///
-		IEnumerable<DictionaryEntry> XmlAttributes();
+		IList<XmlAttributeInfo> XmlAttributes();
 	}
 	/// <summary>
 	/// Abstract panel item representing one file, directory, plugin, or module item.
@@ -201,50 +230,38 @@ namespace FarNet
 		{
 			return IsDirectory ? "Directory" : "File";
 		}
+		static ReadOnlyCollection<XmlAttributeInfo> _attrs;
+		static ReadOnlyCollection<XmlAttributeInfo> XmlAttr()
+		{
+			if (_attrs != null)
+				return _attrs;
+
+			var attrs = new XmlAttributeInfo[]
+			{
+				new XmlAttributeInfo("Name", (object file) => ((FarFile)file).Name),
+				new XmlAttributeInfo("Description", (object file) => ((FarFile)file).Description),
+				new XmlAttributeInfo("Owner", (object file) => ((FarFile)file).Owner),
+				new XmlAttributeInfo("Length", (object file) => ((FarFile)file).Length),
+				new XmlAttributeInfo("CreationTime", (object file) => ((FarFile)file).CreationTime),
+				new XmlAttributeInfo("LastAccessTime", (object file) => ((FarFile)file).LastAccessTime),
+				new XmlAttributeInfo("LastWriteTime", (object file) => ((FarFile)file).LastWriteTime),
+				new XmlAttributeInfo("ReadOnly", (object file) => ((FarFile)file).IsReadOnly),
+				new XmlAttributeInfo("Hidden", (object file) => ((FarFile)file).IsHidden),
+				new XmlAttributeInfo("System", (object file) => ((FarFile)file).IsSystem),
+				new XmlAttributeInfo("Archive", (object file) => ((FarFile)file).IsArchive),
+				new XmlAttributeInfo("Compressed", (object file) => ((FarFile)file).IsCompressed),
+				new XmlAttributeInfo("ReparsePoint", (object file) => ((FarFile)file).IsReparsePoint),
+			};
+
+			_attrs = new ReadOnlyCollection<XmlAttributeInfo>(attrs);
+			return _attrs;
+		}
 		/// <summary>
 		/// Not yet public.
 		/// </summary>
-		public virtual IEnumerable<DictionaryEntry> XmlAttributes()
+		public virtual IList<XmlAttributeInfo> XmlAttributes()
 		{
-			yield return new DictionaryEntry("Name", Name);
-
-			yield return new DictionaryEntry("Length", Length);
-
-			if (Attributes != 0 && Attributes != FileAttributes.Directory)
-			{
-				if (IsReadOnly)
-					yield return new DictionaryEntry("ReadOnly", true);
-
-				if (IsHidden)
-					yield return new DictionaryEntry("Hidden", true);
-
-				if (IsSystem)
-					yield return new DictionaryEntry("System", true);
-
-				if (IsArchive)
-					yield return new DictionaryEntry("Archive", true);
-
-				if (IsCompressed)
-					yield return new DictionaryEntry("Compressed", true);
-
-				if (IsReparsePoint)
-					yield return new DictionaryEntry("ReparsePoint", true);
-			}
-
-			if (CreationTime != DateTime.MinValue)
-				yield return new DictionaryEntry("CreationTime", CreationTime);
-
-			if (LastAccessTime != DateTime.MinValue)
-				yield return new DictionaryEntry("LastAccessTime", LastAccessTime);
-
-			if (LastWriteTime != DateTime.MinValue)
-				yield return new DictionaryEntry("LastWriteTime", LastWriteTime);
-
-			if (!string.IsNullOrEmpty(Owner))
-				yield return new DictionaryEntry("Owner", Owner);
-
-			if (!string.IsNullOrEmpty(Description)) //????? make it elem?
-				yield return new DictionaryEntry("Description", Description);
+			return XmlAttr();
 		}
 	}
 
