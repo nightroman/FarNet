@@ -66,7 +66,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="SuperFile.cs" />
     <Compile Include="Form.cs" />
-    <Compile Include="ObjectXPathProxy.cs" />
+    <Compile Include="XPathObjectNode.cs" />
     <Compile Include="Progress.cs" />
     <Compile Include="ProgressBox.cs" />
     <Compile Include="ProgressForm.cs" />
@@ -76,8 +76,9 @@
     <Compile Include="SubsetForm.cs" />
     <Compile Include="SuperExplorer.cs" />
     <Compile Include="SuperPanel.cs" />
-    <Compile Include="ObjectXPathNavigator.cs" />
+    <Compile Include="XPathObjectNavigator.cs" />
     <Compile Include="XmlTools.cs" />
+    <Compile Include="XPathInput.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet.csproj">

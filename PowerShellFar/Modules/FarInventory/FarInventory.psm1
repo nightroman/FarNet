@@ -48,7 +48,7 @@ function Get-Uninstall
 .SYNOPSIS
 	Shows results of Get-Uninstall in a grid view.
 #>
-function Show-UninstallGridView
+function Open-UninstallGridView
 {
 	Get-Uninstall | Out-GridView
 }
@@ -57,7 +57,7 @@ function Show-UninstallGridView
 .SYNOPSIS
 	Shows results of Get-Uninstall in a panel.
 #>
-function Show-UninstallPanel
+function Open-UninstallPanel
 {
 	Get-Uninstall | Out-FarPanel @(
 		@{ Name = 'Name'; Expression = 'DisplayName' }
@@ -76,7 +76,7 @@ function Show-UninstallPanel
 	not returned by the standard command Get-Service, for example service
 	startup types.
 #>
-function Show-ServicePanel
+function Open-ServicePanel
 (
 	$ComputerName = '.'
 )
@@ -99,7 +99,7 @@ function Show-ServicePanel
 	The panel shows startup commands for the specified computer stored in
 	various locations: startup folders, registry run keys, and etc.
 #>
-function Show-StartupCommandPanel
+function Open-StartupCommandPanel
 (
 	$ComputerName = '.'
 )
@@ -120,7 +120,7 @@ function Show-StartupCommandPanel
 .DESCRIPTION
 	The panel shows local disks and their information.
 #>
-function Show-LogicalDiskPanel
+function Open-LogicalDiskPanel
 (
 	$ComputerName = '.'
 )
@@ -158,7 +158,7 @@ function Show-LogicalDiskPanel
 		Win32_BIOS
 		Win32_OperatingSystem
 #>
-function Show-InventoryPanel
+function Open-InventoryPanel
 (
 	$ComputerName = '.'
 )
@@ -179,7 +179,7 @@ function Show-InventoryPanel
 .SYNOPSIS
 	Shows environment variables in a panel.
 #>
-function Show-EnvironmentPanel
+function Open-EnvironmentPanel
 (
 	$ComputerName = '.'
 )
