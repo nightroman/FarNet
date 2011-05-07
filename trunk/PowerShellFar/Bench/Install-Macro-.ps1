@@ -68,9 +68,9 @@ $Far.Macro.Install($(
 
 	### == Mixed (several areas)
 
-	### (Edit-FarDescription-.ps1) Edit file description: Shell: current item; Editor or Viewer: opened file [AltZ]
+	### (Edit-FarDescription-.ps1) Edit file description: Shell: current item; Editor or Viewer: opened file [CtrlShiftD]
 	$m = @{
-		Name = 'AltZ'
+		Name = 'CtrlShiftD'
 		Sequence = Get-PsfMacro t
 		Description = 'PSF: Edit description'
 	}

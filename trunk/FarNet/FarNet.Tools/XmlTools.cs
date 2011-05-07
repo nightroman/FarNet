@@ -19,16 +19,13 @@ namespace FarNet.Tools
 	/// </summary>
 	class XsltContextVariable : IXsltContextVariable
 	{
-		string _name;
 		object _value;
 		/// <summary>
 		/// Initializes a new instance of the class.
 		/// </summary>
-		/// <param name="name">The name of the variable.</param>
 		/// <param name="value">The value of the variable.</param>
-		public XsltContextVariable(string name, object value)
+		public XsltContextVariable(object value)
 		{
-			_name = name;
 			_value = value;
 
 			if (value is String)
@@ -223,7 +220,7 @@ namespace FarNet.Tools
 			if (_variables == null)
 				_variables = new Dictionary<string, XsltContextVariable>();
 
-			_variables.Add(name, new XsltContextVariable(name, value));
+			_variables.Add(name, new XsltContextVariable(value));
 		}
 	}
 }
