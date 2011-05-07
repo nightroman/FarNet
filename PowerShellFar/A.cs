@@ -21,12 +21,10 @@ namespace PowerShellFar
 		/// <summary>PowerShellFar actor.</summary>
 		public static Actor Psf { get { return _Psf_; } }
 		static Actor _Psf_;
-
 		public static void Connect(Actor psf)
 		{
 			_Psf_ = psf;
 		}
-
 		/// <summary>
 		/// Shows an error.
 		/// </summary>
@@ -34,7 +32,6 @@ namespace PowerShellFar
 		{
 			Far.Net.Message(error.Message, "PowerShellFar error", MsgOptions.LeftAligned);
 		}
-
 		/// <summary>
 		/// Shows a message.
 		/// </summary>
@@ -42,7 +39,6 @@ namespace PowerShellFar
 		{
 			Far.Net.Message(message, Res.Me, MsgOptions.LeftAligned);
 		}
-
 		/// <summary>
 		/// Creates standard Far viewer ready for opening (F3)
 		/// </summary>
@@ -53,7 +49,6 @@ namespace PowerShellFar
 			view.FileName = filePath;
 			return view;
 		}
-
 		/// <summary>
 		/// Sets an item property value as it is.
 		/// </summary>
@@ -80,7 +75,6 @@ namespace PowerShellFar
 			return LanguagePrimitives.TryConvertTo<T>(pi.Value, out value);
 		}
 #endif
-
 #if false //????
 		// Sets location (with workaround)
 		public static void SetLocation(string path)
@@ -88,7 +82,6 @@ namespace PowerShellFar
 			Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(path));
 		}
 #endif
-
 		/// <summary>
 		/// Writes invocation errors.
 		/// </summary>
@@ -107,7 +100,6 @@ namespace PowerShellFar
 					writer.WriteLine(Kit.PositionMessage(asErrorRecord.InvocationInfo.PositionMessage));
 			}
 		}
-
 		/// <summary>
 		/// Writes invocation exception.
 		/// </summary>
@@ -124,7 +116,6 @@ namespace PowerShellFar
 			if (asRuntimeException != null && asRuntimeException.ErrorRecord != null && asRuntimeException.ErrorRecord.InvocationInfo != null)
 				writer.WriteLine(Kit.PositionMessage(asRuntimeException.ErrorRecord.InvocationInfo.PositionMessage));
 		}
-
 		/// <summary>
 		/// Sets an item content, shows errors.
 		/// </summary>
@@ -148,7 +139,6 @@ namespace PowerShellFar
 			}
 			return true;
 		}
-
 		/// <summary>
 		/// Outputs to the default formatter.
 		/// </summary>
@@ -159,7 +149,6 @@ namespace PowerShellFar
 			ps.Commands.AddCommand(OutCommand);
 			ps.Invoke(input);
 		}
-
 		/// <summary>
 		/// Outputs an exception or its error record.
 		/// </summary>
@@ -176,7 +165,6 @@ namespace PowerShellFar
 
 			Out(ps, new object[] { "ERROR: " + ex.GetType().Name + ":", error });
 		}
-
 		/// <summary>
 		/// Shows errors, if any, in a message box and returns true, else just returns false.
 		/// </summary>
@@ -192,7 +180,6 @@ namespace PowerShellFar
 			Far.Net.Message(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
 			return true;
 		}
-
 		/// <summary>
 		/// Sets current directory, shows errors but does not throw.
 		/// </summary>
@@ -211,7 +198,6 @@ namespace PowerShellFar
 				}
 			}
 		}
-
 		static Command _OutCommand;
 		/// <summary>
 		/// Command for formatted output of everything.
@@ -231,7 +217,6 @@ namespace PowerShellFar
 				return _OutCommand;
 			}
 		}
-
 		/// <summary>
 		/// Finds heuristically a property to be used to display the object.
 		/// </summary>
@@ -263,7 +248,6 @@ namespace PowerShellFar
 
 			return null;
 		}
-
 		public static Type FindCommonType(Collection<PSObject> values)
 		{
 			Type result = null;
@@ -299,7 +283,6 @@ namespace PowerShellFar
 
 			return result;
 		}
-
 		/// <summary>
 		/// Gets heuristic base type suitable to be common for mixed sets.
 		/// </summary>
@@ -314,10 +297,8 @@ namespace PowerShellFar
 			if (value is PSVariable) return typeof(PSVariable);
 			return value.GetType();
 		}
-
 		//! Get-FormatData is very expensive (~50% on search), use cache.
 		static Dictionary<string, TableControl> _CacheTableControl;
-
 		/// <summary>
 		/// Finds an available table control.
 		/// </summary>
@@ -380,7 +361,6 @@ namespace PowerShellFar
 			_CacheTableControl.Add(cacheKey, null);
 			return null;
 		}
-
 		/// <summary>
 		/// Robust Get-ChildItem.
 		/// </summary>
@@ -410,7 +390,6 @@ namespace PowerShellFar
 
 			return new Collection<PSObject>();
 		}
-
 		/// <summary>
 		/// Gets the $FormatEnumerationLimit if it is sane or 4.
 		/// </summary>
@@ -425,7 +404,6 @@ namespace PowerShellFar
 					return (int)value;
 			}
 		}
-
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
 		public static void InvokePipelineForEach(IEnumerable<PSObject> input)
 		{
@@ -464,7 +442,6 @@ namespace PowerShellFar
 					Psf.Engine.SessionState.PSVariable.Set(variable);
 			}
 		}
-
 		/// <summary>
 		/// Invokes the script code.
 		/// </summary>
@@ -475,7 +452,6 @@ namespace PowerShellFar
 
 			return Psf.Engine.InvokeCommand.NewScriptBlock(code).Invoke(args);
 		}
-
 		/// <summary>
 		/// Invokes the handler-like script and returns the result collection.
 		/// </summary>
@@ -500,7 +476,6 @@ namespace PowerShellFar
 				variable.Remove("_");
 			}
 		}
-
 		/// <summary>
 		/// Invokes the handler-like script and returns the result as it is.
 		/// </summary>
@@ -525,7 +500,6 @@ namespace PowerShellFar
 				variable.Remove("_");
 			}
 		}
-
 		internal static void SetPropertyFromTextUI(object target, PSPropertyInfo pi, string text)
 		{
 			bool isPSObject;
@@ -567,7 +541,6 @@ namespace PowerShellFar
 				Far.Net.Message(ex.Message, "Setting property");
 			}
 		}
-
 		/// <summary>
 		/// Collects names of files.
 		/// </summary>
@@ -579,7 +552,6 @@ namespace PowerShellFar
 				r.Add(f.Name);
 			return r;
 		}
-
 		/// <summary>
 		/// Invokes Format-List with output to string.
 		/// </summary>
@@ -596,6 +568,21 @@ Format-List -InputObject $args[0] -Property * -Force -Expand Both -ErrorAction 0
 Out-String -Width $args[1]
 ";
 			return InvokeCode((full ? codeFull : codeMain), data, int.MaxValue)[0].ToString();
+		}
+		static Dictionary<string, ScriptBlock> _cacheScript;
+		internal static ScriptBlock GetScriptBlock(string code)
+		{
+			if (_cacheScript == null)
+				_cacheScript = new Dictionary<string, ScriptBlock>();
+
+			ScriptBlock result;
+			if (_cacheScript.TryGetValue(code, out result))
+				return result;
+
+			result = ScriptBlock.Create(code);
+			_cacheScript.Add(code, result);
+
+			return result;
 		}
 	}
 }
