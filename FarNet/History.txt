@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.4.12 =
+
+*) XPath searches
+- Fixed occasional error messages on stopping a search.
+- Optimized memory use during search (weak references allows to discard some of
+not used data). This introduces a little overhead but on large data sets saves
+a lot of memory, avoids out of memory cases, and even may work faster.
+
 = 4.4.11 =
 
 *) XPath searches

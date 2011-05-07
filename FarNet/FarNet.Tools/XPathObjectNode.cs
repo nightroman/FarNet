@@ -18,13 +18,14 @@ namespace FarNet.Tools
 		readonly object _target;
 		readonly string _name;
 		readonly XPathObjectNode _parent;
+		// Sibling list, elements of the parent (it keeps the weak reference alive).
+		readonly IList<XPathObjectNode> _siblings;
+		// Index of this node in the sibling list, needed for MoveToNext, MoveToPrevious.
 		int _index;
 		IList<XmlAttributeInfo> _attributes;
-		IList<XPathObjectNode> _elements;
-		public object UnderlyingObject { get { return _target; } }
-		public int Index { get { return _index; } }
-		public XPathObjectNode(XPathObjectContext context, object target) : this(context, target, null, null, -1) { }
-		XPathObjectNode(XPathObjectContext context, object target, string name, XPathObjectNode parent, int index)
+		readonly WeakReference _elements = new WeakReference(null);
+		public XPathObjectNode(XPathObjectContext context, object target) : this(context, target, null, null, null, -1) { }
+		XPathObjectNode(XPathObjectContext context, object target, string name, XPathObjectNode parent, IList<XPathObjectNode> siblings, int index)
 		{
 			if (context == null) throw new ArgumentNullException("context");
 			if (target == null) throw new ArgumentNullException("target");
@@ -32,6 +33,8 @@ namespace FarNet.Tools
 			_context = context;
 			_target = target;
 			_parent = parent;
+
+			_siblings = siblings;
 			_index = index;
 
 			if (string.IsNullOrEmpty(name))
@@ -51,6 +54,8 @@ namespace FarNet.Tools
 			}
 			_name = GetAtomicString(name);
 		}
+		public object Target { get { return _target; } }
+		public int Index { get { return _index; } }
 		public string Name { get { return _name; } }
 		public XPathObjectNode Parent { get { return _parent; } }
 		public string Value
@@ -77,10 +82,8 @@ namespace FarNet.Tools
 		{
 			get
 			{
-				if (_elements == null)
-					ActivateElements();
-
-				return _elements.Count > 0 || HasText;
+				var elements = ((IList<XPathObjectNode>)_elements.Target) ?? ActivateElements();
+				return elements.Count > 0 || HasText;
 			}
 		}
 		public bool HasText
@@ -117,10 +120,7 @@ namespace FarNet.Tools
 		{
 			get
 			{
-				if (_elements == null)
-					ActivateElements();
-
-				return _elements;
+				return ((IList<XPathObjectNode>)_elements.Target) ?? ActivateElements();
 			}
 		}
 		public void AddSpecialName(string key, string value)
@@ -137,7 +137,11 @@ namespace FarNet.Tools
 		void ActivateAttributes() //?? lock was used, why?
 		{
 			if (_context.Stopping != null && _context.Stopping(null))
+			{
+				//! ensure at least dummy, a caller expects not null
+				_attributes = _emptyAttributes;
 				return;
+			}
 
 			if (_attributes != null)
 				return;
@@ -146,7 +150,7 @@ namespace FarNet.Tools
 			{
 				// no attributes or children
 				_attributes = _emptyAttributes;
-				_elements = _emptyElements;
+				_elements.Target = _emptyElements;
 			}
 			else if (_target is SuperFile)
 			{
@@ -165,155 +169,167 @@ namespace FarNet.Tools
 				ActivateSimple();
 			}
 		}
-		void ActivateElements() //?? lock was used, why?
+		IList<XPathObjectNode> ActivateElements() //?? lock was used, why?
 		{
 			if (_context.Stopping != null && _context.Stopping(null))
-				return;
+				return _emptyElements;
 
-			if (_elements != null)
-				return;
+			{
+				var elements = (IList<XPathObjectNode>)_elements.Target;
+				if (elements != null)
+					return elements;
+			}
 
 			if (_target is ValueType || _target is string) //rvk "Linear types". Perhaps we need more.
 			{
 				// no attributes or children
 				_attributes = _emptyAttributes;
-				_elements = _emptyElements;
+				_elements.Target = _emptyElements;
+				return _emptyElements;
 			}
 			else if (_target is SuperFile)
 			{
-				ActivateSuperFileElements();
+				return ActivateSuperFileElements();
 			}
 			else if (_target is IDictionary) //! before ICollection
 			{
-				ActivateDictionary();
+				return ActivateDictionary();
 			}
 			else if (_target is ICollection) //! after IDictionary
 			{
-				ActivateCollection();
+				return ActivateCollection();
 			}
 			else
 			{
-				ActivateSimple();
+				return ActivateSimple();
 			}
 		}
-		void ActivateDictionary()
+		IList<XPathObjectNode> ActivateDictionary()
 		{
 			// no attributes
 			_attributes = _emptyAttributes;
 
 			// collect elements
-			_elements = new List<XPathObjectNode>();
+			var elements = new List<XPathObjectNode>();
 
 			foreach (DictionaryEntry entry in (IDictionary)_target)
 			{
 				if (entry.Value == null)
 					continue;
 
-				var node = new XPathObjectNode(_context, entry.Value, null, this, _elements.Count); //??????
+				var node = new XPathObjectNode(_context, entry.Value, null, this, elements, elements.Count);
 
-				_elements.Add(node);
+				elements.Add(node);
 
 				node.AddSpecialName("key", entry.Key.ToString());
 			}
 
-			if (_elements.Count == 0)
-				_elements = _emptyElements;
+			if (elements.Count == 0)
+				_elements.Target = _emptyElements;
+			else
+				_elements.Target = elements;
+
+			return elements;
 		}
-		void ActivateCollection()
+		IList<XPathObjectNode> ActivateCollection()
 		{
 			// no attributes
 			_attributes = _emptyAttributes;
 
 			// collect elements
-			_elements = new List<XPathObjectNode>();
-			foreach (object val in (ICollection)_target)
+			var elements = new List<XPathObjectNode>();
+			foreach (object it in (ICollection)_target)
 			{
-				if (val == null)
-					continue;
-
-				_elements.Add(new XPathObjectNode(_context, val, null, this, _elements.Count));
+				if (it != null)
+					elements.Add(new XPathObjectNode(_context, it, null, this, elements, elements.Count));
 			}
 
-			if (_elements.Count == 0)
-				_elements = _emptyElements;
+			if (elements.Count == 0)
+				_elements.Target = _emptyElements;
+			else
+				_elements.Target = elements;
+
+			return elements;
 		}
-		void ActivateSimple()
+		IList<XPathObjectNode> ActivateSimple()
 		{
-			var info = _target as IXmlInfo; //?????? need
+			var info = _target as IXmlInfo; //?????? need?
 			if (info != null)
 			{
 				_attributes = info.XmlAttributes();
-				_elements = _emptyElements; //?????? elements
+				if (_attributes.Count == 0)
+					_attributes = _emptyAttributes;
+
+				_elements.Target = _emptyElements; //?????? elements
+				return _emptyElements;
 			}
-			else
+
+			_attributes = new List<XmlAttributeInfo>();
+			var elements = new List<XPathObjectNode>();
+
+			foreach (PropertyInfo pi in _target.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
-				_attributes = new List<XmlAttributeInfo>();
-				_elements = new List<XPathObjectNode>();
+				// get the value
+				object value = pi.GetValue(_target, null);
+				if (value == null)
+					continue;
 
-				foreach (PropertyInfo pi in _target.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+				// get the custom attributes
+				//rvk It is done just to skip XmlIgnoreAttribute. Do we need this expensive job?
+				object[] attrs = pi.GetCustomAttributes(true);
+				bool skip = false;
+
+				if (attrs != null)
 				{
-					// get the value
-					object val = pi.GetValue(_target, null);
-
-					if (val == null)
-						continue;
-
-					// get the custom attributes
-					//rvk It is done just to skip XmlIgnoreAttribute. Do we need this expensive job?
-					object[] attrs = pi.GetCustomAttributes(true);
-					bool skip = false;
-
-					if (attrs != null)
+					foreach (Attribute a in attrs)
 					{
-						foreach (Attribute a in attrs)
+						if (a is System.Xml.Serialization.XmlIgnoreAttribute)
 						{
-							if (a is System.Xml.Serialization.XmlIgnoreAttribute)
-							{
-								skip = true;
-								break;
-							}
+							skip = true;
+							break;
 						}
 					}
-
-					if (skip)
-						continue; //rvk: It was break == bug?
-
-					// now handle the values
-					string str = CultureSafeToString(val);
-
-					if (str != null)
-						_attributes.Add(new XmlAttributeInfo(GetAtomicString(pi.Name), (object v) => str));
-					else
-						_elements.Add(new XPathObjectNode(_context, val, pi.Name, this, _elements.Count));
 				}
 
-				if (_elements.Count == 0)
-					_elements = _emptyElements;
+				if (skip)
+					continue; //rvk: It was break == bug?
+
+				// now handle the values
+				string str = CultureSafeToString(value);
+
+				if (str != null)
+					_attributes.Add(new XmlAttributeInfo(GetAtomicString(pi.Name), (object v) => str));
+				else
+					elements.Add(new XPathObjectNode(_context, value, pi.Name, this, elements, elements.Count));
 			}
 
-			if (_attributes.Count == 0)
-				_attributes = _emptyAttributes;
+			if (elements.Count == 0)
+				_elements.Target = _emptyElements;
+			else
+				_elements.Target = elements;
+
+			return elements;
 		}
 		void ActivateSuperFileAttributes()
 		{
 			var file = (SuperFile)_target; //??????
 			_attributes = file.XmlAttributes();
 		}
-		void ActivateSuperFileElements()
+		IList<XPathObjectNode> ActivateSuperFileElements()
 		{
 			var file = (SuperFile)_target; //??????
 
 			if (!file.IsDirectory)
 			{
-				_elements = _emptyElements;
-				return;
+				_elements.Target = _emptyElements;
+				return _emptyElements;
 			}
 
 			// progress
 			if (_context.IncrementDirectoryCount != null)
 				_context.IncrementDirectoryCount(1);
 
-			_elements = new List<XPathObjectNode>();
+			var elements = new List<XPathObjectNode>();
 
 			Explorer explorer;
 			if (file.Explorer.CanExploreLocation)
@@ -337,12 +353,16 @@ namespace FarNet.Tools
 						continue;
 
 					// add
-					_elements.Add(new XPathObjectNode(_context, new SuperFile(explorer, it), null, this, _elements.Count));
+					elements.Add(new XPathObjectNode(_context, new SuperFile(explorer, it), null, this, elements, elements.Count));
 				}
 			}
 
-			if (_elements.Count == 0)
-				_elements = _emptyElements;
+			if (elements.Count == 0)
+				_elements.Target = _emptyElements;
+			else
+				_elements.Target = elements;
+
+			return elements;
 		}
 		string GetAtomicString(string array)
 		{

@@ -50,7 +50,7 @@ namespace FarNet.Tools
 			_index = -1;
 		}
 		///
-		public override object UnderlyingObject { get { return _node.UnderlyingObject; } }
+		public override object UnderlyingObject { get { return _node.Target; } }
 		///
 		public override string BaseURI
 		{
@@ -327,23 +327,18 @@ namespace FarNet.Tools
 			return false;
 		}
 		///
-		public override bool MoveToFirst()
+		public override bool MoveToFirst() //?????? see MSDN. When is it called? Is it ever called on XPath scan?
 		{
-			switch (_type)
-			{
-				case XPathNodeType.Element:
-					_index = 0;
-					return true;
+			// The original code was wrong. We use the code similar to sdf.XPath.
+			if (_type == XPathNodeType.Attribute)
+				return false;
 
-				case XPathNodeType.Attribute:
-					_index = 0;
-					return true;
+			// try the parent
+			if (!MoveToParent())
+				return false;
 
-				case XPathNodeType.Text:
-					return true;
-			}
-
-			return false;
+			// and then its child 
+			return MoveToFirstChild();
 		}
 		///
 		public override bool MoveToFirstAttribute()
