@@ -9,17 +9,15 @@
 	'Invoke input code', invoke the command Generate-Dialog-.ps1 (with path if
 	it is not in the system paths).
 
-	Output: file $OutputPath, default: "$($Psf.AppData)\GeneratedDialog-.ps1".
+	The default output file is GeneratedDialog-.ps1 in the local module folder.
 	Normally it is ready to start code to show a dialog that looks like the
 	original one. Of course, it is just a dummy template.
-
-.PARAMETER OutputPath
-		Where generated code is saved.
 #>
 
 param
 (
-	$OutputPath = "$($Psf.AppData)\GeneratedDialog-.ps1"
+	# Where generated code is saved.
+	$OutputPath = "$($Psf.Manager.GetFolderPath(0))\GeneratedDialog-.ps1"
 )
 
 Set-StrictMode -Version 2

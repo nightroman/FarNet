@@ -103,7 +103,7 @@ namespace PowerShellFar
 				var cursor = Far.Net.UI.WindowCursor;
 				menu.X = cursor.X;
 				menu.Y = cursor.Y;
-				A.Psf.Settings.Intelli(menu);
+				Settings.Default.Intelli(menu);
 				if (isEmpty)
 				{
 					menu.Add(Res.Empty).Disabled = true;
@@ -213,7 +213,7 @@ namespace PowerShellFar
 
 			try
 			{
-				string code = A.Psf.Settings.StartupEdit;
+				string code = Settings.Default.StartupEdit;
 				if (!string.IsNullOrEmpty(code))
 					A.InvokeCode(code);
 			}

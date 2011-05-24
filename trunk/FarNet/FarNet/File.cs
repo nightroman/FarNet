@@ -13,30 +13,28 @@ using System.IO;
 namespace FarNet
 {
 	/// <summary>
-	/// ??????
+	/// TEST ONLY
 	/// </summary>
 	public delegate object XmlAttributeGetter(object value);
 	/// <summary>
-	/// ??????
+	/// TEST ONLY
 	/// </summary>
 	public class XmlAttributeInfo
 	{
 		/// <summary>
-		/// ??????
+		/// TEST ONLY
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="getter"></param>
 		public XmlAttributeInfo(string name, XmlAttributeGetter getter)
 		{
 			Name = name;
 			Getter = getter;
 		}
 		/// <summary>
-		/// ??????
+		/// TEST ONLY
 		/// </summary>
 		public string Name { get; private set; }
 		/// <summary>
-		/// ??????
+		/// TEST ONLY
 		/// </summary>
 		public XmlAttributeGetter Getter { get; private set; }
 	}
@@ -231,6 +229,7 @@ namespace FarNet
 			return IsDirectory ? "Directory" : "File";
 		}
 		static ReadOnlyCollection<XmlAttributeInfo> _attrs;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		static ReadOnlyCollection<XmlAttributeInfo> XmlAttr()
 		{
 			if (_attrs != null)

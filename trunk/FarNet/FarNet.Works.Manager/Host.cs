@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
@@ -39,11 +39,6 @@ namespace FarNet.Works
 			}
 		}
 		static HostState _State_;
-
-		public abstract object LoadFarNetValue(string keyPath, string valueName, object defaultValue);
-		public abstract void SaveFarNetValue(string keyPath, string valueName, object value);
-		public abstract IRegistryKey OpenModuleKey(string name, bool writable);
-		public abstract IRegistryKey OpenCacheKey(bool writable);
 
 		public abstract void RegisterProxyCommand(IModuleCommand info);
 		public abstract void RegisterProxyEditor(IModuleEditor info);

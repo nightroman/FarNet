@@ -306,3 +306,28 @@ settings. Available types:
  #Substring, Literal#
 
  Pattern is a substring where * and ? are wildcards or #Literal#
+
+@ModuleSettings
+$#Settings menu and panels#
+~Contents~@Contents@
+
+#The menu#
+
+The Settings menu shows settings sets implemented by modules and discovered by
+the core (a module may implement any number of settings sets). On selection of
+a set from the menu its properties are shown in its module settings panel. The
+settings panel is uniform for all modules.
+
+#Settings panels#
+
+Module settings panels show two columns: property names and values. Use [#F4#]
+in order to edit values in text editors. Changed values are applied on saving.
+Editors are not modal, several settings editors can be opened at the same time.
+It is recommended to exit settings editors before closing the settings panel.
+
+Use [#Del#] or [#F8#] in order to reset selected settings to their default
+values, if there are any provided by a module. Some settings may have no
+defaults, such settings are simply ignored on this operation.
+
+If there are changed values then settings are saved when a panel closes (for
+example, by [#Esc#]).

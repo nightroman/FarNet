@@ -1,7 +1,7 @@
 ﻿
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System;
@@ -20,7 +20,6 @@ namespace PowerShellFar
 		/// For internal use.
 		/// </summary>
 		internal static Entry Instance { get; private set; }
-
 		///
 		public Entry()
 		{
@@ -29,13 +28,11 @@ namespace PowerShellFar
 
 			Instance = this;
 		}
-
 		internal static void Unregister()
 		{
 			if (Instance != null)
 				Instance.Manager.Unregister();
 		}
-
 		///
 		public override void Connect()
 		{
@@ -52,12 +49,6 @@ namespace PowerShellFar
 				new ModuleCommandAttribute() { Name = "PowerShell command (viewer output)", Prefix = ">>" },
 				OnCommandInvoke2);
 
-			// register config
-			Manager.RegisterModuleTool(
-				new Guid("16160a09-ea2a-4c10-91af-c40149002057"),
-				new ModuleToolAttribute() { Name = Res.Me, Options = ModuleToolOptions.Config },
-				OnConfig);
-
 			// register menu
 			Manager.RegisterModuleTool(
 				new Guid("7def4106-570a-41ab-8ecb-40605339e6f7"),
@@ -67,7 +58,6 @@ namespace PowerShellFar
 			// connect actor
 			A.Psf.Connect();
 		}
-
 		///
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public override void Disconnect()
@@ -77,13 +67,11 @@ namespace PowerShellFar
 			A.Connect(null);
 			Instance = null;
 		}
-
 		///
 		public override bool CanExit()
 		{
 			return A.Psf.CanExit();
 		}
-
 		///
 		public override void Invoking()
 		{
@@ -94,7 +82,6 @@ namespace PowerShellFar
 			}
 		}
 		bool InvokingHasBeenCalled;
-
 		//! do not call Invoking(), it is done by FarNet
 		internal static IModuleCommand CommandInvoke1 { get; private set; }
 		void OnCommandInvoke1(object sender, ModuleCommandEventArgs e)
@@ -109,7 +96,6 @@ namespace PowerShellFar
 				A.SetCurrentDirectoryFinally(currentDirectory);
 			}
 		}
-
 		//! do not call Invoking(), it is done by FarNet
 		internal static IModuleCommand CommandInvoke2 { get; private set; }
 		void OnCommandInvoke2(object sender, ModuleCommandEventArgs e)
@@ -124,16 +110,9 @@ namespace PowerShellFar
 				A.SetCurrentDirectoryFinally(currentDirectory);
 			}
 		}
-
-		void OnConfig(object sender, ModuleToolEventArgs e)
-		{
-			e.Ignore = !A.Psf.ShowSettings();
-		}
-
 		internal void OnOpen(object sender, ModuleToolEventArgs e)
 		{
 			UI.ActorMenu.Show(sender, e);
 		}
-
 	}
 }

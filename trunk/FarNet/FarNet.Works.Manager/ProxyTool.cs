@@ -1,12 +1,11 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Collections;
 
 namespace FarNet.Works
 {
@@ -15,24 +14,19 @@ namespace FarNet.Works
 		EventHandler<ModuleToolEventArgs> _Handler;
 		string _Hotkey;
 		ModuleToolOptions _Options;
-		bool _OptionsValid;
-
 		internal ProxyTool(ModuleManager manager, EnumerableReader reader)
 			: base(manager, reader, new ModuleToolAttribute())
 		{
-			Attribute.Options = (ModuleToolOptions)int.Parse(reader.Read(), CultureInfo.InvariantCulture);
+			Attribute.Options = (ModuleToolOptions)reader.Read();
 		}
-
 		internal ProxyTool(ModuleManager manager, Type classType)
 			: base(manager, classType, typeof(ModuleToolAttribute))
 		{ }
-
 		internal ProxyTool(ModuleManager manager, Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
 			: base(manager, id, (ModuleToolAttribute)attribute.Clone())
 		{
 			_Handler = handler;
 		}
-
 		public void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			if (e == null)
@@ -51,98 +45,89 @@ namespace FarNet.Works
 				instance.Invoke(sender, e);
 			}
 		}
-
 		public void ResetHotkey(string value)
 		{
-			// set
-			SetValidHotkey(value);
-
-			// save
-			Host.Instance.SaveFarNetValue(Key, "Hotkey", _Hotkey);
+			_Hotkey = GetValidHotkey(value);
 		}
-
 		public void ResetOptions(ModuleToolOptions value)
 		{
 			// unregister the current
 			Host.Instance.UnregisterProxyTool(this);
 
-			Host.Instance.SaveFarNetValue(Key, "Options", ~(((int)Attribute.Options) & (~((int)value))));
 			_Options = value;
-			_OptionsValid = true;
 
 			// register new
 			Host.Instance.RegisterProxyTool(this);
 		}
-
-		void SetValidHotkey(string value)
+		static string GetValidHotkey(string value)
 		{
-			switch (value.Length)
+			switch ((value ?? string.Empty).Length)
 			{
 				case 0:
-					_Hotkey = " ";
-					break;
+					return EmptyHotkey;
 				case 1:
-					_Hotkey = value;
-					break;
+					return value;
 				default:
-					_Hotkey = value.Substring(0, 1);
-					break;
+					return value.Substring(0, 1);
 			}
 		}
-
 		public sealed override string ToString()
 		{
 			return string.Format(null, "{0} Options='{1}'", base.ToString(), Attribute.Options);
 		}
-
-		internal sealed override void WriteCache(List<string> data)
+		internal sealed override void WriteCache(IList data)
 		{
 			base.WriteCache(data);
-			data.Add(((int)Attribute.Options).ToString(CultureInfo.InvariantCulture));
+			data.Add(Attribute.Options);
 		}
-
 		new ModuleToolAttribute Attribute
 		{
 			get { return (ModuleToolAttribute)base.Attribute; }
 		}
-
 		public ModuleToolOptions DefaultOptions
 		{
 			get { return Attribute.Options; }
 		}
-
 		public string Hotkey
 		{
-			get
-			{
-				// load once
-				if (_Hotkey == null)
-				{
-					string value = Host.Instance.LoadFarNetValue(Key, "Hotkey", string.Empty).ToString();
-					SetValidHotkey(value);
-				}
-
-				return _Hotkey;
-			}
+			get { return _Hotkey; }
 		}
-
 		public override ModuleItemKind Kind
 		{
 			get { return ModuleItemKind.Tool; }
 		}
-
 		public ModuleToolOptions Options
 		{
-			get
+			get { return _Options; }
+		}
+		const int idHotkey = 0;
+		const int idOptions = 1;
+		const string EmptyHotkey = " ";
+		internal override Hashtable SaveData()
+		{
+			var data = new Hashtable();
+			if (_Hotkey != EmptyHotkey)
+				data.Add(idHotkey, _Hotkey);
+			if (_Options != DefaultOptions)
+				data.Add(idOptions, ~(((int)Attribute.Options) & (~((int)_Options)))); 
+			return data;
+		}
+		internal override void LoadData(Hashtable data)
+		{
+			if (data == null)
 			{
-				if (!_OptionsValid)
-				{
-					// merge with the default options
-					_Options = Attribute.Options & (ModuleToolOptions)Host.Instance.LoadFarNetValue(Key, "Options", Attribute.Options);
-					_OptionsValid = true;
-				}
+				_Hotkey = EmptyHotkey;
+				_Options = DefaultOptions;
+			}
+			else
+			{
+				_Hotkey = GetValidHotkey(data[idHotkey] as string);
 
-				return _Options;
+				var options = data[idOptions];
+				if (options == null)
+					_Options = DefaultOptions;
+				else
+					_Options = DefaultOptions & (ModuleToolOptions)options;
 			}
 		}
 	}

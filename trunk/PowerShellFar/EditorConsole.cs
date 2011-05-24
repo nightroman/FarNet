@@ -29,7 +29,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public static EditorConsole CreateConsole(bool prompt)
 		{
-			string dir = Path.Combine(A.Psf.AppData, "psfconsole");
+			string dir = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData), "psfconsole");
 			if (!Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
 
@@ -313,7 +313,7 @@ namespace PowerShellFar
 								// don't lose not empty line!
 								if (Editor[-1].Length > 0)
 									return;
-								History.Cache = History.GetLines(0);
+								History.Cache = History.ReadLines();
 								History.CacheIndex = History.Cache.Length;
 							}
 							else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)

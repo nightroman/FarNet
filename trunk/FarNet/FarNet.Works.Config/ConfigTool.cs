@@ -55,7 +55,7 @@ namespace FarNet.Works
 						menu.Selected = menu.Items.Count;
 
 					// 2) add the item
-					menu.Add(string.Format(null, format, getMenuText(it), it.Options, it.ModuleName + "\\" + it.Id)).Data = it;
+					menu.Add(string.Format(null, format, getMenuText(it), it.Options, it.Manager.ModuleName + "\\" + it.Id)).Data = it;
 				}
 
 				// show
@@ -108,6 +108,8 @@ namespace FarNet.Works
 				if (cbConfig.Selected > 0) newOptions = newOptions | ModuleToolOptions.Config;
 				if (cbDisk.Selected > 0) newOptions = newOptions | ModuleToolOptions.Disk;
 				tool.ResetOptions(newOptions);
+
+				tool.Manager.SaveSettings();
 			}
 		}
 

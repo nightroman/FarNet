@@ -1,12 +1,14 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Resources;
 using System.Text.RegularExpressions;
 
 namespace FarNet.Works

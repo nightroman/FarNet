@@ -16,7 +16,7 @@ namespace PowerShellFar.UI
 		public CommandHistoryMenu(string filter)
 		{
 			_menu = Far.Net.CreateListMenu();
-			A.Psf.Settings.ListMenu(_menu);
+			Settings.Default.ListMenu(_menu);
 
 			_menu.HelpTopic = A.Psf.HelpTopic + "MenuCommandHistory";
 			_menu.SelectLast = true;
@@ -32,19 +32,17 @@ namespace PowerShellFar.UI
 			_menu.AddKey(KeyCode.Del, OnDelete);
 		}
 
-		void ResetItems()
+		void ResetItems(string[] lines)
 		{
 			_menu.Items.Clear();
-			foreach(string s in History.GetLines(0))
+			foreach(string s in lines)
 				_menu.Add(s);
 		}
 
 		void OnDelete(object sender, MenuEventArgs e)
 		{
-			int n1 = _menu.Items.Count;
-			History.RemoveDupes();
-			ResetItems();
-			if (n1 == _menu.Items.Count)
+			var lines = History.Update(null);
+			if (lines.Length == _menu.Items.Count)
 			{
 				e.Ignore = true;
 			}
@@ -52,13 +50,15 @@ namespace PowerShellFar.UI
 			{
 				e.Restart = true;
 				_menu.Selected = -1;
+
+				ResetItems(lines);
 			}
 		}
 
 		public string Show()
 		{
 			// fill
-			ResetItems();
+			ResetItems(History.ReadLines());
 
 			// show
 			if (!_menu.Show())

@@ -42,7 +42,7 @@ function global:New-TestRootExplorer
 		AsExploreDirectory = {
 			switch($_.File.Name) {
 				'Flat' { New-TestFlatExplorer }
-				'Tree' { New-TestTreeExplorer HKCU:\Software\Far2\Plugins }
+				'Tree' { New-TestTreeExplorer 'HKCU:\Control Panel' }
 				'Path' { New-TestPathExplorer $env:FARHOME\FarNet }
 				'Location' { New-TestLocationExplorer $env:FARHOME\FarNet }
 			}

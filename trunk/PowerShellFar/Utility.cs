@@ -38,13 +38,13 @@ namespace PowerShellFar
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal static Process StartExternalViewer(string fileName)
 		{
-			string externalViewerFileName = A.Psf.Settings.ExternalViewerFileName;
+			string externalViewerFileName = Settings.Default.ExternalViewerFileName;
 			string externalViewerArguments;
 
 			// try the user defined viewer
 			if (!string.IsNullOrEmpty(externalViewerFileName))
 			{
-				externalViewerArguments = string.Format(null, A.Psf.Settings.ExternalViewerArguments, fileName);
+				externalViewerArguments = string.Format(null, Settings.Default.ExternalViewerArguments, fileName);
 				try
 				{
 					return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
@@ -52,7 +52,7 @@ namespace PowerShellFar
 				catch (Win32Exception)
 				{
 					Far.Net.Message(
-						"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + A.Psf.Settings.ExternalViewerArguments,
+						"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + Settings.Default.ExternalViewerArguments,
 						Res.Me, MsgOptions.LeftAligned | MsgOptions.Warning);
 				}
 			}

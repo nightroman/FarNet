@@ -654,48 +654,33 @@ KEY_GOTFOCUS
 */
 int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 {
-	// extract the key code
-	int code = key & ~PKF_PREPROCESS;
-
-	// filter out not keys but kind of events (perhaps to make events later)
-	if (code >= Wrap::GetEndKeyCode())
+	// ignore PKF_PREPROCESS, Far 3 is going to drop it
+	if (key & PKF_PREPROCESS)
 		return 0;
 
-	//! mind rare case: panel in null, e.g. closed by [AltF12] + select folder
+	// filter out not really keys (to make events later?)
+	if (key >= Wrap::GetEndKeyCode())
+		return 0;
+
+	//! mind rare case: panel is null: closed by [AltF12] + select folder
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	if (!pp)
 		return 0;
 
-	// the key
-	PanelKeyEventArgs e(code, (KeyStates)controlState);
-	
-	// case: pressing
-	if ((key & PKF_PREPROCESS) != 0)
-	{
-		Log::Source->TraceEvent(TraceEventType::Verbose, 0, "KeyPressing {0}", %e);
+	// args, log
+	PanelKeyEventArgs e(key, (KeyStates)controlState);
+	Log::Source->TraceEvent(TraceEventType::Information, 0, "KeyPressed {0}", %e);
 
-		//1 event
-		pp->Host->WorksKeyPressing(%e);
-		if (e.Ignore)
-			return 1;
-
-		//2 method
-		return pp->Host->UIKeyPressing(e.Code, e.State) ? 1 : 0;
-	}
-
-	// case: pressed
-	Log::Source->TraceEvent(TraceEventType::Verbose, 0, "KeyPressed {0}", %e);
-
-	//1 event
+	// 1. event; handlers work first of all
 	pp->Host->WorksKeyPressed(%e);
 	if (e.Ignore)
 		return 1;
 
-	//2 method
+	// 2. method; default or custom virtual methods
 	if (pp->Host->UIKeyPressed(e.Code, e.State))
 		return 1;
 
-	//3 escape
+	// 3. escape; special not yet handled case
 	if (e.Code == VKeyCode::Escape && (e.State == KeyStates::None || e.State == KeyStates::Shift) && Far::Net->CommandLine->Length == 0)
 	{
 		pp->Host->WorksEscaping(%e);

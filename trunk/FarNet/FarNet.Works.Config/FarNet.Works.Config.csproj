@@ -67,11 +67,15 @@
     <Compile Include="ConfigFiler.cs" />
     <Compile Include="ConfigTool.cs" />
     <Compile Include="ConfigUICulture.cs" />
+    <Compile Include="SettingsExplorer.cs" />
+    <Compile Include="SettingsPanel.cs" />
+    <Compile Include="SettingsUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FarNet\FarNet.csproj">
       <Project>{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}</Project>
       <Name>FarNet</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

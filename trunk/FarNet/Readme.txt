@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.4.12
-Release  : 2011-05-07
+Version  : 4.4.13
+Release  : 2011-05-23
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -83,21 +83,20 @@ descendant classes are loaded from a single *.dll file.
 folders with no *.dll and *.cfg files are ignored.
 
 *) Assembly names must be unique among all modules or there can be problems.
-Assembly names define kind of namespaces for information stored in the
-registry. Directory names and assembly locations are not important.
+Assembly names define kind of namespaces for various information. Directory
+names and assembly locations are not important.
 
 
 = LOADING MODULES FROM CACHE =
 
-
-FarNet modules registry cache:
-HKCU\Software\Far2\Plugins\FarNet\!Cache
+FarNet module cache:
+%LOCALAPPDATA%\Far Manager\FarNet\cache.binary
 
 If possible, FarNet caches information about assemblies and loads them only
 when they are really invoked. In many cases when you change, rename or move
 assemblies or classes FarNet updates the cache itself. But some changes are
-too difficult to discover (e.g. changes in config files). In these cases you
-have to remove the registry cache manually (ditto for other cache problems).
+too difficult to discover (e.g. changes in config files). In these or other
+problem cases remove the cache manually.
 
 
 = CONFIGURATION =
@@ -245,6 +244,8 @@ few reasons. Then the following batch file can be used to start x86 Far:
 	set PATH=%WINDIR%\syswow64;%PATH%
 	"C:\Program Files\Far\Far.exe"
 
+---
+
 PROBLEM
 After installation Far cannot load FarNet or FarNet cannot load its modules.
 
@@ -253,9 +254,11 @@ Read installation steps in Readme.txt (FarNet and modules) carefully and ensure
 that you do everything correctly. Often mistake: Far.exe.config is not copied
 to the Far home directory.
 
+---
+
 PROBLEM
 After updating of a FarNet module this module cannot start or works funny.
 
 SOLUTION
-Try again after removing of the FarNet module cache in the registry:
-HKCU\Software\Far2\Plugins\FarNet\!Cache
+Try again after removing the FarNet module cache:
+%LOCALAPPDATA%\Far Manager\FarNet\cache.binary

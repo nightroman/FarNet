@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
 [assembly: AssemblyVersion("4.4.13.0")]
-[assembly: AssemblyTitle("FarNet panel tools")]
-[assembly: AssemblyDescription("FarNet panel tools")]
+[assembly: AssemblyTitle("FarNet.Settings")]
+[assembly: AssemblyDescription("FarNet.Settings library for FarNet")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
 [assembly: AssemblyProduct("FarNet")]
-[assembly: AssemblyCopyright("Copyright (c) 2005 FarNet Team")]
+[assembly: AssemblyCopyright("Copyright (c) 2011 Roman Kuzmin")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

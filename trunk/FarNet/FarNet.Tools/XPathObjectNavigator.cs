@@ -26,7 +26,7 @@ namespace FarNet.Tools
 			_context = context;
 			_root = new XPathObjectNode(context, root);
 
-			//?????? fails without it
+			//???? fails without it
 			var type = root.GetType();
 			var name = type.FullName;
 			if (type.IsGenericType)
@@ -327,7 +327,7 @@ namespace FarNet.Tools
 			return false;
 		}
 		///
-		public override bool MoveToFirst() //?????? see MSDN. When is it called? Is it ever called on XPath scan?
+		public override bool MoveToFirst() //???? see MSDN. When is it called? Is it ever called on XPath scan?
 		{
 			// The original code was wrong. We use the code similar to sdf.XPath.
 			if (_type == XPathNodeType.Attribute)

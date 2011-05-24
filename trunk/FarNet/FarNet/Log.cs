@@ -20,7 +20,6 @@ namespace FarNet
 		///
 		public static TraceSource Source { get { return _Source; } }
 		static readonly TraceSource _Source = new TraceSource("FarNet");
-
 		///
 		public static string FormatException(Exception error)
 		{
@@ -54,13 +53,11 @@ namespace FarNet
 
 			return info;
 		}
-
 		///
 		public static void TraceError(string error)
 		{
 			Source.TraceEvent(TraceEventType.Error, 0, error);
 		}
-
 		// return: null if not written or formatted error info
 		///
 		public static string TraceException(Exception error)
@@ -89,7 +86,6 @@ namespace FarNet
 
 			return r;
 		}
-
 		// Gets a property value or null
 		static object GetPropertyValue(object obj, string name)
 		{
@@ -104,25 +100,21 @@ namespace FarNet
 			}
 		}
 	}
-
 	/// <summary>
 	/// For internal use.
 	/// </summary>
 	public sealed class LogHandler
 	{
 		EventHandler _handler;
-
 		///
 		public LogHandler(EventHandler handler)
 		{
 			_handler = handler;
 		}
-
 		///
 		public override string ToString()
 		{
 			return _handler.Method.ReflectedType.FullName + "." + _handler.Method.Name;
 		}
 	}
-
 }

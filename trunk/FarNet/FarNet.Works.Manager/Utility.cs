@@ -12,7 +12,6 @@ namespace FarNet.Works
 	public class EnumerableReader
 	{
 		readonly IEnumerator Enumerator;
-
 		public EnumerableReader(IEnumerable enumerable)
 		{
 			if (enumerable == null)
@@ -20,22 +19,19 @@ namespace FarNet.Works
 
 			Enumerator = enumerable.GetEnumerator();
 		}
-
-		public string Read()
+		public object Read()
 		{
 			if (!Enumerator.MoveNext())
 				throw new ModuleException("Unexpected end of the data sequence.");
 
-			return Enumerator.Current.ToString();
+			return Enumerator.Current;
 		}
-
-		public string TryRead()
+		public object TryRead()
 		{
 			if (!Enumerator.MoveNext())
 				return null;
 
-			return Enumerator.Current.ToString();
+			return Enumerator.Current;
 		}
 	}
-
 }

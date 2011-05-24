@@ -1,11 +1,11 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace FarNet.Works
@@ -16,30 +16,27 @@ namespace FarNet.Works
 		string _ClassName;
 		Type _ClassType;
 		Guid _Id;
-		readonly ModuleManager _ModuleManager;
-
+		readonly ModuleManager _Manager;
 		protected ProxyAction(ModuleManager manager, EnumerableReader reader, ModuleActionAttribute attribute)
 		{
 			if (reader == null)
 				throw new ArgumentNullException("reader");
 
-			_ModuleManager = manager;
+			_Manager = manager;
 			_Attribute = attribute;
 
-			_ClassName = reader.Read();
-			_Attribute.Name = reader.Read();
-			_Id = new Guid(reader.Read());
+			_ClassName = (string)reader.Read();
+			_Attribute.Name = (string)reader.Read();
+			_Id = (Guid)reader.Read();
 		}
-
 		protected ProxyAction(ModuleManager manager, Guid id, ModuleActionAttribute attribute)
 		{
-			_ModuleManager = manager;
+			_Manager = manager;
 			_Id = id;
 			_Attribute = attribute;
 
 			Init();
 		}
-
 		protected ProxyAction(ModuleManager manager, Type classType, Type attributeType)
 		{
 			if (classType == null)
@@ -47,7 +44,7 @@ namespace FarNet.Works
 			if (attributeType == null)
 				throw new ArgumentNullException("attributeType");
 
-			_ModuleManager = manager;
+			_Manager = manager;
 			_ClassType = classType;
 			_Id = classType.GUID;
 
@@ -69,60 +66,50 @@ namespace FarNet.Works
 
 			if (_Attribute.Resources)
 			{
-				_ModuleManager.CachedResources = true;
-				string name = _ModuleManager.GetString(_Attribute.Name);
+				_Manager.CachedResources = true;
+				string name = _Manager.GetString(_Attribute.Name);
 				if (!string.IsNullOrEmpty(name))
 					_Attribute.Name = name;
 			}
 		}
-
 		protected ModuleActionAttribute Attribute
 		{
 			get { return _Attribute; }
 		}
-
 		internal ModuleAction GetInstance()
 		{
 			if (_ClassType == null)
 			{
-				_ClassType = _ModuleManager.AssemblyInstance.GetType(_ClassName, true, false);
+				_ClassType = _Manager.LoadAssembly().GetType(_ClassName, true, false);
 				_ClassName = null;
 			}
 
-			return (ModuleAction)_ModuleManager.CreateEntry(_ClassType);
+			return (ModuleAction)_Manager.CreateEntry(_ClassType);
 		}
-
 		void Init()
 		{
 			if (string.IsNullOrEmpty(_Attribute.Name))
 				throw new ModuleException("Empty module action name is not valid.");
 		}
-
 		internal void Invoking()
 		{
-			_ModuleManager.Invoking();
+			_Manager.Invoking();
 		}
-
 		public override string ToString()
 		{
-			return string.Format(null, "{0} {1} Name='{2}'", Key, Kind, Name);
+			return string.Format(null, "{0} {1} {2} Name='{3}'", _Manager.ModuleName, Id, Kind, Name);
 		}
-
 		public virtual void Unregister()
 		{
 			Host.Instance.UnregisterProxyAction(this);
 		}
-
-
-		internal virtual void WriteCache(List<string> data)
+		internal virtual void WriteCache(IList data)
 		{
-			data.Add(Kind.ToString());
+			data.Add(Kind);
 			data.Add(ClassName);
 			data.Add(Name);
-			data.Add(_Id.ToString());
+			data.Add(_Id);
 		}
-
-
 		// Properties
 		internal string ClassName
 		{
@@ -131,38 +118,20 @@ namespace FarNet.Works
 				return _ClassType == null ? _ClassName : _ClassType.FullName;
 			}
 		}
-
 		public virtual Guid Id
 		{
 			get { return _Id; }
 		}
-
-		internal string Key
-		{
-			get
-			{
-				return ModuleName + "\\" + _Id;
-			}
-		}
-
 		public abstract ModuleItemKind Kind { get; }
-
-		internal ModuleManager Manager
-		{
-			get { return _ModuleManager; }
-		}
-
-		public virtual string ModuleName
-		{
-			get
-			{
-				return _ModuleManager.ModuleName;
-			}
-		}
-
 		public virtual string Name
 		{
 			get { return _Attribute.Name; }
 		}
+		public IModuleManager Manager
+		{
+			get { return _Manager; }
+		}
+		internal abstract Hashtable SaveData();
+		internal abstract void LoadData(Hashtable data);
 	}
 }

@@ -27,7 +27,6 @@ param
 
 $ErrorActionPreference = 'Stop'
 $FarSettingsReg = Join-Path $Path Far-Settings.reg
-$FarSettingsXml = Join-Path $Path Far-Settings.xml
 
 # file must exist
 if (![IO.File]::Exists($FarSettingsReg)) { throw "File '$FarSettingsReg' does not exist." }
@@ -35,20 +34,6 @@ if (![IO.File]::Exists($FarSettingsReg)) { throw "File '$FarSettingsReg' does no
 ### Far Manager exit
 Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit..."
 Wait-Process Far -ErrorAction 0
-
-### get PSF history
-$history = @{}
-$regkey = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory')
-if ($regkey) {
-	foreach($name in $regkey.GetValueNames()) {
-		$history.Add($name, $regkey.GetValue($name))
-	}
-	$regkey.Close()
-}
-
-### keep Vessel data
-$Vessel = 'HKCU:\Software\Far2\Plugins\FarNet.Modules\Vessel.dll'
-$VesselFactor = Get-ItemProperty $Vessel -Name Factor -ErrorAction 0
 
 # kill in the registry some data being imported
 Push-Location HKCU:\Software\Far2
@@ -64,24 +49,6 @@ Pop-Location
 ### import data
 Write-Host -ForegroundColor Cyan "Importing '$FarSettingsReg'..."
 cmd /c regedit /s $FarSettingsReg
-
-### merge PSF history
-Write-Host -ForegroundColor Cyan "Merging '$FarSettingsXml'..."
-if (Test-Path $FarSettingsXml) {
-	$history2 = Import-Clixml $FarSettingsXml
-	foreach($name in $history2.Keys) {
-		$history[$name] = $history2[$name]
-	}
-}
-$regkey = [Microsoft.Win32.Registry]::CurrentUser.CreateSubKey('Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory')
-foreach($name in ($history.Keys | Sort-Object)) {
-	$regkey.SetValue($name, $history[$name])
-}
-$regkey.Close()
-
-# merge Vessel data
-if ($VesselFactor) { Set-ItemProperty $Vessel -Name Factor -Value $VesselFactor.Factor -ErrorAction 0 }
-else { Remove-ItemProperty $Vessel -Name Factor -ErrorAction 0 }
 
 # end
 Write-Host -ForegroundColor Green "Import succeeded."

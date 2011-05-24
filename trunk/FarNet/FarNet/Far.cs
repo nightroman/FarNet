@@ -32,7 +32,6 @@ namespace FarNet
 		}
 		static IFar _Host;
 	}
-
 	/// <summary>
 	/// Main interface which exposes top entries of the FarNet object model.
 	/// </summary>
@@ -527,10 +526,6 @@ namespace FarNet
 		/// <remarks>
 		/// The returned key has to be disposed after use by <c>Dispose()</c>.
 		/// <para>
-		/// This method should not be used in standard cases because it operates on global data dependent on the FarNet host.
-		/// Modules should access their local data by <see cref="IModuleManager.OpenRegistryKey"/> of their module managers.
-		/// </para>
-		/// <para>
 		/// For the Far Manager host the root key in the Windows registry is <c>HKEY_CURRENT_USER\Software\Far2</c>
 		/// or <c>HKEY_CURRENT_USER\Software\Far2\Users\Xyz</c> if Far is started with the parameter /u Xyz.
 		/// </para>
@@ -547,8 +542,16 @@ namespace FarNet
 		/// <param name="pattern">The pattern: "include-wildcard|exclude-wildcard" or "/regex/".</param>
 		/// <returns></returns>
 		public abstract bool MatchPattern(string input, string pattern);
+		/// <summary>
+		/// Gets the local or roamimg data directory path of the application.
+		/// </summary>
+		public abstract string GetFolderPath(SpecialFolder folder);
+		/// <summary>
+		/// Returns the manager of a module specified by any type from its assembly.
+		/// </summary>
+		/// <param name="type">Any type from the module assembly.</param>
+		public abstract IModuleManager GetModuleManager(Type type);
 	}
-
 	/// <summary>
 	/// Represents the thumbnail progress bar state.
 	/// </summary>
@@ -576,7 +579,6 @@ namespace FarNet
 		/// </summary>
 		Paused = 8
 	}
-
 	/// <summary>
 	/// Options for <see cref="IFar.ShowHelp"/>.
 	/// </summary>
@@ -585,7 +587,8 @@ namespace FarNet
 	public enum HelpOptions
 	{
 		/// <summary>
-		/// Show the topic from the help file of the calling plugin (note: it is always FarNet).
+		/// Show the topic from the help file of the calling plugin
+		/// (note: it is always FarNet and the path is <c>Far.Net.GetType().Assembly.Location</c>).
 		/// If topic begins with a colon ':', the topic from the main Far help file is shown and path is ignored.
 		/// </summary>
 		None = 0x0,
@@ -614,7 +617,6 @@ namespace FarNet
 		/// </summary>
 		NoError = unchecked((int)0x80000000),
 	}
-
 	/// <summary>
 	/// Information about the confirmation settings.
 	/// Corresponds to options in the "Confirmations" dialog.
@@ -667,7 +669,6 @@ namespace FarNet
 		/// </summary>
 		Exit = 0x200,
 	}
-
 	/// <summary>
 	/// States of macro processing.
 	/// </summary>
@@ -694,5 +695,18 @@ namespace FarNet
 		/// </summary>
 		RecordingCommon
 	}
-
+	/// <summary>
+	/// Specifies enumerated constants used to retrieve directory paths to system special folders.
+	/// </summary>
+	public enum SpecialFolder
+	{
+		/// <summary>
+		/// The directory that serves as a common repository for application-specific data that is used by the current, non-roaming user.
+		/// </summary>
+		LocalData = 0,
+		/// <summary>
+		/// The directory that serves as a common repository for application-specific data for the current roaming user.
+		/// </summary>
+		RoamingData = 1
+	}
 }
