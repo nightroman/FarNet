@@ -199,19 +199,17 @@ $Panel.add_Escaping({&{
 	}
 }})
 
-### KeyPressing & KeyPressed events
-# [F1] is sent to both events if KeyPressing does not handle it
-function global:TestPanelKeyHandler {
+### KeyPressed
+# Optionally process [F1]
+$Panel.add_KeyPressed({&{
 	# case [F1]:
 	if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
-		if (0 -eq (Show-FarMessage "[F1] has been pressed" $args[0] -Choices '&Handle', '&Default')) {
+		if (0 -eq (Show-FarMessage "[F1] has been pressed" "KeyPressed" -Choices '&Handle', '&Default')) {
 			$_.Ignore = $true
-			Show-FarMessage "[F1] has been handled" $args[0]
+			Show-FarMessage "[F1] has been handled" "KeyPressed"
 		}
 	}
-}
-$Panel.add_KeyPressed({ TestPanelKeyHandler 'KeyPressed' })
-$Panel.add_KeyPressing({ TestPanelKeyHandler 'KeyPressing' })
+}})
 
 ### Closing:
 <#

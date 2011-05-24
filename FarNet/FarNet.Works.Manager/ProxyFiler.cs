@@ -5,7 +5,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
 namespace FarNet.Works
 {
@@ -13,22 +13,19 @@ namespace FarNet.Works
 	{
 		EventHandler<ModuleFilerEventArgs> _Handler;
 		string _Mask;
-
 		internal ProxyFiler(ModuleManager manager, EnumerableReader reader)
 			: base(manager, reader, new ModuleFilerAttribute())
 		{
-			Attribute.Mask = reader.Read();
-			Attribute.Creates = bool.Parse(reader.Read());
+			Attribute.Mask = (string)reader.Read();
+			Attribute.Creates = (bool)reader.Read();
 
 			Init();
 		}
-
 		internal ProxyFiler(ModuleManager manager, Type classType)
 			: base(manager, classType, typeof(ModuleFilerAttribute))
 		{
 			Init();
 		}
-
 		internal ProxyFiler(ModuleManager manager, Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler)
 			: base(manager, id, (ModuleFilerAttribute)attribute.Clone())
 		{
@@ -36,13 +33,6 @@ namespace FarNet.Works
 
 			Init();
 		}
-
-		void Init()
-		{
-			if (Attribute.Mask == null)
-				Attribute.Mask = string.Empty;
-		}
-
 		public void Invoke(object sender, ModuleFilerEventArgs e)
 		{
 			if (e == null)
@@ -61,54 +51,59 @@ namespace FarNet.Works
 				instance.Invoke(sender, e);
 			}
 		}
-
 		public void ResetMask(string value)
 		{
-			Host.Instance.SaveFarNetValue(Key, "Mask", value);
 			_Mask = value ?? string.Empty;
 		}
-
 		public sealed override string ToString()
 		{
 			return string.Format(null, "{0} Mask='{1}'", base.ToString(), Mask);
 		}
-
-		internal sealed override void WriteCache(List<string> data)
+		internal sealed override void WriteCache(IList data)
 		{
 			base.WriteCache(data);
 			data.Add(Attribute.Mask);
-			data.Add(Attribute.Creates.ToString());
+			data.Add(Attribute.Creates);
 		}
-
 		new ModuleFilerAttribute Attribute
 		{
 			get { return (ModuleFilerAttribute)base.Attribute; }
 		}
-
 		public bool Creates
 		{
 			get { return Attribute.Creates; }
 		}
-
 		public string DefaultMask
 		{
 			get { return Attribute.Mask; }
 		}
-
 		public override ModuleItemKind Kind
 		{
 			get { return ModuleItemKind.Filer; }
 		}
-
 		public string Mask
 		{
-			get
-			{
-				if (_Mask == null)
-					_Mask = Host.Instance.LoadFarNetValue(Key, "Mask", Attribute.Mask).ToString();
-
-				return _Mask;
-			}
+			get { return _Mask; }
+		}
+		void Init()
+		{
+			if (Attribute.Mask == null)
+				Attribute.Mask = string.Empty;
+		}
+		int idMask = 0;
+		internal override Hashtable SaveData()
+		{
+			var data = new Hashtable();
+			if (_Mask != DefaultMask)
+				data.Add(idMask, _Mask);
+			return data;
+		}
+		internal override void LoadData(Hashtable data)
+		{
+			if (data == null)
+				_Mask = DefaultMask;
+			else
+				_Mask = data[idMask] as string ?? DefaultMask;
 		}
 	}
 }

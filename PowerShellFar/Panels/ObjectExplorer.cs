@@ -214,7 +214,7 @@ namespace PowerShellFar
 			}
 			else
 			{
-				int maximumFileCount = A.Psf.Settings.MaximumPanelFileCount;
+				int maximumFileCount = Settings.Default.MaximumPanelFileCount;
 				int fileCount = 0;
 				foreach (object value in enumerable)
 				{

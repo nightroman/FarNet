@@ -66,6 +66,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.XML" />
@@ -146,7 +147,6 @@
     <Compile Include="UI\NewValueDialog.cs" />
     <Compile Include="UI\PromptDialog.cs" />
     <Compile Include="UI\SelectMenu.cs" />
-    <Compile Include="UI\SettingsDialog.cs" />
     <Compile Include="Panels\ObjectPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FarHost.cs" />
@@ -188,9 +188,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FarNet\FarNet.Settings\FarNet.Settings.csproj">
+      <Project>{A9D3605F-2853-4F71-A34A-6EFF4941AA90}</Project>
+      <Name>FarNet.Settings</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\FarNet\FarNet.Tools\FarNet.Tools.csproj">
       <Project>{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}</Project>
       <Name>FarNet.Tools</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">
       <Project>{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}</Project>

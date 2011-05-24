@@ -20,8 +20,6 @@
 			then this file is not updated.
 		Far-Settings.bak
 			Backup copy of previous FarSettings.reg, if any.
-		Far-Settings.xml
-			Output file with extra data not included into Far-Settings.reg.
 
 	Rescue files:
 		All-Settings.reg
@@ -44,7 +42,6 @@ $AllSettingsReg = Join-Path $Path All-Settings.reg
 $FarSettingsTmp = Join-Path $Path Far-Settings.tmp
 $FarSettingsReg = Join-Path $Path Far-Settings.reg
 $FarSettingsBak = Join-Path $Path Far-Settings.bak
-$FarSettingsXml = Join-Path $Path Far-Settings.xml
 
 # directory must exist
 if (![IO.Directory]::Exists($Path)) { throw "Directory '$Path' does not exist." }
@@ -57,18 +54,6 @@ Wait-Process Far -ErrorAction 0
 Write-Host -ForegroundColor Cyan "Exporting '$AllSettingsReg' (restore on failure manually)..."
 cmd /c regedit /e $AllSettingsReg HKEY_CURRENT_USER\Software\Far2
 
-### export PSF command history
-Write-Host -ForegroundColor Cyan "Exporting '$FarSettingsXml'..."
-$history = @{}
-$regkey = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory')
-if ($regkey) {
-	foreach($name in $regkey.GetValueNames()) {
-		$history.Add($name, $regkey.GetValue($name))
-	}
-	$regkey.Close()
-}
-$history | Export-Clixml $FarSettingsXml
-
 # kill in the registry what is not exported
 Push-Location HKCU:\Software\Far2
 # kill whole keys
@@ -77,8 +62,6 @@ Remove-Item -Recurse -Force -ErrorAction 0 -Path @(
 	'Layout'
 	'Panel\Left'
 	'Panel\Right'
-	'Plugins\FarNet\!Cache'
-	'Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory'
 	'PluginsCache'
 	'SavedDialogHistory'
 	'SavedFolderHistory'

@@ -71,6 +71,7 @@
     <ProjectReference Include="..\FarNet\FarNet.csproj">
       <Project>{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}</Project>
       <Name>FarNet</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

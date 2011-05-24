@@ -25,8 +25,8 @@ namespace PowerShellFar.UI
 			_menu.HelpTopic = A.Psf.HelpTopic + "MenuDebugger";
 			_menu.FilterOptions = PatternOptions.None;
 			_menu.NoInfo = true;
-			_menu.ScreenMargin = A.Psf.Settings.ListMenuScreenMargin;
-			_menu.UsualMargins = A.Psf.Settings.ListMenuUsualMargins;
+			_menu.ScreenMargin = Settings.Default.ListMenuScreenMargin;
+			_menu.UsualMargins = Settings.Default.ListMenuUsualMargins;
 
 			_menu.AddKey(KeyCode.Del, OnDelete);
 			_menu.AddKey(KeyCode.Del | KeyMode.Shift, OnDeleteAll);

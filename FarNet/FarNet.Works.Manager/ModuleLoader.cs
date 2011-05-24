@@ -1,30 +1,69 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FarNet.Works
 {
 	public static class ModuleLoader
 	{
-		const string CacheVersion = "10";
-
+		const int idVersion = 0;
+		const int CacheVersion = 1;
 		static readonly SortedList<string, ModuleManager> _Managers = new SortedList<string, ModuleManager>();
-
+		static Hashtable _Cache;
+		static int _CacheLoaded;
+		static bool _CacheUpdate;
 		/// <summary>
 		/// Loads all modules from the root directory.
 		/// </summary>
 		/// <param name="rootPath">The root directory path.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public static void LoadModules(string rootPath)
 		{
+			// read the cache
+			string path = Far.Net.GetFolderPath(SpecialFolder.LocalData) + @"\FarNet\Cache.binary";
+			if (File.Exists(path))
+			{
+				try
+				{
+					object deserialized;
+					var formatter = new BinaryFormatter();
+					using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+						deserialized = formatter.Deserialize(stream);
+
+					_Cache = deserialized as Hashtable;
+					
+					if (_Cache != null && CacheVersion != (int)_Cache[idVersion])
+						_Cache = null;
+				}
+				catch (Exception ex)
+				{
+					_Cache = null;
+					Far.Net.ShowError("Reading cache", ex);
+				}
+			}
+
+			// new empty cache
+			if (_Cache == null)
+			{
+				//_Cache = new Hashtable(StringComparer.OrdinalIgnoreCase);
+				_Cache = new Hashtable();
+				_Cache.Add(idVersion, CacheVersion);
+			}
+
+			// count to load
+			int toLoad = _Cache.Count - 1;
+
 			// directories:
 			foreach (string dir in Directory.GetDirectories(rootPath))
 			{
@@ -32,8 +71,51 @@ namespace FarNet.Works
 				if (!Path.GetFileName(dir).StartsWith("-", StringComparison.Ordinal))
 					LoadDirectory(dir);
 			}
-		}
 
+			// obsolete records? 
+			if (toLoad != _CacheLoaded)
+			{
+				var list = new List<string>();
+
+				foreach (var key in _Cache.Keys)
+				{
+					var name = key as string;
+					if (name != null && !File.Exists(name))
+						list.Add(name);
+				}
+
+				if (list.Count > 0)
+				{
+					_CacheUpdate = true;
+					foreach (var name in list)
+						_Cache.Remove(name);
+				}
+			}
+
+			// write cache
+			if (_CacheUpdate)
+			{
+				try
+				{
+					// ensure the directory
+					var dir = Path.GetDirectoryName(path);
+					if (!Directory.Exists(dir))
+						Directory.CreateDirectory(dir);
+
+					// write the cache
+					var formatter = new BinaryFormatter();
+					using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
+						formatter.Serialize(stream, _Cache);
+				}
+				catch (Exception ex)
+				{
+					Far.Net.ShowError("Writing cache", ex);
+				}
+			}
+
+			// done with the cache
+			_Cache = null;
+		}
 		/// <summary>
 		/// #1 Loads a module from the directory.
 		/// </summary>
@@ -77,7 +159,6 @@ namespace FarNet.Works
 				Far.Net.ShowError("ERROR: directory " + directoryPath, ex);
 			}
 		}
-
 		/// <summary>
 		/// #2 Loads the manifest.
 		/// </summary>
@@ -112,7 +193,6 @@ namespace FarNet.Works
 			// load with classes, if any
 			LoadAssembly(path, classes);
 		}
-
 		/// <summary>
 		/// #3 Loads the assembly.
 		/// </summary>
@@ -129,25 +209,32 @@ namespace FarNet.Works
 
 			// add new module manager now, it will be removed on errors
 			ModuleManager manager = new ModuleManager(assemblyPath);
-			_Managers.Add(fileInfo.Name, manager);
+			_Managers.Add(manager.ModuleName, manager);
+
+			// read and load data
+			var settings = manager.ReadSettings();
+			manager.LoadData(settings);
+
 			bool done = false;
 			try
 			{
 				Log.Source.TraceInformation("Load module {0}", manager.ModuleName);
 
 				int actionCount = 0;
-				Assembly assembly = manager.AssemblyInstance;
+				Assembly assembly = manager.LoadAssembly();
 				if (classes != null && classes.Count > 0)
 				{
 					foreach (string name in classes)
-						actionCount += LoadType(manager, assembly.GetType(name, true));
+						actionCount += LoadType(manager, settings, assembly.GetType(name, true));
 				}
 				else
 				{
 					foreach (Type type in assembly.GetExportedTypes())
 					{
-						if (!type.IsAbstract && typeof(BaseModuleItem).IsAssignableFrom(type))
-							actionCount += LoadType(manager, type);
+						if (typeof(BaseModuleItem).IsAssignableFrom(type) && !type.IsAbstract)
+							actionCount += LoadType(manager, settings, type);
+						else if (!manager.HasSettings && typeof(ApplicationSettingsBase).IsAssignableFrom(type) && !type.IsAbstract)
+							manager.HasSettings = true;
 					}
 				}
 
@@ -169,7 +256,6 @@ namespace FarNet.Works
 					RemoveModuleManager(manager);
 			}
 		}
-
 		/// <summary>
 		/// #4 Reads the module from the cache.
 		/// </summary>
@@ -179,107 +265,126 @@ namespace FarNet.Works
 		{
 			Log.Source.TraceInformation("Read cache {0}", fileInfo);
 
-			// open for writing, to remove obsolete data
-			using (IRegistryKey cache = Host.Instance.OpenCacheKey(true))
+			string path = fileInfo.FullName;
+			var data = _Cache[path];
+			if (data == null)
+				return false;
+
+			++_CacheLoaded;
+			bool done = false;
+			ModuleManager manager = null;
+			try
 			{
-				// get cached data
-				string fullName = fileInfo.FullName;
-				object data = cache.GetValue(fullName, null);
-				if (data == null)
+				// read data
+				EnumerableReader reader = new EnumerableReader((IEnumerable)data);
+
+				// >> Stamp
+				var assemblyStamp = (long)reader.Read();
+				if (assemblyStamp != fileInfo.LastWriteTime.Ticks)
 					return false;
 
-				bool done = false;
-				ModuleManager manager = null;
-				try
-				{
-					// read data
-					EnumerableReader reader = new EnumerableReader((string[])data);
+				// new manager, add it now, remove later on errors
+				manager = new ModuleManager(path);
+				_Managers.Add(manager.ModuleName, manager);
 
-					// Version
-					string version = reader.Read();
-					if (version != CacheVersion)
+				// read and load data
+				var settings = manager.ReadSettings();
+				manager.LoadData(settings);
+
+				// >> Culture of cached resources
+				var savedCulture = (string)reader.Read();
+
+				// check the culture
+				if (savedCulture.Length > 0)
+				{
+					// the culture changed, ignore the cache
+					if (savedCulture != manager.CurrentUICulture.Name)
 						return false;
 
-					// Stamp
-					string assemblyStamp = reader.Read();
-					if (long.Parse(assemblyStamp, CultureInfo.InvariantCulture) != fileInfo.LastWriteTime.Ticks)
-						return false;
+					// restore the flag
+					manager.CachedResources = true;
+				}
 
-					// new manager, add it now, remove later on errors
-					manager = new ModuleManager(fullName);
-					_Managers.Add(manager.ModuleName, manager);
+				// >> Settings
+				manager.HasSettings = (bool)reader.Read();
 
-					// culture of cached resources
-					string savedCulture = reader.Read();
-
-					// check the culture
-					if (savedCulture.Length > 0)
+				object kind;
+				while (null != (kind = reader.TryRead()))
+				{
+					ProxyAction action = null;
+					switch ((ModuleItemKind)kind)
 					{
-						// the culture changed, ignore the cache
-						if (savedCulture != manager.CurrentUICulture.Name)
-							return false;
-
-						// restore the flag
-						manager.CachedResources = true;
+						case ModuleItemKind.Host:
+							{
+								manager.SetModuleHost((string)reader.Read());
+							}
+							break;
+						case ModuleItemKind.Command:
+							{
+								var it = new ProxyCommand(manager, reader);
+								Host.Instance.RegisterProxyCommand(it);
+								action = it;
+							}
+							break;
+						case ModuleItemKind.Editor:
+							{
+								var it = new ProxyEditor(manager, reader);
+								Host.Instance.RegisterProxyEditor(it);
+								action = it;
+							}
+							break;
+						case ModuleItemKind.Filer:
+							{
+								var it = new ProxyFiler(manager, reader);
+								Host.Instance.RegisterProxyFiler(it);
+								action = it;
+							}
+							break;
+						case ModuleItemKind.Tool:
+							{
+								var it = new ProxyTool(manager, reader);
+								Host.Instance.RegisterProxyTool(it);
+								action = it;
+							}
+							break;
+						default:
+							throw new ModuleException();
 					}
 
-					string kindText;
-					while (null != (kindText = reader.TryRead()))
-					{
-						ModuleItemKind kind = (ModuleItemKind)Enum.Parse(typeof(ModuleItemKind), kindText);
-						switch (kind)
-						{
-							case ModuleItemKind.Host:
-								manager.SetModuleHost(reader.Read());
-								break;
-							case ModuleItemKind.Command:
-								Host.Instance.RegisterProxyCommand(new ProxyCommand(manager, reader));
-								break;
-							case ModuleItemKind.Editor:
-								Host.Instance.RegisterProxyEditor(new ProxyEditor(manager, reader));
-								break;
-							case ModuleItemKind.Filer:
-								Host.Instance.RegisterProxyFiler(new ProxyFiler(manager, reader));
-								break;
-							case ModuleItemKind.Tool:
-								Host.Instance.RegisterProxyTool(new ProxyTool(manager, reader));
-								break;
-							default:
-								throw new ModuleException();
-						}
-					}
-
-					done = true;
-				}
-				catch (ModuleException)
-				{
-					// ignore known
-				}
-				catch (Exception ex)
-				{
-					throw new ModuleException(string.Format(null, "Error on reading the cache from '{0}'.", cache), ex);
-				}
-				finally
-				{
-					if (!done)
-					{
-						// remove cached data
-						cache.SetValue(fileInfo.FullName, null);
-
-						// remove the manager
-						if (manager != null)
-							RemoveModuleManager(manager);
-					}
+					if (action != null)
+						action.LoadData((Hashtable)settings[action.Id]);
 				}
 
-				return done;
+				done = true;
 			}
-		}
+			catch (ModuleException)
+			{
+				// ignore known
+			}
+			catch (Exception ex)
+			{
+				throw new ModuleException(string.Format(null, "Error on reading the cache for '{0}'.", path), ex);
+			}
+			finally
+			{
+				if (!done)
+				{
+					// remove cached data
+					_Cache.Remove(path);
+					_CacheUpdate = true;
 
+					// remove the manager
+					if (manager != null)
+						RemoveModuleManager(manager);
+				}
+			}
+
+			return done;
+		}
 		/// <summary>
 		/// #5 Loads the module item by type.
 		/// </summary>
-		static int LoadType(ModuleManager manager, Type type)
+		static int LoadType(ModuleManager manager, Hashtable settings, Type type)
 		{
 			Log.Source.TraceInformation("Load class {0}", type);
 
@@ -290,24 +395,50 @@ namespace FarNet.Works
 				return 0;
 			}
 
+			// case: settings
+			if (typeof(ApplicationSettingsBase).IsAssignableFrom(type))
+			{
+				manager.HasSettings = true;
+				return 0;
+			}
+
 			// command
+			ProxyAction action;
 			if (typeof(ModuleCommand).IsAssignableFrom(type))
-				Host.Instance.RegisterProxyCommand(new ProxyCommand(manager, type));
+			{
+				var it = new ProxyCommand(manager, type);
+				Host.Instance.RegisterProxyCommand(it);
+				action = it;
+			}
 			// editor
 			else if (typeof(ModuleEditor).IsAssignableFrom(type))
-				Host.Instance.RegisterProxyEditor(new ProxyEditor(manager, type));
+			{
+				var it = new ProxyEditor(manager, type);
+				Host.Instance.RegisterProxyEditor(it);
+				action = it;
+			}
 			// filer
 			else if (typeof(ModuleFiler).IsAssignableFrom(type))
-				Host.Instance.RegisterProxyFiler(new ProxyFiler(manager, type));
+			{
+				var it = new ProxyFiler(manager, type);
+				Host.Instance.RegisterProxyFiler(it);
+				action = it;
+			}
 			// tool
 			else if (typeof(ModuleTool).IsAssignableFrom(type))
-				Host.Instance.RegisterProxyTool(new ProxyTool(manager, type));
+			{
+				var it = new ProxyTool(manager, type);
+				Host.Instance.RegisterProxyTool(it);
+				action = it;
+			}
 			else
 				throw new ModuleException("Unknown module class type.");
 
+			// set settings
+			action.LoadData((Hashtable)settings[action.Id]);
+
 			return 1;
 		}
-
 		/// <summary>
 		/// #6 Saves the module cache.
 		/// </summary>
@@ -315,42 +446,39 @@ namespace FarNet.Works
 		{
 			Log.Source.TraceInformation("Save cache {0}", fileInfo);
 
-			using (IRegistryKey cache = Host.Instance.OpenCacheKey(true))
+			var data = new ArrayList();
+
+			// << Stamp
+			data.Add(fileInfo.LastWriteTime.Ticks);
+
+			// << Culture
+			if (manager.CachedResources)
+				data.Add(manager.CurrentUICulture.Name);
+			else
+				data.Add(string.Empty);
+
+			// << Settings
+			data.Add(manager.HasSettings);
+
+			// << Host
+			string hostClassName = manager.GetModuleHostClassName();
+			if (hostClassName != null)
 			{
-				var data = new List<string>();
-
-				// Version
-				data.Add(CacheVersion);
-
-				// Stamp
-				data.Add(fileInfo.LastWriteTime.Ticks.ToString(CultureInfo.InvariantCulture));
-
-				// Culture
-				if (manager.CachedResources)
-					data.Add(manager.CurrentUICulture.Name);
-				else
-					data.Add(string.Empty);
-
-				// host
-				string hostClassName = manager.GetModuleHostClassName();
-				if (hostClassName != null)
-				{
-					// Type
-					data.Add("Host");
-					// Class
-					data.Add(hostClassName);
-				}
-
-				// write actions of the manager
-				foreach (ProxyAction it in Host.Actions.Values)
-					if (it.Manager == manager)
-						it.WriteCache(data);
-
-				// write to the registry
-				cache.SetValue(manager.AssemblyPath, data.ToArray());
+				// Type
+				data.Add(ModuleItemKind.Host);
+				// Class
+				data.Add(hostClassName);
 			}
-		}
 
+			// << Actions
+			foreach (ProxyAction it in Host.Actions.Values)
+				if (it.Manager == manager)
+					it.WriteCache(data);
+
+			// to write
+			_Cache[manager.AssemblyPath] = data;
+			_CacheUpdate = true;
+		}
 		public static bool CanExit()
 		{
 			foreach (ModuleManager manager in _Managers.Values)
@@ -361,7 +489,6 @@ namespace FarNet.Works
 
 			return true;
 		}
-
 		public static IList<IModuleManager> GatherModuleManagers()
 		{
 			var result = new List<IModuleManager>(_Managers.Count);
@@ -369,7 +496,12 @@ namespace FarNet.Works
 				result.Add(it);
 			return result;
 		}
-
+		public static IEnumerable<IModuleManager> EnumSettings()
+		{
+			foreach (ModuleManager it in _Managers.Values)
+				if (it.HasSettings)
+					yield return it;
+		}
 		//! Don't use Far UI
 		internal static void RemoveModuleManager(ModuleManager manager)
 		{
@@ -386,7 +518,6 @@ namespace FarNet.Works
 			foreach (ProxyAction action in actions)
 				action.Unregister();
 		}
-
 		//! Don't use Far UI
 		public static void UnloadModules()
 		{
@@ -397,6 +528,12 @@ namespace FarNet.Works
 			// actions are removed
 			Debug.Assert(Host.Actions.Count == 0);
 		}
+		public static IModuleManager GetModuleManager(Type type)
+		{
+			if (type == null) throw new ArgumentNullException("type");
 
+			var name = Path.GetFileNameWithoutExtension(type.Assembly.Location);
+			return _Managers[name];
+		}
 	}
 }

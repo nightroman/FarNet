@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System;
@@ -44,7 +44,6 @@ namespace PowerShellFar
 		// guard
 		internal Actor()
 		{ }
-
 		/// <summary>
 		/// Stops the running pipeline.
 		/// </summary>
@@ -62,12 +61,10 @@ namespace PowerShellFar
 			// stop; it still can be bad but chances are low after the above checks
 			pipe.BeginStop(AsyncStop, pipe);
 		}
-
 		void AsyncStop(IAsyncResult ar) //_110128_075844
 		{
 			(ar.AsyncState as PowerShell).EndStop(ar);
 		}
-
 		#region Life
 
 		/// <summary>
@@ -80,9 +77,6 @@ namespace PowerShellFar
 		// *) Invoking() is called by FarNet on a user action; it should wait for opened/broken runspace and continue or die.
 		internal void Connect()
 		{
-			// new settings
-			_settings = new Settings();
-
 			// preload
 			OpenRunspace(false);
 
@@ -479,23 +473,20 @@ Continue with this current directory?
 		string _failedInvokingLocationOld;
 
 		#endregion
-
-		Settings _settings;
 		/// <summary>
 		/// Gets the configuration settings and the session settings.
 		/// </summary>
 		/// <remarks>
-		/// Permanent settings are changed in the configuration dialog.
+		/// Permanent settings are changed in the module settings panel.
 		/// Session preferences are usually set in the profile.
 		/// <para>
 		/// See also .hlf topic [Settings].
 		/// </para>
 		/// </remarks>
-		public PowerShellFar.Settings Settings
+		public Settings Settings
 		{
-			get { return _settings; }
+			get { return Settings.Default; }
 		}
-
 		/// <summary>
 		/// Gets or sets the active text of active editor or editor line.
 		/// </summary>
@@ -509,7 +500,6 @@ Continue with this current directory?
 			get { return EditorKit.ActiveText; }
 			set { EditorKit.ActiveText = value; }
 		}
-
 		/// <summary>
 		/// Adds an action to all menus (Dialog, Editor, Panels, Viewer).
 		/// </summary>
@@ -526,7 +516,6 @@ Continue with this current directory?
 		{
 			UI.ActorMenu.AddUserTool(text, handler, ModuleToolOptions.None);
 		}
-
 		/// <summary>
 		/// Adds an action to the specified menus (combination of Dialog, Editor, Panels, Viewer).
 		/// </summary>
@@ -544,7 +533,6 @@ Continue with this current directory?
 		{
 			UI.ActorMenu.AddUserTool(text, handler, area);
 		}
-
 		/// <summary>
 		/// Gets the editor or throws.
 		/// </summary>
@@ -562,7 +550,6 @@ Continue with this current directory?
 
 			return editor;
 		}
-
 		/// <summary>
 		/// Returns PowerShellFar home path. Designed for internal use.
 		/// </summary>
@@ -571,29 +558,6 @@ Continue with this current directory?
 		{
 			get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); }
 		}
-
-		static string _AppData;
-		/// <summary>
-		/// Returns PowerShellFar data path and ensures once that the directory exists.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public string AppData
-		{
-			get
-			{
-				if (_AppData == null)
-				{
-					string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Res.Me);
-					if (!Directory.Exists(path))
-						Directory.CreateDirectory(path);
-
-					_AppData = path;
-				}
-
-				return _AppData;
-			}
-		}
-
 		/// <summary>
 		/// Returns PowerShellFar string for HelpTopic. Designed for internal use.
 		/// </summary>
@@ -601,7 +565,6 @@ Continue with this current directory?
 		{
 			get { return "<" + AppHome + "\\>"; }
 		}
-
 		/// <summary>
 		/// Shows an input dialog and returns entered PowerShell code.
 		/// </summary>
@@ -622,7 +585,6 @@ Continue with this current directory?
 			ui.UIEdit.UseLastHistory = true;
 			return ui.UIDialog.Show() ? ui.UIEdit.Text : null;
 		}
-
 		/// <summary>
 		/// Prompts to input code and invokes it.
 		/// Called on "Invoke input code".
@@ -640,7 +602,6 @@ Continue with this current directory?
 			if (code != null)
 				Act(code, null, Far.Net.MacroState == MacroState.None);
 		}
-
 		/// <summary>
 		/// Invokes the selected text or the current line text in the editor or the command line.
 		/// Called on "Invoke selected code".
@@ -650,7 +611,6 @@ Continue with this current directory?
 		{
 			EditorKit.InvokeSelectedCode();
 		}
-
 		/// <summary>
 		/// Checks whether it is possible to exit the session safely (may require user interaction).
 		/// </summary>
@@ -668,14 +628,13 @@ Continue with this current directory?
 		{
 			return Job.CanExit();
 		}
-
 		/// <summary>
 		/// Gets PowerShellFar commands from history.
 		/// </summary>
 		/// <remarks>
 		/// PowerShellFar command history is absolutely different from PowerShell command history; PowerShell mechanism is not used
 		/// internally and you should not use it, i.e. forget about <c>Add-History</c>, <c>$MaximumHistoryCount</c>, and etc. - you
-		/// don't need them in PowerShellFar. The history is stored in the registry, so that commands can be used in other sessions.
+		/// don't need them in PowerShellFar. The history is stored in a file, so that commands can be used in other sessions.
 		/// <para>
 		/// Some standard history commands are partially implemented as internal functions.
 		/// <c>Get-History</c> returns command strings, <c>Invoke-History</c> calls <see cref="ShowHistory"/>.
@@ -685,20 +644,14 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IList<string> GetHistory(int count)
 		{
-			return History.GetLines(count);
-		}
+			var lines = History.ReadLines();
+			if (count <= 0 || count >= lines.Length)
+				return lines;
 
-		/// <summary>
-		/// Shows the configuration dialog.
-		/// Called on selection of the plugin config item.
-		/// </summary>
-		/// <seealso cref="Settings"/>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public bool ShowSettings()
-		{
-			return (new UI.SettingsDialog()).Show();
+			var list = new List<string>(lines);
+			list.RemoveRange(0, list.Count - count);
+			return list;
 		}
-
 		/// <summary>
 		/// Shows a new modal editor console.
 		/// </summary>
@@ -713,7 +666,6 @@ Continue with this current directory?
 			if (console != null)
 				console.Editor.Open(OpenMode.Modal);
 		}
-
 		/// <summary>
 		/// Shows a new editor console in specified mode.
 		/// Called on "Editor console".
@@ -725,7 +677,6 @@ Continue with this current directory?
 			if (console != null)
 				console.Editor.Open(mode);
 		}
-
 		/// <summary>
 		/// Shows a menu of available PowerShellFar panels to open.
 		/// Called on "Power panel".
@@ -754,7 +705,6 @@ Continue with this current directory?
 				A.SetCurrentDirectoryFinally(currentDirectory);
 			}
 		}
-
 		/// <summary>
 		/// Shows the background job list.
 		/// Called on "Background jobs" and by <see cref="CanExit"/>.
@@ -764,7 +714,6 @@ Continue with this current directory?
 		{
 			Job.ShowJobs();
 		}
-
 		/// <summary>
 		/// Shows PowerShellFar command history and invokes or insert the selected command or text.
 		/// Called on "Command history".
@@ -775,7 +724,6 @@ Continue with this current directory?
 		{
 			History.ShowHistory();
 		}
-
 		/// <summary>
 		/// Shows a menu with available modules and registered snap-ins.
 		/// Called on "Module+".
@@ -786,7 +734,6 @@ Continue with this current directory?
 			UI.ModulesMenu ui = new PowerShellFar.UI.ModulesMenu();
 			ui.Show();
 		}
-
 		/// <summary>
 		/// Shows PowerShell debugger tools menu.
 		/// </summary>
@@ -796,7 +743,6 @@ Continue with this current directory?
 			UI.DebuggerMenu ui = new UI.DebuggerMenu();
 			ui.Show();
 		}
-
 		/// <summary>
 		/// Shows PowerShell errors.
 		/// </summary>
@@ -806,7 +752,6 @@ Continue with this current directory?
 			UI.ErrorsMenu ui = new UI.ErrorsMenu();
 			ui.Show();
 		}
-
 		/// <summary>
 		/// Shows help, normally for the current command or parameter in an editor line.
 		/// </summary>
@@ -820,7 +765,6 @@ Continue with this current directory?
 		{
 			Help.ShowHelp();
 		}
-
 		/// <summary>
 		/// Expands PowerShell code in an edit line.
 		/// </summary>
@@ -839,26 +783,20 @@ Continue with this current directory?
 		{
 			EditorKit.ExpandCode(editLine);
 		}
-
 		// PS host
 		FarHost FarHost;
-
 		// PS UI
 		FarUI FarUI;
-
 		// PS runspace
 		internal Runspace Runspace { get; private set; }
-
 		// Main pipeline
 		PowerShell Pipeline;
-
 		// PS engine
 		EngineIntrinsics _engine_;
 		internal EngineIntrinsics Engine
 		{
 			get { return _engine_; }
 		}
-
 		/// <summary>
 		/// Gets a new pipeline or nested one.
 		/// </summary>
@@ -872,7 +810,6 @@ Continue with this current directory?
 			Pipeline.Runspace = Runspace;
 			return Pipeline;
 		}
-
 		/// <summary>
 		/// Is it running?
 		/// </summary>
@@ -880,13 +817,10 @@ Continue with this current directory?
 		{
 			get { return Pipeline != null && Pipeline.InvocationStateInfo.State == PSInvocationState.Running; }
 		}
-
 		// Current command being invoked (e.g. used as Out-FarPanel title)
 		internal string _myCommand;
-
 		// Last invoked command (e.g. to reduce dupes in the history)
 		internal string _myLastCommand;
-
 		/// <summary>
 		/// Invokes PowerShell command with pipeline.
 		/// </summary>
@@ -998,7 +932,6 @@ Continue with this current directory?
 
 			return ok;
 		}
-
 		/// <summary>
 		/// Provider settings.
 		/// </summary>
@@ -1022,7 +955,6 @@ Continue with this current directory?
 			set { _Providers = value == null ? new Hashtable() : value; }
 		}
 		IDictionary _Providers = new Hashtable();
-
 		/// <summary>
 		/// Invokes step processing.
 		/// </summary>
@@ -1046,7 +978,6 @@ Continue with this current directory?
 			Stepper stepper = new Stepper();
 			stepper.Go(steps);
 		}
-
 		/// <summary>
 		/// Invokes the script opened in the current editor.
 		/// </summary>
@@ -1063,7 +994,6 @@ Continue with this current directory?
 		{
 			EditorKit.InvokeScriptBeingEdited(null);
 		}
-
 		void OnDebuggerStop(object sender, DebuggerStopEventArgs e)
 		{
 			// show debug dialog
@@ -1097,7 +1027,6 @@ Continue with this current directory?
 			}
 			e.ResumeAction = ui.Show();
 		}
-
 		/// <summary>
 		/// Gets currently running stepper instance if any or null.
 		/// </summary>
@@ -1107,7 +1036,6 @@ Continue with this current directory?
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public Stepper Stepper { get { return Stepper.RunningInstance; } }
-
 		/// <summary>
 		/// FarNet module manager of the PowerShellFar module.
 		/// </summary>
@@ -1123,12 +1051,10 @@ Continue with this current directory?
 		{
 			get { return Entry.Instance.Manager; }
 		}
-
 		/// <summary>
 		/// Transcript writer, ready to write.
 		/// </summary>
 		internal TranscriptOutputWriter Transcript { get { return _transcript; } }
 		readonly TranscriptOutputWriter _transcript = new TranscriptOutputWriter();
-
 	}
 }

@@ -316,7 +316,7 @@ namespace PowerShellFar
 				// enumerable??
 				IEnumerable asEnumerable = v as IEnumerable;
 				if (asEnumerable != null)
-					return Converter.FormatEnumerable(asEnumerable, A.Psf.Settings.FormatEnumerationLimit);
+					return Converter.FormatEnumerable(asEnumerable, Settings.Default.FormatEnumerationLimit);
 
 				// others
 				return (string)LanguagePrimitives.ConvertTo(v, typeof(string), CultureInfo.InvariantCulture);

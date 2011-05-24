@@ -17,10 +17,10 @@ namespace PowerShellFar
 	{
 		static Meta[] CutOffMetas(Meta[] metas)
 		{
-			if (metas.Length <= A.Psf.Settings.MaximumPanelColumnCount)
+			if (metas.Length <= Settings.Default.MaximumPanelColumnCount)
 				return metas;
 
-			Meta[] result = new Meta[A.Psf.Settings.MaximumPanelColumnCount];
+			Meta[] result = new Meta[Settings.Default.MaximumPanelColumnCount];
 			for (int i = result.Length; --i >= 0; )
 				result[i] = metas[i];
 
@@ -40,7 +40,7 @@ namespace PowerShellFar
 				metas[i] = new Meta(table.Rows[0].Columns[i].DisplayEntry, table.Headers[i]);
 
 			// 1) set heuristic types, some columns are moved to the left
-			SetBestTypes(metas, A.Psf.Settings.MaximumPanelColumnCount);
+			SetBestTypes(metas, Settings.Default.MaximumPanelColumnCount);
 
 			// 2) cut off too many columns
 			metas = CutOffMetas(metas);
@@ -114,7 +114,7 @@ namespace PowerShellFar
 				return null;
 
 			// 1) set heuristic types
-			SetBestTypes(metas, A.Psf.Settings.MaximumPanelColumnCount);
+			SetBestTypes(metas, Settings.Default.MaximumPanelColumnCount);
 
 			// 2) cut off
 			return CutOffMetas(metas);
@@ -250,7 +250,7 @@ namespace PowerShellFar
 				if (Converter.IsLinearType(value.BaseObject.GetType()))
 					file.Name = value.ToString();
 				else if ((asIEnumerable = value.BaseObject as IEnumerable) != null)
-					file.Name = Converter.FormatEnumerable(asIEnumerable, A.Psf.Settings.FormatEnumerationLimit);
+					file.Name = Converter.FormatEnumerable(asIEnumerable, Settings.Default.FormatEnumerationLimit);
 				else if ((pi = A.FindDisplayProperty(value)) != null)
 					file.Name = (pi.Value ?? string.Empty).ToString();
 				else

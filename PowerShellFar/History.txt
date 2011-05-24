@@ -3,6 +3,43 @@ http://code.google.com/p/farnet/
 
 = 4.4.12 =
 
+### Moving from registry to user profile directories
+
+*) Settings
+Main persistent settings are storted in a file and modified in the standard
+module settings panel opened from the new FarNet menu .NET \ Settings...
+
+The settings should be migrated manually. Old registry data can be removed.
+
+The file, just in case (but use the settings panel to view/edit), is:
+%APPDATA%\Far Manager\FarNet\PowerShellFar\Settings.binary
+
+*) Command history is now in the file:
+%LOCALAPPDATA%\Far Manager\FarNet\PowerShellFar\PowerShellFarHistory.log
+
+How to export the old history: go to that directory and invoke two commands:
+>: $key = Get-Item HKCU:\Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory
+>: $key.GetValueNames() | Sort-Object | %{ $key.GetValue($_) } | Set-Content PowerShellFarHistory.log -Encoding UTF8
+
+Export-FarSettings.ps1 and Import-FarSettings.ps1 do not care of old registry
+key data. The key should be removed manually after exporting data to the file.
+Also, Import-FarSettings.ps1 does not care of Vessel data, the latest version
+of Vessel uses new FarNet settings engine.
+
+*) $Psf
+- Removed AppData. Use $Psf.Manager.GetFolderPath().
+- Removed ShowSettings() and the dialog (the settings panel is used instead).
+
+### Other changes
+
+*) TabExpansion.ps1
+- Fixed attempt to add a dupe key to the type cache.
+
+*) Test-Panel-.ps1
+- Removed obsolete KeyPressing event code.
+
+= 4.4.12 =
+
 *) Meta class
 - Cache of scripts created from strings (better performance on searches).
 

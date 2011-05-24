@@ -1,7 +1,7 @@
 ﻿
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System;
@@ -19,8 +19,7 @@ namespace FarMacro
 		/// <summary>
 		/// Gets existing fixed path for the temporary files.
 		/// </summary>
-		/// <returns></returns>
-		protected static string GetTempPath()
+		protected static string TempPath()
 		{
 			var path = Path.Combine(Path.GetTempPath(), TempName);
 			if (!Directory.Exists(path))

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -14,19 +14,11 @@ Copyright (c) 2005 FarNet Team
 
 namespace FarNet
 {;
+const int CoreConfigItemCount = 1; //config//
+
 ref class FarNetHost : Works::Host
 {
 public:
-	virtual Object^ LoadFarNetValue(String^ keyPath, String^ valueName, Object^ defaultValue) override
-	{
-		return Works::WinRegistry::GetValue("Plugins\\FarNet\\" + keyPath, valueName, defaultValue);
-	}
-
-	virtual void SaveFarNetValue(String^ keyPath, String^ valueName, Object^ value) override
-	{
-		Works::WinRegistry::SetValue("Plugins\\FarNet\\" + keyPath, valueName, value);
-	}
-
 	virtual void RegisterProxyCommand(IModuleCommand^ info) override
 	{
 		Far0::RegisterProxyCommand(info);
@@ -60,18 +52,6 @@ public:
 	virtual void InvalidateProxyCommand() override
 	{
 		Far0::InvalidateProxyCommand();
-	}
-
-	virtual IRegistryKey^ OpenCacheKey(bool writable) override
-	{
-		String^ path = "Plugins\\FarNet\\!Cache";
-		return Works::WinRegistry::OpenKey(path, writable);
-	}
-
-	virtual IRegistryKey^ OpenModuleKey(String^ name, bool writable) override
-	{
-		String^ path = "Plugins\\FarNet.Modules\\" + name;
-		return Works::WinRegistry::OpenKey(path, writable);
 	}
 };
 
@@ -272,19 +252,21 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 
 	//! Do not forget to add FarNet menus first -> alloc one more and use shifted index.
 
-	// config
+	//config// Add top menu items
 	{
 		if (!_toolConfig)
 		{
 			_toolConfig = Works::Host::GetTools(ModuleToolOptions::Config);
-			_pConfig = new CStr[_toolConfig->Length + 1];
+			_pConfig = new CStr[_toolConfig->Length + CoreConfigItemCount];
+
+			//! mind sort order of items on changing names
 			_pConfig[0].Set(Res::MenuPrefix);
 
 			for(int i = _toolConfig->Length; --i >= 0;)
-				_pConfig[i + 1].Set(GetMenuText(_toolConfig[i]));
+				_pConfig[i + CoreConfigItemCount].Set(GetMenuText(_toolConfig[i]));
 		}
 
-		pi->PluginConfigStringsNumber = _toolConfig->Length + 1;
+		pi->PluginConfigStringsNumber = _toolConfig->Length + CoreConfigItemCount;
 		pi->PluginConfigStrings = (const wchar_t**)_pConfig;
 	}
 
@@ -396,7 +378,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 
 //::Far callbacks
 
-bool Far0::AsConfigure(int itemIndex)
+bool Far0::AsConfigure(int itemIndex) //config//
 {
 	if (itemIndex == 0)
 	{
@@ -408,7 +390,8 @@ bool Far0::AsConfigure(int itemIndex)
 	// index from that menu, not from our config items. There is nothing we can
 	// do about it: the same method is called from the config menu. All we can
 	// do is to check sanity of the index and ignore invalid values.
-	if (--itemIndex >= _toolConfig->Length)
+	itemIndex -= CoreConfigItemCount;
+	if (itemIndex >= _toolConfig->Length)
 		return false;
 
 	IModuleTool^ tool = _toolConfig[itemIndex];
@@ -672,7 +655,7 @@ void Far0::OpenMenu(ModuleToolOptions from)
 	ShowMenu(from);
 }
 
-void Far0::OpenConfig()
+void Far0::OpenConfig() //config//
 {
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->AutoAssignHotkeys = true;
@@ -748,15 +731,14 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 		if (SS(it->Mask) && !CompareNameExclude(it->Mask, fileName, true))
 			continue;
 
-		//! tradeoff: catch all to call the others, too
+		//! tradeoff: catch all in order to call the others, too
 		try
 		{
 			it->Invoke(editor, nullptr);
 		}
 		catch(Exception^ e)
 		{
-			//! show the address, too
-			Far::Net->ShowError(it->ModuleName, e); //???? Key
+			Far::Net->ShowError(it->Manager->ModuleName, e);
 		}
 	}
 }
@@ -864,6 +846,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	String^ sEditors = "&Editors...";
 	String^ sViewers = "&Viewers...";
 	String^ sConsole = "&Console...";
+	String^ sSettings = "&Settings...";
 
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->HelpTopic = "MenuMain";
@@ -884,12 +867,18 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	// Console
 	menu->Add(sConsole);
 
+	// Settings
+	if (from == ModuleToolOptions::Panels)
+		menu->Add(sSettings);
+
 	if (!menu->Show())
 		return;
 
 	String^ text = menu->Items[menu->Selected]->Text;
 
-	if (Object::ReferenceEquals(text, sPanels))
+	if (Object::ReferenceEquals(text, sSettings))
+		Works::Config::SettingsUI::ShowSettings(Works::ModuleLoader::EnumSettings());
+	else if (Object::ReferenceEquals(text, sPanels))
 		Works::PanelTools::ShowPanelsMenu();
 	else if (Object::ReferenceEquals(text, sEditors))
 		Works::EditorTools::ShowEditorsMenu();

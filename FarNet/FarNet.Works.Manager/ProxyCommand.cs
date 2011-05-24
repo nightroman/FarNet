@@ -5,7 +5,7 @@ Copyright (c) 2005 FarNet Team
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
 namespace FarNet.Works
 {
@@ -13,21 +13,18 @@ namespace FarNet.Works
 	{
 		EventHandler<ModuleCommandEventArgs> _Handler;
 		string _Prefix;
-
 		internal ProxyCommand(ModuleManager manager, EnumerableReader reader)
 			: base(manager, reader, new ModuleCommandAttribute())
 		{
-			Attribute.Prefix = reader.Read();
+			Attribute.Prefix = (string)reader.Read();
 
 			Init();
 		}
-
 		internal ProxyCommand(ModuleManager manager, Type classType)
 			: base(manager, classType, typeof(ModuleCommandAttribute))
 		{
 			Init();
 		}
-
 		public ProxyCommand(ModuleManager manager, Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
 			: base(manager, id, (attribute == null ? null : (ModuleCommandAttribute)attribute.Clone()))
 		{
@@ -35,17 +32,6 @@ namespace FarNet.Works
 
 			Init();
 		}
-
-		void Init()
-		{
-			// solid prefix!
-			if (string.IsNullOrEmpty(Attribute.Prefix))
-				throw new ModuleException("Empty command prefix is not valid.");
-
-			// get the working prefix now, it is needed for the command registration
-			_Prefix = Host.Instance.LoadFarNetValue(Key, "Prefix", Attribute.Prefix).ToString();
-		}
-
 		public void Invoke(object sender, ModuleCommandEventArgs e)
 		{
 			if (e == null)
@@ -64,7 +50,6 @@ namespace FarNet.Works
 				instance.Invoke(sender, e);
 			}
 		}
-
 		public void ResetPrefix(string value)
 		{
 			if (string.IsNullOrEmpty(value))
@@ -72,39 +57,53 @@ namespace FarNet.Works
 
 			Host.Instance.InvalidateProxyCommand();
 
-			Host.Instance.SaveFarNetValue(Key, "Prefix", value);
 			_Prefix = value;
 		}
-
 		public sealed override string ToString()
 		{
 			return string.Format(null, "{0} Prefix='{1}'", base.ToString(), Prefix);
 		}
-
-		internal sealed override void WriteCache(List<string> data)
+		internal sealed override void WriteCache(IList data)
 		{
 			base.WriteCache(data);
 			data.Add(Attribute.Prefix);
 		}
-
 		new ModuleCommandAttribute Attribute
 		{
 			get { return (ModuleCommandAttribute)base.Attribute; }
 		}
-
 		public string DefaultPrefix
 		{
 			get { return Attribute.Prefix; }
 		}
-
 		public override ModuleItemKind Kind
 		{
 			get { return ModuleItemKind.Command; }
 		}
-
 		public string Prefix
 		{
 			get { return _Prefix; }
+		}
+		void Init()
+		{
+			// solid prefix!
+			if (string.IsNullOrEmpty(Attribute.Prefix))
+				throw new ModuleException("Empty command prefix is not valid.");
+		}
+		const int idPrefix = 0;
+		internal override Hashtable SaveData()
+		{
+			var data = new Hashtable();
+			if (_Prefix != DefaultPrefix)
+				data.Add(idPrefix, _Prefix);
+			return data;
+		}
+		internal override void LoadData(Hashtable data)
+		{
+			if (data == null)
+				_Prefix = DefaultPrefix;
+			else
+				_Prefix = data[idPrefix] as string ?? DefaultPrefix;
 		}
 	}
 }
