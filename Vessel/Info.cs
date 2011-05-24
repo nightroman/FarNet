@@ -65,11 +65,11 @@ namespace FarNet.Vessel
 		/// <summary>
 		/// Recency group: 0 is the most recent to be sorted by time.
 		/// </summary>
-		public int Group(int factor1, int factor2)
+		public int Group(int limit0, int factor1, int factor2)
 		{
 			var hours = Idle.TotalHours;
 			
-			if (hours < VesselHost.Limit0)
+			if (hours < limit0)
 				return 0;
 
 			if (hours < factor1)

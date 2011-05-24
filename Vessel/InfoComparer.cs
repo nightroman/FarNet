@@ -11,11 +11,13 @@ namespace FarNet.Vessel
 {
 	class InfoComparer : IComparer<Info>
 	{
+		int _limit0;
 		int _factor1;
 		int _factor2;
 
-		public InfoComparer(int factor1, int factor2)
+		public InfoComparer(int limit0, int factor1, int factor2)
 		{
+			_limit0 = limit0;
 			_factor1 = factor1;
 			_factor2 = factor2;
 		}
@@ -25,8 +27,8 @@ namespace FarNet.Vessel
 		{
 			// group or recent time
 			{
-				var x = left.Group(_factor1, _factor2);
-				var y = right.Group(_factor1, _factor2);
+				var x = left.Group(_limit0, _factor1, _factor2);
+				var y = right.Group(_limit0, _factor1, _factor2);
 				if (x < y)
 					return -1;
 				if (x > y)
