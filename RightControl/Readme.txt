@@ -141,6 +141,4 @@ Install-RightControlMacro-.ps1 installs macros that use CallPlugin().
 
 Removed not needed public API.
 
-1.0.11
-
 The module uses new standard FarNet settings and settings panel.
