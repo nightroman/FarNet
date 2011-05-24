@@ -73,7 +73,7 @@ namespace FarNet
 		/// </remarks>
 		public string GetString(string name)
 		{
-			return _Manager.GetString(name);
+			return Manager.GetString(name);
 		}
 
 		/// <summary>

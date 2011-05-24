@@ -1,6 +1,7 @@
 http://code.google.com/p/farnet/
 
 = 4.4.13 =
+= 4.4.14 =
 
 ### No official Windows registry support for modules
 
@@ -33,6 +34,9 @@ that their settings can be viewed/modified in the new module settings panel.
 
 *) Panels
 - Removed KeyPressing event (Far 3 is going to drop it, perhaps).
+
+*) 4.4.14
+Fix for localized moduled.
 
 = 4.4.12 =
 
