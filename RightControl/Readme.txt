@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightControl
-Release  : 2011-01-24
+Release  : 2011-05-19
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,8 +10,8 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
 
- * Far Manager 2.0.1802
- * Plugin FarNet 4.3.38
+ * Far Manager 2.0.1807
+ * Plugin FarNet 4.4.13
 
 
 = DESCRIPTION =
@@ -51,13 +51,12 @@ ShiftLeft/Right (not in editor!) and bind them to the commands vertical-left
 and vertical-right. (Install-RightControlMacro-.ps1 does this, too).
 
 
-= OPTIONS =
+= SETTINGS =
 
+Use the module settings panel from the main .NET menu.
 
-The only option is a regular expression pattern that defines text break points.
-It is stored in the registry as a string/multi-string value "Regex" of the key:
-
-HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\RightControl.dll
+"Regex"
+A regular expression pattern that defines text break points.
 
 EXAMPLES
 
@@ -141,3 +140,7 @@ Install-RightControlMacro-.ps1 installs macros that use CallPlugin().
 1.0.10
 
 Removed not needed public API.
+
+1.0.11
+
+The module uses new standard FarNet settings and settings panel.
