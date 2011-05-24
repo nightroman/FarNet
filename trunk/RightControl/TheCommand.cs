@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightControl
-Copyright (c) 2010 Roman Kuzmin
+Copyright (c) 2010-2011 Roman Kuzmin
 */
 
 using System;
@@ -15,11 +15,8 @@ namespace FarNet.RightControl
 	public class TheCommand : ModuleCommand
 	{
 		const string Name = "RightControl";
-		const string DefaultPattern = @"^ | $ | (?<=\b|\s)\S";
-
 		static Regex Regex { get { if (_Regex_ == null) InitRegex(null); return _Regex_; } }
 		static Regex _Regex_;
-
 		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
 			InitRegex(Manager);
@@ -53,39 +50,22 @@ namespace FarNet.RightControl
 				default: throw new ModuleException("Unknown command: " + e.Command);
 			}
 		}
-
 		static void InitRegex(IModuleManager manager)
 		{
 			if (_Regex_ != null)
 				return;
 
-			string pattern = DefaultPattern;
-			if (manager != null)
-			{
-				using (var key = manager.OpenRegistryKey(null, false))
-				{
-					if (key != null)
-					{
-						object value = key.GetValue("Regex", DefaultPattern);
-						if (value is string[])
-							pattern = string.Join(Environment.NewLine, (string[])value);
-						else
-							pattern = value.ToString();
-					}
-				}
-			}
-
+			var settings = new Settings();
 			try
 			{
-				_Regex_ = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
+				_Regex_ = new Regex(settings.Regex, RegexOptions.IgnorePatternWhitespace);
 			}
 			catch (Exception e)
 			{
-				Far.Net.Message("Error on parsing the regular expression:\r" + e.Message, "RightControl", MsgOptions.LeftAligned | MsgOptions.Warning);
-				_Regex_ = new Regex(DefaultPattern, RegexOptions.IgnorePatternWhitespace);
+				Far.Net.Message("Regular expression error:\r" + e.Message, "RightControl", MsgOptions.LeftAligned | MsgOptions.Warning);
+				_Regex_ = new Regex(Settings.RegexDefault, RegexOptions.IgnorePatternWhitespace);
 			}
 		}
-
 		/// <summary>
 		/// Operation kind.
 		/// </summary>
@@ -95,7 +75,6 @@ namespace FarNet.RightControl
 			Select,
 			Delete
 		}
-
 		/// <summary>
 		/// Runs the specified operation.
 		/// </summary>
@@ -237,7 +216,6 @@ namespace FarNet.RightControl
 				return;
 			}
 		}
-
 		static void SelectStream(IEditor editor, ILine line, bool right, Point caretOld, Point caretNew)
 		{
 			Point first, last;
@@ -341,7 +319,6 @@ namespace FarNet.RightControl
 					line.UnselectText();
 			}
 		}
-
 		static void SelectColumn(IEditor editor, bool right, int line, int caretOld, int caretNew)
 		{
 			int x1, y1, x2, y2;
@@ -425,7 +402,6 @@ namespace FarNet.RightControl
 			editor.GoTo(caretNew, line);
 			editor.Redraw();
 		}
-
 		// This should be removed when Mantis 1465 is resolved.
 		void SelectWorkaround(ILine line, bool right)
 		{
@@ -446,7 +422,6 @@ namespace FarNet.RightControl
 
 			SelectStream(null, line, right, new Point(oldX, 0), new Point(newX, 0));
 		}
-
 		/// <summary>
 		/// Moves the caret or selects the text to the smart line home.
 		/// </summary>
@@ -535,6 +510,5 @@ namespace FarNet.RightControl
 			if (editor != null)
 				editor.Redraw();
 		}
-
 	}
 }
