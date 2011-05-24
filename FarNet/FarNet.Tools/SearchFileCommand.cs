@@ -412,7 +412,7 @@ namespace FarNet.Tools
 			foreach (var file in _RootExplorer.GetFiles(args))
 			{
 				// stop?
-				if (Stopping || progress != null && UIUserStop()) //?????? progress to navigator
+				if (Stopping || progress != null && UIUserStop()) //???? progress to navigator
 					break;
 
 				// filter out a leaf
@@ -425,7 +425,7 @@ namespace FarNet.Tools
 				while (iterator.MoveNext())
 				{
 					// stop?
-					if (Stopping || progress != null && UIUserStop()) //?????? progress to navigator
+					if (Stopping || progress != null && UIUserStop()) //???? progress to navigator
 						break;
 
 					// found file or directory, ignore anything else

@@ -582,48 +582,10 @@ namespace FarNet
 				Idled(this, null);
 		}
 		/// <summary>
-		/// Called when a key is about to be processed.
-		/// </summary>
-		/// <remarks>
-		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module processes the key.
-		/// <para>
-		/// Normally panels are not interested in this event,
-		/// it is needed for advanced processing of some special keys.
-		/// </para>
-		/// <para>
-		/// In Far Manager this event is called from the <c>ProcessKeyW</c> with the <c>PKF_PREPROCESS</c> flag.
-		/// </para>
-		/// </remarks>
-		public event EventHandler<PanelKeyEventArgs> KeyPressing;
-		///
-		public void WorksKeyPressing(PanelKeyEventArgs e)
-		{
-			if (KeyPressing != null)
-				KeyPressing(this, e);
-		}
-		/// <summary>
-		/// Called when a key is about to be processed after the <see cref="KeyPressing"/> event.
-		/// </summary>
-		/// <param name="code">The <see cref="VKeyCode"/> value.</param>
-		/// <param name="state">Key state flags.</param>
-		/// <returns>True if the key has been processed.</returns>
-		public virtual bool UIKeyPressing(int code, KeyStates state)
-		{
-			return false;
-		}
-		/// <summary>
 		/// Called when a key is pressed.
 		/// </summary>
 		/// <remarks>
 		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module processes the key itself.
-		/// <para>
-		/// The event is not called on some special keys processed internally.
-		/// Normally panels are not interested in these keys,
-		/// otherwise they should use the <see cref="KeyPressing"/> event.
-		/// </para>
-		/// <para>
-		/// In Far Manager this event is called from the <c>ProcessKeyW</c> without the <c>PKF_PREPROCESS</c> flag.
-		/// </para>
 		/// </remarks>
 		public event EventHandler<PanelKeyEventArgs> KeyPressed;
 		///

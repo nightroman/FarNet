@@ -36,7 +36,7 @@ namespace FarNet.Works
 				menu.Items.Clear();
 				menu.Add(string.Format(null, format, "Prefix", "Name", "Address")).Disabled = true;
 				foreach (IModuleCommand it in commands)
-					menu.Add(string.Format(null, format, it.Prefix, it.Name, it.ModuleName + "\\" + it.Id)).Data = it;
+					menu.Add(string.Format(null, format, it.Prefix, it.Name, it.Manager.ModuleName + "\\" + it.Id)).Data = it;
 
 				if (!menu.Show())
 					return;
@@ -72,6 +72,7 @@ namespace FarNet.Works
 
 				// reset
 				command.ResetPrefix(prefix);
+				command.Manager.SaveSettings();
 			}
 		}
 	}

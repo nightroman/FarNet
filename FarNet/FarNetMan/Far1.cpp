@@ -536,9 +536,10 @@ String^ Far1::TempName(String^ prefix)
 
 String^ Far1::TempFolder(String^ prefix)
 {
-	String^ r = TempName(prefix);
-	Directory::CreateDirectory(r);
-	return r;
+	String^ dir = TempName(prefix);
+	if (!Directory::Exists(dir))
+		Directory::CreateDirectory(dir);
+	return dir;
 }
 
 IDialog^ Far1::Dialog::get()
@@ -663,6 +664,29 @@ bool Far1::MatchPattern(String^ input, String^ pattern)
 	// wildcard
 	PIN_NE(pin, input);
 	return Far0::CompareNameExclude(pattern, pin, false);
+}
+
+String^ Far1::GetFolderPath(SpecialFolder folder)
+{
+	Environment::SpecialFolder system;
+	switch(folder)
+	{
+	case SpecialFolder::LocalData: system = Environment::SpecialFolder::LocalApplicationData; break;
+	case SpecialFolder::RoamingData: system = Environment::SpecialFolder::ApplicationData; break;
+	default: throw gcnew ArgumentException("folder");
+	}
+
+	String^ dir = Environment::GetFolderPath(system);
+	dir = Path::Combine(dir, "Far Manager");
+	if (!Directory::Exists(dir))
+		Directory::CreateDirectory(dir);
+	
+	return dir;
+}
+
+IModuleManager^ Far1::GetModuleManager(Type^ type)
+{
+	return Works::ModuleLoader::GetModuleManager(type);
 }
 
 }

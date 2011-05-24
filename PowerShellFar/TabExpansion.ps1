@@ -331,7 +331,7 @@ function global:GetTabExpansionType
 						}
 						$set1 = $set2
 					}
-					$set1.Add($type.Name, $null)
+					$set1[$type.Name] = $null
 				}
 			}
 		}

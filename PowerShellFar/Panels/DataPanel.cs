@@ -235,7 +235,7 @@ namespace PowerShellFar
 			if (Columns == null)
 			{
 				// collect/filter table columns to be shown
-				int Count = Math.Min(Table.Columns.Count, A.Psf.Settings.MaximumPanelColumnCount);
+				int Count = Math.Min(Table.Columns.Count, Settings.Default.MaximumPanelColumnCount);
 				metas = new List<Meta>(Count);
 				int nCollected = 0;
 				foreach (DataColumn column in Table.Columns)
@@ -456,7 +456,7 @@ namespace PowerShellFar
 
 			OpenFileActor(file);
 		}
-		int RecordLimit = A.Psf.Settings.MaximumPanelFileCount;
+		int RecordLimit = Settings.Default.MaximumPanelFileCount;
 		// 0-based internally and in UI: 'offset' means "skip 'offset' records"
 		int RecordOffset;
 		void Fill()

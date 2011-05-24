@@ -1,12 +1,13 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
@@ -76,18 +77,11 @@ namespace FarNet
 		}
 
 		/// <summary>
-		/// The module manager.
+		/// Gets the module manager.
 		/// </summary>
 		public IModuleManager Manager
 		{
-			get { return _Manager; }
-			set
-			{
-				if (_Manager != null)
-					throw new InvalidOperationException();
-
-				_Manager = value;
-			}
+			get { return _Manager ?? (_Manager = Far.Net.GetModuleManager(GetType())); }
 		}
 		IModuleManager _Manager;
 	}
@@ -140,6 +134,17 @@ namespace FarNet
 		/// </summary>
 		string GetString(string name);
 		/// <summary>
+		/// Gets the path to the system special folder that is identified by the specified enumeration.
+		/// </summary>
+		/// <remarks>
+		/// The requested directory is created if it does not exist.
+		/// <para>
+		/// Local and roaming data directories are designed for module files.
+		/// But names like <b>FarNet.*</b> are reserved for the internal use.
+		/// </para>
+		/// </remarks>
+		string GetFolderPath(SpecialFolder folder);
+		/// <summary>
 		/// Unregisters the module in critical cases.
 		/// </summary>
 		/// <remarks>
@@ -183,19 +188,6 @@ namespace FarNet
 		/// </remarks>
 		IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
 		/// <summary>
-		/// Opens the registry key where the module may keep its local data like permanent settings.
-		/// </summary>
-		/// <param name="name">Name or path of the key to open. If it is null or empty then the root key is opened.</param>
-		/// <param name="writable">Set to true if you need write access to the key.</param>
-		/// <returns>The requested key or null if the key for reading does not exist.</returns>
-		/// <remarks>
-		/// The returned key has to be disposed after use by <c>Dispose()</c>.
-		/// <para>
-		/// For the Far Manager host the root module key in the Windows registry is <c>...\Plugins\FarNet.Modules\Module.dll</c>.
-		/// </para>
-		/// </remarks>
-		IRegistryKey OpenRegistryKey(string name, bool writable);
-		/// <summary>
 		/// Gets the module name.
 		/// </summary>
 		string ModuleName { get; }
@@ -203,6 +195,14 @@ namespace FarNet
 		/// For internal use.
 		/// </summary>
 		string StoredUICulture { get; set; }
+		/// <summary>
+		/// For internal use. Loads the module assembly (without connecting it).
+		/// </summary>
+		Assembly LoadAssembly();
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		void SaveSettings();
 	}
 
 	/// <summary>
@@ -669,9 +669,9 @@ namespace FarNet
 		/// </summary>
 		ModuleItemKind Kind { get; }
 		/// <summary>
-		/// Gets the module name.
+		/// Gets the module manager.
 		/// </summary>
-		string ModuleName { get; }
+		IModuleManager Manager { get; }
 		/// <summary>
 		/// Unregisters the module action dynamically.
 		/// </summary>

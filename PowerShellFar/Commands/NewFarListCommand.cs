@@ -186,9 +186,9 @@ namespace PowerShellFar.Commands
 			Init(menu);
 
 			if (Intelli)
-				A.Psf.Settings.Intelli(menu);
+				Settings.Default.Intelli(menu);
 			else
-				A.Psf.Settings.ListMenu(menu);
+				Settings.Default.ListMenu(menu);
 
 			if (_setAutoSelect)
 				menu.AutoSelect = _AutoSelect;

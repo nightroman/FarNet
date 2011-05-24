@@ -123,7 +123,7 @@ namespace PowerShellFar
 							value = asPSObject.BaseObject;
 
 						// value
-						file.Description = Converter.FormatValue(value, A.Psf.Settings.FormatEnumerationLimit);
+						file.Description = Converter.FormatValue(value, Settings.Default.FormatEnumerationLimit);
 
 						// hidden by user
 						if (_HideMemberRegex != null && _HideMemberRegex.IsMatch(file.Name))

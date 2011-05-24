@@ -12,7 +12,7 @@ namespace FarNet.Works
 	{
 		internal static string FormatConfigMenu(IModuleAction action)
 		{
-			return string.Format(null, "{0} {1}\\{2}", action.Name, action.ModuleName, action.Id);
+			return string.Format(null, "{0} {1}\\{2}", action.Name, action.Manager.ModuleName, action.Id);
 		}
 	}
 
@@ -54,6 +54,7 @@ namespace FarNet.Works
 
 				// set
 				editor.ResetMask(mask);
+				editor.Manager.SaveSettings();
 			}
 		}
 	}

@@ -46,6 +46,7 @@ namespace FarNet.Works
 
 				// set
 				filer.ResetMask(mask);
+				filer.Manager.SaveSettings();
 			}
 		}
 	}

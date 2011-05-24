@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System;
@@ -160,7 +160,7 @@ namespace FarMacro
 						FileName = FileName.Replace(new string(new char[] { bad }), "_" + (int)bad + "_");
 				}
 				string extension = Area == MacroArea.Consts ? ".tmp" : m.MacroFileExtension;
-				FileName = Path.Combine(GetTempPath(), Area.ToString() + "." + FileName + extension);
+				FileName = Path.Combine(TempPath(), Area.ToString() + "." + FileName + extension);
 
 				// target text
 				string text;

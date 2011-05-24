@@ -1,5 +1,39 @@
 http://code.google.com/p/farnet/
 
+= 4.4.13 =
+
+### No official Windows registry support for modules
+
+Modules should use new standard FarNet settings (see ModuleSettings from new
+FarNet.Settings.dll) or take care of settings on their own. In the latter case
+it is recommended to use files in local or roaming folders (see IModuleManager
+GetFolderPath()). Note: all names like FarNet.* are reserved.
+
+*) New .NET menu item "Settings..."
+Shows modules with at least one settings set implemented and opens the settings
+panel for a selected module settings set. Use [F1] for help. The panel UI is
+rather simple but it is quite enough. To be improved when needed/requested.
+
+*) FarNet module cache (just in case of problems):
+%LOCALAPPDATA%\Far Manager\FarNet\Cache.binary
+
+These old registry data can be removed manually:
+Far2\Plugins\FarNet
+Far2\Plugins\FarNet.Modules
+
+FarNet itself does not use registry when deals with modules. But it still uses
+registry because Far 2 does. Thus, FarNet.Works.Registry.dll still exits and
+IFar.OpenRegistryKey(), too, just in case if some module needs registry data.
+
+*) Modules with old FarNet registry tools should be updated and some settings
+migrated. PowerShellFar, RightControl, and Vessel use new settings approach, so
+that their settings can be viewed/modified in the new module settings panel.
+
+### Other changes
+
+*) Panels
+- Removed KeyPressing event (Far 3 is going to drop it, perhaps).
+
 = 4.4.12 =
 
 *) XPath searches

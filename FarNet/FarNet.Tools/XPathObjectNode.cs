@@ -253,14 +253,14 @@ namespace FarNet.Tools
 		}
 		IList<XPathObjectNode> ActivateSimple()
 		{
-			var info = _target as IXmlInfo; //?????? need?
+			var info = _target as IXmlInfo; //???? need?
 			if (info != null)
 			{
 				_attributes = info.XmlAttributes();
 				if (_attributes.Count == 0)
 					_attributes = _emptyAttributes;
 
-				_elements.Target = _emptyElements; //?????? elements
+				_elements.Target = _emptyElements; //???? elements
 				return _emptyElements;
 			}
 
@@ -312,12 +312,12 @@ namespace FarNet.Tools
 		}
 		void ActivateSuperFileAttributes()
 		{
-			var file = (SuperFile)_target; //??????
+			var file = (SuperFile)_target; //????
 			_attributes = file.XmlAttributes();
 		}
 		IList<XPathObjectNode> ActivateSuperFileElements()
 		{
-			var file = (SuperFile)_target; //??????
+			var file = (SuperFile)_target; //????
 
 			if (!file.IsDirectory)
 			{

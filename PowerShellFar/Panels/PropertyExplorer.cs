@@ -104,7 +104,7 @@ namespace PowerShellFar
 							IsReadOnly = !pi.IsSettable,
 							Data = pi,
 							// set its value
-							Description = Converter.FormatValue(pi.Value, A.Psf.Settings.FormatEnumerationLimit)
+							Description = Converter.FormatValue(pi.Value, Settings.Default.FormatEnumerationLimit)
 						};
 
 						// add

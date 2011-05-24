@@ -43,7 +43,7 @@ namespace PowerShellFar
 			if (_command != null)
 			{
 				string header = string.Concat(Entry.CommandInvoke1.Prefix, ":", _command, "\r\n");
-				Far.Net.UI.Write(header, A.Psf.Settings.CommandForegroundColor);
+				Far.Net.UI.Write(header, Settings.Default.CommandForegroundColor);
 				_command = null;
 
 				A.Psf.Transcript.WriteLine("\r\n" + header);
@@ -88,28 +88,28 @@ namespace PowerShellFar
 		public override void WriteDebugLine(string message)
 		{
 			Writing();
-			Far.Net.UI.Write("DEBUG: " + message + "\r\n", A.Psf.Settings.DebugForegroundColor);
+			Far.Net.UI.Write("DEBUG: " + message + "\r\n", Settings.Default.DebugForegroundColor);
 			A.Psf.Transcript.WriteDebugLine(message);
 		}
 
 		public override void WriteErrorLine(string value)
 		{
 			Writing();
-			Far.Net.UI.Write(value + "\r\n", A.Psf.Settings.ErrorForegroundColor);
+			Far.Net.UI.Write(value + "\r\n", Settings.Default.ErrorForegroundColor);
 			A.Psf.Transcript.WriteErrorLine(value);
 		}
 
 		public override void WriteVerboseLine(string message)
 		{
 			Writing();
-			Far.Net.UI.Write("VERBOSE: " + message + "\r\n", A.Psf.Settings.VerboseForegroundColor);
+			Far.Net.UI.Write("VERBOSE: " + message + "\r\n", Settings.Default.VerboseForegroundColor);
 			A.Psf.Transcript.WriteVerboseLine(message);
 		}
 
 		public override void WriteWarningLine(string message)
 		{
 			Writing();
-			Far.Net.UI.Write("WARNING: " + message + "\r\n", A.Psf.Settings.WarningForegroundColor);
+			Far.Net.UI.Write("WARNING: " + message + "\r\n", Settings.Default.WarningForegroundColor);
 			A.Psf.Transcript.WriteWarningLine(message);
 		}
 	}
