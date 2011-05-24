@@ -94,7 +94,7 @@ Factors    : {7,8}
  result.DownSum,
  result.TotalSum,
  result.Average,
- VesselHost.Limit0.ToString() + "/" + result.Factor1 + "/" + result.Factor2);
+ Settings.Default.Limit0.ToString() + "/" + result.Factor1 + "/" + result.Factor2);
 		}
 
 		static void ShowResults()
@@ -105,15 +105,24 @@ Factors    : {7,8}
 
 		static void SaveFactors(Result result)
 		{
+			var settings = Settings.Default;
 			if (result.Target > 0)
 			{
-				if (result.Factor1 != VesselHost.Factor1 || result.Factor2 != VesselHost.Factor2)
-					VesselHost.SetFactors(result.Factor1, result.Factor2);
+				if (result.Factor1 != settings.Factor1 || result.Factor2 != settings.Factor2)
+				{
+					settings.Factor1 = result.Factor1;
+					settings.Factor2 = result.Factor2;
+					settings.Save();
+				}
 			}
 			else
 			{
-				if (VesselHost.Factor1 >= 0)
-					VesselHost.SetFactors(-1, -1);
+				if (settings.Factor1 >= 0)
+				{
+					settings.Factor1 = -1;
+					settings.Factor2 = -1;
+					settings.Save();
+				}
 			}
 		}
 
@@ -124,7 +133,7 @@ Factors    : {7,8}
 
 			// train/save
 			var algo = new Actor();
-			var result = algo.TrainFull(VesselHost.Limit1, VesselHost.Limit2);
+			var result = algo.TrainFull(Settings.Default.Limit1, Settings.Default.Limit2);
 			SaveFactors(result);
 
 			// post done
@@ -144,7 +153,7 @@ Factors    : {7,8}
 
 			// train/save
 			var algo = new Actor();
-			var result = algo.TrainFast(VesselHost.Factor1, VesselHost.Factor2);
+			var result = algo.TrainFast(Settings.Default.Factor1, Settings.Default.Factor2);
 			SaveFactors(result);
 
 			// post done
@@ -172,8 +181,12 @@ Factors    : {7,8}
 
 		static void ShowHistory(bool smart)
 		{
+			var Factor1 = Settings.Default.Factor1;
+			var Factor2 = Settings.Default.Factor2;
+			var Limit0 = Settings.Default.Limit0;
+
 			// drop smart for the negative factor
-			if (smart && VesselHost.Factor1 < 0)
+			if (smart && Factor1 < 0)
 				smart = false;
 
 			IListMenu menu = Far.Net.CreateListMenu();
@@ -181,7 +194,7 @@ Factors    : {7,8}
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
 			if (smart)
-				menu.Title = string.Format("File history ({0}/{1}/{2})", VesselHost.Limit0, VesselHost.Factor1, VesselHost.Factor2);
+				menu.Title = string.Format("File history ({0}/{1}/{2})", Limit0, Factor1, Factor2);
 			else
 				menu.Title = "File history (plain)";
 
@@ -203,12 +216,12 @@ Factors    : {7,8}
 			{
 				int group1 = -1;
 				int indexLimit0 = int.MaxValue;
-				foreach (var it in Record.GetHistory(null, DateTime.Now, (smart ? VesselHost.Factor1 : -1), VesselHost.Factor2))
+				foreach (var it in Record.GetHistory(null, DateTime.Now, (smart ? Factor1 : -1), Factor2))
 				{
 					// separator
 					if (smart)
 					{
-						int group2 = it.Group(VesselHost.Factor1, VesselHost.Factor2);
+						int group2 = it.Group(Limit0, Factor1, Factor2);
 						if (group1 != group2)
 						{
 							if (group1 >= 0)

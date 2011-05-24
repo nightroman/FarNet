@@ -34,8 +34,14 @@
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FarNet" />
+    <Reference Include="FarNet">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FarNet.Settings">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -46,6 +52,7 @@
     <Compile Include="InfoComparer.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Result.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="VesselHost.cs" />
     <Compile Include="AssemblyInfo.cs" />
