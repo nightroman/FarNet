@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System;
 
-[assembly: AssemblyVersion("4.4.13.0")]
+[assembly: AssemblyVersion("4.4.14.0")]
 [assembly: AssemblyTitle("Windows PowerShell host for FarNet")]
 [assembly: AssemblyDescription("Implements PowerShell host and UI tools for FarNet")]
 [assembly: AssemblyConfiguration("")]
