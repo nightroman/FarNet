@@ -91,7 +91,7 @@ namespace FarNet.Vessel
 
 			// evidences
 			SetEvidences(infos, CollectEvidences());
-			return infos.OrderByDescending(x => x, new InfoComparer(factor1, factor2));
+			return infos.OrderByDescending(x => x, new InfoComparer(Settings.Default.Limit0, factor1, factor2));
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace FarNet.Vessel
 
 				// skip recent and too old
 				var idle = now - record.Time;
-				if (reduced && (idle.TotalHours < VesselHost.Limit0 || record.What == Record.AGED))
+				if (reduced && (idle.TotalHours < Settings.Default.Limit0 || record.What == Record.AGED))
 					continue;
 
 				// init info
@@ -206,7 +206,7 @@ namespace FarNet.Vessel
 
 				// get the rest
 				CollectFileInfo(info, iRecord + 1, record.Time);
-				if (info.Idle.TotalHours < VesselHost.Limit0)
+				if (info.Idle.TotalHours < Settings.Default.Limit0)
 					continue;
 
 				// return not empty
@@ -278,6 +278,8 @@ namespace FarNet.Vessel
 		/// </summary>
 		Result Train()
 		{
+			var Limit0 = Settings.Default.Limit0;
+			
 			// evidences once
 			var map = CollectEvidences();
 
@@ -304,7 +306,7 @@ namespace FarNet.Vessel
 				// sort with factors, get smart rank
 				foreach (var r in _TrainingResults)
 				{
-					infos.Sort(new InfoComparer(r.Factor1, r.Factor2));
+					infos.Sort(new InfoComparer(Limit0, r.Factor1, r.Factor2));
 					int rankSmart = infos.FindIndex(x => x.Path.Equals(record.Path, StringComparison.OrdinalIgnoreCase));
 
 					int win = rankPlain - rankSmart;
@@ -346,12 +348,17 @@ namespace FarNet.Vessel
 
 		Result TrainFastEpoch(int factor1, int factor2)
 		{
+			var Limit0 = Settings.Default.Limit0;
+			var Limit1 = Settings.Default.Limit1;
+			var Limit2 = Settings.Default.Limit2;
+
 			int x1 = Math.Max(0, factor1 - xRadius);
 			int y1 = Math.Max(0, factor2 - yRadius);
-			int x2 = Math.Min(VesselHost.Limit1, factor1 + xRadius);
-			int y2 = Math.Min(VesselHost.Limit2, factor2 + yRadius);
+			int x2 = Math.Min(Limit1, factor1 + xRadius);
+			int y2 = Math.Min(Limit2, factor2 + yRadius);
 
-			_TrainingResults = new List<Result>((x2 - x1 + 1) * (y2 - y1 + 1) + (VesselHost.Limit1 / _FastStep1 + 1) * (VesselHost.Limit2 / _FastStep2 + 1));
+			_TrainingResults = new List<Result>(
+				(x2 - x1 + 1) * (y2 - y1 + 1) + (Limit1 / _FastStep1 + 1) * (Limit2 / _FastStep2 + 1));
 
 			for (int i = x1; i <= x2; ++i)
 				for (int j = y1; j <= y2; ++j)
@@ -359,9 +366,9 @@ namespace FarNet.Vessel
 
 			int xStart = Random.Next(_FastStep1);
 			int yStart = Random.Next(_FastStep2);
-			for (int i = xStart; i <= VesselHost.Limit1; i += _FastStep1)
+			for (int i = xStart; i <= Limit1; i += _FastStep1)
 			{
-				for (int j = yStart; j <= VesselHost.Limit2; j += _FastStep2)
+				for (int j = yStart; j <= Limit2; j += _FastStep2)
 					if (i < x1 || i > x2 || j < y1 || j > y2)
 						_TrainingResults.Add(new Result() { Factor1 = i, Factor2 = j });
 			}
@@ -431,6 +438,15 @@ namespace FarNet.Vessel
 		public string Update()
 		{
 			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", DateTime.Now);
+
+			// sanity
+			int maxDays = Settings.Default.MaximumDayCount;
+			if (maxDays < 30)
+				throw new InvalidOperationException("Use at least 30 as the maximum day count.");
+			int maxFiles = Settings.Default.MaximumFileCount;
+			if (maxFiles < 100)
+				throw new InvalidOperationException("Use at least 100 as the maximum file count.");
+
 			int recordCount = _records.Count;
 
 			// collect and sort by idle
@@ -458,7 +474,6 @@ namespace FarNet.Vessel
 
 			// step 2: remove the most idle extra files
 			int extraFiles = 0;
-			int maxFiles = VesselHost.MaximumFileCount;
 			while (infos.Count > maxFiles)
 			{
 				var info = infos[infos.Count - 1];
@@ -473,7 +488,6 @@ namespace FarNet.Vessel
 			int oldRecords = 0;
 			var today = DateTime.Today;
 			var days = _records.Select(x => x.Time.Date).Where(x => x != today).Distinct().OrderByDescending(x => x).ToArray();
-			int maxDays = VesselHost.MaximumDayCount;
 			if (days.Length > maxDays)
 			{
 				var zero = days[maxDays - 1];

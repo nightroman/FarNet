@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2011-02-13
+Release  : 2011-05-20
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -9,14 +9,14 @@ Source   : http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.0
+ * Plugin FarNet 4.4.13
  * .NET Framework 3.5+
 
 	= DESCRIPTION =
 
 Vessel (short for View/Edit/Save/SELect) records and maintains history of file
 view, edit, and save operations and related statistics. The history file is:
-%USERPROFILE%\VesselHistory.log
+%LOCALAPPDATA%\Far Manager\FarNet\Vessel\VesselHistory.log"
 
 Features
 
@@ -44,33 +44,30 @@ Automatic fast training starts after updating the history file from the menu
 and after opening not recent files from the smart history. It works in the
 background and it is very fast (~50 times faster than full training).
 
-	= OPTIONS =
+	= SETTINGS =
 
-Registry key:
-HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet.Modules\Vessel.dll
+The settings panel is opened from the .NET \ Settings menu.
 
-	DWORD value: MaximumDayCount
+	MaximumDayCount
 
 Maximum number of recorded days to keep the records for.
 The default is 30.
 
-	DWORD value: MaximumFileCount
+	MaximumFileCount
 
 Maximum number of files to keep the records for.
 The default is 512.
 
-	String value: Limits="Limit0/Limit1/Limit2"
+	Limit0
 
-Default, slower training, best results: "2/200/30"
-Faster training and still good results: "2/100/15"
-
-Limit0
 Span 0 in hours. It defines the most recent files sorted only by times.
 
-Limit1
+	Limit1
+
 Maximum span 1 in hours. Training finds the best value (factor 1).
 
-Limit2
+	Limit2
+
 Maximum span 2 in days. Training finds the best value (factor 2).
 
 	= HISTORY =
@@ -142,3 +139,11 @@ Updated for FarNet 4.4.0
 Minor tweaks in ranking.
 
 Fixed an error message in the list on ShiftDel + Esc.
+
+1.0.10
+
+The settings panel is opened from the .NET \ Settings menu.
+
+The history log moved from %USERPROFILE%\VesselHistory.log to
+%LOCALAPPDATA%\Far Manager\FarNet\Vessel\VesselHistory.log
+(do this manually)
