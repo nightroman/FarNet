@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.4.13.0")]
+[assembly: AssemblyVersion("4.4.14.0")]
 [assembly: AssemblyTitle("FarNet.Settings")]
 [assembly: AssemblyDescription("FarNet.Settings library for FarNet")]
 [assembly: AssemblyConfiguration("")]
