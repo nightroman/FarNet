@@ -5,6 +5,7 @@ Copyright (c) 2011 Roman Kuzmin
 */
 
 using System;
+using System.Collections.Generic;
 
 namespace FarNet.Vessel
 {
@@ -37,7 +38,8 @@ namespace FarNet.Vessel
 
 	public class SpanSet
 	{
-		public readonly int[] Spans = new int[Info.SpanCount];
+		readonly int[] _Spans = new int[Info.SpanCount];
+		public IList<int> Spans { get { return _Spans; } }
 		internal DateTime Time { get; set; }
 	}
 
