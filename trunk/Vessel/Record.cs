@@ -42,6 +42,10 @@ namespace FarNet.Vessel
 		/// </summary>
 		public static void CreateLogFile(string store)
 		{
+			var dir = System.IO.Path.GetDirectoryName(store);
+			if (!Directory.Exists(dir))
+				Directory.CreateDirectory(dir);
+			
 			using (StreamWriter writer = new StreamWriter(store, false, Encoding.Unicode))
 			{
 				writer.WriteLine(LINE_HEADER);
