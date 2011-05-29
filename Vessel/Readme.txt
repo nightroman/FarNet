@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2011-05-20
+Release  : 2011-05-29
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -9,7 +9,7 @@ Source   : http://code.google.com/p/farnet/
 	= PREREQUISITES =
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.13
+ * Plugin FarNet 4.4.15
  * .NET Framework 3.5+
 
 	= DESCRIPTION =
@@ -46,7 +46,8 @@ background and it is very fast (~50 times faster than full training).
 
 	= SETTINGS =
 
-The settings panel is opened from the .NET \ Settings menu.
+Open the module settings panel from the main .NET menu:
+F11 | .NET | Settings | Vessel
 
 	MaximumDayCount
 
@@ -147,3 +148,11 @@ The settings panel is opened from the .NET \ Settings menu.
 The history log moved from %USERPROFILE%\VesselHistory.log to
 %LOCALAPPDATA%\Far Manager\FarNet\Vessel\VesselHistory.log
 (do this manually)
+
+1.0.11
+
+Updated for FarNet 4.4.15
+
+The local Vessel\Settings.resources (with training results) is now updated
+separately from the roaming settings. Thus, if you use default settings then
+the roaming file Vessel\Settings.resources can be removed.

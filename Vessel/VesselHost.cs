@@ -31,14 +31,10 @@ namespace FarNet.Vessel
 		{
 			get { return VesselHost._LogPath; }
 		}
-		static VesselHost Instance;
 		public override void Connect()
 		{
-			// the instance
-			Instance = this;
-
 			// ensure the log
-			_LogPath = Path.Combine(Manager.GetFolderPath(SpecialFolder.LocalData), NameLogFile);
+			_LogPath = Path.Combine(Manager.GetFolderPath(SpecialFolder.LocalData, false), NameLogFile);
 			if (!File.Exists(_LogPath))
 				Record.CreateLogFile(_LogPath);
 
