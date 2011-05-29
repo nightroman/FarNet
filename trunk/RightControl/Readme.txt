@@ -53,18 +53,20 @@ and vertical-right. (Install-RightControlMacro-.ps1 does this, too).
 
 = SETTINGS =
 
-Use the module settings panel from the main .NET menu.
+Open the module settings panel from the main .NET menu:
+F11 | .NET | Settings | RightControl
 
-"Regex"
+	Regex
+
 A regular expression pattern that defines text break points.
 
-EXAMPLES
+Examples
 
-Default pattern; breaks are very similar to Visual Studio:
+Default pattern. Breaks are very similar to Visual Studio:
 
 ^ | $ | (?<=\b|\s)\S
 
-Pattern with breaks similar to Word/WordPad; _ breaks, too:
+Pattern with breaks similar to Word/WordPad. "_" breaks, too:
 
 ^ | $ | (?<=\b|\s)\S | (?<=[^_])_ | (?<=_)[^_\s]
 
@@ -73,7 +75,7 @@ Default pattern with two more breaks: letter case and number breaks:
 ^ | $ | (?<=\b|\s)\S | (?<=\p{Ll})\p{Lu} | (?<=\D)\d | (?<=\d)[^\d\s]
 
 The same pattern written with inline comments. All the text below is a valid
-regular expression pattern that can be stored as a multi-line registry value:
+regular expression pattern that can be stored in settings just like that:
 
 ^ | $ # start or end of line
 |
