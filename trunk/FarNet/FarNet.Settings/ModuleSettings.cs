@@ -4,9 +4,7 @@ FarNet.Settings library for FarNet
 Copyright (c) 2011 Roman Kuzmin
 */
 
-using System;
 using System.Configuration;
-using System.Runtime.InteropServices;
 
 namespace FarNet.Settings
 {
@@ -82,15 +80,14 @@ namespace FarNet.Settings
 	/// </code>
 	/// </example>
 	/// </remarks>
-	[ComVisible(false)]
 	public abstract class ModuleSettings : ApplicationSettingsBase
 	{
 		///
 		protected ModuleSettings()
 		{
 			var append = "\\" + GetType().Name + ".resources";
-			Context[ModuleSettingsProvider.LocalFileName] = Manager.GetFolderPath(SpecialFolder.LocalData) + append;
-			Context[ModuleSettingsProvider.RoamingFileName] = Manager.GetFolderPath(SpecialFolder.RoamingData) + append;
+			Context[ModuleSettingsProvider.LocalFileName] = Manager.GetFolderPath(SpecialFolder.LocalData, false) + append;
+			Context[ModuleSettingsProvider.RoamingFileName] = Manager.GetFolderPath(SpecialFolder.RoamingData, false) + append;
 		}
 		/// <summary>
 		/// Gets the module manager.

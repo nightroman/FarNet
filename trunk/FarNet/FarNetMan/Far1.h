@@ -62,13 +62,13 @@ public:
 	virtual String^ TempFolder(String^ prefix) override;
 	virtual String^ TempName(String^ prefix) override;
 	virtual void CopyToClipboard(String^ text) override;
-	virtual void PostJob(EventHandler^ handler) override;
+	virtual void PostJob(Action^ handler) override;
 	virtual void PostKeys(String^ keys, bool enableOutput) override;
 	virtual void PostKeySequence(array<int>^ sequence, bool enableOutput) override;
 	virtual void PostMacro(String^ macro, bool enableOutput, bool disablePlugins) override;
-	virtual void PostStep(EventHandler^ handler) override;
-	virtual void PostStepAfterKeys(String^ keys, EventHandler^ handler) override;
-	virtual void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2) override;
+	virtual void PostStep(Action^ handler) override;
+	virtual void PostStepAfterKeys(String^ keys, Action^ handler) override;
+	virtual void PostStepAfterStep(Action^ handler1, Action^ handler2) override;
 	virtual void PostText(String^ text, bool enableOutput) override;
 	virtual void Quit() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
@@ -77,7 +77,11 @@ internal:
 	static void Connect();
 private:
 	Far1() {}
+	// Instance
 	static Far1 Far;
+	// Paths
+	static String^ _LocalData;
+	static String^ _RoamingData;
 };
 
 }

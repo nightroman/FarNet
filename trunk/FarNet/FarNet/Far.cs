@@ -390,12 +390,13 @@ namespace FarNet
 		/// </remarks>
 		public abstract char CodeToChar(int code);
 		/// <summary>
-		/// Posts a handler to be invoked when user code has finished and Far gets control.
+		/// Posts a handler to be invoked when user code has finished and the core gets control.
 		/// </summary>
 		/// <param name="handler">Step handler.</param>
 		/// <remarks>
-		/// Many Far operations are executed only when Far gets control, i.e. when user code has finished.
-		/// Thus, normally you can not performs several such operations together. This method may help.
+		/// Some core operations are executed only when it gets control, i.e. when user code has finished.
+		/// Thus, such operations cannot be invoked as a synchronous sequence.
+		/// This method allows invoke them as an asynchronous sequence.
 		/// <para>
 		/// This mechanism works only when the plugins menu [F11] is available, because it is used internally for stepping.
 		/// Ensure some FarNet hotkey in the plugins menu. Use [F11] for menu, [F4] to set a hotkey there.
@@ -405,13 +406,13 @@ namespace FarNet
 		/// if you have another step to be invoked in modal mode (e.g. in a dialog after opening).
 		/// </para>
 		/// </remarks>
-		public abstract void PostStep(EventHandler handler);
+		public abstract void PostStep(Action handler);
 		/// <summary>
 		/// Posts the keys that normally start modal UI and a handler which is invoked in that modal mode.
 		/// </summary>
 		/// <param name="keys">Keys starting modal UI.</param>
 		/// <param name="handler">Handler to be called in modal mode.</param>
-		public abstract void PostStepAfterKeys(string keys, EventHandler handler);
+		public abstract void PostStepAfterKeys(string keys, Action handler);
 		/// <summary>
 		/// Invokes a handler that normally starts modal UI and posts another handler which is invoked in that modal mode.
 		/// </summary>
@@ -419,24 +420,24 @@ namespace FarNet
 		/// <param name="handler2">Handler to be called in modal mode.</param>
 		/// <remarks>
 		/// Steps in <see cref="PostStep"/> work fine if they do not call something modal, like a dialog, for example.
-		/// For this special case you should use this method: <b>handler1</b> normally calls something modal (dialog)
-		/// and <b>handler2</b> is posted to be invoked after that (e.g. when a dialog is opened).
+		/// For this special case you should use this method: <b>handler1</b> normally calls something modal (a dialog)
+		/// and <b>handler2</b> is posted to be invoked after that (when a dialog is opened).
 		/// </remarks>
-		public abstract void PostStepAfterStep(EventHandler handler1, EventHandler handler2);
+		public abstract void PostStepAfterStep(Action handler1, Action handler2);
 		/// <summary>
-		/// Posts a job that will be called by the Far main thread when Far gets control.
+		/// Posts a job that will be called by the core when it gets control.
 		/// </summary>
 		/// <param name="handler">Job handler to invoked.</param>
 		/// <remarks>
-		/// It is mostly designed for background job calls. Normally other threads are not allowed to call FarNet.
+		/// It is mostly designed for background job calls. Normally other threads are not allowed to call the core.
 		/// Violation of this rule may lead to crashes and unpredictable results. This methods is thread safe and it
-		/// allowes to post a delayed job that will be called from the main thread as soon as Far gets input control.
-		/// Thus, this posted job can use FarNet as usual.
+		/// allowes to post a delayed job that will be called from the main thread as soon as the core gets control.
+		/// Thus, this posted job can call the core as usual.
 		/// <para>
 		/// This method should be used very carefully and only when it is really needed.
 		/// </para>
 		/// </remarks>
-		public abstract void PostJob(EventHandler handler);
+		public abstract void PostJob(Action handler);
 		/// <summary>
 		/// Gets the current macro area.
 		/// </summary>
@@ -543,8 +544,12 @@ namespace FarNet
 		/// <returns></returns>
 		public abstract bool MatchPattern(string input, string pattern);
 		/// <summary>
-		/// Gets the local or roamimg data directory path of the application.
+		/// For internal use. Gets the local or roamimg data directory path of the application.
 		/// </summary>
+		/// <remarks>
+		/// This method and directories are used by the core and not designed for modules.
+		/// Modules should use <see cref="IModuleManager.GetFolderPath"/> in order to get their data directories.
+		/// </remarks>
 		public abstract string GetFolderPath(SpecialFolder folder);
 		/// <summary>
 		/// Returns the manager of a module specified by any type from its assembly.
@@ -709,4 +714,8 @@ namespace FarNet
 		/// </summary>
 		RoamingData = 1
 	}
+	/// <summary>
+	/// Encapsulates a method that has no parameters and does not return a value.
+	/// </summary>
+	public delegate void Action();
 }

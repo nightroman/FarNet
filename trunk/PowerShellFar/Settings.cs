@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System;
@@ -53,7 +53,6 @@ namespace PowerShellFar
 		/// See .hlf
 		/// </summary>
 		[UserScopedSetting]
-		[DefaultSettingValue("")]
 		[SettingsManageability(SettingsManageability.Roaming)]
 		public string StartupCode
 		{
@@ -64,7 +63,6 @@ namespace PowerShellFar
 		/// See .hlf
 		/// </summary>
 		[UserScopedSetting]
-		[DefaultSettingValue("")]
 		[SettingsManageability(SettingsManageability.Roaming)]
 		public string StartupEdit
 		{

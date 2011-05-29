@@ -185,25 +185,4 @@ namespace PowerShellFar
 		}
 	}
 
-	/// <summary>
-	/// Provider item minimal file.
-	/// </summary>
-	sealed class ItemFile : FarFile
-	{
-		readonly PSObject Value;
-		public ItemFile(PSObject value) { Value = value; }
-		public override string Name
-		{
-			get { return Value.Properties["PSChildName"].Value.ToString(); }
-		}
-		public override object Data
-		{
-			get { return Value; }
-		}
-		public override FileAttributes Attributes
-		{
-			get { return ((bool)Value.Properties["PSIsContainer"].Value) ? FileAttributes.Directory : 0; }
-		}
-	}
-
 }

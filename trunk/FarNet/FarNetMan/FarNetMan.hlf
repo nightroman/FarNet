@@ -30,6 +30,7 @@ The main plugin menu shows the following menus:
 	~Editors menu~@MenuEditors@
 	~Viewers menu~@MenuViewers@
 	~Console menu~@MenuConsole@
+	~Settings menu~@ModuleSettings@
 
 
 @MenuPanels
@@ -130,7 +131,7 @@ $#Config menu#
 ~Contents~@Contents@
 
 This menu allows to configure FarNet module tools:
-commands, editors, filers, menus, and to set module options.
+commands, editors, filers, menus, and to set common module options.
 
 #Menu tools# : shows the ~Configure menu tools~@ConfigTool@ menu.
 
@@ -141,6 +142,16 @@ commands, editors, filers, menus, and to set module options.
 #Filers# : shows the ~Configure filers~@ConfigFiler@ menu.
 
 #UI culture# : shows the ~Module UI culture~@ConfigUICulture@ menu.
+
+---
+
+NOTE: These are #system settings#. They exist for all modules and their tools.
+In contrast, there are also #user settings# panels opened from the plugin menu
+in panels. User settings exist only if they are implemented by a module.
+See ~Settings menu and panels~@ModuleSettings@ (#F11 | .NET | Settings#).
+
+In addition, modules may provide custom settings dialogs and even not standard
+ways to configure settings (e.g. via registry), see module manuals.
 
 
 @ConfigTool
@@ -331,3 +342,15 @@ defaults, such settings are simply ignored on this operation.
 
 If there are changed values then settings are saved when a panel closes (for
 example, by [#Esc#]).
+
+HINT: in editors consider to save changes ([#F2#]) before exiting. In that
+case, if a text cannot be converted to a target type then after an error
+message the modified text is not lost, it can be fixed and saved again.
+
+---
+
+NOTE: These are #user settings# of a module that provides them. In contrast,
+there are also #system settings# menus and dialogs. System settings exist for
+all modules and their tools.
+See ~Config menu~@MenuConfig@ (#F9 | Options | Plugin configuration#).
+

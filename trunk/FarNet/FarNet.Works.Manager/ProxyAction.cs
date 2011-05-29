@@ -35,34 +35,33 @@ namespace FarNet.Works
 			_Id = id;
 			_Attribute = attribute;
 
-			Init();
+			Initialize();
 		}
 		protected ProxyAction(ModuleManager manager, Type classType, Type attributeType)
 		{
-			if (classType == null)
-				throw new ArgumentNullException("classType");
-			if (attributeType == null)
-				throw new ArgumentNullException("attributeType");
+			if (classType == null) throw new ArgumentNullException("classType");
+			if (attributeType == null) throw new ArgumentNullException("attributeType");
 
 			_Manager = manager;
 			_ClassType = classType;
-			_Id = classType.GUID;
 
 			object[] attrs;
 
-			// ID: we have already got it, now ensure it is explicitely set
+			// Guid attribute; get it this way, not as Type.GUID, to be sure the attribute is applied
 			attrs = _ClassType.GetCustomAttributes(typeof(GuidAttribute), false);
 			if (attrs.Length == 0)
-				throw new ModuleException(string.Format(null, "The Guid attribute should be set for the class '{0}'.", _ClassType.Name));
+				throw new ModuleException(string.Format(null, "Apply the Guid attribute to the '{0}' class.", _ClassType.Name));
 
+			_Id = new Guid(((GuidAttribute)attrs[0]).Value);
+			
 			// Module* attribure
 			attrs = _ClassType.GetCustomAttributes(attributeType, false);
 			if (attrs.Length == 0)
-				throw new ModuleException(string.Format(null, "The '{0}' should be set for the class '{1}'.", attributeType.Name, _ClassType.Name));
+				throw new ModuleException(string.Format(null, "Apply the '{0}' attribute to the '{1}' class.", attributeType.Name, _ClassType.Name));
 
 			_Attribute = (ModuleActionAttribute)attrs[0];
 
-			Init();
+			Initialize();
 
 			if (_Attribute.Resources)
 			{
@@ -86,7 +85,7 @@ namespace FarNet.Works
 
 			return (ModuleAction)_Manager.CreateEntry(_ClassType);
 		}
-		void Init()
+		void Initialize()
 		{
 			if (string.IsNullOrEmpty(_Attribute.Name))
 				throw new ModuleException("Empty module action name is not valid.");
@@ -105,7 +104,7 @@ namespace FarNet.Works
 		}
 		internal virtual void WriteCache(IList data)
 		{
-			data.Add(Kind);
+			data.Add((int)Kind);
 			data.Add(ClassName);
 			data.Add(Name);
 			data.Add(_Id);

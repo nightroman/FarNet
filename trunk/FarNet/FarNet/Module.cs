@@ -75,7 +75,6 @@ namespace FarNet
 		{
 			return Manager.GetString(name);
 		}
-
 		/// <summary>
 		/// Gets the module manager.
 		/// </summary>
@@ -113,7 +112,7 @@ namespace FarNet
 	/// <summary>
 	/// The module manager shared between all module items.
 	/// </summary>
-	public interface IModuleManager
+	public abstract class IModuleManager
 	{
 		/// <summary>
 		/// Gets or sets the current UI culture.
@@ -128,29 +127,28 @@ namespace FarNet
 		/// <li>To use cultures which are not even known to Far itself (there are no such .lng files).</li>
 		/// </ul>
 		/// </remarks>
-		CultureInfo CurrentUICulture { get; set; }
+		public abstract CultureInfo CurrentUICulture { get; set; }
 		/// <summary>
 		/// The <see cref="BaseModuleItem.GetString"/> worker.
 		/// </summary>
-		string GetString(string name);
+		public abstract string GetString(string name);
 		/// <summary>
 		/// Gets the path to the system special folder that is identified by the specified enumeration.
 		/// </summary>
+		/// <param name="folder">Special folder enumeration.</param>
+		/// <param name="create">Tells to create the directory if it does not exist.</param>
 		/// <remarks>
-		/// The requested directory is created if it does not exist.
-		/// <para>
-		/// Local and roaming data directories are designed for module files.
-		/// But names like <b>FarNet.*</b> are reserved for the internal use.
-		/// </para>
+		/// Local and roaming data directories are designed for module data and settings files.
+		/// NOTE: Names like <b>FarNet.*</b> are reserved for the internal use.
 		/// </remarks>
-		string GetFolderPath(SpecialFolder folder);
+		public abstract string GetFolderPath(SpecialFolder folder, bool create);
 		/// <summary>
 		/// Unregisters the module in critical cases.
 		/// </summary>
 		/// <remarks>
 		/// This method should be called only on fatal errors and similar cases.
 		/// </remarks>
-		void Unregister();
+		public abstract void Unregister();
 		/// <summary>
 		/// Registers the command handler invoked from the command line by its prefix.
 		/// </summary>
@@ -162,7 +160,7 @@ namespace FarNet
 		/// Dynamic registration is not recommended for standard scenarios.
 		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 		/// </remarks>
-		IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
+		public abstract IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
 		/// <summary>
 		/// Registers the file handler invoked for a file. See <see cref="ModuleFilerEventArgs"/>.
 		/// </summary>
@@ -174,7 +172,7 @@ namespace FarNet
 		/// Dynamic registration is not recommended for standard scenarios.
 		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 		/// </remarks>
-		IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler);
+		public abstract IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler);
 		/// <summary>
 		/// Registers the tool handler invoked from one of Far menus.
 		/// </summary>
@@ -186,23 +184,23 @@ namespace FarNet
 		/// Dynamic registration is not recommended for standard scenarios.
 		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
 		/// </remarks>
-		IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
+		public abstract IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler);
 		/// <summary>
 		/// Gets the module name.
 		/// </summary>
-		string ModuleName { get; }
+		public abstract string ModuleName { get; }
 		/// <summary>
 		/// For internal use.
 		/// </summary>
-		string StoredUICulture { get; set; }
+		public abstract string StoredUICulture { get; set; }
 		/// <summary>
-		/// For internal use. Loads the module assembly (without connecting it).
+		/// For internal use. Loads the module without connecting it.
 		/// </summary>
-		Assembly LoadAssembly();
+		public abstract Assembly LoadAssembly();
 		/// <summary>
 		/// For internal use.
 		/// </summary>
-		void SaveSettings();
+		public abstract void SaveSettings();
 	}
 
 	/// <summary>
@@ -250,7 +248,6 @@ namespace FarNet
 		/// </remarks>
 		public virtual void Connect()
 		{ }
-
 		/// <summary>
 		/// Override this method to process the module disconnection.
 		/// </summary>
@@ -265,7 +262,6 @@ namespace FarNet
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public virtual void Disconnect()
 		{ }
-
 		/// <summary>
 		/// Called before invocation of any module action.
 		/// </summary>
@@ -287,7 +283,6 @@ namespace FarNet
 		/// </remarks>
 		public virtual void Invoking()
 		{ }
-
 		/// <summary>
 		/// Can the module exit now?
 		/// </summary>

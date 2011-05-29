@@ -29,10 +29,10 @@ public:
 	static bool InvokeCommand(const wchar_t* command, MacroArea area);
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static void ChangeFontSize(bool increase);
-	static void PostJob(EventHandler^ handler);
-	static void PostStep(EventHandler^ handler);
-	static void PostStepAfterKeys(String^ keys, EventHandler^ handler);
-	static void PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2);
+	static void PostJob(Action^ handler);
+	static void PostStep(Action^ handler);
+	static void PostStepAfterKeys(String^ keys, Action^ handler);
+	static void PostStepAfterStep(Action^ handler1, Action^ handler2);
 	static void ShowConsoleMenu();
 	static void ShowMenu(ModuleToolOptions from);
 public:
@@ -46,7 +46,7 @@ private:
 	static void AssertHotkeys();
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
-	static void VoidStep(Object^, EventArgs^) {}
+	static void VoidStep() {}
 	static void InvalidateProxyTool(ModuleToolOptions options);
 	static String^ GetMenuText(IModuleTool^ tool);
 private:
@@ -71,10 +71,10 @@ private:
 	// Post
 	static String^ _hotkey;
 	static array<int>^ _hotkeys;
-	static EventHandler^ _handler;
+	static Action^ _handler;
 	// Sync
 	static HANDLE _hMutex;
-	static List<EventHandler^> _syncHandlers;
+	static Action^ _jobs;
 };
 
 }

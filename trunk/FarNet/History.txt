@@ -1,5 +1,43 @@
 http://code.google.com/p/farnet/
 
+= 4.4.15 =
+
+*) IFar
+- All Post*(EventHandler) methods are replaced with Post*(Action). Practice
+shows that EventHandler is redundant. This change is breaking but not many
+modules should be affected (the latest PowerShellFar is updated).
+
+*) IModuleManager.GetFolderPath()
+- Added the 'bool create' parameter, so that creation is now optional and
+it is requested only when it is really needed (on writing files). Thus:
+-- Better performance (some expensive checks of existance are avoided)
+-- No more empty profile sub-directories (you can remove them now)
+
+*) Module settings engine
+- Binary serialization should work fine now (with usual caveats).
+- Saves one file if just one of Local and Roaming sets is dirty.
+- Other tweaks.
+
+*) Module settings panel
+- Better validation of entered values (consider to [F2] before closing editors).
+- Values serialized as XML can be edited as XML. Normally such data should be
+[Browsable(false)] (excluded from UI) but it's up to a developer, after all.
+
+*) Sample modules in FarNet\Modules
+Replaced sample modules Tutorial-Command, Tutorial-Filer, Tutorial-Host with
+one module FarNet.Demo with its Visual Studio solution/project. Features:
+  * Host class (not pre-loaded)
+  * Menu tool class (all areas)
+  * Command class (prefix `Demo:`)
+  * Filer class (`*.resources` files)
+  * Explorer class (used by the filer)
+  * Settings classes (various settings)
+  * Localized module resources (English and Russian)
+
+*) Misc
+- IFar.PostJob uses delegate chains instead of job queues.
+- Cache.binary does not use FarNet types (bullet-proof and effective way).
+
 = 4.4.13 =
 = 4.4.14 =
 
@@ -36,7 +74,7 @@ that their settings can be viewed/modified in the new module settings panel.
 - Removed KeyPressing event (Far 3 is going to drop it, perhaps).
 
 *) 4.4.14
-Fix for localized moduled.
+Fix for localized modules.
 
 = 4.4.12 =
 

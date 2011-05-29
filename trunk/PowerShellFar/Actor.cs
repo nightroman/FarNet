@@ -483,6 +483,7 @@ Continue with this current directory?
 		/// See also .hlf topic [Settings].
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public Settings Settings
 		{
 			get { return Settings.Default; }

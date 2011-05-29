@@ -599,7 +599,7 @@ void Far0::AssertHotkeys()
 // tasks. PostJob does not allow to open panels, to call PostMacro, etc.
 // Workarounds (to post steps as steps or as jobs depending on X) are not neat.
 // Thus, wait for a good CallPlugin in Far or for some other new features.
-void Far0::PostStep(EventHandler^ handler)
+void Far0::PostStep(Action^ handler)
 {
 	// ensure keys
 	AssertHotkeys();
@@ -609,7 +609,7 @@ void Far0::PostStep(EventHandler^ handler)
 	Far::Net->PostKeySequence(_hotkeys);
 }
 
-void Far0::PostStepAfterKeys(String^ keys, EventHandler^ handler)
+void Far0::PostStepAfterKeys(String^ keys, Action^ handler)
 {
 	// ensure keys
 	AssertHotkeys();
@@ -620,22 +620,22 @@ void Far0::PostStepAfterKeys(String^ keys, EventHandler^ handler)
 	Far::Net->PostKeySequence(_hotkeys);
 }
 
-void Far0::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
+void Far0::PostStepAfterStep(Action^ handler1, Action^ handler2)
 {
 	// ensure keys
 	AssertHotkeys();
 
-	// post the second handler, keys and invoke the first handler
+	// post the second handler, then keys, and invoke the first handler
 	_handler = handler2;
 	Far::Net->PostKeySequence(_hotkeys);
 	try
 	{
-		handler1->Invoke(nullptr, nullptr);
+		handler1->Invoke();
 	}
 	catch(...)
 	{
-		//! 'F11 <hotkey>' is already posted and will trigger the menu; so, let's use a fake step
-		_handler = gcnew EventHandler(&VoidStep);
+		//! 'F11 <hotkey>' is posted and going to trigger the menu anyway; so, use a fake step
+		_handler = gcnew Action(&VoidStep);
 		throw;
 	}
 }
@@ -645,9 +645,9 @@ void Far0::OpenMenu(ModuleToolOptions from)
 	// process and drop a posted step handler
 	if (_handler)
 	{
-		EventHandler^ handler = _handler;
+		Action^ handler = _handler;
 		_handler = nullptr;
-		handler(nullptr, nullptr);
+		handler();
 		return;
 	}
 
@@ -751,43 +751,52 @@ void Far0::AsProcessSynchroEvent(int type, void* /*param*/)
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
-		//! handlers can be added during calls, don't use 'for each'
-		while(_syncHandlers.Count)
-		{
-			EventHandler^ handler = _syncHandlers[0];
-			_syncHandlers.RemoveAt(0);
-
-			Log::Source->TraceInformation("AsProcessSynchroEvent: {0}", gcnew LogHandler(handler));
-			handler(nullptr, nullptr);
-		}
+		if (!_jobs)
+			return;
+	
+		//! handlers can be added during invoking
+		Action^ jobs = _jobs;
+		_jobs = nullptr;
+		
+		// invoke
+		Log::Source->TraceInformation("AsProcessSynchroEvent: invoking job(s): {0}", gcnew Works::DelegateToString(jobs));
+		jobs();
 	}
 	finally
 	{
-		_syncHandlers.Clear();
-
 		ReleaseMutex(_hMutex);
 	}
 }
 
-void Far0::PostJob(EventHandler^ handler)
+void Far0::PostJob(Action^ handler)
 {
 	if (!handler)
 		throw gcnew ArgumentNullException("handler");
 
+	Works::DelegateToString log(handler);
+	
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
-		if (_syncHandlers.IndexOf(handler) >= 0)
+		if (_jobs && _jobs != Delegate::Remove(_jobs, handler))
 		{
-			Log::Source->TraceInformation("PostJob: skip already posted {0}", gcnew LogHandler(handler));
+			Log::Source->TraceInformation("PostJob: skip existing job: {0}", %log);
 			return;
 		}
 
-		Log::Source->TraceInformation("PostJob: call ACTL_SYNCHRO and post {0}", gcnew LogHandler(handler));
-
-		_syncHandlers.Add(handler);
-		if (_syncHandlers.Count == 1)
+		if (_jobs)
+		{
+			Log::Source->TraceInformation("PostJob: post to the queue: {0}", %log);
+			
+			_jobs += handler;
+		}
+		else
+		{
+			Log::Source->TraceInformation("PostJob: post the head job: {0}", %log);
+			
+			_jobs = handler;
 			Info.AdvControl(Info.ModuleNumber, ACTL_SYNCHRO, 0);
+		}
 	}
 	finally
 	{
@@ -957,7 +966,7 @@ public:
 		_proxyCommand = proxyCommand;
 		_args = args;
 	}
-	void Invoke(Object^, EventArgs^)
+	void Invoke()
 	{
 		_proxyCommand->Invoke(nullptr, _args);
 	}
@@ -994,7 +1003,7 @@ bool Far0::InvokeCommand(const wchar_t* command, MacroArea area)
 		// invoke later
 		if (isAsync)
 		{
-			EventHandler^ handler = gcnew EventHandler(gcnew CommandJob(it, e), &CommandJob::Invoke);
+			Action^ handler = gcnew Action(gcnew CommandJob(it, e), &CommandJob::Invoke);
 			if (isAsync2)
 				Far::Net->PostJob(handler);
 			else

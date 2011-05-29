@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
@@ -98,23 +98,6 @@ namespace FarNet
 				TraceException(e);
 				return null;
 			}
-		}
-	}
-	/// <summary>
-	/// For internal use.
-	/// </summary>
-	public sealed class LogHandler
-	{
-		EventHandler _handler;
-		///
-		public LogHandler(EventHandler handler)
-		{
-			_handler = handler;
-		}
-		///
-		public override string ToString()
-		{
-			return _handler.Method.ReflectedType.FullName + "." + _handler.Method.Name;
 		}
 	}
 }

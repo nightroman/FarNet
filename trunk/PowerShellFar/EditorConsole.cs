@@ -29,7 +29,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public static EditorConsole CreateConsole(bool prompt)
 		{
-			string dir = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData), "psfconsole");
+			string dir = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, false), "psfconsole");
 			if (!Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
 

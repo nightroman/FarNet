@@ -78,7 +78,7 @@ namespace FarNet.Works
 		internal sealed override void WriteCache(IList data)
 		{
 			base.WriteCache(data);
-			data.Add(Attribute.Options);
+			data.Add((int)Attribute.Options);
 		}
 		new ModuleToolAttribute Attribute
 		{
