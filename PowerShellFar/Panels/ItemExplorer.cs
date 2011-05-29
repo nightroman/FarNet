@@ -207,7 +207,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return null;
 
-			return Explore(My.PathEx.Combine(Location, args.File.Name), args);
+			return Explore(My.PathEx.Combine(Location, args.File.Name));
 		}
 		///
 		public override Explorer DoExploreParent(ExploreParentEventArgs args)
@@ -243,7 +243,7 @@ namespace PowerShellFar
 					// FarMacro
 					args.PostName = path.Substring(iProvider + 2);
 					path = path.Substring(0, iProvider + 2);
-					return Explore(path, args);
+					return Explore(path);
 				}
 				else
 				{
@@ -275,7 +275,7 @@ namespace PowerShellFar
 			if (path != null && path.EndsWith(":", StringComparison.Ordinal))
 				path += "\\";
 
-			return Explore(path, args);
+			return Explore(path);
 		}
 		///
 		public override Explorer DoExploreRoot(ExploreRootEventArgs args)
@@ -284,12 +284,12 @@ namespace PowerShellFar
 			if (string.IsNullOrEmpty(driveName))
 				return null;
 
-			return Explore(driveName + ":\\", args);
+			return Explore(driveName + ":\\");
 		}
-		Explorer Explore(string location, ExplorerEventArgs args)
+		Explorer Explore(string location)
 		{
 			//! propagate the provider, or performance sucks
-			ItemExplorer newExplorer = new ItemExplorer(location);
+			var newExplorer = new ItemExplorer(location);
 			newExplorer.Provider = Provider;
 			newExplorer.Columns = Columns;
 			return newExplorer;

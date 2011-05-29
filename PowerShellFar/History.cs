@@ -24,13 +24,13 @@ namespace PowerShellFar
 		/// History list current index.
 		/// </summary>
 		public static int CacheIndex { get; set; }
-		static string GetFileName()
+		static string GetFileName(bool create)
 		{
-			return A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData) + @"\PowerShellFarHistory.log";
+			return A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, create) + @"\PowerShellFarHistory.log";
 		}
 		static void WriteLines(string[] lines)
 		{
-			File.WriteAllLines(GetFileName(), lines);
+			File.WriteAllLines(GetFileName(true), lines);
 		}
 		/// <summary>
 		/// Gets history lines.
@@ -40,7 +40,7 @@ namespace PowerShellFar
 			// get lines
 			try
 			{
-				var lines = File.ReadAllLines(GetFileName());
+				var lines = File.ReadAllLines(GetFileName(false));
 				if (lines.Length > Settings.Default.MaximumHistoryCount + Settings.Default.MaximumHistoryCount / 10)
 					return Update(lines);
 				else
@@ -93,7 +93,7 @@ namespace PowerShellFar
 		/// </summary>
 		public static void AddLine(string value)
 		{
-			using (var writer = File.AppendText(GetFileName()))
+			using (var writer = File.AppendText(GetFileName(true)))
 				writer.WriteLine(value);
 		}
 		/// <summary>

@@ -423,7 +423,7 @@ namespace PowerShellFar
 
 			for (int show = 0; ; ++show)
 			{
-				WatchJobs(null, null);
+				WatchJobs();
 				if (show > 0 && Jobs.Count == 0)
 					return;
 
@@ -523,7 +523,7 @@ namespace PowerShellFar
 		/// Normally it is posted by <see cref="AsyncTimerCallback"/>.
 		/// It is ok to call it directly but from the main thread only.
 		/// </remarks>
-		static void WatchJobs(object sender, EventArgs e)
+		static void WatchJobs()
 		{
 			// watch the jobs
 			var finished = new List<Job>(Jobs.Count);

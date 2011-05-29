@@ -179,6 +179,7 @@ namespace PowerShellFar
 		/// <remarks>
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="SetFileEventArgs"/>.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AsSet")]
 		public ScriptBlock AsSetFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void SetFile(SetFileEventArgs args)
@@ -198,6 +199,7 @@ namespace PowerShellFar
 		/// <remarks>
 		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="SetTextEventArgs"/>.
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AsSet")]
 		public ScriptBlock AsSetText { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
 		public sealed override void SetText(SetTextEventArgs args)

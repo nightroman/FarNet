@@ -8,56 +8,66 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Resources;
-using System.Runtime.InteropServices;
-using System.Xml.Serialization;
 
 namespace FarNet.Settings
 {
 	/// <summary>
-	/// Settings provider using .resource files.
+	/// Settings provider using .resources files.
 	/// </summary>
 	/// <remarks>
-	/// The type is used as an argument of <c>SettingsProviderAttribute</c>
-	/// of classes derived from <c>ApplicationSettingsBase</c> or its child classes.
+	/// The type of this class is used as the argument of <c>SettingsProviderAttribute</c> of settings classes.
 	/// <para>
-	/// Implementation is straightforward: it reads and writes .resources using <c>ResourceReader</c> and <c>ResourceWriter</c>.
-	/// It writes all settings and reads present only. Missing old settings data are removed from files when settings are saved.
+	/// Implementation.
+	/// It reads and writes .resources using <c>ResourceReader</c> and <c>ResourceWriter</c>.
+	/// It reads existing now settings and saves all requested settings including not dirty.
+	/// Thus, old missing entries are removed from files when settings are saved.
+	/// </para>
+	/// <para>
+	/// Settings contexts should have <see cref="RoamingFileName"/> and <see cref="LocalFileName"/>
+	/// paths of .resources files where roaming and local settings are stored.
 	/// </para>
 	/// </remarks>
-	[ComVisible(false)]
 	public sealed class ModuleSettingsProvider : SettingsProvider
 	{
-		internal const string LocalFileName = "LocalFileName";
-		internal const string RoamingFileName = "RoamingFileName";
+		///
+		public const string LocalFileName = "LocalFileName";
+		///
+		public const string RoamingFileName = "RoamingFileName";
 		///
 		public override void Initialize(string name, NameValueCollection config)
 		{
-			base.Initialize(name ?? ApplicationName, config);
+			base.Initialize(name ?? "ModuleSettingsProvider", config);
 		}
 		///
 		public override string ApplicationName
 		{
-			get { return Assembly.GetExecutingAssembly().GetName().Name; }
+			get { return string.Empty; }
 			set { }
 		}
 		///
 		public override string Name
 		{
-			get { return GetType().Name; }
+			get { return "ModuleSettingsProvider"; }
 		}
 		static bool IsRoaming(SettingsProperty property)
 		{
 			return property.Attributes.ContainsKey(typeof(SettingsManageabilityAttribute));
 		}
-		static string GetFileName(SettingsContext context, string name)
+		static string FileName(SettingsContext context, string name, bool create)
 		{
 			var file = (string)context[name];
-			if (string.IsNullOrEmpty(file))
+			if (file == null)
 				throw new InvalidOperationException("Settings context does not contain " + name);
+
+			if (create)
+			{
+				var dir = Path.GetDirectoryName(file);
+				if (!Directory.Exists(dir))
+					Directory.CreateDirectory(dir);
+			}
+
 			return file;
 		}
 		static Hashtable ReadData(string fileName)
@@ -70,24 +80,30 @@ namespace FarNet.Settings
 			{
 				var it = reader.GetEnumerator();
 				while (it.MoveNext())
-				{
-					try
-					{
-						data.Add(it.Key, it.Value);
-					}
-					catch (Exception ex)
-					{
-						Far.Net.ShowError("Reading settings", ex);
-					}
-				}
+					data.Add(it.Key, it.Value);
 			}
 
 			return data;
 		}
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
 		public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection)
 		{
+			bool dirtyLocal = false;
+			bool dirtyRoaming = false;
+
+			foreach (SettingsPropertyValue settingsPropertyValue in collection)
+			{
+				if (settingsPropertyValue.IsDirty)
+				{
+					if (IsRoaming(settingsPropertyValue.Property))
+						dirtyRoaming = true;
+					else
+						dirtyLocal = true;
+				}
+			}
+
 			ResourceWriter writerLocal = null;
 			ResourceWriter writerRoaming = null;
 			try
@@ -96,29 +112,21 @@ namespace FarNet.Settings
 				{
 					ResourceWriter writer;
 					if (IsRoaming(settingsPropertyValue.Property))
-						writer = writerRoaming ?? (writerRoaming = new ResourceWriter(GetFileName(context, RoamingFileName)));
-					else
-						writer = writerLocal ?? (writerLocal = new ResourceWriter(GetFileName(context, LocalFileName)));
-
-					switch (settingsPropertyValue.Property.SerializeAs)
 					{
-						case SettingsSerializeAs.String:
-							writer.AddResource(settingsPropertyValue.Name, Convert.ToString(settingsPropertyValue.PropertyValue, CultureInfo.InvariantCulture));
-							break;
-						case SettingsSerializeAs.Binary:
-							writer.AddResource(settingsPropertyValue.Name, settingsPropertyValue.PropertyValue);
-							break;
-						case SettingsSerializeAs.Xml:
-							var serializer = new XmlSerializer(settingsPropertyValue.Property.PropertyType);
-							using (var sw = new StringWriter())
-							{
-								serializer.Serialize(sw, settingsPropertyValue.PropertyValue);
-								writer.AddResource(settingsPropertyValue.Name, sw.ToString());
-							}
-							break;
+						if (!dirtyRoaming)
+							continue;
+
+						writer = writerRoaming ?? (writerRoaming = new ResourceWriter(FileName(context, RoamingFileName, true)));
+					}
+					else
+					{
+						if (!dirtyLocal)
+							continue;
+
+						writer = writerLocal ?? (writerLocal = new ResourceWriter(FileName(context, LocalFileName, true)));
 					}
 
-					settingsPropertyValue.IsDirty = false;
+					writer.AddResource(settingsPropertyValue.Name, settingsPropertyValue.SerializedValue);
 				}
 			}
 			finally
@@ -129,6 +137,9 @@ namespace FarNet.Settings
 				if (writerRoaming != null)
 					writerRoaming.Close();
 			}
+
+			foreach (SettingsPropertyValue settingsPropertyValue in collection)
+				settingsPropertyValue.IsDirty = false;
 		}
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
@@ -141,22 +152,17 @@ namespace FarNet.Settings
 			var settingsPropertyValueCollection = new SettingsPropertyValueCollection();
 			foreach (SettingsProperty settingsProperty in collection)
 			{
-				var settingsPropertyValue = new SettingsPropertyValue(settingsProperty);
-
 				Hashtable data;
-				if (IsRoaming(settingsPropertyValue.Property))
-					data = dataRoaming ?? (dataRoaming = ReadData(GetFileName(context, RoamingFileName)));
+				if (IsRoaming(settingsProperty))
+					data = dataRoaming ?? (dataRoaming = ReadData(FileName(context, RoamingFileName, false)));
 				else
-					data = dataLocal ?? (dataLocal = ReadData(GetFileName(context, LocalFileName)));
+					data = dataLocal ?? (dataLocal = ReadData(FileName(context, LocalFileName, false)));
+
+				var settingsPropertyValue = new SettingsPropertyValue(settingsProperty);
 
 				var value = data[settingsProperty.Name];
 				if (value != null)
-				{
-					if (settingsProperty.SerializeAs == SettingsSerializeAs.Binary)
-						settingsPropertyValue.PropertyValue = value;
-					else
-						settingsPropertyValue.SerializedValue = value;
-				}
+					settingsPropertyValue.SerializedValue = value;
 
 				settingsPropertyValueCollection.Add(settingsPropertyValue);
 			}

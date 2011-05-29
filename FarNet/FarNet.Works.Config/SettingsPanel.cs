@@ -52,18 +52,11 @@ namespace FarNet.Works.Config
 			foreach (FarFile file in SelectedFiles)
 			{
 				var property = (SettingsProperty)file.Data;
-				if (property.DefaultValue == null)
+				var text = property.DefaultValue as string;
+				if (text == null)
 					continue;
 
-				var value = _Explorer.Settings.PropertyValues[property.Name];
-
-				//! fragile
-				value.PropertyValue = null;
-				value.Deserialized = false;
-				value.SerializedValue = property.DefaultValue.ToString();
-				file.Description = Convert.ToString(_Explorer.Settings[property.Name]);
-
-				_isDirty = true;
+				file.Description = _Explorer.SetPropertyText(property, text);
 			}
 
 			Update(false);
