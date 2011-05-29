@@ -4,7 +4,7 @@
 
 Vessel (short for View/Edit/Save/SELect) records and maintains history of file
 view, edit, and save operations and related statistics. The history file is:
-%USERPROFILE%\VesselHistory.log
+`%LOCALAPPDATA%\Far Manager\FarNet\Vessel\VesselHistory.log`
 
 Features
 
