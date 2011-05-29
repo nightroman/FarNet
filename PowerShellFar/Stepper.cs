@@ -323,7 +323,7 @@ namespace PowerShellFar
 		}
 
 		// Invokes the next step in the step sequence.
-		void Action(object sender, EventArgs e)
+		void Action()
 		{
 			AssumeCanStep();
 
@@ -423,7 +423,7 @@ namespace PowerShellFar
 					if (script != null)
 					{
 						++_StepIndex;
-						Far.Net.PostStepAfterStep(Wrap.EventHandler(script), Action);
+						Far.Net.PostStepAfterStep(delegate { script.Invoke(); }, Action);
 						return;
 					}
 

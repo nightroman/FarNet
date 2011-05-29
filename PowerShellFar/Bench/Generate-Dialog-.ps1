@@ -17,7 +17,7 @@
 param
 (
 	# Where generated code is saved.
-	$OutputPath = "$($Psf.Manager.GetFolderPath(0))\GeneratedDialog-.ps1"
+	$OutputPath = "$($Psf.Manager.GetFolderPath(0, 1))\GeneratedDialog-.ps1"
 )
 
 Set-StrictMode -Version 2

@@ -22,29 +22,30 @@ namespace FarNet.Works
 		Assembly _AssemblyInstance;
 		CultureInfo _CurrentUICulture;
 		ResourceManager _ResourceManager;
-		internal bool HasSettings { get; set; }
 		// Module host
-		ModuleHost _ModuleHostInstance;
 		string _ModuleHostClassName;
 		Type _ModuleHostClassType;
-		// Module settings
+		ModuleHost _ModuleHost;
+		// Has user settings sets?
+		internal bool HasSettings { get; set; }
+		// New module manager
 		internal ModuleManager(string assemblyPath)
 		{
 			_AssemblyPath = assemblyPath;
 		}
-		string GetSettingsFileName()
+		string GetSettingsFileName(bool create)
 		{
-			return GetFolderPath(SpecialFolder.RoamingData) + @"\FarNet.binary";
+			return GetFolderPath(SpecialFolder.RoamingData, create) + @"\FarNet.binary";
 		}
 		internal Hashtable ReadSettings()
 		{
-			var file = GetSettingsFileName();
+			var file = GetSettingsFileName(false);
 			if (!File.Exists(file))
 				return new Hashtable();
 
 			object deserialized;
 			var formatter = new BinaryFormatter();
-			using (var stream = new FileStream(GetSettingsFileName(), FileMode.Open, FileAccess.Read, FileShare.Read))
+			using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
 				deserialized = formatter.Deserialize(stream);
 
 			return deserialized as Hashtable ?? new Hashtable();
@@ -62,11 +63,11 @@ namespace FarNet.Works
 		}
 		void ConnectModuleHost()
 		{
-			_ModuleHostInstance = (ModuleHost)CreateEntry(_ModuleHostClassType);
+			_ModuleHost = (ModuleHost)CreateEntry(_ModuleHostClassType);
 			_ModuleHostClassType = null;
 
-			Log.Source.TraceInformation("Connect {0}", _ModuleHostInstance);
-			_ModuleHostInstance.Connect();
+			Log.Source.TraceInformation("Connect {0}", _ModuleHost);
+			_ModuleHost.Connect();
 		}
 		internal BaseModuleItem CreateEntry(Type type)
 		{
@@ -74,7 +75,7 @@ namespace FarNet.Works
 		}
 		internal ModuleHost GetLoadedModuleHost()
 		{
-			return _ModuleHostInstance;
+			return _ModuleHost;
 		}
 		internal string GetModuleHostClassName()
 		{
@@ -84,14 +85,14 @@ namespace FarNet.Works
 			if (_ModuleHostClassType != null)
 				return _ModuleHostClassType.FullName;
 
-			if (_ModuleHostInstance != null)
-				return _ModuleHostInstance.GetType().FullName;
+			if (_ModuleHost != null)
+				return _ModuleHost.GetType().FullName;
 
 			return null;
 		}
 		internal bool HasHost()
 		{
-			return _ModuleHostInstance != null || _ModuleHostClassName != null || _ModuleHostClassType != null;
+			return _ModuleHost != null || _ModuleHostClassName != null || _ModuleHostClassType != null;
 		}
 		internal void Invoking()
 		{
@@ -104,8 +105,8 @@ namespace FarNet.Works
 			if (_ModuleHostClassType != null)
 				ConnectModuleHost();
 
-			if (_ModuleHostInstance != null)
-				_ModuleHostInstance.Invoking();
+			if (_ModuleHost != null)
+				_ModuleHost.Invoking();
 		}
 		internal bool LoadLoadableModuleHost()
 		{
@@ -119,7 +120,7 @@ namespace FarNet.Works
 			ConnectModuleHost();
 			return true;
 		}
-		public IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
+		public override IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler)
 		{
 			if (handler == null)
 				throw new ArgumentNullException("handler");
@@ -134,7 +135,7 @@ namespace FarNet.Works
 			Host.Instance.RegisterProxyCommand(it);
 			return it;
 		}
-		public IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler)
+		public override IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler)
 		{
 			if (handler == null)
 				throw new ArgumentNullException("handler");
@@ -149,7 +150,7 @@ namespace FarNet.Works
 			Host.Instance.RegisterProxyFiler(it);
 			return it;
 		}
-		public IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
+		public override IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
 		{
 			if (handler == null)
 				throw new ArgumentNullException("handler");
@@ -164,30 +165,28 @@ namespace FarNet.Works
 			Host.Instance.RegisterProxyTool(it);
 			return it;
 		}
-		internal void SetModuleHost(string moduleHostClassName)
+		internal void SetModuleHost(string type)
 		{
 			if (HasHost())
 				throw new ModuleException("The module host is already set.");
 
-			_ModuleHostClassName = moduleHostClassName;
+			_ModuleHostClassName = type;
 		}
-		internal void SetModuleHost(Type moduleHostClassType)
+		internal void SetModuleHost(Type type)
 		{
 			if (HasHost())
 				throw new ModuleException("The module host is already set.");
 
-			_ModuleHostClassType = moduleHostClassType;
+			_ModuleHostClassType = type;
 		}
 		//! Don't use Far UI
-		[
-		System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"),
-		System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands"),
-		]
-		public void Unregister()
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+		public override void Unregister()
 		{
 			Log.Source.TraceInformation("Unregister module {0}", ModuleName);
 
-			if (_ModuleHostInstance == null)
+			if (_ModuleHost == null)
 			{
 				ModuleLoader.RemoveModuleManager(this);
 				return;
@@ -195,22 +194,22 @@ namespace FarNet.Works
 
 			try
 			{
-				Log.Source.TraceInformation("Disconnect {0}", _ModuleHostInstance);
-				_ModuleHostInstance.Disconnect();
+				Log.Source.TraceInformation("Disconnect {0}", _ModuleHost);
+				_ModuleHost.Disconnect();
 			}
 			catch (Exception ex)
 			{
-				Far.Net.ShowError("ERROR: module " + _ModuleHostInstance, ex);
+				Far.Net.ShowError("ERROR: module " + _ModuleHost, ex);
 			}
 			finally
 			{
-				_ModuleHostInstance = null;
+				_ModuleHost = null;
 
 				ModuleLoader.RemoveModuleManager(this);
 			}
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods")]
-		public Assembly LoadAssembly()
+		public override Assembly LoadAssembly()
 		{
 			if (_AssemblyInstance == null)
 				_AssemblyInstance = Assembly.LoadFrom(_AssemblyPath);
@@ -222,11 +221,11 @@ namespace FarNet.Works
 			get { return _AssemblyPath; }
 		}
 		internal bool CachedResources { get; set; }
-		public string ModuleName
+		public override string ModuleName
 		{
 			get { return Path.GetFileNameWithoutExtension(_AssemblyPath); }
 		}
-		public CultureInfo CurrentUICulture
+		public override CultureInfo CurrentUICulture
 		{
 			get
 			{
@@ -260,12 +259,12 @@ namespace FarNet.Works
 			}
 		}
 		string _StoredUICulture;
-		public string StoredUICulture
+		public override string StoredUICulture
 		{
 			get { return _StoredUICulture ?? string.Empty; }
 			set { _StoredUICulture = value; }
 		}
-		public string GetString(string name)
+		public override string GetString(string name)
 		{
 			if (_ResourceManager == null)
 			{
@@ -276,15 +275,15 @@ namespace FarNet.Works
 
 			return _ResourceManager.GetString(name, CurrentUICulture);
 		}
-		public string GetFolderPath(SpecialFolder folder)
+		public override string GetFolderPath(SpecialFolder folder, bool create)
 		{
 			var dir = Far.Net.GetFolderPath(folder) + @"\FarNet\" + ModuleName;
-			if (!Directory.Exists(dir))
+			if (create && !Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
 			return dir;
 		}
 		// NB: It is fine to be slow, called from UI.
-		public void SaveSettings()
+		public override void SaveSettings()
 		{
 			// read from disk
 			var settings = ReadSettings();
@@ -306,7 +305,7 @@ namespace FarNet.Works
 			}
 
 			var formatter = new BinaryFormatter();
-			using (var stream = new FileStream(GetSettingsFileName(), FileMode.Create, FileAccess.Write, FileShare.None))
+			using (var stream = new FileStream(GetSettingsFileName(true), FileMode.Create, FileAccess.Write, FileShare.None))
 				formatter.Serialize(stream, settings);
 		}
 	}

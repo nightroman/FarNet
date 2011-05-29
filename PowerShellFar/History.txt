@@ -1,6 +1,15 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.15 =
+
+*) Housekeeping
+- Updated for FarNet changes in IFar.Post*() methods.
+- Code cleanup.
+
+*) Data panels
+- Fixed issues on invalid sort/filter user expressions.
+
 = 4.4.13 =
 = 4.4.14 =
 

@@ -17,8 +17,8 @@ namespace FarNet.Works
 {
 	public static class ModuleLoader
 	{
+		const int Version = 2;
 		const int idVersion = 0;
-		const int CacheVersion = 1;
 		static readonly SortedList<string, ModuleManager> _Managers = new SortedList<string, ModuleManager>();
 		static Hashtable _Cache;
 		static int _CacheLoaded;
@@ -43,7 +43,7 @@ namespace FarNet.Works
 
 					_Cache = deserialized as Hashtable;
 					
-					if (_Cache != null && CacheVersion != (int)_Cache[idVersion])
+					if (_Cache != null && Version != (int)_Cache[idVersion])
 						_Cache = null;
 				}
 				catch (Exception ex)
@@ -58,7 +58,7 @@ namespace FarNet.Works
 			{
 				//_Cache = new Hashtable(StringComparer.OrdinalIgnoreCase);
 				_Cache = new Hashtable();
-				_Cache.Add(idVersion, CacheVersion);
+				_Cache.Add(idVersion, Version);
 			}
 
 			// count to load
@@ -465,7 +465,7 @@ namespace FarNet.Works
 			if (hostClassName != null)
 			{
 				// Type
-				data.Add(ModuleItemKind.Host);
+				data.Add((int)ModuleItemKind.Host);
 				// Class
 				data.Add(hostClassName);
 			}

@@ -24,7 +24,12 @@ namespace FarNet
 {;
 void Far1::Connect()
 {
+	// the instance
 	Far::Net = %Far;
+
+	// the data paths
+	_LocalData = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::LocalApplicationData), "Far Manager");
+	_RoamingData = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::ApplicationData), "Far Manager");
 }
 
 String^ Far1::CurrentDirectory::get()
@@ -504,17 +509,17 @@ Char Far1::CodeToChar(int code)
 	return Char(code);
 }
 
-void Far1::PostStep(EventHandler^ handler)
+void Far1::PostStep(Action^ handler)
 {
 	Far0::PostStep(handler);
 }
 
-void Far1::PostStepAfterKeys(String^ keys, EventHandler^ handler)
+void Far1::PostStepAfterKeys(String^ keys, Action^ handler)
 {
 	Far0::PostStepAfterKeys(keys, handler);
 }
 
-void Far1::PostStepAfterStep(EventHandler^ handler1, EventHandler^ handler2)
+void Far1::PostStepAfterStep(Action^ handler1, Action^ handler2)
 {
 	Far0::PostStepAfterStep(handler1, handler2);
 }
@@ -547,7 +552,7 @@ IDialog^ Far1::Dialog::get()
 	return FarDialog::GetDialog();
 }
 
-void Far1::PostJob(EventHandler^ handler)
+void Far1::PostJob(Action^ handler)
 {
 	Far0::PostJob(handler);
 }
@@ -668,20 +673,12 @@ bool Far1::MatchPattern(String^ input, String^ pattern)
 
 String^ Far1::GetFolderPath(SpecialFolder folder)
 {
-	Environment::SpecialFolder system;
 	switch(folder)
 	{
-	case SpecialFolder::LocalData: system = Environment::SpecialFolder::LocalApplicationData; break;
-	case SpecialFolder::RoamingData: system = Environment::SpecialFolder::ApplicationData; break;
+	case SpecialFolder::LocalData: return _LocalData;
+	case SpecialFolder::RoamingData: return _RoamingData;
 	default: throw gcnew ArgumentException("folder");
 	}
-
-	String^ dir = Environment::GetFolderPath(system);
-	dir = Path::Combine(dir, "Far Manager");
-	if (!Directory::Exists(dir))
-		Directory::CreateDirectory(dir);
-	
-	return dir;
 }
 
 IModuleManager^ Far1::GetModuleManager(Type^ type)

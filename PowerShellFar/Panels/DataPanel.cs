@@ -163,7 +163,7 @@ namespace PowerShellFar
 						Table.WriteXml(_XmlFile, XmlWriteMode);
 					else
 						Table.DataSet.WriteXml(_XmlFile, XmlWriteMode);
-					
+
 					// stamp
 					_XmlFileTime = File.GetLastWriteTime(_XmlFile);
 
@@ -188,6 +188,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Fills data table and shows the panel.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override void Open()
 		{
@@ -203,15 +204,16 @@ namespace PowerShellFar
 
 					// dataset
 					var ds = new DataSet();
-					
+					ds.Locale = CultureInfo.CurrentCulture; // CA
+
 					// read schema
 					if (!string.IsNullOrEmpty(XmlSchema))
 						ds.ReadXmlSchema(XmlSchema);
-				
+
 					// read data
 					ds.ReadXml(_XmlFile, XmlReadMode);
 					_XmlFileTime = _XmlFileTime = File.GetLastWriteTime(_XmlFile);
-					
+
 					// accept data
 					ds.AcceptChanges();
 
@@ -226,7 +228,7 @@ namespace PowerShellFar
 					Table.Locale = CultureInfo.CurrentCulture; // CA
 				}
 			}
-			
+
 			// fill table
 			Fill();
 
@@ -243,7 +245,7 @@ namespace PowerShellFar
 					// skip hidden not calculated columns
 					if (column.ColumnMapping == MappingType.Hidden && column.Expression.Length == 0)
 						continue;
-					
+
 					// skip not linear data
 					if (!Converter.IsLinearType(column.DataType))
 						continue;
@@ -459,6 +461,7 @@ namespace PowerShellFar
 		int RecordLimit = Settings.Default.MaximumPanelFileCount;
 		// 0-based internally and in UI: 'offset' means "skip 'offset' records"
 		int RecordOffset;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void Fill()
 		{
 			if (Adapter != null)
@@ -469,9 +472,29 @@ namespace PowerShellFar
 
 			//! Propagate sort and filter to the default view (which is reset on some events).
 			if (ViewSort != null && Table.DefaultView.Sort != ViewSort)
-				Table.DefaultView.Sort = ViewSort;
+			{
+				try
+				{
+					Table.DefaultView.Sort = ViewSort;
+				}
+				catch (Exception ex)
+				{
+					ViewSort = null;
+					Far.Net.ShowError("Invalid sort expression", ex);
+				}
+			}
 			if (ViewRowFilter != null && Table.DefaultView.RowFilter != ViewRowFilter)
-				Table.DefaultView.RowFilter = ViewRowFilter;
+			{
+				try
+				{
+					Table.DefaultView.RowFilter = ViewRowFilter;
+				}
+				catch (Exception ex)
+				{
+					ViewRowFilter = null;
+					Far.Net.ShowError("Invalid filter expression", ex);
+				}
+			}
 
 			// table rows or view rows on sort or filter
 			if (Table.DefaultView.RowFilter.Length == 0 && Table.DefaultView.Sort.Length == 0)
@@ -665,98 +688,112 @@ namespace PowerShellFar
 			var memberPanel = OpenFileMembers(file);
 			memberPanel.Explorer.CanDeleteFiles = false;
 		}
-		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
+		void OnSort()
 		{
-			e.Menu.Add("Sort").Click = delegate
+			GetValues getWords = delegate
 			{
-				GetValues getWords = delegate
-				{
-					var list = new List<string>();
-					foreach (DataColumn c in Table.Columns)
-						list.Add(c.ColumnName);
-					return list;
-				};
-
-				for (; ; )
-				{
-					var ui = new UI.InputBoxEx()
-					{
-						Title = "Sort",
-						Prompt = "Sort column list: [Tab] to complete, comma to separate",
-						Text = ViewSort ?? string.Empty,
-						History = "DataRecordSort",
-						GetWords = getWords
-					};
-					if (!ui.Show())
-						return;
-
-					var text = ui.Text;
-					if (text == ViewSort)
-						return;
-
-					try
-					{
-						ViewSort = text;
-						break;
-					}
-					catch (Exception ex)
-					{
-						A.Message(ex.Message);
-						continue;
-					}
-				}
-
-				UserWants = UserAction.CtrlR;
-				UpdateRedraw(true);
+				var list = new List<string>();
+				foreach (DataColumn c in Table.Columns)
+					list.Add(c.ColumnName);
+				return list;
 			};
 
-			e.Menu.Add("Filter").Click = delegate
+			var ui = new UI.InputBoxEx()
 			{
-				GetValues getWords = delegate
-				{
-					var list = new List<string>();
-					foreach (DataColumn c in Table.Columns)
-						list.Add(c.ColumnName);
+				Title = "Sort",
+				Prompt = "Sort column list: [Tab] to complete, comma to separate",
+				Text = ViewSort ?? string.Empty,
+				History = "DataRecordSort",
+				GetWords = getWords
+			};
+			if (!ui.Show())
+				return;
 
-					list.AddRange(new string[] {
+			var text = ui.Text;
+			if (text == ViewSort)
+				return;
+
+			ViewSort = text;
+
+			UserWants = UserAction.CtrlR;
+			UpdateRedraw(true);
+		}
+		void OnFilter()
+		{
+			GetValues getWords = delegate
+			{
+				var list = new List<string>();
+				foreach (DataColumn c in Table.Columns)
+					list.Add(c.ColumnName);
+
+				list.AddRange(new string[] {
 "","and","avg","between","child","convert","count","false","iif","in","is","isnull","len","like","max","min","not","null","or","parent","stdev","substring","sum","trim","true","var",
 });
 
-					return list;
-				};
-
-				for (; ; )
-				{
-					var ui = new UI.InputBoxEx()
-					{
-						Title = "Filter",
-						Prompt = "Filter expression: [Tab] to complete",
-						Text = ViewRowFilter ?? string.Empty,
-						History = "DataRecordFilter",
-						GetWords = getWords
-					};
-					if (!ui.Show())
-						return;
-
-					var text = ui.Text;
-					if (text == ViewRowFilter)
-						return;
-
-					try
-					{
-						ViewRowFilter = text;
-						break;
-					}
-					catch (Exception ex)
-					{
-						A.Message(ex.Message);
-						continue;
-					}
-				}
-
-				UserWants = UserAction.CtrlR;
-				UpdateRedraw(true);
+				return list;
 			};
+
+			var ui = new UI.InputBoxEx()
+			{
+				Title = "Filter",
+				Prompt = "Filter expression: [Tab] to complete",
+				Text = ViewRowFilter ?? string.Empty,
+				History = "DataRecordFilter",
+				GetWords = getWords
+			};
+			if (!ui.Show())
+				return;
+
+			var text = ui.Text;
+			if (text == ViewRowFilter)
+				return;
+
+			ViewRowFilter = text;
+
+			UserWants = UserAction.CtrlR;
+			UpdateRedraw(true);
+		}
+		void OnRecordLimit()
+		{
+			var text = Far.Net.Input("Record limit", "DataRecordLimit", "Data Panel", "" + RecordLimit);
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			int value;
+			if (!int.TryParse(text, out value) || value < 1)
+			{
+				A.Message("Invalid number");
+				return;
+			}
+
+			RecordLimit = value;
+
+			UserWants = UserAction.CtrlR;
+			UpdateRedraw(true);
+		}
+		void OnRecordOffset()
+		{
+			var text = Far.Net.Input("Record offset", "DataRecordOffset", "Data Panel", "" + RecordOffset);
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			int value;
+			if (!int.TryParse(text, out value) || value < 0)
+			{
+				A.Message("Invalid number");
+				return;
+			}
+
+			RecordOffset = value;
+
+			UserWants = UserAction.CtrlR;
+			UpdateRedraw(true);
+		}
+		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
+		{
+			e.Menu.Add("Sort").Click = delegate { OnSort(); };
+
+			e.Menu.Add("Filter").Click = delegate { OnFilter(); };
 
 			e.Menu.Add(string.Empty).IsSeparator = true;
 
@@ -766,43 +803,9 @@ namespace PowerShellFar
 
 				e.Menu.Add("Previous range").Click = delegate { OnRangePrevious(); };
 
-				e.Menu.Add("Record limit").Click = delegate
-				{
-					var text = Far.Net.Input("Record limit", "DataRecordLimit", "Data Panel", RecordLimit.ToString());
-					if (string.IsNullOrEmpty(text))
-						return;
+				e.Menu.Add("Record limit").Click = delegate { OnRecordLimit(); };
 
-					int value;
-					if (!int.TryParse(text, out value) || value < 1)
-					{
-						A.Message("Invalid number");
-						return;
-					}
-
-					RecordLimit = value;
-
-					UserWants = UserAction.CtrlR;
-					UpdateRedraw(true);
-				};
-
-				e.Menu.Add("Record offset").Click = delegate
-				{
-					var text = Far.Net.Input("Record offset", "DataRecordOffset", "Data Panel", RecordOffset.ToString());
-					if (string.IsNullOrEmpty(text))
-						return;
-
-					int value;
-					if (!int.TryParse(text, out value) || value < 0)
-					{
-						A.Message("Invalid number");
-						return;
-					}
-
-					RecordOffset = value;
-
-					UserWants = UserAction.CtrlR;
-					UpdateRedraw(true);
-				};
+				e.Menu.Add("Record offset").Click = delegate { OnRecordOffset(); };
 
 				e.Menu.Add(string.Empty).IsSeparator = true;
 			}

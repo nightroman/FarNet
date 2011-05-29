@@ -7,12 +7,39 @@ Copyright (c) 2005-2011 FarNet Team
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Resources;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FarNet.Works
 {
+	/// <summary>
+	/// For internal use.
+	/// </summary>
+	public sealed class DelegateToString
+	{
+		readonly Delegate _handler;
+		///
+		public DelegateToString(Delegate handler)
+		{
+			_handler = handler;
+		}
+		///
+		public override string ToString()
+		{
+			var sb = new StringBuilder();
+			foreach (var it in _handler.GetInvocationList())
+			{
+				if (sb.Length > 0)
+					sb.AppendLine();
+
+				sb.Append(_handler.Method.ReflectedType.FullName);
+				sb.Append(".");
+				sb.Append(_handler.Method.Name);
+			}
+			return sb.ToString();
+		}
+	}
+
 	/// <summary>
 	/// For internal use.
 	/// </summary>

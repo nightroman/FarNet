@@ -154,10 +154,7 @@ namespace FarNet.Tools
 				}
 				else
 				{
-					Far.Net.PostJob(delegate
-					{
-						base.Close();
-					});
+					Far.Net.PostJob(delegate { base.Close(); });
 				}
 			}
 		}
@@ -278,7 +275,7 @@ namespace FarNet.Tools
 			SetSize(Progress.FORM_WIDTH, (CanCancel ? 7 : 5) + _LineCount);
 
 			_textActivity = new IText[_LineCount];
-			for(int iLine = 0; iLine < _LineCount; ++iLine)
+			for (int iLine = 0; iLine < _LineCount; ++iLine)
 				_textActivity[iLine] = Dialog.AddText(5, -1, 5 + Progress.TEXT_WIDTH - 1, string.Empty);
 			_textProgress = Dialog.AddText(5, -1, 5 + Progress.TEXT_WIDTH - 1, string.Empty);
 

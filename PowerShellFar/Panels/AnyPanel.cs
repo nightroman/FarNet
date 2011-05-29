@@ -189,15 +189,6 @@ namespace PowerShellFar
 			Redraw(current, top);
 		}
 		/// <summary>
-		/// Updates Far data and redraws.
-		/// </summary>
-		internal void UpdateRedraw(bool keepSelection, string setName)
-		{
-			Update(keepSelection);
-			PostName(setName);
-			Redraw();
-		}
-		/// <summary>
 		/// Sets a handler called on [Enter] and makes this panel lookup.
 		/// </summary>
 		/// <remarks>
