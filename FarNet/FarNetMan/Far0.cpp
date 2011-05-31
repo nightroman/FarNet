@@ -76,7 +76,8 @@ void Far0::Start()
 		path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
 
 	// load
-	Works::ModuleLoader::LoadModules(path);
+	Works::ModuleLoader loader;
+	loader.LoadModules(path);
 }
 
 //! Don't use Far UI

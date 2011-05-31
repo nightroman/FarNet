@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.16 =
+
+*) Technical build for FarNet
+*) "PowerShellFar.cfg" is not used by FarNet and removed from the module.
+
 = 4.4.15 =
 
 *) Housekeeping

@@ -83,7 +83,7 @@ namespace FarNet.Works
 				_ClassName = null;
 			}
 
-			return (ModuleAction)_Manager.CreateEntry(_ClassType);
+			return (ModuleAction)ModuleManager.CreateEntry(_ClassType);
 		}
 		void Initialize()
 		{

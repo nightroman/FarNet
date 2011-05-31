@@ -57,6 +57,7 @@ namespace FarNet.Works.Config
 					continue;
 
 				file.Description = _Explorer.SetPropertyText(property, text);
+				_isDirty = true;
 			}
 
 			Update(false);
