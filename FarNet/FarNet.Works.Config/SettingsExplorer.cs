@@ -122,9 +122,11 @@ namespace FarNet.Works.Config
 			var foo = _settings[property.Name];
 			var value = _settings.PropertyValues[property.Name];
 
-			// get its serialized text
-			var text = value.SerializedValue as string;
-			return text ?? string.Empty;
+			// get its default or serialized text (the latter may be not set if the default is used)
+			if (value.UsingDefaultValue)
+				return value.Property.DefaultValue as string ?? string.Empty;
+			else
+				return value.SerializedValue as string ?? string.Empty;
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
 		internal string SetPropertyText(SettingsProperty property, string text)

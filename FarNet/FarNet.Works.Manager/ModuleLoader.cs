@@ -11,204 +11,64 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FarNet.Works
 {
-	public static class ModuleLoader
+	public class ModuleLoader
 	{
-		const int Version = 2;
-		const int idVersion = 0;
-		static readonly SortedList<string, ModuleManager> _Managers = new SortedList<string, ModuleManager>();
-		static Hashtable _Cache;
-		static int _CacheLoaded;
-		static bool _CacheUpdate;
-		/// <summary>
-		/// Loads all modules from the root directory.
-		/// </summary>
-		/// <param name="rootPath">The root directory path.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public static void LoadModules(string rootPath)
+		static readonly SortedList<string, ModuleManager> _Managers = new SortedList<string, ModuleManager>(StringComparer.OrdinalIgnoreCase);
+		readonly ModuleCache _Cache;
+		///
+		public ModuleLoader()
 		{
 			// read the cache
-			string path = Far.Net.GetFolderPath(SpecialFolder.LocalData) + @"\FarNet\Cache.binary";
-			if (File.Exists(path))
-			{
-				try
-				{
-					object deserialized;
-					var formatter = new BinaryFormatter();
-					using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-						deserialized = formatter.Deserialize(stream);
-
-					_Cache = deserialized as Hashtable;
-					
-					if (_Cache != null && Version != (int)_Cache[idVersion])
-						_Cache = null;
-				}
-				catch (Exception ex)
-				{
-					_Cache = null;
-					Far.Net.ShowError("Reading cache", ex);
-				}
-			}
-
-			// new empty cache
-			if (_Cache == null)
-			{
-				//_Cache = new Hashtable(StringComparer.OrdinalIgnoreCase);
-				_Cache = new Hashtable();
-				_Cache.Add(idVersion, Version);
-			}
-
-			// count to load
-			int toLoad = _Cache.Count - 1;
-
-			// directories:
+			_Cache = new ModuleCache();
+		}
+		/// <summary>
+		/// Loads modules from the root directory.
+		/// </summary>
+		/// <param name="rootPath">The root module directory path.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public void LoadModules(string rootPath)
+		{
+			// directories
 			foreach (string dir in Directory.GetDirectories(rootPath))
 			{
-				// load not disabled
-				if (!Path.GetFileName(dir).StartsWith("-", StringComparison.Ordinal))
-					LoadDirectory(dir);
-			}
-
-			// obsolete records? 
-			if (toLoad != _CacheLoaded)
-			{
-				var list = new List<string>();
-
-				foreach (var key in _Cache.Keys)
-				{
-					var name = key as string;
-					if (name != null && !File.Exists(name))
-						list.Add(name);
-				}
-
-				if (list.Count > 0)
-				{
-					_CacheUpdate = true;
-					foreach (var name in list)
-						_Cache.Remove(name);
-				}
-			}
-
-			// write cache
-			if (_CacheUpdate)
-			{
 				try
 				{
-					// ensure the directory
-					var dir = Path.GetDirectoryName(path);
-					if (!Directory.Exists(dir))
-						Directory.CreateDirectory(dir);
-
-					// write the cache
-					var formatter = new BinaryFormatter();
-					using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
-						formatter.Serialize(stream, _Cache);
+					LoadModule(dir + "\\" + Path.GetFileName(dir) + ".dll");
 				}
 				catch (Exception ex)
 				{
-					Far.Net.ShowError("Writing cache", ex);
+					Far.Net.ShowError("Error on loading " + dir, ex);
 				}
 			}
 
-			// done with the cache
-			_Cache = null;
+			// write the cache
+			_Cache.Update();
 		}
 		/// <summary>
-		/// #1 Loads a module from the directory.
+		/// Loads the module assembly.
 		/// </summary>
-		/// <param name="directoryPath">The directory path to load a module from.</param>
-		/// <remarks>
-		/// Directories with no .CFG or .DLL files (not yet built sources) are simply ignored.
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		static void LoadDirectory(string directoryPath)
+		/// <param name="fileName">The assembly path to load a module from.</param>
+		void LoadModule(string fileName)
 		{
-			Log.Source.TraceInformation("Load directory {0}", directoryPath);
+			Log.Source.TraceInformation("Load module {0}", fileName);
 
-			try
+			// use the file info to reduce file access
+			var fileInfo = new FileInfo(fileName);
+			if (!fileInfo.Exists)
 			{
-				// use the manifest if any
-				string[] manifests = Directory.GetFiles(directoryPath, "*.CFG");
-				if (manifests.Length == 1)
-				{
-					LoadManifest(manifests[0], directoryPath);
-					return;
-				}
-
-				// fail on 2+ manifest files
-				if (manifests.Length > 1)
-					throw new ModuleException("More than one .CFG files found.");
-
-				// use the assembly
-				string[] assemblies = Directory.GetFiles(directoryPath, "*.DLL");
-				if (assemblies.Length == 1)
-				{
-					LoadAssembly(assemblies[0], null);
-					return;
-				}
-
-				// fail on 2+ assembly files
-				if (assemblies.Length > 1)
-					throw new ModuleException("More than one .DLL files found. Expected exactly one .DLL file or exactly one .CFG file.");
+				Log.Source.TraceInformation("Module is not found.");
+				return;
 			}
-			catch (Exception ex)
-			{
-				Far.Net.ShowError("ERROR: directory " + directoryPath, ex);
-			}
-		}
-		/// <summary>
-		/// #2 Loads the manifest.
-		/// </summary>
-		/// <param name="filePath">The manifest file path.</param>
-		/// <param name="directoryPath">The root directory for relative paths.</param>
-		/// <remarks>
-		/// For now assume that manifests contain relative paths.
-		/// </remarks>
-		static void LoadManifest(string filePath, string directoryPath)
-		{
-			Log.Source.TraceInformation("Load manifest {0}", filePath);
-
-			string[] lines = File.ReadAllLines(filePath);
-			if (lines.Length == 0)
-				throw new ModuleException("The manifest file is empty.");
-
-			// assembly
-			string path = lines[0].TrimEnd();
-			if (path.Length == 0)
-				throw new ModuleException("Expected the module assembly name as the first line of the manifest file.");
-			path = Path.Combine(directoryPath, path);
-
-			// collect classes
-			var classes = new List<string>(lines.Length - 1);
-			for (int i = 1; i < lines.Length; ++i)
-			{
-				string name = lines[i].Trim();
-				if (name.Length > 0)
-					classes.Add(name);
-			}
-
-			// load with classes, if any
-			LoadAssembly(path, classes);
-		}
-		/// <summary>
-		/// #3 Loads the assembly.
-		/// </summary>
-		/// <param name="assemblyPath">The assembly path to load a module from.</param>
-		/// <param name="classes">Optional predefined classes.</param>
-		static void LoadAssembly(string assemblyPath, List<string> classes)
-		{
-			Log.Source.TraceInformation("Load assembly {0}", assemblyPath);
 
 			// load from the cache
-			FileInfo fileInfo = new FileInfo(assemblyPath);
 			if (ReadCache(fileInfo))
 				return;
 
 			// add new module manager now, it will be removed on errors
-			ModuleManager manager = new ModuleManager(assemblyPath);
+			ModuleManager manager = new ModuleManager(fileInfo.FullName);
 			_Managers.Add(manager.ModuleName, manager);
 
 			// read and load data
@@ -222,20 +82,12 @@ namespace FarNet.Works
 
 				int actionCount = 0;
 				Assembly assembly = manager.LoadAssembly();
-				if (classes != null && classes.Count > 0)
+				foreach (Type type in assembly.GetExportedTypes())
 				{
-					foreach (string name in classes)
-						actionCount += LoadType(manager, settings, assembly.GetType(name, true));
-				}
-				else
-				{
-					foreach (Type type in assembly.GetExportedTypes())
-					{
-						if (typeof(BaseModuleItem).IsAssignableFrom(type) && !type.IsAbstract)
-							actionCount += LoadType(manager, settings, type);
-						else if (!manager.HasSettings && typeof(ApplicationSettingsBase).IsAssignableFrom(type) && !type.IsAbstract)
-							manager.HasSettings = true;
-					}
+					if (typeof(BaseModuleItem).IsAssignableFrom(type) && !type.IsAbstract)
+						actionCount += LoadType(manager, settings, type);
+					else if (!manager.HasSettings && typeof(ApplicationSettingsBase).IsAssignableFrom(type) && !type.IsAbstract)
+						manager.HasSettings = true;
 				}
 
 				// if the module has the host to load then load it now, if it is not loaded then the module should be cached
@@ -257,20 +109,20 @@ namespace FarNet.Works
 			}
 		}
 		/// <summary>
-		/// #4 Reads the module from the cache.
+		/// Reads the module from the cache.
 		/// </summary>
 		/// <param name="fileInfo">Module file information.</param>
 		/// <returns>True if the module has been loaded from the cache.</returns>
-		static bool ReadCache(FileInfo fileInfo)
+		bool ReadCache(FileInfo fileInfo)
 		{
 			Log.Source.TraceInformation("Read cache {0}", fileInfo);
 
 			string path = fileInfo.FullName;
-			var data = _Cache[path];
+			var data = _Cache.Get(path);
 			if (data == null)
 				return false;
 
-			++_CacheLoaded;
+			++_Cache.CountLoaded;
 			bool done = false;
 			ModuleManager manager = null;
 			try
@@ -371,7 +223,6 @@ namespace FarNet.Works
 				{
 					// remove cached data
 					_Cache.Remove(path);
-					_CacheUpdate = true;
 
 					// remove the manager
 					if (manager != null)
@@ -382,7 +233,7 @@ namespace FarNet.Works
 			return done;
 		}
 		/// <summary>
-		/// #5 Loads the module item by type.
+		/// Loads the module item by type.
 		/// </summary>
 		static int LoadType(ModuleManager manager, Hashtable settings, Type type)
 		{
@@ -440,9 +291,9 @@ namespace FarNet.Works
 			return 1;
 		}
 		/// <summary>
-		/// #6 Saves the module cache.
+		/// Saves the module cache.
 		/// </summary>
-		static void SaveModuleCache(ModuleManager manager, FileInfo fileInfo)
+		void SaveModuleCache(ModuleManager manager, FileInfo fileInfo)
 		{
 			Log.Source.TraceInformation("Save cache {0}", fileInfo);
 
@@ -476,8 +327,7 @@ namespace FarNet.Works
 					it.WriteCache(data);
 
 			// to write
-			_Cache[manager.AssemblyPath] = data;
-			_CacheUpdate = true;
+			_Cache.Set(manager.AssemblyPath, data);
 		}
 		public static bool CanExit()
 		{

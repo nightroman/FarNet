@@ -69,7 +69,7 @@ namespace FarNet.Works
 			Log.Source.TraceInformation("Connect {0}", _ModuleHost);
 			_ModuleHost.Connect();
 		}
-		internal BaseModuleItem CreateEntry(Type type)
+		internal static BaseModuleItem CreateEntry(Type type)
 		{
 			return (BaseModuleItem)Activator.CreateInstance(type);
 		}
@@ -282,10 +282,12 @@ namespace FarNet.Works
 				Directory.CreateDirectory(dir);
 			return dir;
 		}
-		// NB: It is fine to be slow, called from UI.
+		// * This methods can be "slow", it is called from UI only.
+		// * Read data first and merge with the current settings.
+		// We have actions registered explicitly, they may be not loaded now and still have stored settings to be preserved.
 		public override void SaveSettings()
 		{
-			// read from disk
+			// read existing settings
 			var settings = ReadSettings();
 
 			// save module data
@@ -304,6 +306,7 @@ namespace FarNet.Works
 					settings[action.Id] = data;
 			}
 
+			// write merged settings
 			var formatter = new BinaryFormatter();
 			using (var stream = new FileStream(GetSettingsFileName(true), FileMode.Create, FileAccess.Write, FileShare.None))
 				formatter.Serialize(stream, settings);

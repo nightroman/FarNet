@@ -173,15 +173,15 @@ namespace PowerShellFar.Commands
 				if (file == null)
 					Fail(Message ?? "Expected the current panel file.");
 
-				//1
+				//1 case sensitive!
 				if (FileName != null && (fail = FileName != file.Name))
 					Fail(Message ?? "Unexpected current file name.");
 
-				//2
+				//2 case sensitive!
 				if (FileDescription != null && (fail = FileDescription != file.Description))
 					Fail(Message ?? "Unexpected current file description.");
 
-				//3
+				//3 case sensitive!
 				if (FileOwner != null && (fail = FileOwner != file.Owner))
 					Fail(Message ?? "Unexpected current file owner.");
 			}

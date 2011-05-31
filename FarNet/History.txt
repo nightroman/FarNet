@@ -1,5 +1,23 @@
 http://code.google.com/p/farnet/
 
+= 4.4.16 =
+
+*) New FarNet module file structure and loading rules
+
+Simplified the module file structure. See Readme.txt for details. It is now
+mandatory that the module directory and the base assembly names are the same
+(just like it is for Windows PowerShell modules).
+
+Modules may have any other .dll files in their directories. There is no need in
+using .CFG files in order to tell the core what .dll should be loaded exactly.
+Thus, .CFG files are not used now.
+
+Review your modules and make sure they follow these new rules.
+
+*) Bugs in the module settings panel (but settings work fine)
+- Some default values were shown empty.
+- Settings were not saved if only reset to defaults was used ([Del] or [F8]).
+
 = 4.4.15 =
 
 *) IFar
@@ -10,7 +28,7 @@ modules should be affected (the latest PowerShellFar is updated).
 *) IModuleManager.GetFolderPath()
 - Added the 'bool create' parameter, so that creation is now optional and
 it is requested only when it is really needed (on writing files). Thus:
--- Better performance (some expensive checks of existance are avoided)
+-- Better performance (some expensive checks of existence are avoided)
 -- No more empty profile sub-directories (you can remove them now)
 
 *) Module settings engine
