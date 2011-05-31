@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.4.15
-Release  : 2011-05-29
+Version  : 4.4.16
+Release  : 2011-05-30
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -40,76 +40,76 @@ directory structure (see (*) about x64).
 -- Plugins\FarNet\FarNetMan.dll has to be copied from Plugins.x64\FarNet
 
 Optional:
--- FarNet\Modules\* (sample modules; you may copy and build some)
+-- FarNet\Modules\* (sample modules, just sources)
 
-Far.exe.config allows to change the proposed locations of FarNet and Modules
-but this scenario is not tested on development.
+Far.exe.config allows to change the default FarNet directory but this scenario
+is not recommended and not tested.
 
-IMPORTANT: Far.exe.config cannot be moved or renamed. If this file is missed in
-%FARHOME% or configured incorrectly then Far Manager fails to load the FarNet
-plugin and shows only basic failure message with no details.
+IMPORTANT: Far.exe.config cannot be moved or renamed. If this file is missing
+in %FARHOME% or configured incorrectly then Far Manager fails to load the
+FarNet plugin and shows only basic failure message with no details.
 
 
 = FILE STRUCTURE =
 
 
-.\
+%FARHOME%
 Far.exe.config - the configuration file
 
-.\Plugins\FarNet\
-FarNetMan.dll - Far Manager plugin and FarNet module manager
+%FARHOME%\Plugins\FarNet
+FarNetMan.dll - Far Manager plugin and module manager
 FarNetMan.hlf - FarNet UI help
 
-.\FarNet\
-FarNet.dll - FarNet interfaces for .NET modules
-FarNet.xml - FarNet API XML documentation
-FarNet.*.dll - FarNet internal tools
+%FARHOME%\FarNet
+FarNet.dll, FarNet.xml - FarNet API for .NET modules (and XML API comments).
+FarNet.Tools.dll, FarNet.Tools.xml - FarNet module tools library.
+FarNet.Settings.dll, FarNet.Settings.xml - FarNet module settings library.
+FarNet.*.dll - other FarNet libraries used internally by the core.
 
-.\FarNet\Modules\
-Each module folder contains exactly one .cfg file (module manifest) or exactly
-one .dll file (module assembly). The manifest file tells what should be loaded:
-the first line is the .dll path and other optional lines are class names: all
-or none should be specified.
+%FARHOME%\FarNet\Modules
+Module root directory. Each child directory is normaly a module directory.
 
 
 = LOADING MODULES FROM DISK =
 
 
-*) For each folder in Modules: if a manifest *.cfg exists then only specified
-assembly and classes are loaded, else all public not abstract BaseModuleItem
-descendant classes are loaded from a single *.dll file.
+*) For each directory "ModuleName" in Modules the core looks for and loads the
+module assembly "ModuleName\ModuleName.dll". When the assembly is loaded the
+core looks for the special module classes in it. The module directory may
+contain other files including other assemblies, the core ignores them.
 
-*) Not loaded folders: folders with names starting with '-' (-MyModule) and
-folders with no *.dll and *.cfg files are ignored.
-
-*) Assembly names must be unique among all modules or there can be problems.
-Assembly names define kind of namespaces for various information. Directory
-names and assembly locations are not important.
+*) Unique module names (module directory and base assembly names) define
+namespaces for various module information. These names should be chosen
+carefully and should not change.
 
 
 = LOADING MODULES FROM CACHE =
 
-FarNet module cache:
-%LOCALAPPDATA%\Far Manager\FarNet\cache.binary
 
-If possible, FarNet caches information about assemblies and loads them only
-when they are really invoked. In many cases when you change, rename or move
-assemblies or classes FarNet updates the cache itself. But some changes are
-too difficult to discover (e.g. changes in config files). In these or other
-problem cases remove the cache manually.
+If a module is not preloadable then on its first loading the core caches its
+meta data like menu item titles, command prefixes, supported file masks, and
+etc. Next time the module data are read from the cache and the module is not
+loaded when the core starts. It is loaded only when it starts to work.
+
+Normally the core discovers module changes and updates the cache itself. In
+rare cases the cache may have to be removed manually and the core restarted.
+Note that data of removed modules are removed from the cache automatically.
+
+The module cache file:
+%LOCALAPPDATA%\Far Manager\FarNet\Cache.binary
 
 
 = CONFIGURATION =
 
 
-It is recommended to use default settings. The following environment variables
-should be used only for advanced scenarious:
+It is recommended to use the default settings. The following environment
+variables should be used only in special cases:
 
-	set FarNet:FarManager:Modules=path
-	-- Root of Far Manager FarNet modules. Default: %FARHOME%\FarNet\Modules
+	set FarNet:FarManager:Modules=<path>
+	-- Root module directory. Default: %FARHOME%\FarNet\Modules
 
-	set FarNet:FarManager:DisableGui=true|false
-	--  Tells to disable special rare GUI features. Default: false
+	set FarNet:FarManager:DisableGui=<true|false>
+	--  Tells to disable special GUI features. Default: false
 
 
 = MODULE COMMANDS IN MACROS =

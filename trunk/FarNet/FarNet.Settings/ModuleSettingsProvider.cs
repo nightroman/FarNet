@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Resources;
+using System.Security.Permissions;
 
 namespace FarNet.Settings
 {
@@ -86,8 +87,36 @@ namespace FarNet.Settings
 			return data;
 		}
 		///
+		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+		public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
+		{
+			Hashtable dataLocal = null;
+			Hashtable dataRoaming = null;
+
+			var settingsPropertyValueCollection = new SettingsPropertyValueCollection();
+			foreach (SettingsProperty settingsProperty in collection)
+			{
+				Hashtable data;
+				if (IsRoaming(settingsProperty))
+					data = dataRoaming ?? (dataRoaming = ReadData(FileName(context, RoamingFileName, false)));
+				else
+					data = dataLocal ?? (dataLocal = ReadData(FileName(context, LocalFileName, false)));
+
+				var settingsPropertyValue = new SettingsPropertyValue(settingsProperty);
+
+				var value = data[settingsProperty.Name];
+				if (value != null)
+					settingsPropertyValue.SerializedValue = value;
+
+				settingsPropertyValueCollection.Add(settingsPropertyValue);
+			}
+
+			return settingsPropertyValueCollection;
+		}
+		///
+		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection)
 		{
 			bool dirtyLocal = false;
@@ -110,6 +139,12 @@ namespace FarNet.Settings
 			{
 				foreach (SettingsPropertyValue settingsPropertyValue in collection)
 				{
+					//?????? good idea to not write default values but
+					// * find out how to restore 'default' state on [Del] in panel
+					// * count actual data to write, if it is 0 the delete the store
+					//if (settingsPropertyValue.UsingDefaultValue)
+					//    continue;
+					
 					ResourceWriter writer;
 					if (IsRoaming(settingsPropertyValue.Property))
 					{
@@ -140,34 +175,6 @@ namespace FarNet.Settings
 
 			foreach (SettingsPropertyValue settingsPropertyValue in collection)
 				settingsPropertyValue.IsDirty = false;
-		}
-		///
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
-		{
-			Hashtable dataLocal = null;
-			Hashtable dataRoaming = null;
-
-			var settingsPropertyValueCollection = new SettingsPropertyValueCollection();
-			foreach (SettingsProperty settingsProperty in collection)
-			{
-				Hashtable data;
-				if (IsRoaming(settingsProperty))
-					data = dataRoaming ?? (dataRoaming = ReadData(FileName(context, RoamingFileName, false)));
-				else
-					data = dataLocal ?? (dataLocal = ReadData(FileName(context, LocalFileName, false)));
-
-				var settingsPropertyValue = new SettingsPropertyValue(settingsProperty);
-
-				var value = data[settingsProperty.Name];
-				if (value != null)
-					settingsPropertyValue.SerializedValue = value;
-
-				settingsPropertyValueCollection.Add(settingsPropertyValue);
-			}
-
-			return settingsPropertyValueCollection;
 		}
 	}
 }
