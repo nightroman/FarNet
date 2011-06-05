@@ -47,8 +47,6 @@ FarNet.sdf;
 	</Target>
 
 	<Target Name="Archive">
-		<!--Ensure we can build examples-->
-		<MSBuild Projects="Modules\Build.proj" Targets="Build;Clean"/>
 		<!--Build x64-->
 		<MSBuild Projects="FarNet.sln" Targets="Build" Properties="Configuration=Release;Platform=x64"/>
 		<!--Kill output-->
@@ -84,8 +82,8 @@ LICENSE;
 		<Copy DestinationFolder="Tmp\Plugins.x64\FarNet" SourceFiles="
 FarNetMan\Release\x64\FarNetMan.dll;
 "/>
-		<MakeDir Directories="Tmp\FarNet\Modules"/>
-		<Exec Command="xcopy Modules Tmp\FarNet\Modules /s > nul"/>
+		<!--Copy the sample modules-->
+		<Exec Command="robocopy ..\Modules Tmp\FarNet\Modules /mir /np /xf *.suo /xd .svn &amp; if not errorlevel 2 exit 0"/>
 		<!--Archive-->
 		<Exec Command="7z a $(OutputPath) .\*" WorkingDirectory="Tmp"/>
 		<Copy DestinationFolder="." SourceFiles="Tmp\$(OutputPath)"/>
