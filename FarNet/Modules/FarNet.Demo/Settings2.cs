@@ -6,7 +6,7 @@ namespace FarNet.Demo
 {
 	/// <summary>
 	/// Settings set 2 (modules may have any number of settings sets).
-	/// It shows how to control serialization of settings property values.
+	/// Goal: show and test various ways to serialize setting values.
 	/// </summary>
 	[SettingsProvider(typeof(ModuleSettingsProvider))]
 	public class Settings2 : ModuleSettings
@@ -69,6 +69,7 @@ namespace FarNet.Demo
 		}
 		/// <summary>
 		/// User data serialized as XML.
+		/// This class uses standard XML serialization.
 		/// </summary>
 		[UserScopedSetting]
 		public UserDataXml UserAsXml
@@ -78,6 +79,8 @@ namespace FarNet.Demo
 		}
 		/// <summary>
 		/// User data serialized as binary.
+		/// Standard binary serialization could be used in this case
+		/// but the class uses custom serialization, just for testing.
 		/// </summary>
 		[UserScopedSetting]
 		[SettingsSerializeAs(SettingsSerializeAs.Binary)]

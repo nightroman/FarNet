@@ -1,5 +1,35 @@
 http://code.google.com/p/farnet/
 
+= 4.4.17 =
+
+*) Module settings panel and engine
+
+Default setting names start with '-'. Ever edited setting names start with '+'.
+See more about defaults in the panel help [F1].
+
+Reset to defaults ([Del], [F8]) works for all settings, with or without default
+values explicitly defined by settings attributes.
+
+[CtrlF11] in settings shows default / edited (- / +) data sorted separately.
+
+For developers: see ModuleSettingsProvider API docs for some technical details.
+
+*) FarNet.Demo module (included as sources)
+
+Though it is a demo module it includes tools that can be useful for developers:
+
+`Tracing` tool shows the menu that allows to change the level of tracing used
+by the core and to turn tracing to the file on/off. It can be handy if you do
+not have or use DebugView.exe from Sysinternals or similar diagnostics tools.
+
+`demo: process` command shows some useful info about the current process.
+
+`demo: assembly` command shows currently loaded .NET assemblies.
+
+HINT: Tracing level and listeners can be set permanently in Far.exe.config,
+for example in order to trace loading of preloadable modules. FarNet.Demo
+allows to do that temporary for the already started session.
+
 = 4.4.16 =
 
 *) New FarNet module file structure and loading rules

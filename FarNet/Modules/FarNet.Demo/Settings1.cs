@@ -114,7 +114,7 @@ namespace FarNet.Demo
 		/// Roaming string value with the default.
 		/// </summary>
 		[UserScopedSetting]
-		[DefaultSettingValue("Line '1'\r\nLine '2'")]
+		[DefaultSettingValue("Line1\r\nLine2")]
 		[SettingsManageability(SettingsManageability.Roaming)]
 		public string StringRoaming
 		{
@@ -132,8 +132,9 @@ namespace FarNet.Demo
 			set { this["StringCollectionLocal"] = value; }
 		}
 		/// <summary>
-		/// Not browsable in UI roaming collection with the default
-		/// (just to try and test that the default XML works).
+		/// Not browsable in UI roaming collection with the default XML string.
+		/// This is just to try and test that the default XML really works,
+		/// see <see cref="ModuleSettingsProvider"/> remarks for caveats.
 		/// </summary>
 		[Browsable(false)]
 		[UserScopedSetting]

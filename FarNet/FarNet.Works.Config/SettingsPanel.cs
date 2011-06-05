@@ -27,7 +27,7 @@ namespace FarNet.Works.Config
 			PanelPlan plan = new PanelPlan();
 			plan.Columns = new FarColumn[]
 			{
-				new SetColumn() { Kind = "N", Name = "Name" },
+				new SetColumn() { Kind = "O", Name = "Setting" },
 				new SetColumn() { Kind = "Z", Name = "Value" }
 			};
 			SetPlan(PanelViewMode.AlternativeFull, plan);
@@ -51,12 +51,9 @@ namespace FarNet.Works.Config
 		{
 			foreach (FarFile file in SelectedFiles)
 			{
-				var property = (SettingsProperty)file.Data;
-				var text = property.DefaultValue as string;
-				if (text == null)
-					continue;
-
-				file.Description = _Explorer.SetPropertyText(property, text);
+				var value = (SettingsPropertyValue)file.Data;
+				file.Description = SettingsExplorer.SetPropertyValueDefault(value);
+				SettingsExplorer.CompleteFileData(file, value);
 				_isDirty = true;
 			}
 
