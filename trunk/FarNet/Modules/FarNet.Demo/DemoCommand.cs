@@ -1,6 +1,8 @@
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 namespace FarNet.Demo
 {
@@ -8,7 +10,7 @@ namespace FarNet.Demo
 	/// Command invoked from the command line by the "Demo:" prefix.
 	/// It prints some data depending on the command text after the prefix.
 	/// </summary>
-	[ModuleCommand(Name = "FarNet.Demo Command", Prefix = "Demo")]
+	[ModuleCommand(Name = "FarNet.Demo Command", Prefix = "demo")]
 	[Guid("e3b61c33-a71f-487d-bad3-5542aed112d6")]
 	public class DemoCommand : ModuleCommand
 	{
@@ -19,34 +21,53 @@ namespace FarNet.Demo
 		/// </summary>
 		public override void Invoke(object sender, ModuleCommandEventArgs e)
 		{
-			var process = Process.GetCurrentProcess();
 			switch (e.Command.Trim().ToUpper())
 			{
-				case "TT":
-					Far.Net.UI.Write(string.Format("Total time : {0}", process.TotalProcessorTime));
-					break;
-				case "WS":
-					Far.Net.UI.Write(string.Format("Working set : {0:n0} kb", process.WorkingSet64 / kb));
-					break;
-				case "PM":
-					Far.Net.UI.Write(string.Format("Private memory : {0:n0} kb", process.PrivateMemorySize64 / kb));
-					break;
-				case "MM":
-					Far.Net.UI.Write(string.Format("Managed memory : {0:n0} kb", GC.GetTotalMemory(true) / kb));
-					break;
+				case "PROCESS": DoProcess(); break;
+				case "ASSEMBLY": DoAssembly(); break;
 				default:
-					Far.Net.UI.Write(string.Format(@"
+					Far.Net.UI.Write(GetString("Usage"));
+					break;
+			}
+		}
+		/// <summary>
+		/// Prints some useful process information.
+		/// </summary>
+		void DoProcess()
+		{
+			var process = Process.GetCurrentProcess();
+			Far.Net.UI.Write(string.Format(@"
 Total time     : {0}
 Working set    : {1,7:n0} kb
 Private memory : {2,7:n0} kb
 Managed memory : {3,7:n0} kb
 ",
-		 process.TotalProcessorTime,
-		 process.WorkingSet64 / kb,
-		 process.PrivateMemorySize64 / kb,
-		 GC.GetTotalMemory(true) / kb));
-					break;
+ process.TotalProcessorTime,
+ process.WorkingSet64 / kb,
+ process.PrivateMemorySize64 / kb,
+ GC.GetTotalMemory(true) / kb));
+		}
+		/// <summary>
+		/// Shows loaded .NET assembly paths in the viewer.
+		/// </summary>
+		void DoAssembly()
+		{
+			var list = new List<string>();
+			foreach (var it in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				try { list.Add(it.Location); }
+				catch { list.Add(it.FullName); }
 			}
+			list.Sort();
+
+			var viewer = Far.Net.CreateViewer();
+			viewer.Title = "Assemblies";
+			viewer.FileName = Far.Net.TempName();
+			viewer.Switching = Switching.Enabled;
+			viewer.DeleteSource = DeleteSource.File;
+
+			File.WriteAllLines(viewer.FileName, list.ToArray());
+			viewer.Open();
 		}
 	}
 }

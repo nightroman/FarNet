@@ -21,21 +21,29 @@ namespace FarNet.Settings
 	/// The type of this class is used as the argument of <c>SettingsProviderAttribute</c> of settings classes.
 	/// <para>
 	/// Implementation.
-	/// It reads and writes .resources using <c>ResourceReader</c> and <c>ResourceWriter</c>.
-	/// It reads existing now settings and saves all requested settings including not dirty.
-	/// Thus, old missing entries are removed from files when settings are saved.
-	/// </para>
-	/// <para>
+	/// This provider reads and writes .resources using <c>ResourceReader</c> and <c>ResourceWriter</c>.
 	/// Settings contexts should have <see cref="RoamingFileName"/> and <see cref="LocalFileName"/>
 	/// paths of .resources files where roaming and local settings are stored.
+	/// </para>
+	/// <para>
+	/// Settings having <c>UsingDefaultValue</c> equal to true are not stored in files.
+	/// Thus, such settings are restored with their current default values.
+	/// </para>
+	/// <para>
+	/// Settings having <c>SerializedValue</c> equal to null are not stored.
+	/// Thus, such settings are restored with their current default values.
+	/// If defaults are not null then there is a subtle issue of settings values set to null.
+	/// Basically it is better to avoid not null defaults for reference types other than strings.
+	/// It is fine to have not null defaults for strings but consider to save empty strings, not nulls.
+	/// Compare: stored empty strings are restored exactly, not stored nulls are restored as current defaults.
 	/// </para>
 	/// </remarks>
 	public sealed class ModuleSettingsProvider : SettingsProvider
 	{
 		///
-		public const string LocalFileName = "LocalFileName";
-		///
 		public const string RoamingFileName = "RoamingFileName";
+		///
+		public const string LocalFileName = "LocalFileName";
 		///
 		public override void Initialize(string name, NameValueCollection config)
 		{
@@ -91,62 +99,64 @@ namespace FarNet.Settings
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
 		{
-			Hashtable dataLocal = null;
-			Hashtable dataRoaming = null;
+			var result = new SettingsPropertyValueCollection();
+			Hashtable hashRoaming = null;
+			Hashtable hashLocal = null;
 
-			var settingsPropertyValueCollection = new SettingsPropertyValueCollection();
-			foreach (SettingsProperty settingsProperty in collection)
+			foreach (SettingsProperty property in collection)
 			{
-				Hashtable data;
-				if (IsRoaming(settingsProperty))
-					data = dataRoaming ?? (dataRoaming = ReadData(FileName(context, RoamingFileName, false)));
+				var value = new SettingsPropertyValue(property);
+				result.Add(value);
+
+				Hashtable hash;
+				if (IsRoaming(property))
+					hash = hashRoaming ?? (hashRoaming = ReadData(FileName(context, RoamingFileName, false)));
 				else
-					data = dataLocal ?? (dataLocal = ReadData(FileName(context, LocalFileName, false)));
+					hash = hashLocal ?? (hashLocal = ReadData(FileName(context, LocalFileName, false)));
 
-				var settingsPropertyValue = new SettingsPropertyValue(settingsProperty);
-
-				var value = data[settingsProperty.Name];
-				if (value != null)
-					settingsPropertyValue.SerializedValue = value;
-
-				settingsPropertyValueCollection.Add(settingsPropertyValue);
+				var serialized = hash[property.Name];
+				if (serialized != null)
+					value.SerializedValue = serialized;
 			}
 
-			return settingsPropertyValueCollection;
+			return result;
 		}
 		///
 		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection)
 		{
-			bool dirtyLocal = false;
 			bool dirtyRoaming = false;
+			bool dirtyLocal = false;
 
-			foreach (SettingsPropertyValue settingsPropertyValue in collection)
+			foreach (SettingsPropertyValue value in collection)
 			{
-				if (settingsPropertyValue.IsDirty)
+				if (value.IsDirty)
 				{
-					if (IsRoaming(settingsPropertyValue.Property))
+					if (IsRoaming(value.Property))
 						dirtyRoaming = true;
 					else
 						dirtyLocal = true;
 				}
 			}
 
-			ResourceWriter writerLocal = null;
 			ResourceWriter writerRoaming = null;
+			ResourceWriter writerLocal = null;
 			try
 			{
-				foreach (SettingsPropertyValue settingsPropertyValue in collection)
+				foreach (SettingsPropertyValue value in collection)
 				{
-					//?????? good idea to not write default values but
-					// * find out how to restore 'default' state on [Del] in panel
-					// * count actual data to write, if it is 0 the delete the store
-					//if (settingsPropertyValue.UsingDefaultValue)
-					//    continue;
-					
+					if (value.UsingDefaultValue)
+						continue;
+
+					//? Deserialized nulls cause default values to be used.
+					//? Thus, it does not make much sense to store nulls.
+					var serialized = value.SerializedValue;
+					if (serialized == null)
+						continue;
+
 					ResourceWriter writer;
-					if (IsRoaming(settingsPropertyValue.Property))
+					if (IsRoaming(value.Property))
 					{
 						if (!dirtyRoaming)
 							continue;
@@ -161,20 +171,35 @@ namespace FarNet.Settings
 						writer = writerLocal ?? (writerLocal = new ResourceWriter(FileName(context, LocalFileName, true)));
 					}
 
-					writer.AddResource(settingsPropertyValue.Name, settingsPropertyValue.SerializedValue);
+					writer.AddResource(value.Name, serialized);
 				}
 			}
 			finally
 			{
-				if (writerLocal != null)
-					writerLocal.Close();
+				// close files being written or delete dirty but not written files
 
 				if (writerRoaming != null)
+				{
 					writerRoaming.Close();
+				}
+				else if (dirtyRoaming)
+				{
+					File.Delete(FileName(context, RoamingFileName, false));
+				}
+
+				if (writerLocal != null)
+				{
+					writerLocal.Close();
+				}
+				else if (dirtyLocal)
+				{
+					File.Delete(FileName(context, LocalFileName, false));
+				}
 			}
 
-			foreach (SettingsPropertyValue settingsPropertyValue in collection)
-				settingsPropertyValue.IsDirty = false;
+			// all is saved now, clean all dirty flags
+			foreach (SettingsPropertyValue value in collection)
+				value.IsDirty = false;
 		}
 	}
 }

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
@@ -32,11 +32,17 @@ namespace FarNet.Works.Config
 				if (browsable != null && !browsable.Browsable)
 					continue;
 
+				// ensure the property value exists
+				var dummy = _settings[property.Name];
+				var value = _settings.PropertyValues[property.Name];
+				
 				var file = new SetFile();
 				_files.Add(file);
+				file.Data = value;
 				file.Name = property.Name;
-				file.Data = property;
-				file.Description = GetPropertyText(property);
+				file.Description = GetPropertyValueText(value);
+
+				CompleteFileData(file, value);
 			}
 		}
 		public override Panel CreatePanel()
@@ -50,10 +56,10 @@ namespace FarNet.Works.Config
 		public override void GetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
-			var property = (SettingsProperty)args.File.Data;
+			var value = (SettingsPropertyValue)args.File.Data;
 
 			// no text
-			if (property.SerializeAs != SettingsSerializeAs.String && property.SerializeAs != SettingsSerializeAs.Xml)
+			if (value.Property.SerializeAs != SettingsSerializeAs.String && value.Property.SerializeAs != SettingsSerializeAs.Xml)
 			{
 				args.Result = JobResult.Ignore;
 				return;
@@ -63,8 +69,8 @@ namespace FarNet.Works.Config
 			args.UseText = args.File.Description;
 
 			// tweaks
-			args.CanSet = !property.IsReadOnly;
-			if (property.SerializeAs == SettingsSerializeAs.Xml)
+			args.CanSet = !value.Property.IsReadOnly;
+			if (value.Property.SerializeAs == SettingsSerializeAs.Xml)
 				args.UseFileExtension = ".xml";
 			else
 				args.UseFileExtension = ".txt";
@@ -72,9 +78,9 @@ namespace FarNet.Works.Config
 		public override void SetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
-			var property = (SettingsProperty)args.File.Data;
+			var value = (SettingsPropertyValue)args.File.Data;
 
-			var ex = ValidatePropertyText(property, args.Text);
+			var ex = ValidatePropertyText(value.Property, args.Text);
 			if (ex != null)
 			{
 				args.Result = JobResult.Ignore;
@@ -82,7 +88,15 @@ namespace FarNet.Works.Config
 				return;
 			}
 
-			args.File.Description = SetPropertyText(property, args.Text);
+			args.File.Description = SetPropertyValueText(value, args.Text);
+
+			CompleteFileData(args.File, value);
+		}
+		internal static void CompleteFileData(FarFile file, SettingsPropertyValue value)
+		{
+			// defaults
+			var prefix = value.UsingDefaultValue ? "- " : "+ ";
+			file.Owner = prefix + file.Name;
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		static Exception ValidatePropertyText(SettingsProperty property, string text)
@@ -116,29 +130,35 @@ namespace FarNet.Works.Config
 			return new NotSupportedException("Cannot convert.");
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		string GetPropertyText(SettingsProperty property)
+		static string GetPropertyValueText(SettingsPropertyValue value)
 		{
-			// ensure the value
-			var foo = _settings[property.Name];
-			var value = _settings.PropertyValues[property.Name];
-
 			// get its default or serialized text (the latter may be not set if the default is used)
 			if (value.UsingDefaultValue)
 				return value.Property.DefaultValue as string ?? string.Empty;
 			else
 				return value.SerializedValue as string ?? string.Empty;
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		internal string SetPropertyText(SettingsProperty property, string text)
+		//[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+		internal static string SetPropertyValueDefault(SettingsPropertyValue value)
 		{
-			if (property.SerializeAs != SettingsSerializeAs.String && property.SerializeAs != SettingsSerializeAs.Xml)
+			//! fragile
+
+			// set the text to be deserialized
+			value.SerializedValue = null;
+			value.Deserialized = false;
+
+			// set the default flag (it seems to be the only way to set this flag)
+			var dummy = value.PropertyValue;
+			value.IsDirty = true;
+			return value.Property.DefaultValue as string ?? string.Empty;
+		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+		internal static string SetPropertyValueText(SettingsPropertyValue value, string text)
+		{
+			if (value.Property.SerializeAs != SettingsSerializeAs.String && value.Property.SerializeAs != SettingsSerializeAs.Xml)
 				throw new InvalidOperationException();
 
 			//! fragile
-
-			// ensure the value exists
-			var foo = _settings[property.Name];
-			var value = _settings.PropertyValues[property.Name];
 
 			// set the text to be deserialized
 			value.SerializedValue = text;

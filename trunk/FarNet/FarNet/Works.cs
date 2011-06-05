@@ -32,9 +32,16 @@ namespace FarNet.Works
 				if (sb.Length > 0)
 					sb.AppendLine();
 
-				sb.Append(_handler.Method.ReflectedType.FullName);
-				sb.Append(".");
-				sb.Append(_handler.Method.Name);
+				if (it == null)
+				{
+					sb.Append("[null]");
+				}
+				else
+				{
+					sb.Append(it.Method.ReflectedType.FullName);
+					sb.Append(".");
+					sb.Append(it.Method.Name);
+				}
 			}
 			return sb.ToString();
 		}

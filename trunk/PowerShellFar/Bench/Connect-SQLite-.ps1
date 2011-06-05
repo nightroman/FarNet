@@ -6,8 +6,8 @@
 
 .DESCRIPTION
 	Requires System.Data.SQLite ADO.NET provider: http://system.data.sqlite.org
-	Install it or just put System.Data.SQLite.dll to the FarNet home directory.
-	Starting with 1.0.69 SQLite.Interop.dll is also needed.
+	Install it with 'GAC' and 'Add bin to path' options checked or simply put
+	System.Data.SQLite.dll and SQLite.Interop.dll to the FarNet directory.
 
 	With -Panel switch the script shows database tables in a panel using
 	Panel-DbTable-.ps1 and closes the connection together with a panel.
@@ -19,6 +19,8 @@
 	If -Panel is specified and -Options is empty then it prompts for options.
 	This might be needed for example in order to set "DateTimeFormat=Ticks".
 
+	Note: database foreign keys are enabled by the script on connection.
+
 	Far Manager file accosiation to open a database in the panel:
 	SQLite database file
 	Mask: *.sqlite;*.db3;*.db
@@ -29,11 +31,11 @@ param
 (
 	[Parameter(Mandatory=$true)]
 	[string]
-	# SQLite DB file path.
+	# SQLite database file path.
 	$Path
 	,
 	[string]
-	# Connection options.
+	# Options, connection string format.
 	$Options
 	,
 	[string]
@@ -41,11 +43,11 @@ param
 	$ProviderName
 	,
 	[switch]
-	# To show tables in a panel.
+	# Tells to open the panel to browse the database tables.
 	$Panel
 )
 
-### get factory
+### the factory
 if ($ProviderName) {
 	$DbProviderFactory = [System.Data.Common.DbProviderFactories]::GetFactory($ProviderName)
 }
@@ -61,20 +63,16 @@ if ($Panel -and !$Options) {
 
 ### open connection
 $DbConnection = $DbProviderFactory.CreateConnection()
-$DbConnection.ConnectionString = @"
-Data Source = "$Path"; $Options
-"@
+$DbConnection.ConnectionString = &{
+	$builder = $DbProviderFactory.CreateConnectionStringBuilder()
+	$builder.set_ConnectionString($Options)
+	$builder['data source'] = $Path
+	$builder['foreign keys'] = $true
+	$builder.ConnectionString
+}
 $DbConnection.Open()
 
-# enforce foreign keys
-& {
-	$command = $DbConnection.CreateCommand()
-	$command.CommandText = 'PRAGMA foreign_keys=ON'
-	$null = $command.ExecuteNonQuery()
-	$command.Dispose()
-}
-
-### show tables in a panel
+### open the panel with tables
 if ($Panel) {
 	Panel-DbTable- -CloseConnection
 }
