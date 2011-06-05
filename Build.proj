@@ -12,6 +12,9 @@
 	</ItemGroup>
 
 	<Target Name="Archive">
+		<!--Ensure sample modules are built fine-->
+		<MSBuild Projects="Modules\Build.proj" Targets="Build;Clean"/>
+
 		<MSBuild Targets="Archive" Projects="@(Folder->'%(Identity)\Build.proj')"/>
 
 		<!--Archive Accord-->
