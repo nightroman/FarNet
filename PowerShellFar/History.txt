@@ -1,6 +1,15 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.17 =
+
+*) Connect-SQLite-.ps1
+- Use the latest ADO.NET provider from http://system.data.sqlite.org
+- Foreign keys are enabled by connection strings, not by pragmas.
+
+*) PowerShell.hrc
+- Fix: '' in here-strings @'..''..'@ should not be treated as escaped '.
+
 = 4.4.16 =
 
 *) Technical build for FarNet

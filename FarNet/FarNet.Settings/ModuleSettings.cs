@@ -26,9 +26,9 @@ namespace FarNet.Settings
 	/// </li>
 	/// </ul>
 	/// <para>
-	/// A module may have more than one settings classes, if needed.
-	/// In that case they are shown in the settings menu separately
-	/// and each settings set has its own settings panel.
+	/// A module may have any number of settings classes. Classes designed for users should be public.
+	/// For each public settings class the core shows its item in the module settings menu.
+	/// Selection of this item opens the module settings panel.
 	/// </para>
 	/// <para>
 	/// Settings class names are used as settings file names in the local and roaming module directories.
@@ -43,7 +43,7 @@ namespace FarNet.Settings
 	/// Settings for user changes in UI should be convertible to and from strings.
 	/// Do not change types or type members significantly, this may not work well.
 	/// Use custom types in settings carefully, avoid renamings and brute changes,
-	/// or design serialization to be tolerant to such changes.
+	/// or use custom serialization designed to be tolerant to such changes.
 	/// </para>
 	/// <para>
 	/// Override the <c>Save</c> method in order to perform data validation.
@@ -51,8 +51,10 @@ namespace FarNet.Settings
 	/// </para>
 	/// <para>
 	/// If the settings class should have a single instance then use the public static property <c>Default</c>, see the example.
-	/// The settings panel looks for this property and uses its instance. If it is not found then a new instance is created
-	/// (in this case the class must have the default constructor).
+	/// The core looks for this property and uses its instance. If it is not found then a new instance is created (mind default constructor).
+	/// </para>
+	/// <para>
+	/// See <see cref="ModuleSettingsProvider"/> for important details of storing settings.
 	/// </para>
 	/// <example>
 	/// <code>

@@ -1,10 +1,11 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
+using System.IO;
 using FarNet.Works;
 
 namespace FarNet
@@ -178,6 +179,13 @@ namespace FarNet
 		/// Writes text on the user screen (under panels).
 		/// </summary>
 		/// <param name="text">Text.</param>
+		/// <remarks>
+		/// This method is called from the panels area in order to simulate classic console output.
+		/// Calls from other areas are allowed but console output is unexpected and difficult to see.
+		/// <para>
+		/// In PowerShell scripts consider to use the <c>Write-Host</c> cmdlet instead of this method.
+		/// </para>
+		/// </remarks>
 		public abstract void Write(string text);
 		/// <summary>
 		/// Writes colored text on the user screen (under panels).

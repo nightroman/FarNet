@@ -319,38 +319,40 @@ settings. Available types:
  Pattern is a substring where * and ? are wildcards or #Literal#
 
 @ModuleSettings
-$#Settings menu and panels#
+$#Settings menu and panel#
 ~Contents~@Contents@
 
-#The menu#
+#Settings menu#
 
-The Settings menu shows settings sets implemented by modules and discovered by
+The settings menu shows settings sets implemented by modules and discovered by
 the core (a module may implement any number of settings sets). On selection of
 a set from the menu its properties are shown in its module settings panel. The
 settings panel is uniform for all modules.
 
-#Settings panels#
+#Settings panel#
 
-Module settings panels show two columns: property names and values. Use [#F4#]
-in order to edit values in text editors. Changed values are applied on saving.
-Editors are not modal, several settings editors can be opened at the same time.
-It is recommended to exit settings editors before closing the settings panel.
+The module settings panel shows two columns: setting names and values. Use
+[#F4#] in order to edit values in text editors. Editors are not modal, several
+settings editors can be opened at the same time. Changed values are applied
+immediately and cannot be undone. The settings set is saved to files when the
+panel closes (e.g. by [#Esc#]).
 
-Use [#Del#] or [#F8#] in order to reset selected settings to their default
-values, if there are any provided by a module. Some settings may have no
-defaults, such settings are simply ignored on this operation.
+In editors consider to save changes before closing (use [#F2#]). If the current
+text is not valid then after an error message the editor is still opened and
+the text can be corrected. It is recommended to exit settings editors before
+closing the panel.
 
-If there are changed values then settings are saved when a panel closes (for
-example, by [#Esc#]).
+Default setting names start with '-'. Ever edited setting names start with '+';
+note that such values may be equal to default as well. To reset settings to
+defaults use [#Del#] or [#F8#] in the panel for selected settings. Default
+settings are not stored in files, their values are defined in modules.
 
-HINT: in editors consider to save changes ([#F2#]) before exiting. In that
-case, if a text cannot be converted to a target type then after an error
-message the modified text is not lost, it can be fixed and saved again.
+[#CtrlF11#] in the panel shows default and ever edited values sorted
+separately. [#CtrlF3#] restores usual sort by names.
 
 ---
 
-NOTE: These are #user settings# of a module that provides them. In contrast,
-there are also #system settings# menus and dialogs. System settings exist for
-all modules and their tools.
+NOTE: These are #user settings# of modules that provide settings classes. In
+contrast, there are also #system settings# menus and dialogs. System settings
+exist for all modules and their tools.
 See ~Config menu~@MenuConfig@ (#F9 | Options | Plugin configuration#).
-
