@@ -1,0 +1,11 @@
+#summary Spell checker and thesaurus
+
+== Introduction ==
+
+Simple spell checker and thesaurus based on NHunspell. The core (Hunspell) is
+used in OpenOffice and it works with dictionaries published on OpenOffice.org.
+
+For description and other details see [http://farnet.googlecode.com/svn/trunk/RightWords/Readme.txt Readme.txt]
+
+----
+[http://forum.farmanager.com/viewtopic.php?f=5&t=6493 Обсуждение на форуме]
