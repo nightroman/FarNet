@@ -1,6 +1,6 @@
 
 Module   : FarNet.FolderChart
-Release  : 2011-03-27
+Release  : 2011-06-19
 Category : File system
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -11,7 +11,7 @@ Source   : http://code.google.com/p/farnet/
 
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.6
+ * Plugin FarNet 4.4.18
  * .NET Framework 4.0
 
 
@@ -27,7 +27,7 @@ Features:
  * Left click on a folder opens it in the current panel;
  * Left click in other areas switches the chart modes;
  * Right click hides an item in the chart;
- * Chart tooltips show approximate sizes.
+ * Chart tool-tips show approximate sizes.
 
 	= HISTORY =
 
@@ -52,3 +52,7 @@ Updated for FarNet 4.4.0
 1.0.5
 
 Updated for FarNet 4.4.6
+
+1.0.6
+
+Total size is shown in the chart dialog title.
