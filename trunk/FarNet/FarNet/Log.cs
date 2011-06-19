@@ -28,7 +28,9 @@ namespace FarNet
 
 			//?? _090901_055134 Regex is used to fix bad PS V1 strings; check V2
 			Regex re = new Regex("[\r\n]+");
-			string info = error.GetType().Name + ":\r\n" + re.Replace(error.Message, "\r\n") + "\r\n";
+			string info =
+				error.GetType().Name + ":" + Environment.NewLine +
+				re.Replace(error.Message, Environment.NewLine) + Environment.NewLine;
 
 			// get an error record
 			if (error.GetType().FullName.StartsWith("System.Management.Automation.", StringComparison.Ordinal))
@@ -43,13 +45,13 @@ namespace FarNet
 						object pm = GetPropertyValue(ii, "PositionMessage");
 						if (pm != null)
 							//?? 090517 Added Trim(), because a position message starts with an empty line
-							info += re.Replace(pm.ToString().Trim(), "\r\n") + "\r\n";
+							info += re.Replace(pm.ToString().Trim(), Environment.NewLine) + Environment.NewLine;
 					}
 				}
 			}
 
 			if (error.InnerException != null)
-				info += "\r\n" + FormatException(error.InnerException);
+				info += Environment.NewLine + FormatException(error.InnerException);
 
 			return info;
 		}

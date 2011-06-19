@@ -54,7 +54,7 @@ if (!$Regex) {
 
 	$dialog = $Far.CreateDialog(-1, -1, 77, $(if ($InputObject) { 11 } else { 13 }))
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
-	$dialog.HelpTopic = $Psf.HelpTopic + 'SearchRegex'
+	$dialog.HelpTopic = "<$($Psf.AppHome)\\>SearchRegex"
 	[void]$dialog.AddBox(3, 1, 0, 0, 'Search-Regex')
 	$x = 13
 

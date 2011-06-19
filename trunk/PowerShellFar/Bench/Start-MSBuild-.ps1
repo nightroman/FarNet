@@ -47,6 +47,15 @@ if (![IO.File]::Exists($msbuild)) {
 	}
 }
 
+### import history
+$historyPath = Join-Path $Psf.Manager.GetFolderPath('LocalData', $true) Start-MSBuild-.ps1.clixml
+if ([System.IO.File]::Exists($historyPath)) {
+	$history = Import-Clixml -Path $historyPath
+}
+else {
+	$history = @{}
+}
+
 $xml = [xml](Get-Content $FilePath)
 
 $dialog = $Far.CreateDialog(-1, -1, 77, 23)
@@ -55,7 +64,7 @@ $null = $dialog.AddBox(3, 1, 0, 0, 'Start MSBuild')
 $null = $dialog.AddText(5, -1, 0, 'MSBuild options')
 $edit = $dialog.AddEdit(5, -1, 71, '')
 $edit.History = '-MSBuild'
-$edit.UseLastHistory = $true
+$edit.Text = $history[$FilePath]
 
 ### target list
 $targets = $dialog.AddListBox(5, -1, 71, 7, 'Target : Related targets')
@@ -94,7 +103,19 @@ $help.add_ButtonClicked({
 	$Far.AnyViewer.ViewText($text -join "`r", 'MSBuild Help', 'Modal')
 })
 
+### show
 if (!$dialog.Show()) { return }
+
+### export history, remove missing items
+$history[$FilePath] = $edit.Text
+foreach($key in @($history.Keys)) {
+	if (![System.IO.File]::Exists($key)) {
+		$history.Remove($key)
+	}
+}
+Export-Clixml -Path $historyPath -InputObject $history
+
+### run MSBuild
 $null = [Diagnostics.Process]::Start('cmd.exe', @"
 /c $msbuild "$FilePath" $($edit.Text) & pause
 "@)

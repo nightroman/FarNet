@@ -14,6 +14,8 @@
 
 ### New background job
 Start-Job -Name "Test job $(Get-Date)" -ScriptBlock {
+	'Hello'
+	Get-Variable missing
 	1..111 | %{
 		Start-Sleep 1; "$_ : $(Get-Date)"
 	}

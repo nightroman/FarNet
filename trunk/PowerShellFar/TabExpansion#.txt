@@ -6,7 +6,6 @@ $PSBoundParameters
 $PSCmdlet
 $PSCmdlet.ShouldProcess(#)
 $PSScriptRoot
-$PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
 &{process{#}}
 .{process{#}}
 @PSBoundParameters
@@ -31,6 +30,7 @@ Assert-Far (#)
 Assert-Far @(
 ConfirmImpact = 'High'
 DefaultParameterSetName = '#'
+function ScriptRoot { Split-Path $MyInvocation.ScriptName }
 HelpMessage = "#"
 Mandatory = $true
 ParameterSetName = '#'

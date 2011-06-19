@@ -48,9 +48,9 @@ namespace PowerShellFar
 			plan1.StatusColumns = new FarColumn[] { cZ };
 			SetPlan((PanelViewMode)1, plan1);
 		}
-		internal override void ShowHelp()
+		internal override void ShowHelpForPanel()
 		{
-			Help.ShowTopic("TreePanel");
+			Far.Net.ShowHelpTopic("TreePanel");
 		}
 		/// <summary>
 		/// Opens/closes the node.

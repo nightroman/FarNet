@@ -554,11 +554,19 @@ int Editor::ConvertColumnScreenToEditor(int line, int column)
 	return ecp.DestPos;
 }
 
+Point Editor::ConvertPointEditorToScreen(Point point)
+{
+	TextFrame frame = Frame;
+	point.X = ConvertColumnEditorToScreen(point.Y, point.X) - frame.VisibleChar;
+	point.Y -= frame.VisibleLine - 1;
+	return point;
+}
+
 Point Editor::ConvertPointScreenToEditor(Point point)
 {
-	TextFrame f = Frame;
-	point.Y += f.VisibleLine - 1;
-	point.X = ConvertColumnScreenToEditor(point.Y, point.X) + f.VisibleChar;
+	TextFrame frame = Frame;
+	point.Y += frame.VisibleLine - 1;
+	point.X = ConvertColumnScreenToEditor(point.Y, point.X) + frame.VisibleChar;
 	return point;
 }
 

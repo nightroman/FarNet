@@ -255,7 +255,7 @@ namespace PowerShellFar
 						{
 							// [ShiftF1]
 							e.Ignore = true;
-							Help.ShowHelp();
+							Help.ShowHelpForContext();
 						}
 						return;
 					}
@@ -289,39 +289,6 @@ namespace PowerShellFar
 						}
 						return;
 					}
-			}
-		}
-		public static void InvokeScriptBeingEdited(IEditor editor)
-		{
-			// editor
-			if (editor == null)
-				editor = A.Psf.Editor();
-
-			// commit
-			editor.Save();
-
-			// sync location to file
-			string dir = Path.GetDirectoryName(editor.FileName);
-			if (dir.Length < 260)
-			{
-				Environment.CurrentDirectory = dir;
-				A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(dir));
-			}
-
-			// command
-			string code = "& '" + editor.FileName.Replace("'", "''") + "'";
-
-			// invoke
-			Far.Net.UI.WindowTitle = "Running...";
-			try
-			{
-				A.Psf.Act(code, null, false);
-				Far.Net.UI.WindowTitle = "Done " + DateTime.Now;
-			}
-			catch
-			{
-				Far.Net.UI.WindowTitle = "Failed";
-				throw;
 			}
 		}
 		public static void InvokeSelectedCode()
@@ -370,6 +337,61 @@ namespace PowerShellFar
 			// clean the command line if ok
 			if (ok && toCleanCmdLine && wt != WindowKind.Editor)
 				Far.Net.CommandLine.Text = string.Empty;
+		}
+		//_110609_130945
+		public static void InvokeScriptBeingEdited(IEditor editor)
+		{
+			// editor
+			if (editor == null)
+				editor = A.Psf.Editor();
+
+			// commit
+			editor.Save();
+
+			// sync the directory and location to the script directory
+			// maybe it is questionable but it is very handy too often
+			string dir0, dir1;
+
+			// save/set the directory, allow to fail (e.g. a long path)
+			// note: GetDirectoryName fails on a long path, too
+			try
+			{
+				dir1 = Path.GetDirectoryName(editor.FileName);
+				dir0 = Environment.CurrentDirectory;
+				Environment.CurrentDirectory = dir1;
+			}
+			catch (PathTooLongException)
+			{
+				// PowerShell is not able to invoke this script anyway, almost for sure
+				Far.Net.Message("The script path is too long.\rInvoking is not supported.");
+				return;
+			}
+
+			try
+			{
+				Far.Net.UI.WindowTitle = "Running...";
+
+				// push/set the location; let's ignore issues
+				A.Psf.Engine.SessionState.Path.PushCurrentLocation(null);
+				A.Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(dir1));
+
+				// invoke the script
+				A.Psf.Act("& '" + editor.FileName.Replace("'", "''") + "'", null, false);
+				Far.Net.UI.WindowTitle = "Done " + DateTime.Now;
+			}
+			catch
+			{
+				Far.Net.UI.WindowTitle = "Failed";
+				throw;
+			}
+			finally
+			{
+				// restore the directory first
+				Environment.CurrentDirectory = dir0;
+
+				// then pop the location, it may fail perhaps
+				A.Psf.Engine.SessionState.Path.PopLocation(null);
+			}
 		}
 	}
 }

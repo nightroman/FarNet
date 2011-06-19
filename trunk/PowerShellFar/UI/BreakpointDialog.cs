@@ -40,7 +40,7 @@ namespace PowerShellFar.UI
 
 			UIDialog = Far.Net.CreateDialog(-1, -1, 77, h);
 			UIDialog.Closing += OnClosing;
-			UIDialog.HelpTopic = A.Psf.HelpTopic + "BreakpointDialog";
+			UIDialog.HelpTopic = Far.Net.GetHelpTopic("BreakpointDialog");
 
 			// title
 			UIDialog.AddBox(3, 1, 0, 0, typeName + " breakpoint");

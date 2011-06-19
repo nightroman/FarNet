@@ -1,6 +1,31 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.18 =
+
+*) TabExpansion
+- Improved performance of building the cache for type/namespace expansion
+- Added try/catch of assembly access exceptions (e.g. dynamic assemblies)
+- Other tweaks
+
+*) Invoking a script from the editor by [F5]
+As usual it sets the current directory and location to the script directory.
+Now it also restores them after work. Otherwise, with no ASCII plugins, the
+current directory was changing and locking its parent directories.
+
+*) Panel-Job-.ps1 ([F3], [CtrlQ])
+Job errors, if any, are shown in the message box separately. Then the job
+output is shown. (It used to show the first error and no output at all).
+Test-Panel-Job-.ps1 - the first job makes a demo error to show this.
+
+*) Start-MSBuild-.ps1
+Save and restores last used options for each project file. Data are stored in
+the local file Start-MSBuild-.ps1.clixml.
+
+*) Bugs
+Fixed null-ref issues on opening the error list from the PSF menu. There are
+errors with null invocation info, e.g. errors received from PS jobs.
+
 = 4.4.17 =
 
 *) Connect-SQLite-.ps1
@@ -30,7 +55,7 @@ http://code.google.com/p/farnet/
 ### Moving from registry to user profile directories
 
 *) Settings
-Main persistent settings are storted in a file and modified in the standard
+Main persistent settings are stored in a file and modified in the standard
 module settings panel opened from the new FarNet menu .NET \ Settings...
 
 The settings should be migrated manually. Old registry data can be removed.
@@ -81,7 +106,7 @@ Technical build for FarNet 4.4.14
 - Added parameters XFile and XPath, see FarNet history for details.
 
 *) FormatPanel (base of ObjectPanel and ItemPanel)
-- Better performance (avoided expesive repetitive calls of Get-FormatData).
+- Better performance (avoided expensive repetitive calls of Get-FormatData).
 
 = 4.4.9 =
 
@@ -91,7 +116,7 @@ Technical build for FarNet 4.4.14
 - New properties XmlFile, XmlReadMode, XmlSchema, XmlWriteMode, TableName.
 - Added control of the source XML file time in order to detect conflicts.
 - Hidden not calculated columns are excluded by default in the table panel.
-- Hidden, calculated, autoincrement fields are hidden in the member panel.
+- Hidden, calculated, auto-increment fields are hidden in the member panel.
 - Removed redundant constructors, only the default is left.
 - Fix: [F1]\Filter: fixed default text in the input box.
 
