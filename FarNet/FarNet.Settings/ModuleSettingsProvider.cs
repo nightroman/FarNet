@@ -20,12 +20,6 @@ namespace FarNet.Settings
 	/// <remarks>
 	/// The type of this class is used as the argument of <c>SettingsProviderAttribute</c> of settings classes.
 	/// <para>
-	/// Implementation.
-	/// This provider reads and writes .resources using <c>ResourceReader</c> and <c>ResourceWriter</c>.
-	/// Settings contexts should have <see cref="RoamingFileName"/> and <see cref="LocalFileName"/>
-	/// paths of .resources files where roaming and local settings are stored.
-	/// </para>
-	/// <para>
 	/// Settings having <c>UsingDefaultValue</c> equal to true are not stored in files.
 	/// Thus, such settings are restored with their current default values.
 	/// </para>
@@ -36,6 +30,21 @@ namespace FarNet.Settings
 	/// Basically it is better to avoid not null defaults for reference types other than strings.
 	/// It is fine to have not null defaults for strings but consider to save empty strings, not nulls.
 	/// Compare: stored empty strings are restored exactly, not stored nulls are restored as current defaults.
+	/// </para>
+	/// <para>
+	/// Recommended data types for trivial settings are <c>String</c> and <c>DateTime</c> and primitive types:
+	/// <c>Boolean</c>, <c>Byte/SByte</c>, <c>Int16/UInt16</c>, <c>Int32/UInt32</c>, <c>Int64/UInt64</c>, <c>Char</c>, <c>Double</c>, and <c>Single</c>.
+	/// </para>
+	/// <para>
+	/// Other trivial standard value types (for example <c>Guid</c>, <c>Decimal</c>, etc.) can be used as well, with or without defaults,
+	/// but the settings engine never treats them as using default values, <c>UsingDefaultValue</c> is always false.
+	/// </para>
+	/// <para>
+	/// Implementation.
+	/// This provider reads and writes .resources files using <c>ResourceReader</c> and <c>ResourceWriter</c>.
+	/// Settings classes should have added to their contexts two key/value pairs where keys are
+	/// <see cref="RoamingFileName"/> and <see cref="LocalFileName"/>
+	/// and values are full roaming and local paths of settings files.
 	/// </para>
 	/// </remarks>
 	public sealed class ModuleSettingsProvider : SettingsProvider

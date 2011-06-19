@@ -85,6 +85,7 @@ public:
 public:
 	virtual int ConvertColumnEditorToScreen(int line, int column) override;
 	virtual int ConvertColumnScreenToEditor(int line, int column) override;
+	virtual Point ConvertPointEditorToScreen(Point point) override;
 	virtual Point ConvertPointScreenToEditor(Point point) override;
 	virtual String^ GetSelectedText(String^ separator) override;
 	virtual String^ GetText(String^ separator) override;

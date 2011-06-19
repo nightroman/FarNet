@@ -24,6 +24,9 @@ namespace FarNet.Works.Config
 			_settings = settings;
 
 			Functions = ExplorerFunctions.GetContent | ExplorerFunctions.SetText;
+			
+			var type = _settings.GetType();
+			Location = Far.Net.GetModuleManager(type).ModuleName + "\\" + type.Name;
 
 			foreach (SettingsProperty property in _settings.Properties)
 			{

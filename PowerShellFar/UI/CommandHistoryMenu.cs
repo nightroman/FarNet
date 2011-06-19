@@ -18,7 +18,7 @@ namespace PowerShellFar.UI
 			_menu = Far.Net.CreateListMenu();
 			Settings.Default.ListMenu(_menu);
 
-			_menu.HelpTopic = A.Psf.HelpTopic + "MenuCommandHistory";
+			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuCommandHistory");
 			_menu.SelectLast = true;
 			_menu.Title = "PowerShellFar History";
 

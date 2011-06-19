@@ -9,10 +9,10 @@
 	the file is useful as a sample of CLIXML for other tests and experiments.
 #>
 
-$psScriptRoot = Split-Path $MyInvocation.MyCommand.Definition
+function ScriptRoot { Split-Path $MyInvocation.ScriptName }
 
 # compile dynamically definition of a class
-Add-Type ([IO.File]::ReadAllText("$psScriptRoot\Test-Zoo.cs"))
+Add-Type ([IO.File]::ReadAllText("$(ScriptRoot)\Test-Zoo.cs"))
 
 # create an object defined in .NET (strong typed members)
 $dno = New-Object Test.Zoo

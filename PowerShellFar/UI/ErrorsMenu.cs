@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System;
@@ -15,48 +15,51 @@ namespace PowerShellFar.UI
 {
 	class ErrorsMenu
 	{
-		IMenu _menu;
-
+		readonly Regex _regex = new Regex(@"ErrorActionPreference.*Stop:\s*(.*)");
+		readonly IMenu _menu;
 		public ErrorsMenu()
 		{
 			_menu = Far.Net.CreateMenu();
 			_menu.Title = "PowerShell errors ($Error)";
-			_menu.HelpTopic = A.Psf.HelpTopic + "MenuErrors";
+			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuErrors");
 			_menu.BreakKeys.Add(VKeyCode.Delete);
 			_menu.BreakKeys.Add(VKeyCode.F4);
 		}
-
+		string GetErrorMessage(string message)
+		{
+			Match m = _regex.Match(message);
+			return m.Success ? m.Groups[1].Value : message;
+		}
 		public void Show()
 		{
 			ArrayList errors = A.Psf.Engine.SessionState.PSVariable.GetValue("Error") as ArrayList;
-
-			Regex re = new Regex(@"ErrorActionPreference.*Stop:\s*(.*)");
-			foreach (object eo in errors)
+			foreach (object error in errors)
 			{
-				Exception ex = eo as Exception;
-				if (ex != null)
+				// exception:
+				var asException = error as Exception;
+				if (asException != null)
 				{
-					string message = ex.Message;
-					Match m = re.Match(message);
-					if (m.Success)
-						message = m.Groups[1].Value;
-					_menu.Add(message).Data = eo;
+					_menu.Add(GetErrorMessage(asException.Message)).Data = error;
 					continue;
 				}
 
-				ErrorRecord er = eo as ErrorRecord;
-				if (er != null)
+				// record:
+				var asRecord = error as ErrorRecord;
+				if (asRecord != null)
 				{
-					string message = er.ToString();
-					Match m = re.Match(message);
-					if (m.Success)
-						message = m.Groups[1].Value;
-					FarItem mi = _menu.Add(message);
-					mi.Data = eo;
-					if (!string.IsNullOrEmpty(er.InvocationInfo.ScriptName) && File.Exists(er.InvocationInfo.ScriptName))
-						mi.Checked = true;
+					var item = _menu.Add(GetErrorMessage(asRecord.ToString()));
+					item.Data = error;
+
+					// set checked an item with a source script
+					//_110611_091139 InvocationInfo can be null.
+					if (asRecord.InvocationInfo != null && !string.IsNullOrEmpty(asRecord.InvocationInfo.ScriptName) && File.Exists(asRecord.InvocationInfo.ScriptName))
+						item.Checked = true;
+
 					continue;
 				}
+
+				// others:
+				_menu.Add(error == null ? string.Empty : error.ToString());
 			}
 
 			while (_menu.Show())
@@ -67,33 +70,34 @@ namespace PowerShellFar.UI
 					return;
 				}
 
-				object eo = _menu.SelectedData;
+				var error = _menu.SelectedData;
 
-				Exception ex = eo as Exception;
-				if (ex != null)
+				var asException = error as Exception;
+				if (asException != null)
 				{
 					if (_menu.BreakKey != 0)
 						continue;
-					Far.Net.ShowError(null, ex);
+
+					Far.Net.ShowError(null, asException);
 					continue;
 				}
 
-				ErrorRecord er = eo as ErrorRecord;
-				if (er != null)
+				var asRecord = error as ErrorRecord;
+				if (asRecord != null)
 				{
 					if (_menu.BreakKey == VKeyCode.F4)
 					{
-						if (!string.IsNullOrEmpty(er.InvocationInfo.ScriptName) && File.Exists(er.InvocationInfo.ScriptName))
+						if (!string.IsNullOrEmpty(asRecord.InvocationInfo.ScriptName) && File.Exists(asRecord.InvocationInfo.ScriptName))
 						{
 							IEditor editor = Far.Net.CreateEditor();
-							editor.FileName = er.InvocationInfo.ScriptName;
-							editor.GoTo(0, er.InvocationInfo.ScriptLineNumber - 1);
+							editor.FileName = asRecord.InvocationInfo.ScriptName;
+							editor.GoTo(0, asRecord.InvocationInfo.ScriptLineNumber - 1);
 							editor.Open(OpenMode.None);
 							return;
 						}
 					}
 
-					Far.Net.ShowError(null, er.Exception);
+					Far.Net.ShowError(null, asRecord.Exception);
 					continue;
 				}
 			}

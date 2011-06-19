@@ -121,7 +121,7 @@ namespace FarNet.Tools
 				}
 			}
 
-			result.Expression = string.Join("\r\n", lines, i, lines.Length - i);
+			result.Expression = string.Join(Environment.NewLine, lines, i, lines.Length - i);
 			return result;
 		}
 	}

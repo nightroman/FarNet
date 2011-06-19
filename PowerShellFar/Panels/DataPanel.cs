@@ -508,9 +508,9 @@ namespace PowerShellFar
 					Files.Add(new DataRowFile(drv.Row, Map));
 			}
 		}
-		internal override void ShowHelp()
+		internal override void ShowHelpForPanel()
 		{
-			Help.ShowTopic("DataPanel");
+			Far.Net.ShowHelpTopic("DataPanel");
 		}
 		// Command builder
 		DbCommandBuilder _Builder;

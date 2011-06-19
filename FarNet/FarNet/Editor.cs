@@ -417,6 +417,10 @@ namespace FarNet
 		/// <param name="column">Column index to be converted.</param>
 		public abstract int ConvertColumnScreenToEditor(int line, int column);
 		/// <summary>
+		/// Converts the point in editor coordinates to the point in screen coordinates.
+		/// </summary>
+		public abstract Point ConvertPointEditorToScreen(Point point);
+		/// <summary>
 		/// Converts the point in screen coordinates to the point in editor coordinates.
 		/// </summary>
 		public abstract Point ConvertPointScreenToEditor(Point point);

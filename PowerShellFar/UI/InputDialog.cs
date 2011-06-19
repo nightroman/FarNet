@@ -44,7 +44,7 @@ namespace PowerShellFar.UI
 					case KeyCode.F1 | KeyMode.Shift:
 						// [ShiftF1]
 						e.Ignore = true;
-						Help.ShowHelp();
+						Help.ShowHelpForContext();
 						return;
 				}
 			};

@@ -14,7 +14,7 @@ namespace PowerShellFar.UI
 {
 	static class ChoiceMsg
 	{
-		static void ShowHelp(Collection<ChoiceDescription> choices)
+		static void ShowHelpForChoices(Collection<ChoiceDescription> choices)
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("Escape - more options, e.g. to halt the command.");
@@ -63,7 +63,7 @@ namespace PowerShellFar.UI
 					return answer;
 
 				// help:
-				ShowHelp(choices);
+				ShowHelpForChoices(choices);
 			}
 		}
 	}

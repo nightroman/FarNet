@@ -419,12 +419,12 @@ void Far1::ShowError(String^ title, Exception^ error)
 			info = Log::FormatException(error);
 
 		// with title
-		info += title + "\r\n";
+		info += title + Environment::NewLine;
 
 		if (Works::Host::State == Works::HostState::Loading)
 			Far::Net->UI->Write(info, ConsoleColor::Red);
 		else
-			Far::Net->Message(info + "\r\n" + error->ToString(), title, (MsgOptions::Gui | MsgOptions::Warning));
+			Far::Net->Message(info + Environment::NewLine + error->ToString(), title, (MsgOptions::Gui | MsgOptions::Warning));
 
 		return;
 	}
@@ -448,10 +448,10 @@ void Far1::ShowError(String^ title, Exception^ error)
 
 	// add macro info
 	if (msgMacro)
-		info += "\r\n" + msgMacro + "\r\n";
+		info += Environment::NewLine + msgMacro + Environment::NewLine;
 
 	// add verbose information
-	info += "\r\n" + error->ToString();
+	info += Environment::NewLine + error->ToString();
 
 	// locked editor
 	Works::EditorTools::EditText(info, error->GetType()->FullName, true);
@@ -460,14 +460,6 @@ void Far1::ShowError(String^ title, Exception^ error)
 IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)
 {
 	return gcnew FarDialog(left, top, right, bottom);
-}
-
-void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
-{
-	PIN_NE(pinPath, path);
-	PIN_NS(pinTopic, topic);
-
-	Info.ShowHelp(pinPath, pinTopic, (int)options);
 }
 
 Works::IPanelWorks^ Far1::WorksPanel(FarNet::Panel^ panel, Explorer^ explorer)
@@ -684,6 +676,29 @@ String^ Far1::GetFolderPath(SpecialFolder folder)
 IModuleManager^ Far1::GetModuleManager(Type^ type)
 {
 	return Works::ModuleLoader::GetModuleManager(type);
+}
+
+void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
+{
+	PIN_NE(pinPath, path);
+	PIN_NS(pinTopic, topic);
+
+	Info.ShowHelp(pinPath, pinTopic, (int)options);
+}
+
+void Far1::ShowHelpTopic(String^ topic)
+{
+	String^ path = Path::GetDirectoryName(Assembly::GetCallingAssembly()->Location);
+
+	PIN_NE(pinPath, path);
+	PIN_NS(pinTopic, topic);
+
+	Info.ShowHelp(pinPath, pinTopic, FHELP_CUSTOMPATH);
+}
+
+String^ Far1::GetHelpTopic(String^ topic)
+{
+	return "<" + Path::GetDirectoryName(Assembly::GetCallingAssembly()->Location) + "\\>" + topic;
 }
 
 }

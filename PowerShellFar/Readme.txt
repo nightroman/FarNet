@@ -1,7 +1,7 @@
 
 Module   : FarNet.PowerShellFar
-Version  : 4.4.17
-Release  : 2011-06-05
+Version  : 4.4.18
+Release  : 2011-06-19
 Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -26,11 +26,11 @@ Update-FarNet.ps1 or downloaded manually from:
 http://code.google.com/p/farnet/
 
 
-	= PREREQUISITES =
+= PREREQUISITES =
 
 
  - Far Manager 2.0.1807
- - Plugin FarNet 4.4.17
+ - Plugin FarNet 4.4.18
  - Windows PowerShell 2.0
 
 
@@ -61,7 +61,7 @@ this palette in use, other palettes may be less suitable or even practically
 unusable. See installation instructions in the file.
 
 
-	= PROBLEMS AND SOLUTIONS =
+= PROBLEMS AND SOLUTIONS =
 
 
 PROBLEM
