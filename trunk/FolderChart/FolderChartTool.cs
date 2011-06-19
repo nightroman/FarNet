@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module FolderChart
-Copyright (c) 2010 Roman Kuzmin
+Copyright (c) 2010-2011 Roman Kuzmin
 */
 
 using System.IO;
@@ -45,6 +45,9 @@ namespace FolderChart
 			if (sorted.Count == 0)
 				return;
 
+			var totalSize = run.Result.Sum(x => x.Size);
+			var title = Kit.FormatSize(totalSize, path);
+
 			var maxSizeToShow = sorted[sorted.Count - 1].Size / HIDDEN_FACTOR;
 			long sumHiddenSizes = 0;
 			int index = 0;
@@ -60,7 +63,7 @@ namespace FolderChart
 			if (sumHiddenSizes > 0)
 				sorted.Insert(0, new FolderItem() { Name = string.Empty, Size = sumHiddenSizes });
 
-			var result = FolderChartForm.Show(path, sorted, new WindowWrapper(Far.Net.UI.MainWindowHandle));
+			var result = FolderChartForm.Show(title, sorted, new WindowWrapper(Far.Net.UI.MainWindowHandle));
 			if (result == null)
 				return;
 
