@@ -70,7 +70,7 @@ namespace PowerShellFar.UI
 			}
 
 			_Dialog = Far.Net.CreateDialog(-1, -1, dw, dh);
-			_Dialog.HelpTopic = A.Psf.HelpTopic + "DebuggerDialog";
+			_Dialog.HelpTopic = Far.Net.GetHelpTopic("DebuggerDialog");
 			_Dialog.AddBox(3, 1, dw - 4, dh - 2, title);
 
 			_List1 = _Dialog.AddListBox(4, 2, dw - 5, h1 + 1, null);

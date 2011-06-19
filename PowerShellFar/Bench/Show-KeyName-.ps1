@@ -16,6 +16,11 @@
 
 	[Copy]
 	-- Copies the key name to clipboard.
+
+.NOTES
+	There is a native way to get key names. Type these four keys:
+		[Ctrl.] [Ctrl.] [<key>] [Esc]
+	The last [Esc] cancels creation of the recorded empty macro.
 #>
 
 ### create the dialog

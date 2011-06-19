@@ -43,7 +43,7 @@ namespace PowerShellFar
 				menu.Title = "Open Editor Console";
 				menu.Bottom = "[Shift+|Ctrl+]Enter";
 				menu.Add("* New console or session *");
-				menu.HelpTopic = A.Psf.HelpTopic + "EditorConsoleMenuOpen";
+				menu.HelpTopic = Far.Net.GetHelpTopic("EditorConsoleMenuOpen");
 
 				IPanel panel = null;
 				if ((Far.Net.Window.Kind == WindowKind.Panels) && (null != (panel = Far.Net.Panel)) && (panel.Kind != PanelKind.File))
@@ -202,12 +202,12 @@ namespace PowerShellFar
 		{
 			IMenu menu = Far.Net.CreateMenu();
 			menu.Title = "Editor Console";
-			menu.HelpTopic = A.Psf.HelpTopic + "EditorConsole";
+			menu.HelpTopic = Far.Net.GetHelpTopic("EditorConsole");
 			if (Runspace != null)
 				menu.Add("&Global session").Click = delegate { CloseSession(); };
 			menu.Add("New &local session").Click = delegate { OpenLocalSession(); };
 			menu.Add("New &remote session").Click = delegate { OpenRemoteSession(); };
-			menu.Add("&Help").Click = delegate { Help.ShowTopic("EditorConsole"); };
+			menu.Add("&Help").Click = delegate { Far.Net.ShowHelpTopic("EditorConsole"); };
 			menu.Show();
 		}
 
@@ -413,7 +413,7 @@ namespace PowerShellFar
 						{
 							// [ShiftF1]
 							e.Ignore = true;
-							Help.ShowHelp();
+							Help.ShowHelpForContext();
 						}
 						return;
 					}

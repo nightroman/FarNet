@@ -24,9 +24,9 @@
 	[Del], [F8]
 	Stops running or removes selected jobs depending on their states.
 
-	[F3]
-	Preview job output (by Receive-Job -Keep). Output is not discarded and can
-	be processed later by scripts.
+	[F3], [CtrlQ]
+	View the job output. Output is not discarded and can be processed later.
+	Job errors, if any, are shown in the message box separately.
 #>
 
 $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
@@ -51,8 +51,14 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 		}
 	}
 	### Write job data (for [F3], [CtrlQ])
+	#_110611_091139 Use of -ErrorAction 0 allows to get all errors, this is good.
+	# The bad: errors do not have location information (InvocationInfo is null).
 	AsGetContent = {
-		Receive-Job -Job $_.File.Data -Keep > $_.FileName
+		Receive-Job -Job $_.File.Data -Keep -ErrorAction 0 -ErrorVariable err > $_.FileName
+		if ($err) {
+			$msg = $err | %{ "$_" } | Out-String
+			Show-FarMessage $msg -Caption "Job errors" -IsWarning -LeftAligned
+		}
 	}
 }
 

@@ -150,9 +150,9 @@ namespace PowerShellFar
 
 			return true;
 		}
-		internal override void ShowHelp()
+		internal override void ShowHelpForPanel()
 		{
-			Help.ShowTopic("ListPanel");
+			Far.Net.ShowHelpTopic("ListPanel");
 		}
 		internal override void UIApply()
 		{

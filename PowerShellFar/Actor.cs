@@ -560,13 +560,6 @@ Continue with this current directory?
 			get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); }
 		}
 		/// <summary>
-		/// Returns PowerShellFar string for HelpTopic. Designed for internal use.
-		/// </summary>
-		public string HelpTopic
-		{
-			get { return "<" + AppHome + "\\>"; }
-		}
-		/// <summary>
 		/// Shows an input dialog and returns entered PowerShell code.
 		/// </summary>
 		/// <remarks>
@@ -764,7 +757,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowHelp()
 		{
-			Help.ShowHelp();
+			Help.ShowHelpForContext();
 		}
 		/// <summary>
 		/// Expands PowerShell code in an edit line.

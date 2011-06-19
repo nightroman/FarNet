@@ -31,6 +31,9 @@ namespace FarNet.Demo
 			// create the menu instance
 			var menu = Far.Net.CreateMenu();
 			menu.Title = GetString("MenuTitle");
+			
+			// set this menu help topic
+			menu.HelpTopic = Far.Net.GetHelpTopic("TracingMenu");
 
 			// add the menu items
 

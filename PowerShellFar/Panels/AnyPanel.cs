@@ -128,9 +128,9 @@ namespace PowerShellFar
 		/// <summary>
 		/// Shows help.
 		/// </summary>
-		internal virtual void ShowHelp()
+		internal virtual void ShowHelpForPanel()
 		{
-			Help.ShowTopic("PowerPanel");
+			Far.Net.ShowHelpTopic("PowerPanel");
 		}
 		/// <summary>
 		/// Shows help menu (e.g. called on [F1]).
@@ -142,7 +142,7 @@ namespace PowerShellFar
 			if (menu.Show())
 			{
 				if (menu.BreakKey == VKeyCode.F1)
-					ShowHelp();
+					ShowHelpForPanel();
 			}
 		}
 		/// <summary>Apply command.</summary>
@@ -308,7 +308,7 @@ namespace PowerShellFar
 				items.Help = new SetItem()
 				{
 					Text = "Help (F1)",
-					Click = delegate { ShowHelp(); }
+					Click = delegate { ShowHelpForPanel(); }
 				};
 		}
 		/// <summary>

@@ -38,7 +38,6 @@ function global:TabExpansion
 
 		### Members of variables, expressions or static objects
 		elseif ($lastWord_ -match '(^.*?)(\$[\w\.]+|\)|\[[\w\.]+\]::\w+)\.(\w*)$') {
-			$method_ = [System.Management.Automation.PSMemberTypes]'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
 			$pref_ = $matches[1]
 			$expr_ = $matches[2]
 			$patt_ = $matches[3] + '*'
@@ -51,14 +50,16 @@ function global:TabExpansion
 			else {
 				$val_ = Invoke-Expression $expr_
 			}
-			foreach($m in Get-Member -InputObject $val_ $patt_ -View 'extended', 'adapted', 'base' -ErrorAction 0) {
-				# method
-				if ($m.MemberType -band $method_) {
-					$pref_ + $expr_ + '.' + $m.name + '('
-				}
-				# property
-				else {
-					$pref_ + $expr_ + '.' + $m.name
+			if ($null -ne $val_) {
+				foreach($m in Get-Member -InputObject $val_ $patt_ -View All -ErrorAction 0) {
+					# method
+					if ($m.MemberType -band [System.Management.Automation.PSMemberTypes]::Methods) {
+						$pref_ + $expr_ + '.' + $m.Name + '('
+					}
+					# property
+					else {
+						$pref_ + $expr_ + '.' + $m.Name
+					}
 				}
 			}
 		}
@@ -150,9 +151,8 @@ function global:TabExpansion
 			$pref_ = $matches[1]
 			$type = $matches[2]
 			$name = $matches[3]
-			$method_ = [System.Management.Automation.PSMemberTypes] 'Method,CodeMethod,ScriptMethod,ParameterizedProperty'
 			foreach($_ in (Invoke-Expression $type | Get-Member "$name*" -Static -ErrorAction 0)) {
-				if ($_.MemberType -band $method_) {
+				if ($_.MemberType -band [System.Management.Automation.PSMemberTypes]::Methods) {
 					'{0}{1}::{2}(' -f $pref_, $type, $_.Name
 				}
 				else {
@@ -300,8 +300,10 @@ function global:GetTabExpansionType
 	if ($pattern.StartsWith('*')) {
 		$pattern = $pattern + '*'
 		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-			foreach($type in $assembly.GetTypes()) {
-				if ($type.IsPublic -and $type.FullName -like $pattern) {
+			try { $types = $assembly.GetExportedTypes() }
+			catch { $Error.RemoveAt(0); continue }
+			foreach($type in $types) {
+				if ($type.FullName -like $pattern) {
 					if ($prefix) {
 						$prefix + $type.FullName + ']'
 					}
@@ -315,24 +317,22 @@ function global:GetTabExpansionType
 	}
 
 	# update the cache if needed; '*' forces
-	if ($pattern.EndsWith('*') -or !$global:TabExpansionCache) {
+	if (!$global:TabExpansionCache -or $pattern.EndsWith('*')) {
 		$global:TabExpansionCache = @{}
-		foreach($a in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-			foreach($type in $a.GetTypes()) {
-				if ($type.IsPublic -and $type.Namespace) {
-					$set1 = $global:TabExpansionCache
-					foreach($name in $type.Namespace.Split('.')) {
-						if ($set1.ContainsKey($name)) {
-							$set2 = $set1[$name]
-						}
-						else {
-							$set2 = @{}
-							$set1.Add($name, $set2)
-						}
-						$set1 = $set2
+		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+			try { $types = $assembly.GetExportedTypes() }
+			catch { $Error.RemoveAt(0); continue }
+			foreach($type in $types) {
+				$set1 = $global:TabExpansionCache
+				foreach($name in ([string]$type.Namespace).Split('.')) {
+					$set2 = $set1[$name]
+					if ($null -eq $set2) {
+						$set2 = @{}
+						$set1.Add($name, $set2)
 					}
-					$set1[$type.Name] = $null
+					$set1 = $set2
 				}
+				$set1[$type.Name] = $null
 			}
 		}
 	}

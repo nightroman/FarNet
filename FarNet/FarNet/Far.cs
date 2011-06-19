@@ -346,6 +346,24 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/ShowHelp/*'/>
 		public abstract void ShowHelp(string path, string topic, HelpOptions options);
 		/// <summary>
+		/// Shows the help topic from a help file located in the directory of the calling assembly.
+		/// </summary>
+		public abstract void ShowHelpTopic(string topic);
+		/// <summary>
+		/// Formats the help topic path for <c>HelpTopic</c> properties of various UI classes.
+		/// </summary>
+		/// <param name="topic">Module help topic name.</param>
+		/// <returns>Help topic path formatted for the core.</returns>
+		/// <remarks>
+		/// The help topic path is formatted for a help file located in the directory of the calling assembly.
+		/// Normally it is a module assembly but it can be any other, e.g. a shared library or a sub-module.
+		/// <para>
+		/// This method is enough for typical use cases and <c>HelpTopic</c> strings are formatted internally.
+		/// In special cases see <see cref="ShowHelp"/> for help topic format details.
+		/// </para>
+		/// </remarks>
+		public abstract string GetHelpTopic(string topic);
+		/// <summary>
 		/// Returns opened module panels having optionally specified type.
 		/// </summary>
 		/// <param name="type">The panel class type. Use null for any module panel.</param>

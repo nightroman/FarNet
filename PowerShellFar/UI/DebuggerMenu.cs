@@ -22,7 +22,7 @@ namespace PowerShellFar.UI
 		{
 			_menu = Far.Net.CreateListMenu();
 			_menu.Title = "PowerShell debugger tools";
-			_menu.HelpTopic = A.Psf.HelpTopic + "MenuDebugger";
+			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuDebugger");
 			_menu.FilterOptions = PatternOptions.None;
 			_menu.NoInfo = true;
 			_menu.ScreenMargin = Settings.Default.ListMenuScreenMargin;

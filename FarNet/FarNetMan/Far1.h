@@ -56,6 +56,8 @@ public:
 	virtual int Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic) override;
 	virtual int NameToKey(String^ key) override;
 	virtual IRegistryKey^ OpenRegistryKey(String^ name, bool writable) override;
+	[MethodImpl(MethodImplOptions::NoInlining)]
+	virtual String^ GetHelpTopic(String^ topic) override;
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text) override;
 	virtual String^ KeyToName(int key) override;
 	virtual String^ PasteFromClipboard() override;
@@ -73,6 +75,8 @@ public:
 	virtual void Quit() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;
+	[MethodImpl(MethodImplOptions::NoInlining)]
+	virtual void ShowHelpTopic(String^ topic) override;
 internal:
 	static void Connect();
 private:

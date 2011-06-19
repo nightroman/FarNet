@@ -1,5 +1,28 @@
 http://code.google.com/p/farnet/
 
+= 4.4.18 =
+
+*) Help helpers
+
+New IFar.GetHelpTopic() helps to format strings for HelpTopic properties like
+"<C:\...\MyModule\\>Topic" (but in fact format details are hidden in this way).
+
+New IFar.ShowHelpTopic() is a simple method for simple cases. The old and not
+quite simple ShowHelp() still works as usual. But it is kind of deprecated now.
+
+*) FarNet.Demo module
+Added two help files (en, ru) and examples of using help files in the code:
+a) HelpTopic property of the menu;
+b) explicit call of ShowHelpTopic().
+
+*) Module setting
+- Added remarks about recommended data types to ModuleSettingsProvider.
+- Module settings panel is not closed (by pressing [Esc]) if data are invalid
+and Save() throws an exception. Forced close (open another panel) is allowed.
+
+*) IEditor
+New ConvertPointEditorToScreen(), in addition to ConvertPointScreenToEditor().
+
 = 4.4.17 =
 
 *) Module settings panel and engine

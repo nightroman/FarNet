@@ -20,7 +20,7 @@ namespace PowerShellFar.UI
 			IMenu m = Far.Net.CreateMenu();
 			m.AutoAssignHotkeys = true;
 			m.Title = "Power panel";
-			m.HelpTopic = A.Psf.HelpTopic + "MenuPanels";
+			m.HelpTopic = Far.Net.GetHelpTopic("MenuPanels");
 			if (extras)
 			{
 				m.Add("Folder &tree");

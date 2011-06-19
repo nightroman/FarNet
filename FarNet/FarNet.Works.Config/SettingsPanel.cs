@@ -18,8 +18,8 @@ namespace FarNet.Works.Config
 		{
 			_Explorer = explorer;
 
-			var type = _Explorer.Settings.GetType();
-			Title = Far.Net.GetModuleManager(type).ModuleName + "\\" + type.Name;
+			Title = explorer.Location;
+			CurrentLocation = explorer.Location;
 
 			SortMode = PanelSortMode.Name;
 			ViewMode = PanelViewMode.AlternativeFull;
@@ -40,12 +40,6 @@ namespace FarNet.Works.Config
 			Redraw();
 
 			_isDirty = true;
-		}
-		public override void UIClosed()
-		{
-			base.UIClosed();
-			if (_isDirty)
-				_Explorer.Settings.Save();
 		}
 		void SetDefaults()
 		{
@@ -85,6 +79,27 @@ namespace FarNet.Works.Config
 			}
 
 			return base.UIKeyPressed(code, state);
+		}
+		public override bool SaveData()
+		{
+			if (_isDirty)
+			{
+				_Explorer.Settings.Save();
+				_isDirty = false;
+			}
+			return true;
+		}
+		protected override bool CanClose()
+		{
+			if (!SaveData())
+				return false;
+
+			return base.CanClose();
+		}
+		public override void UIClosed()
+		{
+			SaveData();
+			base.UIClosed();
 		}
 	}
 }

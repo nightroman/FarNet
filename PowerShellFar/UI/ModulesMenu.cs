@@ -19,7 +19,7 @@ namespace PowerShellFar.UI
 		{
 			_menu.Title = "PowerShell Modules and Snap-ins";
 			_menu.Bottom = "[Enter] import/remove, [Esc] exit";
-			_menu.HelpTopic = A.Psf.HelpTopic + "MenuModules";
+			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuModules");
 			_menu.AutoAssignHotkeys = true;
 		}
 

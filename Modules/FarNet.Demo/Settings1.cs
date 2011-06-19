@@ -14,6 +14,7 @@ namespace FarNet.Demo
 	[SettingsProvider(typeof(ModuleSettingsProvider))]
 	public class Settings1 : ModuleSettings
 	{
+		#region [Default]
 		/// <summary>
 		/// The only settings instance.
 		/// Normally settings are created once, when needed.
@@ -27,6 +28,8 @@ namespace FarNet.Demo
 		/// It is used for example by the core in order to open the settings panel.
 		/// </summary>
 		public static Settings1 Default { get { return _Default; } }
+		#endregion
+		#region [Save]
 		/// <summary>
 		/// Override this method to perform data validation.
 		/// Throw on errors. Call the base on success.
@@ -41,26 +44,8 @@ namespace FarNet.Demo
 
 			base.Save();
 		}
-		/// <summary>
-		/// Local Int32 value.
-		/// </summary>
-		[UserScopedSetting]
-		public int IntLocal
-		{
-			get { return (int)this["IntLocal"]; }
-			set { this["IntLocal"] = value; }
-		}
-		/// <summary>
-		/// Roaming Int32 value with the default.
-		/// </summary>
-		[UserScopedSetting]
-		[DefaultSettingValue("42")]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public int IntRoaming
-		{
-			get { return (int)this["IntRoaming"]; }
-			set { this["IntRoaming"] = value; }
-		}
+		#endregion
+		#region [Bool]
 		/// <summary>
 		/// Local Boolean value.
 		/// </summary>
@@ -81,6 +66,30 @@ namespace FarNet.Demo
 			get { return (bool)this["BoolRoaming"]; }
 			set { this["BoolRoaming"] = value; }
 		}
+		#endregion
+		#region [Int]
+		/// <summary>
+		/// Local Int32 value.
+		/// </summary>
+		[UserScopedSetting]
+		public int IntLocal
+		{
+			get { return (int)this["IntLocal"]; }
+			set { this["IntLocal"] = value; }
+		}
+		/// <summary>
+		/// Roaming Int32 value with the default.
+		/// </summary>
+		[UserScopedSetting]
+		[DefaultSettingValue("42")]
+		[SettingsManageability(SettingsManageability.Roaming)]
+		public int IntRoaming
+		{
+			get { return (int)this["IntRoaming"]; }
+			set { this["IntRoaming"] = value; }
+		}
+		#endregion
+		#region [DateTime]
 		/// <summary>
 		/// Local DateTime value.
 		/// </summary>
@@ -101,6 +110,30 @@ namespace FarNet.Demo
 			get { return (DateTime)this["DateTimeRoaming"]; }
 			set { this["DateTimeRoaming"] = value; }
 		}
+		#endregion
+		#region [Double]
+		/// <summary>
+		/// Local Double value.
+		/// </summary>
+		[UserScopedSetting]
+		public double DoubleLocal
+		{
+			get { return (double)this["DoubleLocal"]; }
+			set { this["DoubleLocal"] = value; }
+		}
+		/// <summary>
+		/// Roaming Double value with the default.
+		/// </summary>
+		[UserScopedSetting]
+		[DefaultSettingValue("3.14159265358979")]
+		[SettingsManageability(SettingsManageability.Roaming)]
+		public double DoubleRoaming
+		{
+			get { return (double)this["DoubleRoaming"]; }
+			set { this["DoubleRoaming"] = value; }
+		}
+		#endregion
+		#region [String]
 		/// <summary>
 		/// Local string value.
 		/// </summary>
@@ -121,6 +154,8 @@ namespace FarNet.Demo
 			get { return (string)this["StringRoaming"]; }
 			set { this["StringRoaming"] = value; }
 		}
+		#endregion
+		#region [StringCollection]
 		/// <summary>
 		/// Not browsable in UI local collection.
 		/// </summary>
@@ -149,5 +184,6 @@ namespace FarNet.Demo
 			get { return (StringCollection)this["StringCollectionRoaming"]; }
 			set { this["StringCollectionRoaming"] = value; }
 		}
+		#endregion
 	}
 }

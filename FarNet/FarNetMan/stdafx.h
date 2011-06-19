@@ -31,6 +31,7 @@ using namespace System::Globalization;
 using namespace System::IO;
 using namespace System::Reflection;
 using namespace System::Resources;
+using namespace System::Runtime::CompilerServices;
 using namespace System::Text::RegularExpressions;
 using namespace System::Text;
 using namespace System;

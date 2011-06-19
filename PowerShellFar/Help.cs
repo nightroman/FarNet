@@ -18,7 +18,7 @@ namespace PowerShellFar
 	static class Help
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		internal static void ShowHelp()
+		internal static void ShowHelpForContext()
 		{
 			ILine line = Far.Net.Line;
 			if (line == null)
@@ -135,20 +135,15 @@ namespace PowerShellFar
 			}
 		}
 
-		static internal void ShowTopic(string topic)
-		{
-			Far.Net.ShowHelp(A.Psf.AppHome, topic, HelpOptions.Path);
-		}
-
 		static void ShowAreaHelp()
 		{
 			switch (Far.Net.Window.Kind)
 			{
 				case WindowKind.Panels:
-					ShowTopic("CommandLine");
+					Far.Net.ShowHelpTopic("CommandLine");
 					return;
 				default:
-					ShowTopic("Contents");
+					Far.Net.ShowHelpTopic("Contents");
 					return;
 			}
 		}

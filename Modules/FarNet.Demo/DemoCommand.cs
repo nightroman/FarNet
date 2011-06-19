@@ -26,7 +26,8 @@ namespace FarNet.Demo
 				case "PROCESS": DoProcess(); break;
 				case "ASSEMBLY": DoAssembly(); break;
 				default:
-					Far.Net.UI.Write(GetString("Usage"));
+					// Show help in the help viewer
+					Far.Net.ShowHelpTopic("DemoCommand");
 					break;
 			}
 		}
