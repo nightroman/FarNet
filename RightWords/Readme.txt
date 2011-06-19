@@ -35,7 +35,7 @@ replaces the highlighted word with the selected suggestion, [Esc] skips the
 word. The last suggestion menu item [Stop correction] stops this process.
 
 *) Thesaurus
-Prompts to enters a word and shows the list of available meanings and synonyms
+Prompts to enter a word and shows the list of available meanings and synonyms
 in a menu. [Enter] in the menu copies the current item text to the clipboard.
 
 
