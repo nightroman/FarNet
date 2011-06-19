@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module FolderChart
-Copyright (c) 2010 Roman Kuzmin
+Copyright (c) 2010-2011 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ static class FolderChartForm
 			{
 				var point = series.Points.Add(it.Size);
 				point.Label = it.Name;
-				point.ToolTip = it.Name + " ~ " + Kit.FormatSize(it.Size);
+				point.ToolTip = Kit.FormatSize(it.Size, it.Name);
 			}
 
 			using (var chart = new Chart())

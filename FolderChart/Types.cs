@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module FolderChart
-Copyright (c) 2010 Roman Kuzmin
+Copyright (c) 2010-2011 Roman Kuzmin
 */
 
 using System;
@@ -22,7 +22,11 @@ class WindowWrapper : IWin32Window
 
 static class Kit
 {
-	public static string FormatSize(double size)
+	public static string FormatSize(double size, string path)
+	{
+		return FormatSize(size) + " ~ " + path;
+	}
+	static string FormatSize(double size)
 	{
 		if (size < 1024)
 			return size.ToString(CultureInfo.InvariantCulture);
