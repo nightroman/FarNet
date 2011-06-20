@@ -2,7 +2,7 @@
 
 == Introduction ==
 
-Simple spell checker and thesaurus based on NHunspell. The core (Hunspell) is
+Simple spell checker and thesaurus based on NHunspell. The core ([http://en.wikipedia.org/wiki/Hunspell Hunspell]) is
 used in OpenOffice and it works with dictionaries published on OpenOffice.org.
 
 For description and other details see [http://farnet.googlecode.com/svn/trunk/RightWords/Readme.txt Readme.txt]
