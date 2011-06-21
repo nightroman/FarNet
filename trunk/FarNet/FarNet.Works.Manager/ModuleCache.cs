@@ -38,7 +38,7 @@ namespace FarNet.Works
 				if (_Cache != null && Version != (int)_Cache[idVersion])
 					_Cache = null;
 			}
-			catch (FileNotFoundException)
+			catch (IOException) //! Both FileNotFoundException and DirectoryNotFoundException are possible.
 			{ }
 			catch (Exception ex)
 			{

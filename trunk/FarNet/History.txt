@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 4.4.19 =
+
+*) Bug
+Fixed DirectoryNotFoundException on reading the module cache at start.
+
 = 4.4.18 =
 
 *) Help helpers
