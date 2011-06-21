@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightWords
-Release  : 2011-06-19
+Release  : 2011-06-21
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -32,7 +32,7 @@ suggestion menu replaces the current word with the selected suggestion.
 Checks spelling, shows suggestions, and corrects words in the selected text or
 in the text starting from the caret position. [Enter] in the suggestion menu
 replaces the highlighted word with the selected suggestion, [Esc] skips the
-word. The last suggestion menu item [Stop correction] stops this process.
+word. The last suggestion menu item [Stop Spell-checker] stops this process.
 
 *) Thesaurus
 Prompts to enter a word and shows the list of available meanings and synonyms
@@ -72,9 +72,42 @@ in a menu. [Enter] in the menu copies the current item text to the clipboard.
 Open the module settings panel from the main .NET menu:
 F11 | .NET | Settings | RightWords
 
+Regular expression patterns are created with IgnorePatternWhitespace option, so
+that they support line comments (#) and all white spaces should be explicitly
+specified as \ , \t, \s, etc.
+
 	WordPattern
 
 Defines the regular expression pattern for word recognition in texts.
-
 The default pattern: \p{Lu}?\p{Ll}+
 It recognises "RightWords" as two words "Right" and "Words".
+
+	SkipPattern
+
+Defines the regular expression pattern for text areas to be ignored.
+The default pattern is null (not specified, nothing is ignored).
+Example skip pattern:
+
+	"(\w+:\\[^"]+)" # Full file system paths: quoted
+	|
+	\b(\w+:\\[^\s:]+) # Full file system paths: simple
+	|
+	"(\.{1,2}[\\/][^"]+)" # Relative file system paths: quoted
+	|
+	(?:^|\s)(\.{1,2}[\\/][^\s:]+) # Relative file system paths: simple
+	|
+	# URL
+	(?i:
+	\b ((https?|ftp|news|nntp|wais|wysiwyg|gopher|javascript|castanet|about)
+	\:\/\/  | (www|ftp|fido[0-9]*)\.)
+	[\[\]\@\%\:\+\w\.\/\~\?\-\*=_#&;]+\b\/?
+	)
+
+= HISTORY =
+
+1.0.1
+
+Added the SkipPattern to the settings.
+
+Regular expression patterns in settings are created with
+IgnorePatternWhitespace option (see Readme.txt for details).
