@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.19 =
+
+Technical build for FarNet 4.4.19
+
 = 4.4.18 =
 
 *) TabExpansion
