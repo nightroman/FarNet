@@ -11,7 +11,7 @@ Source   : http://code.google.com/p/farnet/
 
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.18
+ * Plugin FarNet 4.4.19
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -32,7 +32,9 @@ suggestion menu replaces the current word with the selected suggestion.
 Checks spelling, shows suggestions, and corrects words in the selected text or
 in the text starting from the caret position. [Enter] in the suggestion menu
 replaces the highlighted word with the selected suggestion, [Esc] skips the
-word. The last suggestion menu item [Stop Spell-checker] stops this process.
+word. Menu commands:
+- [Ignore All] - ignores the word in this session.
+- [Stop Spell-checker] - stops word correction loop.
 
 *) Thesaurus
 Prompts to enter a word and shows the list of available meanings and synonyms
@@ -88,22 +90,24 @@ Defines the regular expression pattern for text areas to be ignored.
 The default pattern is null (not specified, nothing is ignored).
 Example skip pattern:
 
-	"(\w+:\\[^"]+)" # Full file system paths: quoted
+	"\w+:\\[^"]+" # Full file path: quoted
 	|
-	\b(\w+:\\[^\s:]+) # Full file system paths: simple
+	\b\w+:\\[^\s:]+ # Full file path: simple
 	|
-	"(\.{1,2}[\\/][^"]+)" # Relative file system paths: quoted
+	"\.{1,2}[\\/][^"]+" # Relative file path: quoted
 	|
-	(?:^|\s)(\.{1,2}[\\/][^\s:]+) # Relative file system paths: simple
+	(?:^|\s)\.{1,2}[\\/][^\s:]+ # Relative file path: simple
 	|
 	# URL
 	(?i:
-	\b ((https?|ftp|news|nntp|wais|wysiwyg|gopher|javascript|castanet|about)
-	\:\/\/  | (www|ftp|fido[0-9]*)\.)
+	\b (?:(?:https?|ftp|news|nntp|wais|wysiwyg|gopher|javascript|castanet|about)
+	\:\/\/ | (?:www|ftp|fido[0-9]*)\.)
 	[\[\]\@\%\:\+\w\.\/\~\?\-\*=_#&;]+\b\/?
 	)
 
+
 = HISTORY =
+
 
 1.0.1
 
@@ -111,3 +115,11 @@ Added the SkipPattern to the settings.
 
 Regular expression patterns in settings are created with
 IgnorePatternWhitespace option (see Readme.txt for details).
+
+1.0.2
+
+Fixed wrong text selection after word replacements.
+
+Added [Ignore All] command to the suggestion menu.
+
+Slightly improved the SkipPattern sample.
