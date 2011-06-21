@@ -18,6 +18,7 @@ namespace FarNet.RightWords
 	{
 		const string Name = "RightWords";
 		static List<LanguageConfig> _dictionaries;
+		static List<string> _ignoreAll = new List<string>();
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			if (e == null) return;
@@ -217,13 +218,13 @@ namespace FarNet.RightWords
 				int iLine = iLine1;
 				for (; ; )
 				{
+				NextWord:
+					
 					var line = editor[iLine];
 					var text = line.Text;
 
 					MatchCollection skip = null;
 					bool toGetSkip = true;
-
-				NextWord:
 
 					Match match = MatchCaret(regexWord, text, line.Caret, true);
 					if (match == null)
@@ -238,7 +239,8 @@ namespace FarNet.RightWords
 								skip = regexSkip.Matches(text);
 						}
 
-						if (skip != null && HasMatch(skip, match))
+						// skip pattern or ignore list
+						if (skip != null && HasMatch(skip, match) || _ignoreAll.Contains(match.Value))
 						{
 							match = match.NextMatch();
 							if (match.Success)
@@ -288,10 +290,9 @@ namespace FarNet.RightWords
 						foreach (var it in words)
 							menu.Add(it);
 						menu.Add(string.Empty).IsSeparator = true;
-						//var itemIgnore = menu.Add("&Ignore All");
-						//var itemAdd = menu.Add("&Add to Dictionary");
-						//var itemStop = menu.Add("&Stop Spell-checker");
-						var itemStop = menu.Add("Stop Spell-checker");
+						var itemIgnore = menu.Add("Ignore &All");
+						//??var itemAdd = menu.Add("Add to &Dictionary");
+						var itemStop = menu.Add("&Stop Spell-checker");
 
 						// canceled: advance
 						if (!menu.Show())
@@ -303,12 +304,22 @@ namespace FarNet.RightWords
 							goto NextLine;
 						}
 
+						// selected item
+						var item = menu.Items[menu.Selected];
+
 						// stopped:
-						if (itemStop == menu.Items[menu.Selected])
+						if (item == itemStop)
 							return;
 
+						// ignore:
+						if (item == itemIgnore)
+						{
+							_ignoreAll.Add(word);
+							continue;
+						}
+
 						// replace the selected word with the suggested
-						word = menu.Items[menu.Selected].Text;
+						word = item.Text;
 						line.SelectedText = word;
 						line.UnselectText();
 
