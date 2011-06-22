@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightWords
-Release  : 2011-06-21
+Release  : 2011-06-22
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -31,10 +31,11 @@ suggestion menu replaces the current word with the selected suggestion.
 *) Correct text (editor)
 Checks spelling, shows suggestions, and corrects words in the selected text or
 in the text starting from the caret position. [Enter] in the suggestion menu
-replaces the highlighted word with the selected suggestion, [Esc] skips the
-word. Menu commands:
-- [Ignore All] - ignores the word in this session.
-- [Stop Spell-checker] - stops word correction loop.
+replaces the highlighted word with the selected suggestion.
+Menu commands:
+- [Ignore] - ignores the word once;
+- [Ignore All] - ignores the word in the current session;
+- [Add to Dictionary] - adds the word to the user dictionary.
 
 *) Thesaurus
 Prompts to enter a word and shows the list of available meanings and synonyms
@@ -123,3 +124,10 @@ Fixed wrong text selection after word replacements.
 Added [Ignore All] command to the suggestion menu.
 
 Slightly improved the SkipPattern sample.
+
+1.0.3
+
+Revised the suggestion menu actions and used numeric hotkeys.
+
+Added [Add to Dictionary] command to the suggestion menu.
+The user dictionary is the roaming file "RightWords.dic".

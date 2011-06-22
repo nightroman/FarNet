@@ -17,8 +17,9 @@ namespace FarNet.RightWords
 	public class TheTool : ModuleTool
 	{
 		const string Name = "RightWords";
+		const string UserFile = "RightWords.dic";
 		static List<LanguageConfig> _dictionaries;
-		static List<string> _ignoreAll = new List<string>();
+		static Dictionary<string, byte> _ignore = new Dictionary<string, byte>();
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			if (e == null) return;
@@ -62,6 +63,28 @@ namespace FarNet.RightWords
 					}
 				}
 			}
+		}
+		Dictionary<string, byte> ReadUserWords()
+		{
+			var words = new Dictionary<string, byte>();
+			var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, false), UserFile);
+			if (File.Exists(path))
+			{
+				foreach (string line in File.ReadAllLines(path))
+					words[line] = 0;
+			}
+			return words;
+		}
+		void AddUserWord(Dictionary<string, byte> words, string word)
+		{
+			if (words.ContainsKey(word))
+				return;
+
+			var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, true), UserFile);
+			using (var writer = File.AppendText(path))
+				writer.WriteLine(word);
+
+			words.Add(word, 0);
 		}
 		static Match MatchCaret(Regex regex, string input, int caret, bool next)
 		{
@@ -179,7 +202,7 @@ namespace FarNet.RightWords
 
 			return false;
 		}
-		static void DoCorrectText()
+		void DoCorrectText()
 		{
 			// the editor window is expected
 			if (Far.Net.Window.Kind != WindowKind.Editor)
@@ -191,6 +214,9 @@ namespace FarNet.RightWords
 			var patternSkip = Settings.Default.SkipPattern;
 			if (!string.IsNullOrEmpty(patternSkip))
 				regexSkip = new Regex(patternSkip, RegexOptions.IgnorePatternWhitespace);
+
+			// user words
+			var userWords = ReadUserWords();
 
 			// initial editor data
 			var editor = Far.Net.Editor;
@@ -219,7 +245,7 @@ namespace FarNet.RightWords
 				for (; ; )
 				{
 				NextWord:
-					
+
 					var line = editor[iLine];
 					var text = line.Text;
 
@@ -230,7 +256,8 @@ namespace FarNet.RightWords
 					if (match == null)
 						goto NextLine;
 
-					for (; ; )
+					// loop through line words (matches) with no changes
+					for (; match.Success; match = match.NextMatch())
 					{
 						if (toGetSkip)
 						{
@@ -239,39 +266,30 @@ namespace FarNet.RightWords
 								skip = regexSkip.Matches(text);
 						}
 
-						// skip pattern or ignore list
-						if (skip != null && HasMatch(skip, match) || _ignoreAll.Contains(match.Value))
-						{
-							match = match.NextMatch();
-							if (match.Success)
-								continue;
-
-							goto NextLine;
-						}
-						
+						// the culprit word
 						var word = match.Value;
 
+						// next match on skip pattern match or one of ignore list hits
+						if (skip != null && HasMatch(skip, match) || userWords.ContainsKey(word) || _ignore.ContainsKey(word))
+							continue;
+
+						// check spelling and get suggestions
 						List<string> words = null;
 						if (!spell.Spell(word))
 							words = spell.Suggest(word);
 
+						// next match on success or no suggestions
 						if (words == null || words.Count == 0)
-						{
-							match = match.NextMatch();
-							if (match.Success)
-								continue;
+							continue;
 
-							goto NextLine;
-						}
-
-						// new caret is at the end of word
+						// new caret and selection is at the word end
 						int column = match.Index + match.Length;
 
-						// 1) select the target word, !! set the caret now
+						// 1) select the word, !! set the caret now
 						line.SelectText(match.Index, column);
 						line.Caret = column;
 
-						// 2) reframe vertically, !! keep the caret; !! horisontal is sloppy
+						// 2) reframe vertically (!! horisontal is sloppy), !! keep the caret
 						var frame = editor.Frame;
 						frame.VisibleLine = frame.CaretLine - Far.Net.UI.WindowSize.Y / 3;
 						editor.Frame = frame;
@@ -282,6 +300,14 @@ namespace FarNet.RightWords
 						// make the menu
 						var menu = Far.Net.CreateListMenu();
 						menu.Title = match.Value;
+						menu.NoInfo = true;
+						
+						// menu keys
+						menu.AddKey('1');
+						menu.AddKey('2');
+						menu.AddKey('3');
+						
+						// menu position
 						var point = editor.ConvertPointEditorToScreen(new Point(column, iLine));
 						menu.X = point.X;
 						menu.Y = point.Y + 1;
@@ -290,31 +316,32 @@ namespace FarNet.RightWords
 						foreach (var it in words)
 							menu.Add(it);
 						menu.Add(string.Empty).IsSeparator = true;
-						var itemIgnore = menu.Add("Ignore &All");
-						//??var itemAdd = menu.Add("Add to &Dictionary");
-						var itemStop = menu.Add("&Stop Spell-checker");
+						var itemIgnore = menu.Add("&1. Ignore");
+						var itemIgnoreAll = menu.Add("&2. Ignore All");
+						var itemAddToDictionary = menu.Add("&3. Add to Dictionary");
 
-						// canceled: advance
+						// stop:
 						if (!menu.Show())
-						{
-							match = match.NextMatch();
-							if (match.Success)
-								continue;
-
-							goto NextLine;
-						}
-
-						// selected item
-						var item = menu.Items[menu.Selected];
-
-						// stopped:
-						if (item == itemStop)
 							return;
 
+						// selected item
+						var item = menu.Selected < 0 ? null : menu.Items[menu.Selected];
+						
 						// ignore:
-						if (item == itemIgnore)
+						if (menu.BreakKey == '1' || item == itemIgnore)
+							continue;
+
+						// ignore all:
+						if (menu.BreakKey == '2' || item == itemIgnoreAll)
 						{
-							_ignoreAll.Add(word);
+							_ignore.Add(word, 0);
+							continue;
+						}
+
+						// add to dictionary:
+						if (menu.BreakKey == '3' || item == itemAddToDictionary)
+						{
+							AddUserWord(userWords, word);
 							continue;
 						}
 
@@ -331,7 +358,8 @@ namespace FarNet.RightWords
 							goto NextWord;
 						}
 
-						goto NextLine;
+						// next line
+						break;
 					}
 
 				NextLine:
