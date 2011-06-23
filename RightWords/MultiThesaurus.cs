@@ -14,7 +14,7 @@ namespace FarNet.RightWords
 	{
 		readonly List<Hunspell> _spells;
 		readonly List<MyThes> _thesaurus;
-		public MultiThesaurus(IList<LanguageConfig> dictionaries)
+		public MultiThesaurus(IList<DictionaryInfo> dictionaries)
 		{
 			_spells = new List<Hunspell>(dictionaries.Count);
 			_thesaurus = new List<MyThes>(dictionaries.Count);

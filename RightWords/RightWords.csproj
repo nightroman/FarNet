@@ -53,6 +53,7 @@
     <Compile Include="MultiThesaurus.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TheTool.cs" />
+    <Compile Include="Works.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE" />
