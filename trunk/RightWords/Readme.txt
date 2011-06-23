@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightWords
-Release  : 2011-06-22
+Release  : 2011-06-23
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -131,3 +131,11 @@ Revised the suggestion menu actions and used numeric hotkeys.
 
 Added [Add to Dictionary] command to the suggestion menu.
 The user dictionary is the roaming file "RightWords.dic".
+
+1.0.4
+
+Fixed potential SkipPattern filter issues after correction in the same line.
+
+Dictionaries are sorted internally by numbers of valid word hits. This slightly
+improves performance for 2+ dictionaries and provides word suggestions from
+more expected dictionaries first.
