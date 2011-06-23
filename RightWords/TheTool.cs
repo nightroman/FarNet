@@ -18,7 +18,7 @@ namespace FarNet.RightWords
 	{
 		const string Name = "RightWords";
 		const string UserFile = "RightWords.dic";
-		static List<LanguageConfig> _dictionaries;
+		static List<DictionaryInfo> _dictionaries;
 		static Dictionary<string, byte> _ignore = new Dictionary<string, byte>();
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
@@ -43,7 +43,7 @@ namespace FarNet.RightWords
 			if (_dictionaries != null)
 				return;
 
-			_dictionaries = new List<LanguageConfig>();
+			_dictionaries = new List<DictionaryInfo>();
 
 			var home = Path.GetDirectoryName(typeof(Hunspell).Assembly.Location);
 			Hunspell.NativeDllPath = home;
@@ -55,7 +55,7 @@ namespace FarNet.RightWords
 					var dic = Path.ChangeExtension(aff, ".dic");
 					if (File.Exists(dic))
 					{
-						var language = new LanguageConfig() { HunspellAffFile = aff, HunspellDictFile = dic };
+						var language = new DictionaryInfo() { HunspellAffFile = aff, HunspellDictFile = dic };
 						_dictionaries.Add(language);
 
 						foreach (var dat in Directory.GetFiles(dir, "*.dat"))
@@ -64,7 +64,7 @@ namespace FarNet.RightWords
 				}
 			}
 		}
-		Dictionary<string, byte> ReadUserWords()
+		Dictionary<string, byte> ReadRightWords()
 		{
 			var words = new Dictionary<string, byte>();
 			var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, false), UserFile);
@@ -75,7 +75,7 @@ namespace FarNet.RightWords
 			}
 			return words;
 		}
-		void AddUserWord(Dictionary<string, byte> words, string word)
+		void AddRightWord(Dictionary<string, byte> words, string word)
 		{
 			if (words.ContainsKey(word))
 				return;
@@ -196,27 +196,34 @@ namespace FarNet.RightWords
 		}
 		static bool HasMatch(MatchCollection matches, Match match)
 		{
-			foreach (Match m in matches)
-				if (match.Index >= m.Index && match.Index + match.Length <= m.Index + m.Length)
-					return true;
+			if (matches != null)
+				foreach (Match m in matches)
+					if (match.Index >= m.Index && match.Index + match.Length <= m.Index + m.Length)
+						return true;
 
 			return false;
 		}
+		static void ResetHitCounters()
+		{
+			foreach (var dictionary in _dictionaries)
+				dictionary.HitCount = 0;
+		}
+		static Regex GetRegexSkip()
+		{
+			var pattern = Settings.Default.SkipPattern;
+			return string.IsNullOrEmpty(pattern) ? null : new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
+		}
 		void DoCorrectText()
 		{
-			// the editor window is expected
-			if (Far.Net.Window.Kind != WindowKind.Editor)
-				return;
+			// reset counters
+			ResetHitCounters();
 
-			// regex
+			// regular expressions
 			var regexWord = new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace);
-			Regex regexSkip = null;
-			var patternSkip = Settings.Default.SkipPattern;
-			if (!string.IsNullOrEmpty(patternSkip))
-				regexSkip = new Regex(patternSkip, RegexOptions.IgnorePatternWhitespace);
+			Regex regexSkip = GetRegexSkip();
 
-			// user words
-			var userWords = ReadUserWords();
+			// right words
+			var rightWords = ReadRightWords();
 
 			// initial editor data
 			var editor = Far.Net.Editor;
@@ -246,31 +253,26 @@ namespace FarNet.RightWords
 				{
 				NextWord:
 
+					// the line and its text now
 					var line = editor[iLine];
 					var text = line.Text;
 
-					MatchCollection skip = null;
-					bool toGetSkip = true;
-
+					// the first word
 					Match match = MatchCaret(regexWord, text, line.Caret, true);
 					if (match == null)
 						goto NextLine;
 
+					// skip matches
+					MatchCollection skip = regexSkip == null ? null : regexSkip.Matches(text);
+
 					// loop through line words (matches) with no changes
 					for (; match.Success; match = match.NextMatch())
 					{
-						if (toGetSkip)
-						{
-							toGetSkip = false;
-							if (regexSkip != null)
-								skip = regexSkip.Matches(text);
-						}
-
-						// the culprit word
+						// the target word
 						var word = match.Value;
 
-						// next match on skip pattern match or one of ignore list hits
-						if (skip != null && HasMatch(skip, match) || userWords.ContainsKey(word) || _ignore.ContainsKey(word))
+						// skip if the match is in the skip area or the word is in one of the ignore lists
+						if (HasMatch(skip, match) || rightWords.ContainsKey(word) || _ignore.ContainsKey(word))
 							continue;
 
 						// check spelling and get suggestions
@@ -297,24 +299,26 @@ namespace FarNet.RightWords
 						// commit
 						editor.Redraw();
 
-						// make the menu
+						// menu
 						var menu = Far.Net.CreateListMenu();
 						menu.Title = match.Value;
 						menu.NoInfo = true;
-						
+
 						// menu keys
 						menu.AddKey('1');
 						menu.AddKey('2');
 						menu.AddKey('3');
-						
+
 						// menu position
 						var point = editor.ConvertPointEditorToScreen(new Point(column, iLine));
 						menu.X = point.X;
 						menu.Y = point.Y + 1;
 
-						// fill the menu
+						// menu items
 						foreach (var it in words)
 							menu.Add(it);
+
+						// menu commands
 						menu.Add(string.Empty).IsSeparator = true;
 						var itemIgnore = menu.Add("&1. Ignore");
 						var itemIgnoreAll = menu.Add("&2. Ignore All");
@@ -326,7 +330,7 @@ namespace FarNet.RightWords
 
 						// selected item
 						var item = menu.Selected < 0 ? null : menu.Items[menu.Selected];
-						
+
 						// ignore:
 						if (menu.BreakKey == '1' || item == itemIgnore)
 							continue;
@@ -341,17 +345,17 @@ namespace FarNet.RightWords
 						// add to dictionary:
 						if (menu.BreakKey == '3' || item == itemAddToDictionary)
 						{
-							AddUserWord(userWords, word);
+							AddRightWord(rightWords, word);
 							continue;
 						}
 
-						// replace the selected word with the suggested
-						word = item.Text;
-						line.SelectedText = word;
+						// replace editor selection with correction
+						var correction = item.Text;
+						line.SelectedText = correction;
 						line.UnselectText();
 
-						// advance
-						int caret = match.Index + word.Length + 1;
+						// advance in the same line
+						int caret = match.Index + correction.Length + 1;
 						if (caret < line.Text.Length)
 						{
 							line.Caret = caret;
