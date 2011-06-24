@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.4.19#
+#PowerShellFar 4.4.20#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -86,7 +86,7 @@ $#Installation#
 #Requirements#
 
  - Far Manager 2.0.1807
- - Plugin FarNet 4.4.19
+ - Plugin FarNet 4.4.20
  - Windows PowerShell 2.0
 
 
@@ -131,7 +131,7 @@ $#Run commands#
 
 PowerShellFar is all about running PowerShell commands in the text friendly UI
 of Far Manager. There are many ways and literally you can run a command at any
-momement from almost any UI context.
+moment from almost any UI context.
 
 ^***
 
@@ -215,7 +215,7 @@ It is recommended to add an extra space after prefixes: commands look better
 and TabExpansion can expand the first command token correctly.
 
 Note: scripts opened in the editor can be invoked in the current session by the
-[F5] hotkey. It is hardcoded but a different key still can be used.
+[F5] hotkey. It is hard-coded but a different key still can be used.
 See ~Command and macro examples~@Examples@.
 
 #Examples#
@@ -318,7 +318,7 @@ exposed for scripting as #$Psf.ShowHelp()#.
 #Others#
 
 Other tools exist in the menu only if you have added them yourself, for example
-using a startup profile like ~Profile-.ps1~@Profile@.
+using a start-up profile like ~Profile-.ps1~@Profile@.
 
 
 @MenuBackgroundJobs
@@ -649,7 +649,7 @@ Do not invoke commands with $Far.Editor (i.e. this editor) because during the
 operation this object is already used for the command output. Also, do not run
 commands opening other editors because the default console writes output to the
 current editor and results will be unexpected (this is not a problem for async
-consoles, they do not require an editor to be currrent).
+consoles, they do not require an editor to be current).
 
 You still can call external PowerShell commands working on text in this editor
 console as usual. "External" means that a command is executed not from this
@@ -662,7 +662,7 @@ code", "Invoke selected code", your own editor tools, and etc.
 An async console opens a separate runspace with its private session state:
 provider locations, variables, aliases, and many other settings.
 
-Commands are invoked asyncronously in background threads, so that console
+Commands are invoked asynchronously in background threads, so that console
 editors and Far itself are not blocked: you can switch to panels or another
 editors while a command is running. Moreover, you can open several async
 consoles, invoke parallel commands and still continue other work in Far.
@@ -1082,7 +1082,7 @@ it. See also [F4], [ShiftF8]\[ShiftDel], [CtrlG].
 [#F3#] Opens a viewer to show property information, e.g. to find out whether a
 property is settable or not.
 
-[#F4#] Opens an editor to edit property value representable as multiline text.
+[#F4#] Opens an editor to edit property value representable as multi-line text.
 You can open several editors. Properties are assigned on saving in editors.
 
 [#F8#], [#Del#] Removes selected dynamic properties from the object or provider
@@ -1161,7 +1161,7 @@ profile (e.g. Profile-.ps1). Useful command to view/change all settings:
 
 Preference settings are described in .chm. Permanent settings are:
 
- #Main startup code#
+ #Main start-up code#
  #($Psf.Settings.StartupCode)#
 
 PowerShell code which is executed once in the beginning of PowerShell session.
@@ -1330,7 +1330,7 @@ $#Suffixes#
 
 Some scripts in Bench and Test folders have suffixes '-', '+'. Why?
 
-The suffixes designate that these scrips are not standard PowerShell scripts
+The suffixes designate that these scripts are not standard PowerShell scripts
 for, say, PowerShell console or ISE. Namely:
 
  Suffix '-': PowerShellFar scripts that should be invoked by FarHost. Normally
@@ -1349,7 +1349,7 @@ commands, see
 
 	*) standard PowerShell scripts:
 		mask    :  /[^-+]\.ps1$/i
-		command :  powershell.exe -noexit ". '!\!.!'; exit"
+		command :  PowerShell.exe -noexit ". '!\!.!'; exit"
 
 	*) PowerShellFar scripts:
 		mask    :  *-.ps1
@@ -1811,7 +1811,7 @@ See examples below.
 #Groups#
 
 Tells to put to a panel found regex groups instead of full matches. It is
-ingored if "All text" is set.
+ignored if "All text" is set.
 
 #All text#
 

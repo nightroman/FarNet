@@ -3,15 +3,20 @@
 .SYNOPSIS
 	Initializes test environment and optional database data.
 	Author: Roman Kuzmin
+
+.DESCRIPTION
+	Supported database providers for testing:
+	'System.Data.SQLite', 'System.Data.SqlClient', 'System.Data.SqlServerCe'
 #>
 
 param
 (
-	[string]$DbProviderName,
+	[string]$DbProviderName
+	,
 	[switch]$NoDb
 )
 
-# check Far
+# check the host
 if ($Host.Name -ne 'FarHost') { throw "Invoke this script by FarHost." }
 
 # add this directory to the system path for this session
@@ -25,24 +30,34 @@ if ($NoDb) { return }
 
 ### select a provider if not yet
 if (!$DbProviderName) {
-	# find supported data provider classes and ask to select one
-	$DbProviderName = [Data.Common.DbProviderFactories]::GetFactoryClasses() | .{process{
-		if (($_.InvariantName -eq 'System.Data.SqlClient') -or ($_.InvariantName -eq 'System.Data.SqlServerCe.3.5') -or ($_.InvariantName -eq 'System.Data.SQLite')) {
-			$_.InvariantName
-		}
-	}} |
-	Out-FarList -Title "Select database provider"
+	'System.Data.SQLite', 'System.Data.SqlClient', 'System.Data.SqlServerCe' | Out-FarList -Title "Database Provider"
 	if (!$DbProviderName) {
 		return
 	}
 }
 
-### get defined provider factory by name and set it global
-$global:DbProviderFactory = [Data.Common.DbProviderFactories]::GetFactory($DbProviderName)
+# SQLite setup
+function SetupSQLite
+{
+	$null = [System.Reflection.Assembly]::LoadWithPartialName('System.Data.SQLite')
+	$global:DbProviderFactory = [System.Data.SQLite.SQLiteFactory]::Instance
+
+	$DbPath = Join-Path $env:TEMP Tempdb.sqlite
+	$ConnectionString = "Data Source=`"$DbPath`"; FailIfMissing=False"
+	if (Test-Path $DbPath) { Remove-Item $DbPath }
+
+	# open the database connection
+	$global:DbConnection = $DbProviderFactory.CreateConnection()
+	$DbConnection.ConnectionString = $ConnectionString
+	$DbConnection.Open()
+}
 
 # SqlClient setup
 function SetupSqlClient
 {
+	$null = [System.Reflection.Assembly]::LoadWithPartialName('System.Data.SqlClient')
+	$global:DbProviderFactory = [System.Data.SqlClient.SqlClientFactory]::Instance
+
 	# create and open database connection (Tempdb)
 	$global:DbConnection = $DbProviderFactory.CreateConnection()
 	$DbConnection.ConnectionString = "Data Source=.\sqlexpress;Initial Catalog=Tempdb;Integrated Security=SSPI;"
@@ -63,6 +78,9 @@ DROP TABLE [TestCategories]
 # SqlServerCe setup
 function SetupSqlServerCe
 {
+	$null = [System.Reflection.Assembly]::LoadWithPartialName('System.Data.SqlServerCe')
+	$DbProviderFactory = [System.Data.SqlServerCe.SqlCeProviderFactory]::Instance
+
 	$DbPath = Join-Path $env:TEMP Tempdb.sdf
 	$ConnectionString = "Data Source=`"$DbPath`""
 	if (Test-Path $DbPath) { Remove-Item $DbPath }
@@ -78,24 +96,12 @@ function SetupSqlServerCe
 	$DbConnection.Open()
 }
 
-# SQLite setup
-function SetupSQLite
-{
-	$DbPath = Join-Path $env:TEMP Tempdb.sqlite
-	$ConnectionString = "Data Source=`"$DbPath`"; FailIfMissing=False"
-	if (Test-Path $DbPath) { Remove-Item $DbPath }
-
-	# open the database connection
-	$global:DbConnection = $DbProviderFactory.CreateConnection()
-	$DbConnection.ConnectionString = $ConnectionString
-	$DbConnection.Open()
-}
-
 ### setup and open connection; this step depends on a provider
 switch($DbProviderName) {
-	'System.Data.SqlClient' { SetupSqlClient; break }
-	'System.Data.SqlServerCe.3.5' { SetupSqlServerCe; break }
 	'System.Data.SQLite' { SetupSQLite; break }
+	'System.Data.SqlClient' { SetupSqlClient; break }
+	'System.Data.SqlServerCe' { SetupSqlServerCe; break }
+	default { throw "Unsupported provider: $DbProviderName" }
 }
 
 ### create tables and add some data; this step is common
