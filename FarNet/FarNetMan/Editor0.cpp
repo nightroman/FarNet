@@ -147,7 +147,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			if (_anyEditor._Redrawing || editor->_Redrawing)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Redrawing");
-				EditorRedrawingEventArgs ea((int)(INT_PTR)param);
+				EditorRedrawingEventArgs ea((EditorRedrawMode)(INT_PTR)param);
 				if (_anyEditor._Redrawing)
 					_anyEditor._Redrawing(editor, %ea);
 				if (editor->_Redrawing)

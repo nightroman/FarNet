@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.4.20 =
+
+*) Editor color API
+This API is experimental and not yet recommended for public use, it is added
+for the RightWords module for highlighting of misspelled words in editors.
+- IEditor: new methods GetColor(), SetColor(); new class LineColor.
+- New EditorRedrawMode enum, EditorRedrawingEventArgs uses it.
+
 = 4.4.19 =
 
 *) Bug
@@ -432,7 +440,7 @@ change is not breaking but may cause unwanted effects. Review these calls.
 
 *) BUGS
 - Fixed a minor issue in Macro.EnableOutput.
-- Fixed a multithreading issue in ProgressForm.
+- Fixed a multi-threading issue in ProgressForm.
 - Fixed an error message on closing a module panel which is opened over a
 native plugin panel.
 
@@ -466,7 +474,7 @@ New option Draw to draw message-like boxes.
 
 *) IFar.UI (IUserInterface)
 New method Draw(): actually draws the job done by DrawColor & DrawPalette
-(it's more natuaral than also working DrawXXX(.., null)).
+(it's more natural than also working DrawXXX(.., null)).
 
 *) New interface FarNet.Tools.IProgress.
 
@@ -484,7 +492,7 @@ Modules with ProgressForm:
 - Rebuild other (personal) modules.
 
 *) ProgressBox & ProgressForm
-Support of multiline text (see LineCount).
+Support of multi-line text (see LineCount).
 
 = 4.3.37 =
 
@@ -556,8 +564,8 @@ investigated, the event is not removed from FarNet but it does not work.
 = 4.3.32 =
 
 *) .NET menu
--- All panel menu commands and items moved to the new submenu "Panels...".
--- Added the submenu "Console...". There are two commands there: decrease and
+-- All panel menu commands and items moved to the new sub-menu "Panels...".
+-- Added the sub menu "Console...". There are two commands there: decrease and
 increase console font size. This menu is available in all menus F11\.NET
 
 Example mouse macros for the Common area:
@@ -868,7 +876,7 @@ As a result:
 1) Event IPanel.KeyPressed is not called on this, KeyPressing is called;
 2) Flag PanelKeyEventArgs.Preprocess was removed, it is not needed now.
 
-Also, some misterious and\or annoying pseudo key events are filtered out
+Also, some mysterious and\or annoying pseudo key events are filtered out
 internally and panel key events are not called (e.g. KEY_NONE, KEY_IDLE,
 KEY_KILLFOCUS, KEY_GOTFOCUS - some of them are not documented in Far API).
 
@@ -888,7 +896,7 @@ module tool settings may be updated manually when needed.
 
 IFar: removed method ShowPanelMenu(), it is unlikely ever needed for modules.
 
-Internal: impoved management of editor opening events.
+Internal: improved management of editor opening events.
 
 = 4.3.9 =
 

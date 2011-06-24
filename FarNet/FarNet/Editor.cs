@@ -717,6 +717,10 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/Data/*'/>
 		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
 		Hashtable _Data;
+		///??????
+		public abstract LineColor GetColor(int line, int area);
+		///??????
+		public abstract void SetColor(int line, LineColor color);
 	}
 
 	/// <summary>
@@ -775,23 +779,40 @@ namespace FarNet
 	/// Arguments of editor redrawing event.
 	/// </summary>
 	/// <remarks>
-	/// This API is not complete, perhaps it is not needed in FarNet at all.
+	/// This API is not complete, perhaps it is not needed in FarNet at all. //??????
 	/// </remarks>
 	public sealed class EditorRedrawingEventArgs : EventArgs
 	{
-		int _mode;
+		EditorRedrawMode _mode;
 		/// <param name="mode">See <see cref="Mode"/>.</param>
-		public EditorRedrawingEventArgs(int mode)
+		public EditorRedrawingEventArgs(EditorRedrawMode mode)
 		{
 			_mode = mode;
 		}
 		/// <summary>
 		/// Parameter of Far EE_REDRAW event, see Far API, ProcessEditorEvent.
 		/// </summary>
-		public int Mode
+		public EditorRedrawMode Mode
 		{
 			get { return _mode; }
 		}
+	}
+
+	///??????
+	public enum EditorRedrawMode
+	{
+		/// <summary>
+		/// All the screen is being redrawn.
+		/// </summary>
+		Screen,
+		/// <summary>
+		/// Drawing is caused by text changes.
+		/// </summary>
+		Change,
+		/// <summary>
+		/// The current line is being redrawn.
+		/// </summary>
+		Line
 	}
 
 	/// <summary>
@@ -1031,6 +1052,26 @@ namespace FarNet
 		public override string ToString()
 		{
 			return "((" + CaretColumn + "/" + CaretScreenColumn + ", " + CaretLine + ")(" + VisibleChar + ", " + VisibleLine + "))";
+		}
+	}
+
+	/// <summary>
+	/// ??????
+	/// </summary>
+	public class LineColor
+	{
+		///
+		public int Start { get; set; }
+		///
+		public int End { get; set; }
+		///
+		public ConsoleColor Foreground { get; set; }
+		///
+		public ConsoleColor Background { get; set; }
+		///
+		public override string ToString()
+		{
+			return string.Format("({0}, {1}) {2} on {3}", Start, End, Foreground, Background);
 		}
 	}
 }

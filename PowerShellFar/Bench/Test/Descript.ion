@@ -1,5 +1,4 @@
 ﻿About-Test.hlf Read me first.
-Initialize-Test-.ps1 Initializes test environment and optional database data.
 Test-Base-.ps1 Test base features.
 Test-CallStack-.ps1 Test prompt dialog and shows how to get call stack info.
 Test-Debugger.ps1 Test debugger and breakpoints.
@@ -30,3 +29,4 @@ Test-Watch-Output-.ps1 Test the script Watch-Output-.ps1.
 Test-Write.ps1 Test Write-* cmdlets output.
 Test-Zoo-.ps1 Creates, exports, imports and sends data to a panel.
 Test-Zoo.cs .NET types for tests.
+Initialize-Test-.ps1 Initializes test environment and optional database data.
