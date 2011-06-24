@@ -148,7 +148,7 @@ Experimental, with known caveats, highlighting of misspelled words in the
 editor. This mode is turned on/off by the module menu command [Highlighting].
 
 CAVEATS: Highlighting works fine (AFAIK) if there is the Colorer plugin and
-there are no editor color plugins. Without Colorer it works fine only if the
+there are no other color plugins. Without Colorer it works fine only if the
 text is not being modified. With other editor color plugins it is not tried.
 
 Highlighting color is black on red and it is not yet configurable.
