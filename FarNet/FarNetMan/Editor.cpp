@@ -1218,4 +1218,34 @@ void Editor::IsLocked::set(bool value)
 		SetBoolOption(ESPT_LOCKMODE, value);
 }
 
+LineColor^ Editor::GetColor(int line, int area)
+{
+	EditorColor arg;
+	arg.StringNumber = line;
+	arg.ColorItem = area;
+
+	if (!Info.EditorControl(ECTL_GETCOLOR, &arg))
+		return nullptr;
+	
+	LineColor^ r = gcnew LineColor;
+	r->Start = arg.StartPos;
+	r->End = arg.EndPos + 1;
+	r->Foreground = ConsoleColor(arg.Color & 0x0000000F);
+	r->Background = ConsoleColor((arg.Color & 0x000000F0) >> 4);
+	
+	return r;
+}
+
+void Editor::SetColor(int line, LineColor^ color)
+{
+	EditorColor arg;
+	arg.StringNumber = line;
+	arg.ColorItem = 0;
+	arg.StartPos = color->Start;
+	arg.EndPos = color->End - 1;
+	arg.Color = int(color->Foreground) | (int(color->Background) << 4);
+
+	Info.EditorControl(ECTL_ADDCOLOR, &arg);
+}
+
 }

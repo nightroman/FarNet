@@ -1,6 +1,12 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.4.20 =
+
+*) Initialize-Test-.ps1
+Changed the way of choosing and initializing the database provider for testing.
+It allows to work with available but not registered SQLite, for example.
+
 = 4.4.19 =
 
 Technical build for FarNet 4.4.19

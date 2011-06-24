@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.4.19
-Release  : 2011-06-21
+Version  : 4.4.20
+Release  : 2011-06-24
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -67,7 +67,7 @@ FarNet.Settings.dll, FarNet.Settings.xml - FarNet module settings library.
 FarNet.*.dll - other FarNet libraries used internally by the core.
 
 %FARHOME%\FarNet\Modules
-Module root directory. Each child directory is normaly a module directory.
+Module root directory. Each child directory is normally a module directory.
 
 
 = LOADING MODULES FROM DISK =
