@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightWords
-Release  : 2011-06-23
+Release  : 2011-06-24
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -11,7 +11,7 @@ Source   : http://code.google.com/p/farnet/
 
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.19
+ * Plugin FarNet 4.4.20
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -19,8 +19,8 @@ Source   : http://code.google.com/p/farnet/
 = DESCRIPTION =
 
 
-Simple spell checker and thesaurus based on NHunspell. The core (Hunspell) is
-used in OpenOffice and it works with dictionaries published on OpenOffice.org.
+Spell-checker and thesaurus based on NHunspell. The core Hunspell is used in
+OpenOffice and it works with dictionaries published on OpenOffice.org.
 
 The module works through the plugin menus [F11]. Menu commands:
 
@@ -139,3 +139,16 @@ Fixed potential SkipPattern filter issues after correction in the same line.
 Dictionaries are sorted internally by numbers of valid word hits. This slightly
 improves performance for 2+ dictionaries and provides word suggestions from
 more expected dictionaries first.
+
+1.0.5.
+
+Use FarNet 4.4.20 (new editor color API).
+
+Experimental, with known caveats, highlighting of misspelled words in the
+editor. This mode is turned on/off by the module menu command [Highlighting].
+
+CAVEATS: Highlighting works fine (AFAIK) if there is the Colorer plugin and
+there are no editor color plugins. Without Colorer it works fine only if the
+text is not being modified. With other editor color plugins it is not tried.
+
+Highlighting color is black on red and it is not yet configurable.
