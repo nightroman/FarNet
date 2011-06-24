@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Highlighter.cs" />
     <Compile Include="MultiSpell.cs" />
     <Compile Include="MultiThesaurus.cs" />
     <Compile Include="Settings.cs" />

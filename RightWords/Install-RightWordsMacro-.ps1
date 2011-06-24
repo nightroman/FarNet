@@ -8,7 +8,7 @@ Import-Module FarMacro
 $Far.Macro.Install($(
 
 	# Correct word: common for editor, dialog, and command line
-	New-FarMacro Common CtrlShiftSpace -Description 'RightWords: correct word' @'
+	New-FarMacro Common CtrlShiftSpace -Description 'RightWords: Correct word' @'
 $If (AutoCompletion)
 	Esc
 $End
@@ -18,8 +18,13 @@ $End
 '@
 
 	# Correct text: for editor
-	New-FarMacro Editor CtrlShiftF7 -Description 'RightWords: correct text' @'
+	New-FarMacro Editor CtrlShiftF7 -Description 'RightWords: Correct text' @'
 F11 6 2
+'@
+
+	# Highlighting: for editor
+	New-FarMacro Editor CtrlShiftH -Description 'RightWords: Highlighting' @'
+F11 6 3
 '@
 
 ))
