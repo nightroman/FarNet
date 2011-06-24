@@ -13,32 +13,42 @@ using NHunspell;
 namespace FarNet.RightWords
 {
 	[System.Runtime.InteropServices.Guid("ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9")]
-	[ModuleTool(Name = TheTool.Name, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels)]
+	[ModuleTool(Name = Settings.Name, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels)]
 	public class TheTool : ModuleTool
 	{
-		const string Name = "RightWords";
-		const string UserFile = "RightWords.dic";
-		static List<DictionaryInfo> _dictionaries;
-		static Dictionary<string, byte> _ignore = new Dictionary<string, byte>();
+		internal static List<DictionaryInfo> _dictionaries;
+		internal static Dictionary<string, byte> _ignore = new Dictionary<string, byte>();
+		static Guid DataId = new Guid("0f1db61f-0cf8-4859-8ee6-46b567ee21ad");
+		internal static IModuleManager _manager;
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			if (e == null) return;
 
+			_manager = Manager;
 			Initialize();
 
 			var menu = Far.Net.CreateMenu();
-			menu.Title = Name;
+			menu.Title = Settings.Name;
 
 			menu.Add("&1. Correct word").Click += delegate { DoCorrectWord(); };
 
 			if (e.From == ModuleToolOptions.Editor)
+			{
+				var editor = Far.Net.Editor;
+				
 				menu.Add("&2. Correct text").Click += delegate { DoCorrectText(); };
+				
+				var itemHighlighting = menu.Add("&3. Highlighting");
+				itemHighlighting.Click += delegate { DoHighlighting(); };
+				if (editor.Data[DataId] != null)
+					itemHighlighting.Checked = true;
+			}
 
 			menu.Add("&0. Thesaurus...").Click += delegate { DoThesaurus(); };
 
 			menu.Show();
 		}
-		static void Initialize()
+		internal static void Initialize()
 		{
 			if (_dictionaries != null)
 				return;
@@ -64,10 +74,10 @@ namespace FarNet.RightWords
 				}
 			}
 		}
-		Dictionary<string, byte> ReadRightWords()
+		internal static Dictionary<string, byte> ReadRightWords()
 		{
 			var words = new Dictionary<string, byte>();
-			var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, false), UserFile);
+			var path = Path.Combine(_manager.GetFolderPath(SpecialFolder.RoamingData, false), Settings.UserFile);
 			if (File.Exists(path))
 			{
 				foreach (string line in File.ReadAllLines(path))
@@ -80,13 +90,13 @@ namespace FarNet.RightWords
 			if (words.ContainsKey(word))
 				return;
 
-			var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, true), UserFile);
+			var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, true), Settings.UserFile);
 			using (var writer = File.AppendText(path))
 				writer.WriteLine(word);
 
 			words.Add(word, 0);
 		}
-		static Match MatchCaret(Regex regex, string input, int caret, bool next)
+		internal static Match MatchCaret(Regex regex, string input, int caret, bool next)
 		{
 			Match match = regex.Match(input);
 			while (match.Success)
@@ -160,7 +170,7 @@ namespace FarNet.RightWords
 		}
 		static void DoThesaurus()
 		{
-			var word = Far.Net.Input("Word", Name, Name);
+			var word = Far.Net.Input("Word", Settings.Name, Settings.Name);
 			if (word == null || (word = word.Trim()).Length == 0)
 				return;
 
@@ -194,7 +204,7 @@ namespace FarNet.RightWords
 
 			Far.Net.CopyToClipboard(menu.Items[menu.Selected].Text);
 		}
-		static bool HasMatch(MatchCollection matches, Match match)
+		internal static bool HasMatch(MatchCollection matches, Match match)
 		{
 			if (matches != null)
 				foreach (Match m in matches)
@@ -208,7 +218,7 @@ namespace FarNet.RightWords
 			foreach (var dictionary in _dictionaries)
 				dictionary.HitCount = 0;
 		}
-		static Regex GetRegexSkip()
+		internal static Regex GetRegexSkip()
 		{
 			var pattern = Settings.Default.SkipPattern;
 			return string.IsNullOrEmpty(pattern) ? null : new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
@@ -379,6 +389,21 @@ namespace FarNet.RightWords
 			{
 				spell.Dispose();
 				editor.UnselectText();
+			}
+		}
+		void DoHighlighting()
+		{
+			var editor = Far.Net.Editor;
+
+			var highlighter = (Highlighter)editor.Data[DataId];
+			if (highlighter == null)
+			{
+				editor.Data[DataId] = new Highlighter(editor);
+			}
+			else
+			{
+				highlighter.Stop();
+				editor.Data.Remove(DataId);
 			}
 		}
 	}

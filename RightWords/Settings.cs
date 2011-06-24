@@ -14,6 +14,8 @@ namespace FarNet.RightWords
 	[SettingsProvider(typeof(ModuleSettingsProvider))]
 	public sealed class Settings : ModuleSettings
 	{
+		internal const string Name = "RightWords";
+		internal const string UserFile = "RightWords.dic";
 		static readonly Settings _Default = new Settings();
 		public static Settings Default { get { return _Default; } }
 		[UserScopedSetting]
