@@ -23,6 +23,8 @@ internal:
 	// Any editor object
 	static AnyEditor _anyEditor;
 private:
+	static void ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting);
+private:
 	// Registered opened editors
 	static List<Editor^> _editors;
 };

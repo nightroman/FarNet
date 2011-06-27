@@ -717,10 +717,18 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/Data/*'/>
 		public Hashtable Data { get { return _Data ?? (_Data = new Hashtable()); } }
 		Hashtable _Data;
-		///??????
-		public abstract LineColor GetColor(int line, int area);
-		///??????
-		public abstract void SetColor(int line, LineColor color);
+		/// <summary>
+		/// Returns color spans of the specified line.
+		/// </summary>
+		public abstract IList<ColorSpan> GetColors(int line);
+		/// <summary>
+		/// Adds the color span to the specified line.
+		/// </summary>
+		/// <remarks>
+		/// Special case. If the colors are black on black then color spans are removed from the specified start position.
+		/// If the specified start position is equal to -1 then all line colors are removed.
+		/// </remarks>
+		public abstract void AddColor(int line, ColorSpan color);
 	}
 
 	/// <summary>
@@ -1056,17 +1064,25 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// ??????
+	/// Editor line color span.
 	/// </summary>
-	public class LineColor
+	public class ColorSpan
 	{
-		///
+		/// <summary>
+		/// Start position. -1 with black on black colors is used in order to remove all spans.
+		/// </summary>
 		public int Start { get; set; }
-		///
+		/// <summary>
+		/// End position, not included into the span, <c>End - Start</c> is the span length.
+		/// </summary>
 		public int End { get; set; }
-		///
+		/// <summary>
+		/// Foreground color. Black on black is the special case.
+		/// </summary>
 		public ConsoleColor Foreground { get; set; }
-		///
+		/// <summary>
+		/// Background color. Black on black is the special case.
+		/// </summary>
 		public ConsoleColor Background { get; set; }
 		///
 		public override string ToString()

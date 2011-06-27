@@ -83,8 +83,7 @@ public:
 	virtual property FarNet::Switching Switching { FarNet::Switching get() override; void set(FarNet::Switching value) override; }
 	virtual property TextFrame Frame { TextFrame get() override; void set(TextFrame value) override; }
 public:
-	virtual LineColor^ GetColor(int line, int area) override; //??????
-	virtual void SetColor(int line, LineColor^ color) override; //??????
+	virtual IList<ColorSpan^>^ GetColors(int line) override;
 	virtual int ConvertColumnEditorToScreen(int line, int column) override;
 	virtual int ConvertColumnScreenToEditor(int line, int column) override;
 	virtual Point ConvertPointEditorToScreen(Point point) override;
@@ -94,6 +93,7 @@ public:
 	virtual TextWriter^ OpenWriter() override;
 	virtual void Activate() override;
 	virtual void Add(String^ text) override;
+	virtual void AddColor(int line, ColorSpan^ color) override;
 	virtual void BeginAsync() override;
 	virtual void BeginUndo() override;
 	virtual void Clear() override;

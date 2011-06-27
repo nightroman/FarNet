@@ -1218,25 +1218,28 @@ void Editor::IsLocked::set(bool value)
 		SetBoolOption(ESPT_LOCKMODE, value);
 }
 
-LineColor^ Editor::GetColor(int line, int area)
+IList<ColorSpan^>^ Editor::GetColors(int line)
 {
 	EditorColor arg;
 	arg.StringNumber = line;
-	arg.ColorItem = area;
 
-	if (!Info.EditorControl(ECTL_GETCOLOR, &arg))
-		return nullptr;
+	List<ColorSpan^>^ spans = gcnew List<ColorSpan^>;
 	
-	LineColor^ r = gcnew LineColor;
-	r->Start = arg.StartPos;
-	r->End = arg.EndPos + 1;
-	r->Foreground = ConsoleColor(arg.Color & 0x0000000F);
-	r->Background = ConsoleColor((arg.Color & 0x000000F0) >> 4);
+	for(arg.ColorItem = 0; Info.EditorControl(ECTL_GETCOLOR, &arg); ++arg.ColorItem)
+	{
+		ColorSpan^ span = gcnew ColorSpan;
+		span->Start = arg.StartPos;
+		span->End = arg.EndPos + 1;
+		span->Foreground = ConsoleColor(arg.Color & 0x0000000F);
+		span->Background = ConsoleColor((arg.Color & 0x000000F0) >> 4);
+		
+		spans->Add(span);
+	}
 	
-	return r;
+	return spans;
 }
 
-void Editor::SetColor(int line, LineColor^ color)
+void Editor::AddColor(int line, ColorSpan^ color)
 {
 	EditorColor arg;
 	arg.StringNumber = line;

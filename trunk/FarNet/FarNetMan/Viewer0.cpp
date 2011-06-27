@@ -25,7 +25,7 @@ void Viewer0::Register(Viewer^ viewer, const ViewerInfo& vi)
 	viewer->_FileName = gcnew String(vi.FileName);
 }
 
-//! For exturnal use.
+//! For external use.
 Viewer^ Viewer0::GetCurrentViewer()
 {
 	// get current ID
