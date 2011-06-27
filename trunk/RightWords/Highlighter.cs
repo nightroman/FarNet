@@ -8,43 +8,38 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-
 namespace FarNet.RightWords
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
-	public class Highlighter
+	class Highlighter
 	{
-		IEditor _editor;
-		MultiSpell _spell;
-		Regex _regexSkip;
-		Regex _regexWord;
-		Dictionary<string, byte> _rightWords;
+		readonly MultiSpell Spell = new MultiSpell(Actor.Dictionaries);
+		readonly Regex RegexSkip = Actor.GetRegexSkip();
+		readonly Regex RegexWord = new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace);
+		readonly Dictionary<string, byte> RightWords = Actor.ReadRightWords();
+		readonly ConsoleColor HighlightingBackgroundColor = Settings.Default.HighlightingBackgroundColor;
+		readonly ConsoleColor HighlightingForegroundColor = Settings.Default.HighlightingForegroundColor;
+		readonly IEditor Editor;
+		bool? IsRemoveColors;
 		public Highlighter(IEditor editor)
 		{
-			TheTool.Initialize();
-			_editor = editor;
+			Editor = editor;
 
-			_spell = new MultiSpell(TheTool._dictionaries);
-			_regexSkip = TheTool.GetRegexSkip();
-			_regexWord = new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace);
-			_rightWords = TheTool.ReadRightWords();
-
-			editor.Redrawing += OnRedrawing;
-			editor.Closed += OnClosed;
-
-			editor.Redraw();
+			editor.Redrawing += Redrawing;
+			editor.Closed += Closed;
 		}
 		public void Stop()
 		{
-			_editor.Redrawing -= OnRedrawing;
-			_editor.Closed -= OnClosed;
-			_spell.Dispose();
+			Editor.Redrawing -= Redrawing;
+			Editor.Closed -= Closed;
+			
+			Spell.Dispose();
 		}
-		void OnClosed(object sender, EventArgs e)
+		void Closed(object sender, EventArgs e)
 		{
 			Stop();
 		}
-		void OnRedrawing(object sender, EditorRedrawingEventArgs e)
+		void Redrawing(object sender, EditorRedrawingEventArgs e)
 		{
 			if (e.Mode == EditorRedrawMode.Line)
 			{
@@ -53,9 +48,9 @@ namespace FarNet.RightWords
 			}
 
 			int height = Far.Net.UI.WindowSize.Y;
-			TextFrame frame = _editor.Frame;
-			int lineCount = _editor.Count;
-			
+			TextFrame frame = Editor.Frame;
+			int lineCount = Editor.Count;
+
 			for (int i = 0; i < height; ++i)
 			{
 				int index = frame.VisibleLine + i;
@@ -65,35 +60,47 @@ namespace FarNet.RightWords
 				HighlightLine(index);
 			}
 		}
-		void HighlightLine(int index)
+		void HighlightLine(int lineIndex)
 		{
-			var line = _editor[index];
-			var text = line.Text;
-			int caret = line.Caret;
-
-			Match match = TheTool.MatchCaret(_regexWord, text, 0, true);
-			if (match == null)
+			var text = Editor[lineIndex].Text;
+			if (text.Length == 0)
 				return;
 
-			MatchCollection skip = _regexSkip == null ? null : _regexSkip.Matches(text);
+			// check colors
+			if (!IsRemoveColors.HasValue)
+				IsRemoveColors = Editor.GetColors(lineIndex).Count == 0;
 
-			for (; match.Success; match = match.NextMatch())
+			// remove colors
+			if (IsRemoveColors.Value)
+				Editor.AddColor(lineIndex, new ColorSpan() { Start = -1 });
+
+			MatchCollection skip = null;
+			for (var match = RegexWord.Match(text); match.Success; match = match.NextMatch())
 			{
+				// the target word
 				var word = match.Value;
 
-				if (TheTool.HasMatch(skip, match) || _rightWords.ContainsKey(word) || TheTool._ignore.ContainsKey(word)) //???
+				// check cheap skip lists
+				if (RightWords.ContainsKey(word) || Actor.IgnoreWords.ContainsKey(word))
 					continue;
 
-				if (_spell.Spell(word))
+				// check spelling, expensive but better before the skip pattern
+				if (Spell.Spell(word))
 					continue;
 
-				var color = new LineColor();
+				// expensive skip pattern
+				if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(RegexSkip, text)), match))
+					continue;
+
+				// color
+				var color = new ColorSpan();
 				color.Start = match.Index;
 				color.End = match.Index + match.Length;
-				color.Foreground = ConsoleColor.Black;
-				color.Background = ConsoleColor.Red;
+				color.Background = HighlightingBackgroundColor;
+				color.Foreground = HighlightingForegroundColor;
 
-				_editor.SetColor(index, color);
+				// add color
+				Editor.AddColor(lineIndex, color);
 			}
 		}
 	}

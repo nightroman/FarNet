@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightWords
-Release  : 2011-06-24
+Release  : 2011-06-27
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -9,15 +9,13 @@ Source   : http://code.google.com/p/farnet/
 
 = PREREQUISITES =
 
-
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.20
+ * Plugin FarNet 4.4.21
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
 
 = DESCRIPTION =
-
 
 Spell-checker and thesaurus based on NHunspell. The core Hunspell is used in
 OpenOffice and it works with dictionaries published on OpenOffice.org.
@@ -25,8 +23,8 @@ OpenOffice and it works with dictionaries published on OpenOffice.org.
 The module works through the plugin menus [F11]. Menu commands:
 
 *) Correct word (editor, dialogs, command line)
-Checks spelling and shows suggestions for the current word. [Enter] in the
-suggestion menu replaces the current word with the selected suggestion.
+Checks spelling and shows the suggestion menu for the current word. Menu
+actions are the same as for the [Correct text] command menu.
 
 *) Correct text (editor)
 Checks spelling, shows suggestions, and corrects words in the selected text or
@@ -37,13 +35,19 @@ Menu commands:
 - [Ignore All] - ignores the word in the current session;
 - [Add to Dictionary] - adds the word to the user dictionary.
 
+*) Highlighting (editor)
+Turns highlighting of misspelled word on/off. Highlighting is turned on for
+some files automatically, see the settings.
+
+Highlighting is tested with and without the Colorer plugin and without other
+editor color plugins. Scenarios with other editor color plugins are not tested.
+
 *) Thesaurus
 Prompts to enter a word and shows the list of available meanings and synonyms
 in a menu. [Enter] in the menu copies the current item text to the clipboard.
 
 
 = INSTALLATION =
-
 
  * Download the NHunspell binaries and OpenOffice dictionaries
 
@@ -71,44 +75,45 @@ in a menu. [Enter] in the menu copies the current item text to the clipboard.
 
 = SETTINGS =
 
-
 Open the module settings panel from the main .NET menu:
-F11 | .NET | Settings | RightWords
+[F11] | .NET | Settings | RightWords
 
 Regular expression patterns are created with IgnorePatternWhitespace option, so
 that they support line comments (#) and all white spaces should be explicitly
 specified as \ , \t, \s, etc.
 
-	WordPattern
+*) WordPattern
 
 Defines the regular expression pattern for word recognition in texts.
+
 The default pattern: \p{Lu}?\p{Ll}+
 It recognises "RightWords" as two words "Right" and "Words".
 
-	SkipPattern
+*) SkipPattern
 
 Defines the regular expression pattern for text areas to be ignored.
 The default pattern is null (not specified, nothing is ignored).
-Example skip pattern:
 
-	"\w+:\\[^"]+" # Full file path: quoted
+This sample/recommended pattern catches some paths and web addresses:
+
+	"(?:\w+:|\.+)[\\/][^"]+" # Quoted path-like strings
 	|
-	\b\w+:\\[^\s:]+ # Full file path: simple
-	|
-	"\.{1,2}[\\/][^"]+" # Relative file path: quoted
-	|
-	(?:^|\s)\.{1,2}[\\/][^\s:]+ # Relative file path: simple
-	|
-	# URL
-	(?i:
-	\b (?:(?:https?|ftp|news|nntp|wais|wysiwyg|gopher|javascript|castanet|about)
-	\:\/\/ | (?:www|ftp|fido[0-9]*)\.)
-	[\[\]\@\%\:\+\w\.\/\~\?\-\*=_#&;]+\b\/?
-	)
+	(?:\w+:|\.+)[\\/][^\s]+ # Simple path-like strings
+
+*) HighlightingBackgroundColor
+*) HighlightingForegroundColor
+
+Highlighting colors. Values: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed,
+DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta,
+Yellow, White.
+
+*) Auto highlighting file mask
+
+Highlighting is turned on automatically for files which names match the mask:
+[F9] | Options | Plugins configuration | .NET | Editors | RightWords
 
 
 = HISTORY =
-
 
 1.0.1
 
@@ -152,3 +157,22 @@ there are no other color plugins. Without Colorer it works fine only if the
 text is not being modified. With other editor color plugins it is not tried.
 
 Highlighting color is black on red and it is not yet configurable.
+
+1.0.6
+
+Use FarNet 4.4.21 (revised editor color API).
+
+Highlighting is tested with and without the Colorer plugin and without other
+editor color plugins. Scenarios with other editor color plugins are not tested.
+
+Highlighting is turned on automatically for files which names match the mask:
+[F9] | Options | Plugins configuration | .NET | Editors | RightWords
+
+Highlighting colors are configurable in settings (default: black on yellow).
+
+The [Correct word] menu contains the same commands as the [Correct text].
+
+The thesaurus input box uses the current word as the default input.
+
+Code clean-up and light optimization. NOTE: SkipPattern filter is relatively
+expensive. The sample/recommended pattern is simplified (see Readme.txt).
