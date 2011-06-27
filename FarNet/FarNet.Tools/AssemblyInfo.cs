@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-[assembly: AssemblyVersion("4.4.20.0")]
+[assembly: AssemblyVersion("4.4.21.0")]
 [assembly: AssemblyTitle("FarNet Tools")]
 [assembly: AssemblyDescription("FarNet Tools")]
 [assembly: AssemblyConfiguration("")]

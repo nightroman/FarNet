@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.4.21 =
+
+*) Editor color API (revised)
+- IEditor: GetColors(), AddColor() work with the ColorSpan class.
+
+*) Not standard FarNet late loading
+Fixed a few issues in cases when FarNet is loaded after opening editors.
+
 = 4.4.20 =
 
 *) Editor color API
