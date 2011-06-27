@@ -48,12 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actor.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Highlighter.cs" />
     <Compile Include="MultiSpell.cs" />
     <Compile Include="MultiThesaurus.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="TheEditor.cs" />
     <Compile Include="TheTool.cs" />
+    <Compile Include="UIWordMenu.cs" />
     <Compile Include="Works.cs" />
   </ItemGroup>
   <ItemGroup>

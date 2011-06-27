@@ -7,7 +7,6 @@ Copyright (c) 2011 Roman Kuzmin
 using System;
 using System.Collections.Generic;
 using NHunspell;
-
 namespace FarNet.RightWords
 {
 	sealed class MultiSpell : IDisposable
