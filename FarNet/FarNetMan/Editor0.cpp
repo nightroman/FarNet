@@ -21,15 +21,47 @@ array<IEditor^>^ Editor0::Editors()
 //! For exturnal use.
 Editor^ Editor0::GetCurrentEditor()
 {
+	// get info
 	AutoEditorInfo ei(true);
+	if (ei.EditorID == -1)
+		return nullptr;
 
+	// search for the connected editor
 	for(int i = 0; i < _editors.Count; ++i)
 	{
 		if (_editors[i]->Id == ei.EditorID)
 			return _editors[i];
 	}
 
-	return nullptr;
+	// create and connect; rare case, e.g. the editor is opened before the core is loaded
+	//_110624_153138 http://forum.farmanager.com/viewtopic.php?f=8&t=6500
+	Log::Source->TraceInformation("Connecting existing editor");
+	Editor^ editor = gcnew Editor;
+	ConnectEditor(editor, ei, false);
+	return editor;
+}
+
+void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting)
+{
+	// register
+	_editors.Insert(0, editor);
+
+	// 1) start the editor; it calls module editor actions, they may add handlers
+	editor->Start(ei, isEditorWaiting);
+
+	// 2) event for any editor handlers, they add this editor handlers
+	if (_anyEditor._Opened)
+	{
+		Log::Source->TraceInformation("Opened");
+		_anyEditor._Opened(editor, nullptr);
+	}
+
+	// 3) event for this editor handlers
+	if (editor->_Opened)
+	{
+		Log::Source->TraceInformation("Opened");
+		editor->_Opened(editor, nullptr);
+	}
 }
 
 int Editor0::AsProcessEditorEvent(int type, void* param)
@@ -58,25 +90,8 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			// get info
 			AutoEditorInfo ei;
 
-			// register
-			_editors.Insert(0, editor);
-
-			// 1) start the editor; it calls module editor actions, they may add handlers
-			editor->Start(ei, isEditorWaiting);
-
-			// 2) event for any editor handlers, they add this editor handlers
-			if (_anyEditor._Opened)
-			{
-				Log::Source->TraceInformation("Opened");
-				_anyEditor._Opened(editor, nullptr);
-			}
-
-			// 3) event for this editor handlers
-			if (editor->_Opened)
-			{
-				Log::Source->TraceInformation("Opened");
-				editor->_Opened(editor, nullptr);
-			}
+			// connect
+			ConnectEditor(editor, ei, isEditorWaiting);
 		}
 		break;
 	case EE_CLOSE:
@@ -159,6 +174,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
 
+			// make the editor first in the list
 			int id = *((int*)param);
 			Editor^ editor = nullptr;
 			for(int i = 0; i < _editors.Count; ++i)
@@ -171,6 +187,17 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 						_editors.RemoveAt(i);
 						_editors.Insert(0, editor);
 					}
+					break;
+				}
+			}
+
+			//_110624_153138 rare case
+			if (!editor)
+			{
+				editor = GetCurrentEditor();
+				if (editor->Id != id)
+				{
+					Log::Source->TraceInformation("EE_GOTFOCUS: cannot connect editor");
 					break;
 				}
 			}
@@ -207,6 +234,17 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 				}
 			}
 
+			//_110624_153138 rare case
+			if (!editor)
+			{
+				editor = GetCurrentEditor();
+				if (editor->Id != id)
+				{
+					Log::Source->TraceInformation("EE_KILLFOCUS: cannot connect editor");
+					break;
+				}
+			}
+			
 			if (_anyEditor._LosingFocus)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "LosingFocus");
@@ -220,6 +258,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		}
 		break;
 	}
+	
 	return 0;
 }
 
