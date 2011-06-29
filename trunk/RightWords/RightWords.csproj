@@ -56,6 +56,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="TheEditor.cs" />
     <Compile Include="TheTool.cs" />
+    <Compile Include="UIWordDialog.cs" />
     <Compile Include="UIWordMenu.cs" />
     <Compile Include="Works.cs" />
   </ItemGroup>
