@@ -14,17 +14,23 @@ namespace FarNet.RightWords
 	static class Actor
 	{
 		static readonly IModuleManager Manager;
-		internal static readonly List<DictionaryInfo> Dictionaries = new List<DictionaryInfo>();
-		internal static readonly Dictionary<string, byte> IgnoreWords = new Dictionary<string, byte>();
+		public static readonly List<DictionaryInfo> Dictionaries = new List<DictionaryInfo>();
+		public static readonly Dictionary<string, byte> IgnoreWords = new Dictionary<string, byte>();
 		static readonly WeakReference _rightWords = new WeakReference(null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static Actor()
 		{
+			// expose the manager
 			Manager = Far.Net.GetModuleManager(typeof(Actor));
 
+			// home directory, for libraries and dictionaries
 			var home = Path.GetDirectoryName(typeof(Hunspell).Assembly.Location);
-			Hunspell.NativeDllPath = home;
 
+			//! catch `Native Library is already loaded`, e.g. loaded by another module
+			try { Hunspell.NativeDllPath = home; }
+			catch (InvalidOperationException ex) { Log.TraceException(ex); }
+
+			// initialize dictionaries
 			foreach (var dir in Directory.GetDirectories(home))
 			{
 				foreach (var aff in Directory.GetFiles(dir, "*.aff"))
@@ -32,7 +38,7 @@ namespace FarNet.RightWords
 					var dic = Path.ChangeExtension(aff, ".dic");
 					if (File.Exists(dic))
 					{
-						var language = new DictionaryInfo() { HunspellAffFile = aff, HunspellDictFile = dic };
+						var language = new DictionaryInfo() { HunspellAffFile = aff, HunspellDictFile = dic, Language = Path.GetFileName(dir) };
 						Dictionaries.Add(language);
 
 						foreach (var dat in Directory.GetFiles(dir, "*.dat"))
@@ -41,7 +47,7 @@ namespace FarNet.RightWords
 				}
 			}
 		}
-		internal static Dictionary<string, byte> ReadRightWords()
+		public static Dictionary<string, byte> ReadRightWords()
 		{
 			var words = (Dictionary<string, byte>)_rightWords.Target;
 			if (words != null)
@@ -58,21 +64,7 @@ namespace FarNet.RightWords
 			_rightWords.Target = words;
 			return words;
 		}
-		static void AddRightWord(Dictionary<string, byte> words, string word)
-		{
-			if (words == null)
-				words = ReadRightWords();
-
-			if (words.ContainsKey(word))
-				return;
-
-			var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, true), Settings.UserFile);
-			using (var writer = File.AppendText(path))
-				writer.WriteLine(word);
-
-			words.Add(word, 0);
-		}
-		internal static Match MatchCaret(Regex regex, string input, int caret, bool next)
+		public static Match MatchCaret(Regex regex, string input, int caret, bool next)
 		{
 			Match match = regex.Match(input);
 			while (match.Success)
@@ -86,7 +78,7 @@ namespace FarNet.RightWords
 			}
 			return match.Success ? match : null;
 		}
-		internal static void CorrectWord()
+		public static void CorrectWord()
 		{
 			ILine line = null;
 			IEditor editor = null;
@@ -114,9 +106,9 @@ namespace FarNet.RightWords
 
 			// get suggestions with check
 			List<string> words = null;
-			using (var spell = new MultiSpell(Dictionaries))
-				if (!spell.Spell(word))
-					words = spell.Suggest(word);
+			var spell = MultiSpell.GetWeakInstance(Dictionaries);
+			if (!spell.Spell(word))
+				words = spell.Suggest(word);
 
 			// it is correct or nothing is suggested
 			if (words == null || words.Count == 0)
@@ -155,7 +147,7 @@ namespace FarNet.RightWords
 			line.UnselectText();
 			line.Caret = match.Index + word.Length;
 		}
-		internal static void ShowThesaurus()
+		public static void ShowThesaurus()
 		{
 			string word = string.Empty;
 			var line = Far.Net.Line;
@@ -200,7 +192,7 @@ namespace FarNet.RightWords
 
 			Far.Net.CopyToClipboard(menu.Items[menu.Selected].Text);
 		}
-		internal static bool HasMatch(MatchCollection matches, Match match)
+		public static bool HasMatch(MatchCollection matches, Match match)
 		{
 			if (matches != null)
 				foreach (Match m in matches)
@@ -209,7 +201,7 @@ namespace FarNet.RightWords
 
 			return false;
 		}
-		internal static MatchCollection GetMatches(Regex regex, string text)
+		public static MatchCollection GetMatches(Regex regex, string text)
 		{
 			return regex == null ? null : regex.Matches(text);
 		}
@@ -218,12 +210,12 @@ namespace FarNet.RightWords
 			foreach (var dictionary in Dictionaries)
 				dictionary.HitCount = 0;
 		}
-		internal static Regex GetRegexSkip()
+		public static Regex GetRegexSkip()
 		{
 			var pattern = Settings.Default.SkipPattern;
 			return string.IsNullOrEmpty(pattern) ? null : new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
 		}
-		internal static void CorrectText()
+		public static void CorrectText()
 		{
 			// reset counters
 			ResetHitCounters();
@@ -254,7 +246,7 @@ namespace FarNet.RightWords
 			}
 
 			// use the spell checker
-			var spell = new MultiSpell(Dictionaries);
+			var spell = MultiSpell.GetWeakInstance(Dictionaries);
 			try
 			{
 				// loop through words and lines
@@ -367,11 +359,10 @@ namespace FarNet.RightWords
 			}
 			finally
 			{
-				spell.Dispose();
 				editor.UnselectText();
 			}
 		}
-		internal static void Highlight(IEditor editor)
+		public static void Highlight(IEditor editor)
 		{
 			var highlighter = (Highlighter)editor.Data[Settings.EditorDataId];
 			if (highlighter == null)
@@ -382,6 +373,93 @@ namespace FarNet.RightWords
 			{
 				highlighter.Stop();
 				editor.Data.Remove(Settings.EditorDataId);
+			}
+		}
+		public static string GetUserDictionaryPath(string name, bool create)
+		{
+			return Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, create), "RightWords." + name + ".dic");
+		}
+		static void AddRightWord(Dictionary<string, byte> words, string word)
+		{
+			var names = new List<string>();
+			foreach (var dic in Dictionaries)
+				names.Add(dic.Language);
+			names.Sort();
+
+			var menu = Far.Net.CreateMenu();
+			menu.Title = "Add to Dictionary";
+			menu.AutoAssignHotkeys = true;
+			menu.Add("Common");
+			foreach (string name in names)
+				menu.Add(name);
+
+			MultiSpell multiSpell = null;
+
+			for (; ; )
+			{
+				if (!menu.Show())
+					return;
+
+				// common:
+				if (menu.Selected == 0)
+				{
+					if (words == null)
+						words = ReadRightWords();
+
+					if (words.ContainsKey(word))
+						return;
+
+					var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, true), Settings.UserFile);
+					using (var writer = File.AppendText(path))
+						writer.WriteLine(word);
+
+					words.Add(word, 0);
+					return;
+				}
+
+				// language:
+				var language = menu.Items[menu.Selected].Text;
+				var spell = (multiSpell ?? (multiSpell = MultiSpell.GetWeakInstance(Dictionaries))).GetSpell(language);
+
+				// dialog
+				var dialog = new UIWordDialog(word, string.Empty);
+				while (dialog.Show())
+				{
+					var stem1 = dialog.Stem1.Trim();
+					if (stem1.Length == 0)
+						continue;
+
+					var stem2 = dialog.Stem2.Trim();
+
+					bool ok = (stem2.Length == 0) ? spell.Add(stem1) : spell.AddWithAffix(stem1, stem2);
+					if (!ok)
+					{
+						var stems = spell.Stem(stem2);
+						if (stems.Count == 0 || stems.Count == 1 && stems[0] == stem2)
+							continue;
+
+						var menu2 = Far.Net.CreateMenu();
+						menu2.Title = "Example Stem";
+						foreach (var it in stems)
+							menu2.Add(it);
+
+						if (menu2.Show())
+							dialog.Stem2 = menu2.Items[menu2.Selected].Text;
+						
+						continue;
+					}
+
+					var path = Actor.GetUserDictionaryPath(language, true);
+					using (var writer = File.AppendText(path))
+					{
+						if (stem2.Length == 0)
+							writer.WriteLine(stem1);
+						else
+							writer.WriteLine(stem1 + " " + stem2);
+					}
+
+					return;
+				}
 			}
 		}
 	}

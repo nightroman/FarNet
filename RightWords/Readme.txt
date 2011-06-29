@@ -1,7 +1,7 @@
-
+﻿
 Module   : FarNet.RightWords
 Release  : 2011-06-27
-Category : Editors
+Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
@@ -13,38 +13,6 @@ Source   : http://code.google.com/p/farnet/
  * Plugin FarNet 4.4.21
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
-
-
-= DESCRIPTION =
-
-Spell-checker and thesaurus based on NHunspell. The core Hunspell is used in
-OpenOffice and it works with dictionaries published on OpenOffice.org.
-
-The module works through the plugin menus [F11]. Menu commands:
-
-*) Correct word (editor, dialogs, command line)
-Checks spelling and shows the suggestion menu for the current word. Menu
-actions are the same as for the [Correct text] command menu.
-
-*) Correct text (editor)
-Checks spelling, shows suggestions, and corrects words in the selected text or
-in the text starting from the caret position. [Enter] in the suggestion menu
-replaces the highlighted word with the selected suggestion.
-Menu commands:
-- [Ignore] - ignores the word once;
-- [Ignore All] - ignores the word in the current session;
-- [Add to Dictionary] - adds the word to the user dictionary.
-
-*) Highlighting (editor)
-Turns highlighting of misspelled word on/off. Highlighting is turned on for
-some files automatically, see the settings.
-
-Highlighting is tested with and without the Colorer plugin and without other
-editor color plugins. Scenarios with other editor color plugins are not tested.
-
-*) Thesaurus
-Prompts to enter a word and shows the list of available meanings and synonyms
-in a menu. [Enter] in the menu copies the current item text to the clipboard.
 
 
 = INSTALLATION =
@@ -71,6 +39,68 @@ in a menu. [Enter] in the menu copies the current item text to the clipboard.
 	- Dictionary sub-directories may have any names.
 	- Collection of dictionaries is up to a user.
 	- Thesaurus files are optional.
+
+
+= DESCRIPTION =
+
+Spell-checker and thesaurus based on NHunspell. The core Hunspell is used in
+OpenOffice and it works with dictionaries published on OpenOffice.org.
+
+The module works through the plugin menus [F11]. Menu commands:
+
+*) Correct word (editor, dialogs, command line)
+Checks spelling and shows the suggestion menu for the current word. Menu
+actions are the same as for the [Correct text] command menu.
+
+*) Correct text (editor)
+Checks spelling, shows suggestions, and corrects words in the selected text or
+in the text starting from the caret position. [Enter] in the suggestion menu
+replaces the highlighted word with the selected suggestion.
+Menu commands:
+- [Ignore] - ignores the word once;
+- [Ignore All] - ignores the word in the current session;
+- [Add to Dictionary] - adds the word to the user dictionary (see below).
+
+*) Highlighting (editor)
+Turns highlighting of misspelled word on/off. Highlighting is turned on for
+some files automatically, see the settings.
+
+Highlighting is tested with and without the Colorer plugin and without other
+editor color plugins. Scenarios with other editor color plugins are not tested.
+
+*) Thesaurus
+Prompts to enter a word and shows the list of available meanings and synonyms
+in a menu. [Enter] in the menu copies the current item text to the clipboard.
+
+
+= USER DICTIONARIES =
+
+[Add to Dictionary] command supports the common and language dictionaries. In
+order to add a word into a language dictionary two stems should be provided: a
+new word stem and its example stem. If the example stem is empty then the word
+is added as it is, this case is not very different from the common dictionary.
+
+Examples:
+
+English stems: plugin + pin
+These forms become correct:
+
+	plugin   plugins   Plugin   Plugins
+
+Russian stems: плагин + камин
+These forms become correct:
+
+	плагин   плагины   Плагин   Плагины
+	плагина  плагинов  Плагина  Плагинов
+	плагину  плагинам  Плагину  Плагинам
+	плагином плагинами Плагином Плагинами
+	плагине  плагинах  Плагине  Плагинах
+
+CAUTION: Mind word capitalization, e.g. add "plugin", not "Plugin". Words
+starting with capital letters normally mean some names.
+
+User dictionaries are UTF-8 text files in the module roaming directory. They
+are: "RightWords.dic" (common) and files like "RightWords.XYZ.dic" (language).
 
 
 = SETTINGS =
@@ -176,3 +206,11 @@ The thesaurus input box uses the current word as the default input.
 
 Code clean-up and light optimization. NOTE: SkipPattern filter is relatively
 expensive. The sample/recommended pattern is simplified (see Readme.txt).
+
+1.0.7
+
+[Add to Dictionary] command supports the common and language dictionaries. See
+Readme.txt for details. This feature is very useful but it is not that simple.
+
+Ignore the `Native Library is already loaded` exception. It is possible in rare
+cases when other modules use NHunspell and load it before RightWords.
