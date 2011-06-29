@@ -13,7 +13,7 @@ namespace FarNet.RightWords
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	class Highlighter
 	{
-		readonly MultiSpell Spell = new MultiSpell(Actor.Dictionaries);
+		readonly MultiSpell Spell = MultiSpell.GetWeakInstance(Actor.Dictionaries);
 		readonly Regex RegexSkip = Actor.GetRegexSkip();
 		readonly Regex RegexWord = new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace);
 		readonly Dictionary<string, byte> RightWords = Actor.ReadRightWords();
@@ -32,8 +32,6 @@ namespace FarNet.RightWords
 		{
 			Editor.Redrawing -= Redrawing;
 			Editor.Closed -= Closed;
-			
-			Spell.Dispose();
 		}
 		void Closed(object sender, EventArgs e)
 		{
