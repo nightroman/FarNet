@@ -39,11 +39,13 @@ namespace FarNet.RightWords
 		}
 		void Redrawing(object sender, EditorRedrawingEventArgs e)
 		{
+			// do not draw `Line`, `Screen` is called anyway
 			if (e.Mode == EditorRedrawMode.Line)
-			{
-				HighlightLine(-1);
 				return;
-			}
+
+			// do not draw `Change` if we do not remove colors, `Screen` is called anyway
+			if (e.Mode == EditorRedrawMode.Change && IsRemoveColors.HasValue && !IsRemoveColors.Value)
+				return;
 
 			int height = Far.Net.UI.WindowSize.Y;
 			TextFrame frame = Editor.Frame;
