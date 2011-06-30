@@ -7,6 +7,7 @@ Copyright (c) 2011 Roman Kuzmin
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using NHunspell;
 namespace FarNet.RightWords
@@ -120,7 +121,7 @@ namespace FarNet.RightWords
 
 			// show suggestions
 			var cursor = Far.Net.UI.WindowCursor;
-			var menu = new UIWordMenu(words, word, cursor.X, cursor.Y);
+			var menu = new UIWordMenu(words, word, cursor.X, cursor.Y + 1);
 
 			// cancel or ignore:
 			if (!menu.Show() || menu.IsIgnore)
@@ -379,6 +380,27 @@ namespace FarNet.RightWords
 		{
 			return Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, create), "RightWords." + name + ".dic");
 		}
+		const string TitleAddWord = "Add to Dictionary";
+		static string[] ShowMenuAddWord(string word)
+		{
+			string word2;
+
+			if (Regex.IsMatch(word, @"^\p{Ll}{2,}$"))
+				word2 = word.Substring(0, 1).ToUpper(CultureInfo.CurrentCulture) + word.Substring(1);
+			else if (Regex.IsMatch(word, @"^\p{Lu}\p{Ll}+$"))
+				word2 = word.ToLower(CultureInfo.CurrentCulture);
+			else
+				return new string[] { word };
+
+			var menu = Far.Net.CreateMenu();
+			menu.Title = TitleAddWord;
+			menu.Add(word);
+			menu.Add(word + ", " + word2);
+			if (!menu.Show())
+				return null;
+
+			return menu.Selected == 0 ? new string[] { word } : new string[] { word, word2 };
+		}
 		static void AddRightWord(Dictionary<string, byte> words, string word)
 		{
 			var names = new List<string>();
@@ -387,7 +409,7 @@ namespace FarNet.RightWords
 			names.Sort();
 
 			var menu = Far.Net.CreateMenu();
-			menu.Title = "Add to Dictionary";
+			menu.Title = TitleAddWord;
 			menu.AutoAssignHotkeys = true;
 			menu.Add("Common");
 			foreach (string name in names)
@@ -403,17 +425,27 @@ namespace FarNet.RightWords
 				// common:
 				if (menu.Selected == 0)
 				{
+					string[] newWords = ShowMenuAddWord(word);
+					if (newWords == null)
+						return;
+
 					if (words == null)
 						words = ReadRightWords();
 
-					if (words.ContainsKey(word))
-						return;
-
+					// write/add
 					var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, true), Settings.UserFile);
 					using (var writer = File.AppendText(path))
-						writer.WriteLine(word);
+					{
+						foreach(var newWord in newWords)
+						{
+							if (words.ContainsKey(newWord))
+								continue;
 
-					words.Add(word, 0);
+							writer.WriteLine(newWord);
+							words.Add(newWord, 0);
+						}
+					}
+
 					return;
 				}
 
@@ -445,7 +477,7 @@ namespace FarNet.RightWords
 
 						if (menu2.Show())
 							dialog.Stem2 = menu2.Items[menu2.Selected].Text;
-						
+
 						continue;
 					}
 

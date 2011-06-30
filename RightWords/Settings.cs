@@ -27,7 +27,7 @@ namespace FarNet.RightWords
 			set { this["SkipPattern"] = value; }
 		}
 		[UserScopedSetting]
-		[DefaultSettingValue(@"\p{Lu}?\p{Ll}+")]
+		[DefaultSettingValue(@"[\p{Lu}\p{Ll}]\p{Ll}+")] // \p{Lu}?\p{Ll}+
 		[SettingsManageability(SettingsManageability.Roaming)]
 		public string WordPattern
 		{

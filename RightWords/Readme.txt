@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2011-06-27
+Release  : 2011-06-30
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -43,10 +43,10 @@ Source   : http://code.google.com/p/farnet/
 
 = DESCRIPTION =
 
-Spell-checker and thesaurus based on NHunspell. The core Hunspell is used in
-OpenOffice and it works with dictionaries published on OpenOffice.org.
+Spell-checker and thesaurus based on NHunspell. The core Hunspell is used
+in OpenOffice and it works with dictionaries published on OpenOffice.org.
 
-The module works through the plugin menus [F11]. Menu commands:
+The module mostly works through the plugin menus [F11]:
 
 *) Correct word (editor, dialogs, command line)
 Checks spelling and shows the suggestion menu for the current word. Menu
@@ -56,6 +56,7 @@ actions are the same as for the [Correct text] command menu.
 Checks spelling, shows suggestions, and corrects words in the selected text or
 in the text starting from the caret position. [Enter] in the suggestion menu
 replaces the highlighted word with the selected suggestion.
+
 Menu commands:
 - [Ignore] - ignores the word once;
 - [Ignore All] - ignores the word in the current session;
@@ -73,7 +74,7 @@ Prompts to enter a word and shows the list of available meanings and synonyms
 in a menu. [Enter] in the menu copies the current item text to the clipboard.
 
 
-= USER DICTIONARIES =
+= DICTIONARIES =
 
 [Add to Dictionary] command supports the common and language dictionaries. In
 order to add a word into a language dictionary two stems should be provided: a
@@ -96,11 +97,10 @@ These forms become correct:
 	плагином плагинами Плагином Плагинами
 	плагине  плагинах  Плагине  Плагинах
 
-CAUTION: Mind word capitalization, e.g. add "plugin", not "Plugin". Words
-starting with capital letters normally mean some names.
+CAUTION: Mind word capitalization, e.g. add "plugin", not "Plugin".
 
-User dictionaries are UTF-8 text files in the module roaming directory. They
-are: "RightWords.dic" (common) and files like "RightWords.XYZ.dic" (language).
+User dictionaries are UTF-8 text files in the module roaming directory:
+"RightWords.dic" (common) and files like "RightWords.XYZ.dic" (languages).
 
 
 = SETTINGS =
@@ -116,19 +116,21 @@ specified as \ , \t, \s, etc.
 
 Defines the regular expression pattern for word recognition in texts.
 
-The default pattern: \p{Lu}?\p{Ll}+
-It recognises "RightWords" as two words "Right" and "Words".
+The default pattern: [\p{Lu}\p{Ll}]\p{Ll}+
+(words with 2+ letters, "RightWords" is treated as "Right" and "Words")
 
 *) SkipPattern
 
 Defines the regular expression pattern for text areas to be ignored.
 The default pattern is null (not specified, nothing is ignored).
 
-This sample/recommended pattern catches some paths and web addresses:
+Sample pattern:
 
-	"(?:\w+:|\.+)[\\/][^"]+" # Quoted path-like strings
+	\w*\d\w* # words with digits
 	|
-	(?:\w+:|\.+)[\\/][^\s]+ # Simple path-like strings
+	"(?:\w+:|\.+)?[\\/][^"]+" # quoted path-like text
+	|
+	(?:\w+:|\.+)?[\\/][^\s]+ # simple path-like text
 
 *) HighlightingBackgroundColor
 *) HighlightingForegroundColor
@@ -182,10 +184,6 @@ Use FarNet 4.4.20 (new editor color API).
 Experimental, with known caveats, highlighting of misspelled words in the
 editor. This mode is turned on/off by the module menu command [Highlighting].
 
-CAVEATS: Highlighting works fine (AFAIK) if there is the Colorer plugin and
-there are no other color plugins. Without Colorer it works fine only if the
-text is not being modified. With other editor color plugins it is not tried.
-
 Highlighting color is black on red and it is not yet configurable.
 
 1.0.6
@@ -214,3 +212,13 @@ Readme.txt for details. This feature is very useful but it is not that simple.
 
 Ignore the `Native Library is already loaded` exception. It is possible in rare
 cases when other modules use NHunspell and load it before RightWords.
+
+1.0.8
+
+[Correct word] menu is shown one line lower (the word is visible more often).
+
+[Add to Dictionary] | Common: a user is asked to add one or two word forms.
+
+Changed the default WordPattern and the sample SkipPattern (see Readme).
+
+Fixed double added colors in the current line on highlighting.
