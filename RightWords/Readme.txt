@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2011-06-30
+Release  : 2011-07-01
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -139,6 +139,10 @@ Highlighting colors. Values: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed,
 DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta,
 Yellow, White.
 
+*) UserDictionaryDirectory (local)
+The custom directory of user dictionaries. Environment variables are expanded.
+The default is the module roaming directory.
+
 *) Auto highlighting file mask
 
 Highlighting is turned on automatically for files which names match the mask:
@@ -222,3 +226,10 @@ cases when other modules use NHunspell and load it before RightWords.
 Changed the default WordPattern and the sample SkipPattern (see Readme).
 
 Fixed double added colors in the current line on highlighting.
+
+1.0.9
+
+Added UserDictionaryDirectory to settings (optional). Unlike the other settings
+it is local, it is stored in the local module settings, not the roaming.
+
+The UI is localized (English, Russian).

@@ -29,9 +29,11 @@ namespace FarNet.RightWords
 		{
 			Log.Source.TraceInformation("Loading RightWords data");
 			
+			// system dictionaries and spellers
 			_dictionaries = dictionaries;
 			_spells = new List<Hunspell>(dictionaries.Count);
 
+			// user dictionaries
 			foreach (var dic in dictionaries)
 			{
 				var spell = new Hunspell(dic.HunspellAffFile, dic.HunspellDictFile);
