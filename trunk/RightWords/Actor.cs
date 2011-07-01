@@ -55,7 +55,7 @@ namespace FarNet.RightWords
 				return words;
 
 			words = new Dictionary<string, byte>();
-			var path = Path.Combine(Far.Net.GetModuleManager(typeof(TheTool)).GetFolderPath(SpecialFolder.RoamingData, false), Settings.UserFile);
+			var path = Path.Combine(GetUserDictionaryDirectory(false), Settings.UserFile);
 			if (File.Exists(path))
 			{
 				foreach (string line in File.ReadAllLines(path))
@@ -159,7 +159,7 @@ namespace FarNet.RightWords
 					word = match.Value;
 			}
 
-			word = Far.Net.Input("Word", Settings.Name, Settings.Name, word);
+			word = Far.Net.Input(UI.Word, Settings.Name, UI.Thesaurus, word);
 			if (word == null || (word = word.Trim()).Length == 0)
 				return;
 
@@ -167,7 +167,7 @@ namespace FarNet.RightWords
 			menu.Title = word;
 
 			Far.Net.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
-			Far.Net.UI.WindowTitle = "Searching...";
+			Far.Net.UI.WindowTitle = UI.Searching;
 			try
 			{
 				using (var thesaurus = new MultiThesaurus(Dictionaries))
@@ -376,11 +376,23 @@ namespace FarNet.RightWords
 				editor.Data.Remove(Settings.EditorDataId);
 			}
 		}
+		static string GetUserDictionaryDirectory(bool create)
+		{
+			var path = Settings.Default.UserDictionaryDirectory;
+			if (string.IsNullOrEmpty(path))
+				return Manager.GetFolderPath(SpecialFolder.RoamingData, create);
+
+			path = Environment.ExpandEnvironmentVariables(path);
+
+			if (create && !Directory.Exists(path))
+				Directory.CreateDirectory(path);
+
+			return path;
+		}
 		public static string GetUserDictionaryPath(string name, bool create)
 		{
-			return Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, create), "RightWords." + name + ".dic");
+			return Path.Combine(GetUserDictionaryDirectory(create), "RightWords." + name + ".dic");
 		}
-		const string TitleAddWord = "Add to Dictionary";
 		static string[] ShowMenuAddWord(string word)
 		{
 			string word2;
@@ -393,7 +405,7 @@ namespace FarNet.RightWords
 				return new string[] { word };
 
 			var menu = Far.Net.CreateMenu();
-			menu.Title = TitleAddWord;
+			menu.Title = UI.AddToDictionary;
 			menu.Add(word);
 			menu.Add(word + ", " + word2);
 			if (!menu.Show())
@@ -409,9 +421,9 @@ namespace FarNet.RightWords
 			names.Sort();
 
 			var menu = Far.Net.CreateMenu();
-			menu.Title = TitleAddWord;
+			menu.Title = UI.AddToDictionary;
 			menu.AutoAssignHotkeys = true;
-			menu.Add("Common");
+			menu.Add(UI.Common);
 			foreach (string name in names)
 				menu.Add(name);
 
@@ -427,16 +439,16 @@ namespace FarNet.RightWords
 				{
 					string[] newWords = ShowMenuAddWord(word);
 					if (newWords == null)
-						return;
+						continue;
 
 					if (words == null)
 						words = ReadRightWords();
 
 					// write/add
-					var path = Path.Combine(Manager.GetFolderPath(SpecialFolder.RoamingData, true), Settings.UserFile);
+					var path = Path.Combine(GetUserDictionaryDirectory(true), Settings.UserFile);
 					using (var writer = File.AppendText(path))
 					{
-						foreach(var newWord in newWords)
+						foreach (var newWord in newWords)
 						{
 							if (words.ContainsKey(newWord))
 								continue;
@@ -471,7 +483,7 @@ namespace FarNet.RightWords
 							continue;
 
 						var menu2 = Far.Net.CreateMenu();
-						menu2.Title = "Example Stem";
+						menu2.Title = UI.ExampleStem;
 						foreach (var it in stems)
 							menu2.Add(it);
 

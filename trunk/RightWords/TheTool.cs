@@ -17,21 +17,21 @@ namespace FarNet.RightWords
 			var menu = Far.Net.CreateMenu();
 			menu.Title = Settings.Name;
 
-			menu.Add("&1. Correct word").Click += delegate { Actor.CorrectWord(); };
+			menu.Add(UI.DoCorrectWord).Click += delegate { Actor.CorrectWord(); };
 
 			if (e.From == ModuleToolOptions.Editor)
 			{
 				var editor = Far.Net.Editor;
 
-				menu.Add("&2. Correct text").Click += delegate { Actor.CorrectText(); };
-				
-				var itemHighlighting = menu.Add("&3. Highlighting");
+				menu.Add(UI.DoCorrectText).Click += delegate { Actor.CorrectText(); };
+
+				var itemHighlighting = menu.Add(UI.DoHighlighting);
 				itemHighlighting.Click += delegate { Actor.Highlight(editor); };
 				if (editor.Data[Settings.EditorDataId] != null)
 					itemHighlighting.Checked = true;
 			}
 
-			menu.Add("&0. Thesaurus...").Click += delegate { Actor.ShowThesaurus(); };
+			menu.Add(UI.DoThesaurus).Click += delegate { Actor.ShowThesaurus(); };
 
 			menu.Show();
 		}

@@ -50,6 +50,12 @@ namespace FarNet.RightWords
 			get { return (ConsoleColor)this["HighlightingForegroundColor"]; }
 			set { this["HighlightingForegroundColor"] = value; }
 		}
+		[UserScopedSetting]
+		public string UserDictionaryDirectory
+		{
+			get { return (string)this["UserDictionaryDirectory"]; }
+			set { this["UserDictionaryDirectory"] = value; }
+		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
 		public override void Save()
 		{
