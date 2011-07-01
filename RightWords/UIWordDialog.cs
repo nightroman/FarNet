@@ -15,16 +15,16 @@ namespace FarNet.RightWords
 		public UIWordDialog(string stem1, string stem2)
 		{
 			const int h = 6;
-			const int x = 19;
+			const int x = 20;
 
 			_Dialog = Far.Net.CreateDialog(-1, -1, 77, h);
-			_Dialog.AddBox(3, 1, 0, 0, "Add to Dictionary");
+			_Dialog.AddBox(3, 1, 0, 0, UI.AddToDictionary);
 			int y = 1;
 
-			_Dialog.AddText(5, ++y, 0, "&New stem/word");
+			_Dialog.AddText(5, ++y, 0, UI.NewWord);
 			_Stem1 = _Dialog.AddEdit(x, y, 71, stem1);
 
-			_Dialog.AddText(5, ++y, 0, "&Example stem");
+			_Dialog.AddText(5, ++y, 0, UI.ExampleStem);
 			_Stem2 = _Dialog.AddEdit(x, y, 71, stem2);
 			_Stem2.History = "RightWordsStem";
 		}

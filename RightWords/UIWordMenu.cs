@@ -33,9 +33,9 @@ namespace FarNet.RightWords
 
 			// menu commands
 			_menu.Add(string.Empty).IsSeparator = true;
-			_itemIgnore = _menu.Add("&1. Ignore");
-			_itemIgnoreAll = _menu.Add("&2. Ignore All");
-			_itemAddToDictionary = _menu.Add("&3. Add to Dictionary");
+			_itemIgnore = _menu.Add(UI.DoIgnore);
+			_itemIgnoreAll = _menu.Add(UI.DoIgnoreAll);
+			_itemAddToDictionary = _menu.Add(UI.DoAddToDictionary);
 		}
 		public bool Show()
 		{

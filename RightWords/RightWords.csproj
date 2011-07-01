@@ -67,7 +67,10 @@
     <Content Include="Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
+  <Target Name="Resources">
+    <GenerateResource Sources="RightWords.restext;RightWords.ru.restext" OutputResources="Bin\$(Configuration)\RightWords.resources;Bin\$(Configuration)\RightWords.ru.resources" />
+  </Target>
+  <Target Name="AfterBuild" DependsOnTargets="Resources">
+    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll;Bin\$(Configuration)\RightWords.resources;Bin\$(Configuration)\RightWords.ru.resources" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
   </Target>
 </Project>
