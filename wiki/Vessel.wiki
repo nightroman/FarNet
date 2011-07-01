@@ -1,4 +1,4 @@
-#summary (View/Edit/Save/SELect) file history tools
+#summary View/Edit/Save/SELect - Smart file history tools
 
 == Introduction ==
 
