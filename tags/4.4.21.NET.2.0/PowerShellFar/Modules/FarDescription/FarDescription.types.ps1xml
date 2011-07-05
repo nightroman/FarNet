@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Types xmlns="http://schemas.microsoft.com/PowerShell/TypeData/2007/04">
+
+	<!-- File or directory -->
+	<Type>
+		<Name>System.IO.FileSystemInfo</Name>
+		<Members>
+
+			<!-- FarDescription: description based on files Descript.ion, Files.bbs (depends on Far options) -->
+			<CodeProperty>
+				<Name>FarDescription</Name>
+				<GetCodeReference>
+					<TypeName>FarDescription.CodeMethods</TypeName>
+					<MethodName>FileSystemInfoGetFarDescription</MethodName>
+				</GetCodeReference>
+				<SetCodeReference>
+					<TypeName>FarDescription.CodeMethods</TypeName>
+					<MethodName>FileSystemInfoSetFarDescription</MethodName>
+				</SetCodeReference>
+			</CodeProperty>
+
+			<!-- FarMoveTo(): wrapper of MoveTo(); in addition it moves the Far description -->
+			<CodeMethod>
+				<Name>FarMoveTo</Name>
+				<CodeReference>
+					<TypeName>FarDescription.CodeMethods</TypeName>
+					<MethodName>FileSystemInfoMoveTo</MethodName>
+				</CodeReference>
+			</CodeMethod>
+		</Members>
+
+	</Type>
+
+	<!-- File -->
+	<Type>
+		<Name>System.IO.FileInfo</Name>
+		<Members>
+
+			<!-- FarCopyTo(): wrapper of CopyTo(); in addition it copies the Far description -->
+			<CodeMethod>
+				<Name>FarCopyTo</Name>
+				<CodeReference>
+					<TypeName>FarDescription.CodeMethods</TypeName>
+					<MethodName>FileInfoCopyTo</MethodName>
+				</CodeReference>
+			</CodeMethod>
+
+			<!-- FarDelete(): wrapper of Delete(); in addition it removes the Far description -->
+			<CodeMethod>
+				<Name>FarDelete</Name>
+				<CodeReference>
+					<TypeName>FarDescription.CodeMethods</TypeName>
+					<MethodName>FileInfoDelete</MethodName>
+				</CodeReference>
+			</CodeMethod>
+
+		</Members>
+	</Type>
+</Types>
