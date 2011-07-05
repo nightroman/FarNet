@@ -1,9 +1,0 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-	<PropertyGroup>
-		<AssemblyName>FarNet.Tools</AssemblyName>
-	</PropertyGroup>
-
-	<Import Project="..\Build.targets"/>
-
-</Project>
