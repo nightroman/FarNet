@@ -1,0 +1,46 @@
+﻿.Language=English,English (English)
+.PluginContents=FarNet.Demo
+.Options TabSize=4
+
+@Contents
+$#FarNet.Demo Module Sample#
+
+	~Tracing Menu~@TracingMenu@
+	~Demo Command~@DemoCommand@
+
+
+@TracingMenu
+$#Tracing Menu#
+~Contents~@Contents@
+
+View tracing
+	Open the current or written before tracing file in the viewer.
+
+Tracing to the file
+	Start or stop tracing to the file.
+
+Warnings and errors
+	Turn the default tracing level; tracing includes errors and warnings.
+
+Information
+	Include some more information into tracing.
+
+Verbose
+	Verbose tracing (normally not recommended).
+
+All
+	Full tracing (normally not recommended).
+
+
+@DemoCommand
+$#Demo Command#
+~Contents~@Contents@
+
+Usage:
+
+	#demo: <command>#
+
+Commands:
+
+	#process# - show some information about the current process
+	#assembly# - show loaded .NET assemblies
