@@ -7,7 +7,7 @@ Copyright (c) 2011 Roman Kuzmin
 namespace FarNet.RightWords
 {
 	[System.Runtime.InteropServices.Guid("ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9")]
-	[ModuleTool(Name = Settings.Name, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels)]
+	[ModuleTool(Name = Settings.ModuleName, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels)]
 	public class TheTool : ModuleTool
 	{
 		public override void Invoke(object sender, ModuleToolEventArgs e)
@@ -15,7 +15,7 @@ namespace FarNet.RightWords
 			if (e == null) return;
 
 			var menu = Far.Net.CreateMenu();
-			menu.Title = Settings.Name;
+			menu.Title = Settings.ModuleName;
 
 			menu.Add(UI.DoCorrectWord).Click += delegate { Actor.CorrectWord(); };
 

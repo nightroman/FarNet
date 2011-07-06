@@ -6,24 +6,22 @@ Copyright (c) 2011 Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
 using NHunspell;
 namespace FarNet.RightWords
 {
 	static class Actor
 	{
-		static readonly IModuleManager Manager;
 		public static readonly List<DictionaryInfo> Dictionaries = new List<DictionaryInfo>();
-		public static readonly Dictionary<string, byte> IgnoreWords = new Dictionary<string, byte>();
-		static readonly WeakReference _rightWords = new WeakReference(null);
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
-		static Actor()
+		public static readonly HashSet<string> IgnoreWords = new HashSet<string>();
+		static readonly IModuleManager Manager = Far.Net.GetModuleManager(Settings.ModuleName);
+		static readonly WeakReference CommonWords = new WeakReference(null);
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+		static readonly bool Initialized = Initialize();
+		static bool Initialize()
 		{
-			// expose the manager
-			Manager = Far.Net.GetModuleManager(typeof(Actor));
-
 			// home directory, for libraries and dictionaries
 			var home = Path.GetDirectoryName(typeof(Hunspell).Assembly.Location);
 
@@ -47,22 +45,24 @@ namespace FarNet.RightWords
 					}
 				}
 			}
+
+			return true;
 		}
-		public static Dictionary<string, byte> ReadRightWords()
+		public static HashSet<string> GetCommonWords()
 		{
-			var words = (Dictionary<string, byte>)_rightWords.Target;
+			var words = (HashSet<string>)CommonWords.Target;
 			if (words != null)
 				return words;
 
-			words = new Dictionary<string, byte>();
+			words = new HashSet<string>();
 			var path = Path.Combine(GetUserDictionaryDirectory(false), Settings.UserFile);
 			if (File.Exists(path))
 			{
 				foreach (string line in File.ReadAllLines(path))
-					words[line] = 0;
+					words.Add(line);
 			}
 
-			_rightWords.Target = words;
+			CommonWords.Target = words;
 			return words;
 		}
 		public static Match MatchCaret(Regex regex, string input, int caret, bool next)
@@ -103,11 +103,11 @@ namespace FarNet.RightWords
 				return;
 
 			// the current word
-			var word = match.Value;
+			var word = MatchToWord(match);
 
 			// get suggestions with check
 			List<string> words = null;
-			var spell = MultiSpell.GetWeakInstance(Dictionaries);
+			var spell = MultiSpell.Get();
 			if (!spell.Spell(word))
 				words = spell.Suggest(word);
 
@@ -130,7 +130,7 @@ namespace FarNet.RightWords
 			// ignore all:
 			if (menu.IsIgnoreAll)
 			{
-				IgnoreWords.Add(word, 0);
+				IgnoreWords.Add(word);
 				return;
 			}
 
@@ -159,7 +159,7 @@ namespace FarNet.RightWords
 					word = match.Value;
 			}
 
-			word = Far.Net.Input(UI.Word, Settings.Name, UI.Thesaurus, word);
+			word = Far.Net.Input(UI.Word, Settings.ModuleName, UI.Thesaurus, word);
 			if (word == null || (word = word.Trim()).Length == 0)
 				return;
 
@@ -206,11 +206,6 @@ namespace FarNet.RightWords
 		{
 			return regex == null ? null : regex.Matches(text);
 		}
-		static void ResetHitCounters()
-		{
-			foreach (var dictionary in Dictionaries)
-				dictionary.HitCount = 0;
-		}
 		public static Regex GetRegexSkip()
 		{
 			var pattern = Settings.Default.SkipPattern;
@@ -218,15 +213,12 @@ namespace FarNet.RightWords
 		}
 		public static void CorrectText()
 		{
-			// reset counters
-			ResetHitCounters();
-
 			// regular expressions
 			var regexWord = new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace);
 			Regex regexSkip = GetRegexSkip();
 
 			// right words
-			var rightWords = ReadRightWords();
+			var rightWords = GetCommonWords();
 
 			// initial editor data
 			var editor = Far.Net.Editor;
@@ -247,7 +239,7 @@ namespace FarNet.RightWords
 			}
 
 			// use the spell checker
-			var spell = MultiSpell.GetWeakInstance(Dictionaries);
+			var spell = MultiSpell.Get();
 			try
 			{
 				// loop through words and lines
@@ -270,10 +262,10 @@ namespace FarNet.RightWords
 					for (; match.Success; match = match.NextMatch())
 					{
 						// the target word
-						var word = match.Value;
+						var word = MatchToWord(match);
 
 						// check cheap skip lists
-						if (rightWords.ContainsKey(word) || IgnoreWords.ContainsKey(word))
+						if (rightWords.Contains(word) || IgnoreWords.Contains(word))
 							continue;
 
 						// check spelling, expensive but better before the skip pattern
@@ -321,7 +313,7 @@ namespace FarNet.RightWords
 						// ignore all:
 						if (menu.IsIgnoreAll)
 						{
-							IgnoreWords.Add(word, 0);
+							IgnoreWords.Add(word);
 							continue;
 						}
 
@@ -413,27 +405,27 @@ namespace FarNet.RightWords
 
 			return menu.Selected == 0 ? new string[] { word } : new string[] { word, word2 };
 		}
-		static void AddRightWord(Dictionary<string, byte> words, string word)
+		static void AddRightWord(HashSet<string> words, string word)
 		{
-			var names = new List<string>();
+			// language names, unique, sorted
+			var languages = new List<string>();
 			foreach (var dic in Dictionaries)
-				names.Add(dic.Language);
-			names.Sort();
+				if (!languages.Contains(dic.Language))
+					languages.Add(dic.Language);
+			languages.Sort();
 
+			// dictionary menu
 			var menu = Far.Net.CreateMenu();
 			menu.Title = UI.AddToDictionary;
 			menu.AutoAssignHotkeys = true;
 			menu.Add(UI.Common);
-			foreach (string name in names)
+			foreach (string name in languages)
 				menu.Add(name);
 
+			// repeat the menu
 			MultiSpell multiSpell = null;
-
-			for (; ; )
+			while (menu.Show())
 			{
-				if (!menu.Show())
-					return;
-
 				// common:
 				if (menu.Selected == 0)
 				{
@@ -442,7 +434,7 @@ namespace FarNet.RightWords
 						continue;
 
 					if (words == null)
-						words = ReadRightWords();
+						words = GetCommonWords();
 
 					// write/add
 					var path = Path.Combine(GetUserDictionaryDirectory(true), Settings.UserFile);
@@ -450,11 +442,11 @@ namespace FarNet.RightWords
 					{
 						foreach (var newWord in newWords)
 						{
-							if (words.ContainsKey(newWord))
+							if (words.Contains(newWord))
 								continue;
 
 							writer.WriteLine(newWord);
-							words.Add(newWord, 0);
+							words.Add(newWord);
 						}
 					}
 
@@ -463,7 +455,7 @@ namespace FarNet.RightWords
 
 				// language:
 				var language = menu.Items[menu.Selected].Text;
-				var spell = (multiSpell ?? (multiSpell = MultiSpell.GetWeakInstance(Dictionaries))).GetSpell(language);
+				var spell = (multiSpell ?? (multiSpell = MultiSpell.Get())).GetSpell(language);
 
 				// dialog
 				var dialog = new UIWordDialog(word, string.Empty);
@@ -505,6 +497,26 @@ namespace FarNet.RightWords
 					return;
 				}
 			}
+		}
+		public static string MatchToWord(Match match)
+		{
+			if (match.Groups.Count < 2)
+				return match.Value;
+
+			var word = match.Value;
+
+			for (int i = match.Groups.Count; --i >= 1; )
+			{
+				var group = match.Groups[i];
+				if (!group.Success)
+					continue;
+
+				var index = group.Index - match.Index;
+				if (index + group.Length <= word.Length)
+					word = word.Remove(index, group.Length);
+			}
+
+			return word;
 		}
 	}
 }
