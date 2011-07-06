@@ -13,25 +13,29 @@ namespace FarNet.RightWords
 	sealed class MultiSpell
 	{
 		static readonly WeakReference _instance = new WeakReference(null);
-		readonly List<Hunspell> _spells;
 		readonly List<DictionaryInfo> _dictionaries;
-		public static MultiSpell GetWeakInstance(List<DictionaryInfo> dictionaries)
+		readonly List<Hunspell> _spells;
+		public static MultiSpell Get()
 		{
 			var spell = (MultiSpell)_instance.Target;
-			if (spell != null)
-				return spell;
-
-			spell = new MultiSpell(dictionaries);
-			_instance.Target = spell;
+			if (spell == null)
+			{
+				spell = new MultiSpell(Actor.Dictionaries);
+				_instance.Target = spell;
+			}
 			return spell;
 		}
 		MultiSpell(List<DictionaryInfo> dictionaries)
 		{
 			Log.Source.TraceInformation("Loading RightWords data");
-			
+
 			// system dictionaries and spellers
 			_dictionaries = dictionaries;
 			_spells = new List<Hunspell>(dictionaries.Count);
+
+			// reset hit counters
+			foreach (var dictionary in dictionaries)
+				dictionary.HitCount = 0;
 
 			// user dictionaries
 			foreach (var dic in dictionaries)
@@ -66,11 +70,14 @@ namespace FarNet.RightWords
 		}
 		public List<string> Suggest(string word)
 		{
-			var words = new List<string>();
+			var result = new List<string>();
+			
 			foreach (var spell in _spells)
-				words.AddRange(spell.Suggest(word));
+				foreach (var suggestion in spell.Suggest(word))
+					if (!result.Contains(suggestion))
+						result.Add(suggestion);
 
-			return words;
+			return result;
 		}
 		static void MoveItem<T>(List<T> list, int index)
 		{

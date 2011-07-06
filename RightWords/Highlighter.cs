@@ -6,17 +6,16 @@ Copyright (c) 2011 Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 namespace FarNet.RightWords
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	class Highlighter
 	{
-		readonly MultiSpell Spell = MultiSpell.GetWeakInstance(Actor.Dictionaries);
+		readonly MultiSpell Spell = MultiSpell.Get();
 		readonly Regex RegexSkip = Actor.GetRegexSkip();
 		readonly Regex RegexWord = new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace);
-		readonly Dictionary<string, byte> RightWords = Actor.ReadRightWords();
+		readonly HashSet<string> CommonWords = Actor.GetCommonWords();
 		readonly ConsoleColor HighlightingBackgroundColor = Settings.Default.HighlightingBackgroundColor;
 		readonly ConsoleColor HighlightingForegroundColor = Settings.Default.HighlightingForegroundColor;
 		readonly IEditor Editor;
@@ -78,10 +77,10 @@ namespace FarNet.RightWords
 			for (var match = RegexWord.Match(text); match.Success; match = match.NextMatch())
 			{
 				// the target word
-				var word = match.Value;
+				var word = Actor.MatchToWord(match);
 
 				// check cheap skip lists
-				if (RightWords.ContainsKey(word) || Actor.IgnoreWords.ContainsKey(word))
+				if (CommonWords.Contains(word) || Actor.IgnoreWords.Contains(word))
 					continue;
 
 				// check spelling, expensive but better before the skip pattern
