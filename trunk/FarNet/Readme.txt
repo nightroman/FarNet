@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.4.21
-Release  : 2011-06-27
+Version  : 4.5.0
+Release  : 2011-07-06
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -20,12 +20,12 @@ tiny pieces of boilerplate framework code.
 = PREREQUISITES =
 
 
- - .NET Framework 2.0+
  - Far Manager 2.0.1807
+ - .NET Framework 3.5 or 4.0
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
- (*) FarNet is built by Visual Studio 2008 SP1 and depends on VS runtime
- modules. You may have to google, download and install one of the packages:
+ (*) Part of FarNet is built by Visual Studio 2008 SP1 and depends on its
+ runtime modules. You may have to download and install one of the packages:
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (x86)
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (x64)
 
