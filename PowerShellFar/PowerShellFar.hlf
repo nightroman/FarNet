@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.4.21#
+#PowerShellFar 4.5.0#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -86,7 +86,7 @@ $#Installation#
 #Requirements#
 
  - Far Manager 2.0.1807
- - Plugin FarNet 4.4.21
+ - Plugin FarNet 4.5.0
  - Windows PowerShell 2.0
 
 
@@ -828,12 +828,12 @@ column, then you can select one and view (<F3>) or quick view (<CtrlQ>) all its
 properties - thus, it works like well known ProcList plugin but provides much
 more information (more advanced example is Panel-Process-.ps1).
 
-	>: ps | sort ws | Out-FarPanel
+	>: ps | sort WS | Out-FarPanel
 
 - the same but now objects (processes) are sorted by WS (working set); note that
 you have to use unsorted Far mode to see the results sorted by you.
 
-	>: ps | sort ws | Out-FarPanel Name, @@{Expression='WS'; Type='S'}
+	>: ps | sort WS | Out-FarPanel Name, @@{Expression='WS'; Type='S'}
 
 - the same but with only two custom columns: Name and WS, where WS is mapped to
 Far Size column.
@@ -1149,10 +1149,10 @@ names are 'ignored'.
 $#Settings#
 ~Contents~@Contents@
 
-Permanent settings are changed interactively in the [Plugins configuration] \
-[PowerShellFar] dialog or programmatically as properties of #$Psf.Settings#.
-If you want to apply #$Psf.Settings# changes permanently then call
-#$Psf.Settings.Save()#.
+Permanent settings are changed interactively in the settings panel
+#[F11] | .NET | Settings | PowerShellFar\Settings#
+or in scripts as the properties of #$Psf.Settings#. In the latter case call
+#$Psf.Settings.Save()# in order to apply #$Psf.Settings# changes permanently.
 
 Other settings are kind of user preferences and they are usually set in the
 profile (e.g. Profile-.ps1). Useful command to view/change all settings:
@@ -1349,7 +1349,7 @@ commands, see
 
 	*) standard PowerShell scripts:
 		mask    :  /[^-+]\.ps1$/i
-		command :  PowerShell.exe -noexit ". '!\!.!'; exit"
+		command :  PowerShell.exe -NoExit ". '!\!.!'; exit"
 
 	*) PowerShellFar scripts:
 		mask    :  *-.ps1
@@ -1446,7 +1446,7 @@ Here you can set some options of $Psf.Settings, mostly UI preferences.
 
 Import modules or add snap-ins that are used frequently. Occasionally used
 modules should not be loaded from a profile but it still may define some
-favorite proxy functions that load modules themselves.
+favourite proxy functions that load modules themselves.
 
 
 @ProfileEditor
@@ -1960,16 +1960,9 @@ FarNet you should connect it, send the IFar instance there. For example:
 	{
 	   public class Class1
 	   {
-	      IFar _far;
-
-	      public Class1(IFar far)
-	      {
-	         _far = far;
-	      }
-
 	      public bool HelloWorld(string title)
 	      {
-	         return _far.Msg("Hello World", title);
+	         return Far.Net.Message("Hello World", title);
 	      }
 	   }
 	}
@@ -1977,11 +1970,11 @@ FarNet you should connect it, send the IFar instance there. For example:
 #Code (PowerShell):#
 
 	## load the assembly (perhaps in a profile if it is always used)
-	Add-Type -Path "<path>\HelloWorld.dll"
+	Add-Type -Path "...\HelloWorld.dll"
 
-	## create the class sending $Far there
-	## (if the code is in a profile then all scripts see $Hello)
-	$Hello = New-Object ClassLibrary1.Class1 $Far
+	## create the class instance
+	## (if the code is in the profile then all scripts see $Hello)
+	$Hello = New-Object ClassLibrary1.Class1
 
 	## use public members in $Hello, e.g. call HelloWorld()
 	$result = $Hello.HelloWorld("This is example of a parameter")

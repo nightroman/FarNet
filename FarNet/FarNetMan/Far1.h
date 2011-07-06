@@ -36,7 +36,7 @@ public:
 	virtual IInputBox^ CreateInputBox() override;
 	virtual IListMenu^ CreateListMenu() override;
 	virtual IMenu^ CreateMenu() override;
-	virtual IModuleManager^ GetModuleManager(Type^ type) override;
+	virtual IModuleManager^ GetModuleManager(String^ name) override;
 	virtual IViewer^ CreateViewer() override;
 	virtual String^ GetFolderPath(SpecialFolder folder) override;
 	virtual Works::IPanelWorks^ WorksPanel(FarNet::Panel^ panel, Explorer^ explorer) override;

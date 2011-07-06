@@ -64,14 +64,12 @@ namespace PowerShellFar
 			var list = new List<string>(lines);
 			
 			// remove dupes
-			var hash = new Dictionary<string, object>();
+			var hash = new HashSet<string>();
 			for (int i = lines.Length; --i >= 0; )
 			{
 				var line = lines[i];
-				if (hash.ContainsKey(line))
+				if (!hash.Add(line))
 					list.RemoveAt(i);
-				else
-					hash.Add(line, null);
 			}
 			
 			// remove lines above the limit

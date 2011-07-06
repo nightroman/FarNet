@@ -4,6 +4,10 @@ FarNet plugin for Far Manager
 Copyright (c) 2005-2011 FarNet Team
 */
 
+// _110628_192511 Open from a quick view panel issue
+// The `from` == OPEN_VIEWER. But the menu has been created for `window` == WTYPE_PANELS.
+// The `item` is related to the panel handlers. But technically it is strange to call them for not really a panel.
+
 #include "StdAfx.h"
 #include "Far0.h"
 #include "Dialog.h"
@@ -245,13 +249,13 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 	// not at all performance gain it would be more complexity for nothing. The code is disabled.
 
 	// get window type, this is the only known way to get the current area
-	// (?? wish to have 'from' parameter)
+	// (?? wish to have the 'from' parameter)
 	WindowInfo wi;
 	wi.Pos = -1;
 	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
 		wi.Type = -1;
 
-	//! Do not forget to add FarNet menus first -> alloc one more and use shifted index.
+	//! Do not forget to add FarNet menus first -> alloc one more and use shifted indexes.
 
 	//config// Add top menu items
 	{
@@ -271,7 +275,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		pi->PluginConfigStrings = (const wchar_t**)_pConfig;
 	}
 
-	// disk (do not add .NET item!)
+	// disk (do not add the .NET item!)
 	{
 		if (!_toolDisk)
 		{
@@ -325,7 +329,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			pi->PluginMenuStrings = (const wchar_t**)_pEditor;
 		}
 		break;
-	case WTYPE_PANELS:
+	case WTYPE_PANELS: //_110628_192511
 		{
 			if (!_toolPanels)
 			{
@@ -531,6 +535,10 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					OpenMenu(ModuleToolOptions::Viewer);
 					break;
 				}
+				
+				//_110628_192511
+				if (Far::Net->Window->Kind == WindowKind::Panels)
+					break;
 
 				Log::Source->TraceInformation("OPEN_VIEWER");
 				IModuleTool^ tool = _toolViewer[(int)item - 1];

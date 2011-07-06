@@ -1,12 +1,13 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2011 FarNet Team
 */
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using FarNet.Forms;
 
 namespace FarNet
@@ -570,10 +571,20 @@ namespace FarNet
 		/// </remarks>
 		public abstract string GetFolderPath(SpecialFolder folder);
 		/// <summary>
-		/// Returns the manager of a module specified by any type from its assembly.
+		/// Returns the manager of a module specified by its name.
+		/// </summary>
+		/// <param name="name">The module name.</param>
+		public abstract IModuleManager GetModuleManager(string name);
+		/// <summary>
+		/// Returns the manager of a module specified by any type from it.
 		/// </summary>
 		/// <param name="type">Any type from the module assembly.</param>
-		public abstract IModuleManager GetModuleManager(Type type);
+		public IModuleManager GetModuleManager(Type type)
+		{
+			//! Assembly.GetName().Name: 1) slower; 2) does not guarantee the same name.
+			if (type == null) throw new ArgumentNullException("type");
+			return GetModuleManager(Path.GetFileNameWithoutExtension(type.Assembly.Location));
+		}
 	}
 	/// <summary>
 	/// Represents the thumbnail progress bar state.
@@ -732,8 +743,4 @@ namespace FarNet
 		/// </summary>
 		RoamingData = 1
 	}
-	/// <summary>
-	/// Encapsulates a method that has no parameters and does not return a value.
-	/// </summary>
-	public delegate void Action();
 }

@@ -1087,7 +1087,7 @@ namespace FarNet
 		///
 		public override string ToString()
 		{
-			return string.Format("({0}, {1}) {2} on {3}", Start, End, Foreground, Background);
+			return string.Format(null, "({0}, {1}) {2} on {3}", Start, End, Foreground, Background);
 		}
 	}
 }
