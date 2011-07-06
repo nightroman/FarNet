@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2011-07-05
+Release  : 2011-07-06
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,7 +10,7 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.22
+ * Plugin FarNet 4.5.0
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -124,7 +124,8 @@ This allows to check spelling of words with embedded "noise" parts, like the
 hotkey markers "&" in .lng or .restext files. Use not capturing groups "(?:)"
 in all other cases where grouping is needed.
 
-NOTE: nested capturing groups are not supported.
+NOTE: Nested capturing groups are not supported and they are not really needed.
+For performance reasons no checks are done in order to detected nested groups.
 
 Example pattern for .lng and .restext files:
 [\p{Lu}\p{Ll}](?:\p{Ll}|(&))+
