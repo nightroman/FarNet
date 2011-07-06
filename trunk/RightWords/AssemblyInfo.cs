@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Spell-checker and thesaurus")]
 [assembly: AssemblyProduct("FarNet.RightWords")]
 [assembly: AssemblyTitle("FarNet module RightWords")]
-[assembly: AssemblyVersion("1.0.9")]
+[assembly: AssemblyVersion("1.0.10")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
@@ -18,7 +18,7 @@ namespace FarNet.RightWords
 	static class UI
 	{
 		#region private
-		static IModuleManager Manager = Far.Net.GetModuleManager(typeof(UI));
+		static readonly IModuleManager Manager = Far.Net.GetModuleManager(Settings.ModuleName);
 		static string GetString(string name) { return Manager.GetString(name); }
 		#endregion
 		static public string AddToDictionary { get { return GetString("AddToDictionary"); } }

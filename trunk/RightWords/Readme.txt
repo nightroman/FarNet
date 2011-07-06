@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2011-07-01
+Release  : 2011-07-05
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,7 +10,7 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
  * Far Manager 2.0.1807
- * Plugin FarNet 4.4.21
+ * Plugin FarNet 4.4.22
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -25,20 +25,19 @@ Source   : http://code.google.com/p/farnet/
 
 		NHunspell.dll, Hunspellx86.dll, Hunspellx64.dll
 
-		en_GB
+		English
 			en_GB.aff, en_GB.dic - spelling dictionaries
 			th_en_US_v2.dat - thesaurus (optional)
 
-		ru_RU
+		Russian
 			ru_RU.aff, ru_RU.dic - spelling dictionaries
 			th_ru_RU_v2.dat - thesaurus (optional)
 
- * Notes:
+The NHunspell directory name should be used exactly. Thesaurus files are
+optional. Collection of dictionaries is up to a user.
 
-	- The NHunspell directory name should be used exactly.
-	- Dictionary sub-directories may have any names.
-	- Collection of dictionaries is up to a user.
-	- Thesaurus files are optional.
+Dictionary directories may have any names. The names are used in the dictionary
+menu and in user dictionary file names (for example: RightWords.English.dic).
 
 
 = DESCRIPTION =
@@ -116,8 +115,19 @@ specified as \ , \t, \s, etc.
 
 Defines the regular expression pattern for word recognition in texts.
 
-The default pattern: [\p{Lu}\p{Ll}]\p{Ll}+
+The default pattern:
+[\p{Lu}\p{Ll}]\p{Ll}+
 (words with 2+ letters, "RightWords" is treated as "Right" and "Words")
+
+All capturing groups "(...)" are removed from the word before spell-checking.
+This allows to check spelling of words with embedded "noise" parts, like the
+hotkey markers "&" in .lng or .restext files. Use not capturing groups "(?:)"
+in all other cases where grouping is needed.
+
+NOTE: nested capturing groups are not supported.
+
+Example pattern for .lng and .restext files:
+[\p{Lu}\p{Ll}](?:\p{Ll}|(&))+
 
 *) SkipPattern
 
@@ -233,3 +243,18 @@ Added UserDictionaryDirectory to settings (optional). Unlike the other settings
 it is local, it is stored in the local module settings, not the roaming.
 
 The UI is localized (English, Russian).
+
+1.0.10
+
+Use FarNet 4.5.0
+
+Fixed rare but possible dupes in the suggestion and dictionary menus.
+
+The WordPattern setting: all regular expression capturing groups "(...)" are
+removed from the word before spell-checking. This allows to check spelling of
+words with embedded "noise" parts, like the hotkey markers "&" in .lng files.
+See Readme.txt for details and the example pattern with "&".
+
+Added "*.lng" to the default automatic highlighting file mask.
+
+Minor tweaks.
