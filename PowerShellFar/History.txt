@@ -1,9 +1,10 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-= 4.4.21 =
+= 4.5.0 =
 
-Technical build for FarNet 4.4.21
+The module is built for .NET 3.5, just like FarNet 4.5.0.
+A few new 3.5 features are used internally.
 
 = 4.4.20 =
 

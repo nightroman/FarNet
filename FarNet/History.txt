@@ -1,5 +1,33 @@
 http://code.google.com/p/farnet/
 
+= 4.5.0 =
+
+*) Target .NET framework is 3.5 (client profile)
+
+FarNet and its modules are now built for .NET 3.5. At the same time the core is
+configured to run with .NET 4.0 if it is available. Thus, modules targeted for
+.NET 4.0 are supported and .NET 3.5 is not needed if .NET 4.0 is installed.
+
+The game is over for Windows 2000, RIP. If .NET 3.5 is not yet installed and
+Windows is XP SP3 or above then consider to install .NET 4.0 (unless 3.5 is
+really needed for something else). 4.0 is much smaller, just in case.
+
+Existing modules built for .NET 2.0 still work, rebuild is not needed. But when
+such modules are built next time their target framework should be set to 3.5,
+client profile is preferable.
+
+*) Roaming and local data locations
+GetFolderPath() methods are based on the environment variables FARPROFILE,
+FARLOCALPROFILE if they are defined and not empty (introduced in Far 3, 2091).
+Otherwise they use roaming and local paths as usual. Thus, it is possible now
+to configure the locations of FarNet and its module settings and working files.
+
+*) IFar
+(mostly for internal use though this API is officially public)
+New GetModuleManager(string). It is faster than GetModuleManager(type) and it
+can be used if a type is not yet available because its assembly is not loaded.
+In some cases names are not known directly and the old method is still used.
+
 = 4.4.21 =
 
 *) Editor color API (revised)
@@ -1115,7 +1143,7 @@ Let's also fix wrong names and bad names:
 -- RootFar -> RegistryFarPath
 -- RootKey -> RegistryPluginsPath
 -- StartSortDesc -> StartReverseSortOrder
--- UseAttrHighlighting -> UseAttribiteHighlighting
+-- UseAttrHighlighting -> UseAttributeHighlighting
 
 Let's also fix one confusing feature:
 -- InputBox.NoLastHistory -> UseLastHistory
@@ -1143,7 +1171,7 @@ Version number moves forward due to important recent changes:
 -- Localization support
 -- Quit() and CanExit()
 -- MakingDirectory
--- Macros revison
+-- Macros revision
 -- Win7 taskbar icon tools
 -- GUI message boxes (suitable for special tasks)
 -- Revision of panel mode info (more object oriented)
@@ -1499,7 +1527,7 @@ In your code:
 then they are all invoked in the order they were posted.
 
 *) IPanel: new method GoToName(string, bool) in addition to GoToName(string).
-New one returns succeess flag or may optionally throw if a name is not found.
+New one returns success flag or may optionally throw if a name is not found.
 
 *) IPluginPanelInfo: renamed too general name Format into FormatName.
 
@@ -1712,7 +1740,7 @@ a custom column (with proper view mode and column titles, see above).
 
 *) IFar.GetHistory() - adapted to recent Far Manger registry history changes.
 
-*) IMenuItem - new properties Grayed, Hidded (new in Far API).
+*) IMenuItem - new properties Grayed, Hidden (new in Far API).
 
 *) PaletteColor - added new values (new in Far API).
 
@@ -1776,9 +1804,9 @@ only FarNetMan.dll depends on a platform, FarNet.dll does not).
 important achievement for "super-macros" that can be used now also with modal UI.
 See PowerShellFar History.txt for more details.
 
-*) Mantis #730 - thanks to DrKnS, the problem is fixed for listboxes in Far
-2.0.812, so that listboxes can be used as normal. Other problems still exist
-for comboedit and combolist; workaround: when a dialog has started do not use
+*) Mantis #730 - thanks to DrKnS, the problem is fixed for list-boxes in Far
+2.0.812, so that list-boxes can be used as normal. Other problems still exist
+for combo-edit and combo-list; workaround: when a dialog has started do not use
 Clear() and then Insert() without detaching and attaching items.
 
 *) ViewFrame.LeftPos - changed from 'int' to 'long', as it is in Far API.
@@ -1829,7 +1857,7 @@ should work now, added new property IListBox.Bottom, etc.
 
 *) Fixed order of history strings returned by IFar.GetHistory().
 
-*) Wish: allow to "unload" FarNet. Note: DLLs are not phisically unloaded. It
+*) Wish: allow to "unload" FarNet. Note: DLLs are not physically unloaded. It
 is OK to call ExitFARW several times, the first call terminates FarNet. Then it
 is safe to call GetPluginInfoW, FarNet simply returns "nothing". Other exported
 functions must not be called. STILL, THIS SCENARIO IS NOT RECOMMENDED. Besides,
@@ -1925,7 +1953,7 @@ ANNOUNCEMENT
 
 This version is presumably the last one for FAR 1.x; the next version is going
 to be for Unicode FAR 2.x. If you find new or know some old issues in 3.3.57,
-report as soon as possible, this is the last call, then support of the frosen
+report as soon as possible, this is the last call, then support of the frozen
 version will be very limited.
 
 FIX/CHANGE
@@ -1984,7 +2012,7 @@ above). Can be used for reusing already opened panels.
 
 = 3.3.53 =
 
-This is mostly a techical build reflecting FAR API changes up to 1.75.2494.
+This is mostly a technical build reflecting FAR API changes up to 1.75.2494.
 
 There are though a couple of new items in FAR.NET:
 *) IPanel.GoToName() - sets an item current by its name;
@@ -2039,7 +2067,7 @@ default instead of PostMacro() 'disableOutput' which is 'true' by default.
 
 DOCUMENTATION
 
-- New style of .CHM documentation. Old MSDN style actually has more disadvatages
+- New style of .CHM documentation. Old MSDN style actually has more disadvantages
 and it is difficult to improve. New style is somehow simpler and still can be
 improved in next versions. What is already improved:
 *) separated indexes of properties with same names;
@@ -2092,7 +2120,7 @@ not set -- fixed.
 when plugin assemblies are changed and registry cache has to updated.
 - IMessage, IFar.Msg() - if a message contains too many buttons or their text is
 too long, then a dialog with a list box is used instead of a message box where
-listbox items work as buttons.
+list-box items work as buttons.
 - New property IPanel.IsLeft (FAR 1.71.2348).
 - REMOVED IMessage.Reset() because it is not actually needed or used.
 
@@ -2128,7 +2156,7 @@ if any (including standard FAR dialogs). You can get the current dialog item as
 IDialog.Focused or by index and work on it, e.g. get or set text of the current
 IEdit. Some controls in not FAR.NET dialogs are not fully supported yet.
 Example: Complete-Word-.ps1 from PowerShellFar completes a word from history of
-any edit contol in any FAR dialog. See also Generate-Dialog-.ps1 as a demo of
+any edit control in any FAR dialog. See also Generate-Dialog-.ps1 as a demo of
 access to all dialog controls and properties.
 
 - New IFar.GetDialogHistory() - gets saved dialog history by its name (used by
@@ -2328,7 +2356,7 @@ BREAKING CHANGES
 - Property AddDots moved from IPluginPanelInfo to IPluginPanel, i.e. item dots
 now is rather panel data than info.
 - StringDelegate was removed, RegisterPrefix uses now another type of handler:
-EventHandler<ExcutingEventArgs>. This way is more flexible for future changes
+EventHandler<ExecutingEventArgs>. This way is more flexible for future changes
 and allows to RegisterPrefix from PowerShell.
 - Removed obsolete IFar.AnotherPanel; use IFar.Panel2 instead.
 - Renamed OpenPluginMenuItemEventArgs into PluginMenuEventArgs.

@@ -274,7 +274,7 @@ removes duplicated commands or removes the current command and etc.
 
 Recommended key to open an input filter dialog (if permanent filter is enabled).
 Note that in this case #AltDown# does the same if you use this popular macro
-(addon AltDown.reg). See also ~Input filter~@InputFilter@.
+(add-on AltDown.reg). See also ~Input filter~@InputFilter@.
 
 #Symbols#
 

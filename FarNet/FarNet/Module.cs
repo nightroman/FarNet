@@ -194,9 +194,9 @@ namespace FarNet
 		/// </summary>
 		public abstract string StoredUICulture { get; set; }
 		/// <summary>
-		/// For internal use. Loads the module without connecting it.
+		/// For internal use. Loads the assembly.
 		/// </summary>
-		public abstract Assembly LoadAssembly();
+		public abstract Assembly LoadAssembly(bool connect);
 		/// <summary>
 		/// For internal use.
 		/// </summary>

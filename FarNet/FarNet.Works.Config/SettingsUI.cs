@@ -22,7 +22,7 @@ namespace FarNet.Works.Config
 			// collect data sorted, sort is needed for 2+ settings in an assembly
 			var list = new SortedList<string, Type>(StringComparer.OrdinalIgnoreCase);
 			foreach (var manager in managers)
-				foreach (Type type in manager.LoadAssembly().GetExportedTypes())
+				foreach (Type type in manager.LoadAssembly(false).GetExportedTypes())
 					if (!type.IsAbstract && typeof(ApplicationSettingsBase).IsAssignableFrom(type))
 						list.Add(manager.ModuleName + "\\" + type.Name, type);
 

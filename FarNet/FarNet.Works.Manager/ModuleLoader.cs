@@ -378,11 +378,8 @@ namespace FarNet.Works
 			// actions are removed
 			Debug.Assert(Host.Actions.Count == 0);
 		}
-		public static IModuleManager GetModuleManager(Type type)
+		public static IModuleManager GetModuleManager(string name)
 		{
-			if (type == null) throw new ArgumentNullException("type");
-
-			var name = Path.GetFileNameWithoutExtension(type.Assembly.Location);
 			return _Managers[name];
 		}
 	}

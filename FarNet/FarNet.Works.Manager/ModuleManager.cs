@@ -209,10 +209,19 @@ namespace FarNet.Works
 			}
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods")]
-		public override Assembly LoadAssembly()
+		public Assembly LoadAssembly()
 		{
 			if (_AssemblyInstance == null)
 				_AssemblyInstance = Assembly.LoadFrom(_AssemblyPath);
+
+			return _AssemblyInstance;
+		}
+		public override Assembly LoadAssembly(bool connect)
+		{
+			if (connect)
+				Invoking();
+			else
+				LoadAssembly();
 
 			return _AssemblyInstance;
 		}

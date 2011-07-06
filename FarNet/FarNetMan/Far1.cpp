@@ -27,9 +27,15 @@ void Far1::Connect()
 	// the instance
 	Far::Net = %Far;
 
-	// the data paths
-	_LocalData = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::LocalApplicationData), "Far Manager");
-	_RoamingData = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::ApplicationData), "Far Manager");
+	// initialize the local data path
+	_LocalData = Environment::GetEnvironmentVariable("FARLOCALPROFILE");
+	if (ES(_LocalData))
+		_LocalData = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::LocalApplicationData), "Far Manager");
+	
+	// initialize the roaming data path
+	_RoamingData = Environment::GetEnvironmentVariable("FARPROFILE");
+	if (ES(_RoamingData))
+		_RoamingData = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::ApplicationData), "Far Manager");
 }
 
 String^ Far1::CurrentDirectory::get()
@@ -673,9 +679,9 @@ String^ Far1::GetFolderPath(SpecialFolder folder)
 	}
 }
 
-IModuleManager^ Far1::GetModuleManager(Type^ type)
+IModuleManager^ Far1::GetModuleManager(String^ name)
 {
-	return Works::ModuleLoader::GetModuleManager(type);
+	return Works::ModuleLoader::GetModuleManager(name);
 }
 
 void Far1::ShowHelp(String^ path, String^ topic, HelpOptions options)
