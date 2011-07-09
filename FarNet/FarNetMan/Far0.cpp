@@ -687,7 +687,7 @@ void Far0::OpenConfig() //config//
 		{
 		case 0:
 			if (tools.Count)
-				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", gcnew Works::GetMenuText(&Far0::GetMenuText));
+				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
 			break;
 		case 1:
 			if (_registeredCommand.Count)
