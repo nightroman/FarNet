@@ -15,16 +15,12 @@ namespace FarNet
 	/// <summary>
 	/// TEST ONLY
 	/// </summary>
-	public delegate object XmlAttributeGetter(object value);
-	/// <summary>
-	/// TEST ONLY
-	/// </summary>
 	public class XmlAttributeInfo
 	{
 		/// <summary>
 		/// TEST ONLY
 		/// </summary>
-		public XmlAttributeInfo(string name, XmlAttributeGetter getter)
+		public XmlAttributeInfo(string name, Func<object, object> getter)
 		{
 			Name = name;
 			Getter = getter;
@@ -36,7 +32,7 @@ namespace FarNet
 		/// <summary>
 		/// TEST ONLY
 		/// </summary>
-		public XmlAttributeGetter Getter { get; private set; }
+		public Func<object, object> Getter { get; private set; }
 	}
 	/// <summary>
 	/// Not yet public.
