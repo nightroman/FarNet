@@ -5,12 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9}</ProjectGuid>
+    <ProjectGuid>{E9A7FA32-15E0-4F19-B004-9148DF346794}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FarNet.RightWords</RootNamespace>
-    <AssemblyName>RightWords</AssemblyName>
+    <RootNamespace>FarNet.CopyColor</RootNamespace>
+    <AssemblyName>CopyColor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,35 +31,20 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <CodeAnalysisRuleSet>..\FarNet\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarNet">
       <Private>False</Private>
     </Reference>
-    <Reference Include="FarNet.Settings">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NHunspell">
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actor.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Highlighter.cs" />
-    <Compile Include="MultiSpell.cs" />
-    <Compile Include="MultiThesaurus.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="TheEditor.cs" />
+    <Compile Include="ClipboardHelper.cs" />
     <Compile Include="TheTool.cs" />
-    <Compile Include="UIWordDialog.cs" />
-    <Compile Include="UIWordMenu.cs" />
-    <Compile Include="Works.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE" />
@@ -67,10 +53,7 @@
     <Content Include="Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="Resources">
-    <GenerateResource Sources="RightWords.restext;RightWords.ru.restext" OutputResources="Bin\$(Configuration)\RightWords.resources;Bin\$(Configuration)\RightWords.ru.resources" />
-  </Target>
-  <Target Name="AfterBuild" DependsOnTargets="Resources">
-    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll;Bin\$(Configuration)\RightWords.resources;Bin\$(Configuration)\RightWords.ru.resources" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
   </Target>
 </Project>

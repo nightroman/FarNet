@@ -10,11 +10,9 @@ using FarNet.Forms;
 
 namespace FarNet.Works
 {
-	public delegate string GetMenuText(IModuleTool tool);
-
 	public static class ConfigTool
 	{
-		public static void Show(IList<IModuleTool> toolsIn, string helpTopic, GetMenuText getMenuText)
+		public static void Show(IList<IModuleTool> toolsIn, string helpTopic, Func<IModuleTool, string> getMenuText)
 		{
 			if (getMenuText == null)
 				throw new ArgumentNullException("getMenuText");
@@ -125,9 +123,9 @@ namespace FarNet.Works
 
 		class ModuleToolComparer : IComparer<IModuleTool>
 		{
-			GetMenuText _getMenuText;
+			Func<IModuleTool, string> _getMenuText;
 
-			public ModuleToolComparer(GetMenuText getMenuText)
+			public ModuleToolComparer(Func<IModuleTool, string> getMenuText)
 			{
 				_getMenuText = getMenuText;
 			}

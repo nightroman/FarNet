@@ -1,8 +1,13 @@
 http://code.google.com/p/farnet/
 
+= 4.5.1 =
+
+*) Some new .NET 3.5 features
+- Replaced a few not significant delegates with Func<> generics.
+
 = 4.5.0 =
 
-*) Target .NET framework is 3.5 (client profile)
+*) Target .NET framework is 3.5
 
 FarNet and its modules are now built for .NET 3.5. At the same time the core is
 configured to run with .NET 4.0 if it is available. Thus, modules targeted for
@@ -13,8 +18,7 @@ Windows is XP SP3 or above then consider to install .NET 4.0 (unless 3.5 is
 really needed for something else). 4.0 is much smaller, just in case.
 
 Existing modules built for .NET 2.0 still work, rebuild is not needed. But when
-such modules are built next time their target framework should be set to 3.5,
-client profile is preferable.
+such modules are built next time their target framework should be set to 3.5.
 
 *) Roaming and local data locations
 GetFolderPath() methods are based on the environment variables FARPROFILE,
