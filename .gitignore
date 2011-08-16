@@ -1,0 +1,6 @@
+*.suo
+*.vcxproj.user
+[B|b]in
+[O|o]bj
+[D|d]ebug
+[R|r]elease

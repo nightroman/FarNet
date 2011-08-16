@@ -57,9 +57,26 @@ Bin\$(Configuration)\PowerShellFar.xml;
 		<Copy SourceFiles="Modules\FarMacro\Bin\$(Configuration)\FarMacro.dll" DestinationFolder="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarMacro" SkipUnchangedFiles="true"/>
 	</Target>
 
-	<!--Install all. Call it after 'Build'.-->
-	<Target Name="Install" DependsOnTargets="Install-Bin;Install-Res"/>
+	<!--Collect inputs for Build-FarMacroHelp-->
+	<Target Name="FarMacroHelpInput">
+		<CreateItem Include="Modules\FarMacro\*" Exclude="bin;obj">
+			<Output ItemName="FarMacroHelpInput" TaskParameter="Include"/>
+		</CreateItem>
+	</Target>
 
+	<!--Build FarMacro command help. Run after 'Install-*'.-->
+	<Target Name="Build-FarMacroHelp"
+			DependsOnTargets="FarMacroHelpInput"
+			Inputs="@(FarMacroHelpInput)"
+			Outputs="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll-Help.xml">
+		<Message Text="FarMacroHelpInput: @(FarMacroHelpInput)"/>
+		<Exec Command="PowerShell .\Build-Helps.ps1 '$(Install)'"/>
+	</Target>
+
+	<!--Install all. Run after 'Build'.-->
+	<Target Name="Install" DependsOnTargets="Install-Bin;Install-Res;Build-FarMacroHelp"/>
+
+	<!--Uninstall all.-->
 	<Target Name="Uninstall">
 		<Error Condition="'$(Install)' == ''"/>
 		<RemoveDir Directories="$(Install)\FarNet\Modules\PowerShellFar"/>

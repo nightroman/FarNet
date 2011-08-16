@@ -1,6 +1,4 @@
 
-Import-Module FarMacro
-
 $BaseMacroParameters = @{ ###
 	Area = 'See Macro.Area'
 	Name = 'See Macro.Name'
