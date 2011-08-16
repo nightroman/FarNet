@@ -8,9 +8,5 @@
 	NestedModules = 'FarMacro.dll'
 	FormatsToProcess = 'FarMacro.Format.ps1xml'
 
-	CLRVersion = '2.0.50727'
-	PowerShellVersion = '2.0'
-	PowerShellHostName = 'FarHost'
-	PowerShellHostVersion = '4.3.1'
 	GUID = '{c1769b3b-e066-4042-bbea-be7a599562d3}'
 }
