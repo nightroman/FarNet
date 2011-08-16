@@ -41,6 +41,7 @@ function global:Reformat-Selection-
 		'\.(?:txt|hlf)' { $pattern = '$'; break }
 		'\.(?:ps1|psd1|psm1|pl|pls|py|pyw|pys|R|rb|rbw|ruby|rake|php\d?)$' { $pattern = '#+'; break }
 		'\.(?:bat|cmd)$' { $pattern = '::+|rem\s'; break }
+		'\.(?:md|markdown)$' { $pattern = '>'; break }
 		'\.(?:sql|lua)$' { $pattern = '--+'; break }
 		'\.(?:vb|vbs|bas|vbp|frm|cls)$' { $pattern = "'+"; break }
 		default { $pattern = '(?://+|;+)' }

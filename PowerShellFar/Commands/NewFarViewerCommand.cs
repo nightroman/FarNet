@@ -1,22 +1,14 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
-using System.ComponentModel;
 using FarNet;
 
 namespace PowerShellFar.Commands
 {
-	/// <summary>
-	/// New-FarViewer command.
-	/// Creates a viewer for other settings before opening.
-	/// </summary>
-	/// <seealso cref="IViewer"/>
-	/// <seealso cref="IFar.CreateViewer"/>
-	[Description("Creates a viewer for other settings before opening.")]
-	public class NewFarViewerCommand : BaseTextCmdlet
+	class NewFarViewerCommand : BaseTextCmdlet
 	{
 		internal IViewer CreateViewer()
 		{
@@ -28,8 +20,6 @@ namespace PowerShellFar.Commands
 			viewer.Title = Title;
 			return viewer;
 		}
-
-		///
 		protected override void ProcessRecord()
 		{
 			WriteObject(CreateViewer());

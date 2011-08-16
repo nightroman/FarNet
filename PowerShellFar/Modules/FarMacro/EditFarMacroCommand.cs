@@ -5,7 +5,6 @@ Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Management.Automation;
 using System.Text;
@@ -14,59 +13,36 @@ using FarNet;
 namespace FarMacro
 {
 	[Cmdlet(VerbsData.Edit, BaseCmdlet.Noun)]
-	[Description("Opens the editor with the macro sequence and install the macro on saving if its syntax is correct.")]
 	public class EditFarMacroCommand : BaseCmdlet
 	{
-		[Parameter(
-			ParameterSetName = "Name",
-			Position = 0,
-			Mandatory = true,
-			HelpMessage = "The key name. It is corrected to the standard form.")]
+		[Parameter(ParameterSetName = "Name", Position = 0, Mandatory = true)]
 		public string Name { get; set; }
-
-		[Parameter(
-			ParameterSetName = "Name",
-			Position = 1,
-			HelpMessage = "The macro area. If it is not set then the current Dialog, Editor, Shell, or Viewer area is assumed.")]
+		[Parameter(ParameterSetName = "Name", Position = 1)]
 		public MacroArea Area { get; set; }
-
-		[Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, HelpMessage = "Input macro instances.", ParameterSetName = "Macros")]
+		[Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, ParameterSetName = "Macros")]
 		public Macro InputObject { get; set; }
-
-		[Parameter(
-			ParameterSetName = "Macro",
-			HelpMessage = "The macro instance which sequence is edited.")]
+		[Parameter(ParameterSetName = "Macro")]
 		public Macro Macro { get; set; }
-
-		[Parameter(
-			ParameterSetName = "File",
-			HelpMessage = "The path of a file with a macro sequence to edit.")]
+		[Parameter(ParameterSetName = "File")]
 		public string FilePath { get; set; }
-
-		[Parameter(
-			HelpMessage = "A panel to be updated on saving.")]
+		[Parameter]
 		public Panel Panel { get; set; }
-
 		/// <summary>
 		/// Actual file path used by the editor.
 		/// </summary>
 		string FileName;
-
 		/// <summary>
 		/// Original input scalar value.
 		/// </summary>
 		object InputScalar;
-
 		/// <summary>
 		/// The only used editor.
 		/// </summary>
 		IEditor Editor;
-
 		/// <summary>
 		/// The last parser error or null.
 		/// </summary>
 		MacroParseError Error;
-
 		static class m
 		{
 			public const string
@@ -78,7 +54,6 @@ namespace FarMacro
 				InvalidKeyName = "Invalid key name.",
 				UndefinedArea = "Parameter 'Area' has to be defined.";
 		}
-
 		/// <summary>
 		/// Keeps the input value and converts it to text.
 		/// </summary>
@@ -87,7 +62,6 @@ namespace FarMacro
 			InputScalar = value ?? string.Empty;
 			return InputScalar.ToString();
 		}
-
 		/// <summary>
 		/// Converts to the original input type if needed.
 		/// </summary>
@@ -98,7 +72,6 @@ namespace FarMacro
 			else
 				return Kit.ConvertTo(text, InputScalar.GetType());
 		}
-
 		protected override void BeginProcessing()
 		{
 			// get the working file path and the macro
@@ -198,7 +171,6 @@ namespace FarMacro
 			// go
 			Editor.Open();
 		}
-
 		void OpenEditor()
 		{
 			// go to the last error position
@@ -210,7 +182,6 @@ namespace FarMacro
 			// open
 			Editor.Open();
 		}
-
 		void OnSaving(object sender, EventArgs e)
 		{
 			// target text
@@ -250,7 +221,6 @@ namespace FarMacro
 			if (Panel != null)
 				Panel.Update(true);
 		}
-
 		void OnClosed(object sender, EventArgs e)
 		{
 			// case: OK

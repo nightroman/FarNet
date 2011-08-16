@@ -11,54 +11,39 @@ namespace FarMacro
 {
 	public class BaseFarMacroCmdlet : BaseCmdlet
 	{
-		[Parameter(Position = 0, Mandatory = true, HelpMessage = "See Macro.Area", ParameterSetName = "Properties")]
+		[Parameter(Position = 0, Mandatory = true, ParameterSetName = "Properties")]
 		public MacroArea Area { get; set; }
-
-		[Parameter(Position = 1, Mandatory = true, HelpMessage = "See Macro.Name")]
+		[Parameter(Position = 1, Mandatory = true)]
 		public string Name { get; set; }
-
-		[Parameter(Position = 2, HelpMessage = "See Macro.Sequence")]
+		[Parameter(Position = 2)]
 		public string Sequence { get; set; }
-
-		[Parameter(Position = 3, HelpMessage = "See Macro.Description")]
+		[Parameter(Position = 3)]
 		public string Description { get; set; }
-
-		[Parameter(HelpMessage = "See Macro.CommandLine")]
+		[Parameter]
 		public string CommandLine { get; set; }
-
-		[Parameter(HelpMessage = "See Macro.SelectedText")]
+		[Parameter]
 		public string SelectedText { get; set; }
-
-		[Parameter(HelpMessage = "See Macro.SelectedItems")]
+		[Parameter]
 		public string SelectedItems { get; set; }
-
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-		[Parameter(HelpMessage = "See Macro.PanelIsPlugin")]
+		[Parameter]
 		public string PanelIsPlugin { get; set; }
-
-		[Parameter(HelpMessage = "See Macro.ItemIsDirectory")]
+		[Parameter]
 		public string ItemIsDirectory { get; set; }
-
-		[Parameter(HelpMessage = "See Macro.SelectedItems2")]
+		[Parameter]
 		public string SelectedItems2 { get; set; }
-
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-		[Parameter(HelpMessage = "See Macro.PanelIsPlugin2")]
+		[Parameter]
 		public string PanelIsPlugin2 { get; set; }
-
-		[Parameter(HelpMessage = "See Macro.ItemIsDirectory2")]
+		[Parameter]
 		public string ItemIsDirectory2 { get; set; }
-
-		[Parameter(HelpMessage = "See Macro.EnableOutput")]
+		[Parameter]
 		public SwitchParameter EnableOutput { get; set; }
-
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-		[Parameter(HelpMessage = "See Macro.DisablePlugins")]
+		[Parameter]
 		public SwitchParameter DisablePlugins { get; set; }
-
-		[Parameter(HelpMessage = "See Macro.RunAfterFarStart")]
+		[Parameter]
 		public SwitchParameter RunAfterFarStart { get; set; }
-
 		protected Macro CreateMacro()
 		{
 			Macro macro = new Macro();
