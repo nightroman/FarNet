@@ -1,25 +1,17 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
-using System.ComponentModel;
 using System.Management.Automation;
 using FarNet;
 
 namespace PowerShellFar.Commands
 {
-	/// <summary>
-	/// New-FarList command.
-	/// Creates a list with some properties.
-	/// </summary>
-	/// <seealso cref="IListMenu"/>
-	[Description("Creates a list with some properties.")]
-	public class NewFarListCommand : BaseMenuCmdlet
+	class NewFarListCommand : BaseMenuCmdlet
 	{
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.AutoSelect")]
+		[Parameter()]
 		public SwitchParameter AutoSelect
 		{
 			get { return _AutoSelect; }
@@ -31,9 +23,7 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _AutoSelect;
 		bool _setAutoSelect;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.Filter")]
+		[Parameter()]
 		public string Filter
 		{
 			get { return _Filter; }
@@ -45,9 +35,7 @@ namespace PowerShellFar.Commands
 		}
 		string _Filter;
 		bool _setFilter;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.FilterHistory")]
+		[Parameter()]
 		public string FilterHistory
 		{
 			get { return _FilterHistory; }
@@ -59,9 +47,7 @@ namespace PowerShellFar.Commands
 		}
 		string _FilterHistory;
 		bool _setFilterHistory;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.FilterKey")]
+		[Parameter()]
 		public int FilterKey
 		{
 			get { return _FilterKey; }
@@ -73,9 +59,7 @@ namespace PowerShellFar.Commands
 		}
 		int _FilterKey;
 		bool _setFilterKey;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.FilterOptions")]
+		[Parameter()]
 		public PatternOptions FilterOptions
 		{
 			get { return _FilterOptions; }
@@ -87,9 +71,7 @@ namespace PowerShellFar.Commands
 		}
 		PatternOptions _FilterOptions;
 		bool _setFilterOptions;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.FilterRestore")]
+		[Parameter()]
 		public SwitchParameter FilterRestore
 		{
 			get { return _FilterRestore; }
@@ -101,9 +83,7 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _FilterRestore;
 		bool _setFilterRestore;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.Incremental")]
+		[Parameter()]
 		public string Incremental
 		{
 			get { return _Incremental; }
@@ -115,9 +95,7 @@ namespace PowerShellFar.Commands
 		}
 		string _Incremental;
 		bool _setIncremental;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.IncrementalOptions")]
+		[Parameter()]
 		public PatternOptions IncrementalOptions
 		{
 			get { return _IncrementalOptions; }
@@ -129,9 +107,7 @@ namespace PowerShellFar.Commands
 		}
 		PatternOptions _IncrementalOptions;
 		bool _setIncrementalOptions;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.NoShadow")]
+		[Parameter()]
 		public SwitchParameter NoShadow
 		{
 			get { return _NoShadow; }
@@ -143,9 +119,7 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _NoShadow;
 		bool _setNoShadow;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.ScreenMargin")]
+		[Parameter()]
 		public int ScreenMargin
 		{
 			get { return _ScreenMargin; }
@@ -157,9 +131,7 @@ namespace PowerShellFar.Commands
 		}
 		int _ScreenMargin;
 		bool _setScreenMargin;
-
-		///
-		[Parameter(HelpMessage = "Sets IListMenu.UsualMargins")]
+		[Parameter()]
 		public SwitchParameter UsualMargins
 		{
 			get { return _UsualMargins; }
@@ -171,15 +143,8 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _UsualMargins;
 		bool _setUsualMargins;
-
-		///
-		[Parameter(HelpMessage = "Intelli-list style. Uses $Psf.Settings.Intelli* options.")]
-		public SwitchParameter Intelli
-		{
-			get;
-			set;
-		}
-
+		[Parameter()]
+		public SwitchParameter Intelli { get; set; }
 		internal IListMenu Create()
 		{
 			IListMenu menu = Far.Net.CreateListMenu();
@@ -215,8 +180,6 @@ namespace PowerShellFar.Commands
 
 			return menu;
 		}
-
-		///
 		protected override void BeginProcessing()
 		{
 			IListMenu menu = Create();

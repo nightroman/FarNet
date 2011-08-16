@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -10,52 +10,19 @@ using FarNet;
 
 namespace PowerShellFar.Commands
 {
-	/// <summary>
-	/// Common features of cmdlets working with panel files.
-	/// </summary>
-	/// <seealso cref="FarFile"/>
-	/// <seealso cref="IPanel"/>
-	public class BaseFileCmdlet : BaseCmdlet
+	class BaseFileCmdlet : BaseCmdlet
 	{
-		/// <summary>
-		/// See <see cref="IPanel.ShownFiles"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Get all the panel items.")]
-		public SwitchParameter All
-		{
-			get { return _All; }
-			set { _All = value; }
-		}
-		SwitchParameter _All;
-
-		/// <summary>
-		/// See <see cref="IPanel.SelectedFiles"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Get the selected panel items or the current one if none is selected.")]
-		public SwitchParameter Selected
-		{
-			get { return _Selected; }
-			set { _Selected = value; }
-		}
-		SwitchParameter _Selected;
-
-		/// <summary>
-		/// See <see cref="IFar.Panel2"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Get items from the passive panel. Default is from the active panel.")]
-		public SwitchParameter Passive
-		{
-			get { return _Passive; }
-			set { _Passive = value; }
-		}
-		SwitchParameter _Passive;
-
+		[Parameter(ParameterSetName = "All", Mandatory = true)]
+		public SwitchParameter All { get; set; }
+		[Parameter(ParameterSetName = "Selected", Mandatory = true)]
+		public SwitchParameter Selected { get; set; }
+		[Parameter()]
+		public SwitchParameter Passive { get; set; }
 		internal class PathEnumerator : My.Enumerator<string, FarFile>
 		{
 			string _path;
 			bool _realNames;
 			bool _joinRealNames;
-
 			public PathEnumerator(IEnumerable<FarFile> files, string path, bool realNames, bool joinRealNames)
 				: base(files)
 			{
@@ -63,7 +30,6 @@ namespace PowerShellFar.Commands
 				_realNames = realNames;
 				_joinRealNames = realNames && joinRealNames;
 			}
-
 			public override bool MoveNext()
 			{
 				while (_enumerator.MoveNext())
@@ -83,7 +49,6 @@ namespace PowerShellFar.Commands
 				return false;
 			}
 		}
-
 		internal static string GetCurrentPath(IPanel panel1, IPanel panel2)
 		{
 			FarFile f = panel1.CurrentFile;
@@ -104,6 +69,5 @@ namespace PowerShellFar.Commands
 
 			return My.PathEx.Combine(panel2.CurrentDirectory, name);
 		}
-
 	}
 }

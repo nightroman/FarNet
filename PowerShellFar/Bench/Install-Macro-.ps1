@@ -66,6 +66,11 @@ $Far.Macro.Install($(
 	# AltF10 in panels disables questionable folder tree.
 	New-FarMacro Common AltF10 'CallPlugin(FarNet, ":>: $Psf.ShowHistory()")' 'PSF: Command history' -EnableOutput
 
+	### Search Google (requires the script)
+	New-FarMacro Common CtrlShiftG -Description 'PSF: Search Google' -EnableOutput @'
+CallPlugin(FarNet, ":>: Search-Google.ps1 (Read-Host 'Search')")
+'@
+
 	### == Mixed (several areas)
 
 	### (Edit-FarDescription-.ps1) Edit file description: Shell: current item; Editor or Viewer: opened file [CtrlShiftD]

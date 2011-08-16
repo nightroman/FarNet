@@ -1,25 +1,17 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Management.Automation;
 using FarNet;
 
 namespace PowerShellFar.Commands
 {
-	/// <summary>
-	/// Get-FarItem command.
-	/// Gets provider items or attached objects from panels.
-	/// </summary>
-	[Description("Gets provider items or attached objects from panels.")]
-	public sealed class GetFarItemCommand : BaseFileCmdlet
+	sealed class GetFarItemCommand : BaseFileCmdlet
 	{
-		///
 		protected override void BeginProcessing()
 		{
 			IPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
@@ -80,6 +72,5 @@ namespace PowerShellFar.Commands
 					WriteObject(InvokeCommand.NewScriptBlock("Get-Item -LiteralPath @($args[0]) -Force -ErrorAction 0").Invoke(it), true);
 			}
 		}
-
 	}
 }

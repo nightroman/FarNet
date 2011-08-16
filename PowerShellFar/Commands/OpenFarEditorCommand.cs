@@ -1,28 +1,18 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
-using System.ComponentModel;
 using System.Management.Automation;
 using FarNet;
 
 namespace PowerShellFar.Commands
 {
-	/// <summary>
-	/// Open-FarEditor command.
-	/// Creates and opens an editor.
-	/// </summary>
-	/// <seealso cref="NewFarEditorCommand"/>
-	[Description("Creates and opens an editor.")]
-	public sealed class OpenFarEditorCommand : NewFarEditorCommand
+	sealed class OpenFarEditorCommand : NewFarEditorCommand
 	{
-		///
-		[Parameter(HelpMessage = _helpModal)]
+		[Parameter()]
 		public SwitchParameter Modal { get; set; }
-
-		///
 		protected override void ProcessRecord()
 		{
 			IEditor editor = CreateEditor();

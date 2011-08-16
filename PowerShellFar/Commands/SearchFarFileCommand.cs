@@ -1,66 +1,33 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
-using System.ComponentModel;
 using System.Management.Automation;
 using FarNet;
 using FarNet.Tools;
 
 namespace PowerShellFar.Commands
 {
-	/// <summary>
-	/// Search-FarFile command.
-	/// Searches files in the panel opens the result panel.
-	/// </summary>
-	[Description("Searches files in the panel opens the result panel.")]
-	public class SearchFarFileCommand : BaseCmdlet
+	class SearchFarFileCommand : BaseCmdlet
 	{
-		/// <summary>
-		/// Classic Far Manager file mask including exclude and regex forms.
-		/// </summary>
-		[Parameter(Position = 0, ParameterSetName = "Mask",
-			HelpMessage = "Classic Far Manager file mask including exclude and regex forms.")]
+		[Parameter(Position = 0, ParameterSetName = "Mask")]
 		public string Mask { get; set; }
-		/// <summary>
-		/// Search script. Variables: <c>$this</c> is the explorer providing the file, <c>$_</c> is the file.
-		/// </summary>
-		[Parameter(Position = 0, ParameterSetName = "Script",
-			HelpMessage = "Search script. Variables: $this is the explorer providing the file, $_ is the file.")]
+		[Parameter(Position = 0, ParameterSetName = "Script")]
 		public ScriptBlock Script { get; set; }
-		/// <summary>
-		/// XPath expression text.
-		/// </summary>
-		[Parameter(HelpMessage = "XPath expression text.")]
+		[Parameter()]
 		public string XPath { get; set; }
-		/// <summary>
-		/// XPath expression file.
-		/// </summary>
-		[Parameter(HelpMessage = "XPath expression file.")]
+		[Parameter()]
 		public string XFile { get; set; }
-		/// <summary>
-		/// Search depth. 0: ignored; negative: unlimited.
-		/// </summary>
-		[Parameter(HelpMessage = "Search depth. 0: ignored; negative: unlimited.")]
+		[Parameter()]
 		public int Depth { get; set; }
-		/// <summary>
-		/// Tells to include directories into the search process and results.
-		/// </summary>
-		[Parameter(HelpMessage = "Tells to include directories into the search process and results.")]
+		[Parameter()]
 		public SwitchParameter Directory { get; set; }
-		/// <summary>
-		/// Tells to search through all directories and sub-directories.
-		/// </summary>
-		[Parameter(HelpMessage = "Tells to search through all directories and sub-directories.")]
+		[Parameter()]
 		public SwitchParameter Recurse { get; set; }
-		/// <summary>
-		/// Tells to performs the search in the background and to open the result panel immediately.
-		/// </summary>
-		[Parameter(HelpMessage = "Tells to performs the search in the background and to open the result panel immediately.")]
+		[Parameter()]
 		public SwitchParameter Asynchronous { get; set; }
-		///
 		protected override void BeginProcessing()
 		{
 			Panel panel = Far.Net.Panel as Panel;

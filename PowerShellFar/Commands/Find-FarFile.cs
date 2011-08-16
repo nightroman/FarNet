@@ -1,45 +1,24 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
-using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.IO;
 using System.Management.Automation;
 using FarNet;
 
 namespace PowerShellFar.Commands
 {
-	/// <summary>
-	/// Find-FarFile command.
-	/// Finds a panel file and sets it current.
-	/// </summary>
-	/// <remarks>
-	/// If a panel file is not found the cmdlet writes an error.
-	/// </remarks>
-	/// <seealso cref="IPanel.GoToName(string)"/>
-	/// <seealso cref="IPanel.GoToName(string, bool)"/>
-	[Description("Finds a panel file and sets it current.")]
-	public sealed class FindFarFileCommand : BaseCmdlet
+	sealed class FindFarFileCommand : BaseCmdlet
 	{
-		/// <summary>
-		/// File name to find.
-		/// </summary>
-		[Parameter(Position = 0, Mandatory = true, ParameterSetName = "Name", HelpMessage = "File name to find.")]
+		[Parameter(Position = 0, Mandatory = true, ParameterSetName = "Name")]
 		public string Name { get; set; }
-		/// <summary>
-		/// Boolean scriptblock operating on $_ ~ <see cref="FarFile"/>.
-		/// </summary>
-		[Parameter(Position = 0, Mandatory = true, ParameterSetName = "Where", HelpMessage = "Boolean scriptblock operating on $_ ~ FarFile.")]
+		[Parameter(Position = 0, Mandatory = true, ParameterSetName = "Where")]
 		public ScriptBlock Where { get; set; }
-		/// <summary>
-		/// Tells to search up, not down.
-		/// </summary>
-		[Parameter(ParameterSetName = "Where", HelpMessage = "Tells to search up, not down.")]
+		[Parameter(ParameterSetName = "Where")]
 		public SwitchParameter Up { get; set; }
-		///
 		protected override void BeginProcessing()
 		{
 			if (Name != null)
