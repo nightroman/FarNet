@@ -176,17 +176,20 @@ Test 'GWMI *process' '*process' { $_ -contains 'Win32_Process' } | Write-Error
 Test 'GET-WMIOBJECT -CLASS *process' '*process' { $_ -contains 'Win32_Process' } | Write-Error
 
 ### Help comments
-Test '.' '.' { $_ -contains '.SYNOPSIS' -and $_ -contains '.LINK' } | Write-Error
-Test '.s' '.s' { $_ -eq '.SYNOPSIS' } | Write-Error
-Test ' .s' '.s' { $_ -eq '.SYNOPSIS' } | Write-Error
-Test "`t.s" '.s' { $_ -eq '.SYNOPSIS' } | Write-Error
-Test '.d' '.d' { $_ -eq '.DESCRIPTION' } | Write-Error
-Test '.p' '.p' { $_ -eq '.PARAMETER' } | Write-Error
-Test '.i' '.i' { $_ -eq '.INPUTS' } | Write-Error
-Test '.o' '.o' { $_ -eq '.OUTPUTS' } | Write-Error
-Test '.n' '.n' { $_ -eq '.NOTES' } | Write-Error
-Test '.e' '.e' { $_ -eq '.EXAMPLE' } | Write-Error
-Test '.l' '.l' { $_ -eq '.LINK' } | Write-Error
+Test '.' '.' { $_ -ccontains '.Synopsis' -and $_ -contains '.Link' } | Write-Error
+Test '.s' '.s' { $_ -ceq '.Synopsis' } | Write-Error
+Test ' .s' '.s' { $_ -ceq '.Synopsis' } | Write-Error
+Test "`t.s" '.s' { $_ -ceq '.Synopsis' } | Write-Error
+Test '.d' '.d' { $_ -ceq '.Description' } | Write-Error
+Test '.p' '.p' { $_ -ceq '.Parameter' } | Write-Error
+Test '.i' '.i' { $_ -ceq '.Inputs' } | Write-Error
+Test '.o' '.o' { $_ -ceq '.Outputs' } | Write-Error
+Test '.n' '.n' { $_ -ceq '.Notes' } | Write-Error
+Test '.e' '.e' { $_ -ceq '.Example' } | Write-Error
+Test '.l' '.l' { $_ -ceq '.Link' } | Write-Error
+Test '#.e' '' { $_ -ccontains '.ExternalHelp' } | Write-Error
+Test '#  .e' '' { $_ -ccontains '.ExternalHelp' } | Write-Error
+Test '  ##  .e' '' { $_ -ccontains '.ExternalHelp' } | Write-Error
 
 ### Fix of $Line.[Tab] (name is exactly 'LINE')
 $Line = $Far.CommandLine
@@ -206,12 +209,10 @@ $notparam
 Test "$tmp -" '-' { -join $_ -eq '-param0-param1-param2-param3-param4' } | Write-Error
 Remove-Item $tmp
 
-### #-pattern
+### #-patterns
 Test '' '$#' { ($_ -contains '$LASTEXITCODE') -and ($_ -notcontains '$Error') } | Write-Error
-Test '' '#$' { ($_ -contains '$LASTEXITCODE') -and ($_ -notcontains '$Error') } | Write-Error
-Test '' '#[val' { $_ -contains '[ValidateCount(#, )]' } | Write-Error
-Test '' '#val' { $_ -contains 'ValueFromPipeline = $true' -and $_ -notcontains '[ValidateCount(#, )]' } | Write-Error
-
+Test '' '[val#' { $_ -contains '[ValidateCount(#, )]' } | Write-Error
+Test '' 'val#' { $_ -contains 'ValueFromPipeline = $true' -and $_ -notcontains '[ValidateCount(#, )]' } | Write-Error
 # Drop the cache
 Remove-Variable -Scope global TabExpansionCache
 

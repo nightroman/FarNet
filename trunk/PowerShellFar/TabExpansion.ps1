@@ -1,6 +1,6 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	TabExpansion implementation.
 	Author: Roman Kuzmin
 #>
@@ -22,7 +22,7 @@ function global:TabExpansion
 	$sort_ = $true
 	$expanded_ = .{
 		### #<pattern>: custom patterns in FarHost or history
-		if (($lastWord_.EndsWith('#') -and ($lastWord_ -match '^(.*)#$')) -or ($lastWord_.StartsWith('#') -and ($lastWord_ -match '^#(.*)$'))) {
+		if ($lastWord_.EndsWith('#') -and ($lastWord_ -match '^(.*)#$')) {
 			if ($Host.Name -eq 'FarHost') {
 				$patt_ = $matches[1].Replace('[', '`[').Replace(']', '`]') + '*'
 				@(Get-Content -LiteralPath ('{0}\{1}' -f $Psf.AppHome, 'TabExpansion#.txt')) -like $patt_
@@ -34,6 +34,27 @@ function global:TabExpansion
 					$cmds_[$$]
 				}
 			}
+		}
+
+		### Help comments (start with '.')
+		elseif ($line_ -match '^\s*#*\s*(\.\w*)$') {
+			@(
+				'.Synopsis'
+				'.Description'
+				'.Parameter'
+				'.Inputs'
+				'.Outputs'
+				'.Notes'
+				'.Example'
+				'.Link'
+				'.Component'
+				'.Role'
+				'.Functionality'
+				'.ForwardHelpTargetName'
+				'.ForwardHelpCategory'
+				'.RemoteHelpRunspace'
+				'.ExternalHelp'
+			) -like "$($matches[1])*"
 		}
 
 		### Members of variables, expressions or static objects
@@ -197,27 +218,6 @@ function global:TabExpansion
 			}}
 		}
 
-		### Help comments (line starts with '.')
-		elseif ($line_ -match '^\s*\.\w*$') {
-			@(
-				'.SYNOPSIS'
-				'.DESCRIPTION'
-				'.PARAMETER'
-				'.INPUTS'
-				'.OUTPUTS'
-				'.NOTES'
-				'.EXAMPLE'
-				'.LINK'
-				'.COMPONENT'
-				'.ROLE'
-				'.FUNCTIONALITY'
-				'.FORWARDHELPTARGETNAME'
-				'.FORWARDHELPCATEGORY'
-				'.REMOTEHELPRUNSPACE'
-				'.EXTERNALHELP'
-			) -like "$lastWord_*"
-		}
-
 		### Module names for *-Module
 		elseif ($line_ -match '\b(Import-Module|ipmo|Remove-Module|rmo)(?:\s+-Name)?\s+[*\w]+$') {
 			foreach($_ in Get-Module "$lastWord_*" -ListAvailable:($matches[1] -eq 'Import-Module' -or $matches[1] -eq 'ipmo')) {
@@ -283,7 +283,7 @@ function global:TabExpansion
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Gets type names for TabExpansion using the global cache $TabExpansionCache.
 #>
 function global:GetTabExpansionType
@@ -389,10 +389,10 @@ function global:GetTabExpansionType
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Gets parameter names of a script.
 
-.DESCRIPTION
+.Description
 	Approach (Get-Command X).Parameters does not work in V2 if scripts have
 	parameters with types defined in not yet loaded assemblies. For functions
 	we do not need this, they are loaded and Get-Command gets parameters fine.

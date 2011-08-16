@@ -60,7 +60,8 @@ namespace PowerShellFar
 				{
 					if (token.Type == PSTokenType.Command)
 					{
-						//! Call Help, not Get-Help, for Get-FarHelp fallback.
+						//! Call the Help function, just in case it is redefined.
+						//! It used to call now retired Get-FarHelp.
 						script = "Help $args[1] -Full > $args[0]";
 						args = new object[] { null, command };
 					}

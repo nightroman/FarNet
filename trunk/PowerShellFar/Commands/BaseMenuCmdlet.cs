@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -12,31 +12,20 @@ namespace PowerShellFar.Commands
 	/// <summary>
 	/// Common features of menu cmdlets.
 	/// </summary>
-	public class BaseMenuCmdlet : BaseCmdlet
+	class BaseMenuCmdlet : BaseCmdlet
 	{
-		///
-		[Parameter(Position = 0, HelpMessage = "Sets IAnyMenu.Title")]
+		[Parameter(Position = 0)]
 		public string Title { get; set; }
-
-		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-		[Parameter(Position = 1, HelpMessage = "Items to add to IAnyMenu.Items")]
+		[Parameter(Position = 1)]
 		public FarItem[] Items { get; set; }
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.AutoAssignHotkeys")]
+		[Parameter()]
 		public SwitchParameter AutoAssignHotkeys { get; set; }
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.Bottom")]
+		[Parameter()]
 		public string Bottom { get; set; }
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.HelpTopic")]
+		[Parameter()]
 		public string HelpTopic { get; set; }
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.Selected")]
+		[Parameter()]
 		public int Selected
 		{
 			get { return _Selected; }
@@ -48,21 +37,13 @@ namespace PowerShellFar.Commands
 		}
 		int _Selected;
 		bool _setSelected;
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.SelectLast")]
+		[Parameter()]
 		public SwitchParameter SelectLast { get; set; }
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.ShowAmpersands")]
+		[Parameter()]
 		public SwitchParameter ShowAmpersands { get; set; }
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.WrapCursor")]
+		[Parameter()]
 		public SwitchParameter WrapCursor { get; set; }
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.X")]
+		[Parameter()]
 		public int X
 		{
 			get { return _X; }
@@ -74,9 +55,7 @@ namespace PowerShellFar.Commands
 		}
 		int _X;
 		bool _setX;
-
-		///
-		[Parameter(HelpMessage = "Sets IAnyMenu.Y")]
+		[Parameter()]
 		public int Y
 		{
 			get { return _Y; }
@@ -88,8 +67,6 @@ namespace PowerShellFar.Commands
 		}
 		int _Y;
 		bool _setY;
-
-		///
 		internal void Init(IAnyMenu menu)
 		{
 			menu.Title = Title;

@@ -1,63 +1,33 @@
 ﻿TOPIC
-	about_FarMacro
+    about_FarMacro
 
 SHORT DESCRIPTION
-	Far Manager macro provider and tools.
-	Author: Roman Kuzmin
+    Far Manager macro provider and tools.
+    Author: Roman Kuzmin
 
 LONG DESCRIPTION
-
-CMDLETS
-	Use Get-FarHelp to get more details about the cmdlets.
-    =================================================================
-
-	Edit-FarMacro
-
-	Opens the editor with the macro sequence. Syntax highlighting should work
-	if the Colorer plugin is used. On saving, if syntax is valid, the macro is
-	installed and ready to use. On syntax errors an error message is shown and
-	the cursor is set to the error position. On exit, if syntax is not valid,
-	you are prompted to continue or discard the changes. NOTE: in this way you
-	only edit the sequence, other macro options remains default for a new macro
-	and not changed for an existing.
-
-	There are three modes, depending on parameter sets:
-	-- Macro : -Macro; based on a macro object;
-	-- Name  : -Name, -Area; existing or a new macro by names;
-	-- File  : -FilePath; based on an existing or a new macro file.
-
-	The File mode simply edits the file and checks syntax on saving.
-
-    =================================================================
-
-	New-FarMacro
-
-	Creates a new macro instance with empty or default option values.
-
-    =================================================================
-
-	Set-FarMacro
-
-	Installs one or more macros.
 
 PROVIDERS
     The module includes the FarMacro provider. The FarMacro provider lets you
     view the macros in PowerShell as though they were on a file system drive.
 
-    The FarMacro provider exposes the FarMacro: drive. To go into the FarMacro:
-    drive, type:
+    See:
+    >>: help FarMacro
 
-	Set-Location FarMacro:
+CMDLETS
+    Use Get-Help to get more details about the cmdlets.
 
-    To view the contents of the drive, type:
+    New-FarMacro
+        Creates a new macro instance with empty or default option values.
 
-	Get-ChildItem
+    Set-FarMacro
+        Installs one or more macros.
 
-    To view the contents of the drive from another Windows PowerShell drive,
-    begin the path with the drive name. For example:
+    Edit-FarMacro
+        Opens the editor with the macro sequence for modification.
 
-	Get-ChildItem FarMacro:
-
-    To get macros in a particular area, type the drive name and the area name.
-
-	Get-ChildItem FarMacro:\Shell
+SEE ALSO
+    >>: help FarMacro
+    >>: help -Full New-FarMacro
+    >>: help -Full Set-FarMacro
+    >>: help -Full Edit-FarMacro

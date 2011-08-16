@@ -18,7 +18,6 @@ $ErrorActionPreference = 'Stop'
 ### Aliases
 Set-Alias fff Find-FarFile -Description 'Finds the panel file'
 Set-Alias gff Get-FarFile -Description 'Gets the panel file(s)'
-Set-Alias gfh Get-FarHelp -Description 'Gets command details'
 Set-Alias go Go-To- -Description 'Go to specified file or directory'
 Set-Alias ip Import-Panel- -Description 'Import objects from files to a panel'
 Set-Alias nff New-FarFile -Description 'Creates a new panel file'

@@ -1,48 +1,30 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2001 Roman Kuzmin
 */
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Management.Automation;
 using FarNet;
 
 namespace PowerShellFar.Commands
 {
-	/// <summary>
-	/// Out-FarPanel command.
-	/// Sends output to a new or appends to the active object panel.
-	/// </summary>
-	[Description("Sends output to a new or appends to the active object panel.")]
-	public sealed class OutFarPanelCommand : BasePanelCmdlet
+	sealed class OutFarPanelCommand : BasePanelCmdlet
 	{
 		ObjectPanel _panel;
-		/// <summary>
-		/// Custom columns (names or special hashtables).
-		/// </summary>
-		/// <remarks>
-		/// Use property names to specify columns or hashtables to describe columns in details,
-		/// see <see cref="Meta"/> about hashtables and <see cref="PanelPlan.Columns"/> about column types.
-		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-		[Parameter(HelpMessage = "Sets Columns property.", Position = 0)]
+		[Parameter(Position = 0)]
 		public object[] Columns { get; set; }
-		///
-		[Parameter(HelpMessage = "Object(s) to be sent to an object panel.", ValueFromPipeline = true)]
+		[Parameter(ValueFromPipeline = true)]
 		public PSObject InputObject { get; set; }
-		///
-		[Parameter(HelpMessage = "Regular expression pattern of members to be excluded in a child list panel.")]
+		[Parameter()]
 		public string ExcludeMemberPattern { get; set; }
-		///
-		[Parameter(HelpMessage = "Regular expression pattern of members to be hidden in a child list panel.")]
+		[Parameter()]
 		public string HideMemberPattern { get; set; }
-		///
-		[Parameter(HelpMessage = "Tells to append objects to the active object panel. All others options are ignored.")]
+		[Parameter()]
 		public SwitchParameter Append { get; set; }
-		///
 		protected override void BeginProcessing()
 		{
 			if (Append)
@@ -72,7 +54,6 @@ namespace PowerShellFar.Commands
 		}
 		// Use collector to control count of finaly added to the panel.
 		List<object> _Collector = new List<object>();
-		///
 		protected override void ProcessRecord()
 		{
 			//! Skip null. 'Out-FarPanel' should open a panel with no items.
@@ -85,7 +66,6 @@ namespace PowerShellFar.Commands
 			else
 				_Collector.Add(InputObject);
 		}
-		///
 		protected override void EndProcessing()
 		{
 			if (_Collector.Count == 1)

@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2011 Roman Kuzmin
 */
 
 using System;
@@ -14,71 +14,27 @@ namespace PowerShellFar.Commands
 	/// <summary>
 	/// Common panel parameters.
 	/// </summary>
-	public class BasePanelCmdlet : BaseCmdlet
+	class BasePanelCmdlet : BaseCmdlet
 	{
-		/// <summary>
-		/// Panel type Id. See <see cref="Panel.TypeId"/>
-		/// </summary>
-		[Parameter(HelpMessage = "Panel type Id.")]
-		public Guid TypeId
-		{
-			get { return _TypeId.GetValueOrDefault(); }
-			set { _TypeId = value; }
-		}
+		[Parameter()]
+		public Guid TypeId { get { return _TypeId.GetValueOrDefault(); } set { _TypeId = value; } }
 		Guid? _TypeId;
-
-		/// <summary>
-		/// Panel title. See <see cref="Panel.Title"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Panel title.")]
+		[Parameter()]
 		public string Title { get; set; }
-
-		/// <summary>
-		/// Panel sort mode. See <see cref="IPanel.SortMode"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Panel sort mode.")]
-		public PanelSortMode SortMode
-		{
-			get { return _SortMode.GetValueOrDefault(); }
-			set { _SortMode = value; }
-		}
+		[Parameter()]
+		public PanelSortMode SortMode { get { return _SortMode.GetValueOrDefault(); } set { _SortMode = value; } }
 		PanelSortMode? _SortMode;
-
-		/// <summary>
-		/// Panel view mode. See <see cref="IPanel.ViewMode"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Panel view mode.")]
-		public PanelViewMode ViewMode
-		{
-			get { return _ViewMode.GetValueOrDefault(); }
-			set { _ViewMode = value; }
-		}
+		[Parameter()]
+		public PanelViewMode ViewMode { get { return _ViewMode.GetValueOrDefault(); } set { _ViewMode = value; } }
 		PanelViewMode? _ViewMode;
-
-		/// <summary>
-		/// Tells to update data periodically when idle. See <see cref="Panel.IdleUpdate"/>.
-		/// </summary>
-		[Parameter(HelpMessage = "Tells to update data periodically when idle.")]
-		public SwitchParameter IdleUpdate
-		{
-			get { return _IdleUpdate.GetValueOrDefault(); }
-			set { _IdleUpdate = value; }
-		}
+		[Parameter()]
+		public SwitchParameter IdleUpdate { get { return _IdleUpdate.GetValueOrDefault(); } set { _IdleUpdate = value; } }
 		SwitchParameter? _IdleUpdate;
-
-		/// <summary>
-		/// Custom data ID getter to distinguish files by data.
-		/// </summary>
-		[Parameter(HelpMessage = "Custom data ID to distinguish files by data.")]
+		[Parameter()]
 		public Meta DataId { get; set; }
-
-		/// <summary>
-		/// Attached user data. See <see cref="Panel.Data"/>.
-		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		[Parameter(HelpMessage = "Attached user data.")]
+		[Parameter()]
 		public IDictionary Data { get; set; }
-
 		internal void ApplyParameters(Panel panel)
 		{
 			// panel
@@ -94,6 +50,5 @@ namespace PowerShellFar.Commands
 			if (_ViewMode.HasValue) panel.ViewMode = _ViewMode.Value;
 			if (Title != null) panel.Title = Title;
 		}
-
 	}
 }
