@@ -70,11 +70,27 @@ Bin\$(Configuration)\PowerShellFar.xml;
 			Inputs="@(FarMacroHelpInput)"
 			Outputs="$(Install)\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll-Help.xml">
 		<Message Text="FarMacroHelpInput: @(FarMacroHelpInput)"/>
-		<Exec Command="PowerShell .\Build-Helps.ps1 '$(Install)'"/>
+		<Exec Command="PowerShell .\Build-Helps.ps1 '$(Install)' -FarMacro"/>
+	</Target>
+
+	<!--Collect inputs for Build-PowerShellFarHelp-->
+	<Target Name="PowerShellFarHelpInput">
+		<CreateItem Include="Commands\*">
+			<Output ItemName="PowerShellFarHelpInput" TaskParameter="Include"/>
+		</CreateItem>
+	</Target>
+
+	<!--Build PowerShellFar command help. Run after 'Install-*'.-->
+	<Target Name="Build-PowerShellFarHelp"
+			DependsOnTargets="PowerShellFarHelpInput"
+			Inputs="@(PowerShellFarHelpInput)"
+			Outputs="$(Install)\FarNet\Modules\PowerShellFar\PowerShellFar.dll-Help.xml">
+		<Message Text="PowerShellFarHelpInput: @(PowerShellFarHelpInput)"/>
+		<Exec Command="PowerShell .\Build-Helps.ps1 '$(Install)' -PowerShellFar"/>
 	</Target>
 
 	<!--Install all. Run after 'Build'.-->
-	<Target Name="Install" DependsOnTargets="Install-Bin;Install-Res;Build-FarMacroHelp"/>
+	<Target Name="Install" DependsOnTargets="Install-Bin;Install-Res;Build-FarMacroHelp;Build-PowerShellFarHelp"/>
 
 	<!--Uninstall all.-->
 	<Target Name="Uninstall">

@@ -13,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Provider;
+using System.Management.Automation.Runspaces;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text.RegularExpressions;
@@ -30,6 +31,11 @@ namespace PowerShellFar
 	/// </summary>
 	public static class Zoo
 	{
+		///
+		public static void Initialize(RunspaceConfiguration configuration)
+		{
+			Commands.BaseCmdlet.AddCmdlets(configuration);
+		}
 		///
 		public static Meta[] TablePanelSetupColumns(object[] columns)
 		{
