@@ -1,8 +1,9 @@
 
 Set-StrictMode -Version 2
 
+### Assert-Far
 @{
-	command = 'Assert-Far' ###
+	command = 'Assert-Far'
 	synopsis = @'
 Checks for the condition(s) and stops the pipeline with a message if any condition is false or not Boolean.
 '@
@@ -68,8 +69,9 @@ Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Searc
 	)
 }
 
+### Find-FarFile
 @{
-	command = 'Find-FarFile' ###
+	command = 'Find-FarFile'
 	synopsis = 'Finds the specified panel file and sets it current.'
 	description = 'If a panel file is not found the cmdlet writes an error.'
 	sets = @{
@@ -85,8 +87,9 @@ Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Searc
 	outputs = @()
 }
 
+### New-FarFile
 @{
-	command = 'New-FarFile' ###
+	command = 'New-FarFile'
 	synopsis = 'Creates a panel file (custom or from a file system info).'
 	parameters = @{
 		Description = 'Sets FarFile.Description'
@@ -102,10 +105,25 @@ Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Searc
 		File = 'File system info (file or directory).'
 		FullName = 'Tells to use the full name for a file system item.'
 	}
+	inputs = @(
+		@{
+			type = 'System.String'
+			description = 'Strings used as names of new file objects.'
+		}
+		@{
+			type = 'System.IO.FileSystemInfo'
+			description = 'File and directory objects which properties are copied to new file objects.'
+		}
+	)
+	outputs = @{
+		type = 'FarNet.FarFile'
+		description = 'New file objects.'
+	}
 }
 
+### New-FarItem
 @{
-	command = 'New-FarItem' ###
+	command = 'New-FarItem'
 	synopsis = 'Creates an item for menus, list menus and list dialog controls.'
 	parameters = @{
 		Text = 'Sets FarItem.Text'
@@ -119,8 +137,9 @@ Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Searc
 	}
 }
 
+### Search-FarFile
 @{
-	command = 'Search-FarFile' ###
+	command = 'Search-FarFile'
 	synopsis = 'Searches files in the panel opens the result panel.'
 	parameters = @{
 		Mask = 'Classic Far Manager file mask including exclude and regular expression forms.'
@@ -134,6 +153,7 @@ Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Searc
 	}
 }
 
+### Show-FarMessage
 @{
 	command = 'Show-FarMessage'
 	synopsis = 'Shows a message box.'
@@ -155,8 +175,9 @@ otherwise nothing is returned, it is used simply to display a message.
 	}
 }
 
+### Start-FarJob
 @{
-	command = 'Start-FarJob' ###
+	command = 'Start-FarJob'
 	synopsis = 'Starts a new background job (not classic PowerShell job).'
 	description = @'
 It helps to create a background job with available parameters. Note:
@@ -189,18 +210,21 @@ $BaseFile = @{
 	}
 }
 
+### Get-FarFile
 Merge-Helps $BaseFile @{
-	command = 'Get-FarFile' ###
+	command = 'Get-FarFile'
 	synopsis = 'Gets the current panel file, selected files, or all files.'
 }
 
+### Get-FarItem
 Merge-Helps $BaseFile @{
-	command = 'Get-FarItem' ###
+	command = 'Get-FarItem'
 	synopsis = 'Gets provider items or attached to files data objects from panels.'
 }
 
+### Get-FarPath
 Merge-Helps $BaseFile @{
-	command = 'Get-FarPath' ###
+	command = 'Get-FarPath'
 	synopsis = 'Gets the current panel path, selected paths, or all paths.'
 	parameters = @{
 		Mirror = 'Tells to join the target file names with the opposite panel path.'
@@ -219,6 +243,7 @@ $BaseText = @{
 	inputs = @()
 	outputs = @()
 }
+
 # editor
 $BaseEditor = Merge-Helps $BaseText @{
 	parameters = @{
@@ -227,29 +252,34 @@ $BaseEditor = Merge-Helps $BaseText @{
 		Host = 'The host instance.'
 	}
 }
-# other
+
+# misc
 $parametersModal = @{
 	Modal = "Tells to open modal. By default it is not but it depends on where it is opened."
 }
 
+### New-FarEditor
 Merge-Helps $BaseEditor @{
-	command = 'New-FarEditor' ###
+	command = 'New-FarEditor'
 	synopsis = 'Creates an editor for other settings before opening.'
 }
 
+### Open-FarEditor
 Merge-Helps $BaseEditor @{
-	command = 'Open-FarEditor' ###
+	command = 'Open-FarEditor'
 	synopsis = 'Creates and opens an editor.'
 	parameters = $parametersModal
 }
 
+### New-FarViewer
 Merge-Helps $BaseText @{
-	command = 'New-FarViewer' ###
+	command = 'New-FarViewer'
 	synopsis = 'Creates a viewer for other settings before opening.'
 }
 
+### Open-FarViewer
 Merge-Helps $BaseText @{
-	command = 'Open-FarViewer' ###
+	command = 'Open-FarViewer'
 	synopsis = 'Creates and opens a viewer.'
 	parameters = $parametersModal
 }
@@ -267,8 +297,9 @@ $BasePanel = @{
 	}
 }
 
+### Open-FarPanel
 Merge-Helps $BasePanel @{
-	command = 'Open-FarPanel' ###
+	command = 'Open-FarPanel'
 	synopsis = 'Opens the panel.'
 	description = 'The panel is opened only when the core gets control.'
 	parameters = @{
@@ -277,8 +308,9 @@ Merge-Helps $BasePanel @{
 	}
 }
 
+### Out-FarPanel
 Merge-Helps $BasePanel @{
-	command = 'Out-FarPanel' ###
+	command = 'Out-FarPanel'
 	synopsis = 'Sends output to a new or appends to the active object panel.'
 	parameters = @{
 		Columns = 'Custom columns (names or special hash tables).',
@@ -310,8 +342,9 @@ $BaseMenu = @{
 	}
 }
 
+### New-FarMenu
 Merge-Helps $BaseMenu @{
-	command = 'New-FarMenu' ###
+	command = 'New-FarMenu'
 	synopsis = 'Creates a menu with some properties.'
 	parameters = @{
 		ReverseAutoAssign = 'Sets IMenu.ReverseAutoAssign'
@@ -320,6 +353,7 @@ Merge-Helps $BaseMenu @{
 	}
 }
 
+### List Cmdlets
 $FarList = Merge-Helps $BaseMenu @{
 	parameters = @{
 		AutoSelect = 'Sets IListMenu.AutoSelect'
@@ -337,13 +371,15 @@ $FarList = Merge-Helps $BaseMenu @{
 	}
 }
 
+### New-FarList
 Merge-Helps $FarList @{
-	command = 'New-FarList' ###
+	command = 'New-FarList'
 	synopsis = 'Creates a list with some properties.'
 }
 
+### Out-FarList
 Merge-Helps $FarList @{
-	command = 'Out-FarList' ###
+	command = 'Out-FarList'
 	synopsis = 'Shows a list of input objects and returns selected.'
 	parameters = @{
 		InputObject = 'Object to be represented as a list item.'
