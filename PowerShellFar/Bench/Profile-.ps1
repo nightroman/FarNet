@@ -87,9 +87,9 @@ $Psf.Providers = @{
 }
 
 ### Preferences
-$Psf.Settings.IntelliAutoSelect = $false
-$Psf.Settings.IntelliMaxHeight = 0
-$Psf.Settings.IntelliNoShadow = $false
+$Psf.Settings.PopupAutoSelect = $false
+$Psf.Settings.PopupMaxHeight = 0
+$Psf.Settings.PopupNoShadow = $false
 $Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Down
 
 ### Module helpers

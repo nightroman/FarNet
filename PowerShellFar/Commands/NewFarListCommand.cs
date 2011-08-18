@@ -144,14 +144,14 @@ namespace PowerShellFar.Commands
 		SwitchParameter _UsualMargins;
 		bool _setUsualMargins;
 		[Parameter()]
-		public SwitchParameter Intelli { get; set; }
+		public SwitchParameter Popup { get; set; }
 		internal IListMenu Create()
 		{
 			IListMenu menu = Far.Net.CreateListMenu();
 			Init(menu);
 
-			if (Intelli)
-				Settings.Default.Intelli(menu);
+			if (Popup)
+				Settings.Default.PopupMenu(menu);
 			else
 				Settings.Default.ListMenu(menu);
 
