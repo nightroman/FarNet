@@ -92,7 +92,7 @@ namespace PowerShellFar.UI
 			var cursor = Far.Net.UI.WindowCursor;
 			menu.X = cursor.X;
 			menu.Y = cursor.Y;
-			Settings.Default.Intelli(menu);
+			Settings.Default.PopupMenu(menu);
 			menu.Incremental = lastWord + "*";
 			menu.IncrementalOptions = PatternOptions.Prefix;
 

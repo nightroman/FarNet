@@ -8,6 +8,8 @@ http://code.google.com/p/farnet/
 - "Get-Help", "help", "man" commands work with Far cmdlets just fine.
 - Removed workarounds "Get-FarHelp" and "help" from the internal profile.
 
+*) Popup-style list code names: replaced all `Intelli` with `Popup`.
+
 *) PowerShell.hrc for Colorer
 - Doc-comments are supported in line comments, too (as in block comments).
 - 'task' is processed as 'function'. Though it is not a native PowerShell
