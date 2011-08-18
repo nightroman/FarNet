@@ -12,12 +12,17 @@
 	</ItemGroup>
 
 	<Target Name="Archive">
-		<!--Ensure sample modules are built fine-->
-		<MSBuild Projects="Modules\Build.proj" Targets="Build;Clean"/>
+		<!--
+		Build the sample modules just to be sure that they are alive.
+		Use the temporary folder, so that FarNet.demo is not updated.
+		-->
+		<MSBuild Projects="Modules\Build.proj" Targets="Build;Clean" Properties="Install=C:\TEMP\z"/>
+		<RemoveDir Directories="C:\TEMP\z"/>
 
+		<!--Call child targets-->
 		<MSBuild Targets="Archive" Projects="@(Folder->'%(Identity)\Build.proj')"/>
 
-		<!--Archive Accord-->
+		<!--Zip FarNetAccord-->
 		<RemoveDir Directories="Tmp"/>
 		<Copy DestinationFolder="Tmp" SourceFiles="Install.txt"/>
 		<Copy DestinationFolder="Tmp\FarNet" SourceFiles="$(Install)\FarNet\FarNetAccord.chm"/>
