@@ -103,7 +103,7 @@ namespace PowerShellFar
 				var cursor = Far.Net.UI.WindowCursor;
 				menu.X = cursor.X;
 				menu.Y = cursor.Y;
-				Settings.Default.Intelli(menu);
+				Settings.Default.PopupMenu(menu);
 				if (isEmpty)
 				{
 					menu.Add(Res.Empty).Disabled = true;

@@ -1432,7 +1432,7 @@ properties Providers (class Actor), Columns (class ItemPanel).
  __________
 
 	## Preferences
-	$Psf.Settings.IntelliAutoSelect = $false
+	$Psf.Settings.PopupAutoSelect = $false
 	...
 
 Here you can set some options of $Psf.Settings, mostly UI preferences.

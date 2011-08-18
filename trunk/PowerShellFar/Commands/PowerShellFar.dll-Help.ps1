@@ -367,7 +367,7 @@ $FarList = Merge-Helps $BaseMenu @{
 		NoShadow = 'Sets IListMenu.NoShadow'
 		ScreenMargin = 'Sets IListMenu.ScreenMargin'
 		UsualMargins = 'Sets IListMenu.UsualMargins'
-		Intelli = 'Intelli-list style. Uses $Psf.Settings.Intelli* options.'
+		Popup = 'Popup-list style. Uses $Psf.Settings.Popup* options.'
 	}
 }
 

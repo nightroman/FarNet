@@ -107,7 +107,7 @@ function global:Complete-Word-
 			$words.GetEnumerator() | .{process{ if ($_.Value) { $_.Key } }} | Sort-Object
 			$words.GetEnumerator() | .{process{ if (!$_.Value) { $_.Key } }} | Sort-Object
 		} |
-		Out-FarList -Intelli -IncrementalOptions 'Prefix' -Incremental "$word*" -X $cursor.X -Y $cursor.Y
+		Out-FarList -Popup -IncrementalOptions 'Prefix' -Incremental "$word*" -X $cursor.X -Y $cursor.Y
 		if (!$w) {
 			return
 		}

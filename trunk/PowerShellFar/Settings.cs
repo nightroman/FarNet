@@ -29,14 +29,14 @@ namespace PowerShellFar
 		public static Settings Default { get { return _Default; } }
 		static readonly Settings _Default = new Settings();
 		/// <summary>
-		/// Sets intelli-list menu.
+		/// Sets popup list menu.
 		/// </summary>
-		public void Intelli(IListMenu menu)
+		public void PopupMenu(IListMenu menu)
 		{
 			if (menu == null) throw new ArgumentNullException("menu");
-			menu.AutoSelect = _IntelliAutoSelect;
-			menu.MaxHeight = _IntelliMaxHeight;
-			menu.NoShadow = _IntelliNoShadow;
+			menu.AutoSelect = _PopupAutoSelect;
+			menu.MaxHeight = _PopupMaxHeight;
+			menu.NoShadow = _PopupNoShadow;
 		}
 		/// <summary>
 		/// Sets list menu.
@@ -69,32 +69,32 @@ namespace PowerShellFar
 			get { return (string)this["StartupEdit"]; }
 			set { this["StartupEdit"] = value; }
 		}
-		bool _IntelliAutoSelect = true;
+		bool _PopupAutoSelect = true;
 		/// <summary>
-		/// <see cref="IListMenu.AutoSelect"/> for intellisense menus.
+		/// <see cref="IListMenu.AutoSelect"/> for popup menus.
 		/// </summary>
-		public bool IntelliAutoSelect
+		public bool PopupAutoSelect
 		{
-			get { return _IntelliAutoSelect; }
-			set { _IntelliAutoSelect = value; }
+			get { return _PopupAutoSelect; }
+			set { _PopupAutoSelect = value; }
 		}
-		int _IntelliMaxHeight = -1;
+		int _PopupMaxHeight = -1;
 		/// <summary>
-		/// <see cref="IAnyMenu.MaxHeight"/> for intellisense menus.
+		/// <see cref="IAnyMenu.MaxHeight"/> for popup menus.
 		/// </summary>
-		public int IntelliMaxHeight
+		public int PopupMaxHeight
 		{
-			get { return _IntelliMaxHeight; }
-			set { _IntelliMaxHeight = value; }
+			get { return _PopupMaxHeight; }
+			set { _PopupMaxHeight = value; }
 		}
-		bool _IntelliNoShadow;
+		bool _PopupNoShadow;
 		/// <summary>
-		/// <see cref="IListMenu.NoShadow"/> for intellisense menus.
+		/// <see cref="IListMenu.NoShadow"/> for popup menus.
 		/// </summary>
-		public bool IntelliNoShadow
+		public bool PopupNoShadow
 		{
-			get { return _IntelliNoShadow; }
-			set { _IntelliNoShadow = value; }
+			get { return _PopupNoShadow; }
+			set { _PopupNoShadow = value; }
 		}
 		PatternOptions _ListMenuFilterOptions = PatternOptions.Regex;
 		/// <summary>
