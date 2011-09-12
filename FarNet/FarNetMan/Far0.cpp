@@ -822,24 +822,26 @@ CultureInfo^ Far0::GetCurrentUICulture(bool update)
 	// FARLANG
 	String^ lang = Environment::GetEnvironmentVariable("FARLANG");
 
-	// a few known cases
+	//! Known cases.
+	//! It is important to use full names like "en-US" (not "en").
+	//! Neutral names are not always suitable (e.g. "en" in PowerShell).
 	if (lang == "English")
-		return _currentUICulture = CultureInfo::GetCultureInfo("en");
+		return _currentUICulture = CultureInfo::GetCultureInfo("en-US");
 	if (lang == "Russian")
-		return _currentUICulture = CultureInfo::GetCultureInfo("ru");
+		return _currentUICulture = CultureInfo::GetCultureInfo("ru-RU");
 	if (lang == "Czech")
-		return _currentUICulture = CultureInfo::GetCultureInfo("cs");
+		return _currentUICulture = CultureInfo::GetCultureInfo("cs-CZ");
 	if (lang == "German")
-		return _currentUICulture = CultureInfo::GetCultureInfo("de");
+		return _currentUICulture = CultureInfo::GetCultureInfo("de-DE");
 	if (lang == "Hungarian")
-		return _currentUICulture = CultureInfo::GetCultureInfo("hu");
+		return _currentUICulture = CultureInfo::GetCultureInfo("hu-HU");
 	if (lang == "Polish")
-		return _currentUICulture = CultureInfo::GetCultureInfo("pl");
+		return _currentUICulture = CultureInfo::GetCultureInfo("pl-PL");
 
-	// find by name
+	// find by *display* name
 	for each(CultureInfo^ ci in CultureInfo::GetCultures(CultureTypes::NeutralCultures))
 	{
-		if (ci->EnglishName == lang)
+		if (ci->DisplayName == lang)
 			return _currentUICulture = ci;
 	}
 
