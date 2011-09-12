@@ -12,7 +12,7 @@ namespace PowerShellFar.Commands
 {
 	sealed class NewFarItemCommand : BaseCmdlet
 	{
-		[Parameter(Position = 0, ValueFromPipeline = true)]
+		[Parameter(Position = 0)]
 		public string Text { get; set; }
 		[Parameter(Position = 1)]
 		public EventHandler Click { get; set; }
@@ -28,7 +28,7 @@ namespace PowerShellFar.Commands
 		public SwitchParameter Hidden { get; set; }
 		[Parameter()]
 		public SwitchParameter IsSeparator { get; set; }
-		protected override void ProcessRecord()
+		protected override void BeginProcessing()
 		{
 			WriteObject(new SetItem()
 			{

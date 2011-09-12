@@ -135,12 +135,17 @@ Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Searc
 		Hidden = 'Sets FarItem.Hidden'
 		IsSeparator = 'Sets FarItem.IsSeparator'
 	}
+	inputs = @()
+	outputs = @{
+		type = 'FarNet.FarItem'
+		description = 'A new item for menus and lists.'
+	}
 }
 
 ### Search-FarFile
 @{
 	command = 'Search-FarFile'
-	synopsis = 'Searches files in the panel opens the result panel.'
+	synopsis = 'Searches files in the panel and opens the result panel with found items.'
 	parameters = @{
 		Mask = 'Classic Far Manager file mask including exclude and regular expression forms.'
 		Script = 'Search script. Variables: $this is the explorer providing the file, $_ is the file.'
@@ -151,12 +156,14 @@ Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Searc
 		Recurse = 'Tells to search through all directories and sub-directories.'
 		Asynchronous = 'Tells to performs the search in the background and to open the result panel immediately.'
 	}
+	inputs = @()
+	outputs = @()
 }
 
 ### Show-FarMessage
 @{
 	command = 'Show-FarMessage'
-	synopsis = 'Shows a message box.'
+	synopsis = 'Shows a message box with one or more choice buttons.'
 	description = @'
 If there are two or more buttons it returns either the selected button index or -1 on escape,
 otherwise nothing is returned, it is used simply to display a message.
@@ -172,6 +179,14 @@ otherwise nothing is returned, it is used simply to display a message.
 		KeepBackground = 'Do not redraw the message background.'
 		IsError = 'If error type returned by GetLastError is known, the error description will be shown before the message body text.'
 		IsWarning = 'Warning message colors are used (white text on red background by default).'
+	}
+	inputs = @()
+	outputs = @{
+		type = '[int] or none'
+		description = @'
+The selected button index or -1 on escape, or none if the message box has no
+choice buttons and just shows a message.
+'@
 	}
 }
 
@@ -199,6 +214,11 @@ standard PowerShell background jobs require WSMan and output objects.
 		'Jobs with errors are not removed automatically, you should remove them from the list.',
 		'Stopwatch is started when the first job notification is shown in the console title.'
 	}
+	inputs = @()
+	outputs = @{
+		type = 'PowerShellFar.Job'
+		description = 'A new not yet started job if the Return switch is used, otherwise nothing is returned.'
+	}
 }
 
 ### File Cmdlets
@@ -208,18 +228,25 @@ $BaseFile = @{
 		Passive = 'Tells to get items from the passive panel.'
 		Selected = 'Tells to get selected panel items or the current one if none is selected.'
 	}
+	inputs = @()
 }
 
 ### Get-FarFile
 Merge-Helps $BaseFile @{
 	command = 'Get-FarFile'
 	synopsis = 'Gets the current panel file, selected files, or all files.'
+	outputs = @{
+		type = 'FarNet.FarFile'
+	}
 }
 
 ### Get-FarItem
 Merge-Helps $BaseFile @{
 	command = 'Get-FarItem'
 	synopsis = 'Gets provider items or attached to files data objects from panels.'
+	outputs = @{
+		type = '[object]'
+	}
 }
 
 ### Get-FarPath
@@ -228,6 +255,9 @@ Merge-Helps $BaseFile @{
 	synopsis = 'Gets the current panel path, selected paths, or all paths.'
 	parameters = @{
 		Mirror = 'Tells to join the target file names with the opposite panel path.'
+	}
+	outputs = @{
+		type = '[string]'
 	}
 }
 
@@ -306,6 +336,11 @@ Merge-Helps $BasePanel @{
 		InputObject = 'A panel or explorer to be opened or an object which members to be shown.'
 		AsChild = 'Tells to open the panel as a child of the current parent.'
 	}
+	inputs = @{
+		type = 'FarNet.Panel'
+		description = 'The panel being opened.'
+	}
+	outputs = @()
 }
 
 ### Out-FarPanel
@@ -323,6 +358,11 @@ see [Meta] about hash tables and PanelPlan.Columns about column types.
 		HideMemberPattern = 'Regular expression pattern of members to be hidden in a child list panel.'
 		Append = 'Tells to append objects to the active object panel. All others options are ignored.'
 	}
+	inputs = @{
+		type = '[object]'
+		description = 'Any objects to be shown as panel files.'
+	}
+	outputs = @()
 }
 
 ### Menu Cmdlets
@@ -340,6 +380,7 @@ $BaseMenu = @{
 		X = 'Sets IAnyMenu.X coordinate.'
 		Y = 'Sets IAnyMenu.Y coordinate.'
 	}
+	inputs = @()
 }
 
 ### New-FarMenu
@@ -350,6 +391,10 @@ Merge-Helps $BaseMenu @{
 		ReverseAutoAssign = 'Sets IMenu.ReverseAutoAssign'
 		ChangeConsoleTitle = 'Sets IMenu.ChangeConsoleTitle'
 		Show = 'Tells to show immediately. In this case nothing is returned and all actions are done by item event handlers.'
+	}
+	outputs = @{
+		type = 'FarNet.IMenu or none'
+		description = 'A new menu object or none if the Show switch is used.'
 	}
 }
 
@@ -375,6 +420,10 @@ $FarList = Merge-Helps $BaseMenu @{
 Merge-Helps $FarList @{
 	command = 'New-FarList'
 	synopsis = 'Creates a list with some properties.'
+	outputs = @{
+		type = 'FarNet.IListMenu'
+		description = 'A new list menu object.'
+	}
 }
 
 ### Out-FarList
@@ -384,8 +433,16 @@ Merge-Helps $FarList @{
 	parameters = @{
 		InputObject = 'Object to be represented as a list item.'
 		Text = @'
-A property name or a script to get FarItem.Text of a list item.
+A property name or a script to get the FarItem.Text text of a list item.
 Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 '@
+	}
+	inputs = @{
+		type = '[object]'
+		description = 'Any objects.'
+	}
+	outputs = @{
+		type = '[object] or none'
+		description = 'One of the input objects selected by a user or none if nothing is selected.'
 	}
 }
