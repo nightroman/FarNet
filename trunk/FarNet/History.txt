@@ -5,6 +5,10 @@ http://code.google.com/p/farnet/
 *) Some new .NET 3.5 features
 - Replaced a few not significant delegates with Func<> generics.
 
+*) Changed CurrentUICulture inference from %FARLANG%
+Used specific cultures instead of neutrals e.g. en -> en-US, ru -> ru-RU, ..
+Neutrals are not always suitable (e.g. PowerShell help does not know "en").
+
 = 4.5.0 =
 
 *) Target .NET framework is 3.5
