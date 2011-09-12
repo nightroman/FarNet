@@ -79,7 +79,7 @@ New-Object PowerShellFar.ObjectExplorer -Property @{
 					$wmi[0] | Open-FarPanel -AsChild
 				}
 			}
-			New-FarItem	'Activate main window' {
+			New-FarItem 'Activate main window' {
 				$null = [NativeMethods]::Activate($process.MainWindowHandle)
 			}
 		)
