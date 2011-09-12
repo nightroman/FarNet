@@ -13,9 +13,12 @@ http://code.google.com/p/farnet/
 *) New-FarItem cmdlet does not accept pipeline input now.
 
 *) PowerShell.hrc for Colorer
+- Changed processing of '.' symbols.
 - Doc-comments are supported in line comments, too (as in block comments).
-- `task` is processed as `function`. Though it is not a native PowerShell
-feature it is handy with `psake` and similar tools.
+- `task` is processed as `function` (including outlined list). It is not a
+PowerShell feature but it is really handy with `Invoke-Build` or `psake`:
+https://github.com/nightroman/Invoke-Build
+https://github.com/JamesKovacs/psake
 
 = 4.5.0 =
 
