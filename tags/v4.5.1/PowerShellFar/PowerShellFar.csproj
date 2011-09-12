@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{602C5210-AF86-471A-BF19-35C0D5A71719}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PowerShellFar</RootNamespace>
+    <AssemblyName>PowerShellFar</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\PowerShellFar.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Release\PowerShellFar.xml</DocumentationFile>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+    <CodeAnalysisRuleSet>..\FarNet\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\AssertFarCommand.cs" />
+    <Compile Include="Commands\Find-FarFile.cs" />
+    <Compile Include="Commands\GetFarFileCommand.cs" />
+    <Compile Include="Commands\StartFarJobCommand.cs" />
+    <Compile Include="Commands\SearchFarFileCommand.cs" />
+    <Compile Include="EditorConsole.cs" />
+    <Compile Include="Format.cs" />
+    <Compile Include="Help.cs" />
+    <Compile Include="JobCommand.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Panels\AnyPanelSet.cs" />
+    <Compile Include="Panels\AnyPanelTypes.cs" />
+    <Compile Include="Panels\DataExplorer.cs" />
+    <Compile Include="Panels\DataPanelTypes.cs" />
+    <Compile Include="Entry.cs" />
+    <Compile Include="A.cs" />
+    <Compile Include="Commands\BaseCmdlet.cs" />
+    <Compile Include="Collections.cs" />
+    <Compile Include="Commands\BaseMenuCmdlet.cs" />
+    <Compile Include="Commands\BaseTextCmdlet.cs" />
+    <Compile Include="Commands\BaseFileCmdlet.cs" />
+    <Compile Include="Commands\BasePanelCmdlet.cs" />
+    <Compile Include="Commands\GetFarItemCommand.cs" />
+    <Compile Include="Commands\GetFarPathCommand.cs" />
+    <Compile Include="Commands\NewFarEditorCommand.cs" />
+    <Compile Include="Commands\NewFarListCommand.cs" />
+    <Compile Include="Commands\NewFarMenuCommand.cs" />
+    <Compile Include="Commands\NewFarItemCommand.cs" />
+    <Compile Include="Commands\NewFarFileCommand.cs" />
+    <Compile Include="Commands\NewFarViewerCommand.cs" />
+    <Compile Include="Commands\OutFarListCommand.cs" />
+    <Compile Include="Commands\OutFarPanelCommand.cs" />
+    <Compile Include="Commands\ShowFarMessageCommand.cs" />
+    <Compile Include="Commands\OpenFarEditorCommand.cs" />
+    <Compile Include="Commands\OpenFarPanelCommand.cs" />
+    <Compile Include="Commands\OpenFarViewerCommand.cs" />
+    <Compile Include="Converter.cs" />
+    <Compile Include="Files.cs" />
+    <Compile Include="Panels\FolderExplorer.cs" />
+    <Compile Include="Panels\FormatExplorer.cs" />
+    <Compile Include="Panels\FormatPanel.cs" />
+    <Compile Include="Panels\FormatPanelTypes.cs" />
+    <Compile Include="History.cs" />
+    <Compile Include="Panels\ItemExplorer.cs" />
+    <Compile Include="Panels\ListPanel.cs" />
+    <Compile Include="Editor.cs" />
+    <Compile Include="Panels\MemberExplorer.cs" />
+    <Compile Include="Panels\MemberPanel.cs" />
+    <Compile Include="Panels\AnyPanel.cs" />
+    <Compile Include="Panels\ItemPanel.cs" />
+    <Compile Include="Meta.cs" />
+    <Compile Include="OutputWriters.cs" />
+    <Compile Include="Panels\ObjectExplorer.cs" />
+    <Compile Include="Panels\PropertyExplorer.cs" />
+    <Compile Include="Panels\TableExplorer.cs" />
+    <Compile Include="Panels\TreeExplorer.cs" />
+    <Compile Include="RawUI.cs" />
+    <Compile Include="PowerExplorer.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Stepper.cs" />
+    <Compile Include="Text.cs" />
+    <Compile Include="UI\ActorMenu.cs" />
+    <Compile Include="UI\BreakpointDialog.cs" />
+    <Compile Include="UI\ChoiceMsg.cs" />
+    <Compile Include="UI\CommandHistoryMenu.cs" />
+    <Compile Include="UI\ConnectionDialog.cs" />
+    <Compile Include="UI\DebuggerDialog.cs" />
+    <Compile Include="UI\DebuggerMenu.cs" />
+    <Compile Include="UI\ErrorsMenu.cs" />
+    <Compile Include="UI\ExportDialog.cs" />
+    <Compile Include="UI\InputBoxEx.cs" />
+    <Compile Include="UI\InputDialog.cs" />
+    <Compile Include="UI\NewValueDialog.cs" />
+    <Compile Include="UI\PromptDialog.cs" />
+    <Compile Include="UI\SelectMenu.cs" />
+    <Compile Include="Panels\ObjectPanel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FarHost.cs" />
+    <Compile Include="Actor.cs" />
+    <Compile Include="Job.cs" />
+    <Compile Include="Panels\PropertyPanel.cs" />
+    <Compile Include="Panels\FolderTree.cs" />
+    <Compile Include="FarUI.cs" />
+    <Compile Include="JobUI.cs" />
+    <Compile Include="Panels\DataPanel.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\TablePanel.cs" />
+    <Compile Include="Panels\TreePanel.cs" />
+    <Compile Include="UI\ModulesMenu.cs" />
+    <Compile Include="UniformUI.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="Wrap.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PowerShellFar.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\FarNet\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+    <Content Include="doc.xml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FarNet\FarNet.Settings\FarNet.Settings.csproj">
+      <Project>{A9D3605F-2853-4F71-A34A-6EFF4941AA90}</Project>
+      <Name>FarNet.Settings</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\FarNet\FarNet.Tools\FarNet.Tools.csproj">
+      <Project>{3FEFB36E-496D-4DA9-B185-1DE4683B5BA1}</Project>
+      <Name>FarNet.Tools</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\FarNet\FarNet\FarNet.csproj">
+      <Project>{264744C1-B6FF-4B75-8AD0-0920BCCFF3D3}</Project>
+      <Name>FarNet</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>

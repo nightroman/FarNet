@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0E976D42-04C6-4DE7-AF97-7692A020525C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FarNet.Demo</RootNamespace>
+    <AssemblyName>FarNet.Demo</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Release\FarNet.Demo.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FarNet" />
+    <Reference Include="FarNet.Settings" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DemoCommand.cs" />
+    <Compile Include="DemoExplorer.cs" />
+    <Compile Include="DemoFiler.cs" />
+    <Compile Include="DemoHost.cs" />
+    <Compile Include="DemoTool.cs" />
+    <Compile Include="Settings1.cs" />
+    <Compile Include="Settings2.cs" />
+    <Compile Include="UserData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Help.en.hlf" />
+    <Content Include="Help.ru.hlf" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	<PropertyGroup>
+		<Install Condition="'$(Install)' == ''">$(FARHOME)</Install>
+	</PropertyGroup>
+  <Target Name="Resources">
+    <GenerateResource Sources="FarNet.Demo.restext;FarNet.Demo.ru.restext" OutputResources="Bin\$(Configuration)\FarNet.Demo.resources;Bin\$(Configuration)\FarNet.Demo.ru.resources" />
+  </Target>
+  <Target Name="AfterBuild" DependsOnTargets="Resources">
+    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll;Bin\$(Configuration)\FarNet.Demo.resources;Bin\$(Configuration)\FarNet.Demo.ru.resources" DestinationFolder="$(Install)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

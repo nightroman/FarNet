@@ -1,0 +1,2784 @@
+http://code.google.com/p/farnet/
+
+= 4.5.1 =
+
+*) Some new .NET 3.5 features
+- Replaced a few not significant delegates with Func<> generics.
+
+*) Changed CurrentUICulture inference from %FARLANG%
+Used specific cultures instead of neutrals e.g. en -> en-US, ru -> ru-RU, ..
+Neutrals are not always suitable (e.g. PowerShell help does not know "en").
+
+= 4.5.0 =
+
+*) Target .NET framework is 3.5
+
+FarNet and its modules are now built for .NET 3.5. At the same time the core is
+configured to run with .NET 4.0 if it is available. Thus, modules targeted for
+.NET 4.0 are supported and .NET 3.5 is not needed if .NET 4.0 is installed.
+
+The game is over for Windows 2000, RIP. If .NET 3.5 is not yet installed and
+Windows is XP SP3 or above then consider to install .NET 4.0 (unless 3.5 is
+really needed for something else). 4.0 is much smaller, just in case.
+
+Existing modules built for .NET 2.0 still work, rebuild is not needed. But when
+such modules are built next time their target framework should be set to 3.5.
+
+*) Roaming and local data locations
+GetFolderPath() methods are based on the environment variables FARPROFILE,
+FARLOCALPROFILE if they are defined and not empty (introduced in Far 3, 2091).
+Otherwise they use roaming and local paths as usual. Thus, it is possible now
+to configure the locations of FarNet and its module settings and working files.
+
+*) IFar
+(mostly for internal use though this API is officially public)
+New GetModuleManager(string). It is faster than GetModuleManager(type) and it
+can be used if a type is not yet available because its assembly is not loaded.
+In some cases names are not known directly and the old method is still used.
+
+= 4.4.21 =
+
+*) Editor color API (revised)
+- IEditor: GetColors(), AddColor() work with the ColorSpan class.
+
+*) Not standard FarNet late loading
+Fixed a few issues in cases when FarNet is loaded after opening editors.
+
+= 4.4.20 =
+
+*) Editor color API
+This API is experimental and not yet recommended for public use, it is added
+for the RightWords module for highlighting of misspelled words in editors.
+- IEditor: new methods GetColor(), SetColor(); new class LineColor.
+- New EditorRedrawMode enum, EditorRedrawingEventArgs uses it.
+
+= 4.4.19 =
+
+*) Bug
+Fixed DirectoryNotFoundException on reading the module cache at start.
+
+= 4.4.18 =
+
+*) Help helpers
+
+New IFar.GetHelpTopic() helps to format strings for HelpTopic properties like
+"<C:\...\MyModule\\>Topic" (but in fact format details are hidden in this way).
+
+New IFar.ShowHelpTopic() is a simple method for simple cases. The old and not
+quite simple ShowHelp() still works as usual. But it is kind of deprecated now.
+
+*) FarNet.Demo module
+Added two help files (en, ru) and examples of using help files in the code:
+a) HelpTopic property of the menu;
+b) explicit call of ShowHelpTopic().
+
+*) Module setting
+- Added remarks about recommended data types to ModuleSettingsProvider.
+- Module settings panel is not closed (by pressing [Esc]) if data are invalid
+and Save() throws an exception. Forced close (open another panel) is allowed.
+
+*) IEditor
+New ConvertPointEditorToScreen(), in addition to ConvertPointScreenToEditor().
+
+= 4.4.17 =
+
+*) Module settings panel and engine
+
+Default setting names start with '-'. Ever edited setting names start with '+'.
+See more about defaults in the panel help [F1].
+
+Reset to defaults ([Del], [F8]) works for all settings, with or without default
+values explicitly defined by settings attributes.
+
+[CtrlF11] in settings shows default / edited (- / +) data sorted separately.
+
+For developers: see ModuleSettingsProvider API docs for some technical details.
+
+*) FarNet.Demo module (included as sources)
+
+Though it is a demo module it includes tools that can be useful for developers:
+
+`Tracing` tool shows the menu that allows to change the level of tracing used
+by the core and to turn tracing to the file on/off. It can be handy if you do
+not have or use DebugView.exe from Sysinternals or similar diagnostics tools.
+
+`demo: process` command shows some useful info about the current process.
+
+`demo: assembly` command shows currently loaded .NET assemblies.
+
+HINT: Tracing level and listeners can be set permanently in Far.exe.config,
+for example in order to trace loading of preloadable modules. FarNet.Demo
+allows to do that temporary for the already started session.
+
+= 4.4.16 =
+
+*) New FarNet module file structure and loading rules
+
+Simplified the module file structure. See Readme.txt for details. It is now
+mandatory that the module directory and the base assembly names are the same
+(just like it is for Windows PowerShell modules).
+
+Modules may have any other .dll files in their directories. There is no need in
+using .CFG files in order to tell the core what .dll should be loaded exactly.
+Thus, .CFG files are not used now.
+
+Review your modules and make sure they follow these new rules.
+
+*) Bugs in the module settings panel (but settings work fine)
+- Some default values were shown empty.
+- Settings were not saved if only reset to defaults was used ([Del] or [F8]).
+
+= 4.4.15 =
+
+*) IFar
+- All Post*(EventHandler) methods are replaced with Post*(Action). Practice
+shows that EventHandler is redundant. This change is breaking but not many
+modules should be affected (the latest PowerShellFar is updated).
+
+*) IModuleManager.GetFolderPath()
+- Added the 'bool create' parameter, so that creation is now optional and
+it is requested only when it is really needed (on writing files). Thus:
+-- Better performance (some expensive checks of existence are avoided)
+-- No more empty profile sub-directories (you can remove them now)
+
+*) Module settings engine
+- Binary serialization should work fine now (with usual caveats).
+- Saves one file if just one of Local and Roaming sets is dirty.
+- Other tweaks.
+
+*) Module settings panel
+- Better validation of entered values (consider to [F2] before closing editors).
+- Values serialized as XML can be edited as XML. Normally such data should be
+[Browsable(false)] (excluded from UI) but it's up to a developer, after all.
+
+*) Sample modules in FarNet\Modules
+Replaced sample modules Tutorial-Command, Tutorial-Filer, Tutorial-Host with
+one module FarNet.Demo with its Visual Studio solution/project. Features:
+  * Host class (not pre-loaded)
+  * Menu tool class (all areas)
+  * Command class (prefix `Demo:`)
+  * Filer class (`*.resources` files)
+  * Explorer class (used by the filer)
+  * Settings classes (various settings)
+  * Localized module resources (English and Russian)
+
+*) Misc
+- IFar.PostJob uses delegate chains instead of job queues.
+- Cache.binary does not use FarNet types (bullet-proof and effective way).
+
+= 4.4.13 =
+= 4.4.14 =
+
+### No official Windows registry support for modules
+
+Modules should use new standard FarNet settings (see ModuleSettings from new
+FarNet.Settings.dll) or take care of settings on their own. In the latter case
+it is recommended to use files in local or roaming folders (see IModuleManager
+GetFolderPath()). Note: all names like FarNet.* are reserved.
+
+*) New .NET menu item "Settings..."
+Shows modules with at least one settings set implemented and opens the settings
+panel for a selected module settings set. Use [F1] for help. The panel UI is
+rather simple but it is quite enough. To be improved when needed/requested.
+
+*) FarNet module cache (just in case of problems):
+%LOCALAPPDATA%\Far Manager\FarNet\Cache.binary
+
+These old registry data can be removed manually:
+Far2\Plugins\FarNet
+Far2\Plugins\FarNet.Modules
+
+FarNet itself does not use registry when deals with modules. But it still uses
+registry because Far 2 does. Thus, FarNet.Works.Registry.dll still exits and
+IFar.OpenRegistryKey(), too, just in case if some module needs registry data.
+
+*) Modules with old FarNet registry tools should be updated and some settings
+migrated. PowerShellFar, RightControl, and Vessel use new settings approach, so
+that their settings can be viewed/modified in the new module settings panel.
+
+### Other changes
+
+*) Panels
+- Removed KeyPressing event (Far 3 is going to drop it, perhaps).
+
+*) 4.4.14
+Fix for localized modules.
+
+= 4.4.12 =
+
+*) XPath searches
+- Fixed occasional error messages on stopping a search.
+- Optimized memory use during search (weak references allows to discard some of
+not used data). This introduces a little overhead but on large data sets saves
+a lot of memory, avoids out of memory cases, and even may work faster.
+
+= 4.4.11 =
+
+*) XPath searches
+- Optimized the XPath navigator (performance gain is about 30%).
+- Changed File and Directory attributes: boolean flags (ReadOnly, Archive, ...)
+always exist, their values are 0 (false) and 1 (true).
+- XPath files (.xq) can contain comments and variable declarations with defined
+values or external. In the latter case an input box is shown in order to input
+values. All this stuff has to be placed before the XPath expression.
+Demo XPath file:
+http://farnet.googlecode.com/files/_110428_160407_Demo-XFile.xq.htm
+
+*) SearchFileCommand
+- New property XVariables allow to perform XPath queries with variables.
+
+= 4.4.10 =
+
+*) XPath queries in file searches and related tools
+- Added parameters XFile, XPath to the Explore module 'explore:' command.
+- Extended the XPath engine with custom helper functions:
+* equals(p1, p2) : string.Equals(p1, p2, StringComparison.OrdinalIgnoreCase)
+* compare(p1, p2) : string.string.CompareOrdinal(p1, p2)
+* is-match(p1, p2) : Regex.IsMatch(p1, p2)
+
+See some examples of XPath queries in Readme.txt of the Explore module.
+
+HINT: use .xq extensions for files with XPath expressions, so that Colorer
+processes them as xquery. This is not the same, indeed, but it's quite fine.
+
+= 4.4.9 =
+
+*) Panel
+Converted one more internal method into public virtual:
+- WorksViewChanged -> UIViewChanged
+
+= 4.4.8 =
+
+*) Panel
+Converted some more internal methods into public virtual:
+- WorksCtrlBreak -> UICtrlBreak
+- WorksGotFocus -> UIGotFocus
+- WorksLosingFocus -> UILosingFocus
+- WorksRedrawing -> UIRedrawing
+- WorksUpdateInfo -> UIUpdateInfo
+
+= 4.4.7 =
+
+*) Panel
+Converted some more internal methods into public virtual:
+- WorksClosed -> UIClosed
+- WorksClosing -> UIClosing
+NOTE: UIClosing is useful but buggy:
+http://bugs.farmanager.com/view.php?id=602
+
+= 4.4.6 =
+
+*) Panels & explorers
+- ImportFiles supports the FilesToStay list and selection recovery.
+- ExportFiles: target panel is updated to show new items without a delay.
+- New *CloneFile* family of methods for [ShiftF5] in panels.
+- New method Navigate(), only for the same type explorers ~ same virtual FS.
+- Removed the dialog from UIRename() and NewName from RenameFileEventArgs, it
+is completely up to panels and explorers what they do and show on operations.
+- Select|UnselectNames parameter is IEnumerable now (and ToString() is used).
+
+*) UI menu: .NET \ Panels
+- New commands "Decrease left column", "Increase left column" work for module
+panel if its current view has two columns. The vertical column separator is
+moved left and right on these commands. Use [Space] to repeat the menu.
+- For example it works in super panels, including search result panels.
+- They are candidates for macros, e.g. for CtrlAltLeft/Right.
+
+*) UI menu: .NET \ Console \ Decrease|Increase font size
+- [Space] is used to invoke commands and repeat the menu.
+
+*) Misc
+- New property IPanel.ViewPlan - info about column kinds and widths.
+
+*) Bugs
+- Native panel state was not restored in some cases.
+
+= 4.4.5 =
+
+*) Explorer arguments
+Removed the Panel property. Instead, most of explorer methods are called via
+virtual panel methods, so that panels have a chance to do something before or
+after. There is also the Parameter property, explorers and callers may use it.
+
+*) Explorer methods
+- Renamed a few methods (see the forum discussion)
+- AcceptFilesEventArgs: Delete -> ToDeleteFiles
+
+*) Explorers and panels
+- Added RenameFile() to rename a file
+- Added ExportFiles() to copy/move module files to native destinations
+- Super panel supports ExportFiles (actually it depends on explorers of files)
+
+*) Misc
+- FarFile class is abstract
+
+= 4.4.4 =
+
+*) File search
+- Uses the progress box with some info and [Esc] key stopping the search.
+- Results are shown as Name/Owner where Owner values are explorer locations.
+- Can be performed in the background with the new switch -Asynchronous of the
+Explore module "explore:" command. Results are added to the panel dynamically.
+NOTE: Asynchronous mode is very cool but vulnerable, some module panels are not
+suitable for this, it all depends on how they and their dependencies work.
+- On [Esc] you are prompted to Close or Push the result panel. Push can be done
+even if the search process is still in progress. Use the FarNet menu to pop the
+panel later (perhaps with more results).
+- Added -Depth parameter to the explore: command.
+
+*) Super panel, analogue of the temporary panel
+
+Unlike the temporary panel the super panel deals with files from module panels,
+including mixed. It knows how to view / edit / copy / move / delete and etc.
+its files because any super file keeps the reference to its source explorer
+that actually performs that operations on files, the super panel simply
+dispatches operations and files.
+
+It is opened by the empty "explore:" command (i.e. without parameters).
+
+It is also used for search results in both sync and async modes.
+
+*) Opening files (on [Enter])
+Added methods OpenFile() and UIOpenFile() to explorer and panels. As a result,
+files are opened "as usual" from super/search panels if an explorer can do.
+
+*) ProgressBox
+- New properties ElapsedFromShow (used to avoid too frequent shows),
+ElapsedFromStart (useful for statistics, performance measurement, etc.)
+
+*) ProgressForm
+uses "safe" abort, if possible. The idea/code is from:
+http://www.codeproject.com/KB/threads/AbortIfSafe.aspx
+
+= 4.4.3 =
+
+*) Module panel revision, continued
+
+*) Explorer
+- Added quite a number of new methods, changed some existing.
+
+*) Panels revision
+- All module panels are based on explorers now. A lots of stuff moved to the
+Explorer class. To be continued.
+
+*) Panels new
+- Method SelectFiles().
+- Property SelectionExists.
+
+*) IFar
+- FindPanel() ~ one panel -> Panels() ~ all panels
+
+*) Misc
+- Error message box: removed [Copy], [More] shows details in the locked editor.
+
+= 4.4.2 =
+
+*) Module panel revision, continued
+
+Experimental search command moved to the new module Explore. But the search
+core moved to FarNet.Tools - the idea is that any module can make its own
+custom search using the tools. There are two consumers so far:
+- the FarNet module Explore;
+- the Start-FarSearch cmdlet in PowerShellFar.
+
+Corrections/changes/etc. in panels and explorers:
+- Renamed OperationModes -> ExplorerModes.
+- CanX() methods are replaced with Function flags.
+- MakePanel(args) -> CreatePanel(): now it has to create or get null.
+- Removed SetupPanel() as redundant, CreatePanel() should do this job.
+- CanImport is used in ExportFileArgs to let the core to [not] lock the editor.
+- Panel.DataId is replaced with more flexible FileComparer approach/property.
+- IPanel.TempFileExtension -> ExportFileArgs.FileNameExtension (search panel
+can now Export/Edit files with the proper extensions + extensions may now be
+different for different files).
+
+Explorers/panels have TypeId and ExplorerTypeId - simple way to tell the core
+to reuse the panel with several explorers of the same type.
+
+New explorer type/method ExploreLocation - it works with pure paths and files
+with no data. Advantage: standard Far search [AltF7] and [F3], [CtrlQ] work.
+
+*) Editor
+- IsLocked is settable (before opening, too).
+
+*) Dialog
+- IButton.Text - added internal setter (reflection issue).
+- Added IControl.Name (not used by the core) in addition to Data.
+
+= 4.4.1 =
+
+Module panel revision, continued
+- Fixed a few bugs in the Panel class
+- ExplorerResult -> JobResult (to be used elsewhere)
+- Panel.UI{View/Edit}CurrentFile -> UI{View/Edit}File
+- Added to explorers the DeleteFiles method and its infrastructure
+
+Concept proof: the first version of universal search in explorer panels:
+[ShiftF7] (hardcoded so far). There is no dialog yet, it finds all items and
+shows them in a new search result panel. [Enter] on found items opens their
+original panels as child panels of the search. If an item (its explorer)
+supports Export/Import then you can view/edit it in the result panel.
+
+= 4.4.0 =
+
+*** Massive revision of panel API and the first step to "file explorers" ***
+
+All module panels have to be adapted to the new infrastructure.
+Modules accessing changed panel members have to be updated, too.
+
+*) Classes and interfaces
+- Panel replaces IPanel
+- IAnyPanel becomes IPanel (any panel: native, plugin, module)
+- Removed IPanelInfo (Info property), its data moved to the class.
+- Removed AlternateName from files, it is generated and used internally.
+
+Module panel interface (old IPanel) is combined with the Panel class. The Panel
+class (or derived) holds the panel data, event handlers, extra members, etc.
+The Host property was removed.
+
+*) New class Explorer
+Experimental data provider dealing with FarFile. Explorers are panel helpers
+but they can be used without panels for pure data operations including testing.
+
+The PowerShellFar script Test-Explorer-.ps1 shows how various explorers work.
+
+To be continued. All panel methods operating on its virtual file system will be
+moved to explorers soon. Panels should be for pure UI classes.
+
+*) Renamed/changed quite a number of lame names/things; just some of them:
+- IPanel.Path -> CurrentDirectory
+- IPanel.ActivePath -> StartDirectory
+- IFar.ActivePath -> CurrentDirectory
+- Use*Highlighting -> Highlighting (3 states)
+- AddDots -> DotsMode:PanelDotsMode (3 states)
+- Some flags were renamed, e.g. related to RealNames mode.
+- Events: UpdateFiles, ExportFiles, ImportFiles, MakeDirectory, and
+SetPanelDirectory (should set PanelDirectory, not CurrentDirectory).
+
+*) IFar
+New method MatchPattern() compatible with the core file masks.
+
+= 4.3.40 =
+
+*) CallPlugin(0xcd, ..) properly opens modal UI and even panels!
+CallPlugin supports asynchronous commands (steps and jobs). Asynchronous
+commands are suitable for opening dialogs, modal editor/viewers, and even
+panels. See Readme.txt for the details, examples, and a known issue, too.
+
+*) IFar
+New property MacroArea.
+
+*) ModuleCommandEventArgs
+New property MacroArea (instead of IsMacro).
+
+*) IDialog
+New property KeepWindowTitle (Far 2.0.1805). As a result, ProgressForm is now
+able to show progress information in the console title, as ProgressBox does.
+
+*) Housekeeping (BREAKING if a module is affected)
+- Renamed FarMacroState to MacroState ("Far" is rather useless in here);
+- PostKeys(, bool), PostText(, bool), PostKeySequence(, bool) - inverted the
+second parameter: disableOutput -> enableOutput for consistency with PostMacro,
+and Macro.EnableOutput. Also, this follows the rule of "default false". The
+change is not breaking but may cause unwanted effects. Review these calls.
+
+*) BUGS
+- Fixed a minor issue in Macro.EnableOutput.
+- Fixed a multi-threading issue in ProgressForm.
+- Fixed an error message on closing a module panel which is opened over a
+native plugin panel.
+
+= 4.3.39 =
+
+*) API documentation FarNetAccord.chm
+Used the patch for the help builder. There are many fixes. The most important
+perhaps is the fix of missing enum value descriptions.
+
+*) ProgressForm
+- Removed obsolete SetProgressInt64(). Use SetProgressValue().
+- If you use the MultiHasher module: take 0.2.1 or later.
+
+*) IAnyPanel
+New property bool CaseSensitiveSort { get; set; }
+
+*) PanelSortMode
+New value ChangeTime (~ SM_CHTIME).
+
+*) Revision of the PanelSortMode enum and related panel properties
+Added all the same values with the 'Reversed' suffix, e.g. added 'NameReversed'
+for 'Name', etc. Thus, all *SortMode properties in panels now get/set the sort
+mode and direction in one shot. This approach seems to be easy, intuitive, and
+helps to avoid some mistakes. This change is breaking if a module uses removed
+*ReverseSortOrder properties.
+
+= 4.3.38 =
+
+*) IFar.Message
+New option Draw to draw message-like boxes.
+
+*) IFar.UI (IUserInterface)
+New method Draw(): actually draws the job done by DrawColor & DrawPalette
+(it's more natural than also working DrawXXX(.., null)).
+
+*) New interface FarNet.Tools.IProgress.
+
+*) New class FarNet.Tools.ProgressBox : IProgress
+Draws a simple message box with progress information.
+PSF script Test-ProgressForm-.ps1 shows how to use it.
+
+*) ProgressForm implements IProgress
+- SetProgressValue() now works with double's, not int's.
+- SetProgressInt64() is OBSOLETE AND WILL BE REMOVED.
+
+Modules with ProgressForm:
+- Multihasher should work fine;
+- FolderChart has to be updated;
+- Rebuild other (personal) modules.
+
+*) ProgressBox & ProgressForm
+Support of multi-line text (see LineCount).
+
+= 4.3.37 =
+
+*) MODULE COMMANDS AND MACROS
+If a FarNet module provides commands invoked by prefixes then these commands
+can be called from macros by CallPlugin(). The first argument is the FarNet
+system ID: 0xcd. The second argument is the module prefix and command.
+
+Example (RightControl and PowerShellFar commands):
+
+	CallPlugin(0xcd, "RightControl:step-left")
+	CallPlugin(0xcd, ">: Menu-Favorites-.ps1")
+
+Mnemonic for 0xcd: eXecute CommanD
+
+*) Search in FarNet panels
+Search by name pattern and F3/CtrlQ on folders work. Note that module panels
+should do this properly. E.g. built-in PSF panels do not support this, yet.
+
+*) IEditor, IPanel, IDialog
+Property object Data {get;set;} is replaced with Hashtable Data {get;}. This
+change allows more than one user to attach data without conflicts. Table keys
+should be unique, indeed (e.g. a unique reference, Guid, etc.).
+
+*) IFar
+Removed the Run method. Use more effective way: GetModuleCommand + Invoke.
+
+*) ModuleCommandEventArgs
+New property IsMacro tells that a command is invoked via CallPlugin().
+New property Ignore to tell it is not done (e.g. to use another way).
+
+= 4.3.36 =
+
+*) IEditor
+Added yet missed property IsVirtualSpace (EOPT_CURSORBEYONDEOL in Far API).
+
+*) IAnyPanel
+New method SelectedIndexes().
+
+*) Shelve/Unshelve FarNet panels
+These actions use SelectedIndexes() and keep/restore selection by indexes, not
+names. This is more effective and allows to restore selection with same names
+(rare but still possible use case, e.g. process list). NB: Push/Pop of native
+panels still use names because indexes might change if files changed.
+
+= 4.3.35 =
+
+*) IEditor.KeyCount
+Corrected to count actual changes. (Reminder: it is not for public use)
+
+= 4.3.34 =
+
+*) x64: Fixed crashes in dialogs. Thanks to signatov2000.
+
+*) IEditor.KeyCount
+It is mostly designed for the Vessel module, not for public use. Most of not
+significant keys are excluded (navigation, Ctrl and Alt combinations, etc.)
+
+= 4.3.33 =
+
+*) Menu	Console...
+Commands Decrease/Increase font size: this feature works only in Windows Vista
+and above. But it should not make problems in XP.
+
+*) MouseWheel event in editor
+It turns out this event is  not yet supported by Far API. The issue is being
+investigated, the event is not removed from FarNet but it does not work.
+
+= 4.3.32 =
+
+*) .NET menu
+-- All panel menu commands and items moved to the new sub-menu "Panels...".
+-- Added the sub menu "Console...". There are two commands there: decrease and
+increase console font size. This menu is available in all menus F11\.NET
+
+Example mouse macros for the Common area:
+-- CtrlMsWheelDown (FarNet: Decrease font size):
+F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End
+-- CtrlMsWheelUp (FarNet: Increase font size):
+F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End
+
+Notes:
+-- increasing fonts too much leads to appearance of the console scroll bars;
+-- some fonts are not suitable for this kind of interactive resizing.
+
+*) IEditor
+-- SetText() now drops selection, if any; this way looks more intuitive.
+-- Fixed GetSelectedText() for column kind of selection.
+
+*) MouseInfo
+-- New property Value (wheel value for the MouseWheel event). Note: MouseWheel
+event works in Far 2.0.1756+
+
+*) IListMenu
+Fixed the permanent filter.
+
+= 4.3.31 =
+
+*) UI: new .NET menu items
+Added two new menu items "Editors..." and "Viewers..." that show the editor or
+viewer list sorted by recent activity. This is experimental but it looks like a
+useful addition to the native Far menu Screens.
+
+*) Editor & Viewer
+-- New methods Activate() to make the instance window active.
+-- Improved internal management of editor and viewer lists. Useful side effect:
+IFar methods Editors() and Viewers() return instances sorted by last activity.
+
+*) IEditor
+-- New properties KeyCount, TimeOfOpen, TimeOfSave (for statistics, AI, etc.)
+-- Changed Save(): it saves only on changes. This is shorter than often used
+"if (!editor.IsSaved) Save();" and helps to avoid misuse of the IsModified.
+-- New method Save(bool) allows to save even not changed file.
+
+NB: change of Save() is unlikely breaking but you may want to review your calls
+and remove not needed checks.
+
+*) IViewer
+-- New property TimeOfOpen (similar to IEditor).
+
+= 4.3.30 =
+
+*) IEditor
+-- New property Bookmark gets the bookmark operator.
+-- Method Bookmarks() moved to the IEditorBookmark.
+
+*) New interface IEditorBookmark
+Operates on the standard and stack (new!) editor bookmarks.
+
+*) Exceptions on Far call failures
+InvalidOperationException is used for internal issues, e.g. Far call failures,
+instead of OperationCanceledException. Modules may be affected if they used to
+catch/check OperationCanceledException.
+
+NB: for correct work with bookmarks use Far 2.0.1667+
+
+= 4.3.29 =
+
+*) Far.Net.UI
+New method SetProgressFlash() (Far 2.0.1660, ACTL_PROGRESSNOTIFY).
+
+*) FarNet.Tools.ProgressForm
+The progress form calls SetProgressFlash() after show. As a result, such
+modules as FolderChart, MultiHasher have this new feature automatically.
+NB: the toolbar icon flashes only if the window is not active.
+
+*) IDialog
+Fixed work of the TypeId property for native Far dialogs.
+
+= 4.3.28 =
+
+*) IEdit, IComboBox
+Added property IsTouched (~ DM_EDITUNCHANGEDFLAG).
+
+*) New interface IEditable
+IEdit and IComboBox now share the same base interface IEditable.
+(It's unlikely breaking, but probability is not zero)
+
+= 4.3.27 =
+
+*) FarNet.Tools.ProgressForm
+-- New helper method SetProgressInt64() for long integer values.
+-- New method Invoke() invokes the specified job action delegate in a new
+thread. This is a simple scenario with optional job thread abortion.
+-- New features were tried/tested in the MultiHasher module and will be
+proposed to the author. Watch the MultiHasher announcements.
+
+= 4.3.26 =
+
+*) New utility library FarNet.Tools.dll (and its FarNet.Tools.xml)
+It will contain tools that are not FarNet API or Far Manager API but extra
+FarNet utilities designed for all modules. If a module uses these tools then
+FarNet.Tools.dll should be added to its references together with FarNet.dll.
+-- moved SubsetForm from FarNet to FarNet.Tools;
+-- added new utility form ProgressForm; examples: Test-ProgressForm-.ps1 in
+PowerShellFar and the separately distributed module FolderChart.
+
+*) Utility forms moved from FarNet to FarNet.Tools
+-- removed IFar.CreateSubsetForm() method;
+-- removed interfaces IForm and ISubsetForm.
+
+*) Documentation
+-- Added documentation of new FarNet.Tools types.
+-- Improved index panel: added sub-indexes for types, joined indexes for
+members with same names + full names view in the "Topics found" dialog.
+
+= 4.3.25 =
+
+*) IEditor
+-- Very good news: workaround methods BeginAccess/EndAccess for faster line
+iterations are not needed anymore (Far 2.1623+) and removed. Breaking change,
+modules using them should be updated.
+-- If EditorKit module is used then it has to be rebuilt.
+
+*) Documentation
+-- It is adapted for and built by the latest Sandcastle. Documentation style is
+changed from "Prototype" to "VS2005" because "Prototype" is declared obsolete.
+("VS2005" style is better, basically)
+
+= 4.3.23 =
+
+*) Update-FarNet.ps1 (new script for selective update of FarNet packages)
+http://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarNet.ps1
+
+Its goal is selective update of various FarNet packages. In particular it
+updates FarNet. You may skip any packages.
+
+You can download the script directly from the above URL (do not forget to
+unblock the script) or take it together with the PowerShellFar package.
+
+*) Raw UI
+Minor changes and fixes.
+
+= 4.3.22 =
+
+*) Raw UI methods moved to a separate interface
+-- Renamed recently added property IFar.RawUI to UI.
+-- Added a few UI members to hide direct calls to System.Console.
+-- Moved raw UI members from IFar to IFar.UI: DrawColor, DrawPalette,
+GetPaletteBackground, GetPaletteForeground, MainWindowHandle, RestoreScreen,
+SaveScreen, SaveUserScreen, ShowUserScreen, SetProgressState, SetProgressValue,
+Redraw, and Write.
+
+= 4.3.21 =
+
+*) IFar
+-- New property RawUI.
+
+*) IRawUI
+-- Low level UI operator; properties so far: WindowCursor, WindowPlace
+(Far 2.0.1573: ACTL_GETFARRECT, ACTL_GETCURSORPOS, ACTL_SETCURSORPOS).
+
+= 4.3.20 =
+
+*) Renamed documentation
+Renamed PowerShellFar.chm to FarNetAccord.chm. It includes PowerShellFar API
+but it is about FarNet in the first place, so the new name is less confusing.
+
+*) IButton
+-- fix: .Text should return the real text, i.e. without brackets.
+
+*) Module configuration
+-- fixes in editor and filer module config tools.
+
+*) Misc
+-- fix of console colors of error messages on exit.
+
+= 4.3.19 =
+
+Internal changes dealing with the user screen operations. Automatic calls of
+SaveUserScreen before showing Far UI after ShowUserScreen and console writing.
+NOTE: direct use of these methods and console writing is not recommended.
+
+IFar
+Renamed WriteText and WritePalette to DrawColor and DrawPalette in order to
+distinguish them from low level Write* methods. In contrast to Write* family
+Draw* methods are for normal use, for example for custom dialog controls.
+
+= 4.3.18 =
+
+New module cache approach
+-- It is fine to use several Far or FarNet locations with different sets of
+modules or even different versions. Cache conflicts are resolved now.
+-- Theoretically new way of caching should work slightly faster because some
+housekeeping procedures are not performed.
+But:
+-- There is no automatic cache cleaning now. The cache may contain entries not
+used any more. It is recommended to remove the cache manually periodically, in
+particular after removing\moving\renaming modules and Far\FarNet locations:
+HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet\!Cache
+
+Renamed confusing names
+IFar.GetUserScreen -> ShowUserScreen
+IFar.SetUserScreen -> SaveUserScreen
+These methods are "low level" and it is very unlikely that many modules use
+them. Still, if a module calls them then this change is breaking, indeed.
+
+= 4.3.17 =
+
+Tracing (configured via Far.exe.config or dynamically)
+-- Internal FarNet tracing uses newer TraceSource tools instead of older Trace.
+-- "Far.exe.config" enables the source "FarNet" with the switch "FarNet.Trace".
+The default switch level is "Warning". Do not forget to update the config file
+(or merge with your changes) to make sure that new tracing works.
+-- The trace listener writing to the file "C:\Far.exe.trace.log" is disabled in
+the distributed config file. Practice shows that it is useful only in special
+cases. In that cases this or other listeners should be added and configured.
+Alternatively, tracing can be watched by the Sysinternals utility DbgView.exe
+or in the attached debugger if any is available.
+
+= 4.3.16 =
+
+IEditor
+-- Removed the workaround method ChangeTitle because Mantis 1334 was recently
+resolved: the property .Title now changes the title permanently, null or empty
+string restores the original title.
+
+Module EditorKit
+The module TrimSaving is replaced with a new module EditorKit. It contains:
+-- TrimSaving (old) - trims line ends on saving;
+-- ExpandTabsAll (new) - sets tabs expansion mode to 'All' for some files.
+Notes:
+-- Reminder: file types are configurable via FarNet configuration UI.
+-- You may want to remove or rename this registry key:
+HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet\TrimSaving.dll
+
+= 4.3.15 =
+
+IDialog
+-- New property IEnumerable<IControl> Controls
+-- Breaking change: GetControl is replaced with the indexer [int]
+
+IEditor
+-- New method ChangeTitle: changes the title permanently.
+This API may be changed or removed depending on Mantis 1334.
+
+= 4.3.13 =
+
+Technical build with some changes in the API documentation.
+
+= 4.3.12 =
+
+MASSIVE REVISION OF EDITOR AND EDITOR LINES
+(breaking for modules working with editors)
+
+As it was mentioned at the forum some time ago, API of editor and edit lines is
+revised in this version. There are many changes, they are not listed in here,
+everything is explained in the API documentation. Just two words: basic stuff
+and principles are the same. But some "too smart" and practically not really
+useful features were cut off. Some names were changed to be more informative.
+
+Also, key and mouse events are split up: OnKey -> KeyDown, KeyUp; OnMouse ->
+MouseClick, MouseDoubleClick, MouseMove, MouseWheel. Thus, now in many cases
+handlers do not have to check event kinds.
+
+NEW PANELS FEATURES
+(new in Far API)
+
+*) New property DirectoriesFirst (bool) ~ new sorting mode
+*) New PanelSortMode values: StreamCount, StreamSize, FullName
+
+OTHER CHANGES
+
+Included two more internal .NET assemblies into the FarNet package.
+
+= 4.3.11 =
+
+Changes are mostly internal, important for the future. They are not breaking if
+modules do not use something not recommended.
+
+FarNet host configuration: some settings in "Far.exe.config" are replaced with
+environment variables, see Readme.txt for details. But normally you should use
+default settings.
+
+New DLLs are included into the FarNet package: FarNet.Works.*.dll. They contain
+pure .NET host independent internal tools. They should not be used by modules
+directly. They are used only by the FarNet host (actual Far plugin). In the
+future they will be used by other FarNet hosts.
+
+Some public API was extended. This should not affect modules and they should
+not use it (marked "for internal use").
+
+Related internal change: renamed namespace FarNet.Support into FarNet.Works; it
+contains internal FarNet stuff that should not be used by modules.
+
+= 4.3.10 =
+
+ACTION GUID
+
+Guid attribute is now mandatory for module action classes (tools, commands,
+editors, filers). Generate it, do not copy\paste it from some sample code :).
+
+At the same time Guid attribute is not required for module host classes. It is
+not an error to set it, it is just not used by FarNet. Each module host is well
+identified by its module name, because module names have to be unique.
+
+PANEL KEY PROCESSING
+
+Preprocessing of panel keys is now done by the new event IPanel.KeyPressing.
+As a result:
+1) Event IPanel.KeyPressed is not called on this, KeyPressing is called;
+2) Flag PanelKeyEventArgs.Preprocess was removed, it is not needed now.
+
+Also, some mysterious and\or annoying pseudo key events are filtered out
+internally and panel key events are not called (e.g. KEY_NONE, KEY_IDLE,
+KEY_KILLFOCUS, KEY_GOTFOCUS - some of them are not documented in Far API).
+
+This change is breaking for panels using PanelKeyEventArgs.Preprocess. But it
+makes processing of IPanel.KeyPressed simpler because in most cases panels are
+not interested in preprocessing events. Thus, panels do not have to filter out
+noise of preprocessing keys and pseudo keys.
+
+Just in case, [e]Bu$ter's module "Windows7.Libraries" should work fine.
+
+MINOR CHANGES
+
+FarNet module tool config: minor issue: if a new version of an installed module
+tool adds new menu areas then items may be not shown there by default if a user
+had already modified the tool configuration. Fixed for new modules to come. Old
+module tool settings may be updated manually when needed.
+
+IFar: removed method ShowPanelMenu(), it is unlikely ever needed for modules.
+
+Internal: improved management of editor opening events.
+
+= 4.3.9 =
+
+Fixed a few configuration bugs of FarNet 4.3.8.
+
+Disk menu: show just tool names with no .NET prefix and hotkeys.
+
+Tutorial-Host sample module: used Options=AllAreas, for demo and testing sake.
+
+= 4.3.8 =
+
+FarNet configuration dialog for a module tool allows to set a hotkey for the
+.NET menus (as usual) and to disable\enable the default areas where the tool
+menu items are shown (new feature). As a result, normally modules should not
+care of these configuration settings, they are common for all modules and
+configured by the core.
+
+= 4.3.7 =
+
+PROGRESS
+
+*) Modules with dynamically added actions do not have to unregister them on
+disconnection: they are unregistered automatically.
+
+*) IMacro: added support for Consts and Vars areas.
+
+*) Optimized module loading, unloading, caching.
+
+*) Fixed crash on incorrect use of a listbox.
+
+REFACTORING, BREAKING FOR SOME MODULES
+
+*) Abstract registry access:
+-- Removed properties IFar .RegistryFarPath, .RegistryPluginsPath.
+-- Modules should not operate on the registry directly (though they can, of
+course). They should access data via IRegistryKey returned by OpenRegistryKey()
+of IModuleManager (normally) or IFar (only when really needed).
+-- For Far Manager IRegistryKey works with the Windows registry, it is the
+wrapper of Microsoft.Win32.RegistryKey. But modules should not rely on this.
+
+*) IFar: window members moved to the operator:
+Members GetWindowInfo, GetWindowType, SetCurrentWindow, WindowCount, and
+WindowType moved to new window operator IFar.Window (and names adapted).
+
+*) Type -> Kind:
+The word 'Type' is replaced with 'Kind' in most cases. 'Type' should deal with
+.NET System.Type class only. This change should reduce confusions and fix some
+code analysis issues.
+Renamed:
+-- WindowType -> WindowKind, Type -> Kind, TypeName -> KindName
+-- SelectionType -> RegionKind (and used more general 'Region')
+-- FarColumn, SetColumn: Type -> Kind
+-- ISelection.Type -> Kind
+-- PanelType -> PanelKind
+-- IAnyPanel.Type -> Kind
+
+= 4.3.6 =
+
+UPDATE STEPS
+
+Remove the registry key "Far2\Plugins\FarNet" and make sure you do not start
+old FarNet after that, otherwise you will get never used FarNet registry data.
+
+MAIN CHANGES
+
+*) All module items (actions and hosts) should have a Guid attribute. Generate
+it once for each class or registered action and never change. But you can now
+use any class or action names and change them as you want: registry data will
+not be affected. All sample modules use these GUIDs.
+
+*) Module actions: new attribute property Resources. If it is true the property
+Name is the name of a resource string from the module .resources files.
+
+*) All Register*\Unregister* methods moved from IFar to IModuleManager.
+
+*) IFar: new methods GetModuleCommand, GetModuleFiler, GetModuleTool allow to
+call an action of any module (loaded or not yet) from any other module.
+
+*) Configuration menus and dialogs were changed a little bit. For tools we now
+can set internal hotkeys (do not use standard Far hotkeys!). This is temporary,
+hopefully Far will use GUIDs for menus, then module items will be able to use
+standard Far hotkeys.
+
+OTHER CHANGES
+
+*) IControl: new property Data: user data (for FarNet controls only).
+
+*) IAnyPanel: new method UnselectNames(), opposite to SelectNames().
+
+*) Recommendation: how modules should keep their settings. IFar: removed
+methods GetPluginValue(), SetPluginValue(), this place is not for modules.
+Use new IModuleManager.OpenSubKey().
+
+= 4.3.5 =
+
+MAJOR ARCHITECTURE CHANGES
+
+*) Module tool classes:
+-- Module tool class instance is created for each call of its Invoke() method.
+-- Virtual Connect()\Disconnect() are removed. Use ModuleHost if you need them.
+-- Virtual properties are replaced with class attributes, see documentation and
+sample modules. Each class has its own attribute class: e.g. ModuleXyzAttribute
+for ModuleXyz class.
+-- Attributes are mandatory. Empty ("default") names are not allowed any more.
+
+*) Simplified access to IFar host. It is now 'Far.Net' anywhere. In your code:
+-- Module classes: replace 'Far.' with 'Far.Net.';
+-- Other code: you do not have to think of exposing IFar (e.g. sending it to
+constructors or keeping it in a static variable), just use 'Far.Net' anywhere.
+
+*) Simplified module manifest files (.cfg), see Readme.txt if you use them.
+
+*) A few renamings, e.g. ToolOptions -> ModuleToolOptions, CommandEventArgs ->
+ModuleCommandEventArgs, etc. New names describe themselves better.
+
+*) These changes are breaking, indeed, and the modules should be updated.
+If you have problems on loading after update try to drop the cache:
+HKEY_CURRENT_USER\Software\Far2\Plugins\FarNet\<cache>
+
+MINOR RELATED CHANGES
+
+*) For a menu tool default Options value changed from 'AllMenus' to 'None'.
+Thus, it is mandatory to specify Options, otherwise an item is not shown:
+[ModuleTool(Name = "Hello", Options = ModuleToolOptions.Panels)]
+
+*) Invoke() in some module tools: sender is null now, not IFar instance. It is
+useless to send IFar because it is available as Far.Net anywhere.
+
+*) Sample module Tutorial-Tool is replaced with Tutorial-Host. It still
+contains the same sample module tool and a sample module host is added.
+This host is not preloadable. Example of preloadable host is PSF.
+
+OTHER CHANGES
+
+*) IEditor: options WordDiv, ShowWhiteSpace, WriteByteOrderMark can be set
+before (new!) or after opening the editor.
+
+*) PanelModeInfo: new properties IsAlignedExtensions, IsCaseConversion.
+
+= 4.3.4 =
+
+*) [e]Bu$ter fixed a recent bug of FarColumn percentage (negative) widths.
+
+*) IMacro.Check() should start to work correctly in Far 2.0.1386+
+
+= 4.3.3 =
+
+*) Removed the ".NET" item from the disk menu. It is not used. Note: ".NET"
+items in F11 menus, even empty, are used internally and cannot be removed.
+
+*) FarColumn, SetColumn: Width changed type from 'string' to 'int':
+positive: absolute width; negative: percentage; 0: Far decides.
+
+*) Fix: "event" Invoking() was not always called for module tools.
+
+*) IMacro: new method Check(). Far 2.0.1381+
+
+*) IEditor: new option WriteByteOrderMark. Far 2.0.1384+
+
+*) Tracing: too frequent events moved from mode 3 to 4 (see Far.exe.config).
+
+= 4.3.2 =
+
+CUSTOM COLORS OF DIALOG CONTROLS
+
+New event IControl.Coloring allows to set 1-4 custom colors depending on the
+control type. PowerShellFar script Test-Dialog-.ps1 shows a few examples.
+
+= 4.3.1 =
+
+ANNOUNCEMENT
+
+It is discussed and decided that FarNet plugins are not called PLUGINS any more
+everywhere: in API, code, documentation. From now on they are called MODULES:
+.NET assemblies implementing one or more FarNet MODULE TOOLS.
+
+The folders structure is changed, see Readme.txt or just extract from the
+archive to %FARHOME% keeping the structure. Then remove old Lib (it is now
+%FARHOME%\FarNet) and Plugins.NET (it is now %FARHOME%\FarNet\Modules).
+Do not forget to replace %FARHOME%\Far.exe.config with new one.
+
+TERMINOLOGY: PLUGINS -> MODULES
+(breaking name changes)
+
+Module tools:
+-- BasePlugin -> BaseModule
+-- CommandPlugin -> ModuleCommand
+-- EditorPlugin -> ModuleEditor
+-- FilerPlugin -> ModuleFiler
+-- ToolPlugin -> ModuleTool
+-- PluginException -> ModuleException
+
+Interfaces:
+-- IPanel -> IAnyPanel (rename it first, before IPluginPanel -> IPanel)
+-- IPluginPanel -> IPanel (rename it second, after IPanel -> IAnyPanel)
+-- IPluginPanelInfo -> IPanelInfo
+
+Members:
+-- GetPluginPanel() -> FindPanel()
+-- CreatePluginPanel() -> CreatePanel()
+
+Let's also fix wrong names and bad names:
+-- EnvExpanded -> ExpandEnvironmentVariables
+-- Eol -> EndOfLine
+-- HWnd -> MainWindowHandle
+-- Msg -> Message
+-- NoSmartCoords -> NoSmartCoordinates
+-- RootFar -> RegistryFarPath
+-- RootKey -> RegistryPluginsPath
+-- StartSortDesc -> StartReverseSortOrder
+-- UseAttrHighlighting -> UseAttributeHighlighting
+
+Let's also fix one confusing feature:
+-- InputBox.NoLastHistory -> UseLastHistory
+a) to have the same name as the property of IEdit
+b) because by default it should be "don't use" (the least surprise)
+
+OTHER CHANGES
+
+*) Macros:
+-- IMacro.GetNames(): fixed exceptions on missed areas.
+-- Macro.Area type changed from string to enum MacroArea.
+-- IMacro methods use the enum MacroArea.
+-- API changes: see documentation.
+
+*) Issue _090208_042536. IBaseList: removed the obsolete workaround method
+.Clear(). Instead, the method .Items.Clear() should be used. If it still has
+problems, report, it will be restored ASAP. (It was a bug in PowerShell that
+looks fixed in V2 RTM).
+
+= 4.3.0 =
+
+NEW VERSION NUMBER
+
+Version number moves forward due to important recent changes:
+-- Localization support
+-- Quit() and CanExit()
+-- MakingDirectory
+-- Macros revision
+-- Win7 taskbar icon tools
+-- GUI message boxes (suitable for special tasks)
+-- Revision of panel mode info (more object oriented)
+-- Long paths support (note: .NET does not like long file paths)
+-- Multiple panels (true for FarNet, saved state for file panels)
+-- Async writing mode in editors (including not current editors)
+-- Code pages in editors (get\set)
+-- More info on exceptions
+-- Dialog enhancements
+
+NEW IN THIS VERSION
+
+*) New method IFar.Quit(): Tells Far to quit (Far 2.0.1348 ACTL_QUIT).
+
+*) New virtual method BasePlugin.CanExit() (called by IFar.Quit()).
+
+*) Hopefully the final revision of macros (breaking for using plugins):
+-- MacroData is replaced with Macro;
+-- IMacro methods updated for new Macro.
+The story: unusual IMacro methods with dictionaries were designed for easy use
+in PowerShell. End of story: in PowerShell V2 New-Object supports dictionaries
+itself, so that IMacro methods now can be natural and simple.
+
+= 4.2.27 =
+
+*) Tweaks in docs and code.
+
+= 4.2.26 =
+
+*) Minor fix in MakingDirectoryEventArgs.
+
+*) Work around "Far does not restore panel state" on menu action .NET \ Close
+panel: let's set the top item current before closing.
+
+NEW FEATURES
+
+*) IInputBox:
+-- New flag IsPath (~ Far FIB_EDITPATH).
+
+*) IEdit:
+-- New flag IsPath (~ Far DIF_EDITPATH).
+-- Renamed Password -> IsPassword (to be the same as in IInputBox). Technically
+this is a breaking change but it is unlikely used (it is read only in IEdit).
+
+*) FarNet configuration: "UI culture": added [F1] help for the input box.
+
+REFACTORING OF MACROS
+(breaking changes for plugins using macros)
+
+-- Renamed interface IKeyMacroHost to IMacro
+-- Its methods Post() moved to IFar as PostMacro()
+-- Renamed property IFar KeyMacro to Macro
+-- Renamed class KeyMacroData to MacroData
+-- Internal: the macro operator is created only when requested.
+
+= 4.2.25 =
+
+*) IPluginPanel: it turned out that the event MakingDirectory still was not
+quite implemented. Now it is.
+
+*) Far error messages in a panel which is not subscribed to MakingDirectory
+on pressing [F7] are fixed.
+
+*) Plugins.NET samples: replaced .bat files with .proj files for MSBuild.exe:
+C:\Windows\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe
+Basically "MSBuild" and "projects" are similar to "make" and "makefiles" but
+MSBuild is .NET oriented and projects are XML files (see MSDN for details).
+
+Examples:
+MSBuild.exe Build.proj (makes default targets, usually "Build")
+MSBuild.exe Build.proj /t:Build (makes the target "Build")
+MSBuild.exe Build.proj /t:Clean (makes the target "Clean")
+MSBuild.exe Build.proj /t:Build;Clean (makes the "Build" and "Clean")
+
+If you use PowerShellFar then the script Start-MSBuild-.ps1 can be used, too.
+It helps to choose command line parameters and keeps commands in history.
+
+Even if you develop in Visual Studio, MSBuild tasks still can be useful, for
+example you may add custom MSBuild tasks like resource files generation (see
+Tutorial-ToolPlugin\Build.proj). See commented out targets "BeforeBuild" and
+"AfterBuild" in your Visual Studio project file (.csproj, use text editor).
+
+= 4.2.24 =
+
+PLUGINS LOCALIZATION SUPPORT (continued, see 4.2.23)
+
+*) FarNet configuration menus and dialogs
+-- Section "Tools": fixed displayed tool number.
+-- Section "Modules": added submenu item "UI culture".
+-- Updated the .hlf file.
+
+= 4.2.23 =
+
+PLUGINS LOCALIZATION SUPPORT
+(Standard file based resource management in .NET)
+
+*) BasePlugin: localization support:
+-- New property CurrentUICulture (normally you should not care but see help).
+-- New method GetString() gets localized strings from standard resource files:
+PluginBaseName.resources (default, English is recommended)
+PluginBaseName.ru.resources (Russian)
+PluginBaseName.de.resources (German)
+...
+Binary .resources files are generated by resgen.exe from trivial .txt\.restext
+files or Visual Studio .resx files. Note that resgen.exe allows to decompile
+.resources back to .restext or .resx, only original comments are lost.
+
+Yet another way to build resources is MSBuild task GenerateResource.
+
+*) IFar: localization support:
+-- New method GetCurrentUICulture() based on %FARLANG%.
+
+*) Plugins.NET\Tutorial-ToolPlugin: shows how to build a localized plugin using
+trivial .restext files. Note that Hello.ru.restext translates only language
+dependent strings and does not care of others. The .NET resource manager
+processes such cases just fine.
+
+WINDOWS 7 TASKBAR ICON
+
+*) IFar: new methods SetProgressState() and SetProgressValue() expose Far API
+ACTL_SETPROGRESSSTATE and ACTL_SETPROGRESSVALUE (build 1309).
+
+MISC
+
+*) IFar.TempName() uses changed Far FSF.MkTemp (build 1311).
+
+*) Plugins.NET: it is decided to drop VB and JS samples. Hopefully provided CS
+samples should be quite enough: basically all .NET languages are very similar.
+
+= 4.2.22 =
+
+*) IPanel: methods SelectAt(), UnselectAt(): null as input parameter is OK now,
+it is simply ignored, just like an empty array.
+
+= 4.2.21 =
+
+*) IPluginPanel: property DataComparison (class Comparison<object>) is replaced
+with easier to use and more natural property DataId (delegate Getter). This
+change is breaking if your plugins use DataComparison.
+
+= 4.2.20 =
+
+*) IEditor: confusing property name "IsEnd" is changed to "IsLastLine".
+
+*) API code comments and documentation.
+
+= 4.2.19 =
+
+*) Archive structure: files LICENSE and History.txt moved to the plugin folder
+"Plugins\FarNet".
+
+= 4.2.18 =
+
+*) Version numbers: as far as FarNet and PowerShellFar are always built and
+released together, from now on their version numbers will be the same.
+
+*) FarNet updates: if you use FarNet together with PowerShell then it can be
+updated together with PowerShellFar by a script distributed with PowerShellFar.
+
+= 4.2.17 =
+
+*) Added section PROBLEMS AND SOLUTIONS to the Readme.txt; discribed a rare
+problem of loading .NET plugins in x86 Far on x64 machines and a possible
+workaround.
+
+*) API code comments and documentation.
+
+= 4.2.16 =
+
+*) Updated API code comments and documentation.
+
+= 4.2.15 =
+
+*** Far 2.0.1238+ ***
+
+*) IEditor: new property ShowWhiteSpace: Gets or sets show white space flag.
+
+*) Internal: more robust IFar.Dialog (current dialog). Note: implemented as
+workaround: there is no such Far API, see Mantis 1179.
+
+= 4.2.14 =
+
+*) IFar.Msg() with 'Gui*' options: it is OK to provide 'helpTopic' parameter,
+it's not an error, it is simply ignored. Throw only on custom buttoms: they
+are not supported in GUI mode.
+
+= 4.2.13 =
+
+*** Far 2.0.1209+ ***
+
+*) Updated IFar.GetDialogHistory() for Far 2.0.1208
+
+= 4.2.12 =
+
+*) Improved view of error messages and stack information shown on exceptions
+when you press buttons [View info] and [Copy info] in exception dialogs.
+
+*) Added class PluginException. If a plugin throws exceptions then for better
+diagnostics it is recommended to use this or derived from this exceptions.
+
+*) Minor internal tweaks.
+
+= 4.2.11 =
+
+*** Requires Far 2.0.1200+ ***
+
+*) Adapted for Far 2.0.1200 (IEditor.WordDiv).
+
+= 4.2.10 =
+
+REVISION OF PanelModeInfo
+
+*) New abstract class FarColumn and its simple implementation SetColumn. Use
+SetColumn to define panel column type, width, and title or status column type
+and width.
+
+*) Properties ColumnTitles, ColumnTypes, ColumnWidths are replaced with new
+property - array Columns.
+
+*) Properties StatusColumnTypes, StatusColumnWidths are replaced with new
+property - array StatusColumns.
+
+New columns definition is perhaps slightly more verbose but it is more object
+oriented and safe: with old version incorrect data could crash Far or lead to
+displayed garbage. Also, it is now easier to change column options and order
+after creation (both in code and at run time).
+
+= 4.2.9 =
+
+*) IFar.Msg(): new MsgOptions flags Gui and GuiOnMacro allow to show standard
+Windows GUI message boxes. Do not use these flags without good reasons.
+
+*) Far.exe.config: appSettings: added key FarNet.DisableGui. Allows to disable
+GUI message boxes used internally in exceptional cases. Recommended (default)
+value is false, i.e. special GUI messages are enabled.
+
+*) For safety sake: avoiding unexpected results on exceptions during a running
+macro IFar.ShowError() now stops a macro before showing an error dialog.
+
+= 4.2.8 =
+
+*** Requires Far 2.0.1181+ ***
+
+*) IFar.ActivePath returns the internal Far current directory path. NOTE: this
+is not always the same as the IPanel.Path of the active panel.
+
+*) IPanel.GoToPath(): fixed wrong current item for paths ending with a slash.
+
+= 4.2.7 =
+
+*) IFar: property Version is replaced with two properties: FarVersion and
+FarNetVersion.
+
+= 4.2.6 =
+
+MULTIPLE PANELS
+(true for FarNet panels, simulation for Far file panels)
+
+FarNet plugin panels on closing by Close() restore the original file panel
+current and selected items. (Far does not do this itself, see Mantis 1114).
+
+FarNet panel tools (available from the plugin menu) allow to work with multiple
+FarNet panels and to simulate work with multiple standard Far file panels. You
+can:
+-- push any FarNet plugin panel for later use (as usual);
+-- shelve any standard Far file panel, i.e. keep its state (new feature!);
+-- pop/unshelve previously pushed/shelved panels; the shown panel restores its
+state: current and selected items and sort and view modes (new for file panels
++ restoring of selection is new for FarNet plugin panels).
+
+OTHER CHANGES
+
+*) IPanel: new method SelectNames(). It is introduced for *restoring* of the
+selection (see above), but it can be used for other selection tasks as well.
+
+*) IFar: removed method PushedPanels(). It is unlikely needed for external use.
+
+*) IPluginPanel: property ActivePath is read only now.
+
+= 4.2.5 =
+
+*) Requires Far 2.0.1160. Event IPluginPanel.PuttingFiles now accepts arguments
+as PuttingFilesEventArgs which has additional property Source - source path of
+the files being processed. This is not a breaking change, but in Far 2.0.1145+
+some operations cannot be performed correctly without this Source information,
+such plugins have to be updated.
+
+= 4.2.4 =
+
+*) IEditor: new methods BeginAsync() and EndAsync() allows to write to not a
+current editor or from background jobs. Output procedure is similar to console
+output. Use this mode very carefully and only when it is absolutely needed.
+Plugin PowerShellFar uses this mode for asynchronous editor consoles.
+
+= 4.2.3 =
+
+*) Adapted to Far 2.0.1145+: Far does not set the current directory to the
+active panel path (a step to long paths support). Still, remember that .NET
+itself and many other external tools do not like long paths. _090929_061740
+
+*) New property IFar.ActivePath: Gets the path of the active Far panel or the
+ActivePath (former StartDirectory) of the active FarNet panel. Mind long paths.
+
+*) IEditor.CodePage is now settable after opening, so that it is possible to
+change code pages from a plugin. Another good news: Far 2.0.1144+ API works
+correctly with code pages on open, save, and save as operations.
+
+= 4.2.2 =
+
+*) IDialog: new event ConsoleSizeChanged ~ DN_RESIZECONSOLE.
+
+*) IDialog: new methods DisableRedraw(), EnableRedraw() ~ DM_ENABLEREDRAW.
+
+*) IDialog: Rect is settable after Show(), too; same as Move() + Resize().
+
+*) IListMenu uses ConsoleSizeChanged to recalculate its size according to the
+new console size.
+
+= 4.2.1 =
+
+*) IEditor: new method TextWriter CreateWriter(): the writer calls Insert*()
+internally. It is convenient and efficient for using where a writer is
+expected.
+
+*) IEditor: new method InsertChar(): not a big deal (Insert() can do the job)
+but it is effectively used by text writers created by CreateWriter().
+
+= 4.2.0 =
+
+----- Major changes -----
+
+4.1.0 introduced classes FarFile and SetFile instead of interface IFile. This
+approach looks good. So now 4.2.0 in the same way introduces classes FarItem
+and SetItem instead of interface IMenuItem.
+
+Yet another change is replacement of a menu item event OnClick (with ability to
+add multiple handlers) with a single handler Click. Practice shows that a
+single handler is enough and less confusing.
+
+The changes are breaking, indeed, but it should be really easy to update your
+code, please follow the simple steps below:
+
+In your code:
+1) replace 'IMenuItem' with 'FarItem'
+2) replace 'Far.CreateMenuItem()' with 'new SetItem()'
+3) replace adding 'OnClick += ...' with setting 'Click = ...'
+
+----- Other changes -----
+
+*) IMenu: added still missed property ChangeConsoleTitle.
+
+*) IFar: improved PostJob; it collects all posted handlers (excluding dupes);
+then they are all invoked in the order they were posted.
+
+*) IPanel: new method GoToName(string, bool) in addition to GoToName(string).
+New one returns success flag or may optionally throw if a name is not found.
+
+*) IPluginPanelInfo: renamed too general name Format into FormatName.
+
+= 4.1.11 =
+
+*) Fix: IPluginPanel.ShownList used to return null instead of a "dots" file.
+
+*) Added property GettingFilesEventArgs.Names needed in rare cases when auto
+alternate names are used.
+
+= 4.1.10 =
+
+*) Fix: Menu: item event handler should not be triggered on a break key.
+
+= 4.1.9 =
+
+*) Fixed not restored parent panel current item on exit from a child panel
+which view mode is different from parent.
+
+*) New property IPluginPanelInfo.AutoAlternateNames: Tells to generate
+AlternateName value in plugin panel files automatically.
+
+*) Property IPluginPanel.Files is now get/set, you can set any IList<FarFile>
+instead of refilling the existing list instance.
+
+= 4.1.8 =
+
+*) New utility interface ISubsetForm - Dialog for selecting a subset of items.
+Create it by IFar.CreateSubsetForm(), set its Items and initial selected
+Indexes, call Show(), get result selected Indexes. To be continued.
+
+*) IDialog.MouseClicked is now also called if a control does not process this
+event (same as for KeyPressed event).
+
+*) IDialog. New property TypeId. Implemented recently added related Far API:
+DN_GETDIALOGINFO, DM_GETDIALOGINFO.
+
+*) Fixed not shown panel data of a child panel which view mode is different
+from parent panel view mode. New code is also more optimal.
+
+= 4.1.7 =
+
+*) IPanel. New methods SelectAt, UnselectAt, SelectAll, UnselectAll.
+
+*) IPanel. New properties ShownList and SelectedList. They are similar to
+ShownFiles and SelectedFiles, but not always the same and work dynamically,
+i.e. return only really accessed items. Note that ShownFiles now does not
+return ".." item, if you need this item then use new ShownList instead.
+
+*) IPluginPanel. Property Id is renamed into TypeId.
+
+*) Internal. Changed memory management for panel items. As a result, reduced
+"out-of-memory" chances for panels with extremely large number of items.
+
+= 4.1.6 =
+
+*) IEditor. New methods BeginUndo(), EndUndo(), Undo(), Redo(). Note: they
+implement new Far API.
+
+*) IEditor::SetText is now atomic for Undo\Redo.
+
+*) IFar. New method PostJob() - posts a handler to be invoked in the Far main
+thread when Far gets control. Note: it implements new Far API. Note: test only
+so far.
+
+INTERNAL
+- Removed workaround in Editor::SetText (missed the first empty line of the
+first output), the editor looks working fine in the latest Far.
+
+= 4.1.5 =
+
+Updated for Far 2.0.997 (breaking changes in Far Editor and Window API)
+
+= 4.1.4 =
+
+Updated for Far 2.0.992 (breaking changes in Far Dialog API)
+
+CUSTOM PANEL COLUMNS
+
+At last FarNet supports custom user panel columns. Use FarFile.Columns,
+SetFile.Columns. Custom columns are very easy: property Columns is any
+collection of any objects. See also FarNet.PanelModeInfo: use C0-C9 in
+ColumnTypes and StatusColumnTypes.
+
+= 4.1.3 =
+
+*) Fixed plugin calls from the disk menu.
+
+*) IAnyEditor
+Added new event Idled, as usual, triggered periodically when a user is idle.
+Event OnKey is not triggered with VirtualKeyCode = 0 any more, plugins should
+use new event Idled for this case. This change makes handlers more natural and
+also improves performance: OnKey is relatively expensive and called not often
+now, Idled is cheap (event itself, actual cost depends on handlers, of course).
+
+*) New class IdledHandler
+It is a helper for Idled events. Idled events may be called too frequently for
+a particular task. In this case use IdledHandler.Create to get a handler with a
+custom call frequency.
+
+*) Forms.IDialog.Idled changed from EventHandler<AnyEventArgs> to the simple
+EventHandler for 2 reasons: a) arguments were not used anyway; b) to follow
+common Idled events scheme, which allows use of IdledHandler, for example.
+
+= 4.1.1 =
+
+*) IEditor.CodePage for the opened editor works now (read only).
+
+*) As it was announced, two obsolete methods IFar.CreatePanelItem() were
+removed. Plugins should create instances of SetFile directly by 'new' or they
+can use custom files derived from FarFile.
+
+*) Build. Directory FarNetMan\Headers.c is removed. The FarNetMan expects it in
+here: "C:\Program Files\Far\PluginSDK\Headers.c". If this is not a case then
+project include directories should be corrected.
+
+= 4.1.0 =
+
+MAJOR CHANGES
+
+*) Interface 'IFile' is replaced with abstract class 'FarFile'. This approach
+is more convenient for plugins that use custom implementation of files. Also,
+though it is less important, it provides slightly faster access to members.
+WARNING: this change is breaking, but technically in almost 100% cases you
+simply just have to replace the name IFile with FarFile everywhere.
+
+*) FarNet provides ready to use implementation of 'FarFile': class 'SetFile'.
+Instances of this class can be created directly by 'new'. That is why two
+methods IFar.CreatePanelItem() are not needed now; they are attributed
+'Obsolete' and will be removed in the next version.
+
+OTHER CHANGES
+
+*) Reviewed and improved (hopefully) tracing of errors. IFar.ShowError() now
+traces errors, too, so that if a plugin calls this function then error info is
+sent to trace listeners. Reminder: see "Far.exe.config" for tracing options.
+
+= 4.0.13 =
+
+TRACING
+
+*) FarNet core supports standard .NET tracing mechanism. It is customized in
+"Far.exe.config", take a look at comments there and customize it for yourself.
+
+*) A default listener (added in machine .config) outputs to a debugger, so that
+FarNet plugin debugging may be easier. Trace levels 3 and 4 (see below) can be
+slow with a debugger; in this case you can remove default listeners by <clear/>
+and still use a fast file writer added by <add ... />.
+
+*) Removed option FarNet.StartupErrorDialog from "Far.exe.config" - critical
+startup errors are written to the console and optionally traced now. Modal
+dialogs should not be shown on loading.
+
+*) Most important calls Far <-> FarNet <-> FarNetPlugin are already traced.
+More tracing, especially FarNet <-> FarNetPlugin will be introduced later.
+
+TRACING TIPS
+
+1) Switch 'FarNet.Trace' defines 5 levels of tracing (0:Off ... 4:Verbose);
+recommended level is 2:Warning - to trace errors and warnings, if any. Note:
+they normally show plugins or system issues, not FarNet itself.
+
+2) You can add more trace listeners, for example a log file writer; one is
+added in "Far.exe.config". Remove it or change it as needed.
+
+3) Your plugin can call System.Diagnostics.Trace methods itself. 'FarNet.Trace'
+does not affect your tracing unless you use it directly (see TraceSwitch, MSDN).
+
+4) Tracing is a standard .NET feature, see MSDN for details about tracing and
+configuration files - there are many useful titbits for free there.
+
+5) Do not be tempted to use tracing for normal data output. Tracing is for
+diagnostics and troubleshooting.
+
+MISC
+
+*) Renamed namespace FarNet.Raw into FarNet.Support; it contains supportive
+features that normally should not be used from user code.
+
+*) Internal FarNet menu commands are processed more effectively.
+
+= 4.0.12 =
+
+PLUGIN PANEL VIEW MODES
+(in progress, subject to change)
+
+*) New .NET menu item "Switch full screen" allows to switch "full screen"
+mode for any view mode of any FarNet panel. So that you may actually have
+20 modes = 10 as usual + 10 the same but with switched "full screen".
+
+*) PanelModeInfo - new method Clone() for shallow copy. It is useful for
+creation of similar modes with a few differences.
+
+*) IPluginPanelInfo - replaced property Modes (array of all modes) with two
+methods GetMode() and SetMode() (they work only for one mode).
+
+OTHER CHANGES
+
+*) ControlKeyStates, KeyInfo and MouseInfo: obsolete not standard name
+AltCtrlShift was replaced with classic name CtrlAltShift.
+
+= 4.0.11 =
+
+*) New. PanelModeInfo and IPluginPanelInfo.Modes are used for setting plugin
+panel view modes (column types, widths, titles, status line and etc.). To be
+continued, remarks are welcome.
+
+*) Implemented processing of IFile.Owner for plugin panels. It can be used as
+a custom column (with proper view mode and column titles, see above).
+
+*) IFar.GetHistory() - adapted to recent Far Manger registry history changes.
+
+*) IMenuItem - new properties Grayed, Hidden (new in Far API).
+
+*) PaletteColor - added new values (new in Far API).
+
+*) ControlKeyStates, KeyInfo and MouseInfo: AltCtrlShift is set obsolete (not
+standard name) and will be removed soon. Use classic CtrlAltShift instead.
+
+= 4.0.10 =
+
+*) ISelection - new method SelectAll() selects all text in the editor. It is
+a helper, you can do the same by Select() with proper parameters.
+
+*) IViewer.CodePage for the opened viewer works now (read only).
+
+*) IFar.CodeToChar() fixed old ANSI approach.
+
+= 4.0.9 =
+
+*) IFar.Write - fixed Unicode output (some characters were written as '?').
+Lesson to learn: avoid Console.Write* methods in FarNet and its plugins.
+
+= 4.0.8 =
+
+*) IPluginPanel. New event Escaping. It is triggered when [Escape] is pressed
+and the command line is empty. Basically it only helps to use [Escape] key for
+closing a panel (or other action). There is no default action, perhaps it will
+be added later, suggestions are welcome.
+
+*) As far as IFar.GetWindowType(-1) is used quite frequently, a new property
+IFar.WindowType is introduced: it gets a type of the current Far window:
+Panels, Dialog, Editor and etc.
+
+*) Undone stepping mode optimization because of problems for command, tool and
+filer plugins dynamically registered during stepping.
+
+*) IFar.PostStepAfterStep - fixed a subtle issue: when the first step throws an
+error then the second should not be invoked even if it has been already posted.
+
+*) Dialog controls. Improved some code originally designed in Far/1 and not
+effective in Far/2.
+
+= 4.0.7 =
+
+*) IListMenu
+- New property NoInfo: Do not show item count information at the bottom line.
+- Fix. If a key handler is available and called then a standard handler, if
+any, should not be called.
+
+= 4.0.6 =
+
+*) x64 support: FarNetMan.dll for x64 Far Manager should be copied from
+Plugins.x64\FarNet. (NOTE: the build contains both x86 and x64 versions,
+only FarNetMan.dll depends on a platform, FarNet.dll does not).
+
+*) Optimized performance of stepping mechanism (IFar.PostStepXXX methods).
+
+*) Experimental low level UI types were moved to FarNet.Raw namespace.
+
+= 4.0.5 =
+
+*) New IFar methods PostStepAfterKeys() and PostStepAfterStep(). This is a very
+important achievement for "super-macros" that can be used now also with modal UI.
+See PowerShellFar History.txt for more details.
+
+*) Mantis #730 - thanks to DrKnS, the problem is fixed for list-boxes in Far
+2.0.812, so that list-boxes can be used as normal. Other problems still exist
+for combo-edit and combo-list; workaround: when a dialog has started do not use
+Clear() and then Insert() without detaching and attaching items.
+
+*) ViewFrame.LeftPos - changed from 'int' to 'long', as it is in Far API.
+
+= 4.0.4 =
+
+MAIN CHANGES
+
+*) FarNet is adapted to new Far panel API in 2.0.789. Of course .NET plugins
+should not care about it.
+
+*) For technical reasons FarNet is built by Visual Studio 2008 SP1 and FarNet
+C++/CLI depends on VS runtime modules. If you do not have VS 2008 then you may
+have to google, download and install one of the redistributable packages:
+- Microsoft Visual C++ 2008 SP1 Redistributable Package (x86)
+- Microsoft Visual C++ 2008 SP1 Redistributable Package (x64)
+
+OTHER CHANGES
+
+*) IAnyViewer.ViewText() - switching to editor is enabled. For now if you
+switch by [F6] to editor then on exit you see "The file ... was moved or
+deleted. [Save]...". It is not a perfect solution perhaps but it is just
+useful. If you do not like it, do not switch. Better ideas are welcome.
+
+*) New interface IRawUI and property in IFar, TEST ONLY, they are experimental
+and perhaps will be removed.
+
+= 4.0.3 =
+
+*) Property IListBox.Bottom - it was runtime only, now it is standard: as
+usual, you can set it before opening a dialog.
+
+*) New overloaded IFar.GetHistory() with extra parameter 'filter' returns
+history strings by type(s).
+
+*) It turned out that it is possible to unload FarNet abnormally, for example
+by 'unloadp' FAR command or by some plugin manager. This scenario is not
+recommended but some changes still were done for avoiding problems.
+
+= 4.0.2 =
+
+*) Improved exchange of strings between .NET and FAR. Note that now in some
+cases FarNet is less tolerant to null input strings where text is expected.
+
+*) Dialogs: fixed a few FAR 1 to 2 issues, fixed memory leaks in list controls
+on dynamic operations on items, asked to implement IListBox.Title so that it
+should work now, added new property IListBox.Bottom, etc.
+
+*) Fixed order of history strings returned by IFar.GetHistory().
+
+*) Wish: allow to "unload" FarNet. Note: DLLs are not physically unloaded. It
+is OK to call ExitFARW several times, the first call terminates FarNet. Then it
+is safe to call GetPluginInfoW, FarNet simply returns "nothing". Other exported
+functions must not be called. STILL, THIS SCENARIO IS NOT RECOMMENDED. Besides,
+perhaps some FarNet sub-plugins were not designed for "half-termination".
+
+*) Issue: http://bugs.farmanager.com/view.php?id=730
+Do not make dialog list controls empty directly when a dialog is running. Use
+this way: DetachItems(), Clear() or RemoveAt(), add items, AttachItems().
+
+= 4.0.1 =
+
+*) Due to a bug in FarNet multiarc plugin did not work. Fixed.
+
+*) FilerEventArgs: new property OperationModes Mode. Unfortunately it is not
+yet clear how to use it, you may only experiment for now.
+
+= 4.0.0 =
+
+ANNOUNCEMENT
+
+From now on FarNet 4.x is for Far 2.x. FarNet 3.x is officially not supported.
+Theoretically it is possible to use both FarNet 3.x and 4.x in Far 2.x at the
+same time but this scenario is not supported, not tested and not recommended.
+
+This is the first and mostly technical phase of transition from Far 1.x to 2.x.
+Next FarNet version will use new Far API more effectively.
+
+INSTALLATION
+
+If you did not use FarNet 3.x in Far 2.x then simply do what Readme.txt says;
+do read it again even if you read it before: some default names are changed.
+
+If you use or used FarNet 3.x in Far 2.x then do in this order:
+
+1) Remove all(!) installed files of FarNet and .NET plugins.
+
+2) If you want to migrate old settings then rename in the registry:
+HKEY_CURRENT_USER\Software\Far2\PluginHotkeys:
+rename key "Plugins/FAR.NET/FarNetPlugin.dll" into "Plugins/FarNet/FarNetMan.dll"
+HKEY_CURRENT_USER\Software\Far2\Plugins:
+rename key "FAR.NET" info "FarNet"
+
+3) Install FarNet, see Readme.txt for instructions.
+
+4) Install new FarNet plugins, e.g. PowerShellFar 2.x
+
+5) If you have your own FarNet plugins rebuild them with new FarNet.
+
+BREAKING CHANGES (MAJOR)
+
+*) You have to change dependency from FarNetInt.dll to FarNet.dll and rename
+namespace FarManager into FarNet.
+
+*) Removed property Targeted from panels, use new property SelectedFiles.
+
+*) Removed property IFile.IsSelected. Originally it was introduced "a la FAR
+API", but in fact it is not fit well to FarNet concept and planned evolution.
+
+*) IViewer, IEditor - boolean property EnableSwitch is replaced with Switching
+with 3 states: Auto(default), Enabled and Disabled.
+
+BREAKING CHANGES (MINOR)
+
+A few renamings for better consistency, discoverability and English, too.
+
+*) IPanel:
+Current -> CurrentFile
+Contents -> ShownFiles
+Selected -> SelectedFiles
+
+*) All names *PanelPlugin* renamed into *PluginPanel*, e.g. new names are:
+IPluginPanel, IPluginPanelInfo, CreatePluginPanel() and etc.
+
+*) IPluginPanel.Another -> AnotherPanel
+
+*) MessageOptions -> MsgOptions (to conform with IFar.Msg())
+
+*) KeyCode constants:
+- all names now are the same as FAR macro key names
+- Ctrl, Alt, Shift moved to another type: KeyMode
+
+*) VKeyCode constants:
+- Ctrl, Alt, Shift moved to another type: VKeyMode
+
+OTHER CHANGES
+
+*) Do not use new properties CodePage in IEditor and IViewer, they are added,
+but it turned out that FAR does not use them yet :)
+
+= 3.3.57 =
+
+ANNOUNCEMENT
+
+This version is presumably the last one for FAR 1.x; the next version is going
+to be for Unicode FAR 2.x. If you find new or know some old issues in 3.3.57,
+report as soon as possible, this is the last call, then support of the frozen
+version will be very limited.
+
+FIX/CHANGE
+
+*) Two accidentally related issues: fixed regression in IFar.ShowHelp();
+changed how IPanel.GoToName() works with empty names: now it ignores them
+(well, empty names are technically possible, but it is a weird case anyway).
+
+HOUSEKEEPING
+
+*) Refactoring and cleaning of legacy code shared between IFar.Msg and recently
+removed obsolete IMessage.
+
+= 3.3.56 =
+
+*) Improved control over panel opening and possible failures. Fixed cases when
+opening used to fail silently, now errors with explained reasons are shown.
+
+*) IPanel.GoToPath() - fixed a few issues with not complete paths.
+
+*) As it was announced, obsolete method IFar.CreateMessage() and interface
+IMessage are removed. Use one of 5 overloaded IFar.Msg() methods instead.
+
+= 3.3.55 =
+
+CHANGES
+
+*) Logic of IKeyMacroHost.Install(IDictionary[]) is changed. This is not a
+breaking change but if you use it you have to take a look at the manual.
+
+FIXED
+
+*) False error "Cannot open a plugin panel at this moment." in rare cases.
+*) Minor issue in error message in editor on opening a file with null name.
+
+OBSOLETE
+
+*) As it was announced in 3.3.44, method IFar.CreateMessage() and interface
+IMessage are obsolete and will be removed. Use IFar.Msg() instead, these 5
+methods provide the same features and also some improvements.
+
+= 3.3.54 =
+
+*) New property IPluginPanel.DataComparison - compares data attached to panel
+items (normally in order to restore the current item correctly). Needed for
+cases with not trivial equality.
+
+*) New property IPluginPanel.IdleUpdate - tells to update and redraw the panel
+automatically when idle. Useful for frequently changed data.
+
+*) New user property Guid IPanel.Id - normally assigned once and used by a
+creator for distinguishing panel types and reusing opened panels.
+
+*) New method IFar.GetPluginPanel(Guid) - gets opened plugin panel by ID (see
+above). Can be used for reusing already opened panels.
+
+= 3.3.53 =
+
+This is mostly a technical build reflecting FAR API changes up to 1.75.2494.
+
+There are though a couple of new items in FAR.NET:
+*) IPanel.GoToName() - sets an item current by its name;
+*) IPanel.GoToPath() - similar to FAR command goto:<path>.
+
+= 3.3.52 =
+
+*) New event IControl.Drawing (e.g. it can be used to draw a user control by
+IFar.WriteText and IFar.WritePalette methods).
+*) New enum PaletteColor - standard FAR color palette indexes.
+*) New IFar.WritePalette - to write text using standard FAR colors.
+*) New IFar.GetPaletteBackground, IFar.GetPaletteForeground get palette colors.
+*) IAnyViewer, IViewer - new events GotFocus, LosingFocus (FAR 1.71.2406).
+
+= 3.3.51 =
+
+*) IEditor.Cursor is {get; set;} property now (it was {get;} only).
+
+= 3.3.50 =
+
+MACRO MANAGEMENT
+
+- REMOVED obsolete IFar methods: LoadMacros(), SaveMacros(), PostMacro(). Use
+new methods of IKeyMacroHost: Load(), Save(), Post().
+
+DOCUMENTATION
+
+- Improved look of member tables: set relative column width
+- Removed annoying members inherited from System.Object
+- Other little improvements and topic updates.
+
+OTHER
+
+- Added protected constructor to BasePlugin. It denies instances of this class.
+
+= 3.3.49 =
+
+MACRO MANAGEMENT
+
+- New interface IKeyMacroHost exposed as IFar.KeyMacro property. It provides
+methods for macro management.
+
+- New class KeyMacroData: data set describing a macro. It is used by
+IKeyMacroHost to get\set a macro data. Note: property names and values are
+related to FAR native registry names and values, but this relation is not always
+direct, RTFM.
+
+- These IFar methods are OBSOLETE and will be removed: LoadMacros(),
+SaveMacros(), PostMacro(). Use new methods of IKeyMacroHost: Load(), Save(),
+Post(). Note: new Post() uses 'enableOutput' parameter which is 'false' by
+default instead of PostMacro() 'disableOutput' which is 'true' by default.
+
+DOCUMENTATION
+
+- New style of .CHM documentation. Old MSDN style actually has more disadvantages
+and it is difficult to improve. New style is somehow simpler and still can be
+improved in next versions. What is already improved:
+*) separated indexes of properties with same names;
+*) overloaded methods are all shown in member list;
+*) method parameter names are shown in contents;
+*) enabled advanced search features;
+*) added favourites tab.
+
+OTHER CHANGES
+
+- IListMenu: if filter is not enabled then filter dialog should not start.
+
+= 3.3.48 =
+
+- Fixed error messages in viewer on Add|Subtract keys ~ open next|prev file.
+
+- IFar: new property ILine Line { get; }: current editor line in any area (it is
+$Psf.HotLine moved from PowerShellFar).
+
+- IFar: new method KeyToName(): converts an internal key code to its string
+representation.
+
+- ILine: new property WindowType: parent window type (Editor, Panels, Dialog).
+
+- IListMenu: by default in any list menu keys [CtrlC] and [CtrlIns] are used to
+copy text of the current item to the clipboard.
+
+= 3.3.47 =
+
+- IListBox: new method SetFrame() to set both current and top positions.
+
+= 3.3.46 =
+
+- Fixed IFar.AnyEditor.EditText(): error if the text is empty and the file is
+not saved on exit.
+
+= 3.3.44 =
+
+- One more method IFar.Msg() with extra parameter 'helpTopic' (FYI: it looks
+like IMessage is completely covered by IFar.Msg() methods and perhaps it will be
+removed in the future).
+- IListMenu.Incremental: '*' in the end in 'prefix' mode: see help for more
+(example: used by completions in PowerShellFar).
+- IEditor.Open(): if a file is already opened then start position, if any, is
+not set -- fixed.
+
+= 3.3.43 =
+
+- Avoided inconvenient for plugin development internal exceptions on loading
+when plugin assemblies are changed and registry cache has to updated.
+- IMessage, IFar.Msg() - if a message contains too many buttons or their text is
+too long, then a dialog with a list box is used instead of a message box where
+list-box items work as buttons.
+- New property IPanel.IsLeft (FAR 1.71.2348).
+- REMOVED IMessage.Reset() because it is not actually needed or used.
+
+= 3.3.42 =
+
+MENU AND LIST DIALOG CONTROLS
+
+- BREAKING. Interface IMenuItems was completely removed and standard collection
+type was used instead. Not standard methods Add() of IMenuItems were moved to
+IAnyMenu.Add(). In other words, in your code replace "menu.Items.Add(<text>)"
+with "menu.Add(<text>)".
+- New dynamic property IBaseList.Items (IListBox, IComboBox), see help. In
+brief: when a dialog is started this collection is mapped to a FAR control
+dynamically, i.e. all operations (set, insert, remove and etc.) are displayed
+immediately. See also new DetachItems(), AttachItems().
+- New method IFar::CreateMenuItem()
+
+OTHER
+
+- IControl.Rect is also settable (always); IDialog.Rect is settable before
+Show(); after Show() you can use new methods Move() and Resize().
+
+= 3.3.41 =
+
+- This is mostly a technical build for FAR 1.71.2346
+- New IListBox.Title. IListBox.Text get\set is mapped to the current item text
+(dynamically, i.e. when a dialog is opened).
+
+= 3.3.40 =
+
+- Access to dialogs and controls. New property IFar.Dialog - the current dialog
+if any (including standard FAR dialogs). You can get the current dialog item as
+IDialog.Focused or by index and work on it, e.g. get or set text of the current
+IEdit. Some controls in not FAR.NET dialogs are not fully supported yet.
+Example: Complete-Word-.ps1 from PowerShellFar completes a word from history of
+any edit control in any FAR dialog. See also Generate-Dialog-.ps1 as a demo of
+access to all dialog controls and properties.
+
+- New IFar.GetDialogHistory() - gets saved dialog history by its name (used by
+Complete-Word-.ps1 for completion from editor control history).
+
+- BREAKING: removed IText.Separator2 and converted type of IText.Separator from
+bool to int: 0: standard text; 1: single line separator; 2: double line
+separator.
+
+- New helper IAnyViewer.ViewText - opens a viewer to view some text. Similar to
+IAnyEditor.EditText but you can also choose whether it is modal or not.
+
+- Slightly changed action on setting of IPanel.Path and IPanelPath.Path: if the
+panel is a plugin not supporting the path then it is closed and a FAR panel is
+opened if the new path exists.
+
+= 3.3.39 =
+
+CHANGED
+- VKeyCode names was made compatible with System.ConsoleKey names.
+
+OBSOLETE
+- Removed obsolete editor and viewer properties DeleteOnClose and
+DeleteOnlyFileOnClose. Use new property DeleteSource (enum DeleteSource).
+- Removed obsolete editor events AfterOpen, AfterClose, BeforeSave. Use new
+events: Opened, Closed, Saving. Updated demo plugin Plugins.NET \ TrimSaving.
+
+= 3.3.38 =
+
+NEW
+- Many new features in IViewer and new interface IAnyViewer. In short, viewer
+management is now similar to editor management (but features are different).
+- Minor changes in IEditor and replacements for obsoletes (see below).
+- IFar: TempName(), TempFolder().
+
+FIX
+- Improved error detection on Open() in editor and viewer (it used to throw a
+false error in some rare special cases).
+
+OBSOLETE\CHANGED
+- Removed editor and viewer properties Async and IsModal. Use new method Open(
+OpenMode ). Old method Open() with no parameter works as Open( OpenMode.None ).
+- Editor and viewer properties DeleteOnClose and DeleteOnlyFileOnClose will be
+removed, use new property and enum DeleteSource.
+- Editor events AfterOpen, AfterClose, BeforeSave will be removed because their
+names violate .NET naming guidelines; use new events: Opened, Closed, Saving.
+
+= 3.3.37 =
+
+Recommended FAR 1.71.2315
+
+NEW
+- IFar.Redraw() for FAR 1.71.2315
+- IMenuItem.Disabled works in menus.
+- IMenuItem.Text + IsSeparator is shown in menus.
+- IMenuItem.From enables\disables a menu item "automatically".
+- IMenu: item properties (except Text) can be changed in locked mode.
+- BasePlugin.Invoking(): rarely needed, but sometimes useful, see help.
+- IUserControl - currently it is not really a user defined control with custom
+drawing, but it still can be used to receive some events where other controls
+are not suitable.
+
+OBSOLETE
+- REMOVED property BreakCode from menus, see 3.3.36 notes.
+- Editor and viewer properties Async and IsModal WILL BE REMOVED. Use new method
+Open( OpenMode ) with OpenMode enum. Old method Open() with no parameter is also
+obsolete for now, don't use it for this transition period; but it will not be
+removed, later it will work as Open( OpenMode.None ).
+
+= 3.3.36 =
+
+Requires FAR 1.71 alpha 4 (build 2309)
+http://forum.farmanager.com/viewtopic.php?p=29848#29848
+
+NEW IN FAR.NET
+- EditorPlugin - yet another plugin helper, see help and examples.
+
+NEW IN FAR API AND FAR.NET
+- Support of FAR plugins menu in dialogs.
+- IEdit.NoAutoComplete ~ DIF_NOAUTOCOMPLETE.
+- Events GotFocus and LosingFocus in plugin panels and editor instances.
+- Enum FarMacroState, property IFar.MacroState ~ FARMACROSTATE, MCMD_GETSTATE.
+
+FIXED
+- Memory was not freed on PasteFromClipboard().
+
+CHANGED
+- Moved property WordDiv from IFar to IAnyEditor.
+- Converted property IFar.Editors into method Editors(), it returns an array of
+opened editors.
+
+OBSOLETE
+- Property BreakCode in menus (IListMenu and IMenu) will be removed, use the new
+property BreakKey instead. For IListMenu it is simply renaming; for IMenu it is
+not an index of a break key but a key code itself - this way looks more natural
+and makes coding and changes easier.
+
+= 3.3.35 =
+
+NEW
+
+- CommandPlugin, FilerPlugin classes - two more plugin helpers, see .CHM help
+and Plugins.NET examples.
+- ToolPlugin, CommandPlugin, FilerPlugin are normally not preloaded, i.e.
+information is read from the registry cache only and an assembly is loaded only
+when a plugin feature is invoked.
+- FAR.NET config allows to edit file masks of file plugins.
+- FAR.NET features are described in .hlf topics (also opened on F1).
+- Loading plugins: if a DLL has nothing to load an exception is thrown. This DLL
+has to be removed from a plugin folder or a .cfg file has to be used to define
+what DLLs and classes are loaded exactly.
+- New information in Readme.txt.
+
+FIXED
+
+- Recent bug: can't not open a panel when two panels are already opened.
+- Command prefixes were case sensitive.
+- IEdit.Line.Insert() did not work.
+- A few x64 issues.
+
+CHANGED
+- Removed obsolete IFar.Clipboard, use CopyToClipboard and PasteFromClipboard.
+- A few breaking renamings in the recent features for the sake of common names
+style: RegisterPrefix -> RegisterCommand (actually we register a command, prefix
+is only a default suggestion); UnregisterPrefix -> UnregisterCommand;
+ExecutingEventArgs -> CommandEventArgs (for plugin); RegisterFile ->
+RegisterFiler; UnregisterFile -> UnregisterFiler; OpenFileEventArgs ->
+FilerEventArgs.
+- RegisterFiler has two more parameters: 'mask' and 'creates'.
+- FilerEventArgs.Data type changed from byte[] to System.IO.Stream (to avoid
+redundant data copy), see example in Plugins.NET.
+
+= 3.3.34 =
+
+MAIN CHANGES (BREAKING) AND NEW FEATURES
+(result of all recent forum discussions)
+
+- IFar.Register*|Unregister* methods are quite different, see .CHM and updated
+examples. BasePlugin class can be used as usual with new Register*|Unregister*
+methods. There is also a new simpler helper ToolPlugin - all you need is to
+implement a single method (other stuff is up to you).
+- FAR.NET provides some configuration tools for all its plugins: 1) you can edit
+plugin menu strings in different areas (Panels, Editor, Viewer..); 2) you can
+edit all prefixes according to your preferences or to resolve conflicts; plugins
+may do not care of prefixes in their configurations.
+- Removed IFar.From as not really important. Plugin handlers have this info.
+Besides, new IFar.GetWindowType() gets almost the same information.
+- Slightly changed rules of loading plugins, see Readme.txt.
+
+HOTKEYS
+
+- You have to reset your hotkeys. It is recommended to set the main FAR.NET
+hotkey as usual by F4 and set other FAR.NET hotkeys by ampersands in Options \
+Plugins configuration \ .NET \ Panels tools, Editor tools, Viewer tools (yes,
+.NET plugins may have different hotkeys in different areas).
+
+NEW
+
+- Button [Copy Info] in error dialog copies the error info to the clipboard.
+- IFar.PostStep() returns control to FAR and after that invokes a step handler.
+
+FIXED
+
+- "Index out of range" in IListMenu when a key handler changes menu items.
+
+CHANGED
+
+- IFar.Msg(string) and IFar.Msg(string, string) return void. Other Msg methods
+as usual return pressed button index or -1 on Escape.
+- VKeyCode: some keys were renamed according to .NET naming guidelines.
+
+OBSOLETE
+
+- Property IFar.Clipboard will be removed, use methods CopyToClipboard and
+PasteFromClipboard. Property is sometimes triggered when it is not really
+wanted: e.g. in debugger, in PowerShell member list and etc.
+
+= 3.3.33 =
+
+NEW
+
+- You can now open as many panels as you want (or keep one invisible for later
+use). Of course, only two of them can be shown but the others can be pushed to
+the stack by IPluginPanel.Push so that later you can IPluginPanel.Open them.
+Another new related methods: IFar.ShowPanelMenu() - panel menu where you can
+push a panel or open pushed panels (it is included in plugins and disk menus);
+IFar.PushedPanels() - array of pushed panels, IPluginPanel.Post*() - used
+internally to remember and restore the current file in a pushed panel.
+- IPluginPanel.DotsDescription (used together with AddDots).
+- IPluginPanelInfo.InfoItems allows to set custom info panel items.
+- IPluginPanelInfo.SetKeyBar*() allows to set custom key bar labels.
+- IFar.{Register|Unregister}OpenFile() implements OpenFilePlugin FAR API.
+- VKeyCode - some of virtual key codes.
+
+BREAKING CHANGES
+
+- Property AddDots moved from IPluginPanelInfo to IPluginPanel, i.e. item dots
+now is rather panel data than info.
+- StringDelegate was removed, RegisterPrefix uses now another type of handler:
+EventHandler<ExecutingEventArgs>. This way is more flexible for future changes
+and allows to RegisterPrefix from PowerShell.
+- Removed obsolete IFar.AnotherPanel; use IFar.Panel2 instead.
+- Renamed OpenPluginMenuItemEventArgs into PluginMenuEventArgs.
+
+FIXED/IMPROVED
+
+- Fixed IPluginPanel.PuttingFiles Event.
+- Fixed (or, say, implemented) processing of AddDots in panels.
+- Avoided redundant internal memory allocations on GetPluginInfo().
+- IFar.Plugin bug when two plugin panels are opened and one of them is under
+the info panel.
+- Restored removed by mistake IFar.Unregister* methods.
+
+= 3.3.32 =
+
+FIXED/IMPROVED
+
+- Fixed memory leaks on panel operations.
+- Optimized memory use on panel operations.
+- Avoided redundant panel updates in some cases.
+
+NEW
+
+- IAnyEditor.EditText() - simple way to edit text in a modal editor.
+- IFar.PostMacro()
+
+OBSOLETE/CHANGED/REMOVED
+
+- IFar.AnotherPanel will be removed, use IFar.Panel2 instead.
+- Methods IFar.CreateKeySequence() and IFar.PostKeySequence() work with int[],
+not IList<int>.
+- Removed IPluginMenuItem and CreatePluginsMenuItem, RegisterPlugins*Item. Use
+methods RegisterPlugins*Item(string, handler) instead.
+
+= 3.3.31 =
+
+NEW
+
+- IFar.LoadMacros(), IFar.SaveMacros().
+
+REVISION: IMenu, IListMenu
+
+- IMenu does not support filters any more, it is now pure MENU OF COMMANDS, as
+simple and effective as possible. If your menu is rather a LIST OF OBJECTS for
+selection than use IListMenu, which provides filters: permanent and incremental,
+both with variety of PatternOptions.
+
+- Migration from IMenu to IListMenu (if you really need it) is simple: semantics
+is the same, just rename IMenu and CreateMenu to IListMenu and CreateListMenu;
+actually only keys are different: IMenu uses virtual key codes, IListMenu uses
+internal key codes added by AddKey() with optional handlers.
+
+- If you use permanent filter than, to enable it, now you have to define
+IListMenu.FilterOption according to your preferences, not FilterKey, which is
+now set to default (CtrlDown) and you don't have to fuss about internal codes,
+at least for this.
+
+- [F1] in list menus and input filter dialogs opens basic FAR.NET help about
+predefined and recommended list menu keys and about patterns used for filters.
+
+= 3.3.30 =
+
+NEW
+
+- IAnyMenu - any menu interface; IMenu is now derived from it.
+- IListMenu, Far.CreateListMenu() - new style menu with extra features, e.g.
+incremental filter on typing (substring/prefix/wildcard). It is ready to use,
+but further changes are very possible.
+- Far.CodeToChar() - converts internal key code to char (20h-FFh).
+- KeyCode - helper constants for internal key codes (subject to change).
+
+REMOVED
+(these changes are unlikely breaking, but...)
+
+- Removed IListItem, use IMenuItem instead (items of combo and list boxes).
+In other words property Items of IMenu, IListMenu, IComboBox, IListBox is a
+collection of IMenuItem's. If you used IListItem directly, just rename it.
+- Removed IMenu.OnClick - it turned out that it was declared but not really
+implemented or used. Looks like it was declared by mistake.
+
+= 3.3.28 =
+
+- Added property IMenu.Sender:object; this object is passed in event handler as
+a sender. By default IMenuItem is a sender.
+
+= 3.3.26 =
+
+PLUGIN PANELS
+- New property IPluginPanel.StartDirectory (current directory when it starts).
+
+REMOVED
+- Removed IFar.UnregisterPluginsDiskItem, IFar.UnregisterPluginsMenuItem, see
+explanation in history 3.3.25.
+
+= 3.3.25 =
+
+OBSOLETE
+- IFar.UnregisterPluginsDiskItem, IFar.UnregisterPluginsMenuItem are obsolete
+and will be removed because they are not really effective: registration is done
+only when Connect() is called and it cannot be 'undone'. Besides, when FAR.NET
+is disconnected all registered items are 'unregistered' automatically. Example
+plugin sources are already updated, you may have to update your existing
+plugins too: simply remove calls of these methods. Bonus: you don't have to keep
+menu item references waiting for Disconnect() to be unregistered, and in most
+cases a plugin does not have to implement Disconnect() at all.
+
+PLUGIN CONFIGURATION
+- New method RegisterPluginsConfigItem(): adds "Plugin configuration" item.
+
+WINDOWS
+- New property IFar.WindowCount {get}.
+- New interface IWindowInfo and enum WindowType.
+- New methods IFar: GetWindowInfo(), SetCurrentWindow(), Commit().
+
+DIALOGS
+New features mostly simplifying creation of a dialog and especially future
+modifications of it (Test-Dialog-.ps1 in PowerShellFar shows them all):
+- IDialog.AddBox(): if a parameter right\bottom is 0 then it is calculated;
+- New properties IDialog.Rect, IControl.Rect (useful for relative positions);
+- New property IDialog.NoSmartCoords. By default coordinates are "smart", i.e.
+not positive Top is subtracted from the previous control Top: (0) - the same
+line, (-1) - the next line, and so on. See more in help.
+- New property IDialog.Cancel:IButton - if it is set and the button is pushed
+then Selected is set to this button as usually, but Show() returns false now.
+
+PLUGIN PANELS
+- REMOVED property IPluginPanelInfo.ConfirmClose because of FE_CLOSE issues: it
+may not happen or it may happen when a panel is not about to close.
+- New methods IPanel.Close() and IPanel.Close(string path).
+- REMOVED method IFar.ClosePanel(), instead of it use IPanel.Close() (also for
+IPluginPanel), i.e. call Far.Panel.Close() to close an active panel,
+Far.Panel2.Close() to close a passive panel, <IPluginPanel>.Close() to close a
+plugin panel (active or passive).
+
+= 3.3.23 =
+
+- New methods IFar.{Get|Set}PluginValue(string pluginName, string valueName,
+object {default|new}Value) to {get|set} a plugin value stored in the registry,
+usually at "Software\Far\Plugins" (or "Software\Far\Users\user1\Plugins" if FAR
+is started started with '/u user1' parameter). "pluginName" defines a subkey
+there; the subkey is created if it does not exist even if you only get a value.
+
+= 3.3.22 =
+
+- Fixed most (all?) of x64 issues. Sources are ready for x64. Currently binaries
+are provided for x32 only, sorry for inconvenience.
+
+= 3.3.19 =
+
+- Added 'set' method to property IPanel.NumericSort.
+- Fixed issues in plugin panel start sort modes.
+
+= 3.3.18 =
+
+- Properties IPanel.{ReverseSortOrder | SortMode | ViewMode} are now 'get\set'
+(i.e. not 'get' only).
+- New properties IFar.{RootFar | RootKey} - registry paths taking into account
+a user, e.g. '/u user1' in FAR command line.
+- Improved switching\keeping\restoring of plugin panels modes.
+- Fixed lib path in Build-JS.bat.
+- Fixed ReplaceSlashes.js in examples.
+
+= 3.3.17 =
+
+- removed obsolete properties {ILines | IStrings}.Text; please, use methods
+{IEditor | ISelection}.{GetText | SetText}.
+
+= 3.3.16 =
+
+- new property IFar.From:OpenFrom - where a plugin is opened from.
+- new property IPanel.Window:Place - panel coordinates.
+- new properties IEditor.TrueLines,TrueSelection: no empty last line if any.
+They are designed for convenient reading or changing existing lines in foreach
+loops; Add(), Insert(), RemoveAt() are available, but not yet recommended, they
+can not be used in foreach anyway.
+
+OBSOLETE:
+- properties {ILines | IStrings}.Text will be removed; please, use methods
+{IEditor | ISelection}.{GetText | SetText} - they will be more effective.
+ILines and IStrings will be almost nothing but ILine and string lists.
+
+= 3.3.15 =
+
+- Far.exe.config: added option FarManager.StartupErrorDialog: 0: write error
+info to console (default); 1: show standard error dialog (you may want to turn
+it on to view error info in viewer (button [Info])).
+- fixed exception on clipboard failure.
+- fixed broken examples in Plugins.NET folder
+
+= 3.3.14 =
+
+BREAKING CHANGE: some of IFile properties and panel modes enums renamed using
+names of standard .NET class FileSystemInfo. Sorry for that, but it should be
+much more convenient than to have 3 different set of names for the same things.
+
+Panels:
+- change: IFar.CreatePluginPanel() creates a panel, then IPluginPanel.Open()
+should be called explicitly.
+- removed IPluginPanel.Panel:IPanel. Instead, IPluginPanel is derived from
+IPanel and implements some functionality more effectively.
+- removed IPanel.Top (it looks like it is not used), use IPanel.TopIndex which
+is really needed.
+- IFar.Panel, IFar.Panel2: if it is a FAR.NET plugin panel it returns
+IPluginPanel (derived from IPanel, see above).
+- IFile.Tag:int was replaced with IFile.Data:object, so that you can attach any
+objects to your plugin panel items.
+
+= 3.3.13 =
+
+Plugin panels:
+- new method IFar.GetPluginPanel().
+- removed from public interface property IPluginPanel.Id (used internally).
+- new IPluginPanel.Another - another FAR.NET IPluginPanel if it exists.
+- new IPluginPanel.Panel - IPanel interface for this IPluginPanel.
+- new IPluginPanel.Host - you may use it if you have more than one panel.
+
+Plugin disk menu:
+- Added IFar.{Register | Unregister} PluginsDiskItem(): the same as
+IFar.{Register | Unregister} PluginsMenuItem() but for FAR disk menu.
+
+= 3.3.12 =
+
+- Updated Plugins.NET\IronPython plugin (by Max Belugin).
+- IFar.Input(): added 3 overloaded methods and changed parameter order in
+the existing method: prompt, history, title, text.
+
+= 3.3.11 =
+
+- Fixed minor issues on exceptions in plugin panel events.
+- IFar: new method Input() - helper to create and show IInputBox.
+- IEditor: fixed exceptions from get-properties of not opened editor.
+- Added Plugins.NET\Ipy: plugin to run scripts in IronPython (by Max Belugin).
+
+= 3.3.10 =
+
+- IFar: new method ClosePanel(): closes the current plugin panel.
+- IPluginPanelInfo: new property ConfirmClose:bool.
+- IPanel: new method Redraw(int, int).
+- IFile: new property: Tag:int. It works as user data attached to an item.
+Unfortunately Data:object, as in other interfaces, is not possible for IFile.
+Removed properties Path and ParentPath, sorry for a breaking change, but they
+were error prone in many cases (and redundant in many other cases); thus, if you
+need parent path take it as IPanel.Path and then you decide what Path is in your
+scenario: with slash, backslash, nothing, ... (if you need Path at all).
+- Refactoring of panel related interfaces for new plugin panel functionality,
+added new features, some minor changes may be breaking.
+- Updated documentation.
+
+= 3.3.9 =
+
+- Implemented plugin panel interfaces: main of them are: IPluginPanel and
+IPluginPanelInfo. See docs for details. Not yet everything is implemented but
+significant part. Everything is a subject to change, this is the first version.
+A simple but not really trivial example is Search-Regex-.ps1 in PowerShellFar.
+- Refactoring for panel plugins: removed interface IFolder; replaced property
+IFolder IFile.Parent with string IFile.ParentPath; replaced property IFolder
+IPanel.Contents with IList<IFile> IPanel.Contents.
+- Removed from public interface currently redundant IPluginMenuItem.FireOnOpen()
+and IMenuItem.FireOnClick().
+
+= 3.3.8 =
+
+- Improved some XML doc code comments, updated CHM help. CHM help: removed MSDN
+references, inherited .NET comments and other redundant information.
+- Preliminary internal changes for coming features.
+
+= 3.3.7 =
+
+- Created CHM help: from now on the latest version can be downloaded from:
+http://code.google.com/p/farnet/downloads/list
+- IFar: two new methods Write() appending plain or colored text to the user
+screen (under panels).
+- FAR.NET does not show now error message boxes during the procedure of loading
+plugins (it is annoying if problems are known and temporary). Instead, it writes
+all error messages to the user screen and continues.
+
+= 3.3.6 =
+
+- Removed: IMenuItem.Selected and related IMenu.Show(int) and parameters
+Selected from several methods IMenuItems.Add(). Instead, IMenu.Show() uses
+IMenu.Selected as input if it is set. This way seems more consistent than
+approach with IMenuItem.Selected (potential conflict between items).
+
+= 3.3.5 =
+
+- ILine.Pos: setting of a negative value moves cursor to the end of a line.
+- New ILine.Length: text length; use it when text itself is irrelevant.
+- New IEditor.GoEnd(): effective way to move cursor to the end of file.
+- IFar.Msg(): header: chars '\t', '\r', '\n', if any, are replaced with spaces.
+- Removed FarPluginsLoader.dll; you have to do it manually (in %FARHOME%\Lib).
+- Fixed recent bugs in menus.
+- New property IMenu.SelectLast: tells to select the last item.
+- New IMenu feature: filters. See XML docs for properties Filter, FilterKey,
+FilterHistory, FilterRestore.
+
+= 3.3.4 =
+
+- Implemented IEdit\IComboBox.Line.Selection.
+- Interfaces IRect, IStream, ITwoPoints are replaced with value type with
+neutral name Place which can be used as Rect, Stream or TwoPoints.
+- New properties HelpTopic in IDialog, IMenu, IInputBox, IMessage and new method
+IFar.ShowHelp().
+- Removed FarDotNetStruct.dll; you should remove it manually if you have one,
+normally it is in here: "%FARHOME%\Lib\".
+
+= 3.3.3 =
+
+- New editor methods Begin()\End(). They drastically improve performance of
+operations on large number of editor lines. Example: an operation used to take
+2-3 minutes on a file containing 40,000 lines; now being used with Begin\End it
+takes 4 seconds.
+- Interface ICursor is replaced with struct TextFrame + related properties
+Frame, Cursor and methods GoTo*.
+- New property Line (ILine) in IEdit and IComboBox.
+- Fixed crash in dialogs on Idled event.
+
+= 3.3.2 =
+
+- Fixed IInputBox.History issue.
+- IEditor: new ConvertPosToTab(), ConvertTabToPos() and ConvertScreenToCursor()
+- IMenu.Show() automatically changes coordinate Y (if >= 0) if items are out of
+the screen.
+- Interface IPoint is replaced with struct Point.
+
+= 3.3.1 =
+
+- New dialog item IComboBox, IListBox, password editor and vertical text or
+separator.
+- Implemented main dialog events. See Test-Dialog-.ps1 in PowerShellFar 1.1.1
+for examples.
+- Most of dialog items properties are dynamic, i.e. when a dialog is started
+they reflect the current dialog state both for reading and writing. Example:
+Test-Dialog-.ps1 - button [Test] and related code.
+- IFar.Msg(): supported line delimiters are \r, \n è \r\n, Tabs are replaced
+with spaces. Text is wrapped if required. Two new methods IFar.Msg() with more
+options.
+- Revision of old Key, Mouse and related events. New structs are KeyInfo and
+MouseInfo.
+
+= 3.3.0 =
+
+- FarManager.Forms: implemented IDialog, IBox (double, single), IButton,
+ICheckBox, IEdit (standard, fixed), IRadioButton, IText. Example -
+Test-Dialog-.ps1 in PowerShellFar 1.1.0.
+- New method IFar.CreateViewer() and interface IViewer.
+- New method IFar.WriteText().
+- Revision of IInputBox.
+- IFar.PostText() processes \n, \r and \r\n as Enter. Empty text and empty key
+sequence for IFar.PostKeys() is not an error.
+- Optimized some string operations.
+
+= 3.2.9 =
+
+- Improved exception handling.
+- New IFar.ShowError() for internal use but can be used externally as well.
+- New IFar.PostText().
+
+= 3.2.8 =
+
+- New IFar.GetHistory()
+- IVersion is replaced with System.Version
+
+= 3.2.7 =
+
+- New IEditor.CurrentLine of type ILine.
+- New in ILine: Pos, Insert(), Select(), Unselect().
+- IFar.CommandLine is ILine now. ICommandLine is removed.
+- IFar.GetUserScreen() sends "user screen" to screen. Far >= 1.71.2187.
+- IPanel.IsVisible is get\set (set works via sending CtrlF1\F2).
+
+= 3.2.6 =
+
+- New IMenuItem.Data, IMenu.SelectedData, IPanel.NumericSort,
+IFar.SetUserScreen(), ICommandLine.Insert().
+- IEditor.ExpandTabs type is enum ExpandTabsMode.
+- Improved some exceptions info.
+
+= 3.2.5 =
+
+- Minor changes in IMenu è ISelection and fix of potential crash of a menu with
+incorrect coordinates.
+
+= 3.2.4 =
+
+- Main editor functionality is now implemented as it was designed.
+- Vast revision of existing IEditor implementation.
+- New IEditor.Bookmarks().
+- New properties in IPanel, mostly 'get', but Path is also 'set'.
+- New interface ICommandLine and property IFar.CommandLine.
+- Examples: added Build-CS.bat, Build-JS.bat, Build-VB.bat.
+
+= 3.2.3 =
+
+- Implemented lists in editor.
+- All collections are generic now.
+- All event handlers are standard now (i.e.: object sender, ..EventArgs e).
+
+= 3.2.1 =
+
+- Fixed selection in editor.
+- Completed .NET 2.0 porting.
+
+= 3.1.? and older =
+
+- 29.08.06 - ported to .NET 2.0
+- 19.08.05 - beta stage
+- editor fixes
+- new plugin loading scheme
+- new IFar.RegisterPluginsMenuItem(name, onclick)
+- new IMenuItems.Add(name, onclick)
+- XML comments in FarNetIntf.dll
+- 11.08.05 - alpha stage
+- new settings in Far.exe.config
+- further editor implementation
+- added demo plugins: CopyShared, JS.NetCalc, ReplaceSlashes
+- 19.07.05 - started implementation of editor, fixed bugs in panels
+- 16.05.05 - implemented SHPCE 2.0 functionality (except editor)

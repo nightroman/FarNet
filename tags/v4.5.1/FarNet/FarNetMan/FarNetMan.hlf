@@ -1,0 +1,358 @@
+.Language=English,English (English)
+.PluginContents=FarNet
+.Options TabSize=4
+
+@Contents
+$#FarNet#
+
+#FarNet menus#
+
+	~Plugin menu~@MenuMain@
+	~Config menu~@MenuConfig@
+
+#User interface features#
+
+	~List menu~@ListMenu@
+	~Input filter~@InputFilter@
+
+#FarNet modules#
+
+    ~PowerShellFar~@<..\..\FarNet\Modules\PowerShellFar\>Contents@
+
+
+@MenuMain
+$#Plugin menu#
+~Contents~@Contents@
+
+The main plugin menu shows the following menus:
+
+	~Panels menu~@MenuPanels@
+	~Editors menu~@MenuEditors@
+	~Viewers menu~@MenuViewers@
+	~Console menu~@MenuConsole@
+	~Settings menu~@ModuleSettings@
+
+
+@MenuPanels
+$#Panels menu#
+~Contents~@Contents@
+
+The panels menu shows commands dealing with the panel.
+
+	#Push/Shelve the panel#
+
+If the current panel is a FarNet panel then you can push it to the internal
+shelve for later use. The pushed panel is replaced with a Far file panel.
+
+If the current panel is a Far file panel then you can shelve it: to remember
+its path, current and selected items, sort and view modes. The shelved panel
+remains current.
+
+You can push/shelve any number of panels and pop/unshelve them later.
+
+	#Decrease left column# ([Space] to repeat)
+	#Increase left column# ([Space] to repeat)
+
+If the module panel has two columns then these commands to move the vertical
+column separator left and right. Use [Space] to repeat the menu after the
+command.
+
+	#Switch full screen# ([Space] to repeat)
+
+This command switches the full screen mode for any view mode of any FarNet
+panel. Thus, you may actually use 20 modes = 10 as usual + 10 the same with
+switched full screen. Use [Space] to invoke the command and repeat the menu.
+
+	#Close the panel#
+
+Closes the active plugin panel. It can be any plugin: FarNet or native. Some
+plugin panels may not close on this command. For native plugins original Far
+panel state is not restored on closing.
+
+	#Pop/Unshelve [Enter]#
+
+If there are previously pushed/shelved panels then this menu shows titles of
+these panels. When you select one then the selected panel is restored and its
+original current item, selected items, sort and view modes normally should be
+restored, too.
+
+Pushed FarNet panels are popped, i.e. removed from the internal shelve. Shelved
+Far panels are unshelved, i.e. not removed from the shelve, they are kind of
+panel bookmarks that can be used several times.
+
+	#Pop/Unshelve [Del]#
+
+Removes the selected shelved panel information from the internal shelve. It is
+ignored if the selected item is not a shelved panel.
+
+
+@MenuConsole
+$#Console menu#
+~Contents~@Contents@
+
+The console menu shows commands dealing with the console window.
+
+	#Decrease font size# ([Space] to repeat)
+	#Increase font size# ([Space] to repeat)
+
+These commands work only in Windows Vista and above. They decrease and increase
+the current console font and window size. Use [Space] to repeat the menu after
+commands in order to perform several steps, or use these commands via macros.
+
+Example mouse macros for the Common area:
+
+ [CtrlMsWheelDown] FarNet: Decrease font size:
+ F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End
+
+ [CtrlMsWheelUp] FarNet: Increase font size:
+ F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End
+
+
+@MenuEditors
+$#Editors menu#
+~Contents~@Contents@
+
+This menu shows the list of opened editors sorted by the most recent activity.
+E.g. the first item is the current editor, the second item is the previously
+active and so on.
+
+
+@MenuViewers
+$#Viewers menu#
+~Contents~@Contents@
+
+This menu shows the list of opened viewers sorted by the most recent activity.
+E.g. the first item is the current viewer, the second item is the previously
+active and so on.
+
+
+@MenuConfig
+$#Config menu#
+~Contents~@Contents@
+
+This menu allows to configure FarNet module tools:
+commands, editors, filers, menus, and to set common module options.
+
+#Menu tools# : shows the ~Configure menu tools~@ConfigTool@ menu.
+
+#Commands# : shows the ~Configure commands~@ConfigCommand@ menu.
+
+#Editors# : shows the ~Configure editors~@ConfigEditor@ menu.
+
+#Filers# : shows the ~Configure filers~@ConfigFiler@ menu.
+
+#UI culture# : shows the ~Module UI culture~@ConfigUICulture@ menu.
+
+---
+
+NOTE: These are #system settings#. They exist for all modules and their tools.
+In contrast, there are also #user settings# panels opened from the plugin menu
+in panels. User settings exist only if they are implemented by a module.
+See ~Settings menu and panels~@ModuleSettings@ (#F11 | .NET | Settings#).
+
+In addition, modules may provide custom settings dialogs and even not standard
+ways to configure settings (e.g. via registry), see module manuals.
+
+
+@ConfigTool
+$#Configure menu tools#
+~Contents~@Contents@
+
+This menu and the dialogs allow to set the .NET menu hotkeys and to disable and
+re-enable default areas where tool menu items are shown.
+
+[#Enter#] (menu)
+
+Opens the dialog where you can set the hotkey and switch the default areas.
+
+#Dialog#
+
+Set or change the .NET menu hotkey. Enter an empty string to drop the hotkey.
+Disable or re-enable the default areas where the tool menu items are shown.
+
+#.NET and other FarNet hotkeys#
+
+It is recommended to set the main .NET hotkey (the FarNet plugin itself) as
+usual by [F4] and to set FarNet module hotkeys not by [F4] but using this way:
+
+	#Options \ Plugins configuration \ .NET \ Menu tools#
+
+
+@ConfigCommand
+$#Configure commands#
+~Contents~@Contents@
+
+This menu and the input box allow to edit FarNet module command line prefixes.
+
+[#Enter#] (menu)
+
+Opens the input box where you can change the selected prefix.
+
+#Input box#
+
+In the input box you change the selected prefix. If you enter an empty string
+then the default prefix is restored.
+
+
+@ConfigEditor
+$#Configure editors#
+~Contents~@Contents@
+
+This menu and the input box allow to edit module editor file masks.
+
+[#Enter#] (menu)
+
+Opens the input box where you can change the file mask.
+
+#Input box#
+
+In the input box you change the file mask, see ~File masks~@:FileMasks@, exclude
+masks are supported (i.e. <include>|<exclude>). If you enter an empty string
+then the default mask is restored.
+
+
+@ConfigFiler
+$#Configure filers#
+~Contents~@Contents@
+
+This menu and the input box allow to edit module filer file masks.
+
+[#Enter#] (menu)
+
+Opens the input box where you can change the file mask.
+
+#Input box#
+
+In the input box you change the file mask, see ~File masks~@:FileMasks@, exclude
+masks are supported (i.e. <include>|<exclude>). If you enter an empty string
+then the default mask is restored.
+
+
+@ConfigUICulture
+$#Module UI culture menu#
+~Contents~@Contents@
+
+This menu and the input box allow to set FarNet module UI cultures needed for
+localization. It makes sense if a module provides more than one localized
+*.resources files and you want to set its UI to a culture different from the
+current Far UI culture.
+
+[#Enter#] (menu)
+
+Opens the input box where you can change the culture.
+
+#Input box#
+
+Enter a new culture name. Empty name tells to use the current Far UI culture.
+
+
+@ListMenu
+$#List menu#
+~Contents~@Contents@
+
+This is basic description of all list menus. Actual keys and operations depend
+on properties set by a module.
+
+[#Enter#]
+
+Selects the current item and closes the menu. The selected item is processed by
+a caller. Example: command history: the selected command is invoked.
+
+[#CtrlEnter#]
+
+Recommended key for an alternative action, i.e. it selects the current item,
+closes the menu and the item is processed by a caller in alternative way.
+Example: command history: the selected command is inserted into the command
+line.
+
+[#Del#]
+
+Recommended key for removing item(s) from the menu. Example: command history:
+removes duplicated commands or removes the current command and etc.
+
+[#CtrlDown#]
+
+Recommended key to open an input filter dialog (if permanent filter is enabled).
+Note that in this case #AltDown# does the same if you use this popular macro
+(add-on AltDown.reg). See also ~Input filter~@InputFilter@.
+
+#Symbols#
+
+Applies incremental filter immediately on typing (if incremental filter is
+enabled). By default symbols * and ? are wildcards.
+
+[#BS#]
+
+Removes the last symbol from the current incremental filter pattern.
+
+[#ShiftBS#]
+
+Removes the incremental filter string completely.
+
+[#CtrlC#], [#CtrlIns#]
+
+Copies the current item text to the clipboard.
+
+
+@InputFilter
+$#Input filter#
+~Contents~@Contents@
+
+Input box for a filter pattern. Pattern type depends on a module or its
+settings. Available types:
+
+ #Regex#
+ #Regex, Literal#
+
+ regex - standard regular expression
+ ?text - text is a prefix where * and ? are wildcards or #Literal#
+ *text - text is a substring where * and ? are wildcards or #Literal#
+
+ #Prefix#
+ #Prefix, Literal#
+
+ Pattern is a prefix where * and ? are wildcards or #Literal#
+
+ #Substring#
+ #Substring, Literal#
+
+ Pattern is a substring where * and ? are wildcards or #Literal#
+
+@ModuleSettings
+$#Settings menu and panel#
+~Contents~@Contents@
+
+#Settings menu#
+
+The settings menu shows settings sets implemented by modules and discovered by
+the core (a module may implement any number of settings sets). On selection of
+a set from the menu its properties are shown in its module settings panel. The
+settings panel is uniform for all modules.
+
+#Settings panel#
+
+The module settings panel shows two columns: setting names and values. Use
+[#F4#] in order to edit values in text editors. Editors are not modal, several
+settings editors can be opened at the same time. Changed values are applied
+immediately and cannot be undone. The settings set is saved to files when the
+panel closes (e.g. by [#Esc#]).
+
+In editors consider to save changes before closing (use [#F2#]). If the current
+text is not valid then after an error message the editor is still opened and
+the text can be corrected. It is recommended to exit settings editors before
+closing the panel.
+
+Default setting names start with '-'. Ever edited setting names start with '+';
+note that such values may be equal to default as well. To reset settings to
+defaults use [#Del#] or [#F8#] in the panel for selected settings. Default
+settings are not stored in files, their values are defined in modules.
+
+[#CtrlF11#] in the panel shows default and ever edited values sorted
+separately. [#CtrlF3#] restores usual sort by names.
+
+---
+
+NOTE: These are #user settings# of modules that provide settings classes. In
+contrast, there are also #system settings# menus and dialogs. System settings
+exist for all modules and their tools.
+See ~Config menu~@MenuConfig@ (#F9 | Options | Plugin configuration#).
