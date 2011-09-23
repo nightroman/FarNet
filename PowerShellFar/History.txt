@@ -1,6 +1,12 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.5.2 =
+
+*) Renamed scripts
+Connect-Mdb-.ps1 -> Connect-MSAccess-.ps1
+Connect-Sdf-.ps1 -> Connect-SqlCompact-.ps1
+
 = 4.5.1 =
 
 *) Built-in cmdlets help
