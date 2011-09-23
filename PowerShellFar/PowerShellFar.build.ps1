@@ -70,8 +70,8 @@ task BuildFarMacroHelp `
 -Outputs $FarHome\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll-Help.xml `
 {
 	Add-Type -Path $FarHome\FarNet\FarNet.dll
-	Import-Module Helps
 	Import-Module $FarHome\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll
+	. Helps.ps1
 	Convert-Helps Modules\FarMacro\FarMacro.dll-Help.ps1 $Outputs
 }
 
@@ -89,7 +89,7 @@ task BuildPowerShellFarHelp `
 	$ps.Runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace($Configuration)
 	$ps.Runspace.Open()
 	$null = $ps.AddScript(@"
-Import-Module Helps
+. Helps.ps1
 Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 "@)
 	$ps.Invoke()
