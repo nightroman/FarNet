@@ -1,3 +1,4 @@
+*.sdf
 *.suo
 *.vcxproj.user
 [B|b]in

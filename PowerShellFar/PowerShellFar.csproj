@@ -7,7 +7,6 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{602C5210-AF86-471A-BF19-35C0D5A71719}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PowerShellFar</RootNamespace>
     <AssemblyName>PowerShellFar</AssemblyName>
     <SignAssembly>false</SignAssembly>
@@ -72,6 +71,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnyAssemblyInfo.cs" />
     <Compile Include="Commands\AssertFarCommand.cs" />
     <Compile Include="Commands\Find-FarFile.cs" />
     <Compile Include="Commands\GetFarFileCommand.cs" />
@@ -148,7 +148,7 @@
     <Compile Include="UI\PromptDialog.cs" />
     <Compile Include="UI\SelectMenu.cs" />
     <Compile Include="Panels\ObjectPanel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="FarHost.cs" />
     <Compile Include="Actor.cs" />
     <Compile Include="Job.cs" />
