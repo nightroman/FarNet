@@ -1,4 +1,17 @@
 
+<#
+.Synopsis
+	Task library (https://github.com/nightroman/Invoke-Build)
+
+.Description
+	It is imported by build scripts of child projects.
+
+	Requires:
+	* $FarHome
+	* $Configuration
+	* $Assembly - assembly file name
+#>
+
 task Clean {
 	Remove-Item bin, obj -Recurse -Force -ErrorAction 0
 }
