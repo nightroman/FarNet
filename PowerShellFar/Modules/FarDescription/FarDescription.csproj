@@ -62,6 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\AnyAssemblyInfo.cs">
+      <Link>AnyAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CodeMethods.cs" />
     <Compile Include="Description.cs" />
     <Compile Include="AssemblyInfo.cs" />
