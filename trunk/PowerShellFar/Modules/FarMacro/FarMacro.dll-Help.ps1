@@ -1,4 +1,9 @@
 
+<#
+.Synopsis
+	Help script (https://github.com/nightroman/Helps)
+#>
+
 $BaseMacroParameters = @{ ###
 	Area = 'See Macro.Area'
 	Name = 'See Macro.Name'
