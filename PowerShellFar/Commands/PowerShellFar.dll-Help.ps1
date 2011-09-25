@@ -1,4 +1,9 @@
 
+<#
+.Synopsis
+	Help script (https://github.com/nightroman/Helps)
+#>
+
 Set-StrictMode -Version 2
 
 ### Assert-Far
