@@ -65,20 +65,14 @@ task InstallRes {
 	exec { robocopy Modules\FarMacro $dir\Modules\FarMacro about_FarMacro.help.txt FarMacro.psd1 FarMacro.Format.ps1xml /np } (0..2)
 }
 
-task BuildFarMacroHelp `
--Inputs { Get-Item Modules\FarMacro\*.* } `
--Outputs $FarHome\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll-Help.xml `
-{
+task BuildFarMacroHelp -Incremental @{{ Get-Item Modules\FarMacro\*.* } = "$FarHome\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll-Help.xml" } {
 	Add-Type -Path $FarHome\FarNet\FarNet.dll
 	Import-Module $FarHome\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll
 	. Helps.ps1
 	Convert-Helps Modules\FarMacro\FarMacro.dll-Help.ps1 $Outputs
 }
 
-task BuildPowerShellFarHelp `
--Inputs { Get-Item Commands\* } `
--Outputs $FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll-Help.xml `
-{
+task BuildPowerShellFarHelp -Incremental @{{ Get-Item Commands\* } = "$FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll-Help.xml"} {
 	Add-Type -Path $FarHome\FarNet\FarNet.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Settings.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Tools.dll

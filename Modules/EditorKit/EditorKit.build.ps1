@@ -16,7 +16,7 @@ $dll = 'EditorKit.dll'
 
 use $null csc
 
-task Build -Inputs $src -Outputs $dll {
+task Build -Incremental @{$src = $dll} {
 	exec { csc /target:library /optimize "/reference:$FarHome\FarNet\FarNet.dll" *.cs }
 }
 

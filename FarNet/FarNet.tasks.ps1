@@ -16,7 +16,7 @@ task Clean {
 	Remove-Item bin, obj -Recurse -Force -ErrorAction 0
 }
 
-task Install -Inputs bin\$Configuration\$Assembly -Outputs { "$FarHome\FarNet\$Assembly" } {process{
+task Install -Partial @{"bin\$Configuration\$Assembly" = "$FarHome\FarNet\$Assembly"} {process{
 	Copy-Item -LiteralPath $_ $$
 }}
 
