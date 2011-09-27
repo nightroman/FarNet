@@ -56,24 +56,24 @@
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\</IntDir>
-    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install {. .\.build.ps1 -Configuration $(Configuration) -Platform $(Platform)}</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install {. .\.build.ps1 -Configuration $(Configuration) -Platform $(Platform)}</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install .build.ps1 @{Configuration='$(Configuration)'; Platform='$(Platform)'}</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install .build.ps1 @{Configuration='$(Configuration)'; Platform='$(Platform)'}</NMakeReBuildCommandLine>
     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\</IntDir>
-    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install {. .\.build.ps1 -Configuration $(Configuration) -Platform $(Platform)}</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install {. .\.build.ps1 -Configuration $(Configuration) -Platform $(Platform)}</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install .build.ps1 @{Configuration='$(Configuration)'; Platform='$(Platform)'}</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install .build.ps1 @{Configuration='$(Configuration)'; Platform='$(Platform)'}</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">rem</NMakeCleanCommandLine>
     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\</IntDir>
-    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install {. .\.build.ps1 -Configuration $(Configuration) -Platform $(Platform)}</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install {. .\.build.ps1 -Configuration $(Configuration) -Platform $(Platform)}</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install .build.ps1 @{Configuration='$(Configuration)'; Platform='$(Platform)'}</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install .build.ps1 @{Configuration='$(Configuration)'; Platform='$(Platform)'}</NMakeReBuildCommandLine>
     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\</IntDir>
-    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install {. .\.build.ps1 -Configuration $(Configuration) -Platform $(Platform)}</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install {. .\.build.ps1 -Configuration $(Configuration) -Platform $(Platform)}</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install .build.ps1 @{Configuration='$(Configuration)'; Platform='$(Platform)'}</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PowerShell.exe -NoProfile Invoke-Build.ps1 Install .build.ps1 @{Configuration='$(Configuration)'; Platform='$(Platform)'}</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">rem</NMakeCleanCommandLine>
     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">rem</NMakeCleanCommandLine>
