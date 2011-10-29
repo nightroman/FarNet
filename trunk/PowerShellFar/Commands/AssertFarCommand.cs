@@ -129,20 +129,9 @@ namespace PowerShellFar.Commands
 			}
 			else
 			{
-				PSObject psobject = condition as PSObject;
-				if (psobject != null)
-					condition = psobject.BaseObject;
-
-				if (condition.GetType() != typeof(bool))
-				{
-					Message = "Expected Boolean conditions; actual input type is " + condition.GetType().Name;
-					Title = null;
-				}
-				else if ((bool)condition)
-				{
-					// OK
+				// used to require Boolean; let's keep it simple
+				if (LanguagePrimitives.IsTrue(condition))
 					return;
-				}
 			}
 
 			Fail(null);

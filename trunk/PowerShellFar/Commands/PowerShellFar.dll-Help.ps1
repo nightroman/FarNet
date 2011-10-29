@@ -10,7 +10,7 @@ Set-StrictMode -Version 2
 @{
 	command = 'Assert-Far'
 	synopsis = @'
-Checks for the condition(s) and stops the pipeline with a message if any condition is false or not Boolean.
+Checks for the condition(s) and stops the pipeline with a message if any condition is not evaluated to true.
 '@
 	description = @'
 If the assertion fails then a message is shown and the PipelineStoppedException exception is thrown after that.
@@ -21,7 +21,7 @@ If the message Title is provided then just a simple message is shown on failures
 This mode is suitable for production scripts.
 '@
 	parameters = @{
-		Conditions = 'A Boolean value or an array of Boolean values to be checked.'
+		Conditions = 'A value or an array of values to be checked.'
 		Message = 'The message to display on failure or a script block to invoke and get the message.'
 		Title = 'The title of a simple message designed for production scripts.'
 		FileDescription = 'Asserts the current panel file description.'
