@@ -3,6 +3,10 @@ http://code.google.com/p/farnet/
 
 = 4.5.2 =
 
+*) Cmdlet Assert-Far
+It used to require exactly Boolean values. Let's keep it simple, any type is
+fine, just like for 'if'. It is checked now as LanguagePrimitives.IsTrue().
+
 *) Renamed scripts
 Connect-Mdb-.ps1 -> Connect-MSAccess-.ps1
 Connect-Sdf-.ps1 -> Connect-SqlCompact-.ps1

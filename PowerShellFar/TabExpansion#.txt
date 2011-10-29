@@ -4,6 +4,9 @@ $LastExitCode
 $MyInvocation.MyCommand.Definition
 $PSBoundParameters
 $PSCmdlet
+$PSCmdlet.GetResolvedProviderPathFromPSPath(#, [ref]$null)
+$PSCmdlet.GetUnresolvedProviderPathFromPSPath(#)
+$PSCmdlet.ParameterSetName
 $PSCmdlet.ShouldProcess(#)
 $PSScriptRoot
 &{process{#}}
