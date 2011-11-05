@@ -535,7 +535,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					OpenMenu(ModuleToolOptions::Viewer);
 					break;
 				}
-				
+
 				//_110628_192511
 				if (Far::Net->Window->Kind == WindowKind::Panels)
 					break;
@@ -605,7 +605,7 @@ void Far0::AssertHotkeys()
 
 // _100411_022932 Why PostStep is better than PostJob: PostStep makes FarNet to
 // be called from OpenPlugin, so that it can open panels and do most of needed
-// tasks. PostJob does not allow to open panels, to call PostMacro, etc.
+// tasks. PostJob does not allow opening panels, calling PostMacro, etc.
 // Workarounds (to post steps as steps or as jobs depending on X) are not neat.
 // Thus, wait for a good CallPlugin in Far or for some other new features.
 void Far0::PostStep(Action^ handler)
@@ -762,11 +762,11 @@ void Far0::AsProcessSynchroEvent(int type, void* /*param*/)
 	{
 		if (!_jobs)
 			return;
-	
+
 		//! handlers can be added during invoking
 		Action^ jobs = _jobs;
 		_jobs = nullptr;
-		
+
 		// invoke
 		Log::Source->TraceInformation("AsProcessSynchroEvent: invoking job(s): {0}", gcnew Works::DelegateToString(jobs));
 		jobs();
@@ -783,7 +783,7 @@ void Far0::PostJob(Action^ handler)
 		throw gcnew ArgumentNullException("handler");
 
 	Works::DelegateToString log(handler);
-	
+
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
@@ -796,13 +796,13 @@ void Far0::PostJob(Action^ handler)
 		if (_jobs)
 		{
 			Log::Source->TraceInformation("PostJob: post to the queue: {0}", %log);
-			
+
 			_jobs += handler;
 		}
 		else
 		{
 			Log::Source->TraceInformation("PostJob: post the head job: {0}", %log);
-			
+
 			_jobs = handler;
 			Info.AdvControl(Info.ModuleNumber, ACTL_SYNCHRO, 0);
 		}
@@ -918,7 +918,7 @@ void Far0::ShowConsoleMenu()
 	menu->Add("&Increase font size");
 
 	menu->BreakKeys->Add(VKeyCode::Spacebar);
-	
+
 	while(menu->Show())
 	{
 		switch(menu->Selected)
@@ -930,7 +930,7 @@ void Far0::ShowConsoleMenu()
 			ChangeFontSize(true);
 			break;
 		}
-		
+
 		if (menu->BreakKey != VKeyCode::Spacebar)
 			return;
 	}

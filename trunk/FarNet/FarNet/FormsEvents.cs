@@ -132,7 +132,7 @@ namespace FarNet.Forms
 			: base(losing)
 		{ }
 		/// <summary>
-		/// Control you want to pass focus to or leave it null to allow to lose focus.
+		/// Control you want to pass focus to or leave it null to allow losing focus.
 		/// </summary>
 		public IControl Focused { get; set; }
 	}

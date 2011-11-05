@@ -7,7 +7,7 @@ namespace FarNet.Demo
 {
 	/// <summary>
 	/// Provides a menu item in all plugin menus.
-	/// It allows to set the level of tracing used by the core and turn tracing to the file on/off.
+	/// It sets the level of tracing used by the core and turn tracing to the file on/off.
 	/// The file trace listener is added to the <see cref="Log.Source"/> (FarNet) and <see cref="Trace"/> (.NET).
 	/// </summary>
 	/// <remarks>
@@ -31,7 +31,7 @@ namespace FarNet.Demo
 			// create the menu instance
 			var menu = Far.Net.CreateMenu();
 			menu.Title = GetString("MenuTitle");
-			
+
 			// set this menu help topic
 			menu.HelpTopic = Far.Net.GetHelpTopic("TracingMenu");
 

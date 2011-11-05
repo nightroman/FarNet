@@ -39,7 +39,7 @@ static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, ILis
 				names->Add(gcnew String(panelItem[i].FindData.lpwszAlternateFileName));
 		}
 	}
-	
+
 	return r;
 }
 
@@ -338,7 +338,7 @@ int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 {
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	ExplorerModes mode = (ExplorerModes)opMode;
-	
+
 	Log::Source->TraceInformation("PutFilesW Mode='{0}'", mode);
 
 	if (!pp->Host->Explorer->CanImportFiles)
@@ -363,7 +363,7 @@ int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	// failed:
 	if (args.Result != JobResult::Incomplete || args.FilesToStay->Count == 0)
 		return 0;
-	
+
 	// incomplete:
 
 	// drop selection flags
@@ -395,7 +395,7 @@ int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsN
 
 	DeleteFilesEventArgs args(mode, ItemsToFiles(pp->Host->Explorer->CanExploreLocation, pp->Files, nullptr, panelItem, itemsNumber), false);
 	pp->Host->UIDeleteFiles(%args);
-	
+
 	return args.Result == JobResult::Ignore ? 0 : 1;
 }
 
@@ -407,7 +407,7 @@ void Panel0::AsClosePlugin(HANDLE hPlugin)
 	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
 	pp->Free();
 	_panels[(int)(INT_PTR)hPlugin] = nullptr;
-	
+
 	// done for pushed
 	if (pp->_Pushed)
 		return;
@@ -442,7 +442,7 @@ void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 		return;
 	}
 
-	// trigger - allow to update info before making it for Far
+	// trigger - to update info before making it for Far
 	if (!State::GetPanelInfo)
 	{
 		Log::Source->TraceEvent(TraceEventType::Verbose, 0, "UpdateInfo");
@@ -487,7 +487,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 			{
 				CommandLineEventArgs e(gcnew String((const wchar_t*)param));
 				Log::Source->TraceInformation("InvokingCommand: {0}", e.Command);
-				
+
 				//! Try\catch in order to return exactly what the module returns.
 				try
 				{
@@ -594,7 +594,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 						return 1;
 					}
 				}
-				
+
 				return 0;
 			}
 
@@ -605,7 +605,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 				pp->_postFile = nullptr;
 				pp->_postName = nullptr;
-				
+
 				IList<FarFile^>^ files = pp->ShownList;
 				for(int n = files->Count, i = pp->HasDots ? 1 : 0; i < n; ++i)
 				{
@@ -616,14 +616,14 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 						return 1;
 					}
 				}
-				
+
 				return 0;
 			}
 
 			// else: find posted file
 			if (!pp->_postFile)
 				return 0;
-			
+
 			IEqualityComparer<FarFile^>^ comparer = pp->Host->Explorer->FileComparer;
 			FarFile^ file = pp->_postFile;
 			pp->_postFile = nullptr;
@@ -638,7 +638,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 					return 1;
 				}
 			}
-			
+
 			return 0;
 		}
 		break;
@@ -944,7 +944,7 @@ void Panel0::OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ ar
 		core->ReplaceExplorer(explorer);
 		newPanel = oldPanel;
 	}
-	
+
 	// post
 	if (args)
 	{

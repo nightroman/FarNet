@@ -25,7 +25,7 @@ namespace PowerShellFar
 	/// Gets object sequence. Used for lazy evaluation. Suitable for script blocks.
 	/// </summary>
 	delegate IEnumerable GetValues(); //! IEnumerable<string> is not good for "script blocks delegates".
-	
+
 	/// <summary>
 	/// For internal use and testing.
 	/// </summary>
@@ -415,7 +415,7 @@ namespace My
 			});
 		}
 		/// <summary>
-		/// Simple call helper. Eventually may help to use a custom editor.
+		/// Simple call helper. Eventually may help with a custom editor.
 		/// </summary>
 		public static Process StartNotepad(string path)
 		{

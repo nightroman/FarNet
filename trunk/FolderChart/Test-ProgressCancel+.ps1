@@ -11,9 +11,9 @@
 	It starts the long job a few times and then cancels it after a random time.
 	We see activity at the Windows 7 task bar. The script stops after a while.
 
-	This is a test for race conditions. It is naive but it really helps to find
-	problems. It is not to be included to the regular test base. Just run it
-	once or even more after relevant code changes and watch for issues.
+	This is a test for race conditions. It is naive but it finds problems. It
+	is not to be included to the regular test base. Just run it once or even
+	more after relevant code changes and watch for issues.
 #>
 
 {

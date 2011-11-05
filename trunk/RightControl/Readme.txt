@@ -17,9 +17,9 @@ Source   : http://code.google.com/p/farnet/
 = DESCRIPTION =
 
 
-This tool allows to alter some operations in editors, edit controls, and the
-command line. They are: Step/Select/Delete by words, Go/Select to smart home.
-New actions are similar to what many popular editors do on stepping, selecting,
+This tool alters some operations in editors, edit controls, and the command
+line. They are: Step/Select/Delete by words, Go/Select to smart home. New
+actions are similar to what many popular editors do on stepping, selecting,
 deleting by words, and etc. Example: Visual Studio editor, Word, WordPad, etc.
 
 All the module commands work via the macro function CallPlugin().
@@ -101,7 +101,7 @@ Drop existing selection on Ctrl-Left/Right
 
 Ctrl-Backspace/Delete (delete by words) use the same rules as step/select
 
-Registry option Regex allows to define custom text breaks (see Readme.txt)
+Registry option Regex defines custom text breaks (see Readme.txt)
 
 1.0.4
 

@@ -10,9 +10,9 @@
 	file path the action depends on parameters; default action is to jump to
 	the target file, other actions: edit or view the file.
 
-	Switch -Panel allows to open a shortcut in a panel to view and edit its
-	properties. If you change data it asks you to save changes on exit or you
-	can use [CtrlS] to save data at any moment.
+	Switch -Panel opens a shortcut in a panel to view and edit its properties.
+	If you change data it asks you to save changes on exit or you can use
+	[CtrlS] to save data at any moment.
 
 	How to open .lnk files, e.g. by [Enter], [CtrlPgDn], [F3], [F4]:
 	Open menu Commands \ File Associations, add an association and set:

@@ -5,9 +5,8 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	It helps to run Far Manager in the current PowerShell console. On exit from
-	Far it sets the last panel directory current and updates the current
-	PowerShell location.
+	It starts Far Manager in the current PowerShell console. On exit it sets
+	the current directory and provider location to the last current panel path.
 
 	All arguments are passed in Far. Do not confuse PowerShell: use '/', not
 	'-' for switches. Mind other PowerShell parsing rules different from Cmd.

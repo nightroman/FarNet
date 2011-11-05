@@ -5,8 +5,8 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	This script and Import-FarSettings.ps1 allow to export and import only main
-	Far Manger settings that normally should be the same for any machine of the
+	This script and Import-FarSettings.ps1 export and import only main Far
+	Manager settings that normally should be the same for any machine of the
 	same user. Many other settings like history data normally should not be
 	transferred. Key Users is also excluded.
 
