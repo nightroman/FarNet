@@ -92,9 +92,9 @@ $#Installation#
 
 #Installation#
 
-Check the local PowerShell execution policy: start PowerShell.exe and type
-Get-ExecutionPolicy. If it is not RemoteSigned or Unrestricted then invoke
-Set-ExecutionPolicy with RemoteSigned or Unrestricted argument.
+Set execution policy: start PowerShell.exe and type Get-ExecutionPolicy. If it
+is not Bypass, Unrestricted, or RemoteSigned then invoke Set-ExecutionPolicy
+with one of these values. Bypass is the fastest but the least secure.
 
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
 The location and name can be changed but it is recommended to use this way:
@@ -300,7 +300,7 @@ control in any dialog. Default TabExpansion is replaced with advanced
 #Modules+#
 
 Shows available PowerShell modules and registered PowerShell snap-ins in a menu
-which allows to import or remove them for current the session.
+which imports or removes selected modules for current the session.
 See ~Modules menu~@MenuModules@.
 
 #Errors#
@@ -366,7 +366,7 @@ menu has started.
 commands from all areas and the current area may be not suitable. Example: a
 command that opens a panel should not be called from a dialog.
 
-[#CtrlEnter#] Allows to edit the command before invocation.
+[#CtrlEnter#] Edits the command before invocation.
 *) In panels: inserts the command text into the command line with automatically
 added prefix.
 *) In editor consoles: inserts the command text into the editor.
@@ -394,7 +394,7 @@ $#Power panel menu#
 ~Contents~@Contents@
 ~Power panel~@PowerPanel@
 
-This menu allows to open a panel for any .NET objects or a provider panel at the
+This menu opens a panel for any .NET objects or a provider panel at the
 selected drive.
 
 [#Enter#] Opens the selected panel.
@@ -404,8 +404,8 @@ selected drive.
 $#Modules menu#
 ~Contents~@Contents@
 
-This menu shows available module and registered snap-ins and allows to import
-or remove them for the current session. Already imported modules and added
+This menu shows available modules and registered snap-ins and imports or
+removes them for the current session. Already imported modules and added
 snap-ins have their items checked on the left.
 
 
@@ -992,8 +992,8 @@ $#Data panel#
 
 #WARNING: use this feature carefully, you can change or delete database data.#
 
-Data panel shows database records selected by a SQL command and allows to modify
-and update data, insert and delete records.
+Data panel shows database records selected by a SQL command and provides tools
+used to modify and update data, insert and delete records.
 
 
 #KEYS AND ACTIONS#
@@ -1072,7 +1072,7 @@ An object being shown is exposed as #$Far.Panel.Host.Value#
 
 #KEYS AND ACTIONS#
 
-[#Enter#] Allows to modify a property using the command line. If the command
+[#Enter#] It is used to modify a property in the command line. If the command
 line is empty and the current property value can be represented as a single
 line of text, then [Enter] puts the value into the command line with a prefix
 =. If the command line is not empty and it starts with = then [Enter] treats
@@ -1094,7 +1094,7 @@ selected properties.
 
 [#CtrlG#] Apply command. Opens an input box and prompts to enter a command to
 be invoked for the target object #$_# which members or properties are shown.
-This way allows to invoke the target object methods and to assign results of
+This is used to invoke the target object methods and to assign results of
 expressions to properties.
 
 [#CtrlShiftM#] Switches panel modes: mode 1: properties and values (you can
@@ -1340,9 +1340,9 @@ for, say, PowerShell console or ISE. Namely:
  by PowerShellFar.Stepper for step sequence processing.
 
 The suffixes are not mandatory for PowerShellFar scripts or step units, you may
-use any names with or without suffixes. But suffixes help to distinguish very
-different script classes. Also, suffixes can be effectively used for assigning
-commands, see
+use any names with or without suffixes. Suffixes are useful for distinguishing
+between different script classes. Also, suffixes can be effectively used for
+assigning commands, see
 ~file associations~@:FileAssoc@
 
 #EXAMPLES#
@@ -1539,10 +1539,9 @@ the FarMacro module.
 [farmac[Tab] does not work if FarMacro is loaded after $TabExpansionCache
 creation.
 
-NOTE: remember that PowerShell allows to omit the "System." in the type names,
-so that it is OK to type [String] instead of [System.String]. PSF TabExpansion
-takes this into account and provides some more expansion candidates than one
-may expect.
+NOTE: remember that PowerShell allows omitting "System." in type names, so that
+it is fine to use [String] instead of [System.String]. PSF TabExpansion takes
+this into account and provides more expansion candidates than one may expect.
 
 ---------------------------------------------------------------------
 
@@ -2040,9 +2039,9 @@ for normal TabExpansion of the first word:
  (X is the PowerShellFar hotkey in the plugin menu)
 
 Now you can type PowerShell commands without a prefix and press [ShiftSpace] to
-execute it. There is a bonus: if a command fails, say, due to mistakes, its
-text is still in the command line, ready for correction, even cursor position
-is the same: this helps to compose some lengthy commands.
+execute it. There is a bonus: if a command fails then its text is still in the
+command line, ready for correction; even the caret position is the same, this
+is handy on composing lengthy commands.
 
 
 @ConsoleApplications

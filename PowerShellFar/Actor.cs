@@ -99,7 +99,7 @@ namespace PowerShellFar
 		{
 			//! do not unsubscribe _110301_164313
 			//Console.CancelKeyPress -= CancelKeyPress; //_110128_075844
-			
+
 			// unsubscribe
 			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
 			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
@@ -538,8 +538,8 @@ Continue with this current directory?
 		/// Gets the editor or throws.
 		/// </summary>
 		/// <remarks>
-		/// Gets the editor associated with the current window or throws, if none.
-		/// It just helps to avoid boring checks in many editor scripts.
+		/// Gets the editor associated with the current window or fails if there is none.
+		/// Using it avoids boring checks in scripts designed for the current editor.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Editor is not opened or its window is not current.</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
@@ -930,7 +930,7 @@ Continue with this current directory?
 		/// Provider settings.
 		/// </summary>
 		/// <remarks>
-		/// These settings are optional but they help to configure appearance of provider data.
+		/// These optional settings configure appearance of provider data.
 		/// See <c>Profile-.ps1</c> for examples.
 		/// <para>
 		/// Keys are provider names, e.g. 'FileSystem', 'Registry', 'Alias', and etc.

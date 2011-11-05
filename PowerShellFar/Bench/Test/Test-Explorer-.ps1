@@ -59,7 +59,7 @@ function global:New-TestRootExplorer
 
 # Flat data explorer. It is designed to show just one panel with some files,
 # that is why it does not have the AsExploreX scripts.
-# *) It allows to edit, view, and [CtrlQ] by AsGetContent and AsSetText.
+# *) It is used to edit, view, and [CtrlQ] by AsGetContent and AsSetText.
 # *) Editors/viewers are not modal and work even when the panel has closed.
 function global:New-TestFlatExplorer
 {
@@ -74,7 +74,7 @@ function global:New-TestFlatExplorer
 		AsDeleteFiles = {
 			$_.Files | Remove-Item -LiteralPath { "Function:\$($_.Name)" }
 		}
-		# Allows to edit, view and [CtrlQ] the function definition
+		# To edit, view and [CtrlQ] the function definition
 		AsGetContent = {
 			$_.CanSet = $this.AsSetText -ne $null # for testing
 			$_.UseText = $_.File.Data.Definition
@@ -152,7 +152,7 @@ function global:New-TestPathExplorer($Path)
 				New-TestPathExplorer $path
 			}
 		}
-		# Allows to edit, view and [CtrlQ]
+		# To edit, view and [CtrlQ]
 		AsGetContent = {
 			$_.CanSet = $true
 			$_.UseFileName = Join-Path $this.Location $_.File.Name

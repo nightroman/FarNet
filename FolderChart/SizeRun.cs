@@ -16,10 +16,10 @@ using FarNet.Tools;
 // With no progress we would use aggregation of the results. It was tried and
 // it worked. But in this case if we report progress from the final step of
 // aggregation then with, say, 2 cores progress is too late. With 1 core it is
-// probably not updated at all. And if we report progress on each step then we
-// should use locks in steps and aggregation does not help to reduce locks.
-// Thus, in this particular task for the sake of progress we do not use
-// aggregation, we use concurrent collectors.
+// probably not updated at all. If we report progress on each step then we
+// should use locks in steps and aggregation does not reduce locks. Thus, in
+// this particular task for the sake of progress we do not use aggregation, we
+// use concurrent collectors.
 
 class SizeRun
 {

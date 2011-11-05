@@ -200,10 +200,9 @@ choice buttons and just shows a message.
 	command = 'Start-FarJob'
 	synopsis = 'Starts a new background job (not classic PowerShell job).'
 	description = @'
-It helps to create a background job with available parameters. Note:
-PowerShellFar background jobs are simple jobs that use PowerShell engine
-only and oriented for no output or formatted text output. In contrast,
-standard PowerShell background jobs require WSMan and output objects.
+It creates a background job with specified parameters. Note: these jobs are not
+native PowerShell background jobs. They are much simpler. They are designed for
+commands with no output or output suitable for viewing as formatted text.
 '@
 	parameters = @{
 		Command = 'A command name or a script block.'

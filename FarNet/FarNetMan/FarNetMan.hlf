@@ -130,8 +130,8 @@ active and so on.
 $#Config menu#
 ~Contents~@Contents@
 
-This menu allows to configure FarNet module tools:
-commands, editors, filers, menus, and to set common module options.
+This menu is used in order to configure module tools: commands, editors,
+filers, menus, and to set common module options.
 
 #Menu tools# : shows the ~Configure menu tools~@ConfigTool@ menu.
 
@@ -158,8 +158,8 @@ ways to configure settings (e.g. via registry), see module manuals.
 $#Configure menu tools#
 ~Contents~@Contents@
 
-This menu and the dialogs allow to set the .NET menu hotkeys and to disable and
-re-enable default areas where tool menu items are shown.
+This menu and dialogs set the .NET menu hotkeys and default areas where tool
+menu items are shown.
 
 [#Enter#] (menu)
 
@@ -182,7 +182,7 @@ usual by [F4] and to set FarNet module hotkeys not by [F4] but using this way:
 $#Configure commands#
 ~Contents~@Contents@
 
-This menu and the input box allow to edit FarNet module command line prefixes.
+This menu and input box set FarNet module command line prefixes.
 
 [#Enter#] (menu)
 
@@ -198,7 +198,7 @@ then the default prefix is restored.
 $#Configure editors#
 ~Contents~@Contents@
 
-This menu and the input box allow to edit module editor file masks.
+This menu and input box set module editor file masks.
 
 [#Enter#] (menu)
 
@@ -215,7 +215,7 @@ then the default mask is restored.
 $#Configure filers#
 ~Contents~@Contents@
 
-This menu and the input box allow to edit module filer file masks.
+This menu and input box set module filer file masks.
 
 [#Enter#] (menu)
 
@@ -232,10 +232,9 @@ then the default mask is restored.
 $#Module UI culture menu#
 ~Contents~@Contents@
 
-This menu and the input box allow to set FarNet module UI cultures needed for
-localization. It makes sense if a module provides more than one localized
-*.resources files and you want to set its UI to a culture different from the
-current Far UI culture.
+This menu and input box set FarNet module UI cultures needed for localization.
+It makes sense if a module provides more than one localized *.resources files
+and you want to set its UI to a culture different from the current.
 
 [#Enter#] (menu)
 

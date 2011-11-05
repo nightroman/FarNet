@@ -293,8 +293,8 @@ namespace FarMacro
 			}
 		}
 
-		// We do not allow to remove an area with children. If we say true in here then the core
-		// will show an extra prompt which is useles. That is why we cheat in here.
+		// We do not allow removing an area with children. If we say true in here then the core
+		// will show an extra prompt which is useless. That is why we cheat in here.
 		protected override bool HasChildItems(string path)
 		{
 			return false;

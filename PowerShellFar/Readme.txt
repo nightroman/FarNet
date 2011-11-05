@@ -38,9 +38,9 @@ http://code.google.com/p/farnet/
 
 
 *) Configure PowerShell:
-Check the local PowerShell execution policy: start PowerShell.exe and type
-Get-ExecutionPolicy. If it is not RemoteSigned or Unrestricted then invoke
-Set-ExecutionPolicy with RemoteSigned or Unrestricted argument.
+Set execution policy: start PowerShell.exe and type Get-ExecutionPolicy. If it
+is not Bypass, Unrestricted, or RemoteSigned then invoke Set-ExecutionPolicy
+with one of these values. Bypass is the fastest but the least secure.
 
 *) Install the module:
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.

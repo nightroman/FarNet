@@ -370,7 +370,7 @@ namespace FarNet
 		/// <remarks>
 		/// For the current editor setting the title to null or empty restores the original title.
 		/// <para>
-		/// NOTE: Far API only allows to set the title.
+		/// NOTE: Far API only allows setting the title.
 		/// Thus, the title just gets the last value set by a module, if any, not the actual title.
 		/// </para>
 		/// </remarks>
@@ -469,7 +469,7 @@ namespace FarNet
 		/// <remarks>
 		/// This property is set by a module in advanced scenarios when an editor is used in a very unusual way.
 		/// It can be set once, usually by a creator or by a handler on opening. It is not used internally, it
-		/// only helps to avoid conflicts between modules.
+		/// is just for avoiding module conflicts.
 		/// <para>Example scenario: <b>PowerShellFar</b> may use editors as command consoles. On opening it
 		/// attaches a host object which is subscribed to the editor events. This approach makes impossible
 		/// to attach yet another editor host and prevents advanced use of the editor from other modules
@@ -883,10 +883,10 @@ namespace FarNet
 		/// </summary>
 		public abstract void UnselectText();
 		/// <summary>
-		/// Gets the the text length.
+		/// Gets the text length.
 		/// </summary>
 		/// <remarks>
-		/// It helps to avoid calls of more expensive <see cref="Text"/> in some cases when only length is needed.
+		/// Use it instead of more expensive <see cref="Text"/> in cases when just length is needed.
 		/// </remarks>
 		public abstract int Length { get; }
 		/// <summary>

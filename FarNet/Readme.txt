@@ -42,8 +42,8 @@ directory structure (see (*) about x64).
 Optional:
 -- FarNet\Modules\* (sample modules, just sources)
 
-Far.exe.config allows to change the default FarNet directory but this scenario
-is not recommended and not tested.
+Far.exe.config can change the default FarNet directory but this scenario is not
+recommended and not tested.
 
 IMPORTANT: Far.exe.config cannot be moved or renamed. If this file is missing
 in %FARHOME% or configured incorrectly then Far Manager fails to load the
