@@ -77,7 +77,7 @@ namespace FarNet
 		{
 			if (explorer == null) throw new ArgumentNullException("explorer");
 			if (explorer.TypeId != Explorer.TypeId) throw new ArgumentException("New explorer is not compatible with the current.");
-			
+
 			_Panel.Navigate(explorer);
 		}
 		///
@@ -131,7 +131,7 @@ namespace FarNet
 		/// <para>
 		/// It is recommended to call this as soon as possible and only then to configure the panel and other data.
 		/// Technically this method only tries to post the panel for opening and may fail due to the reasons above.
-		/// Early call and failure helps to avoid some jobs for nothing.
+		/// Early call and failure avoids jobs for nothing.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Open(bool)"/>
@@ -206,7 +206,7 @@ namespace FarNet
 			if (IsOpened || _Parent != null)
 				throw new InvalidOperationException();
 
-			// allow to setup/fail
+			// setup/fail
 			if (!OpenChildBegin(parent))
 				return;
 
@@ -717,7 +717,7 @@ namespace FarNet
 				{
 					foreach (var it in _Garbage)
 						it.Dispose();
-					
+
 					_Garbage = null;
 				}
 			}

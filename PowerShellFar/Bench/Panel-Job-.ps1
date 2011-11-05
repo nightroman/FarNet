@@ -51,8 +51,8 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 		}
 	}
 	### Write job data (for [F3], [CtrlQ])
-	#_110611_091139 Use of -ErrorAction 0 allows to get all errors, this is good.
-	# The bad: errors do not have location information (InvocationInfo is null).
+	#_110611_091139 Use of -ErrorAction 0 allows getting all errors.
+	# NOTE: InvocationInfo is null in errors.
 	AsGetContent = {
 		Receive-Job -Job $_.File.Data -Keep -ErrorAction 0 -ErrorVariable err > $_.FileName
 		if ($err) {

@@ -407,7 +407,7 @@ namespace FarNet
 		/// </para>
 		/// <para>
 		/// Choose a proper <see cref="FarNet.Explorer.FileComparer"/> otherwise source files that should stay
-		/// may lose selection or even may be deleted because the comparer does not help to find or exclude them.
+		/// may lose selection or even may be deleted because the comparer cannot find them.
 		/// </para>
 		/// </remarks>
 		public IList<FarFile> FilesToStay { get { return _FilesToStay; } }

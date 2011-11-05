@@ -120,9 +120,9 @@ The default pattern:
 (words with 2+ letters, "RightWords" is treated as "Right" and "Words")
 
 All capturing groups "(...)" are removed from the word before spell-checking.
-This allows to check spelling of words with embedded "noise" parts, like the
-hotkey markers "&" in .lng or .restext files. Use not capturing groups "(?:)"
-in all other cases where grouping is needed.
+This is used for checking spelling of words with embedded "noise" parts, like
+the hotkey markers "&" in .lng or .restext files. Use not capturing groups
+"(?:)" in all other cases where grouping is needed.
 
 NOTE: Nested capturing groups are not supported and they are not really needed.
 For performance reasons no checks are done in order to detected nested groups.
@@ -252,9 +252,9 @@ Use FarNet 4.5.0
 Fixed rare but possible dupes in the suggestion and dictionary menus.
 
 The WordPattern setting: all regular expression capturing groups "(...)" are
-removed from the word before spell-checking. This allows to check spelling of
-words with embedded "noise" parts, like the hotkey markers "&" in .lng files.
-See Readme.txt for details and the example pattern with "&".
+removed from the word before spell-checking. This is used for checking spelling
+of words with embedded "noise" parts, like the hotkey markers "&" in .lng
+files. See Readme.txt for details and the example pattern with "&".
 
 Added "*.lng" to the default automatic highlighting file mask.
 

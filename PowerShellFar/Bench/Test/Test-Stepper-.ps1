@@ -8,8 +8,8 @@
 	This script starts processing of step units. A step unit is a script that
 	returns steps: a sequence of keys and script blocks posted and invoked one
 	by one. Far Manager gets control after each step, completes pending jobs
-	and invokes the next step. This scenario allows to perform quite tricky
-	operations impossible during normal continuous code flow.
+	and invokes the next step. This scenario is used to perform quite tricky
+	operations impossible during synchronous code flow.
 
 	Also, this approach is useful for automated testing; this script is an
 	example of a simple test monitor: it adds test units, starts processing,

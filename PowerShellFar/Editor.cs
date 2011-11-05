@@ -352,7 +352,7 @@ namespace PowerShellFar
 			// maybe it is questionable but it is very handy too often
 			string dir0, dir1;
 
-			// save/set the directory, allow to fail (e.g. a long path)
+			// save/set the directory, allow failures (e.g. a long path)
 			// note: GetDirectoryName fails on a long path, too
 			try
 			{

@@ -5,7 +5,7 @@
 	Author: Roman Kuzmin
 
 .DESCRIPTION
-	Shows table records or result rows of a SELECT command and allows to
+	Shows table records or result rows of a SELECT command and provides UI to
 	UPDATE, INSERT, and DELETE real data right in a database (in some cases
 	these operations should be configured manually through a data adapter).
 
