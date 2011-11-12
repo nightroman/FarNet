@@ -177,9 +177,10 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 	}
 	catch(Exception^ e)
 	{
-		//???? .. else log error?
 		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
-			Far::Net->ShowError(__FUNCTION__, e);
+			Far::Net->ShowError("Getting panel files", e);
+		else
+			Log::TraceException(e);
 
 		return false;
 	}

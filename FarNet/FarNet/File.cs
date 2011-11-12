@@ -45,11 +45,19 @@ namespace FarNet
 		IList<XmlAttributeInfo> XmlAttributes();
 	}
 	/// <summary>
-	/// Abstract panel item representing one file, directory, plugin, or module item.
+	/// Abstract panel item representing file, directory, plugin item, or module item.
 	/// </summary>
 	/// <remarks>
-	/// Modules may implement derived classes (at least <see cref="Name"/> has to be defined)
-	/// or they may just use the ready straightforward implementation <see cref="SetFile"/>.
+	/// Modules may implement derived classes in order to represent their panel
+	/// items effectively. Alternatively, they may use <see cref="SetFile"/>,
+	/// already implemented simple property set.
+	/// <para>
+	/// Although this class is abstract all its virtual properties are defined,
+	/// they get default values and throw <c>NotImplementedException</c> on
+	/// setting. Thus, derived classes do not have to implement every property,
+	/// at least <see cref="Name"/> has to be defined (in order to be shown in
+	/// a panel), other properties are implemented only if they are used.
+	/// </para>
 	/// </remarks>
 	public abstract class FarFile : IXmlInfo
 	{
@@ -59,7 +67,7 @@ namespace FarNet
 		public virtual string Name
 		{
 			get { return null; }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// Description.
@@ -67,7 +75,7 @@ namespace FarNet
 		public virtual string Description
 		{
 			get { return null; }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// Owner.
@@ -75,7 +83,7 @@ namespace FarNet
 		public virtual string Owner
 		{
 			get { return null; }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// User data. Only for <see cref="Panel"/>.
@@ -83,7 +91,7 @@ namespace FarNet
 		public virtual object Data
 		{
 			get { return null; } //??? _090610_071700
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// Creation time.
@@ -91,7 +99,7 @@ namespace FarNet
 		public virtual DateTime CreationTime
 		{
 			get { return new DateTime(); }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// Last access time.
@@ -99,7 +107,7 @@ namespace FarNet
 		public virtual DateTime LastAccessTime
 		{
 			get { return new DateTime(); }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// Last write time.
@@ -107,7 +115,7 @@ namespace FarNet
 		public virtual DateTime LastWriteTime
 		{
 			get { return new DateTime(); }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// File length.
@@ -115,7 +123,7 @@ namespace FarNet
 		public virtual long Length
 		{
 			get { return 0; }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// Custom columns. See <see cref="PanelPlan"/>.
@@ -124,7 +132,7 @@ namespace FarNet
 		public virtual ICollection Columns
 		{
 			get { return null; }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// File attributes. All <c>Is*</c> properties are based on this value.
@@ -136,7 +144,7 @@ namespace FarNet
 		public virtual FileAttributes Attributes
 		{
 			get { return 0; }
-			set { throw new NotSupportedException(); }
+			set { throw new NotImplementedException(); }
 		}
 		/// <summary>
 		/// Read only attribute.
@@ -264,9 +272,10 @@ namespace FarNet
 	/// Straightforward implementation of <see cref="FarFile"/> ready to use by module panels.
 	/// </summary>
 	/// <remarks>
-	/// It is just a set of properties where any property can be set.
-	/// In most cases panels should just use this class for their items.
-	/// In some cases they may use custom implementations of <see cref="FarFile"/>.
+	/// It is just a set of properties where any property can be set. In most
+	/// cases panels may use this class for their items. In some cases they may
+	/// implement custom classes derived from <see cref="FarFile"/> in order to
+	/// represent data more effectively (using less memory or working faster).
 	/// </remarks>
 	public sealed class SetFile : FarFile
 	{
