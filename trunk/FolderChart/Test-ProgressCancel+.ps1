@@ -1,9 +1,9 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test FolderChart cancellations.
 
-.DESCRIPTION
+.Description
 	* Assume F11 3 ~ FolderChart.
 	* Assume the C: drive contains a lot.
 	* It is run by the PowerShellFar stepper.
@@ -31,7 +31,7 @@ $test = {
 	}
 }
 
-for($$ = 0; $$ -lt 25; ++$$) {
+for($1 = 0; $1 -lt 25; ++$1) {
 	. $test
-	if ($$ % 2) { 'Esc' } else { 'Enter' }
+	if ($1 % 2) { 'Esc' } else { 'Enter' }
 }

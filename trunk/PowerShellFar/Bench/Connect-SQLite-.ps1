@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Connects SQLite database and optionally shows tables in a panel.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Requires System.Data.SQLite ADO.NET provider: http://system.data.sqlite.org
 	Install it with 'GAC' and 'Add bin to path' options checked or simply put
 	System.Data.SQLite.dll and SQLite.Interop.dll to the FarNet directory.

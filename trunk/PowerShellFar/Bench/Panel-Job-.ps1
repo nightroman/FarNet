@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Panel PowerShell background jobs that are running in the current session.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Shows PowerShell background jobs in a panel and updates these data
 	periodically when idle.
 

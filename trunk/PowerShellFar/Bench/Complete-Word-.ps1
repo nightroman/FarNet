@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Completes the current word in editor, command line or edit box.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The script implements a classic task of completing a current word. The
 	script can be run for the current editor, the command line or any dialog
 	edit control. Candidate words are taken from the current text in editor or
@@ -18,10 +18,10 @@
 	- keep it in a directory included in the path;
 	- call it just by name with no extension.
 
-.LINK
+.Link
 	Help: Autoloaded functions
 
-.EXAMPLE
+.Example
 	Complete-Word-
 #>
 

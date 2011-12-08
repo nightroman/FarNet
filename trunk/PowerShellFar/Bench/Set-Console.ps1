@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Sets console window properties.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Console resizing is an awkward procedure. This script makes it easier: it
 	sets new width and\or height values or resizes window interactively with
 	arrow keys.
@@ -12,13 +12,13 @@
 	Buffer width is always set equal to window width. Buffer height is kept
 	equal to width if it is originally equal or it is not changed otherwise.
 
-.EXAMPLE
+.Example
 	# Starts interactive resizing with arrow keys:
 	Set-Console.ps1
-.EXAMPLE
+.Example
 	# Sets classic small console size:
 	Set-Console.ps1 80 25
-.EXAMPLE
+.Example
 	# Sets only new width:
 	Set-Console.ps1 80
 #>

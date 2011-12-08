@@ -1,14 +1,14 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test panel with PowerShell core jobs.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It creates a few jobs and starts Panel-Job-.ps1. You can view the jobs and
 	test panel actions (e.g. [F3], [CtrlQ], [Del], [ShiftDel]).
 
-.OUTPUTS
+.Outputs
 	Returns new job instances (needed for automated testing).
 #>
 

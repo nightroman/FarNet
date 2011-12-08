@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test unit for PowerShellFar.Stepper.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It is a step unit example. Steps are key sequences and script blocks
 	returned by this script. This script should not be invoked directly.
 	Instead, use a stepper to invoke it, see Test-Stepper-.ps1

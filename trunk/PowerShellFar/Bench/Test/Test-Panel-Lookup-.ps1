@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test panel lookup actions
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Lookup panels are used by ListPanel when an object or a value has to be
 	selected from a set represented by another, lookup panel.
 

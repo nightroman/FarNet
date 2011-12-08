@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test scripted explorers with panels.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	PowerExplorer is the fully functional explorer designed for scripts. Interface
 	methods have related script block properties. Each method calls its script.
 
@@ -15,7 +15,7 @@
 	a result, the FarNet search panel contains a lot of files with same names.
 	This is a tough case for native panels but it works fine in FarNet panels.
 
-.EXAMPLE
+.Example
 	Examples show how Start-FarSearch works with this panel:
 
 	# Invoke from Flat or use -Recurse from Root:

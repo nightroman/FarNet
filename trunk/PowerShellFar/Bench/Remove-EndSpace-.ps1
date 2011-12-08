@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Removes end spaces in object Text property
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Processes any input objects with string property Text, for example:
 
 	# process all lines in the current text

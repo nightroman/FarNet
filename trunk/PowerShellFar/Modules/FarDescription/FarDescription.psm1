@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Updates Far descriptions of scripts by synopses.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	For any *.ps1 script in the directory it takes the first line of the
 	synopsis, if any, and sets it as the Far description (Descript.ion).
 

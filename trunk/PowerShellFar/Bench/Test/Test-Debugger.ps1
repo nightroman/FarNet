@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test debugger and breakpoints.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This test shows examples of a few breakpoint types: command, variable
 	(reading, writing, reading and writing) and custom action breakpoints.
 

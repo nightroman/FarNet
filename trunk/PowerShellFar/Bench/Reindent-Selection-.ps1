@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Reindents selected lines or the current line.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	First of all it is designed for nice formatting of PowerShell source code.
 	Indentation is controlled by leading and trailing {}() in lines. Lines in
 	here-strings @".."@, @'..'@ and simple block-comments are not changed.
@@ -12,7 +12,7 @@
 	It formats PowerShell code well enough if it follows proper coding style,
 	for example all scripts in Bench are formatted by this script.
 
-.LINK
+.Link
 	Profile-.ps1 - how to add this command to the "User menu".
 	Install-Macro-.ps1 - how to add this command key macro.
 	Help: Autoloaded functions

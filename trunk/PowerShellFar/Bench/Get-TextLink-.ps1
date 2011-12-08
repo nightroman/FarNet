@@ -1,16 +1,16 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Gets a text link to the current editor line.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It gets a Visual Studio style text link to the current editor line.
 
-.LINK
+.Link
 	Open-TextLink-.ps1
 
-.EXAMPLE
+.Example
 	# Get and copy to clipboard the current line link
 	$Far.CopyToClipboard((Get-TextLink-))
 #>

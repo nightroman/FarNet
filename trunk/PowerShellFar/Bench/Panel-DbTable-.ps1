@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Panel tables for a connection.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	THIS IS USEFUL BUT YOU CAN KILL YOUR DATA, TOO. USE IT ON YOUR OWN RISK.
 
 	For most providers, and normally when a table has a primary key, you can

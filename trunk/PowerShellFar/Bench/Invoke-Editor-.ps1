@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Invokes a file from the current editor.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Saves a file in the editor and invokes it depending on the file type.
 
 	If a file is *-.ps1 it is executed in the current PowerShell session by

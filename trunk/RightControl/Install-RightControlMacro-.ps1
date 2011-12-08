@@ -1,9 +1,9 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Installs typical RightControl module macros.
 
-.DESCRIPTION
+.Description
 	This script installs 6 macros in the common area:
 		CtrlLeft/Right
 		CtrlShiftLeft/Right

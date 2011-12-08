@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test panel with demo menu called on [ShiftF3]
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Requires: Test-Panel-Lookup-.ps1 in the same directory.
 
 	This script shows how to add items to the panel menu and process panel data

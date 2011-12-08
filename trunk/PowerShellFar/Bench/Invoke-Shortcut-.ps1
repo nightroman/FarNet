@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Opens a shortcut file (.lnk) in a few ways.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The script gets a target path from the shortcut file (.lnk). If it is a
 	directory path this directory is opened on the current panel. If it is a
 	file path the action depends on parameters; default action is to jump to

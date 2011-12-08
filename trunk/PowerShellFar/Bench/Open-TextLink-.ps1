@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Opens a text link contained in the text.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The script parses the passed text, the selected editor text, or the current
 	line for a text link to some object (file, URL) and opens it in the editor,
 	browser, etc. Recognised text link types: Visual Studio, PowerShell (error
@@ -30,7 +30,7 @@
 	"..\Read Me.txt"
 	.\ReadMe.txt
 
-.LINK
+.Link
 	Get-TextLink-.ps1
 #>
 

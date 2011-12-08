@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test panel mixed items on TreePanel
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Points of interest:
 	- root items of different types: Services, Processes, Provider items
 	- root items can be optionally pre-expanded: $p.AddRoot($r, $true)

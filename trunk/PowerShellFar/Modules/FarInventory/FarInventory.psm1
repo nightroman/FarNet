@@ -1,15 +1,15 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Computer inventory tools for Far Manager.
 	Author: Roman Kuzmin
 #>
 
 <#
-.SYNOPSIS
+.Synopsis
 	Gets uninstall records from the registry.
 
-.DESCRIPTION
+.Description
 	This function returns information similar to the "Add or remove programs"
 	Windows tool. The function normally works much faster and gets some more
 	information.
@@ -45,7 +45,7 @@ function Get-Uninstall
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows results of Get-Uninstall in a grid view.
 #>
 function Open-UninstallGridView
@@ -54,7 +54,7 @@ function Open-UninstallGridView
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows results of Get-Uninstall in a panel.
 #>
 function Open-UninstallPanel
@@ -68,10 +68,10 @@ function Open-UninstallPanel
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows services in a panel.
 
-.DESCRIPTION
+.Description
 	This panel can be really useful, in particular it shows some information
 	not returned by the standard command Get-Service, for example service
 	startup types.
@@ -92,10 +92,10 @@ function Open-ServicePanel
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows startup commands in a panel.
 
-.DESCRIPTION
+.Description
 	The panel shows startup commands for the specified computer stored in
 	various locations: startup folders, registry run keys, and etc.
 #>
@@ -114,10 +114,10 @@ function Open-StartupCommandPanel
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows local disks in a panel.
 
-.DESCRIPTION
+.Description
 	The panel shows local disks and their information.
 #>
 function Open-LogicalDiskPanel
@@ -147,10 +147,10 @@ function Open-LogicalDiskPanel
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows various computer information in a panel.
 
-.DESCRIPTION
+.Description
 	The panel shows various information about a computer:
 
 		Win32_ComputerSystem
@@ -176,7 +176,7 @@ function Open-InventoryPanel
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows environment variables in a panel.
 #>
 function Open-EnvironmentPanel

@@ -1,6 +1,6 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	The internal profile.
 	Author: Roman Kuzmin
 #>
@@ -12,7 +12,7 @@ trap { continue }
 Set-Alias more.com more
 
 <#
-.SYNOPSIS
+.Synopsis
 	FarNet 'Clear-Host'.
 #>
 function Clear-Host
@@ -21,7 +21,7 @@ function Clear-Host
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	FarNet 'more'.
 #>
 function more
@@ -40,7 +40,7 @@ function more
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Far friendly 'Get-History'.
 #>
 function Get-History
@@ -53,7 +53,7 @@ function Get-History
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Far friendly 'Invoke-History'.
 #>
 function Invoke-History
@@ -63,7 +63,7 @@ function Invoke-History
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	PSF: Gets names for the drives menu.
 #>
 function Get-PowerShellFarDriveName
@@ -81,7 +81,7 @@ function Get-PowerShellFarDriveName
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows transcribed command console output in a viewer.
 #>
 function Show-FarTranscript

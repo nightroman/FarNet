@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows internal Far name of pressed keys.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The dialog shows internal Far names of pressed keys. These names are used
 	in native Far macros and in $Far.PostKeys(), $Far.PostMacro().
 
@@ -17,7 +17,7 @@
 	[Copy]
 	-- Copies the key name to clipboard.
 
-.NOTES
+.Notes
 	There is a native way to get key names. Type these four keys:
 		[Ctrl.] [Ctrl.] [<key>] [Esc]
 	The last [Esc] cancels creation of the recorded empty macro.

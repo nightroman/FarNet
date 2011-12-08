@@ -1,14 +1,14 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Imports objects from files and shows them in a panel.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	A single object is opened in a Member panel, two and more objects are
 	opened in an Object panel.
 
-.EXAMPLE
+.Example
 	Far Commands | File associations:
 	Mask: *.clixml;*.csv
 	Command: >: Import-Panel- (Get-FarPath) #

@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test super-macro engine.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This script starts processing of step units. A step unit is a script that
 	returns steps: a sequence of keys and script blocks posted and invoked one
 	by one. Far Manager gets control after each step, completes pending jobs

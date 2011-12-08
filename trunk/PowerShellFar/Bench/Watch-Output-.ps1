@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Watches commands output repeatedly in the editor.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It opens an editor with a temp file and periodically, when idle, updates it
 	with output of a command. The command is a PowerShell script block; it may
 	contain several commands and call external console applications (the only
@@ -15,7 +15,7 @@
 	- you can open several "Watch-Output-" editors for several commands;
 	- commands are invoked only for the active editor.
 
-.LINK
+.Link
 	# Example of complex output, long lines and many lines
 	Test-Watch-Output-.ps1
 #>

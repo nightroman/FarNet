@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test panel with data from .CSV files
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It shows data from two CSV files using OleDbConnection and Microsoft.Jet
 	provider. This demo finds and shows files with the same names in WINDIR and
 	WINDIR\SYSTEM32: WINDIR and WINDIR\SYSTEM32 files are exported to temporary

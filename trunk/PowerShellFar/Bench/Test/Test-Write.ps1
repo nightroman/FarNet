@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test Write-* cmdlets output.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Some commands are duplicated in order to see how subsequent calls are
 	processed and how the output looks like depending on modes >: and >>:
 

@@ -1,13 +1,13 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Formats output as a table with the last chart column.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The chart column is based on the last property, numeric, indeed.
 
-.EXAMPLE
+.Example
 	# Process working sets; bar characters make shadows effect
 	Get-Process | Format-Chart Name, WS -Bar ([char]9600) -Space ([char]9617)
 

@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Imports Far Manager settings.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This script is used with Export-FarSettings.ps1 which exports settings. At
 	first Export-FarSettings.ps1 should be called (machine A) then exported
 	data are imported by this script (machine B or even the same machine A).

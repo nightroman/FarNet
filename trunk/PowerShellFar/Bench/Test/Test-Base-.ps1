@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test base features.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It demonstrates:
 	- menu
 	- input box
