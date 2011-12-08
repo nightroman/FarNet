@@ -1,14 +1,14 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Panel SQL server databases.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Uses existing SQL server connection or opens a new connection assuming SQL
 	Server Express ".\sqlexpress" instance.
 
-.NOTES
+.Notes
 	sp_helpdb may fail on the first call after reboot if there is a missing
 	database. "SELECT * FROM sys.databases" works fine and shows problem
 	databases, too. Besides, it gets more database info (but size).

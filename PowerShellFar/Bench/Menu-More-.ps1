@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Demo menu script, e.g. called on "More...", see Profile-.ps1.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This script shows a menu with a few commands. Commands depend on the area
 	where the script is called from. Profile-.ps1 adds the action "More..." to
 	call this script, but the script can be called directly from the command

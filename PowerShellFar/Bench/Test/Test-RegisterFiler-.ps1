@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test a filer handler.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Steps:
 	- invoke this script, it registers a *.test files handler;
 	- [Enter] on a text file *.test to view its lines in a panel;

@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Exports Far Manager settings.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This script and Import-FarSettings.ps1 export and import only main Far
 	Manager settings that normally should be the same for any machine of the
 	same user. Many other settings like history data normally should not be

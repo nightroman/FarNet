@@ -1,19 +1,19 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Selects panel files by the specified filter.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The script uses the scriptblock filter -Where to collect the files from the
 	active or passive panel and selects them. Filter operates on FarNet.FarFile
 	represented by $_ and returns $true or $false. Basically it works similar
 	to Find-FarFile -Where but all found files get selected.
 
-.LINK
+.Link
 	Find-FarFile
 
-.EXAMPLE
+.Example
 	# Select by names *\bin\*, e.g. in the the temp panel search results:
 	Select-FarFile- { $_.Name -like '*\bin\*' }
 

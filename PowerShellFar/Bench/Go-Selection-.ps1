@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Goes to the current selection start\end position
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Many popular editors on [Left]\[Right] put cursor to the start\end position
 	of the selected text and drop the selection. The script does the same in
 	editor, command line and dialog edit boxes.
@@ -13,7 +13,7 @@
 	effective for this job. The script is kept as an example and for cases when
 	macros do not work or cannot be called.
 
-.LINK
+.Link
 	Profile-.ps1 - how to add a script to the "User menu".
 	Install-Macro-.ps1 - how to add macros.
 	Help: Autoloaded functions

@@ -1,14 +1,14 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Sets selected text in the editor, command line or dialog editbox.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It changes the selected text in the current editor, command line or dialog
 	edit box. Operations are defined by a single parameter.
 
-.EXAMPLE
+.Example
 	# Escape \ and " with \
 	Set-Selection- -Replace '([\\"])', '\$1'
 

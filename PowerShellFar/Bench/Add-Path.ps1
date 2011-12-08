@@ -1,14 +1,14 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Adds a directory path to the current process path.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It is a standard PowerShell script for any host. But in the first place it
 	was designed for use in Far Manager to add the active panel path to paths.
 
-.EXAMPLE
+.Example
 	# Far user menu command to add the active path
 	>: Add-Path $Far.CurrentDirectory #
 

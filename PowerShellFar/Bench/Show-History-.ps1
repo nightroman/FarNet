@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows command, folder or view history.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It collects and shows Far command, folder or view history in a list menu.
 	Selected command is posted to Far (assuming the command line); selected
 	folder is opened in the active panel; selected file is opened in the

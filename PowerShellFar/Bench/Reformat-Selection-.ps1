@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Reformats selected lines or the current line in the editor
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Primary indent, prefix and secondary indent are taken from the first line
 	and inserted into any result line. Primary indent is leading white spaces,
 	prefix depends on the file type, secondary indent are white spaces after
@@ -13,7 +13,7 @@
 	Tabs in the primary indent are preserved, the parameter -TabSize is used
 	only for actual text length calculation by -RightMargin.
 
-.LINK
+.Link
 	Help: Autoloaded functions
 #>
 

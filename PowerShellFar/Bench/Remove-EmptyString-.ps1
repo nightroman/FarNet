@@ -1,18 +1,18 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Removes empty strings from a list.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	An item is treated as empty if its string representation is empty or
 	contains white spaces only.
 
-.EXAMPLE
+.Example
 	# Remove all empty lines from editor selection:
 	Remove-EmptyString- $Far.Editor.SelectedLines
 
-.EXAMPLE
+.Example
 	# Remove double empty lines from editor text:
 	Remove-EmptyString- $Far.Editor.Lines 2
 #>

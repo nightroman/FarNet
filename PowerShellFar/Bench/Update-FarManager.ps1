@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Updates Far Manager and standard plugins.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Command 7z has to be available, e.g. 7z.exe in the system path.
 
 	If Far Manager is running the script prompts you to exit running instances
@@ -25,7 +25,7 @@
 	Finally the script checks and shows extra user items which do not exist in
 	the archive, e.g. user plugins and files and standard files excluded now.
 
-.EXAMPLE
+.Example
 	# This command starts update in a new console and keeps it opened to view
 	# the output. Then it tells Far to exit because update will wait for this.
 	>: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()

@@ -1,17 +1,17 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test unit for Test-Dialog-.ps1.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This is a super-macro to automate testing of a dialog Test-Dialog-.ps1.
 	Note that local variables defined in Test-Dialog-.ps1 are all visible.
 
 	How to start these steps from UI: run the test dialog Test-Dialog-.ps1,
 	push the button [Test] and watch the steps one by one.
 
-.NOTES
+.Notes
 	This unit is used by:
 	1) Test-Stepper-.ps1 - all steps are returned in this case, including steps
 	opening the dialog in the beginning and steps closing the dialog in the

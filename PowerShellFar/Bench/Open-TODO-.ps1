@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	TODO notes in XML files.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This is a toy script but it can be useful, too, as it is or with changes.
 	The goal is to show how to use:
 	- DataTable with data stored in XML files;
@@ -98,10 +98,10 @@ $panel.ViewSort = 'Rank desc, Date desc'
 $panel.Open()
 
 <#
-.SYNOPSIS
+.Synopsis
 	Edits name and text together.
 
-.DESCRIPTION
+.Description
 	The name is the first not empty line. The text is all the lines after.
 
 	Output. If the text is not saved then the output is null. Otherwise two
@@ -127,15 +127,15 @@ function global:Edit-NameText
 
 	if ($editor.TimeOfSave -ne [datetime]::MinValue) {
 		$lines = [IO.File]::ReadAllLines($FileName, [Text.Encoding]::Unicode)
-		for($$ = 0; $$ -lt $lines.Count; ++$$) {
-			$Name = $lines[$$].TrimEnd()
+		for($1 = 0; $1 -lt $lines.Count; ++$1) {
+			$Name = $lines[$1].TrimEnd()
 			if ($Name) {
 				$Name
 				break
 			}
 		}
-		if ($$ -lt $lines.Count) {
-			($(for(++$$; $$ -lt $lines.Count; ++$$) { $lines[$$].TrimEnd() }) -join "`r`n").TrimEnd()
+		if ($1 -lt $lines.Count) {
+			($(for(++$1; $1 -lt $lines.Count; ++$1) { $lines[$1].TrimEnd() }) -join "`r`n").TrimEnd()
 		}
 		else {
 			('', '')

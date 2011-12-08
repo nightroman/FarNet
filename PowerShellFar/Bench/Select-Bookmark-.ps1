@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows current editor bookmarks and goes to a selected one
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Shows a menu of bookmarks for the current file in editor and moves cursor
 	to a selected one: this restores not only cursor position but the entire
 	saved text frame. So called temporary stack bookmark are included, too.

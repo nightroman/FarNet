@@ -1,6 +1,6 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test extreme message boxes.
 	Author: Roman Kuzmin
 #>

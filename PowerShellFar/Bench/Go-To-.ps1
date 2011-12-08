@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Goes to the specified file system item or a provider container
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It is similar to far:goto command but the input path is any suitable
 	PowerShell expression. Wildcards resolved to one or more items are
 	permitted.
@@ -12,7 +12,7 @@
 	In addition we can use other PowerShell provider paths, especially Registry
 	can be useful. In this case a provider panel is opened.
 
-.EXAMPLE
+.Example
 	# Let's use an alias
 	Set-Alias go Go-To-.ps1
 
@@ -33,7 +33,7 @@
 	# Prompts to enter a path (or select from history)
 	go
 
-.PARAMETER Path
+.Parameter Path
 		*) File system directory or file path. For a directory end \ or / tells
 		to open it, not set a cursor to it. Wildcard patterns are permitted. If
 		a pattern is resolved to more than one item a list is shown for choice.

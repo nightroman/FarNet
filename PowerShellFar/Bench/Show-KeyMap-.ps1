@@ -1,18 +1,19 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows Far hotkeys and macros by areas (HTML page).
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Generates and shows an HTML page with Far keys and macros by areas. Area
 	table colums are: key name, default Far action, common macro, area macro.
 	It is useful to be able to see all keys together.
 
-.EXAMPLE
+.Example
 	# Shows all keys:
 	Show-KeyMap-
-.EXAMPLE
+
+.Example
 	# Shows specified keys:
 	Show-KeyMap- Del, ShiftDel, F8, ShiftF8
 #>

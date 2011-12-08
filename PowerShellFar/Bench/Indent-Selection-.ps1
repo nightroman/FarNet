@@ -1,19 +1,19 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Indents or outdents selected lines in the editor
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Increments or decrements indentation of selected lines in editor according
 	to current tab settings. Many popular editors do this on [Tab]\[ShiftTab].
 
-.LINK
+.Link
 	Profile-.ps1 - how to add these two commands to the "User menu".
 	Install-Macro-.ps1 - how to add [Tab]\[ShiftTab] key macros.
 	Help: Autoloaded functions
 
-.PARAMETER Outdent
+.Parameter Outdent
 		Outdent selected lines, i.e. decrement indentation.
 #>
 

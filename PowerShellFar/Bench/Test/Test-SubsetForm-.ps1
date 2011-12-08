@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Tests FarNet.Tools.SubsetForm.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Invoke this script and play with the form by selecting, deselecting, and
 	sorting selected items.
 #>

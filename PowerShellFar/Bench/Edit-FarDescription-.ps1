@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Edits pseudo multiline description in the editor.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Pseudo line delimiter ' _ ' is replaced with new line in the editor. It is
 	shown literally in Far descriptions and in the native [CtrlZ] line editor.
 #>

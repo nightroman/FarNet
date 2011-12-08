@@ -1,9 +1,9 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Installs Vessel macros.
 
-.DESCRIPTION
+.Description
 	Macros:
 	* Common\AltF11 - smart file history instead of standard
 	* Common\CtrlShiftF11 - show standard "File view history"

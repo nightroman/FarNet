@@ -1,17 +1,17 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Clears PowerShell session resources.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It removes global variables with empty Description and Option values but
 	keeps variables listed in the code as $keep.
 
 	In addition, the script clears $Error list (optionally), calls garbage
 	collection and gets some statistics.
 
-.OUTPUTS
+.Outputs
 	An object with properties:
 	-- WorkingSet - the current process working set (KB)
 	-- ManagedBefore - before garbage collection (KB)

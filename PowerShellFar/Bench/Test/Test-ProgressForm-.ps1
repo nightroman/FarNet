@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test progress tools.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It shows how to use simple progress boxes and advanced progress forms.
 
 	The first ProgressBox shows only its activity text, the second also shows
@@ -44,9 +44,9 @@ function TestProgressBox
 	### a) simple progress box showing activity description
 	$Progress = [FarNet.Tools.ProgressBox]'ProgressBox: activity text only'
 	# ideally, we should do: try {...} finally {dispose}
-	for($$ = 1; $$ -le $JobSteps; ++$$) {
+	for($1 = 1; $1 -le $JobSteps; ++$1) {
 		if ($Far.UI.ReadKeys([FarNet.VKeyCode]::Escape)) { break }
-		$Progress.Activity = "Step $$ of $JobSteps`nMore`nInfo`n"
+		$Progress.Activity = "Step $1 of $JobSteps`nMore`nInfo`n"
 		$Progress.ShowProgress()
 		Start-Sleep -Milliseconds $Delay
 	}
@@ -55,10 +55,10 @@ function TestProgressBox
 	### b) simple progress box showing activity and percentage
 	$Progress = [FarNet.Tools.ProgressBox]'ProgressBox: activity and percentage'
 	# ideally, we should do: try {...} finally {dispose}
-	for($$ = 1; $$ -le $JobSteps; ++$$) {
+	for($1 = 1; $1 -le $JobSteps; ++$1) {
 		if ($Far.UI.ReadKeys([FarNet.VKeyCode]::Escape)) { break }
-		$Progress.Activity = "Step $$ of $JobSteps`nMore`nInfo`n"
-		$Progress.SetProgressValue($$, $JobSteps)
+		$Progress.Activity = "Step $1 of $JobSteps`nMore`nInfo`n"
+		$Progress.SetProgressValue($1, $JobSteps)
 		$Progress.ShowProgress()
 		Start-Sleep -Milliseconds $Delay
 	}
@@ -76,14 +76,14 @@ function TestProgressForm
 	### 2) start the job; it will Complete() the progress
 	Start-FarJob -Hidden -Parameters $Progress, $JobSeconds, $JobSteps, $Delay {
 		param($Progress, $JobSeconds, $JobSteps, $Delay)
-		for($$ = 1; $$ -le $JobSteps; ++$$) {
+		for($1 = 1; $1 -le $JobSteps; ++$1) {
 			# if the progress IsClosed (canceled) then exit
 			if ($Progress.IsClosed) {
 				return
 			}
 			# update progress data
-			$Progress.Activity = "Step $$ of $JobSteps`nMore`nInfo"
-			$Progress.SetProgressValue($$, $JobSteps)
+			$Progress.Activity = "Step $1 of $JobSteps`nMore`nInfo"
+			$Progress.SetProgressValue($1, $JobSteps)
 			Start-Sleep -Milliseconds $Delay
 		}
 		# the job is done, call Complete() to stop the progress

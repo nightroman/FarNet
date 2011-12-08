@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test editor and related scripts.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It tests, demonstrates and covers almost all important functionality of
 	FarNet editor. Thus, if you look at it and understand it then you know
  	almost all you need for editor scripting. Note that it also includes

@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows one or more images in a GUI window.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This script shows pictures in a GUI window. No extra software is needed. It
 	is a standard PowerShell script but it may be easier to use in Far Manager
 	via file associations or user menu commands, see examples.
@@ -19,28 +19,28 @@
 	opens the current picture, [Left] and [Right] changes the current picture.
 	[Escape] closes the window.
 
-.INPUTS
+.Inputs
 	Image file paths are passed in as arguments or piped. If there is no input
 	then all image files from the current location are taken.
 
 	NOTE: do not open too much images at once, this script may fail due to out
 	of memory exception.
 
-.EXAMPLE
+.Example
 	# Far Manager association: internal way: faster but picture windows will be
 	# closed together with the Far window on exit.
 	>: Start-FarJob -Hidden Show-Image (Get-FarPath) #
 
-.EXAMPLE
+.Example
 	# Far Manager association: external way: slower but picture windows will be
 	# opened even after closing the Far window.
 	start /min powershell -WindowStyle Hidden -File C:\PS\Show-Image.ps1 "!\!.!"
 
-.EXAMPLE
+.Example
 	# Far Manager user menu: internal way: show selected images
 	>: Start-FarJob -Hidden Show-Image (Get-FarPath -Selected) #
 
-.EXAMPLE
+.Example
 	# Far Manager user menu: external way: show all images here
 	start /min powershell -WindowStyle Hidden Show-Image
 #>

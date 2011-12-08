@@ -17,7 +17,7 @@ task Clean {
 }
 
 task Install -Partial @{"bin\$Configuration\$Assembly" = "$FarHome\FarNet\$Assembly"} {process{
-	Copy-Item -LiteralPath $_ $$
+	Copy-Item -LiteralPath $_ $2
 }}
 
 task Uninstall {

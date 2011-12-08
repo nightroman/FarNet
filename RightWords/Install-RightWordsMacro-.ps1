@@ -1,6 +1,6 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Installs RightWords macros.
 #>
 

@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test panel with joined table TestNotes with lookup
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This script demonstrates some important techniques:
 
 	1) Panel uses data adapter with manually configured INSERT, DELETE and

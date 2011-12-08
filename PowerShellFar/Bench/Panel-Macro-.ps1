@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Panel and view/edit Far key macros
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	When it is invoked in panels without parameters it opens the customized
 	FarMacro provider panel: you can work with items as usual: [F5], [ShiftF5],
 	[F6], [ShiftF6], [F7], [F8] (some operations require another panel to be
@@ -18,12 +18,12 @@
 	(use [F4] to edit multi-line sequences). Other data are flags with three
 	states: <empty>: DEFAULT; 0: NO; 1: YES.
 
-.LINK
+.Link
 	About macros: http://api.farmanager.com/en/macro/index.html
 	FarMacro module
 	Edit-FarMacro cmdlet
 
-.EXAMPLE
+.Example
 	Panel-Macro-
 	Panel-Macro- CtrlS
 	Panel-Macro- AltDown Shell

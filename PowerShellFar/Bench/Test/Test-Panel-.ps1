@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test simple panels.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	PowerShellFar panels are often derived from AnyPanel, but this is not a
 	requirement for scripts. This script shows how to use a pure FarNet panel
 	and its features. Other points of interest: custom modes, titles, columns;
