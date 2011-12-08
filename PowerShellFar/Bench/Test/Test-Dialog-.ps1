@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test dialog controls.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Just run it and press [F1] for description.
 #>
 
@@ -249,16 +249,16 @@ function TestList($box, $fast)
 	# create and add new items with some random properties
 	$num = 1000
 	$rnd = New-Object Random
-	for($$ = 0; $$ -lt $num; ++$$) {
+	for($1 = 0; $1 -lt $num; ++$1) {
 		$box.Items.Add((
-			New-FarItem -Text $$ -Checked:($rnd.Next(2)) -Disabled:($rnd.Next(2))
+			New-FarItem -Text $1 -Checked:($rnd.Next(2)) -Disabled:($rnd.Next(2))
 		))
 	}
 
 	# remove some items randomly
-	for($$ = $num; --$$ -ge 0;) {
+	for($1 = $num; --$1 -ge 0;) {
 		if ($rnd.Next(2)) {
-			$box.Items.RemoveAt($$)
+			$box.Items.RemoveAt($1)
 		}
 	}
 

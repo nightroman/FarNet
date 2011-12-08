@@ -1,24 +1,24 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows .hlf help file.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It is similar to the plugin HlfViewer.
 
 	"What's it for if there is HlfViewer?" Well, originally it was created to
 	test IFar.ShowHelp(). Then, as far as it is created, why not to use it?
 	Besides, this way is perhaps more flexible.
 
-.EXAMPLE
+.Example
 	# Show Far help
 	Show-Hlf- "$env:FARHOME\FarEng.hlf"
 
 	# Show PowerShellFar help topic Cmdlets
 	Show-Hlf- "$($Psf.AppHome)\PowerShellFar.hlf" Cmdlets
 
-.LINK
+.Link
 	Profile-Editor-.ps1 - how to call it for .hlf file in editor by F1
 	(this is for demo, a better way is to use the menu and a macro).
 #>

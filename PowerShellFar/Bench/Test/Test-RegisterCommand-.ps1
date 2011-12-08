@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows how to register commands dynamically.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Steps:
 	- invoke this script to register the command;
 	- type in the command line: mycmd: <any text>

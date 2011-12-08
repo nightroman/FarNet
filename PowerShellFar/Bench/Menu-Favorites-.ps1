@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Shows Windows Favorites as a menu and invokes items.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This menu navigates through Favorites folders (submenus) and files. Hotkeys
 	are assigned automatically, you can control them only by source item names.
 	Proper names simplify navigations not only in this menu but in GUI menus as
@@ -84,25 +84,25 @@ for(;;) {
 		continue
 	}
 
-	$$ = $menu.SelectedData
-	if (!$$) { return }
+	$1 = $menu.SelectedData
+	if (!$1) { return }
 
 	### go to the item
 	if ($menu.breakKey -eq ([FarNet.VKeyCode]::Enter -bor [FarNet.VKeyMode]::Ctrl)) {
-		$Far.Panel.GoToPath($$.FullName)
+		$Far.Panel.GoToPath($1.FullName)
 		return
 	}
 
 	### open folder submenu
-	if ($$.PSIsContainer) {
-		$path = $$.FullName
+	if ($1.PSIsContainer) {
+		$path = $1.FullName
 		continue
 	}
 
 	### open directory shortcut
-	if ($Far.Window.Kind -eq 'Panels' -and $$.Name -like '*.lnk') {
+	if ($Far.Window.Kind -eq 'Panels' -and $1.Name -like '*.lnk') {
 		$WshShell = New-Object -ComObject WScript.Shell
-		$target = $WshShell.CreateShortcut([IO.Path]::GetFullPath($$.FullName)).TargetPath
+		$target = $WshShell.CreateShortcut([IO.Path]::GetFullPath($1.FullName)).TargetPath
 		if ([System.IO.Directory]::Exists($target)) {
 			$Far.Panel.CurrentDirectory = $target
 			return
@@ -110,9 +110,9 @@ for(;;) {
 	}
 
 	### invoke the item
-	Invoke-Item -LiteralPath $$.FullName
+	Invoke-Item -LiteralPath $1.FullName
 	if ($menu.BreakKey -ne ([FarNet.VKeyCode]::Spacebar)) {
 		return
 	}
-	$goto = $$.FullName
+	$goto = $1.FullName
 }

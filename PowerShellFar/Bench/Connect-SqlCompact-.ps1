@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Connects .sdf database and optionally shows tables in a panel.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	With -Panel switch the script shows database tables in a panel using
 	Panel-DbTable-.ps1 and closes the connection together with a panel.
 

@@ -1,14 +1,14 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test TabExpansion.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This test is for the PowerShellFar development environment. It may fail in
 	a different environment. But with adjustments most of the test should work.
 
-.NOTES
+.Notes
 	(Get-Content -e --> -Encoding) may fail depending on the current provider,
 	because it is a dynamic parameter. We test TabExpansion in here, not
 	PowerShell provider cmdlets issues, so do not use Encoding.

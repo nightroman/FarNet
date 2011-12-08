@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Creates, exports, imports and sends data to a panel.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Creates Test-Zoo.clixml in $HOME. It is not removed after this test because
 	the file is useful as a sample of CLIXML for other tests and experiments.
 #>

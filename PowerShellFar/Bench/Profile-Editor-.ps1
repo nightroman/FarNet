@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Editor startup code (example).
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This is an example of configuration "Editor startup code" which is invoked
 	when an editor is opened the first time. It installs some key and mouse
 	handles. Before using read help "Profile-Editor-.ps1" and the code.

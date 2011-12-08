@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test prompt dialog and shows how to get call stack info.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Stack information can be viewed on errors if $ErrorActionPreference is set
 	to Inquire. In this mode an error opens a PowerShell choice dialog. Click
 	[Suspend] and in the editor console type one of the commands:

@@ -211,7 +211,7 @@ namespace PowerShellFar
 			{
 				if (_OutCommand == null)
 				{
-					_OutCommand = new Command("Microsoft.PowerShell.Utility\\Out-Host");
+					_OutCommand = new Command("Out-Host");
 					_OutCommand.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error;
 				}
 				return _OutCommand;
@@ -462,7 +462,7 @@ namespace PowerShellFar
 		{
 			if (Runspace.DefaultRunspace == null)
 				Runspace.DefaultRunspace = Psf.Runspace;
-			
+
 			var variable = script.Module == null ? Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
 			variable.Set("this", sender);
 			variable.Set("_", e);

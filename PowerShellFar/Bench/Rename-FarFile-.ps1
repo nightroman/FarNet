@@ -1,15 +1,15 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Renames the current panel file or directory.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The script renames the current file panel item, updates its description,
 	and sets the renamed item current in the panel. By default it asks to
 	confirm.
 
-.EXAMPLE
+.Example
 	# Add a prefix based on LastWriteTime time:
 	Rename-FarFile- { $_.LastWriteTime.ToString('_yyMMdd_HHmmss_') + $_.Name }
 #>

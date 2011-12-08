@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Main startup code (example).
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Configuration: startup code to load this profile:
 	. Profile-.ps1
 
@@ -101,7 +101,7 @@ $Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Dow
 #Import-Module FarMacro
 
 <#
-.SYNOPSIS
+.Synopsis
 	Open-ServicePanel proxy.
 #>
 function Open-ServicePanel
@@ -112,7 +112,7 @@ function Open-ServicePanel
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Open-StartupCommandPanel proxy.
 #>
 function Open-StartupCommandPanel
@@ -123,7 +123,7 @@ function Open-StartupCommandPanel
 }
 
 <#
-.SYNOPSIS
+.Synopsis
 	Open-UninstallPanel proxy.
 #>
 function Open-UninstallPanel

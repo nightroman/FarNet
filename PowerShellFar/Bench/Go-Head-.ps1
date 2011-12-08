@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Goes to the head of panel files or directories.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The script sets current panel position to the head of files or to the head
 	of all items depending on the current item type (file or directory) and its
 	position.

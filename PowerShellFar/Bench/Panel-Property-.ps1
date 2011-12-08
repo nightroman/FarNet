@@ -1,16 +1,16 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Panel PowerShell provider item properties.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	In case of several items only the first one is processed.
 
 	Warning: depending on a provider you can create\delete\edit properties in a
 	panel affecting real source data, like registry values, see example.
 
-.EXAMPLE
+.Example
 	Panel-Property- HKCU:\Soft*\Far2\*\PowerShellFarHistory
 #>
 

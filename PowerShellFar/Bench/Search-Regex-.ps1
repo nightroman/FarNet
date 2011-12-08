@@ -1,30 +1,30 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Searches for a regex in files and work on results in a panel
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	See help (e.g. run this and press F1) for more information about input,
 	dialog controls and result panel keys.
 
-.PARAMETER Regex
+.Parameter Regex
 		Regular expression or *substring to search for a literal substring. If
 		it is not defined then a dialog is opened where you can define it and
 		the other intput data.
-.PARAMETER Options
+.Parameter Options
 		.NET regular expression options. Used if -Regex is defined as a string,
 		i.e. not a ready to use Regex object.
-.PARAMETER InputObject
+.Parameter InputObject
 		Strings (file paths) or IO.FileInfo based objects (e.g. from
 		Get-*Item). If it is not defined then objects are taken from the input
 		pipeline. If there are no objects and -Regex is not set then in a
 		dialog you have to define a command which output is used as input
 		objects.
-.PARAMETER Groups
+.Parameter Groups
 		To put to a panel found regex groups instead of full matches. Ignored
 		if -AllText is set.
-.PARAMETER AllText
+.Parameter AllText
 		To search in a file text read as one string.
 #>
 

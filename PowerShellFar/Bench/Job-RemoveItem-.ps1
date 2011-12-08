@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Job: remove the specified provider item(s).
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Removing of large directories may be very time consuming. This script does
 	the job in the background, so that Far is not blocked during this time.
 
@@ -12,7 +12,7 @@
 	of Get-Item or Get-ChildItem commands. In PowerShellFar there are more
 	commands getting items from panels: Get-FarItem, Get-FarItem -Selected, ...
 
-.EXAMPLE
+.Example
 	# Remove selected items on the active panel (suitable for Far user menu)
 	Job-RemoveItem- (Get-FarItem -Selected)
 #>

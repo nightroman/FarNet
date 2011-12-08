@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Updates FarNet products selectively from the project site.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Command 7z has to be available, e.g. 7z.exe in the system path.
 
 	If Far Manager is running the script prompts you to exit running instances
@@ -24,7 +24,7 @@
 
 	<Archive>\Install.txt files show what is updated from <Archive>.
 
-.EXAMPLE
+.Example
 	# This command starts update in a new console and keeps it opened to view
 	# the output. Then it tells Far to exit because update will wait for this.
 	>: Start-Process powershell.exe "-noexit Update-FarNet"; $Far.Quit()

@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Panel current processes.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Shows the list of current processes in a panel and updates these data
 	periodically when idle.
 

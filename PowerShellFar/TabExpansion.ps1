@@ -30,8 +30,8 @@ function global:TabExpansion
 			else {
 				$sort_ = $false
 				$cmds_ = @(Get-History -Count 32767) -like "*$($matches[1])*"
-				for($$ = $cmds_.Count - 1; $$ -ge 0; --$$) {
-					$cmds_[$$]
+				for($1 = $cmds_.Count - 1; $1 -ge 0; --$1) {
+					$cmds_[$1]
 				}
 			}
 		}

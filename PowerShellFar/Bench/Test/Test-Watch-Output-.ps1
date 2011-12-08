@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test the script Watch-Output-.ps1.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	The script shows some features of Watch-Output-.ps1
 	- combined output of several commands;
 	- output of external console program;
@@ -13,7 +13,7 @@
 	Just invoke the test and watch changes in the editor. Then try to scroll
 	horisontally (test long lines) and vertically (test many lines).
 
-.LINK
+.Link
 	Watch-Output-.ps1
 #>
 

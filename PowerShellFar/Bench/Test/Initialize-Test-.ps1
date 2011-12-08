@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Initializes test environment and optional database data.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Supported database providers for testing:
 	'System.Data.SQLite', 'System.Data.SqlClient', 'System.Data.SqlServerCe'
 #>

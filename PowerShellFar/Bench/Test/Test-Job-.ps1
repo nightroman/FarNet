@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test background jobs.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	This script shows how to use various background jobs, techniques and tests
 	some special cases.
 #>

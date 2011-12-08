@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Starts or manages file transfer jobs in a panel.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Without parameters it opens the panel with file transfer jobs where you can
 	operate on them. It monitors all existing jobs, even created in another
 	PowerShell session or started in previous Windows sessions.
@@ -47,7 +47,7 @@
 	Import-Module BitsTransfer
 	Get-Command *-BitsTransfer
 
-.EXAMPLE
+.Example
 	# Open file transfer jobs panel if not yet
 	Panel-BitsTransfer-
 

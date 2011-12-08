@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Starts MSBuild with a helper input dialog for the project file.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	It reads the project file and shows targets, dependencies, and parameters
 	with values (these values are usually default but it depends on other
 	project conditions, the script does not analyse data).

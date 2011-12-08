@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Installs macros (example).
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	DO NOT USE THIS DIRECTLY, USE YOUR OWN MACROS, THIS IS ONLY AN EXAMPLE!
 
 	The script shows how to assign macros to the user tools via menus or the
@@ -13,14 +13,14 @@
 	For the editor there is another way: event handlers installed in the editor
 	startup code; example: Profile-Editor-.ps1.
 
-.NOTES
+.Notes
 	-- It is recommended to install all macros by one call of Install() to make
 	sure that there are no duplicates with same area and name.
 
 	-- Note that parameter of Install() in this example is not just an array of
 	[FarNet.Macro], it is a block of code which outputs [FarNet.Macro] objects.
 
-.LINK
+.Link
 	FarNet.IMacro.Install
 #>
 

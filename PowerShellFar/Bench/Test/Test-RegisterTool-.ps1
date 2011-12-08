@@ -1,10 +1,10 @@
 
 <#
-.SYNOPSIS
+.Synopsis
 	Test a tool handler.
 	Author: Roman Kuzmin
 
-.DESCRIPTION
+.Description
 	Steps:
 	- invoke this script to register the tool;
 	- try it in F11, disk and config menus;
