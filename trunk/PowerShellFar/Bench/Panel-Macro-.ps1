@@ -65,23 +65,25 @@ if ($wi.Kind -eq 'Panels' -and !$Name) {
 		Drive = "FarMacro"
 		### [Enter]
 		AsOpenFile = {
-			if ($this.CurrentDirectory -match '^FarMacro:\\(\w+)$') {
+			param($0, $_)
+			if ($0.CurrentDirectory -match '^FarMacro:\\(\w+)$') {
 				Panel-Macro- -Name $_.File.Name -Area $matches[1] -AsChild
 			}
 			else {
-				$this.OpenFile($_.File)
+				$0.OpenFile($_.File)
 			}
 		}
 		### [F4]
 		AsEditFile = {
+			param($0, $_)
 			if ($_.Data -is [FarNet.Macro]) {
-				Edit-FarMacro -Macro $_.Data -Panel $this
+				Edit-FarMacro -Macro $_.Data -Panel $0
 			}
-			elseif ($this.CurrentDirectory -match '\\Consts$') {
-				Edit-FarMacro -Area 'Consts' -Name $_.Name -Panel $this
+			elseif ($0.CurrentDirectory -match '\\Consts$') {
+				Edit-FarMacro -Area 'Consts' -Name $_.Name -Panel $0
 			}
-			elseif ($this.CurrentDirectory -match '\\Vars$') {
-				Edit-FarMacro -Area 'Vars' -Name $_.Name -Panel $this
+			elseif ($0.CurrentDirectory -match '\\Vars$') {
+				Edit-FarMacro -Area 'Vars' -Name $_.Name -Panel $0
 			}
 		}
 	} | Open-FarPanel
@@ -125,8 +127,9 @@ $Explorer = New-Object PowerShellFar.MemberExplorer $macro -Property @{
 $Panel = New-Object PowerShellFar.MemberPanel $Explorer -Property @{
 	Title = "$Area $Name"
 	AsSaveData = {
-		$Far.Macro.Install($this.Value)
-		$this.Modified = $false
+		param($0)
+		$Far.Macro.Install($0.Value)
+		$0.Modified = $false
 		$Host.UI.RawUI.WindowTitle = 'Saved'
 	}
 }

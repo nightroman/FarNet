@@ -170,7 +170,7 @@ namespace PowerShellFar
 					IEditor editor = Far.Net.Editor;
 					if (editor.SelectionExists)
 						return editor.GetSelectedText();
-					return editor[-1].Text;
+					return editor.Line.Text;
 				}
 
 				// other lines
@@ -195,7 +195,7 @@ namespace PowerShellFar
 							return;
 					}
 
-					editor[-1].Text = value;
+					editor.Line.Text = value;
 					return;
 				}
 
@@ -276,7 +276,7 @@ namespace PowerShellFar
 							// [Tab]
 							if (!editor.SelectionExists)
 							{
-								ILine line = editor[-1];
+								ILine line = editor.Line;
 								string text = line.Text;
 								int pos = line.Caret - 1;
 								if (pos >= 0 && pos < line.Length && text[pos] != ' ' && text[pos] != '\t')

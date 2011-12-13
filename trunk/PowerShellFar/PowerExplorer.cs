@@ -46,7 +46,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.GetFiles"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="ExplorerEventArgs"/>.
 		/// <para>
 		/// The script outputs files or nothing. In the latter case the predefined <see cref="Cache"/> list is used.
 		/// </para>
@@ -82,7 +82,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.ExploreDirectory"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreDirectoryEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="ExploreDirectoryEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreDirectory { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -101,7 +101,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.ExploreLocation"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExploreLocationEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="ExploreLocationEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreLocation { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -120,7 +120,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.ExploreParent"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="ExplorerEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreParent { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -139,7 +139,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.ExploreRoot"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="ExplorerEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExploreRoot { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -158,7 +158,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.GetContent"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="GetContentEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="GetContentEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsGetContent { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -177,7 +177,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.SetFile"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="SetFileEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="SetFileEventArgs"/>.
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AsSet")]
 		public ScriptBlock AsSetFile { get; set; }
@@ -197,7 +197,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.SetText"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="SetTextEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="SetTextEventArgs"/>.
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AsSet")]
 		public ScriptBlock AsSetText { get; set; }
@@ -217,7 +217,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.CloneFile"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="CloneFileEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="CloneFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsCloneFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -236,7 +236,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.CreateFile"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="CreateFileEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="CreateFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsCreateFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -255,7 +255,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.OpenFile"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="OpenFileEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="OpenFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsOpenFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -274,7 +274,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.RenameFile"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="RenameFileEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="RenameFileEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsRenameFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -293,7 +293,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.AcceptFiles"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="AcceptFilesEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="AcceptFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsAcceptFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -312,7 +312,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.ImportFiles"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ImportFilesEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="ImportFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsImportFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -331,7 +331,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.ExportFiles"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExportFilesEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="ExportFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsExportFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -350,7 +350,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.DeleteFiles"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="DeleteFilesEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="DeleteFilesEventArgs"/>.
 		/// </remarks>
 		public ScriptBlock AsDeleteFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -369,7 +369,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.CreatePanel"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer.
+		/// Arguments: 0: this explorer.
 		/// </remarks>
 		public ScriptBlock AsCreatePanel { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
@@ -378,7 +378,7 @@ namespace PowerShellFar
 			if (AsCreatePanel == null)
 				return DoCreatePanel();
 			else
-				return (Panel)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCreatePanel, this, null), typeof(Panel), null);
+				return (Panel)LanguagePrimitives.ConvertTo(A.InvokeScriptReturnAsIs(AsCreatePanel, this), typeof(Panel), null);
 		}
 		/// <summary>
 		/// <see cref="Explorer.EnterPanel"/> worker.
@@ -388,7 +388,7 @@ namespace PowerShellFar
 		/// <see cref="Explorer.EnterPanel"/> worker.
 		/// </summary>
 		/// <remarks>
-		/// Script variables: <c>$this</c> is this explorer, <c>$_</c> is the <see cref="Panel"/> to be updated.
+		/// Arguments: 0: this explorer, 1: <see cref="Panel"/> to be updated.
 		/// </remarks>
 		public ScriptBlock AsEnterPanel { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>

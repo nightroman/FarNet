@@ -75,29 +75,32 @@ $Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83
 	Data = $Data
 	### AcceptFiles: called on [F5], [F6]
 	AsAcceptFiles = {
+		param($0, $_)
 		# count events, update info
-		$data = $this.Data
+		$data = $0.Data
 		++$data.AcceptFiles
 		$data.UpdateInfo()
 
 		# just add input files
-		$_.Files | %{ $this.Cache.Add($_) }
+		$_.Files | %{ $0.Cache.Add($_) }
 
 		# the core deletes on move
 		$_.ToDeleteFiles = $true
 	}
 	### DeleteFiles: called on [F8]
 	AsDeleteFiles = {
+		param($0, $_)
 		# count events, update info
-		$data = $this.Data
+		$data = $0.Data
 		++$data.DeleteFiles
 		$data.UpdateInfo()
 
 		# remove input files
-		$_.Files | % { $this.Cache.Remove($_) }
+		$_.Files | % { $0.Cache.Remove($_) }
 	}
 	### ExportFiles: [F5], [F6] to a native panel
 	AsExportFiles = {
+		param($0, $_)
 		# allow delete on move
 		$_.ToDeleteFiles = $true
 		# make some fake files and simulate incomplete results
@@ -112,13 +115,15 @@ $Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83
 	}
 	### ImportFiles: [F5], [F6] from a native panel
 	AsImportFiles = {
+		param($0, $_)
 		# just add input files
-		$_.Files | %{ $this.Cache.Add($_) }
+		$_.Files | %{ $0.Cache.Add($_) }
 	}
 	### GetContent: called on [F3], [F4], [CtrlQ]
 	AsGetContent = {
+		param($0, $_)
 		# count events, update info
-		$data = $this.Data
+		$data = $0.Data
 		++$data.GetContent
 		$data.UpdateInfo()
 
@@ -127,15 +132,16 @@ $Explorer = New-Object PowerShellFar.PowerExplorer 'd797d742-3b57-4bfd-a997-da83
 	}
 	### CreateFile: called on [F7]
 	AsCreateFile = {
+		param($0, $_)
 		# count events, update info
-		$data = $this.Data
+		$data = $0.Data
 		$n = ++$data.CreateFile
 		$data.UpdateInfo()
 
 		# get and post a new name, add a new item
 		$newName = "Item$n"
 		$_.PostName = $newName
-		$this.Cache.Add((
+		$0.Cache.Add((
 			New-FarFile $newName -Owner "Value$n" -Description "Description$n" -Columns "custom[0]=$n", "custom[1]=$n"
 		))
 	}

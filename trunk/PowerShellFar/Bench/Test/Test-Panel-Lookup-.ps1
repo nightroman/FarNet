@@ -33,11 +33,13 @@ $Panel.Title = 'Press [Enter] on properties'
 $Panel.AddLookup(@{
 	### property 'Any' has to be a value from the fixed set
 	'Any' = {
+		param($0, $_)
 		$Panel = New-Object PowerShellFar.ObjectPanel -Property @{
 			Title = 'Press [Enter] on a value'
 			ViewMode = 'Medium'
 			Lookup = {
-				$this.Parent.Value.Any = $_.File.Data
+				param($0, $_)
+				$0.Parent.Value.Any = $_.File.Data
 			}
 		}
 		$Panel.AddObjects(@(
@@ -46,29 +48,33 @@ $Panel.AddLookup(@{
 			3.1415
 			2007
 		))
-		$Panel.OpenChild($this)
+		$Panel.OpenChild($0)
 	}
 	### property 'Item' has to be a selected file or folder
 	'Item' = {
+		param($0, $_)
 		$Panel = New-Object PowerShellFar.ObjectPanel -Property @{
 			Title = 'Press [Enter] on an item'
 			Lookup = {
-				$this.Parent.Value.Item = $_.File.Data
+				param($0, $_)
+				$0.Parent.Value.Item = $_.File.Data
 			}
 		}
 		$Panel.AddObjects((Get-ChildItem $env:FARHOME))
-		$Panel.OpenChild($this)
+		$Panel.OpenChild($0)
 	}
 	### property 'Process' has to be a selected process
 	'Process' = {
+		param($0, $_)
 		$Panel = New-Object PowerShellFar.ObjectPanel -Property @{
 			Title = 'Press [Enter] on a process'
 			Lookup = {
-				$this.Parent.Value.Process = $_.File.Data.Name
+				param($0, $_)
+				$0.Parent.Value.Process = $_.File.Data.Name
 			}
 		}
 		$Panel.AddObjects((Get-Process))
-		$Panel.OpenChild($this)
+		$Panel.OpenChild($0)
 	}
 })
 

@@ -274,7 +274,7 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 $Explorer = New-Object PowerShellFar.PowerExplorer '7ef0bbec-9509-4223-a452-ea928ac9846c' -Property @{
 	Data = $job
 	### GetFiles: read found items
-	AsGetFiles = {
+	AsGetFiles = {param($this, $_)
 		$job = $this.Data
 		foreach($e in $job.Output.ReadAll()) {
 			$this.Cache.Add($e)
@@ -341,7 +341,7 @@ $Panel.add_KeyPressed({&{
 		$frame.CaretColumn = $match[0] + $match[1]
 		$frame.VisibleLine = $frame.CaretLine - $Host.UI.RawUI.WindowSize.Height / 3
 		$editor.Frame = $frame
-		$line = $editor[-1] # can be null if a file is already opened
+		$line = $editor.Line # can be null if a file is already opened
 		if ($match[1] -and $line) {
 			$line.SelectText($match[0], $frame.CaretColumn)
 			$editor.Redraw()

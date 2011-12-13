@@ -124,6 +124,7 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 	}
 	### Delete jobs
 	AsDeleteFiles = {
+		param($0, $_)
 		if (0 -eq $Far.Message('Remove selected transfer jobs?', 'Remove', 'OkCancel')) {
 			$_.FilesData | Remove-BitsTransfer
 		} else {
@@ -132,6 +133,7 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 	}
 	### Open a job, show the menu
 	AsOpenFile = {
+		param($0, $_)
 		$job = $_.File.Data
 		$menu = New-FarMenu "Job: $($job.DisplayName)" $(
 			if ($job.JobState -eq 'Transferred') {

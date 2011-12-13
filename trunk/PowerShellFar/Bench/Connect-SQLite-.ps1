@@ -6,8 +6,7 @@
 
 .Description
 	Requires System.Data.SQLite ADO.NET provider: http://system.data.sqlite.org
-	Install it with 'GAC' and 'Add bin to path' options checked or simply put
-	System.Data.SQLite.dll and SQLite.Interop.dll to the FarNet directory.
+	Install it to GAC or copy SQLite assemblies to the FarNet directory.
 
 	With -Panel switch the script shows database tables in a panel using
 	Panel-DbTable-.ps1 and closes the connection together with a panel.

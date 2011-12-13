@@ -88,7 +88,7 @@ namespace PowerShellFar
 		}
 		/// <summary>
 		/// Gets or sets the script getting raw file data objects.
-		/// Variables: <c>$this</c> is this explorer, <c>$_</c> is <see cref="ExplorerEventArgs"/>.
+		/// Arguments: 0: this explorer, 1: <see cref="ExplorerEventArgs"/>.
 		/// </summary>
 		/// <remarks>
 		/// The script returns raw data to be represented as files with the data attached.

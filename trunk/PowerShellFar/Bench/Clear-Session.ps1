@@ -74,6 +74,7 @@ param
 		'ProgressPreference'
 		'PSBoundParameters'
 		'PSCmdlet'
+		'PSCommandPath' #?? V3
 		'PSCulture'
 		'PSDebugContext'
 		'PSEmailServer'

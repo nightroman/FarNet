@@ -19,9 +19,14 @@ namespace PowerShellFar
 	/// </summary>
 	class FarHost : PSHost
 	{
-		// UI object
+		// This instance ID.
+		static Guid _InstanceId = Guid.NewGuid();
+		// Original current culture.
+		CultureInfo _CurrentCulture = Thread.CurrentThread.CurrentCulture;
+		// User interface object.
 		PSHostUserInterface _UI;
-
+		// Nested prompt editor.
+		IEditor _nested;
 		/// <summary>
 		/// Construct an instance of this PSHost implementation.
 		/// Keep a reference to the hosting application object.
@@ -31,9 +36,7 @@ namespace PowerShellFar
 		{
 			_UI = ui;
 		}
-
 		#region PSHost
-
 		/// <summary>
 		/// The host name: FarHost
 		/// </summary>
@@ -41,7 +44,6 @@ namespace PowerShellFar
 		{
 			get { return "FarHost"; }
 		}
-
 		/// <summary>
 		/// Gets the current culture to use.
 		/// </summary>
@@ -49,8 +51,6 @@ namespace PowerShellFar
 		{
 			get { return _CurrentCulture; }
 		}
-		CultureInfo _CurrentCulture = Thread.CurrentThread.CurrentCulture;
-
 		/// <summary>
 		/// Gets the current UI culture to use.
 		/// </summary>
@@ -58,7 +58,6 @@ namespace PowerShellFar
 		{
 			get { return A.Psf.Manager.CurrentUICulture; }
 		}
-
 		/// <summary>
 		/// Gets the GUID generated once.
 		/// </summary>
@@ -66,8 +65,6 @@ namespace PowerShellFar
 		{
 			get { return _InstanceId; }
 		}
-		static Guid _InstanceId = Guid.NewGuid();
-
 		/// <summary>
 		/// Gets the UI instance.
 		/// </summary>
@@ -75,7 +72,6 @@ namespace PowerShellFar
 		{
 			get { return _UI; }
 		}
-
 		/// <summary>
 		/// Gets the assembly version.
 		/// </summary>
@@ -83,7 +79,6 @@ namespace PowerShellFar
 		{
 			get { return Assembly.GetExecutingAssembly().GetName().Version; }
 		}
-
 		/// <summary>
 		/// Instructs the host to interrupt the currently running pipeline and start a new nested input loop.
 		/// An input loop is the cycle of prompt, input, and execute.
@@ -100,12 +95,22 @@ namespace PowerShellFar
 				//! SVN tag 4.2.26
 				EditorConsole console = EditorConsole.CreateConsole(false);
 				_nested = console.Editor;
+
+				// Enter the modal editor. There are two ways to exit.
+				// 1) User exits the editor ([Esc]/[F10]). _nested should be this editor, not null.
+				// But PowerShell nested prompt is not yet exited, call 'exit', it triggers
+				// ExitNestedPrompt(), it sets _nested to null.
+				// 2) User types 'exit' in the editor. Then ExitNestedPrompt() is called first,
+				// it sets _nested to null and closes the editor. Control gets here with null
+				// _nested, so we do nothing but restoring the very first _nested.
 				_nested.Open(OpenMode.Modal);
 
-				// it is exited
-				if (_nested != null)
+				// If _nested is not null then a user has closed the editor via UI, not by 'exit'.
+				// Thus, we have to exit the nested prompt. IsRunning check is added for V3 CTP2.
+				// It works fine in V2, too. Meaning: if there is no running pipeline (stepper)
+				// then there is nothing to exit, so do not exit. Exit nothing hangs in V3 CTP2.
+				if (_nested != null && A.Psf.IsRunning)
 				{
-					//! case editor closed: do exit; DON'T use script block
 					using (PowerShell pipe = A.Psf.CreatePipeline())
 					{
 						pipe.Commands.AddScript("exit");
@@ -119,8 +124,6 @@ namespace PowerShellFar
 				_nested = keepNested;
 			}
 		}
-		IEditor _nested;
-
 		/// <summary>
 		/// Instructs the host to exit the currently running input loop.
 		/// </summary>
@@ -128,39 +131,31 @@ namespace PowerShellFar
 		{
 			if (_nested != null)
 			{
-				if (_nested.IsOpened)
-					_nested.Close();
+				var nested = _nested;
 				_nested = null;
+				if (nested.IsOpened)
+					nested.Close();
 			}
 		}
-
 		/// <summary>
 		/// Called before an external application process is started.
 		/// It is used to save state that the child process may alter
 		/// so the parent can restore that state when the child exits.
 		/// </summary>
 		public override void NotifyBeginApplication()
-		{
-			// PSF 2.2.10 Do not need this.
-		}
-
+		{ }
 		/// <summary>
 		/// Called after an external application process finishes.
 		/// It is used to restore state that the child process may have altered.
 		/// </summary>
 		public override void NotifyEndApplication()
-		{
-			// PSF 2.2.10 Do not need this.
-		}
-
+		{ }
 		/// <summary>
 		/// Indicates to the host that an exit has been requested.
 		/// It passes the exit code that the host should use when exiting the process.
 		/// </summary>
 		public override void SetShouldExit(int exitCode)
-		{
-		}
-
+		{ }
 		#endregion
 	}
 }

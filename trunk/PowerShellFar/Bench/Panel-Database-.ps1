@@ -23,6 +23,7 @@ if (!$DbProviderFactory -or !$DbConnection) {
 
 $Panel = Panel-DbData- -NoShow -SelectCommand 'SELECT * FROM sys.databases' -Columns 'name', 'database_id', 'state_desc', 'create_date'
 $Panel.AsOpenFile = {
+	param($0, $_)
 	$DbProviderFactory = [Data.SqlClient.SqlClientFactory]::Instance
 	$DbConnection = $DbProviderFactory.CreateConnection()
 	$DbConnection.ConnectionString = "Data Source=.\sqlexpress;Initial Catalog=$($_.File.Name);Integrated Security=SSPI;"

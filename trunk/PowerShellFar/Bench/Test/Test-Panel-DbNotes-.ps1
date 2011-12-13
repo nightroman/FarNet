@@ -94,29 +94,32 @@ $Panel.ExcludeMemberPattern = '^(NoteId|CategoryId)$'
 # there are two alternative examples below:
 #
 # 1) GENERIC LOOKUP (NOT SIMPLE BUT MORE UNIVERSAL)
-# $this - event sender, it is a lookup panel created by Test-Panel-DbCategories-.ps1
-# $this.Parent - its parent panel, it is a member panel with TestNotes row fields
-# $this.Parent.Value - destination row with CategoryId and Category
+# $0 - event sender, it is a lookup panel created by Test-Panel-DbCategories-.ps1
+# $0.Parent - its parent panel, it is a member panel with TestNotes row fields
+# $0.Parent.Value - destination row with CategoryId and Category
 # $_ - event arguments (PowerShellFar.FileEventArgs)
 # $_.File.Data - lookup row from TestCategories
 #
 # 2) DATA LOOKUP (SIMPLE BUT ONLY FOR DATA PANELS)
 # Actually use this simple way always when possible.
-# $this.CreateDataLookup() returns a helper handler that makes all the generic job.
+# $0.CreateDataLookup() returns a helper handler that makes all the generic job.
 
 if ($GenericLookup) {
 	$Panel.AddLookup('Category', {
-		Test-Panel-DbCategories- -Lookup {&{
-			$r1 = $this.Parent.Value
+		param($0, $_)
+		Test-Panel-DbCategories- -Lookup {
+			param($0, $_)
+			$r1 = $0.Parent.Value
 			$r2 = $_.File.Data
 			$r1.CategoryId = $r2.CategoryId
 			$r1.Category = $r2.Category
-		}}
+		}
 	})
 }
 else {
 	$Panel.AddLookup('Category', {
-		Test-Panel-DbCategories- -Lookup $this.CreateDataLookup(@('Category', 'Category', 'CategoryId', 'CategoryId'))
+		param($0, $_)
+		Test-Panel-DbCategories- -Lookup $0.CreateDataLookup(@('Category', 'Category', 'CategoryId', 'CategoryId'))
 	})
 }
 

@@ -807,7 +807,7 @@ Continue with this current directory?
 		/// <summary>
 		/// Is it running?
 		/// </summary>
-		bool IsRunning
+		internal bool IsRunning
 		{
 			get { return Pipeline != null && Pipeline.InvocationStateInfo.State == PSInvocationState.Running; }
 		}

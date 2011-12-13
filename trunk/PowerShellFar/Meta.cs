@@ -253,8 +253,8 @@ namespace PowerShellFar
 				}
 				finally
 				{
-					//! Remove $_ to avoid a leak
-					session.PSVariable.Remove("_");
+					//! Null $_ to avoid a leak
+					session.PSVariable.Set("_", null);
 				}
 			}
 
