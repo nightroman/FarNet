@@ -179,11 +179,11 @@ namespace PowerShellFar.Commands
 			// buttons
 			string[] buttons;
 			if (!IsError)
-				buttons = new string[] { BtnBreak };
+				buttons = new string[] { BtnThrow, BtnBreak };
 			else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
-				buttons = new string[] { BtnBreak, BtnDebug };
+				buttons = new string[] { BtnThrow, BtnBreak, BtnDebug };
 			else
-				buttons = new string[] { BtnBreak, BtnDebug, BtnEdit };
+				buttons = new string[] { BtnThrow, BtnBreak, BtnDebug, BtnEdit };
 
 			// prompt
 			int result = Far.Net.Message(
@@ -195,25 +195,36 @@ namespace PowerShellFar.Commands
 			// editor
 			if (result >= 0)
 			{
-				if (buttons[result] == BtnEdit)
+				switch (buttons[result])
 				{
-					IEditor editor = Far.Net.CreateEditor();
-					editor.FileName = MyInvocation.ScriptName;
-					editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
-					editor.Open();
-				}
-				else if (buttons[result] == BtnDebug)
-				{
-					A.InvokeCode("Set-PSBreakpoint -Command " + MyName);
-					return;
+					case BtnBreak:
+						{
+							throw new PipelineStoppedException();
+						}
+					case BtnDebug:
+						{
+							A.InvokeCode("Set-PSBreakpoint -Variable daf01ff6-f004-43bd-b6bf-cf481e9333d3 -Mode Read");
+							SessionState.PSVariable.Set("daf01ff6-f004-43bd-b6bf-cf481e9333d3", null);
+							GetVariableValue("daf01ff6-f004-43bd-b6bf-cf481e9333d3");
+							return;
+						}
+					case BtnEdit:
+						{
+							IEditor editor = Far.Net.CreateEditor();
+							editor.FileName = MyInvocation.ScriptName;
+							editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
+							editor.Open();
+							break;
+						}
 				}
 			}
 
-			// break
-			throw new PipelineStoppedException();
+			// throw
+			throw new PSInvalidOperationException(body);
 		}
 		const string
 			BtnBreak = "&Break",
+			BtnThrow = "&Throw",
 			BtnDebug = "&Debug",
 			BtnEdit = "&Edit";
 	}

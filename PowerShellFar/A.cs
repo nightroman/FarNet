@@ -25,6 +25,21 @@ namespace PowerShellFar
 		{
 			_Psf_ = psf;
 		}
+		//?????
+		//static Hashtable _VersionTable_;
+		//static bool _IsV3_;
+		//internal static bool IsV3
+		//{
+		//    get
+		//    {
+		//        if (_VersionTable_ == null)
+		//        {
+		//            _VersionTable_ = (Hashtable)Psf.Engine.SessionState.PSVariable.GetValue("PSVersionTable");
+		//            _IsV3_ = ((Version)_VersionTable_["PSVersion"]).Major >= 3;
+		//        }
+		//        return _IsV3_;
+		//    }
+		//}
 		/// <summary>
 		/// Shows an error.
 		/// </summary>
@@ -411,10 +426,10 @@ namespace PowerShellFar
 			if (items.Count == 0)
 				return;
 
-			// keep the _
-			PSVariable variable = Psf.Engine.SessionState.PSVariable.Get("_");
+			// keep $_
+			var dash = Psf.Engine.SessionState.PSVariable.GetValue("_");
 
-			// set the _ to a sample for TabExpansion
+			// set $_ to a sample for TabExpansion
 			Psf.Engine.SessionState.PSVariable.Set("_", items[0]);
 
 			try
@@ -435,11 +450,8 @@ namespace PowerShellFar
 			}
 			finally
 			{
-				// restore the _
-				if (variable == null)
-					Psf.Engine.SessionState.PSVariable.Remove("_");
-				else
-					Psf.Engine.SessionState.PSVariable.Set(variable);
+				// restore $_
+				Psf.Engine.SessionState.PSVariable.Set("_", dash);
 			}
 		}
 		/// <summary>
@@ -456,49 +468,25 @@ namespace PowerShellFar
 		/// Invokes the handler-like script and returns the result collection.
 		/// </summary>
 		/// <param name="script">The script block to invoke.</param>
-		/// <param name="sender">The object for $this.</param>
-		/// <param name="e">The object for $_.</param>
-		internal static Collection<PSObject> InvokeScript(ScriptBlock script, object sender, object e)
+		/// <param name="args">Script arguments.</param>
+		internal static Collection<PSObject> InvokeScript(ScriptBlock script, params object[] args)
 		{
 			if (Runspace.DefaultRunspace == null)
 				Runspace.DefaultRunspace = Psf.Runspace;
 
-			var variable = script.Module == null ? Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
-			variable.Set("this", sender);
-			variable.Set("_", e);
-			try
-			{
-				return script.Invoke();
-			}
-			finally
-			{
-				variable.Remove("this");
-				variable.Remove("_");
-			}
+			return script.Invoke(args);
 		}
 		/// <summary>
 		/// Invokes the handler-like script and returns the result as it is.
 		/// </summary>
 		/// <param name="script">The script block to invoke.</param>
-		/// <param name="sender">The object for $this.</param>
-		/// <param name="e">The object for $_.</param>
-		internal static object InvokeScriptReturnAsIs(ScriptBlock script, object sender, object e)
+		/// <param name="args">Script arguments.</param>
+		internal static object InvokeScriptReturnAsIs(ScriptBlock script, params object[] args)
 		{
 			if (Runspace.DefaultRunspace == null)
 				Runspace.DefaultRunspace = Psf.Runspace;
 
-			var variable = script.Module == null ? Psf.Engine.SessionState.PSVariable : script.Module.SessionState.PSVariable;
-			variable.Set("this", sender);
-			variable.Set("_", e);
-			try
-			{
-				return script.InvokeReturnAsIs();
-			}
-			finally
-			{
-				variable.Remove("this");
-				variable.Remove("_");
-			}
+			return script.InvokeReturnAsIs(args);
 		}
 		internal static void SetPropertyFromTextUI(object target, PSPropertyInfo pi, string text)
 		{

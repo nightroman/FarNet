@@ -40,6 +40,7 @@ function global:New-TestRootExplorer
 			New-FarFile -Name 'Location' -Description 'Location explorer' -Attributes 'Directory'
 		}
 		AsExploreDirectory = {
+			param($0, $_)
 			switch($_.File.Name) {
 				'Flat' { New-TestFlatExplorer }
 				'Tree' { New-TestTreeExplorer 'HKCU:\Control Panel' }
@@ -48,7 +49,8 @@ function global:New-TestRootExplorer
 			}
 		}
 		AsCreatePanel = {
-			New-Object FarNet.Panel $this -Property @{
+			param($0, $_)
+			New-Object FarNet.Panel $0 -Property @{
 				Title = 'Root'
 				ViewMode = 'Descriptions'
 				SortMode = 'Unsorted'
@@ -68,25 +70,30 @@ function global:New-TestFlatExplorer
 		Location = 'Flat'
 		# Files are PowerShell functions
 		AsGetFiles = {
+			param($0, $_)
 			Get-ChildItem Function: | %{ New-FarFile -Name $_.Name -Description $_.Definition -Data $_ }
 		}
 		# Deletes selected functions
 		AsDeleteFiles = {
+			param($0, $_)
 			$_.Files | Remove-Item -LiteralPath { "Function:\$($_.Name)" }
 		}
 		# To edit, view and [CtrlQ] the function definition
 		AsGetContent = {
-			$_.CanSet = $this.AsSetText -ne $null # for testing
+			param($0, $_)
+			$_.CanSet = $0.AsSetText -ne $null # for testing
 			$_.UseText = $_.File.Data.Definition
 			$_.UseFileExtension = '.ps1'
 		}
 		# Updates the function when it is edited
 		AsSetText = {
+			param($0, $_)
 			Set-Content "Function:\$($_.File.Name)" ($_.Text.TrimEnd())
 		}
 		# The panel
 		AsCreatePanel = {
-			New-Object FarNet.Panel $this -Property @{
+			param($0)
+			New-Object FarNet.Panel $0 -Property @{
 				Title = 'Flat: Functions'
 			}
 		}
@@ -105,19 +112,22 @@ function global:New-TestTreeExplorer($Path)
 		Location = $Path
 		# The files represent file system directories and files
 		AsGetFiles = {
-			Get-ChildItem $this.Location | %{
+			param($0, $_)
+			Get-ChildItem $0.Location | %{
 				New-FarFile $_.PSChildName -Attributes 'Directory' -Description "$($_.Property)" -Data $_
 			}
 		}
 		# Gets another explorer for the requested directory
 		AsExploreDirectory = {
+			param($0, $_)
 			$_.NewPanel = $true
 			New-TestTreeExplorer $_.File.Data.PSPath
 		}
 		# The panel
 		AsCreatePanel = {
-			New-Object FarNet.Panel $this -Property @{
-				Title = "Tree: $($this.Location)"
+			param($0, $_)
+			New-Object FarNet.Panel $0 -Property @{
+				Title = "Tree: $($0.Location)"
 			}
 		}
 	}
@@ -135,31 +145,37 @@ function global:New-TestPathExplorer($Path)
 		Location = $Path
 		# The files represent file system directories and files
 		AsGetFiles = {
-			Get-ChildItem -LiteralPath $this.Location | New-FarFile
+			param($0)
+			Get-ChildItem -LiteralPath $0.Location | New-FarFile
 		}
 		# Gets another explorer for the requested directory
 		AsExploreDirectory = {
+			param($0, $_)
 			New-TestPathExplorer $_.File.Data.FullName
 		}
 		# Gets the root explorer
 		AsExploreRoot = {
-			New-TestPathExplorer ([IO.Path]::GetPathRoot($this.Location))
+			param($0, $_)
+			New-TestPathExplorer ([IO.Path]::GetPathRoot($0.Location))
 		}
 		# Gets the parent explorer or nothing
 		AsExploreParent = {
-			$path = [IO.Path]::GetDirectoryName($this.Location)
+			param($0, $_)
+			$path = [IO.Path]::GetDirectoryName($0.Location)
 			if ($path) {
 				New-TestPathExplorer $path
 			}
 		}
 		# To edit, view and [CtrlQ]
 		AsGetContent = {
+			param($0, $_)
 			$_.CanSet = $true
-			$_.UseFileName = Join-Path $this.Location $_.File.Name
+			$_.UseFileName = Join-Path $0.Location $_.File.Name
 		}
 		# Updates the panel title when explorers change
 		AsEnterPanel = {
-			$_.Title = "Path: $($this.Location)"
+			param($0, $_)
+			$_.Title = "Path: $($0.Location)"
 		}
 	}
 }
@@ -174,29 +190,34 @@ function global:New-TestLocationExplorer($Path)
 		Location = $Path
 		# The files represent file system directories and files
 		AsGetFiles = {
-			Get-ChildItem -LiteralPath $this.Location | %{
+			param($0, $_)
+			Get-ChildItem -LiteralPath $0.Location | %{
 				New-Object FarNet.SetFile $_, $false
 			}
 		}
 		# Gets another explorer for the requested location
 		AsExploreLocation = {
-			$Path = if ($_.Location.Contains(':')) { $_.Location } else { Join-Path $this.Location $_.Location }
+			param($0, $_)
+			$Path = if ($_.Location.Contains(':')) { $_.Location } else { Join-Path $0.Location $_.Location }
 			New-TestLocationExplorer $Path
 		}
 		# Gets the parent explorer or nothing
 		AsExploreParent = {
-			$path = [IO.Path]::GetDirectoryName($this.Location)
+			param($0, $_)
+			$path = [IO.Path]::GetDirectoryName($0.Location)
 			if ($path) {
 				New-TestLocationExplorer $path
 			}
 		}
 		# Gets the root explorer
 		AsExploreRoot = {
-			New-TestLocationExplorer ([IO.Path]::GetPathRoot($this.Location))
+			param($0, $_)
+			New-TestLocationExplorer ([IO.Path]::GetPathRoot($0.Location))
 		}
 		# Updates the panel title when explorers change
 		AsEnterPanel = {
-			$_.Title = "Location: $($this.Location)"
+			param($0, $_)
+			$_.Title = "Location: $($0.Location)"
 		}
 	}
 }

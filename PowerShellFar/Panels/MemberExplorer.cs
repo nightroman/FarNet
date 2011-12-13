@@ -106,9 +106,9 @@ namespace PowerShellFar
 						{
 							value = pi.Value;
 						}
-						catch (RuntimeException)
+						catch (Exception e) //?????
 						{
-							continue;
+							value = string.Format(null, "<ERROR: {0}>", e.Message);
 						}
 
 						SetFile file = new SetFile()
@@ -128,7 +128,7 @@ namespace PowerShellFar
 						// hidden by user
 						if (_HideMemberRegex != null && _HideMemberRegex.IsMatch(file.Name))
 							file.IsHidden = true;
-						
+
 						// hidden due to column features
 						if (!file.IsHidden && datarow != null)
 						{

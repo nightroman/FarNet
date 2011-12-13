@@ -50,7 +50,7 @@ function global:Reformat-Selection-
 	# get the selected lines or the current line
 	$lines = $Editor.SelectedLines
 	if (!$lines.Count) {
-		$line = $Editor[-1]
+		$line = $Editor.Line
 		$line.SelectText(0, $line.Length)
 		$lines = @($line)
 	}

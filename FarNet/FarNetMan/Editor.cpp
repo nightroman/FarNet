@@ -1063,6 +1063,11 @@ ILine^ Editor::default::get(int index)
     return gcnew EditorLine(index);
 }
 
+ILine^ Editor::Line::get()
+{
+    return gcnew EditorLine(-1);
+}
+
 void Editor::RemoveAt(int index)
 {
 	Edit_RemoveAt(index);

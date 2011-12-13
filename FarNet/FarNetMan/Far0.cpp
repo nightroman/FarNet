@@ -757,23 +757,24 @@ void Far0::AsProcessSynchroEvent(int type, void* /*param*/)
 	if (type != SE_COMMONSYNCHRO)
 		return;
 
+	Action^ jobs = nullptr;
 	WaitForSingleObject(_hMutex, INFINITE);
 	try
 	{
-		if (!_jobs)
-			return;
-
 		//! handlers can be added during invoking
-		Action^ jobs = _jobs;
+		jobs = _jobs;
 		_jobs = nullptr;
-
-		// invoke
-		Log::Source->TraceInformation("AsProcessSynchroEvent: invoking job(s): {0}", gcnew Works::DelegateToString(jobs));
-		jobs();
 	}
 	finally
 	{
 		ReleaseMutex(_hMutex);
+	}
+
+	// invoke out of the lock
+	if (jobs)
+	{
+		Log::Source->TraceInformation("AsProcessSynchroEvent: invoking job(s): {0}", gcnew Works::DelegateToString(jobs));
+		jobs();
 	}
 }
 

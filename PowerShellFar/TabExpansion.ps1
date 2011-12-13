@@ -144,11 +144,11 @@ function global:TabExpansion
 			}
 			if ($cmd) {
 				# its info
-				$cmd = @(Get-Command -CommandType 'Alias,Function,Filter,Cmdlet,ExternalScript' $cmd)[0]
+				$cmd = @(Get-Command $cmd -ErrorAction Stop)[0]
 
 				# resolve an alias
 				while($cmd.CommandType -eq 'Alias') {
-					$cmd = @(Get-Command -CommandType 'Alias,Function,Filter,Cmdlet,ExternalScript' $cmd.Definition)[0]
+					$cmd = @(Get-Command $cmd.Definition -ErrorAction Stop)[0]
 				}
 
 				# process parameters and emit matching
@@ -258,7 +258,7 @@ function global:TabExpansion
 			$patt_ = "$lastWord_*"
 
 			### Commands
-			foreach($_ in Get-Command $patt_ -CommandType 'Application,Cmdlet,Function,ExternalScript') {
+			foreach($_ in Get-Command $patt_ -CommandType 'Application,Cmdlet,Function,ExternalScript' -ErrorAction 0) {
 				$_.Name
 			}
 

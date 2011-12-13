@@ -72,6 +72,7 @@ $panel.Columns = @(
 
 # [F4] - edit the current record text
 $panel.AsEditFile = {
+	param($0, $_)
 	$name, $text = Edit-NameText $_.Data.Name $_.Data.Text 'TODO'
 	if ($name -eq $null) { return }
 
@@ -83,9 +84,9 @@ $panel.AsEditFile = {
 		$_.Data.Delete()
 	}
 
-	$this.SaveData()
-	$this.Update(0)
-	$this.Redraw()
+	$0.SaveData()
+	$0.Update(0)
+	$0.Redraw()
 }
 
 # exclude calculated column from members

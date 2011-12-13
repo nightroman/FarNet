@@ -63,6 +63,7 @@ public:
 	virtual property ExpandTabsMode ExpandTabs { ExpandTabsMode get() override; void set(ExpandTabsMode value) override; }
 	virtual property IEditorBookmark^ Bookmark { IEditorBookmark^ get() override; }
 	virtual property ILine^ default[int] { ILine^ get(int index) override; }
+	virtual property ILine^ Line { ILine^ get() override; }
 	virtual property IList<ILine^>^ Lines { IList<ILine^>^ get() override; }
 	virtual property IList<ILine^>^ SelectedLines { IList<ILine^>^ get() override; }
 	virtual property IList<String^>^ Strings { IList<String^>^ get() override; }

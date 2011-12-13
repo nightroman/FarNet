@@ -55,19 +55,22 @@ New-Object PowerShellFar.ObjectExplorer -Property @{
 	Data = $data
 	### Get processes
 	AsGetData = {
-		Get-Process $this.Data.Name -ErrorAction 0 | Where-Object $this.Data.Where
+		param($0)
+		Get-Process $0.Data.Name -ErrorAction 0 | Where-Object $0.Data.Where
 	}
 	### Delete processes
 	AsDeleteFiles = {
+		param($0, $_)
 		if (0 -eq $Far.Message('Kill selected process(es)?', 'Kill', 'OkCancel')) {
 			foreach($file in $_.Files) {
 				$file.Data.Kill()
-				$this.Cache.Remove($file)
+				$0.Cache.Remove($file)
 			}
 		}
 	}
 	### Open: show menu
 	AsOpenFile = {
+		param($0, $_)
 		$process = $_.File.Data
 		if ($process.HasExited) {
 			return
@@ -86,8 +89,9 @@ New-Object PowerShellFar.ObjectExplorer -Property @{
 	}
 	### Create panel
 	AsCreatePanel = {
-		New-Object PowerShellFar.ObjectPanel $this -Property @{
-			Title = $this.Data.Title
+		param($0, $_)
+		New-Object PowerShellFar.ObjectPanel $0 -Property @{
+			Title = $0.Data.Title
 			IdleUpdate = $true
 		}
 	}

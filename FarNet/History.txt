@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/
 
+= 4.6.0 =
+
+*) Asynchronous jobs
+Fixed potential deadlocks of posting jobs which post new jobs themselves.
+
+*) IEditor
+New property Line, the current line. The old way of getting the current line
+by the index -1 is deprecated, it does not work, for example, in PowerShell
+V3 CTP2. It still works in C# and PowerShell V2 but from now on this is not
+documented feature. It can be removed in future versions.
+
 = 4.5.1 =
 
 *) Some new .NET 3.5 features

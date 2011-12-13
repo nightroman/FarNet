@@ -1,7 +1,28 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
-= 4.5.2 =
+= 4.6.0 =
+
+Changes for PowerShell V3 CTP2. Adapted most of features. PSF should work in
+both V2 and V3. But some advanced scenarios may not work in V3 (yet) or may
+work differently. NOTE: it does not mean that use of V3 CTP2 is recommended.
+But it is possible.
+
+*) Scripts called by PSF
+Breaking change. Calling conventions changed. V3 CTP2 does not allow use of
+$this as it used to be in V2. Thus, instead of setting automatic variables
+$this and $_ before calling scripts PSF sends these data as arguments. All
+scripts should either use $args[0] instead of $this and $args[1] instead of $_
+or use param($x, $y), for example, "param($this, $_)" added as the first script
+line lets to keep scripts using $this and $_ not changed.
+
+*) Use of $$ is deprecated
+The easy to type variable $$ works funny in PowerShell V3. A bug or not, PSF
+scripts do not use this variable now.
+
+*) Member panel
+Properties that throw exceptions on getting values are now included with values
+like "<ERROR: exception message>".
 
 *) Cmdlet Assert-Far
 It used to require exactly Boolean values. Let's keep it simple, any type is
@@ -10,6 +31,8 @@ fine, just like for 'if'. It is checked now as LanguagePrimitives.IsTrue().
 *) Renamed scripts
 Connect-Mdb-.ps1 -> Connect-MSAccess-.ps1
 Connect-Sdf-.ps1 -> Connect-SqlCompact-.ps1
+
+*) Cosmetic changes in scripts.
 
 = 4.5.1 =
 

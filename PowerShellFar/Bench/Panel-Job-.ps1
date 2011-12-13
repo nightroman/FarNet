@@ -37,6 +37,7 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 	}
 	### Delete jobs (stop\remove)
 	AsDeleteFiles = {
+		param($0, $_)
 		$action = if ($_.Force) { 'Remove' } else { 'Stop\Remove' }
 		if ($Far.Message("$action selected jobs?", $action, 'OkCancel') -ne 0) {
 			return
@@ -54,6 +55,7 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 	#_110611_091139 Use of -ErrorAction 0 allows getting all errors.
 	# NOTE: InvocationInfo is null in errors.
 	AsGetContent = {
+		param($0, $_)
 		Receive-Job -Job $_.File.Data -Keep -ErrorAction 0 -ErrorVariable err > $_.FileName
 		if ($err) {
 			$msg = $err | %{ "$_" } | Out-String
