@@ -112,7 +112,8 @@ $Panel.Open($AsChild)
 
 ### [Enter] handler ([CtrlPgDn] is for members)
 $Panel.AsOpenFile = {
-	$data = $this.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1']
+	param($0, $_)
+	$data = $0.Data['66e6fa15-150f-450e-baa1-e7e0bf19c6e1']
 	$DbProviderFactory = $data.DbProviderFactory
 	$DbConnection = $data.DbConnection
 	$row = $_.File.Data

@@ -13,8 +13,8 @@ Set-StrictMode -Version 2
 Checks for the condition(s) and stops the pipeline with a message if any condition is not evaluated to true.
 '@
 	description = @'
-If the assertion fails then a message is shown and the PipelineStoppedException exception is thrown after that.
-A running macro, if any, is stopped before showing the message.
+If the assertion fails then an error dialog is shown with several options.
+A running macro, if any, is stopped before showing the dialog.
 '@,
 	@'
 If the message Title is provided then just a simple message is shown on failures, all the assertion details are omitted.

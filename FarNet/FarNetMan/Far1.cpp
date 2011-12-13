@@ -286,7 +286,7 @@ ILine^ Far1::Line::get()
 	case FarNet::WindowKind::Editor:
 		{
 			IEditor^ editor = Editor;
-			return editor[-1];
+			return editor->Line;
 		}
 	case FarNet::WindowKind::Panels:
 		{

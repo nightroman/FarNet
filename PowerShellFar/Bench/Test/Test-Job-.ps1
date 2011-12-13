@@ -167,12 +167,15 @@ Assert-Far @(
 	$job.Output[0] -eq 'Test of Write-Output'
 )
 
-# Error
-Assert-Far @(
-	$job.Error.Count -eq 3
-	$job.Error[0].ToString() -eq 'Cannot invoke this function because the current host does not implement it.'
-	$job.Error[1].ToString() -eq 'Test of Write-Error 1'
-)
+# Errors
+Assert-Far ($job.Error.Count -eq 3)
+$4 = $job.Error[0].ToString()
+Assert-Far (
+	$4 -like '*the host program or the command type does not support user interaction*' -or `
+	$4 -eq 'Cannot invoke this function because the current host does not implement it.'
+) "Actual [[$4]]."
+$4 = $job.Error[1].ToString()
+Assert-Far ($4 -eq 'Test of Write-Error 1') "Actual [[$4]]."
 
 # Debug
 Assert-Far @(

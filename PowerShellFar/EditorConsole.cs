@@ -245,9 +245,9 @@ namespace PowerShellFar
 							{
 								e.Ignore = true;
 								if (Runspace == null)
-									EditorKit.ExpandCode(Editor[-1]);
+									EditorKit.ExpandCode(Editor.Line);
 								else
-									ExpandCode(Editor[-1]);
+									ExpandCode(Editor.Line);
 
 								Editor.Redraw();
 							}
@@ -259,10 +259,10 @@ namespace PowerShellFar
 						if (e.Key.CtrlAltShift == ControlKeyStates.None)
 						{
 							// [Esc]
-							if (IsLastLineCurrent && Editor[-1].Length > 0)
+							if (IsLastLineCurrent && Editor.Line.Length > 0)
 							{
 								e.Ignore = true;
-								ILine line = Editor[-1];
+								ILine line = Editor.Line;
 								line.Text = string.Empty;
 								line.Caret = 0;
 								Editor.Redraw();
@@ -278,7 +278,7 @@ namespace PowerShellFar
 							if (!IsLastLineCurrent)
 								return;
 
-							ILine curr = Editor[-1];
+							ILine curr = Editor.Line;
 							if (curr.Caret != curr.Length)
 								return;
 
@@ -311,7 +311,7 @@ namespace PowerShellFar
 							if (History.Cache == null)
 							{
 								// don't lose not empty line!
-								if (Editor[-1].Length > 0)
+								if (Editor.Line.Length > 0)
 									return;
 								History.Cache = History.ReadLines();
 								History.CacheIndex = History.Cache.Length;
@@ -359,7 +359,7 @@ namespace PowerShellFar
 							}
 
 							e.Ignore = true;
-							ILine curr = Editor[-1];
+							ILine curr = Editor.Line;
 							curr.Text = code;
 							curr.Caret = -1;
 							Editor.Redraw();
@@ -374,7 +374,7 @@ namespace PowerShellFar
 							if (!IsLastLineCurrent)
 								return;
 
-							ILine curr = Editor[-1];
+							ILine curr = Editor.Line;
 							if (curr.Length > 0)
 								return;
 
@@ -429,7 +429,7 @@ namespace PowerShellFar
 		internal void Invoke()
 		{
 			// current line and script, skip empty
-			ILine curr = Editor[-1];
+			ILine curr = Editor.Line;
 			string code = curr.Text;
 			if (code.Length == 0)
 				return;

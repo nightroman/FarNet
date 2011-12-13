@@ -20,7 +20,7 @@ namespace PowerShellFar
 		#region OpenFile
 		/// <summary>
 		/// Gets or sets the script to open a file (e.g. on [Enter]).
-		/// Variables: <c>$this</c> is this panel, <c>$_</c> is <see cref="OpenFileEventArgs"/>.
+		/// Arguments: 0: this panel, 1: <see cref="OpenFileEventArgs"/>.
 		/// </summary>
 		public ScriptBlock AsOpenFile { get; set; }
 		/// <summary>
@@ -87,7 +87,7 @@ namespace PowerShellFar
 		#region EditFile
 		/// <summary>
 		/// <see cref="UIEditFile"/> worker.
-		/// Variables: <c>$this</c> is this panel, <c>$_</c> is the <see cref="FarFile"/>.
+		/// Arguments: 0: this panel, 1: <see cref="FarFile"/>.
 		/// </summary>
 		public ScriptBlock AsEditFile { get; set; }
 		/// <summary>
@@ -106,7 +106,7 @@ namespace PowerShellFar
 		#region ViewFile
 		/// <summary>
 		/// <see cref="UIViewFile"/> worker.
-		/// Variables: <c>$this</c> is this panel, <c>$_</c> is the <see cref="FarFile"/>.
+		/// Arguments: 0: this panel, 1: <see cref="FarFile"/>.
 		/// </summary>
 		public ScriptBlock AsViewFile { get; set; }
 		/// <summary>
@@ -125,7 +125,7 @@ namespace PowerShellFar
 		#region ViewAll
 		/// <summary>
 		/// Gets or sets the script to show all files information (e.g. on [F3] on the dots).
-		/// Variables: <c>$this</c> is this panel.
+		/// Arguments: 0: this panel.
 		/// </summary>
 		public ScriptBlock AsViewAll { get; set; }
 		/// <summary>

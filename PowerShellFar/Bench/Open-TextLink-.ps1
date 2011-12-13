@@ -69,7 +69,7 @@ if ($Text -match '\b(?<File>\w:[\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::(?<Te
 	### 'Opened' handler checks the line or searches the nearest by text
 	$line = $matches.Text.Trim()
 	$Editor.add_Opened({
-		if ($Editor[-1].Text.Trim() -eq $line) { return }
+		if ($Editor.Line.Text.Trim() -eq $line) { return }
 
 		$index1 = $Editor.Caret.Y - 1
 		$index2 = $index1 + 2

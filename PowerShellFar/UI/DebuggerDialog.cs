@@ -163,6 +163,8 @@ namespace PowerShellFar.UI
 
 		public DebuggerResumeAction Show()
 		{
+			A.InvokeCode("Get-PSBreakpoint -Variable daf01ff6-f004-43bd-b6bf-cf481e9333d3 | Remove-PSBreakpoint");
+
 			if (OnView == null)
 				_View.Disabled = true;
 			else

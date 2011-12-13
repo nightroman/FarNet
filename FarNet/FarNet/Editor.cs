@@ -125,17 +125,15 @@ namespace FarNet
 	public abstract class IEditor : IEditorBase
 	{
 		#region Line list
-
 		/// <summary>
 		/// Gets line count. At least one line always exists.
 		/// </summary>
 		/// <seealso cref="this[int]"/>
 		public abstract int Count { get; }
-
 		/// <summary>
-		/// Gets the line by its index or the current line by -1.
+		/// Gets the line by its index.
 		/// </summary>
-		/// <param name="index">Line index, -1 for the current line.</param>
+		/// <param name="index">Line index.</param>
 		/// <returns>The requested line.</returns>
 		/// <seealso cref="Count"/>
 		/// <seealso cref="Lines"/>
@@ -143,11 +141,8 @@ namespace FarNet
 		/// <remarks>
 		/// The returned line instance should be used instantly and should never be kept for future use.
 		/// The index is permanent, the instance always points to a line at this index even if it is invalid after text changes.
-		/// This can be effectively used for the current line (index is -1): the instance always points to the line where the caret is,
-		/// after any text changes, caret movement, setting text frames, and etc.
 		/// </remarks>
 		public abstract ILine this[int index] { get; }
-
 		/// <summary>
 		/// Adds the text to the end.
 		/// </summary>
@@ -158,26 +153,31 @@ namespace FarNet
 		/// last. But this way is actually rather expected for the editor.
 		/// </remarks>
 		public abstract void Add(string text);
-
 		/// <summary>
 		/// Removes all lines but one empty.
 		/// </summary>
 		public abstract void Clear();
-
 		/// <summary>
 		/// Inserts the text at the given line index.
 		/// </summary>
 		/// <param name="line">Line index.</param>
 		/// <param name="text">Text to be inserted.</param>
 		public abstract void Insert(int line, string text);
-
 		/// <summary>
 		/// Removes the line by its index.
 		/// </summary>
 		/// <param name="index">Index of the line to be removed.</param>
 		public abstract void RemoveAt(int index);
-
 		#endregion
+		/// <summary>
+		/// Gets the current editor line.
+		/// </summary>
+		/// <remarks>
+		/// The returned object is not a copy of the current line but rather a pointer to the current line.
+		/// If the caret moves to another line then the object operates on a new current line.
+		/// </remarks>
+		/// <seealso cref="IFar.Line"/>
+		public abstract ILine Line { get; }
 		/// <summary>
 		/// Gets the internal identifier.
 		/// </summary>
