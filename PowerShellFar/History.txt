@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 4.6.1 =
+
+This probably the last build for Far 2. Minor fixes in scripts and help.
+Update-FarManager.ps1 updates Far 3 by default.
+
 = 4.6.0 =
 
 Changes for PowerShell V3 CTP2. Adapted most of features. PSF should work in

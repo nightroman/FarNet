@@ -45,7 +45,7 @@ $ext = [IO.Path]::GetExtension($path)
 if ($ext -eq '.ps1') {
 	$env:script = $path
 	[Diagnostics.Process]::Start('powershell.exe', @"
--noexit . '$env:script'; Read-Host '[ENTER]'; exit
+-noexit . '$env:script'; Read-Host '[ENTER]'; `$Host.SetShouldExit(0)
 "@)
 	return
 }

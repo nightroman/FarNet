@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2011 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System;
@@ -35,7 +35,7 @@ namespace PowerShellFar
 	/// <example>
 	/// <code>
 	/// # Do some job on exiting
-	/// Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { $Far.Msg('See you', 'Exit', 'Gui') }
+	/// Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { $Far.Message('See you', 'Exit', 'Gui') }
 	/// </code>
 	/// </example>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightControl
-Copyright (c) 2010-2011 Roman Kuzmin
+Copyright (c) 2010-2012 Roman Kuzmin
 */
 
 using System.Configuration;
