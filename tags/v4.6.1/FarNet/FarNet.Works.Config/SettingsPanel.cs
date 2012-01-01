@@ -1,0 +1,105 @@
+﻿
+/*
+FarNet plugin for Far Manager
+Copyright (c) 2005-2011 FarNet Team
+*/
+
+using System;
+using System.Configuration;
+
+namespace FarNet.Works.Config
+{
+	class SettingsPanel : Panel
+	{
+		bool _isDirty;
+		SettingsExplorer _Explorer;
+		public SettingsPanel(SettingsExplorer explorer)
+			: base(explorer)
+		{
+			_Explorer = explorer;
+
+			Title = explorer.Location;
+			CurrentLocation = explorer.Location;
+
+			SortMode = PanelSortMode.Name;
+			ViewMode = PanelViewMode.AlternativeFull;
+
+			PanelPlan plan = new PanelPlan();
+			plan.Columns = new FarColumn[]
+			{
+				new SetColumn() { Kind = "O", Name = "Setting" },
+				new SetColumn() { Kind = "Z", Name = "Value" }
+			};
+			SetPlan(PanelViewMode.AlternativeFull, plan);
+		}
+		public override void UISetText(SetTextEventArgs args)
+		{
+			base.UISetText(args);
+
+			Update(true);
+			Redraw();
+
+			_isDirty = true;
+		}
+		void SetDefaults()
+		{
+			foreach (FarFile file in SelectedFiles)
+			{
+				var value = (SettingsPropertyValue)file.Data;
+				file.Description = SettingsExplorer.SetPropertyValueDefault(value);
+				SettingsExplorer.CompleteFileData(file, value);
+				_isDirty = true;
+			}
+
+			Update(false);
+			Redraw();
+		}
+		public override bool UIKeyPressed(int code, KeyStates state)
+		{
+			switch (code)
+			{
+				case VKeyCode.F1:
+
+					if (state == KeyStates.None)
+					{
+						Far.Net.ShowHelp(Far.Net.GetType().Assembly.Location, SettingsUI.HelpSettings, HelpOptions.None);
+						return true;
+					}
+
+					break;
+
+				case VKeyCode.Delete:
+
+					goto case VKeyCode.F8;
+
+				case VKeyCode.F8:
+
+					SetDefaults();
+					return true;
+			}
+
+			return base.UIKeyPressed(code, state);
+		}
+		public override bool SaveData()
+		{
+			if (_isDirty)
+			{
+				_Explorer.Settings.Save();
+				_isDirty = false;
+			}
+			return true;
+		}
+		protected override bool CanClose()
+		{
+			if (!SaveData())
+				return false;
+
+			return base.CanClose();
+		}
+		public override void UIClosed()
+		{
+			SaveData();
+			base.UIClosed();
+		}
+	}
+}

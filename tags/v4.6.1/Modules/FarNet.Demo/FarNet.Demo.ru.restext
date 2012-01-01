@@ -1,0 +1,10 @@
+﻿
+# Russian translation
+MenuTitle=Трассировка
+itemShowFile=&*. Просмотр трассировки
+itemListener=&0. Трассировка в файл
+itemWarning=&1. Предупреждения и ошибки
+itemInformation=&2. Информационная
+itemVerbose=&3. Подробная
+itemAll=&4. Полная
+BadResources=Это не файл ресурсов.

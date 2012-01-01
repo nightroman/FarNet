@@ -1,0 +1,45 @@
+$ErrorActionPreference = 'Stop'
+$InputObject
+$LastExitCode
+$MyInvocation.MyCommand.Definition
+$PSBoundParameters
+$PSCmdlet
+$PSCmdlet.GetResolvedProviderPathFromPSPath(#, [ref]$null)
+$PSCmdlet.GetUnresolvedProviderPathFromPSPath(#)
+$PSCmdlet.ParameterSetName
+$PSCmdlet.ShouldProcess(#)
+$PSScriptRoot
+&{process{#}}
+.{process{#}}
+@PSBoundParameters
+[Alias('#')]
+[AllowEmptyCollection()]
+[AllowEmptyString()]
+[AllowNull()]
+[CmdletBinding(#)]
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+[Parameter(#)]
+[ValidateCount(#, )]
+[ValidateLength(#, )]
+[ValidateNotNull()]
+[ValidateNotNullOrEmpty()]
+[ValidatePattern('#')]
+[ValidateRange(#, )]
+[ValidateScript({#})]
+[ValidateScript({[System.IO.Directory]::Exists($_)})]
+[ValidateScript({[System.IO.File]::Exists($_)})]
+[ValidateSet(#, )]
+Assert-Far (#)
+Assert-Far @(
+ConfirmImpact = 'High'
+DefaultParameterSetName = '#'
+function ScriptRoot { Split-Path $MyInvocation.ScriptName }
+HelpMessage = "#"
+Mandatory = $true
+ParameterSetName = '#'
+Position = #
+Set-StrictMode -Version 2
+SupportsShouldProcess = $true
+ValueFromPipeline = $true
+ValueFromPipelineByPropertyName = $true
+ValueFromRemainingArguments = $true

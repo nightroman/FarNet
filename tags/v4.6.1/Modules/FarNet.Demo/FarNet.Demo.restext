@@ -1,0 +1,13 @@
+﻿
+# Strings translated into other languages, see .ru.restext
+MenuTitle=Tracing
+itemShowFile=&*. View tracing
+itemListener=&0. Tracing to the file
+itemWarning=&1. Warnings and errors
+itemInformation=&2. Information
+itemVerbose=&3. Verbose
+itemAll=&4. All
+BadResources=This is not a resource file.
+
+# Invariant strings may be included to this file only
+SomeInvariantString={0}, {1}!
