@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2011 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using FarNet;

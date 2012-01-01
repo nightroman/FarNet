@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightWords
-Copyright (c) 2011 Roman Kuzmin
+Copyright (c) 2011-2012 Roman Kuzmin
 */
 
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2011 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -21,7 +21,7 @@ namespace PowerShellFar.Commands
 			// ignore empty or the rest of input
 			if (InputObject == null || _Panel != null)
 				return;
-			
+
 			// get the panel or a new member panel
 			var explorer = InputObject.BaseObject as Explorer;
 			if (explorer == null)

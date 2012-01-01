@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("FarDescription")]
 [assembly: AssemblyDescription("Far Manager file description tools.")]
-[assembly: AssemblyCopyright("Copyright (c) 2010-2011 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2010-2012 Roman Kuzmin")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]

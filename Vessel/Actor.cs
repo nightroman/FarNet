@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011 Roman Kuzmin
+Copyright (c) 2011-2012 Roman Kuzmin
 */
 
 using System;
@@ -101,7 +101,7 @@ namespace FarNet.Vessel
 		{
 			var result = new List<Info>();
 			var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			
+
 			for (int iRecord = 0; iRecord < _records.Count; ++iRecord)
 			{
 				// skip data from the future
@@ -279,7 +279,7 @@ namespace FarNet.Vessel
 		Result Train()
 		{
 			var Limit0 = Settings.Default.Limit0;
-			
+
 			// evidences once
 			var map = CollectEvidences();
 

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightWords
-Copyright (c) 2011 Roman Kuzmin
+Copyright (c) 2011-2012 Roman Kuzmin
 */
 
 using System;
@@ -67,7 +67,7 @@ namespace FarNet.RightWords
 
 			if (WordPattern == null || WordPattern.Trim().Length == 0)
 				throw new ModuleException("Empty word pattern is invalid.");
-			
+
 			try { new Regex(WordPattern, RegexOptions.IgnorePatternWhitespace); }
 			catch (ArgumentException ex) { throw new ModuleException("Invalid word pattern: " + ex.Message); }
 

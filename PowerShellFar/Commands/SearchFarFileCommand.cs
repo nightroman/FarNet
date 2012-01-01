@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2011 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -58,7 +58,7 @@ namespace PowerShellFar.Commands
 					return LanguagePrimitives.IsTrue(A.InvokeScriptReturnAsIs(Script, explorer, file));
 				};
 			}
-			
+
 			// go
 			if (Asynchronous)
 				search.InvokeAsync(panel);

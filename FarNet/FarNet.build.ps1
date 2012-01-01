@@ -40,7 +40,7 @@ task Install {
 	Copy-Item Far.exe.config $FarHome
 	# It may fail in Debug...
 	if ($Configuration -eq 'Release') {
-		Copy-Item FarNet.Settings\bin\Release\FarNet.Settings.xml, FarNet.Tools\bin\Release\FarNet.Tools.xml $FarHome
+		Copy-Item FarNet.Settings\bin\Release\FarNet.Settings.xml, FarNet.Tools\bin\Release\FarNet.Tools.xml $FarHome\FarNet
 	}
 }
 

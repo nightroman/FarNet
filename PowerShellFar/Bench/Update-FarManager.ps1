@@ -25,6 +25,22 @@
 	Finally the script checks and shows extra user items which do not exist in
 	the archive, e.g. user plugins and files and standard files excluded now.
 
+.Parameter FARHOME
+		Far directory needed if %FARHOME% is not defined and its location is
+		not standard.
+
+.Parameter Platform
+		Target platform: x86 or x64. Default: depends on the current process.
+
+.Parameter Version
+		Major Far version: 2 or 3.
+
+.Parameter Archive
+		Already downloaded archive where Far should be updated from.
+
+.Parameter Stable
+		Download and update only stable builds.
+
 .Example
 	# This command starts update in a new console and keeps it opened to view
 	# the output. Then it tells Far to exit because update will wait for this.
@@ -34,22 +50,19 @@
 [CmdletBinding()]
 param
 (
-	[string]
-	[ValidateScript({[System.IO.Directory]::Exists($_)})]
-	# Far directory; needed if %FARHOME% is not defined and its location is not standard.
+	[string][ValidateScript({[System.IO.Directory]::Exists($_)})]
 	$FARHOME = $(if ($env:FARHOME) {$env:FARHOME} else {"C:\Program Files\Far"})
 	,
-	[string]
-	[ValidateSet('x86', 'x64')]
-	# Target platform: x86 or x64. Default: depends on the current process.
+	[string][ValidateSet('x86', 'x64')]
 	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'})
 	,
+	[int][ValidateSet(2, 3)]
+	$Version = 3
+	,
 	[string]
-	# Already downloaded archive where Far should be updated from.
 	$Archive
 	,
 	[switch]
-	# Download and update only stable builds.
 	$Stable
 )
 
@@ -69,8 +82,8 @@ nothing is checked: OK
 #>
 if (!$Archive) {
 	### get URL: stable, platform
-	$URL = $(if ($Stable) {"http://www.farmanager.com/files/update2.php"} else {"http://www.farmanager.com/nightly/update2.php"})
-	$URL += $(if ('x86' -eq $Platform) {'?p=32'} else {'?p=64'})
+	$URL = if ($Stable) {"http://www.farmanager.com/files/update$Version.php"} else {"http://www.farmanager.com/nightly/update$Version.php"}
+	$URL += if ('x86' -eq $Platform) {'?p=32'} else {'?p=64'}
 
 	### look for updates (request the archive name)
 	Write-Host -ForegroundColor Cyan "Looking for updates at '$URL'..."

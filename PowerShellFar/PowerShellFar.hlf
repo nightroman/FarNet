@@ -51,7 +51,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.6.0#
+#PowerShellFar 4.6.1#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -86,7 +86,7 @@ $#Installation#
 #Requirements#
 
  - Far Manager 2.0.1807
- - Plugin FarNet 4.6.0
+ - Plugin FarNet 4.6.1
  - Windows PowerShell V2, V3
 
 
@@ -95,6 +95,10 @@ $#Installation#
 Set execution policy: start PowerShell.exe and type Get-ExecutionPolicy. If it
 is not Bypass, Unrestricted, or RemoteSigned then invoke Set-ExecutionPolicy
 with one of these values. Bypass is the fastest but the least secure.
+
+On x64 machines Set-ExecutionPolicy should be set twice: for x86 and x64. Use
+the Windows PowerShell start menu in order to start both consoles and set the
+policy in both.
 
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
 The location and name can be changed but it is recommended to use this way:
@@ -233,7 +237,7 @@ Commands with viewer output, prefix >>:
 
 Commands starting UI or background jobs normally use prefix >:
 
-	>: $Far.Msg("Hello world!")
+	>: $Far.Message("Hello world!")
 	>: Get-Process | Out-FarList -Text Name | Open-FarPanel
 	>: Start-FarJob { Remove-Item C:\TEMP\LargeFolder -Recurse -Force }
 

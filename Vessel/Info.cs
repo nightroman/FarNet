@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011 Roman Kuzmin
+Copyright (c) 2011-2012 Roman Kuzmin
 */
 
 using System;
@@ -68,7 +68,7 @@ namespace FarNet.Vessel
 		public int Group(int limit0, int factor1, int factor2)
 		{
 			var hours = Idle.TotalHours;
-			
+
 			if (hours < limit0)
 				return 0;
 
