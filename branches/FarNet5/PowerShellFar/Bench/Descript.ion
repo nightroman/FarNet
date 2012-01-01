@@ -1,0 +1,56 @@
+﻿Add-Path.ps1 Adds a directory path to the current process path.
+Clear-Session.ps1 Clears PowerShell session resources.
+Complete-Word-.ps1 Completes the current word in editor, command line or edit box.
+Connect-MSAccess-.ps1 Connects .mdb database and optionally shows tables in a panel.
+Connect-SqlCompact-.ps1 Connects .sdf database and optionally shows tables in a panel.
+Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a panel.
+Edit-FarDescription-.ps1 Edits pseudo multiline description in the editor.
+Export-FarSettings.ps1 Exports Far Manager settings.
+Format-Chart.ps1 Formats output as a table with the last chart column.
+Generate-Dialog-.ps1 Generates template code for the current dialog.
+Get-TextLink-.ps1 Gets a text link to the current editor line.
+Go-Head-.ps1 Goes to the head of panel files or directories.
+Go-Selection-.ps1 Goes to the current selection start\end position
+Go-To-.ps1 Goes to the specified file system item or a provider container
+Import-FarSettings.ps1 Imports Far Manager settings.
+Import-Panel-.ps1 Imports objects from files and shows them in a panel.
+Indent-Selection-.ps1 Indents or outdents selected lines in the editor
+Install-Macro-.ps1 Installs macros (example).
+Invoke-Editor-.ps1 Invokes a file from the current editor.
+Invoke-Environment.ps1 Invokes a command and imports its environment variables.
+Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk) in a few ways.
+Job-RemoveItem-.ps1 Job: remove the specified provider item(s).
+Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
+Menu-More-.ps1 Demo menu script, e.g. called on "More...", see Profile-.ps1.
+Open-TextLink-.ps1 Opens a text link contained in the text.
+Open-TODO-.ps1 TODO notes in XML files.
+Panel-BitsTransfer-.ps1 Starts or manages file transfer jobs in a panel.
+Panel-Database-.ps1 Panel SQL server databases.
+Panel-DbData-.ps1 Panel DataTable rows.
+Panel-DbTable-.ps1 Panel tables for a connection.
+Panel-Job-.ps1 Panel PowerShell background jobs that are running in the current session.
+Panel-Macro-.ps1 Panel and view/edit Far key macros
+Panel-Process-.ps1 Panel current processes.
+Panel-Property-.ps1 Panel PowerShell provider item properties.
+Profile-.ps1 Main startup code (example).
+Profile-Editor-.ps1 Editor startup code (example).
+Reformat-Selection-.ps1 Reformats selected lines or the current line in the editor
+Reindent-Selection-.ps1 Reindents selected lines or the current line.
+Remove-EmptyString-.ps1 Removes empty strings from a list.
+Remove-EndSpace-.ps1 Removes end spaces in object Text property
+Rename-FarFile-.ps1 Renames the current panel file or directory.
+Search-Regex-.ps1 Searches for a regex in files and work on results in a panel
+Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected one
+Select-FarFile-.ps1 Selects panel files by the specified filter.
+Set-Console.ps1 Sets console window properties.
+Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
+Show-History-.ps1 Shows command, folder or view history.
+Show-Hlf-.ps1 Shows .hlf help file.
+Show-Image.ps1 Shows one or more images in a GUI window.
+Show-KeyMap-.ps1 Shows Far hotkeys and macros by areas (HTML page).
+Show-KeyName-.ps1 Shows internal Far name of pressed keys.
+Start-Far.ps1 Starts Far and manages start and exit current directory.
+Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project file.
+Update-FarManager.ps1 Updates Far Manager and standard plugins.
+Update-FarNet.ps1 Updates FarNet products selectively from the project site.
+Watch-Output-.ps1 Watches commands output repeatedly in the editor.

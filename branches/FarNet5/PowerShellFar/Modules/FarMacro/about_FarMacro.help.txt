@@ -1,0 +1,33 @@
+﻿TOPIC
+    about_FarMacro
+
+SHORT DESCRIPTION
+    Far Manager macro provider and tools.
+    Author: Roman Kuzmin
+
+LONG DESCRIPTION
+
+PROVIDERS
+    The module includes the FarMacro provider. The FarMacro provider lets you
+    view the macros in PowerShell as though they were on a file system drive.
+
+    See:
+    >>: help FarMacro
+
+CMDLETS
+    Use Get-Help to get more details about the cmdlets.
+
+    New-FarMacro
+        Creates a new macro instance with empty or default option values.
+
+    Set-FarMacro
+        Installs one or more macros.
+
+    Edit-FarMacro
+        Opens the editor with the macro sequence for modification.
+
+SEE ALSO
+    >>: help FarMacro
+    >>: help -Full New-FarMacro
+    >>: help -Full Set-FarMacro
+    >>: help -Full Edit-FarMacro

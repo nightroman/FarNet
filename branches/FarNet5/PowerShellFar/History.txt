@@ -1,0 +1,4086 @@
+http://code.google.com/p/farnet/
+(+ FarNet and API documentation)
+
+= 4.6.1 =
+
+This probably the last build for Far 2. Minor fixes in scripts and help.
+Update-FarManager.ps1 updates Far 3 by default.
+
+= 4.6.0 =
+
+Changes for PowerShell V3 CTP2. Adapted most of features. PSF should work in
+both V2 and V3. But some advanced scenarios may not work in V3 (yet) or may
+work differently. NOTE: it does not mean that use of V3 CTP2 is recommended.
+But it is possible.
+
+*) Scripts called by PSF
+Breaking change. Calling conventions changed. V3 CTP2 does not allow use of
+$this as it used to be in V2. Thus, instead of setting automatic variables
+$this and $_ before calling scripts PSF sends these data as arguments. All
+scripts should either use $args[0] instead of $this and $args[1] instead of $_
+or use param($x, $y), for example, "param($this, $_)" added as the first script
+line lets to keep scripts using $this and $_ not changed.
+
+*) Use of $$ is deprecated
+The easy to type variable $$ works funny in PowerShell V3. A bug or not, PSF
+scripts do not use this variable now.
+
+*) Member panel
+Properties that throw exceptions on getting values are now included with values
+like "<ERROR: exception message>".
+
+*) Cmdlet Assert-Far
+It used to require exactly Boolean values. Let's keep it simple, any type is
+fine, just like for 'if'. It is checked now as LanguagePrimitives.IsTrue().
+
+*) Renamed scripts
+Connect-Mdb-.ps1 -> Connect-MSAccess-.ps1
+Connect-Sdf-.ps1 -> Connect-SqlCompact-.ps1
+
+*) Cosmetic changes in scripts.
+
+= 4.5.1 =
+
+*) Built-in cmdlets help
+- Fixed cmdlet HelpFile properties and related Get-Help problems.
+- `Get-Help`, `help`, `man` commands work with Far cmdlets just fine.
+- Removed workarounds `Get-FarHelp` and `help` from the internal profile.
+
+*) Popup-style list code names: replaced all `Intelli` with `Popup`.
+
+*) New-FarItem cmdlet does not accept pipeline input now.
+
+*) PowerShell.hrc for Colorer
+- Changed processing of '.' symbols.
+- Doc-comments are supported in line comments, too (as in block comments).
+- `task` is processed as `function` (including outlined list). It is not a
+PowerShell feature but it is really handy with `Invoke-Build` or `psake`:
+https://github.com/nightroman/Invoke-Build
+https://github.com/JamesKovacs/psake
+
+= 4.5.0 =
+
+The module is built for .NET 3.5, just like FarNet 4.5.0.
+A few new 3.5 features are used internally.
+
+= 4.4.20 =
+
+*) Initialize-Test-.ps1
+Changed the way of choosing and initializing the database provider for testing.
+It allows to work with available but not registered SQLite, for example.
+
+= 4.4.18 =
+
+*) TabExpansion
+- Improved performance of building the cache for type/namespace expansion
+- Added try/catch of assembly access exceptions (e.g. dynamic assemblies)
+- Other tweaks
+
+*) Invoking a script from the editor by [F5]
+As usual it sets the current directory and location to the script directory.
+Now it also restores them after work. Otherwise, with no ASCII plugins, the
+current directory was changing and locking its parent directories.
+
+*) Panel-Job-.ps1 ([F3], [CtrlQ])
+Job errors, if any, are shown in the message box separately. Then the job
+output is shown. (It used to show the first error and no output at all).
+Test-Panel-Job-.ps1 - the first job makes a demo error to show this.
+
+*) Start-MSBuild-.ps1
+Save and restores last used options for each project file. Data are stored in
+the local file Start-MSBuild-.ps1.clixml.
+
+*) Bugs
+Fixed null-ref issues on opening the error list from the PSF menu. There are
+errors with null invocation info, e.g. errors received from PS jobs.
+
+= 4.4.17 =
+
+*) Connect-SQLite-.ps1
+- Use the latest ADO.NET provider from http://system.data.sqlite.org
+- Foreign keys are enabled by connection strings, not by pragmas.
+
+*) PowerShell.hrc
+- Fix: '' in here-strings @'..''..'@ should not be treated as escaped '.
+
+= 4.4.16 =
+
+*) Technical build for FarNet
+*) "PowerShellFar.cfg" is not used by FarNet and removed from the module.
+
+= 4.4.15 =
+
+*) Housekeeping
+- Updated for FarNet changes in IFar.Post*() methods.
+- Code cleanup.
+
+*) Data panels
+- Fixed issues on invalid sort/filter user expressions.
+
+= 4.4.13 =
+= 4.4.14 =
+
+### Moving from registry to user profile directories
+
+*) Settings
+Main persistent settings are stored in a file and modified in the standard
+module settings panel opened from the new FarNet menu .NET \ Settings...
+
+The settings should be migrated manually. Old registry data can be removed.
+
+The file, just in case (but use the settings panel to view/edit), is:
+%APPDATA%\Far Manager\FarNet\PowerShellFar\Settings.binary
+
+*) Command history is now in the file:
+%LOCALAPPDATA%\Far Manager\FarNet\PowerShellFar\PowerShellFarHistory.log
+
+How to export the old history: go to that directory and invoke two commands:
+>: $key = Get-Item HKCU:\Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory
+>: $key.GetValueNames() | Sort-Object | %{ $key.GetValue($_) } | Set-Content PowerShellFarHistory.log -Encoding UTF8
+
+Export-FarSettings.ps1 and Import-FarSettings.ps1 do not care of old registry
+key data. The key should be removed manually after exporting data to the file.
+Also, Import-FarSettings.ps1 does not care of Vessel data, the latest version
+of Vessel uses new FarNet settings engine.
+
+*) $Psf
+- Removed AppData. Use $Psf.Manager.GetFolderPath().
+- Removed ShowSettings() and the dialog (the settings panel is used instead).
+
+### Other changes
+
+*) TabExpansion.ps1
+- Fixed attempt to add a dupe key to the type cache.
+
+*) Test-Panel-.ps1
+- Removed obsolete KeyPressing event code.
+
+*) 4.4.14
+Technical build for FarNet 4.4.14
+
+= 4.4.12 =
+
+*) Meta class
+- Cache of scripts created from strings (better performance on searches).
+
+= 4.4.11 =
+
+*) FarInventory module
+- Renamed Show-*Panel -> Open-*Panel
+
+= 4.4.10 =
+
+*) Search-FarFile cmdlet
+- Added parameters XFile and XPath, see FarNet history for details.
+
+*) FormatPanel (base of ObjectPanel and ItemPanel)
+- Better performance (avoided expensive repetitive calls of Get-FormatData).
+
+= 4.4.9 =
+
+*) DataPanel
+- New properties ViewSort, ViewRowFilter allow to set predefined sort/filter.
+- XML data may have 2+ tables, use TableName or choose a table from a menu.
+- New properties XmlFile, XmlReadMode, XmlSchema, XmlWriteMode, TableName.
+- Added control of the source XML file time in order to detect conflicts.
+- Hidden not calculated columns are excluded by default in the table panel.
+- Hidden, calculated, auto-increment fields are hidden in the member panel.
+- Removed redundant constructors, only the default is left.
+- Fix: [F1]\Filter: fixed default text in the input box.
+
+*) Connect-SQLite-.ps1
+Improved discovery of the SQLite assembly or provider. In particular, it is
+fine simply to have System.Data.SQLite.dll in the FarNet home directory (no
+installation and/or registration is needed in this case). Starting with 1.0.69
+(released a few days ago) SQLite.Interop.dll is also needed.
+
+*) Open-TODO-.ps1
+- Changed column/field names: Text -> Name, Memo -> Text, M -> T.
+- [F4] in the table opens the editor to edit Name and Text values together.
+If the result editor text is empty then the record is deleted.
+
+= 4.4.8 =
+
+*) DataPanel class, scripts, etc.
+
+[F1] menu
+- New Sort command; syntax is similar to ORDER BY in SELECT.
+- New Filter command with a logical expression, see Expression Syntax:
+http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression
+- Sort and Filter input boxes provide TabExpansion of columns, functions, etc.
+
+Raw DataTable support
+- Data are not from a database, they are in-memory data or imported from and
+exported to XML files. Constructors: DataPanel(DataTable), DataPanel(xmlFile),
+DataPanel(xmlSchema, xmlData).
+
+*) New script Open-TODO-.ps1
+
+This is a toy script but it can be useful, too, as it is or with changes.
+The goal is to show how to use:
+- DataTable with data stored in XML files;
+- DataPanel in order to view and modify that data.
+
+Example of Far Manager file association:
+- Mask: *TODO.xml
+- Command: >: Open-TODO- (Get-FarPath) #
+
+*) Out-FarPanel cmdlet
+If it is opened when a module panel is active then this panel is restored on
+the output panel exit (it used to be closed when the output panel starts).
+
+= 4.4.7 =
+
+*) DataPanel
+- [F1] menu: "Record limit", "Record offset" (offset N tells to skip N records).
+- [F3]/[CtrlQ]: noisy data members are excluded, only record fields are shown.
+- Fixed: [F7] + [Esc] + [No] used to show an error and close the panel.
+
+*) Panel-DbTable-.ps1
+
+For SQLite databases it now shows views in addition to tables.
+
+[Enter] on a table shows the input box with the select command to be used. As a
+result, you can: 1) cancel (why not?); 2) change the command; 3) execute other
+SQL command -- only SELECT commands are recommended, but if your command is
+"DROP TABLE X" then it is executed as well, IT'S YOUR CHOICE.
+
+Example (useful for SQLite): the table name is Files and the default command is
+"SELECT * FROM [Files]". If Files does not have an explicit key column then the
+opened table cannot be modified. This command: "SELECT rowid, * FROM [Files]"
+allows to add/delete/modify records (SQLite tables always have the rowid).
+
+= 4.4.6 =
+
+*) Connect-SQLite-.ps1
+If -Panel is specified and -Options is empty then it prompts for options.
+This might be needed for example in order to set "DateTimeFormat=Ticks".
+
+*) DataPanel
+- Number of shown records is limited now, real life tables can be huge.
+- Added help menu ([F1]) commands: Next range, Previous range, Record start
+number, Record maximum count (default is $Psf.Settings.MaximumPanelFileCount).
+
+*) FarNet menu: .NET \ Panels \ Decrease|Increase left column
+- In PSF it works in all list panels (MemberPanel, PropertyPanel),
+ObjectPanel-s and DataPanel-s with two columns, Search-FarFile and
+Search-Regex-.ps1 panels and etc. Use via macros or by pressing [Space].
+
+*) Bugs
+- Crash on stopping a script by CtrlBreak in some cases.
+- Could not enter nulls by [Shift{F8|Del}] in the list panel in some cases.
+
+= 4.4.5 =
+
+*) Updates for FarNet changes.
+
+*) Search-Regex-.ps1
+Fixed shown count of found matches.
+
+*) PowerShell.hrc
+Fix  http://code.google.com/p/farnet/issues/detail?id=5
+
+*) SQLite database support
+- Uses SQLite ADO.NET provider: http://sourceforge.net/projects/sqlite-dotnet2
+- New script Connect-SQLite-.ps1 allows to connect to a database and optionally
+to open it in the panel (assume Panel-DbData-.ps1 and Panel-DbTable-.ps1 are in
+the system path). The panel is not just a viewer, it allows to add, delete and
+edit database records.
+- Initialize-Test-.ps1 allows to create a test DB Tempdb.sqlite in %TEMP%.
+Then the command:
+>: Connect-SQLite-.ps1 -Panel $env:TEMP\Tempdb.sqlite
+.. opens the DB in the panel with two test tables ready to view or change data.
+
+= 4.4.4 =
+
+*) ItemPanel (PS providers)
+- It supports explorer features completely. As a result, search works fine.
+- Improved performance of explorers in search mode.
+
+*) Search-FarFile
+- Added -Depth parameter.
+- Added -Asynchronous switch: Tells to performs the search in the background and
+to open the result panel immediately. Found items are added dynamically.
+
+*) Scripts
+A numbers of small changes dealing with changed or new explorer/panel features.
+
+= 4.4.3 =
+
+*) Revised panels
+- Panels are based on explorers (but not all is used/enabled yet).
+- Lots of changes for the new engine not mentioned in here.
+- Removed UserPanel, use ObjectPanel instead.
+- Removed ObjectPanelOnDots, it's not useful.
+- SetSave() -> AsSaveData
+- SetLookup() -> Lookup (combined)
+- Fixed stack overflow on command line events
+
+*) Adapted scripts
+- Adapted all scripts that create panels to the new panel engine.
+
+*) Renamed cmdlets to follow guidelines, hopefully
+Start-FarPanel -> Open-FarPanel
+Start-FarEditor -> Open-FarEditor
+Start-FarViewer -> Open-FarViewer
+Start-FarSearch -> Search-FarFile
+
+= 4.4.2 =
+
+*) Start-FarSearch cmdlet
+Added parameter -Mask: classic Far mask including exclude and regex forms.
+-Mask is for simple searches by name(s). -Script can search by anything.
+See help:
+>>: Get-FarHelp Start-FarSearch
+
+= 4.4.2 =
+
+*) New cmdlet Start-FarSearch
+See help:
+>>: Get-FarHelp Start-FarSearch
+
+Run Test-Explorer-.ps1 and try Start-FarSearch:
+
+# Invoke from Flat or use -Recurse from Root:
+>: Start-FarSearch { $_.Data.Definition -match 'throw' }
+
+# Invoke from Root
+>: Start-FarSearch { $_.Name -like 'PowerShellFar.*' } -Recurse -Directory
+
+*) Test-Explorer-.ps1
+- "Tree" test case: use HKCU:\Software\Far2\Plugins as the root.
+- "Path" test case: use of TypeId and ExplorerTypeId on panel creation.
+- New test case "Location": example of an explorer with 'ExploreLocation'.
+
+*) MemberPanel, PropertyPanel
+- Replaced warnings on editing read only members with editor locks.
+
+= 4.4.1 =
+
+*) Test-Explorer-.ps1
+It shows how just added search in explorer panels works (see FarNet History.txt)
+
+*) Housekeeping (the core)
+Removed use of Notepad on [ShiftF4] in panels. It was introduced and needed in
+Far 1.x for Unicode data. Now it is useless, besides it is modal. [F4] rules.
+
+*) Housekeeping (scripts)
+AnyPanel
+- SetDelete -> AsDeleteFiles
+- SetEdit -> AsEditFile
+- SetOpen -> AsOpenFile
+- SetView -> AsViewFile
+- SetViewAll -> AsViewAll
+UserPanel
+- SetGetData -> AsFiles
+- SetWrite -> AsWriteFile
+
+= 4.4.0 =
+
+*) Revision of FarNet panels
+The PSF core and all the scripts are updated according to the new panel API.
+There are many small changes in all panel scripts, mostly renaming-like.
+
+*) PowerExplorer
+PowerExplorer is the fully functional explorer designed for scripts. Interface
+methods have related script block properties. Each method calls its script.
+
+Test-Explorer-.ps1 shows a complex data tree with different kinds of explorers.
+
+*) New-FarFile
+Accepts System.IO FileInfo and DirectoryInfo as input and attaches it as Data.
+All other properties are set automatically except Description.
+
+*) PowerShell.hrc for Colorer
+Arrays @() and hashtables @{} use the same style as (), {} blocks. It is now
+easier to see orphan symbols without matching pairs, that is, syntax mistakes.
+
+= 4.3.40 =
+
+*) Panel-Macro-.ps1
+Removed not needed call of Load().
+
+= 4.3.39 =
+
+*) Cmdlets Out-FarPanel, Start-FarPanel
+- Removed the ReverseSortOrder switch.
+- The SortMode parameter now includes *Reversed values.
+
+= 4.3.38 =
+
+*) Breaking synchronous commands
+[CtrlBreak] is used instead of [CtrlC] in order to break synchronous commands
+(including started from the global editor console). Asynchronous commands in
+local and remote editor consoles are still stopped by [CtrlC].
+
+*) Cmdlet Show-FarMessage
+New switch -Draw to draw message-like boxes.
+
+*) Test-ProgressForm-.ps1
+Added ProgressBox examples.
+
+= 4.3.37 =
+
+*) Removed the hotkey [Alt1] from the main menu
+- THIS CHANGE BREAKS MACROS: F11 <PSF> Alt1 ...
+- Use the CallPlugin() instead, see FarNet's Readme.txt. Update affected macros
+(and do not forget documentation/comments, too).
+- Updated Install-Macro-.ps1
+
+*) Better UI culture support, e.g. for scripts localization
+$PSUICulture and $Host.CurrentUICulture are internally connected to the currect
+culture of the PSF module. Thus, e.g. Import-LocalizedData may work with the
+current culture by default (it uses $PSUICulture).
+
+*) Cmdlet New-FarEditor
+Replaced parameter Data with Host. As far as a caller creates the editor, it is
+OK to consume the Host property: it is simpler to use than the Data.
+
+*) Cmdlets Out-FarPanel, Start-FarPanel
+Parameter Data is now IDictionary, not Object (due to FarNet changes).
+
+*) New role of FarNet IEditor.Data, IPanel.Data:
+Edit-FarDescription-.ps1, Panel-DbTable-.ps1, Search-Regex-.ps1,
+Watch-Output-.ps1
+
+*) Profile-.ps1
+Removed menu action 'Edit recent file' (it's done by Vessel, if used).
+
+= 4.3.36 =
+
+*) FarMacro module
+Moved the temporary files folder %APPDATA%\FarMacro to %TEMP%\FarMacro.
+
+= 4.3.35 =
+
+*) Added the [Atl1] hotkey to the PSF menus
+- Bare dialog to input and invoke code. It is designed for macros.
+- Install-Macro-.ps1 uses the hotkey [Alt1] instead of [1].
+- "F11 <PSF> Alt1" discards command output, if any.
+- "F11 <PSF> 1" may be used for macros with output.
+- See help "Command and macro examples".
+
+*) FarDescription module
+- Do not trim leading white spaces.
+- Test-Descript-.ps1 covers this change.
+
+*) Import-FarSettings.ps1
+Preserves some local data of the Vessel module.
+
+= 4.3.34 =
+
+*) Test-Dialog+.ps1
+Enabled for x64, too.
+
+= 4.3.33 =
+
+*) Reformat-Selection-.ps1
+Added *.R files to '#' line comments file group
+
+= 4.3.32 =
+
+*) Removed Go-Home-.ps1
+The code and commands are moved to FarNet.RightControl module. Updated
+Profile-.ps1 and Profile-Editor-.ps1 accordingly.
+
+*) Install-Macro-.ps1
+-- Added mouse macros for FarNet commands Decrease/Increase font size.
+-- Common\AltF11 is not used (to be used by another FarNet module).
+-- Shell\CtrlC to copy selected text.
+
+= 4.3.31 =
+
+*) PowerShell.hrc for Colorer
+Outlined: improved for functions, added for variables $global:X and $script:X
+(with prefix). This allows to insert functions and variable names from the
+outliner menu.
+
+*) Object panel columns a la Out-GridView in some cases:
+- Same primitive types: 1 column (TypeName)
+- Mixed types: 3 columns (##, Value, Type)
+Compare these two panels:
+>: '42', 'foo' | Out-FarPanel
+>: 42, 'foo' | Out-FarPanel
+
+*) Minor fix: removed misused IEditor.IsModified from editor scripts.
+
+*) Removed cmdlet Trace-Far
+It is not proven to be useful. Just call [Diagnostics.Trace]::Trace* methods
+directly (see Test-Stepper-.ps1) or use advanced .NET class TraceSource.
+As a result:
+- Test-Stepper+.ps1 does not trace (too much for a demo)
+- Test-Stepper-.ps1 shows use of standard .NET tracing
+
+= 4.3.30 =
+
+*) Select-Bookmark-.ps1
+-- Updated for changes in Far 4.3.30
+-- Stack bookmarks are included, too
+-- Fixed an old bug
+
+*) Install-Macro-.ps1
+Added a few utility macros working with editor bookmarks including the call to
+Select-Bookmark-.ps1
+
+NB: for correct work with bookmarks use Far 2.0.1667+
+
+= 4.3.29 =
+
+*) Search-Regex-.ps1
+It calls new $Far.UI.SetProgressFlash() when it is done.
+
+*) Import-Panel-.ps1
+Added support for the Txt format (tab delimited data files).
+
+= 4.3.28 =
+
+*) Test-Dialog+.ps1
+Added test of IsTouched property of edit-boxes and combo-edits.
+
+= 4.3.27 =
+
+*) Show-FarMessage cmdlet
+Allow null as the input text (show an empty message, do not fail).
+
+= 4.3.26 =
+
+*) TabExpansion.ps1
+-- Undone the previous change and fixed the original issues properly.
+
+*) New library FarNet.Tools.dll (see FarNet)
+These tools are created and used directly, not via $Far methods. For example to
+create a SubsetForm add the library and then call New-Object:
+  Add-Type -Path $env:FARHOME\FarNet\FarNet.Tools.dll
+  $form = New-Object FarNet.Tools.SubsetForm
+  ...
+
+*) New test/demo Test-ProgressForm-.ps1
+It demonstrates typical use cases of the new FarNet tool ProgressForm and
+explains in code comments the common 4-steps scenario.
+
+= 4.3.25 =
+
+*) See FarNet: IEditor.BeginAccess/EndAccess are removed. PSF core and all the
+scripts are updated accordingly.
+
+*) TabExpansion.ps1
+-- fixed minor issues on type/namespace expansion
+
+= 4.3.24 =
+
+*) $Psf.Settings.MaximumPanelFileCount sets the limit for panel files to be
+shown in an object panel without confirmation. Default is 1000, should be
+enough for data preview in most cases. Try:
+>: 1..10000 | Out-FarPanel
+
+*) Edit-TextLink-.ps1 is renamed to Open-TextLink-.ps1 and:
+-- Recognizes and opens URL addresses (by Start-Process, like Windows Run);
+-- Supports Select-String output format links: <File>:<Line>:<Text>
+(You may remove the old file Edit-TextLink-.ps1)
+
+*) Menu-More-.ps1: commands "Edit text link" and "Copy text link" moved to main
+PSF menu (see Profile-.ps1).
+
+*) Panel-Database-.ps1
+-- Uses sys.databases instead of sp_helpdb (it gets more useful info and shows
+some problem databases, too).
+
+= 4.3.23 =
+
+*) Update-FarNet.ps1
+-- This script replaces the old Update-PowerShellFar.ps1 (you may delete it).
+-- New feature: for any FarNet product it asks to confirm its download/update,
+so that you can skip not used packages and still use the script for updates of
+other packages.
+
+*) Edit-TextLink-.ps1
+Links can include character numbers in addition to line numbers:
+  C:\Program Files\Far\FarEng.lng(36,22)
+  At C:\Program Files\Far\FarEng.lng:36 char:22
+These links are opened at line 36 and char 22 (columns may depend on tabs)
+
+*) >>: commands output viewer
+-- Enabled switching to editor [F6] from the output viewer. Note: the tmp file
+is deleted on switching but Far prompts you to save data when editor exits.
+Switching to editor is used (for example) to open error sources from error
+messages using Edit-TextLink-.ps1
+
+= 4.3.22 =
+
+*) FarNet raw UI moved to $Far.UI
+-- PSF core and scripts now use this API and $Host.UI.RawUI, not Console.
+-- Your affected scripts may have to be updated. Also, do not call Console
+methods directly; instead, use FarNet or PSF APIs ($Far.UI or $Host.UI.RawUI).
+
+*) TabExpansion #-patterns
+{#|#xyz|xyz#}[Tab] patterns are expanded into custom patterns from the
+TabExpansion#.txt in the PSF home directory. Patterns are basically any
+strings, one per line. # in patterns is treated as the caret insertion
+point after expansion. These patterns can effectively cover not standard
+or rare but still useful cases.
+
+Examples:
+  #[Tab] -> all patterns
+  #*null -> [AllowNull()], [ValidateNotNull()], ...
+  $#[Tab] -> $LastExitCode, $MyInvocation.MyCommand.Definition, ...
+  [Al#[Tab] -> [Alias('#')], # is removed and the caret is set there
+
+If TabExpansion.ps1 is used in other hosts then this feature is used to expand
+command history entries there.
+
+*) Other changes
+-- PowerShell.hrc for Colorer -- Added operator ::.
+-- Assert-Far -- Added a few helper switches.
+-- Help -- Minor improvements.
+
+= 4.3.21 =
+
+NOTE: update manually (not by Update-PowerShellFar.ps1). This script and its
+parameters are redesigned to be less sensitive to future changes in archive
+list and archive contents.
+
+*) Far /w mode
+-- Fixed TabExpansion and Complete-Word-.ps1 menu position.
+
+*) TabExpansion
+-- Applications are also added to candidates (gcm * -type application). It's a
+little bit noisy, perhaps (that's why it was not done), but it looks like we
+better have these candidates in the list, too.
+
+*) Script debugging dialog
+-- New button [View]: Opens an external viewer to view the running command
+output. This action is not available for some commands, e.g. editor console
+commands.
+
+*) Command output (continued)
+-- The command "Invoke script from editor" ([F5] in the editor with .ps1 file)
+has the same effect as if it is invoked from the input command box (similar to
+>>: commands from the command line). Output, if any, is shown in the internal
+viewer when the command is done. External viewer is used only on debugging via
+[View], see above.
+
+= 4.3.20 =
+
+*) Transcription of command output
+
+Output of >: commands is written to the user screen and to the current session
+transcription file. The transcription file is in the %TEMP% directory, its name
+is "PowerShell_transcript.<timestamp>.txt"
+
+The transcription file is lazy opened, kept opened until the end of the session
+and deleted if Far exits normally.
+
+Use Show-FarTranscript [-External] to view the transcribed session output. Note
+that external show is especially useful on script debugging.
+
+Output of >>: commands is written to files:
+"PowerShell_transcript.<timestamp>.<pid>.<counter>.txt".
+Their life is shorter: they are deleted as soon as their viewers are closed.
+
+*) Update-PowerShellFar.ps1
+-- Adapted to the changed FarNet package.
+
+*) Generate-Dialog-.ps1
+-- update: replaced GetControl() with $dialog[]
+-- FarNet fix: generated button text should not have brackets
+
+*) PowerShell.hrc (Colorer)
+-- Added $Transcript to special PS variables (see Start-Transcript, -Path)
+
+*) Start-Far.ps1
+-- Start Far with /w, not /rc switch (Far 2.0.1566)
+
+= 4.3.19 =
+
+*) Commands output
+-- command line commands with prefixes '>:' write to the console;
+-- command line commands with prefixes '>>:' show output in viewers;
+-- command box commands always show output in viewers;
+-- removed $Psf.Settings.OutputPreference, there is nothing to configure;
+(Reminder: user menu and file association are command line commands, too)
+
+*) Console output
+-- fixed screen defects on UI in the middle of execution with output;
+-- added configurable output colors: $Psf.Settings.*ForegroundColor;
+-- echo commands using colors, do not echo commands with no output.
+
+Demo of new console output with all colors and message types:
+>: .\Test-Write.ps1
+
+*) Background jobs
+Starting jobs by prefix >>: was not really useful. The prefix is now reused for
+commands with viewer output (see above). Jobs should be started by usual prefix
+>: and the cmdlet Start-FarJob. Start-FarJob allows to specify arguments and
+switches; that is why job command prefixes are not enough.
+
+Note: you can define your own prefixes and commands and do whatever you want,
+see Test-RegisterCommand-.ps1 for the example. In particular you can define a
+prefix for invoking jobs, just like it was before. In contrast: features like
+>: and >>: cannot be defined from scripts.
+
+*) Member panel
+-- issue: input enum values should be case insensitive.
+
+= 4.3.18 =
+
+New option $Psf.Settings.OutputPreference
+-- Values: 'Default', 'Console'; it is normally set in the profile but it can
+be changed dynamically, too:
+>: $Psf.Settings.OutputPreference = ...
+Default: as it was before (the engine decides how to output);
+Console: output of commands from panels is written to the user screen. The
+good: output is colored (errors, warnings, etc.). The bad: only the tail of
+long output can be seen after invocation. Output can produce unwanted but
+harmless screen effects on commands with Far UI and on PowerShell debugging.
+
+= 4.3.17 =
+
+Table panels
+-- Automatic columns preserve property order for homogeneous sets
+-- Improved automatic column arrangement and fixed a bug there
+-- Automatic Name column with a null value used to fail
+
+Tracing tools
+-- Use of newer FarNet tracing tools.
+-- Cmdlet Trace-Far now has two parameter sets:
+*) Trace (old): uses Trace class (for trivial tracing);
+*) Event (new): uses TraceSource "FarNet" (new FarNet tracing).
+
+= 4.3.16 =
+
+Start-MSBuild-.ps1
+-- Use of MSBuild depending on existence: 4.0, else 3.5, else 2.0.
+
+= 4.3.15 =
+
+PSF console
+-- Editor title shows extra information about the session: "Local session" for
+the local async sessions, "<ComputerName> session" for remote sessions. The
+global session editor title is just a file name, as usual.
+
+FarNet changes
+-- $dialog.GetControl($i) -> $dialog[$i]
+
+Module FarInventory
+-- New function Show-EnvironmentPanel
+
+= 4.3.14 =
+
+Module FarInventory
+
+*) New functions: Show-InventoryPanel, Show-LogicalDiskPanel
+
+*) Corrected Get-Uninstall for x64 machines (registry data should be taken from
+more than one key). Note that in 32 bit process Get-Uninstall does not get info
+about installed 64 bit products; in 64 bit process Get-Uninstall should get
+information about 32 and 64 products.
+
+TabExpansion
+
+*) Added expansion of WMI class names immediately after Get-WmiObject, gwmi,
+Invoke-WmiMethod, Register-WmiEvent, Remove-WmiObject, Set-WmiInstance with
+optional -Class parameter. Examples:
+gwmi win[Tab]
+Get-WmiObject -Class *process[Tab]
+
+*) Fixed some cases with expressions like this:
+(Get-WmiObject Win32_Service -Filter 'Name="Spooler"').[Tab]
+
+*) TabExpansion does not hides errors now:
+(Get-WmiObject Win32_Service -Filter 'Name="Spooler").[Tab]
+
+*) TabExpansion shows an empty list now:
+(Get-WmiObject Win32_Service -Filter 'Name="Oops"').[Tab]
+
+Others
+
+*) Fix: script block as Expression in Columns in table panels did not work from
+panels created in PS modules (e.g. FarInventory). Also, the global variable $_
+is now removed after use.
+
+*) Fix: Reindent-Selection-.ps1: initial indent size was not always correct.
+
+*) Install-Macro-.ps1: corrected Common macros for the AutoCompletion area.
+
+= 4.3.13 =
+
+Table and list panels: new feature "Apply command": [CtrlG] opens an input box
+and prompts to enter a command to be invoked for each object $_ in the selected
+or the current objects in a table panel or the target object in a list panel.
+
+Table panel column meta information defined by hashtables: the key 'Type' which
+defines Far panel column kind is renamed to 'Kind', so that the name is the
+same as in the FarNet SetColumn class.
+
+List and table panels and scripts:
+*) Property ExcludeMembers (string[]) is replaced with ExcludeMemberPattern
+(string, regular expression pattern). This way is simpler and more flexible.
+*) Added new property HideMemberPattern for members to be included into the
+member list but shown with IsHidden flag set.
+
+Added parameters ExcludeMemberPattern and HideMemberPattern to the Out-FarPanel
+cmdlet (HideMemberPattern is used in the new module FarInventory to hide some
+noisy but still sometimes useful WMI properties).
+
+New module FarInventory. This is a script module with a bunch of functions. It
+contains just a few now, to be continued. See about_FarInventory.help.txt for
+details or run this:
+>: Import-Module FarInventory; help about_FarInventory
+
+Fixed: [CtrlR] in object panels with custom columns used to show an empty panel
+instead of refreshing the objects.
+
+= 4.3.12 =
+
+The PSF core and several scripts were adapted to the recent FarNet refactoring
+changes in editor and editor lines API. See FarNet history for details. Scripts
+working with that API have to be updated, more likely.
+
+In addition: $Psf property HotText was renamed into ActiveText (just to be more
+formal and to follow ILine.ActiveText). HotLines was removed as not really used.
+
+= 4.3.11 =
+
+DATA PREVIEW IN PANELS
+
+Improved preview of enumerable types and some frequently used types in panels.
+
+Simplified internal procedures of column set selection from properties. Default
+column sets now may be not the same as in previous versions. Preview is preview.
+
+Default column set selection in table panels: if there are too many properties
+(more than $Psf.Settings.MaximumPanelColumnCount) then best candidates for N, Z
+and O columns are moved to the left. Example:
+>: Get-WmiObject Win32_PnPEntity | Out-FarPanel
+.. the first columns are Name, Description, Status. Compare: in the old version
+the column Name was not shown at all.
+
+OTHER CHANGES
+
+Copy objects from an object panel to another object panel: the target panel
+should be updated automatically.
+
+= 4.3.10 =
+
+PanelKeyEventArgs.Preprocess was removed, see FarNet news. Affected scripts
+should be updated. Updated scripts in PSF: Search-Regex-.ps1, Test-Panel-.ps1.
+
+Test-Panel-.ps1: added demo handler of the new event KeyPressing.
+
+The $Psf.Settings.FormatEnumerationLimit (default is $FormatEnumerationLimit)
+is used for object panel columns and list panel values display. Example: invoke
+this command:
+>: Get-ChildItem hkcu:\ | Out-FarPanel
+.. and see that only a few first items is shown in the Property column. Compare
+with standard PowerShell output:
+>: Get-ChildItem hkcu:\
+.. results should look more or less the same (visually, of course, panel output
+is not text output, it shows live objects in the panel, not dead text).
+
+Fix: Module FarMacro: a few issues with paths with end '\'.
+
+= 4.3.8 =
+
+Improved TabExpansion of type and namespace names. Changed the global type
+cache $TabExpansionCache from DataTable to Hashtable. Some of improvements:
+-- more names are covered, this works now: [mi[Tab] -> [Microsoft. ...
+-- A dot is added automatically to namespace names (ready for the next [Tab])
+
+Other new TabExpansion features:
+[*...[Tab] -- global search: the type cache is not used; example: [*farmac[Tab]
+is expanded to type names with 'farmac'; it should always work after loading of
+the FarMacro module.
+[...*[Tab] -- '*' tells to update the global cache before expansion; example:
+[farmac*[Tab] should always work after loading of the FarMacro module; compare:
+[farmac[Tab] does not work if FarMacro is loaded after $TabExpansionCache
+creation.
+
+Export-FarSettings.ps1 and Import-FarSettings.ps1 use the file FarSettings.xml
+where PSF commands are exported to and imported from. On import PSF commands
+are merged with existing in the registry.
+
+Fix: Complete-Word-.ps1 was not updated for recent FarNet changes.
+
+= 4.3.7 =
+
+See FarNet History.txt for changes there, some scripts may be affected.
+
+Registry: PSF command history moved from "SavedDialogHistory\PowerShellFarHistory"
+to its module data location: "Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory"
+Move\rename it using two registry provider panels (or maybe just remove the old location).
+
+New cmdlet Assert-Far: the helper for testing and debugging. If the conditions
+fail it breaks execution and prompts for choices: one is to break into the PSF
+debugger (may continue), another is to open a script in the editor at the
+assertion line (stops).
+
+In fact, "Assert-Far $false" (same as "Assert-Far") is a hardcoded breakpoint.
+
+Assert-Far with the parameter -Title is designed for production scripts:
+it shows a simple message and stops in a friendly way without much noise:
+Assert-Far ($Far.Window.Kind -eq 'Editor') "Run from editor!" -Title "Oops"
+
+Debugger dialog:
+-- New button [Break] stops the pipeline (throws PipelineStoppedException).
+-- Replaced [Goto] with [Edit] and [Goto] buttons and fixed a [Goto] bug.
+
+FarMacro module: added support of Consts and Vars areas. Cmdlet Edit-FarMacro
+and script Panel-Macro-.ps1 also support these areas and allow to work there.
+All standard Far data types are supported: text, dword, qword.
+
+ObjectPanel: fix: when it is used as a temp panel for any objects it should be
+updated on copying objects from another panel.
+
+Panels: obsolete and not used property and parameter "AutoSize" was removed
+from panels and cmdlets. There are no plans to use it in the future: default
+columns are good enough for data preview.
+
+= 4.3.6 =
+
+UPDATE STEPS
+
+Remove the registry key "Far2\Plugins\FarNet" and make sure you do not start
+old FarNet after that, otherwise you will get never used FarNet registry data.
+
+The PowerShellFar registry settings moved from: "Far2\Plugins\PowerShellFar" to
+"Far2\Plugins\FarNet.Modules\PowerShellFar.dll". You should reset configuration
+or move the old registry properties, for example, using the registry panel.
+
+See FarNet History.txt for changes there, some scripts may be affected.
+
+= 4.3.5 =
+
+*) Module FarMacro: New cmdlet Edit-FarMacro allows to edit macro sequences in
+the editor with syntax coloring (Colorer plugin) and syntax checks on saving
+($Far.Macro.Check()). See also about_FarMacro.help.txt
+
+*) Script Panel-Macro-.ps1: it is now based on the FarModule completely. In
+particular the -Editor mode is removed, use new Edit-FarMacro cmdlet instead.
+
+= 4.3.4 =
+
+*) Panel Columns: new attribute Alignment: Alignment='Right' can be used
+together with positive column widths.
+
+*) Table panels: better adjustment of built-in table formats for narrow panels.
+For now we just drop preset widths and ignore alignments. Right aligned data
+are not funny any more after that, they are just shown as they are.
+
+*) Panel-Macro-.ps1: [F4] or "Panel-Macro- <key> <area>" (edit macro sequence
+in the editor): on exit from the editor IMacro.Check() is called to check the
+sequence, show errors and prompt to continue or discard. This is better than
+nothing. To be continued.
+
+= 4.3.3 =
+
+*) "PowerShellFar" item was removed from the disk menu for 3 reasons:
+1) It looks like many users are not happy due to extra items in disks;
+2) This menu has some known peculiarities for opening panels;
+3) This item can be added for example from the profile script:
+$null = $Far.RegisterTool($null, "PSF panel", { $Psf.ShowPanel() }, "Disk")
+
+*) Table panels: added simple procedures that "fix" built-in PS table formats
+for narrow panels, at least to make more columns visible. Right aligned data
+may look funny. Tip: use wider panels (80+) or set Columns by a script.
+
+*) FarNet: FarColumn, SetColumn: Width type changed from 'string' to 'int'.
+
+= 4.3.2 =
+
+TABLE PANELS: TRUE COLUMNS AND PS FORMATS
+
+All table panels show data in true columns now. Pseudo-columns of Format-Table
+are not used. Columns are defined: 1) manually by property Columns; 2) auto by
+object types and related PS formats (TableControl); 3) auto by properties for
+mono type object sets; 4) three column mode for mixed type object sets: index,
+value, and type.
+
+PS TableControl formats are now found heuristically by object types in the
+Get-FormatData list. Next versions will allow to specify formats manually.
+
+Option AutoSize is not used now but it is kept for the future. Built-in PS
+formats are good only if panel width is about 80, like default console (Far
+width is about 164 with two such panels). Next versions will be able to fix
+formats for too narrow panels dynamically.
+
+*) Removed obsolete properties and parameters FarName, ExcludeColumns from
+panel classes, cmdlets and all scripts. Only Columns or PS formats are used.
+
+*) New option $Psf.Settings.MaximumPanelColumnCount (3-13, default is 8).
+
+*) UserPanel: two methods SetGet*() are replaced with one SetGetData().
+
+OTHER CHANGES
+
+*) Provider panels (ItemPanel, FolderTree) are now more robust on internal PS
+core failures. They ignore faulty items and still return other items.
+
+*) Object panels on [F7] prompt a user to enter a command that gets new panel
+objects. Old action was actually almost useless (add an empty PSCustomObject).
+
+*) Object panels do not prompt on [Esc] any more. [Esc] closes panels.
+
+*) Removed cmdlets New-FarObjectPanel and New-FarUserPanel because they do not
+add any value to New-Object PowerShellFar.ObjectPanel, PowerShellFar.UserPanel
+
+*) Start-FarPanel cmdlet: renamed confusing parameter OrderBy to SortMode and
+View to ViewMode. Added these parameters to Out-FarPanel, too.
+
+*) Renamed $Psf.Settings.MaxHistoryCount -> MaximumHistoryCount.
+
+*) Fixed Rename-FarFile-.ps1: Added import of the FarDescription module.
+
+*) Removed Set-SynopsisDescription-.ps1 because it does not depend on Far.
+Instead, use a new function Update-FarDescriptionSynopsis exported by the
+FarDescription module (see its definition in FarDescription.psm1).
+
+= 4.3.1 =
+
+REFACTORING: PLUGINS -> MODULES AND OTHER NAME FIXES
+
+*) See breaking name changes in FarNet History.txt; your scripts that use
+changed names should be updated. In PSF, in addition:
+-- Show-FarMsg -> Show-FarMessage
+-- Removed script Debug-Msg-.ps1. In fact, it was not very useful since the
+debugger was implemented.
+
+*) Removed the term "plugin" from two properties\options. Rename:
+2 properties in $Psf.Settings (just in case if scripts use them) and
+2 registry values of HKEY_CURRENT_USER\Software\Far2\Plugins\PowerShellFar:
+-- PluginStartupCode -> StartupCode
+-- PluginStartupEdit -> StartupEdit
+
+POWERSHELL MODULES
+(Yes, modules, just like in FarNet, the same approach but for PowerShell)
+
+*) These modules are standard PowerShell modules. But they:
+-- are normally designed for FarNet and used with the PSF FarHost;
+-- do not use PowerShellFar directly (at least this is not recommended)
+
+*) Default Modules directory
+Directory "$($Psf.AppHome)\Modules" is added to $env:PSModulePath on loading,
+so that all modules in this directory are available at runtime. As usual,
+import them by Import-Module. In UI there is also the "Modules+" menu.
+
+NEW MODULE FARMACRO
+(Actually the first for the FarHost)
+
+Cmdlet New-FarMacro moved there from the PSF core (it's good to keep some not
+frequently used tools like this in modules: they are loaded only when needed).
+Switch -Install is removed, instead a new cmdlet is added: Set-FarMacro.
+
+New provider FarMacro with its default drive FarMacro:\. Provider panels work
+for FarMacro automatically: edit, copy, move, rename, create, remove, and etc.
+
+NOTE: The script Panel-Macro-.ps1 is not yet upgraded, it still works directly
+with "old" Registry provider, not yet with "modern" FarMacro. To be continued.
+
+For more details:
+>: Import-Module FarMacro; man about_FarMacro
+
+NEW MODULE FARDESCRIPTION
+(Actually works for any host)
+
+Though it is designed for Far it does not depend on Far or FarNet, it works in
+any PS host (i.e. you can work on descriptions using standard Console and ISE
+hosts or any others). But it uses Far description settings from the registry:
+HKEY_CURRENT_USER\Software\Far2\Descriptions
+
+All the code dealing with descriptions, including the Update-FarDescription
+cmdlet, moved to this module.
+
+For more details:
+>: Import-Module FarDescription; man about_FarDescription
+
+OTHER CHANGES
+
+*) Menu action "Help" did not work in the cmdline with PSF prefixes. Fixed.
+
+*) Provider panels: improvements for "unknown" not configured providers.
+
+*) Show-KeyMap-.ps1: updated for FarNet 4.3.0 changes; added the dialog key
+map; added more special keys; added area names to key names.
+
+*) Reformat-Selection-.ps1: added detection of comments for some known file
+types of PowerShell, Perl, Python, Ruby, PHP, SQL, Lua, Cmd, Basic.
+
+= 4.3.0 =
+
+NEW WAY FOR MACROS WITH EMBEDDED CODE
+
+*) "Invoke input code" dialog is now suitable for macros with embedded code.
+Namely, when a macro is in progress this action works in a special way:
+-- an input box is used instead of the dialog;
+-- commands are not stored in the history;
+-- commands output is discarded.
+Thus, now it is convenient to put some code into a macro.
+
+Example: [F10] (exactly!) in Panels: safe exit with background jobs check:
+F11 X 1 "$Far.Quit()" Enter
+(X is the PowerShellFar hotkey in the plugins menu)
+
+.. or hotkey independent version with native F10 if PSF is not installed:
+F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter 1 "$Far.Quit()" Enter $Else Esc F10 $End
+
+NEW FEATURE: SCRIPTING FAR EXIT
+
+*) A few tips about new method $Far.Quit() in addition to above examples. Some
+update, backup, restore commands waits for Far exit:
+-- Update-FarManager.ps1
+-- Update-PowerShellFar.ps1
+-- Export-FarSettings.ps1
+-- Import-FarSettings.ps1
+-- ...
+
+They all can be started from the command line or the user menu like this:
+>: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()
+("-noexit" is to keep a new console opened, it's up to you)
+
+POWERSHELL HELP IN EDITORS
+
+*) Main menu: new action "&-. Help": For the current code token in an editor
+line (editor, editbox, cmdline) it gets and shows in the viewer available help
+information. In code editors (*.ps1, *.psm1, *.psd1, *.psfconsole, input code
+boxes) this action is associated with [ShiftF1]. It is exposed for scripting as
+$Psf.ShowHelp().
+
+*) Script Get-Usage.ps1 is replaced with internal function Get-FarHelp and
+removed. Keep or remove it yourself. Old version will be in here:
+http://code.google.com/p/farnet/source/browse/tags/4.2.26/
+PowerShellFar/Bench/Get-Usage.ps1
+
+TWEAKS AND FIXES
+
+*) TabExpansion.ps1: reduced conflicts with internal variable names used by
+TabExpansion itself (e.g. "Line", this should work correctly: $Line.[Tab]).
+
+*) Macros:
+-- New cmdlet New-FarMacro;
+-- Script Panel-Macro-.ps1: updated;
+-- Script Install-Macro-.ps1: uses new cmdlet New-FarMacro.
+
+*) PowerShellFar.hrc for Colorer: missed operator -bnot and new New-FarMacro.
+
+*) Minor tweaks and new features in psfconsole UI.
+
+= 4.2.27 =
+
+*) Fixed unexpected effects with IsPath = true in some dialogs (4.2.26).
+
+*) At last implemented [Halt command] in core "prompt for choice" dialogs:
+-- Console host: [CtrlC] halts the command;
+-- ISE host: [Esc] halts the command;
+-- Far host: for compartibility with other hosts: [Esc] opens a dialog with
+extra options: [Halt command], [Cancel]. Example: press [Esc] after this:
+>: Remove-Variable Host -Confirm
+
+*) Removed $Psf.ShowCallStack() and calls of it. Why?
+1) In PS V2 there is a built-in cmdlet Get-PSCallStack.
+2) $Psf.ShowCallStack() is not found very useful but may have issues.
+3) It is a wrapper of a script, you can use the original script instead:
+http://code.google.com/p/farnet/source/browse/tags/4.2.26/
+PowerShellFar/Resources/Show-CallStack.ps1
+
+*) Test-CallStack-.ps1: it tells how to use the built-in cmdlet Get-PSCallStack
+instead of the removed $Psf.ShowCallStack().
+
+*) Menu-Favorites-.ps1: fix: [BS] did not work in empty submenus.
+
+= 4.2.26 =
+
+*) ETS (Extended Type System): in addition to FarDescription property: added
+code methods FarMoveTo() (files and directories) and FarCopyTo(), FarDelete()
+(files only). They call .NET methods MoveTo(), CopyTo(), Delete() and move,
+copy, delete the descriptions. Test-Descript-.ps1 shows how they all work.
+
+*) New script Rename-FarFile-.ps1 uses new FarMoveTo() to rename the current
+item on the file panel. New name can be defined as a string (boring, can be
+done manually) or a scriptblock (handy, can be in the user menu or a script)
+with $_ = the current FileInfo or DirectoryInfo, see an example there.
+
+*) PowerShellFar UI editboxes use new FarNet IEdit.IsPath where appropriate:
+"Invoke input code ~ Code", "Breakpoint ~ Script", "Export-Clixml ~ Path".
+
+*) New script Show-KeyName-.ps1: Shows internal Far names of pressed keys.
+Why? E.g. on writing macros some key names are difficult to remember.
+
+*) Invoke-Editor-.ps1: *.*proj files are started by Start-MSBuild-.ps1.
+
+*) Updates for FarNet 4.2.26:
+-- Generate-Dialog-.ps1: Password -> IsPassword.
+-- Install-Macro-.ps1, Panel-Macro-.ps1, Show-KeyMap-.ps1: updated names.
+
+= 4.2.25 =
+
+*) Test-Panel-.ps1: IPluginPanel event MakingDrectory is fixed in FarNet and
+the test now shows how actually this event is used.
+
+= 4.2.23 =
+
+*** Far 2.0.1311+ ***
+
+*) Win7 taskbar icon: PowerShellFar uses new FarNet methods SetProgressState()
+and SetProgressValue():
+-- Running commands and scripts normally show their activity during execution
+(at least Indeterminate icon state).
+-- Internal WriteProgress() calls SetProgressValue() to display percentage.
+As a result, the cmdlet Write-Progress updates the icon. NOTE: after use call
+Write-Progress -Completed: you are responsible for cleaning the icon.
+-- Finished PSF background jobs show green\red state depending on their state.
+So that if there are finished jobs you are notified via the icon in addition
+to the console title.
+
+*) Menu-Favorites-.ps1: [Space]: It works as [Enter] but the menu is not closed
+after opening a file.
+
+*) PowerShell.hrc: + new V2 number suffixes: TB and PB (tera\peta bytes).
+
+= 4.2.22 =
+
+*) Cmdlet Find-FarFile: new parameters -Where and -Up: allow to go to the next
+(down\up) panel file which matches the specified -Where boolean scriptblock.
+See also new script Select-FarFile-.ps1.
+
+*) New script Select-FarFile-.ps1: Selects active or passive panel files by the
+specified scriptblock filter. See also Find-FarFile cmdlet with new parameters
+-Where and -Up.
+
+*) New script Menu-Favorites-.ps1: Shows Windows Favorites as a menu and
+invokes items. -Flat mode may be useful with [CtrlAltF] menu filter.
+
+*) Profile-.ps1: added call of Menu-Favorites-.ps1 to the PSF main menu.
+
+*) New script Test-Panel-Job-.ps1 to play with Panel-Job-.ps1.
+
+= 4.2.21 =
+
+*) FarNet: IPluginPanel: property DataComparison (class Comparison<object>) is
+replaced with easier to use and more natural property DataId (delegate Getter).
+PSF: DataComparison is replaced with DataId (scripts Panel-BitsTransfer-.ps1,
+Panel-Process-.ps1, cmdlet Start-FarPanel).
+
+*) [PowerShellFar.UserPanel]: method SetGetData() is replaced with two new:
+-- SetGetFiles() - basically it is exactly the same as the old SetGetData(); it
+is renamed to make it clear that scripts operate on panel files directly. The
+script Panel-Process-.ps1 still uses this way (mostly for demo).
+-- SetGetObjects() - this new method provides more natural way of getting data
+for panels: scripts simply return objects to be shown. See Panel-Job-.ps1,
+Panel-BitsTransfer-.ps1.
+
+*) New script Panel-Job-.ps1: Operates on PowerShell background jobs in a panel
+and updates these data periodically when idle. See comments for details.
+
+*) Removed script Panel-Shortcut-.ps1: Its functionality is now covered and
+extended by Invoke-Shortcut-.ps1 with the -Panel switch.
+
+Reminder for those who uses Update-PowerShellFar.ps1: read History.txt on
+updates, mind removed and renamed files: for example on this update you may
+want to remove Panel-Shortcut-.ps1 manually.
+
+= 4.2.20 =
+
+*) List panels (MemberPanel, PropertyPanel): [ShiftDel], [ShiftF8] assign null
+to selected properties (kind of "delete values"). It was not easy to enter
+nulls. To delete dynamic properties, as usual, use [Del], [F8].
+
+*) Object panel: in case of unknown objects it finds (heuristically) a name of a
+property for display, it tries: Name, Id, Key, *Key, *Name, *Id.
+
+*) Export-Clixml dialog (called on [CtrlS] in some PSF panels): the default
+encoding is Unicode, the same as in Export-Clixml cmdlet. BTW: PS help says the
+default is UTF8 but it looks like a mistake.
+
+*) PSF prompt dialog: enabled autocomplete from history because in latest Far
+it works more or less as expected (defects will be hopefully fixed soon).
+
+*) Update-FarManager.ps1 and Update-PowerShellFar.ps1 do not use a temp file
+for version requests, they download needed text directly.
+
+*) Invoke-Shortcut-.ps1: new switch -Panel: to view\edit shortcut properties in a
+panel. If you change data it asks you to save changes on exit or you can use
+[CtrlS] to save data at any moment.
+
+*) Tweaks in scripts and help.
+
+= 4.2.19 =
+
+CHRISTMAS-BOX FEATURE: AUTOMATED UPDATE (modified and hopefully improved)
+
+*) Archive structure: LICENSE, History.txt, Bench, Extras moved to the plugin
+folder "Plugins.NET\PowerShellFar".
+
+*) Folders Bench (scripts and demos) and Extras (for Colorer) are extracted to
+the plugin folder "Plugins.NET\PowerShellFar". It is decided that for a calling
+script it is easier to delete\move something after update than to extract extra
+items from downloaded archives.
+
+*) Script Update-PowerShellFar.ps1:
+-- It does not return version number anymore: with new approach it is useless.
+Output of the script should be ignored.
+-- If -FARHOME is UNC then that machine has to be configured for PS remoting.
+This allows to update remote machines safely (i.e. waiting for Far exit if it
+is running there).
+
+= 4.2.18 =
+
+CHRISTMAS-BOX FEATURE: AUTOMATED UPDATE
+
+This version is mostly designed for easy updates of PowerShellFar + FarNet +
+API help by a script. Not standard plugin locations and folder names are not
+supported. If you want to update everything easily then read both Readme.txt
+and ensure your locations and names are standard:
+
+STANDARD ITEMS IN %FARHOME%:
+FOLDERS
+-- Lib
+-- Plugins\FarNet
+-- Plugins.NET\PowerShellFar
+FILES
+-- Far.exe.config
+-- Plugins.NET\PowerShellFar.chm
+
+RELATED CHANGES AND NOTES
+
+*) Version numbers: as far as FarNet and PowerShellFar are always built and
+released together, from now on their version numbers will be the same.
+
+*) Archive changes: plugin files are now in "Plugins.NET\PowerShellFar", so
+that you should copy this folder to "%FARHOME%\Plugins.NET\PowerShellFar". The
+location and name can be changed but it is recommended to use exactly this way.
+
+*) New script Update-PowerShellFar.ps1: updates PowerShellFar + FarNet + API
+help from the site or already downloaded archives. Keep the last downloaded
+archives, then the script can be used simply to check for updates, it does
+nothing if files already exist. See the script for details.
+
+*) If you want other distributed files and folders to be updatable as well then
+create and use an extra script which calls Update-PowerShellFar.ps1 and then
+extracts extra files to your personal locations. Update-PowerShellFar.ps1
+returns actual version number that may be used to find out archive names.
+
+= 2.2.17 =
+
+*) Added section PROBLEMS AND SOLUTIONS to the Readme.txt; discribed a rare
+problem of loading PowerShell core in x86 Far on x64 machines and a possible
+workaround. The PSF error message points to this section as well.
+
+*) TabExpansion: added expansion of process names for a few *-Process cmdlets.
+
+= 2.2.16 =
+
+*) Tree panels (e.g. Folder tree): available view modes are:
+[Ctrl0] - view mode: tree and description columns (start mode).
+[Ctrl1] - view mode: tree column and description status.
+Note: any FarNet panel can switch full screen mode by FarNet menu command.
+
+= 2.2.15 =
+
+*) List panel: improved presentation and processing of properties of PSObject
+type (e.g. deserialized from .clixml properties are PSObject-s).
+
+*) Power panel: if an object "looks like" a full path of an existing file then
+[F3], [F4] allow to view, edit that file. This is by default, real actions may
+depend on a panel.
+
+*) New script Set-Console.ps1. It is the next version of this script:
+http://nightroman.spaces.live.com/blog/cns!F011223B604739FA!129.entry
+1) It can be called from any of these consoles: Far, PowerShell, or Cmd.
+2) In Far it must be invoked by PowerShell.exe, not by the PSF host.
+3) Do not use with console emulators.
+
+*) Update-FarManager.ps1: You can remove not used .hlf and .lng files from Far
+home; they will be also removed after updating from an archive.
+
+= 2.2.14 =
+
+*) Fixed external viewer bugs and temporary file issues (encoding, removal).
+Hmm, bugs were there for ages and nobody found them... Just in case: external
+viewer is used on [F5] = invoke scripts from editor in the current session and
+on debugging to be able to see output in an outside Far window because this Far
+window is used by the debugger dialog.
+
+*) Profile-.ps1: removed custom external viewer settings. Let's external viewer
+be really default by default (i.e. Far.exe /m /p /v ...).
+
+*) Invoke-Editor-.ps1: fixed invocation of .ps1 files. FYI: this way is very
+different from [F5]: a script is invoked outside of Far by PowerShell.exe, not
+by the Far host. So far it is done by a script, in contrast to built-in [F5].
+
+= 2.2.13 =
+
+*** Far 2.0.1209+ ***
+
+*) Description tools (FarDescription property, Update-FarDescription cmdlet)
+work according to Far 2.0.1206 (see changelog). After changing Far settings
+"ANSI by default" and "Save in UTF8" you should restart Far or save settings
+[ShiftF9] => PSF works with new settings.
+
+*) Edit-FarDescription-.ps1 saves an intermediate file in Unicode, so that data
+are not lost on convertion. Final description encoding depends on Far settings.
+
+= 2.2.12 =
+
+*) Extra error message on exceptions in the plugin user startup code (see
+configuration dialog). Otherwise it was not clear enough where an error was.
+Note: it is GUI, because initialization is performed in a background thread.
+
+*) ObjectPanel (and derived) supports Edit operation [F4] for MatchInfo items:
+an editor is opened at a match position and matched text is selected. What are
+these MatchInfo items? They are results of Select-String, so that you can do:
+>: dir | Select-String foo | Out-FarPanel
+or even slightly better:
+>: dir | Select-String foo | Out-FarPanel FileName, LineNumber, Line
+and [F4] on items opens an editor at the found match with its text selected.
+
+*) Removed event 'Exiting' from $Psf. In PS V2 there is a native way:
+>: Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { ... }
+This way works for any workspace where Register-EngineEvent is called, so that
+it can be used by background jobs (PSF and PS), async consoles (local and
+remote), and etc.
+
+*) Removed workaround $Psf.WrapEventHandler() and $Psf.WrapPanelEvent(). You
+should remove them from your panel scripts. If some problems still exist now
+(in PS V2) without them, please, report.
+
+*) PowerShell.hrc, Clear-Session.ps1: added yet missed automatic variables.
+
+*) Revised .hlf help, corrected obsolete information, added some new.
+
+= 2.2.11 =
+
+*) History:
+-- $Psf: .GetHistory() is replaced with .GetHistory(int count)
+-- Command Get-History: added parameter -Count, default is 32.
+-- Command Invoke-History: simply calls $Psf.ShowHistory().
+
+*) TabExpansion
+-- Fixed a few issues with #<pattern> (history expansion).
+-- cd x[tab] expands only folder names
+
+*) PowerShellFar.AnyPanel.ShowAsChild(<panel>): it is OK now to send null as
+<panel>, even if there is no active PSF panel (why not?): in this case it is
+the same as Show().
+
+= 2.2.10 =
+
+*) Output of invoked console applications is not written to the console but
+merged with other PS output. Thus, in most cases it is allowed now to use these
+commands in editor consoles and in background jobs directly with no tricks like
+"... | Out-Default". Still, as usual, applications operating on the console
+directly should not be called in PSF, run them in Far or Cmd.
+
+*) New FarNet.SetColumn (see FarNet) is used in the plugin code and in the
+scripts: see Test-Panel-.ps1, Search-Regex-.ps1.
+
+*) TabExpansion
+-- Revised and updated.
+-- Expands available module names right after 'Import-Module', 'ipmo',
+'Remove-Module', 'rmo', and optional '-Name'. E.g.:
+Import-Module b[Tab] -> BitsTransfer
+-- Expands #<pattern> as command history entries (not exactly the same as in
+PS because PSF history is different, e.g. #<id> is not supported).
+
+*) Added internal function Get-History: for now it simply returns all entries
+as strings. N.B.: for compatibility with PS history entries some code may use
+.ToString() instead of .CommandLine: then results are the same in PS and PSF.
+
+= 2.2.9 =
+
+*) This is the first version for just released PowerShell V2 RTM. Nothing is
+changed in the plugin for this; it is simply "officially tested" with V2 RTM.
+
+*) Invoking (see 2.2.8): if the plugin cannot set location or directory and a
+macro is in progress then instead of Far message boxes GUI message boxes are
+used, so that a macro is safely suspended and then, depending on a choice,
+stopped or resumed. GUI can be disabled in Far.exe.config but this is not
+recommended.
+
+*) Clear-Session.ps1: changed scenario of variable removal:
+-- updated the hardcoded exclude name list for PS V2
+-- an attribute is not a reason to keep a variable
+
+= 2.2.8 =
+
+*** Requires Far 2.0.1181+ and FarNet 4.2.8+ ***
+
+INVOKING USER COMMANDS AND SCRIPTS
+
+*) Before invoking: process current directory is set to $Far.ActivePath;
+provider location is usually set to $Far.ActivePath, too, but for provider
+panels (ItemPanel, FolderTree) it is set to their current location paths.
+
+*) After invoking: process current directory is restored. If it is not, please,
+report as a bug. Provider location is not restored (or is it really needed?).
+
+*) If the plugin cannot change provider location or current directory then it
+shows actual current location and directory and asks how to proceed. This is
+for safety: PowerShell commands can be dangerous if they are used incorrectly,
+for example when current paths are not what a user expects on invoking.
+
+OTHER CHANGES
+
+*) Show-Image.ps1: [Enter] switches maximized / normal state.
+
+= 2.2.7 =
+
+*) From now on the plugin sources are in the SVN repository together with the
+FarNet sources. Scripts are released as usual.
+
+*) A few weeks of work with Far 2.0.1145+ show confusing effects of difference
+between the current process directory and the active panel path. It is decided
+to sync these paths before calling PowerShell with user commands/scripts.
+
+*) New script Show-Image.ps1 for simple viewing of pictures. It is a standard
+PowerShell script, but in Far it is easier to use: associations, user menu. It
+is also an example of how to drive windows forms from PowerShell.
+
+*) Folder tree panel: hidden file system folders are processed in a standard
+Far way ([CtrlH]).
+
+*) Job list: fix: some jobs were not removed automatically from the list.
+
+*) Closing a panel together with parents by opening another panel: parent
+panels are notified (basically for correct disposal of their resources).
+
+*) Closing a panel together with parents by [ShiftEsc]: implemented in a right
+way: parent panels are asked before closing and notified after closing.
+
+*) Menu-More.ps1: removed the action "Sync the current directory". The same
+effect you now get on any PowerShell command, even empty.
+
+*) TabExpansion: this should work, too (e.g. in definition of a hashtable):
+Name = Split-Path -l[Tab]
+
+*) Internal: command execution engine migrated from the 'Pipeline' interface to
+the modern 'PowerShell' interface introduced in PS V2.
+
+= 2.2.6 =
+
+*) FarNet 4.2.6 introduces a useful feature: on Close() panels normally restore
+the original Far file panels state: the current and even selected items. All
+PSF panels get this feature automatically, no changes are needed. Still, some
+panels may be slightly updated (e.g. Search-Regex-.ps1 does not have to use
+ActivePath, it just calls Close()).
+
+*) Folder tree panel: fixed minor issues on closing, fixed incorrect current
+item after [CtrlPgUp]; added processing of [Ctrl\].
+
+*) Minor internal fixes and tweaks.
+
+= 2.2.5 =
+
+*) Menu "Snap-ins..." is replaced with "Modules+..." which shows available
+modules and registered snap-ins and allows to import/remove them to/from the
+session. Modules are new PowerShell V2 alternative of snap-ins; modules are
+basically easier to use, develop, and can be also written as scripts (*.psm1).
+
+*) Background jobs are now almost semantically the same as PS V2 jobs. Still,
+internally Far jobs are completely different and often more effective because
+of simpler implementation. Cmdlet Start-FarJob and class Job are upgraded with
+a few breaking changes. See API help for details and scripts Test-Job-.ps1,
+Search-Regex-.ps1, and the others with Start-FarJob.
+
+*) Test-Job-.ps1: upgraded old tests; added a few new tests to show various new
+scenarious. The very first test shows how to use parallel jobs and compares
+performance of 3 different scenarios:
+a) invoke two tasks one by one
+b) invoke same tasks as parallel Far jobs
+c) invoke same tasks as parallel PowerShell jobs
+
+*) Search-Regex-.ps1: option "Background input" was kind of broken since Far
+2.0.1145. Now we set the job PS location to the current in the default session
+before evaluating the input command.
+
+*) Improved and corrected internal procedures for editing various data
+(provider item content and property, object property value, and etc.).
+
+= 2.2.4.1 =
+
+*) Async editor consoles: fix: TabExpansion should work in the runspace of a
+console, not in the default runspace, because runspace states are completely
+different (location, commands, variables, and etc.).
+
+*) Directory Panels was not included into the sources by mistake.
+
+= 2.2.4 =
+
+EDITOR CONSOLES WITH NEW LOCAL OR REMOTE SESSIONS
+
+#Enter# (As usual)
+Opens a new or selected existing console file in the default global PowerShell
+session. Commands are invoked synchronously in the default global runspace. All
+consoles opened by [Enter] share the same workspace.
+
+#ShiftEnter# (New!)
+Opens a new or selected existing console file in a new local PowerShell
+session. Commands are invoked asynchronously in a private runspace.
+
+#CtrlEnter# (New!)
+Opens a new or selected existing console file in a new remote PowerShell
+session. Commands are invoked asynchronously in a private remote runspace. You
+are prompted to enter a computer name and a user domain\name. If a user name is
+specified then a password is also requested.
+
+MAIN ASYNCHRONOUS CONSOLE FEATURES
+
+An async console opens a separate runspace with its private session state:
+provider locations, variables, aliases, and many other settings.
+
+Commands are invoked asynchronously in background threads, so that console
+editors and Far itself are not blocked: you can switch to panels or other
+editors while a command is running. Moreover, you can open several async
+consoles, invoke parallel commands and still continue other work in Far.
+
+LIMITATIONS: objects $Far and $Psf are not exposed; cmdlets *-Far* are exposed
+but in fact you must not use them unless it is explicitly allowed; PowerShell
+UI should be avoided (Read-Host, Write-Progress, confirmations).
+
+EXAMPLE
+
+You can play for example with these "slow" commands with some output:
+
+1..1000 | %{ $_; Start-Sleep 1 }
+Get-ChildItem c:\ -Recurse | %{ $_; Start-Sleep 1 }
+
+Open a few async editor consoles (by [ShiftEnter]), run a command, switch
+between console editors and panels: you should see work of all commands in
+progress and Far is still available for other tasks. [CtrlC] in a console
+breaks the running command or you may simply exit the editor as usual, the
+command will be stopped internally.
+
+OTHER CHANGES
+
+*) Cmdlet Get-Credential works now due to implemented required host methods.
+Internally this is used for getting a password on opening a remote console.
+
+= 2.2.3 =
+
+*) Adapted to Far 2.0.1145+: Far does not set the current directory to the
+active panel path (a step to long paths support). Still, remember that .NET
+itself and many other external tools do not like long paths. _090929_061740
+
+*) Menu-More-.ps1: added a few demo (but still useful) commands for panels
+including "Set the current directory" which may be needed in Far 2.0.1145+.
+
+*) ObjectPanel: formatting of trivial types: if the first object has a trivial
+type (string, enum, and etc.) then trivial formatting is used for all objects
+(assuming that all objects are trivial).
+
+*) Editor consoles default code page is Unicode now (Far 2.0.1144+).
+
+*) TabExpansion.ps1 expands start '.' or '.XYZ' in a line into help comments
+.SYNOPSIS, .DESCRIPTION, .PARAMETER, and etc.
+
+*) PowerShell.hrc for Colorer: script help comments and cosmetic changes.
+
+*) Fix: Set-SynopsisDescription-.ps1 fails is a processed script has syntax
+errors. Found interesting side effect: Get-Help also checks script syntax.
+
+*) Out-FarPanel: added parameter -Title.
+
+*) New scripts: Add-Path.ps1, Panel-Shortcut-.ps1, see comments.
+
+= 2.2.2 =
+
+----- ANNOUNCEMENT: PowerShell V2 RC (XP, Vista, ..) and V2 RTM (Win7) -----
+
+As usual, PowerShellFar will support only the latest versions. V2 CTP3 should
+still work basically fine right now, but it is recommended to upgrade: quite
+soon PowerShellFar will use new PowerShell features and V2 CTP3 will not work.
+
+*) PowerShell.hrc for Colorer is updated for V2 RC syntax changes, new and
+removed cmdlets, and reserved keywords.
+
+*) Removed script Panel-FileTransfer-.ps1 (it is only for PS V2 CTP3). Use the
+recently added script Panel-BitsTransfer-.ps1.
+
+-----
+
+*) New script Invoke-Environment.ps1: it is somewhat similar to plugin FarCall:
+it invokes a cmd shell command (a batch file) and imports its environment vars
+to the calling process. It can be used not only in PowerShellFar.
+
+*) Removed Show-Balloon.ps1: it does not look very useful for Far. It still
+works fine, keep it yourself if you need it.
+
+*) Text link scripts
+-- Edit-Link-.ps1 is renamed into Edit-TextLink-.ps1, 'Link' is too general.
+-- Edit-TextLink-.ps1: Improved recognition of links in the source text.
+-- Edit-TextLink-.ps1: VS links with text work with nearest text search.
+-- New script Get-TextLink-.ps1 gets a VS link with the line text.
+-- Menu-More-.ps1 calls these scripts in the editor.
+
+= 2.2.1 =
+
+*) $Psf.Settings.PluginStartupJobs (profile code for jobs) is removed from the
+code and the configuration. It's a long story to explain; this way gives less
+surprises and unexpected effects. After all, jobs or callers can run the same
+code themselves. You may remove the registry value PluginStartupJobs from
+Plugins\PowerShellFar.
+
+*) Script Edit-Descript-.ps1 is renamed into Edit-FarDescription-.ps1 to follow
+file system items property name - FarDescription.
+
+*) Minor fixes and tweaks.
+
+= 2.2.0 =
+
+----- FarNet 4.2.0 menu items revision -----
+
+See FarNet 4.2.0 History.txt for details. Steps to update your scripts:
+
+*) Replace '$Far.CreateMenuItem()' with 'New-Object FarNet.FarItem' or, even
+better, use cmdlet New-FarItem. Also, if you use IMenuItem name in scripts
+(unlikely) then replace it with FarItem.
+
+*) Event IMenuItem.OnClick is replaced with a single handler property Click.
+You should replace 'add_OnClick({...})' with 'Click = {...}' in scripts.
+
+*) Cmdlet New-FarItem: parameter -OnClick is renamed into -Click.
+
+----- PowerShellFar user menu revision -----
+
+*) Removed $Psf.UserMenu and related code everywhere. User menu items (actions)
+are now added by $Psf.Action(), see API help and Profile-.ps1.
+
+*) Removed $Psf.Settings.PluginUserCommand ("user command" or "user code"). PSF
+provides enough ways to do the same without this special support. You may
+delete the value Plugins\PowerShellFar\PluginUserCommand in the registry.
+
+*) Script UserCode-.ps1 (demo for removed PluginUserCommand) is renamed into
+Menu-More-.ps1 and Profile-.ps1 adds the action "More..." that calls it.
+
+----- PowerShellFar background jobs revision -----
+
+*) In couple of words: all jobs (included into the list or not) are started
+only by the new cmdlet Start-FarJob.
+
+*) 'Start-FarJob -Pipeline' gets a started job for direct reading (instead of
+removed class Invoker). Examples: Test-Job-.ps1, Search-Regex-.ps1
+
+*) See API help and test and demo scripts: Test-Job.ps1, Job-RemoveItem-.ps1.
+Note that Robocopy-.ps1 was removed, it seems to be better to run Robocopy
+for massive operations outside of Far, not as a job inside.
+
+----- Descriptions support -----
+
+*) New script Set-SynopsisDescription-.ps1: useful for keeping descriptions in
+sync with script synopses (as it is in Bench). Read comments, use carefully.
+
+*) Fixed Description cache issue on using both Edit-Descript-.ps1 (PSF, editor)
+and [CtrlZ] (native, input box) description editors.
+
+*) Theoretically Description code is thread safe now, so that jobs may use
+FarDescription properties safely.
+
+----- Other features/changes -----
+
+*) Panel Columns support FormatString (just like Format-Table), e.g. this
+command makes a column 'Length' with width 15 and right aligned numbers with
+thousand separators (e.g. 3,230,649)
+>: Get-ChildItem | Out-FarPanel Name, @{ e='Length'; f='{0,15:n0}'; w=15 }
+
+*) New cmdlets Find-FarFile, Get-FarFile (mostly to reduce typing on testing,
+but they can be used for real jobs too).
+
+*) $Psf.Providers is now settable, see how Profile-.ps1 uses this. It seems to
+be easier than it was before. Old way should work too.
+
+*) AnyPanel: renamed event MenuCreated -> MenuCreating (more logically correct)
+
+*) Editor console:
+-- atomic undo of commands output
+-- greatly improved performance of output to the editor (faster than console?)
+
+= 2.1.11 =
+
+*) Simplified type rules for TablePanel.Columns (and -Columns of Out-FarPanel
+cmdlet). Only needed types can be specified, missed types will be used from
+remaining default types automatically.
+
+*) Improved data conversion on mapping data to panel columns (basically PS
+conversion procedure is used).
+
+*) Work around PowerShell bug(?) leading to occasional failures of FormatPanel
+with ExcludeColumns for some types. Now it looks more stable. Note that use of
+ExcludeColumns is not recommended anyway, use of Columns is much better.
+
+*) Minor fixes and improvements here and there.
+
+= 2.1.10 =
+
+*) Fixed startup issues causing TabExpansion problems (reported by GMax).
+
+*) Fixed display issues of Format-Table (used by default in table panels).
+Added new property FormatPanel.AutoSize and cmdlet switch Out-FarPanel
+-AutoSize: this mode is slower but often formatted data look better or
+formatting is only possible in this mode.
+
+*) Cmdlet Out-FarPanel: parameter Columns is positional (goes first), so that
+we can omit its name:
+>: Get-Process | Out-FarPanel Name, Company
+
+*) PSF panels now have a help menu called on [F1]. Its commands depend on a
+panel. Method AddMenuItem() was removed; called once event MenuCreated should
+be used instead for adding user commands, see Test-Panel-Menu-.ps1. All this is
+experimental, to be continued, changed or even removed.
+
+*) Search-Regex-.ps1: found file paths are right aligned now.
+
+*) PowerShellFar.chm: PowerShellFar.Commands: removed noisy inherited members.
+
+----- Revision of Far descriptions support -----
+
+*) For better performance and incapsulation built-in PS functions *-Descript
+implemented in C# and removed from the internal profile. Descriptions are
+exposed by FarDescription properties (get/set).
+
+*) Extension properties Description of classes FileSystemInfo (FileInfo and
+DirectoryInfo) are renamed into FarDescription to minimize risk of clashes
+(name "Description" is too general).
+
+*) Script Edit-Descript-.ps1 is updated to use only FarDescription properties
+for all actions.
+
+*) New cmdlet Update-FarDescription updates a description file for a directory:
+removes orphan descriptions, sorts existing by file names.
+
+= 2.1.9 =
+
+----- Changes for PowerShell V2 RC (Vista) and RTM (Win7) -----
+
+*) Fixed minor issues and incompatibilities in scripts and the code. Basically
+all latest versions should work now: CTP3 (XP), RC (Vista), RTM (Win7).
+
+*) Added new script Panel-BitsTransfer-.ps1 - replacement of not working in RTM
+Panel-FileTransfer-.ps1 which is still distributed while we use V2 CTP3 (XP).
+
+----- Standard and user columns in PowerShellFar panels and scripts -----
+
+The idea was to use standard and custom columns and to minimize internal use of
+slow Format-Table for better data look and much better performance. It's done.
+
+*) All panels are designed to start in AlternativeFull mode (0).
+
+*) Main rule: if property Columns is set then columns are shown exactly
+according to it and slow Format-Table is not used internally.
+
+*) Removed method SetBind(). It is useless now, Columns defines binding.
+
+*) Removed property FarDescription. Again, Columns does the job instead.
+
+*) Removed properties FarName and ExcludeColumns from DataPanel. Other panels
+still may use them if Columns is not defined.
+
+*) Removed static property DataPanel.MaxFormattedRows because Format-Table is
+not used internally any more. Performance on large tables is much better now.
+Still, it would be nice to have some reasonable limits - to be continued.
+
+*) Panel-DbData-.ps1: ditto: removed parameters FarName, FarDescription, and
+ExcludeColumns.
+
+*) Provider settings ($Psf.Providers) now also use the same approach, see the
+script Profile-.ps1 for examples for the most of standard providers.
+
+*) Object panels by default still use Format-Table internally. As far as data
+are not described then let's PowerShell cares of formatting. A panel now uses
+only one column to show output. No horisontal scrolling is needed. Quick search
+(Alt-letter) works for a property 'Name', if any, or for a property defined by
+FarName.
+
+*) All scripts were updated according to the new panel column architechture.
+
+----- Other changes -----
+
+*) New static class PowerShellFar.Wrap will contain wrappers for types
+difficult to create in PowerShell scripts (e.g. delegates or generics).
+Example from Test-SubsetForm-.ps1:
+... = [PowerShellFar.Wrap]::ConverterToString({ "Item $_" })
+
+*) Added helper scripts for MS Access and SQL Server Compact databases:
+Connect-Mdb-.ps1 and Connect-Sdf-.ps1
+
+= 2.1.8 =
+
+*) New script Test-SubsetForm-.ps1 demonstrates new FarNet feature: ISubsetForm
+used for selection of a subset of items.
+
+*) FarName revision (breaking, but hopefully not much)
+- Artificial extra property 'FarName' in objects is not used anymore. Practice
+shows that this way is not natural and also expensive. Panel property 'FarName'
+should be used instead, where appropriate.
+- Import-Panel-.ps1: parameter -Name is renamed into -FarName, i.e. the same
+name as ObjectPanel's property has.
+- Cmdlet New-FarObjectPanel: added parameters -FarName and -FarDescription.
+- Simplified related internal procedures.
+
+*) Panel-DbTable-.ps1
+- Fix: it did not work with PostgreSQL databases (Npgsql ADO.NET data
+provider) with tables with case sensitive names.
+- Internal DataRow data are removed from show => much  better performance.
+
+*) Test-Dialog-.ps1: some more tests, demos and comments.
+
+= 2.1.7 =
+
+*) Go-Head-.ps1 uses new panel property ShownList (more effective) and works
+for plugin panels, too.
+
+*) PowerShell.hrc - constants and auto and user variables should be different
+in expandable strings (e.g. in "text $true $this $user" 4 words should have
+differnt colors)
+
+*) Start-FarPnel. Parameter Id is renamed into TypeId.
+
+= 2.1.6 =
+
+*) Scripts Indent-Selection-.ps1, Reformat-Selection-.ps1,
+Reindent-Selection-.ps1 now use BeginUndo\EndUndo to make operations atomic.
+
+*) Script Watch-Output-.ps1 was kind of "memory leaking" because of growing
+undo data, though undo is not actually needed. Far 2.0.1010 provides some
+workarounds. Unfortunately it is not yet possible to turn Undo off.
+
+= 2.1.5 =
+
+Updated for Far 2.0.997 (breaking changes in Far Editor and Window API)
+
+= 2.1.4 =
+
+*) New-FarFile cmdlet supports custom columns by the parameter -Columns (see
+FarFile.Columns, SetFile.Columns).
+
+*) Test-Panel-.ps1 shows how to use just implemented in FarNet custom panel
+columns (use [Ctrl0] mode in this demo).
+
+*) Edit-Link-.ps1 is the renamed Go-Link-.ps1. New: it also recognizes some
+full and relative file system paths and opens that files, paths with spaces
+should be quoted. To be continued.
+
+P.S. TablePanel and derived DataPanel, ItemPanel, ObjectPanel, UserPanel do not
+use yet custom panel columns. To be continued.
+
+= 2.1.3 =
+
+*) Fixed the "Power panel" call from the disk menu (FarNet fix).
+
+*) Update-FarManager.ps1 - with -Stable switch URL was not correct.
+
+*) Watch-Output-.ps1
+Avoided use of a global function. New parameter Seconds specifies update
+frequency, default: 1.0 second (it was too frequent before). Details: it uses
+new FarNet feature [FarNet.IdledHandler], it is an example in the editor.
+
+*) Test-Panel-Tree-.ps1, Test-Watch-Output-.ps1 - minor tweaks and fixes.
+
+*) Test-Dialog-.ps1 uses new FarNet feature [FarNet.IdledHandler]: time in the
+console title is updated every 2 seconds, it is an example in the dialog.
+
+= 2.1.2 =
+
+*) Update-FarManager.ps1
+- Checks for new archives only, exits if none.
+- Asks to exit Far only when it starts extraction.
+- Searches for extra items in top home directories, too.
+- New parameter - switch Stable - to get only stable builds.
+
+*) New script Format-Chart.ps1. Formats output as a table with the last chart
+column. This script should work for any host, e.g. in PS console, too. Example:
+just run Test-Watch-Output-.ps1 - it shows chart of process working sets (but
+you can make charts of anything you want, of course). Note: Format-Chart.ps1
+has to be in the system path for this demo.
+
+*) New script Go-Link-.ps1 opens a file in editor by a text link in the current
+line. Recognised text link types: Visual Studio, PowerShell. To be continued.
+
+*) $Psf.HotText - for practical reasons it is changed. It is now the selected
+text or the current line text in the current editor or an edit line. (get|set)
+
+*) Minor tweaks in others scripts.
+
+= 2.1.1 =
+
+*) As it was announced, methods $Far.CreatePanelItem() were removed from
+FarNet. Scripts should create instances of SetFile directly by New-Object or
+New-FarFile.
+
+*) Far updates. Due to recent Far changes scripts "Download-FarUpdate.ps1",
+"Install-FarUpdate.ps1" are replaced with one script "Update-FarManager.ps1".
+ONLY Far 2.x is supported, both x86 and x64. See comments for details.
+
+*) Minor improvements in TabExpansion.
+
+*) Minor changes in "Export-FarSettings.ps1" and "Import-FarSettings.ps1".
+
+= 2.1.0 =
+
+*) Breaking changes in FarNet 4.1.0 in almost 100% cases should not affect
+scripts. Nevertheless: a) if you use the name IFile directly, replace it with
+FarFile or SetFile; b) $Far.CreatePanelItem() will be removed soon, replace it
+with New-Object FarNet.FarFile or, even better, with New-FarFile.
+
+*) Concept of TreePanel and related features is almost completely reworked with
+use of new FarNet capabilities. Everything works fine and it seems that tree
+panels will be supported, but implementation is still in progress.
+
+*) PowerShellFar.AnyPanel.Items is renamed into ShownItems to avoid confusion
+and to follow FarNet <-> PSF names correspondence. That is, ShownItems are
+derived from ShownFiles, SelectedItems are derived from SelectedFiles,
+CurrentItem is derived from CurrentFile.
+
+*) Show-History-.ps1 - when a panel is a plugin panel, it shows all paths from
+history, not only plugin paths.
+
+*) Download-FarUpdate.ps1 - parameter 'Platform' default value depends on the
+current process. So that if you run it from x86/x64 Far and want to download
+x86/x64 version (i.e. the same), then you do not have to use this parameter.
+
+= 2.0.13 =
+
+*) New cmdlet Trace-Far - for tracing tasks. It is a helper for .NET class
+Trace methods. "Test-Stepper-.ps1" and "Test-Stepper+.ps1" show how to use it.
+Tracing output normally depends on configuration "Far.exe.config", it can be
+sent to a debugger (default listener), a file ("c:\Far.exe.trace.log") and etc.
+
+*) Documentation of PSF cmdlets moved from .hlf to .chm - it is more useful for
+many reasons. See classes *Command in PowerShellFar.Commands namespace.
+
+*) Search-Regex-.ps1 uses custom modes Descriptions and LongDescriptions
+independent on Far panel modes.
+
+*) Export-FarSettings.ps1 - S_And_R history values are exluded from export.
+
+= 2.0.12 =
+
+*) New class PowerShellFar.FolderTree - replacement of ProviderTree which was
+rather experimental. Menu: F11 > PSF > Power Panel > Folder tree. It works for
+all "navigation" providers: FileSystem, Registry, Feeds, Certificate and etc.
+(depends on installed PS snap-ins). In brief: it shows expandable folder tree
+of directories, registry keys, etc. See more in .hlf: "Folder Tree".
+
+*) List panels member panel (object properties, [CtrlPgDn]) and property panel
+(provider item properties, [CtrlA], [ShiftEnter]) start in 'Descriptions' mode
+[Ctrl6] with two equal width columns Name and Value.
+
+*) Table panels and tree panels use custom 'Descriptions' mode, so that it does
+not depend now on Far view mode settings.
+
+*) Fix. PSF debugger dialog - shown in the debugger source code lines was read
+with incorrect encoding.
+
+*) Fix. Profile-Editor-.ps1 - editor text selection by Click + ShiftClick did
+not work sometimes.
+
+*) Show-History-.ps1 - folder history depends on the active panel type:
+standard Far file panel ~ file system directories; plugin panel ~ plugin paths.
+
+*) Test-Panel-.ps1 - adapted to FarNet changes (SetMode()). Shows how to use
+new method Clone() for creation of a mode similar to another one.
+
+*) Refactoring: replaced some code originally designed for PS V1 with newer. As
+a result, removed some code from the internal startup script PowerShellFar.ps1.
+
+= 2.0.11 =
+
+*) [PowerShellFar.TreePanel] starts in [Ctrl0] view mode and supports [Ctrl1]
+mode - full screen. Quick search Alt+[Letter] should work now as usual, '+' and
+'-' in tree node names are 'ignored'.
+
+*) Test-Panel-.ps1 shows how to use new FarNet PanelModeInfo and
+IPluginPanelInfo.Modes to describe plugin panel view modes (column types,
+widths, titles, status line and etc.).
+
+*) Profile-Editor-.ps1 - avoided global handler functions, removed obsolete
+features, other refactoring. Note: selection by Click + ShiftClick on some
+machines works only for second ShiftClick at the same position, for unknown
+reasons.
+
+*) Generate-Dialog-.ps1: 1) added parameter OutputPath; 2) when dialog code is
+generated then the output file is opened in the editor; 3) width and height are
+used for generated CreateDialog(), not coordinates.
+
+= 2.0.10 =
+
+*) New scripts Export-FarSettings.ps1 and Import-FarSettings.ps1 allow to
+export and import only those Far Manager settings that normally should be the
+same for any machine of the same user. Many other settings like history data
+normally should not be exported/imported. The key Users (if any) is also not
+exported for a few reasons.
+WARNING: this approach is very useful and works perfectly for the author for
+more than a year and many machines. But please, do test it, at least make and
+keep for a while a full copy of your HKCU:\Software\Far2
+
+*) Edit-Descript-.ps1 - when description is opened in the editor its text is
+selected now. It looks like a common scenario when description is copied and
+pasted, not actually edited. Pre-selected text makes this a bit easier.
+
+*) Profile-Editor-.ps1 - adapted to recent mouse changes in Far:
+- Fixed unwanted selection of a single char by left click.
+- Fixed dynamic text selection by dragging with left button.
+- As far as mouse double click in editor is now processed by Far itself, there
+is no need to do this in PSF. Removed.
+
+= 2.0.9 =
+
+This version is all about "super-macros". It is not a new concept but it is
+improved and made easier for practical tasks, unit testing in the first place.
+
+*) Revision of [PowerShellFar.Stepper]. It still works with step sequences as
+usual, but in addition it supports so called step units. Step unit is usually a
+script that returns steps to be processed immediately after invocation. Several
+units can be posted into the unit queue. See API help and samples below.
+BREAKING CHANGES:
+- Stepper is not exposed as $args[0] to steps, use $Psf.Stepper instead;
+- Stepper.Data is removed because it is useless in multi-unit scenario; use
+global variables, better with the same prefix, remove them in the last step.
+
+*) Test-Stepper-.ps1 was completely remade. Now it shows how to invoke several
+step units. Basically it is an example of a simple test monitor. This technique
+is used for internal testing of FarNet and PowerShellFar. Two test examples are
+included (see *+.ps1 files), because they are interesting themselves as demos.
+Many other tests are technical and boring, they are not published.
+
+*) Introduced new recommended suffix '+' for step unit scripts. See help topic
+'Suffixes', it tells how to associate a command to such files.
+
+*) New script (step unit) Test-Stepper+.ps1 contains steps that originally were
+in Test-Stepper-.ps1. Plus some new minor changes. How to see its work: run
+Test-Stepper-.ps1 which first of all plays Test-Stepper+.ps1 steps.
+
+*) New script (step unit) Test-Dialog+.ps1 - steps for testing Test-Dialog-.ps1
+dialog. How to see its work: run Test-Dialog-.ps1, push the button [Test] there
+and watch the steps one by one.
+
+*) Test-All-.ps1 (assorted tests) is removed because it is rather obsolete and
+messy with new testing tools. Its test cases are covered by tests internally.
+
+*) Clear-Session.ps1 - added more PS variables that should not be removed:
+$this, $StackTrace, $LASTEXITCODE.
+
+*) Generate-Dialog-.ps1 - output: a) $env:USERPROFILE\GeneratedDialog-.ps1
+instead of C:\TEMP\Dialog-.ps1; b) Unicode instead of ASCII.
+
+*) Read-Host uses for history SavedDialogHistory\PowerShellFarPrompt key,
+not its subkeys; you may remove not used subkeys, if any, by this command:
+>: ri HKCU:\Software\Far2\SavedDialogHistory\PowerShellFarPrompt\* -Confirm
+
+= 2.0.8 =
+
+*) Search-Regex-.ps1
+- uses new FarNet panel Escaping event for an exit confirmation dialog;
+- exit confirmation: new button 'Push' pushes the panel for later use.
+
+*) Test-Panel-.ps1 - some more tutorial code including demo of new FarNet panel
+Escaping event.
+
+*) Minor fixes in tests.
+
+= 2.0.7 =
+
+*) Design. FarNet entry point was completely detached from $Psf as the new
+class Entry. It is public but it cannot be created or accessed from scripts.
+This approach protects against accidental mistakes. $Psf (Actor instance)
+exposes only PowerShellFar tools now. $Far still exposes IFar instance. This
+change is not breaking if scripts do not use $Psf.Far; if they do then simply
+replace $Psf.Far with $Far there.
+
+*) Fix. Message box about errors in startup code (e.g. Profile-.ps1) was not
+shown due to a CTP3 breaking change that was not yet found.
+
+*) Fix. Debugger menu. Editor for line breakpoints (F4) was opened at the line
+after required.
+
+*) Fix. DataPanel. Unwanted switching to slow full table formatting mode on
+exit from a child record data panel when MaxFormattedRows limit is exceeded.
+
+*) Fix. Panel-DbTable-.ps1. Table with spaces in name could not be opened for
+some database providers.
+
+*) New. Event PowerShellFar.Actor.Exiting is invoked on Far exit (normally) or
+on the plugin unloading (abnormally). You can add one or more handlers for some
+shutdown tasks.
+
+*) Removed method $Psf.Prompt(); it was TEST ONLY.
+
+= 2.0.6 =
+
+*) New UI debugger tools, mostly dealing with various breakpoints. See the new
+plugin menu item "9. Debugger...", select it and press [F1] for more details.
+You can now add, view, enable, disable and remove breakpoints of 3 types: line,
+command and variable. Each breakpoint can be either standard (breakes into the
+debugger) or with action (triggers a piece of your code).
+
+*) Removed the helper script Set-Breakpoint-.ps1 because its functionality is
+completely covered by new built-in breakpoint tools.
+
+*) Download-FarUpdate.ps1
+- it can now download x64 builds, too
+- adapted to new download list format
+
+*) PowerShellFar.DataPanel - normally you have to set Factory property even if
+you use known Odbc, OleDb or SqlClient database factory. Using a factory the
+DataPanel is now able to work with any database provider.
+
+*) Fixed a few issues with table names in Panel-DbData-.ps1, Panel-DbTable-.ps1
+
+*) Start-MSBuild-.ps1 uses Microsoft.NET\Framework\v3.5\MSBuild.exe if found.
+It allows to build *.*proj and *.sln files from VS 2008.
+
+= 2.0.5 =
+
+*) New IFar methods PostStepAfterKeys() and PostStepAfterStep(). This is a very
+important achievement for "super-macros" that can be used now also with modal
+dialogs, editors and viewers. PowerShellFar uses this mechanism by Stepper, see
+the script Test-Stepper-.ps1, it shows how to open modal modes without
+interruption of step sequences.
+
+IMPORTANT: from now on FarNet + PowerShellFar can be used effectively for Far
+Manager and any plugins unit testing (in any areas where plugins menu can be
+called). The idea is to emulate various user actions by steps (script blocks
+and keys) and to check validity of results dynamically by extra steps (script
+blocks). See Test-Stepper-.ps1 again.
+
+*) Download-FarUpdate.ps1: 1) restores current location and directory on exit;
+2) reuses the same Net.WebClient object for all downloads; 3) calls Dispose()
+for Net.WebClient.
+
+*) Install-FarUpdate.ps1 used to fail if the target is not found or ambiguous,
+now it writes a warning. As a result Download-FarUpdate.ps1 does not stop on
+missed targets (e.g. if some standard plugins are not actually used).
+
+= 2.0.4 =
+
+*) FarNet IAnyViewer.ViewText() - switching to editor is enabled; as a result,
+it is now possible to view commands output also in editor by [F6], with well
+known advantages. See FarNet history for some more details.
+
+*) ObjectPanel - hashtables and dictionaries objects - on [Enter] a new panel
+with contaited items is opened. Old action: member panel is opened; it is still
+available on [CtrlEnter].
+
+*) Panel-DbTable-.ps1 fails if there is only one table in a database. Fixed.
+
+*) Search-Regex-.ps1: dialog: if you leave edit box "Options" empty then it is
+not an error, option "None" is assumed in this case.
+
+*) Panel-Process-.ps1 shows how to call from PowerShell functions exported from
+native DLLs. It is done by Add-Type with a piece of C# code.
+
+*) Experimental tools from WinKit namespace were removed. If you use them then
+keep the old WinKit.cs, build your own assembly from it or make it built-in in
+scripts, see examples: Panel-Process-.ps1, Test-Zoo-.ps1.
+
+*) More graceful death on fatal errors. If PowerShell engine cannot start then
+PSF should not crash or hang. It keeps silence while you do not really use it,
+then it shows an error and detaches itself from FarNet.
+
+= 2.0.3 =
+
+*) Good news: [CtrlC] stops running interactive commands. Normally it is not
+recommended, but sometimes it is OK, just think. Note: it has nothing to do
+with background jobs (stopped by [Del] in the job list) and script blocks in
+menus or event handlers in editor, panels, etc. (they cannot be stopped).
+
+*) Show-History-.ps1 uses new IFar.GetHistory() with extra parameter 'filter',
+to show only 'View' and 'Edit' file paths from history, not 'Ext.'.
+
+*) PowerShell.hrc for Colorer - comments '###' are treated as 'Outlined', so
+that Colorer command 'Outliner list' shows functions, filters and all lines
+with '###' comments. It can be used effectively for navigation in a script.
+
+*) New database approach. In scripts working with databases we now use
+DbProviderFactory and DbConnection parameters or predefined variables. This
+allows to work with wider range of databases, in particular with modern SQL
+Server Compact (.sdf files): very promising free desktop/mobile database.
+As a result:
+- Added new scripts Panel-DbData-.ps1, Panel-DbTable-.ps1
+- Updated script Panel-Database-.ps1 (example of how to connect now)
+- Updated Bench\Test scripts to work with both SqlClient and SqlServerCe.
+- Removed scripts Panel-Data-.ps1, Panel-Table-.ps1; if you use them - do not
+worry, keep them, for now they should work and should not conflict with new
+scripts, hopefully. But it is strongly recommended to migrate to new scripts.
+
+= 2.0.2 =
+
+*) New script Start-Far.ps1 - It is a helper for running FAR from PowerShell
+console in /rc mode (restore console on exit). On exit from FAR it sets the
+last panel directory current and updates the current PowerShell location.
+
+*) Script Download-FarUpdate.ps1 - If there are new builds downloaded it
+prompts to install them immediately using Install-FarUpdate.ps1.
+
+*) Script Go-To-.ps1 - If '*' is used as a path parameter then you are prompted
+to select one of standard system folders from a list.
+
+*) Script Invoke-Shortcut-.ps1 did not work with spaces in paths. Fixed.
+
+*) IFar.GetHistory() now returns correctly ordered strings. As a result, the
+script Show-History-.ps1 was simplified. It behaves slightly differently but
+faster and its new behaviour is similar to FAR.
+
+= 2.0.1 =
+
+*) Install-FarUpdate.ps1 - now it can update plugins from .7z archives, too.
+You may set -Target path or let the script resolve the target by a .dll file
+from the archive.
+
+*) Changed location of PSF console files from %TEMP%\psfconsole to %APPDATA%\
+PowerShellFar\psfconsole. These files are not really temporary, so that %TEMP%
+location is not suitable.
+
+= 2.0.0 =
+
+ANNOUNCEMENT
+
+From now on PowerShellFar 2.x is for Far 2.x. Versions 1.x are officially not
+supported. It is not recommended to keep PowerShellFar 1.x scripts in the
+system path when you use PowerShellFar 2.x.
+
+This is the first and mostly technical phase of transition from Far 1.x to 2.x.
+Next FarNet and PowerShellFar versions will use new Far API more effectively.
+
+INSTALLATION
+
+*) If you use or used PowerShellFar in Far 2.x then remove all PSF files from
+Far directory.
+
+*) If you will continue use of PSF 1.x with Far 1.x then make sure that your
+PSF script directory (Bench) is not used by new and old PSF versions.
+
+BREAKING CHANGES
+
+*) These are FarNet changes, but PSF scripts may use FarNet API directly, so
+that check and update your scripts. See breaking changes in FarNet History.txt
+
+OTHER CHANGES
+
+*) External viewer: when you use incorrect settings and PSF cannot start it
+then it shows an informative message and starts the default external viewer.
+
+*) Simplified and optimized ObjectPanel code internally.
+
+*) Other changes are migration changes, functionality is not affected.
+
+= 1.1.57 =
+
+ANNOUNCEMENT: FAR.NET 3.3.57 is presumably the last version for FAR 1.x. PSF
+itself should not be changed for FAR 2.x. But it is quite possible that next
+FAR.NET will have some breaking changes (not many, but...). In this case PSF
+1.1.57 will be the last version compatible with FAR.NET 3.3.57 and they will
+be frosen together. If you find new or know some old issues in this version,
+report them as soon as possible.
+
+*) ObjectPanel and its derived (but not yet DataPanel) - you can set a script
+block as FarName and FarDescription, not just a property name, see example for
+Out-FarPanel below (same as $panel.FarName = {...}).
+
+*) Cmdlet Out-FarPanel - new parameters FarName, FarDescription (property name
+or script block getting a string to display), IncludeColums, ExcludeColumns.
+
+[code]
+# Examples (use Descriptions panel mode)
+Get-Process | Sort-Object WS -Desc | Out-FarPanel -Include WS, Id
+Get-Process | Out-FarPanel -FarName {$_.Name + ' ' + $_.Id} -FarDescription Company
+Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -FarDescription {$_.Synopsis -replace '\s', ' '}
+[/code]
+(The last command will get meaningful synopsis only for scripts that included
+in the system path and use V2 CTP3 auto-help comments, for example all PSF
+Bench scripts)
+
+*) FAR 1.75.2520 introduced the macro function Editor.Sel() so that it is more
+effective to use it for [Left]\[Right] macros instead of a script. Thus, PSF
+commands "Go to selection start|end" will be removed one day, and the script
+Go-Selection-.ps1 will be disconnected (not removed completely, it is still
+useful for other tasks). See how Install-Macro-.ps1 uses new Editor.Sel().
+
+*) Fix in Download-FarUpdate.ps1 - '(NEW BUILD)' was not shown for FAR itself.
+
+*) New scripts Build-FarEnc.ps1 and Test-HtmlLink.ps1 - they are not included
+into PSF but submitted to FAR sources by Skirda: enc\tools\contrib\nightroman.
+Now anytime you can download the latest fresh FAR API enciclopedia sources and
+build Russian or English CHM help file yourself by Build-FarEnc.ps1 (you have
+to have HTML Help Workshop or just hhc.exe, of course).
+
+= 1.1.56 =
+
+*) PSF panels - removed two facilities making more evil than good: running code
+from command line without prefix and use of artificial automatic variable $this
+(some reasons are explained at forum). From now on rules are simple and uniform
+for PowerShell code in command line: 1) we always use prefix; 2) the code is
+standard PowerShell code without confusing helpers like variable $this.
+
+*) PSF command history list: [CtrlEnter] now always allow to edit the selected
+command before invocation. In panels and editor console it inserts the command,
+in other areas it opens the "Invoke input code" dialog with the command text.
+
+*) New script Go-To-.ps1 - a la far:goto but argument is not just a string, it
+is a PowerShell expression. Also we can go to, for example, Registry provider
+item panel. Profile-.ps1 sets an alias 'go' for this script.
+
+*) REMOVED: Panel-Item-.ps1 is removed because Go-To-.ps1 actually replaces it.
+
+*) TabExpansion
+- improved expansion of script parameters: it should work in more exotic cases;
+- all result strings are now sorted and duplicated strings are removed.
+
+*) Out-FarPanel now by default does not append objects to already opened panel
+because it is often confusing. Instead it opens a new panel. New switch -Append
+should be used if we really want to append objects.
+
+*) Download-FarUpdate.ps1 - can work with new .ini section [info]; also, now it
+does not fail on unknown .ini options, it writes warnings.
+
+*) Clear-Session.ps1 - fixed use of variable property Options.
+
+= 1.1.55 =
+
+*) New cmdlets New-FarMenu and New-FarItem help to write menu code in easy
+PowerShell style (.NET style is still available, of course). The scripts in
+Bench now use this new approach. The code is shorter, and more important,
+TabExpansion works for cmdlets and their parameters.
+
+*) New cmdlets New-FarList and Out-FarList - same as above but for list menus.
+Bench scripts use them instead of $Far.CreateListMenu() and Select-Menu-.ps1.
+
+*) Select-Menu-.ps1 is removed as not needed. Keep it yourself or better use
+new Out-FarList. Note that in code you cannot just replace Select-Menu- with
+Out-FarList because a few parameter names are changed, they now conform
+IListMenu names, see:
+>: man Out-FarList
+
+*) New cmdlet New-FarFile creates plugin panels items in PowerShell way.
+
+*) New cmdlet Show-FarMsg is a PowerShell alternative of 5 $Far.Msg() methods.
+BTW, OBSOLETE: FAR.NET IFar.CreateMessage() and IMessage will be removed soon.
+
+*) New test Test-Watch-Output-.ps1 just shows how Watch-Output-.ps1 works (in
+particular with long lines and many lines).
+
+*) Download-FarUpdate.ps1 - cosmetic changes and some new output messages, for
+example what downloaded files really have new build numbers.
+
+*) TabExpansion - fixed: parameters of some commands were not sorted.
+
+*) Logic of FAR.NET IKeyMacroHost.Install() is changed, so that it is easier to
+use; as a result, the script Install-Macro-.ps1 is simplified a little bit. In
+two words: 1) we don't have to call Save() and Load(); 2) we can install all
+the macros by one call (if we want).
+
+*) Install-Macro-.ps1: new macro [ShiftBS] shows how to run PSF from command
+line without prefix (it is not something new, just in case). BTW, this mode
+has a bonus: if a command fails (often due to mistakes in it) its text is still
+in the command line, ready for correction, even cursor position is the same -
+this really saves time on composing complex commands.
+
+*) Built-in PowerShell function 'help' is replaced with another one for two
+reasons: 1) redirection to 'more' is useless in PSF; 2) if Get-Help fails then
+Get-Usage is called (assume it is in %PATH%), so that you can get some help for
+PSF cmdlets, e.g.
+>: man New-FarFile # should work and get help
+>: help Out-FarList # ditto
+>: Get-Help Out-FarList # still fails (with confusing msg)
+(N.B. use of Get-Usage is temporary, standard PowerShell help will be provided
+for PSF cmdlets as soon as PowerShell has tools for that, as they promise).
+
+*) Cmdlets New-FarEditor, Start-FarEditor - a few tricks with cmdlet parameters
+(aliases, ValueFromPipelineByPropertyName) in some cases allow shorter commands
+see help topic "PowerShellFar command examples".
+
+*) Revised PowerShellFar.hlf reflects many recent changes. Also, many script
+topics moved to script auto-help comments, this place looks more natural now.
+
+= 1.1.54 =
+
+*) New script Panel-FileTransfer-.ps1 uses new CTP3 module FileTransfer. Starts
+or manages file transfer jobs in a panel. Suitable for transferring very large
+files from\to Web or across network; you start jobs and then you can exit FAR
+or even restart the machine: jobs will be still working in the background.
+
+*) New script Download-FarUpdate.ps1 downloads FAR and plugin archives from Web
+(nightly builds) to a special update directory. Only new files are downloaded.
+
+*) Script Update-Far.ps1 is renamed into Install-FarUpdate.ps1 and moved to
+Bench directory. Changes: 1) as far as now FAR updates are 7z files, RAR in the
+script is replaced with 7z or 7za (whatever found first); 2) all the files from
+the archive are now updated (including for example Headers.c)
+
+*) Script Panel-Process-.ps1: 1) panel data are updated automatically when
+idle; 2) [Enter] opens the current process menu with new command "Show WMI
+properties"; 3) on exit from a child panel the current process is restored.
+
+*) Script Install-Macro-.ps1 moved from Extras to Bench directory. Thus, all
+the utility scripts are in Bench directory now. Directory Extras is for other
+tools, e.g. files for Colorer.
+
+*) Get-FarPath cmdlet - new parameter -Mirror, it helps to get destination
+paths on the opposite panel with source item names.
+
+*) Start-FarPanel cmdlet - a few new parameterers that set some basic panel
+properies before panel start.
+
+*) Helper class PowerShellFar.ScriptComparison: yet another way to set
+DataComparison in IPluginPanel (but recommended way is to use a parameter in
+Start-FarPanel, see Panel-Process-.ps1, Panel-FileTransfer-.ps1)
+
+*) ObjectPanel - fixed a few problems for items that are not PSObject.
+
+*) Minor UI improvements (hopefully). For example in some menus [Esc] was
+actually associated with some actions - this was rather confusing, fixed now.
+
+= 1.1.53 =
+
+*** IMPORTANT: NEW POWERSHELL VERSION ***
+
+This version requires PowerShell V2 CTP3. Older versions of PowerShell will not
+be supported. Even with new bugs (yes, there are a few) PowerShell V2 CTP3 is
+much better and more powerfull than any older version.
+
+V2 CTP3 CHANGES
+
+*) The PSF engine did not require any changes for V2 CTP3, but some scripts
+were updated due to some breaking changes in V2 CTP3.
+
+*) Built-in help comments were included in scripts, so that you can now (just a
+few examples):
+	>: My-Script.ps1 -?
+	>: man My-Script.ps1
+	>: help My-Script.ps1 -full
+
+*) TabExpansion mechanism is updated so that it uses new CTP3 features where it
+is possible.
+
+*) Reindent-Selection-.ps1 takes into account new block comments <#..#>.
+
+*) Colorer: PowerShell.hrc is updated to reflect changed and new CTP3 features:
+renamed\removed\new cmdlets, block comments, auto-help comments, etc.
+
+OTHER CHANGES
+
+*) New script Invoke-Shortcut-.ps1 opens a shortcut file (.lnk) in FAR in a few
+ways. See comments there or just use new CTP3 feature auto-help, that is type
+one of the commands:
+>: Invoke-Shortcut-.ps1 -?
+>: man Invoke-Shortcut-.ps1 -full
+(assume the script is the system path)
+
+*) Fixed occasional mysterious error message "Not enough storage..." on running
+the first interactive command in a session from the FAR command line or the
+editor console.
+
+*) PSF command history - Ctrl-R removes duplicates (it is more standard shortcut
+than Delete; Delete still does the same, but in the future this action may be
+changed, perhaps).
+
+*) Install-Macro-.ps1 - added "easy prefix" macro ']' in Shell area (John Doe
+proposed '>', but it is a matter of preference, of course; besides, ']' allows
+one hand typing). So, ']' in empty command line is expanded to '>: '.
+
+*) Test-Dialog-.ps1: fixed variable conflicts in user control Drawing handler:
+used extra block &{..} that makes variables local and avoids the conflicts.
+
+= 1.1.52 =
+
+*) Test-Dialog-.ps1 uses IControl.Drawing to draw a user control. It shows main
+techniques: calculates absolute coordinates using absolute IDialog.Rect and
+relative IControl.Rect and writes text by IFar.WritePalette and IFar.WriteText
+methods using standard FAR palette or only standard background or foreground.
+
+= 1.1.51 =
+
+PLUGIN
+
+*) Operation ``Invoke script from editor (F5)'': set FAR title after invoking to
+``Done <time>''. It is useful when a script has no output: at least changed time
+tells that the script really was invoked.
+
+NEW SCRIPT SET-SELECTION-.PS1 AND RELATED CHANGES
+
+*) It changes the selected text in editor, command line or any dialog editbox.
+For now there are three options: -ToLower, -ToUpper (similar to EditCase plugin)
+and -Replace (covers removed Escape-Selection-.ps1, see below).
+*) Updated script Profile-.ps1 to add items ``To lower case'', ``To upper case''
+to the user menu, so that these operations can be called by macros.
+*) Updated script Extras\Install-Macro-.ps1 to install this macro in three
+areas: Editor, Shell, Dialog. It uses keys CtrlU, CtrlShiftU for -ToLower,
+-ToUpper (a la Visual Studio and some other editors).
+*) Updated Test-Editor-.ps1 to cover new and changed functionality by tests.
+
+REMOVED SCRIPT ESCAPE-SELECTION-.PS1
+
+*) It is removed because in fact its functionality is completely covered by
+Set-Selection- (see above). Of course, you may keep and use the old script.
+*) Updated script UserCode-.ps1 (items ``Escape'', ``Unescape'') accordingly.
+
+SCRIPT DEBUG-MSG-.PS1
+
+*) Data are shown together with their type names.
+*) Data are sent as arguments (as usual) or via pipeline (new feature).
+*) EXAMPLES
+>: Debug-Msg- $Far
+>: $Far | Debug-Msg-
+
+SCRIPT GO-SELECTION-.PS1
+
+*) Fix: it did not work in command line and dialog editbox when an editor was
+opened.
+
+TABEXPANSION
+
+*) Expansion of @variable, e.g. @co[tab] -> @CommandLineParameters
+
+COLORER
+
+*) PowerShell.hrc:
+-- reviewed representation of constants and system variables
+-- parameter variables @name are supported, too
+-- numbers are slightly simplified
+*) RomanConsole.hrd: changed colors to make them closer to Visual Studio and
+Graphical PowerShell colors.
+*) RomanRainbow.hrd: (NEW FILE): RGB palette; it is used for example for creation
+of colored HTML pages from source files (by colorer.exe). It is generated from
+RomanConsole.hrd, i.e. HTML should have same colors as FAR editor.
+
+= 1.1.50 =
+
+- Invoke script from editor (F5): improved logic of external viewer window
+activation.
+
+- Start-MSBuild-.ps1: slightly improved error messages.
+
+- Some work on documentation.
+
+= 1.1.49 =
+
+PSF CORE
+
+- OBSOLETE $Psf.HotLine was moved to FAR.NET; use it as $Far.Line
+
+- Member panel: fixed unwanted extra properties in V2 CTP2 (e.g. for DataRow:
+RowError, RowState and etc.)
+
+- Invoke script from editor (F5): set system current directory and PS current
+location to the file directory before invoking; this is perhaps less flexible,
+but it is more expected. Also, set FAR title to 'Running...' and 'Done' before
+and after invoking.
+
+SCRIPTS
+
+- Get-KeyMap-.ps1:
+*) renamed from Get-KeyMap.ps1 because it depends on FAR.NET.
+*) description of macros with restrictions starts with '+'.
+*) if description is empty then sequence is shown instead.
+
+- Go-Selection-.ps1:
+"Go to selection start\end": it works not only in editor but also in command
+line and dialog edit boxes. Profile-.ps1 enables these PSF user menu items for
+Dialog and Panels areas, so that this operation can be used by macros.
+
+- Profile-Editor-.ps1:
+Removed processing of Left and Right ("go to selection start\end") because now
+it can be done by uniform macros in all suitable areas.
+
+- Panel-Macro-.ps1:
+Simplified a lot and improved due to new FAR.NET macro tools. As a result, macro
+member panel is automatically improved, at least validation of input is better.
+
+- Profile-Editor-.ps1:
+Removed some code to be used via macros. Still left some code calling Go-Home-
+on [Home] key as an example. Mouse right click: show trivial Cut \ Copy \ Paste
+menu.
+
+- UserCode-.ps1:
+Revison of code and usage. Added call to Robocopy-.ps1 (from panels) to copy the
+current folder item to another panel. Added call to Set-Breakpoint-.ps1 for the
+editor and *.ps1 file in it.
+
+EXTRAS
+
+This new folder will contain rarely needed tools mostly for configuration tasks
+and other extra files, e.g. for Colorer.
+
+- New script Install-Macro-.ps1 uses new FAR.NET macro features and allows to
+install key macros for some available PSF tools. This is a demo, normally you
+should use only what you need from this script and you may also want to change
+used keys and hotkeys.
+
+- Some of distributed files and scripts moved to EXTRAS directory.
+
+= 1.1.48 =
+
+TABEXPANSION
+
+- Covered yet another parameter expansion case with any not alpha numeric
+"garbage" in the beginning of a line (this also fixes a minor unfortunate
+regression in the last drop):
+  #~?!"?$%^&*()<>' = Get-Content -e[TAB] -> Encoding and etc.
+
+- Improved expansion of base and adapted members, e.g.
+  >: $xml = [xml]'<tests><test>test</test></tests>' # run this first
+  $xml.Ou[TAB] -> OuterXml
+  $xml.te[TAB] -> tests
+
+PROGRAMMING
+
+- $Psf.HotLine: it is OBSOLETE and will be removed. Actually it is not obsolete,
+but moved to FAR.NET as $Far.Line, so that FAR.NET plugins can use it, too. As
+usual, it is the current editor line in any area (editor, dialog or panels).
+
+PSF UI
+
+- PSF command history opened from a dialog edit box: CtrlEnter inserts text into
+the edit box.
+
+- In any list menu keys CtrlC and CtrlIns are used to copy text of the current
+item to the clipboard.
+
+SCRIPTS
+
+- New script Get-KeyMap.ps1: Generates and shows HTML page with FAR key maps for
+various areas as tables of 4 colums: key name, default FAR action, common macro,
+area macro. It is useful to have this data all in one place to avoid or resolve
+key conflicts.
+
+- New script Go-Head-.ps1: "Go to the head panel file or item", see comments.
+
+- Get-Usage.ps1: *) parameter set list is shown for parameters (if it is not
+'__AllParameterSets'); *) it is converted from 'script' to 'script-cmdlet' (new
+V2 feature).
+
+- Test-Zoo-.ps1: used new PS feature "compile .NET source code on the fly": e.g.
+Add-Type <C# code>. As a result, the temp file Test-Zoo-.dll is not used.
+
+= 1.1.47 =
+
+DEBUGGING
+
+Debugger is getting visual: script source code is shown in the listbox with the
+current debugger line selected (and checked). Use Test-Debugger.ps1 to see how
+it works.
+
+Editor console: Redraw() is called now on any output, so that you can see output
+in progress (this is good for debugging first of all).
+
+TABEXPANSION
+
+Expansion of parameters: in addition to cmdlets and scripts it works also for
+currently loaded functions, filters and script cmdlets.
+
+Expansion of types and namespaces: not public types are excluded from processing
+and not cached -> no "noise" and better performance (~30%).
+
+Improved expansion of parameters in some tricky cases, e.g.
+@(Get-Content $file -TotalCount ($x + $y) -e<TAB>
+"@(Get-Content $file -TotalCount ($x + $y) -e<TAB>
+'@(Get-Content $file -TotalCount ($x + $y) -e<TAB>
+
+COLORER
+
+PowerShell.hrc: polished some cases of CTP2 keywords.
+
+RomanConsole.hrd: operators |, >, >>, and etc.: changed background color from
+yellow to gray (yellow looks too agressive, say, like warning).
+
+OTHER
+
+PSF menu command 'Invoke selected code' also works for dialog edit boxes.
+
+Fixed a minor issue in PowerShell.Invoker: Search-Regex-.ps1 used to show
+incorrect status 'Failed' when it was actually 'Completed'.
+
+= 1.1.46 =
+
+IMPORTANT: V2 CTP2
+
+This version requires PowerShell V2 CTP2. It is not a release version, features
+may not work, be removed, changed, etc. If you do not want to risk then use:
+- PowerShell V2 CTP + PowerShellFar 1.1.45 + FAR.NET 3.3.44
+- or PowerShell V1 + PowerShellFar 1.1.42 + FAR.NET 3.3.42
+Download:
+http://www.microsoft.com/downloads/details.aspx?FamilyId=7C8051C2-9BFC-4C81-859D-0864979FA403&displaylang=en
+
+CHANGES FOR V2 CTP2. NEW DEBUG FEATURES.
+
+There are lots of changes, but many of them are too small to be mentioned.
+The most important changes are in debugging: breakpoint dialog has new step
+buttons [Step], [Over], [Out] and they look working fine. See also the script
+Set-Breakpoint-.ps1 - helper for setting breakpoints right in the script editor
+and play with demo script Test-Debug-.ps1 (which works in ConsoleHost, too).
+
+NEW FAR PANEL CMDLETS
+
+To get the list of new panel cmdlets run this:
+>: Get-Command *-Far*Panel -CommandType Cmdlet
+
+For details see the help topic "Cmdlets" and use new script Get-Usage.ps1 (all
+the help topics are actually generated by it). NOTE: the cmdlets are ready to
+use, but some features may change in the future.
+
+REMOVED SCRIPTS
+
+The following scripts are replaced by new cmdlets and not distributed. But they
+are not broken, you may keep them on your own:
+- Panel-Member-.ps1
+- Panel-Object-.ps1
+
+REMOVED OBSOLETE $PSF PROPERTIES
+
+- $Psf.*Items, $Psf.*Items2 (replaced by cmdlet Get-FarItem)
+- $Psf.*Paths, $Psf.*Paths2 (replaced by cmdlet Get-FarPath)
+
+OTHER CHANGES
+
+- New very handy script Get-Usage.ps1 (host independent). It is sometimes better
+than "Get-Help -Full" and, moreover, it also works for cmdlets with no help (FAR
+cmdlets for example don't have standard help and some new V2 CTP2 cmdlets, too).
+
+- Cmdlet New-FarEditor: added parameter -Data ~ IEditor.Data
+
+- PowerShell.hrc for Colorer: reflected V2 CTP2 changes and fixed color of hash
+keys with the same names as PS keywords.
+
+- New script Start-MSBuild-.ps1 - MSBuild helper. NOTE: this is a beta version,
+subject to change or even remove.
+
+= 1.1.45 ( NOTE: required far.net is still 3.3.44 ) =
+
+NEW BUILT-IN CMDLETS (See help topic "Cmdlets")
+
+Get-FarItem
+Get-FarPath
+New-FarEditor
+New-FarViewer
+Start-FarEditor
+Start-FarViewer
+
+REMOVED SCRIPTS
+
+They are still working and you may keep them from the previous version:
+- Get-Data-.ps1 (replaced by cmdlet Get-FarItem)
+- New-Editor-.ps1 (replaced by cmdlet New-FarEditor)
+
+OBSOLETE PSF PROPERTIES
+
+They are still working, but they will be removed in the next version:
+- $Psf.*Items, $Psf.*Items2 (replaced by cmdlet Get-FarItem)
+- $Psf.*Paths, $Psf.*Paths2 (replaced by cmdlet Get-FarPath)
+
+ADVANCED TABEXPANSION IS ENABLED BY DEFAULT
+
+- The script TabExpansion-.ps1 was moved from Bench to the plugin directory and
+it is automatically loaded from there once and only when needed. Profile-.ps1:
+'manual' installation of TabExpansion was removed - it is not needed any more.
+Reminder: the script is independent on a host, i.e. you can use it in console
+host too. It is also OK to use your own TabExpansion.ps1 in PowerShellFar.
+
+OTHER CHANGES
+
+- Added new cmdlet names to PowerShell.hrc for Colorer.
+- Global function Show-Balloon (loaded internaly from the old PowerShellFar.ps1)
+was moved to the script Show-Balloon.ps1, so that you still can use it. The
+script is independent on the PowerShell host.
+
+= 1.1.44 =
+
+First debugging features (new in V2 CTP)
+
+- New scripts Set-Breakpoint-.ps1 and Test-Debugger.ps1 uses new PS debugging
+features. Function, command and variable breakpoints look working fine already,
+line breakpoints sometimes do not work (perhaps due to PS beta issues). More
+info: see scripts or just run Test-Debugger.ps1 and press F1 in the dialog.
+
+Running scripts from the editor (also for debugging)
+
+- F5 in the .ps1 script editor invokes this script in the current PowerShell
+runspace. Key F5 is hardcoded for now, but you can assign another key to
+$Psf.InvokeScriptFromEditor() via PSF User Menu and a macro.
+- Output is written into a tmp file and an external viewer is started to view it.
+Why external? - to be able to view output and at the same time perform some
+operations with modal UI, e.g. debugging.
+- New $Psf.Settings settings: ExternalViewerFileName and ExternalViewerArguments
+allow to set alternative viewer and its arguments, see more in .CHM and example
+in Profile-.ps1 (e.g. if you use FAR with ConEmu).
+- Invoke-Editor-.ps1 - changed processing of *-.ps1 scripts - it sets error mode
+to 'Inquire' and calls new $Psf.InvokeScriptFromEditor().
+
+$Host.UI.
+
+- .ReadLine() - implemented.
+- .Prompt() - re-implemented as a dialog with several input fields. E.g. it is
+good for script cmdlets with several missed mandatory parameters; in fact it is
+a very simple way to make auto-generated input data dialogs (also with history
+automatically stored by cmdlet parameter names). Note: script cmdlets are new in
+V2 CTP. Silly example: run Trace-Command without parameters and you will get a
+dialog with 2 input fields.
+
+TabExpansion and Complete-Word-
+
+- '*' is added automatically to the end of the initial pattern, so that you can
+type any remaining substring, e.g. for GET-PSJOB you may type only g[TAB]jo, not
+g[TAB]*jo. Note: '*' can be undone by backspace.
+- TabExpansion expands all variable names, not global only; it is useful when
+execution is suspended and you deal with the current scope variables.
+- TabExpansion expands 'win32..[TAB]' as WMI classes from ROOT\CIMV2, e.g.
+win32_des[TAB] -> Win32_DesktopMonitor, Win32_Desktop.
+- Fixed expansion of script parameters with default values.
+
+Refactoring (perhaps breaking)
+
+- For better performance and to avoid misuse: type of $Psf.*Items, $Psf.*Items2,
+$Psf.*Paths, $Psf.*Paths2 and .*Items of AnyPanel and derived panels were
+converted from Collection<> to IEnumerable<>. If you already use them
+effectively then you will not notice this change. Otherwise you have to improve
+your scripts:
+*) use them as pipeline input: '$Psf.Items | ...';
+*) use them with 'foreach($item ...', not with 'for($index ...';
+*) and if you REALLY need them as arrays then use @(): @($Psf.Items).
+
+Misc
+
+- New script Clear-Session.ps1, see its comments for details.
+- $Psf and $Far are constant for all scopes, i.e. they really never change now.
+- $Host.PrivateData is not supported any more; exception on any access.
+- Panel-Macro-.ps1 - fixed a few multiline sequence editor issues.
+- Fix: IEditor.Open(): if a file is already opened then start position, if any,
+was not set (e.g. you could not go to error line from "PowerShell errors" list,
+if a file is already in the editor).
+
+= 1.1.43 =
+
+IMPORTANT: this version requires PowerShell V2 CTP
+
+It is not a release version, features may not work, be removed, changed, etc. If
+you do not want to risk then stay with PowerShell V1 and PowerShellFar 1.1.42 +
+FAR.NET 3.3.42 and wait for the next CTP (end of April, they say) or the next
+release (date unknown).
+
+Download and install PowerShell V2 CTP (this link is for English version):
+
+http://www.microsoft.com/downloads/details.aspx?FamilyID=60deac2b-975b-41e6-9fa0-c2fd6aa6bc89&displaylang=en
+Mind other links at this page:
+- you HAVE TO install AT FIRST (!!) WS-Management 1.1
+- you may (but DON'T HAVE TO) install .NET Framework 3.0 to use Graphical
+PowerShell (it's only a demo, I would not recommend it) and Out-GridView (it is
+quite nice, but perhaps .NET 3.0 is too much if it is only for this).
+
+CHANGES
+
+TabExpansion-.ps1
+
+- Expansion of script parameters uses new PSParser API (see GetScriptParameter
+in TabExpansion-.ps1); as a result, now you don't have to put one parameter per
+line to make this working, it should work for any script (or it is a defect of
+GetScriptParameter, report it).
+- Type and namespace names are expanded not only after '[' but also immediately
+after New-Object: e.g. New-Object System.da[Tab]
+
+PowerShell.hrc for Colorer
+
+- new operators -split and -join
+- new language keywords Data and Cmdlet
+- new system variables $CommandLineParameters $PSVersionTable $Culture $UICulture
+- new cmdlets Get-PSBreakpoint Get-PSCallStack Remove-PSJob New-PSBreakpoint
+ConvertFrom-StringData Start-PSJob Disable-PSBreakpoint Import-LocalizedData
+Stop-PSJob Enable-PSBreakpoint Get-Runspace Wait-PSJob Remove-PSBreakpoint
+New-Runspace Invoke-WMIMethod Step-Into Remove-Runspace Remove-WMIObject
+Step-Out Get-PsJob Set-WMIInstance Step-Over Receive-PSJob Out-GridView
+
+Other Changes
+
+- Improved input box called on missed cmdlet parameters, Read-Host and etc.:
+better arrangement of prompt messages and enabled TabExpansion on [Tab].
+- Search-Regex-.ps1 - new parameter [switch] -Groups and checkbox in the input
+dialog - it tells to put to a panel found regex groups instead of full matches.
+- New Test-Msg-.ps1 - a few extreme cases of FAR.NET message boxes.
+- Auto name of .psfconsole file: 24 hours time format.
+
+= 1.1.42 =
+
+- Refactoring for the new FAR.NET drop (menus and list controls).
+- Test-Dialog-.ps1: new button [List] tests new dynamic list controls.
+- Complete-Word-.ps1 - do not show error message if there is no input.
+- Profile-Editor-.ps1 - call Show-Hlf-.ps1 only for .hlf files
+- Show-Hlf-.ps1 - removed return value not used any more by Profile-Editor-.ps1
+
+= 1.1.41 =
+
+- This is mostly a technical build for FAR 1.71.2346
+- Search-Regex-.ps1: added checkbox 'Background input' to the input dialog -
+useful for relatively simple but very time consuming commands like this:
+DIR C:\ -REC -INC *.TXT
+
+= 1.1.40 =
+
+NEW DIALOG AND CONTROL ACCESS (SEE FAR.NET)
+
+- New script Generate-Dialog-.ps1 generates creation code for any opened dialog.
+
+- TabExpansion and Complete-Word-.ps1 work on any edit control in any dialog (in
+addition to the editor and the command line). Complete-Word- takes words from
+the control history if any or from the command line history if the control has
+no history.
+
+- $Psf.HotLine is now ILine from the editor, the command line or (NEW!) edit or
+combobox control in any dialog. In other words you can now operate almost on any
+text being edited in FAR. TabExpansion and Complete-Word-.ps1 actually both use
+this $Psf.HotLine.
+
+SEARCH-REGEX-.PS1: NEW INPUT DIALOG AND MORE
+
+- Search-Regex-.ps1 was simplified and made much easier to use. Added a dialog
+to enter not defined input data and options, see more in help (e.g. run it and
+press F1). The new version is not compatible with the old one due to the params
+-Path, -Include, -Force removed, but nothing is missed: you can move that params
+to Get-ChildItem and use pipeline:
+>: Get-ChildItem -Path .. [-Include ..] [-Force] | Search-Regex- ..
+
+OTHER CHANGES
+
+- Improved some cases of $Psf.Paths, SelectedPaths and other similar properties,
+so that they work fine also for a temp panel, for example.
+- Show-CallStack: *) more info about the last errors; *) fixed potential dead
+lock when it is called from an event handler.
+- Function Show-Balloon: default timeout is 30 sec.; old value 0 sec. was not
+good at some machines.
+- Improved some internal operations with script blocks instead of commands.
+
+= 1.1.39 =
+
+HOW TO INSTALL:
+COPY ALL FILES from "Plugin" to "%FARHOME%\Plugins.NET\PowerShellFar\"
+
+NEW
+
+- Property Description of file system items (e.g. result of Get-*Item) is now
+writable. New demo script Test-Descript-.ps1 shows it.
+- $Host.UI.RawUI: implemented most of missed functionality. Warning: so far
+$Host.UI.RawUI is recommended only for reading data, writing in FAR is a bit
+different story.
+- MemberPanel and PropertyPanel: it is allowed to edit null values or unknown
+data types (using =... in FAR command line). Only string can be entered and only
+if assignment of a string is allowed by an object.
+
+FIXED
+
+- Show-CallStack.ps1
+
+CHANGED
+
+- "Editor console" menu: .psfconsole files are stored in %TEMP%\psfconsole. If
+there are existing files then on "Editor console" you are prompted to open one
+of them or to press escape for a new one.
+
+= 1.1.38 =
+
+FAR DESCRIPTIONS
+
+- New script Edit-Descript-.ps1 to edit pseudo multiline descriptions in the
+internal editor. Default pseudo line delimiter is " _ ", it is of course shown
+in panels or when you modify text by standard one-liner Ctrl-Z. In editor these
+delimiters are replaced with new lines. You can call it from panels, editor and
+viewer for the current item or define a file as a parameter.
+- Profile-.ps1: added "Edit description" to the user menu.
+- New built-in function Export-Descript.
+
+FIXED
+
+- OEM encoding in built-in function Import-Descript.
+- Some cases of incorrect $Psf.CurrentPath, e.g. for a temp panel.
+
+OTHER
+
+- New: PowerShellFar.UserPanel.SetGetData, see Panel-Process-.ps1
+- Panel-Process-.ps1 - CtrlR updates not only properties of already shown
+processes, but the list itself too, i.e. new processes are shown, exited
+processes are removed. + New parameter -Where to filter processes dynamically.
+- TabExpansion-.ps1: 1) takes into account that "System." can be omitted; 2)
+wildcards are not permitted anymore, only substrings (starts with *), example:
+[*commandt<TAB> (then you can use wildcards just in the list incrementally).
+
+= 1.1.37 =
+
+Recommended FAR 1.71.2315
+
+- Various menu items are enabled \ disabled according to the current area.
+- Test-Dialog-.ps1: added new FAR IUserContol to emulate dialog MouseClicked.
+- Test-Dialog-.ps1: removed button [Code] as not needed - starting from FAR
+1.71.2309 you can invoke PowerShell commands from any FAR dialog using F11 \
+PowerShellFar \ Invoke input code...
+- Revised obsolete plugin code and scripts, see FAR.NET 3.3.37 History.txt
+
+= 1.1.36 =
+
+Requires FAR 1.71 alpha 4 (build 2309)
+http://forum.farmanager.com/viewtopic.php?p=29848#29848
+
+NOTE: PowerShellFar menu is shown on F11 in dialogs (new FAR feature) and most
+of commands work fine, but some of them may have unwanted effects that will be
+fixed in future versions (i.e. do not report these issues for now).
+
+- Added new PowerShellFar menu item "Errors..." to view PowerShell errors and,
+if source is available, open a source file in the internal editor at the error
+line.
+- ObjectPanel StartSortMode is set to unsorted; it looks like in many cases it
+is better to view objects in their original order. Of course, sorting by name
+(or whatever) still can be set by a script or manually before or after Show().
+- Removed the script Build-Call-.ps1; it is still working, but it will not be
+supported, keep it yourself if you use it. TabExpansion of cmdlet and script
+parameters actually provides similar functionality.
+- Removed auto-trimming of editor line ends from Profile-Editor-.ps1; this task
+is now implemented as FAR.NET sample TrimSaving (just in case if you use it).
+
+= 1.1.35 =
+
+FIXED
+
+- Error message when FAR started with /e or /v
+- Issue on copy/move from an ItemPanel to an incompatible panel.
+
+OTHER
+
+- Internal changes needed for the latest version of FAR.NET.
+- New scripts Test-RegisterCommand-.ps1, Test-RegisterFiler-.ps1,
+Test-RegisterTool-.ps1 demonstrate $Far.Register*|Unregister* methods.
+
+= 1.1.34 =
+
+SETTINGS AND CONFIG
+
+- Prefixes (main and jobs) are removed from PSF settings and the config dialog.
+FAR.NET now takes care of all plugin prefixes, see FAR Options \ Plugins
+configuration \ .NET \ Prefix tools.
+- PowerShellFar probably lost its hotkey, go to Options \ Plugins configuration \
+.NET and set a hotkey by ampersand in Panels tools, Editor tools, Viewer tools
+(yes, a plugin now may have different hotkeys in different areas).
+
+PANELS
+
+- Plugin menu command "Power panel" works also from not modal editors\viewers.
+
+STEP QUEUE TOOLS
+
+- Step queue processing was partially moved into FAR.NET, so that any FAR.NET
+plugin can use it too. As a result PSF does not need the menu command "Go" and
+configuration option hotkey, they were removed.
+- New class PowerShellFar.Stepper implements all this and provides more control
+on step processing. New script Test-Stepper-.ps1 is an example.
+
+IMPROVED
+
+- Avoided "Can not write at this moment..." limitation. A script does not fail
+now, its output is written to the user screen (under panels). In other words,
+Write-Host should work always. Write-Error still has some limitations, e.g. it
+fails when it is called from Stepper steps (but it is not really a big deal).
+
+= 1.1.33 =
+
+NEW
+
+- Many new features were added to FAR.NET, see its History.txt; the most
+interesting is pushing panels (you can now keep as many panels as you want) but
+there are even more new features. PowerShellFar shows them in new test scripts.
+- Script Test-Panel-.ps1 shows basic operations on base FAR.NET panels including
+new features: custom key bar labels and custom info panel lines.
+- Script Test-OpenFile-.ps1 shows how to use OpenFilePlugin FAR API.
+
+= 1.1.32 =
+
+NEW: Update-Far.ps1
+
+Update-Far.ps1 downloads new alpha version and updates FAR. It is OK and even
+better to run this script from FAR (in this case you don't have to specify
+parameter -FarDir) . Note that it is standard PowerShell script, not PSF.
+
+NEW: step queue tools
+
+Many FAR operations are executed only when FAR gets control, i.e. when your code
+has finished. This restriction is quite a problem if you actually want several
+such operations to be executed together. Step queue technique in PowerShellFar
+may help:
+
+- Plugin option Hotkey ~ $Psf.Settings.PluginHotkey; it should be set to the
+PowerShellFar hotkey from the F11 menu. It is needed for step queue processing.
+
+- New methods $Psf.Go()/ToGo(), plugin command "Go!" - tools of a step queue
+processing. Script Test-Go-.ps1 shows what it is and how it works. See its
+comments for more or just run it.
+
+- Power panels (e.g. opened by scripts Panel-*.ps1 from Bench) can now be
+started not only from panels but also from not modal editors and viewers.
+
+PROVIDER ITEM PANEL
+
+- Implemented work around Rename-Item problems with symbols *?[]. E.g. it was a
+problem to rename a macro "Ctrl[" in Panel-Macro-.ps1. It should work fine now.
+
+FAR MACROS
+
+Panel-Macro-.ps1:
+- Fixed a few bugs.
+- You can call it from editor or viewer to edit a macro sequence in another
+modal editor (call by "Invoke input code" or better add a command to the user
+menu/code, see Profile-.ps1).
+- [F4] (NEW) on a macro opens a modal editor to edit a sequence; if you want to
+view/edit other properties as usual press [Enter] (in this case [F4] opens not
+modal editors).
+
+OBSOLETE
+
+- FAR.NET: IFar.AnotherPanel will be removed, use IFar.Panel2 instead.
+- Will be removed or changed: [CtrlA] = "open properties" in ItemPanel (e.g.
+Registry, key values). Use [ShiftEnter] instead.
+
+MISC
+
+- Settings.MaxHistoryCount: number of commands kept in the registry.
+- MemberPanel and PropertyPanel remember the last current item name; when you
+open a panel next time then an item with this name is current.
+- SetEdit() moved from UserPanel to AnyPanel, so that you can override default
+action; example: Panel-Macro-.ps1: [F4] opens an editor in customized Registry
+panel (try the same in standard Registry panel - operation is not supported).
+
+= 1.1.31 =
+
+FAR MACROS PANEL (multi-line sequences are supported)
+
+- New script Panel-Macro-.ps1 (alpha) to explore and view/edit macros. Note that
+F4 on a Sequence allows to edit multi-line macros in FAR editor. You work on a
+macro in a panel, not in modal dialogs, so that you can save (CtrlS) a macro,
+test it and continue edit immediately. See more in the script comments.
+
+PROVIDER ITEM PANELS
+
+- Enabled operation copy-here (ShiftF5) for more providers. E.g. working with
+macros (i.e. Registry provider), see above, you can duplicate a macro in the
+same area with a new name. As usual you can copy/move items to another item
+panel (for macros use the second macro panel).
+
+OTHER POWER PANELS
+
+- Some functionality was added to Power panels for the sake of Panel-Macro-.ps1.
+Actually it shows how to create and configure a provider item panel for special
+data with special operations. This approach is very promising and it will be
+further developed (read, changed).
+
+MENUS AND LIST MENUS
+
+- Quite a number of FAR.NET changes to improve intelli-lists and other list
+menus (TabExpansion, Complete-Word-.ps1, history, etc.). If you use in your
+scripts IMenu filters, then you have to migrate to IListMenu. IMenu now is pure
+set of commands and optional break keys, just like in FAR. IListMenu is designed
+for much more. See history in FAR.NET 3.3.31 and updated documentation.
+
+TABEXPANSION
+
+- TabExpansion-.ps1 - improved expansion of full paths (i.e. with slashes)
+including registry and network paths.
+
+= 1.1.30 =
+
+LIST MENUS (with incremental filter - NEW!)
+
+- FAR.NET introduced a new UI feature: list menu (IListMenu). It is used in
+menus that are rather object lists than command sets. In PSF they are now:
+Command history, TabExpansion, Complete-Word-.ps1, Select-Menu-.ps1,
+Show-History-.ps1. All these menus have incremental filter and some of them
+still have permanent filter (primary). Both filters may work together. Note that
+default permanent filter key changed to CtrlDown (but it is configurable now).
+
+SETTINGS
+
+- $Psf.Settings has new properties, kind of user preferences, mostly UI. See
+more in .hlf, .chm and some examples in Profile-.ps1
+
+FIXED
+
+- Panel-Object-.ps1: fixed call with -Append switch.
+
+MISC
+
+- "TabExpansion-.ps1": all parameter set (i.e. -[Tab]) is sorted and contains
+unique names (it used to return parameters by groups which is not good now for
+new incremental filter).
+- Changed Job.State type from string to enum PipelineState (it is not breaking -
+in scripts you may continue using strings).
+
+= 1.1.29 =
+
+PLUGIN
+
+- Good news for those who uses PSF frequently - now PS is initialized in the
+background, so that FAR starts much faster (if PSF was preloadable) and the
+first PS command is invoked without a delay. Option "Plugin preloadable" was
+removed from settings at all.
+- BUT, FOR EDITOR EVENTS (just in case is you use):
+this scenario does not allow you to install editor handlers from the main
+profile ("Main startup code"); you have to move all such code to a separate
+profile defined by new option "Editor startup code" (code executed once when you
+open editor the first time). See more in updated help topic "Plugin settings".
+
+- Removed operation "Close session". It was not really useful, but it was able
+to make problems, e.g. on existing editor handlers added from scripts. When you
+really need a new session then restart FAR or open another one.
+
+FIXED
+
+- Search-Regex-.ps1: fixed error message on [Enter] on already opened file.
+- Fixed unwanted creation of global variables in internal operations of
+TabExpansion and PropertyPanel ($line, $lastword, $item, $literalname, $name)
+and in scripts (handler scriptblocks executed in global scope were converted
+from {..} to {&{..}}, so that their variables are in a local scope).
+
+NEW
+
+- New small job test in Test-Job-.ps1 (TEST 3)
+- New predefined global function Show-Balloon (defined in PowerShellFar.ps1).
+It is used to notify about startup code errors. You can use it too. E.g. type
+in command line:
+>: Show-Balloon 'Title' 'Message'
+
+CHANGES
+
+- Improved output of background jobs on Write-{Debug|Error|Verbose|Warning}.
+- Minor simplification of Robocopy-.ps1
+
+OBSOLETE
+
+- As it was announced in 1.1.28 obsolete methods were removed:
+$Psf.CollectHistory(), $Psf.InputPowerShell(), $Psf.ExpandCode().
+
+HOUSEKEEPING
+
+- Internal profile PowerShellFar.ps1 is not distributed any more, but it is
+still used internally (Sources\Resources\PowerShellFar.ps1)
+
+= 1.1.28 =
+
+FIXED
+
+- Word-completion bug in editor console (.psfconsole files).
+
+PLUGIN
+
+- Added new plugin menu command "Snap-ins" allowing you to add or remove
+registered PowerShell snap-ins. See also help.
+
+- Most of menu commands now have corresponding public methods in $Psf, e.g.
+"Snap-ins" ~ $Psf.ShowSnapIns(), "TabExpansion" ~ $Psf.ExpandCode() and etc.
+In other words, almost any plugin UI feature can be called from PowerShell.
+
+PANEL MENU
+
+- Added AnyPanel.AddMenuItem() (panel menu called on [ShiftF3]). See demo script
+"Test-Panel-Menu-.ps1".
+
+DATA PANEL
+
+- Added simplified lookup for DataPanel: MemberPanel.CreateDataLookup() creates
+a simple handler for DataPanel.SetLookup(). Example: Test-Panel-Notes-.ps1 (old
+example is not removed because it demonstrates how lookup actually works and can
+be used in complex cases, e.g. when a value is calculated by lookup data).
+
+WINKIT
+
+Namespace Windows was renamed into WinKit. A few words about it: it is not
+related to FAR. Everything is experimental and subject to change. Changes:
+- Windows.NativeMethods.ShowWindow -> WinKit.Window.Activate
+- Windows.NativeMethods.NewHardLink -> WinKit.Tools.CreateHardLink
+
+OBSOLETE
+
+Some methods were renamed for better consistency of existing and future public
+names. The old methods still exist but will be removed in the next version:
+
+- Remaned $Psf.CollectHistory() into $Psf.GetHistory().
+- Remaned $Psf.InputPowerShell() into $Psf.InputCode().
+- Remaned $Psf.ExpandPowerShell() into $Psf.ExpandCode().
+
+= 1.1.27 =
+
+DOCUMENTATION
+
+This is the first version with documented code (download "PowerShellFar.chm").
+This help file contains both FAR.NET and PowerShellFar references, or, in other
+words, everything you need for writing PowerShellFar scripts and automating FAR
+via FAR.NET. Note that "PowerShellFar.hlf" may still contain useful information
+not included in .chm documentation (UI, scripts, techniques, tips and etc.)
+
+"PowerShellFar.xml" (code comments) is also distributed now. It can be used for
+example by .NET Reflector or in Visual Studio (just in case if somebody wants to
+create an assembly dependent on PowerShellFar.dll - comments should be available
+for Object Browser, intellisense and etc.)
+
+All the code was revised to make documented features more consistent and easier
+to use and to hide everything that should be used only internally. There is tiny
+probability that some changes are breaking, e.g. AnyPanel: renamed method Find()
+into GetPanel().
+
+LOOKUP PANELS
+
+At first this functionality was designed for DataPanel only. Now it can be used
+in more cases, for example see new demo script Test-Panel-Lookup-.ps1 and
+comments there for details.
+
+= 1.1.26 =
+
+COLORER
+
+PowerShell.hrc version 1.3.4: 'regexp' and 'sql' support:
+- 'regexp' scheme is used in string operand of -match, -notmatch, -replace, ..
+- Here strings are processed with 'regexp' or 'sql' schemes starting with lines
+#REGEX or --SQL respectively. Note that regex normally should be created with
+option IgnorePatternWhitespace or use inline instruction (?x). See examples in
+PowerShell.hrc (<documentation>) and SQL examples in Test-Panel-Notes-.ps1
+- REMOVED prototype definition from PowerShell.hrc; thus, the prototype and
+PowerShell.hrc have to be registered in different way - see <documentation> in
+the file.
+
+RomanConsole.hrd:
+- Included console palette RomanConsole.hrd (white background). PowerShell.hrc
+is actually designed with this palette in use, other palettes can be less
+suitable or even practically unusable.
+
+PANELS
+
+- New panel class PowerShellFar.TreePanel allows to display panel items as a
+tree with some standard features. Example script Test-Panel-Tree-.ps1 shows how
+to use it and describes several points of interest.
+
+MISC
+
+- Fixed "Job prefix" bug in configuration dialog.
+- New demo script Test-CallStack-.ps1, see the source and comments.
+- Minor changes in Show-History-.ps1.
+- Hardcoded pieces of PowerShell code moved from .cs files to .ps1 files in the
+Resources directory; consider them as yet more PowerShellFar examples (note that
+they are not called directly).
+
+= 1.1.25 =
+
+DIALOGS
+
+Test-Dialog-.ps1 shows new FAR.NET features: IDialog.AddBox() with right\bottom
+set to 0; "smart" relative Top\Bottom values (see help: IDialog.NoSmartCoords);
+IControl.Rect (good for relative positions, too); IDialog.Cancel:IButton (if set
+and pushed then Show() returns false).
+
+SETTINGS
+
+Added PowerShellFar configuration dialog which is called in a standard way, i.e.
+from the "Options\Plugin configuration" menu.
+
+HOUSEKEEPING
+
+- Improved Search-Regex-.ps1 (e.g. restoring the start folder on exit).
+- REMOVED obsolete Set-Settings-.ps1, use the configuration dialog instead.
+- REMOVED script New-Regex.ps1 as not related to FAR and not used by the others.
+- RENAMED Test-UserCommand-.ps1 into UserCode-.ps1 (it is not a test after all);
+depending on how it was used you may have to update your "User code command" in
+the configuration dialog.
+
+= 1.1.24 =
+
+This version is almost all about TabExpansion, a key feature of PowerShell. Now
+this mechanism is more simple, yet powerful and its core is really integrated
+into PowerShellFar.
+
+Just like in PowerShell.exe by default there is only standard very poor built-in
+function TabExpansion. Advanced function TabExpansion- is not enabled by default
+and it is implemented as a separate script TabExpansion-.ps1. The reasons are:
+
+*) anybody can replace MS TabExpansion with anything he wants in a profile,
+advanced TabExpansion- is one possible alternative and it can be edited itself.
+
+*) TabExpansion- is implemented as "autoloaded function"; thus, it is not loaded
+if it is not really used.
+
+*) TabExpansion-.ps1 is used by the author for both PowerShellFar (in FAR) and
+standard PowerShell (in PowerShell.exe console).
+
+TABEXPANSION INTERFACE CHANGES
+
+*) Added plugin menu item "TabExpansion" which calls TabExpansion for the text
+in the editor or the command line.
+
+*) *.ps1 files: TabExpansion is simply called on <Tab> if the line is not empty
+and the cursor is not after space or tab, otherwise tab is inserted as usually.
+
+*) Removed Expand-PowerShell-.ps1 (its functionality was moved to the core). If
+you really want to call this directly, call public $Psf.ExpandPowerShell().
+Also removed not needed now $Psf.add_TabExpansion().
+
+NEW TABEXPANSION OF (see help for details and examples):
+
+*) parameters of a script alias;
+*) members of a static object;
+*) members of an object defined by a simple expression (see warning);
+*) types and namespaces directly or with wildcards (see note about cache).
+
+HOUSEKEEPING
+
+Removed scripts Download-Feed.ps1, Download-Feed-.ps1 and Panel-Feed-.ps1
+because they are not really related to FAR (keep them if you want, they are
+still valid now, but will not be supported). The idea was to show an example of
+UserPanel in Panel-Feed-.ps1, but it is done now in other scripts Panel-Process-
+and Panel-Table-.
+
+= 1.1.23 =
+
+EDITOR
+
+New script Reformat-Selection-.ps1: it is similar to classic "Align block"
+editor plugin command with "Reformat block" option, but it has some extra
+features: primary indent (preserved exactly), prefix and secondary indent, see
+the script for details. A command to run the script can be added to the user
+menu, see example in Profile-.ps1, so that it is easy to call it with a macro.
+
+EDITOR CONSOLE
+
+<Del> in the last empty line as usually deletes the last output but now it keeps
+commands. In other words, it deletes the last found block of lines between lines
+"<=" and "=>" (output markers).
+
+PROVIDER ITEM PANEL
+
+Network paths were supported from the very beginning, but computer shares were
+not. Now they are: you are prompted to select a computer share from a menu if
+you run Panel-Item-.ps1 with a path like '\\ComputerName' or if you enter '..'
+when the current path is already a share, e.g. '\\ComputerName\ShareName'.
+
+BACKGROUND JOBS
+
+If you close FAR safely (F10) and jobs still exist in the job list then for any
+job you are prompted to abort it, wait for its exit, view its output if any or
+discard all jobs and output. Note that it is done with WinForm message boxes and
+Notepad because FAR UI is not available on exiting. This solution is simple and
+it is enough in most cases; if it is not enough and your PowerShellFar is set to
+be preloadable then there is an advanced way, see help: Background jobs.
+
+TABEXPANSION FOR SCRIPTS
+
+*) All PowerShell scripts in the system path directories are also included into
+the list of candidates for expansion.
+*) You can expand parameters of those scripts if 'param' statement and each
+parameter are written one per line, i.e. like it is done in Bench scripts. As
+usually, if you do -[tab] then all parameters are shown.
+*) Examples:
+	panel-d[tab] -> Panel-Data-.ps1 Panel-Database-.ps1
+	Panel-Data-.ps1 -t[tab] -> -TableName -Title
+	Panel-Data-.ps1 -[tab] -> <all parameters>
+
+MISC
+
+Demo user menu in Profile-.ps1: removed the item "Run test script Try-.ps1" - it
+is not really useful for everybody, but anybody can add it only if he wants.
+
+= 1.1.22 =
+
+DATABASE AND PANEL TOOLS
+
+Panel-Data-.ps1 (and underlying class DataPanel):
+- Removed switch -BuildCommands. DataPanel will try to build commands itself
+only when you delete, insert or update records. It is simple and effective.
+- Added parameter -Title (~ IPluginPanel.Info.Title) - panel title.
+- If parameter -Connection is not defined then variable $DB is assumed. Thus,
+parameter -Connection is optional now, and all the parameters were reordered to
+make simple commands even simpler. For example with a new alias pd ~ Panel-Data-
+you can open a data panel like this (but run Initialize-Test-.ps1 at first, i.e.
+open your global connection $DB):
+  >: pd "select * from testnotes where note like '%<%>%'"
+and in the result panel you still can delete, insert and update data really in
+the database (!) - it is useful, but take care, these data are 'connected', not
+just 'copied'.
+- New property TablePanel.FarDescription (~ parameter -FarDescription of
+Panel-Data-). Use it instead of IncludeColumns and ExcludeColumns when you want
+the only column in Description. It is highly recommended if you expect thousands
+of result records. Format-Table which is called when you use IncludeColumns and
+ExcludeColumns can take ages.
+- Added static property DataTable.MaxFormattedRows = 500 (you can set your value
+in your profile) - for 'unknown' tables. See code comments in DataPanel.cs.
+- Added property DataTable.Connection (get). Why? It can be passed in lookup
+panels so that they can reuse already opened connection (just in case if it is
+not in a global variable; a global variable is an easy solution, indeed, say,
+for demos and simple tasks, but it is not good if you are about to use several
+connections in the same session at the same time).
+- Start sort mode of DataPanel is set to Unsorted to preserve the order produced
+by SELECT with its powerful ORDER BY capabilities.
+
+- <ShiftEsc> closes the current panel together with all its parents (as before,
+<Esc> closes the current panel and opens its parent if any).
+
+MISC
+
+- Fixed screen garbage on PowerShellFar output when panels are hidden and status
+line is visible.
+- Fixed an error on opening a Power panel from disk menu when PluginPreloadable
+is false and this is the first action in a session.
+
+= 1.1.21 =
+
+DATABASE TOOLS
+
+- New script Panel-Table-.ps1: show tables and views of an open connection $DB
+in a panel. <Enter> opens a selected table by Panel-Data-.ps1: depending on a
+table and a connection you can insert, delete and update records; <Esc> returns
+you back to the parent panel with tables.
+
+- New script Panel-Database-.ps1 (designed and tested for SQL Server Express):
+shows all databases; <CtrlPgDn> opens database properties, <Enter> opens list of
+tables in the database (it is done by Panel-Table-.ps1, see above).
+
+- You can now configure your table panels to take some fields values from
+another (lookup) table panel. See how it is done in Test-Panel-Notes-.ps1: when
+you <Enter> Category field then another Test-Panel-Categories-.ps1 is called
+where you: can <Esc> to exit with no changes, <Enter> to set selected Category
+as new value in TestNotes record, or before <Esc> or <Enter> you can work with
+lookup table as if it is opened directly, i.e. you can add, remove, edit
+records (use <CtrlPgDn> to enter a record because <Enter> is used for lookup).
+
+- Other minor changes in scripts and code mostly related to new tools above.
+
+TEST SCRIPTS
+
+- Test scripts moved to Bench\Test directory and some test rules changed, read
+About-Test.txt if you want to run some tests, especially database test panels.
+- Functions from Test-DataPanel-.ps1 was transformed into Panel-Table-.ps1 and
+advanced test scripts in Test directory; script itself was removed.
+
+MISC
+
+- Demo Profile-.ps1: $ErrorActionPreference = 'Stop' again. 'Inquire' mode is
+really good for troubleshooting but it is too annoying for normal work when
+errors are not due to bugs in code.
+
+= 1.1.20 =
+
+VIEW CALL STACK ON ERRORS ($ErrorActionPreference = 'Inquire')
+
+For the sake of better troubleshooting of your scripts and just for experience I
+set $ErrorActionPreference = 'Inquire' in demo Profile-.ps1 (just in case if you
+use it or you can set it in your profile).
+
+Advantages: you have a choice what to do on an error: continue; silently
+continue; break; suspend and invoke intermediate commands in Editor console; use
+NEW FEATURE - view call stack on error (<Esc> in error message dialog).
+
+Disadvantages: can be annoying if you simply compose a new command; not all
+scripts allow interaction, e.g. inside DB transactions (but actually in this
+case you can explicitly set $ErrorActionPreference = 'Stop\Continue' in a
+script or any other scope).
+
+Anyway, it is up to you what $ErrorActionPreference to use, but the new feature
+'view call stack' useful for troubleshooting is available only in error dialog,
+i.e. when $ErrorActionPreference = 'Inquire'.
+
+OTHER CHANGES
+
+- Minor improvements in TabExpansion-.ps1
+- Fixed example 'Tables' in Test-DataPanel-.ps1
+- Editor console: <= and => are used as command output markers.
+- Plugin menu command "Run selected code" being invoked from the command line
+with no selection (i.e. full text) clears the command line on success and keeps
+the text on errors so that you can correct the text immediately.
+
+= 1.1.19 =
+
+- New script Panel-Data-.ps1 - advanced helper for PowerShellFar.DataPanel (see
+how it is used in Test-DataPanel-.ps1).
+- Added demo CSV ~ function ShowCsvData to Test-DataPanel-.ps1 - it shows how to
+panel data from CSV files using OleDbConnection and Microsoft.Jet provider.
+- Object panel and Member can open (<Enter>) IEnumerable objects - their items
+are shown in a child Object panel.
+- Object panel can open(<Enter>) ManagementClass object (e.g. from Get-WmiObject
+-List). It also can open results of Group-Object, thus, you can create and browse
+quite complex object structure by commands like this (browse WMI classes grouped
+by dynasty; warning: avoid opening 'unknown' items - some WMI items take ages):
+>: Get-WmiObject -list | Group-Object __DYNASTY | Panel-Object-
+- Member and Property panels: default sort mode is 'Unsorted' (it was not set);
+- Object panels: start view mode is not set (it was 'Descriptions', which can be
+very time consuming for large number of objects with many properties).
+- Internal (but public) function NativeMethods.SetActiveWindow was renamed into
+ShowWindow.
+
+= 1.1.18 =
+
+- The plugin keep its settings in IFar.RootKey + '\PowerShellFar'; this also
+fixes problems on starting the plugin with '/u' parameter in FAR command line.
+- Improved panel modes: Member and Property panels start in Description modes;
+parent panels restore their initial modes when child panels are closed.
+- Improvement in Object panel: you can open (<Enter>) results of Group-Object,
+e.g. after commands like this:
+>: Get-Command * | Group-Object CommandType | Panel-Object-
+you can enter into groups (in this example: Alias,Cmdlet,..) and view items.
+
+= 1.1.17 =
+
+PowerShellFar.DataPanel:
+- F7: when a new record is added its Member panel is opened, so that you can
+start to edit data immediately (it seems quite natural). Then you are prompted
+to save the added record when you return to the table panel.
+- Manual changes are normally committed to a database automatically (you are
+just prompted to confirm). Other changes (e.g. done by scripts) still can be
+saved by <CtrlS>. <CtrlS> can also be used in Member panel when you edit a
+record data.
+- Other minor improvements and fixes in Data and other Power panels.
+
+OBSOLETE:
+- removed obsolete $Psf.From; please, use $Far.From.
+- remainder: FAR.NET: removed obsolete properties {ILines | IStrings}.Text;
+please, use methods {IEditor | ISelection}.{GetText | SetText}.
+
+= 1.1.16 =
+
+PowerShellFar.DataPanel:
+- new panel allows to work with database data with all set of main operations:
+select, update, insert, delete (of course you don't have to type these commands
+in a panel, you do it once in a script via data adapter). Test-DataPanel-.ps1
+shows all this for SQL Server Express 2005.
+
+Object panel:
+- <CtrlS> exports objects to .clixml file; see also new Import-Panel-.ps1
+
+Member panel:
+- <Del> deletes properties (if possible, usually PSCustomObject NoteProperty).
+
+Misc:
+- improvements in all Power panels.
+- functions not used by PowerShellFar moved from system PowerShellFar.ps1 to
+folder Bench as scripts, aliases moved to demo user profile Profile-.ps1, some
+names changed: Get-FarData -> Get-Data-.ps1, Show-Member -> Panel-Member-.ps1,
+Show-Property -> Panel-Property-.ps1, Start-PowerPanel -> Panel-Item-.ps1 and
+Panel-Object-.ps1; aliases: gd, pi, pm, po, pp.
+- command output to console or viewer - viewer is started if output is going to
+be not completely visible (panel visibility and height is taken into account),
+i.e. normally you don't have to hide panels to see output.
+- PowerShell.hrc - suffix d|D for 'decimal' number type.
+
+OBSOLETE:
+- $Psf.From will be removed; please, use $Far.From.
+
+= 1.1.15 =
+
+- REMOVED script Show-Member-.ps1, because its functionality is covered now by
+member mode of Power panel (class PowerShellFar.MemberPanel) and function
+Show-Member (alias shm) defined in system profile PowerShellFar.ps1.
+
+Member panel:
+- CtrlShiftM: switches modes: 1) properties and values in a description column
+(you can edit some properties in editor or in commands line using <Enter> and
+prefix '=', see help; 2) all members with member info in a description column,
+(and no changes allowed).
+
+Property panel:
+- <Enter> and prefix '=' allows to edit some properties just in the command line
+(like in Member panel).
+
+Other changes:
+- new class PowerShellFar.Invoker: it is used for running scripts in another
+runspace. It is designed first of all for running scripts in the background
+(InvokeAsync()) and reading output during processing. Search-Regex-.ps1 shows
+how to use it.
+- converted $Psf.TabExpansion from event to a simple event handler.
+- removed $Psf.CreateJob() as dupe of "New-Object PowerShellFar.Job".
+- added helper function Get-FarData (and alias gfd), see PowerShellFar.ps1
+- updated help topic "Power panel".
+
+= 1.1.14 =
+
+Power panel:
+- F4: internal non-modal internal editor, AltF4 - Notepad, usually modal.
+- CtrlPgDn: panel with the current object members (like Get-Member), see help.
+- removed methods $Psf.StartPowerPanel() (avoiding duplicated functionality).
+Instead, use the predefined function Start-PowerPanel (alias pp) or create\open
+a panel directly using New-Object and PowerShellFar classes.
+- many internal changes using new FAR.NET panel features.
+
+ETS (Extended Type System):
+- Import-FileDescription, Get-FileDescription can get info from any "Descript.*"
+file (if there is one and only one in a directory).
+
+- new scripts *-Feed*.ps1 allow download and preview Web feeds in a panel and
+open their links in IE; they also show how to use Power panel with custom
+objects (this approach is under construction).
+
+= 1.1.13 =
+
+Installation:
+- copy all files "PowerShellFar*" to your "%FARHOME%\Plugins.NET\PowerShellFar"
+
+Power panel:
+- New mode: "Objects" - any PowerShell objects, for example output of commands,
+i.e. ">: ps | pp" shows all processes in the panel with some properties in the
+description column, then you can select one and view (F3) or quick view (CtrlQ)
+all its properties - thus, it works like ProcList plugin but provides much more
+information. NOTE: process list is only an example, you can put any objects to
+the panel and get their information.
+- $Psf.{Paths|Items}[2]|Current{Path|Item}[2]|Selected{Path|Item}[2]: if the
+panel is a Power panel then Paths are valid original Unicode paths, Items are
+any panel objects in object mode or provider items in provider mode.
+- PowerShell function Start-PowerPanel moved from demo Profile-.ps1 to internal
+profile PowerShellFar.ps1 and updated for the Object mode.
+- Now Power panel can be opened also from FAR disk menu.
+- Updated help for Power panel.
+
+Other changes:
+- Fixed unwanted global variables from PowerShellFar.ps1 functions.
+- Changed logic of $Psf.Selected{Paths|Items}[2]: it includes selected elements
+if any else the current element if it is not '..' else nothing;
+
+ETS: Description property for file and directories:
+- Take a look at the first experiment with PowerShell ETS (extended type
+system): now in PowerShellFar any IO.DirectoryInfo and IO.FileInfo object (e.g.
+what you get from Get-*Item, but not only) has property Description which is FAR
+text from description file Descript.ion. Cool, isn't it? It is done completely
+in PowerShell (i.e. no C# coding or whatever): see PowerShellFar.types.ps1xml
+and PowerShellFar.ps1 (command Update-TypeData, function Get-FileDescription).
+Silly example: >: dir | ft Name,Length,Description -a
+
+= 1.1.12 =
+
+Output and plugin settings:
+- Commands output is now shown by the internal FAR viewer (with tmp files);
+- As a result, settings PluginLogFile, PluginLogViewApp, PluginLogViewArgs were
+removed;
+- Remaining settings now live in the Registry, you should manually remove:
+\Local Settings\Application Data\Eugene_Roshal_&_FAR_Group\..\user.config
+(and set your settings again: startup code, user code, etc.).
+
+Refactoring:
+- created internal profile "PowerShellFar.ps1" (it has to be copied to the same
+location where "PowerShellFar.dll" is). User profile is loaded after this system
+profile, so that a user can redefine some features.
+- moved functions `Clear-Host`, `more` from demo profile "Profile-.ps1" to this
+system profile (because they are actually not optional).
+
+Power panel:
+- reduced number of data reads (e.g. improved network performance).                                                                                               -
+- fix: new item (F7) should not overwrite an existing with the same name.
+- added ShiftF5: copy here with a new name (if supported by a provider).
+- CtrlA is used for properties (not CtrlPgDn, it will be used differently).
+- access to properties of .. item, e.g. CtrlA at .. when path is hkcu:\
+- improved view\edit of properties which values are arrays of primitive types
+(e.g. you can edit types Binary and MultiString in Registry).
+- Patch for (default) property of Registry (see help).
+
+= 1.1.11 =
+
+- Revised internal invocation of PowerShell, as a result some restrictions no
+longer exist.
+
+Power panel:
+- Description column contains preview of item data. Note: Description mode can
+take significant time for large number of items.
+- Provider settings for Description column can be defined via $Psf.Providers,
+see Profile-.ps1 for examples and help for more details.
+- Fixed some provider oddities (bugs?) and other issues.
+
+- Implemented PowerShell host methods {Enter|Exit}NestedPrompt(); now you can
+suspend\resume execution: it is suspended by modal editor console (.psfconsole)
+where you can run nested PS commands and investigate output just in the editor.
+To exit this mode run "exit" (it closes the editor silently) or exit the editor
+as usually (and optionally save its contents). This feature is useful for
+debugging and diagnostic: for example now you can enable 'Inquire' error mode by
+setting $ErrorActionPreference = 'Inquire' (global or local). In this mode on
+any error you will see a dialog with an error message and choices: [Continue]
+[Silent Continue] [Break] [Suspend] - choosing [Suspend] you can investigate the
+case and then decide: [Continue] [Silent Continue] or [Break]. Then, if you use
+-Confirm switch for a PS cmdlet then one of the choices is [Suspend], too.
+
+= 1.1.10 =
+
+- Search-Regex-.ps1: <Enter> on a found match: cursor in editor is positioned
+at the found match and, in standard (line) mode, the matched text is selected.
+Added -AllText mode: search is performed on the whole file text, i.e. you can
+find multi-line matches, too. Improved communication between threads. <Esc>
+closes the panel.
+- Power panel: fixed bugs and issues, implemented many new features, see help.
+WARNING: Power panel is still very experimental, please, be careful. But it is
+already preliminary tested with 10 different data store providers.
+- Fixed a recent bug on closing PS session.
+- PS confirmation is now implemented as FAR dialog (not a menu used before),
+e.g. on "del MyFile.txt -confirm" and etc. starts a dialog.
+
+= 1.1.9 =
+
+- Completely remade Search-Regex-.ps1: it is now a real tool, not just a demo:
+search is performed in the background, results are sent to a FAR panel, you can
+start work with them while search is still in progress, found lines are opened
+in non-modal editors, etc.
+- Implemented quick and dirty version of "Power panel" - FAR panel exploring
+PowerShell EFS (extended file system). Thus, you can browse: file system itself
+(not a big deal but you can map and use PS drives, e.g. MyDrive:\), registry
+(hkcu:\, hklm:\), environment variables (env:\), certificats (cert:\), PS
+aliases (alias:\), PS functions (function:\), PS variables (variable:\) and, if
+you add any external PS provider then (theoretically) you can browse its EFS as
+well. WARNING: in Power panel all typed commands are executed as PowerShell
+commands no matter with or without a prefix; it is handy but you have to take
+care.
+- Disabled background jobs notification in the console title (for now or ever?).
+
+= 1.1.8 =
+
+- Fixed an error message on viewing an already discarded background job.
+- Ctrl+C stops the current command at the moment of any output or PowerShell UI
+operation. This solution is quite dirty but it is better than nothing at all.
+See also help topic "Restrictions".
+- $Psf: new properties: Paths2, CurrentPath2, SelectedPaths2 for passive panel.
+- $Psf: new properties: Items, CurrentItem, SelectedItems, Items2, CurrentItem2,
+SelectedItems2 - native PowerShell items (same as from cmdlets Get-ChildItem,
+Get-Item, etc.), they are useful in PowerShell command lines.
+- .psfconsole: simple rule: if any selection exists the editor always acts as
+standard editor.
+- PowerShell.hrc: improved keywords if, for, foreach, while, until and others.
+
+= 1.1.7 =
+
+- New background job helper New-Job-.ps1 and its demo in Test-Job-.ps1.
+- PowerShell.hrc: added outlined ### comments and other minor improvements.
+
+= 1.1.6 =
+
+- Included new version of PowerShell.hrc for Colorer-take5.beta5: it works for
+both .ps1 and .psfconsole files. Note that this version contains prototype
+definition in it, so all you need is to add a link to this file to your Colorer
+catalog.xml. PowerShell.hrc was significantly improved itself.
+- Added a number of new features to "Editor console": Up\Down ~ prev\next
+command; End ~ menu of commands with the same prefix; Escape ~ clear the line.
+Fixed a few issues.
+- Updated scripts according to recent FAR.NET changes in menus ('Selected').
+- Complete-Word-.ps1 in .psfconsole files takes words also from history.
+- Tiny improvement in TabExpansion.
+
+= 1.1.5 =
+
+- PowerShellFar now keeps its own command history. Commands with '#' in the end
+are not added (e.g. you may want to ignore some commands in user menu (F2), file
+associations, etc.).
+- New cool (and experimental) feature "Editor console": "*.psfconsole" files are
+opened in editor in special mode which is more or less similar to console. This
+feature is also available from scripts by $Psf.ShowConsole().
+- New plugin menu commands: "Command History" and "Editor console".
+- New script Debug-Msg-.ps1 useful for diagnostics, see help for details.
+- Script Invoke-Editor-: simplified invocation of -.ps1 scripts with Debug-Msg-,
+added a few new types.
+- TabExpansion expands also loaded functions and filters.
+- New FAR.NET menu feature: filters. It is used with AltDown in PowerShellFar
+Command History and Select-Menu-.ps1. Besides, Select-Menu- has new parameters.
+- Removed Search-History-.ps1 (actually replaced with simple Show-History-.ps1)
+because search (filter) is enabled now just in menus.
+- Corrected spelling of TabExpansion.
+- New script Watch-Output-.ps1 - it is a useful tool similar to 'TOP', but it is
+also at least a very nice toy and demo, do try it (and also see the help).
+
+= 1.1.4 =
+
+- New method $Psf.InputPowerShell() shows a dialog similar to "Input and run
+code" where you can use TabExpansion. Example: see Test-Dialog-.ps1.
+- FAR.NET supports help files now. See using .HelpTopic and .ShowHelp() in
+scripts.
+- PowerShellFar documentation is now in English and in help file.
+- New script Show-Hlf.ps1 - works like HlfViewer; sure, don't use them
+together.
+- Profile-Editor-.ps1: F1 runs Show-Hlf.ps1.
+- Complete-Word-.ps1: skips the current word itself.
+
+= 1.1.3 =
+
+- Dialog "Input and run code" supports TabExpansion (exactly by Tab).
+- New FAR.NET editor methods Begin()\End() are used in Profile-Editor-, function
+Handle-Saving used to take 2-3 minutes for a file with 40,000 lines, now it
+takes 4 seconds for the same file.
+
+= 1.1.2 =
+
+- Minor internal fixes.
+- Simple implementation of Write-Progress, it writes percents and other info in
+console title; it is better than nothing.
+- New script Profile-Editor-.ps1: auto-trimming line ends on saving; four
+popular mouse operations: select a word by double click, select text by moving
+with left button pressed, select from cursor by Shift+LeftClick and "context
+menu" by RightClick; and processing of keys Home, ShiftHome, Left and Right as
+Go-Home- and Go-Selection- (see help).
+
+= 1.1.1 =
+
+- All new FAR.NET dialog features are reflected in Test-Dialog-.ps1: ComboBox,
+ListBox, password editor, vertical text and separators, events and dynamic item
+properties.
+- New script Robocopy-.ps1 - wrapper of Robocopy.exe: starts Robocopy in Far as
+background job (see help: Robocopy-.ps1).
+- New method $Psf.CanExit(), see help "Background jobs".
+
+= 1.1.0 =
+
+- New script Test-Dialog-.ps1 test new FAR.NET dialog features.
+- New command prefix >> for background jobs.
+- New plugin menu item "Background jobs".
+- New method $Psf.StartJob(), example: Test-Job-.ps1
+- Improved Expand-PowerShell- and TabExpansion-
+
+= 1.0.9 =
+
+- Ability to run some PowerShell commands when another command is running.
+- Improvements in scripts and help.
+
+= 1.0.8 =
+
+- Commands output is written to the console if possible. Far >= 1.71.2187.
+- Search-History-.ps1 uses new $Far.GetHistory().
+- Complete-Word-.ps1: 1) works in command line, too; words are taken from
+commands history by new $Far.GetHistory(); 2) grouping by prior symbol.
+- TabExpansion- for Expand-PowerShell-: expansion of current folder file names
+and full paths if a word contains \ or /.
+- Search-History-.ps1 and Search-Regex-.ps1 both uses New-Regex.ps1.
+- New Profile-.ps1 - recommented profile template.
+
+= 1.0.7 =
+
+- 'Standard' panel behaviour on running external console applications.
+- "Run selected code" works with command line, too.
+- New $Psf.HotLine, and new behaviour of $Psf.HotText.
+- Expand-PowerShell- works in command line, too.
+- Improved Complete-Word- è Expand-PowerShell-.
+
+= 1.0.6 =
+
+- New $Psf.UserMenu, $Psf.Editor().
+- New scripts Indent-Selection-.ps1, Reindent-Selection-.ps1, Go-Home-.ps1,
+Go-Selection-.ps1, Build-Call-.ps1, Show-Member-.ps1, Profile-.ps1.
+- Improved Search-History-.ps1, Set-Settings-.ps1, Search-Regex-.ps1,
+Complete-Word-.ps1 a TabExpansion-.ps1.
+- Select-Menu-.ps1 shows using of new IMenuItem.Data, IMenu.SelectedData.
+- Some scripts are transformed into auto-loaded global functions.
+
+= 1.0.5 =
+
+- New $Psf.Paths.
+- New scripts Complete-Word-.ps1, Expand-PowerShell-.ps1, New-Editor-.ps1,
+Search-Regex-.ps1
+
+= 1.0.4 =
+
+- New $Psf.HotLines a $Psf.HotText, $Psf.Settings.PluginPreloadable.
+- New scripts Invoke-Editor-.ps1, Select-Bookmark-.ps1.
+- Test-Editor-.ps1 uses new FAR.NET features.
+
+= 1.0.3 =
+
+- "Run selected code" takes the current line if there is no selection.
+- New script Test-Editor-.ps1 shows new editor features in FAR.NET.
+- Event handlers for editor.
+
+= 1.0.2 =
+
+- New menu "User code" and $Psf.Settings.PluginUserCommand.
+- Implemented Write-Debug, Write-Error, Write-Host, Write-Output, Write-Verbose,
+Write-Warning.
+
+= 1.0.1 =
+
+- New global variables $Far è $Psf.
+- Changes in scripts.
+- Minor changes in PowerShell UI.
+
+= 1.0.0 =
+
+Minimal PowerShell UI implementation: Read-Host (with InputBox), user choise
+(with menu). Test-UI in Test.ps1 shows some features.
