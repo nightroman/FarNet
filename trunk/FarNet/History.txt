@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/
 
+= 4.6.1 =
+
+Technical build, probably the last for Far 2.
+
 = 4.6.0 =
 
 *) Asynchronous jobs

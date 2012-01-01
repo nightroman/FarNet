@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightWords
-Copyright (c) 2011 Roman Kuzmin
+Copyright (c) 2011-2012 Roman Kuzmin
 */
 
 using System;
@@ -64,14 +64,14 @@ namespace FarNet.RightWords
 		~MultiSpell()
 		{
 			Log.Source.TraceInformation("Disposing RightWords data");
-			
+
 			foreach (var spell in _spells)
 				spell.Dispose();
 		}
 		public List<string> Suggest(string word)
 		{
 			var result = new List<string>();
-			
+
 			foreach (var spell in _spells)
 				foreach (var suggestion in spell.Suggest(word))
 					if (!result.Contains(suggestion))
@@ -113,7 +113,7 @@ namespace FarNet.RightWords
 			for (int i = 0; i < _spells.Count; ++i)
 				if (_dictionaries[i].Language == language)
 					return _spells[i];
-			
+
 			throw new InvalidOperationException();
 		}
 	}

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011 Roman Kuzmin
+Copyright (c) 2011-2012 Roman Kuzmin
 */
 
 using System;
@@ -45,7 +45,7 @@ namespace FarNet.Vessel
 			var dir = System.IO.Path.GetDirectoryName(store);
 			if (!Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
-			
+
 			using (StreamWriter writer = new StreamWriter(store, false, Encoding.Unicode))
 			{
 				writer.WriteLine(LINE_HEADER);

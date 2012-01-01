@@ -1,7 +1,7 @@
 
 /*
 FarNet module CopyColor
-Copyright (c) 2011 Roman Kuzmin
+Copyright (c) 2011-2012 Roman Kuzmin
 */
 
 // HTML formatting code comes from:

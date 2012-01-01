@@ -1,11 +1,11 @@
 
 <#
 .Synopsis
-	Panel PowerShell background jobs that are running in the current session.
+	Shows PowerShell jobs in a panel.
 	Author: Roman Kuzmin
 
 .Description
-	Shows PowerShell background jobs in a panel and updates these data
+	The script opens a panel with PowerShell jobs and updates these data
 	periodically when idle.
 
 	NOTE: This script operates on PS core jobs, not on PSF plugin jobs. PSF

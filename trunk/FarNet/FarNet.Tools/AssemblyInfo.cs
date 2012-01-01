@@ -6,7 +6,7 @@ using System.Security.Permissions;
 
 [assembly: AssemblyTitle("FarNet Tools")]
 [assembly: AssemblyDescription("FarNet Tools")]
-[assembly: AssemblyCopyright("Copyright (c) 2006-2011 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2006-2012 Roman Kuzmin")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
