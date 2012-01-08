@@ -1,7 +1,7 @@
 
 <#
 .Synopsis
-	Test a tool handler.
+	Shows how to register tools dynamically.
 	Author: Roman Kuzmin
 
 .Description

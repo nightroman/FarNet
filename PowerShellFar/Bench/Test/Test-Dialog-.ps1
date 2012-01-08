@@ -163,8 +163,8 @@ $dialog.add_MouseClicked({
 
 ### KeyPressed: how to get not processed by controls key events
 $dialog.add_KeyPressed({
-	$log += "[Dialog: KeyPressed: {0:x}]" -f $_.Code
-	if ($_.Code -eq [FarNet.KeyCode]::F1) {
+	$log += "[Dialog: KeyPressed: {0:x}]" -f $_.Key
+	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
 		Show-FarMessage @'
 We catch F1 and do not set $_.Ignore to $true,
 => default action (help) will be still called.

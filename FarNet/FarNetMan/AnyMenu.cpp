@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -13,6 +13,7 @@ AnyMenu::AnyMenu()
 : _x(-1)
 , _y(-1)
 , _selected(-1)
+, _keyIndex(-1)
 {
 	_items = gcnew List<FarItem^>;
 }
@@ -59,14 +60,9 @@ void AnyMenu::Selected::set(int value)
 	_selected = value;
 }
 
-IList<int>^ AnyMenu::BreakKeys::get()
+KeyData^ AnyMenu::Key::get()
 {
-	return %_keys;
-}
-
-int AnyMenu::BreakKey::get()
-{
-	return _breakKey;
+	return _keyIndex < 0 ? KeyData::Empty : _keys[_keyIndex];
 }
 
 FarItem^ AnyMenu::Add(String^ text)
@@ -74,12 +70,27 @@ FarItem^ AnyMenu::Add(String^ text)
 	return Add(text, nullptr);
 }
 
-FarItem^ AnyMenu::Add(String^ text, EventHandler^ handler)
+FarItem^ AnyMenu::Add(String^ text, EventHandler<MenuEventArgs^>^ click)
 {
 	FarItem^ r = gcnew SetItem;
 	r->Text = text;
-	r->Click = handler;
+	r->Click = click;
 	Items->Add(r);
 	return r;
 }
+
+void AnyMenu::AddKey(int virtualKeyCode)
+{
+	AddKey(virtualKeyCode, ControlKeyStates::None, nullptr);
+}
+void AnyMenu::AddKey(int virtualKeyCode, ControlKeyStates controlKeyState)
+{
+	AddKey(virtualKeyCode, controlKeyState, nullptr);
+}
+void AnyMenu::AddKey(int virtualKeyCode, ControlKeyStates controlKeyState, EventHandler<MenuEventArgs^>^ handler)
+{
+	_keys.Add(gcnew KeyData(virtualKeyCode, controlKeyState));
+	_handlers.Add(handler);
+}
+
 }

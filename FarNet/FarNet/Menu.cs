@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -11,8 +11,8 @@ using System.Diagnostics;
 namespace FarNet
 {
 	/// <summary>
-	/// Arguments of a menu key handler, see <see cref="IListMenu.AddKey(int,EventHandler&lt;MenuEventArgs&gt;)"/>.
-	/// By default the key closes the menu and it is stored in <see cref="IAnyMenu.BreakKey"/>.
+	/// Arguments of a menu key handler.
+	/// By default the key closes the menu and it is stored in <see cref="IAnyMenu.Key"/>.
 	/// Use <see cref="Ignore"/> or <see cref="Restart"/> to perform different actions.
 	/// </summary>
 	public class MenuEventArgs : EventArgs
@@ -80,9 +80,9 @@ namespace FarNet
 		/// </summary>
 		public virtual object Data { get { return null; } set { throw new NotImplementedException(); } }
 		/// <summary>
-		/// Called when a menu item is clicked.
+		/// Called when a menu item is selected.
 		/// </summary>
-		public virtual EventHandler Click { get { return null; } set { throw new NotImplementedException(); } }
+		public virtual EventHandler<MenuEventArgs> Click { get { return null; } set { throw new NotImplementedException(); } }
 	}
 
 	/// <summary>
@@ -125,7 +125,7 @@ namespace FarNet
 		/// <summary>
 		/// Called when a menu item is clicked.
 		/// </summary>
-		public override EventHandler Click { get; set; }
+		public override EventHandler<MenuEventArgs> Click { get; set; }
 	}
 
 	/// <summary>
@@ -211,17 +211,6 @@ namespace FarNet
 		/// <include file='doc.xml' path='doc/AutoAssignHotkeys/*'/>
 		bool AutoAssignHotkeys { get; set; }
 		/// <summary>
-		/// Gets a key that has closed the menu.
-		/// </summary>
-		/// <remarks>
-		/// It is a virtual <see cref="VKeyCode"/> key for <see cref="IMenu"/>
-		/// and an internal <see cref="KeyCode"/> key for <see cref="IListMenu"/>.
-		/// <para>
-		/// Keys that break the menu should be added by a caller before the show.
-		/// </para>
-		/// </remarks>
-		int BreakKey { get; }
-		/// <summary>
 		/// Adds a new item to <see cref="Items"/> and returns it.
 		/// </summary>
 		/// <param name="text">Item text.</param>
@@ -233,7 +222,32 @@ namespace FarNet
 		/// <param name="text">Item text.</param>
 		/// <param name="click">Handler to be called on <see cref="FarItem.Click"/>.</param>
 		/// <returns>New menu item. You may set more properties.</returns>
-		FarItem Add(string text, EventHandler click);
+		FarItem Add(string text, EventHandler<MenuEventArgs> click);
+		/// <summary>
+		/// Gets a key that has closed the menu or an empty key.
+		/// </summary>
+		/// <remarks>
+		/// Keys that close the menu are added before showing the menu.
+		/// </remarks>
+		KeyData Key { get; }
+		/// <summary>
+		/// Adds a key code that closes the menu.
+		/// </summary>
+		/// <param name="virtualKeyCode">Key code, for example <see cref="KeyCode"/>.</param>
+		void AddKey(int virtualKeyCode);
+		/// <summary>
+		/// Adds a key code that closes the menu.
+		/// </summary>
+		/// <param name="virtualKeyCode">Key code, for example <see cref="KeyCode"/>.</param>
+		/// <param name="controlKeyState">Key states.</param>
+		void AddKey(int virtualKeyCode, ControlKeyStates controlKeyState);
+		/// <summary>
+		/// Adds a key code that closes the menu and invokes a handler.
+		/// </summary>
+		/// <param name="virtualKeyCode">Key code, for example <see cref="KeyCode"/>.</param>
+		/// <param name="controlKeyState">Key states.</param>
+		/// <param name="handler">Key handler triggered on the key pressed.</param>
+		void AddKey(int virtualKeyCode, ControlKeyStates controlKeyState, EventHandler<MenuEventArgs> handler);
 	}
 
 	/// <summary>
@@ -250,10 +264,6 @@ namespace FarNet
 		/// Tells to set the console title to the menu title.
 		/// </summary>
 		bool ChangeConsoleTitle { get; set; }
-		/// <summary>
-		/// Gets the list of <see cref="VKeyCode"/> keys that close the menu. See VK_* in Far API.
-		/// </summary>
-		IList<int> BreakKeys { get; }
 		/// <summary>
 		/// Creates low level internal data of the menu from the current items.
 		/// Normally you have to call <see cref="Unlock"/> after use.
@@ -315,7 +325,7 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// This kind of a menu is more suitable for a list of objects than a set of commands.
-	/// It provides two kinds of filters: permanent and incremental, both with many options, both can be used together.
+	/// It provides incremental filtering with various options.
 	/// <para>
 	/// Keys:<br/>
 	/// [CtrlC], [CtrlIns] - copy text of the current item to the clipboard.<br/>
@@ -326,31 +336,6 @@ namespace FarNet
 	/// </remarks>
 	public interface IListMenu : IAnyMenu
 	{
-		/// <summary>
-		/// Gets or sets the type of permanent filter and enables it.
-		/// </summary>
-		PatternOptions FilterOptions { get; set; }
-		/// <summary>
-		/// Gets or sets the permanent filter pattern.
-		/// </summary>
-		/// <remarks>
-		/// It does not enable filter itself, you have to set <see cref="FilterOptions"/>.
-		/// If it is empty then it is taken from the history if <see cref="FilterHistory"/> and <see cref="FilterRestore"/> are set.
-		/// </remarks>
-		string Filter { get; set; }
-		/// <summary>
-		/// Gets or sets the permanent filter history name used by the filter input box opened by <see cref="FilterKey"/>.
-		/// </summary>
-		string FilterHistory { get; set; }
-		/// <summary>
-		/// Tells to restore permanent filter pattern from history
-		/// if <see cref="Filter"/> is empty and <see cref="FilterHistory"/> is set.
-		/// </summary>
-		bool FilterRestore { get; set; }
-		/// <summary>
-		/// Gets or sets the internal <see cref="KeyCode"/> key that opens a permanent filter input box. Default: [CtrlDown].
-		/// </summary>
-		int FilterKey { get; set; }
 		/// <summary>
 		/// Gets or sets the incremental filter and related options.
 		/// </summary>
@@ -392,17 +377,5 @@ namespace FarNet
 		/// Tells to use usual Far menu margins.
 		/// </summary>
 		bool UsualMargins { get; set; }
-		/// <summary>
-		/// Adds an internal key code that closes the menu.
-		/// </summary>
-		/// <param name="key">Internal key code, see <see cref="KeyCode"/> helper.</param>
-		void AddKey(int key);
-		/// <summary>
-		/// Adds an internal key code with associated handler.
-		/// </summary>
-		/// <param name="key">Internal key code, see <see cref="KeyCode"/> helper.</param>
-		/// <param name="handler">Key handler triggered on the key pressed.</param>
-		void AddKey(int key, EventHandler<MenuEventArgs> handler);
 	}
-
 }

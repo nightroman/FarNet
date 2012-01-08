@@ -22,7 +22,6 @@ namespace PowerShellFar
 			: base(explorer)
 		{
 			PostName(_lastCurrentName);
-			UseFilter = true;
 
 			// 090411 Use custom Descriptions mode
 			PanelPlan plan = new PanelPlan();
@@ -199,17 +198,17 @@ namespace PowerShellFar
 			}
 		}
 		///
-		public override bool UIKeyPressed(int code, KeyStates state)
+		public override bool UIKeyPressed(int code, ControlKeyStates state)
 		{
 			switch (code)
 			{
-				case VKeyCode.Delete:
-					goto case VKeyCode.F8;
+				case KeyCode.Delete:
+					goto case KeyCode.F8;
 
-				case VKeyCode.F8:
+				case KeyCode.F8:
 					switch (state)
 					{
-						case KeyStates.Shift:
+						case ControlKeyStates.ShiftPressed:
 							UISetNulls();
 							return true;
 					}

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -663,29 +663,6 @@ namespace FarNet
 		/// Gets column kinds, e.g. N,S,D,T.
 		/// </summary>
 		public string Columns { get; private set; }
-	}
-
-	/// <summary>
-	/// Arguments of <see cref="Panel.KeyPressed"/> event.
-	/// Set <see cref="PanelEventArgs.Ignore"/> = true to tell that the key has been processed internally.
-	/// </summary>
-	public sealed class PanelKeyEventArgs : PanelEventArgs
-	{
-		///
-		public PanelKeyEventArgs(int code, KeyStates state) { Code = code; State = state; }
-		/// <summary>
-		/// Gets the <see cref="VKeyCode"/> value.
-		/// </summary>
-		public int Code { get; private set; }
-		/// <summary>
-		/// Gets the key state flags.
-		/// </summary>
-		public KeyStates State { get; private set; }
-		///
-		public override string ToString()
-		{
-			return string.Format(null, "State={0} Code={1}/{2}", State, Code, (ConsoleKey)Code);
-		}
 	}
 
 	/// <summary>

@@ -66,7 +66,7 @@ namespace PowerShellFar
 		public override PS.KeyInfo ReadKey(PS.ReadKeyOptions options)
 		{
 			FarNet.KeyInfo k = Far.Net.UI.ReadKey((FN.ReadKeyOptions)options);
-			return new PS.KeyInfo(k.VirtualKeyCode, k.Character, (PS.ControlKeyStates)k.ControlKeyState, k.KeyDown);
+			return new PS.KeyInfo((int)k.VirtualKeyCode, k.Character, (PS.ControlKeyStates)k.ControlKeyState, k.KeyDown);
 		}
 
 		public override Size MaxPhysicalWindowSize

@@ -200,7 +200,7 @@ namespace PowerShellFar
 					if (Kit.Equals(names[i], "(default)"))
 					{
 						// remove or not
-						if (!confirm || 0 == Far.Net.Message("Delete the (default) property", Res.Delete, MsgOptions.YesNo))
+						if (!confirm || 0 == Far.Net.Message("Delete the (default) property", Res.Delete, MessageOptions.YesNo))
 							A.Psf.Engine.InvokeProvider.Property.Remove(Kit.EscapeWildcard(ItemPath), string.Empty);
 
 						// remove from the list in any case

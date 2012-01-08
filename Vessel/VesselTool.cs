@@ -12,19 +12,9 @@ using System.Threading;
 namespace FarNet.Vessel
 {
 	[System.Runtime.InteropServices.Guid("58ad5e13-d2ba-4f4c-82cd-f53a66e9e8c0")]
-	[ModuleTool(Name = "Vessel history", Options = ModuleToolOptions.F11Menus)]
+	[ModuleTool(Name = "Vessel", Options = ModuleToolOptions.F11Menus)]
 	public class VesselTool : ModuleTool
 	{
-		const int
-			KeyEdit = (KeyCode.F4),
-			KeyEditAdd = (KeyMode.Shift | KeyCode.Enter),
-			KeyEditModal = (KeyMode.Ctrl | KeyCode.F4),
-			KeyGoToFile = (KeyMode.Ctrl | KeyCode.Enter),
-			KeyDiscard = (KeyMode.Shift | KeyCode.Del),
-			KeyUpdate = (KeyMode.Ctrl | 'R'),
-			KeyView = (KeyCode.F3),
-			KeyViewModal = (KeyMode.Ctrl | KeyCode.F3);
-
 		static string AppHome { get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); } }
 		static string HelpTopic { get { return "<" + AppHome + "\\>"; } }
 
@@ -99,7 +89,7 @@ Factors    : {7,8}
 
 		static void ShowResults()
 		{
-			Far.Net.Message(_TrainingReport, "Training results", MsgOptions.LeftAligned);
+			Far.Net.Message(_TrainingReport, "Training results", MessageOptions.LeftAligned);
 			_TrainingReport = null;
 		}
 
@@ -176,7 +166,7 @@ Factors    : {7,8}
 			StartFastTraining();
 
 			// show update info
-			Far.Net.Message(text, "Update", MsgOptions.LeftAligned);
+			Far.Net.Message(text, "Update", MessageOptions.LeftAligned);
 		}
 
 		static void ShowHistory(bool smart)
@@ -198,19 +188,16 @@ Factors    : {7,8}
 			else
 				menu.Title = "File history (plain)";
 
-			menu.FilterHistory = "RegexFileHistory";
-			menu.FilterRestore = true;
-			menu.FilterOptions = PatternOptions.Regex;
 			menu.IncrementalOptions = PatternOptions.Substring;
 
-			menu.AddKey(KeyEdit);
-			menu.AddKey(KeyEditAdd);
-			menu.AddKey(KeyEditModal);
-			menu.AddKey(KeyGoToFile);
-			menu.AddKey(KeyDiscard);
-			menu.AddKey(KeyUpdate);
-			menu.AddKey(KeyView);
-			menu.AddKey(KeyViewModal);
+			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
+			menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
+			menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
+			menu.AddKey(KeyCode.F3);
+			menu.AddKey(KeyCode.F3, ControlKeyStates.LeftCtrlPressed);
+			menu.AddKey(KeyCode.F4);
+			menu.AddKey(KeyCode.F4, ControlKeyStates.LeftCtrlPressed);
+			menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed);
 
 			for (; ; menu.Items.Clear())
 			{
@@ -246,7 +233,7 @@ Factors    : {7,8}
 					return;
 
 				// update:
-				if (menu.BreakKey == KeyUpdate)
+				if (menu.Key.IsCtrl(KeyCode.R))
 				{
 					var algo = new Actor(VesselHost.LogPath);
 					algo.Update();
@@ -258,9 +245,9 @@ Factors    : {7,8}
 				string path = menu.Items[indexSelected].Text;
 
 				// delete:
-				if (menu.BreakKey == KeyDiscard)
+				if (menu.Key.IsShift(KeyCode.Delete))
 				{
-					if (0 == Far.Net.Message("Discard " + path, "Confirm", MsgOptions.OkCancel))
+					if (0 == Far.Net.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
 					{
 						Record.Remove(VesselHost.LogPath, path);
 						continue;
@@ -270,12 +257,12 @@ Factors    : {7,8}
 				}
 
 				// go to:
-				if (menu.BreakKey == KeyGoToFile)
+				if (menu.Key.IsCtrl(KeyCode.Enter))
 				{
 					Far.Net.Panel.GoToPath(path);
 				}
 				// view:
-				else if (menu.BreakKey == KeyView || menu.BreakKey == KeyViewModal)
+				else if (menu.Key.VirtualKeyCode == KeyCode.F3)
 				{
 					if (!File.Exists(path))
 						continue;
@@ -283,7 +270,7 @@ Factors    : {7,8}
 					IViewer viewer = Far.Net.CreateViewer();
 					viewer.FileName = path;
 
-					if (menu.BreakKey == KeyViewModal)
+					if (menu.Key.IsCtrl())
 					{
 						viewer.DisableHistory = true;
 						viewer.Open(OpenMode.Modal);
@@ -302,7 +289,7 @@ Factors    : {7,8}
 					IEditor editor = Far.Net.CreateEditor();
 					editor.FileName = path;
 
-					if (menu.BreakKey == KeyEditModal)
+					if (menu.Key.IsCtrl(KeyCode.F4))
 					{
 						editor.DisableHistory = true;
 						editor.Open(OpenMode.Modal);
@@ -311,7 +298,7 @@ Factors    : {7,8}
 
 					editor.Open();
 
-					if (menu.BreakKey == KeyEditAdd)
+					if (menu.Key.IsShift(KeyCode.Enter))
 						goto show;
 
 					// post fast training

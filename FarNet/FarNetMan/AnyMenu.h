@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -16,8 +16,7 @@ public:
 	virtual property bool ShowAmpersands;
 	virtual property bool WrapCursor;
 	virtual property IList<FarItem^>^ Items { IList<FarItem^>^ get(); }
-	virtual property IList<int>^ BreakKeys { IList<int>^ get(); }
-	virtual property int BreakKey { int get(); }
+	virtual property KeyData^ Key { KeyData^ get(); }
 	virtual property int MaxHeight;
 	virtual property int Selected { int get(); void set(int value); }
 	virtual property int X { int get(); void set(int value); }
@@ -30,7 +29,10 @@ public:
 public:
 	virtual bool Show() = 0;
 	virtual FarItem^ Add(String^ text);
-	virtual FarItem^ Add(String^ text, EventHandler^ handler);
+	virtual FarItem^ Add(String^ text, EventHandler<MenuEventArgs^>^ click);
+	virtual void AddKey(int virtualKeyCode);
+	virtual void AddKey(int virtualKeyCode, ControlKeyStates controlKeyState);
+	virtual void AddKey(int virtualKeyCode, ControlKeyStates controlKeyState, EventHandler<MenuEventArgs^>^ handler);
 protected:
 	AnyMenu();
 internal:
@@ -38,7 +40,8 @@ internal:
 	int _x;
 	int _y;
 	int _selected;
-	List<int> _keys;
-	int _breakKey;
+	int _keyIndex;
+	List<KeyData^> _keys;
+	List<EventHandler<MenuEventArgs^>^> _handlers;
 };
 }

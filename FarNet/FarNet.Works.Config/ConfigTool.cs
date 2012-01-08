@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -20,8 +20,8 @@ namespace FarNet.Works
 			var sorted = new List<IModuleTool>(toolsIn);
 
 			IMenu menu = Far.Net.CreateMenu();
-			menu.Title = "Menu tools";
 			menu.HelpTopic = helpTopic;
+			menu.Title = Res.ModuleTools;
 
 			IModuleTool tool = null;
 			for (; ; )
@@ -64,14 +64,9 @@ namespace FarNet.Works
 				tool = (IModuleTool)menu.SelectedData;
 
 				// dialog
-				IDialog dialog = Far.Net.CreateDialog(-1, -1, 77, 14);
+				IDialog dialog = Far.Net.CreateDialog(-1, -1, 77, 12);
 				dialog.HelpTopic = helpTopic;
 				dialog.AddBox(3, 1, 0, 0, tool.Name);
-
-				IEdit edHotkey = dialog.AddEditFixed(5, -1, 5, (tool.Hotkey == " " ? string.Empty : tool.Hotkey));
-				dialog.AddText(7, 0, 0, "&Hotkey");
-
-				dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
 
 				ModuleToolOptions defaultOptions = tool.DefaultOptions;
 				ModuleToolOptions currentOptions = tool.Options;
@@ -93,9 +88,6 @@ namespace FarNet.Works
 
 				if (!dialog.Show())
 					continue;
-
-				// new hotkey
-				tool.ResetHotkey(edHotkey.Text);
 
 				// new options
 				ModuleToolOptions newOptions = ModuleToolOptions.None;

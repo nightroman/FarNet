@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -244,10 +244,10 @@ namespace FarNet
 		/// <summary>
 		/// Reads all keys from the input buffer and finds one of the given.
 		/// </summary>
-		/// <returns>Virtual key code of the first found key or 0.</returns>
+		/// <returns>Index of the first found key or -1.</returns>
 		/// <remarks>
 		/// The input buffer is empty after the call.
 		/// </remarks>
-		public abstract int ReadKeys(params int[] virtualKeyCodes);
+		public abstract int ReadKeys(params KeyData[] keys);
 	}
 }

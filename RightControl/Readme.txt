@@ -1,6 +1,6 @@
 
 Module   : FarNet.RightControl
-Release  : 2011-05-19
+Release  : 2012-01-05
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,8 +10,8 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
 
- * Far Manager 2.0.1807
- * Plugin FarNet 4.4.13
+ * Far Manager 3.0.0.x
+ * Plugin FarNet 5.0.0
 
 
 = DESCRIPTION =
@@ -25,6 +25,7 @@ deleting by words, and etc. Example: Visual Studio editor, Word, WordPad, etc.
 All the module commands work via the macro function CallPlugin().
 
 Word commands:
+
 	step-left
 	step-right
 	select-left
@@ -35,14 +36,17 @@ Word commands:
 	vertical-right
 
 Smart home commands:
+
 	go-to-smart-home
 	select-to-smart-home
 
 Example macro for the Editor area:
-	CallPlugin(0xcd, "RightControl:go-to-smart-home")
 
-The included PowerShellFar script Install-RightControlMacro-.ps1 installs the
-typical macros, see its comments.
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:go-to-smart-home")
+
+Use RightControl.farconfig in order to import typical macros:
+
+	Far.exe /import RightControl.farconfig
 
 Known issue/workaround:
 Until the issue Mantis 1465 is resolved Shift+Left/Right work funny in dialogs
@@ -54,7 +58,7 @@ and vertical-right. (Install-RightControlMacro-.ps1 does this, too).
 = SETTINGS =
 
 Open the module settings panel from the main .NET menu:
-F11 | .NET | Settings | RightControl
+F11 | FarNet | Settings | RightControl
 
 	Regex
 
@@ -144,3 +148,7 @@ Install-RightControlMacro-.ps1 installs macros that use CallPlugin().
 Removed not needed public API.
 
 The module uses new standard FarNet settings and settings panel.
+
+2.0.0
+
+Adapted for Far3 + FarNet5.

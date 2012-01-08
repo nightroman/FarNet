@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -29,10 +29,10 @@ ICollection<TextFrame>^ EditorBookmark::Bookmarks()
 	if (ei.BookMarkCount > 0)
 	{
 		EditorBookMarks ebm;
-		ebm.Cursor = new long[ei.BookMarkCount];
-		ebm.LeftPos = new long[ei.BookMarkCount];
-		ebm.Line = new long[ei.BookMarkCount];
-		ebm.ScreenLine = new long[ei.BookMarkCount];
+		ebm.Cursor = new int[ei.BookMarkCount];
+		ebm.LeftPos = new int[ei.BookMarkCount];
+		ebm.Line = new int[ei.BookMarkCount];
+		ebm.ScreenLine = new int[ei.BookMarkCount];
 		try
 		{
 			EditorControl_ECTL_GETBOOKMARKS(ebm);
@@ -57,18 +57,18 @@ ICollection<TextFrame>^ EditorBookmark::StackBookmarks()
 {
 	List<TextFrame>^ r = gcnew List<TextFrame>();
 
-	int count = Info.EditorControl(ECTL_GETSTACKBOOKMARKS, NULL);
+	int count = (int)Info.EditorControl(-1, ECTL_GETSTACKBOOKMARKS, 0, 0);
 	if (count <= 0)
 		return r;
 
 	EditorBookMarks ebm;
-	ebm.Cursor = new long[count];
-	ebm.LeftPos = new long[count];
-	ebm.Line = new long[count];
-	ebm.ScreenLine = new long[count];
+	ebm.Cursor = new int[count];
+	ebm.LeftPos = new int[count];
+	ebm.Line = new int[count];
+	ebm.ScreenLine = new int[count];
 	try
 	{
-		if (!Info.EditorControl(ECTL_GETSTACKBOOKMARKS, &ebm))
+		if (!Info.EditorControl(-1, ECTL_GETSTACKBOOKMARKS, 0, &ebm))
 			throw gcnew InvalidOperationException("ECTL_GETSTACKBOOKMARKS");
 
 		r->Capacity = count;
@@ -88,32 +88,32 @@ ICollection<TextFrame>^ EditorBookmark::StackBookmarks()
 
 void EditorBookmark::AddStackBookmark()
 {
-	if (!Info.EditorControl(ECTL_ADDSTACKBOOKMARK, NULL))
+	if (!Info.EditorControl(-1, ECTL_ADDSTACKBOOKMARK, 0, 0))
 		throw gcnew InvalidOperationException("ECTL_ADDSTACKBOOKMARK");
 }
 
 void EditorBookmark::ClearStackBookmarks()
 {
-	if (!Info.EditorControl(ECTL_CLEARSTACKBOOKMARKS, NULL))
+	if (!Info.EditorControl(-1, ECTL_CLEARSTACKBOOKMARKS, 0, 0))
 		throw gcnew InvalidOperationException("ECTL_CLEARSTACKBOOKMARKS");
 }
 
 void EditorBookmark::RemoveStackBookmarkAt(int index)
 {
-	if (!Info.EditorControl(ECTL_DELETESTACKBOOKMARK, (void*)index))
+	if (!Info.EditorControl(-1, ECTL_DELETESTACKBOOKMARK, 0, (void*)index))
 		throw gcnew InvalidOperationException("ECTL_DELETESTACKBOOKMARK");
 }
 
 //! Ignore errors
 void EditorBookmark::GoToNextStackBookmark()
 {
-	Info.EditorControl(ECTL_NEXTSTACKBOOKMARK, NULL);
+	Info.EditorControl(-1, ECTL_NEXTSTACKBOOKMARK, 0, 0);
 }
 
 //! Ignore errors
 void EditorBookmark::GoToPreviousStackBookmark()
 {
-	Info.EditorControl(ECTL_PREVSTACKBOOKMARK, NULL);
+	Info.EditorControl(-1, ECTL_PREVSTACKBOOKMARK, 0, 0);
 }
 
 }

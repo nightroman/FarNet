@@ -142,9 +142,9 @@ namespace FarNet.Tools
 			}
 		}
 		// Asks a user to Close/Push/Stop/Cancel.
-		void OnPanelEscaping(object sender, PanelKeyEventArgs e)
+		void OnPanelEscaping(object sender, KeyEventArgs e)
 		{
-			if (e.State != KeyStates.None)
+			if (e.Key.Is())
 				return;
 
 			var panel = sender as SuperPanel;
@@ -160,7 +160,7 @@ namespace FarNet.Tools
 				: new string[] { "&Close", "&Push", "Cancel" };
 
 			// ask
-			int ask = Far.Net.Message("How would you like to continue?", "Search", MsgOptions.None, buttons);
+			int ask = Far.Net.Message("How would you like to continue?", "Search", MessageOptions.None, buttons);
 
 			// close
 			if (ask == 0)
@@ -232,10 +232,10 @@ namespace FarNet.Tools
 		}
 		bool UIUserStop()
 		{
-			if (0 == Far.Net.UI.ReadKeys(VKeyCode.Escape))
+			if (Far.Net.UI.ReadKeys(new KeyData(KeyCode.Escape)) < 0)
 				return false;
 
-			if (0 != Far.Net.Message(Res.StopSearch, Res.Search, MsgOptions.OkCancel))
+			if (0 != Far.Net.Message(Res.StopSearch, Res.Search, MessageOptions.OkCancel))
 				return false;
 
 			Stopping = true;

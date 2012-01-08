@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	RightWords macros
+
+	* CtrlShiftSpace - Correct the word (editor, dialog, and command line).
+	* CtrlShiftF7 - Correct the selected text (editor).
+	* CtrlShiftH - Switch highlighting (editor).
+-->
+<farconfig version="3.0.2350">
+	<macro>
+		<keymacros>
+			<macro area="Common" key="CtrlShiftSpace" flags="DisableOutput" description="RightWords: Correct word">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	F11
+	$If (Menu.Select("RightWords", 2) > 0)
+		Enter 1
+	$End
+$End
+]]>
+			</macro>
+			<macro area="Editor" key="CtrlShiftF7" flags="DisableOutput" description="RightWords: Correct text">
+				<![CDATA[
+F11
+$If (Menu.Select("RightWords", 2) > 0)
+	Enter 2
+$End
+]]>
+			</macro>
+			<macro area="Editor" key="CtrlShiftH" flags="DisableOutput" description="RightWords: Highlighting">
+				<![CDATA[
+F11
+$If (Menu.Select("RightWords", 2) > 0)
+	Enter 3
+$End
+]]>
+			</macro>
+		</keymacros>
+	</macro>
+</farconfig>

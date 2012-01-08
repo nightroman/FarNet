@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -73,7 +73,12 @@ void ShelveInfoNative::Pop(bool active)
 	if (Path)
 	{
 		PIN_NE(pin, Path);
-		if (!Info.Control(handle, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
+		
+		FarPanelDirectory arg; memset(&arg, 0, sizeof(arg));
+		arg.StructSize = sizeof(arg);
+		arg.Name = pin;
+		
+		if (!Info.PanelControl(handle, FCTL_SETPANELDIRECTORY, 0, &arg)) //????? duplicated
 			throw gcnew InvalidOperationException("Cannot set panel directory: " + Path);
 	}
 
@@ -83,7 +88,7 @@ void ShelveInfoNative::Pop(bool active)
 
 	PanelInfo pi;
 	GetPanelInfo(handle, pi);
-	if (pi.Plugin || pi.PanelType != PTYPE_FILEPANEL)
+	if (0 != (pi.Flags & PFLAGS_PLUGIN) || pi.PanelType != PTYPE_FILEPANEL)
 		//! do not throw, sometimes a panel just cannot close
 		return;
 

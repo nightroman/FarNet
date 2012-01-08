@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="DemoCommand.cs" />
     <Compile Include="DemoExplorer.cs" />
-    <Compile Include="DemoFiler.cs" />
     <Compile Include="DemoHost.cs" />
     <Compile Include="DemoTool.cs" />
     <Compile Include="Settings1.cs" />

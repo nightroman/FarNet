@@ -102,15 +102,15 @@ namespace FarNet.Tools
 			}
 		}
 		///
-		public override bool UIKeyPressed(int code, KeyStates state)
+		public override bool UIKeyPressed(int code, ControlKeyStates state)
 		{
 			switch (code)
 			{
-				case VKeyCode.F7:
+				case KeyCode.F7:
 
 					switch (state)
 					{
-						case KeyStates.None:
+						case ControlKeyStates.None:
 							{
 								var files = SelectedFiles;
 								if (files.Count > 0)
@@ -124,11 +124,11 @@ namespace FarNet.Tools
 					}
 					break;
 
-				case VKeyCode.PageUp:
+				case KeyCode.PageUp:
 
 					switch (state)
 					{
-						case KeyStates.Control:
+						case ControlKeyStates.LeftCtrlPressed:
 							{
 								var efile = (SuperFile)CurrentFile;
 								if (efile == null)

@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2011-05-29
+Release  : 2012-01-05
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -8,15 +8,15 @@ Source   : http://code.google.com/p/farnet/
 
 	= PREREQUISITES =
 
- * Far Manager 2.0.1807
- * Plugin FarNet 4.4.15
+ * Far Manager 3.0.0.x
+ * Plugin FarNet 5.0.0
  * .NET Framework 3.5+
 
 	= DESCRIPTION =
 
 Vessel (short for View/Edit/Save/SELect) records and maintains history of file
 view, edit, and save operations and related statistics. The history file is:
-%LOCALAPPDATA%\Far Manager\FarNet\Vessel\VesselHistory.log
+%LOCALAPPDATA%\Far Manager\Profile\FarNet\Vessel\VesselHistory.log
 
 Features
 
@@ -26,9 +26,8 @@ Features
  * advanced filter with reusable regular expressions (CtrlDown, AltDown)
  * for other features see history lists help (F1)
 
-If the log file is missing then it is generated from the existing Far history.
-This history is not yet effective for training. The smart history list will be
-the same as the plain list for some time even after training.
+Short history is not effective for training. The smart history list will be the
+same as the plain list for some time even after training.
 
 The smart history list shows files in heuristically improved order. Recently
 used files are sorted by last times, as usual. Files not used for a while are
@@ -47,7 +46,7 @@ background and it is very fast (~50 times faster than full training).
 	= SETTINGS =
 
 Open the module settings panel from the main .NET menu:
-F11 | .NET | Settings | Vessel
+F11 | FarNet | Settings | Vessel
 
 	MaximumDayCount
 
@@ -156,3 +155,7 @@ Updated for FarNet 4.4.15
 The local Vessel\Settings.resources (with training results) is now updated
 separately from the roaming settings. Thus, if you use default settings then
 the roaming file Vessel\Settings.resources can be removed.
+
+2.0.0
+
+Adapted for Far3 + FarNet5.

@@ -43,7 +43,6 @@ $#PowerShellFar#
 
 #Remarks#
 
-	~Autoloaded functions~@AutoloadedFunctions@
 	~Using .NET assemblies~@UsingAssemblies@
 
 
@@ -51,7 +50,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 4.6.1#
+#PowerShellFar 5.0.0#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -85,8 +84,8 @@ $#Installation#
 
 #Requirements#
 
- - Far Manager 2.0.1807
- - Plugin FarNet 4.6.1
+ - Far Manager 3.0.0
+ - Plugin FarNet 5.0.0
  - Windows PowerShell V2, V3
 
 
@@ -99,6 +98,10 @@ with one of these values. Bypass is the fastest but the least secure.
 On x64 machines Set-ExecutionPolicy should be set twice: for x86 and x64. Use
 the Windows PowerShell start menu in order to start both consoles and set the
 policy in both.
+
+If you are not administrator use the parameter -Scope CurrentUser, for example:
+
+	>: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.
 The location and name can be changed but it is recommended to use this way:
@@ -1154,7 +1157,7 @@ $#Settings#
 ~Contents~@Contents@
 
 Permanent settings are changed interactively in the settings panel
-#[F11] | .NET | Settings | PowerShellFar\Settings#
+#[F11] | FarNet | Settings | PowerShellFar#
 or in scripts as the properties of #$Psf.Settings#. In the latter case call
 #$Psf.Settings.Save()# in order to apply #$Psf.Settings# changes permanently.
 
@@ -1534,14 +1537,9 @@ variable $TabExpansionCache. It is created on the first TabExpansion call for
 types. If you load new assemblies after that then their types are not yet
 available for expansion. In this case use artificial '*' symbols:
 
-[*...[Tab] -- global search: the type cache is not used; example: [*farmac[Tab]
-is expanded to type names with 'farmac'; it should always work after loading of
-the FarMacro module.
+[*...[Tab] -- global search: the type cache is not used.
 
-[...*[Tab] -- '*' tells to update the global cache before expansion; example:
-[farmac*[Tab] should always work after loading of the FarMacro module; compare:
-[farmac[Tab] does not work if FarMacro is loaded after $TabExpansionCache
-creation.
+[...*[Tab] -- '*' tells to update the global cache before expansion.
 
 NOTE: remember that PowerShell allows omitting "System." in type names, so that
 it is fine to use [String] instead of [System.String]. PSF TabExpansion takes
@@ -1906,34 +1904,6 @@ or you can just invoke standard help commands, for example:
 	...
 
 
-@AutoloadedFunctions
-$#Autoloaded functions#
-~Contents~@Contents@
-
-Some scripts (Complete-Word-.ps1) designed for frequent use are implemented as
-autoloaded global functions. Take a look at Complete-Word-: on the first call
-of Complete-Word- (with no extension!) from any code the script is invoked. It
-installs the global function Complete-Word- (the same name!) and calls it (with
-the parameters passed in, if any). From now on Complete-Word- is resolved to
-the function, not the source script. Note: use @@PSBoundParameters to resend
-all the parameters, if any.
-
-
-#Two rules of using this technique#
-
-	- put a script into a directory included in the system path
-	- call it from your code just by name, with no path or extension
-
-
-#Advantages of autoloaded functions#
-
-Needless to say that calling a loaded function from memory is more effective
-than calling a script file from disk. But it is not a good idea to load all the
-functions that can be potentially used if many of them actually may not be used
-in a session. The described technique solves the dilemma: you load only what you
-really use and it is loaded once on the first call.
-
-
 @UsingAssemblies
 $#Using .NET assemblies#
 ~Contents~@Contents@
@@ -2000,18 +1970,13 @@ many times (if it is in a profile then it is always loaded, indeed).
 
 #Way 3 - PowerShell module#
 
-Modules depend on PowerShell and may or may not depend on FarNet. Examples:
-FarMacro uses FarNet and FarDescription does not. In the first case the
-required IFar instance is exposed as the value of
-(IFar)Host.PrivateData.BaseObject
+Modules depend on PowerShell and may or may not depend on FarNet. Modules
+implement PowerShell features and infrastructure. For example:
 
-Modules let you implement PowerShell features and infrastructure. For example
-FarDescription and FarMacro modules show how to:
-
-	-- create cmdlets
-	-- create providers
-	-- use custom type formatting
-	-- add new members to existing types
+	-- cmdlets
+	-- providers
+	-- custom type formatting
+	-- new members to existing types
 
 
 #Way 4 - Compile .NET code dynamically#
@@ -2032,15 +1997,16 @@ A: There are at least two options, both using macros
 example [Space] is expanded into '>: '. Space after the prefix is recommended
 for normal TabExpansion of the first word:
 
- >: Import-Module FarMacro
- >: Set-FarMacro Shell Space '> : Space' 'Easy prefix' -CommandLine 0
+	<macro area="Shell" key="Space" flags="EmptyCommandLine|DisableOutput" description="PSF: Easy prefix">
+	<![CDATA[> : Space]]>
+	</macro>
 
 2) #Easy invoke#: Type and run without prefix using a macro associated with
 "Invoke selected code" menu command. Example ([ShiftSpace]):
 
- >: Import-Module FarMacro
- >: Set-FarMacro Shell ShiftSpace 'F11 X 2' 'Easy invoke' -CommandLine 1
- (X is the PowerShellFar hotkey in the plugin menu)
+	<macro area="Shell" key="ShiftSpace" flags="NotEmptyCommandLine|DisableOutput" description="PSF: Easy invoke">
+	<![CDATA[F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter 2 $Else Esc $End]]>
+	</macro>
 
 Now you can type PowerShell commands without a prefix and press [ShiftSpace] to
 execute it. There is a bonus: if a command fails then its text is still in the

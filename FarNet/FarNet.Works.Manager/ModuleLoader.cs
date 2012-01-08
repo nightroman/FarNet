@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -185,13 +185,6 @@ namespace FarNet.Works
 								action = it;
 							}
 							break;
-						case ModuleItemKind.Filer:
-							{
-								var it = new ProxyFiler(manager, reader);
-								Host.Instance.RegisterProxyFiler(it);
-								action = it;
-							}
-							break;
 						case ModuleItemKind.Tool:
 							{
 								var it = new ProxyTool(manager, reader);
@@ -266,13 +259,6 @@ namespace FarNet.Works
 			{
 				var it = new ProxyEditor(manager, type);
 				Host.Instance.RegisterProxyEditor(it);
-				action = it;
-			}
-			// filer
-			else if (typeof(ModuleFiler).IsAssignableFrom(type))
-			{
-				var it = new ProxyFiler(manager, type);
-				Host.Instance.RegisterProxyFiler(it);
 				action = it;
 			}
 			// tool

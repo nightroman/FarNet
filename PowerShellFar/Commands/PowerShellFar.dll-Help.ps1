@@ -406,11 +406,6 @@ Merge-Helps $BaseMenu @{
 $FarList = Merge-Helps $BaseMenu @{
 	parameters = @{
 		AutoSelect = 'Sets IListMenu.AutoSelect'
-		Filter = 'Sets IListMenu.Filter'
-		FilterHistory = 'Sets IListMenu.FilterHistory'
-		FilterKey = 'Sets IListMenu.FilterKey'
-		FilterOptions = 'Sets IListMenu.FilterOptions'
-		FilterRestore = 'Sets IListMenu.FilterRestore'
 		Incremental = 'Sets IListMenu.Incremental'
 		IncrementalOptions = 'Sets IListMenu.IncrementalOptions'
 		NoShadow = 'Sets IListMenu.NoShadow'

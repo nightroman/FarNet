@@ -227,18 +227,26 @@ namespace FarNet.Tools
 		//! Do not add Close() on Enter, Enter is called on ButtonClick (why?)
 		void OnKeyPressed(object sender, KeyPressedEventArgs e)
 		{
-			switch (e.Code)
+			switch (e.Key.VirtualKeyCode)
 			{
-				case KeyMode.Ctrl | KeyCode.Up:
-					e.Ignore = true;
-					Dialog.SetFocus(_ListBox2.Id);
-					DoUp();
-					return;
-				case KeyMode.Ctrl | KeyCode.Down:
-					e.Ignore = true;
-					Dialog.SetFocus(_ListBox2.Id);
-					DoDown();
-					return;
+				case KeyCode.UpArrow:
+					if (e.Key.IsCtrl())
+					{
+						e.Ignore = true;
+						Dialog.SetFocus(_ListBox2.Id);
+						DoUp();
+						return;
+					}
+					break;
+				case KeyCode.DownArrow:
+					if (e.Key.IsCtrl())
+					{
+						e.Ignore = true;
+						Dialog.SetFocus(_ListBox2.Id);
+						DoDown();
+						return;
+					}
+					break;
 				case KeyCode.Tab:
 					if (Dialog.Focused == _ListBox2)
 					{
@@ -248,7 +256,7 @@ namespace FarNet.Tools
 					}
 					break;
 				case KeyCode.Enter:
-				case KeyCode.Space:
+				case KeyCode.Spacebar:
 					if (Dialog.Focused == _ListBox1)
 					{
 						e.Ignore = true;

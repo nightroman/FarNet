@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -54,13 +54,13 @@ namespace FarNet.Works.Config
 			Update(false);
 			Redraw();
 		}
-		public override bool UIKeyPressed(int code, KeyStates state)
+		public override bool UIKeyPressed(int code, ControlKeyStates state)
 		{
 			switch (code)
 			{
-				case VKeyCode.F1:
+				case KeyCode.F1:
 
-					if (state == KeyStates.None)
+					if (state == 0)
 					{
 						Far.Net.ShowHelp(Far.Net.GetType().Assembly.Location, SettingsUI.HelpSettings, HelpOptions.None);
 						return true;
@@ -68,11 +68,11 @@ namespace FarNet.Works.Config
 
 					break;
 
-				case VKeyCode.Delete:
+				case KeyCode.Delete:
 
-					goto case VKeyCode.F8;
+					goto case KeyCode.F8;
 
-				case VKeyCode.F8:
+				case KeyCode.F8:
 
 					SetDefaults();
 					return true;

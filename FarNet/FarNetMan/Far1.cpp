@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -27,20 +27,14 @@ void Far1::Connect()
 	// the instance
 	Far::Net = %Far;
 
-	// initialize the local data path
+	// initialize data paths
 	_LocalData = Environment::GetEnvironmentVariable("FARLOCALPROFILE");
-	if (ES(_LocalData))
-		_LocalData = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::LocalApplicationData), "Far Manager");
-	
-	// initialize the roaming data path
 	_RoamingData = Environment::GetEnvironmentVariable("FARPROFILE");
-	if (ES(_RoamingData))
-		_RoamingData = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::ApplicationData), "Far Manager");
 }
 
 String^ Far1::CurrentDirectory::get()
 {
-	DWORD size = Info.FSF->GetCurrentDirectory(0, 0);
+	size_t size = Info.FSF->GetCurrentDirectory(0, 0);
 	CBox buf(size);
 	Info.FSF->GetCurrentDirectory(size, buf);
 	return gcnew String(buf);
@@ -55,15 +49,6 @@ IModuleCommand^ Far1::GetModuleCommand(Guid id)
 	return (IModuleCommand^)action;
 }
 
-IModuleFiler^ Far1::GetModuleFiler(Guid id)
-{
-	IModuleAction^ action;
-	if (!Works::Host::Actions->TryGetValue(id, action))
-		return nullptr;
-
-	return (IModuleFiler^)action;
-}
-
 IModuleTool^ Far1::GetModuleTool(Guid id)
 {
 	IModuleAction^ action;
@@ -73,16 +58,16 @@ IModuleTool^ Far1::GetModuleTool(Guid id)
 	return (IModuleTool^)action;
 }
 
-int Far1::Message(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
+int Far1::Message(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic)
 {
 	return Message::Show(body, header, options, buttons, helpTopic);
 }
 
 System::Version^ Far1::FarVersion::get()
 {
-	DWORD vn;
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARVERSION, &vn);
-	return gcnew System::Version((vn&0x0000ff00)>>8, vn&0x000000ff, (int)((long)vn&0xffff0000)>>16);
+	VersionInfo vi;
+	Info.AdvControl(&MainGuid, ACTL_GETFARMANAGERVERSION, 0, &vi);
+	return gcnew System::Version(vi.Major, vi.Minor, vi.Revision, vi.Build);
 }
 
 System::Version^ Far1::FarNetVersion::get()
@@ -102,21 +87,17 @@ IListMenu^ Far1::CreateListMenu()
 
 FarConfirmations Far1::Confirmations::get()
 {
-	return (FarConfirmations)Info.AdvControl(Info.ModuleNumber, ACTL_GETCONFIRMATIONS, 0);
+	return (FarConfirmations)Info.AdvControl(&MainGuid, ACTL_GETCONFIRMATIONS, 0, 0);
 }
 
 FarNet::MacroArea Far1::MacroArea::get()
 {
-	ActlKeyMacro command;
-	command.Command = MCMD_GETAREA;
-	return (FarNet::MacroArea)(1 + Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command));
+	return (FarNet::MacroArea)(1 + Info.MacroControl(&MainGuid, MCTL_GETAREA, 0, 0));
 }
 
 FarNet::MacroState Far1::MacroState::get()
 {
-	ActlKeyMacro command;
-	command.Command = MCMD_GETSTATE;
-	return (FarNet::MacroState)Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command);
+	return (FarNet::MacroState)Info.MacroControl(&MainGuid, MCTL_GETSTATE, 0, 0);
 }
 
 array<IEditor^>^ Far1::Editors()
@@ -163,91 +144,37 @@ IViewer^ Far1::CreateViewer()
 	return gcnew FarNet::Viewer;
 }
 
-array<int>^ Far1::CreateKeySequence(String^ keys)
-{
-	if (!keys)
-		throw gcnew ArgumentNullException("keys");
-	
-	array<wchar_t>^ space = {' ', '\t', '\r', '\n'};
-	array<String^>^ a = keys->Split(space, StringSplitOptions::RemoveEmptyEntries);
-	array<int>^ r = gcnew array<int>(a->Length);
-
-	for(int i = 0; i < a->Length; ++i)
-	{
-		int k = NameToKey(a[i]);
-		if (k == -1)
-			throw gcnew ArgumentException("Argument 'keys' contains invalid key: '" + a[i] + "'.");
-
-		r[i] = k;
-	}
-	
-	return r;
-}
-
-//! [_090328_170110] KSFLAGS_NOSENDKEYSTOPLUGINS is not set,
-//! but Tab for TabExpansion is not working in .ps1 editor, why?
-void Far1::PostKeySequence(array<int>^ sequence, bool enableOutput)
-{
-	if (sequence == nullptr) throw gcnew ArgumentNullException("sequence");
-	if (sequence->Length == 0)
-		return;
-
-	// local buffer for a small sequence
-	const int smallCount = 256;
-	DWORD keys[smallCount];
-
-	KeySequence keySequence;
-	keySequence.Count = sequence->Length;
-	keySequence.Flags = enableOutput ? 0 : KSFLAGS_DISABLEOUTPUT;
-
-	DWORD* cur = keySequence.Count <= smallCount ? keys : new DWORD[keySequence.Count];
-	keySequence.Sequence = cur;
-	for each(int i in sequence)
-	{
-		*cur = i;
-		++cur;
-	}
-
-	try
-	{
-		if (!Info.AdvControl(Info.ModuleNumber, ACTL_POSTKEYSEQUENCE, &keySequence))
-			throw gcnew InvalidOperationException;
-	}
-	finally
-	{
-		if (keySequence.Sequence != keys)
-			delete keySequence.Sequence;
-	}
-}
-
-// Don't throw on a wrong key, it is used for validation.
-// See also:
-// About AltXXXXX and etc.: http://forum.farmanager.com/viewtopic.php?f=8&t=5058
-int Far1::NameToKey(String^ key)
+KeyInfo^ Far1::NameToKeyInfo(String^ key)
 {
 	if (!key)
 		throw gcnew ArgumentNullException("key");
 
 	PIN_NE(pin, key);
-	return Info.FSF->FarNameToKey(pin);
+	INPUT_RECORD ir;
+	if (!Info.FSF->FarNameToInputRecord(pin, &ir) || ir.EventType != KEY_EVENT)
+		return nullptr;
+
+	return KeyInfoFromInputRecord(ir);
 }
 
-String^ Far1::KeyToName(int key)
+String^ Far1::KeyInfoToName(KeyInfo^ key)
 {
-	wchar_t name[33];
-	if (!Info.FSF->FarKeyToName(key, name, countof(name) - 1))
+	INPUT_RECORD ir;
+	memset(&ir, 0, sizeof(ir));
+	
+	ir.EventType = KEY_EVENT;
+	ir.Event.KeyEvent.wVirtualKeyCode = (WORD)key->VirtualKeyCode;
+	ir.Event.KeyEvent.uChar.UnicodeChar = (WCHAR)key->Character;
+	ir.Event.KeyEvent.dwControlKeyState = (DWORD)key->ControlKeyState;
+	ir.Event.KeyEvent.bKeyDown = key->KeyDown;
+	ir.Event.KeyEvent.wRepeatCount = 1;
+	
+	const size_t size = 100;
+	wchar_t name[size] = {0};
+	if (!Info.FSF->FarInputRecordToName(&ir, name, size))
 		return nullptr;
 
 	return gcnew String(name);
-}
-
-void Far1::PostKeys(String^ keys, bool enableOutput)
-{
-	if (keys == nullptr)
-		throw gcnew ArgumentNullException("keys");
-
-	keys = keys->Trim();
-	PostKeySequence(CreateKeySequence(keys), enableOutput);
 }
 
 void Far1::PostText(String^ text, bool enableOutput)
@@ -276,7 +203,7 @@ void Far1::PostText(String^ text, bool enableOutput)
 			break;
 		}
 	}
-	PostKeys(keys.ToString(), enableOutput);
+	PostMacro(keys.ToString(), enableOutput, false);
 }
 
 ILine^ Far1::Line::get()
@@ -336,60 +263,6 @@ IInputBox^ Far1::CreateInputBox()
 	return gcnew InputBox;
 }
 
-ICollection<String^>^ Far1::GetDialogHistory(String^ name)
-{
-	return GetHistory("SavedDialogHistory\\" + name, nullptr);
-}
-
-//! Hack, not API.
-// Avoid exceptions, return what we can get.
-ICollection<String^>^ Far1::GetHistory(String^ name, String^ filter)
-{
-	List<String^>^ r = gcnew List<String^>;
-
-	IRegistryKey^ key = nullptr;
-	try
-	{
-		key = Far::Net->OpenRegistryKey(name, false);
-		if (!key)
-			return r;
-
-		array<String^>^ lines = reinterpret_cast<array<String^>^>(key->GetValue(L"Lines", nullptr));
-		if (lines && lines->Length)
-		{
-			// capacity
-			r->Capacity = lines->Length;
-
-			String^ types = nullptr;
-			if (SS(filter))
-			{
-				Object^ o = key->GetValue(L"Types", nullptr);
-				if (o)
-					types = o->ToString();
-			}
-
-			for(int i = lines->Length; --i >= 0;)
-			{
-				// filter
-				if (types && i < types->Length)
-				{
-					if (filter->IndexOf(types[i]) < 0)
-						continue;
-				}
-
-				// add
-				r->Add(lines[i]);
-			}
-		}
-	}
-	finally
-	{
-		delete key;
-	}
-
-	return r;
-}
-
 void Far1::ShowError(String^ title, Exception^ error)
 {
 	// 091028 Do not throw on null, just ignore.
@@ -430,7 +303,7 @@ void Far1::ShowError(String^ title, Exception^ error)
 		if (Works::Host::State == Works::HostState::Loading)
 			Far::Net->UI->Write(info, ConsoleColor::Red);
 		else
-			Far::Net->Message(info + Environment::NewLine + error->ToString(), title, (MsgOptions::Gui | MsgOptions::Warning));
+			Far::Net->Message(info + Environment::NewLine + error->ToString(), title, (MessageOptions::Gui | MessageOptions::Warning));
 
 		return;
 	}
@@ -443,7 +316,7 @@ void Far1::ShowError(String^ title, Exception^ error)
 	int res = Message(
 		error->Message,
 		String::IsNullOrEmpty(title) ? error->GetType()->FullName : title,
-		MsgOptions::LeftAligned | MsgOptions::Warning,
+		MessageOptions::LeftAligned | MessageOptions::Warning,
 		gcnew array<String^>{"Ok", "More"});
 	if (res < 1)
 		return;
@@ -494,19 +367,6 @@ String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text
 	return ib.Show() ? ib.Text : nullptr;
 }
 
-Char Far1::CodeToChar(int code)
-{
-	// get just the code
-	code &= KeyMode::CodeMask;
-
-	// not char
-	if (code > 0xFFFF)
-		return 0;
-
-	// convert
-	return Char(code);
-}
-
 void Far1::PostStep(Action^ handler)
 {
 	Far0::PostStep(handler);
@@ -527,7 +387,7 @@ String^ Far1::TempName(String^ prefix)
 	// reasonable buffer
 	PIN_NE(pin, prefix);
 	wchar_t buf[CBox::eBuf];
-	int size = Info.FSF->MkTemp(buf, countof(buf), pin);
+	size_t size = Info.FSF->MkTemp(buf, countof(buf), pin);
 	if (size <= countof(buf))
 		return gcnew String(buf);
 
@@ -566,15 +426,18 @@ void Far1::PostMacro(String^ macro, bool enableOutput, bool disablePlugins)
 		throw gcnew ArgumentNullException("macro");
 
 	PIN_NE(pin, macro);
-	ActlKeyMacro command;
-	command.Command = MCMD_POSTMACROSTRING;
-	command.Param.PlainText.SequenceText = (wchar_t*)pin;
-	command.Param.PlainText.Flags = 0;
+
+	MacroSendMacroText arg;
+	memset(&arg, 0, sizeof(arg));
+	arg.StructSize = sizeof(arg);
+	arg.SequenceText = pin;
+	
 	if (!enableOutput)
-		command.Param.PlainText.Flags |= KSFLAGS_DISABLEOUTPUT;
+		arg.Flags |= KMFLAGS_DISABLEOUTPUT;
 	if (disablePlugins)
-		command.Param.PlainText.Flags |= KSFLAGS_NOSENDKEYSTOPLUGINS;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &command))
+		arg.Flags |= KMFLAGS_NOSENDKEYSTOPLUGINS;
+	
+	if (!Info.MacroControl(&MainGuid, MCTL_SENDSTRING, MSSC_POST, &arg))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
@@ -583,7 +446,7 @@ void Far1::Quit()
 	if (!Works::ModuleLoader::CanExit())
 		return;
 	
-	Info.AdvControl(Info.ModuleNumber, ACTL_QUIT, 0);
+	Info.AdvControl(&MainGuid, ACTL_QUIT, 0, 0);
 }
 
 ILine^ Far1::CommandLine::get()
@@ -596,56 +459,7 @@ IWindow^ Far1::Window::get()
 	return %FarNet::Window::Instance;
 }
 
-IRegistryKey^ Far1::OpenRegistryKey(String^ name, bool writable)
-{
-	return Works::WinRegistry::OpenKey(name, writable);
-}
-
 // Implementation of Far methods.
-ref class FarMacro : Works::FarMacro
-{
-public:
-	virtual MacroParseError^ Check(String^ sequence, bool silent) override
-	{
-		PIN_ES(pin, sequence);
-
-		ActlKeyMacro args;
-		args.Command = MCMD_CHECKMACRO;
-		args.Param.PlainText.SequenceText = pin;
-		args.Param.PlainText.Flags = silent ? KSFLAGS_SILENTCHECK : 0;
-
-		//! it always gets ErrCode
-		Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args);
-		if (args.Param.MacroResult.ErrCode == MPEC_SUCCESS)
-			return nullptr;
-
-		MacroParseError^ r = gcnew MacroParseError;
-		r->ErrorCode = (MacroParseStatus)args.Param.MacroResult.ErrCode;
-		r->Token = gcnew String(args.Param.MacroResult.ErrSrc);
-		r->Line = args.Param.MacroResult.ErrPos.Y;
-		r->Pos = args.Param.MacroResult.ErrPos.X;
-		return r;
-	}
-	virtual void Load() override
-	{
-		ActlKeyMacro args;
-		args.Command = MCMD_LOADALL;
-		if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
-			throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
-	}
-	virtual void Save() override
-	{
-		ActlKeyMacro args;
-		args.Command = MCMD_SAVEALL;
-		if (!Info.AdvControl(Info.ModuleNumber, ACTL_KEYMACRO, &args))
-			throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
-	}
-};
-
-IMacro^ Far1::Macro::get()
-{
-	return Works::FarMacro::Instance ? Works::FarMacro::Instance : gcnew FarMacro();
-}
 
 IUserInterface^ Far1::UI::get()
 {

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -213,7 +213,7 @@ void Viewer::Frame::set(ViewFrame value)
 	vsp.Flags = VSP_NORETNEWPOS;
 	vsp.LeftPos = value.Column;
 	vsp.StartPos = value.Offset;
-	Info.ViewerControl(VCTL_SETPOSITION, &vsp);
+	Info.ViewerControl(_id, VCTL_SETPOSITION, 0, &vsp);
 }
 
 Int64 Viewer::SetFrame(Int64 pos, int left, ViewFrameOptions options)
@@ -223,20 +223,20 @@ Int64 Viewer::SetFrame(Int64 pos, int left, ViewFrameOptions options)
 	vsp.Flags = (DWORD)options;
 	vsp.LeftPos = left;
 	vsp.StartPos = pos;
-	Info.ViewerControl(VCTL_SETPOSITION, &vsp);
+	Info.ViewerControl(_id, VCTL_SETPOSITION, 0, &vsp);
 	return vsp.StartPos;
 }
 
 void Viewer::Close()
 {
 	AssertCurrentViewer();
-	Info.ViewerControl(VCTL_QUIT, 0);
+	Info.ViewerControl(_id, VCTL_QUIT, 0, 0);
 }
 
 void Viewer::Redraw()
 {
 	AssertCurrentViewer();
-	Info.ViewerControl(VCTL_REDRAW, 0);
+	Info.ViewerControl(_id, VCTL_REDRAW, 0, 0);
 }
 
 void Viewer::SelectText(Int64 symbolStart, int symbolCount)
@@ -244,14 +244,14 @@ void Viewer::SelectText(Int64 symbolStart, int symbolCount)
 	AssertCurrentViewer();
 	if (symbolCount <= 0)
 	{
-		Info.ViewerControl(VCTL_SELECT, 0);
+		Info.ViewerControl(_id, VCTL_SELECT, 0, 0);
 	}
 	else
 	{
 		ViewerSelect vs;
 		vs.BlockLen = symbolCount;
 		vs.BlockStartPos = symbolStart;
-		Info.ViewerControl(VCTL_SELECT, &vs);
+		Info.ViewerControl(_id, VCTL_SELECT, 0, &vs);
 	}
 }
 
@@ -275,8 +275,8 @@ void Viewer::HexMode::set(bool value)
 	ViewerSetMode vsm;
 	vsm.Flags = vsm.Reserved = 0;
 	vsm.Type = VSMT_HEX;
-	vsm.Param.iParam = value;
-	Info.ViewerControl(VCTL_SETMODE, &vsm);
+	vsm.iParam = value;
+	Info.ViewerControl(_id, VCTL_SETMODE, 0, &vsm);
 }
 
 bool Viewer::WrapMode::get()
@@ -294,8 +294,8 @@ void Viewer::WrapMode::set(bool value)
 	ViewerSetMode vsm;
 	vsm.Flags = vsm.Reserved = 0;
 	vsm.Type = VSMT_WRAP;
-	vsm.Param.iParam = value;
-	Info.ViewerControl(VCTL_SETMODE, &vsm);
+	vsm.iParam = value;
+	Info.ViewerControl(_id, VCTL_SETMODE, 0, &vsm);
 }
 
 bool Viewer::WordWrapMode::get()
@@ -313,8 +313,8 @@ void Viewer::WordWrapMode::set(bool value)
 	ViewerSetMode vsm;
 	vsm.Flags = vsm.Reserved = 0;
 	vsm.Type = VSMT_WORDWRAP;
-	vsm.Param.iParam = value;
-	Info.ViewerControl(VCTL_SETMODE, &vsm);
+	vsm.iParam = value;
+	Info.ViewerControl(_id, VCTL_SETMODE, 0, &vsm);
 }
 
 int Viewer::CodePage::get()
@@ -346,8 +346,12 @@ void Viewer::Activate()
 	int nWindow = Far::Net->Window->Count;
 	for(int i = 0; i < nWindow; ++i)
 	{
-		IWindowInfo^ info = Far::Net->Window->GetInfoAt(i, true);
-		if (info->Kind == WindowKind::Viewer && info->Name == _FileName)
+		WindowKind kind = Far::Net->Window->GetKindAt(i);
+		if (kind != WindowKind::Viewer)
+			continue;
+		
+		String^ name = Far::Net->Window->GetNameAt(i);
+		if (name == _FileName)
 		{
 			Far::Net->Window->SetCurrentAt(i);
 			Far::Net->Window->Commit();

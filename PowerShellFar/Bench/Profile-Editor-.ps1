@@ -28,12 +28,10 @@ $Far.AnyEditor.add_KeyDown({&{
 	}
 	else {
 		### F1
-		if ($_.Key.VirtualKeyCode -eq [FarNet.VKeyCode]::F1) {
-			if ($e.Key.CtrlAltShift -eq 0) {
-				if ($this.FileName -like '*.hlf') {
-					$e.Ignore = $true
-					Show-Hlf-
-				}
+		if ($_.Key.Is([FarNet.KeyCode]::F1)) {
+			if ($this.FileName -like '*.hlf') {
+				$e.Ignore = $true
+				Show-Hlf-
 			}
 		}
 	}
@@ -44,11 +42,11 @@ $Far.AnyEditor.add_MouseClick({&{
 	$m = $_.Mouse
 	### Left click
 	if ($m.Buttons -eq 'Left') {
-		if ($m.CtrlAltShift -eq 0) {
+		if ($m.Is()) {
 			${Editor.Data}.LCPos = $this.ConvertPointScreenToEditor($m.Where)
 			${Editor.Data}.LMFoo = 1
 		}
-		elseif ($m.CtrlAltShift -eq [FarNet.ControlKeyStates]::ShiftPressed) {
+		elseif ($m.IsShift()) {
 			$_.Ignore = $true
 			${Editor.Data}.LMFoo = 1
 			$p1 = ${Editor.Data}.LCPos
@@ -62,7 +60,7 @@ $Far.AnyEditor.add_MouseClick({&{
 	}
 	### Right click
 	elseif ($m.Buttons -eq 'Right') {
-		if ($m.CtrlAltShift -eq 0) {
+		if ($m.Is()) {
 			$_.Ignore = $true
 			$Editor = $this
 			$SelectionExists = $this.SelectionExists
@@ -86,7 +84,7 @@ $Far.AnyEditor.add_MouseMove({&{
 			$_.Ignore = $true
 			${Editor.Data}.LMFoo = 0
 		}
-		elseif ($m.CtrlAltShift -eq 0) {
+		elseif ($m.Is()) {
 			$p1 = ${Editor.Data}.LCPos
 			if ($p1) {
 				$_.Ignore = $true

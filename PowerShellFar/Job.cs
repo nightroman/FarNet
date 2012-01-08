@@ -416,10 +416,10 @@ namespace PowerShellFar
 			menu.Title = Res.BackgroundJobs;
 			menu.ShowAmpersands = true;
 			menu.HelpTopic = Far.Net.GetHelpTopic("MenuBackgroundJobs");
-			menu.BreakKeys.Add(VKeyCode.F3);
-			menu.BreakKeys.Add(VKeyCode.F5);
-			menu.BreakKeys.Add(VKeyCode.Delete);
-			menu.BreakKeys.Add(VKeyCode.Delete | VKeyMode.Shift);
+			menu.AddKey(KeyCode.F3);
+			menu.AddKey(KeyCode.F5);
+			menu.AddKey(KeyCode.Delete);
+			menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed);
 
 			for (int show = 0; ; ++show)
 			{
@@ -439,7 +439,7 @@ namespace PowerShellFar
 				while (menu.Show())
 				{
 					// refresh
-					if (menu.BreakKey == VKeyCode.F5)
+					if (menu.Key.Is(KeyCode.F5))
 					{
 						menu.Items.Clear();
 						break;
@@ -450,7 +450,7 @@ namespace PowerShellFar
 						break;
 
 					// delete
-					if (menu.BreakKey == VKeyCode.Delete)
+					if (menu.Key.Is(KeyCode.Delete))
 					{
 						if (job.IsRunning)
 						{
@@ -463,7 +463,7 @@ namespace PowerShellFar
 					}
 
 					// delete all
-					if (menu.BreakKey == (VKeyCode.Delete | VKeyMode.Shift))
+					if (menu.Key.IsShift(KeyCode.Delete))
 					{
 						// copy and then traverse
 						var jobsToKill = new List<Job>(Jobs);
@@ -491,7 +491,7 @@ namespace PowerShellFar
 						IViewer v = Far.Net.CreateViewer();
 						v.FileName = job.FileName;
 						v.DisableHistory = true;
-						if (menu.BreakKey == VKeyCode.F3)
+						if (menu.Key == new KeyData(KeyCode.F3))
 						{
 							v.Open(OpenMode.Modal);
 							break;
@@ -699,7 +699,7 @@ Ignore: discard all jobs and output
 				string title = "Background job";
 				Far.Net.UI.WindowTitle = title;
 
-				switch (Far.Net.Message(message, title, MsgOptions.Gui | MsgOptions.AbortRetryIgnore))
+				switch (Far.Net.Message(message, title, MessageOptions.Gui | MessageOptions.AbortRetryIgnore))
 				{
 					case 0:
 						{

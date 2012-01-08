@@ -1,7 +1,7 @@
 
 Module   : FarNet.PowerShellFar
-Version  : 4.6.1
-Release  : 2012-01-01
+Version  : 5.0.0
+Release  : 2012-01-08
 Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -29,8 +29,8 @@ http://code.google.com/p/farnet/
 = PREREQUISITES =
 
 
- - Far Manager 2.0.1807
- - Plugin FarNet 4.6.1
+ - Far Manager 3.0.0
+ - Plugin FarNet 5.0.0
  - Windows PowerShell V2, V3
 
 
@@ -45,6 +45,9 @@ with one of these values. Bypass is the fastest but the least secure.
 On x64 machines Set-ExecutionPolicy should be set twice: for x86 and x64. Use
 the Windows PowerShell start menu in order to start both consoles and set the
 policy in both.
+
+If you are not administrator use the parameter -Scope CurrentUser, for example:
+>: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 *) Install the module:
 Copy FarNet\Modules\PowerShellFar to %FARHOME%\FarNet\Modules\PowerShellFar.

@@ -15,7 +15,6 @@ Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-FarSettings.ps1 Imports Far Manager settings.
 Import-Panel-.ps1 Imports objects from files and shows them in a panel.
 Indent-Selection-.ps1 Indents or outdents selected lines in the editor
-Install-Macro-.ps1 Installs macros (example).
 Invoke-Editor-.ps1 Invokes a file from the current editor.
 Invoke-Environment.ps1 Invokes a command and imports its environment variables.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk) in a few ways.
@@ -29,7 +28,6 @@ Panel-Database-.ps1 Panel SQL server databases.
 Panel-DbData-.ps1 Panel DataTable rows.
 Panel-DbTable-.ps1 Panel tables for a connection.
 Panel-Job-.ps1 Panel PowerShell background jobs that are running in the current session.
-Panel-Macro-.ps1 Panel and view/edit Far key macros
 Panel-Process-.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-.ps1 Main startup code (example).
@@ -44,13 +42,12 @@ Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected one
 Select-FarFile-.ps1 Selects panel files by the specified filter.
 Set-Console.ps1 Sets console window properties.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
-Show-History-.ps1 Shows command, folder or view history.
 Show-Hlf-.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
-Show-KeyMap-.ps1 Shows Far hotkeys and macros by areas (HTML page).
 Show-KeyName-.ps1 Shows internal Far name of pressed keys.
 Start-Far.ps1 Starts Far and manages start and exit current directory.
 Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project file.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
+Show-KeyMap.ps1 Shows Far hotkeys and macros by areas (HTML page).

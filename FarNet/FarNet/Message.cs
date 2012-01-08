@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -12,7 +12,7 @@ namespace FarNet
 	/// Message box options.
 	/// </summary>
 	[Flags]
-	public enum MsgOptions
+	public enum MessageOptions
 	{
 		/// <summary>
 		/// No options.
@@ -21,53 +21,49 @@ namespace FarNet
 		/// <summary>
 		/// Warning message colors are used (white text on red background by default).
 		/// </summary>
-		Warning = 0x00000001,
+		Warning = 0x1,
 		/// <summary>
 		/// If error type returned by <c>GetLastError</c> is known to Far or Windows,
 		/// the error description is shown in the first message line and
 		/// the text is shown below the error description.
 		/// </summary>
-		Error = 0x00000002,
+		Error = 0x2,
 		/// <summary>
 		/// Do not redraw the message background.
 		/// </summary>
-		KeepBackground = 0x00000004,
-		/// <summary>
-		/// Display the message two lines lower than usual.
-		/// </summary>
-		Down = 0x00000008,
+		KeepBackground = 0x4,
 		/// <summary>
 		/// Left align the message lines.
 		/// </summary>
-		LeftAligned = 0x00000010,
-		/// <summary>
-		/// Additional button: Ok.
-		/// </summary>
-		Ok = 0x00010000,
-		/// <summary>
-		/// Additional buttons: Ok and Cancel.
-		/// </summary>
-		OkCancel = 0x00020000,
-		/// <summary>
-		/// Additional buttons: Abort, Retry and Ignore.
-		/// </summary>
-		AbortRetryIgnore = 0x00030000,
-		/// <summary>
-		/// Additional buttons: Yes and No.
-		/// </summary>
-		YesNo = 0x00040000,
-		/// <summary>
-		/// Additional buttons: Yes, No and Cancel.
-		/// </summary>
-		YesNoCancel = 0x00050000,
-		/// <summary>
-		/// Additional buttons: Retry and Cancel.
-		/// </summary>
-		RetryCancel = 0x00060000,
+		LeftAligned = 0x8,
 		/// <summary>
 		/// Reserved.
 		/// </summary>
-		Z1 = 0x00000020,
+		Z1 = 0x10,
+		/// <summary>
+		/// Additional button: Ok.
+		/// </summary>
+		Ok = 0x10000,
+		/// <summary>
+		/// Additional buttons: Ok and Cancel.
+		/// </summary>
+		OkCancel = 0x20000,
+		/// <summary>
+		/// Additional buttons: Abort, Retry and Ignore.
+		/// </summary>
+		AbortRetryIgnore = 0x30000,
+		/// <summary>
+		/// Additional buttons: Yes and No.
+		/// </summary>
+		YesNo = 0x40000,
+		/// <summary>
+		/// Additional buttons: Yes, No and Cancel.
+		/// </summary>
+		YesNoCancel = 0x50000,
+		/// <summary>
+		/// Additional buttons: Retry and Cancel.
+		/// </summary>
+		RetryCancel = 0x60000,
 		/// <summary>
 		/// For internal use (normally). GUI message.
 		/// </summary>

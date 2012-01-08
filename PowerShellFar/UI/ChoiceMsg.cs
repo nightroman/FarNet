@@ -47,12 +47,12 @@ namespace PowerShellFar.UI
 			// show
 			for (; ; )
 			{
-				int answer = Far.Net.Message(message, caption, MsgOptions.LeftAligned, buttons);
+				int answer = Far.Net.Message(message, caption, MessageOptions.LeftAligned, buttons);
 
 				// [Esc]:
 				if (answer < 0)
 				{
-					answer = Far.Net.Message(message, caption, MsgOptions.LeftAligned, new string[] { "&Halt command", "Cancel" });
+					answer = Far.Net.Message(message, caption, MessageOptions.LeftAligned, new string[] { "&Halt command", "Cancel" });
 					if (answer == 0)
 						throw new PipelineStoppedException();
 					continue;

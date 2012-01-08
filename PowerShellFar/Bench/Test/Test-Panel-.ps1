@@ -209,7 +209,7 @@ $Panel.add_Escaping({&{
 # Optionally process [F1]
 $Panel.add_KeyPressed({&{
 	# case [F1]:
-	if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
+	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
 		if (0 -eq (Show-FarMessage "[F1] has been pressed" "KeyPressed" -Choices '&Handle', '&Default')) {
 			$_.Ignore = $true
 			Show-FarMessage "[F1] has been handled" "KeyPressed"

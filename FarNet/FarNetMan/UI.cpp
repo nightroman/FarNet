@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -18,12 +18,15 @@ static void ThrowWithLastError(String^ message)
 	throw gcnew InvalidOperationException(message + " error code: " + GetLastError());
 }
 
-static int GetFarPaletteColor(PaletteColor paletteColor)
+static FarColor GetFarPaletteColor(PaletteColor paletteColor)
 {
-	INT_PTR index = (INT_PTR)paletteColor;
+	int index = (int)paletteColor;
 	if (index < 0 || index >= Wrap::GetEndPalette())
 		throw gcnew ArgumentOutOfRangeException("paletteColor");
-	return (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETCOLOR, (void*)index);
+
+	FarColor arg;
+	Info.AdvControl(&MainGuid, ACTL_GETCOLOR, index, &arg);
+	return arg;
 }
 
 int FarUI::CursorSize::get()
@@ -56,14 +59,14 @@ void FarUI::ForegroundColor::set(ConsoleColor value)
 Place FarUI::WindowPlace::get()
 {
 	SMALL_RECT rect;
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARRECT, &rect);
+	Info.AdvControl(&MainGuid, ACTL_GETFARRECT, 0, &rect);
 	return Place(rect.Left, rect.Top, rect.Right, rect.Bottom);
 }
 
 Point FarUI::WindowPoint::get()
 {
 	SMALL_RECT rect;
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARRECT, &rect);
+	Info.AdvControl(&MainGuid, ACTL_GETFARRECT, 0, &rect);
 	return Point(rect.Left, rect.Top);
 }
 void FarUI::WindowPoint::set(Point value)
@@ -74,7 +77,7 @@ void FarUI::WindowPoint::set(Point value)
 Point FarUI::WindowSize::get()
 {
 	SMALL_RECT rect;
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETFARRECT, &rect);
+	Info.AdvControl(&MainGuid, ACTL_GETFARRECT, 0, &rect);
 	return Point(rect.Right - rect.Left + 1, rect.Bottom - rect.Top + 1);
 }
 void FarUI::WindowSize::set(Point value)
@@ -103,7 +106,7 @@ void FarUI::BufferSize::set(Point value)
 Point FarUI::WindowCursor::get()
 {
 	COORD pos;
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETCURSORPOS, &pos);
+	Info.AdvControl(&MainGuid, ACTL_GETCURSORPOS, 0, &pos);
 	return Point(pos.X, pos.Y);
 }
 void FarUI::WindowCursor::set(Point value)
@@ -111,7 +114,7 @@ void FarUI::WindowCursor::set(Point value)
 	COORD pos;
 	pos.X = (SHORT)value.X;
 	pos.Y = (SHORT)value.Y;
-	Info.AdvControl(Info.ModuleNumber, ACTL_SETCURSORPOS, &pos);
+	Info.AdvControl(&MainGuid, ACTL_SETCURSORPOS, 0, &pos);
 }
 
 void FarUI::FlushInputBuffer()
@@ -129,7 +132,7 @@ bool FarUI::KeyAvailable::get()
 	return Console::KeyAvailable;
 }
 
-KeyInfo FarUI::ReadKey(Works::ReadKeyOptions options)
+KeyInfo^ FarUI::ReadKey(Works::ReadKeyOptions options)
 {
 	if (int(options & (Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp)) == 0)
 		throw gcnew ArgumentException("Argument 'options': either IncludeKeyDown, IncludeKeyUp or both must be set.");
@@ -171,11 +174,7 @@ KeyInfo FarUI::ReadKey(Works::ReadKeyOptions options)
 				if (int(options & Works::ReadKeyOptions::IncludeKeyUp) == 0)
 					continue;
 			}
-			return KeyInfo(
-				ir.Event.KeyEvent.wVirtualKeyCode,
-				ir.Event.KeyEvent.uChar.UnicodeChar,
-				(ControlKeyStates)ir.Event.KeyEvent.dwControlKeyState,
-				ir.Event.KeyEvent.bKeyDown != 0);
+			return KeyInfoFromInputRecord(ir);
 		}
 	}
 	finally
@@ -416,7 +415,7 @@ void FarUI::Write(String^ text)
 
 	PIN_NE(pin, text);
 	DWORD cch = text->Length;
-	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, NULL);
+	WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), pin, cch, &cch, nullptr);
 }
 
 void FarUI::Write(String^ text, ConsoleColor foregroundColor)
@@ -440,30 +439,30 @@ void FarUI::Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backg
 
 void FarUI::ShowUserScreen()
 {
-	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETUSERSCREEN, 0, 0);
 }
 
 void FarUI::SaveUserScreen()
 {
-	Info.Control(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETUSERSCREEN, 0, 0);
 }
 
 void FarUI::SetProgressFlash()
 {
-	Info.AdvControl(Info.ModuleNumber, ACTL_PROGRESSNOTIFY, 0);
+	Info.AdvControl(&MainGuid, ACTL_PROGRESSNOTIFY, 0, 0);
 }
 
 void FarUI::SetProgressState(TaskbarProgressBarState state)
 {
-	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSSTATE, (void*)(INT_PTR)state);
+	Info.AdvControl(&MainGuid, ACTL_SETPROGRESSSTATE, (int)state, 0);
 }
 
 void FarUI::SetProgressValue(int currentValue, int maximumValue)
 {
-	PROGRESSVALUE arg;
+	ProgressValue arg;
 	arg.Completed = currentValue;
 	arg.Total = maximumValue;
-	Info.AdvControl(Info.ModuleNumber, ACTL_SETPROGRESSVALUE, &arg);
+	Info.AdvControl(&MainGuid, ACTL_SETPROGRESSVALUE, 0, &arg);
 }
 
 int FarUI::SaveScreen(int x1, int y1, int x2, int y2)
@@ -478,36 +477,43 @@ void FarUI::RestoreScreen(int screen)
 
 void FarUI::Draw()
 {
-	Info.Text(0, 0, 0, NULL);
+	Info.Text(0, 0, 0, nullptr);
 }
 
 void FarUI::DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, String^ text)
 {
+	FarColor arg;
+	arg.Flags = FCF_4BITMASK;
+	arg.BackgroundColor = (COLORREF)backgroundColor;
+	arg.ForegroundColor = (COLORREF)foregroundColor;
+
 	PIN_NE(pin, text);
-	Info.Text(left, top, int(foregroundColor)|(int(backgroundColor)<<4), pin);
+	
+	Info.Text(left, top, &arg, pin);
 }
 
 void FarUI::DrawPalette(int left, int top, PaletteColor paletteColor, String^ text)
 {
+	FarColor arg = ::GetFarPaletteColor(paletteColor);
 	PIN_NE(pin, text);
-	Info.Text(left, top, ::GetFarPaletteColor(paletteColor), pin);
+	Info.Text(left, top, &arg, pin);
 }
 
 ConsoleColor FarUI::GetPaletteBackground(PaletteColor paletteColor)
 {
-	int color = ::GetFarPaletteColor(paletteColor);
-	return ConsoleColor(color >> 4);
+	FarColor arg = ::GetFarPaletteColor(paletteColor);
+	return (ConsoleColor)arg.BackgroundColor;
 }
 
 ConsoleColor FarUI::GetPaletteForeground(PaletteColor paletteColor)
 {
-	int color = ::GetFarPaletteColor(paletteColor);
-	return ConsoleColor(color & 0xF);
+	FarColor arg = ::GetFarPaletteColor(paletteColor);
+	return (ConsoleColor)arg.ForegroundColor;
 }
 
 IntPtr FarUI::MainWindowHandle::get()
 {
-	return (IntPtr)Info.AdvControl(Info.ModuleNumber, ACTL_GETFARHWND, nullptr);
+	return (IntPtr)Info.AdvControl(&MainGuid, ACTL_GETFARHWND, 0, 0);
 }
 
 void FarUI::Clear()
@@ -518,35 +524,30 @@ void FarUI::Clear()
 
 void FarUI::Redraw()
 {
-	Info.AdvControl(Info.ModuleNumber, ACTL_REDRAWALL, 0);
+	Info.AdvControl(&MainGuid, ACTL_REDRAWALL, 0, 0);
 }
 
-int FarUI::ReadKeys(array<int>^ virtualKeyCodes)
+int FarUI::ReadKeys(array<KeyData^>^ keys)
 {
+	int result = -1;
 	while (KeyAvailable)
 	{
-		KeyInfo key = ReadKey(Works::ReadKeyOptions::AllowCtrlC | Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp | Works::ReadKeyOptions::NoEcho);
-
-		int code = key.VirtualKeyCode;
-		if (int(key.ControlKeyState & (ControlKeyStates::LeftAltPressed | ControlKeyStates::RightAltPressed)))
-			code |= VKeyMode::Alt;
-		if (int(key.ControlKeyState & (ControlKeyStates::LeftCtrlPressed | ControlKeyStates::RightCtrlPressed)))
-			code |= VKeyMode::Ctrl;
-		if (int(key.ControlKeyState & ControlKeyStates::ShiftPressed))
-			code |= VKeyMode::Shift;
-
-		for each(int it in virtualKeyCodes)
+		KeyInfo^ info = ReadKey(Works::ReadKeyOptions::AllowCtrlC | Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp | Works::ReadKeyOptions::NoEcho);
+		if (!keys || keys->Length == 0)
+			break;
+		
+		KeyData key(info->VirtualKeyCode, info->CtrlAltShift());
+		for(int i = 0; i < keys->Length; ++i)
 		{
-			if (it == code)
+			if (keys[i] == %key)
 			{
-				FlushInputBuffer();
-				return it;
+				result = i;
+				break;
 			}
 		}
 	}
-
 	FlushInputBuffer();
-	return 0;
+	return result;
 }
 
 }

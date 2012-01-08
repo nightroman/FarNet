@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 namespace FarNet
@@ -39,87 +39,68 @@ namespace FarNet
 		/// </remarks>
 		public abstract void SetCurrentAt(int index);
 		/// <summary>
-		/// Returns information about the window spesified by its index.
-		/// </summary>
-		/// <param name="index">Window index; -1 ~ current. See <see cref="Count"/>.</param>
-		/// <param name="full">
-		/// If it is false then <see cref="IWindowInfo.Name"/> and <see cref="IWindowInfo.KindName"/> are not filled.
-		/// </param>
-		public abstract IWindowInfo GetInfoAt(int index, bool full);
-		/// <summary>
-		/// Returns a type of a window specified by the index.
+		/// Returns the window kind.
 		/// </summary>
 		/// <param name="index">
 		/// Window index or -1 for the current window, same as <see cref="WindowKind"/>.
 		/// See <see cref="Count"/>.
 		/// </param>
 		public abstract WindowKind GetKindAt(int index);
-	}
-
-	/// <summary>
-	/// Far window kinds.
-	/// </summary>
-	public enum WindowKind
-	{
 		/// <summary>
-		/// Dummy.
+		/// Returns the window title.
 		/// </summary>
-		None,
-		/// <summary>
-		/// File panels.
-		/// </summary>
-		Panels,
-		/// <summary>
-		/// Internal viewer window.
-		/// </summary>
-		Viewer,
-		/// <summary>
-		/// Internal editor window.
-		/// </summary>
-		Editor,
-		/// <summary>
-		/// Dialog.
-		/// </summary>
-		Dialog,
-		/// <summary>
-		/// Menu.
-		/// </summary>
-		Menu,
-		/// <summary>
-		/// Help window.
-		/// </summary>
-		Help
-	}
-
-	/// <summary>
-	/// Contains information about one Far window. See <see cref="IWindow.GetInfoAt"/>.
-	/// </summary>
-	public interface IWindowInfo
-	{
-		/// <summary>
-		/// Window kind.
-		/// </summary>
-		WindowKind Kind { get; }
-		/// <summary>
-		/// Modification flag. Valid only for editor window.
-		/// </summary>
-		bool Modified { get; }
-		/// <summary>
-		/// Is the window active?
-		/// </summary>
-		bool Current { get; }
-		/// <summary>
-		/// Name of the window kind depending on the current Far language.
-		/// </summary>
-		string KindName { get; }
-		/// <summary>
+		/// <param name="index">
+		/// Window index or -1 for the current window.
+		/// See <see cref="Count"/>.
+		/// </param>
+		/// <remarks>
 		/// Window title:
 		/// viewer, editor: the file name;
 		/// panels: selected file name;
 		/// help: .hlf file path;
 		/// menu, dialog: header.
+		/// </remarks>
+		public abstract string GetNameAt(int index);
+		/// <summary>
+		/// Returns the window kind name in the current language.
 		/// </summary>
-		string Name { get; }
+		/// <param name="index">
+		/// Window index or -1 for the current window.
+		/// See <see cref="Count"/>.
+		/// </param>
+		public abstract string GetKindNameAt(int index);
 	}
 
+	/// <summary>
+	/// Window kind constants.
+	/// </summary>
+	public enum WindowKind
+	{
+		///
+		None,
+		/// <summary>
+		/// File panels.
+		/// </summary>
+		Panels = 1,
+		/// <summary>
+		/// Internal viewer window.
+		/// </summary>
+		Viewer = 2,
+		/// <summary>
+		/// Internal editor window.
+		/// </summary>
+		Editor = 3,
+		/// <summary>
+		/// Dialog.
+		/// </summary>
+		Dialog = 4,
+		/// <summary>
+		/// Menu.
+		/// </summary>
+		Menu = 5,
+		/// <summary>
+		/// Help window.
+		/// </summary>
+		Help = 6
+	}
 }

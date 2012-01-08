@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -39,22 +39,6 @@ namespace FarNet
 		CtrlAltShift = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed,
 		/// <summary>All states.</summary>
 		All = RightAltPressed | LeftAltPressed | RightCtrlPressed | LeftCtrlPressed | ShiftPressed | NumLockOn | ScrollLockOn | CapsLockOn | EnhancedKey
-	}
-
-	/// <summary>
-	/// Represents Control, Alt and Shift states.
-	/// </summary>
-	[Flags]
-	public enum KeyStates
-	{
-		/// <summary>None.</summary>
-		None = 0,
-		/// <summary>Control pressed.</summary>
-		Control = 0x1,
-		/// <summary>Alt pressed.</summary>
-		Alt = 0x2,
-		/// <summary>Shift pressed.</summary>
-		Shift = 0x4,
 	}
 
 	/// <summary>
@@ -107,181 +91,15 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Key modes and helper masks used with <see cref="KeyCode"/>. [farkeys.hpp]
-	/// </summary>
-	/// <remarks>
-	/// Use modes to make a key combination with [Ctrl], [Alt], [Shift] and etc.
-	/// </remarks>
-	/// <example>
-	/// Use (KeyMode.Ctrl | 'R') for [CtrlR], (KeyMode.Ctrl | KeyCode.Enter) for [CtrlEnter] and etc.
-	/// </example>
-	public static class KeyMode
-	{
-		/// <summary>
-		/// Code mask, i.e. (Key &amp; CodeMask) gets key code without modes.
-		/// </summary>
-		public const long CodeMask = 0x00FFFFFF;
-
-		/// <summary>
-		/// Mode mask, i.e. (Key &amp; ModeMask) gets key modes without code.
-		/// </summary>
-		public const long ModeMask = 0xFF000000;
-
-		///
-		public const int
-
-		Ctrl = 0x01000000,
-		Alt = 0x02000000,
-		Shift = 0x04000000,
-		RCtrl = 0x10000000,
-		RAlt = 0x20000000,
-
-		AltShift = Alt | Shift,
-		CtrlAlt = Ctrl | Alt,
-		CtrlShift = Ctrl | Shift,
-		CtrlAltShift = Ctrl | Alt | Shift;
-	}
-
-	/// <summary>
-	/// Internal key codes. Use <see cref="KeyMode"/> to make key combinations. [farkeys.hpp]
-	/// </summary>
-	/// <remarks>
-	/// Key names and codes are Far key macro names and codes.
-	/// <para>
-	/// This PowerShellFar code gets names and codes from BS to 131086 (Oem* and Spec* are excluded):
-	/// </para>
-	/// <para>
-	/// .{for($r = 0; $r -le 131086; ++$r) {$r}} | %{$e = $Far.KeyToName($_); if ($e.Length -ge 2 -and $e -notmatch '^Oem|^Spec' ) {"$e = $r,"}}
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// Use KeyMode.Ctrl | 'R' for CtrlR, KeyMode.Ctrl | KeyCode.Enter for CtrlEnter and etc.
-	/// </example>
-	public static class KeyCode
-	{
-		///
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
-		public const int
-BS = 8,
-Tab = 9,
-Enter = 13,
-Esc = 27,
-Space = 32,
-BackSlash = 92,
-Break = 65539,
-Pause = 65555,
-CapsLock = 65556,
-PgUp = 65569,
-PgDn = 65570,
-End = 65571,
-Home = 65572,
-Left = 65573,
-Up = 65574,
-Right = 65575,
-Down = 65576,
-PrntScrn = 65580,
-Ins = 65581,
-Del = 65582,
-LWin = 65627,
-RWin = 65628,
-Apps = 65629,
-Standby = 65631,
-Num0 = 65632,
-Num1 = 65633,
-Num2 = 65634,
-Num3 = 65635,
-Num4 = 65636,
-Clear = 65637,
-Num6 = 65638,
-Num7 = 65639,
-Num8 = 65640,
-Num9 = 65641,
-Multiply = 65642,
-Add = 65643,
-Subtract = 65645,
-Decimal = 65646,
-Divide = 65647,
-F1 = 65648,
-F2 = 65649,
-F3 = 65650,
-F4 = 65651,
-F5 = 65652,
-F6 = 65653,
-F7 = 65654,
-F8 = 65655,
-F9 = 65656,
-F10 = 65657,
-F11 = 65658,
-F12 = 65659,
-F13 = 65660,
-F14 = 65661,
-F15 = 65662,
-F16 = 65663,
-F17 = 65664,
-F18 = 65665,
-F19 = 65666,
-F20 = 65667,
-F21 = 65668,
-F22 = 65669,
-F23 = 65670,
-F24 = 65671,
-NumLock = 65680,
-ScrollLock = 65681,
-BrowserBack = 65702,
-BrowserForward = 65703,
-BrowserRefresh = 65704,
-BrowserStop = 65705,
-BrowserSearch = 65706,
-BrowserFavorites = 65707,
-BrowserHome = 65708,
-VolumeMute = 65709,
-VolumeDown = 65710,
-VolumeUp = 65711,
-MediaNextTrack = 65712,
-MediaPrevTrack = 65713,
-MediaStop = 65714,
-MediaPlayPause = 65715,
-LaunchMail = 65716,
-LaunchMediaSelect = 65717,
-LaunchApp1 = 65718,
-LaunchApp2 = 65719,
-CtrlAltShiftPress = 131073,
-CtrlAltShiftRelease = 131074,
-MsWheelUp = 131075,
-MsWheelDown = 131076,
-RightCtrlAltShiftPress = 131079,
-RightCtrlAltShiftRelease = 131080,
-NumDel = 131081,
-NumEnter = 131083,
-MsWheelLeft = 131084,
-MsWheelRight = 131085;
-	}
-
-	/// <summary>
-	/// Virtual key modes for key combinations.
-	/// </summary>
-	public static class VKeyMode
-	{
-		///
-		public const int
-Ctrl = 1 << 16,
-Alt = 2 << 16,
-Shift = 4 << 16;
-	}
-
-	/// <summary>
 	/// Virtual key codes.
-	/// Use <see cref="VKeyMode"/> for combinations.
 	/// </summary>
 	/// <remarks>
-	/// They are similar to <c>System.ConsoleKey</c>, <c>System.Windows.Forms.Keys</c>.
+	/// They are similar to <c>System.ConsoleKey</c> and <c>System.Windows.Forms.Keys</c>.
 	/// <para>
-	/// [enum]::GetNames([consolekey]) | %{ '{0} = {1},' -f $_, [int][consolekey]$_ }
+	/// [enum]::GetNames([ConsoleKey]) | %{ '{0} = {1},' -f $_, [int][ConsoleKey]$_ }
 	/// </para>
 	/// </remarks>
-	public static class VKeyCode
+	public static class KeyCode
 	{
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
@@ -766,136 +584,261 @@ OemClear = 254;
 	}
 
 	/// <summary>
-	/// Keyboard event information.
+	/// Base class for keyboard related classes.
 	/// </summary>
-	public struct KeyInfo
+	public abstract class KeyBase
 	{
-		bool _KeyDown;
-		char _Character;
-		int _VirtualKeyCode;
 		ControlKeyStates _ControlKeyState;
-
 		///
-		public KeyInfo(int virtualKeyCode, char character, ControlKeyStates controlKeyState, bool keyDown)
+		protected KeyBase()
+		{ }
+		///
+		protected KeyBase(ControlKeyStates controlKeyState)
 		{
-			_VirtualKeyCode = virtualKeyCode;
-			_Character = character;
 			_ControlKeyState = controlKeyState;
-			_KeyDown = keyDown;
 		}
-
-		/// <summary>
-		/// <see cref="VKeyCode"/> code.
-		/// </summary>
-		public int VirtualKeyCode { get { return _VirtualKeyCode; } set { _VirtualKeyCode = value; } }
-
-		/// <summary>
-		/// Character.
-		/// </summary>
-		public char Character { get { return _Character; } set { _Character = value; } }
-
 		/// <summary>
 		/// Gets all control key states.
 		/// </summary>
-		public ControlKeyStates ControlKeyState { get { return _ControlKeyState; } set { _ControlKeyState = value; } }
-
+		public ControlKeyStates ControlKeyState { get { return _ControlKeyState; } }
 		/// <summary>
-		/// Key down event.
+		/// Tests no Ctrl, Alt, or Shift.
 		/// </summary>
-		public bool KeyDown { get { return _KeyDown; } set { _KeyDown = value; } }
-
+		public bool Is()
+		{
+			return 0 == (_ControlKeyState & ControlKeyStates.CtrlAltShift);
+		}
+		/// <summary>
+		/// Tests Alt state.
+		/// </summary>
+		public bool IsAlt()
+		{
+			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			return value == ControlKeyStates.LeftAltPressed || value == ControlKeyStates.RightAltPressed;
+		}
+		/// <summary>
+		/// Tests Ctrl state.
+		/// </summary>
+		public bool IsCtrl()
+		{
+			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			return value == ControlKeyStates.LeftCtrlPressed || value == ControlKeyStates.RightCtrlPressed;
+		}
+		/// <summary>
+		/// Tests Shift state.
+		/// </summary>
+		public bool IsShift()
+		{
+			return (_ControlKeyState & ControlKeyStates.CtrlAltShift) == ControlKeyStates.ShiftPressed;
+		}
 		/// <summary>
 		/// Gets only Ctrl, Alt and Shift states.
 		/// </summary>
-		public ControlKeyStates CtrlAltShift { get { return _ControlKeyState & ControlKeyStates.CtrlAltShift; } }
+		public ControlKeyStates CtrlAltShift()
+		{
+			return _ControlKeyState & ControlKeyStates.CtrlAltShift;
+		}
+		///
+		public static bool operator ==(KeyBase left, KeyBase right)
+		{
+			return left._ControlKeyState == right._ControlKeyState;
+		}
+		///
+		public static bool operator !=(KeyBase left, KeyBase right)
+		{
+			return !(left == right);
+		}
+		///
+		public override bool Equals(object obj)
+		{
+			return obj is KeyBase && this == (KeyBase)obj;
+		}
+		///
+		public override int GetHashCode()
+		{
+			return (int)_ControlKeyState;
+		}
+		///
+		public override string ToString()
+		{
+			return _ControlKeyState.ToString();
+		}
+	}
 
+	/// <summary>
+	/// Minimal key data.
+	/// </summary>
+	public class KeyData : KeyBase
+	{
+		static readonly KeyData _Empty = new KeyData(0);
+		int _VirtualKeyCode;
+		///
+		public KeyData(int virtualKeyCode)
+		{
+			_VirtualKeyCode = virtualKeyCode;
+		}
+		///
+		public KeyData(int virtualKeyCode, ControlKeyStates controlKeyState)
+			: base(controlKeyState)
+		{
+			_VirtualKeyCode = virtualKeyCode;
+		}
+		/// <summary>
+		/// Gets the empty key instance.
+		/// </summary>
+		public static KeyData Empty { get { return _Empty; } }
+		/// <summary>
+		/// <see cref="KeyCode"/> code.
+		/// </summary>
+		public int VirtualKeyCode { get { return _VirtualKeyCode; } }
+		/// <summary>
+		/// Tests a key code with no Ctrl, Alt, or Shift.
+		/// </summary>
+		public bool Is(int virtualKeyCode)
+		{
+			return _VirtualKeyCode == virtualKeyCode && Is();
+		}
+		/// <summary>
+		/// Tests a key code with Alt.
+		/// </summary>
+		public bool IsAlt(int virtualKeyCode)
+		{
+			return _VirtualKeyCode == virtualKeyCode && IsAlt();
+		}
+		/// <summary>
+		/// Tests a key code with Ctrl.
+		/// </summary>
+		public bool IsCtrl(int virtualKeyCode)
+		{
+			return _VirtualKeyCode == virtualKeyCode && IsCtrl();
+		}
+		/// <summary>
+		/// Tests a key code with Shift.
+		/// </summary>
+		public bool IsShift(int virtualKeyCode)
+		{
+			return _VirtualKeyCode == virtualKeyCode && IsShift();
+		}
+		///
+		public static bool operator ==(KeyData left, KeyData right)
+		{
+			return
+				left._VirtualKeyCode == right._VirtualKeyCode &&
+				left.ControlKeyState == right.ControlKeyState;
+		}
+		///
+		public static bool operator !=(KeyData left, KeyData right)
+		{
+			return !(left == right);
+		}
+		///
+		public override bool Equals(object obj)
+		{
+			return obj is KeyData && this == (KeyData)obj;
+		}
+		///
+		public override int GetHashCode()
+		{
+			uint num = ((uint)ControlKeyState) << 0x10 | (uint)_VirtualKeyCode;
+			return num.GetHashCode();
+		}
+		///
+		public override string ToString()
+		{
+			return "(" + ControlKeyState + ")" + _VirtualKeyCode;
+		}
+	}
+
+	/// <summary>
+	/// Full key information.
+	/// </summary>
+	public sealed class KeyInfo : KeyData
+	{
+		char _Character;
+		bool _KeyDown;
+		///
+		public KeyInfo(int virtualKeyCode, char character, ControlKeyStates controlKeyState, bool keyDown)
+			: base(virtualKeyCode, controlKeyState)
+		{
+			_Character = character;
+			_KeyDown = keyDown;
+		}
+		/// <summary>
+		/// Character.
+		/// </summary>
+		public char Character { get { return _Character; } }
+		/// <summary>
+		/// Key down state.
+		/// </summary>
+		public bool KeyDown { get { return _KeyDown; } }
 		///
 		public static bool operator ==(KeyInfo left, KeyInfo right)
 		{
 			return
+				left.VirtualKeyCode == right.VirtualKeyCode &&
+				left.ControlKeyState == right.ControlKeyState &&
 				left._Character == right._Character &&
-				left._ControlKeyState == right._ControlKeyState &&
-				left._KeyDown == right._KeyDown &&
-				left._VirtualKeyCode == right._VirtualKeyCode;
+				left._KeyDown == right._KeyDown;
 		}
-
 		///
 		public static bool operator !=(KeyInfo left, KeyInfo right)
 		{
 			return !(left == right);
 		}
-
 		///
 		public override bool Equals(object obj)
 		{
-			return obj != null && obj.GetType() == typeof(KeyInfo) && this == (KeyInfo)obj;
+			return obj is KeyInfo && this == (KeyInfo)obj;
 		}
-
 		///
 		public override int GetHashCode()
 		{
 			uint num = _KeyDown ? 0x10000000u : 0;
-			num |= ((uint)_ControlKeyState) << 0x10;
-			num |= (uint)_VirtualKeyCode;
+			num |= ((uint)ControlKeyState) << 0x10;
+			num |= (uint)VirtualKeyCode;
 			return num.GetHashCode();
 		}
-
 		///
 		public override string ToString()
 		{
-			return "Down = " + _KeyDown + "; Code = " + _VirtualKeyCode + "; Char = " + _Character + " (" + _ControlKeyState + ")";
+			return "Down = " + _KeyDown + "; Code = " + VirtualKeyCode + "; Char = " + _Character + " (" + ControlKeyState + ")";
 		}
-
 	}
 
 	/// <summary>
 	/// Mouse event information.
 	/// </summary>
-	public struct MouseInfo
+	public sealed class MouseInfo : KeyBase
 	{
+		Point _Where;
+		MouseAction _Action;
+		MouseButtons _Buttons;
+		int _Value;
 		/// <param name="where">Position.</param>
 		/// <param name="action">Action.</param>
 		/// <param name="buttons">Buttons.</param>
 		/// <param name="controls">Control keys.</param>
 		/// <param name="value">Wheel value.</param>
 		public MouseInfo(Point where, MouseAction action, MouseButtons buttons, ControlKeyStates controls, int value)
+			: base(controls)
 		{
-			_where = where;
-			_buttons = buttons;
-			_action = action;
-			_controls = controls;
-			_value = value;
+			_Where = where;
+			_Buttons = buttons;
+			_Action = action;
+			_Value = value;
 		}
-
 		/// <summary>
 		/// Mouse positon.
 		/// </summary>
-		public Point Where { get { return _where; } set { _where = value; } }
-		Point _where;
-
-		/// <summary>
-		/// Buttons.
-		/// </summary>
-		public MouseButtons Buttons { get { return _buttons; } set { _buttons = value; } }
-		MouseButtons _buttons;
-
+		public Point Where { get { return _Where; } }
 		/// <summary>
 		/// Action.
 		/// </summary>
-		public MouseAction Action { get { return _action; } set { _action = value; } }
-		MouseAction _action;
-
+		public MouseAction Action { get { return _Action; } }
 		/// <summary>
-		/// Gets all control key states.
+		/// Buttons.
 		/// </summary>
-		public ControlKeyStates ControlKeyState { get { return _controls; } set { _controls = value; } }
-		ControlKeyStates _controls;
-
-		/// <summary>
-		/// Gets only Ctrl, Alt and Shift states.
-		/// </summary>
-		public ControlKeyStates CtrlAltShift { get { return _controls & ControlKeyStates.CtrlAltShift; } }
-
+		public MouseButtons Buttons { get { return _Buttons; } }
 		/// <summary>
 		/// Wheel value.
 		/// </summary>
@@ -903,44 +846,37 @@ OemClear = 254;
 		/// It is positive or negative depending on the wheel direction.
 		/// The value is normally 120*X but it depends on the mouse driver.
 		/// </remarks>
-		public int Value { get { return _value; } set { _value = value; } }
-		int _value;
-
+		public int Value { get { return _Value; } }
 		///
 		public static bool operator ==(MouseInfo left, MouseInfo right)
 		{
 			return
-				left._action == right._action &&
-				left._buttons == right._buttons &&
-				left._controls == right._controls &&
-				left._where == right._where;
+				left._Action == right._Action &&
+				left._Buttons == right._Buttons &&
+				left.ControlKeyState == right.ControlKeyState &&
+				left._Where == right._Where;
 		}
-
 		///
 		public static bool operator !=(MouseInfo left, MouseInfo right)
 		{
 			return !(left == right);
 		}
-
 		///
 		public override bool Equals(object obj)
 		{
-			return obj != null && obj.GetType() == typeof(MouseInfo) && this == (MouseInfo)obj;
+			return obj is MouseInfo && this == (MouseInfo)obj;
 		}
-
 		///
 		public override int GetHashCode()
 		{
-			uint num = (uint)_action + ((uint)_buttons << 8) + ((uint)_controls << 16);
-			return num.GetHashCode() ^ _where.GetHashCode();
+			uint num = (uint)_Action + ((uint)_Buttons << 8) + ((uint)ControlKeyState << 16);
+			return num.GetHashCode() ^ _Where.GetHashCode();
 		}
-
 		///
 		public override string ToString()
 		{
-			return _where.ToString() + " " + _action + " (" + _buttons + ") (" + _controls + ")";
+			return _Where.ToString() + " " + _Action + " (" + _Buttons + ") (" + ControlKeyState + ")";
 		}
-
 	}
 
 	/// <summary>
@@ -956,7 +892,6 @@ OemClear = 254;
 		DateTime _Time;
 		double _Seconds;
 		EventHandler _Handler;
-
 		/// <summary>
 		/// Creates a handler with a custom frequency.
 		/// </summary>
@@ -969,13 +904,11 @@ OemClear = 254;
 
 			return (new IdledHandler(seconds, handler)).Invoke;
 		}
-
 		IdledHandler(double seconds, EventHandler handler)
 		{
 			_Seconds = seconds;
 			_Handler = handler;
 		}
-
 		void Invoke(object sender, EventArgs e)
 		{
 			DateTime now = DateTime.Now;

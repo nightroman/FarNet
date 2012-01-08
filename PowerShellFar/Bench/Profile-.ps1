@@ -32,7 +32,6 @@ $Psf.Action('&m. Macro(s)...', { Panel-Macro- })
 $Psf.Action('&a. Favorites...', { Menu-Favorites- })
 $Psf.Action('&c. Complete word', { Complete-Word- }, 'Dialog, Editor, Panels')
 $Psf.Action('&t. Edit description', { Edit-FarDescription- }, 'Editor, Viewer, Panels')
-$Psf.Action('&n. Go to recent folder', { Show-History- -Folder })
 $Psf.Action('&h. Go to panel head item', { Go-Head- }, 'Panels')
 $Psf.Action('&g. Go to selection start', { Go-Selection- }, 'Dialog, Editor, Panels')
 $Psf.Action('&d. Go to selection end', { Go-Selection- -End }, 'Dialog, Editor, Panels')
@@ -90,7 +89,6 @@ $Psf.Providers = @{
 $Psf.Settings.PopupAutoSelect = $false
 $Psf.Settings.PopupMaxHeight = 0
 $Psf.Settings.PopupNoShadow = $false
-$Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Down
 
 ### Module helpers
 # Here we import some modules so that they are always loaded and ready to use.
@@ -98,7 +96,6 @@ $Psf.Settings.ListMenuFilterKey = [FarNet.KeyMode]::Ctrl + [FarNet.KeyCode]::Dow
 
 #Import-Module FarDescription
 #Import-Module FarInventory
-#Import-Module FarMacro
 
 <#
 .Synopsis

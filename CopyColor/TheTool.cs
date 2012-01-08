@@ -52,7 +52,7 @@ namespace FarNet.CopyColor
 				linespans.Add(colors);
 
 				var spans = editor.GetColors(line);
-				if (spans == null || spans.Count == 0 || spans[0].Start > 0 || spans[0].End < text.Length)
+				if (spans == null || spans.Count == 0 || spans[0].Start > 0 || spans[spans.Count - 1].End < text.Length)
 				{
 					Far.Net.Message(@"
 Cannot copy: part of the selected test has no colors.

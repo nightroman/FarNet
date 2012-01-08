@@ -22,8 +22,8 @@ namespace PowerShellFar.UI
 			_menu = Far.Net.CreateMenu();
 			_menu.Title = "PowerShell errors ($Error)";
 			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuErrors");
-			_menu.BreakKeys.Add(VKeyCode.Delete);
-			_menu.BreakKeys.Add(VKeyCode.F4);
+			_menu.AddKey(KeyCode.Delete);
+			_menu.AddKey(KeyCode.F4);
 		}
 		string GetErrorMessage(string message)
 		{
@@ -64,7 +64,7 @@ namespace PowerShellFar.UI
 
 			while (_menu.Show())
 			{
-				if (_menu.BreakKey == VKeyCode.Delete)
+				if (_menu.Key.Is(KeyCode.Delete))
 				{
 					errors.Clear();
 					return;
@@ -75,7 +75,7 @@ namespace PowerShellFar.UI
 				var asException = error as Exception;
 				if (asException != null)
 				{
-					if (_menu.BreakKey != 0)
+					if (_menu.Key.VirtualKeyCode != 0)
 						continue;
 
 					Far.Net.ShowError(null, asException);
@@ -85,7 +85,7 @@ namespace PowerShellFar.UI
 				var asRecord = error as ErrorRecord;
 				if (asRecord != null)
 				{
-					if (_menu.BreakKey == VKeyCode.F4)
+					if (_menu.Key.Is(KeyCode.F4))
 					{
 						if (!string.IsNullOrEmpty(asRecord.InvocationInfo.ScriptName) && File.Exists(asRecord.InvocationInfo.ScriptName))
 						{

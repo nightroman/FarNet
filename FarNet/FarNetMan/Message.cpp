@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -21,7 +21,7 @@ bool Message::Show()
 
 	// process the draw flag
 	int flags = _flags;
-	if ((flags & (int)MsgOptions::Draw) == 0)
+	if ((flags & (int)MessageOptions::Draw) == 0)
 	{
 		// add at least one button
 		if ((flags & ALL_BUTTONS) == 0 && (!_buttons || _buttons->Length == 0))
@@ -31,7 +31,14 @@ bool Message::Show()
 	int nbItems;
 	CStr* items = CreateBlock(nbItems);
 	PIN_NS(pinHelpTopic, _helpTopic);
-	_selected = Info.Message(0, flags, pinHelpTopic, (wchar_t**)items, nbItems, _buttons ? _buttons->Length : 0);
+	_selected = Info.Message(
+		&MainGuid,
+		nullptr, //?????
+		flags,
+		pinHelpTopic,
+		(wchar_t**)items,
+		nbItems,
+		_buttons ? _buttons->Length : 0);
 	delete[] items;
 
 	return _selected != -1;
@@ -70,27 +77,27 @@ CStr* Message::CreateBlock(int& outNbItems)
 	return r;
 }
 
-int Message::Show(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic)
+int Message::Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic)
 {
 	// Draw mode?
-	if (int(options & MsgOptions::Draw))
+	if (int(options & MessageOptions::Draw))
 	{
-		if (int(options & (MsgOptions::Gui | MsgOptions::GuiOnMacro)))
+		if (int(options & (MessageOptions::Gui | MessageOptions::GuiOnMacro)))
 			throw gcnew ArgumentException("Draw and GUI options cannot be used together.");
 		if ((int(options) & ALL_BUTTONS) || (buttons && buttons->Length))
 			throw gcnew ArgumentException("Buttons cannot be used in drawn messages.");
 	}
 
 	// GUI on macro?
-	if (int(options & MsgOptions::GuiOnMacro) != 0)
+	if (int(options & MessageOptions::GuiOnMacro) != 0)
 	{
 		// check macro
 		if (Far::Net->MacroState != MacroState::None)
-			options = options | MsgOptions::Gui;
+			options = options | MessageOptions::Gui;
 	}
 
 	// case: GUI message
-	if (int(options & MsgOptions::Gui) != 0)
+	if (int(options & MessageOptions::Gui) != 0)
 	{
 		if (buttons)
 			throw gcnew ArgumentException("Custom buttons are not supported in GUI message boxes.");
@@ -182,7 +189,7 @@ int Message::ShowDialog(int width)
 	return list->Selected;
 }
 
-int Message::ShowGui(String^ body, String^ header, MsgOptions options)
+int Message::ShowGui(String^ body, String^ header, MessageOptions options)
 {
 	PIN_ES(pinText, body);
 	PIN_ES(pinCaption, header);
@@ -192,19 +199,19 @@ int Message::ShowGui(String^ body, String^ header, MsgOptions options)
 	// buttons
 	switch(UINT(options) & 0xFFFF0000)
 	{
-	case UINT(MsgOptions::OkCancel):
+	case UINT(MessageOptions::OkCancel):
 		type |= MB_OKCANCEL;
 		break;
-	case UINT(MsgOptions::AbortRetryIgnore):
+	case UINT(MessageOptions::AbortRetryIgnore):
 		type |= MB_ABORTRETRYIGNORE;
 		break;
-	case UINT(MsgOptions::YesNo):
+	case UINT(MessageOptions::YesNo):
 		type |= MB_YESNO;
 		break;
-	case UINT(MsgOptions::YesNoCancel):
+	case UINT(MessageOptions::YesNoCancel):
 		type |= MB_YESNOCANCEL;
 		break;
-	case UINT(MsgOptions::RetryCancel):
+	case UINT(MessageOptions::RetryCancel):
 		type |= MB_RETRYCANCEL;
 		break;
 	default:
@@ -213,7 +220,7 @@ int Message::ShowGui(String^ body, String^ header, MsgOptions options)
 	}
 
 	// icon
-	if (int(options & MsgOptions::Warning))
+	if (int(options & MessageOptions::Warning))
 		type |= MB_ICONSTOP;
 	else
 		type |= MB_ICONEXCLAMATION;
@@ -224,17 +231,17 @@ int Message::ShowGui(String^ body, String^ header, MsgOptions options)
 	// result
 	switch(UINT(options) & 0xFFFF0000)
 	{
-	case UINT(MsgOptions::Ok):
+	case UINT(MessageOptions::Ok):
 		return res == IDOK ? 0 : -1;
-	case UINT(MsgOptions::OkCancel):
+	case UINT(MessageOptions::OkCancel):
 		return res == IDOK ? 0 : res == IDCANCEL ? 1 : -1;
-	case UINT(MsgOptions::AbortRetryIgnore):
+	case UINT(MessageOptions::AbortRetryIgnore):
 		return res == IDABORT ? 0 : res == IDRETRY ? 1 : res == IDIGNORE ? 2 : -1;
-	case UINT(MsgOptions::YesNo):
+	case UINT(MessageOptions::YesNo):
 		return res == IDYES ? 0 : res == IDNO ? 1 : -1;
-	case UINT(MsgOptions::YesNoCancel):
+	case UINT(MessageOptions::YesNoCancel):
 		return res == IDYES ? 0 : res == IDNO ? 1 : res == IDCANCEL ? 2 : -1;
-	case UINT(MsgOptions::RetryCancel):
+	case UINT(MessageOptions::RetryCancel):
 		return res == IDRETRY ? 0 : res == IDCANCEL ? 1 : -1;
 	}
 	return -1;

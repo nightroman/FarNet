@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -305,9 +305,9 @@ namespace FarNet
 		/// If <see cref="PanelEventArgs.Ignore"/> = true then the core does nothing.
 		/// Otherwise it calls <see cref="UIEscape"/> to close the panel.
 		/// </remarks>
-		public event EventHandler<PanelKeyEventArgs> Escaping;
+		public event EventHandler<KeyEventArgs> Escaping;
 		///
-		public void WorksEscaping(PanelKeyEventArgs e)
+		public void WorksEscaping(KeyEventArgs e)
 		{
 			if (Escaping != null)
 				Escaping(this, e);
@@ -587,9 +587,9 @@ namespace FarNet
 		/// <remarks>
 		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module processes the key itself.
 		/// </remarks>
-		public event EventHandler<PanelKeyEventArgs> KeyPressed;
+		public event EventHandler<KeyEventArgs> KeyPressed;
 		///
-		public void WorksKeyPressed(PanelKeyEventArgs e)
+		public void WorksKeyPressed(KeyEventArgs e)
 		{
 			if (KeyPressed != null)
 				KeyPressed(this, e);
@@ -597,19 +597,19 @@ namespace FarNet
 		/// <summary>
 		/// Called when a key is pressed after the <see cref="KeyPressed"/> event.
 		/// </summary>
-		/// <param name="code">The <see cref="VKeyCode"/> value.</param>
+		/// <param name="code">The <see cref="KeyCode"/> value.</param>
 		/// <param name="state">Key state flags.</param>
 		/// <returns>True if the key has been processed.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		public virtual bool UIKeyPressed(int code, KeyStates state)
+		public virtual bool UIKeyPressed(int code, ControlKeyStates state)
 		{
 			switch (code)
 			{
-				case VKeyCode.Enter:
+				case KeyCode.Enter:
 
 					switch (state)
 					{
-						case KeyStates.None:
+						case ControlKeyStates.None:
 							if (RealNames)
 								break;
 
@@ -622,11 +622,11 @@ namespace FarNet
 					}
 					break;
 
-				case VKeyCode.F3:
+				case KeyCode.F3:
 
 					switch (state)
 					{
-						case KeyStates.None:
+						case ControlKeyStates.None:
 							if (RealNames)
 								break;
 
@@ -639,11 +639,11 @@ namespace FarNet
 					}
 					break;
 
-				case VKeyCode.F4:
+				case KeyCode.F4:
 
 					switch (state)
 					{
-						case KeyStates.None:
+						case ControlKeyStates.None:
 							if (RealNames)
 								break;
 
@@ -656,41 +656,41 @@ namespace FarNet
 					}
 					break;
 
-				case VKeyCode.F5:
+				case KeyCode.F5:
 
 					switch (state)
 					{
-						case KeyStates.None:
+						case ControlKeyStates.None:
 							UICopyMove(false);
 							return true;
 
-						case KeyStates.Shift: //???? if (RealNames) ?
+						case ControlKeyStates.ShiftPressed: //???? if (RealNames) ?
 							//! return true even if the file is dots
 							UIClone();
 							return true;
 					}
 					break;
 
-				case VKeyCode.F6:
+				case KeyCode.F6:
 
 					switch (state)
 					{
-						case KeyStates.None:
+						case ControlKeyStates.None:
 							UICopyMove(true);
 							return true;
 
-						case KeyStates.Shift: //???? if (RealNames) ?
+						case ControlKeyStates.ShiftPressed: //???? if (RealNames) ?
 							//! return true even if the file is dots
 							UIRename();
 							return true;
 					}
 					break;
 
-				case VKeyCode.F7:
+				case KeyCode.F7:
 
 					switch (state)
 					{
-						case KeyStates.None:
+						case ControlKeyStates.None:
 							if (RealNames && RealNamesMakeDirectory)
 								break;
 
@@ -700,25 +700,23 @@ namespace FarNet
 
 					break;
 
-				case VKeyCode.Delete:
+				case KeyCode.Delete:
 
 					if (Far.Net.CommandLine.Length > 0)
 						break;
 
-					goto case VKeyCode.F8;
+					goto case KeyCode.F8;
 
-				case VKeyCode.F8:
+				case KeyCode.F8:
 
 					switch (state)
 					{
-						case KeyStates.None:
-							goto case KeyStates.Shift;
-
-						case KeyStates.Shift:
+						case ControlKeyStates.None:
+						case ControlKeyStates.ShiftPressed:
 							if (RealNames && RealNamesDeleteFiles)
 								break;
 
-							UIDelete(state == KeyStates.Shift);
+							UIDelete(state == ControlKeyStates.ShiftPressed);
 							return true;
 					}
 					break;

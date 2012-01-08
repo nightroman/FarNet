@@ -23,16 +23,15 @@ namespace PowerShellFar.UI
 			_menu = Far.Net.CreateListMenu();
 			_menu.Title = "PowerShell debugger tools";
 			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuDebugger");
-			_menu.FilterOptions = PatternOptions.None;
 			_menu.NoInfo = true;
 			_menu.ScreenMargin = Settings.Default.ListMenuScreenMargin;
 			_menu.UsualMargins = Settings.Default.ListMenuUsualMargins;
 
-			_menu.AddKey(KeyCode.Del, OnDelete);
-			_menu.AddKey(KeyCode.Del | KeyMode.Shift, OnDeleteAll);
-			_menu.AddKey(KeyCode.F4, OnEdit);
-			_menu.AddKey(KeyCode.BS | KeyMode.Shift, OnDisableAll);
-			_menu.AddKey(KeyCode.Space, OnToggle);
+			_menu.AddKey(KeyCode.Delete, ControlKeyStates.None, OnDelete);
+			_menu.AddKey(KeyCode.Delete, ControlKeyStates.ShiftPressed, OnDeleteAll);
+			_menu.AddKey(KeyCode.F4, ControlKeyStates.None, OnEdit);
+			_menu.AddKey(KeyCode.Backspace, ControlKeyStates.ShiftPressed, OnDisableAll);
+			_menu.AddKey(KeyCode.Spacebar, ControlKeyStates.None, OnToggle);
 		}
 
 		public void Show()
@@ -81,7 +80,7 @@ namespace PowerShellFar.UI
 
 		void OnLineBreakpoint(object sender, EventArgs e)
 		{
-			if (_menu.BreakKey != 0)
+			if (_menu.Key.VirtualKeyCode != 0)
 				return;
 
 			string file = null;
@@ -110,7 +109,7 @@ namespace PowerShellFar.UI
 				{
 					switch(Far.Net.Message("Breakpoint exists",
 						"Line breakpoint",
-						MsgOptions.None,
+						MessageOptions.None,
 						new string[] {
 							"&Remove",
 							bpFound.Enabled ? "&Disable" : "&Enable",
@@ -157,7 +156,7 @@ namespace PowerShellFar.UI
 
 		void OnCommandBreakpoint(object sender, EventArgs e)
 		{
-			if (_menu.BreakKey != 0)
+			if (_menu.Key.VirtualKeyCode != 0)
 				return;
 
 			string file = null;
@@ -178,7 +177,7 @@ namespace PowerShellFar.UI
 
 		void OnVariableBreakpoint(object sender, EventArgs e)
 		{
-			if (_menu.BreakKey != 0)
+			if (_menu.Key.VirtualKeyCode != 0)
 				return;
 
 			string file = null;

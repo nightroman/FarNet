@@ -25,6 +25,7 @@ namespace FarNet.Demo
 			{
 				case "PROCESS": DoProcess(); break;
 				case "ASSEMBLY": DoAssembly(); break;
+				case "RESOURCES": DoResources(); break;
 				default:
 					// Show help in the help viewer
 					Far.Net.ShowHelpTopic("DemoCommand");
@@ -69,6 +70,21 @@ Managed memory : {3,7:n0} kb
 
 			File.WriteAllLines(viewer.FileName, list.ToArray());
 			viewer.Open();
+		}
+		/// <summary>
+		/// Opens the current panel file as a .resources file.
+		/// </summary>
+		void DoResources()
+		{
+			var file = Far.Net.Panel.CurrentFile;
+			if (file == null)
+				return;
+
+			var path = Path.Combine(Far.Net.Panel.CurrentDirectory, file.Name);
+			if (!File.Exists(path))
+				return;
+			
+			(new DemoExplorer(path)).OpenPanel();
 		}
 	}
 }

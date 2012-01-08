@@ -86,10 +86,6 @@
       <Project>{f1d6e33d-67f2-4b80-9c8c-d1af502d1131}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="PowerShellFar\Modules\FarMacro\FarMacro.csproj">
-      <Project>{6223b3d5-a0ca-4dd1-9cd3-d7d394b55da6}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="PowerShellFar\PowerShellFar.csproj">
       <Project>{602c5210-af86-471a-bf19-35c0d5a71719}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

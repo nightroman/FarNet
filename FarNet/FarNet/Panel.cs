@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -558,11 +558,11 @@ namespace FarNet
 		/// </summary>
 		public bool ShowNamesOnly { get { return _Panel.ShowNamesOnly; } set { _Panel.ShowNamesOnly = value; } }
 		/// <summary>
-		/// Tells to use filter in the panel.
+		/// Tells to disable filters in the panel.
 		/// </summary>
-		public bool UseFilter { get { return _Panel.UseFilter; } set { _Panel.UseFilter = value; } }
+		public bool NoFilter { get { return _Panel.NoFilter; } set { _Panel.NoFilter = value; } }
 		/// <summary>
-		/// Gets or sets the panel highlighting mode.
+		/// Gets or sets the highlighting mode.
 		/// </summary>
 		public PanelHighlighting Highlighting { get { return _Panel.Highlighting; } set { _Panel.Highlighting = value; } }
 		#endregion

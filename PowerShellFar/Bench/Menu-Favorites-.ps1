@@ -51,10 +51,10 @@ for(;;) {
 	$menu.AutoAssignHotkeys = $true
 	$menu.ShowAmpersands = $true
 	$menu.WrapCursor = $true
-	$menu.BreakKeys.Add([FarNet.VKeyCode]::Backspace)
-	$menu.BreakKeys.Add([FarNet.VKeyCode]::Spacebar)
+	$menu.AddKey([FarNet.KeyCode]::Backspace)
+	$menu.AddKey([FarNet.KeyCode]::Spacebar)
 	if ($Far.Window.Kind -eq 'Panels') {
-		$menu.BreakKeys.Add([FarNet.VKeyCode]::Enter -bor [FarNet.VKeyMode]::Ctrl)
+		$menu.AddKey([FarNet.KeyCode]::Enter, 'LeftCtrlPressed')
 	}
 
 	### add items
@@ -76,7 +76,7 @@ for(;;) {
 	$null = $menu.Show()
 
 	### go back (check this case always)
-	if ($menu.BreakKey -eq ([FarNet.VKeyCode]::Backspace)) {
+	if ($menu.Key.Is([FarNet.KeyCode]::Backspace)) {
 		if ($path -ne $path0) {
 			$goto = $path
 			$path = Split-Path $path
@@ -88,7 +88,7 @@ for(;;) {
 	if (!$1) { return }
 
 	### go to the item
-	if ($menu.breakKey -eq ([FarNet.VKeyCode]::Enter -bor [FarNet.VKeyMode]::Ctrl)) {
+	if ($menu.Key.IsCtrl([FarNet.KeyCode]::Enter)) {
 		$Far.Panel.GoToPath($1.FullName)
 		return
 	}
@@ -111,7 +111,7 @@ for(;;) {
 
 	### invoke the item
 	Invoke-Item -LiteralPath $1.FullName
-	if ($menu.BreakKey -ne ([FarNet.VKeyCode]::Spacebar)) {
+	if (!$menu.Key.Is([FarNet.KeyCode]::Spacebar)) {
 		return
 	}
 	$goto = $1.FullName

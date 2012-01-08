@@ -19,10 +19,8 @@ $script:Builds = @(
 	'FarNet.Works.Config\.build.ps1'
 	'FarNet.Works.Dialog\.build.ps1'
 	'FarNet.Works.Editor\.build.ps1'
-	'FarNet.Works.Macros\.build.ps1'
 	'FarNet.Works.Manager\.build.ps1'
 	'FarNet.Works.Panels\.build.ps1'
-	'FarNet.Works.Registry\.build.ps1'
 	'FarNetMan\.build.ps1'
 )
 

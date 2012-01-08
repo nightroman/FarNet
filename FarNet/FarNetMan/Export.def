@@ -1,21 +1,21 @@
 LIBRARY	FarNetMan
 EXPORTS
-	ClosePluginW
+	GetGlobalInfoW
+	ClosePanelW
 	ConfigureW
 	DeleteFilesW
 	ExitFARW
 	FreeFindDataW
 	GetFilesW
 	GetFindDataW
-	GetOpenPluginInfoW
+	GetOpenPanelInfoW
 	GetPluginInfoW
-	OpenFilePluginW
-	OpenPluginW
+	OpenW
 	ProcessDialogEventW
 	ProcessEditorEventW
 	ProcessEditorInputW
-	ProcessEventW
-	ProcessKeyW
+	ProcessPanelEventW
+	ProcessPanelInputW
 	ProcessSynchroEventW
 	ProcessViewerEventW
 	PutFilesW

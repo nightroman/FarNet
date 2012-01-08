@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -14,7 +14,7 @@ namespace FarNet.Works
 {
 	class ModuleCache
 	{
-		const int Version = 2;
+		const int Version = 3;
 		const int idVersion = 0;
 		readonly string _FileName;
 		readonly Hashtable _Cache;
@@ -39,10 +39,14 @@ namespace FarNet.Works
 					_Cache = null;
 			}
 			catch (IOException) //! FileNotFoundException, DirectoryNotFoundException
-			{ }
+			{
+				_Cache = null;
+				_ToUpdate = true;
+			}
 			catch (Exception ex)
 			{
 				_Cache = null;
+				_ToUpdate = true;
 				Far.Net.ShowError("Reading cache", ex);
 			}
 

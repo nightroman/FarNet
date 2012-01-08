@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -22,18 +22,18 @@ internal:
 	static array<Panel^>^ PanelsByGuid(Guid typeId);
 	static array<Panel^>^ PanelsByType(Type^ type);
 	static HANDLE AddPluginPanel(Panel2^ plugin);
-	static int AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode);
-	static int AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode);
-	static int AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode);
-	static int AsProcessEvent(HANDLE hPlugin, int id, void* param);
-	static int AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState);
-	static int AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode);
-	static int AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode);
+	static int AsDeleteFiles(const DeleteFilesInfo* info);
+	static int AsGetFiles(GetFilesInfo* info);
+	static int AsGetFindData(GetFindDataInfo* info);
+	static int AsProcessPanelEvent(const ProcessPanelEventInfo* info);
+	static int AsProcessPanelInput(const ProcessPanelInputInfo* info);
+	static int AsPutFiles(PutFilesInfo* info);
+	static int AsSetDirectory(const SetDirectoryInfo* info);
 	static IPanel^ GetPanel(bool active);
 	static Panel2^ GetPanel2(Panel2^ plugin);
-	static void AsClosePlugin(HANDLE hPlugin);
-	static void AsFreeFindData(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber);
-	static void AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info);
+	static void AsClosePanel(const ClosePanelInfo* info);
+	static void AsFreeFindData(const FreeFindDataInfo* info);
+	static void AsGetOpenPanelInfo(OpenPanelInfo* info);
 	static void OpenPanel(Panel2^ plugin);
 	static void PushPanel(Panel2^ plugin);
 	static void ReplacePanel(Panel2^ oldPanel, Panel2^ newPanel);

@@ -19,7 +19,7 @@ New-FarMenu -Show 'Bookmarks' $(
 		++$index
 		# ignore the top line
 		if ($bookmark.CaretLine -ge 1 -and $bookmark.CaretLine -lt $Editor.Count) {
-			New-FarItem ('&{0} {1} {2}' -f $index, (1 + $bookmark.CaretLine), $Editor[$bookmark.CaretLine]) -Data $bookmark { $Editor.Frame = $this.Data }
+			New-FarItem ('&{0} {1} {2}' -f $index, (1 + $bookmark.CaretLine), $Editor[$bookmark.CaretLine]) -Data $bookmark { $Editor.Frame = $_.Item.Data }
 			++$added
 		}
 	}
@@ -30,7 +30,7 @@ New-FarMenu -Show 'Bookmarks' $(
 			New-FarItem -IsSeparator "Stack"
 		}
 		foreach($bookmark in $bookmarks) {
-			New-FarItem ('&{0} {1}' -f (1 + $bookmark.CaretLine), $Editor[$bookmark.CaretLine]) -Data $bookmark { $Editor.Frame = $this.Data }
+			New-FarItem ('&{0} {1}' -f (1 + $bookmark.CaretLine), $Editor[$bookmark.CaretLine]) -Data $bookmark { $Editor.Frame = $_.Item.Data }
 		}
 	}
 )

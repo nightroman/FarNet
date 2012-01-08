@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -15,8 +15,8 @@ ref class Editor0
 internal:
 	static array<IEditor^>^ Editors();
 	static Editor^ GetCurrentEditor();
-	static int AsProcessEditorEvent(int type, void* param);
-	static int AsProcessEditorInput(const INPUT_RECORD* rec);
+	static int AsProcessEditorEvent(const ProcessEditorEventInfo* info);
+	static int AsProcessEditorInput(const ProcessEditorInputInfo* info);
 internal:
 	// Editor waiting for ID
 	static Editor^ _editorWaiting;

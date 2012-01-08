@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -56,10 +56,6 @@ namespace FarNet
 		/// </summary>
 		public abstract IModuleCommand GetModuleCommand(Guid id);
 		/// <summary>
-		/// Gets any module filer by its ID.
-		/// </summary>
-		public abstract IModuleFiler GetModuleFiler(Guid id);
-		/// <summary>
 		/// Gets any module tool by its ID.
 		/// </summary>
 		public abstract IModuleTool GetModuleTool(Guid id);
@@ -67,15 +63,15 @@ namespace FarNet
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
-		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
-		public void Message(string body) { Message(body, null, MsgOptions.Ok, null, null); }
+		/// <seealso cref="Message(string, string, MessageOptions, string[], string)"/>
+		public void Message(string body) { Message(body, null, MessageOptions.Ok, null, null); }
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>
 		/// <param name="body">Message text.</param>
 		/// <param name="header">Message header.</param>
-		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
-		public void Message(string body, string header) { Message(body, header, MsgOptions.Ok, null, null); }
+		/// <seealso cref="Message(string, string, MessageOptions, string[], string)"/>
+		public void Message(string body, string header) { Message(body, header, MessageOptions.Ok, null, null); }
 		/// <summary>
 		/// Shows a message box with options.
 		/// </summary>
@@ -83,8 +79,8 @@ namespace FarNet
 		/// <param name="header">Message header.</param>
 		/// <param name="options">Message options.</param>
 		/// <returns>Button index or -1 if canceled.</returns>
-		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
-		public int Message(string body, string header, MsgOptions options) { return Message(body, header, options, null, null); }
+		/// <seealso cref="Message(string, string, MessageOptions, string[], string)"/>
+		public int Message(string body, string header, MessageOptions options) { return Message(body, header, options, null, null); }
 		/// <summary>
 		/// Shows a message box with options and buttons.
 		/// </summary>
@@ -93,8 +89,8 @@ namespace FarNet
 		/// <param name="options">Message options.</param>
 		/// <param name="buttons">Message buttons. Not supported with <c>Gui*</c> options.</param>
 		/// <returns>Button index or -1 if canceled.</returns>
-		/// <seealso cref="Message(string, string, MsgOptions, string[], string)"/>
-		public int Message(string body, string header, MsgOptions options, string[] buttons) { return Message(body, header, options, buttons, null); }
+		/// <seealso cref="Message(string, string, MessageOptions, string[], string)"/>
+		public int Message(string body, string header, MessageOptions options, string[] buttons) { return Message(body, header, options, buttons, null); }
 		/// <summary>
 		/// Shows a message box with options, buttons and help.
 		/// </summary>
@@ -109,12 +105,12 @@ namespace FarNet
 		/// <returns>Button index or -1 if canceled, or 0 in the drawn message.</returns>
 		/// <remarks>
 		/// <para>
-		/// If the <see cref="MsgOptions.Draw"/> option is set then GUI or buttons are not allowed.
+		/// If the <see cref="MessageOptions.Draw"/> option is set then GUI or buttons are not allowed.
 		/// A message box with no buttons is simply drawn and the execution continues immediately.
 		/// The caller has to remove the message by redrawing or restoring the screen.
 		/// </para>
 		/// <para>
-		/// If the <see cref="MsgOptions.Draw"/> option is not set then the message is modal and
+		/// If the <see cref="MessageOptions.Draw"/> option is not set then the message is modal and
 		/// it shows at least the OK button if there are no buttons provided by the parameters.
 		/// </para>
 		/// <para>
@@ -122,7 +118,7 @@ namespace FarNet
 		/// a listbox dialog is used where the listbox items work as buttons.
 		/// </para>
 		/// </remarks>
-		public abstract int Message(string body, string header, MsgOptions options, string[] buttons, string helpTopic);
+		public abstract int Message(string body, string header, MessageOptions options, string[] buttons, string helpTopic);
 		/// <summary>
 		/// Gets Far version.
 		/// </summary>
@@ -181,17 +177,6 @@ namespace FarNet
 		/// </summary>
 		public abstract IViewer CreateViewer();
 		/// <summary>
-		/// Posts keys to the Far keyboard queue. Processing is not displayed.
-		/// </summary>
-		/// <param name="keys">String of keys.</param>
-		public void PostKeys(string keys) { PostKeys(keys, false); }
-		/// <summary>
-		/// Posts keys to the Far keyboard queue.
-		/// </summary>
-		/// <param name="keys">String of keys.</param>
-		/// <param name="enableOutput">Tells to display processing.</param>
-		public abstract void PostKeys(string keys, bool enableOutput);
-		/// <summary>
 		/// Posts literal text to the Far keyboard queue. Processing is not displayed.
 		/// </summary>
 		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
@@ -202,21 +187,6 @@ namespace FarNet
 		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
 		/// <param name="enableOutput">Tells to display processing.</param>
 		public abstract void PostText(string text, bool enableOutput);
-		/// <summary>
-		/// Creates a sequence of key codes from a string of keys.
-		/// </summary>
-		public abstract int[] CreateKeySequence(string keys);
-		/// <summary>
-		/// Posts a sequence of keys to the Far keyboard queue. Processing is not displayed.
-		/// </summary>
-		/// <param name="sequence">Sequence of keys.</param>
-		public void PostKeySequence(int[] sequence) { PostKeySequence(sequence, false); }
-		/// <summary>
-		/// Posts a sequence of keys to the Far keyboard queue.
-		/// </summary>
-		/// <param name="sequence">Sequence of keys.</param>
-		/// <param name="enableOutput">Tells to display processing.</param>
-		public abstract void PostKeySequence(int[] sequence, bool enableOutput);
 		/// <summary>
 		/// Posts a macro to Far. Processing is not displayed. Keys are sent to editor plugins.
 		/// </summary>
@@ -230,13 +200,13 @@ namespace FarNet
 		/// <param name="disablePlugins">Don't send keystrokes to editor plugins.</param>
 		public abstract void PostMacro(string macro, bool enableOutput, bool disablePlugins);
 		/// <summary>
-		/// Converts a key string representation to the internal <see cref="KeyCode"/>. Returns -1 on errors.
+		/// Converts a key string representation to <see cref="KeyInfo"/>. Returns null on errors.
 		/// </summary>
-		public abstract int NameToKey(string key);
+		public abstract KeyInfo NameToKeyInfo(string key);
 		/// <summary>
-		/// Converts an internal <see cref="KeyCode"/> to string representation. Returns null on errors.
+		/// Converts a <see cref="KeyInfo"/> to its string representation. Returns null on errors.
 		/// </summary>
-		public abstract string KeyToName(int key);
+		public abstract string KeyInfoToName(KeyInfo key);
 		/// <summary>
 		/// Gets the current editor or null if none.
 		/// </summary>
@@ -300,24 +270,6 @@ namespace FarNet
 		/// </para>
 		/// </remarks>
 		public abstract ILine CommandLine { get; }
-		/// <summary>
-		/// Returns all strings from history.
-		/// </summary>
-		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory.</param>
-		public ICollection<string> GetHistory(string name) { return GetHistory(name, null); }
-		/// <summary>
-		/// Returns strings from history by type.
-		/// </summary>
-		/// <param name="name">History name. Standard values are: SavedHistory, SavedFolderHistory, SavedViewHistory.</param>
-		/// <param name="filter">
-		/// Type filter: each character represents a type. For example for SavedViewHistory: 0: view; 1: edit; 2: external.
-		/// </param>
-		public abstract ICollection<string> GetHistory(string name, string filter);
-		/// <summary>
-		/// Returns strings from dialog control history.
-		/// </summary>
-		/// <param name="name">History name.</param>
-		public abstract ICollection<string> GetDialogHistory(string name);
 		/// <summary>
 		/// Shows an error information in a message box which also stops any macro.
 		/// </summary>
@@ -401,14 +353,6 @@ namespace FarNet
 		/// <returns>Entered text or null if canceled.</returns>
 		public abstract string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Converts an internal key code to a 'printable' char. <see cref="KeyCode"/>
-		/// </summary>
-		/// <remarks>
-		/// If the code does not correspond to a 'printable' char then 0 is returned.
-		/// Note: chars below space are returned as they are because they are sort of 'printable'.
-		/// </remarks>
-		public abstract char CodeToChar(int code);
-		/// <summary>
 		/// Posts a handler to be invoked when user code has finished and the core gets control.
 		/// </summary>
 		/// <param name="handler">Step handler.</param>
@@ -418,7 +362,6 @@ namespace FarNet
 		/// This method allows invoke them as an asynchronous sequence.
 		/// <para>
 		/// This mechanism works only when the plugins menu [F11] is available, because it is used internally for stepping.
-		/// Ensure some FarNet hotkey in the plugins menu. Use [F11] for menu, [F4] to set a hotkey there.
 		/// </para>
 		/// <para>
 		/// If a step handler starts modal UI without exiting (e.g. dialog) then use <see cref="PostStepAfterStep"/>
@@ -506,10 +449,6 @@ namespace FarNet
 		/// </remarks>
 		public abstract ILine Line { get; }
 		/// <summary>
-		/// Gets macro operator.
-		/// </summary>
-		public abstract IMacro Macro { get; }
-		/// <summary>
 		/// Gets the internal current directory.
 		/// </summary>
 		/// <remarks>
@@ -537,20 +476,6 @@ namespace FarNet
 		/// Gets the window operator.
 		/// </summary>
 		public abstract IWindow Window { get; }
-		/// <summary>
-		/// Opens the virtual registry key to access the FarNet host data.
-		/// </summary>
-		/// <param name="name">Name or path of the key to open. If it is null or empty then the root key is opened.</param>
-		/// <param name="writable">Set to true if you need write access to the key.</param>
-		/// <returns>The requested key or null if the key for reading does not exist.</returns>
-		/// <remarks>
-		/// The returned key has to be disposed after use by <c>Dispose()</c>.
-		/// <para>
-		/// For the Far Manager host the root key in the Windows registry is <c>HKEY_CURRENT_USER\Software\Far2</c>
-		/// or <c>HKEY_CURRENT_USER\Software\Far2\Users\Xyz</c> if Far is started with the parameter /u Xyz.
-		/// </para>
-		/// </remarks>
-		public abstract IRegistryKey OpenRegistryKey(string name, bool writable);
 		/// <summary>
 		/// Low level UI operator.
 		/// </summary>

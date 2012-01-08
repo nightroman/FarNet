@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2011-07-06
+Release  : 2012-01-06
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -9,8 +9,8 @@ Source   : http://code.google.com/p/farnet/
 
 = PREREQUISITES =
 
- * Far Manager 2.0.1807
- * Plugin FarNet 4.5.0
+ * Far Manager 3.0.0.x
+ * Plugin FarNet 5.0.0
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -105,7 +105,7 @@ User dictionaries are UTF-8 text files in the module roaming directory:
 = SETTINGS =
 
 Open the module settings panel from the main .NET menu:
-[F11] | .NET | Settings | RightWords
+[F11] | FarNet | Settings | RightWords
 
 Regular expression patterns are created with IgnorePatternWhitespace option, so
 that they support line comments (#) and all white spaces should be explicitly
@@ -259,3 +259,7 @@ files. See Readme.txt for details and the example pattern with "&".
 Added "*.lng" to the default automatic highlighting file mask.
 
 Minor tweaks.
+
+2.0.0
+
+Adapted for Far3 + FarNet5.

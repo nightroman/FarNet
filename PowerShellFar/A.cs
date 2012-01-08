@@ -45,14 +45,14 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(Exception error)
 		{
-			Far.Net.Message(error.Message, "PowerShellFar error", MsgOptions.LeftAligned);
+			Far.Net.Message(error.Message, "PowerShellFar error", MessageOptions.LeftAligned);
 		}
 		/// <summary>
 		/// Shows a message.
 		/// </summary>
 		public static void Message(string message)
 		{
-			Far.Net.Message(message, Res.Me, MsgOptions.LeftAligned);
+			Far.Net.Message(message, Res.Me, MessageOptions.LeftAligned);
 		}
 		/// <summary>
 		/// Creates standard Far viewer ready for opening (F3)
@@ -192,7 +192,7 @@ namespace PowerShellFar
 			foreach (object o in ps.Streams.Error)
 				sb.AppendLine(o.ToString());
 
-			Far.Net.Message(sb.ToString(), "PowerShellFar error(s)", MsgOptions.LeftAligned);
+			Far.Net.Message(sb.ToString(), "PowerShellFar error(s)", MessageOptions.LeftAligned);
 			return true;
 		}
 		/// <summary>

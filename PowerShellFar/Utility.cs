@@ -59,7 +59,7 @@ namespace PowerShellFar
 				{
 					Far.Net.Message(
 						"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + Settings.Default.ExternalViewerArguments,
-						Res.Me, MsgOptions.LeftAligned | MsgOptions.Warning);
+						Res.Me, MessageOptions.LeftAligned | MessageOptions.Warning);
 				}
 			}
 

@@ -32,7 +32,6 @@ namespace PowerShellFar
 
 			CurrentLocation = "*";
 			SortMode = PanelSortMode.Unsorted; // assume it is sorted in SELECT
-			UseFilter = true;
 			UseSortGroups = false;
 		}
 		DateTime _XmlFileTime;
@@ -350,7 +349,7 @@ namespace PowerShellFar
 					return true;
 			}
 
-			switch (Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+			switch (Far.Net.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 			{
 				case 0:
 					return SaveData();
@@ -369,7 +368,7 @@ namespace PowerShellFar
 
 			if (args.UI && 0 != (Far.Net.Confirmations & FarConfirmations.Delete))
 			{
-				if (0 != Far.Net.Message("Delete selected record(s)?", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }))
+				if (0 != Far.Net.Message("Delete selected record(s)?", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }))
 					return;
 			}
 
@@ -584,22 +583,22 @@ namespace PowerShellFar
 			UpdateRedraw(true);
 		}
 		///
-		public override bool UIKeyPressed(int code, KeyStates state) //????? docs
+		public override bool UIKeyPressed(int code, ControlKeyStates state) //????? docs
 		{
 			switch (code)
 			{
-				case VKeyCode.PageDown:
+				case KeyCode.PageDown:
 					switch (state)
 					{
-						case KeyStates.Control | KeyStates.Shift:
+						case ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed:
 							OnRangeNext();
 							return true;
 					}
 					break;
-				case VKeyCode.PageUp:
+				case KeyCode.PageUp:
 					switch (state)
 					{
-						case KeyStates.Control | KeyStates.Shift:
+						case ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed:
 							OnRangePrevious();
 							return true;
 					}
@@ -637,7 +636,7 @@ namespace PowerShellFar
 			if (0 == (xRowState & (DataRowState.Added | DataRowState.Deleted | DataRowState.Modified)))
 				return true;
 
-			switch (Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+			switch (Far.Net.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 			{
 				case 0:
 					// save data, update the table
@@ -671,7 +670,7 @@ namespace PowerShellFar
 				{
 					using (var dt = Table.GetChanges())
 					{
-						if (dt != null && Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNo) == 0)
+						if (dt != null && Far.Net.Message(Res.AskSaveModified, "Save", MessageOptions.YesNo) == 0)
 							SaveData();
 					}
 				}

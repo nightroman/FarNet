@@ -33,7 +33,7 @@
 		Target platform: x86 or x64. Default: depends on the current process.
 
 .Parameter Version
-		Major Far version: 2 or 3.
+		Major Far version: 3 (default) or 2.
 
 .Parameter Archive
 		Already downloaded archive where Far should be updated from.

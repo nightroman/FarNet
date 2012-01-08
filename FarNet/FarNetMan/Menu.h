@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -23,14 +23,14 @@ public:
 internal:
 	Menu();
 private:
-	FarMenuItemEx* CreateItems();
-	void DeleteItems(FarMenuItemEx* items);
+	FarMenuItem* CreateItems();
+	void DeleteItems(FarMenuItem* items);
 	int Flags();
-	int* CreateBreakKeys();
-	void ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* title, const wchar_t* bottom, const wchar_t* help);
+	FarKey* CreateBreakKeys();
+	void ShowMenu(FarMenuItem* items, const FarKey* breaks, const wchar_t* title, const wchar_t* bottom, const wchar_t* help);
 private:
-	FarMenuItemEx* _createdItems;
-	int* _createdBreaks;
+	FarMenuItem* _createdItems;
+	FarKey* _createdBreaks;
 	wchar_t* _help;
 	wchar_t* _title;
 	wchar_t* _bottom;

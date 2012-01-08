@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -50,11 +50,11 @@ void CStr::Set(String^ str)
 #pragma warning (push)
 #pragma warning (disable : 4996)
 
-// Returns NULL for null or empty. Callers delete the result.
+// Returns nullptr for null or empty. Callers delete the result.
 wchar_t* NewChars(String^ str)
 {
 	if (ES(str))
-		return 0;
+		return nullptr;
 
 	wchar_t* r = new wchar_t[str->Length + 1];
 	PIN_NE(pin, str);
@@ -82,36 +82,36 @@ void CopyStringToChars(String^ str, wchar_t* buffer)
 
 void EditorControl_ECTL_DELETEBLOCK()
 {
-	Info.EditorControl(ECTL_DELETEBLOCK, 0);
+	Info.EditorControl(-1, ECTL_DELETEBLOCK, 0, 0);
 }
 
 void EditorControl_ECTL_DELETECHAR()
 {
-	Info.EditorControl(ECTL_DELETECHAR, 0);
+	Info.EditorControl(-1, ECTL_DELETECHAR, 0, 0);
 }
 
 void EditorControl_ECTL_DELETESTRING()
 {
-	Info.EditorControl(ECTL_DELETESTRING, 0);
+	Info.EditorControl(-1, ECTL_DELETESTRING, 0, 0);
 }
 
 void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm)
 {
-	if (!Info.EditorControl(ECTL_GETBOOKMARKS, &ebm))
+	if (!Info.EditorControl(-1, ECTL_GETBOOKMARKS, 0, &ebm))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 }
 
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index)
 {
 	egs.StringNumber = index;
-	if (!Info.EditorControl(ECTL_GETSTRING, &egs))
+	if (!Info.EditorControl(-1, ECTL_GETSTRING, 0, &egs))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + index + ". Ensure current editor and valid line number.");
 }
 
 void EditorControl_ECTL_INSERTSTRING(bool indent)
 {
 	int value = indent;
-	Info.EditorControl(ECTL_INSERTSTRING, &value);
+	Info.EditorControl(-1, ECTL_INSERTSTRING, 0, &value);
 }
 
 void EditorControl_ECTL_INSERTTEXT(Char text, int overtype)
@@ -121,7 +121,7 @@ void EditorControl_ECTL_INSERTTEXT(Char text, int overtype)
 
 	wchar_t buf[2] = { text, 0 };
 
-	Info.EditorControl(ECTL_INSERTTEXT, (wchar_t*)buf);
+	Info.EditorControl(-1, ECTL_INSERTTEXT, 0, (wchar_t*)buf);
 
 	if (overtype > 0)
 		Edit_SetOvertype(true);
@@ -134,7 +134,7 @@ void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype)
 
 	String^ text2 = text->Replace("\r\n", "\r")->Replace('\n', '\r');
 	PIN_NE(pin, text2);
-	Info.EditorControl(ECTL_INSERTTEXT, (wchar_t*)pin);
+	Info.EditorControl(-1, ECTL_INSERTTEXT, 0, (wchar_t*)pin);
 
 	if (overtype > 0)
 		Edit_SetOvertype(true);
@@ -143,41 +143,38 @@ void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype)
 //! Don't check result here.
 void EditorControl_ECTL_SELECT(EditorSelect& es)
 {
-	Info.EditorControl(ECTL_SELECT, &es);
+	Info.EditorControl(-1, ECTL_SELECT, 0, &es);
 }
 
-int EditorControl_ECTL_SETPARAM(const EditorSetParameter esp)
+int EditorControl_ECTL_SETPARAM(const EditorSetParameter& esp)
 {
-	return Info.EditorControl(ECTL_SETPARAM, (void*)&esp);
+	return (int)Info.EditorControl(-1, ECTL_SETPARAM, 0, (void*)&esp);
 }
 
 //! *) Looks like it does not fail if input is 'out of range'.
 //! *) It is called from 'finally' and FxCop is against exceptions in 'finally'.
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp)
 {
-	if (!Info.EditorControl(ECTL_SETPOSITION, (EditorSetPosition*)&esp))
+	if (!Info.EditorControl(-1, ECTL_SETPOSITION, 0, (void*)&esp))
 		Log::Source->TraceEvent(TraceEventType::Warning, 0, "ECTL_SETPOSITION failed");
 }
 
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess)
 {
-	if (!Info.EditorControl(ECTL_SETSTRING, &ess))
+	if (!Info.EditorControl(-1, ECTL_SETSTRING, 0, &ess))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + ess.StringNumber + ". Ensure current editor and valid line number.");
 }
 
 bool IsCurrentViewer()
 {
-	// get type
-	WindowInfo wi; wi.Pos = -1;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
-		throw gcnew InvalidOperationException("ACTL_GETSHORTWINDOWINFO failed.");
+	WindowKind windowKind = Wrap::WindowGetKind();
 
 	// viewer
-	if (wi.Type == WTYPE_VIEWER)
+	if (windowKind == WindowKind::Viewer)
 		return true;
 
 	// not panels
-	if (wi.Type != WTYPE_PANELS)
+	if (windowKind != WindowKind::Panels)
 		return false;
 
 	// qview
@@ -205,7 +202,7 @@ void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe)
 
 	// get viewer info
 	vi.StructSize = sizeof(vi);
-	Info.ViewerControl(VCTL_GETINFO, &vi);
+	Info.ViewerControl(-1, VCTL_GETINFO, 0, &vi);
 }
 
 void AssertCurrentViewer()
@@ -308,9 +305,9 @@ void Edit_RemoveAt(int index)
 	Edit_RestoreEditorInfo(ei);
 }
 
-MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m)
+MouseInfo^ GetMouseInfo(const MOUSE_EVENT_RECORD& m)
 {
-	return MouseInfo(
+	return gcnew MouseInfo(
 		Point(m.dwMousePosition.X, m.dwMousePosition.Y),
 		(MouseAction)m.dwEventFlags & MouseAction::All,
 		(MouseButtons)m.dwButtonState & MouseButtons::All,
@@ -434,6 +431,32 @@ int ParseInt(String^ value, int fallback)
 {
 	int result;
 	return int::TryParse(value, result) ? result : fallback;
+}
+
+Guid FromGUID(const GUID& guid)
+{
+	return Guid(
+		guid.Data1, guid.Data2, guid.Data3, 
+		guid.Data4[0], guid.Data4[1], 
+		guid.Data4[2], guid.Data4[3], 
+		guid.Data4[4], guid.Data4[5], 
+		guid.Data4[6], guid.Data4[7]);
+}
+
+GUID ToGUID(Guid guid)
+{
+   array<Byte>^ guidData = guid.ToByteArray();
+   pin_ptr<Byte> data = &(guidData[0]);
+   return *(GUID*)data;
+}
+
+KeyInfo^ KeyInfoFromInputRecord(const INPUT_RECORD& ir)
+{
+	return gcnew KeyInfo(
+		ir.Event.KeyEvent.wVirtualKeyCode,
+		ir.Event.KeyEvent.uChar.UnicodeChar,
+		(ControlKeyStates)ir.Event.KeyEvent.dwControlKeyState,
+		ir.Event.KeyEvent.bKeyDown != 0);
 }
 
 namespace FarNet

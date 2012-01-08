@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -12,7 +12,7 @@ Copyright (c) 2005 FarNet Team
 namespace FarNet
 {;
 // Dialog callback dispatches the event to the specified dialog
-LONG_PTR WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, LONG_PTR param2)
+INT_PTR WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, void* param2)
 {
 	for each(FarDialog^ dialog in FarDialog::_dialogs)
 	{
@@ -100,7 +100,7 @@ Place FarDialog::Rect::get()
 		return _rect;
 
 	SMALL_RECT arg;
-    Info.SendDlgMessage(_hDlg, DM_GETDLGRECT, 0, (LONG_PTR)&arg);
+    Info.SendDlgMessage(_hDlg, DM_GETDLGRECT, 0, &arg);
 	return Place(arg.Left, arg.Top, arg.Right, arg.Bottom);
 }
 
@@ -131,21 +131,10 @@ Guid FarDialog::TypeId::get()
 
 	// request
 	DialogInfo arg = { sizeof(DialogInfo) };
-	if (Info.SendDlgMessage(_hDlg, DM_GETDIALOGINFO, 0, (LONG_PTR)&arg))
+	if (Info.SendDlgMessage(_hDlg, DM_GETDIALOGINFO, 0, &arg))
 	{
 		// get and save it to reuse
-		_typeId = Guid(
-		arg.Id.Data1,
-		arg.Id.Data2,
-		arg.Id.Data3,
-		arg.Id.Data4[0],
-		arg.Id.Data4[1],
-		arg.Id.Data4[2],
-		arg.Id.Data4[3],
-		arg.Id.Data4[4],
-		arg.Id.Data4[5],
-		arg.Id.Data4[6],
-		arg.Id.Data4[7]);
+		_typeId = FromGUID(arg.Id);
 		return _typeId;
 	}
 
@@ -295,7 +284,7 @@ bool FarDialog::Show()
 		{
 			int i = _items->IndexOf(_default);
 			if (i >= 0)
-				items[i].DefaultButton = true;
+				items[i].Flags |= DIF_DEFAULTBUTTON;
 		}
 
 		// set focused
@@ -303,7 +292,7 @@ bool FarDialog::Show()
 		{
 			int i = _items->IndexOf(_focused);
 			if (i >= 0)
-				items[i].Focus = true;
+				items[i].Flags |= DIF_FOCUS;
 		}
 
 		// help
@@ -311,8 +300,10 @@ bool FarDialog::Show()
 
 		// init
 		_dialogs.Add(this);
+		GUID typeId = ToGUID(_typeId);
 		_hDlg = Info.DialogInit(
-			Info.ModuleNumber,
+			&MainGuid,
+			&typeId, //????? watch ptr to local data
 			_rect.Left,
 			_rect.Top,
 			_rect.Right,
@@ -323,7 +314,7 @@ bool FarDialog::Show()
 			(DWORD)0,
 			(DWORD)_flags,
 			FarDialogProc,
-			NULL);
+			nullptr);
 
 		if (_hDlg == INVALID_HANDLE_VALUE)
 			return false;
@@ -418,7 +409,7 @@ IControl^ FarDialog::default::get(int id)
 	}
 
 	FarDialogItem di;
-	if (!Info.SendDlgMessage(_hDlg, DM_GETDLGITEMSHORT, id, (LONG_PTR)&di))
+	if (!Info.SendDlgMessage(_hDlg, DM_GETDLGITEMSHORT, id, &di))
 		return nullptr;
 
 	switch(di.Type)
@@ -482,7 +473,7 @@ void FarDialog::Move(Point point, bool absolute)
 		throw gcnew InvalidOperationException("Dialog is not started.");
 
 	COORD arg = { (SHORT)point.X, (SHORT)point.Y };
-	Info.SendDlgMessage(_hDlg, DM_MOVEDIALOG, absolute, (LONG_PTR)&arg);
+	Info.SendDlgMessage(_hDlg, DM_MOVEDIALOG, absolute, &arg);
 }
 
 void FarDialog::Resize(Point size)
@@ -491,7 +482,7 @@ void FarDialog::Resize(Point size)
 		throw gcnew InvalidOperationException("Dialog is not started.");
 
 	COORD arg = { (SHORT)size.X, (SHORT)size.Y };
-	Info.SendDlgMessage(_hDlg, DM_RESIZEDIALOG, 0, (LONG_PTR)&arg);
+	Info.SendDlgMessage(_hDlg, DM_RESIZEDIALOG, 0, &arg);
 }
 
 // _091127_112807 Do we need to keep a global dialog handle in here?
@@ -499,11 +490,9 @@ void FarDialog::Resize(Point size)
 // 2) Other code can be dialog event handlers (DialogProc), the dialog is a sender.
 // Stepper now uses [1]. But e.g. on callbacks [1] is not called, we need Far API.
 // Mantis 1179 requests such API, let's wait.
-int FarDialog::AsProcessDialogEvent(int id, void* param)
+int FarDialog::AsProcessDialogEvent(const ProcessDialogEventInfo* info)
 {
-	FarDialogEvent* de = (FarDialogEvent*)param;
-
-	switch(id)
+	switch(info->Event)
 	{
 	case DE_DLGPROCINIT:
 		// before outer handler; it always happens
@@ -513,10 +502,10 @@ int FarDialog::AsProcessDialogEvent(int id, void* param)
 		break;
 	case DE_DLGPROCEND:
 		// after all handlers
-		switch(de->Msg)
+		switch(info->Param->Msg)
 		{
 		case DN_CLOSE:
-			if (de->Result)
+			if (info->Param->Result)
 			{
 				// drop the global current handle
 				_hDlgTop = INVALID_HANDLE_VALUE;
@@ -528,12 +517,12 @@ int FarDialog::AsProcessDialogEvent(int id, void* param)
 	}
 
 	// set the global current to be used by $Far.Dialog
-	_hDlgTop = de->hDlg;
+	_hDlgTop = info->Param->hDlg;
 
 	return false;
 }
 
-LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
+INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 {
 	try
 	{
@@ -578,35 +567,38 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 				}
 				return 1;
 			}
-		case DN_CTLCOLORDLGITEM:
-			{
-				FarControl^ fc = _items[param1];
-				if (fc->_Coloring)
-				{
-					ColoringEventArgs ea(fc);
-					ea.Foreground1 = ConsoleColor(param2 & 0x0000000F);
-					ea.Background1 = ConsoleColor((param2 & 0x000000F0) >> 4);
-					ea.Foreground2 = ConsoleColor((param2 & 0x00000F00) >> 8);
-					ea.Background2 = ConsoleColor((param2 & 0x0000F000) >> 12);
-					ea.Foreground3 = ConsoleColor((param2 & 0x000F0000) >> 16);
-					ea.Background3 = ConsoleColor((param2 & 0x00F00000) >> 20);
-					ea.Foreground4 = ConsoleColor((param2 & 0x0F000000) >> 24);
-					ea.Background4 = ConsoleColor((param2 & 0xF0000000) >> 28);
+		//case DN_CTLCOLORDLGITEM://?????
+		//	{
+		//		FarControl^ fc = _items[param1];
+		//		if (fc->_Coloring)
+		//		{
+		//			ColoringEventArgs ea(fc);
+		//			FarDialogItemColors* colors = (FarDialogItemColors*)param2;
+		//			// - В DN_CTLCOLORDLGITEM в Param2 приходит FarDialogItemColors*, менять надо FarDialogItemColors.Colors по принципу:
+		//			// Colors[0] == lwlb, Colors[1] == lwhb, Colors[2] == hwlb, Colors[3] == hwhb.
+		//			ea.Foreground1 = ConsoleColor(param2 & 0x0000000F);
+		//			ea.Background1 = ConsoleColor((param2 & 0x000000F0) >> 4);
+		//			ea.Foreground2 = ConsoleColor((param2 & 0x00000F00) >> 8);
+		//			ea.Background2 = ConsoleColor((param2 & 0x0000F000) >> 12);
+		//			ea.Foreground3 = ConsoleColor((param2 & 0x000F0000) >> 16);
+		//			ea.Background3 = ConsoleColor((param2 & 0x00F00000) >> 20);
+		//			ea.Foreground4 = ConsoleColor((param2 & 0x0F000000) >> 24);
+		//			ea.Background4 = ConsoleColor((param2 & 0xF0000000) >> 28);
 
-					fc->_Coloring(this, %ea);
+		//			fc->_Coloring(this, %ea);
 
-					return
-						(int(ea.Foreground1)) |
-						(int(ea.Background1) << 4) |
-						(int(ea.Foreground2) << 8) |
-						(int(ea.Background2) << 12) |
-						(int(ea.Foreground3) << 16) |
-						(int(ea.Background3) << 20) |
-						(int(ea.Foreground4) << 24) |
-						(int(ea.Background4) << 28);
-				}
-				break;
-			}
+		//			return
+		//				(int(ea.Foreground1)) |
+		//				(int(ea.Background1) << 4) |
+		//				(int(ea.Foreground2) << 8) |
+		//				(int(ea.Background2) << 12) |
+		//				(int(ea.Foreground3) << 16) |
+		//				(int(ea.Background3) << 20) |
+		//				(int(ea.Foreground4) << 24) |
+		//				(int(ea.Background4) << 28);
+		//		}
+		//		break;
+		//	}
 		case DN_GOTFOCUS:
 			{
 				FarControl^ fc = _items[param1];
@@ -675,8 +667,8 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 				{
 					if (fe->_TextChanged)
 					{
-						FarDialogItem& item = *(FarDialogItem*)(LONG_PTR)param2;
-						TextChangedEventArgs ea(fe, gcnew String(item.PtrData));
+						FarDialogItem& item = *(FarDialogItem*)param2;
+						TextChangedEventArgs ea(fe, gcnew String(item.Data));
 						fe->_TextChanged(this, %ea);
 						return !ea.Ignore;
 					}
@@ -687,8 +679,8 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 				{
 					if (cb->_TextChanged)
 					{
-						FarDialogItem& item = *(FarDialogItem*)(LONG_PTR)param2;
-						TextChangedEventArgs ea(cb, gcnew String(item.PtrData));
+						FarDialogItem& item = *(FarDialogItem*)param2;
+						TextChangedEventArgs ea(cb, gcnew String(item.Data));
 						cb->_TextChanged(this, %ea);
 						return !ea.Ignore;
 					}
@@ -704,69 +696,59 @@ LONG_PTR FarDialog::DialogProc(int msg, int param1, LONG_PTR param2)
 				}
 				break;
 			}
-		case DN_MOUSECLICK:
+		case DN_CONTROLINPUT:
 			{
 				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
-				if (fc && fc->_MouseClicked || _MouseClicked)
+				INPUT_RECORD* ir = (INPUT_RECORD*)param2;
+				
+				if (MOUSE_EVENT == ir->EventType)
 				{
-					//! get args once: if both handler work then for the second this memory may be garbage
-					MouseClickedEventArgs ea(fc, GetMouseInfo(*(MOUSE_EVENT_RECORD*)(LONG_PTR)param2));
-					if (fc && fc->_MouseClicked)
+					if (fc && fc->_MouseClicked || _MouseClicked)
 					{
-						fc->_MouseClicked(this, %ea);
-						if (ea.Ignore)
-							return true;
-					}
-					if (_MouseClicked)
-					{
-						//! translate user control coordinates to standard
-						if (fc && dynamic_cast<FarUserControl^>(fc) != nullptr)
+						//! get args once: if both handler work then for the second this memory may be garbage
+						MouseClickedEventArgs ea(fc, GetMouseInfo(ir->Event.MouseEvent));
+						if (fc && fc->_MouseClicked)
 						{
-							Point pt1 = Rect.First;
-							Point pt2 = fc->Rect.First;
-							Point pt3 = ea.Mouse.Where;
-							MouseInfo mi = ea.Mouse;
-							mi.Where = Point(pt1.X + pt2.X + pt3.X, pt1.Y + pt2.Y + pt3.Y);
-							ea.Mouse = mi;
+							fc->_MouseClicked(this, %ea);
+							if (ea.Ignore)
+								return true;
 						}
-						_MouseClicked(this, %ea);
+						if (_MouseClicked)
+						{
+							//! translate user control coordinates to standard
+							if (fc && dynamic_cast<FarUserControl^>(fc) != nullptr)
+							{
+								Point pt1 = Rect.First;
+								Point pt2 = fc->Rect.First;
+								Point pt3 = ea.Mouse->Where;
+								ea.Mouse = gcnew MouseInfo(
+									Point(pt1.X + pt2.X + pt3.X, pt1.Y + pt2.Y + pt3.Y),
+									ea.Mouse->Action, ea.Mouse->Buttons, ea.Mouse->ControlKeyState, ea.Mouse->Value);
+							}
+							_MouseClicked(this, %ea);
+							if (ea.Ignore)
+								return true;
+						}
+					}
+				}
+				else if (KEY_EVENT == ir->EventType)
+				{
+					if (fc && fc->_KeyPressed)
+					{
+						KeyPressedEventArgs ea(fc, KeyInfoFromInputRecord(*ir));
+						fc->_KeyPressed(this, %ea);
+						if (ea.Ignore)
+							return true;
+					}
+					if (_KeyPressed)
+					{
+						KeyPressedEventArgs ea(fc, KeyInfoFromInputRecord(*ir));
+						_KeyPressed(this, %ea);
 						if (ea.Ignore)
 							return true;
 					}
 				}
 				break;
-			}
-		case DN_KEY:
-			{
-				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
-				if (fc && fc->_KeyPressed)
-				{
-					KeyPressedEventArgs ea(fc, (int)param2);
-					fc->_KeyPressed(this, %ea);
-					if (ea.Ignore)
-						return true;
-				}
-				if (_KeyPressed)
-				{
-					KeyPressedEventArgs ea(fc, (int)param2);
-					_KeyPressed(this, %ea);
-					if (ea.Ignore)
-						return true;
-				}
-				break;
-			}
-		case DN_GETDIALOGINFO:
-			{
-				// get my dialog info
-				DialogInfo& di = *(DialogInfo*)param2;
-
-				// copy type ID
-				array<unsigned char>^ bytes = _typeId.ToByteArray();
-				for(int i = 0; i < 16; ++i)
-					((unsigned char*)&di.Id)[i] = bytes[i];
-
-				// done
-				return true;
 			}
 		case DN_RESIZECONSOLE:
 			{

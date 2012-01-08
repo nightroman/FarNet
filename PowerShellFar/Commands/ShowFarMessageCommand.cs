@@ -39,32 +39,32 @@ namespace PowerShellFar.Commands
 			if (Buttons != ButtonSet.Ok && Choices != null && Choices.Length > 0)
 				throw new RuntimeException("Parameters 'Buttons' and 'Choices' cannot be used together.");
 
-			MsgOptions options;
+			MessageOptions options;
 			if (Draw)
 			{
-				options = MsgOptions.Draw;
+				options = MessageOptions.Draw;
 			}
 			else
 			{
-				options = MsgOptions.None;
+				options = MessageOptions.None;
 				switch (Buttons)
 				{
-					case ButtonSet.AbortRetryIgnore: options |= MsgOptions.AbortRetryIgnore; break;
-					case ButtonSet.OkCancel: options |= MsgOptions.OkCancel; break;
-					case ButtonSet.RetryCancel: options |= MsgOptions.RetryCancel; break;
-					case ButtonSet.YesNo: options |= MsgOptions.YesNo; break;
-					case ButtonSet.YesNoCancel: options |= MsgOptions.YesNoCancel; break;
+					case ButtonSet.AbortRetryIgnore: options |= MessageOptions.AbortRetryIgnore; break;
+					case ButtonSet.OkCancel: options |= MessageOptions.OkCancel; break;
+					case ButtonSet.RetryCancel: options |= MessageOptions.RetryCancel; break;
+					case ButtonSet.YesNo: options |= MessageOptions.YesNo; break;
+					case ButtonSet.YesNoCancel: options |= MessageOptions.YesNoCancel; break;
 				}
 			}
 
 			if (KeepBackground)
-				options |= MsgOptions.KeepBackground;
+				options |= MessageOptions.KeepBackground;
 			if (IsError)
-				options |= MsgOptions.Error;
+				options |= MessageOptions.Error;
 			if (IsWarning)
-				options |= MsgOptions.Warning;
+				options |= MessageOptions.Warning;
 			if (LeftAligned)
-				options |= MsgOptions.LeftAligned;
+				options |= MessageOptions.LeftAligned;
 
 			int r = Far.Net.Message(Text ?? string.Empty, Caption, options, Choices, HelpTopic);
 			if (!Draw && (Buttons != ButtonSet.Ok || Choices != null && Choices.Length > 0))

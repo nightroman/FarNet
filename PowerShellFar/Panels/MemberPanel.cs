@@ -184,7 +184,7 @@ namespace PowerShellFar
 			// ask
 			if (!r)
 			{
-				switch (Far.Net.Message(Res.AskSaveModified, "Save", MsgOptions.YesNoCancel))
+				switch (Far.Net.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 				{
 					case 0:
 						A.InvokeScriptReturnAsIs(AsSaveData, this);

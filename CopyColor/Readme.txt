@@ -1,6 +1,6 @@
 
 Module   : FarNet.CopyColor
-Release  : 2011-07-09
+Release  : 2012-01-06
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -9,8 +9,8 @@ Source   : http://code.google.com/p/farnet/
 
 = PREREQUISITES =
 
- * Far Manager 2.0.1807
- * Plugin FarNet 4.5.0
+ * Far Manager 3.0.0.x
+ * Plugin FarNet 5.0.0
  * Plugin Colorer
 
 
@@ -33,3 +33,10 @@ repeated until the end of a file may produce coloured selection ready for copy.
 
 Long lines are not supported. The tool cannot copy selected text if it contains
 at least one line which is longer than the current editor window width.
+
+
+= HISTORY =
+
+2.0.0
+
+Adapted for Far3 + FarNet5.

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -29,9 +29,9 @@ public:
 	virtual array<Works::BufferCell, 2>^ GetBufferContents(Place rectangle) override;
 	virtual ConsoleColor GetPaletteBackground(PaletteColor paletteColor) override;
 	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor) override;
-	virtual int ReadKeys(array<int>^ virtualKeyCodes) override;
+	virtual int ReadKeys(array<KeyData^>^ keys) override;
 	virtual int SaveScreen(int x1, int y1, int x2, int y2) override;
-	virtual KeyInfo ReadKey(Works::ReadKeyOptions options) override;
+	virtual KeyInfo^ ReadKey(Works::ReadKeyOptions options) override;
 	virtual void Break() override;
 	virtual void Clear() override;
 	virtual void Draw() override;

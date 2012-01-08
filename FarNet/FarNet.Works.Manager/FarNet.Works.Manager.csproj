@@ -71,7 +71,6 @@
     <Compile Include="ProxyAction.cs" />
     <Compile Include="ProxyCommand.cs" />
     <Compile Include="ProxyEditor.cs" />
-    <Compile Include="ProxyFiler.cs" />
     <Compile Include="ProxyTool.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
