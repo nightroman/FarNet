@@ -23,9 +23,9 @@ namespace FarNet.RightWords
 			_menu.Y = line;
 
 			// menu keys
-			_menu.AddKey('1');
-			_menu.AddKey('2');
-			_menu.AddKey('3');
+			_menu.AddKey(KeyCode.D1);
+			_menu.AddKey(KeyCode.D2);
+			_menu.AddKey(KeyCode.D3);
 
 			// menu items
 			foreach (var it in words)
@@ -41,9 +41,9 @@ namespace FarNet.RightWords
 		{
 			return _menu.Show();
 		}
-		public bool IsIgnore { get { return _menu.BreakKey == '1' || _menu.Selected >= 0 && _menu.Items[_menu.Selected] == _itemIgnore; } }
-		public bool IsIgnoreAll { get { return _menu.BreakKey == '2' || _menu.Selected >= 0 && _menu.Items[_menu.Selected] == _itemIgnoreAll; } }
-		public bool IsAddToDictionary { get { return _menu.BreakKey == '3' || _menu.Selected >= 0 && _menu.Items[_menu.Selected] == _itemAddToDictionary; } }
+		public bool IsIgnore { get { return _menu.Key.Is(KeyCode.D1) || _menu.Selected >= 0 && _menu.Items[_menu.Selected] == _itemIgnore; } }
+		public bool IsIgnoreAll { get { return _menu.Key.Is(KeyCode.D2) || _menu.Selected >= 0 && _menu.Items[_menu.Selected] == _itemIgnoreAll; } }
+		public bool IsAddToDictionary { get { return _menu.Key.Is(KeyCode.D3) || _menu.Selected >= 0 && _menu.Items[_menu.Selected] == _itemAddToDictionary; } }
 		public string Word { get { return _menu.Selected < 0 ? string.Empty : _menu.Items[_menu.Selected].Text; } }
 	}
 }

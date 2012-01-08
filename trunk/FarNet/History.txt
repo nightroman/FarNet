@@ -1,5 +1,62 @@
 http://code.google.com/p/farnet/
 
+= 5.0.0 =
+
+This version is designed for Far Manager 3. All modules should be updated.
+v5.0.x API is not final, it may change frequently but not much, most of API
+already looks stabilized.
+
+There are many breaking changes but they are all easy to fix. In theory it
+would be possible to avoid most of them. But these changes were needed for
+really effective use of new Far and its API.
+
+*) Settings
+Roaming and local FarNet and module settings moved:
+
+	%APPDATA%\Far Manager\FarNet ->
+	%APPDATA%\Far Manager\Profile\FarNet
+
+	%LOCALAPPDATA%\Far Manager\FarNet ->
+	%LOCALAPPDATA%\Far Manager\Profile\FarNet
+
+Actual new locations depend on %FARPROFILE% and %FARLOCALPROFILE%. This moving
+should work fine for most or all modules. Module *.settings files can be moved
+with no problems. FarNet.binary files should be moved only if needed. Do not
+move Cache.binary, better delete them all, they will be recreated.
+
+*) Filers
+Module filer classes are not supported anymore. Their value is low and cost is
+high. FarNet provides enough alternative ways for opening files in panels.
+
+*) Hotkeys
+Module menu items can now use standard Far hotkeys. As a result internal pseudo
+hotkey stuff was removed from API, code, and FarNet settings.
+
+*) Keyboard
+- Used enums and structures: KeyCode, ControlKeyStates, KeyData, KeyInfo. All
+other types were removed. KeyData in most cases replaces use of internal and
+virtual numeric key codes.
+- Standard and list menus use the same break keys API: Key, AddKey().
+- Panel and dialog key events changed.
+- ReadKeys() changed.
+
+*) Macros
+- Removed IMacro, IFar.Macro and all related stuff.
+- Also removed from IFar: PostKeys(), CreateKeySequence(), PostKeySequence().
+Use PostMacro() and PostText() instead.
+
+*) Registry
+- Removed IRegistryKey, IFar.OpenRegistryKey().
+- Removed history methods because they used to work with the registry.
+
+*) Windows
+Removed IWindowInfo. Replaced IWindow.GetInfoAt() with GetKindAt(), GetNameAt()
+and GetKindNameAt().
+
+*) Others
+- MsgOptions -> MessageOptions
+- Panel UseFilter -> NoFilter
+
 = 4.6.1 =
 
 Technical build, probably the last for Far 2.

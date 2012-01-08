@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -25,7 +25,7 @@ int DialogLine::Caret::get()
 {
 	COORD c;
 	c.Y = 0;
-	Info.SendDlgMessage(_hDlg, DM_GETCURSORPOS, _id, (LONG_PTR)&c);
+	Info.SendDlgMessage(_hDlg, DM_GETCURSORPOS, _id, &c);
 	return c.X;
 }
 
@@ -37,7 +37,7 @@ void DialogLine::Caret::set(int value)
 	COORD c;
 	c.Y = 0;
 	c.X = (SHORT)value;
-	Info.SendDlgMessage(_hDlg, DM_SETCURSORPOS, _id, (LONG_PTR)&c);
+	Info.SendDlgMessage(_hDlg, DM_SETCURSORPOS, _id, &c);
 
 	//_100819_142053 Mantis 1464. ?? For now drop 'unchanged' manually.
 	//???? Wait! It affects $TestLine.SelectedText = '12345' @ "Test-Line+.ps1"
@@ -52,13 +52,13 @@ String^ DialogLine::Text::get()
 void DialogLine::Text::set(String^ value)
 {
 	PIN_NE(pin, value);
-	Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
+	Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (wchar_t*)pin);
 }
 
 Span DialogLine::SelectionSpan::get()
 {
 	EditorSelect es;
-	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
+	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, &es);
 
 	Span result;
 	if (es.BlockType == BTYPE_NONE)
@@ -78,7 +78,7 @@ Span DialogLine::SelectionSpan::get()
 String^ DialogLine::SelectedText::get()
 {
 	EditorSelect es;
-	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
+	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, &es);
 	if (es.BlockType == BTYPE_NONE)
 		return nullptr;
 
@@ -88,7 +88,7 @@ String^ DialogLine::SelectedText::get()
 void DialogLine::SelectedText::set(String^ value)
 {
 	EditorSelect es;
-	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, (LONG_PTR)&es);
+	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, &es);
 	if (es.BlockType == BTYPE_NONE)
 		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
 
@@ -99,11 +99,11 @@ void DialogLine::SelectedText::set(String^ value)
 	String^ text = ::GetDialogControlText(_hDlg, _id, -1, 0);
 	text = text->Substring(0, es.BlockStartPos) + value + text->Substring(es.BlockStartPos + es.BlockWidth);
 	PIN_NE(pin, text);
-	Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (LONG_PTR)(const wchar_t*)pin);
+	Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (wchar_t*)pin);
 
 	// set selection
 	es.BlockWidth = value->Length;
-	Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
+	Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, &es);
 
 	// restore cursor
 	Caret = pos <= text->Length ? pos : text->Length;
@@ -135,14 +135,14 @@ void DialogLine::SelectText(int start, int end)
 	es.BlockStartPos = start;
 	es.BlockWidth = end - start;
 	es.BlockHeight = 1;
-	Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
+	Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, &es);
 }
 
 void DialogLine::UnselectText()
 {
 	EditorSelect es;
 	es.BlockType = BTYPE_NONE;
-	Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, (LONG_PTR)&es);
+	Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, &es);
 }
 
 }

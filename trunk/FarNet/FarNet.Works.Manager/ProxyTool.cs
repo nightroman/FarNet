@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -12,7 +12,6 @@ namespace FarNet.Works
 	public sealed class ProxyTool : ProxyAction, IModuleTool
 	{
 		EventHandler<ModuleToolEventArgs> _Handler;
-		string _Hotkey;
 		ModuleToolOptions _Options;
 		internal ProxyTool(ModuleManager manager, EnumerableReader reader)
 			: base(manager, reader, new ModuleToolAttribute())
@@ -45,10 +44,6 @@ namespace FarNet.Works
 				instance.Invoke(sender, e);
 			}
 		}
-		public void ResetHotkey(string value)
-		{
-			_Hotkey = GetValidHotkey(value);
-		}
 		public void ResetOptions(ModuleToolOptions value)
 		{
 			// unregister the current
@@ -58,18 +53,6 @@ namespace FarNet.Works
 
 			// register new
 			Host.Instance.RegisterProxyTool(this);
-		}
-		static string GetValidHotkey(string value)
-		{
-			switch ((value ?? string.Empty).Length)
-			{
-				case 0:
-					return EmptyHotkey;
-				case 1:
-					return value;
-				default:
-					return value.Substring(0, 1);
-			}
 		}
 		public sealed override string ToString()
 		{
@@ -88,10 +71,6 @@ namespace FarNet.Works
 		{
 			get { return Attribute.Options; }
 		}
-		public string Hotkey
-		{
-			get { return _Hotkey; }
-		}
 		public override ModuleItemKind Kind
 		{
 			get { return ModuleItemKind.Tool; }
@@ -100,14 +79,10 @@ namespace FarNet.Works
 		{
 			get { return _Options; }
 		}
-		const int idHotkey = 0;
 		const int idOptions = 1;
-		const string EmptyHotkey = " ";
 		internal override Hashtable SaveData()
 		{
 			var data = new Hashtable();
-			if (_Hotkey != EmptyHotkey)
-				data.Add(idHotkey, _Hotkey);
 			if (_Options != DefaultOptions)
 				data.Add(idOptions, ~(((int)Attribute.Options) & (~((int)_Options)))); 
 			return data;
@@ -116,13 +91,10 @@ namespace FarNet.Works
 		{
 			if (data == null)
 			{
-				_Hotkey = EmptyHotkey;
 				_Options = DefaultOptions;
 			}
 			else
 			{
-				_Hotkey = GetValidHotkey(data[idHotkey] as string);
-
 				var options = data[idOptions];
 				if (options == null)
 					_Options = DefaultOptions;

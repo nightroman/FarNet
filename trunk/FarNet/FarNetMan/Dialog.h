@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -58,8 +58,8 @@ public:
 internal:
 	FarDialog(HANDLE hDlg);
 	FarDialog(int left, int top, int right, int bottom);
-	static int AsProcessDialogEvent(int id, void* param);
-	LONG_PTR DialogProc(int msg, int param1, LONG_PTR param2);
+	static int AsProcessDialogEvent(const ProcessDialogEventInfo* info);
+	INT_PTR DialogProc(int msg, int param1, void* param2);
 	static FarDialog^ GetDialog();
 internal:
 	static List<FarDialog^> _dialogs;

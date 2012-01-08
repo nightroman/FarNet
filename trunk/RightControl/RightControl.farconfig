@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	Typical RightControl module macros
+
+	6 macros in the common area:
+
+		CtrlLeft/Right
+		CtrlShiftLeft/Right
+		CtrlBS/Del
+
+	4 editor macros:
+
+		CtrlAltLeft/Right,
+		Home/ShiftHome.
+
+	2 workaround macros ShiftLeft/Right in the common area.
+	They should be removed when Mantis 1465 is resolved.
+
+	Note: Home/ShiftHome can be used in the common area, too, but file makes
+	them for the editor only. Smart home is not really useful for line editors
+	where text normally does not start with spaces.
+-->
+<farconfig version="3.0.2350">
+	<macro>
+		<keymacros>
+			<macro area="Common" key="CtrlBS" flags="DisableOutput" description="RightControl: delete left">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-left")
+$Else
+	$AKey
+$End
+]]>
+			</macro>
+			<macro area="Common" key="CtrlDel" flags="DisableOutput" description="RightControl: delete right">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-right")
+$Else
+	$AKey
+$End
+]]>
+			</macro>
+			<macro area="Common" key="CtrlLeft" flags="DisableOutput" description="RightControl: step left">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
+$Else
+	$AKey
+$End
+]]>
+			</macro>
+			<macro area="Common" key="CtrlRight" flags="DisableOutput" description="RightControl: step right">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-right")
+$Else
+	$AKey
+$End
+]]>
+			</macro>
+			<macro area="Common" key="CtrlShiftLeft" flags="DisableOutput" description="RightControl: select left">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-left")
+$Else
+	$AKey
+$End
+]]>
+			</macro>
+			<macro area="Common" key="CtrlShiftRight" flags="DisableOutput" description="RightControl: select right">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-right")
+$Else
+	$AKey
+$End
+]]>
+			</macro>
+			<macro area="Common" key="ShiftLeft" flags="DisableOutput" description="RightControl: workaround left">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
+$Else
+	$AKey
+$End
+]]>
+			</macro>
+			<macro area="Common" key="ShiftRight" flags="DisableOutput" description="RightControl: workaround right">
+				<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion)
+	Esc
+$End
+$If (Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
+$Else
+	$AKey
+$End
+]]>
+			</macro>
+			<macro area="Editor" key="CtrlAltLeft" flags="DisableOutput" description="RightControl: vertical left">
+				<![CDATA[
+CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
+]]>
+			</macro>
+			<macro area="Editor" key="CtrlAltRight" flags="DisableOutput" description="RightControl: vertical right">
+				<![CDATA[
+CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
+]]>
+			</macro>
+			<macro area="Editor" key="Home" flags="DisableOutput" description="RightControl: go to smart home">
+				<![CDATA[
+CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:go-to-smart-home")
+]]>
+			</macro>
+			<macro area="Editor" key="ShiftHome" flags="DisableOutput" description="RightControl: select to smart home">
+				<![CDATA[
+CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-to-smart-home")
+]]>
+			</macro>
+		</keymacros>
+	</macro>
+</farconfig>

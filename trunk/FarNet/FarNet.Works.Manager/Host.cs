@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -42,7 +42,6 @@ namespace FarNet.Works
 
 		public abstract void RegisterProxyCommand(IModuleCommand info);
 		public abstract void RegisterProxyEditor(IModuleEditor info);
-		public abstract void RegisterProxyFiler(IModuleFiler info);
 		public abstract void RegisterProxyTool(IModuleTool info);
 		public abstract void UnregisterProxyAction(IModuleAction action);
 		public abstract void UnregisterProxyTool(IModuleTool tool);

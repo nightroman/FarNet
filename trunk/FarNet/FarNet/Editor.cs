@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -786,9 +786,6 @@ namespace FarNet
 	/// <summary>
 	/// Arguments of editor redrawing event.
 	/// </summary>
-	/// <remarks>
-	/// This API is not complete, perhaps it is not needed in FarNet at all. //??????
-	/// </remarks>
 	public sealed class EditorRedrawingEventArgs : EventArgs
 	{
 		EditorRedrawMode _mode;
@@ -798,7 +795,7 @@ namespace FarNet
 			_mode = mode;
 		}
 		/// <summary>
-		/// Parameter of Far EE_REDRAW event, see Far API, ProcessEditorEvent.
+		/// Redrawing mode. Parameter of Far EE_REDRAW event, see Far API, ProcessEditorEvent.
 		/// </summary>
 		public EditorRedrawMode Mode
 		{
@@ -806,7 +803,9 @@ namespace FarNet
 		}
 	}
 
-	///??????
+	/// <summary>
+	/// Editor redrawing modes.
+	/// </summary>
 	public enum EditorRedrawMode
 	{
 		/// <summary>

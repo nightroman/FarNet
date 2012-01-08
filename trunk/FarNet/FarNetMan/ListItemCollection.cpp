@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -28,7 +28,7 @@ void ListItemCollection::ClearItems()
 		FarListDelete arg;
 		arg.Count = 0;
 		arg.StartIndex = 0;
-		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTDELETE, _box->Id, (LONG_PTR)&arg))
+		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTDELETE, _box->Id, &arg))
 			throw gcnew InvalidOperationException;
 	}
 
@@ -50,7 +50,7 @@ void ListItemCollection::InsertItem(int index, FarItem^ item)
 		arg.Item.Text = pinText;
 		arg.Index = index;
 
-		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTINSERT, _box->Id, (LONG_PTR)&arg))
+		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTINSERT, _box->Id, &arg))
 			throw gcnew InvalidOperationException;
 	}
 
@@ -67,7 +67,7 @@ void ListItemCollection::RemoveItem(int index)
 		FarListDelete d;
 		d.Count = 1;
 		d.StartIndex = index;
-		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTDELETE, _box->Id, (LONG_PTR)&d))
+		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTDELETE, _box->Id, &d))
 			throw gcnew InvalidOperationException;
 	}
 

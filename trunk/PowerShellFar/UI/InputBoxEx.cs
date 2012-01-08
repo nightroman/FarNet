@@ -45,7 +45,7 @@ namespace PowerShellFar.UI
 			{
 				edit.KeyPressed += delegate(object sender, KeyPressedEventArgs e)
 				{
-					switch (e.Code)
+					switch (e.Key.VirtualKeyCode)
 					{
 						case KeyCode.Tab:
 							e.Ignore = true;

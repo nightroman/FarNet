@@ -1,6 +1,17 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.0 =
+
+This version is designed for Far Manager 3 + FarNet 5.
+
+There are breaking changes and some scripts have to be updated. See FarNet
+history for details and new FarNet API documentation.
+
+Some PSF features were removed (forever or not may depend on the feedback):
+- FarMacro module and its cmdlets (*-FarMacro).
+- Far history is not supported by scripts.
+
 = 4.6.1 =
 
 This probably the last build for Far 2. Minor fixes in scripts and help.

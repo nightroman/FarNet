@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System.Globalization;

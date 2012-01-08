@@ -50,10 +50,10 @@ namespace PowerShellFar
 					panel = null;
 
 				// break keys
-				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Shift);
-				menu.BreakKeys.Add(VKeyCode.Enter | VKeyMode.Ctrl);
+				menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
+				menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
 				if (panel != null)
-					menu.BreakKeys.Add(VKeyCode.Spacebar);
+					menu.AddKey(KeyCode.Spacebar);
 
 				if (files.Length > 0)
 				{
@@ -68,15 +68,15 @@ namespace PowerShellFar
 				if (name.Length > 0 && name[0] == '*')
 					name = null;
 
-				switch (menu.BreakKey)
+				switch (menu.Key.VirtualKeyCode)
 				{
-					case (VKeyCode.Enter | VKeyMode.Shift):
-						mode = 1;
+					case KeyCode.Enter:
+						if (menu.Key.IsShift())
+							mode = 1;
+						else if (menu.Key.IsCtrl())
+							mode = 2;
 						break;
-					case (VKeyCode.Enter | VKeyMode.Ctrl):
-						mode = 2;
-						break;
-					case VKeyCode.Spacebar:
+					case KeyCode.Spacebar:
 						string path = name == null ? dir + "\\" : Path.Combine(dir, name);
 						panel.GoToPath(path);
 						return null;
@@ -226,9 +226,9 @@ namespace PowerShellFar
 
 			switch (e.Key.VirtualKeyCode)
 			{
-				case VKeyCode.Enter:
+				case KeyCode.Enter:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [Enter]
 							e.Ignore = true;
@@ -236,9 +236,9 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case VKeyCode.Tab:
+				case KeyCode.Tab:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [Tab]
 							if (IsLastLineCurrent)
@@ -254,9 +254,9 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case VKeyCode.Escape:
+				case KeyCode.Escape:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [Esc]
 							if (IsLastLineCurrent && Editor.Line.Length > 0)
@@ -270,9 +270,9 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case VKeyCode.End:
+				case KeyCode.End:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [End]
 							if (!IsLastLineCurrent)
@@ -297,11 +297,11 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case VKeyCode.UpArrow:
-					goto case VKeyCode.DownArrow;
-				case VKeyCode.DownArrow:
+				case KeyCode.UpArrow:
+					goto case KeyCode.DownArrow;
+				case KeyCode.DownArrow:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [Up], [Down]
 							if (!IsLastLineCurrent)
@@ -321,7 +321,7 @@ namespace PowerShellFar
 								lastUsedCmd = History.Cache[History.CacheIndex];
 							}
 							string code;
-							if (e.Key.VirtualKeyCode == 38)
+							if (e.Key.VirtualKeyCode == KeyCode.UpArrow)
 							{
 								for (; ; )
 								{
@@ -366,9 +366,9 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case VKeyCode.Delete:
+				case KeyCode.Delete:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [Del]
 							if (!IsLastLineCurrent)
@@ -401,15 +401,15 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case VKeyCode.F1:
+				case KeyCode.F1:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [F1]
 							e.Ignore = true;
 							OnF1();
 						}
-						else if (e.Key.CtrlAltShift == ControlKeyStates.ShiftPressed)
+						else if (e.Key.IsShift())
 						{
 							// [ShiftF1]
 							e.Ignore = true;

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -51,9 +51,9 @@ Viewer^ Viewer0::GetCurrentViewer()
 	return viewer;
 }
 
-int Viewer0::AsProcessViewerEvent(int type, void* param)
+int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 {
-	switch(type)
+	switch(info->Event)
 	{
 	case VE_READ:
 		{
@@ -61,7 +61,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 
 			// get info
 			ViewerInfo vi; vi.StructSize = sizeof(vi);
-			Info.ViewerControl(VCTL_GETINFO, &vi);
+			Info.ViewerControl(-1, VCTL_GETINFO, 0, &vi);
 
 			// take waiting, existing or create new
 			//! It really may exist on 'Add', 'Subtract' in a viewer open a file in the *same* viewer.
@@ -112,7 +112,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			Log::Source->TraceInformation("VE_CLOSE");
 
 			// get registered, close and unregister
-			int id = *((int*)param);
+			int id = *((int*)info->Param);
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{
@@ -151,7 +151,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_GOTFOCUS");
 
 			// get registered
-			int id = *((int*)param);
+			int id = *((int*)info->Param);
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{
@@ -188,7 +188,7 @@ int Viewer0::AsProcessViewerEvent(int type, void* param)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_KILLFOCUS");
 
 			// get registered
-			int id = *((int*)param);
+			int id = *((int*)info->Param);
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{

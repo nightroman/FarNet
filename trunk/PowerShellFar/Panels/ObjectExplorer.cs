@@ -51,7 +51,7 @@ namespace PowerShellFar
 
 			if (args.UI && (Far.Net.Confirmations & FarConfirmations.Delete) != 0)
 			{
-				if (Far.Net.Message("Remove object(s) from the panel?", Res.Remove, MsgOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
+				if (Far.Net.Message("Remove object(s) from the panel?", Res.Remove, MessageOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
 				{
 					args.Result = JobResult.Ignore;
 					return;
@@ -251,7 +251,7 @@ namespace PowerShellFar
 				string.Format(null, "There are more than {0} panel files.", maximumFileCount) :
 				string.Format(null, "There are {0} panel files, the limit is {1}.", collection.Count, maximumFileCount);
 
-			return Far.Net.Message(message, "$Psf.Settings.MaximumPanelFileCount", MsgOptions.AbortRetryIgnore);
+			return Far.Net.Message(message, "$Psf.Settings.MaximumPanelFileCount", MessageOptions.AbortRetryIgnore);
 		}
 		///
 		public override void DoCreateFile(CreateFileEventArgs args)

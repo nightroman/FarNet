@@ -102,7 +102,7 @@ namespace PowerShellFar
 		public override void UIExplorerEntered(ExplorerEnteredEventArgs args)
 		{
 			if (args == null) return;
-			
+
 			base.UIExplorerEntered(args);
 			DoExplored((ItemExplorer)args.Explorer);
 		}
@@ -110,7 +110,7 @@ namespace PowerShellFar
 		{
 			var info1 = explorer == null ? null : explorer.Info();
 			var info2 = Explorer.Info();
-			
+
 			// fixed drive?
 			if (Drive.Length > 0 && !Kit.Equals(Drive, info2.DriveName))
 				return;
@@ -147,7 +147,6 @@ namespace PowerShellFar
 
 			if (info2.Provider.ImplementingType == typeof(FileSystemProvider))
 			{
-				UseFilter = true;
 				UseSortGroups = true;
 				Highlighting = PanelHighlighting.Full;
 
@@ -156,7 +155,6 @@ namespace PowerShellFar
 			}
 			else
 			{
-				UseFilter = true;
 				UseSortGroups = false;
 				Highlighting = PanelHighlighting.Default;
 			}
@@ -226,7 +224,7 @@ namespace PowerShellFar
 		public override void UISetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
-			
+
 			// call
 			base.UISetText(args);
 			if (args.Result != JobResult.Done)

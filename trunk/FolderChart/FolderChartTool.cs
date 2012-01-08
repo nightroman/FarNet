@@ -20,7 +20,7 @@ namespace FolderChart
 
 		static void Message(string body)
 		{
-			Far.Net.Message(body, "Forder Chart", MsgOptions.LeftAligned);
+			Far.Net.Message(body, "Forder Chart", MessageOptions.LeftAligned);
 		}
 
 		public override void Invoke(object sender, ModuleToolEventArgs e)

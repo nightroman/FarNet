@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -31,7 +31,7 @@ bool Panel1::IsActive::get()
 	if (!TryPanelInfo(_handle, pi))
 		return false;
 
-	return pi.Focus != 0;
+	return 0 != (pi.Flags & PFLAGS_FOCUS);
 }
 
 bool Panel1::IsLeft::get()
@@ -48,14 +48,14 @@ bool Panel1::IsPlugin::get()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	return pi.Plugin != 0;
+	return 0 != (pi.Flags & PFLAGS_PLUGIN);
 }
 
 bool Panel1::IsVisible::get()
 {
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
-	return pi.Visible != 0;
+	return 0 != (pi.Flags & PFLAGS_VISIBLE);
 }
 
 void Panel1::IsVisible::set(bool value)
@@ -63,19 +63,15 @@ void Panel1::IsVisible::set(bool value)
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	bool old = pi.Visible != 0;
+	bool old = 0 != (pi.Flags & PFLAGS_VISIBLE);
 	if (old == value)
 		return;
 
-	DWORD key = pi.PanelRect.left == 0 ? (KeyMode::Ctrl | KeyCode::F1) : (KeyMode::Ctrl | KeyCode::F2);
-	KeySequence ks;
-	ks.Count = 1;
-	ks.Flags = 0;
-	ks.Sequence = &key;
-	Info.AdvControl(Info.ModuleNumber, ACTL_POSTKEYSEQUENCE, &ks);
+	String^ macro = pi.PanelRect.left == 0 ? "CtrlF1" : "CtrlF2";
+	Far::Net->PostMacro(macro);
 }
 
-//! It is possible to ask the current file directly, but implementation is not safe
+// STOP: It is possible to ask the current file directly, but implementation is not safe.
 FarFile^ Panel1::CurrentFile::get()
 {
 	PanelInfo pi;
@@ -84,7 +80,7 @@ FarFile^ Panel1::CurrentFile::get()
 	if (pi.ItemsNumber == 0)
 		return nullptr;
 
-	AutoPluginPanelItem item(_handle, pi.CurrentItem, ShownFile);
+	AutoPluginPanelItem item(_handle, (int)pi.CurrentItem, ShownFile);
 
 	return ItemToFile(item.Get());
 }
@@ -94,7 +90,7 @@ int Panel1::CurrentIndex::get()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	return pi.ItemsNumber ? pi.CurrentItem : -1;
+	return pi.ItemsNumber ? (int)pi.CurrentItem : -1;
 }
 
 int Panel1::TopIndex::get()
@@ -102,7 +98,7 @@ int Panel1::TopIndex::get()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	return pi.ItemsNumber ? pi.TopPanelItem : -1;
+	return pi.ItemsNumber ? (int)pi.TopPanelItem : -1;
 }
 
 Place Panel1::Window::get()
@@ -121,7 +117,7 @@ Point Panel1::Frame::get()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	return pi.ItemsNumber ? Point(pi.CurrentItem, pi.TopPanelItem) : Point(-1, -1);
+	return pi.ItemsNumber ? Point((int)pi.CurrentItem, (int)pi.TopPanelItem) : Point(-1, -1);
 }
 
 PanelViewMode Panel1::ViewMode::get()
@@ -134,15 +130,16 @@ PanelViewMode Panel1::ViewMode::get()
 
 void Panel1::ViewMode::set(PanelViewMode value)
 {
-	Info.Control(_handle, FCTL_SETVIEWMODE, (int)value, NULL);
+	Info.PanelControl(_handle, FCTL_SETVIEWMODE, (int)value, nullptr);
 }
 
 String^ Panel1::CurrentDirectory::get()
 {
-	int size = Info.Control(_handle, FCTL_GETPANELDIR, 0, NULL);
+	size_t size = Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, 0, 0);
 	CBox buf(size);
-	Info.Control(_handle, FCTL_GETPANELDIR, size, (LONG_PTR)(wchar_t*)buf);
-	return gcnew String(buf);
+	FarPanelDirectory* arg = (FarPanelDirectory*)(void*)buf;
+	Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, (int)size, arg);
+	return gcnew String(arg->Name);
 }
 
 // _090929_061740
@@ -158,7 +155,12 @@ void Panel1::CurrentDirectory::set(String^ value)
 		throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
 
 	PIN_NE(pin, value);
-	if (!Info.Control(_handle, FCTL_SETPANELDIR, 0, (LONG_PTR)pin))
+	
+	FarPanelDirectory arg; memset(&arg, 0, sizeof(arg));
+	arg.StructSize = sizeof(arg);
+	arg.Name = pin;
+
+	if (!Info.PanelControl(_handle, FCTL_SETPANELDIRECTORY, 0, &arg))
 		throw gcnew InvalidOperationException("Cannot set panel directory: " + value);
 }
 
@@ -172,11 +174,11 @@ IList<FarFile^>^ Panel1::ShownFiles::get()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	List<FarFile^>^ r = gcnew List<FarFile^>(pi.ItemsNumber);
-	for(int i = 0; i < pi.ItemsNumber; ++i)
+	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.ItemsNumber);
+	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
-		if (i == 0 && item.Get().FindData.lpwszFileName[0] == '.' && item.Get().FindData.lpwszFileName[1] == '.' && item.Get().FindData.lpwszFileName[2] == '\0')
+		if (i == 0 && item.Get().FileName[0] == '.' && item.Get().FileName[1] == '.' && item.Get().FileName[2] == '\0')
 			continue;
 		r->Add(ItemToFile(item.Get()));
 	}
@@ -189,8 +191,8 @@ IList<FarFile^>^ Panel1::SelectedFiles::get()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	List<FarFile^>^ r = gcnew List<FarFile^>(pi.SelectedItemsNumber);
-	for(int i = 0; i < pi.SelectedItemsNumber; ++i)
+	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.SelectedItemsNumber);
+	for(int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, SelectedFile);
 		r->Add(ItemToFile(item.Get()));
@@ -227,21 +229,21 @@ SetFile^ Panel1::ItemToFile(const PluginPanelItem& item)
 {
 	SetFile^ file = gcnew SetFile;
 
-	file->Name = gcnew String(item.FindData.lpwszFileName);
+	file->Name = gcnew String(item.FileName);
 	file->Description = gcnew String(item.Description);
 	file->Owner = gcnew String(item.Owner);
 
-	file->Attributes = (FileAttributes)item.FindData.dwFileAttributes;
-	file->CreationTime = FileTimeToDateTime(item.FindData.ftCreationTime);
-	file->LastAccessTime = FileTimeToDateTime(item.FindData.ftLastAccessTime);
-	file->LastWriteTime = FileTimeToDateTime(item.FindData.ftLastWriteTime);
-	file->Length = item.FindData.nFileSize;
+	file->Attributes = (FileAttributes)item.FileAttributes;
+	file->CreationTime = FileTimeToDateTime(item.CreationTime);
+	file->LastAccessTime = FileTimeToDateTime(item.LastAccessTime);
+	file->LastWriteTime = FileTimeToDateTime(item.LastWriteTime);
+	file->Length = item.FileSize;
 
 	if (item.CustomColumnNumber)
 	{
-		array<String^>^ columns = gcnew array<String^>(item.CustomColumnNumber);
+		array<String^>^ columns = gcnew array<String^>((int)item.CustomColumnNumber);
 		file->Columns = columns;
-		for(int i = item.CustomColumnNumber; --i >= 0;)
+		for(int i = (int)item.CustomColumnNumber; --i >= 0;)
 			columns[i] = gcnew String(item.CustomColumnData[i]);
 	}
 
@@ -294,7 +296,7 @@ bool Panel1::NumericSort::get()
 
 void Panel1::NumericSort::set(bool value)
 {
-	Info.Control(_handle, FCTL_SETNUMERICSORT, (int)value, NULL);
+	Info.PanelControl(_handle, FCTL_SETNUMERICSORT, (int)value, nullptr);
 }
 
 bool Panel1::CaseSensitiveSort::get()
@@ -307,7 +309,7 @@ bool Panel1::CaseSensitiveSort::get()
 
 void Panel1::CaseSensitiveSort::set(bool value)
 {
-	Info.Control(_handle, FCTL_SETCASESENSITIVESORT, (int)value, NULL);
+	Info.PanelControl(_handle, FCTL_SETCASESENSITIVESORT, (int)value, nullptr);
 }
 
 bool Panel1::DirectoriesFirst::get()
@@ -320,7 +322,7 @@ bool Panel1::DirectoriesFirst::get()
 
 void Panel1::DirectoriesFirst::set(bool value)
 {
-	Info.Control(_handle, FCTL_SETDIRECTORIESFIRST, (int)value, NULL);
+	Info.PanelControl(_handle, FCTL_SETDIRECTORIESFIRST, (int)value, nullptr);
 }
 
 bool Panel1::RealNames::get()
@@ -340,7 +342,7 @@ int Panel1::GetShownFileCount()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	return pi.ItemsNumber;
+	return (int)pi.ItemsNumber;
 }
 
 int Panel1::GetSelectedFileCount()
@@ -348,18 +350,18 @@ int Panel1::GetSelectedFileCount()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	return pi.SelectedItemsNumber;
+	return (int)pi.SelectedItemsNumber;
 }
 
 void Panel1::Close()
 {
-	Info.Control(_handle, FCTL_CLOSEPLUGIN, 0, NULL);
+	Info.PanelControl(_handle, FCTL_CLOSEPANEL, 0, 0);
 }
 
 void Panel1::Close(String^ path)
 {
 	PIN_NE(pin, path);
-	Info.Control(_handle, FCTL_CLOSEPLUGIN, 0, (LONG_PTR)(const wchar_t*)pin);
+	Info.PanelControl(_handle, FCTL_CLOSEPANEL, 0, (wchar_t*)pin);
 }
 
 void Panel1::GoToName(String^ name)
@@ -375,10 +377,10 @@ bool Panel1::GoToName(String^ name, bool fail)
 	GetPanelInfo(_handle, pi);
 
 	PIN_NE(pin, name);
-	for(int i = 0; i < pi.ItemsNumber; ++i)
+	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
-		if (Info.FSF->LStricmp(pin, item.Get().FindData.lpwszFileName) == 0)
+		if (Info.FSF->LStricmp(pin, item.Get().FileName) == 0)
 		{
 			Redraw(i, 0);
 			return true;
@@ -413,7 +415,7 @@ void Panel1::GoToPath(String^ path)
 
 void Panel1::Redraw()
 {
-	Info.Control(_handle, FCTL_REDRAWPANEL, 0, NULL);
+	Info.PanelControl(_handle, FCTL_REDRAWPANEL, 0, nullptr);
 }
 
 void Panel1::Redraw(int current, int top)
@@ -428,7 +430,7 @@ void Panel1::Redraw(int current, int top)
 	PanelRedrawInfo pri;
 	pri.CurrentItem = current;
 	pri.TopPanelItem = top;
-	Info.Control(_handle, FCTL_REDRAWPANEL, 0, (LONG_PTR)&pri);
+	Info.PanelControl(_handle, FCTL_REDRAWPANEL, 0, &pri);
 }
 
 void Panel1::Select(array<int>^ indexes, bool select)
@@ -440,20 +442,20 @@ void Panel1::Select(array<int>^ indexes, bool select)
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	Info.Control(_handle, FCTL_BEGINSELECTION, 0, 0);
+	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, 0);
 	try
 	{
 		for(int i = 0; i < indexes->Length; ++i)
 		{
 			int index = indexes[i];
-			if (index < 0 || index >= pi.ItemsNumber)
+			if (index < 0 || index >= (int)pi.ItemsNumber)
 				throw gcnew IndexOutOfRangeException("Invalid panel item index.");
-			Info.Control(_handle, FCTL_SETSELECTION, index, select);
+			Info.PanelControl(_handle, FCTL_SETSELECTION, index, (void*)select);
 		}
 	}
 	finally
 	{
-		Info.Control(_handle, FCTL_ENDSELECTION, 0, 0);
+		Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, 0);
 	}
 }
 
@@ -472,12 +474,12 @@ void Panel1::SelectAll(bool select)
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	Info.Control(_handle, FCTL_BEGINSELECTION, 0, 0);
+	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, 0);
 	{
-		for(int i = 0; i < pi.ItemsNumber; ++i)
-			Info.Control(_handle, FCTL_SETSELECTION, i, select);
+		for(int i = 0; i < (int)pi.ItemsNumber; ++i)
+			Info.PanelControl(_handle, FCTL_SETSELECTION, i, (void*)select);
 	}
-	Info.Control(_handle, FCTL_ENDSELECTION, 0, 0);
+	Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, 0);
 }
 
 void Panel1::SelectAll()
@@ -497,14 +499,14 @@ void Panel1::SelectNames(System::Collections::IEnumerable^ names, bool select)
 
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
-	List<String^> namesNow(pi.ItemsNumber);
-	for(int i = 0; i < pi.ItemsNumber; ++i)
+	List<String^> namesNow((int)pi.ItemsNumber);
+	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
-		namesNow.Add(gcnew String(item.Get().FindData.lpwszFileName));
+		namesNow.Add(gcnew String(item.Get().FileName));
 	}
 
-	Info.Control(_handle, FCTL_BEGINSELECTION, 0, 0);
+	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, 0);
 	try
 	{
 		for each(Object^ it in names)
@@ -513,13 +515,13 @@ void Panel1::SelectNames(System::Collections::IEnumerable^ names, bool select)
 			{
 				int index = namesNow.IndexOf(it->ToString());
 				if (index >= 0)
-					Info.Control(_handle, FCTL_SETSELECTION, index, select);
+					Info.PanelControl(_handle, FCTL_SETSELECTION, index, (void*)select);
 			}
 		}
 	}
 	finally
 	{
-		Info.Control(_handle, FCTL_ENDSELECTION, 0, 0);
+		Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, 0);
 	}
 }
 
@@ -535,7 +537,7 @@ void Panel1::UnselectNames(System::Collections::IEnumerable^ names)
 
 void Panel1::Update(bool keepSelection)
 {
-	Info.Control(_handle, FCTL_UPDATEPANEL, keepSelection, NULL);
+	Info.PanelControl(_handle, FCTL_UPDATEPANEL, keepSelection, nullptr);
 }
 
 void Panel1::Push()
@@ -548,8 +550,8 @@ array<int>^ Panel1::SelectedIndexes()
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	List<int> list(pi.SelectedItemsNumber);
-	for(int i = 0; i < pi.ItemsNumber; ++i)
+	List<int> list((int)pi.SelectedItemsNumber);
+	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(_handle, i, ShownFile);
 		if (0 != (item.Get().Flags & PPIF_SELECTED))
@@ -592,27 +594,27 @@ void Panel1::SortMode::set(PanelSortMode value)
 
 	//! first
 	if (mode != pi.SortMode)
-		Info.Control(_handle, FCTL_SETSORTMODE, (int)mode, NULL);
+		Info.PanelControl(_handle, FCTL_SETSORTMODE, (int)mode, nullptr);
 
 	//! second
 	if (reversed != ((pi.Flags & PFLAGS_REVERSESORTORDER) != 0))
-		Info.Control(_handle, FCTL_SETSORTORDER, (int)reversed, NULL);
+		Info.PanelControl(_handle, FCTL_SETSORTORDER, (int)reversed, nullptr);
 }
 
 PanelPlan^ Panel1::ViewPlan::get()
 {
 	String^ sColumnTypes;
 	{
-		int size = ::Info.Control(Handle, FCTL_GETCOLUMNTYPES, 0, NULL);
+		size_t size = ::Info.PanelControl(Handle, FCTL_GETCOLUMNTYPES, 0, nullptr);
 		CBox buf(size);
-		::Info.Control(Handle, FCTL_GETCOLUMNTYPES, size, (LONG_PTR)(wchar_t*)buf);
+		::Info.PanelControl(Handle, FCTL_GETCOLUMNTYPES, (int)size, (wchar_t*)buf);
 		sColumnTypes = gcnew String(buf);
 	}
 	String^ sColumnWidths;
 	{
-		int size = ::Info.Control(Handle, FCTL_GETCOLUMNWIDTHS, 0, NULL);
+		size_t size = ::Info.PanelControl(Handle, FCTL_GETCOLUMNWIDTHS, 0, nullptr);
 		CBox buf(size);
-		::Info.Control(Handle, FCTL_GETCOLUMNWIDTHS, size, (LONG_PTR)(wchar_t*)buf);
+		::Info.PanelControl(Handle, FCTL_GETCOLUMNWIDTHS, (int)size, (wchar_t*)buf);
 		sColumnWidths = gcnew String(buf);
 	}
 

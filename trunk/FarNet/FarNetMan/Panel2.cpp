@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -56,7 +56,7 @@ FarFile^ Panel2::CurrentFile::get()
 	if (pi.ItemsNumber == 0)
 		return nullptr;
 
-	AutoPluginPanelItem item(Handle, pi.CurrentItem, ShownFile);
+	AutoPluginPanelItem item(Handle, (int)pi.CurrentItem, ShownFile);
 	int fi = (int)(INT_PTR)item.Get().UserData;
 	if (fi < 0)
 		return nullptr;
@@ -82,8 +82,8 @@ IList<FarFile^>^ Panel2::ShownFiles::get()
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
-	List<FarFile^>^ r = gcnew List<FarFile^>(pi.ItemsNumber);
-	for(int i = 0; i < pi.ItemsNumber; ++i)
+	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.ItemsNumber);
+	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, ShownFile);
 		int fi = (int)(INT_PTR)item.Get().UserData;
@@ -104,8 +104,8 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 	PanelInfo pi;
 	GetPanelInfo(Handle, pi);
 
-	List<FarFile^>^ r = gcnew List<FarFile^>(pi.SelectedItemsNumber);
-	for(int i = 0; i < pi.SelectedItemsNumber; ++i)
+	List<FarFile^>^ r = gcnew List<FarFile^>((int)pi.SelectedItemsNumber);
+	for(int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, SelectedFile);
 		int fi = (int)(INT_PTR)item.Get().UserData;
@@ -285,13 +285,13 @@ else\
 }\
 }
 
-SETKEYBAR(, Titles)
-SETKEYBAR(Alt, AltTitles)
-SETKEYBAR(AltShift, AltShiftTitles)
-SETKEYBAR(Ctrl, CtrlTitles)
-SETKEYBAR(CtrlAlt, CtrlAltTitles)
-SETKEYBAR(CtrlShift, CtrlShiftTitles)
-SETKEYBAR(Shift, ShiftTitles)
+//SETKEYBAR(, Titles) //??????
+//SETKEYBAR(Alt, AltTitles)
+//SETKEYBAR(AltShift, AltShiftTitles)
+//SETKEYBAR(Ctrl, CtrlTitles)
+//SETKEYBAR(CtrlAlt, CtrlAltTitles)
+//SETKEYBAR(CtrlShift, CtrlShiftTitles)
+//SETKEYBAR(Shift, ShiftTitles)
 
 PanelSortMode Panel2::StartSortMode::get()
 {
@@ -313,7 +313,7 @@ void Panel2::StartSortMode::set(PanelSortMode value)
 
 	if (m)
 	{
-		m->StartSortMode = _FarStartSortMode;
+		m->StartSortMode = (OPENPANELINFO_SORTMODES)_FarStartSortMode;
 		m->StartSortOrder = _FarStartSortOrder;
 	}
 }
@@ -336,33 +336,33 @@ void Panel2::Free12Strings(wchar_t* const dst[12])
 		delete[] dst[i];
 }
 
-#define FLAG(Prop, Flag) if (Prop) r |= Flag
 int Panel2::Flags()
 {
-	int r = 0;
-	
-	FLAG(CompareFatTime, OPIF_COMPAREFATTIME);
-	FLAG(PreserveCase, OPIF_SHOWPRESERVECASE);
-	FLAG(RawSelection, OPIF_RAWSELECTION);
-	FLAG(RealNames, OPIF_REALNAMES);
-	FLAG(RealNamesDeleteFiles, OPIF_EXTERNALDELETE);
-	FLAG(RealNamesExportFiles, OPIF_EXTERNALGET);
-	FLAG(RealNamesImportFiles, OPIF_EXTERNALPUT);
-	FLAG(RealNamesMakeDirectory, OPIF_EXTERNALMKDIR);
-	FLAG(RightAligned, OPIF_SHOWRIGHTALIGNNAMES);
-	FLAG(ShowNamesOnly, OPIF_SHOWNAMESONLY);
-	FLAG(UseFilter, OPIF_USEFILTER);
-	FLAG(UseSortGroups, OPIF_USESORTGROUPS);
-
+	// init by highlighting
+	int r;
 	switch(_Highlighting)
 	{
-	case PanelHighlighting::Default: r |= OPIF_USEATTRHIGHLIGHTING; break;
-	case PanelHighlighting::Full: r |= OPIF_USEHIGHLIGHTING; break;
+	case PanelHighlighting::Default: r = OPIF_USEATTRHIGHLIGHTING; break;
+	case PanelHighlighting::Off: r = OPIF_DISABLEHIGHLIGHTING; break;
+	default: r = 0;
 	}
+
+	// add other flags
+	if (CompareFatTime) r |= OPIF_COMPAREFATTIME;
+	if (NoFilter) r |= OPIF_DISABLEFILTER;
+	if (PreserveCase) r |= OPIF_SHOWPRESERVECASE;
+	if (RawSelection) r |= OPIF_RAWSELECTION;
+	if (RealNames) r |= OPIF_REALNAMES;
+	if (RealNamesDeleteFiles) r |= OPIF_EXTERNALDELETE;
+	if (RealNamesExportFiles) r |= OPIF_EXTERNALGET;
+	if (RealNamesImportFiles) r |= OPIF_EXTERNALPUT;
+	if (RealNamesMakeDirectory) r |= OPIF_EXTERNALMKDIR;
+	if (RightAligned) r |= OPIF_SHOWRIGHTALIGNNAMES;
+	if (ShowNamesOnly) r |= OPIF_SHOWNAMESONLY;
+	if (!UseSortGroups) r |= OPIF_DISABLESORTGROUPS;
 
 	return r;
 }
-#undef FLAG
 
 void Panel2::CreateInfoLines()
 {
@@ -376,7 +376,7 @@ void Panel2::CreateInfoLines()
 			return;
 		}
 
-		if (m->InfoLinesNumber < _InfoItems->Length)
+		if ((int)m->InfoLinesNumber < _InfoItems->Length)
 			DeleteInfoLines();
 	}
 
@@ -409,7 +409,7 @@ void Panel2::DeleteInfoLines()
 {
 	if (m->InfoLines)
 	{
-		for(int i = m->InfoLinesNumber; --i >= 0;)
+		for(int i = (int)m->InfoLinesNumber; --i >= 0;)
 		{
 			delete m->InfoLines[i].Text;
 			delete m->InfoLines[i].Data;
@@ -507,14 +507,14 @@ wchar_t* NewColumnWidths(IEnumerable<FarColumn^>^ columns)
 wchar_t** NewColumnTitles(array<FarColumn^>^ columns)
 {
 	int i = -1;
-	wchar_t** r = NULL;
+	wchar_t** r = nullptr;
 	for each(FarColumn^ column in columns)
 	{
 		++i;
 		if (ES(column->Name))
 			continue;
 
-		if (r == NULL)
+		if (r == nullptr)
 		{
 			int n = columns->Length + 1;
 			r = new wchar_t*[n];
@@ -531,10 +531,14 @@ void InitPanelMode(::PanelMode& d, PanelPlan^ s)
 	assert(s != nullptr);
 
 	// options
-	d.AlignExtensions = s->IsAlignedExtensions;
-	d.CaseConversion = s->IsCaseConversion;
-	d.DetailedStatus = s->IsDetailedStatus;
-	d.FullScreen = s->IsFullScreen;
+	if (s->IsAlignedExtensions)
+		d.Flags |= PMFLAGS_ALIGNEXTENSIONS;
+	if (s->IsCaseConversion)
+		d.Flags |= PMFLAGS_CASECONVERSION;
+	if (s->IsDetailedStatus)
+		d.Flags |= PMFLAGS_DETAILEDSTATUS;
+	if (s->IsFullScreen)
+		d.Flags |= PMFLAGS_FULLSCREEN;
 
 	// kind strings, it can throw
 	String^ kinds1 = s->Columns ? GetColumnKinds(s->Columns) : nullptr;
@@ -548,9 +552,9 @@ void InitPanelMode(::PanelMode& d, PanelPlan^ s)
 	}
 	else
 	{
-		d.ColumnTypes = NULL;
-		d.ColumnWidths = NULL;
-		d.ColumnTitles = NULL;
+		d.ColumnTypes = nullptr;
+		d.ColumnWidths = nullptr;
+		d.ColumnTitles = nullptr;
 	}
 
 	if (kinds2)
@@ -560,8 +564,8 @@ void InitPanelMode(::PanelMode& d, PanelPlan^ s)
 	}
 	else
 	{
-		d.StatusColumnTypes = NULL;
-		d.StatusColumnWidths = NULL;
+		d.StatusColumnTypes = nullptr;
+		d.StatusColumnWidths = nullptr;
 	}
 }
 
@@ -666,18 +670,18 @@ void Panel2::DeleteModes()
 	m->PanelModesArray = 0;
 }
 
-OpenPluginInfo& Panel2::Make()
+OpenPanelInfo& Panel2::Make()
 {
 	if (m)
 		return *m;
 
-	m = new OpenPluginInfo;
+	m = new OpenPanelInfo;
 	memset(m, 0, sizeof(*m));
 	m->StructSize = sizeof(*m);
 
 	m->Flags = Flags();
 
-	m->StartSortMode = _FarStartSortMode;
+	m->StartSortMode = (OPENPANELINFO_SORTMODES)_FarStartSortMode;
 	m->StartSortOrder = _FarStartSortOrder;
 	m->StartPanelMode = int(_StartViewMode) + 0x30;
 
@@ -686,13 +690,13 @@ OpenPluginInfo& Panel2::Make()
 	m->HostFile = NewChars(_HostFile);
 	m->PanelTitle = NewChars(_Title);
 
-	SetKeyBar(_keyBar);
-	SetKeyBarAlt(_keyBarAlt);
-	SetKeyBarAltShift(_keyBarAltShift);
-	SetKeyBarCtrl(_keyBarCtrl);
-	SetKeyBarCtrlAlt(_keyBarCtrlAlt);
-	SetKeyBarCtrlShift(_keyBarCtrlShift);
-	SetKeyBarShift(_keyBarShift);
+	//SetKeyBar(_keyBar); //??????
+	//SetKeyBarAlt(_keyBarAlt);
+	//SetKeyBarAltShift(_keyBarAltShift);
+	//SetKeyBarCtrl(_keyBarCtrl);
+	//SetKeyBarCtrlAlt(_keyBarCtrlAlt);
+	//SetKeyBarCtrlShift(_keyBarCtrlShift);
+	//SetKeyBarShift(_keyBarShift);
 
 	if (_InfoItems)
 		CreateInfoLines();
@@ -717,13 +721,13 @@ void Panel2::Free()
 
 		if (m->KeyBar)
 		{
-			Free12Strings(m->KeyBar->AltShiftTitles);
-			Free12Strings(m->KeyBar->AltTitles);
-			Free12Strings(m->KeyBar->CtrlAltTitles);
-			Free12Strings(m->KeyBar->CtrlShiftTitles);
-			Free12Strings(m->KeyBar->CtrlTitles);
-			Free12Strings(m->KeyBar->ShiftTitles);
-			Free12Strings(m->KeyBar->Titles);
+			//Free12Strings(m->KeyBar->AltShiftTitles);//??????
+			//Free12Strings(m->KeyBar->AltTitles);
+			//Free12Strings(m->KeyBar->CtrlAltTitles);
+			//Free12Strings(m->KeyBar->CtrlShiftTitles);
+			//Free12Strings(m->KeyBar->CtrlTitles);
+			//Free12Strings(m->KeyBar->ShiftTitles);
+			//Free12Strings(m->KeyBar->Titles);
 			delete m->KeyBar;
 		}
 

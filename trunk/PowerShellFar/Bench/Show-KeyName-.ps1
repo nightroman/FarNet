@@ -47,9 +47,9 @@ $5.CenterGroup = $true
 
 ### process pressed keys
 $2.add_KeyPressed({&{
-	if ($_.Code -ne [FarNet.KeyCode]::Esc -or $2.Text -ne 'Esc') {
+	if (!$_.Key.Is([FarNet.KeyCode]::Escape) -or $2.Text -ne 'Esc') {
 		$_.Ignore = $true
-		$2.Text = $Far.KeyToName($_.Code)
+		$2.Text = $Far.KeyInfoToName($_.Key)
 	}
 }})
 

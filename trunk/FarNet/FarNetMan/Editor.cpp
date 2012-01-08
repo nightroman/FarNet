@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -16,9 +16,9 @@ namespace FarNet
 {;
 String^ AnyEditor::WordDiv::get()
 {
-	int size = (int)Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, 0);
+	int size = (int)Info.AdvControl(&MainGuid, ACTL_GETSYSWORDDIV, 0, 0);
 	CBox wd(size);
-	Info.AdvControl(Info.ModuleNumber, ACTL_GETSYSWORDDIV, wd);
+	Info.AdvControl(&MainGuid, ACTL_GETSYSWORDDIV, 0, wd);
 	return gcnew String(wd);
 }
 
@@ -158,7 +158,7 @@ void Editor::Open(OpenMode mode)
 
 void Editor::Close()
 {
-	if (!Info.EditorControl(ECTL_QUIT, 0))
+	if (!Info.EditorControl(-1, ECTL_QUIT, 0, 0))
 		throw gcnew InvalidOperationException;
 }
 
@@ -261,7 +261,7 @@ void Editor::CodePage::set(int value)
 	{
 		EditorSetParameter esp;
 		esp.Type = ESPT_CODEPAGE;
-		esp.Param.iParam = value;
+		esp.iParam = value;
 		EditorControl_ECTL_SETPARAM(esp);
 	}
 
@@ -286,7 +286,7 @@ void Editor::ExpandTabs::set(ExpandTabsMode value)
 {
 	EditorSetParameter esp;
 	esp.Type = ESPT_EXPANDTABS;
-	esp.Param.iParam = (int)value;
+	esp.iParam = (int)value;
 	EditorControl_ECTL_SETPARAM(esp);
 }
 
@@ -312,7 +312,7 @@ void Editor::TabSize::set(int value)
 
 	EditorSetParameter esp;
 	esp.Type = ESPT_TABSIZE;
-	esp.Param.iParam = value;
+	esp.iParam = value;
 	EditorControl_ECTL_SETPARAM(esp);
 }
 
@@ -351,7 +351,7 @@ void Editor::Title::set(String^ value)
 	if (IsOpened)
 	{
 		PIN_NE(pin, value);
-		Info.EditorControl(ECTL_SETTITLE, (wchar_t*)pin);
+		Info.EditorControl(-1, ECTL_SETTITLE, 0, (wchar_t*)pin);
 	}
 	_Title = value;
 }
@@ -442,7 +442,7 @@ void Editor::InsertLine()
 
 void Editor::Redraw()
 {
-	Info.EditorControl(ECTL_REDRAW, 0);
+	Info.EditorControl(-1, ECTL_REDRAW, 0, 0);
 }
 
 void Editor::DeleteChar()
@@ -461,7 +461,7 @@ void Editor::Save()
 	if (IsSaved)
 		return;
 
-	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
+	if (!Info.EditorControl(-1, ECTL_SAVEFILE, 0, 0))
 		throw gcnew InvalidOperationException("Cannot save the editor file.");
 }
 
@@ -470,7 +470,7 @@ void Editor::Save(bool force)
 	if (!force && IsSaved)
 		return;
 
-	if (!Info.EditorControl(ECTL_SAVEFILE, 0))
+	if (!Info.EditorControl(-1, ECTL_SAVEFILE, 0, 0))
 		throw gcnew InvalidOperationException("Cannot save the editor file.");
 }
 
@@ -488,7 +488,7 @@ void Editor::Save(String^ fileName)
 	AutoEditorInfo ei;
 	esf.CodePage = ei.CodePage;
 
-	if (!Info.EditorControl(ECTL_SAVEFILE, &esf))
+	if (!Info.EditorControl(-1, ECTL_SAVEFILE, 0, &esf))
 		throw gcnew InvalidOperationException("Cannot save the editor file as: " + fileName);
 }
 
@@ -541,7 +541,7 @@ int Editor::ConvertColumnEditorToScreen(int line, int column)
 	EditorConvertPos ecp;
 	ecp.StringNumber = line;
 	ecp.SrcPos = column;
-	Info.EditorControl(ECTL_REALTOTAB, &ecp);
+	Info.EditorControl(-1, ECTL_REALTOTAB, 0, &ecp);
 	return ecp.DestPos;
 }
 
@@ -550,7 +550,7 @@ int Editor::ConvertColumnScreenToEditor(int line, int column)
 	EditorConvertPos ecp;
 	ecp.StringNumber = line;
 	ecp.SrcPos = column;
-	Info.EditorControl(ECTL_TABTOREAL, &ecp);
+	Info.EditorControl(-1, ECTL_TABTOREAL, 0, &ecp);
 	return ecp.DestPos;
 }
 
@@ -626,7 +626,7 @@ String^ Editor::GetText(String^ separator)
    	EditorGetString egs;
 	for(egs.StringNumber = 0; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
     {
-        Info.EditorControl(ECTL_GETSTRING, &egs);
+        Info.EditorControl(-1, ECTL_GETSTRING, 0, &egs);
 		if (egs.StringNumber > 0)
 			sb.Append(separator);
 		if (egs.StringLength > 0)
@@ -722,25 +722,25 @@ void Editor::SetText(String^ text)
 void Editor::BeginUndo()
 {
 	EditorUndoRedo eur = { EUR_BEGIN };
-	Info.EditorControl(ECTL_UNDOREDO, &eur);
+	Info.EditorControl(-1, ECTL_UNDOREDO, 0, &eur);
 }
 
 void Editor::EndUndo()
 {
 	EditorUndoRedo eur = { EUR_END };
-	Info.EditorControl(ECTL_UNDOREDO, &eur);
+	Info.EditorControl(-1, ECTL_UNDOREDO, 0, &eur);
 }
 
 void Editor::Undo()
 {
 	EditorUndoRedo eur = { EUR_UNDO };
-	Info.EditorControl(ECTL_UNDOREDO, &eur);
+	Info.EditorControl(-1, ECTL_UNDOREDO, 0, &eur);
 }
 
 void Editor::Redo()
 {
 	EditorUndoRedo eur = { EUR_REDO };
-	Info.EditorControl(ECTL_UNDOREDO, &eur);
+	Info.EditorControl(-1, ECTL_UNDOREDO, 0, &eur);
 }
 
 TextWriter^ Editor::OpenWriter()
@@ -757,7 +757,7 @@ void Editor::BeginAsync()
 	if (!IsOpened)
 		throw gcnew InvalidOperationException("Editor must be opened.");
 
-	_hMutex = CreateMutex(NULL, FALSE, NULL);
+	_hMutex = CreateMutex(nullptr, FALSE, nullptr);
 
 	BeginUndo();
 	_output = gcnew StringBuilder();
@@ -813,11 +813,11 @@ String^ Editor::WordDiv::get()
 
 	EditorSetParameter esp;
 	esp.Type = ESPT_GETWORDDIV;
-	esp.Param.wszParam = NULL;
+	esp.wszParam = 0;
 	esp.Size = EditorControl_ECTL_SETPARAM(esp);
 
 	CBox buf(esp.Size);
-	esp.Param.wszParam = buf;
+	esp.wszParam = buf;
 	EditorControl_ECTL_SETPARAM(esp);
 
 	return gcnew String(buf);
@@ -834,7 +834,7 @@ void Editor::WordDiv::set(String^ value)
 	PIN_NE(pin, value);
 	EditorSetParameter esp;
 	esp.Type = ESPT_SETWORDDIV;
-	esp.Param.wszParam = (wchar_t*)pin;
+	esp.wszParam = (wchar_t*)pin;
 	EditorControl_ECTL_SETPARAM(esp);
 }
 
@@ -869,18 +869,18 @@ void Editor::WriteByteOrderMark::set(bool value)
 	if (IsOpened)
 		SetBoolOption(ESPT_SETBOM, value);
 }
-void Editor::SetBoolOption(int option, bool value)
+void Editor::SetBoolOption(EDITOR_SETPARAMETER_TYPES option, bool value)
 {
 	EditorSetParameter esp;
 	esp.Type = option;
-	esp.Param.iParam = (int)value;
+	esp.iParam = (int)value;
 	EditorControl_ECTL_SETPARAM(esp);
 }
 
 void Editor::Start(const EditorInfo& ei, bool waiting)
 {
-	CBox fileName(Info.EditorControl(ECTL_GETFILENAME, 0));
-	Info.EditorControl(ECTL_GETFILENAME, fileName);
+	CBox fileName(Info.EditorControl(-1, ECTL_GETFILENAME, 0, 0));
+	Info.EditorControl(-1, ECTL_GETFILENAME, 0, fileName);
 
 	// set info
 	_id = ei.EditorID;
@@ -927,7 +927,7 @@ String^ Editor::GetSelectedText(String^ separator)
 	EditorGetString egs;
 	for(egs.StringNumber = ei.BlockStartLine; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
     {
-        Info.EditorControl(ECTL_GETSTRING, &egs);
+        Info.EditorControl(-1, ECTL_GETSTRING, 0, &egs);
 		if (egs.SelStart < 0)
 			break;
 		if (egs.StringNumber > ei.BlockStartLine)
@@ -1196,8 +1196,12 @@ void Editor::Activate()
 	int nWindow = Far::Net->Window->Count;
 	for(int i = 0; i < nWindow; ++i)
 	{
-		IWindowInfo^ info = Far::Net->Window->GetInfoAt(i, true);
-		if (info->Kind == WindowKind::Editor && info->Name == _FileName)
+		WindowKind kind = Far::Net->Window->GetKindAt(i);
+		if (kind != WindowKind::Editor)
+			continue;
+
+		String^ name = Far::Net->Window->GetNameAt(i);
+		if (name == _FileName)
 		{
 			Far::Net->Window->SetCurrentAt(i);
 			Far::Net->Window->Commit();
@@ -1225,19 +1229,19 @@ void Editor::IsLocked::set(bool value)
 
 IList<ColorSpan^>^ Editor::GetColors(int line)
 {
-	EditorColor arg;
+	EditorColor arg; memset(&arg, 0, sizeof(arg));
+	arg.StructSize = sizeof(arg);
 	arg.StringNumber = line;
 
 	List<ColorSpan^>^ spans = gcnew List<ColorSpan^>;
-	
-	for(arg.ColorItem = 0; Info.EditorControl(ECTL_GETCOLOR, &arg); ++arg.ColorItem)
+
+	for(arg.ColorItem = 0; Info.EditorControl(-1, ECTL_GETCOLOR, 0, &arg); ++arg.ColorItem)
 	{
 		ColorSpan^ span = gcnew ColorSpan;
 		span->Start = arg.StartPos;
 		span->End = arg.EndPos + 1;
-		span->Foreground = ConsoleColor(arg.Color & 0x0000000F);
-		span->Background = ConsoleColor((arg.Color & 0x000000F0) >> 4);
-		
+		span->Background = ConsoleColor(arg.Color.BackgroundColor);
+		span->Foreground = ConsoleColor(arg.Color.ForegroundColor);
 		spans->Add(span);
 	}
 	
@@ -1246,14 +1250,16 @@ IList<ColorSpan^>^ Editor::GetColors(int line)
 
 void Editor::AddColor(int line, ColorSpan^ color)
 {
-	EditorColor arg;
+	EditorColor arg; memset(&arg, 0, sizeof(arg));
 	arg.StringNumber = line;
 	arg.ColorItem = 0;
 	arg.StartPos = color->Start;
 	arg.EndPos = color->End - 1;
-	arg.Color = int(color->Foreground) | (int(color->Background) << 4);
+	arg.Color.Flags = FCF_4BITMASK;
+	arg.Color.BackgroundColor = (COLORREF)color->Background;
+	arg.Color.ForegroundColor = (COLORREF)color->Foreground;
 
-	Info.EditorControl(ECTL_ADDCOLOR, &arg);
+	Info.EditorControl(-1, ECTL_ADDCOLOR, 0, &arg);
 }
 
 }

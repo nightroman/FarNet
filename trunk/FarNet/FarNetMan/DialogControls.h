@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -40,7 +40,7 @@ internal:
 	void SetSelected(int value);
 	bool GetChanged();
 	void SetChanged(bool value);
-	virtual void Init(FarDialogItem& item, int type);
+	virtual void Init(FarDialogItem& item, FARDIALOGITEMTYPES type);
 	virtual void Starting(FarDialogItem& item) = 0;
 	virtual void Started() {}
 	virtual void Stop(bool ok);
@@ -50,7 +50,7 @@ internal:
 	Place _rect;
 	FarDialogItem* _item;
 	FarDialog^ const _dialog;
-	long _flags;
+	FARDIALOGITEMFLAGS _flags;
 	int _selected;
 	String^ _text;
 	Object^ _data;
@@ -119,14 +119,15 @@ public:
 	virtual property String^ Mask { String^ get(); void set(String^ value); }
 public: DEF_EVENT_ARGS(TextChanged, _TextChanged, TextChangedEventArgs);
 internal:
-	FarEdit(FarDialog^ dialog, int index, int type);
-	FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, int type);
+	FarEdit(FarDialog^ dialog, int index, FARDIALOGITEMTYPES type);
+	FarEdit(FarDialog^ dialog, int left, int top, int right, String^ text, FARDIALOGITEMTYPES type);
 	virtual void Starting(FarDialogItem& item) override;
 	virtual void Stop(bool ok) override;
 	virtual void Free() override;
 private:
-	int _type;
+	FARDIALOGITEMTYPES _type;
 	String^ _history;
+	String^ _mask;
 };
 
 ref class FarRadioButton : public FarControl, public IRadioButton
@@ -181,6 +182,7 @@ public:
 	virtual property bool WrapCursor { bool get(); void set(bool value); }
 	virtual property IList<FarItem^>^ Items { IList<FarItem^>^ get(); }
 	virtual property int Selected { int get(); void set(int value); }
+	virtual void Stop(bool ok) override;
 public:
 	virtual FarItem^ Add(String^ text);
 	virtual void AttachItems();
@@ -189,7 +191,7 @@ protected:
 	FarBaseList(FarDialog^ dialog, int index);
 	FarBaseList(FarDialog^ dialog, int left, int top, int right, int bottom, String^ text);
 internal:
-	virtual void Init(FarDialogItem& item, int type) override;
+	virtual void Init(FarDialogItem& item, FARDIALOGITEMTYPES type) override;
 	virtual void Free() override;
 	void FreeItems();
 	static void InitFarListItem(FarListItem& i2, FarItem^ i1);
@@ -210,12 +212,12 @@ public:
 	virtual property bool ReadOnly { bool get(); void set(bool value); }
 	virtual property bool SelectOnEntry { bool get(); void set(bool value); }
 	virtual property ILine^ Line { ILine^ get(); }
+	virtual void Stop(bool ok) override;
 public: DEF_EVENT_ARGS(TextChanged, _TextChanged, TextChangedEventArgs);
 internal:
 	FarComboBox(FarDialog^ dialog, int index);
 	FarComboBox(FarDialog^ dialog, int left, int top, int right, String^ text);
 	virtual void Starting(FarDialogItem& item) override;
-	virtual void Stop(bool ok) override;
 };
 
 ref class FarListBox : public FarBaseList, public IListBox

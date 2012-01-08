@@ -17,5 +17,5 @@ static class Res
 	public const string
 		ModuleCommands = "Commands",
 		ModuleEditors = "Editors",
-		ModuleFilers = "Filers";
+		ModuleTools = "Tools";
 }

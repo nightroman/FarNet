@@ -75,38 +75,31 @@ namespace PowerShellFar
 		/// </summary>
 		internal static Stepper RunningInstance { get { return Stepper._RunningInstance; } }
 		static Stepper _RunningInstance;
-
 		// Units and steps
 		List<ScriptBlock> _units = new List<ScriptBlock>();
 		ArrayList _steps = new ArrayList();
-
 		/// <summary>
 		/// Creates a stepper.
 		/// </summary>
 		public Stepper()
 		{ }
-
 		/// <summary>
 		/// Total count of steps processed so far.
 		/// </summary>
 		public int StepCount { get { return _StepCount; } }
 		int _StepCount;
-
 		/// <summary>
 		/// Total count of units processed so far.
 		/// </summary>
 		public int UnitCount { get { return _UnitIndex + 1; } }
-
 		/// <summary>
 		/// Current step index.
 		/// </summary>
 		int _StepIndex;
-
 		/// <summary>
 		/// Current unit index.
 		/// </summary>
 		int _UnitIndex = -1;
-
 		static bool _AskDefault;
 		/// <summary>
 		/// Default initial <see cref="Ask"/> value.
@@ -116,7 +109,6 @@ namespace PowerShellFar
 			get { return _AskDefault; }
 			set { _AskDefault = value; }
 		}
-
 		bool _Ask = _AskDefault;
 		/// <summary>
 		/// Tells to ask for actions before each step.
@@ -126,7 +118,6 @@ namespace PowerShellFar
 			get { return _Ask; }
 			set { _Ask = value; }
 		}
-
 		/// <summary>
 		/// Adds the step sequence and posts the first step or inserts the sequence just after the step being invoked.
 		/// </summary>
@@ -156,7 +147,6 @@ namespace PowerShellFar
 				InsertRange(_StepIndex + 1, steps);
 			}
 		}
-
 		// Inserts steps at
 		void InsertRange(int index, ICollection steps)
 		{
@@ -176,32 +166,16 @@ namespace PowerShellFar
 				{
 					string s = Cast<string>.From(o);
 					if (s != null)
-					{
-						try
-						{
-							oInsert = Far.Net.CreateKeySequence(s);
-							if (_Ask)
-								oInsert = s;
-						}
-						catch (ArgumentException ex)
-						{
-							throw new InvalidOperationException("Invalid keys: '" + s + "'. " + ex.Message);
-						}
-					}
+						oInsert = s;
 					else if (o == null)
-					{
 						throw new RuntimeException("Step sequence contains a null object.");
-					}
 					else
-					{
 						throw new RuntimeException("Step sequence contains unknown object: " + o.ToString());
-					}
 				}
 				_steps.Insert(index, oInsert);
 				++index;
 			}
 		}
-
 		/// <summary>
 		/// Posts a step unit command.
 		/// </summary>
@@ -238,7 +212,6 @@ namespace PowerShellFar
 			// unknown
 			throw new ArgumentException("'command' should be a string or a script block.");
 		}
-
 		/// <summary>
 		/// Starts posted steps and step units processing.
 		/// </summary>
@@ -253,7 +226,6 @@ namespace PowerShellFar
 			if (_RunningInstance == null)
 				Far.Net.PostStep(Action);
 		}
-
 		/// <summary>
 		/// Current unit script block if any or null.
 		/// </summary>
@@ -267,13 +239,11 @@ namespace PowerShellFar
 					return null;
 			}
 		}
-
 		void AssumeCanStep()
 		{
 			if (_RunningInstance != this && _RunningInstance != null)
 				throw new InvalidOperationException("Stepper is already running, concurrent stepper is not allowed.");
 		}
-
 		/// <summary>
 		/// Event is triggered when the stepper state has changed.
 		/// </summary>
@@ -286,7 +256,6 @@ namespace PowerShellFar
 		/// </para>
 		/// </remarks>
 		public event EventHandler StateChanged;
-
 		StepperState _state_ = StepperState.None;
 		/// <summary>
 		/// Current state. See <see cref="StateChanged"/> event.
@@ -308,7 +277,6 @@ namespace PowerShellFar
 					StateChanged(this, null);
 			}
 		}
-
 		Exception _Error;
 		/// <summary>
 		/// The error that has stopped the processing.
@@ -321,7 +289,6 @@ namespace PowerShellFar
 		{
 			get { return _Error; }
 		}
-
 		// Invokes the next step in the step sequence.
 		void Action()
 		{
@@ -390,7 +357,7 @@ namespace PowerShellFar
 					switch (Far.Net.Message(
 						text,
 						title,
-						MsgOptions.LeftAligned | MsgOptions.Down,
+						MessageOptions.LeftAligned,
 						new string[] { "Step", "Continue", "Cancel" }))
 					{
 						case 0:
@@ -438,13 +405,8 @@ namespace PowerShellFar
 				}
 				else
 				{
-					// get keys
-					int[] keys = Cast<int[]>.From(it);
-					if (keys == null)
-						keys = Far.Net.CreateKeySequence(it.ToString());
-
-					// post keys
-					Far.Net.PostKeySequence(keys);
+					// post macro
+					Far.Net.PostMacro(it.ToString());
 				}
 
 				// post
@@ -463,6 +425,5 @@ namespace PowerShellFar
 				_RunningInstance = null;
 			}
 		}
-
 	}
 }

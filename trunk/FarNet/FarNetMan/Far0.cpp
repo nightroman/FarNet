@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 // _110628_192511 Open from a quick view panel issue
@@ -18,7 +18,12 @@ Copyright (c) 2005-2011 FarNet Team
 
 namespace FarNet
 {;
-const int CoreConfigItemCount = 1; //config//
+static PluginMenuItem _Config;
+static PluginMenuItem _Dialog;
+static PluginMenuItem _Disk;
+static PluginMenuItem _Editor;
+static PluginMenuItem _Panels;
+static PluginMenuItem _Viewer;
 
 ref class FarNetHost : Works::Host
 {
@@ -31,11 +36,6 @@ public:
 	virtual void RegisterProxyEditor(IModuleEditor^ info) override
 	{
 		Far0::RegisterProxyEditor(info);
-	}
-
-	virtual void RegisterProxyFiler(IModuleFiler^ info) override
-	{
-		Far0::RegisterProxyFiler(info);
 	}
 
 	virtual void RegisterProxyTool(IModuleTool^ info) override
@@ -59,23 +59,32 @@ public:
 	}
 };
 
+void Far0::FreePluginMenuItem(PluginMenuItem& p)
+{
+	if (p.Count == 0) return;
+
+	for(int i = p.Count; --i >= 0;)
+		delete p.Strings[i];
+
+	delete p.Strings;
+	p.Strings = 0;
+	
+	delete p.Guids;
+	p.Guids = 0;
+	
+	p.Count = 0;
+}
+
 void Far0::Start()
 {
-	// init the registry path
-	String^ path = gcnew String(Info.RootKey);
-	Works::WinRegistry::RegistryPath = path->Substring(0, path->LastIndexOf('\\'));
-
 	// init async operations
-	_hMutex = CreateMutex(NULL, FALSE, NULL);
-
-	// init my hotkey
-	_hotkey = Works::WinRegistry::GetValue("PluginHotkeys\\Plugins/FarNet/FarNetMan.dll", "Hotkey", String::Empty)->ToString();
+	_hMutex = CreateMutex(nullptr, FALSE, nullptr);
 
 	// connect the host
 	Works::Host::Instance = gcnew FarNetHost();
 
 	// module path
-	path = Configuration::GetString(Configuration::Modules);
+	String^ path = Configuration::GetString(Configuration::Modules);
 	if (!path)
 		path = Environment::ExpandEnvironmentVariables("%FARHOME%\\FarNet\\Modules");
 
@@ -84,18 +93,23 @@ void Far0::Start()
 	loader.LoadModules(path);
 }
 
+void Far0::PostSelf()
+{
+	Far::Net->PostMacro("F11 Menu.Select(\"FarNet\", 3) Enter");
+}
+
 //! Don't use Far UI
 void Far0::Stop()
 {
 	CloseHandle(_hMutex);
 	Works::ModuleLoader::UnloadModules();
 
-	delete[] _pConfig;
-	delete[] _pDisk;
-	delete[] _pDialog;
-	delete[] _pEditor;
-	delete[] _pPanels;
-	delete[] _pViewer;
+	FreePluginMenuItem(_Config);
+	FreePluginMenuItem(_Disk);
+	FreePluginMenuItem(_Dialog);
+	FreePluginMenuItem(_Editor);
+	FreePluginMenuItem(_Panels);
+	FreePluginMenuItem(_Viewer);
 	delete _prefixes;
 }
 
@@ -128,13 +142,6 @@ void Far0::UnregisterProxyAction(IModuleAction^ action)
 		_registeredEditor.Remove(editor);
 		return;
 	}
-
-	IModuleFiler^ filer = dynamic_cast<IModuleFiler^>(action);
-	if (filer)
-	{
-		_registeredFiler.Remove(filer);
-		return;
-	}
 }
 
 void Far0::UnregisterProxyTool(IModuleTool^ tool)
@@ -151,43 +158,37 @@ void Far0::InvalidateProxyTool(ModuleToolOptions options)
 	if (int(options & ModuleToolOptions::Config))
 	{
 		_toolConfig = nullptr;
-		delete[] _pConfig;
-		_pConfig = 0;
+		FreePluginMenuItem(_Config);
 	}
 
 	if (int(options & ModuleToolOptions::Dialog))
 	{
 		_toolDialog = nullptr;
-		delete[] _pDialog;
-		_pDialog = 0;
+		FreePluginMenuItem(_Dialog);
 	}
 
 	if (int(options & ModuleToolOptions::Disk))
 	{
 		_toolDisk = nullptr;
-		delete[] _pDisk;
-		_pDisk = 0;
+		FreePluginMenuItem(_Disk);
 	}
 
 	if (int(options & ModuleToolOptions::Editor))
 	{
 		_toolEditor = nullptr;
-		delete[] _pEditor;
-		_pEditor = 0;
+		FreePluginMenuItem(_Editor);
 	}
 
 	if (int(options & ModuleToolOptions::Panels))
 	{
 		_toolPanels = nullptr;
-		delete[] _pPanels;
-		_pPanels = 0;
+		FreePluginMenuItem(_Panels);
 	}
 
 	if (int(options & ModuleToolOptions::Viewer))
 	{
 		_toolViewer = nullptr;
-		delete[] _pViewer;
-		_pViewer = 0;
+		FreePluginMenuItem(_Viewer);
 	}
 }
 
@@ -211,15 +212,6 @@ void Far0::RegisterProxyEditor(IModuleEditor^ info)
 	_registeredEditor.Add(info);
 }
 
-void Far0::RegisterProxyFiler(IModuleFiler^ info)
-{
-	Log::Source->TraceInformation("Register {0}", info);
-
-	Works::Host::Actions->Add(info->Id, info);
-
-	_registeredFiler.Add(info);
-}
-
 void Far0::RegisterProxyTool(IModuleTool^ info)
 {
 	Log::Source->TraceInformation("Register {0}", info);
@@ -233,27 +225,21 @@ void Far0::RegisterProxyTool(IModuleTool^ info)
 -- It is called frequently to get information about menu and disk commands.
 -- It is not called when FarNet is unloaded.
 
-// http://forum.farmanager.com/viewtopic.php?f=7&t=3890
-// (?? it would be nice to have ACTL_POSTCALLBACK)
+callplugin()
+http://forum.farmanager.com/viewtopic.php?f=7&t=3890
+
+STOP
+Do not ignore these methods even in stepping mode:
+*) plugins can change this during stepping and Far has to be informed;
+*) there is no more or less noticeable performance gain at all, really.
+We still can do that with some global flags telling that something was changed, but with
+not at all performance gain it would be more complexity for nothing. The code is disabled.
 */
 void Far0::AsGetPluginInfo(PluginInfo* pi)
 {
-	// _110118_073431 SysID for CallPlugin. Not quite legal but there is no better effective way.
-	pi->Reserved = 0xcd;
-
-	//! STOP
-	// Do not ignore these methods even in stepping mode:
-	// *) plugins can change this during stepping and Far has to be informed;
-	// *) there is no more or less noticeable performance gain at all, really.
-	// We still can do that with some global flags telling that something was changed, but with
-	// not at all performance gain it would be more complexity for nothing. The code is disabled.
-
 	// get window type, this is the only known way to get the current area
 	// (?? wish to have the 'from' parameter)
-	WindowInfo wi;
-	wi.Pos = -1;
-	if (!Info.AdvControl(Info.ModuleNumber, ACTL_GETSHORTWINDOWINFO, &wi))
-		wi.Type = -1;
+	WindowKind windowKind = Wrap::WindowGetKind();
 
 	//! Do not forget to add FarNet menus first -> alloc one more and use shifted indexes.
 
@@ -262,55 +248,51 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		if (!_toolConfig)
 		{
 			_toolConfig = Works::Host::GetTools(ModuleToolOptions::Config);
-			_pConfig = new CStr[_toolConfig->Length + CoreConfigItemCount];
+			
+			_Config.Count = _toolConfig->Length + 1;
+			GUID* guids = new GUID[_Config.Count];
+			_Config.Guids = guids;
+			wchar_t** strings = new wchar_t*[_Config.Count];
+			_Config.Strings = strings;
 
 			//! mind sort order of items on changing names
-			_pConfig[0].Set(Res::MenuPrefix);
+			guids[0] = MainGuid;
+			strings[0] = NewChars(Res::Menu);
 
 			for(int i = _toolConfig->Length; --i >= 0;)
-				_pConfig[i + CoreConfigItemCount].Set(GetMenuText(_toolConfig[i]));
-		}
-
-		pi->PluginConfigStringsNumber = _toolConfig->Length + CoreConfigItemCount;
-		pi->PluginConfigStrings = (const wchar_t**)_pConfig;
-	}
-
-	// disk (do not add the .NET item!)
-	{
-		if (!_toolDisk)
-		{
-			_toolDisk = Works::Host::GetTools(ModuleToolOptions::Disk);
-			if (_toolDisk->Length > 0)
 			{
-				_pDisk = new CStr[_toolDisk->Length];
-
-				//! Use just Name, not menu text, and no prefix.
-				for(int i = _toolDisk->Length; --i >= 0;)
-					_pDisk[i].Set(_toolDisk[i]->Name);
+				guids[i + 1] = ToGUID(_toolConfig[i]->Id);
+				strings[i + 1] = NewChars(GetMenuText(_toolConfig[i]));
 			}
 		}
-
-		pi->DiskMenuStringsNumber = _toolDisk->Length;
-		pi->DiskMenuStrings = (const wchar_t**)_pDisk;
+		pi->PluginConfig = _Config;
 	}
 
 	// type
-	switch(wi.Type)
+	switch(windowKind)
 	{
 	case WTYPE_DIALOG:
 		{
 			if (!_toolDialog)
 			{
 				_toolDialog = Works::Host::GetTools(ModuleToolOptions::Dialog);
-				_pDialog = new CStr[_toolDialog->Length + 1];
-				_pDialog[0].Set(Res::MenuPrefix);
+				
+				_Dialog.Count = _toolDialog->Length + 1;
+				GUID* guids = new GUID[_Dialog.Count];
+				_Dialog.Guids = guids;
+				wchar_t** strings = new wchar_t*[_Dialog.Count];
+				_Dialog.Strings = strings;
+
+				guids[0] = MainGuid;
+				strings[0] = NewChars(Res::Menu);
 
 				for(int i = _toolDialog->Length; --i >= 0;)
-					_pDialog[i + 1].Set(GetMenuText(_toolDialog[i]));
+				{
+					guids[i + 1] = ToGUID(_toolDialog[i]->Id);
+					strings[i + 1] = NewChars(GetMenuText(_toolDialog[i]));
+				}
 			}
-
-			pi->PluginMenuStringsNumber = _toolDialog->Length + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pDialog;
+			pi->PluginMenu = _Dialog;
 		}
 		break;
 	case WTYPE_EDITOR:
@@ -318,31 +300,23 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			if (!_toolEditor)
 			{
 				_toolEditor = Works::Host::GetTools(ModuleToolOptions::Editor);
-				_pEditor = new CStr[_toolEditor->Length + 1];
-				_pEditor[0].Set(Res::MenuPrefix);
+				
+				_Editor.Count = _toolEditor->Length + 1;
+				GUID* guids = new GUID[_Editor.Count];
+				_Editor.Guids = guids;
+				wchar_t** strings = new wchar_t*[_Editor.Count];
+				_Editor.Strings = strings;
+
+				guids[0] = MainGuid;
+				strings[0] = NewChars(Res::Menu);
 
 				for(int i = _toolEditor->Length; --i >= 0;)
-					_pEditor[i + 1].Set(GetMenuText(_toolEditor[i]));
+				{
+					guids[i + 1] = ToGUID(_toolEditor[i]->Id);
+					strings[i + 1] = NewChars(GetMenuText(_toolEditor[i]));
+				}
 			}
-
-			pi->PluginMenuStringsNumber = _toolEditor->Length + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pEditor;
-		}
-		break;
-	case WTYPE_PANELS: //_110628_192511
-		{
-			if (!_toolPanels)
-			{
-				_toolPanels = Works::Host::GetTools(ModuleToolOptions::Panels);
-				_pPanels = new CStr[_toolPanels->Length + 1];
-				_pPanels[0].Set(Res::MenuPrefix);
-
-				for(int i = _toolPanels->Length; --i >= 0;)
-					_pPanels[i + 1].Set(GetMenuText(_toolPanels[i]));
-			}
-
-			pi->PluginMenuStringsNumber = _toolPanels->Length + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pPanels;
+			pi->PluginMenu = _Editor;
 		}
 		break;
 	case WTYPE_VIEWER:
@@ -350,15 +324,71 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			if (!_toolViewer)
 			{
 				_toolViewer = Works::Host::GetTools(ModuleToolOptions::Viewer);
-				_pViewer = new CStr[_toolViewer->Length + 1];
-				_pViewer[0].Set(Res::MenuPrefix);
+				
+				_Viewer.Count = _toolViewer->Length + 1;
+				GUID* guids = new GUID[_Viewer.Count];
+				_Viewer.Guids = guids;
+				wchar_t** strings = new wchar_t*[_Viewer.Count];
+				_Viewer.Strings = strings;
+
+				guids[0] = MainGuid;
+				strings[0] = NewChars(Res::Menu);
 
 				for(int i = _toolViewer->Length; --i >= 0;)
-					_pViewer[i + 1].Set(GetMenuText(_toolViewer[i]));
+				{
+					guids[i + 1] = ToGUID(_toolViewer[i]->Id);
+					strings[i + 1] = NewChars(GetMenuText(_toolViewer[i]));
+				}
 			}
+			pi->PluginMenu = _Viewer;
+		}
+		break;
+	case WTYPE_PANELS: //_110628_192511
+		// panels menu
+		{
+			if (!_toolPanels)
+			{
+				_toolPanels = Works::Host::GetTools(ModuleToolOptions::Panels);
+				
+				_Panels.Count = _toolPanels->Length + 1;
+				GUID* guids = new GUID[_Panels.Count];
+				_Panels.Guids = guids;
+				wchar_t** strings = new wchar_t*[_Panels.Count];
+				_Panels.Strings = strings;
 
-			pi->PluginMenuStringsNumber = _toolViewer->Length + 1;
-			pi->PluginMenuStrings = (const wchar_t**)_pViewer;
+				guids[0] = MainGuid;
+				strings[0] = NewChars(Res::Menu);
+
+				for(int i = _toolPanels->Length; --i >= 0;)
+				{
+					guids[i + 1] = ToGUID(_toolPanels[i]->Id);
+					strings[i + 1] = NewChars(GetMenuText(_toolPanels[i]));
+				}
+			}
+			pi->PluginMenu = _Panels;
+		}
+		// disk menu (do not add the .NET item!)
+		{
+			if (!_toolDisk)
+			{
+				_toolDisk = Works::Host::GetTools(ModuleToolOptions::Disk);
+				if (_toolDisk->Length > 0)
+				{
+					_Disk.Count = _toolDisk->Length;
+					GUID* guids = new GUID[_toolDisk->Length];
+					_Disk.Guids = guids;
+					wchar_t** strings = new wchar_t*[_toolDisk->Length];
+					_Disk.Strings = strings;
+
+					//! Use just Name, not menu text, and no prefix.
+					for(int i = _toolDisk->Length; --i >= 0;)
+					{
+						guids[i] = ToGUID(_toolDisk[i]->Id);
+						strings[i] = NewChars(_toolDisk[i]->Name);
+					}
+				}
+			}
+			pi->DiskMenu = _Disk;
 		}
 		break;
 	}
@@ -383,85 +413,34 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 
 //::Far callbacks
 
-bool Far0::AsConfigure(int itemIndex) //config//
+bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 {
-	if (itemIndex == 0)
+	Guid guid = FromGUID(*info->Guid);
+	if (guid == FromGUID(MainGuid))
 	{
 		OpenConfig();
 		return true;
 	}
 
-	// STOP: If it is called by [ShiftF9] from a F11-menu then Far sends the
+	//????? STOP: If it is called by [ShiftF9] from a F11-menu then Far sends the
 	// index from that menu, not from our config items. There is nothing we can
 	// do about it: the same method is called from the config menu. All we can
 	// do is to check sanity of the index and ignore invalid values.
-	itemIndex -= CoreConfigItemCount;
-	if (itemIndex >= _toolConfig->Length)
-		return false;
+	//itemIndex -= CoreConfigItemCount;
+	//if (itemIndex >= _toolConfig->Length)
+	//	return false;
 
-	IModuleTool^ tool = _toolConfig[itemIndex];
+	IModuleTool^ tool = Far::Net->GetModuleTool(guid);
+	if (!tool)
+		return false;
+	
 	ModuleToolEventArgs e;
 	e.From = ModuleToolOptions::Config;
 	tool->Invoke(nullptr, %e);
 	return e.Ignore ? false : true;
 }
 
-HANDLE Far0::AsOpenFilePlugin(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
-{
-	if (_registeredFiler.Count == 0)
-		return INVALID_HANDLE_VALUE;
-
-	Panel0::BeginOpenMode();
-	ValueUserScreen userscreen; //_100514_000000
-
-	try
-	{
-		ModuleFilerEventArgs^ e;
-		for each(IModuleFiler^ it in _registeredFiler)
-		{
-			// create?
-			if (!name && !it->Creates)
-				continue;
-
-			// mask?
-			if (SS(it->Mask) && !CompareNameExclude(it->Mask, name, true))
-				continue;
-
-			// arguments
-			if (!e)
-			{
-				e = gcnew ModuleFilerEventArgs;
-				e->Name = gcnew String(name);
-				e->Mode = (ExplorerModes)opMode;
-				e->Data = gcnew UnmanagedMemoryStream((unsigned char*)data, dataSize, dataSize, FileAccess::Read);
-			}
-			else
-			{
-				e->Data->Seek(0, SeekOrigin::Begin);
-			}
-
-			// invoke
-			it->Invoke(nullptr, e);
-
-			// open a posted panel
-			if (Panel0::PostedPanel)
-			{
-				HANDLE h = Panel0::AddPluginPanel(Panel0::PostedPanel);
-				return h;
-			}
-		}
-
-		return INVALID_HANDLE_VALUE;
-	}
-	finally
-	{
-		Panel0::EndOpenMode();
-		if (userscreen.Get()) //_100514_000000
-			Far::Net->UI->SaveUserScreen();
-	}
-}
-
-HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
+HANDLE Far0::AsOpen(const OpenInfo* info)
 {
 	Panel0::BeginOpenMode();
 	ValueUserScreen userscreen; //_100514_000000
@@ -469,37 +448,43 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 	// call a plugin; it may create a panel waiting for opening
 	try
 	{
-		switch(from)
+		switch(info->OpenFrom)
 		{
 		default:
 			{
 				// _110118_073431
-				if ((from & (OPEN_FROMMACRO | OPEN_FROMMACROSTRING)) == (OPEN_FROMMACRO | OPEN_FROMMACROSTRING))
+				if ((info->OpenFrom & (OPEN_FROMMACRO | OPEN_FROMMACROSTRING)) == (OPEN_FROMMACRO | OPEN_FROMMACROSTRING))
 				{
 					Log::Source->TraceInformation("OPEN_FROMMACRO");
-					if (!InvokeCommand((const wchar_t*)item, (MacroArea)(1 + (from & OPEN_FROM_MASK)))) //_100201_110148
+					if (!InvokeCommand((const wchar_t*)info->Data, (MacroArea)(1 + (info->OpenFrom & OPEN_FROM_MASK)))) //_100201_110148
 						return 0;
 				}
 			}
 			break;
+		case OPEN_ANALYSE:
+			info = info;
+			break;
 		case OPEN_COMMANDLINE:
 			{
 				Log::Source->TraceInformation("OPEN_COMMANDLINE");
-				InvokeCommand((const wchar_t*)item, MacroArea::None);
+				InvokeCommand((const wchar_t*)info->Data, MacroArea::None);
 			}
 			break;
-		case OPEN_DISKMENU:
+		case OPEN_LEFTDISKMENU:
+		case OPEN_RIGHTDISKMENU:
 			{
 				Log::Source->TraceInformation("OPEN_DISKMENU");
-				IModuleTool^ tool = _toolDisk[(int)item];
+				IModuleTool^ tool = Far::Net->GetModuleTool(FromGUID(*info->Guid));
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Disk;
+				e.IsLeft = info->OpenFrom == OPEN_LEFTDISKMENU;
 				tool->Invoke(nullptr, %e);
 			}
 			break;
 		case OPEN_PLUGINSMENU:
 			{
-				if (item == 0)
+				Guid guid = FromGUID(*info->Guid);
+				if (guid == FromGUID(MainGuid))
 				{
 					OpenMenu(ModuleToolOptions::Panels);
 					break;
@@ -507,7 +492,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 
 				Log::Source->TraceInformation("OPEN_PLUGINSMENU");
 
-				IModuleTool^ tool = _toolPanels[(int)item - 1];
+				IModuleTool^ tool = Far::Net->GetModuleTool(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Panels;
 				tool->Invoke(nullptr, %e);
@@ -515,14 +500,15 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 			break;
 		case OPEN_EDITOR:
 			{
-				if (item == 0)
+				Guid guid = FromGUID(*info->Guid);
+				if (guid == FromGUID(MainGuid))
 				{
 					OpenMenu(ModuleToolOptions::Editor);
 					break;
 				}
 
 				Log::Source->TraceInformation("OPEN_EDITOR");
-				IModuleTool^ tool = _toolEditor[(int)item - 1];
+				IModuleTool^ tool = Far::Net->GetModuleTool(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Editor;
 				tool->Invoke(nullptr, %e);
@@ -530,7 +516,8 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 			break;
 		case OPEN_VIEWER:
 			{
-				if (item == 0)
+				Guid guid = FromGUID(*info->Guid);
+				if (guid == FromGUID(MainGuid))
 				{
 					OpenMenu(ModuleToolOptions::Viewer);
 					break;
@@ -541,7 +528,7 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 					break;
 
 				Log::Source->TraceInformation("OPEN_VIEWER");
-				IModuleTool^ tool = _toolViewer[(int)item - 1];
+				IModuleTool^ tool = Far::Net->GetModuleTool(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Viewer;
 				tool->Invoke(nullptr, %e);
@@ -550,20 +537,20 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 		//! STOP: dialog case is different
 		case OPEN_DIALOG:
 			{
-				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)item;
+				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)info->Data;
 
 				// just to be sure, see also _091127_112807
 				FarDialog::_hDlgTop = dd->hDlg;
 
-				int index = dd->ItemNumber;
-				if (index == 0)
+				Guid guid = FromGUID(*info->Guid);
+				if (guid == FromGUID(MainGuid))
 				{
 					OpenMenu(ModuleToolOptions::Dialog);
 					break;
 				}
 
 				Log::Source->TraceInformation("OPEN_DIALOG");
-				IModuleTool^ tool = _toolDialog[index - 1];
+				IModuleTool^ tool = Far::Net->GetModuleTool(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Dialog;
 				tool->Invoke(nullptr, %e);
@@ -589,20 +576,6 @@ HANDLE Far0::AsOpenPlugin(int from, INT_PTR item)
 	}
 }
 
-void Far0::AssertHotkeys()
-{
-	if (!_hotkeys)
-	{
-		if (ES(_hotkey))
-			throw gcnew InvalidOperationException(Res::ErrorNoHotKey);
-
-		array<int>^ keys = gcnew array<int>(2);
-		keys[1] = Far::Net->NameToKey(_hotkey);
-		keys[0] = Far::Net->NameToKey("F11");
-		_hotkeys = keys;
-	}
-}
-
 // _100411_022932 Why PostStep is better than PostJob: PostStep makes FarNet to
 // be called from OpenPlugin, so that it can open panels and do most of needed
 // tasks. PostJob does not allow opening panels, calling PostMacro, etc.
@@ -610,33 +583,24 @@ void Far0::AssertHotkeys()
 // Thus, wait for a good CallPlugin in Far or for some other new features.
 void Far0::PostStep(Action^ handler)
 {
-	// ensure keys
-	AssertHotkeys();
-
-	// post handler and keys
+	// post handler and recall
 	_handler = handler;
-	Far::Net->PostKeySequence(_hotkeys);
+	PostSelf();
 }
 
 void Far0::PostStepAfterKeys(String^ keys, Action^ handler)
 {
-	// ensure keys
-	AssertHotkeys();
-
 	// post the handler, keys and hotkeys
 	_handler = handler;
-	Far::Net->PostKeys(keys);
-	Far::Net->PostKeySequence(_hotkeys);
+	Far::Net->PostMacro(keys);
+	PostSelf();
 }
 
 void Far0::PostStepAfterStep(Action^ handler1, Action^ handler2)
 {
-	// ensure keys
-	AssertHotkeys();
-
 	// post the second handler, then keys, and invoke the first handler
 	_handler = handler2;
-	Far::Net->PostKeySequence(_hotkeys);
+	PostSelf();
 	try
 	{
 		handler1->Invoke();
@@ -674,10 +638,9 @@ void Far0::OpenConfig() //config//
 	List<IModuleTool^> tools(Works::Host::EnumTools());
 
 	String^ format = "{0,-10} : {1,2}";
-	menu->Add(String::Format(format, Res::ModuleMenuTools, tools.Count));
 	menu->Add(String::Format(format, Res::ModuleCommands, _registeredCommand.Count));
 	menu->Add(String::Format(format, Res::ModuleEditors, _registeredEditor.Count));
-	menu->Add(String::Format(format, Res::ModuleFilers, _registeredFiler.Count));
+	menu->Add(String::Format(format, Res::ModuleTools, tools.Count));
 	menu->Add("Settings")->IsSeparator = true;
 	menu->Add("UI culture");
 
@@ -686,22 +649,18 @@ void Far0::OpenConfig() //config//
 		switch(menu->Selected)
 		{
 		case 0:
-			if (tools.Count)
-				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
-			break;
-		case 1:
 			if (_registeredCommand.Count)
 				Works::ConfigCommand::Show(%_registeredCommand, Far0::_helpTopic + "ConfigCommand");
 			break;
-		case 2:
+		case 1:
 			if (_registeredEditor.Count)
 				Works::ConfigEditor::Show(%_registeredEditor, Far0::_helpTopic + "ConfigEditor");
 			break;
-		case 3:
-			if (_registeredFiler.Count)
-				Works::ConfigFiler::Show(%_registeredFiler, Far0::_helpTopic + "ConfigFiler");
+		case 2:
+			if (tools.Count)
+				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
 			break;
-		case 5: // mind separator
+		case 4: // mind separator
 			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::_helpTopic + "ConfigUICulture");
 			break;
 		}
@@ -752,9 +711,9 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 	}
 }
 
-void Far0::AsProcessSynchroEvent(int type, void* /*param*/)
+void Far0::AsProcessSynchroEvent(const ProcessSynchroEventInfo* info)
 {
-	if (type != SE_COMMONSYNCHRO)
+	if (info->Event != SE_COMMONSYNCHRO)
 		return;
 
 	Action^ jobs = nullptr;
@@ -805,7 +764,7 @@ void Far0::PostJob(Action^ handler)
 			Log::Source->TraceInformation("PostJob: post the head job: {0}", %log);
 
 			_jobs = handler;
-			Info.AdvControl(Info.ModuleNumber, ACTL_SYNCHRO, 0);
+			Info.AdvControl(&MainGuid, ACTL_SYNCHRO, 0, 0);
 		}
 	}
 	finally
@@ -858,7 +817,7 @@ void Far0::InvalidateProxyCommand()
 
 String^ Far0::GetMenuText(IModuleTool^ tool)
 {
-	return String::Format("{0} &{1} {2}", Res::MenuPrefix, tool->Hotkey, tool->Name);
+	return tool->Name;
 }
 
 void Far0::ShowMenu(ModuleToolOptions from)
@@ -918,7 +877,7 @@ void Far0::ShowConsoleMenu()
 	menu->Add("&Decrease font size");
 	menu->Add("&Increase font size");
 
-	menu->BreakKeys->Add(VKeyCode::Spacebar);
+	menu->AddKey(KeyCode::Spacebar);
 
 	while(menu->Show())
 	{
@@ -932,7 +891,7 @@ void Far0::ShowConsoleMenu()
 			break;
 		}
 
-		if (menu->BreakKey != VKeyCode::Spacebar)
+		if (menu->Key)
 			return;
 	}
 }

@@ -15,7 +15,6 @@
 .Link
 	Profile-.ps1 - how to add this command to the "User menu".
 	Install-Macro-.ps1 - how to add this command key macro.
-	Help: Autoloaded functions
 #>
 
 # Autoloaded function

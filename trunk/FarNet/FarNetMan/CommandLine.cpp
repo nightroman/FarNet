@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -16,15 +16,15 @@ FarNet::WindowKind CommandLine::WindowKind::get()
 
 int CommandLine::Length::get()
 {
-	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
+	int size = (int)Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
 	return size - 1;
 }
 
 String^ CommandLine::Text::get()
 {
-	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
+	int size = (int)Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
 	CBox buf(size);
-	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, size, (LONG_PTR)(wchar_t*)buf);
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, size, buf);
 	return gcnew String(buf);
 }
 
@@ -34,14 +34,14 @@ void CommandLine::Text::set(String^ value)
 		throw gcnew ArgumentNullException("value");
 
 	PIN_NE(pin, value);
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (LONG_PTR)pin))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (wchar_t*)pin))
 		throw gcnew InvalidOperationException;
 }
 
 int CommandLine::Caret::get()
 {
 	int pos;
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINEPOS, 0, (LONG_PTR)&pos))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINEPOS, 0, &pos))
 		throw gcnew InvalidOperationException;
 	return pos;
 }
@@ -51,7 +51,7 @@ void CommandLine::Caret::set(int value)
 	if (value < 0)
 		value = Length;
 
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINEPOS, value, 0))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINEPOS, value, 0))
 		throw gcnew InvalidOperationException;
 }
 
@@ -61,7 +61,7 @@ void CommandLine::InsertText(String^ text)
 		throw gcnew ArgumentNullException("text");
 
 	PIN_NE(pin, text);
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, 0, (LONG_PTR)pin))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, 0, (wchar_t*)pin))
 		throw gcnew InvalidOperationException;
 }
 
@@ -70,7 +70,7 @@ void CommandLine::SelectText(int start, int end)
 	CmdLineSelect cls;
 	cls.SelStart = start;
 	cls.SelEnd = end;
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, &cls))
 		throw gcnew InvalidOperationException;
 }
 
@@ -82,7 +82,7 @@ void CommandLine::UnselectText()
 Span CommandLine::SelectionSpan::get()
 {
 	CmdLineSelect cls;
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, &cls))
 		throw gcnew InvalidOperationException;
 
 	Span result;
@@ -102,15 +102,15 @@ Span CommandLine::SelectionSpan::get()
 String^ CommandLine::SelectedText::get()
 {
 	CmdLineSelect cls;
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, &cls))
 		throw gcnew InvalidOperationException;
 
 	if (cls.SelStart < 0)
 		return nullptr;
 
-	int size = Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
+	int size = (int)Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
 	CBox buf(size);
-	Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, size, (LONG_PTR)(wchar_t*)buf);
+	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, size, (wchar_t*)buf);
 	return gcnew String(buf, cls.SelStart, cls.SelEnd - cls.SelStart);
 }
 
@@ -120,7 +120,7 @@ void CommandLine::SelectedText::set(String^ value)
 		throw gcnew ArgumentNullException("value");
 
 	CmdLineSelect cls;
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, &cls))
 		throw gcnew InvalidOperationException;
 	if (cls.SelStart < 0)
 		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
@@ -136,12 +136,12 @@ void CommandLine::SelectedText::set(String^ value)
 
 	// set new text
 	PIN_NE(pin, text);
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (LONG_PTR)pin))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (wchar_t*)pin))
 		throw gcnew InvalidOperationException;
 
 	// set new selection
 	cls.SelEnd = cls.SelStart + value->Length;
-	if (!Info.Control(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, (LONG_PTR)&cls))
+	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, &cls))
 		throw gcnew InvalidOperationException;
 
 	// restore cursor

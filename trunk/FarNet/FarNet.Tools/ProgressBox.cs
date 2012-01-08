@@ -104,7 +104,7 @@ namespace FarNet.Tools
 			else
 				text = string.Join("\r", lines) + "\r" + progress;
 
-			Far.Net.Message(text, Title, MsgOptions.Draw | MsgOptions.LeftAligned);
+			Far.Net.Message(text, Title, MessageOptions.Draw | MessageOptions.LeftAligned);
 
 			_lastShow = _progress.Elapsed;
 		}

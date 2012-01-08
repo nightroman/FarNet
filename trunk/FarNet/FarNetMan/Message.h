@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -12,8 +12,8 @@ namespace FarNet
 ref class Message
 {
 internal:
-	static int Show(String^ body, String^ header, MsgOptions options, array<String^>^ buttons, String^ helpTopic);
-	static int ShowGui(String^ body, String^ header, MsgOptions options);
+	static int Show(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic);
+	static int ShowGui(String^ body, String^ header, MessageOptions options);
 private:
 	bool Show();
 	int ShowDialog(int width);

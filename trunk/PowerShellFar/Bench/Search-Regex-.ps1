@@ -328,7 +328,7 @@ $Panel.add_Idled({&{
 ### KeyPressed: handles keys
 $Panel.add_KeyPressed({&{
 	### [Enter] opens an editor at the selected match
-	if ($_.Code -eq [FarNet.VKeyCode]::Enter -and $_.State -eq 0 -and !$Far.CommandLine.Length) {
+	if ($_.Key.Is([FarNet.KeyCode]::Enter) -and !$Far.CommandLine.Length) {
 		$file = $this.CurrentFile
 		if (!$file -or $file.Description -notmatch '^\s*(\d+):') {
 			return
@@ -349,7 +349,7 @@ $Panel.add_KeyPressed({&{
 		return
 	}
 	### [F1] opens Search-Regex help topic
-	if ($_.Code -eq [FarNet.VKeyCode]::F1 -and $_.State -eq 0) {
+	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
 		$Far.ShowHelp($Psf.AppHome, 'SearchRegex', 'Path')
 		$_.Ignore = $true
 		return

@@ -1,10 +1,11 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "stdafx.h"
+#include <initguid.h>
 #include "Dialog.h"
 #include "Editor0.h"
 #include "Far0.h"
@@ -15,8 +16,24 @@ Copyright (c) 2005 FarNet Team
 PluginStartupInfo Info;
 static FarStandardFunctions FSF;
 
+// {10435532-9BB3-487B-A045-B0E6ECAAB6BC}
+DEFINE_GUID(MainGuid, 0x10435532, 0x9bb3, 0x487b, 0xa0, 0x45, 0xb0, 0xe6, 0xec, 0xaa, 0xb6, 0xbc);
+
 #define __START try {
 #define __END } catch(Exception^ e) { Far::Net->ShowError(nullptr, e); }
+
+#define PLUGIN_VERSION MAKEFARVERSION(5, 0, 0, 0, VS_RELEASE)
+
+void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
+{
+	info->StructSize = sizeof(GlobalInfo);
+	info->MinFarVersion = FARMANAGERVERSION;
+	info->Version = PLUGIN_VERSION;
+	info->Guid = MainGuid;
+	info->Author = L"Roman Kuzmin";
+	info->Title = L"FarNet";
+	info->Description = L"FarNet module manager.";
+}
 
 /*
 SetStartupInfo is normally called once when the plugin DLL has been loaded.
@@ -30,7 +47,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 		// deny 2+ load
 		if (Works::Host::State != Works::HostState::None)
 		{
-			Far::Net->Message("FarNet cannot be loaded twice.", "FarNet", MsgOptions::Warning);
+			Far::Net->Message("FarNet cannot be loaded twice.", "FarNet", MessageOptions::Warning);
 			return;
 		}
 
@@ -64,7 +81,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 Unloads modules and the plugin.
 STOP: ensure it is "loaded".
 */
-void WINAPI ExitFARW()
+void WINAPI ExitFARW(const ExitInfo*)
 {
 	Log::Source->TraceInformation(__FUNCTION__ "{");
 	try
@@ -112,140 +129,132 @@ void WINAPI GetPluginInfoW(PluginInfo* pi)
 }
 
 // It is called for an action; action result can be a new panel.
-HANDLE WINAPI OpenPluginW(int from, INT_PTR item)
+HANDLE WINAPI OpenW(const OpenInfo* info)
 {
 	__START;
-	return Far0::AsOpenPlugin(from, item);
+	return Far0::AsOpen(info);
 	__END;
 	return INVALID_HANDLE_VALUE;
 }
 
-int WINAPI ConfigureW(int itemIndex)
+int WINAPI ConfigureW(const ConfigureInfo* info)
 {
 	__START;
-	return Far0::AsConfigure(itemIndex);
+	return Far0::AsConfigure(info);
 	__END;
 	return false;
 }
 
-void WINAPI ClosePluginW(HANDLE hPlugin)
+void WINAPI ClosePanelW(const ClosePanelInfo* info)
 {
 	__START;
-	Panel0::AsClosePlugin(hPlugin);
+	Panel0::AsClosePanel(info);
 	__END;
 }
 
-int WINAPI GetFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t** destPath, int opMode)
+int WINAPI GetFilesW(GetFilesInfo* info)
 {
 	__START;
-	return Panel0::AsGetFiles(hPlugin, panelItem, itemsNumber, move, destPath, opMode);
+	return Panel0::AsGetFiles(info);
 	__END;
 	return 0;
 }
 
-int WINAPI PutFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode)
+int WINAPI PutFilesW(PutFilesInfo* info)
 {
 	__START;
-	return Panel0::AsPutFiles(hPlugin, panelItem, itemsNumber, move, srcPath, opMode);
+	return Panel0::AsPutFiles(info);
 	__END;
 	return 0;
 }
 
-int WINAPI GetFindDataW(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
+int WINAPI GetFindDataW(GetFindDataInfo* info)
 {
-	return Panel0::AsGetFindData(hPlugin, pPanelItem, pItemsNumber, opMode);
+	return Panel0::AsGetFindData(info);
 }
 
-void WINAPI FreeFindDataW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber)
+void WINAPI FreeFindDataW(const FreeFindDataInfo* info)
 {
 	__START;
-	Panel0::AsFreeFindData(hPlugin, panelItem, itemsNumber);
+	Panel0::AsFreeFindData(info);
 	__END;
 }
 
-void WINAPI GetOpenPluginInfoW(HANDLE hPlugin, OpenPluginInfo* info)
+void WINAPI GetOpenPanelInfoW(OpenPanelInfo* info)
 {
 	__START;
-	Panel0::AsGetOpenPluginInfo(hPlugin, info);
+	Panel0::AsGetOpenPanelInfo(info);
 	__END;
 }
 
-int WINAPI SetDirectoryW(HANDLE hPlugin, const wchar_t* dir, int opMode)
+int WINAPI SetDirectoryW(const SetDirectoryInfo* info)
 {
 	__START;
-	return Panel0::AsSetDirectory(hPlugin, dir, opMode);
-	__END;
-	return false;
-}
-
-int WINAPI DeleteFilesW(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
-{
-	__START;
-	return Panel0::AsDeleteFiles(hPlugin, panelItem, itemsNumber, opMode);
+	return Panel0::AsSetDirectory(info);
 	__END;
 	return false;
 }
 
-HANDLE WINAPI OpenFilePluginW(wchar_t* name, const unsigned char* data, int dataSize, int opMode)
+int WINAPI DeleteFilesW(const DeleteFilesInfo* info)
 {
 	__START;
-	return Far0::AsOpenFilePlugin(name, data, dataSize, opMode);
+	return Panel0::AsDeleteFiles(info);
 	__END;
-	return INVALID_HANDLE_VALUE;
+	return false;
 }
 
-int WINAPI ProcessDialogEventW(int id, void* param)
+int WINAPI ProcessDialogEventW(const ProcessDialogEventInfo* info)
 {
 	__START;
-	return FarDialog::AsProcessDialogEvent(id, param);
+	return FarDialog::AsProcessDialogEvent(info);
 	__END;
 	return true; // ignore, there was a problem
 }
 
-int WINAPI ProcessEditorEventW(int type, void* param)
+int WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
 {
 	__START;
-	return Editor0::AsProcessEditorEvent(type, param);
+	return Editor0::AsProcessEditorEvent(info);
 	__END;
 	return 0;
 }
 
-int WINAPI ProcessEditorInputW(const INPUT_RECORD* rec)
+int WINAPI ProcessEditorInputW(const ProcessEditorInputInfo* info)
 {
 	__START;
-	return Editor0::AsProcessEditorInput(rec);
+	return Editor0::AsProcessEditorInput(info);
 	__END;
 	return true; // on problems consider event as processed to avoid default actions
 }
 
-int WINAPI ProcessEventW(HANDLE hPlugin, int id, void* param)
+int WINAPI ProcessPanelEventW(const ProcessPanelEventInfo* info)
 {
 	__START;
-	return Panel0::AsProcessEvent(hPlugin, id, param);
+	return Panel0::AsProcessPanelEvent(info);
 	__END;
 	return false;
 }
 
-int WINAPI ProcessKeyW(HANDLE hPlugin, int key, unsigned int controlState)
+int WINAPI ProcessPanelInputW(const ProcessPanelInputInfo* info)
 {
 	__START;
-	return Panel0::AsProcessKey(hPlugin, key, controlState);
+	return Panel0::AsProcessPanelInput(info);
 	__END;
 	return true; // ignore, there was a problem
 }
 
-int WINAPI ProcessSynchroEventW(int type, void* param)
+int WINAPI ProcessSynchroEventW(const ProcessSynchroEventInfo* info)
 {
 	__START;
-	Far0::AsProcessSynchroEvent(type, param);
+	Far0::AsProcessSynchroEvent(info);
 	__END;
 	return 0;
 }
 
-int WINAPI ProcessViewerEventW(int type, void* param)
+int WINAPI ProcessViewerEventW(const ProcessViewerEventInfo* info)
 {
 	__START;
-	return Viewer0::AsProcessViewerEvent(type, param);
+	return Viewer0::AsProcessViewerEvent(info);
 	__END;
 	return 0;
 }

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -119,14 +119,14 @@ class TStr
 public:
 	TStr() : m_str(0)
 	{}
-	TStr(int len)
+	TStr(size_t len)
 	{
 		if (len > eLen)
 			m_str = new T[len + 1];
 		else
 			m_str = m_buf;
 	}
-	TStr(const T* str, int len)
+	TStr(const T* str, size_t len)
 	{
 		if (len > eLen)
 			m_str = new T[len + 1];
@@ -176,7 +176,7 @@ void EditorControl_ECTL_INSERTSTRING(bool indent);
 void EditorControl_ECTL_INSERTTEXT(Char text, int overtype);
 void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype);
 void EditorControl_ECTL_SELECT(EditorSelect& es);
-int EditorControl_ECTL_SETPARAM(const EditorSetParameter esp);
+int EditorControl_ECTL_SETPARAM(const EditorSetParameter& esp);
 void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp);
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess);
 void ViewerControl_VCTL_GETINFO(ViewerInfo& vi, bool safe = false);
@@ -230,12 +230,10 @@ ref class Res
 	Res() {}
 internal:
 	static ConstString
-		ModuleMenuTools = "Menu tools",
+		Menu = "FarNet",
 		ModuleCommands = "Commands",
 		ModuleEditors = "Editors",
-		ModuleFilers = "Filers",
-		ErrorNoHotKey = "Set any FarNet hotkey [F4] in the Far plugin menu [F11] and restart Far.",
-		MenuPrefix = ".NET",
+		ModuleTools = "Tools",
 		InvalidColumnKind = "Invalid column kind: ",
 		Column0IsUsedTwice = "Column '{0}' is used twice.",
 		CannotSetSelectedText = "Cannot set selected text because there is no selection.",
@@ -259,9 +257,13 @@ public:
 // Helpers
 int Compare(String^ strA, String^ strB);
 int ParseInt(String^ value, int fallback);
-MouseInfo GetMouseInfo(const MOUSE_EVENT_RECORD& m);
+KeyInfo^ KeyInfoFromInputRecord(const INPUT_RECORD& ir);
+MouseInfo^ GetMouseInfo(const MOUSE_EVENT_RECORD& m);
 String^ JoinText(String^ head, String^ tail);
 String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();
 void DeleteSourceOptional(String^ path, DeleteSource option);
 void ValidateRect(int& x, int& w, int min, int size);
+
+Guid FromGUID(const GUID& guid);
+GUID ToGUID(Guid guid);

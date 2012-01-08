@@ -44,8 +44,6 @@ namespace PowerShellFar
 		public void ListMenu(IListMenu menu)
 		{
 			if (menu == null) throw new ArgumentNullException("menu");
-			menu.FilterOptions = _ListMenuFilterOptions;
-			menu.FilterKey = _ListMenuFilterKey;
 			menu.ScreenMargin = _ListMenuScreenMargin;
 			menu.UsualMargins = _ListMenuUsualMargins;
 		}
@@ -95,24 +93,6 @@ namespace PowerShellFar
 		{
 			get { return _PopupNoShadow; }
 			set { _PopupNoShadow = value; }
-		}
-		PatternOptions _ListMenuFilterOptions = PatternOptions.Regex;
-		/// <summary>
-		/// <see cref="IListMenu.FilterOptions"/> for list menus.
-		/// </summary>
-		public PatternOptions ListMenuFilterOptions
-		{
-			get { return _ListMenuFilterOptions; }
-			set { _ListMenuFilterOptions = value; }
-		}
-		int _ListMenuFilterKey = (KeyMode.Ctrl | KeyCode.Down);
-		/// <summary>
-		/// <see cref="IListMenu.FilterKey"/> for list menus.
-		/// </summary>
-		public int ListMenuFilterKey
-		{
-			get { return _ListMenuFilterKey; }
-			set { _ListMenuFilterKey = value; }
 		}
 		int _ListMenuScreenMargin = 2;
 		/// <summary>

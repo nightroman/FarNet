@@ -30,7 +30,6 @@ namespace PowerShellFar
 		{
 			IgnoreDirectoryFlag = true; // _090810_180151
 
-			UseFilter = true;
 			SortMode = PanelSortMode.Unsorted;
 
 			// columns
@@ -75,13 +74,13 @@ namespace PowerShellFar
 			UpdateRedraw(false);
 		}
 		///
-		public override bool UIKeyPressed(int code, KeyStates state)
+		public override bool UIKeyPressed(int code, ControlKeyStates state)
 		{
 			switch (code)
 			{
-				case VKeyCode.LeftArrow:
+				case KeyCode.LeftArrow:
 					{
-						if (state != KeyStates.None && state != KeyStates.Alt || Far.Net.CommandLine.Length > 0)
+						if (state != 0 && state != ControlKeyStates.LeftAltPressed || Far.Net.CommandLine.Length > 0)
 							break;
 
 						FarFile file = CurrentFile;
@@ -92,7 +91,7 @@ namespace PowerShellFar
 						if (node._State == 1)
 						{
 							// reset
-							if (state == KeyStates.Alt)
+							if (state == ControlKeyStates.LeftAltPressed)
 							{
 								node.ChildFiles.Clear();
 								node._State = 0;
@@ -111,9 +110,9 @@ namespace PowerShellFar
 
 						return true;
 					}
-				case VKeyCode.RightArrow:
+				case KeyCode.RightArrow:
 					{
-						if (state != KeyStates.None && state != KeyStates.Alt || Far.Net.CommandLine.Length > 0)
+						if (state != 0 && state != ControlKeyStates.LeftAltPressed || Far.Net.CommandLine.Length > 0)
 							break;
 
 						FarFile file = CurrentFile;
@@ -124,7 +123,7 @@ namespace PowerShellFar
 						if (node != null && node._State != 1 && node.IsNode)
 						{
 							// reset
-							if (state == KeyStates.Alt)
+							if (state == ControlKeyStates.LeftAltPressed)
 							{
 								node.ChildFiles.Clear();
 								node._State = 0;

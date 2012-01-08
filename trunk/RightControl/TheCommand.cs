@@ -62,7 +62,7 @@ namespace FarNet.RightControl
 			}
 			catch (Exception e)
 			{
-				Far.Net.Message("Regular expression error:\r" + e.Message, "RightControl", MsgOptions.LeftAligned | MsgOptions.Warning);
+				Far.Net.Message("Regular expression error:\r" + e.Message, "RightControl", MessageOptions.LeftAligned | MessageOptions.Warning);
 				_Regex_ = new Regex(Settings.RegexDefault, RegexOptions.IgnorePatternWhitespace);
 			}
 		}

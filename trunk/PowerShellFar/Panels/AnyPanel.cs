@@ -141,7 +141,7 @@ namespace PowerShellFar
 			IMenu menu = HelpMenuCreate();
 			if (menu.Show())
 			{
-				if (menu.BreakKey == VKeyCode.F1)
+				if (menu.Key == new KeyData(KeyCode.F1))
 					ShowHelpForPanel();
 			}
 		}
@@ -262,7 +262,7 @@ namespace PowerShellFar
 			r.AutoAssignHotkeys = true;
 			r.Sender = this;
 			r.Title = "Help menu";
-			r.BreakKeys.Add(VKeyCode.F1);
+			r.AddKey(KeyCode.F1);
 
 			// args
 			PanelMenuEventArgs e = new PanelMenuEventArgs(r, CurrentFile, SelectedList);
@@ -321,18 +321,18 @@ namespace PowerShellFar
 		public event EventHandler<PanelMenuEventArgs> MenuCreating;
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		public override bool UIKeyPressed(int code, KeyStates state)
+		public override bool UIKeyPressed(int code, ControlKeyStates state)
 		{
 			UserWants = UserAction.None;
 			try
 			{
 				switch (code)
 				{
-					case VKeyCode.Enter:
+					case KeyCode.Enter:
 
 						switch (state)
 						{
-							case KeyStates.None:
+							case ControlKeyStates.None:
 								FarFile file = CurrentFile;
 								if (file == null)
 									break;
@@ -345,16 +345,16 @@ namespace PowerShellFar
 								UIOpenFile(file);
 								return true;
 
-							case KeyStates.Shift:
+							case ControlKeyStates.ShiftPressed:
 								UIAttributes();
 								return true;
 						}
 
 						break;
 
-					case VKeyCode.F1:
+					case KeyCode.F1:
 
-						if (state == KeyStates.None)
+						if (state == ControlKeyStates.None)
 						{
 							UIHelp();
 							return true;
@@ -362,11 +362,11 @@ namespace PowerShellFar
 
 						break;
 
-					case VKeyCode.F3:
+					case KeyCode.F3:
 
 						switch (state)
 						{
-							case KeyStates.None:
+							case ControlKeyStates.None:
 								if (CurrentFile == null)
 								{
 									UIViewAll();
@@ -374,16 +374,16 @@ namespace PowerShellFar
 								}
 								break;
 
-							case KeyStates.Shift:
+							case ControlKeyStates.ShiftPressed:
 								ShowMenu();
 								return true;
 						}
 
 						break;
 
-					case VKeyCode.PageDown:
+					case KeyCode.PageDown:
 
-						if (state == KeyStates.Control)
+						if (state == ControlKeyStates.LeftCtrlPressed)
 						{
 							UIOpenFileMembers();
 							return true;
@@ -391,9 +391,9 @@ namespace PowerShellFar
 
 						break;
 
-					case VKeyCode.A:
+					case KeyCode.A:
 
-						if (state == KeyStates.Control)
+						if (state == ControlKeyStates.LeftCtrlPressed)
 						{
 							UIAttributes();
 							return true;
@@ -401,9 +401,9 @@ namespace PowerShellFar
 
 						break;
 
-					case VKeyCode.G:
+					case KeyCode.G:
 
-						if (state == KeyStates.Control)
+						if (state == ControlKeyStates.LeftCtrlPressed)
 						{
 							UIApply();
 							return true;
@@ -411,9 +411,9 @@ namespace PowerShellFar
 
 						break;
 
-					case VKeyCode.M:
+					case KeyCode.M:
 
-						if (state == (KeyStates.Control | KeyStates.Shift))
+						if (state == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
 						{
 							UIMode();
 							return true;
@@ -421,16 +421,16 @@ namespace PowerShellFar
 
 						break;
 
-					case VKeyCode.R:
+					case KeyCode.R:
 
-						if (state == KeyStates.Control)
+						if (state == ControlKeyStates.LeftCtrlPressed)
 							UserWants = UserAction.CtrlR;
 
 						break;
 
-					case VKeyCode.S:
+					case KeyCode.S:
 
-						if (state == KeyStates.Control)
+						if (state == ControlKeyStates.LeftCtrlPressed)
 						{
 							SaveData();
 							return true;

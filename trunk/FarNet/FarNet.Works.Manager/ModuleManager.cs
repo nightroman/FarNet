@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -133,21 +133,6 @@ namespace FarNet.Works
 			it.LoadData((Hashtable)ReadSettings()[it.Id]);
 
 			Host.Instance.RegisterProxyCommand(it);
-			return it;
-		}
-		public override IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler)
-		{
-			if (handler == null)
-				throw new ArgumentNullException("handler");
-			if (attribute == null)
-				throw new ArgumentNullException("attribute");
-			if (string.IsNullOrEmpty(attribute.Name))
-				throw new ArgumentException("'attribute.Name' must not be empty.");
-
-			ProxyFiler it = new ProxyFiler(this, id, attribute, handler);
-			it.LoadData((Hashtable)ReadSettings()[it.Id]);
-
-			Host.Instance.RegisterProxyFiler(it);
 			return it;
 		}
 		public override IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)

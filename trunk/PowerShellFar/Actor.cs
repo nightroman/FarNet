@@ -261,7 +261,7 @@ Code (see configuration):
 Reason (see also $Error):
 {1}
 ", Settings.StartupCode, ex.Message);
-						Far.Net.Message(msg, Res.Me, MsgOptions.Warning | MsgOptions.Gui | MsgOptions.Ok);
+						Far.Net.Message(msg, Res.Me, MessageOptions.Warning | MessageOptions.Gui | MessageOptions.Ok);
 					}
 				}
 			}
@@ -320,7 +320,7 @@ See PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
 					Far.Net.Message(@"
 The startup code was invoked with errors.
 View the error list or the variable $Error.
-", "PowerShellFar startup errors", MsgOptions.Gui);
+", "PowerShellFar startup errors", MessageOptions.Gui);
 				}
 			}
 		}
@@ -400,7 +400,7 @@ Continue with this current location?
 {1}
 ", location, currentLocation);
 
-					switch (Far.Net.Message(message, Res.Me, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
+					switch (Far.Net.Message(message, Res.Me, MessageOptions.GuiOnMacro | MessageOptions.AbortRetryIgnore | MessageOptions.Warning | MessageOptions.LeftAligned))
 					{
 						case 1:
 							break;
@@ -446,7 +446,7 @@ Continue with this current directory?
 {1}
 ", directory, currentDirectory);
 
-					switch (Far.Net.Message(message, Res.Me, MsgOptions.GuiOnMacro | MsgOptions.AbortRetryIgnore | MsgOptions.Warning | MsgOptions.LeftAligned))
+					switch (Far.Net.Message(message, Res.Me, MessageOptions.GuiOnMacro | MessageOptions.AbortRetryIgnore | MessageOptions.Warning | MessageOptions.LeftAligned))
 					{
 						case 1:
 							currentDirectory = null;
@@ -505,7 +505,7 @@ Continue with this current directory?
 		/// Adds an action to all menus (Dialog, Editor, Panels, Viewer).
 		/// </summary>
 		/// <param name="text">Menu item text. Use ampersand to set a hotkey.</param>
-		/// <param name="handler">Action script block. Keep it simple, normally it should just call other commands.</param>
+		/// <param name="click">Action script block. Keep it simple, normally it should just call other commands.</param>
 		/// <remarks>
 		/// Actions can be added any time, but the best practice is to add them from the startup code.
 		/// <para>
@@ -513,15 +513,15 @@ Continue with this current directory?
 		/// </para>
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void Action(string text, EventHandler handler)
+		public void Action(string text, EventHandler<MenuEventArgs> click)
 		{
-			UI.ActorMenu.AddUserTool(text, handler, ModuleToolOptions.None);
+			UI.ActorMenu.AddUserTool(text, click, ModuleToolOptions.None);
 		}
 		/// <summary>
 		/// Adds an action to the specified menus (combination of Dialog, Editor, Panels, Viewer).
 		/// </summary>
 		/// <param name="text">Menu item text. Use ampersand to set a hotkey.</param>
-		/// <param name="handler">Action script block. Keep it simple, normally it should just call other commands.</param>
+		/// <param name="click">Action script block. Keep it simple, normally it should just call other commands.</param>
 		/// <param name="area">Where this action should be available in a menu: combination of Dialog, Editor, Panels, Viewer.</param>
 		/// <remarks>
 		/// Actions can be added any time, but the best practice is to add them from the startup code.
@@ -530,9 +530,9 @@ Continue with this current directory?
 		/// </para>
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void Action(string text, EventHandler handler, ModuleToolOptions area)
+		public void Action(string text, EventHandler<MenuEventArgs> click, ModuleToolOptions area)
 		{
-			UI.ActorMenu.AddUserTool(text, handler, area);
+			UI.ActorMenu.AddUserTool(text, click, area);
 		}
 		/// <summary>
 		/// Gets the editor or throws.

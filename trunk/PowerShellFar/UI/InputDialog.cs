@@ -34,18 +34,22 @@ namespace PowerShellFar.UI
 			// hotkeys
 			UIEdit.KeyPressed += delegate(object sender, KeyPressedEventArgs e)
 			{
-				switch (e.Code)
+				switch (e.Key.VirtualKeyCode)
 				{
 					case KeyCode.Tab:
 						// [Tab]
 						e.Ignore = true;
 						EditorKit.ExpandCode(UIEdit.Line);
 						return;
-					case KeyCode.F1 | KeyMode.Shift:
-						// [ShiftF1]
-						e.Ignore = true;
-						Help.ShowHelpForContext();
-						return;
+					case KeyCode.F1:
+						if (e.Key.IsShift())
+						{
+							// [ShiftF1]
+							e.Ignore = true;
+							Help.ShowHelpForContext();
+							return;
+						}
+						break;
 				}
 			};
 		}

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2011 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -162,18 +162,6 @@ namespace FarNet
 		/// </remarks>
 		public abstract IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
 		/// <summary>
-		/// Registers the file handler invoked for a file. See <see cref="ModuleFilerEventArgs"/>.
-		/// </summary>
-		/// <param name="id">Unique filer ID.</param>
-		/// <param name="handler">Filer handler.</param>
-		/// <param name="attribute">Filer attribute.</param>
-		/// <remarks>
-		/// NOTE: Consider to implement the <see cref="ModuleFiler"/> instead.
-		/// Dynamic registration is not recommended for standard scenarios.
-		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
-		/// </remarks>
-		public abstract IModuleFiler RegisterModuleFiler(Guid id, ModuleFilerAttribute attribute, EventHandler<ModuleFilerEventArgs> handler);
-		/// <summary>
 		/// Registers the tool handler invoked from one of Far menus.
 		/// </summary>
 		/// <param name="id">Unique tool ID.</param>
@@ -331,7 +319,7 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Abstract parent of <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, <see cref="ModuleEditor"/>, and <see cref="ModuleFiler"/>.
+	/// Abstract parent of <see cref="ModuleTool"/>, <see cref="ModuleCommand"/>, <see cref="ModuleEditor"/>.
 	/// </summary>
 	public abstract class ModuleAction : BaseModuleItem
 	{
@@ -455,70 +443,6 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module filer action attribute.
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class ModuleFilerAttribute : ModuleActionAttribute
-	{
-		/// <include file='doc.xml' path='doc/FileMask/*'/>
-		public string Mask { get; set; }
-		/// <summary>
-		/// Tells that the filer also creates files.
-		/// </summary>
-		public bool Creates { get; set; }
-	}
-
-	/// <summary>
-	/// Module filer action event arguments.
-	/// </summary>
-	/// <remarks>
-	/// A handler is called to open a <see cref="Panel"/> which emulates a file system based on a file.
-	/// If a file is unknown a handler should do nothing.
-	/// </remarks>
-	public sealed class ModuleFilerEventArgs : EventArgs
-	{
-		/// <summary>
-		/// Full name of a file including the path.
-		/// If it is empty then a handler is called to create a new file [ShiftF1].
-		/// In any case a handler opens <see cref="Panel"/> or ignores this call.
-		/// </summary>
-		public string Name { get; set; }
-		/// <summary>
-		/// Data from the beginning of the file used to detect the file type.
-		/// Use this stream in a handler only or copy the data for later use.
-		/// </summary>
-		public Stream Data { get; set; }
-		/// <summary>
-		/// Combination of the operation mode flags.
-		/// </summary>
-		public ExplorerModes Mode { get; set; }
-	}
-
-	/// <summary>
-	/// A module filer action.
-	/// </summary>
-	/// <remarks>
-	/// The <see cref="Invoke"/> method has to be implemented.
-	/// <para>
-	/// It is mandatory to use <see cref="ModuleFilerAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
-	/// The optional default file mask is defined as <see cref="ModuleFilerAttribute.Mask"/>.
-	/// </para>
-	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
-	/// </remarks>
-	public abstract class ModuleFiler : ModuleAction
-	{
-		/// <summary>
-		/// Filer handler called when a file is opened.
-		/// </summary>
-		/// <remarks>
-		/// It is up to the module how to process a file.
-		/// But usually filers represent file data in a panel,
-		/// so that this method is used to open and configure a panel (<see cref="Panel"/>).
-		/// </remarks>
-		public abstract void Invoke(object sender, ModuleFilerEventArgs e);
-	}
-
-	/// <summary>
 	/// Module tool options, combination of flags.
 	/// </summary>
 	/// <remarks>
@@ -586,7 +510,7 @@ namespace FarNet
 	/// Arguments of a module tool event.
 	/// </summary>
 	/// <remarks>
-	/// This event is normally called from the Far plugin, disk or configuration menus.
+	/// This event is called from plugin, disk or configuration menus.
 	/// </remarks>
 	public sealed class ModuleToolEventArgs : EventArgs
 	{
@@ -598,6 +522,10 @@ namespace FarNet
 		/// Tells to ignore results, for example when a configuration dialog is canceled.
 		/// </summary>
 		public bool Ignore { get; set; }
+		/// <summary>
+		/// Gets true if the event is called from the left disk menu.
+		/// </summary>
+		public bool IsLeft { get; set; }
 	}
 
 	/// <summary>
@@ -633,8 +561,6 @@ namespace FarNet
 		///
 		Editor,
 		///
-		Filer,
-		///
 		Tool
 	}
 
@@ -646,7 +572,7 @@ namespace FarNet
 	/// These representation interfaces are not directly related to action classes or handlers, they only represent them.
 	/// <para>
 	/// Action representations can be requested by their IDs by
-	/// <see cref="IFar.GetModuleCommand"/>, <see cref="IFar.GetModuleFiler"/>, and <see cref="IFar.GetModuleTool"/>.
+	/// <see cref="IFar.GetModuleCommand"/> and <see cref="IFar.GetModuleTool"/>.
 	/// </para>
 	/// </remarks>
 	public interface IModuleAction
@@ -733,37 +659,6 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module filer runtime representation.
-	/// </summary>
-	/// <remarks>
-	/// It represents an auto registered <see cref="ModuleFiler"/> or a filer registered by <see cref="IModuleManager.RegisterModuleFiler"/>.
-	/// It can be accessed by <see cref="IFar.GetModuleFiler"/> from any module.
-	/// </remarks>
-	public interface IModuleFiler : IModuleAction
-	{
-		/// <summary>
-		/// Processes the filer event.
-		/// </summary>
-		void Invoke(object sender, ModuleFilerEventArgs e);
-		/// <summary>
-		/// Gets the file mask.
-		/// </summary>
-		string Mask { get; }
-		/// <summary>
-		/// Gets true if the filer also creates files.
-		/// </summary>
-		bool Creates { get; }
-		/// <summary>
-		/// Gets the default file mask.
-		/// </summary>
-		string DefaultMask { get; }
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		void ResetMask(string value);
-	}
-
-	/// <summary>
 	/// Module tool runtime representation.
 	/// </summary>
 	/// <remarks>
@@ -781,17 +676,9 @@ namespace FarNet
 		/// </summary>
 		ModuleToolOptions Options { get; }
 		/// <summary>
-		/// Gets the menu hotkey.
-		/// </summary>
-		string Hotkey { get; }
-		/// <summary>
 		/// Gets the default tool options.
 		/// </summary>
 		ModuleToolOptions DefaultOptions { get; }
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		void ResetHotkey(string value);
 		/// <summary>
 		/// For internal use.
 		/// </summary>

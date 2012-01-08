@@ -24,66 +24,6 @@ namespace PowerShellFar.Commands
 		SwitchParameter _AutoSelect;
 		bool _setAutoSelect;
 		[Parameter()]
-		public string Filter
-		{
-			get { return _Filter; }
-			set
-			{
-				_Filter = value;
-				_setFilter = true;
-			}
-		}
-		string _Filter;
-		bool _setFilter;
-		[Parameter()]
-		public string FilterHistory
-		{
-			get { return _FilterHistory; }
-			set
-			{
-				_FilterHistory = value;
-				_setFilterHistory = true;
-			}
-		}
-		string _FilterHistory;
-		bool _setFilterHistory;
-		[Parameter()]
-		public int FilterKey
-		{
-			get { return _FilterKey; }
-			set
-			{
-				_FilterKey = value;
-				_setFilterKey = true;
-			}
-		}
-		int _FilterKey;
-		bool _setFilterKey;
-		[Parameter()]
-		public PatternOptions FilterOptions
-		{
-			get { return _FilterOptions; }
-			set
-			{
-				_FilterOptions = value;
-				_setFilterOptions = true;
-			}
-		}
-		PatternOptions _FilterOptions;
-		bool _setFilterOptions;
-		[Parameter()]
-		public SwitchParameter FilterRestore
-		{
-			get { return _FilterRestore; }
-			set
-			{
-				_FilterRestore = value;
-				_setFilterRestore = true;
-			}
-		}
-		SwitchParameter _FilterRestore;
-		bool _setFilterRestore;
-		[Parameter()]
 		public string Incremental
 		{
 			get { return _Incremental; }
@@ -157,16 +97,6 @@ namespace PowerShellFar.Commands
 
 			if (_setAutoSelect)
 				menu.AutoSelect = _AutoSelect;
-			if (_setFilter)
-				menu.Filter = _Filter;
-			if (_setFilterHistory)
-				menu.FilterHistory = _FilterHistory;
-			if (_setFilterKey)
-				menu.FilterKey = _FilterKey;
-			if (_setFilterOptions)
-				menu.FilterOptions = _FilterOptions;
-			if (_setFilterRestore)
-				menu.FilterRestore = _FilterRestore;
 			if (_setIncremental)
 				menu.Incremental = _Incremental;
 			if (_setIncrementalOptions)

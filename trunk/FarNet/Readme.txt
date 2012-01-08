@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 4.6.1
-Release  : 2012-01-01
+Version  : 5.0.0
+Release  : 2012-01-08
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -20,7 +20,7 @@ tiny pieces of boilerplate framework code.
 = PREREQUISITES =
 
 
- - Far Manager 2.0.1807
+ - Far Manager 3.0.0
  - .NET Framework 3.5 or 4.0
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
@@ -95,8 +95,8 @@ Normally the core discovers module changes and updates the cache itself. In
 rare cases the cache may have to be removed manually and the core restarted.
 Note that data of removed modules are removed from the cache automatically.
 
-The module cache file:
-%LOCALAPPDATA%\Far Manager\FarNet\Cache.binary
+The module cache file by default:
+%LOCALAPPDATA%\Far Manager\Profile\FarNet\Cache.binary
 
 
 = CONFIGURATION =
@@ -121,15 +121,17 @@ system ID: 0xcd. The second argument is the module prefix, colon and command.
 For asynchronous steps and jobs the argument should start with one and two
 colons respectively.
 
-Create and use in macros the macro constant FarNet:
+FarNet ID is "10435532-9BB3-487B-A045-B0E6ECAAB6BC". It can be used directly or
+as a constant: import FarNet.farconfig (Far.exe /import FarNet.farconfig):
 
-	use the PowerShellFar command:
-		>: $Far.Macro.InstallConstant('FarNet', 0xcd)
-
-	or use the .reg file:
-		Windows Registry Editor Version 5.00
-		[HKEY_CURRENT_USER\Software\Far2\KeyMacros\Consts]
-		"FarNet"=dword:000000cd
+	<?xml version="1.0" encoding="UTF-8" ?>
+	<farconfig version="3.0.2350">
+		<macro>
+			<constants>
+				<constant name="FarNet" value="10435532-9BB3-487B-A045-B0E6ECAAB6BC" type="text" />
+			</constants>
+		</macro>
+	</farconfig>
 
 SYNTAX AND DETAILS
 
@@ -261,4 +263,4 @@ After updating of a FarNet module this module cannot start or works funny.
 
 SOLUTION
 Try again after removing the FarNet module cache:
-%LOCALAPPDATA%\Far Manager\FarNet\cache.binary
+%LOCALAPPDATA%\Far Manager\Profile\FarNet\cache.binary

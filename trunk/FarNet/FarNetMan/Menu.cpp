@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -27,34 +27,34 @@ Menu::!Menu()
 	Unlock();
 }
 
-int* Menu::CreateBreakKeys()
+FarKey* Menu::CreateBreakKeys()
 {
-	int* r = NULL;
+	FarKey* r = nullptr;
 	int nKey = _keys.Count;
 	if (nKey > 0)
 	{
-		r = new int[nKey + 1];
+		r = new FarKey[nKey + 1];
 		int i = 0;
-		for each(int k in _keys)
-			r[i++] = k;
-		r[i] = 0;
+		for each(KeyData^ k in _keys)
+		{
+			r[i].VirtualKeyCode = (WORD)k->VirtualKeyCode;
+			r[i].ControlKeyState = (DWORD)k->ControlKeyState;
+			++i;
+		}
+		r[i].VirtualKeyCode = 0;
+		r[i].ControlKeyState = 0;
 	}
 	return r;
 }
 
 int Menu::Flags()
 {
-	int r = FMENU_USEEXT;
-	if (ShowAmpersands)
-		r |= FMENU_SHOWAMPERSAND;
-	if (WrapCursor)
-		r |= FMENU_WRAPMODE;
-	if (AutoAssignHotkeys)
-		r |= FMENU_AUTOHIGHLIGHT;
-	if (ReverseAutoAssign)
-		r |= FMENU_REVERSEAUTOHIGHLIGHT;
-	if (ChangeConsoleTitle)
-		r |= FMENU_CHANGECONSOLETITLE;
+	int r = 0;
+	if (AutoAssignHotkeys) r |= FMENU_AUTOHIGHLIGHT;
+	if (ChangeConsoleTitle) r |= FMENU_CHANGECONSOLETITLE;
+	if (ReverseAutoAssign) r |= FMENU_REVERSEAUTOHIGHLIGHT;
+	if (ShowAmpersands) r |= FMENU_SHOWAMPERSAND;
+	if (WrapCursor) r |= FMENU_WRAPMODE;
 	return r;
 }
 
@@ -90,22 +90,21 @@ void Menu::Unlock()
 	_bottom = 0;
 }
 
-FarMenuItemEx* Menu::CreateItems()
+FarMenuItem* Menu::CreateItems()
 {
 	int n = 0;
-	FarMenuItemEx* r = new struct FarMenuItemEx[_items->Count];
+	FarMenuItem* r = new struct FarMenuItem[_items->Count];
+	memset(r, 0, sizeof(FarMenuItem) * _items->Count);
 	for each(FarItem^ item1 in _items)
 	{
-		FarMenuItemEx& item2 = r[n];
+		FarMenuItem& item2 = r[n];
 		item2.Text = NewChars(item1->Text);
-		item2.AccelKey = 0;
-		item2.Reserved = 0;
 		++n;
 	}
 	return r;
 }
 
-void Menu::DeleteItems(FarMenuItemEx* items)
+void Menu::DeleteItems(FarMenuItem* items)
 {
 	if (items)
 	{
@@ -115,7 +114,7 @@ void Menu::DeleteItems(FarMenuItemEx* items)
 	}
 }
 
-void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* title, const wchar_t* bottom, const wchar_t* help)
+void Menu::ShowMenu(FarMenuItem* items, const FarKey* breaks, const wchar_t* title, const wchar_t* bottom, const wchar_t* help)
 {
 	// validate X, Y to avoid crashes and out of screen
 	int x = _x < 0 ? -1 : _x < 2 ? 2 : _x;
@@ -136,20 +135,15 @@ void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* titl
 	{
 		// source and destination
 		FarItem^ item1 = _items[i];
-		FarMenuItemEx& item2 = items[i];
+		FarMenuItem& item2 = items[i];
 
 		// common flags
 		item2.Flags = 0;
-		if (item1->Checked)
-			item2.Flags |= MIF_CHECKED;
-		if (item1->Disabled)
-			item2.Flags |= MIF_DISABLE;
-		if (item1->Grayed)
-			item2.Flags |= MIF_GRAYED;
-		if (item1->Hidden)
-			item2.Flags |= MIF_HIDDEN;
-		if (item1->IsSeparator)
-			item2.Flags |= MIF_SEPARATOR;
+		if (item1->Checked) item2.Flags |= MIF_CHECKED;
+		if (item1->Disabled) item2.Flags |= MIF_DISABLE;
+		if (item1->Grayed) item2.Flags |= MIF_GRAYED;
+		if (item1->Hidden) item2.Flags |= MIF_HIDDEN;
+		if (item1->IsSeparator) item2.Flags |= MIF_SEPARATOR;
 	}
 
 	// select an item (same as listbox!)
@@ -159,9 +153,10 @@ void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* titl
 		items[_selected].Flags |= MIF_SELECTED;
 
 	// show
-	int bc;
+	int bc = -1;
 	_selected = Info.Menu(
-		Info.ModuleNumber,
+		&MainGuid,
+		&MainGuid,
 		x,
 		y,
 		MaxHeight,
@@ -173,53 +168,56 @@ void Menu::ShowMenu(FarMenuItemEx* items, const int* breaks, const wchar_t* titl
 		&bc,
 		(const FarMenuItem*)items,
 		_items->Count);
-	_breakKey = bc < 0 ? 0 : _keys[bc];
+
+	_keyIndex = bc;
 }
 
 bool Menu::Show()
 {
-	if (_createdItems)
+	bool lock = _createdItems == nullptr;
+	if (lock)
+		Lock();
+	
+	try
 	{
-		ShowMenu(_createdItems, _createdBreaks, _title, _bottom, _help);
-	}
-	else
-	{
-		FarMenuItemEx* items = CreateItems();
-		int* breaks = CreateBreakKeys();
-		PIN_NS(pinTitle, Title);
-		PIN_NS(pinBottom, Bottom);
-		PIN_NS(pinHelpTopic, HelpTopic);
-		try
+		for(;;)
 		{
-			ShowMenu(items, breaks, pinTitle, pinBottom, pinHelpTopic);
-		}
-		finally
-		{
-			DeleteItems(items);
-			delete breaks;
+			ShowMenu(_createdItems, _createdBreaks, _title, _bottom, _help);
+
+			// check the key before the selected, it may work in empty menus with nothing selected
+			if (_keyIndex >= 0)
+			{
+				if (_handlers[_keyIndex])
+				{
+					MenuEventArgs e((_selected >= 0 ? _items[_selected] : nullptr));
+					_handlers[_keyIndex]((Sender ? Sender : this), %e);
+					if (e.Ignore || e.Restart)
+						continue;
+				}
+				return true;
+			}
+
+			// check selected
+			if (_selected < 0)
+				return false;
+			
+			// call click (if not a break key!)
+			FarItem^ item = _items[_selected];
+			if (item->Click)
+			{
+				MenuEventArgs e(item);
+				item->Click((Sender ? Sender : this), %e);
+				if (e.Ignore || e.Restart)
+					continue;
+			}
+
+			return true;
 		}
 	}
-
-	//! When nothing is selected (e.g. empty menu) break key still may work
-
-	// check selected
-	if (_selected < 0)
-		return false;
-
-	// check break key
-	if (_breakKey > 0)
-		return true;
-
-	// call click (if not a break key!)
-	FarItem^ item = _items[_selected];
-	if (item->Click)
+	finally
 	{
-		if (Sender)
-			item->Click(Sender, nullptr);
-		else
-			item->Click(item, nullptr);
+		if (lock)
+			Unlock();
 	}
-
-	return true;
 }
 }

@@ -23,7 +23,6 @@ namespace PowerShellFar
 		{
 			CurrentLocation = "*";
 			SortMode = PanelSortMode.Unsorted;
-			UseFilter = true;
 		}
 		///
 		public ObjectPanel() : this(new ObjectExplorer()) { }

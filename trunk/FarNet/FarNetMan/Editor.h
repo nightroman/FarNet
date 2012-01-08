@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -135,7 +135,7 @@ internal:
 private:
 	void AssertClosed();
 	bool GetBoolOption(int option, Nullable<bool> value);
-	void SetBoolOption(int option, bool value);
+	void SetBoolOption(EDITOR_SETPARAMETER_TYPES option, bool value);
 private:
 	int _id;
 	String^ _FileName;

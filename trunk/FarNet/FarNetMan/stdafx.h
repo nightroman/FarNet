@@ -45,6 +45,7 @@ using namespace System;
 #endif
 
 extern PluginStartupInfo Info;
+extern const GUID MainGuid;
 
 #include "Log.h"
 #include "Utils.h"

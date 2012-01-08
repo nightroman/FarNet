@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -198,20 +198,20 @@ namespace FarNet.Forms
 	public sealed class KeyPressedEventArgs : AnyEventArgs
 	{
 		/// <param name="control">Current control.</param>
-		/// <param name="code">Internal key code.</param>
-		public KeyPressedEventArgs(IControl control, int code)
+		/// <param name="key">The key.</param>
+		public KeyPressedEventArgs(IControl control, KeyInfo key)
 			: base(control)
 		{
-			_code = code;
+			_key = key;
 		}
 		/// <summary>
-		/// Internal key code. <see cref="KeyCode"/>
+		/// The key.
 		/// </summary>
-		public int Code
+		public KeyInfo Key
 		{
-			get { return _code; }
+			get { return _key; }
 		}
-		int _code;
+		KeyInfo _key;
 		/// <summary>
 		/// Ignore further processing.
 		/// </summary>

@@ -16,7 +16,6 @@
 .Link
 	Profile-.ps1 - how to add a script to the "User menu".
 	Install-Macro-.ps1 - how to add macros.
-	Help: Autoloaded functions
 #>
 
 param

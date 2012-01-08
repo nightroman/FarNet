@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -46,7 +46,7 @@ ref class Panel2 : public Panel1, Works::IPanelWorks
 {
 internal:
 	void Free();
-	OpenPluginInfo& Make();
+	OpenPanelInfo& Make();
 public: // IPanel
 	virtual property bool RealNames { bool get() override; void set(bool value) override; }
 	virtual property bool UseSortGroups { bool get() override; void set(bool value) override; }
@@ -60,6 +60,7 @@ public: // IPanel
 	virtual void Push() override;
 public: // IPanelWorks
 	FPPI_FLAG(CompareFatTime);
+	FPPI_FLAG(NoFilter);
 	FPPI_FLAG(PreserveCase);
 	FPPI_FLAG(RawSelection);
 	FPPI_FLAG(RealNamesDeleteFiles);
@@ -68,7 +69,6 @@ public: // IPanelWorks
 	FPPI_FLAG(RealNamesMakeDirectory);
 	FPPI_FLAG(RightAligned);
 	FPPI_FLAG(ShowNamesOnly);
-	FPPI_FLAG(UseFilter);
 	FPPI_PROP(PanelViewMode, StartViewMode, m->StartPanelMode = int(_StartViewMode) + 0x30);
 	FPPI_TEXT(CurrentLocation, CurDir);
 	FPPI_TEXT(FormatName, Format);
@@ -89,13 +89,13 @@ public:
 	virtual void PostData(Object^ data);
 	virtual void PostFile(FarFile^ file);
 	virtual void PostName(String^ name);
-	virtual void SetKeyBar(array<String^>^ labels);
-	virtual void SetKeyBarAlt(array<String^>^ labels);
-	virtual void SetKeyBarAltShift(array<String^>^ labels);
-	virtual void SetKeyBarCtrl(array<String^>^ labels);
-	virtual void SetKeyBarCtrlAlt(array<String^>^ labels);
-	virtual void SetKeyBarCtrlShift(array<String^>^ labels);
-	virtual void SetKeyBarShift(array<String^>^ labels);
+	virtual void SetKeyBar(array<String^>^ /*labels*/){};//??????
+	virtual void SetKeyBarAlt(array<String^>^ /*labels*/){};
+	virtual void SetKeyBarAltShift(array<String^>^ /*labels*/){};
+	virtual void SetKeyBarCtrl(array<String^>^ /*labels*/){};
+	virtual void SetKeyBarCtrlAlt(array<String^>^ /*labels*/){};
+	virtual void SetKeyBarCtrlShift(array<String^>^ /*labels*/){};
+	virtual void SetKeyBarShift(array<String^>^ /*labels*/){};
 	virtual void SetPlan(PanelViewMode mode, PanelPlan^ plan);
 internal:
 	Panel2(Panel^ panel, Explorer^ explorer);
@@ -126,7 +126,7 @@ private:
 	static void Make12Strings(wchar_t** dst, array<String^>^ src);
 private:
 	Explorer^ _MyExplorer;
-	OpenPluginInfo* m;
+	OpenPanelInfo* m;
 	bool _FarStartSortOrder;
 	bool _RealNames;
 	bool _UseSortGroups;
@@ -134,12 +134,12 @@ private:
 	PanelHighlighting _Highlighting;
 	array<DataItem^>^ _InfoItems;
 	array<PanelPlan^>^ _Plans;
-	array<String^>^ _keyBar;
-	array<String^>^ _keyBarAlt;
-	array<String^>^ _keyBarAltShift;
-	array<String^>^ _keyBarCtrl;
-	array<String^>^ _keyBarCtrlAlt;
-	array<String^>^ _keyBarCtrlShift;
-	array<String^>^ _keyBarShift;
+	//array<String^>^ _keyBar; //?????
+	//array<String^>^ _keyBarAlt;
+	//array<String^>^ _keyBarAltShift;
+	//array<String^>^ _keyBarCtrl;
+	//array<String^>^ _keyBarCtrlAlt;
+	//array<String^>^ _keyBarCtrlShift;
+	//array<String^>^ _keyBarShift;
 };
 }

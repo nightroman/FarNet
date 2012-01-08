@@ -221,7 +221,7 @@ namespace PowerShellFar
 			// ask
 			if (args.UI && (Far.Net.Confirmations & FarConfirmations.Delete) != 0)
 			{
-				if (Far.Net.Message("Delete selected members", Res.Delete, MsgOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
+				if (Far.Net.Message("Delete selected members", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
 				{
 					args.Result = JobResult.Ignore;
 					return;

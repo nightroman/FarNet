@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -15,7 +15,7 @@ ref class Viewer0
 internal:
 	static array<IViewer^>^ Viewers();
 	static Viewer^ GetCurrentViewer();
-	static int AsProcessViewerEvent(int type, void* param);
+	static int AsProcessViewerEvent(const ProcessViewerEventInfo* info);
 internal:
 	// Viewer waiting for ID
 	static Viewer^ _viewerWaiting;

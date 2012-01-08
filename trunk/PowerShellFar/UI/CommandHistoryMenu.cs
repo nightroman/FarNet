@@ -21,15 +21,11 @@ namespace PowerShellFar.UI
 			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuCommandHistory");
 			_menu.SelectLast = true;
 			_menu.Title = "PowerShellFar History";
-
-			_menu.Filter = filter;
-			_menu.FilterHistory = "PowerShellFarFilterHistory";
-			_menu.FilterRestore = true;
 			_menu.IncrementalOptions = PatternOptions.Substring;
 
-			_menu.AddKey(KeyMode.Ctrl | KeyCode.Enter);
-			_menu.AddKey(KeyMode.Ctrl | 'R', OnDelete);
-			_menu.AddKey(KeyCode.Del, OnDelete);
+			_menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
+			_menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed, OnDelete);
+			_menu.AddKey(KeyCode.Delete, ControlKeyStates.None, OnDelete);
 		}
 
 		void ResetItems(string[] lines)
@@ -65,7 +61,7 @@ namespace PowerShellFar.UI
 				return null;
 
 			// selected
-			Alternative = _menu.BreakKey == (KeyMode.Ctrl | KeyCode.Enter);
+			Alternative = _menu.Key == new KeyData(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
 			return _menu.Items[_menu.Selected].Text;
 		}
 	}

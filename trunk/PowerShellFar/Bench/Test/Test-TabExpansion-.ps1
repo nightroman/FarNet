@@ -78,7 +78,7 @@ Test 'Name = Split-Path -l' '-l' { $_ -contains '-Leaf' -and $_ -contains '-Lite
 
 ### scripts, their aliases and parameters
 Test '' 'pd' { $_ -eq 'Panel-DbData-' }
-Test '' 'Panel-Ma' { $_ -eq 'Panel-Macro-.ps1' }
+Test '' 'Panel-Bits' { $_ -eq 'Panel-BitsTransfer-.ps1' }
 Test 'pd -col' '-col' { $_ -eq '-Columns' }
 Test 'Panel-DbData- -col' '-col' { $_ -eq '-Columns' }
 
@@ -118,7 +118,7 @@ Test '' 'gc' { $_ -eq 'Get-Content' }
 
 ### full path
 Test '' 'c:\prog*\common' { $_ -eq 'C:\Program Files\Common Files' }
-Test '' 'HKCU:\Software\Far2\K' { $_ -eq 'HKCU:\Software\Far2\KeyMacros' }
+Test '' 'HKCU:\Cons' { $_ -eq 'HKCU:\Console' }
 
 ### with prefixes
 Test '' ';({|$hos' { $_ -eq ';({|$Host' }

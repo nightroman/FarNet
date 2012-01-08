@@ -97,7 +97,7 @@ namespace PowerShellFar.UI
 					filePath = My.PathEx.Combine(directory, filePath);
 
 				if (File.Exists(filePath))
-					if (Far.Net.Message("File " + filePath + " exists. Continue?", "Confirm", MsgOptions.YesNo) != 0)
+					if (Far.Net.Message("File " + filePath + " exists. Continue?", "Confirm", MessageOptions.YesNo) != 0)
 						return;
 
 				const string code = "$args[0] | Export-Clixml -Path $args[1] -Encoding $args[2] -Force -ErrorAction Stop";

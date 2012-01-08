@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -9,7 +9,7 @@ Copyright (c) 2005 FarNet Team
 ref class Wrap
 {
 public:
-	static int GetEndKeyCode();
+	static WindowKind WindowGetKind();
 	static int GetEndPalette();
 };
 
@@ -52,7 +52,7 @@ private:
 enum FileType
 {
 	ShownFile = FCTL_GETPANELITEM,
-	SelectedFile = FCTL_GETSELECTEDPANELITEM
+	SelectedFile = FCTL_GETSELECTEDPANELITEM,
 };
 #pragma pop_macro("FCTL_GETPANELITEM")
 #pragma pop_macro("FCTL_GETSELECTEDPANELITEM")
@@ -62,9 +62,9 @@ class AutoPluginPanelItem
 public:
 	AutoPluginPanelItem(HANDLE handle, int index, FileType type);
 	~AutoPluginPanelItem();
-	const PluginPanelItem& Get() const { return *m; }
+	const PluginPanelItem& Get() const { return *m.Item; }
 private:
-	PluginPanelItem* m;
+	FarGetPluginPanelItem m;
 	char mBuffer[1024];
 	void operator=(const AutoPluginPanelItem&) {}
 };

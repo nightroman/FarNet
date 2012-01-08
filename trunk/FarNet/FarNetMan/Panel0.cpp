@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -17,7 +17,7 @@ static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, ILis
 	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
 
 	//? Far bug: alone dots has UserData = 0 no matter what was written there; so check the dots name
-	if (itemsNumber == 1 && panelItem[0].UserData == 0 && wcscmp(panelItem[0].FindData.lpwszFileName, L"..") == 0)
+	if (itemsNumber == 1 && panelItem[0].UserData == 0 && wcscmp(panelItem[0].FileName, L"..") == 0)
 		return r;
 
 	// pure case
@@ -36,7 +36,7 @@ static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, ILis
 		{
 			r->Add(files[fi]);
 			if (names)
-				names->Add(gcnew String(panelItem[i].FindData.lpwszAlternateFileName));
+				names->Add(gcnew String(panelItem[i].AlternateFileName));
 		}
 	}
 
@@ -47,10 +47,12 @@ static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, ILis
 //! 090712. Allocation by chunks was originally used. But it turns out it does not improve
 //! performance much (tested for 200000+ files). On the other hand allocation of large chunks
 //! may fail due to memory fragmentation more frequently.
-int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pItemsNumber, int opMode)
+int Panel0::AsGetFindData(GetFindDataInfo* info)
 {
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	ExplorerModes mode = (ExplorerModes)opMode;
+	info->StructSize = sizeof(*info);
+
+	Panel2^ pp = _panels[(int)info->hPanel];
+	ExplorerModes mode = (ExplorerModes)info->OpMode;
 	const bool canExploreLocation = pp->Host->Explorer->CanExploreLocation;
 
 	Log::Source->TraceInformation("GetFindDataW Mode='{0}' Location='{1}'", mode, pp->CurrentLocation);
@@ -61,13 +63,13 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		if (pp->_voidUpdateFiles)
 		{
 			Log::Source->TraceInformation("GetFindDataW fake empty panel");
-			(*pItemsNumber) = 0;
-			(*pPanelItem) = NULL;
+			info->ItemsNumber = 0;
+			info->PanelItem = 0;
 			return 1;
 		}
 
 		// the Find mode
-		const bool isFind = 0 != (opMode & OPM_FIND);
+		const bool isFind = 0 != (info->OpMode & OPM_FIND);
 		if (isFind && !canExploreLocation)
 			return 0;
 
@@ -84,17 +86,17 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 		int nItem = pp->Files->Count;
 		if (pp->HasDots)
 			++nItem;
-		(*pItemsNumber) = nItem;
+		info->ItemsNumber = nItem;
 		if (nItem == 0)
 		{
-			(*pPanelItem) = NULL;
+			info->PanelItem = 0;
 			return true;
 		}
 
 		// alloc all
-		(*pPanelItem) = new PluginPanelItem[nItem];
-		memset((*pPanelItem), 0, nItem * sizeof(PluginPanelItem));
-		Log::Source->TraceInformation("GetFindDataW Address='{0:x}'", (long)(*pPanelItem));
+		info->PanelItem = new PluginPanelItem[nItem];
+		memset(info->PanelItem, 0, nItem * sizeof(PluginPanelItem));
+		Log::Source->TraceInformation("GetFindDataW Address='{0:x}'", (long)info->PanelItem);
 
 		// add dots
 		int itemIndex = -1, fileIndex = -1;
@@ -103,9 +105,9 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 			++itemIndex;
 			wchar_t* dots = new wchar_t[3];
 			dots[0] = dots[1] = '.'; dots[2] = '\0';
-			PluginPanelItem& p = (*pPanelItem)[0];
+			PluginPanelItem& p = info->PanelItem[0];
 			p.UserData = (DWORD_PTR)(-1);
-			p.FindData.lpwszFileName = dots;
+			p.FileName = dots;
 			p.Description = NewChars(pp->Host->DotsDescription);
 		}
 
@@ -115,36 +117,35 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 			++itemIndex;
 			++fileIndex;
 
-			PluginPanelItem& p = (*pPanelItem)[itemIndex];
-			FAR_FIND_DATA& d = p.FindData;
+			PluginPanelItem& p = info->PanelItem[itemIndex];
 
 			// names
-			d.lpwszFileName = NewChars(file->Name);
+			p.FileName = NewChars(file->Name);
 			p.Description = NewChars(file->Description);
 			p.Owner = NewChars(file->Owner);
 
 			// alternate names are for QView and this is important
-			if (opMode == 0 && !canExploreLocation)
+			if (info->OpMode == 0 && !canExploreLocation)
 			{
 				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
 				Info.FSF->itoa(fileIndex, buf, 10);
 				int size = (int)wcslen(buf) + 1;
 				wchar_t* alternate = new wchar_t[size];
 				memcpy(alternate, buf, size * sizeof(wchar_t));
-				d.lpwszAlternateFileName = alternate;
+				p.AlternateFileName = alternate;
 			}
 			else
 			{
-				d.lpwszAlternateFileName = NULL;
+				p.AlternateFileName = 0;
 			}
 
 			// other
 			p.UserData = canExploreLocation ? -1 : fileIndex;
-			d.dwFileAttributes = (DWORD)file->Attributes;
-			d.nFileSize = file->Length;
-			d.ftCreationTime = DateTimeToFileTime(file->CreationTime);
-			d.ftLastWriteTime = DateTimeToFileTime(file->LastWriteTime);
-			d.ftLastAccessTime = DateTimeToFileTime(file->LastAccessTime);
+			p.FileAttributes = (DWORD)file->Attributes;
+			p.FileSize = file->Length;
+			p.CreationTime = DateTimeToFileTime(file->CreationTime);
+			p.LastWriteTime = DateTimeToFileTime(file->LastWriteTime);
+			p.LastAccessTime = DateTimeToFileTime(file->LastAccessTime);
 
 			// columns
 			System::Collections::ICollection^ columns = file->Columns;
@@ -177,7 +178,7 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 	}
 	catch(Exception^ e)
 	{
-		if ((opMode & (OPM_FIND | OPM_SILENT)) == 0)
+		if ((info->OpMode & (OPM_FIND | OPM_SILENT)) == 0)
 			Far::Net->ShowError("Getting panel files", e);
 		else
 			Log::TraceException(e);
@@ -186,44 +187,44 @@ int Panel0::AsGetFindData(HANDLE hPlugin, PluginPanelItem** pPanelItem, int* pIt
 	}
 }
 
-void Panel0::AsFreeFindData(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber)
+void Panel0::AsFreeFindData(const FreeFindDataInfo* info)
 {
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin]; //???? need? can it be static managed by Address -> Data map including Panel2^
-	Log::Source->TraceInformation("FreeFindDataW Address='{0:x}' Location='{1}'", (long)panelItem, pp->CurrentLocation);
+	Panel2^ pp = _panels[(int)info->hPanel]; //???? need? can it be static managed by Address -> Data map including Panel2^
+	Log::Source->TraceInformation("FreeFindDataW Address='{0:x}' Location='{1}'", (long)info->PanelItem, pp->CurrentLocation);
 
-	for(int i = itemsNumber; --i >= 0;)
+	for(int i = (int)info->ItemsNumber; --i >= 0;)
 	{
-		PluginPanelItem& item = panelItem[i];
+		PluginPanelItem& item = info->PanelItem[i];
 
 		delete[] item.Owner;
 		delete[] item.Description;
-		delete[] item.FindData.lpwszAlternateFileName;
-		delete[] item.FindData.lpwszFileName;
+		delete[] item.AlternateFileName;
+		delete[] item.FileName;
 
 		if (item.CustomColumnData)
 		{
-			for(int j = item.CustomColumnNumber; --j >= 0;)
+			for(int j = (int)item.CustomColumnNumber; --j >= 0;)
 				delete[] item.CustomColumnData[j];
 
 			delete[] item.CustomColumnData;
 		}
 	}
 
-	delete[] panelItem;
+	delete[] info->PanelItem;
 }
 
-int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
+int Panel0::AsSetDirectory(const SetDirectoryInfo* info)
 {
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	ExplorerModes mode = (ExplorerModes)opMode;
-	String^ directory = gcnew String(dir);
+	Panel2^ pp = _panels[(int)info->hPanel];
+	ExplorerModes mode = (ExplorerModes)info->OpMode;
+	String^ directory = gcnew String(info->Dir);
 
 	Log::Source->TraceInformation("SetDirectoryW Mode='{0}' Name='{1}'", mode, directory);
 
 	const bool canExploreLocation = pp->Host->Explorer->CanExploreLocation;
 
 	//! Silent but not Find is possible on CtrlQ scan
-	if (!canExploreLocation && 0 != (opMode & (OPM_FIND | OPM_SILENT)))
+	if (!canExploreLocation && 0 != (info->OpMode & (OPM_FIND | OPM_SILENT)))
 		return 0;
 
 	_inAsSetDirectory = true;
@@ -294,10 +295,12 @@ int Panel0::AsSetDirectory(HANDLE hPlugin, const wchar_t* dir, int opMode)
 
 //?? NYI: Parameter destPath can be changed, i.e. (*destPath) replaced.
 //?? NYI: Not used return value -1 (stopped by a user).
-int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int /*move*/, const wchar_t** destPath, int opMode) //???? move?
+int Panel0::AsGetFiles(GetFilesInfo* info) //???? move?
 {
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	ExplorerModes mode = (ExplorerModes)opMode;
+	info->StructSize = sizeof(*info);
+
+	Panel2^ pp = _panels[(int)info->hPanel];
+	ExplorerModes mode = (ExplorerModes)info->OpMode;
 
 	Log::Source->TraceInformation("GetFilesW Mode='{0}'", mode);
 
@@ -313,10 +316,10 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	List<String^>^ names;
 	if (!canExploreLocation)
 		names = gcnew List<String^>; //1
-	List<FarFile^> files = ItemsToFiles(canExploreLocation, pp->Files, names, panelItem, itemsNumber); //2
-	String^ destination = gcnew String((*destPath));
+	List<FarFile^> files = ItemsToFiles(canExploreLocation, pp->Files, names, info->PanelItem, (int)info->ItemsNumber); //2
+	String^ destination = gcnew String(info->DestPath);
 
-	for(int i = 0; i < itemsNumber; ++i)
+	for(int i = 0; i < (int)info->ItemsNumber; ++i)
 	{
 		String^ fileName = canExploreLocation
 			? Path::Combine(destination, files[i]->Name)
@@ -335,25 +338,27 @@ int Panel0::AsGetFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 }
 
 //! It is called on [F5], [F6] only from a native/plugin panel to a module panel.
-int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int move, const wchar_t* srcPath, int opMode)
+int Panel0::AsPutFiles(PutFilesInfo* info)
 {
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	ExplorerModes mode = (ExplorerModes)opMode;
+	info->StructSize = sizeof(*info);
+
+	Panel2^ pp = _panels[(int)info->hPanel];
+	ExplorerModes mode = (ExplorerModes)info->OpMode;
 
 	Log::Source->TraceInformation("PutFilesW Mode='{0}'", mode);
 
 	if (!pp->Host->Explorer->CanImportFiles)
 		return 0;
 
-	List<FarFile^>^ files = gcnew List<FarFile^>(itemsNumber);
-	for(int i = 0; i < itemsNumber; ++i)
-		files->Add(Panel1::ItemToFile(panelItem[i]));
+	List<FarFile^>^ files = gcnew List<FarFile^>((int)info->ItemsNumber);
+	for(int i = 0; i < (int)info->ItemsNumber; ++i)
+		files->Add(Panel1::ItemToFile(info->PanelItem[i]));
 
 	ImportFilesEventArgs args(
 		mode,
 		files,
-		move != 0,
-		srcPath ? gcnew String(srcPath) : String::Empty);
+		info->Move != 0,
+		info->SrcPath ? gcnew String(info->SrcPath) : String::Empty);
 
 	pp->Host->UIImportFiles(%args);
 
@@ -368,25 +373,25 @@ int Panel0::AsPutFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumb
 	// incomplete:
 
 	// drop selection flags
-	for(int i = itemsNumber; --i >= 0;)
-		panelItem[i].Flags &= ~PPIF_SELECTED;
+	for(int i = (int)info->ItemsNumber; --i >= 0;)
+		info->PanelItem[i].Flags &= ~PPIF_SELECTED;
 
 	// restore selection flags
 	for each(FarFile^ file in args.FilesToStay)
 	{
 		int index = args.Files->IndexOf(file);
-		if (index >= 0 && index < itemsNumber)
-			panelItem[index].Flags |= PPIF_SELECTED;
+		if (index >= 0 && index < (int)info->ItemsNumber)
+			info->PanelItem[index].Flags |= PPIF_SELECTED;
 	}
 
 	return -1;
 }
 
 //! It is called on move, too? I.e. is Move = Copy + Delete?
-int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsNumber, int opMode)
+int Panel0::AsDeleteFiles(const DeleteFilesInfo* info)
 {
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	ExplorerModes mode = (ExplorerModes)opMode;
+	Panel2^ pp = _panels[(int)info->hPanel];
+	ExplorerModes mode = (ExplorerModes)info->OpMode;
 
 	Log::Source->TraceInformation("DeleteFilesW Mode='{0}'", mode);
 
@@ -394,20 +399,20 @@ int Panel0::AsDeleteFiles(HANDLE hPlugin, PluginPanelItem* panelItem, int itemsN
 	if (!explorer->CanDeleteFiles)
 		return 0;
 
-	DeleteFilesEventArgs args(mode, ItemsToFiles(pp->Host->Explorer->CanExploreLocation, pp->Files, nullptr, panelItem, itemsNumber), false);
+	DeleteFilesEventArgs args(mode, ItemsToFiles(pp->Host->Explorer->CanExploreLocation, pp->Files, nullptr, info->PanelItem, (int)info->ItemsNumber), false);
 	pp->Host->UIDeleteFiles(%args);
 
 	return args.Result == JobResult::Ignore ? 0 : 1;
 }
 
-void Panel0::AsClosePlugin(HANDLE hPlugin)
+void Panel0::AsClosePanel(const ClosePanelInfo* info)
 {
 	Log::Source->TraceInformation("ClosePluginW");
 
 	// disconnect
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	Panel2^ pp = _panels[(int)info->hPanel];
 	pp->Free();
-	_panels[(int)(INT_PTR)hPlugin] = nullptr;
+	_panels[(int)info->hPanel] = nullptr;
 
 	// done for pushed
 	if (pp->_Pushed)
@@ -428,20 +433,18 @@ void Panel0::AsClosePlugin(HANDLE hPlugin)
 }
 
 //! It is called too often, log Verbose
-void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
+void Panel0::AsGetOpenPanelInfo(OpenPanelInfo* info)
 {
 	Log::Source->TraceEvent(TraceEventType::Verbose, 0, "GetOpenPluginInfoW");
+	info->StructSize = sizeof(*info);
 
 	// plugin panel
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	Panel2^ pp = _panels[(int)info->hPanel];
 
 	//! pushed case
 	//?? _091015_190130 Far calls this after Close(), perhaps a bug. How: push folder tree panel.
 	if (pp->IsPushed)
-	{
-		info->StructSize = sizeof(OpenPluginInfo);
 		return;
-	}
 
 	// trigger - to update info before making it for Far
 	if (!State::GetPanelInfo)
@@ -455,10 +458,10 @@ void Panel0::AsGetOpenPluginInfo(HANDLE hPlugin, OpenPluginInfo* info)
 }
 
 static bool _reenterOnRedrawing;
-int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
+int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 {
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
-	switch(id)
+	Panel2^ pp = _panels[(int)info->hPanel];
+	switch(info->Event)
 	{
 	case FE_BREAK:
 		{
@@ -486,7 +489,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 
 			if (pp->Host->WorksInvokingCommand(nullptr))
 			{
-				CommandLineEventArgs e(gcnew String((const wchar_t*)param));
+				CommandLineEventArgs e(gcnew String((const wchar_t*)info->Param));
 				Log::Source->TraceInformation("InvokingCommand: {0}", e.Command);
 
 				//! Try\catch in order to return exactly what the module returns.
@@ -512,7 +515,7 @@ int Panel0::AsProcessEvent(HANDLE hPlugin, int id, void* param)
 		{
 			Log::Source->TraceInformation("FE_CHANGEVIEWMODE");
 
-			ViewChangedEventArgs e(gcnew String((const wchar_t*)param));
+			ViewChangedEventArgs e(gcnew String((const wchar_t*)info->Param));
 			pp->Host->UIViewChanged(%e);
 		}
 		break;
@@ -653,23 +656,19 @@ KEY_NONE=INTERNAL_KEY_BASE_2+1,
 KEY_KILLFOCUS=INTERNAL_KEY_BASE_2+6,
 KEY_GOTFOCUS
 */
-int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
+int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)//??????
 {
-	// ignore PKF_PREPROCESS, Far 3 is going to drop it
-	if (key & PKF_PREPROCESS)
+	const INPUT_RECORD& ir = info->Rec;
+	if (ir.EventType != KEY_EVENT || ir.Event.KeyEvent.wVirtualKeyCode <= 7) //?????? what is 7?
 		return 0;
-
-	// filter out not really keys (to make events later?)
-	if (key >= Wrap::GetEndKeyCode())
-		return 0;
-
+	
 	//! mind rare case: panel is null: closed by [AltF12] + select folder
-	Panel2^ pp = _panels[(int)(INT_PTR)hPlugin];
+	Panel2^ pp = _panels[(int)info->hPanel];
 	if (!pp)
 		return 0;
 
 	// args, log
-	PanelKeyEventArgs e(key, (KeyStates)controlState);
+	KeyEventArgs e(KeyInfoFromInputRecord(ir));
 	Log::Source->TraceEvent(TraceEventType::Information, 0, "KeyPressed {0}", %e);
 
 	// 1. event; handlers work first of all
@@ -678,17 +677,17 @@ int Panel0::AsProcessKey(HANDLE hPlugin, int key, unsigned int controlState)
 		return 1;
 
 	// 2. method; default or custom virtual methods
-	if (pp->Host->UIKeyPressed(e.Code, e.State))
+	if (pp->Host->UIKeyPressed(e.Key->VirtualKeyCode, e.Key->CtrlAltShift()))
 		return 1;
 
 	// 3. escape; special not yet handled case
-	if (e.Code == VKeyCode::Escape && (e.State == KeyStates::None || e.State == KeyStates::Shift) && Far::Net->CommandLine->Length == 0)
+	if ((e.Key->Is(KeyCode::Escape) || e.Key->IsShift(KeyCode::Escape)) && Far::Net->CommandLine->Length == 0)
 	{
 		pp->Host->WorksEscaping(%e);
 		if (e.Ignore)
 			return 1;
 
-		pp->Host->UIEscape(e.State == KeyStates::Shift);
+		pp->Host->UIEscape(e.Key->IsShift());
 		return 1;
 	}
 
@@ -702,7 +701,7 @@ IPanel^ Panel0::GetPanel(bool active)
 	if (!TryPanelInfo((active ? PANEL_ACTIVE : PANEL_PASSIVE), pi))
 		return nullptr;
 
-	if (!pi.Plugin)
+	if (0 == (pi.Flags & PFLAGS_PLUGIN))
 		return gcnew Panel1(active);
 
 	for (int i = 1; i < cPanels; ++i)
@@ -896,7 +895,7 @@ void Panel0::PushPanel(Panel2^ plugin)
 	FarFile^ file = nullptr;
 	if (pi.ItemsNumber > 0)
 	{
-		AutoPluginPanelItem item(plugin->Handle, pi.CurrentItem, ShownFile);
+		AutoPluginPanelItem item(plugin->Handle, (int)pi.CurrentItem, ShownFile);
 		int index = (int)item.Get().UserData;
 		if (index >= 0 && index < plugin->Files->Count)
 			file = plugin->Files[index];

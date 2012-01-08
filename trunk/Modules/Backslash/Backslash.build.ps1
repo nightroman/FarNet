@@ -14,7 +14,7 @@ $dir = "$FarNetModules\Backslash"
 $src = 'Backslash.cs'
 $dll = 'Backslash.dll'
 
-use $null csc
+use Framework\v3.5 csc
 
 task Build -Incremental @{$src = $dll} {
 	exec { csc /target:library /optimize "/reference:$FarHome\FarNet\FarNet.dll" *.cs }

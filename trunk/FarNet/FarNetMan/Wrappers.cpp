@@ -1,17 +1,25 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
 #include "Wrappers.h"
 #include "farcolor.hpp"
-#include "farkeys.hpp"
 
-int Wrap::GetEndKeyCode()
+// STOP
+// How it fails: open Vessel history dialog, [F3] ~ open viewer, [Esc] ~ close viewer
+// => VE_CLOSE => Vessel's handler calls ACTL_GETWINDOWTYPE and it returns 0.
+// Far2 and Far3 both have the same issue. WindowKind::None will do.
+WindowKind Wrap::WindowGetKind()
 {
-	return INTERNAL_KEY_BASE_2;
+	WindowType arg;
+	arg.StructSize = sizeof(WindowType);
+	if (Info.AdvControl(&MainGuid, ACTL_GETWINDOWTYPE, 0, &arg))
+		return (WindowKind)arg.Type;
+	else
+		return WindowKind::None;
 }
 
 int Wrap::GetEndPalette()
@@ -32,7 +40,7 @@ bool State::GetPanelInfo;
 
 AutoEditorInfo::AutoEditorInfo(bool safe)
 {
-	if (!Info.EditorControl(ECTL_GETINFO, this))
+	if (!Info.EditorControl(-1, ECTL_GETINFO, 0, this))
 	{
 		if (safe)
 			EditorID = -1;
@@ -43,27 +51,27 @@ AutoEditorInfo::AutoEditorInfo(bool safe)
 
 void AutoEditorInfo::Update()
 {
-	if (!Info.EditorControl(ECTL_GETINFO, this))
+	if (!Info.EditorControl(-1, ECTL_GETINFO, 0, this))
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
 }
 
 AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, FileType type)
 {
-	const int size = Info.Control(handle, type, index, 0);
-	if (size > sizeof(mBuffer))
-		m = (PluginPanelItem*)new char[size];
+	m.Size = Info.PanelControl(handle, (FILE_CONTROL_COMMANDS)type, index, 0);
+	if (m.Size > sizeof(mBuffer))
+		m.Item = (PluginPanelItem*)new char[m.Size];
 	else
-		m = (PluginPanelItem*)mBuffer;
+		m.Item = (PluginPanelItem*)mBuffer;
 
 	try
 	{
-		if (!Info.Control(handle, type, index, (LONG_PTR)m))
+		if (!Info.PanelControl(handle, (FILE_CONTROL_COMMANDS)type, index, &m))
 			throw gcnew InvalidOperationException("Cannot get panel item; index: " + index);
 	}
 	catch(...)
 	{
-		if (mBuffer != (char*)m)
-			delete[] (char*)m;
+		if (mBuffer != (char*)m.Item)
+			delete[] (char*)m.Item;
 
 		throw;
 	}
@@ -71,8 +79,8 @@ AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, FileType type
 
 AutoPluginPanelItem::~AutoPluginPanelItem()
 {
-	if (mBuffer != (char*)m)
-		delete[] (char*)m;
+	if (mBuffer != (char*)m.Item)
+		delete[] (char*)m.Item;
 }
 
 #undef FCTL_GETPANELINFO
@@ -81,7 +89,7 @@ void GetPanelInfo(HANDLE handle, PanelInfo& info)
 {
 	SetState<bool> state(State::GetPanelInfo, true);
 
-	if (!Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&info))
+	if (!Info.PanelControl(handle, FCTL_GETPANELINFO, 0, &info))
 		throw gcnew InvalidOperationException("Cannot get panel information.");
 }
 
@@ -90,7 +98,7 @@ bool TryPanelInfo(HANDLE handle, PanelInfo& info)
 {
 	SetState<bool> state(State::GetPanelInfo, true);
 
-	return Info.Control(handle, FCTL_GETPANELINFO, 0, (LONG_PTR)&info) ? true : false;
+	return Info.PanelControl(handle, FCTL_GETPANELINFO, 0, &info) ? true : false;
 }
 
 // Gets dialog control text of any length

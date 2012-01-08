@@ -1,6 +1,6 @@
 
 Module   : FarNet.Explore
-Release  : 2011-04-24
+Release  : 2012-01-06
 Category : Panels
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,8 +10,8 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
 
- * Far Manager 2.0.1807
- * Plugin FarNet 4.4.10
+ * Far Manager 3.0.0.x
+ * Plugin FarNet 5.0.0
 
 
 = DESCRIPTION =
@@ -171,3 +171,7 @@ Support of partial parameter names.
 Masks with spaces are allowed (enclosed by '"').
 
 New parameters -XFile and -XPath extend filters with XPath expressions.
+
+2.0.0
+
+Adapted for Far3 + FarNet5.

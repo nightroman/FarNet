@@ -11,7 +11,6 @@
 .Link
 	Profile-.ps1 - how to add these two commands to the "User menu".
 	Install-Macro-.ps1 - how to add [Tab]\[ShiftTab] key macros.
-	Help: Autoloaded functions
 
 .Parameter Outdent
 		Outdent selected lines, i.e. decrement indentation.

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -75,8 +75,8 @@ namespace FarNet.Works
 			menu.ShowAmpersands = true;
 			menu.Title = "Panels";
 
-			menu.BreakKeys.Add(VKeyCode.Delete);
-			menu.BreakKeys.Add(VKeyCode.Spacebar);
+			menu.AddKey(KeyCode.Delete);
+			menu.AddKey(KeyCode.Spacebar);
 	
 			for(;; menu.Items.Clear())
 			{
@@ -117,7 +117,7 @@ namespace FarNet.Works
 				var mi = menu.Items[menu.Selected];
 
 				// [Delete]:
-				if (menu.BreakKey == VKeyCode.Delete)
+				if (menu.Key.VirtualKeyCode == KeyCode.Delete)
 				{
 					// remove the shelved panel; do not remove module panels because of their shutdown bypassed
 					var si = (ShelveInfo)mi.Data;
@@ -134,7 +134,7 @@ namespace FarNet.Works
 					return;
 				}
 
-				bool repeat = VKeyCode.Spacebar == menu.BreakKey;
+				bool repeat = menu.Key.VirtualKeyCode == KeyCode.Spacebar;
 
 				// Decrease/Increase column
 				if (mi.Text == sResizeColum1 || mi.Text == sResizeColum2)

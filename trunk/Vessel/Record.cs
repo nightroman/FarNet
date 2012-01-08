@@ -47,13 +47,7 @@ namespace FarNet.Vessel
 				Directory.CreateDirectory(dir);
 
 			using (StreamWriter writer = new StreamWriter(store, false, Encoding.Unicode))
-			{
 				writer.WriteLine(LINE_HEADER);
-
-				var paths = Far.Net.GetHistory("SavedViewHistory", "01").ToList();
-				for (int i = 0; i < paths.Count; ++i)
-					writer.WriteLine(LINE_FORMAT, DateTime.Now - new TimeSpan(0, 0, paths.Count - i), 0, "view", paths[i]);
-			}
 		}
 
 		/// <summary>

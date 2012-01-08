@@ -16,13 +16,11 @@ task Clean {
 		'obj'
 		'Modules\FarDescription\bin'
 		'Modules\FarDescription\obj'
-		'Modules\FarMacro\bin'
-		'Modules\FarMacro\obj'
 	)
 }
 
 # Install all. Run after Build.
-task Install InstallBin, InstallRes, BuildFarMacroHelp, BuildPowerShellFarHelp
+task Install InstallBin, InstallRes, BuildPowerShellFarHelp
 
 task Uninstall {
 	$dir = "$FarHome\FarNet\Modules\PowerShellFar"
@@ -54,7 +52,6 @@ task InstallBin {
 	$dir = "$FarHome\FarNet\Modules\PowerShellFar"
 	exec { robocopy Bin\$Configuration $dir PowerShellFar.dll PowerShellFar.xml /np } (0..2)
 	exec { robocopy Modules\FarDescription\Bin\$Configuration $dir\Modules\FarDescription FarDescription.dll /np } (0..2)
-	exec { robocopy Modules\FarMacro\Bin\$Configuration $dir\Modules\FarMacro FarMacro.dll /np } (0..2)
 }
 
 task InstallRes {
@@ -62,14 +59,6 @@ task InstallRes {
 	exec { robocopy . $dir PowerShellFar.hlf TabExpansion.ps1 TabExpansion#.txt /np } (0..2)
 	exec { robocopy Modules\FarDescription $dir\Modules\FarDescription about_FarDescription.help.txt FarDescription.psd1 FarDescription.psm1 FarDescription.Types.ps1xml /np } (0..2)
 	exec { robocopy Modules\FarInventory $dir\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 /np } (0..2)
-	exec { robocopy Modules\FarMacro $dir\Modules\FarMacro about_FarMacro.help.txt FarMacro.psd1 FarMacro.Format.ps1xml /np } (0..2)
-}
-
-task BuildFarMacroHelp -Incremental @{{ Get-Item Modules\FarMacro\*.* } = "$FarHome\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll-Help.xml" } {
-	Add-Type -Path $FarHome\FarNet\FarNet.dll
-	Import-Module $FarHome\FarNet\Modules\PowerShellFar\Modules\FarMacro\FarMacro.dll
-	. Helps.ps1
-	Convert-Helps Modules\FarMacro\FarMacro.dll-Help.ps1 $Outputs
 }
 
 task BuildPowerShellFarHelp -Incremental @{{ Get-Item Commands\* } = "$FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll-Help.xml"} {

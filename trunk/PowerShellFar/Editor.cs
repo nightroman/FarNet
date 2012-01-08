@@ -249,9 +249,9 @@ namespace PowerShellFar
 
 			switch (e.Key.VirtualKeyCode)
 			{
-				case VKeyCode.F1:
+				case KeyCode.F1:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.ShiftPressed)
+						if (e.Key.IsShift())
 						{
 							// [ShiftF1]
 							e.Ignore = true;
@@ -259,9 +259,9 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case VKeyCode.F5:
+				case KeyCode.F5:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [F5]
 							e.Ignore = true;
@@ -269,9 +269,9 @@ namespace PowerShellFar
 						}
 						return;
 					}
-				case VKeyCode.Tab:
+				case KeyCode.Tab:
 					{
-						if (e.Key.CtrlAltShift == ControlKeyStates.None)
+						if (e.Key.Is())
 						{
 							// [Tab]
 							if (!editor.SelectionExists)

@@ -132,7 +132,7 @@ namespace PowerShellFar.UI
 			}
 		}
 
-		static FarItem NewItem(string text, EventHandler click)
+		static FarItem NewItem(string text, EventHandler<MenuEventArgs> click)
 		{
 			SetItem item = new SetItem() { Text = text };
 			if (click == null)
@@ -142,7 +142,7 @@ namespace PowerShellFar.UI
 			return item;
 		}
 
-		static void AddTool(string text, EventHandler click, ModuleToolOptions from)
+		static void AddTool(string text, EventHandler<MenuEventArgs> click, ModuleToolOptions from)
 		{
 			AddItem(NewItem(text, click), from);
 		}
@@ -193,7 +193,7 @@ namespace PowerShellFar.UI
 			}
 		}
 
-		public static void AddUserTool(string text, EventHandler click, ModuleToolOptions from)
+		public static void AddUserTool(string text, EventHandler<MenuEventArgs> click, ModuleToolOptions from)
 		{
 			// case: just collect, e.g. called from profile
 			if (_menuDialog == null)

@@ -189,7 +189,7 @@ namespace PowerShellFar.Commands
 			int result = Far.Net.Message(
 				body,
 				Title ?? MyName,
-				IsError ? (MsgOptions.Warning | MsgOptions.LeftAligned) : MsgOptions.None,
+				IsError ? (MessageOptions.Warning | MessageOptions.LeftAligned) : MessageOptions.None,
 				buttons);
 
 			// editor

@@ -1,6 +1,6 @@
 
 Module   : FarNet.FolderChart
-Release  : 2011-06-19
+Release  : 2012-01-05
 Category : File system
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,8 +10,8 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
 
- * Far Manager 2.0.1807
- * Plugin FarNet 4.4.18
+ * Far Manager 3.0.0.x
+ * Plugin FarNet 5.0.0
  * .NET Framework 4.0
 
 
@@ -29,7 +29,8 @@ Features:
  * Right click hides an item in the chart;
  * Chart tool-tips show approximate sizes.
 
-	= HISTORY =
+
+= HISTORY =
 
 1.0.1
 
@@ -56,3 +57,7 @@ Updated for FarNet 4.4.6
 1.0.6
 
 Total size is shown in the chart dialog title.
+
+2.0.0
+
+Adapted for Far3 + FarNet5.

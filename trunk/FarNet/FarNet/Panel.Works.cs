@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
@@ -51,7 +51,7 @@ namespace FarNet.Works
 		///
 		bool ShowNamesOnly { get; set; }
 		///
-		bool UseFilter { get; set; }
+		bool NoFilter { get; set; }
 		///
 		PanelHighlighting Highlighting { get; set; }
 		#endregion

@@ -45,7 +45,7 @@ function TestProgressBox
 	$Progress = [FarNet.Tools.ProgressBox]'ProgressBox: activity text only'
 	# ideally, we should do: try {...} finally {dispose}
 	for($1 = 1; $1 -le $JobSteps; ++$1) {
-		if ($Far.UI.ReadKeys([FarNet.VKeyCode]::Escape)) { break }
+		if ($Far.UI.ReadKeys(([FarNet.KeyData][FarNet.KeyCode]::Escape)) -ge 0) { break }
 		$Progress.Activity = "Step $1 of $JobSteps`nMore`nInfo`n"
 		$Progress.ShowProgress()
 		Start-Sleep -Milliseconds $Delay
@@ -56,7 +56,7 @@ function TestProgressBox
 	$Progress = [FarNet.Tools.ProgressBox]'ProgressBox: activity and percentage'
 	# ideally, we should do: try {...} finally {dispose}
 	for($1 = 1; $1 -le $JobSteps; ++$1) {
-		if ($Far.UI.ReadKeys([FarNet.VKeyCode]::Escape)) { break }
+		if ($Far.UI.ReadKeys(([FarNet.KeyData][FarNet.KeyCode]::Escape)) -ge 0) { break }
 		$Progress.Activity = "Step $1 of $JobSteps`nMore`nInfo`n"
 		$Progress.SetProgressValue($1, $JobSteps)
 		$Progress.ShowProgress()

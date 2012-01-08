@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -55,7 +55,7 @@ bool InputBox::Show()
 	PIN_NS(pinHistory, History);
 	CBox sDest(_maxLength);
 
-	if (!Info.InputBox(pinTitle, pinPrompt, pinHistory, pinText, sDest, MaxLength, pinHelp, Flags()))
+	if (!Info.InputBox(&MainGuid, &MainGuid, pinTitle, pinPrompt, pinHistory, pinText, sDest, MaxLength, pinHelp, Flags()))
 		return false;
 
 	Text = gcnew String(sDest);

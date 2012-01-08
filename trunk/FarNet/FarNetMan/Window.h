@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
@@ -15,9 +15,10 @@ public:
 	virtual property WindowKind Kind { WindowKind get() override; }
 public:
 	virtual bool Commit() override;
-	virtual IWindowInfo^ GetInfoAt(int index, bool full) override;
 	virtual void SetCurrentAt(int index) override;
 	virtual WindowKind GetKindAt(int index) override;
+	virtual String^ GetKindNameAt(int index) override;
+	virtual String^ GetNameAt(int index) override;
 internal:
 	static Window Instance;
 private:

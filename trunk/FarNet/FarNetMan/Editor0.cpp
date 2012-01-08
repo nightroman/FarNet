@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005 FarNet Team
+Copyright (c) 2005-2012 FarNet Team
 */
 
 #include "StdAfx.h"
@@ -64,9 +64,9 @@ void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorW
 	}
 }
 
-int Editor0::AsProcessEditorEvent(int type, void* param)
+int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 {
-	switch(type)
+	switch(info->Event)
 	{
 	case EE_READ:
 		{
@@ -99,7 +99,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Log::Source->TraceInformation("EE_CLOSE");
 
 			// get registered, stop, unregister
-			int id = *((int*)param);
+			int id = *((int*)info->Param);
 			Editor^ editor = nullptr;
 			for(int i = 0; i < _editors.Count; ++i)
 			{
@@ -156,13 +156,13 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 
 			Editor^ editor = GetCurrentEditor();
 
-			if (param == EEREDRAW_CHANGE)
+			if (info->Param == EEREDRAW_CHANGE)
 				++editor->_KeyCount;
 
 			if (_anyEditor._Redrawing || editor->_Redrawing)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Redrawing");
-				EditorRedrawingEventArgs ea((EditorRedrawMode)(INT_PTR)param);
+				EditorRedrawingEventArgs ea((EditorRedrawMode)(INT_PTR)info->Param);
 				if (_anyEditor._Redrawing)
 					_anyEditor._Redrawing(editor, %ea);
 				if (editor->_Redrawing)
@@ -175,7 +175,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
 
 			// make the editor first in the list
-			int id = *((int*)param);
+			int id = *((int*)info->Param);
 			Editor^ editor = nullptr;
 			for(int i = 0; i < _editors.Count; ++i)
 			{
@@ -223,7 +223,7 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_KILLFOCUS");
 
-			int id = *((int*)param);
+			int id = *((int*)info->Param);
 			Editor^ editor = nullptr;
 			for(int i = 0; i < _editors.Count; ++i)
 			{
@@ -262,8 +262,9 @@ int Editor0::AsProcessEditorEvent(int type, void* param)
 	return 0;
 }
 
-int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
+int Editor0::AsProcessEditorInput(const ProcessEditorInputInfo* info)
 {
+	const INPUT_RECORD* rec = &info->Rec;
 	Editor^ editor = GetCurrentEditor();
 
 	// async
@@ -280,10 +281,10 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 
 			switch(rec->Event.KeyEvent.wVirtualKeyCode)
 			{
-			case VKeyCode::Escape:
-			case VKeyCode::F10:
+			case KeyCode::Escape:
+			case KeyCode::F10:
 				return false;
-			case VKeyCode::C:
+			case KeyCode::C:
 				if ((rec->Event.KeyEvent.dwControlKeyState & int(ControlKeyStates::CtrlAltShift)) == int(ControlKeyStates::LeftCtrlPressed))
 				{
 					if (editor->_CtrlCPressed)
@@ -314,7 +315,7 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 			{
 				if (_anyEditor._KeyDown || editor->_KeyDown)
 				{
-					KeyEventArgs ea(KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, true));
+					KeyEventArgs ea(gcnew KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, true));
 					if (_anyEditor._KeyDown)
 						_anyEditor._KeyDown(editor, %ea);
 					if (editor->_KeyDown)
@@ -327,7 +328,7 @@ int Editor0::AsProcessEditorInput(const INPUT_RECORD* rec)
 			{
 				if (_anyEditor._KeyUp || editor->_KeyUp)
 				{
-					KeyEventArgs ea(KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, false));
+					KeyEventArgs ea(gcnew KeyInfo(key.wVirtualKeyCode, key.uChar.UnicodeChar, (ControlKeyStates)key.dwControlKeyState, false));
 					if (_anyEditor._KeyUp)
 						_anyEditor._KeyUp(editor, %ea);
 					if (editor->_KeyUp)
