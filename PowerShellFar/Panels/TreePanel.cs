@@ -74,13 +74,13 @@ namespace PowerShellFar
 			UpdateRedraw(false);
 		}
 		///
-		public override bool UIKeyPressed(int code, ControlKeyStates state)
+		public override bool UIKeyPressed(KeyInfo key)
 		{
-			switch (code)
+			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.LeftArrow:
 					{
-						if (state != 0 && state != ControlKeyStates.LeftAltPressed || Far.Net.CommandLine.Length > 0)
+						if (!key.Is() && !key.IsAlt() || Far.Net.CommandLine.Length > 0)
 							break;
 
 						FarFile file = CurrentFile;
@@ -91,7 +91,7 @@ namespace PowerShellFar
 						if (node._State == 1)
 						{
 							// reset
-							if (state == ControlKeyStates.LeftAltPressed)
+							if (key.IsAlt())
 							{
 								node.ChildFiles.Clear();
 								node._State = 0;
@@ -112,7 +112,7 @@ namespace PowerShellFar
 					}
 				case KeyCode.RightArrow:
 					{
-						if (state != 0 && state != ControlKeyStates.LeftAltPressed || Far.Net.CommandLine.Length > 0)
+						if (!key.Is() && !key.IsAlt() || Far.Net.CommandLine.Length > 0)
 							break;
 
 						FarFile file = CurrentFile;
@@ -123,7 +123,7 @@ namespace PowerShellFar
 						if (node != null && node._State != 1 && node.IsNode)
 						{
 							// reset
-							if (state == ControlKeyStates.LeftAltPressed)
+							if (key.IsAlt())
 							{
 								node.ChildFiles.Clear();
 								node._State = 0;
@@ -143,7 +143,7 @@ namespace PowerShellFar
 			}
 
 			// base
-			return base.UIKeyPressed(code, state);
+			return base.UIKeyPressed(key);
 		}
 		///
 		public override IList<FarFile> UIGetFiles(GetFilesEventArgs args)

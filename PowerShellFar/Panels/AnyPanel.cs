@@ -321,40 +321,41 @@ namespace PowerShellFar
 		public event EventHandler<PanelMenuEventArgs> MenuCreating;
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		public override bool UIKeyPressed(int code, ControlKeyStates state)
+		public override bool UIKeyPressed(KeyInfo key)
 		{
 			UserWants = UserAction.None;
 			try
 			{
-				switch (code)
+				switch (key.VirtualKeyCode)
 				{
 					case KeyCode.Enter:
 
-						switch (state)
+						if (key.Is())
 						{
-							case ControlKeyStates.None:
-								FarFile file = CurrentFile;
-								if (file == null)
-									break;
+							FarFile file = CurrentFile;
+							if (file == null)
+								break;
 
-								UserWants = UserAction.Enter;
+							UserWants = UserAction.Enter;
 
-								if (file.IsDirectory && !IgnoreDirectoryFlag)
-									break;
+							if (file.IsDirectory && !IgnoreDirectoryFlag)
+								break;
 
-								UIOpenFile(file);
-								return true;
+							UIOpenFile(file);
+							return true;
+						}
 
-							case ControlKeyStates.ShiftPressed:
-								UIAttributes();
-								return true;
+						if (key.IsShift())
+						{
+							UIAttributes();
+							return true;
 						}
 
 						break;
 
 					case KeyCode.F1:
 
-						if (state == ControlKeyStates.None)
+						if (key.Is())
 						{
 							UIHelp();
 							return true;
@@ -364,26 +365,27 @@ namespace PowerShellFar
 
 					case KeyCode.F3:
 
-						switch (state)
+						if (key.Is())
 						{
-							case ControlKeyStates.None:
-								if (CurrentFile == null)
-								{
-									UIViewAll();
-									return true;
-								}
-								break;
-
-							case ControlKeyStates.ShiftPressed:
-								ShowMenu();
+							if (CurrentFile == null)
+							{
+								UIViewAll();
 								return true;
+							}
+							break;
+						}
+
+						if (key.IsShift())
+						{
+							ShowMenu();
+							return true;
 						}
 
 						break;
 
 					case KeyCode.PageDown:
 
-						if (state == ControlKeyStates.LeftCtrlPressed)
+						if (key.IsCtrl())
 						{
 							UIOpenFileMembers();
 							return true;
@@ -393,7 +395,7 @@ namespace PowerShellFar
 
 					case KeyCode.A:
 
-						if (state == ControlKeyStates.LeftCtrlPressed)
+						if (key.IsCtrl())
 						{
 							UIAttributes();
 							return true;
@@ -403,7 +405,7 @@ namespace PowerShellFar
 
 					case KeyCode.G:
 
-						if (state == ControlKeyStates.LeftCtrlPressed)
+						if (key.IsCtrl())
 						{
 							UIApply();
 							return true;
@@ -413,7 +415,7 @@ namespace PowerShellFar
 
 					case KeyCode.M:
 
-						if (state == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
+						if (key.CtrlAltShift() == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
 						{
 							UIMode();
 							return true;
@@ -423,14 +425,14 @@ namespace PowerShellFar
 
 					case KeyCode.R:
 
-						if (state == ControlKeyStates.LeftCtrlPressed)
+						if (key.IsCtrl())
 							UserWants = UserAction.CtrlR;
 
 						break;
 
 					case KeyCode.S:
 
-						if (state == ControlKeyStates.LeftCtrlPressed)
+						if (key.IsCtrl())
 						{
 							SaveData();
 							return true;
@@ -440,7 +442,7 @@ namespace PowerShellFar
 				}
 
 				// base
-				return base.UIKeyPressed(code, state);
+				return base.UIKeyPressed(key);
 			}
 			finally
 			{

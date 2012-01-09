@@ -144,7 +144,7 @@ namespace FarNet.Tools
 		// Asks a user to Close/Push/Stop/Cancel.
 		void OnPanelEscaping(object sender, KeyEventArgs e)
 		{
-			if (e.Key.Is())
+			if (!e.Key.Is())
 				return;
 
 			var panel = sender as SuperPanel;

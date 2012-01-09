@@ -54,13 +54,13 @@ namespace FarNet.Works.Config
 			Update(false);
 			Redraw();
 		}
-		public override bool UIKeyPressed(int code, ControlKeyStates state)
+		public override bool UIKeyPressed(KeyInfo key)
 		{
-			switch (code)
+			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.F1:
 
-					if (state == 0)
+					if (key.Is())
 					{
 						Far.Net.ShowHelp(Far.Net.GetType().Assembly.Location, SettingsUI.HelpSettings, HelpOptions.None);
 						return true;
@@ -69,16 +69,13 @@ namespace FarNet.Works.Config
 					break;
 
 				case KeyCode.Delete:
-
-					goto case KeyCode.F8;
-
 				case KeyCode.F8:
 
 					SetDefaults();
 					return true;
 			}
 
-			return base.UIKeyPressed(code, state);
+			return base.UIKeyPressed(key);
 		}
 		public override bool SaveData()
 		{

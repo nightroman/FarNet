@@ -102,48 +102,44 @@ namespace FarNet.Tools
 			}
 		}
 		///
-		public override bool UIKeyPressed(int code, ControlKeyStates state)
+		public override bool UIKeyPressed(KeyInfo key)
 		{
-			switch (code)
+			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.F7:
 
-					switch (state)
+					if (key.Is())
 					{
-						case ControlKeyStates.None:
-							{
-								var files = SelectedFiles;
-								if (files.Count > 0)
-								{
-									Explorer.RemoveFiles(files);
-									Update(false);
-									Redraw();
-								}
-							}
-							return true;
+						var files = SelectedFiles;
+						if (files.Count > 0)
+						{
+							Explorer.RemoveFiles(files);
+							Update(false);
+							Redraw();
+						}
+						return true;
 					}
+
 					break;
 
 				case KeyCode.PageUp:
 
-					switch (state)
+					if (key.IsCtrl())
 					{
-						case ControlKeyStates.LeftCtrlPressed:
-							{
-								var efile = (SuperFile)CurrentFile;
-								if (efile == null)
-									break;
+							var efile = (SuperFile)CurrentFile;
+							if (efile == null)
+								break;
 
-								var panel = efile.Explorer.CreatePanel();
-								panel.PostFile(efile.File);
-								panel.OpenChild(this);
-							}
+							var panel = efile.Explorer.CreatePanel();
+							panel.PostFile(efile.File);
+							panel.OpenChild(this);
 							return true;
 					}
+					
 					break;
 			}
 
-			return base.UIKeyPressed(code, state);
+			return base.UIKeyPressed(key);
 		}
 	}
 }

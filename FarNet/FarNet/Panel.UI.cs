@@ -597,105 +597,107 @@ namespace FarNet
 		/// <summary>
 		/// Called when a key is pressed after the <see cref="KeyPressed"/> event.
 		/// </summary>
-		/// <param name="code">The <see cref="KeyCode"/> value.</param>
-		/// <param name="state">Key state flags.</param>
+		/// <param name="key">The pressed key.</param>
 		/// <returns>True if the key has been processed.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		public virtual bool UIKeyPressed(int code, ControlKeyStates state)
+		public virtual bool UIKeyPressed(KeyInfo key)
 		{
-			switch (code)
+			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.Enter:
 
-					switch (state)
+					if (key.Is())
 					{
-						case ControlKeyStates.None:
-							if (RealNames)
-								break;
+						if (RealNames)
+							break;
 
-							var file = CurrentFile;
-							if (file == null || file.IsDirectory)
-								break;
+						var file = CurrentFile;
+						if (file == null || file.IsDirectory)
+							break;
 
-							UIOpenFile(file);
-							return true;
+						UIOpenFile(file);
+						return true;
 					}
+
 					break;
 
 				case KeyCode.F3:
 
-					switch (state)
+					if (key.Is())
 					{
-						case ControlKeyStates.None:
-							if (RealNames)
-								break;
+						if (RealNames)
+							break;
 
-							var file = CurrentFile;
-							if (file == null || file.IsDirectory)
-								break;
+						var file = CurrentFile;
+						if (file == null || file.IsDirectory)
+							break;
 
-							UIViewFile(file);
-							return true;
+						UIViewFile(file);
+						return true;
 					}
+
 					break;
 
 				case KeyCode.F4:
 
-					switch (state)
+					if (key.Is())
 					{
-						case ControlKeyStates.None:
-							if (RealNames)
-								break;
+						if (RealNames)
+							break;
 
-							var file = CurrentFile;
-							if (file == null || file.IsDirectory)
-								break;
+						var file = CurrentFile;
+						if (file == null || file.IsDirectory)
+							break;
 
-							UIEditFile(file);
-							return true;
+						UIEditFile(file);
+						return true;
 					}
+
 					break;
 
 				case KeyCode.F5:
 
-					switch (state)
+					if (key.Is())
 					{
-						case ControlKeyStates.None:
-							UICopyMove(false);
-							return true;
-
-						case ControlKeyStates.ShiftPressed: //???? if (RealNames) ?
-							//! return true even if the file is dots
-							UIClone();
-							return true;
+						UICopyMove(false);
+						return true;
 					}
+
+					if (key.IsShift()) //???? if (RealNames) ?
+					{
+						//! return true even if the file is dots
+						UIClone();
+						return true;
+					}
+
 					break;
 
 				case KeyCode.F6:
 
-					switch (state)
+					if (key.Is())
 					{
-						case ControlKeyStates.None:
-							UICopyMove(true);
-							return true;
-
-						case ControlKeyStates.ShiftPressed: //???? if (RealNames) ?
-							//! return true even if the file is dots
-							UIRename();
-							return true;
+						UICopyMove(true);
+						return true;
 					}
+
+					if (key.IsShift()) //???? if (RealNames) ?
+					{
+						//! return true even if the file is dots
+						UIRename();
+						return true;
+					}
+
 					break;
 
 				case KeyCode.F7:
 
-					switch (state)
+					if (key.Is())
 					{
-						case ControlKeyStates.None:
-							if (RealNames && RealNamesMakeDirectory)
-								break;
+						if (RealNames && RealNamesMakeDirectory)
+							break;
 
-							UICreate();
-							return true;
+						UICreate();
+						return true;
 					}
 
 					break;
@@ -709,16 +711,15 @@ namespace FarNet
 
 				case KeyCode.F8:
 
-					switch (state)
+					if (key.Is() || key.IsShift())
 					{
-						case ControlKeyStates.None:
-						case ControlKeyStates.ShiftPressed:
-							if (RealNames && RealNamesDeleteFiles)
-								break;
+						if (RealNames && RealNamesDeleteFiles)
+							break;
 
-							UIDelete(state == ControlKeyStates.ShiftPressed);
-							return true;
+						UIDelete(key.IsShift());
+						return true;
 					}
+					
 					break;
 			}
 
