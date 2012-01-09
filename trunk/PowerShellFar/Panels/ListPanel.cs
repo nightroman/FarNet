@@ -188,7 +188,7 @@ namespace PowerShellFar
 						pi.Value = DBNull.Value;
 					else
 						SetUserValue(pi, null);
-					
+
 					UpdateRedraw(true);
 				}
 				catch (RuntimeException ex)
@@ -198,25 +198,24 @@ namespace PowerShellFar
 			}
 		}
 		///
-		public override bool UIKeyPressed(int code, ControlKeyStates state)
+		public override bool UIKeyPressed(KeyInfo key)
 		{
-			switch (code)
+			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.Delete:
-					goto case KeyCode.F8;
-
 				case KeyCode.F8:
-					switch (state)
+
+					if (key.IsShift())
 					{
-						case ControlKeyStates.ShiftPressed:
-							UISetNulls();
-							return true;
+						UISetNulls();
+						return true;
 					}
+					
 					break;
 			}
 
 			// base
-			return base.UIKeyPressed(code, state);
+			return base.UIKeyPressed(key);
 		}
 	}
 }

@@ -677,7 +677,7 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)//??????
 		return 1;
 
 	// 2. method; default or custom virtual methods
-	if (pp->Host->UIKeyPressed(e.Key->VirtualKeyCode, e.Key->CtrlAltShift()))
+	if (pp->Host->UIKeyPressed(e.Key))
 		return 1;
 
 	// 3. escape; special not yet handled case

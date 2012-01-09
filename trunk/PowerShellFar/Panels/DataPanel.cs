@@ -583,28 +583,32 @@ namespace PowerShellFar
 			UpdateRedraw(true);
 		}
 		///
-		public override bool UIKeyPressed(int code, ControlKeyStates state) //????? docs
+		public override bool UIKeyPressed(KeyInfo key) //????? docs
 		{
-			switch (code)
+			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.PageDown:
-					switch (state)
+					
+					if (key.CtrlAltShift() == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
 					{
-						case ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed:
-							OnRangeNext();
-							return true;
+						OnRangeNext();
+						return true;
 					}
+					
 					break;
+				
 				case KeyCode.PageUp:
-					switch (state)
+					
+					if (key.CtrlAltShift() == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
 					{
-						case ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed:
-							OnRangePrevious();
-							return true;
+						OnRangePrevious();
+						return true;
 					}
+					
 					break;
 			}
-			return base.UIKeyPressed(code, state);
+			
+			return base.UIKeyPressed(key);
 		}
 		internal override string HelpMenuTextOpenFileMembers { get { return "Edit row data"; } }
 		internal void DoCreateFile()

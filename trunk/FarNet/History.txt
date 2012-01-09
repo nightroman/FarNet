@@ -8,7 +8,7 @@ already looks stabilized.
 
 There are many breaking changes but they are all easy to fix. In theory it
 would be possible to avoid most of them. But these changes were needed for
-really effective use of new Far and its API.
+effective use of new Far and its API.
 
 *) Settings
 Roaming and local FarNet and module settings moved:
@@ -34,7 +34,7 @@ hotkey stuff was removed from API, code, and FarNet settings.
 
 *) Keyboard
 - Used enums and structures: KeyCode, ControlKeyStates, KeyData, KeyInfo. All
-other types were removed. KeyData in most cases replaces use of internal and
+other types were removed. KeyInfo in most cases replaces use of internal and
 virtual numeric key codes.
 - Standard and list menus use the same break keys API: Key, AddKey().
 - Panel and dialog key events changed.
@@ -53,7 +53,8 @@ Use PostMacro() and PostText() instead.
 Removed IWindowInfo. Replaced IWindow.GetInfoAt() with GetKindAt(), GetNameAt()
 and GetKindNameAt().
 
-*) Others
+*) Misc
+- Panel key bars do not work yet
 - MsgOptions -> MessageOptions
 - Panel UseFilter -> NoFilter
 
