@@ -720,15 +720,15 @@ namespace FarNet
 		/// <summary>
 		/// Returns color spans of the specified line.
 		/// </summary>
-		public abstract IList<ColorSpan> GetColors(int line);
+		public abstract IList<EditorColorInfo> GetColors(int line);
 		/// <summary>
 		/// Adds the color span to the specified line.
 		/// </summary>
-		/// <remarks>
-		/// Special case. If the colors are black on black then color spans are removed from the specified start position.
-		/// If the specified start position is equal to -1 then all line colors are removed.
-		/// </remarks>
-		public abstract void AddColor(int line, ColorSpan color);
+		public abstract void AddColor(int line, EditorColorInfo color, int priority);
+		/// <summary>
+		/// Removes colors in the specified line from the specified position.
+		/// </summary>
+		public abstract void RemoveColors(Guid owner, int line, int start);
 	}
 
 	/// <summary>
@@ -1065,24 +1065,37 @@ namespace FarNet
 	/// <summary>
 	/// Editor line color span.
 	/// </summary>
-	public class ColorSpan
+	public class EditorColorInfo
 	{
+		///
+		public EditorColorInfo(Guid owner, int start, int end, ConsoleColor foreground, ConsoleColor background)
+		{
+			Owner = owner;
+			Start = start;
+			End = end;
+			Foreground = foreground;
+			Background = background;
+		}
+		/// <summary>
+		/// The owner of the color span.
+		/// </summary>
+		public Guid Owner { get; private set; }
 		/// <summary>
 		/// Start position. -1 with black on black colors is used in order to remove all spans.
 		/// </summary>
-		public int Start { get; set; }
+		public int Start { get; private set; }
 		/// <summary>
 		/// End position, not included into the span, <c>End - Start</c> is the span length.
 		/// </summary>
-		public int End { get; set; }
+		public int End { get; private set; }
 		/// <summary>
 		/// Foreground color. Black on black is the special case.
 		/// </summary>
-		public ConsoleColor Foreground { get; set; }
+		public ConsoleColor Foreground { get; private set; }
 		/// <summary>
 		/// Background color. Black on black is the special case.
 		/// </summary>
-		public ConsoleColor Background { get; set; }
+		public ConsoleColor Background { get; private set; }
 		///
 		public override string ToString()
 		{

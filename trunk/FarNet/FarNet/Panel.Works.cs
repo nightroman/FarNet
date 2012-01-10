@@ -77,19 +77,7 @@ namespace FarNet.Works
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		DataItem[] InfoItems { get; set; }
 		///
-		void SetKeyBar(string[] labels);
-		///
-		void SetKeyBarCtrl(string[] labels);
-		///
-		void SetKeyBarAlt(string[] labels);
-		///
-		void SetKeyBarShift(string[] labels);
-		///
-		void SetKeyBarCtrlShift(string[] labels);
-		///
-		void SetKeyBarAltShift(string[] labels);
-		///
-		void SetKeyBarCtrlAlt(string[] labels);
+		void SetKeyBars(KeyBar[] bars);
 		///
 		PanelPlan GetPlan(PanelViewMode mode);
 		///

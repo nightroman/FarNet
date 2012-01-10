@@ -1,6 +1,6 @@
 
 Module   : FarNet.CopyColor
-Release  : 2012-01-06
+Release  : 2012-01-09
 Category : Editors
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,7 +10,7 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
  * Far Manager 3.0.0.x
- * Plugin FarNet 5.0.0
+ * Plugin FarNet 5.0.1
  * Plugin Colorer
 
 
@@ -40,3 +40,7 @@ at least one line which is longer than the current editor window width.
 2.0.0
 
 Adapted for Far3 + FarNet5.
+
+2.0.1
+
+Use FarNet 5.0.1. Some fixes + only Colorer's colors are used.

@@ -724,4 +724,23 @@ namespace FarNet
 		public override int Width { get; set; }
 	}
 
+	/// <summary>
+	/// Panel key bar item.
+	/// </summary>
+	public sealed class KeyBar
+	{
+		///
+		public KeyBar(int virtualKeyCode, ControlKeyStates controlKeyState, string text, string longText)
+		{
+			Key = new KeyData(virtualKeyCode, controlKeyState);
+			Text = text;
+			LongText = longText;
+		}
+		///
+		public KeyData Key { get; private set; }
+		///
+		public string Text { get; private set; }
+		///
+		public string LongText { get; private set; }
+	}
 }

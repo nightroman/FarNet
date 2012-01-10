@@ -18,13 +18,13 @@ namespace FarNet.RightWords
 			const int x = 20;
 
 			_Dialog = Far.Net.CreateDialog(-1, -1, 77, h);
-			_Dialog.AddBox(3, 1, 0, 0, UI.AddToDictionary);
+			_Dialog.AddBox(3, 1, 0, 0, My.AddToDictionary);
 			int y = 1;
 
-			_Dialog.AddText(5, ++y, 0, UI.NewWord);
+			_Dialog.AddText(5, ++y, 0, My.NewWord);
 			_Stem1 = _Dialog.AddEdit(x, y, 71, stem1);
 
-			_Dialog.AddText(5, ++y, 0, UI.ExampleStem);
+			_Dialog.AddText(5, ++y, 0, My.ExampleStem);
 			_Stem2 = _Dialog.AddEdit(x, y, 71, stem2);
 			_Stem2.History = "RightWordsStem";
 		}

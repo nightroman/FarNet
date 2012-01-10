@@ -15,8 +15,10 @@ using System.Runtime.InteropServices;
 
 namespace FarNet.RightWords
 {
-	static class UI
+	static class My
 	{
+		public const string GuidString = "ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9";
+		public readonly static Guid Guid = new Guid(GuidString);
 		#region private
 		static readonly IModuleManager Manager = Far.Net.GetModuleManager(Settings.ModuleName);
 		static string GetString(string name) { return Manager.GetString(name); }

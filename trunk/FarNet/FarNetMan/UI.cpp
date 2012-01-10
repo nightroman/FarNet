@@ -484,8 +484,8 @@ void FarUI::DrawColor(int left, int top, ConsoleColor foregroundColor, ConsoleCo
 {
 	FarColor arg;
 	arg.Flags = FCF_4BITMASK;
-	arg.BackgroundColor = (COLORREF)backgroundColor;
 	arg.ForegroundColor = (COLORREF)foregroundColor;
+	arg.BackgroundColor = (COLORREF)backgroundColor;
 
 	PIN_NE(pin, text);
 	

@@ -159,7 +159,7 @@ namespace FarNet.RightWords
 					word = match.Value;
 			}
 
-			word = Far.Net.Input(UI.Word, Settings.ModuleName, UI.Thesaurus, word);
+			word = Far.Net.Input(My.Word, Settings.ModuleName, My.Thesaurus, word);
 			if (word == null || (word = word.Trim()).Length == 0)
 				return;
 
@@ -167,7 +167,7 @@ namespace FarNet.RightWords
 			menu.Title = word;
 
 			Far.Net.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
-			Far.Net.UI.WindowTitle = UI.Searching;
+			Far.Net.UI.WindowTitle = My.Searching;
 			try
 			{
 				using (var thesaurus = new MultiThesaurus(Dictionaries))
@@ -357,16 +357,11 @@ namespace FarNet.RightWords
 		}
 		public static void Highlight(IEditor editor)
 		{
-			var highlighter = (Highlighter)editor.Data[Settings.EditorDataId];
+			var highlighter = (Highlighter)editor.Data[My.Guid];
 			if (highlighter == null)
-			{
-				editor.Data[Settings.EditorDataId] = new Highlighter(editor);
-			}
+				editor.Data[My.Guid] = new Highlighter(editor);
 			else
-			{
-				highlighter.Stop();
-				editor.Data.Remove(Settings.EditorDataId);
-			}
+				highlighter.Disabled = !highlighter.Disabled;
 		}
 		static string GetUserDictionaryDirectory(bool create)
 		{
@@ -397,7 +392,7 @@ namespace FarNet.RightWords
 				return new string[] { word };
 
 			var menu = Far.Net.CreateMenu();
-			menu.Title = UI.AddToDictionary;
+			menu.Title = My.AddToDictionary;
 			menu.Add(word);
 			menu.Add(word + ", " + word2);
 			if (!menu.Show())
@@ -416,9 +411,9 @@ namespace FarNet.RightWords
 
 			// dictionary menu
 			var menu = Far.Net.CreateMenu();
-			menu.Title = UI.AddToDictionary;
+			menu.Title = My.AddToDictionary;
 			menu.AutoAssignHotkeys = true;
-			menu.Add(UI.Common);
+			menu.Add(My.Common);
 			foreach (string name in languages)
 				menu.Add(name);
 
@@ -475,7 +470,7 @@ namespace FarNet.RightWords
 							continue;
 
 						var menu2 = Far.Net.CreateMenu();
-						menu2.Title = UI.ExampleStem;
+						menu2.Title = My.ExampleStem;
 						foreach (var it in stems)
 							menu2.Add(it);
 

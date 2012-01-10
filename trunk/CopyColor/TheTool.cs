@@ -15,7 +15,8 @@ namespace FarNet.CopyColor
 	public class TheTool : ModuleTool
 	{
 		const string ModuleName = "CopyColor";
-		readonly string[] Colors = { "#000000", "#000080", "#008000", "#008080", "#800000", "#800080", "#808000", "#c0c0c0", "#808080", "#0000ff", "#00ff00", "#00ffff", "#ff0000", "#ff00ff", "#ffff00", "#ffffff", };
+		readonly static Guid Colorer = new Guid("d2f36b62-a470-418d-83a3-ed7a3710e5b5");
+		readonly static string[] Colors = { "#000000", "#000080", "#008000", "#008080", "#800000", "#800080", "#808000", "#c0c0c0", "#808080", "#0000ff", "#00ff00", "#00ffff", "#ff0000", "#ff00ff", "#ffff00", "#ffffff", };
 		static string EncodeHtml(string html)
 		{
 			return html.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
@@ -40,7 +41,7 @@ namespace FarNet.CopyColor
 			}
 
 			var linetexts = new List<string>();
-			var linespans = new List<ColorSpan[]>();
+			var linespans = new List<EditorColorInfo[]>();
 			var bgcount = new int[16];
 
 			for (int line = iLine1; line <= iLine2; ++line)
@@ -48,11 +49,13 @@ namespace FarNet.CopyColor
 				var text = editor[line].Text;
 				linetexts.Add(text);
 
-				var colors = new ColorSpan[text.Length];
+				var colors = new EditorColorInfo[text.Length];
 				linespans.Add(colors);
 
-				var spans = editor.GetColors(line);
-				if (spans == null || spans.Count == 0 || spans[0].Start > 0 || spans[spans.Count - 1].End < text.Length)
+				var spans = editor.GetColors(line).Where(x => x.Owner == Colorer).ToList();
+				int min = spans.Count > 0 ? spans.Min(x => x.Start) : 1;
+				int max = spans.Count > 0 ? spans.Max(x => x.End) : -1;
+				if (min > 0 || max < text.Length)
 				{
 					Far.Net.Message(@"
 Cannot copy: part of the selected test has no colors.

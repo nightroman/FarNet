@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.1 =
+
+Technical build for FarNet 5.0.1.
+
 = 5.0.0 =
 
 This version is designed for Far Manager 3 + FarNet 5.

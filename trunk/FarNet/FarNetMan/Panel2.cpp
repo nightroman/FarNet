@@ -265,34 +265,6 @@ PanelPlan^ Panel2::GetPlan(PanelViewMode mode)
 		return nullptr;
 }
 
-#define SETKEYBAR(Name, Data) void Panel2::SetKeyBar##Name(array<String^>^ labels)\
-{\
-	_keyBar##Name = labels;\
-	if (!m) return;\
-	if (m->KeyBar)\
-{\
-	if (labels)\
-	Make12Strings((wchar_t**)m->KeyBar->Data, labels);\
-else\
-	Free12Strings((wchar_t**)m->KeyBar->Data);\
-	return;\
-}\
-	if (labels)\
-{\
-	m->KeyBar = new KeyBarTitles;\
-	memset((void*)m->KeyBar, 0, sizeof(KeyBarTitles));\
-	Make12Strings((wchar_t**)m->KeyBar->Data, labels);\
-}\
-}
-
-//SETKEYBAR(, Titles) //??????
-//SETKEYBAR(Alt, AltTitles)
-//SETKEYBAR(AltShift, AltShiftTitles)
-//SETKEYBAR(Ctrl, CtrlTitles)
-//SETKEYBAR(CtrlAlt, CtrlAltTitles)
-//SETKEYBAR(CtrlShift, CtrlShiftTitles)
-//SETKEYBAR(Shift, ShiftTitles)
-
 PanelSortMode Panel2::StartSortMode::get()
 {
 	return (PanelSortMode)(_FarStartSortOrder ? -_FarStartSortMode : _FarStartSortMode);
@@ -316,24 +288,6 @@ void Panel2::StartSortMode::set(PanelSortMode value)
 		m->StartSortMode = (OPENPANELINFO_SORTMODES)_FarStartSortMode;
 		m->StartSortOrder = _FarStartSortOrder;
 	}
-}
-
-void Panel2::Make12Strings(wchar_t** dst, array<String^>^ src)
-{
-	for(int i = 11; i >= 0; --i)
-	{
-		delete dst[i];
-		if (i >= src->Length)
-			dst[i] = 0;
-		else
-			dst[i] = NewChars(src[i]);
-	}
-}
-
-void Panel2::Free12Strings(wchar_t* const dst[12])
-{
-	for(int i = 11; i >= 0; --i)
-		delete[] dst[i];
 }
 
 int Panel2::Flags()
@@ -690,13 +644,7 @@ OpenPanelInfo& Panel2::Make()
 	m->HostFile = NewChars(_HostFile);
 	m->PanelTitle = NewChars(_Title);
 
-	//SetKeyBar(_keyBar); //??????
-	//SetKeyBarAlt(_keyBarAlt);
-	//SetKeyBarAltShift(_keyBarAltShift);
-	//SetKeyBarCtrl(_keyBarCtrl);
-	//SetKeyBarCtrlAlt(_keyBarCtrlAlt);
-	//SetKeyBarCtrlShift(_keyBarCtrlShift);
-	//SetKeyBarShift(_keyBarShift);
+	SetKeyBars(_keyBars);
 
 	if (_InfoItems)
 		CreateInfoLines();
@@ -721,13 +669,7 @@ void Panel2::Free()
 
 		if (m->KeyBar)
 		{
-			//Free12Strings(m->KeyBar->AltShiftTitles);//??????
-			//Free12Strings(m->KeyBar->AltTitles);
-			//Free12Strings(m->KeyBar->CtrlAltTitles);
-			//Free12Strings(m->KeyBar->CtrlShiftTitles);
-			//Free12Strings(m->KeyBar->CtrlTitles);
-			//Free12Strings(m->KeyBar->ShiftTitles);
-			//Free12Strings(m->KeyBar->Titles);
+			DeleteKeyBars(*m->KeyBar);
 			delete m->KeyBar;
 		}
 
@@ -764,6 +706,59 @@ void Panel2::Navigate(Explorer^ explorer)
 	ReplaceExplorer(explorer);
 	Update(false);
 	Redraw();
+}
+
+void Panel2::CreateKeyBars(KeyBarTitles& b)
+{
+	b.CountLabels = _keyBars->Length;
+	b.Labels = new KeyBarLabel[_keyBars->Length];
+	
+	for(int i = _keyBars->Length; --i >= 0;)
+	{
+		KeyBarLabel& it = b.Labels[i];
+		KeyBar^ bar = _keyBars[i];
+		it.Key.VirtualKeyCode = (WORD)bar->Key->VirtualKeyCode;
+		it.Key.ControlKeyState = (DWORD)bar->Key->ControlKeyState;
+		it.Text = SS(bar->Text) ? NewChars(bar->Text) : nullptr;
+		it.LongText = SS(bar->LongText) ? NewChars(bar->LongText) : nullptr;
+	}
+}
+
+void Panel2::DeleteKeyBars(const KeyBarTitles& b)
+{
+	for(int i = (int)b.CountLabels; --i >= 0;)
+	{
+		KeyBarLabel& it = b.Labels[i];
+		delete it.Text;
+		delete it.LongText;
+	}
+	delete b.Labels;
+}
+
+void Panel2::SetKeyBars(array<KeyBar^>^ bars)
+{
+	_keyBars = bars;
+	if (!m)
+		return;
+
+	if (m->KeyBar)
+	{
+		DeleteKeyBars(*m->KeyBar);
+		if (bars)
+		{
+			CreateKeyBars(*(KeyBarTitles*)m->KeyBar);
+		}
+		else
+		{
+			delete m->KeyBar;
+			m->KeyBar = nullptr;
+		}
+	}
+	else if (bars)
+	{
+		m->KeyBar = new KeyBarTitles;
+		CreateKeyBars(*(KeyBarTitles*)m->KeyBar);
+	}
 }
 
 }

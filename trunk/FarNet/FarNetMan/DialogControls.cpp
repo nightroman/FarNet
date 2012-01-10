@@ -53,21 +53,17 @@ String^ FarControl::ToString()
 void FarControl::Init(FarDialogItem& item, FARDIALOGITEMTYPES type)
 {
 	_item = &item;
+	memset(_item, 0, sizeof(FarDialogItem));
+	
 	item.Type = type;
 	item.X1 = _rect.Left;
 	item.Y1 = _rect.Top;
 	item.X2 = _rect.Right;
 	item.Y2 = _rect.Bottom;
 	item.Selected = _selected;
-	item.History = 0;
-	item.Mask = 0;
 	item.Flags = _flags;
-	item.MaxLength = 0;
 	if (Text)
 		item.Data = NewChars(Text);
-	else
-		item.Data = 0;
-	item.UserData = 0;
 }
 
 // Called internally when a dialog has exited but still exists
