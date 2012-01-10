@@ -19,31 +19,20 @@ namespace FarNet.RightWords
 		readonly ConsoleColor HighlightingBackgroundColor = Settings.Default.HighlightingBackgroundColor;
 		readonly ConsoleColor HighlightingForegroundColor = Settings.Default.HighlightingForegroundColor;
 		readonly IEditor Editor;
-		bool? IsRemoveColors;
 		public Highlighter(IEditor editor)
 		{
 			Editor = editor;
-
 			editor.Redrawing += Redrawing;
-			editor.Closed += Closed;
 		}
-		public void Stop()
-		{
-			Editor.Redrawing -= Redrawing;
-			Editor.Closed -= Closed;
-		}
-		void Closed(object sender, EventArgs e)
-		{
-			Stop();
-		}
+		public bool Disabled { get; set; }
 		void Redrawing(object sender, EditorRedrawingEventArgs e)
 		{
 			// do not draw `Line`, `Screen` is called anyway
 			if (e.Mode == EditorRedrawMode.Line)
 				return;
 
-			// do not draw `Change` if we do not remove colors, `Screen` is called anyway
-			if (e.Mode == EditorRedrawMode.Change && IsRemoveColors.HasValue && !IsRemoveColors.Value)
+			// do not draw `Change`, `Screen` is called anyway
+			if (e.Mode == EditorRedrawMode.Change)
 				return;
 
 			int height = Far.Net.UI.WindowSize.Y;
@@ -61,17 +50,15 @@ namespace FarNet.RightWords
 		}
 		void HighlightLine(int lineIndex)
 		{
+			// remove colors always ([Home ShiftEnd Del] => existing colors should be removed)
+			Editor.RemoveColors(My.Guid, lineIndex, -1);
+
+			if (Disabled)
+				return;
+
 			var text = Editor[lineIndex].Text;
 			if (text.Length == 0)
 				return;
-
-			// check colors
-			if (!IsRemoveColors.HasValue)
-				IsRemoveColors = Editor.GetColors(lineIndex).Count == 0;
-
-			// remove colors
-			if (IsRemoveColors.Value)
-				Editor.AddColor(lineIndex, new ColorSpan() { Start = -1 });
 
 			MatchCollection skip = null;
 			for (var match = RegexWord.Match(text); match.Success; match = match.NextMatch())
@@ -92,14 +79,15 @@ namespace FarNet.RightWords
 					continue;
 
 				// color
-				var color = new ColorSpan();
-				color.Start = match.Index;
-				color.End = match.Index + match.Length;
-				color.Background = HighlightingBackgroundColor;
-				color.Foreground = HighlightingForegroundColor;
+				var color = new EditorColorInfo(
+				My.Guid,
+				match.Index,
+				match.Index + match.Length,
+				HighlightingForegroundColor,
+				HighlightingBackgroundColor);
 
 				// add color
-				Editor.AddColor(lineIndex, color);
+				Editor.AddColor(lineIndex, color, 1);
 			}
 		}
 	}

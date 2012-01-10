@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2012-01-06
+Release  : 2012-01-09
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,7 +10,7 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
  * Far Manager 3.0.0.x
- * Plugin FarNet 5.0.0
+ * Plugin FarNet 5.0.1
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -64,9 +64,6 @@ Menu commands:
 *) Highlighting (editor)
 Turns highlighting of misspelled word on/off. Highlighting is turned on for
 some files automatically, see the settings.
-
-Highlighting is tested with and without the Colorer plugin and without other
-editor color plugins. Scenarios with other editor color plugins are not tested.
 
 *) Thesaurus
 Prompts to enter a word and shows the list of available meanings and synonyms
@@ -263,3 +260,7 @@ Minor tweaks.
 2.0.0
 
 Adapted for Far3 + FarNet5.
+
+2.0.1
+
+Requires FarNet 5.0.1. Bug fixing.

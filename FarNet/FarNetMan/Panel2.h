@@ -89,13 +89,7 @@ public:
 	virtual void PostData(Object^ data);
 	virtual void PostFile(FarFile^ file);
 	virtual void PostName(String^ name);
-	virtual void SetKeyBar(array<String^>^ /*labels*/){};//??????
-	virtual void SetKeyBarAlt(array<String^>^ /*labels*/){};
-	virtual void SetKeyBarAltShift(array<String^>^ /*labels*/){};
-	virtual void SetKeyBarCtrl(array<String^>^ /*labels*/){};
-	virtual void SetKeyBarCtrlAlt(array<String^>^ /*labels*/){};
-	virtual void SetKeyBarCtrlShift(array<String^>^ /*labels*/){};
-	virtual void SetKeyBarShift(array<String^>^ /*labels*/){};
+	virtual void SetKeyBars(array<KeyBar^>^ bars);
 	virtual void SetPlan(PanelViewMode mode, PanelPlan^ plan);
 internal:
 	Panel2(Panel^ panel, Explorer^ explorer);
@@ -122,8 +116,8 @@ private:
 	void CreateModes();
 	void DeleteInfoLines();
 	void DeleteModes();
-	static void Free12Strings(wchar_t* const dst[12]);
-	static void Make12Strings(wchar_t** dst, array<String^>^ src);
+	void CreateKeyBars(KeyBarTitles& m);
+	static void DeleteKeyBars(const KeyBarTitles& m);
 private:
 	Explorer^ _MyExplorer;
 	OpenPanelInfo* m;
@@ -134,12 +128,6 @@ private:
 	PanelHighlighting _Highlighting;
 	array<DataItem^>^ _InfoItems;
 	array<PanelPlan^>^ _Plans;
-	//array<String^>^ _keyBar; //?????
-	//array<String^>^ _keyBarAlt;
-	//array<String^>^ _keyBarAltShift;
-	//array<String^>^ _keyBarCtrl;
-	//array<String^>^ _keyBarCtrlAlt;
-	//array<String^>^ _keyBarCtrlShift;
-	//array<String^>^ _keyBarShift;
+	array<KeyBar^>^ _keyBars;
 };
 }

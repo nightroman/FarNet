@@ -1227,39 +1227,54 @@ void Editor::IsLocked::set(bool value)
 		SetBoolOption(ESPT_LOCKMODE, value);
 }
 
-IList<ColorSpan^>^ Editor::GetColors(int line)
+IList<EditorColorInfo^>^ Editor::GetColors(int line)
 {
-	EditorColor arg; memset(&arg, 0, sizeof(arg));
+	EditorColor arg;
 	arg.StructSize = sizeof(arg);
 	arg.StringNumber = line;
 
-	List<ColorSpan^>^ spans = gcnew List<ColorSpan^>;
+	List<EditorColorInfo^>^ spans = gcnew List<EditorColorInfo^>;
 
 	for(arg.ColorItem = 0; Info.EditorControl(-1, ECTL_GETCOLOR, 0, &arg); ++arg.ColorItem)
 	{
-		ColorSpan^ span = gcnew ColorSpan;
-		span->Start = arg.StartPos;
-		span->End = arg.EndPos + 1;
-		span->Background = ConsoleColor(arg.Color.BackgroundColor);
-		span->Foreground = ConsoleColor(arg.Color.ForegroundColor);
-		spans->Add(span);
+		spans->Add(gcnew EditorColorInfo(
+			FromGUID(arg.Owner),
+			arg.StartPos,
+			arg.EndPos + 1,
+			(ConsoleColor)arg.Color.ForegroundColor,
+			(ConsoleColor)arg.Color.BackgroundColor));
 	}
 	
 	return spans;
 }
 
-void Editor::AddColor(int line, ColorSpan^ color)
+void Editor::AddColor(int line, EditorColorInfo^ color, int priority)
 {
-	EditorColor arg; memset(&arg, 0, sizeof(arg));
+	EditorColor arg;
+	arg.StructSize = sizeof(arg);
 	arg.StringNumber = line;
 	arg.ColorItem = 0;
 	arg.StartPos = color->Start;
 	arg.EndPos = color->End - 1;
+	arg.Priority = priority;
+	arg.Flags = 0;
 	arg.Color.Flags = FCF_4BITMASK;
 	arg.Color.BackgroundColor = (COLORREF)color->Background;
 	arg.Color.ForegroundColor = (COLORREF)color->Foreground;
+	arg.Owner = ToGUID(color->Owner);
 
 	Info.EditorControl(-1, ECTL_ADDCOLOR, 0, &arg);
+}
+
+void Editor::RemoveColors(Guid owner, int line, int start)
+{
+	EditorDeleteColor arg;
+	arg.StructSize = sizeof(arg);
+	arg.Owner = ToGUID(owner);
+	arg.StringNumber = line;
+	arg.StartPos = start;
+
+	Info.EditorControl(-1, ECTL_DELCOLOR, 0, &arg);
 }
 
 }

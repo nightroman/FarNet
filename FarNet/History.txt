@@ -1,5 +1,22 @@
 http://code.google.com/p/farnet/
 
+= 5.0.1 =
+
+- Editor color methods with more options.
+- Custom colors in dialog controls.
+- Custom module panel key bars.
+
+- Fixed crash in x64 dialogs.
+
+- Local module settings are now saved in "Xyz.local.resources" files in order
+to avoid conflicts with roaming "Xyz.resources" files when roaming and local
+settings paths are the same (this is possible with custom "Far.exe.ini").
+
+NOTE: If you use Far2 with FarNet avoid starting Far2 from Far3. FarNet in Far2
+will use existing %FARPROFILE% and %FARLOCALPROFILE% paths and this may lead to
+settings issues either in Far2 or Far3 (not necessarily but this is possible if
+settings data structure change). This issue is not going to be fixed.
+
 = 5.0.0 =
 
 This version is designed for Far Manager 3. All modules should be updated.

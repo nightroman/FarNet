@@ -6,7 +6,7 @@ Copyright (c) 2011-2012 Roman Kuzmin
 
 namespace FarNet.RightWords
 {
-	[System.Runtime.InteropServices.Guid("ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9")]
+	[System.Runtime.InteropServices.Guid(My.GuidString)]
 	[ModuleTool(Name = Settings.ModuleName, Options = ModuleToolOptions.Dialog | ModuleToolOptions.Editor | ModuleToolOptions.Panels)]
 	public class TheTool : ModuleTool
 	{
@@ -17,21 +17,22 @@ namespace FarNet.RightWords
 			var menu = Far.Net.CreateMenu();
 			menu.Title = Settings.ModuleName;
 
-			menu.Add(UI.DoCorrectWord).Click += delegate { Actor.CorrectWord(); };
+			menu.Add(My.DoCorrectWord).Click = delegate { Actor.CorrectWord(); };
 
 			if (e.From == ModuleToolOptions.Editor)
 			{
 				var editor = Far.Net.Editor;
 
-				menu.Add(UI.DoCorrectText).Click += delegate { Actor.CorrectText(); };
+				menu.Add(My.DoCorrectText).Click = delegate { Actor.CorrectText(); };
 
-				var itemHighlighting = menu.Add(UI.DoHighlighting);
-				itemHighlighting.Click += delegate { Actor.Highlight(editor); };
-				if (editor.Data[Settings.EditorDataId] != null)
+				var itemHighlighting = menu.Add(My.DoHighlighting);
+				itemHighlighting.Click = delegate { Actor.Highlight(editor); };
+				var highlighter = (Highlighter)editor.Data[My.Guid];
+				if (highlighter != null && !highlighter.Disabled)
 					itemHighlighting.Checked = true;
 			}
 
-			menu.Add(UI.DoThesaurus).Click += delegate { Actor.ShowThesaurus(); };
+			menu.Add(My.DoThesaurus).Click = delegate { Actor.ShowThesaurus(); };
 
 			menu.Show();
 		}

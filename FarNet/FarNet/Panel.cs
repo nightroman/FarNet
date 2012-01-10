@@ -885,33 +885,9 @@ namespace FarNet
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		public DataItem[] InfoItems { get { return _Panel.InfoItems; } set { _Panel.InfoItems = value; } }
 		/// <summary>
-		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
+		/// Sets key bars.
 		/// </summary>
-		public void SetKeyBar(string[] labels) { _Panel.SetKeyBar(labels); }
-		/// <summary>
-		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
-		/// </summary>
-		public void SetKeyBarCtrl(string[] labels) { _Panel.SetKeyBarCtrl(labels); }
-		/// <summary>
-		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
-		/// </summary>
-		public void SetKeyBarAlt(string[] labels) { _Panel.SetKeyBarAlt(labels); }
-		/// <summary>
-		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
-		/// </summary>
-		public void SetKeyBarShift(string[] labels) { _Panel.SetKeyBarShift(labels); }
-		/// <summary>
-		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
-		/// </summary>
-		public void SetKeyBarCtrlShift(string[] labels) { _Panel.SetKeyBarCtrlShift(labels); }
-		/// <summary>
-		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
-		/// </summary>
-		public void SetKeyBarAltShift(string[] labels) { _Panel.SetKeyBarAltShift(labels); }
-		/// <summary>
-		/// Sets 1-12 key bar labels, use empty labels for Far defaults.
-		/// </summary>
-		public void SetKeyBarCtrlAlt(string[] labels) { _Panel.SetKeyBarCtrlAlt(labels); }
+		public void SetKeyBars(KeyBar[] bars) { _Panel.SetKeyBars(bars); }
 		/// <summary>
 		/// Gets the panel view plan or null if it is not set.
 		/// </summary>

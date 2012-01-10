@@ -87,9 +87,9 @@ namespace FarNet.Settings
 		///
 		protected ModuleSettings()
 		{
-			var append = "\\" + GetType().Name + ".resources";
-			Context[ModuleSettingsProvider.LocalFileName] = Manager.GetFolderPath(SpecialFolder.LocalData, false) + append;
-			Context[ModuleSettingsProvider.RoamingFileName] = Manager.GetFolderPath(SpecialFolder.RoamingData, false) + append;
+			var name = GetType().Name;
+			Context[ModuleSettingsProvider.RoamingFileName] = Manager.GetFolderPath(SpecialFolder.RoamingData, false) + "\\" + name + ".resources";
+			Context[ModuleSettingsProvider.LocalFileName] = Manager.GetFolderPath(SpecialFolder.LocalData, false) + "\\" + name + ".local.resources";
 		}
 		/// <summary>
 		/// Gets the module manager.

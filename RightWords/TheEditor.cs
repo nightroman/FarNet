@@ -13,7 +13,7 @@ namespace FarNet.RightWords
 		public override void Invoke(object sender, ModuleEditorEventArgs e)
 		{
 			var editor = (IEditor)sender;
-			editor.Data[Settings.EditorDataId] = new Highlighter(editor);
+			editor.Data[My.Guid] = new Highlighter(editor);
 		}
 	}
 }

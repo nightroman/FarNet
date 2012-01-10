@@ -16,7 +16,6 @@ namespace FarNet.RightWords
 		internal const string ModuleName = "RightWords";
 		internal const string UserFile = "RightWords.dic";
 		internal const string AutoHighlightingMask = "*.hlf;*.htm;*.html;*.lng;*.restext";
-		internal static Guid EditorDataId = new Guid("0f1db61f-0cf8-4859-8ee6-46b567ee21ad");
 		static readonly Settings _Default = new Settings();
 		public static Settings Default { get { return _Default; } }
 		[UserScopedSetting]

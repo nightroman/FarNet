@@ -567,38 +567,38 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 				}
 				return 1;
 			}
-		//case DN_CTLCOLORDLGITEM://?????
-		//	{
-		//		FarControl^ fc = _items[param1];
-		//		if (fc->_Coloring)
-		//		{
-		//			ColoringEventArgs ea(fc);
-		//			FarDialogItemColors* colors = (FarDialogItemColors*)param2;
-		//			// - В DN_CTLCOLORDLGITEM в Param2 приходит FarDialogItemColors*, менять надо FarDialogItemColors.Colors по принципу:
-		//			// Colors[0] == lwlb, Colors[1] == lwhb, Colors[2] == hwlb, Colors[3] == hwhb.
-		//			ea.Foreground1 = ConsoleColor(param2 & 0x0000000F);
-		//			ea.Background1 = ConsoleColor((param2 & 0x000000F0) >> 4);
-		//			ea.Foreground2 = ConsoleColor((param2 & 0x00000F00) >> 8);
-		//			ea.Background2 = ConsoleColor((param2 & 0x0000F000) >> 12);
-		//			ea.Foreground3 = ConsoleColor((param2 & 0x000F0000) >> 16);
-		//			ea.Background3 = ConsoleColor((param2 & 0x00F00000) >> 20);
-		//			ea.Foreground4 = ConsoleColor((param2 & 0x0F000000) >> 24);
-		//			ea.Background4 = ConsoleColor((param2 & 0xF0000000) >> 28);
+		case DN_CTLCOLORDLGITEM:
+			{
+				FarControl^ fc = _items[param1];
+				if (fc->_Coloring)
+				{
+					ColoringEventArgs ea(fc);
+					FarDialogItemColors& arg = *(FarDialogItemColors*)param2;
 
-		//			fc->_Coloring(this, %ea);
+					ea.Foreground1 = ConsoleColor(arg.Colors[0].ForegroundColor);
+					ea.Background1 = ConsoleColor(arg.Colors[0].BackgroundColor);
+					ea.Foreground2 = ConsoleColor(arg.Colors[1].ForegroundColor);
+					ea.Background2 = ConsoleColor(arg.Colors[1].BackgroundColor);
+					ea.Foreground3 = ConsoleColor(arg.Colors[2].ForegroundColor);
+					ea.Background3 = ConsoleColor(arg.Colors[2].BackgroundColor);
+					ea.Foreground4 = ConsoleColor(arg.Colors[3].ForegroundColor);
+					ea.Background4 = ConsoleColor(arg.Colors[3].BackgroundColor);
 
-		//			return
-		//				(int(ea.Foreground1)) |
-		//				(int(ea.Background1) << 4) |
-		//				(int(ea.Foreground2) << 8) |
-		//				(int(ea.Background2) << 12) |
-		//				(int(ea.Foreground3) << 16) |
-		//				(int(ea.Background3) << 20) |
-		//				(int(ea.Foreground4) << 24) |
-		//				(int(ea.Background4) << 28);
-		//		}
-		//		break;
-		//	}
+					fc->_Coloring(this, %ea);
+
+					arg.Colors[0].ForegroundColor = COLORREF(ea.Foreground1);
+					arg.Colors[0].BackgroundColor = COLORREF(ea.Background1);
+					arg.Colors[1].ForegroundColor = COLORREF(ea.Foreground2);
+					arg.Colors[1].BackgroundColor = COLORREF(ea.Background2);
+					arg.Colors[2].ForegroundColor = COLORREF(ea.Foreground3);
+					arg.Colors[2].BackgroundColor = COLORREF(ea.Background3);
+					arg.Colors[3].ForegroundColor = COLORREF(ea.Foreground4);
+					arg.Colors[3].BackgroundColor = COLORREF(ea.Background4);
+
+					return 1;
+				}
+				break;
+			}
 		case DN_GOTFOCUS:
 			{
 				FarControl^ fc = _items[param1];

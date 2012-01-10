@@ -46,17 +46,16 @@ $Data | Add-Member ScriptMethod UpdateInfo {
 	$Panel = $Far.Panel
 	if ($Panel.Explorer.TypeId -ne 'd797d742-3b57-4bfd-a997-da83ba66b9bb') { return }
 
-	# generator of new key labels
-	function Make12($s) { for($i = 1; $i -le 12; ++$i) { "$i $s $($this.Total)" } }
-
 	# generate new key labels
-	$Panel.SetKeyBar((Make12 Main))
-	$Panel.SetKeyBarCtrl((Make12 Ctrl))
-	$Panel.SetKeyBarCtrlAlt((Make12 CtrlAlt))
-	$Panel.SetKeyBarCtrlShift((Make12 CtrlShift))
-	$Panel.SetKeyBarAlt((Make12 Alt))
-	$Panel.SetKeyBarAltShift((Make12 AltShift))
-	$Panel.SetKeyBarShift((Make12 Shift))
+	$Panel.SetKeyBars(@(
+		New-Object FarNet.KeyBar ([FarNet.KeyCode]::F1, 0, $this.Total, '')
+		New-Object FarNet.KeyBar ([FarNet.KeyCode]::F1, 'LeftCtrlPressed', ('C' + $this.Total), '')
+		New-Object FarNet.KeyBar ([FarNet.KeyCode]::F1, 'LeftCtrlPressed, LeftAltPressed', ('CA' + $this.Total), '')
+		New-Object FarNet.KeyBar ([FarNet.KeyCode]::F1, 'LeftCtrlPressed, ShiftPressed', ('CS' + $this.Total), '')
+		New-Object FarNet.KeyBar ([FarNet.KeyCode]::F1, 'LeftAltPressed', ('A' + $this.Total), '')
+		New-Object FarNet.KeyBar ([FarNet.KeyCode]::F1, 'LeftAltPressed, ShiftPressed', ('AS' + $this.Total), '')
+		New-Object FarNet.KeyBar ([FarNet.KeyCode]::F1, 'ShiftPressed', ('S' + $this.Total), '')
+	))
 
 	# update event counters and reset the property
 	$InfoItems = $Panel.InfoItems
