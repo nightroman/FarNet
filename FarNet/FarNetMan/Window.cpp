@@ -12,6 +12,41 @@ Copyright (c) 2005-2012 FarNet Team
 
 namespace FarNet
 {;
+static void Call_ACTL_GETWINDOWINFO(WindowInfo& wi, int index)
+{
+	wi.StructSize = sizeof(wi);
+	wi.TypeName = nullptr;
+	wi.Name = nullptr;
+	wi.TypeNameSize = 0;
+	wi.NameSize = 0;
+	wi.Pos = index;
+	
+	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, 0, &wi))
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + index);
+}
+
+WindowKind Window::GetKindAt(int index)
+{
+	WindowInfo wi;
+	Call_ACTL_GETWINDOWINFO(wi, index);
+
+	return (FarNet::WindowKind)wi.Type;
+}
+
+String^ Window::GetNameAt(int index)
+{
+	WindowInfo wi;
+	Call_ACTL_GETWINDOWINFO(wi, index);
+
+	CBox text(wi.NameSize);
+	wi.Name = text;
+	
+	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, 0, &wi))
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + index);
+
+	return gcnew String(text);
+}
+
 int Window::Count::get()
 {
 	return (int)Info.AdvControl(&MainGuid, ACTL_GETWINDOWCOUNT, 0, 0);
@@ -22,66 +57,12 @@ WindowKind Window::Kind::get()
 	return Wrap::WindowGetKind();
 }
 
-WindowKind Window::GetKindAt(int index)
-{
-	WindowInfo wi;
-	wi.StructSize = sizeof(wi);
-	wi.Name = wi.TypeName = nullptr;
-	wi.NameSize = wi.TypeNameSize = 0;
-	
-	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, index, &wi))
-		throw gcnew InvalidOperationException("ACTL_GETWINDOWINFO: " + index + " failed.");
-
-	return (FarNet::WindowKind)wi.Type;
-}
-
-String^ Window::GetKindNameAt(int index)
-{
-	WindowInfo wi;
-	wi.StructSize = sizeof(wi);
-	wi.Name = wi.TypeName = nullptr;
-	wi.NameSize = wi.TypeNameSize = 0;
-	
-	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, index, &wi))
-		throw gcnew InvalidOperationException("ACTL_GETWINDOWINFO: " + index + " failed.");
-
-	CBox text(wi.TypeNameSize);
-	wi.TypeName = text;
-
-	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, index, &wi))
-		throw gcnew InvalidOperationException("ACTL_GETWINDOWINFO: " + index + " failed.");
-
-	return gcnew String(text);
-}
-
-String^ Window::GetNameAt(int index)
-{
-	WindowInfo wi;
-	wi.StructSize = sizeof(wi);
-	wi.Name = wi.TypeName = nullptr;
-	wi.NameSize = wi.TypeNameSize = 0;
-	
-	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, index, &wi))
-		throw gcnew InvalidOperationException("ACTL_GETWINDOWINFO: " + index + " failed.");
-
-	CBox text(wi.NameSize);
-	wi.Name = text;
-
-	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, index, &wi))
-		throw gcnew InvalidOperationException("ACTL_GETWINDOWINFO: " + index + " failed.");
-
-	return gcnew String(text);
-}
-
 void Window::SetCurrentAt(int index)
 {
 	if (!Info.AdvControl(&MainGuid, ACTL_SETCURRENTWINDOW, index, 0))
-		throw gcnew InvalidOperationException("SetCurrentWindow:" + index + " failed.");
-}
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + index);
 
-bool Window::Commit()
-{
-	return Info.AdvControl(&MainGuid, ACTL_COMMIT, 0, 0) != 0;
+	Info.AdvControl(&MainGuid, ACTL_COMMIT, 0, 0);
 }
 
 }

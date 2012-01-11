@@ -1204,7 +1204,6 @@ void Editor::Activate()
 		if (name == _FileName)
 		{
 			Far::Net->Window->SetCurrentAt(i);
-			Far::Net->Window->Commit();
 			return;
 		}
 	}

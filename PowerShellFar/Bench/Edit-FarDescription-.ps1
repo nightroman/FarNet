@@ -19,8 +19,7 @@ param
 Import-Module FarDescription
 
 if (!$Path) {
-	$wi = $Far.Window.GetInfoAt(-1, $true)
-	$Path = $wi.Name
+	$Path = $Far.Window.GetNameAt(-1)
 }
 
 # check and convert to full name
