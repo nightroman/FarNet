@@ -14,11 +14,9 @@ public:
 	virtual property int Count { int get() override; }
 	virtual property WindowKind Kind { WindowKind get() override; }
 public:
-	virtual bool Commit() override;
+	virtual String^ GetNameAt(int index) override;
 	virtual void SetCurrentAt(int index) override;
 	virtual WindowKind GetKindAt(int index) override;
-	virtual String^ GetKindNameAt(int index) override;
-	virtual String^ GetNameAt(int index) override;
 internal:
 	static Window Instance;
 private:

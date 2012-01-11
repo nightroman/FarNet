@@ -26,19 +26,6 @@ namespace FarNet
 		/// </remarks>
 		public abstract WindowKind Kind { get; }
 		/// <summary>
-		/// Commits the results of the last operation on windows (e.g. of <see cref="SetCurrentAt"/>).
-		/// </summary>
-		/// <returns>true on success.</returns>
-		public abstract bool Commit();
-		/// <summary>
-		/// Sets the current window by the specified window index.
-		/// </summary>
-		/// <param name="index">Window index. See <see cref="Count"/>.</param>
-		/// <remarks>
-		/// Window change is actually performed only on <see cref="Commit"/> or when Far gets control.
-		/// </remarks>
-		public abstract void SetCurrentAt(int index);
-		/// <summary>
 		/// Returns the window kind.
 		/// </summary>
 		/// <param name="index">
@@ -62,13 +49,10 @@ namespace FarNet
 		/// </remarks>
 		public abstract string GetNameAt(int index);
 		/// <summary>
-		/// Returns the window kind name in the current language.
+		/// Sets the current window by the specified index.
 		/// </summary>
-		/// <param name="index">
-		/// Window index or -1 for the current window.
-		/// See <see cref="Count"/>.
-		/// </param>
-		public abstract string GetKindNameAt(int index);
+		/// <param name="index">Window index. See <see cref="Count"/>.</param>
+		public abstract void SetCurrentAt(int index);
 	}
 
 	/// <summary>

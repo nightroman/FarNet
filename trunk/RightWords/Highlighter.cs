@@ -27,13 +27,12 @@ namespace FarNet.RightWords
 		public bool Disabled { get; set; }
 		void Redrawing(object sender, EditorRedrawingEventArgs e)
 		{
-			// do not draw `Line`, `Screen` is called anyway
-			if (e.Mode == EditorRedrawMode.Line)
+			// test: try to edit a line with colors with and without Colorer
+			if (e.Mode == EditorRedrawMode.Line || e.Mode == EditorRedrawMode.Change)
+			{
+				HighlightLine(Editor.Caret.Y);
 				return;
-
-			// do not draw `Change`, `Screen` is called anyway
-			if (e.Mode == EditorRedrawMode.Change)
-				return;
+			}
 
 			int height = Far.Net.UI.WindowSize.Y;
 			TextFrame frame = Editor.Frame;

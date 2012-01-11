@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2012-01-09
+Release  : 2012-01-10
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,7 +10,7 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
  * Far Manager 3.0.0.x
- * Plugin FarNet 5.0.1
+ * Plugin FarNet 5.0.2
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -37,7 +37,7 @@ The NHunspell directory name should be used exactly. Thesaurus files are
 optional. Collection of dictionaries is up to a user.
 
 Dictionary directories may have any names. The names are used in the dictionary
-menu and in user dictionary file names (for example: RightWords.English.dic).
+menu and in user dictionary file names (e.g. English -> RightWords.English.dic).
 
 
 = DESCRIPTION =
@@ -154,7 +154,7 @@ The default is the module roaming directory.
 *) Auto highlighting file mask
 
 Highlighting is turned on automatically for files which names match the mask:
-[F9] | Options | Plugins configuration | .NET | Editors | RightWords
+[F9] | Options | Plugins configuration | FarNet | Editors | RightWords
 
 
 = HISTORY =
@@ -264,3 +264,9 @@ Adapted for Far3 + FarNet5.
 2.0.1
 
 Requires FarNet 5.0.1. Bug fixing.
+
+2.0.2
+
+Fixed highlighting defects on editing with spelling errors without Colorer.
+
+http://code.google.com/p/farnet/downloads/list
