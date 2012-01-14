@@ -11,7 +11,7 @@ namespace PowerShellFar.Commands
 {
 	sealed class OpenFarViewerCommand : NewFarViewerCommand
 	{
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Modal { get; set; }
 		protected override void ProcessRecord()
 		{

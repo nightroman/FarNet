@@ -100,11 +100,11 @@ commands in order to perform several steps, or use these commands via macros.
 
 Example mouse macros for the Common area:
 
- [CtrlMsWheelDown] FarNet: Decrease font size:
- F11 $If (Menu.Select(".NET", 2) > 0) Enter c d $End
+ [CtrlMsWheelDown] FarNet: Decrease font size
+ F11 $If (Menu.Select("FarNet", 2) > 0) Enter c d $End
 
  [CtrlMsWheelUp] FarNet: Increase font size:
- F11 $If (Menu.Select(".NET", 2) > 0) Enter c i $End
+ F11 $If (Menu.Select("FarNet", 2) > 0) Enter c i $End
 
 
 @MenuEditors
@@ -145,7 +145,7 @@ and common module options.
 NOTE: These are #system settings#. They exist for all modules and their tools.
 In contrast, there are also #user settings# panels opened from the plugin menu
 in panels. User settings exist only if they are implemented by a module.
-See ~Settings menu and panels~@ModuleSettings@ (#F11 | .NET | Settings#).
+See ~Settings menu and panels~@ModuleSettings@ (#F11 | FarNet | Settings#).
 
 In addition, modules may provide custom settings dialogs and even not standard
 ways to configure settings (e.g. via registry), see module manuals.

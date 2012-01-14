@@ -16,17 +16,17 @@ namespace PowerShellFar.Commands
 		public string Text { get; set; }
 		[Parameter(Position = 1)]
 		public EventHandler<MenuEventArgs> Click { get; set; }
-		[Parameter()]
+		[Parameter]
 		public object Data { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Checked { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Disabled { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Grayed { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Hidden { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter IsSeparator { get; set; }
 		protected override void BeginProcessing()
 		{

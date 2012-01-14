@@ -1,5 +1,18 @@
 http://code.google.com/p/farnet/
 
+= 5.0.3 =
+
+Adapted for Far 3.0.2377.
+
+*) Editor colors API
+- API is simpler and much easier to use. Advanced methods are not exposed,
+perhaps they are not needed at all. See modules: RightWords, PowerShellFar.
+
+*) Misc
+- Fixed IFar.FarVersion build and revision.
+- Revised Key/Mouse methods ==, !=, Equals.
+- Memory leaks.
+
 = 5.0.2 =
 
 *) IWindow

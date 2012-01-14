@@ -6,6 +6,7 @@ Copyright (c) 2006-2012 Roman Kuzmin
 
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using FarNet;
 
@@ -16,24 +17,31 @@ namespace PowerShellFar.Commands
 	/// </summary>
 	class BasePanelCmdlet : BaseCmdlet
 	{
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public Guid TypeId { get { return _TypeId.GetValueOrDefault(); } set { _TypeId = value; } }
 		Guid? _TypeId;
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public string Title { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public PanelSortMode SortMode { get { return _SortMode.GetValueOrDefault(); } set { _SortMode = value; } }
 		PanelSortMode? _SortMode;
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public PanelViewMode ViewMode { get { return _ViewMode.GetValueOrDefault(); } set { _ViewMode = value; } }
 		PanelViewMode? _ViewMode;
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public SwitchParameter IdleUpdate { get { return _IdleUpdate.GetValueOrDefault(); } set { _IdleUpdate = value; } }
 		SwitchParameter? _IdleUpdate;
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public Meta DataId { get; set; }
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+		[Parameter]
 		public IDictionary Data { get; set; }
 		internal void ApplyParameters(Panel panel)
 		{

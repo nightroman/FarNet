@@ -8,7 +8,7 @@ Source   : http://code.google.com/p/farnet/
 
 	= PREREQUISITES =
 
- * Far Manager 3.0.0.x
+ * Far Manager 3.0.x
  * Plugin FarNet 5.0.0
  * .NET Framework 3.5+
 
@@ -159,3 +159,5 @@ the roaming file Vessel\Settings.resources can be removed.
 2.0.0
 
 Adapted for Far3 + FarNet5.
+
+http://code.google.com/p/farnet/downloads/list

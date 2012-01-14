@@ -94,7 +94,6 @@ public:
 	virtual TextWriter^ OpenWriter() override;
 	virtual void Activate() override;
 	virtual void Add(String^ text) override;
-	virtual void AddColor(int line, EditorColorInfo^ color, int priority) override;
 	virtual void BeginAsync() override;
 	virtual void BeginUndo() override;
 	virtual void Clear() override;
@@ -117,8 +116,8 @@ public:
 	virtual void Open(OpenMode mode) override;
 	virtual void Redo() override;
 	virtual void Redraw() override;
+	virtual void RegisterDrawer(EditorDrawer^ drawer) override;
 	virtual void RemoveAt(int index) override;
-	virtual void RemoveColors(Guid owner, int line, int start) override;
 	virtual void Save() override;
 	virtual void Save(bool force) override;
 	virtual void Save(String^ fileName) override;
@@ -130,10 +129,13 @@ public:
 	virtual void UnselectText() override;
 internal:
 	Editor();
+	void Redraw(EditorRedrawingEventArgs^ e);
 	void Sync();
 	void Start(const EditorInfo& ei, bool waiting);
 	void Stop();
 private:
+	static void AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors);
+	static void RemoveColors(Guid owner, int startLine, int endLine);
 	void AssertClosed();
 	bool GetBoolOption(int option, Nullable<bool> value);
 	void SetBoolOption(EDITOR_SETPARAMETER_TYPES option, bool value);
@@ -161,5 +163,6 @@ internal:
 	// async stuff
 	HANDLE _hMutex;
 	StringBuilder^ _output;
+	List<EditorDrawer^>^ _drawers;
 };
 }

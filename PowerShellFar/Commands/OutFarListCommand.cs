@@ -14,7 +14,7 @@ namespace PowerShellFar.Commands
 		IListMenu _menu;
 		[Parameter(ValueFromPipeline = true)]
 		public object InputObject { get; set; }
-		[Parameter()]
+		[Parameter]
 		public Meta Text { get; set; }
 		protected override void BeginProcessing()
 		{

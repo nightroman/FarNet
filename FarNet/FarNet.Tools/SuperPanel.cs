@@ -104,6 +104,7 @@ namespace FarNet.Tools
 		///
 		public override bool UIKeyPressed(KeyInfo key)
 		{
+			if (key == null) throw new ArgumentNullException("key");
 			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.F7:

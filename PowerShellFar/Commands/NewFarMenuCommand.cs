@@ -11,11 +11,11 @@ namespace PowerShellFar.Commands
 {
 	sealed class NewFarMenuCommand : BaseMenuCmdlet
 	{
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter ReverseAutoAssign { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter ChangeConsoleTitle { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Show { get; set; }
 		protected override void BeginProcessing()
 		{

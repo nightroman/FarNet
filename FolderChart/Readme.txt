@@ -10,7 +10,7 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
 
- * Far Manager 3.0.0.x
+ * Far Manager 3.0.x
  * Plugin FarNet 5.0.0
  * .NET Framework 4.0
 
@@ -61,3 +61,5 @@ Total size is shown in the chart dialog title.
 2.0.0
 
 Adapted for Far3 + FarNet5.
+
+http://code.google.com/p/farnet/downloads/list

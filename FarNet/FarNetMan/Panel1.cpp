@@ -135,9 +135,11 @@ void Panel1::ViewMode::set(PanelViewMode value)
 
 String^ Panel1::CurrentDirectory::get()
 {
-	size_t size = Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, 0, 0);
+	size_t size = Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, 0, nullptr);
 	CBox buf(size);
-	FarPanelDirectory* arg = (FarPanelDirectory*)(void*)buf;
+	
+	FarPanelDirectory* arg = (FarPanelDirectory*)(void*)buf; arg->StructSize = sizeof(FarPanelDirectory);
+	
 	Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, (int)size, arg);
 	return gcnew String(arg->Name);
 }
@@ -156,8 +158,7 @@ void Panel1::CurrentDirectory::set(String^ value)
 
 	PIN_NE(pin, value);
 	
-	FarPanelDirectory arg; memset(&arg, 0, sizeof(arg));
-	arg.StructSize = sizeof(arg);
+	FarPanelDirectory arg; memset(&arg, 0, sizeof(arg)); arg.StructSize = sizeof(arg);
 	arg.Name = pin;
 
 	if (!Info.PanelControl(_handle, FCTL_SETPANELDIRECTORY, 0, &arg))
@@ -355,7 +356,7 @@ int Panel1::GetSelectedFileCount()
 
 void Panel1::Close()
 {
-	Info.PanelControl(_handle, FCTL_CLOSEPANEL, 0, 0);
+	Info.PanelControl(_handle, FCTL_CLOSEPANEL, 0, nullptr);
 }
 
 void Panel1::Close(String^ path)
@@ -442,7 +443,7 @@ void Panel1::Select(array<int>^ indexes, bool select)
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, 0);
+	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, nullptr);
 	try
 	{
 		for(int i = 0; i < indexes->Length; ++i)
@@ -455,7 +456,7 @@ void Panel1::Select(array<int>^ indexes, bool select)
 	}
 	finally
 	{
-		Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, 0);
+		Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, nullptr);
 	}
 }
 
@@ -474,12 +475,12 @@ void Panel1::SelectAll(bool select)
 	PanelInfo pi;
 	GetPanelInfo(_handle, pi);
 
-	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, 0);
+	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, nullptr);
 	{
 		for(int i = 0; i < (int)pi.ItemsNumber; ++i)
 			Info.PanelControl(_handle, FCTL_SETSELECTION, i, (void*)select);
 	}
-	Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, 0);
+	Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, nullptr);
 }
 
 void Panel1::SelectAll()
@@ -506,7 +507,7 @@ void Panel1::SelectNames(System::Collections::IEnumerable^ names, bool select)
 		namesNow.Add(gcnew String(item.Get().FileName));
 	}
 
-	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, 0);
+	Info.PanelControl(_handle, FCTL_BEGINSELECTION, 0, nullptr);
 	try
 	{
 		for each(Object^ it in names)
@@ -521,7 +522,7 @@ void Panel1::SelectNames(System::Collections::IEnumerable^ names, bool select)
 	}
 	finally
 	{
-		Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, 0);
+		Info.PanelControl(_handle, FCTL_ENDSELECTION, 0, nullptr);
 	}
 }
 

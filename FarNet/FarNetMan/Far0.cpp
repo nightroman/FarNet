@@ -830,7 +830,7 @@ void Far0::ShowMenu(ModuleToolOptions from)
 
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->HelpTopic = "MenuMain";
-	menu->Title = ".NET tools";
+	menu->Title = "FarNet";
 
 	// Panels
 	if (from == ModuleToolOptions::Panels)

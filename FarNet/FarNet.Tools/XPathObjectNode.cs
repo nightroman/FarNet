@@ -19,6 +19,7 @@ namespace FarNet.Tools
 		readonly string _name;
 		readonly XPathObjectNode _parent;
 		// Sibling list, elements of the parent (it keeps the weak reference alive).
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		readonly IList<XPathObjectNode> _siblings;
 		// Index of this node in the sibling list, needed for MoveToNext, MoveToPrevious.
 		int _index;

@@ -6,11 +6,12 @@
 	* CtrlShiftF7 - Correct the selected text (editor).
 	* CtrlShiftH - Switch highlighting (editor).
 -->
-<farconfig version="3.0.2350">
-	<macro>
+<farconfig version="3.0.2366">
+	<macros>
 		<keymacros>
 			<macro area="Common" key="CtrlShiftSpace" flags="DisableOutput" description="RightWords: Correct word">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -21,23 +22,28 @@ $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
 	$End
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Editor" key="CtrlShiftF7" flags="DisableOutput" description="RightWords: Correct text">
-				<![CDATA[
+				<text>
+					<![CDATA[
 F11
 $If (Menu.Select("RightWords", 2) > 0)
 	Enter 2
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Editor" key="CtrlShiftH" flags="DisableOutput" description="RightWords: Highlighting">
-				<![CDATA[
+				<text>
+					<![CDATA[
 F11
 $If (Menu.Select("RightWords", 2) > 0)
 	Enter 3
 $End
 ]]>
+				</text>
 			</macro>
 		</keymacros>
-	</macro>
+	</macros>
 </farconfig>

@@ -56,6 +56,7 @@ namespace FarNet.Works.Config
 		}
 		public override bool UIKeyPressed(KeyInfo key)
 		{
+			if (key == null) throw new ArgumentNullException("key");
 			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.F1:

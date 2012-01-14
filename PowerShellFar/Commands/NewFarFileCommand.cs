@@ -16,12 +16,12 @@ namespace PowerShellFar.Commands
 		#region [ Any parameter set ]
 		[Parameter(Position = 1, ValueFromPipelineByPropertyName = true)]
 		public string Description { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string Owner { get; set; }
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		[Parameter()]
+		[Parameter]
 		public System.Collections.ICollection Columns { get; set; }
-		[Parameter()]
+		[Parameter]
 		public object Data { get; set; }
 		#endregion
 		#region [ Name parameter set ]

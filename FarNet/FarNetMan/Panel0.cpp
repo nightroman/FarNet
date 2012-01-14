@@ -650,16 +650,11 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 	return 0;
 }
 
-/*
-#define INTERNAL_KEY_BASE_2 0x00030000
-KEY_NONE=INTERNAL_KEY_BASE_2+1,
-KEY_KILLFOCUS=INTERNAL_KEY_BASE_2+6,
-KEY_GOTFOCUS
-*/
-int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)//??????
+int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 {
+	// ignore not key events
 	const INPUT_RECORD& ir = info->Rec;
-	if (ir.EventType != KEY_EVENT || ir.Event.KeyEvent.wVirtualKeyCode <= 7) //?????? what is 7?
+	if (ir.EventType != KEY_EVENT)
 		return 0;
 	
 	//! mind rare case: panel is null: closed by [AltF12] + select folder

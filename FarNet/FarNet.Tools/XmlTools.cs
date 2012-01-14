@@ -49,7 +49,7 @@ namespace FarNet.Tools
 					{
 						try
 						{
-							_value = Convert.ToDouble(value);
+							_value = Convert.ToDouble(value, CultureInfo.InvariantCulture);
 							// We suceeded, so it's a number.
 							_type = XPathResultType.Number;
 						}

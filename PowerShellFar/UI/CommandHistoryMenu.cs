@@ -1,9 +1,10 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
+using System;
 using FarNet;
 
 namespace PowerShellFar.UI
@@ -13,7 +14,7 @@ namespace PowerShellFar.UI
 		IListMenu _menu;
 		internal bool Alternative;
 
-		public CommandHistoryMenu(string filter)
+		public CommandHistoryMenu(string prefix)
 		{
 			_menu = Far.Net.CreateListMenu();
 			Settings.Default.ListMenu(_menu);
@@ -21,6 +22,8 @@ namespace PowerShellFar.UI
 			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuCommandHistory");
 			_menu.SelectLast = true;
 			_menu.Title = "PowerShellFar History";
+
+			_menu.Incremental = prefix;
 			_menu.IncrementalOptions = PatternOptions.Substring;
 
 			_menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
@@ -31,8 +34,11 @@ namespace PowerShellFar.UI
 		void ResetItems(string[] lines)
 		{
 			_menu.Items.Clear();
-			foreach(string s in lines)
-				_menu.Add(s);
+			foreach (string s in lines)
+			{
+				if (string.IsNullOrEmpty(_menu.Incremental) || s.StartsWith(_menu.Incremental, StringComparison.OrdinalIgnoreCase))
+					_menu.Add(s);
+			}
 		}
 
 		void OnDelete(object sender, MenuEventArgs e)

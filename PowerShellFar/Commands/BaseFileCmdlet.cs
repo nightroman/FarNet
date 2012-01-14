@@ -12,11 +12,14 @@ namespace PowerShellFar.Commands
 {
 	class BaseFileCmdlet : BaseCmdlet
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter(ParameterSetName = "All", Mandatory = true)]
 		public SwitchParameter All { get; set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter(ParameterSetName = "Selected", Mandatory = true)]
 		public SwitchParameter Selected { get; set; }
-		[Parameter()]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public SwitchParameter Passive { get; set; }
 		internal class PathEnumerator : My.Enumerator<string, FarFile>
 		{

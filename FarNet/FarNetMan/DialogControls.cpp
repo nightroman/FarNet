@@ -473,8 +473,12 @@ void FarEdit::Stop(bool ok)
 void FarEdit::Free()
 {
 	FarControl::Free();
+	
 	delete _item->History;
 	_item->History = nullptr;
+	
+	delete _item->Mask;
+	_item->Mask = nullptr;
 }
 
 ILine^ FarEdit::Line::get()

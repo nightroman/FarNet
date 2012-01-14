@@ -15,7 +15,7 @@ namespace PowerShellFar.Commands
 		public int LineNumber { get; set; }
 		[Parameter(Position = 2)]
 		public int CharNumber { get; set; }
-		[Parameter()]
+		[Parameter]
 		public new PSObject Host { get; set; }
 		internal IEditor CreateEditor()
 		{

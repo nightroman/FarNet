@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System;
@@ -323,6 +323,8 @@ namespace PowerShellFar
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override bool UIKeyPressed(KeyInfo key)
 		{
+			if (key == null) throw new ArgumentNullException("key");
+			
 			UserWants = UserAction.None;
 			try
 			{

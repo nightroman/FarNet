@@ -74,8 +74,7 @@ void ShelveInfoNative::Pop(bool active)
 	{
 		PIN_NE(pin, Path);
 		
-		FarPanelDirectory arg; memset(&arg, 0, sizeof(arg));
-		arg.StructSize = sizeof(arg);
+		FarPanelDirectory arg; memset(&arg, 0, sizeof(arg)); arg.StructSize = sizeof(arg);
 		arg.Name = pin;
 		
 		if (!Info.PanelControl(handle, FCTL_SETPANELDIRECTORY, 0, &arg)) //????? duplicated

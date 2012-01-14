@@ -19,11 +19,11 @@ namespace PowerShellFar.Commands
 		public object[] Columns { get; set; }
 		[Parameter(ValueFromPipeline = true)]
 		public PSObject InputObject { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string ExcludeMemberPattern { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string HideMemberPattern { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Append { get; set; }
 		protected override void BeginProcessing()
 		{

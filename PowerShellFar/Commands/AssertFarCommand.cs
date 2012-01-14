@@ -18,27 +18,27 @@ namespace PowerShellFar.Commands
 		public object Message { get; set; }
 		[Parameter(Position = 2)]
 		public string Title { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string FileDescription { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string FileName { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string FileOwner { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Dialog { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Editor { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Panels { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Viewer { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Plugin { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Plugin2 { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Native { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Native2 { get; set; }
 		bool IsError
 		{

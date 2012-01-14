@@ -58,8 +58,8 @@ $mapShell = @{ ### SHELL MAP
 'BS' = 'Delete char left'
 'Clear' = 'View'
 'Ctrl;' = 'Insert full file name from the passive panel'
-'Ctrl[' = 'Insert path from the left panel'
-'Ctrl]' = 'Insert path from the right panel'
+'Ctrl[' = 'Insert the left panel path'
+'Ctrl]' = 'Insert the right panel path'
 'Ctrl0' = 'L|R: Set alternative full view mode | Go to folder shortcut'
 'Ctrl1' = 'L|R: Set brief view mode | Go to folder shortcut'
 'Ctrl2' = 'L|R: Set medium view mode | Go to folder shortcut'
@@ -413,12 +413,12 @@ Remove-Item -LiteralPath $tmp
 
 function GetMacroMap($Area)
 {
-	$macros = Select-Xml -XPath "farconfig/macro/keymacros/macro[@area='$Area']" -Xml $xml
+	$macros = Select-Xml -XPath "farconfig/macros/keymacros/macro[@area='$Area']" -Xml $xml
 	$map = @{}
 	foreach($data in $macros) {
-		$desc = [string]$data.Node.description
-		$desc += ' |' + [string]$data.Node.flags
-		$desc += '| ' + $data.Node.InnerText
+		$desc = [System.Web.HttpUtility]::HtmlEncode($data.Node.description)
+		$desc += '<br />' + [string]$data.Node.flags
+		$desc += '<br /> ' + [System.Web.HttpUtility]::HtmlEncode($data.Node.InnerText)
 		$map[$data.Node.key] = $desc
 	}
 	$map
@@ -464,7 +464,6 @@ function OutAreaTable($Area, $Default, $Common, $Macro)
 			# data: common macro
 			'<td>'
 			if ($commonMacro) {
-				$commonMacro = [System.Web.HttpUtility]::HtmlEncode($commonMacro)
 				if ($areaMacro) {
 					"<strike>$commonMacro</strike>"
 				}
@@ -477,7 +476,7 @@ function OutAreaTable($Area, $Default, $Common, $Macro)
 			# data: area macro
 			'<td>'
 			if ($areaMacro) {
-				[System.Web.HttpUtility]::HtmlEncode($areaMacro)
+				$areaMacro
 			}
 			'</td>'
 

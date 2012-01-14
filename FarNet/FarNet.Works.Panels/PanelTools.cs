@@ -15,6 +15,8 @@ namespace FarNet.Works
 	{
 		public static void ResizeColumn(Panel panel, bool right)
 		{
+			if (panel == null) throw new ArgumentNullException("panel");
+			
 			var view = panel.ViewMode;
 			var plan = panel.GetPlan(view) ?? panel.ViewPlan;
 			if (plan.Columns.Length != 2)
@@ -45,6 +47,8 @@ namespace FarNet.Works
 		}
 		public static void SwitchFullScreen(Panel panel)
 		{
+			if (panel == null) throw new ArgumentNullException("panel");
+			
 			// get/make the plan
 			var iViewMode = panel.ViewMode;
 			var plan = panel.GetPlan(iViewMode) ?? panel.ViewPlan;
