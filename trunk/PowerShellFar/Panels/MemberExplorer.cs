@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System;
@@ -64,6 +64,7 @@ namespace PowerShellFar
 			return new MemberPanel(this);
 		}
 		///
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;
@@ -106,7 +107,7 @@ namespace PowerShellFar
 						{
 							value = pi.Value;
 						}
-						catch (Exception e) //?????
+						catch (Exception e)
 						{
 							value = string.Format(null, "<ERROR: {0}>", e.Message);
 						}

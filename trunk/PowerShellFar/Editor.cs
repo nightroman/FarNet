@@ -1,13 +1,15 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 using FarNet;
@@ -20,6 +22,7 @@ namespace PowerShellFar
 	/// </summary>
 	static class EditorKit
 	{
+		static readonly Guid GuidBreakpoint = new Guid("01AD5C51-65EB-4DB3-B8DB-84298219FA66");
 		static int _initTabExpansion;
 		static ScriptBlock _TabExpansion;
 		/// <summary>
@@ -237,6 +240,33 @@ namespace PowerShellFar
 			else if (My.PathEx.IsPSFile(fileName))
 			{
 				editor.KeyDown += OnKeyDownPSFile;
+				editor.RegisterDrawer(new EditorDrawer(GetColors, GuidBreakpoint, 2));
+			}
+		}
+		/// <summary>
+		/// Called on redrawing in *.ps1.
+		/// </summary>
+		static IEnumerable<EditorColor> GetColors(IEditor editor, int startLine, int endLine, int startChar, int endChar)
+		{
+			var script = editor.FileName;
+			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
+
+			for (int indexLine = startLine; indexLine < endLine; ++indexLine)
+			{
+				foreach (var bp in breakpoints)
+				{
+					if (bp.Line != indexLine + 1)
+						continue;
+
+					yield return new EditorColor(
+						indexLine,
+						startChar,
+						endChar,
+						ConsoleColor.Black,
+						ConsoleColor.Yellow);
+
+					break;
+				}
 			}
 		}
 		/// <summary>

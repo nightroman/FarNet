@@ -20,19 +20,19 @@ namespace PowerShellFar.Commands
 		[Parameter(Position = 2)]
 		public ButtonSet Buttons { get; set; }
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-		[Parameter()]
+		[Parameter]
 		public string[] Choices { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string HelpTopic { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Draw { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter LeftAligned { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter KeepBackground { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter IsError { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter IsWarning { get; set; }
 		protected override void BeginProcessing()
 		{

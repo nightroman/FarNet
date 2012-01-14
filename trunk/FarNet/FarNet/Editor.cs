@@ -722,14 +722,46 @@ namespace FarNet
 		/// </summary>
 		public abstract IList<EditorColorInfo> GetColors(int line);
 		/// <summary>
-		/// Adds the color span to the specified line.
+		/// Registers an editor drawer.
 		/// </summary>
-		public abstract void AddColor(int line, EditorColorInfo color, int priority);
-		/// <summary>
-		/// Removes colors in the specified line from the specified position.
-		/// </summary>
-		public abstract void RemoveColors(Guid owner, int line, int start);
+		public abstract void RegisterDrawer(EditorDrawer drawer);
 	}
+
+	/// <summary>
+	/// Arguments of <see cref="IEditor.RegisterDrawer"/>
+	/// </summary>
+	public sealed class EditorDrawer
+	{
+		///
+		public EditorDrawer(GetEditorColors getColors, Guid owner, int priority)
+		{
+			GetColors = getColors;
+			Owner = owner;
+			Priority = priority;
+		}
+		/// <summary>
+		/// Method that gets colors.
+		/// </summary>
+		public GetEditorColors GetColors { get; private set; }
+		/// <summary>
+		/// Colors owner ID.
+		/// </summary>
+		public Guid Owner { get; private set; }
+		/// <summary>
+		/// Colors priority.
+		/// </summary>
+		public int Priority { get; private set; }
+	}
+
+	/// <summary>
+	/// Method called in order to get editor colors on redrawing.
+	/// </summary>
+	/// <param name="editor">Current editor.</param>
+	/// <param name="startLine">Index of the first line.</param>
+	/// <param name="endLine">Index of the line after the last.</param>
+	/// <param name="startChar">Index of the first character.</param>
+	/// <param name="endChar">Index of the character after the last.</param>
+	public delegate IEnumerable<EditorColor> GetEditorColors(IEditor editor, int startLine, int endLine, int startChar, int endChar);
 
 	/// <summary>
 	/// Editor bookmark operator.
@@ -1065,23 +1097,23 @@ namespace FarNet
 	/// <summary>
 	/// Editor line color span.
 	/// </summary>
-	public class EditorColorInfo
+	public class EditorColor
 	{
 		///
-		public EditorColorInfo(Guid owner, int start, int end, ConsoleColor foreground, ConsoleColor background)
+		public EditorColor(int line, int start, int end, ConsoleColor foreground, ConsoleColor background)
 		{
-			Owner = owner;
+			Line = line;
 			Start = start;
 			End = end;
 			Foreground = foreground;
 			Background = background;
 		}
 		/// <summary>
-		/// The owner of the color span.
+		/// Line index.
 		/// </summary>
-		public Guid Owner { get; private set; }
+		public int Line { get; private set; }
 		/// <summary>
-		/// Start position. -1 with black on black colors is used in order to remove all spans.
+		/// Start position.
 		/// </summary>
 		public int Start { get; private set; }
 		/// <summary>
@@ -1100,6 +1132,33 @@ namespace FarNet
 		public override string ToString()
 		{
 			return string.Format(null, "({0}, {1}) {2} on {3}", Start, End, Foreground, Background);
+		}
+	}
+
+	/// <summary>
+	/// Editor line color info.
+	/// </summary>
+	public class EditorColorInfo : EditorColor
+	{
+		///
+		public EditorColorInfo(int line, int start, int end, ConsoleColor foreground, ConsoleColor background, Guid owner, int priority)
+			: base(line, start, end, foreground, background)
+		{
+			Owner = owner;
+			Priority = priority;
+		}
+		/// <summary>
+		/// Color owner ID.
+		/// </summary>
+		public Guid Owner { get; private set; }
+		/// <summary>
+		/// Color priority.
+		/// </summary>
+		public int Priority { get; private set; }
+		///
+		public override string ToString()
+		{
+			return string.Format(null, "{0} {1} {2} ({3}, {4}) {5}/{6}", Priority, Owner, Line, Start, End, Foreground, Background);
 		}
 	}
 }

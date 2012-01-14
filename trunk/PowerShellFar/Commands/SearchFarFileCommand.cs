@@ -16,17 +16,17 @@ namespace PowerShellFar.Commands
 		public string Mask { get; set; }
 		[Parameter(Position = 0, ParameterSetName = "Script")]
 		public ScriptBlock Script { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string XPath { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string XFile { get; set; }
-		[Parameter()]
+		[Parameter]
 		public int Depth { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Directory { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Recurse { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Asynchronous { get; set; }
 		protected override void BeginProcessing()
 		{

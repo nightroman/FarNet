@@ -18,15 +18,15 @@ namespace PowerShellFar.Commands
 		public JobCommand Command { get; set; }
 		[Parameter(Position = 1)]
 		public PSObject Parameters { get; set; }
-		[Parameter()]
+		[Parameter]
 		public string Name { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Output { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Return { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Hidden { get; set; }
-		[Parameter()]
+		[Parameter]
 		public int KeepSeconds { get; set; }
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		protected override void BeginProcessing()

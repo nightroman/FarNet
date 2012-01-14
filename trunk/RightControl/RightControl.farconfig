@@ -20,11 +20,12 @@
 	them for the editor only. Smart home is not really useful for line editors
 	where text normally does not start with spaces.
 -->
-<farconfig version="3.0.2350">
-	<macro>
+<farconfig version="3.0.2366">
+	<macros>
 		<keymacros>
 			<macro area="Common" key="CtrlBS" flags="DisableOutput" description="RightControl: delete left">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -34,9 +35,11 @@ $Else
 	$AKey
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Common" key="CtrlDel" flags="DisableOutput" description="RightControl: delete right">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -46,9 +49,11 @@ $Else
 	$AKey
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Common" key="CtrlLeft" flags="DisableOutput" description="RightControl: step left">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -58,9 +63,11 @@ $Else
 	$AKey
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Common" key="CtrlRight" flags="DisableOutput" description="RightControl: step right">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -70,9 +77,11 @@ $Else
 	$AKey
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Common" key="CtrlShiftLeft" flags="DisableOutput" description="RightControl: select left">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -82,9 +91,11 @@ $Else
 	$AKey
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Common" key="CtrlShiftRight" flags="DisableOutput" description="RightControl: select right">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -94,9 +105,11 @@ $Else
 	$AKey
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Common" key="ShiftLeft" flags="DisableOutput" description="RightControl: workaround left">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -106,9 +119,11 @@ $Else
 	$AKey
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Common" key="ShiftRight" flags="DisableOutput" description="RightControl: workaround right">
-				<![CDATA[
+				<text>
+					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
@@ -118,27 +133,36 @@ $Else
 	$AKey
 $End
 ]]>
+				</text>
 			</macro>
 			<macro area="Editor" key="CtrlAltLeft" flags="DisableOutput" description="RightControl: vertical left">
-				<![CDATA[
+				<text>
+					<![CDATA[
 CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
 ]]>
+				</text>
 			</macro>
 			<macro area="Editor" key="CtrlAltRight" flags="DisableOutput" description="RightControl: vertical right">
-				<![CDATA[
+				<text>
+					<![CDATA[
 CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
 ]]>
+				</text>
 			</macro>
 			<macro area="Editor" key="Home" flags="DisableOutput" description="RightControl: go to smart home">
-				<![CDATA[
+				<text>
+					<![CDATA[
 CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:go-to-smart-home")
 ]]>
+				</text>
 			</macro>
 			<macro area="Editor" key="ShiftHome" flags="DisableOutput" description="RightControl: select to smart home">
-				<![CDATA[
+				<text>
+					<![CDATA[
 CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-to-smart-home")
 ]]>
+				</text>
 			</macro>
 		</keymacros>
-	</macro>
+	</macros>
 </farconfig>

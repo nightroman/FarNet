@@ -5,6 +5,7 @@ Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System.Management.Automation;
+using System.Diagnostics.CodeAnalysis;
 using FarNet;
 
 namespace PowerShellFar.Commands
@@ -14,18 +15,24 @@ namespace PowerShellFar.Commands
 	/// </summary>
 	class BaseMenuCmdlet : BaseCmdlet
 	{
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter(Position = 0)]
 		public string Title { get; set; }
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		[Parameter(Position = 1)]
 		public FarItem[] Items { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public SwitchParameter AutoAssignHotkeys { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public string Bottom { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public string HelpTopic { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public int Selected
 		{
 			get { return _Selected; }
@@ -37,13 +44,17 @@ namespace PowerShellFar.Commands
 		}
 		int _Selected;
 		bool _setSelected;
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public SwitchParameter SelectLast { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public SwitchParameter ShowAmpersands { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public SwitchParameter WrapCursor { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public int X
 		{
 			get { return _X; }
@@ -55,7 +66,8 @@ namespace PowerShellFar.Commands
 		}
 		int _X;
 		bool _setX;
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public int Y
 		{
 			get { return _Y; }

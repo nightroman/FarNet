@@ -1,6 +1,6 @@
 ﻿/*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System;

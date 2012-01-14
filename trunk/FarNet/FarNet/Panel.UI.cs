@@ -602,6 +602,7 @@ namespace FarNet
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public virtual bool UIKeyPressed(KeyInfo key)
 		{
+			if (key == null) throw new ArgumentNullException("key");
 			switch (key.VirtualKeyCode)
 			{
 				case KeyCode.Enter:
@@ -719,7 +720,7 @@ namespace FarNet
 						UIDelete(key.IsShift());
 						return true;
 					}
-					
+
 					break;
 			}
 

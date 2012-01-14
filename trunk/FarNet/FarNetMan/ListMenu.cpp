@@ -95,8 +95,8 @@ void ListMenu::Incremental::set(String^ value)
 PatternOptions ListMenu::IncrementalOptions::get() { return _IncrementalOptions; }
 void ListMenu::IncrementalOptions::set(PatternOptions value)
 {
-	if (int(value & PatternOptions::Regex))
-		throw gcnew ArgumentException("Incremental filter can not be 'Regex'.");
+	if (int(value & PatternOptions::Regex)) throw gcnew ArgumentException("Incremental filter can not be 'Regex'.");
+
 	_IncrementalOptions = value;
 }
 
@@ -131,8 +131,8 @@ void ListMenu::MakeFilter()
 		return;
 	_toFilter = false;
 
-	// Don't filter by predefined, assume that predefined filter is usually used without permanent.
-	// E.g. TabEx: 'sc[Tab]' gets 'Set-Contents' which doesn't match prefix 'sc', but it should be shown.
+	// Do not filter by predefined. Case:
+	// TabEx: 'sc[Tab]' gets 'Set-Contents' which doesn't match the prefix 'sc', but it should be shown.
 	if (_filter == Incremental)
 		return;
 
@@ -301,12 +301,12 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 	// incremental
 	if (!int(IncrementalOptions))
 		return;
-	
+
 	if (key.Is(KeyCode::Backspace) || key.IsShift(KeyCode::Backspace))
 	{
 		if (_filter->Length == 0)
 			return;
-		
+
 		// case: Shift, drop incremental
 		if (key.IsShift())
 		{

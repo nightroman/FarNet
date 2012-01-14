@@ -89,6 +89,7 @@ void GetPanelInfo(HANDLE handle, PanelInfo& info)
 {
 	SetState<bool> state(State::GetPanelInfo, true);
 
+	info.StructSize = sizeof(info);
 	if (!Info.PanelControl(handle, FCTL_GETPANELINFO, 0, &info))
 		throw gcnew InvalidOperationException("Cannot get panel information.");
 }
@@ -98,6 +99,7 @@ bool TryPanelInfo(HANDLE handle, PanelInfo& info)
 {
 	SetState<bool> state(State::GetPanelInfo, true);
 
+	info.StructSize = sizeof(info);
 	return Info.PanelControl(handle, FCTL_GETPANELINFO, 0, &info) ? true : false;
 }
 

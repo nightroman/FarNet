@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System;
@@ -283,8 +283,6 @@ namespace PowerShellFar
 								return;
 
 							string pref = curr.Text;
-							if (pref.Length > 0 && pref[0] != '*')
-								pref = "^" + Regex.Escape(pref);
 							UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(pref);
 							string code = m.Show();
 							if (code == null)

@@ -9,7 +9,7 @@ Source   : http://code.google.com/p/farnet/
 
 = PREREQUISITES =
 
- * Far Manager 3.0.0.x
+ * Far Manager 3.0.x
  * Plugin FarNet 5.0.1
  * Plugin Colorer
 
@@ -44,3 +44,5 @@ Adapted for Far3 + FarNet5.
 2.0.1
 
 Use FarNet 5.0.1. Some fixes + only Colorer's colors are used.
+
+http://code.google.com/p/farnet/downloads/list

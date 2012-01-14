@@ -11,7 +11,7 @@ namespace PowerShellFar.Commands
 {
 	sealed class OpenFarEditorCommand : NewFarEditorCommand
 	{
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Modal { get; set; }
 		protected override void ProcessRecord()
 		{

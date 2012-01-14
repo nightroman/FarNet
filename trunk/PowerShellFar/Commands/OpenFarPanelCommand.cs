@@ -14,7 +14,7 @@ namespace PowerShellFar.Commands
 		Panel _Panel;
 		[Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true)]
 		public PSObject InputObject { get; set; }
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter AsChild { get; set; }
 		protected override void ProcessRecord()
 		{

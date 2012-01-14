@@ -159,7 +159,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			if (info->Param == EEREDRAW_CHANGE)
 				++editor->_KeyCount;
 
-			if (_anyEditor._Redrawing || editor->_Redrawing)
+			if (_anyEditor._Redrawing || editor->_Redrawing || editor->_drawers)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Redrawing");
 				EditorRedrawingEventArgs ea((EditorRedrawMode)(INT_PTR)info->Param);
@@ -167,6 +167,8 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 					_anyEditor._Redrawing(editor, %ea);
 				if (editor->_Redrawing)
 					editor->_Redrawing(editor, %ea);
+				if (editor->_drawers)
+					editor->Redraw(%ea);
 			}
 		}
 		break;

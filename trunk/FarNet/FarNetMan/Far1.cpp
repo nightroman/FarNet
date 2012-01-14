@@ -67,7 +67,7 @@ System::Version^ Far1::FarVersion::get()
 {
 	VersionInfo vi;
 	Info.AdvControl(&MainGuid, ACTL_GETFARMANAGERVERSION, 0, &vi);
-	return gcnew System::Version(vi.Major, vi.Minor, vi.Revision, vi.Build);
+	return gcnew System::Version(vi.Major, vi.Minor, vi.Build, vi.Revision);
 }
 
 System::Version^ Far1::FarNetVersion::get()

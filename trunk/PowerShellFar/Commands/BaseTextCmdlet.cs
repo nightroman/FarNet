@@ -5,6 +5,7 @@ Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System.Management.Automation;
+using System.Diagnostics.CodeAnalysis;
 using FarNet;
 
 namespace PowerShellFar.Commands
@@ -14,16 +15,21 @@ namespace PowerShellFar.Commands
 	/// </summary>
 	class BaseTextCmdlet : BaseCmdlet
 	{
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
 		[Alias("FilePath", "FileName")]
 		public string Path { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public string Title { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public DeleteSource DeleteSource { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public SwitchParameter DisableHistory { get; set; }
-		[Parameter()]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
 		public Switching Switching { get; set; }
 	}
 }

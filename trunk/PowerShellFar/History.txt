@@ -1,6 +1,23 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.3 =
+
+*) Debugging
+Script breakpoints are highlighted in the script editor. Note: breakpoints are
+not updated when scripts change. To be continued, hopefully with this:
+http://bugs.farmanager.com/view.php?id=1981
+
+*) Scripts
+- New Test-EditorDrawer-.ps1 (enjoy colors in PSF, too!)
+- New Show-EditorColor-.ps1 (dumps current editor colors)
+- Updated Show-KeyMap.ps1 for Far 3.0.2366 + new formatting.
+
+*) Removed scripts designed for Far2:
+- Start-Far.ps1
+- Export-FarSettings.ps1
+- Import-FarSettings.ps1.
+
 = 5.0.2 =
 
 - Fixed Edit-FarDescription-.ps1

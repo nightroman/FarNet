@@ -1228,52 +1228,98 @@ void Editor::IsLocked::set(bool value)
 
 IList<EditorColorInfo^>^ Editor::GetColors(int line)
 {
-	EditorColor arg;
-	arg.StructSize = sizeof(arg);
-	arg.StringNumber = line;
+	::EditorColor ec;
+	ec.StructSize = sizeof(ec);
+	ec.StringNumber = line;
 
 	List<EditorColorInfo^>^ spans = gcnew List<EditorColorInfo^>;
 
-	for(arg.ColorItem = 0; Info.EditorControl(-1, ECTL_GETCOLOR, 0, &arg); ++arg.ColorItem)
+	for(ec.ColorItem = 0; Info.EditorControl(-1, ECTL_GETCOLOR, 0, &ec); ++ec.ColorItem)
 	{
 		spans->Add(gcnew EditorColorInfo(
-			FromGUID(arg.Owner),
-			arg.StartPos,
-			arg.EndPos + 1,
-			(ConsoleColor)arg.Color.ForegroundColor,
-			(ConsoleColor)arg.Color.BackgroundColor));
+			line,
+			ec.StartPos,
+			ec.EndPos + 1,
+			(ConsoleColor)ec.Color.ForegroundColor,
+			(ConsoleColor)ec.Color.BackgroundColor,
+			FromGUID(ec.Owner),
+			ec.Priority));
 	}
 	
 	return spans;
 }
 
-void Editor::AddColor(int line, EditorColorInfo^ color, int priority)
+void Editor::AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors)
 {
-	EditorColor arg;
-	arg.StructSize = sizeof(arg);
-	arg.StringNumber = line;
-	arg.ColorItem = 0;
-	arg.StartPos = color->Start;
-	arg.EndPos = color->End - 1;
-	arg.Priority = priority;
-	arg.Flags = 0;
-	arg.Color.Flags = FCF_4BITMASK;
-	arg.Color.BackgroundColor = (COLORREF)color->Background;
-	arg.Color.ForegroundColor = (COLORREF)color->Foreground;
-	arg.Owner = ToGUID(color->Owner);
+	::EditorColor ec;
+	ec.StructSize = sizeof(ec);
+	ec.ColorItem = 0;
+	ec.Priority = priority;
+	ec.Flags = 0;
+	ec.Color.Flags = FCF_4BITMASK;
+	ec.Owner = ToGUID(owner);
 
-	Info.EditorControl(-1, ECTL_ADDCOLOR, 0, &arg);
+	for each(EditorColor^ color in colors)
+	{
+		ec.StringNumber = color->Line;
+		ec.StartPos = color->Start;
+		ec.EndPos = color->End - 1;
+		ec.Color.BackgroundColor = (COLORREF)color->Background;
+		ec.Color.ForegroundColor = (COLORREF)color->Foreground;
+		
+		Info.EditorControl(-1, ECTL_ADDCOLOR, 0, &ec);
+	}
 }
 
-void Editor::RemoveColors(Guid owner, int line, int start)
+void Editor::RemoveColors(Guid owner, int startLine, int endLine)
 {
-	EditorDeleteColor arg;
-	arg.StructSize = sizeof(arg);
-	arg.Owner = ToGUID(owner);
-	arg.StringNumber = line;
-	arg.StartPos = start;
+	EditorDeleteColor edc;
+	edc.StructSize = sizeof(edc);
+	edc.Owner = ToGUID(owner);
+	edc.StartPos = -1;
 
-	Info.EditorControl(-1, ECTL_DELCOLOR, 0, &arg);
+	for(int line = startLine; line < endLine; ++line)
+	{
+		edc.StringNumber = line;
+		Info.EditorControl(-1, ECTL_DELCOLOR, 0, &edc);
+	}
+}
+
+void Editor::RegisterDrawer(EditorDrawer^ drawer)
+{
+	if (!drawer)
+		throw gcnew ArgumentNullException("drawer");
+	
+	if (!_drawers)
+		_drawers = gcnew List<EditorDrawer^>;
+	
+	_drawers->Add(drawer);
+}
+
+void Editor::Redraw(EditorRedrawingEventArgs^ e)
+{
+	Point size = WindowSize;
+	TextFrame frame = Frame;
+	int lineCount = Count;
+
+	int startLine, endLine;
+	if (e->Mode == EditorRedrawMode::Line || e->Mode == EditorRedrawMode::Change)
+	{
+		startLine = frame.CaretLine;
+		endLine = startLine + 1;
+	}
+	else
+	{
+		startLine = frame.VisibleLine;
+		endLine = startLine + size.Y;
+	}
+	endLine = Math::Min(endLine, lineCount);
+
+	for each(EditorDrawer^ it in _drawers)
+	{
+		RemoveColors(it->Owner, startLine, endLine);
+		AddColors(it->Owner, it->Priority, it->GetColors(this, startLine, endLine, frame.VisibleChar, frame.VisibleChar + size.X));
+	}
 }
 
 }

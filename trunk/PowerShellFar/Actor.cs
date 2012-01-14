@@ -312,6 +312,7 @@ See PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
 				// add the debug handler
 				//?? what if it is already added by profile?
 				Runspace.Debugger.DebuggerStop += OnDebuggerStop;
+				Runspace.Debugger.BreakpointUpdated += OnBreakpointUpdated;
 
 				//! Check and notify about startup errors, remember: no interaction.
 				ArrayList errors = Engine.SessionState.PSVariable.GetValue("Error") as ArrayList;
@@ -987,6 +988,22 @@ Continue with this current directory?
 		public void InvokeScriptFromEditor()
 		{
 			EditorKit.InvokeScriptBeingEdited(null);
+		}
+		HashSet<LineBreakpoint> _breakpoints_;
+		internal HashSet<LineBreakpoint> Breakpoints { get { return _breakpoints_ ?? (_breakpoints_ = new HashSet<LineBreakpoint>()); } }
+		void OnBreakpointUpdated(object sender, BreakpointUpdatedEventArgs e)
+		{
+			if (!string.IsNullOrEmpty(e.Breakpoint.Script))
+			{
+				var bp = e.Breakpoint as LineBreakpoint;
+				if (bp != null)
+				{
+					if (e.UpdateType == BreakpointUpdateType.Removed)
+						Breakpoints.Remove(bp);
+					else
+						Breakpoints.Add(bp);
+				}
+			}
 		}
 		void OnDebuggerStop(object sender, DebuggerStopEventArgs e)
 		{

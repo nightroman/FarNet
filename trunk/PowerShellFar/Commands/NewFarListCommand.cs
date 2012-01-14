@@ -11,7 +11,7 @@ namespace PowerShellFar.Commands
 {
 	class NewFarListCommand : BaseMenuCmdlet
 	{
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter AutoSelect
 		{
 			get { return _AutoSelect; }
@@ -23,7 +23,7 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _AutoSelect;
 		bool _setAutoSelect;
-		[Parameter()]
+		[Parameter]
 		public string Incremental
 		{
 			get { return _Incremental; }
@@ -35,7 +35,7 @@ namespace PowerShellFar.Commands
 		}
 		string _Incremental;
 		bool _setIncremental;
-		[Parameter()]
+		[Parameter]
 		public PatternOptions IncrementalOptions
 		{
 			get { return _IncrementalOptions; }
@@ -47,7 +47,7 @@ namespace PowerShellFar.Commands
 		}
 		PatternOptions _IncrementalOptions;
 		bool _setIncrementalOptions;
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter NoShadow
 		{
 			get { return _NoShadow; }
@@ -59,7 +59,7 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _NoShadow;
 		bool _setNoShadow;
-		[Parameter()]
+		[Parameter]
 		public int ScreenMargin
 		{
 			get { return _ScreenMargin; }
@@ -71,7 +71,7 @@ namespace PowerShellFar.Commands
 		}
 		int _ScreenMargin;
 		bool _setScreenMargin;
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter UsualMargins
 		{
 			get { return _UsualMargins; }
@@ -83,7 +83,7 @@ namespace PowerShellFar.Commands
 		}
 		SwitchParameter _UsualMargins;
 		bool _setUsualMargins;
-		[Parameter()]
+		[Parameter]
 		public SwitchParameter Popup { get; set; }
 		internal IListMenu Create()
 		{

@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006 Roman Kuzmin
+Copyright (c) 2006-2012 Roman Kuzmin
 */
 
 using System;
@@ -25,21 +25,6 @@ namespace PowerShellFar
 		{
 			_Psf_ = psf;
 		}
-		//?????
-		//static Hashtable _VersionTable_;
-		//static bool _IsV3_;
-		//internal static bool IsV3
-		//{
-		//    get
-		//    {
-		//        if (_VersionTable_ == null)
-		//        {
-		//            _VersionTable_ = (Hashtable)Psf.Engine.SessionState.PSVariable.GetValue("PSVersionTable");
-		//            _IsV3_ = ((Version)_VersionTable_["PSVersion"]).Major >= 3;
-		//        }
-		//        return _IsV3_;
-		//    }
-		//}
 		/// <summary>
 		/// Shows an error.
 		/// </summary>

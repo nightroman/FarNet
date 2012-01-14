@@ -639,19 +639,11 @@ OemClear = 254;
 			return _ControlKeyState & ControlKeyStates.CtrlAltShift;
 		}
 		///
-		public static bool operator ==(KeyBase left, KeyBase right)
-		{
-			return left._ControlKeyState == right._ControlKeyState;
-		}
-		///
-		public static bool operator !=(KeyBase left, KeyBase right)
-		{
-			return !(left == right);
-		}
-		///
 		public override bool Equals(object obj)
 		{
-			return obj is KeyBase && this == (KeyBase)obj;
+			var that = obj as KeyBase;
+			return that != null &&
+				_ControlKeyState == that._ControlKeyState;
 		}
 		///
 		public override int GetHashCode()
@@ -720,21 +712,12 @@ OemClear = 254;
 			return _VirtualKeyCode == virtualKeyCode && IsShift();
 		}
 		///
-		public static bool operator ==(KeyData left, KeyData right)
-		{
-			return
-				left._VirtualKeyCode == right._VirtualKeyCode &&
-				left.ControlKeyState == right.ControlKeyState;
-		}
-		///
-		public static bool operator !=(KeyData left, KeyData right)
-		{
-			return !(left == right);
-		}
-		///
 		public override bool Equals(object obj)
 		{
-			return obj is KeyData && this == (KeyData)obj;
+			var that = obj as KeyData;
+			return that != null &&
+				_VirtualKeyCode == that._VirtualKeyCode &&
+				ControlKeyState == that.ControlKeyState;
 		}
 		///
 		public override int GetHashCode()
@@ -772,23 +755,14 @@ OemClear = 254;
 		/// </summary>
 		public bool KeyDown { get { return _KeyDown; } }
 		///
-		public static bool operator ==(KeyInfo left, KeyInfo right)
-		{
-			return
-				left.VirtualKeyCode == right.VirtualKeyCode &&
-				left.ControlKeyState == right.ControlKeyState &&
-				left._Character == right._Character &&
-				left._KeyDown == right._KeyDown;
-		}
-		///
-		public static bool operator !=(KeyInfo left, KeyInfo right)
-		{
-			return !(left == right);
-		}
-		///
 		public override bool Equals(object obj)
 		{
-			return obj is KeyInfo && this == (KeyInfo)obj;
+			var that = obj as KeyInfo;
+			return that != null &&
+				VirtualKeyCode == that.VirtualKeyCode &&
+				ControlKeyState == that.ControlKeyState &&
+				_Character == that._Character &&
+				_KeyDown == that._KeyDown;
 		}
 		///
 		public override int GetHashCode()
@@ -848,23 +822,14 @@ OemClear = 254;
 		/// </remarks>
 		public int Value { get { return _Value; } }
 		///
-		public static bool operator ==(MouseInfo left, MouseInfo right)
-		{
-			return
-				left._Action == right._Action &&
-				left._Buttons == right._Buttons &&
-				left.ControlKeyState == right.ControlKeyState &&
-				left._Where == right._Where;
-		}
-		///
-		public static bool operator !=(MouseInfo left, MouseInfo right)
-		{
-			return !(left == right);
-		}
-		///
 		public override bool Equals(object obj)
 		{
-			return obj is MouseInfo && this == (MouseInfo)obj;
+			var that = obj as MouseInfo;
+			return that != null &&
+				_Action == that._Action &&
+				_Buttons == that._Buttons &&
+				ControlKeyState == that.ControlKeyState &&
+				_Where == that._Where;
 		}
 		///
 		public override int GetHashCode()

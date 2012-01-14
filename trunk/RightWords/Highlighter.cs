@@ -22,71 +22,46 @@ namespace FarNet.RightWords
 		public Highlighter(IEditor editor)
 		{
 			Editor = editor;
-			editor.Redrawing += Redrawing;
+			editor.RegisterDrawer(new EditorDrawer(GetColors, My.Guid, 1));
 		}
 		public bool Disabled { get; set; }
-		void Redrawing(object sender, EditorRedrawingEventArgs e)
+		IEnumerable<EditorColor> GetColors(IEditor editor, int startLine, int endLine, int startChar, int endChar)
 		{
-			// test: try to edit a line with colors with and without Colorer
-			if (e.Mode == EditorRedrawMode.Line || e.Mode == EditorRedrawMode.Change)
-			{
-				HighlightLine(Editor.Caret.Y);
-				return;
-			}
-
-			int height = Far.Net.UI.WindowSize.Y;
-			TextFrame frame = Editor.Frame;
-			int lineCount = Editor.Count;
-
-			for (int i = 0; i < height; ++i)
-			{
-				int index = frame.VisibleLine + i;
-				if (index >= lineCount)
-					break;
-
-				HighlightLine(index);
-			}
-		}
-		void HighlightLine(int lineIndex)
-		{
-			// remove colors always ([Home ShiftEnd Del] => existing colors should be removed)
-			Editor.RemoveColors(My.Guid, lineIndex, -1);
-
 			if (Disabled)
-				return;
+				yield break;
 
-			var text = Editor[lineIndex].Text;
-			if (text.Length == 0)
-				return;
-
-			MatchCollection skip = null;
-			for (var match = RegexWord.Match(text); match.Success; match = match.NextMatch())
+			for (int lineIndex = startLine; lineIndex < endLine; ++lineIndex)
 			{
-				// the target word
-				var word = Actor.MatchToWord(match);
-
-				// check cheap skip lists
-				if (CommonWords.Contains(word) || Actor.IgnoreWords.Contains(word))
+				var text = Editor[lineIndex].Text;
+				if (text.Length == 0)
 					continue;
 
-				// check spelling, expensive but better before the skip pattern
-				if (Spell.Spell(word))
-					continue;
+				MatchCollection skip = null;
+				for (var match = RegexWord.Match(text); match.Success; match = match.NextMatch())
+				{
+					// the target word
+					var word = Actor.MatchToWord(match);
 
-				// expensive skip pattern
-				if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(RegexSkip, text)), match))
-					continue;
+					// check cheap skip lists
+					if (CommonWords.Contains(word) || Actor.IgnoreWords.Contains(word))
+						continue;
 
-				// color
-				var color = new EditorColorInfo(
-				My.Guid,
-				match.Index,
-				match.Index + match.Length,
-				HighlightingForegroundColor,
-				HighlightingBackgroundColor);
+					// check spelling, expensive but better before the skip pattern
+					if (Spell.Spell(word))
+						continue;
 
-				// add color
-				Editor.AddColor(lineIndex, color, 1);
+					// expensive skip pattern
+					if (Actor.HasMatch(skip ?? (skip = Actor.GetMatches(RegexSkip, text)), match))
+						continue;
+
+					// add color
+					yield return new EditorColor(
+						lineIndex,
+						match.Index,
+						match.Index + match.Length,
+						HighlightingForegroundColor,
+						HighlightingBackgroundColor);
+				}
 			}
 		}
 	}
