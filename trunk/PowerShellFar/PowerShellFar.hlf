@@ -50,7 +50,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 5.0.3#
+#PowerShellFar 5.0.4#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -84,8 +84,8 @@ $#Installation#
 
 #Requirements#
 
- - Far Manager 3.0.2377
- - Plugin FarNet 5.0.3
+ - Far Manager 3.0.2407
+ - Plugin FarNet 5.0.4
  - Windows PowerShell V2, V3
 
 
@@ -570,14 +570,16 @@ you can examine or change variables, invoke commands and etc. On exit the same
 dialog is repeated.
 See also ~Editor console~@EditorConsole@.
 
-[#[Edit]#] Opens the source in the editor at the debugger line. You should
-not edit the script at this moment, it is only for taking a look at the code.
-On exit from the editor the debugger dialog is repeated.
+[#[Edit]#] Opens the source in the editor at the debugger line. The editor is
+locked because changes during debugging normally should be avoided. Of course
+the editor can be unlocked and the script modified but normal debugging steps
+may be difficult after that. On exit from the editor the debugger dialog is
+repeated.
 
 [#[View]#] Opens an external viewer to view the running command output. This
 action is not available for some commands, e.g. for editor console commands.
 
-[#[Goto]#] Sets the current list line to the current debugger line.
+[#[Line]#] Sets the current list line to the current debugger line.
 
 [#[Break]#] Stops the running pipeline and debugging immediately.
 
@@ -646,9 +648,6 @@ See ~TabExpansion.ps1~@TabExpansion@
 
 [#CtrlC#] Stops running asynchronous commands in the local or remote console.
 
-[#F1#] Opens the help menu where you can change or reset the current session to
-default, local, or remote, or open this help topic.
-
 
 #DEFAULT CONSOLE SESSIONS#
 
@@ -695,27 +694,24 @@ $#Editor console menu#
 ~Contents~@Contents@
 ~Editor console~@EditorConsole@
 
-The menu opens a new editor console or an editor console file previously saved
-in the console files directory.
+The menu opens a new editor console for the main, new local, or new remote
+sessions.
 
+#Main session#
+Opens a console file for the main PowerShell session. Commands are invoked
+synchronously in the default runspace as if they invoked from the command line.
+Output is sent to the same editor. All main consoles share the same workspace.
 
-#KEYS AND ACTIONS#
+#New local session#
+Opens a console file for a new local PowerShell session. Commands are invoked
+asynchronously in a new private runspace. When the console closes all session
+data are removed.
 
-[#Enter#] Opens a new or selected existing console file in the default global
-PowerShell session. Commands are invoked synchronously in the default global
-runspace. All consoles opened by [Enter] share the same workspace.
-
-[#ShiftEnter#] Opens a new or selected existing console file in a new local
-PowerShell session. Commands are invoked asynchronously in a private runspace.
-
-[#CtrlEnter#] Opens a new or selected existing console file in a new remote
-PowerShell session. Commands are invoked asynchronously in a private remote
-runspace. You are prompted to enter a computer name and a user domain\name. If
-a user name is specified then a password is also requested. See PowerShell
-about_remote* help topics for more details.
-
-[#Space#] (If the menu is opened from a file panel) Opens the console files
-directory and sets the selected file current.
+#New remote session#
+Opens a console file in a new remote PowerShell session. Commands are invoked
+asynchronously in a private remote runspace. You are prompted to enter a
+computer name and a user domain\name. If a user name is specified then a
+password is also requested. See about_remote* help topics for details.
 
 
 @PowerPanel

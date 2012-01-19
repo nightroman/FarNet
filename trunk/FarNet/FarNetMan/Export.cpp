@@ -22,16 +22,13 @@ DEFINE_GUID(MainGuid, 0x10435532, 0x9bb3, 0x487b, 0xa0, 0x45, 0xb0, 0xe6, 0xec, 
 #define __START try {
 #define __END } catch(Exception^ e) { Far::Net->ShowError(nullptr, e); }
 
-#define PLUGIN_VERSION MAKEFARVERSION(5, 0, 0, 0, VS_RELEASE)
-
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {
-	info->StructSize = sizeof(GlobalInfo);
-	info->MinFarVersion = FARMANAGERVERSION;
-	info->Version = PLUGIN_VERSION;
+	info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2377, VS_RELEASE);
+	info->Version = MAKEFARVERSION(5, 0, 0, 0, VS_RELEASE);
 	info->Guid = MainGuid;
-	info->Author = L"Roman Kuzmin";
 	info->Title = L"FarNet";
+	info->Author = L"Roman Kuzmin";
 	info->Description = L"FarNet module manager.";
 }
 
@@ -117,7 +114,6 @@ do return flags, preloadable flag is absolutely important as cached.
 */
 void WINAPI GetPluginInfoW(PluginInfo* pi)
 {
-	pi->StructSize = sizeof(PluginInfo);
 	pi->Flags = PF_DIALOG | PF_EDITOR | PF_VIEWER | PF_FULLCMDLINE | PF_PRELOAD;
 
 	if (Works::Host::State != Works::HostState::Loaded)

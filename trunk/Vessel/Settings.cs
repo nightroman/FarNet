@@ -4,8 +4,9 @@ FarNet module Vessel
 Copyright (c) 2011-2012 Roman Kuzmin
 */
 
-using System.Configuration;
+using System;
 using System.ComponentModel;
+using System.Configuration;
 using FarNet.Settings;
 
 namespace FarNet.Vessel
@@ -15,6 +16,13 @@ namespace FarNet.Vessel
 	{
 		static readonly Settings _Default = new Settings();
 		public static Settings Default { get { return _Default; } }
+		[Browsable(false)]
+		[UserScopedSetting]
+		public DateTime LastUpdateTime
+		{
+			get { return (DateTime)this["LastUpdateTime"]; }
+			set { this["LastUpdateTime"] = value; }
+		}
 		[Browsable(false)]
 		[UserScopedSetting]
 		[DefaultSettingValue("-1")]

@@ -16,52 +16,42 @@ namespace FarNet.Vessel
 		// scale 2: 10 ~ 42 days
 		public const int SpanCount = 11;
 		public const int SpanScale = 2;
-
 		/// <summary>
 		/// File path.
 		/// </summary>
 		public string Path { get; set; }
-
 		/// <summary>
 		/// The first recorded time.
 		/// </summary>
 		public DateTime Head { get; set; }
-
 		/// <summary>
 		/// The last recorded time.
 		/// </summary>
 		public DateTime Tail { get; set; }
-
 		/// <summary>
 		/// Count of records.
 		/// </summary>
 		public int UseCount { get; set; }
-
 		/// <summary>
 		/// Recent activity rank.
 		/// </summary>
 		public int Activity { get; set; }
-
 		/// <summary>
 		/// Count of days of use.
 		/// </summary>
 		public int DayCount { get; set; }
-
 		/// <summary>
 		/// Count of typed keys.
 		/// </summary>
 		public int KeyCount { get; set; }
-
 		/// <summary>
 		/// Idle span since the last use.
 		/// </summary>
 		public TimeSpan Idle { get; set; }
-
 		/// <summary>
 		/// Kind of probability in percents.
 		/// </summary>
 		public int Evidence { get; set; }
-
 		/// <summary>
 		/// Recency group: 0 is the most recent to be sorted by time.
 		/// </summary>
@@ -80,6 +70,5 @@ namespace FarNet.Vessel
 
 			return 3;
 		}
-
 	}
 }

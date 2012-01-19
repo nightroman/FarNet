@@ -17,11 +17,9 @@ namespace FarNet.Vessel
 	{
 		static string AppHome { get { return Path.GetDirectoryName((Assembly.GetExecutingAssembly()).Location); } }
 		static string HelpTopic { get { return "<" + AppHome + "\\>"; } }
-
 		static string _TrainingReport;
 		internal static int TrainingRecordCount { get; set; }
 		internal static int TrainingRecordIndex { get; set; }
-
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
 			IMenu menu = Far.Net.CreateMenu();
@@ -45,7 +43,6 @@ namespace FarNet.Vessel
 
 			menu.Show();
 		}
-
 		static TrainingState TrainingStatus
 		{
 			get
@@ -62,7 +59,6 @@ namespace FarNet.Vessel
 				return TrainingState.Completed;
 			}
 		}
-
 		static string ResultText(Result result)
 		{
 			return string.Format(@"
@@ -86,13 +82,11 @@ Factors    : {7,8}
  result.Average,
  Settings.Default.Limit0.ToString() + "/" + result.Factor1 + "/" + result.Factor2);
 		}
-
 		static void ShowResults()
 		{
 			Far.Net.Message(_TrainingReport, "Training results", MessageOptions.LeftAligned);
 			_TrainingReport = null;
 		}
-
 		static void SaveFactors(Result result)
 		{
 			var settings = Settings.Default;
@@ -115,7 +109,6 @@ Factors    : {7,8}
 				}
 			}
 		}
-
 		static void TrainWorkerFull()
 		{
 			// post started
@@ -129,13 +122,11 @@ Factors    : {7,8}
 			// post done
 			_TrainingReport = ResultText(result);
 		}
-
 		static void TrainFull()
 		{
 			var thread = new Thread(TrainWorkerFull);
 			thread.Start();
 		}
-
 		static void TrainWorkerFast()
 		{
 			// post started
@@ -149,13 +140,11 @@ Factors    : {7,8}
 			// post done
 			_TrainingReport = ResultText(result);
 		}
-
 		public static void StartFastTraining()
 		{
 			var thread = new Thread(TrainWorkerFast);
 			thread.Start();
 		}
-
 		static void Update()
 		{
 			// update
@@ -168,7 +157,26 @@ Factors    : {7,8}
 			// show update info
 			Far.Net.Message(text, "Update", MessageOptions.LeftAligned);
 		}
+		static void UpdateOnce()
+		{
+			var now = DateTime.Now;
+			if (now.Date == Settings.Default.LastUpdateTime.Date)
+				return;
 
+			Settings.Default.LastUpdateTime = now;
+			Settings.Default.Save();
+
+			var thread = new Thread(() =>
+				{
+					// update
+					var algo = new Actor(VesselHost.LogPath);
+					algo.Update();
+
+					// retrain
+					StartFastTraining();
+				});
+			thread.Start();
+		}
 		static void ShowHistory(bool smart)
 		{
 			var Factor1 = Settings.Default.Factor1;
@@ -306,9 +314,9 @@ Factors    : {7,8}
 						VesselHost.PathToTrain = path;
 				}
 
+				UpdateOnce();
 				return;
 			}
 		}
-
 	}
 }

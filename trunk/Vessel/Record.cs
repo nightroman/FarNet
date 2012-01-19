@@ -17,12 +17,10 @@ namespace FarNet.Vessel
 		internal const string AGED = "aged";
 		const string LINE_HEADER = "Time\tKeys\tWhat\tPath";
 		const string LINE_FORMAT = "{0:yyyy-MM-dd HH:mm:ss}\t{1}\t{2}\t{3}";
-
 		public DateTime Time { get; private set; }
 		public int Keys { get; private set; }
 		public string What { get; private set; }
 		public string Path { get; private set; }
-
 		Record(DateTime time, int keys, string what, string path)
 		{
 			Time = time;
@@ -30,13 +28,11 @@ namespace FarNet.Vessel
 			What = what;
 			Path = path;
 		}
-
 		public void SetAged()
 		{
 			Keys = 0;
 			What = AGED;
 		}
-
 		/// <summary>
 		/// Creates the history file and imports the history.
 		/// </summary>
@@ -49,7 +45,6 @@ namespace FarNet.Vessel
 			using (StreamWriter writer = new StreamWriter(store, false, Encoding.Unicode))
 				writer.WriteLine(LINE_HEADER);
 		}
-
 		/// <summary>
 		/// Reads history records from the store.
 		/// </summary>
@@ -79,33 +74,33 @@ namespace FarNet.Vessel
 				}
 			}
 		}
-
 		internal static void Write(string store, IEnumerable<Record> records)
 		{
-			using (StreamWriter writer = new StreamWriter(store, false, Encoding.Unicode))
+			// write the temp
+			string temp = store + ".tmp";
+			using (StreamWriter writer = new StreamWriter(temp, false, Encoding.Unicode))
 			{
 				writer.WriteLine(LINE_HEADER);
 				foreach (var log in records)
 					writer.WriteLine(LINE_FORMAT, log.Time, log.Keys, log.What, log.Path);
 			}
-		}
 
-		public static void Write(string store, DateTime time, int keys, string what, string path)
+			// replace with the temp
+			File.Replace(temp, store, null);
+		}
+		public static void Append(string store, DateTime time, int keys, string what, string path)
 		{
 			using (StreamWriter writer = new StreamWriter(store, true, Encoding.Unicode))
 				writer.WriteLine(LINE_FORMAT, time, keys, what, path);
 		}
-
 		public static void Remove(string store, string path)
 		{
 			Write(store, Read(store).Where(x => !x.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToList());
 		}
-
 		public static IEnumerable<Info> GetHistory(string store, DateTime now, int factor1, int factor2)
 		{
 			var algo = new Actor(store);
 			return algo.GetHistory(now, factor1, factor2);
 		}
-
 	}
 }

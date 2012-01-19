@@ -65,7 +65,7 @@ void Editor::Open(OpenMode mode)
 	// flags
 	int flags = 0;
 
-	if (_IsNew)
+	if (ES(_FileName)) // Far 3.0.2400
 		flags |= EF_CREATENEW;
 
 	if (_DisableHistory)
@@ -202,17 +202,6 @@ bool Editor::IsModified::get()
 	AutoEditorInfo ei;
 
 	return (ei.CurState & ECSTATE_MODIFIED) != 0;
-}
-
-bool Editor::IsNew::get()
-{
-	return _IsNew;
-}
-
-void Editor::IsNew::set(bool value)
-{
-	AssertClosed();
-	_IsNew = value;
 }
 
 bool Editor::IsOpened::get()
@@ -650,19 +639,6 @@ void Editor::SetText(String^ text)
 	//_101210_142325 drop selection
 	if (ei.BlockType != BTYPE_NONE)
 		UnselectText();
-
-	// workaround: Watch-Output-.ps1, missed the first empty line of the first output;
-	// 090617 disabled this workaround because I cannot see any problem (I do not remember what it was)
-#if 0
-	if (ei.TotalLines == 1 && ei.CurPos == 0 && _IsNew)
-	{
-		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, 0);
-		if (egs.StringLength == 0)
-			EditorControl_ECTL_INSERTSTRING(false);
-
-		ei.Update();
-	}
-#endif
 
 	// split: the fact: this way is much faster than clear\insert all text
 	array<String^>^ newLines = FarNet::Works::Kit::SplitLines(text);
@@ -1210,6 +1186,9 @@ void Editor::Activate()
 	throw gcnew InvalidOperationException("Cannot find the window by name.");
 }
 
+// STOP: EF_LOCKED is not used, it is not flexible as our flag.
+// Case: read only files are opened locked if there is such an option set in settings.
+// Compare: Far: no EF_LOCKED still opens locked -- FarNet: IsLocked = false opens not locked.
 bool Editor::IsLocked::get()
 {
 	if (!IsOpened)
@@ -1228,8 +1207,7 @@ void Editor::IsLocked::set(bool value)
 
 IList<EditorColorInfo^>^ Editor::GetColors(int line)
 {
-	::EditorColor ec;
-	ec.StructSize = sizeof(ec);
+	::EditorColor ec; ec.StructSize = sizeof(ec);
 	ec.StringNumber = line;
 
 	List<EditorColorInfo^>^ spans = gcnew List<EditorColorInfo^>;
@@ -1251,8 +1229,7 @@ IList<EditorColorInfo^>^ Editor::GetColors(int line)
 
 void Editor::AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colors)
 {
-	::EditorColor ec;
-	ec.StructSize = sizeof(ec);
+	::EditorColor ec; ec.StructSize = sizeof(ec);
 	ec.ColorItem = 0;
 	ec.Priority = priority;
 	ec.Flags = 0;
@@ -1273,8 +1250,7 @@ void Editor::AddColors(Guid owner, int priority, IEnumerable<EditorColor^>^ colo
 
 void Editor::RemoveColors(Guid owner, int startLine, int endLine)
 {
-	EditorDeleteColor edc;
-	edc.StructSize = sizeof(edc);
+	EditorDeleteColor edc; edc.StructSize = sizeof(edc);
 	edc.Owner = ToGUID(owner);
 	edc.StartPos = -1;
 
@@ -1287,11 +1263,18 @@ void Editor::RemoveColors(Guid owner, int startLine, int endLine)
 
 void Editor::RegisterDrawer(EditorDrawer^ drawer)
 {
-	if (!drawer)
-		throw gcnew ArgumentNullException("drawer");
+	if (!drawer) throw gcnew ArgumentNullException("drawer");
 	
-	if (!_drawers)
+	if (_drawers)
+	{
+		for each(EditorDrawer^ it in _drawers)
+			if (it->Owner == drawer->Owner)
+				throw gcnew InvalidOperationException("Drawer is already registered.");
+	}
+	else
+	{
 		_drawers = gcnew List<EditorDrawer^>;
+	}
 	
 	_drawers->Add(drawer);
 }

@@ -303,7 +303,7 @@ bool FarDialog::Show()
 		GUID typeId = ToGUID(_typeId);
 		_hDlg = Info.DialogInit(
 			&MainGuid,
-			&typeId, //????? watch ptr to local data
+			&typeId,
 			_rect.Left,
 			_rect.Top,
 			_rect.Right,
@@ -340,20 +340,19 @@ bool FarDialog::Show()
 	}
 	finally
 	{
+		// free dialog
 		if (_hDlg != INVALID_HANDLE_VALUE)
 		{
 			Info.DialogFree(_hDlg);
 			_hDlg = INVALID_HANDLE_VALUE;
 		}
 
-		//! now is safe to delete our data
-		if (items)
-		{
-			for(int i = _items->Count; --i >= 0;)
-				_items[i]->Free();
-			delete[] items;
-		}
+		// delete items
+		for(int i = _items->Count; --i >= 0;)
+			_items[i]->Free();
+		delete[] items;
 
+		// unregister
 		_dialogs.Remove(this);
 	}
 }

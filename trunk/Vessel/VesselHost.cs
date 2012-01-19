@@ -82,7 +82,7 @@ namespace FarNet.Vessel
 			if (path.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
 				return;
 
-			Record.Write(_LogPath, time, keys, what, path);
+			Record.Append(_LogPath, time, keys, what, path);
 
 			if (path.Equals(PathToTrain, StringComparison.OrdinalIgnoreCase))
 			{
