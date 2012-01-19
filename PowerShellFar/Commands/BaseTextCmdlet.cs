@@ -16,10 +16,6 @@ namespace PowerShellFar.Commands
 	class BaseTextCmdlet : BaseCmdlet
 	{
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		[Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
-		[Alias("FilePath", "FileName")]
-		public string Path { get; set; }
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public string Title { get; set; }
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -31,5 +27,9 @@ namespace PowerShellFar.Commands
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		[Parameter]
 		public Switching Switching { get; set; }
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[Parameter]
+		public int CodePage { get { return _CodePage; } set { _CodePage = value; } }
+		int _CodePage = -1;
 	}
 }

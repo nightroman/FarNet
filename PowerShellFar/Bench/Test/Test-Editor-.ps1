@@ -27,8 +27,8 @@ Set-Location (Get-Location -PSProvider FileSystem)
 if (Test-Path $Test) { Remove-Item $Test }
 $script:log = @()
 
-### Create an editor
-$Editor = New-FarEditor $Test -Title 'TEST' -DeleteSource 'File'
+### Create editor
+$Editor = New-FarEditor $Test -Title 'TEST' -DeleteSource 'File' -DisableHistory -CodePage 1200
 
 ### Add editor events
 $Editor.add_Opened({ $script:log += 'Editor:Opened' })

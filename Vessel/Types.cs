@@ -29,25 +29,21 @@ namespace FarNet.Vessel
 
 			return result;
 		}
-
 		public static int EvidenceSpan(double value, int scale)
 		{
 			return Span(value, scale);
 		}
 	}
-
 	public class SpanSet
 	{
 		readonly int[] _Spans = new int[Info.SpanCount];
 		public IList<int> Spans { get { return _Spans; } }
 		internal DateTime Time { get; set; }
 	}
-
 	enum TrainingState
 	{
 		None,
 		Started,
 		Completed
 	}
-
 }

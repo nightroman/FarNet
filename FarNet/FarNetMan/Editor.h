@@ -49,7 +49,6 @@ public:
 	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
 	virtual property bool IsLocked { bool get() override; void set(bool value) override; }
 	virtual property bool IsModified { bool get() override; }
-	virtual property bool IsNew { bool get() override; void set(bool value) override; }
 	virtual property bool IsOpened { bool get() override; }
 	virtual property bool IsSaved { bool get() override; }
 	virtual property bool IsVirtualSpace { bool get() override; void set(bool value) override; }
@@ -152,7 +151,6 @@ private:
 	FarNet::DeleteSource _DeleteSource;
 	FarNet::Switching _Switching;
 	bool _DisableHistory;
-	bool _IsNew;
 	Place _Window;
 	String^ _Title;
 	int _CodePage;

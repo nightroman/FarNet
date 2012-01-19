@@ -17,10 +17,8 @@ namespace FarNet.Vessel
 	{
 		readonly string _store;
 		readonly List<Record> _records;
-
 		private int _FastStep1 = 20;
 		private int _FastStep2 = 4;
-
 		/// <summary>
 		/// Gets or sets the fast training step 1.
 		/// </summary>
@@ -29,7 +27,6 @@ namespace FarNet.Vessel
 			get { return _FastStep1; }
 			set { _FastStep1 = value; }
 		}
-
 		/// <summary>
 		/// Gets or sets the fast training step 2.
 		/// </summary>
@@ -38,7 +35,6 @@ namespace FarNet.Vessel
 			get { return _FastStep2; }
 			set { _FastStep2 = value; }
 		}
-
 		/// <summary>
 		/// Gets or sets the random number generator.
 		/// </summary>
@@ -52,12 +48,10 @@ namespace FarNet.Vessel
 			set { _Random_ = value; }
 		}
 		Random _Random_;
-
 		/// <summary>
 		/// Creates the instance with data from the default storage.
 		/// </summary>
 		public Actor() : this(null) { }
-
 		/// <summary>
 		/// Creates the instance with data ready for analyses.
 		/// </summary>
@@ -68,12 +62,10 @@ namespace FarNet.Vessel
 			_records = Record.Read(store).ToList();
 			_records.Reverse();
 		}
-
 		/// <summary>
 		/// Gets records from the most recent to old.
 		/// </summary>
 		public ReadOnlyCollection<Record> Records { get { return new ReadOnlyCollection<Record>(_records); } }
-
 		/// <summary>
 		/// Gets the ordered history info list.
 		/// </summary>
@@ -93,7 +85,6 @@ namespace FarNet.Vessel
 			SetEvidences(infos, CollectEvidences());
 			return infos.OrderByDescending(x => x, new InfoComparer(Settings.Default.Limit0, factor1, factor2));
 		}
-
 		/// <summary>
 		/// Collects the unordered history info.
 		/// </summary>
@@ -138,7 +129,6 @@ namespace FarNet.Vessel
 
 			return result;
 		}
-
 		public Dictionary<string, SpanSet> CollectEvidences()
 		{
 			var result = new Dictionary<string, SpanSet>(StringComparer.OrdinalIgnoreCase);
@@ -168,7 +158,6 @@ namespace FarNet.Vessel
 			result.Add(string.Empty, set1);
 			return result;
 		}
-
 		/// <summary>
 		/// Sets info evidences from collected data.
 		/// </summary>
@@ -190,7 +179,6 @@ namespace FarNet.Vessel
 					info.Evidence = 100 * count / spans[span];
 			}
 		}
-
 		/// <summary>
 		/// Collects not empty info for each record at the record's time.
 		/// </summary>
@@ -216,7 +204,6 @@ namespace FarNet.Vessel
 			SetEvidences(result, CollectEvidences());
 			return result;
 		}
-
 		/// <summary>
 		/// Collects info for a file.
 		/// </summary>
@@ -266,13 +253,11 @@ namespace FarNet.Vessel
 				info.Head = record.Time;
 			}
 		}
-
 		/// <summary>
 		/// Gets all the training results.
 		/// </summary>
 		public IList<Result> TrainingResults { get { return _TrainingResults; } }
 		List<Result> _TrainingResults;
-
 		/// <summary>
 		/// Makes training.
 		/// </summary>
@@ -342,10 +327,8 @@ namespace FarNet.Vessel
 
 			return result;
 		}
-
 		const int xRadius = 5;
 		const int yRadius = 2;
-
 		Result TrainFastEpoch(int factor1, int factor2)
 		{
 			var Limit0 = Settings.Default.Limit0;
@@ -383,7 +366,6 @@ namespace FarNet.Vessel
 
 			return result;
 		}
-
 		/// <summary>
 		/// Trains the model using all factors.
 		/// </summary>
@@ -399,7 +381,6 @@ namespace FarNet.Vessel
 
 			return Train();
 		}
-
 		/// <summary>
 		/// Trains the model using the old factors.
 		/// </summary>
@@ -433,11 +414,14 @@ namespace FarNet.Vessel
 				return result;
 			}
 		}
-
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public string Update()
 		{
-			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", DateTime.Now);
+			var now = DateTime.Now;
+			Logger.Source.TraceEvent(TraceEventType.Start, 0, "Update {0}", now);
+			
+			Settings.Default.LastUpdateTime = now;
+			Settings.Default.Save();
 
 			// sanity
 			int maxDays = Settings.Default.MaximumDayCount;
@@ -542,6 +526,5 @@ Records       : {5,4}
 			infos.Count - agedFiles,
 			_records.Count);
 		}
-
 	}
 }

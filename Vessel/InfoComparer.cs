@@ -4,7 +4,6 @@ FarNet module Vessel
 Copyright (c) 2011-2012 Roman Kuzmin
 */
 
-using System;
 using System.Collections.Generic;
 
 namespace FarNet.Vessel
@@ -14,14 +13,12 @@ namespace FarNet.Vessel
 		int _limit0;
 		int _factor1;
 		int _factor2;
-
 		public InfoComparer(int limit0, int factor1, int factor2)
 		{
 			_limit0 = limit0;
 			_factor1 = factor1;
 			_factor2 = factor2;
 		}
-
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public int Compare(Info left, Info right)
 		{

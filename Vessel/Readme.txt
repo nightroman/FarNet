@@ -1,18 +1,20 @@
 
 Module   : FarNet.Vessel
-Release  : 2012-01-05
+Release  : 2012-01-16
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
 
-	= PREREQUISITES =
+
+= PREREQUISITES =
 
  * Far Manager 3.0.x
- * Plugin FarNet 5.0.0
+ * Plugin FarNet 5.0.4
  * .NET Framework 3.5+
 
-	= DESCRIPTION =
+
+= DESCRIPTION =
 
 Vessel (short for View/Edit/Save/SELect) records and maintains history of file
 view, edit, and save operations and related statistics. The history file is:
@@ -43,7 +45,11 @@ Automatic fast training starts after updating the history file from the menu
 and after opening not recent files from the smart history. It works in the
 background and it is very fast (~50 times faster than full training).
 
-	= SETTINGS =
+Automatic log update and training is also done once a day on the first use.
+Thus, manual updates and trainings are not normally needed at all.
+
+
+= SETTINGS =
 
 Open the module settings panel from the main .NET menu:
 F11 | FarNet | Settings | Vessel
@@ -70,7 +76,8 @@ Maximum span 1 in hours. Training finds the best value (factor 1).
 
 Maximum span 2 in days. Training finds the best value (factor 2).
 
-	= HISTORY =
+
+= HISTORY =
 
 1.0.1
 
@@ -159,5 +166,10 @@ the roaming file Vessel\Settings.resources can be removed.
 2.0.0
 
 Adapted for Far3 + FarNet5.
+
+2.0.1
+
+Automatic log update and training is also done once a day on the first use.
+Thus, manual updates and trainings are not normally needed at all.
 
 http://code.google.com/p/farnet/downloads/list

@@ -268,11 +268,12 @@ Merge-Helps $BaseFile @{
 ### Text Cmdlets
 $BaseText = @{
 	parameters = @{
-		Path = 'The path of a file to be opened.'
-		Title = 'Window title. The default is the file path.'
+		CodePage = 'Code page identifier.'
 		DeleteSource = 'Tells when and how to delete the file when closed.'
 		DisableHistory = 'Tells to not add the file to the history.'
+		Path = 'The path of a file to be opened.'
 		Switching = 'Switching between editor and viewer.'
+		Title = 'Window title. The default is the file path.'
 	}
 	inputs = @()
 	outputs = @()

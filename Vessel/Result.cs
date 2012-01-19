@@ -15,12 +15,10 @@ namespace FarNet.Vessel
 		public int SameCount { get; set; }
 		public int UpSum { get; set; }
 		public int DownSum { get; set; }
-
 		public int TotalSum
 		{
 			get { return UpSum - DownSum; }
 		}
-
 		public float Average
 		{
 			get
@@ -29,12 +27,10 @@ namespace FarNet.Vessel
 				return count == 0 ? 0 : (float)(UpSum - DownSum) / count;
 			}
 		}
-
 		// Keep it float for experiments with float targets
 		public float Target
 		{
 			get { return TotalSum; }
 		}
-
 	}
 }

@@ -1,6 +1,17 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.4 =
+
+*) Editor console
+- Simplified menus and removed some exotic unlikely used features.
+- [Console] in the debugger dialog does not show not needed menus.
+- Files, if saved, are in the local PowerShellFar root directory.
+
+*) Cmdlets *-FarEditor, *-FarViewer
+- Added yet missing parameter CodePage
+- *-FarEditor cmdlets allow empty file names
+
 = 5.0.3 =
 
 *) Debugging

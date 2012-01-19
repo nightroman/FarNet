@@ -21,6 +21,19 @@ namespace PowerShellFar
 	/// </summary>
 	class EditorConsole
 	{
+		public IEditor Editor { get; private set; }
+		FarUI FarUI;
+		FarHost FarHost;
+		Runspace Runspace;
+		PowerShell PowerShell;
+		static string GetFolderPath()
+		{
+			return A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, true);
+		}
+		static string GetFilePath()
+		{
+			return Path.Combine(GetFolderPath(), Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + Word.ConsoleExtension);
+		}
 		/// <summary>
 		/// Creates an editor console.
 		/// </summary>
@@ -29,90 +42,34 @@ namespace PowerShellFar
 		/// </remarks>
 		public static EditorConsole CreateConsole(bool prompt)
 		{
-			string dir = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, false), "psfconsole");
-			if (!Directory.Exists(dir))
-				Directory.CreateDirectory(dir);
-
 			int mode = 0;
-			string name = null;
 			if (prompt)
 			{
-				string[] files = Directory.GetFiles(dir, "*" + Word.ConsoleExtension);
 				IMenu menu = Far.Net.CreateMenu();
-				menu.AutoAssignHotkeys = true;
 				menu.Title = "Open Editor Console";
-				menu.Bottom = "[Shift+|Ctrl+]Enter";
-				menu.Add("* New console or session *");
+				menu.Add("&1. Main session");
+				menu.Add("&2. New local session");
+				menu.Add("&3. New remote session");
 				menu.HelpTopic = Far.Net.GetHelpTopic("EditorConsoleMenuOpen");
 
-				IPanel panel = null;
-				if ((Far.Net.Window.Kind == WindowKind.Panels) && (null != (panel = Far.Net.Panel)) && (panel.Kind != PanelKind.File))
-					panel = null;
-
-				// break keys
-				menu.AddKey(KeyCode.Enter, ControlKeyStates.ShiftPressed);
-				menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
-				if (panel != null)
-					menu.AddKey(KeyCode.Spacebar);
-
-				if (files.Length > 0)
-				{
-					menu.Add("Saved Consoles").IsSeparator = true;
-					foreach (string file in files)
-						menu.Add(Path.GetFileName(file));
-				}
 				if (!menu.Show())
 					return null;
 
-				name = menu.Items[menu.Selected].Text;
-				if (name.Length > 0 && name[0] == '*')
-					name = null;
-
-				switch (menu.Key.VirtualKeyCode)
-				{
-					case KeyCode.Enter:
-						if (menu.Key.IsShift())
-							mode = 1;
-						else if (menu.Key.IsCtrl())
-							mode = 2;
-						break;
-					case KeyCode.Spacebar:
-						string path = name == null ? dir + "\\" : Path.Combine(dir, name);
-						panel.GoToPath(path);
-						return null;
-				}
+				mode = menu.Selected;
 			}
 
 			// editor
 			IEditor editor = Far.Net.CreateEditor();
-
-			// new file, generate a name, set Unicode, don't history
-			if (name == null)
-			{
-				name = Kit.ToString(DateTime.Now, "_yyMMdd_HHmmss") + Word.ConsoleExtension;
-				editor.CodePage = Encoding.Unicode.CodePage;
-				editor.DisableHistory = true;
-				editor.IsNew = true;
-			}
-
-			// do not set code page now
-			editor.FileName = Path.Combine(dir, name);
+			editor.FileName = GetFilePath();
+			editor.CodePage = Encoding.Unicode.CodePage;
+			editor.DisableHistory = true;
 
 			// create the console and attach it as the host to avoid conflicts
 			EditorConsole r = new EditorConsole(editor, mode);
 			editor.Host = r;
 			return r;
 		}
-
-		public IEditor Editor { get; private set; }
-
-		FarUI FarUI;
-		FarHost FarHost;
-		Runspace Runspace;
-		PowerShell PowerShell;
-
 		public EditorConsole(IEditor editor) : this(editor, 0) { }
-
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public EditorConsole(IEditor editor, int mode)
 		{
@@ -129,7 +86,6 @@ namespace PowerShellFar
 					break;
 			}
 		}
-
 		void CloseSession()
 		{
 			if (Runspace != null)
@@ -140,7 +96,6 @@ namespace PowerShellFar
 
 			Editor.Title = Editor.FileName;
 		}
-
 		void EnsureHost()
 		{
 			if (FarHost == null)
@@ -151,7 +106,6 @@ namespace PowerShellFar
 				FarHost = new FarHost(FarUI);
 			}
 		}
-
 		void OpenLocalSession()
 		{
 			EnsureHost();
@@ -161,7 +115,6 @@ namespace PowerShellFar
 
 			Editor.Title = "Local session: " + Path.GetFileName(Editor.FileName);
 		}
-
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		void OpenRemoteSession()
 		{
@@ -187,7 +140,6 @@ namespace PowerShellFar
 
 			Editor.Title = computerName + " session: " + Path.GetFileName(Editor.FileName);
 		}
-
 		//! This method is sync and uses pipeline, that is why we must not null the pipeline async.
 		void OnCtrlCPressed(object sender, EventArgs e)
 		{
@@ -197,20 +149,6 @@ namespace PowerShellFar
 				PowerShell.BeginStop(AsyncStop, null);
 			}
 		}
-
-		void OnF1()
-		{
-			IMenu menu = Far.Net.CreateMenu();
-			menu.Title = "Editor Console";
-			menu.HelpTopic = Far.Net.GetHelpTopic("EditorConsole");
-			if (Runspace != null)
-				menu.Add("&Global session").Click = delegate { CloseSession(); };
-			menu.Add("New &local session").Click = delegate { OpenLocalSession(); };
-			menu.Add("New &remote session").Click = delegate { OpenRemoteSession(); };
-			menu.Add("&Help").Click = delegate { Far.Net.ShowHelpTopic("EditorConsole"); };
-			menu.Show();
-		}
-
 		/// <summary>
 		/// Called on key in psfconsole.
 		/// </summary>
@@ -401,13 +339,7 @@ namespace PowerShellFar
 					}
 				case KeyCode.F1:
 					{
-						if (e.Key.Is())
-						{
-							// [F1]
-							e.Ignore = true;
-							OnF1();
-						}
-						else if (e.Key.IsShift())
+						if (e.Key.IsShift())
 						{
 							// [ShiftF1]
 							e.Ignore = true;
@@ -423,7 +355,6 @@ namespace PowerShellFar
 					}
 			}
 		}
-
 		internal void Invoke()
 		{
 			// current line and script, skip empty
@@ -473,7 +404,6 @@ namespace PowerShellFar
 				Editor.Redraw();
 			}
 		}
-
 		void InvokePipeline(string code)
 		{
 			// drop history cache
@@ -508,7 +438,6 @@ namespace PowerShellFar
 				Far.Net.ShowError(Res.Me, ex);
 			}
 		}
-
 		void AsyncInvoke(IAsyncResult ar)
 		{
 			// end; it may throw, e.g. on [CtrlC]
@@ -543,12 +472,10 @@ namespace PowerShellFar
 			// kill
 			PowerShell.Dispose();
 		}
-
 		void AsyncStop(IAsyncResult ar)
 		{
 			PowerShell.EndStop(ar);
 		}
-
 		int _initTabExpansion;
 		public void ExpandCode(ILine editLine)
 		{
@@ -594,7 +521,6 @@ namespace PowerShellFar
 			// complete expansion
 			EditorKit.ExpandText(editLine, text, line, lastWord, words);
 		}
-
 		bool IsLastLineCurrent
 		{
 			get
@@ -602,6 +528,5 @@ namespace PowerShellFar
 				return Editor.Caret.Y == Editor.Count - 1;
 			}
 		}
-
 	}
 }

@@ -275,14 +275,6 @@ namespace FarNet
 		/// </summary>
 		public abstract Point WindowSize { get; }
 		/// <summary>
-		/// Tells to open a new (non-existing) file in the editor, similar to [ShiftF4].
-		/// Set it before opening.
-		/// </summary>
-		/// <remarks>
-		/// Perhaps this option in not actually used (Far 2.0.1302).
-		/// </remarks>
-		public abstract bool IsNew { get; set; }
-		/// <summary>
 		/// Inserts the text at the caret position.
 		/// </summary>
 		/// <param name="text">The text. Supported line delimiters: CR, LF, CR+LF.</param>
@@ -522,8 +514,8 @@ namespace FarNet
 		/// <remarks>
 		/// To open an editor you should create an editor operator by <see cref="IFar.CreateEditor"/>,
 		/// set at least its <see cref="FileName"/> and optionally: <see cref="DeleteSource"/>,
-		/// <see cref="DisableHistory"/>, <see cref="Switching"/>, <see cref="IsNew"/>,
-		/// <see cref="Title"/>, and <see cref="Window"/>. Then this method is called.
+		/// <see cref="DisableHistory"/>, <see cref="Switching"/>, <see cref="Title"/>,
+		/// and <see cref="Window"/>. Then this method is called.
 		/// <para>
 		/// If the file is already opened in an editor then this instance should not be used after opening
 		/// because technically an editor was not opened but reused. The safe way is to get the current
@@ -724,6 +716,7 @@ namespace FarNet
 		/// <summary>
 		/// Registers an editor drawer.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Drawer is already registered.</exception>
 		public abstract void RegisterDrawer(EditorDrawer drawer);
 	}
 
@@ -735,6 +728,8 @@ namespace FarNet
 		///
 		public EditorDrawer(GetEditorColors getColors, Guid owner, int priority)
 		{
+			if (getColors == null) throw new ArgumentNullException("getColors");
+			
 			GetColors = getColors;
 			Owner = owner;
 			Priority = priority;

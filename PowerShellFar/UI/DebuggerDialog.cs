@@ -16,11 +16,8 @@ namespace PowerShellFar.UI
 	class DebuggerDialog
 	{
 		static DebuggerResumeAction _LastAction = DebuggerResumeAction.StepInto;
-
 		public EventHandler<ButtonClickedEventArgs> OnView { get; set; }
-
 		InvocationInfo _InvocationInfo;
-
 		IDialog _Dialog;
 		IListBox _List1;
 		IListBox _List2;
@@ -32,7 +29,6 @@ namespace PowerShellFar.UI
 		IButton _View;
 		IButton _Goto;
 		IButton _Break;
-
 		public DebuggerDialog(DebuggerStopEventArgs e)
 		{
 			_InvocationInfo = e.InvocationInfo;
@@ -128,7 +124,7 @@ namespace PowerShellFar.UI
 			_View.NoBrackets = true;
 			_View.NoClose = true;
 
-			_Goto = _Dialog.AddButton(0, 0, BtnGoto);
+			_Goto = _Dialog.AddButton(0, 0, BtnLine);
 			_Goto.CenterGroup = true;
 			_Goto.NoBrackets = true;
 			_Goto.NoClose = true;
@@ -140,27 +136,23 @@ namespace PowerShellFar.UI
 
 			_Dialog.Initialized += OnInitialized;
 		}
-
 		void SetFrame()
 		{
 			int i = _InvocationInfo.ScriptLineNumber - 1;
 			_List2.SetFrame(i, i - _List2.Rect.Height / 2);
 		}
-
 		void OnInitialized(object sender, EventArgs e)
 		{
 			// set listbox frame
 			if (_List2.Items.Count > 0)
 				SetFrame();
 		}
-
 		void OnGoto(object sender, EventArgs e)
 		{
 			// set listbox frame
 			if (_List2.Items.Count > 0)
 				SetFrame();
 		}
-
 		public DebuggerResumeAction Show()
 		{
 			A.InvokeCode("Get-PSBreakpoint -Variable daf01ff6-f004-43bd-b6bf-cf481e9333d3 | Remove-PSBreakpoint");
@@ -195,7 +187,8 @@ namespace PowerShellFar.UI
 
 				if (_Dialog.Selected == _Console)
 				{
-					A.Psf.ShowConsole(OpenMode.Modal);
+					var console = EditorConsole.CreateConsole(false);
+					console.Editor.Open(OpenMode.Modal);
 					continue;
 				}
 
@@ -205,6 +198,7 @@ namespace PowerShellFar.UI
 					{
 						IEditor editor = Far.Net.CreateEditor();
 						editor.FileName = _InvocationInfo.ScriptName;
+						editor.IsLocked = true;
 						editor.GoToLine(_InvocationInfo.ScriptLineNumber - 1);
 						editor.Open(OpenMode.Modal);
 					}
@@ -217,15 +211,14 @@ namespace PowerShellFar.UI
 
 			return DebuggerResumeAction.Continue;
 		}
-
 		const string
 			BtnStep = "&Step",
 			BtnOver = "O&ver",
 			BtnOut = "&Out",
-			BtnConsole = "Conso&le",
+			BtnConsole = "&Console",
 			BtnEdit = "&Edit",
 			BtnView = "V&iew",
-			BtnGoto = "&Goto",
+			BtnLine = "&Line",
 			BtnBreak = "&Break";
 	}
 }
