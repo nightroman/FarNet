@@ -36,7 +36,7 @@ task Zip {
 	$null = mkdir $dir\Extras
 
 	Copy-Item Readme.txt, Install.txt z
-	Copy-Item History.txt, LICENSE $dir
+	Copy-Item History.txt, LICENSE, PowerShellFar.farconfig $dir
 	Copy-Item $FarHome\FarNet\Modules\PowerShellFar\* $dir -Recurse
 	Copy-Item Bench $dir -Recurse -Force
 	Copy-Item $draw\PowerShell.hrc, $draw\RomanConsole.hrd, $draw\RomanRainbow.hrd $dir\Extras

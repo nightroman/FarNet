@@ -1,6 +1,16 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.5 =
+
+*) Histories come back
+- Complete-Word-.ps1 uses command/dialog history again.
+- Show-History-.ps1 comes back.
+
+*) Misc
+- A few example macros in PowerShellFar.farconfig
+- Minor fixes
+
 = 5.0.4 =
 
 *) Editor console

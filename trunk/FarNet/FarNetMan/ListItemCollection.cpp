@@ -29,7 +29,7 @@ void ListItemCollection::ClearItems()
 		arg.Count = 0;
 		arg.StartIndex = 0;
 		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTDELETE, _box->Id, &arg))
-			throw gcnew InvalidOperationException;
+			throw gcnew InvalidOperationException(__FUNCTION__);
 	}
 
 	Collection<FarItem^>::ClearItems();
@@ -51,7 +51,7 @@ void ListItemCollection::InsertItem(int index, FarItem^ item)
 		arg.Index = index;
 
 		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTINSERT, _box->Id, &arg))
-			throw gcnew InvalidOperationException;
+			throw gcnew InvalidOperationException(__FUNCTION__);
 	}
 
 	Collection<FarItem^>::InsertItem(index, item);
@@ -68,7 +68,7 @@ void ListItemCollection::RemoveItem(int index)
 		d.Count = 1;
 		d.StartIndex = index;
 		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTDELETE, _box->Id, &d))
-			throw gcnew InvalidOperationException;
+			throw gcnew InvalidOperationException(__FUNCTION__);
 	}
 
 	Collection<FarItem^>::RemoveItem(index);

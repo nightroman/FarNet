@@ -18,6 +18,7 @@ public:
 	virtual property IAnyViewer^ AnyViewer { IAnyViewer^ get() override; }
 	virtual property IDialog^ Dialog { IDialog^ get() override; }
 	virtual property IEditor^ Editor { IEditor^ get() override; }
+	virtual property IHistory^ History { IHistory^ get() override; }
 	virtual property ILine^ CommandLine { ILine^ get() override; }
 	virtual property ILine^ Line { ILine^ get() override; }
 	virtual property IPanel^ Panel { IPanel^ get() override; }

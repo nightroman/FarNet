@@ -1,6 +1,6 @@
 
 Module   : FarNet.Vessel
-Release  : 2012-01-16
+Release  : 2012-01-20
 Category : File history
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,7 +10,7 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
  * Far Manager 3.0.x
- * Plugin FarNet 5.0.4
+ * Plugin FarNet 5.0.5
  * .NET Framework 3.5+
 
 
@@ -28,8 +28,9 @@ Features
  * advanced filter with reusable regular expressions (CtrlDown, AltDown)
  * for other features see history lists help (F1)
 
-Short history is not effective for training. The smart history list will be the
-same as the plain list for some time even after training.
+If the log file is missing then it is generated from the existing Far history.
+This history is not yet effective for training. The smart history list will be
+the same as the plain list for some time even after training.
 
 The smart history list shows files in heuristically improved order. Recently
 used files are sorted by last times, as usual. Files not used for a while are
@@ -171,5 +172,9 @@ Adapted for Far3 + FarNet5.
 
 Automatic log update and training is also done once a day on the first use.
 Thus, manual updates and trainings are not normally needed at all.
+
+2.0.2
+
+Use FarNet 5.0.5. Initial generation of the log from Far history is back.
 
 http://code.google.com/p/farnet/downloads/list

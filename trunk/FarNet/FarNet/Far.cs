@@ -510,6 +510,10 @@ namespace FarNet
 			if (type == null) throw new ArgumentNullException("type");
 			return GetModuleManager(Path.GetFileNameWithoutExtension(type.Assembly.Location));
 		}
+		/// <summary>
+		/// Gets the history operator.
+		/// </summary>
+		public abstract IHistory History { get; }
 	}
 	/// <summary>
 	/// Represents the thumbnail progress bar state.

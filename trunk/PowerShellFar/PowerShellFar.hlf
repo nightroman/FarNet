@@ -50,7 +50,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 5.0.4#
+#PowerShellFar 5.0.5#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -85,7 +85,7 @@ $#Installation#
 #Requirements#
 
  - Far Manager 3.0.2407
- - Plugin FarNet 5.0.4
+ - Plugin FarNet 5.0.5
  - Windows PowerShell V2, V3
 
 
@@ -1991,23 +1991,17 @@ A: There are at least two options, both using macros
 
 1) #Easy prefix#: A macro that expands the empty command line to '>: '. In this
 example [Space] is expanded into '>: '. Space after the prefix is recommended
-for normal TabExpansion of the first word:
-
-	<macro area="Shell" key="Space" flags="EmptyCommandLine|DisableOutput" description="PSF: Easy prefix">
-	<![CDATA[> : Space]]>
-	</macro>
+for normal TabExpansion of the first word.
+See #PowerShellFar.farconfig#
 
 2) #Easy invoke#: Type and run without prefix using a macro associated with
-"Invoke selected code" menu command. Example ([ShiftSpace]):
-
-	<macro area="Shell" key="ShiftSpace" flags="NotEmptyCommandLine|DisableOutput" description="PSF: Easy invoke">
-	<![CDATA[F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter 2 $Else Esc $End]]>
-	</macro>
+"Invoke selected code" menu command. Example ([ShiftSpace]).
+See #PowerShellFar.farconfig#
 
 Now you can type PowerShell commands without a prefix and press [ShiftSpace] to
 execute it. There is a bonus: if a command fails then its text is still in the
-command line, ready for correction; even the caret position is the same, this
-is handy on composing lengthy commands.
+command line, ready for correction; even the caret position is the same that
+might be useful on composing lengthy commands.
 
 
 @ConsoleApplications

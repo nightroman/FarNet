@@ -67,7 +67,7 @@ namespace PowerShellFar.UI
 				return null;
 
 			// selected
-			Alternative = _menu.Key == new KeyData(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
+			Alternative = _menu.Key.IsCtrl(KeyCode.Enter);
 			return _menu.Items[_menu.Selected].Text;
 		}
 	}

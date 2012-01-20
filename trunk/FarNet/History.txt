@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/
 
+= 5.0.5 =
+
+*) History
+- All histories come back, use IFar.History and its methods.
+
 = 5.0.4 =
 
 *) IEditor ~ Mantis 1988 and Far 3.0.2400+

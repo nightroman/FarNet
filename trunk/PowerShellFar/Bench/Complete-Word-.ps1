@@ -5,15 +5,16 @@
 	Author: Roman Kuzmin
 
 .Description
-	NOTE: Only editor is supported for now, command line and dialogs are not.
-
 	The script implements a classic task of completing the current word. The
 	script can be run for the current editor, the command line or any dialog
-	edit control. Candidate words are taken from the current text in editor or
-	from Far commands history or from edit control history if any.
+	edit control. Candidate words are taken from the current editor text,
+	command history, or dialog control history respectively.
 
 	Words are grouped by the preceding symbol and only then sorted. The first
 	group candidates are usually used more frequently, at least in source code.
+
+.Link
+	PowerShellFar.farconfig
 #>
 
 # get edit line
@@ -66,9 +67,14 @@ switch($Line.WindowKind) {
 			$Psf.GetHistory(0) | CollectWords
 		}
 	}
+	'Dialog' {
+		$control = $Far.Dialog.Focused
+		if ($control.History) {
+			$Far.History.Dialog($control.History) | .{process{ $_.Name }} | CollectWords
+		}
+	}
 	default {
-		Show-FarMessage "Only editor is supported for now." -Caption "Complete Word"
-		return
+		$Far.History.Command() | .{process{ $_.Name }} | CollectWords
 	}
 }
 if ($words.Count -eq 0) {

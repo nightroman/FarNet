@@ -43,7 +43,15 @@ namespace FarNet.Vessel
 				Directory.CreateDirectory(dir);
 
 			using (StreamWriter writer = new StreamWriter(store, false, Encoding.Unicode))
+			{
 				writer.WriteLine(LINE_HEADER);
+
+				foreach(var it in Far.Net.History.Editor())
+					writer.WriteLine(LINE_FORMAT, it.Time, 0, "edit", it.Name);
+
+				foreach (var it in Far.Net.History.Viewer())
+					writer.WriteLine(LINE_FORMAT, it.Time, 0, "view", it.Name);
+			}
 		}
 		/// <summary>
 		/// Reads history records from the store.
