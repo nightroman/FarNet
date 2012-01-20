@@ -14,8 +14,9 @@ Features
  * advanced filter with reusable regular expressions (CtrlDown, AltDown)
  * for other features see history lists help (F1)
 
-Short history is not effective for training. The smart history list will be the
-same as the plain list for some time even after training.
+If the log file is missing then it is generated from the existing Far history.
+This history is not yet effective for training. The smart history list will be
+the same as the plain list for some time even after training.
 
 The smart history list shows files in heuristically improved order. Recently
 used files are sorted by last times, as usual. Files not used for a while are
