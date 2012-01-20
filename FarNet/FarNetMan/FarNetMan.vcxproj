@@ -304,6 +304,7 @@
     <ClCompile Include="Export.cpp" />
     <ClCompile Include="Far0.cpp" />
     <ClCompile Include="Far1.cpp" />
+    <ClCompile Include="History.cpp" />
     <ClCompile Include="InputBox.cpp" />
     <ClCompile Include="ListItemCollection.cpp" />
     <ClCompile Include="ListMenu.cpp" />
@@ -344,6 +345,7 @@
     <ClInclude Include="Far1.h" />
     <ClInclude Include="Headers.c\farcolor.hpp" />
     <ClInclude Include="Headers.c\farkeys.hpp" />
+    <ClInclude Include="History.h" />
     <ClInclude Include="InputBox.h" />
     <ClInclude Include="ListItemCollection.h" />
     <ClInclude Include="ListMenu.h" />
@@ -355,6 +357,7 @@
     <ClInclude Include="Panel2.h" />
     <ClInclude Include="PanelFileCollection.h" />
     <ClInclude Include="Headers.c\plugin.hpp" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Shelve.h" />
     <ClInclude Include="stdafx.h" />

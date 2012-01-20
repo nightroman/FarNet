@@ -41,6 +41,7 @@ Select-FarFile-.ps1 Selects panel files by the specified filter.
 Set-Console.ps1 Sets console window properties.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
 Show-EditorColor-.ps1 Shows editor color information.
+Show-History-.ps1 Shows command, folder or view history.
 Show-Hlf-.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
 Show-KeyMap.ps1 Shows Far hotkeys and macros by areas (HTML page).

@@ -10,6 +10,7 @@ Copyright (c) 2005-2012 FarNet Team
 #include "Dialog.h"
 #include "Editor0.h"
 #include "Far0.h"
+#include "History.h"
 #include "InputBox.h"
 #include "ListMenu.h"
 #include "Menu.h"
@@ -519,6 +520,11 @@ void Far1::ShowHelpTopic(String^ topic)
 String^ Far1::GetHelpTopic(String^ topic)
 {
 	return "<" + Path::GetDirectoryName(Assembly::GetCallingAssembly()->Location) + "\\>" + topic;
+}
+
+IHistory^ Far1::History::get()
+{
+	return %FarNet::History::Instance;
 }
 
 }

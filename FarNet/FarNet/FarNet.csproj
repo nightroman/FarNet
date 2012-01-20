@@ -121,6 +121,7 @@
     <Compile Include="Forms.cs" />
     <Compile Include="FormsEvents.cs" />
     <Compile Include="Geometry.cs" />
+    <Compile Include="History.cs" />
     <Compile Include="InputBox.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Menu.cs" />

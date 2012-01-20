@@ -93,11 +93,6 @@ void Far0::Start()
 	loader.LoadModules(path);
 }
 
-void Far0::PostSelf()
-{
-	Far::Net->PostMacro("F11 Menu.Select(\"FarNet\", 3) Enter");
-}
-
 //! Don't use Far UI
 void Far0::Stop()
 {
@@ -576,11 +571,16 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 	}
 }
 
+void Far0::PostSelf()
+{
+	Far::Net->PostMacro("F11 Menu.Select(\"FarNet\", 2) Enter");
+}
+
 // _100411_022932 Why PostStep is better than PostJob: PostStep makes FarNet to
 // be called from OpenPlugin, so that it can open panels and do most of needed
 // tasks. PostJob does not allow opening panels, calling PostMacro, etc.
-// Workarounds (to post steps as steps or as jobs depending on X) are not neat.
-// Thus, wait for a good CallPlugin in Far or for some other new features.
+// To post steps as steps or as jobs depending on X is ugly.
+// Thus, wait for a good CallPlugin or other features.
 void Far0::PostStep(Action^ handler)
 {
 	// post handler and recall
@@ -607,7 +607,7 @@ void Far0::PostStepAfterStep(Action^ handler1, Action^ handler2)
 	}
 	catch(...)
 	{
-		//! 'F11 <hotkey>' is posted and going to trigger the menu anyway; so, use a fake step
+		//! self is posted and going to call the menu anyway; so, use a fake step
 		_handler = gcnew Action(&VoidStep);
 		throw;
 	}

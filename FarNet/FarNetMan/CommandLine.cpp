@@ -35,14 +35,14 @@ void CommandLine::Text::set(String^ value)
 
 	PIN_NE(pin, value);
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (wchar_t*)pin))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 }
 
 int CommandLine::Caret::get()
 {
 	int pos;
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINEPOS, 0, &pos))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 	return pos;
 }
 
@@ -52,7 +52,7 @@ void CommandLine::Caret::set(int value)
 		value = Length;
 
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINEPOS, value, 0))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 }
 
 void CommandLine::InsertText(String^ text)
@@ -62,7 +62,7 @@ void CommandLine::InsertText(String^ text)
 
 	PIN_NE(pin, text);
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_INSERTCMDLINE, 0, (wchar_t*)pin))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 }
 
 void CommandLine::SelectText(int start, int end)
@@ -71,7 +71,7 @@ void CommandLine::SelectText(int start, int end)
 	cls.SelStart = start;
 	cls.SelEnd = end;
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, &cls))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 }
 
 void CommandLine::UnselectText()
@@ -83,7 +83,7 @@ Span CommandLine::SelectionSpan::get()
 {
 	CmdLineSelect cls;
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, &cls))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 
 	Span result;
 	if (cls.SelStart < 0)
@@ -103,7 +103,7 @@ String^ CommandLine::SelectedText::get()
 {
 	CmdLineSelect cls;
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, &cls))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 
 	if (cls.SelStart < 0)
 		return nullptr;
@@ -121,7 +121,7 @@ void CommandLine::SelectedText::set(String^ value)
 
 	CmdLineSelect cls;
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINESELECTION, 0, &cls))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 	if (cls.SelStart < 0)
 		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
 
@@ -137,12 +137,12 @@ void CommandLine::SelectedText::set(String^ value)
 	// set new text
 	PIN_NE(pin, text);
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINE, 0, (wchar_t*)pin))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 
 	// set new selection
 	cls.SelEnd = cls.SelStart + value->Length;
 	if (!Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_SETCMDLINESELECTION, 0, &cls))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 
 	// restore cursor
 	Caret = pos <= text->Length ? pos : text->Length;

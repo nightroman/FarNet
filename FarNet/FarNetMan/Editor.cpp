@@ -159,7 +159,7 @@ void Editor::Open(OpenMode mode)
 void Editor::Close()
 {
 	if (!Info.EditorControl(-1, ECTL_QUIT, 0, 0))
-		throw gcnew InvalidOperationException;
+		throw gcnew InvalidOperationException(__FUNCTION__);
 }
 
 DeleteSource Editor::DeleteSource::get()
