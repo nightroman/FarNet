@@ -61,9 +61,7 @@ public:
 	virtual void PostJob(Action^ handler) override;
 	virtual void PostMacro(String^ macro, bool enableOutput, bool disablePlugins) override;
 	virtual void PostStep(Action^ handler) override;
-	virtual void PostStepAfterKeys(String^ keys, Action^ handler) override;
-	virtual void PostStepAfterStep(Action^ handler1, Action^ handler2) override;
-	virtual void PostText(String^ text, bool enableOutput) override;
+	virtual void PostStep2(Action^ handler1, Action^ handler2) override;
 	virtual void Quit() override;
 	virtual void ShowError(String^ title, Exception^ error) override;
 	virtual void ShowHelp(String^ path, String^ topic, HelpOptions options) override;

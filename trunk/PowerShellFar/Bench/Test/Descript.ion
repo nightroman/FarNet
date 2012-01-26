@@ -22,8 +22,8 @@ Test-Panel-Tree-.ps1 Test panel mixed items on TreePanel
 Test-ProgressForm-.ps1 Test progress tools.
 Test-RegisterCommand-.ps1 Shows how to register commands dynamically.
 Test-RegisterTool-.ps1 Shows how to register tools dynamically.
-Test-Stepper+.ps1 Test unit for PowerShellFar.Stepper.
-Test-Stepper-.ps1 Test super-macro engine.
+Test-Stepper+.ps1 Test unit for the Stepper.
+Test-Stepper-.ps1 Test the stepper engine.
 Test-SubsetForm-.ps1 Tests FarNet.Tools.SubsetForm.
 Test-TabExpansion-.ps1 Test TabExpansion.
 Test-Watch-Output-.ps1 Test the script Watch-Output-.ps1.

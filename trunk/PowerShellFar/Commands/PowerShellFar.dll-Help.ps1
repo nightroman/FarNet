@@ -446,3 +446,49 @@ Example: 'FullName' or {$_.FullName} tell to use a property FullName.
 		description = 'One of the input objects selected by a user or none if nothing is selected.'
 	}
 }
+
+### Invoke-FarStepper
+@{
+	command = 'Invoke-FarStepper'
+	synopsis = 'Invokes sequences of asynchronous macro and script block steps.'
+	description = @'
+This cmdlet provides a simple way to invoke stepper scripts. For more complex
+scenarios with stepping events use the class [PowerShellFar.Stepper] directly.
+'@
+	parameters = @{
+		Path = @'
+A script that gets macros and script blocks. Use either full paths or just
+names of scripts in the system path. Use of relative paths is not recommended
+with more than one unit.
+'@
+		Ask = @'
+Tells to ask a user to choose an action before each step.
+This mode is used for troubleshooting, demonstrations, and etc.
+'@
+	}
+	inputs = @(
+		@{
+			type = 'System.String'
+			description = 'Literal stepper script paths. See the Path parameter.'
+		}
+		@{
+			type = 'System.IO.FileInfo'
+			description = 'File items, for example output of Get-*Item cmdlets.'
+		}
+	)
+	outputs = @()
+	examples = @(
+		@{
+			code = {
+				Invoke-FarStepper -Path (Get-FarPath)
+			}
+			remarks = 'Invokes the current panel file by the stepper.'
+		}
+		@{
+			code = {
+				Invoke-FarStepper .\Test-Stepper+.ps1 -Ask
+			}
+			remarks = 'Invokes the test from Bench\Text with confirmations.'
+		}
+	)
+}

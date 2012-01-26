@@ -1,29 +1,33 @@
 
 <#
 .Synopsis
-	Test super-macro engine.
+	Test the stepper engine.
 	Author: Roman Kuzmin
 
 .Description
 	This script starts processing of step units. A step unit is a script that
-	returns steps: a sequence of keys and script blocks posted and invoked one
-	by one. Far Manager gets control after each step, completes pending jobs
-	and invokes the next step. This scenario is used to perform quite tricky
-	operations impossible during synchronous code flow.
+	returns steps: a sequence of macros and script blocks posted and invoked
+	one by one. The core gets control after each step, completes pending jobs
+	and invokes the next step. This way is used to perform tricky operations
+	impossible with synchronous code flow.
 
-	Also, this approach is useful for automated testing; this script is an
-	example of a simple test monitor: it adds test units, starts processing,
-	watches and traces stepper events.
+	This approach is useful for automated testing. This script is the example
+	of a simple test monitor: it adds test units, starts processing, watches
+	and traces stepper events.
+
+	In order to invoke a single step unit without events just use the cmdlet
+	Invoke-FarStepper, this is simpler than direct use of the class Stepper.
 
 	For demo sake by default it shows a confirmation dialog before each step,
-	so that you can see steps in progress. Use -Auto to disable.
+	so that you can see steps in progress.
+
+.Parameter Auto
+		Tells to process without confirmations.
 #>
 
 param
 (
-	[switch]
-	# Tells to process without user confirmations, as usual.
-	$Auto
+	[switch]$Auto
 )
 
 # Remove existing errors before the test
@@ -33,10 +37,10 @@ $Error.Clear()
 $stepper = New-Object PowerShellFar.Stepper
 $stepper.Ask = !$Auto
 
-# Post units
+# Add units
 $myFolder = Split-Path $MyInvocation.MyCommand.Path
-$stepper.PostUnit("$myFolder\Test-Stepper+.ps1")
-$stepper.PostUnit("$myFolder\Test-Dialog+.ps1")
+$stepper.AddFile("$myFolder\Test-Stepper+.ps1")
+$stepper.AddFile("$myFolder\Test-Dialog+.ps1")
 
 # Add a handler to watch stepping progress
 $stepper.add_StateChanged({
@@ -57,9 +61,6 @@ $stepper.add_StateChanged({
 $(Get-Date) Stepper stopped.
 Processed steps: $($this.StepCount)
 "@)
-
-		# end
-		Remove-Item Variable:\Stepper*
 	}
 })
 

@@ -29,8 +29,8 @@ param
 )
 
 # this code is invoked before steps as usual code
-$global:TestDialogScript = Join-Path (Split-Path $MyInvocation.MyCommand.Path) 'Test-Dialog-.ps1'
-$global:TestDialogValue = $null
+$Data.Script = Join-Path (Split-Path $MyInvocation.MyCommand.Path) 'Test-Dialog-.ps1'
+$Data.Value = $null
 
 # open the test dialog if not yet
 if (!$TestOpened) {
@@ -39,7 +39,7 @@ if (!$TestOpened) {
 
 	{{
 		# run the dialog
-		& $global:TestDialogScript
+		& $Data.Script
 	}}
 
 	{
@@ -114,7 +114,7 @@ if (!$TestOpened) {
 	Assert-Far ($dialog.Focused -eq $x1)
 
 	# keep its state
-	$global:TestDialogValue = $x1.Selected
+	$Data.Value = $x1.Selected
 }
 
 # switch checkbox
@@ -122,7 +122,7 @@ if (!$TestOpened) {
 
 {
 	# test new checkbox state, should be different
-	Assert-Far ($global:TestDialogValue -ne $x1.Selected)
+	Assert-Far ($Data.Value -ne $x1.Selected)
 }
 
 ### CheckBox (three state)
@@ -284,9 +284,4 @@ if (!$TestOpened) {
 		# no dialog
 		Assert-Far ($Far.Window.Kind -ne 'Dialog')
 	}
-}
-
-{
-	# end
-	Remove-Variable -Scope global TestDialog*
 }

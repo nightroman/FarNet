@@ -1,28 +1,28 @@
 
 <#
 .Synopsis
-	Test unit for PowerShellFar.Stepper.
+	Test unit for the Stepper.
 	Author: Roman Kuzmin
 
 .Description
-	It is a step unit example. Steps are key sequences and script blocks
-	returned by this script. This script should not be invoked directly.
-	Instead, use a stepper to invoke it, see Test-Stepper-.ps1
+	It is a step unit example. Steps are macros and script blocks returned by
+	this script. This script should not be invoked directly. Either use the
+	cmdlet Invoke-FarStepper or call the test Test-Stepper-.ps1.
 
 	A step unit contains two parts: standard code and script blocks. A unit is
 	invoked as a normal script, it may or may not do some job itself (Part 1).
-	Normally it returns steps (Part 2). But it is fine to return nothing.
+	Normally it returns steps (Part 2). It is fine to return nothing.
 
 	Steps may add extra steps by $Psf.Stepper.Go(). Extra steps are inserted
 	into the queue after the current. This is useful when all steps are not
 	known beforehand, e.g. actual steps may depend on a user choice.
 
-	Note that you have to use global variables to share data between steps
-	because steps are invoked in different scopes and local variables of
-	previous steps do not exist.
+	Steps are invoked in different scopes and local variables of one step are
+	not available for another. In order to share data between steps use global
+	variables or, even better, the automatic variable $Data (shortcut for
+	$Psf.Stepper.Data).
 
-	The script also shows how to enter modal mode and continue steps in it:
-	dialogs started by keys or commands, modal editors, and etc.
+	The script also shows how to enter modal UI and continue steps in it.
 #>
 
 ### Part 1. Optional code to be invoked before steps.
@@ -35,9 +35,9 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 ### Part 2. Returned steps: returned keys and script blocks.
 
 {
-	# keep some data, use global variables!
-	$global:TestStepperPath = $Far.Panel.CurrentDirectory
-	$global:TestStepperIndex = $Far.Panel.CurrentIndex
+	# keep some data, use the automatic variable $Data
+	$Data.Path = $Far.Panel.CurrentDirectory
+	$Data.Index = $Far.Panel.CurrentIndex
 }
 
 {
@@ -62,13 +62,8 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	Find-FarFile 'far.exe.config'
 }
 
-# HOW TO: start a modal dialog by keys
-{
-	# open the attributes dialog; it is modal, but the step sequence
-	# is not stopped because keys are RETURNED BY THE CURRENT STEP
-	# and the stepper knows how to process this case correctly
-	'CtrlA'
-}
+# open the attributes dialog
+'CtrlA'
 
 {
 	# test: a dialog exists and there is a valid control in it
@@ -154,10 +149,8 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	Assert-Far -Editor
 }
 
-{
-	# insert some text (use PostText to test it)
-	$Far.PostText('Modeless Editor')
-}
+# insert some text
+'"Modeless Editor"'
 
 {
 	# test: editor text
@@ -186,12 +179,12 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	if ($Psf.Stepper.Ask) {
 		$answer = Show-FarMessage 'Open another panel?' -Choices 'Yes', 'No', 'Fail'
 		if ($answer -eq 2) { throw "This is a demo error." }
-		$global:TestStepperAnotherPanel = $answer -eq 0
+		$Data.AnotherPanel = $answer -eq 0
 	}
 	else {
-		$global:TestStepperAnotherPanel = $true
+		$Data.AnotherPanel = $true
 	}
-	if ($global:TestStepperAnotherPanel) {
+	if ($Data.AnotherPanel) {
 		$Psf.Stepper.Go(@(
 			'Tab'
 			{
@@ -228,7 +221,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# close one more panel (by returned extra steps)
-	if ($global:TestStepperAnotherPanel) {
+	if ($Data.AnotherPanel) {
 		$Psf.Stepper.Go(@(
 			'Tab'
 			'Esc Tab'
@@ -238,11 +231,6 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 
 {
 	# restore original panel path and item
-	$Far.Panel.CurrentDirectory = $global:TestStepperPath
-	$Far.Panel.Redraw($global:TestStepperIndex, 0)
-}
-
-{
-	# last step, do final jobs and cleaning
-	Remove-Item Variable:\TestStepper*
+	$Far.Panel.CurrentDirectory = $Data.Path
+	$Far.Panel.Redraw($Data.Index, 0)
 }

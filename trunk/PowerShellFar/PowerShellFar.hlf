@@ -50,7 +50,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 5.0.5#
+#PowerShellFar 5.0.6#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -84,8 +84,8 @@ $#Installation#
 
 #Requirements#
 
- - Far Manager 3.0.2407
- - Plugin FarNet 5.0.5
+ - Far Manager 3.0.2412
+ - Plugin FarNet 5.0.6
  - Windows PowerShell V2, V3
 
 
@@ -1356,11 +1356,11 @@ assigning commands, see
 
 	*) PowerShellFar scripts:
 		mask    :  *-.ps1
-		command :  >: & '!\!.!' ##
+		command :  >: & (Get-FarPath) ##
 
-	*) PowerShellFar steps:
+	*) PowerShellFar steppers:
 		mask    :  *+.ps1
-		command :  >: $Psf.Go((& '!\!.!')) ##
+		command :  >: Invoke-FarStepper -Path (Get-FarPath) ##
 
 With the associations above when you press [Enter] on scripts in the panel then
 standard scripts are started by PowerShell.exe, PowerShellFar scripts are

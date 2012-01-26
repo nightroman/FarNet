@@ -62,14 +62,14 @@ namespace FarDescription
 		/// It is a wrapper of <c>System.IO.FileInfo.MoveTo()</c> and <c>System.IO.DirectoryInfo.MoveTo()</c>:
 		/// in addition it moves the Far description.
 		/// </remarks>
-		public static object FileSystemInfoMoveTo(PSObject instance, string value) //?????
+		public static object FileSystemInfoMoveTo(PSObject instance, string value)
 		{
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
 			FileSystemInfo info = instance.BaseObject as FileSystemInfo;
 			if (info == null)
-				return null; //?????
+				return null;
 
 			string path = info.FullName;
 			string desc = Description.Get(path);
@@ -82,7 +82,7 @@ namespace FarDescription
 
 			Description.Set(path, string.Empty);
 			Description.Set(info.FullName, desc);
-			return null; //?????
+			return null;
 		}
 
 		/// <summary>
@@ -113,19 +113,19 @@ namespace FarDescription
 		/// It is a wrapper of <c>System.IO.FileInfo.Delete()</c>:
 		/// in addition it deletes the Far description.
 		/// </remarks>
-		public static object FileInfoDelete(PSObject instance) //?????
+		public static object FileInfoDelete(PSObject instance)
 		{
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
 			FileInfo file = instance.BaseObject as FileInfo;
 			if (file == null)
-				return null; //?????
+				return null;
 
 			string path = file.FullName;
 			file.Delete();
 			Description.Set(path, string.Empty);
-			return null; //?????
+			return null;
 		}
 	}
 

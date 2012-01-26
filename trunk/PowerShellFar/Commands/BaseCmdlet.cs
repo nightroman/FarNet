@@ -27,6 +27,7 @@ new CmdletConfigurationEntry("Find-FarFile", typeof(Commands.FindFarFileCommand)
 new CmdletConfigurationEntry("Get-FarFile", typeof(Commands.GetFarFileCommand), Help),
 new CmdletConfigurationEntry("Get-FarItem", typeof(Commands.GetFarItemCommand), Help),
 new CmdletConfigurationEntry("Get-FarPath", typeof(Commands.GetFarPathCommand), Help),
+new CmdletConfigurationEntry("Invoke-FarStepper", typeof(Commands.InvokeFarStepperCommand), Help),
 new CmdletConfigurationEntry("New-FarEditor", typeof(Commands.NewFarEditorCommand), Help),
 new CmdletConfigurationEntry("New-FarFile", typeof(Commands.NewFarFileCommand), Help),
 new CmdletConfigurationEntry("New-FarItem", typeof(Commands.NewFarItemCommand), Help),

@@ -68,10 +68,10 @@ void Far0::FreePluginMenuItem(PluginMenuItem& p)
 
 	delete p.Strings;
 	p.Strings = 0;
-	
+
 	delete p.Guids;
 	p.Guids = 0;
-	
+
 	p.Count = 0;
 }
 
@@ -243,7 +243,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 		if (!_toolConfig)
 		{
 			_toolConfig = Works::Host::GetTools(ModuleToolOptions::Config);
-			
+
 			_Config.Count = _toolConfig->Length + 1;
 			GUID* guids = new GUID[_Config.Count];
 			_Config.Guids = guids;
@@ -271,7 +271,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			if (!_toolDialog)
 			{
 				_toolDialog = Works::Host::GetTools(ModuleToolOptions::Dialog);
-				
+
 				_Dialog.Count = _toolDialog->Length + 1;
 				GUID* guids = new GUID[_Dialog.Count];
 				_Dialog.Guids = guids;
@@ -295,7 +295,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			if (!_toolEditor)
 			{
 				_toolEditor = Works::Host::GetTools(ModuleToolOptions::Editor);
-				
+
 				_Editor.Count = _toolEditor->Length + 1;
 				GUID* guids = new GUID[_Editor.Count];
 				_Editor.Guids = guids;
@@ -319,7 +319,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			if (!_toolViewer)
 			{
 				_toolViewer = Works::Host::GetTools(ModuleToolOptions::Viewer);
-				
+
 				_Viewer.Count = _toolViewer->Length + 1;
 				GUID* guids = new GUID[_Viewer.Count];
 				_Viewer.Guids = guids;
@@ -344,7 +344,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 			if (!_toolPanels)
 			{
 				_toolPanels = Works::Host::GetTools(ModuleToolOptions::Panels);
-				
+
 				_Panels.Count = _toolPanels->Length + 1;
 				GUID* guids = new GUID[_Panels.Count];
 				_Panels.Guids = guids;
@@ -428,7 +428,7 @@ bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 	IModuleTool^ tool = Far::Net->GetModuleTool(guid);
 	if (!tool)
 		return false;
-	
+
 	ModuleToolEventArgs e;
 	e.From = ModuleToolOptions::Config;
 	tool->Invoke(nullptr, %e);
@@ -576,29 +576,19 @@ void Far0::PostSelf()
 	Far::Net->PostMacro("F11 Menu.Select(\"FarNet\", 2) Enter");
 }
 
-// _100411_022932 Why PostStep is better than PostJob: PostStep makes FarNet to
-// be called from OpenPlugin, so that it can open panels and do most of needed
-// tasks. PostJob does not allow opening panels, calling PostMacro, etc.
-// To post steps as steps or as jobs depending on X is ugly.
-// Thus, wait for a good CallPlugin or other features.
+// Why PostStep is better than PostJob: PostStep makes FarNet to be called from
+// OpenW(), so that it can open panels and do most of needed tasks. PostJob
+// does not allow opening panels, calling PostMacro, etc.
 void Far0::PostStep(Action^ handler)
 {
-	// post handler and recall
+	// register the handler and post recall
 	_handler = handler;
 	PostSelf();
 }
 
-void Far0::PostStepAfterKeys(String^ keys, Action^ handler)
+void Far0::PostStep2(Action^ handler1, Action^ handler2)
 {
-	// post the handler, keys and hotkeys
-	_handler = handler;
-	Far::Net->PostMacro(keys);
-	PostSelf();
-}
-
-void Far0::PostStepAfterStep(Action^ handler1, Action^ handler2)
-{
-	// post the second handler, then keys, and invoke the first handler
+	// register the second handler and post recall, then invoke the first handler
 	_handler = handler2;
 	PostSelf();
 	try
@@ -615,7 +605,7 @@ void Far0::PostStepAfterStep(Action^ handler1, Action^ handler2)
 
 void Far0::OpenMenu(ModuleToolOptions from)
 {
-	// process and drop a posted step handler
+	// unregister and call the registered handler
 	if (_handler)
 	{
 		Action^ handler = _handler;

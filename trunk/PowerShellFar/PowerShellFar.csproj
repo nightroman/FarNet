@@ -75,6 +75,7 @@
     <Compile Include="Commands\AssertFarCommand.cs" />
     <Compile Include="Commands\Find-FarFile.cs" />
     <Compile Include="Commands\GetFarFileCommand.cs" />
+    <Compile Include="Commands\InvokeFarStepperCommand.cs" />
     <Compile Include="Commands\StartFarJobCommand.cs" />
     <Compile Include="Commands\SearchFarFileCommand.cs" />
     <Compile Include="EditorConsole.cs" />
