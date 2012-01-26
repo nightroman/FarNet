@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!--
 This file contains example macros which invoke PowerShellFar features.
 DO NOT USE THIS AS IT IS, USE YOUR OWN MACROS, THIS IS ONLY AN EXAMPLE
 -->
-<farconfig version="3.0.2408">
+<farconfig>
 	<macros>
 		<keymacros>
 
@@ -25,9 +25,9 @@ DO NOT USE THIS AS IT IS, USE YOUR OWN MACROS, THIS IS ONLY AN EXAMPLE
 
 			<!--Shell: Folder history-->
 
-			<macro area="Shell" key="AltF12" flags="DisableOutput" description="PSF: Folder history">
+			<macro area="Shell" key="AltF12" flags="" description="PSF: Folder history">
 				<text>
-					<![CDATA[CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>:Show-History-.ps1 -Folder")]]>
+					<![CDATA[CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Show-History-.ps1 -Folder")]]>
 				</text>
 			</macro>
 
@@ -41,14 +41,14 @@ DO NOT USE THIS AS IT IS, USE YOUR OWN MACROS, THIS IS ONLY AN EXAMPLE
 
 			<!--Common: Complete-Word-.ps1-->
 
-			<macro area="Common" key="CtrlSpace" flags="DisableOutput" description="PSF: Complete-Word-.ps1">
+			<macro area="Common" key="CtrlSpace" flags="" description="PSF: Complete-Word-.ps1">
 				<text>
 					<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>:Complete-Word-.ps1")
+	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Complete-Word-.ps1")
 $Else
 	$AKey
 $End

@@ -1,6 +1,18 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.6 =
+
+*) Stepper (engine for tests and super-macros)
+- Steps may return script blocks (modal steps), other output is an error.
+- New cmdlet Invoke-FarStepper for running stepper scripts easier.
+- New Stepper.AddFile(), Stepper.Data & automatic variable $Data.
+- Removed $Psf.Go(), Stepper.AskDefault, Stepper.PostUnit().
+- More information on errors.
+
+*) PowerShellFar.farconfig
+- Minor tweaks of some macros (e.g. about Mantis 1700).
+
 = 5.0.5 =
 
 *) Histories come back

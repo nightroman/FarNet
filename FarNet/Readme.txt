@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 5.0.5
-Release  : 2012-01-20
+Version  : 5.0.6
+Release  : 2012-01-26
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -20,7 +20,7 @@ tiny pieces of boilerplate framework code.
 = PREREQUISITES =
 
 
- - Far Manager 3.0.2407
+ - Far Manager 3.0.2412
  - .NET Framework 3.5 or 4.0
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 
@@ -116,43 +116,30 @@ variables should be used only in special cases:
 
 
 If a FarNet module provides commands invoked by prefixes then these commands
-can be called from macros by CallPlugin(). The first argument is the FarNet
-system ID: 0xcd. The second argument is the module prefix, colon and command.
-For asynchronous steps and jobs the argument should start with one and two
-colons respectively.
-
-FarNet ID is "10435532-9BB3-487B-A045-B0E6ECAAB6BC". It can be used directly or
-as a constant: import FarNet.farconfig (Far.exe /import FarNet.farconfig):
-
-	<?xml version="1.0" encoding="UTF-8" ?>
-	<farconfig version="3.0.2350">
-		<macro>
-			<constants>
-				<constant name="FarNet" value="10435532-9BB3-487B-A045-B0E6ECAAB6BC" type="text" />
-			</constants>
-		</macro>
-	</farconfig>
+can be called from macros by CallPlugin(). The first argument is FarNet GUID.
+The second argument is the module prefix, colon, and command. For asynchronous
+steps and jobs the argument should start with one and two colons respectively.
+FarNet GUID is "10435532-9BB3-487B-A045-B0E6ECAAB6BC".
 
 SYNTAX AND DETAILS
 
 	Synchronous command:
 
-		CallPlugin(FarNet, "Prefix:Command")
+		CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "Prefix:Command")
 			- It is called from all macro areas
 			- It can but should not use modal UI
 			- It cannot open panels
 
 	Asynchronous step (IFar.PostStep)
 
-		CallPlugin(FarNet, ":Prefix:Command")
-			- It is called from areas where the plugin menu is available
-			- FarNet itself must have a hotkey in the plugin menu
+		CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":Prefix:Command")
+			- It is called from areas with the plugin menu
 			- It can use modal UI as usual
 			- It can open panels
 
 	Asynchronous job (IFar.PostJob)
 
-		CallPlugin(FarNet, "::Prefix:Command")
+		CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::Prefix:Command")
 			- It is called from all macro areas
 			- It can use modal UI as usual
 			- It cannot open panels
@@ -173,16 +160,16 @@ EXAMPLES
 
 	Synchronous (RightControl and PowerShellFar commands):
 
-		CallPlugin(FarNet, "RightControl:step-left")
-		CallPlugin(FarNet, ">: Menu-Favorites-.ps1")
+		CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
+		CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">: Menu-Favorites-.ps1")
 
 	Asynchronous step (PowerShellFar command opens the panel):
 
-		CallPlugin(FarNet, ":>: Get-Process | Out-FarPanel")
+		CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: Get-Process | Out-FarPanel")
 
 	Asynchronous job (PowerShellFar command opens the dialog):
 
-		CallPlugin(FarNet, "::>: $Psf.InvokeInputCode()")
+		CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::>: $Psf.InvokeInputCode()")
 
 KNOWN ISSUE AND WORKAROUND
 

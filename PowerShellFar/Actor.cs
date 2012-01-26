@@ -951,29 +951,6 @@ Continue with this current directory?
 		}
 		IDictionary _Providers = new Hashtable();
 		/// <summary>
-		/// Invokes step processing.
-		/// </summary>
-		/// <remarks>
-		/// This is a helper method to invoke a step sequence. Step sequence is usually kept in a step unit script.
-		/// It is recommended to use some naming convension to distinguish between these scripts and the others.
-		/// <para>
-		/// For example, assume that step unit scripts are named as "*+.ps1". Then we can create Far Manager association:
-		/// </para>
-		/// <ul>
-		/// <li>Mask: *+.ps1</li>
-		/// <li>Command (Enter): >: $Psf.Go((&amp; '.\!.!')) #</li>
-		/// </ul>
-		/// <para>
-		/// Having done this we can press enter on "*+.ps1" files and their steps will be invoked.
-		/// </para>
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		public void Go(object[] steps)
-		{
-			Stepper stepper = new Stepper();
-			stepper.Go(steps);
-		}
-		/// <summary>
 		/// Invokes the script opened in the current editor.
 		/// </summary>
 		/// <remarks>

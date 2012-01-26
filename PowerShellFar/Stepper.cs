@@ -8,9 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Management.Automation;
-using System.Text;
 using FarNet;
 
 namespace PowerShellFar
@@ -47,48 +45,74 @@ namespace PowerShellFar
 	}
 
 	/// <summary>
-	/// Invoker of steps: key sequences, script blocks and scripts returning steps.
+	/// Invoker of steps (macros and script blocks) and units (scripts getting steps).
 	/// </summary>
 	/// <remarks>
+	/// This class invokes sequences of asynchronous steps: macros and script
+	/// blocks. The core gets control after each step, completes pending jobs
+	/// and invokes the next step. This scenario is used to perform tricky
+	/// operations impossible with synchronous code flow. In particular, it is
+	/// very effective for testing: some steps perform UI actions without much
+	/// programming, following script block steps check expected results.
 	/// <para>
-	/// This object is exposed as <see cref="Actor.Stepper"/> to the step script block being invoked.
-	/// A step may call <c>$Psf.Stepper.Go()</c> to insert extra steps to be invoked immediately after.
+	/// It is possible to add steps during stepping. The current stepper object
+	/// is exposed as <see cref="Actor.Stepper"/> to the current step. The step
+	/// may call <c>$Psf.Stepper.Go()</c> to insert extra steps to be invoked
+	/// immediately after the current.
 	/// </para>
 	/// <para>
-	/// Output of script blocks is normally ignored (except a script block or new keys, see below),
-	/// use <c>Write-Host</c> or <c>$Far.Write()</c> to write some information to the screen.
-	/// Do not call other <c>Write-*</c> cmdlets, they may fail because streams may be not opened.
+	/// If a script block step returns another script block, that is it looks like <c>{{...}}</c>,
+	/// then <see cref="IFar.PostStep2"/> is called for the next step instead of the usual
+	/// <see cref="IFar.PostStep"/>. The returned script block normally starts modal UI
+	/// (dialog, editor, and etc.). The next step in the sequence is invoked when modal
+	/// UI has started.
 	/// </para>
 	/// <para>
-	/// If a script block being invoked returns a string or another script block then <see cref="IFar.PostStepAfterKeys"/>
-	/// or <see cref="IFar.PostStepAfterStep"/> is called for the next step instead of usual <see cref="IFar.PostStep"/>.
-	/// The returned keys or script normally start modal UI (dialog, editor and etc.). The next step in the sequence
-	/// will be invoked when modal UI element has started.
+	/// Any other output of script block steps is not allowed. Use <c>Write-Host</c>
+	/// or <c>$Far.Write()</c> in order to write some text to the screen. Do not use
+	/// other <c>Write-*</c> cmdlets, they may not work.
+	/// </para>
+	/// <para>
+	/// Consider to use the cmdlet <c>Invoke-FarStepper</c> in order to invoke stepper scripts.
+	/// Direct use of this class is needed in more complex scenarous.
 	/// </para>
 	/// </remarks>
-	/// <example>Test-Stepper-.ps1, "Test-Stepper+.ps1", "Test-Dialog+.ps1".</example>
-	public sealed class Stepper // _100411_022932
+	/// <example>Test-Stepper-.ps1, Test-Stepper+.ps1, Test-Dialog+.ps1.</example>
+	public sealed class Stepper
 	{
+		const string DataVariableName = "Data";
 		/// <summary>
 		/// The only allowed running instance.
 		/// </summary>
 		internal static Stepper RunningInstance { get { return Stepper._RunningInstance; } }
 		static Stepper _RunningInstance;
-		// Units and steps
-		List<ScriptBlock> _units = new List<ScriptBlock>();
+		/// <summary>
+		/// Gets the current unit data (it is exposed as $Data for steps).
+		/// </summary>
+		/// <remarks>
+		/// Local variables of one step are not available for another.
+		/// Only global variables can be used for sharing data between steps.
+		/// This hashtable and its variable $Data are designed for use in steps.
+		/// As a result, the global scope is not polluted too match by variables.
+		/// $Data is reset for each unit and removed when all units are processed.
+		/// </remarks>
+		public Hashtable Data { get { return _Data; } }
+		readonly Hashtable _Data = new Hashtable();
+		// Units
+		readonly List<string> _units = new List<string>();
 		ArrayList _steps = new ArrayList();
 		/// <summary>
-		/// Creates a stepper.
+		/// New stepper.
 		/// </summary>
 		public Stepper()
 		{ }
 		/// <summary>
-		/// Total count of steps processed so far.
+		/// Gets the total count of steps processed so far.
 		/// </summary>
 		public int StepCount { get { return _StepCount; } }
 		int _StepCount;
 		/// <summary>
-		/// Total count of units processed so far.
+		/// Gets the total count of step units processed so far.
 		/// </summary>
 		public int UnitCount { get { return _UnitIndex + 1; } }
 		/// <summary>
@@ -99,32 +123,20 @@ namespace PowerShellFar
 		/// Current unit index.
 		/// </summary>
 		int _UnitIndex = -1;
-		static bool _AskDefault;
 		/// <summary>
-		/// Default initial <see cref="Ask"/> value.
+		/// Tells to ask a user to choose an action before each step.
 		/// </summary>
-		public static bool AskDefault
-		{
-			get { return _AskDefault; }
-			set { _AskDefault = value; }
-		}
-		bool _Ask = _AskDefault;
-		/// <summary>
-		/// Tells to ask for actions before each step.
-		/// </summary>
-		public bool Ask
-		{
-			get { return _Ask; }
-			set { _Ask = value; }
-		}
-		/// <summary>
-		/// Adds the step sequence and posts the first step or inserts the sequence just after the step being invoked.
-		/// </summary>
-		/// <param name="steps">Script blocks and key sequences.</param>
 		/// <remarks>
-		/// If it is called in order to start the sequence then normally it should be the last command in a script.
+		/// This mode is used for troubleshooting, demonstrations, and etc.
 		/// </remarks>
-		/// <seealso cref="Actor.Go"/>
+		public bool Ask { get; set; }
+		/// <summary>
+		/// Adds steps and starts processing or inserts steps after the current running step.
+		/// </summary>
+		/// <param name="steps">Macros and script blocks.</param>
+		/// <remarks>
+		/// If it is called in order to start stepping then normally it should be the last script command.
+		/// </remarks>
 		public void Go(object[] steps)
 		{
 			AssumeCanStep();
@@ -147,76 +159,57 @@ namespace PowerShellFar
 			}
 		}
 		// Inserts steps at
-		void InsertRange(int index, ICollection steps)
+		void InsertRange(int index, IEnumerable steps)
 		{
 			// state
 			State = StepperState.Parsing;
 
 			// steps
-			foreach (object o in steps)
+			foreach (object step in steps)
 			{
-				object oInsert;
-				ScriptBlock b = Cast<ScriptBlock>.From(o);
-				if (b != null)
+				object insert = null;
+				ScriptBlock block = Cast<ScriptBlock>.From(step);
+				if (block != null)
 				{
-					oInsert = b;
+					insert = block;
 				}
 				else
 				{
-					string s = Cast<string>.From(o);
-					if (s != null)
-						oInsert = s;
-					else if (o == null)
-						throw new RuntimeException("Step sequence contains a null object.");
+					string macro = Cast<string>.From(step);
+					if (macro != null)
+						insert = macro;
 					else
-						throw new RuntimeException("Step sequence contains unknown object: " + o.ToString());
+						Throw("Invalid step: " + TypeName(step));
 				}
-				_steps.Insert(index, oInsert);
+				_steps.Insert(index, insert);
 				++index;
 			}
 		}
 		/// <summary>
-		/// Posts a step unit command.
+		/// Adds a step unit script file.
 		/// </summary>
-		/// <param name="command">Step unit command: text code or a script block.</param>
+		/// <param name="path">
+		/// A script that gets macros and script blocks.
+		/// Use either full paths or just names of scripts in the system path.
+		/// Use of relative paths is not recommended with more than one unit.
+		/// </param>
 		/// <remarks>
-		/// Step unit command is any command that returns steps, for example a step unit script path.
-		/// <para>
-		/// The command is posted to the end of the internal queue.
-		/// Note that the order of posted units may be significant for the results.
-		/// </para>
+		/// The unit file is added to the end of the internal unit queue.
+		/// Later it is invoked in order to get macros and script blocks.
+		/// Then they are invoked one by one.
 		/// </remarks>
-		public void PostUnit(object command)
+		public void AddFile(string path)
 		{
-			// null
-			if (command == null)
-				throw new ArgumentNullException("command");
+			if (path == null) throw new ArgumentNullException("path");
 
-			// code
-			string code = Cast<string>.From(command);
-			if (code != null)
-			{
-				_units.Add(ScriptBlock.Create(code));
-				return;
-			}
-
-			// script
-			ScriptBlock script = Cast<ScriptBlock>.From(command);
-			if (script != null)
-			{
-				_units.Add(script);
-				return;
-			}
-
-			// unknown
-			throw new ArgumentException("'command' should be a string or a script block.");
+			_units.Add(path);
 		}
 		/// <summary>
-		/// Starts posted steps and step units processing.
+		/// Starts processing of added steps step units.
 		/// </summary>
 		/// <remarks>
 		/// Normally this should be the last command in the script.
-		/// If step processing is already in progress then this call is ignored.
+		/// If stepping is already in progress then this call is ignored.
 		/// </remarks>
 		public void Go()
 		{
@@ -226,9 +219,9 @@ namespace PowerShellFar
 				Far.Net.PostStep(Action);
 		}
 		/// <summary>
-		/// Current unit script block if any or null.
+		/// Gets the current running step unit or null if there is none.
 		/// </summary>
-		public ScriptBlock CurrentUnit
+		public string CurrentUnit
 		{
 			get
 			{
@@ -241,24 +234,26 @@ namespace PowerShellFar
 		void AssumeCanStep()
 		{
 			if (_RunningInstance != this && _RunningInstance != null)
-				throw new InvalidOperationException("Stepper is already running, concurrent stepper is not allowed.");
+				throw new InvalidOperationException("Stepper is running, nested steppers are not allowed.");
 		}
 		/// <summary>
-		/// Event is triggered when the stepper state has changed.
+		/// Event triggered when the stepper state has changed.
 		/// </summary>
 		/// <remarks>
-		/// It is designed mostly for logging and monitoring tasks.
-		/// Other scenarios are not recommended.
+		/// It is mostly designed for handler which perform logging and diagnostics.
 		/// <para>
 		/// New state is exposed for a script handler as <c>$this.State</c>
-		/// which is the <see cref="State"/> property of the stepper.
+		/// which is the <see cref="State"/> property of the current stepper.
 		/// </para>
 		/// </remarks>
 		public event EventHandler StateChanged;
 		StepperState _state_ = StepperState.None;
 		/// <summary>
-		/// Current state. See <see cref="StateChanged"/> event.
+		/// Gets the current stepping state.
 		/// </summary>
+		/// <remarks>
+		/// The state may be used for example by a <see cref="StateChanged"/> event handler.
+		/// </remarks>
 		public StepperState State
 		{
 			get { return _state_; }
@@ -268,22 +263,36 @@ namespace PowerShellFar
 				if (value == _state_)
 					return;
 
+				// set the helper variable
+				switch (value)
+				{
+					case StepperState.Loading:
+					case StepperState.Stepping:
+						A.Psf.Engine.SessionState.PSVariable.Set(DataVariableName, _Data);
+						break;
+				}
+
 				// change
 				_state_ = value;
 
 				// trigger
 				if (StateChanged != null)
 					StateChanged(this, null);
+
+				// remove the helper variable
+				switch (value)
+				{
+					case StepperState.Completed:
+					case StepperState.Failed:
+						A.Psf.Engine.SessionState.PSVariable.Remove(DataVariableName);
+						break;
+				}
 			}
 		}
 		Exception _Error;
 		/// <summary>
-		/// The error that has stopped the processing.
+		/// Gets the exception which has stopped stepping.
 		/// </summary>
-		/// <remarks>
-		/// This error is usually a PowerShell error which is also kept as the <c>$Error[0]</c> item.
-		/// Note that this is not always the case and the error may be not stored in the <c>$Error</c> list at all.
-		/// </remarks>
 		public Exception Error
 		{
 			get { return _Error; }
@@ -301,6 +310,10 @@ namespace PowerShellFar
 				// done with steps?
 				if (_StepIndex >= _steps.Count)
 				{
+					// remove user data
+					if (_Data != null)
+						_Data.Clear();
+
 					// done with units?
 					if (++_UnitIndex >= _units.Count)
 					{
@@ -317,7 +330,9 @@ namespace PowerShellFar
 					_StepIndex = 0;
 
 					// get steps from the current unit
-					Collection<PSObject> steps = _units[_UnitIndex].Invoke();
+					var path = _units[_UnitIndex];
+					var code = "& '" + path.Replace("'", "''") + "'";
+					Collection<PSObject> steps = A.InvokeCode(code);
 
 					// no steps? 'continue'
 					if (steps.Count == 0)
@@ -339,10 +354,10 @@ namespace PowerShellFar
 				// next step object
 				object it = _steps[_StepIndex];
 				if (it == null)
-					throw new RuntimeException("Step object is null.");
+					Throw("Step is null.");
 
 				// show
-				if (_Ask)
+				if (Ask)
 				{
 					string text = it.ToString();
 					string title = "Step " + (_StepIndex + 1) + "/" + _steps.Count;
@@ -362,7 +377,7 @@ namespace PowerShellFar
 						case 0:
 							break;
 						case 1:
-							_Ask = false;
+							Ask = false;
 							break;
 						default:
 							return;
@@ -374,32 +389,31 @@ namespace PowerShellFar
 				if (block != null)
 				{
 					// invoke the step script
-					object value;
+					Collection<PSObject> result = null;
 					try
 					{
-						value = block.InvokeReturnAsIs();
+						result = block.Invoke();
 					}
 					catch (RuntimeException ex)
 					{
-						throw new ModuleException("Step failed: " + ex.Message, ex);
+						Throw(block, "Step failed: " + ex.Message, ex);
 					}
 
 					// extra script, normally starts modal UI
-					ScriptBlock script = Cast<ScriptBlock>.From(value);
-					if (script != null)
+					ScriptBlock script;
+					if (result.Count == 1 && null != (script = result[0].BaseObject as ScriptBlock))
 					{
 						++_StepIndex;
-						Far.Net.PostStepAfterStep(delegate { script.Invoke(); }, Action);
+						Far.Net.PostStep2(delegate { script.Invoke(); }, Action);
 						return;
 					}
 
-					// extra keys, normally start modal UI
-					string keys = Cast<string>.From(value);
-					if (keys != null)
+					// unexpected output
+					if (result.Count != 0)
 					{
-						++_StepIndex;
-						Far.Net.PostStepAfterKeys(keys, Action);
-						return;
+						Throw(block, string.Format(null,
+							"Unexpected step output: {0} item(s): [{1}]...",
+							result.Count, TypeName(result[0])), null);
 					}
 				}
 				else
@@ -412,7 +426,7 @@ namespace PowerShellFar
 				++_StepIndex;
 				Far.Net.PostStep(Action);
 			}
-			catch(Exception error)
+			catch (Exception error)
 			{
 				_Error = error;
 				State = StepperState.Failed;
@@ -423,6 +437,27 @@ namespace PowerShellFar
 				// step is over
 				_RunningInstance = null;
 			}
+		}
+		static void Throw(ScriptBlock script, string message, Exception innerException)
+		{
+			throw new ModuleException(string.Format(null,
+				"{0}\r\nFile: {1}\r\nLine: {2}\r\nCode: {{{3}}}",
+				message,
+				script.File,
+				script.StartPosition.StartLine,
+				script), innerException);
+		}
+		void Throw(string message)
+		{
+			throw new ModuleException(string.Format(null,
+				"{0}\r\nUnit: {1}",
+				message,
+				CurrentUnit));
+		}
+		static string TypeName(object value)
+		{
+			var it = Cast<object>.From(value);
+			return it == null ? "null" : it.GetType().FullName;
 		}
 	}
 }

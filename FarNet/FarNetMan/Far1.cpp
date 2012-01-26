@@ -178,35 +178,6 @@ String^ Far1::KeyInfoToName(KeyInfo^ key)
 	return gcnew String(name);
 }
 
-void Far1::PostText(String^ text, bool enableOutput)
-{
-	if (text == nullptr)
-		throw gcnew ArgumentNullException("text");
-
-	StringBuilder keys;
-	text = text->Replace(CV::CRLF, CV::LF)->Replace('\r', '\n');
-	for each(Char c in text)
-	{
-		switch(c)
-		{
-		case ' ':
-			keys.Append("Space ");
-			break;
-		case '\n':
-			keys.Append("Enter ");
-			break;
-		case '\t':
-			keys.Append("Tab ");
-			break;
-		default:
-			keys.Append(c);
-			keys.Append(" ");
-			break;
-		}
-	}
-	PostMacro(keys.ToString(), enableOutput, false);
-}
-
 ILine^ Far1::Line::get()
 {
 	switch (Window->Kind)
@@ -373,14 +344,9 @@ void Far1::PostStep(Action^ handler)
 	Far0::PostStep(handler);
 }
 
-void Far1::PostStepAfterKeys(String^ keys, Action^ handler)
+void Far1::PostStep2(Action^ handler1, Action^ handler2)
 {
-	Far0::PostStepAfterKeys(keys, handler);
-}
-
-void Far1::PostStepAfterStep(Action^ handler1, Action^ handler2)
-{
-	Far0::PostStepAfterStep(handler1, handler2);
+	Far0::PostStep2(handler1, handler2);
 }
 
 String^ Far1::TempName(String^ prefix)

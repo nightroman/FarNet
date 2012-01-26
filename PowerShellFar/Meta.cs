@@ -131,8 +131,7 @@ namespace PowerShellFar
 			if (entry.ValueType == DisplayEntryValueType.Property)
 				_Property = entry.Value;
 			else
-				//! performance critical: ex: 15% on scan for file system items due to `Mode` with no cache.
-				//?????_Script = A.Psf.Engine.InvokeCommand.NewScriptBlock(entry.Value);
+				//! performance: with no cache it takes 15% on scan for file system items.
 				_Script = A.GetScriptBlock(entry.Value);
 
 			if (!string.IsNullOrEmpty(header.Label))

@@ -1,5 +1,12 @@
 http://code.google.com/p/farnet/
 
+= 5.0.6 =
+
+*) Revision of Post* methods
+- Renamed PostStepAfterStep -> PostStep2.
+- Removed PostStepAfterKeys, apparently it is not needed in Far3.
+- Removed PostText(), not so useful in Far3, use PostMacro() + "", print().
+
 = 5.0.5 =
 
 *) History

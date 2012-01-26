@@ -1,12 +1,11 @@
 
 <#
 .Synopsis
-	Shows internal Far name of pressed keys.
+	Shows internal names of pressed keys.
 	Author: Roman Kuzmin
 
 .Description
-	The dialog shows internal Far names of pressed keys. These names are used
-	in native Far macros and in $Far.PostKeys(), $Far.PostMacro().
+	The dialog shows names of pressed keys. These names are used in macros.
 
 	Press [Esc] twice or use mouse to click the button [Cancel] to close the
 	dialog with no action. Other buttons close the dialog as well and:

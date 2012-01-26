@@ -29,8 +29,7 @@ public:
 	static void ChangeFontSize(bool increase);
 	static void PostJob(Action^ handler);
 	static void PostStep(Action^ handler);
-	static void PostStepAfterKeys(String^ keys, Action^ handler);
-	static void PostStepAfterStep(Action^ handler1, Action^ handler2);
+	static void PostStep2(Action^ handler1, Action^ handler2);
 	static void ShowConsoleMenu();
 	static void ShowMenu(ModuleToolOptions from);
 public:

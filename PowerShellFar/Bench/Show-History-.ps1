@@ -61,6 +61,9 @@ else {
 	### command history
 	$Far.History.Command() |
 	Menu 'Command history' | .{process{
-		$Far.PostText($_, $false)
+		$line = $Far.Line
+		if ($line) {
+			$line.InsertText($_)
+		}
 	}}
 }

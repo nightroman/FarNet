@@ -177,17 +177,6 @@ namespace FarNet
 		/// </summary>
 		public abstract IViewer CreateViewer();
 		/// <summary>
-		/// Posts literal text to the Far keyboard queue. Processing is not displayed.
-		/// </summary>
-		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
-		public void PostText(string text) { PostText(text, false); }
-		/// <summary>
-		/// Posts literal text to the Far keyboard queue.
-		/// </summary>
-		/// <param name="text">Literal text. \t, \r, \n, \r\n are translated to [Tab] and [Enter].</param>
-		/// <param name="enableOutput">Tells to display processing.</param>
-		public abstract void PostText(string text, bool enableOutput);
-		/// <summary>
 		/// Posts a macro to Far. Processing is not displayed. Keys are sent to editor plugins.
 		/// </summary>
 		/// <param name="macro">Macro text.</param>
@@ -364,17 +353,11 @@ namespace FarNet
 		/// This mechanism works only when the plugins menu [F11] is available, because it is used internally for stepping.
 		/// </para>
 		/// <para>
-		/// If a step handler starts modal UI without exiting (e.g. dialog) then use <see cref="PostStepAfterStep"/>
+		/// If a step handler starts modal UI without exiting (e.g. dialog) then use <see cref="PostStep2"/>
 		/// if you have another step to be invoked in modal mode (e.g. in a dialog after opening).
 		/// </para>
 		/// </remarks>
 		public abstract void PostStep(Action handler);
-		/// <summary>
-		/// Posts the keys that normally start modal UI and a handler which is invoked in that modal mode.
-		/// </summary>
-		/// <param name="keys">Keys starting modal UI.</param>
-		/// <param name="handler">Handler to be called in modal mode.</param>
-		public abstract void PostStepAfterKeys(string keys, Action handler);
 		/// <summary>
 		/// Invokes a handler that normally starts modal UI and posts another handler which is invoked in that modal mode.
 		/// </summary>
@@ -385,19 +368,16 @@ namespace FarNet
 		/// For this special case you should use this method: <b>handler1</b> normally calls something modal (a dialog)
 		/// and <b>handler2</b> is posted to be invoked after that (when a dialog is opened).
 		/// </remarks>
-		public abstract void PostStepAfterStep(Action handler1, Action handler2);
+		public abstract void PostStep2(Action handler1, Action handler2);
 		/// <summary>
 		/// Posts a job that will be called by the core when it gets control.
 		/// </summary>
-		/// <param name="handler">Job handler to invoked.</param>
+		/// <param name="handler">Job handler to be posted.</param>
 		/// <remarks>
 		/// It is mostly designed for background job calls. Normally other threads are not allowed to call the core.
-		/// Violation of this rule may lead to crashes and unpredictable results. This methods is thread safe and it
-		/// allowes to post a delayed job that will be called from the main thread as soon as the core gets control.
-		/// Thus, this posted job can call the core as usual.
-		/// <para>
-		/// This method should be used very carefully and only when it is really needed.
-		/// </para>
+		/// Violation of this rule may lead to crashes and unpredictable results. This method is thread safe. It is
+		/// used to post a job that will be called from the main thread as soon as the core gets control.
+		/// The posted job can call the core as usual.
 		/// </remarks>
 		public abstract void PostJob(Action handler);
 		/// <summary>
@@ -477,7 +457,7 @@ namespace FarNet
 		/// </summary>
 		public abstract IWindow Window { get; }
 		/// <summary>
-		/// Low level UI operator.
+		/// Gets the low level UI operator.
 		/// </summary>
 		public abstract IUserInterface UI { get; }
 		/// <summary>

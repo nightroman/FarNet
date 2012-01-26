@@ -41,11 +41,11 @@ Select-FarFile-.ps1 Selects panel files by the specified filter.
 Set-Console.ps1 Sets console window properties.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
 Show-EditorColor-.ps1 Shows editor color information.
-Show-History-.ps1 Shows command, folder or view history.
+Show-History-.ps1 Shows command, folder, or editor history.
 Show-Hlf-.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
 Show-KeyMap.ps1 Shows Far hotkeys and macros by areas (HTML page).
-Show-KeyName-.ps1 Shows internal Far name of pressed keys.
+Show-KeyName-.ps1 Shows internal names of pressed keys.
 Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project file.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
