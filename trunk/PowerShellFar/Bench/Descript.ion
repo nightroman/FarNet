@@ -50,3 +50,4 @@ Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project fil
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
+Draw-Word-.ps1 Draws occurrences of the current word in editors.

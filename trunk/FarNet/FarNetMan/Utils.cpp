@@ -10,6 +10,28 @@ Copyright (c) 2005-2012 FarNet Team
 // hosted values
 bool ValueUserScreen::_value;
 
+namespace FarNet
+{;
+bool Configuration::GetBool(String^ key)
+{
+	String^ value = Environment::GetEnvironmentVariable(key);
+	if (!value)
+		return false;
+
+	bool result;
+	if (!Boolean::TryParse(value->ToString(), result))
+		return false;
+
+	return result;
+}
+
+String^ Configuration::GetString(String^ key)
+{
+	return Environment::GetEnvironmentVariable(key);
+}
+
+}
+
 // empty string
 wchar_t CStr::s_empty[1] = {0};
 
@@ -459,26 +481,35 @@ KeyInfo^ KeyInfoFromInputRecord(const INPUT_RECORD& ir)
 		ir.Event.KeyEvent.bKeyDown != 0);
 }
 
-namespace FarNet
-{;
-bool Configuration::GetBool(String^ key)
+#undef FCTL_SETPANELDIRECTORY
+void SetPanelDirectory(HANDLE handle, String^ path)
 {
-	String^ value = Environment::GetEnvironmentVariable(key);
-	if (!value)
-		return false;
+	PIN_NE(pin, path);
 
-	bool result;
-	if (!Boolean::TryParse(value->ToString(), result))
-		return false;
+	FarPanelDirectory arg; memset(&arg, 0, sizeof(arg)); arg.StructSize = sizeof(arg);
+	arg.Name = pin;
 
-	return result;
+	if (!Info.PanelControl(handle, FCTL_SETPANELDIRECTORY, 0, &arg))
+		throw gcnew InvalidOperationException("Cannot set panel directory: " + path);
 }
 
-String^ Configuration::GetString(String^ key)
+#undef ACTL_GETWINDOWINFO
+void Call_ACTL_GETWINDOWINFO(WindowInfo& wi, int index)
 {
-	return Environment::GetEnvironmentVariable(key);
+	wi.StructSize = sizeof(wi);
+	wi.TypeName = nullptr;
+	wi.Name = nullptr;
+	wi.TypeNameSize = 0;
+	wi.NameSize = 0;
+	wi.Pos = index;
+	
+	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, 0, &wi))
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + index);
 }
-
+void Call_ACTL_GETWINDOWINFO(WindowInfo& wi)
+{
+	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, 0, &wi))
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + wi.Pos);
 }
 
 #ifdef TRACE_MEMORY

@@ -19,12 +19,6 @@ param
 # check the host
 if ($Host.Name -ne 'FarHost') { throw "Invoke this script by FarHost." }
 
-# add this directory to the system path for this session
-$path = ';' + (Split-Path $MyInvocation.MyCommand.Path)
-if ($env:PATH -notlike "*$path*") {
-	$env:PATH += $path
-}
-
 # no DB?
 if ($NoDb) { return }
 

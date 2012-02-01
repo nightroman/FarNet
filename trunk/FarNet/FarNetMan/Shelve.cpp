@@ -71,15 +71,7 @@ void ShelveInfoNative::Pop(bool active)
 {
 	HANDLE handle = active ? PANEL_ACTIVE : PANEL_PASSIVE;
 	if (Path)
-	{
-		PIN_NE(pin, Path);
-		
-		FarPanelDirectory arg; memset(&arg, 0, sizeof(arg)); arg.StructSize = sizeof(arg);
-		arg.Name = pin;
-		
-		if (!Info.PanelControl(handle, FCTL_SETPANELDIRECTORY, 0, &arg)) //????? duplicated
-			throw gcnew InvalidOperationException("Cannot set panel directory: " + Path);
-	}
+		::SetPanelDirectory(handle, Path);
 
 	array<String^>^ selectedNames = GetSelectedNames();
 	if (!Current && !selectedNames && !_modes)

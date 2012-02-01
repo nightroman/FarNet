@@ -58,12 +58,10 @@ public:
 internal:
 	FarDialog(HANDLE hDlg);
 	FarDialog(int left, int top, int right, int bottom);
-	static int AsProcessDialogEvent(const ProcessDialogEventInfo* info);
 	INT_PTR DialogProc(int msg, int param1, void* param2);
 	static FarDialog^ GetDialog();
 internal:
 	static List<FarDialog^> _dialogs;
-	static HANDLE _hDlgTop = INVALID_HANDLE_VALUE;
 	HANDLE _hDlg;
 	List<FarControl^>^ _items;
 private:

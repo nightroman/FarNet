@@ -179,27 +179,33 @@ namespace PowerShellFar.Commands
 			// buttons
 			string[] buttons;
 			if (!IsError)
-				buttons = new string[] { BtnThrow, BtnBreak };
+				buttons = new string[] { BtnBreak, BtnThrow };
 			else if (string.IsNullOrEmpty(MyInvocation.ScriptName))
-				buttons = new string[] { BtnThrow, BtnBreak, BtnDebug };
+				buttons = new string[] { BtnBreak, BtnThrow, BtnDebug };
 			else
-				buttons = new string[] { BtnThrow, BtnBreak, BtnDebug, BtnEdit };
+				buttons = new string[] { BtnBreak, BtnThrow, BtnDebug, BtnEdit };
 
 			// prompt
-			int result = Far.Net.Message(
+			for (; ; )
+			{
+				int result = Far.Net.Message(
 				body,
 				Title ?? MyName,
 				IsError ? (MessageOptions.Warning | MessageOptions.LeftAligned) : MessageOptions.None,
 				buttons);
 
-			// editor
-			if (result >= 0)
-			{
+				if (result < 0)
+					continue;
+
 				switch (buttons[result])
 				{
 					case BtnBreak:
 						{
 							throw new PipelineStoppedException();
+						}
+					case BtnThrow:
+						{
+							throw new PSInvalidOperationException(body);
 						}
 					case BtnDebug:
 						{
@@ -214,13 +220,10 @@ namespace PowerShellFar.Commands
 							editor.FileName = MyInvocation.ScriptName;
 							editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
 							editor.Open();
-							break;
+							goto case BtnThrow;
 						}
 				}
 			}
-
-			// throw
-			throw new PSInvalidOperationException(body);
 		}
 		const string
 			BtnBreak = "&Break",

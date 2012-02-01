@@ -246,7 +246,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Called on redrawing in *.ps1.
 		/// </summary>
-		static IEnumerable<EditorColor> GetColors(IEditor editor, int startLine, int endLine, int startChar, int endChar)
+		static void GetColors(IEditor editor, ICollection<EditorColor> colors, int startLine, int endLine, int startChar, int endChar)
 		{
 			var script = editor.FileName;
 			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
@@ -258,12 +258,12 @@ namespace PowerShellFar
 					if (bp.Line != indexLine + 1)
 						continue;
 
-					yield return new EditorColor(
+					colors.Add(new EditorColor(
 						indexLine,
 						startChar,
 						endChar,
-						ConsoleColor.Black,
-						ConsoleColor.Yellow);
+						ConsoleColor.White,
+						ConsoleColor.DarkRed));
 
 					break;
 				}
@@ -368,7 +368,9 @@ namespace PowerShellFar
 			if (ok && toCleanCmdLine && wt != WindowKind.Editor)
 				Far.Net.CommandLine.Text = string.Empty;
 		}
-		//_110609_130945
+		// PSF sets the current directory and location to the script directory.
+		// This is often useful and consistent with invoking from panels.
+		// NOTE: ISE [F5] does not.
 		public static void InvokeScriptBeingEdited(IEditor editor)
 		{
 			// editor

@@ -79,6 +79,7 @@ WHERE NoteId = @NoteId
 
 # create a panel, set adapter
 $Panel = New-Object PowerShellFar.DataPanel
+$Panel.Data.ScriptRoot = Split-Path $MyInvocation.MyCommand.Path
 $Panel.Adapter = $a
 
 # data appearance
@@ -107,7 +108,7 @@ $Panel.ExcludeMemberPattern = '^(NoteId|CategoryId)$'
 if ($GenericLookup) {
 	$Panel.AddLookup('Category', {
 		param($0, $_)
-		Test-Panel-DbCategories- -Lookup {
+		& "$($0.Parent.Data.ScriptRoot)\Test-Panel-DbCategories-.ps1" -Lookup {
 			param($0, $_)
 			$r1 = $0.Parent.Value
 			$r2 = $_.File.Data
@@ -119,7 +120,7 @@ if ($GenericLookup) {
 else {
 	$Panel.AddLookup('Category', {
 		param($0, $_)
-		Test-Panel-DbCategories- -Lookup $0.CreateDataLookup(@('Category', 'Category', 'CategoryId', 'CategoryId'))
+		& "$($0.Parent.Data.ScriptRoot)\Test-Panel-DbCategories-.ps1" -Lookup $0.CreateDataLookup(@('Category', 'Category', 'CategoryId', 'CategoryId'))
 	})
 }
 

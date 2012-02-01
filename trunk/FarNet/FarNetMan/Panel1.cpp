@@ -156,13 +156,7 @@ void Panel1::CurrentDirectory::set(String^ value)
 	if (value->Length < 260 && !Directory::Exists(value))
 		throw gcnew ArgumentException("Directory '" + value + "' does not exist.");
 
-	PIN_NE(pin, value);
-	
-	FarPanelDirectory arg; memset(&arg, 0, sizeof(arg)); arg.StructSize = sizeof(arg);
-	arg.Name = pin;
-
-	if (!Info.PanelControl(_handle, FCTL_SETPANELDIRECTORY, 0, &arg))
-		throw gcnew InvalidOperationException("Cannot set panel directory: " + value);
+	::SetPanelDirectory(_handle, value);
 }
 
 String^ Panel1::ToString()

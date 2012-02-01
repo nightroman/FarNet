@@ -25,10 +25,10 @@ namespace FarNet.RightWords
 			editor.RegisterDrawer(new EditorDrawer(GetColors, My.Guid, 1));
 		}
 		public bool Disabled { get; set; }
-		IEnumerable<EditorColor> GetColors(IEditor editor, int startLine, int endLine, int startChar, int endChar)
+		void GetColors(IEditor editor, ICollection<EditorColor> colors, int startLine, int endLine, int startChar, int endChar)
 		{
 			if (Disabled)
-				yield break;
+				return;
 
 			for (int lineIndex = startLine; lineIndex < endLine; ++lineIndex)
 			{
@@ -55,12 +55,12 @@ namespace FarNet.RightWords
 						continue;
 
 					// add color
-					yield return new EditorColor(
+					colors.Add(new EditorColor(
 						lineIndex,
 						match.Index,
 						match.Index + match.Length,
 						HighlightingForegroundColor,
-						HighlightingBackgroundColor);
+						HighlightingBackgroundColor));
 				}
 			}
 		}

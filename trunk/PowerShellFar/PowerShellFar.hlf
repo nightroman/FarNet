@@ -50,7 +50,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 5.0.6#
+#PowerShellFar 5.0.7#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -84,8 +84,8 @@ $#Installation#
 
 #Requirements#
 
- - Far Manager 3.0.2412
- - Plugin FarNet 5.0.6
+ - Far Manager 3.0.2428
+ - Plugin FarNet 5.0.7
  - Windows PowerShell V2, V3
 
 
@@ -1018,6 +1018,9 @@ scripts).
 example if you have changed the table data by PowerShell commands or scripts).
 Table may have any number of modified, new and deleted records. <CtrlS> saves
 them all.
+
+[#CtrlShiftPgDn#], [#CtrlShiftPgUp#] Shows the next and previous range of
+records. Use the [F1] menu in order to change record range parameters.
 
 [#Enter#], [#CtrlPgDn#] Opens a Member panel for the current record. You may
 edit fields values. Use [CtrlS] to save your changes or [Esc] to return to the

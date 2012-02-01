@@ -1301,7 +1301,11 @@ void Editor::Redraw(EditorRedrawingEventArgs^ e)
 	for each(EditorDrawer^ it in _drawers)
 	{
 		RemoveColors(it->Owner, startLine, endLine);
-		AddColors(it->Owner, it->Priority, it->GetColors(this, startLine, endLine, frame.VisibleChar, frame.VisibleChar + size.X));
+		
+		List<EditorColor^> colors;
+		it->GetColors(this, %colors, startLine, endLine, frame.VisibleChar, frame.VisibleChar + size.X);
+		
+		AddColors(it->Owner, it->Priority, %colors);
 	}
 }
 

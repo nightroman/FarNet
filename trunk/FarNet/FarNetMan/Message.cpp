@@ -33,7 +33,7 @@ bool Message::Show()
 	PIN_NS(pinHelpTopic, _helpTopic);
 	_selected = Info.Message(
 		&MainGuid,
-		nullptr, //?????
+		nullptr,
 		flags,
 		pinHelpTopic,
 		(wchar_t**)items,

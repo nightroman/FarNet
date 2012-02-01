@@ -417,7 +417,7 @@ namespace PowerShellFar
 
 					case KeyCode.M:
 
-						if (key.CtrlAltShift() == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
+						if (key.IsCtrlShift())
 						{
 							UIMode();
 							return true;

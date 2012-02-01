@@ -59,29 +59,6 @@ namespace PowerShellFar
 				"Set-ItemProperty -LiteralPath $args[0] -Name $args[1] -Value $args[2] -ErrorAction Stop",
 				itemPath, propertyName, value);
 		}
-
-#if false //????
-		/// <summary>
-		/// Tries to get a property value.
-		/// </summary>
-		public static bool TryGetPropertyValue<T>(PSObject target, string name, out T value)
-		{
-			value = default(T);
-
-			PSPropertyInfo pi = target.Properties[name];
-			if (pi == null)
-				return false;
-
-			return LanguagePrimitives.TryConvertTo<T>(pi.Value, out value);
-		}
-#endif
-#if false //????
-		// Sets location (with workaround)
-		public static void SetLocation(string path)
-		{
-			Psf.Engine.SessionState.Path.SetLocation(Kit.EscapeWildcard(path));
-		}
-#endif
 		/// <summary>
 		/// Writes invocation errors.
 		/// </summary>

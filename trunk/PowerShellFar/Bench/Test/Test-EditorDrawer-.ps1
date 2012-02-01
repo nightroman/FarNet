@@ -3,9 +3,12 @@
 .Synopsis
 	Test editor drawer with all console colors.
 	Author: Roman Kuzmin
+
+.Link
+	Draw-Word-.ps1
 #>
 
-$color=[Enum]::GetValues([ConsoleColor])
+$color = [Enum]::GetValues([ConsoleColor])
 
 # Open editor and set text
 Open-FarEditor -DeleteSource File $env:TEMP\Colors
@@ -20,16 +23,16 @@ $Far.Editor.SetText((.{
 } | Out-String))
 
 # The drawer gets colors
-$getColors = {&{
-	$colors = New-Object System.Collections.Generic.List[FarNet.EditorColor]
+$GetColors = { param($Editor, $Colors) &{
+	# Fill the color collection. This sample is trivial, it returns same
+	# colors. For more practical example see the script Draw-Word-.ps1.
 	for($back = 0; $back -le 15; ++$back) {
 		for($fore = 0; $fore -le 15; ++$fore) {
-			$colors.Add((New-Object FarNet.EditorColor $back, ($fore * 3), ($fore * 3 + 3), $fore, $back))
+			$Colors.Add((New-Object FarNet.EditorColor $back, ($fore * 3), ($fore * 3 + 3), $fore, $back))
 		}
 	}
-	, $colors
 }}
 
 # Register the drawer and redraw
-$Far.Editor.RegisterDrawer((New-Object FarNet.EditorDrawer $getColors, "4ddb64b8-7954-41f0-a93f-d5f6a09cc752", 1))
+$Far.Editor.RegisterDrawer((New-Object FarNet.EditorDrawer $GetColors, '4ddb64b8-7954-41f0-a93f-d5f6a09cc752', 1))
 $Far.Editor.Redraw()

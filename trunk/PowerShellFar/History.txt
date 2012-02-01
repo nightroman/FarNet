@@ -1,6 +1,18 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.7 =
+
+*) Editor drawers use new PowerShell friendly API
+- New script Draw-Word-.ps1: Draws occurrences of the current word.
+- Adapted Test-EditorDrawer-.ps1
+
+*) Breakpoints in PS files
+- Changed highlighting color to White on DarkRed (like in ISE, VS, etc.).
+
+*) Assert-Far
+- Changed order of buttons and disabled cancel.
+
 = 5.0.6 =
 
 *) Stepper (engine for tests and super-macros)
