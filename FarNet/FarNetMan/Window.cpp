@@ -8,23 +8,8 @@ Copyright (c) 2005-2012 FarNet Team
 #include "Window.h"
 #include "Wrappers.h"
 
-#undef ACTL_GETWINDOWINFO
-
 namespace FarNet
 {;
-static void Call_ACTL_GETWINDOWINFO(WindowInfo& wi, int index)
-{
-	wi.StructSize = sizeof(wi);
-	wi.TypeName = nullptr;
-	wi.Name = nullptr;
-	wi.TypeNameSize = 0;
-	wi.NameSize = 0;
-	wi.Pos = index;
-	
-	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, 0, &wi))
-		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + index);
-}
-
 WindowKind Window::GetKindAt(int index)
 {
 	WindowInfo wi;
@@ -40,9 +25,8 @@ String^ Window::GetNameAt(int index)
 
 	CBox text(wi.NameSize);
 	wi.Name = text;
-	
-	if (!Info.AdvControl(&MainGuid, ACTL_GETWINDOWINFO, 0, &wi))
-		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + index);
+
+	Call_ACTL_GETWINDOWINFO(wi);
 
 	return gcnew String(text);
 }

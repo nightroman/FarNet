@@ -264,6 +264,9 @@ String^ Wildcard(String^ pattern);
 void AssertCurrentViewer();
 void DeleteSourceOptional(String^ path, DeleteSource option);
 void ValidateRect(int& x, int& w, int min, int size);
+void SetPanelDirectory(HANDLE handle, String^ path);
+void Call_ACTL_GETWINDOWINFO(WindowInfo& wi, int index);
+void Call_ACTL_GETWINDOWINFO(WindowInfo& wi);
 
 Guid FromGUID(const GUID& guid);
 GUID ToGUID(Guid guid);

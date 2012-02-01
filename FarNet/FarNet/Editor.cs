@@ -589,7 +589,7 @@ namespace FarNet
 		/// </summary>
 		public abstract bool IsVirtualSpace { get; set; }
 		/// <summary>
-		/// Tells to show or hide white spaces.
+		/// Tells to show or hide white space symbols.
 		/// Set it before or after opening.
 		/// </summary>
 		public abstract bool ShowWhiteSpace { get; set; }
@@ -752,11 +752,12 @@ namespace FarNet
 	/// Method called in order to get editor colors on redrawing.
 	/// </summary>
 	/// <param name="editor">Current editor.</param>
+	/// <param name="colors">Result colors.</param>
 	/// <param name="startLine">Index of the first line.</param>
 	/// <param name="endLine">Index of the line after the last.</param>
 	/// <param name="startChar">Index of the first character.</param>
 	/// <param name="endChar">Index of the character after the last.</param>
-	public delegate IEnumerable<EditorColor> GetEditorColors(IEditor editor, int startLine, int endLine, int startChar, int endChar);
+	public delegate void GetEditorColors(IEditor editor, ICollection<EditorColor> colors, int startLine, int endLine, int startChar, int endChar);
 
 	/// <summary>
 	/// Editor bookmark operator.

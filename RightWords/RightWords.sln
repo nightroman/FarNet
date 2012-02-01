@@ -5,7 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RightWords", "RightWords.cs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C047EE2-5E79-4AF3-947D-A94EE21D6F01}"
 	ProjectSection(SolutionItems) = preProject
-		Install-RightWordsMacro-.ps1 = Install-RightWordsMacro-.ps1
 		RightWords.restext = RightWords.restext
 		RightWords.ru.restext = RightWords.ru.restext
 	EndProjectSection

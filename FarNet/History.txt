@@ -1,5 +1,27 @@
 http://code.google.com/p/farnet/
 
+= 5.0.7 =
+
+Requires Far 3.0.2428 (DrKnS fixed potential mouse issues).
+
+*) [ShiftF9] in plugin menus
+- Configuration actions are called only for items having the Config flag set.
+For all other FarNet module plugin items the FarNet configuration is opened.
+
+*) Keyboard methods
+- More key combination helpers: IsAltShift(), IsCtrlAlt(), IsCtrlShift().
+
+*) Module settings
+- Temp files are used to minimize chances of data corruption. It is almost safe
+to write settings in other threads while the main crashes, Far closes, and etc.
+The last change can be lost but previous settings should survive.
+
+*) Editor
+- Drawer API is more PowerShell friendly.
+
+*) Misc
+- IFar.Dialog without hacks.
+
 = 5.0.6 =
 
 *) Revision of Post* methods

@@ -583,7 +583,7 @@ namespace PowerShellFar
 			UpdateRedraw(true);
 		}
 		///
-		public override bool UIKeyPressed(KeyInfo key) //????? docs
+		public override bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");
 			
@@ -591,7 +591,7 @@ namespace PowerShellFar
 			{
 				case KeyCode.PageDown:
 					
-					if (key.CtrlAltShift() == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
+					if (key.IsCtrlShift())
 					{
 						OnRangeNext();
 						return true;
@@ -601,7 +601,7 @@ namespace PowerShellFar
 				
 				case KeyCode.PageUp:
 					
-					if (key.CtrlAltShift() == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.ShiftPressed))
+					if (key.IsCtrlShift())
 					{
 						OnRangePrevious();
 						return true;

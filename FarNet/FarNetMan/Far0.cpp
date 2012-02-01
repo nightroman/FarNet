@@ -63,7 +63,7 @@ void Far0::FreePluginMenuItem(PluginMenuItem& p)
 {
 	if (p.Count == 0) return;
 
-	for(int i = p.Count; --i >= 0;)
+	for(int i = (int)p.Count; --i >= 0;)
 		delete p.Strings[i];
 
 	delete p.Strings;
@@ -411,28 +411,17 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 {
 	Guid guid = FromGUID(*info->Guid);
-	if (guid == FromGUID(MainGuid))
+	IModuleTool^ tool = Far::Net->GetModuleTool(guid);
+	if (tool && (tool->Options & ModuleToolOptions::Config))
 	{
-		OpenConfig();
-		return true;
+		ModuleToolEventArgs e;
+		e.From = ModuleToolOptions::Config;
+		tool->Invoke(nullptr, %e);
+		return e.Ignore ? false : true;
 	}
 
-	//????? STOP: If it is called by [ShiftF9] from a F11-menu then Far sends the
-	// index from that menu, not from our config items. There is nothing we can
-	// do about it: the same method is called from the config menu. All we can
-	// do is to check sanity of the index and ignore invalid values.
-	//itemIndex -= CoreConfigItemCount;
-	//if (itemIndex >= _toolConfig->Length)
-	//	return false;
-
-	IModuleTool^ tool = Far::Net->GetModuleTool(guid);
-	if (!tool)
-		return false;
-
-	ModuleToolEventArgs e;
-	e.From = ModuleToolOptions::Config;
-	tool->Invoke(nullptr, %e);
-	return e.Ignore ? false : true;
+	OpenConfig();
+	return true;
 }
 
 HANDLE Far0::AsOpen(const OpenInfo* info)
@@ -532,11 +521,6 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		//! STOP: dialog case is different
 		case OPEN_DIALOG:
 			{
-				const OpenDlgPluginData* dd = (const OpenDlgPluginData*)info->Data;
-
-				// just to be sure, see also _091127_112807
-				FarDialog::_hDlgTop = dd->hDlg;
-
 				Guid guid = FromGUID(*info->Guid);
 				if (guid == FromGUID(MainGuid))
 				{

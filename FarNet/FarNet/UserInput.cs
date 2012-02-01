@@ -598,7 +598,7 @@ OemClear = 254;
 			_ControlKeyState = controlKeyState;
 		}
 		/// <summary>
-		/// Gets all control key states.
+		/// Gets all control key states including special flags.
 		/// </summary>
 		public ControlKeyStates ControlKeyState { get { return _ControlKeyState; } }
 		/// <summary>
@@ -632,7 +632,37 @@ OemClear = 254;
 			return (_ControlKeyState & ControlKeyStates.CtrlAltShift) == ControlKeyStates.ShiftPressed;
 		}
 		/// <summary>
-		/// Gets only Ctrl, Alt and Shift states.
+		/// Tests AltShift state.
+		/// </summary>
+		public bool IsAltShift()
+		{
+			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			return
+				value == (ControlKeyStates.ShiftPressed | ControlKeyStates.LeftAltPressed) ||
+				value == (ControlKeyStates.ShiftPressed | ControlKeyStates.RightAltPressed);
+		}
+		/// <summary>
+		/// Tests CtrlAlt state.
+		/// </summary>
+		public bool IsCtrlAlt()
+		{
+			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			return
+				value == (ControlKeyStates.LeftCtrlPressed | ControlKeyStates.LeftAltPressed) ||
+				value == (ControlKeyStates.RightCtrlPressed | ControlKeyStates.RightAltPressed);
+		}
+		/// <summary>
+		/// Tests CtrlShift state.
+		/// </summary>
+		public bool IsCtrlShift()
+		{
+			var value = _ControlKeyState & ControlKeyStates.CtrlAltShift;
+			return
+				value == (ControlKeyStates.ShiftPressed | ControlKeyStates.LeftCtrlPressed) ||
+				value == (ControlKeyStates.ShiftPressed | ControlKeyStates.RightCtrlPressed);
+		}
+		/// <summary>
+		/// Gets only Ctrl, Alt, and Shift states excluding special flags.
 		/// </summary>
 		public ControlKeyStates CtrlAltShift()
 		{
@@ -710,6 +740,27 @@ OemClear = 254;
 		public bool IsShift(int virtualKeyCode)
 		{
 			return _VirtualKeyCode == virtualKeyCode && IsShift();
+		}
+		/// <summary>
+		/// Tests a key with AltShift.
+		/// </summary>
+		public bool IsAltShift(int virtualKeyCode)
+		{
+			return _VirtualKeyCode == virtualKeyCode && IsAltShift();
+		}
+		/// <summary>
+		/// Tests a key with CtrlAlt.
+		/// </summary>
+		public bool IsCtrlAlt(int virtualKeyCode)
+		{
+			return _VirtualKeyCode == virtualKeyCode && IsCtrlAlt();
+		}
+		/// <summary>
+		/// Tests a key with CtrlShift.
+		/// </summary>
+		public bool IsCtrlShift(int virtualKeyCode)
+		{
+			return _VirtualKeyCode == virtualKeyCode && IsCtrlShift();
 		}
 		///
 		public override bool Equals(object obj)

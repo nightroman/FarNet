@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 5.0.6
-Release  : 2012-01-26
+Version  : 5.0.7
+Release  : 2012-02-01
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -20,7 +20,7 @@ tiny pieces of boilerplate framework code.
 = PREREQUISITES =
 
 
- - Far Manager 3.0.2412
+ - Far Manager 3.0.2428
  - .NET Framework 3.5 or 4.0
  - Microsoft Visual C++ 2008 SP1 Redistributable Package (*)
 

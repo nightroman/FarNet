@@ -151,6 +151,10 @@ namespace FarNet.Settings
 
 			ResourceWriter writerRoaming = null;
 			ResourceWriter writerLocal = null;
+			string fileRoaming = null;
+			string fileLocal = null;
+			string tempRoaming = null;
+			string tempLocal = null;
 			try
 			{
 				foreach (SettingsPropertyValue value in collection)
@@ -170,14 +174,28 @@ namespace FarNet.Settings
 						if (!dirtyRoaming)
 							continue;
 
-						writer = writerRoaming ?? (writerRoaming = new ResourceWriter(FileName(context, RoamingFileName, true)));
+						if (writerRoaming == null)
+						{
+							fileRoaming = FileName(context, RoamingFileName, true);
+							tempRoaming = fileRoaming + ".tmp";
+							writerRoaming = new ResourceWriter(tempRoaming);
+						}
+
+						writer = writerRoaming;
 					}
 					else
 					{
 						if (!dirtyLocal)
 							continue;
 
-						writer = writerLocal ?? (writerLocal = new ResourceWriter(FileName(context, LocalFileName, true)));
+						if (writerLocal == null)
+						{
+							fileLocal = FileName(context, LocalFileName, true);
+							tempLocal = fileLocal + ".tmp";
+							writerLocal = new ResourceWriter(tempLocal);
+						}
+
+						writer = writerLocal;
 					}
 
 					writer.AddResource(value.Name, serialized);
@@ -190,6 +208,7 @@ namespace FarNet.Settings
 				if (writerRoaming != null)
 				{
 					writerRoaming.Close();
+					ReplaceFile(tempRoaming, fileRoaming);
 				}
 				else if (dirtyRoaming)
 				{
@@ -199,6 +218,7 @@ namespace FarNet.Settings
 				if (writerLocal != null)
 				{
 					writerLocal.Close();
+					ReplaceFile(tempLocal, fileLocal);
 				}
 				else if (dirtyLocal)
 				{
@@ -209,6 +229,13 @@ namespace FarNet.Settings
 			// all is saved now, clean all dirty flags
 			foreach (SettingsPropertyValue value in collection)
 				value.IsDirty = false;
+		}
+		static void ReplaceFile(string source, string destination)
+		{
+			if (File.Exists(destination))
+				File.Replace(source, destination, null);
+			else
+				File.Move(source, destination);
 		}
 	}
 }

@@ -381,16 +381,20 @@ void FarDialog::EnableRedraw()
 
 FarDialog^ FarDialog::GetDialog()
 {
-	if (_hDlgTop == INVALID_HANDLE_VALUE)
+	WindowInfo wi;
+	Call_ACTL_GETWINDOWINFO(wi, -1);
+
+	if (wi.Id == 0 || wi.Type != WTYPE_DIALOG)
 		return nullptr;
 
+	HANDLE hDlg = (HANDLE)wi.Id;
 	for each(FarDialog^ dialog in FarDialog::_dialogs)
 	{
-		if (dialog->_hDlg == _hDlgTop)
+		if (dialog->_hDlg == hDlg)
 			return dialog;
 	}
 
-	return gcnew FarDialog(_hDlgTop);
+	return gcnew FarDialog(hDlg);
 }
 
 //! 090719 There is no way to get control count, so we allow an index to be too large - we return null in this case even for our dialog.
@@ -482,43 +486,6 @@ void FarDialog::Resize(Point size)
 
 	COORD arg = { (SHORT)size.X, (SHORT)size.Y };
 	Info.SendDlgMessage(_hDlg, DM_RESIZEDIALOG, 0, &arg);
-}
-
-// _091127_112807 Do we need to keep a global dialog handle in here?
-// 1) It is done on OPEN_DIALOG => all code called from the plugin menu is happy.
-// 2) Other code can be dialog event handlers (DialogProc), the dialog is a sender.
-// Stepper now uses [1]. But e.g. on callbacks [1] is not called, we need Far API.
-// Mantis 1179 requests such API, let's wait.
-int FarDialog::AsProcessDialogEvent(const ProcessDialogEventInfo* info)
-{
-	switch(info->Event)
-	{
-	case DE_DLGPROCINIT:
-		// before outer handler; it always happens
-		break;
-	case DE_DEFDLGPROCINIT:
-		// before inner handler; it is called if outer has not handled the event
-		break;
-	case DE_DLGPROCEND:
-		// after all handlers
-		switch(info->Param->Msg)
-		{
-		case DN_CLOSE:
-			if (info->Param->Result)
-			{
-				// drop the global current handle
-				_hDlgTop = INVALID_HANDLE_VALUE;
-				return false;
-			}
-			break;
-		}
-		break;
-	}
-
-	// set the global current to be used by $Far.Dialog
-	_hDlgTop = info->Param->hDlg;
-
-	return false;
 }
 
 INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)

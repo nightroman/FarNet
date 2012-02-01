@@ -25,7 +25,7 @@ DEFINE_GUID(FarGuid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {
-	info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2377, VS_RELEASE);
+	info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2428, VS_RELEASE);
 	info->Version = MAKEFARVERSION(5, 0, 0, 0, VS_RELEASE);
 	info->Guid = MainGuid;
 	info->Title = L"FarNet";
@@ -198,14 +198,6 @@ int WINAPI DeleteFilesW(const DeleteFilesInfo* info)
 	return Panel0::AsDeleteFiles(info);
 	__END;
 	return false;
-}
-
-int WINAPI ProcessDialogEventW(const ProcessDialogEventInfo* info)
-{
-	__START;
-	return FarDialog::AsProcessDialogEvent(info);
-	__END;
-	return true; // ignore, there was a problem
 }
 
 int WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
