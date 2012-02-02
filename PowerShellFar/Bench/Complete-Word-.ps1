@@ -19,23 +19,18 @@
 
 # get edit line
 $Line = $Far.Line
-if (!$Line) {
-	return
-}
+if (!$Line) {return}
 
 # current word
-$pos = $Line.Caret
+$match = $Line.MatchCaret('\w[-\w]*')
+if (!$match) {return}
+
 $text = $Line.Text
-$word = $text.Substring(0, $pos)
-if ($word -notmatch '(^|\W)(\w[-\w]*)$') {
-	return
-}
-$pref = $matches[1]
-$word = $matches[2]
-$skip = $null
-if ($text.Substring($pos) -match '^([-\w]+)') {
-	$skip = $word + $matches[1]
-}
+$word = $text.Substring($match.Index, $Line.Caret - $match.Index)
+if (!$word) {return}
+
+$skip = $match.Value
+$pref = if ($match.Index) {[string]$text[$match.Index - 1]} else {$null}
 
 # collect matching words in editor or\and history
 $words = @{}
