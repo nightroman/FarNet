@@ -22,17 +22,17 @@ namespace FarNet.RightWords
 		public Highlighter(IEditor editor)
 		{
 			Editor = editor;
-			editor.RegisterDrawer(new EditorDrawer(GetColors, My.Guid, 1));
+			editor.RegisterDrawer(new EditorDrawer(My.Guid, 1, GetColors));
 		}
 		public bool Disabled { get; set; }
-		void GetColors(IEditor editor, ICollection<EditorColor> colors, int startLine, int endLine, int startChar, int endChar)
+		void GetColors(IEditor editor, ICollection<EditorColor> colors, IList<ILine> lines, int startChar, int endChar)
 		{
 			if (Disabled)
 				return;
 
-			for (int lineIndex = startLine; lineIndex < endLine; ++lineIndex)
+			foreach (var line in lines)
 			{
-				var text = Editor[lineIndex].Text;
+				var text = line.Text;
 				if (text.Length == 0)
 					continue;
 
@@ -56,7 +56,7 @@ namespace FarNet.RightWords
 
 					// add color
 					colors.Add(new EditorColor(
-						lineIndex,
+						line.Index,
 						match.Index,
 						match.Index + match.Length,
 						HighlightingForegroundColor,

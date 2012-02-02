@@ -721,43 +721,55 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Arguments of <see cref="IEditor.RegisterDrawer"/>
+	/// Editor drawer.
 	/// </summary>
+	/// <remarks>
+	/// This class is just a set of arguments for <see cref="IEditor.RegisterDrawer"/>.
+	/// </remarks>
 	public sealed class EditorDrawer
 	{
-		///
-		public EditorDrawer(GetEditorColors getColors, Guid owner, int priority)
+		/// <summary>
+		/// New drawer.
+		/// </summary>
+		/// <param name="id">Drawer ID.</param>
+		/// <param name="priority">Color priority.</param>
+		/// <param name="getColors">Method that gets colors.</param>
+		public EditorDrawer(Guid id, int priority, GetEditorColors getColors)
 		{
 			if (getColors == null) throw new ArgumentNullException("getColors");
-			
-			GetColors = getColors;
-			Owner = owner;
+
+			Id = id;
 			Priority = priority;
+			GetColors = getColors;
 		}
+		/// <summary>
+		/// Drawer ID.
+		/// </summary>
+		public Guid Id { get; private set; }
+		/// <summary>
+		/// Color priority.
+		/// </summary>
+		public int Priority { get; private set; }
 		/// <summary>
 		/// Method that gets colors.
 		/// </summary>
 		public GetEditorColors GetColors { get; private set; }
-		/// <summary>
-		/// Colors owner ID.
-		/// </summary>
-		public Guid Owner { get; private set; }
-		/// <summary>
-		/// Colors priority.
-		/// </summary>
-		public int Priority { get; private set; }
 	}
 
 	/// <summary>
-	/// Method called in order to get editor colors on redrawing.
+	/// Method that gets colors for the specified lines and characters.
 	/// </summary>
-	/// <param name="editor">Current editor.</param>
+	/// <param name="editor">The editor.</param>
 	/// <param name="colors">Result colors.</param>
-	/// <param name="startLine">Index of the first line.</param>
-	/// <param name="endLine">Index of the line after the last.</param>
+	/// <param name="lines">Lines to get colors for.</param>
 	/// <param name="startChar">Index of the first character.</param>
 	/// <param name="endChar">Index of the character after the last.</param>
-	public delegate void GetEditorColors(IEditor editor, ICollection<EditorColor> colors, int startLine, int endLine, int startChar, int endChar);
+	/// <remarks>
+	/// It is called frequently and it should work as fast as possible.
+	/// Its goal is just to fill the result color collection.
+	/// It should not change anything in the editor.
+	/// </remarks>
+	public delegate void GetEditorColors(IEditor editor, ICollection<EditorColor> colors, IList<ILine> lines, int startChar, int endChar);
 
 	/// <summary>
 	/// Editor bookmark operator.
@@ -950,6 +962,27 @@ namespace FarNet
 		public sealed override string ToString()
 		{
 			return Text;
+		}
+		/// <summary>
+		/// Gets the match for the current caret position.
+		/// </summary>
+		/// <param name="regex">Regular expression that defines "words".</param>
+		/// <returns>The found match or null if the caret is not at any "word".</returns>
+		/// <remarks>
+		/// This methods is useful for the common task of getting the current "word".
+		/// In the editor it should be called on the current line only.
+		/// "Words" to look for are defined by a regular expression.
+		/// </remarks>
+		public Match MatchCaret(Regex regex)
+		{
+			if (regex == null) throw new ArgumentNullException("regex");
+
+			int caret = Caret;
+			for (var match = regex.Match(Text); match.Success; match = match.NextMatch())
+				if (caret <= match.Index + match.Length)
+					return caret < match.Index ? null : match;
+
+			return null;
 		}
 	}
 

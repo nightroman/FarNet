@@ -240,26 +240,26 @@ namespace PowerShellFar
 			else if (My.PathEx.IsPSFile(fileName))
 			{
 				editor.KeyDown += OnKeyDownPSFile;
-				editor.RegisterDrawer(new EditorDrawer(GetColors, GuidBreakpoint, 2));
+				editor.RegisterDrawer(new EditorDrawer(GuidBreakpoint, 2, GetColors));
 			}
 		}
 		/// <summary>
 		/// Called on redrawing in *.ps1.
 		/// </summary>
-		static void GetColors(IEditor editor, ICollection<EditorColor> colors, int startLine, int endLine, int startChar, int endChar)
+		static void GetColors(IEditor editor, ICollection<EditorColor> colors, IList<ILine> lines, int startChar, int endChar)
 		{
 			var script = editor.FileName;
 			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
 
-			for (int indexLine = startLine; indexLine < endLine; ++indexLine)
+			foreach (var line in lines)
 			{
 				foreach (var bp in breakpoints)
 				{
-					if (bp.Line != indexLine + 1)
+					if (bp.Line != line.Index + 1)
 						continue;
 
 					colors.Add(new EditorColor(
-						indexLine,
+						line.Index,
 						startChar,
 						endChar,
 						ConsoleColor.White,

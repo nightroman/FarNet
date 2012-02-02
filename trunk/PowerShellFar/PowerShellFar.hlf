@@ -50,7 +50,7 @@ $#PowerShellFar#
 $#About#
 ~Contents~@Contents@
 
-#PowerShellFar 5.0.7#
+#PowerShellFar 5.0.8#
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -84,8 +84,8 @@ $#Installation#
 
 #Requirements#
 
- - Far Manager 3.0.2428
- - Plugin FarNet 5.0.7
+ - Far Manager 3.0.2430
+ - Plugin FarNet 5.0.8
  - Windows PowerShell V2, V3
 
 

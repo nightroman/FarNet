@@ -1268,7 +1268,7 @@ void Editor::RegisterDrawer(EditorDrawer^ drawer)
 	if (_drawers)
 	{
 		for each(EditorDrawer^ it in _drawers)
-			if (it->Owner == drawer->Owner)
+			if (it->Id == drawer->Id)
 				throw gcnew InvalidOperationException("Drawer is already registered.");
 	}
 	else
@@ -1298,14 +1298,16 @@ void Editor::Redraw(EditorRedrawingEventArgs^ e)
 	}
 	endLine = Math::Min(endLine, lineCount);
 
+	List<EditorColor^> colors;
+	Works::LineCollection lines(this, startLine, endLine - startLine);
 	for each(EditorDrawer^ it in _drawers)
 	{
-		RemoveColors(it->Owner, startLine, endLine);
-		
-		List<EditorColor^> colors;
-		it->GetColors(this, %colors, startLine, endLine, frame.VisibleChar, frame.VisibleChar + size.X);
-		
-		AddColors(it->Owner, it->Priority, %colors);
+		RemoveColors(it->Id, startLine, endLine);
+
+		colors.Clear();
+		it->GetColors(this, %colors, %lines, frame.VisibleChar, frame.VisibleChar + size.X);
+
+		AddColors(it->Id, it->Priority, %colors);
 	}
 }
 

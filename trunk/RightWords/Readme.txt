@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2012-02-01
+Release  : 2012-02-02
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -10,7 +10,7 @@ Source   : http://code.google.com/p/farnet/
 = PREREQUISITES =
 
  * Far Manager 3.0.2428
- * Plugin FarNet 5.0.7
+ * Plugin FarNet 5.0.8
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -276,5 +276,9 @@ Use FarNet 5.0.3. Simplified and yet faster work with editor colors.
 2.0.4
 
 Use FarNet 5.0.7 with amended drawer API.
+
+2.0.5
+
+Use FarNet 5.0.8 with amended drawer API.
 
 http://code.google.com/p/farnet/downloads/list

@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/
 
+= 5.0.8 =
+
+*) Editors
+- New method ILine.MatchCaret() for getting current words easier.
+- Simpler and yet more flexible and PowerShell friendly drawers.
+
 = 5.0.7 =
 
 Requires Far 3.0.2428 (DrKnS fixed potential mouse issues).

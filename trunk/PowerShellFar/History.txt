@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.8 =
+
+*) Amended drawers API
+- Adapted Draw-Word-.ps1. As a result, also fixed some defects.
+
 = 5.0.7 =
 
 *) Editor drawers use new PowerShell friendly API
