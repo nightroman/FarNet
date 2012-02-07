@@ -285,6 +285,7 @@ $BaseEditor = Merge-Helps $BaseText @{
 		LineNumber = 'Line number to open the editor at. The first is 1.'
 		CharNumber = 'Character number in the line to open the editor at. The first is 1.'
 		Host = 'The host instance.'
+		IsLocked = 'Sets the lock mode ([CtrlL]).'
 	}
 }
 

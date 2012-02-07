@@ -112,7 +112,7 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 			Log::Source->TraceInformation("VE_CLOSE");
 
 			// get registered, close and unregister
-			int id = *((int*)info->Param);
+			int id = info->ViewerID;
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{
@@ -151,7 +151,7 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_GOTFOCUS");
 
 			// get registered
-			int id = *((int*)info->Param);
+			int id = info->ViewerID;
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{
@@ -188,7 +188,7 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_KILLFOCUS");
 
 			// get registered
-			int id = *((int*)info->Param);
+			int id = info->ViewerID;
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{

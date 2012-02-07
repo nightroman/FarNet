@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="ConfigCommand.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ConfigDrawer.cs" />
     <Compile Include="ConfigEditor.cs" />
     <Compile Include="ConfigTool.cs" />
     <Compile Include="ConfigUICulture.cs" />

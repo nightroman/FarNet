@@ -3,7 +3,6 @@ Clear-Session.ps1 Clears PowerShell session resources.
 Connect-MSAccess-.ps1 Connects .mdb database and optionally shows tables in a panel.
 Connect-SqlCompact-.ps1 Connects .sdf database and optionally shows tables in a panel.
 Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a panel.
-Draw-Word-.ps1 Draws occurrences of the current word in the editor.
 Edit-FarDescription-.ps1 Edits pseudo multiline description in the editor.
 Format-Chart.ps1 Formats output as a table with the last chart column.
 Generate-Dialog-.ps1 Generates template code for the current dialog.

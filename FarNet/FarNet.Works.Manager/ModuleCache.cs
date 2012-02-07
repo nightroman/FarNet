@@ -14,7 +14,7 @@ namespace FarNet.Works
 {
 	class ModuleCache
 	{
-		const int Version = 3;
+		const int Version = 4;
 		const int idVersion = 0;
 		readonly string _FileName;
 		readonly Hashtable _Cache;

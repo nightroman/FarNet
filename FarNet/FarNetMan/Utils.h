@@ -232,6 +232,7 @@ internal:
 	static ConstString
 		Menu = "FarNet",
 		ModuleCommands = "Commands",
+		ModuleDrawers = "Drawers",
 		ModuleEditors = "Editors",
 		ModuleTools = "Tools",
 		InvalidColumnKind = "Invalid column kind: ",

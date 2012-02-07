@@ -52,13 +52,9 @@ namespace FarNet
 		/// </summary>
 		public abstract Works.IPanelWorks WorksPanel(Panel panel, Explorer explorer);
 		/// <summary>
-		/// Gets any module command by its ID.
+		/// Gets a module action by its ID. Null is returned if the ID is not found.
 		/// </summary>
-		public abstract IModuleCommand GetModuleCommand(Guid id);
-		/// <summary>
-		/// Gets any module tool by its ID.
-		/// </summary>
-		public abstract IModuleTool GetModuleTool(Guid id);
+		public abstract IModuleAction GetModuleAction(Guid id);
 		/// <summary>
 		/// Shows a message box.
 		/// </summary>

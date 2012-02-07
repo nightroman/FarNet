@@ -1,0 +1,95 @@
+﻿
+/*
+FarNet plugin for Far Manager
+Copyright (c) 2005-2012 FarNet Team
+*/
+
+using System.Collections.Generic;
+using FarNet.Forms;
+
+namespace FarNet.Works
+{
+	public static class ConfigDrawer
+	{
+		public static void Show(IList<IModuleDrawer> drawers, string helpTopic)
+		{
+			if (drawers == null)
+				return;
+
+			IMenu menu = Far.Net.CreateMenu();
+			menu.AutoAssignHotkeys = true;
+			menu.HelpTopic = helpTopic;
+			menu.Title = Res.ModuleDrawers;
+
+			foreach (IModuleDrawer it in drawers)
+				menu.Add(Utility.FormatConfigMenu(it)).Data = it;
+
+			while (menu.Show())
+			{
+				FarItem mi = menu.Items[menu.Selected];
+				IModuleDrawer drawer = (IModuleDrawer)mi.Data;
+
+				var dialog = new ConfigDrawerDialog(drawer, helpTopic);
+				while (dialog.Dialog.Show())
+				{
+					string mask = dialog.Mask.Text.Trim();
+					if (mask.Length == 0)
+						mask = drawer.DefaultMask;
+
+					int priority;
+					string priorityText = dialog.Priority.Text.Trim();
+					if (priorityText.Length == 0)
+					{
+						priority = drawer.DefaultPriority;
+					}
+					else
+					{
+						if (!int.TryParse(priorityText, out priority))
+						{
+							Far.Net.Message("Invalid Priority");
+							continue;
+						}
+					}
+
+					// set
+					drawer.ResetMask(mask);
+					drawer.ResetPriority(priority);
+					drawer.Manager.SaveSettings();
+					break;
+				}
+			}
+		}
+	}
+
+	class ConfigDrawerDialog
+	{
+		public IDialog Dialog;
+		public IEdit Mask;
+		public IEdit Priority;
+		public ConfigDrawerDialog(IModuleDrawer drawer, string helpTopic)
+		{
+			Dialog = Far.Net.CreateDialog(-1, -1, 77, 8);
+			Dialog.HelpTopic = helpTopic;
+
+			// Box
+			Dialog.AddBox(3, 1, 0, 0, drawer.Name);
+			int x = 14;
+
+			// Mask
+			Dialog.AddText(5, -1, 0, "&Mask");
+			Mask = Dialog.AddEdit(x, 0, 71, drawer.Mask);
+
+			// Priority
+			Dialog.AddText(5, -1, 0, "&Priority");
+			Priority = Dialog.AddEdit(x, 0, 71, drawer.Priority.ToString());
+
+			Dialog.AddText(5, -1, 0, string.Empty).Separator = 1;
+
+			IButton buttonOK = Dialog.AddButton(0, -1, "Ok");
+			buttonOK.CenterGroup = true;
+
+			IButton buttonCancel = Dialog.AddButton(0, 0, "Cancel");
+			buttonCancel.CenterGroup = true;
+		}
+	}
+}

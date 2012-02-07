@@ -54,7 +54,6 @@
     <Compile Include="MultiSpell.cs" />
     <Compile Include="MultiThesaurus.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="TheEditor.cs" />
     <Compile Include="TheTool.cs" />
     <Compile Include="UIWordDialog.cs" />
     <Compile Include="UIWordMenu.cs" />

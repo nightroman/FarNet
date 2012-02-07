@@ -17,7 +17,6 @@ namespace PowerShellFar.UI
 		IEditor _editor;
 		Collection<PSObject> _breakpoints;
 		bool _toStop;
-
 		public DebuggerMenu()
 		{
 			_menu = Far.Net.CreateListMenu();
@@ -33,7 +32,6 @@ namespace PowerShellFar.UI
 			_menu.AddKey(KeyCode.Backspace, ControlKeyStates.ShiftPressed, OnDisableAll);
 			_menu.AddKey(KeyCode.Spacebar, ControlKeyStates.None, OnToggle);
 		}
-
 		public void Show()
 		{
 			// active editor
@@ -77,7 +75,6 @@ namespace PowerShellFar.UI
 					return;
 			}
 		}
-
 		void OnLineBreakpoint(object sender, EventArgs e)
 		{
 			if (_menu.Key.VirtualKeyCode != 0)
@@ -119,7 +116,7 @@ namespace PowerShellFar.UI
 						}))
 					{
 						case 0:
-							A.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bpFound);
+							A.RemoveBreakpoint(bpFound);
 							return;
 						case 1:
 							if (bpFound.Enabled)
@@ -144,16 +141,12 @@ namespace PowerShellFar.UI
 				return;
 
 			// set new
-			string code = "Set-PSBreakpoint -Script $args[0] -Line $args[1]";
-			if (ui.Action != null)
-				code += " -Action $args[2]";
-			A.InvokeCode(code, ui.Script, ui.Matter, ui.Action);
+			A.SetBreakpoint(ui.Script, int.Parse(ui.Matter), ui.Action);
 
 			// remove the old
 			if (bpFound != null)
-				A.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bpFound);
+				A.RemoveBreakpoint(bpFound);
 		}
-
 		void OnCommandBreakpoint(object sender, EventArgs e)
 		{
 			if (_menu.Key.VirtualKeyCode != 0)
@@ -174,7 +167,6 @@ namespace PowerShellFar.UI
 				code += " -Action $args[2]";
 			A.InvokeCode(code, ui.Matter, ui.Script, ui.Action);
 		}
-
 		void OnVariableBreakpoint(object sender, EventArgs e)
 		{
 			if (_menu.Key.VirtualKeyCode != 0)
@@ -195,7 +187,6 @@ namespace PowerShellFar.UI
 				code += " -Action $args[3]";
 			A.InvokeCode(code, ui.Matter, ui.Mode, ui.Script, ui.Action);
 		}
-
 		void OnDelete(object sender, MenuEventArgs e)
 		{
 			Breakpoint bp = _menu.SelectedData as Breakpoint;
@@ -205,17 +196,15 @@ namespace PowerShellFar.UI
 				return;
 			}
 
-			A.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", bp);
+			A.RemoveBreakpoint(bp);
 		}
-
 		void OnDeleteAll(object sender, MenuEventArgs e)
 		{
 			if (_breakpoints.Count > 0)
-				A.InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", _breakpoints);
+				A.RemoveBreakpoint(_breakpoints);
 			else
 				e.Ignore = true;
 		}
-
 		void OnDisableAll(object sender, MenuEventArgs e)
 		{
 			if (_breakpoints.Count > 0)
@@ -223,7 +212,6 @@ namespace PowerShellFar.UI
 			else
 				e.Ignore = true;
 		}
-
 		void OnToggle(object sender, MenuEventArgs e)
 		{
 			Breakpoint bp = _menu.SelectedData as Breakpoint;
@@ -238,7 +226,6 @@ namespace PowerShellFar.UI
 			else
 				A.InvokeCode("Enable-PSBreakpoint -Breakpoint $args[0]", bp);
 		}
-
 		void OnEdit(object sender, MenuEventArgs e)
 		{
 			Breakpoint bp = _menu.SelectedData as Breakpoint;
@@ -272,6 +259,5 @@ namespace PowerShellFar.UI
 
 			editor.Open();
 		}
-
 	}
 }

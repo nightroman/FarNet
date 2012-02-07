@@ -6,9 +6,19 @@
 	* CtrlShiftF7 - Correct the selected text (editor).
 	* CtrlShiftH - Switch highlighting (editor).
 -->
-<farconfig version="3.0.2366">
+<farconfig>
 	<macros>
 		<keymacros>
+			<macro area="Editor" key="CtrlShiftH" flags="DisableOutput" description="RightWords: Highlighting">
+				<text>
+					<![CDATA[
+F11
+$If (Menu.Select("FarNet", 2) == 0) $Exit $End Enter
+$If (Menu.Select("Drawers", 2) == 0) $Exit $End Enter
+$If (Menu.Select("Spelling mistakes", 2) == 0) $Exit $End Enter
+]]>
+				</text>
+			</macro>
 			<macro area="Common" key="CtrlShiftSpace" flags="DisableOutput" description="RightWords: Correct word">
 				<text>
 					<![CDATA[
@@ -30,16 +40,6 @@ $End
 F11
 $If (Menu.Select("RightWords", 2) > 0)
 	Enter 2
-$End
-]]>
-				</text>
-			</macro>
-			<macro area="Editor" key="CtrlShiftH" flags="DisableOutput" description="RightWords: Highlighting">
-				<text>
-					<![CDATA[
-F11
-$If (Menu.Select("RightWords", 2) > 0)
-	Enter 3
 $End
 ]]>
 				</text>

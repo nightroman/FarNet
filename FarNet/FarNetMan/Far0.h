@@ -18,6 +18,7 @@ public:
 public:
 	static void InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName);
 	static void RegisterProxyCommand(IModuleCommand^ info);
+	static void RegisterProxyDrawer(IModuleDrawer^ info);
 	static void RegisterProxyEditor(IModuleEditor^ info);
 	static void RegisterProxyTool(IModuleTool^ info);
 	static void Start();
@@ -31,6 +32,7 @@ public:
 	static void PostStep(Action^ handler);
 	static void PostStep2(Action^ handler1, Action^ handler2);
 	static void ShowConsoleMenu();
+	static void ShowDrawersMenu();
 	static void ShowMenu(ModuleToolOptions from);
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
@@ -56,6 +58,7 @@ private:
 	static array<IModuleTool^>^ _toolViewer;
 	static CStr* _prefixes;
 	static List<IModuleCommand^> _registeredCommand;
+	static List<IModuleDrawer^> _registeredDrawer;
 	static List<IModuleEditor^> _registeredEditor;
 private:
 	static CultureInfo^ _currentUICulture;

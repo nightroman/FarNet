@@ -41,6 +41,7 @@ namespace FarNet.Works
 		static HostState _State_;
 
 		public abstract void RegisterProxyCommand(IModuleCommand info);
+		public abstract void RegisterProxyDrawer(IModuleDrawer info);
 		public abstract void RegisterProxyEditor(IModuleEditor info);
 		public abstract void RegisterProxyTool(IModuleTool info);
 		public abstract void UnregisterProxyAction(IModuleAction action);

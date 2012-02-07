@@ -41,22 +41,13 @@ String^ Far1::CurrentDirectory::get()
 	return gcnew String(buf);
 }
 
-IModuleCommand^ Far1::GetModuleCommand(Guid id)
+IModuleAction^ Far1::GetModuleAction(Guid id)
 {
 	IModuleAction^ action;
 	if (!Works::Host::Actions->TryGetValue(id, action))
 		return nullptr;
 
-	return (IModuleCommand^)action;
-}
-
-IModuleTool^ Far1::GetModuleTool(Guid id)
-{
-	IModuleAction^ action;
-	if (!Works::Host::Actions->TryGetValue(id, action))
-		return nullptr;
-
-	return (IModuleTool^)action;
+	return action;
 }
 
 int Far1::Message(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic)

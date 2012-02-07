@@ -16,6 +16,7 @@ static class Res
 {
 	public const string
 		ModuleCommands = "Commands",
+		ModuleDrawers = "Drawers",
 		ModuleEditors = "Editors",
 		ModuleTools = "Tools";
 }

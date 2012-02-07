@@ -22,7 +22,6 @@ namespace PowerShellFar
 	/// </summary>
 	static class EditorKit
 	{
-		static readonly Guid GuidBreakpoint = new Guid("01AD5C51-65EB-4DB3-B8DB-84298219FA66");
 		static int _initTabExpansion;
 		static ScriptBlock _TabExpansion;
 		/// <summary>
@@ -240,33 +239,39 @@ namespace PowerShellFar
 			else if (My.PathEx.IsPSFile(fileName))
 			{
 				editor.KeyDown += OnKeyDownPSFile;
-				editor.RegisterDrawer(new EditorDrawer(GuidBreakpoint, 2, GetColors));
+				editor.Changed += OnChangedPSFile;
 			}
 		}
-		/// <summary>
-		/// Called on redrawing in *.ps1.
-		/// </summary>
-		static void GetColors(IEditor editor, ICollection<EditorColor> colors, IList<ILine> lines, int startChar, int endChar)
+		static void OnChangedPSFile(object sender, EditorChangedEventArgs e)
 		{
+			if (e.Kind == EditorChangeKind.LineChanged)
+				return;
+
+			var editor = (IEditor)sender;
 			var script = editor.FileName;
-			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
+			var line = e.Line + 1;
 
-			foreach (var line in lines)
+			IEnumerable<LineBreakpoint> bps = null;
+			int delta = 0;
+			if (e.Kind == EditorChangeKind.LineAdded)
 			{
-				foreach (var bp in breakpoints)
-				{
-					if (bp.Line != line.Index + 1)
-						continue;
+				delta = 1;
+				bps = A.Psf.Breakpoints.Where(x => x.Line >= line && x.Script.Equals(script, StringComparison.OrdinalIgnoreCase)).ToArray();
+			}
+			else
+			{
+				var bp = A.Psf.Breakpoints.FirstOrDefault(x => x.Line == line && x.Script.Equals(script, StringComparison.OrdinalIgnoreCase));
+				if (bp != null)
+					A.RemoveBreakpoint(bp);
 
-					colors.Add(new EditorColor(
-						line.Index,
-						startChar,
-						endChar,
-						ConsoleColor.White,
-						ConsoleColor.DarkRed));
+				delta = -1;
+				bps = A.Psf.Breakpoints.Where(x => x.Line > line && x.Script.Equals(script, StringComparison.OrdinalIgnoreCase)).ToArray();
+			}
 
-					break;
-				}
+			foreach (var bp in bps)
+			{
+				A.SetBreakpoint(bp.Script, bp.Line + delta, bp.Action);
+				A.RemoveBreakpoint(bp);
 			}
 		}
 		/// <summary>
@@ -423,6 +428,40 @@ namespace PowerShellFar
 
 				// then pop the location, it may fail perhaps
 				A.Psf.Engine.SessionState.Path.PopLocation(null);
+			}
+		}
+	}
+
+	/// <summary>
+	/// PowerShell breakpoint drawer.
+	/// </summary>
+	[ModuleDrawer(Name = "PowerShell breakpoints", Mask = "*.ps1;*.psm1", Priority = 2)]
+	[System.Runtime.InteropServices.Guid("67db13c5-6b7b-4936-b984-e59db08e23c7")]
+	public class BreakpointDrawer : ModuleDrawer
+	{
+		///
+		public override void Invoke(object sender, ModuleDrawerEventArgs e)
+		{
+			var editor = (IEditor)sender;
+			var script = editor.FileName;
+			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
+
+			foreach (var line in e.Lines)
+			{
+				foreach (var bp in breakpoints)
+				{
+					if (bp.Line != line.Index + 1)
+						continue;
+
+					e.Colors.Add(new EditorColor(
+						line.Index,
+						0,
+						e.EndChar,
+						ConsoleColor.White,
+						ConsoleColor.DarkRed));
+
+					break;
+				}
 			}
 		}
 	}

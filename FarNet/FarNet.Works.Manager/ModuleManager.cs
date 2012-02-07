@@ -135,6 +135,21 @@ namespace FarNet.Works
 			Host.Instance.RegisterProxyCommand(it);
 			return it;
 		}
+		public override IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, EventHandler<ModuleDrawerEventArgs> handler)
+		{
+			if (handler == null)
+				throw new ArgumentNullException("handler");
+			if (attribute == null)
+				throw new ArgumentNullException("attribute");
+			if (string.IsNullOrEmpty(attribute.Name))
+				throw new ArgumentException("'attribute.Name' must not be empty.");
+
+			ProxyDrawer it = new ProxyDrawer(this, id, attribute, handler);
+			it.LoadData((Hashtable)ReadSettings()[it.Id]);
+
+			Host.Instance.RegisterProxyDrawer(it);
+			return it;
+		}
 		public override IModuleTool RegisterModuleTool(Guid id, ModuleToolAttribute attribute, EventHandler<ModuleToolEventArgs> handler)
 		{
 			if (handler == null)

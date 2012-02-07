@@ -76,6 +76,10 @@ namespace FarNet
 		/// Called on redrawing.
 		/// </summary>
 		public abstract event EventHandler<EditorRedrawingEventArgs> Redrawing;
+		/// <summary>
+		/// Called on changes.
+		/// </summary>
+		public abstract event EventHandler<EditorChangedEventArgs> Changed;
 	}
 
 	/// <summary>
@@ -714,62 +718,16 @@ namespace FarNet
 		/// </summary>
 		public abstract IList<EditorColorInfo> GetColors(int line);
 		/// <summary>
-		/// Registers an editor drawer.
+		/// Adds the drawer to this editor.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">Drawer is already registered.</exception>
-		public abstract void RegisterDrawer(EditorDrawer drawer);
+		/// <param name="drawer">The drawer.</param>
+		public abstract void AddDrawer(IModuleDrawer drawer);
+		/// <summary>
+		/// Removes the drawer from this editor.
+		/// </summary>
+		/// <param name="id">The drawer ID.</param>
+		public abstract void RemoveDrawer(Guid id);
 	}
-
-	/// <summary>
-	/// Editor drawer.
-	/// </summary>
-	/// <remarks>
-	/// This class is just a set of arguments for <see cref="IEditor.RegisterDrawer"/>.
-	/// </remarks>
-	public sealed class EditorDrawer
-	{
-		/// <summary>
-		/// New drawer.
-		/// </summary>
-		/// <param name="id">Drawer ID.</param>
-		/// <param name="priority">Color priority.</param>
-		/// <param name="getColors">Method that gets colors.</param>
-		public EditorDrawer(Guid id, int priority, GetEditorColors getColors)
-		{
-			if (getColors == null) throw new ArgumentNullException("getColors");
-
-			Id = id;
-			Priority = priority;
-			GetColors = getColors;
-		}
-		/// <summary>
-		/// Drawer ID.
-		/// </summary>
-		public Guid Id { get; private set; }
-		/// <summary>
-		/// Color priority.
-		/// </summary>
-		public int Priority { get; private set; }
-		/// <summary>
-		/// Method that gets colors.
-		/// </summary>
-		public GetEditorColors GetColors { get; private set; }
-	}
-
-	/// <summary>
-	/// Method that gets colors for the specified lines and characters.
-	/// </summary>
-	/// <param name="editor">The editor.</param>
-	/// <param name="colors">Result colors.</param>
-	/// <param name="lines">Lines to get colors for.</param>
-	/// <param name="startChar">Index of the first character.</param>
-	/// <param name="endChar">Index of the character after the last.</param>
-	/// <remarks>
-	/// It is called frequently and it should work as fast as possible.
-	/// Its goal is just to fill the result color collection.
-	/// It should not change anything in the editor.
-	/// </remarks>
-	public delegate void GetEditorColors(IEditor editor, ICollection<EditorColor> colors, IList<ILine> lines, int startChar, int endChar);
 
 	/// <summary>
 	/// Editor bookmark operator.
@@ -827,39 +785,36 @@ namespace FarNet
 	/// Arguments of editor redrawing event.
 	/// </summary>
 	public sealed class EditorRedrawingEventArgs : EventArgs
+	{ }
+
+	/// <summary>
+	/// Editor change constants.
+	/// </summary>
+	public enum EditorChangeKind
 	{
-		EditorRedrawMode _mode;
-		/// <param name="mode">See <see cref="Mode"/>.</param>
-		public EditorRedrawingEventArgs(EditorRedrawMode mode)
-		{
-			_mode = mode;
-		}
-		/// <summary>
-		/// Redrawing mode. Parameter of Far EE_REDRAW event, see Far API, ProcessEditorEvent.
-		/// </summary>
-		public EditorRedrawMode Mode
-		{
-			get { return _mode; }
-		}
+		///
+		LineChanged,
+		///
+		LineAdded,
+		///
+		LineRemoved
 	}
 
 	/// <summary>
-	/// Editor redrawing modes.
+	/// Arguments of editor changed event.
 	/// </summary>
-	public enum EditorRedrawMode
+	public sealed class EditorChangedEventArgs : EventArgs
 	{
-		/// <summary>
-		/// All the screen is being redrawn.
-		/// </summary>
-		Screen,
-		/// <summary>
-		/// Drawing is caused by text changes.
-		/// </summary>
-		Change,
-		/// <summary>
-		/// The current line is being redrawn.
-		/// </summary>
-		Line
+		///
+		public EditorChangedEventArgs(EditorChangeKind kind, int line)
+		{
+			Kind = kind;
+			Line = line;
+		}
+		///
+		public EditorChangeKind Kind { get; private set; }
+		///
+		public int Line { get; private set; }
 	}
 
 	/// <summary>
