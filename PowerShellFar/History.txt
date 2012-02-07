@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.10 =
+
+Technical build for FarNet 5.0.10.
+
 = 5.0.9 =
 
 *) New FarNet drawers infrastructure and new Far events

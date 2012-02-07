@@ -12,7 +12,7 @@ namespace FarNet.Works
 	public sealed class ProxyDrawer : ProxyAction, IModuleDrawer
 	{
 		const int idMask = 0, idPriority = 1;
-		EventHandler<ModuleDrawerEventArgs> _Handler;
+		readonly EventHandler<ModuleDrawerEventArgs> _Handler;
 		string _Mask;
 		int _Priority;
 		internal ProxyDrawer(ModuleManager manager, EnumerableReader reader)
@@ -35,15 +35,14 @@ namespace FarNet.Works
 
 			Init();
 		}
-		public EventHandler<ModuleDrawerEventArgs> Handler()
+		public EventHandler<ModuleDrawerEventArgs> CreateHandler()
 		{
-			if (_Handler == null)
-			{
-				Invoking();
-				ModuleDrawer instance = (ModuleDrawer)GetInstance();
-				_Handler = instance.Invoke;
-			}
-			return _Handler;
+			if (_Handler != null)
+				return _Handler;
+			
+			Invoking();
+			ModuleDrawer instance = (ModuleDrawer)GetInstance();
+			return instance.Invoke;
 		}
 		public sealed override string ToString()
 		{

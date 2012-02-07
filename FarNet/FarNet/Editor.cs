@@ -75,7 +75,7 @@ namespace FarNet
 		/// <summary>
 		/// Called on redrawing.
 		/// </summary>
-		public abstract event EventHandler<EditorRedrawingEventArgs> Redrawing;
+		public abstract event EventHandler Redrawing;
 		/// <summary>
 		/// Called on changes.
 		/// </summary>
@@ -780,12 +780,6 @@ namespace FarNet
 		/// </summary>
 		public abstract void GoToPreviousStackBookmark();
 	}
-
-	/// <summary>
-	/// Arguments of editor redrawing event.
-	/// </summary>
-	public sealed class EditorRedrawingEventArgs : EventArgs
-	{ }
 
 	/// <summary>
 	/// Editor change constants.

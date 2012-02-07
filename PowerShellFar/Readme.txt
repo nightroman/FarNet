@@ -1,7 +1,7 @@
 
 Module   : FarNet.PowerShellFar
-Version  : 5.0.9
-Release  : 2012-02-06
+Version  : 5.0.10
+Release  : 2012-02-07
 Category : Scripting
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -30,7 +30,7 @@ http://code.google.com/p/farnet/
 
 
  - Far Manager 3.0.2442
- - Plugin FarNet 5.0.9
+ - Plugin FarNet 5.0.10
  - Windows PowerShell V2, V3
 
 

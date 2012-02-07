@@ -1264,9 +1264,14 @@ void Editor::RemoveColors(Guid owner, int startLine, int endLine)
 void Editor::AddDrawer(IModuleDrawer^ drawer)
 {
 	if (!_drawers)
-		_drawers = gcnew Dictionary<Guid, IModuleDrawer^>;
+		_drawers = gcnew Dictionary<Guid, DrawerInfo^>;
 	
-	_drawers[drawer->Id] = drawer;
+	DrawerInfo^ info = gcnew DrawerInfo;
+	info->Id = drawer->Id;
+	info->Priority = drawer->Priority;
+	info->Handler = drawer->CreateHandler();
+
+	_drawers[drawer->Id] = info;
 }
 
 void Editor::RemoveDrawer(Guid id)
@@ -1275,7 +1280,7 @@ void Editor::RemoveDrawer(Guid id)
 		RemoveColors(id, 0, Count);
 }
 
-void Editor::ProcessDrawers(EditorRedrawingEventArgs^ /*e*/)
+void Editor::InvokeDrawers()
 {
 	Point size = WindowSize;
 	TextFrame frame = Frame;
@@ -1288,12 +1293,12 @@ void Editor::ProcessDrawers(EditorRedrawingEventArgs^ /*e*/)
 	Works::LineCollection lines(this, startLine, endLine - startLine);
 	ModuleDrawerEventArgs args(%colors, %lines, frame.VisibleChar, frame.VisibleChar + size.X);
 
-	for each(IModuleDrawer^ it in _drawers->Values)
+	for each(DrawerInfo^ it in _drawers->Values)
 	{
 		RemoveColors(it->Id, startLine, endLine);
 
 		colors.Clear();
-		it->Handler()(this, %args);
+		it->Handler(this, %args);
 
 		AddColors(it->Id, it->Priority, %colors);
 	}

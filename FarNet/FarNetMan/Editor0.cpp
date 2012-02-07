@@ -42,14 +42,13 @@ Editor^ Editor0::GetCurrentEditor()
 }
 
 // For internal use.
-Editor^ Editor0::GetEditor(int id)
+int Editor0::FindEditor(int id)
 {
 	for(int i = 0; i < _editors.Count; ++i)
-	{
 		if (id == _editors[i]->Id)
-			return _editors[i];
-	}
-	throw gcnew InvalidOperationException(__FUNCTION__);
+			return i;
+
+	return -1;
 }
 
 void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting)
@@ -81,7 +80,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 	{
 	case EE_READ:
 		{
-			Log::Source->TraceInformation("EE_READ"); //?????? EditorID
+			Log::Source->TraceInformation("EE_READ"); //?????? use EditorID?
 
 			// pop the waiting or create new
 			Editor^ editor;
@@ -110,19 +109,11 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			Log::Source->TraceInformation("EE_CLOSE");
 
 			// get registered, stop, unregister
-			int id = info->EditorID;
-			Editor^ editor = nullptr;
-			for(int i = 0; i < _editors.Count; ++i)
-			{
-				if (_editors[i]->Id == id)
-				{
-					editor = _editors[i];
-					_editors.RemoveAt(i);
-					editor->Stop();
-					break;
-				}
-			}
-
+			int index = FindEditor(info->EditorID);
+			Editor^ editor = _editors[index];
+			_editors.RemoveAt(index);
+			editor->Stop();
+			
 			// end async
 			editor->EndAsync();
 
@@ -146,7 +137,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 		{
 			Log::Source->TraceInformation("EE_SAVE");
 
-			Editor^ editor = GetEditor(info->EditorID);
+			Editor^ editor = _editors[FindEditor(info->EditorID)];
 			editor->_TimeOfSave = DateTime::Now;
 
 			if (_anyEditor._Saving)
@@ -165,7 +156,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_CHANGE");
 
-			Editor^ editor = GetEditor(info->EditorID);
+			Editor^ editor = _editors[FindEditor(info->EditorID)];
 			++editor->_KeyCount;
 
 			if (_anyEditor._Changed || editor->_Changed)
@@ -183,18 +174,17 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 	case EE_REDRAW:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_REDRAW");
-			Editor^ editor = GetEditor(info->EditorID);
+			Editor^ editor = _editors[FindEditor(info->EditorID)];
 
 			if (_anyEditor._Redrawing || editor->_Redrawing || editor->_drawers)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Redrawing");
-				EditorRedrawingEventArgs ea;
 				if (_anyEditor._Redrawing)
-					_anyEditor._Redrawing(editor, %ea);
+					_anyEditor._Redrawing(editor, nullptr);
 				if (editor->_Redrawing)
-					editor->_Redrawing(editor, %ea);
+					editor->_Redrawing(editor, nullptr);
 				if (editor->_drawers)
-					editor->ProcessDrawers(%ea);
+					editor->InvokeDrawers();
 			}
 		}
 		break;
@@ -202,28 +192,21 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
 
+			int index = FindEditor(info->EditorID);
+			Editor^ editor = index < 0 ? nullptr : _editors[index];
+			
 			// make the editor first in the list
-			int id = info->EditorID;
-			Editor^ editor = nullptr;
-			for(int i = 0; i < _editors.Count; ++i)
+			if (index > 0)
 			{
-				if (_editors[i]->Id == id)
-				{
-					editor = _editors[i];
-					if (i > 0)
-					{
-						_editors.RemoveAt(i);
-						_editors.Insert(0, editor);
-					}
-					break;
-				}
+				_editors.RemoveAt(index);
+				_editors.Insert(0, editor);
 			}
 
 			//_110624_153138 rare case
 			if (!editor)
 			{
 				editor = GetCurrentEditor();
-				if (editor->Id != id)
+				if (editor->Id != info->EditorID)
 				{
 					Log::Source->TraceInformation("EE_GOTFOCUS: cannot connect editor");
 					break;
@@ -251,22 +234,14 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_KILLFOCUS");
 
-			int id = info->EditorID;
-			Editor^ editor = nullptr;
-			for(int i = 0; i < _editors.Count; ++i)
-			{
-				if (_editors[i]->Id == id)
-				{
-					editor = _editors[i];
-					break;
-				}
-			}
+			int index = FindEditor(info->EditorID);
+			Editor^ editor = index < 0 ? nullptr : _editors[index];
 
 			//_110624_153138 rare case
 			if (!editor)
 			{
 				editor = GetCurrentEditor();
-				if (editor->Id != id)
+				if (editor->Id != info->EditorID)
 				{
 					Log::Source->TraceInformation("EE_KILLFOCUS: cannot connect editor");
 					break;
