@@ -1,5 +1,12 @@
 http://code.google.com/p/farnet/
 
+= 5.0.10 =
+
+*) Editor
+- Removed EditorRedrawingEventArgs; null is now passed in the Redrawing event.
+- Fixed: drawers should be created one per editor, not session.
+- Minor tweaks related to recent editor API changes.
+
 = 5.0.9 =
 
 Use Far 3.0.2442+ (new editor drawing and change events).

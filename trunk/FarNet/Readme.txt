@@ -1,7 +1,7 @@
 
 Plugin   : FarNet
-Version  : 5.0.9
-Release  : 2012-02-06
+Version  : 5.0.10
+Release  : 2012-02-07
 Category : Development
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com

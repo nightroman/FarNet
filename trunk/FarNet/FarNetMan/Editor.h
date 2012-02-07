@@ -17,17 +17,25 @@ public: DEF_EVENT_ARGS_IMP(MouseClick, _MouseClick, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseDoubleClick, _MouseDoubleClick, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseMove, _MouseMove, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseWheel, _MouseWheel, MouseEventArgs);
-public: DEF_EVENT_ARGS_IMP(Redrawing, _Redrawing, EditorRedrawingEventArgs);
 public: DEF_EVENT_IMP(Closed, _Closed);
 public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
 public: DEF_EVENT_IMP(GotFocus, _GotFocus);
 public: DEF_EVENT_IMP(Idled, _Idled);
 public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
+public: DEF_EVENT_IMP(Redrawing, _Redrawing);
 public: DEF_EVENT_IMP(Saving, _Saving);
 public:
 	virtual property String^ WordDiv { String^ get() override; }
 	virtual String^ EditText(String^ text, String^ title) override;
+};
+
+ref class DrawerInfo sealed
+{
+public:
+	Guid Id;
+	int Priority;
+	EventHandler<ModuleDrawerEventArgs^>^ Handler;
 };
 
 ref class Editor sealed : IEditor
@@ -39,13 +47,13 @@ public: DEF_EVENT_ARGS_IMP(MouseClick, _MouseClick, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseDoubleClick, _MouseDoubleClick, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseMove, _MouseMove, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseWheel, _MouseWheel, MouseEventArgs);
-public: DEF_EVENT_ARGS_IMP(Redrawing, _Redrawing, EditorRedrawingEventArgs);
 public: DEF_EVENT_IMP(Closed, _Closed);
 public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
 public: DEF_EVENT_IMP(GotFocus, _GotFocus);
 public: DEF_EVENT_IMP(Idled, _Idled);
 public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
+public: DEF_EVENT_IMP(Redrawing, _Redrawing);
 public: DEF_EVENT_IMP(Saving, _Saving);
 public:
 	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
@@ -131,7 +139,7 @@ public:
 	virtual void UnselectText() override;
 internal:
 	Editor();
-	void ProcessDrawers(EditorRedrawingEventArgs^ e);
+	void InvokeDrawers();
 	void Sync();
 	void Start(const EditorInfo& ei, bool waiting);
 	void Stop();
@@ -164,6 +172,6 @@ internal:
 	// async stuff
 	HANDLE _hMutex;
 	StringBuilder^ _output;
-	Dictionary<Guid, IModuleDrawer^>^ _drawers;
+	Dictionary<Guid, DrawerInfo^>^ _drawers;
 };
 }

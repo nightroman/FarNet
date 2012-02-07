@@ -752,7 +752,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns the drawer handler.
 		/// </summary>
-		EventHandler<ModuleDrawerEventArgs> Handler();
+		EventHandler<ModuleDrawerEventArgs> CreateHandler();
 		/// <summary>
 		/// Gets the actual file mask.
 		/// </summary>
