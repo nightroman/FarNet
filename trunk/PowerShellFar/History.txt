@@ -1,6 +1,18 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.9 =
+
+*) New FarNet drawers infrastructure and new Far events
+- Good news: breakpoints are now updated on script changes. There are some
+cases not yet processed correctly due to the nature of Far change events.
+- Breakpoint highlighting is based on new drawers engine + fixed minor defects.
+- Removed Draw-Word-.ps1 (it is replaced by the new FarNet module Drawer).
+- Test-EditorDrawer-.ps1 -> Test-RegisterDrawer-.ps1
+
+*) Misc
+- Added yet missing switch -IsLocked to *-FarEditor cmdlets.
+
 = 5.0.8 =
 
 *) Amended drawers API

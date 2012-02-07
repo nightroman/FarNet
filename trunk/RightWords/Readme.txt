@@ -1,6 +1,6 @@
 ﻿
 Module   : FarNet.RightWords
-Release  : 2012-02-02
+Release  : 2012-02-05
 Category : Spell-checker
 Author   : Roman Kuzmin
 E-mail   : nightroman@gmail.com
@@ -9,8 +9,8 @@ Source   : http://code.google.com/p/farnet/
 
 = PREREQUISITES =
 
- * Far Manager 3.0.2428
- * Plugin FarNet 5.0.8
+ * Far Manager 3.0.2432
+ * Plugin FarNet 5.0.9
  * NHunspell: http://nhunspell.sourceforge.net
  * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
 
@@ -45,7 +45,10 @@ menu and in user dictionary file names (e.g. English -> RightWords.English.dic).
 Spell-checker and thesaurus based on NHunspell. The core Hunspell is used
 in OpenOffice and it works with dictionaries published on OpenOffice.org.
 
-The module mostly works through the plugin menus [F11]:
+In order to turn "Spelling mistakes" highlighting on and off use the menu:
+[F11] | FarNet | Drawers | Spelling mistakes
+
+For other actions use the module menu in the plugin menus [F11]:
 
 *) Correct word (editor, dialogs, command line)
 Checks spelling and shows the suggestion menu for the current word. Menu
@@ -60,10 +63,6 @@ Menu commands:
 - [Ignore] - ignores the word once;
 - [Ignore All] - ignores the word in the current session;
 - [Add to Dictionary] - adds the word to the user dictionary (see below).
-
-*) Highlighting (editor)
-Turns highlighting of misspelled word on/off. Highlighting is turned on for
-some files automatically, see the settings.
 
 *) Thesaurus
 Prompts to enter a word and shows the list of available meanings and synonyms
@@ -99,9 +98,16 @@ User dictionaries are UTF-8 text files in the module roaming directory:
 "RightWords.dic" (common) and files like "RightWords.XYZ.dic" (languages).
 
 
+= OPTIONS =
+
+[F9] | Options | Plugin configuration | FarNet | Drawers | Spelling mistakes
+* Mask - mask of files where the "Spelling mistakes" is turned on automatically.
+* Priority - drawer color priority.
+
+
 = SETTINGS =
 
-Open the module settings panel from the main .NET menu:
+Open the module settings panel:
 [F11] | FarNet | Settings | RightWords
 
 Regular expression patterns are created with IgnorePatternWhitespace option, so
@@ -150,11 +156,6 @@ Yellow, White.
 *) UserDictionaryDirectory (local)
 The custom directory of user dictionaries. Environment variables are expanded.
 The default is the module roaming directory.
-
-*) Auto highlighting file mask
-
-Highlighting is turned on automatically for files which names match the mask:
-[F9] | Options | Plugins configuration | FarNet | Editors | RightWords
 
 
 = HISTORY =
@@ -280,5 +281,12 @@ Use FarNet 5.0.7 with amended drawer API.
 2.0.5
 
 Use FarNet 5.0.8 with amended drawer API.
+
+2.1.0
+
+FarNet 5.0.9 with centralized drawer infrastructure. As a result:
+- Menu item "Highlighting" moved to the FarNet drawers menu.
+- "Auto highlighting file mask" moved to the FarNet options.
+- See RightWords.farconfig for the updated "Highlighting" macro.
 
 http://code.google.com/p/farnet/downloads/list

@@ -10,6 +10,7 @@ namespace FarNet
 {;
 ref class AnyEditor : IAnyEditor
 {
+public: DEF_EVENT_ARGS_IMP(Changed, _Changed, EditorChangedEventArgs);
 public: DEF_EVENT_ARGS_IMP(KeyDown, _KeyDown, KeyEventArgs);
 public: DEF_EVENT_ARGS_IMP(KeyUp, _KeyUp, KeyEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseClick, _MouseClick, MouseEventArgs);
@@ -31,6 +32,7 @@ public:
 
 ref class Editor sealed : IEditor
 {
+public: DEF_EVENT_ARGS_IMP(Changed, _Changed, EditorChangedEventArgs);
 public: DEF_EVENT_ARGS_IMP(KeyDown, _KeyDown, KeyEventArgs);
 public: DEF_EVENT_ARGS_IMP(KeyUp, _KeyUp, KeyEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseClick, _MouseClick, MouseEventArgs);
@@ -93,6 +95,7 @@ public:
 	virtual TextWriter^ OpenWriter() override;
 	virtual void Activate() override;
 	virtual void Add(String^ text) override;
+	virtual void AddDrawer(IModuleDrawer^ drawer) override;
 	virtual void BeginAsync() override;
 	virtual void BeginUndo() override;
 	virtual void Clear() override;
@@ -115,8 +118,8 @@ public:
 	virtual void Open(OpenMode mode) override;
 	virtual void Redo() override;
 	virtual void Redraw() override;
-	virtual void RegisterDrawer(EditorDrawer^ drawer) override;
 	virtual void RemoveAt(int index) override;
+	virtual void RemoveDrawer(Guid id) override;
 	virtual void Save() override;
 	virtual void Save(bool force) override;
 	virtual void Save(String^ fileName) override;
@@ -128,7 +131,7 @@ public:
 	virtual void UnselectText() override;
 internal:
 	Editor();
-	void Redraw(EditorRedrawingEventArgs^ e);
+	void ProcessDrawers(EditorRedrawingEventArgs^ e);
 	void Sync();
 	void Start(const EditorInfo& ei, bool waiting);
 	void Stop();
@@ -161,6 +164,6 @@ internal:
 	// async stuff
 	HANDLE _hMutex;
 	StringBuilder^ _output;
-	List<EditorDrawer^>^ _drawers;
+	Dictionary<Guid, IModuleDrawer^>^ _drawers;
 };
 }

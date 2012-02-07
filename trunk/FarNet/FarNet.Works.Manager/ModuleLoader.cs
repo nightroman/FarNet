@@ -185,6 +185,13 @@ namespace FarNet.Works
 								action = it;
 							}
 							break;
+						case ModuleItemKind.Drawer:
+							{
+								var it = new ProxyDrawer(manager, reader);
+								Host.Instance.RegisterProxyDrawer(it);
+								action = it;
+							}
+							break;
 						case ModuleItemKind.Tool:
 							{
 								var it = new ProxyTool(manager, reader);
@@ -254,13 +261,6 @@ namespace FarNet.Works
 				Host.Instance.RegisterProxyCommand(it);
 				action = it;
 			}
-			// editor
-			else if (typeof(ModuleEditor).IsAssignableFrom(type))
-			{
-				var it = new ProxyEditor(manager, type);
-				Host.Instance.RegisterProxyEditor(it);
-				action = it;
-			}
 			// tool
 			else if (typeof(ModuleTool).IsAssignableFrom(type))
 			{
@@ -268,8 +268,21 @@ namespace FarNet.Works
 				Host.Instance.RegisterProxyTool(it);
 				action = it;
 			}
-			else
-				throw new ModuleException("Unknown module class type.");
+			// editor
+			else if (typeof(ModuleEditor).IsAssignableFrom(type))
+			{
+				var it = new ProxyEditor(manager, type);
+				Host.Instance.RegisterProxyEditor(it);
+				action = it;
+			}
+			// drawer
+			else if (typeof(ModuleDrawer).IsAssignableFrom(type))
+			{
+				var it = new ProxyDrawer(manager, type);
+				Host.Instance.RegisterProxyDrawer(it);
+				action = it;
+			}
+			else throw new ModuleException("Unknown module class type.");
 
 			// set settings
 			action.LoadData((Hashtable)settings[action.Id]);

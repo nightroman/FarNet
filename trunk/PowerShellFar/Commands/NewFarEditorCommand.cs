@@ -20,6 +20,9 @@ namespace PowerShellFar.Commands
 		public int CharNumber { get; set; }
 		[Parameter]
 		public new PSObject Host { get; set; }
+		[Parameter]
+		public SwitchParameter IsLocked { get { return _IsLocked.GetValueOrDefault(); } set { _IsLocked = value; } }
+		SwitchParameter? _IsLocked;
 		internal IEditor CreateEditor()
 		{
 			IEditor editor = Far.Net.CreateEditor();
@@ -32,6 +35,8 @@ namespace PowerShellFar.Commands
 			editor.GoTo(CharNumber - 1, LineNumber - 1);
 			if (CodePage >= 0)
 				editor.CodePage = CodePage;
+			if (_IsLocked.HasValue)
+				editor.IsLocked = _IsLocked.Value;
 
 			return editor;
 		}

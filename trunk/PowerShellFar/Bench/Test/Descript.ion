@@ -7,7 +7,6 @@ Test-Descript-.ps1 Test Far decription tools.
 Test-Dialog+.ps1 Test unit for Test-Dialog-.ps1.
 Test-Dialog-.ps1 Test dialog controls.
 Test-Editor-.ps1 Test editor and related scripts.
-Test-EditorDrawer-.ps1 Test editor drawer with all console colors.
 Test-Explorer-.ps1 Test scripted explorers with panels.
 Test-Job-.ps1 Test background jobs.
 Test-Msg-.ps1 Test extreme message boxes.
@@ -30,3 +29,4 @@ Test-Watch-Output-.ps1 Test the script Watch-Output-.ps1.
 Test-Write.ps1 Test Write-* cmdlets output.
 Test-Zoo-.ps1 Creates, exports, imports and sends data to a panel.
 Test-Zoo.cs .NET types for tests.
+Test-RegisterDrawer-.ps1 Test editor drawer with all console colors.

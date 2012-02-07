@@ -10,7 +10,9 @@ using System.Text.RegularExpressions;
 namespace FarNet.RightWords
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
-	class Highlighter
+	[System.Runtime.InteropServices.Guid("bbed2ef1-97d1-4ba2-ac56-9de56bc8030c")]
+	[ModuleDrawer(Name = "Spelling mistakes", Mask = "*.hlf;*.htm;*.html;*.lng;*.restext", Priority = 1)]
+	public class Highlighter : ModuleDrawer
 	{
 		readonly MultiSpell Spell = MultiSpell.Get();
 		readonly Regex RegexSkip = Actor.GetRegexSkip();
@@ -18,19 +20,9 @@ namespace FarNet.RightWords
 		readonly HashSet<string> CommonWords = Actor.GetCommonWords();
 		readonly ConsoleColor HighlightingBackgroundColor = Settings.Default.HighlightingBackgroundColor;
 		readonly ConsoleColor HighlightingForegroundColor = Settings.Default.HighlightingForegroundColor;
-		readonly IEditor Editor;
-		public Highlighter(IEditor editor)
+		public override void Invoke(object sender, ModuleDrawerEventArgs e)
 		{
-			Editor = editor;
-			editor.RegisterDrawer(new EditorDrawer(My.Guid, 1, GetColors));
-		}
-		public bool Disabled { get; set; }
-		void GetColors(IEditor editor, ICollection<EditorColor> colors, IList<ILine> lines, int startChar, int endChar)
-		{
-			if (Disabled)
-				return;
-
-			foreach (var line in lines)
+			foreach (var line in e.Lines)
 			{
 				var text = line.Text;
 				if (text.Length == 0)
@@ -55,7 +47,7 @@ namespace FarNet.RightWords
 						continue;
 
 					// add color
-					colors.Add(new EditorColor(
+					e.Colors.Add(new EditorColor(
 						line.Index,
 						match.Index,
 						match.Index + match.Length,

@@ -18,7 +18,7 @@ array<IEditor^>^ Editor0::Editors()
 	return _editors.ToArray();
 }
 
-//! For exturnal use.
+//! For external use.
 Editor^ Editor0::GetCurrentEditor()
 {
 	// get info
@@ -39,6 +39,17 @@ Editor^ Editor0::GetCurrentEditor()
 	Editor^ editor = gcnew Editor;
 	ConnectEditor(editor, ei, false);
 	return editor;
+}
+
+// For internal use.
+Editor^ Editor0::GetEditor(int id)
+{
+	for(int i = 0; i < _editors.Count; ++i)
+	{
+		if (id == _editors[i]->Id)
+			return _editors[i];
+	}
+	throw gcnew InvalidOperationException(__FUNCTION__);
 }
 
 void Editor0::ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting)
@@ -70,7 +81,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 	{
 	case EE_READ:
 		{
-			Log::Source->TraceInformation("EE_READ");
+			Log::Source->TraceInformation("EE_READ"); //?????? EditorID
 
 			// pop the waiting or create new
 			Editor^ editor;
@@ -99,7 +110,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			Log::Source->TraceInformation("EE_CLOSE");
 
 			// get registered, stop, unregister
-			int id = *((int*)info->Param);
+			int id = info->EditorID;
 			Editor^ editor = nullptr;
 			for(int i = 0; i < _editors.Count; ++i)
 			{
@@ -135,40 +146,55 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 		{
 			Log::Source->TraceInformation("EE_SAVE");
 
-			Editor^ ed = GetCurrentEditor();
-			ed->_TimeOfSave = DateTime::Now;
+			Editor^ editor = GetEditor(info->EditorID);
+			editor->_TimeOfSave = DateTime::Now;
 
 			if (_anyEditor._Saving)
 			{
 				Log::Source->TraceInformation("Saving");
-				_anyEditor._Saving(ed, nullptr);
+				_anyEditor._Saving(editor, nullptr);
 			}
-			if (ed->_Saving)
+			if (editor->_Saving)
 			{
 				Log::Source->TraceInformation("Saving");
-				ed->_Saving(ed, nullptr);
+				editor->_Saving(editor, nullptr);
+			}
+		}
+		break;
+	case EE_CHANGE:
+		{
+			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_CHANGE");
+
+			Editor^ editor = GetEditor(info->EditorID);
+			++editor->_KeyCount;
+
+			if (_anyEditor._Changed || editor->_Changed)
+			{
+				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Changed");
+				EditorChange* ec = (EditorChange*)info->Param;
+				EditorChangedEventArgs ea((EditorChangeKind)ec->Type, ec->StringNumber);
+				if (_anyEditor._Changed)
+					_anyEditor._Changed(editor, %ea);
+				if (editor->_Changed)
+					editor->_Changed(editor, %ea);
 			}
 		}
 		break;
 	case EE_REDRAW:
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_REDRAW");
-
-			Editor^ editor = GetCurrentEditor();
-
-			if (info->Param == EEREDRAW_CHANGE)
-				++editor->_KeyCount;
+			Editor^ editor = GetEditor(info->EditorID);
 
 			if (_anyEditor._Redrawing || editor->_Redrawing || editor->_drawers)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Redrawing");
-				EditorRedrawingEventArgs ea((EditorRedrawMode)(INT_PTR)info->Param);
+				EditorRedrawingEventArgs ea;
 				if (_anyEditor._Redrawing)
 					_anyEditor._Redrawing(editor, %ea);
 				if (editor->_Redrawing)
 					editor->_Redrawing(editor, %ea);
 				if (editor->_drawers)
-					editor->Redraw(%ea);
+					editor->ProcessDrawers(%ea);
 			}
 		}
 		break;
@@ -177,7 +203,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_GOTFOCUS");
 
 			// make the editor first in the list
-			int id = *((int*)info->Param);
+			int id = info->EditorID;
 			Editor^ editor = nullptr;
 			for(int i = 0; i < _editors.Count; ++i)
 			{
@@ -225,7 +251,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 		{
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "EE_KILLFOCUS");
 
-			int id = *((int*)info->Param);
+			int id = info->EditorID;
 			Editor^ editor = nullptr;
 			for(int i = 0; i < _editors.Count; ++i)
 			{

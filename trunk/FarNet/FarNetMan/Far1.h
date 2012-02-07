@@ -46,8 +46,7 @@ public:
 	virtual array<IViewer^>^ Viewers() override;
 	virtual bool MatchPattern(String^ input, String^ pattern) override;
 	virtual CultureInfo^ GetCurrentUICulture(bool update) override;
-	virtual IModuleCommand^ GetModuleCommand(Guid id) override;
-	virtual IModuleTool^ GetModuleTool(Guid id) override;
+	virtual IModuleAction^ GetModuleAction(Guid id) override;
 	virtual int Message(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic) override;
 	virtual KeyInfo^ NameToKeyInfo(String^ key) override;
 	[MethodImpl(MethodImplOptions::NoInlining)]

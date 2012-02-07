@@ -26,6 +26,7 @@ $#Plugin menu#
 The main plugin menu shows the following menus:
 
 	~Panels menu~@MenuPanels@
+	~Drawers menu~@MenuDrawers@
 	~Editors menu~@MenuEditors@
 	~Viewers menu~@MenuViewers@
 	~Console menu~@MenuConsole@
@@ -107,6 +108,16 @@ Example mouse macros for the Common area:
  F11 $If (Menu.Select("FarNet", 2) > 0) Enter c i $End
 
 
+@MenuDrawers
+$#Drawers menu#
+~Contents~@Contents@
+
+This menu is available in editors. It shows the list of registered drawers.
+Menu items of drawers which are already added to the current editor are
+checked. Selecting an added drawer removes it from the current editor.
+Selecting a not added drawer adds it to the current editor.
+
+
 @MenuEditors
 $#Editors menu#
 ~Contents~@Contents@
@@ -133,6 +144,8 @@ This menu is used in order to configure module commands, editors, tools,
 and common module options.
 
 #Commands# : shows the ~Configure commands~@ConfigCommand@ menu.
+
+#Drawers# : shows the ~Configure drawers~@ConfigDrawer@ menu.
 
 #Editors# : shows the ~Configure editors~@ConfigEditor@ menu.
 
@@ -165,6 +178,28 @@ Opens the input box where you can change the selected prefix.
 
 In the input box you change the selected prefix. If you enter an empty string
 then the default prefix is restored.
+
+
+@ConfigDrawer
+$#Configure drawers#
+~Contents~@Contents@
+
+This menu and dialog set module drawer file masks and priorities.
+
+[#Enter#] (menu)
+
+Opens the dialog where you can change drawer settings.
+
+#Dialog#
+
+In the dialog you change the file mask, see ~File masks~@:FileMasks@, exclude
+masks are supported (i.e. <include>|<exclude>). If you enter an empty string
+then the default mask is restored. If the default is empty itself then the
+drawer is disabled by default for all files.
+
+The #Priority# field is for changing drawer color priorities. It makes sense to
+configure it if there are several drawers and some of them have to be
+prioritized with respect to the others.
 
 
 @ConfigEditor

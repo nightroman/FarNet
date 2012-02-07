@@ -355,14 +355,6 @@ namespace FarNet.RightWords
 				editor.UnselectText();
 			}
 		}
-		public static void Highlight(IEditor editor)
-		{
-			var highlighter = (Highlighter)editor.Data[My.Guid];
-			if (highlighter == null)
-				editor.Data[My.Guid] = new Highlighter(editor);
-			else
-				highlighter.Disabled = !highlighter.Disabled;
-		}
 		static string GetUserDictionaryDirectory(bool create)
 		{
 			var path = Settings.Default.UserDictionaryDirectory;

@@ -11,6 +11,7 @@ Copyright (c) 2005-2012 FarNet Team
 #include "StdAfx.h"
 #include "Far0.h"
 #include "Dialog.h"
+#include "Editor.h"
 #include "Panel0.h"
 #include "Panel2.h"
 #include "Shelve.h"
@@ -32,27 +33,26 @@ public:
 	{
 		Far0::RegisterProxyCommand(info);
 	}
-
+	virtual void RegisterProxyDrawer(IModuleDrawer^ info) override
+	{
+		Far0::RegisterProxyDrawer(info);
+	}
 	virtual void RegisterProxyEditor(IModuleEditor^ info) override
 	{
 		Far0::RegisterProxyEditor(info);
 	}
-
 	virtual void RegisterProxyTool(IModuleTool^ info) override
 	{
 		Far0::RegisterProxyTool(info);
 	}
-
 	virtual void UnregisterProxyAction(IModuleAction^ action) override
 	{
 		Far0::UnregisterProxyAction(action);
 	}
-
 	virtual void UnregisterProxyTool(IModuleTool^ tool) override
 	{
 		Far0::UnregisterProxyTool(tool);
 	}
-
 	virtual void InvalidateProxyCommand() override
 	{
 		Far0::InvalidateProxyCommand();
@@ -111,31 +111,44 @@ void Far0::Stop()
 void Far0::UnregisterProxyAction(IModuleAction^ action)
 {
 	// case: tool
-	IModuleTool^ tool = dynamic_cast<IModuleTool^>(action);
-	if (tool)
 	{
-		UnregisterProxyTool(tool);
-		return;
+		IModuleTool^ it = dynamic_cast<IModuleTool^>(action);
+		if (it)
+		{
+			UnregisterProxyTool(it);
+			return;
+		}
 	}
 
 	Log::Source->TraceInformation("Unregister {0}", action);
 
 	Works::Host::Actions->Remove(action->Id);
 
-	IModuleCommand^ command = dynamic_cast<IModuleCommand^>(action);
-	if (command)
 	{
-		_registeredCommand.Remove(command);
-		delete _prefixes;
-		_prefixes = 0;
-		return;
+		IModuleCommand^ it = dynamic_cast<IModuleCommand^>(action);
+		if (it)
+		{
+			_registeredCommand.Remove(it);
+			delete _prefixes;
+			_prefixes = 0;
+			return;
+		}
 	}
-
-	IModuleEditor^ editor = dynamic_cast<IModuleEditor^>(action);
-	if (editor)
 	{
-		_registeredEditor.Remove(editor);
-		return;
+		IModuleEditor^ it = dynamic_cast<IModuleEditor^>(action);
+		if (it)
+		{
+			_registeredEditor.Remove(it);
+			return;
+		}
+	}
+	{
+		IModuleDrawer^ it = dynamic_cast<IModuleDrawer^>(action);
+		if (it)
+		{
+			_registeredDrawer.Remove(it);
+			return;
+		}
 	}
 }
 
@@ -196,6 +209,15 @@ void Far0::RegisterProxyCommand(IModuleCommand^ info)
 	_registeredCommand.Add(info);
 	delete _prefixes;
 	_prefixes = 0;
+}
+
+void Far0::RegisterProxyDrawer(IModuleDrawer^ info)
+{
+	Log::Source->TraceInformation("Register {0}", info);
+
+	Works::Host::Actions->Add(info->Id, info);
+
+	_registeredDrawer.Add(info);
 }
 
 void Far0::RegisterProxyEditor(IModuleEditor^ info)
@@ -411,7 +433,7 @@ void Far0::AsGetPluginInfo(PluginInfo* pi)
 bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 {
 	Guid guid = FromGUID(*info->Guid);
-	IModuleTool^ tool = Far::Net->GetModuleTool(guid);
+	IModuleTool^ tool = (IModuleTool^)Far::Net->GetModuleAction(guid);
 	if (tool && (tool->Options & ModuleToolOptions::Config))
 	{
 		ModuleToolEventArgs e;
@@ -458,7 +480,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		case OPEN_RIGHTDISKMENU:
 			{
 				Log::Source->TraceInformation("OPEN_DISKMENU");
-				IModuleTool^ tool = Far::Net->GetModuleTool(FromGUID(*info->Guid));
+				IModuleTool^ tool = (IModuleTool^)Far::Net->GetModuleAction(FromGUID(*info->Guid));
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Disk;
 				e.IsLeft = info->OpenFrom == OPEN_LEFTDISKMENU;
@@ -476,7 +498,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 
 				Log::Source->TraceInformation("OPEN_PLUGINSMENU");
 
-				IModuleTool^ tool = Far::Net->GetModuleTool(guid);
+				IModuleTool^ tool = (IModuleTool^)Far::Net->GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Panels;
 				tool->Invoke(nullptr, %e);
@@ -492,7 +514,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 				}
 
 				Log::Source->TraceInformation("OPEN_EDITOR");
-				IModuleTool^ tool = Far::Net->GetModuleTool(guid);
+				IModuleTool^ tool = (IModuleTool^)Far::Net->GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Editor;
 				tool->Invoke(nullptr, %e);
@@ -512,7 +534,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 					break;
 
 				Log::Source->TraceInformation("OPEN_VIEWER");
-				IModuleTool^ tool = Far::Net->GetModuleTool(guid);
+				IModuleTool^ tool = (IModuleTool^)Far::Net->GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Viewer;
 				tool->Invoke(nullptr, %e);
@@ -529,7 +551,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 				}
 
 				Log::Source->TraceInformation("OPEN_DIALOG");
-				IModuleTool^ tool = Far::Net->GetModuleTool(guid);
+				IModuleTool^ tool = (IModuleTool^)Far::Net->GetModuleAction(guid);
 				ModuleToolEventArgs e;
 				e.From = ModuleToolOptions::Dialog;
 				tool->Invoke(nullptr, %e);
@@ -613,6 +635,7 @@ void Far0::OpenConfig() //config//
 
 	String^ format = "{0,-10} : {1,2}";
 	menu->Add(String::Format(format, Res::ModuleCommands, _registeredCommand.Count));
+	menu->Add(String::Format(format, Res::ModuleDrawers, _registeredDrawer.Count));
 	menu->Add(String::Format(format, Res::ModuleEditors, _registeredEditor.Count));
 	menu->Add(String::Format(format, Res::ModuleTools, tools.Count));
 	menu->Add("Settings")->IsSeparator = true;
@@ -628,13 +651,17 @@ void Far0::OpenConfig() //config//
 			break;
 		case 1:
 			if (_registeredEditor.Count)
-				Works::ConfigEditor::Show(%_registeredEditor, Far0::_helpTopic + "ConfigEditor");
+				Works::ConfigDrawer::Show(%_registeredDrawer, Far0::_helpTopic + "ConfigDrawer");
 			break;
 		case 2:
+			if (_registeredEditor.Count)
+				Works::ConfigEditor::Show(%_registeredEditor, Far0::_helpTopic + "ConfigEditor");
+			break;
+		case 3:
 			if (tools.Count)
 				Works::ConfigTool::Show(%tools, Far0::_helpTopic + "ConfigTool", gcnew Func<IModuleTool^, String^>(&Far0::GetMenuText));
 			break;
-		case 4: // mind separator
+		case 5: // +2, mind separator
 			Works::ConfigUICulture::Show(Works::ModuleLoader::GatherModuleManagers(), Far0::_helpTopic + "ConfigUICulture");
 			break;
 		}
@@ -662,10 +689,29 @@ bool Far0::CompareNameExclude(String^ mask, const wchar_t* name, bool skipPath)
 
 void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 {
-	if (_registeredEditor.Count == 0)
+	if (_registeredDrawer.Count == 0 && _registeredEditor.Count == 0)
 		return;
 
 	AutoEditorInfo ei;
+
+	for each(IModuleDrawer^ it in _registeredDrawer)
+	{
+		// mask?
+		if (ES(it->Mask))
+			continue;
+		if (!CompareNameExclude(it->Mask, fileName, true))
+			continue;
+
+		// catch all in order to add the others
+		try
+		{
+			((Editor^)editor)->AddDrawer(it);
+		}
+		catch(Exception^ e)
+		{
+			Far::Net->ShowError(it->Manager->ModuleName, e);
+		}
+	}
 
 	for each(IModuleEditor^ it in _registeredEditor)
 	{
@@ -673,7 +719,7 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 		if (SS(it->Mask) && !CompareNameExclude(it->Mask, fileName, true))
 			continue;
 
-		//! tradeoff: catch all in order to call the others, too
+		// catch all in order to call the others
 		try
 		{
 			it->Invoke(editor, nullptr);
@@ -796,11 +842,12 @@ String^ Far0::GetMenuText(IModuleTool^ tool)
 
 void Far0::ShowMenu(ModuleToolOptions from)
 {
-	String^ sPanels = "&Panels...";
-	String^ sEditors = "&Editors...";
-	String^ sViewers = "&Viewers...";
-	String^ sConsole = "&Console...";
-	String^ sSettings = "&Settings...";
+	String^ sPanels = "&Panels";
+	String^ sDrawers = "&Drawers";
+	String^ sEditors = "&Editors";
+	String^ sViewers = "&Viewers";
+	String^ sConsole = "&Console";
+	String^ sSettings = "&Settings";
 
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->HelpTopic = "MenuMain";
@@ -814,6 +861,8 @@ void Far0::ShowMenu(ModuleToolOptions from)
 	// Viewers
 	if (from != ModuleToolOptions::Dialog)
 	{
+		if (from == ModuleToolOptions::Editor)
+			menu->Add(sDrawers);
 		menu->Add(sEditors);
 		menu->Add(sViewers);
 	}
@@ -838,8 +887,36 @@ void Far0::ShowMenu(ModuleToolOptions from)
 		Works::EditorTools::ShowEditorsMenu();
 	else if (Object::ReferenceEquals(text, sViewers))
 		Works::EditorTools::ShowViewersMenu();
+	else if (Object::ReferenceEquals(text, sDrawers))
+		ShowDrawersMenu();
 	else
 		ShowConsoleMenu();
+}
+
+void Far0::ShowDrawersMenu()
+{
+	Editor^ editor = (Editor^)Far::Net->Editor;
+
+	IMenu^ menu = Far::Net->CreateMenu();
+	menu->Title = "Drawers";
+	menu->HelpTopic = "MenuDrawers";
+	
+	for each(IModuleDrawer^ drawer in _registeredDrawer)
+	{
+		FarItem^ item = menu->Add(drawer->Name);
+		item->Data = drawer;
+		if (editor->_drawers && editor->_drawers->ContainsKey(drawer->Id))
+			item->Checked = true;
+	}
+
+	if (!menu->Show())
+		return;
+
+	FarItem^ item = menu->Items[menu->Selected];
+	if (item->Checked)
+		editor->RemoveDrawer(((IModuleDrawer^)item->Data)->Id);
+	else
+		editor->AddDrawer((IModuleDrawer^)item->Data);
 }
 
 void Far0::ShowConsoleMenu()

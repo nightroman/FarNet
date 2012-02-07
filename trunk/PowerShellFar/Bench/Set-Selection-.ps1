@@ -10,14 +10,14 @@
 
 .Example
 	# Escape \ and " with \
-	Set-Selection- -Replace '([\\"])', '\$1'
+	Set-Selection-.ps1 -Replace '([\\"])', '\$1'
 
 	# Unescape \\ and \"
-	Set-Selection- -Replace '\\([\\"])', '$1'
+	Set-Selection-.ps1 -Replace '\\([\\"])', '$1'
 
 	# Convert selected text to lower\upper case
-	Set-Selection- -ToLower
-	Set-Selection- -ToUpper
+	Set-Selection-.ps1 -ToLower
+	Set-Selection-.ps1 -ToUpper
 #>
 
 param

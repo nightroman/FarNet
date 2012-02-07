@@ -11,7 +11,7 @@
 	- invoke this script again to unregister the tool.
 #>
 
-$tool = $Far.GetModuleTool("f2a1fc38-35d0-4546-b67c-13d8bb93fa2e")
+$tool = $Far.GetModuleAction("f2a1fc38-35d0-4546-b67c-13d8bb93fa2e")
 if ($tool) {
 	# unregister
 	$tool.Unregister()

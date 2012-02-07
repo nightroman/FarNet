@@ -34,8 +34,7 @@ namespace FarNet.Works
 		}
 		public void Invoke(object sender, ModuleCommandEventArgs e)
 		{
-			if (e == null)
-				throw new ArgumentNullException("e");
+			if (e == null) throw new ArgumentNullException("e");
 
 			Log.Source.TraceInformation("Invoking {0} Command='{1}'", this, e.Command);
 			Invoking();

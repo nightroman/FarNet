@@ -20,17 +20,7 @@ namespace FarNet.RightWords
 			menu.Add(My.DoCorrectWord).Click = delegate { Actor.CorrectWord(); };
 
 			if (e.From == ModuleToolOptions.Editor)
-			{
-				var editor = Far.Net.Editor;
-
 				menu.Add(My.DoCorrectText).Click = delegate { Actor.CorrectText(); };
-
-				var itemHighlighting = menu.Add(My.DoHighlighting);
-				itemHighlighting.Click = delegate { Actor.Highlight(editor); };
-				var highlighter = (Highlighter)editor.Data[My.Guid];
-				if (highlighter != null && !highlighter.Disabled)
-					itemHighlighting.Checked = true;
-			}
 
 			menu.Add(My.DoThesaurus).Click = delegate { Actor.ShowThesaurus(); };
 

@@ -13,7 +13,7 @@
 
 # try to find this command already registered in order to test Unregister();
 # you should not check this, say, if you register commands from the profile
-$command = $Far.GetModuleCommand("053a9a98-db98-415c-9c80-88eee2f336ae")
+$command = $Far.GetModuleAction("053a9a98-db98-415c-9c80-88eee2f336ae")
 
 # not found, register
 if (!$command) {

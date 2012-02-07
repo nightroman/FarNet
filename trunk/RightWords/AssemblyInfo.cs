@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Spell-checker and thesaurus")]
 [assembly: AssemblyProduct("FarNet.RightWords")]
 [assembly: AssemblyTitle("FarNet module RightWords")]
-[assembly: AssemblyVersion("2.0.5")]
+[assembly: AssemblyVersion("2.1.0")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
@@ -31,7 +31,6 @@ namespace FarNet.RightWords
 		static public string Thesaurus { get { return GetString("Thesaurus"); } }
 		static public string DoCorrectWord { get { return GetString("DoCorrectWord"); } }
 		static public string DoCorrectText { get { return GetString("DoCorrectText"); } }
-		static public string DoHighlighting { get { return GetString("DoHighlighting"); } }
 		static public string DoThesaurus { get { return GetString("DoThesaurus"); } }
 		static public string Common { get { return GetString("Common"); } }
 		static public string Searching { get { return GetString("Searching"); } }

@@ -1,5 +1,36 @@
 http://code.google.com/p/farnet/
 
+= 5.0.9 =
+
+Use Far 3.0.2442+ (new editor drawing and change events).
+
+Centralized editor drawer infrastructure (UI and API). ModuleDrawer is the new
+type of module item classes (which implement various module actions/intents).
+IModuleDrawer is its runtime proxy object.
+
+As a result, FarNet provides UI for managing drawers and their common settings.
+Module drawer developers should not care of:
+- How to turn a drawer on and off.
+- How to turn it on automatically for some files.
+- How to allow users to configure drawer color priorities.
+
+*) UI changes
+- Removed "..." from FarNet menu items (update your macros with Menu.Select).
+- F11 | FarNet | Drawers - show all drawers + allow turning them on and off.
+- F9 | Options | Plugin configuration | FarNet | Drawers - common configuration
+properties of drawers:
+-- Mask - file mask used to use a drawer automatically (empty = disabled)
+-- Priority - drawer color priority
+
+*) API changes
+- New types ModuleDrawer, ModuleDrawerEventArgs, IModuleDrawer,
+EditorChangeKind, EditorChangedEventArgs.
+- New members IModuleManager.RegisterDrawer, IEditor.AddDrawer/RemoveDrawer,
+IEditor.Changed.
+- Old drawer methods were removed.
+- Replaced GetModuleCommand and GetModuleTool with GetModuleAction. The new
+method gets all module actions including commands, drawers, editors, tools.
+
 = 5.0.8 =
 
 *) Editors
@@ -754,7 +785,7 @@ significant keys are excluded (navigation, Ctrl and Alt combinations, etc.)
 
 = 4.3.33 =
 
-*) Menu	Console...
+*) Menu Console...
 Commands Decrease/Increase font size: this feature works only in Windows Vista
 and above. But it should not make problems in XP.
 

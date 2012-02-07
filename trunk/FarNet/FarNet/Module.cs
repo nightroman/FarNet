@@ -5,8 +5,8 @@ Copyright (c) 2005-2012 FarNet Team
 */
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -152,7 +152,7 @@ namespace FarNet
 		/// <summary>
 		/// Registers the command handler invoked from the command line by its prefix.
 		/// </summary>
-		/// <param name="id">Unique command ID.</param>
+		/// <param name="id">Unique ID.</param>
 		/// <param name="handler">Command handler.</param>
 		/// <param name="attribute">Command attribute.</param>
 		/// <remarks>
@@ -162,9 +162,21 @@ namespace FarNet
 		/// </remarks>
 		public abstract IModuleCommand RegisterModuleCommand(Guid id, ModuleCommandAttribute attribute, EventHandler<ModuleCommandEventArgs> handler);
 		/// <summary>
+		/// Registers the editor drawer handler.
+		/// </summary>
+		/// <param name="id">Unique ID.</param>
+		/// <param name="handler">Drawer handler.</param>
+		/// <param name="attribute">Drawer attribute.</param>
+		/// <remarks>
+		/// NOTE: Consider to implement the <see cref="ModuleDrawer"/> instead.
+		/// Dynamic registration is not recommended for standard scenarios.
+		/// <include file='doc.xml' path='doc/RegisterModule/*'/>
+		/// </remarks>
+		public abstract IModuleDrawer RegisterModuleDrawer(Guid id, ModuleDrawerAttribute attribute, EventHandler<ModuleDrawerEventArgs> handler);
+		/// <summary>
 		/// Registers the tool handler invoked from one of Far menus.
 		/// </summary>
-		/// <param name="id">Unique tool ID.</param>
+		/// <param name="id">Unique ID.</param>
 		/// <param name="handler">Tool handler.</param>
 		/// <param name="attribute">Tool attribute.</param>
 		/// <remarks>
@@ -405,10 +417,55 @@ namespace FarNet
 	}
 
 	/// <summary>
-	/// Module editor action event arguments.
+	/// Module editor drawer attribute.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class ModuleDrawerAttribute : ModuleActionAttribute
+	{
+		/// <include file='doc.xml' path='doc/FileMask/*'/>
+		public string Mask { get; set; }
+		/// <summary>
+		/// Color priority.
+		/// </summary>
+		public int Priority { get; set; }
+	}
+
+	/// <summary>
+	/// Module editor event arguments.
 	/// </summary>
 	public class ModuleEditorEventArgs : EventArgs
 	{
+	}
+
+	/// <summary>
+	/// Module drawer event arguments.
+	/// </summary>
+	public class ModuleDrawerEventArgs : EventArgs
+	{
+		///
+		public ModuleDrawerEventArgs(ICollection<EditorColor> colors, IList<ILine> lines, int startChar, int endChar)
+		{
+			Colors = colors;
+			Lines = lines;
+			StartChar = startChar;
+			EndChar = endChar;
+		}
+		/// <summary>
+		/// Gets the result color collection. A drawer adds colors to it.
+		/// </summary>
+		public ICollection<EditorColor> Colors { get; private set; }
+		/// <summary>
+		/// Gets the lines to get colors for. A drawer should not change anything.
+		/// </summary>
+		public IList<ILine> Lines { get; private set; }
+		/// <summary>
+		/// Index of the first character.
+		/// </summary>
+		public int StartChar { get; private set; }
+		/// <summary>
+		/// Index of the character after the last.
+		/// </summary>
+		public int EndChar { get; private set; }
 	}
 
 	/// <summary>
@@ -440,6 +497,31 @@ namespace FarNet
 		/// It is not just an example, it can be used for real.
 		/// </example>
 		public abstract void Invoke(object sender, ModuleEditorEventArgs e);
+	}
+
+	/// <summary>
+	/// A module drawer action.
+	/// </summary>
+	/// <remarks>
+	/// This action is called on editor drawing in order to get colors for the specified lines.
+	/// <para>
+	/// The <see cref="Invoke"/> method has to be implemented.
+	/// It should work as fast as possible because it is called frequently.
+	/// Its goal is to fill the color collection, it should not change anything.
+	/// </para>
+	/// <para>
+	/// It is mandatory to use <see cref="ModuleDrawerAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>.
+	/// The optional default file mask is defined as <see cref="ModuleDrawerAttribute.Mask"/>
+	/// and the default color priority <see cref="ModuleDrawerAttribute.Priority"/>.
+	/// </para>
+	/// <include file='doc.xml' path='doc/ActionGuid/*'/>
+	/// </remarks>
+	public abstract class ModuleDrawer : ModuleAction
+	{
+		/// <summary>
+		/// Gets colors for the specified editor lines.
+		/// </summary>
+		public abstract void Invoke(object sender, ModuleDrawerEventArgs e);
 	}
 
 	/// <summary>
@@ -561,7 +643,9 @@ namespace FarNet
 		///
 		Editor,
 		///
-		Tool
+		Tool,
+		///
+		Drawer
 	}
 
 	/// <summary>
@@ -571,8 +655,7 @@ namespace FarNet
 	/// Any registered module action has its runtime representation, one of this inderface descendants.
 	/// These representation interfaces are not directly related to action classes or handlers, they only represent them.
 	/// <para>
-	/// Action representations can be requested by their IDs by
-	/// <see cref="IFar.GetModuleCommand"/> and <see cref="IFar.GetModuleTool"/>.
+	/// Action representations can be requested by their IDs by <see cref="IFar.GetModuleAction"/>.
 	/// </para>
 	/// </remarks>
 	public interface IModuleAction
@@ -610,7 +693,7 @@ namespace FarNet
 	/// </summary>
 	/// <remarks>
 	/// It represents an auto registered <see cref="ModuleCommand"/> or a command registered by <see cref="IModuleManager.RegisterModuleCommand"/>.
-	/// It can be accessed by <see cref="IFar.GetModuleCommand"/> from any module.
+	/// It can be accessed by <see cref="IFar.GetModuleAction"/> from any module.
 	/// </remarks>
 	public interface IModuleCommand : IModuleAction
 	{
@@ -659,11 +742,49 @@ namespace FarNet
 	}
 
 	/// <summary>
+	/// Module drawer runtime representation.
+	/// </summary>
+	/// <remarks>
+	/// It represents an auto registered <see cref="ModuleDrawer"/> or a drawer registered by <see cref="IModuleManager.RegisterModuleDrawer"/>.
+	/// </remarks>
+	public interface IModuleDrawer : IModuleAction
+	{
+		/// <summary>
+		/// Returns the drawer handler.
+		/// </summary>
+		EventHandler<ModuleDrawerEventArgs> Handler();
+		/// <summary>
+		/// Gets the actual file mask.
+		/// </summary>
+		string Mask { get; }
+		/// <summary>
+		/// Gets the default file mask.
+		/// </summary>
+		string DefaultMask { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		void ResetMask(string value);
+		/// <summary>
+		/// Gets the actual priority.
+		/// </summary>
+		int Priority { get; }
+		/// <summary>
+		/// Gets the default priority.
+		/// </summary>
+		int DefaultPriority { get; }
+		/// <summary>
+		/// For internal use.
+		/// </summary>
+		void ResetPriority(int value);
+	}
+
+	/// <summary>
 	/// Module tool runtime representation.
 	/// </summary>
 	/// <remarks>
 	/// It represents an auto registered <see cref="ModuleTool"/> or a tool registered by <see cref="IModuleManager.RegisterModuleTool"/>.
-	/// It can be accessed by <see cref="IFar.GetModuleTool"/> from any module.
+	/// It can be accessed by <see cref="IFar.GetModuleAction"/> from any module.
 	/// </remarks>
 	public interface IModuleTool : IModuleAction
 	{

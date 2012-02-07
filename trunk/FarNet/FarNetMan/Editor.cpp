@@ -1261,51 +1261,39 @@ void Editor::RemoveColors(Guid owner, int startLine, int endLine)
 	}
 }
 
-void Editor::RegisterDrawer(EditorDrawer^ drawer)
+void Editor::AddDrawer(IModuleDrawer^ drawer)
 {
-	if (!drawer) throw gcnew ArgumentNullException("drawer");
+	if (!_drawers)
+		_drawers = gcnew Dictionary<Guid, IModuleDrawer^>;
 	
-	if (_drawers)
-	{
-		for each(EditorDrawer^ it in _drawers)
-			if (it->Id == drawer->Id)
-				throw gcnew InvalidOperationException("Drawer is already registered.");
-	}
-	else
-	{
-		_drawers = gcnew List<EditorDrawer^>;
-	}
-	
-	_drawers->Add(drawer);
+	_drawers[drawer->Id] = drawer;
 }
 
-void Editor::Redraw(EditorRedrawingEventArgs^ e)
+void Editor::RemoveDrawer(Guid id)
+{
+	if (_drawers && _drawers->Remove(id))
+		RemoveColors(id, 0, Count);
+}
+
+void Editor::ProcessDrawers(EditorRedrawingEventArgs^ /*e*/)
 {
 	Point size = WindowSize;
 	TextFrame frame = Frame;
 	int lineCount = Count;
 
-	int startLine, endLine;
-	if (e->Mode == EditorRedrawMode::Line || e->Mode == EditorRedrawMode::Change)
-	{
-		startLine = frame.CaretLine;
-		endLine = startLine + 1;
-	}
-	else
-	{
-		startLine = frame.VisibleLine;
-		endLine = startLine + size.Y;
-	}
-	endLine = Math::Min(endLine, lineCount);
+	int startLine = frame.VisibleLine;
+	int endLine = Math::Min(startLine + size.Y, lineCount);
 
 	List<EditorColor^> colors;
 	Works::LineCollection lines(this, startLine, endLine - startLine);
-	for each(EditorDrawer^ it in _drawers)
+	ModuleDrawerEventArgs args(%colors, %lines, frame.VisibleChar, frame.VisibleChar + size.X);
+
+	for each(IModuleDrawer^ it in _drawers->Values)
 	{
 		RemoveColors(it->Id, startLine, endLine);
 
 		colors.Clear();
-		it->GetColors(this, %colors, %lines, frame.VisibleChar, frame.VisibleChar + size.X);
+		it->Handler()(this, %args);
 
 		AddColors(it->Id, it->Priority, %colors);
 	}
