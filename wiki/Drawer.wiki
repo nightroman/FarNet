@@ -1,0 +1,12 @@
+#summary Editor color drawers
+
+== Introduction ==
+
+The module is designed for color drawers in Far Manager editors.
+
+The only drawer available for now is "Current word". It highlights all
+occurrences of the current word in the editor.
+
+----
+[http://forum.farmanager.com/viewtopic.php?f=11&t=6951 News]
+[http://forum.farmanager.com/viewtopic.php?f=5&t=6952 Russian forum]
