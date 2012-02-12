@@ -9,10 +9,14 @@
 #include "plugin.hpp"
 #pragma warning(pop)
 
+// Deny .NET
 #define Console stop_Console
+
+// Deny Far
 #define ACTL_GETWINDOWINFO stop_ACTL_GETWINDOWINFO
 #define DM_ENABLEREDRAW stop_DM_ENABLEREDRAW
 #define DM_GETDLGITEM stop_DM_GETDLGITEM
+#define DM_GETTEXT use_DM_GETTEXTPTR // DM_GETTEXTPTR uses DM_GETTEXT
 #define DM_SETDLGITEM stop_DM_SETDLGITEM
 #define ECTL_GETINFO stop_ECTL_GETINFO
 #define FCTL_GETCMDLINESELECTEDTEXT stop_FCTL_GETCMDLINESELECTEDTEXT // Far bug: gets 1 char less; there is another way

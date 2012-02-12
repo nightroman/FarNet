@@ -35,10 +35,10 @@ void Far1::Connect()
 
 String^ Far1::CurrentDirectory::get()
 {
-	size_t size = Info.FSF->GetCurrentDirectory(0, 0);
-	CBox buf(size);
-	Info.FSF->GetCurrentDirectory(size, buf);
-	return gcnew String(buf);
+	CBox box;
+	while(box(Info.FSF->GetCurrentDirectory(box.Size(), box))) {}
+
+	return gcnew String(box);
 }
 
 IModuleAction^ Far1::GetModuleAction(Guid id)
@@ -342,16 +342,11 @@ void Far1::PostStep2(Action^ handler1, Action^ handler2)
 
 String^ Far1::TempName(String^ prefix)
 {
-	// reasonable buffer
 	PIN_NE(pin, prefix);
-	wchar_t buf[CBox::eBuf];
-	size_t size = Info.FSF->MkTemp(buf, countof(buf), pin);
-	if (size <= countof(buf))
-		return gcnew String(buf);
 
-	// larger buffer
-	CBox box(size);
-	Info.FSF->MkTemp(box, size, pin);
+	CBox box;
+	while(box(Info.FSF->MkTemp(box, box.Size(), pin))) {}
+	
 	return gcnew String(box);
 }
 

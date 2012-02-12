@@ -545,5 +545,9 @@ Out-String -Width $args[1]
 		{
 			InvokeCode("Remove-PSBreakpoint -Breakpoint $args[0]", breakpoint);
 		}
+		internal static void DisableBreakpoint(object breakpoint)
+		{
+			InvokeCode("Disable-PSBreakpoint -Breakpoint $args[0]", breakpoint);
+		}
 	}
 }

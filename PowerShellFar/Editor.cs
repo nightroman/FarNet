@@ -270,8 +270,8 @@ namespace PowerShellFar
 
 			foreach (var bp in bps)
 			{
-				A.SetBreakpoint(bp.Script, bp.Line + delta, bp.Action);
 				A.RemoveBreakpoint(bp);
+				A.SetBreakpoint(bp.Script, bp.Line + delta, bp.Action);
 			}
 		}
 		/// <summary>

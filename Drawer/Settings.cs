@@ -13,7 +13,6 @@ namespace FarNet.Drawer
 	[SettingsProvider(typeof(ModuleSettingsProvider))]
 	public sealed class Settings : ModuleSettings
 	{
-		public const string ModuleName = "Drawer";
 		public const string CurrentWordGuid = "a9a6f877-e049-4438-a315-d5914b200988";
 		public const string CurrentWordName = "Current word";
 		static readonly Settings _Default = new Settings();

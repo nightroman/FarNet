@@ -112,46 +112,81 @@ protected:
 	static wchar_t s_empty[1];
 };
 
-///<summary> Temp string buffer. </summary>
-template<class T>
-class TStr
+///<summary> Temp data buffer. </summary>
+class CBin
 {
 public:
-	TStr() : m_str(0)
-	{}
-	TStr(size_t len)
+	CBin()
 	{
-		if (len > eLen)
-			m_str = new T[len + 1];
+		m_size = eSize;
+		m_data = m_room;
+	}
+	CBin(size_t size)
+	{
+		if (size > eSize)
+		{
+			m_size = size;
+			m_data = new char[size];
+		}
 		else
-			m_str = m_buf;
+		{
+			m_size = eSize;
+			m_data = m_room;
+		}
 	}
-	TStr(const T* str, size_t len)
+	~CBin()
 	{
-		if (len > eLen)
-			m_str = new T[len + 1];
-		else
-			m_str = m_buf;
-		strncpy_s(m_str, len + 1, str, len);
+		if (m_data != m_room)
+			delete m_data;
 	}
-	~TStr()
+	void* Data()
 	{
-		if (m_str != m_buf)
-			delete m_str;
+		return m_data;
 	}
-	operator T*()
+	int Size() const
 	{
-		return m_str;
+		return (int)m_size;
 	}
-	// Buffer size at least > MAX_PATH.
-	enum { eLen = 511, eBuf = eLen + 1 };
+	bool operator()(size_t size)
+	{
+		if (size <= m_size)
+			return false;
+		
+		if (m_data != m_room)
+			delete m_data;
+
+		m_size = size;
+		m_data = new char[size];
+		return true;
+	}
 private:
-	T m_buf[eBuf];
-	T* m_str;
+	enum { eSize = 1024 };
+	char m_room[eSize];
+	size_t m_size;
+	char* m_data;
 };
 
-// String box
-typedef TStr<wchar_t> CBox;
+///<summary> Temp string buffer. </summary>
+class CBox : CBin
+{
+public:
+	CBox() : CBin()
+	{}
+	CBox(size_t size) : CBin(size * sizeof(wchar_t))
+	{}
+	int Size() const
+	{
+		return CBin::Size() / sizeof(wchar_t);
+	}
+	bool operator()(size_t size)
+	{
+		return CBin::operator()(size * sizeof(wchar_t));
+	}
+	operator wchar_t*()
+	{
+		return (wchar_t*)Data();
+	}
+};
 
 struct SEditorSetPosition : EditorSetPosition
 {
@@ -268,6 +303,7 @@ void ValidateRect(int& x, int& w, int min, int size);
 void SetPanelDirectory(HANDLE handle, String^ path);
 void Call_ACTL_GETWINDOWINFO(WindowInfo& wi, int index);
 void Call_ACTL_GETWINDOWINFO(WindowInfo& wi);
+void Call_DM_GETDLGITEM(CBin& bin, FarGetDialogItem& gdi, HANDLE hDlg, int item);
 
 Guid FromGUID(const GUID& guid);
 GUID ToGUID(Guid guid);

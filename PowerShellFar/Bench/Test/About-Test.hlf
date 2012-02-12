@@ -10,19 +10,19 @@ PREREQUISITES
 *) Test scripts usually call PowerShellFar scripts from Bench directory. That
 is why directory Bench has to be included into the system path before tests.
 
-*) Test scripts can call each other and database scripts need some data to work
-with. That is why before some tests you have to run Initialize-Test-.ps1. It
-adds the directory to the path and asks whether you want to create temporary
-data tables for data test scripts Test-Panel-Db*-.ps1 (if you have supported
-database providers installed).
+*) Some tests have to be initialized, for example test database scripts need
+some temporary data to work with. That is why before some tests you should run
+Initialize-Test-.ps1. It asks whether you want to create temporary data tables
+for data test scripts Test-Panel-Db*-.ps1 (if you have supported database
+providers installed).
 
 SEE ALSO
 
-	~DATABASE TESTS~@DataTest@
-	~Test-Dialog.ps1~@TestDialog@
+	~Database Tests~@DataTest@
+	~Dialog Tests~@DialogTest@
 
 @DataTest
-$#DATABASE TESTS#
+$#Database Tests#
 ~Contents~@Contents@
 
 You can run script Test-Panel-DbText-.ps1 without any preparations. See the
@@ -85,15 +85,15 @@ $#Test-Base-.ps1#
 This is just a demo help topic.
 
 
-@TestDialog
-$#Test-Dialog-.ps1#
+@DialogTest
+$#Dialog Tests#
 ~Contents~@Contents@
 
-This scripts demonstrates most of features and functionality available in
-Far.NET dialogs. It
+The script Test-Dialog-.ps1 demonstrates most of features and functionality
+available in FarNet dialogs. It
 
 	- creates a dialog and sets a help topic from a file in the same folder;
-	- adds most of available Far.NET dialog items and their different forms;
+	- adds most of available FarNet dialog items and their different forms;
 	- sets items properties before Show() and after Show() (see [Code]);
 	- adds a number of various dialog and item event handlers;
 	- sets focused and default item and starts Show().
@@ -132,13 +132,12 @@ Button [More] starts the same dialog to show it is OK to open nested dialogs.
 
 #F11 \ PowerShellFar \ Invoke input code#
 
-Starting from Far 1.71.2309 you can invoke PowerShell commands from Far dialogs,
-too. Thus, you can test a dialog and its items manually running PowerShell code
-just in place. All variables defined is the script are available for the code.
-For example you can enter and run:
+You can invoke PowerShell commands from dialogs. Thus, you can test a dialog
+and its items manually running PowerShell code right there. Variables defined
+is the script are available. For example you can enter and run:
 
 	$dialog ## gets this dialog properties;
 	$e1 ## gets the first edit control properties;
 	$e1.Text = 'New text' ## sets some new text in it;
 	$e1.Disabled = 1 ## disabled it
-	$lb.Items.RemoveAt(0) ## remove the first listbox item
+	$lb.Items.RemoveAt(0) ## remove the first list box item
