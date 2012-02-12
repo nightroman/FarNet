@@ -297,10 +297,10 @@ String^ FarButton::Text::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		int len = (int)Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, 0);
-		CBox buf(len);
-		Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, (wchar_t*)buf);
-		return gcnew String(buf);
+		size_t len = Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, 0);
+		CBox box(len + 1);
+		Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, box);
+		return gcnew String(box);
 	}
 	else
 	{
@@ -397,11 +397,10 @@ String^ FarEdit::History::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		FarDialogItem di;
-		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEMSHORT, Id, &di))
-			return nullptr;
-
-		return gcnew String(di.History);
+		CBin bin;
+		FarGetDialogItem gdi;
+		Call_DM_GETDLGITEM(bin, gdi, _dialog->_hDlg, Id);
+		return gcnew String(gdi.Item->History);
 	}
 	else
 	{
@@ -411,7 +410,7 @@ String^ FarEdit::History::get()
 
 void FarEdit::History::set(String^ value)
 {
-	//! We can use DM_SETHISTORY but do we need?
+	//! We can DM_SETHISTORY but why?
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 		throw gcnew NotImplementedException;
 
@@ -422,11 +421,10 @@ String^ FarEdit::Mask::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		FarDialogItem di;
-		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEMSHORT, Id, &di))
-			return nullptr;
-
-		return gcnew String(di.Mask);
+		CBin bin;
+		FarGetDialogItem gdi;
+		Call_DM_GETDLGITEM(bin, gdi, _dialog->_hDlg, Id);
+		return gcnew String(gdi.Item->Mask);
 	}
 	else
 	{
@@ -436,7 +434,7 @@ String^ FarEdit::Mask::get()
 
 void FarEdit::Mask::set(String^ value)
 {
-	//! Perhaps we can do this but do we need?
+	//! Perhaps we can but why?
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 		throw gcnew NotImplementedException;
 
@@ -878,13 +876,13 @@ String^ FarListBox::Bottom::get()
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETTITLES, Id, &arg))
 			return String::Empty;
 
-		CBox bufBottom(arg.BottomSize);
-		arg.Bottom = bufBottom;
+		CBox box(arg.BottomSize);
+		arg.Bottom = box;
 
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETTITLES, Id, &arg))
 			return String::Empty;
 
-		return gcnew String(bufBottom);
+		return gcnew String(box);
 	}
 	else
 	{
@@ -901,13 +899,13 @@ String^ FarListBox::Title::get()
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETTITLES, Id, &arg))
 			return String::Empty;
 
-		CBox bufTitle(arg.TitleSize);
-		arg.Title = bufTitle;
+		CBox box(arg.TitleSize);
+		arg.Title = box;
 
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETTITLES, Id, &arg))
 			return String::Empty;
 
-		return gcnew String(bufTitle);
+		return gcnew String(box);
 	}
 	else
 	{

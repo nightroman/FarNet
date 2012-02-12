@@ -512,6 +512,21 @@ void Call_ACTL_GETWINDOWINFO(WindowInfo& wi)
 		throw gcnew InvalidOperationException(__FUNCTION__ " failed, index = " + wi.Pos);
 }
 
+#undef DM_GETDLGITEM
+void Call_DM_GETDLGITEM(CBin& bin, FarGetDialogItem& gdi, HANDLE hDlg, int item)
+{
+	gdi.Size = bin.Size();
+	gdi.Item = (FarDialogItem*)bin.Data();
+	
+	gdi.Size = Info.SendDlgMessage(hDlg, DM_GETDLGITEM, item, &gdi);
+	if ((int)gdi.Size <= bin.Size())
+		return;
+
+	bin(gdi.Size);
+	gdi.Item = (FarDialogItem*)bin.Data();
+	Info.SendDlgMessage(hDlg, DM_GETDLGITEM, item, &gdi);
+}
+
 #ifdef TRACE_MEMORY
 #define TRACE_MEMORY_BREAK
 #include <Test1.cpp>

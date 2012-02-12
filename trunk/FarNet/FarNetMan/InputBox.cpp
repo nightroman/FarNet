@@ -11,8 +11,7 @@ namespace FarNet
 {;
 InputBox::InputBox()
 : _maxLength(511)
-{
-}
+{}
 
 int InputBox::MaxLength::get()
 {
@@ -53,12 +52,12 @@ bool InputBox::Show()
 	PIN_ES(pinText, Text);
 	PIN_NS(pinHelp, HelpTopic);
 	PIN_NS(pinHistory, History);
-	CBox sDest(_maxLength);
+	CBox box(MaxLength + 1);
 
-	if (!Info.InputBox(&MainGuid, &MainGuid, pinTitle, pinPrompt, pinHistory, pinText, sDest, MaxLength, pinHelp, Flags()))
+	if (!Info.InputBox(&MainGuid, &MainGuid, pinTitle, pinPrompt, pinHistory, pinText, box, box.Size(), pinHelp, Flags()))
 		return false;
 
-	Text = gcnew String(sDest);
+	Text = gcnew String(box);
 	return true;
 }
 

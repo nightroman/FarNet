@@ -14,8 +14,8 @@ namespace FarNet.Drawer
 	public class CurrentWordDrawer : ModuleDrawer
 	{
 		readonly Regex _regex = new Regex(Settings.Default.CurrentWordPattern);
-		readonly ConsoleColor foreground = Settings.Default.CurrentWordColorForeground;
-		readonly ConsoleColor background = Settings.Default.CurrentWordColorBackground;
+		readonly ConsoleColor _foreground = Settings.Default.CurrentWordColorForeground;
+		readonly ConsoleColor _background = Settings.Default.CurrentWordColorBackground;
 		public override void Invoke(object sender, ModuleDrawerEventArgs e)
 		{
 			var editor = (IEditor)sender;
@@ -36,7 +36,7 @@ namespace FarNet.Drawer
 
 				for (match = _regex.Match(text); match.Success; match = match.NextMatch())
 					if (match.Value.Equals(word, StringComparison.OrdinalIgnoreCase))
-						e.Colors.Add(new EditorColor(line.Index, match.Index, match.Index + match.Length, foreground, background));
+						e.Colors.Add(new EditorColor(line.Index, match.Index, match.Index + match.Length, _foreground, _background));
 			}
 		}
 	}

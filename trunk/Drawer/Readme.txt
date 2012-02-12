@@ -9,15 +9,18 @@ Source   : http://code.google.com/p/farnet/
 
 = PREREQUISITES =
 
- * Far Manager 3.0.2428
+ * Far Manager 3.0.2442
  * Plugin FarNet 5.0.9
 
 
 = DESCRIPTION =
 
-The module is designed for editor drawers. The only drawer is "Current word".
-It highlights all occurrences of the current word in the editor. In order to
-turn it on and off use the menu:
+The module provides editor color drawers.
+
+The only available drawer is "Current word". It highlights occurrences of the
+current word in the editor.
+
+In order to turn it on and off use the menu:
 [F11] | FarNet | Drawers | Current word
 
 

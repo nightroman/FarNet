@@ -120,7 +120,7 @@ namespace PowerShellFar.UI
 							return;
 						case 1:
 							if (bpFound.Enabled)
-								A.InvokeCode("Disable-PSBreakpoint -Breakpoint $args[0]", bpFound);
+								A.DisableBreakpoint(bpFound);
 							else
 								A.InvokeCode("Enable-PSBreakpoint -Breakpoint $args[0]", bpFound);
 							return;
@@ -140,12 +140,12 @@ namespace PowerShellFar.UI
 			if (!ui.Show())
 				return;
 
-			// set new
-			A.SetBreakpoint(ui.Script, int.Parse(ui.Matter), ui.Action);
-
-			// remove the old
+			// remove old
 			if (bpFound != null)
 				A.RemoveBreakpoint(bpFound);
+
+			// set new
+			A.SetBreakpoint(ui.Script, int.Parse(ui.Matter), ui.Action);
 		}
 		void OnCommandBreakpoint(object sender, EventArgs e)
 		{
@@ -208,7 +208,7 @@ namespace PowerShellFar.UI
 		void OnDisableAll(object sender, MenuEventArgs e)
 		{
 			if (_breakpoints.Count > 0)
-				A.InvokeCode("Disable-PSBreakpoint -Breakpoint $args[0]", _breakpoints);
+				A.DisableBreakpoint(_breakpoints);
 			else
 				e.Ignore = true;
 		}
@@ -222,7 +222,7 @@ namespace PowerShellFar.UI
 			}
 
 			if (bp.Enabled)
-				A.InvokeCode("Disable-PSBreakpoint -Breakpoint $args[0]", bp);
+				A.DisableBreakpoint(bp);
 			else
 				A.InvokeCode("Enable-PSBreakpoint -Breakpoint $args[0]", bp);
 		}

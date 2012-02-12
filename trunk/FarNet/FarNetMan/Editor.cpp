@@ -16,10 +16,10 @@ namespace FarNet
 {;
 String^ AnyEditor::WordDiv::get()
 {
-	int size = (int)Info.AdvControl(&MainGuid, ACTL_GETSYSWORDDIV, 0, 0);
-	CBox wd(size);
-	Info.AdvControl(&MainGuid, ACTL_GETSYSWORDDIV, 0, wd);
-	return gcnew String(wd);
+	CBox box;
+	while(box(Info.AdvControl(&MainGuid, ACTL_GETSYSWORDDIV, box.Size(), box))) {}
+
+	return gcnew String(box);
 }
 
 String^ AnyEditor::EditText(String^ text, String^ title)
@@ -792,11 +792,11 @@ String^ Editor::WordDiv::get()
 	esp.wszParam = 0;
 	esp.Size = EditorControl_ECTL_SETPARAM(esp);
 
-	CBox buf(esp.Size);
-	esp.wszParam = buf;
+	CBox box(esp.Size);
+	esp.wszParam = box;
 	EditorControl_ECTL_SETPARAM(esp);
 
-	return gcnew String(buf);
+	return gcnew String(box);
 }
 
 void Editor::WordDiv::set(String^ value)

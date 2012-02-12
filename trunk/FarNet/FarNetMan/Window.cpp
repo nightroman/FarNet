@@ -23,12 +23,12 @@ String^ Window::GetNameAt(int index)
 	WindowInfo wi;
 	Call_ACTL_GETWINDOWINFO(wi, index);
 
-	CBox text(wi.NameSize);
-	wi.Name = text;
+	CBox box(wi.NameSize);
+	wi.Name = box;
 
 	Call_ACTL_GETWINDOWINFO(wi);
 
-	return gcnew String(text);
+	return gcnew String(box);
 }
 
 int Window::Count::get()

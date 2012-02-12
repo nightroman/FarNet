@@ -411,11 +411,8 @@ namespace FarNet
 			return TempFolder(null);
 		}
 		/// <summary>
-		/// Gets the current dialog operator. Use it sparingly.
+		/// Gets the current dialog or null if the current window is not dialog.
 		/// </summary>
-		/// <remarks>
-		/// STOP: Be sure that a dialog exists otherwise effects are not predictable.
-		/// </remarks>
 		public abstract IDialog Dialog { get; }
 		/// <summary>
 		/// Gets the current editor or dialog edit box line or the command line.

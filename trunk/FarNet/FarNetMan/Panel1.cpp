@@ -135,12 +135,15 @@ void Panel1::ViewMode::set(PanelViewMode value)
 
 String^ Panel1::CurrentDirectory::get()
 {
-	size_t size = Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, 0, nullptr);
-	CBox buf(size);
-	
-	FarPanelDirectory* arg = (FarPanelDirectory*)(void*)buf; arg->StructSize = sizeof(FarPanelDirectory);
-	
-	Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, (int)size, arg);
+	CBin bin;
+	FarPanelDirectory* arg = (FarPanelDirectory*)bin.Data();
+	arg->StructSize = sizeof(FarPanelDirectory);
+	while(bin(Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, bin.Size(), arg)))
+	{
+		arg = (FarPanelDirectory*)bin.Data();
+		arg->StructSize = sizeof(FarPanelDirectory);
+	}
+
 	return gcnew String(arg->Name);
 }
 
@@ -598,19 +601,17 @@ void Panel1::SortMode::set(PanelSortMode value)
 
 PanelPlan^ Panel1::ViewPlan::get()
 {
+	CBox box;
+	
 	String^ sColumnTypes;
 	{
-		size_t size = ::Info.PanelControl(Handle, FCTL_GETCOLUMNTYPES, 0, nullptr);
-		CBox buf(size);
-		::Info.PanelControl(Handle, FCTL_GETCOLUMNTYPES, (int)size, (wchar_t*)buf);
-		sColumnTypes = gcnew String(buf);
+		while(box(Info.PanelControl(Handle, FCTL_GETCOLUMNTYPES, box.Size(), box))) {}
+		sColumnTypes = gcnew String(box);
 	}
 	String^ sColumnWidths;
 	{
-		size_t size = ::Info.PanelControl(Handle, FCTL_GETCOLUMNWIDTHS, 0, nullptr);
-		CBox buf(size);
-		::Info.PanelControl(Handle, FCTL_GETCOLUMNWIDTHS, (int)size, (wchar_t*)buf);
-		sColumnWidths = gcnew String(buf);
+		while(box(Info.PanelControl(Handle, FCTL_GETCOLUMNWIDTHS, box.Size(), box))) {}
+		sColumnWidths = gcnew String(box);
 	}
 
 	array<String^>^ types = sColumnTypes->Split(',');

@@ -22,10 +22,10 @@ int CommandLine::Length::get()
 
 String^ CommandLine::Text::get()
 {
-	int size = (int)Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
-	CBox buf(size);
-	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, size, buf);
-	return gcnew String(buf);
+	CBox box;
+	while(box(Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, box.Size(), box))) {}
+	
+	return gcnew String(box);
 }
 
 void CommandLine::Text::set(String^ value)
@@ -108,10 +108,10 @@ String^ CommandLine::SelectedText::get()
 	if (cls.SelStart < 0)
 		return nullptr;
 
-	int size = (int)Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, 0, 0);
-	CBox buf(size);
-	Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, size, (wchar_t*)buf);
-	return gcnew String(buf, cls.SelStart, cls.SelEnd - cls.SelStart);
+	CBox box;
+	while(box(Info.PanelControl(INVALID_HANDLE_VALUE, FCTL_GETCMDLINE, box.Size(), box))) {}
+	
+	return gcnew String(box, cls.SelStart, cls.SelEnd - cls.SelStart);
 }
 
 void CommandLine::SelectedText::set(String^ value)
