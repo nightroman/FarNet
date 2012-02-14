@@ -89,7 +89,7 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				A.Psf.Act(e.Command, new ConsoleOutputWriter(e.Command), e.MacroArea == MacroArea.None);
+				A.Psf.Act(e.Command, new ConsoleOutputWriter(e.Command), !e.IsMacro);
 			}
 			finally
 			{
@@ -103,7 +103,7 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				A.Psf.Act(e.Command, null, e.MacroArea == MacroArea.None);
+				A.Psf.Act(e.Command, null, !e.IsMacro);
 			}
 			finally
 			{

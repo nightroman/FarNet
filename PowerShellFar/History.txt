@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/
 (+ FarNet and API documentation)
 
+= 5.0.12 =
+
+* Amended source info format in stepper error messages.
+
 = 5.0.11 =
 
 Tweaks in PowerShell breakpoint related code.
