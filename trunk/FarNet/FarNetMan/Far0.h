@@ -25,7 +25,7 @@ public:
 	static void Stop();
 	static void UnregisterProxyAction(IModuleAction^ action);
 public:
-	static bool InvokeCommand(const wchar_t* command, MacroArea area);
+	static bool InvokeCommand(const wchar_t* command, bool isMacro);
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static void ChangeFontSize(bool increase);
 	static void PostJob(Action^ handler);

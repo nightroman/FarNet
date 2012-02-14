@@ -357,14 +357,19 @@ namespace FarNet
 	/// </summary>
 	public class ModuleCommandEventArgs : EventArgs
 	{
+		///
+		public ModuleCommandEventArgs(string command)
+		{
+			Command = command;
+		}
 		/// <summary>
-		/// The command text to be processed by the module.
+		/// Gets the command text.
 		/// </summary>
-		public string Command { get; set; }
+		public string Command { get; private set; }
 		/// <summary>
-		/// The macro area where the command is called from by <c>CallPlugin()</c> (see FarNet Readme.txt)
+		/// Tells that command is called by <c>CallPlugin()</c> (see FarNet Readme.txt)
 		/// </summary>
-		public MacroArea MacroArea { get; set; }
+		public bool IsMacro { get; set; }
 		/// <summary>
 		/// Tells to ignore the call and allows alternative actions.
 		/// </summary>

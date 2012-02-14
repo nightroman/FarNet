@@ -441,7 +441,7 @@ namespace PowerShellFar
 		static void Throw(ScriptBlock script, string message, Exception innerException)
 		{
 			throw new ModuleException(string.Format(null,
-				"{0}\r\nFile: {1}\r\nLine: {2}\r\nCode: {{{3}}}",
+				"{0}\r\nAt {1}:{2}\r\nCode: {{{3}}}",
 				message,
 				script.File,
 				script.StartPosition.StartLine,

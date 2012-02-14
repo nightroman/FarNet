@@ -456,24 +456,21 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 	{
 		switch(info->OpenFrom)
 		{
-		default:
+		case OPEN_FROMMACRO:
 			{
-				// _110118_073431
-				if ((info->OpenFrom & (OPEN_FROMMACRO | OPEN_FROMMACROSTRING)) == (OPEN_FROMMACRO | OPEN_FROMMACROSTRING))
+				Log::Source->TraceInformation("OPEN_FROMMACRO");
+				OpenMacroInfo* mi = (OpenMacroInfo*)info->Data;
+				if (FMVT_STRING == mi->Value.Type)
 				{
-					Log::Source->TraceInformation("OPEN_FROMMACRO");
-					if (!InvokeCommand((const wchar_t*)info->Data, (MacroArea)(1 + (info->OpenFrom & OPEN_FROM_MASK)))) //_100201_110148
+					if (!InvokeCommand(mi->Value.String, true))
 						return 0;
 				}
 			}
 			break;
-		case OPEN_ANALYSE:
-			info = info;
-			break;
 		case OPEN_COMMANDLINE:
 			{
 				Log::Source->TraceInformation("OPEN_COMMANDLINE");
-				InvokeCommand((const wchar_t*)info->Data, MacroArea::None);
+				InvokeCommand((const wchar_t*)info->Data, false);
 			}
 			break;
 		case OPEN_LEFTDISKMENU:
@@ -994,7 +991,7 @@ public:
 	}
 };
 
-bool Far0::InvokeCommand(const wchar_t* command, MacroArea area)
+bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 {
 	// asynchronous command
 	bool isAsync = command[0] == ':';
@@ -1018,9 +1015,8 @@ bool Far0::InvokeCommand(const wchar_t* command, MacroArea area)
 		if (!prefix->Equals(it->Prefix, StringComparison::OrdinalIgnoreCase))
 			continue;
 
-		ModuleCommandEventArgs^ e = gcnew ModuleCommandEventArgs();
-		e->Command = gcnew String(colon + 1);
-		e->MacroArea = area;
+		ModuleCommandEventArgs^ e = gcnew ModuleCommandEventArgs(gcnew String(colon + 1));
+		e->IsMacro = isMacro;
 
 		// invoke later
 		if (isAsync)
