@@ -1,8 +1,12 @@
 http://code.google.com/p/farnet/
 
+= 5.0.13 =
+
+Far 3.0.2460 (API changes)
+
 = 5.0.12 =
 
-Requires Far 3.0.2458 (API changes)
+Far 3.0.2458 (API changes)
 
 * ModuleCommandEventArgs
 - Replaced MacroArea with IsMacro. For MacroArea use IFar.MacroArea.

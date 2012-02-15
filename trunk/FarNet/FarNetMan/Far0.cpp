@@ -446,12 +446,12 @@ bool Far0::AsConfigure(const ConfigureInfo* info) //config//
 	return true;
 }
 
+// It may create a panel waiting for opening.
 HANDLE Far0::AsOpen(const OpenInfo* info)
 {
 	Panel0::BeginOpenMode();
 	ValueUserScreen userscreen; //_100514_000000
 
-	// call a plugin; it may create a panel waiting for opening
 	try
 	{
 		switch(info->OpenFrom)
@@ -460,9 +460,9 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 			{
 				Log::Source->TraceInformation("OPEN_FROMMACRO");
 				OpenMacroInfo* mi = (OpenMacroInfo*)info->Data;
-				if (FMVT_STRING == mi->Value.Type)
+				if (mi->Count == 1 && mi->Values[0].Type == FMVT_STRING)
 				{
-					if (!InvokeCommand(mi->Value.String, true))
+					if (!InvokeCommand(mi->Values[0].String, true))
 						return 0;
 				}
 			}
