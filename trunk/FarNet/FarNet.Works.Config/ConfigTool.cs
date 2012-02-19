@@ -6,6 +6,7 @@ Copyright (c) 2005-2012 FarNet Team
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FarNet.Forms;
 
 namespace FarNet.Works
@@ -17,7 +18,7 @@ namespace FarNet.Works
 			if (getMenuText == null)
 				throw new ArgumentNullException("getMenuText");
 
-			var sorted = new List<IModuleTool>(toolsIn);
+			var sorted = toolsIn.OrderBy(getMenuText, StringComparer.OrdinalIgnoreCase).ToList();
 
 			IMenu menu = Far.Net.CreateMenu();
 			menu.HelpTopic = helpTopic;
@@ -29,23 +30,17 @@ namespace FarNet.Works
 				// format
 				int widthName = 9; // Name
 				int widthAttr = 7; // Options
-				foreach (IModuleTool it in sorted)
+				if (sorted.Count > 0)
 				{
-					string menuText = getMenuText(it);
-					if (widthName < menuText.Length)
-						widthName = menuText.Length;
-					if (widthAttr < it.Options.ToString().Length)
-						widthAttr = it.Options.ToString().Length;
+					widthName = Math.Max(widthName, sorted.Max(x => getMenuText(x).Length));
+					widthAttr = Math.Max(widthAttr, sorted.Max(x => x.Options.ToString().Length));
 				}
 				widthName += 3;
 				string format = "{0,-" + widthName + "} : {1,-" + widthAttr + "} : {2}";
 
-				// reset
+				// refill
 				menu.Items.Clear();
-				sorted.Sort(new ModuleToolComparer(getMenuText));
-
-				// fill
-				menu.Add(string.Format(null, format, "Title& ", "Options", "Address")).Disabled = true;
+				menu.Add(string.Format(null, format, "Title", "Options", "Address")).Disabled = true;
 				foreach (IModuleTool it in sorted)
 				{
 					// 1) restore the current item, its index vary due to sorting with new hotkeys
@@ -102,7 +97,6 @@ namespace FarNet.Works
 				tool.Manager.SaveSettings();
 			}
 		}
-
 		static ICheckBox AddOption(IDialog dialog, string text, ModuleToolOptions option, ModuleToolOptions defaultOptions, ModuleToolOptions currentOptions)
 		{
 			ICheckBox result = dialog.AddCheckBox(5, -1, text);
@@ -112,21 +106,5 @@ namespace FarNet.Works
 				result.Selected = 1;
 			return result;
 		}
-
-		class ModuleToolComparer : IComparer<IModuleTool>
-		{
-			Func<IModuleTool, string> _getMenuText;
-
-			public ModuleToolComparer(Func<IModuleTool, string> getMenuText)
-			{
-				_getMenuText = getMenuText;
-			}
-
-			public int Compare(IModuleTool x, IModuleTool y)
-			{
-				return string.Compare(_getMenuText(x), _getMenuText(y), true, Far.Net.GetCurrentUICulture(false));
-			}
-		}
-
 	}
 }

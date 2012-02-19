@@ -22,17 +22,11 @@ $Far.AnyEditor.add_GotFocus({&{
 
 ### Key down handler
 $Far.AnyEditor.add_KeyDown({&{
-	$e = $_
-	if ($e.Key.ControlKeyState -band [FarNet.ControlKeyStates]::EnhancedKey) {
-		# navigation keys (not used now)
-	}
-	else {
-		### F1
-		if ($_.Key.Is([FarNet.KeyCode]::F1)) {
-			if ($this.FileName -like '*.hlf') {
-				$e.Ignore = $true
-				Show-Hlf-
-			}
+	### F1
+	if ($_.Key.Is([FarNet.KeyCode]::F1)) {
+		if ($this.FileName -like '*.hlf') {
+			$_.Ignore = $true
+			Show-Hlf-.ps1
 		}
 	}
 }})
