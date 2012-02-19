@@ -647,7 +647,7 @@ void Far0::OpenConfig() //config//
 				Works::ConfigCommand::Show(%_registeredCommand, Far0::_helpTopic + "ConfigCommand");
 			break;
 		case 1:
-			if (_registeredEditor.Count)
+			if (_registeredDrawer.Count)
 				Works::ConfigDrawer::Show(%_registeredDrawer, Far0::_helpTopic + "ConfigDrawer");
 			break;
 		case 2:
