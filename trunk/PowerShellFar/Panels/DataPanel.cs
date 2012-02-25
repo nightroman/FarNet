@@ -366,7 +366,7 @@ namespace PowerShellFar
 
 			var Files = Explorer.Cache;
 
-			if (args.UI && 0 != (Far.Net.Confirmations & FarConfirmations.Delete))
+			if (args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete"))
 			{
 				if (0 != Far.Net.Message("Delete selected record(s)?", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }))
 					return;

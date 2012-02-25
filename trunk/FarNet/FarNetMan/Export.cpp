@@ -25,7 +25,7 @@ DEFINE_GUID(FarGuid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {
-	info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2460, VS_RELEASE);
+	info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2479, VS_RELEASE);
 	info->Version = MAKEFARVERSION(5, 0, 0, 0, VS_RELEASE);
 	info->Guid = MainGuid;
 	info->Title = L"FarNet";

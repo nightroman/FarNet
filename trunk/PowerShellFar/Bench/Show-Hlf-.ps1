@@ -11,6 +11,12 @@
 	test IFar.ShowHelp(). Then, as far as it is created, why not to use it?
 	Besides, this way is perhaps more flexible.
 
+.Parameter FileName
+		Help file path; if none then a file is taken from the editor.
+
+.Parameter Topic
+		Help topic in a file.
+
 .Example
 	# Show Far help
 	Show-Hlf- "$env:FARHOME\FarEng.hlf"
@@ -25,15 +31,9 @@
 
 param
 (
-	[string]
-	# .hlf file path; if none then a file is taken from the editor.
-	$FileName
-	,
-	[string]
-	# Help topic in a file.
-	$Topic
+	[Parameter()][string]$FileName,
+	[string]$Topic
 )
-if ($args) { throw "Unknown parameters: $args" }
 
 # open help by path and topic
 if ($FileName) {
@@ -53,9 +53,8 @@ $editor.Save()
 
 # open a file from editor with the current topic
 for($e = $editor.Caret.Y; $e -ge 0; --$e) {
-	$text = $editor[$e].Text
-	if ($text.StartsWith('@')) {
-		$Topic = $text.Substring(1)
+	if ($editor[$e].Text -match '^@(\S+)') {
+		$Topic = $matches[1]
 		break
 	}
 }

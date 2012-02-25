@@ -5,11 +5,11 @@ Copyright (c) 2005-2012 FarNet Team
 */
 
 #pragma once
+#include "Utils.h"
 
 class Settings
 {
 	HANDLE _handle;
-
 public:
 	Settings(const GUID& guid)
 	{
@@ -21,27 +21,30 @@ public:
 		
 		_handle = settings.Handle;
 	}
-
 	~Settings()
 	{
 		Info.SettingsControl(_handle, SCTL_FREE, 0, 0);
 	}
-
 	HANDLE Handle() const
 	{
 		return _handle;
 	}
-
 	int OpenSubKey(int root, const wchar_t* name)
 	{
 		FarSettingsValue value = {root, name};
 		return (int)Info.SettingsControl(_handle, SCTL_OPENSUBKEY, 0, &value);
 	}
-
 	void Enum(int root, FarSettingsEnum& arg)
 	{
 		arg.Root = root;
 		if (!Info.SettingsControl(_handle, SCTL_ENUM, 0, &arg))
 			throw gcnew InvalidOperationException(__FUNCTION__);
+	}
+	bool Get(int root, String^ name, FarSettingsItem& arg)
+	{
+		PIN_NE(pin, name);
+		arg.Root = root;
+		arg.Name = pin;
+		return Info.SettingsControl(_handle, SCTL_GET, 0, &arg) != 0;
 	}
 };

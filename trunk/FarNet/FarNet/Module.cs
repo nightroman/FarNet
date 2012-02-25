@@ -367,7 +367,7 @@ namespace FarNet
 		/// </summary>
 		public string Command { get; private set; }
 		/// <summary>
-		/// Tells that command is called by <c>CallPlugin()</c> (see FarNet Readme.txt)
+		/// Tells that command is called by <c>CallPlugin()</c>.
 		/// </summary>
 		public bool IsMacro { get; set; }
 		/// <summary>

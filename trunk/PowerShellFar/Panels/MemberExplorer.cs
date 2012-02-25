@@ -220,7 +220,7 @@ namespace PowerShellFar
 			}
 
 			// ask
-			if (args.UI && (Far.Net.Confirmations & FarConfirmations.Delete) != 0)
+			if (args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete"))
 			{
 				if (Far.Net.Message("Delete selected members", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
 				{

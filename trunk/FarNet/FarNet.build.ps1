@@ -26,7 +26,7 @@ $script:Builds = @(
 
 function Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
-	Remove-Item FarNet.sdf -ErrorAction 0
+	Remove-Item -ErrorAction 0 FarNet.sdf, About-FarNet.htm
 }
 
 task Clean {
@@ -47,7 +47,12 @@ task Uninstall {
 	Remove-Item $FarHome\Far.exe.config -ErrorAction 0
 }
 
-task Zip {
+task Help {
+	exec { MarkdownToHtml "From=About-FarNet.md" "To=About-FarNet.htm" }
+	exec { HtmlToFarHelp "From=About-FarNet.htm" "To=$FarHome\Plugins\FarNet\FarNetMan.hlf" }
+}
+
+task Zip Help, {
 	. ..\Get-Version.ps1
 
 	# Build x64
@@ -58,7 +63,7 @@ task Zip {
 	$null = mkdir z\FarNet, z\Plugins\FarNet, z\Plugins.x64\FarNet
 
 	# Root files
-	Copy-Item $FarHome\Far.exe.config, Readme.txt, Install.txt z
+	Copy-Item $FarHome\Far.exe.config, About-FarNet.htm, Install.txt z
 
 	# FarNet files
 	Copy-Item $FarHome\FarNet\FarNet.* z\FarNet

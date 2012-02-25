@@ -14,14 +14,6 @@ Copyright (c) 2005-2012 FarNet Team
 
 namespace FarNet
 {;
-String^ AnyEditor::WordDiv::get()
-{
-	CBox box;
-	while(box(Info.AdvControl(&MainGuid, ACTL_GETSYSWORDDIV, box.Size(), box))) {}
-
-	return gcnew String(box);
-}
-
 String^ AnyEditor::EditText(String^ text, String^ title)
 {
 	return Works::EditorTools::EditText(text, title);

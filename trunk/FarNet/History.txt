@@ -1,4 +1,21 @@
-http://code.google.com/p/farnet/
+http://code.google.com/p/farnet/downloads/list
+
+= 5.0.15 =
+
+Far 3.0.2479 (settings API)
+
+* About
+- Replaced "Readme.txt" with "About-FarNet.htm" which is generated from the
+same source as "FarNetMan.hlf".
+
+* Far settings
+- Added IFar.GetSetting()
+- Removed IFar.Confirmations, use GetSetting().
+- Removed IAnyEditor.WordDiv, use GetSetting().
+
+* UI
+- Removed "the" from the Panels menu items. New names: "Push/Shelve panel",
+"Close panel". Macros with old names should be updated.
 
 = 5.0.14 =
 

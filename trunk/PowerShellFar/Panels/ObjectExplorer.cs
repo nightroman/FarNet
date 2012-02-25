@@ -49,7 +49,7 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			if (args.UI && (Far.Net.Confirmations & FarConfirmations.Delete) != 0)
+			if (args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete"))
 			{
 				if (Far.Net.Message("Remove object(s) from the panel?", Res.Remove, MessageOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
 				{
