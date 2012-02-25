@@ -11,7 +11,7 @@ param
 	$Platform = 'Win32'
 )
 
-$CopyFile = 'FarNetMan.hlf', "$Configuration\$Platform\FarNetMan.dll"
+$CopyFile = "$Configuration\$Platform\FarNetMan.dll"
 
 task Clean {
 	Remove-Item Debug, Release -Force -Recurse -ErrorAction 0

@@ -1,5 +1,6 @@
 ﻿Add-Path.ps1 Adds a directory path to the current process path.
 Clear-Session.ps1 Clears PowerShell session resources.
+Complete-Word-.ps1 Completes the current word in editors.
 Connect-MSAccess-.ps1 Connects .mdb database and optionally shows tables in a panel.
 Connect-SqlCompact-.ps1 Connects .sdf database and optionally shows tables in a panel.
 Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a panel.
@@ -45,8 +46,8 @@ Show-Hlf-.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
 Show-KeyMap.ps1 Shows Far hotkeys and macros by areas (HTML page).
 Show-KeyName-.ps1 Shows internal names of pressed keys.
+Show-Markdown-.ps1 Shows markdown as HTML or Far help file.
 Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project file.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.
-Complete-Word-.ps1 Completes the current word in editors.

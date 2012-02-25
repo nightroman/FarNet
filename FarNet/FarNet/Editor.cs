@@ -89,7 +89,7 @@ namespace FarNet
 	/// It is exposed as <see cref="IFar.AnyEditor"/>.
 	/// <para>
 	/// It is used to subscribe to events of editors that are not yet opened.
-	/// It also exposes global settings and common editor tools.
+	/// It also exposes common editor tools.
 	/// </para>
 	/// </remarks>
 	public abstract class IAnyEditor : IEditorBase
@@ -98,10 +98,6 @@ namespace FarNet
 		/// Opens a modal temporary editor to edit the given text.
 		/// </summary>
 		public abstract string EditText(string text, string title);
-		/// <summary>
-		/// Gets editor word delimiters global option.
-		/// </summary>
-		public abstract string WordDiv { get; } //_100324_160008 Name 'WordDiv' is standard, it is used by Far and Colorer.
 	}
 
 	/// <summary>

@@ -294,7 +294,7 @@ Reason (see also $Error):
 				Entry.Unregister();
 				throw new ModuleException(@"
 The engine is not initialized due to fatal reasons and will be unloaded.
-See PROBLEMS AND SOLUTIONS in the Readme.txt for known issues.
+For some known issues read 'Problems and solutions' in About-FarNet.htm.
 ", _errorFatal);
 			}
 

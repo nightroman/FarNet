@@ -66,11 +66,11 @@ namespace FarNet.Works
 			panel.Redraw();
 		}
 		const string
-			sPushShelveThePanel = "Push/Shelve the panel",
+			sPushShelveThePanel = "Push/Shelve panel",
 			sSwitchFullScreen = "Switch full screen",
 			sResizeColum1 = "Decrease left column",
 			sResizeColum2 = "Increase left column",
-			sClose = "Close the panel";
+			sClose = "Close panel";
 		public static void ShowPanelsMenu()
 		{
 			var menu = Far.Net.CreateMenu();

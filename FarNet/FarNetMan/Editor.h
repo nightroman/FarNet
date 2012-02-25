@@ -26,7 +26,6 @@ public: DEF_EVENT_IMP(Opened, _Opened);
 public: DEF_EVENT_IMP(Redrawing, _Redrawing);
 public: DEF_EVENT_IMP(Saving, _Saving);
 public:
-	virtual property String^ WordDiv { String^ get() override; }
 	virtual String^ EditText(String^ text, String^ title) override;
 };
 

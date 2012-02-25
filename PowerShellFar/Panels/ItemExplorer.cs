@@ -118,17 +118,18 @@ namespace PowerShellFar
 			Command c = new Command("Remove-Item");
 
 			// -Confirm -Recurse
-			FarConfirmations confirm = Far.Net.Confirmations;
-			if ((confirm & FarConfirmations.Delete) != 0 && (confirm & FarConfirmations.DeleteNotEmptyFolders) != 0)
+			var confirmDelete = 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete");
+			var confirmDeleteFolder = 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "DeleteFolder");
+			if (confirmDelete && confirmDeleteFolder)
 			{
 				c.Parameters.Add(Prm.Confirm);
 			}
-			else if ((confirm & FarConfirmations.Delete) != 0)
+			else if (confirmDelete)
 			{
 				c.Parameters.Add(Prm.Confirm);
 				c.Parameters.Add(Prm.Recurse);
 			}
-			else if ((confirm & FarConfirmations.DeleteNotEmptyFolders) == 0)
+			else if (confirmDeleteFolder)
 			{
 				c.Parameters.Add(Prm.Recurse);
 			}

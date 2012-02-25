@@ -311,10 +311,6 @@ namespace FarNet
 		/// </summary>
 		/// <param name="typeId">The panel type ID (normally assigned on creation).</param>
 		public abstract Panel[] Panels(Guid typeId);
-		/// <summary>
-		/// Gets confirmation settings (see Far "Confirmations" dialog).
-		/// </summary>
-		public abstract FarConfirmations Confirmations { get; }
 		/// <include file='doc.xml' path='doc/Include/*'/>
 		/// <param name="prompt">Prompt text.</param>
 		/// <returns>Entered text or null if canceled.</returns>
@@ -487,6 +483,14 @@ namespace FarNet
 		/// Gets the history operator.
 		/// </summary>
 		public abstract IHistory History { get; }
+		/// <summary>
+		/// Gets the specified setting value.
+		/// </summary>
+		/// <param name="settingSet">Setting set.</param>
+		/// <param name="settingName">Setting name.</param>
+		/// <returns>Requested value (long, string, or byte[]).</returns>
+		/// <exception cref="ArgumentException">The specified set or name is invalid.</exception>
+		public abstract object GetSetting(FarSetting settingSet, string settingName);
 	}
 	/// <summary>
 	/// Represents the thumbnail progress bar state.
@@ -554,58 +558,6 @@ namespace FarNet
 		NoError = unchecked((int)0x80000000),
 	}
 	/// <summary>
-	/// Information about the confirmation settings.
-	/// Corresponds to options in the "Confirmations" dialog.
-	/// </summary>
-	[Flags]
-	public enum FarConfirmations
-	{
-		/// <summary>
-		/// Nothing.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// Overwrite files when copying.
-		/// </summary>
-		CopyOverwrite = 0x1,
-		/// <summary>
-		/// Overwritte files when moving.
-		/// </summary>
-		MoveOverwrite = 0x2,
-		/// <summary>
-		/// Drag and drop.
-		/// </summary>
-		DragAndDrop = 0x4,
-		/// <summary>
-		/// Delete.
-		/// </summary>
-		Delete = 0x8,
-		/// <summary>
-		/// Delete non-empty folders.
-		/// </summary>
-		DeleteNotEmptyFolders = 0x10,
-		/// <summary>
-		/// Interrupt operation.
-		/// </summary>
-		InterruptOperation = 0x20,
-		/// <summary>
-		/// Disconnect network drive.
-		/// </summary>
-		DisconnectNetworkDrive = 0x40,
-		/// <summary>
-		/// Reload edited file.
-		/// </summary>
-		ReloadEditedFile = 0x80,
-		/// <summary>
-		/// Clear history list.
-		/// </summary>
-		ClearHistoryList = 0x100,
-		/// <summary>
-		/// Exit
-		/// </summary>
-		Exit = 0x200,
-	}
-	/// <summary>
 	/// States of macro processing.
 	/// </summary>
 	public enum MacroState
@@ -644,5 +596,33 @@ namespace FarNet
 		/// The directory that serves as a common repository for application-specific data for the current roaming user.
 		/// </summary>
 		RoamingData = 1
+	}
+	/// <summary>
+	/// Far Manager settings.
+	/// </summary>
+	public enum FarSetting
+	{
+		///
+		None,
+		/// <summary>
+		/// Confirmation settings:
+		/// Copy, Move, RO, Drag, Delete, DeleteFolder, Esc, HistoryClear, Exit.
+		/// </summary>
+		Confirmations = 16,
+		/// <summary>
+		/// System settings:
+		/// DeleteToRecycleBin, CopyOpened, PluginMaxReadData, ScanJunction.
+		/// </summary>
+		System = 17,
+		/// <summary>
+		/// Panels settings:
+		/// ShowHidden.
+		/// </summary>
+		Panels = 18,
+		/// <summary>
+		/// Editor settings:
+		/// WordDiv.
+		/// </summary>
+		Editor = 19,
 	}
 }

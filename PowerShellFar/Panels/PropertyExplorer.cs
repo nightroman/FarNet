@@ -187,7 +187,7 @@ namespace PowerShellFar
 			if (args == null) return;
 
 			// to ask
-			bool confirm = args.UI && (Far.Net.Confirmations & FarConfirmations.Delete) != 0;
+			bool confirm = args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete");
 
 			// names to be deleted
 			List<string> names = A.FileNameList(args.Files);

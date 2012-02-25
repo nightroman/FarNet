@@ -17,6 +17,7 @@ Copyright (c) 2005-2012 FarNet Team
 #include "Message.h"
 #include "Panel0.h"
 #include "Panel2.h"
+#include "Settings.h"
 #include "UI.h"
 #include "Viewer0.h"
 #include "Window.h"
@@ -75,11 +76,6 @@ IMenu^ Far1::CreateMenu()
 IListMenu^ Far1::CreateListMenu()
 {
 	return gcnew ListMenu;
-}
-
-FarConfirmations Far1::Confirmations::get()
-{
-	return (FarConfirmations)Info.AdvControl(&MainGuid, ACTL_GETCONFIRMATIONS, 0, 0);
 }
 
 FarNet::MacroArea Far1::MacroArea::get()
@@ -477,6 +473,28 @@ String^ Far1::GetHelpTopic(String^ topic)
 IHistory^ Far1::History::get()
 {
 	return %FarNet::History::Instance;
+}
+
+Object^ Far1::GetSetting(FarSetting settingSet, String^ settingName)
+{
+	Settings settings(FarGuid);
+
+	FarSettingsItem arg;
+	if (!settings.Get((int)settingSet, settingName, arg))
+		throw gcnew ArgumentException(String::Format("Cannot get setting: set = '{0}' name = '{1}'", settingSet, settingName));
+	
+	switch(arg.Type)
+	{
+	case FST_QWORD:
+		return (System::Int64)arg.Number;
+	case FST_STRING:
+		return gcnew String(arg.String);
+	case FST_DATA:
+		array<Byte>^ arr = gcnew array<Byte>((int)arg.Data.Size);
+		for(int i = arr->Length; --i >= 0;) arr[i] = ((char*)arg.Data.Data)[i];
+		return arr;
+	}
+	return nullptr;
 }
 
 }

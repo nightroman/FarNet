@@ -3,9 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41B8AD22-D6A2-4056-92DD-7BC963D754DC}"
 	ProjectSection(SolutionItems) = preProject
+		FarNet\About-FarNet.md = FarNet\About-FarNet.md
+		PowerShellFar\About-PowerShellFar.md = PowerShellFar\About-PowerShellFar.md
 		FarNet\Build.proj = FarNet\Build.proj
 		FarNet\Far.exe.config = FarNet\Far.exe.config
-		FarNet\FarNetMan\FarNetMan.hlf = FarNet\FarNetMan\FarNetMan.hlf
 		PowerShellFar\Resources\PowerShellFar.ps1 = PowerShellFar\Resources\PowerShellFar.ps1
 	EndProjectSection
 EndProject

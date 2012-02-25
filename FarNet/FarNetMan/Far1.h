@@ -11,7 +11,6 @@ namespace FarNet
 ref class Far1 sealed : IFar
 {
 public:
-	virtual property FarConfirmations Confirmations { FarConfirmations get() override; }
 	virtual property FarNet::MacroArea MacroArea { FarNet::MacroArea get() override; }
 	virtual property FarNet::MacroState MacroState { FarNet::MacroState get() override; }
 	virtual property IAnyEditor^ AnyEditor { IAnyEditor^ get() override; }
@@ -49,6 +48,7 @@ public:
 	virtual IModuleAction^ GetModuleAction(Guid id) override;
 	virtual int Message(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic) override;
 	virtual KeyInfo^ NameToKeyInfo(String^ key) override;
+	virtual Object^ GetSetting(FarSetting settingSet, String^ settingName) override;
 	[MethodImpl(MethodImplOptions::NoInlining)]
 	virtual String^ GetHelpTopic(String^ topic) override;
 	virtual String^ Input(String^ prompt, String^ history, String^ title, String^ text) override;
