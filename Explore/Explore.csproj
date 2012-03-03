@@ -53,7 +53,7 @@
     <Content Include="LICENSE" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Readme.txt" />
+    <Content Include="About-Explore.text" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

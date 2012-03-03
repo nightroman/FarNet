@@ -29,11 +29,12 @@ param
 $Editor = $Psf.Editor()
 
 # get the prefix pattern by file type
+$type = ''
 switch -regex ([System.IO.Path]::GetExtension($Editor.FileName)) {
 	'\.(?:txt|hlf)' { $pattern = '$'; break }
 	'\.(?:ps1|psd1|psm1|pl|pls|py|pyw|pys|R|rb|rbw|ruby|rake|php\d?)$' { $pattern = '#+'; break }
 	'\.(?:bat|cmd)$' { $pattern = '::+|rem\s'; break }
-	'\.(?:md|markdown)$' { $pattern = '>'; break }
+	'\.(?:text|md|markdown)$' { $pattern = ' {0,3}(?:>|(?:[*+\-:]|\d+\.)\s+)'; $type = 'md'; break }
 	'\.(?:sql|lua)$' { $pattern = '--+'; break }
 	'\.(?:vb|vbs|bas|vbp|frm|cls)$' { $pattern = "'+"; break }
 	default { $pattern = '(?://+|;+)' }
@@ -76,7 +77,18 @@ foreach($line in $lines) {
 }
 
 # split, format and insert
-$text = [Regex]::Split($text, "(.{0,$len}(?:\s|$))") | .{process{ if ($_) { $pref + $_.TrimEnd() } }}
+$first = $true
+$text = [Regex]::Split($text, "(.{0,$len}(?:\s|$))") | .{process{ if ($_) {
+	$pref + $_.TrimEnd()
+	if ($first) {
+		$first = $false
+		if ($type -eq 'md') {
+			if ($pref -match '^ {0,3}(?:[*+\-:]|\d+\.)') {
+				$pref = '    '
+			}
+		}
+	}
+}}}
 if ($lines.Count -gt 1) {
 	$text += ''
 }

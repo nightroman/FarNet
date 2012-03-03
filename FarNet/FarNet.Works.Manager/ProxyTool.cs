@@ -44,16 +44,6 @@ namespace FarNet.Works
 				instance.Invoke(sender, e);
 			}
 		}
-		public void ResetOptions(ModuleToolOptions value)
-		{
-			// unregister the current
-			Host.Instance.UnregisterProxyTool(this);
-
-			_Options = value;
-
-			// register new
-			Host.Instance.RegisterProxyTool(this);
-		}
 		public sealed override string ToString()
 		{
 			return string.Format(null, "{0} Options='{1}'", base.ToString(), Attribute.Options);
@@ -78,6 +68,16 @@ namespace FarNet.Works
 		public ModuleToolOptions Options
 		{
 			get { return _Options; }
+			set
+			{
+				// unregister the current
+				Host.Instance.UnregisterProxyTool(this);
+
+				_Options = value;
+
+				// register new
+				Host.Instance.RegisterProxyTool(this);
+			}
 		}
 		const int idOptions = 1;
 		internal override Hashtable SaveData()

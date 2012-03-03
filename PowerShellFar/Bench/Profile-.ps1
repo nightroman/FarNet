@@ -40,11 +40,15 @@ $Psf.Action('&x. Search regex', { Search-Regex-.ps1 }, 'Panels')
 $Psf.Action('&[. Open text link', { Open-TextLink-.ps1 }, 'Dialog, Editor, Panels')
 $Psf.Action('&=. More...', { Menu-More-.ps1 })
 $Psf.Action('Editor', $null, 'Editor')
+$Psf.Action('&b. Bookmarks', { Select-Bookmark-.ps1 }, 'Editor')
 $Psf.Action('&i. Indent selection', { Indent-Selection- }, 'Editor')
 $Psf.Action('&o. Outdent selection', { Indent-Selection- -Outdent }, 'Editor')
 $Psf.Action('&r. Reindent selection', { Reindent-Selection-.ps1 }, 'Editor')
 $Psf.Action('&f. Reformat selection', { Reformat-Selection-.ps1 }, 'Editor')
 $Psf.Action('&]. Copy text link', { $Far.CopyToClipboard((Get-TextLink-.ps1)) }, 'Editor')
+
+### The script invoked after editor console commands.
+$Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
 
 ### Provider settings (ItemPanel)
 $Psf.Providers = @{

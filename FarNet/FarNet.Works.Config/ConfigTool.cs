@@ -13,6 +13,15 @@ namespace FarNet.Works
 {
 	public static class ConfigTool
 	{
+		public static string ValidateMask(string mask)
+		{
+			mask = mask.Trim();
+			if (mask.Length == 0 || Far.Net.IsMaskValid(mask))
+				return mask;
+
+			Far.Net.Message("Invalid Mask.");
+			return null;
+		}
 		public static void Show(IList<IModuleTool> toolsIn, string helpTopic, Func<IModuleTool, string> getMenuText)
 		{
 			if (getMenuText == null)
@@ -92,8 +101,8 @@ namespace FarNet.Works
 				if (cbDialog.Selected > 0) newOptions = newOptions | ModuleToolOptions.Dialog;
 				if (cbConfig.Selected > 0) newOptions = newOptions | ModuleToolOptions.Config;
 				if (cbDisk.Selected > 0) newOptions = newOptions | ModuleToolOptions.Disk;
-				tool.ResetOptions(newOptions);
-
+				
+				tool.Options = newOptions;
 				tool.Manager.SaveSettings();
 			}
 		}

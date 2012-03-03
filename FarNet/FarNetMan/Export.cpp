@@ -6,6 +6,7 @@ Copyright (c) 2005-2012 FarNet Team
 
 #include "stdafx.h"
 #include <initguid.h>
+#include "Active.h"
 #include "Dialog.h"
 #include "Editor0.h"
 #include "Far0.h"
@@ -25,7 +26,7 @@ DEFINE_GUID(FarGuid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {
-	info->MinFarVersion = MAKEFARVERSION(3, 0, 0, 2479, VS_RELEASE);
+	info->MinFarVersion = MAKEFARVERSION(MinFarVersionMajor, MinFarVersionMinor, 0, MinFarVersionBuild, VS_RELEASE);
 	info->Version = MAKEFARVERSION(5, 0, 0, 0, VS_RELEASE);
 	info->Guid = MainGuid;
 	info->Title = L"FarNet";

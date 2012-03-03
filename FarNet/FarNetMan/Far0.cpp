@@ -665,23 +665,10 @@ void Far0::OpenConfig() //config//
 	}
 }
 
-bool Far0::CompareName(String^ mask, const wchar_t* name, bool skipPath)
+bool Far0::MatchMask(String^ mask, const wchar_t* name, bool skipPath)
 {
-	for each(String^ s in mask->Split(gcnew array<Char>{',', ';'}, StringSplitOptions::RemoveEmptyEntries))
-	{
-		PIN_NE(pin, s);
-		if (Info.FSF->ProcessName(pin, (wchar_t*)name, 0, skipPath ? (PN_CMPNAME | PN_SKIPPATH) : (PN_CMPNAME)))
-			return true;
-	}
-	return false;
-}
-
-bool Far0::CompareNameExclude(String^ mask, const wchar_t* name, bool skipPath)
-{
-	int i = mask->IndexOf('|');
-	if (i < 0)
-		return CompareName(mask, name, skipPath);
-	return  CompareName(mask->Substring(0, i), name, skipPath) && !CompareName(mask->Substring(i + 1), name, skipPath);
+	PIN_NE(pin, mask);
+	return 0 != Info.FSF->ProcessName(pin, (wchar_t*)name, 0, skipPath ? (PN_CMPNAMELIST | PN_SKIPPATH) : (PN_CMPNAMELIST));
 }
 
 void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
@@ -693,10 +680,8 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 
 	for each(IModuleDrawer^ it in _registeredDrawer)
 	{
-		// mask?
-		if (ES(it->Mask))
-			continue;
-		if (!CompareNameExclude(it->Mask, fileName, true))
+		// match
+		if (ES(it->Mask) || !MatchMask(it->Mask, fileName, true))
 			continue;
 
 		// catch all in order to add the others
@@ -712,8 +697,8 @@ void Far0::InvokeModuleEditors(IEditor^ editor, const wchar_t* fileName)
 
 	for each(IModuleEditor^ it in _registeredEditor)
 	{
-		// mask?
-		if (SS(it->Mask) && !CompareNameExclude(it->Mask, fileName, true))
+		// match
+		if (ES(it->Mask) || !MatchMask(it->Mask, fileName, true))
 			continue;
 
 		// catch all in order to call the others

@@ -1,5 +1,26 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.16 =
+
+Far 3.0.2516 (new file mask API)
+
+Module configuration
+- Masks support all Far features including useful <groups>.
+- Masks are checked for validity on various input.
+- Empty masks in config exclude all files.
+- Internal refactoring.
+
+IFar
+- Renamed MatchPattern -> IsMaskMatch. It uses Far API.
+- Added IsMaskValid() checks a mask for validity.
+
+Editor
+- Renamed StackBookmark -> SessionBookmark (a la Far).
+
+Panel
+- New property CodePage in GetContentEventArgs.
+- Disabled history on view/edit items via temp files.
+
 = 5.0.15 =
 
 Far 3.0.2479 (settings API)

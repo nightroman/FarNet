@@ -220,7 +220,7 @@ namespace PowerShellFar.Commands
 							editor.FileName = MyInvocation.ScriptName;
 							editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
 							editor.Open();
-							goto case BtnThrow;
+							goto case BtnBreak;
 						}
 				}
 			}

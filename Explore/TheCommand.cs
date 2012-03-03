@@ -58,12 +58,15 @@ namespace FarNet.Explore
 				if (parameter == null)
 				{
 					if (search.Filter != null)
-						throw new InvalidOperationException("Invalid command line.");
+						throw new ModuleException("Invalid command line.");
 
-					var pattern = token;
+					var mask = token;
+					if (!Far.Net.IsMaskValid(mask))
+						throw new ModuleException("Invalid mask.");
+					
 					search.Filter = delegate(Explorer explorer, FarFile file)
 					{
-						return Far.Net.MatchPattern(file.Name, pattern);
+						return Far.Net.IsMaskMatch(file.Name, mask);
 					};
 					continue;
 				}
@@ -74,19 +77,19 @@ namespace FarNet.Explore
 						{
 							search.XPath = tokens[iToken + 1];
 							if (search.XPath.Length == 0)
-								throw new InvalidOperationException("Invalid -XPath.");
+								throw new ModuleException("Invalid -XPath.");
 							iToken = tokens.Count;
 							break;
 						}
 					case "-XFile":
 						{
-							if (++iToken >= token.Length) throw new InvalidOperationException("Invalid -XFile.");
+							if (++iToken >= token.Length) throw new ModuleException("Invalid -XFile.");
 							search.XFile = tokens[iToken];
 							break;
 						}
 					case "-Depth":
 						{
-							if (++iToken >= token.Length) throw new InvalidOperationException("Invalid -Depth.");
+							if (++iToken >= token.Length) throw new ModuleException("Invalid -Depth.");
 							search.Depth = int.Parse(tokens[iToken]);
 							break;
 						}

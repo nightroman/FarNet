@@ -1,6 +1,21 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.16 =
+
+Settings
+- $Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
+The script is invoked after each editor console command, its output is
+converted to strings and written to the editor console.
+
+Markdown tools
+- Reformat-Selection-.ps1: formatting of markdown list items.
+- Markdown scripts support .text, .md, .markdown extensions.
+
+Select-Bookmark-.ps1 adapted to FarNet changes.
+
+Search-FarFile checks masks for validity.
+
 = 5.0.15 =
 
 * About

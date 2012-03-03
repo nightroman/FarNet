@@ -32,13 +32,6 @@ namespace FarNet.Works
 			ModuleEditor instance = (ModuleEditor)GetInstance();
 			instance.Invoke(sender, e);
 		}
-		public void ResetMask(string value)
-		{
-			if (value == null)
-				throw new ArgumentNullException("value");
-
-			_Mask = value;
-		}
 		public sealed override string ToString()
 		{
 			return string.Format(null, "{0} Mask='{1}'", base.ToString(), Mask);
@@ -52,10 +45,6 @@ namespace FarNet.Works
 		{
 			get { return (ModuleEditorAttribute)base.Attribute; }
 		}
-		public string DefaultMask
-		{
-			get { return Attribute.Mask; }
-		}
 		public override ModuleItemKind Kind
 		{
 			get { return ModuleItemKind.Editor; }
@@ -63,6 +52,11 @@ namespace FarNet.Works
 		public string Mask
 		{
 			get { return _Mask; }
+			set
+			{
+				if (value == null) throw new ArgumentNullException("value");
+				_Mask = value;
+			}
 		}
 		void Init()
 		{
@@ -73,16 +67,16 @@ namespace FarNet.Works
 		internal override Hashtable SaveData()
 		{
 			var data = new Hashtable();
-			if (_Mask != DefaultMask)
+			if (_Mask != Attribute.Mask)
 				data.Add(idMask, _Mask);
 			return data;
 		}
 		internal override void LoadData(Hashtable data)
 		{
 			if (data == null)
-				_Mask = DefaultMask;
+				_Mask = Attribute.Mask;
 			else
-				_Mask = data[idMask] as string ?? DefaultMask;
+				_Mask = data[idMask] as string ?? Attribute.Mask;
 		}
 	}
 }

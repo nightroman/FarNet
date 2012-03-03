@@ -53,11 +53,11 @@ ICollection<TextFrame>^ EditorBookmark::Bookmarks()
 	return r;
 }
 
-ICollection<TextFrame>^ EditorBookmark::StackBookmarks()
+ICollection<TextFrame>^ EditorBookmark::SessionBookmarks()
 {
 	List<TextFrame>^ r = gcnew List<TextFrame>();
 
-	int count = (int)Info.EditorControl(-1, ECTL_GETSTACKBOOKMARKS, 0, 0);
+	int count = (int)Info.EditorControl(-1, ECTL_GETSESSIONBOOKMARKS, 0, 0);
 	if (count <= 0)
 		return r;
 
@@ -68,8 +68,8 @@ ICollection<TextFrame>^ EditorBookmark::StackBookmarks()
 	ebm.ScreenLine = new int[count];
 	try
 	{
-		if (!Info.EditorControl(-1, ECTL_GETSTACKBOOKMARKS, 0, &ebm))
-			throw gcnew InvalidOperationException("ECTL_GETSTACKBOOKMARKS");
+		if (!Info.EditorControl(-1, ECTL_GETSESSIONBOOKMARKS, 0, &ebm))
+			throw gcnew InvalidOperationException("ECTL_GETSESSIONBOOKMARKS");
 
 		r->Capacity = count;
 		for(int i = 0; i < count; ++i)
@@ -86,34 +86,34 @@ ICollection<TextFrame>^ EditorBookmark::StackBookmarks()
 	return r;
 }
 
-void EditorBookmark::AddStackBookmark()
+void EditorBookmark::AddSessionBookmark()
 {
-	if (!Info.EditorControl(-1, ECTL_ADDSTACKBOOKMARK, 0, 0))
-		throw gcnew InvalidOperationException("ECTL_ADDSTACKBOOKMARK");
+	if (!Info.EditorControl(-1, ECTL_ADDSESSIONBOOKMARK, 0, 0))
+		throw gcnew InvalidOperationException("ECTL_ADDSESSIONBOOKMARK");
 }
 
-void EditorBookmark::ClearStackBookmarks()
+void EditorBookmark::ClearSessionBookmarks()
 {
-	if (!Info.EditorControl(-1, ECTL_CLEARSTACKBOOKMARKS, 0, 0))
-		throw gcnew InvalidOperationException("ECTL_CLEARSTACKBOOKMARKS");
+	if (!Info.EditorControl(-1, ECTL_CLEARSESSIONBOOKMARKS, 0, 0))
+		throw gcnew InvalidOperationException("ECTL_CLEARSESSIONBOOKMARKS");
 }
 
-void EditorBookmark::RemoveStackBookmarkAt(int index)
+void EditorBookmark::RemoveSessionBookmarkAt(int index)
 {
-	if (!Info.EditorControl(-1, ECTL_DELETESTACKBOOKMARK, 0, (void*)index))
-		throw gcnew InvalidOperationException("ECTL_DELETESTACKBOOKMARK");
-}
-
-//! Ignore errors
-void EditorBookmark::GoToNextStackBookmark()
-{
-	Info.EditorControl(-1, ECTL_NEXTSTACKBOOKMARK, 0, 0);
+	if (!Info.EditorControl(-1, ECTL_DELETESESSIONBOOKMARK, 0, (void*)index))
+		throw gcnew InvalidOperationException("ECTL_DELETESESSIONBOOKMARK");
 }
 
 //! Ignore errors
-void EditorBookmark::GoToPreviousStackBookmark()
+void EditorBookmark::GoToNextSessionBookmark()
 {
-	Info.EditorControl(-1, ECTL_PREVSTACKBOOKMARK, 0, 0);
+	Info.EditorControl(-1, ECTL_NEXTSESSIONBOOKMARK, 0, 0);
+}
+
+//! Ignore errors
+void EditorBookmark::GoToPreviousSessionBookmark()
+{
+	Info.EditorControl(-1, ECTL_PREVSESSIONBOOKMARK, 0, 0);
 }
 
 }

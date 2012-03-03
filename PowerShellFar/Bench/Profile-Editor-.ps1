@@ -28,7 +28,7 @@ $Far.AnyEditor.add_KeyDown({&{
 			$_.Ignore = $true
 			Show-Hlf-.ps1
 		}
-		elseif ($this.FileName -match '\.(?:md|markdown)$') {
+		elseif ($this.FileName -match '\.(?:text|md|markdown)$') {
 			$_.Ignore = $true
 			Show-Markdown-.ps1 -Help
 		}

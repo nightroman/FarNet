@@ -106,12 +106,16 @@ namespace PowerShellFar
 				FarHost = new FarHost(FarUI);
 			}
 		}
+		void RunspaceOpen()
+		{
+			Runspace.Open();
+		}
 		void OpenLocalSession()
 		{
 			EnsureHost();
 
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, Runspace.DefaultRunspace.RunspaceConfiguration);
-			Runspace.Open();
+			RunspaceOpen();
 
 			Editor.Title = "Local session: " + Path.GetFileName(Editor.FileName);
 		}
@@ -136,7 +140,7 @@ namespace PowerShellFar
 			EnsureHost();
 
 			Runspace = RunspaceFactory.CreateRunspace(FarHost, connectionInfo);
-			Runspace.Open();
+			RunspaceOpen();
 
 			Editor.Title = computerName + " session: " + Path.GetFileName(Editor.FileName);
 		}
@@ -395,11 +399,8 @@ namespace PowerShellFar
 			}
 			else
 			{
-				if (writer.WriteCount > 0)
-					Editor.InsertText("=>\r");
-				else
-					Editor.InsertLine();
-
+				// complete output
+				EndOutput(writer);
 				Editor.EndUndo();
 				Editor.Redraw();
 			}
@@ -459,15 +460,8 @@ namespace PowerShellFar
 			}
 
 			// complete output
-			{
-				EditorOutputWriter1 writer = (EditorOutputWriter1)FarUI.PopWriter();
-				if (writer.WriteCount > 0)
-					Editor.InsertText("=>\r");
-				else
-					Editor.InsertLine();
-
-				Editor.EndAsync();
-			}
+			EndOutput((EditorOutputWriter1)FarUI.PopWriter());
+			Editor.EndAsync();
 
 			// kill
 			PowerShell.Dispose();
@@ -527,6 +521,37 @@ namespace PowerShellFar
 			{
 				return Editor.Caret.Y == Editor.Count - 1;
 			}
+		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		void EndOutput(EditorOutputWriter1 writer)
+		{
+			// custom extra output
+			var endCode = Settings.Default.EditorConsoleEndOutputScript;
+			if (!string.IsNullOrEmpty(endCode))
+			{
+				try
+				{
+					using (PowerShell ps = PowerShell.Create())
+					{
+						ps.Runspace = Runspace;
+						ps.AddScript(endCode);
+
+						foreach (var it in ps.Invoke())
+							if (it != null)
+								writer.WriteLine(it.ToString());
+					}
+				}
+				catch (Exception e)
+				{
+					writer.WriteErrorLine("EditorConsoleEndOutputScript: " + e.Message);
+				}
+			}
+
+			// last line
+			if (writer.WriteCount == 0)
+				Editor.InsertLine();
+			else
+				Editor.InsertText("=>\r");
 		}
 	}
 }

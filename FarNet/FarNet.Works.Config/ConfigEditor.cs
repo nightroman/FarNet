@@ -28,10 +28,10 @@ namespace FarNet.Works
 			menu.HelpTopic = helpTopic;
 			menu.Title = Res.ModuleEditors;
 
-			foreach(IModuleEditor it in editors)
+			foreach (IModuleEditor it in editors)
 				menu.Add(Utility.FormatConfigMenu(it)).Data = it;
 
-			while(menu.Show())
+			while (menu.Show())
 			{
 				FarItem mi = menu.Items[menu.Selected];
 				IModuleEditor editor = (IModuleEditor)mi.Data;
@@ -40,20 +40,18 @@ namespace FarNet.Works
 				ib.EmptyEnabled = true;
 				ib.HelpTopic = helpTopic;
 				ib.History = "Masks";
-				ib.Prompt = "New mask for " + editor.Name;
+				ib.Prompt = "Mask";
 				ib.Text = editor.Mask;
-				ib.Title = "Default mask: " + editor.DefaultMask;
+				ib.Title = editor.Name;
 				if (!ib.Show())
 					continue;
 
-				string mask = ib.Text.Trim();
-
-				// restore original on empty
-				if (mask.Length == 0)
-					mask = editor.DefaultMask;
+				var mask = ConfigTool.ValidateMask(ib.Text);
+				if (mask == null)
+					continue;
 
 				// set
-				editor.ResetMask(mask);
+				editor.Mask = mask;
 				editor.Manager.SaveSettings();
 			}
 		}

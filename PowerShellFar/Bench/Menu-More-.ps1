@@ -29,7 +29,6 @@ New-FarMenu 'More' -Show -AutoAssignHotkeys -ChangeConsoleTitle $(
 		}
 
 		### Other editor commands
-		New-FarItem '&b. Bookmarks, go to selected' { Select-Bookmark- }
 		New-FarItem '&s. Remove end spaces (all text)' { $editor.Lines | Remove-EndSpace- }
 		New-FarItem '&d. Remove double empty lines (all text)' { Remove-EmptyString- $editor.Lines 2 }
 		New-FarItem '&f. Invoke a file from editor' { Invoke-Editor- }

@@ -24,7 +24,7 @@ New-FarMenu -Show 'Bookmarks' $(
 		}
 	}
 
-	$bookmarks = $Editor.Bookmark.StackBookmarks()
+	$bookmarks = $Editor.Bookmark.SessionBookmarks()
 	if ($bookmarks) {
 		if ($added -gt 0) {
 			New-FarItem -IsSeparator "Stack"

@@ -49,15 +49,6 @@ namespace FarNet.Works
 				instance.Invoke(sender, e);
 			}
 		}
-		public void ResetPrefix(string value)
-		{
-			if (string.IsNullOrEmpty(value))
-				value = DefaultPrefix;
-
-			Host.Instance.InvalidateProxyCommand();
-
-			_Prefix = value;
-		}
 		public sealed override string ToString()
 		{
 			return string.Format(null, "{0} Prefix='{1}'", base.ToString(), Prefix);
@@ -71,10 +62,6 @@ namespace FarNet.Works
 		{
 			get { return (ModuleCommandAttribute)base.Attribute; }
 		}
-		public string DefaultPrefix
-		{
-			get { return Attribute.Prefix; }
-		}
 		public override ModuleItemKind Kind
 		{
 			get { return ModuleItemKind.Command; }
@@ -82,6 +69,12 @@ namespace FarNet.Works
 		public string Prefix
 		{
 			get { return _Prefix; }
+			set
+			{
+				if (string.IsNullOrEmpty(value)) value = Attribute.Prefix;
+				Host.Instance.InvalidateProxyCommand();
+				_Prefix = value;
+			}
 		}
 		void Init()
 		{
@@ -93,16 +86,16 @@ namespace FarNet.Works
 		internal override Hashtable SaveData()
 		{
 			var data = new Hashtable();
-			if (_Prefix != DefaultPrefix)
+			if (_Prefix != Attribute.Prefix)
 				data.Add(idPrefix, _Prefix);
 			return data;
 		}
 		internal override void LoadData(Hashtable data)
 		{
 			if (data == null)
-				_Prefix = DefaultPrefix;
+				_Prefix = Attribute.Prefix;
 			else
-				_Prefix = data[idPrefix] as string ?? DefaultPrefix;
+				_Prefix = data[idPrefix] as string ?? Attribute.Prefix;
 		}
 	}
 }

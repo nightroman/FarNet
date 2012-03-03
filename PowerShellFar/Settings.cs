@@ -25,7 +25,9 @@ namespace PowerShellFar
 	[SettingsProvider(typeof(ModuleSettingsProvider))]
 	public sealed class Settings : ModuleSettings
 	{
-		///
+		/// <summary>
+		/// The settings exposed as <c>$Psf.Settings</c>.
+		/// </summary>
 		public static Settings Default { get { return _Default; } }
 		static readonly Settings _Default = new Settings();
 		/// <summary>
@@ -48,7 +50,7 @@ namespace PowerShellFar
 			menu.UsualMargins = _ListMenuUsualMargins;
 		}
 		/// <summary>
-		/// See .hlf
+		/// See the manual [Settings].
 		/// </summary>
 		[UserScopedSetting]
 		[SettingsManageability(SettingsManageability.Roaming)]
@@ -58,7 +60,7 @@ namespace PowerShellFar
 			set { this["StartupCode"] = value; }
 		}
 		/// <summary>
-		/// See .hlf
+		/// See the manual [Settings].
 		/// </summary>
 		[UserScopedSetting]
 		[SettingsManageability(SettingsManageability.Roaming)]
@@ -168,7 +170,7 @@ namespace PowerShellFar
 		}
 		string _ExternalViewerFileName = string.Empty;
 		/// <summary>
-		/// Gets or sets the external viewer application path.
+		/// The external viewer application path.
 		/// </summary>
 		/// <remarks>
 		/// By default it is empty and external Far viewer is used.
@@ -187,7 +189,7 @@ namespace PowerShellFar
 		}
 		string _ExternalViewerArguments = string.Empty;
 		/// <summary>
-		/// Gets or sets the command line arguments for the external viewer.
+		/// The command line arguments for the external viewer.
 		/// </summary>
 		/// <remarks>
 		/// It is used together with <see cref="ExternalViewerFileName"/>.
@@ -243,5 +245,17 @@ namespace PowerShellFar
 			get { return _WarningForegroundColor; }
 			set { _WarningForegroundColor = value; }
 		}
+		/// <summary>
+		/// The script invoked after editor console commands.
+		/// </summary>
+		/// <remarks>
+		/// The script is invoked after each editor console command, its output
+		/// is converted to strings and written to the editor console.
+		/// </remarks>
+		/// <example><code>
+		/// # In the StartupCode
+		/// $Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
+		/// </code></example>
+		public String EditorConsoleEndOutputScript { get; set; }
 	}
 }

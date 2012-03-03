@@ -32,28 +32,21 @@ namespace FarNet.Works
 				var dialog = new ConfigDrawerDialog(drawer, helpTopic);
 				while (dialog.Dialog.Show())
 				{
-					string mask = dialog.Mask.Text.Trim();
-					if (mask.Length == 0)
-						mask = drawer.DefaultMask;
+					var mask = ConfigTool.ValidateMask(dialog.Mask.Text);
+					if (mask == null)
+						continue;
 
 					int priority;
 					string priorityText = dialog.Priority.Text.Trim();
-					if (priorityText.Length == 0)
+					if (!int.TryParse(priorityText, out priority))
 					{
-						priority = drawer.DefaultPriority;
-					}
-					else
-					{
-						if (!int.TryParse(priorityText, out priority))
-						{
-							Far.Net.Message("Invalid Priority");
-							continue;
-						}
+						Far.Net.Message("Invalid Priority.");
+						continue;
 					}
 
 					// set
-					drawer.ResetMask(mask);
-					drawer.ResetPriority(priority);
+					drawer.Mask = mask;
+					drawer.Priority = priority;
 					drawer.Manager.SaveSettings();
 					break;
 				}

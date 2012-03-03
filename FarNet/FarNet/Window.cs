@@ -44,7 +44,7 @@ namespace FarNet
 		/// Window title:
 		/// viewer, editor: the file name;
 		/// panels: selected file name;
-		/// help: .hlf file path;
+		/// help: HLF file path;
 		/// menu, dialog: header.
 		/// </remarks>
 		public abstract string GetNameAt(int index);

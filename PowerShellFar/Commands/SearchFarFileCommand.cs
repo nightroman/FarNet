@@ -13,7 +13,16 @@ namespace PowerShellFar.Commands
 	class SearchFarFileCommand : BaseCmdlet
 	{
 		[Parameter(Position = 0, ParameterSetName = "Mask")]
-		public string Mask { get; set; }
+		public string Mask
+		{
+			get { return _Mask; }
+			set
+			{
+				if (!Far.Net.IsMaskValid(value)) throw new PSArgumentException("Invalid mask: " + value);
+				_Mask = value;
+			}
+		}
+		string _Mask;
 		[Parameter(Position = 0, ParameterSetName = "Script")]
 		public ScriptBlock Script { get; set; }
 		[Parameter]
@@ -48,7 +57,7 @@ namespace PowerShellFar.Commands
 			{
 				search.Filter = delegate(Explorer explorer, FarFile file)
 				{
-					return Far.Net.MatchPattern(file.Name, Mask);
+					return Far.Net.IsMaskMatch(file.Name, Mask);
 				};
 			}
 			else if (Script != null)

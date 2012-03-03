@@ -47,9 +47,9 @@ namespace FarNet.Works
 				IInputBox ib = Far.Net.CreateInputBox();
 				ib.EmptyEnabled = true;
 				ib.HelpTopic = helpTopic;
-				ib.Prompt = "New prefix for: " + command.Name;
+				ib.Prompt = "Prefix";
 				ib.Text = command.Prefix;
-				ib.Title = "Default prefix: " + command.DefaultPrefix;
+				ib.Title = command.Name;
 
 				string prefix = null;
 				while (ib.Show())
@@ -66,12 +66,8 @@ namespace FarNet.Works
 				if (prefix == null)
 					continue;
 
-				// restore original on empty
-				if (prefix.Length == 0)
-					prefix = command.DefaultPrefix;
-
 				// reset
-				command.ResetPrefix(prefix);
+				command.Prefix = prefix;
 				command.Manager.SaveSettings();
 			}
 		}

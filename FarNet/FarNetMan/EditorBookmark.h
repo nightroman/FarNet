@@ -12,12 +12,12 @@ ref class EditorBookmark sealed : IEditorBookmark
 {
 public:
 	virtual ICollection<TextFrame>^ Bookmarks() override;
-	virtual void AddStackBookmark() override;
-	virtual void ClearStackBookmarks() override;
-	virtual void RemoveStackBookmarkAt(int index) override;
-	virtual ICollection<TextFrame>^ StackBookmarks() override;
-	virtual void GoToNextStackBookmark() override;
-	virtual void GoToPreviousStackBookmark() override;
+	virtual void AddSessionBookmark() override;
+	virtual void ClearSessionBookmarks() override;
+	virtual void RemoveSessionBookmarkAt(int index) override;
+	virtual ICollection<TextFrame>^ SessionBookmarks() override;
+	virtual void GoToNextSessionBookmark() override;
+	virtual void GoToPreviousSessionBookmark() override;
 internal:
 	static EditorBookmark Instance;
 private:

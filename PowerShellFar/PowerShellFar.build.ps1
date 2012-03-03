@@ -24,7 +24,7 @@ task Uninstall {
 }
 
 task Help {
-	exec { MarkdownToHtml "From=About-PowerShellFar.md" "To=About-PowerShellFar.htm" }
+	exec { MarkdownToHtml "From=About-PowerShellFar.text" "To=About-PowerShellFar.htm" }
 	exec { HtmlToFarHelp "From=About-PowerShellFar.htm" "To=$PsfHome\PowerShellFar.hlf" }
 }
 

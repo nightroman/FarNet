@@ -294,7 +294,7 @@ Reason (see also $Error):
 				Entry.Unregister();
 				throw new ModuleException(@"
 The engine is not initialized due to fatal reasons and will be unloaded.
-For some known issues read 'Problems and solutions' in About-FarNet.htm.
+For some known issues see 'Problems and solutions' in the FarNet manual.
 ", _errorFatal);
 			}
 
@@ -481,7 +481,7 @@ Continue with this current directory?
 		/// Permanent settings are changed in the module settings panel.
 		/// Session preferences are usually set in the profile.
 		/// <para>
-		/// See also .hlf topic [Settings].
+		/// See also the manual [Settings].
 		/// </para>
 		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
@@ -955,7 +955,7 @@ Continue with this current directory?
 		/// </summary>
 		/// <remarks>
 		/// [F5] is the hardcoded shortcut. A different key can be used with a macro:
-		/// the example macro in the .hlf file shows how to do that.
+		/// see the example macro in the manual.
 		/// <para>
 		/// The action is the same as to invoke the script from the input command box
 		/// but if the file is modified then it is saved before invoking.

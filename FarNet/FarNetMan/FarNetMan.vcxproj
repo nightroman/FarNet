@@ -332,6 +332,7 @@
     <None Include="Export.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Active.h" />
     <ClInclude Include="AnyMenu.h" />
     <ClInclude Include="CommandLine.h" />
     <ClInclude Include="Dialog.h" />

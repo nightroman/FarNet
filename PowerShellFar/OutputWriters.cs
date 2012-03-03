@@ -17,7 +17,6 @@ namespace PowerShellFar
 		public abstract void Write(string value);
 		public abstract void WriteLine();
 		public abstract void WriteLine(string value);
-
 		public abstract void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value);
 		public abstract void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value);
 		public abstract void WriteDebugLine(string message);
@@ -29,14 +28,11 @@ namespace PowerShellFar
 	sealed class ConsoleOutputWriter : OutputWriter
 	{
 		string _command;
-
 		public ConsoleOutputWriter() { }
-
 		public ConsoleOutputWriter(string command)
 		{
 			_command = command;
 		}
-
 		void Writing()
 		{
 			// echo the command and drop it
@@ -49,63 +45,54 @@ namespace PowerShellFar
 				A.Psf.Transcript.WriteLine(Environment.NewLine + header);
 			}
 		}
-
 		public override void Write(string value)
 		{
 			Writing();
 			Far.Net.UI.Write(value);
 			A.Psf.Transcript.Write(value);
 		}
-
 		public override void WriteLine()
 		{
 			Writing();
 			Far.Net.UI.Write(Environment.NewLine);
 			A.Psf.Transcript.WriteLine();
 		}
-
 		public override void WriteLine(string value)
 		{
 			Writing();
 			Far.Net.UI.Write(value + Environment.NewLine);
 			A.Psf.Transcript.WriteLine(value);
 		}
-
 		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
 			Far.Net.UI.Write(value, foregroundColor, backgroundColor);
 			A.Psf.Transcript.Write(value);
 		}
-
 		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
 			Far.Net.UI.Write(value + Environment.NewLine, foregroundColor, backgroundColor);
 			A.Psf.Transcript.WriteLine(value);
 		}
-
 		public override void WriteDebugLine(string message)
 		{
 			Writing();
 			Far.Net.UI.Write("DEBUG: " + message + Environment.NewLine, Settings.Default.DebugForegroundColor);
 			A.Psf.Transcript.WriteDebugLine(message);
 		}
-
 		public override void WriteErrorLine(string value)
 		{
 			Writing();
 			Far.Net.UI.Write(value + Environment.NewLine, Settings.Default.ErrorForegroundColor);
 			A.Psf.Transcript.WriteErrorLine(value);
 		}
-
 		public override void WriteVerboseLine(string message)
 		{
 			Writing();
 			Far.Net.UI.Write("VERBOSE: " + message + Environment.NewLine, Settings.Default.VerboseForegroundColor);
 			A.Psf.Transcript.WriteVerboseLine(message);
 		}
-
 		public override void WriteWarningLine(string message)
 		{
 			Writing();
@@ -117,52 +104,43 @@ namespace PowerShellFar
 	abstract class TextOutputWriter : OutputWriter
 	{
 		WriteMode _mode;
-
 		/// <summary>
 		/// 1 of 3 actual writers.
 		/// </summary>
 		protected abstract void Append(string value);
-
 		/// <summary>
 		/// 2 of 3 actual writers.
 		/// </summary>
 		protected abstract void AppendLine();
-
 		/// <summary>
 		/// 3 of 3 actual writers.
 		/// </summary>
 		protected abstract void AppendLine(string value);
-
 		public sealed override void Write(string value)
 		{
 			_mode = WriteMode.None;
 			Append(value);
 		}
-
 		public sealed override void WriteLine()
 		{
 			_mode = WriteMode.None;
 			AppendLine();
 		}
-
 		public sealed override void WriteLine(string value)
 		{
 			_mode = WriteMode.None;
 			AppendLine(value);
 		}
-
 		public sealed override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			_mode = WriteMode.None;
 			Append(value);
 		}
-
 		public sealed override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			_mode = WriteMode.None;
 			AppendLine(value);
 		}
-
 		public sealed override void WriteDebugLine(string message)
 		{
 			if (_mode != WriteMode.Debug)
@@ -172,7 +150,6 @@ namespace PowerShellFar
 			}
 			AppendLine(message);
 		}
-
 		public sealed override void WriteErrorLine(string value)
 		{
 			if (_mode != WriteMode.Error)
@@ -182,7 +159,6 @@ namespace PowerShellFar
 			}
 			AppendLine(value);
 		}
-
 		public sealed override void WriteVerboseLine(string message)
 		{
 			if (_mode != WriteMode.Verbose)
@@ -192,7 +168,6 @@ namespace PowerShellFar
 			}
 			AppendLine(message);
 		}
-
 		public sealed override void WriteWarningLine(string message)
 		{
 			if (_mode != WriteMode.Warning)
@@ -207,22 +182,18 @@ namespace PowerShellFar
 	sealed class StreamOutputWriter : TextOutputWriter
 	{
 		StreamWriter _writer;
-
 		public StreamOutputWriter(StreamWriter writer)
 		{
 			_writer = writer;
 		}
-
 		protected override void Append(string value)
 		{
 			_writer.Write(value);
 		}
-
 		protected override void AppendLine()
 		{
 			_writer.WriteLine();
 		}
-
 		protected override void AppendLine(string value)
 		{
 			_writer.WriteLine(value);
@@ -235,9 +206,7 @@ namespace PowerShellFar
 		static int _fileNameCount;
 		StreamWriter _writer;
 		string _fileName;
-
 		public string FileName { get { return _fileName; } }
-
 		public void Close()
 		{
 			if (_writer != null)
@@ -246,7 +215,6 @@ namespace PowerShellFar
 				_writer = null;
 			}
 		}
-
 		string NewFileName()
 		{
 			// Tried to use the Personal folder (like PS does). For some reasons
@@ -273,7 +241,6 @@ namespace PowerShellFar
 					string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.{1}.{2}.txt", DateTime.Now, process, _fileNameCount));
 			}
 		}
-
 		void Writing()
 		{
 			if (_writer == null)
@@ -283,19 +250,16 @@ namespace PowerShellFar
 				_writer.AutoFlush = true;
 			}
 		}
-
 		protected override void Append(string value)
 		{
 			Writing();
 			_writer.Write(value);
 		}
-
 		protected override void AppendLine()
 		{
 			Writing();
 			_writer.WriteLine();
 		}
-
 		protected override void AppendLine(string value)
 		{
 			Writing();
@@ -312,17 +276,14 @@ namespace PowerShellFar
 		/// The editor.
 		/// </summary>
 		protected IEditor Editor { get; private set; }
-
 		/// <summary>
 		/// Write call count.
 		/// </summary>
 		internal int WriteCount { get; private set; }
-
 		public EditorOutputWriter1(IEditor editor)
 		{
 			Editor = editor;
 		}
-
 		protected override void Append(string value)
 		{
 			// start
@@ -332,7 +293,6 @@ namespace PowerShellFar
 			// insert
 			Editor.InsertText(value);
 		}
-
 		protected override void AppendLine()
 		{
 			// start
@@ -341,7 +301,6 @@ namespace PowerShellFar
 			else
 				Editor.InsertLine();
 		}
-
 		protected override void AppendLine(string value)
 		{
 			// start
@@ -359,9 +318,7 @@ namespace PowerShellFar
 	sealed class EditorOutputWriter2 : EditorOutputWriter1
 	{
 		Stopwatch _stopwatch = Stopwatch.StartNew();
-
 		public EditorOutputWriter2(IEditor editor) : base(editor) { }
-
 		void Redraw()
 		{
 			// max 25 redraw per second
@@ -371,19 +328,16 @@ namespace PowerShellFar
 				_stopwatch = Stopwatch.StartNew();
 			}
 		}
-
 		protected override void Append(string value)
 		{
 			base.Append(value);
 			Redraw();
 		}
-
 		protected override void AppendLine()
 		{
 			base.AppendLine();
 			Redraw();
 		}
-
 		protected override void AppendLine(string value)
 		{
 			base.AppendLine(value);

@@ -415,21 +415,23 @@ IUserInterface^ Far1::UI::get()
 	return %FarUI::Instance;
 }
 
-bool Far1::MatchPattern(String^ input, String^ pattern)
+bool Far1::IsMaskMatch(String^ path, String^ mask)
 {
-	if (!input) throw gcnew ArgumentNullException("input");
+	if (!path) throw gcnew ArgumentNullException("path");
+	if (!mask) throw gcnew ArgumentNullException("mask");
 	
-	// empty
-	if (ES(pattern))
-		return true;
+	// match
+	PIN_NE(pin, path);
+	return Far0::MatchMask(mask, pin, true);
+}
 
-	// regex
-	if (pattern->StartsWith("/") && pattern->EndsWith("/"))
-		return Regex::IsMatch(input, pattern->Substring(1, pattern->Length - 2), RegexOptions::IgnoreCase);
+bool Far1::IsMaskValid(String^ mask)
+{
+	if (!mask) throw gcnew ArgumentNullException("mask");
 
-	// wildcard
-	PIN_NE(pin, input);
-	return Far0::CompareNameExclude(pattern, pin, false);
+	// check
+	PIN_NE(pin, mask);
+	return 0 != Info.FSF->ProcessName(pin, nullptr, 0, PN_CHECKMASK);
 }
 
 String^ Far1::GetFolderPath(SpecialFolder folder)
