@@ -15,7 +15,7 @@
 	If it fails the PowerShell is not exited, but stopped, you may work in
 	failed PowerShell session to investigate problems just in place.
 
-	*.md, *.markdown files are opened by Show-Markdown-.ps1
+	Markdown files are opened by Show-Markdown-.ps1
 
 	*.*proj files are processed by Start-MSBuild-.ps1
 
@@ -61,7 +61,7 @@ if ($ext -like '.*proj') {
 $arg = "`"$path`""
 
 # Markdown
-if ('.md', '.markdown' -contains $ext) {
+if ('.text', '.md', '.markdown' -contains $ext) {
 	Show-Markdown-.ps1
 }
 

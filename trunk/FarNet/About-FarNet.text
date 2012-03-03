@@ -18,12 +18,12 @@
 
 * [List menu](#ListMenu)
 
----------------------------------------------------------------------
+*********************************************************************
 ## About {#About}
 
 [Contents](#Contents)
 
-**FarNet 5.0.15**
+**FarNet 5.0.16**
 
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The API is exposed in comfortable object oriented way and most of
@@ -40,14 +40,14 @@ tiny pieces of boilerplate framework code.
 * [nightroman@gmail.com](mailto:nightroman@gmail.com)
 * [http://nightroman.wordpress.com/](http://nightroman.wordpress.com/)
 
----------------------------------------------------------------------
+*********************************************************************
 ## Installation {#Installation}
 
 [Contents](#Contents)
 
 **Requirements**
 
-- Far Manager 3.0.2490
+- Far Manager 3.0.2516
 - .NET Framework 3.5 or 4.0
 - Microsoft Visual C++ 2008 SP1 Redistributable Package
 
@@ -100,7 +100,7 @@ The optional folder *FarNet\Modules* contains the sources of sample modules.
 
 - Module root directory. Each child is normally a module directory.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Commands in macros {#Macros}
 
 [Contents](#Contents)
@@ -181,7 +181,7 @@ shown for a moment if a macro has its option "Disable screen output" checked.
 The workaround is funny: uncheck this macro option, i.e. allow screen output.
 The effect is the opposite: the unwanted menu is not shown anymore.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Technical information {#TechInfo}
 
 [Contents](#Contents)
@@ -232,7 +232,7 @@ variables should be used only in special cases:
     Values: `true` or `false`.
     Default: `false`.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Problems and solutions {#Issues}
 
 [Contents](#Contents)
@@ -264,7 +264,7 @@ can be used to start x86 Far:
     set PATH=%WINDIR%\syswow64;%PATH%
     "...\Far.exe"
 
----------------------------------------------------------------------
+*********************************************************************
 ## Plugin menu {#MenuMain}
 
 [Contents](#Contents)
@@ -278,7 +278,7 @@ The main plugin menu shows the following menus:
 * [Console menu](#MenuConsole)
 * [Settings menu](#ModuleSettings)
 
----------------------------------------------------------------------
+*********************************************************************
 ## Panels menu {#MenuPanels}
 
 [Contents](#Contents)
@@ -330,7 +330,7 @@ The panels menu shows commands dealing with the panel.
     Removes the selected shelved panel information from the internal shelve. It is
     ignored if the selected item is not a shelved panel.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Console menu {#MenuConsole}
 
 [Contents](#Contents)
@@ -351,7 +351,7 @@ Example mouse macros for the Common area:
     [CtrlMsWheelUp] FarNet: Increase font size:
     F11 $If (Menu.Select("FarNet", 2) > 0) Enter c i $End
 
----------------------------------------------------------------------
+*********************************************************************
 ## Drawers menu {#MenuDrawers}
 
 [Contents](#Contents)
@@ -361,7 +361,7 @@ Menu items of drawers which are already added to the current editor are
 checked. Selecting an added drawer removes it from the current editor.
 Selecting a not added drawer adds it to the current editor.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Editors menu {#MenuEditors}
 
 [Contents](#Contents)
@@ -370,7 +370,7 @@ This menu shows the list of opened editors sorted by the most recent activity.
 E.g. the first item is the current editor, the second item is the previously
 active and so on.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Viewers menu {#MenuViewers}
 
 [Contents](#Contents)
@@ -379,7 +379,7 @@ This menu shows the list of opened viewers sorted by the most recent activity.
 E.g. the first item is the current viewer, the second item is the previously
 active and so on.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Config menu {#MenuConfig}
 
 [Contents](#Contents)
@@ -401,7 +401,7 @@ See [Settings menu and panels](#ModuleSettings) (`F11 | FarNet | Settings`).
 In addition, modules may provide custom settings dialogs and even not standard
 ways to configure settings (e.g. via registry), see module manuals.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Configure commands {#ConfigCommand}
 
 [Contents](#Contents)
@@ -417,7 +417,7 @@ Opens the input box where you can change the selected prefix.
 In the input box you change the selected prefix. If you enter an empty string
 then the default prefix is restored.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Configure drawers {#ConfigDrawer}
 
 [Contents](#Contents)
@@ -430,16 +430,14 @@ Opens the dialog where you can change drawer settings.
 
 **Dialog**
 
-In the dialog you change the file mask, see [File masks](:FileMasks), exclude
-masks are supported (i.e. `include|exclude`). If you enter an empty string
-then the default mask is restored. If the default is empty itself then the
-drawer is disabled by default for all files.
+In the dialog you change the file mask, see [File masks](:FileMasks).
+Use the empty mask in order to exclude all files.
 
 The `Priority` field is for changing drawer color priorities. It makes sense to
 configure it if there are several drawers and some of them have to be
 prioritized with respect to the others.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Configure editors {#ConfigEditor}
 
 [Contents](#Contents)
@@ -452,11 +450,10 @@ Opens the input box where you can change the file mask.
 
 **Input box**
 
-In the input box you change the file mask, see [File masks](:FileMasks), exclude
-masks are supported (i.e. `include|exclude`). If you enter an empty string
-then the default mask is restored.
+In the input box you change the file mask, see [File masks](:FileMasks).
+Use the empty mask in order to exclude all files.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Configure menu tools {#ConfigTool}
 
 [Contents](#Contents)
@@ -471,13 +468,13 @@ Opens the dialog where you can change the default areas.
 
 Disable or re-enable the default areas where the tool menu items are shown.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Module UI culture menu {#ConfigUICulture}
 
 [Contents](#Contents)
 
 This menu and input box set FarNet module UI cultures needed for localization.
-It makes sense if a module provides more than one localized *.resources files
+It makes sense if a module provides more than one localized *.resources* files
 and you want to set its UI to a culture different from the current.
 
 `[Enter]` (menu)
@@ -488,7 +485,7 @@ Opens the input box where you can change the culture.
 
 Enter a new culture name. Empty name tells to use the current Far UI culture.
 
----------------------------------------------------------------------
+*********************************************************************
 ## List menu {#ListMenu}
 
 [Contents](#Contents)
@@ -530,7 +527,7 @@ Removes the incremental filter string completely.
 
 Copies the current item text to the clipboard.
 
----------------------------------------------------------------------
+*********************************************************************
 ## Settings menu and panel {#ModuleSettings}
 
 [Contents](#Contents)
@@ -568,4 +565,4 @@ contrast, there are also *system settings* menus and dialogs. System settings
 exist for all modules and their tools.
 See [Config menu](#MenuConfig) (`F9 | Options | Plugin configuration`).
 
----------------------------------------------------------------------
+*********************************************************************

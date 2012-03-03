@@ -61,7 +61,7 @@ if ($FileName) {
 
 # from editor?
 $editor = $Far.Editor
-if (!$editor -or $editor.FileName -notmatch '\.(md|markdown)$') {
+if (!$editor -or $editor.FileName -notmatch '\.(text|md|markdown)$') {
 	Show-FarMessage "Run it with parameters or a markdown file in the editor."
 	return
 }

@@ -90,6 +90,7 @@ namespace FarNet
 
 			// write text
 			File.WriteAllText(fileName, text, Encoding.Unicode);
+			args.CodePage = 1200;
 			return args;
 		}
 		/// <summary>
@@ -390,8 +391,11 @@ namespace FarNet
 			// editor
 			var editorTemp = Far.Net.CreateEditor();
 			editorTemp.DeleteSource = DeleteSource.File;
+			editorTemp.DisableHistory = true;
 			editorTemp.FileName = temp;
 			editorTemp.Title = file.Name;
+			if (asExportFileEventArgs.CodePage != 0)
+				editorTemp.CodePage = asExportFileEventArgs.CodePage;
 
 			// future
 			if (xExportArgs.CanSet)
@@ -458,11 +462,16 @@ namespace FarNet
 				return;
 			}
 
-			// temp viewer
+			// viewer
 			var viewerTemp = Far.Net.CreateViewer();
 			viewerTemp.DeleteSource = DeleteSource.File;
+			viewerTemp.DisableHistory = true;
 			viewerTemp.FileName = temp;
 			viewerTemp.Title = file.Name;
+			if (asExportFileEventArgs.CodePage != 0)
+				viewerTemp.CodePage = asExportFileEventArgs.CodePage;
+			
+			// open
 			viewerTemp.Open();
 		}
 		/// <summary>

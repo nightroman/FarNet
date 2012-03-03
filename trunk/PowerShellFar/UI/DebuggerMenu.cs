@@ -104,7 +104,7 @@ namespace PowerShellFar.UI
 				// found?
 				if (bpFound != null)
 				{
-					switch(Far.Net.Message("Breakpoint exists",
+					switch (Far.Net.Message("Breakpoint exists",
 						"Line breakpoint",
 						MessageOptions.None,
 						new string[] {
@@ -145,7 +145,7 @@ namespace PowerShellFar.UI
 				A.RemoveBreakpoint(bpFound);
 
 			// set new
-			A.SetBreakpoint(ui.Script, int.Parse(ui.Matter), ui.Action);
+			A.SetBreakpoint(ui.Script, int.Parse(ui.Matter, null), ui.Action);
 		}
 		void OnCommandBreakpoint(object sender, EventArgs e)
 		{

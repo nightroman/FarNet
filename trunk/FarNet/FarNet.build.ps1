@@ -48,7 +48,7 @@ task Uninstall {
 }
 
 task Help {
-	exec { MarkdownToHtml "From=About-FarNet.md" "To=About-FarNet.htm" }
+	exec { MarkdownToHtml "From=About-FarNet.text" "To=About-FarNet.htm" }
 	exec { HtmlToFarHelp "From=About-FarNet.htm" "To=$FarHome\Plugins\FarNet\FarNetMan.hlf" }
 }
 

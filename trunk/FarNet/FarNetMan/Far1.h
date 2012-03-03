@@ -43,7 +43,8 @@ public:
 	virtual array<FarNet::Panel^>^ Panels(Type^ type) override;
 	virtual array<IEditor^>^ Editors() override;
 	virtual array<IViewer^>^ Viewers() override;
-	virtual bool MatchPattern(String^ input, String^ pattern) override;
+	virtual bool IsMaskMatch(String^ path, String^ mask) override;
+	virtual bool IsMaskValid(String^ mask) override;
 	virtual CultureInfo^ GetCurrentUICulture(bool update) override;
 	virtual IModuleAction^ GetModuleAction(Guid id) override;
 	virtual int Message(String^ body, String^ header, MessageOptions options, array<String^>^ buttons, String^ helpTopic) override;

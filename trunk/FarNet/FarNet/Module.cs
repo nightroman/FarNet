@@ -707,17 +707,9 @@ namespace FarNet
 		/// </summary>
 		void Invoke(object sender, ModuleCommandEventArgs e);
 		/// <summary>
-		/// Gets the actual command prefix.
+		/// Gets the command prefix. Setting is for internal use.
 		/// </summary>
-		string Prefix { get; }
-		/// <summary>
-		/// Gets the default prefix.
-		/// </summary>
-		string DefaultPrefix { get; }
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		void ResetPrefix(string value);
+		string Prefix { get; set; }
 	}
 
 	/// <summary>
@@ -733,17 +725,9 @@ namespace FarNet
 		/// </summary>
 		void Invoke(object sender, ModuleEditorEventArgs e);
 		/// <summary>
-		/// Gets the actual file mask.
+		/// Gets the file mask. Setting is for internal use.
 		/// </summary>
-		string Mask { get; }
-		/// <summary>
-		/// Gets the default file mask.
-		/// </summary>
-		string DefaultMask { get; }
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		void ResetMask(string value);
+		string Mask { get; set; }
 	}
 
 	/// <summary>
@@ -759,29 +743,13 @@ namespace FarNet
 		/// </summary>
 		EventHandler<ModuleDrawerEventArgs> CreateHandler();
 		/// <summary>
-		/// Gets the actual file mask.
+		/// Gets the file mask. Setting is for internal use.
 		/// </summary>
-		string Mask { get; }
+		string Mask { get; set; }
 		/// <summary>
-		/// Gets the default file mask.
+		/// Gets the priority. Setting is for internal use.
 		/// </summary>
-		string DefaultMask { get; }
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		void ResetMask(string value);
-		/// <summary>
-		/// Gets the actual priority.
-		/// </summary>
-		int Priority { get; }
-		/// <summary>
-		/// Gets the default priority.
-		/// </summary>
-		int DefaultPriority { get; }
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		void ResetPriority(int value);
+		int Priority { get; set; }
 	}
 
 	/// <summary>
@@ -798,17 +766,13 @@ namespace FarNet
 		/// </summary>
 		void Invoke(object sender, ModuleToolEventArgs e);
 		/// <summary>
-		/// Gets the actual tool options.
+		/// Gets the tool options. Setting is for internal use.
 		/// </summary>
-		ModuleToolOptions Options { get; }
+		ModuleToolOptions Options { get; set; }
 		/// <summary>
 		/// Gets the default tool options.
 		/// </summary>
 		ModuleToolOptions DefaultOptions { get; }
-		/// <summary>
-		/// For internal use.
-		/// </summary>
-		void ResetOptions(ModuleToolOptions value);
 	}
 
 }

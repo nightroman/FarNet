@@ -39,7 +39,7 @@ namespace FarNet.Works
 		{
 			if (_Handler != null)
 				return _Handler;
-			
+
 			Invoking();
 			ModuleDrawer instance = (ModuleDrawer)GetInstance();
 			return instance.Invoke;
@@ -65,28 +65,19 @@ namespace FarNet.Works
 		public string Mask
 		{
 			get { return _Mask; }
-		}
-		public string DefaultMask
-		{
-			get { return Attribute.Mask; }
-		}
-		public void ResetMask(string value)
-		{
-			if (value == null) throw new ArgumentNullException("value");
-
-			_Mask = value;
+			set
+			{
+				if (value == null) throw new ArgumentNullException("value");
+				_Mask = value;
+			}
 		}
 		public int Priority
 		{
 			get { return _Priority; }
-		}
-		public int DefaultPriority
-		{
-			get { return Attribute.Priority; }
-		}
-		public void ResetPriority(int value)
-		{
-			_Priority = value;
+			set
+			{
+				_Priority = value;
+			}
 		}
 		void Init()
 		{
@@ -97,10 +88,10 @@ namespace FarNet.Works
 		{
 			var data = new Hashtable();
 
-			if (_Mask != DefaultMask)
+			if (_Mask != Attribute.Mask)
 				data.Add(idMask, _Mask);
 
-			if (_Priority != DefaultPriority)
+			if (_Priority != Attribute.Priority)
 				data.Add(idPriority, _Priority);
 
 			return data;
@@ -109,13 +100,13 @@ namespace FarNet.Works
 		{
 			if (data == null)
 			{
-				_Mask = DefaultMask;
-				_Priority = DefaultPriority;
+				_Mask = Attribute.Mask;
+				_Priority = Attribute.Priority;
 			}
 			else
 			{
-				_Mask = data[idMask] as string ?? DefaultMask;
-				_Priority = (int)(data[idPriority] ?? DefaultPriority);
+				_Mask = data[idMask] as string ?? Attribute.Mask;
+				_Priority = (int)(data[idPriority] ?? Attribute.Priority);
 			}
 		}
 	}

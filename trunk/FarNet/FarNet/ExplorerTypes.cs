@@ -346,6 +346,14 @@ namespace FarNet
 		/// The extension may be useful in order to get proper syntax highlighting with the <i>Colorer</i> plugin.
 		/// </remarks>
 		public string UseFileExtension { get; set; }
+		/// <summary>
+		/// Gets or sets the code page to use in the editor.
+		/// </summary>
+		/// <remarks>
+		/// It may be use together with <see cref="UseFileName"/>.
+		/// With <see cref="UseText"/> the code page is set to 1200.
+		/// </remarks>
+		public int CodePage { get; set; }
 	}
 
 	/// <summary>

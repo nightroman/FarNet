@@ -25,6 +25,7 @@ public:
 	static void Stop();
 	static void UnregisterProxyAction(IModuleAction^ action);
 public:
+	static bool MatchMask(String^ mask, const wchar_t* name, bool skipPath);
 	static bool InvokeCommand(const wchar_t* command, bool isMacro);
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static void ChangeFontSize(bool increase);
@@ -37,11 +38,9 @@ public:
 public:
 	static String^ _folder = Path::GetDirectoryName((Assembly::GetExecutingAssembly())->Location);
 	static String^ _helpTopic = "<" + _folder + "\\>";
-	static bool CompareNameExclude(String^ mask, const wchar_t* name, bool skipPath);
 	static void InvalidateProxyCommand();
 	static void UnregisterProxyTool(IModuleTool^ tool);
 private:
-	static bool CompareName(String^ mask, const wchar_t* name, bool skipPath);
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
 	static void PostSelf();

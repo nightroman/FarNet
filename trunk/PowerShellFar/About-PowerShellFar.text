@@ -39,12 +39,12 @@
 
 * [Using .NET assemblies](#UsingAssemblies)
 
----------------------------------------------------------------------
+*********************************************************************
 # About {#About}
 
 [Contents](#Contents)
 
-**PowerShellFar 5.0.15**
+**PowerShellFar 5.0.16**
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -75,15 +75,15 @@ PowerShellFar, FarNet and documentation can be updated by the included script
 * [http://nightroman.wordpress.com/](http://nightroman.wordpress.com/)
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Installation {#Installation}
 
 [Contents](#Contents)
 
 **Requirements**
 
-- Far Manager 3.0.2490
-- Plugin FarNet 5.0.15
+- Far Manager 3.0.2516
+- Plugin FarNet 5.0.16
 - Windows PowerShell V2, V3
 
 **Set PowerShell execution policy**
@@ -139,7 +139,7 @@ at least 164, so that panels width is 80 which is the default console width.
 Many PowerShell type formats are designed with 80 columns in mind.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Run commands {#RunCommands}
 
 [Contents](#Contents)
@@ -229,7 +229,7 @@ It is not normally possible to stop commands started from event handlers (e.g.
 editor and panel events or `$Psf.Action handlers`). Design such code carefully.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Command line {#CommandLine}
 
 [Contents](#Contents)
@@ -279,7 +279,7 @@ commands in the user menu (`[F2]`) and the file associations. Users normally do
 not want them to pollute the history because they are not typed manually.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Menu commands {#MenuCommands}
 
 [Contents](#Contents)
@@ -341,10 +341,10 @@ See [Errors menu](#MenuErrors).
 
 **Help**
 
-For the current code token in editor, editbox, cmdline it shows in the viewer
-available help information. In code editors (*.ps1, *.psm1, *.psd1,
-*.psfconsole, input code boxes) this action is associated with [ShiftF1]. It is
-exposed for scripting as #$Psf.ShowHelp()#.
+For the current token in an editor, an edit box, or the command line it shows
+available help information in the viewer. In code editors (*.ps1*, *.psm1*,
+*.psd1*, *.psfconsole*, input code boxes) this action is associated with
+`[ShiftF1]`. It is exposed for scripting as `$Psf.ShowHelp()`.
 
 **Others**
 
@@ -352,7 +352,7 @@ Other tools exist in the menu only if you have added them yourself, for example
 using a start-up profile like [Profile-.ps1](#Profile).
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Background jobs menu {#MenuBackgroundJobs}
 
 [Contents](#Contents)
@@ -383,7 +383,7 @@ list, discards its output, errors, and deletes temp files, if any.
 `[ShiftDel]` Invokes [Del] action for each job in the list.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Command history menu {#MenuCommandHistory}
 
 [Contents](#Contents)
@@ -414,7 +414,7 @@ are wildcards.
 `[ShiftBS]` Removes the incremental filter string completely.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Power panel menu {#MenuPanels}
 
 [Contents](#Contents)
@@ -426,7 +426,7 @@ selected drive.
 `[Enter]` Opens the selected panel.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Modules menu {#MenuModules}
 
 [Contents](#Contents)
@@ -472,7 +472,7 @@ You may use Import-Module and Add-PSSnapin in your profile to import/add
 favourite modules and snap-ins always when PowerShellFar starts.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Errors menu {#MenuErrors}
 
 [Contents](#Contents)
@@ -491,7 +491,7 @@ source file in the internal editor at the line that caused an error.
 `[Del]` Removes all error records and closes the menu.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Debugger tools menu {#MenuDebugger}
 
 [Contents](#Contents)
@@ -549,7 +549,7 @@ or remove breakpoints.
     Removes all existing breakpoints.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Breakpoint dialog {#BreakpointDialog}
 
 [Contents](#Contents)
@@ -584,7 +584,7 @@ debugging, logging, diagnostics, adding extra or altering original features
 without changing the original source code - all depends on your fantasy.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Debugger dialog {#DebuggerDialog}
 
 [Contents](#Contents)
@@ -656,7 +656,7 @@ of transcribed output before you start debugging (`Show-FarTranscript
 -External`). In this way you can see the output during debugging.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Editor console {#EditorConsole}
 
 [Contents](#Contents)
@@ -769,7 +769,7 @@ Use word completion (e.g. *Complete-Word-.ps1*): words from output of previous
 commands often can be effectively completed in a new command being composed.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Editor console menu {#EditorConsoleMenuOpen}
 
 [Contents](#Contents)
@@ -798,7 +798,7 @@ sessions.
     password is also requested. See `about_remote*` help topics for details.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Power panel {#PowerPanel}
 
 [Contents](#Contents)
@@ -946,7 +946,7 @@ types, providers and etc.
     Search. It is not really implemented.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Object panel {#ObjectPanel}
 
 [Contents](#Contents)
@@ -968,7 +968,7 @@ properties - thus, it is similar to the *ProcList* plugin (see also *Panel-Proce
 the same but now objects (processes) are sorted by WS (working set); note that
 you have to use unsorted Far mode to see the results sorted by you.
 
-    >: ps | sort WS | Out-FarPanel Name, @@{Expression='WS'; Type='S'}
+    >: ps | sort WS | Out-FarPanel Name, @{Expression='WS'; Type='S'}
 
 the same but with only two custom columns: Name and WS, where WS is mapped to
 Far Size column.
@@ -1032,7 +1032,7 @@ importing from clixml (enough for many tasks). You can also export/import data
 to/from .csv files, in this case most of imported data are strings.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Provider item panel {#ItemPanel}
 
 [Contents](#Contents)
@@ -1085,7 +1085,7 @@ may use scripts *Go-To-.ps1* (not for *FileSystem*) and *Panel-Property-.ps1*
 (for any provider). See comments and examples there.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Provider folder tree {#FolderTree}
 
 [Contents](#Contents)
@@ -1127,7 +1127,7 @@ modules/snap-ins.
     (expanding, collapsing nodes and etc.).
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Data panel {#DataPanel}
 
 [Contents](#Contents)
@@ -1214,7 +1214,7 @@ Once again: remember that a data panel is a kind of a [Power
 panel](#PowerPanel), so that many keys and rules are the same.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # List panel {#ListPanel}
 
 [Contents](#Contents)
@@ -1281,7 +1281,7 @@ It is not recommended to use member panels to view exposed internal objects
 like `$Far`, `$Psf`, `$Far.Panel`, `$Far.Panel2`, and etc.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Tree panel {#TreePanel}
 
 [Contents](#Contents)
@@ -1327,7 +1327,7 @@ FileSystem and Registry do, Function and Variable do not.
 * `[Ctrl1]` - tree column and description status.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Settings {#Settings}
 
 [Contents](#Contents)
@@ -1387,7 +1387,7 @@ There are many settings not included in configuration dialog and $Psf.Settings
 configured in a profile script (example: [Profile-.ps1](#Profile)).
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Global objects {#GlobalObjects}
 
 [Contents](#Contents)
@@ -1414,7 +1414,7 @@ There are three main objects defined as global variables.
     The script may choose how to work depending on a host.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Commands output {#CommandsOutput}
 
 [Contents](#Contents)
@@ -1465,7 +1465,7 @@ Output of `>>:` commands is written to files:
 They are deleted as soon as their viewers are closed.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Background jobs {#BackgroundJobs}
 
 [Contents](#Contents)
@@ -1507,7 +1507,7 @@ proceed on jobs. The macro `[F10]` can get control of exit in panels: see
 [Command and macro examples](#Examples).
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Suffixes {#Suffix}
 
 [Contents](#Contents)
@@ -1554,7 +1554,7 @@ then standard scripts are started by PowerShell.exe, PowerShellFar scripts are
 started by PowerShellFar and step units are started by the stepper.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Profile-.ps1 - example of startup code {#Profile}
 
 [Contents](#Contents)
@@ -1607,6 +1607,14 @@ macros connected to scripts via action script blocks.
 
 ---
 
+    # The script invoked after editor console commands.
+    $Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
+
+The script is invoked after each editor console command, its output is
+converted to strings and written to the editor console.
+
+---
+
     # Provider settings
     $Psf.Providers = ...
 
@@ -1634,7 +1642,7 @@ modules should not be loaded from a profile but it still may define some
 favourite proxy functions that load modules themselves.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Profile-Editor-.ps1 - example editor event handlers {#ProfileEditor}
 
 [Contents](#Contents)
@@ -1674,7 +1682,7 @@ This example profile covers the following events:
 
 Keyboard events:
 
-- `[F1]` - in a .hlf file save and show help for the current topic.
+- `[F1]` - in a HLF file: save and show help for the current topic.
 
 Mouse events:
 
@@ -1688,7 +1696,7 @@ The topic [Remove-EndSpace-.ps1](#RemoveEndSpace) shows how to set different
 event handlers for different file types.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # TabExpansion.ps1 {#TabExpansion}
 
 [Contents](#Contents)
@@ -1866,7 +1874,7 @@ This long list of examples is not full, much more examples can be found in the
 test script *Test-TabExpansion-.ps1*.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Remove-EndSpace-.ps1 {#RemoveEndSpace}
 
 [Contents](#Contents)
@@ -1923,7 +1931,7 @@ PowerShell handlers do not use parameters, they use special variables:
 - `$_` - event argument (not used in our example)
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Job-RemoveItem-.ps1 {#JobRemoveItem}
 
 [Contents](#Contents)
@@ -1939,7 +1947,7 @@ user menu, directly or by a macro):
     >: Job-RemoveItem-.ps1 (Get-FarItem -Selected) #
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Search-Regex-.ps1 {#SearchRegex}
 
 [Contents](#Contents)
@@ -2054,7 +2062,7 @@ The script demonstrates a few important PowerShellFar and FarNet techniques:
 using background jobs and Far panels for the results and further operations.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Other scripts {#Others}
 
 [Contents](#Contents)
@@ -2067,7 +2075,7 @@ or you can just invoke standard help commands, for example:
     ...
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Using .NET assemblies {#UsingAssemblies}
 
 [Contents](#Contents)
@@ -2146,7 +2154,7 @@ The `Add-Type` cmdlet can compile .NET code at runtime. Example: *Test-Zoo.cs*
 contains some C# code, *Test-Zoo-.ps1* shows how to compile and use it.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Frequently asked questions {#FAQ}
 
 [Contents](#Contents)
@@ -2172,7 +2180,7 @@ A: There are at least two options, both using macros
     position is the same that might be useful on composing lengthy commands.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Invoking console applications {#ConsoleApplications}
 
 [Contents](#Contents)
@@ -2187,7 +2195,7 @@ console directly should not be used in PSF. Run them in Far or Cmd. This is
 especially important for asynchronous editor consoles and background jobs.
 
 
----------------------------------------------------------------------
+*********************************************************************
 # Command and macro examples {#Examples}
 
 [Contents](#Contents)
@@ -2266,4 +2274,4 @@ with this macro:
 
     CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>: $Psf.InvokeScriptFromEditor()")
 
----------------------------------------------------------------------
+*********************************************************************

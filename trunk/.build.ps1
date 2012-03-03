@@ -20,7 +20,10 @@ $Builds = @(
 
 task Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
-	Remove-Item FarNetAccord.sdf -ErrorAction 0
+	
+	Remove-Item -ErrorAction 0 `
+	FarNetAccord.sdf,
+	$FarHome\FarNet\Modules\Explore\About-Explore.htm
 }
 
 task Build {

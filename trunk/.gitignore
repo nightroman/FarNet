@@ -1,4 +1,5 @@
 *.htm
+*.opensdf
 *.sdf
 *.suo
 *.vcxproj.user

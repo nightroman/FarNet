@@ -450,12 +450,15 @@ namespace FarNet
 		/// </summary>
 		public abstract IUserInterface UI { get; }
 		/// <summary>
-		/// Gets true if the string matches the pattern compatible with the core file masks.
+		/// Gets true if a file path matches a Far Manager file mask.
 		/// </summary>
-		/// <param name="input">Input string.</param>
-		/// <param name="pattern">The pattern: "include-wildcard|exclude-wildcard" or "/regex/".</param>
-		/// <returns></returns>
-		public abstract bool MatchPattern(string input, string pattern);
+		/// <param name="path">Input file path.</param>
+		/// <param name="mask">Mask: "include-wildcard-list[|exclude-wildcard-list]" or "/regex/[option]".</param>
+		public abstract bool IsMaskMatch(string path, string mask);
+		/// <summary>
+		/// Gets true if a Far Manager file mask is valid.
+		/// </summary>
+		public abstract bool IsMaskValid(string mask);
 		/// <summary>
 		/// For internal use. Gets the local or roamimg data directory path of the application.
 		/// </summary>
@@ -538,7 +541,7 @@ namespace FarNet
 		/// </summary>
 		Far = 1 << 0,
 		/// <summary>
-		/// Assume path specifies full path to a .hlf file (c:\path\filename).
+		/// Assume path specifies full path to a HLF file (c:\path\filename).
 		/// </summary>
 		File = 1 << 1,
 		/// <summary>
