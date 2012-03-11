@@ -1,6 +1,35 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.17 =
+
+FarDescription module and Edit-FarDescription-.ps1
+(description tools and multi-line editor)
+
+- Do not trim, keep text as it is.
+- Do not preselect 1-line descriptions.
+- Use temp names like "name.ext.description.txt" and enable editor history.
+Thus, it is much more convenient to edit descriptions - texts are opened at
+last saved positions and Colorer adds some colors for .txt. Distinctive name
+can be used by other tools (e.g. RightWords for spelling checks on opening).
+
+Show-Markdown-.ps1
+- Amended the anchor pattern.
+
+Reformat-Selection-.ps1
+- Amended formatting of markdown lists.
+
+Indent-Selection-.ps1
+- Renamed the switch Outdent -> Back.
+- It can work with any custom prefix, e.g. '> ' (quotations in markdown).
+
+Show-Hlf-.ps1
+- @+ @- should not be treated as topic anchors.
+
+RomanConsole.hrd
+- Changed def:Tag color so that it is different from def:Text.
+(BTW, the original standard White scheme has the same "defect").
+
 = 5.0.16 =
 
 Settings

@@ -53,7 +53,7 @@ $editor.Save()
 
 # open a file from editor with the current topic
 for($e = $editor.Caret.Y; $e -ge 0; --$e) {
-	if ($editor[$e].Text -match '^@(\S+)') {
+	if ($editor[$e].Text -match '^@(\w\S*)') {
 		$Topic = $matches[1]
 		break
 	}

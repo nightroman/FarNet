@@ -1135,8 +1135,8 @@ IList<ILine^>^ Editor::SelectedLines::get()
 	Place pp = Edit_SelectionPlace();
 	if (pp.Top < 0)
 		return gcnew Works::LineCollection(this, 0, 0);
-	else
-		return gcnew Works::LineCollection(this, pp.Top, pp.Height);
+
+	return gcnew Works::LineCollection(this, pp.Top, (pp.Right < 0 ? pp.Height - 1 : pp.Height));
 }
 
 IEditorBookmark^ Editor::Bookmark::get()

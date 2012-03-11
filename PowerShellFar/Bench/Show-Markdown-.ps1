@@ -71,7 +71,7 @@ $editor.Save()
 
 # open a file from editor with the current topic
 for($e = $editor.Caret.Y; $e -ge 0; --$e) {
-	if ($editor[$e].Text -match '^#+.*{#(\w+)}') {
+	if ($editor[$e].Text -match '^#+.*{#([a-zA-Z][a-zA-Z0-9_\-:.]*)}') {
 		$Topic = $matches[1]
 		break
 	}

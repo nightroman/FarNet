@@ -157,6 +157,7 @@ namespace FarDescription
 		{
 			//! trim '\': FullName may have it after MoveTo() for directories
 			path = path.TrimEnd('\\');
+			string directory = Path.GetDirectoryName(path);
 
 			lock (WeakCache)
 			{
@@ -164,7 +165,6 @@ namespace FarDescription
 				DescriptionMap cache = (DescriptionMap)WeakCache.Target;
 
 				// description file, if any
-				string directory = Path.GetDirectoryName(path);
 				bool exists;
 				string descriptionFile = GetDescriptionFile(directory, out exists);
 				if (!exists)
@@ -188,15 +188,18 @@ namespace FarDescription
 		{
 			//! trim '\': FullName may have it after MoveTo() for directories
 			path = path.TrimEnd('\\');
+			string directory = Path.GetDirectoryName(path);
 
+			// replace line breaks
+			value = value.Replace("\r\n", " _ ").Replace("\r", " _ ");
+			
 			lock (WeakCache)
 			{
 				// get data and set new value
-				string directory = Path.GetDirectoryName(path);
 				bool exists;
 				string descriptionFile = GetDescriptionFile(directory, out exists);
 				Dictionary<string, string> map = Import(descriptionFile);
-				map[Path.GetFileName(path)] = value.TrimEnd().Replace("\r\n", " _ ").Replace("\r", " _ ");
+				map[Path.GetFileName(path)] = value;
 
 				// export
 				Export(descriptionFile, map);

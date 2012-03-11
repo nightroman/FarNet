@@ -1,19 +1,21 @@
 
 <#
 .Synopsis
-	Edits pseudo multiline description in the editor.
+	Edits multiline Far descriptions in the editor.
 	Author: Roman Kuzmin
 
 .Description
 	Pseudo line delimiter ' _ ' is replaced with new line in the editor. It is
 	shown literally in Far descriptions and in the native [CtrlZ] line editor.
+
+.Parameter Path
+		File or directory path which description is edited. Default: a current
+		panel item or a file in the current editor or viewer.
 #>
 
 param
 (
-	[string]
-	# File or directory path which description is edited. Default: a current panel item or an opened file in editor/viewer.
-	$Path
+	[Parameter()][string]$Path
 )
 
 Import-Module FarDescription
@@ -26,25 +28,18 @@ if (!$Path) {
 if (![System.IO.File]::Exists($Path) -and ![System.IO.Directory]::Exists($Path)) { return }
 $Path = [System.IO.Path]::GetFullPath($Path)
 
-# item
+# item and description
 $item = Get-Item -LiteralPath $Path -Force
+$text = $item.FarDescription -replace ' _(?: |$)', "`r`n"
 
-# description
-$text1 = $item.FarDescription
-$text2 = $text1.Replace(' _ ', "`r`n")
+# temp file
+$edit = "$env:TEMP\$([System.IO.Path]::GetFileName($Path)).description.txt"
+[System.IO.File]::WriteAllText($edit, $text, [System.Text.Encoding]::UTF8)
 
-$edit = $Far.TempName()
-[System.IO.File]::WriteAllText($edit, $text2, [System.Text.Encoding]::Unicode)
+# editor
+$editor = New-FarEditor $edit -Title "Description: $Path" -DeleteSource 'File' -Host $item
 
-# setup editor
-$editor = New-FarEditor $edit -Title "Description: $Path" -DeleteSource 'File' -DisableHistory -Host $item
-
-# select on open
-if ($text1 -eq $text2) {
-	$editor.add_Opened({ $this.SelectAllText() })
-}
-
-# update on save
+# saving sets description
 $editor.add_Saving({ $this.Host.FarDescription = $this.GetText("`r") })
 
 # open editor
