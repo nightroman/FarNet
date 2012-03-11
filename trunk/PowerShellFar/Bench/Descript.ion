@@ -4,15 +4,15 @@ Complete-Word-.ps1 Completes the current word in editors.
 Connect-MSAccess-.ps1 Connects .mdb database and optionally shows tables in a panel.
 Connect-SqlCompact-.ps1 Connects .sdf database and optionally shows tables in a panel.
 Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a panel.
-Edit-FarDescription-.ps1 Edits pseudo multiline description in the editor.
+Edit-FarDescription-.ps1 Edits multiline Far descriptions in the editor.
 Format-Chart.ps1 Formats output as a table with the last chart column.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
 Get-TextLink-.ps1 Gets a text link to the current editor line.
 Go-Head-.ps1 Goes to the head of panel files or directories.
-Go-Selection-.ps1 Goes to the current selection start\end position
+Go-Selection-.ps1 Goes to the current selection start/end position
 Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-Panel-.ps1 Imports objects from files and shows them in a panel.
-Indent-Selection-.ps1 Indents or outdents selected lines in the editor
+Indent-Selection-.ps1 Indents selected lines in the editor.
 Invoke-Editor-.ps1 Invokes a file from the current editor.
 Invoke-Environment.ps1 Invokes a command and imports its environment variables.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk) in a few ways.

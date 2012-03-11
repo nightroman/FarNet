@@ -227,6 +227,9 @@ namespace FarNet
 		/// Then use <see cref="SetSelectedText"/> if you want new text to be selected after replacement
 		/// or use <see cref="DeleteText"/> + <see cref="InsertText"/> to delete selected and insert new text.
 		/// </para>
+		/// <para>
+		/// The last line of the selection area is not included if nothing is actually selected there.
+		/// </para>
 		/// </remarks>
 		public abstract IList<ILine> SelectedLines { get; }
 		/// <summary>

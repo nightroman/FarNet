@@ -83,8 +83,11 @@ $text = [Regex]::Split($text, "(.{0,$len}(?:\s|$))") | .{process{ if ($_) {
 	if ($first) {
 		$first = $false
 		if ($type -eq 'md') {
-			if ($pref -match '^ {0,3}(?:[*+\-:]|\d+\.)') {
-				$pref = '    '
+			if ($pref -match '^(\s*)((?:[*+\-:]|\d+\.)\s+)') {
+				$pref = $matches[1] + (' ' * $matches[2].Length)
+			}
+			elseif ($pref -match '^(\s*)') {
+				$pref = ' ' * $matches[1].Length
 			}
 		}
 	}

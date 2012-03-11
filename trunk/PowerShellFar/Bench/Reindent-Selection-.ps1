@@ -11,10 +11,6 @@
 
 	It formats PowerShell code well enough if it follows proper coding style,
 	for example all scripts in Bench are formatted by this script.
-
-.Link
-	Profile-.ps1 - how to add this command to the "User menu".
-	Install-Macro-.ps1 - how to add this command key macro.
 #>
 
 $Editor = $Psf.Editor()

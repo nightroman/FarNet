@@ -1,7 +1,7 @@
 
-# FarNet {#Contents}
+# FarNet, the Far Manager plugin {#Contents}
 
-**General**
+### General
 
 * [About](#About)
 * [Installation](#Installation)
@@ -9,12 +9,12 @@
 * [Technical information](#TechInfo)
 * [Problems and solutions](#Issues)
 
-**FarNet menus**
+### FarNet menus
 
 * [Plugin menu](#MenuMain)
 * [Config menu](#MenuConfig)
 
-**User interface features**
+### User interface features
 
 * [List menu](#ListMenu)
 
@@ -23,18 +23,18 @@
 
 [Contents](#Contents)
 
-**FarNet 5.0.16**
+### FarNet 5.0.17
 
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The API is exposed in comfortable object oriented way and most of
 tedious programming job is done internally. User modules normally contain only
 tiny pieces of boilerplate framework code.
 
-**Project**
+### Project
 
 * [http://code.google.com/p/farnet/](http://code.google.com/p/farnet/)
 
-**Author**
+### Author
 
 * Roman Kuzmin
 * [nightroman@gmail.com](mailto:nightroman@gmail.com)
@@ -45,9 +45,9 @@ tiny pieces of boilerplate framework code.
 
 [Contents](#Contents)
 
-**Requirements**
+### Requirements
 
-- Far Manager 3.0.2516
+- Far Manager 3.0.2535
 - .NET Framework 3.5 or 4.0
 - Microsoft Visual C++ 2008 SP1 Redistributable Package
 
@@ -59,7 +59,7 @@ modules. You may have to download and install one of the packages:
 
 ---
 
-**Installation**
+### Installation
 
 The file *Install.txt* shows what has to be copied to `%FARHOME%` keeping the
 same directory structure.
@@ -78,7 +78,7 @@ The optional folder *FarNet\Modules* contains the sources of sample modules.
 
 ---
 
-**File structure**
+### File structure
 
 *%FARHOME%*
 
@@ -113,7 +113,7 @@ respectively.
 
 The FarNet GUID is `"10435532-9BB3-487B-A045-B0E6ECAAB6BC"`.
 
-**Syntax and details**
+### Syntax and details
 
 Synchronous command:
 
@@ -148,7 +148,7 @@ Comparison:
 
 ---
 
-**Notes**
+### Notes
 
 It is recommended to use asynchronous steps, not jobs. Steps are basically the
 same as calls from the plugin menu, this is the most stable approach. Jobs may
@@ -157,7 +157,7 @@ very powerful but its status is still experimental.
 
 ---
 
-**Examples**
+### Examples
 
 Synchronous (*RightControl* and *PowerShellFar* module commands)
 
@@ -174,7 +174,7 @@ Asynchronous job (PowerShellFar command opens the dialog)
 
 ---
 
-**Known issue and workaround**
+### Known issue and workaround
 
 An asynchronous step opens the plugin menu internally. This menu is actually
 shown for a moment if a macro has its option "Disable screen output" checked.
@@ -186,7 +186,7 @@ The effect is the opposite: the unwanted menu is not shown anymore.
 
 [Contents](#Contents)
 
-**Loading modules from disk**
+### Loading modules from disk
 
 For each directory *ModuleName* in *Modules* the core looks for and loads the
 module assembly *ModuleName\ModuleName.dll* (note: directory and assembly names
@@ -200,7 +200,7 @@ carefully and should not change.
 
 ---
 
-**Loading modules from cache**
+### Loading modules from cache
 
 If a module is not preloadable then on its first loading the core caches its
 meta data like menu item titles, command prefixes, supported file masks, and
@@ -216,7 +216,7 @@ The module cache file by default is
 
 ---
 
-**Configuration**
+### Configuration
 
 It is recommended to use the default configuration. The following environment
 variables should be used only in special cases:
@@ -412,7 +412,7 @@ This menu and input box set FarNet module command line prefixes.
 
 Opens the input box where you can change the selected prefix.
 
-**Input box**
+### Input box
 
 In the input box you change the selected prefix. If you enter an empty string
 then the default prefix is restored.
@@ -428,7 +428,7 @@ This menu and dialog set module drawer file masks and priorities.
 
 Opens the dialog where you can change drawer settings.
 
-**Dialog**
+### Dialog
 
 In the dialog you change the file mask, see [File masks](:FileMasks).
 Use the empty mask in order to exclude all files.
@@ -448,7 +448,7 @@ This menu and input box set module editor file masks.
 
 Opens the input box where you can change the file mask.
 
-**Input box**
+### Input box
 
 In the input box you change the file mask, see [File masks](:FileMasks).
 Use the empty mask in order to exclude all files.
@@ -464,7 +464,7 @@ This menu and dialogs set areas where tool menu items are shown.
 
 Opens the dialog where you can change the default areas.
 
-**Dialog**
+### Dialog
 
 Disable or re-enable the default areas where the tool menu items are shown.
 
@@ -481,7 +481,7 @@ and you want to set its UI to a culture different from the current.
 
 Opens the input box where you can change the culture.
 
-**Input box**
+### Input box
 
 Enter a new culture name. Empty name tells to use the current Far UI culture.
 
@@ -510,7 +510,7 @@ line.
 Recommended key for removing item(s) from the menu. Example: command history:
 removes duplicated commands or removes the current command and etc.
 
-**Incremental filter**
+### Incremental filter
 
 Incremental filter is applied immediately on typing (if incremental filtering
 is enabled). By default symbols * and ? are wildcards.
@@ -532,14 +532,14 @@ Copies the current item text to the clipboard.
 
 [Contents](#Contents)
 
-**Settings menu**
+### Settings menu
 
 The settings menu shows settings sets implemented by modules and discovered by
 the core (a module may implement any number of settings sets). On selection of
 a set from the menu its properties are shown in its module settings panel. The
 settings panel is uniform for all modules.
 
-**Settings panel**
+### Settings panel
 
 The module settings panel shows two columns: setting names and values. Use
 `[F4]` in order to edit values in text editors. Editors are not modal, several
