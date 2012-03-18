@@ -26,6 +26,10 @@ namespace FarNet
 		/// </remarks>
 		public abstract WindowKind Kind { get; }
 		/// <summary>
+		/// Gets true if the the current window is modal.
+		/// </summary>
+		public abstract bool IsModal { get; }
+		/// <summary>
 		/// Returns the window kind.
 		/// </summary>
 		/// <param name="index">

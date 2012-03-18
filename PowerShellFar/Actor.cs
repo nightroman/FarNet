@@ -586,7 +586,7 @@ Continue with this current directory?
 		/// </summary>
 		/// <remarks>
 		/// If it is called during a macro then commands are not added to the history.
-		/// Note: use of <c>CallPlugin()</c> (see FarNet Readme.txt) is often better for macros.
+		/// Note: use of <c>Plugin.Call()</c> (see the FarNet manual) is often better for macros.
 		/// <para>
 		/// In order to input and get the code without invoking use the <see cref="InputCode"/> method.
 		/// </para>

@@ -574,6 +574,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 	}
 }
 
+// Plugin.Menu is not a replacement for F11, it is less predictable on posted keys and async jobs.
 void Far0::PostSelf()
 {
 	Far::Net->PostMacro("F11 Menu.Select(\"FarNet\", 2) Enter");
@@ -989,7 +990,7 @@ bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 	// find the colon
 	const wchar_t* colon = wcschr(command, ':');
 
-	// missing colon is possible on CallPlugin
+	// missing colon is possible from macro
 	if (!colon)
 		throw gcnew InvalidOperationException("Invalid module command syntax.");
 
@@ -1008,9 +1009,9 @@ bool Far0::InvokeCommand(const wchar_t* command, bool isMacro)
 		{
 			Action^ handler = gcnew Action(gcnew CommandJob(it, e), &CommandJob::Invoke);
 			if (isAsync2)
-				Far::Net->PostJob(handler);
-			else
 				Far::Net->PostStep(handler);
+			else
+				Far::Net->PostJob(handler);
 			return true;
 		}
 

@@ -11,6 +11,7 @@ namespace FarNet
 ref class Window sealed : IWindow
 {
 public:
+	virtual property bool IsModal { bool get() override; }
 	virtual property int Count { int get() override; }
 	virtual property WindowKind Kind { WindowKind get() override; }
 public:

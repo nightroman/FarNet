@@ -23,7 +23,7 @@
 
 [Contents](#Contents)
 
-### FarNet 5.0.17
+### FarNet 5.0.18
 
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The API is exposed in comfortable object oriented way and most of
@@ -47,7 +47,7 @@ tiny pieces of boilerplate framework code.
 
 ### Requirements
 
-- Far Manager 3.0.2535
+- Far Manager 3.0.2553
 - .NET Framework 3.5 or 4.0
 - Microsoft Visual C++ 2008 SP1 Redistributable Package
 
@@ -106,10 +106,10 @@ The optional folder *FarNet\Modules* contains the sources of sample modules.
 [Contents](#Contents)
 
 If a FarNet module provides commands invoked by prefixes then these commands
-can be called from macros by `CallPlugin()`. The first argument is the FarNet
-GUID. The second argument is the module prefix, colon, and command. For
-asynchronous steps and jobs the argument should start with one and two colons
-respectively.
+can be called from macros by `Plugin.Call()`. The first argument is the FarNet
+GUID. The second argument consists of 0-2 colons, a command prefix, a colon,
+and a command. For asynchronous jobs and steps the argument should start with
+one and two colons respectively.
 
 The FarNet GUID is `"10435532-9BB3-487B-A045-B0E6ECAAB6BC"`.
 
@@ -117,60 +117,50 @@ The FarNet GUID is `"10435532-9BB3-487B-A045-B0E6ECAAB6BC"`.
 
 Synchronous command:
 
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "Prefix:Command")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "Prefix:Command")
 
         - It is called from all macro areas
-        - It can but should not use modal UI
+        - It should avoid calling modal UI
+        - It cannot open panels
+
+Asynchronous job (`IFar.PostJob()`)
+
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":Prefix:Command")
+
+        - It is called from all macro areas
+        - It can call modal UI as usual
         - It cannot open panels
 
 Asynchronous step (`IFar.PostStep()`)
 
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":Prefix:Command")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::Prefix:Command")
 
         - It is called from areas with the plugin menu
-        - It can use modal UI as usual
+        - It can call modal UI as usual
         - It can open panels
 
-Asynchronous job (`IFar.PostJob()`)
-
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::Prefix:Command")
-
-        - It is called from all macro areas
-        - It can use modal UI as usual
-        - It cannot open panels
-
-Comparison:
+Conclusion:
 
 - Synchronous calls are for simple actions with no or tiny interaction;
-- Asynchronous `CallPlugin` normally should be the last macro commands;
-- Asynchronous jobs are good for starting modal dialogs, editors, etc.;
-- Asynchronous steps are used to open any UI including module panels.
-
----
-
-### Notes
-
-It is recommended to use asynchronous steps, not jobs. Steps are basically the
-same as calls from the plugin menu, this is the most stable approach. Jobs may
-reveal scenarios not quite expected by Far Manager. The `CallPlugin` feature is
-very powerful but its status is still experimental.
+- Asynchronous `Plugin.Call` normally should be the last macro command;
+- Asynchronous jobs are for opening any UI but panels;
+- Asynchronous steps are for opening panels.
 
 ---
 
 ### Examples
 
-Synchronous (*RightControl* and *PowerShellFar* module commands)
+Synchronous. *RightControl* changes the caret position:
 
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">: Menu-Favorites-.ps1")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
 
-Asynchronous step (PowerShellFar command opens the panel)
+Asynchronous job. *PowerShellFar* opens a dialog:
 
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: Get-Process | Out-FarPanel")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Psf.InvokeInputCode()")
 
-Asynchronous job (PowerShellFar command opens the dialog)
+Asynchronous step. *PowerShellFar* opens a panel:
 
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::>: $Psf.InvokeInputCode()")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::>: Get-Process | Out-FarPanel")
 
 ---
 
@@ -179,7 +169,7 @@ Asynchronous job (PowerShellFar command opens the dialog)
 An asynchronous step opens the plugin menu internally. This menu is actually
 shown for a moment if a macro has its option "Disable screen output" checked.
 The workaround is funny: uncheck this macro option, i.e. allow screen output.
-The effect is the opposite: the unwanted menu is not shown anymore.
+The effect is the opposite: the unwanted menu is not shown.
 
 *********************************************************************
 ## Technical information {#TechInfo}

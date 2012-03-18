@@ -44,7 +44,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.17
+### PowerShellFar 5.0.18
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -52,9 +52,9 @@ PowerShell perfectly integrated into this original text friendly environment.
 
 It implements the Windows PowerShell host in Far Manager, exposes the FarNet
 object model, and provides several ways for invoking commands and viewing the
-results. The package includes cmdlets, modules, and scripts for many popular Far
-Manager tasks and PowerShell.hrc for Colorer providing rich PowerShell syntax
-highlighting.
+results. The package includes cmdlets, modules, and scripts for many popular
+Far Manager tasks and powershell.hrc for Colorer providing rich PowerShell
+syntax highlighting.
 
 Most of PowerShell features are fully supported. There is nothing really
 serious not implemented, normally you won't even notice that something is
@@ -82,8 +82,8 @@ PowerShellFar, FarNet and documentation can be updated by the included script
 
 ### Requirements
 
-- Far Manager 3.0.2535
-- Plugin FarNet 5.0.17
+- Far Manager 3.0.2553
+- Plugin FarNet 5.0.18
 - Windows PowerShell V2, V3
 
 ### Set PowerShell execution policy
@@ -125,11 +125,11 @@ for more details.
 
 ### Colorer support
 
-Install *PowerShell.hrc* for syntax highlighting in PowerShell files. See
+Install *powershell.hrc* for syntax highlighting in PowerShell files. See
 installation instructions there.
 
 Consider to use *PowerShell.hrd* (console color scheme with white background).
-*PowerShell.hrc* is designed with this scheme in use, other schemes may be less
+*powershell.hrc* is designed with this scheme in use, other schemes may be less
 suitable or even practically unusable. See installation instructions there.
 
 ### Console window width
@@ -770,7 +770,7 @@ should be avoided (`Read-Host`, `Write-Progress`, confirmations, and etc.)
 
 ### Notes
 
-Use *PowerShell.hrc* with Colorer plugin. It works not only for standard
+Use *powershell.hrc* with Colorer plugin. It works not only for standard
 *.ps1*, *.psm1*, *.psd1* files but for *.psfconsole* files, too. In addition to
 standard PowerShell syntax special editor console output is also highlighted
 (numbers, errors, warnings, and etc.)
@@ -2218,42 +2218,51 @@ user menu commands (do not forget to add space and # to the end if you do not
 want a command to be added to the history). Examples with panels should be run
 from panels.
 
+---
 Show three versions: Far, FarNet, PowerShellFar:
 
     >: "Far $($Far.FarVersion)`nFarNet $($Far.FarNetVersion)`nPowerShellFar $($Host.Version)"
 
+---
 Do some math, keep results in variables, use them later
 
     >: $x = [math]::sqrt([math]::pi)
     >: $y = [math]::sqrt(3.14)
     >: $x - $y
 
+---
 Add the current folder to the system path for this Far session (.NET example: static methods and properties)
 
     >: [Environment]::SetEnvironmentVariable('PATH', $env:PATH + ';' + [Environment]::CurrentDirectory, 'Process')
 
+---
 Open selected files in editor at once
 
     >: Get-FarPath -Selected | Start-FarEditor
 
+---
 View *.log* files one by one, don't add to history
 
     >: Get-Item *.log | Start-FarViewer -Modal -DisableHistory
 
+---
 Find string "alias" in .ps1 files, show list of found lines and open editor at
 the selected line (guess why these commands are the same):
 
     >: Get-Item *.ps1 | Select-String alias | Out-FarList | Start-FarEditor
     >: Get-Item *.ps1 | Select-String alias | Out-FarList | %{ Start-FarEditor $_.Path $_.LineNumber }
 
+---
 Show PSF settings in the member panel
 
     >: Open-FarPanel $Psf.Settings
 
+---
 Show list of names and command lines of running processes and then show the selected process member panel (WMI)
 
     >: Get-WmiObject Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Open-FarPanel
 
+---
 Show available scripts and their help synopsis in description column
 
     >: Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -Columns Name, Synopsis
@@ -2262,27 +2271,33 @@ Show available scripts and their help synopsis in description column
 
 ### Macro examples
 
-PowerShell commands can be invoked from macros using the `CallPlugin` function.
-The first argument is the FarNet GUID, the second argument is the module prefix
-and command.
+PowerShell commands can be invoked from macros using the `Plugin.Call`
+function. The first argument is the FarNet GUID, the second argument consists
+of 0-2 colons, a command prefix, a colon, and a command. See the FarNet manual
+for the roles of leading colons.
 
+---
 `[F10]` in the *Panels* area: safe exit with PowerShellFar background jobs check:
 
-    $If (CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">: $Far.Quit()")) $Else F10 $End
+    $If (Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">: $Far.Quit()")) $Else F10 $End
 
-This macro in the *Common* area calls the *Menu-Favorites-.ps1*:
+---
+This macro in the *Common* area calls the *Menu-Favorites-.ps1*. The leading
+colon tells to call it as async job, e.g. to make macros working in the menu.
 
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">: Menu-Favorites-.ps1")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: Menu-Favorites-.ps1")
 
-This macro invokes the *Clear-Session.ps1* script. The macro uses the prefix
-`>>` in order to show command output in the viewer:
+---
+This macro invokes the *Clear-Session.ps1* script. The macro uses the PSF
+prefix `>>` in order to show command output in the viewer:
 
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>: Clear-Session.ps1 -Verbose")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>: Clear-Session.ps1 -Verbose")
 
+---
 Scripts opened in the editor can be invoked in the current session by `[F5]`.
 The key is hardcoded but yet another key still can be used for the same job
 with this macro:
 
-    CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>: $Psf.InvokeScriptFromEditor()")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>: $Psf.InvokeScriptFromEditor()")
 
 *********************************************************************

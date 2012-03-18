@@ -22,7 +22,7 @@ line. They are: Step/Select/Delete by words, Go/Select to smart home. New
 actions are similar to what many popular editors do on stepping, selecting,
 deleting by words, and etc. Example: Visual Studio editor, Word, WordPad, etc.
 
-All the module commands work via the macro function CallPlugin().
+All the module commands work via the macro function Plugin.Call().
 
 Word commands:
 
@@ -42,7 +42,7 @@ Smart home commands:
 
 Example macro for the Editor area:
 
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:go-to-smart-home")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:go-to-smart-home")
 
 Use RightControl.farconfig in order to import typical macros:
 

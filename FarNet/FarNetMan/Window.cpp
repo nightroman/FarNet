@@ -36,6 +36,14 @@ int Window::Count::get()
 	return (int)Info.AdvControl(&MainGuid, ACTL_GETWINDOWCOUNT, 0, 0);
 }
 
+bool Window::IsModal::get()
+{
+	WindowInfo wi;
+	Call_ACTL_GETWINDOWINFO(wi, -1);
+
+	return 0 != (wi.Flags & WIF_MODAL);
+}
+
 WindowKind Window::Kind::get()
 {
 	return Wrap::WindowGetKind();
