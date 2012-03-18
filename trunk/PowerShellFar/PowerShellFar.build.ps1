@@ -41,7 +41,7 @@ task Zip Help, {
 	Copy-Item History.txt, LICENSE, PowerShellFar.farconfig $dir
 	Copy-Item $FarHome\FarNet\Modules\PowerShellFar\* $dir -Recurse
 	Copy-Item Bench $dir -Recurse -Force
-	Copy-Item $draw\PowerShell\PowerShell.hrc, $draw\RomanConsole.hrd, $draw\RomanRainbow.hrd $dir\Extras
+	Copy-Item $draw\powershell\powershell.hrc, $draw\RomanConsole.hrd, $draw\RomanRainbow.hrd $dir\Extras
 
 	Push-Location z
 	exec { & 7z a ..\PowerShellFar.$PowerShellFarVersion.7z * }

@@ -4,58 +4,78 @@ This file contains example macros which invoke PowerShellFar features.
 DO NOT USE THIS AS IT IS, USE YOUR OWN MACROS, THIS IS ONLY AN EXAMPLE
 -->
 <farconfig>
-	<macros>
-		<keymacros>
+<macros>
+<keymacros>
 
-			<!--Shell: Easy prefix-->
+<macro area="Shell" key="Space" description="PSF: Easy prefix" flags="EmptyCommandLine|DisableOutput">
+<text>
+<![CDATA[> : Space]]>
+</text>
+</macro>
 
-			<macro area="Shell" key="Space" flags="EmptyCommandLine|DisableOutput" description="PSF: Easy prefix">
-				<text>
-					<![CDATA[> : Space]]>
-				</text>
-			</macro>
+<macro area="Shell" key="ShiftSpace" description="PSF: Easy invoke" flags="NotEmptyCommandLine">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::>: $Psf.InvokeSelectedCode()")]]>
+</text>
+</macro>
 
-			<!--Shell: Easy invoke-->
-
-			<macro area="Shell" key="ShiftSpace" flags="NotEmptyCommandLine|DisableOutput" description="PSF: Easy invoke">
-				<text>
-					<![CDATA[F11 $If (Menu.Select("PowerShellFar", 2) > 0) Enter 2 $Else Esc $End]]>
-				</text>
-			</macro>
-
-			<!--Shell: Folder history-->
-
-			<macro area="Shell" key="AltF12" flags="" description="PSF: Folder history">
-				<text>
-					<![CDATA[CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Show-History-.ps1 -Folder")]]>
-				</text>
-			</macro>
-
-			<!--Shell: Standard folder history-->
-
-			<macro area="Shell" key="CtrlShiftF12" flags="DisableOutput" description="PSF: Standard folder history">
-				<text>
-					<![CDATA[AltF12]]>
-				</text>
-			</macro>
-
-			<!--Common: Complete-Word-.ps1-->
-
-			<macro area="Common" key="CtrlSpace" flags="" description="PSF: Complete-Word-.ps1">
-				<text>
-					<![CDATA[
+<macro area="Common" key="CtrlSpace" description="PSF: Complete-Word-.ps1">
+<text>
+<![CDATA[
 $If (Dialog.AutoCompletion || Shell.AutoCompletion)
 	Esc
 $End
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Complete-Word-.ps1")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Complete-Word-.ps1")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
+</text>
+</macro>
 
-		</keymacros>
-	</macros>
+<macro area="Common" key="CtrlShiftL" description="PSF: Favorites menu">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: Menu-Favorites-.ps1")]]>
+</text>
+</macro>
+
+<macro area="Common" key="AltF10" description="PSF: Command history">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Psf.ShowHistory()")]]>
+</text>
+</macro>
+
+<macro area="Common" key="CtrlShiftP" description="PSF: Command box">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Psf.InvokeInputCode()")]]>
+</text>
+</macro>
+
+<macro area="Editor" key="Ctrl=" description="PSF Show editor bookmarks">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: Select-Bookmark-")]]>
+</text>
+</macro>
+
+<macro area="Shell" key="F10" description="PSF: Quit Far">
+<text>
+<![CDATA[$If (Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Far.Quit()")) $Else F10 $End]]>
+</text>
+</macro>
+
+<macro area="Shell" key="AltF12" description="PSF: Folder history">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: Show-History-.ps1 -Folder")]]>
+</text>
+</macro>
+
+<macro area="Shell" key="CtrlShiftF12" description="PSF: Standard folder history">
+<text>
+<![CDATA[AltF12]]>
+</text>
+</macro>
+
+</keymacros>
+</macros>
 </farconfig>

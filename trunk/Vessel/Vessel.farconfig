@@ -5,15 +5,28 @@
 	* Common\AltF11 - smart file history instead of standard
 	* Common\CtrlShiftF11 - show standard "File view history"
 -->
-<farconfig version="3.0.2366">
-	<macros>
-		<keymacros>
-			<macro area="Common" key="AltF11" flags="DisableOutput" description="Vessel: Smart file history">
-				<text>
-					<![CDATA[F11 $If (Menu.Select("Vessel", 2) > 0) Enter 1 $Else Esc $AKey $End]]>
-				</text>
-			</macro>
-			<macro area="Common" key="CtrlShiftF11" flags="DisableOutput" description="Vessel: Standard file history">AltF11</macro>
-		</keymacros>
-	</macros>
+<farconfig>
+<macros>
+<keymacros>
+
+<macro area="Common" key="AltF11" description="Vessel: Smart file history" flags="DisableOutput">
+<text>
+<![CDATA[
+$If (Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "58AD5E13-D2BA-4F4C-82CD-F53A66E9E8C0"))
+	1
+$Else
+	$AKey
+$End
+]]>
+</text>
+</macro>
+
+<macro area="Common" key="CtrlShiftF11" description="Vessel: Standard file history">
+<text>
+<![CDATA[AltF11]]>
+</text>
+</macro>
+
+</keymacros>
+</macros>
 </farconfig>

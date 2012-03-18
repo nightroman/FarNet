@@ -609,7 +609,7 @@ namespace FarNet
 		None,
 		/// <summary>
 		/// Confirmation settings:
-		/// Copy, Move, RO, Drag, Delete, DeleteFolder, Esc, HistoryClear, Exit.
+		/// Copy, Move, RO, Drag, Delete, DeleteFolder, Esc, HistoryClear, Exit, RemoveConnection.
 		/// </summary>
 		Confirmations = 16,
 		/// <summary>
@@ -627,5 +627,25 @@ namespace FarNet
 		/// WordDiv.
 		/// </summary>
 		Editor = 19,
+		/// <summary>
+		/// Screen settings:
+		/// KeyBar.
+		/// </summary>
+		Screen = 20,
+		/// <summary>
+		/// Dialog settings:
+		/// EditBlock, EULBsClear, DelRemovesBlocks.
+		/// </summary>
+		Dialog = 21,
+		/// <summary>
+		/// Interface settings:
+		/// ShowMenuBar.
+		/// </summary>
+		Interface = 22,
+		/// <summary>
+		/// Panel layout settings:
+		/// ColumnTitles, StatusLine, SortMode.
+		/// </summary>
+		PanelLayout = 23,
 	}
 }

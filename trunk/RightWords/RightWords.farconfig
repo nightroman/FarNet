@@ -7,43 +7,43 @@
 	* CtrlShiftH - Switch highlighting (editor).
 -->
 <farconfig>
-	<macros>
-		<keymacros>
-			<macro area="Editor" key="CtrlShiftH" flags="DisableOutput" description="RightWords: Highlighting">
-				<text>
-					<![CDATA[
-F11
-$If (Menu.Select("FarNet", 2) == 0) $Exit $End Enter
-$If (Menu.Select("Drawers", 2) == 0) $Exit $End Enter
-$If (Menu.Select("Spelling mistakes", 2) == 0) $Exit $End Enter
-]]>
-				</text>
-			</macro>
-			<macro area="Common" key="CtrlShiftSpace" flags="DisableOutput" description="RightWords: Correct word">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+<macros>
+<keymacros>
+
+<macro area="Common" key="CtrlShiftSpace" flags="DisableOutput" description="RightWords: Correct word">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	F11
-	$If (Menu.Select("RightWords", 2) > 0)
-		Enter 1
+	$If (Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9"))
+		1
 	$End
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Editor" key="CtrlShiftF7" flags="DisableOutput" description="RightWords: Correct text">
-				<text>
-					<![CDATA[
-F11
-$If (Menu.Select("RightWords", 2) > 0)
-	Enter 2
+</text>
+</macro>
+
+<macro area="Editor" key="CtrlShiftF7" flags="DisableOutput" description="RightWords: Correct text">
+<text>
+<![CDATA[
+$If (Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9"))
+	2
 $End
 ]]>
-				</text>
-			</macro>
-		</keymacros>
-	</macros>
+</text>
+</macro>
+
+<macro area="Editor" key="CtrlShiftH" flags="DisableOutput" description="RightWords: Highlighting">
+<text>
+<![CDATA[
+$If (0 == Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "10435532-9BB3-487B-A045-B0E6ECAAB6BC")) $Exit $End
+$If (0 == Menu.Select("Drawers")) $Exit $End Enter
+$If (0 == Menu.Select("Spelling mistakes")) $Exit $End Enter
+]]>
+</text>
+</macro>
+
+</keymacros>
+</macros>
 </farconfig>

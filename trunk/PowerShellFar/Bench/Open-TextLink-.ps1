@@ -8,27 +8,39 @@
 	The script parses the passed text, the selected editor text, or the current
 	line for a text link to some object (file, URL) and opens it in the editor,
 	browser, etc. Recognised text link types: Visual Studio, PowerShell (error
-	messages or Select-String), full and relative file system paths, URLs.
+	messages or Select-String), full and relative file system paths, URLs. In
+	markdown files in the editor it jumps to the current internal link target.
 
-	"Visual Studio" and "Select-String" links may include the original line
-	text after a column: <File>(<Line>):<Text> | <File>:<Line>:<Text>. In this
-	case after opening the editor the script compares the text with the target
-	line and, if it is different, tries to find the nearest line with the same
-	text. Thus, such links are corrected dynamically in many cases when target
-	lines are not changed.
+	"Visual Studio" and "Select-String" links may include a hint, the original
+	line text after a column: <File>(<Line>):<Text> | <File>:<Line>:<Text>. In
+	this case after opening the editor the script compares the text with the
+	target line and, if it is different, tries to find the nearest line with
+	the same text. Thus, such links are corrected dynamically in many cases
+	when target lines are not changed.
+
+	"Visual Studio" link hint line can be the next line as well.
 
 	TEXT LINK EXAMPLES
-	http://www.farmanager.com/
-	C:\Program Files\Far\FarEng.lng(55):"Warning"
-	C:\Program Files\Far\FarEng.lng:55:"Warning"
-	C:\Program Files\Far\FarEng.lng:36 char:22
-	C:\Program Files\Far\FarEng.lng(36,22)
-	C:\Program Files\Far\FarEng.lng(32)
-	C:\Program Files\Far\FarEng.lng:32
-	"C:\Program Files\Far\FarEng.lng"
-	C:\WINDOWS\setuplog.txt
-	"..\Read Me.txt"
-	.\ReadMe.txt
+
+	Web link
+		http://www.farmanager.com/
+
+	VS link with a hint
+		C:\Program Files\Far\FarEng.lng(55):"Warning"
+		<or this line is a hint>
+
+	SS link with a hint
+		C:\Program Files\Far\FarEng.lng:55:"Warning"
+
+	Others
+		C:\Program Files\Far\FarEng.lng:36 char:22
+		C:\Program Files\Far\FarEng.lng(36,22)
+		C:\Program Files\Far\FarEng.lng(32)
+		C:\Program Files\Far\FarEng.lng:32
+		"C:\Program Files\Far\FarEng.lng"
+		C:\WINDOWS\setuplog.txt
+		"..\Read Me.txt"
+		.\ReadMe.txt
 
 .Link
 	Get-TextLink-.ps1
@@ -40,15 +52,31 @@ param
 	$Text = $Psf.ActiveText
 )
 
+$Editor = if ($Far.Window.Kind -eq 'Editor') {$Far.Editor}
+
 ### Link with a position
+
 #! Order: Visual Studio, Select-String, PowerShell
-if ($Text -match '\b(?<File>\w:[\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::(?<Text>.*))?' -or `
-	$Text -match '^>?\s*(?<File>.+?):(?<Line>\d+):(?<Text>.*)' -or `
-	$Text -match '\b(?<File>\w:[\\/][^:]+):(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?') {
+$type = 0
+switch -regex ($Text) {
+	'\b(?<File>\w:[\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::\s*(?<Text>.*))?' {$type = 1; break}
+	'^>?\s*(?<File>.+?):(?<Line>\d+):(?<Text>.*)' {$type = 2; break}
+	'\b(?<File>\w:[\\/][^:]+):(?<Line>\d+)(?:\s+\w+:(?<Char>\d+))?' {$type = 3; break}
+}
+
+if ($type) {
 	$file = $matches.File
 	if (![IO.File]::Exists($file)) {
 		Show-FarMessage "File '$file' does not exist."
 		return
+	}
+
+	$hintText = "$($matches.Text)".Trim()
+	if (!$hintText -and $type -eq 1 -and $Editor) {
+		$findLine = $Editor.Caret.Y + 1
+		if ($findLine -lt $Editor.Count) {
+			$hintText = $Editor[$findLine].Text.Trim()
+		}
 	}
 
 	### Create editor
@@ -61,24 +89,23 @@ if ($Text -match '\b(?<File>\w:[\\/].+?)\((?<Line>\d+),?(?<Char>\d+)?\)(?::(?<Te
 	else {
 		$Editor.GoToLine($iLine)
 	}
-	if (!$matches.Text -or !$matches.Text.Trim()) {
+	if (!$hintText) {
 		$Editor.Open()
 		return
 	}
 
 	### 'Opened' handler checks the line or searches the nearest by text
-	$line = $matches.Text.Trim()
 	$Editor.add_Opened({
-		if ($Editor.Line.Text.Trim() -eq $line) { return }
+		if ($Editor.Line.Text.Trim() -eq $hintText) { return }
 
 		$index1 = $Editor.Caret.Y - 1
 		$index2 = $index1 + 2
 		while(($index1 -ge 0) -or ($index2 -lt $Editor.Count)) {
-			if (($index1 -ge 0) -and ($Editor[$index1].Text.Trim() -eq $line)) {
+			if (($index1 -ge 0) -and ($Editor[$index1].Text.Trim() -eq $hintText)) {
 				$Editor.GoToLine($index1)
 				return
 			}
-			if (($index2 -lt $Editor.Count) -and ($Editor[$index2].Text.Trim() -eq $line)) {
+			if (($index2 -lt $Editor.Count) -and ($Editor[$index2].Text.Trim() -eq $hintText)) {
 				$Editor.GoToLine($index2)
 				return
 			}
@@ -121,14 +148,32 @@ if ($Text -match '"(\.{1,2}[\\/][^"]+)"' -or $Text -match '(?:^|\s)(\.{1,2}[\\/]
 }
 
 ### URL
+
 # From Colorer default.hrc NetURL scheme
-$url = New-Object Regex @'
+$url = [regex]@'
+(?x)
 #REGEX
 \b ((https?|ftp|news|nntp|wais|wysiwyg|gopher|javascript|castanet|about)
 \:\/\/  | (www|ftp|fido[0-9]*)\.)
 [\[\]\@\%\:\+\w\.\/\~\?\-\*=_#&;]+\b\/?
-'@, 'IgnoreCase, IgnorePatternWhitespace'
+'@
+
 if ($Text -match $url) {
 	Start-Process $matches[0]
 	return
+}
+
+### Markdown in the editor: jump to the internal link target
+if ($Editor -and $Editor.FileName -match '\.(text|md|markdown)$') {
+	$match = $Editor.Line.MatchCaret('(?:\[.*\])\(#(.*)\)')
+	if ($match) {
+		$pattern = '^#{1,6}.*?\{#' + [regex]::Escape($match.Groups[1]) + '\}'
+		foreach($line in $Editor.Lines) {
+			if ($line.Text -match $pattern) {
+				$Editor.GoToLine($line.Index)
+				$Editor.Redraw()
+				return
+			}
+		}
+	}
 }

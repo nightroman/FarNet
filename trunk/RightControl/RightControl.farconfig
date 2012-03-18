@@ -20,149 +20,146 @@
 	them for the editor only. Smart home is not really useful for line editors
 	where text normally does not start with spaces.
 -->
-<farconfig version="3.0.2366">
-	<macros>
-		<keymacros>
-			<macro area="Common" key="CtrlBS" flags="DisableOutput" description="RightControl: delete left">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+<farconfig>
+<macros>
+<keymacros>
+
+<macro area="Common" key="CtrlBS" description="RightControl: delete left">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-left")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-left")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Common" key="CtrlDel" flags="DisableOutput" description="RightControl: delete right">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+</text>
+</macro>
+
+<macro area="Common" key="CtrlDel" description="RightControl: delete right">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-right")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-right")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Common" key="CtrlLeft" flags="DisableOutput" description="RightControl: step left">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+</text>
+</macro>
+
+<macro area="Common" key="CtrlLeft" description="RightControl: step left">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Common" key="CtrlRight" flags="DisableOutput" description="RightControl: step right">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+</text>
+</macro>
+
+<macro area="Common" key="CtrlRight" description="RightControl: step right">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-right")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-right")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Common" key="CtrlShiftLeft" flags="DisableOutput" description="RightControl: select left">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+</text>
+</macro>
+
+<macro area="Common" key="CtrlShiftLeft" description="RightControl: select left">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-left")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-left")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Common" key="CtrlShiftRight" flags="DisableOutput" description="RightControl: select right">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+</text>
+</macro>
+
+<macro area="Common" key="CtrlShiftRight" description="RightControl: select right">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-right")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-right")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Common" key="ShiftLeft" flags="DisableOutput" description="RightControl: workaround left">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+</text>
+</macro>
+
+<macro area="Common" key="ShiftLeft" description="RightControl: workaround left">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Common" key="ShiftRight" flags="DisableOutput" description="RightControl: workaround right">
-				<text>
-					<![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
+</text>
+</macro>
+
+<macro area="Common" key="ShiftRight" description="RightControl: workaround right">
+<text>
+<![CDATA[
+$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+
 $If (Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
+	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
 $Else
 	$AKey
 $End
 ]]>
-				</text>
-			</macro>
-			<macro area="Editor" key="CtrlAltLeft" flags="DisableOutput" description="RightControl: vertical left">
-				<text>
-					<![CDATA[
-CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
-]]>
-				</text>
-			</macro>
-			<macro area="Editor" key="CtrlAltRight" flags="DisableOutput" description="RightControl: vertical right">
-				<text>
-					<![CDATA[
-CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
-]]>
-				</text>
-			</macro>
-			<macro area="Editor" key="Home" flags="DisableOutput" description="RightControl: go to smart home">
-				<text>
-					<![CDATA[
-CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:go-to-smart-home")
-]]>
-				</text>
-			</macro>
-			<macro area="Editor" key="ShiftHome" flags="DisableOutput" description="RightControl: select to smart home">
-				<text>
-					<![CDATA[
-CallPlugin("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-to-smart-home")
-]]>
-				</text>
-			</macro>
-		</keymacros>
-	</macros>
+</text>
+</macro>
+
+<macro area="Editor" key="CtrlAltLeft" description="RightControl: vertical left">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")]]>
+</text>
+</macro>
+
+<macro area="Editor" key="CtrlAltRight" description="RightControl: vertical right">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")]]>
+</text>
+</macro>
+
+<macro area="Editor" key="Home" description="RightControl: go to smart home">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:go-to-smart-home")]]>
+</text>
+</macro>
+
+<macro area="Editor" key="ShiftHome" description="RightControl: select to smart home">
+<text>
+<![CDATA[Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-to-smart-home")]]>
+</text>
+</macro>
+
+</keymacros>
+</macros>
 </farconfig>

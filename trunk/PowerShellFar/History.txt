@@ -1,6 +1,23 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.18 =
+
+Improved powershell.hrc for Colorer
+- Renamed PowerShell to powershell (Colorer style), update your prototype file.
+- powershell:regions instead of def:regions (colors can be customized in .hrd).
+- Comment inherits def:Comment => TODO, URL, Email, bug, fix, ??, !!
+- Backtick at EOL is the region LineWrap.
+- Added yet missing escaped "" in "...".
+- Improved psfconsole output.
+
+Get-TextLink-.ps1
+- Gets the link + selected text, if any.
+
+Open-TextLink-.ps1
+- VS link: also uses the next editor line as a hint.
+- In markdown files can jump to internal link targets.
+
 = 5.0.17 =
 
 FarDescription module and Edit-FarDescription-.ps1

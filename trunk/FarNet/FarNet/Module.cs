@@ -41,7 +41,7 @@ namespace FarNet
 	public abstract class BaseModuleItem
 	{
 		/// <summary>
-		/// Gets a localized string from .resorces files.
+		/// Gets a localized string from .resources files.
 		/// </summary>
 		/// <returns>Localized string. If a best match is not possible, null is returned.</returns>
 		/// <param name="name">String name.</param>
@@ -64,7 +64,7 @@ namespace FarNet
 		/// <para>
 		/// See <see cref="CultureInfo"/> about culture names and MSDN about file based resource management.
 		/// Use ResGen.exe tool or MSBuild task GenerateResource for binary .resources files generation
-		/// from trivial .txt\.restext text files or Visual Studio .resx XML files.
+		/// from trivial .txt/.restext text files or Visual Studio .resx XML files.
 		/// </para>
 		/// <para>
 		/// If you edit source .resx files in Visual Studio (a very good idea) then ensure they are
@@ -89,11 +89,15 @@ namespace FarNet
 	/// Module exception.
 	/// </summary>
 	/// <remarks>
-	/// If a module throws exceptions then for better diagnostics it is recommended to use this or derived exceptions
-	/// in order to be able to distinguish between system, module, and even particular module exceptions.
+	/// If a module throws exceptions then for better diagnostics it is
+	/// recommended to use this or derived exceptions in order to be able to
+	/// distinguish between system, module, and even particular module
+	/// exceptions.
 	/// <para>
-	/// Best practice: catch an exception, wrap it by a new module exception with better explanation of a problem and throw the new one.
-	/// Wrapped inner exception is not lost: its message and stack are shown, for example by <see cref="IFar.ShowError"/>.
+	/// Best practice: catch an exception, wrap it by a new module exception
+	/// with better explanation of a problem and throw the new one. Wrapped
+	/// inner exception is not lost: its message and stack are shown, for
+	/// example by <see cref="IFar.ShowError"/>.
 	/// </para>
 	/// </remarks>
 	[Serializable]
@@ -242,9 +246,10 @@ namespace FarNet
 		/// Override this method to process the module connection.
 		/// </summary>
 		/// <remarks>
-		/// This method is called once.
-		/// For standard hosts it is called before creation of the first called module action.
-		/// For preloadable hosts it is called immediately after loading of the module assembly and registraion of its actions.
+		/// This method is called once. For standard hosts it is called before
+		/// creation of the first called module action. For preloadable hosts
+		/// it is called immediately after loading of the module assembly and
+		/// registration of its actions.
 		/// </remarks>
 		public virtual void Connect()
 		{ }
@@ -255,8 +260,9 @@ namespace FarNet
 		/// NOTE: Don't call Far UI, it is not working on exiting.
 		/// Consider to use GUI message boxes if it is absolutely needed.
 		/// <para>
-		/// The host does not have to unregister dynamically registered actions on disconnection.
-		/// But added "global" event handlers have to be removed, for example, handlers added to the <see cref="IFar.AnyEditor"/> operator.
+		/// The host does not have to unregister dynamically registered actions
+		/// on disconnection. But added "global" event handlers have to be
+		/// removed, for example, handlers added to <see cref="IFar.AnyEditor"/>.
 		/// </para>
 		/// </remarks>
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
@@ -367,7 +373,7 @@ namespace FarNet
 		/// </summary>
 		public string Command { get; private set; }
 		/// <summary>
-		/// Tells that command is called by <c>CallPlugin()</c>.
+		/// Tells that command is called by <c>Plugin.Call()</c>.
 		/// </summary>
 		public bool IsMacro { get; set; }
 		/// <summary>
@@ -377,7 +383,7 @@ namespace FarNet
 		/// This flag is used when the command is called from a macro.
 		/// <para>
 		/// A handler sets this to true to tell that nothing is done and
-		/// it makes sense for a caller to perfom an alternative action.
+		/// it makes sense for a caller to perform an alternative action.
 		/// </para>
 		/// <para>
 		/// Note: this is not the case when processing has started and failed;
@@ -394,8 +400,9 @@ namespace FarNet
 	/// <remarks>
 	/// The <see cref="Invoke"/> method has to be implemented.
 	/// <para>
-	/// Commands are called by their prefixes from command lines: the panel command line and user menu and file association commands.
-	/// Macros call commands by <c>CallPlugin()</c> (see FarNet Readme.txt).
+	/// Commands are called by their prefixes from command lines: the panel
+	/// command line and user menu and file association commands. Macros call
+	/// commands by <c>Plugin.Call()</c> (see the FarNet manual).
 	/// </para>
 	/// <para>
 	/// It is mandatory to use <see cref="ModuleCommandAttribute"/> and specify the <see cref="ModuleActionAttribute.Name"/>
@@ -544,7 +551,7 @@ namespace FarNet
 		/// </summary>
 		None,
 		/// <summary>
-		/// Show the item in the config menu and call it from other specifiled menus by [ShiftF9].
+		/// Show the item in the config menu and call it from other specified menus by [ShiftF9].
 		/// </summary>
 		Config = 1 << 0,
 		/// <summary>
