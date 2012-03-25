@@ -638,7 +638,7 @@ void FarBaseList::Selected::set(int value)
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		FarListPos arg;
+		FarListPos arg = {sizeof(arg)};
 		arg.SelectPos = value;
 		arg.TopPos = -1;
 		Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETCURPOS, Id, &arg);
@@ -872,7 +872,7 @@ String^ FarListBox::Bottom::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		FarListTitles arg = {0, 0, 0, 0};
+		FarListTitles arg = {sizeof(arg), 0, 0, 0, 0};
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETTITLES, Id, &arg))
 			return String::Empty;
 
@@ -895,7 +895,7 @@ String^ FarListBox::Title::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		FarListTitles arg = {0, 0, 0, 0};
+		FarListTitles arg = {sizeof(arg), 0, 0, 0, 0};
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETTITLES, Id, &arg))
 			return String::Empty;
 
@@ -920,7 +920,7 @@ void FarListBox::Bottom::set(String^ value)
 	{
 		PIN_NE(pinBottom, value);
 		PIN_NE(pinTitle, Title);
-		FarListTitles arg;
+		FarListTitles arg = {sizeof(arg)};
 		arg.Bottom = pinBottom;
 		arg.Title = pinTitle;
 		Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETTITLES, Id, &arg);
@@ -938,7 +938,7 @@ void FarListBox::Title::set(String^ value)
 	{
 		PIN_NE(pinBottom, Bottom);
 		PIN_NE(pinTitle, value);
-		FarListTitles arg;
+		FarListTitles arg = {sizeof(arg)};
 		arg.Bottom = pinBottom;
 		arg.Title = pinTitle;
 		Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETTITLES, Id, &arg);
@@ -953,7 +953,7 @@ String^ FarListBox::Text::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		FarListGetItem list;
+		FarListGetItem list = {sizeof(list)};
 		list.ItemIndex = (int)Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETCURPOS, Id, 0);
 		if (!Info.SendDlgMessage(_dialog->_hDlg, DM_LISTGETITEM, Id, &list))
 			throw gcnew InvalidOperationException(__FUNCTION__);
@@ -978,7 +978,7 @@ void FarListBox::SetFrame(int selected, int top)
 {
 	AssertOpened();
 
-	FarListPos arg;
+	FarListPos arg = {sizeof(arg)};
 	arg.SelectPos = selected;
 	arg.TopPos = top;
 	Info.SendDlgMessage(_dialog->_hDlg, DM_LISTSETCURPOS, Id, &arg);

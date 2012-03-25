@@ -132,7 +132,7 @@ HANDLE WINAPI OpenW(const OpenInfo* info)
 	__START;
 	return Far0::AsOpen(info);
 	__END;
-	return INVALID_HANDLE_VALUE;
+	return nullptr;
 }
 
 int WINAPI ConfigureW(const ConfigureInfo* info)

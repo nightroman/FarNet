@@ -515,6 +515,7 @@ void Call_ACTL_GETWINDOWINFO(WindowInfo& wi)
 #undef DM_GETDLGITEM
 void Call_DM_GETDLGITEM(CBin& bin, FarGetDialogItem& gdi, HANDLE hDlg, int item)
 {
+	gdi.StructSize = sizeof(gdi);
 	gdi.Size = bin.Size();
 	gdi.Item = (FarDialogItem*)bin.Data();
 	
