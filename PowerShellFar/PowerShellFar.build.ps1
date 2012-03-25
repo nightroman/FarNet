@@ -34,14 +34,13 @@ task Zip Help, {
 	$draw = 'C:\ROM\FarDev\Draw'
 
 	Remove-Item [z] -Force -Recurse
-	$null = mkdir $dir\Extras
+	$null = mkdir $dir
 
 	Move-Item About-PowerShellFar.htm z
 	Copy-Item Install.txt z
 	Copy-Item History.txt, LICENSE, PowerShellFar.farconfig $dir
 	Copy-Item $FarHome\FarNet\Modules\PowerShellFar\* $dir -Recurse
 	Copy-Item Bench $dir -Recurse -Force
-	Copy-Item $draw\powershell\powershell.hrc, $draw\RomanConsole.hrd, $draw\RomanRainbow.hrd $dir\Extras
 
 	Push-Location z
 	exec { & 7z a ..\PowerShellFar.$PowerShellFarVersion.7z * }

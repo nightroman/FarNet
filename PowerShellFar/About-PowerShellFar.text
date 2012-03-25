@@ -53,8 +53,8 @@ PowerShell perfectly integrated into this original text friendly environment.
 It implements the Windows PowerShell host in Far Manager, exposes the FarNet
 object model, and provides several ways for invoking commands and viewing the
 results. The package includes cmdlets, modules, and scripts for many popular
-Far Manager tasks and powershell.hrc for Colorer providing rich PowerShell
-syntax highlighting.
+Far Manager tasks. The package ColorerPack includes syntax and color schemes
+for Colorer providing rich PowerShell syntax highlighting.
 
 Most of PowerShell features are fully supported. There is nothing really
 serious not implemented, normally you won't even notice that something is
@@ -125,12 +125,9 @@ for more details.
 
 ### Colorer support
 
-Install *powershell.hrc* for syntax highlighting in PowerShell files. See
-installation instructions there.
-
-Consider to use *PowerShell.hrd* (console color scheme with white background).
-*powershell.hrc* is designed with this scheme in use, other schemes may be less
-suitable or even practically unusable. See installation instructions there.
+Use the syntax scheme *powershell.hrc* (optionally with *visual.hrd*) from the
+ColorerPack package for syntax highlighting in PowerShell files and editor
+console.
 
 ### Console window width
 
@@ -770,10 +767,10 @@ should be avoided (`Read-Host`, `Write-Progress`, confirmations, and etc.)
 
 ### Notes
 
-Use *powershell.hrc* with Colorer plugin. It works not only for standard
-*.ps1*, *.psm1*, *.psd1* files but for *.psfconsole* files, too. In addition to
-standard PowerShell syntax special editor console output is also highlighted
-(numbers, errors, warnings, and etc.)
+Use *powershell.hrc* (optionally with *visual.hrd*) from the ColorerPack for
+command and output syntax highlighting. In addition to PowerShell syntax
+console output is colored as well: numbers, dates, times, paths, errors,
+warnings, and etc. *visual.hrd* enables zebra output and hides output marks.
 
 Use word completion (e.g. *Complete-Word-.ps1*): words from output of previous
 commands often can be effectively completed in a new command being composed.

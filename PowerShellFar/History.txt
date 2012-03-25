@@ -1,6 +1,13 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.19 =
+
+Extras\
+- The directory Extras with Colorer syntax and color schemes is removed from
+the PowerShellFar package. It is distributed separately as the ColorerPack
+package among other FarNet packages.
+
 = 5.0.18 =
 
 Improved powershell.hrc for Colorer

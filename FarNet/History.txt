@@ -5,7 +5,7 @@ http://code.google.com/p/farnet/downloads/list
 Module commands in macros with Plugin.Call()
 - Swapped the roles of leading colons - `:` is for async jobs, any area, opens
 all but panels, `::` is for async steps, areas with the plugin menu, opens all.
-`::` is deprecated and may be removed soon, Plugin.Prefix() will replaces it.
+`::` is deprecated and may be removed soon, Plugin.Prefix() will replace it.
 
 FarSetting
 - New setting groups.
