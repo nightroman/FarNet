@@ -292,16 +292,17 @@ void Panel2::StartSortMode::set(PanelSortMode value)
 
 int Panel2::Flags()
 {
-	// init by highlighting
-	int r;
+	//_120325_180317
+	int r = OPIF_SHORTCUT;
+
+	// highlighting
 	switch(_Highlighting)
 	{
-	case PanelHighlighting::Default: r = OPIF_USEATTRHIGHLIGHTING; break;
-	case PanelHighlighting::Off: r = OPIF_DISABLEHIGHLIGHTING; break;
-	default: r = 0;
+	case PanelHighlighting::Default: r |= OPIF_USEATTRHIGHLIGHTING; break;
+	case PanelHighlighting::Off: r |= OPIF_DISABLEHIGHLIGHTING; break;
 	}
 
-	// add other flags
+	// other flags
 	if (CompareFatTime) r |= OPIF_COMPAREFATTIME;
 	if (NoFilter) r |= OPIF_DISABLEFILTER;
 	if (PreserveCase) r |= OPIF_SHOWPRESERVECASE;

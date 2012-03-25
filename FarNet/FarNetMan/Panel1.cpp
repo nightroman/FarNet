@@ -138,8 +138,16 @@ String^ Panel1::CurrentDirectory::get()
 	CBin bin;
 	FarPanelDirectory* arg = (FarPanelDirectory*)bin.Data();
 	arg->StructSize = sizeof(FarPanelDirectory);
-	while(bin(Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, bin.Size(), arg)))
+	for(;;)
 	{
+		//_120325_180317 build 2556 - 0 if OPIF_SHORTCUT is not set
+		size_t size = Info.PanelControl(_handle, FCTL_GETPANELDIRECTORY, bin.Size(), arg);
+		if (0 == size)
+			return String::Empty;
+
+		if (!bin(size))
+			break;
+
 		arg = (FarPanelDirectory*)bin.Data();
 		arg->StructSize = sizeof(FarPanelDirectory);
 	}
