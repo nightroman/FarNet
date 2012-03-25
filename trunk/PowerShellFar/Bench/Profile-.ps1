@@ -48,7 +48,7 @@ $Psf.Action('&[. Copy text link', { $Far.CopyToClipboard((Get-TextLink-.ps1)) },
 $Psf.Action('&]. Open text link', { Open-TextLink-.ps1 }, 'Dialog, Editor, Panels')
 
 ### The script invoked after editor console commands.
-$Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
+#$Psf.Settings.EditorConsoleEndOutputScript = 'Get-Date'
 
 ### Provider settings (ItemPanel)
 $Psf.Providers = @{
