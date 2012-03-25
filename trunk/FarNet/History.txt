@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.19 =
+
+For Far 3.0.2573.
+
 = 5.0.18 =
 
 Module commands in macros with Plugin.Call()
