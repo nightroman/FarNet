@@ -25,7 +25,7 @@ void ListItemCollection::ClearItems()
 {
 	if (_box && _box->_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		FarListDelete arg;
+		FarListDelete arg = {sizeof(arg)};
 		arg.Count = 0;
 		arg.StartIndex = 0;
 		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTDELETE, _box->Id, &arg))
@@ -45,7 +45,7 @@ void ListItemCollection::InsertItem(int index, FarItem^ item)
 	if (_box && _box->_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
 		PIN_ES(pinText, item->Text);
-		FarListInsert arg;
+		FarListInsert arg = {sizeof(arg)};
 		FarBaseList::InitFarListItemShort(arg.Item, item);
 		arg.Item.Text = pinText;
 		arg.Index = index;
@@ -64,7 +64,7 @@ void ListItemCollection::RemoveItem(int index)
 
 	if (_box && _box->_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		FarListDelete d;
+		FarListDelete d = {sizeof(d)};
 		d.Count = 1;
 		d.StartIndex = index;
 		if (!Info.SendDlgMessage(_box->_dialog->_hDlg, DM_LISTDELETE, _box->Id, &d))

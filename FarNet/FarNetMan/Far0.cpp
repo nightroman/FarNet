@@ -563,8 +563,8 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 			return h;
 		}
 
-		// don't open a panel
-		return INVALID_HANDLE_VALUE;
+		// no panel
+		return nullptr;
 	}
 	finally
 	{
