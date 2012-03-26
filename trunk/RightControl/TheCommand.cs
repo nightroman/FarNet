@@ -303,11 +303,11 @@ namespace FarNet.RightControl
 			// set/drop selection and set the caret
 			if (line == null)
 			{
+				editor.GoTo(caretNew.X, caretNew.Y);
 				if (first.Y >= 0)
 					editor.SelectText(first.X, first.Y, last.X, last.Y);
 				else
 					editor.UnselectText();
-				editor.GoTo(caretNew.X, caretNew.Y);
 				editor.Redraw();
 			}
 			else
@@ -398,8 +398,8 @@ namespace FarNet.RightControl
 			}
 
 			// set/drop selection and set the caret
-			editor.SelectText(x1, y1, x2, y2, PlaceKind.Column);
 			editor.GoTo(caretNew, line);
+			editor.SelectText(x1, y1, x2, y2, PlaceKind.Column);
 			editor.Redraw();
 		}
 		// This should be removed when Mantis 1465 is resolved.
