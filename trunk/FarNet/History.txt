@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.20 =
+
+Use Far 3.0.2578.
+Fixed return value of Plugin.Call().
+
 = 5.0.19 =
 
 For Far 3.0.2573.
@@ -9,7 +14,7 @@ For Far 3.0.2573.
 Module commands in macros with Plugin.Call()
 - Swapped the roles of leading colons - `:` is for async jobs, any area, opens
 all but panels, `::` is for async steps, areas with the plugin menu, opens all.
-`::` is deprecated and may be removed soon, Plugin.Prefix() will replace it.
+`::` is deprecated and may be removed soon, Plugin.Command() will replace it.
 
 FarSetting
 - New setting groups.

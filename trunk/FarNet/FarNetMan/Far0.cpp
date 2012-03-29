@@ -462,7 +462,9 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 				OpenMacroInfo* mi = (OpenMacroInfo*)info->Data;
 				if (mi->Count == 1 && mi->Values[0].Type == FMVT_STRING)
 				{
-					if (!InvokeCommand(mi->Values[0].String, true))
+					if (InvokeCommand(mi->Values[0].String, true))
+						return (HANDLE)1;
+					else
 						return 0;
 				}
 			}
