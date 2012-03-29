@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.20 =
+
+Adapted a few scripts to new powershell.hrc features.
+
 = 5.0.19 =
 
 For Far 3.0.2573.

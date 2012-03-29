@@ -152,7 +152,6 @@ if ($Text -match '"(\.{1,2}[\\/][^"]+)"' -or $Text -match '(?:^|\s)(\.{1,2}[\\/]
 # From Colorer default.hrc NetURL scheme
 $url = [regex]@'
 (?x)
-#REGEX
 \b ((https?|ftp|news|nntp|wais|wysiwyg|gopher|javascript|castanet|about)
 \:\/\/  | (www|ftp|fido[0-9]*)\.)
 [\[\]\@\%\:\+\w\.\/\~\?\-\*=_#&;]+\b\/?
