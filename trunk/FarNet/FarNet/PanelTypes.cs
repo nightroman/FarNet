@@ -85,6 +85,10 @@ namespace FarNet
 		/// </summary>
 		bool IsLeft { get; }
 		/// <summary>
+		/// Gets true if the panel is designed for navigation by paths.
+		/// </summary>
+		bool IsNavigation { get; }
+		/// <summary>
 		/// Gets true if it is a plugin panel.
 		/// </summary>
 		/// <remarks>

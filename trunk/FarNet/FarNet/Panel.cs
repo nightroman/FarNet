@@ -443,6 +443,10 @@ namespace FarNet
 		/// </summary>
 		public bool IsLeft { get { return _Panel.IsLeft; } }
 		/// <summary>
+		/// Gets true if the panel is designed for navigation by paths.
+		/// </summary>
+		public bool IsNavigation { get { return _Panel.IsNavigation; } }
+		/// <summary>
 		/// Gets true always.
 		/// </summary>
 		public bool IsPlugin { get { return true; } }
