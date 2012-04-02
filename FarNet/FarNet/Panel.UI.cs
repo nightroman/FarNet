@@ -447,7 +447,7 @@ namespace FarNet
 			var temp = Far.Net.TempName();
 
 			// export
-			var xExportArgs = WorksExportExplorerFile(Explorer, this, ExplorerModes.Edit, file, temp);
+			var xExportArgs = WorksExportExplorerFile(Explorer, this, ExplorerModes.View, file, temp);
 			if (xExportArgs == null)
 				return;
 

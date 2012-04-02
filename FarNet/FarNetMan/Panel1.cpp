@@ -43,6 +43,15 @@ bool Panel1::IsLeft::get()
 	return (pi.Flags & PFLAGS_PANELLEFT) != 0;
 }
 
+bool Panel1::IsNavigation::get()
+{
+	PanelInfo pi;
+	if (!TryPanelInfo(_handle, pi))
+		return false;
+
+	return (pi.Flags & PFLAGS_SHORTCUT) != 0;
+}
+
 bool Panel1::IsPlugin::get()
 {
 	PanelInfo pi;

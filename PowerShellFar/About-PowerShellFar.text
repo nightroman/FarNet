@@ -83,7 +83,7 @@ PowerShellFar, FarNet and documentation can be updated by the included script
 ### Requirements
 
 - Far Manager 3.0.2578
-- Plugin FarNet 5.0.20
+- Plugin FarNet 5.0.21
 - Windows PowerShell V2, V3
 
 ### Set PowerShell execution policy

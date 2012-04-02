@@ -293,7 +293,7 @@ void Panel2::StartSortMode::set(PanelSortMode value)
 int Panel2::Flags()
 {
 	//_120325_180317
-	int r = OPIF_SHORTCUT;
+	int r = 0; //??????OPIF_SHORTCUT;
 
 	// highlighting
 	switch(_Highlighting)

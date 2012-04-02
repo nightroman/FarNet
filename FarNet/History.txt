@@ -1,5 +1,19 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.21 =
+
+Use Far 3.0.2581.
+
+Fixed incorrect flag on panel view operations (from MaximKat).
+
+FarNet panels for now do not use OPIF_SHORTCUT, so that their paths do not go
+to history and do not clatter it. It is not yet clear how this mechanism will
+work in FarNet. To be continued.
+
+New panel property IsNavigation ~ PFLAGS_SHORTCUT & OPIF_SHORTCUT in Far API.
+It is always false for FarNet panels (see above). Not sure about this flag,
+consider this as experimental.
+
 = 5.0.20 =
 
 Use Far 3.0.2578.
