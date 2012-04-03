@@ -470,7 +470,7 @@ namespace FarNet
 			viewerTemp.Title = file.Name;
 			if (asExportFileEventArgs.CodePage != 0)
 				viewerTemp.CodePage = asExportFileEventArgs.CodePage;
-			
+
 			// open
 			viewerTemp.Open();
 		}
@@ -669,6 +669,10 @@ namespace FarNet
 
 					if (key.Is())
 					{
+						// default
+						if (!Explorer.CanExportFiles && Explorer.CanGetContent && !(Far.Net.Panel2 is Panel))
+							return false;
+							
 						UICopyMove(false);
 						return true;
 					}
@@ -686,6 +690,10 @@ namespace FarNet
 
 					if (key.Is())
 					{
+						// default
+						if (!Explorer.CanExportFiles && Explorer.CanGetContent && !(Far.Net.Panel2 is Panel))
+							return false;
+						
 						UICopyMove(true);
 						return true;
 					}

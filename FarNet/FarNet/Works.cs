@@ -7,6 +7,7 @@ Copyright (c) 2005-2012 FarNet Team
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -145,5 +146,19 @@ namespace FarNet.Works
 			}
 			return hash;
 		}
+		/// <summary>
+		/// Gets true if a string is not a valid file system file name.
+		/// </summary>
+		public static bool IsInvalidFileName(string name)
+		{
+			if (string.IsNullOrEmpty(name))
+				return true;
+
+			if (_invalidName == null)
+				_invalidName = new Regex("[" + Regex.Escape(new string(Path.GetInvalidFileNameChars())) + @"]|[\s.]$|^(?:CON|PRN|AUX|NUL|(?:COM|LPT)[1-9])$", RegexOptions.IgnoreCase);
+
+			return _invalidName.IsMatch(name);
+		}
+		static Regex _invalidName;
 	}
 }

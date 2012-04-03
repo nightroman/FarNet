@@ -30,6 +30,10 @@ namespace FarNet
 	/// once created an explorer should always return the same data, of course,
 	/// if these data are not changed in the virtual file system.
 	/// </para>
+	/// Exporting files ([F5], [F6]) is normally done by implementing the <see
+	/// cref="ExportFiles"/> method and setting <see cref="CanExportFiles"/>.
+	/// It is also possible to implement just <see cref="GetContent"/> and set
+	/// <see cref="CanGetContent"/>.
 	/// </remarks>
 	public abstract class Explorer
 	{
