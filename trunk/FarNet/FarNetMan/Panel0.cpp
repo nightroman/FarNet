@@ -24,7 +24,11 @@ static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, ILis
 	if (pureFiles)
 	{
 		for(int i = 0; i < itemsNumber; ++i)
+		{
 			r->Add(Panel1::ItemToFile(panelItem[i]));
+			if (names)
+				names->Add(gcnew String(panelItem[i].AlternateFileName));
+		}
 		return r;
 	}
 
@@ -124,8 +128,9 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 			p.Description = NewChars(file->Description);
 			p.Owner = NewChars(file->Owner);
 
-			// alternate names are for QView and this is important
-			if (info->OpMode == 0 && !canExploreLocation)
+			// alternate names are for QView to work with any names,
+			// even ExploreLocation explorers may have problem names
+			if (info->OpMode == 0)
 			{
 				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
 				Info.FSF->itoa(fileIndex, buf, 10);
@@ -293,9 +298,15 @@ int Panel0::AsSetDirectory(const SetDirectoryInfo* info)
 	}
 }
 
-//?? NYI: Parameter destPath can be changed, i.e. (*destPath) replaced.
-//?? NYI: Not used return value -1 (stopped by a user).
-int Panel0::AsGetFiles(GetFilesInfo* info) //???? move?
+/*
+?? NYI: Parameter destPath can be changed, i.e. (*destPath) replaced.
+?? NYI: Not used return value -1 (stopped by a user).
+?? TODO: Move.
+
+It is normally called on F5/F6 when an explorer cannot export files but can get
+content and the target panel is not FarNet (otherwise the target panel cares).
+*/
+int Panel0::AsGetFiles(GetFilesInfo* info)
 {
 	info->StructSize = sizeof(*info);
 
@@ -304,33 +315,56 @@ int Panel0::AsGetFiles(GetFilesInfo* info) //???? move?
 
 	Log::Source->TraceInformation("GetFilesW Mode='{0}'", mode);
 
-	//???? && (opMode & (OPM_VIEW | OPM_QUICKVIEW | OPM_EDIT)) limited modes; need only for QView or *modal* requirement?
-	// MB needed for Copy to native plugins or FS. But how to be with names: use a flag SystemNames? Call a virtual method?
-	// SystemNames looks good. If names are bad, it's a big issue for exchange via FS anyway.
-	// And if SystemNames is ON then we do not generate aliases internally. Think.
 	Explorer^ explorer = pp->Host->Explorer;
 	if (!explorer->CanGetContent)
 		return 0;
+
 	const bool canExploreLocation = explorer->CanExploreLocation;
+	const bool quickView = 0 != int(mode & ExplorerModes::QuickView);
 
 	List<String^>^ names;
-	if (!canExploreLocation)
+	if (quickView)
 		names = gcnew List<String^>; //1
 	List<FarFile^> files = ItemsToFiles(canExploreLocation, pp->Files, names, info->PanelItem, (int)info->ItemsNumber); //2
 	String^ destination = gcnew String(info->DestPath);
 
 	for(int i = 0; i < (int)info->ItemsNumber; ++i)
 	{
-		String^ fileName = canExploreLocation
-			? Path::Combine(destination, files[i]->Name)
-			: Path::Combine(destination, names[i]);
+		String^ fileName;
+		if (quickView)
+		{
+			fileName = names[i];
+		}
+		else
+		{
+			fileName = files[i]->Name;
+			if (Works::Kit::IsInvalidFileName(fileName))
+			{
+				if (int(mode & ExplorerModes::Silent))
+					continue;
+
+				bool invalid = true;
+				do
+				{
+					fileName = Far::Net->Input("Correct file name", nullptr, "Invalid file name", fileName);
+					if (!fileName)
+						break;
+
+					invalid = Works::Kit::IsInvalidFileName(fileName);
+				}
+				while(invalid);
+
+				if (invalid)
+					continue;
+			}
+		}
+		fileName = Path::Combine(destination, fileName);
 
 		GetContentEventArgs^ argsJob = Panel::WorksExportExplorerFile(explorer, pp->Host, mode, files[i], fileName);
-		if (argsJob && argsJob->Result == JobResult::Done) //???? not tested
+		if (argsJob && argsJob->Result == JobResult::Done) //?????? not tested
 		{
-			GetContentEventArgs^ asGetContentEventArgs = dynamic_cast<GetContentEventArgs^>(argsJob);
-			if (asGetContentEventArgs && SS(asGetContentEventArgs->UseFileName))
-				File::Copy(asGetContentEventArgs->UseFileName, fileName);
+			if (SS(argsJob->UseFileName))
+				File::Copy(argsJob->UseFileName, fileName);
 		}
 	}
 
@@ -656,7 +690,7 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 	const INPUT_RECORD& ir = info->Rec;
 	if (ir.EventType != KEY_EVENT)
 		return 0;
-	
+
 	//! mind rare case: panel is null: closed by [AltF12] + select folder
 	Panel2^ pp = _panels[(int)info->hPanel];
 	if (!pp)

@@ -1,5 +1,18 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.22 =
+
+Module panels. For exporting files (F5/F6) from a module panel to a native file
+or plugin panel it is enough to implement GetContent(). Files with good names
+are copied fine. A user is prompted to correct bad names in interactive mode.
+Bad names are ignored in batch mode. Possible duplicates are not treated, the
+last file wins.
+
+NOTES:
+* Still, consider to use ExportFiles (more power, control, flexibility).
+* F6 works like F5 in new "lazy" scenarios, to be continued.
+
+
 = 5.0.21 =
 
 Use Far 3.0.2581.
