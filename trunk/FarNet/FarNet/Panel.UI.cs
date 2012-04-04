@@ -669,10 +669,9 @@ namespace FarNet
 
 					if (key.Is())
 					{
-						// default
-						if (!Explorer.CanExportFiles && Explorer.CanGetContent && !(Far.Net.Panel2 is Panel))
+						if (NeedDefaultCopy())
 							return false;
-							
+
 						UICopyMove(false);
 						return true;
 					}
@@ -690,8 +689,7 @@ namespace FarNet
 
 					if (key.Is())
 					{
-						// default
-						if (!Explorer.CanExportFiles && Explorer.CanGetContent && !(Far.Net.Panel2 is Panel))
+						if (NeedDefaultCopy())
 							return false;
 						
 						UICopyMove(true);
@@ -742,6 +740,22 @@ namespace FarNet
 			}
 
 			return false;
+		}
+		bool NeedDefaultCopy()
+		{
+			// target panel
+			var panel2 = Far.Net.Panel2;
+			
+			// module panel
+			if (panel2 is Panel)
+				return false;
+
+			// native plugin
+			if (panel2.IsPlugin)
+				return true;
+
+			// default if cannot export but can get content
+			return !Explorer.CanExportFiles && Explorer.CanGetContent;
 		}
 	}
 }

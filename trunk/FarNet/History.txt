@@ -1,5 +1,15 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.23 =
+
+5.0.22 continued
+
+* Move (F6) deletes successfully copied files if an explorer can DeleteFiles.
+
+* Bad names are silently ignored if the target is a plugin because Far does not
+know about names possibly corrected by a user. This is especially important on
+move: not completely processed files should not be deleted.
+
 = 5.0.22 =
 
 Module panels. For exporting files (F5/F6) from a module panel to a native file
@@ -11,7 +21,6 @@ last file wins.
 NOTES:
 * Still, consider to use ExportFiles (more power, control, flexibility).
 * F6 works like F5 in new "lazy" scenarios, to be continued.
-
 
 = 5.0.21 =
 
