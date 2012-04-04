@@ -26,14 +26,10 @@ namespace FarNet
 	/// <para>
 	/// On requests explorers have to create and return new explorers or return nulls.
 	/// They should never return themselves because the core assumes that each explorer
-	/// is responsible for its own virtual directory that never change. In other words,
-	/// once created an explorer should always return the same data, of course,
+	/// is responsible for its own virtual directory that never change. In other words:
+	/// once created, an explorer should always return the same data, of course,
 	/// if these data are not changed in the virtual file system.
 	/// </para>
-	/// Exporting files ([F5], [F6]) is normally done by implementing the <see
-	/// cref="ExportFiles"/> method and setting <see cref="CanExportFiles"/>.
-	/// It is also possible to implement just <see cref="GetContent"/> and set
-	/// <see cref="CanGetContent"/>.
 	/// </remarks>
 	public abstract class Explorer
 	{
@@ -218,10 +214,19 @@ namespace FarNet
 		/// Exports the file content to a file or returns it as text.
 		/// </summary>
 		/// <remarks>
+		/// <para>
 		/// It is normally called by the core on [F3], [F4], [CtrlQ],
-		/// if the explorer has its flag <see cref="CanGetContent"/> set.
+		/// if the explorer sets the flag <see cref="CanGetContent"/>.
+		/// It is also called in order to copy files to native destinations
+		/// if the advanced method <see cref="ExportFiles"/> is not implemented.
+		/// A user corrects invalid file system names interactively, if this is allowed.
+		/// Otherwise such files are ignored. Implemented <see cref="ExportFiles"/>
+		/// can get more control on export operations.
+		/// </para>
+		/// <para>
 		/// If the content can be set back then this method should set <see cref="GetContentEventArgs.CanSet"/>:
 		/// this is used on [F4]: if the flag is not set then the editor will be opened in the locked mode.
+		/// </para>
 		/// <para>
 		/// There are three ways to export file data.
 		/// <ol>
@@ -264,6 +269,9 @@ namespace FarNet
 		/// <summary>
 		/// Exports files to a native destination.
 		/// </summary>
+		/// <remarks>
+		/// This method gives some more control than default export performed with <see cref="GetContent"/>.
+		/// </remarks>
 		public virtual void ExportFiles(ExportFilesEventArgs args) { if (args != null) args.Result = JobResult.Ignore; }
 		/// <summary>
 		/// Imports files from a native source.

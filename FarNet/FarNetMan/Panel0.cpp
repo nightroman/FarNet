@@ -301,10 +301,10 @@ int Panel0::AsSetDirectory(const SetDirectoryInfo* info)
 /*
 ?? NYI: Parameter destPath can be changed, i.e. (*destPath) replaced.
 ?? NYI: Not used return value -1 (stopped by a user).
-?? TODO: Move.
 
-It is normally called on F5/F6 when an explorer cannot export files but can get
-content and the target panel is not FarNet (otherwise the target panel cares).
+It is called on F5/F6 when a target panel is a native plugin or an explorer
+cannot export files but can get content and a target is a native file panel
+(FarNet targets accept files themselves).
 */
 int Panel0::AsGetFiles(GetFilesInfo* info)
 {
@@ -319,28 +319,41 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 	if (!explorer->CanGetContent)
 		return 0;
 
+	// modes
 	const bool canExploreLocation = explorer->CanExploreLocation;
-	const bool quickView = 0 != int(mode & ExplorerModes::QuickView);
+	const bool qview = 0 != int(mode & ExplorerModes::QuickView);
+	const bool silent = int(mode & ExplorerModes::Silent);
 
-	List<String^>^ names;
-	if (quickView)
-		names = gcnew List<String^>; //1
-	List<FarFile^> files = ItemsToFiles(canExploreLocation, pp->Files, names, info->PanelItem, (int)info->ItemsNumber); //2
+	// process bad names? - do not if silent or the target is plugin
+	const bool processBadNames = qview || (!silent && !Far::Net->Panel2->IsPlugin);
+
+	// delete files on move?
+	const bool deleteFiles = info->Move && explorer->CanDeleteFiles;
+	List<FarFile^>^ filesToDelete;
+	if (deleteFiles)
+		filesToDelete = gcnew List<FarFile^>;
+
+	// collect files
+	List<String^>^ names = qview ? gcnew List<String^> : nullptr;
+	List<FarFile^>^ files = ItemsToFiles(canExploreLocation, pp->Files, names, info->PanelItem, (int)info->ItemsNumber);
+
+	// copy files
 	String^ destination = gcnew String(info->DestPath);
-
-	for(int i = 0; i < (int)info->ItemsNumber; ++i)
+	for(int i = 0; i < files->Count; ++i)
 	{
 		String^ fileName;
-		if (quickView)
+		if (qview)
 		{
+			// use the alias
 			fileName = names[i];
 		}
 		else
 		{
+			// use the name, check for invalid
 			fileName = files[i]->Name;
 			if (Works::Kit::IsInvalidFileName(fileName))
 			{
-				if (int(mode & ExplorerModes::Silent))
+				if (!processBadNames)
 					continue;
 
 				bool invalid = true;
@@ -358,14 +371,27 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 					continue;
 			}
 		}
-		fileName = Path::Combine(destination, fileName);
 
+		// export file
+		fileName = Path::Combine(destination, fileName);
 		GetContentEventArgs^ argsJob = Panel::WorksExportExplorerFile(explorer, pp->Host, mode, files[i], fileName);
-		if (argsJob && argsJob->Result == JobResult::Done) //?????? not tested
-		{
-			if (SS(argsJob->UseFileName))
-				File::Copy(argsJob->UseFileName, fileName);
-		}
+		if (!argsJob || argsJob->Result != JobResult::Done)
+			continue;
+
+		// copy existing file
+		if (SS(argsJob->UseFileName))
+			File::Copy(argsJob->UseFileName, fileName);
+
+		// collect to delete
+		if (deleteFiles)
+			filesToDelete->Add(files[i]);
+	}
+
+	// delete collected files
+	if (deleteFiles && filesToDelete->Count > 0)
+	{
+		DeleteFilesEventArgs args(mode, filesToDelete, false);
+		pp->Host->UIDeleteFiles(%args);
 	}
 
 	return 1;
