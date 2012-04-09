@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin 2012-04-01
+powershell.hrc by Roman Kuzmin 2012-04-09
 For PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 Distributed with ColorerPack: http://code.google.com/p/farnet
 
@@ -40,12 +40,14 @@ SQL syntax in here-strings after <#sql#>
 <region name="HelpDirective" parent="def:CommentDoc"    description="Help comment directives."/>
 <region name="Identifier"    parent="def:Identifier"/>
 <region name="Keyword"       parent="def:Keyword"/>
+<region name="Label"         parent="def:Label"         description=":label constructs."/>
 <region name="Pipeline"      parent="def:KeywordStrong" description="Pipeline and redirection operators."/>
 <region name="String"        parent="def:String"        description="Literal text in string expressions."/>
 <region name="SyntaxEdge"    parent="def:StringEdge"    description="Edges of other syntax areas."/>
 <region name="SystemVar"     parent="def:VarStrong"     description="System variables (automatic, preference, ...)."/>
 <region name="Type"          parent="def:TypeKeyword"   description=".NET type [...]."/>
 <region name="UserVar"       parent="def:Var"           description="User variables and parameters."/>
+<region name="VarPrefix"     parent="def:VarStrong"     description="Variable prefixes."/>
 
 <region name="Number"        parent="def:Number"/>
 <region name="NumberDec"     parent="def:NumberDec"     description="Decimal numbers."/>
@@ -70,29 +72,35 @@ SQL syntax in here-strings after <#sql#>
 <region name="start" parent="def:PairStart"/>
 <region name="end" parent="def:PairEnd"/>
 
+<entity name="n-simple" value="\D?=\w+"/>
+<entity name="s-common" value="(?:^|[;\{}()]?#1)\s*"/>
+<entity name="s-assign" value="(?:^|[;\{}()=]?#1)\s*"/>
+<entity name="var" value="\w[\w\?]*"/>
+
 <scheme name="Escape">
 	<regexp match="/(?{EscapeSpecial}`[0abfnrtv])/"/>
 	<regexp match="/(?{EscapeWrap}`)(?{Error}\s+)?$/"/>
 	<regexp match="/(?{Escape}`.)/"/>
 </scheme>
 
-<!--User variable, operator ::-->
+<scheme name="Type">
+	<regexp match="/(?:~|^)\s*%n-simple;([.+]%n-simple;)*/"/>
+	<block scheme="Type" start="/(?{start}\[)/" end="/(?{end}\])/"/>
+	<block scheme="powershell" start="/(?{start}\()/" end="/(?{end}\))/"/>
+</scheme>
+
 <scheme name="UserVar">
-	<!--Outlined assignment of global or script-->
-	<regexp match="/(?{UserVar}(?{def:Outlined}\$(?:global|script):\w+))\s*(?{Operator}=)/i"/>
+	<!--global:x =-->
+	<regexp match="/(?{UserVar}(?{def:Outlined}\$(?{VarPrefix}(?:global|script):)%var;))\s*(?{Operator}=)/i"/>
 
-	<!--$x::-->
-	<regexp match="/(?{UserVar}\$\w+)(?{Operator}::)/"/>
-
-	<!--$x, $x:x-->
-	<regexp match="/(?{UserVar}[$@][\w:]*\w)/"/>
+	<!--$x[:x]-->
+	<regexp match="/(?{UserVar}[$@](?:(?{VarPrefix}\w+::?!))?(%var;(?:::?!)?)+)/"/>
 
 	<!--${..}-->
 	<block scheme="Escape" region="UserVar"
 	start="/(?{start}\$\{)/" end="/(?{end}\})/"/>
 </scheme>
 
-<!--Special variable-->
 <scheme name="AutoVar">
 	<!--System constant-->
 	<keywords ignorecase="yes" region="Constant">
@@ -181,6 +189,11 @@ SQL syntax in here-strings after <#sql#>
 		<word name="$WarningPreference"/>
 		<word name="$WhatIfPreference"/>
 	</keywords>
+</scheme>
+
+<scheme name="Var">
+	<inherit scheme="AutoVar"/>
+	<inherit scheme="UserVar"/>
 </scheme>
 
 <scheme name="SubExpr">
@@ -587,7 +600,47 @@ SQL syntax in here-strings after <#sql#>
 	</keywords>
 </scheme>
 
-<scheme name="Operator">
+<scheme name="Separator">
+	<regexp match="/(?{Error};)(?:\s*$|\s*\}|\s+#)/"/>
+	<keywords region="Operator">
+		<symb name=","/>
+		<symb name=";"/>
+	</keywords>
+</scheme>
+
+<scheme name="Pipeline">
+	<keywords region="Error">
+		<symb name="&amp;&amp;"/>
+		<symb name="||"/>
+		<word name="&lt;"/>
+		<word name="1&gt;&amp;2"/>
+	</keywords>
+	<keywords region="Operator">
+		<symb name="&amp;"/>
+	</keywords>
+	<keywords region="Pipeline">
+		<symb name="|"/>
+		<symb name="&gt;&gt;"/>
+		<symb name="&gt;"/>
+		<symb name="2&gt;&amp;1"/>
+		<symb name="2&gt;&gt;"/>
+		<symb name="2&gt;"/>
+		<symb name="3&gt;&amp;1"/>
+		<symb name="3&gt;&gt;"/>
+		<symb name="3&gt;"/>
+		<symb name="4&gt;&amp;1"/>
+		<symb name="4&gt;&gt;"/>
+		<symb name="4&gt;"/>
+		<symb name="5&gt;&amp;1"/>
+		<symb name="5&gt;&gt;"/>
+		<symb name="5&gt;"/>
+		<symb name="*&gt;&amp;1"/>
+		<symb name="*&gt;&gt;"/>
+		<symb name="*&gt;"/>
+	</keywords>
+</scheme>
+
+<scheme name="WOperator">
 	<keywords ignorecase="yes" region="Operator">
 		<word name="-eq"/>
 		<word name="-ne"/>
@@ -645,27 +698,31 @@ SQL syntax in here-strings after <#sql#>
 		<word name="-csplit"/>
 		<word name="-isplit"/>
 	</keywords>
+</scheme>
+
+<scheme name="SOperator">
 	<keywords region="Operator">
 		<symb name="--"/>
 		<symb name="%="/>
 		<symb name="*="/>
+		<symb name=".."/>
 		<symb name="/="/>
+		<symb name="::"/>
 		<symb name="++"/>
 		<symb name="+="/>
 		<symb name="-="/>
-		<symb name=".."/>
+		<symb name="!"/>
 		<symb name="%"/>
 		<symb name="*"/>
 		<symb name="/"/>
 		<symb name="+"/>
 		<symb name="="/>
-		<symb name="!"/>
 	</keywords>
-	<!--reserved-->
-	<keywords region="Error">
-		<symb name="&#38;&#38;"/>
-		<symb name="||"/>
-	</keywords>
+</scheme>
+
+<scheme name="ForEach">
+	<block scheme="Var" start="/~/" end="/\b\M(?{Keyword}in)\b/i"/>
+	<block scheme="powershell" start="/\bin\b/" end="/\)?=/i"/>
 </scheme>
 
 <scheme name="powershell">
@@ -705,7 +762,7 @@ SQL syntax in here-strings after <#sql#>
 
 	<!--@''@-->
 	<block scheme="def:empty" region="String"
-	start="/(?{start}@'$)/" end="/(?{end}^'@)/"/>
+	start="/(?{start}@')(?{Error}.+)?$/" end="/(?{end}^'@)/"/>
 
 	<!--''-->
 	<block scheme="InApos1" region="String"
@@ -721,74 +778,63 @@ SQL syntax in here-strings after <#sql#>
 
 	<!--@""@-->
 	<block scheme="InQuot2" region="String"
-	start="/(?{start}@&#34;$)/" end="/(?{end}^&#34;@)/"/>
+	start="/(?{start}@&#34;)(?{Error}.+)?$/" end="/(?{end}^&#34;@)/"/>
 
 	<!--""-->
 	<block scheme="InQuot1" region="String"
 	start="/(?{start}&#34;)/" end="/(?{end}&#34;)/"/>
 
-	<!--[x.x], [x[]] except [1], [$x] and operator ::-->
-	<regexp match="/(?{Type}\[[A-Za-z][\w.+]*(?:\[\])*\])(?{Operator}::)?/"/>
+	<!--[Type], [x[]] except [1], [$x]-->
+	<block scheme="Type" region="Type"
+	start="/(?{start}\[)\s*\M%n-simple;/" end="/(?{end}\])/"/>
 
 	<inherit scheme="def:PairedBrackets">
 		<virtual scheme="def:PairedBrackets" subst-scheme="powershell"/>
 	</inherit>
 
 	<inherit scheme="Cmdlet"/>
-	<inherit scheme="AutoVar"/>
-	<inherit scheme="UserVar"/>
-	<inherit scheme="Operator"/>
 
-	<!-- -, -x-->
-	<regexp match="/(?{Operator}\-[a-zA-Z]?!)/"/>
+	<inherit scheme="Var"/>
 
-	<!--Keyword everywhere-->
-	<keywords ignorecase="yes" region="Keyword" worddiv="[\s\(\)\{\};]">
-		<word name="in"/>
-	</keywords>
+	<inherit scheme="Separator"/>
 
-	<!--if, eleseif-->
-	<regexp match="/(?:^|~|[;=\}]?#1)\s*(?{Keyword}if)\s*\M\(/i"/>
-	<regexp match="/(?:^|~|[;\}]?#1)\s*(?{Keyword}elseif)\s*\M\(/i"/>
+	<inherit scheme="Pipeline"/>
 
-	<!--Loop-->
-	<regexp match="/(?:^|~|[;=\}]?#1)\s*(?{Identifier}:[A-Za-z_][-\w]*)?\s*(?{Keyword}for|foreach|while|until)\s*\M\(/i"/>
-	<regexp match="/(?:^|~|[;=\}]?#1)\s*(?{Identifier}:[A-Za-z_][-\w]*)?\s*(?{Keyword}do)\s*\M\{/i"/>
-
-	<!--Keyword including reserved, mind @{key = value}-->
-	<regexp match="/(?:^|~|[;\}]?#1)\s*(?{Keyword}break|catch|class|continue|default|define|else|exit|finally|param|return|switch|throw|trap|try|using|var)\b(\s*=)?!/i"/>
-	<regexp match="/(?:^|~|[;\}\)]?#1)\s*(?{Keyword}begin|end|process)\b(\s*=)?!/i"/>
-
-	<!--Function and etc. Silly names \w\.\*-->
-	<regexp match="/(?:^|~|[;\}]?#1)\s*(?{Keyword}function|filter|data|task|workflow)\s+(?{def:Outlined}(?{Identifier}[\w\.\*][^\s\(\{]*))/i"/>
-
-	<!--Pipeline and redirection, before Number-->
-	<keywords ignorecase="yes" region="Pipeline">
-		<symb name="|"/>
-		<symb name="&gt;"/>
-		<symb name="&gt;&gt;"/>
-		<symb name="2&gt;"/>
-		<symb name="2&gt;&amp;1"/>
-		<symb name="2&gt;&gt;"/>
-	</keywords>
-
-	<!--Redirection, before Number-->
-	<keywords ignorecase="yes" region="Error">
-		<word name="&lt;"/>
-		<word name="1&gt;&amp;2"/>
-	</keywords>
-
-	<!--Number, after redirection-->
 	<inherit scheme="Number"/>
 
+	<inherit scheme="WOperator"/>
+
+	<!--if, eleseif-->
+	<regexp match="/%s-assign;(?{Keyword}if)\s*\M\(/i"/>
+	<regexp match="/(?:^|\}?#1)\s*(?{Keyword}elseif)\s*\M\(/i"/>
+
+	<!--foreach()-->
+	<block scheme="ForEach"
+	start="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}foreach)\s*(?{start}(?{def:Symbol}\())/i" end="/(?{end}(?{def:Symbol}\)))/"/>
+
+	<!--switch-->
+	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}switch)(\s*\(|\s+-)?=/i"/>
+
+	<!--Loop-->
+	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}for|while|until)\s*\M\(/i"/>
+	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}do)\s*\M\{/i"/>
+
+	<!--Keyword-->
+	<regexp match="/%s-common;(?{Keyword}break|catch|class|continue|default|define|else|exit|finally|param|return|throw|trap|try|using|var)\b(\s*=)?!/i"/>
+	<regexp match="/%s-common;(?{Keyword}begin|end|process)\b(\s*=)?!/i"/>
+
+	<!--Function-->
+	<regexp match="/%s-common;(?{Keyword}function|filter|workflow)\s+(?{def:Outlined}(?{Identifier}[^\s=$()\{}][^\s()\{}]*|\$\B))/i"/>
+	<regexp match="/%s-common;(?{Keyword}data)\s+(?{def:Outlined}(?{Identifier}%n-simple;))(\s|$|\{)?=/i"/>
+
+	<!--Task-->
+	<regexp match="/(?{def:Outlined}(?:^|[;\{}]?#1)\s*(?{Keyword}task)\s+=?!(?{Identifier}[^$'&#34;()\{}]\S*)?)/i"/>
+
+	<inherit scheme="SOperator"/>
+	<regexp match="/(?{Operator}\-[a-zA-Z]?!)/"/>
+
 	<!--Identifier, silly-->
-	<regexp match="/(?{Identifier}[\w.-]*)/"/>
-
-	<!--Warning: redundant semicolon-->
-	<regexp match="/(?{Error};)(?:\s*$|\s*\}|\s+#)/"/>
-
-	<!--Error: @'x, @"x-->
-	<regexp match="/(?{Error}@['&#34;].+)/"/>
+	<regexp match="/(?{Identifier}[\w\-.]+)/"/>
 </scheme>
 </type>
 </hrc>
