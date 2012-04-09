@@ -118,6 +118,21 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-04-09
+
+*powershell.hrc*
+
+- Added `, ; & ::` operators and V3 redirection operators.
+- Colored attributes, some loop labels, variable prefixes.
+- Fixed `if`, `for`, ... after `param()`.
+- Improved:
+    - `switch`
+    - `foreach( in )`
+    - here-string error areas
+    - type syntax, including generics and arrays
+    - name patterns of function, filter, data, task
+
+***
 ### 2012-04-01
 
 *r.hrc*
