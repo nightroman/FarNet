@@ -380,7 +380,7 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 
 		// copy existing file
 		if (SS(argsJob->UseFileName))
-			File::Copy(argsJob->UseFileName, fileName);
+			File::Copy(argsJob->UseFileName, fileName, true);
 
 		// collect to delete
 		if (deleteFiles)

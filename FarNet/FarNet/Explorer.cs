@@ -215,24 +215,32 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// It is normally called by the core on [F3], [F4], [CtrlQ],
-		/// if the explorer sets the flag <see cref="CanGetContent"/>.
-		/// It is also called in order to copy files to native destinations
-		/// if the advanced method <see cref="ExportFiles"/> is not implemented.
-		/// A user corrects invalid file system names interactively, if this is allowed.
-		/// Otherwise such files are ignored. Implemented <see cref="ExportFiles"/>
-		/// can get more control on export operations.
+		/// It is normally called by the core on [F3], [F4], [CtrlQ], if the
+		/// explorer sets the flag <see cref="CanGetContent"/>. It is also
+		/// called in order to copy files to native destinations if the
+		/// advanced method <see cref="ExportFiles"/> is not implemented. A
+		/// user corrects invalid file system names interactively, if this is
+		/// allowed. Otherwise such files are ignored.
 		/// </para>
 		/// <para>
-		/// If the content can be set back then this method should set <see cref="GetContentEventArgs.CanSet"/>:
-		/// this is used on [F4]: if the flag is not set then the editor will be opened in the locked mode.
+		/// For export operations, especially batch, consider to use <see
+		/// cref="ExportFiles"/>, it gets more overall control and it is more
+		/// flexible in case of failures. Besides, content for view and edit
+		/// operations does not have to be the same as content for export and
+		/// import operations.
 		/// </para>
 		/// <para>
-		/// There are three ways to export file data.
+		/// If the content is settable then this method should set the <see
+		/// cref="GetContentEventArgs.CanSet"/>. It is used on editing ([F4]).
+		/// If the flag is not set then an editor is opened locked, changes are
+		/// not allowed by default.
+		/// </para>
+		/// <para>
+		/// There are three ways of getting file content:
 		/// <ol>
-		/// <li>Assign the text or the line collection to the <see cref="GetContentEventArgs.UseText"/>.</li>
-		/// <li>Copy the content to the temporary file with the provided <see cref="GetContentEventArgs.FileName"/>.</li>
-		/// <li>If the file represents a system file then assign that path to the <see cref="GetContentEventArgs.UseFileName"/>.</li>
+		/// <li>Assign a string or a line collection to the <see cref="GetContentEventArgs.UseText"/>.</li>
+		/// <li>Copy data to a temporary file with the provided <see cref="GetContentEventArgs.FileName"/>.</li>
+		/// <li>If a file represents a system file then assign its path to the <see cref="GetContentEventArgs.UseFileName"/>.</li>
 		/// </ol>
 		/// </para>
 		/// </remarks>
