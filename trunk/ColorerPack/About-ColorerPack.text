@@ -118,6 +118,23 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-04-12
+
+*powershell.hrc*
+
+- Improved syntax of `do, for, foreach, while, function, filter, workflow, switch` blocks.
+- Corrected and improved syntax of `data` sections (still simplified).
+- Added `dynamicparam` block and auto-variable `$PSItem`.
+- Removed not really useful reserved keywords.
+- Simplified code related to improved blocks.
+- Fixed a minor defect in loop labels.
+
+*r.hrc*
+
+- Amended outlined comments `###`.
+- Optimized by eating spaces.
+
+***
 ### 2012-04-11
 
 *powershell.hrc*

@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin 2012-04-11
+powershell.hrc by Roman Kuzmin 2012-04-12
 For PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 Distributed with ColorerPack: http://code.google.com/p/farnet
 
@@ -73,6 +73,7 @@ SQL syntax in here-strings after <#sql#>
 <region name="end" parent="def:PairEnd"/>
 
 <entity name="e-block" value="(\s*(?:\{|$)|\s+&lt;?#)?="/>
+<entity name="e-func" value="(\s*(?:[\(\{]|$)|\s+&lt;?#)?="/>
 <entity name="e-paren" value="(\s*(?:\(|$)|\s+&lt;?#)?="/>
 <entity name="n-simple" value="\D?=\w+"/>
 <entity name="s-assign" value="(?:^|[;\{}()=]?#1)\s*"/>
@@ -80,6 +81,8 @@ SQL syntax in here-strings after <#sql#>
 <entity name="s-else" value="(?:^|\}?#1)\s*"/>
 <entity name="s-rem" value="(?:^|[\s,;=()\{}\[\]'&#34;]?#1)"/>
 <entity name="var" value="\w[\w\?]*"/>
+
+<entity name="s-label" value="%s-assign;((?{Label}:%n-simple;)\s+)?"/>
 
 <scheme name="Escape">
 	<regexp match="/(?{EscapeSpecial}`[0abfnrtv])/"/>
@@ -151,6 +154,7 @@ SQL syntax in here-strings after <#sql#>
 		<word name="$PSCulture"/>
 		<word name="$PSDebugContext"/>
 		<word name="$PSHOME"/>
+		<word name="$PSItem"/>
 		<word name="$PSScriptRoot"/>
 		<word name="$PSSenderInfo"/>
 		<word name="$PSUICulture"/>
@@ -204,11 +208,6 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="UserVar"/>
 </scheme>
 
-<scheme name="SubExpr">
-	<block scheme="code"
-	start="/(?{start}(?{Bracket}\$\())/" end="/(?{end}(?{Bracket}\)))/"/>
-</scheme>
-
 <!--''-->
 <scheme name="InApos1">
 	<regexp match="/(?{Escape}'')/"/>
@@ -219,7 +218,7 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="Escape"/>
 	<inherit scheme="AutoVar"/>
 	<inherit scheme="UserVar"/>
-	<inherit scheme="SubExpr"/>
+	<inherit scheme="subexpr-block"/>
 </scheme>
 
 <!--""-->
@@ -335,7 +334,7 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <!--<==>-->
-<scheme name="Log">
+<scheme name="log">
 	<regexp match="/(?{LogError}^ERROR(?::|\b)|\&lt;\&lt;\&lt;\&lt;(?:\s|$))/"/>
 	<regexp match="/^\+\s+(?{LogError}\~+)\s*$/"/>
 	<regexp match="/(?{LogDebug}^DEBUG\b.*$)/"/>
@@ -353,6 +352,10 @@ SQL syntax in here-strings after <#sql#>
 
 	<inherit scheme="def:Path"/>
 	<inherit scheme="Number"/>
+</scheme>
+<scheme name="log-block">
+	<block scheme="log" region="LogText"
+	start="/(?{start}(?{LogStart}^&lt;=$))/" end="/(?{end}(?{LogEnd}^=&gt;$))/"/>
 </scheme>
 
 <scheme name="Cmdlet">
@@ -741,6 +744,14 @@ SQL syntax in here-strings after <#sql#>
 	</keywords>
 </scheme>
 
+<scheme name="code-block">
+	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="code"/>
+</scheme>
+
+<scheme name="subexpr-block">
+	<block start="/(?{start}(?{Bracket}\$\())/" end="/(?{end}(?{Bracket}\)))/" scheme="code"/>
+</scheme>
+
 <scheme name="script-block">
 	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="powershell"/>
 </scheme>
@@ -753,14 +764,127 @@ SQL syntax in here-strings after <#sql#>
 	<block start="/(?{start}(?{Bracket}\[))/" end="/(?{end}(?{Bracket}\]))/" scheme="expression"/>
 </scheme>
 
+<scheme name="__code">
+	<inherit scheme="code-block"/>
+	<inherit scheme="base"/>
+</scheme>
+
+<scheme name="__paren">
+	<inherit scheme="paren-block"/>
+	<inherit scheme="base"/>
+</scheme>
+
+<scheme name="__paren_code">
+	<inherit scheme="paren-block"/>
+	<inherit scheme="code-block"/>
+	<inherit scheme="base"/>
+</scheme>
+
+<scheme name="__paren_code2">
+	<inherit scheme="paren-block"/>
+	<inherit scheme="code-block"/>
+	<inherit scheme="expression"/>
+</scheme>
+
+<scheme name="__paren_script">
+	<inherit scheme="paren-block"/>
+	<inherit scheme="script-block"/>
+	<inherit scheme="base"/>
+</scheme>
+
+<scheme name="__type_code">
+	<inherit scheme="code-block"/>
+	<inherit scheme="type-block"/>
+	<inherit scheme="base"/>
+	<keywords region="Operator">
+		<symb name=","/>
+	</keywords>
+</scheme>
+
+<scheme name="param-block">
+	<block scheme="__paren"
+	start="/(?:^|\{?#1)\s*(?{start}(?{Keyword}param))\b/i" end="/(?{end}\))?#1/"/>
+</scheme>
+
+<scheme name="named-block">
+	<block scheme="__code"
+	start="/(?:^|[\{})]?#1)\s*(?{start}(?{Keyword}process|begin|end|dynamicparam))%e-block;/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="function-block">
+	<block scheme="__paren_script"
+	start="/%s-common;(?{start}(?{Keyword}function|filter|workflow))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-func;/i"
+	end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="else-block">
+	<block scheme="__code"
+	start="/%s-else;(?{start}(?{Keyword}else))%e-block;/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="if-block">
+	<block scheme="__paren_code"
+	start="/%s-assign;(?{start}(?{Keyword}if))%e-paren;/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="elseif-block">
+	<block scheme="__paren_code"
+	start="/%s-else;(?{start}(?{Keyword}elseif))%e-paren;/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="try-finally-block">
+	<block scheme="__code"
+	start="/%s-common;(?{start}(?{Keyword}try|finally))%e-block;/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="catch-trap-block">
+	<block scheme="__type_code"
+	start="/%s-common;(?{start}(?{Keyword}catch|trap))(?:%e-block;|(?:\s*\[)?=)/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="for-while-block">
+	<block scheme="__paren_code"
+	start="/%s-label;(?{start}(?{Keyword}for|while))%e-paren;/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="foreach-paren">
+	<block scheme="Var" start="/~/" end="/\b\M(?{Keyword}in)\b/i"/>
+	<block scheme="expression" start="/\bin\b/i" end="/\)?=/"/>
+</scheme>
+<scheme name="__foreach">
+	<block scheme="foreach-paren" start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/"/>
+	<inherit scheme="code-block"/>
+	<inherit scheme="base"/>
+</scheme>
+<scheme name="foreach-block">
+	<block scheme="__foreach"
+	start="/%s-label;(?{start}(?{Keyword}foreach))%e-paren;/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="__do">
+	<inherit scheme="code-block"/>
+	<block scheme="__paren" start="/(?{start}(?{Keyword}while|until))%e-paren;/i" end="/(?{end}\))?#1/"/>
+	<inherit scheme="base"/>
+</scheme>
+<scheme name="do-block">
+	<block scheme="__do"
+	start="/%s-label;(?{start}(?{Keyword}do))%e-block;/i" end="/(?{end}\))?#1/"/>
+</scheme>
+
+<scheme name="data-block">
+	<block scheme="__paren_code2"
+	start="/%s-assign;(?{start}(?{Keyword}data))(?:\s+(?{def:Outlined}(?{Identifier}%n-simple;)))?(\s*\{|\s+-\w)?=/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="switch-block">
+	<block scheme="__paren_code2"
+	start="/%s-label;(?{start}(?{Keyword}switch))(%e-paren;|\s+-\w)?=/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
 <scheme name="ps1">
 	<inherit scheme="LineComment"/>
 	<inherit scheme="ExtraComment"/>
 	<inherit scheme="BlockComment"/>
-
-	<!--<==>-->
-	<block scheme="Log" region="LogText"
-	start="/(?{start}(?{LogStart}^&lt;=$))/" end="/(?{end}(?{LogEnd}^=&gt;$))/"/>
 
 	<!--op @'RE'@-->
 	<block scheme="REApos2" region="String" inner-region="yes"
@@ -788,7 +912,7 @@ SQL syntax in here-strings after <#sql#>
 
 	<inherit scheme="Escape"/>
 
-	<inherit scheme="SubExpr"/>
+	<inherit scheme="subexpr-block"/>
 
 	<inherit scheme="Array"/>
 
@@ -824,14 +948,10 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="else-block"/>
 	<inherit scheme="elseif-block"/>
 
-	<inherit scheme="foreach"/>
-
-	<!--switch-->
-	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}switch)(\s*\(|\s+-)?=/i"/>
-
-	<!--Loop-->
-	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}for|while|until)\s*\M\(/i"/>
-	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}do)\s*\M\{/i"/>
+	<inherit scheme="foreach-block"/>
+	<inherit scheme="for-while-block"/>
+	<inherit scheme="switch-block"/>
+	<inherit scheme="do-block"/>
 </scheme>
 
 <scheme name="ps2">
@@ -847,91 +967,14 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="ps2"/>
 </scheme>
 
-<scheme name="code-block">
-	<block scheme="code" start="/(?{start}(?{Bracket}\{))/" end="/(?{end}\})?=/"/>
-</scheme>
-
-<scheme name="x-block">
-	<inherit scheme="code-block"/>
-	<inherit scheme="base"/>
-</scheme>
-
-<scheme name="x-paren">
-	<block scheme="expression" start="/(?{start}(?{Bracket}\())/" end="/(?{end}\))?=/"/>
-	<inherit scheme="base"/>
-</scheme>
-
-<scheme name="x-paren-block">
-	<inherit scheme="paren-block"/>
-	<inherit scheme="code-block"/>
-	<inherit scheme="base"/>
-</scheme>
-
-<scheme name="x-type-block">
-	<inherit scheme="code-block"/>
-	<inherit scheme="type-block"/>
-	<inherit scheme="base"/>
-	<keywords region="Operator">
-		<symb name=","/>
-	</keywords>
-</scheme>
-
-<scheme name="param-block">
-	<block scheme="x-paren"
-	start="/(?:^|\{?#1)\s*(?{start}(?{Keyword}param))\b/i" end="/(?{end}(?{Bracket}\)))/"/>
-</scheme>
-
-<scheme name="named-block">
-	<block scheme="x-block"
-	start="/(?:^|[\{})]?#1)\s*(?{start}(?{Keyword}begin|end|process))%e-block;/i" end="/(?{end}(?{Bracket}\}))/"/>
-</scheme>
-
-<scheme name="else-block">
-	<block scheme="x-block"
-	start="/%s-else;(?{start}(?{Keyword}else))%e-block;/i" end="/(?{end}(?{Bracket}\}))/"/>
-</scheme>
-
-<scheme name="if-block">
-	<block scheme="x-paren-block"
-	start="/%s-assign;(?{start}(?{Keyword}if))%e-paren;/i" end="/(?{end}(?{Bracket}\}))/"/>
-</scheme>
-
-<scheme name="elseif-block">
-	<block scheme="x-paren-block"
-	start="/%s-else;(?{start}(?{Keyword}elseif))%e-paren;/i" end="/(?{end}(?{Bracket}\}))/"/>
-</scheme>
-
-<scheme name="try-finally-block">
-	<block scheme="x-block"
-	start="/%s-common;(?{start}(?{Keyword}try|finally))%e-block;/i" end="/(?{end}(?{Bracket}\}))/"/>
-</scheme>
-
-<scheme name="catch-block">
-	<block scheme="x-type-block"
-	start="/%s-common;(?{start}(?{Keyword}catch|trap))(?:%e-block;|(?:\s*\[)?=)/i" end="/(?{end}(?{Bracket}\}))/"/>
-</scheme>
-
-<scheme name="_foreach">
-	<block scheme="Var" start="/~/" end="/\b\M(?{Keyword}in)\b/i"/>
-	<block scheme="expression" start="/\bin\b/i" end="/\)?=/"/>
-</scheme>
-<scheme name="foreach">
-	<block scheme="_foreach"
-	start="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}foreach)\s*(?{start}(?{Bracket}\())/i" end="/(?{end}(?{Bracket}\)))/"/>
-</scheme>
-
 <scheme name="common">
+	<inherit scheme="function-block"/>
 	<inherit scheme="try-finally-block"/>
-	<inherit scheme="catch-block"/>
+	<inherit scheme="catch-trap-block"/>
+	<inherit scheme="data-block"/>
 
-	<!--Keyword-->
-	<regexp match="/%s-common;(?{Keyword}break|class|continue|default|define|exit|return|throw|using|var)\b/i"/>
+	<regexp match="/%s-common;(?{Keyword}break|continue|default|exit|return|throw)\b/i"/>
 
-	<!--Function-->
-	<regexp match="/%s-common;(?{Keyword}function|filter|workflow)\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))/i"/>
-	<regexp match="/%s-common;(?{Keyword}data)\s+(?{def:Outlined}(?{Identifier}%n-simple;))(\s|$|\{)?=/i"/>
-
-	<!--Task-->
 	<regexp match="/(?{def:Outlined}(?:^|[;\{}]?#1)\s*(?{Keyword}task)\s+=?!(?{Identifier}[^$'&#34;()\{}]\S*)?)/i"/>
 
 	<inherit scheme="ps2"/>
@@ -943,6 +986,8 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="powershell">
+	<inherit scheme="log-block"/>
+
 	<inherit scheme="ps1"/>
 
 	<inherit scheme="param-block"/>

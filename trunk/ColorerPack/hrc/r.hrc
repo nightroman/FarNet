@@ -146,8 +146,10 @@ Add to proto.hrc:
 </scheme>
 
 <scheme name="r">
+	<regexp match="/(?{def:default}\s+)/"/>
+
 	<!--###-->
-	<regexp match="/(?{Comment}(?:^|\s)(?{def:Outlined}###(?:\s+.*|$)))/"/>
+	<regexp match="/(?{Comment}(?{def:Outlined}#{3}#?!.*))/"/>
 
 	<!--#-->
 	<block scheme="Comment" region="Comment"
