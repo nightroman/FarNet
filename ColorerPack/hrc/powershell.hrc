@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin 2012-04-09
+powershell.hrc by Roman Kuzmin 2012-04-11
 For PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 Distributed with ColorerPack: http://code.google.com/p/farnet
 
@@ -34,6 +34,7 @@ SQL syntax in here-strings after <#sql#>
 
 ]]></documentation></annotation>
 
+<region name="Bracket"       parent="def:Symbol"        description="{} () []."/>
 <region name="Comment"       parent="def:Comment"       description="Code comments."/>
 <region name="Constant"      parent="def:Constant"      description="$null, $true, $false."/>
 <region name="Error"         parent="def:Error"         description="Error and warning areas."/>
@@ -55,7 +56,6 @@ SQL syntax in here-strings after <#sql#>
 <region name="NumberFloat"   parent="def:NumberFloat"   description="Floating point numbers."/>
 
 <region name="Operator"      parent="def:Operator"      description="Operators."/>
-<region name="Expression"    parent="Operator"          description="$(...), @(...) operators."/>
 
 <region name="Escape"        parent="def:StringContent" description="Escaping and escaped symbols."/>
 <region name="EscapeWrap"    parent="def:KeywordStrong" description="Escaping backtick at line ends."/>
@@ -72,9 +72,13 @@ SQL syntax in here-strings after <#sql#>
 <region name="start" parent="def:PairStart"/>
 <region name="end" parent="def:PairEnd"/>
 
+<entity name="e-block" value="(\s*(?:\{|$)|\s+&lt;?#)?="/>
+<entity name="e-paren" value="(\s*(?:\(|$)|\s+&lt;?#)?="/>
 <entity name="n-simple" value="\D?=\w+"/>
-<entity name="s-common" value="(?:^|[;\{}()]?#1)\s*"/>
 <entity name="s-assign" value="(?:^|[;\{}()=]?#1)\s*"/>
+<entity name="s-common" value="(?:^|[;\{}()]?#1)\s*"/>
+<entity name="s-else" value="(?:^|\}?#1)\s*"/>
+<entity name="s-rem" value="(?:^|[\s,;=()\{}\[\]'&#34;]?#1)"/>
 <entity name="var" value="\w[\w\?]*"/>
 
 <scheme name="Escape">
@@ -83,10 +87,14 @@ SQL syntax in here-strings after <#sql#>
 	<regexp match="/(?{Escape}`.)/"/>
 </scheme>
 
-<scheme name="Type">
+<scheme name="_type">
 	<regexp match="/(?:~|^)\s*%n-simple;([.+]%n-simple;)*/"/>
-	<block scheme="Type" start="/(?{start}\[)/" end="/(?{end}\])/"/>
-	<block scheme="powershell" start="/(?{start}\()/" end="/(?{end}\))/"/>
+	<block scheme="_type" start="/(?{start}\[)/" end="/(?{end}\])/"/>
+	<block scheme="expression" start="/(?{start}\()/" end="/(?{end}\))/"/>
+</scheme>
+<scheme name="type-block">
+	<block scheme="_type" region="Type"
+	start="/(?{start}\[)\s*\M%n-simple;/" end="/(?{end}\])/"/>
 </scheme>
 
 <scheme name="UserVar">
@@ -197,8 +205,8 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="SubExpr">
-	<block scheme="powershell"
-	start="/(?{start}(?{Expression}\$\())/" end="/(?{end}(?{Expression}\)))/"/>
+	<block scheme="code"
+	start="/(?{start}(?{Bracket}\$\())/" end="/(?{end}(?{Bracket}\)))/"/>
 </scheme>
 
 <!--''-->
@@ -222,14 +230,14 @@ SQL syntax in here-strings after <#sql#>
 
 <!--@()-->
 <scheme name="Array">
-	<block scheme="powershell"
-	start="/(?{start}(?{Expression}\@\())/" end="/(?{end}(?{Expression}\)))/"/>
+	<block scheme="expression"
+	start="/(?{start}(?{Bracket}\@\())/" end="/(?{end}(?{Bracket}\)))/"/>
 </scheme>
 
 <!--@{}-->
 <scheme name="Hash">
-	<block scheme="powershell"
-	start="/(?{start}(?{Expression}\@\{))/" end="/(?{end}(?{Expression}\}))/"/>
+	<block scheme="expression"
+	start="/(?{start}(?{Bracket}\@\{))/" end="/(?{end}(?{Bracket}\}))/"/>
 </scheme>
 
 <!--Number-->
@@ -280,37 +288,50 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="sql:sql"/>
 </scheme>
 
-<scheme name="External">
+<scheme name="ExtraComment">
 	<!--[regex]@''@, <#regex#>@''@-->
 	<block scheme="REApos2" region="String" inner-region="yes"
-	start="/(?{start}(?:(?{Type}\[regex\])|(?{Comment}&lt;#regex#&gt;))\s*(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
+	start="/(?{start}(?:(?{Type}\[regex\])|(?{Comment}%s-rem;&lt;#regex#&gt;))\s*(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
 
 	<!--[regex]'', <#regex#>''-->
 	<block scheme="REApos1" region="String" inner-region="yes"
-	start="/(?{start}(?:(?{Type}\[regex\])|(?{Comment}&lt;#regex#&gt;))\s*(?{SyntaxEdge}'))/i" end="/(?{end}(?{SyntaxEdge}'))/"/>
+	start="/(?{start}(?:(?{Type}\[regex\])|(?{Comment}%s-rem;&lt;#regex#&gt;))\s*(?{SyntaxEdge}'))/i" end="/(?{end}(?{SyntaxEdge}'))/"/>
 
 	<!--[regex]@""@, <#regex#>@""@-->
 	<block scheme="REQuot2" region="String" inner-region="yes"
-	start="/(?{start}(?:(?{Type}\[regex\])|(?{Comment}&lt;#regex#&gt;))\s*(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
+	start="/(?{start}(?:(?{Type}\[regex\])|(?{Comment}%s-rem;&lt;#regex#&gt;))\s*(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
 
 	<!--[regex]"", <#regex#>""-->
 	<block scheme="REQuot1" region="String" inner-region="yes"
-	start="/(?{start}(?:(?{Type}\[regex\])|(?{Comment}&lt;#regex#&gt;))\s*(?{SyntaxEdge}&#34;))/i" end="/(?{end}(?{SyntaxEdge}&#34;))/"/>
+	start="/(?{start}(?:(?{Type}\[regex\])|(?{Comment}%s-rem;&lt;#regex#&gt;))\s*(?{SyntaxEdge}&#34;))/i" end="/(?{end}(?{SyntaxEdge}&#34;))/"/>
 
 	<!--<#sql#>@''@-->
 	<block scheme="sql:sql" content-priority="low"
-	start="/(?{start}(?{Comment}&lt;#sql#&gt;)\s*(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
+	start="/(?{start}(?{Comment}%s-rem;&lt;#sql#&gt;)\s*(?{SyntaxEdge}@'$))/i" end="/(?{end}(?{SyntaxEdge}^'@))/"/>
 
 	<!--<#sql#>@""@-->
 	<block scheme="SqlQuot2" content-priority="low"
-	start="/(?{start}(?{Comment}&lt;#sql#&gt;)\s*(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
+	start="/(?{start}(?{Comment}%s-rem;&lt;#sql#&gt;)\s*(?{SyntaxEdge}@&#34;$))/i" end="/(?{end}(?{SyntaxEdge}^&#34;@))/"/>
 </scheme>
 
-<!--<##>, mind TabExpansion-->
 <scheme name="Comment">
 	<regexp match="/(?:^|~)\s*(?{HelpDirective}\.(?:SYNOPSIS|DESCRIPTION|INPUTS|OUTPUTS|NOTES|EXAMPLE|LINK|COMPONENT|ROLE|FUNCTIONALITY))\s*$/i"/>
 	<regexp match="/(?:^|~)\s*(?{HelpDirective}\.(?:PARAMETER|FORWARDHELPTARGETNAME|FORWARDHELPCATEGORY|REMOTEHELPRUNSPACE|EXTERNALHELP))\s+(?{UserVar}.+)$/i"/>
 	<inherit scheme="def:Comment"/>
+</scheme>
+
+<scheme name="LineComment">
+	<regexp match="/(?{Comment}%s-rem;(?{def:Outlined}#{3}#?!.*))/"/>
+	<block scheme="Comment" region="Comment" start="/%s-rem;#+/" end="/$/"/>
+</scheme>
+
+<scheme name="BlockComment">
+	<block scheme="Comment" region="Comment" start="/(?{start}%s-rem;&lt;#)/" end="/(?{end}#&gt;)/"/>
+</scheme>
+
+<scheme name="base">
+	<inherit scheme="LineComment"/>
+	<inherit scheme="BlockComment"/>
 </scheme>
 
 <!--<==>-->
@@ -720,25 +741,22 @@ SQL syntax in here-strings after <#sql#>
 	</keywords>
 </scheme>
 
-<scheme name="ForEach">
-	<block scheme="Var" start="/~/" end="/\b\M(?{Keyword}in)\b/i"/>
-	<block scheme="powershell" start="/\bin\b/" end="/\)?=/i"/>
+<scheme name="script-block">
+	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="powershell"/>
 </scheme>
 
-<scheme name="powershell">
-	<!--###-->
-	<regexp match="/(?{Comment}(?:^|\s)(?{def:Outlined}###(?:\s+.*|$)))/"/>
+<scheme name="paren-block">
+	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="expression"/>
+</scheme>
 
-	<!--#-->
-	<block scheme="Comment" region="Comment"
-	start="/(?:^|\s)#+/" end="/$/"/>
+<scheme name="index-block">
+	<block start="/(?{start}(?{Bracket}\[))/" end="/(?{end}(?{Bracket}\]))/" scheme="expression"/>
+</scheme>
 
-	<!--<#key#>-->
-	<inherit scheme="External"/>
-
-	<!--<##>-->
-	<block scheme="Comment" region="Comment"
-	start="/(?{start}&lt;#)/" end="/(?{end}#&gt;)/"/>
+<scheme name="ps1">
+	<inherit scheme="LineComment"/>
+	<inherit scheme="ExtraComment"/>
+	<inherit scheme="BlockComment"/>
 
 	<!--<==>-->
 	<block scheme="Log" region="LogText"
@@ -784,13 +802,11 @@ SQL syntax in here-strings after <#sql#>
 	<block scheme="InQuot1" region="String"
 	start="/(?{start}&#34;)/" end="/(?{end}&#34;)/"/>
 
-	<!--[Type], [x[]] except [1], [$x]-->
-	<block scheme="Type" region="Type"
-	start="/(?{start}\[)\s*\M%n-simple;/" end="/(?{end}\])/"/>
+	<inherit scheme="type-block"/>
 
-	<inherit scheme="def:PairedBrackets">
-		<virtual scheme="def:PairedBrackets" subst-scheme="powershell"/>
-	</inherit>
+	<inherit scheme="script-block"/>
+	<inherit scheme="paren-block"/>
+	<inherit scheme="index-block"/>
 
 	<inherit scheme="Cmdlet"/>
 
@@ -804,13 +820,11 @@ SQL syntax in here-strings after <#sql#>
 
 	<inherit scheme="WOperator"/>
 
-	<!--if, eleseif-->
-	<regexp match="/%s-assign;(?{Keyword}if)\s*\M\(/i"/>
-	<regexp match="/(?:^|\}?#1)\s*(?{Keyword}elseif)\s*\M\(/i"/>
+	<inherit scheme="if-block"/>
+	<inherit scheme="else-block"/>
+	<inherit scheme="elseif-block"/>
 
-	<!--foreach()-->
-	<block scheme="ForEach"
-	start="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}foreach)\s*(?{start}(?{def:Symbol}\())/i" end="/(?{end}(?{def:Symbol}\)))/"/>
+	<inherit scheme="foreach"/>
 
 	<!--switch-->
 	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}switch)(\s*\(|\s+-)?=/i"/>
@@ -818,23 +832,123 @@ SQL syntax in here-strings after <#sql#>
 	<!--Loop-->
 	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}for|while|until)\s*\M\(/i"/>
 	<regexp match="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}do)\s*\M\{/i"/>
+</scheme>
 
-	<!--Keyword-->
-	<regexp match="/%s-common;(?{Keyword}break|catch|class|continue|default|define|else|exit|finally|param|return|throw|trap|try|using|var)\b(\s*=)?!/i"/>
-	<regexp match="/%s-common;(?{Keyword}begin|end|process)\b(\s*=)?!/i"/>
-
-	<!--Function-->
-	<regexp match="/%s-common;(?{Keyword}function|filter|workflow)\s+(?{def:Outlined}(?{Identifier}[^\s=$()\{}][^\s()\{}]*|\$\B))/i"/>
-	<regexp match="/%s-common;(?{Keyword}data)\s+(?{def:Outlined}(?{Identifier}%n-simple;))(\s|$|\{)?=/i"/>
-
-	<!--Task-->
-	<regexp match="/(?{def:Outlined}(?:^|[;\{}]?#1)\s*(?{Keyword}task)\s+=?!(?{Identifier}[^$'&#34;()\{}]\S*)?)/i"/>
-
+<scheme name="ps2">
 	<inherit scheme="SOperator"/>
 	<regexp match="/(?{Operator}\-[a-zA-Z]?!)/"/>
 
 	<!--Identifier, silly-->
 	<regexp match="/(?{Identifier}[\w\-.]+)/"/>
+</scheme>
+
+<scheme name="expression">
+	<inherit scheme="ps1"/>
+	<inherit scheme="ps2"/>
+</scheme>
+
+<scheme name="code-block">
+	<block scheme="code" start="/(?{start}(?{Bracket}\{))/" end="/(?{end}\})?=/"/>
+</scheme>
+
+<scheme name="x-block">
+	<inherit scheme="code-block"/>
+	<inherit scheme="base"/>
+</scheme>
+
+<scheme name="x-paren">
+	<block scheme="expression" start="/(?{start}(?{Bracket}\())/" end="/(?{end}\))?=/"/>
+	<inherit scheme="base"/>
+</scheme>
+
+<scheme name="x-paren-block">
+	<inherit scheme="paren-block"/>
+	<inherit scheme="code-block"/>
+	<inherit scheme="base"/>
+</scheme>
+
+<scheme name="x-type-block">
+	<inherit scheme="code-block"/>
+	<inherit scheme="type-block"/>
+	<inherit scheme="base"/>
+	<keywords region="Operator">
+		<symb name=","/>
+	</keywords>
+</scheme>
+
+<scheme name="param-block">
+	<block scheme="x-paren"
+	start="/(?:^|\{?#1)\s*(?{start}(?{Keyword}param))\b/i" end="/(?{end}(?{Bracket}\)))/"/>
+</scheme>
+
+<scheme name="named-block">
+	<block scheme="x-block"
+	start="/(?:^|[\{})]?#1)\s*(?{start}(?{Keyword}begin|end|process))%e-block;/i" end="/(?{end}(?{Bracket}\}))/"/>
+</scheme>
+
+<scheme name="else-block">
+	<block scheme="x-block"
+	start="/%s-else;(?{start}(?{Keyword}else))%e-block;/i" end="/(?{end}(?{Bracket}\}))/"/>
+</scheme>
+
+<scheme name="if-block">
+	<block scheme="x-paren-block"
+	start="/%s-assign;(?{start}(?{Keyword}if))%e-paren;/i" end="/(?{end}(?{Bracket}\}))/"/>
+</scheme>
+
+<scheme name="elseif-block">
+	<block scheme="x-paren-block"
+	start="/%s-else;(?{start}(?{Keyword}elseif))%e-paren;/i" end="/(?{end}(?{Bracket}\}))/"/>
+</scheme>
+
+<scheme name="try-finally-block">
+	<block scheme="x-block"
+	start="/%s-common;(?{start}(?{Keyword}try|finally))%e-block;/i" end="/(?{end}(?{Bracket}\}))/"/>
+</scheme>
+
+<scheme name="catch-block">
+	<block scheme="x-type-block"
+	start="/%s-common;(?{start}(?{Keyword}catch|trap))(?:%e-block;|(?:\s*\[)?=)/i" end="/(?{end}(?{Bracket}\}))/"/>
+</scheme>
+
+<scheme name="_foreach">
+	<block scheme="Var" start="/~/" end="/\b\M(?{Keyword}in)\b/i"/>
+	<block scheme="expression" start="/\bin\b/i" end="/\)?=/"/>
+</scheme>
+<scheme name="foreach">
+	<block scheme="_foreach"
+	start="/%s-assign;(?{Label}:%n-simple;)?\s*(?{Keyword}foreach)\s*(?{start}(?{Bracket}\())/i" end="/(?{end}(?{Bracket}\)))/"/>
+</scheme>
+
+<scheme name="common">
+	<inherit scheme="try-finally-block"/>
+	<inherit scheme="catch-block"/>
+
+	<!--Keyword-->
+	<regexp match="/%s-common;(?{Keyword}break|class|continue|default|define|exit|return|throw|using|var)\b/i"/>
+
+	<!--Function-->
+	<regexp match="/%s-common;(?{Keyword}function|filter|workflow)\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))/i"/>
+	<regexp match="/%s-common;(?{Keyword}data)\s+(?{def:Outlined}(?{Identifier}%n-simple;))(\s|$|\{)?=/i"/>
+
+	<!--Task-->
+	<regexp match="/(?{def:Outlined}(?:^|[;\{}]?#1)\s*(?{Keyword}task)\s+=?!(?{Identifier}[^$'&#34;()\{}]\S*)?)/i"/>
+
+	<inherit scheme="ps2"/>
+</scheme>
+
+<scheme name="code">
+	<inherit scheme="ps1"/>
+	<inherit scheme="common"/>
+</scheme>
+
+<scheme name="powershell">
+	<inherit scheme="ps1"/>
+
+	<inherit scheme="param-block"/>
+	<inherit scheme="named-block"/>
+
+	<inherit scheme="common"/>
 </scheme>
 </type>
 </hrc>

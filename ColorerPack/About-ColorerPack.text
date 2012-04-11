@@ -118,6 +118,16 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-04-11
+
+*powershell.hrc*
+
+- Fixed case sensitivity of `in` in `foreach`.
+- Resolved false keyword colors in many cases.
+- Improved `param, begin, process, end, if, else, elseif, try, catch, finally,
+  trap` blocks: multiline syntax including comments, dual start/end pairs, etc.
+
+***
 ### 2012-04-09
 
 *powershell.hrc*
