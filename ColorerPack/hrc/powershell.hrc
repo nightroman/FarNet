@@ -955,6 +955,8 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="ps2">
+	<regexp match="/(?{def:default}^\s+)/"/>
+
 	<inherit scheme="SOperator"/>
 	<regexp match="/(?{Operator}\-[a-zA-Z]?!)/"/>
 
