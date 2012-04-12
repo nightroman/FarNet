@@ -122,6 +122,13 @@ with *visual.hrd*.
 
 *powershell.hrc*
 
+- Optimized by eating spaces (about 20% faster).
+
+***
+### 2012-04-12
+
+*powershell.hrc*
+
 - Improved syntax of `do, for, foreach, while, function, filter, workflow, switch` blocks.
 - Corrected and improved syntax of `data` sections (still simplified).
 - Added `dynamicparam` block and auto-variable `$PSItem`.
