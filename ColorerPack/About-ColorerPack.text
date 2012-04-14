@@ -118,6 +118,16 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-04-14
+
+*powershell.hrc*
+
+- Amended `switch` block. In particular:
+    - fixed use of `default` as a keyword
+    - fixed context of inner blocks
+- Simplified `data` block.
+
+***
 ### 2012-04-12
 
 *powershell.hrc*

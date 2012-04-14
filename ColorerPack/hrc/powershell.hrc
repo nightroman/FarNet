@@ -780,12 +780,6 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="base"/>
 </scheme>
 
-<scheme name="__paren_code2">
-	<inherit scheme="paren-block"/>
-	<inherit scheme="code-block"/>
-	<inherit scheme="expression"/>
-</scheme>
-
 <scheme name="__paren_script">
 	<inherit scheme="paren-block"/>
 	<inherit scheme="script-block"/>
@@ -872,17 +866,27 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="data-block">
-	<block scheme="__paren_code2"
+	<block scheme="expression"
 	start="/%s-assign;(?{start}(?{Keyword}data))(?:\s+(?{def:Outlined}(?{Identifier}%n-simple;)))?(\s*\{|\s+-\w)?=/i" end="/(?{end}\})?#1/"/>
 </scheme>
 
+<scheme name="__switch2">
+	<keywords region="Keyword" ignorecase="yes">
+		<word name="default"/>
+	</keywords>
+	<inherit scheme="code-block"/>
+	<inherit scheme="expression"/>
+</scheme>
+<scheme name="__switch">
+	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="__switch2"/>
+	<inherit scheme="expression"/>
+</scheme>
 <scheme name="switch-block">
-	<block scheme="__paren_code2"
+	<block scheme="__switch"
 	start="/%s-label;(?{start}(?{Keyword}switch))(%e-paren;|\s+-\w)?=/i" end="/(?{end}\})?#1/"/>
 </scheme>
 
-<scheme name="ps1">
-	<inherit scheme="LineComment"/>
+<scheme name="literal">
 	<inherit scheme="ExtraComment"/>
 	<inherit scheme="BlockComment"/>
 
@@ -910,14 +914,6 @@ SQL syntax in here-strings after <#sql#>
 	<block scheme="InApos1" region="String"
 	start="/(?{start}')/" end="/(?{end}')/"/>
 
-	<inherit scheme="Escape"/>
-
-	<inherit scheme="subexpr-block"/>
-
-	<inherit scheme="Array"/>
-
-	<inherit scheme="Hash"/>
-
 	<!--@""@-->
 	<block scheme="InQuot2" region="String"
 	start="/(?{start}@&#34;)(?{Error}.+)?$/" end="/(?{end}^&#34;@)/"/>
@@ -928,19 +924,31 @@ SQL syntax in here-strings after <#sql#>
 
 	<inherit scheme="type-block"/>
 
+	<inherit scheme="Pipeline"/>
+	<inherit scheme="Number"/>
+</scheme>
+
+<scheme name="value">
+	<inherit scheme="literal"/>
+	<inherit scheme="Var"/>
+	<inherit scheme="Hash"/>
+	<inherit scheme="Array"/>
+	<inherit scheme="subexpr-block"/>
 	<inherit scheme="script-block"/>
 	<inherit scheme="paren-block"/>
+</scheme>
+
+<scheme name="ps1">
+	<inherit scheme="LineComment"/>
+	<inherit scheme="value"/>
+
+	<inherit scheme="Escape"/>
+
 	<inherit scheme="index-block"/>
 
 	<inherit scheme="Cmdlet"/>
 
-	<inherit scheme="Var"/>
-
 	<inherit scheme="Separator"/>
-
-	<inherit scheme="Pipeline"/>
-
-	<inherit scheme="Number"/>
 
 	<inherit scheme="WOperator"/>
 
@@ -961,7 +969,7 @@ SQL syntax in here-strings after <#sql#>
 	<regexp match="/(?{Operator}\-[a-zA-Z]?!)/"/>
 
 	<!--Identifier, silly-->
-	<regexp match="/(?{Identifier}[\w\-.]+)/"/>
+	<regexp match="/(?{def:default}[\w\-.]+)/"/>
 </scheme>
 
 <scheme name="expression">
@@ -975,7 +983,7 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="catch-trap-block"/>
 	<inherit scheme="data-block"/>
 
-	<regexp match="/%s-common;(?{Keyword}break|continue|default|exit|return|throw)\b/i"/>
+	<regexp match="/%s-common;(?{Keyword}break|continue|exit|return|throw)\b/i"/>
 
 	<regexp match="/(?{def:Outlined}(?:^|[;\{}]?#1)\s*(?{Keyword}task)\s+=?!(?{Identifier}[^$'&#34;()\{}]\S*)?)/i"/>
 
