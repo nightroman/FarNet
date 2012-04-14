@@ -160,5 +160,24 @@ namespace FarNet.Works
 			return _invalidName.IsMatch(name);
 		}
 		static Regex _invalidName;
+		/// <summary>
+		/// Interactively fixes an invalid file name.
+		/// </summary>
+		/// <param name="name">An invalid file name.</param>
+		/// <returns>A valid file name or null if canceled.</returns>
+		public static string FixInvalidFileName(string name)
+		{
+			for (; ; )
+			{
+				name = Far.Net.Input("Correct file name", null, "Invalid file name", name);
+				if (null == name)
+					return null;
+
+				if (IsInvalidFileName(name))
+					continue;
+
+				return name;
+			}
+		}
 	}
 }

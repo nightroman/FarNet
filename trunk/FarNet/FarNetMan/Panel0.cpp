@@ -349,25 +349,15 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 		}
 		else
 		{
-			// use the name, check for invalid
+			// use the name, check/fix invalid
 			fileName = files[i]->Name;
 			if (Works::Kit::IsInvalidFileName(fileName))
 			{
 				if (!processBadNames)
 					continue;
 
-				bool invalid = true;
-				do
-				{
-					fileName = Far::Net->Input("Correct file name", nullptr, "Invalid file name", fileName);
-					if (!fileName)
-						break;
-
-					invalid = Works::Kit::IsInvalidFileName(fileName);
-				}
-				while(invalid);
-
-				if (invalid)
+				fileName = Works::Kit::FixInvalidFileName(fileName);
+				if (!fileName)
 					continue;
 			}
 		}
