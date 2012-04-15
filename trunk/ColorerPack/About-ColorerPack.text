@@ -118,6 +118,15 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-04-15
+
+*powershell.hrc*
+
+- Added member access and invocation operators `. ::`.
+- Corrected some ambiguous operator-or-literal cases.
+- Colored loop labels in `break continue`.
+
+***
 ### 2012-04-14
 
 *powershell.hrc*

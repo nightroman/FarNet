@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin 2012-04-12
+powershell.hrc by Roman Kuzmin 2012-04-15
 For PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 Distributed with ColorerPack: http://code.google.com/p/farnet
 
@@ -73,7 +73,8 @@ SQL syntax in here-strings after <#sql#>
 <region name="end" parent="def:PairEnd"/>
 
 <entity name="e-block" value="(\s*(?:\{|$)|\s+&lt;?#)?="/>
-<entity name="e-func" value="(\s*(?:[\(\{]|$)|\s+&lt;?#)?="/>
+<entity name="e-function" value="(\s*(?:[\(\{]|$)|\s+&lt;?#)?="/>
+<entity name="e-operator" value="([\s\d$\(\{\['&#34;]|\.\d|$)?="/>
 <entity name="e-paren" value="(\s*(?:\(|$)|\s+&lt;?#)?="/>
 <entity name="n-simple" value="\D?=\w+"/>
 <entity name="s-assign" value="(?:^|[;\{}()=]?#1)\s*"/>
@@ -93,7 +94,7 @@ SQL syntax in here-strings after <#sql#>
 <scheme name="_type">
 	<regexp match="/(?:~|^)\s*%n-simple;([.+]%n-simple;)*/"/>
 	<block scheme="_type" start="/(?{start}\[)/" end="/(?{end}\])/"/>
-	<block scheme="expression" start="/(?{start}\()/" end="/(?{end}\))/"/>
+	<block scheme="pipeline" start="/(?{start}\()/" end="/(?{end}\))/"/>
 </scheme>
 <scheme name="type-block">
 	<block scheme="_type" region="Type"
@@ -229,13 +230,13 @@ SQL syntax in here-strings after <#sql#>
 
 <!--@()-->
 <scheme name="Array">
-	<block scheme="expression"
+	<block scheme="pipeline"
 	start="/(?{start}(?{Bracket}\@\())/" end="/(?{end}(?{Bracket}\)))/"/>
 </scheme>
 
 <!--@{}-->
 <scheme name="Hash">
-	<block scheme="expression"
+	<block scheme="pipeline"
 	start="/(?{start}(?{Bracket}\@\{))/" end="/(?{end}(?{Bracket}\}))/"/>
 </scheme>
 
@@ -325,7 +326,7 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="BlockComment">
-	<block scheme="Comment" region="Comment" start="/(?{start}%s-rem;&lt;#)/" end="/(?{end}#&gt;)/"/>
+	<block scheme="Comment" region="Comment" start="/(?{start}%s-rem;&lt;#)/" end="/(?{end}#&gt;)\s*/"/>
 </scheme>
 
 <scheme name="base">
@@ -624,15 +625,7 @@ SQL syntax in here-strings after <#sql#>
 	</keywords>
 </scheme>
 
-<scheme name="Separator">
-	<regexp match="/(?{Error};)(?:\s*$|\s*\}|\s+#)/"/>
-	<keywords region="Operator">
-		<symb name=","/>
-		<symb name=";"/>
-	</keywords>
-</scheme>
-
-<scheme name="Pipeline">
+<scheme name="Redirection">
 	<keywords region="Error">
 		<symb name="&amp;&amp;"/>
 		<symb name="||"/>
@@ -643,7 +636,6 @@ SQL syntax in here-strings after <#sql#>
 		<symb name="&amp;"/>
 	</keywords>
 	<keywords region="Pipeline">
-		<symb name="|"/>
 		<symb name="&gt;&gt;"/>
 		<symb name="&gt;"/>
 		<symb name="2&gt;&amp;1"/>
@@ -664,7 +656,7 @@ SQL syntax in here-strings after <#sql#>
 	</keywords>
 </scheme>
 
-<scheme name="WOperator">
+<scheme name="BinaryOperator">
 	<keywords ignorecase="yes" region="Operator">
 		<word name="-eq"/>
 		<word name="-ne"/>
@@ -709,39 +701,17 @@ SQL syntax in here-strings after <#sql#>
 		<word name="-isnot"/>
 		<word name="-as"/>
 		<word name="-and"/>
-		<word name="-not"/>
 		<word name="-or"/>
 		<word name="-xor"/>
 		<word name="-band"/>
 		<word name="-bor"/>
-		<word name="-bnot"/>
 		<word name="-bxor"/>
 		<word name="-f"/>
-		<word name="-join"/>
-		<word name="-split"/>
-		<word name="-csplit"/>
-		<word name="-isplit"/>
 	</keywords>
-</scheme>
-
-<scheme name="SOperator">
 	<keywords region="Operator">
-		<symb name="--"/>
-		<symb name="%="/>
-		<symb name="*="/>
 		<symb name=".."/>
-		<symb name="/="/>
-		<symb name="::"/>
-		<symb name="++"/>
-		<symb name="+="/>
-		<symb name="-="/>
-		<symb name="!"/>
-		<symb name="%"/>
-		<symb name="*"/>
-		<symb name="/"/>
-		<symb name="+"/>
-		<symb name="="/>
 	</keywords>
+	<regexp match="/(?{Operator}[*\/%])%e-operator;/"/>
 </scheme>
 
 <scheme name="code-block">
@@ -757,7 +727,7 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="paren-block">
-	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="expression"/>
+	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="pipeline"/>
 </scheme>
 
 <scheme name="index-block">
@@ -807,7 +777,7 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="function-block">
 	<block scheme="__paren_script"
-	start="/%s-common;(?{start}(?{Keyword}function|filter|workflow))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-func;/i"
+	start="/%s-common;(?{start}(?{Keyword}function|filter|workflow))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-function;/i"
 	end="/(?{end}\})?#1/"/>
 </scheme>
 
@@ -843,7 +813,7 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="foreach-paren">
 	<block scheme="Var" start="/~/" end="/\b\M(?{Keyword}in)\b/i"/>
-	<block scheme="expression" start="/\bin\b/i" end="/\)?=/"/>
+	<block scheme="pipeline" start="/\bin\b/i" end="/\)?=/"/>
 </scheme>
 <scheme name="__foreach">
 	<block scheme="foreach-paren" start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/"/>
@@ -866,7 +836,7 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="data-block">
-	<block scheme="expression"
+	<block scheme="pipeline"
 	start="/%s-assign;(?{start}(?{Keyword}data))(?:\s+(?{def:Outlined}(?{Identifier}%n-simple;)))?(\s*\{|\s+-\w)?=/i" end="/(?{end}\})?#1/"/>
 </scheme>
 
@@ -875,15 +845,21 @@ SQL syntax in here-strings after <#sql#>
 		<word name="default"/>
 	</keywords>
 	<inherit scheme="code-block"/>
-	<inherit scheme="expression"/>
+	<inherit scheme="pipeline"/>
 </scheme>
 <scheme name="__switch">
 	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="__switch2"/>
-	<inherit scheme="expression"/>
+	<inherit scheme="pipeline"/>
 </scheme>
 <scheme name="switch-block">
 	<block scheme="__switch"
 	start="/%s-label;(?{start}(?{Keyword}switch))(%e-paren;|\s+-\w)?=/i" end="/(?{end}\})?#1/"/>
+</scheme>
+
+<scheme name="__break_continue">
+	<regexp match="/(?{Label}%n-simple;)/"/>
+	<inherit scheme="unary-expression"/>
+	<inherit scheme="base"/>
 </scheme>
 
 <scheme name="literal">
@@ -924,7 +900,7 @@ SQL syntax in here-strings after <#sql#>
 
 	<inherit scheme="type-block"/>
 
-	<inherit scheme="Pipeline"/>
+	<inherit scheme="Redirection"/>
 	<inherit scheme="Number"/>
 </scheme>
 
@@ -938,19 +914,42 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="paren-block"/>
 </scheme>
 
+<scheme name="primary-expression">
+	<inherit scheme="value"/>
+	<regexp match="/\S?#1(?{Operator}\.|::)\s*(?:(?{Identifier}%n-simple;)|[$\('&#34;]?=)/"/>
+	<inherit scheme="index-block"/>
+</scheme>
+
+<scheme name="unary-expression">
+	<inherit scheme="primary-expression"/>
+	<keywords ignorecase="yes" region="Operator">
+		<word name="-not"/>
+		<word name="-bnot"/>
+		<word name="-join"/>
+		<word name="-split"/>
+		<word name="-csplit"/>
+		<word name="-isplit"/>
+	</keywords>
+	<keywords region="Operator">
+		<symb name="--"/>
+		<symb name="++"/>
+		<symb name=","/>
+		<symb name="!"/>
+	</keywords>
+	<regexp match="/(?{Operator}[+\-])%e-operator;/"/>
+</scheme>
+
+<scheme name="expression">
+	<inherit scheme="unary-expression"/>
+	<inherit scheme="BinaryOperator"/>
+</scheme>
+
 <scheme name="ps1">
 	<inherit scheme="LineComment"/>
-	<inherit scheme="value"/>
+
+	<inherit scheme="expression"/>
 
 	<inherit scheme="Escape"/>
-
-	<inherit scheme="index-block"/>
-
-	<inherit scheme="Cmdlet"/>
-
-	<inherit scheme="Separator"/>
-
-	<inherit scheme="WOperator"/>
 
 	<inherit scheme="if-block"/>
 	<inherit scheme="else-block"/>
@@ -965,14 +964,27 @@ SQL syntax in here-strings after <#sql#>
 <scheme name="ps2">
 	<regexp match="/(?{def:default}^\s+)/"/>
 
-	<inherit scheme="SOperator"/>
-	<regexp match="/(?{Operator}\-[a-zA-Z]?!)/"/>
+	<keywords region="Pipeline">
+		<symb name="|"/>
+	</keywords>
 
-	<!--Identifier, silly-->
-	<regexp match="/(?{def:default}[\w\-.]+)/"/>
+	<keywords region="Operator">
+		<symb name="%="/>
+		<symb name="*="/>
+		<symb name="/="/>
+		<symb name="+="/>
+		<symb name="-="/>
+		<symb name="="/>
+		<symb name=";"/>
+	</keywords>
+
+	<inherit scheme="Cmdlet"/>
+
+	<!--Identifier TODO silly-->
+	<regexp match="/(?{def:default}[\w\\\/.+\-*?%]+)/"/>
 </scheme>
 
-<scheme name="expression">
+<scheme name="pipeline">
 	<inherit scheme="ps1"/>
 	<inherit scheme="ps2"/>
 </scheme>
@@ -983,7 +995,10 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="catch-trap-block"/>
 	<inherit scheme="data-block"/>
 
-	<regexp match="/%s-common;(?{Keyword}break|continue|exit|return|throw)\b/i"/>
+	<block scheme="__break_continue"
+	start="/%s-common;(?{Keyword}break|continue)\b\s*/i" end="/($|[\s;\}\)\]])?=/"/>
+
+	<regexp match="/%s-common;(?{Keyword}exit|return|throw)\b/i"/>
 
 	<regexp match="/(?{def:Outlined}(?:^|[;\{}]?#1)\s*(?{Keyword}task)\s+=?!(?{Identifier}[^$'&#34;()\{}]\S*)?)/i"/>
 
