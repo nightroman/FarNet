@@ -118,6 +118,17 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-04-17
+
+*powershell.hrc*
+
+- Commands invoked by `& .` are fully parsed and colored (command name,
+  parameters, and arguments are different things now). True parsing of all
+  commands is coming soon.
+- Improved parsing and colors of script parameter attributes.
+- Amended parsing of hash literals.
+
+***
 ### 2012-04-15
 
 *powershell.hrc*
