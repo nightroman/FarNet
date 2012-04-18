@@ -69,7 +69,7 @@
 <assign fore="#0F" back="#04" name="def:Error"/>
 <assign fore="#0D" name="def:ErrorText"/>
 
-<assign fore="#04" back="#07" name="def:TODO"/>
+<assign fore="#0F" back="#02" name="def:TODO"/>
 <assign fore="#04" back="#07" name="def:Debug"/>
 
 <assign back="#0E" name="def:Insertion"/>
