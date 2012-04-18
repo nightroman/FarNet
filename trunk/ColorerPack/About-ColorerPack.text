@@ -118,6 +118,21 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-04-18
+
+*powershell.hrc*
+
+- All commands are fully parsed. This is the major improvement and the code
+  looks more informative, at least with *visual.hrd*. There are a few known
+  cases of scheme confusion, nothing serious. To be continued.
+- New colors and areas: Argument, HashKey, StringEdge.
+- Amended function parameter list, hash tables, etc.
+
+*visual.hrd*
+
+- def:TODO colors are inverted comment colors (look more comfortable).
+
+***
 ### 2012-04-17
 
 *powershell.hrc*

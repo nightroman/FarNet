@@ -34,18 +34,21 @@ SQL syntax in here-strings after <#sql#>
 
 ]]></documentation></annotation>
 
+<region name="Argument"      parent="def:String"        description="Command arguments."/>
 <region name="Bracket"       parent="def:Symbol"        description="{} () []."/>
-<region name="Command"       parent="def:Prefix"        description="Command names."/>
+<region name="Command"       parent="def:Identifier"    description="Command names."/>
 <region name="Comment"       parent="def:Comment"       description="Code comments."/>
 <region name="Constant"      parent="def:Constant"      description="$null, $true, $false."/>
 <region name="Error"         parent="def:Error"         description="Error and warning areas."/>
+<region name="HashKey"       parent="def:Parameter"     description="Hashtable keys."/>
 <region name="HelpDirective" parent="def:CommentDoc"    description="Help comment directives."/>
 <region name="Identifier"    parent="def:Identifier"/>
 <region name="Keyword"       parent="def:Keyword"/>
 <region name="Label"         parent="def:Label"         description=":Label constructs."/>
-<region name="Parameter"     parent="def:Parameter"     description="Command -Parameter."/>
+<region name="Parameter"     parent="def:Parameter"     description="Command parameters."/>
 <region name="Pipeline"      parent="def:KeywordStrong" description="Pipeline and redirection operators."/>
 <region name="String"        parent="def:String"        description="Literal text in string expressions."/>
+<region name="StringEdge"    parent="def:StringEdge"    description="Edges of string literals."/>
 <region name="SyntaxEdge"    parent="def:StringEdge"    description="Edges of other syntax areas."/>
 <region name="SystemVar"     parent="def:VarStrong"     description="System variables (automatic, preference, ...)."/>
 <region name="Type"          parent="def:TypeKeyword"   description=".NET type [...]."/>
@@ -79,10 +82,10 @@ SQL syntax in here-strings after <#sql#>
 <entity name="e-operator" value="([\s\d$\(\{\['&#34;]|\.\d|$)?="/>
 <entity name="e-paren" value="(\s*(?:\(|$)|\s+&lt;?#)?="/>
 <entity name="n-simple" value="\D?=\w+"/>
-<entity name="s-assign" value="(?:^|[;\{}()=]?#1)\s*"/>
-<entity name="s-common" value="(?:^|[;\{}()]?#1)\s*"/>
+<entity name="s-assign" value="(?:^|[;\{}\()=]?#1)\s*"/>
+<entity name="s-common" value="(?:^|[;\{}\()]?#1)\s*"/>
 <entity name="s-else" value="(?:^|\}?#1)\s*"/>
-<entity name="s-rem" value="(?:^|[\s,;=()\{}\[\]'&#34;]?#1)"/>
+<entity name="s-rem" value="(?:^\s*|[\s,;=()\{}\[\]'&#34;]?#1)"/>
 <entity name="var" value="\w[\w\?]*"/>
 
 <entity name="s-label" value="%s-assign;((?{Label}:%n-simple;)\s+)?"/>
@@ -246,12 +249,9 @@ SQL syntax in here-strings after <#sql#>
 
 <!--@{}-->
 <scheme name="_hash">
-	<regexp match="/(?{Identifier}%n-simple;)\s*/"/>
-	<inherit scheme="pipeline"/> <!--todo statement-->
-	<keywords region="Operator">
-		<symb name="="/>
-		<symb name=";"/>
-	</keywords>
+	<regexp match="/(^|~|;?#1)\s*(?{HashKey}%n-simple;)\s*/"/>
+	<block scheme="unary-expression" start="/^|~|;?#1/" end="/$|[=}]?=/"/>
+	<block scheme="pipeline" start="/(?{Operator}=)/" end="/$|(?{Operator};)|\}?=/"/>
 	<inherit scheme="base"/>
 </scheme>
 <scheme name="hash-literal-expression">
@@ -262,12 +262,10 @@ SQL syntax in here-strings after <#sql#>
 <!--Number-->
 <entity name="numexp" value="(?:[eE][\-+]?\d+)"/>
 <entity name="numsuf" value="(?:[DdLl]?(?:KB|MB|GB|TB|PB)?)"/>
+<entity name="real" value="(?{NumberFloat}\B\.?~1\.\d+%numexp;?%numsuf;\b | \b\d+\.\.?!\d*(?:%numexp;?%numsuf;\b|\B) | \b\d+%numexp;%numsuf;\b)"/>
+<entity name="int" value="(?{NumberDec}\b\d+%numsuf;\b) | (?{NumberHex}\b0[xX][\da-fA-F]+%numsuf;\b)"/>
 <scheme name="Number">
-	<regexp match="/(?{NumberFloat}\B\.?~1\.\d+%numexp;?%numsuf;\b)/i"/>
-	<regexp match="/(?{NumberFloat}\b\d+\.\.?!\d*(?:%numexp;?%numsuf;\b|\B))/i"/>
-	<regexp match="/(?{NumberFloat}\b\d+%numexp;%numsuf;\b)/i"/>
-	<regexp match="/(?{NumberHex}\b0[xX][\da-fA-F]+%numsuf;\b)/i"/>
-	<regexp match="/(?{NumberDec}\b\d+%numsuf;\b)/i"/>
+	<regexp match="/%real;|%int;/ix"/>
 </scheme>
 
 <!--RE-->
@@ -301,7 +299,7 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="SqlQuot2">
 	<block scheme="InBoth" region="String"
-	start="/(?{start}')/" end="/(?{end}')/"/>
+	start="/(?{start}(?{StringEdge}'))/" end="/(?{end}(?{StringEdge}'))/"/>
 
 	<inherit scheme="InQuot2"/>
 	<inherit scheme="sql:sql"/>
@@ -766,12 +764,6 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="base"/>
 </scheme>
 
-<scheme name="__paren_script">
-	<inherit scheme="parenthesized-expression"/>
-	<inherit scheme="script-block-expression"/>
-	<inherit scheme="base"/>
-</scheme>
-
 <scheme name="__type_code">
 	<inherit scheme="statement-block"/>
 	<inherit scheme="type-block"/>
@@ -781,7 +773,7 @@ SQL syntax in here-strings after <#sql#>
 	</keywords>
 </scheme>
 
-<scheme name="_param2">
+<scheme name="parameter-list">
 	<inherit scheme="expression"/>
 	<keywords region="Operator">
 		<symb name="="/>
@@ -789,7 +781,7 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="base"/>
 </scheme>
 <scheme name="_param">
-	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="_param2"/>
+	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
 	<inherit scheme="base"/>
 </scheme>
 <scheme name="param-block">
@@ -802,8 +794,13 @@ SQL syntax in here-strings after <#sql#>
 	start="/(?:^|[\{})]?#1)\s*(?{start}(?{Keyword}process|begin|end|dynamicparam))%e-block;/i" end="/(?{end}\})?#1/"/>
 </scheme>
 
+<scheme name="_function">
+	<block start="/(?{start}(?{Bracket}\())/" end="/(?{end}(?{Bracket}\)))/" scheme="parameter-list"/>
+	<inherit scheme="script-block-expression"/>
+	<inherit scheme="base"/>
+</scheme>
 <scheme name="function-block">
-	<block scheme="__paren_script"
+	<block scheme="_function"
 	start="/%s-common;(?{start}(?{Keyword}function|filter|workflow))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-function;/i"
 	end="/(?{end}\})?#1/"/>
 </scheme>
@@ -929,19 +926,19 @@ SQL syntax in here-strings after <#sql#>
 
 	<!--@''@-->
 	<block scheme="def:empty" region="String"
-	start="/(?{start}@')(?{Error}.+)?$/" end="/(?{end}^'@)/"/>
+	start="/(?{start}(?{StringEdge}@'))(?{Error}.+)?$/" end="/(?{end}^(?{StringEdge}'@))/"/>
 
 	<!--''-->
 	<block scheme="InApos1" region="String"
-	start="/(?{start}')/" end="/(?{end}')/"/>
+	start="/(?{start}(?{StringEdge}'))/" end="/(?{end}(?{StringEdge}'))/"/>
 
 	<!--@""@-->
 	<block scheme="InQuot2" region="String"
-	start="/(?{start}@&#34;)(?{Error}.+)?$/" end="/(?{end}^&#34;@)/"/>
+	start="/(?{start}(?{StringEdge}@&#34;))(?{Error}.+)?$/" end="/(?{end}^(?{StringEdge}&#34;@))/"/>
 
 	<!--""-->
 	<block scheme="InQuot1" region="String"
-	start="/(?{start}&#34;)/" end="/(?{end}&#34;)/"/>
+	start="/(?{start}(?{StringEdge}&#34;))/" end="/(?{end}(?{StringEdge}&#34;))/"/>
 
 	<inherit scheme="type-block"/>
 
@@ -1004,15 +1001,35 @@ SQL syntax in here-strings after <#sql#>
 <entity name="tokench" value="[^\s\{}\();,|&amp;$'&#34;]"/>
 
 <scheme name="expand-token">
+	<inherit scheme="Cmdlet"/>
 	<inherit scheme="Escape"/>
 	<inherit scheme="subexpr-block"/>
 </scheme>
 
+<scheme name="command-argument">
+	<inherit scheme="Escape"/>
+	<inherit scheme="variable"/>
+	<inherit scheme="subexpr-block"/>
+</scheme>
+
+<scheme name="white">
+	<inherit scheme="base"/>
+	<regexp match="/\S/" />
+</scheme>
+
 <scheme name="command-element">
-	<regexp match="/\s+(?{Parameter}-\D?=[\w?][^\s\{}\();,|&amp;.\[:]*)/"/>
+	<regexp match="/\s+(?{Parameter}-\D?=[\w?][^\s\{}\();,|&amp;.\[:]*)(?{Operator}:?)/"/>
 
 	<inherit scheme="primary-expression"/>
+
+	<block scheme="base"
+	start="/(?{Operator},)/" end="/\S?=(&lt;?#)?!/"/>
+
 	<inherit scheme="base"/>
+
+	<block scheme="command-argument" region="Argument"
+	start="/\M%tokench;/" end="/$|%tokench;?!/"/>
+
 </scheme>
 
 <scheme name="_invocation">
@@ -1024,7 +1041,7 @@ SQL syntax in here-strings after <#sql#>
 <scheme name="invocation-block">
 	<block scheme="_invocation"
 	start="/(%s-assign;|(?{Pipeline}\|)\s*)\M(?{start}(?{Operator}\.)[\s$\(\{'&#34;]?=|(?{Operator}&amp;))/"
-	end="/(?{end})($|[|})\];])?=/"/>
+	end="/(?{end})(`?~1$|[|})\];])?=/"/>
 </scheme>
 
 <scheme name="__command">
@@ -1033,15 +1050,14 @@ SQL syntax in here-strings after <#sql#>
 
 	<inherit scheme="command-element"/>
 </scheme>
-<scheme name="command-block"> <!--todo filter out numbers-->
+<scheme name="command-block">
 	<block scheme="__command"
-	start="/(%s-assign;|(?{Pipeline}\|)\s*)\M(?{start}%tokench;)/"
-	end="/(?{end})($|[|})\];])?=/"/>
-</scheme>
+	start="/^\s*(?{start}(?{Keyword}task))\s+(?{def:Outlined}(?{Identifier}%tokench;+)?)/i"
+	end="/(?{end})(`?~1$|[|})\];])?=/"/>
 
-<scheme name="command">
-	<inherit scheme="command-block"/>
-	<inherit scheme="invocation-block"/>
+	<block scheme="__command"
+	start="/(%s-assign;|((?{Pipeline}\|)|(\bin)?#2)\s*)\M(&lt;?#|\[|\@[\w\(\{'&#34;]|%real;|%int;)?!(?{start}%tokench;)/ix"
+	end="/(?{end})(`?~1$|[|})\];])?=/"/>
 </scheme>
 
 <scheme name="ps1">
@@ -1049,7 +1065,6 @@ SQL syntax in here-strings after <#sql#>
 
 	<inherit scheme="assignment-expression"/>
 
-	<inherit scheme="Escape"/>
 	<inherit scheme="invocation-block"/>
 
 	<inherit scheme="if-statement"/>
@@ -1064,6 +1079,8 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="ps2">
+	<inherit scheme="command-block"/>
+
 	<regexp match="/(?{def:default}^\s+)/"/>
 
 	<keywords region="Pipeline">
@@ -1072,8 +1089,9 @@ SQL syntax in here-strings after <#sql#>
 
 	<inherit scheme="Cmdlet"/>
 
-	<!--Identifier TODO silly-->
-	<regexp match="/(?{def:default}[\w\\\/.+\-*?%]+)/"/>
+	<!--TODO temp error
+	<regexp match="/(?{Error}\S+)/" priority="low"/>
+	-->
 </scheme>
 
 <scheme name="pipeline">
@@ -1093,8 +1111,6 @@ SQL syntax in here-strings after <#sql#>
 	start="/%s-common;(?{Keyword}break|continue)\b\s*/i" end="/($|[\s;\}\)\]])?=/"/>
 
 	<regexp match="/%s-common;(?{Keyword}exit|return|throw)\b/i"/>
-
-	<regexp match="/(?{def:Outlined}(?:^|[;\{}]?#1)\s*(?{Keyword}task)\s+=?!(?{Identifier}[^$'&#34;()\{}]\S*)?)/i"/>
 
 	<keywords region="Operator">
 		<symb name=";"/>
