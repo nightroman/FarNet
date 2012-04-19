@@ -118,6 +118,14 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-04-19
+
+*powershell.hrc*
+
+- Colored optional elements of `switch` and `data`.
+- Fixed many of recently added known issues, not all yet.
+
+***
 ### 2012-04-18
 
 *powershell.hrc*
