@@ -46,7 +46,7 @@ $Created = { $null = $c.Parameters.Add("Created", [Data.SqlDbType]::DateTime, 0,
 
 # command to insert data
 $a.InsertCommand = $c = $DbConnection.CreateCommand()
-$c.CommandText = <#sql#> @'
+$c.CommandText = <#sql#>@'
 INSERT TestNotes (Note, CategoryId, Created)
 VALUES (@Note, @CategoryId, @Created)
 '@
@@ -56,7 +56,7 @@ VALUES (@Note, @CategoryId, @Created)
 
 # command to delete data
 $a.DeleteCommand = $c = $DbConnection.CreateCommand()
-$c.CommandText = <#sql#> @'
+$c.CommandText = <#sql#>@'
 DELETE FROM TestNotes
 WHERE NoteId = @NoteId
 '@
@@ -64,7 +64,7 @@ WHERE NoteId = @NoteId
 
 # command to update data
 $a.UpdateCommand = $c = $DbConnection.CreateCommand()
-$c.CommandText = <#sql#> @'
+$c.CommandText = <#sql#>@'
 UPDATE TestNotes
 SET Note = @Note, CategoryId = @CategoryId, Created = @Created
 WHERE NoteId = @NoteId
