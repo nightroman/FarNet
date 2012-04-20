@@ -37,7 +37,7 @@ In addition to natural recognition regex syntax is colored in strings after the
 conventional comment `<#regex#>`. The example also shows use of a here-string:
 
 <pre>
-<span style='color:#008000'>&lt;#regex#></span> <span style='color:#ff0000'>@'</span>
+<span style='color:#008000'>&lt;#regex#></span><span style='color:#ff0000'>@'</span>
 <span style='color:#ff0000'>(?</span><span style='color:#0000ff'>ix</span><span style='color:#ff0000'>)</span>
 <span style='color:#0000ff'>^</span><span style='color:#800000'> text1 </span><span style='color:#008000'>  # comment1</span>
 <span style='color:#800000'> text2 </span><span style='color:#0000ff'>$</span><span style='color:#008000'>  # comment2</span>
@@ -55,7 +55,7 @@ SQL syntax is colored in here-strings (`@'...'@`, `@"..."@`) after the
 conventional comment `<#sql#>`:
 
 <pre>
-<span style='color:#008000'>&lt;#sql#></span> <span style='color:#ff0000'>@'</span>
+<span style='color:#008000'>&lt;#sql#></span><span style='color:#ff0000'>@'</span>
 <span style='color:#0000ff'>SELECT</span> <span style='color:#0000ff'>*</span>
 <span style='color:#0000ff'>FROM</span> table1
 <span style='color:#0000ff'>WHERE</span> data1 <span style='color:#0000ff'>=</span> <span style='color:#ff0000'>@param1</span>
@@ -116,6 +116,18 @@ with *visual.hrd*.
 
 *********************************************************************
 ## History {#History}
+
+***
+### 2012-04-20
+
+*powershell.hrc*
+
+- Many major improvements, PowerShell syntax parsing is almost fair now. At the
+  same time the scheme is simpler and it works about 25% faster.
+- Resolved most of known issues, both recently added and very old. Other known
+  issues are rather exotic, some of them will be fixed later, some never.
+- "Breaking" change: no spaces are allowed between conventional comments
+  `<#sql#> <#regex#>` and following string edges.
 
 ***
 ### 2012-04-19
