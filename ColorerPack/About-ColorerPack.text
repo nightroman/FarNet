@@ -17,10 +17,10 @@ Far Manager editor which works somewhat similar to PowerShell console.
 
 ### Outlined regions
 
-- Functions and filters.
-- Global and script variables.
-- Triple-hash line comments `###`.
-- `task` entries (*Invoke-Build*, *psake*).
+- Parameters;
+- Functions and filters;
+- Triple-hash line comments `###`;
+- `task` entries (DSL of *Invoke-Build*, *psake*).
 
 ### Regex syntax
 
@@ -116,6 +116,19 @@ with *visual.hrd*.
 
 *********************************************************************
 ## History {#History}
+
+***
+### 2012-04-22
+
+*powershell.hrc*
+
+- Fixed the region of `.` on invocation of script blocks and expressions.
+- Amended syntax after `break continue throw return exit`.
+- Amended syntax of redirection including V3 new features.
+- Dropped outlined global/script variable assignment.
+- Amended parameter list, outlined parameters.
+- Added operators `-in -notin` (V3).
+- Refactoring and optimization.
 
 ***
 ### 2012-04-20
