@@ -582,46 +582,101 @@ void Far0::PostSelf()
 	Far::Net->PostMacro("F11 Menu.Select(\"FarNet\", 2) Enter");
 }
 
-// Why PostStep is better than PostJob: PostStep makes FarNet to be called from
-// OpenW(), so that it can open panels and do most of needed tasks. PostJob
+// When PostSteps is better than PostJob: PostSteps calls from OpenW(),
+// so that steps can open panels and do most of needed tasks. PostJob
 // does not allow opening panels, calling PostMacro, etc.
-void Far0::PostStep(Action^ handler)
+void Far0::PostSteps(IEnumerable<Object^>^ steps)
 {
-	// register the handler and post recall
-	_handler = handler;
-	PostSelf();
+	if (!_steps)
+		_steps = gcnew Stack<IEnumerator<Object^>^>;
+
+	_steps->Push(steps->GetEnumerator());
+
+	if (_steps->Count == 1)
+		PostSelf();
 }
 
-void Far0::PostStep2(Action^ handler1, Action^ handler2)
-{
-	// register the second handler and post recall, then invoke the first handler
-	_handler = handler2;
-	PostSelf();
-	try
-	{
-		handler1->Invoke();
-	}
-	catch(...)
-	{
-		//! self is posted and going to call the menu anyway; so, use a fake step
-		_handler = gcnew Action(&VoidStep);
-		throw;
-	}
-}
-
+/*
+Why fake step. On Action we PostSelf() and then action(). PostSelf() cannot be
+undone, OpenW() is going to be called anyway. A fake step is used in order to
+ignore this call.
+*/
 void Far0::OpenMenu(ModuleToolOptions from)
 {
-	// unregister and call the registered handler
-	if (_handler)
+	// just show the menu
+	if (!_steps || !_steps->Count)
 	{
-		Action^ handler = _handler;
-		_handler = nullptr;
-		handler();
+		ShowMenu(from);
 		return;
 	}
 
-	// menu
-	ShowMenu(from);
+	// the current iterator; null is the fake
+	IEnumerator<Object^>^ enumerator = _steps->Peek();
+	if (!enumerator)
+	{
+		_steps->Pop();
+		return;
+	}
+
+	// invoke the next step
+	bool makeFakeStep = false;
+	try
+	{
+		if (!enumerator->MoveNext())
+		{
+			delete _steps->Pop();
+
+			if (_steps->Count)
+				PostSelf();
+
+			return;
+		}
+
+		Object^ current = enumerator->Current;
+		if (!current)
+		{
+			PostSelf();
+			return;
+		}
+
+		String^ macro = dynamic_cast<String^>(current);
+		if (macro)
+		{
+			if (macro->Length > 0)
+				Far::Net->PostMacro(macro);
+
+			PostSelf();
+			return;
+		}
+
+		Action^ action = dynamic_cast<Action^>(current);
+		if (action)
+		{
+			PostSelf();
+			try
+			{
+				action();
+				return;
+			}
+			catch(...)
+			{
+				makeFakeStep = true;
+				throw;
+			}
+		}
+
+		throw gcnew InvalidOperationException("Unexpected step type: " + current->GetType());
+	}
+	catch(...)
+	{
+		while(_steps->Count)
+			delete _steps->Pop();
+
+		if (makeFakeStep)
+			_steps->Push(nullptr);
+
+		throw;
+	}
 }
 
 void Far0::OpenConfig() //config//
@@ -885,7 +940,7 @@ void Far0::ShowDrawersMenu()
 	IMenu^ menu = Far::Net->CreateMenu();
 	menu->Title = "Drawers";
 	menu->HelpTopic = "MenuDrawers";
-	
+
 	for each(IModuleDrawer^ drawer in _registeredDrawer)
 	{
 		FarItem^ item = menu->Add(drawer->Name);

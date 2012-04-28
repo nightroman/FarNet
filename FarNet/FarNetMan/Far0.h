@@ -30,8 +30,7 @@ public:
 	static CultureInfo^ GetCurrentUICulture(bool update);
 	static void ChangeFontSize(bool increase);
 	static void PostJob(Action^ handler);
-	static void PostStep(Action^ handler);
-	static void PostStep2(Action^ handler1, Action^ handler2);
+	static void PostSteps(IEnumerable<Object^>^ steps);
 	static void ShowConsoleMenu();
 	static void ShowDrawersMenu();
 	static void ShowMenu(ModuleToolOptions from);
@@ -44,7 +43,6 @@ private:
 	static void OpenConfig();
 	static void OpenMenu(ModuleToolOptions from);
 	static void PostSelf();
-	static void VoidStep() {}
 	static void InvalidateProxyTool(ModuleToolOptions options);
 	static String^ GetMenuText(IModuleTool^ tool);
 private:
@@ -61,8 +59,8 @@ private:
 	static List<IModuleEditor^> _registeredEditor;
 private:
 	static CultureInfo^ _currentUICulture;
-	// Post
-	static Action^ _handler;
+	// Step
+	static Stack<IEnumerator<Object^>^>^ _steps;
 	// Sync
 	static HANDLE _hMutex;
 	static Action^ _jobs;

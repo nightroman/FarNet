@@ -160,8 +160,7 @@ namespace FarNet
 				}
 
 				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
-				// I tried to ignore my check - a panel did not open. In contrast, PostStep calls via the menu where
-				// a panel is opened from with no problems.
+				// In contrast, PostStep calls via the menu where a panel is opened from with no problems.
 				Far.Net.PostStep(Open);
 				return;
 			}

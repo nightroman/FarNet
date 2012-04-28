@@ -334,33 +334,40 @@ namespace FarNet
 		/// <returns>Entered text or null if canceled.</returns>
 		public abstract string Input(string prompt, string history, string title, string text);
 		/// <summary>
-		/// Posts a handler to be invoked when user code has finished and the core gets control.
+		/// Posts a single step action, see <see cref="PostSteps"/>.
 		/// </summary>
-		/// <param name="handler">Step handler.</param>
-		/// <remarks>
-		/// Some core operations are executed only when it gets control, i.e. when user code has finished.
-		/// Thus, such operations cannot be invoked as a synchronous sequence.
-		/// This method allows invoke them as an asynchronous sequence.
-		/// <para>
-		/// This mechanism works only when the plugins menu [F11] is available, because it is used internally for stepping.
-		/// </para>
-		/// <para>
-		/// If a step handler starts modal UI without exiting (e.g. dialog) then use <see cref="PostStep2"/>
-		/// if you have another step to be invoked in modal mode (e.g. in a dialog after opening).
-		/// </para>
-		/// </remarks>
-		public abstract void PostStep(Action handler);
+		public void PostStep(Action handler) { PostSteps(new object[] { handler }); }
 		/// <summary>
-		/// Invokes a handler that normally starts modal UI and posts another handler which is invoked in that modal mode.
+		/// Posts a sequence of steps enumerated asynchronously (e.g. coroutine with <c>yield</c>).
 		/// </summary>
-		/// <param name="handler1">Handler starting modal UI.</param>
-		/// <param name="handler2">Handler to be called in modal mode.</param>
 		/// <remarks>
-		/// Steps in <see cref="PostStep"/> work fine if they do not call something modal, like a dialog, for example.
-		/// For this special case you should use this method: <b>handler1</b> normally calls something modal (a dialog)
-		/// and <b>handler2</b> is posted to be invoked after that (when a dialog is opened).
+		/// Some operations take effect only when module code finishes and the core gets control.
+		/// Such operations cannot be invoked synchronously in the middle of module code.
+		/// But with this method they may be invoked in the middle of a step sequence.
+		/// <para>
+		/// This method internally uses the plugin menu [F11] for chaining steps.
+		/// Thus, steps should not end in areas where this menu is not available.
+		/// </para>
+		/// <para>
+		/// Allowed types of step objects:
+		/// *) Nulls are ignored (they may be needed with yield);
+		/// *) Strings are posted as macros;
+		/// *) Action delegates are invoked.
+		/// Action delegates should be not post macros.
+		/// </para>
+		/// <para>
+		/// An enumerator implemented with <c>yield</c> works as "coroutine".
+		/// Its code is suspended on <c>yield return</c> and the core gets
+		/// control. The code is resumed on the next iteration. The code may
+		/// yield nulls in order to separate steps.
+		/// </para>
+		/// <para>
+		/// Multiple and nested step sequences are allowed. The last posted
+		/// sequence is processed first. The only caveat: new sequences must
+		/// not be posted from <c>MoveNext</c> when they return false.
+		/// </para>
 		/// </remarks>
-		public abstract void PostStep2(Action handler1, Action handler2);
+		public abstract void PostSteps(IEnumerable<object> steps);
 		/// <summary>
 		/// Posts a job that will be called by the core when it gets control.
 		/// </summary>

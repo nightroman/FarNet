@@ -334,6 +334,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 			else
 			{
 				_toFilter = true;
+				_ii = nullptr;
 			}
 		}
 	}
