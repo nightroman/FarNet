@@ -326,14 +326,9 @@ String^ Far1::Input(String^ prompt, String^ history, String^ title, String^ text
 	return ib.Show() ? ib.Text : nullptr;
 }
 
-void Far1::PostStep(Action^ handler)
+void Far1::PostSteps(IEnumerable<Object^>^ steps)
 {
-	Far0::PostStep(handler);
-}
-
-void Far1::PostStep2(Action^ handler1, Action^ handler2)
-{
-	Far0::PostStep2(handler1, handler2);
+	Far0::PostSteps(steps);
 }
 
 String^ Far1::TempName(String^ prefix)

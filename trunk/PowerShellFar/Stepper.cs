@@ -61,11 +61,8 @@ namespace PowerShellFar
 	/// immediately after the current.
 	/// </para>
 	/// <para>
-	/// If a script block step returns another script block, that is it looks like <c>{{...}}</c>,
-	/// then <see cref="IFar.PostStep2"/> is called for the next step instead of the usual
-	/// <see cref="IFar.PostStep"/>. The returned script block normally starts modal UI
-	/// (dialog, editor, and etc.). The next step in the sequence is invoked when modal
-	/// UI has started.
+	/// In order to invoke modal UI and continue the step sequence in it a script block
+	/// should return yet another script block, that is it looks like <c>{{...}}</c>.
 	/// </para>
 	/// <para>
 	/// Any other output of script block steps is not allowed. Use <c>Write-Host</c>
@@ -78,9 +75,19 @@ namespace PowerShellFar
 	/// </para>
 	/// </remarks>
 	/// <example>Test-Stepper-.ps1, Test-Stepper+.ps1, Test-Dialog+.ps1.</example>
-	public sealed class Stepper
+	public sealed class Stepper : IEnumerator<object>, IEnumerable<object>
 	{
 		const string DataVariableName = "Data";
+		object _current;
+		///
+		public object Current { get { return _current; } }
+		///
+		public void Reset() { throw new NotImplementedException(); }
+		///
+		public void Dispose() { }
+		///
+		public IEnumerator<object> GetEnumerator() { return this; }
+		IEnumerator System.Collections.IEnumerable.GetEnumerator() { return this; }
 		/// <summary>
 		/// The only allowed running instance.
 		/// </summary>
@@ -150,7 +157,7 @@ namespace PowerShellFar
 			{
 				_StepIndex = 0;
 				InsertRange(0, steps);
-				Far.Net.PostStep(Action);
+				Far.Net.PostSteps(this);
 			}
 			// in progress
 			else
@@ -216,7 +223,7 @@ namespace PowerShellFar
 			AssumeCanStep();
 
 			if (_RunningInstance == null)
-				Far.Net.PostStep(Action);
+				Far.Net.PostSteps(this);
 		}
 		/// <summary>
 		/// Gets the current running step unit or null if there is none.
@@ -297,10 +304,13 @@ namespace PowerShellFar
 		{
 			get { return _Error; }
 		}
-		// Invokes the next step in the step sequence.
-		void Action()
+		/// <summary>
+		/// Invokes the next step in the step sequence.
+		/// </summary>
+		public bool MoveNext()
 		{
 			AssumeCanStep();
+			_current = null;
 
 			try
 			{
@@ -319,7 +329,7 @@ namespace PowerShellFar
 					{
 						// state
 						State = StepperState.Completed;
-						return;
+						return false;
 					}
 
 					// state
@@ -336,10 +346,7 @@ namespace PowerShellFar
 
 					// no steps? 'continue'
 					if (steps.Count == 0)
-					{
-						Far.Net.PostStep(Action);
-						return;
-					}
+						return true;
 
 					// add steps and start
 					InsertRange(0, steps);
@@ -380,7 +387,7 @@ namespace PowerShellFar
 							Ask = false;
 							break;
 						default:
-							return;
+							return false;
 					}
 				}
 
@@ -404,8 +411,8 @@ namespace PowerShellFar
 					if (result.Count == 1 && null != (script = result[0].BaseObject as ScriptBlock))
 					{
 						++_StepIndex;
-						Far.Net.PostStep2(delegate { script.Invoke(); }, Action);
-						return;
+						_current = new Action(delegate { script.Invoke(); });
+						return true;
 					}
 
 					// unexpected output
@@ -419,12 +426,12 @@ namespace PowerShellFar
 				else
 				{
 					// post macro
-					Far.Net.PostMacro(it.ToString());
+					_current = it;
 				}
 
 				// post
 				++_StepIndex;
-				Far.Net.PostStep(Action);
+				return true;
 			}
 			catch (Exception error)
 			{

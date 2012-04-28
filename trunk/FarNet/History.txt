@@ -3,8 +3,14 @@ http://code.google.com/p/farnet/downloads/list
 = 5.0.24 =
 
 Panel
-* Copy by GetContent+UseFileName: fixed issues on targets with source names.
-* ++ Explorer help.
+* GetContent+UseFileName: fixed issues on existing targets with source names.
+
+Asynchronous sequences (almost "coroutines" if used with C# yield)
+* New method IFar.PostSteps()
+* Removed redundant PostStep2()
+
+Misc
+* Fix: incremental filter update on backspace.
 
 = 5.0.23 =
 
