@@ -18,7 +18,7 @@ void AnyViewer::ViewText(String^ text, String^ title, OpenMode mode)
 Viewer::Viewer()
 : _id(-1)
 , _Title(String::Empty)
-, _CodePage(CP_AUTODETECT)
+, _CodePage(CP_DEFAULT)
 {}
 
 void Viewer::Open(OpenMode mode)
