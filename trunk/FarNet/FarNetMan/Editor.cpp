@@ -22,7 +22,7 @@ String^ AnyEditor::EditText(String^ text, String^ title)
 Editor::Editor()
 : _id(-1)
 , _Title(String::Empty)
-, _CodePage(CP_AUTODETECT)
+, _CodePage(CP_DEFAULT)
 , _frameStart(-1)
 {}
 
