@@ -598,19 +598,23 @@ void Far0::PostSteps(IEnumerable<Object^>^ steps)
 
 /*
 Why fake step. On Action we PostSelf() and then action(). PostSelf() cannot be
-undone, OpenW() is going to be called anyway. A fake step is used in order to
-ignore this call.
+undone, OpenW() is going to be called anyway. A fake step is to ignore this call.
+
+Why skip step. `MoveNext` or `Current` can start modal UI. [F11] should work
+for a user as usual there even if pending steps exist. Thus, we set the flag
+before calling these members.
 */
+static bool _SkipStep;
 void Far0::OpenMenu(ModuleToolOptions from)
 {
 	// just show the menu
-	if (!_steps || !_steps->Count)
+	if (!_steps || !_steps->Count || _SkipStep)
 	{
 		ShowMenu(from);
 		return;
 	}
 
-	// the current iterator; null is the fake
+	// the current iterator; null is a fake step
 	IEnumerator<Object^>^ enumerator = _steps->Peek();
 	if (!enumerator)
 	{
@@ -622,6 +626,7 @@ void Far0::OpenMenu(ModuleToolOptions from)
 	bool makeFakeStep = false;
 	try
 	{
+		_SkipStep = true;
 		if (!enumerator->MoveNext())
 		{
 			delete _steps->Pop();
@@ -652,6 +657,7 @@ void Far0::OpenMenu(ModuleToolOptions from)
 		Action^ action = dynamic_cast<Action^>(current);
 		if (action)
 		{
+			_SkipStep = false;
 			PostSelf();
 			try
 			{
@@ -676,6 +682,10 @@ void Far0::OpenMenu(ModuleToolOptions from)
 			_steps->Push(nullptr);
 
 		throw;
+	}
+	finally
+	{
+		_SkipStep = false;
 	}
 }
 

@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.25 =
+
+* Amended the stepping code.
+
 = 5.0.24 =
 
 Panel
