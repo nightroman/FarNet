@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin 2012-04-25
+powershell.hrc by Roman Kuzmin 2012-05-06
 For PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 Distributed with ColorerPack: http://code.google.com/p/farnet
 
@@ -79,12 +79,13 @@ SQL syntax in here-strings after <#sql#>
 
 <entity name="token" value="[^\s$'&#34;\()\{},|;&amp;]"/>
 <entity name="e-function" value="(?:\s*(?:[\(\{]|$)|\s+&lt;?#)?="/>
-<entity name="end" value="(?:[`|]?~1$|[|});])?="/>
+<entity name="end" value="(?:`?~1$|[|});]?=)"/>
 <entity name="sname" value="\D?=\w+"/>
 <entity name="s-rem" value="(?:^|[\s,;=\()\{}\[\]'&#34;]?#1)"/>
 <entity name="vname" value="\w[\w\?]*"/>
 
 <entity name="s-label" value="(?:(?{Label}:%sname;)\s+)?"/>
+<entity name="vbody" value="(?:(?{VarPrefix}\w+::?!))?(?:%vname;(?:::?!)?)+"/>
 
 <scheme name="base">
 	<regexp match="/(?{def:default}^\s+)/"/>
@@ -139,7 +140,7 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="variable">
 	<inherit scheme="known-variable"/>
-	<regexp match="/(?{UserVar}[$@](?:(?{VarPrefix}\w+::?!))?(?:%vname;(?:::?!)?)+)/"/>
+	<regexp match="/(?{UserVar}\$%vbody;)/"/>
 	<block scheme="escape" region="UserVar" start="/(?{start}\$\{)/" end="/(?{end}\})/"/>
 </scheme>
 <scheme name="known-variable">
@@ -872,12 +873,14 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="argument">
 	<block scheme="quot2" region="Argument"
-	start="/(?:\s?#1|^)\M\[/" end="/$|%token;?!/"/>
+	start="/(?:\s?#1|^)\M\[/" end="/%token;?!|$/"/>
 
 	<inherit scheme="primary-expression"/>
 
+	<regexp match="/(?{UserVar}@%vbody;)/"/>
+
 	<block scheme="quot2" region="Argument"
-	start="/\M%token;/" end="/$|%token;?!/"/>
+	start="/%token;+/" end="/%token;?!|$/"/>
 </scheme>
 
 <scheme name="command-element">
@@ -892,7 +895,7 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="invoke">
 	<block scheme="command-name" region="Command" inner-region="yes"
-	start="/~(?{Operator}[.&amp;])\s*%token;?=/" end="/$|%token;?!/"/>
+	start="/~(?{Operator}[.&amp;])\s*%token;?=/" end="/%token;?!|$/"/>
 
 	<regexp match="/~(?{Operator}[.&amp;])/"/>
 
@@ -901,7 +904,7 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="call">
 	<block scheme="command-name" region="Command"
-	start="/~%token;?=/" end="/$|%token;?!/"/>
+	start="/~%token;?=/" end="/%token;?!|$/"/>
 
 	<inherit scheme="command-element"/>
 </scheme>
@@ -978,7 +981,7 @@ SQL syntax in here-strings after <#sql#>
 	start="/(?{start}(?{Keyword}data))%token;?!/i" end="/(?{end}\})?#1/"/>
 
 	<block scheme="pipeline"
-	start="/\M\S/" end="/(?:`?~1$|[});])?=/"/>
+	start="/\M\S/" end="//"/>
 </scheme>
 
 <scheme name="statement-list">
