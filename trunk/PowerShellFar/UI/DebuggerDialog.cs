@@ -28,7 +28,7 @@ namespace PowerShellFar.UI
 		IButton _Edit;
 		IButton _View;
 		IButton _Goto;
-		IButton _Break;
+		IButton _Quit;
 		public DebuggerDialog(DebuggerStopEventArgs e)
 		{
 			_InvocationInfo = e.InvocationInfo;
@@ -130,9 +130,9 @@ namespace PowerShellFar.UI
 			_Goto.NoClose = true;
 			_Goto.ButtonClicked += OnGoto;
 
-			_Break = _Dialog.AddButton(0, 0, BtnBreak);
-			_Break.CenterGroup = true;
-			_Break.NoBrackets = true;
+			_Quit = _Dialog.AddButton(0, 0, BtnQuit);
+			_Quit.CenterGroup = true;
+			_Quit.NoBrackets = true;
 
 			_Dialog.Initialized += OnInitialized;
 		}
@@ -205,7 +205,7 @@ namespace PowerShellFar.UI
 					continue;
 				}
 
-				if (_Dialog.Selected == _Break)
+				if (_Dialog.Selected == _Quit)
 					throw new PipelineStoppedException();
 			}
 
@@ -219,6 +219,6 @@ namespace PowerShellFar.UI
 			BtnEdit = "&Edit",
 			BtnView = "V&iew",
 			BtnLine = "&Line",
-			BtnBreak = "&Break";
+			BtnQuit = "&Quit";
 	}
 }

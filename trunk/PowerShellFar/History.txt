@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.25 =
+
+* Debugger dialog: renamed Break -> Quit (like in the console debugger).
+
 = 5.0.24 =
 
 The stepper engine uses new IFar.PostSteps().

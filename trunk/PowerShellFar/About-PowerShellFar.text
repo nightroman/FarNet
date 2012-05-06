@@ -602,53 +602,44 @@ in editor, take a look at the source code, or stop the pipeline and debugging.
 
 ### Keys, buttons, and actions
 
-* `[Esc]`, `[F10]`
+`[Esc]`, `[F10]`
+: (Continue) Continues execution.
 
-    (Continue) Continues execution.
+`{Step}`
+: (Step Into) Executes the next statement. It steps through the script one line
+  at a time.
 
-* `{Step}`
+`{Over}`
+: (Step Over) Executes the next statement, but skips over statements in
+  functions or other scripts. The functions and scripts are executed, but it
+  does not stop at each statement.
 
-    (Step Into) Executes the next statement. It steps through the script one
-    line at a time.
+`{Out}`
+: (Step Out) Runs the script until completion or the next breakpoint. If used
+  while stepping through a function, it exits the function and steps to the
+  next statement.
 
-* `{Over}`
+`{Console}`
+: Opens an editor console (in other words, nested prompt) where you can examine
+  or change variables, invoke commands and etc. On exit the same dialog is
+  repeated. See also [Editor console](#EditorConsole).
 
-    (Step Over) Executes the next statement, but skips over statements in
-    functions or other scripts. The functions and scripts are executed, but it
-    does not stop at each statement.
+`{Edit}`
+: Opens the source in the editor at the debugger line. The editor is locked
+  because changes during debugging normally should be avoided. Of course the
+  editor can be unlocked and the script modified but normal debugging steps may
+  be difficult after that. On exit from the editor the debugger dialog is
+  repeated.
 
-* `{Out}`
+`{View}`
+: Opens an external viewer to view the running command output. This action is
+  not available for some commands, e.g. for editor console commands.
 
-    (Step Out) Runs the script until completion or the next breakpoint. If used
-    while stepping through a function, it exits the function and steps to the
-    next statement.
+`{Line}`
+: Sets the current list line to the current debugger line.
 
-* `{Console}`
-
-    Opens an editor console (in other words, nested prompt) where you can
-    examine or change variables, invoke commands and etc. On exit the same
-    dialog is repeated. See also [Editor console](#EditorConsole).
-
-* `{Edit}`
-
-    Opens the source in the editor at the debugger line. The editor is locked
-    because changes during debugging normally should be avoided. Of course the
-    editor can be unlocked and the script modified but normal debugging steps
-    may be difficult after that. On exit from the editor the debugger dialog is
-    repeated.
-
-* `{View}`
-
-    Opens an external viewer to view the running command output. This action is
-    not available for some commands, e.g. for editor console commands.
-
-* `{Line}`
-
-    Sets the current list line to the current debugger line.
-
-* `{Break}`
-
-    Stops the running pipeline and debugging immediately.
+`{Quit}`
+: Stops execution and exits the debugger.
 
 ---
 
