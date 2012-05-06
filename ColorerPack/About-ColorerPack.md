@@ -118,6 +118,15 @@ with *visual.hrd*.
 ## History {#History}
 
 ***
+### 2012-05-06
+
+*powershell.hrc*
+
+- Corrected use of the operator `@`.
+- Fixed `|` in the end of line comments.
+- Minor tweaks, improved performance (~5%).
+
+***
 ### 2012-04-28
 
 *powershell.hrc*
