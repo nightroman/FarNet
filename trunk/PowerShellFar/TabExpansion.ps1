@@ -86,7 +86,7 @@ function global:TabExpansion
 		}
 
 		### Variables
-		elseif ($lastWord_ -match '(^.*[$@](?:global:|script:|local:)?)(\w*)$') {
+		elseif ($lastWord_ -match '(^.*[$@](?:global:|script:|local:)?)([\w*?]*)$') {
 			# use and exclude variables *_
 			$pref_ = $matches[1]
 			foreach($var_ in Get-Variable -Exclude '*_' "$($matches[2])*" -ErrorAction 0) {

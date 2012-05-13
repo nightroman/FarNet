@@ -54,11 +54,13 @@ Test '' '$local:hos' { $_ -eq '$local:Host' }
 Test '' '$host.u' { $_ -eq '$Host.UI' }
 Test '' '$host.ui.r' { $_[0] -eq '$Host.UI.RawUI' }
 Test '' '$Host.UI.RawUI.e' { $_ -eq '$Host.UI.RawUI.Equals(' }
-# case: base member
+# base member
 $xml = [xml]'<tests><test>test</test></tests>'
 Test '' '$xml.ou' { $_ -eq '$xml.OuterXml'}
-# case: adapted member
+# adapted member
 Test '' '$xml.tes' { $_ -eq '$xml.Tests'}
+# wildcard
+Test '' '$*var' { $_ -contains '$MaximumVariableCount' }
 
 ### members of a static object
 Test '' '[system.datetime]::Now.h' { $_ -eq '[system.datetime]::Now.Hour' }
