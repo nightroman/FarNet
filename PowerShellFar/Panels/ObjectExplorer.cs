@@ -97,24 +97,34 @@ namespace PowerShellFar
 		/// Normally it is used together with custom columns
 		/// otherwise default formatting is not always suitable.
 		/// </para>
+		/// <para>
+		/// Returned objects are converted to files and cached internally.
+		/// Scripts may reuse these data and return the <c>Cache</c> as <c>, $args[0].Cache</c>.
+		/// </para>
 		/// </remarks>
 		/// <example>Panel-Job-.ps1, Panel-Process-.ps1</example>
 		public ScriptBlock AsGetData { get; set; }
-		internal override object GetData(ExplorerEventArgs args)
+		internal override object GetData(GetFilesEventArgs args)
 		{
+			// custom script
 			if (AsGetData != null)
-				return A.InvokeScript(AsGetData, this, args);
+			{
+				// call
+				var result = A.InvokeScript(AsGetData, this, args);
 
-			var panel = args.Parameter as ObjectPanel;
+				// discover and get the cache or get other objects as they are
+				if (result.Count == 1 && result[0].BaseObject == Cache)
+					return Cache;
+				else
+					return result;
+			}
+
 			var Files = Cache;
 			try
 			{
-				if (panel != null)
-				{
-					//???? it works but looks like a hack
-					if (panel.UserWants != UserAction.CtrlR && _AddedValues == null && (Map != null || Files.Count > 0 && Files[0] is SetFile))
-						return Files;
-				}
+				//???? it works but smells
+				if (!args.NewFiles && _AddedValues == null && (Map != null || Files.Count > 0 && Files[0] is SetFile))
+					return Files;
 
 				if (Map == null || Columns == null)
 				{

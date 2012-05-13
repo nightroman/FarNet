@@ -82,6 +82,7 @@ namespace PowerShellFar
 			Expression = "Expression",
 			FormatString = "FormatString",
 			Id = "Id",
+			Id2 = "_id",
 			Key = "Key",
 			Kind = "Kind",
 			Name = "Name",

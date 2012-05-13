@@ -1164,10 +1164,11 @@ so that you can find other keys not listed here that still work in Data panel.
     may have any number of modified, new and deleted records. `[CtrlS]` saves
     them all.
 
-* `[CtrlShiftPgDn]`, `[CtrlShiftPgUp]`
+* `[PgDn]`, `[PgUp]`
 
-    Shows the next and previous range of records. Use the `[F1]` menu in order
-    to change record range parameters.
+    If their are pressed at the last or the first panel item respectively then
+    they tell to show the next and previous page of records. Otherwise they
+    work as usual. Use the `[F1]` menu in order to change paging settings.
 
 * `[Enter]`, `[CtrlPgDn]`
 

@@ -375,7 +375,7 @@ void Panel2::DeleteInfoLines()
 	}
 }
 
-String^ GetColumnKinds(IEnumerable<FarColumn^>^ columns)
+String^ GetColumnKinds(array<FarColumn^>^ columns)
 {
 	// available kinds
 	List<String^> availableColumnKinds(FarColumn::DefaultColumnKinds);
@@ -545,6 +545,14 @@ void Panel2::SetPlan(PanelViewMode mode, PanelPlan^ plan)
 	int i = int(mode);
 	if (i < 0 || i > 9)
 		throw gcnew ArgumentOutOfRangeException("mode");
+
+	// empty plan ~ just name
+	if (!plan->Columns)
+	{
+		SetColumn^ column = gcnew SetColumn;
+		column->Kind = "N";
+		plan->Columns = gcnew array<FarColumn^>{column};
+	}
 
 	// ensure managed array
 	if (!_Plans)

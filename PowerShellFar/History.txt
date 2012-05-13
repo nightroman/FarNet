@@ -3,7 +3,16 @@ http://code.google.com/p/farnet/downloads/list
 
 = 5.0.25 =
 
-* Debugger dialog: renamed Break -> Quit (like in the console debugger).
+New script Panel-Mongo-.ps1, the browser of MongoDB databases, collections, and
+documents, including nested data. Requires MongoDB + Mdbc. Simple, fast, cool.
+
+DataPanel (universal SQL database data browser) uses new FarNet paging instead
+of implementing its own. Removed "Next / Previous Range" from the [F1] menu.
+For paging simply use "smart" [PgDn] and [PgUp].
+
+Debugger dialog: renamed Break -> Quit (like in the console debugger).
+
+TabExpansion expands $*xxx[tab]. Added a test.
 
 = 5.0.24 =
 

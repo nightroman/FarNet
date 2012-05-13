@@ -691,7 +691,7 @@ namespace FarNet
 					{
 						if (NeedDefaultCopy())
 							return false;
-						
+
 						UICopyMove(true);
 						return true;
 					}
@@ -737,6 +737,45 @@ namespace FarNet
 					}
 
 					break;
+
+				case KeyCode.PageDown:
+
+					if (key.Is())
+					{
+						int currentIndex;
+						FarFile currentFile;
+						if (PageLimit > 0 && (currentIndex = CurrentIndex) >= ShownList.Count - 1 && null != (currentFile = CurrentFile) && currentFile.Name != "..")
+						{
+							int topIndex = TopIndex;
+							PageOffset += PageLimit;
+							NeedsNewFiles = true;
+							
+							Update(false);
+							Redraw(currentIndex, topIndex);
+							return true;
+						}
+					}
+
+					break;
+
+				case KeyCode.PageUp:
+
+					if (key.Is())
+					{
+						if (PageLimit > 0 && CurrentIndex == 0)
+						{
+							PageOffset -= PageLimit;
+							if (PageOffset < 0)
+								PageOffset = 0;
+
+							NeedsNewFiles = true;
+							Update(false);
+							Redraw(0, 0);
+							return true;
+						}
+					}
+
+					break;
 			}
 
 			return false;
@@ -745,7 +784,7 @@ namespace FarNet
 		{
 			// target panel
 			var panel2 = Far.Net.Panel2;
-			
+
 			// module panel
 			if (panel2 is Panel)
 				return false;

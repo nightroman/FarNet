@@ -2,6 +2,16 @@ http://code.google.com/p/farnet/downloads/list
 
 = 5.0.25 =
 
+Panels: paging for large data.
+* New property NeedsNewFiles used on paging and [CtrlR].
+* New properties PageLimit (enables paging) and PageOffset.
+* When paging is enabled pressing [PgDn]/[PgUp] on the last/first panel items
+sets NeedsNewFiles, updates PageOffset, and gets files from the panel explorer.
+Explorers that support paging or file updates should use parameters NewFiles,
+Limit, and Offset in order to get new portion of files (or get cached data if
+NewFiles is false).
+
+Misc
 * Amended the stepping code.
 
 = 5.0.24 =

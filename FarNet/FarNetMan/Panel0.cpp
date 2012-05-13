@@ -80,10 +80,12 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 		// get the files
 		if (!pp->_skipUpdateFiles)
 		{
-			GetFilesEventArgs args(mode);
+			GetFilesEventArgs args(mode, pp->Host->PageOffset, pp->Host->PageLimit, pp->Host->NeedsNewFiles);
 			pp->Files = pp->Host->UIGetFiles(%args);
 			if (args.Result != JobResult::Done)
 				return 0;
+
+			pp->Host->NeedsNewFiles = false;
 		}
 
 		// all item number
@@ -735,6 +737,10 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 		pp->Host->UIEscape(e.Key->IsShift());
 		return 1;
 	}
+
+	// CtrlR
+	if (e.Key->IsCtrl(KeyCode::R))
+		pp->Host->NeedsNewFiles = true;
 
 	return 0;
 }
