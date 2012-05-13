@@ -7,7 +7,7 @@ Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a pa
 Edit-FarDescription-.ps1 Edits multiline Far descriptions in the editor.
 Format-Chart.ps1 Formats output as a table with the last chart column.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
-Get-TextLink-.ps1 Gets a text link to the current editor line.
+Get-TextLink-.ps1 Gets a text link with the current editor line or selection.
 Go-Head-.ps1 Goes to the head of panel files or directories.
 Go-Selection-.ps1 Goes to the current selection start/end position
 Go-To-.ps1 Goes to the specified file system item or a provider container
@@ -26,6 +26,7 @@ Panel-Database-.ps1 Panel SQL server databases.
 Panel-DbData-.ps1 Panel DataTable rows.
 Panel-DbTable-.ps1 Panel tables for a connection.
 Panel-Job-.ps1 Shows PowerShell jobs in a panel.
+Panel-Mongo-.ps1 MongoDB data browser.
 Panel-Process-.ps1 Panel current processes.
 Panel-Property-.ps1 Panel PowerShell provider item properties.
 Profile-.ps1 Main startup code (example).

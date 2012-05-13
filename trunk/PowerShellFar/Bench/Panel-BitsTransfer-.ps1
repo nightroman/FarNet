@@ -47,35 +47,41 @@
 	Import-Module BitsTransfer
 	Get-Command *-BitsTransfer
 
-.Example
+	EXAMPLE
+
 	# Open file transfer jobs panel if not yet
-	Panel-BitsTransfer-
+	Panel-BitsTransfer-.ps1
 
 	# Start MyJob to transfer selected files from the active panel to passive
-	Panel-BitsTransfer- -DisplayName MyJob -Auto
+	Panel-BitsTransfer-.ps1 -DisplayName MyJob -Auto
 
 	# Transfer File1 from Web server
-	Panel-BitsTransfer- -Source http://server/File1 -Destination C:\File1
+	Panel-BitsTransfer-.ps1 -Source http://server/File1 -Destination C:\File1
+
+.Parameter Source
+		Names of the files to transfer at the server. The names are paired with
+		the corresponding client file names by indices.
+
+.Parameter Destination
+		Existing destination directory or names of the files to transfer at the
+		client. The names are paired with the corresponding server file names
+		by indices.
+
+.Parameter DisplayName
+		Display name of the transfer job. Default: current date and time.
+
+.Parameter Auto
+		Starts a new job where the server files are the selected files on the
+		active panel and the destination directory is the passive panel path.
 #>
 
 [CmdletBinding()]
 param
 (
-	[string[]]
-	# Names of the files to transfer at the server. The names are paired with the corresponding client file names by indices.
-	$Source
-	,
-	[string[]]
-	# Existing destination directory or names of the files to transfer at the client. The names are paired with the corresponding server file names by indices.
-	$Destination
-	,
-	[string]
-	# Display name of the transfer job. Default: current date and time.
-	$DisplayName = ([DateTime]::Now.ToString('s'))
-	,
-	[switch]
-	# Starts a new job where the server files are the selected files on the active panel and the destination directory is the passive panel path.
-	$Auto
+	[string[]]$Source,
+	[string[]]$Destination,
+	[string]$DisplayName = ([DateTime]::Now.ToString('s')),
+	[switch]$Auto
 )
 
 Set-StrictMode -Version 2

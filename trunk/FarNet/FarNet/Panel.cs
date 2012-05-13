@@ -46,6 +46,28 @@ namespace FarNet
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
 	public partial class Panel : IPanel
 	{
+		/// <summary>
+		/// Gets or sets the flag telling that files should be refreshed, reloaded, etc.
+		/// </summary>
+		/// <remarks>
+		/// The flag is set by the core on opening a panel and when a user presses [CtrlR] or [PgDn]/[PgUp] on paging.
+		/// Modules also can set it after some panel or data changes before calling the <see cref="Update"/>.
+		/// The core drops the flag automatically after panel updates.
+		/// <para>
+		/// The flag is passed in <see cref="GetFilesEventArgs"/> and used by explorers that cache their data
+		/// but still allow them to be refreshed (e.g. on [CtrlR]) or even completely changed (e.g. on paging).
+		/// </para>
+		/// </remarks>
+		public bool NeedsNewFiles { get { return _NeedsNewFiles; } set { _NeedsNewFiles = value; } }
+		bool _NeedsNewFiles = true;
+		/// <summary>
+		/// Gets or sets the maximum number of files for paging. The default is 0, paging is not used.
+		/// </summary>
+		public int PageLimit { get; set; }
+		/// <summary>
+		/// Gets or sets the number of files to skip on paging.
+		/// </summary>
+		public int PageOffset { get; set; }
 		readonly Works.IPanelWorks _Panel;
 		Panel _Parent;
 		Panel _Child;
@@ -903,7 +925,7 @@ namespace FarNet
 		/// Sets the panel plan.
 		/// </summary>
 		/// <param name="mode">View mode to set the plan for.</param>
-		/// <param name="plan">The plan.</param>
+		/// <param name="plan">The plan. If it has no columns then a column "Name" is assumed.</param>
 		public void SetPlan(PanelViewMode mode, PanelPlan plan) { _Panel.SetPlan(mode, plan); }
 		/// <summary>
 		/// Selects the specified panel files.

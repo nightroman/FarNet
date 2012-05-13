@@ -47,7 +47,7 @@ namespace PowerShellFar
 			// keep metas for panels to set plan
 			Metas = metas;
 		}
-		internal abstract object GetData(ExplorerEventArgs args);
+		internal abstract object GetData(GetFilesEventArgs args);
 		///
 		public override IList<FarFile> DoGetFiles(GetFilesEventArgs args)
 		{

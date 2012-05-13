@@ -258,9 +258,7 @@ namespace PowerShellFar
 		/// <summary>None.</summary>
 		None,
 		/// <summary>Enter is pressed.</summary>
-		Enter,
-		/// <summary>CtrlR is pressed.</summary>
-		CtrlR,
+		Enter
 	}
 
 	/// <summary>

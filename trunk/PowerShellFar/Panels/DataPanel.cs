@@ -33,6 +33,8 @@ namespace PowerShellFar
 			CurrentLocation = "*";
 			SortMode = PanelSortMode.Unsorted; // assume it is sorted in SELECT
 			UseSortGroups = false;
+
+			PageLimit = Settings.Default.MaximumPanelFileCount;
 		}
 		DateTime _XmlFileTime;
 		/// <summary>
@@ -228,8 +230,9 @@ namespace PowerShellFar
 				}
 			}
 
-			// fill table
+			// fill and drop the flag avoiding 2nd call on opening
 			Fill();
+			NeedsNewFiles = false;
 
 			// pass 1: collect the columns
 			IList<Meta> metas;
@@ -418,7 +421,7 @@ namespace PowerShellFar
 			var Files = Explorer.Cache;
 
 			// refill
-			if (UserWants == UserAction.CtrlR)
+			if (NeedsNewFiles)
 			{
 				if (CanClose())
 				{
@@ -429,7 +432,7 @@ namespace PowerShellFar
 			}
 
 			// no job?
-			if (!ToUpdateData && UserWants != UserAction.CtrlR)
+			if (!ToUpdateData && !NeedsNewFiles)
 				return Files;
 
 			// refresh data
@@ -457,14 +460,11 @@ namespace PowerShellFar
 
 			OpenFileActor(file);
 		}
-		int RecordLimit = Settings.Default.MaximumPanelFileCount;
-		// 0-based internally and in UI: 'offset' means "skip 'offset' records"
-		int RecordOffset;
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		void Fill()
 		{
 			if (Adapter != null)
-				Adapter.Fill(RecordOffset, RecordLimit, Table);
+				Adapter.Fill(PageOffset, PageLimit, Table);
 
 			var Files = Explorer.Cache;
 			Files.Clear();
@@ -559,58 +559,6 @@ namespace PowerShellFar
 
 			EnsureBuilder();
 			Adapter.UpdateCommand = _Builder.GetUpdateCommand();
-		}
-		void OnRangeNext()
-		{
-			if (Table.Rows.Count < RecordLimit)
-				return;
-
-			RecordOffset += RecordLimit;
-
-			UserWants = UserAction.CtrlR;
-			UpdateRedraw(true);
-		}
-		void OnRangePrevious()
-		{
-			if (RecordOffset == 0)
-				return;
-
-			RecordOffset -= RecordLimit;
-			if (RecordOffset < 0)
-				RecordOffset = 0;
-
-			UserWants = UserAction.CtrlR;
-			UpdateRedraw(true);
-		}
-		///
-		public override bool UIKeyPressed(KeyInfo key)
-		{
-			if (key == null) throw new ArgumentNullException("key");
-			
-			switch (key.VirtualKeyCode)
-			{
-				case KeyCode.PageDown:
-					
-					if (key.IsCtrlShift())
-					{
-						OnRangeNext();
-						return true;
-					}
-					
-					break;
-				
-				case KeyCode.PageUp:
-					
-					if (key.IsCtrlShift())
-					{
-						OnRangePrevious();
-						return true;
-					}
-					
-					break;
-			}
-			
-			return base.UIKeyPressed(key);
 		}
 		internal override string HelpMenuTextOpenFileMembers { get { return "Edit row data"; } }
 		internal void DoCreateFile()
@@ -720,7 +668,7 @@ namespace PowerShellFar
 
 			ViewSort = text;
 
-			UserWants = UserAction.CtrlR;
+			NeedsNewFiles = true;
 			UpdateRedraw(true);
 		}
 		void OnFilter()
@@ -755,12 +703,12 @@ namespace PowerShellFar
 
 			ViewRowFilter = text;
 
-			UserWants = UserAction.CtrlR;
+			NeedsNewFiles = true;
 			UpdateRedraw(true);
 		}
-		void OnRecordLimit()
+		void OnPageLimit()
 		{
-			var text = Far.Net.Input("Record limit", "DataRecordLimit", "Data Panel", "" + RecordLimit);
+			var text = Far.Net.Input("Record limit", "DataRecordLimit", "Data Panel", "" + PageLimit);
 			if (string.IsNullOrEmpty(text))
 				return;
 
@@ -771,14 +719,14 @@ namespace PowerShellFar
 				return;
 			}
 
-			RecordLimit = value;
+			PageLimit = value;
 
-			UserWants = UserAction.CtrlR;
+			NeedsNewFiles = true;
 			UpdateRedraw(true);
 		}
-		void OnRecordOffset()
+		void OnPageOffset()
 		{
-			var text = Far.Net.Input("Record offset", "DataRecordOffset", "Data Panel", "" + RecordOffset);
+			var text = Far.Net.Input("Record offset", "DataRecordOffset", "Data Panel", "" + PageOffset);
 			if (string.IsNullOrEmpty(text))
 				return;
 
@@ -789,9 +737,9 @@ namespace PowerShellFar
 				return;
 			}
 
-			RecordOffset = value;
+			PageOffset = value;
 
-			UserWants = UserAction.CtrlR;
+			NeedsNewFiles = true;
 			UpdateRedraw(true);
 		}
 		internal override void HelpMenuInitItems(HelpMenuItems items, PanelMenuEventArgs e)
@@ -804,13 +752,9 @@ namespace PowerShellFar
 
 			if (Adapter != null)
 			{
-				e.Menu.Add("Next range").Click = delegate { OnRangeNext(); };
+				e.Menu.Add("Page limit").Click = delegate { OnPageLimit(); };
 
-				e.Menu.Add("Previous range").Click = delegate { OnRangePrevious(); };
-
-				e.Menu.Add("Record limit").Click = delegate { OnRecordLimit(); };
-
-				e.Menu.Add("Record offset").Click = delegate { OnRecordOffset(); };
+				e.Menu.Add("Page offset").Click = delegate { OnPageOffset(); };
 
 				e.Menu.Add(string.Empty).IsSeparator = true;
 			}

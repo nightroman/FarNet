@@ -199,6 +199,25 @@ namespace FarNet
 	{
 		///
 		public GetFilesEventArgs(ExplorerModes mode) : base(mode) { }
+		///
+		public GetFilesEventArgs(ExplorerModes mode, int offset, int limit, bool newFiles) : base(mode)
+		{
+			Limit = limit;
+			Offset = offset;
+			NewFiles = newFiles;
+		}
+		/// <summary>
+		/// Gets the maximum number of files to get on paging.
+		/// </summary>
+		public int Limit { get; private set; }
+		/// <summary>
+		/// Gets the number of files to skip on paging.
+		/// </summary>
+		public int Offset { get; private set; }
+		/// <summary>
+		/// Tells to gets new (not cached) files, for example on paging.
+		/// </summary>
+		public bool NewFiles { get; private set; }
 	}
 
 	/// <summary>

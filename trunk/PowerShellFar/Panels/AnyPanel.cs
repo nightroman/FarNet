@@ -425,13 +425,6 @@ namespace PowerShellFar
 
 						break;
 
-					case KeyCode.R:
-
-						if (key.IsCtrl())
-							UserWants = UserAction.CtrlR;
-
-						break;
-
 					case KeyCode.S:
 
 						if (key.IsCtrl())
@@ -448,8 +441,7 @@ namespace PowerShellFar
 			}
 			finally
 			{
-				if (UserWants != UserAction.CtrlR)
-					UserWants = UserAction.None;
+				UserWants = UserAction.None;
 			}
 		}
 		///

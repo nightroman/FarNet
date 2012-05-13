@@ -124,7 +124,7 @@ namespace PowerShellFar
 			int count = metas.Length;
 
 			// heuristic N
-			if (count > 1 && SetBestType(metas, maximum, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Key, "*" + Word.Key, "*" + Word.Id))
+			if (count > 1 && SetBestType(metas, maximum, "N", Word.Name, "*" + Word.Name, Word.Id, Word.Id2, Word.Key, "*" + Word.Key, "*" + Word.Id))
 				--count;
 
 			// heuristic Z

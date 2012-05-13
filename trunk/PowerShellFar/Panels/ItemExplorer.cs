@@ -315,7 +315,7 @@ namespace PowerShellFar
 					Cache.Add(new ItemMapFile(value, Map));
 			}
 		}
-		internal override object GetData(ExplorerEventArgs args)
+		internal override object GetData(GetFilesEventArgs args)
 		{
 			// get items for the location
 			return A.GetChildItems(Location);
