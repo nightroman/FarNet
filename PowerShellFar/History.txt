@@ -1,6 +1,17 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.26 =
+
+Panel-Mongo-.ps1 (requires Mdbc module v2.0.0)
+* It can delete selected databases, collections, documents. DISCLAIMER: usual,
+see in the script. Thus, in addition to browsing you can also prune your data.
+NB: changes of document data in panels are ignored.
+* Specific content. New parameters DatabaseName, CollectionName allow opening
+collections of the specified database or documents of the specified collection.
+
+Minor supportive changes in the PSF core.
+
 = 5.0.25 =
 
 New script Panel-Mongo-.ps1, the browser of MongoDB databases, collections, and
