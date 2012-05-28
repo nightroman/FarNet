@@ -51,7 +51,7 @@ namespace PowerShellFar
 
 			if (args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete"))
 			{
-				if (Far.Net.Message("Remove object(s) from the panel?", Res.Remove, MessageOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
+				if (Far.Net.Message("Remove object(s)?", Res.Remove, MessageOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
 				{
 					args.Result = JobResult.Ignore;
 					return;
