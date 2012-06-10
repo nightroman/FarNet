@@ -26,6 +26,9 @@
 	[ShiftDel]
 		Also deletes not empty databases and collections.
 
+	[ShiftF6]
+		Prompts for a new name and renames the current collection.
+
 .Parameter ConnectionString
 		MongoDB server connection string. The default is ".", the default local
 		server and port. If DatabaseName and CollectionName are not defined
@@ -108,7 +111,7 @@ $($2.Files[0..9] -join "`n")
 function global:New-MdbcDatabaseExplorer($Server, $DatabaseName) {
 	New-Object PowerShellFar.PowerExplorer f0dbf3cf-d45a-40fd-aa6f-7d8ccf5e3bf5 -Property @{
 		Data = @{Database = $Server.GetDatabase($DatabaseName)}
-		Functions = 'DeleteFiles'
+		Functions = 'DeleteFiles, RenameFile'
 		AsCreatePanel = {
 			param($1)
 			$panel = [FarNet.Panel]$1
@@ -126,6 +129,14 @@ function global:New-MdbcDatabaseExplorer($Server, $DatabaseName) {
 		AsExploreDirectory = {
 			param($1, $2)
 			New-MdbcCollectionExplorer $1.Data.Database $2.File.Name
+		}
+		AsRenameFile = {
+			param($1, $2)
+			$newName = ([string]$Far.Input('New name', $null, 'Rename', $2.File.Name)).Trim()
+			if (!$newName) {return}
+			if ($1.Data.Database.CollectionExists($newName)) {return $Far.Message('Collection exists')}
+			$1.Data.Database.RenameCollection($2.File.Name, $newName)
+			$2.PostName = $newName
 		}
 		AsDeleteFiles = {
 			param($1, $2)
