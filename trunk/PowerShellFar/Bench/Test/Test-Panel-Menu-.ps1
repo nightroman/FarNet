@@ -51,7 +51,8 @@ $Panel.add_MenuCreating({
 		$Far.Message($text)
 	}}))
 
-	# to check that handlers have global scope: variables $tmp1 and $tmp2 are global
+	#! to check handlers global scope: variables $tmp1 and $tmp2 are global
+	#! V3 RC - handlers are invoked in own scope, these variables are local
 	$_.Menu.Items.Add((New-FarItem -Text '3. Store current and selected' -Click {
 		$tmp1 = $this.CurrentItem
 		$tmp2 = @($this.SelectedItems)
