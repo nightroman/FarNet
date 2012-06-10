@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.27 =
+
+Panel-Mongo-.ps1
+* [ShiftF6] Prompts for a new name and renames the current collection.
+
 = 5.0.26 =
 
 Panel-Mongo-.ps1 (requires Mdbc module v2.0.0)
