@@ -153,7 +153,7 @@ Highlighting colors. Values: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed,
 DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta,
 Yellow, White.
 
-*) UserDictionaryDirectory (local)
+*) UserDictionaryDirectory
 The custom directory of user dictionaries. Environment variables are expanded.
 The default is the module roaming directory.
 
@@ -288,5 +288,12 @@ FarNet 5.0.9 with centralized drawer infrastructure. As a result:
 - Menu item "Highlighting" moved to the FarNet drawers menu.
 - "Auto highlighting file mask" moved to the FarNet options.
 - See RightWords.farconfig for the updated "Highlighting" macro.
+
+2.1.1
+
+The storage of the optional setting UserDictionaryDirectory changed from local
+to roaming (by a user request, to improve portability). If this path was set
+before then it has to be set again and the old *.local.settings file can be
+removed, UserDictionaryDirectory was the only local setting.
 
 http://code.google.com/p/farnet/downloads/list
