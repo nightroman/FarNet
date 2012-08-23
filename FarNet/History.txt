@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.26 =
+
+Menus
+* WrapCursor is `true` by default (as far as Far API recommends to use `true`).
+
 = 5.0.25 =
 
 Panels: paging for large data.

@@ -114,7 +114,7 @@
 		</summary>
 		<remarks>
 			In the wrap cursor mode moving the cursor up from the first element or down from the last element
-			moves the cursor to the bottom or the top.
+			moves the cursor to the bottom or the top. In menus the default is true, as recommended by the API.
 		</remarks>
 	</WrapCursor>
 	<AutoAssignHotkeys>

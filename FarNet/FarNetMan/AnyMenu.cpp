@@ -16,6 +16,7 @@ AnyMenu::AnyMenu()
 , _keyIndex(-1)
 {
 	_items = gcnew List<FarItem^>;
+	WrapCursor = true; //! default is true, as recommended by Far API
 }
 
 int AnyMenu::X::get()
