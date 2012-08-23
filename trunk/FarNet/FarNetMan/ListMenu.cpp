@@ -421,11 +421,11 @@ bool ListMenu::Show()
 		_box->Selected = _selected;
 		_box->SelectLast = SelectLast;
 		_box->NoBox = true;
+		_box->WrapCursor = WrapCursor;
 		if (IncrementalOptions == PatternOptions::None)
 		{
 			_box->AutoAssignHotkeys = AutoAssignHotkeys;
 			_box->NoAmpersands = !ShowAmpersands;
-			_box->WrapCursor = WrapCursor;
 		}
 
 		// "bottom"
