@@ -49,6 +49,7 @@ namespace FarNet.RightWords
 			set { this["HighlightingForegroundColor"] = value; }
 		}
 		[UserScopedSetting]
+		[SettingsManageability(SettingsManageability.Roaming)]
 		public string UserDictionaryDirectory
 		{
 			get { return (string)this["UserDictionaryDirectory"]; }

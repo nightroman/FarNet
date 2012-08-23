@@ -94,9 +94,10 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\ROM\INC;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\ROM\INC;$(IncludePath);C:\Program Files\Microsoft Visual Studio 10.0\VC\include</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\ROM\INC;$(IncludePath);C:\Program Files\Microsoft Visual Studio 10.0\VC\include</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\ROM\INC;$(IncludePath);C:\Program Files\Microsoft Visual Studio 10.0\VC\include</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\ROM\INC;$(IncludePath);C:\Program Files\Microsoft Visual Studio 10.0\VC\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CustomBuildStep>
