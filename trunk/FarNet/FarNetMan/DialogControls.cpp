@@ -292,14 +292,16 @@ void FarButton::Starting(FarDialogItem& item)
 	Init(item, DI_BUTTON);
 }
 
-//! Default one gets text with [] and {}
+//! Default one gets text with [] and {}, so does DM_GETCONSTTEXTPTR
 String^ FarButton::Text::get()
 {
 	if (_dialog->_hDlg != INVALID_HANDLE_VALUE)
 	{
-		size_t len = Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, 0);
-		CBox box(len + 1);
-		Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXTPTR, Id, box);
+		FarDialogItemData arg = {sizeof(FarDialogItemData)};
+		arg.PtrLength = Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXT, Id, 0);
+		CBox box(arg.PtrLength);
+		arg.PtrData = box;
+		Info.SendDlgMessage(_dialog->_hDlg, DM_GETTEXT, Id, &arg);
 		return gcnew String(box);
 	}
 	else

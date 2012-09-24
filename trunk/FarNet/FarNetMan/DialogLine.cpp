@@ -18,7 +18,7 @@ DialogLine::DialogLine(HANDLE hDlg, int id)
 
 int DialogLine::Length::get()
 {
-	return (int)Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
+	return (int)(Info.SendDlgMessage(_hDlg, DM_GETTEXT, _id, 0) - 1);
 }
 
 int DialogLine::Caret::get()
@@ -32,7 +32,7 @@ int DialogLine::Caret::get()
 void DialogLine::Caret::set(int value)
 {
 	if (value < 0)
-		value = (int)Info.SendDlgMessage(_hDlg, DM_GETTEXTLENGTH, _id, 0);
+		value = Length;
 
 	COORD c;
 	c.Y = 0;
