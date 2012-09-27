@@ -67,7 +67,7 @@ namespace FarNet
 		/// <summary>
 		/// Gets the internal identifier.
 		/// </summary>
-		public abstract int Id { get; }
+		public abstract IntPtr Id { get; }
 		/// <summary>
 		/// Gets or sets the option to delete the source file on exit.
 		/// </summary>
@@ -161,9 +161,9 @@ namespace FarNet
 		/// <param name="symbolCount">Selected character count.</param>
 		public abstract void SelectText(long symbolStart, int symbolCount);
 		/// <summary>
-		/// Gets or sets the hexadecimal mode in the current viewer (~ [F4]).
+		/// Gets or sets the view mode in the current viewer (~ [F4]).
 		/// </summary>
-		public abstract bool HexMode { get; set; }
+		public abstract ViewerViewMode ViewMode { get; set; }
 		/// <summary>
 		/// Gets or sets the wrap mode in the current editor (~ [F2]).
 		/// </summary>
@@ -181,6 +181,25 @@ namespace FarNet
 		/// </summary>
 		/// <remarks>It may throw if the window cannot be activated.</remarks>
 		public abstract void Activate();
+	}
+
+	/// <summary>
+	/// Viewer modes.
+	/// </summary>
+	public enum ViewerViewMode
+	{
+		/// <summary>
+		/// Text view mode.
+		/// </summary>
+		Text,
+		/// <summary>
+		/// Hex view mode.
+		/// </summary>
+		Hex,
+		/// <summary>
+		/// Dump view mode.
+		/// </summary>
+		Dump
 	}
 
 	/// <summary>

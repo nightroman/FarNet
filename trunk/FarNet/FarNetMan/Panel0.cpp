@@ -17,7 +17,7 @@ static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, ILis
 	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
 
 	//? Far bug: alone dots has UserData = 0 no matter what was written there; so check the dots name
-	if (itemsNumber == 1 && panelItem[0].UserData == 0 && wcscmp(panelItem[0].FileName, L"..") == 0)
+	if (itemsNumber == 1 && panelItem[0].UserData.Data == 0 && wcscmp(panelItem[0].FileName, L"..") == 0)
 		return r;
 
 	// pure case
@@ -35,7 +35,7 @@ static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, ILis
 	// data case
 	for(int i = 0; i < itemsNumber; ++i)
 	{
-		int fi = (int)(INT_PTR)panelItem[i].UserData;
+		int fi = (int)(INT_PTR)panelItem[i].UserData.Data;
 		if (fi >= 0)
 		{
 			r->Add(files[fi]);
@@ -112,7 +112,7 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 			wchar_t* dots = new wchar_t[3];
 			dots[0] = dots[1] = '.'; dots[2] = '\0';
 			PluginPanelItem& p = info->PanelItem[0];
-			p.UserData = (DWORD_PTR)(-1);
+			p.UserData.Data = (void*)(-1);
 			p.FileName = dots;
 			p.Description = NewChars(pp->Host->DotsDescription);
 		}
@@ -147,7 +147,7 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 			}
 
 			// other
-			p.UserData = canExploreLocation ? -1 : fileIndex;
+			p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex);
 			p.FileAttributes = (DWORD)file->Attributes;
 			p.FileSize = file->Length;
 			p.CreationTime = DateTimeToFileTime(file->CreationTime);
@@ -947,7 +947,7 @@ void Panel0::PushPanel(Panel2^ plugin)
 	if (pi.ItemsNumber > 0)
 	{
 		AutoPluginPanelItem item(plugin->Handle, (int)pi.CurrentItem, ShownFile);
-		int index = (int)item.Get().UserData;
+		int index = (int)item.Get().UserData.Data;
 		if (index >= 0 && index < plugin->Files->Count)
 			file = plugin->Files[index];
 	}

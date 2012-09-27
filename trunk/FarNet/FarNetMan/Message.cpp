@@ -31,7 +31,7 @@ bool Message::Show()
 	int nbItems;
 	CStr* items = CreateBlock(nbItems);
 	PIN_NS(pinHelpTopic, _helpTopic);
-	_selected = Info.Message(
+	_selected = (int)Info.Message(
 		&MainGuid,
 		nullptr,
 		flags,

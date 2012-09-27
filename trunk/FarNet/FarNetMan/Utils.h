@@ -192,6 +192,7 @@ struct SEditorSetPosition : EditorSetPosition
 {
 	SEditorSetPosition()
 	{
+		StructSize = sizeof(EditorSetPosition);
 		CurLine = -1;
 		CurPos = -1;
 		CurTabPos = -1;
@@ -205,7 +206,6 @@ struct SEditorSetPosition : EditorSetPosition
 void EditorControl_ECTL_DELETEBLOCK();
 void EditorControl_ECTL_DELETECHAR();
 void EditorControl_ECTL_DELETESTRING();
-void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm);
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index);
 void EditorControl_ECTL_INSERTSTRING(bool indent);
 void EditorControl_ECTL_INSERTTEXT(Char text, int overtype);

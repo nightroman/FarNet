@@ -19,7 +19,7 @@ array<HistoryInfo^>^ History::Command()
 {
 	Settings settings(FarGuid);
 
-	FarSettingsEnum arg;
+	FarSettingsEnum arg = {sizeof(arg)};
 	settings.Enum(FSSF_HISTORY_CMD, arg);
 
 	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>((int)arg.Count);
@@ -33,7 +33,7 @@ array<HistoryInfo^>^ History::Editor()
 {
 	Settings settings(FarGuid);
 
-	FarSettingsEnum arg;
+	FarSettingsEnum arg = {sizeof(arg)};
 	settings.Enum(FSSF_HISTORY_EDIT, arg);
 
 	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>((int)arg.Count);
@@ -47,7 +47,7 @@ array<HistoryInfo^>^ History::Viewer()
 {
 	Settings settings(FarGuid);
 
-	FarSettingsEnum arg;
+	FarSettingsEnum arg = {sizeof(arg)};
 	settings.Enum(FSSF_HISTORY_VIEW, arg);
 
 	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>((int)arg.Count);
@@ -61,7 +61,7 @@ array<HistoryInfo^>^ History::Folder()
 {
 	Settings settings(FarGuid);
 
-	FarSettingsEnum arg;
+	FarSettingsEnum arg = {sizeof(arg)};
 	settings.Enum(FSSF_HISTORY_FOLDER, arg);
 
 	List<HistoryInfo^> list((int)arg.Count);
@@ -84,7 +84,7 @@ array<HistoryInfo^>^ History::Dialog(String^ name)
 	PIN_NE(pin, name);
 	int root = settings.OpenSubKey(0, pin);
 
-	FarSettingsEnum arg;
+	FarSettingsEnum arg = {sizeof(arg)};
 	settings.Enum(root, arg);
 
 	array<HistoryInfo^>^ result = gcnew array<HistoryInfo^>((int)arg.Count);

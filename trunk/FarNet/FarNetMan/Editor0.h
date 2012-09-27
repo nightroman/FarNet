@@ -24,7 +24,7 @@ internal:
 	static AnyEditor _anyEditor;
 private:
 	static void ConnectEditor(Editor^ editor, const EditorInfo& ei, bool isEditorWaiting);
-	static int FindEditor(int id);
+	static int FindEditor(intptr_t id);
 private:
 	// Opened editors
 	static List<Editor^> _editors;

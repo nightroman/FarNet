@@ -12,7 +12,7 @@ Copyright (c) 2005-2012 FarNet Team
 namespace FarNet
 {;
 // Dialog callback dispatches the event to the specified dialog
-INT_PTR WINAPI FarDialogProc(HANDLE hDlg, int msg, int param1, void* param2)
+INT_PTR WINAPI FarDialogProc(HANDLE hDlg, intptr_t msg, intptr_t param1, void* param2)
 {
 	for each(FarDialog^ dialog in FarDialog::_dialogs)
 	{
@@ -311,8 +311,8 @@ bool FarDialog::Show()
 			pinHelpTopic,
 			items,
 			_items->Count,
-			(DWORD)0,
-			(DWORD)_flags,
+			0,
+			_flags,
 			FarDialogProc,
 			nullptr);
 
@@ -320,7 +320,7 @@ bool FarDialog::Show()
 			return false;
 
 		// show
-		int selected = Info.DialogRun(_hDlg);
+		int selected = (int)Info.DialogRun(_hDlg);
 
 		// update
 		for(int i = _items->Count; --i >= 0;)
@@ -488,7 +488,7 @@ void FarDialog::Resize(Point size)
 	Info.SendDlgMessage(_hDlg, DM_RESIZEDIALOG, 0, &arg);
 }
 
-INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
+INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 {
 	try
 	{
@@ -503,7 +503,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 
 				if (_Initialized)
 				{
-					InitializedEventArgs ea(param1 < 0 ? nullptr : _items[param1]);
+					InitializedEventArgs ea(param1 < 0 ? nullptr : _items[(int)param1]);
 					_Initialized(this, %ea);
 					_Initialized = nullptr;
 					return !ea.Ignore;
@@ -512,7 +512,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 			}
 		case DN_CLOSE:
 			{
-				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
+				FarControl^ fc = param1 >= 0 ? _items[(int)param1] : nullptr;
 				if (_Closing)
 				{
 					ClosingEventArgs ea(fc);
@@ -524,7 +524,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 			}
 		case DN_DRAWDLGITEM:
 			{
-				FarControl^ fc = _items[param1];
+				FarControl^ fc = _items[(int)param1];
 				if (fc->_Drawing)
 				{
 					DrawingEventArgs ea(fc);
@@ -535,7 +535,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 			}
 		case DN_CTLCOLORDLGITEM:
 			{
-				FarControl^ fc = _items[param1];
+				FarControl^ fc = _items[(int)param1];
 				if (fc->_Coloring)
 				{
 					ColoringEventArgs ea(fc);
@@ -567,7 +567,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 			}
 		case DN_GOTFOCUS:
 			{
-				FarControl^ fc = _items[param1];
+				FarControl^ fc = _items[(int)param1];
 				if (fc->_GotFocus)
 				{
 					AnyEventArgs ea(fc);
@@ -577,7 +577,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 			}
 		case DN_KILLFOCUS:
 			{
-				FarControl^ fc = _items[param1];
+				FarControl^ fc = _items[(int)param1];
 				if (fc->_LosingFocus)
 				{
 					LosingFocusEventArgs ea(fc);
@@ -589,7 +589,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 			}
 		case DN_BTNCLICK:
 			{
-				FarControl^ fc = _items[param1];
+				FarControl^ fc = _items[(int)param1];
 				FarButton^ fb = dynamic_cast<FarButton^>(fc);
 				if (fb)
 				{
@@ -627,7 +627,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 			}
 		case DN_EDITCHANGE:
 			{
-				FarControl^ fc = _items[param1];
+				FarControl^ fc = _items[(int)param1];
 				FarEdit^ fe = dynamic_cast<FarEdit^>(fc);
 				if (fe)
 				{
@@ -664,7 +664,7 @@ INT_PTR FarDialog::DialogProc(int msg, int param1, void* param2)
 			}
 		case DN_CONTROLINPUT:
 			{
-				FarControl^ fc = param1 >= 0 ? _items[param1] : nullptr;
+				FarControl^ fc = param1 >= 0 ? _items[(int)param1] : nullptr;
 				INPUT_RECORD* ir = (INPUT_RECORD*)param2;
 				
 				if (MOUSE_EVENT == ir->EventType)

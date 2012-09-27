@@ -31,7 +31,7 @@ public:
 	}
 	int OpenSubKey(int root, const wchar_t* name)
 	{
-		FarSettingsValue value = {root, name};
+		FarSettingsValue value = {sizeof(value), root, name};
 		return (int)Info.SettingsControl(_handle, SCTL_OPENSUBKEY, 0, &value);
 	}
 	void Enum(int root, FarSettingsEnum& arg)

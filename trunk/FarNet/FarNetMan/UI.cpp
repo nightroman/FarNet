@@ -459,7 +459,7 @@ void FarUI::SetProgressState(TaskbarProgressBarState state)
 
 void FarUI::SetProgressValue(int currentValue, int maximumValue)
 {
-	ProgressValue arg;
+	ProgressValue arg = {sizeof(arg)};
 	arg.Completed = currentValue;
 	arg.Total = maximumValue;
 	Info.AdvControl(&MainGuid, ACTL_SETPROGRESSVALUE, 0, &arg);

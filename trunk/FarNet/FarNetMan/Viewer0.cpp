@@ -22,7 +22,10 @@ void Viewer0::Register(Viewer^ viewer, const ViewerInfo& vi)
 	_viewers.Insert(0, viewer);
 	viewer->_id = vi.ViewerID;
 	viewer->_TimeOfOpen = DateTime::Now;
-	viewer->_FileName = gcnew String(vi.FileName);
+
+	CBox fileName(Info.ViewerControl(-1, VCTL_GETFILENAME, 0, 0));
+	Info.ViewerControl(-1, VCTL_GETFILENAME, fileName.Size(), fileName);
+	viewer->_FileName = gcnew String(fileName);
 }
 
 //! For external use.
@@ -41,8 +44,8 @@ Viewer^ Viewer0::GetCurrentViewer()
 	}
 
 	//! It may be not yet registered: CtrlQ panel started with Far or CtrlQ of folder (there was no VE_READ event)
-	// CtrlQ of folder
-	if (vi.FileName[0] == 0)
+	size_t size = Info.ViewerControl(-1, VCTL_GETFILENAME, 0, 0);
+	if (size == 0)
 		return nullptr;
 
 	// create and register
@@ -81,7 +84,11 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 					{
 						// new file is opened in the same viewer -- update file name
 						viewer = _viewers[i];
-						viewer->_FileName = gcnew String(vi.FileName);
+						
+						CBox fileName(Info.ViewerControl(-1, VCTL_GETFILENAME, 0, 0));
+						Info.ViewerControl(-1, VCTL_GETFILENAME, fileName.Size(), fileName);
+						viewer->_FileName = gcnew String(fileName);
+						
 						break;
 					}
 				}
@@ -112,7 +119,7 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 			Log::Source->TraceInformation("VE_CLOSE");
 
 			// get registered, close and unregister
-			int id = info->ViewerID;
+			intptr_t id = info->ViewerID;
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{
@@ -151,7 +158,7 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_GOTFOCUS");
 
 			// get registered
-			int id = info->ViewerID;
+			intptr_t id = info->ViewerID;
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{
@@ -188,7 +195,7 @@ int Viewer0::AsProcessViewerEvent(const ProcessViewerEventInfo* info)
 			Log::Source->TraceEvent(TraceEventType::Verbose, 0, "VE_KILLFOCUS");
 
 			// get registered
-			int id = info->ViewerID;
+			intptr_t id = info->ViewerID;
 			Viewer^ viewer = nullptr;
 			for(int i = 0; i < _viewers.Count; ++i)
 			{

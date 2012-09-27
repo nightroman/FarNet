@@ -57,7 +57,7 @@ void DialogLine::Text::set(String^ value)
 
 Span DialogLine::SelectionSpan::get()
 {
-	EditorSelect es;
+	EditorSelect es = {sizeof(es)};
 	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, &es);
 
 	Span result;
@@ -68,8 +68,8 @@ Span DialogLine::SelectionSpan::get()
 	}
 	else
 	{
-		result.Start = es.BlockStartPos;
-		result.End = es.BlockStartPos + es.BlockWidth;
+		result.Start = (int)es.BlockStartPos;
+		result.End = (int)(es.BlockStartPos + es.BlockWidth);
 	}
 
 	return result;
@@ -77,17 +77,17 @@ Span DialogLine::SelectionSpan::get()
 
 String^ DialogLine::SelectedText::get()
 {
-	EditorSelect es;
+	EditorSelect es = {sizeof(es)};
 	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, &es);
 	if (es.BlockType == BTYPE_NONE)
 		return nullptr;
 
-	return ::GetDialogControlText(_hDlg, _id, es.BlockStartPos, es.BlockWidth);
+	return ::GetDialogControlText(_hDlg, _id, (int)es.BlockStartPos, (int)es.BlockWidth);
 }
 
 void DialogLine::SelectedText::set(String^ value)
 {
-	EditorSelect es;
+	EditorSelect es = {sizeof(es)};
 	Info.SendDlgMessage(_hDlg, DM_GETSELECTION, _id, &es);
 	if (es.BlockType == BTYPE_NONE)
 		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
@@ -97,7 +97,7 @@ void DialogLine::SelectedText::set(String^ value)
 
 	// make and set new text
 	String^ text = ::GetDialogControlText(_hDlg, _id, -1, 0);
-	text = text->Substring(0, es.BlockStartPos) + value + text->Substring(es.BlockStartPos + es.BlockWidth);
+	text = text->Substring(0, (int)es.BlockStartPos) + value + text->Substring((int)(es.BlockStartPos + es.BlockWidth));
 	PIN_NE(pin, text);
 	Info.SendDlgMessage(_hDlg, DM_SETTEXTPTR, _id, (wchar_t*)pin);
 
@@ -129,7 +129,7 @@ void DialogLine::InsertText(String^ text)
 
 void DialogLine::SelectText(int start, int end)
 {
-	EditorSelect es;
+	EditorSelect es = {sizeof(es)};
 	es.BlockType = BTYPE_STREAM;
 	es.BlockStartLine = 0;
 	es.BlockStartPos = start;
@@ -140,7 +140,7 @@ void DialogLine::SelectText(int start, int end)
 
 void DialogLine::UnselectText()
 {
-	EditorSelect es;
+	EditorSelect es = {sizeof(es)};
 	es.BlockType = BTYPE_NONE;
 	Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, &es);
 }

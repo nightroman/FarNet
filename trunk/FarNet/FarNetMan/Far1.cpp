@@ -110,16 +110,17 @@ IAnyViewer^ Far1::AnyViewer::get()
 
 String^ Far1::PasteFromClipboard()
 {
-	wchar_t* buffer = Info.FSF->PasteFromClipboard();
-	String^ r = gcnew String(buffer);
-	Info.FSF->DeleteBuffer(buffer);
-	return r;
+	CBox box(Info.FSF->PasteFromClipboard(FCT_ANY, 0, 0));
+	if (box.Size() > 0)
+		Info.FSF->PasteFromClipboard(FCT_ANY, box, box.Size());
+
+	return gcnew String(box);
 }
 
 void Far1::CopyToClipboard(String^ text)
 {
 	PIN_NE(pin, text);
-	Info.FSF->CopyToClipboard(pin);
+	Info.FSF->CopyToClipboard(FCT_STREAM, pin);
 }
 
 IEditor^ Far1::CreateEditor()
@@ -476,7 +477,7 @@ Object^ Far1::GetSetting(FarSetting settingSet, String^ settingName)
 {
 	Settings settings(FarGuid);
 
-	FarSettingsItem arg;
+	FarSettingsItem arg = {sizeof(arg)};
 	if (!settings.Get((int)settingSet, settingName, arg))
 		throw gcnew ArgumentException(String::Format("Cannot get setting: set = '{0}' name = '{1}'", settingSet, settingName));
 	

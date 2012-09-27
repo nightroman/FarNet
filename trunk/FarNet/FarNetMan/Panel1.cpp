@@ -442,7 +442,7 @@ void Panel1::Redraw(int current, int top)
 		return;
 	}
 
-	PanelRedrawInfo pri;
+	PanelRedrawInfo pri = {sizeof(pri)};
 	pri.CurrentItem = current;
 	pri.TopPanelItem = top;
 	Info.PanelControl(_handle, FCTL_REDRAWPANEL, 0, &pri);

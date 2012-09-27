@@ -26,13 +26,13 @@ public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
 public:
 	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
-	virtual property bool HexMode { bool get() override; void set(bool value) override; }
+	virtual property ViewerViewMode ViewMode { ViewerViewMode get() override; void set(ViewerViewMode value) override; }
 	virtual property bool WrapMode { bool get() override; void set(bool value) override; }
 	virtual property bool WordWrapMode { bool get() override; void set(bool value) override; }
 	virtual property DateTime TimeOfOpen { DateTime get() override; }
 	virtual property FarNet::DeleteSource DeleteSource { FarNet::DeleteSource get() override; void set(FarNet::DeleteSource value) override; }
 	virtual property int CodePage { int get() override; void set(int value) override; }
-	virtual property int Id { int get() override; }
+	virtual property IntPtr Id { IntPtr get() override; }
 	virtual property Int64 FileSize { Int64 get() override; }
 	virtual property Place Window { Place get() override; void set(Place value) override; }
 	virtual property Point WindowSize { Point get() override; }
@@ -50,7 +50,7 @@ public:
 internal:
 	Viewer();
 internal:
-	int _id;
+	intptr_t _id;
 	String^ _FileName;
 	DateTime _TimeOfOpen;
 private:
@@ -62,6 +62,6 @@ private:
 	bool _DisableHistory;
 	Place _Window;
 	String^ _Title;
-	int _CodePage;
+	intptr_t _CodePage;
 };
 }

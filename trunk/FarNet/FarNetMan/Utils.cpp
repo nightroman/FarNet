@@ -117,12 +117,6 @@ void EditorControl_ECTL_DELETESTRING()
 	Info.EditorControl(-1, ECTL_DELETESTRING, 0, 0);
 }
 
-void EditorControl_ECTL_GETBOOKMARKS(EditorBookMarks& ebm)
-{
-	if (!Info.EditorControl(-1, ECTL_GETBOOKMARKS, 0, &ebm))
-		throw gcnew InvalidOperationException(__FUNCTION__ " failed. Ensure current editor.");
-}
-
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index)
 {
 	egs.StringNumber = index;
@@ -241,9 +235,10 @@ void AssertCurrentViewer()
 void Edit_Clear()
 {
 	AutoEditorInfo ei;
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, ei.TotalLines - 1);
+	EditorGetString egs = {sizeof(egs)};
+	EditorControl_ECTL_GETSTRING(egs, (int)ei.TotalLines - 1);
 
-	EditorSelect es;
+	EditorSelect es = {sizeof(es)};
 	es.BlockHeight = ei.TotalLines;
 	es.BlockWidth = egs.StringLength;
 	if (es.BlockHeight > 1 || es.BlockWidth > 0)
@@ -297,8 +292,8 @@ void Edit_RemoveAt(int index)
 	if (index == ei.TotalLines - 1)
 	{
 		// last
-		EditorGetString egsLast;
-		EditorControl_ECTL_GETSTRING(egsLast, ei.TotalLines - 1);
+		EditorGetString egsLast = {sizeof(egsLast)};
+		EditorControl_ECTL_GETSTRING(egsLast, (int)ei.TotalLines - 1);
 
 		// remove if not empty
 		if (egsLast.StringLength > 0)
@@ -312,7 +307,7 @@ void Edit_RemoveAt(int index)
 			return;
 
 		EditorControl_ECTL_GETSTRING(egsLast, index);
-		Edit_GoTo(egsLast.StringLength, index);
+		Edit_GoTo((int)egsLast.StringLength, index);
 
 		// and delete EOL
 		EditorControl_ECTL_DELETECHAR();
@@ -344,20 +339,20 @@ Place Edit_SelectionPlace()
 		return Place(-1);
 
 	Place r;
-	EditorGetString egs;
-	r.Top = ei.BlockStartLine;
+	EditorGetString egs = {sizeof(egs)};
+	r.Top = (int)ei.BlockStartLine;
 	r.Left = -1;
 	for(egs.StringNumber = r.Top; egs.StringNumber < ei.TotalLines; ++egs.StringNumber)
 	{
-		EditorControl_ECTL_GETSTRING(egs, egs.StringNumber);
+		EditorControl_ECTL_GETSTRING(egs, (int)egs.StringNumber);
 		if (r.Left < 0)
-			r.Left = egs.SelStart;
+			r.Left = (int)egs.SelStart;
 		if (egs.SelStart < 0)
 			break;
-		r.Right = egs.SelEnd;
+		r.Right = (int)egs.SelEnd;
 	}
 	--r.Right;
-	r.Bottom = egs.StringNumber - 1;
+	r.Bottom = (int)egs.StringNumber - 1;
 
 	return r;
 }

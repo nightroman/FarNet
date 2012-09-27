@@ -29,7 +29,7 @@ Editor^ Editor0::GetCurrentEditor()
 	// search for the connected editor
 	for(int i = 0; i < _editors.Count; ++i)
 	{
-		if (_editors[i]->Id == ei.EditorID)
+		if ((intptr_t)_editors[i]->Id == ei.EditorID)
 			return _editors[i];
 	}
 
@@ -42,10 +42,10 @@ Editor^ Editor0::GetCurrentEditor()
 }
 
 // For internal use.
-int Editor0::FindEditor(int id)
+int Editor0::FindEditor(intptr_t id)
 {
 	for(int i = 0; i < _editors.Count; ++i)
-		if (id == _editors[i]->Id)
+		if (id == (intptr_t)_editors[i]->Id)
 			return i;
 
 	return -1;
@@ -163,7 +163,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			{
 				Log::Source->TraceEvent(TraceEventType::Verbose, 0, "Changed");
 				EditorChange* ec = (EditorChange*)info->Param;
-				EditorChangedEventArgs ea((EditorChangeKind)ec->Type, ec->StringNumber);
+				EditorChangedEventArgs ea((EditorChangeKind)ec->Type, (int)ec->StringNumber);
 				if (_anyEditor._Changed)
 					_anyEditor._Changed(editor, %ea);
 				if (editor->_Changed)
@@ -206,7 +206,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			if (!editor)
 			{
 				editor = GetCurrentEditor();
-				if (editor->Id != info->EditorID)
+				if ((intptr_t)editor->Id != info->EditorID)
 				{
 					Log::Source->TraceInformation("EE_GOTFOCUS: cannot connect editor");
 					break;
@@ -241,7 +241,7 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			if (!editor)
 			{
 				editor = GetCurrentEditor();
-				if (editor->Id != info->EditorID)
+				if ((intptr_t)editor->Id != info->EditorID)
 				{
 					Log::Source->TraceInformation("EE_KILLFOCUS: cannot connect editor");
 					break;

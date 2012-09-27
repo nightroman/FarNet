@@ -20,7 +20,5 @@ public:
 	virtual void GoToPreviousSessionBookmark() override;
 internal:
 	static EditorBookmark Instance;
-private:
-	static TextFrame NewTextFrame(const EditorBookMarks& bookmarks, int index);
 };
 }
