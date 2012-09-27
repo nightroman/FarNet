@@ -153,8 +153,8 @@ void Menu::ShowMenu(FarMenuItem* items, const FarKey* breaks, const wchar_t* tit
 		items[_selected].Flags |= MIF_SELECTED;
 
 	// show
-	int bc = -1;
-	_selected = Info.Menu(
+	intptr_t bc = -1;
+	_selected = (int)Info.Menu(
 		&MainGuid,
 		&MainGuid,
 		x,
@@ -169,7 +169,7 @@ void Menu::ShowMenu(FarMenuItem* items, const FarKey* breaks, const wchar_t* tit
 		(const FarMenuItem*)items,
 		_items->Count);
 
-	_keyIndex = bc;
+	_keyIndex = (int)bc;
 }
 
 bool Menu::Show()

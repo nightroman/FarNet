@@ -58,7 +58,7 @@ public:
 internal:
 	FarDialog(HANDLE hDlg);
 	FarDialog(int left, int top, int right, int bottom);
-	INT_PTR DialogProc(int msg, int param1, void* param2);
+	INT_PTR DialogProc(intptr_t msg, intptr_t param1, void* param2);
 	static FarDialog^ GetDialog();
 internal:
 	static List<FarDialog^> _dialogs;

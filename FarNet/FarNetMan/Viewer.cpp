@@ -98,9 +98,9 @@ void Viewer::Open(OpenMode mode)
 		throw gcnew InvalidOperationException("Cannot open the file '" + FileName + "'");
 }
 
-int Viewer::Id::get()
+IntPtr Viewer::Id::get()
 {
-	return _id;
+	return (IntPtr)_id;
 }
 
 DeleteSource Viewer::DeleteSource::get()
@@ -171,8 +171,8 @@ Point Viewer::WindowSize::get()
 	Point r;
 	if (vi.ViewerID >= 0 && vi.ViewerID == _id)
 	{
-		r.X = vi.WindowSizeX;
-		r.Y = vi.WindowSizeY;
+		r.X = (int)vi.WindowSizeX;
+		r.Y = (int)vi.WindowSizeY;
 	}
 	return r;
 }
@@ -209,7 +209,7 @@ ViewFrame Viewer::Frame::get()
 void Viewer::Frame::set(ViewFrame value)
 {
 	AssertCurrentViewer();
-	ViewerSetPosition vsp;
+	ViewerSetPosition vsp = {sizeof(vsp)};
 	vsp.Flags = VSP_NORETNEWPOS;
 	vsp.LeftPos = value.Column;
 	vsp.StartPos = value.Offset;
@@ -219,7 +219,7 @@ void Viewer::Frame::set(ViewFrame value)
 Int64 Viewer::SetFrame(Int64 pos, int left, ViewFrameOptions options)
 {
 	AssertCurrentViewer();
-	ViewerSetPosition vsp;
+	ViewerSetPosition vsp = {sizeof(vsp)};
 	vsp.Flags = (DWORD)options;
 	vsp.LeftPos = left;
 	vsp.StartPos = pos;
@@ -248,7 +248,7 @@ void Viewer::SelectText(Int64 symbolStart, int symbolCount)
 	}
 	else
 	{
-		ViewerSelect vs;
+		ViewerSelect vs = {sizeof(vs)};
 		vs.BlockLen = symbolCount;
 		vs.BlockStartPos = symbolStart;
 		Info.ViewerControl(_id, VCTL_SELECT, 0, &vs);
@@ -260,22 +260,21 @@ void Viewer::AssertClosed()
 	if (IsOpened) throw gcnew InvalidOperationException("Viewer must not be open for this operation.");
 }
 
-bool Viewer::HexMode::get()
+ViewerViewMode Viewer::ViewMode::get()
 {
 	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
 	if (vi.ViewerID < 0 || vi.ViewerID != _id)
-		return false;
+		return ViewerViewMode::Text;
 	else
-		return vi.CurMode.Hex != 0;
+		return (ViewerViewMode)vi.CurMode.Type;
 }
-
-void Viewer::HexMode::set(bool value)
+void Viewer::ViewMode::set(ViewerViewMode value)
 {
 	AssertCurrentViewer();
-	ViewerSetMode vsm;
-	vsm.Flags = vsm.Reserved = 0;
+	ViewerSetMode vsm = {sizeof(vsm)};
+	vsm.Flags = 0;
 	vsm.Type = VSMT_HEX;
-	vsm.iParam = value;
+	vsm.iParam = (intptr_t)value;
 	Info.ViewerControl(_id, VCTL_SETMODE, 0, &vsm);
 }
 
@@ -285,14 +284,13 @@ bool Viewer::WrapMode::get()
 	if (vi.ViewerID < 0 || vi.ViewerID != _id)
 		return false;
 	else
-		return vi.CurMode.Wrap != 0;
+		return (vi.CurMode.Flags & VMF_WRAP) != 0;
 }
-
 void Viewer::WrapMode::set(bool value)
 {
 	AssertCurrentViewer();
-	ViewerSetMode vsm;
-	vsm.Flags = vsm.Reserved = 0;
+	ViewerSetMode vsm = {sizeof(vsm)};
+	vsm.Flags = 0;
 	vsm.Type = VSMT_WRAP;
 	vsm.iParam = value;
 	Info.ViewerControl(_id, VCTL_SETMODE, 0, &vsm);
@@ -304,14 +302,13 @@ bool Viewer::WordWrapMode::get()
 	if (vi.ViewerID < 0 || vi.ViewerID != _id)
 		return false;
 	else
-		return vi.CurMode.WordWrap != 0;
+		return (vi.CurMode.Flags & VMF_WORDWRAP) != 0;
 }
-
 void Viewer::WordWrapMode::set(bool value)
 {
 	AssertCurrentViewer();
-	ViewerSetMode vsm;
-	vsm.Flags = vsm.Reserved = 0;
+	ViewerSetMode vsm = {sizeof(vsm)};
+	vsm.Flags = 0;
 	vsm.Type = VSMT_WORDWRAP;
 	vsm.iParam = value;
 	Info.ViewerControl(_id, VCTL_SETMODE, 0, &vsm);
@@ -320,13 +317,13 @@ void Viewer::WordWrapMode::set(bool value)
 int Viewer::CodePage::get()
 {
 	if (!IsOpened)
-		return _CodePage;
+		return (int)_CodePage;
 
 	ViewerInfo vi; ViewerControl_VCTL_GETINFO(vi, true);
 	if (vi.ViewerID < 0 || vi.ViewerID != _id)
 		return 0;
 
-	return vi.CurMode.CodePage;
+	return (int)vi.CurMode.CodePage;
 }
 
 void Viewer::CodePage::set(int value)

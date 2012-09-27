@@ -10,80 +10,45 @@ Copyright (c) 2005-2012 FarNet Team
 
 namespace FarNet
 {;
-TextFrame EditorBookmark::NewTextFrame(const EditorBookMarks& bookmarks, int index)
+static TextFrame NewTextFrame(const EditorBookmarks& bookmarks, int index)
 {
 	TextFrame r;
-	r.CaretLine = bookmarks.Line[index];
-	r.CaretColumn = bookmarks.Cursor[index];
+	r.CaretLine = (int)bookmarks.Line[index];
+	r.CaretColumn = (int)bookmarks.Cursor[index];
 	r.CaretScreenColumn = -1;
-	r.VisibleLine = r.CaretLine - bookmarks.ScreenLine[index];
-	r.VisibleChar = bookmarks.LeftPos[index];
+	r.VisibleLine = r.CaretLine - (int)bookmarks.ScreenLine[index];
+	r.VisibleChar = (int)bookmarks.LeftPos[index];
+	return r;
+}
+
+static ICollection<TextFrame>^ GetBookmarks(EDITOR_CONTROL_COMMANDS command)
+{
+	size_t size = Info.EditorControl(-1, command, 0, 0);
+	if (size == 0)
+		return gcnew List<TextFrame>();
+	
+	char* buffer = new char[size];
+	EditorBookmarks& ebm = *(EditorBookmarks*)buffer;
+	ebm.StructSize = sizeof(EditorBookmarks);
+	ebm.Size = size;
+
+	Info.EditorControl(-1, command, 0, buffer);
+	List<TextFrame>^ r = gcnew List<TextFrame>((int)ebm.Count);
+
+	for(size_t i = 0; i < ebm.Count; ++i)
+		r->Add(NewTextFrame(ebm, (int)i));
+	
+	delete buffer;
 	return r;
 }
 
 ICollection<TextFrame>^ EditorBookmark::Bookmarks()
 {
-	AutoEditorInfo ei;
-
-	List<TextFrame>^ r = gcnew List<TextFrame>();
-	if (ei.BookMarkCount > 0)
-	{
-		EditorBookMarks ebm;
-		ebm.Cursor = new int[ei.BookMarkCount];
-		ebm.LeftPos = new int[ei.BookMarkCount];
-		ebm.Line = new int[ei.BookMarkCount];
-		ebm.ScreenLine = new int[ei.BookMarkCount];
-		try
-		{
-			EditorControl_ECTL_GETBOOKMARKS(ebm);
-
-			r->Capacity = ei.BookMarkCount;
-			for(int i = 0; i < ei.BookMarkCount; ++i)
-				r->Add(NewTextFrame(ebm, i));
-		}
-		finally
-		{
-			delete ebm.Cursor;
-			delete ebm.LeftPos;
-			delete ebm.Line;
-			delete ebm.ScreenLine;
-		}
-	}
-
-	return r;
+	return GetBookmarks(ECTL_GETBOOKMARKS);
 }
-
 ICollection<TextFrame>^ EditorBookmark::SessionBookmarks()
 {
-	List<TextFrame>^ r = gcnew List<TextFrame>();
-
-	int count = (int)Info.EditorControl(-1, ECTL_GETSESSIONBOOKMARKS, 0, 0);
-	if (count <= 0)
-		return r;
-
-	EditorBookMarks ebm;
-	ebm.Cursor = new int[count];
-	ebm.LeftPos = new int[count];
-	ebm.Line = new int[count];
-	ebm.ScreenLine = new int[count];
-	try
-	{
-		if (!Info.EditorControl(-1, ECTL_GETSESSIONBOOKMARKS, 0, &ebm))
-			throw gcnew InvalidOperationException("ECTL_GETSESSIONBOOKMARKS");
-
-		r->Capacity = count;
-		for(int i = 0; i < count; ++i)
-			r->Add(NewTextFrame(ebm, i));
-	}
-	finally
-	{
-		delete ebm.Cursor;
-		delete ebm.LeftPos;
-		delete ebm.Line;
-		delete ebm.ScreenLine;
-	}
-
-	return r;
+	return GetBookmarks(ECTL_GETSESSIONBOOKMARKS);
 }
 
 void EditorBookmark::AddSessionBookmark()

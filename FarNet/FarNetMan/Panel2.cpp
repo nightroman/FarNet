@@ -57,7 +57,7 @@ FarFile^ Panel2::CurrentFile::get()
 		return nullptr;
 
 	AutoPluginPanelItem item(Handle, (int)pi.CurrentItem, ShownFile);
-	int fi = (int)(INT_PTR)item.Get().UserData;
+	int fi = (int)(INT_PTR)item.Get().UserData.Data;
 	if (fi < 0)
 		return nullptr;
 
@@ -86,7 +86,7 @@ IList<FarFile^>^ Panel2::ShownFiles::get()
 	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, ShownFile);
-		int fi = (int)(INT_PTR)item.Get().UserData;
+		int fi = (int)(INT_PTR)item.Get().UserData.Data;
 		if (fi >= 0)
 			r->Add(_Files[fi]);
 	}
@@ -108,7 +108,7 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 	for(int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, SelectedFile);
-		int fi = (int)(INT_PTR)item.Get().UserData;
+		int fi = (int)(INT_PTR)item.Get().UserData.Data;
 		if (fi >= 0)
 			r->Add(_Files[fi]);
 	}
@@ -120,7 +120,7 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 FarFile^ Panel2::GetFile(int index, FileType type)
 {
 	AutoPluginPanelItem item(Handle, index, type);
-	int fi = (int)(INT_PTR)item.Get().UserData;
+	int fi = (int)(INT_PTR)item.Get().UserData.Data;
 	if (fi >= 0)
 		// module file
 		return _Files[fi];
@@ -350,12 +350,12 @@ void Panel2::CreateInfoLines()
 		if (s->Data)
 		{
 			d.Data = NewChars(s->Data->ToString());
-			d.Separator = false;
+			d.Flags = 0;
 		}
 		else
 		{
 			d.Data = 0;
-			d.Separator = true;
+			d.Flags = IPLFLAGS_SEPARATOR;
 		}
 	}
 }

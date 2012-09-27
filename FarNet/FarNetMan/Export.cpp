@@ -135,7 +135,7 @@ HANDLE WINAPI OpenW(const OpenInfo* info)
 	return nullptr;
 }
 
-int WINAPI ConfigureW(const ConfigureInfo* info)
+intptr_t WINAPI ConfigureW(const ConfigureInfo* info)
 {
 	__START;
 	return Far0::AsConfigure(info);
@@ -150,7 +150,7 @@ void WINAPI ClosePanelW(const ClosePanelInfo* info)
 	__END;
 }
 
-int WINAPI GetFilesW(GetFilesInfo* info)
+intptr_t WINAPI GetFilesW(GetFilesInfo* info)
 {
 	__START;
 	return Panel0::AsGetFiles(info);
@@ -166,7 +166,7 @@ int WINAPI PutFilesW(PutFilesInfo* info)
 	return 0;
 }
 
-int WINAPI GetFindDataW(GetFindDataInfo* info)
+intptr_t WINAPI GetFindDataW(GetFindDataInfo* info)
 {
 	return Panel0::AsGetFindData(info);
 }
@@ -185,7 +185,7 @@ void WINAPI GetOpenPanelInfoW(OpenPanelInfo* info)
 	__END;
 }
 
-int WINAPI SetDirectoryW(const SetDirectoryInfo* info)
+intptr_t WINAPI SetDirectoryW(const SetDirectoryInfo* info)
 {
 	__START;
 	return Panel0::AsSetDirectory(info);
@@ -193,7 +193,7 @@ int WINAPI SetDirectoryW(const SetDirectoryInfo* info)
 	return false;
 }
 
-int WINAPI DeleteFilesW(const DeleteFilesInfo* info)
+intptr_t WINAPI DeleteFilesW(const DeleteFilesInfo* info)
 {
 	__START;
 	return Panel0::AsDeleteFiles(info);
@@ -201,7 +201,7 @@ int WINAPI DeleteFilesW(const DeleteFilesInfo* info)
 	return false;
 }
 
-int WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
+intptr_t WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
 {
 	__START;
 	return Editor0::AsProcessEditorEvent(info);
@@ -209,7 +209,7 @@ int WINAPI ProcessEditorEventW(const ProcessEditorEventInfo* info)
 	return 0;
 }
 
-int WINAPI ProcessEditorInputW(const ProcessEditorInputInfo* info)
+intptr_t WINAPI ProcessEditorInputW(const ProcessEditorInputInfo* info)
 {
 	__START;
 	return Editor0::AsProcessEditorInput(info);
@@ -217,7 +217,7 @@ int WINAPI ProcessEditorInputW(const ProcessEditorInputInfo* info)
 	return true; // on problems consider event as processed to avoid default actions
 }
 
-int WINAPI ProcessPanelEventW(const ProcessPanelEventInfo* info)
+intptr_t WINAPI ProcessPanelEventW(const ProcessPanelEventInfo* info)
 {
 	__START;
 	return Panel0::AsProcessPanelEvent(info);
@@ -225,7 +225,7 @@ int WINAPI ProcessPanelEventW(const ProcessPanelEventInfo* info)
 	return false;
 }
 
-int WINAPI ProcessPanelInputW(const ProcessPanelInputInfo* info)
+intptr_t WINAPI ProcessPanelInputW(const ProcessPanelInputInfo* info)
 {
 	__START;
 	return Panel0::AsProcessPanelInput(info);
@@ -233,7 +233,7 @@ int WINAPI ProcessPanelInputW(const ProcessPanelInputInfo* info)
 	return true; // ignore, there was a problem
 }
 
-int WINAPI ProcessSynchroEventW(const ProcessSynchroEventInfo* info)
+intptr_t WINAPI ProcessSynchroEventW(const ProcessSynchroEventInfo* info)
 {
 	__START;
 	Far0::AsProcessSynchroEvent(info);
@@ -241,7 +241,7 @@ int WINAPI ProcessSynchroEventW(const ProcessSynchroEventInfo* info)
 	return 0;
 }
 
-int WINAPI ProcessViewerEventW(const ProcessViewerEventInfo* info)
+intptr_t WINAPI ProcessViewerEventW(const ProcessViewerEventInfo* info)
 {
 	__START;
 	return Viewer0::AsProcessViewerEvent(info);

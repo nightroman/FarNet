@@ -77,9 +77,9 @@ public:
 	virtual property IList<String^>^ Strings { IList<String^>^ get() override; }
 	virtual property int CodePage { int get() override; void set(int value) override; }
 	virtual property int Count { int get() override; }
-	virtual property int Id { int get() override; }
 	virtual property int KeyCount { int get() override; }
 	virtual property int TabSize { int get() override; void set(int value) override; }
+	virtual property IntPtr Id { IntPtr get() override; }
 	virtual property Place SelectionPlace { Place get() override; }
 	virtual property Place Window { Place get() override; void set(Place value) override; }
 	virtual property Point Caret { Point get() override; void set(Point value) override; }
@@ -149,7 +149,7 @@ private:
 	bool GetBoolOption(int option, Nullable<bool> value);
 	void SetBoolOption(EDITOR_SETPARAMETER_TYPES option, bool value);
 private:
-	int _id;
+	intptr_t _id;
 	String^ _FileName;
 	DateTime _TimeOfOpen;
 	String^ _WordDiv; // null = none
@@ -163,7 +163,7 @@ private:
 	bool _DisableHistory;
 	Place _Window;
 	String^ _Title;
-	int _CodePage;
+	intptr_t _CodePage;
 	TextFrame _frameStart;
 internal:
 	DateTime _TimeOfSave;

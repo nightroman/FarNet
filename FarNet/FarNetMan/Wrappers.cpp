@@ -40,6 +40,7 @@ bool State::GetPanelInfo;
 
 AutoEditorInfo::AutoEditorInfo(bool safe)
 {
+	StructSize = sizeof(EditorInfo);
 	if (!Info.EditorControl(-1, ECTL_GETINFO, 0, this))
 	{
 		if (safe)
@@ -57,6 +58,7 @@ void AutoEditorInfo::Update()
 
 AutoPluginPanelItem::AutoPluginPanelItem(HANDLE handle, int index, FileType type)
 {
+	m.StructSize = sizeof(FarGetPluginPanelItem);
 	m.Size = Info.PanelControl(handle, (FILE_CONTROL_COMMANDS)type, index, 0);
 	if (m.Size > sizeof(mBuffer))
 		m.Item = (PluginPanelItem*)new char[m.Size];

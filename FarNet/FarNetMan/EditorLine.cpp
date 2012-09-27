@@ -21,8 +21,9 @@ FarNet::WindowKind EditorLine::WindowKind::get()
 
 int EditorLine::Length::get()
 {
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
-	return egs.StringLength;
+	EditorGetString egs = {sizeof(egs)};
+	EditorControl_ECTL_GETSTRING(egs, _Index);
+	return (int)egs.StringLength;
 }
 
 int EditorLine::Index::get()
@@ -35,7 +36,7 @@ int EditorLine::Caret::get()
 	AutoEditorInfo ei;
 
 	if (_Index < 0 || _Index == ei.CurLine)
-		return ei.CurPos;
+		return (int)ei.CurPos;
 
 	return -1;
 }
@@ -44,8 +45,9 @@ void EditorLine::Caret::set(int value)
 {
 	if (value < 0)
 	{
-		EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
-		value = egs.StringLength;
+		EditorGetString egs = {sizeof(egs)};
+		EditorControl_ECTL_GETSTRING(egs, _Index);
+		value = (int)egs.StringLength;
 	}
 	SEditorSetPosition esp;
 	esp.CurPos = value;
@@ -55,8 +57,9 @@ void EditorLine::Caret::set(int value)
 
 String^ EditorLine::Text::get()
 {
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
-	return gcnew String(egs.StringText, 0, egs.StringLength);
+	EditorGetString egs = {sizeof(egs)};
+	EditorControl_ECTL_GETSTRING(egs, _Index);
+	return gcnew String(egs.StringText, 0, (int)egs.StringLength);
 }
 
 void EditorLine::Text::set(String^ value)
@@ -64,7 +67,8 @@ void EditorLine::Text::set(String^ value)
 	if (!value)
 		throw gcnew ArgumentNullException("value");
 
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
+	EditorGetString egs = {sizeof(egs)};
+	EditorControl_ECTL_GETSTRING(egs, _Index);
 	EditorSetString ess = GetEss();
 	PIN_NE(pin, value);
 	ess.StringText = pin;
@@ -76,7 +80,8 @@ void EditorLine::Text::set(String^ value)
 Span EditorLine::SelectionSpan::get()
 {
 	Span result;
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
+	EditorGetString egs = {sizeof(egs)};
+	EditorControl_ECTL_GETSTRING(egs, _Index);
 
 	if (egs.SelStart < 0)
 	{
@@ -85,13 +90,13 @@ Span EditorLine::SelectionSpan::get()
 	}
 	else if (egs.SelEnd < 0)
 	{
-		result.Start = egs.SelStart;
-		result.End = egs.StringLength;
+		result.Start = (int)egs.SelStart;
+		result.End = (int)egs.StringLength;
 	}
 	else
 	{
-		result.Start = egs.SelStart;
-		result.End = egs.SelEnd;
+		result.Start = (int)egs.SelStart;
+		result.End = (int)egs.SelEnd;
 	}
 
 	return result;
@@ -99,13 +104,14 @@ Span EditorLine::SelectionSpan::get()
 
 String^ EditorLine::SelectedText::get()
 {
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
+	EditorGetString egs = {sizeof(egs)};
+	EditorControl_ECTL_GETSTRING(egs, _Index);
 	if (egs.SelStart < 0)
 		return nullptr;
 	if (egs.SelEnd < 0)
 		egs.SelEnd = egs.StringLength;
 
-	return gcnew String(egs.StringText + egs.SelStart, 0, egs.SelEnd - egs.SelStart);
+	return gcnew String(egs.StringText + egs.SelStart, 0, (int)(egs.SelEnd - egs.SelStart));
 }
 
 void EditorLine::SelectedText::set(String^ value)
@@ -113,22 +119,23 @@ void EditorLine::SelectedText::set(String^ value)
 	if (!value)
 		throw gcnew ArgumentNullException("value");
 
-	EditorGetString egs; EditorControl_ECTL_GETSTRING(egs, _Index);
+	EditorGetString egs = {sizeof(egs)};
+	EditorControl_ECTL_GETSTRING(egs, _Index);
 	if (egs.SelStart < 0)
 		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
 
-	String^ text1 = gcnew String(egs.StringText, 0, egs.StringLength);
-	String^ text2 = text1->Substring(0, egs.SelStart) + value;
+	String^ text1 = gcnew String(egs.StringText, 0, (int)egs.StringLength);
+	String^ text2 = text1->Substring(0, (int)egs.SelStart) + value;
 	int dd = 0;
 	if (egs.SelEnd >= 0)
 	{
-		text2 = text2 + text1->Substring(egs.SelEnd);
-		dd = egs.SelStart + value->Length - egs.SelEnd;
+		text2 = text2 + text1->Substring((int)egs.SelEnd);
+		dd = (int)(egs.SelStart + value->Length - egs.SelEnd);
 	}
 
 	// set string
 	PIN_NE(pin, text2);
-	EditorSetString ess;
+	EditorSetString ess = {sizeof(ess)};
 	ess.StringEOL = egs.StringEOL;
 	ess.StringLength = text2->Length;
 	ess.StringNumber = _Index;
@@ -139,7 +146,7 @@ void EditorLine::SelectedText::set(String^ value)
 	if (dd != 0)
 	{
 		Place pp = Edit_SelectionPlace();
-		EditorSelect es;
+		EditorSelect es = {sizeof(es)};
 		es.BlockHeight = pp.Bottom - pp.Top + 1;
 		es.BlockStartLine = pp.Top;
 		es.BlockStartPos = pp.Left;
@@ -160,7 +167,7 @@ void EditorLine::InsertText(String^ text)
 
 void EditorLine::SelectText(int start, int end)
 {
-	EditorSelect es;
+	EditorSelect es = {sizeof(es)};
 	es.BlockType = BTYPE_STREAM;
 	es.BlockStartLine = _Index;
 	es.BlockStartPos = start;
@@ -171,14 +178,14 @@ void EditorLine::SelectText(int start, int end)
 
 void EditorLine::UnselectText()
 {
-	EditorSelect es;
+	EditorSelect es = {sizeof(es)};
 	es.BlockType = BTYPE_NONE;
 	EditorControl_ECTL_SELECT(es);
 }
 
 EditorSetString EditorLine::GetEss()
 {
-	EditorSetString ess;
+	EditorSetString ess = {sizeof(ess)};
 	ess.StringNumber = _Index;
 	return ess;
 }

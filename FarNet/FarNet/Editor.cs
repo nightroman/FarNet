@@ -181,7 +181,7 @@ namespace FarNet
 		/// <summary>
 		/// Gets the internal identifier.
 		/// </summary>
-		public abstract int Id { get; }
+		public abstract IntPtr Id { get; }
 		/// <summary>
 		/// Gets or sets tab size in spaces in the current editor.
 		/// </summary>
@@ -747,7 +747,7 @@ namespace FarNet
 		/// </remarks>
 		public abstract ICollection<TextFrame> Bookmarks();
 		/// <summary>
-		/// Gets stack bookmarks in the current editor.
+		/// Gets session bookmarks in the current editor.
 		/// </summary>
 		/// <remarks>
 		/// Bookmarks are defined as <see cref="TextFrame"/>.

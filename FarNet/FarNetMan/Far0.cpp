@@ -472,7 +472,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 		case OPEN_COMMANDLINE:
 			{
 				Log::Source->TraceInformation("OPEN_COMMANDLINE");
-				InvokeCommand((const wchar_t*)info->Data, false);
+				InvokeCommand(((OpenCommandLineInfo*)info->Data)->CommandLine, false);
 			}
 			break;
 		case OPEN_LEFTDISKMENU:

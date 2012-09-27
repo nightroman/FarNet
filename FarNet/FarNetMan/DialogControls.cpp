@@ -73,7 +73,7 @@ void FarControl::Stop(bool ok)
 	{
 		FarDialogItem di;
 		Info.SendDlgMessage(_dialog->_hDlg, DM_GETDLGITEMSHORT, Id, &di);
-		_selected = di.Selected;
+		_selected = (int)di.Selected;
 		_flags = di.Flags;
 	}
 }
@@ -700,6 +700,8 @@ void FarBaseList::Init(FarDialogItem& item, FARDIALOGITEMTYPES type)
 	FarControl::Init(item, type);
 
 	_pFarList = item.ListItems = new FarList;
+	_pFarList->StructSize = sizeof(*_pFarList);
+
 	if (_ii)
 	{
 		_pFarList->ItemsNumber = _ii->Count;
@@ -771,7 +773,7 @@ void FarBaseList::AttachItems()
 	if (list)
 		list->SetBox(this);
 
-	FarList arg;
+	FarList arg = {sizeof(arg)};
 	arg.Items = new FarListItem[_Items->Count];
 	arg.ItemsNumber = _Items->Count;
 	for(int i = _Items->Count; --i >= 0;)

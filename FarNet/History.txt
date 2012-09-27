@@ -1,5 +1,17 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.27 =
+
+Adapted for API changes in Far 3.0.2799-2834. Most of modules work fine without
+updates or rebuilds. Some new API (clipboard block types, panel item custom
+free) is not yet used. To be continued.
+
+IViewer
+* Property HexMode (bool) replaced with ViewMode (ViewerViewMode - Text, Hex, Dump).
+
+IEditor, IViewer
+* Property Id type changed from int to IntPtr.
+
 = 5.0.26 =
 
 Menus
