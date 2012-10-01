@@ -51,7 +51,7 @@ if (!$TestOpened) {
 ### Edit (standard)
 
 # go to edit 1 (by hotkey) and type
-'AltT Home ShiftEnd Del î ê à'
+'Keys"AltT Home ShiftEnd Del î ê à"'
 {
 	Assert-Far @(
 		# editbox is current
@@ -118,7 +118,7 @@ if (!$TestOpened) {
 }
 
 # switch checkbox
-'Space'
+'Keys"Space"'
 
 {
 	# test new checkbox state, should be different
@@ -142,14 +142,14 @@ if (!$TestOpened) {
 }
 
 # switch
-'Space'
+'Keys"Space"'
 {
 	# test state
 	Assert-Far ($x2.Selected -eq 1)
 }
 
 # switch
-'Space'
+'Keys"Space"'
 {
 	# test state
 	Assert-Far ($x2.Selected -eq 2)
@@ -158,7 +158,7 @@ if (!$TestOpened) {
 ### Edit (fixed)
 
 # type 'Text12345', mask should deny '12345'
-'Tab Home ShiftEnd Del T e x t 1 2 3 4 5'
+'Keys"Tab Home ShiftEnd Del T e x t 1 2 3 4 5"'
 
 {
 	# test focus and text
@@ -170,7 +170,7 @@ if (!$TestOpened) {
 
 ### Edit (password)
 
-'Tab Del W o r d'
+'Keys"Tab Del W o r d"'
 
 {
 	# test focus and text
@@ -194,7 +194,7 @@ if (!$TestOpened) {
 }
 
 # go to button 2 and select
-'Right Space'
+'Keys"Right Space"'
 
 {
 	Assert-Far @(
@@ -256,7 +256,7 @@ if (!$TestOpened) {
 }
 
 # push the button 1st time
-'Enter'
+'Keys"Enter"'
 
 {
 	# test listbox data
@@ -267,7 +267,7 @@ if (!$TestOpened) {
 }
 
 # push the button 2nd time
-'Enter'
+'Keys"Enter"'
 
 {
 	# test listbox data
@@ -278,7 +278,7 @@ if (!$TestOpened) {
 if (!$TestOpened) {
 
 	# exit
-	'Esc'
+	'Keys"Esc"'
 
 	{
 		# no dialog

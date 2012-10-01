@@ -63,7 +63,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 }
 
 # open the attributes dialog
-'CtrlA'
+'Keys"CtrlA"'
 
 {
 	# test: a dialog exists and there is a valid control in it
@@ -74,7 +74,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 }
 
 # exit the dialog
-'Esc'
+'Keys"Esc"'
 
 {
 	# test: the window (panels) and item ('far.exe.config')
@@ -90,7 +90,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 }}
 
 # type some text
-'S a m p l e Space t e x t'
+'Keys"S a m p l e Space t e x t"'
 
 {
 	# test: a dialog exists and there is a valid control in it
@@ -111,7 +111,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 }
 
 # exit the dialog
-'Esc'
+'Keys"Esc"'
 
 # HOW TO: open a modal editor
 {{
@@ -132,7 +132,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 }
 
 # exit the editor, do not save
-'Esc n'
+'Keys"Esc n"'
 
 {
 	# test: current window is panel
@@ -150,7 +150,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 }
 
 # insert some text
-'"Modeless Editor"'
+'print("Modeless Editor")'
 
 {
 	# test: editor text
@@ -186,14 +186,14 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 	}
 	if ($Data.AnotherPanel) {
 		$Psf.Stepper.Go(@(
-			'Tab'
+			'Keys"Tab"'
 			{
 				# this step was added dynamically to open yet another panel
 				$Panel = New-Object PowerShellFar.ObjectPanel
 				$Panel.AddObjects((Get-ChildItem))
 				$Panel.Open()
 			}
-			'Tab'
+			'Keys"Tab"'
 		))
 	}
 }
@@ -209,7 +209,7 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 }
 
 # exit the editor, do not save
-'Esc n'
+'Keys"Esc n"'
 
 {
 	# test: current window is panel
@@ -217,14 +217,14 @@ Assert-Far ($Far.Window.Count -eq 1) "Close Far Manager internal windows before 
 }
 
 # exit the plugin panel
-'Esc'
+'Keys"Esc"'
 
 {
 	# close one more panel (by returned extra steps)
 	if ($Data.AnotherPanel) {
 		$Psf.Stepper.Go(@(
-			'Tab'
-			'Esc Tab'
+			'Keys"Tab"'
+			'Keys"Esc Tab"'
 		))
 	}
 }

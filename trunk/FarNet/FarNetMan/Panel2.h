@@ -42,11 +42,20 @@ namespace FarNet
 ref class ShelveInfoNative;
 ref class ShelveInfoModule;
 
+ref struct ExplorerFilePair
+{
+public:
+	ExplorerFilePair(Explorer^ explorer, FarFile^ file) : Explorer(explorer), File(file) {}
+	Explorer^ Explorer;
+	FarFile^ File;
+};
+
 ref class Panel2 : public Panel1, Works::IPanelWorks
 {
 internal:
 	void Free();
 	OpenPanelInfo& Make();
+	static void StoreFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file);
 public: // IPanel
 	virtual property bool RealNames { bool get() override; void set(bool value) override; }
 	virtual property bool UseSortGroups { bool get() override; void set(bool value) override; }
@@ -79,7 +88,6 @@ public:
 	virtual property bool IsOpened { bool get() { return Index > 0; } }
 	virtual property bool IsPushed { bool get() { return _Pushed != nullptr; } }
 	virtual property Explorer^ MyExplorer { Explorer^ get() { return _MyExplorer; } }
-	virtual property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
 	virtual property Panel^ TargetPanel { Panel^ get(); }
 	virtual property PanelHighlighting Highlighting { PanelHighlighting get(); void set(PanelHighlighting value); }
 	virtual PanelPlan^ GetPlan(PanelViewMode mode);
@@ -93,6 +101,7 @@ public:
 	virtual void SetPlan(PanelViewMode mode, PanelPlan^ plan);
 internal:
 	Panel2(Panel^ panel, Explorer^ explorer);
+	property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
 	property bool HasDots { bool get(); }
 	property PanelSortMode StartSortMode { PanelSortMode get(); void set(PanelSortMode value); }
 	void AssertOpen();
@@ -109,8 +118,6 @@ internal:
 	array<int>^ _postSelected;
 	ShelveInfoNative^ _ActiveInfo;
 private:
-	IList<FarFile^>^ _Files;
-private:
 	int Flags();
 	void CreateInfoLines();
 	void CreateModes();
@@ -119,6 +126,7 @@ private:
 	void CreateKeyBars(KeyBarTitles& m);
 	static void DeleteKeyBars(const KeyBarTitles& m);
 private:
+	IList<FarFile^>^ _Files;
 	Explorer^ _MyExplorer;
 	OpenPanelInfo* m;
 	bool _FarStartSortOrder;

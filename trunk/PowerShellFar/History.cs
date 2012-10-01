@@ -62,7 +62,7 @@ namespace PowerShellFar
 
 			// copy lines
 			var list = new List<string>(lines);
-			
+
 			// remove dupes
 			var hash = new HashSet<string>();
 			for (int i = lines.Length; --i >= 0; )
@@ -71,7 +71,7 @@ namespace PowerShellFar
 				if (!hash.Add(line))
 					list.RemoveAt(i);
 			}
-			
+
 			// remove lines above the limit
 			int removeCount = list.Count - Settings.Default.MaximumHistoryCount;
 			if (removeCount > 0)
@@ -80,7 +80,7 @@ namespace PowerShellFar
 			// return the same lines
 			if (lines.Length == list.Count)
 				return lines;
-			
+
 			// write and return new lines
 			lines = list.ToArray();
 			WriteLines(lines);
@@ -111,7 +111,7 @@ namespace PowerShellFar
 					{
 						Far.Net.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
 						if (!m.Alternative)
-							Far.Net.PostMacro("Enter", true, false);
+							Far.Net.PostMacro("Keys('Enter')", true, false);
 						return;
 					}
 				case WindowKind.Editor:

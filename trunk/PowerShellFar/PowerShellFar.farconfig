@@ -9,7 +9,7 @@ DO NOT USE THIS AS IT IS, USE YOUR OWN MACROS, THIS IS ONLY AN EXAMPLE
 
 <macro area="Shell" key="Space" description="PSF: Easy prefix" flags="EmptyCommandLine|DisableOutput">
 <text>
-<![CDATA[> : Space]]>
+<![CDATA[Keys("> : Space")]]>
 </text>
 </macro>
 
@@ -22,14 +22,14 @@ DO NOT USE THIS AS IT IS, USE YOUR OWN MACROS, THIS IS ONLY AN EXAMPLE
 <macro area="Common" key="CtrlSpace" description="PSF: Complete-Word-.ps1">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion)
-	Esc
-$End
-$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then
+	Keys("Esc")
+end
+if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Complete-Word-.ps1")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>
@@ -60,7 +60,7 @@ $End
 
 <macro area="Shell" key="F10" description="PSF: Quit Far">
 <text>
-<![CDATA[$If (Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Far.Quit()")) $Else F10 $End]]>
+<![CDATA[if Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Far.Quit()") then else Keys("F10") end]]>
 </text>
 </macro>
 
@@ -72,7 +72,7 @@ $End
 
 <macro area="Shell" key="CtrlShiftF12" description="PSF: Standard folder history">
 <text>
-<![CDATA[AltF12]]>
+<![CDATA[Keys("AltF12")]]>
 </text>
 </macro>
 

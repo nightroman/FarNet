@@ -11,6 +11,29 @@ Copyright (c) 2005-2012 FarNet Team
 
 namespace FarNet
 {;
+static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPanelItemFreeInfo* /*info*/);
+ref class FileStore
+{
+internal:
+	static int _nextFileKey;
+	static Dictionary<int, ExplorerFilePair^> _files;
+	static void StoreFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file)
+	{
+		++_nextFileKey;
+		_files.Add(_nextFileKey, gcnew ExplorerFilePair(explorer, file));
+		panelItem.UserData.Data = (void*)_nextFileKey;
+		panelItem.UserData.FreeData = FarPanelItemFreeCallback;
+	}
+};
+static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPanelItemFreeInfo* /*info*/)
+{
+	FileStore::_files.Remove((int)userData);
+}
+void Panel2::StoreFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file)
+{
+	FileStore::StoreFile(panelItem, explorer, file);
+}
+
 Panel2::Panel2(Panel^ panel, Explorer^ explorer)
 : Panel1(true)
 , Host(panel)

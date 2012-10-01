@@ -1,5 +1,13 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.28 =
+
+Adapted for the new macro engine in Far 3.0.2853. Modules using hardcoded
+macros should be adapted, as well as other used macros.
+
+First step to native search in FarNet panels. It is not yet working, some more
+features are needed in Far for setting directories "by items".
+
 = 5.0.27 =
 
 Adapted for API changes in Far 3.0.2799-2834. Most of modules work fine without

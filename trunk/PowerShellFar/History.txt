@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.28 =
+
+Adapted for the new macro engine in Far 3.0.2853. Scripts using hardcoded
+macros (e.g. stepper scripts) should be adapted, as well as other used macros.
+
 = 5.0.27 =
 
 Panel-Mongo-.ps1
