@@ -56,8 +56,9 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 	info->StructSize = sizeof(*info);
 
 	Panel2^ pp = _panels[(int)info->hPanel];
+	Explorer^ explorer = pp->Host->Explorer;
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
-	const bool canExploreLocation = pp->Host->Explorer->CanExploreLocation;
+	const bool canExploreLocation = explorer->CanExploreLocation;
 
 	Log::Source->TraceInformation("GetFindDataW Mode='{0}' Location='{1}'", mode, pp->CurrentLocation);
 
@@ -72,10 +73,9 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 			return 1;
 		}
 
-		// the Find mode
+		// the Find mode //???????
 		const bool isFind = 0 != (info->OpMode & OPM_FIND);
-		if (isFind && !canExploreLocation)
-			return 0;
+		const bool isSpecialFind = isFind && !canExploreLocation;
 
 		// get the files
 		if (!pp->_skipUpdateFiles)
@@ -147,7 +147,10 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 			}
 
 			// other
-			p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex);
+			if (isSpecialFind) //???????
+				Panel2::StoreFile(p, explorer, file);
+			else
+				p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex);
 			p.FileAttributes = (DWORD)file->Attributes;
 			p.FileSize = file->Length;
 			p.CreationTime = DateTimeToFileTime(file->CreationTime);
@@ -231,7 +234,7 @@ int Panel0::AsSetDirectory(const SetDirectoryInfo* info)
 	const bool canExploreLocation = pp->Host->Explorer->CanExploreLocation;
 
 	//! Silent but not Find is possible on CtrlQ scan
-	if (!canExploreLocation && 0 != (info->OpMode & (OPM_FIND | OPM_SILENT)))
+	if (!canExploreLocation && 0 != (info->OpMode & (OPM_FIND | OPM_SILENT))) //???????
 		return 0;
 
 	_inAsSetDirectory = true;

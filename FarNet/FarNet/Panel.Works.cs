@@ -18,9 +18,6 @@ namespace FarNet.Works
 		void Navigate(Explorer explorer);
 		#region Properties
 		///
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		IList<FarFile> Files { get; set; }
-		///
 		bool IsOpened { get; }
 		///
 		bool IsPushed { get; }

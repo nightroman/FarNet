@@ -27,13 +27,13 @@
 <macro area="Common" key="CtrlBS" description="RightControl: delete left">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-left")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>
@@ -41,13 +41,13 @@ $End
 <macro area="Common" key="CtrlDel" description="RightControl: delete right">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-right")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>
@@ -55,13 +55,13 @@ $End
 <macro area="Common" key="CtrlLeft" description="RightControl: step left">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>
@@ -69,13 +69,13 @@ $End
 <macro area="Common" key="CtrlRight" description="RightControl: step right">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-right")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>
@@ -83,13 +83,13 @@ $End
 <macro area="Common" key="CtrlShiftLeft" description="RightControl: select left">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-left")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>
@@ -97,13 +97,13 @@ $End
 <macro area="Common" key="CtrlShiftRight" description="RightControl: select right">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-right")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>
@@ -111,13 +111,13 @@ $End
 <macro area="Common" key="ShiftLeft" description="RightControl: workaround left">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>
@@ -125,13 +125,13 @@ $End
 <macro area="Common" key="ShiftRight" description="RightControl: workaround right">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
+if Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
 	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
-$Else
-	$AKey
-$End
+else
+	Keys("AKey")
+end
 ]]>
 </text>
 </macro>

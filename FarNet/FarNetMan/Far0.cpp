@@ -579,7 +579,7 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 // Plugin.Menu is not a replacement for F11, it is less predictable on posted keys and async jobs.
 void Far0::PostSelf()
 {
-	Far::Net->PostMacro("F11 Menu.Select(\"FarNet\", 2) Enter");
+	Far::Net->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')");
 }
 
 // When PostSteps is better than PostJob: PostSteps calls from OpenW(),

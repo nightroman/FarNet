@@ -13,13 +13,13 @@
 <macro area="Common" key="CtrlShiftSpace" flags="DisableOutput" description="RightWords: Correct word">
 <text>
 <![CDATA[
-$If (Dialog.AutoCompletion || Shell.AutoCompletion) Esc $End
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
-$If (Editor || Dialog || ((Shell || Info || QView || Tree) && !CmdLine.Empty))
-	$If (Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9"))
-		1
-	$End
-$End
+if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
+	if Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9") then
+		Keys("1")
+	end
+end
 ]]>
 </text>
 </macro>
@@ -27,9 +27,9 @@ $End
 <macro area="Editor" key="CtrlShiftF7" flags="DisableOutput" description="RightWords: Correct text">
 <text>
 <![CDATA[
-$If (Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9"))
-	2
-$End
+if Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9") then
+	Keys("2")
+end
 ]]>
 </text>
 </macro>
@@ -37,9 +37,9 @@ $End
 <macro area="Editor" key="CtrlShiftH" flags="DisableOutput" description="RightWords: Highlighting">
 <text>
 <![CDATA[
-$If (0 == Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "10435532-9BB3-487B-A045-B0E6ECAAB6BC")) $Exit $End
-$If (0 == Menu.Select("Drawers")) $Exit $End Enter
-$If (0 == Menu.Select("Spelling mistakes")) $Exit $End Enter
+if 0 == Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "10435532-9BB3-487B-A045-B0E6ECAAB6BC") then exit() end
+if 0 == Menu.Select("Drawers") then exit() end Keys("Enter")
+if 0 == Menu.Select("Spelling mistakes") then exit() end Keys("Enter")
 ]]>
 </text>
 </macro>

@@ -76,7 +76,7 @@ void Panel1::IsVisible::set(bool value)
 	if (old == value)
 		return;
 
-	String^ macro = pi.PanelRect.left == 0 ? "CtrlF1" : "CtrlF2";
+	String^ macro = pi.PanelRect.left == 0 ? "Keys('CtrlF1')" : "Keys('CtrlF2')";
 	Far::Net->PostMacro(macro);
 }
 
