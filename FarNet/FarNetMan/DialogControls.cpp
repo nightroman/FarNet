@@ -667,7 +667,7 @@ FarItem^ FarBaseList::Add(String^ text)
 void FarBaseList::InitFarListItem(FarListItem& i2, FarItem^ i1)
 {
 	i2.Text = NewChars(i1->Text);
-	i2.Flags = i2.Reserved[0] = i2.Reserved[1] = i2.Reserved[2] = 0;
+	i2.Flags = 0;
 	if (i1->Checked)
 		i2.Flags |= LIF_CHECKED;
 	if (i1->Disabled)

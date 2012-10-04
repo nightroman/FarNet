@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.29 =
+
+* Fixed a bug in dialog lists.
+* Amended the required Far version.
+
 = 5.0.28 =
 
 Adapted for the new macro engine in Far 3.0.2853. Modules using hardcoded
