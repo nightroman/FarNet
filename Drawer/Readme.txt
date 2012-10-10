@@ -2,8 +2,6 @@
 Module   : FarNet.Drawer
 Release  : 2012-10-10
 Category : Editor
-Author   : Roman Kuzmin
-E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
 
 
