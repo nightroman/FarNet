@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="FixedColumnDrawer.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="CurrentWordDrawer.cs" />
   </ItemGroup>
