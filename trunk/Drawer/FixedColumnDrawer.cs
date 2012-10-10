@@ -5,7 +5,6 @@ Copyright (c) 2012 Roman Kuzmin
 */
 
 using System;
-using System.Text.RegularExpressions;
 
 namespace FarNet.Drawer
 {
