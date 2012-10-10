@@ -2266,9 +2266,11 @@ of 0-2 colons, a command prefix, a colon, and a command. See the FarNet manual
 for the roles of leading colons.
 
 ---
-`[F10]` in the *Panels* area: safe exit with PowerShellFar background jobs check:
+`[F10]` in the *Panels* area: safe exit without killing running PowerShellFar
+background jobs. Standard PowerShell background jobs are not checked. If there
+are jobs then the job menu is shown.
 
-    $If (Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">: $Far.Quit()")) $Else F10 $End
+    if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Far.Quit()") then Keys("F10") end
 
 ---
 This macro in the *Common* area calls the *Menu-Favorites-.ps1*. The leading

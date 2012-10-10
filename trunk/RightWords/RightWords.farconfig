@@ -37,7 +37,7 @@ end
 <macro area="Editor" key="CtrlShiftH" flags="DisableOutput" description="RightWords: Highlighting">
 <text>
 <![CDATA[
-if 0 == Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "10435532-9BB3-487B-A045-B0E6ECAAB6BC") then exit() end
+if not Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "10435532-9BB3-487B-A045-B0E6ECAAB6BC") then exit() end
 if 0 == Menu.Select("Drawers") then exit() end Keys("Enter")
 if 0 == Menu.Select("Spelling mistakes") then exit() end Keys("Enter")
 ]]>
