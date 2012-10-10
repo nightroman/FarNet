@@ -2,11 +2,13 @@
 
 == Introduction ==
 
-The module provides editor color drawers.
+The module provides editor color drawers:
 
-The only available drawer is "Current word". It highlights occurrences of the
-current word in the editor.
+ * "Current word" - It highlights occurrences of the current word in the editor.
+ * "Fixed column" - It highlights the fixed column (80th by default).
+
+See [http://farnet.googlecode.com/svn/trunk/Drawer/Readme.txt Readme.txt] for the details.
 
 ----
- * [http://forum.farmanager.com/viewtopic.php?f=11&t=6951 News]
+ * [http://forum.farmanager.com/viewtopic.php?f=11&t=6951 Announcements]
  * [http://forum.farmanager.com/viewtopic.php?f=5&t=6952 Russian forum]
