@@ -26,7 +26,6 @@ namespace FarDescription
 	/// </summary>
 	public static class CodeMethods
 	{
-
 		/// <summary>
 		/// Gets Far description for a FS item.
 		/// </summary>
@@ -41,7 +40,6 @@ namespace FarDescription
 			else
 				return string.Empty;
 		}
-
 		/// <summary>
 		/// Sets Far description for a FS item.
 		/// </summary>
@@ -54,7 +52,6 @@ namespace FarDescription
 			if (info != null)
 				Description.Set(info.FullName, value);
 		}
-
 		/// <summary>
 		/// Moves a file or directory and its Far description.
 		/// </summary>
@@ -84,7 +81,6 @@ namespace FarDescription
 			Description.Set(info.FullName, desc);
 			return null;
 		}
-
 		/// <summary>
 		/// Copies a file and its Far description.
 		/// </summary>
@@ -105,7 +101,6 @@ namespace FarDescription
 			Description.Set(file2.FullName, Description.Get(file1.FullName));
 			return file2;
 		}
-
 		/// <summary>
 		/// Deletes a file and its Far description.
 		/// </summary>

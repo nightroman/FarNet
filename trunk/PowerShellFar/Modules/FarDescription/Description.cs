@@ -6,80 +6,35 @@ Copyright (c) 2006-2012 Roman Kuzmin
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
-using Microsoft.Win32;
 
 namespace FarDescription
 {
+	/// <summary>
+	/// Global settings.
+	/// </summary>
+	public static class Settings
+	{
+		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
+		public static string[] ListNames { get; set; }
+		public static bool AnsiByDefault { get; set; }
+		public static bool SaveInUtf { get; set; }
+		public static bool SetHidden { get; set; }
+	}
 	/// <summary>
 	/// Far description tools for internal use.
 	/// </summary>
 	static class Description
 	{
-		// Default description file name
-		const string DefaultDescriptionName = "Descript.ion";
-
-		// Options: registry key name
-		static string RegKeyName
-		{
-			get
-			{
-				return Registry.CurrentUser.Name + "\\Software\\Far2\\Descriptions";
-			}
-		}
-
-		// Description file names from registry, at least one.
-		static string[] DescriptionNames { get { Init(); return _DescriptionNames; } }
-		static string[] _DescriptionNames;
-
-		static bool IsAnsiByDefault
-		{
-			get
-			{
-				return 0 != (int)Registry.GetValue(RegKeyName, "AnsiByDefault", 0);
-			}
-		}
-
-		static bool IsSaveInUtf
-		{
-			get
-			{
-				return 0 != (int)Registry.GetValue(RegKeyName, "SaveInUtf", 0);
-			}
-		}
-
-		static bool IsSetHidden
-		{
-			get
-			{
-				return 0 != (int)Registry.GetValue(RegKeyName, "SetHidden", 0);
-			}
-		}
-
 		// Directory description data cache, use locked!
 		static readonly WeakReference WeakCache = new WeakReference(null);
-
-		// Gets settings once
-		internal static void Init()
-		{
-			if (_DescriptionNames != null)
-				return;
-
-			// ListNames
-			string csv = (string)Registry.GetValue(RegKeyName, "ListNames", DefaultDescriptionName);
-			string[] names = csv.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-			if (names.Length == 0)
-				_DescriptionNames = new string[] { DefaultDescriptionName };
-			else
-				_DescriptionNames = names;
-		}
-
 		// Gets full path of existing or default description file for a directory.
 		internal static string GetDescriptionFile(string directory, out bool exists)
 		{
 			directory = Path.GetFullPath(directory);
-			foreach (string name in DescriptionNames)
+			foreach (string name in Settings.ListNames)
 			{
 				string path = Path.Combine(directory, name);
 				if (File.Exists(path))
@@ -89,9 +44,8 @@ namespace FarDescription
 				}
 			}
 			exists = false;
-			return Path.Combine(directory, DescriptionNames[0]);
+			return Path.Combine(directory, Settings.ListNames[0]);
 		}
-
 		// Updates the description file and removes it if it is empty.
 		internal static void UpdateDescriptionFile(string descriptionFile)
 		{
@@ -107,7 +61,6 @@ namespace FarDescription
 			}
 			Export(descriptionFile, data);
 		}
-
 		static Dictionary<string, string> Import(string descriptionFile)
 		{
 			var r = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -115,7 +68,7 @@ namespace FarDescription
 				return r;
 
 			// preamble is recognized anyway, we just set a fallback encoding
-			Encoding encoding = IsAnsiByDefault ? Encoding.Default : Encoding.GetEncoding(NativeMethods.GetOEMCP());
+			Encoding encoding = Settings.AnsiByDefault ? Encoding.Default : Encoding.GetEncoding(NativeMethods.GetOEMCP());
 			using (StreamReader sr = new StreamReader(descriptionFile, encoding, true))
 			{
 				string line;
@@ -151,7 +104,6 @@ namespace FarDescription
 
 			return r;
 		}
-
 		// Gets Far description for a FS item.
 		internal static string Get(string path)
 		{
@@ -182,7 +134,6 @@ namespace FarDescription
 				return cache.Map.TryGetValue(Path.GetFileName(path), out value) ? value : string.Empty;
 			}
 		}
-
 		// Sets Far description for a FS item.
 		internal static void Set(string path, string value)
 		{
@@ -205,7 +156,6 @@ namespace FarDescription
 				Export(descriptionFile, map);
 			}
 		}
-
 		//! *** CHANGE CAREFULLY AND TEST WELL
 		//! It may fail if another process operates on the file, too.
 		//! But it seems to be rare and massive data loss is unlikely.
@@ -232,9 +182,9 @@ namespace FarDescription
 
 				// encoding
 				Encoding encoding;
-				if (IsSaveInUtf)
+				if (Settings.SaveInUtf)
 					encoding = Encoding.UTF8;
-				else if (IsAnsiByDefault)
+				else if (Settings.AnsiByDefault)
 					encoding = Encoding.Default;
 				else
 					encoding = Encoding.GetEncoding(NativeMethods.GetOEMCP());
@@ -269,13 +219,12 @@ namespace FarDescription
 				if (existed)
 					File.SetAttributes(descriptionFile, attr | FileAttributes.Archive);
 				// add hidden attribute for a new file
-				else if (IsSetHidden)
+				else if (Settings.SetHidden)
 					File.SetAttributes(descriptionFile, File.GetAttributes(descriptionFile) | FileAttributes.Hidden);
 
 				// cache
 				WeakCache.Target = new DescriptionMap(Path.GetDirectoryName(descriptionFile), File.GetLastWriteTime(descriptionFile), map);
 			}
 		}
-
 	}
 }

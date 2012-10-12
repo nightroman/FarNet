@@ -1,4 +1,9 @@
 
+[FarDescription.Settings]::ListNames = 'Descript.ion', 'Files.bbs'
+[FarDescription.Settings]::AnsiByDefault = $false
+[FarDescription.Settings]::SaveInUTF = $true
+[FarDescription.Settings]::SetHidden = $true
+
 <#
 .Synopsis
 	Updates Far descriptions of scripts by synopses.
@@ -40,4 +45,4 @@ function Update-FarDescriptionSynopsis
 	}
 }
 
-Export-ModuleMember -Function *
+Export-ModuleMember -Function * -Variable FarDescription*

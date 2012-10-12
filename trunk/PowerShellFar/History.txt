@@ -1,6 +1,15 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.29 =
+
+Module FarDescription does not depend on Far2 registry settings. The settings
+are defined in `FarDescription.psm1`. See `about_FarDescription.help.txt` for
+details.
+
+Script `Update-FarNet.ps1`
+* Removed check for running Far instances. It was troublesome in some cases.
+
 = 5.0.28 =
 
 Adapted for the new macro engine in Far 3.0.2853. Scripts using hardcoded
