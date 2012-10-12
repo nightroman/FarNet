@@ -7,12 +7,7 @@
 .Description
 	Command 7z has to be available, e.g. 7z.exe in the system path.
 
-	If Far Manager is running the script prompts you to exit running instances
-	and waits until this is done. That is why you should not run the script IN
-	Far Manager. On the other hand it is still useful to start the script FROM
-	Far Manager (using 'start' command or [ShiftEnter] in the command line), in
-	this case you do not have to set the parameter -FARHOME. If -FARHOME is UNC
-	then that machine has to be configured for PS remoting.
+	Ensure that Far Manager being updated has no running instances.
 
 	-ArchiveHome is the destination for downloaded archives. Old files are not
 	deleted. Keep the last downloaded archives there, the script downloads only
@@ -24,6 +19,25 @@
 
 	<Archive>\Install.txt files show what is updated from <Archive>.
 
+.Parameter FARHOME
+		Far directory; needed if %FARHOME% is not defined and its location is
+		not standard.
+
+.Parameter Platform
+		Target platform: x86 or x64. Default: depends on the current process.
+
+.Parameter ArchiveHome
+		Downloaded archives directory. Default: $HOME.
+
+.Parameter ArchiveNames
+		Archive names. Default: latest from the project site.
+
+.Parameter Force
+		Tells to update from already downloaded archives.
+
+.Parameter All
+		Tells to update all.
+
 .Example
 	# This command starts update in a new console and keeps it opened to view
 	# the output. Then it tells Far to exit because update will wait for this.
@@ -33,31 +47,17 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param
 (
-	[string]
-	[ValidateScript({[System.IO.Directory]::Exists($_)})]
-	# Far directory; needed if %FARHOME% is not defined and its location is not standard.
-	$FARHOME = $(if ($env:FARHOME) {$env:FARHOME} else {"C:\Program Files\Far"})
-	,
-	[string]
-	[ValidateSet('x86', 'x64')]
-	# Target platform: x86 or x64. Default: depends on the current process.
-	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'})
-	,
-	[string]
-	[ValidateScript({[System.IO.Directory]::Exists($_)})]
-	# Downloaded archives directory. Default: $HOME.
-	$ArchiveHome = $HOME
-	,
+	[string][ValidateScript({[System.IO.Directory]::Exists($_)})]
+	$FARHOME = $(if ($env:FARHOME) {$env:FARHOME} else {"C:\Program Files\Far"}),
+	[string][ValidateSet('x86', 'x64')]
+	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'}),
+	[string][ValidateScript({[System.IO.Directory]::Exists($_)})]
+	$ArchiveHome = $HOME,
 	[string[]]
-	# Archive names. Default: latest from the site.
-	$ArchiveNames
-	,
+	$ArchiveNames,
 	[switch]
-	# Tells to update from already downloaded archives.
-	$Force
-	,
+	$Force,
 	[switch]
-	# Tells to update all.
 	$All
 )
 
@@ -102,19 +102,6 @@ foreach($name in $ArchiveNames) {
 if (!$Force -and $done -eq 0) {
 	Write-Host -ForegroundColor Cyan "All the archives already exist, use -Force to update from them."
 	return
-}
-
-### exit running; use remoting for UNC
-if (Test-Path "$FARHOME\Far.exe") {
-	$uri = [System.Uri]$FARHOME
-	if ($uri.IsUnc) {
-		Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit: $($uri.Host)..."
-		Invoke-Command -ComputerName $uri.Host { Wait-Process Far -ErrorAction 0 }
-	}
-	else {
-		Write-Host -ForegroundColor Cyan "Waiting for Far Manager exit..."
-		Wait-Process Far -ErrorAction 0
-	}
 }
 
 ### extract from archives

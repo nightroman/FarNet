@@ -1,49 +1,59 @@
 ﻿TOPIC
-	about_FarDescription
+    about_FarDescription
 
 SHORT DESCRIPTION
-	Far Manager file description tools.
-	Author: Roman Kuzmin
+    Far Manager file description tools.
+    Author: Roman Kuzmin
 
 LONG DESCRIPTION
-	Though this module is designed for Far Manager it does not depend on Far or
-	FarNet, it works in any PowerShell host (e.g. in Console or ISE hosts).
+    Though this module is designed for Far Manager it does not depend on it or
+    even on FarNet, it works in any PowerShell host (e.g. in Console or ISE).
 
-	It still uses Far Manager description settings from the registry:
-	HKEY_CURRENT_USER\Software\Far2\Descriptions
+MODULE SETTINGS
+    The module settings are similar to Far Manager description settings but
+    they are defined separately in the module script `FarDescription.psm1`:
+
+        [FarDescription.Settings]::ListNames = 'Descript.ion', 'Files.bbs'
+        [FarDescription.Settings]::AnsiByDefault = $false
+        [FarDescription.Settings]::SaveInUTF = $true
+        [FarDescription.Settings]::SetHidden = $true
+
+    Changes in the module script are not recommended. In order to change these
+    settings consider to use a wrapper script that imports this module and then
+    sets the settings.
 
 EXPORTED COMMANDS
-	-- Update-FarDescription (cmdlet)
-	-- Update-FarDescriptionSynopsis (function)
+    -- Update-FarDescription (cmdlet)
+    -- Update-FarDescriptionSynopsis (function)
 
 EXTENDED TYPES
-	The module adds a few members to the [System.IO.FileSystemInfo] items
-	(files or directories, items of the FileSystem provider).
+    The module adds a few members to the [System.IO.FileSystemInfo] items
+    (files or directories, items of the FileSystem provider).
 
-	=================================================================
+    =================================================================
 
-	[System.IO.FileSystemInfo]
-	(files and directories)
+    [System.IO.FileSystemInfo]
+    (files and directories)
 
-	FarDescription property
-		Gets or sets the item description. Description is deleted if it is
-		empty. Empty description files are also deleted.
+    FarDescription property
+        Gets or sets the item description. Description is deleted if it is
+        empty. Empty description files are also deleted.
 
-	FarMoveTo() method
-		It calls the .NET method MoveTo() and then moves the description.
+    FarMoveTo() method
+        It calls the .NET method MoveTo() and then moves the description.
 
 
-	=================================================================
+    =================================================================
 
-	[System.IO.FileInfo]
-	(files only)
+    [System.IO.FileInfo]
+    (files only)
 
-	FarCopyTo() method
-		It calls the .NET method CopyTo() and then copies the description.
+    FarCopyTo() method
+        It calls the .NET method CopyTo() and then copies the description.
 
-	FarDelete() method
-		It calls the .NET method Delete() and then deletes the description.
+    FarDelete() method
+        It calls the .NET method Delete() and then deletes the description.
 
 SEE ALSO
-	Rename-FarFile-.ps1 : renames a file and updates its description.
-	Test-Descript-.ps1 : this script shows how to use all the features.
+    Rename-FarFile-.ps1 : renames a file and updates its description.
+    Test-Descript-.ps1 : this script shows how to use all the features.
