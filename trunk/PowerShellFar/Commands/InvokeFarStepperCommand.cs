@@ -4,12 +4,13 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2012 Roman Kuzmin
 */
 
+using System;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 
 namespace PowerShellFar.Commands
 {
-	sealed class InvokeFarStepperCommand : BaseCmdlet
+	sealed class InvokeFarStepperCommand : BaseCmdlet, IDisposable
 	{
 		[Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
 		[Alias("PSPath", "FileName")]
@@ -17,6 +18,10 @@ namespace PowerShellFar.Commands
 		[Parameter()]
 		public SwitchParameter Ask { get; set; }
 		readonly Stepper _stepper = new Stepper();
+		public void Dispose()
+		{
+			_stepper.Dispose();
+		}
 		protected override void ProcessRecord()
 		{
 			_stepper.AddFile(Path);

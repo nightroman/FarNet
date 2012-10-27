@@ -73,11 +73,32 @@ namespace PowerShellFar
 			// invoke
 			try
 			{
-				// call
+				// call expansion
 				Collection<PSObject> words = _TabExpansion.Invoke(line, lastWord);
 
+				// standard results
+				if (editLine.WindowKind != WindowKind.Editor || lastWord[0] != '$')
+				{
+					// expand
+					ExpandText(editLine, text, line, lastWord, words);
+					return;
+				}
+
+				// variables from the current editor
+				var variables = new SortedDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+				var reVar = new Regex(Regex.Escape(lastWord) + @"\w+", RegexOptions.IgnoreCase);
+				foreach (var line1 in Far.Net.Editor.Lines)
+				{
+					foreach (Match match1 in reVar.Matches(line1.Text))
+						variables[match1.Value] = null;
+				}
+
+				// join variables
+				foreach (var ps in words)
+					variables[ps.ToString()] = null;
+
 				// expand
-				ExpandText(editLine, text, line, lastWord, words);
+				ExpandText(editLine, text, line, lastWord, variables.Keys.ToList());
 			}
 			catch (RuntimeException ex)
 			{
@@ -169,7 +190,7 @@ namespace PowerShellFar
 				// case: editor
 				if (Far.Net.Window.Kind == WindowKind.Editor)
 				{
-					IEditor editor = Far.Net.Editor;
+					var editor = Far.Net.Editor;
 					if (editor.SelectionExists)
 						return editor.GetSelectedText();
 					return editor.Line.Text;
@@ -187,7 +208,7 @@ namespace PowerShellFar
 				// case: editor
 				if (Far.Net.Window.Kind == WindowKind.Editor)
 				{
-					IEditor editor = Far.Net.Editor;
+					var editor = Far.Net.Editor;
 					switch (editor.SelectionKind)
 					{
 						case PlaceKind.Column:
@@ -334,7 +355,7 @@ namespace PowerShellFar
 
 			if (wt == WindowKind.Editor)
 			{
-				IEditor editor = Far.Net.Editor;
+				var editor = Far.Net.Editor;
 				code = editor.GetSelectedText();
 				if (string.IsNullOrEmpty(code))
 					code = editor[editor.Caret.Y].Text;
