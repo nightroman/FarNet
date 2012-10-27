@@ -9,6 +9,12 @@
 	table colums are: key name, default Far action, common macro, area macro.
 	It is useful to be able to see all keys together.
 
+.Parameter Name
+		Subset of keys to be shown. Default: empty, all keys are shown.
+
+.Parameter Output
+		Output HTML file path. Default: $env:TEMP\FarKeyMap.output.htm
+
 .Example
 	# Shows all keys:
 	Show-KeyMap
@@ -20,12 +26,8 @@
 
 param
 (
-	[string[]]
-	# Subset of keys to be shown. Default: empty, all keys are shown.
-	$Name
-	,
-	# Output HTML file path. Default: $HOME\FarKeyMap.output.htm
-	$Output = "$HOME\FarKeyMap.output.htm"
+	[string[]]$Name,
+	$Output = "$env:TEMP\FarKeyMap.output.htm"
 )
 
 # HtmlEncode

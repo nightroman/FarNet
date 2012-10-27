@@ -293,8 +293,8 @@ Reason (see also $Error):
 				//! emergency
 				Entry.Unregister();
 				throw new ModuleException(@"
-The engine is not initialized due to fatal reasons and will be unloaded.
-For some known issues see 'Problems and solutions' in the FarNet manual.
+The engine is not successfully initialized and will be unloaded.
+For known issues see 'Problems and solutions' in the manual.
 ", _errorFatal);
 			}
 

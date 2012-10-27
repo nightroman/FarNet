@@ -75,6 +75,7 @@ namespace PowerShellFar
 	/// </para>
 	/// </remarks>
 	/// <example>Test-Stepper-.ps1, Test-Stepper+.ps1, Test-Dialog+.ps1.</example>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public sealed class Stepper : IEnumerator<object>, IEnumerable<object>
 	{
 		const string DataVariableName = "Data";

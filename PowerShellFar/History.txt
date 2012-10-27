@@ -1,6 +1,17 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.30 =
+
+Expansion of variables (TabExpansion) also uses variables from the current file
+(usually a script) in the editor in addition to existing session variables.
+
+Show-KeyMap.ps1
+* Default output file is $env:TEMP\FarKeyMap.output.htm
+
+Invoke-Editor-.ps1
+* Amended invocation of .ps1 files in an external console
+
 = 5.0.29 =
 
 Module FarDescription does not depend on Far2 registry settings. The settings

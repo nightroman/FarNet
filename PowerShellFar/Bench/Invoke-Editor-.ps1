@@ -43,16 +43,13 @@ $editor.Save()
 # Extension
 $ext = [IO.Path]::GetExtension($path)
 
-### Start PowerShell in extermnal window and return immediately
+### PowerShell in external window and return
 if ($ext -eq '.ps1') {
-	$env:script = $path
-	[Diagnostics.Process]::Start('powershell.exe', @"
--noexit . '$env:script'; Read-Host '[ENTER]'; `$Host.SetShouldExit(0)
-"@)
+	[Diagnostics.Process]::Start('powershell.exe', "-NoExit . '$($path.Replace("'", "''"))'")
 	return
 }
 
-# case MSBuild:
+### MSBuild
 if ($ext -like '.*proj') {
 	Start-MSBuild- $path
 	return
@@ -60,27 +57,27 @@ if ($ext -like '.*proj') {
 
 $arg = "`"$path`""
 
-# Markdown
+### Markdown
 if ('.text', '.md', '.markdown' -contains $ext) {
 	Show-Markdown-.ps1
 }
 
-# Cmd
+### Cmd
 elseif ('.bat', '.cmd' -contains $ext) {
 	cmd /c start cmd /k $arg
 }
 
-# Perl
+### Perl
 elseif ('.pl' -eq $ext) {
 	cmd /c start cmd /k perl $arg
 }
 
-# Makefile
+### Makefile
 elseif ('.mak' -eq $ext -or [IO.Path]::GetFileName($path) -eq 'makefile') {
 	cmd /c start cmd /k nmake /f $arg /nologo
 }
 
-# Others
+### Others
 else {
 	Invoke-Item -LiteralPath $path
 }
