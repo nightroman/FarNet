@@ -55,7 +55,7 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 {
 	info->StructSize = sizeof(*info);
 
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 	Explorer^ explorer = pp->Host->Explorer;
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 	const bool canExploreLocation = explorer->CanExploreLocation;
@@ -199,7 +199,7 @@ int Panel0::AsGetFindData(GetFindDataInfo* info)
 
 void Panel0::AsFreeFindData(const FreeFindDataInfo* info)
 {
-	Panel2^ pp = _panels[(int)info->hPanel]; //???? need? can it be static managed by Address -> Data map including Panel2^
+	Panel2^ pp = HandleToPanel(info->hPanel); //???? need? can it be static managed by Address -> Data map including Panel2^
 	Log::Source->TraceInformation("FreeFindDataW Address='{0:x}' Location='{1}'", (long)info->PanelItem, pp->CurrentLocation);
 
 	for(int i = (int)info->ItemsNumber; --i >= 0;)
@@ -225,7 +225,7 @@ void Panel0::AsFreeFindData(const FreeFindDataInfo* info)
 
 int Panel0::AsSetDirectory(const SetDirectoryInfo* info)
 {
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 	String^ directory = gcnew String(info->Dir);
 
@@ -315,7 +315,7 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 {
 	info->StructSize = sizeof(*info);
 
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 
 	Log::Source->TraceInformation("GetFilesW Mode='{0}'", mode);
@@ -397,7 +397,7 @@ int Panel0::AsPutFiles(PutFilesInfo* info)
 {
 	info->StructSize = sizeof(*info);
 
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 
 	Log::Source->TraceInformation("PutFilesW Mode='{0}'", mode);
@@ -445,7 +445,7 @@ int Panel0::AsPutFiles(PutFilesInfo* info)
 //! It is called on move, too? I.e. is Move = Copy + Delete?
 int Panel0::AsDeleteFiles(const DeleteFilesInfo* info)
 {
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 	ExplorerModes mode = (ExplorerModes)info->OpMode;
 
 	Log::Source->TraceInformation("DeleteFilesW Mode='{0}'", mode);
@@ -465,9 +465,9 @@ void Panel0::AsClosePanel(const ClosePanelInfo* info)
 	Log::Source->TraceInformation("ClosePluginW");
 
 	// disconnect
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 	pp->Free();
-	_panels[(int)info->hPanel] = nullptr;
+	RemovePanel(info->hPanel);
 
 	// done for pushed
 	if (pp->_Pushed)
@@ -494,7 +494,7 @@ void Panel0::AsGetOpenPanelInfo(OpenPanelInfo* info)
 	info->StructSize = sizeof(*info);
 
 	// plugin panel
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 
 	//! pushed case
 	//?? _091015_190130 Far calls this after Close(), perhaps a bug. How: push folder tree panel.
@@ -515,7 +515,7 @@ void Panel0::AsGetOpenPanelInfo(OpenPanelInfo* info)
 static bool _reenterOnRedrawing;
 int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 {
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 	switch(info->Event)
 	{
 	case FE_BREAK:
@@ -713,7 +713,7 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 		return 0;
 
 	//! mind rare case: panel is null: closed by [AltF12] + select folder
-	Panel2^ pp = _panels[(int)info->hPanel];
+	Panel2^ pp = HandleToPanel(info->hPanel);
 	if (!pp)
 		return 0;
 

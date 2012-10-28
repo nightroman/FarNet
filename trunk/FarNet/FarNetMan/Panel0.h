@@ -41,6 +41,8 @@ internal:
 private:
 	Panel0() {}
 	static void OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ args);
+	static Panel2^ HandleToPanel(HANDLE hPanel) { return _panels[(int)hPanel]; }
+	static void RemovePanel(HANDLE hPanel) { _panels[(int)hPanel] = nullptr; }
 private:
 	// Posted [0] and opened [1..3] panels; i.e. size is 4, see AddPluginPanel().
 	static array<Panel2^>^ _panels = gcnew array<Panel2^>(cPanels);
