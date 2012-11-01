@@ -3,7 +3,6 @@ Module   : FarNet.RightWords
 Release  : 2012-02-05
 Category : Spell-checker
 Author   : Roman Kuzmin
-E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
 
 

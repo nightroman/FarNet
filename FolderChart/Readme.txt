@@ -3,7 +3,6 @@ Module   : FarNet.FolderChart
 Release  : 2012-01-05
 Category : File system
 Author   : Roman Kuzmin
-E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
 
 
