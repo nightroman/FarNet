@@ -3,7 +3,6 @@ Module   : FarNet.CopyColor
 Release  : 2012-01-09
 Category : Editors
 Author   : Roman Kuzmin
-E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
 
 

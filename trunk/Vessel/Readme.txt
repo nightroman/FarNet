@@ -3,7 +3,6 @@ Module   : FarNet.Vessel
 Release  : 2012-01-20
 Category : File history
 Author   : Roman Kuzmin
-E-mail   : nightroman@gmail.com
 Source   : http://code.google.com/p/farnet/
 
 
