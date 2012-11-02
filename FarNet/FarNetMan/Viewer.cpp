@@ -266,14 +266,14 @@ ViewerViewMode Viewer::ViewMode::get()
 	if (vi.ViewerID < 0 || vi.ViewerID != _id)
 		return ViewerViewMode::Text;
 	else
-		return (ViewerViewMode)vi.CurMode.Type;
+		return (ViewerViewMode)vi.CurMode.ViewMode;
 }
 void Viewer::ViewMode::set(ViewerViewMode value)
 {
 	AssertCurrentViewer();
 	ViewerSetMode vsm = {sizeof(vsm)};
 	vsm.Flags = 0;
-	vsm.Type = VSMT_HEX;
+	vsm.Type = VSMT_VIEWMODE;
 	vsm.iParam = (intptr_t)value;
 	Info.ViewerControl(_id, VCTL_SETMODE, 0, &vsm);
 }
