@@ -1,6 +1,18 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.31 =
+
+Read-Host
+* The input dialog supports multi-line prompts.
+
+Panel-Job-.ps1
+* [Enter] opens a menu with the commands: Suspend, Resume, Stop, Remove.
+* In PS v3 workflow and scheduled jobs are supported. See script comments.
+
+Panel-BitsTransfer-.ps1
+* Fixed the [Enter] menu.
+
 = 5.0.30 =
 
 Expansion of variables (TabExpansion) also uses variables from the current file
