@@ -4,8 +4,8 @@ PowerShellFar module for Far Manager
 Copyright (c) 2006-2012 Roman Kuzmin
 */
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 using FarNet;
@@ -72,9 +72,26 @@ namespace PowerShellFar.UI
 		static public Dictionary<string, PSObject> Prompt(string caption, string message, ICollection<FieldDescription> descriptions)
 		{
 			var r = new Dictionary<string, PSObject>();
-			PromptDialog ui = new PromptDialog(caption, message, descriptions);
-			for (; ; )
+
+			// `Count == 1` (e.g. `Read-Host`): promts may have 2+ lines, so use another UI.
+			if (descriptions.Count == 1)
 			{
+				var prompt = descriptions.First().Name;
+				var ui = new InputBoxEx()
+				{
+					Title = caption,
+					Prompt = prompt,
+					History = Res.HistoryPrompt
+				};
+
+				if (!ui.Show())
+					return null;
+
+				r.Add(prompt, PSObject.AsPSObject(ui.Text));
+			}
+			else
+			{
+				var ui = new PromptDialog(caption, message, descriptions);
 				if (!ui.Dialog.Show())
 					return null;
 
@@ -84,8 +101,6 @@ namespace PowerShellFar.UI
 					++i;
 					r.Add(fd.Name, PSObject.AsPSObject(ui.Edit[i].Text));
 				}
-
-				break;
 			}
 
 			return r;

@@ -6,17 +6,21 @@
 
 .Description
 	The script opens a panel with PowerShell jobs and updates these data
-	periodically when idle.
+	periodically when idle. PSF module jobs are not covered by this script.
 
-	NOTE: This script operates on PS core jobs, not on PSF plugin jobs. PSF
-	jobs are often more effective for trivial tasks. But, of course, PS jobs
-	can be in use, too: they are designed for more complex tasks (remoting,
-	events, and etc.) and they basically do not depend on a host.
+	In order to show special PowerShell jobs existing outside this session
+	their modules have to be imported before opening the panel. E.g.
+
+		Import-Module PSWorkflow, PSScheduledJob
 
 	PANEL KEYS AND ACTIONS
 
 	[Enter]
-	Opens a child panel to view job properties.
+	Opens the current job menu. Commands:
+	- Stop    - Stop the running job.
+	- Suspend - Suspend the running job, if possible.
+	- Resume  - Resume the suspended job.
+	- Remove  - Remove the job.
 
 	[ShiftDel], [ShiftF8]
 	Removes all selected jobs including running.
@@ -27,6 +31,9 @@
 	[F3], [CtrlQ]
 	View the job output. Output is not discarded and can be processed later.
 	Job errors, if any, are shown in the message box separately.
+
+	[CtrlPgDn]
+	Opens the child panel with job properties.
 #>
 
 $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
@@ -61,6 +68,29 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 			$msg = $err | %{ "$_" } | Out-String
 			Show-FarMessage $msg -Caption "Job errors" -IsWarning -LeftAligned
 		}
+	}
+	### Open the job menu
+	AsOpenFile = {
+		param($0, $_)
+		$job = $_.File.Data
+		New-FarMenu -Show "Job: $($job.Name)" $(
+			if ($job.State -eq 'Running') {
+				New-FarItem 'Stop' {
+					Stop-Job -Id $job.Id -Confirm
+				}
+				New-FarItem 'Suspend' {
+					Suspend-Job -Id $job.Id -Confirm
+				}
+			}
+			if ($job.State -eq 'Suspended') {
+				New-FarItem 'Resume' {
+					Resume-Job -Id $job.Id -Confirm
+				}
+			}
+			New-FarItem 'Remove' {
+				Remove-Job -Id $job.Id -Confirm
+			}
+		)
 	}
 }
 

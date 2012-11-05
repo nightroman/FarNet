@@ -22,7 +22,7 @@ namespace PowerShellFar.UI
 
 		public bool Show()
 		{
-			var promptLines = (Prompt ?? string.Empty).Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			var promptLines = FarNet.Works.Kit.SplitLines(Prompt ?? string.Empty);
 
 			int w = Far.Net.UI.WindowSize.X - 7;
 			int h = 5 + promptLines.Length;

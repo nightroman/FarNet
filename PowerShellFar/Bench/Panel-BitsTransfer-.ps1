@@ -137,11 +137,11 @@ $Explorer = New-Object PowerShellFar.ObjectExplorer -Property @{
 			$_.Result = 'Ignore'
 		}
 	}
-	### Open a job, show the menu
+	### Open the job menu
 	AsOpenFile = {
 		param($0, $_)
 		$job = $_.File.Data
-		$menu = New-FarMenu "Job: $($job.DisplayName)" $(
+		New-FarMenu -Show "Job: $($job.DisplayName)" $(
 			if ($job.JobState -eq 'Transferred') {
 				New-FarItem 'Complete' {
 					Complete-BitsTransfer -BitsJob $job -Confirm
