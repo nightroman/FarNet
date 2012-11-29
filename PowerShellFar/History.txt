@@ -1,6 +1,16 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.32 =
+
+Improved expansion of variables in an editor from the current text.
+
+Open-TextLink-.ps1
+* Also opens Evernote links (evernote://...).
+
+Import-Panel-.ps1
+* No AI, an object panel is opened for any number of objects: 0, 1, 2+.
+
 = 5.0.31 =
 
 Read-Host
