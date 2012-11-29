@@ -74,31 +74,35 @@ namespace PowerShellFar
 			try
 			{
 				// call expansion
-				Collection<PSObject> words = _TabExpansion.Invoke(line, lastWord);
-
-				// standard results
-				if (editLine.WindowKind != WindowKind.Editor || lastWord[0] != '$')
-				{
-					// expand
-					ExpandText(editLine, text, line, lastWord, words);
-					return;
-				}
+				IList words = _TabExpansion.Invoke(line, lastWord);
 
 				// variables from the current editor
-				var variables = new SortedDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-				var reVar = new Regex(Regex.Escape(lastWord) + @"\w+", RegexOptions.IgnoreCase);
-				foreach (var line1 in Far.Net.Editor.Lines)
+				if (editLine.WindowKind == WindowKind.Editor)
 				{
-					foreach (Match match1 in reVar.Matches(line1.Text))
-						variables[match1.Value] = null;
+					var matchVar = Regex.Match(lastWord, @"^(.*[!;\(\{\|""'']*)\$(\w*)$"); //! as TabExpansion.ps1 but ends with \$(\w*)$
+					if (matchVar.Success)
+					{
+						var prefix = matchVar.Groups[1].Value;
+						var re = new Regex(@"\$" + matchVar.Groups[2].Value + @"\w+", RegexOptions.IgnoreCase);
+
+						var variables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+						foreach (var line1 in Far.Net.Editor.Lines)
+						{
+							foreach (Match match1 in re.Matches(line1.Text))
+								variables.Add(prefix + match1.Value);
+						}
+
+						// union lists
+						foreach (var x in words)
+							variables.Add(x.ToString());
+
+						// final sorted list
+						words = variables.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
+					}
 				}
 
-				// join variables
-				foreach (var ps in words)
-					variables[ps.ToString()] = null;
-
 				// expand
-				ExpandText(editLine, text, line, lastWord, variables.Keys.ToList());
+				ExpandText(editLine, text, line, lastWord, words);
 			}
 			catch (RuntimeException ex)
 			{
