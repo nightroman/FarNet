@@ -7,9 +7,8 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin 2012-05-06
-For PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
-Distributed with ColorerPack: http://code.google.com/p/farnet
+powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2012-12-01
+Designed for PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 
 Add to proto.hrc:
 
@@ -583,6 +582,12 @@ SQL syntax in here-strings after <#sql#>
 <word name="Update-Help"/>
 <word name="Wait-Job"/>
 <word name="Where-Object"/>
+<!--Workflow-->
+<word name="Checkpoint-Workflow"/>
+<word name="InlineScript"/>
+<word name="Parallel"/>
+<word name="Sequence"/>
+<word name="Suspend-Workflow"/>
 </keywords>
 </scheme>
 
@@ -693,7 +698,7 @@ SQL syntax in here-strings after <#sql#>
 
 <scheme name="parameter-list">
 	<block scheme="expression" start="/(?{Operator}=)/" end="/[,)]?=/"/>
-	<regexp match="/(?{UserVar}(?{def:Outlined}\$%vname;))/"/>
+	<regexp match="/(?{UserVar}\$%vname;)/"/>
 	<inherit scheme="type-literal"/>
 	<keywords region="Operator">
 		<symb name=","/>
@@ -963,7 +968,7 @@ SQL syntax in here-strings after <#sql#>
 	start="/(?{start}(?{Keyword}elseif))%token;?!/i" end="/(?{end}\})?#1/"/>
 
 	<block scheme="foreach"
-	start="/%s-label;(?{start}(?{Keyword}foreach))%token;?!/i" end="/(?{end}\})?#1/"/>
+	start="/%s-label;(?{start}(?{Keyword}foreach(\s+(?{Parameter}-parallel))?))%token;?!/i" end="/(?{end}\})?#1/"/>
 
 	<block scheme="for"
 	start="/%s-label;(?{start}(?{Keyword}for))%token;?!/i" end="/(?{end}\})?#1/"/>

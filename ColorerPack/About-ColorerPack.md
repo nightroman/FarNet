@@ -17,7 +17,6 @@ Far Manager editor which works somewhat similar to PowerShell console.
 
 ### Outlined regions
 
-- Parameters;
 - Functions and filters;
 - Triple-hash line comments `###`;
 - `task` entries (DSL of *Invoke-Build*, *psake*).
@@ -299,5 +298,15 @@ SQL
   foreground is inherited from the context, this seems to be more informative.
 - `xml:CData` color changed from `def:default`.
 - `c:PreprocInclude` color is VS color.
+
+***
+### 2012-12-01
+
+*powershell.hrc*
+
+- Added workflow specific keywords and basic features. There is no special
+  context, they also work outside workflows.
+- Parameters are not outlined anymore. Latest PowerShellFar provides
+  tab-expansion of script variables including parameters.
 
 ***
