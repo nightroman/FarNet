@@ -1,11 +1,9 @@
-﻿Add-Path.ps1 Adds a directory path to the current process path.
-Clear-Session.ps1 Clears PowerShell session resources.
+﻿Clear-Session.ps1 Clears PowerShell session resources.
 Complete-Word-.ps1 Completes the current word in editors.
 Connect-MSAccess-.ps1 Connects .mdb database and optionally shows tables in a panel.
 Connect-SqlCompact-.ps1 Connects .sdf database and optionally shows tables in a panel.
 Connect-SQLite-.ps1 Connects SQLite database and optionally shows tables in a panel.
 Edit-FarDescription-.ps1 Edits multiline Far descriptions in the editor.
-Format-Chart.ps1 Formats output as a table with the last chart column.
 Generate-Dialog-.ps1 Generates template code for the current dialog.
 Get-TextLink-.ps1 Gets a text link with the current editor line or selection.
 Go-Head-.ps1 Goes to the head of panel files or directories.
@@ -14,7 +12,6 @@ Go-To-.ps1 Goes to the specified file system item or a provider container
 Import-Panel-.ps1 Imports objects from files and shows them in a panel.
 Indent-Selection-.ps1 Indents selected lines in the editor.
 Invoke-Editor-.ps1 Invokes a file from the current editor.
-Invoke-Environment.ps1 Invokes a command and imports its environment variables.
 Invoke-Shortcut-.ps1 Opens a shortcut file (.lnk) in a few ways.
 Job-RemoveItem-.ps1 Job: remove the specified provider item(s).
 Menu-Favorites-.ps1 Shows Windows Favorites as a menu and invokes items.
@@ -39,7 +36,6 @@ Rename-FarFile-.ps1 Renames the current panel file or directory.
 Search-Regex-.ps1 Searches for a regex in files and work on results in a panel
 Select-Bookmark-.ps1 Shows current editor bookmarks and goes to a selected one
 Select-FarFile-.ps1 Selects panel files by the specified filter.
-Set-Console.ps1 Sets console window properties.
 Set-Selection-.ps1 Sets selected text in the editor, command line or dialog editbox.
 Show-EditorColor-.ps1 Shows color information for the current editor.
 Show-History-.ps1 Shows command, folder, or editor history.

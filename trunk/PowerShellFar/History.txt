@@ -1,6 +1,18 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.33 =
+
+Improved TabExpansion of variables in a script in the editor for variables with
+prefixes `$script:`, `$global:`, and `$private:`.
+
+Moved some not PSF scripts to https://github.com/nightroman/PowerShelf
+They are useful with or without Far and will be maintained separately.
+* Add-Path.ps1
+* Format-Chart.ps1
+* Invoke-Environment.ps1
+* Set-Console.ps1 (as Set-ConsoleSize.ps1)
+
 = 5.0.32 =
 
 Improved expansion of variables in an editor from the current text.

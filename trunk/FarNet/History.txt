@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.30 =
+
+Improved diagnostics on failed changes in a locked editor. The exception
+"Editor is locked for changes. Unlock by [CtrlL]." is thrown instead of
+"ECTL_SETSTRING failed" or silent failures in some methods.
+
 = 5.0.29 =
 
 * Fixed a bug in dialog lists.
