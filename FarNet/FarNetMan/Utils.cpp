@@ -102,19 +102,37 @@ void CopyStringToChars(String^ str, wchar_t* buffer)
 // Generic Far wrappers
 //
 
+void ThrowEditorLocked()
+{
+	if (Far::Net->Editor->IsLocked)
+		throw gcnew InvalidOperationException("Editor is locked for changes. Unlock by [CtrlL].");
+}
+
 void EditorControl_ECTL_DELETEBLOCK()
 {
-	Info.EditorControl(-1, ECTL_DELETEBLOCK, 0, 0);
+	if (Info.EditorControl(-1, ECTL_DELETEBLOCK, 0, 0))
+		return;
+
+	ThrowEditorLocked();
+	throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
 void EditorControl_ECTL_DELETECHAR()
 {
-	Info.EditorControl(-1, ECTL_DELETECHAR, 0, 0);
+	if (Info.EditorControl(-1, ECTL_DELETECHAR, 0, 0))
+		return;
+
+	ThrowEditorLocked();
+	throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
 void EditorControl_ECTL_DELETESTRING()
 {
-	Info.EditorControl(-1, ECTL_DELETESTRING, 0, 0);
+	if (Info.EditorControl(-1, ECTL_DELETESTRING, 0, 0))
+		return;
+
+	ThrowEditorLocked();
+	throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
 void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index)
@@ -127,7 +145,11 @@ void EditorControl_ECTL_GETSTRING(EditorGetString& egs, int index)
 void EditorControl_ECTL_INSERTSTRING(bool indent)
 {
 	int value = indent;
-	Info.EditorControl(-1, ECTL_INSERTSTRING, 0, &value);
+	if (Info.EditorControl(-1, ECTL_INSERTSTRING, 0, &value))
+		return;
+
+	ThrowEditorLocked();
+	throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
 }
 
 void EditorControl_ECTL_INSERTTEXT(Char text, int overtype)
@@ -137,10 +159,19 @@ void EditorControl_ECTL_INSERTTEXT(Char text, int overtype)
 
 	wchar_t buf[2] = { text, 0 };
 
-	Info.EditorControl(-1, ECTL_INSERTTEXT, 0, (wchar_t*)buf);
+	try
+	{
+		if (Info.EditorControl(-1, ECTL_INSERTTEXT, 0, (wchar_t*)buf))
+			return;
 
-	if (overtype > 0)
-		Edit_SetOvertype(true);
+		ThrowEditorLocked();
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
+	}
+	finally
+	{
+		if (overtype > 0)
+			Edit_SetOvertype(true);
+	}
 }
 
 void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype)
@@ -150,10 +181,20 @@ void EditorControl_ECTL_INSERTTEXT(String^ text, int overtype)
 
 	String^ text2 = text->Replace("\r\n", "\r")->Replace('\n', '\r');
 	PIN_NE(pin, text2);
-	Info.EditorControl(-1, ECTL_INSERTTEXT, 0, (wchar_t*)pin);
 
-	if (overtype > 0)
-		Edit_SetOvertype(true);
+	try
+	{
+		if (Info.EditorControl(-1, ECTL_INSERTTEXT, 0, (wchar_t*)pin))
+			return;
+
+		ThrowEditorLocked();
+		throw gcnew InvalidOperationException(__FUNCTION__ " failed.");
+	}
+	finally
+	{
+		if (overtype > 0)
+			Edit_SetOvertype(true);
+	}
 }
 
 //! Don't check result here.
@@ -177,8 +218,11 @@ void EditorControl_ECTL_SETPOSITION(const EditorSetPosition& esp)
 
 void EditorControl_ECTL_SETSTRING(EditorSetString& ess)
 {
-	if (!Info.EditorControl(-1, ECTL_SETSTRING, 0, &ess))
-		throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + ess.StringNumber + ". Ensure current editor and valid line number.");
+	if (Info.EditorControl(-1, ECTL_SETSTRING, 0, &ess))
+		return;
+
+	ThrowEditorLocked();
+	throw gcnew InvalidOperationException(__FUNCTION__ " failed with line index: " + ess.StringNumber + ". Ensure current editor and valid line number.");
 }
 
 bool IsCurrentViewer()

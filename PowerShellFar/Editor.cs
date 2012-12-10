@@ -79,17 +79,27 @@ namespace PowerShellFar
 				// variables from the current editor
 				if (editLine.WindowKind == WindowKind.Editor)
 				{
-					var matchVar = Regex.Match(lastWord, @"^(.*[!;\(\{\|""'']*)\$(\w*)$"); //! as TabExpansion.ps1 but ends with \$(\w*)$
+					//! as TabExpansion.ps1 but ends with \$(\w*)$
+					var matchVar = Regex.Match(lastWord, @"^(.*[!;\(\{\|""'']*)\$(global:|script:|private:)?(\w*)$", RegexOptions.IgnoreCase);
 					if (matchVar.Success)
 					{
-						var prefix = matchVar.Groups[1].Value;
-						var re = new Regex(@"\$" + matchVar.Groups[2].Value + @"\w+", RegexOptions.IgnoreCase);
+						var start = matchVar.Groups[1].Value;
+						var prefix = matchVar.Groups[2].Value;
+						var re = new Regex(@"\$(global:|script:|private:)?(" + prefix + matchVar.Groups[3].Value + @"\w+:?)", RegexOptions.IgnoreCase);
 
 						var variables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 						foreach (var line1 in Far.Net.Editor.Lines)
 						{
-							foreach (Match match1 in re.Matches(line1.Text))
-								variables.Add(prefix + match1.Value);
+							foreach (Match m in re.Matches(line1.Text))
+							{
+								var all = m.Value;
+								if (all[all.Length - 1] != ':')
+								{
+									variables.Add(start + all);
+									if (prefix.Length == 0 && m.Groups[1].Value.Length > 0)
+										variables.Add(start + "$" + m.Groups[2].Value);
+								}
+							}
 						}
 
 						// union lists

@@ -5,13 +5,16 @@
 	Author: Roman Kuzmin
 
 .Description
+	Requires:
+	- Format-Chart.ps1 https://github.com/nightroman/PowerShelf
+
 	The script shows some features of Watch-Output-.ps1
 	- combined output of several commands;
 	- output of external console program;
 	- work with long and many lines.
 
 	Just invoke the test and watch changes in the editor. Then try to scroll
-	horisontally (test long lines) and vertically (test many lines).
+	horizontally (test long lines) and vertically (test many lines).
 
 .Link
 	Watch-Output-.ps1
@@ -27,8 +30,7 @@ Watch-Output- -Title "EXAMPLE: COMBINED OUTPUT" {
 	"Managed mem  : $([int]([gc]::GetTotalMemory($false) / 1Mb)) Mb"
 
 	"`n===== OUTPUT OF POWERSHELL COMMANDS ====="
-	Get-Process | Format-Chart Name, WorkingSet
-	Get-Counter
+	Get-Process | ?{$_.WS -gt 10mb} | Format-Chart.ps1 Name, WS
 
 	"`n===== OUTPUT OF CONSOLE APPLICATIONS ====="
 	netstat -e
