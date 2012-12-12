@@ -41,7 +41,6 @@ Show-EditorColor-.ps1 Shows color information for the current editor.
 Show-History-.ps1 Shows command, folder, or editor history.
 Show-Hlf-.ps1 Shows .hlf help file.
 Show-Image.ps1 Shows one or more images in a GUI window.
-Show-KeyMap.ps1 Shows Far hotkeys and macros by areas (HTML page).
 Show-KeyName-.ps1 Shows internal names of pressed keys.
 Show-Markdown-.ps1 Shows markdown as HTML or Far help file.
 Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project file.

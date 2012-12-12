@@ -62,7 +62,7 @@
   <ItemGroup>
     <Content Include="LICENSE" />
     <Content Include="Readme.txt" />
-    <Content Include="RightWords.farconfig" />
+    <Content Include="RightWords.macro.lua" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Resources">

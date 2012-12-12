@@ -19,7 +19,7 @@
 		Show editor history.
 
 .Link
-	PowerShellFar.farconfig
+	PowerShellFar.macro.lua
 #>
 
 param

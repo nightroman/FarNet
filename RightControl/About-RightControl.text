@@ -53,9 +53,7 @@ Example macro for the Editor area:
 
     Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl: go-to-smart-home")
 
-Use *RightControl.farconfig* in order to import predefined typical macros:
-
-    Far.exe /import RightControl.farconfig
+*RightControl.macro.lua* provides predefined typical macros.
 
 ---
 ### Known issue and workaround
@@ -65,7 +63,7 @@ funny in dialogs and the command line when selection is set by the module.
 
 Workaround: use macros `[ShiftLeft]` and `[ShiftRight]` (not in the editor!)
 and bind them to the commands `vertical-left` and `vertical-right`.
-*RightControl.farconfig* includes these macros.
+*RightControl.macro.lua* includes these macros.
 
 *********************************************************************
 ## Settings {#Settings}
