@@ -21,7 +21,8 @@
 	where text normally does not start with spaces.
 ]]
 
-Macro { area="Common"; key="CtrlBS"; description="RightControl: delete left"; action=function()
+Macro {
+area="Common"; key="CtrlBS"; description="RightControl: delete left"; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
 if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
@@ -29,9 +30,11 @@ if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area
 else
 	Keys("AKey")
 end
-end;}
+end;
+}
 
-Macro { area="Common"; key="CtrlDel"; description="RightControl: delete right"; action=function()
+Macro {
+area="Common"; key="CtrlDel"; description="RightControl: delete right"; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
 if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
@@ -39,9 +42,11 @@ if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area
 else
 	Keys("AKey")
 end
-end;}
+end;
+}
 
-Macro { area="Common"; key="CtrlLeft"; description="RightControl: step left"; action=function()
+Macro {
+area="Common"; key="CtrlLeft"; description="RightControl: step left"; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
 if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
@@ -49,9 +54,11 @@ if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area
 else
 	Keys("AKey")
 end
-end;}
+end;
+}
 
-Macro { area="Common"; key="CtrlRight"; description="RightControl: step right"; action=function()
+Macro {
+area="Common"; key="CtrlRight"; description="RightControl: step right"; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
 if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
@@ -59,9 +66,11 @@ if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area
 else
 	Keys("AKey")
 end
-end;}
+end;
+}
 
-Macro { area="Common"; key="CtrlShiftLeft"; description="RightControl: select left"; action=function()
+Macro {
+area="Common"; key="CtrlShiftLeft"; description="RightControl: select left"; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
 if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
@@ -69,9 +78,11 @@ if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area
 else
 	Keys("AKey")
 end
-end;}
+end;
+}
 
-Macro { area="Common"; key="CtrlShiftRight"; description="RightControl: select right"; action=function()
+Macro {
+area="Common"; key="CtrlShiftRight"; description="RightControl: select right"; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
 if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
@@ -79,9 +90,11 @@ if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area
 else
 	Keys("AKey")
 end
-end;}
+end;
+}
 
-Macro { area="Common"; key="ShiftLeft"; description="RightControl: workaround left"; action=function()
+Macro {
+area="Common"; key="ShiftLeft"; description="RightControl: workaround left"; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
 if Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
@@ -89,9 +102,11 @@ if Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not 
 else
 	Keys("AKey")
 end
-end;}
+end;
+}
 
-Macro { area="Common"; key="ShiftRight"; description="RightControl: workaround right"; action=function()
+Macro {
+area="Common"; key="ShiftRight"; description="RightControl: workaround right"; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
 
 if Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
@@ -99,20 +114,29 @@ if Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not 
 else
 	Keys("AKey")
 end
-end;}
+end;
+}
 
-Macro { area="Editor"; key="CtrlAltLeft"; description="RightControl: vertical left"; action=function()
+Macro {
+area="Editor"; key="CtrlAltLeft"; description="RightControl: vertical left"; action=function()
 Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
-end;}
+end;
+}
 
-Macro { area="Editor"; key="CtrlAltRight"; description="RightControl: vertical right"; action=function()
+Macro {
+area="Editor"; key="CtrlAltRight"; description="RightControl: vertical right"; action=function()
 Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
-end;}
+end;
+}
 
-Macro { area="Editor"; key="Home"; description="RightControl: go to smart home"; action=function()
+Macro {
+area="Editor"; key="Home"; description="RightControl: go to smart home"; action=function()
 Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:go-to-smart-home")
-end;}
+end;
+}
 
-Macro { area="Editor"; key="ShiftHome"; description="RightControl: select to smart home"; action=function()
+Macro {
+area="Editor"; key="ShiftHome"; description="RightControl: select to smart home"; action=function()
 Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-to-smart-home")
-end;}
+end;
+}
