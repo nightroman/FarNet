@@ -286,7 +286,7 @@ Use FarNet 5.0.8 with amended drawer API.
 FarNet 5.0.9 with centralized drawer infrastructure. As a result:
 - Menu item "Highlighting" moved to the FarNet drawers menu.
 - "Auto highlighting file mask" moved to the FarNet options.
-- See RightWords.farconfig for the updated "Highlighting" macro.
+- See RightWords.macro.lua for the updated "Highlighting" macro.
 
 2.1.1
 

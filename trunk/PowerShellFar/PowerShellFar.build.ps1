@@ -38,7 +38,7 @@ task Zip Help, {
 
 	Move-Item About-PowerShellFar.htm z
 	Copy-Item Install.txt z
-	Copy-Item History.txt, LICENSE, PowerShellFar.farconfig $dir
+	Copy-Item History.txt, LICENSE, PowerShellFar.macro.lua $dir
 	Copy-Item $FarHome\FarNet\Modules\PowerShellFar\* $dir -Recurse
 	Copy-Item Bench $dir -Recurse -Force
 

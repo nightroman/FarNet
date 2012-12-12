@@ -2161,12 +2161,12 @@ A: There are at least two options, both using macros
 
     A macro that expands the empty command line to '>: '. Space after the
     prefix is recommended for normal TabExpansion of the first word. See
-    *PowerShellFar.farconfig* (`[Space]`).
+    *PowerShellFar.macro.lua* (`[Space]`).
 
 * Easy invoke
 
     Type and run without prefix using a macro associated with "Invoke selected
-    code" menu command. See *PowerShellFar.farconfig* (`[ShiftSpace]`).
+    code" menu command. See *PowerShellFar.macro.lua* (`[ShiftSpace]`).
 
     Now you can type PowerShell commands without a prefix and press
     `[ShiftSpace]` to execute it. There is a bonus: if a command fails then its

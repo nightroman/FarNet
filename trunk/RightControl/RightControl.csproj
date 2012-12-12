@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE" />
-    <Content Include="RightControl.farconfig" />
+    <Content Include="RightControl.macro.lua" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="About-RightControl.text" />

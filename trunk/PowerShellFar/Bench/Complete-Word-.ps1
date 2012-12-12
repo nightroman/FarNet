@@ -14,7 +14,7 @@
 	group candidates are usually used more frequently, at least in source code.
 
 .Link
-	PowerShellFar.farconfig
+	PowerShellFar.macro.lua
 #>
 
 # get edit line

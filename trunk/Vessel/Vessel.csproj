@@ -61,7 +61,7 @@
     <Content Include="LICENSE" />
     <Content Include="Readme.txt" />
     <Content Include="Vessel.hlf" />
-    <Content Include="Vessel.farconfig" />
+    <Content Include="Vessel.macro.lua" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
