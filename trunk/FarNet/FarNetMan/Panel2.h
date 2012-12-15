@@ -42,20 +42,11 @@ namespace FarNet
 ref class ShelveInfoNative;
 ref class ShelveInfoModule;
 
-ref struct ExplorerFilePair
-{
-public:
-	ExplorerFilePair(Explorer^ explorer, FarFile^ file) : Explorer(explorer), File(file) {}
-	Explorer^ Explorer;
-	FarFile^ File;
-};
-
 ref class Panel2 : public Panel1, Works::IPanelWorks
 {
 internal:
 	void Free();
 	OpenPanelInfo& Make();
-	static void StoreFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file);
 public: // IPanel
 	virtual property bool RealNames { bool get() override; void set(bool value) override; }
 	virtual property bool UseSortGroups { bool get() override; void set(bool value) override; }
@@ -101,12 +92,13 @@ public:
 	virtual void SetPlan(PanelViewMode mode, PanelPlan^ plan);
 internal:
 	Panel2(Panel^ panel, Explorer^ explorer);
-	property IList<FarFile^>^ Files { IList<FarFile^>^ get(); void set(IList<FarFile^>^ value); }
 	property bool HasDots { bool get(); }
 	property PanelSortMode StartSortMode { PanelSortMode get(); void set(PanelSortMode value); }
 	void AssertOpen();
 	void ReplaceExplorer(Explorer^ explorer);
 	virtual FarFile^ GetFile(int index, FileType type) override;
+	List<FarFile^>^ ItemsToFiles(IList<String^>^ names, PluginPanelItem* panelItem, int itemsNumber);
+	int AsGetFindData(GetFindDataInfo* info);
 internal:
 	Panel^ const Host;
 	ShelveInfoModule^ _Pushed;
@@ -125,8 +117,9 @@ private:
 	void DeleteModes();
 	void CreateKeyBars(KeyBarTitles& m);
 	static void DeleteKeyBars(const KeyBarTitles& m);
+	FarFile^ GetItemFile(const PluginPanelItem& panelItem);
 private:
-	IList<FarFile^>^ _Files;
+	IList<FarFile^>^ _Files_;
 	Explorer^ _MyExplorer;
 	OpenPanelInfo* m;
 	bool _FarStartSortOrder;
