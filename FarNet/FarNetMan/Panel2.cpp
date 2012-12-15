@@ -12,12 +12,21 @@ Copyright (c) 2005-2012 FarNet Team
 namespace FarNet
 {;
 static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPanelItemFreeInfo* /*info*/);
+
+ref struct ExplorerFilePair
+{
+public:
+	ExplorerFilePair(Explorer^ explorer, FarFile^ file) : Explorer(explorer), File(file) {}
+	Explorer^ Explorer;
+	FarFile^ File;
+};
+
 ref class FileStore
 {
 internal:
 	static int _nextFileKey;
 	static Dictionary<int, ExplorerFilePair^> _files;
-	static void StoreFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file)
+	static void AddFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file)
 	{
 		++_nextFileKey;
 		_files.Add(_nextFileKey, gcnew ExplorerFilePair(explorer, file));
@@ -25,29 +34,21 @@ internal:
 		panelItem.UserData.FreeData = FarPanelItemFreeCallback;
 	}
 };
+
 static void WINAPI FarPanelItemFreeCallback(void* userData, const struct FarPanelItemFreeInfo* /*info*/)
 {
-	FileStore::_files.Remove((int)userData);
-}
-void Panel2::StoreFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file)
-{
-	FileStore::StoreFile(panelItem, explorer, file);
+	if (!FileStore::_files.Remove((int)userData))
+		Log::Source->TraceEvent(TraceEventType::Warning, 0, __FUNCTION__);
 }
 
 Panel2::Panel2(Panel^ panel, Explorer^ explorer)
 : Panel1(true)
 , Host(panel)
 , _MyExplorer(explorer)
-, _Files(gcnew List<FarFile^>())
+, _Files_(gcnew List<FarFile^>())
 , _StartViewMode(PanelViewMode::Undefined)
 , _ActiveInfo(ShelveInfoNative::CreateActiveInfo(false))
 {}
-
-IList<FarFile^>^ Panel2::Files::get() { return _Files; }
-void Panel2::Files::set(IList<FarFile^>^ value)
-{
-	_Files = value;
-}
 
 void Panel2::AssertOpen()
 {
@@ -80,19 +81,7 @@ FarFile^ Panel2::CurrentFile::get()
 		return nullptr;
 
 	AutoPluginPanelItem item(Handle, (int)pi.CurrentItem, ShownFile);
-	int fi = (int)(INT_PTR)item.Get().UserData.Data;
-	if (fi < 0)
-		return nullptr;
-
-	// 090411 Extra sanity test and watch.
-	// See State::GetPanelInfo - this approach fixes the problem, but let's watch for a while.
-	if (fi >= _Files->Count)
-	{
-		assert(0);
-		return nullptr;
-	}
-
-	return _Files[fi];
+	return GetItemFile(item.Get());
 }
 
 IList<FarFile^>^ Panel2::ShownFiles::get()
@@ -109,9 +98,9 @@ IList<FarFile^>^ Panel2::ShownFiles::get()
 	for(int i = 0; i < (int)pi.ItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, ShownFile);
-		int fi = (int)(INT_PTR)item.Get().UserData.Data;
-		if (fi >= 0)
-			r->Add(_Files[fi]);
+		FarFile^ file = GetItemFile(item.Get());
+		if (file)
+			r->Add(file);
 	}
 
 	return r;
@@ -131,9 +120,9 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 	for(int i = 0; i < (int)pi.SelectedItemsNumber; ++i)
 	{
 		AutoPluginPanelItem item(Handle, i, SelectedFile);
-		int fi = (int)(INT_PTR)item.Get().UserData.Data;
-		if (fi >= 0)
-			r->Add(_Files[fi]);
+		FarFile^ file = GetItemFile(item.Get());
+		if (file)
+			r->Add(file);
 	}
 
 	return r;
@@ -143,10 +132,10 @@ IList<FarFile^>^ Panel2::SelectedFiles::get()
 FarFile^ Panel2::GetFile(int index, FileType type)
 {
 	AutoPluginPanelItem item(Handle, index, type);
-	int fi = (int)(INT_PTR)item.Get().UserData.Data;
-	if (fi >= 0)
+	FarFile^ file = GetItemFile(item.Get());
+	if (file)
 		// module file
-		return _Files[fi];
+		return file;
 	else
 		// dots or no-data module file
 		return ItemToFile(item.Get());
@@ -791,6 +780,195 @@ void Panel2::SetKeyBars(array<KeyBar^>^ bars)
 		m->KeyBar = new KeyBarTitles;
 		CreateKeyBars(*(KeyBarTitles*)m->KeyBar);
 	}
+}
+
+List<FarFile^>^ Panel2::ItemsToFiles(IList<String^>^ names, PluginPanelItem* panelItem, int itemsNumber)
+{
+	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
+
+	//? Far bug: alone dots has UserData = 0 no matter what was written there; so check the dots name
+	if (itemsNumber == 1 && panelItem[0].UserData.Data == 0 && wcscmp(panelItem[0].FileName, L"..") == 0)
+		return r;
+
+	// pure case
+	if (Host->Explorer->CanExploreLocation)
+	{
+		for(int i = 0; i < itemsNumber; ++i)
+		{
+			r->Add(Panel1::ItemToFile(panelItem[i]));
+			if (names)
+				names->Add(gcnew String(panelItem[i].AlternateFileName));
+		}
+		return r;
+	}
+
+	// data case
+	for(int i = 0; i < itemsNumber; ++i)
+	{
+		FarFile^ file = GetItemFile(panelItem[i]);
+		if (file)
+		{
+			r->Add(file);
+			if (names)
+				names->Add(gcnew String(panelItem[i].AlternateFileName));
+		}
+	}
+
+	return r;
+}
+
+//! 090712. Allocation by chunks was originally used. But it turns out it does not improve
+//! performance much (tested for 200000+ files). On the other hand allocation of large chunks
+//! may fail due to memory fragmentation more frequently.
+int Panel2::AsGetFindData(GetFindDataInfo* info)
+{
+	info->StructSize = sizeof(*info);
+
+	Explorer^ explorer = Host->Explorer;
+	ExplorerModes mode = (ExplorerModes)info->OpMode;
+	const bool canExploreLocation = explorer->CanExploreLocation;
+
+	Log::Source->TraceInformation("GetFindDataW Mode='{0}' Location='{1}'", mode, CurrentLocation);
+
+	try
+	{
+		// fake empty panel needed on switching modes, for example
+		if (_voidUpdateFiles)
+		{
+			Log::Source->TraceInformation("GetFindDataW fake empty panel");
+			info->ItemsNumber = 0;
+			info->PanelItem = 0;
+			return 1;
+		}
+
+		// the Find mode //???????
+		const bool isFind = 0 != (info->OpMode & OPM_FIND);
+		const bool isSpecialFind = isFind && !canExploreLocation;
+
+		// get the files
+		if (!_skipUpdateFiles)
+		{
+			GetFilesEventArgs args(mode, Host->PageOffset, Host->PageLimit, Host->NeedsNewFiles);
+			_Files_ = Host->UIGetFiles(%args);
+			if (args.Result != JobResult::Done)
+				return 0;
+
+			Host->NeedsNewFiles = false;
+		}
+
+		// all item number
+		int nItem = _Files_->Count;
+		if (HasDots)
+			++nItem;
+		info->ItemsNumber = nItem;
+		if (nItem == 0)
+		{
+			info->PanelItem = 0;
+			return true;
+		}
+
+		// alloc all
+		info->PanelItem = new PluginPanelItem[nItem];
+		memset(info->PanelItem, 0, nItem * sizeof(PluginPanelItem));
+		Log::Source->TraceInformation("GetFindDataW Address='{0:x}'", (long)info->PanelItem);
+
+		// add dots
+		int itemIndex = -1, fileIndex = -1;
+		if (HasDots)
+		{
+			++itemIndex;
+			wchar_t* dots = new wchar_t[3];
+			dots[0] = dots[1] = '.'; dots[2] = '\0';
+			PluginPanelItem& p = info->PanelItem[0];
+			p.UserData.Data = (void*)(-1);
+			p.FileName = dots;
+			p.Description = NewChars(Host->DotsDescription);
+		}
+
+		// add files
+		for each(FarFile^ file in _Files_)
+		{
+			++itemIndex;
+			++fileIndex;
+
+			PluginPanelItem& p = info->PanelItem[itemIndex];
+
+			// names
+			p.FileName = NewChars(file->Name);
+			p.Description = NewChars(file->Description);
+			p.Owner = NewChars(file->Owner);
+
+			// alternate names are for QView to work with any names,
+			// even ExploreLocation explorers may have problem names
+			if (info->OpMode == 0)
+			{
+				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
+				Info.FSF->itoa(fileIndex, buf, 10);
+				int size = (int)wcslen(buf) + 1;
+				wchar_t* alternate = new wchar_t[size];
+				memcpy(alternate, buf, size * sizeof(wchar_t));
+				p.AlternateFileName = alternate;
+			}
+			else
+			{
+				p.AlternateFileName = 0;
+			}
+
+			// other
+			if (isSpecialFind) //???????
+				FileStore::AddFile(p, explorer, file);
+			else
+				p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex);
+			p.FileAttributes = (DWORD)file->Attributes;
+			p.FileSize = file->Length;
+			p.CreationTime = DateTimeToFileTime(file->CreationTime);
+			p.LastWriteTime = DateTimeToFileTime(file->LastWriteTime);
+			p.LastAccessTime = DateTimeToFileTime(file->LastAccessTime);
+
+			// columns
+			System::Collections::ICollection^ columns = file->Columns;
+			if (columns)
+			{
+				int nb = columns->Count;
+				if (nb)
+				{
+					wchar_t** custom = new wchar_t*[nb];
+					p.CustomColumnNumber = nb;
+					p.CustomColumnData = custom;
+					int iColumn = 0;
+					for each(Object^ it in columns)
+					{
+						if (it)
+							custom[iColumn] = NewChars(it->ToString());
+						else
+							custom[iColumn] = 0;
+						++iColumn;
+					}
+				}
+			}
+		}
+
+		// drop pure files
+		if (canExploreLocation)
+			_Files_ = nullptr;
+
+		return 1;
+	}
+	catch(Exception^ e)
+	{
+		if ((info->OpMode & (OPM_FIND | OPM_SILENT)) == 0)
+			Far::Net->ShowError("Getting panel files", e);
+		else
+			Log::TraceException(e);
+
+		return 0;
+	}
+}
+
+FarFile^ Panel2::GetItemFile(const PluginPanelItem& panelItem)
+{
+	int fi = (int)(INT_PTR)panelItem.UserData.Data;
+	return fi < 0 ? nullptr : _Files_[fi];
 }
 
 }

@@ -12,189 +12,11 @@ Copyright (c) 2005-2012 FarNet Team
 
 namespace FarNet
 {;
-static List<FarFile^>^ ItemsToFiles(bool pureFiles, IList<FarFile^>^ files, IList<String^>^ names, PluginPanelItem* panelItem, int itemsNumber)
-{
-	List<FarFile^>^ r = gcnew List<FarFile^>(itemsNumber);
-
-	//? Far bug: alone dots has UserData = 0 no matter what was written there; so check the dots name
-	if (itemsNumber == 1 && panelItem[0].UserData.Data == 0 && wcscmp(panelItem[0].FileName, L"..") == 0)
-		return r;
-
-	// pure case
-	if (pureFiles)
-	{
-		for(int i = 0; i < itemsNumber; ++i)
-		{
-			r->Add(Panel1::ItemToFile(panelItem[i]));
-			if (names)
-				names->Add(gcnew String(panelItem[i].AlternateFileName));
-		}
-		return r;
-	}
-
-	// data case
-	for(int i = 0; i < itemsNumber; ++i)
-	{
-		int fi = (int)(INT_PTR)panelItem[i].UserData.Data;
-		if (fi >= 0)
-		{
-			r->Add(files[fi]);
-			if (names)
-				names->Add(gcnew String(panelItem[i].AlternateFileName));
-		}
-	}
-
-	return r;
-}
-
 // This is the very first called method
-//! 090712. Allocation by chunks was originally used. But it turns out it does not improve
-//! performance much (tested for 200000+ files). On the other hand allocation of large chunks
-//! may fail due to memory fragmentation more frequently.
 int Panel0::AsGetFindData(GetFindDataInfo* info)
 {
-	info->StructSize = sizeof(*info);
-
 	Panel2^ pp = HandleToPanel(info->hPanel);
-	Explorer^ explorer = pp->Host->Explorer;
-	ExplorerModes mode = (ExplorerModes)info->OpMode;
-	const bool canExploreLocation = explorer->CanExploreLocation;
-
-	Log::Source->TraceInformation("GetFindDataW Mode='{0}' Location='{1}'", mode, pp->CurrentLocation);
-
-	try
-	{
-		// fake empty panel needed on switching modes, for example
-		if (pp->_voidUpdateFiles)
-		{
-			Log::Source->TraceInformation("GetFindDataW fake empty panel");
-			info->ItemsNumber = 0;
-			info->PanelItem = 0;
-			return 1;
-		}
-
-		// the Find mode //???????
-		const bool isFind = 0 != (info->OpMode & OPM_FIND);
-		const bool isSpecialFind = isFind && !canExploreLocation;
-
-		// get the files
-		if (!pp->_skipUpdateFiles)
-		{
-			GetFilesEventArgs args(mode, pp->Host->PageOffset, pp->Host->PageLimit, pp->Host->NeedsNewFiles);
-			pp->Files = pp->Host->UIGetFiles(%args);
-			if (args.Result != JobResult::Done)
-				return 0;
-
-			pp->Host->NeedsNewFiles = false;
-		}
-
-		// all item number
-		int nItem = pp->Files->Count;
-		if (pp->HasDots)
-			++nItem;
-		info->ItemsNumber = nItem;
-		if (nItem == 0)
-		{
-			info->PanelItem = 0;
-			return true;
-		}
-
-		// alloc all
-		info->PanelItem = new PluginPanelItem[nItem];
-		memset(info->PanelItem, 0, nItem * sizeof(PluginPanelItem));
-		Log::Source->TraceInformation("GetFindDataW Address='{0:x}'", (long)info->PanelItem);
-
-		// add dots
-		int itemIndex = -1, fileIndex = -1;
-		if (pp->HasDots)
-		{
-			++itemIndex;
-			wchar_t* dots = new wchar_t[3];
-			dots[0] = dots[1] = '.'; dots[2] = '\0';
-			PluginPanelItem& p = info->PanelItem[0];
-			p.UserData.Data = (void*)(-1);
-			p.FileName = dots;
-			p.Description = NewChars(pp->Host->DotsDescription);
-		}
-
-		// add files
-		for each(FarFile^ file in pp->Files)
-		{
-			++itemIndex;
-			++fileIndex;
-
-			PluginPanelItem& p = info->PanelItem[itemIndex];
-
-			// names
-			p.FileName = NewChars(file->Name);
-			p.Description = NewChars(file->Description);
-			p.Owner = NewChars(file->Owner);
-
-			// alternate names are for QView to work with any names,
-			// even ExploreLocation explorers may have problem names
-			if (info->OpMode == 0)
-			{
-				wchar_t buf[12]; // 12: 10=len(0xffffffff=4294967295) + 1=sign + 1=\0
-				Info.FSF->itoa(fileIndex, buf, 10);
-				int size = (int)wcslen(buf) + 1;
-				wchar_t* alternate = new wchar_t[size];
-				memcpy(alternate, buf, size * sizeof(wchar_t));
-				p.AlternateFileName = alternate;
-			}
-			else
-			{
-				p.AlternateFileName = 0;
-			}
-
-			// other
-			if (isSpecialFind) //???????
-				Panel2::StoreFile(p, explorer, file);
-			else
-				p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex);
-			p.FileAttributes = (DWORD)file->Attributes;
-			p.FileSize = file->Length;
-			p.CreationTime = DateTimeToFileTime(file->CreationTime);
-			p.LastWriteTime = DateTimeToFileTime(file->LastWriteTime);
-			p.LastAccessTime = DateTimeToFileTime(file->LastAccessTime);
-
-			// columns
-			System::Collections::ICollection^ columns = file->Columns;
-			if (columns)
-			{
-				int nb = columns->Count;
-				if (nb)
-				{
-					wchar_t** custom = new wchar_t*[nb];
-					p.CustomColumnNumber = nb;
-					p.CustomColumnData = custom;
-					int iColumn = 0;
-					for each(Object^ it in columns)
-					{
-						if (it)
-							custom[iColumn] = NewChars(it->ToString());
-						else
-							custom[iColumn] = 0;
-						++iColumn;
-					}
-				}
-			}
-		}
-
-		// drop pure files
-		if (canExploreLocation)
-			pp->Files = nullptr;
-
-		return true;
-	}
-	catch(Exception^ e)
-	{
-		if ((info->OpMode & (OPM_FIND | OPM_SILENT)) == 0)
-			Far::Net->ShowError("Getting panel files", e);
-		else
-			Log::TraceException(e);
-
-		return false;
-	}
+	return pp->AsGetFindData(info);
 }
 
 void Panel0::AsFreeFindData(const FreeFindDataInfo* info)
@@ -325,7 +147,6 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 		return 0;
 
 	// modes
-	const bool canExploreLocation = explorer->CanExploreLocation;
 	const bool qview = 0 != int(mode & ExplorerModes::QuickView);
 	const bool silent = int(mode & ExplorerModes::Silent);
 
@@ -340,7 +161,7 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 
 	// collect files
 	List<String^>^ names = qview ? gcnew List<String^> : nullptr;
-	List<FarFile^>^ files = ItemsToFiles(canExploreLocation, pp->Files, names, info->PanelItem, (int)info->ItemsNumber);
+	List<FarFile^>^ files = pp->ItemsToFiles(names, info->PanelItem, (int)info->ItemsNumber);
 
 	// copy files
 	String^ destination = gcnew String(info->DestPath);
@@ -454,7 +275,7 @@ int Panel0::AsDeleteFiles(const DeleteFilesInfo* info)
 	if (!explorer->CanDeleteFiles)
 		return 0;
 
-	DeleteFilesEventArgs args(mode, ItemsToFiles(pp->Host->Explorer->CanExploreLocation, pp->Files, nullptr, info->PanelItem, (int)info->ItemsNumber), false);
+	DeleteFilesEventArgs args(mode, pp->ItemsToFiles(nullptr, info->PanelItem, (int)info->ItemsNumber), false);
 	pp->Host->UIDeleteFiles(%args);
 
 	return args.Result == JobResult::Ignore ? 0 : 1;
@@ -946,14 +767,7 @@ void Panel0::PushPanel(Panel2^ plugin)
 	plugin->StartViewMode = (PanelViewMode)pi.ViewMode;
 
 	// current
-	FarFile^ file = nullptr;
-	if (pi.ItemsNumber > 0)
-	{
-		AutoPluginPanelItem item(plugin->Handle, (int)pi.CurrentItem, ShownFile);
-		int index = (int)item.Get().UserData.Data;
-		if (index >= 0 && index < plugin->Files->Count)
-			file = plugin->Files[index];
-	}
+	FarFile^ file = pi.ItemsNumber == 0 ? nullptr : plugin->CurrentFile;
 
 	// push
 	plugin->_Pushed = gcnew ShelveInfoModule(plugin);
