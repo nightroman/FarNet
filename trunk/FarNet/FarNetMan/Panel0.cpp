@@ -48,76 +48,10 @@ void Panel0::AsFreeFindData(const FreeFindDataInfo* info)
 int Panel0::AsSetDirectory(const SetDirectoryInfo* info)
 {
 	Panel2^ pp = HandleToPanel(info->hPanel);
-	ExplorerModes mode = (ExplorerModes)info->OpMode;
-	String^ directory = gcnew String(info->Dir);
-
-	Log::Source->TraceInformation("SetDirectoryW Mode='{0}' Name='{1}'", mode, directory);
-
-	const bool canExploreLocation = pp->Host->Explorer->CanExploreLocation;
-
-	//! Silent but not Find is possible on CtrlQ scan
-	if (!canExploreLocation && 0 != (info->OpMode & (OPM_FIND | OPM_SILENT))) //???????
-		return 0;
-
 	_inAsSetDirectory = true;
 	try
 	{
-		Explorer^ explorer2;
-		ExploreEventArgs^ args2;
-		if (directory == "\\")
-		{
-			ExploreRootEventArgs^ args = gcnew ExploreRootEventArgs(mode);
-			explorer2 = pp->Host->UIExploreRoot(args);
-			if (!explorer2)
-			{
-				Panel^ mp = pp->Host;
-				if (!mp->Parent)
-					return 0;
-
-				while(mp->Parent)
-				{
-					Panel^ parent = mp->Parent;
-					mp->CloseChild();
-					mp = parent;
-				}
-
-				return 1;
-			}
-			args2 = args;
-		}
-		else if (directory == "..")
-		{
-			ExploreParentEventArgs^ args = gcnew ExploreParentEventArgs(mode);
-			explorer2 = pp->Host->UIExploreParent(args);
-			if (!explorer2)
-			{
-				if (!pp->Host->Parent)
-					return 0;
-
-				pp->Host->CloseChild();
-				return 1;
-			}
-			args2 = args;
-		}
-		else if (canExploreLocation)
-		{
-			ExploreLocationEventArgs^ args = gcnew ExploreLocationEventArgs(mode, directory);
-			explorer2 = pp->Host->UIExploreLocation(args);
-			args2 = args;
-		}
-		else
-		{
-			ExploreDirectoryEventArgs^ args = gcnew ExploreDirectoryEventArgs(mode, pp->Host->CurrentFile);
-			explorer2 = pp->Host->UIExploreDirectory(args);
-			args2 = args;
-		}
-
-		if (!explorer2)
-			return 0;
-
-		// open
-		OpenExplorer(pp, explorer2, args2);
-		return 1;
+		return pp->AsSetDirectory(info);
 	}
 	finally
 	{
@@ -786,54 +720,6 @@ void Panel0::PushPanel(Panel2^ plugin)
 void Panel0::ShelvePanel(Panel1^ panel, bool modes)
 {
 	Works::ShelveInfo::Stack->Add(gcnew ShelveInfoNative(panel, modes));
-}
-
-// Explorer enters to the panel
-void Panel0::OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ args)
-{
-	Panel^ oldPanel = core->Host;
-
-	// explorers must get new explorers
-	if ((Object^)explorer == (Object^)oldPanel->Explorer)
-		throw gcnew InvalidOperationException("The same explorer object is not expected.");
-
-	// make the panel
-	Panel^ newPanel = nullptr;
-
-	// make or reuse
-	if (args->NewPanel || explorer->TypeId != oldPanel->Explorer->TypeId)
-	{
-		// make a new panel
-		newPanel = explorer->CreatePanel();
-	}
-	else
-	{
-		// reuse, update is called there
-		core->ReplaceExplorer(explorer);
-		newPanel = oldPanel;
-	}
-
-	// post
-	if (args)
-	{
-		newPanel->PostData(args->PostData);
-		newPanel->PostFile(args->PostFile);
-		newPanel->PostName(args->PostName);
-	}
-
-	// location
-	String^ location = explorer->Location;
-	if (location->Length)
-		newPanel->CurrentLocation = location;
-	else
-		newPanel->CurrentLocation = "*";
-
-	// same panel? update, reuse
-	if (newPanel == oldPanel)
-		return;
-
-	// open new as child
-	newPanel->OpenChild(oldPanel);
 }
 
 }

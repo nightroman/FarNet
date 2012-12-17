@@ -40,7 +40,6 @@ internal:
 	static void ShelvePanel(Panel1^ panel, bool modes);
 private:
 	Panel0() {}
-	static void OpenExplorer(Panel2^ core, Explorer^ explorer, ExploreEventArgs^ args);
 	static Panel2^ HandleToPanel(HANDLE hPanel) { return _panels[(int)hPanel]; }
 	static void RemovePanel(HANDLE hPanel) { _panels[(int)hPanel] = nullptr; }
 private:

@@ -95,10 +95,10 @@ internal:
 	property bool HasDots { bool get(); }
 	property PanelSortMode StartSortMode { PanelSortMode get(); void set(PanelSortMode value); }
 	void AssertOpen();
-	void ReplaceExplorer(Explorer^ explorer);
 	virtual FarFile^ GetFile(int index, FileType type) override;
 	List<FarFile^>^ ItemsToFiles(IList<String^>^ names, PluginPanelItem* panelItem, int itemsNumber);
 	int AsGetFindData(GetFindDataInfo* info);
+	int AsSetDirectory(const SetDirectoryInfo* info);
 internal:
 	Panel^ const Host;
 	ShelveInfoModule^ _Pushed;
@@ -118,6 +118,8 @@ private:
 	void CreateKeyBars(KeyBarTitles& m);
 	static void DeleteKeyBars(const KeyBarTitles& m);
 	FarFile^ GetItemFile(const PluginPanelItem& panelItem);
+	void OpenExplorer(Explorer^ explorer, ExploreEventArgs^ args);
+	void ReplaceExplorer(Explorer^ explorer);
 private:
 	IList<FarFile^>^ _Files_;
 	Explorer^ _MyExplorer;

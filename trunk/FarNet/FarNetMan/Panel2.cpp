@@ -24,13 +24,17 @@ public:
 ref class FileStore
 {
 internal:
-	static int _nextFileKey;
+	static int _lastFileKey = -1;
 	static Dictionary<int, ExplorerFilePair^> _files;
+	static FarFile^ GetFile(int key)
+	{
+		return _files[key]->File;
+	}
 	static void AddFile(PluginPanelItem& panelItem, Explorer^ explorer, FarFile^ file)
 	{
-		++_nextFileKey;
-		_files.Add(_nextFileKey, gcnew ExplorerFilePair(explorer, file));
-		panelItem.UserData.Data = (void*)_nextFileKey;
+		--_lastFileKey;
+		_files.Add(_lastFileKey, gcnew ExplorerFilePair(explorer, file));
+		panelItem.UserData.Data = (void*)_lastFileKey;
 		panelItem.UserData.FreeData = FarPanelItemFreeCallback;
 	}
 };
@@ -817,6 +821,54 @@ List<FarFile^>^ Panel2::ItemsToFiles(IList<String^>^ names, PluginPanelItem* pan
 	return r;
 }
 
+// Explorer enters to the panel
+void Panel2::OpenExplorer(Explorer^ explorer, ExploreEventArgs^ args)
+{
+	Panel^ oldPanel = Host;
+
+	// explorers must get new explorers
+	if ((Object^)explorer == (Object^)oldPanel->Explorer)
+		throw gcnew InvalidOperationException("The same explorer object is not expected.");
+
+	// make the panel
+	Panel^ newPanel = nullptr;
+
+	// make or reuse
+	if (args->NewPanel || explorer->TypeId != oldPanel->Explorer->TypeId)
+	{
+		// make a new panel
+		newPanel = explorer->CreatePanel();
+	}
+	else
+	{
+		// reuse, update is called there
+		ReplaceExplorer(explorer);
+		newPanel = oldPanel;
+	}
+
+	// post
+	if (args)
+	{
+		newPanel->PostData(args->PostData);
+		newPanel->PostFile(args->PostFile);
+		newPanel->PostName(args->PostName);
+	}
+
+	// location
+	String^ location = explorer->Location;
+	if (location->Length)
+		newPanel->CurrentLocation = location;
+	else
+		newPanel->CurrentLocation = "*";
+
+	// same panel? update, reuse
+	if (newPanel == oldPanel)
+		return;
+
+	// open new as child
+	newPanel->OpenChild(oldPanel);
+}
+
 //! 090712. Allocation by chunks was originally used. But it turns out it does not improve
 //! performance much (tested for 200000+ files). On the other hand allocation of large chunks
 //! may fail due to memory fragmentation more frequently.
@@ -880,7 +932,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			wchar_t* dots = new wchar_t[3];
 			dots[0] = dots[1] = '.'; dots[2] = '\0';
 			PluginPanelItem& p = info->PanelItem[0];
-			p.UserData.Data = (void*)(-1);
+			p.UserData.Data = (void*)(-1); //???????
 			p.FileName = dots;
 			p.Description = NewChars(Host->DotsDescription);
 		}
@@ -918,7 +970,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 			if (isSpecialFind) //???????
 				FileStore::AddFile(p, explorer, file);
 			else
-				p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex);
+				p.UserData.Data = (void*)(canExploreLocation ? -1 : fileIndex + 1);
 			p.FileAttributes = (DWORD)file->Attributes;
 			p.FileSize = file->Length;
 			p.CreationTime = DateTimeToFileTime(file->CreationTime);
@@ -965,10 +1017,85 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 	}
 }
 
+int Panel2::AsSetDirectory(const SetDirectoryInfo* info)
+{
+	ExplorerModes mode = (ExplorerModes)info->OpMode;
+	String^ directory = gcnew String(info->Dir);
+
+	Log::Source->TraceInformation("SetDirectoryW Mode='{0}' Name='{1}'", mode, directory);
+
+	const bool canExploreLocation = Host->Explorer->CanExploreLocation;
+
+	//! Silent but not Find is possible on CtrlQ scan
+	if (!canExploreLocation && 0 != (info->OpMode & (OPM_FIND | OPM_SILENT))) //???????
+		return 0;
+
+	Explorer^ explorer2;
+	ExploreEventArgs^ args2;
+	if (directory == "\\")
+	{
+		ExploreRootEventArgs^ args = gcnew ExploreRootEventArgs(mode);
+		explorer2 = Host->UIExploreRoot(args);
+		if (!explorer2)
+		{
+			Panel^ mp = Host;
+			if (!mp->Parent)
+				return 0;
+
+			while(mp->Parent)
+			{
+				Panel^ parent = mp->Parent;
+				mp->CloseChild();
+				mp = parent;
+			}
+
+			return 1;
+		}
+		args2 = args;
+	}
+	else if (directory == "..")
+	{
+		ExploreParentEventArgs^ args = gcnew ExploreParentEventArgs(mode);
+		explorer2 = Host->UIExploreParent(args);
+		if (!explorer2)
+		{
+			if (!Host->Parent)
+				return 0;
+
+			Host->CloseChild();
+			return 1;
+		}
+		args2 = args;
+	}
+	else if (canExploreLocation)
+	{
+		ExploreLocationEventArgs^ args = gcnew ExploreLocationEventArgs(mode, directory);
+		explorer2 = Host->UIExploreLocation(args);
+		args2 = args;
+	}
+	else
+	{
+		ExploreDirectoryEventArgs^ args = gcnew ExploreDirectoryEventArgs(mode, Host->CurrentFile);
+		explorer2 = Host->UIExploreDirectory(args);
+		args2 = args;
+	}
+
+	if (!explorer2)
+		return 0;
+
+	// open
+	OpenExplorer(explorer2, args2);
+	return 1;
+}
+
 FarFile^ Panel2::GetItemFile(const PluginPanelItem& panelItem)
 {
-	int fi = (int)(INT_PTR)panelItem.UserData.Data;
-	return fi < 0 ? nullptr : _Files_[fi];
+	int key = (int)(INT_PTR)panelItem.UserData.Data;
+	if (key > 0)
+		return _Files_[key - 1];
+	if (key < -1)
+		return FileStore::GetFile(key);
+	return nullptr;
 }
 
 }
