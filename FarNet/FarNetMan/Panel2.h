@@ -118,6 +118,7 @@ private:
 	void CreateKeyBars(KeyBarTitles& m);
 	static void DeleteKeyBars(const KeyBarTitles& m);
 	FarFile^ GetItemFile(const PluginPanelItem& panelItem);
+	FarFile^ GetFileByUserData(void* data);
 	void OpenExplorer(Explorer^ explorer, ExploreEventArgs^ args);
 	void ReplaceExplorer(Explorer^ explorer);
 private:
