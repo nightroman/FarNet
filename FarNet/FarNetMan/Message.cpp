@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -16,7 +16,7 @@ bool Message::Show()
 	if (ValueUserScreen::Get()) //_100514_000000
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->UI->SaveUserScreen();
+		Far::Api->UI->SaveUserScreen();
 	}
 
 	// process the draw flag
@@ -92,7 +92,7 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 	if (int(options & MessageOptions::GuiOnMacro) != 0)
 	{
 		// check macro
-		if (Far::Net->MacroState != MacroState::None)
+		if (Far::Api->MacroState != MacroState::None)
 			options = options | MessageOptions::Gui;
 	}
 
@@ -112,7 +112,7 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 	m._flags = (int)options;
 
 	// text width
-	int width = Far::Net->UI->WindowSize.X - 16;
+	int width = Far::Api->UI->WindowSize.X - 16;
 
 	// header
 	if (!String::IsNullOrEmpty(header))
@@ -123,7 +123,7 @@ int Message::Show(String^ body, String^ header, MessageOptions options, array<St
 	}
 
 	// body
-	int height = Far::Net->UI->WindowSize.Y - 9;
+	int height = Far::Api->UI->WindowSize.Y - 9;
 	FarNet::Works::Kit::FormatMessage(%m._body, body, width, height, FarNet::Works::FormatMessageMode::Word);
 
 	// buttons? dialog?
@@ -163,13 +163,13 @@ int Message::ShowDialog(int width)
 		}
 	}
 	w += 10;
-	Point size = Far::Net->UI->WindowSize;
+	Point size = Far::Api->UI->WindowSize;
 	int nBody = Math::Min(_body.Count, size.Y / 3);
 	int h = 5 + nBody + _buttons->Length;
 	if (h > size.Y - 4)
 		h = size.Y - 4;
 
-	IDialog^ dialog = Far::Net->CreateDialog(-1, -1, w, h);
+	IDialog^ dialog = Far::Api->CreateDialog(-1, -1, w, h);
 	dialog->HelpTopic = _helpTopic;
 	dialog->IsWarning = (_flags & FMSG_WARNING);
 	dialog->AddBox(3, 1, w - 4, h - 2, _header);

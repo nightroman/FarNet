@@ -87,7 +87,7 @@ namespace FarNet.Tools
 				if (match.Success)
 				{
 					// prompt
-					text = Far.Net.Input("Variable: " + name, "XPathVariable", "Input variable");
+					text = Far.Api.Input("Variable: " + name, "XPathVariable", "Input variable");
 					if (text == null)
 					{
 						result.Variables.Add(name, string.Empty);

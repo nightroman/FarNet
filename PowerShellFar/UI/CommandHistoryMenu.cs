@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -16,10 +16,10 @@ namespace PowerShellFar.UI
 
 		public CommandHistoryMenu(string prefix)
 		{
-			_menu = Far.Net.CreateListMenu();
+			_menu = Far.Api.CreateListMenu();
 			Settings.Default.ListMenu(_menu);
 
-			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuCommandHistory");
+			_menu.HelpTopic = Far.Api.GetHelpTopic("MenuCommandHistory");
 			_menu.SelectLast = true;
 			_menu.Title = "PowerShellFar History";
 

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightControl
-Copyright (c) 2010-2012 Roman Kuzmin
+Copyright (c) 2010-2013 Roman Kuzmin
 */
 
 using System;
@@ -23,14 +23,14 @@ namespace FarNet.RightControl
 
 			ILine line = null;
 			IEditor editor = null;
-			var kind = Far.Net.Window.Kind;
+			var kind = Far.Api.Window.Kind;
 			if (kind == WindowKind.Editor)
 			{
-				editor = Far.Net.Editor;
+				editor = Far.Api.Editor;
 			}
 			else
 			{
-				line = Far.Net.Line;
+				line = Far.Api.Line;
 				if (line == null)
 					return;
 			}
@@ -62,7 +62,7 @@ namespace FarNet.RightControl
 			}
 			catch (Exception e)
 			{
-				Far.Net.Message("Regular expression error:\r" + e.Message, "RightControl", MessageOptions.LeftAligned | MessageOptions.Warning);
+				Far.Api.Message("Regular expression error:\r" + e.Message, "RightControl", MessageOptions.LeftAligned | MessageOptions.Warning);
 				_Regex_ = new Regex(Settings.RegexDefault, RegexOptions.IgnorePatternWhitespace);
 			}
 		}
@@ -152,7 +152,7 @@ namespace FarNet.RightControl
 						//_100819_142053 Workaround
 						if (line.WindowKind == WindowKind.Dialog)
 						{
-							IDialog dialog = Far.Net.Dialog;
+							IDialog dialog = Far.Api.Dialog;
 							if (dialog != null)
 							{
 								var control = dialog.Focused as IEditable;

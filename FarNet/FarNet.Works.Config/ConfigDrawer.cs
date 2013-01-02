@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace FarNet.Works
 			if (drawers == null)
 				return;
 
-			IMenu menu = Far.Net.CreateMenu();
+			IMenu menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
 			menu.HelpTopic = helpTopic;
 			menu.Title = Res.ModuleDrawers;
@@ -40,7 +40,7 @@ namespace FarNet.Works
 					string priorityText = dialog.Priority.Text.Trim();
 					if (!int.TryParse(priorityText, out priority))
 					{
-						Far.Net.Message("Invalid Priority.");
+						Far.Api.Message("Invalid Priority.");
 						continue;
 					}
 
@@ -61,7 +61,7 @@ namespace FarNet.Works
 		public IEdit Priority;
 		public ConfigDrawerDialog(IModuleDrawer drawer, string helpTopic)
 		{
-			Dialog = Far.Net.CreateDialog(-1, -1, 77, 8);
+			Dialog = Far.Api.CreateDialog(-1, -1, 77, 8);
 			Dialog.HelpTopic = helpTopic;
 
 			// Box

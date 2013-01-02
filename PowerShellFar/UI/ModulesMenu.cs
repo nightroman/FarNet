@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.ObjectModel;
@@ -13,13 +13,13 @@ namespace PowerShellFar.UI
 {
 	class ModulesMenu
 	{
-		IMenu _menu = Far.Net.CreateMenu();
+		IMenu _menu = Far.Api.CreateMenu();
 
 		public ModulesMenu()
 		{
 			_menu.Title = "PowerShell Modules and Snap-ins";
 			_menu.Bottom = "[Enter] import/remove, [Esc] exit";
-			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuModules");
+			_menu.HelpTopic = Far.Api.GetHelpTopic("MenuModules");
 			_menu.AutoAssignHotkeys = true;
 		}
 

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -28,13 +28,13 @@ namespace FarNet.Works
 		}
 		public static string EditText(string text, string title, bool locked)
 		{
-			var file = Far.Net.TempName();
+			var file = Far.Api.TempName();
 			try
 			{
 				if (!string.IsNullOrEmpty(text))
 					File.WriteAllText(file, text, Encoding.Unicode);
 
-				var editor = Far.Net.CreateEditor();
+				var editor = Far.Api.CreateEditor();
 				editor.FileName = file;
 				editor.DisableHistory = true;
 				if (!string.IsNullOrEmpty(title))
@@ -81,10 +81,10 @@ namespace FarNet.Works
 		*/
 		public static void ViewText(string text, string title, OpenMode mode)
 		{
-			string tmpfile = Far.Net.TempName();
+			string tmpfile = Far.Api.TempName();
 			File.WriteAllText(tmpfile, text, Encoding.Unicode);
 
-			var viewer = Far.Net.CreateViewer();
+			var viewer = Far.Api.CreateViewer();
 			viewer.DeleteSource = DeleteSource.File; // yes, File - we can control it
 			viewer.DisableHistory = true;
 			viewer.FileName = tmpfile;
@@ -97,12 +97,12 @@ namespace FarNet.Works
 		const string MenuItemFormat = "&{0}. {1}";
 		public static void ShowEditorsMenu()
 		{
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.HelpTopic = "MenuEditors";
 			menu.Title = "Editors";
 
 			int index = -1;
-			foreach (var it in Far.Net.Editors())
+			foreach (var it in Far.Api.Editors())
 			{
 				++index;
 				var name = string.Format(null, MenuItemFormat, (index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " "), it.FileName);
@@ -114,12 +114,12 @@ namespace FarNet.Works
 		}
 		public static void ShowViewersMenu()
 		{
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.HelpTopic = "MenuViewers";
 			menu.Title = "Viewers";
 
 			int index = -1;
-			foreach (var it in Far.Net.Viewers())
+			foreach (var it in Far.Api.Viewers())
 			{
 				++index;
 				var name = string.Format(null, MenuItemFormat, (index < MenuHotkeys.Length ? MenuHotkeys.Substring(index, 1) : " "), it.FileName);

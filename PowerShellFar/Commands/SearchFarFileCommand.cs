@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -18,7 +18,7 @@ namespace PowerShellFar.Commands
 			get { return _Mask; }
 			set
 			{
-				if (!Far.Net.IsMaskValid(value)) throw new PSArgumentException("Invalid mask: " + value);
+				if (!Far.Api.IsMaskValid(value)) throw new PSArgumentException("Invalid mask: " + value);
 				_Mask = value;
 			}
 		}
@@ -39,7 +39,7 @@ namespace PowerShellFar.Commands
 		public SwitchParameter Asynchronous { get; set; }
 		protected override void BeginProcessing()
 		{
-			Panel panel = Far.Net.Panel as Panel;
+			Panel panel = Far.Api.Panel as Panel;
 			if (panel == null)
 			{
 				WriteWarning("This is not a module panel.");
@@ -57,7 +57,7 @@ namespace PowerShellFar.Commands
 			{
 				search.Filter = delegate(Explorer explorer, FarFile file)
 				{
-					return Far.Net.IsMaskMatch(file.Name, Mask);
+					return Far.Api.IsMaskMatch(file.Name, Mask);
 				};
 			}
 			else if (Script != null)

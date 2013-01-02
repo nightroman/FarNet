@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -80,7 +80,7 @@ namespace FarNet
 		/// </summary>
 		public IModuleManager Manager
 		{
-			get { return _Manager ?? (_Manager = Far.Net.GetModuleManager(GetType())); }
+			get { return _Manager ?? (_Manager = Far.Api.GetModuleManager(GetType())); }
 		}
 		IModuleManager _Manager;
 	}

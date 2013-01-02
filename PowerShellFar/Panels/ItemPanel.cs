@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 /*
@@ -43,7 +43,7 @@ namespace PowerShellFar
 			// current location, post the current name
 			if (string.IsNullOrEmpty(path))
 			{
-				FarFile file = Far.Net.Panel.CurrentFile;
+				FarFile file = Far.Api.Panel.CurrentFile;
 				if (file != null)
 					PostName(file.Name);
 			}

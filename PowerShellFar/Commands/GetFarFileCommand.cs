@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace PowerShellFar.Commands
 	{
 		protected override void BeginProcessing()
 		{
-			IPanel panel = Passive ? Far.Net.Panel2 : Far.Net.Panel;
+			IPanel panel = Passive ? Far.Api.Panel2 : Far.Api.Panel;
 
 			// no panel?
 			if (panel == null)

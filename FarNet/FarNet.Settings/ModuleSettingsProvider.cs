@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet.Settings library for FarNet
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using System;

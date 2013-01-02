@@ -115,14 +115,14 @@ namespace FarNet.Tools
 				progress = FormatProgress(_percentage);
 
 				// icon progress
-				Far.Net.UI.SetProgressValue(_percentage, 100);
+				Far.Api.UI.SetProgressValue(_percentage, 100);
 
 				// window title
 				title = string.Format(null, "{0}% {1}", _percentage, result[0]);
 			}
 
 			// window title
-			Far.Net.UI.WindowTitle = title;
+			Far.Api.UI.WindowTitle = title;
 
 			// the copy
 			return result;

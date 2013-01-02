@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -412,10 +412,10 @@ namespace PowerShellFar
 
 		internal static void ShowJobs()
 		{
-			IMenu menu = Far.Net.CreateMenu();
+			IMenu menu = Far.Api.CreateMenu();
 			menu.Title = Res.BackgroundJobs;
 			menu.ShowAmpersands = true;
-			menu.HelpTopic = Far.Net.GetHelpTopic("MenuBackgroundJobs");
+			menu.HelpTopic = Far.Api.GetHelpTopic("MenuBackgroundJobs");
 			menu.AddKey(KeyCode.F3);
 			menu.AddKey(KeyCode.F5);
 			menu.AddKey(KeyCode.Delete);
@@ -488,7 +488,7 @@ namespace PowerShellFar
 							break;
 
 						// file exists, view it
-						IViewer v = Far.Net.CreateViewer();
+						IViewer v = Far.Api.CreateViewer();
 						v.FileName = job.FileName;
 						v.DisableHistory = true;
 						if (menu.Key == new KeyData(KeyCode.F3))
@@ -513,7 +513,7 @@ namespace PowerShellFar
 		/// </summary>
 		static void AsyncTimerCallback(object state)
 		{
-			Far.Net.PostJob(WatchJobs);
+			Far.Api.PostJob(WatchJobs);
 		}
 
 		/// <summary>
@@ -564,7 +564,7 @@ namespace PowerShellFar
 					Timer = null;
 
 					// win7 NoProgress
-					Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+					Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 				}
 			}
 			else
@@ -580,11 +580,11 @@ namespace PowerShellFar
 					JobLastNotified.KeepStopwatch = Stopwatch.StartNew();
 
 				// notify
-				Far.Net.UI.WindowTitle = JobLastNotified.StateText + ": " + JobLastNotified.ToLine(100);
+				Far.Api.UI.WindowTitle = JobLastNotified.StateText + ": " + JobLastNotified.ToLine(100);
 
 				// win7
-				Far.Net.UI.SetProgressValue(1, 1);
-				Far.Net.UI.SetProgressState(JobLastNotified.IsSucceeded ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Error);
+				Far.Api.UI.SetProgressValue(1, 1);
+				Far.Api.UI.SetProgressState(JobLastNotified.IsSucceeded ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Error);
 
 				// install the timer
 				if (Timer == null)
@@ -665,7 +665,7 @@ namespace PowerShellFar
 				JobUI.Close();
 
 				// post notificator
-				Far.Net.PostJob(WatchJobs);
+				Far.Api.PostJob(WatchJobs);
 			}
 		}
 
@@ -697,9 +697,9 @@ Ignore: discard all jobs and output
 ", job.ToLine(100), job.StateText, job.Length);
 
 				string title = "Background job";
-				Far.Net.UI.WindowTitle = title;
+				Far.Api.UI.WindowTitle = title;
 
-				switch (Far.Net.Message(message, title, MessageOptions.Gui | MessageOptions.AbortRetryIgnore))
+				switch (Far.Api.Message(message, title, MessageOptions.Gui | MessageOptions.AbortRetryIgnore))
 				{
 					case 0:
 						{
@@ -712,7 +712,7 @@ Ignore: discard all jobs and output
 					case 1:
 						if (job.IsRunning)
 						{
-							Far.Net.UI.WindowTitle = "Waiting for a background job...";
+							Far.Api.UI.WindowTitle = "Waiting for a background job...";
 							job.Finished.WaitOne();
 						}
 						else

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace FarNet.Works
 			if (commands == null)
 				return;
 
-			IMenu menu = Far.Net.CreateMenu();
+			IMenu menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
 			menu.HelpTopic = helpTopic;
 			menu.Title = Res.ModuleCommands;
@@ -44,7 +44,7 @@ namespace FarNet.Works
 				FarItem mi = menu.Items[menu.Selected];
 				IModuleCommand command = (IModuleCommand)mi.Data;
 
-				IInputBox ib = Far.Net.CreateInputBox();
+				IInputBox ib = Far.Api.CreateInputBox();
 				ib.EmptyEnabled = true;
 				ib.HelpTopic = helpTopic;
 				ib.Prompt = "Prefix";
@@ -57,7 +57,7 @@ namespace FarNet.Works
 					prefix = ib.Text.Trim();
 					if (prefix.IndexOf(' ') >= 0 || prefix.IndexOf(':') >= 0)
 					{
-						Far.Net.Message("Prefix must not contain ' ' or ':'.");
+						Far.Api.Message("Prefix must not contain ' ' or ':'.");
 						prefix = null;
 						continue;
 					}

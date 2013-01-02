@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -293,7 +293,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 	if (e->Key->IsCtrl(KeyCode::C) || e->Key->IsCtrl(KeyCode::Insert))
 	{
 		FarListBox^ box = (FarListBox^)e->Control;
-		Far::Net->CopyToClipboard(box->Text);
+		Far::Api->CopyToClipboard(box->Text);
 		e->Ignore = true;
 		return;
 	}
@@ -437,7 +437,7 @@ bool ListMenu::Show()
 		_box->_ii = _ii;
 
 		// now we are ready to make sizes
-		MakeSizes(%dialog, Far::Net->UI->WindowSize);
+		MakeSizes(%dialog, Far::Api->UI->WindowSize);
 
 		// handlers
 		dialog._ConsoleSizeChanged += gcnew EventHandler<SizeEventArgs^>(this, &ListMenu::OnConsoleSizeChanged);

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -199,7 +199,7 @@ namespace FarNet.Works
 			}
 			catch (Exception ex)
 			{
-				Far.Net.ShowError("ERROR: module " + _ModuleHost, ex);
+				Far.Api.ShowError("ERROR: module " + _ModuleHost, ex);
 			}
 			finally
 			{
@@ -257,7 +257,7 @@ namespace FarNet.Works
 
 					// not yet? use current
 					if (_CurrentUICulture == null)
-						_CurrentUICulture = Far.Net.GetCurrentUICulture(false);
+						_CurrentUICulture = Far.Api.GetCurrentUICulture(false);
 				}
 
 				return _CurrentUICulture;
@@ -286,7 +286,7 @@ namespace FarNet.Works
 		}
 		public override string GetFolderPath(SpecialFolder folder, bool create)
 		{
-			var dir = Far.Net.GetFolderPath(folder) + @"\FarNet\" + ModuleName;
+			var dir = Far.Api.GetFolderPath(folder) + @"\FarNet\" + ModuleName;
 			if (create && !Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
 			return dir;

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -121,7 +121,7 @@ void Menu::ShowMenu(FarMenuItem* items, const FarKey* breaks, const wchar_t* tit
 	int y = _y;
 	if (y != -1)
 	{
-		int yMax = Far::Net->UI->WindowSize.Y - Math::Max(_items->Count, MaxHeight) - 4;
+		int yMax = Far::Api->UI->WindowSize.Y - Math::Max(_items->Count, MaxHeight) - 4;
 		if (y > yMax)
 			y = yMax;
 		if (y < 0)

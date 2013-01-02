@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -27,7 +27,7 @@ namespace FarNet
 void Far1::Connect()
 {
 	// the instance
-	Far::Net = %Far;
+	Far::Api = %Far;
 
 	// initialize data paths
 	_LocalData = Environment::GetEnvironmentVariable("FARLOCALPROFILE");
@@ -168,6 +168,7 @@ String^ Far1::KeyInfoToName(KeyInfo^ key)
 
 ILine^ Far1::Line::get()
 {
+	IDialog^ dialog = nullptr;
 	switch (Window->Kind)
 	{
 	case FarNet::WindowKind::Editor:
@@ -181,20 +182,32 @@ ILine^ Far1::Line::get()
 		}
 	case FarNet::WindowKind::Dialog:
 		{
-			IDialog^ dialog = Dialog;
-			if (dialog) //?? need?
-			{
-				IControl^ control = dialog->Focused;
-				IEdit^ edit = dynamic_cast<IEdit^>(control);
-				if (edit)
-					return edit->Line;
-				IComboBox^ combo = dynamic_cast<IComboBox^>(control);
-				if (combo)
-					return combo->Line;
-			}
-			break;
+			dialog = Dialog;
 		}
+		break;
+	case FarNet::WindowKind::Menu: //????????
+		{
+			FarNet::MacroArea area = Far::Api->MacroArea;
+			if (area == FarNet::MacroArea::ShellAutoCompletion)
+				return CommandLine;
+
+			if (area == FarNet::MacroArea::DialogAutoCompletion)
+				dialog = Dialog;
+		}
+		break;
 	}
+
+	if (dialog)
+	{
+		IControl^ control = dialog->Focused;
+		IEdit^ edit = dynamic_cast<IEdit^>(control);
+		if (edit)
+			return edit->Line;
+		IComboBox^ combo = dynamic_cast<IComboBox^>(control);
+		if (combo)
+			return combo->Line;
+	}
+	
 	return nullptr;
 }
 
@@ -261,9 +274,9 @@ void Far1::ShowError(String^ title, Exception^ error)
 		info += title + Environment::NewLine;
 
 		if (Works::Host::State == Works::HostState::Loading)
-			Far::Net->UI->Write(info, ConsoleColor::Red);
+			Far::Api->UI->Write(info, ConsoleColor::Red);
 		else
-			Far::Net->Message(info + Environment::NewLine + error->ToString(), title, (MessageOptions::Gui | MessageOptions::Warning));
+			Far::Api->Message(info + Environment::NewLine + error->ToString(), title, (MessageOptions::Gui | MessageOptions::Warning));
 
 		return;
 	}

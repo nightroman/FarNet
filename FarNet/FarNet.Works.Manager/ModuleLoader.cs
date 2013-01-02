@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -40,7 +40,7 @@ namespace FarNet.Works
 				}
 				catch (Exception ex)
 				{
-					Far.Net.ShowError("Error on loading " + dir, ex);
+					Far.Api.ShowError("Error on loading " + dir, ex);
 				}
 			}
 

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -169,7 +169,7 @@ namespace FarNet.Works
 		{
 			for (; ; )
 			{
-				name = Far.Net.Input("Correct file name", null, "Invalid file name", name);
+				name = Far.Api.Input("Correct file name", null, "Invalid file name", name);
 				if (null == name)
 					return null;
 

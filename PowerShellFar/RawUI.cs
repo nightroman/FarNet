@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -19,87 +19,87 @@ namespace PowerShellFar
 	{
 		public override string WindowTitle
 		{
-			get { return Far.Net.UI.WindowTitle; }
-			set { Far.Net.UI.WindowTitle = value; }
+			get { return Far.Api.UI.WindowTitle; }
+			set { Far.Api.UI.WindowTitle = value; }
 		}
 
 		public override int CursorSize
 		{
-			get { return Far.Net.UI.CursorSize; }
-			set { Far.Net.UI.CursorSize = value; }
+			get { return Far.Api.UI.CursorSize; }
+			set { Far.Api.UI.CursorSize = value; }
 		}
 
 		public override Coordinates CursorPosition
 		{
-			get { return ToCoordinates(Far.Net.UI.BufferCursor); }
-			set { Far.Net.UI.BufferCursor = ToPoint(value); }
+			get { return ToCoordinates(Far.Api.UI.BufferCursor); }
+			set { Far.Api.UI.BufferCursor = ToPoint(value); }
 		}
 
 		public override ConsoleColor BackgroundColor
 		{
-			get { return Far.Net.UI.BackgroundColor; }
-			set { Far.Net.UI.BackgroundColor = value; }
+			get { return Far.Api.UI.BackgroundColor; }
+			set { Far.Api.UI.BackgroundColor = value; }
 		}
 
 		public override ConsoleColor ForegroundColor
 		{
-			get { return Far.Net.UI.ForegroundColor; }
-			set { Far.Net.UI.ForegroundColor = value; }
+			get { return Far.Api.UI.ForegroundColor; }
+			set { Far.Api.UI.ForegroundColor = value; }
 		}
 
 		public override Size BufferSize
 		{
-			get { return ToSize(Far.Net.UI.BufferSize); }
-			set { Far.Net.UI.BufferSize = ToPoint(value); }
+			get { return ToSize(Far.Api.UI.BufferSize); }
+			set { Far.Api.UI.BufferSize = ToPoint(value); }
 		}
 
 		public override bool KeyAvailable
 		{
-			get { return Far.Net.UI.KeyAvailable; }
+			get { return Far.Api.UI.KeyAvailable; }
 		}
 
 		public override void FlushInputBuffer()
 		{
-			Far.Net.UI.FlushInputBuffer();
+			Far.Api.UI.FlushInputBuffer();
 		}
 
 		public override PS.KeyInfo ReadKey(PS.ReadKeyOptions options)
 		{
-			FarNet.KeyInfo k = Far.Net.UI.ReadKey((FN.ReadKeyOptions)options);
+			FarNet.KeyInfo k = Far.Api.UI.ReadKey((FN.ReadKeyOptions)options);
 			return new PS.KeyInfo((int)k.VirtualKeyCode, k.Character, (PS.ControlKeyStates)k.ControlKeyState, k.KeyDown);
 		}
 
 		public override Size MaxPhysicalWindowSize
 		{
-			get { return ToSize(Far.Net.UI.MaxPhysicalWindowSize); }
+			get { return ToSize(Far.Api.UI.MaxPhysicalWindowSize); }
 		}
 
 		public override Size MaxWindowSize
 		{
-			get { return ToSize(Far.Net.UI.MaxWindowSize); }
+			get { return ToSize(Far.Api.UI.MaxWindowSize); }
 		}
 
 		public override Coordinates WindowPosition
 		{
-			get { return ToCoordinates(Far.Net.UI.WindowPoint); }
-			set { Far.Net.UI.WindowPoint = ToPoint(value); }
+			get { return ToCoordinates(Far.Api.UI.WindowPoint); }
+			set { Far.Api.UI.WindowPoint = ToPoint(value); }
 		}
 
 		public override Size WindowSize
 		{
-			get { return ToSize(Far.Net.UI.WindowSize); }
-			set { Far.Net.UI.WindowSize = ToPoint(value); }
+			get { return ToSize(Far.Api.UI.WindowSize); }
+			set { Far.Api.UI.WindowSize = ToPoint(value); }
 		}
 
 		public override void ScrollBufferContents(Rectangle source, Coordinates destination, Rectangle clip, PS.BufferCell fill)
 		{
-			Far.Net.UI.ScrollBufferContents(ToPlace(source), ToPoint(destination), ToPlace(clip), ToBufferCell(fill));
+			Far.Api.UI.ScrollBufferContents(ToPlace(source), ToPoint(destination), ToPlace(clip), ToBufferCell(fill));
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		public override PS.BufferCell[,] GetBufferContents(Rectangle rectangle)
 		{
-			FN.BufferCell[,] r1 = Far.Net.UI.GetBufferContents(ToPlace(rectangle));
+			FN.BufferCell[,] r1 = Far.Api.UI.GetBufferContents(ToPlace(rectangle));
 			PS.BufferCell[,] r2 = new PS.BufferCell[r1.GetLength(0), r1.GetLength(1)];
 			for (int i = 0; i < r1.GetLength(0); ++i)
 				for (int j = 0; j < r1.GetLength(1); ++j)
@@ -117,12 +117,12 @@ namespace PowerShellFar
 			for (int i = 0; i < contents.GetLength(0); ++i)
 				for (int j = 0; j < contents.GetLength(1); ++j)
 					r[i, j] = ToBufferCell(contents[i, j]);
-			Far.Net.UI.SetBufferContents(ToPoint(origin), r);
+			Far.Api.UI.SetBufferContents(ToPoint(origin), r);
 		}
 
 		public override void SetBufferContents(Rectangle rectangle, PS.BufferCell fill)
 		{
-			Far.Net.UI.SetBufferContents(ToPlace(rectangle), ToBufferCell(fill));
+			Far.Api.UI.SetBufferContents(ToPlace(rectangle), ToBufferCell(fill));
 		}
 
 		#region Converters

@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -126,7 +126,7 @@ void CommandLine::SelectedText::set(String^ value)
 		throw gcnew InvalidOperationException(Res::CannotSetSelectedText);
 
 	// make new text
-	String^ text = Far::Net->CommandLine->Text;
+	String^ text = Far::Api->CommandLine->Text;
 	String^ text1 = text->Substring(0, (int)cls.SelStart);
 	String^ text2 = text->Substring((int)cls.SelEnd);
 	text = text1 + value + text2;

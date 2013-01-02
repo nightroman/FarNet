@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections;
@@ -25,7 +25,7 @@ namespace PowerShellFar.UI
 			if (useDepth)
 				++h;
 
-			_Dialog = Far.Net.CreateDialog(-1, -1, 77, h);
+			_Dialog = Far.Api.CreateDialog(-1, -1, 77, h);
 			_Dialog.AddBox(3, 1, 0, 0, title);
 			const int x = 16;
 			int y = 1;
@@ -97,7 +97,7 @@ namespace PowerShellFar.UI
 					filePath = My.PathEx.Combine(directory, filePath);
 
 				if (File.Exists(filePath))
-					if (Far.Net.Message("File " + filePath + " exists. Continue?", "Confirm", MessageOptions.YesNo) != 0)
+					if (Far.Api.Message("File " + filePath + " exists. Continue?", "Confirm", MessageOptions.YesNo) != 0)
 						return;
 
 				const string code = "$args[0] | Export-Clixml -Path $args[1] -Encoding $args[2] -Force -ErrorAction Stop";

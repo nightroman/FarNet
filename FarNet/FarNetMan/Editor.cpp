@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -38,7 +38,7 @@ void Editor::Open(OpenMode mode)
 	if (ValueUserScreen::Get()) //????
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->UI->SaveUserScreen();
+		Far::Api->UI->SaveUserScreen();
 	}
 
 	// strings
@@ -50,7 +50,7 @@ void Editor::Open(OpenMode mode)
 	int nPos = _frameStart.CaretColumn >= 0 ? _frameStart.CaretColumn + 1 : -1;
 
 	// from dialog? set modal
-	WindowKind wt = Far::Net->Window->Kind;
+	WindowKind wt = Far::Api->Window->Kind;
 	if (wt == WindowKind::Dialog)
 		mode = OpenMode::Modal;
 
@@ -122,7 +122,7 @@ void Editor::Open(OpenMode mode)
 
 	// redraw Far
 	if (wt == WindowKind::Dialog)
-		Far::Net->UI->Redraw();
+		Far::Api->UI->Redraw();
 
 	//! Check errors: ID must not be -1 (even if it is already closed then ID = -2).
 	//! Using Far diagnostics fires false errors, e.g.:
@@ -1162,17 +1162,17 @@ int Editor::KeyCount::get()
 
 void Editor::Activate()
 {
-	int nWindow = Far::Net->Window->Count;
+	int nWindow = Far::Api->Window->Count;
 	for(int i = 0; i < nWindow; ++i)
 	{
-		WindowKind kind = Far::Net->Window->GetKindAt(i);
+		WindowKind kind = Far::Api->Window->GetKindAt(i);
 		if (kind != WindowKind::Editor)
 			continue;
 
-		String^ name = Far::Net->Window->GetNameAt(i);
+		String^ name = Far::Api->Window->GetNameAt(i);
 		if (name == _FileName)
 		{
-			Far::Net->Window->SetCurrentAt(i);
+			Far::Api->Window->SetCurrentAt(i);
 			return;
 		}
 	}

@@ -28,7 +28,7 @@ namespace FarNet.Demo
 				case "RESOURCES": DoResources(); break;
 				default:
 					// Show help in the help viewer
-					Far.Net.ShowHelpTopic("DemoCommand");
+					Far.Api.ShowHelpTopic("DemoCommand");
 					break;
 			}
 		}
@@ -38,7 +38,7 @@ namespace FarNet.Demo
 		void DoProcess()
 		{
 			var process = Process.GetCurrentProcess();
-			Far.Net.UI.Write(string.Format(@"
+			Far.Api.UI.Write(string.Format(@"
 Total time     : {0}
 Working set    : {1,7:n0} kb
 Private memory : {2,7:n0} kb
@@ -62,9 +62,9 @@ Managed memory : {3,7:n0} kb
 			}
 			list.Sort();
 
-			var viewer = Far.Net.CreateViewer();
+			var viewer = Far.Api.CreateViewer();
 			viewer.Title = "Assemblies";
-			viewer.FileName = Far.Net.TempName();
+			viewer.FileName = Far.Api.TempName();
 			viewer.Switching = Switching.Enabled;
 			viewer.DeleteSource = DeleteSource.File;
 
@@ -76,14 +76,14 @@ Managed memory : {3,7:n0} kb
 		/// </summary>
 		void DoResources()
 		{
-			var file = Far.Net.Panel.CurrentFile;
+			var file = Far.Api.Panel.CurrentFile;
 			if (file == null)
 				return;
 
-			var path = Path.Combine(Far.Net.Panel.CurrentDirectory, file.Name);
+			var path = Path.Combine(Far.Api.Panel.CurrentDirectory, file.Name);
 			if (!File.Exists(path))
 				return;
-			
+
 			(new DemoExplorer(path)).OpenPanel();
 		}
 	}

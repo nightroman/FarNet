@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace PowerShellFar.Commands
 		{
 			if (Name != null)
 			{
-				bool found = Far.Net.Panel.GoToName(Name, false);
+				bool found = Far.Api.Panel.GoToName(Name, false);
 				if (!found)
 					WriteError(new ErrorRecord(
 						new FileNotFoundException("File is not found: '" + Name + "'."),
@@ -33,8 +33,8 @@ namespace PowerShellFar.Commands
 			}
 			else
 			{
-				IList<FarFile> files = Far.Net.Panel.ShownList;
-				int current = Far.Net.Panel.CurrentIndex;
+				IList<FarFile> files = Far.Api.Panel.ShownList;
+				int current = Far.Api.Panel.CurrentIndex;
 				int count = files.Count;
 
 				int step;
@@ -60,7 +60,7 @@ namespace PowerShellFar.Commands
 						SessionState.PSVariable.Set("_", files[index]);
 						if (LanguagePrimitives.IsTrue(Where.InvokeReturnAsIs(null)))
 						{
-							Far.Net.Panel.Redraw(index, -1);
+							Far.Api.Panel.Redraw(index, -1);
 							return;
 						}
 					}

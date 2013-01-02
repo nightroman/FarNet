@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet.Settings library for FarNet
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using System.Configuration;
@@ -96,7 +96,7 @@ namespace FarNet.Settings
 		/// </summary>
 		protected IModuleManager Manager
 		{
-			get { return _Manager ?? (_Manager = Far.Net.GetModuleManager(GetType())); }
+			get { return _Manager ?? (_Manager = Far.Api.GetModuleManager(GetType())); }
 		}
 		IModuleManager _Manager;
 		/// <summary>

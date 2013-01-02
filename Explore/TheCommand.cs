@@ -26,10 +26,10 @@ namespace FarNet.Explore
 			}
 
 			// the module panel
-			Panel panel = Far.Net.Panel as Panel;
+			Panel panel = Far.Api.Panel as Panel;
 			if (panel == null)
 			{
-				Far.Net.Message("This is not a module panel.");
+				Far.Api.Message("This is not a module panel.");
 				return;
 			}
 
@@ -61,12 +61,12 @@ namespace FarNet.Explore
 						throw new ModuleException("Invalid command line.");
 
 					var mask = token;
-					if (!Far.Net.IsMaskValid(mask))
+					if (!Far.Api.IsMaskValid(mask))
 						throw new ModuleException("Invalid mask.");
 					
 					search.Filter = delegate(Explorer explorer, FarFile file)
 					{
-						return Far.Net.IsMaskMatch(file.Name, mask);
+						return Far.Api.IsMaskMatch(file.Name, mask);
 					};
 					continue;
 				}

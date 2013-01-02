@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.ObjectModel;
@@ -33,7 +33,7 @@ namespace PowerShellFar.UI
 				else
 					sb.AppendLine();
 			}
-			Far.Net.AnyViewer.ViewText(sb.ToString(), "Help", OpenMode.Modal);
+			Far.Api.AnyViewer.ViewText(sb.ToString(), "Help", OpenMode.Modal);
 		}
 
 		static public int Show(string caption, string message, Collection<ChoiceDescription> choices)
@@ -47,12 +47,12 @@ namespace PowerShellFar.UI
 			// show
 			for (; ; )
 			{
-				int answer = Far.Net.Message(message, caption, MessageOptions.LeftAligned, buttons);
+				int answer = Far.Api.Message(message, caption, MessageOptions.LeftAligned, buttons);
 
 				// [Esc]:
 				if (answer < 0)
 				{
-					answer = Far.Net.Message(message, caption, MessageOptions.LeftAligned, new string[] { "&Halt command", "Cancel" });
+					answer = Far.Api.Message(message, caption, MessageOptions.LeftAligned, new string[] { "&Halt command", "Cancel" });
 					if (answer == 0)
 						throw new PipelineStoppedException();
 					continue;

@@ -60,7 +60,7 @@ task InstallRes {
 	exec { robocopy Modules\FarInventory $PsfHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 /np } (0..2)
 }
 
-task BuildPowerShellFarHelp -Incremental @{{ Get-Item Commands\* } = "$PsfHome\PowerShellFar.dll-Help.xml"} {
+task BuildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\PowerShellFar.dll-Help.xml" {
 	Add-Type -Path $FarHome\FarNet\FarNet.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Settings.dll
 	Add-Type -Path $FarHome\FarNet\FarNet.Tools.dll

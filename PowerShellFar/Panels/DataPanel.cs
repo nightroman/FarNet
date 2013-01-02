@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -78,7 +78,7 @@ namespace PowerShellFar
 			if (dataSet.Tables.Count == 1)
 				return dataSet.Tables[0];
 
-			var menu = Far.Net.CreateListMenu();
+			var menu = Far.Api.CreateListMenu();
 			menu.Title = "Tables";
 			menu.UsualMargins = true;
 
@@ -155,7 +155,7 @@ namespace PowerShellFar
 					// conflict?
 					if (_XmlFileTime != DateTime.MinValue && File.Exists(_XmlFile) && _XmlFileTime != File.GetLastWriteTime(_XmlFile))
 					{
-						Far.Net.Message("Cannot save because the source file is modified.", "Conflict");
+						Far.Api.Message("Cannot save because the source file is modified.", "Conflict");
 						return false;
 					}
 
@@ -352,7 +352,7 @@ namespace PowerShellFar
 					return true;
 			}
 
-			switch (Far.Net.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
+			switch (Far.Api.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 			{
 				case 0:
 					return SaveData();
@@ -369,9 +369,9 @@ namespace PowerShellFar
 
 			var Files = Explorer.Cache;
 
-			if (args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete"))
+			if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
 			{
-				if (0 != Far.Net.Message("Delete selected record(s)?", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }))
+				if (0 != Far.Api.Message("Delete selected record(s)?", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }))
 					return;
 			}
 
@@ -479,7 +479,7 @@ namespace PowerShellFar
 				catch (Exception ex)
 				{
 					ViewSort = null;
-					Far.Net.ShowError("Invalid sort expression", ex);
+					Far.Api.ShowError("Invalid sort expression", ex);
 				}
 			}
 			if (ViewRowFilter != null && Table.DefaultView.RowFilter != ViewRowFilter)
@@ -491,7 +491,7 @@ namespace PowerShellFar
 				catch (Exception ex)
 				{
 					ViewRowFilter = null;
-					Far.Net.ShowError("Invalid filter expression", ex);
+					Far.Api.ShowError("Invalid filter expression", ex);
 				}
 			}
 
@@ -509,7 +509,7 @@ namespace PowerShellFar
 		}
 		internal override void ShowHelpForPanel()
 		{
-			Far.Net.ShowHelpTopic("DataPanel");
+			Far.Api.ShowHelpTopic("DataPanel");
 		}
 		// Command builder
 		DbCommandBuilder _Builder;
@@ -590,7 +590,7 @@ namespace PowerShellFar
 			if (0 == (xRowState & (DataRowState.Added | DataRowState.Deleted | DataRowState.Modified)))
 				return true;
 
-			switch (Far.Net.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
+			switch (Far.Api.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 			{
 				case 0:
 					// save data, update the table
@@ -624,7 +624,7 @@ namespace PowerShellFar
 				{
 					using (var dt = Table.GetChanges())
 					{
-						if (dt != null && Far.Net.Message(Res.AskSaveModified, "Save", MessageOptions.YesNo) == 0)
+						if (dt != null && Far.Api.Message(Res.AskSaveModified, "Save", MessageOptions.YesNo) == 0)
 							SaveData();
 					}
 				}
@@ -708,7 +708,7 @@ namespace PowerShellFar
 		}
 		void OnPageLimit()
 		{
-			var text = Far.Net.Input("Record limit", "DataRecordLimit", "Data Panel", "" + PageLimit);
+			var text = Far.Api.Input("Record limit", "DataRecordLimit", "Data Panel", "" + PageLimit);
 			if (string.IsNullOrEmpty(text))
 				return;
 
@@ -726,7 +726,7 @@ namespace PowerShellFar
 		}
 		void OnPageOffset()
 		{
-			var text = Far.Net.Input("Record offset", "DataRecordOffset", "Data Panel", "" + PageOffset);
+			var text = Far.Api.Input("Record offset", "DataRecordOffset", "Data Panel", "" + PageOffset);
 			if (string.IsNullOrEmpty(text))
 				return;
 

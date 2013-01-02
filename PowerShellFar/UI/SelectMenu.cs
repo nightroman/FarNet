@@ -1,7 +1,7 @@
 ﻿
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.ObjectModel;
@@ -17,10 +17,10 @@ namespace PowerShellFar.UI
 		/// </summary>
 		internal static string SelectDrive(string select, bool extras)
 		{
-			IMenu m = Far.Net.CreateMenu();
+			IMenu m = Far.Api.CreateMenu();
 			m.AutoAssignHotkeys = true;
 			m.Title = "Power panel";
-			m.HelpTopic = Far.Net.GetHelpTopic("MenuPanels");
+			m.HelpTopic = Far.Api.GetHelpTopic("MenuPanels");
 			if (extras)
 			{
 				m.Add("Folder &tree");
@@ -60,7 +60,7 @@ Sort-Object Name |
 ";
 			Collection<PSObject> values = A.InvokeCode(code, computer);
 
-			IMenu m = Far.Net.CreateMenu();
+			IMenu m = Far.Api.CreateMenu();
 			m.AutoAssignHotkeys = true;
 			m.Title = computer + " shares";
 			for (int i = 0; i < values.Count; i += 2)

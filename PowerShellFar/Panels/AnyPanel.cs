@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -130,7 +130,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal virtual void ShowHelpForPanel()
 		{
-			Far.Net.ShowHelpTopic("PowerPanel");
+			Far.Api.ShowHelpTopic("PowerPanel");
 		}
 		/// <summary>
 		/// Shows help menu (e.g. called on [F1]).
@@ -216,7 +216,7 @@ namespace PowerShellFar
 			MemberPanel panel = new MemberPanel(new MemberExplorer(target));
 			panel._LookupOpeners = _LookupOpeners;
 
-			var tablePanel = Far.Net.Panel as TablePanel;
+			var tablePanel = Far.Api.Panel as TablePanel;
 			if (tablePanel != null)
 			{
 				if (!string.IsNullOrEmpty(tablePanel.ExcludeMemberPattern))
@@ -258,7 +258,7 @@ namespace PowerShellFar
 		IMenu HelpMenuCreate()
 		{
 			// create
-			IMenu r = Far.Net.CreateMenu();
+			IMenu r = Far.Api.CreateMenu();
 			r.AutoAssignHotkeys = true;
 			r.Sender = this;
 			r.Title = "Help menu";
@@ -450,7 +450,7 @@ namespace PowerShellFar
 			if (args == null) return;
 
 			// prompt
-			IInputBox input = Far.Net.CreateInputBox();
+			IInputBox input = Far.Api.CreateInputBox();
 			input.EmptyEnabled = true;
 			input.Title = "Copy";
 			input.Prompt = "New name";
@@ -474,7 +474,7 @@ namespace PowerShellFar
 			if (args == null) return;
 
 			// prompt
-			IInputBox input = Far.Net.CreateInputBox();
+			IInputBox input = Far.Api.CreateInputBox();
 			input.EmptyEnabled = true;
 			input.Title = "Rename";
 			input.Prompt = "New name";

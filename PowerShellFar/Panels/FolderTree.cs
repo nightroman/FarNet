@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 /*
@@ -42,7 +42,7 @@ namespace PowerShellFar
 			// post name
 			if (string.IsNullOrEmpty(path) || path == ".")
 			{
-				FarFile currentFile = Far.Net.Panel.CurrentFile;
+				FarFile currentFile = Far.Api.Panel.CurrentFile;
 				if (currentFile != null)
 					PostName(currentFile.Name);
 			}
@@ -119,9 +119,9 @@ namespace PowerShellFar
 			// open at the passive panel
 			if (provider.Name == "FileSystem")
 			{
-				Far.Net.Panel2.CurrentDirectory = node.Path;
-				Far.Net.Panel2.Update(false);
-				Far.Net.Panel2.Redraw();
+				Far.Api.Panel2.CurrentDirectory = node.Path;
+				Far.Api.Panel2.Update(false);
+				Far.Api.Panel2.Redraw();
 			}
 			// open at the same panel as child
 			else
@@ -157,7 +157,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal override void ShowHelpForPanel()
 		{
-			Far.Net.ShowHelpTopic("FolderTree");
+			Far.Api.ShowHelpTopic("FolderTree");
 		}
 	}
 }

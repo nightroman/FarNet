@@ -1,7 +1,7 @@
 ﻿
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -38,9 +38,9 @@ namespace PowerShellFar.UI
 			if (Type == 2)
 				++h;
 
-			UIDialog = Far.Net.CreateDialog(-1, -1, 77, h);
+			UIDialog = Far.Api.CreateDialog(-1, -1, 77, h);
 			UIDialog.Closing += OnClosing;
-			UIDialog.HelpTopic = Far.Net.GetHelpTopic("BreakpointDialog");
+			UIDialog.HelpTopic = Far.Api.GetHelpTopic("BreakpointDialog");
 
 			// title
 			UIDialog.AddBox(3, 1, 0, 0, typeName + " breakpoint");
@@ -113,7 +113,7 @@ namespace PowerShellFar.UI
 				int value;
 				if (!int.TryParse(UIMatter.Text, out value) || value <= 0)
 				{
-					Far.Net.Message("Invalid line number", "Line");
+					Far.Api.Message("Invalid line number", "Line");
 					UIDialog.Focused = UIMatter;
 					e.Ignore = true;
 					return;
@@ -121,7 +121,7 @@ namespace PowerShellFar.UI
 
 				if (UIScript.Text.TrimEnd().Length == 0)
 				{
-					Far.Net.Message("Script has to be defined", "Script");
+					Far.Api.Message("Script has to be defined", "Script");
 					UIDialog.Focused = UIScript;
 					e.Ignore = true;
 					return;
@@ -142,7 +142,7 @@ namespace PowerShellFar.UI
 				}
 				catch (RuntimeException ex)
 				{
-					Far.Net.Message(ex.Message, "Action");
+					Far.Api.Message(ex.Message, "Action");
 					UIDialog.Focused = UIAction;
 					e.Ignore = true;
 					return;

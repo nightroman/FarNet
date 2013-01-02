@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -17,27 +17,33 @@ namespace FarNet
 	/// </summary>
 	public static class Far
 	{
+		static IFar _Host;
 		/// <summary>
 		/// The global <see cref="IFar"/> instance.
 		/// </summary>
-		public static IFar Net
+		public static IFar Api
 		{
 			get { return _Host; }
 			set
 			{
-				if (_Host == null)
-					_Host = value;
-				else
-					throw new InvalidOperationException();
+				if (_Host != null) throw new InvalidOperationException();
+				_Host = value;
 			}
 		}
-		static IFar _Host;
+		/// <summary>
+		/// Obsolete, use Api.
+		/// </summary>
+		[Obsolete("Use Api.")]
+		public static IFar Net
+		{
+			get { return _Host; }
+		}
 	}
 	/// <summary>
 	/// Main interface which exposes top entries of the FarNet object model.
 	/// </summary>
 	/// <remarks>
-	/// The only instance of this class is exposed as the static property <see cref="Far.Net"/> of the class <see cref="Far"/>.
+	/// The only instance of this class is exposed as the static property <see cref="Far.Api"/> of the class <see cref="Far"/>.
 	/// Both names <c>Far</c> and <c>Net</c> are symbolic and make sense only when used together as <c>Far.Net</c>.
 	/// <para>
 	/// The exposed instance provides access to top level Far methods and objects or creates new Far objects like

@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -88,10 +88,10 @@ namespace PowerShellFar
 			if (record.RecordType == ProgressRecordType.Completed)
 			{
 				// title
-				Far.Net.UI.WindowTitle = "Done : " + record.Activity + " : " + record.StatusDescription;
+				Far.Api.UI.WindowTitle = "Done : " + record.Activity + " : " + record.StatusDescription;
 
 				// win7 NoProgress
-				Far.Net.UI.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
+				Far.Api.UI.SetProgressState(FarNet.TaskbarProgressBarState.NoProgress);
 
 				return;
 			}
@@ -107,10 +107,10 @@ namespace PowerShellFar
 				text = string.Empty + record.PercentComplete + "% " + text;
 			if (record.SecondsRemaining > 0)
 				text = string.Empty + record.SecondsRemaining + " sec. " + text;
-			Far.Net.UI.WindowTitle = text;
+			Far.Api.UI.WindowTitle = text;
 
 			// win7 %
-			Far.Net.UI.SetProgressValue(record.PercentComplete, 100);
+			Far.Api.UI.SetProgressValue(record.PercentComplete, 100);
 		}
 		Stopwatch _progressWatch = Stopwatch.StartNew();
 

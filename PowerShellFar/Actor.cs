@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -83,8 +83,8 @@ namespace PowerShellFar
 			// subscribe
 			// editor events: OnEditorOpened1 should be called always and first
 			// do Invoking() (at least for TabExpansion) and the startup code
-			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened1;
-			Far.Net.AnyEditor.Opened += EditorKit.OnEditorOpened2;
+			Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened1;
+			Far.Api.AnyEditor.Opened += EditorKit.OnEditorOpened2;
 
 			//! subscribe only _110301_164313
 			Console.CancelKeyPress += CancelKeyPress; //_110128_075844
@@ -101,8 +101,8 @@ namespace PowerShellFar
 			//Console.CancelKeyPress -= CancelKeyPress; //_110128_075844
 
 			// unsubscribe
-			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
-			Far.Net.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
+			Far.Api.AnyEditor.Opened -= EditorKit.OnEditorOpened2;
+			Far.Api.AnyEditor.Opened -= EditorKit.OnEditorOpened1;
 
 			// kill menu
 			UI.ActorMenu.Destroy();
@@ -228,7 +228,7 @@ namespace PowerShellFar
 				PSVariable var1 = new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
 				var1.Description = "Exposes PowerShellFar.";
 				Engine.SessionState.PSVariable.Set(var1);
-				PSVariable var2 = new PSVariable("Far", Far.Net, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
+				PSVariable var2 = new PSVariable("Far", Far.Api, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
 				var2.Description = "Exposes FarNet.";
 				Engine.SessionState.PSVariable.Set(var2);
 
@@ -261,7 +261,7 @@ Code (see configuration):
 Reason (see also $Error):
 {1}
 ", Settings.StartupCode, ex.Message);
-						Far.Net.Message(msg, Res.Me, MessageOptions.Warning | MessageOptions.Gui | MessageOptions.Ok);
+						Far.Api.Message(msg, Res.Me, MessageOptions.Warning | MessageOptions.Gui | MessageOptions.Ok);
 					}
 				}
 			}
@@ -318,7 +318,7 @@ For known issues see 'Problems and solutions' in the manual.
 				ArrayList errors = Engine.SessionState.PSVariable.GetValue("Error") as ArrayList;
 				if (errors != null && errors.Count > 0)
 				{
-					Far.Net.Message(@"
+					Far.Api.Message(@"
 The startup code was invoked with errors.
 View the error list or the variable $Error.
 ", "PowerShellFar startup errors", MessageOptions.Gui);
@@ -339,12 +339,12 @@ View the error list or the variable $Error.
 				return null;
 
 			// don't on no panels mode
-			IPanel panel = Far.Net.Panel;
+			IPanel panel = Far.Api.Panel;
 			if (panel == null)
 				return null;
 
 			// at first get both paths: for the current system directory and provider location
-			string directory = Far.Net.CurrentDirectory;
+			string directory = Far.Api.CurrentDirectory;
 			string location = null;
 			if (panel.IsPlugin)
 			{
@@ -401,7 +401,7 @@ Continue with this current location?
 {1}
 ", location, currentLocation);
 
-					switch (Far.Net.Message(message, Res.Me, MessageOptions.GuiOnMacro | MessageOptions.AbortRetryIgnore | MessageOptions.Warning | MessageOptions.LeftAligned))
+					switch (Far.Api.Message(message, Res.Me, MessageOptions.GuiOnMacro | MessageOptions.AbortRetryIgnore | MessageOptions.Warning | MessageOptions.LeftAligned))
 					{
 						case 1:
 							break;
@@ -410,8 +410,8 @@ Continue with this current location?
 							_failedInvokingLocationOld = currentLocation;
 							break;
 						default:
-							if (Far.Net.MacroState != MacroState.None)
-								Far.Net.UI.Break();
+							if (Far.Api.MacroState != MacroState.None)
+								Far.Api.UI.Break();
 							throw;
 					}
 				}
@@ -447,7 +447,7 @@ Continue with this current directory?
 {1}
 ", directory, currentDirectory);
 
-					switch (Far.Net.Message(message, Res.Me, MessageOptions.GuiOnMacro | MessageOptions.AbortRetryIgnore | MessageOptions.Warning | MessageOptions.LeftAligned))
+					switch (Far.Api.Message(message, Res.Me, MessageOptions.GuiOnMacro | MessageOptions.AbortRetryIgnore | MessageOptions.Warning | MessageOptions.LeftAligned))
 					{
 						case 1:
 							currentDirectory = null;
@@ -458,8 +458,8 @@ Continue with this current directory?
 							_failedInvokingDirectoryOld = currentDirectory;
 							break;
 						default:
-							if (Far.Net.MacroState != MacroState.None)
-								Far.Net.UI.Break();
+							if (Far.Api.MacroState != MacroState.None)
+								Far.Api.UI.Break();
 							throw;
 					}
 				}
@@ -546,8 +546,8 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IEditor Editor()
 		{
-			IEditor editor = Far.Net.Editor;
-			if (editor == null || Far.Net.Window.Kind != WindowKind.Editor)
+			IEditor editor = Far.Api.Editor;
+			if (editor == null || Far.Api.Window.Kind != WindowKind.Editor)
 				throw new InvalidOperationException(Res.NeedsEditor);
 
 			return editor;
@@ -595,7 +595,7 @@ Continue with this current directory?
 		{
 			string code = InputCode();
 			if (code != null)
-				Act(code, null, Far.Net.MacroState == MacroState.None);
+				Act(code, null, Far.Api.MacroState == MacroState.None);
 		}
 		/// <summary>
 		/// Invokes the selected text or the current line text in the editor or the command line.
@@ -846,7 +846,7 @@ Continue with this current directory?
 			try
 			{
 				// win7 Indeterminate
-				Far.Net.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
+				Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
 
 				// add history
 				if (addHistory)
@@ -875,8 +875,8 @@ Continue with this current directory?
 					// push console color
 					if (writer is ConsoleOutputWriter)
 					{
-						color1 = Far.Net.UI.ForegroundColor;
-						Far.Net.UI.ForegroundColor = Settings.ErrorForegroundColor;
+						color1 = Far.Api.UI.ForegroundColor;
+						Far.Api.UI.ForegroundColor = Settings.ErrorForegroundColor;
 					}
 
 					// write the reson
@@ -888,14 +888,14 @@ Continue with this current directory?
 					// pop console color
 					if (color1 != ConsoleColor.Black)
 					{
-						Far.Net.UI.ForegroundColor = color1;
+						Far.Api.UI.ForegroundColor = color1;
 					}
 				}
 			}
 			finally
 			{
 				// win7 NoProgress
-				Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 
 				_myLastCommand = _myCommand;
 				_myCommand = null;
@@ -910,7 +910,7 @@ Continue with this current directory?
 					myWriter.Close();
 					if (myWriter.FileName != null)
 					{
-						var viewer = Far.Net.CreateViewer();
+						var viewer = Far.Api.CreateViewer();
 						viewer.Title = code;
 						viewer.FileName = myWriter.FileName;
 						viewer.DeleteSource = DeleteSource.File;

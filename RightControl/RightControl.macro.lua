@@ -2,118 +2,75 @@
 --[[
 	RightControl macros
 
-	6 macros in the common area:
+	6 macros for editor, edit box, command line: CtrlLeft/Right,
+	CtrlShiftLeft/Right, CtrlBS/Del.
 
-		CtrlLeft/Right
-		CtrlShiftLeft/Right
-		CtrlBS/Del
+	4 editor macros: CtrlAltLeft/Right, Home/ShiftHome.
 
-	4 editor macros:
+	2 workaround macros ShiftLeft/Right for edit box and command line. They
+	should be removed when Mantis 1465 is resolved.
 
-		CtrlAltLeft/Right,
-		Home/ShiftHome.
-
-	2 workaround macros ShiftLeft/Right in the common area.
-	They should be removed when Mantis 1465 is resolved.
-
-	Note: Home/ShiftHome can be used in the common area, too, but file makes
-	them for the editor only. Smart home is not really useful for line editors
-	where text normally does not start with spaces.
+	Note: Home/ShiftHome can be used for edit box and command line, too, but
+	smart home is not useful where text normally does not start with spaces.
 ]]
 
-Macro {
-area="Common"; key="CtrlBS"; description="RightControl: delete left"; action=function()
-if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
+local areaAnyEditor="Editor Dialog DialogAutoCompletion Shell ShellAutoCompletion Info QView Tree"
+local areaLineEditor="Dialog DialogAutoCompletion Shell ShellAutoCompletion Info QView Tree"
+local isEditor=function() return not (Area.Shell or Area.ShellAutoCompletion or Area.Info or Area.QView or Area.Tree) or not CmdLine.Empty end
 
-if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-left")
-else
-	Keys("AKey")
-end
+Macro {
+key="CtrlBS"; description="RightControl: delete left"; area=areaAnyEditor; condition=isEditor; action=function()
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-left")
 end;
 }
 
 Macro {
-area="Common"; key="CtrlDel"; description="RightControl: delete right"; action=function()
+key="CtrlDel"; description="RightControl: delete right"; area=areaAnyEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-
-if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-right")
-else
-	Keys("AKey")
-end
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:delete-right")
 end;
 }
 
 Macro {
-area="Common"; key="CtrlLeft"; description="RightControl: step left"; action=function()
+key="CtrlLeft"; description="RightControl: step left"; area=areaAnyEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-
-if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
-else
-	Keys("AKey")
-end
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-left")
 end;
 }
 
 Macro {
-area="Common"; key="CtrlRight"; description="RightControl: step right"; action=function()
+key="CtrlRight"; description="RightControl: step right"; area=areaAnyEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-
-if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-right")
-else
-	Keys("AKey")
-end
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:step-right")
 end;
 }
 
 Macro {
-area="Common"; key="CtrlShiftLeft"; description="RightControl: select left"; action=function()
+key="CtrlShiftLeft"; description="RightControl: select left"; area=areaAnyEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-
-if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-left")
-else
-	Keys("AKey")
-end
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-left")
 end;
 }
 
 Macro {
-area="Common"; key="CtrlShiftRight"; description="RightControl: select right"; action=function()
+key="CtrlShiftRight"; description="RightControl: select right"; area=areaAnyEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-
-if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-right")
-else
-	Keys("AKey")
-end
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:select-right")
 end;
 }
 
 Macro {
-area="Common"; key="ShiftLeft"; description="RightControl: workaround left"; action=function()
+key="ShiftLeft"; description="RightControl: workaround left"; area=areaLineEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-
-if Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
-else
-	Keys("AKey")
-end
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-left")
 end;
 }
 
 Macro {
-area="Common"; key="ShiftRight"; description="RightControl: workaround right"; action=function()
+key="ShiftRight"; description="RightControl: workaround right"; area=areaLineEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
-
-if Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
-else
-	Keys("AKey")
-end
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "RightControl:vertical-right")
 end;
 }
 

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -113,7 +113,7 @@ namespace FarNet
 					return;
 
 				// target?
-				var native = Far.Net.Panel2;
+				var native = Far.Api.Panel2;
 				if (native.IsPlugin || native.Kind != PanelKind.File)
 					return;
 
@@ -360,7 +360,7 @@ namespace FarNet
 				return;
 
 			// target
-			var temp = Far.Net.TempName();
+			var temp = Far.Api.TempName();
 
 			// export
 			var xExportArgs = WorksExportExplorerFile(Explorer, this, ExplorerModes.Edit, file, temp);
@@ -371,7 +371,7 @@ namespace FarNet
 			var asExportFileEventArgs = xExportArgs as GetContentEventArgs;
 			if (asExportFileEventArgs != null && !string.IsNullOrEmpty(asExportFileEventArgs.UseFileName))
 			{
-				var editorActual = Far.Net.CreateEditor();
+				var editorActual = Far.Api.CreateEditor();
 				editorActual.FileName = asExportFileEventArgs.UseFileName;
 				editorActual.Title = file.Name;
 				if (!asExportFileEventArgs.CanSet)
@@ -389,7 +389,7 @@ namespace FarNet
 			}
 
 			// editor
-			var editorTemp = Far.Net.CreateEditor();
+			var editorTemp = Far.Api.CreateEditor();
 			editorTemp.DeleteSource = DeleteSource.File;
 			editorTemp.DisableHistory = true;
 			editorTemp.FileName = temp;
@@ -444,7 +444,7 @@ namespace FarNet
 				return;
 
 			// target
-			var temp = Far.Net.TempName();
+			var temp = Far.Api.TempName();
 
 			// export
 			var xExportArgs = WorksExportExplorerFile(Explorer, this, ExplorerModes.View, file, temp);
@@ -455,7 +455,7 @@ namespace FarNet
 			var asExportFileEventArgs = xExportArgs as GetContentEventArgs;
 			if (asExportFileEventArgs != null && !string.IsNullOrEmpty(asExportFileEventArgs.UseFileName))
 			{
-				var viewerActual = Far.Net.CreateViewer();
+				var viewerActual = Far.Api.CreateViewer();
 				viewerActual.FileName = asExportFileEventArgs.UseFileName;
 				viewerActual.Title = file.Name;
 				viewerActual.Open();
@@ -463,7 +463,7 @@ namespace FarNet
 			}
 
 			// viewer
-			var viewerTemp = Far.Net.CreateViewer();
+			var viewerTemp = Far.Api.CreateViewer();
 			viewerTemp.DeleteSource = DeleteSource.File;
 			viewerTemp.DisableHistory = true;
 			viewerTemp.FileName = temp;
@@ -720,7 +720,7 @@ namespace FarNet
 
 				case KeyCode.Delete:
 
-					if (Far.Net.CommandLine.Length > 0)
+					if (Far.Api.CommandLine.Length > 0)
 						break;
 
 					goto case KeyCode.F8;
@@ -783,7 +783,7 @@ namespace FarNet
 		bool NeedDefaultCopy()
 		{
 			// target panel
-			var panel2 = Far.Net.Panel2;
+			var panel2 = Far.Api.Panel2;
 
 			// module panel
 			if (panel2 is Panel)

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightWords
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using System;
@@ -16,7 +16,7 @@ namespace FarNet.RightWords
 	{
 		public static readonly List<DictionaryInfo> Dictionaries = new List<DictionaryInfo>();
 		public static readonly HashSet<string> IgnoreWords = new HashSet<string>();
-		static readonly IModuleManager Manager = Far.Net.GetModuleManager(Settings.ModuleName);
+		static readonly IModuleManager Manager = Far.Api.GetModuleManager(Settings.ModuleName);
 		static readonly WeakReference CommonWords = new WeakReference(null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		static readonly bool Initialized = Initialize();
@@ -84,15 +84,15 @@ namespace FarNet.RightWords
 			ILine line = null;
 			IEditor editor = null;
 
-			var kind = Far.Net.Window.Kind;
+			var kind = Far.Api.Window.Kind;
 			if (kind == WindowKind.Editor)
 			{
-				editor = Far.Net.Editor;
+				editor = Far.Api.Editor;
 				line = editor[-1];
 			}
 			else
 			{
-				line = Far.Net.Line;
+				line = Far.Api.Line;
 				if (line == null)
 					return;
 			}
@@ -120,7 +120,7 @@ namespace FarNet.RightWords
 			}
 
 			// show suggestions
-			var cursor = Far.Net.UI.WindowCursor;
+			var cursor = Far.Api.UI.WindowCursor;
 			var menu = new UIWordMenu(words, word, cursor.X, cursor.Y + 1);
 
 			// cancel or ignore:
@@ -151,7 +151,7 @@ namespace FarNet.RightWords
 		public static void ShowThesaurus()
 		{
 			string word = string.Empty;
-			var line = Far.Net.Line;
+			var line = Far.Api.Line;
 			if (line != null)
 			{
 				var match = MatchCaret(new Regex(Settings.Default.WordPattern, RegexOptions.IgnorePatternWhitespace), line.Text, line.Caret, false);
@@ -159,15 +159,15 @@ namespace FarNet.RightWords
 					word = match.Value;
 			}
 
-			word = Far.Net.Input(My.Word, Settings.ModuleName, My.Thesaurus, word);
+			word = Far.Api.Input(My.Word, Settings.ModuleName, My.Thesaurus, word);
 			if (word == null || (word = word.Trim()).Length == 0)
 				return;
 
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.Title = word;
 
-			Far.Net.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
-			Far.Net.UI.WindowTitle = My.Searching;
+			Far.Api.UI.SetProgressState(TaskbarProgressBarState.Indeterminate);
+			Far.Api.UI.WindowTitle = My.Searching;
 			try
 			{
 				using (var thesaurus = new MultiThesaurus(Dictionaries))
@@ -185,13 +185,13 @@ namespace FarNet.RightWords
 			}
 			finally
 			{
-				Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
 			}
 
 			if (!menu.Show())
 				return;
 
-			Far.Net.CopyToClipboard(menu.Items[menu.Selected].Text);
+			Far.Api.CopyToClipboard(menu.Items[menu.Selected].Text);
 		}
 		public static bool HasMatch(MatchCollection matches, Match match)
 		{
@@ -221,7 +221,7 @@ namespace FarNet.RightWords
 			var rightWords = GetCommonWords();
 
 			// initial editor data
-			var editor = Far.Net.Editor;
+			var editor = Far.Api.Editor;
 			var caret0 = editor.Caret;
 			int iLine1, iLine2;
 			if (editor.SelectionExists)
@@ -292,7 +292,7 @@ namespace FarNet.RightWords
 
 						// 2) reframe vertically (!! horisontal is sloppy), !! keep the caret
 						var frame = editor.Frame;
-						frame.VisibleLine = frame.CaretLine - Far.Net.UI.WindowSize.Y / 3;
+						frame.VisibleLine = frame.CaretLine - Far.Api.UI.WindowSize.Y / 3;
 						editor.Frame = frame;
 
 						// commit
@@ -383,7 +383,7 @@ namespace FarNet.RightWords
 			else
 				return new string[] { word };
 
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.Title = My.AddToDictionary;
 			menu.Add(word);
 			menu.Add(word + ", " + word2);
@@ -402,7 +402,7 @@ namespace FarNet.RightWords
 			languages.Sort();
 
 			// dictionary menu
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.Title = My.AddToDictionary;
 			menu.AutoAssignHotkeys = true;
 			menu.Add(My.Common);
@@ -461,7 +461,7 @@ namespace FarNet.RightWords
 						if (stems.Count == 0 || stems.Count == 1 && stems[0] == stem2)
 							continue;
 
-						var menu2 = Far.Net.CreateMenu();
+						var menu2 = Far.Api.CreateMenu();
 						menu2.Title = My.ExampleStem;
 						foreach (var it in stems)
 							menu2.Add(it);

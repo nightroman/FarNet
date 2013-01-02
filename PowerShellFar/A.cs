@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -30,14 +30,14 @@ namespace PowerShellFar
 		/// </summary>
 		public static void Msg(Exception error)
 		{
-			Far.Net.Message(error.Message, "PowerShellFar error", MessageOptions.LeftAligned);
+			Far.Api.Message(error.Message, "PowerShellFar error", MessageOptions.LeftAligned);
 		}
 		/// <summary>
 		/// Shows a message.
 		/// </summary>
 		public static void Message(string message)
 		{
-			Far.Net.Message(message, Res.Me, MessageOptions.LeftAligned);
+			Far.Api.Message(message, Res.Me, MessageOptions.LeftAligned);
 		}
 		/// <summary>
 		/// Creates standard Far viewer ready for opening (F3)
@@ -45,7 +45,7 @@ namespace PowerShellFar
 		/// <param name="filePath">Existing file to view.</param>
 		public static IViewer CreateViewer(string filePath)
 		{
-			IViewer view = Far.Net.CreateViewer();
+			IViewer view = Far.Api.CreateViewer();
 			view.FileName = filePath;
 			return view;
 		}
@@ -154,7 +154,7 @@ namespace PowerShellFar
 			foreach (object o in ps.Streams.Error)
 				sb.AppendLine(o.ToString());
 
-			Far.Net.Message(sb.ToString(), "PowerShellFar error(s)", MessageOptions.LeftAligned);
+			Far.Api.Message(sb.ToString(), "PowerShellFar error(s)", MessageOptions.LeftAligned);
 			return true;
 		}
 		/// <summary>
@@ -171,7 +171,7 @@ namespace PowerShellFar
 				}
 				catch (IOException ex)
 				{
-					Far.Net.ShowError(Res.Me, ex);
+					Far.Api.ShowError(Res.Me, ex);
 				}
 			}
 		}
@@ -488,7 +488,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				Far.Net.Message(ex.Message, "Setting property");
+				Far.Api.Message(ex.Message, "Setting property");
 			}
 		}
 		/// <summary>

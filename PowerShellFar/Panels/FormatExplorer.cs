@@ -1,7 +1,7 @@
 ﻿
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -65,7 +65,7 @@ namespace PowerShellFar
 			catch (RuntimeException ex)
 			{
 				if (args.UI)
-					Far.Net.ShowError(Res.Me, ex);
+					Far.Api.ShowError(Res.Me, ex);
 
 				data = new List<FarFile>();
 			}

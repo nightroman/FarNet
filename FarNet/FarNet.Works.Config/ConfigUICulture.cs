@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -17,7 +17,7 @@ namespace FarNet.Works
 			if (managers == null)
 				return;
 
-			IMenu menu = Far.Net.CreateMenu();
+			IMenu menu = Far.Api.CreateMenu();
 			menu.Title = "Module UI culture";
 			menu.HelpTopic = helpTopic;
 			menu.AutoAssignHotkeys = true;
@@ -43,7 +43,7 @@ namespace FarNet.Works
 				IModuleManager manager = (IModuleManager)menu.SelectedData;
 
 				// show the input box
-				IInputBox ib = Far.Net.CreateInputBox();
+				IInputBox ib = Far.Api.CreateInputBox();
 				ib.Title = manager.ModuleName;
 				ib.Prompt = "Culture name (empty = the Far culture)";
 				ib.Text = manager.StoredUICulture;
@@ -67,14 +67,14 @@ namespace FarNet.Works
 
 					// use the current Far culture instead of invariant
 					if (ci.Name.Length == 0)
-						ci = Far.Net.GetCurrentUICulture(true);
+						ci = Far.Api.GetCurrentUICulture(true);
 
 					// update the module
 					manager.CurrentUICulture = ci;
 				}
 				catch (ArgumentException)
 				{
-					Far.Net.Message("Unknown culture name.");
+					Far.Api.Message("Unknown culture name.");
 				}
 			}
 		}

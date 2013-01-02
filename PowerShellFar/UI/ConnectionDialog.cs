@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using FarNet;
@@ -22,7 +22,7 @@ namespace PowerShellFar.UI
 
 		public ConnectionDialog(string title)
 		{
-			_Dialog = Far.Net.CreateDialog(-1, -1, 77, 8);
+			_Dialog = Far.Api.CreateDialog(-1, -1, 77, 8);
 			_Dialog.AddBox(3, 1, 0, 0, title);
 
 			_Dialog.AddText(5, -1, 0, "&Computer");

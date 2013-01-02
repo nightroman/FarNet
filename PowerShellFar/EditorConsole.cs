@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -45,12 +45,12 @@ namespace PowerShellFar
 			int mode = 0;
 			if (prompt)
 			{
-				IMenu menu = Far.Net.CreateMenu();
+				IMenu menu = Far.Api.CreateMenu();
 				menu.Title = "Open Editor Console";
 				menu.Add("&1. Main session");
 				menu.Add("&2. New local session");
 				menu.Add("&3. New remote session");
-				menu.HelpTopic = Far.Net.GetHelpTopic("EditorConsoleMenuOpen");
+				menu.HelpTopic = Far.Api.GetHelpTopic("EditorConsoleMenuOpen");
 
 				if (!menu.Show())
 					return null;
@@ -59,7 +59,7 @@ namespace PowerShellFar
 			}
 
 			// editor
-			IEditor editor = Far.Net.CreateEditor();
+			IEditor editor = Far.Api.CreateEditor();
 			editor.FileName = GetFilePath();
 			editor.CodePage = Encoding.Unicode.CodePage;
 			editor.DisableHistory = true;
@@ -393,9 +393,9 @@ namespace PowerShellFar
 
 			// default runspace
 			A.Psf.Act(code, writer, true);
-			if (Editor != Far.Net.Editor)
+			if (Editor != Far.Api.Editor)
 			{
-				Far.Net.Message(Res.EditorConsoleCannotComplete);
+				Far.Api.Message(Res.EditorConsoleCannotComplete);
 			}
 			else
 			{
@@ -436,7 +436,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				Far.Net.ShowError(Res.Me, ex);
+				Far.Api.ShowError(Res.Me, ex);
 			}
 		}
 		void AsyncInvoke(IAsyncResult ar)

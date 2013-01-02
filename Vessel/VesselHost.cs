@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using System;
@@ -39,8 +39,8 @@ namespace FarNet.Vessel
 				Record.CreateLogFile(_LogPath);
 
 			// subscribe
-			Far.Net.AnyViewer.Closed += OnViewerClosed;
-			Far.Net.AnyEditor.Closed += OnEditorClosed;
+			Far.Api.AnyViewer.Closed += OnViewerClosed;
+			Far.Api.AnyEditor.Closed += OnEditorClosed;
 		}
 		static void OnViewerClosed(object sender, EventArgs e)
 		{
@@ -54,7 +54,7 @@ namespace FarNet.Vessel
 				return;
 
 			// quick view, presumably
-			if (Far.Net.Window.Kind == WindowKind.Panels)
+			if (Far.Api.Window.Kind == WindowKind.Panels)
 				return;
 
 			// go

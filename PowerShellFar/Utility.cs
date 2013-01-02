@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -57,7 +57,7 @@ namespace PowerShellFar
 				}
 				catch (Win32Exception)
 				{
-					Far.Net.Message(
+					Far.Api.Message(
 						"Cannot start the external viewer, default viewer will be used.\nYour settings:\nExternalViewerFileName: " + externalViewerFileName + "\nExternalViewerArguments: " + Settings.Default.ExternalViewerArguments,
 						Res.Me, MessageOptions.LeftAligned | MessageOptions.Warning);
 				}
@@ -83,7 +83,7 @@ namespace PowerShellFar
 			}
 			else
 			{
-				var viewer = Far.Net.CreateViewer();
+				var viewer = Far.Api.CreateViewer();
 				viewer.Title = Path.GetFileName(A.Psf.Transcript.FileName);
 				viewer.FileName = A.Psf.Transcript.FileName;
 				viewer.CodePage = 1200;

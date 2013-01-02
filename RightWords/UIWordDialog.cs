@@ -1,7 +1,7 @@
 
 /*
 FarNet module RightWords
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using FarNet.Forms;
@@ -17,7 +17,7 @@ namespace FarNet.RightWords
 			const int h = 6;
 			const int x = 20;
 
-			_Dialog = Far.Net.CreateDialog(-1, -1, 77, h);
+			_Dialog = Far.Api.CreateDialog(-1, -1, 77, h);
 			_Dialog.AddBox(3, 1, 0, 0, My.AddToDictionary);
 			int y = 1;
 

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module CopyColor
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using System;
@@ -23,7 +23,7 @@ namespace FarNet.CopyColor
 		}
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
-			var editor = Far.Net.Editor;
+			var editor = Far.Api.Editor;
 
 			int iLine1, iLine2;
 			if (editor.SelectionExists)
@@ -57,7 +57,7 @@ namespace FarNet.CopyColor
 				int max = spans.Count > 0 ? spans.Max(x => x.End) : -1;
 				if (min > 0 || max < text.Length)
 				{
-					Far.Net.Message(@"
+					Far.Api.Message(@"
 Cannot copy: part of the selected test has no colors.
 Try to scroll the text. Long lines are not supported.
 ", ModuleName);

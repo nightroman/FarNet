@@ -29,11 +29,11 @@ namespace FarNet.Demo
 			var fileName = Path.Combine(Manager.GetFolderPath(SpecialFolder.LocalData, true), TracingFile);
 
 			// create the menu instance
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.Title = GetString("MenuTitle");
 
 			// set this menu help topic
-			menu.HelpTopic = Far.Net.GetHelpTopic("TracingMenu");
+			menu.HelpTopic = Far.Api.GetHelpTopic("TracingMenu");
 
 			// add the menu items
 
@@ -81,7 +81,7 @@ namespace FarNet.Demo
 				{
 					case 0:
 						// open the tracing file in the viewer
-						var viewer = Far.Net.CreateViewer();
+						var viewer = Far.Api.CreateViewer();
 						viewer.Switching = Switching.Disabled;
 						viewer.FileName = fileName;
 						viewer.Open();
