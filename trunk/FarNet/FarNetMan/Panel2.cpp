@@ -1075,7 +1075,8 @@ int Panel2::AsSetDirectory(const SetDirectoryInfo* info)
 	}
 	else
 	{
-		ExploreDirectoryEventArgs^ args = gcnew ExploreDirectoryEventArgs(mode, Host->CurrentFile);
+		FarFile^ file = GetFileByUserData(info->UserData.Data);
+		ExploreDirectoryEventArgs^ args = gcnew ExploreDirectoryEventArgs(mode, file);
 		explorer2 = Host->UIExploreDirectory(args);
 		args2 = args;
 	}
@@ -1090,7 +1091,17 @@ int Panel2::AsSetDirectory(const SetDirectoryInfo* info)
 
 FarFile^ Panel2::GetItemFile(const PluginPanelItem& panelItem)
 {
-	int key = (int)(INT_PTR)panelItem.UserData.Data;
+	int key = (int)panelItem.UserData.Data;
+	if (key > 0)
+		return _Files_[key - 1];
+	if (key < -1)
+		return FileStore::GetFile(key);
+	return nullptr;
+}
+
+FarFile^ Panel2::GetFileByUserData(void* data)
+{
+	int key = (int)data;
 	if (key > 0)
 		return _Files_[key - 1];
 	if (key < -1)
