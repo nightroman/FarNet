@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -73,7 +73,7 @@ namespace FarNet.Works
 			sClose = "Close panel";
 		public static void ShowPanelsMenu()
 		{
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
 			menu.HelpTopic = "MenuPanels";
 			menu.ShowAmpersands = true;
@@ -84,7 +84,7 @@ namespace FarNet.Works
 	
 			for(;; menu.Items.Clear())
 			{
-				IPanel panel = Far.Net.Panel;
+				IPanel panel = Far.Api.Panel;
 				Panel module = null;
 		
 				// Push/Shelve

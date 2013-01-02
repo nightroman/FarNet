@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -104,7 +104,7 @@ void CopyStringToChars(String^ str, wchar_t* buffer)
 
 void ThrowEditorLocked()
 {
-	if (Far::Net->Editor->IsLocked)
+	if (Far::Api->Editor->IsLocked)
 		throw gcnew InvalidOperationException("Editor is locked for changes. Unlock by [CtrlL].");
 }
 

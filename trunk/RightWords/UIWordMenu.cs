@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightWords
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace FarNet.RightWords
 		public UIWordMenu(List<string> words, string word, int column, int line)
 		{
 			// menu
-			_menu = Far.Net.CreateListMenu();
+			_menu = Far.Api.CreateListMenu();
 			_menu.Title = word;
 			_menu.NoInfo = true;
 			_menu.X = column;

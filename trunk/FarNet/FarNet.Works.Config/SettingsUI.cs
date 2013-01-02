@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -28,7 +28,7 @@ namespace FarNet.Works.Config
 
 			// do menu
 			
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
 			menu.Title = "Module settings";
 			menu.HelpTopic = HelpSettings;

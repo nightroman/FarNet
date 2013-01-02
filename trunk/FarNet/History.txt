@@ -1,5 +1,16 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.31 =
+
+Use Far 3.0.3040+. FarNet uses new Far API for setting directories in panels.
+
+Renamed the API property Far.Net to Far.Api. The old name still works but it is
+obsolete and going to be removed in the next version. Upgrade your modules now.
+
+Far.Line also works when auto complete menu is shown in command line. WARNING:
+In dialogs getting Far.Line on opened auto complete hangs in Far. A workaround
+is to check for and close auto complete and then only get Far.Line.
+
 = 5.0.30 =
 
 Improved diagnostics on failed changes in a locked editor. The exception

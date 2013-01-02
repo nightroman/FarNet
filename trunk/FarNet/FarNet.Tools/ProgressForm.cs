@@ -154,7 +154,7 @@ namespace FarNet.Tools
 				}
 				else
 				{
-					Far.Net.PostJob(delegate { base.Close(); });
+					Far.Api.PostJob(delegate { base.Close(); });
 				}
 			}
 		}
@@ -209,8 +209,8 @@ namespace FarNet.Tools
 			}
 			finally
 			{
-				Far.Net.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
-				Far.Net.UI.SetProgressFlash();
+				Far.Api.UI.SetProgressState(TaskbarProgressBarState.NoProgress);
+				Far.Api.UI.SetProgressFlash();
 			}
 		}
 

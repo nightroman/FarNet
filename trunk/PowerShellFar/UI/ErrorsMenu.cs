@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -19,9 +19,9 @@ namespace PowerShellFar.UI
 		readonly IMenu _menu;
 		public ErrorsMenu()
 		{
-			_menu = Far.Net.CreateMenu();
+			_menu = Far.Api.CreateMenu();
 			_menu.Title = "PowerShell errors ($Error)";
-			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuErrors");
+			_menu.HelpTopic = Far.Api.GetHelpTopic("MenuErrors");
 			_menu.AddKey(KeyCode.Delete);
 			_menu.AddKey(KeyCode.F4);
 		}
@@ -78,7 +78,7 @@ namespace PowerShellFar.UI
 					if (_menu.Key.VirtualKeyCode != 0)
 						continue;
 
-					Far.Net.ShowError(null, asException);
+					Far.Api.ShowError(null, asException);
 					continue;
 				}
 
@@ -89,7 +89,7 @@ namespace PowerShellFar.UI
 					{
 						if (!string.IsNullOrEmpty(asRecord.InvocationInfo.ScriptName) && File.Exists(asRecord.InvocationInfo.ScriptName))
 						{
-							IEditor editor = Far.Net.CreateEditor();
+							IEditor editor = Far.Api.CreateEditor();
 							editor.FileName = asRecord.InvocationInfo.ScriptName;
 							editor.GoTo(0, asRecord.InvocationInfo.ScriptLineNumber - 1);
 							editor.Open(OpenMode.None);
@@ -97,7 +97,7 @@ namespace PowerShellFar.UI
 						}
 					}
 
-					Far.Net.ShowError(null, asRecord.Exception);
+					Far.Api.ShowError(null, asRecord.Exception);
 					continue;
 				}
 			}

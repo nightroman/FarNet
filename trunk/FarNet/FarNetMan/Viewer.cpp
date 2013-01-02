@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -28,7 +28,7 @@ void Viewer::Open(OpenMode mode)
 	if (ValueUserScreen::Get()) //????
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->UI->SaveUserScreen();
+		Far::Api->UI->SaveUserScreen();
 	}
 
 	// flags
@@ -72,7 +72,7 @@ void Viewer::Open(OpenMode mode)
 	PIN_ES(pinTitle, _Title);
 
 	// from dialog? set modal
-	WindowKind wt = Far::Net->Window->Kind;
+	WindowKind wt = Far::Api->Window->Kind;
 	if (wt == WindowKind::Dialog)
 		flags &= ~VF_NONMODAL;
 
@@ -91,7 +91,7 @@ void Viewer::Open(OpenMode mode)
 
 	// redraw Far
 	if (wt == WindowKind::Dialog)
-		Far::Net->UI->Redraw();
+		Far::Api->UI->Redraw();
 
 	// errors: see editor
 	if (_id == -1)
@@ -340,17 +340,17 @@ DateTime Viewer::TimeOfOpen::get()
 
 void Viewer::Activate()
 {
-	int nWindow = Far::Net->Window->Count;
+	int nWindow = Far::Api->Window->Count;
 	for(int i = 0; i < nWindow; ++i)
 	{
-		WindowKind kind = Far::Net->Window->GetKindAt(i);
+		WindowKind kind = Far::Api->Window->GetKindAt(i);
 		if (kind != WindowKind::Viewer)
 			continue;
 		
-		String^ name = Far::Net->Window->GetNameAt(i);
+		String^ name = Far::Api->Window->GetNameAt(i);
 		if (name == _FileName)
 		{
-			Far::Net->Window->SetCurrentAt(i);
+			Far::Api->Window->SetCurrentAt(i);
 			return;
 		}
 	}

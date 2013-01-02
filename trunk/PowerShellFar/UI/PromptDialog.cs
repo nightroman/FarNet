@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace PowerShellFar.UI
 		//?? F1, to use FieldDescription.HelpMessage
 		public PromptDialog(string caption, string message, ICollection<FieldDescription> descriptions)
 		{
-			int w = Far.Net.UI.WindowSize.X - 7;
+			int w = Far.Api.UI.WindowSize.X - 7;
 
 			var lines = new List<string>();
 			FarNet.Works.Kit.FormatMessage(lines, message, w - 10, 3, FarNet.Works.FormatMessageMode.Word);
@@ -30,7 +30,7 @@ namespace PowerShellFar.UI
 
 			int h = 4 + lines.Count + descriptions.Count;
 
-			Dialog = Far.Net.CreateDialog(-1, -1, w, h);
+			Dialog = Far.Api.CreateDialog(-1, -1, w, h);
 			Dialog.AddBox(3, 1, w - 4, h - 2, caption);
 			foreach (string s in lines)
 				Dialog.AddText(5, -1, w - 6, s);

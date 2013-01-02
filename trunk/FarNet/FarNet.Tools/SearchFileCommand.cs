@@ -160,7 +160,7 @@ namespace FarNet.Tools
 				: new string[] { "&Close", "&Push", "Cancel" };
 
 			// ask
-			int ask = Far.Net.Message("How would you like to continue?", "Search", MessageOptions.None, buttons);
+			int ask = Far.Api.Message("How would you like to continue?", "Search", MessageOptions.None, buttons);
 
 			// close
 			if (ask == 0)
@@ -232,10 +232,10 @@ namespace FarNet.Tools
 		}
 		bool UIUserStop()
 		{
-			if (Far.Net.UI.ReadKeys(new KeyData(KeyCode.Escape)) < 0)
+			if (Far.Api.UI.ReadKeys(new KeyData(KeyCode.Escape)) < 0)
 				return false;
 
-			if (0 != Far.Net.Message(Res.StopSearch, Res.Search, MessageOptions.OkCancel))
+			if (0 != Far.Api.Message(Res.StopSearch, Res.Search, MessageOptions.OkCancel))
 				return false;
 
 			Stopping = true;

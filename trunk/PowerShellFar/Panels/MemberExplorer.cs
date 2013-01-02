@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -220,9 +220,9 @@ namespace PowerShellFar
 			}
 
 			// ask
-			if (args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete"))
+			if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
 			{
-				if (Far.Net.Message("Delete selected members", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
+				if (Far.Api.Message("Delete selected members", Res.Delete, MessageOptions.None, new string[] { Res.Delete, Res.Cancel }) != 0)
 				{
 					args.Result = JobResult.Ignore;
 					return;

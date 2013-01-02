@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -25,7 +25,7 @@ namespace FarNet.Works
 		public ModuleCache()
 		{
 			//! read the cache; do not check existence, normally it exists
-			_FileName = Far.Net.GetFolderPath(SpecialFolder.LocalData) + @"\FarNet\Cache.binary";
+			_FileName = Far.Api.GetFolderPath(SpecialFolder.LocalData) + @"\FarNet\Cache.binary";
 			try
 			{
 				object deserialized;
@@ -47,7 +47,7 @@ namespace FarNet.Works
 			{
 				_Cache = null;
 				_ToUpdate = true;
-				Far.Net.ShowError("Reading cache", ex);
+				Far.Api.ShowError("Reading cache", ex);
 			}
 
 			// new empty cache
@@ -100,7 +100,7 @@ namespace FarNet.Works
 				}
 				catch (Exception ex)
 				{
-					Far.Net.ShowError("Writing cache", ex);
+					Far.Api.ShowError("Writing cache", ex);
 				}
 			}
 		}

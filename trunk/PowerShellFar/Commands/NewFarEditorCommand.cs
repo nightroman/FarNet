@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -25,7 +25,7 @@ namespace PowerShellFar.Commands
 		SwitchParameter? _IsLocked;
 		internal IEditor CreateEditor()
 		{
-			IEditor editor = Far.Net.CreateEditor();
+			IEditor editor = Far.Api.CreateEditor();
 			editor.DeleteSource = DeleteSource;
 			editor.DisableHistory = DisableHistory;
 			editor.FileName = Path;

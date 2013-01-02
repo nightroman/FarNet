@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -141,7 +141,7 @@ namespace PowerShellFar
 			}
 			catch (RuntimeException ex)
 			{
-				Far.Net.ShowError("Edit", ex);
+				Far.Api.ShowError("Edit", ex);
 			}
 		}
 		///
@@ -187,7 +187,7 @@ namespace PowerShellFar
 			if (args == null) return;
 
 			// to ask
-			bool confirm = args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete");
+			bool confirm = args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete");
 
 			// names to be deleted
 			List<string> names = A.FileNameList(args.Files);
@@ -200,7 +200,7 @@ namespace PowerShellFar
 					if (Kit.Equals(names[i], "(default)"))
 					{
 						// remove or not
-						if (!confirm || 0 == Far.Net.Message("Delete the (default) property", Res.Delete, MessageOptions.YesNo))
+						if (!confirm || 0 == Far.Api.Message("Delete the (default) property", Res.Delete, MessageOptions.YesNo))
 							A.Psf.Engine.InvokeProvider.Property.Remove(Kit.EscapeWildcard(ItemPath), string.Empty);
 
 						// remove from the list in any case

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using System;
@@ -46,10 +46,10 @@ namespace FarNet.Vessel
 			{
 				writer.WriteLine(LINE_HEADER);
 
-				foreach(var it in Far.Net.History.Editor())
+				foreach(var it in Far.Api.History.Editor())
 					writer.WriteLine(LINE_FORMAT, it.Time, 0, "edit", it.Name);
 
-				foreach (var it in Far.Net.History.Viewer())
+				foreach (var it in Far.Api.History.Viewer())
 					writer.WriteLine(LINE_FORMAT, it.Time, 0, "view", it.Name);
 			}
 		}

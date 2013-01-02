@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -139,7 +139,7 @@ namespace PowerShellFar
 				return;
 			}
 
-			string tmp = Far.Net.TempName();
+			string tmp = Far.Api.TempName();
 			try
 			{
 				A.InvokeCode("$args[0] | Format-Table -AutoSize -ea 0 | Out-File -FilePath $args[1]", ShownItems, tmp);

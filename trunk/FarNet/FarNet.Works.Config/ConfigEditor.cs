@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace FarNet.Works
 			if (editors == null)
 				return;
 
-			IMenu menu = Far.Net.CreateMenu();
+			IMenu menu = Far.Api.CreateMenu();
 			menu.AutoAssignHotkeys = true;
 			menu.HelpTopic = helpTopic;
 			menu.Title = Res.ModuleEditors;
@@ -36,7 +36,7 @@ namespace FarNet.Works
 				FarItem mi = menu.Items[menu.Selected];
 				IModuleEditor editor = (IModuleEditor)mi.Data;
 
-				IInputBox ib = Far.Net.CreateInputBox();
+				IInputBox ib = Far.Api.CreateInputBox();
 				ib.EmptyEnabled = true;
 				ib.HelpTopic = helpTopic;
 				ib.History = "Masks";

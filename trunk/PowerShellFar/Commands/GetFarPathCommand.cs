@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Collections.Generic;
@@ -16,8 +16,8 @@ namespace PowerShellFar.Commands
 		public SwitchParameter Mirror { get; set; }
 		protected override void BeginProcessing()
 		{
-			IPanel panel1 = Passive ? Far.Net.Panel2 : Far.Net.Panel;
-			IPanel panel2 = Mirror ? (Passive ? Far.Net.Panel : Far.Net.Panel2) : panel1;
+			IPanel panel1 = Passive ? Far.Api.Panel2 : Far.Api.Panel;
+			IPanel panel2 = Mirror ? (Passive ? Far.Api.Panel : Far.Api.Panel2) : panel1;
 
 			// no panel?
 			if (panel1 == null || panel2 == null)

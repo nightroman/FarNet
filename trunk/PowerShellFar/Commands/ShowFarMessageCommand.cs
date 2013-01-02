@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -66,7 +66,7 @@ namespace PowerShellFar.Commands
 			if (LeftAligned)
 				options |= MessageOptions.LeftAligned;
 
-			int r = Far.Net.Message(Text ?? string.Empty, Caption, options, Choices, HelpTopic);
+			int r = Far.Api.Message(Text ?? string.Empty, Caption, options, Choices, HelpTopic);
 			if (!Draw && (Buttons != ButtonSet.Ok || Choices != null && Choices.Length > 0))
 				WriteObject(r);
 		}

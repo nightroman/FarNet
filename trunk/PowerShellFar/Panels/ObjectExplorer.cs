@@ -1,7 +1,7 @@
 ﻿
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -49,9 +49,9 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			if (args.UI && 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete"))
+			if (args.UI && 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete"))
 			{
-				if (Far.Net.Message("Remove object(s)?", Res.Remove, MessageOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
+				if (Far.Api.Message("Remove object(s)?", Res.Remove, MessageOptions.None, new string[] { Res.Remove, Res.Cancel }) != 0)
 				{
 					args.Result = JobResult.Ignore;
 					return;
@@ -261,7 +261,7 @@ namespace PowerShellFar
 				string.Format(null, "There are more than {0} panel files.", maximumFileCount) :
 				string.Format(null, "There are {0} panel files, the limit is {1}.", collection.Count, maximumFileCount);
 
-			return Far.Net.Message(message, "$Psf.Settings.MaximumPanelFileCount", MessageOptions.AbortRetryIgnore);
+			return Far.Api.Message(message, "$Psf.Settings.MaximumPanelFileCount", MessageOptions.AbortRetryIgnore);
 		}
 		///
 		public override void DoCreateFile(CreateFileEventArgs args)
@@ -271,7 +271,7 @@ namespace PowerShellFar
 			args.Result = JobResult.Ignore;
 
 			// prompt for a command
-			string code = Far.Net.MacroState == MacroState.None ? A.Psf.InputCode() : Far.Net.Input(null);
+			string code = Far.Api.MacroState == MacroState.None ? A.Psf.InputCode() : Far.Api.Input(null);
 			if (string.IsNullOrEmpty(code))
 				return;
 

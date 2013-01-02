@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -19,7 +19,7 @@ namespace PowerShellFar.UI
 
 		public NewValueDialog(string title)
 		{
-			Dialog = Far.Net.CreateDialog(-1, -1, 77, 9);
+			Dialog = Far.Api.CreateDialog(-1, -1, 77, 9);
 			Dialog.AddBox(3, 1, 0, 0, title);
 			int x = 11;
 

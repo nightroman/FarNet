@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
-[assembly: AssemblyCopyright("Copyright (c) 2011-2012 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2011-2013 Roman Kuzmin")]
 [assembly: AssemblyDescription("Spell-checker and thesaurus")]
 [assembly: AssemblyProduct("FarNet.RightWords")]
 [assembly: AssemblyTitle("FarNet module RightWords")]
@@ -20,7 +20,7 @@ namespace FarNet.RightWords
 		public const string GuidString = "ca7ecdc0-f446-4bff-a99d-06c90fe0a3a9";
 		public readonly static Guid Guid = new Guid(GuidString);
 		#region private
-		static readonly IModuleManager Manager = Far.Net.GetModuleManager(Settings.ModuleName);
+		static readonly IModuleManager Manager = Far.Api.GetModuleManager(Settings.ModuleName);
 		static string GetString(string name) { return Manager.GetString(name); }
 		#endregion
 		static public string AddToDictionary { get { return GetString("AddToDictionary"); } }

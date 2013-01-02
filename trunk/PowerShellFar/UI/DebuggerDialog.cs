@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -49,7 +49,7 @@ namespace PowerShellFar.UI
 				catch (IOException) { }
 			}
 
-			int dw = Math.Max(Math.Min(Far.Net.UI.WindowSize.X - 7, maxLine + 12), 73);
+			int dw = Math.Max(Math.Min(Far.Api.UI.WindowSize.X - 7, maxLine + 12), 73);
 			int dh = 22;
 
 			string title;
@@ -65,8 +65,8 @@ namespace PowerShellFar.UI
 				h1 = 2;
 			}
 
-			_Dialog = Far.Net.CreateDialog(-1, -1, dw, dh);
-			_Dialog.HelpTopic = Far.Net.GetHelpTopic("DebuggerDialog");
+			_Dialog = Far.Api.CreateDialog(-1, -1, dw, dh);
+			_Dialog.HelpTopic = Far.Api.GetHelpTopic("DebuggerDialog");
 			_Dialog.AddBox(3, 1, dw - 4, dh - 2, title);
 
 			_List1 = _Dialog.AddListBox(4, 2, dw - 5, h1 + 1, null);
@@ -196,7 +196,7 @@ namespace PowerShellFar.UI
 				{
 					if (_List2.Items.Count > 0)
 					{
-						IEditor editor = Far.Net.CreateEditor();
+						IEditor editor = Far.Api.CreateEditor();
 						editor.FileName = _InvocationInfo.ScriptName;
 						editor.IsLocked = true;
 						editor.GoToLine(_InvocationInfo.ScriptLineNumber - 1);

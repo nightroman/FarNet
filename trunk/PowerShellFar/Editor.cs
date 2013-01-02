@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -48,7 +48,7 @@ namespace PowerShellFar
 			// hot line
 			if (editLine == null)
 			{
-				editLine = Far.Net.Line;
+				editLine = Far.Api.Line;
 				if (editLine == null)
 				{
 					A.Message("There is no current editor line.");
@@ -88,7 +88,7 @@ namespace PowerShellFar
 						var re = new Regex(@"\$(global:|script:|private:)?(" + prefix + matchVar.Groups[3].Value + @"\w+:?)", RegexOptions.IgnoreCase);
 
 						var variables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-						foreach (var line1 in Far.Net.Editor.Lines)
+						foreach (var line1 in Far.Api.Editor.Lines)
 						{
 							foreach (Match m in re.Matches(line1.Text))
 							{
@@ -136,8 +136,8 @@ namespace PowerShellFar
 			else
 			{
 				// make menu
-				IListMenu menu = Far.Net.CreateListMenu();
-				var cursor = Far.Net.UI.WindowCursor;
+				IListMenu menu = Far.Api.CreateListMenu();
+				var cursor = Far.Api.UI.WindowCursor;
 				menu.X = cursor.X;
 				menu.Y = cursor.Y;
 				Settings.Default.PopupMenu(menu);
@@ -202,16 +202,16 @@ namespace PowerShellFar
 			get
 			{
 				// case: editor
-				if (Far.Net.Window.Kind == WindowKind.Editor)
+				if (Far.Api.Window.Kind == WindowKind.Editor)
 				{
-					var editor = Far.Net.Editor;
+					var editor = Far.Api.Editor;
 					if (editor.SelectionExists)
 						return editor.GetSelectedText();
 					return editor.Line.Text;
 				}
 
 				// other lines
-				ILine line = Far.Net.Line;
+				ILine line = Far.Api.Line;
 				if (line == null)
 					return string.Empty;
 				else
@@ -220,9 +220,9 @@ namespace PowerShellFar
 			set
 			{
 				// case: editor
-				if (Far.Net.Window.Kind == WindowKind.Editor)
+				if (Far.Api.Window.Kind == WindowKind.Editor)
 				{
-					var editor = Far.Net.Editor;
+					var editor = Far.Api.Editor;
 					switch (editor.SelectionKind)
 					{
 						case PlaceKind.Column:
@@ -237,7 +237,7 @@ namespace PowerShellFar
 				}
 
 				// other lines
-				ILine line = Far.Net.Line;
+				ILine line = Far.Api.Line;
 				if (line == null)
 					throw new InvalidOperationException("There is no current text to set.");
 				else
@@ -260,7 +260,7 @@ namespace PowerShellFar
 			}
 			finally
 			{
-				Far.Net.AnyEditor.Opened -= OnEditorOpened1;
+				Far.Api.AnyEditor.Opened -= OnEditorOpened1;
 			}
 		}
 		public static void OnEditorOpened2(object sender, EventArgs e)
@@ -365,22 +365,22 @@ namespace PowerShellFar
 		{
 			string code;
 			bool toCleanCmdLine = false;
-			WindowKind wt = Far.Net.Window.Kind;
+			WindowKind wt = Far.Api.Window.Kind;
 
 			if (wt == WindowKind.Editor)
 			{
-				var editor = Far.Net.Editor;
+				var editor = Far.Api.Editor;
 				code = editor.GetSelectedText();
 				if (string.IsNullOrEmpty(code))
 					code = editor[editor.Caret.Y].Text;
 			}
 			else if (wt == WindowKind.Dialog)
 			{
-				IDialog dialog = Far.Net.Dialog;
+				IDialog dialog = Far.Api.Dialog;
 				IEdit edit = dialog.Focused as IEdit;
 				if (edit == null)
 				{
-					Far.Net.Message("The current control has to be an edit box", Res.InvokeSelectedCode);
+					Far.Api.Message("The current control has to be an edit box", Res.InvokeSelectedCode);
 					return;
 				}
 				code = edit.Line.SelectedText;
@@ -389,7 +389,7 @@ namespace PowerShellFar
 			}
 			else
 			{
-				ILine cl = Far.Net.CommandLine;
+				ILine cl = Far.Api.CommandLine;
 				code = cl.SelectedText;
 				if (string.IsNullOrEmpty(code))
 				{
@@ -406,7 +406,7 @@ namespace PowerShellFar
 
 			// clean the command line if ok
 			if (ok && toCleanCmdLine && wt != WindowKind.Editor)
-				Far.Net.CommandLine.Text = string.Empty;
+				Far.Api.CommandLine.Text = string.Empty;
 		}
 		// PSF sets the current directory and location to the script directory.
 		// This is often useful and consistent with invoking from panels.
@@ -435,13 +435,13 @@ namespace PowerShellFar
 			catch (PathTooLongException)
 			{
 				// PowerShell is not able to invoke this script anyway, almost for sure
-				Far.Net.Message("The script path is too long.\rInvoking is not supported.");
+				Far.Api.Message("The script path is too long.\rInvoking is not supported.");
 				return;
 			}
 
 			try
 			{
-				Far.Net.UI.WindowTitle = "Running...";
+				Far.Api.UI.WindowTitle = "Running...";
 
 				// push/set the location; let's ignore issues
 				A.Psf.Engine.SessionState.Path.PushCurrentLocation(null);
@@ -449,11 +449,11 @@ namespace PowerShellFar
 
 				// invoke the script
 				A.Psf.Act("& '" + editor.FileName.Replace("'", "''") + "'", null, false);
-				Far.Net.UI.WindowTitle = "Done " + DateTime.Now;
+				Far.Api.UI.WindowTitle = "Done " + DateTime.Now;
 			}
 			catch
 			{
-				Far.Net.UI.WindowTitle = "Failed";
+				Far.Api.UI.WindowTitle = "Failed";
 				throw;
 			}
 			finally

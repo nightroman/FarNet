@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -47,7 +47,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenPropertyChanged(string itemPath)
 		{
-			foreach (PropertyPanel p in Far.Net.Panels(typeof(PropertyPanel)))
+			foreach (PropertyPanel p in Far.Api.Panels(typeof(PropertyPanel)))
 				if (p.Explorer.ItemPath == itemPath)
 					p.UpdateRedraw(true);
 		}

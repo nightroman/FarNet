@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -16,10 +16,10 @@ namespace FarNet.Works
 		public static string ValidateMask(string mask)
 		{
 			mask = mask.Trim();
-			if (mask.Length == 0 || Far.Net.IsMaskValid(mask))
+			if (mask.Length == 0 || Far.Api.IsMaskValid(mask))
 				return mask;
 
-			Far.Net.Message("Invalid Mask.");
+			Far.Api.Message("Invalid Mask.");
 			return null;
 		}
 		public static void Show(IList<IModuleTool> toolsIn, string helpTopic, Func<IModuleTool, string> getMenuText)
@@ -29,7 +29,7 @@ namespace FarNet.Works
 
 			var sorted = toolsIn.OrderBy(getMenuText, StringComparer.OrdinalIgnoreCase).ToList();
 
-			IMenu menu = Far.Net.CreateMenu();
+			IMenu menu = Far.Api.CreateMenu();
 			menu.HelpTopic = helpTopic;
 			menu.Title = Res.ModuleTools;
 
@@ -68,7 +68,7 @@ namespace FarNet.Works
 				tool = (IModuleTool)menu.SelectedData;
 
 				// dialog
-				IDialog dialog = Far.Net.CreateDialog(-1, -1, 77, 12);
+				IDialog dialog = Far.Api.CreateDialog(-1, -1, 77, 12);
 				dialog.HelpTopic = helpTopic;
 				dialog.AddBox(3, 1, 0, 0, tool.Name);
 

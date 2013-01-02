@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -85,7 +85,7 @@ int Panel0::AsGetFiles(GetFilesInfo* info)
 	const bool silent = int(mode & ExplorerModes::Silent);
 
 	// process bad names? - do not if silent or the target is plugin
-	const bool processBadNames = qview || (!silent && !Far::Net->Panel2->IsPlugin);
+	const bool processBadNames = qview || (!silent && !Far::Api->Panel2->IsPlugin);
 
 	// delete files on move?
 	const bool deleteFiles = info->Move && explorer->CanDeleteFiles;
@@ -237,7 +237,7 @@ void Panel0::AsClosePanel(const ClosePanelInfo* info)
 		}
 		catch(Exception^ ex)
 		{
-			Far::Net->ShowError("UIClosed", ex);
+			Far::Api->ShowError("UIClosed", ex);
 		}
 	}
 }
@@ -310,11 +310,11 @@ int Panel0::AsProcessPanelEvent(const ProcessPanelEventInfo* info)
 
 					// clear the command line
 					if (e.Ignore)
-						Far::Net->CommandLine->Text = String::Empty;
+						Far::Api->CommandLine->Text = String::Empty;
 				}
 				catch(Exception^ exception)
 				{
-					Far::Net->ShowError("Event: Executing", exception);
+					Far::Api->ShowError("Event: Executing", exception);
 				}
 
 				return e.Ignore ? 1 : 0;
@@ -486,7 +486,7 @@ int Panel0::AsProcessPanelInput(const ProcessPanelInputInfo* info)
 		return 1;
 
 	// 3. escape; special not yet handled case
-	if ((e.Key->Is(KeyCode::Escape) || e.Key->IsShift(KeyCode::Escape)) && Far::Net->CommandLine->Length == 0)
+	if ((e.Key->Is(KeyCode::Escape) || e.Key->IsShift(KeyCode::Escape)) && Far::Api->CommandLine->Length == 0)
 	{
 		pp->Host->WorksEscaping(%e);
 		if (e.Ignore)
@@ -616,7 +616,7 @@ void Panel0::OpenPanel(Panel2^ plugin)
 	// panels window should be current
 	try
 	{
-		Far::Net->Window->SetCurrentAt(0);
+		Far::Api->Window->SetCurrentAt(0);
 	}
 	catch(InvalidOperationException^ e)
 	{

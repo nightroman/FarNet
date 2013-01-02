@@ -3,8 +3,10 @@ http://code.google.com/p/farnet/downloads/list
 
 = 5.0.34 =
 
+* Adapted for FarNet 5.0.31
 * Converted PowerShellFar.farconfig to PowerShellFar.macro.lua.
-* Removed Show-KeyMap.ps1, it does not work with new macros.
+* Removed Show-KeyMap.ps1, it does not work with new Far macros.
+* Select-Bookmark-.ps1 - call Redraw() after setting the position.
 
 = 5.0.33 =
 

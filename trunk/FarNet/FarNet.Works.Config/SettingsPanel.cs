@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -63,7 +63,7 @@ namespace FarNet.Works.Config
 
 					if (key.Is())
 					{
-						Far.Net.ShowHelp(Far.Net.GetType().Assembly.Location, SettingsUI.HelpSettings, HelpOptions.None);
+						Far.Api.ShowHelp(Far.Api.GetType().Assembly.Location, SettingsUI.HelpSettings, HelpOptions.None);
 						return true;
 					}
 

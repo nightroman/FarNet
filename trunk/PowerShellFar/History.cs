@@ -1,7 +1,7 @@
 ﻿
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 // Encoding: UTF8 with no BOM (same as in logging tools, BinaryFormatter, etc).
@@ -105,13 +105,13 @@ namespace PowerShellFar
 			if (code == null)
 				return;
 
-			switch (Far.Net.Window.Kind)
+			switch (Far.Api.Window.Kind)
 			{
 				case WindowKind.Panels:
 					{
-						Far.Net.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
+						Far.Api.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
 						if (!m.Alternative)
-							Far.Net.PostMacro("Keys('Enter')", true, false);
+							Far.Api.PostMacro("Keys('Enter')", true, false);
 						return;
 					}
 				case WindowKind.Editor:

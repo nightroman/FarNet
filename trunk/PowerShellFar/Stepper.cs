@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -158,7 +158,7 @@ namespace PowerShellFar
 			{
 				_StepIndex = 0;
 				InsertRange(0, steps);
-				Far.Net.PostSteps(this);
+				Far.Api.PostSteps(this);
 			}
 			// in progress
 			else
@@ -224,7 +224,7 @@ namespace PowerShellFar
 			AssumeCanStep();
 
 			if (_RunningInstance == null)
-				Far.Net.PostSteps(this);
+				Far.Api.PostSteps(this);
 		}
 		/// <summary>
 		/// Gets the current running step unit or null if there is none.
@@ -376,7 +376,7 @@ namespace PowerShellFar
 						title += " Unit " + (_UnitIndex + 1) + "/" + _units.Count;
 					}
 
-					switch (Far.Net.Message(
+					switch (Far.Api.Message(
 						text,
 						title,
 						MessageOptions.LeftAligned,

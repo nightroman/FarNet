@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -87,7 +87,7 @@ namespace PowerShellFar
 		/// </summary>
 		internal static void WhenMemberChanged(object instance)
 		{
-			foreach (MemberPanel p in Far.Net.Panels(typeof(MemberPanel)))
+			foreach (MemberPanel p in Far.Api.Panels(typeof(MemberPanel)))
 			{
 				if (p.Target == instance)
 				{
@@ -184,7 +184,7 @@ namespace PowerShellFar
 			// ask
 			if (!r)
 			{
-				switch (Far.Net.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
+				switch (Far.Api.Message(Res.AskSaveModified, "Save", MessageOptions.YesNoCancel))
 				{
 					case 0:
 						A.InvokeScriptReturnAsIs(AsSaveData, this);

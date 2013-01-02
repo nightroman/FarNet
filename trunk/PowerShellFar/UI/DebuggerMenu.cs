@@ -1,7 +1,7 @@
 ﻿
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -19,9 +19,9 @@ namespace PowerShellFar.UI
 		bool _toStop;
 		public DebuggerMenu()
 		{
-			_menu = Far.Net.CreateListMenu();
+			_menu = Far.Api.CreateListMenu();
 			_menu.Title = "PowerShell debugger tools";
-			_menu.HelpTopic = Far.Net.GetHelpTopic("MenuDebugger");
+			_menu.HelpTopic = Far.Api.GetHelpTopic("MenuDebugger");
 			_menu.NoInfo = true;
 			_menu.ScreenMargin = Settings.Default.ListMenuScreenMargin;
 			_menu.UsualMargins = Settings.Default.ListMenuUsualMargins;
@@ -35,8 +35,8 @@ namespace PowerShellFar.UI
 		public void Show()
 		{
 			// active editor
-			if (Far.Net.Window.Kind == WindowKind.Editor)
-				_editor = Far.Net.Editor;
+			if (Far.Api.Window.Kind == WindowKind.Editor)
+				_editor = Far.Api.Editor;
 
 			// menu loop
 			for (_toStop = false; ; _menu.Items.Clear())
@@ -104,7 +104,7 @@ namespace PowerShellFar.UI
 				// found?
 				if (bpFound != null)
 				{
-					switch (Far.Net.Message("Breakpoint exists",
+					switch (Far.Api.Message("Breakpoint exists",
 						"Line breakpoint",
 						MessageOptions.None,
 						new string[] {
@@ -252,7 +252,7 @@ namespace PowerShellFar.UI
 				return;
 			}
 
-			editor = Far.Net.CreateEditor();
+			editor = Far.Api.CreateEditor();
 			editor.FileName = bp.Script;
 			if (lbp != null)
 				editor.GoToLine(lbp.Line - 1);

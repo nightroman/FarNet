@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -77,7 +77,7 @@ namespace FarNet
 		public Panel(Explorer explorer)
 		{
 			if (explorer == null) throw new ArgumentNullException("explorer");
-			_Panel = Far.Net.WorksPanel(this, explorer);
+			_Panel = Far.Api.WorksPanel(this, explorer);
 		}
 		/// <summary>
 		/// Gets the current file explorer.
@@ -169,12 +169,12 @@ namespace FarNet
 				Title = DefaultTitle;
 
 			// try to open even not from panels
-			WindowKind wt = Far.Net.Window.Kind;
+			WindowKind wt = Far.Api.Window.Kind;
 			if (wt != WindowKind.Panels)
 			{
 				try
 				{
-					Far.Net.Window.SetCurrentAt(0);
+					Far.Api.Window.SetCurrentAt(0);
 				}
 				catch (InvalidOperationException ex)
 				{
@@ -183,7 +183,7 @@ namespace FarNet
 
 				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".
 				// In contrast, PostStep calls via the menu where a panel is opened from with no problems.
-				Far.Net.PostStep(Open);
+				Far.Api.PostStep(Open);
 				return;
 			}
 
@@ -214,7 +214,7 @@ namespace FarNet
 			if (parent == null)
 			{
 				// try to use the active as parent; do not use the passive, show as normal
-				parent = Far.Net.Panel as Panel;
+				parent = Far.Api.Panel as Panel;
 				if (parent == null)
 				{
 					// go

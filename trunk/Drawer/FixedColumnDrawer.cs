@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Drawer
-Copyright (c) 2012 Roman Kuzmin
+Copyright (c) 2012-2013 Roman Kuzmin
 */
 
 using System;
@@ -21,7 +21,7 @@ namespace FarNet.Drawer
 
 			foreach (var line in e.Lines)
 			{
-				
+
 				e.Colors.Add(new EditorColor(
 					line.Index,
 					editor.ConvertColumnScreenToEditor(line.Index, _columnNumber - 1),

@@ -29,7 +29,7 @@ namespace PowerShellFar.Commands
 		{
 			if (Append)
 			{
-				var panel = Far.Net.Panel as Panel;
+				var panel = Far.Api.Panel as Panel;
 				if (panel == null || panel.GetType() != typeof(ObjectPanel))
 					throw new InvalidOperationException("There is no panel able to append objects.");
 

@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -26,7 +26,7 @@ namespace FarNet.Works.Config
 			Functions = ExplorerFunctions.GetContent | ExplorerFunctions.SetText;
 			
 			var type = _settings.GetType();
-			Location = Far.Net.GetModuleManager(type).ModuleName + "\\" + type.Name;
+			Location = Far.Api.GetModuleManager(type).ModuleName + "\\" + type.Name;
 
 			foreach (SettingsProperty property in _settings.Properties)
 			{
@@ -87,7 +87,7 @@ namespace FarNet.Works.Config
 			if (ex != null)
 			{
 				args.Result = JobResult.Ignore;
-				Far.Net.ShowError("Settings", ex);
+				Far.Api.ShowError("Settings", ex);
 				return;
 			}
 

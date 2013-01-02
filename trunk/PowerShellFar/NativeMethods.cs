@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -90,7 +90,7 @@ namespace PowerShellFar
 			bool flag = false;
 			int pfSave = Convert.ToInt32(flag);
 			structure.cbSize = Marshal.SizeOf(structure);
-			structure.hwndParent = Far.Net.UI.MainWindowHandle; //! works for conemu, too, but the effect is as if we use IntPtr.Zero
+			structure.hwndParent = Far.Api.UI.MainWindowHandle; //! works for conemu, too, but the effect is as if we use IntPtr.Zero
 			CREDUI_FLAGS dwFlags = CREDUI_FLAGS.DO_NOT_PERSIST;
 			if ((allowedCredentialTypes & PSCredentialTypes.Domain) != PSCredentialTypes.Domain)
 			{

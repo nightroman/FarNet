@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module RightWords
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 namespace FarNet.RightWords
@@ -14,7 +14,7 @@ namespace FarNet.RightWords
 		{
 			if (e == null) return;
 
-			var menu = Far.Net.CreateMenu();
+			var menu = Far.Api.CreateMenu();
 			menu.Title = Settings.ModuleName;
 
 			menu.Add(My.DoCorrectWord).Click = delegate { Actor.CorrectWord(); };

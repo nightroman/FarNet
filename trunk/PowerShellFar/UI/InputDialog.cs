@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -18,10 +18,10 @@ namespace PowerShellFar.UI
 
 		public InputDialog(string caption, string history, params string[] prompt)
 		{
-			int w = Far.Net.UI.WindowSize.X - 7;
+			int w = Far.Api.UI.WindowSize.X - 7;
 			int h = 5 + prompt.Length;
 
-			UIDialog = Far.Net.CreateDialog(-1, -1, w, h);
+			UIDialog = Far.Api.CreateDialog(-1, -1, w, h);
 			UIDialog.AddBox(3, 1, w - 4, h - 2, caption);
 			UIPrompt = new IText[prompt.Length];
 			for (int i = 0; i < prompt.Length; ++i)

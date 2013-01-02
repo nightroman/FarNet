@@ -26,7 +26,7 @@ namespace FarNet.Tools
 	{
 		int _savedScreen;
 		readonly Progress _progress = new Progress();
-		readonly string _title = Far.Net.UI.WindowTitle;
+		readonly string _title = Far.Api.UI.WindowTitle;
 		/// <summary>
 		/// Gets or sets the progress box title.
 		/// </summary>
@@ -57,13 +57,13 @@ namespace FarNet.Tools
 		public void Dispose()
 		{
 			Hide();
-			Far.Net.UI.WindowTitle = _title;
+			Far.Api.UI.WindowTitle = _title;
 		}
 		void Hide()
 		{
 			if (_savedScreen != 0)
 			{
-				Far.Net.UI.RestoreScreen(_savedScreen);
+				Far.Api.UI.RestoreScreen(_savedScreen);
 				_savedScreen = 0;
 			}
 		}
@@ -94,7 +94,7 @@ namespace FarNet.Tools
 		public void ShowProgress()
 		{
 			Hide();
-			_savedScreen = Far.Net.UI.SaveScreen(0, 0, -1, -1);
+			_savedScreen = Far.Api.UI.SaveScreen(0, 0, -1, -1);
 
 			string progress;
 			var lines = _progress.Build(out progress, LineCount);
@@ -104,7 +104,7 @@ namespace FarNet.Tools
 			else
 				text = string.Join("\r", lines) + "\r" + progress;
 
-			Far.Net.Message(text, Title, MessageOptions.Draw | MessageOptions.LeftAligned);
+			Far.Api.Message(text, Title, MessageOptions.Draw | MessageOptions.LeftAligned);
 
 			_lastShow = _progress.Elapsed;
 		}

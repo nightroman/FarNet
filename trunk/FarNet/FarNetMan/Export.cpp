@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "stdafx.h"
@@ -22,7 +22,7 @@ DEFINE_GUID(MainGuid, 0x10435532, 0x9bb3, 0x487b, 0xa0, 0x45, 0xb0, 0xe6, 0xec, 
 DEFINE_GUID(FarGuid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 #define __START try {
-#define __END } catch(Exception^ e) { Far::Net->ShowError(nullptr, e); }
+#define __END } catch(Exception^ e) { Far::Api->ShowError(nullptr, e); }
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo* info)
 {
@@ -46,7 +46,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo* psi)
 		// deny 2+ load
 		if (Works::Host::State != Works::HostState::None)
 		{
-			Far::Net->Message("FarNet cannot be loaded twice.", "FarNet", MessageOptions::Warning);
+			Far::Api->Message("FarNet cannot be loaded twice.", "FarNet", MessageOptions::Warning);
 			return;
 		}
 

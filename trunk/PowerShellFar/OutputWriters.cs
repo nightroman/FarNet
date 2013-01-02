@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -39,7 +39,7 @@ namespace PowerShellFar
 			if (_command != null)
 			{
 				string header = string.Concat(Entry.CommandInvoke1.Prefix, ":", _command, Environment.NewLine);
-				Far.Net.UI.Write(header, Settings.Default.CommandForegroundColor);
+				Far.Api.UI.Write(header, Settings.Default.CommandForegroundColor);
 				_command = null;
 
 				A.Psf.Transcript.WriteLine(Environment.NewLine + header);
@@ -48,55 +48,55 @@ namespace PowerShellFar
 		public override void Write(string value)
 		{
 			Writing();
-			Far.Net.UI.Write(value);
+			Far.Api.UI.Write(value);
 			A.Psf.Transcript.Write(value);
 		}
 		public override void WriteLine()
 		{
 			Writing();
-			Far.Net.UI.Write(Environment.NewLine);
+			Far.Api.UI.Write(Environment.NewLine);
 			A.Psf.Transcript.WriteLine();
 		}
 		public override void WriteLine(string value)
 		{
 			Writing();
-			Far.Net.UI.Write(value + Environment.NewLine);
+			Far.Api.UI.Write(value + Environment.NewLine);
 			A.Psf.Transcript.WriteLine(value);
 		}
 		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
-			Far.Net.UI.Write(value, foregroundColor, backgroundColor);
+			Far.Api.UI.Write(value, foregroundColor, backgroundColor);
 			A.Psf.Transcript.Write(value);
 		}
 		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
-			Far.Net.UI.Write(value + Environment.NewLine, foregroundColor, backgroundColor);
+			Far.Api.UI.Write(value + Environment.NewLine, foregroundColor, backgroundColor);
 			A.Psf.Transcript.WriteLine(value);
 		}
 		public override void WriteDebugLine(string message)
 		{
 			Writing();
-			Far.Net.UI.Write("DEBUG: " + message + Environment.NewLine, Settings.Default.DebugForegroundColor);
+			Far.Api.UI.Write("DEBUG: " + message + Environment.NewLine, Settings.Default.DebugForegroundColor);
 			A.Psf.Transcript.WriteDebugLine(message);
 		}
 		public override void WriteErrorLine(string value)
 		{
 			Writing();
-			Far.Net.UI.Write(value + Environment.NewLine, Settings.Default.ErrorForegroundColor);
+			Far.Api.UI.Write(value + Environment.NewLine, Settings.Default.ErrorForegroundColor);
 			A.Psf.Transcript.WriteErrorLine(value);
 		}
 		public override void WriteVerboseLine(string message)
 		{
 			Writing();
-			Far.Net.UI.Write("VERBOSE: " + message + Environment.NewLine, Settings.Default.VerboseForegroundColor);
+			Far.Api.UI.Write("VERBOSE: " + message + Environment.NewLine, Settings.Default.VerboseForegroundColor);
 			A.Psf.Transcript.WriteVerboseLine(message);
 		}
 		public override void WriteWarningLine(string message)
 		{
 			Writing();
-			Far.Net.UI.Write("WARNING: " + message + Environment.NewLine, Settings.Default.WarningForegroundColor);
+			Far.Api.UI.Write("WARNING: " + message + Environment.NewLine, Settings.Default.WarningForegroundColor);
 			A.Psf.Transcript.WriteWarningLine(message);
 		}
 	}

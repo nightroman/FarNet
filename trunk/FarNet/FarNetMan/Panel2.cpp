@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -1009,7 +1009,7 @@ int Panel2::AsGetFindData(GetFindDataInfo* info)
 	catch(Exception^ e)
 	{
 		if ((info->OpMode & (OPM_FIND | OPM_SILENT)) == 0)
-			Far::Net->ShowError("Getting panel files", e);
+			Far::Api->ShowError("Getting panel files", e);
 		else
 			Log::TraceException(e);
 

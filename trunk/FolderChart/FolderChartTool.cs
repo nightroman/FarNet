@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module FolderChart
-Copyright (c) 2010-2012 Roman Kuzmin
+Copyright (c) 2010-2013 Roman Kuzmin
 */
 
 using System.IO;
@@ -20,12 +20,12 @@ namespace FolderChart
 
 		static void Message(string body)
 		{
-			Far.Net.Message(body, "Forder Chart", MessageOptions.LeftAligned);
+			Far.Api.Message(body, "Forder Chart", MessageOptions.LeftAligned);
 		}
 
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
-			var panel = Far.Net.Panel;
+			var panel = Far.Api.Panel;
 			if (panel.IsPlugin || panel.Kind != PanelKind.File)
 				return;
 
@@ -63,7 +63,7 @@ namespace FolderChart
 			if (sumHiddenSizes > 0)
 				sorted.Insert(0, new FolderItem() { Name = string.Empty, Size = sumHiddenSizes });
 
-			var result = FolderChartForm.Show(title, sorted, new WindowWrapper(Far.Net.UI.MainWindowHandle));
+			var result = FolderChartForm.Show(title, sorted, new WindowWrapper(Far.Api.UI.MainWindowHandle));
 			if (result == null)
 				return;
 

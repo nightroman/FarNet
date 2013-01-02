@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -53,41 +53,41 @@ namespace PowerShellFar.Commands
 			bool fail = true;
 
 			// check dialog
-			if (Dialog && (fail = Far.Net.Window.Kind != WindowKind.Dialog))
+			if (Dialog && (fail = Far.Api.Window.Kind != WindowKind.Dialog))
 				Fail(Message ?? "The current window is expected to be dialog.");
 
 			// check editor
-			if (Editor && (fail = Far.Net.Window.Kind != WindowKind.Editor))
+			if (Editor && (fail = Far.Api.Window.Kind != WindowKind.Editor))
 				Fail(Message ?? "The current window is expected to be editor.");
 
 			// check panels
-			if (Panels && (fail = Far.Net.Window.Kind != WindowKind.Panels))
+			if (Panels && (fail = Far.Api.Window.Kind != WindowKind.Panels))
 				Fail(Message ?? "The current window is expected to be panels.");
 
 			// check viewer
-			if (Viewer && (fail = Far.Net.Window.Kind != WindowKind.Viewer))
+			if (Viewer && (fail = Far.Api.Window.Kind != WindowKind.Viewer))
 				Fail(Message ?? "The current window is expected to be viewer.");
 
 			// check plugin
-			if (Plugin && (fail = !Far.Net.Panel.IsPlugin))
+			if (Plugin && (fail = !Far.Api.Panel.IsPlugin))
 				Fail(Message ?? "The active panel is expected to be plugin.");
 
 			// check plugin 2
-			if (Plugin2 && (fail = !Far.Net.Panel2.IsPlugin))
+			if (Plugin2 && (fail = !Far.Api.Panel2.IsPlugin))
 				Fail(Message ?? "The passive panel is expected to be plugin.");
 
 			// check native
-			if (Native && (fail = Far.Net.Panel.IsPlugin))
+			if (Native && (fail = Far.Api.Panel.IsPlugin))
 				Fail(Message ?? "The active panel is expected to be native.");
 
 			// check native 2
-			if (Native2 && (fail = Far.Net.Panel2.IsPlugin))
+			if (Native2 && (fail = Far.Api.Panel2.IsPlugin))
 				Fail(Message ?? "The passive panel is expected to be native.");
 
 			// check file data
 			if (FileDescription != null || FileName != null || FileOwner != null)
 			{
-				var file = Far.Net.Panel.CurrentFile;
+				var file = Far.Api.Panel.CurrentFile;
 				if (file == null)
 					Fail(Message ?? "Expected the current panel file.");
 
@@ -139,9 +139,9 @@ namespace PowerShellFar.Commands
 		void Fail(object message)
 		{
 			// break a macro
-			MacroState macroState = Far.Net.MacroState;
+			MacroState macroState = Far.Api.MacroState;
 			if (macroState == MacroState.Executing || macroState == MacroState.ExecutingCommon)
-				Far.Net.UI.Break();
+				Far.Api.UI.Break();
 
 			// get the message
 			if (message == null)
@@ -188,7 +188,7 @@ namespace PowerShellFar.Commands
 			// prompt
 			for (; ; )
 			{
-				int result = Far.Net.Message(
+				int result = Far.Api.Message(
 				body,
 				Title ?? MyName,
 				IsError ? (MessageOptions.Warning | MessageOptions.LeftAligned) : MessageOptions.None,
@@ -216,7 +216,7 @@ namespace PowerShellFar.Commands
 						}
 					case BtnEdit:
 						{
-							IEditor editor = Far.Net.CreateEditor();
+							IEditor editor = Far.Api.CreateEditor();
 							editor.FileName = MyInvocation.ScriptName;
 							editor.GoToLine(MyInvocation.ScriptLineNumber - 1);
 							editor.Open();

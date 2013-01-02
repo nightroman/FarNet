@@ -37,7 +37,7 @@ namespace FarNet.Tools
 		/// </summary>
 		protected Form()
 		{
-			Dialog = Far.Net.CreateDialog(-1, -1, DLG_XSIZE, DLG_YSIZE);
+			Dialog = Far.Api.CreateDialog(-1, -1, DLG_XSIZE, DLG_YSIZE);
 			Box = Dialog.AddBox(3, 1, 0, 0, string.Empty);
 		}
 

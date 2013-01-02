@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -20,7 +20,7 @@ namespace PowerShellFar
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		internal static void ShowHelpForContext()
 		{
-			ILine line = Far.Net.Line;
+			ILine line = Far.Api.Line;
 			if (line == null)
 			{
 				ShowAreaHelp();
@@ -105,7 +105,7 @@ namespace PowerShellFar
 
 			if (script == null)
 			{
-				Far.Net.Message("No help targets found at the editor caret position.", Res.Me);
+				Far.Api.Message("No help targets found at the editor caret position.", Res.Me);
 				return;
 			}
 
@@ -127,7 +127,7 @@ namespace PowerShellFar
 
 			if (ok)
 			{
-				IViewer viewer = Far.Net.CreateViewer();
+				IViewer viewer = Far.Api.CreateViewer();
 				viewer.FileName = file;
 				viewer.DeleteSource = DeleteSource.File;
 				viewer.DisableHistory = true;
@@ -138,13 +138,13 @@ namespace PowerShellFar
 
 		static void ShowAreaHelp()
 		{
-			switch (Far.Net.Window.Kind)
+			switch (Far.Api.Window.Kind)
 			{
 				case WindowKind.Panels:
-					Far.Net.ShowHelpTopic("CommandLine");
+					Far.Api.ShowHelpTopic("CommandLine");
 					return;
 				default:
-					Far.Net.ShowHelpTopic("Contents");
+					Far.Api.ShowHelpTopic("Contents");
 					return;
 			}
 		}

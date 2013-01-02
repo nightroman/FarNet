@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -49,7 +49,7 @@ namespace PowerShellFar
 		}
 		internal override void ShowHelpForPanel()
 		{
-			Far.Net.ShowHelpTopic("TreePanel");
+			Far.Api.ShowHelpTopic("TreePanel");
 		}
 		/// <summary>
 		/// Opens/closes the node.
@@ -82,7 +82,7 @@ namespace PowerShellFar
 			{
 				case KeyCode.LeftArrow:
 					{
-						if (!key.Is() && !key.IsAlt() || Far.Net.CommandLine.Length > 0)
+						if (!key.Is() && !key.IsAlt() || Far.Api.CommandLine.Length > 0)
 							break;
 
 						FarFile file = CurrentFile;
@@ -114,7 +114,7 @@ namespace PowerShellFar
 					}
 				case KeyCode.RightArrow:
 					{
-						if (!key.Is() && !key.IsAlt() || Far.Net.CommandLine.Length > 0)
+						if (!key.Is() && !key.IsAlt() || Far.Api.CommandLine.Length > 0)
 							break;
 
 						FarFile file = CurrentFile;

@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -68,7 +68,7 @@ namespace PowerShellFar
 			if (s != null)
 			{
 				// set command line
-				ILine cl = Far.Net.CommandLine;
+				ILine cl = Far.Api.CommandLine;
 				cl.Text = "=" + s;
 				cl.SelectText(1, s.Length + 1);
 				return;
@@ -151,7 +151,7 @@ namespace PowerShellFar
 		}
 		internal override void ShowHelpForPanel()
 		{
-			Far.Net.ShowHelpTopic("ListPanel");
+			Far.Api.ShowHelpTopic("ListPanel");
 		}
 		internal override void UIApply()
 		{

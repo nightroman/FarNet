@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System.Management.Automation;
@@ -16,7 +16,7 @@ namespace PowerShellFar.Commands
 		public string Path { get; set; }
 		internal IViewer CreateViewer()
 		{
-			IViewer viewer = Far.Net.CreateViewer();
+			IViewer viewer = Far.Api.CreateViewer();
 			viewer.DeleteSource = DeleteSource;
 			viewer.DisableHistory = DisableHistory;
 			viewer.FileName = Path;

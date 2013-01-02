@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -24,11 +24,11 @@ namespace PowerShellFar.UI
 		{
 			var promptLines = FarNet.Works.Kit.SplitLines(Prompt ?? string.Empty);
 
-			int w = Far.Net.UI.WindowSize.X - 7;
+			int w = Far.Api.UI.WindowSize.X - 7;
 			int h = 5 + promptLines.Length;
 
 			// dialog
-			var dialog = Far.Net.CreateDialog(-1, -1, w, h);
+			var dialog = Far.Api.CreateDialog(-1, -1, w, h);
 			dialog.AddBox(3, 1, w - 4, h - 2, Title);
 
 			// prompt
@@ -66,7 +66,7 @@ namespace PowerShellFar.UI
 			// hot line
 			if (editLine == null)
 			{
-				editLine = Far.Net.Line;
+				editLine = Far.Api.Line;
 				if (editLine == null)
 				{
 					A.Message("There is no current editor line.");
@@ -88,8 +88,8 @@ namespace PowerShellFar.UI
 		public static void CompleteText(ILine editLine, string tail, string line, string lastWord, IEnumerable words)
 		{
 			// menu
-			IListMenu menu = Far.Net.CreateListMenu();
-			var cursor = Far.Net.UI.WindowCursor;
+			IListMenu menu = Far.Api.CreateListMenu();
+			var cursor = Far.Api.UI.WindowCursor;
 			menu.X = cursor.X;
 			menu.Y = cursor.Y;
 			Settings.Default.PopupMenu(menu);

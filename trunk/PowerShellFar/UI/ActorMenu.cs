@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -32,17 +32,17 @@ namespace PowerShellFar.UI
 		{
 			Debug.Assert(_menuEditor == null);
 
-			_menuDialog = Far.Net.CreateMenu();
-			_menuEditor = Far.Net.CreateMenu();
-			_menuPanels = Far.Net.CreateMenu();
-			_menuViewer = Far.Net.CreateMenu();
+			_menuDialog = Far.Api.CreateMenu();
+			_menuEditor = Far.Api.CreateMenu();
+			_menuPanels = Far.Api.CreateMenu();
+			_menuViewer = Far.Api.CreateMenu();
 
 			_menuDialog.Title = Res.Me;
 			_menuEditor.Title = Res.Me;
 			_menuPanels.Title = Res.Me;
 			_menuViewer.Title = Res.Me;
 
-			string helpTopic = Far.Net.GetHelpTopic("MenuCommands");
+			string helpTopic = Far.Api.GetHelpTopic("MenuCommands");
 			_menuDialog.HelpTopic = helpTopic;
 			_menuEditor.HelpTopic = helpTopic;
 			_menuPanels.HelpTopic = helpTopic;

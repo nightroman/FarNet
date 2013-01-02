@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011-2012 Roman Kuzmin
+Copyright (c) 2011-2013 Roman Kuzmin
 */
 
 using System;
@@ -22,7 +22,7 @@ namespace FarNet.Vessel
 		internal static int TrainingRecordIndex { get; set; }
 		public override void Invoke(object sender, ModuleToolEventArgs e)
 		{
-			IMenu menu = Far.Net.CreateMenu();
+			IMenu menu = Far.Api.CreateMenu();
 			menu.Title = "Vessel";
 			menu.HelpTopic = HelpTopic + "MenuCommands";
 			menu.Add("&1. Smart file history").Click += delegate { ShowHistory(true); };
@@ -84,7 +84,7 @@ Factors    : {7,8}
 		}
 		static void ShowResults()
 		{
-			Far.Net.Message(_TrainingReport, "Training results", MessageOptions.LeftAligned);
+			Far.Api.Message(_TrainingReport, "Training results", MessageOptions.LeftAligned);
 			_TrainingReport = null;
 		}
 		static void SaveFactors(Result result)
@@ -155,7 +155,7 @@ Factors    : {7,8}
 			StartFastTraining();
 
 			// show update info
-			Far.Net.Message(text, "Update", MessageOptions.LeftAligned);
+			Far.Api.Message(text, "Update", MessageOptions.LeftAligned);
 		}
 		static void UpdateOnce()
 		{
@@ -187,7 +187,7 @@ Factors    : {7,8}
 			if (smart && Factor1 < 0)
 				smart = false;
 
-			IListMenu menu = Far.Net.CreateListMenu();
+			IListMenu menu = Far.Api.CreateListMenu();
 			menu.HelpTopic = HelpTopic + "FileHistory";
 			menu.SelectLast = true;
 			menu.UsualMargins = true;
@@ -255,7 +255,7 @@ Factors    : {7,8}
 				// delete:
 				if (menu.Key.IsShift(KeyCode.Delete))
 				{
-					if (0 == Far.Net.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
+					if (0 == Far.Api.Message("Discard " + path, "Confirm", MessageOptions.OkCancel))
 					{
 						Record.Remove(VesselHost.LogPath, path);
 						continue;
@@ -267,7 +267,7 @@ Factors    : {7,8}
 				// go to:
 				if (menu.Key.IsCtrl(KeyCode.Enter))
 				{
-					Far.Net.Panel.GoToPath(path);
+					Far.Api.Panel.GoToPath(path);
 				}
 				// view:
 				else if (menu.Key.VirtualKeyCode == KeyCode.F3)
@@ -275,7 +275,7 @@ Factors    : {7,8}
 					if (!File.Exists(path))
 						continue;
 
-					IViewer viewer = Far.Net.CreateViewer();
+					IViewer viewer = Far.Api.CreateViewer();
 					viewer.FileName = path;
 
 					if (menu.Key.IsCtrl())
@@ -294,7 +294,7 @@ Factors    : {7,8}
 				// edit:
 				else
 				{
-					IEditor editor = Far.Net.CreateEditor();
+					IEditor editor = Far.Api.CreateEditor();
 					editor.FileName = path;
 
 					if (menu.Key.IsCtrl(KeyCode.F4))

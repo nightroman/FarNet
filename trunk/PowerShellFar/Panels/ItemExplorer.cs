@@ -1,6 +1,7 @@
-﻿/*
+﻿
+/*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2012 Roman Kuzmin
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
@@ -118,8 +119,8 @@ namespace PowerShellFar
 			Command c = new Command("Remove-Item");
 
 			// -Confirm -Recurse
-			var confirmDelete = 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "Delete");
-			var confirmDeleteFolder = 0 != (long)Far.Net.GetSetting(FarSetting.Confirmations, "DeleteFolder");
+			var confirmDelete = 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete");
+			var confirmDeleteFolder = 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "DeleteFolder");
 			if (confirmDelete && confirmDeleteFolder)
 			{
 				c.Parameters.Add(Prm.Confirm);
@@ -200,7 +201,7 @@ namespace PowerShellFar
 			catch (RuntimeException ex)
 			{
 				if (args.UI)
-					Far.Net.ShowError("Edit", ex);
+					Far.Api.ShowError("Edit", ex);
 			}
 		}
 		///

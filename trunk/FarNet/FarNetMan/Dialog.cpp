@@ -1,7 +1,7 @@
 
 /*
 FarNet plugin for Far Manager
-Copyright (c) 2005-2012 FarNet Team
+Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 #include "StdAfx.h"
@@ -42,7 +42,7 @@ FarDialog::FarDialog(int left, int top, int right, int bottom)
 {
 	if (left < 0 || top < 0)
 	{
-		Point size = Far::Net->UI->WindowSize;
+		Point size = Far::Api->UI->WindowSize;
 		if (left < 0)
 		{
 			_rect.Left = (size.X - right) / 2;
@@ -269,7 +269,7 @@ bool FarDialog::Show()
 	if (ValueUserScreen::Get()) //_100514_000000
 	{
 		ValueUserScreen::Set(false);
-		Far::Net->UI->SaveUserScreen();
+		Far::Api->UI->SaveUserScreen();
 	}
 
 	FarDialogItem* items = new FarDialogItem[_items->Count];
@@ -381,20 +381,24 @@ void FarDialog::EnableRedraw()
 
 FarDialog^ FarDialog::GetDialog()
 {
-	WindowInfo wi;
-	Call_ACTL_GETWINDOWINFO(wi, -1);
-
-	if (wi.Id == 0 || wi.Type != WTYPE_DIALOG)
-		return nullptr;
-
-	HANDLE hDlg = (HANDLE)wi.Id;
-	for each(FarDialog^ dialog in FarDialog::_dialogs)
+	for(int i = Far::Api->Window->Count; --i >= 0;) //????????
 	{
-		if (dialog->_hDlg == hDlg)
-			return dialog;
-	}
+		WindowInfo wi;
+		Call_ACTL_GETWINDOWINFO(wi, i);
 
-	return gcnew FarDialog(hDlg);
+		if (wi.Id == 0 || wi.Type != WTYPE_DIALOG)
+			continue;
+
+		HANDLE hDlg = (HANDLE)wi.Id;
+		for each(FarDialog^ dialog in FarDialog::_dialogs)
+		{
+			if (dialog->_hDlg == hDlg)
+				return dialog;
+		}
+
+		return gcnew FarDialog(hDlg);
+	}
+	return nullptr;
 }
 
 //! 090719 There is no way to get control count, so we allow an index to be too large - we return null in this case even for our dialog.
@@ -733,7 +737,7 @@ INT_PTR FarDialog::DialogProc(intptr_t msg, intptr_t param1, void* param2)
 	}
 	catch(Exception^ e)
 	{
-		Far::Net->ShowError("Error in " __FUNCTION__, e);
+		Far::Api->ShowError("Error in " __FUNCTION__, e);
 	}
 
 	// default
