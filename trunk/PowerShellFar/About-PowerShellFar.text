@@ -2099,7 +2099,7 @@ FarNet you should connect it, send the IFar instance there. For example:
        {
           public bool HelloWorld(string title)
           {
-             return Far.Net.Message("Hello World", title);
+             return Far.Api.Message("Hello World", title);
           }
        }
     }

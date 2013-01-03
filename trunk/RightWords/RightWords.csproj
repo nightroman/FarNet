@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE" />
-    <Content Include="Readme.txt" />
+    <Content Include="About-RightWords.text" />
     <Content Include="RightWords.macro.lua" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

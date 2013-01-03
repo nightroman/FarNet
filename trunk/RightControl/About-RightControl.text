@@ -17,13 +17,13 @@ WordPad, etc.
 
 **Project**
 
-* Source: [http://code.google.com/p/farnet/](http://code.google.com/p/farnet/)
-* Author: Roman Kuzmin
+ * Source: [http://code.google.com/p/farnet/](http://code.google.com/p/farnet/)
+ * Author: Roman Kuzmin
 
 **Prerequisites**
 
- * Far Manager 3.0.x
- * Plugin FarNet 5.0.19
+ * Far Manager 3.0.3061
+ * Plugin FarNet 5.0.31
 
 *********************************************************************
 ## Commands {#Commands}
@@ -170,5 +170,9 @@ regular expression pattern that can be stored in settings just like that:
 
     Use Far 3.0.2574 and FarNet 5.0.19.
     Avoided post-selection issues in the Far editor.
+
+2.0.2
+
+    Adapted for FarNet 5.0.31
 
 <http://code.google.com/p/farnet/downloads/list>

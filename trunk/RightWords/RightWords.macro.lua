@@ -2,19 +2,19 @@
 --[[
 	RightWords macros
 
-	* CtrlShiftSpace - Correct the word (editor, dialog, and command line).
+	* CtrlShiftSpace - Correct the word (editor, dialog, command line).
 	* CtrlShiftF7 - Correct the selected text (editor).
 	* CtrlShiftH - Switch highlighting (editor).
 ]]
 
-Macro {
-area="Common"; key="CtrlShiftSpace"; flags="DisableOutput"; description="RightWords: Correct word"; action=function()
-if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
+local areaAnyEditor="Editor Dialog DialogAutoCompletion Shell ShellAutoCompletion Info QView Tree"
+local isEditor=function() return not (Area.Shell or Area.ShellAutoCompletion or Area.Info or Area.QView or Area.Tree) or not CmdLine.Empty end
 
-if Area.Editor or Area.Dialog or ((Area.Shell or Area.Info or Area.QView or Area.Tree) and not CmdLine.Empty) then
-	if Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9") then
-		Keys("1")
-	end
+Macro {
+key="CtrlShiftSpace"; flags="DisableOutput"; description="RightWords: Correct word"; area=areaAnyEditor; condition=isEditor; action=function()
+if Area.DialogAutoCompletion or Area.ShellAutoCompletion then Keys("Esc") end
+if Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "CA7ECDC0-F446-4BFF-A99D-06C90FE0A3A9") then
+	Keys("1")
 end
 end;
 }
@@ -29,8 +29,8 @@ end;
 
 Macro {
 area="Editor"; key="CtrlShiftH"; flags="DisableOutput"; description="RightWords: Highlighting"; action=function()
-if not Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "10435532-9BB3-487B-A045-B0E6ECAAB6BC") then exit() end
-if 0 == Menu.Select("Drawers") then exit() end Keys("Enter")
-if 0 == Menu.Select("Spelling mistakes") then exit() end Keys("Enter")
+if not Plugin.Menu("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "10435532-9BB3-487B-A045-B0E6ECAAB6BC") then return end
+if 0 == Menu.Select("Drawers") then return end Keys("Enter")
+if 0 == Menu.Select("Spelling mistakes") then return end Keys("Enter")
 end;
 }

@@ -1,0 +1,60 @@
+﻿
+# FarNet module *Drawer*
+
+*********************************************************************
+## Synopsis
+
+The module provides a few editor color tools (drawers).
+
+**Project**
+
+ * Source: <http://code.google.com/p/farnet/>
+ * Author: Roman Kuzmin
+
+**Prerequisites**
+
+ * Far Manager 3.0.3061
+ * Plugin FarNet 5.0.31
+ * Plugin FarColorer
+
+*********************************************************************
+## Description
+
+The module provides the following editor color drawers:
+
+* *Current word* - It highlights occurrences of the current word in the editor.
+* *Fixed column* - It highlights the fixed column (80th by default).
+
+In order to turn a drawer on and off use the menu: `[F11] | FarNet | Drawers | (Drawer)`
+
+### Options
+
+`[F9] | Options | Plugin configuration | FarNet | Drawers | (Drawer)`
+
+* Mask - mask of files where the (Drawer) is turned on automatically.
+* Priority - drawer color priority.
+
+### Settings
+
+Open the module settings panel: `[F11] | FarNet | Settings | Drawer`
+
+CurrentWordPattern
+: Defines the regular expression pattern for words of the "Current word"
+  drawer. The default pattern is `\w[-\w]*`
+
+FixedColumnNumber
+: Defines the number of highlighted column in the "Fixed column" drawer. The
+  default column number is 80
+
+(Drawer)ColorForeground, (Drawer)ColorBackground
+: Drawer colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta,
+  DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White.
+
+*********************************************************************
+## History
+
+1.0.1
+
+    Adapted for FarNet 5.0.31
+
+<http://code.google.com/p/farnet/downloads/list>
