@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyProduct("FarNet.RightControl")]
-[assembly: AssemblyVersion("2.0.1")]
+[assembly: AssemblyVersion("2.0.2")]
 [assembly: AssemblyTitle("FarNet module RightControl")]
 [assembly: AssemblyDescription("Some editor actions work like in other editors")]
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]

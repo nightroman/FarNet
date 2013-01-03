@@ -7,7 +7,6 @@
 * [Examples](#Examples)
 * [History](#History)
 
-
 *********************************************************************
 ## Synopsis {#Synopsis}
 
@@ -16,14 +15,13 @@ It is invoked from the command line with the prefix *Explore:*.
 
 **Project**
 
-* Source: <http://code.google.com/p/farnet/>
-* Author: Roman Kuzmin
+ * Source: <http://code.google.com/p/farnet/>
+ * Author: Roman Kuzmin
 
 **Prerequisites**
 
- * Far Manager 3.0.x
- * Plugin FarNet 5.0.16
-
+ * Far Manager 3.0.3061
+ * Plugin FarNet 5.0.31
 
 *********************************************************************
 ## Command syntax {#Syntax}
@@ -202,5 +200,9 @@ Note: `is-match()` is a helper function added by FarNet.
 2.0.1
 
     Adapted for FarNet 5.0.16. File masks are checked for validity.
+
+2.0.2
+
+    Adapted for FarNet 5.0.31
 
 <http://code.google.com/p/farnet/downloads/list>

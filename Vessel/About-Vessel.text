@@ -1,0 +1,178 @@
+
+# FarNet module *Vessel*
+
+*********************************************************************
+## Synopsis
+
+Vessel (short for View/Edit/Save/SELect) records and maintains history of file
+view, edit, and save operations and related statistics. The history file is:
+%LOCALAPPDATA%\Far Manager\Profile\FarNet\Vessel\VesselHistory.log
+
+**Project**
+
+ * Source: <http://code.google.com/p/farnet/>
+ * Author: Roman Kuzmin
+
+**Prerequisites**
+
+ * Far Manager 3.0.3061
+ * Plugin FarNet 5.0.31
+
+*********************************************************************
+## Description
+
+Features
+
+ * Smart and plain history lists
+ * Incremental filter in history lists works at once (no need for CtrlAltF)
+ * Advanced filter with reusable regular expressions (CtrlDown, AltDown)
+ * For other features see history lists help (F1)
+
+If the log file is missing then it is generated from the existing Far history.
+This history is not yet effective for training. The smart history list will be
+the same as the plain list for some time even after training.
+
+The smart history list shows files in heuristically improved order. Recently
+used files are sorted by last times, as usual. Files not used for a while are
+sorted by ranks. Rank is based on last time, frequency, activity, and factors
+calculated by training.
+
+How training works. For every file record it builds the plain history list and
+several ranked lists with different factors. The list with the file nearest to
+the top wins. Finally the factors that maximize the total difference between
+the plain and ranked lists for all records are taken.
+
+Automatic fast training starts after updating the history file from the menu
+and after opening not recent files from the smart history. It works in the
+background and it is very fast (~50 times faster than full training).
+
+Automatic log update and training is also done once a day on the first use.
+Thus, manual updates and trainings are not normally needed at all.
+
+*********************************************************************
+## Settings
+
+Open the module settings panel from the main .NET menu:
+`F11 | FarNet | Settings | Vessel`
+
+MaximumDayCount
+: Maximum number of recorded days to keep the records for. The default is 30.
+
+MaximumFileCount
+: Maximum number of files to keep the records for. The default is 512.
+
+Limit0
+: Span 0 in hours. It defines the most recent files sorted only by times.
+
+Limit1
+: Maximum span 1 in hours. Training finds the best value (factor 1).
+
+Limit2
+: Maximum span 2 in days. Training finds the best value (factor 2).
+
+*********************************************************************
+## History
+
+1.0.1
+
+    * Key counts are used in ranking.
+    * Improved ranking model and training.
+    * Expected extra gain is more than 20%.
+
+1.0.2
+
+    * Training is 2-4 times faster.
+    * Fixed recent time is 2 hours.
+    * Expected extra gain is about 15%.
+
+1.0.3
+
+    * Use of closing time instead of opening time is better for a few reasons.
+    * Smart history list shows separators of the groups defined by factors.
+    * Trainig shows the progress form.
+    * Option Limits (see About-Vessel).
+    * Ranking model is based on two factors instead of one. As a result:
+    - Training is slow but factors can live longer without re-training.
+    - Expected about 10% more total gain.
+
+1.0.4
+
+    Fixed the plain history list and minor defects in 1.0.3.
+
+1.0.5
+
+    Fix: plain history should be used on negative training results.
+
+1.0.6
+
+    Training is now done in the background. When training has completed the
+    menu shows the "Training results" item until it is not visited once. This
+    item is also shown after automatic fast training.
+
+    Automatic fast training starts after updating the history file from the
+    menu and after opening not recent files from the smart history. It works in
+    the background and it is very fast (~50 times faster than full training).
+
+    Training result numbers do not include openings below Limit0: they are not
+    really important because they are the same as in the classic plain history.
+
+1.0.7
+
+    Use FarNet 4.3.35: key counts reflect actual changes better. This is quite
+    important statistics for Vessel.
+
+    Update removes from the history records of missing files, oldest files
+    exceeding the limit, and old records keeping at least one per file.
+
+    Added the registry options MaximumDayCount and MaximumFileCount.
+
+    Minor improvements of UI and training performance.
+
+1.0.8
+
+    Improved predictability of the model by taking into account evidences of
+    openings for idle periods. The test set shows 30-40% more gain for long
+    enough histories.
+
+1.0.9
+
+    Updated for FarNet 4.4.0
+
+    Minor tweaks in ranking.
+
+    Fixed an error message in the list on ShiftDel + Esc.
+
+1.0.10
+
+    The settings panel is opened from the .NET \ Settings menu.
+
+    The history log moved from %USERPROFILE%\VesselHistory.log to
+    %LOCALAPPDATA%\Far Manager\FarNet\Vessel\VesselHistory.log
+    (do this manually)
+
+1.0.11
+
+    Updated for FarNet 4.4.15
+
+    The local Vessel\Settings.resources (with training results) is now updated
+    separately from the roaming settings. Thus, if you use default settings then
+    the roaming file Vessel\Settings.resources can be removed.
+
+2.0.0
+
+    Adapted for Far3 + FarNet5.
+
+2.0.1
+
+    Automatic log update and training is also done once a day on the first use.
+    Thus, manual updates and trainings are not normally needed at all.
+
+2.0.2
+
+    Use FarNet 5.0.5. Initial generation of the log from Far history is back.
+
+2.0.3
+
+    Adapted for FarNet 5.0.31
+
+<http://code.google.com/p/farnet/downloads/list>

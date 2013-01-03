@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.32 =
+
+Removed the obsolete property Far.Net. Use the new Far.Api instead.
+
 = 5.0.31 =
 
 Use Far 3.0.3040+. FarNet uses new Far API for setting directories in panels.

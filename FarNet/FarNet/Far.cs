@@ -30,21 +30,12 @@ namespace FarNet
 				_Host = value;
 			}
 		}
-		/// <summary>
-		/// Obsolete, use Api.
-		/// </summary>
-		[Obsolete("Use Api.")]
-		public static IFar Net
-		{
-			get { return _Host; }
-		}
 	}
 	/// <summary>
 	/// Main interface which exposes top entries of the FarNet object model.
 	/// </summary>
 	/// <remarks>
 	/// The only instance of this class is exposed as the static property <see cref="Far.Api"/> of the class <see cref="Far"/>.
-	/// Both names <c>Far</c> and <c>Net</c> are symbolic and make sense only when used together as <c>Far.Net</c>.
 	/// <para>
 	/// The exposed instance provides access to top level Far methods and objects or creates new Far objects like
 	/// menus, input and message boxes, dialogs, editors, viewers, panels and etc.
@@ -543,9 +534,9 @@ namespace FarNet
 	public enum HelpOptions
 	{
 		/// <summary>
-		/// Show the topic from the help file of the calling plugin
-		/// (note: it is always FarNet and the path is <c>Far.Net.GetType().Assembly.Location</c>).
-		/// If topic begins with a colon ':', the topic from the main Far help file is shown and path is ignored.
+		/// Show the topic from the help file of the plugin.
+		/// In FarNet it is <c>Far.Api.GetType().Assembly.Location</c>.
+		/// If a topic begins with a colon the a topic from the main Far help file is shown.
 		/// </summary>
 		None = 0x0,
 		/// <summary>

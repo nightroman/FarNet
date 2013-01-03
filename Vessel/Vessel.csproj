@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE" />
-    <Content Include="Readme.txt" />
+    <Content Include="About-Vessel.text" />
     <Content Include="Vessel.hlf" />
     <Content Include="Vessel.macro.lua" />
   </ItemGroup>
