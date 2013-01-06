@@ -1,0 +1,542 @@
+
+<!--
+Global options are set before the first topic. Then they can be changed
+anywhere. Use an empty set in order to reset the current options to global.
+-->
+
+<!--HLF:
+    Language = English,English;
+    Margin = 1;
+    IndentCode = 4;
+    IndentList = 2;
+    IndentPara = 0;
+    IndentQuote = 4;
+    CenterHeading = false;
+    CenterRule = false;
+    PlainCode = false;
+    PlainHeading = false;
+-->
+
+# HelpDown {#Contents}
+
+This file is an example of *HelpDown* markdown for conversion to HLF via HTML.
+It shows features suitable for conversion, some cases interesting for syntax
+highlighting with *Colorer + markdown.hrc*, and special test cases.
+
+### Features
+
+* [Headings](#Headings)
+* [Emphasis](#Emphasis)
+* [Paragraphs](#Paragraphs)
+* [Code blocks](#CodeBlocks)
+* [Blockquotes](#Blockquotes)
+* [Backslash escapes](#Escapes)
+* [Lists](#Lists)
+* [Links](#Links)
+* [Definition lists](#DefinitionLists)
+* [More complex lists](#ComplexLists)
+
+### Test cases
+
+* [Italic, bold, code across lines](#AcrossLines)
+* [List text should be unindented](#case_120227_103044)
+* [Trim new lines in list text](#case_120227_113658)
+* [Escape ~, #, @ in HLF](#case_120228_104823)
+* [Emphasis of "#"](#case_120228_105542)
+* [Eaten spaces](#case_120228_134202)
+* [Many  spaces](#case_120229_053114)
+
+
+*********************************************************************
+# Headings {#Headings}
+
+Every heading with an anchor (e.g. `{#Headings}`) starts a new HLF topic and
+gives its title. Heading anchor names are used as HLF topic names.
+
+### Heading in the topic
+
+Headings without anchors are used inside topics. All headings are emphasized by
+default so that in HLF they look like highlighted text.
+
+Options `CenterHeading` and `PlainHeading` change heading style:
+
+<!--HLF: CenterHeading = true-->
+### Heading with `CenterHeading = true`
+
+<!--HLF: PlainHeading = true-->
+### `PlainHeading = true` allows emphasis: *Italic*, **Bold**, `Code`
+
+<!--HLF:-->
+### Heading with the global style again
+
+*********************************************************************
+# Emphasis {#Emphasis}
+
+Simple samples: *italic1* and _italic2_ and **bold1** and __bold2__
+
+Emphasis with underscores works as long as you emphasise whole words and
+underscores do not touch anything else:
+
+_This is italic_ but _This is not italic_.
+
+__This is bold__ but __This is not bold__.
+
+Note: Colorer scheme cannot threat such edge cases correctly.
+
+Asterisks for emphasis work in more cases than underscores:
+
+*This is italic* and *This is italic*.
+
+**This is bold** and **This is bold**.
+
+***
+### Nested cases
+
+Not all but many nested emphasis, code spans, and links are supported by
+*Colorer + markdown.hrc*. But in HLF viewer this does not make much sense.
+
+Examples:
+
++ text ***bold+italic and even `code` and [link](#Contents) inside*** text
++ text **bold *bold+italic* bold `code` bold [link](#Contents) bold** text
++ text *italic **bold+italic** italic `code` italic [link](#Contents) italic* text
+
+
+*********************************************************************
+# Paragraphs {#Paragraphs}
+
+A  paragraph  starts  with  the  start  of  a  line
+and  consists  of  all  following  solid  lines
+    including
+        indented.
+HLF:
+1) Indentation is removed.
+2) Double+ spaces are preserved.
+
+
+
+This is the second paragraph.
+At least one empty line separates paragraphs.
+HLF: 2+ empty lines are replaced by one.
+
+
+*********************************************************************
+# Code blocks {#CodeBlocks}
+
+### Strong code blocks (`PlainCode = false`)
+
+Indented code block:
+
+    # converted literally: <bar> `bar` *bar* **bar**
+    2b || !2b
+
+Fenced code block:
+
+~~~
+$x = 1 + 1
+Write-Host $x
+~~~
+
+***
+### Plain code blocks (`PlainCode = true`)
+
+<!--HLF: PlainCode = true-->
+
+Indented code block:
+
+    # converted literally: <bar> `bar` *bar* **bar**
+    2b || !2b
+
+Fenced code block:
+
+~~~
+$x = 1 + 1
+Write-Host $x
+~~~
+
+<!--HLF:-->
+
+
+*********************************************************************
+# Blockquotes {#Blockquotes}
+
+Blockquotes are used to indent paragraphs, lists, and code blocks.
+
+> Blockquotes starts with the `>` mark.
+Marks can be at any line
+or just the first line.
+
+Multiple quotes are also supported:
+
+>> This paragraph
+>> is double quoted.
+
+Quoted list:
+
+> * Item 1.
+> * Item 2.
+>
+>     Paragraph in list.
+>
+>         Code block in list.
+
+Double quoted list:
+
+>> * Item 1.
+>> * Item 2.
+>>
+>>     Paragraph in list.
+>>
+>>         Code block in list.
+
+Quoted code block (5+ spaces after marks):
+
+>     code
+>     code
+
+Double quoted code block (5+ spaces after marks):
+
+>>     code
+>>     code
+
+*********************************************************************
+# Backslash escapes {#Escapes}
+
+In order to suppress unwanted markdown features in conflicting cases the
+following characters may have to be escaped by `\`:
+
+* \\\`\*\_\{\}\[\]\(\)\>\#\+\-\.\!\:\|\=\<
+* ``\`*_{}[]()>#+-.!:|=<``
+
+Examples:
+
+- Not \*\*bold**
+- Not \*italic*
+- Not \[link]
+- Not \`code`
+
+Nothing is escaped inside `code spans`, so that code spans are suitable for
+complex cases, use them when in doubts. Here is the set of special characters
+in a code span: ``\`*_{}[]()#.!+-<>;:|``. Note use of ``` `` ``` in order to
+enclose a code span with `` ` `` in it.
+
+
+*********************************************************************
+# Lists {#Lists}
+
+### Unordered list:
+
+* Item 1.
+* Item 2.
+More item 2.
+
+### Ordered list:
+
+1. Apples
+1. Pears
+1. Bananas
+and oranges
+
+### List with paragraphs and code:
+
+* Item 1.
+    More item 1.
+
+    Paragraph 2.
+    More text.
+
+* Item 2.
+    More item 2.
+
+    Paragraph 2.
+    More text.
+
+        This is 2+/8+ tab/space
+        formatted indented code.
+
+    Paragraph 3
+    of the item.
+
+### Definition list with paragraphs and code:
+
+Term 1.
+: Definition 1.
+
+    Definition 1.
+    Paragraph 2.
+
+        This is 2+/8+ tab/space
+        formatted indented code.
+
+    Definition 1.
+    Paragraph 3.
+
+### Ordered list with paragraphs and code:
+
+1. Item 1.
+Paragraph 1.
+
+    Item 1,
+    paragraph 2.
+
+        This is 2+/8+ tab/space
+        formatted indented code.
+
+    Item 1,
+    paragraph 3.
+
+*********************************************************************
+# Links {#Links}
+
+[Contents](#Contents)
+[Internal link](#Contents)
+[Another internal](#Contents)
+
+### Web links
+
+* Automatic: <http://daringfireball.net/projects/markdown/syntax>
+* Automatic: <http://www.toptensoftware.com/markdowndeep/>
+* With text: [PHP Markdown Extra](http://michelf.com/projects/php-markdown/extra/)
+
+### E-mails
+
+* Automatic: <James.Bond@google.com>
+* With text: [whoever](mailto:whoever@gmail.com)
+
+### Link text across lines
+
+Link text across lines is allowed and colored by Colorer:
+
+This is a link [Go To
+Contents](#Contents) across lines.
+
+### Colorer: special case
+
+This is not a link: [Go To Contents]. But it is colored as a link because it
+is *potentially* a link, for example it would be a link if the below line is
+not indented.
+
+    [Go To Contents]: #Contents
+
+
+*********************************************************************
+# Definition lists {#DefinitionLists}
+
+Layout of HLF definition lists is slightly different from HTML. Namely, count
+of paragraphs, lines in paragraphs, empty lines between terms and definitions
+are all ignored in HLF.
+
+### Simple definition list
+
+Term 1.
+: Definition 1.
+
+Term 2.
+
+: Definition 2 (empty line is ignored in HLF).
+
+### Definition list with paragraphs and wrapped lines
+
+`Term`
+: Definition, para 1.
+    Still para 1, not code.
+
+`Term`
+: Definition, para 1.
+
+    Definition, para 2, not code.
+
+`Term`
+: Definition, para 1.
+    Still para 1, not code.
+
+    Definition, para 2, not code.
+
+`Term`
+: Definition, para 1.
+    Still para 1, not code.
+
+    Definition, para 2, not code.
+    Still para 2.
+
+
+*********************************************************************
+# More complex lists {#ComplexLists}
+
+Complex syntax in lists is supported (partially by *markdown.hrc*).
+
+* Item 1.
+Same item paragraph.
+    > This is a block quote.
+    Same quote paragraph.
+
+    Item 1, 2nd paragraph.
+    Same item paragraph.
+
+* Item 2.
+    ~~~
+    Fenced code
+    block in list.
+    ~~~
+    Item 2, 2nd paragraph.
+Same item paragraph even if text is wrapped and left aligned.
+
+        Indented code
+        block in list.
+
+    Still item 2, 3rd paragraph.
+    Same item paragraph.
+
+* Item 3.
+
+*********************************************************************
+# Italic, bold, code across lines {#AcrossLines}
+
+Each following paragraph has two source lines with italic, bold, and code text
+starting at the first line and ending at the second. This is a special case on
+conversion to HLF.
+
+Some *italic
+text* across lines.
+
+Some **bold
+text** across lines.
+
+Some `code
+text` across lines.
+
+
+*********************************************************************
+# List text should be unindented {#case_120227_103044}
+
+* Item 1.
+   3 leading spaces are to be removed in HLF.
+* Item 2.
+
+
+*********************************************************************
+# Trim new lines in list text {#case_120227_113658}
+
+* Item 1.
+    4 leading spaces result in leading and trailing new lines in HTML.
+* Item 2.
+
+
+*********************************************************************
+# Escape ~, #, @ in HLF {#case_120228_104823}
+
+Symbols ~, #, @ are doubled in HLF.
+
+    # Same in code:
+    Get-Item ~\#@.txt
+
+
+*********************************************************************
+# Emphasis of "#" {#case_120228_105542}
+
+Far cannot treat emphasis with a leading "#" correctly, the "#" is not
+emphasised, as a result.
+
+Italic: *#text*
+
+Bold: **#text**
+
+Code: `#text`
+
+
+*********************************************************************
+# Eaten spaces {#case_120228_134202}
+
+need
+space
+
+* need
+space
+
+---
+
+* item
+
+    need space
+    `code`
+
+    need space
+    **bold**
+
+    need space
+    *italic*
+
+---
+
+need space
+`code`
+
+need space
+**bold**
+
+need space
+*italic*
+
+---
+
+* item
+
+    `code`
+    need space
+
+    **bold**
+    need space
+
+    *italic*
+    need space
+
+---
+
+`code`
+need space
+
+**bold**
+need space
+
+*italic*
+need space
+
+---
+
+* item
+
+    `need`
+    `space`
+
+    **need**
+    **space**
+
+    *need*
+    *space*
+
+---
+
+`need`
+`space`
+
+**need**
+**space**
+
+*need*
+*space*
+
+
+*********************************************************************
+# Many  spaces  *Italic*,  **Bold**,  `Code`  . {#case_120229_053114}
+
+HLF preserves spaces unlike HTML.
+
+### Many  spaces  *Italic*,  **Bold**,  `Code`  .
+
+* Many  spaces  *Italic*,  **Bold**,  `Code`  .
+
+    Many  spaces  *Italic*,  **Bold**,  `Code`  .
+
+Many  spaces  *Italic*,  **Bold**,  `Code`  .
+
+*********************************************************************
