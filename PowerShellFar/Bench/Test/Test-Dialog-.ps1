@@ -55,7 +55,7 @@ $ed = $dialog.AddEdit(5, -1, 70, 'Disabled Edit')
 $ed.Disabled = $true
 
 ### Text (separator, double line)
-$dialog.AddText(5, -1, 0, 'Separator2').Separator = 2
+$dialog.AddText(-1, -1, 0, 'Separator2').Separator = 2
 
 ### CheckBox (standard)
 $x1 = $dialog.AddCheckBox(5, -1, 'Check&Box')
@@ -85,7 +85,7 @@ $r2 = $dialog.AddRadioButton(25, 0, 'RadioButton&2')
 $r2.Selected = $true
 
 ### Text (separator, single line)
-$_ = $dialog.AddText(5, -2, 0, 'Separator1')
+$_ = $dialog.AddText(-1, -2, 0, 'Separator1')
 $_.BoxColor = $true
 $_.Separator = 1
 
@@ -218,7 +218,7 @@ $fail.add_ButtonClicked({
 
 ### [More] Run another dialog (also shows how to use $MyInvocation)
 $more.add_ButtonClicked({
-	& $MyInvocation.MyCommand.Definition ($X + 4) ($Y + 4)
+	& $myFolder\Test-Dialog-.ps1 ($X + 4) ($Y + 4)
 	$_.Ignore = $true
 })
 
@@ -231,6 +231,7 @@ $test.add_ButtonClicked({
 	# create a stepper
 	$stepper = New-Object PowerShellFar.Stepper
 	$stepper.Ask = $true
+	$data = $stepper.Data
 	$stepper.Go((& "$myFolder\Test-Dialog+.ps1" -TestOpened))
 })
 

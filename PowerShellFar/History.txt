@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.35 =
+
+Test-Dialog-.ps1 - fixes for interactive testing and positions of separators.
+
 = 5.0.34 =
 
 * Adapted for FarNet 5.0.31

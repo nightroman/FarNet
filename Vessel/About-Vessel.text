@@ -24,8 +24,8 @@ view, edit, and save operations and related statistics. The history file is:
 Features
 
  * Smart and plain history lists
- * Incremental filter in history lists works at once (no need for CtrlAltF)
- * Advanced filter with reusable regular expressions (CtrlDown, AltDown)
+ * Incremental filter (no need for CtrlAltF)
+ * Reduced noise (e.g. excluded temporary files)
  * For other features see history lists help (F1)
 
 If the log file is missing then it is generated from the existing Far history.

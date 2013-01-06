@@ -411,14 +411,19 @@ namespace FarNet
 			return TempFolder(null);
 		}
 		/// <summary>
-		/// Gets the current dialog or null if the current window is not dialog.
+		/// Gets the most recent opened dialog or null.
 		/// </summary>
+		/// <remarks>
+		/// If there are no opened dialogs then it gets null.
+		/// Due to Mantis 2241 null is also returned if a menu is opened after a dialog.
+		/// </remarks>
 		public abstract IDialog Dialog { get; }
 		/// <summary>
 		/// Gets the current editor or dialog edit box line or the command line.
 		/// </summary>
 		/// <remarks>
-		/// It is null if there is no current editor line available.
+		/// It returns null if there is no current editor line available.
+		/// Due to Mantis 2241 null is also returned for a dialog if a menu is opened after this dialog (e.g. auto complete menu).
 		/// </remarks>
 		public abstract ILine Line { get; }
 		/// <summary>
