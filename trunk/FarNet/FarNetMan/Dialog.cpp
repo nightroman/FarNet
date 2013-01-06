@@ -381,10 +381,14 @@ void FarDialog::EnableRedraw()
 
 FarDialog^ FarDialog::GetDialog()
 {
-	for(int i = Far::Api->Window->Count; --i >= 0;) //????????
+	for(int i = Far::Api->Window->Count; --i >= 0;)
 	{
 		WindowInfo wi;
 		Call_ACTL_GETWINDOWINFO(wi, i);
+
+		//_130105_190834 Mantis 2241. Hangs on DialogAutoCompletion. For now disable in all menus.
+		if (wi.Type == WTYPE_VMENU)
+			return nullptr;
 
 		if (wi.Id == 0 || wi.Type != WTYPE_DIALOG)
 			continue;

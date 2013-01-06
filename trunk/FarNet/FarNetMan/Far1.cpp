@@ -185,7 +185,7 @@ ILine^ Far1::Line::get()
 			dialog = Dialog;
 		}
 		break;
-	case FarNet::WindowKind::Menu: //????????
+	case FarNet::WindowKind::Menu:
 		{
 			FarNet::MacroArea area = Far::Api->MacroArea;
 			if (area == FarNet::MacroArea::ShellAutoCompletion)
