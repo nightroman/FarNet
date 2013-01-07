@@ -5,8 +5,8 @@
 	Author: Roman Kuzmin
 
 .Description
-	Requires [FarHelpDown](https://github.com/nightroman/FarHelpDown).
-	Put these files together somewhere in the system path:
+	Requires [HelpDown](http://code.google.com/p/farnet/downloads/list).
+	Copy these files to the same directory which included in %PATH%:
 	- MarkdownToHtml.exe
 	- HtmlToFarHelp.exe
 	- MarkdownDeep.dll
