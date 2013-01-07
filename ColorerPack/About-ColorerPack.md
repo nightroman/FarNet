@@ -1,6 +1,7 @@
 
 # ColorerPack - syntax and color schemes for Colorer
 
+- markdown.hrc
 - [powershell.hrc](#powershell)
 - [r.hrc](#r)
 - [visual.hrd](#visual)
@@ -116,7 +117,6 @@ with *visual.hrd*.
 *********************************************************************
 ## History {#History}
 
-***
 ### 2012-05-06
 
 *powershell.hrc*
@@ -125,14 +125,12 @@ with *visual.hrd*.
 - Fixed `|` in the end of line comments.
 - Minor tweaks, improved performance (~5%).
 
-***
 ### 2012-04-28
 
 *powershell.hrc*
 
 - Reviewed list of known cmdlets (V3 included).
 
-***
 ### 2012-04-22
 
 *powershell.hrc*
@@ -145,7 +143,6 @@ with *visual.hrd*.
 - Added operators `-in -notin` (V3).
 - Refactoring and optimization.
 
-***
 ### 2012-04-20
 
 *powershell.hrc*
@@ -157,7 +154,6 @@ with *visual.hrd*.
 - "Breaking" change: no spaces are allowed between conventional comments
   `<#sql#> <#regex#>` and following string edges.
 
-***
 ### 2012-04-19
 
 *powershell.hrc*
@@ -165,7 +161,6 @@ with *visual.hrd*.
 - Colored optional elements of `switch` and `data`.
 - Fixed many of recently added known issues, not all yet.
 
-***
 ### 2012-04-18
 
 *powershell.hrc*
@@ -180,7 +175,6 @@ with *visual.hrd*.
 
 - def:TODO colors are inverted comment colors (look more comfortable).
 
-***
 ### 2012-04-17
 
 *powershell.hrc*
@@ -191,7 +185,6 @@ with *visual.hrd*.
 - Improved parsing and colors of script parameter attributes.
 - Amended parsing of hash literals.
 
-***
 ### 2012-04-15
 
 *powershell.hrc*
@@ -200,7 +193,6 @@ with *visual.hrd*.
 - Corrected some ambiguous operator-or-literal cases.
 - Colored loop labels in `break continue`.
 
-***
 ### 2012-04-14
 
 *powershell.hrc*
@@ -210,14 +202,12 @@ with *visual.hrd*.
     - fixed context of inner blocks
 - Simplified `data` block.
 
-***
 ### 2012-04-12
 
 *powershell.hrc*
 
 - Optimized by eating spaces (about 20% faster).
 
-***
 ### 2012-04-12
 
 *powershell.hrc*
@@ -234,7 +224,6 @@ with *visual.hrd*.
 - Amended outlined comments `###`.
 - Optimized by eating spaces.
 
-***
 ### 2012-04-11
 
 *powershell.hrc*
@@ -244,7 +233,6 @@ with *visual.hrd*.
 - Improved `param, begin, process, end, if, else, elseif, try, catch, finally,
   trap` blocks: multiline syntax including comments, dual start/end pairs, etc.
 
-***
 ### 2012-04-09
 
 *powershell.hrc*
@@ -259,7 +247,6 @@ with *visual.hrd*.
     - type syntax, including generics and arrays
     - name patterns of function, filter, data, task
 
-***
 ### 2012-04-01
 
 *r.hrc*
@@ -272,7 +259,6 @@ with *visual.hrd*.
 - Added yet missing operator `!`.
 - Added reserved operators `&&`, `||` (as errors).
 
-***
 ### 2012-03-29
 
 *About-ColorerPack*
@@ -299,7 +285,6 @@ SQL
 - `xml:CData` color changed from `def:default`.
 - `c:PreprocInclude` color is VS color.
 
-***
 ### 2012-12-01
 
 *powershell.hrc*
@@ -309,4 +294,6 @@ SQL
 - Parameters are not outlined anymore. Latest PowerShellFar provides
   tab-expansion of script variables including parameters.
 
-***
+### 2013-01-07
+
+- Included *markdown.hrc*.

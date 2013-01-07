@@ -189,7 +189,7 @@ Search-FarFile checks masks for validity.
 the same source as "PowerShellFar.hlf".
 
 * Markdown & markdown help tools
-- Requires [FarHelpDown](https://github.com/nightroman/FarHelpDown)
+- Requires [HelpDown](http://code.google.com/p/farnet/downloads/list)
 - New script Show-Markdown-.ps1 opens markdown as HTML or Far help.
 - Invoke-Editor-.ps1 opens markdown files from editors as HTML, at the topic.
 - Profile-Editor-.ps1 opens markdown files from editors as HLF, at the topic.
