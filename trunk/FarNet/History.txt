@@ -6,8 +6,8 @@ As it was announced, removed the obsolete property Far.Net. Use the new Far.Api
 instead. Upgrade your modules. All FarNet suite modules at the download page
 were upgraded some time ago.
 
-IFar.Dialog now gets the top dialog even if it is under other windows but
-menus. Menus will be enabled when Mantis 2241 is resolved. As a result,
+IFar.Dialog now gets the top dialog even if it is under other windows but not
+menus. Menus will be (?) enabled when Mantis 2241 is resolved. As a result,
 IFar.Line in menus over a dialog gets null. This is better than hanging.
 
 Workaround for macros. Macros may check the area for DialogAutoCompletion and

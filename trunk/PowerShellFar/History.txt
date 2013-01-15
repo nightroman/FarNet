@@ -3,7 +3,9 @@ http://code.google.com/p/farnet/downloads/list
 
 = 5.0.35 =
 
-Test-Dialog-.ps1 - fixes for interactive testing and positions of separators.
+Technical build for FarNet 5.0.32.
+
+Test-Dialog-.ps1 - fixed interactive testing and separator text positions.
 
 = 5.0.34 =
 

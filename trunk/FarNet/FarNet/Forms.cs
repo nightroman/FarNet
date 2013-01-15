@@ -308,6 +308,9 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Tells to center the text (horizontally or vertically).
 		/// </summary>
+		/// <remarks>
+		/// For separators yet another way to tell this is to use -1 as position in <see cref="IDialog.AddText"/>.
+		/// </remarks>
 		bool Centered { get; set; }
 		/// <summary>
 		/// Gets true if the text is vertical.
@@ -630,6 +633,9 @@ namespace FarNet.Forms
 		/// </summary>
 		/// <include file='doc.xml' path='doc/LTR/*'/>
 		/// <param name="text">Control text.</param>
+		/// <remarks>
+		/// For separators use of -1 as position tells to center the text (alternative to <see cref="IText.Centered"/>).
+		/// </remarks>
 		public abstract IText AddText(int left, int top, int right, string text);
 		/// <summary>
 		/// Adds a vertical text control. See <see cref="NoSmartCoordinates"/>.
