@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2012-12-01
+powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-01-18
 Designed for PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 
 Add to proto.hrc:
@@ -979,6 +979,12 @@ SQL syntax in here-strings after <#sql#>
 	<block scheme="switch"
 	start="/%s-label;(?{start}(?{Keyword}switch))%token;?!/i" end="/(?{end}\})?#1/"/>
 
+	<block scheme="statement-block"
+	start="/(?{start}(?{Keyword}try|finally))%token;?!/i" end="/(?{end}\})?#1/"/>
+
+	<block scheme="catch-trap"
+	start="/(?{start}(?{Keyword}catch|trap))%token;?!/i" end="/(?{end}\})?#1/"/>
+
 	<block scheme="do"
 	start="/%s-label;(?{start}(?{Keyword}do))%token;?!/i" end="/(?{end}\))?#1/"/>
 
@@ -993,12 +999,6 @@ SQL syntax in here-strings after <#sql#>
 	<block scheme="function"
 	start="/(?{start}(?{Keyword}function|filter|workflow))\s+(?{def:Outlined}(?{Identifier}[^\s$()\{}][^\s()\{}]*|\$\B))%e-function;/i"
 	end="/(?{end}\})?#1/"/>
-
-	<block scheme="statement-block"
-	start="/(?{start}(?{Keyword}try|finally))%token;?!/i" end="/(?{end}\})?#1/"/>
-
-	<block scheme="catch-trap"
-	start="/(?{start}(?{Keyword}catch|trap))%token;?!/i" end="/(?{end}\})?#1/"/>
 
 	<block scheme="break-continue"
 	start="/(?{Keyword}break|continue)%token;?!/i" end="/%end;/"/>

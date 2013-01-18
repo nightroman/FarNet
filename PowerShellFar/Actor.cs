@@ -360,9 +360,11 @@ View the error list or the variable $Error.
 					{
 						FolderTree folderTree = plugin as FolderTree;
 						if (folderTree != null)
+						{
 							location = panel.CurrentDirectory;
-						else
-							location = directory;
+							if (location == "*") //_130117_234326
+								location = directory;
+						}
 					}
 				}
 			}

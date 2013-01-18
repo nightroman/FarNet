@@ -166,9 +166,14 @@ namespace FarNet.Works
 					// native plugin panel: go to the first item to work around "Far does not restore panel state",
 					// this does not restore either but is still better than unexpected current item after exit.
 					if (null == module)
+					{
 						panel.Redraw(0, 0);
-
-					panel.Close();
+						panel.Close();
+					}
+					else
+					{
+						module.UIEscape(true);
+					}
 					return;
 				}
 

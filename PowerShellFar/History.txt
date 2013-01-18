@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.36 =
+
+Folder panel. Fixed occasional errors on syncing the current location before
+invoking PS commands when this panel is active.
+
 = 5.0.35 =
 
 Technical build for FarNet 5.0.32.

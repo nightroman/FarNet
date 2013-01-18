@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.33 =
+
+The menu command [F11 \ FarNet \ Panels \ Close panel] is now the same as
+[ShiftEsc] (i.e. a user may cancel closing in some cases). The hardcoded
+[ShiftEsc] in FarNet panels is not removed (needed at least for tests).
+
 = 5.0.32 =
 
 As it was announced, removed the obsolete property Far.Net. Use the new Far.Api
