@@ -296,4 +296,8 @@ SQL
 
 ### 2013-01-07
 
-- Included *markdown.hrc*.
+Included *markdown.hrc*.
+
+### 2013-01-18
+
+*powershell.hrc*. Fixed `try, catch, finally` after `=`.
