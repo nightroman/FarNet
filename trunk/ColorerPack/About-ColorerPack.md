@@ -301,3 +301,7 @@ Included *markdown.hrc*.
 ### 2013-01-18
 
 *powershell.hrc*. Fixed `try, catch, finally` after `=`.
+
+### 2013-01-26
+
+*powershell.hrc*. Switch case conditions are arguments.

@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-01-18
+powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-01-26
 Designed for PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 
 Add to proto.hrc:
@@ -751,7 +751,7 @@ SQL syntax in here-strings after <#sql#>
 		<word name="default"/>
 	</keywords>
 	<inherit scheme="statement-block"/>
-	<inherit scheme="primary-expression"/>
+	<inherit scheme="argument"/>
 </scheme>
 <scheme name="switch">
 	<block start="/(?{start}(?{Bracket}\{))/" end="/(?{end}(?{Bracket}\}))/" scheme="case"/>
