@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-01-26
+powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-01-27
 Designed for PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 
 Add to proto.hrc:
@@ -135,6 +135,10 @@ SQL syntax in here-strings after <#sql#>
 <scheme name="type-literal">
 	<block scheme="type-spec" region="Type"
 	start="/(?{start}\[)\s*\M%sname;/" end="/(?{end}\])/"/>
+</scheme>
+<scheme name="cmdlet-binding">
+	<block scheme="type-spec" region="Type"
+	start="/(?{start}\[)\s*\MCmdletBinding\b/i" end="/(?{end}\])/"/>
 </scheme>
 
 <scheme name="variable">
@@ -1017,6 +1021,8 @@ SQL syntax in here-strings after <#sql#>
 	<inherit scheme="base">
 		<virtual scheme="def:empty" subst-scheme="help"/>
 	</inherit>
+
+	<inherit scheme="cmdlet-binding"/>
 
 	<block scheme="param"
 	start="/(?{start}(?{Keyword}param))%token;?!/i" end="/(?{end}\))?#1/"/>

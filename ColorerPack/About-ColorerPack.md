@@ -305,3 +305,7 @@ Included *markdown.hrc*.
 ### 2013-01-26
 
 *powershell.hrc*. Switch case conditions are arguments.
+
+### 2013-01-27
+
+*powershell.hrc*. cmdlet-binding fixes `[CmdletBinding()] param()`.
