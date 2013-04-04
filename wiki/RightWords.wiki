@@ -5,7 +5,7 @@
 Spell-checker and thesaurus based on [http://nhunspell.sourceforge.net NHunspell]. The core [http://en.wikipedia.org/wiki/Hunspell Hunspell] is
 used in `OpenOffice` and it works with dictionaries published on `OpenOffice.org`.
 
-For description and other details see [http://farnet.googlecode.com/svn/trunk/RightWords/Readme.txt Readme.txt]
+For description and other details see [http://farnet.googlecode.com/svn/trunk/RightWords/About-RightWords.text About-RightWords.text]
 
 ----
 [http://forum.farmanager.com/viewtopic.php?f=5&t=6493 Обсуждение на форуме]
