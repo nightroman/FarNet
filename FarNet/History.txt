@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.34 =
+
+Use Far 3.0.3265. Added new method Panel.SetActive().
+
 = 5.0.33 =
 
 The menu command [F11 \ FarNet \ Panels \ Close panel] is now the same as

@@ -53,6 +53,7 @@ public:
 	virtual void SelectAt(array<int>^ indexes);
 	virtual void SelectAll();
 	virtual void SelectNames(System::Collections::IEnumerable^ names);
+	virtual void SetActive();
 	virtual void UnselectAt(array<int>^ indexes);
 	virtual void UnselectAll();
 	virtual void UnselectNames(System::Collections::IEnumerable^ names);

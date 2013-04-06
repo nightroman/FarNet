@@ -458,6 +458,7 @@ namespace FarNet
 		/// <summary>
 		/// Gets true if the panel is active.
 		/// </summary>
+		/// <seealso cref="SetActive"/>
 		public bool IsActive { get { return _Panel.IsActive; } }
 		/// <summary>
 		/// Gets true if the panel is the left panel.
@@ -962,5 +963,11 @@ namespace FarNet
 			if (indexes.Count > 0)
 				SelectAt(indexes.ToArray());
 		}
+		/// <summary>
+		/// Sets the panel active.
+		/// </summary>
+		/// <seealso cref="IsActive"/>
+		/// <exception cref="InvalidOperationException">The panel cannot be active, e.g. it is hidden.</exception>
+		public void SetActive() { _Panel.SetActive(); }
 	}
 }

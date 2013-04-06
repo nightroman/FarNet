@@ -8,7 +8,7 @@ local areaAnyEditor="Editor Dialog DialogAutoCompletion Shell ShellAutoCompletio
 local isEditor=function() return not (Area.Shell or Area.ShellAutoCompletion or Area.Info or Area.QView or Area.Tree) or not CmdLine.Empty end
 
 Macro {
-area="Shell"; key="Space"; flags="EmptyCommandLine|DisableOutput"; description="PSF: Easy prefix"; action=function()
+area="Shell"; key="Space"; flags="EmptyCommandLine"; description="PSF: Easy prefix"; action=function()
 Keys("> : Space")
 end;
 }
