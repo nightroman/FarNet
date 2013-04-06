@@ -79,6 +79,7 @@ namespace FarNet
 		/// <summary>
 		/// Gets true if the panel is active.
 		/// </summary>
+		/// <seealso cref="SetActive"/>
 		bool IsActive { get; }
 		/// <summary>
 		/// Gets true if the panel is the left panel.
@@ -139,13 +140,17 @@ namespace FarNet
 		/// </remarks>
 		IList<FarFile> ShownList { get; }
 		/// <summary>
-		/// Gets the first visible file index.
+		/// Gets true if selection exists.
 		/// </summary>
-		int TopIndex { get; }
+		bool SelectionExists { get; }
 		/// <summary>
 		/// Gets or sets the panel sort mode.
 		/// </summary>
 		PanelSortMode SortMode { get; set; }
+		/// <summary>
+		/// Gets the first visible file index.
+		/// </summary>
+		int TopIndex { get; }
 		/// <summary>
 		/// Gets or sets the panel view mode.
 		/// </summary>
@@ -274,9 +279,11 @@ namespace FarNet
 		/// </remarks>
 		int[] SelectedIndexes();
 		/// <summary>
-		/// Gets true if selection exists.
+		/// Sets the panel active.
 		/// </summary>
-		bool SelectionExists { get; }
+		/// <seealso cref="IsActive"/>
+		/// <exception cref="InvalidOperationException">The panel cannot be active, e.g. it is hidden.</exception>
+		void SetActive();
 		#endregion
 	}
 

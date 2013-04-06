@@ -14,10 +14,10 @@ in OpenOffice and it works with dictionaries published on OpenOffice.org.
 
 **Prerequisites**
 
- * Far Manager 3.0.3061
- * Plugin FarNet 5.0.31
- * NHunspell: http://nhunspell.sourceforge.net
- * Dictionaries: http://wiki.services.openoffice.org/wiki/Dictionaries
+ * Far Manager 3.0.3297
+ * Plugin FarNet 5.0.33
+ * [NHunspell 1.1.0](http://sourceforge.net/projects/nhunspell/files/NHunspell.1.1.0.0.zip/download)
+ * [Dictionaries](http://wiki.services.openoffice.org/wiki/Dictionaries)
 
 *********************************************************************
 ## Installation
@@ -308,5 +308,10 @@ UserDictionaryDirectory
 2.1.2
 
     Adapted for FarNet 5.0.31
+
+2.1.3
+
+    Upgraded for NHunspell 1.1.0
+    http://sourceforge.net/projects/nhunspell/files/NHunspell.1.1.0.0.zip/download
 
 <http://code.google.com/p/farnet/downloads/list>

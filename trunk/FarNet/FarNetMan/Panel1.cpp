@@ -653,4 +653,10 @@ PanelPlan^ Panel1::ViewPlan::get()
 	return plan;
 }
 
+void Panel1::SetActive()
+{
+	if (!Info.PanelControl(_handle, FCTL_SETACTIVEPANEL, 0, nullptr))
+		throw gcnew InvalidOperationException("Panel cannot be active.");
+}
+
 }
