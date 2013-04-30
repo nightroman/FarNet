@@ -870,6 +870,10 @@ void Editor::Start(const EditorInfo& ei, bool waiting)
 			WriteByteOrderMark = _WriteByteOrderMark.Value;
 	}
 
+	// subscribe to change events Far 3.0.3371
+	EditorSubscribeChangeEvent esce = {sizeof(EditorSubscribeChangeEvent), MainGuid};
+	Info.EditorControl(-1, ECTL_SUBSCRIBECHANGEEVENT, 0, &esce);
+
 	// now call the modules
 	Far0::InvokeModuleEditors(this, fileName);
 }

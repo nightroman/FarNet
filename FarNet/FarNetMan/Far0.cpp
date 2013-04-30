@@ -1010,7 +1010,7 @@ void Far0::ChangeFontSize(bool increase)
 	if (!fnGetCurrentConsoleFontEx || !fnSetCurrentConsoleFontEx)
 		return;
 
-	CONSOLE_FONT_INFOEX font = { sizeof(CONSOLE_FONT_INFOEX) };
+	CONSOLE_FONT_INFOEX font = {sizeof(CONSOLE_FONT_INFOEX)};
 	if (!fnGetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &font))
 		return;
 

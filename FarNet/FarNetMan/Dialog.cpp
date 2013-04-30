@@ -130,7 +130,7 @@ Guid FarDialog::TypeId::get()
 		return _typeId;
 
 	// request
-	DialogInfo arg = { sizeof(DialogInfo) };
+	DialogInfo arg = {sizeof(DialogInfo)};
 	if (Info.SendDlgMessage(_hDlg, DM_GETDIALOGINFO, 0, &arg))
 	{
 		// get and save it to reuse
