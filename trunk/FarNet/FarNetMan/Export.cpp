@@ -19,7 +19,6 @@ static FarStandardFunctions FSF;
 
 // {10435532-9BB3-487B-A045-B0E6ECAAB6BC}
 DEFINE_GUID(MainGuid, 0x10435532, 0x9bb3, 0x487b, 0xa0, 0x45, 0xb0, 0xe6, 0xec, 0xaa, 0xb6, 0xbc);
-DEFINE_GUID(FarGuid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 #define __START try {
 #define __END } catch(Exception^ e) { Far::Api->ShowError(nullptr, e); }

@@ -30,7 +30,7 @@ namespace FarNet
 		/// <summary>
 		/// Called before saving.
 		/// </summary>
-		public abstract event EventHandler Saving;
+		public abstract event EventHandler<EditorSavingEventArgs> Saving;
 		/// <summary>
 		/// Called on a key pressed.
 		/// </summary>
@@ -808,6 +808,23 @@ namespace FarNet
 		public EditorChangeKind Kind { get; private set; }
 		///
 		public int Line { get; private set; }
+	}
+
+	/// <summary>
+	/// Arguments of editor saving event.
+	/// </summary>
+	public sealed class EditorSavingEventArgs : EventArgs
+	{
+		///
+		public EditorSavingEventArgs(string fileName, int codePage)
+		{
+			FileName = fileName;
+			CodePage = codePage;
+		}
+		///
+		public string FileName { get; private set; }
+		///
+		public int CodePage { get; private set; }
 	}
 
 	/// <summary>
