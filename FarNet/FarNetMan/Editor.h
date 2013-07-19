@@ -17,6 +17,7 @@ public: DEF_EVENT_ARGS_IMP(MouseClick, _MouseClick, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseDoubleClick, _MouseDoubleClick, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseMove, _MouseMove, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseWheel, _MouseWheel, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(Saving, _Saving, EditorSavingEventArgs);
 public: DEF_EVENT_IMP(Closed, _Closed);
 public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
 public: DEF_EVENT_IMP(GotFocus, _GotFocus);
@@ -24,7 +25,6 @@ public: DEF_EVENT_IMP(Idled, _Idled);
 public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
 public: DEF_EVENT_IMP(Redrawing, _Redrawing);
-public: DEF_EVENT_IMP(Saving, _Saving);
 public:
 	virtual String^ EditText(String^ text, String^ title) override;
 };
@@ -46,6 +46,7 @@ public: DEF_EVENT_ARGS_IMP(MouseClick, _MouseClick, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseDoubleClick, _MouseDoubleClick, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseMove, _MouseMove, MouseEventArgs);
 public: DEF_EVENT_ARGS_IMP(MouseWheel, _MouseWheel, MouseEventArgs);
+public: DEF_EVENT_ARGS_IMP(Saving, _Saving, EditorSavingEventArgs);
 public: DEF_EVENT_IMP(Closed, _Closed);
 public: DEF_EVENT_IMP(CtrlCPressed, _CtrlCPressed);
 public: DEF_EVENT_IMP(GotFocus, _GotFocus);
@@ -53,7 +54,6 @@ public: DEF_EVENT_IMP(Idled, _Idled);
 public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
 public: DEF_EVENT_IMP(Redrawing, _Redrawing);
-public: DEF_EVENT_IMP(Saving, _Saving);
 public:
 	virtual property bool DisableHistory { bool get() override; void set(bool value) override; }
 	virtual property bool IsLocked { bool get() override; void set(bool value) override; }

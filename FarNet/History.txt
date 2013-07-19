@@ -1,5 +1,14 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.35 =
+
+Requires Far 3.0.3525
+
+The editor event Saving receives the argument EditorSavingEventArgs which can
+be useful on "Save as" operations. Modules using this event have to be rebuilt
+(e.g. the sample module EditorKit), changes in their code are not needed unless
+the new argument is going to be actually used.
+
 = 5.0.34 =
 
 Far 3.0.3371. Adapted for change events in editors.

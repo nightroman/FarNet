@@ -140,15 +140,15 @@ int Editor0::AsProcessEditorEvent(const ProcessEditorEventInfo* info)
 			Editor^ editor = _editors[FindEditor(info->EditorID)];
 			editor->_TimeOfSave = DateTime::Now;
 
-			if (_anyEditor._Saving)
+			if (_anyEditor._Saving || editor->_Saving)
 			{
+				EditorSaveFile* esf = (EditorSaveFile*)info->Param;
+				EditorSavingEventArgs ea(gcnew String(esf->FileName), (int)esf->CodePage);
 				Log::Source->TraceInformation("Saving");
-				_anyEditor._Saving(editor, nullptr);
-			}
-			if (editor->_Saving)
-			{
-				Log::Source->TraceInformation("Saving");
-				editor->_Saving(editor, nullptr);
+				if (_anyEditor._Saving)
+					_anyEditor._Saving(editor, %ea);
+				if (editor->_Saving)
+					editor->_Saving(editor, %ea);
 			}
 		}
 		break;
