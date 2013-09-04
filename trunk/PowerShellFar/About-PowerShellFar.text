@@ -44,7 +44,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.37
+### PowerShellFar 5.0.38
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -76,8 +76,8 @@ PowerShellFar, FarNet and documentation can be updated by the included script
 
 ### Requirements
 
-- Far Manager 3.0.3375
-- Plugin FarNet 5.0.34
+- Far Manager 3.0.3525
+- Plugin FarNet 5.0.35
 - Windows PowerShell V2, V3
 
 ### Set PowerShell execution policy
@@ -92,7 +92,7 @@ policy in both.
 
 If you are not administrator use the parameter `-Scope CurrentUser`, for example:
 
-    >: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    ps: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ### Install the module
 
@@ -157,7 +157,7 @@ moment from almost any UI context.
 * Command line
 
     In the panels mode use the command line to type and invoke
-    commands with prefixes: `>:` and `>>:` by default.
+    commands with prefixes: `ps:` and `vps:` by default.
     See [Command line](#CommandLine).
 
 * Far user menu and file associations
@@ -226,8 +226,8 @@ editor and panel events or `$Psf.Action handlers`). Design such code carefully.
 [Contents](#Contents)
 
 PowerShellFar commands with prefixes are used in the command line, the user
-menu (`[F2]`) and the file associations. By default command prefixes are: `>:`
-(console output) and `>>:` (viewer output).
+menu (`[F2]`) and the file associations. By default command prefixes are: `ps:`
+(console output) and `vps:` (viewer output).
 
 Console output is also transcribed in a temporary file which can be opened in a
 viewer at any time by the command `Show-FarTranscript [-External]`.
@@ -241,22 +241,22 @@ See [Command and macro examples](#Examples).
 
 ### Examples
 
-Commands with console output, prefix `>:`
+Commands with console output, prefix `ps:`
 
-    >: Get-Date
-    >: 3.14 / 3
-    >: [math]::pi / 3
+    ps: Get-Date
+    ps: 3.14 / 3
+    ps: [math]::pi / 3
 
-Commands with viewer output, prefix `>>:`
+Commands with viewer output, prefix `vps:`
 
-    >>: Get-Process
-    >>: Get-ChildItem C:\TEMP\LargeFolder -Recurse -Force
+    vps: Get-Process
+    vps: Get-ChildItem C:\TEMP\LargeFolder -Recurse -Force
 
-Commands starting UI or background jobs, normally prefix `>:`
+Commands starting UI or background jobs, normally prefix `ps:`
 
-    >: $Far.Message("Hello world!")
-    >: Get-Process | Out-FarList -Text Name | Open-FarPanel
-    >: Start-FarJob { Remove-Item C:\TEMP\LargeFolder -Recurse -Force }
+    ps: $Far.Message("Hello world!")
+    ps: Get-Process | Out-FarList -Text Name | Open-FarPanel
+    ps: Start-FarJob { Remove-Item C:\TEMP\LargeFolder -Recurse -Force }
 
 ### Accelerators
 
@@ -446,28 +446,28 @@ snap-in is removed, otherwise it is imported/added.
 
 Show help:
 
-    >: help about_modules
-    >: help about_pssnapins
+    ps: help about_modules
+    ps: help about_pssnapins
 
 Get available/registered:
 
-    >: Get-Module -ListAvailable
-    >: Get-PSSnapin -Registered
+    ps: Get-Module -ListAvailable
+    ps: Get-PSSnapin -Registered
 
 Get imported/added:
 
-    >: Get-Module
-    >: Get-PSSnapin
+    ps: Get-Module
+    ps: Get-PSSnapin
 
 Import/add to the session:
 
-    >: Import-Module -Name <name>
-    >: Add-PSSnapin -Name <name>
+    ps: Import-Module -Name <name>
+    ps: Add-PSSnapin -Name <name>
 
 Remove from the session:
 
-    >: Remove-Module -Name <name>
-    >: Remove-PSSnapin -Name <name>
+    ps: Remove-Module -Name <name>
+    ps: Remove-PSSnapin -Name <name>
 
 You may use Import-Module and Add-PSSnapin in your profile to import/add
 favourite modules and snap-ins always when PowerShellFar starts.
@@ -949,18 +949,18 @@ commands. You can send objects to the panel using `Out-FarPanel` cmdlet.
 
 ### Examples
 
-    >: ps | Out-FarPanel
+    ps: ps | Out-FarPanel
 
 shows all processes in the Power panel with some properties in the description
 column, then you can select one and view (`[F3]`) or quick view (`[CtrlQ]`) all its
 properties - thus, it is similar to the *ProcList* plugin (see also *Panel-Process-.ps1*).
 
-    >: ps | sort WS | Out-FarPanel
+    ps: ps | sort WS | Out-FarPanel
 
 the same but now objects (processes) are sorted by WS (working set); note that
 you have to use unsorted Far mode to see the results sorted by you.
 
-    >: ps | sort WS | Out-FarPanel Name, @{Expression='WS'; Type='S'}
+    ps: ps | sort WS | Out-FarPanel Name, @{Expression='WS'; Type='S'}
 
 the same but with only two custom columns: Name and WS, where WS is mapped to
 Far Size column.
@@ -995,10 +995,10 @@ operations by default. For example:
 Example commands to play with `[Enter]` on groups and `[F4]` on items:
 
     # Group files by extensions:
-    >: Get-ChildItem | Group-Object Extension | Out-FarPanel
+    ps: Get-ChildItem | Group-Object Extension | Out-FarPanel
 
     # Find string "throw" in files, group results by files:
-    >: Get-ChildItem | Select-String throw | Group-Object Path | Out-FarPanel
+    ps: Get-ChildItem | Select-String throw | Group-Object Path | Out-FarPanel
 
 ---
 
@@ -1011,11 +1011,11 @@ panel: original .NET and PowerShell objects and their restored versions.
 Tip: you can associate files *.clixml* with a command which imports objects
 from to Object panel:
 
-    >: Import-Clixml (Get-FarPath) | Out-FarPanel #
+    ps: Import-Clixml (Get-FarPath) | Out-FarPanel #
 
 or
 
-    >: Import-Panel-.ps1 (Get-FarPath) #
+    ps: Import-Panel-.ps1 (Get-FarPath) #
 
 (`#` in the end tells not to add a command to PowerShellFar history)
 
@@ -1061,8 +1061,8 @@ and added snap-ins. For example providers from
 
 If you change PowerShell location by a command, e.g. invoke commands like:
 
-    >: cd HKCU:\Software
-    >: Set-Location variable:\
+    ps: cd HKCU:\Software
+    ps: Set-Location variable:\
 
 then the panel contents is updated accordingly. And vice versa: if you navigate
 in the panel to some location then PowerShell current location is changed, so
@@ -1333,7 +1333,7 @@ or in scripts as the properties of `$Psf.Settings`. In the latter case call
 Other settings are kind of user preferences and they are usually set in the
 profile (e.g. Profile-.ps1). Useful command to view/change all settings:
 
-    >: Open-FarPanel $Psf.Settings
+    ps: Open-FarPanel $Psf.Settings
 
 Preference settings are described in .chm. Permanent settings are:
 
@@ -1412,7 +1412,7 @@ There are three main objects defined as global variables.
 
 [Contents](#Contents)
 
-### Command lines with prefixes `>:`
+### Command lines with prefixes `ps:`
 
 Output of these commands is written to the user screen (console under panels).
 The output uses different colors depending on message types (errors, warnings,
@@ -1421,7 +1421,7 @@ at any time during the session by Show-FarTranscript.
 
 User screen output may have unwanted screen effects on commands with Far UI and
 on PowerShell debugging. Such commands should be invoked from the command box
-or with `>>:` prefixes.
+or with `vps:` prefixes.
 
 Useful hotkeys:
 
@@ -1429,7 +1429,7 @@ Useful hotkeys:
 * `[CtrlO]`, `[CtrlF1]`, `[CtrlF2]` - hide and show panels
 * `[CtrlUp]`, `[CtrlDown]` - change visible user screen area
 
-### Command lines with prefixes `>>:` and command box commands
+### Command lines with prefixes `vps:` and command box commands
 
 Output of these commands is normally collected and then, when a command has
 completed it is shown in the internal viewer. In some cases (e.g. debugging)
@@ -1443,7 +1443,7 @@ boxes, minor errors and warnings are ignored.
 
 ### Transcription of command output
 
-Output of `>:` commands is written to the user screen and to the current session
+Output of `ps:` commands is written to the user screen and to the current session
 transcription file. The transcription file is in the `%TEMP%` directory, its name
 is *PowerShell_transcript.timestamp.txt*
 
@@ -1453,7 +1453,7 @@ end of the session, and deleted if Far exits normally.
 Use `Show-FarTranscript [-External]` to view the transcribed session output.
 External show is especially useful on script debugging.
 
-Output of `>>:` commands is written to files:
+Output of `vps:` commands is written to files:
 *PowerShell_transcript.timestamp.pid.counter.txt*.
 They are deleted as soon as their viewers are closed.
 
@@ -1535,12 +1535,12 @@ Standard PowerShell scripts:
 PowerShellFar scripts:
 
     mask    :  *-.ps1
-    command :  >: & (Get-FarPath) #
+    command :  ps: & (Get-FarPath) #
 
 PowerShellFar steppers:
 
     mask    :  *+.ps1
-    command :  >: Invoke-FarStepper -Path (Get-FarPath) #
+    command :  ps: Invoke-FarStepper -Path (Get-FarPath) #
 
 With the associations above when you press `[Enter]` for scripts in the panel
 then standard scripts are started by PowerShell.exe, PowerShellFar scripts are
@@ -1938,7 +1938,7 @@ job in the background, so that Far is not blocked during this time.
 Remove items selected in the active panel (e.g. you can use this from the Far
 user menu, directly or by a macro):
 
-    >: Job-RemoveItem-.ps1 (Get-FarItem -Selected) #
+    ps: Job-RemoveItem-.ps1 (Get-FarItem -Selected) #
 
 
 *********************************************************************
@@ -2159,7 +2159,7 @@ A: There are at least two options, both using macros
 
 * Easy prefix
 
-    A macro that expands the empty command line to '>: '. Space after the
+    A macro that expands the empty command line to 'ps: '. Space after the
     prefix is recommended for normal TabExpansion of the first word. See
     *PowerShellFar.macro.lua* (`[Space]`).
 
@@ -2204,51 +2204,51 @@ from panels.
 ---
 Show three versions: Far, FarNet, PowerShellFar:
 
-    >: "Far $($Far.FarVersion)`nFarNet $($Far.FarNetVersion)`nPowerShellFar $($Host.Version)"
+    ps: "Far $($Far.FarVersion)`nFarNet $($Far.FarNetVersion)`nPowerShellFar $($Host.Version)"
 
 ---
 Do some math, keep results in variables, use them later
 
-    >: $x = [math]::sqrt([math]::pi)
-    >: $y = [math]::sqrt(3.14)
-    >: $x - $y
+    ps: $x = [math]::sqrt([math]::pi)
+    ps: $y = [math]::sqrt(3.14)
+    ps: $x - $y
 
 ---
 Add the current folder to the system path for this Far session (.NET example: static methods and properties)
 
-    >: [Environment]::SetEnvironmentVariable('PATH', $env:PATH + ';' + [Environment]::CurrentDirectory, 'Process')
+    ps: [Environment]::SetEnvironmentVariable('PATH', $env:PATH + ';' + [Environment]::CurrentDirectory, 'Process')
 
 ---
 Open selected files in editor at once
 
-    >: Get-FarPath -Selected | Start-FarEditor
+    ps: Get-FarPath -Selected | Start-FarEditor
 
 ---
 View *.log* files one by one, don't add to history
 
-    >: Get-Item *.log | Start-FarViewer -Modal -DisableHistory
+    ps: Get-Item *.log | Start-FarViewer -Modal -DisableHistory
 
 ---
 Find string "alias" in .ps1 files, show list of found lines and open editor at
 the selected line (guess why these commands are the same):
 
-    >: Get-Item *.ps1 | Select-String alias | Out-FarList | Start-FarEditor
-    >: Get-Item *.ps1 | Select-String alias | Out-FarList | %{ Start-FarEditor $_.Path $_.LineNumber }
+    ps: Get-Item *.ps1 | Select-String alias | Out-FarList | Start-FarEditor
+    ps: Get-Item *.ps1 | Select-String alias | Out-FarList | %{ Start-FarEditor $_.Path $_.LineNumber }
 
 ---
 Show PSF settings in the member panel
 
-    >: Open-FarPanel $Psf.Settings
+    ps: Open-FarPanel $Psf.Settings
 
 ---
 Show list of names and command lines of running processes and then show the selected process member panel (WMI)
 
-    >: Get-WmiObject Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Open-FarPanel
+    ps: Get-WmiObject Win32_Process | Out-FarList -Text { $_.Name + ' ' + $_.CommandLine } | Open-FarPanel
 
 ---
 Show available scripts and their help synopsis in description column
 
-    >: Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -Columns Name, Synopsis
+    ps: Get-Command -Type ExternalScript | Get-Help | Out-FarPanel -Columns Name, Synopsis
 
 ---
 
@@ -2264,25 +2264,25 @@ for the roles of leading colons.
 background jobs. Standard PowerShell background jobs are not checked. If there
 are jobs then the job menu is shown.
 
-    if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Far.Quit()") then Keys("F10") end
+    if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps: $Far.Quit()") then Keys("F10") end
 
 ---
 This macro in the *Common* area calls the *Menu-Favorites-.ps1*. The leading
 colon tells to call it as async job, e.g. to make macros working in the menu.
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: Menu-Favorites-.ps1")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps: Menu-Favorites-.ps1")
 
 ---
 This macro invokes the *Clear-Session.ps1* script. The macro uses the PSF
-prefix `>>` in order to show command output in the viewer:
+prefix `vps:` in order to show command output in the viewer:
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>: Clear-Session.ps1 -Verbose")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps: Clear-Session.ps1 -Verbose")
 
 ---
 Scripts opened in the editor can be invoked in the current session by `[F5]`.
 The key is hardcoded but yet another key still can be used for the same job
 with this macro:
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ">>: $Psf.InvokeScriptFromEditor()")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "vps: $Psf.InvokeScriptFromEditor()")
 
 *********************************************************************

@@ -21,7 +21,7 @@
 	How to accociate *.*proj files with this script in Far
 	In Commands \ File associations insert an entry and set:
 	-- Mask: *.*proj
-	-- Command: >: Start-MSBuild- (Get-FarPath) #
+	-- Command: ps: Start-MSBuild- (Get-FarPath) #
 #>
 
 param

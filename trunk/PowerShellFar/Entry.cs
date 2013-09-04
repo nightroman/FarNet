@@ -42,11 +42,11 @@ namespace PowerShellFar
 			// register commands with prefixes
 			CommandInvoke1 = Manager.RegisterModuleCommand(
 				new Guid("60353ab6-52cb-413e-8e11-e4917099b80b"),
-				new ModuleCommandAttribute() { Name = "PowerShell command (console output)", Prefix = ">" },
+				new ModuleCommandAttribute() { Name = "PowerShell command (console output)", Prefix = "ps" },
 				OnCommandInvoke1);
 			CommandInvoke2 = Manager.RegisterModuleCommand(
 				new Guid("03760876-d154-467c-bc5d-8ec39efb637d"),
-				new ModuleCommandAttribute() { Name = "PowerShell command (viewer output)", Prefix = ">>" },
+				new ModuleCommandAttribute() { Name = "PowerShell command (viewer output)", Prefix = "vps" },
 				OnCommandInvoke2);
 
 			// register menu

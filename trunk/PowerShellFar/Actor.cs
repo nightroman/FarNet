@@ -151,7 +151,7 @@ namespace PowerShellFar
 			Commands.BaseCmdlet.AddCmdlets(configuration);
 
 			// formats: can add now, but let's do it async in profile
-			// >: Update-TypeData "$($Psf.AppHome)\PowerShellFar.types.ps1xml"
+			// ps: Update-TypeData "$($Psf.AppHome)\PowerShellFar.types.ps1xml"
 			// configuration.Types.Append(new TypeConfigurationEntry(Path.Combine(AppHome, "PowerShellFar.types.ps1xml")));
 
 			// open/start runspace

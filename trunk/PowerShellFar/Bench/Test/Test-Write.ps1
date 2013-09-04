@@ -6,7 +6,7 @@
 
 .Description
 	Some commands are duplicated in order to see how subsequent calls are
-	processed and how the output looks like depending on modes >: and >>:
+	processed and how the output looks like depending on modes ps: and vps:
 
 	This script should work in other PowerShell hosts.
 #>

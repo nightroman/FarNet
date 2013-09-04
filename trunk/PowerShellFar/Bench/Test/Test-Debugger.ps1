@@ -11,7 +11,7 @@
 	- Run it and some breakpoints in this script will be set for testing.
 	- Run it again to see how the debugger works when breakpoints are hit.
 	- After testing you may want to remove these breakpoints:
-	>: .\Test-Debugger.ps1 -RemoveBreakpoints
+	ps: .\Test-Debugger.ps1 -RemoveBreakpoints
 
 	Tested on: FarHost, ConsoleHost, PowerShell ISE V2 CTP3.
 #>

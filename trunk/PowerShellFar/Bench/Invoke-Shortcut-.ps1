@@ -17,10 +17,10 @@
 	How to open .lnk files, e.g. by [Enter], [CtrlPgDn], [F3], [F4]:
 	Open menu Commands \ File Associations, add an association and set:
 	-- Mask: *.lnk
-	-- Command for [Enter]: >: Invoke-Shortcut- #
-	-- Command for [CtrlPgDn]: >: Invoke-Shortcut- -Panel #
-	-- Command for [F3]: >: Invoke-Shortcut- -View #
-	-- Command for [F4]: >: Invoke-Shortcut- -Edit #
+	-- Command for [Enter]: ps: Invoke-Shortcut- #
+	-- Command for [CtrlPgDn]: ps: Invoke-Shortcut- -Panel #
+	-- Command for [F3]: ps: Invoke-Shortcut- -View #
+	-- Command for [F4]: ps: Invoke-Shortcut- -Edit #
 
 	[Shift-Enter] still opens shortcut files from Far in standard Windows way.
 #>

@@ -9,7 +9,7 @@
 	where the script is called from. Profile-.ps1 adds the action "More..." to
 	call this script, but the script can be called directly from the command
 	line or the Far user menu [F2]:
-	>: Menu-More-.ps1
+	ps: Menu-More-.ps1
 #>
 
 ### Create and show the menu
