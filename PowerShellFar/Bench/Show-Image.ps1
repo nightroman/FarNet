@@ -29,7 +29,7 @@
 .Example
 	# Far Manager association: internal way: faster but picture windows will be
 	# closed together with the Far window on exit.
-	>: Start-FarJob -Hidden Show-Image (Get-FarPath) #
+	ps: Start-FarJob -Hidden Show-Image (Get-FarPath) #
 
 .Example
 	# Far Manager association: external way: slower but picture windows will be
@@ -38,7 +38,7 @@
 
 .Example
 	# Far Manager user menu: internal way: show selected images
-	>: Start-FarJob -Hidden Show-Image (Get-FarPath -Selected) #
+	ps: Start-FarJob -Hidden Show-Image (Get-FarPath -Selected) #
 
 .Example
 	# Far Manager user menu: external way: show all images here

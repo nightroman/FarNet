@@ -19,12 +19,12 @@
 	Examples show how Start-FarSearch works with this panel:
 
 	# Invoke from Flat or use -Recurse from Root:
-	>: Start-FarSearch *help*
-	>: Start-FarSearch { $_.Data.Definition -match 'throw' }
+	ps: Start-FarSearch *help*
+	ps: Start-FarSearch { $_.Data.Definition -match 'throw' }
 
 	# Invoke from Root: the 1st uses -Mask, the 2nd uses -Script:
-	>: Start-FarSearch -Recurse -Directory *explore*
-	>: Start-FarSearch -Recurse -Directory { $_.Name -like *explore* }
+	ps: Start-FarSearch -Recurse -Directory *explore*
+	ps: Start-FarSearch -Recurse -Directory { $_.Name -like *explore* }
 #>
 
 # Root explorer - complex data tree with different explorers. It works like a

@@ -1,6 +1,12 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.38 =
+
+Changed default command prefixes ">:" to "ps:" and ">>:" to "vps:". If you want
+to use the old prefixes go to Options\Plugins configuration\FarNet\Commands and
+change the prefixes there.
+
 = 5.0.37 =
 
 Technical build for FarNet 5.0.34.
@@ -440,8 +446,8 @@ The file, just in case (but use the settings panel to view/edit), is:
 %LOCALAPPDATA%\Far Manager\FarNet\PowerShellFar\PowerShellFarHistory.log
 
 How to export the old history: go to that directory and invoke two commands:
->: $key = Get-Item HKCU:\Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory
->: $key.GetValueNames() | Sort-Object | %{ $key.GetValue($_) } | Set-Content PowerShellFarHistory.log -Encoding UTF8
+ps: $key = Get-Item HKCU:\Software\Far2\Plugins\FarNet.Modules\PowerShellFar.dll\CommandHistory
+ps: $key.GetValueNames() | Sort-Object | %{ $key.GetValue($_) } | Set-Content PowerShellFarHistory.log -Encoding UTF8
 
 Export-FarSettings.ps1 and Import-FarSettings.ps1 do not care of old registry
 key data. The key should be removed manually after exporting data to the file.
@@ -525,7 +531,7 @@ The goal is to show how to use:
 
 Example of Far Manager file association:
 - Mask: *TODO.xml
-- Command: >: Open-TODO- (Get-FarPath) #
+- Command: ps: Open-TODO- (Get-FarPath) #
 
 *) Out-FarPanel cmdlet
 If it is opened when a module panel is active then this panel is restored on
@@ -590,7 +596,7 @@ the system path). The panel is not just a viewer, it allows to add, delete and
 edit database records.
 - Initialize-Test-.ps1 allows to create a test DB Tempdb.sqlite in %TEMP%.
 Then the command:
->: Connect-SQLite-.ps1 -Panel $env:TEMP\Tempdb.sqlite
+ps: Connect-SQLite-.ps1 -Panel $env:TEMP\Tempdb.sqlite
 .. opens the DB in the panel with two test tables ready to view or change data.
 
 = 4.4.4 =
@@ -633,21 +639,21 @@ Start-FarSearch -> Search-FarFile
 Added parameter -Mask: classic Far mask including exclude and regex forms.
 -Mask is for simple searches by name(s). -Script can search by anything.
 See help:
->>: Get-FarHelp Start-FarSearch
+vps: Get-FarHelp Start-FarSearch
 
 = 4.4.2 =
 
 *) New cmdlet Start-FarSearch
 See help:
->>: Get-FarHelp Start-FarSearch
+vps: Get-FarHelp Start-FarSearch
 
 Run Test-Explorer-.ps1 and try Start-FarSearch:
 
 # Invoke from Flat or use -Recurse from Root:
->: Start-FarSearch { $_.Data.Definition -match 'throw' }
+ps: Start-FarSearch { $_.Data.Definition -match 'throw' }
 
 # Invoke from Root
->: Start-FarSearch { $_.Name -like 'PowerShellFar.*' } -Recurse -Directory
+ps: Start-FarSearch { $_.Name -like 'PowerShellFar.*' } -Recurse -Directory
 
 *) Test-Explorer-.ps1
 - "Tree" test case: use HKCU:\Software\Far2\Plugins as the root.
@@ -801,8 +807,8 @@ outliner menu.
 - Same primitive types: 1 column (TypeName)
 - Mixed types: 3 columns (##, Value, Type)
 Compare these two panels:
->: '42', 'foo' | Out-FarPanel
->: 42, 'foo' | Out-FarPanel
+ps: '42', 'foo' | Out-FarPanel
+ps: 42, 'foo' | Out-FarPanel
 
 *) Minor fix: removed misused IEditor.IsModified from editor scripts.
 
@@ -873,7 +879,7 @@ scripts are updated accordingly.
 *) $Psf.Settings.MaximumPanelFileCount sets the limit for panel files to be
 shown in an object panel without confirmation. Default is 1000, should be
 enough for data preview in most cases. Try:
->: 1..10000 | Out-FarPanel
+ps: 1..10000 | Out-FarPanel
 
 *) Edit-TextLink-.ps1 is renamed to Open-TextLink-.ps1 and:
 -- Recognizes and opens URL addresses (by Start-Process, like Windows Run);
@@ -901,7 +907,7 @@ Links can include character numbers in addition to line numbers:
   At C:\Program Files\Far\FarEng.lng:36 char:22
 These links are opened at line 36 and char 22 (columns may depend on tabs)
 
-*) >>: commands output viewer
+*) vps: commands output viewer
 -- Enabled switching to editor [F6] from the output viewer. Note: the tmp file
 is deleted on switching but Far prompts you to save data when editor exits.
 Switching to editor is used (for example) to open error sources from error
@@ -957,7 +963,7 @@ commands.
 *) Command output (continued)
 -- The command "Invoke script from editor" ([F5] in the editor with .ps1 file)
 has the same effect as if it is invoked from the input command box (similar to
->>: commands from the command line). Output, if any, is shown in the internal
+vps: commands from the command line). Output, if any, is shown in the internal
 viewer when the command is done. External viewer is used only on debugging via
 [View], see above.
 
@@ -965,7 +971,7 @@ viewer when the command is done. External viewer is used only on debugging via
 
 *) Transcription of command output
 
-Output of >: commands is written to the user screen and to the current session
+Output of ps: commands is written to the user screen and to the current session
 transcription file. The transcription file is in the %TEMP% directory, its name
 is "PowerShell_transcript.<timestamp>.txt"
 
@@ -975,7 +981,7 @@ and deleted if Far exits normally.
 Use Show-FarTranscript [-External] to view the transcribed session output. Note
 that external show is especially useful on script debugging.
 
-Output of >>: commands is written to files:
+Output of vps: commands is written to files:
 "PowerShell_transcript.<timestamp>.<pid>.<counter>.txt".
 Their life is shorter: they are deleted as soon as their viewers are closed.
 
@@ -995,8 +1001,8 @@ Their life is shorter: they are deleted as soon as their viewers are closed.
 = 4.3.19 =
 
 *) Commands output
--- command line commands with prefixes '>:' write to the console;
--- command line commands with prefixes '>>:' show output in viewers;
+-- command line commands with prefixes 'ps:' write to the console;
+-- command line commands with prefixes 'vps:' show output in viewers;
 -- command box commands always show output in viewers;
 -- removed $Psf.Settings.OutputPreference, there is nothing to configure;
 (Reminder: user menu and file association are command line commands, too)
@@ -1007,18 +1013,18 @@ Their life is shorter: they are deleted as soon as their viewers are closed.
 -- echo commands using colors, do not echo commands with no output.
 
 Demo of new console output with all colors and message types:
->: .\Test-Write.ps1
+ps: .\Test-Write.ps1
 
 *) Background jobs
-Starting jobs by prefix >>: was not really useful. The prefix is now reused for
+Starting jobs by prefix vps: was not really useful. The prefix is now reused for
 commands with viewer output (see above). Jobs should be started by usual prefix
->: and the cmdlet Start-FarJob. Start-FarJob allows to specify arguments and
+ps: and the cmdlet Start-FarJob. Start-FarJob allows to specify arguments and
 switches; that is why job command prefixes are not enough.
 
 Note: you can define your own prefixes and commands and do whatever you want,
 see Test-RegisterCommand-.ps1 for the example. In particular you can define a
 prefix for invoking jobs, just like it was before. In contrast: features like
->: and >>: cannot be defined from scripts.
+ps: and vps: cannot be defined from scripts.
 
 *) Member panel
 -- issue: input enum values should be case insensitive.
@@ -1028,7 +1034,7 @@ prefix for invoking jobs, just like it was before. In contrast: features like
 New option $Psf.Settings.OutputPreference
 -- Values: 'Default', 'Console'; it is normally set in the profile but it can
 be changed dynamically, too:
->: $Psf.Settings.OutputPreference = ...
+ps: $Psf.Settings.OutputPreference = ...
 Default: as it was before (the engine decides how to output);
 Console: output of commands from panels is written to the user screen. The
 good: output is colored (errors, warnings, etc.). The bad: only the tail of
@@ -1127,7 +1133,7 @@ noisy but still sometimes useful WMI properties).
 New module FarInventory. This is a script module with a bunch of functions. It
 contains just a few now, to be continued. See about_FarInventory.help.txt for
 details or run this:
->: Import-Module FarInventory; help about_FarInventory
+ps: Import-Module FarInventory; help about_FarInventory
 
 Fixed: [CtrlR] in object panels with custom columns used to show an empty panel
 instead of refreshing the objects.
@@ -1153,7 +1159,7 @@ column sets now may be not the same as in previous versions. Preview is preview.
 Default column set selection in table panels: if there are too many properties
 (more than $Psf.Settings.MaximumPanelColumnCount) then best candidates for N, Z
 and O columns are moved to the left. Example:
->: Get-WmiObject Win32_PnPEntity | Out-FarPanel
+ps: Get-WmiObject Win32_PnPEntity | Out-FarPanel
 .. the first columns are Name, Description, Status. Compare: in the old version
 the column Name was not shown at all.
 
@@ -1172,10 +1178,10 @@ Test-Panel-.ps1: added demo handler of the new event KeyPressing.
 The $Psf.Settings.FormatEnumerationLimit (default is $FormatEnumerationLimit)
 is used for object panel columns and list panel values display. Example: invoke
 this command:
->: Get-ChildItem hkcu:\ | Out-FarPanel
+ps: Get-ChildItem hkcu:\ | Out-FarPanel
 .. and see that only a few first items is shown in the Property column. Compare
 with standard PowerShell output:
->: Get-ChildItem hkcu:\
+ps: Get-ChildItem hkcu:\
 .. results should look more or less the same (visually, of course, panel output
 is not text output, it shows live objects in the panel, not dead text).
 
@@ -1378,7 +1384,7 @@ NOTE: The script Panel-Macro-.ps1 is not yet upgraded, it still works directly
 with "old" Registry provider, not yet with "modern" FarMacro. To be continued.
 
 For more details:
->: Import-Module FarMacro; man about_FarMacro
+ps: Import-Module FarMacro; man about_FarMacro
 
 NEW MODULE FARDESCRIPTION
 (Actually works for any host)
@@ -1392,7 +1398,7 @@ All the code dealing with descriptions, including the Update-FarDescription
 cmdlet, moved to this module.
 
 For more details:
->: Import-Module FarDescription; man about_FarDescription
+ps: Import-Module FarDescription; man about_FarDescription
 
 OTHER CHANGES
 
@@ -1435,7 +1441,7 @@ update, backup, restore commands waits for Far exit:
 -- ...
 
 They all can be started from the command line or the user menu like this:
->: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()
+ps: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()
 ("-noexit" is to keep a new console opened, it's up to you)
 
 POWERSHELL HELP IN EDITORS
@@ -1474,7 +1480,7 @@ TabExpansion itself (e.g. "Line", this should work correctly: $Line.[Tab]).
 -- ISE host: [Esc] halts the command;
 -- Far host: for compartibility with other hosts: [Esc] opens a dialog with
 extra options: [Halt command], [Cancel]. Example: press [Esc] after this:
->: Remove-Variable Host -Confirm
+ps: Remove-Variable Host -Confirm
 
 *) Removed $Psf.ShowCallStack() and calls of it. Why?
 1) In PS V2 there is a built-in cmdlet Get-PSCallStack.
@@ -1729,13 +1735,13 @@ Note: it is GUI, because initialization is performed in a background thread.
 *) ObjectPanel (and derived) supports Edit operation [F4] for MatchInfo items:
 an editor is opened at a match position and matched text is selected. What are
 these MatchInfo items? They are results of Select-String, so that you can do:
->: dir | Select-String foo | Out-FarPanel
+ps: dir | Select-String foo | Out-FarPanel
 or even slightly better:
->: dir | Select-String foo | Out-FarPanel FileName, LineNumber, Line
+ps: dir | Select-String foo | Out-FarPanel FileName, LineNumber, Line
 and [F4] on items opens an editor at the found match with its text selected.
 
 *) Removed event 'Exiting' from $Psf. In PS V2 there is a native way:
->: Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { ... }
+ps: Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { ... }
 This way works for any workspace where Register-EngineEvent is called, so that
 it can be used by background jobs (PSF and PS), async consoles (local and
 remote), and etc.
@@ -2080,7 +2086,7 @@ FarDescription properties safely.
 *) Panel Columns support FormatString (just like Format-Table), e.g. this
 command makes a column 'Length' with width 15 and right aligned numbers with
 thousand separators (e.g. 3,230,649)
->: Get-ChildItem | Out-FarPanel Name, @{ e='Length'; f='{0,15:n0}'; w=15 }
+ps: Get-ChildItem | Out-FarPanel Name, @{ e='Length'; f='{0,15:n0}'; w=15 }
 
 *) New cmdlets Find-FarFile, Get-FarFile (mostly to reduce typing on testing,
 but they can be used for real jobs too).
@@ -2120,7 +2126,7 @@ formatting is only possible in this mode.
 
 *) Cmdlet Out-FarPanel: parameter Columns is positional (goes first), so that
 we can omit its name:
->: Get-Process | Out-FarPanel Name, Company
+ps: Get-Process | Out-FarPanel Name, Company
 
 *) PSF panels now have a help menu called on [F1]. Its commands depend on a
 panel. Method AddMenuItem() was removed; called once event MenuCreated should
@@ -2464,7 +2470,7 @@ instead of C:\TEMP\Dialog-.ps1; b) Unicode instead of ASCII.
 
 *) Read-Host uses for history SavedDialogHistory\PowerShellFarPrompt key,
 not its subkeys; you may remove not used subkeys, if any, by this command:
->: ri HKCU:\Software\Far2\SavedDialogHistory\PowerShellFarPrompt\* -Confirm
+ps: ri HKCU:\Software\Far2\SavedDialogHistory\PowerShellFarPrompt\* -Confirm
 
 = 2.0.8 =
 
@@ -2748,7 +2754,7 @@ Bench scripts use them instead of $Far.CreateListMenu() and Select-Menu-.ps1.
 new Out-FarList. Note that in code you cannot just replace Select-Menu- with
 Out-FarList because a few parameter names are changed, they now conform
 IListMenu names, see:
->: man Out-FarList
+ps: man Out-FarList
 
 *) New cmdlet New-FarFile creates plugin panels items in PowerShell way.
 
@@ -2778,9 +2784,9 @@ this really saves time on composing complex commands.
 reasons: 1) redirection to 'more' is useless in PSF; 2) if Get-Help fails then
 Get-Usage is called (assume it is in %PATH%), so that you can get some help for
 PSF cmdlets, e.g.
->: man New-FarFile # should work and get help
->: help Out-FarList # ditto
->: Get-Help Out-FarList # still fails (with confusing msg)
+ps: man New-FarFile # should work and get help
+ps: help Out-FarList # ditto
+ps: Get-Help Out-FarList # still fails (with confusing msg)
 (N.B. use of Get-Usage is temporary, standard PowerShell help will be provided
 for PSF cmdlets as soon as PowerShell has tools for that, as they promise).
 
@@ -2844,9 +2850,9 @@ were updated due to some breaking changes in V2 CTP3.
 
 *) Built-in help comments were included in scripts, so that you can now (just a
 few examples):
-	>: My-Script.ps1 -?
-	>: man My-Script.ps1
-	>: help My-Script.ps1 -full
+	ps: My-Script.ps1 -?
+	ps: man My-Script.ps1
+	ps: help My-Script.ps1 -full
 
 *) TabExpansion mechanism is updated so that it uses new CTP3 features where it
 is possible.
@@ -2861,8 +2867,8 @@ OTHER CHANGES
 *) New script Invoke-Shortcut-.ps1 opens a shortcut file (.lnk) in FAR in a few
 ways. See comments there or just use new CTP3 feature auto-help, that is type
 one of the commands:
->: Invoke-Shortcut-.ps1 -?
->: man Invoke-Shortcut-.ps1 -full
+ps: Invoke-Shortcut-.ps1 -?
+ps: man Invoke-Shortcut-.ps1 -full
 (assume the script is the system path)
 
 *) Fixed occasional mysterious error message "Not enough storage..." on running
@@ -2875,7 +2881,7 @@ changed, perhaps).
 
 *) Install-Macro-.ps1 - added "easy prefix" macro ']' in Shell area (John Doe
 proposed '>', but it is a matter of preference, of course; besides, ']' allows
-one hand typing). So, ']' in empty command line is expanded to '>: '.
+one hand typing). So, ']' in empty command line is expanded to 'ps: '.
 
 *) Test-Dialog-.ps1: fixed variable conflicts in user control Drawing handler:
 used extra block &{..} that makes variables local and avoids the conflicts.
@@ -2918,8 +2924,8 @@ SCRIPT DEBUG-MSG-.PS1
 *) Data are shown together with their type names.
 *) Data are sent as arguments (as usual) or via pipeline (new feature).
 *) EXAMPLES
->: Debug-Msg- $Far
->: $Far | Debug-Msg-
+ps: Debug-Msg- $Far
+ps: $Far | Debug-Msg-
 
 SCRIPT GO-SELECTION-.PS1
 
@@ -3017,7 +3023,7 @@ regression in the last drop):
   #~?!"?$%^&*()<>' = Get-Content -e[TAB] -> Encoding and etc.
 
 - Improved expansion of base and adapted members, e.g.
-  >: $xml = [xml]'<tests><test>test</test></tests>' # run this first
+  ps: $xml = [xml]'<tests><test>test</test></tests>' # run this first
   $xml.Ou[TAB] -> OuterXml
   $xml.te[TAB] -> tests
 
@@ -3111,7 +3117,7 @@ and play with demo script Test-Debug-.ps1 (which works in ConsoleHost, too).
 NEW FAR PANEL CMDLETS
 
 To get the list of new panel cmdlets run this:
->: Get-Command *-Far*Panel -CommandType Cmdlet
+ps: Get-Command *-Far*Panel -CommandType Cmdlet
 
 For details see the help topic "Cmdlets" and use new script Get-Usage.ps1 (all
 the help topics are actually generated by it). NOTE: the cmdlets are ready to
@@ -3332,7 +3338,7 @@ to enter not defined input data and options, see more in help (e.g. run it and
 press F1). The new version is not compatible with the old one due to the params
 -Path, -Include, -Force removed, but nothing is missed: you can move that params
 to Get-ChildItem and use pipeline:
->: Get-ChildItem -Path .. [-Include ..] [-Force] | Search-Regex- ..
+ps: Get-ChildItem -Path .. [-Include ..] [-Force] | Search-Regex- ..
 
 OTHER CHANGES
 
@@ -3635,7 +3641,7 @@ NEW
 - New predefined global function Show-Balloon (defined in PowerShellFar.ps1).
 It is used to notify about startup code errors. You can use it too. E.g. type
 in command line:
->: Show-Balloon 'Title' 'Message'
+ps: Show-Balloon 'Title' 'Message'
 
 CHANGES
 
@@ -3886,7 +3892,7 @@ parameter -Connection is optional now, and all the parameters were reordered to
 make simple commands even simpler. For example with a new alias pd ~ Panel-Data-
 you can open a data panel like this (but run Initialize-Test-.ps1 at first, i.e.
 open your global connection $DB):
-  >: pd "select * from testnotes where note like '%<%>%'"
+  ps: pd "select * from testnotes where note like '%<%>%'"
 and in the result panel you still can delete, insert and update data really in
 the database (!) - it is useful, but take care, these data are 'connected', not
 just 'copied'.
@@ -3993,7 +3999,7 @@ are shown in a child Object panel.
 -List). It also can open results of Group-Object, thus, you can create and browse
 quite complex object structure by commands like this (browse WMI classes grouped
 by dynasty; warning: avoid opening 'unknown' items - some WMI items take ages):
->: Get-WmiObject -list | Group-Object __DYNASTY | Panel-Object-
+ps: Get-WmiObject -list | Group-Object __DYNASTY | Panel-Object-
 - Member and Property panels: default sort mode is 'Unsorted' (it was not set);
 - Object panels: start view mode is not set (it was 'Descriptions', which can be
 very time consuming for large number of objects with many properties).
@@ -4008,7 +4014,7 @@ fixes problems on starting the plugin with '/u' parameter in FAR command line.
 parent panels restore their initial modes when child panels are closed.
 - Improvement in Object panel: you can open (<Enter>) results of Group-Object,
 e.g. after commands like this:
->: Get-Command * | Group-Object CommandType | Panel-Object-
+ps: Get-Command * | Group-Object CommandType | Panel-Object-
 you can enter into groups (in this example: Alias,Cmdlet,..) and view items.
 
 = 1.1.17 =
@@ -4108,7 +4114,7 @@ Installation:
 
 Power panel:
 - New mode: "Objects" - any PowerShell objects, for example output of commands,
-i.e. ">: ps | pp" shows all processes in the panel with some properties in the
+i.e. "ps: ps | pp" shows all processes in the panel with some properties in the
 description column, then you can select one and view (F3) or quick view (CtrlQ)
 all its properties - thus, it works like ProcList plugin but provides much more
 information. NOTE: process list is only an example, you can put any objects to
@@ -4133,7 +4139,7 @@ what you get from Get-*Item, but not only) has property Description which is FAR
 text from description file Descript.ion. Cool, isn't it? It is done completely
 in PowerShell (i.e. no C# coding or whatever): see PowerShellFar.types.ps1xml
 and PowerShellFar.ps1 (command Update-TypeData, function Get-FileDescription).
-Silly example: >: dir | ft Name,Length,Description -a
+Silly example: ps: dir | ft Name,Length,Description -a
 
 = 1.1.12 =
 
@@ -4312,7 +4318,7 @@ background job (see help: Robocopy-.ps1).
 = 1.1.0 =
 
 - New script Test-Dialog-.ps1 test new FAR.NET dialog features.
-- New command prefix >> for background jobs.
+- New command prefix for background jobs.
 - New plugin menu item "Background jobs".
 - New method $Psf.StartJob(), example: Test-Job-.ps1
 - Improved Expand-PowerShell- and TabExpansion-

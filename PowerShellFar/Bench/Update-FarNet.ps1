@@ -41,7 +41,7 @@
 .Example
 	# This command starts update in a new console and keeps it opened to view
 	# the output. Then it tells Far to exit because update will wait for this.
-	>: Start-Process powershell.exe "-noexit Update-FarNet"; $Far.Quit()
+	ps: Start-Process powershell.exe "-noexit Update-FarNet"; $Far.Quit()
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]

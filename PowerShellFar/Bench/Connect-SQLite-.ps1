@@ -23,7 +23,7 @@
 	Far Manager file accosiation to open a database in the panel:
 	SQLite database file
 	Mask: *.sqlite;*.db3;*.db
-	Command: >: Connect-SQLite- (Get-FarPath) -Panel #
+	Command: ps: Connect-SQLite- (Get-FarPath) -Panel #
 #>
 
 param

@@ -9,56 +9,56 @@ local isEditor=function() return not (Area.Shell or Area.ShellAutoCompletion or 
 
 Macro {
 area="Shell"; key="Space"; flags="EmptyCommandLine"; description="PSF: Easy prefix"; action=function()
-Keys("> : Space")
+Keys("p s : Space")
 end;
 }
 
 Macro {
 area="Shell"; key="ShiftSpace"; flags="NotEmptyCommandLine"; description="PSF: Easy invoke"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::>:$Psf.InvokeSelectedCode()")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::ps:$Psf.InvokeSelectedCode()")
 end;
 }
 
 Macro {
 key="CtrlSpace"; description="PSF: Complete-Word-.ps1"; area=areaAnyEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion then Keys("Esc") end
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Complete-Word-.ps1")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:Complete-Word-.ps1")
 end;
 }
 
 Macro {
 area="Common"; key="CtrlShiftL"; description="PSF: Favorites menu"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Menu-Favorites-.ps1")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:Menu-Favorites-.ps1")
 end;
 }
 
 Macro {
 area="Common"; key="AltF10"; description="PSF: Command history"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:$Psf.ShowHistory()")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:$Psf.ShowHistory()")
 end;
 }
 
 Macro {
 area="Common"; key="CtrlShiftP"; description="PSF: Command box"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:$Psf.InvokeInputCode()")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:$Psf.InvokeInputCode()")
 end;
 }
 
 Macro {
 area="Editor"; key="CtrlShiftM"; description="PSF: Show editor bookmarks"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Select-Bookmark-")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:Select-Bookmark-")
 end;
 }
 
 Macro {
 area="Shell"; key="F10"; description="PSF: Quit Far"; action=function()
-if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:$Far.Quit()") then Keys("F10") end
+if not Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:$Far.Quit()") then Keys("F10") end
 end;
 }
 
 Macro {
 area="Shell"; key="AltF12"; description="PSF: Folder history"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>:Show-History-.ps1 -Folder")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:Show-History-.ps1 -Folder")
 end;
 }
 

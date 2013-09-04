@@ -236,7 +236,7 @@ namespace PowerShellFar
 				session.PSVariable.Set("_", value);
 
 				//??? suppress for now
-				// >: .{ls; ps} | op
+				// ps: .{ls; ps} | op
 				// -- this with fail on processes with file scripts
 				try
 				{

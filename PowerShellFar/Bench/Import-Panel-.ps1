@@ -15,7 +15,7 @@
 .Example
 	Far Commands | File associations:
 	Mask: *.clixml;*.csv
-	Command: >: Import-Panel-.ps1 (Get-FarPath) #
+	Command: ps: Import-Panel-.ps1 (Get-FarPath) #
 #>
 
 param

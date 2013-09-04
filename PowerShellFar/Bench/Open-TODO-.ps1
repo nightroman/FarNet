@@ -18,7 +18,7 @@
 
 	Example of Far Manager file association:
 	- Mask: *TODO.xml
-	- Command: >: Open-TODO- (Get-FarPath) #
+	- Command: ps: Open-TODO- (Get-FarPath) #
 #>
 
 param
