@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.36 =
+
+Added the suffix 32/64 to the module cache file name. By default it is:
+%LOCALAPPDATA%\Far Manager\Profile\FarNet\Cache??.binary
+Old files Cache.binary can be removed.
+
 = 5.0.35 =
 
 Requires Far 3.0.3525

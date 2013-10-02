@@ -56,14 +56,20 @@ namespace PowerShellFar
 				}
 			}
 
-			// line and last word
+			// original line
 			string text = editLine.Text;
 			string line = text.Substring(0, editLine.Caret);
+
+			// prefix and corrected line
+			string prefix = string.Empty;
+			if (editLine.WindowKind == WindowKind.Panels)
+				Entry.SplitCommandWithPrefix(ref line, out prefix);
+
+			// last word and remaining text
 			Match match = Regex.Match(line, @"(?:^|\s)(\S+)$");
 			if (!match.Success)
 				return;
-
-			text = text.Substring(line.Length);
+			text = text.Substring(prefix.Length + line.Length);
 			string lastWord = match.Groups[1].Value;
 
 			// compile once
@@ -84,8 +90,8 @@ namespace PowerShellFar
 					if (matchVar.Success)
 					{
 						var start = matchVar.Groups[1].Value;
-						var prefix = matchVar.Groups[2].Value;
-						var re = new Regex(@"\$(global:|script:|private:)?(" + prefix + matchVar.Groups[3].Value + @"\w+:?)", RegexOptions.IgnoreCase);
+						var scope = matchVar.Groups[2].Value;
+						var re = new Regex(@"\$(global:|script:|private:)?(" + scope + matchVar.Groups[3].Value + @"\w+:?)", RegexOptions.IgnoreCase);
 
 						var variables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 						foreach (var line1 in Far.Api.Editor.Lines)
@@ -96,7 +102,7 @@ namespace PowerShellFar
 								if (all[all.Length - 1] != ':')
 								{
 									variables.Add(start + all);
-									if (prefix.Length == 0 && m.Groups[1].Value.Length > 0)
+									if (scope.Length == 0 && m.Groups[1].Value.Length > 0)
 										variables.Add(start + "$" + m.Groups[2].Value);
 								}
 							}
@@ -112,7 +118,7 @@ namespace PowerShellFar
 				}
 
 				// expand
-				ExpandText(editLine, text, line, lastWord, words);
+				ExpandText(editLine, text, prefix + line, lastWord, words);
 			}
 			catch (RuntimeException ex)
 			{
@@ -396,7 +402,9 @@ namespace PowerShellFar
 					code = cl.Text;
 					toCleanCmdLine = true;
 				}
-				code = Regex.Replace(code.Trim(), @"^\s*>:\s*", "");
+				
+				string prefix;
+				Entry.SplitCommandWithPrefix(ref code, out prefix);
 			}
 			if (code.Length == 0)
 				return;

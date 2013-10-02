@@ -1,6 +1,12 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.39 =
+
+Fixed a few defects caused by new prefixes ps:, vps: (e.g. TabExpansion, etc.).
+
+Minor, mostly internal, changes in PSF background jobs.
+
 = 5.0.38 =
 
 Changed default command prefixes ">:" to "ps:" and ">>:" to "vps:". If you want
