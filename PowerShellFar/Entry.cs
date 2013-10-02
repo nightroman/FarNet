@@ -114,5 +114,35 @@ namespace PowerShellFar
 		{
 			UI.ActorMenu.Show(sender, e);
 		}
+		// "\s*prefix:\s*line" -> "\s*prefix:\s*" and "line"
+		internal static void SplitCommandWithPrefix(ref string line, out string prefix)
+		{
+			string tmp = line.TrimStart();
+			int delta = line.Length - tmp.Length;
+			if (delta > 0)
+			{
+				prefix = line.Substring(0, delta);
+				line = tmp;
+			}
+			else
+			{
+				prefix = string.Empty;
+			}
+			
+			if (line.StartsWith((tmp = CommandInvoke1.Prefix + ":"), StringComparison.OrdinalIgnoreCase) ||
+				line.StartsWith((tmp = CommandInvoke2.Prefix + ":"), StringComparison.OrdinalIgnoreCase))
+			{
+				prefix += line.Substring(0, tmp.Length);
+				line = line.Substring(tmp.Length);
+			}
+
+			tmp = line.TrimStart();
+			delta = line.Length - tmp.Length;
+			if (delta > 0)
+			{
+				prefix += line.Substring(0, delta);
+				line = tmp;
+			}
+		}
 	}
 }

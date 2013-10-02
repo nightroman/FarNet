@@ -62,8 +62,16 @@ namespace PowerShellFar
 		const string MenuFormatString = "{0,9} : {1,6} : {2}";
 		const int NotifyPeriod = 3000;
 
+		/// <summary>
+		/// Gets available jobs.
+		/// </summary>
+		public static IList<Job> Jobs
+		{
+			get { return JobList.ToArray(); }
+		}
+
 		// UI job list controlled by a user
-		static readonly List<Job> Jobs = new List<Job>();
+		static readonly List<Job> JobList = new List<Job>();
 
 		// Last notification target
 		static Job JobLastNotified;
@@ -354,14 +362,11 @@ namespace PowerShellFar
 		}
 
 		/// <summary>
-		/// Disposes the job.
+		/// Disposes the job and removes it from the job list.
 		/// </summary>
 		/// <remarks>
 		/// If you own this object, e.g. call <c>Start-FarJob</c> with <see cref="Commands.StartFarJobCommand.Output"/> switch
 		/// then you should dispose it after use. It is OK to call this for already disposed object.
-		/// <para>
-		/// NOTE: The job must not be running.
-		/// </para>
 		/// </remarks>
 		public void Dispose()
 		{
@@ -383,6 +388,8 @@ namespace PowerShellFar
 				if (JobUI.FileName != null)
 					File.Delete(JobUI.FileName);
 			}
+			
+			JobList.Remove(this);
 		}
 
 		/// <summary>
@@ -404,12 +411,6 @@ namespace PowerShellFar
 				JobUI.HasError = true;
 		}
 
-		internal static void RemoveJob(Job job)
-		{
-			job.Dispose();
-			Jobs.Remove(job);
-		}
-
 		internal static void ShowJobs()
 		{
 			IMenu menu = Far.Api.CreateMenu();
@@ -424,13 +425,13 @@ namespace PowerShellFar
 			for (int show = 0; ; ++show)
 			{
 				WatchJobs();
-				if (show > 0 && Jobs.Count == 0)
+				if (show > 0 && JobList.Count == 0)
 					return;
 
 				menu.Items.Clear();
 				FarItem item = menu.Add(string.Format(null, MenuFormatString, "State", "Output", "Name/Command"));
 				item.Disabled = true;
-				foreach (Job job in Jobs)
+				foreach (Job job in JobList)
 				{
 					item = menu.Add(string.Format(null, MenuFormatString, job.StateText, job.Length, job.ToLine(100)));
 					item.Data = job;
@@ -458,7 +459,7 @@ namespace PowerShellFar
 							if (job.Length > 0)
 								break;
 						}
-						RemoveJob(job);
+						job.Dispose();
 						break;
 					}
 
@@ -466,7 +467,7 @@ namespace PowerShellFar
 					if (menu.Key.IsShift(KeyCode.Delete))
 					{
 						// copy and then traverse
-						var jobsToKill = new List<Job>(Jobs);
+						var jobsToKill = new List<Job>(JobList);
 						foreach (Job jobToKill in jobsToKill)
 						{
 							if (jobToKill.IsRunning)
@@ -475,7 +476,7 @@ namespace PowerShellFar
 								if (jobToKill.Length > 0)
 									continue;
 							}
-							RemoveJob(jobToKill);
+							jobToKill.Dispose();
 						}
 						break;
 					}
@@ -526,10 +527,10 @@ namespace PowerShellFar
 		static void WatchJobs()
 		{
 			// watch the jobs
-			var finished = new List<Job>(Jobs.Count);
-			for (int iJob = 0; iJob < Jobs.Count; ++iJob)
+			var finished = new List<Job>(JobList.Count);
+			for (int iJob = 0; iJob < JobList.Count; ++iJob)
 			{
-				Job job = Jobs[iJob];
+				Job job = JobList[iJob];
 
 				// process alive
 				if (!job.Disposed)
@@ -549,7 +550,7 @@ namespace PowerShellFar
 				// remove killed
 				if (job.Disposed)
 				{
-					Jobs.RemoveAt(iJob);
+					JobList.RemoveAt(iJob);
 					--iJob;
 				}
 			}
@@ -599,7 +600,7 @@ namespace PowerShellFar
 		{
 			// register UI job
 			if (JobUI != null)
-				Jobs.Add(this);
+				JobList.Add(this);
 
 			// invoke async
 			if (Output == null)
@@ -634,7 +635,7 @@ namespace PowerShellFar
 
 						// KO: make it UI
 						JobUI = new JobUI();
-						Jobs.Add(this);
+						JobList.Add(this);
 						JobUI.HasError = true;
 						A.WriteErrors(JobUI.GetWriter(), PowerShell.Streams.Error);
 					}
@@ -645,7 +646,7 @@ namespace PowerShellFar
 					if (IsHidden)
 					{
 						JobUI = new JobUI();
-						Jobs.Add(this);
+						JobList.Add(this);
 						A.WriteErrors(JobUI.GetWriter(), PowerShell.Streams.Error);
 					}
 
@@ -672,14 +673,14 @@ namespace PowerShellFar
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal static void StopJobsOnExit()
 		{
-			while (Jobs.Count > 0)
+			while (JobList.Count > 0)
 			{
-				Job job = Jobs[0];
+				Job job = JobList[0];
 
 				if (!job.IsRunning && job.Length == 0)
 				{
 					job.Dispose();
-					Jobs.RemoveAt(0);
+					JobList.RemoveAt(0);
 					continue;
 				}
 
@@ -706,7 +707,7 @@ Ignore: discard all jobs and output
 							if (job.IsRunning)
 								job.StopJob();
 							job.Dispose();
-							Jobs.RemoveAt(0);
+							JobList.RemoveAt(0);
 						}
 						break;
 					case 1:
@@ -721,17 +722,17 @@ Ignore: discard all jobs and output
 								My.ProcessEx.StartNotepad(job.FileName).WaitForExit();
 
 							job.Dispose();
-							Jobs.RemoveAt(0);
+							JobList.RemoveAt(0);
 						}
 						break;
 					default:
 						{
-							foreach (Job j in Jobs)
+							foreach (Job j in JobList)
 							{
 								j.StopJob(); //!
 								j.Dispose();
 							}
-							Jobs.Clear();
+							JobList.Clear();
 						}
 						return;
 				}
@@ -741,10 +742,10 @@ Ignore: discard all jobs and output
 		internal static bool CanExit()
 		{
 			// show jobs
-			if (Jobs.Count > 0)
+			if (JobList.Count > 0)
 			{
 				ShowJobs();
-				if (Job.Jobs.Count > 0)
+				if (Job.JobList.Count > 0)
 					return false;
 			}
 			return true;

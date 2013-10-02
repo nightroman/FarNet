@@ -25,7 +25,7 @@ namespace FarNet.Works
 		public ModuleCache()
 		{
 			//! read the cache; do not check existence, normally it exists
-			_FileName = Far.Api.GetFolderPath(SpecialFolder.LocalData) + @"\FarNet\Cache.binary";
+			_FileName = Far.Api.GetFolderPath(SpecialFolder.LocalData) + (IntPtr.Size == 4 ? @"\FarNet\Cache32.binary" : @"\FarNet\Cache64.binary");
 			try
 			{
 				object deserialized;

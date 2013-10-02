@@ -29,13 +29,9 @@ namespace PowerShellFar
 
 			// line text, replace prefixes with spaces to avoid parsing problems
 			string text = line.Text;
+			string prefix = string.Empty;
 			if (line.WindowKind == WindowKind.Panels)
-			{
-				if (text.StartsWith(Entry.CommandInvoke1.Prefix + ":", StringComparison.OrdinalIgnoreCase))
-					text = string.Empty.PadRight(Entry.CommandInvoke1.Prefix.Length + 1) + text.Substring(Entry.CommandInvoke1.Prefix.Length + 1);
-				else if (text.StartsWith(Entry.CommandInvoke2.Prefix + ":", StringComparison.OrdinalIgnoreCase))
-					text = string.Empty.PadRight(Entry.CommandInvoke2.Prefix.Length + 1) + text.Substring(Entry.CommandInvoke2.Prefix.Length + 1);
-			}
+				Entry.SplitCommandWithPrefix(ref text, out prefix);
 
 			// trim end and process the empty case
 			text = text.TrimEnd();
@@ -45,7 +41,7 @@ namespace PowerShellFar
 				return;
 			}
 
-			int pos = line.Caret;
+			int pos = line.Caret - prefix.Length;
 			string script = null;
 			string command = null;
 			object[] args = null;

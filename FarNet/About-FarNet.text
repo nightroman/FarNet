@@ -23,7 +23,7 @@
 
 [Contents](#Contents)
 
-### FarNet 5.0.35
+### FarNet 5.0.36
 
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The API is exposed in comfortable object oriented way and most of
@@ -197,7 +197,7 @@ rare cases the cache may have to be removed manually and the core restarted.
 Note that data of removed modules are removed from the cache automatically.
 
 The module cache file by default is
-*%LOCALAPPDATA%\Far Manager\Profile\FarNet\Cache.binary*
+*%LOCALAPPDATA%\Far Manager\Profile\FarNet\Cache??.binary*
 
 ---
 
@@ -235,7 +235,7 @@ copied to the Far home directory.
 funny.
 
 Try again after removing the FarNet module cache. Its default location:
-*%LOCALAPPDATA%\Far Manager\Profile\FarNet\Cache.binary*
+*%LOCALAPPDATA%\Far Manager\Profile\FarNet\Cache??.binary*
 
 ---
 
