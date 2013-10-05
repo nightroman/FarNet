@@ -1,6 +1,23 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.40 =
+
+Improved view and navigation of DictionaryEntry's in object and member panels.
+Object panel: [Enter] on DictionaryEntry opens a panel for its Value, if it is
+not trivial, [CtrlPgDn] as usual opens a member panel. Member panel: only "Key"
+and "Value" are shown, "Name" is removed (redundant PowerShell alias of "Key").
+
+Fixed "Cannot access a disposed object." in a dialog of remote session console.
+
+Script Invoke-Editor-.ps1. If a file is *.build|test.ps1 then the current task
+is invoked by Invoke-Build.ps1 (https://github.com/nightroman/Invoke-Build)
+
+Script Complete-Word-.ps1. Redraw the editor on insertion to avoid delays.
+
+Scripts Update-FarManager.ps1, Update-FarNet.ps1 - either parameter or env
+variable FARHOME is mandatory. Default "C:\Program Files\Far" is not used.
+
 = 5.0.39 =
 
 Fixed a few defects caused by new prefixes ps:, vps: (e.g. TabExpansion, etc.).

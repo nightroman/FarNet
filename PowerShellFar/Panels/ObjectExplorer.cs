@@ -167,7 +167,19 @@ namespace PowerShellFar
 		{
 			if (args == null) return null;
 
-			PSObject psData = PSObject.AsPSObject(args.File.Data);
+			object data = args.File.Data;
+			PSObject psData = PSObject.AsPSObject(data);
+
+			// replace dictionary entry with its value if it is complex
+			if (psData.BaseObject.GetType() == typeof(DictionaryEntry))
+			{
+				var value = ((DictionaryEntry)psData.BaseObject).Value;
+				if (value != null && !Converter.IsLinearType(value.GetType()))
+				{
+					data = value;
+					psData = PSObject.AsPSObject(value);
+				}
+			}
 
 			// case: linear type: ignore, it is useless to open
 			if (Converter.IsLinearType(psData.BaseObject.GetType()))
@@ -177,7 +189,7 @@ namespace PowerShellFar
 			}
 
 			// case: enumerable (string is excluded by linear type case)
-			IEnumerable asIEnumerable = Cast<IEnumerable>.From(args.File.Data);
+			IEnumerable asIEnumerable = Cast<IEnumerable>.From(data);
 			if (asIEnumerable != null)
 			{
 				var explorer = new ObjectExplorer();
@@ -208,7 +220,7 @@ namespace PowerShellFar
 			}
 
 			// open members
-			return new MemberExplorer(args.File.Data);
+			return new MemberExplorer(data);
 		}
 		internal void AddObjects(object values)
 		{

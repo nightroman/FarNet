@@ -5,6 +5,7 @@ Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Management.Automation;
@@ -83,12 +84,21 @@ namespace PowerShellFar
 					//! value: low (it is UI and member number is normally small)
 					var membersToShow = new List<string>();
 					{
-						string code = "Get-Member -InputObject $args[0] -MemberType Properties -ErrorAction 0";
-						foreach (PSObject o in A.InvokeCode(code, Value))
+						//_131002_111804 in a DictionaryEntry avoid Name (same as Key)
+						if (Value.BaseObject.GetType() == typeof(DictionaryEntry))
 						{
-							string name = o.Properties[Word.Name].Value.ToString();
-							if (_ExcludeMemberRegex == null || !_ExcludeMemberRegex.IsMatch(name))
-								membersToShow.Add(name);
+							membersToShow.Add("Key");
+							membersToShow.Add("Value");
+						}
+						else
+						{
+							string code = "Get-Member -InputObject $args[0] -MemberType Properties -ErrorAction 0";
+							foreach (PSObject o in A.InvokeCode(code, Value))
+							{
+								string name = o.Properties[Word.Name].Value.ToString();
+								if (_ExcludeMemberRegex == null || !_ExcludeMemberRegex.IsMatch(name))
+									membersToShow.Add(name);
+							}
 						}
 					}
 

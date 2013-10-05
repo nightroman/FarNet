@@ -10,6 +10,9 @@
 	If a file is *-.ps1 it is executed in the current PowerShell session by
 	$Psf.InvokeScriptFromEditor() with $ErrorActionPreference = 'Inquire'
 
+	If a file is *.build|test.ps1 then the current task is invoked by
+	Invoke-Build.ps1 (https://github.com/nightroman/Invoke-Build)
+
 	If a file is *.ps1 it is invoked by PowerShell.exe outside of Far. When it
 	is done you can watch the console output and close the window by [Enter].
 	If it fails the PowerShell is not exited, but stopped, you may work in
@@ -45,7 +48,19 @@ $ext = [IO.Path]::GetExtension($path)
 
 ### PowerShell in external window and return
 if ($ext -eq '.ps1') {
-	[Diagnostics.Process]::Start('powershell.exe', "-NoExit . '$($path.Replace("'", "''"))'")
+	if ($path -match '\.(?:build|test)\.ps1$') {
+		$task = '.'
+		for($e = $editor.Caret.Y; $e -ge 0; --$e) {
+			if ($editor[$e].Text -match '^\s*task\s+(\S+)') {
+				$task = $matches[1]
+				break
+			}
+		}
+		[Diagnostics.Process]::Start('powershell.exe', "-NoExit Invoke-Build $task '$($path.Replace("'", "''"))'")
+	}
+	else {
+		[Diagnostics.Process]::Start('powershell.exe', "-NoExit . '$($path.Replace("'", "''"))'")
+	}
 	return
 }
 
