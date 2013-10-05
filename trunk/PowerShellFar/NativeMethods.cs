@@ -73,7 +73,6 @@ namespace PowerShellFar
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
 		{
-			PSCredential credential = null;
 			if (string.IsNullOrEmpty(caption))
 			{
 				caption = Res.Me + " Credential Request";
@@ -82,59 +81,60 @@ namespace PowerShellFar
 			{
 				message = "Enter your credentials.";
 			}
-			CREDUI_INFO structure = new CREDUI_INFO();
-			structure.pszCaptionText = caption;
-			structure.pszMessageText = message;
-			StringBuilder pszUserName = new StringBuilder(userName, 0x201);
-			StringBuilder pszPassword = new StringBuilder(0x100);
-			bool flag = false;
-			int pfSave = Convert.ToInt32(flag);
-			structure.cbSize = Marshal.SizeOf(structure);
-			structure.hwndParent = Far.Api.UI.MainWindowHandle; //! works for conemu, too, but the effect is as if we use IntPtr.Zero
-			CREDUI_FLAGS dwFlags = CREDUI_FLAGS.DO_NOT_PERSIST;
+			CREDUI_INFO cREDUI_INFO = default(CREDUI_INFO);
+			cREDUI_INFO.pszCaptionText = caption;
+			cREDUI_INFO.pszMessageText = message;
+			StringBuilder stringBuilder = new StringBuilder(userName, 513);
+			StringBuilder stringBuilder2 = new StringBuilder(256);
+			bool value = false;
+			int num = Convert.ToInt32(value);
+			cREDUI_INFO.cbSize = Marshal.SizeOf(cREDUI_INFO);
+			cREDUI_INFO.hwndParent = Far.Api.UI.MainWindowHandle; //! works for conemu, too, but the effect is as if we use IntPtr.Zero
+			CREDUI_FLAGS cREDUI_FLAGS = CREDUI_FLAGS.DO_NOT_PERSIST;
 			if ((allowedCredentialTypes & PSCredentialTypes.Domain) != PSCredentialTypes.Domain)
 			{
-				dwFlags |= CREDUI_FLAGS.GENERIC_CREDENTIALS;
+				cREDUI_FLAGS |= CREDUI_FLAGS.GENERIC_CREDENTIALS;
 				if ((options & PSCredentialUIOptions.AlwaysPrompt) == PSCredentialUIOptions.AlwaysPrompt)
 				{
-					dwFlags |= CREDUI_FLAGS.ALWAYS_SHOW_UI;
+					cREDUI_FLAGS |= CREDUI_FLAGS.ALWAYS_SHOW_UI;
 				}
 			}
-			CredUIReturnCodes codes = CredUIReturnCodes.ERROR_INVALID_PARAMETER;
-			if ((pszUserName.Length <= 0x201) && (pszPassword.Length <= 0x100))
+			CredUIReturnCodes credUIReturnCodes = CredUIReturnCodes.ERROR_INVALID_PARAMETER;
+			if (stringBuilder.Length <= 513 && stringBuilder2.Length <= 256)
 			{
-				codes = CredUIPromptForCredentials(ref structure, targetName, IntPtr.Zero, 0, pszUserName, 0x201, pszPassword, 0x100, ref pfSave, dwFlags);
+				credUIReturnCodes = CredUIPromptForCredentials(ref cREDUI_INFO, targetName, IntPtr.Zero, 0, stringBuilder, 513, stringBuilder2, 256, ref num, cREDUI_FLAGS);
 			}
-			if (codes == CredUIReturnCodes.NO_ERROR)
+			PSCredential pSCredential;
+			if (credUIReturnCodes == CredUIReturnCodes.NO_ERROR)
 			{
-				string str = null;
-				if (pszUserName != null)
+				string text = null;
+				if (stringBuilder != null)
 				{
-					str = pszUserName.ToString();
+					text = stringBuilder.ToString();
 				}
-
-				using (SecureString password = new SecureString())
+				SecureString secureString = new SecureString();
+				for (int i = 0; i < stringBuilder2.Length; i++)
 				{
-					for (int i = 0; i < pszPassword.Length; i++)
-					{
-						password.AppendChar(pszPassword[i]);
-						pszPassword[i] = '\0';
-					}
-
-					if (!string.IsNullOrEmpty(str))
-						credential = new PSCredential(str, password);
-					else
-						credential = null;
+					secureString.AppendChar(stringBuilder2[i]);
+					stringBuilder2[i] = '\0';
+				}
+				if (!string.IsNullOrEmpty(text))
+				{
+					pSCredential = new PSCredential(text, secureString);
+				}
+				else
+				{
+					pSCredential = null;
 				}
 			}
 			else
 			{
-				if (codes != CredUIReturnCodes.ERROR_CANCELLED)
-					throw new InvalidOperationException("Getting credentials error: " + codes.ToString());
+				//if (credUIReturnCodes != CredUIReturnCodes.ERROR_CANCELLED)
+				//    throw new InvalidOperationException("Getting credentials error: " + credUIReturnCodes);
 
-				credential = null;
+				pSCredential = null;
 			}
-			return credential;
+			return pSCredential;
 		}
 	}
 }

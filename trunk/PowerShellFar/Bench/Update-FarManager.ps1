@@ -26,8 +26,7 @@
 	the archive, e.g. user plugins and files and standard files excluded now.
 
 .Parameter FARHOME
-		Far directory needed if %FARHOME% is not defined and its location is
-		not standard.
+		Far Manager directory. Default: %FARHOME%.
 
 .Parameter Platform
 		Target platform: x86 or x64. Default: depends on the current process.
@@ -51,17 +50,13 @@
 param
 (
 	[string][ValidateScript({[System.IO.Directory]::Exists($_)})]
-	$FARHOME = $(if ($env:FARHOME) {$env:FARHOME} else {"C:\Program Files\Far"})
-	,
+	$FARHOME = $env:FARHOME,
 	[string][ValidateSet('x86', 'x64')]
-	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'})
-	,
+	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'}),
 	[int][ValidateSet(2, 3)]
-	$Version = 3
-	,
+	$Version = 3,
 	[string]
-	$Archive
-	,
+	$Archive,
 	[switch]
 	$Stable
 )

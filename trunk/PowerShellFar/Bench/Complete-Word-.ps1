@@ -96,3 +96,4 @@ else {
 
 # complete by the selected word
 $Line.InsertText($w.Substring($word.Length))
+if ($Line.WindowKind -eq 'Editor') {$Editor.Redraw()}
