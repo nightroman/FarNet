@@ -14,7 +14,7 @@ end;
 }
 
 Macro {
-area="Shell"; key="ShiftSpace"; flags="NotEmptyCommandLine"; description="PSF: Easy invoke"; action=function()
+area="Shell"; key="F5"; flags="NotEmptyCommandLine"; description="PSF: Easy invoke"; action=function()
 Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::ps:$Psf.InvokeSelectedCode()")
 end;
 }

@@ -169,9 +169,10 @@ namespace PowerShellFar
 
 			object data = args.File.Data;
 			PSObject psData = PSObject.AsPSObject(data);
+			var type = psData.BaseObject.GetType();
 
 			// replace dictionary entry with its value if it is complex
-			if (psData.BaseObject.GetType() == typeof(DictionaryEntry))
+			if (type == typeof(DictionaryEntry))
 			{
 				var value = ((DictionaryEntry)psData.BaseObject).Value;
 				if (value != null && !Converter.IsLinearType(value.GetType()))
@@ -181,8 +182,20 @@ namespace PowerShellFar
 				}
 			}
 
+			// replace key/value pair with its value if it is complex
+			var typeName = type.FullName;
+			if (typeName.StartsWith("System.Collections.Generic.KeyValuePair`", StringComparison.OrdinalIgnoreCase))
+			{
+				var value = psData.Properties["Value"].Value;
+				if (value != null && !Converter.IsLinearType(value.GetType()))
+				{
+					data = value;
+					psData = PSObject.AsPSObject(value);
+				}
+			}
+
 			// case: linear type: ignore, it is useless to open
-			if (Converter.IsLinearType(psData.BaseObject.GetType()))
+			if (Converter.IsLinearType(type))
 			{
 				args.Result = JobResult.Ignore;
 				return null;
@@ -203,11 +216,11 @@ namespace PowerShellFar
 			{
 				var explorer = new ObjectExplorer();
 				explorer.AddObjects(pi.Value);
-				return explorer; 
+				return explorer;
 			}
 
 			// case: WMI
-			if (psData.BaseObject.GetType().FullName == "System.Management.ManagementClass")
+			if (typeName == "System.Management.ManagementClass")
 			{
 				pi = psData.Properties[Word.Name];
 				if (pi != null && pi.Value != null)
