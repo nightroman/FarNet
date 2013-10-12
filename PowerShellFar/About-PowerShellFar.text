@@ -44,7 +44,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.40
+### PowerShellFar 5.0.41
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -77,7 +77,7 @@ PowerShellFar, FarNet and documentation can be updated by the included script
 ### Requirements
 
 - Far Manager 3.0.3525
-- Plugin FarNet 5.0.36
+- Plugin FarNet 5.0.37
 - Windows PowerShell V2, V3
 
 ### Set PowerShell execution policy
@@ -2160,17 +2160,16 @@ A: There are at least two options, both using macros
 * Easy prefix
 
     A macro that expands the empty command line to 'ps: '.
-    See *PowerShellFar.macro.lua* (`[Space]`).
+    See *PowerShellFar.macro.lua*, `[Space]`.
 
 * Easy invoke
 
     Type and run without prefix using a macro associated with "Invoke selected
-    code" menu command. See *PowerShellFar.macro.lua* (`[ShiftSpace]`).
+    code" menu command. See *PowerShellFar.macro.lua*, `[F5]`.
 
-    You can type PowerShell commands without a prefix and press `[ShiftSpace]`
-    to execute it. There is a bonus: if a command fails then its text is still
-    in the command line, ready for correction; even the caret position is the
-    same that might be useful on composing lengthy commands.
+    A bonus: if a command fails then its text is still in the command line and
+    the caret position is the same. This is useful on composing and correcting
+    lengthy commands.
 
 
 *********************************************************************

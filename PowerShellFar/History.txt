@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.41 =
+
+Improved navigation of KeyValuePair's in object and member panels.
+
 = 5.0.40 =
 
 Improved view and navigation of DictionaryEntry's in object and member panels.

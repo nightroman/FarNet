@@ -1,5 +1,9 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.37 =
+
+Fixed getting text length of dialog edit boxes.
+
 = 5.0.36 =
 
 Added the suffix 32/64 to the module cache file name. By default it is:
