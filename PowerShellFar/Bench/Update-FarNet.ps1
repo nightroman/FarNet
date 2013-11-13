@@ -21,35 +21,30 @@
 
 .Parameter FARHOME
 		Far Manager directory. Default: %FARHOME%.
-
 .Parameter Platform
-		Target platform: x86 or x64. Default: depends on the current process.
-
+		Platform: x64 or x86|Win32. Default: from Far.exe file info.
 .Parameter ArchiveHome
 		Downloaded archives directory. Default: $HOME.
-
 .Parameter ArchiveNames
 		Archive names. Default: latest from the project site.
-
 .Parameter Force
 		Tells to update from already downloaded archives.
-
 .Parameter All
 		Tells to update all.
 
 .Example
-	# This command starts update in a new console and keeps it opened to view
-	# the output. Then it tells Far to exit because update will wait for this.
-	ps: Start-Process powershell.exe "-noexit Update-FarNet"; $Far.Quit()
+	ps: Start-Process PowerShell.exe '-NoExit Update-FarNet'; $Far.Quit()
+
+	Update the current Far Manager in a new console and close the current.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param
 (
-	[string][ValidateScript({[System.IO.Directory]::Exists($_)})]
+	[string]
 	$FARHOME = $env:FARHOME,
-	[string][ValidateSet('x86', 'x64')]
-	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'}),
+	[string][ValidateSet('x64', 'x86', 'Win32')]
+	$Platform,
 	[string][ValidateScript({[System.IO.Directory]::Exists($_)})]
 	$ArchiveHome = $HOME,
 	[string[]]
@@ -62,7 +57,19 @@ param
 
 Set-StrictMode -Version 2
 $ErrorActionPreference = 'Stop'
-if ($Host.Name -ne 'ConsoleHost') { throw "Please, invoke by the console host." }
+if ($Host.Name -ne 'ConsoleHost') {Write-Error "Please, invoke by the console host."}
+
+### FARHOME
+if ($FARHOME) {$FARHOME = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FARHOME)}
+if (![IO.Directory]::Exists($FARHOME)) {Write-Error "Parameter FARHOME: missing directory '$FARHOME'."}
+
+### Platform
+if (!$Platform) {
+	if (!($exe = Get-Item -LiteralPath "$FARHOME\Far.exe" -ErrorAction 0) -or ($exe.VersionInfo.FileVersion -notmatch '\b(x86|x64)\b')) {
+		Write-Error "Cannot get info from Far.exe. Specify parameter Platform."
+	}
+	$Platform = $matches[1]
+}
 
 ### to download if not yet
 # see Update-FarManager.ps1
@@ -99,7 +106,7 @@ foreach($name in $ArchiveNames) {
 }
 
 if (!$Force -and $done -eq 0) {
-	Write-Host -ForegroundColor Cyan "All the archives already exist, use -Force to update from them."
+	Write-Host -ForegroundColor Cyan "All archives already exist, use -Force to update from them."
 	return
 }
 
@@ -109,20 +116,20 @@ foreach($name in $ArchiveNames) {
 	$path = "$ArchiveHome\$name"
 	Write-Host -ForegroundColor Cyan "Extracting from '$path'..."
 
-	# extract the install list
+	# extract install list
 	& '7z' 'e' $path "-o$($env:TEMP)" '-aoa' 'Install.txt'
-	if ($lastexitcode) { throw "7z failed." }
+	if ($LastExitCode) {Write-Error "Error on extracting Install.txt."}
 
-	# extract using the install list
+	# extract using install list
 	$install = "$($env:TEMP)\Install.txt"
 	& '7z' 'x' $path "-o$FARHOME" '-aoa' "@$install"
-	if ($lastexitcode) { throw "7z failed." }
+	if ($LastExitCode) {Write-Error "Error on extracting files."}
 	[System.IO.File]::Delete($install)
 
 	# x64 FarNet
 	if ($Platform -eq 'x64' -and $name -like 'FarNet.*') {
 		& '7z' 'e' $path "-o$FARHOME\Plugins\FarNet" '-aoa' 'Plugins.x64\FarNet\FarNetMan.dll'
-		if ($lastexitcode) { throw "7z failed." }
+		if ($LastExitCode) {Write-Error "Error on extracting FarNetMan.dll."}
 	}
 }
 

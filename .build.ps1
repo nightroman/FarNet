@@ -6,10 +6,10 @@
 
 param
 (
-	$FarHome = (property FarHome),
-	$Configuration = (property Configuration Release),
-	$Platform = 'Win32'
+	$Platform = (property Platform Win32),
+	$Configuration = (property Configuration Release)
 )
+$FarHome = "C:\Bin\Far\$Platform"
 
 use Framework\v4.0.30319 MSBuild
 
@@ -20,7 +20,7 @@ $Builds = @(
 
 task Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
-	
+
 	Remove-Item -ErrorAction 0 `
 	FarNetAccord.sdf,
 	$FarHome\FarNet\Modules\Explore\About-Explore.htm

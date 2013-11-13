@@ -111,16 +111,7 @@ namespace PowerShellFar
 						if (!membersToShow.Contains(pi.Name))
 							continue;
 
-						//! exceptions, e.g. exit code of running process
-						object value;
-						try
-						{
-							value = pi.Value;
-						}
-						catch (Exception e)
-						{
-							value = string.Format(null, "<ERROR: {0}>", e.Message);
-						}
+						var value = A.SafePropertyValue(pi);
 
 						SetFile file = new SetFile()
 						{

@@ -6,9 +6,10 @@
 
 param
 (
-	$FarHome = (property FarHome),
+	$Platform = (property Platform Win32),
 	$Configuration = (property Configuration Release)
 )
+$FarHome = "C:\Bin\Far\$Platform"
 
 task Clean {
 	Remove-Item bin, obj -Recurse -Force -ErrorAction 0

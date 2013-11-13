@@ -549,5 +549,31 @@ Out-String -Width $args[1]
 		{
 			InvokeCode("Disable-PSBreakpoint -Breakpoint $args[0]", breakpoint);
 		}
+		internal static object SafePropertyValue(PSPropertyInfo pi) 
+		{
+			//! exceptions, e.g. exit code of running process
+			try
+			{
+				return pi.Value;
+			}
+			catch (GetValueException e)
+			{
+				return string.Format(null, "<ERROR: {0}>", e.Message);
+			}
+		}
+		internal static string SafeToString(object value)
+		{
+			if (value == null)
+				return string.Empty;
+
+			try
+			{
+				return value.ToString();
+			}
+			catch (Exception e)
+			{
+				return string.Format(null, "<ERROR: {0}>", e.Message);
+			}
+		}
 	}
 }

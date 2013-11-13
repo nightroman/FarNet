@@ -13,7 +13,7 @@ param
 use Framework\v4.0.30319 MSBuild
 
 task Build {
-	exec { MSBuild /t:Build "/p:Configuration=Release;Install=$FarNetModules" FarNet.Demo.csproj }
+	exec { MSBuild /t:Build "/p:Configuration=Release;Install=$FarNetModules;FarHome=$FarHome" FarNet.Demo.csproj }
 }
 
 task Clean {

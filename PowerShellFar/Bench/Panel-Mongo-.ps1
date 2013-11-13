@@ -41,6 +41,10 @@
 .Parameter CollectionName
 		Tells to open a panel with documents of the specified collection. This
 		parameter is used together with DatabaseName.
+
+.Parameter File
+		Specifies the bson data file path and tells to open it in the panel.
+		Documents in the file must have unique _id's.
 #>
 
 param
@@ -48,7 +52,8 @@ param
 	[Parameter()]
 	$ConnectionString = '.',
 	$DatabaseName,
-	$CollectionName
+	$CollectionName,
+	$File
 )
 
 Import-Module Mdbc
@@ -167,9 +172,15 @@ $($2.Files[0..9] -join "`n")
 	}
 }
 
-function global:New-MdbcCollectionExplorer($Database, $CollectionName) {
+function global:New-MdbcCollectionExplorer($Database, $CollectionName, $File) {
+	if ($File) {
+		Open-MdbcFile $File
+	}
+	else {
+		$Collection = $Database.GetCollection($CollectionName)
+	}
 	New-Object PowerShellFar.ObjectExplorer -Property @{
-		Data = @{ Collection = $Database.GetCollection($CollectionName) }
+		Data = @{ Collection = $Collection }
 		FileComparer = [PowerShellFar.FileMetaComparer]'_id'
 		AsCreatePanel = {
 			param($1)
@@ -182,7 +193,7 @@ function global:New-MdbcCollectionExplorer($Database, $CollectionName) {
 		AsGetData = {
 			param($1, $2)
 			if ($2.NewFiles) {
-				Get-MdbcData -Collection $1.Data.Collection -AsCustomObject -First $2.Limit -Skip $2.Offset
+				Get-MdbcData -Collection $1.Data.Collection -As PS -First $2.Limit -Skip $2.Offset
 			}
 			else {
 				, $1.Cache
@@ -197,14 +208,14 @@ function global:New-MdbcCollectionExplorer($Database, $CollectionName) {
 			}
 			# remove
 			try {
-				$result = $2.FilesData | Remove-MdbcData -Collection $1.Data.Collection -Result
-				if (!$result.Ok) {throw $result.ErrorMessage}
+				$2.FilesData | Remove-MdbcData -Collection $1.Data.Collection -ErrorAction 1
 			}
 			catch {
 				$2.Result = 'Incomplete'
 				if ($2.UI) {Show-FarMessage "$_"}
 			}
-			$1.Data.Panel.NeedsNewFiles = $true
+			Save-MdbcFile -Collection $1.Data.Collection
+			$1.Data.Panel.NeedsNewFiles = $1.Data.Collection -is [MongoDB.Driver.MongoCollection]
 		}
 	}
 }
@@ -216,6 +227,9 @@ if ($CollectionName) {
 elseif ($DatabaseName) {
 	Connect-Mdbc $ConnectionString
 	(New-MdbcDatabaseExplorer $Server $DatabaseName).OpenPanel()
+}
+elseif ($File) {
+	(New-MdbcCollectionExplorer -File $File).OpenPanel()
 }
 else {
 	(New-MdbcServerExplorer $ConnectionString).OpenPanel()

@@ -65,13 +65,21 @@ namespace PowerShellFar
 			if (editLine.WindowKind == WindowKind.Panels)
 				Entry.SplitCommandWithPrefix(ref line, out prefix);
 
-			// last word and remaining text
+			// last word as PS does, it includes too much
 			Match match = Regex.Match(line, @"(?:^|\s)(\S+)$");
 			if (!match.Success)
 				return;
-			text = text.Substring(prefix.Length + line.Length);
 			string lastWord = match.Groups[1].Value;
 
+			// try to make a smaller last word as TabExpansion does;
+			// as a result, we avoid the same prefixes at all choices
+			match = Regex.Match(lastWord, @"^.*[!;\(\{\|""']+(.*)$");
+			if (match.Success)
+				lastWord = match.Groups[1].Value;
+
+			// remaining text
+			text = text.Substring(prefix.Length + line.Length);
+			
 			// compile once
 			if (_TabExpansion == null)
 				_TabExpansion = A.Psf.Engine.InvokeCommand.NewScriptBlock("TabExpansion $args[0] $args[1]");

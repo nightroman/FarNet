@@ -1,6 +1,18 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.42 =
+
+Object panel: Take into account possible problematic objects with some
+properties or ToString() throwing exceptions.
+
+TabExpansion: Avoided redundant parts in choice menu items in some cases.
+
+Update-FarManager.ps1, Update-FarNet.ps1: parameter Platform: default value
+(x86|x64) is taken from Far.exe file info.
+
+Panel-Mongo-.ps1: Adapted for the latest Mdbc. Added support of file collections.
+
 = 5.0.41 =
 
 Improved navigation of KeyValuePair's in object and member panels.

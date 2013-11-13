@@ -4,6 +4,10 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
+param(
+	$FarHome = (property FarHome)
+)
+
 $Builds = @(
 	'Backslash\Backslash.build.ps1'
 	'EditorKit\EditorKit.build.ps1'

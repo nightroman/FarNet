@@ -252,9 +252,9 @@ namespace PowerShellFar
 				else if ((asIEnumerable = value.BaseObject as IEnumerable) != null)
 					file.Name = Converter.FormatEnumerable(asIEnumerable, Settings.Default.FormatEnumerationLimit);
 				else if ((pi = A.FindDisplayProperty(value)) != null)
-					file.Name = (pi.Value ?? string.Empty).ToString();
+					file.Name = A.SafeToString(A.SafePropertyValue(pi)); //_131106_104220
 				else
-					file.Name = value.ToString();
+					file.Name = A.SafeToString(value); //_131106_105605
 
 				// add
 				files.Add(file);
