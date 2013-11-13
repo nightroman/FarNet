@@ -6,10 +6,10 @@
 
 param
 (
-	$FarHome = (property FarHome),
-	$Configuration = (property Configuration Release),
-	$Platform = (property Platform Win32)
+	$Platform = (property Platform Win32),
+	$Configuration = (property Configuration Release)
 )
+$FarHome = "C:\Bin\Far\$Platform"
 
 $CopyFile = "$Configuration\$Platform\FarNetMan.dll"
 

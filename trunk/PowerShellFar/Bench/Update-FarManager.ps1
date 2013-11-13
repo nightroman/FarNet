@@ -14,8 +14,8 @@
 	this case you do not have to set the parameter FARHOME.
 
 	$HOME directory is the destination for downloaded archives. Old files are
-	not deleted. It is recommended to keep at the last downloaded archive
-	there, the script downloads only new archives, if any.
+	not deleted. Keep at least the last downloaded archive there, the script
+	downloads only new archives, if any.
 
 	The script gets the latest web archive name. If the file already exists the
 	script exits. Otherwise it downloads the archive and starts extraction. It
@@ -27,32 +27,28 @@
 
 .Parameter FARHOME
 		Far Manager directory. Default: %FARHOME%.
-
 .Parameter Platform
-		Target platform: x86 or x64. Default: depends on the current process.
-
+		Platform: x64 or x86|Win32. Default: from Far.exe file info.
 .Parameter Version
 		Major Far version: 3 (default) or 2.
-
 .Parameter Archive
-		Already downloaded archive where Far should be updated from.
-
+		Already downloaded archive to be used.
 .Parameter Stable
 		Download and update only stable builds.
 
 .Example
-	# This command starts update in a new console and keeps it opened to view
-	# the output. Then it tells Far to exit because update will wait for this.
-	ps: Start-Process powershell.exe "-noexit Update-FarManager"; $Far.Quit()
+	ps: Start-Process PowerShell.exe '-NoExit Update-FarManager'; $Far.Quit()
+
+	Update the current Far Manager in a new console and close the current.
 #>
 
 [CmdletBinding()]
 param
 (
-	[string][ValidateScript({[System.IO.Directory]::Exists($_)})]
+	[string]
 	$FARHOME = $env:FARHOME,
-	[string][ValidateSet('x86', 'x64')]
-	$Platform = $(if ([intptr]::Size -eq 4) {'x86'} else {'x64'}),
+	[string][ValidateSet('x64', 'x86', 'Win32')]
+	$Platform,
 	[int][ValidateSet(2, 3)]
 	$Version = 3,
 	[string]
@@ -63,28 +59,32 @@ param
 
 Set-StrictMode -Version 2
 $ErrorActionPreference = 'Stop'
-if ($Host.Name -ne 'ConsoleHost') { throw "Please, invoke by the console host." }
+if ($Host.Name -ne 'ConsoleHost') {Write-Error "Please, invoke by the console host."}
+
+### FARHOME
+if ($FARHOME) {$FARHOME = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FARHOME)}
+if (![IO.Directory]::Exists($FARHOME)) {Write-Error "Parameter FARHOME: missing directory '$FARHOME'."}
+
+### Platform
+if (!$Platform) {
+	if (!($exe = Get-Item -LiteralPath "$FARHOME\Far.exe" -ErrorAction 0) -or ($exe.VersionInfo.FileVersion -notmatch '\b(x86|x64)\b')) {
+		Write-Error "Cannot get info from Far.exe. Specify parameter Platform."
+	}
+	$Platform = $matches[1]
+}
 
 ### download if not yet
-<#
-DownloadFile() may depend on IE Tools > Internet Options > Connections > LAN settings
-My machines:
-- machine 1: nothing is checked: OK
-- machine 2: "Use automatic configuration script" + some script: OK
-- machine 3:
-"Automatically detect settings": ERROR: (407) Proxy Authentication Required.
-nothing is checked: OK
-#>
+#! DownloadFile() depends on IE Tools > Internet Options > Connections > LAN settings
 if (!$Archive) {
 	### get URL: stable, platform
 	$URL = if ($Stable) {"http://www.farmanager.com/files/update$Version.php"} else {"http://www.farmanager.com/nightly/update$Version.php"}
-	$URL += if ('x86' -eq $Platform) {'?p=32'} else {'?p=64'}
+	$URL += if ($Platform -eq 'x64') {'?p=64'} else {'?p=32'}
 
 	### look for updates (request the archive name)
 	Write-Host -ForegroundColor Cyan "Looking for updates at '$URL'..."
 	$wc = New-Object Net.WebClient
 	$initext = $wc.DownloadString($URL)
-	if ($initext -notmatch 'arc="(Far[^"]+\.7z)"') { throw "Cannot get an archive name from '$ini'." }
+	if ($initext -notmatch 'arc="(Far[^"]+\.7z)"') {Write-Error "Cannot get archive name from '$ini'."}
 
 	### exit if the archive exists
 	$Name = $matches[1]
@@ -109,7 +109,7 @@ Write-Host -ForegroundColor Cyan "Extracting from '$Archive'..."
 $plugins1 = [System.IO.Directory]::GetDirectories("$FARHOME\Plugins")
 $files1 = foreach($_ in '*.hlf', '*.lng') { [System.IO.Directory]::GetFiles($FARHOME, $_) }
 & '7z' 'x' $Archive "-o$FARHOME" '-aoa'
-if ($lastexitcode) { throw "7z failed." }
+if ($LastExitCode) {Write-Error "Error on extracting files."}
 
 ### remove not used plugins
 Write-Host -ForegroundColor Cyan "Removing not used plugins..."
@@ -150,6 +150,6 @@ $inArchive = @{}
 		++$nExtra
 	}
 }}
-Write-Host -ForegroundColor Cyan "$nExtra extra items."
 
+Write-Host -ForegroundColor Cyan "$nExtra extra items."
 Write-Host -ForegroundColor Green "Update succeeded."

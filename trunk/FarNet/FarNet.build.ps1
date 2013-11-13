@@ -6,9 +6,10 @@
 
 param
 (
-	$FarHome = (property FarHome),
+	$Platform = (property Platform Win32),
 	$Configuration = (property Configuration Release)
 )
+$FarHome = "C:\Bin\Far\$Platform"
 
 use Framework\v4.0.30319 MSBuild
 
