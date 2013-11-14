@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-01-27
+powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-11-14
 Designed for PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
 
 Add to proto.hrc:
@@ -652,6 +652,8 @@ SQL syntax in here-strings after <#sql#>
 		<word name="-notin"/>
 		<word name="-cnotin"/>
 		<word name="-inotin"/>
+		<word name="-shl"/>
+		<word name="-shr"/>
 	</keywords>
 	<keywords region="Operator">
 		<symb name=".."/>
