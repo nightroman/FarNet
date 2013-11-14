@@ -309,3 +309,7 @@ Included *markdown.hrc*.
 ### 2013-01-27
 
 *powershell.hrc*. cmdlet-binding fixes `[CmdletBinding()] param()`.
+
+### 2013-11-14
+
+*powershell.hrc*. Added operators `-shl`, `-shr`.
