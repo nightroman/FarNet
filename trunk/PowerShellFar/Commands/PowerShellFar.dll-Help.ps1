@@ -36,41 +36,35 @@ This mode is suitable for production scripts.
 		Native = 'Checks the active panel is native (not plugin).'
 		Native2 = 'Checks the passive panel is native (not plugin).'
 	}
+
 	inputs = @()
 	outputs = @()
+
 	examples = @(
-		@{
-			code = @'
-# Hardcoded breakpoint
-Assert-Far
-'@
-		}
-		@{
-			code = @'
-# Single checks
-Assert-Far -Panels
-Assert-Far -Plugin
-Assert-Far ($Far.Window.Kind -eq 'Panels')
-'@
-		}
-		@{
-			code = @'
-# Combined checks
-Assert-Far -Panels -Plugin
-Assert-Far -Panels ($Far.Panel.IsPlugin)
-Assert-Far @(
-	$Far.Window.Kind -eq 'Panels'
-	$Far.Panel.IsPlugin
-)
-'@
-		}
-		@{
-			code = @'
-# User friendly error message. Mind use of -Message and -Title with switches:
-Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
-Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Search-Regex"
-'@
-		}
+		@{code={
+	# Hardcoded breakpoint
+	Assert-Far
+		}}
+		@{code={
+	# Single checks
+	Assert-Far -Panels
+	Assert-Far -Plugin
+	Assert-Far ($Far.Window.Kind -eq 'Panels')
+		}}
+		@{code={
+	# Combined checks
+	Assert-Far -Panels -Plugin
+	Assert-Far -Panels ($Far.Panel.IsPlugin)
+	Assert-Far @(
+		$Far.Window.Kind -eq 'Panels'
+		$Far.Panel.IsPlugin
+	)
+		}}
+		@{code={
+	# User friendly error message. Mind use of -Message and -Title with switches:
+	Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
+	Assert-Far ($Far.Window.Kind -eq 'Panels') "Run this script from panels." "Search-Regex"
+		}}
 	)
 }
 
@@ -320,16 +314,28 @@ Merge-Helps $BaseText @{
 	parameters = $parametersModal
 }
 
-### Panel Cmdlets
+### Base panel
 $BasePanel = @{
 	parameters = @{
-		TypeId = 'Panel type ID.'
-		Title = 'Panel title.'
-		SortMode = 'Panel sort mode.'
-		ViewMode = 'Panel view mode.'
-		IdleUpdate = 'Tells to update data periodically when idle.'
-		DataId = 'Custom data ID to distinguish files by data.'
-		Data = 'Attached user data.'
+		Title = 'Specifies the panel title.'
+		TypeId = 'Specifies the panel type ID which is used to identify the panel by other tools.'
+		SortMode = 'Specifies the panel start sort mode.'
+		ViewMode = 'Specifies the panel start view mode.'
+		Data = @'
+Specifies any object which is used later by custom panel event handlers.
+'@
+		IdleUpdate = @'
+Tells to update the panel periodically when idle. This is useful for panel
+objects that change their properties over time, e.g. system processes.
+'@
+		DataId = @'
+Specifies the custom data ID used to distinguish files by their data.
+The following types can be used:
+	String
+		Specifies an ID property name.
+	ScriptBlock
+		Specifies an ID calculated from $_.
+'@
 	}
 }
 
@@ -352,23 +358,107 @@ Merge-Helps $BasePanel @{
 ### Out-FarPanel
 Merge-Helps $BasePanel @{
 	command = 'Out-FarPanel'
-	synopsis = 'Sends output to a new or appends to the active object panel.'
-	parameters = @{
-		Columns = 'Custom columns (names or special hash tables).',
-		@'
-Use property names to specify columns or hash tables to describe columns in details,
-see [Meta] about hash tables and PanelPlan.Columns about column types.
+	synopsis = 'Sends output to a new object panel or appends to the active.'
+	description = @'
+This command is used in order to create a panel from input objects on the fly.
+By default a set of appropriate columns is chosen automatically. In some cases
+automatic columns are not effective. Use the property Columns in order to tell
+what is needed exactly.
 '@
-		InputObject = 'Object(s) to be sent to an object panel.'
+	parameters = @{
+		Columns = @'
+Custom columns. Each column is either a property name (string) or a column
+description (hashtable). A column description table looks like
+
+	@{Expression = ..; Name = ..; Kind = ..; Width = ..; Alignment = ..}
+
+Keys are case insensitive and can be shortened, even to their first letters.
+
+	Expression
+		Property name (string) or a calculated property (script block operating
+		on input object $_). Name/Label is normally also used for a script block.
+
+	Name or Label
+		Display name for a value from a script block or alternative name for a
+		property. It is used as a panel column title.
+
+	Kind
+		Far column kind, e.g. N, O, Z, S, C0, ... C9
+
+	Width
+		Far column width: positive: absolute width, negative: percentage.
+		Positive widths are ignored if a panel is too narrow to display all
+		columns.
+
+	Alignment
+		If the width is positive Right alignment can be used. If a panel is too
+		narrow to display all columns this option can be ignored.
+
+Column kinds (see Far manual for details):
+
+	N  Name
+	O  Owner
+	Z  Description
+	S  Length
+	DC CreationTime
+	DM LastWriteTime
+	DA LastAccessTime
+	C0 Custom
+	..
+	C9 Custom
+
+Column kind rules:
+
+	A column kind can be specified just once.
+
+	Specify column kinds when you really have to do so. Especially avoid
+	C0..C9, let them to be processed automatically.
+
+	C0...C9 must be listed incrementally without gaps. But other kinds between
+	them is fine. E.g. C1, C0 or C0, C2 are wrong, C0, N, C1 is correct.
+
+	If a kind is not specified then the next available from the remaining
+	default sequence is taken automatically.
+
+Default column kind sequence:
+
+	"N", "Z", "O", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9".
+'@
+		InputObject = @'
+Object(s) to be sent to an object panel. Normally this parameter is not used
+directly, instead input objects come from the pipeline.
+'@
 		ExcludeMemberPattern = 'Regular expression pattern of members to be excluded in a child list panel.'
 		HideMemberPattern = 'Regular expression pattern of members to be hidden in a child list panel.'
-		Append = 'Tells to append objects to the active object panel. All others options are ignored.'
+		Append = 'Tells to append objects to the active object panel. Other parameters are ignored.'
 	}
+
 	inputs = @{
 		type = '[object]'
 		description = 'Any objects to be shown as panel files.'
 	}
 	outputs = @()
+
+	examples = @(
+		@{code={
+	# Invoke the commands and compare their panels.
+
+	# Group processes and panel them as it is.
+	# Note that the column Group is not very useful.
+
+	Get-Process | Group-Object Name | Out-FarPanel
+
+	# Specify only useful columns Count and Name.
+	# The column Count is too wide and not aligned.
+
+	Get-Process | Group-Object Name | Out-FarPanel Count, Name
+
+	# Customize the column Count.
+	# The panel looks better now.
+
+	Get-Process | Group-Object Name | Out-FarPanel @{e='Count'; k='S'}, Name
+		}}
+	)
 }
 
 ### Menu Cmdlets
@@ -467,6 +557,7 @@ Tells to ask a user to choose an action before each step.
 This mode is used for troubleshooting, demonstrations, and etc.
 '@
 	}
+
 	inputs = @(
 		@{
 			type = 'System.String'
@@ -478,18 +569,15 @@ This mode is used for troubleshooting, demonstrations, and etc.
 		}
 	)
 	outputs = @()
+
 	examples = @(
-		@{
-			code = {
-				Invoke-FarStepper -Path (Get-FarPath)
-			}
-			remarks = 'Invokes the current panel file by the stepper.'
-		}
-		@{
-			code = {
-				Invoke-FarStepper .\Test-Stepper+.ps1 -Ask
-			}
-			remarks = 'Invokes the test from Bench\Text with confirmations.'
-		}
+		@{code={
+	# Invoke the current panel file by the stepper
+	Invoke-FarStepper -Path (Get-FarPath)
+		}}
+		@{code={
+	# Invoke the test from Bench\Text with confirmations
+	Invoke-FarStepper .\Test-Stepper+.ps1 -Ask
+		}}
 	)
 }
