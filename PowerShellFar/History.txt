@@ -1,6 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.43 =
+
+TabExpansion: Fixed issues on not yet imported module command parameters.
+
 = 5.0.42 =
 
 Object panel: Take into account possible problematic objects with some

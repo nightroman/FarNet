@@ -102,16 +102,17 @@ namespace PowerShellFar
 			//! as a script: if param name -Value is used, can't set e.g. Alias:\%
 			//! as a block: same problem
 			//! so, use a command
-			using (PowerShell p = Psf.CreatePipeline())
+			using (var ps = Psf.NewPowerShell())
 			{
-				Command command = new Command("Set-Content");
-				command.Parameters.Add("LiteralPath", itemPath);
-				command.Parameters.Add("Value", text);
-				command.Parameters.Add(Prm.Force);
-				command.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
-				p.Commands.AddCommand(command);
-				p.Invoke();
-				if (ShowError(p))
+				ps.AddCommand("Set-Content")
+					.AddParameter("LiteralPath", itemPath)
+					.AddParameter("Value", text)
+					.AddParameter(Prm.Force)
+					.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+					
+				ps.Invoke();
+				
+				if (ShowError(ps))
 					return false;
 			}
 			return true;

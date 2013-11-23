@@ -7,8 +7,6 @@ Copyright (c) 2006-2013 Roman Kuzmin
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -798,7 +796,7 @@ Continue with this current directory?
 		/// Gets a new pipeline or nested one.
 		/// </summary>
 		/// <returns>Pipeline; it has to be disposed.</returns>
-		internal PowerShell CreatePipeline()
+		internal PowerShell NewPowerShell()
 		{
 			if (IsRunning)
 				return Pipeline.CreateNestedPowerShell();
@@ -859,12 +857,10 @@ Continue with this current directory?
 				}
 
 				// invoke command
-				using (PowerShell ps = CreatePipeline())
+				using (var ps = NewPowerShell())
 				{
 					_myCommand = code;
-					ps.Commands
-						.AddScript(code)
-						.AddCommand(A.OutCommand);
+					ps.Commands.AddScript(code).AddCommand(A.OutCommand);
 					ps.Invoke();
 				}
 			}
@@ -881,8 +877,8 @@ Continue with this current directory?
 						Far.Api.UI.ForegroundColor = Settings.ErrorForegroundColor;
 					}
 
-					// write the reson
-					using (PowerShell ps = CreatePipeline())
+					// write the reason
+					using (var ps = NewPowerShell())
 						A.OutReason(ps, reason);
 				}
 				finally

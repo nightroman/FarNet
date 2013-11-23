@@ -7,7 +7,6 @@ Copyright (c) 2006-2013 Roman Kuzmin
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -23,7 +22,6 @@ namespace PowerShellFar
 	static class EditorKit
 	{
 		static int _initTabExpansion;
-		static ScriptBlock _TabExpansion;
 		/// <summary>
 		/// Expands PowerShell code in an edit line.
 		/// </summary>
@@ -80,15 +78,13 @@ namespace PowerShellFar
 			// remaining text
 			text = text.Substring(prefix.Length + line.Length);
 			
-			// compile once
-			if (_TabExpansion == null)
-				_TabExpansion = A.Psf.Engine.InvokeCommand.NewScriptBlock("TabExpansion $args[0] $args[1]");
-
 			// invoke
 			try
 			{
-				// call expansion
-				IList words = _TabExpansion.Invoke(line, lastWord);
+				// call TabExpansion
+				IList words;
+				using (var ps = A.Psf.NewPowerShell())
+					words = ps.AddCommand("TabExpansion").AddArgument(line).AddArgument(lastWord).Invoke();
 
 				// variables from the current editor
 				if (editLine.WindowKind == WindowKind.Editor)
