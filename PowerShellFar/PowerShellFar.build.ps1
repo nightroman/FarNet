@@ -71,7 +71,9 @@ task BuildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\Pow
 	[PowerShellFar.Zoo]::Initialize($Configuration)
 	$ps.Runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace($Configuration)
 	$ps.Runspace.Open()
+	#! $ErrorActionPreference = 1 in Convert-Helps does not help to catch errors
 	$null = $ps.AddScript(@"
+`$ErrorActionPreference = 1
 . Helps.ps1
 Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 "@)
