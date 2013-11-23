@@ -9,7 +9,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using FarNet;
 using Microsoft.PowerShell.Commands;
 
@@ -214,16 +213,17 @@ namespace PowerShellFar
 					return;
 			}
 
-			using (PowerShell ps = A.Psf.CreatePipeline())
+			using (var ps = A.Psf.NewPowerShell())
 			{
-				Command command = new Command("Remove-ItemProperty");
-				command.Parameters.Add("LiteralPath", ItemPath);
-				command.Parameters.Add(Word.Name, names);
+				ps.AddCommand("Remove-ItemProperty")
+					.AddParameter("LiteralPath", ItemPath)
+					.AddParameter(Word.Name, names)
+					.AddParameter(Prm.Force)
+					.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+				
 				if (confirm)
-					command.Parameters.Add(Prm.Confirm);
-				command.Parameters.Add(Prm.Force);
-				command.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
-				ps.Commands.AddCommand(command);
+					ps.AddParameter(Prm.Confirm);
+				
 				ps.Invoke();
 
 				// ?? V2 CTP3 bug: Registry: Remove-ItemProperty -Confirm fails on 'No':
@@ -289,15 +289,15 @@ namespace PowerShellFar
 				return;
 			}
 
-			using (PowerShell ps = A.Psf.CreatePipeline())
+			using (var ps = A.Psf.NewPowerShell())
 			{
-				Command c = new Command("Rename-ItemProperty");
-				c.Parameters.Add(new CommandParameter("LiteralPath", ItemPath));
-				c.Parameters.Add(new CommandParameter(Word.Name, args.File.Name));
-				c.Parameters.Add(new CommandParameter("NewName", newName));
-				c.Parameters.Add(Prm.Force);
-				c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
-				ps.Commands.AddCommand(c);
+				ps.AddCommand("Rename-ItemProperty")
+					.AddParameter("LiteralPath", ItemPath)
+					.AddParameter(Word.Name, args.File.Name)
+					.AddParameter("NewName", newName)
+					.AddParameter(Prm.Force)
+					.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+					
 				ps.Invoke();
 
 				if (ps.Streams.Error.Count > 0)
@@ -319,21 +319,22 @@ namespace PowerShellFar
 			{
 				try
 				{
-					using (PowerShell p = A.Psf.CreatePipeline())
+					using (var ps = A.Psf.NewPowerShell())
 					{
 						//! Don't use Value if it is empty (e.g. to avoid (default) property at new key in Registry).
 						//! Don't use -Force or you silently kill existing item\property (with all children, properties, etc.)
-						Command c = new Command("New-ItemProperty");
-						c.Parameters.Add("LiteralPath", ItemPath);
-						c.Parameters.Add(Word.Name, ui.Name.Text);
-						c.Parameters.Add("PropertyType", ui.Type.Text);
-
+						ps.AddCommand("New-ItemProperty")
+							.AddParameter("LiteralPath", ItemPath)
+							.AddParameter(Word.Name, ui.Name.Text)
+							.AddParameter("PropertyType", ui.Type.Text)
+							.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+						
 						if (ui.Value.Text.Length > 0)
-							c.Parameters.Add("Value", ui.Value.Text);
-						c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
-						p.Commands.AddCommand(c);
-						p.Invoke();
-						if (A.ShowError(p))
+							ps.AddParameter("Value", ui.Value.Text);
+						
+						ps.Invoke();
+						
+						if (A.ShowError(ps))
 							continue;
 					}
 

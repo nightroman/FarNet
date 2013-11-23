@@ -7,7 +7,6 @@ Copyright (c) 2006-2013 Roman Kuzmin
 using System;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using FarNet;
 using Microsoft.PowerShell.Commands;
 
@@ -75,30 +74,19 @@ namespace PowerShellFar
 				return;
 			}
 
-			Command c;
-			if (args.Move)
-			{
-				// Move-Item -Force
-				c = new Command("Move-Item");
-				c.Parameters.Add(Prm.Force);
-			}
-			else
-			{
-				// Copy-Item -Recurse
-				c = new Command("Copy-Item");
-				c.Parameters.Add(Prm.Recurse);
-			}
-			// -Destination
-			c.Parameters.Add("Destination", this.Location);
-			// -Confirm
-			c.Parameters.Add(Prm.Confirm);
-			// -ErrorAction
-			c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
-
 			// call
-			using (PowerShell ps = A.Psf.CreatePipeline())
+			using (var ps = A.Psf.NewPowerShell())
 			{
-				ps.Commands.AddCommand(c);
+				if (args.Move)
+					ps.AddCommand("Move-Item").AddParameter(Prm.Force);
+				else
+					ps.AddCommand("Copy-Item").AddParameter(Prm.Recurse);
+				
+				ps
+					.AddParameter("Destination", this.Location)
+					.AddParameter(Prm.Confirm)
+					.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+
 				ps.Invoke(args.FilesData);
 
 				// errors
@@ -115,38 +103,26 @@ namespace PowerShellFar
 		{
 			if (args == null) return;
 
-			// Remove-Item
-			Command c = new Command("Remove-Item");
-
 			// -Confirm -Recurse
 			var confirmDelete = 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "Delete");
 			var confirmDeleteFolder = 0 != (long)Far.Api.GetSetting(FarSetting.Confirmations, "DeleteFolder");
-			if (confirmDelete && confirmDeleteFolder)
-			{
-				c.Parameters.Add(Prm.Confirm);
-			}
-			else if (confirmDelete)
-			{
-				c.Parameters.Add(Prm.Confirm);
-				c.Parameters.Add(Prm.Recurse);
-			}
-			else if (confirmDeleteFolder)
-			{
-				c.Parameters.Add(Prm.Recurse);
-			}
-
-			// -Force
-			c.Parameters.Add(Prm.Force);
-
-			// -ErrorAction
-			c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
 
 			// call
 			try
 			{
-				using (PowerShell ps = A.Psf.CreatePipeline())
+				using (var ps = A.Psf.NewPowerShell())
 				{
-					ps.Commands.AddCommand(c);
+					ps.AddCommand("Remove-Item")
+						.AddParameter(Prm.Force)
+						.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+
+					if (confirmDelete && confirmDeleteFolder)
+						ps.AddParameter(Prm.Confirm);
+					else if (confirmDelete)
+						ps.AddParameter(Prm.Confirm).AddParameter(Prm.Recurse);
+					else if (confirmDeleteFolder)
+						ps.AddParameter(Prm.Recurse);
+
 					ps.Invoke(args.FilesData);
 
 					if (ps.Streams.Error.Count > 0)
@@ -346,24 +322,23 @@ namespace PowerShellFar
 			{
 				try
 				{
-					using (PowerShell p = A.Psf.CreatePipeline())
+					using (var ps = A.Psf.NewPowerShell())
 					{
 						//! Don't use Value if it is empty (e.g. to avoid (default) property at new key in Registry).
 						//! Don't use -Force or you silently kill existing item\property (with all children, properties, etc.)
-						Command c = new Command("New-Item");
-						// -Path (it is literal)
-						c.Parameters.Add("Path", My.PathEx.Combine(Location, ui.Name.Text));
-						// -ItemType
+						ps.AddCommand("New-Item")
+							.AddParameter("Path", My.PathEx.Combine(Location, ui.Name.Text)) // it is literal
+							.AddParameter(Prm.ErrorAction, ActionPreference.Continue);
+						
 						if (ui.Type.Text.Length > 0)
-							c.Parameters.Add("ItemType", ui.Type.Text);
-						// -Value
+							ps.AddParameter("ItemType", ui.Type.Text);
+						
 						if (ui.Value.Text.Length > 0)
-							c.Parameters.Add("Value", ui.Value.Text);
-						// -ErrorAction
-						c.Parameters.Add(Prm.ErrorAction, ActionPreference.Continue);
-						p.Commands.AddCommand(c);
-						p.Invoke();
-						if (A.ShowError(p))
+							ps.AddParameter("Value", ui.Value.Text);
+						
+						ps.Invoke();
+						
+						if (A.ShowError(ps))
 							continue;
 					}
 

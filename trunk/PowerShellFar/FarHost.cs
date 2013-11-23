@@ -6,7 +6,6 @@ Copyright (c) 2006-2013 Roman Kuzmin
 
 using System;
 using System.Globalization;
-using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Reflection;
 using System.Threading;
@@ -111,11 +110,8 @@ namespace PowerShellFar
 				// then there is nothing to exit, so do not exit. Exit nothing hangs in V3 CTP2.
 				if (_nested != null && A.Psf.IsRunning)
 				{
-					using (PowerShell pipe = A.Psf.CreatePipeline())
-					{
-						pipe.Commands.AddScript("exit");
-						pipe.Invoke();
-					}
+					using (var ps = A.Psf.NewPowerShell())
+						ps.AddScript("exit").Invoke();
 				}
 			}
 			finally
