@@ -5,6 +5,8 @@ http://code.google.com/p/farnet/downloads/list
 
 TabExpansion: Fixed issues on not yet imported module command parameters.
 
+Internal: Removed scriptblock cache. PS V3 uses its own.
+
 = 5.0.42 =
 
 Object panel: Take into account possible problematic objects with some
