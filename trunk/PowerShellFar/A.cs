@@ -520,21 +520,6 @@ Out-String -Width $args[1]
 ";
 			return InvokeCode((full ? codeFull : codeMain), data, int.MaxValue)[0].ToString();
 		}
-		static Dictionary<string, ScriptBlock> _cacheScript;
-		internal static ScriptBlock GetScriptBlock(string code)
-		{
-			if (_cacheScript == null)
-				_cacheScript = new Dictionary<string, ScriptBlock>();
-
-			ScriptBlock result;
-			if (_cacheScript.TryGetValue(code, out result))
-				return result;
-
-			result = ScriptBlock.Create(code);
-			_cacheScript.Add(code, result);
-
-			return result;
-		}
 		internal static void SetBreakpoint(string script, int line, ScriptBlock action)
 		{
 			string code = "Set-PSBreakpoint -Script $args[0] -Line $args[1]";

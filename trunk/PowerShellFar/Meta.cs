@@ -131,8 +131,9 @@ namespace PowerShellFar
 			if (entry.ValueType == DisplayEntryValueType.Property)
 				_Property = entry.Value;
 			else
-				//! performance: with no cache it takes 15% on scan for file system items.
-				_Script = A.GetScriptBlock(entry.Value);
+				//! Perf: with no cache it takes 15% on scan for file system items.
+				//+ 131122 PS V3 uses its own cache, let's do not care of V2.
+				_Script = ScriptBlock.Create(entry.Value);
 
 			if (!string.IsNullOrEmpty(header.Label))
 				_ColumnName = header.Label;
