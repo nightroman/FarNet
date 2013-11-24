@@ -2,7 +2,7 @@
 $FarVersion = "3.0.3525"
 $FarNetVersion = "5.0.37"
 $FarNetAccordVersion = "5.0.36"
-$PowerShellFarVersion = "5.0.43"
+$PowerShellFarVersion = "5.0.44"
 
 $ArchiveNames = @(
 	"FarNet.$FarNetVersion.7z"

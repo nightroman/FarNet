@@ -44,7 +44,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.43
+### PowerShellFar 5.0.44
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -1697,48 +1697,41 @@ event handlers for different file types.
 This is a powerful replacement of the default PowerShell function `TabExpansion`.
 
 The script has to be in the PowerShellFar module home directory. It is loaded
-once on the first call. It installs the global function `TabExpansion` and some
-supportive functions.
+on the first call. It loads the global function `TabExpansion` and a few helper
+functions.
 
 Useful to know: *TabExpansion.ps1* can work in other PowerShell hosts: console
 host, ISE host, and etc. All you need is to call this script once, for example
 from your PowerShell profile script.
 
----
-
-### Type names expansion
-
-Cached type information from the loaded assemblies is stored in the global
-variable `$TabExpansionCache`. It is created on the first expansion of types.
-If you load new assemblies after that then their types are not yet available
-for expansion. In this case use artificial `*` symbols:
-
-`[*...[Tab]` - global search: the type cache is not used.
-
-`[...*[Tab]` - `*` tells to update the global cache before expansion.
-
 NOTE: Remember that PowerShell allows omitting "System." in type names, so that
-it is fine to use `[String]` instead of `[System.String]`. PSF TabExpansion
-takes this into account and provides more expansion candidates than one may
-expect.
+it is fine to use `[String]` instead of `[System.String]`. TabExpansion takes
+this into account and provides more expansion candidates than one may expect.
 
 ---
 
-### Custom #-patterns
+### History patterns
 
-`...#[Tab]` is expanded into custom patterns from the *TabExpansion#.txt* in
-the PSF home directory. Patterns are basically any strings, one per line. `#`
-in patterns is treated as the caret insertion point after expansion. These
-patterns can effectively cover not standard or rare but useful cases.
+`WORD#[Tab]` is expanded into commands from history. Expansion gets commands
+containing WORD.
+
+---
+
+### Custom patterns
+
+`WORD=[Tab]` is expanded into custom patterns from the *TabExpansion.txt* in
+the same directory as *TabExpansion.ps1*. Patterns are any strings, one per
+line. Expansion gets lines containing WORD. `#` in patterns is treated as the
+caret insertion point. These patterns effectively cover not standard or rare
+useful cases.
 
 Examples:
 
-* `#[Tab]` - all patterns
-* `$#[Tab]` - `$LastExitCode`, `$MyInvocation.MyCommand.Definition`, ...
-* `[Al#[Tab]` - `[Alias('#')]`, # is removed and the caret is set there
+* `=[Tab]` - all patterns, use incremental filter in the menu
+* `$=[Tab]` - `$LastExitCode`, `$MyInvocation.MyCommand.Definition`
+* `[al=[Tab]` - `[Alias('#')]`, # is removed and the caret is set there
 
-If *TabExpansion.ps1* is used in other hosts then this feature is used to
-expand command history entries there.
+If *TabExpansion.ps1* is used in other hosts then this feature should work, too.
 
 ---
 
@@ -1793,8 +1786,8 @@ e.g. $far.Editor is selected, now you can continue:
 
 members of a static object:
 
-    [datetime]::Now.h
-        [datetime]::Now.Hour
+    [DateTime]::Now.h
+        [DateTime]::Now.Hour
 
 members of an object defined by a simple expression (WARNING: expression in ()
 is really executed now, think of unwanted effects before expansion!):
@@ -1860,9 +1853,13 @@ type and namespace names after `[` or `New-Object` directly or by substring
     [PowerShellFar.
         (all types in PowerShellFar)
 
-    [*commandty
-        [System.Data.CommandType]
-        [System.Management.Automation.CommandTypes]
+    [*client
+        [System.Net.Mail.SmtpClient]
+        [System.Net.WebClient]
+
+    [*wildcard*
+        [System.Management.Automation.WildcardOptions]
+        [System.Management.Automation.WildcardPattern]
 
 This long list of examples is not full, much more examples can be found in the
 test script *Test-TabExpansion-.ps1*.
