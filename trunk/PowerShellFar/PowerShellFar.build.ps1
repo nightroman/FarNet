@@ -56,7 +56,7 @@ task InstallBin {
 }
 
 task InstallRes {
-	exec { robocopy . $PsfHome TabExpansion.ps1 TabExpansion#.txt /np } (0..2)
+	exec { robocopy . $PsfHome TabExpansion.ps1 TabExpansion.txt /np } (0..2)
 	exec { robocopy Modules\FarDescription $PsfHome\Modules\FarDescription about_FarDescription.help.txt FarDescription.psd1 FarDescription.psm1 FarDescription.Types.ps1xml /np } (0..2)
 	exec { robocopy Modules\FarInventory $PsfHome\Modules\FarInventory about_FarInventory.help.txt FarInventory.psm1 /np } (0..2)
 }

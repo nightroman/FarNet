@@ -1,6 +1,32 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.44 =
+
+TabExpansion
+
+- Improved expansion of types and namespaces. Removed type caching, all works
+fast enough. As a result, types added later are processed without re-caching.
+
+- If a type name contains any wildcard character then a search for all types is
+performed. '*' is not added to end as it used to be, so that it is possible to
+search for types which names "end with". E.g. [*client<Tab> gets types which
+names end with 'client'.
+
+- Special "#". WORD#<Tab> is used for command history, like in the console
+host. Expansion gets commands containing WORD.
+
+- Special "=". WORD=<Tab> is used for lines from TabExpansion.txt from the same
+directory as TabExpansion.ps1. Expansion gets lines containing WORD and sets
+the cursor to the symbol "#", if any. Old TabExpansion#.txt can be removed.
+
+NOTE: Special "#" and "=" should work in other hosts if TabExpansion.ps1 is
+used there. Tested with Microsoft PowerShell console and ISE hosts.
+
+NOTE: This is probably the last PS V2 compatible TabExpansion. It will continue
+to exist and work for V2 but for V3 TabExpansion2 will be used. New development
+will be there. Some new features are coming soon.
+
 = 5.0.43 =
 
 TabExpansion: Fixed issues on not yet imported module command parameters.

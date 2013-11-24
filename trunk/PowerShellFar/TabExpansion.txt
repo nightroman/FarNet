@@ -9,8 +9,6 @@ $PSCmdlet.GetUnresolvedProviderPathFromPSPath(#)
 $PSCmdlet.ParameterSetName
 $PSCmdlet.ShouldProcess(#)
 $PSScriptRoot
-&{process{#}}
-.{process{#}}
 @PSBoundParameters
 [Alias('#')]
 [AllowEmptyCollection()]
@@ -38,7 +36,8 @@ HelpMessage = "#"
 Mandatory = $true
 ParameterSetName = '#'
 Position = #
-Set-StrictMode -Version 2
+process{#}
+Set-StrictMode -Version Latest
 SupportsShouldProcess = $true
 ValueFromPipeline = $true
 ValueFromPipelineByPropertyName = $true

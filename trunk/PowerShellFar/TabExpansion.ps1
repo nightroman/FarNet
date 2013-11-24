@@ -21,18 +21,19 @@ function global:TabExpansion
 	### Expand
 	$sort_ = $true
 	$expanded_ = .{
-		### #<pattern>: custom patterns in FarHost or history
-		if ($lastWord_.EndsWith('#') -and ($lastWord_ -match '^(.*)#$')) {
-			if ($Host.Name -eq 'FarHost') {
-				$patt_ = $matches[1].Replace('[', '`[').Replace(']', '`]') + '*'
-				@(Get-Content -LiteralPath ('{0}\{1}' -f $Psf.AppHome, 'TabExpansion#.txt')) -like $patt_
+		### = and #
+		if ($lastWord_ -match '(^.*)([=#])$') {
+			$sort_ = $false
+			$body = [regex]::Escape($matches[1])
+			if ($matches[2] -eq '=') {
+				$head = "^$body"
+				@(Get-Content -LiteralPath ([IO.Path]::ChangeExtension((Get-Item function:TabExpansion).ScriptBlock.File, '.txt'))) -match $body |
+				Sort-Object {$_ -notmatch $head}
 			}
 			else {
-				$sort_ = $false
-				$cmds_ = @(Get-History -Count 32767) -like "*$($matches[1])*"
-				for($1 = $cmds_.Count - 1; $1 -ge 0; --$1) {
-					$cmds_[$1]
-				}
+				$_ = [Collections.ArrayList](@(Get-History -Count 9999) -match $body)
+				$_.Reverse()
+				$_
 			}
 		}
 
@@ -284,126 +285,81 @@ function global:TabExpansion
 
 <#
 .Synopsis
-	Gets type names for TabExpansion using the global cache $TabExpansionCache.
+	Gets namespace and type names for TabExpansion.
+.Parameter pattern
+		Pattern to search for matches.
+.Parameter prefix
+		Prefix used by TabExpansion.
 #>
 function global:GetTabExpansionType
 (
-	# Pattern to search for matches.
-	$pattern
-	,
-	[string]
-	# Prefix used by TabExpansion.
-	$prefix
+	$pattern,
+	[string]$prefix
 )
 {
-	# global type search, do not use cache
-	if ($pattern.StartsWith('*')) {
-		$pattern = $pattern + '*'
+	$OutType = { if ($prefix) { $prefix + $args[0] + ']'} else { $args[0] } }
+
+	# wildcard type search
+	if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($pattern)) {
 		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
 			try { $types = $assembly.GetExportedTypes() }
 			catch { $Error.RemoveAt(0); continue }
 			foreach($type in $types) {
 				if ($type.FullName -like $pattern) {
-					if ($prefix) {
-						$prefix + $type.FullName + ']'
-					}
-					else {
-						$type.FullName
-					}
+					. $OutType $type.FullName
 				}
 			}
 		}
 		return
 	}
 
-	# update the cache if needed; '*' forces
-	if (!$global:TabExpansionCache -or $pattern.EndsWith('*')) {
-		$global:TabExpansionCache = @{}
-		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-			try { $types = $assembly.GetExportedTypes() }
-			catch { $Error.RemoveAt(0); continue }
-			foreach($type in $types) {
-				$set1 = $global:TabExpansionCache
-				foreach($name in ([string]$type.Namespace).Split('.')) {
-					$set2 = $set1[$name]
-					if ($null -eq $set2) {
-						$set2 = @{}
-						$set1.Add($name, $set2)
-					}
-					$set1 = $set2
-				}
-				$set1[$type.Name] = $null
-			}
-		}
-	}
-
-	# add 'System.Xyz' candidate, PS lets omit 'System.'
+	# regex including System.
+	$escaped = [regex]::Escape($pattern)
+	$re = [regex]"(?i)^($escaped[^.]*)(\.)?"
 	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
-		$pattern = @($pattern, ('System.' + $pattern))
+		$re = $re, [regex]"(?i)^System\.($escaped[^.]*)(\.)?"
 	}
 
-	# expand namespace and type names
-	$Write = { $prefix + $args[0] }
-	foreach($r in $pattern) {
-		$names = $r.Split('.')
-		$last = $names.Length - 1
-
-		$set1 = $global:TabExpansionCache
-		$failed = $false
-		$path = ''
-
-		for($i = 0; $i -lt $last; ++$i) {
-			$name = $names[$i]
-			$set2 = $set1[$name]
-			if (!$set2) {
-				$failed = $true
-				break
-			}
-			$path += $name + '.'
-			$set1 = $set2
+	# namespace or type scan
+	foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+		try { $types = $assembly.GetExportedTypes() }
+		catch { $Error.RemoveAt(0); continue }
+		$ns = New-Object 'System.Collections.Generic.HashSet[string]'
+		foreach($type in $types) {
+			$null = $ns.Add($type.Namespace)
 		}
-
-		if (!$failed) {
-			$name = $names[$last] + '*'
-			#_100728_121000
-			foreach($kv in $set1.GetEnumerator()) {
-				if ($kv.Key -like $name) {
-					# namespace?
-					if ($kv.Value) {
-						. $Write ($path + $kv.Key + '.')
-					}
-					# type, with prefix
-					elseif ($prefix) {
-						. $Write ($path + $kv.Key + ']')
-					}
-					# type, no prefix
-					else {
-						. $Write ($path + $kv.Key)
-					}
+		foreach($r in $re) {
+			foreach($n in $ns) {
+				if ($n -match $r) {
+					$prefix + $matches[1] + '.'
+				}
+			}
+			foreach($type in $types) {
+				if ($type.FullName -match $r -and !$matches[2]) {
+					. $OutType $matches[1]
 				}
 			}
 		}
-
-		$Write = { $prefix + $args[0].Substring(7) }
 	}
 }
 
 <#
 .Synopsis
 	Gets parameter names of a script.
-
 .Description
-	Approach (Get-Command X).Parameters does not work in V2 if scripts have
-	parameters with types defined in not yet loaded assemblies. For functions
-	we do not need this, they are loaded and Get-Command gets parameters fine.
+	Works around Get-Command Parameters which fails in V2 if scripts have
+	parameters with types from not loaded assemblies.
+.Parameter Path
+		Full script path.
+.Parameter Script
+		Script code (if Path is empty).
+.Parameter Pattern
+		Optional parameter wildcard pattern.
 #>
 function global:GetScriptParameter
 (
-	# Full script path.
 	$Path,
-	# Script code (if $Path is not defined).
 	$Script,
-	# Parameter wildcard pattern (to get a subset).
 	$Pattern
 )
 {
@@ -438,15 +394,15 @@ function global:GetScriptParameter
 		}
 
 		switch($t.Type) {
-			'NewLine' { break }
-			'Comment' { break }
-			'Command' {
+			NewLine { break }
+			Comment { break }
+			Command {
 				if ($mode -le 1) {
 					return
 				}
 				break
 			}
-			'Keyword' {
+			Keyword {
 				if ($mode -eq 0) {
 					if ($t.Content -eq 'param') {
 						$mode = 1
@@ -454,7 +410,7 @@ function global:GetScriptParameter
 					}
 				}
 			}
-			'GroupStart' {
+			GroupStart {
 				if ($mode) {
 					++$mode
 					break
@@ -463,13 +419,13 @@ function global:GetScriptParameter
 					return
 				}
 			}
-			'GroupEnd' {
+			GroupEnd {
 				--$mode
 				if ($mode -lt 2) {
 					return
 				}
 			}
-			'Variable' {
+			Variable {
 				if ($mode -eq 2 -and $param) {
 					$param = $false
 					if ((!$Pattern) -or ($t.Content -like $Pattern)) {
@@ -478,7 +434,7 @@ function global:GetScriptParameter
 					break
 				}
 			}
-			'Operator' {
+			Operator {
 				if (($mode -eq 2) -and ($t.Content -eq ',')) {
 					$param = $true
 				}

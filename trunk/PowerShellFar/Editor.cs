@@ -132,7 +132,8 @@ namespace PowerShellFar
 		public static void ExpandText(ILine editLine, string text, string line, string lastWord, IList words)
 		{
 			bool isEmpty = words.Count == 0;
-			int hashMode = lastWord[0] == '#' ? 1 : lastWord[lastWord.Length - 1] == '#' ? 2 : 0;
+			char lastChar = lastWord[lastWord.Length - 1];
+			bool custom = lastChar == '=' || lastChar == '#';
 
 			// select a word
 			string word;
@@ -158,8 +159,17 @@ namespace PowerShellFar
 					menu.Show();
 					return;
 				}
-				menu.Incremental = (hashMode == 1 ? lastWord.Substring(1) : hashMode == 2 ? lastWord.Substring(0, lastWord.Length - 1) : lastWord) + "*";
-				menu.IncrementalOptions = PatternOptions.Prefix;
+
+				if (custom)
+				{
+					menu.Incremental = "*";
+					menu.IncrementalOptions = PatternOptions.Substring;
+				}
+				else
+				{
+					menu.Incremental = lastWord + "*";
+					menu.IncrementalOptions = PatternOptions.Prefix;
+				}
 
 				foreach (var it in words)
 				{
@@ -188,9 +198,9 @@ namespace PowerShellFar
 			// head before the last word
 			line = line.Substring(0, line.Length - lastWord.Length);
 
-			// #-pattern
+			// custom pattern
 			int index, caret = -1;
-			if (hashMode != 0 && (index = word.IndexOf('#')) >= 0)
+			if (custom && (index = word.IndexOf('#')) >= 0)
 			{
 				word = word.Substring(0, index) + word.Substring(index + 1);
 				caret = line.Length + index;
