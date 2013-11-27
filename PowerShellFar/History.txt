@@ -1,6 +1,30 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.45 =
+
+TabExpansion2 for PowerShell v3
+
+New script TabExpansion2.ps1 in the module home directory is automatically used
+for PowerShell v3. The old TabExpansion.ps1 is also there, it is used for
+PowerShell v2.
+
+There are many new useful features. One of the best (personally) is argument
+completion for some popular cmdlets and ability to add custom completers for
+own or even build-in cmdlets and parameters.
+
+TabExpansion2.ps1, unlike the old one, supports custom extensions via profiles.
+New script Bench\TabExpansionProfile.ps1 is a profile used by the author. Use
+it as the base for your own profile(s). See the script comments and code for
+the details.
+
+Custom completers are new and some features may change, like rules for result
+completers. Other completers are more or less standard, they are less likely
+going to change.
+
+Removed the script Test-TabExpansion-.ps1 from the package. It became technical
+and not interesting as a demo.
+
 = 5.0.44 =
 
 TabExpansion

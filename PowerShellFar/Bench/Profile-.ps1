@@ -18,13 +18,13 @@ $ErrorActionPreference = 'Stop'
 ### Aliases
 Set-Alias fff Find-FarFile -Description 'Finds the panel file'
 Set-Alias gff Get-FarFile -Description 'Gets the panel file(s)'
-Set-Alias go Go-To- -Description 'Go to specified file or directory'
-Set-Alias ip Import-Panel- -Description 'Import objects from files to a panel'
+Set-Alias go Go-To-.ps1 -Description 'Go to specified file or directory'
+Set-Alias ip Import-Panel-.ps1 -Description 'Import objects from files to a panel'
 Set-Alias nff New-FarFile -Description 'Creates a new panel file'
 Set-Alias op Out-FarPanel -Description 'Send objects to an object panel'
-Set-Alias pd Panel-DbData- -Description 'Panel SQL SELECT or table data'
-Set-Alias pp Panel-Property- -Description 'Panel provider item properties'
-Set-Alias scff Select-FarFile- -Description 'Select files in the panel'
+Set-Alias pd Panel-DbData-.ps1 -Description 'Panel SQL SELECT or table data'
+Set-Alias pp Panel-Property-.ps1 -Description 'Panel provider item properties'
+Set-Alias scff Select-FarFile-.ps1 -Description 'Select files in the panel'
 Set-Alias srff Search-FarFile -Description 'Search files in the panel'
 
 ### Actions

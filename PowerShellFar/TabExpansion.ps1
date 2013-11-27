@@ -28,7 +28,7 @@ function global:TabExpansion
 			if ($matches[2] -eq '=') {
 				$head = "^$body"
 				@(Get-Content -LiteralPath ([IO.Path]::ChangeExtension((Get-Item function:TabExpansion).ScriptBlock.File, '.txt'))) -match $body |
-				Sort-Object {$_ -notmatch $head}
+				Sort-Object {$_ -notmatch $head}, {$_}
 			}
 			else {
 				$_ = [Collections.ArrayList](@(Get-History -Count 9999) -match $body)

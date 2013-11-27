@@ -4,8 +4,8 @@ Test-Base-.ps1 Test base features.
 Test-CallStack-.ps1 Test prompt dialog and shows how to get call stack info.
 Test-Debugger.ps1 Test debugger and breakpoints.
 Test-Descript-.ps1 Test Far decription tools.
-Test-Dialog+.ps1 Test unit for Test-Dialog-.ps1.
 Test-Dialog-.ps1 Test dialog controls.
+Test-Dialog+.ps1 Test unit for Test-Dialog-.ps1.
 Test-Editor-.ps1 Test editor and related scripts.
 Test-Explorer-.ps1 Test scripted explorers with panels.
 Test-Job-.ps1 Test background jobs.
@@ -20,13 +20,12 @@ Test-Panel-Menu-.ps1 Test panel with demo menu called on [ShiftF3]
 Test-Panel-Tree-.ps1 Test panel mixed items on TreePanel
 Test-ProgressForm-.ps1 Test progress tools.
 Test-RegisterCommand-.ps1 Shows how to register commands dynamically.
+Test-RegisterDrawer-.ps1 Test editor drawer with all console colors.
 Test-RegisterTool-.ps1 Shows how to register tools dynamically.
-Test-Stepper+.ps1 Test unit for the Stepper.
 Test-Stepper-.ps1 Test the stepper engine.
+Test-Stepper+.ps1 Test unit for the Stepper.
 Test-SubsetForm-.ps1 Tests FarNet.Tools.SubsetForm.
-Test-TabExpansion-.ps1 Test TabExpansion.
 Test-Watch-Output-.ps1 Test the script Watch-Output-.ps1.
 Test-Write.ps1 Test Write-* cmdlets output.
 Test-Zoo-.ps1 Creates, exports, imports and sends data to a panel.
 Test-Zoo.cs .NET types for tests.
-Test-RegisterDrawer-.ps1 Test editor drawer with all console colors.

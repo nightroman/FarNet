@@ -29,7 +29,7 @@
 * [Suffixes](#Suffix)
 * [Profile-.ps1](#Profile)
 * [Profile-Editor-.ps1](#ProfileEditor)
-* [TabExpansion.ps1](#TabExpansion)
+* [TabExpansion2.ps1](#TabExpansion)
 * [Remove-EndSpace-.ps1](#RemoveEndSpace)
 * [Job-RemoveItem-.ps1](#JobRemoveItem)
 * [Search-Regex-.ps1](#SearchRegex)
@@ -232,9 +232,6 @@ menu (`[F2]`) and the file associations. By default command prefixes are: `ps:`
 Console output is also transcribed in a temporary file which can be opened in a
 viewer at any time by the command `Show-FarTranscript [-External]`.
 
-It is recommended to add an extra space after prefixes: commands look better
-and TabExpansion can expand the first command token correctly.
-
 Note: scripts opened in the editor can be invoked in the current session by
 `[F5]`. The key is hard-coded but a different key still can be used.
 See [Command and macro examples](#Examples).
@@ -280,7 +277,7 @@ not want them to pollute the history because they are not typed manually.
 You are prompted to enter PowerShell code to be executed. Use `[Tab]` to
 complete the current token by TabExpansion. Use `[ShiftF1]` to view help for
 the current token. See also
-[TabExpansion.ps1](#TabExpansion),
+[TabExpansion2.ps1](#TabExpansion),
 [Command and macro examples](#Examples).
 
 ### Invoke selected code
@@ -318,7 +315,7 @@ See [Power panel menu](#MenuPanels) and [Power panel](#PowerPanel).
 
 It calls TabExpansion for the text in the editor, the command line or any edit
 control in any dialog. Default TabExpansion is replaced with advanced
-[TabExpansion.ps1](#TabExpansion).
+[TabExpansion2.ps1](#TabExpansion).
 
 ### Modules+
 
@@ -707,7 +704,7 @@ Without selection some editor events for such a file are different:
 * `[Tab]`
 
     Invokes PowerShell TabExpansion for the current token.
-    See [TabExpansion.ps1](#TabExpansion)
+    See [TabExpansion2.ps1](#TabExpansion)
 
 * `[CtrlBreak]`
 
@@ -1690,179 +1687,27 @@ event handlers for different file types.
 
 
 *********************************************************************
-# TabExpansion.ps1 {#TabExpansion}
+# TabExpansion2.ps1 {#TabExpansion}
 
 [Contents](#Contents)
 
-This is a powerful replacement of the default PowerShell function `TabExpansion`.
+This is a replacement of the built-in PowerShell function.
+PowerShell v3 `TabExpansion2` is replaced by *TabExpansion2.ps1*.
+PowerShell v2 `TabExpansion` is replaced by *TabExpansion.ps1*.
 
-The script has to be in the PowerShellFar module home directory. It is loaded
-on the first call. It loads the global function `TabExpansion` and a few helper
-functions.
+The script has to be located in the PowerShellFar module home directory. It is
+loaded on the first call. It replaces the built-in expansion function and adds
+helpers.
 
-Useful to know: *TabExpansion.ps1* can work in other PowerShell hosts: console
-host, ISE host, and etc. All you need is to call this script once, for example
-from your PowerShell profile script.
+In PowerShell v3 *TabExpansion2.ps1* reuses a lot of built-in completions and
+supports extensions added by one or more `*TabExpansionProfile*.ps1` scripts.
 
-NOTE: Remember that PowerShell allows omitting "System." in type names, so that
-it is fine to use `[String]` instead of `[System.String]`. TabExpansion takes
-this into account and provides more expansion candidates than one may expect.
+The script *Bench\TabExpansionProfile.ps1* is such a profile. Use it as the
+base for your own profile. See the script code and comments.
 
----
-
-### History patterns
-
-`WORD#[Tab]` is expanded into commands from history. Expansion gets commands
-containing WORD.
-
----
-
-### Custom patterns
-
-`WORD=[Tab]` is expanded into custom patterns from the *TabExpansion.txt* in
-the same directory as *TabExpansion.ps1*. Patterns are any strings, one per
-line. Expansion gets lines containing WORD. `#` in patterns is treated as the
-caret insertion point. These patterns effectively cover not standard or rare
-useful cases.
-
-Examples:
-
-* `=[Tab]` - all patterns, use incremental filter in the menu
-* `$=[Tab]` - `$LastExitCode`, `$MyInvocation.MyCommand.Definition`
-* `[al=[Tab]` - `[Alias('#')]`, # is removed and the caret is set there
-
-If *TabExpansion.ps1* is used in other hosts then this feature should work, too.
-
----
-
-### Examples of what can be expanded
-
-    (typed text)
-        (expanded choices)
-
-full paths (if text contains slashes) (also with * and ?)
-
-    c:\p*\fa?\p
-        C:\Program Files\far\Plugins
-        C:\Program Files\far\PluginSDK
-
-file/folder names in the current folder (e.g. in Bench):
-
-    go
-        Go-Head-.ps1
-        Go-Selection-.ps1
-
-static members of .NET types:
-
-    [regex]::m
-        [regex]::Match(
-        [regex]::Matches(
-
-global variables:
-
-    $er
-        $Error
-        $ErrorActionPreference
-        $ErrorView
-
-    $
-        (all variables)
-
-members of an object defined by a variable:
-
-    $far.e
-        $far.Editor
-        $far.Editors
-        $far.Equals(
-
-    $far.
-        (all members)
-
-e.g. $far.Editor is selected, now you can continue:
-
-    $far.Editor.in
-        $far.Editor.Insert(
-        $far.Editor.InsertLine(
-
-members of a static object:
-
-    [DateTime]::Now.h
-        [DateTime]::Now.Hour
-
-members of an object defined by a simple expression (WARNING: expression in ()
-is really executed now, think of unwanted effects before expansion!):
-
-    (get-date).h
-        (get-date).Hour
-
-    (1 + 1).t
-        (1 + 1).ToString(
-
-environment variables:
-
-    $env:c
-        $env:COMPUTERNAME
-        $env:ComSpec
-
-named parameters of cmdlets (or their aliases):
-
-    dir -f
-        -Filter
-        -Force
-
-    dir -
-        (all parameters)
-
-replacement of an alias with cmdlet or script name:
-
-    dir
-        Get-ChildItem
-
-    pd
-        Panel-DbData-
-
-parameters of scripts, via aliases, too
-
-    pd -t
-        -TableName
-        -Title
-
-    Panel-DbData- -
-        (all parameters)
-
-type and namespace names after `[` or `New-Object` directly or by substring
-(starts with `*`):
-
-    New-Object Sy
-        System.
-        SystemException
-
-    [Sy
-        [System.
-        [SystemException]
-
-    [System.Data.Sq
-        [System.Data.SqlClient.
-        ...
-
-    [P
-        [PowerShellFar.
-        [ParamArrayAttribute]
-        ...
-
-    [PowerShellFar.
-        (all types in PowerShellFar)
-
-    [*client
-        [System.Net.Mail.SmtpClient]
-        [System.Net.WebClient]
-
-    [*wildcard*
-        [System.Management.Automation.WildcardOptions]
-        [System.Management.Automation.WildcardPattern]
-
-This long list of examples is not full, much more examples can be found in the
-test script *Test-TabExpansion-.ps1*.
+NOTE: *TabExpansion2.ps1* and *TabExpansion.ps1* can work in other PowerShell
+hosts like the console and ISE. All you need is to call this script once, for
+example from your PowerShell profile script.
 
 
 *********************************************************************

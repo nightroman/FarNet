@@ -776,7 +776,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ExpandCode(ILine editLine)
 		{
-			EditorKit.ExpandCode(editLine);
+			EditorKit.ExpandCode(editLine, null);
 		}
 		// PS host
 		FarHost FarHost;
