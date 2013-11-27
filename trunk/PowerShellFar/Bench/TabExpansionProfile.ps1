@@ -132,6 +132,13 @@ $TabExpansionOptions.ResultProcessors += {
 	) -like "$($matches[2])*" | .{process{
 		$result.CompletionMatches.Insert($i++, (New-CompletionResult ($matches[1] + $_)))
 	}}
+},{
+	### Complete $*var
+	param($result, $token, $ast, $tokens, $positionOfCursor, $options)
+	if ($token -notmatch '^\$(\*.*)') {return}
+	foreach($_ in Get-Variable "$($matches[1])*") {
+		$result.CompletionMatches.Add((New-CompletionResult "`$$($_.Name)"))
+	}
 }
 
 # If it is not FarHost then return.

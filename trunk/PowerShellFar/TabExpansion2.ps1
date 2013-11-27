@@ -66,23 +66,18 @@ function global:TabExpansion2
 	[CmdletBinding(DefaultParameterSetName = 'ScriptInputSet')]
 	param(
 		[Parameter(ParameterSetName = 'ScriptInputSet', Mandatory = $true, Position = 0)]
-		[string] $inputScript,
-
+		[string]$inputScript,
 		[Parameter(ParameterSetName = 'ScriptInputSet', Mandatory = $true, Position = 1)]
-		[int] $cursorColumn,
-
+		[int]$cursorColumn,
 		[Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 0)]
 		[System.Management.Automation.Language.Ast] $ast,
-
 		[Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 1)]
-		[System.Management.Automation.Language.Token[]] $tokens,
-
+		[System.Management.Automation.Language.Token[]]$tokens,
 		[Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 2)]
-		[System.Management.Automation.Language.IScriptPosition] $positionOfCursor,
-
+		[System.Management.Automation.Language.IScriptPosition]$positionOfCursor,
 		[Parameter(ParameterSetName = 'ScriptInputSet', Position = 2)]
 		[Parameter(ParameterSetName = 'AstInputSet', Position = 3)]
-		[Hashtable] $options = $null
+		[Hashtable]$options
 	)
 
 	# take/init global options
@@ -90,14 +85,19 @@ function global:TabExpansion2
 		$options = $PSCmdlet.GetVariableValue('TabExpansionOptions')
 		if ($options -and $PSCmdlet.GetVariableValue('TabExpansionProfile')) {
 			Remove-Variable -Name TabExpansionProfile -Scope Global
-			foreach($command in Get-Command -Name *TabExpansionProfile*.ps1 -CommandType ExternalScript -All) {
-				& $command.Definition
+			foreach($_ in Get-Command -Name *TabExpansionProfile*.ps1 -CommandType ExternalScript -All) {
+				& $_.Definition
 			}
 		}
 	}
 
-	# parse input
+	# make input
 	if ($psCmdlet.ParameterSetName -eq 'ScriptInputSet') {
+		# allow comments but help
+		if ($inputScript -match '^(\s*#+)(\s*(.).*)' -and $Matches[3] -cne '.') {
+			$inputScript = ''.PadRight($Matches[1].Length) + $Matches[2]
+		}
+		# parse
 		$_ = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput($inputScript, $cursorColumn)
 		$ast = $_.Item1
 		$tokens = $_.Item2
@@ -108,7 +108,7 @@ function global:TabExpansion2
 	$result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $options)
 
 	# processors?
-	$processors = $options['ResultProcessors']
+	$private:processors = $options['ResultProcessors']
 	if (!$processors) {return $result}
 
 	# work around read only
