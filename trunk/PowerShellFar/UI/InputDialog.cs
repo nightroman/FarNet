@@ -39,7 +39,7 @@ namespace PowerShellFar.UI
 					case KeyCode.Tab:
 						// [Tab]
 						e.Ignore = true;
-						EditorKit.ExpandCode(UIEdit.Line);
+						EditorKit.ExpandCode(UIEdit.Line, null);
 						return;
 					case KeyCode.F1:
 						if (e.Key.IsShift())

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Text.RegularExpressions;
 using FarNet;
 using FarNet.Forms;
@@ -22,26 +23,60 @@ namespace PowerShellFar
 	static class EditorKit
 	{
 		static int _initTabExpansion;
+		static string _callTabExpansion;
+		static void InitTabExpansion()
+		{
+			if (_initTabExpansion != 0)
+				return;
+
+			_initTabExpansion = -1;
+
+			string path;
+
+			if (A.PSVersion.Major > 2)
+			{
+				path = A.Psf.AppHome + @"\TabExpansion2.ps1";
+				_callTabExpansion = @"
+param($inputScript, $cursorColumn)
+$r = TabExpansion2 $inputScript $cursorColumn
+@{
+	CompletionMatches = @(foreach($_ in $r.CompletionMatches) { $_.CompletionText })
+	ReplacementIndex = $r.ReplacementIndex
+	ReplacementLength = $r.ReplacementLength
+}
+";
+			}
+			else
+			{
+				path = A.Psf.AppHome + @"\TabExpansion.ps1";
+				_callTabExpansion = @"
+param($inputScript, $cursorColumn)
+$line = $inputScript.Substring(0, $cursorColumn)
+$word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
+@{
+	CompletionMatches = @(TabExpansion $line $word)
+	ReplacementIndex = $line.Length - $word.Length
+	ReplacementLength = $word.Length
+}
+";
+			}
+
+			// TabExpansion.ps1 must exist
+			if (!File.Exists(path))
+				throw new FileNotFoundException("path");
+
+			A.InvokeCode(". $args[0]", path);
+			_initTabExpansion = +1;
+		}
 		/// <summary>
 		/// Expands PowerShell code in an edit line.
 		/// </summary>
 		/// <param name="editLine">Editor line, command line or dialog edit box line; if null then <see cref="IFar.Line"/> is used.</param>
+		/// <param name="runspace">Runspace or null for the main.</param>
 		/// <seealso cref="Actor.ExpandCode"/>
-		public static void ExpandCode(ILine editLine)
+		public static void ExpandCode(ILine editLine, Runspace runspace)
 		{
-			// dot-source TabExpansion.ps1 once
-			if (_initTabExpansion == 0)
-			{
-				_initTabExpansion = -1;
-				string path = A.Psf.AppHome + @"\TabExpansion.ps1";
-
-				// TabExpansion.ps1 must exist
-				if (!File.Exists(path))
-					throw new FileNotFoundException("path");
-
-				A.InvokeCode(". $args[0]", path);
-				_initTabExpansion = +1;
-			}
+			InitTabExpansion();
 
 			// hot line
 			if (editLine == null)
@@ -56,35 +91,44 @@ namespace PowerShellFar
 
 			// original line
 			string text = editLine.Text;
-			string line = text.Substring(0, editLine.Caret);
+			int caret = editLine.Caret;
 
-			// prefix and corrected line
-			string prefix = string.Empty;
+			// process prefix
+			string inputScript = text, prefix = string.Empty;
 			if (editLine.WindowKind == WindowKind.Panels)
-				Entry.SplitCommandWithPrefix(ref line, out prefix);
+				Entry.SplitCommandWithPrefix(ref inputScript, out prefix);
 
-			// last word as PS does, it includes too much
-			Match match = Regex.Match(line, @"(?:^|\s)(\S+)$");
-			if (!match.Success)
+			// empty fails due to mandatory
+			if (inputScript.Length == 0)
 				return;
-			string lastWord = match.Groups[1].Value;
 
-			// try to make a smaller last word as TabExpansion does;
-			// as a result, we avoid the same prefixes at all choices
-			match = Regex.Match(lastWord, @"^.*[!;\(\{\|""']+(.*)$");
-			if (match.Success)
-				lastWord = match.Groups[1].Value;
+			// correct caret
+			int cursorColumn = caret - prefix.Length;
+			if (cursorColumn < 0)
+				return;
 
-			// remaining text
-			text = text.Substring(prefix.Length + line.Length);
-			
 			// invoke
 			try
 			{
 				// call TabExpansion
-				IList words;
-				using (var ps = A.Psf.NewPowerShell())
-					words = ps.AddCommand("TabExpansion").AddArgument(line).AddArgument(lastWord).Invoke();
+				Hashtable result;
+				using (var ps = runspace == null ? A.Psf.NewPowerShell() : PowerShell.Create())
+				{
+					if (runspace != null)
+						ps.Runspace = runspace;
+
+					result = (Hashtable)ps.AddScript(_callTabExpansion, true).AddArgument(inputScript).AddArgument(cursorColumn).Invoke()[0].BaseObject;
+				}
+
+				// result data
+				var words = (IList)result["CompletionMatches"];
+				int replacementIndex = (int)result["ReplacementIndex"];
+				int replacementLength = (int)result["ReplacementLength"];
+				if (replacementIndex < 0 || replacementLength < 0)
+					return;
+
+				// replaced text
+				var lastWord = inputScript.Substring(replacementIndex, replacementLength);
 
 				// variables from the current editor
 				if (editLine.WindowKind == WindowKind.Editor)
@@ -122,18 +166,16 @@ namespace PowerShellFar
 				}
 
 				// expand
-				ExpandText(editLine, text, prefix + line, lastWord, words);
+				ExpandText(editLine, replacementIndex + prefix.Length, replacementLength, words);
 			}
-			catch (RuntimeException ex)
-			{
-				A.Message(ex.Message);
-			}
+			catch (RuntimeException) { }
 		}
-		public static void ExpandText(ILine editLine, string text, string line, string lastWord, IList words)
+		public static void ExpandText(ILine editLine, int replacementIndex, int replacementLength, IList words)
 		{
 			bool isEmpty = words.Count == 0;
-			char lastChar = lastWord[lastWord.Length - 1];
-			bool custom = lastChar == '=' || lastChar == '#';
+			var text = editLine.Text;
+			var last = replacementIndex + replacementLength - 1;
+			bool custom = last > 0 && text[last] == '=';
 
 			// select a word
 			string word;
@@ -160,16 +202,8 @@ namespace PowerShellFar
 					return;
 				}
 
-				if (custom)
-				{
-					menu.Incremental = "*";
-					menu.IncrementalOptions = PatternOptions.Substring;
-				}
-				else
-				{
-					menu.Incremental = lastWord + "*";
-					menu.IncrementalOptions = PatternOptions.Prefix;
-				}
+				menu.Incremental = "*";
+				menu.IncrementalOptions = PatternOptions.Substring;
 
 				foreach (var it in words)
 				{
@@ -193,26 +227,26 @@ namespace PowerShellFar
 				}
 			}
 
-			// expand last word
+			// replace
 
-			// head before the last word
-			line = line.Substring(0, line.Length - lastWord.Length);
+			// head before replaced part
+			string head = text.Substring(0, replacementIndex);
 
 			// custom pattern
-			int index, caret = -1;
+			int index, caret;
 			if (custom && (index = word.IndexOf('#')) >= 0)
 			{
 				word = word.Substring(0, index) + word.Substring(index + 1);
-				caret = line.Length + index;
+				caret = head.Length + index;
 			}
 			// standard
 			else
 			{
-				caret = line.Length + word.Length;
+				caret = head.Length + word.Length;
 			}
 
 			// set new text = old head + expanded + old tail
-			editLine.Text = line + word + text;
+			editLine.Text = head + word + text.Substring(replacementIndex + replacementLength);
 
 			// set caret
 			editLine.Caret = caret;
@@ -368,13 +402,21 @@ namespace PowerShellFar
 							{
 								ILine line = editor.Line;
 								string text = line.Text;
-								int pos = line.Caret - 1;
-								if (pos >= 0 && pos < line.Length && text[pos] != ' ' && text[pos] != '\t')
-								{
-									e.Ignore = true;
-									A.Psf.ExpandCode(line);
-									editor.Redraw();
-								}
+
+								// find non white before the caret
+								int pos = line.Caret;
+								while (--pos >= 0)
+									if (text[pos] > ' ')
+										break;
+
+								// not found, default Tab
+								if (pos < 0)
+									return;
+
+								// TabExpansion
+								e.Ignore = true;
+								A.Psf.ExpandCode(line);
+								editor.Redraw();
 							}
 						}
 						return;
@@ -416,7 +458,7 @@ namespace PowerShellFar
 					code = cl.Text;
 					toCleanCmdLine = true;
 				}
-				
+
 				string prefix;
 				Entry.SplitCommandWithPrefix(ref code, out prefix);
 			}

@@ -186,10 +186,7 @@ namespace PowerShellFar
 							if (IsLastLineCurrent)
 							{
 								e.Ignore = true;
-								if (Runspace == null)
-									EditorKit.ExpandCode(Editor.Line);
-								else
-									ExpandCode(Editor.Line);
+								EditorKit.ExpandCode(Editor.Line, Runspace);
 
 								Editor.Redraw();
 							}
@@ -469,51 +466,6 @@ namespace PowerShellFar
 		void AsyncStop(IAsyncResult ar)
 		{
 			PowerShell.EndStop(ar);
-		}
-		int _initTabExpansion;
-		public void ExpandCode(ILine editLine)
-		{
-			if (_initTabExpansion == 0)
-			{
-				_initTabExpansion = -1;
-				string path = A.Psf.AppHome + @"\TabExpansion.ps1";
-				if (!File.Exists(path))
-					return;
-
-				string code = File.ReadAllText(path);
-
-				using (PowerShell shell = PowerShell.Create())
-				{
-					shell.Runspace = Runspace;
-					shell.AddScript(code);
-					shell.Invoke();
-				}
-
-				_initTabExpansion = +1;
-			}
-
-			// line and last word
-			string text = editLine.Text;
-			string line = text.Substring(0, editLine.Caret);
-			Match match = Regex.Match(line, @"(?:^|\s)(\S+)$");
-			if (!match.Success)
-				return;
-
-			text = text.Substring(line.Length);
-			string lastWord = match.Groups[1].Value;
-
-			// invoke
-			Collection<PSObject> words;
-			using (PowerShell shell = PowerShell.Create())
-			{
-				shell.Runspace = Runspace;
-				shell.AddScript("TabExpansion $args[0] $args[1]");
-				shell.AddParameters(new object[] { line, lastWord });
-				words = shell.Invoke();
-			}
-
-			// complete expansion
-			EditorKit.ExpandText(editLine, text, line, lastWord, words);
 		}
 		bool IsLastLineCurrent
 		{
