@@ -18,6 +18,7 @@
 		CustomArgumentCompleters = @{}
 		NativeArgumentCompleters = @{}
 		ResultProcessors = @()
+		InputProcessors = @()
 
 	Initialization. When TabExpansion2 is called the first time it invokes all
 	*TabExpansionProfile*.ps1 found in the system path. They add their scripts
@@ -34,6 +35,9 @@
 		RelativePaths
 			$true tells to replace paths with relative paths.
 			$false tells to replace paths with absolute paths.
+
+.Link
+	Profile https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/TabExpansionProfile.ps1
 #>
 
 # The global option table
@@ -41,6 +45,7 @@ New-Variable -Force -Name TabExpansionOptions -Scope Global -Description 'Custom
 	CustomArgumentCompleters = @{}
 	NativeArgumentCompleters = @{}
 	ResultProcessors = @()
+	InputProcessors = @()
 }
 
 # Temporary initialization variable
@@ -70,7 +75,7 @@ function global:TabExpansion2
 		[Parameter(ParameterSetName = 'ScriptInputSet', Mandatory = $true, Position = 1)]
 		[int]$cursorColumn,
 		[Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 0)]
-		[System.Management.Automation.Language.Ast] $ast,
+		[System.Management.Automation.Language.Ast]$ast,
 		[Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 1)]
 		[System.Management.Automation.Language.Token[]]$tokens,
 		[Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 2)]
@@ -91,23 +96,28 @@ function global:TabExpansion2
 		}
 	}
 
-	# make input
+	# parse input
 	if ($psCmdlet.ParameterSetName -eq 'ScriptInputSet') {
-		# allow comments but help
+		# allow comments except help-like
 		if ($inputScript -match '^(\s*#+)(\s*(.).*)' -and $Matches[3] -cne '.') {
 			$inputScript = ''.PadRight($Matches[1].Length) + $Matches[2]
 		}
 		# parse
 		$_ = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput($inputScript, $cursorColumn)
-		$ast = $_.Item1
-		$tokens = $_.Item2
-		$positionOfCursor = $_.Item3
+		$ast = $_.Item1; $tokens = $_.Item2; $positionOfCursor = $_.Item3
 	}
 
-	# built-in
-	$result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $options)
+	# input processors?
+	foreach($_ in $options['InputProcessors']) {
+		if ($private:result = & $_ $ast $tokens $positionOfCursor $options) {
+			return $result
+		}
+	}
 
-	# processors?
+	# call built-in
+	$private:result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $options)
+
+	# result processors?
 	$private:processors = $options['ResultProcessors']
 	if (!$processors) {return $result}
 
@@ -122,10 +132,9 @@ function global:TabExpansion2
 	if ($result.CompletionMatches.IsReadOnly) {return $result}
 
 	# result processors
-	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
-	foreach($script in $processors) {
-		& $script $result $token $ast $tokens $positionOfCursor $options
+	foreach($_ in $processors) {
+		& $_ $result $ast $tokens $positionOfCursor $options
 	}
 
-	return $result
+	$result
 }

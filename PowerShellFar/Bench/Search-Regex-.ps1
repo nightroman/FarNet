@@ -5,30 +5,28 @@
 	Author: Roman Kuzmin
 
 .Description
-	See help (e.g. run this and press F1) for more information about input,
-	dialog controls and result panel keys.
+	See help (run this and press [F1]) for more information about input, dialog
+	controls and result panel keys.
 
 .Parameter Regex
-		Regular expression or *substring to search for a literal substring. If
-		it is not defined then a dialog is opened where you can define it and
-		the other intput data.
+		Regular expression pattern or object. If it is not defined then a
+		dialog is opened where you can define this and other parameters.
 .Parameter Options
-		.NET regular expression options. Used if -Regex is defined as a string,
-		i.e. not a ready to use Regex object.
+		.NET regular expression options and extra options. It is used if Regex
+		is defined as a string, i.e. not a ready Regex object. In this case two
+		more options are used: SimpleMatch (1024), WholeWord (2048).
 .Parameter InputObject
-		Strings (file paths) or IO.FileInfo based objects (e.g. from
-		Get-*Item). If it is not defined then objects are taken from the input
-		pipeline. If there are no objects and -Regex is not set then in a
-		dialog you have to define a command which output is used as input
-		objects.
+		Strings (file paths) and IO.FileInfo (from Get-*Item) as ready input or
+		a script block for background input. If it is not defined then objects
+		come from the pipeline. If there are no objects and Regex is not set
+		then an input command is specified in the dialog.
 .Parameter Groups
-		To put to a panel found regex groups instead of full matches. Ignored
-		if -AllText is set.
+		Tells to panel found regex groups instead of full matches.
+		It is ignored if AllText is set.
 .Parameter AllText
-		To search in a file text read as one string.
+		Tells to search in all text, i.e. file read as one string.
 #>
 
-[CmdletBinding()]
 param
 (
 	$Regex,
@@ -37,8 +35,33 @@ param
 	[switch]$Groups,
 	[switch]$AllText
 )
-
+if ($args) {Write-Error -ErrorAction Stop "Invalid arguments: $args"}
 Assert-Far -Panels -Message "Run this script from panels." -Title "Search-Regex"
+
+Add-Type @'
+using System;
+[Flags]
+public enum SearchRegexOptions
+{
+	None = 0,
+	IgnoreCase = 1,
+	Multiline = 2,
+	ExplicitCapture = 4,
+	Compiled = 8,
+	Singleline = 16,
+	IgnorePatternWhitespace = 32,
+	RightToLeft = 64,
+	ECMAScript = 256,
+	CultureInvariant = 512,
+	SimpleMatch = 1024,
+	WholeWord = 2048
+}
+'@
+
+# Pattern to whole word
+function WholeWord($_) {
+	"(?(?=\w)\b)$_(?(?<=\w)\b)"
+}
 
 # Collect input if any
 if (!$InputObject) {
@@ -51,7 +74,6 @@ $parameters = @{}
 
 ### Create and show a dialog
 if (!$Regex) {
-
 	$dialog = $Far.CreateDialog(-1, -1, 77, $(if ($InputObject) { 11 } else { 13 }))
 	$dialog.TypeId = 'DA462DD5-7767-471E-9FC8-64A227BEE2B1'
 	$dialog.HelpTopic = "<$($Psf.AppHome)\\>SearchRegex"
@@ -84,7 +106,7 @@ if (!$Regex) {
 	$xAllText.Selected = [bool]$AllText
 
 	if (!$InputObject) {
-		$xCommand = $dialog.AddCheckBox($x, -1, '&Background input')
+		$xScript = $dialog.AddCheckBox($x, -1, '&Background input')
 	}
 
 	$dialog.AddText(5, -1, 0, '').Separator = 1
@@ -96,67 +118,76 @@ if (!$Regex) {
 	$dialog.Cancel.CenterGroup = $true
 
 	# show dialog
-	for(;;) {
+	for() {
+		if (!$dialog.Show()) {return}
 
-		if (!$dialog.Show()) {
-			return
-		}
-
-		# pattern
-		$pattern = $eRegex.Text
-		if (!$pattern) {
-			$Far.Message("Expression must not be empty.", "Invalid Expression")
-			$dialog.Focused = $eRegex
-			continue
-		}
-		if ($pattern.StartsWith('*')) {
-			$pattern = [regex]::Escape($pattern.Substring(1))
-		}
-
-		# options before regex
+		# options
 		if ($eOptions.Text) {
-			try { $Options = [Text.RegularExpressions.RegexOptions]$eOptions.Text }
+			try { $Options = [SearchRegexOptions]$eOptions.Text }
 			catch {
-				$Far.Message($_, "Invalid Options")
+				$Far.Message($_, 'Invalid options')
 				$dialog.Focused = $eOptions
 				continue
 			}
 		}
 		else {
-			$Options = [Text.RegularExpressions.RegexOptions]::None
+			$Options = [SearchRegexOptions]::None
 		}
 
-		# regex after options
+		# pattern after options
+		$pattern = $eRegex.Text
+		if (!$pattern) {
+			$Far.Message('Pattern must not be empty.', 'Invalid pattern')
+			$dialog.Focused = $eRegex
+			continue
+		}
+		if ([int]$Options -band [SearchRegexOptions]::SimpleMatch) {
+			$pattern = [regex]::Escape($pattern)
+		}
+		if ([int]$Options -band [SearchRegexOptions]::WholeWord) {
+			$pattern = WholeWord $pattern
+		}
+
+		# regex after options and pattern
 		try {
-			$Regex = New-Object Regex $pattern, $Options
+			$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$Options) -band (-bnot (1024 + 2048)))
+			$Regex = New-Object Regex $pattern, $RegexOptions
 		}
 		catch {
-			$Far.Message($_, "Invalid Expression")
+			$Far.Message($_, 'Invalid pattern')
 			$dialog.Focused = $eRegex
 			continue
 		}
 
+		# ready input
 		if ($InputObject) {
 			break
 		}
 
-		if ($xCommand.Selected) {
-			$parameters.Command = $eInput.Text
-			break
-		}
-
 		try {
+			# parse command
+			if (!($script = $eInput.Text)) { $script = 'Get-ChildItem' }
+			$script = [scriptblock]::Create($script)
+
+			# background
+			if ($xScript.Selected) {
+				$parameters.Script = $script
+				break
+			}
+
+			# invoke
 			$Host.UI.RawUI.WindowTitle = 'Evaluating input...'
-			$InputObject = Invoke-Expression $eInput.Text
+			$InputObject = & $script
 			if ($InputObject) {
 				break
 			}
 
+			# no input
 			$dialog.Focused = $eInput
-			$Far.Message("There are no input files.", "Check the input")
+			$Far.Message('There are no input files.', 'Input')
 		}
 		catch {
-			$Far.Message($_, "Invalid Input")
+			$Far.Message($_, 'Invalid Input', 'LeftAligned')
 			$dialog.Focused = $eInput
 			$InputObject = $null
 		}
@@ -166,23 +197,32 @@ if (!$Regex) {
 	$Groups = [bool]$xGroups.Selected
 	$AllText = [bool]$xAllText.Selected
 }
+elseif ($InputObject -is [scriptblock]) {
+	$parameters.Script = [scriptblock]::Create($InputObject) #!
+}
 
 ### Validate input and set job data
-if (!$InputObject -and !$parameters.Command) {
-	throw "There is no input to search in."
-}
-if (!$Regex) {
-	throw "Parameter -Regex is empty."
-}
-if ($Regex -is [string]) {
-	if ($Regex.StartsWith('*')) {
-		$Regex = [regex]::Escape($Regex.Substring(1))
+try {
+	if ($Regex -is [string]) {
+		$Options = if ($Options) {[SearchRegexOptions]$Options} else {0}
+		if ([int]$Options -band [SearchRegexOptions]::SimpleMatch) {
+			$Regex = [regex]::Escape($Regex)
+		}
+		if ([int]$Options -band [SearchRegexOptions]::WholeWord) {
+			$Regex = WholeWord $Regex
+		}
+		$RegexOptions = [Text.RegularExpressions.RegexOptions](([int]$Options) -band (-bnot (1024 + 2048)))
+		$Regex = New-Object Regex $Regex, $RegexOptions
 	}
-	if (!$Options) { $Options = 'IgnoreCase' }
-	$Regex = New-Object Regex $Regex, $Options
+	elseif ($Regex -isnot [regex]) {
+		throw "Parameter Regex must be [string] or [regex]."
+	}
+	if (!$InputObject -and !$parameters.Script) {
+		throw "There is no input to search in."
+	}
 }
-elseif ($Regex -isnot [regex]) {
-	throw "Unknown type of parameter -Regex."
+catch {
+	Write-Error -ErrorAction Stop $_
 }
 
 # Other parameters
@@ -191,7 +231,7 @@ $parameters.Regex = $Regex
 $parameters.Groups = $Groups
 $parameters.AllText = $AllText
 $parameters.Out = $parameters
-if ($parameters.Command) {
+if ($parameters.Script) {
 	$parameters.Path = (Get-Location -PSProvider FileSystem).Path
 }
 
@@ -199,7 +239,7 @@ if ($parameters.Command) {
 $job = Start-FarJob -Output -Parameters:$parameters {
 	param
 	(
-		$Command,
+		$Script,
 		$Items,
 		$Regex,
 		$Path,
@@ -210,16 +250,16 @@ $job = Start-FarJob -Output -Parameters:$parameters {
 	$Out.Total = 0
 	$re = $Regex
 	.{
-		if ($Command) {
+		if ($Script) {
 			Set-Location -LiteralPath $Path
-			Invoke-Expression $Command
+			& $Script
 		}
 		else {
 			$Items
 		}
 	} | .{process{
 		$item = $_
-		trap { continue }
+		trap {continue}
 		.{
 			if ($item -is [string]) {
 				$item = Get-Item -LiteralPath $item -Force
