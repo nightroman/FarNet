@@ -18,7 +18,6 @@
 
 ### Add common argument completers
 $TabExpansionOptions.CustomArgumentCompleters += @{
-
 	### Parameter ComputerName for all cmdlets
 	'ComputerName' = {
 		# add this machine first
@@ -32,7 +31,6 @@ $TabExpansionOptions.CustomArgumentCompleters += @{
 
 ### Add native application completers
 $TabExpansionOptions.NativeArgumentCompleters += @{
-
 	### Far Manager command line switches
 	# [Tab] after a space shows Far switches.
 	# Otherwise the default completion is used.
@@ -47,11 +45,10 @@ $TabExpansionOptions.NativeArgumentCompleters += @{
 	}
 }
 
-### Add extra result processors
+### Add result processors
 $TabExpansionOptions.ResultProcessors += {
-
 	### WORD=[Tab] completions from TabExpansion.txt
-	param($result, $token, $ast, $tokens, $positionOfCursor, $options)
+	param($result, $ast, $tokens, $positionOfCursor, $options)
 
 	# exit if the result is not empty
 	if ($result.CompletionMatches.Count) {return}
@@ -70,7 +67,7 @@ $TabExpansionOptions.ResultProcessors += {
 	}}
 },{
 	### WORD#[Tab] completions from history
-	param($result, $token, $ast, $tokens, $positionOfCursor, $options)
+	param($result, $ast, $tokens, $positionOfCursor, $options)
 
 	# exit if the result is not empty
 	if ($result.CompletionMatches.Count) {return}
@@ -84,8 +81,9 @@ $TabExpansionOptions.ResultProcessors += {
 	$_ | .{process{ $result.CompletionMatches.Add((New-CompletionResult $_)) }}
 },{
 	### Complete an alias with definition and remove the alias itself
-	param($result, $token, $ast, $tokens, $positionOfCursor, $options)
+	param($result, $ast, $tokens, $positionOfCursor, $options)
 
+	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
 	if (!$token -or $token.TokenFlags -ne 'CommandName') {return}
 
 	# get alias
@@ -105,7 +103,7 @@ $TabExpansionOptions.ResultProcessors += {
 	$result.CompletionMatches.Insert(0, (New-CompletionResult $alias.Definition))
 },{
 	### Complete help comments like .Synopsis, .Description.
-	param($result, $token, $ast, $tokens, $positionOfCursor, $options)
+	param($result, $ast, $tokens, $positionOfCursor, $options)
 
 	# match the whole text for candidates, exit on none
 	$line = "$ast".TrimEnd()
@@ -133,12 +131,32 @@ $TabExpansionOptions.ResultProcessors += {
 		$result.CompletionMatches.Insert($i++, (New-CompletionResult ($matches[1] + $_)))
 	}}
 },{
-	### Complete $*var
-	param($result, $token, $ast, $tokens, $positionOfCursor, $options)
-	if ($token -notmatch '^\$(\*.*)') {return}
+	### Complete variable $*var
+	param($result, $ast, $tokens, $positionOfCursor, $options)
+
+	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
+	if (!$token -or $token -notmatch '^\$(\*.*)') {return}
+
 	foreach($_ in Get-Variable "$($matches[1])*") {
 		$result.CompletionMatches.Add((New-CompletionResult "`$$($_.Name)"))
 	}
+}
+
+### Add input processors
+$TabExpansionOptions.InputProcessors += {
+	### Complete [Type/Namespace[Tab]
+	# Expands one piece at a time, e.g. [System. | [System.Data. | [System.Data.CommandType]
+	# If pattern in "[pattern" contains wildcard characters all types are searched for the match.
+	param($ast, $tokens, $positionOfCursor, $options)
+
+	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
+	if (!$token -or ($token.TokenFlags -cne 'TypeName' -and $token.TokenFlags -cne 'CommandName')) {return}
+
+	$line = $positionOfCursor.Line.Substring(0, $positionOfCursor.Offset)
+	if ($line -notmatch '\[([\w.*?]+)$') {return}
+
+	function TabExpansion($line, $lastWord) { GetTabExpansionType $matches[1] '[' | Sort-Object -Unique }
+	[System.Management.Automation.CommandCompletion]::CompleteInput($line, $positionOfCursor.Offset, $null)
 }
 
 # If it is not FarHost then return.
@@ -150,9 +168,68 @@ $TabExpansionOptions.CustomArgumentCompleters += @{
 	'Find-FarFile:Name' = {
 		$Far.Panel.ShownFiles
 	}
-
 	### Out-FarPanel - use the column template
 	'Out-FarPanel:Columns' = {
 		"@{e = ''; n=''; k = ''; w = 0; a = ''}"
+	}
+}
+
+<#
+.Synopsis
+	Gets namespace and type names for TabExpansion.
+.Parameter pattern
+		Pattern to search for matches.
+.Parameter prefix
+		Prefix used by TabExpansion.
+#>
+function global:GetTabExpansionType
+(
+	$pattern,
+	[string]$prefix
+)
+{
+	$OutType = { if ($prefix) { $prefix + $args[0] + ']'} else { $args[0] } }
+
+	# wildcard type search
+	if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($pattern)) {
+		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+			try { $types = $assembly.GetExportedTypes() }
+			catch { $Error.RemoveAt(0); continue }
+			foreach($type in $types) {
+				if ($type.FullName -like $pattern) {
+					. $OutType $type.FullName
+				}
+			}
+		}
+		return
+	}
+
+	# regex including System.
+	$escaped = [regex]::Escape($pattern)
+	$re = [regex]"(?i)^($escaped[^.]*)(\.)?"
+	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
+		$re = $re, [regex]"(?i)^System\.($escaped[^.]*)(\.)?"
+	}
+
+	# namespace or type scan
+	foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+		try { $types = $assembly.GetExportedTypes() }
+		catch { $Error.RemoveAt(0); continue }
+		$ns = New-Object 'System.Collections.Generic.HashSet[string]'
+		foreach($type in $types) {
+			$null = $ns.Add($type.Namespace)
+		}
+		foreach($r in $re) {
+			foreach($n in $ns) {
+				if ($n -match $r) {
+					$prefix + $matches[1] + '.'
+				}
+			}
+			foreach($type in $types) {
+				if ($type.FullName -match $r -and !$matches[2]) {
+					. $OutType $matches[1]
+				}
+			}
+		}
 	}
 }

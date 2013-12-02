@@ -44,7 +44,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.45
+### PowerShellFar 5.0.46
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -1788,30 +1788,34 @@ user menu, directly or by a macro):
 
 [Contents](#Contents)
 
-The script searches for a regex or literal substring entered as `*substring` in
-the specified source files and sends found matches to a panel, so that you can
-open an editor just at those lines with found text selected.
+The script searches for a regex or a simple match in the specified source files
+and sends found matches to a panel, so that you can open an editor just at
+those lines with found text selected.
 
 Search is performed in the background and results are dynamically sent to a
 panel. You may work with found results immediately even with search in
 progress.
 
-If the parameter `-Regex` is not defined you are prompted to enter it together
+If the parameter `Regex` is not defined you are prompted to enter it together
 with other data.
 
 ### Input dialog controls
 
-### Expression
+### Pattern
 
-Regular expression or `*substring` (regular expressions cannot start with `*`).
-See .NET documentation for regular expression details.
+Specifies a regular expression pattern or a simple text to search for. See .NET
+documentation for regular expression details.
 
 ### Options
 
-Comma delimited regular expression options. Available options are: None,
-IgnoreCase, Multiline, ExplicitCapture, Compiled, Singleline,
-IgnorePatternWhitespace, RightToLeft, ECMAScript, CultureInvariant. See .NET
-documentation for option details.
+Comma delimited regular expression and extra options.
+
+Standard .NET regular expression options: `None`, `IgnoreCase`, `Multiline`,
+`ExplicitCapture`, `Compiled`, `Singleline`, `IgnorePatternWhitespace`,
+`RightToLeft`, `ECMAScript`, `CultureInvariant`.
+
+Extra helper options: `SimpleMatch` tells that the pattern is a literal string,
+`WholeWord` tells to search for word bounds at the pattern start and end words.
 
 ### Input
 
@@ -1823,8 +1827,8 @@ the command line, test it, and only then use for a search.
 
 ### Groups
 
-Tells to put to a panel found regex groups instead of full matches. It is
-ignored if "All text" is set.
+Tells to panel found regex groups instead of full matches. It is ignored if
+"All text" is set.
 
 ### All text
 
@@ -1835,11 +1839,10 @@ is not selected in the editor, only cursor is set at the beginning of it.
 
 ### Background input
 
-By default an input command is invoked in the main thread, i.e. there are no
-restrictions to access Far data, PowerShell data and etc. In some cases when
-this access is not needed and a command itself takes long time
-(e.g. `dir C:\ -Recurse -Include *.txt`)
-then it is more effective to run it in the background by setting this flag on.
+By default an input command is invoked in the main runspace, it can use defined
+variables, commands, and etc. If a command actually does not need this and it
+is going to take long time itself, `dir C:\ -Recurse -Include *.txt`, then it
+is more effective to run it in the background by setting this flag.
 
 ---
 
@@ -1853,49 +1856,59 @@ then it is more effective to run it in the background by setting this flag on.
 
 ### Examples of input commands in a dialog
 
-Search in .ps1 files in the current directory (OK for background input):
+Search in .ps1 files in the current directory:
 
     dir . -Include *.ps1
 
-The same but with all sub-directories (OK for background input):
+The same but with all sub-directories:
 
     dir . -Include *.ps1 -Recurse
 
-Search in all panel items (temp panel, too) (NOT for background input)
+The above command are fine for background input, they do not use anything from
+the current PowerShell session. Commands below cannot be used for background
+input. But they can create useful inputs using the API
+
+Search in all panel items (any panel: file, temp, etc.)
 
     Get-FarPath -All
 
-Search in selected panel items (temp panel, too) (NOT for background input)
+Search in selected panel items
 
     Get-FarPath -Selected
 
-Search in files from view\edit history. WARNING: be careful with the first
-command: if history contains missed network paths or you are not connected to
-network then the search may take ages and sometimes it is very difficult to stop
-it, even by killing Far. The second command is safe, it removes network paths
-from the input.
+Search in files from the edit history
 
-    $Far.GetHistory('SavedViewHistory')
-    $Far.GetHistory('SavedViewHistory') | ?{ !$_.StartsWith('\\') }
+    $Far.History.Editor() | %{$_.Name}
+
+NOTE: If the history contains not available network paths then the search may
+take ages and sometimes it is difficult to stop. This command removes network
+paths from the input:
+
+    $Far.History.Editor() | %{if ($_.Name -notmatch '^\\\\') {$_.Name}}
 
 ---
 
-### Command line use
+### Command line mode
 
-The script is started with no input dialog if the parameter `-Regex` is
-defined. In this case, of course, the other data and options should be also
-defined in the command. Source items are piped to the script.
+The script is started with no dialog if the parameter `Regex` is defined. In
+this case options are also defined in the command and input items are either
+piped to the script or specified by the parameter `InputObject`. If it is a
+script block then it is invoked in the background for getting input items.
 
 Example:
 
-    ls *.ps1 | Search-Regex- -Regex 'return' -Options 'IgnoreCase'
+    ls *.ps1 | Search-Regex-.ps1 TODO 'IgnoreCase, WholeWord'
+
+Ditto but items are collected in the background:
+
+    Search-Regex-.ps1 TODO 'IgnoreCase, WholeWord' {ls *.ps1}
 
 ---
 
 ### Notes
 
-The script demonstrates a few important PowerShellFar and FarNet techniques:
-using background jobs and Far panels for the results and further operations.
+The script demonstrates useful techniques of using background jobs for
+processing and panels for displaying results and further operations.
 
 
 *********************************************************************

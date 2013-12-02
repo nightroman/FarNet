@@ -1,6 +1,27 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.46 =
+
+TabExpansion2
+
+- Removed $token parameter from result processors.
+- Upgraded TabExpansionProfile.ps1 result processors accordingly.
+- Added support for InputProcessors in addition to ResultProcessors.
+- Added one custom input processor which completes .NET types and namespaces
+like TabExpansion.ps1 does. Personally, this way is much more useful than the
+built-in completion.
+
+Search-Regex-.ps1
+
+- Extra options:
+* SimpleMatch instead of the old trick *pattern.
+* WholeWord ensures word bounds at pattern start/end words.
+
+- Command line mode: if InputObject is specified and it is a script block then
+it will be invoked in the background for getting input files. Analogue in UI:
+"Input" command + "Background input" checked.
+
 = 5.0.45 =
 
 TabExpansion2 for PowerShell v3
