@@ -297,46 +297,48 @@ function global:GetTabExpansionType
 	[string]$prefix
 )
 {
-	$OutType = { if ($prefix) { $prefix + $args[0] + ']'} else { $args[0] } }
+	$suffix = if ($prefix) {']'} else {''}
 
-	# wildcard type search
+	# wildcard type
 	if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($pattern)) {
 		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-			try { $types = $assembly.GetExportedTypes() }
-			catch { $Error.RemoveAt(0); continue }
-			foreach($type in $types) {
-				if ($type.FullName -like $pattern) {
-					. $OutType $type.FullName
+			try {
+				foreach($_ in $assembly.GetExportedTypes()) {
+					if ($_.FullName -like $pattern) {
+						"$prefix$($_.FullName)$suffix"
+					}
 				}
 			}
+			catch { $Error.RemoveAt(0) }
 		}
 		return
 	}
 
 	# regex including System.
 	$escaped = [regex]::Escape($pattern)
-	$re = [regex]"(?i)^($escaped[^.]*)(\.)?"
+	$re1 = [regex]"(?i)^($escaped[^.]*)"
+	$re2 = [regex]"(?i)^($escaped[^.]*)$"
 	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
-		$re = $re, [regex]"(?i)^System\.($escaped[^.]*)(\.)?"
+		$re1 = $re1, [regex]"(?i)^System\.($escaped[^.]*)"
+		$re2 = $re2, [regex]"(?i)^System\.($escaped[^.]*)$"
 	}
 
-	# namespace or type scan
+	# namespace and type
 	foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
 		try { $types = $assembly.GetExportedTypes() }
 		catch { $Error.RemoveAt(0); continue }
-		$ns = New-Object 'System.Collections.Generic.HashSet[string]'
-		foreach($type in $types) {
-			$null = $ns.Add($type.Namespace)
-		}
-		foreach($r in $re) {
-			foreach($n in $ns) {
-				if ($n -match $r) {
-					$prefix + $matches[1] + '.'
+		$n = [System.Collections.Generic.HashSet[object]]@(foreach($_ in $types) {$_.Namespace})
+		foreach($r in $re1) {
+			foreach($_ in $n) {
+				if ($_ -match $r) {
+					"$prefix$($matches[1])."
 				}
 			}
-			foreach($type in $types) {
-				if ($type.FullName -match $r -and !$matches[2]) {
-					. $OutType $matches[1]
+		}
+		foreach($r in $re2) {
+			foreach($_ in $types) {
+				if ($_.FullName -match $r) {
+					"$prefix$($matches[1])$suffix"
 				}
 			}
 		}
