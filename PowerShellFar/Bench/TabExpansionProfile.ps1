@@ -167,8 +167,21 @@ $TabExpansionOptions.InputProcessors += {
 	$line = $positionOfCursor.Line.Substring(0, $positionOfCursor.Offset)
 	if ($line -notmatch '\[([\w.*?]+)$') {return}
 
+	# fake
 	function TabExpansion($line, $lastWord) { GetTabExpansionType $matches[1] '[' | Sort-Object -Unique }
-	[System.Management.Automation.CommandCompletion]::CompleteInput($line, $positionOfCursor.Offset, $null)
+	$result = [System.Management.Automation.CommandCompletion]::CompleteInput($line, $positionOfCursor.Offset, $null)
+
+	# ISE list
+	if ($Host.Name -eq 'Windows PowerShell ISE Host') {
+		for($i = $result.CompletionMatches.Count; --$i -ge 0) {
+			$text = $result.CompletionMatches[$i].CompletionText
+			if ($text -match '\.([^.]+\.?)$') {
+				$result.CompletionMatches[$i] = New-CompletionResult $text "[$($matches[1])"
+			}
+		}
+	}
+
+	$result
 }
 
 <#
