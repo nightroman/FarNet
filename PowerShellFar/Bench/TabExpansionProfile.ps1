@@ -11,10 +11,22 @@
 
 	The script reflects preferences of the author. Use it as the base for your
 	own profile(s). Multiple profiles *TabExpansionProfile*.ps1 are supported.
-
-	The script consists of two parts. The first is suitable for other hosts,
-	e.g. the console and ISE hosts. The second part is specific for FarHost.
 #>
+
+# FarHost completers
+if ($Host.Name -ceq 'FarHost') {
+	### Add FarNet cmdlet completers
+	$TabExpansionOptions.CustomArgumentCompleters += @{
+		### Find-FarFile - names from the active panel
+		'Find-FarFile:Name' = {
+			$Far.Panel.ShownFiles
+		}
+		### Out-FarPanel - use the column template
+		'Out-FarPanel:Columns' = {
+			"@{e = ''; n=''; k = ''; w = 0; a = ''}"
+		}
+	}
+}
 
 ### Add common argument completers
 $TabExpansionOptions.CustomArgumentCompleters += @{
@@ -157,21 +169,6 @@ $TabExpansionOptions.InputProcessors += {
 
 	function TabExpansion($line, $lastWord) { GetTabExpansionType $matches[1] '[' | Sort-Object -Unique }
 	[System.Management.Automation.CommandCompletion]::CompleteInput($line, $positionOfCursor.Offset, $null)
-}
-
-# If it is not FarHost then return.
-if ($Host.Name -ne 'FarHost') {return}
-
-### Add FarNet cmdlet completers
-$TabExpansionOptions.CustomArgumentCompleters += @{
-	### Find-FarFile - use names from the active panel
-	'Find-FarFile:Name' = {
-		$Far.Panel.ShownFiles
-	}
-	### Out-FarPanel - use the column template
-	'Out-FarPanel:Columns' = {
-		"@{e = ''; n=''; k = ''; w = 0; a = ''}"
-	}
 }
 
 <#
