@@ -1,6 +1,17 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.48 =
+
+TabExpansionProfile.ps1, TabExpansion2.ps1
+
+- Completion in comments moved from TabExpansion2 to TabExpansionProfile. In
+other words, it is up to a user. TabExpansion2 is now just a bare engine for
+invoking completers added by profiles.
+- Completion of help comments (.Synopsis, etc.) is for FarHost only. It's
+complicated in ISE and useless in console.
+- Improved work around read only built-in results.
+
 = 5.0.47 =
 
 TabExpansionProfile.ps1, TabExpansion2.ps1, TabExpansion.ps1

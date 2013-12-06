@@ -36,6 +36,37 @@ if ($Host.Name -ceq 'FarHost') {
 			"@{e=''; n=''; k=''; w=0; a=''}"
 		}
 	}
+	$TabExpansionOptions.ResultProcessors += {
+		### Complete help comments like .Synopsis, .Description.
+		# FarHost. It's complicated in ISE and useless in console.
+		param($result, $ast, $tokens, $positionOfCursor, $options)
+
+		# match the whole line
+		$line = $positionOfCursor.Line.TrimEnd()
+		if ($line -notmatch '^\s*(#*\s*)(\.\w*)$' -or $positionOfCursor.Offset -ne $line.Length) {return}
+
+		# insert help tags
+		$i = 0
+		@(
+			'.Synopsis'
+			'.Description'
+			'.Parameter'
+			'.Inputs'
+			'.Outputs'
+			'.Notes'
+			'.Example'
+			'.Link'
+			'.Component'
+			'.Role'
+			'.Functionality'
+			'.ForwardHelpTargetName'
+			'.ForwardHelpCategory'
+			'.RemoteHelpRunspace'
+			'.ExternalHelp'
+		) -like "$($matches[2])*" | .{process{
+			$result.CompletionMatches.Insert($i++, (New-CompletionResult ($matches[1] + $_) -ResultType ParameterName))
+		}}
+	}
 }
 
 ### Add common argument completers
@@ -122,35 +153,6 @@ $TabExpansionOptions.ResultProcessors += {
 	# insert first
 	$result.CompletionMatches.Insert(0, (New-CompletionResult $aliases[0].Definition -ResultType Command))
 },{
-	### Complete help comments like .Synopsis, .Description.
-	param($result, $ast, $tokens, $positionOfCursor, $options)
-
-	# match the whole text
-	$line = $positionOfCursor.Line.TrimEnd()
-	if ($line -notmatch '^\s*(#*\s*)(\.\w*)$' -or $positionOfCursor.Offset -ne $line.Length) {return}
-
-	# insert help tags
-	$i = 0
-	@(
-		'.Synopsis'
-		'.Description'
-		'.Parameter'
-		'.Inputs'
-		'.Outputs'
-		'.Notes'
-		'.Example'
-		'.Link'
-		'.Component'
-		'.Role'
-		'.Functionality'
-		'.ForwardHelpTargetName'
-		'.ForwardHelpCategory'
-		'.RemoteHelpRunspace'
-		'.ExternalHelp'
-	) -like "$($matches[2])*" | .{process{
-		$result.CompletionMatches.Insert($i++, (New-CompletionResult ($matches[1] + $_) -ResultType ParameterName))
-	}}
-},{
 	### Complete variable $*var
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
@@ -172,18 +174,18 @@ $TabExpansionOptions.InputProcessors += {
 	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
 	if (!$token -or ($token.TokenFlags -ne 'TypeName' -and $token.TokenFlags -ne 'CommandName')) {return}
 
-	$line = $positionOfCursor.Line.Substring(0, $positionOfCursor.Offset)
+	$line = $positionOfCursor.Line.Substring(0, $positionOfCursor.ColumnNumber - 1)
 	if ($line -notmatch '\[([\w.*?]+)$') {return}
 
 	# fake
 	function TabExpansion($line, $lastWord) { GetTabExpansionType $matches[1] '[' }
-	$result = [System.Management.Automation.CommandCompletion]::CompleteInput($line, $positionOfCursor.Offset, $null)
+	$result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $null)
 
 	# ISE
 	if ($Host.Name -eq 'Windows PowerShell ISE Host') {
 		for($i = $result.CompletionMatches.Count; --$i -ge 0) {
 			$text = $result.CompletionMatches[$i].CompletionText
-			if ($text -match '\.([^.]+(\.)?)$') {
+			if ($text -match '\b(\w+([.,\[\]])+)$') {
 				$type = if ($matches[2] -ceq '.') {'Namespace'} else {'Type'}
 				$result.CompletionMatches[$i] = New-CompletionResult $text "[$($matches[1])" $type
 			}
@@ -191,21 +193,24 @@ $TabExpansionOptions.InputProcessors += {
 	}
 
 	$result
+},{
+	### Complete code in line comments
+	param($ast, $tokens, $positionOfCursor, $options)
+
+	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
+	if (!$token -or $token.Kind -ne 'Comment') {return}
+
+	if ($token.Text -match '^(#+)(\s*(.).*)' -and $Matches[3] -cne '.') {
+		$inputScript = ''.PadRight($token.Extent.StartOffset + $Matches[1].Length) + $Matches[2]
+		TabExpansion2 $inputScript $positionOfCursor.Offset $options
+	}
 }
 
 <#
 .Synopsis
-	Gets namespace and type names for TabExpansion.
-.Parameter pattern
-		Pattern to search for matches.
-.Parameter prefix
-		Prefix used by TabExpansion.
+	Gets types and namespaces for completers.
 #>
-function global:GetTabExpansionType
-(
-	$pattern,
-	[string]$prefix
-)
+function global:GetTabExpansionType($pattern, $prefix)
 {
 	$suffix = if ($prefix) {']'} else {''}
 
