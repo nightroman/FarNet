@@ -200,6 +200,7 @@ function global:TabExpansion
 		### Types and namespaces 1
 		elseif ($lastWord_ -match '\[(.+)') {
 			GetTabExpansionType $matches[1] '['
+			$sort_ = $false
 		}
 
 		### Full paths
@@ -252,6 +253,7 @@ function global:TabExpansion
 		### Types and namespaces 2 for New-Object
 		elseif ($line_ -match '\bNew-Object(?:\s+-TypeName)?\s+[*.\w]+$') {
 			GetTabExpansionType $lastWord_
+			$sort_ = $false
 		}
 
 		### Commands, aliases, paths
@@ -301,7 +303,7 @@ function global:GetTabExpansionType
 
 	# wildcard type
 	if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($pattern)) {
-		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+		.{ foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
 			try {
 				foreach($_ in $assembly.GetExportedTypes()) {
 					if ($_.FullName -like $pattern) {
@@ -310,20 +312,22 @@ function global:GetTabExpansionType
 				}
 			}
 			catch { $Error.RemoveAt(0) }
-		}
+		}} | Sort-Object
 		return
 	}
 
-	# regex including System.
+	# patterns
 	$escaped = [regex]::Escape($pattern)
 	$re1 = [regex]"(?i)^($escaped[^.]*)"
-	$re2 = [regex]"(?i)^($escaped[^.]*)$"
+	$re2 = [regex]"(?i)^($escaped[^.``]*)(?:``(\d+))?$"
 	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
 		$re1 = $re1, [regex]"(?i)^System\.($escaped[^.]*)"
-		$re2 = $re2, [regex]"(?i)^System\.($escaped[^.]*)$"
+		$re2 = $re2, [regex]"(?i)^System\.($escaped[^.``]*)(?:``(\d+))?$"
 	}
 
-	# namespace and type
+	# namespaces and types
+	$1 = @{}
+	$2 = [System.Collections.ArrayList]@()
 	foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
 		try { $types = $assembly.GetExportedTypes() }
 		catch { $Error.RemoveAt(0); continue }
@@ -331,18 +335,25 @@ function global:GetTabExpansionType
 		foreach($r in $re1) {
 			foreach($_ in $n) {
 				if ($_ -match $r) {
-					"$prefix$($matches[1])."
+					$1["$prefix$($matches[1])."] = $null
 				}
 			}
 		}
 		foreach($r in $re2) {
 			foreach($_ in $types) {
 				if ($_.FullName -match $r) {
-					"$prefix$($matches[1])$suffix"
+					if ($matches[2]) {
+						$null = $2.Add("$prefix$($matches[1])[$(''.PadRight(([int]$matches[2] - 1), ','))]$suffix")
+					}
+					else {
+						$null = $2.Add("$prefix$($matches[1])$suffix")
+					}
 				}
 			}
 		}
 	}
+	$1.Keys | Sort-Object
+	$2 | Sort-Object
 }
 
 <#

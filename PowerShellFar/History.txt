@@ -1,6 +1,19 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.47 =
+
+TabExpansionProfile.ps1, TabExpansion2.ps1, TabExpansion.ps1
+
+- Special processing of results for ISE lists (V3).
+- Type/namespace order: namespaces first, types second.
+- Generic types are completed with "[]", "[,]", etc. at ends.
+- Faster type and namespace completions, even with new features.
+- Added ResultType to New-CompletionResult and used in completers accordingly.
+NB: If you use ISE, this value is important for icons in ISE completion lists.
+- Magic. TabExpansionProfile.ps1 Out-FarPanel completer gets properties, try:
+Get-Process | Out-FarPanel [Tab]
+
 = 5.0.46 =
 
 TabExpansion2
