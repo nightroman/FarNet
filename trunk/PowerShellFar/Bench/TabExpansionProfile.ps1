@@ -1,29 +1,39 @@
 
 <#
 .Synopsis
-	Custom TabExpansion2 profile.
+	TabExpansion2 profile.
 	Author: Roman Kuzmin
 
 .Description
-	This script should be located in the system path. It is invoked on the
-	first call of the custom TabExpansion2. It adds its completers to the
-	global table $TabExpansionOptions.
+	This script should be in the path. It is invoked on the first call of the
+	custom TabExpansion2. It adds code completers to the global option table.
+	https://farnet.googlecode.com/svn/trunk/PowerShellFar/TabExpansion2.ps1
 
 	The script reflects preferences of the author. Use it as the base for your
 	own profile(s). Multiple profiles *TabExpansionProfile*.ps1 are supported.
 #>
 
-# FarHost completers
+### FarHost completers
 if ($Host.Name -ceq 'FarHost') {
-	### Add FarNet cmdlet completers
 	$TabExpansionOptions.CustomArgumentCompleters += @{
 		### Find-FarFile - names from the active panel
 		'Find-FarFile:Name' = {
 			$Far.Panel.ShownFiles
 		}
-		### Out-FarPanel - use the column template
+		### Out-FarPanel - properties + column info template
 		'Out-FarPanel:Columns' = {
-			"@{e = ''; n=''; k = ''; w = 0; a = ''}"
+			param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
+
+			# properties
+			if (($ast = $commandAst.Parent) -is [System.Management.Automation.Language.PipelineAst] -and $ast.PipelineElements.Count -eq 2) {
+				try {
+					(Invoke-Expression $ast.PipelineElements[0] | Get-Member $wordToComplete* -MemberType Properties).Name | Sort-Object -Unique
+				}
+				catch {}
+			}
+
+			# column info template
+			"@{e=''; n=''; k=''; w=0; a=''}"
 		}
 	}
 }
@@ -34,22 +44,20 @@ $TabExpansionOptions.CustomArgumentCompleters += @{
 	'ComputerName' = {
 		# add this machine first
 		$name = $env:COMPUTERNAME
-		$name
+		New-CompletionResult $name
 
 		# add others from the list
-		foreach($_ in $env:pc_master, $env:pc_slave) { if ($_ -and $_ -ne $name) {$_} }
+		foreach($_ in $env:pc_master, $env:pc_slave) { if ($_ -and $_ -ne $name) { New-CompletionResult $_ } }
 	}
 }
 
 ### Add native application completers
 $TabExpansionOptions.NativeArgumentCompleters += @{
 	### Far Manager command line switches
-	# [Tab] after a space shows Far switches.
-	# Otherwise the default completion is used.
 	'Far' = {
 		param($wordToComplete, $commandAst)
 
-		# default completion of a word
+		# default
 		if ($wordToComplete) {return}
 
 		# suggest all command line switches
@@ -62,66 +70,66 @@ $TabExpansionOptions.ResultProcessors += {
 	### WORD=[Tab] completions from TabExpansion.txt
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
-	# exit if the result is not empty
-	if ($result.CompletionMatches.Count) {return}
+	# default
+	if ($result.CompletionMatches) {return}
 
-	# exit if not WORD=
+	# WORD=?
 	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*)=$') {return}
 	$body = [regex]::Escape($matches[1])
 	$head = "^$body"
 
-	# get completions from TabExpansion.txt in the TabExpansion2 script directory
+	# completions from TabExpansion.txt in the TabExpansion2 script directory
 	$path = [System.IO.Path]::GetDirectoryName((Get-Item Function:TabExpansion2).ScriptBlock.File)
 	$lines = @(Get-Content -LiteralPath $path\TabExpansion.txt)
 	$lines -match $body | Sort-Object {$_ -notmatch $head}, {$_} | .{process{
 		if ($Host.Name -cne 'FarHost') {$_ = $_.Replace('#', '')}
-		$result.CompletionMatches.Add((New-CompletionResult $_))
+		$result.CompletionMatches.Add((New-CompletionResult $_ -ResultType Text))
 	}}
 },{
 	### WORD#[Tab] completions from history
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
-	# exit if the result is not empty
-	if ($result.CompletionMatches.Count) {return}
+	# default
+	if ($result.CompletionMatches) {return}
 
-	# exit if not WORD#
+	# WORD#?
 	if ("$ast".Substring($result.ReplacementIndex, $result.ReplacementLength) -notmatch '(^.*)#$') {return}
 	$body = [regex]::Escape($matches[1])
 
-	$_ = [Collections.ArrayList](@(Get-History -Count 9999) -match $body)
+	$_ = [System.Collections.ArrayList](@(Get-History -Count 9999) -match $body)
 	$_.Reverse()
-	$_ | .{process{ $result.CompletionMatches.Add((New-CompletionResult $_)) }}
+	$_ | .{process{ $result.CompletionMatches.Add((New-CompletionResult $_ -ResultType History)) }}
 },{
-	### Complete an alias with definition and remove the alias itself
+	### Complete an alias as definition and remove itself
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
 	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
 	if (!$token -or $token.TokenFlags -ne 'CommandName') {return}
 
-	# get alias
+	# aliases
 	$name = "$token"
-	$alias = Get-Alias $name -ErrorAction Ignore
-	if (!$alias) {return}
+	$aliases = @(Get-Alias $name -ErrorAction Ignore)
+	if ($aliases.Count -ne 1) {return}
 
-	# remove it from results
-	for($i = 0; $i -lt $result.CompletionMatches.Count; ++$i) {
+	# remove itself
+	for($i = $result.CompletionMatches.Count; --$i -ge 0) {
 		if ($result.CompletionMatches[$i].CompletionText -eq $name) {
 			$result.CompletionMatches.RemoveAt($i)
 			break
 		}
 	}
 
-	# add alias expansion first
-	$result.CompletionMatches.Insert(0, (New-CompletionResult $alias.Definition))
+	# insert first
+	$result.CompletionMatches.Insert(0, (New-CompletionResult $aliases[0].Definition -ResultType Command))
 },{
 	### Complete help comments like .Synopsis, .Description.
 	param($result, $ast, $tokens, $positionOfCursor, $options)
 
-	# match the whole text for candidates, exit on none
-	$line = "$ast".TrimEnd()
-	if ($line -notmatch '^\s*(#*\s*)(\.\w*)$' -or $positionOfCursor.Offset -ne $matches[0].Length) {return}
+	# match the whole text
+	$line = $positionOfCursor.Line.TrimEnd()
+	if ($line -notmatch '^\s*(#*\s*)(\.\w*)$' -or $positionOfCursor.Offset -ne $line.Length) {return}
 
-	# insert matching tags to results
+	# insert help tags
 	$i = 0
 	@(
 		'.Synopsis'
@@ -140,7 +148,7 @@ $TabExpansionOptions.ResultProcessors += {
 		'.RemoteHelpRunspace'
 		'.ExternalHelp'
 	) -like "$($matches[2])*" | .{process{
-		$result.CompletionMatches.Insert($i++, (New-CompletionResult ($matches[1] + $_)))
+		$result.CompletionMatches.Insert($i++, (New-CompletionResult ($matches[1] + $_) -ResultType ParameterName))
 	}}
 },{
 	### Complete variable $*var
@@ -150,7 +158,7 @@ $TabExpansionOptions.ResultProcessors += {
 	if (!$token -or $token -notmatch '^\$(\*.*)') {return}
 
 	foreach($_ in Get-Variable "$($matches[1])*") {
-		$result.CompletionMatches.Add((New-CompletionResult "`$$($_.Name)"))
+		$result.CompletionMatches.Add((New-CompletionResult "`$$($_.Name)" -ResultType Variable))
 	}
 }
 
@@ -162,21 +170,22 @@ $TabExpansionOptions.InputProcessors += {
 	param($ast, $tokens, $positionOfCursor, $options)
 
 	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
-	if (!$token -or ($token.TokenFlags -cne 'TypeName' -and $token.TokenFlags -cne 'CommandName')) {return}
+	if (!$token -or ($token.TokenFlags -ne 'TypeName' -and $token.TokenFlags -ne 'CommandName')) {return}
 
 	$line = $positionOfCursor.Line.Substring(0, $positionOfCursor.Offset)
 	if ($line -notmatch '\[([\w.*?]+)$') {return}
 
 	# fake
-	function TabExpansion($line, $lastWord) { GetTabExpansionType $matches[1] '[' | Sort-Object -Unique }
+	function TabExpansion($line, $lastWord) { GetTabExpansionType $matches[1] '[' }
 	$result = [System.Management.Automation.CommandCompletion]::CompleteInput($line, $positionOfCursor.Offset, $null)
 
-	# ISE list
+	# ISE
 	if ($Host.Name -eq 'Windows PowerShell ISE Host') {
 		for($i = $result.CompletionMatches.Count; --$i -ge 0) {
 			$text = $result.CompletionMatches[$i].CompletionText
-			if ($text -match '\.([^.]+\.?)$') {
-				$result.CompletionMatches[$i] = New-CompletionResult $text "[$($matches[1])"
+			if ($text -match '\.([^.]+(\.)?)$') {
+				$type = if ($matches[2] -ceq '.') {'Namespace'} else {'Type'}
+				$result.CompletionMatches[$i] = New-CompletionResult $text "[$($matches[1])" $type
 			}
 		}
 	}
@@ -202,7 +211,7 @@ function global:GetTabExpansionType
 
 	# wildcard type
 	if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($pattern)) {
-		foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+		.{ foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
 			try {
 				foreach($_ in $assembly.GetExportedTypes()) {
 					if ($_.FullName -like $pattern) {
@@ -211,20 +220,22 @@ function global:GetTabExpansionType
 				}
 			}
 			catch { $Error.RemoveAt(0) }
-		}
+		}} | Sort-Object
 		return
 	}
 
-	# regex including System.
+	# patterns
 	$escaped = [regex]::Escape($pattern)
 	$re1 = [regex]"(?i)^($escaped[^.]*)"
-	$re2 = [regex]"(?i)^($escaped[^.]*)$"
+	$re2 = [regex]"(?i)^($escaped[^.``]*)(?:``(\d+))?$"
 	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
 		$re1 = $re1, [regex]"(?i)^System\.($escaped[^.]*)"
-		$re2 = $re2, [regex]"(?i)^System\.($escaped[^.]*)$"
+		$re2 = $re2, [regex]"(?i)^System\.($escaped[^.``]*)(?:``(\d+))?$"
 	}
 
-	# namespace and type
+	# namespaces and types
+	$1 = @{}
+	$2 = [System.Collections.ArrayList]@()
 	foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
 		try { $types = $assembly.GetExportedTypes() }
 		catch { $Error.RemoveAt(0); continue }
@@ -232,16 +243,23 @@ function global:GetTabExpansionType
 		foreach($r in $re1) {
 			foreach($_ in $n) {
 				if ($_ -match $r) {
-					"$prefix$($matches[1])."
+					$1["$prefix$($matches[1])."] = $null
 				}
 			}
 		}
 		foreach($r in $re2) {
 			foreach($_ in $types) {
 				if ($_.FullName -match $r) {
-					"$prefix$($matches[1])$suffix"
+					if ($matches[2]) {
+						$null = $2.Add("$prefix$($matches[1])[$(''.PadRight(([int]$matches[2] - 1), ','))]$suffix")
+					}
+					else {
+						$null = $2.Add("$prefix$($matches[1])$suffix")
+					}
 				}
 			}
 		}
 	}
+	$1.Keys | Sort-Object
+	$2 | Sort-Object
 }

@@ -55,15 +55,16 @@ $global:TabExpansionProfile = $true
 .Synopsis
 	Creates a new System.Management.Automation.CompletionResult.
 .Description
-	This helper is used to create completion results in custom processors.
+	This helper is used to create completion results in custom completers.
 #>
 function global:New-CompletionResult(
 	[Parameter(Mandatory)][string]$CompletionText,
 	[string]$ListItemText = $CompletionText,
+	[System.Management.Automation.CompletionResultType]$ResultType = 'ParameterValue',
 	[string]$ToolTip = $CompletionText
 )
 {
-	New-Object System.Management.Automation.CompletionResult $CompletionText, $ListItemText, 'Text', $ToolTip
+	New-Object System.Management.Automation.CompletionResult $CompletionText, $ListItemText, $ResultType, $ToolTip
 }
 
 function global:TabExpansion2
@@ -107,14 +108,14 @@ function global:TabExpansion2
 		$ast = $_.Item1; $tokens = $_.Item2; $positionOfCursor = $_.Item3
 	}
 
-	# input processors?
+	# input processors
 	foreach($_ in $options['InputProcessors']) {
 		if ($private:result = & $_ $ast $tokens $positionOfCursor $options) {
 			return $result
 		}
 	}
 
-	# call built-in
+	# built-in
 	$private:result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $options)
 
 	# result processors?
