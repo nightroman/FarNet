@@ -287,77 +287,6 @@ function global:TabExpansion
 
 <#
 .Synopsis
-	Gets namespace and type names for TabExpansion.
-.Parameter pattern
-		Pattern to search for matches.
-.Parameter prefix
-		Prefix used by TabExpansion.
-#>
-function global:GetTabExpansionType
-(
-	$pattern,
-	[string]$prefix
-)
-{
-	$suffix = if ($prefix) {']'} else {''}
-
-	# wildcard type
-	if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($pattern)) {
-		.{ foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-			try {
-				foreach($_ in $assembly.GetExportedTypes()) {
-					if ($_.FullName -like $pattern) {
-						"$prefix$($_.FullName)$suffix"
-					}
-				}
-			}
-			catch { $Error.RemoveAt(0) }
-		}} | Sort-Object
-		return
-	}
-
-	# patterns
-	$escaped = [regex]::Escape($pattern)
-	$re1 = [regex]"(?i)^($escaped[^.]*)"
-	$re2 = [regex]"(?i)^($escaped[^.``]*)(?:``(\d+))?$"
-	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
-		$re1 = $re1, [regex]"(?i)^System\.($escaped[^.]*)"
-		$re2 = $re2, [regex]"(?i)^System\.($escaped[^.``]*)(?:``(\d+))?$"
-	}
-
-	# namespaces and types
-	$1 = @{}
-	$2 = [System.Collections.ArrayList]@()
-	foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
-		try { $types = $assembly.GetExportedTypes() }
-		catch { $Error.RemoveAt(0); continue }
-		$n = [System.Collections.Generic.HashSet[object]]@(foreach($_ in $types) {$_.Namespace})
-		foreach($r in $re1) {
-			foreach($_ in $n) {
-				if ($_ -match $r) {
-					$1["$prefix$($matches[1])."] = $null
-				}
-			}
-		}
-		foreach($r in $re2) {
-			foreach($_ in $types) {
-				if ($_.FullName -match $r) {
-					if ($matches[2]) {
-						$null = $2.Add("$prefix$($matches[1])[$(''.PadRight(([int]$matches[2] - 1), ','))]$suffix")
-					}
-					else {
-						$null = $2.Add("$prefix$($matches[1])$suffix")
-					}
-				}
-			}
-		}
-	}
-	$1.Keys | Sort-Object
-	$2 | Sort-Object
-}
-
-<#
-.Synopsis
 	Gets parameter names of a script.
 .Description
 	Works around Get-Command Parameters which fails in V2 if scripts have
@@ -454,4 +383,67 @@ function global:GetScriptParameter
 			}
 		}
 	}
+}
+
+<#
+.Synopsis
+	Gets types and namespaces for completers.
+#>
+function global:GetTabExpansionType($pattern, $prefix)
+{
+	$suffix = if ($prefix) {']'} else {''}
+
+	# wildcard type
+	if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($pattern)) {
+		.{ foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+			try {
+				foreach($_ in $assembly.GetExportedTypes()) {
+					if ($_.FullName -like $pattern) {
+						"$prefix$($_.FullName)$suffix"
+					}
+				}
+			}
+			catch { $Error.RemoveAt(0) }
+		}} | Sort-Object
+		return
+	}
+
+	# patterns
+	$escaped = [regex]::Escape($pattern)
+	$re1 = [regex]"(?i)^($escaped[^.]*)"
+	$re2 = [regex]"(?i)^($escaped[^.``]*)(?:``(\d+))?$"
+	if (!$pattern.StartsWith('System.', 'OrdinalIgnoreCase')) {
+		$re1 = $re1, [regex]"(?i)^System\.($escaped[^.]*)"
+		$re2 = $re2, [regex]"(?i)^System\.($escaped[^.``]*)(?:``(\d+))?$"
+	}
+
+	# namespaces and types
+	$1 = @{}
+	$2 = [System.Collections.ArrayList]@()
+	foreach($assembly in [System.AppDomain]::CurrentDomain.GetAssemblies()) {
+		try { $types = $assembly.GetExportedTypes() }
+		catch { $Error.RemoveAt(0); continue }
+		$n = [System.Collections.Generic.HashSet[object]]@(foreach($_ in $types) {$_.Namespace})
+		foreach($r in $re1) {
+			foreach($_ in $n) {
+				if ($_ -match $r) {
+					$1["$prefix$($matches[1])."] = $null
+				}
+			}
+		}
+		foreach($r in $re2) {
+			foreach($_ in $types) {
+				if ($_.FullName -match $r) {
+					if ($matches[2]) {
+						$null = $2.Add("$prefix$($matches[1])[$(''.PadRight(([int]$matches[2] - 1), ','))]$suffix")
+					}
+					else {
+						$null = $2.Add("$prefix$($matches[1])$suffix")
+					}
+				}
+			}
+		}
+	}
+	$1.Keys | Sort-Object
+	$2 | Sort-Object
 }

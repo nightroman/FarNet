@@ -1,8 +1,8 @@
 
 <#
 .Synopsis
-	TabExpansion2 replacement and helpers.
-	Author: Roman Kuzmin
+	TabExpansion2 with completers added by profiles.
+	Author: Roman Kuzmin, 2013-12-06
 
 .Description
 	This script replaces the built-in function TabExpansion2, creates the table
@@ -36,8 +36,14 @@
 			$true tells to replace paths with relative paths.
 			$false tells to replace paths with absolute paths.
 
-.Link
-	Profile https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/TabExpansionProfile.ps1
+	Several completers for any host and some for FarHost
+		https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/TabExpansionProfile.ps1
+
+	Completers for Invoke-Build
+		https://raw.github.com/nightroman/Invoke-Build/master/TabExpansionProfile.Invoke-Build.ps1
+
+	Completers for Mdbc
+		https://raw.github.com/nightroman/Mdbc/master/Scripts/TabExpansionProfile.Mdbc.ps1
 #>
 
 # The global option table
@@ -99,11 +105,6 @@ function global:TabExpansion2
 
 	# parse input
 	if ($psCmdlet.ParameterSetName -eq 'ScriptInputSet') {
-		# allow comments except help-like
-		if ($inputScript -match '^(\s*#+)(\s*(.).*)' -and $Matches[3] -cne '.') {
-			$inputScript = ''.PadRight($Matches[1].Length) + $Matches[2]
-		}
-		# parse
 		$_ = [System.Management.Automation.CommandCompletion]::MapStringInputToParsedInput($inputScript, $cursorColumn)
 		$ast = $_.Item1; $tokens = $_.Item2; $positionOfCursor = $_.Item3
 	}
@@ -123,9 +124,9 @@ function global:TabExpansion2
 	if (!$processors) {return $result}
 
 	# work around read only
-	if ($result.CompletionMatches.IsReadOnly -and !$result.CompletionMatches.Count -and $PSCmdlet.ParameterSetName -ceq 'ScriptInputSet') {
-		function TabExpansion($line, $lastWord) {'z'}
-		$result = [System.Management.Automation.CommandCompletion]::CompleteInput($inputScript, $cursorColumn, $null)
+	if ($result.CompletionMatches.IsReadOnly -and !$result.CompletionMatches.Count) {
+		function TabExpansion($line, $lastWord) {'*'}
+		$result = [System.Management.Automation.CommandCompletion]::CompleteInput("$ast", $positionOfCursor.Offset, $null)
 		$result.CompletionMatches.Clear()
 	}
 
