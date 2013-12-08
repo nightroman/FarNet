@@ -2,7 +2,7 @@
 <#
 .Synopsis
 	TabExpansion2 with completers added by profiles.
-	Author: Roman Kuzmin, 2013-12-07
+	Author: Roman Kuzmin, 2013-12-08
 
 .Description
 	This script replaces the built-in function TabExpansion2, creates the table
@@ -118,12 +118,10 @@ function global:TabExpansion2
 	# input processors
 	foreach($_ in $options['InputProcessors']) {
 		if ($private:result = & $_ $ast $tokens $positionOfCursor $options) {
-			if ($result) {
-				if ($result -is [System.Management.Automation.CommandCompletion]) {
-					return $result
-				}
-				Write-Error -ErrorAction 0 "TabExpansion2: Invalid result. Input processor: $_"
+			if ($result -is [System.Management.Automation.CommandCompletion]) {
+				return $result
 			}
+			Write-Error -ErrorAction 0 "TabExpansion2: Invalid result. Input processor: $_"
 		}
 	}
 
