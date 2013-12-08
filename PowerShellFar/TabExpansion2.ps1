@@ -2,29 +2,33 @@
 <#
 .Synopsis
 	TabExpansion2 with completers added by profiles.
-	Author: Roman Kuzmin, 2013-12-06
+	Author: Roman Kuzmin, 2013-12-07
 
 .Description
 	This script replaces the built-in function TabExpansion2, creates the table
-	TabExpansionOptions and does nothing else. Initialization will be performed
-	on the first call of TabExpansion2. At the same time modules or other tools
-	may start to add their scripts to the options, e.g. on loading modules.
+	TabExpansionOptions, and does nothing else. Initialization is performed on
+	the first call of TabExpansion2.
 
-	TabExpansion2.ps1 should be called in the very beginning of a session, e.g.
-	in a profile, so that other tools may assume presence of the option table.
-
-	The initial option table consists of
+	The option table consists of empty entries:
 
 		CustomArgumentCompleters = @{}
 		NativeArgumentCompleters = @{}
 		ResultProcessors = @()
 		InputProcessors = @()
 
-	Initialization. When TabExpansion2 is called the first time it invokes all
-	*TabExpansionProfile*.ps1 found in the system path. They add their scripts
-	to the options.
+	Initialization via profiles. When TabExpansion2 is called the first time it
+	invokes all *TabExpansionProfile*.ps1 found in the system path. They add
+	their completers to the options.
 
-	Extra options:
+	TabExpansion2.ps1 should be called in the very beginning of an interactive
+	session. Modules and other tools on loading may check for existence of the
+	table and add their completers directly. If the table is missing then the
+	session is presumably non interactive and completers are not needed.
+
+	Diagnosed profile and completer issues are written as silent errors.
+	Examine the variable $Error on troubleshooting.
+
+	Extra table options:
 
 		IgnoreHiddenShares
 			$true tells to ignore hidden UNC shares.
@@ -36,7 +40,7 @@
 			$true tells to replace paths with relative paths.
 			$false tells to replace paths with absolute paths.
 
-	Several completers for any host and some for FarHost
+	Example profile with completers for any host and some for FarHost
 		https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/TabExpansionProfile.ps1
 
 	Completers for Invoke-Build
@@ -61,7 +65,7 @@ $global:TabExpansionProfile = $true
 .Synopsis
 	Creates a new System.Management.Automation.CompletionResult.
 .Description
-	This helper is used to create completion results in custom completers.
+	This helper is used to create completion results in completers.
 #>
 function global:New-CompletionResult(
 	[Parameter(Mandatory)][string]$CompletionText,
@@ -95,10 +99,12 @@ function global:TabExpansion2
 	# take/init global options
 	if (!$options) {
 		$options = $PSCmdlet.GetVariableValue('TabExpansionOptions')
-		if ($options -and $PSCmdlet.GetVariableValue('TabExpansionProfile')) {
+		if ($PSCmdlet.GetVariableValue('TabExpansionProfile')) {
 			Remove-Variable -Name TabExpansionProfile -Scope Global
 			foreach($_ in Get-Command -Name *TabExpansionProfile*.ps1 -CommandType ExternalScript -All) {
-				& $_.Definition
+				if (& $_.Definition) {
+					Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Profile: $($_.Definition)"
+				}
 			}
 		}
 	}
@@ -112,7 +118,12 @@ function global:TabExpansion2
 	# input processors
 	foreach($_ in $options['InputProcessors']) {
 		if ($private:result = & $_ $ast $tokens $positionOfCursor $options) {
-			return $result
+			if ($result) {
+				if ($result -is [System.Management.Automation.CommandCompletion]) {
+					return $result
+				}
+				Write-Error -ErrorAction 0 "TabExpansion2: Invalid result. Input processor: $_"
+			}
 		}
 	}
 
@@ -120,22 +131,25 @@ function global:TabExpansion2
 	$private:result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $options)
 
 	# result processors?
-	$private:processors = $options['ResultProcessors']
-	if (!$processors) {return $result}
+	if (!($private:processors = $options['ResultProcessors'])) {
+		return $result
+	}
 
 	# work around read only
-	if ($result.CompletionMatches.IsReadOnly -and !$result.CompletionMatches.Count) {
-		function TabExpansion($line, $lastWord) {'*'}
+	if ($result.CompletionMatches.IsReadOnly) {
+		if ($result.CompletionMatches) {
+			return $result
+		}
+		function TabExpansion {'*'}
 		$result = [System.Management.Automation.CommandCompletion]::CompleteInput("$ast", $positionOfCursor.Offset, $null)
 		$result.CompletionMatches.Clear()
 	}
 
-	# read only?
-	if ($result.CompletionMatches.IsReadOnly) {return $result}
-
 	# result processors
 	foreach($_ in $processors) {
-		& $_ $result $ast $tokens $positionOfCursor $options
+		if (& $_ $result $ast $tokens $positionOfCursor $options) {
+			Write-Error -ErrorAction 0 "TabExpansion2: Unexpected output. Result processor: $_"
+		}
 	}
 
 	$result

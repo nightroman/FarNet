@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Text;
 using System.Text.RegularExpressions;
 using FarNet;
 using FarNet.Forms;
@@ -89,23 +90,44 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				}
 			}
 
-			// original line
-			string text = editLine.Text;
-			int caret = editLine.Caret;
+			int lineOffset = 0;
+			string inputScript;
+			int cursorColumn;
+			var prefix = string.Empty;
+			IEditor editor;
 
-			// process prefix
-			string inputScript = text, prefix = string.Empty;
-			if (editLine.WindowKind == WindowKind.Panels)
-				Entry.SplitCommandWithPrefix(ref inputScript, out prefix);
+			// script or line mode
+			if (A.PSVersion.Major > 2 && editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
+			{
+				// whole text including current line
+				int lineIndex = editor.Caret.Y;
+				var sb = new StringBuilder();
+				for (int i = 0; i < lineIndex; ++i)
+					sb.AppendLine(editor[i].Text);
+				lineOffset = sb.Length;
+				sb.Append(editLine.Text);
+				inputScript = sb.ToString();
+				cursorColumn = lineOffset + editLine.Caret;
+			}
+			else
+			{
+				// original line
+				inputScript = editLine.Text;
+				cursorColumn = editLine.Caret;
 
-			// empty fails due to mandatory
-			if (inputScript.Length == 0)
-				return;
+				// process prefix
+				if (editLine.WindowKind == WindowKind.Panels)
+					Entry.SplitCommandWithPrefix(ref inputScript, out prefix);
 
-			// correct caret
-			int cursorColumn = caret - prefix.Length;
-			if (cursorColumn < 0)
-				return;
+				// empty fails due to mandatory
+				if (inputScript.Length == 0)
+					return;
+
+				// correct caret
+				cursorColumn -= prefix.Length;
+				if (cursorColumn < 0)
+					return;
+			}
 
 			// invoke
 			try
@@ -124,6 +146,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				var words = (IList)result["CompletionMatches"];
 				int replacementIndex = (int)result["ReplacementIndex"];
 				int replacementLength = (int)result["ReplacementLength"];
+				replacementIndex -= lineOffset;
 				if (replacementIndex < 0 || replacementLength < 0)
 					return;
 

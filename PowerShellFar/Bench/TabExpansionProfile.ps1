@@ -18,7 +18,8 @@ if ($Host.Name -ceq 'FarHost') {
 	$TabExpansionOptions.CustomArgumentCompleters += @{
 		### Find-FarFile - names from the active panel
 		'Find-FarFile:Name' = {
-			$Far.Panel.ShownFiles
+			param($commandName, $parameterName, $wordToComplete, $commandAst, $boundParameters)
+			@(foreach($_ in $Far.Panel.ShownFiles) {$_.Name}) -like "$wordToComplete*"
 		}
 		### Out-FarPanel - properties + column info template
 		'Out-FarPanel:Columns' = {
@@ -35,37 +36,6 @@ if ($Host.Name -ceq 'FarHost') {
 			# column info template
 			"@{e=''; n=''; k=''; w=0; a=''}"
 		}
-	}
-	$TabExpansionOptions.ResultProcessors += {
-		### Complete help comments like .Synopsis, .Description.
-		# FarHost. It's complicated in ISE and useless in console.
-		param($result, $ast, $tokens, $positionOfCursor, $options)
-
-		# match the whole line
-		$line = $positionOfCursor.Line.TrimEnd()
-		if ($line -notmatch '^\s*(#*\s*)(\.\w*)$' -or $positionOfCursor.Offset -ne $line.Length) {return}
-
-		# insert help tags
-		$i = 0
-		@(
-			'.Synopsis'
-			'.Description'
-			'.Parameter'
-			'.Inputs'
-			'.Outputs'
-			'.Notes'
-			'.Example'
-			'.Link'
-			'.Component'
-			'.Role'
-			'.Functionality'
-			'.ForwardHelpTargetName'
-			'.ForwardHelpCategory'
-			'.RemoteHelpRunspace'
-			'.ExternalHelp'
-		) -like "$($matches[2])*" | .{process{
-			$result.CompletionMatches.Insert($i++, (New-CompletionResult ($matches[1] + $_) -ResultType ParameterName))
-		}}
 	}
 }
 
@@ -178,7 +148,7 @@ $TabExpansionOptions.InputProcessors += {
 	if ($line -notmatch '\[([\w.*?]+)$') {return}
 
 	# fake
-	function TabExpansion($line, $lastWord) { GetTabExpansionType $matches[1] '[' }
+	function TabExpansion { GetTabExpansionType $matches[1] '[' }
 	$result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $null)
 
 	# ISE
@@ -194,14 +164,46 @@ $TabExpansionOptions.InputProcessors += {
 
 	$result
 },{
-	### Complete code in line comments
+	### Complete in comments: help tags or one line code
 	param($ast, $tokens, $positionOfCursor, $options)
 
-	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -eq $positionOfCursor.Offset) {$_; break}}
+	$token = foreach($_ in $tokens) {if ($_.Extent.EndOffset -ge $positionOfCursor.Offset) {$_; break}}
 	if (!$token -or $token.Kind -ne 'Comment') {return}
 
-	if ($token.Text -match '^(#+)(\s*(.).*)' -and $Matches[3] -cne '.') {
-		$inputScript = ''.PadRight($token.Extent.StartOffset + $Matches[1].Length) + $Matches[2]
+	$line = $positionOfCursor.Line
+	$caret = $positionOfCursor.ColumnNumber - 1
+	$offset = $positionOfCursor.Offset - $caret
+
+	# help tags
+	if ($line -match '^(\s*#*\s*)(\.\w*)' -and $caret -eq $Matches[0].Length) {
+		$results = @(
+			'.Synopsis'
+			'.Description'
+			'.Parameter'
+			'.Inputs'
+			'.Outputs'
+			'.Notes'
+			'.Example'
+			'.Link'
+			'.Component'
+			'.Role'
+			'.Functionality'
+			'.ForwardHelpTargetName'
+			'.ForwardHelpCategory'
+			'.RemoteHelpRunspace'
+			'.ExternalHelp'
+		) -like "$($Matches[2])*"
+		function TabExpansion {$results}
+		return [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $null)
+	}
+
+	# one line code
+	if ($token.Extent.StartOffset -gt $offset) {
+		$line = $line.Substring($token.Extent.StartOffset - $offset)
+		$offset = $token.Extent.StartOffset
+	}
+	if ($line -match '^(\s*(?:<#)?#*\s*)(.+)') {
+		$inputScript = ''.PadRight($offset + $Matches[1].Length) + $Matches[2]
 		TabExpansion2 $inputScript $positionOfCursor.Offset $options
 	}
 }

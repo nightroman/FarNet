@@ -1,6 +1,23 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.49 =
+
+Code completion in script editors analyses not just the current line but the
+whole code, e.g. completion in multiline statements including continued lines
+(` at EOL) should work fine.
+
+TabExpansion2.ps1
+
+- Improved diagnostics of user profile and completer issues like unexpected
+output and invalid result type. Errors are silent, examine $Error on problems.
+
+TabExpansionProfile.ps1
+
+- Completion of Find-FarFile:Name takes into account pre-typed parts.
+- Completion of help comment tags (.Synopsis, etc.) works in ISE, too.
+- Improved completion of "one line code" in comments, also works in ISE.
+
 = 5.0.48 =
 
 TabExpansionProfile.ps1, TabExpansion2.ps1
