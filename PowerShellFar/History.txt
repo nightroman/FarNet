@@ -1,6 +1,13 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.50 =
+
+Code completion in script editors
+
+- Covered statements that continue after the current line.
+- Corrected completion of variables from the current script.
+
 = 5.0.49 =
 
 Code completion in script editors analyses not just the current line but the

@@ -11,31 +11,30 @@
 
 ###############################################################################
 ### TEST: PARALLEL JOBS: TWO BACKGROUNG THREADS
-# *) shows that parallel jobs may work faster
-# *) how to start Far jobs, wait and get results
-# *) how to start PowerShell jobs, wait and get results
-#
-# NOTES: you will see that native PowerShell jobs (Start-Job) look slower.
-# Apparently, PowerShell jobs take more time to start, so that they are not
-# suitable for small fast tasks. But for slow tasks they are still good and
-# they have extra features that Far jobs miss. If value of $count is taken
-# large enough then time 3 will be less than time 1.
+<#
+*) how to start Far jobs with output and wait/get results
+*) how to start PowerShell jobs and wait/get results
+
+There are 3 tests: sequential, Far jobs, PowerShell jobs. In PS v2 the fastest
+is "Far jobs", the slowest is "PowerShell jobs". In PS v3 "Far jobs" is still
+faster than "PowerShell jobs" but the sequential test actually wins.
+#>
 
 # loop count
 $count = 50000
 
 # task 1
 $script1 = {
-	$res = 0
-	for($e = 0; $e -lt $args[0]; ++$e) { $res += [math]::sin($e) }
-	$res
+	$r = 0
+	for($e = 0; $e -lt $args[0]; ++$e) { $r += [math]::sin($e) }
+	$r
 }
 
 # task 2
 $script2 = {
-	$res = 0
-	for($e = 0; $e -lt $args[0]; ++$e) { $res += [math]::cos($e) }
-	$res
+	$r = 0
+	for($e = 0; $e -lt $args[0]; ++$e) { $r += [math]::cos($e) }
+	$r
 }
 
 # invoke task scripts one by one
@@ -92,14 +91,14 @@ time3 : $('{0,4} ms = {1,5:p0}' -f $stopwatch3.ElapsedMilliseconds, ($stopwatch3
 $job = Start-FarJob { 1..4 } -Output
 
 # process output in this thread
-$res = $job.Output | %{ 2 * $_ }
+$r = $job.Output | %{ 2 * $_ }
 $job.Dispose()
 
 # result contains 4 numbers: 2,?,?,8
 Assert-Far @(
-	$res.Count -eq 4
-	$res[0] -eq 2
-	$res[3] -eq 8
+	$r.Count -eq 4
+	$r[0] -eq 2
+	$r[3] -eq 8
 )
 
 ###############################################################################
