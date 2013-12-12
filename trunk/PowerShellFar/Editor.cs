@@ -99,15 +99,25 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			// script or line mode
 			if (A.PSVersion.Major > 2 && editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
 			{
-				// whole text including current line
 				int lineIndex = editor.Caret.Y;
+				int lastIndex = editor.Count - 1;
+
+				// previous text
 				var sb = new StringBuilder();
 				for (int i = 0; i < lineIndex; ++i)
 					sb.AppendLine(editor[i].Text);
+
+				// current line
 				lineOffset = sb.Length;
-				sb.Append(editLine.Text);
-				inputScript = sb.ToString();
 				cursorColumn = lineOffset + editLine.Caret;
+
+				// remaining text
+				for (int i = lineIndex; i < lastIndex; ++i)
+					sb.AppendLine(editor[i].Text);
+				sb.Append(editor[lastIndex]);
+
+				// whole text
+				inputScript = sb.ToString();
 			}
 			else
 			{
@@ -119,15 +129,15 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				if (editLine.WindowKind == WindowKind.Panels)
 					Entry.SplitCommandWithPrefix(ref inputScript, out prefix);
 
-				// empty fails due to mandatory
-				if (inputScript.Length == 0)
-					return;
-
 				// correct caret
 				cursorColumn -= prefix.Length;
 				if (cursorColumn < 0)
 					return;
 			}
+
+			// skip empty (also avoid errors)
+			if (inputScript.Length == 0)
+				return;
 
 			// invoke
 			try
@@ -142,7 +152,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 					result = (Hashtable)ps.AddScript(_callTabExpansion, true).AddArgument(inputScript).AddArgument(cursorColumn).Invoke()[0].BaseObject;
 				}
 
-				// result data
+				// results
 				var words = (IList)result["CompletionMatches"];
 				int replacementIndex = (int)result["ReplacementIndex"];
 				int replacementLength = (int)result["ReplacementLength"];
@@ -150,12 +160,12 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				if (replacementIndex < 0 || replacementLength < 0)
 					return;
 
-				// replaced text
-				var lastWord = inputScript.Substring(replacementIndex, replacementLength);
-
 				// variables from the current editor
 				if (editLine.WindowKind == WindowKind.Editor)
 				{
+					// replaced text
+					var lastWord = inputScript.Substring(lineOffset + replacementIndex, replacementLength);
+
 					//! as TabExpansion.ps1 but ends with \$(\w*)$
 					var matchVar = Regex.Match(lastWord, @"^(.*[!;\(\{\|""'']*)\$(global:|script:|private:)?(\w*)$", RegexOptions.IgnoreCase);
 					if (matchVar.Success)

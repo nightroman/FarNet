@@ -21,7 +21,8 @@ $Builds = @(
 task Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
 
-	Remove-Item -ErrorAction 0 `
+	Remove-Item -Force -Recurse -ErrorAction 0 `
+	obj,
 	FarNetAccord.sdf,
 	$FarHome\FarNet\Modules\Explore\About-Explore.htm
 }
