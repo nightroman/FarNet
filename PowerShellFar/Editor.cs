@@ -94,9 +94,12 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			string inputScript;
 			int cursorColumn;
 			var prefix = string.Empty;
-			IEditor editor;
 
-			// script or line mode
+			IEditor editor = null;
+			EditorConsole console;
+			EditorConsole.Area area;
+
+			// script?
 			if (A.PSVersion.Major > 2 && editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
 			{
 				int lineIndex = editor.Caret.Y;
@@ -119,6 +122,30 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				// whole text
 				inputScript = sb.ToString();
 			}
+			// area?
+			else if (editor != null && (console = editor.Host as EditorConsole) != null && (area = console.GetCommandArea()) != null)
+			{
+				int lineIndex = area.Caret.Y;
+				int lastIndex = area.LastLineIndex;
+
+				// previous text
+				var sb = new StringBuilder();
+				for (int i = area.FirstLineIndex; i < lineIndex; ++i)
+					sb.AppendLine(editor[i].Text);
+
+				// current line
+				lineOffset = sb.Length;
+				cursorColumn = lineOffset + area.Caret.X;
+
+				// remaining text
+				for (int i = lineIndex; i < lastIndex; ++i)
+					sb.AppendLine(editor[i].Text);
+				sb.Append(editor[lastIndex]);
+
+				// whole text
+				inputScript = sb.ToString();
+			}
+			// line
 			else
 			{
 				// original line
@@ -431,24 +458,11 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 						if (e.Key.Is())
 						{
 							// [Tab]
-							if (!editor.SelectionExists)
+							if (!editor.SelectionExists && NeedsTabExpansion(editor))
 							{
-								ILine line = editor.Line;
-								string text = line.Text;
-
-								// find non white before the caret
-								int pos = line.Caret;
-								while (--pos >= 0)
-									if (text[pos] > ' ')
-										break;
-
-								// not found, default Tab
-								if (pos < 0)
-									return;
-
 								// TabExpansion
 								e.Ignore = true;
-								A.Psf.ExpandCode(line);
+								A.Psf.ExpandCode(editor.Line);
 								editor.Redraw();
 							}
 						}
@@ -562,41 +576,18 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				A.Psf.Engine.SessionState.Path.PopLocation(null);
 			}
 		}
-	}
-
-	/// <summary>
-	/// PowerShell breakpoint drawer.
-	/// </summary>
-	[ModuleDrawer(Name = "PowerShell breakpoints", Mask = "*.ps1;*.psm1", Priority = 2)]
-	[System.Runtime.InteropServices.Guid("67db13c5-6b7b-4936-b984-e59db08e23c7")]
-	public class BreakpointDrawer : ModuleDrawer
-	{
-		///
-		public override void Invoke(object sender, ModuleDrawerEventArgs e)
+		// true if there is a solid char anywhere before the caret
+		internal static bool NeedsTabExpansion(IEditor editor)
 		{
-			if (e == null) return;
+			ILine line = editor.Line;
+			string text = line.Text;
 
-			var editor = (IEditor)sender;
-			var script = editor.FileName;
-			var breakpoints = A.Psf.Breakpoints.Where(x => script.Equals(x.Script, StringComparison.OrdinalIgnoreCase));
+			int pos = line.Caret;
+			while (--pos >= 0)
+				if (text[pos] > ' ')
+					return true;
 
-			foreach (var line in e.Lines)
-			{
-				foreach (var bp in breakpoints)
-				{
-					if (bp.Line != line.Index + 1)
-						continue;
-
-					e.Colors.Add(new EditorColor(
-						line.Index,
-						0,
-						e.EndChar,
-						ConsoleColor.White,
-						ConsoleColor.DarkRed));
-
-					break;
-				}
-			}
+			return false;
 		}
 	}
 }

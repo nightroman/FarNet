@@ -1,6 +1,20 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.51 =
+
+Multiline commands in PowerShell editor consoles
+
+- Like in ISE, [ShiftEnter] just adds a new line without invoking the command.
+- [Enter] at any position of the last command area invokes the whole area code.
+- As a result, it is possible to paste multiline code and invoke it by [Enter].
+- Introduced the marker line <> for empty output. It is needed now in order to
+separate commands because they are not one-liners anymore.
+- Multiline commands are not added to the history.
+- Updated TabExpansion for multiline commands.
+- Updated editor console help.
+- Updated powershell.hrc in order to recognize the new marker <>.
+
 = 5.0.50 =
 
 Code completion in script editors

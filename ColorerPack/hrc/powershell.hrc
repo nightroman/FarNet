@@ -7,15 +7,8 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-11-14
-Designed for PowerShell 2.0+, Colorer 1.0.3+, and optional visual.hrd
-
-Add to proto.hrc:
-
-<prototype name="powershell" group="scripts" description="PowerShell">
-<filename>/\.(ps[dDmM]?1|psfconsole)$/i</filename>
-<location link="..."/>
-</prototype>
+powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-12-12
+Designed for PowerShell 3.0, Colorer 1.2.1, and optional visual.hrd
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>
 
@@ -65,6 +58,7 @@ SQL syntax in here-strings after <#sql#>
 <region name="Escape"        parent="def:StringContent" description="Escaping and escaped symbols."/>
 <region name="EscapeSpecial" parent="def:KeywordStrong" description="`0, `a, `b, `f, `n, `r, `t, `v."/>
 
+<region name="LogEmpty"      parent="def:Tag"           description="Log empty mark."/>
 <region name="LogStart"      parent="def:OpenTag"       description="Log start."/>
 <region name="LogText"       parent="def:Text"          description="Log text."/>
 <region name="LogEnd"        parent="def:CloseTag"      description="Log end."/>
@@ -1036,6 +1030,8 @@ SQL syntax in here-strings after <#sql#>
 </scheme>
 
 <scheme name="powershell">
+	<regexp match="/(?{LogEmpty}^&lt;&gt;$)/"/>
+
 	<block scheme="log" region="LogText"
 	start="/(?{start}(?{LogStart}^&lt;=$))/" end="/(?{end}(?{LogEnd}^=&gt;$))/"/>
 

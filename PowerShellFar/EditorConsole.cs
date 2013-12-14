@@ -21,11 +21,16 @@ namespace PowerShellFar
 	/// </summary>
 	class EditorConsole
 	{
+		const string OutputMark1 = "<=";
+		const string OutputMark2 = "=>";
+		const string OutputMark3 = "<>";
+
 		public IEditor Editor { get; private set; }
 		FarUI FarUI;
 		FarHost FarHost;
 		Runspace Runspace;
 		PowerShell PowerShell;
+
 		static string GetFolderPath()
 		{
 			return A.Psf.Manager.GetFolderPath(SpecialFolder.LocalData, true);
@@ -78,6 +83,9 @@ namespace PowerShellFar
 
 			switch (mode)
 			{
+				case 0:
+					OpenMainSession();
+					break;
 				case 1:
 					OpenLocalSession();
 					break;
@@ -109,6 +117,10 @@ namespace PowerShellFar
 		void RunspaceOpen()
 		{
 			Runspace.Open();
+		}
+		void OpenMainSession()
+		{
+			Editor.Title = "Main session: " + Path.GetFileName(Editor.FileName);
 		}
 		void OpenLocalSession()
 		{
@@ -166,15 +178,24 @@ namespace PowerShellFar
 			if (Editor.SelectionExists)
 				return;
 
+			// current line
+			var currentLine = Editor.Line;
+
 			switch (e.Key.VirtualKeyCode)
 			{
 				case KeyCode.Enter:
 					{
 						if (e.Key.Is())
 						{
-							// [Enter]
+							// [Enter] - invoke, copy, or pass
+							e.Ignore = Invoke();
+						}
+						else if (e.Key.IsShift())
+						{
+							// [ShiftEnter] similar to ISE
 							e.Ignore = true;
-							Invoke();
+							Editor.InsertLine();
+							Editor.Redraw();
 						}
 						return;
 					}
@@ -183,11 +204,10 @@ namespace PowerShellFar
 						if (e.Key.Is())
 						{
 							// [Tab]
-							if (IsLastLineCurrent)
+							if (GetCommandArea() != null && EditorKit.NeedsTabExpansion(Editor))
 							{
 								e.Ignore = true;
-								EditorKit.ExpandCode(Editor.Line, Runspace);
-
+								EditorKit.ExpandCode(currentLine, Runspace);
 								Editor.Redraw();
 							}
 						}
@@ -198,12 +218,11 @@ namespace PowerShellFar
 						if (e.Key.Is())
 						{
 							// [Esc]
-							if (IsLastLineCurrent && Editor.Line.Length > 0)
+							if (IsLastLineCurrent && currentLine.Length > 0)
 							{
 								e.Ignore = true;
-								ILine line = Editor.Line;
-								line.Text = string.Empty;
-								line.Caret = 0;
+								currentLine.Text = string.Empty;
+								currentLine.Caret = 0;
 								Editor.Redraw();
 							}
 						}
@@ -217,19 +236,17 @@ namespace PowerShellFar
 							if (!IsLastLineCurrent)
 								return;
 
-							ILine curr = Editor.Line;
-							if (curr.Caret != curr.Length)
+							if (currentLine.Caret != currentLine.Length)
 								return;
 
-							string pref = curr.Text;
-							UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(pref);
+							UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(currentLine.Text);
 							string code = m.Show();
 							if (code == null)
 								return;
 
 							e.Ignore = true;
-							curr.Text = code;
-							curr.Caret = -1;
+							currentLine.Text = code;
+							currentLine.Caret = -1;
 							Editor.Redraw();
 						}
 						return;
@@ -248,8 +265,9 @@ namespace PowerShellFar
 							if (History.Cache == null)
 							{
 								// don't lose not empty line!
-								if (Editor.Line.Length > 0)
+								if (currentLine.Length > 0)
 									return;
+
 								History.Cache = History.ReadLines();
 								History.CacheIndex = History.Cache.Length;
 							}
@@ -296,9 +314,8 @@ namespace PowerShellFar
 							}
 
 							e.Ignore = true;
-							ILine curr = Editor.Line;
-							curr.Text = code;
-							curr.Caret = -1;
+							currentLine.Text = code;
+							currentLine.Caret = -1;
 							Editor.Redraw();
 						}
 						return;
@@ -311,8 +328,7 @@ namespace PowerShellFar
 							if (!IsLastLineCurrent)
 								return;
 
-							ILine curr = Editor.Line;
-							if (curr.Length > 0)
+							if (currentLine.Length > 0)
 								return;
 
 							e.Ignore = true;
@@ -321,13 +337,16 @@ namespace PowerShellFar
 							for (int i = pt.Y - 1; i >= 0; --i)
 							{
 								string text = Editor[i].Text;
-								if (text == "<=")
+								if (text == OutputMark1)
 								{
 									Editor.SelectText(0, i, -1, pt.Y, PlaceKind.Stream);
 									Editor.DeleteText();
+									Editor.GoTo(0, i);
+									Editor.InsertText(OutputMark3 + "\r");
+									Editor.GoToEnd(false);
 									break;
 								}
-								if (text == "=>")
+								if (text == OutputMark2 || text == OutputMark3)
 								{
 									pt = new Point(-1, i + 1);
 									continue;
@@ -356,32 +375,91 @@ namespace PowerShellFar
 					}
 			}
 		}
-		internal void Invoke()
+		internal class Area
 		{
-			// current line and script, skip empty
-			ILine curr = Editor.Line;
-			string code = curr.Text;
-			if (code.Length == 0)
-				return;
+			public int FirstLineIndex;
+			public int LastLineIndex;
+			public Point Caret;
+			public bool Active;
+		}
+		internal Area GetCommandArea()
+		{
+			var r = new Area();
+			r.Caret = Editor.Caret;
 
-			// end?
-			if (!IsLastLineCurrent)
+			// first line
+			for (int y = r.Caret.Y; --y >= 0; )
 			{
-				// - no, copy code and exit
-				Editor.GoToEnd(true);
-				Editor.InsertText(code);
-				Editor.Redraw();
-				return;
+				var text = Editor[y].Text;
+				if (text == OutputMark2 || text == OutputMark3)
+				{
+					r.FirstLineIndex = y + 1;
+					break;
+				}
+
+				if (text == OutputMark1)
+					return null;
 			}
 
+			// last line
+			r.LastLineIndex = Editor.Count - 1;
+			for (int y = r.Caret.Y; ++y <= r.LastLineIndex; )
+			{
+				var text = Editor[y].Text;
+				if (text == OutputMark1 || text == OutputMark3)
+				{
+					r.LastLineIndex = y - 1;
+					return r;
+				}
+
+				if (text == OutputMark2)
+					return null;
+			}
+
+			r.Active = true;
+			return r;
+		}
+		internal bool Invoke()
+		{
+			var area = GetCommandArea();
+			if (area == null)
+				return false;
+
+			// script, skip empty
+			var sb = new StringBuilder();
+			for (int y = area.FirstLineIndex; y < area.LastLineIndex; ++y)
+				sb.AppendLine(Editor[y].Text);
+			var lastText = Editor[area.LastLineIndex].Text;
+			sb.Append(lastText);
+
+			string code = sb.ToString();
+			if (code.Length == 0)
+				return true;
+			if (code == OutputMark3)
+				return false;
+
+			// copy to the end
+			if (!area.Active)
+			{
+				Editor.GoToEnd(true);
+				Editor.BeginUndo();
+				Editor.InsertText(code);
+				Editor.EndUndo();
+				Editor.Redraw();
+				return true;
+			}
+
+			// history
+			bool addHistory = area.FirstLineIndex == area.LastLineIndex;
+
 			// go end
-			curr.Caret = -1;
+			Editor.GoToEnd(false);
 
 			// go async
 			if (Runspace != null)
 			{
-				InvokePipeline(code);
-				return;
+				InvokePipeline(code, addHistory);
+				return true;
 			}
 
 			// invoke
@@ -389,7 +467,7 @@ namespace PowerShellFar
 			Editor.BeginUndo();
 
 			// default runspace
-			A.Psf.Act(code, writer, true);
+			A.Psf.Act(code, writer, addHistory);
 			if (Editor != Far.Api.Editor)
 			{
 				Far.Api.Message(Res.EditorConsoleCannotComplete);
@@ -401,8 +479,10 @@ namespace PowerShellFar
 				Editor.EndUndo();
 				Editor.Redraw();
 			}
+
+			return true;
 		}
-		void InvokePipeline(string code)
+		void InvokePipeline(string code, bool addHistory)
 		{
 			// drop history cache
 			History.Cache = null;
@@ -414,11 +494,14 @@ namespace PowerShellFar
 			try
 			{
 				// history
-				code = code.Trim();
-				if (code.Length > 0 && code[code.Length - 1] != '#' && A.Psf._myLastCommand != code)
+				if (addHistory)
 				{
-					History.AddLine(code);
-					A.Psf._myLastCommand = code;
+					code = code.Trim();
+					if (code.Length > 0 && code[code.Length - 1] != '#' && A.Psf._myLastCommand != code)
+					{
+						History.AddLine(code);
+						A.Psf._myLastCommand = code;
+					}
 				}
 
 				// invoke command
@@ -500,10 +583,10 @@ namespace PowerShellFar
 			}
 
 			// last line
-			if (writer.WriteCount == 0)
-				Editor.InsertLine();
+			if (writer.WriteCount > 0)
+				Editor.InsertText(OutputMark2 + "\r");
 			else
-				Editor.InsertText("=>\r");
+				Editor.InsertText("\r" + OutputMark3 + "\r");
 		}
 	}
 }
