@@ -44,7 +44,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.50
+### PowerShellFar 5.0.51
 
 One of the most useful FarNet modules is PowerShellFar. It combines the rich
 console based user interface of Far Manager with full power of Windows
@@ -301,9 +301,9 @@ Shows the command history menu. See [Command history menu](#MenuCommandHistory).
 
 ### Editor console
 
-Opens new or existing .psfconsole file. Files are stored in
-%APPDATA%\PowerShellFar\psfconsole directory. You can open several editor
-consoles.
+Opens a new *.psfconsole* file associated with a main, local, or remote session.
+Files are stored in *%FARLOCALPROFILE%\FarNet\PowerShellFar*.
+Several editor consoles are allowed.
 See [Editor console](#EditorConsole).
 
 ### Power panel
@@ -651,45 +651,64 @@ of transcribed output before you start debugging (`Show-FarTranscript
 [Contents](#Contents)
 [Invoking console applications](#ConsoleApplications)
 
-It is any *.psfconsole* file opened in the Far editor. It is designed for typing
-and running PowerShell commands so that their output is directed to the same
-editor to the end. Editor console is also opened when you enter so called
-"nested prompt" mode, for example when you suspend PowerShell execution.
+Editor console is a *.psfconsole* file opened in the editor. Such a file is
+opened in the special console-like mode designed for typing and invoking
+PowerShell commands with their output appended to the editor text end.
 
-The default console is opened from the "Editor console" menu by `[Enter]`.
-`[ShiftEnter]` opens an asynchronous local console session. `[CtrlEnter]` opens
-an asynchronous remote console session. When any console is opened its `[F1]`
-menu allows you to change or reset the current session to default, local, or
-remote.
+A new editor console is normally opened from the *Editor console* menu with
+three choices: *Main session*, *New local session*, and *New remote session*.
+
+An editor console is also opened from the debugger dialog and on entering a
+nested prompt, for example when PowerShell execution is suspended.
 
 An editor console works similar to a traditional command console but it is
 still an editor window with some rules and special hotkeys.
 
-### Rule of selection
+### Rule of existing selection
 
 If any selection exists then editor always acts as a standard editor.
 
+### Command and output areas
+
+Output areas are lines between markers `<=` and `=>`. Empty outputs are shown
+as marker lines `<>`. Areas between or outside output are command areas. The
+last command area is the active command.
+
+Output can be edited as usual text. Note that caress modification of marker
+lines may confuse the editor console tools, syntax highlighting, and etc.
+
 ### Keys and actions
 
-Without selection some editor events for such a file are different:
+Without selection some editor events are special:
 
 * `[Enter]`
 
-    If it is the last line its text is executed as PowerShell code and
-    output is appended to the end of the file (marked by <= and =>). If it is not
-    the last line its text is copied to the end and the cursor is moved there, too.
+    If the caret is in the active command then the command is invoked and its
+    output is appended to the end marked by `<=` and `=>` or `<>` .
+
+    If it is in the passive command then its code is appended to the active
+    command and the caret is moved there as well.
+
+    It is possible to paste multiline code to the active command area and then
+    invoke it by `[Enter]`.
+
+* `[ShiftEnter]`
+
+    It just inserts a new line even if it is the last command area. It is used
+    to compose multiline commands before invoking them. Remember that `[Enter]`
+    invokes the active command being edited.
 
 * `[End]`
 
-    If it is the last line and the cursor is in the end then it shows a
-    menu of history commands beginning with the characters that are in the line. If
-    the line is empty then it actually shows all history commands. If the line
+    If it is the last line and the cursor is at the end then it shows a menu of
+    history commands beginning with the characters that are in the line. If the
+    line is empty then it actually shows all history commands. If the line
     starts with * then the rest of it is used as a substring filter.
 
 * `[Up]`, `[Down]`
 
-    If it is the last line and it is initially empty inserts
-    previous\next command from PowerShellFar history while you press these keys.
+    If it is the last line and it is initially empty these keys insert previous
+    and next commands from the history.
 
 * `[Esc]`
 
@@ -697,13 +716,12 @@ Without selection some editor events for such a file are different:
 
 * `[Del]`
 
-    If it is the last line and it is empty it deletes all text from the end
-    to the last mark <= found in the text. It is useful when you want to discard
-    recent output.
+    If it is the last line and it is empty it replaces the last found not empty
+    output area `<=...=>` with `<>`. It is used to discard recent outputs.
 
 * `[Tab]`
 
-    Invokes PowerShell TabExpansion for the current token.
+    Invokes PowerShell TabExpansion.
     See [TabExpansion2.ps1](#TabExpansion)
 
 * `[CtrlBreak]`
@@ -749,10 +767,10 @@ should be avoided (`Read-Host`, `Write-Progress`, confirmations, and etc.)
 
 ### Notes
 
-Use *powershell.hrc* (optionally with *visual.hrd*) from the ColorerPack for
-command and output syntax highlighting. In addition to PowerShell syntax
-console output is colored as well: numbers, dates, times, paths, errors,
-warnings, and etc. *visual.hrd* enables zebra output and hides output marks.
+The *Colorer* scheme *powershell.hrc* (optionally with *visual.hrd*) takes care
+of syntax highlighting. In addition to PowerShell syntax console output is
+colored as well: numbers, dates, times, paths, errors, warnings, and etc.
+*visual.hrd* enables zebra output and hides some output markers.
 
 Use word completion (e.g. *Complete-Word-.ps1*): words from output of previous
 commands often can be effectively completed in a new command being composed.
