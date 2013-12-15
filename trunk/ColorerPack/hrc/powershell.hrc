@@ -7,7 +7,7 @@ xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hr
 <type name="powershell">
 <annotation><documentation><![CDATA[
 
-powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-12-12
+powershell.hrc by Roman Kuzmin http://code.google.com/p/farnet 2013-12-15
 Designed for PowerShell 3.0, Colorer 1.2.1, and optional visual.hrd
 
 Regex syntax in strings after regex operators, [regex], and <#regex#>
@@ -295,11 +295,14 @@ SQL syntax in here-strings after <#sql#>
 	<regexp match="/(?{LogVerbose}^VERBOSE\b.*$)/"/>
 	<regexp match="/(?{LogWarning}^WARNING\b.*$)/"/>
 
+	<!--Guid-->
+	<regexp match="/(?{def:URL}\{?\b[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\b\}?)/"/>
+
 	<!--Time+-->
 	<regexp match="/(?{def:Time}\b\d{1,2}:\d{1,2}(?::\d{1,2}(?:\.\d+)?)?\b)/"/>
 
 	<!--Date+-->
-	<regexp match="/(?{def:Date}\b\d+[\/\-]\d+[\/\-]\d+\b)/"/>
+	<regexp match="/(?{def:Date}(^|[^\/\-]?#1)\b\d+[\/\-]\d+[\/\-]\d+\b($|[^\/\-]?=))/"/>
 
 	<!--d.d.d-->
 	<regexp match="/(?{Number}\b[0-9]+[.0-9]*\b)/"/>
