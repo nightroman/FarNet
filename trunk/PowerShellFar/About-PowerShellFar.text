@@ -44,10 +44,10 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.51
+### PowerShellFar 5.0.52
 
-PowerShellFar is one of the most useful FarNet modules. It combines the console
-based user interface of Far Manager with the full power of Windows PowerShell.
+PowerShellFar is the FarNet module which effectively combines the Windows
+PowerShell core with the text friendly console environment of Far Manager.
 
 PowerShellFar implements the Windows PowerShell host in Far Manager, exposes
 the FarNet object model, and provides several ways for invoking commands and
@@ -55,12 +55,11 @@ viewing the results. The package includes cmdlets, modules, and scripts for
 many popular Far Manager tasks. PowerShell syntax highlighting in editors is
 provided by Colorer.
 
-Most of PowerShell features are fully supported. There is nothing really
-serious not implemented, normally you won't even notice that something is
-missing or works partially. Still, a few PowerShell cmdlets and host methods
-(mostly designed for plain console UI) are not supported.
+Most of PowerShell features are supported. Some PowerShell cmdlets and host
+features designed for plain console UI may not work or may work with some
+different UI.
 
-PowerShellFar, FarNet and documentation can be updated by the included script
+PowerShellFar, FarNet, and documentation can be updated by the included script
 *Update-FarNet.ps1* or downloaded and installed manually from the project site.
 
 ### Project
@@ -85,25 +84,24 @@ Start `PowerShell.exe` and type `Get-ExecutionPolicy`. If it is not *Bypass*,
 *Unrestricted*, or *RemoteSigned* then invoke `Set-ExecutionPolicy` with one of
 these values. *Bypass* is the fastest but the least secure.
 
-On x64 machines `Set-ExecutionPolicy` should be set twice: for x86 and x64. Use
-the Windows PowerShell start menu in order to start both consoles and set the
-policy in both.
+On x64 machines `Set-ExecutionPolicy` should be set for x86 and x64. Use the
+Windows start menu in order to open x86 and x64 consoles and set the policy.
 
 If you are not administrator use the parameter `-Scope CurrentUser`, for example:
 
-    ps: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ### Install the module
 
 Copy *FarNet\Modules\PowerShellFar* to *%FARHOME%\FarNet\Modules\PowerShellFar*.
-The location and name can be changed but it is recommended to use this way:
+The location and name can be changed but it is recommended to use the original:
 some tools assume this path by default, e.g. *Update-FarNet.ps1*.
 
 ### Using Bench scripts
 
-Included Bench scripts are ready to use handy tools for various tasks. There are
-also tests and demos for learning PowerShellFar and PowerShell. In order to to
-use these scripts directly from Bench:
+Included Bench scripts are ready to use handy tools for various tasks. There
+are also test and demo scripts for learning PowerShellFar and PowerShell. In
+order to to use these scripts directly from Bench:
 
 Include directory Bench into the system path.
 
@@ -118,15 +116,15 @@ for more details.
 
 ### Colorer support
 
-Use the syntax scheme *powershell.hrc* (optionally with *visual.hrd*) from the
-ColorerPack package for syntax highlighting in PowerShell files and editor
-console.
+The syntax scheme *powershell.hrc* and the optional color scheme *visual.hrd*
+come with the Colorer package. They provide syntax highlighting in PowerShell
+files and editor consoles.
 
 ### Console window width
 
-If you work a lot with power panels then it is recommended to set console width
-at least 164, so that panels width is 80 which is the default console width.
-Many PowerShell type formats are designed with 80 columns in mind.
+If you work a lot with power panels then it is recommended to use the console
+width at least 164, so that panel widths are 80. Many PowerShell type formats
+are designed with 80 columns in mind.
 
 
 *********************************************************************
@@ -155,58 +153,58 @@ moment from almost any UI context.
 
 * Command line
 
-    In the panels mode use the command line to type and invoke
-    commands with prefixes: `ps:` and `vps:` by default.
+    In the panels use the command line to type and invoke commands with
+    prefixes: `ps:` and `vps:` by default.
     See [Command line](#CommandLine).
 
 * Far user menu and file associations
 
-    The Far user menu (`[F2]`) and file
-    associations (`[F9] \ Commands \ File associations`) may include PowerShell
-    commands with prefixes. See Far Manager help for details.
+    The user menu (`[F2]`) and file associations (`[F9] \ Commands \ File
+    associations`) may include PowerShell commands with prefixes. See Far
+    Manager help for details.
 
 * Editor consoles
 
-    Global, local, or remote editor consoles can be opened at
-    any moment: `[F11] \ PowerShellFar \ Editor console`. The editor is modal if it
-    is started from modal context and modeless otherwise. Local and remote consoles
-    run commands asynchronously in their own PowerShell sessions.
+    Main, local, and remote editor consoles can be opened at any moment: `[F11]
+    \ PowerShellFar \ Editor console`. The editor is modal if it is started
+    from modal context. Local and remote consoles use separate PowerShell
+    sessions and invoke commands asynchronously, UI is not blocked when
+    commands are running, even with their output in progress.
     See [Editor console](#EditorConsole).
 
 * Script editor
 
-    A script opened in the current editor can be invoked in the
-    global session by pressing `[F5]` in the editor. It is the same as to invoke the
-    script without parameters from the command line or command box.
+    A script opened in the editor can be invoked in the main session by `[F5]`
+    in the editor. It is the same as to invoke the script without parameters
+    from the command line or the command box.
 
 * Far Manager macros
 
-    Macro associate key combinations in the current UI area
-    with pieces of macro code that may invoke PowerShell commands in a few ways.
+    Macros associate key combinations in the current UI area with pieces of
+    macro code which can invoke PowerShell commands.
     See [Command and macro examples](#Examples).
 
 * Menu actions and event handlers
 
-    Custom predefined actions can event handlers
-    can be added using the profiles.
+    Menu actions and various event handlers can be added using the profiles.
     See [Profile-.ps1](#Profile) and [Profile-Editor-.ps1](#ProfileEditor).
 
 ---
 
 ### Stopping running commands
 
-Think twice before stopping running commands. There are must be
-good reasons for doing this and this should be presumably safe, i.e. you know
-that this does not make something broken or you know it is easy to recover.
+Think twice before stopping commands. There are must be good reasons for doing
+this and this should be presumably safe, i.e. you know that this does not make
+something broken or you know it is easy to recover.
 
 `[CtrlBreak]` stops synchronous commands invoked from:
 
 - Command line
 - Command input box
-- Global editor console
+- Main editor console
 - Script editor by `[F5]`
-- Far user menu (`[F2]`)
-- Far file associations
+- User menu (`[F2]`)
+- File associations
 
 `[CtrlC]` stops asynchronous commands commands invoked from:
 
@@ -215,8 +213,9 @@ that this does not make something broken or you know it is easy to recover.
 
 `[Del]` in the background job list stops running background jobs.
 
-It is not normally possible to stop commands started from event handlers (e.g.
-editor and panel events or `$Psf.Action handlers`). Design such code carefully.
+It is not normally possible to stop commands started from event handlers, e.g.
+editor and panel events or `$Psf.Action handlers`. Design such code carefully
+and test it before adding to handlers.
 
 
 *********************************************************************
@@ -225,8 +224,8 @@ editor and panel events or `$Psf.Action handlers`). Design such code carefully.
 [Contents](#Contents)
 
 PowerShellFar commands with prefixes are used in the command line, the user
-menu (`[F2]`) and the file associations. By default command prefixes are: `ps:`
-(console output) and `vps:` (viewer output).
+menu (`[F2]`), and the file associations. By default command prefixes are:
+`ps:` (console output) and `vps:` (viewer output).
 
 Console output is also transcribed in a temporary file which can be opened in a
 viewer at any time by the command `Show-FarTranscript [-External]`.
@@ -261,9 +260,9 @@ You can reduce typing by "Easy prefix" and "Easy invoke" macros, see [FAQ](#FAQ)
 ### Command history
 
 Most of commands are added to the PowerShellFar command history automatically.
-But a command is not added if the last symbol is `#`. This trick is useful for
-commands in the user menu (`[F2]`) and the file associations. Users normally do
-not want them to pollute the history because they are not typed manually.
+A command is not added if it ends with "#". This may be useful for commands in
+the user menu (`[F2]`) and the file associations. Such commands are not typed
+manually and normally should not pollute the history.
 
 
 *********************************************************************
@@ -273,30 +272,32 @@ not want them to pollute the history because they are not typed manually.
 
 ### Invoke input code...
 
-You are prompted to enter PowerShell code to be executed. Use `[Tab]` to
-complete the current token by TabExpansion. Use `[ShiftF1]` to view help for
-the current token. See also
+You are prompted to enter PowerShell code to be invoked. Use `[Tab]` for code
+completion by TabExpansion. Use `[ShiftF1]` to view help for the current token.
+See also
 [TabExpansion2.ps1](#TabExpansion),
 [Command and macro examples](#Examples).
 
 ### Invoke selected code
 
-In editor: execute the selected code or the current line if nothing is
-selected. Thus, you can try your code just in the editor. The code is executed
-in the global scope, variables created by commands are available for other
-commands.
+In editor: execute the selected code or the current line. Thus, you can try
+your code just in the editor. The code is executed in the global scope,
+variables created by commands are available for other commands.
 
-In command line: execute the command line text, the prefix is not required (but
-it is not an error). The command text is kept in the command line if an error
-happens or if there is a selection. See also "Easy invoke": [FAQ](#FAQ).
+In command line: execute the command line text, the prefix is not required but
+it is not an error. The command text is kept in the command line if an error
+happens or if there is a selection.
+See also "Easy invoke": [FAQ](#FAQ).
 
 ### Background jobs
 
-Shows the background jobs menu. See [Background jobs menu](#MenuBackgroundJobs).
+Shows the background jobs menu.
+See [Background jobs menu](#MenuBackgroundJobs).
 
 ### Command history
 
-Shows the command history menu. See [Command history menu](#MenuCommandHistory).
+Shows the command history menu.
+See [Command history menu](#MenuCommandHistory).
 
 ### Editor console
 
@@ -312,19 +313,19 @@ See [Power panel menu](#MenuPanels) and [Power panel](#PowerPanel).
 
 ### TabExpansion
 
-It calls TabExpansion for the text in the editor, the command line or any edit
-control in any dialog. Default TabExpansion is replaced with advanced
+It calls TabExpansion for the text in the editor, the command line, or an edit
+box in a dialog. The default TabExpansion is replaced with advanced
 [TabExpansion2.ps1](#TabExpansion).
 
 ### Modules+
 
 Shows available PowerShell modules and registered PowerShell snap-ins in a menu
-which imports or removes selected modules for current the session.
+which imports or removes selected modules for the current session.
 See [Modules menu](#MenuModules).
 
 ### Errors
 
-Shows the list of recent PowerShell errors ($Error items).
+Shows the recent PowerShell errors stored in the global variable `$Error`.
 See [Errors menu](#MenuErrors).
 
 ### Help
