@@ -1,6 +1,18 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.52 =
+
+TabExpansion
+
+- Like in ISE, completion list items can be different from their completion
+texts (e.g. shorter, without common leading parts, etc.).
+
+TabExpansionProfile.ps1, Type/Namespace completion
+
+- Fixed cases of incorrect replacement on type name completion.
+- Like in ISE, completion lists show ListItemText instead of CompletionText.
+
 = 5.0.51 =
 
 Multiline commands in PowerShell editor consoles

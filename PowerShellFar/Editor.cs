@@ -23,8 +23,12 @@ namespace PowerShellFar
 	/// </summary>
 	static class EditorKit
 	{
+		const string CompletionText = "CompletionText";
+		const string ListItemText = "ListItemText";
+
 		static int _initTabExpansion;
 		static string _callTabExpansion;
+		
 		static void InitTabExpansion()
 		{
 			if (_initTabExpansion != 0)
@@ -41,7 +45,7 @@ namespace PowerShellFar
 param($inputScript, $cursorColumn)
 $r = TabExpansion2 $inputScript $cursorColumn
 @{
-	CompletionMatches = @(foreach($_ in $r.CompletionMatches) { $_.CompletionText })
+	CompletionMatches = @(foreach($_ in $r.CompletionMatches) { @{CompletionText = $_.CompletionText; ListItemText = $_.ListItemText} })
 	ReplacementIndex = $r.ReplacementIndex
 	ReplacementLength = $r.ReplacementLength
 }
@@ -68,6 +72,26 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 			A.InvokeCode(". $args[0]", path);
 			_initTabExpansion = +1;
+		}
+		static string TECompletionText(object value)
+		{
+			var t = value as Hashtable;
+			if (t == null)
+				return value.ToString();
+
+			return t[CompletionText].ToString();
+		}
+		static string TEListItemText(object value)
+		{
+			var t = value as Hashtable;
+			if (t == null)
+				return value.ToString();
+
+			var r = t[ListItemText];
+			if (r != null)
+				return r.ToString();
+
+			return t[CompletionText].ToString();
 		}
 		/// <summary>
 		/// Expands PowerShell code in an edit line.
@@ -218,7 +242,8 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 						// union lists
 						foreach (var x in words)
-							variables.Add(x.ToString());
+							if (x != null)
+								variables.Add(TECompletionText(x));
 
 						// final sorted list
 						words = variables.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
@@ -244,7 +269,8 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				// 1 word
 				if (words[0] == null)
 					return;
-				word = words[0].ToString();
+
+				word = TECompletionText(words[0]);
 			}
 			else
 			{
@@ -267,8 +293,11 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 				foreach (var it in words)
 				{
-					if (it != null)
-						menu.Add(it.ToString());
+					if (it == null) continue;
+					var item = new SetItem();
+					item.Text = TEListItemText(it);
+					item.Data = it;
+					menu.Items.Add(item);
 				}
 
 				if (menu.Items.Count == 0)
@@ -276,14 +305,14 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 				if (menu.Items.Count == 1)
 				{
-					word = menu.Items[0].Text;
+					word = TECompletionText(menu.Items[0].Data);
 				}
 				else
 				{
 					// show menu
 					if (!menu.Show())
 						return;
-					word = menu.Items[menu.Selected].Text;
+					word = TECompletionText(menu.Items[menu.Selected].Data);
 				}
 			}
 

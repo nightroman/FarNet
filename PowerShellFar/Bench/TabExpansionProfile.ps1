@@ -34,7 +34,7 @@ if ($Host.Name -ceq 'FarHost') {
 			}
 
 			# column info template
-			"@{e=''; n=''; k=''; w=0; a=''}"
+			New-CompletionResult "@{e=''; n=''; k=''; w=0; a=''}" '@{...}'
 		}
 	}
 }
@@ -146,19 +146,18 @@ $TabExpansionOptions.InputProcessors += {
 
 	$line = $positionOfCursor.Line.Substring(0, $positionOfCursor.ColumnNumber - 1)
 	if ($line -notmatch '\[([\w.*?]+)$') {return}
+	$pattern = $matches[1]
 
 	# fake
-	function TabExpansion { GetTabExpansionType $matches[1] '[' }
+	function TabExpansion($line, $lastWord) { GetTabExpansionType $pattern $lastWord.Substring(0, $lastWord.Length - $pattern.Length) }
 	$result = [System.Management.Automation.CommandCompletion]::CompleteInput($ast, $tokens, $positionOfCursor, $null)
 
-	# ISE
-	if ($Host.Name -eq 'Windows PowerShell ISE Host') {
-		for($i = $result.CompletionMatches.Count; --$i -ge 0) {
-			$text = $result.CompletionMatches[$i].CompletionText
-			if ($text -match '\b(\w+([.,\[\]])+)$') {
-				$type = if ($matches[2] -ceq '.') {'Namespace'} else {'Type'}
-				$result.CompletionMatches[$i] = New-CompletionResult $text "[$($matches[1])" $type
-			}
+	# amend
+	for($i = $result.CompletionMatches.Count; --$i -ge 0) {
+		$text = $result.CompletionMatches[$i].CompletionText
+		if ($text -match '\b(\w+([.,\[\]])+)$') {
+			$type = if ($matches[2] -ceq '.') {'Namespace'} else {'Type'}
+			$result.CompletionMatches[$i] = New-CompletionResult $text "[$($matches[1])" $type
 		}
 	}
 
