@@ -2,14 +2,14 @@
 
 == Introduction ==
 
-One of the most useful FarNet modules is PowerShellFar. It combines the rich console based user interface of Far Manager with full power of Windows PowerShell perfectly integrated into this original text friendly environment. 
+PowerShellFar is the FarNet module which effectively combines the Windows
+PowerShell core with the text friendly console environment of Far Manager.
 
-It implements the Windows PowerShell host in Far Manager, exposes the FarNet
-object model, and provides several ways for invoking commands and viewing the
-results. The package includes cmdlets, modules and scripts for many popular Far
-Manager tasks.
-The package ColorerPack includes syntax and color schemes
-for Colorer providing rich PowerShell syntax highlighting.
+PowerShellFar implements the Windows PowerShell host in Far Manager, exposes
+the FarNet object model, and provides several ways for invoking commands and
+viewing the results. The package includes cmdlets, modules, and scripts for
+many popular Far Manager tasks. PowerShell syntax highlighting in editors is
+provided by Colorer.
 
 ----
 == Windows PowerShell ==
