@@ -11,12 +11,12 @@ viewing the results. The package includes cmdlets, modules, and scripts for
 many popular Far Manager tasks. PowerShell syntax highlighting in editors is
 provided by Colorer.
 
+See [https://farnet.googlecode.com/svn/trunk/PowerShellFar/About-PowerShellFar.text About-PowerShellFar.text] for the details.
+
 ----
 == Windows PowerShell ==
 
 Windows PowerShell is Microsoft's task automation framework, consisting of a command-line shell and associated scripting language built on top of, and integrated with, the .NET Framework. PowerShell provides full access to COM and WMI, enabling administrators to perform administrative tasks on both local and remote Windows systems.
-
-Version 2.0 is integrated with Windows 7 and Windows Server 2008 R2 and is released for Windows XP with Service Pack 3, Windows Server 2003 with Service Pack 2, Windows Vista with Service Pack 1, and Windows Server 2008.
 
   * [http://en.wikipedia.org/wiki/powershell More...]
 
