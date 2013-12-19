@@ -1,19 +1,19 @@
 
 <#
 .Synopsis
-	Editor startup code (example).
+	Editor profile (example).
 	Author: Roman Kuzmin
 
 .Description
-	This is an example of configuration "Editor startup code" which is invoked
-	when an editor is opened the first time. It installs some key and mouse
-	handles. Before using read help "Profile-Editor-.ps1" and the code.
+	The profile should be in %FARPROFILE%\FarNet\PowerShellFar
+
+	This is an example of the editor profile which is invoked when an editor is
+	opened the first time. It installs some key and mouse handles. Before using
+	read the help "Profile-Editor.ps1" and the code.
 #>
 
-$ErrorActionPreference = 'Stop'
-
-### Editor data; this line also denies the second call of this script
-New-Variable Editor.Data @{} -Scope Global -Option ReadOnly -Description 'Editor handlers data.'
+### Editor data. This line also denies the second call, it fails.
+New-Variable Editor.Data @{} -Scope Global -Option ReadOnly -Description 'Editor handlers data.' -ErrorAction Stop
 
 ### GotFocus handler; it resets old data
 $Far.AnyEditor.add_GotFocus({&{

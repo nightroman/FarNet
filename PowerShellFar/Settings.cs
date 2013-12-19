@@ -5,9 +5,7 @@ Copyright (c) 2006-2013 Roman Kuzmin
 */
 
 using System;
-using System.Configuration;
 using FarNet;
-using FarNet.Settings;
 
 namespace PowerShellFar
 {
@@ -15,18 +13,13 @@ namespace PowerShellFar
 	/// PowerShellFar settings. Exposed as <c>$Psf.Settings</c>
 	/// </summary>
 	/// <remarks>
-	/// Properties <see cref="StartupCode"/> and <see cref="StartupEdit"/> are stored
-	/// in a file and can be changed in the module settings panel.
-	/// <para>
-	/// Other properties are session preferences and normally set in the profile.
-	/// </para>
-	/// <example>Profile-.ps1</example>
+	/// The settings are mostly preference variables.
+	/// They are usually set in the profile.
 	/// </remarks>
-	[SettingsProvider(typeof(ModuleSettingsProvider))]
-	public sealed class Settings : ModuleSettings
+	public sealed class Settings
 	{
 		/// <summary>
-		/// The settings exposed as <c>$Psf.Settings</c>.
+		/// The settings object exposed as <c>$Psf.Settings</c>.
 		/// </summary>
 		public static Settings Default { get { return _Default; } }
 		static readonly Settings _Default = new Settings();
@@ -48,26 +41,6 @@ namespace PowerShellFar
 			if (menu == null) throw new ArgumentNullException("menu");
 			menu.ScreenMargin = _ListMenuScreenMargin;
 			menu.UsualMargins = _ListMenuUsualMargins;
-		}
-		/// <summary>
-		/// See the manual [Settings].
-		/// </summary>
-		[UserScopedSetting]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public string StartupCode
-		{
-			get { return (string)this["StartupCode"]; }
-			set { this["StartupCode"] = value; }
-		}
-		/// <summary>
-		/// See the manual [Settings].
-		/// </summary>
-		[UserScopedSetting]
-		[SettingsManageability(SettingsManageability.Roaming)]
-		public string StartupEdit
-		{
-			get { return (string)this["StartupEdit"]; }
-			set { this["StartupEdit"] = value; }
 		}
 		bool _PopupAutoSelect = true;
 		/// <summary>

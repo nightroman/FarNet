@@ -14,6 +14,7 @@
 * [Data panel](#DataPanel)
 * [Tree panel](#TreePanel)
 * [Global objects](#GlobalObjects)
+* [Profiles](#Profiles)
 * [Settings](#Settings)
 
 ### Details
@@ -27,8 +28,8 @@
 ### Scripts
 
 * [Suffixes](#Suffix)
-* [Profile-.ps1](#Profile)
-* [Profile-Editor-.ps1](#ProfileEditor)
+* [Profile.ps1](#Profile)
+* [Profile-Editor.ps1](#ProfileEditor)
 * [TabExpansion2.ps1](#TabExpansion)
 * [Remove-EndSpace-.ps1](#RemoveEndSpace)
 * [Job-RemoveItem-.ps1](#JobRemoveItem)
@@ -44,7 +45,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.52
+### PowerShellFar 5.0.53
 
 PowerShellFar is the FarNet module which effectively combines the Windows
 PowerShell core with the text friendly console environment of Far Manager.
@@ -99,20 +100,14 @@ some tools assume this path by default, e.g. *Update-FarNet.ps1*.
 
 ### Using Bench scripts
 
-Included Bench scripts are ready to use handy tools for various tasks. There
-are also test and demo scripts for learning PowerShellFar and PowerShell. In
-order to to use these scripts directly from Bench:
+Included Bench scripts are ready to use tools for various tasks. There are also
+test and demo scripts for learning PowerShellFar and PowerShell. In order to to
+use these scripts directly from Bench include the directory Bench in the path.
 
-Include directory Bench into the system path.
-
-New users may want to configure the module with the predefined profile:
-
-    Startup code
-    . Profile-.ps1
-
-This enables many features including additional menu tools, so that you can
-invoke some scripts right from the menus. Read this help and script comments
-for more details.
+New users may want to configure the module with the profile [Profile.ps1](#Profile).
+Then it should be copied to *%FARPROFILE%\FarNet\PowerShellFar*. It adds many
+features including additional menu tools, so that you can invoke some scripts
+right from the menu.
 
 ### Colorer support
 
@@ -187,7 +182,7 @@ moment from almost any UI context.
 * Menu actions and event handlers
 
     Menu actions and various event handlers can be added using the profiles.
-    See [Profile-.ps1](#Profile) and [Profile-Editor-.ps1](#ProfileEditor).
+    See [Profile.ps1](#Profile) and [Profile-Editor.ps1](#ProfileEditor).
 
 ---
 
@@ -338,7 +333,7 @@ available help information in the viewer. In code editors (*.ps1*, *.psm1*,
 ### Others
 
 Other tools exist in the menu only if you have added them yourself, for example
-using a start-up profile like [Profile-.ps1](#Profile).
+using the profile [Profile.ps1](#Profile).
 
 
 *********************************************************************
@@ -653,7 +648,7 @@ of transcribed output before you start debugging (`Show-FarTranscript
 
 Editor console is a *.psfconsole* file opened in the editor. Such a file is
 opened in the special console-like mode designed for typing and invoking
-PowerShell commands with their output appended to the editor text end.
+PowerShell commands with their output appended to the end of editor text.
 
 A new editor console is normally opened from the *Editor console* menu with
 three choices: *Main session*, *New local session*, and *New remote session*.
@@ -734,34 +729,46 @@ Without selection some editor events are special:
 
 ---
 
-### Default console sessions
+Editor consoles are often more convenient than traditional consoles. But they
+have many limitations. They cannot replace traditional Far or Cmd consoles in
+some cases. Some features and limitations are described below.
 
-Do not invoke commands with `$Far.Editor` (i.e. this editor) because during the
-operation this object is already used for the command output. Also, do not run
-commands opening other editors because the default console writes output to the
-current editor and results will be unexpected (this is not a problem for async
-consoles, they do not require an editor to be current).
+### All editor consoles
 
-You still can call external PowerShell commands working on text in this editor
-console as usual. "External" means that a command is executed not from this
-editor console. In other words, you still can use menu actions "Invoke input
-code", "Invoke selected code", your own editor tools, and etc.
+Native console applications with user interaction should not be called.
 
 ---
 
-### Asynchronous console sessions
+### Main sessions (synchronous consoles)
 
-An async console opens a separate runspace with its private session state:
-provider locations, variables, aliases, and many other settings.
+Do not invoke commands with `$Far.Editor` (i.e. this editor) because during the
+operation this object is already used for the command output. Also, do not run
+commands opening other editors because the main editor console writes output to
+the current editor and results will be unexpected. This is not a problem for
+async consoles, they do not require an editor to be current.
+
+You still can call external PowerShell commands working on text in this editor
+console as usual. "External" means that a command is executed not from this
+editor console. In other words, you can use menu actions "Invoke input code",
+"Invoke selected code", your own editor tools, and etc.
+
+---
+
+### Local and remote sessions (asynchronous consoles)
+
+Each console opens a separate runspace with its private session state: provider
+locations, variables, functions, aliases, and etc.
 
 Commands are invoked asynchronously in background threads, so that console
 editors and Far itself are not blocked: you can switch to panels or another
 editors while a command is running. Moreover, you can open several async
 consoles, invoke parallel commands and still continue other work in Far.
 
-Limitations: objects `$Far` and `$Psf` are not exposed; cmdlets `*-Far*` are
-exposed but you should not use them unless this is allowed; PowerShell UI
-should be avoided (`Read-Host`, `Write-Progress`, confirmations, and etc.)
+Limitations of asynchronous consoles:
+
+- Objects `$Far` and `$Psf` are not exposed.
+- Cmdlets `*-Far*` are exposed but normally should not be used.
+- PowerShell UI should be avoided: `Read-Host`, `Write-Progress`, confirmations, ...
 
 ---
 
@@ -787,22 +794,23 @@ sessions.
 
 * Main session
 
-    Opens a console file for the main PowerShell session. Commands are invoked
-    synchronously in the default runspace as if they invoked from the command line.
-    Output is sent to the same editor. All main consoles share the same workspace.
+    Opens a console for the main PowerShell session. Commands are invoked
+    synchronously in the default runspace as if they invoked from the command
+    line. Output is sent to the same editor. All main consoles share the same
+    workspace.
 
 * New local session
 
-    Opens a console file for a new local PowerShell session. Commands are invoked
-    asynchronously in a new private runspace. When the console closes all session
-    data are removed.
+    Opens a console for a new local PowerShell session. Commands are invoked
+    asynchronously in a new runspace. When the console closes all session data
+    are removed.
 
 * New remote session
 
-    Opens a console file in a new remote PowerShell session. Commands are invoked
-    asynchronously in a private remote runspace. You are prompted to enter a
-    computer name and a user domain\name. If a user name is specified then a
-    password is also requested. See `about_remote*` help topics for details.
+    Opens a console in a new remote PowerShell session. Commands are invoked
+    asynchronously in a new remote runspace. You are prompted to enter a
+    computer name and a user domain\name. If a user is specified then a
+    password is also requested.
 
 
 *********************************************************************
@@ -1336,66 +1344,6 @@ FileSystem and Registry do, Function and Variable do not.
 
 
 *********************************************************************
-# Settings {#Settings}
-
-[Contents](#Contents)
-
-Permanent settings are changed interactively in the settings panel
-`[F11] | FarNet | Settings | PowerShellFar`
-or in scripts as the properties of `$Psf.Settings`. In the latter case call
-`$Psf.Settings.Save()` in order to apply settings changes permanently.
-
-Other settings are kind of user preferences and they are usually set in the
-profile (e.g. Profile-.ps1). Useful command to view/change all settings:
-
-    ps: Open-FarPanel $Psf.Settings
-
-Preference settings are described in .chm. Permanent settings are:
-
-### Main start-up code ($Psf.Settings.StartupCode)
-
-PowerShell code which is executed once in the beginning of PowerShell session.
-Normally it dot-sources a profile. See [Profile-.ps1](#Profile) for a demo
-profile, at first you may use it, then you may want to create and use your own.
-Note that you can dot-source several profiles, see example below.
-
-IMPORTANT: main startup code is invoked asynchronously for faster Far startup
-and this adds some limitations:
-
-* Do not add editor event handlers in main startup code, use "Editor startup
-code";
-* Startup code errors are not shown automatically, you are notified later on
-other operations and have to examine variable `$Error`;
-* Don't call `$Far` directly or not, profile code is only for initialisation of
-the session, not for work. Profile functions being added can do that, indeed.
-
-Examples (mind dot and space before names):
-
-    . Profile-.ps1
-    . Profile-AnyPS.ps1; . Profile-PSFar-.ps1
-
-IMPORTANT: this profile has nothing to do with background jobs or async
-consoles, it is for the default runspace. Jobs and async consoles use their own
-runspaces.
-
-### Editor startup code ($Psf.Settings.StartupEdit)
-
-This code is executed once when an editor is opened the first time. Normally it
-adds editor event handlers ($Far.AnyEditor events). Full-fledged example is
-[Profile-Editor-.ps1](#ProfileEditor) (please, don't try it without reading
-information about it).
-
-    Example (mind dot and space before the name):
-    . Profile-Editor-.ps1
-
-### More settings
-
-There are many settings not included in configuration dialog and $Psf.Settings
-(for example other public properties of $Psf). These settings should be set or
-configured in a profile script (example: [Profile-.ps1](#Profile)).
-
-
-*********************************************************************
 # Global objects {#GlobalObjects}
 
 [Contents](#Contents)
@@ -1420,6 +1368,76 @@ There are three main objects defined as global variables.
     The PowerShell host instance. It is not really useful in PowerShellFar. But
     you may check the property `$Host.Name`, it is "FarHost" in PowerShellFar.
     The script may choose how to work depending on a host.
+
+
+*********************************************************************
+# Profiles {#Profiles}
+
+[Contents](#Contents)
+
+PowerShellFar is configured via profiles with special fixed names located in
+*%FARPROFILE%\FarNet\PowerShellFar*. Each profile is invoked on the relevant
+event, once per session. Profiles are invoked in the global scope.
+
+Supported profiles:
+
+- *Profile.ps1*
+- *Profile-Editor.ps1*
+- *Profile-Local.ps1*
+- *Profile-Remote.ps1*
+
+---
+### Profile.ps1
+
+It is the main session profile invoked once on loading PowerShellFar.
+
+IMPORTANT: It is invoked in the background for faster startup. This introduces
+some limitations, actually easy to deal with:
+
+* DO NOT add editor event handlers in the main profile, use the editor profile
+  *Profile-Editor.ps1*.
+* DO NOT call `$Far`. The profile is only for initialisation of the session,
+  not for doing any work.
+* Not terminating profile errors are not shown. A terminating error is shown in
+  a GUI message box with a bare error message. Examine the variable `$Error` on
+  profile troubleshooting after loading.
+
+See also [Profile.ps1](#Profile)
+
+---
+### Profile-Editor.ps1
+
+It is the editor profile invoked on the first use of editor. Normally it adds
+editor event handlers to `$Far.AnyEditor`. The example profile is
+[Profile-Editor.ps1](#ProfileEditor).
+
+---
+### Profile-Local.ps1 and Profile-Remote.ps1
+
+They are session profiles invoked on opening local and remote editor consoles,
+once per each new session.
+
+Not terminating profile errors are not shown. A terminating error is shown in a
+standard message box with a bare error message. Examine the variable `$Error`
+exactly *in these consoles* for full error information after opening.
+
+*********************************************************************
+# Settings {#Settings}
+
+[Contents](#Contents)
+
+Settings are mostly user preferences and they are usually set in *Profile.ps1*.
+The command to view or change settings temporarily is
+
+    ps: Open-FarPanel $Psf.Settings
+
+These settings are described in *FarNetAccord.chm*.
+
+Not everything is configured via `$Psf.Settings`. There are other exposed
+objects designed for configuration in the profile, for example `$Psf.Action`,
+`$Psf.Providers`.
+
+See example [Profile.ps1](#Profile).
 
 
 *********************************************************************
@@ -1563,27 +1581,13 @@ started by PowerShellFar and step units are started by the stepper.
 
 
 *********************************************************************
-# Profile-.ps1 - example of startup code {#Profile}
+# Profile.ps1 - the main session profile {#Profile}
 
 [Contents](#Contents)
 
-It is an example profile to start with, you may take what suits you there. It
-is not enabled by default, you have to open the configuration dialog and set:
-
-### StartupCode
-
-    . Profile-.ps1
-
-* Mind leading dot-space before the script name.
-* If it is not in the system path then use its full path.
-
-Then you can change this profile (or even better use your own) according to
-your preferences and activities, the script is only an example.
-
-The startup code can be more complex, but basically you should only load
-(dot-source) various profile scripts:
-
-    . C:\Scripts\AnyHost-Profile.ps1; . FarHost-Profile.ps1
+This is an example profile to start with, you may take what suits you there. It
+should be copied to *%FARPROFILE%\FarNet\PowerShellFar*. Then you can change it
+according to your preferences and activities, the script is only the example.
 
 ---
 
@@ -1607,7 +1611,7 @@ The profile is a good place to define aliases. Some sample aliases are predefine
 ---
 
     # Actions
-    $Psf.Action('&m. Macro(s)...', { Panel-Macro- })
+    $Psf.Action('&c. Complete word', { Complete-Word-.ps1 }, 'Dialog, Editor, Panels')
     ...
 
 Adds actions that you may invoke from the PowerShellFar menu directly or by
@@ -1637,56 +1641,35 @@ properties `Providers` (class `Actor`), `Columns` (class `ItemPanel`).
 
 Here you can set some options of `$Psf.Settings`, mostly UI preferences.
 
----
-
-    # Module helpers
-    Import-Module FarDescription
-    ...
-    function Show-ServicePanel
-    ...
-
-Import modules or add snap-ins that are used frequently. Occasionally used
-modules should not be loaded from a profile but it still may define some
-favourite proxy functions that load modules themselves.
-
 
 *********************************************************************
-# Profile-Editor-.ps1 - example editor event handlers {#ProfileEditor}
+# Profile-Editor.ps1 - the editor profile {#ProfileEditor}
 
 [Contents](#Contents)
 
-### Warnings
+The script is an example of the editor profile which is called once on the
+first use of an editor. It should be in *%FARPROFILE%\FarNet\PowerShellFar*.
 
-Read this topic carefully, view the script and then decide what you are going to
-use from this script and what should be removed. If you are not absolutely sure
-just don't use it at all. Besides, some operations can be invoked by commands,
-menu and used by macros.
+### Warning
 
-The author uses this editor profile to set editor event handlers even for keys,
-where macros might be used instead. This is done at least in order to be sure
-that handlers work fine.
+Read this topic carefully, view the script and then decide what you are going
+to use from this script and what should be removed. If you are not absolutely
+sure just don't use it at all. Besides, some operations can be invoked by
+commands, menu, and macros.
 
-- Don't use together with *HlfViewer*: disable the plugin or remove `[F1]` code
-from the script.
+The author uses this editor profile to set editor event handlers even in cases
+when macros might be used more effectively. This is done deliberately in order
+to be sure that handlers work fine, too. Other users may prefer to use macros.
 
-- Don't use with other plugins working with mouse events in editor or remove
-mouse code from the script.
+- DO NOT use it as it is together with *HlfViewer*. Either disable the plugin
+  or remove `[F1]` code from the script.
 
-- Never run more than once; more calls will add conflicting handlers. Actually
-you should not run it manually at all, use configuration "Editor startup code".
-
-### Configuration
-
-This or your own editor profile should be invoked automatically when an editor
-is opened the first time, if you set it as "Editor startup code"
-(see [Settings](#Settings)).
-
-    Example of "Editor startup code" (mind dot and space before the name):
-    . Profile-Editor-.ps1
+- DO NOT use it as it is with plugins processing mouse events in editors.
+  Either disable the plugins or remove mouse code from the script.
 
 ### Events and actions
 
-This example profile covers the following events:
+This example editor profile covers the following events:
 
 Keyboard events:
 
@@ -1695,7 +1678,7 @@ Keyboard events:
 Mouse events:
 
 - `LeftMove` - select to the moving location dynamically while moving.
-- `RightClick` - shows a menu with several commands (mostly for demo sake).
+- `RightClick` - shows a menu with some commands like Cut, Copy, and Paste.
 - `Shift+LeftClick` - select from the last LeftClick position or from the cursor.
 
 ### See also
@@ -2056,8 +2039,8 @@ fine to call external applications with output from the command line, scripts,
 editor consoles, and even background jobs.
 
 Still, console applications with user interaction and applications operating on
-console directly should not be used in PSF. Run them in Far or Cmd. This is
-especially important for asynchronous editor consoles and background jobs.
+console directly should not be used. Run them in Far or Cmd. This is especially
+important for asynchronous editor consoles and background jobs.
 
 
 *********************************************************************

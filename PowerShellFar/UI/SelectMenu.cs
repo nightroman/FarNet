@@ -12,6 +12,18 @@ namespace PowerShellFar.UI
 {
 	static class SelectMenu
 	{
+		const string GetPowerShellFarDriveName = @"
+$extra = @{}
+foreach($d in [System.IO.DriveInfo]::GetDrives()) {
+	if ($d.DriveType -ne 'Fixed') {
+		$extra[$d.Name.Substring(0, 1)] = $null
+	}
+}
+$drive = Get-PSDrive | .{process{ $_.Name }}
+foreach($d in $drive) { if (!$extra.Contains($d)) { $d } }
+''
+foreach($d in $drive) { if ($extra.Contains($d)) { $d } }
+";
 		/// <summary>
 		/// Returns e.g. MyDrive:
 		/// </summary>
@@ -29,7 +41,7 @@ namespace PowerShellFar.UI
 			}
 
 			int i = extras ? 2 : -1;
-			foreach (object o in A.InvokeCode("Get-PowerShellFarDriveName"))
+			foreach (var o in A.InvokeCode(GetPowerShellFarDriveName))
 			{
 				++i;
 				FarItem mi = m.Add(o.ToString());
