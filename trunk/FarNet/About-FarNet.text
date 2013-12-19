@@ -151,20 +151,11 @@ Synchronous. *RightControl* changes the caret position:
 
 Asynchronous job. *PowerShellFar* opens a dialog:
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":>: $Psf.InvokeInputCode()")
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps: $Psf.InvokeInputCode()")
 
 Asynchronous step. *PowerShellFar* opens a panel:
 
-    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::>: Get-Process | Out-FarPanel")
-
----
-
-### Known issue and workaround
-
-An asynchronous step opens the plugin menu internally. This menu is actually
-shown for a moment if a macro has its option "Disable screen output" checked.
-The workaround is funny: uncheck this macro option, i.e. allow screen output.
-The effect is the opposite: the unwanted menu is not shown.
+    Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", "::ps: Get-Process | Out-FarPanel")
 
 *********************************************************************
 ## Technical information {#TechInfo}

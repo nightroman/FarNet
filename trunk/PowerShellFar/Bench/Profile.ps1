@@ -1,15 +1,14 @@
 
 <#
 .Synopsis
-	Main startup code (example).
+	Main profile (example).
 	Author: Roman Kuzmin
 
 .Description
-	Configuration: startup code to load this profile:
-	. Profile-.ps1
+	The profile should be in %FARPROFILE%\FarNet\PowerShellFar
 
 	See API: Action [PowerShellFar.Actor]
-	See help: Profile-.ps1, Global objects, Plugin settings
+	See help: Profile.ps1, Global objects
 #>
 
 ### Error action: 'Stop' is recommended to stop on errors immediately
@@ -28,7 +27,6 @@ Set-Alias scff Select-FarFile-.ps1 -Description 'Select files in the panel'
 Set-Alias srff Search-FarFile -Description 'Search files in the panel'
 
 ### Actions
-$Psf.Action('&a. Favorites...', { Menu-Favorites-.ps1 })
 $Psf.Action('&c. Complete word', { Complete-Word-.ps1 }, 'Dialog, Editor, Panels')
 $Psf.Action('&t. Edit description', { Edit-FarDescription-.ps1 }, 'Editor, Viewer, Panels')
 $Psf.Action('&h. Go to panel head item', { Go-Head-.ps1 }, 'Panels')
@@ -92,43 +90,3 @@ $Psf.Providers = @{
 $Psf.Settings.PopupAutoSelect = $false
 $Psf.Settings.PopupMaxHeight = 0
 $Psf.Settings.PopupNoShadow = $false
-
-### Module helpers
-# Here we import some modules so that they are always loaded and ready to use.
-# Alternatively we can use proxy functions that load their modules themselves.
-
-#Import-Module FarDescription
-#Import-Module FarInventory
-
-<#
-.Synopsis
-	Open-ServicePanel proxy.
-#>
-function Open-ServicePanel
-{
-	Remove-Item Function:\Open-ServicePanel
-	Import-Module FarInventory
-	Open-ServicePanel
-}
-
-<#
-.Synopsis
-	Open-StartupCommandPanel proxy.
-#>
-function Open-StartupCommandPanel
-{
-	Remove-Item Function:\Open-StartupCommandPanel
-	Import-Module FarInventory
-	Open-StartupCommandPanel
-}
-
-<#
-.Synopsis
-	Open-UninstallPanel proxy.
-#>
-function Open-UninstallPanel
-{
-	Remove-Item Function:\Open-UninstallPanel
-	Import-Module FarInventory
-	Open-UninstallPanel
-}

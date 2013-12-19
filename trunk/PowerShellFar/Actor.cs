@@ -208,12 +208,17 @@ namespace PowerShellFar
 
 			// Add the module path.
 			// STOP: [_100127_182335 test]
-			// *) It has to be done before profile loading, so that it can load modules.
-			// *) And it has to be done after the core loading so that standard paths are added.
-			Environment.SetEnvironmentVariable(Word.PSModulePath, string.Concat(AppHome, "\\Modules;", Environment.GetEnvironmentVariable(Word.PSModulePath)));
+			// *) Add before the profile, so that it can load modules.
+			// *) Add after the core loading so that standard paths are added.
+			// *) Check for already added, e.g. when starting from another Far.
+			var modulePathAdd = string.Concat(AppHome, "\\Modules;");
+			var modulePathNow = Environment.GetEnvironmentVariable(Word.PSModulePath);
+			if (!modulePathNow.Contains(modulePathAdd))
+				Environment.SetEnvironmentVariable(Word.PSModulePath, modulePathAdd + modulePathNow);
 
 			//! If it is async then PS catches all and adds errors to $Error.
 			//! Thus, we don't catch anything, because this is normally async.
+			string message = null;
 			try
 			{
 				//! Bug (_090315_091325)
@@ -230,36 +235,33 @@ namespace PowerShellFar
 				var2.Description = "Exposes FarNet.";
 				Engine.SessionState.PSVariable.Set(var2);
 
-				// invoke internal profile (NB: there is trap in there) and startup code
-				using (Pipeline p = Runspace.CreatePipeline())
+				// invoke profiles
+				using (var ps = NewPowerShell())
 				{
-					p.Commands.AddScript(Resource.PowerShellFar);
-					p.Invoke();
-				}
+					// internal profile (NB: there is trap in there)
+					ps.AddScript(Resource.PowerShellFar, false).Invoke();
 
-				// invoke user startup code, separately for better diagnostics
-				if (!string.IsNullOrEmpty(Settings.StartupCode))
-				{
-					try
+					// user profile, separately for better diagnostics
+					var profile = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.RoamingData, true), "Profile.ps1");
+					if (File.Exists(profile))
 					{
-						using (Pipeline p = Runspace.CreatePipeline())
+						ps.Commands.Clear();
+						try
 						{
-							p.Commands.AddScript(Settings.StartupCode);
-							p.Invoke();
+							ps.AddCommand(profile, false).Invoke();
 						}
-					}
-					catch (RuntimeException ex)
-					{
-						string msg = string.Format(null, @"
-Startup code has failed.
-
-Code (see configuration):
+						catch (RuntimeException ex)
+						{
+							message = string.Format(null, @"
+Error in the profile:
 {0}
 
-Reason (see also $Error):
+Error message:
 {1}
-", Settings.StartupCode, ex.Message);
-						Far.Api.Message(msg, Res.Me, MessageOptions.Warning | MessageOptions.Gui | MessageOptions.Ok);
+
+See $Error for details.
+", profile, ex.Message);
+						}
 					}
 				}
 			}
@@ -270,6 +272,10 @@ Reason (see also $Error):
 				{
 					_lock_runspace_opened_or_broken_ = true;
 				}
+
+				// GUI message
+				if (message != null)
+					Far.Api.Message(message, Res.Me, MessageOptions.Warning | MessageOptions.Gui | MessageOptions.Ok);
 			}
 		}
 
@@ -291,8 +297,8 @@ Reason (see also $Error):
 				//! emergency
 				Entry.Unregister();
 				throw new ModuleException(@"
-The engine is not successfully initialized and will be unloaded.
-For known issues see 'Problems and solutions' in the manual.
+The engine was not successfully initialized and will be unloaded.
+For known issues see 'Problems and solutions' in the FarNet manual.
 ", _errorFatal);
 			}
 
@@ -308,19 +314,8 @@ For known issues see 'Problems and solutions' in the manual.
 				Runspace.DefaultRunspace = Runspace;
 
 				// add the debug handler
-				//?? what if it is already added by profile?
 				Runspace.Debugger.DebuggerStop += OnDebuggerStop;
 				Runspace.Debugger.BreakpointUpdated += OnBreakpointUpdated;
-
-				//! Check and notify about startup errors, remember: no interaction.
-				ArrayList errors = Engine.SessionState.PSVariable.GetValue("Error") as ArrayList;
-				if (errors != null && errors.Count > 0)
-				{
-					Far.Api.Message(@"
-The startup code was invoked with errors.
-View the error list or the variable $Error.
-", "PowerShellFar startup errors", MessageOptions.Gui);
-				}
 			}
 		}
 

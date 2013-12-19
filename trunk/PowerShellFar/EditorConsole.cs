@@ -30,6 +30,7 @@ namespace PowerShellFar
 		FarHost FarHost;
 		Runspace Runspace;
 		PowerShell PowerShell;
+		bool _doneTabExpansion;
 
 		static string GetFolderPath()
 		{
@@ -130,6 +131,8 @@ namespace PowerShellFar
 			RunspaceOpen();
 
 			Editor.Title = "Local session: " + Path.GetFileName(Editor.FileName);
+
+			InvokeProfile("Profile-Local.ps1");
 		}
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		void OpenRemoteSession()
@@ -155,6 +158,29 @@ namespace PowerShellFar
 			RunspaceOpen();
 
 			Editor.Title = computerName + " session: " + Path.GetFileName(Editor.FileName);
+
+			InvokeProfile("Profile-Remote.ps1");
+		}
+		void InvokeProfile(string fileName)
+		{
+			var profile = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.RoamingData, true), fileName);
+			if (!File.Exists(profile))
+				return;
+
+			try
+			{
+				using (var ps = PowerShell.Create())
+				{
+					ps.Runspace = Runspace;
+					ps.AddCommand(profile, false).Invoke();
+				}
+			}
+			catch (RuntimeException ex)
+			{
+				Far.Api.Message(
+					string.Format(null, "Error in {0}, see $Error for defails. Message: {1}", fileName, ex.Message),
+					Res.Me, MessageOptions.Warning | MessageOptions.LeftAligned);
+			}
 		}
 		//! This method is sync and uses pipeline, that is why we must not null the pipeline async.
 		void OnCtrlCPressed(object sender, EventArgs e)
@@ -163,6 +189,14 @@ namespace PowerShellFar
 			{
 				//! Stop() tends to hang.
 				PowerShell.BeginStop(AsyncStop, null);
+			}
+		}
+		void InitTabExpansion()
+		{
+			if (!_doneTabExpansion)
+			{
+				_doneTabExpansion = true;
+				EditorKit.InitTabExpansion(Runspace);
 			}
 		}
 		/// <summary>
@@ -207,6 +241,7 @@ namespace PowerShellFar
 							if (GetCommandArea() != null && EditorKit.NeedsTabExpansion(Editor))
 							{
 								e.Ignore = true;
+								InitTabExpansion();
 								EditorKit.ExpandCode(currentLine, Runspace);
 								Editor.Redraw();
 							}

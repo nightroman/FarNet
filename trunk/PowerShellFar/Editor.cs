@@ -25,36 +25,15 @@ namespace PowerShellFar
 	{
 		const string CompletionText = "CompletionText";
 		const string ListItemText = "ListItemText";
-
-		static int _initTabExpansion;
-		static string _callTabExpansion;
-		
-		static void InitTabExpansion()
-		{
-			if (_initTabExpansion != 0)
-				return;
-
-			_initTabExpansion = -1;
-
-			string path;
-
-			if (A.PSVersion.Major > 2)
-			{
-				path = A.Psf.AppHome + @"\TabExpansion2.ps1";
-				_callTabExpansion = @"
+		const string CallTabExpansionV3 = @"
 param($inputScript, $cursorColumn)
 $r = TabExpansion2 $inputScript $cursorColumn
 @{
 	CompletionMatches = @(foreach($_ in $r.CompletionMatches) { @{CompletionText = $_.CompletionText; ListItemText = $_.ListItemText} })
 	ReplacementIndex = $r.ReplacementIndex
 	ReplacementLength = $r.ReplacementLength
-}
-";
-			}
-			else
-			{
-				path = A.Psf.AppHome + @"\TabExpansion.ps1";
-				_callTabExpansion = @"
+}";
+		const string CallTabExpansionV2 = @"
 param($inputScript, $cursorColumn)
 $line = $inputScript.Substring(0, $cursorColumn)
 $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
@@ -62,20 +41,50 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 	CompletionMatches = @(TabExpansion $line $word)
 	ReplacementIndex = $line.Length - $word.Length
 	ReplacementLength = $word.Length
-}
-";
+}";
+
+		static bool _doneTabExpansion;
+		static string _pathTabExpansion;
+		static string _callTabExpansion;
+
+		static void InitTabExpansion()
+		{
+			if (!_doneTabExpansion)
+			{
+				_doneTabExpansion = true;
+				InitTabExpansion(null);
+			}
+		}
+		//! It is called once in the main session and once per each local and remote session.
+		public static void InitTabExpansion(Runspace runspace)
+		{
+			// init path and caller
+			if (_pathTabExpansion == null)
+			{
+				if (A.PSVersion.Major > 2)
+				{
+					_pathTabExpansion = Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1");
+					_callTabExpansion = CallTabExpansionV3;
+				}
+				else
+				{
+					_pathTabExpansion = Path.Combine(A.Psf.AppHome, "TabExpansion.ps1");
+					_callTabExpansion = CallTabExpansionV2;
+				}
 			}
 
-			// TabExpansion.ps1 must exist
-			if (!File.Exists(path))
-				throw new FileNotFoundException("path");
+			// load TabExpansion
+			using (var ps = runspace == null ? A.Psf.NewPowerShell() : PowerShell.Create())
+			{
+				if (runspace != null)
+					ps.Runspace = runspace;
 
-			A.InvokeCode(". $args[0]", path);
-			_initTabExpansion = +1;
+				ps.AddCommand(_pathTabExpansion, false).Invoke();
+			}
 		}
 		static string TECompletionText(object value)
 		{
-			var t = value as Hashtable;
+			var t = Cast<Hashtable>.From(value); //! remote gets PSObject
 			if (t == null)
 				return value.ToString();
 
@@ -83,7 +92,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 		}
 		static string TEListItemText(object value)
 		{
-			var t = value as Hashtable;
+			var t = Cast<Hashtable>.From(value); //! remote gets PSObject
 			if (t == null)
 				return value.ToString();
 
@@ -204,7 +213,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				}
 
 				// results
-				var words = (IList)result["CompletionMatches"];
+				var words = Cast<IList>.From(result["CompletionMatches"]); //! remote gets PSObject
 				int replacementIndex = (int)result["ReplacementIndex"];
 				int replacementLength = (int)result["ReplacementLength"];
 				replacementIndex -= lineOffset;
@@ -393,13 +402,16 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 
 			try
 			{
-				string code = Settings.Default.StartupEdit;
-				if (!string.IsNullOrEmpty(code))
-					A.InvokeCode(code);
+				var profile = Path.Combine(A.Psf.Manager.GetFolderPath(SpecialFolder.RoamingData, true), "Profile-Editor.ps1");
+				if (File.Exists(profile))
+				{
+					using (var ps = A.Psf.NewPowerShell())
+						ps.AddCommand(profile, false).Invoke();
+				}
 			}
 			catch (RuntimeException ex)
 			{
-				throw new RuntimeException("Editor startup code failed (see configuration).", ex);
+				throw new RuntimeException("Error in Profile-Editor.ps1, see $Error for defails.", ex);
 			}
 			finally
 			{

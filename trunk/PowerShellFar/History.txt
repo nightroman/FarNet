@@ -1,6 +1,48 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.53 =
+
+NOTE: Simple manual upgrade steps may be needed.
+
+CONFIGURATION VIA PROFILES
+
+PowerShellFar is configured via profiles with special fixed names located in
+"%FARPROFILE%\FarNet\PowerShellFar". Each profile is invoked on the relevant
+event, once per session. Profiles are invoked in the global scope.
+
+HOW TO UPGRADE. Rename profile scripts and copy them to the profile directory.
+Cosmetic changes may be needed depending on how profiles were called before.
+
+Supported profiles:
+- Profile.ps1        - use new or upgraded
+- Profile-Editor.ps1 - use new or upgraded
+- Profile-Local.ps1  - new feature
+- Profile-Remote.ps1 - new feature
+
+"Profile.ps1" is the main session profile invoked on loading PowerShellFar. It
+replaces the old setting "StartupCode". Renamed "Profile-.ps1" to "Profile.ps1".
+
+"Profile-Editor.ps1" is the editor profile invoked on the first use of editor.
+It replaces the old setting "StartupEdit". Renamed "Profile-Editor-.ps1" to
+"Profile-Editor.ps1".
+
+NEW: "Profile-Local.ps1" and "Profile-Remote.ps1" are session profiles invoked
+on opening local and remote editor consoles, once per each new session.
+
+Updated the manual and added the new topic "Profiles".
+
+If the old file "%FARPROFILE%\FarNet\PowerShellFar\Settings.resources" exists
+remove it because PowerShellFar does not have any settings saved there now.
+
+CODE COMPLETION IN LOCAL AND REMOTE CONSOLES
+
+TabExpansion2/TabExpansion which is used in the main session is enabled in
+local and remote editor consoles, too. It is also initialized on the first
+completion and the same completer rules and expansion profiles are used.
+
+Fixed some code completion issues in remote consoles.
+
 = 5.0.52 =
 
 TabExpansion
