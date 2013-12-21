@@ -3,8 +3,14 @@ http://code.google.com/p/farnet/downloads/list
 
 = 5.0.54 =
 
-Fixed incorrect comparison of keys (transition to Far3, v5.0.0).
-E.g. break keys in some menus did not work properly.
+Fixed incorrect comparison of keys (transition to Far3, v5.0.0). E.g. break
+keys in some menus did not work.
+
+Fixed issues in the "Background job" dialog shown on Far exit with existing
+jobs. Used the PSF external viewer instead of Notepad for viewing jobs output.
+
+Added the switch /ro to the default PSF external viewer command, so it is:
+<this-far.exe> /ro /m /p /v <file>
 
 = 5.0.53 =
 

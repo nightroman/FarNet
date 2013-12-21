@@ -65,7 +65,7 @@ namespace PowerShellFar
 
 			// use default external viewer
 			externalViewerFileName = Process.GetCurrentProcess().MainModule.FileName;
-			externalViewerArguments = "/m /p /v \"" + fileName + "\"";
+			externalViewerArguments = "/ro /m /p /v \"" + fileName + "\"";
 			return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 		}
 		///
@@ -410,17 +410,6 @@ namespace My
 			{
 				FileName = fileName,
 				Arguments = arguments
-			});
-		}
-		/// <summary>
-		/// Simple call helper. Eventually may help with a custom editor.
-		/// </summary>
-		public static Process StartNotepad(string path)
-		{
-			return Process.Start(new ProcessStartInfo()
-			{
-				FileName = "Notepad.exe",
-				Arguments = "\"" + path + "\""
 			});
 		}
 	}
