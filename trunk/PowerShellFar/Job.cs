@@ -88,10 +88,100 @@ namespace PowerShellFar
 		// Stopwatch counting job keeping time
 		Stopwatch KeepStopwatch;
 
-		// Engine stuff
+		// Engine
+		IAsyncResult InvokeResult;
 		readonly Runspace Runspace;
 		readonly PowerShell PowerShell;
-		IAsyncResult InvokeResult;
+
+		#region Public properties
+		/// <summary>
+		/// Gets the command that is invoked by this job.
+		/// </summary>
+		public string Command
+		{
+			get { return JobCommand.Command; }
+		}
+		/// <summary>
+		/// Gets the friendly name to identify the job.
+		/// </summary>
+		public string Name { get; private set; }
+		/// <summary>
+		/// Gets the wait handle that is signaled when job is finished.
+		/// </summary>
+		public WaitHandle Finished
+		{
+			get { return InvokeResult == null ? null : InvokeResult.AsyncWaitHandle; }
+		}
+		//! Used by Search-Regex-.ps1
+		/// <summary>
+		/// Gets the job command parameters.
+		/// </summary>
+		/// <remarks>
+		/// <c>IDictionary</c> for named parameters, <c>IList</c> for arguments, or a single argument.
+		/// <para>
+		/// Note that parameters can be used also for output via class instance properties,
+		/// normally when primary <see cref="Output"/> data should not be mixed with others.
+		/// Mind thread safety issues when a job works with not thread safe instances.
+		/// </para>
+		/// </remarks>
+		public object Parameters { get; private set; }
+		//! Used by Search-Regex-.ps1
+		/// <summary>
+		/// Gets the status of the job.
+		/// </summary>
+		/// <remarks>
+		/// Properties:
+		/// <para>
+		/// <c>State</c>: Gets the current job state: <c>NotStarted</c>, <c>Running</c>, <c>Stopping</c>, <c>Stopped</c>, <c>Failed</c>, and <c>Completed</c>.
+		/// </para>
+		/// <para>
+		/// <c>Reason</c>: Gets the reason for the last state change if the state changed because of an error.
+		/// </para>
+		/// </remarks>
+		public PSInvocationStateInfo JobStateInfo
+		{
+			get { return PowerShell.InvocationStateInfo; }
+		}
+		/// <summary>
+		/// Output of the job started for output. It is null for other jobs.
+		/// </summary>
+		public PSDataCollection<PSObject> Output { get; private set; }
+		/// <summary>
+		/// Gets the buffer where debug information is stored.
+		/// </summary>
+		public PSDataCollection<DebugRecord> Debug
+		{
+			get { return PowerShell.Streams.Debug; }
+		}
+		/// <summary>
+		/// Gets the buffer where error information is stored.
+		/// </summary>
+		public PSDataCollection<ErrorRecord> Error
+		{
+			get { return PowerShell.Streams.Error; }
+		}
+		/// <summary>
+		/// Gets the buffer where progress information is stored.
+		/// </summary>
+		public PSDataCollection<ProgressRecord> Progress
+		{
+			get { return PowerShell.Streams.Progress; }
+		}
+		/// <summary>
+		/// Gets the buffer where verbose information is stored.
+		/// </summary>
+		public PSDataCollection<VerboseRecord> Verbose
+		{
+			get { return PowerShell.Streams.Verbose; }
+		}
+		/// <summary>
+		/// Gets the buffer where warning information is stored.
+		/// </summary>
+		public PSDataCollection<WarningRecord> Warning
+		{
+			get { return PowerShell.Streams.Warning; }
+		}
+		#endregion
 
 		/// <summary>
 		/// New job.
@@ -159,108 +249,6 @@ namespace PowerShellFar
 				Output = new PSDataCollection<PSObject>();
 			}
 		}
-
-		#region Public properties
-
-		/// <summary>
-		/// Gets the command that is invoked by this job.
-		/// </summary>
-		public string Command
-		{
-			get { return JobCommand.Command; }
-		}
-
-		/// <summary>
-		/// Gets the friendly name to identify the job.
-		/// </summary>
-		public string Name { get; private set; }
-
-		/// <summary>
-		/// Gets the wait handle that is signaled when job is finished.
-		/// </summary>
-		public WaitHandle Finished
-		{
-			get { return InvokeResult == null ? null : InvokeResult.AsyncWaitHandle; }
-		}
-
-		//! Used by Search-Regex-.ps1
-		/// <summary>
-		/// Gets the job command parameters.
-		/// </summary>
-		/// <remarks>
-		/// <c>IDictionary</c> for named parameters, <c>IList</c> for arguments, or a single argument.
-		/// <para>
-		/// Note that parameters can be used also for output via class instance properties,
-		/// normally when primary <see cref="Output"/> data should not be mixed with others.
-		/// Mind thread safety issues when a job works with not thread safe instances.
-		/// </para>
-		/// </remarks>
-		public object Parameters { get; private set; }
-
-		//! Used by Search-Regex-.ps1
-		/// <summary>
-		/// Gets the status of the job.
-		/// </summary>
-		/// <remarks>
-		/// Properties:
-		/// <para>
-		/// <c>State</c>: Gets the current job state: <c>NotStarted</c>, <c>Running</c>, <c>Stopping</c>, <c>Stopped</c>, <c>Failed</c>, and <c>Completed</c>.
-		/// </para>
-		/// <para>
-		/// <c>Reason</c>: Gets the reason for the last state change if the state changed because of an error.
-		/// </para>
-		/// </remarks>
-		public PSInvocationStateInfo JobStateInfo
-		{
-			get { return PowerShell.InvocationStateInfo; }
-		}
-
-		/// <summary>
-		/// Output of the job started for output. It is null for other jobs.
-		/// </summary>
-		public PSDataCollection<PSObject> Output { get; private set; }
-
-		/// <summary>
-		/// Gets the buffer where debug information is stored.
-		/// </summary>
-		public PSDataCollection<DebugRecord> Debug
-		{
-			get { return PowerShell.Streams.Debug; }
-		}
-
-		/// <summary>
-		/// Gets the buffer where error information is stored.
-		/// </summary>
-		public PSDataCollection<ErrorRecord> Error
-		{
-			get { return PowerShell.Streams.Error; }
-		}
-
-		/// <summary>
-		/// Gets the buffer where progress information is stored.
-		/// </summary>
-		public PSDataCollection<ProgressRecord> Progress
-		{
-			get { return PowerShell.Streams.Progress; }
-		}
-
-		/// <summary>
-		/// Gets the buffer where verbose information is stored.
-		/// </summary>
-		public PSDataCollection<VerboseRecord> Verbose
-		{
-			get { return PowerShell.Streams.Verbose; }
-		}
-
-		/// <summary>
-		/// Gets the buffer where warning information is stored.
-		/// </summary>
-		public PSDataCollection<WarningRecord> Warning
-		{
-			get { return PowerShell.Streams.Warning; }
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Job command.
@@ -373,8 +361,6 @@ namespace PowerShellFar
 			if (Disposed)
 				return;
 
-			Disposed = true;
-
 			if (PowerShell != null)
 				PowerShell.Dispose();
 
@@ -388,8 +374,10 @@ namespace PowerShellFar
 				if (JobUI.FileName != null)
 					File.Delete(JobUI.FileName);
 			}
-			
+
 			JobList.Remove(this);
+
+			Disposed = true;
 		}
 
 		/// <summary>
@@ -673,14 +661,25 @@ namespace PowerShellFar
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		internal static void StopJobsOnExit()
 		{
+			bool force = false;
 			while (JobList.Count > 0)
 			{
-				Job job = JobList[0];
-
-				if (!job.IsRunning && job.Length == 0)
+				// try to get a job because the list may get empty after the check for the Count
+				Job job;
+				try
 				{
+					job = JobList[0];
+				}
+				catch (ArgumentOutOfRangeException)
+				{
+					return;
+				}
+
+				if (force || !job.IsRunning && job.Length == 0)
+				{
+					if (job.IsRunning)
+						job.StopJob();
 					job.Dispose();
-					JobList.RemoveAt(0);
 					continue;
 				}
 
@@ -697,18 +696,12 @@ Ignore: discard all jobs and output
 
 ", job.ToLine(100), job.StateText, job.Length);
 
-				string title = "Background job";
-				Far.Api.UI.WindowTitle = title;
-
-				switch (Far.Api.Message(message, title, MessageOptions.Gui | MessageOptions.AbortRetryIgnore))
+				switch (Far.Api.Message(message, "Background job", MessageOptions.Gui | MessageOptions.AbortRetryIgnore))
 				{
 					case 0:
-						{
-							if (job.IsRunning)
-								job.StopJob();
-							job.Dispose();
-							JobList.RemoveAt(0);
-						}
+						if (job.IsRunning)
+							job.StopJob();
+						job.Dispose();
 						break;
 					case 1:
 						if (job.IsRunning)
@@ -719,22 +712,14 @@ Ignore: discard all jobs and output
 						else
 						{
 							if (job.JobUI.Length > 0)
-								My.ProcessEx.StartNotepad(job.FileName).WaitForExit();
+								Zoo.StartExternalViewer(job.FileName).WaitForExit();
 
 							job.Dispose();
-							JobList.RemoveAt(0);
 						}
 						break;
 					default:
-						{
-							foreach (Job j in JobList)
-							{
-								j.StopJob(); //!
-								j.Dispose();
-							}
-							JobList.Clear();
-						}
-						return;
+						force = true;
+						continue;
 				}
 			}
 		}
