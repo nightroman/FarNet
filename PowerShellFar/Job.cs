@@ -696,7 +696,8 @@ Ignore: discard all jobs and output
 
 ", job.ToLine(100), job.StateText, job.Length);
 
-				switch (Far.Api.Message(message, "Background job", MessageOptions.Gui | MessageOptions.AbortRetryIgnore))
+				Far.Api.UI.WindowTitle = Res.BackgroundJobs;
+				switch (Far.Api.Message(message, Res.BackgroundJobs, MessageOptions.Gui | MessageOptions.AbortRetryIgnore))
 				{
 					case 0:
 						if (job.IsRunning)
