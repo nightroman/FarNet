@@ -539,7 +539,7 @@ int FarUI::ReadKeys(array<KeyData^>^ keys)
 		KeyData key(info->VirtualKeyCode, info->CtrlAltShift());
 		for(int i = 0; i < keys->Length; ++i)
 		{
-			if (keys[i] == %key)
+			if (key.Equals(keys[i]))
 			{
 				result = i;
 				break;

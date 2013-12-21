@@ -141,7 +141,7 @@ namespace PowerShellFar
 			IMenu menu = HelpMenuCreate();
 			if (menu.Show())
 			{
-				if (menu.Key == new KeyData(KeyCode.F1))
+				if (menu.Key.VirtualKeyCode == KeyCode.F1)
 					ShowHelpForPanel();
 			}
 		}
