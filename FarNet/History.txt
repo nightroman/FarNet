@@ -1,5 +1,10 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.38 =
+
+Fixed incorrect comparison of keys (transition to Far3, v5.0.0).
+E.g. [Esc] might not work in progress forms.
+
 = 5.0.37 =
 
 Fixed getting text length of dialog edit boxes.

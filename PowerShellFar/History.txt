@@ -1,6 +1,11 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.54 =
+
+Fixed incorrect comparison of keys (transition to Far3, v5.0.0).
+E.g. break keys in some menus did not work properly.
+
 = 5.0.53 =
 
 NOTE: Simple manual upgrade steps may be needed.

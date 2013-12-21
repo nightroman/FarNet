@@ -492,7 +492,7 @@ namespace PowerShellFar
 						IViewer v = Far.Api.CreateViewer();
 						v.FileName = job.FileName;
 						v.DisableHistory = true;
-						if (menu.Key == new KeyData(KeyCode.F3))
+						if (menu.Key.VirtualKeyCode == KeyCode.F3)
 						{
 							v.Open(OpenMode.Modal);
 							break;

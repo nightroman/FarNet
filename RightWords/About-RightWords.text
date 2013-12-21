@@ -121,8 +121,9 @@ Regular expression patterns are created with IgnorePatternWhitespace option, so
 that they support line comments (`#`) and all white spaces should be explicitly
 specified as `\ `, `\t`, `\s`, etc.
 
-WordPattern
-: Defines the regular expression pattern for word recognition in texts.
+**WordPattern**
+
+Defines the regular expression pattern for word recognition in texts.
 
 The default pattern: `[\p{Lu}\p{Ll}]\p{Ll}+` (words with 2+ letters,
 "RightWords" is treated as "Right" and "Words")
@@ -138,26 +139,27 @@ For performance reasons no checks are done in order to detected nested groups.
 Example pattern for *.lng* and *.restext* files:
 `[\p{Lu}\p{Ll}](?:\p{Ll}|(&))+`
 
-SkipPattern
-: Defines the regular expression pattern for text areas to be ignored. The
-  default pattern is null (not specified, nothing is ignored).
+**SkipPattern**
+
+Defines the regular expression pattern for text areas to be ignored. The
+default pattern is null (not specified, nothing is ignored).
 
 Sample pattern:
 
     \w*\d\w* # words with digits
-    |
-    "(?:\w+:|\.+)?[\\/][^"]+" # quoted path-like text
-    |
-    (?:\w+:|\.+)?[\\/][^\s]+ # simple path-like text
+    | "(?:\w+:|\.+)?[\\/][^"]+" # quoted path-like text
+    | (?:\w+:|\.+)?[\\/][^\s]+ # simple path-like text
 
-HighlightingBackgroundColor, HighlightingForegroundColor
-: Highlighting colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed,
-  DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta,
-  Yellow, White.
+**HighlightingBackgroundColor, HighlightingForegroundColor**
 
-UserDictionaryDirectory
-: The custom directory of user dictionaries. Environment variables are
-  expanded. The default is the module roaming directory.
+Highlighting colors: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed,
+DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta,
+Yellow, White.
+
+**UserDictionaryDirectory**
+
+The custom directory of user dictionaries. Environment variables are expanded.
+The default is the module roaming directory.
 
 *********************************************************************
 ## History
