@@ -12,6 +12,7 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Reflection;
 using System.Security.Permissions;
+using System.Threading;
 using FarNet;
 
 namespace PowerShellFar
@@ -142,18 +143,17 @@ namespace PowerShellFar
 			FarUI = new FarUI();
 			FarHost = new FarHost(FarUI);
 
-			// configuration
-			RunspaceConfiguration configuration = RunspaceConfiguration.Create();
+			// initial state
+			var state = InitialSessionState.CreateDefault();
 
-			// add cmdlets
-			Commands.BaseCmdlet.AddCmdlets(configuration);
+			// cmdlets
+			Commands.BaseCmdlet.AddCmdlets(state);
 
-			// formats: can add now, but let's do it async in profile
-			// ps: Update-TypeData "$($Psf.AppHome)\PowerShellFar.types.ps1xml"
-			// configuration.Types.Append(new TypeConfigurationEntry(Path.Combine(AppHome, "PowerShellFar.types.ps1xml")));
+			// apartment
+			state.ApartmentState = Environment.GetEnvironmentVariable("PSF.ApartmentState") == "MTA" ? ApartmentState.MTA : ApartmentState.STA;
 
 			// open/start runspace
-			Runspace = RunspaceFactory.CreateRunspace(FarHost, configuration);
+			Runspace = RunspaceFactory.CreateRunspace(FarHost, state);
 			Runspace.StateChanged += OnRunspaceStateEvent;
 			if (sync)
 				Runspace.Open();
@@ -161,23 +161,8 @@ namespace PowerShellFar
 				Runspace.OpenAsync();
 		}
 
-		// universal object for lock
-		static readonly object _lock = new object();
-
-		// use only in lock(_lock)
-		bool _lock_runspace_opened_or_broken_;
-
-		// tells to sleep
-		bool IsRunspaceOpened
-		{
-			get
-			{
-				lock (_lock)
-				{
-					return _lock_runspace_opened_or_broken_;
-				}
-			}
-		}
+		// Tells that loading is over
+		bool _isRunspaceOpenedOrBroken;
 
 		//! Fatal error for posponed action.
 		Exception _errorFatal;
@@ -197,12 +182,9 @@ namespace PowerShellFar
 				// broken; keep an error silently
 				_errorFatal = e.RunspaceStateInfo.Reason;
 
-				//! Set broken flag, so that waiting threads may continue.
-				//! The last code, Invoking() can be waiting for this.
-				lock (_lock)
-				{
-					_lock_runspace_opened_or_broken_ = true;
-				}
+				//! Set the broken flag, waiting threads may continue.
+				//! The last code, Invoking() may be waiting for this.
+				_isRunspaceOpenedOrBroken = true;
 				return;
 			}
 
@@ -221,10 +203,10 @@ namespace PowerShellFar
 			string message = null;
 			try
 			{
-				//! Bug (_090315_091325)
-				//! Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
-				//! Looks like a hack, but it works fine. Problem case: run Test-CallStack-.ps1, Esc -> the error above.
-				//! SVN tag 4.2.26
+				//_090315_091325
+				// Get engine once to avoid this: "A pipeline is already executing. Concurrent SessionStateProxy method call is not allowed."
+				// Looks like a hack, but it works fine. Problem case: run Test-CallStack-.ps1, Esc -> the error above.
+				// SVN tag 4.2.26
 				_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
 
 				// new variables
@@ -267,15 +249,12 @@ See $Error for details.
 			}
 			finally
 			{
-				//! The last code, Invoking() can be waiting for this.
-				lock (_lock)
-				{
-					_lock_runspace_opened_or_broken_ = true;
-				}
-
 				// GUI message
 				if (message != null)
 					Far.Api.Message(message, Res.Me, MessageOptions.Warning | MessageOptions.Gui | MessageOptions.Ok);
+
+				//! The last code, Invoking() may be waiting for this.
+				_isRunspaceOpenedOrBroken = true;
 			}
 		}
 
@@ -305,8 +284,8 @@ For known issues see 'Problems and solutions' in the FarNet manual.
 			// complete opening
 			if (Runspace.DefaultRunspace == null)
 			{
-				//! wait for initialization
-				while (!IsRunspaceOpened)
+				//! wait while loading
+				while (!_isRunspaceOpenedOrBroken)
 					System.Threading.Thread.Sleep(100);
 
 				//! set default runspace for handlers

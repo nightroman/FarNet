@@ -1,6 +1,24 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.55 =
+
+INITIALIZATION
+
+Internal changes in session initialization. Like in ISE and ConsoleHost v3, the
+default apartment state is STA. As a result, for example, it is possible to use
+System.Windows.Forms.Clipboard, WPF forms, and other features that require STA.
+
+NOTE: If MTA is still required set the env var: PSF.ApartmentState=MTA. Please,
+report such cases, perhaps a better option is needed.
+
+NOTE: New initialization caused an insignificant change in one test. If you
+notice any significant changes in PowerShellFar behaviour, please report.
+
+OTHER CHANGES
+
+Amended items in completion lists for commands and provider items.
+
 = 5.0.54 =
 
 Fixed incorrect comparison of keys (transition to Far3, v5.0.0). E.g. break

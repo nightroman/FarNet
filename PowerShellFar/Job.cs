@@ -205,12 +205,12 @@ namespace PowerShellFar
 			if (ui)
 			{
 				JobUI = new JobUI();
-				Runspace = RunspaceFactory.CreateRunspace(new FarHost(JobUI), Runspace.DefaultRunspace.RunspaceConfiguration);
+				Runspace = RunspaceFactory.CreateRunspace(new FarHost(JobUI), Runspace.DefaultRunspace.InitialSessionState);
 			}
 			else
 			{
 				//! DefaultHost is created internally. Perhaps it is reasonable to live with it, not with a custom host.
-				Runspace = RunspaceFactory.CreateRunspace(Runspace.DefaultRunspace.RunspaceConfiguration);
+				Runspace = RunspaceFactory.CreateRunspace(Runspace.DefaultRunspace.InitialSessionState);
 			}
 			Runspace.Open();
 

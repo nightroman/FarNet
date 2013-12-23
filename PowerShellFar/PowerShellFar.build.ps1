@@ -67,9 +67,9 @@ task BuildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\Pow
 	Add-Type -Path $FarHome\FarNet\FarNet.Tools.dll
 	Add-Type -Path $FarHome\FarNet\Modules\PowerShellFar\PowerShellFar.dll
 	$ps = [Management.Automation.PowerShell]::Create()
-	$configuration = [Management.Automation.Runspaces.RunspaceConfiguration]::Create()
-	[PowerShellFar.Zoo]::Initialize($Configuration)
-	$ps.Runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace($Configuration)
+	$state = [Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+	[PowerShellFar.Zoo]::Initialize($state)
+	$ps.Runspace = [Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace($state)
 	$ps.Runspace.Open()
 	#! $ErrorActionPreference = 1 in Convert-Helps does not help to catch errors
 	$null = $ps.AddScript(@"

@@ -25,23 +25,39 @@ namespace PowerShellFar
 	{
 		const string CompletionText = "CompletionText";
 		const string ListItemText = "ListItemText";
+		/*
+		V3 completion. CompletionText is used in lists for:
+		Command - avoid two Get-History -> Get-History, Microsoft.PowerShell.Core\Get-History
+		ProviderItem - avoid two Test-Far.ps1 -> .\Test-Far.ps1, Test-Far.ps1
+		ProviderContainer - for consistency with ProviderItem
+		*/
 		const string CallTabExpansionV3 = @"
 param($inputScript, $cursorColumn)
 $r = TabExpansion2 $inputScript $cursorColumn
 @{
-	CompletionMatches = @(foreach($_ in $r.CompletionMatches) { @{CompletionText = $_.CompletionText; ListItemText = $_.ListItemText} })
 	ReplacementIndex = $r.ReplacementIndex
 	ReplacementLength = $r.ReplacementLength
-}";
+	CompletionMatches = @(foreach($m in $r.CompletionMatches) {
+		switch ($m.ResultType) {
+			Command { $m.CompletionText }
+			ProviderItem { $m.CompletionText }
+			ProviderContainer { $m.CompletionText }
+			default { @{CompletionText = $m.CompletionText; ListItemText = $m.ListItemText} }
+		}
+	})
+}
+";
+		// V2 completion
 		const string CallTabExpansionV2 = @"
 param($inputScript, $cursorColumn)
 $line = $inputScript.Substring(0, $cursorColumn)
 $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 @{
-	CompletionMatches = @(TabExpansion $line $word)
 	ReplacementIndex = $line.Length - $word.Length
 	ReplacementLength = $word.Length
-}";
+	CompletionMatches = @(TabExpansion $line $word)
+}
+";
 
 		static bool _doneTabExpansion;
 		static string _pathTabExpansion;
