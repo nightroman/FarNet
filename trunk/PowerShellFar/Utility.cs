@@ -32,9 +32,9 @@ namespace PowerShellFar
 	public static class Zoo
 	{
 		///
-		public static void Initialize(RunspaceConfiguration configuration)
+		public static void Initialize(InitialSessionState state)
 		{
-			Commands.BaseCmdlet.AddCmdlets(configuration);
+			Commands.BaseCmdlet.AddCmdlets(state);
 		}
 		///
 		public static Meta[] TablePanelSetupColumns(object[] columns)

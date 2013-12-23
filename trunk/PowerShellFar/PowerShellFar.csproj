@@ -79,6 +79,7 @@
     <Compile Include="Commands\StartFarJobCommand.cs" />
     <Compile Include="Commands\SearchFarFileCommand.cs" />
     <Compile Include="EditorConsole.cs" />
+    <Compile Include="EditorKit.cs" />
     <Compile Include="Format.cs" />
     <Compile Include="Help.cs" />
     <Compile Include="JobCommand.cs" />
@@ -118,7 +119,6 @@
     <Compile Include="History.cs" />
     <Compile Include="Panels\ItemExplorer.cs" />
     <Compile Include="Panels\ListPanel.cs" />
-    <Compile Include="Editor.cs" />
     <Compile Include="Panels\MemberExplorer.cs" />
     <Compile Include="Panels\MemberPanel.cs" />
     <Compile Include="Panels\AnyPanel.cs" />

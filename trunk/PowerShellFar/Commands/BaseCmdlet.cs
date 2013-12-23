@@ -14,34 +14,33 @@ namespace PowerShellFar.Commands
 	/// </summary>
 	class BaseCmdlet : PSCmdlet
 	{
+		const string Help = "PowerShellFar.dll-Help.xml";
 		/// <summary>
-		/// Adds cmdlets to a configuration.
+		/// Adds cmdlets to the initial state.
 		/// </summary>
-		internal static void AddCmdlets(RunspaceConfiguration configuration)
+		internal static void AddCmdlets(InitialSessionState state)
 		{
-			const string Help = "PowerShellFar.dll-Help.xml";
-			//! add cmdlets; Append() locks, so add all at once
-			configuration.Cmdlets.Append(new CmdletConfigurationEntry[] {
-new CmdletConfigurationEntry(AssertFarCommand.MyName, typeof(Commands.AssertFarCommand), Help),
-new CmdletConfigurationEntry("Find-FarFile", typeof(Commands.FindFarFileCommand), Help),
-new CmdletConfigurationEntry("Get-FarFile", typeof(Commands.GetFarFileCommand), Help),
-new CmdletConfigurationEntry("Get-FarItem", typeof(Commands.GetFarItemCommand), Help),
-new CmdletConfigurationEntry("Get-FarPath", typeof(Commands.GetFarPathCommand), Help),
-new CmdletConfigurationEntry("Invoke-FarStepper", typeof(Commands.InvokeFarStepperCommand), Help),
-new CmdletConfigurationEntry("New-FarEditor", typeof(Commands.NewFarEditorCommand), Help),
-new CmdletConfigurationEntry("New-FarFile", typeof(Commands.NewFarFileCommand), Help),
-new CmdletConfigurationEntry("New-FarItem", typeof(Commands.NewFarItemCommand), Help),
-new CmdletConfigurationEntry("New-FarList", typeof(Commands.NewFarListCommand), Help),
-new CmdletConfigurationEntry("New-FarMenu", typeof(Commands.NewFarMenuCommand), Help),
-new CmdletConfigurationEntry("New-FarViewer", typeof(Commands.NewFarViewerCommand), Help),
-new CmdletConfigurationEntry("Open-FarEditor", typeof(Commands.OpenFarEditorCommand), Help),
-new CmdletConfigurationEntry("Open-FarPanel", typeof(Commands.OpenFarPanelCommand), Help),
-new CmdletConfigurationEntry("Open-FarViewer", typeof(Commands.OpenFarViewerCommand), Help),
-new CmdletConfigurationEntry("Out-FarList", typeof(Commands.OutFarListCommand), Help),
-new CmdletConfigurationEntry("Out-FarPanel", typeof(Commands.OutFarPanelCommand), Help),
-new CmdletConfigurationEntry("Search-FarFile", typeof(Commands.SearchFarFileCommand), Help),
-new CmdletConfigurationEntry("Show-FarMessage", typeof(Commands.ShowFarMessageCommand), Help),
-new CmdletConfigurationEntry("Start-FarJob", typeof(Commands.StartFarJobCommand), Help),
+			state.Commands.Add(new SessionStateCmdletEntry[] {
+				new SessionStateCmdletEntry(AssertFarCommand.MyName, typeof(Commands.AssertFarCommand), Help),
+				new SessionStateCmdletEntry("Find-FarFile", typeof(Commands.FindFarFileCommand), Help),
+				new SessionStateCmdletEntry("Get-FarFile", typeof(Commands.GetFarFileCommand), Help),
+				new SessionStateCmdletEntry("Get-FarItem", typeof(Commands.GetFarItemCommand), Help),
+				new SessionStateCmdletEntry("Get-FarPath", typeof(Commands.GetFarPathCommand), Help),
+				new SessionStateCmdletEntry("Invoke-FarStepper", typeof(Commands.InvokeFarStepperCommand), Help),
+				new SessionStateCmdletEntry("New-FarEditor", typeof(Commands.NewFarEditorCommand), Help),
+				new SessionStateCmdletEntry("New-FarFile", typeof(Commands.NewFarFileCommand), Help),
+				new SessionStateCmdletEntry("New-FarItem", typeof(Commands.NewFarItemCommand), Help),
+				new SessionStateCmdletEntry("New-FarList", typeof(Commands.NewFarListCommand), Help),
+				new SessionStateCmdletEntry("New-FarMenu", typeof(Commands.NewFarMenuCommand), Help),
+				new SessionStateCmdletEntry("New-FarViewer", typeof(Commands.NewFarViewerCommand), Help),
+				new SessionStateCmdletEntry("Open-FarEditor", typeof(Commands.OpenFarEditorCommand), Help),
+				new SessionStateCmdletEntry("Open-FarPanel", typeof(Commands.OpenFarPanelCommand), Help),
+				new SessionStateCmdletEntry("Open-FarViewer", typeof(Commands.OpenFarViewerCommand), Help),
+				new SessionStateCmdletEntry("Out-FarList", typeof(Commands.OutFarListCommand), Help),
+				new SessionStateCmdletEntry("Out-FarPanel", typeof(Commands.OutFarPanelCommand), Help),
+				new SessionStateCmdletEntry("Search-FarFile", typeof(Commands.SearchFarFileCommand), Help),
+				new SessionStateCmdletEntry("Show-FarMessage", typeof(Commands.ShowFarMessageCommand), Help),
+				new SessionStateCmdletEntry("Start-FarJob", typeof(Commands.StartFarJobCommand), Help)
 			});
 		}
 	}
