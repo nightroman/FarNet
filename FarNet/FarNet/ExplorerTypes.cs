@@ -142,7 +142,7 @@ namespace FarNet
 	/// </summary>
 	public abstract class ExplorerEventArgs : EventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="Mode"/>.</param>
 		protected ExplorerEventArgs(ExplorerModes mode) { Mode = mode; }
 		/// <summary>
 		/// Gets the explorer mode.
@@ -197,9 +197,12 @@ namespace FarNet
 	/// </summary>
 	public class GetFilesEventArgs : ExplorerEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
 		public GetFilesEventArgs(ExplorerModes mode) : base(mode) { }
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="offset">See <see cref="Offset"/>.</param>
+		/// <param name="limit">See <see cref="Limit"/>.</param>
+		/// <param name="newFiles">See <see cref="NewFiles"/>.</param>
 		public GetFilesEventArgs(ExplorerModes mode, int offset, int limit, bool newFiles) : base(mode)
 		{
 			Limit = limit;
@@ -225,7 +228,7 @@ namespace FarNet
 	/// </summary>
 	public sealed class CreateFileEventArgs : ExplorerEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
 		public CreateFileEventArgs(ExplorerModes mode) : base(mode) { }
 	}
 
@@ -234,7 +237,7 @@ namespace FarNet
 	/// </summary>
 	public class ExploreEventArgs : ExplorerEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
 		public ExploreEventArgs(ExplorerModes mode) : base(mode) { }
 		/// <summary>
 		/// Tells to create a new panel even if the new explorer has the same type as the current.
@@ -247,7 +250,8 @@ namespace FarNet
 	/// </summary>
 	public sealed class ExploreDirectoryEventArgs : ExploreEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="file">See <see cref="File"/>.</param>
 		public ExploreDirectoryEventArgs(ExplorerModes mode, FarFile file) : base(mode) { File = file; }
 		/// <summary>
 		/// Gets the directory file to explore.
@@ -260,7 +264,8 @@ namespace FarNet
 	/// </summary>
 	public sealed class ExploreLocationEventArgs : ExploreEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="location">See <see cref="Location"/>.</param>
 		public ExploreLocationEventArgs(ExplorerModes mode, string location) : base(mode) { Location = location; }
 		/// <summary>
 		/// Gets the location.
@@ -273,7 +278,7 @@ namespace FarNet
 	/// </summary>
 	public sealed class ExploreParentEventArgs : ExploreEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
 		public ExploreParentEventArgs(ExplorerModes mode) : base(mode) { }
 	}
 
@@ -282,7 +287,7 @@ namespace FarNet
 	/// </summary>
 	public sealed class ExploreRootEventArgs : ExploreEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
 		public ExploreRootEventArgs(ExplorerModes mode) : base(mode) { }
 	}
 
@@ -291,7 +296,8 @@ namespace FarNet
 	/// </summary>
 	public abstract class ExplorerFileEventArgs : ExplorerEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="file">See <see cref="File"/>.</param>
 		protected ExplorerFileEventArgs(ExplorerModes mode, FarFile file) : base(mode) { File = file; }
 		/// <summary>
 		/// Gets the file to be processed.
@@ -304,7 +310,7 @@ namespace FarNet
 	/// </summary>
 	public sealed class OpenFileEventArgs : ExplorerFileEventArgs
 	{
-		///
+		/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/>.</param>
 		public OpenFileEventArgs(FarFile file) : base(ExplorerModes.None, file) { }
 	}
 
@@ -313,7 +319,8 @@ namespace FarNet
 	/// </summary>
 	public sealed class CloneFileEventArgs : ExplorerFileEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/>.</param>
 		public CloneFileEventArgs(ExplorerModes mode, FarFile file) : base(mode, file) { }
 	}
 
@@ -322,7 +329,8 @@ namespace FarNet
 	/// </summary>
 	public sealed class RenameFileEventArgs : ExplorerFileEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/>.</param>
 		public RenameFileEventArgs(ExplorerModes mode, FarFile file) : base(mode, file) { }
 	}
 
@@ -331,7 +339,9 @@ namespace FarNet
 	/// </summary>
 	public class GetContentEventArgs : ExplorerFileEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/>.</param>
+		/// <param name="fileName">See <see cref="FileName"/>.</param>
 		public GetContentEventArgs(ExplorerModes mode, FarFile file, string fileName) : base(mode, file) { FileName = fileName; }
 		/// <summary>
 		/// Gets the destination file path.
@@ -380,7 +390,9 @@ namespace FarNet
 	/// </summary>
 	public class SetFileEventArgs : ExplorerFileEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/>.</param>
+		/// <param name="fileName">See <see cref="FileName"/>.</param>
 		public SetFileEventArgs(ExplorerModes mode, FarFile file, string fileName) : base(mode, file) { FileName = fileName; }
 		/// <summary>
 		/// Gets the source file path.
@@ -393,7 +405,9 @@ namespace FarNet
 	/// </summary>
 	public class SetTextEventArgs : ExplorerFileEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="file">See <see cref="ExplorerFileEventArgs.File"/>.</param>
+		/// <param name="text">See <see cref="Text"/>.</param>
 		public SetTextEventArgs(ExplorerModes mode, FarFile file, string text) : base(mode, file) { Text = text; }
 		/// <summary>
 		/// Gets the text to be imported.
@@ -406,7 +420,8 @@ namespace FarNet
 	/// </summary>
 	public abstract class ExplorerFilesEventArgs : ExplorerEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="files">See <see cref="Files"/>.</param>
 		protected ExplorerFilesEventArgs(ExplorerModes mode, IList<FarFile> files) : base(mode) { Files = files; }
 		/// <summary>
 		/// Gets the files to be processed.
@@ -446,7 +461,9 @@ namespace FarNet
 	/// </summary>
 	public class DeleteFilesEventArgs : ExplorerFilesEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="files">See <see cref="ExplorerFilesEventArgs.Files"/>.</param>
+		/// <param name="force">See <see cref="Force"/>.</param>
 		public DeleteFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool force) : base(mode, files) { Force = force; }
 		/// <summary>
 		/// Gets the force mode, e.g. on [ShiftDel] instead of [Del].
@@ -459,7 +476,10 @@ namespace FarNet
 	/// </summary>
 	public sealed class ImportFilesEventArgs : ExplorerFilesEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="files">See <see cref="ExplorerFilesEventArgs.Files"/>.</param>
+		/// <param name="move">See <see cref="Move"/>.</param>
+		/// <param name="directoryName">See <see cref="DirectoryName"/>.</param>
 		public ImportFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move, string directoryName)
 			: base(mode, files)
 		{
@@ -481,7 +501,9 @@ namespace FarNet
 	/// </summary>
 	public abstract class CopyFilesEventArgs : ExplorerFilesEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="files">See <see cref="ExplorerFilesEventArgs.Files"/>.</param>
+		/// <param name="move">See <see cref="Move"/>.</param>
 		protected CopyFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move)
 			: base(mode, files)
 		{
@@ -510,7 +532,10 @@ namespace FarNet
 	/// </summary>
 	public sealed class AcceptFilesEventArgs : CopyFilesEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="files">See <see cref="ExplorerFilesEventArgs.Files"/>.</param>
+		/// <param name="move">See <see cref="CopyFilesEventArgs.Move"/>.</param>
+		/// <param name="explorer">See <see cref="Explorer"/>.</param>
 		public AcceptFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move, Explorer explorer)
 			: base(mode, files, move)
 		{
@@ -527,7 +552,10 @@ namespace FarNet
 	/// </summary>
 	public sealed class ExportFilesEventArgs : CopyFilesEventArgs
 	{
-		///
+		/// <param name="mode">See <see cref="ExplorerEventArgs.Mode"/>.</param>
+		/// <param name="files">See <see cref="ExplorerFilesEventArgs.Files"/>.</param>
+		/// <param name="move">See <see cref="CopyFilesEventArgs.Move"/>.</param>
+		/// <param name="directoryName">See <see cref="DirectoryName"/>.</param>
 		public ExportFilesEventArgs(ExplorerModes mode, IList<FarFile> files, bool move, string directoryName)
 			: base(mode, files, move)
 		{
@@ -544,7 +572,7 @@ namespace FarNet
 	/// </summary>
 	public sealed class ExplorerEnteredEventArgs : EventArgs
 	{
-		///
+		/// <param name="explorer">See <see cref="Explorer"/>.</param>
 		public ExplorerEnteredEventArgs(Explorer explorer) { Explorer = explorer; }
 		/// <summary>
 		/// The old explorer replaced by the new just entered <see cref="Panel.Explorer"/>.

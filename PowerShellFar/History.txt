@@ -1,6 +1,16 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.56 =
+
+Fixed TabExpansion in the editor console opened from the debugger dialog.
+
+Script Connect-SQLite-.ps1 - Redesigned for use of the NuGet package and the
+env var (can be set globally or in a profile). This is more portable and does
+not require installation of assemblies to GAC or registration of the provider.
+
+Fixed several issues in database demo scripts.
+
 = 5.0.55 =
 
 INITIALIZATION

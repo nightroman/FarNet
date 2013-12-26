@@ -59,7 +59,10 @@ namespace FarNet
 		{
 			return X | (Y << 16);
 		}
-		///
+		/// <summary>
+		/// Returns the string (X, Y).
+		/// </summary>
+		/// <returns>The string (X, Y).</returns>
 		public override string ToString()
 		{
 			return "(" + X + ", " + Y + ")";
@@ -183,7 +186,10 @@ namespace FarNet
 		{
 			return First.GetHashCode() ^ Last.GetHashCode();
 		}
-		///
+		/// <summary>
+		/// Returns the string (First, Last).
+		/// </summary>
+		/// <returns>The string (First, Last).</returns>
 		public override string ToString()
 		{
 			return "(" + First + ", " + Last + ")";
@@ -254,7 +260,10 @@ namespace FarNet
 		{
 			return Start | (End << 16);
 		}
-		///
+		/// <summary>
+		/// Returns the string "&lt;none&gt;" or "Length from Start to End".
+		/// </summary>
+		/// <returns>The string representation.</returns>
 		public override string ToString()
 		{
 			return Length < 0 ? "<none>" : string.Format(null, "{0} from {1} to {2}", Length, Start, End);

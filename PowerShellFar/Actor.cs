@@ -209,6 +209,16 @@ namespace PowerShellFar
 				// SVN tag 4.2.26
 				_engine_ = Runspace.SessionStateProxy.PSVariable.GetValue(Word.ExecutionContext) as EngineIntrinsics;
 
+				// get version
+				try
+				{
+					_PSVersion = (Version)((IDictionary)Runspace.SessionStateProxy.PSVariable.GetValue("PSVersionTable"))["PSVersion"];
+				}
+				catch
+				{
+					throw new InvalidOperationException("Cannot get PowerShell version.");
+				}
+
 				// new variables
 				PSVariable var1 = new PSVariable("Psf", this, ScopedItemOptions.AllScope | ScopedItemOptions.Constant);
 				var1.Description = "Exposes PowerShellFar.";
@@ -762,10 +772,10 @@ Continue with this current directory?
 		PowerShell Pipeline;
 		// PS engine
 		EngineIntrinsics _engine_;
-		internal EngineIntrinsics Engine
-		{
-			get { return _engine_; }
-		}
+		internal EngineIntrinsics Engine { get { return _engine_; } }
+		// PS version
+		Version _PSVersion;
+		internal Version PSVersion { get { return _PSVersion; } }
 		/// <summary>
 		/// Gets a new pipeline or nested one.
 		/// </summary>

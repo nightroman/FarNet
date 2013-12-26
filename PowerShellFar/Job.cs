@@ -38,9 +38,9 @@ namespace PowerShellFar
 {
 	/// <summary>PowerShellFar background job.</summary>
 	/// <remarks>
-	/// A job is created by <c>Start-FarJob</c> cmdlet (<see cref="Commands.StartFarJobCommand"/>)
-	/// and automatically started immediately (normally) or started later by <see cref="StartJob"/> (advanced).
-	/// Properties are mostly the same as properties of PowerShell job, but some of them have different types though names are the same.
+	/// A job is created by <c>Start-FarJob</c> and automatically started immediately (normally) or
+	/// started later by <see cref="StartJob"/> (advanced). Properties are mostly the same as
+	/// properties of PowerShell job, but some of them have different types.
 	/// <para>
 	/// There are two kind of Far jobs: UI jobs and output jobs.
 	/// </para>
@@ -56,7 +56,6 @@ namespace PowerShellFar
 	/// is up to a user.
 	/// </para>
 	/// </remarks>
-	/// <seealso cref="Commands.StartFarJobCommand"/>
 	public sealed class Job : IDisposable
 	{
 		const string MenuFormatString = "{0,9} : {1,6} : {2}";
@@ -353,8 +352,7 @@ namespace PowerShellFar
 		/// Disposes the job and removes it from the job list.
 		/// </summary>
 		/// <remarks>
-		/// If you own this object, e.g. call <c>Start-FarJob</c> with <see cref="Commands.StartFarJobCommand.Output"/> switch
-		/// then you should dispose it after use. It is OK to call this for already disposed object.
+		/// If you own the job, e.g. call <c>Start-FarJob</c> with the switch <c>Output</c>, then you should dispose it.
 		/// </remarks>
 		public void Dispose()
 		{

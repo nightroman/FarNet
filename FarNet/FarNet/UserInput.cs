@@ -680,7 +680,7 @@ OemClear = 254;
 		{
 			return (int)_ControlKeyState;
 		}
-		///
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return _ControlKeyState.ToString();
@@ -776,7 +776,7 @@ OemClear = 254;
 			uint num = ((uint)ControlKeyState) << 0x10 | (uint)_VirtualKeyCode;
 			return num.GetHashCode();
 		}
-		///
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return "(" + ControlKeyState + ")" + _VirtualKeyCode;
@@ -823,7 +823,7 @@ OemClear = 254;
 			num |= (uint)VirtualKeyCode;
 			return num.GetHashCode();
 		}
-		///
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return "Down = " + _KeyDown + "; Code = " + VirtualKeyCode + "; Char = " + _Character + " (" + ControlKeyState + ")";

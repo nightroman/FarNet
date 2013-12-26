@@ -21,7 +21,6 @@ namespace PowerShellFar
 		/// <summary>PowerShellFar actor.</summary>
 		public static Actor Psf { get { return _Psf_; } }
 		static Actor _Psf_;
-		static Version _PSVersion;
 		public static void Connect(Actor psf)
 		{
 			_Psf_ = psf;
@@ -560,25 +559,6 @@ Out-String -Width $args[1]
 			catch (Exception e)
 			{
 				return string.Format(null, "<ERROR: {0}>", e.Message);
-			}
-		}
-		internal static Version PSVersion
-		{
-			get
-			{
-				if (_PSVersion == null)
-				{
-					try
-					{
-						var table = (IDictionary)Psf.Runspace.SessionStateProxy.PSVariable.GetValue("PSVersionTable");
-						_PSVersion = (Version)table["PSVersion"];
-					}
-					catch
-					{
-						throw new InvalidOperationException("Cannot get PowerShell version.");
-					}
-				}
-				return _PSVersion;
 			}
 		}
 	}

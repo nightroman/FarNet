@@ -7,14 +7,10 @@ $#PowerShellFar Tests#
 
 PREREQUISITES
 
-*) Test scripts usually call PowerShellFar scripts from Bench directory. That
-is why directory Bench has to be included into the system path before tests.
+*) Include the directory Bench to the path. Tests may call scripts from there.
 
-*) Some tests have to be initialized, for example test database scripts need
-some temporary data to work with. That is why before some tests you should run
-Initialize-Test-.ps1. It asks whether you want to create temporary data tables
-for data test scripts Test-Panel-Db*-.ps1 (if you have supported database
-providers installed).
+*) Some tests should be initialized. For example database tests need some data
+to work with. Invoke Initialize-Test-.ps1 before such tests.
 
 SEE ALSO
 
@@ -25,57 +21,49 @@ SEE ALSO
 $#Database Tests#
 ~Contents~@Contents@
 
-You can run script Test-Panel-DbText-.ps1 without any preparations. See the
-script comments for details.
+You can invoke Test-Panel-DbText-.ps1 without preparations. See the script
+comments for details.
 
 *) Other scripts are designed for and tested with SQL Server Express (instance
-'.\sqlexpress', e.g. installed with Visual Studio 2005), SQL Server Compact
-(installed with Visual Studio 2008, 2010), and SQLite
-(http://sourceforge.net/projects/sqlite-dotnet2).
+".\sqlexpress", e.g. installed with Visual Studio), SQL Server Compact
+(installed with Visual Studio), and SQLite (http://system.data.sqlite.org/).
 
 *) If your SQL Server is different, change the connection string in
-Initialize-Test-.ps1, line $DbConnection.ConnectionString = ..
+Initialize-Test-.ps1, see $DbConnection.ConnectionString = ..
 
-*) Run Initialize-Test-.ps1 - it creates a mini-database with two tables.
+*) Invoke Initialize-Test-.ps1 to create a mini-database with two tables.
 
 	For SQL Server Express it creates two related tables in Tempdb: TestNotes
-	(used by Test-Panel-DbNotes-.ps1) and TestCategories. After tests you can
-	drop the tables manually or you can just forget about them, they will be
-	removed automatically when SQL server restarts.
+	and TestCategories. After tests drop the tables manually or just leave
+	them, they will be removed automatically when the server restarts.
 
-	For SQL Server Compact it created a database file Tempdb.sdf in %TEMP%
-	directory and adds same two tables and same data. After tests you should
-	remove this file yourself.
+	For SQL Server Compact or SQLite it creates in %TEMP% the file Tempdb.sdf
+	or Tempdb.sqlite and adds the same tables and data. You may remove these
+	files after tests.
 
 Now you are ready to play with scripts. Recommended sequence:
 
-1) Run Panel-DbTable-.ps1 (from Bench, it is a tool not a demo), if everything
-is fine you get all tables in your Tempdb including TestNotes and
-TestCategories. Open them by [Enter] and see how they look in basic mode (i.e.
-without any customisation). Note that you can even perform all operations like
-insert, delete and update ([F7], [Del], etc.)
+1) Run Panel-DbTable-.ps1 (from Bench), if everything is fine you get all
+tables in your Tempdb including TestNotes and TestCategories. Open them by
+[Enter] and see how they look in basic mode (i.e. without any customisation).
+Note that you can even perform all operations like insert, delete and update
+([F7], [Del], etc.)
 
-2) Run Test-Panel-DbCategories-.ps1 - the table looks now slightly different,
-not much, but the field CategoryId is hidden because a user normally should not
-use or even see it, this is internal DB information.
+2) Run Test-Panel-DbCategories-.ps1 - the table looks different, not much, but
+the field CategoryId is hidden because a user normally should not use or even
+see it, this information is internal.
 
-3) Run Test-Panel-DbNotes-.ps1 - it looks even more different (two fields are
-hidden). The important point is that how you modify Category field. When you
-[Enter] on it Test-Panel-DbCategories-.ps1 is actually called and the table
-TestCategories is opened for selection of another category; at the same time
-you can modify or add new categories just like as if you opened it directly in
-step 2).
+3) Run Test-Panel-DbNotes-.ps1 - it looks more different (two fields are
+hidden). The important point is that how you modify Category. When you [Enter]
+on it Test-Panel-DbCategories-.ps1 is actually called and the table
+TestCategories is opened for selection of another category. At the same time
+you can modify or add new categories as if you opened it directly in step 2).
 
 #KNOWN ISSUES#
 
-*) If you are about to delete or modify again just added and saved record then
-at first you have to re-read the table data explicitly by <CtrlR> (otherwise you
+If you are about to delete or modify again just added and saved record then at
+first you have to re-read the table data explicitly by <CtrlR> (otherwise you
 can get concurrency error or record data can be incomplete and etc.).
-
-*) Don't [Enter] into tables with too many records, loading data in basic mode
-(i.e. SELECT *) can take very long time. In real production databases normally
-one have to use manually and carefully designed SELECT for taking only really
-needed records and fields.
 
 
 @TestBase
@@ -118,13 +106,13 @@ play the rest of steps automatically.
 
 #[List]#
 
-Extra test of three list controls (comboedit, combobox, listbox). The code shows
-how to use DetachItems(), AttachItems() for better performance when changes are
-large enough.
+Extra test of three list controls (combo edit, combo box, list box). The code
+shows how to use DetachItems(), AttachItems() for better performance when
+changes are large enough.
 
 #[More]#
 
-Button [More] starts the same dialog to show it is OK to open nested dialogs.
+This button starts the same dialog to show it is fine to open nested dialogs.
 
 #[Exit]#
 
@@ -134,7 +122,7 @@ Button [More] starts the same dialog to show it is OK to open nested dialogs.
 
 You can invoke PowerShell commands from dialogs. Thus, you can test a dialog
 and its items manually running PowerShell code right there. Variables defined
-is the script are available. For example you can enter and run:
+is the dialog script are available. For example you can enter and run:
 
 	$dialog ## gets this dialog properties;
 	$e1 ## gets the first edit control properties;

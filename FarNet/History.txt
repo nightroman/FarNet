@@ -1,5 +1,11 @@
 http://code.google.com/p/farnet/downloads/list
 
+= 5.0.39 =
+
+Mostly technical build for the upgraded FarNetAccord.chm.
+
+FarNetAccord.chm is built by the upgraded documentation tools.
+
 = 5.0.38 =
 
 Fixed incorrect comparison of keys (transition to Far3, v5.0.0).

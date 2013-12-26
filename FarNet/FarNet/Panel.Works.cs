@@ -9,7 +9,9 @@ using System.Collections.Generic;
 
 namespace FarNet.Works
 {
-	///
+	/// <summary>
+	/// For internal use.
+	/// </summary>
 	public interface IPanelWorks : IPanel
 	{
 		///

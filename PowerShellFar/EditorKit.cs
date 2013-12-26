@@ -77,7 +77,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			// init path and caller
 			if (_pathTabExpansion == null)
 			{
-				if (A.PSVersion.Major > 2)
+				if (A.Psf.PSVersion.Major > 2)
 				{
 					_pathTabExpansion = Path.Combine(A.Psf.AppHome, "TabExpansion2.ps1");
 					_callTabExpansion = CallTabExpansionV3;
@@ -149,7 +149,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			EditorConsole.Area area;
 
 			// script?
-			if (A.PSVersion.Major > 2 && editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
+			if (A.Psf.PSVersion.Major > 2 && editLine.WindowKind == WindowKind.Editor && My.PathEx.IsPSFile((editor = Far.Api.Editor).FileName))
 			{
 				int lineIndex = editor.Caret.Y;
 				int lastIndex = editor.Count - 1;
