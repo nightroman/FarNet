@@ -39,10 +39,30 @@ FROM TestNotes n JOIN TestCategories c ON n.CategoryId = c.CategoryId
 "@
 
 # reusable script blocks to add command parameters
-$NoteId = { $null = $c.Parameters.Add("NoteId", [Data.SqlDbType]::Int, 0, "NoteId") }
-$CategoryId = { $null = $c.Parameters.Add("CategoryId", [Data.SqlDbType]::Int, 0, "CategoryId") }
-$Note = { $null = $c.Parameters.Add("Note", [Data.SqlDbType]::NText, 0, "Note") }
-$Created = { $null = $c.Parameters.Add("Created", [Data.SqlDbType]::DateTime, 0, "Created") }
+$NoteId = {
+	$p = $c.CreateParameter()
+	$p.ParameterName = $p.SourceColumn = 'NoteId'
+	$p.DbType = [Data.DbType]::Int32
+	$null = $c.Parameters.Add($p)
+}
+$CategoryId = {
+	$p = $c.CreateParameter()
+	$p.ParameterName = $p.SourceColumn = 'CategoryId'
+	$p.DbType = [Data.DbType]::Int32
+	$null = $c.Parameters.Add($p)
+}
+$Note = {
+	$p = $c.CreateParameter()
+	$p.ParameterName = $p.SourceColumn = 'Note'
+	$p.DbType = [Data.DbType]::String
+	$null = $c.Parameters.Add($p)
+}
+$Created = {
+	$p = $c.CreateParameter()
+	$p.ParameterName = $p.SourceColumn = 'Created'
+	$p.DbType = [Data.DbType]::DateTime
+	$null = $c.Parameters.Add($p)
+}
 
 # command to insert data
 $a.InsertCommand = $c = $DbConnection.CreateCommand()

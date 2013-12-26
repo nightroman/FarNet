@@ -798,15 +798,20 @@ namespace FarNet
 	/// </summary>
 	public sealed class EditorChangedEventArgs : EventArgs
 	{
-		///
+		/// <param name="kind">See <see cref="Kind"/>.</param>
+		/// <param name="line">See <see cref="Line"/>.</param>
 		public EditorChangedEventArgs(EditorChangeKind kind, int line)
 		{
 			Kind = kind;
 			Line = line;
 		}
-		///
+		/// <summary>
+		/// Gets the editor change kind.
+		/// </summary>
 		public EditorChangeKind Kind { get; private set; }
-		///
+		/// <summary>
+		/// Gets the changed line index.
+		/// </summary>
 		public int Line { get; private set; }
 	}
 
@@ -924,6 +929,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns the line text.
 		/// </summary>
+		/// <returns>The line text.</returns>
 		public sealed override string ToString()
 		{
 			return Text;
@@ -1081,7 +1087,7 @@ namespace FarNet
 		{
 			return CaretLine | (CaretColumn << 16);
 		}
-		///
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return "((" + CaretColumn + "/" + CaretScreenColumn + ", " + CaretLine + ")(" + VisibleChar + ", " + VisibleLine + "))";
@@ -1093,7 +1099,11 @@ namespace FarNet
 	/// </summary>
 	public class EditorColor
 	{
-		///
+		/// <param name="line">See <see cref="Line"/>.</param>
+		/// <param name="start">See <see cref="Start"/>.</param>
+		/// <param name="end">See <see cref="End"/>.</param>
+		/// <param name="foreground">See <see cref="Foreground"/>.</param>
+		/// <param name="background">See <see cref="Background"/>.</param>
 		public EditorColor(int line, int start, int end, ConsoleColor foreground, ConsoleColor background)
 		{
 			Line = line;
@@ -1122,7 +1132,7 @@ namespace FarNet
 		/// Background color. Black on black is the special case.
 		/// </summary>
 		public ConsoleColor Background { get; private set; }
-		///
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format(null, "({0}, {1}) {2} on {3}", Start, End, Foreground, Background);
@@ -1134,7 +1144,13 @@ namespace FarNet
 	/// </summary>
 	public class EditorColorInfo : EditorColor
 	{
-		///
+		/// <param name="line">See <see cref="EditorColor.Line"/>.</param>
+		/// <param name="start">See <see cref="EditorColor.Start"/>.</param>
+		/// <param name="end">See <see cref="EditorColor.End"/>.</param>
+		/// <param name="foreground">See <see cref="EditorColor.Foreground"/>.</param>
+		/// <param name="background">See <see cref="EditorColor.Background"/>.</param>
+		/// <param name="owner">See <see cref="Owner"/>.</param>
+		/// <param name="priority">See <see cref="Priority"/>.</param>
 		public EditorColorInfo(int line, int start, int end, ConsoleColor foreground, ConsoleColor background, Guid owner, int priority)
 			: base(line, start, end, foreground, background)
 		{
@@ -1149,7 +1165,7 @@ namespace FarNet
 		/// Color priority.
 		/// </summary>
 		public int Priority { get; private set; }
-		///
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format(null, "{0} {1} {2} ({3}, {4}) {5}/{6}", Priority, Owner, Line, Start, End, Foreground, Background);

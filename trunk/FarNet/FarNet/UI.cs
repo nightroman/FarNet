@@ -83,23 +83,15 @@ namespace FarNet
 		/// Reads a key from the input buffer.
 		/// </summary>
 		public abstract KeyInfo ReadKey(ReadKeyOptions options);
-		/// <summary>
-		/// For internal use.
-		/// </summary>
+		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		public abstract BufferCell[,] GetBufferContents(Place rectangle);
-		/// <summary>
-		/// For internal use.
-		/// </summary>
+		///
 		public abstract void ScrollBufferContents(Place source, Point destination, Place clip, BufferCell fill);
-		/// <summary>
-		/// For internal use.
-		/// </summary>
+		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
 		public abstract void SetBufferContents(Point origin, BufferCell[,] contents);
-		/// <summary>
-		/// For internal use.
-		/// </summary>
+		///
 		public abstract void SetBufferContents(Place rectangle, BufferCell fill);
 		/// <summary>
 		/// For internal use.

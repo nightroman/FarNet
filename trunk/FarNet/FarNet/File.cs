@@ -219,8 +219,9 @@ namespace FarNet
 			set { Attributes = value ? (Attributes | FileAttributes.Encrypted) : (Attributes & ~FileAttributes.Encrypted); }
 		}
 		/// <summary>
-		/// Returns the <see cref="Name"/>.
+		/// Returns the file name.
 		/// </summary>
+		/// <returns>The file name.</returns>
 		public sealed override string ToString()
 		{
 			return Name;

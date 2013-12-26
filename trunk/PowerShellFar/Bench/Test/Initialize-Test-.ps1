@@ -5,14 +5,13 @@
 	Author: Roman Kuzmin
 
 .Description
-	Supported database providers for testing:
-	'System.Data.SQLite', 'System.Data.SqlClient', 'System.Data.SqlServerCe'
+	For System.Data.SqlClient and System.Data.SqlServerCe their providers
+	should be registered in the system. For SQLite see Connect-SQLite-.ps1.
 #>
 
 param
 (
-	[string]$DbProviderName
-	,
+	[string]$DbProviderName,
 	[switch]$NoDb
 )
 
@@ -24,7 +23,7 @@ if ($NoDb) { return }
 
 ### select a provider if not yet
 if (!$DbProviderName) {
-	'System.Data.SQLite', 'System.Data.SqlClient', 'System.Data.SqlServerCe' | Out-FarList -Title "Database Provider"
+	$DbProviderName = 'System.Data.SQLite', 'System.Data.SqlClient', 'System.Data.SqlServerCe' | Out-FarList -Title "Database Provider"
 	if (!$DbProviderName) {
 		return
 	}
@@ -33,17 +32,14 @@ if (!$DbProviderName) {
 # SQLite setup
 function SetupSQLite
 {
-	$null = [System.Reflection.Assembly]::LoadWithPartialName('System.Data.SQLite')
-	$global:DbProviderFactory = [System.Data.SQLite.SQLiteFactory]::Instance
-
+	# temp DB
 	$DbPath = Join-Path $env:TEMP Tempdb.sqlite
-	$ConnectionString = "Data Source=`"$DbPath`"; FailIfMissing=False"
-	if (Test-Path $DbPath) { Remove-Item $DbPath }
+	if (Test-Path -LiteralPath $DbPath) { Remove-Item -LiteralPath $DbPath }
 
-	# open the database connection
-	$global:DbConnection = $DbProviderFactory.CreateConnection()
-	$DbConnection.ConnectionString = $ConnectionString
-	$DbConnection.Open()
+	# connect
+	. Connect-SQLite-.ps1 $DbPath
+	$global:DbProviderFactory = $DbProviderFactory
+	$global:DbConnection = $DbConnection
 }
 
 # SqlClient setup
@@ -73,7 +69,7 @@ DROP TABLE [TestCategories]
 function SetupSqlServerCe
 {
 	$null = [System.Reflection.Assembly]::LoadWithPartialName('System.Data.SqlServerCe')
-	$DbProviderFactory = [System.Data.SqlServerCe.SqlCeProviderFactory]::Instance
+	$global:DbProviderFactory = [System.Data.SqlServerCe.SqlCeProviderFactory]::Instance
 
 	$DbPath = Join-Path $env:TEMP Tempdb.sdf
 	$ConnectionString = "Data Source=`"$DbPath`""
