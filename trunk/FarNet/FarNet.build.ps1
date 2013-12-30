@@ -94,8 +94,6 @@ task NuGet Package, Version, {
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The package includes the framework and the module manager plugin.
 '@
-	$text = "TEST ONLY, not yet ready"
-	Write-Warning "TEST ONLY"
 	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
@@ -110,6 +108,7 @@ FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
+		<releaseNotes>See https://farnet.googlecode.com/svn/trunk/FarNet/History.txt</releaseNotes>
 		<tags>FarManager FarNet PowerShell Module Plugin</tags>
 	</metadata>
 </package>
