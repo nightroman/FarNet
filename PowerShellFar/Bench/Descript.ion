@@ -21,7 +21,7 @@ Open-TODO-.ps1 TODO notes in XML files.
 Panel-BitsTransfer-.ps1 Starts or manages file transfer jobs in a panel.
 Panel-Database-.ps1 Panel SQL server databases.
 Panel-DbData-.ps1 Panel DataTable rows.
-Panel-DbTable-.ps1 Panel tables for a connection.
+Panel-DbTable-.ps1 Panel database tables for the specified connection.
 Panel-Job-.ps1 Shows PowerShell jobs in a panel.
 Panel-Mongo-.ps1 MongoDB data browser.
 Panel-Process-.ps1 Panel current processes.
@@ -49,4 +49,5 @@ Start-MSBuild-.ps1 Starts MSBuild with a helper input dialog for the project fil
 TabExpansionProfile.ps1 TabExpansion2 profile.
 Update-FarManager.ps1 Updates Far Manager and standard plugins.
 Update-FarNet.ps1 Updates FarNet products selectively from the project site.
+Update-FarPackage.ps1 Updates Far Manager NuGet packages.
 Watch-Output-.ps1 Watches commands output repeatedly in the editor.

@@ -232,7 +232,7 @@ $test.add_ButtonClicked({
 	$stepper = New-Object PowerShellFar.Stepper
 	$stepper.Ask = $true
 	$data = $stepper.Data
-	$stepper.Go((& "$myFolder\Test-Dialog+.ps1" -TestOpened))
+	$stepper.Go((& "$myFolder\Test-Dialog!.ps1" -TestOpened))
 })
 
 ### [List] Test list controls

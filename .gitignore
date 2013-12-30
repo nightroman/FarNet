@@ -1,9 +1,10 @@
 *.htm
+*.nupkg
 *.opensdf
 *.sdf
 *.suo
 *.vcxproj.user
 [B|b]in
-[O|o]bj
 [D|d]ebug
+[O|o]bj
 [R|r]elease

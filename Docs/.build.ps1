@@ -5,14 +5,14 @@ param(
 
 task Build {
 	use 4.0 MSBuild
-	exec { MSBuild FarNetAccord.shfbproj /p:Configuration=Release }
+	exec { MSBuild FarNetAPI.shfbproj /p:Configuration=Release }
 },
 Test
 
 task Install {
-	assert (Test-Path Help\FarNetAccord.chm) "Please, invoke Build."
-	Remove-Item $FarHome\FarNet\FarNetAccord.*
-	Copy-Item Help\FarNetAccord.chm $FarHome\FarNet
+	assert (Test-Path Help\FarNetAPI.chm) "Please, invoke Build."
+	Remove-Item $FarHome\FarNet\FarNetAPI.*
+	Copy-Item Help\FarNetAPI.chm $FarHome\FarNet
 }
 
 task Clean {

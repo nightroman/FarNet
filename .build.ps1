@@ -39,25 +39,13 @@ task Uninstall {
 	foreach($_ in $Builds) { Invoke-Build Uninstall $_ }
 }
 
-task Zip {
-	. .\Get-Version.ps1
-
+task NuGet {
 	# Test build of the sample modules, make sure they are alive
 	Invoke-Build TestBuild Modules\Modules.build.ps1
 
 	# Call
-	foreach($_ in $Builds) { Invoke-Build Zip $_ }
-
-	# Zip FarNetAccord
-	Remove-Item [z] -Recurse -Force
-	$null = mkdir z\FarNet
-	Copy-Item Install.txt z
-	Copy-Item $FarHome\FarNet\FarNetAccord.chm z\FarNet
-	Push-Location z
-	exec { & 7z a ..\FarNetAccord.$FarNetAccordVersion.7z * }
-	Pop-Location
-	Remove-Item z -Recurse -Force
+	foreach($_ in $Builds) { Invoke-Build NuGet, Clean $_ }
 
 	# Move result archives
-	Move-Item FarNetAccord.*.7z, FarNet\FarNet.*.7z, PowerShellFar\PowerShellFar.*.7z $Home -Force
+	Move-Item FarNet\FarNet.*.nupkg, PowerShellFar\FarNet.PowerShellFar.*.nupkg $Home -Force
 }

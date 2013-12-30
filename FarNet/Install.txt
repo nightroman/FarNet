@@ -1,3 +1,0 @@
-Far.exe.config
-FarNet\*.*
-Plugins\FarNet

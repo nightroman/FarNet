@@ -11,7 +11,7 @@ param
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
-use Framework\v4.0.30319 MSBuild
+use 4.0 MSBuild
 
 $script:Builds = @(
 	'FarNet\.build.ps1'
@@ -27,7 +27,7 @@ $script:Builds = @(
 
 function Clean {
 	foreach($_ in $Builds) { Invoke-Build Clean $_ }
-	Remove-Item -ErrorAction 0 FarNet.sdf, About-FarNet.htm
+	Remove-Item -Force -Recurse -ErrorAction 0 -LiteralPath z, FarNet.sdf, About-FarNet.htm
 }
 
 task Clean {
@@ -53,32 +53,67 @@ task Help {
 	exec { HtmlToFarHelp "From=About-FarNet.htm" "To=$FarHome\Plugins\FarNet\FarNetMan.hlf" }
 }
 
-task Zip Help, {
-	. ..\Get-Version.ps1
+# Make package files
+task Package Help, {
+	assert ($Platform -eq 'Win32')
 
-	# Build x64
+	# build x64
 	exec { MSBuild FarNet.sln /t:Build /p:Configuration=Release /p:Platform=x64 }
 
-	# Folders
+	# folders
 	Remove-Item [z] -Recurse -Force
-	$null = mkdir z\FarNet, z\Plugins\FarNet, z\Plugins.x64\FarNet
+	$null = mkdir `
+	z\tools\About,
+	z\tools\FarHome\FarNet,
+	z\tools\FarHome\Plugins\FarNet,
+	z\tools\FarHome.x64\Plugins\FarNet,
+	z\tools\FarHome.x86\Plugins\FarNet
 
-	# Root files
-	Copy-Item $FarHome\Far.exe.config, About-FarNet.htm, Install.txt z
+	# copy
+	Copy-Item -Destination z\tools\About About-FarNet.htm, History.txt, $FarHome\FarNet\FarNetAPI.chm
+	Copy-Item -Destination z\tools\FarHome $FarHome\Far.exe.config
+	Copy-Item -Destination z\tools\FarHome\FarNet $FarHome\FarNet\FarNet.*
+	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.hlf, LICENSE
+	Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet FarNetMan\Release\x64\FarNetMan.dll
+	Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
 
-	# FarNet files
-	Copy-Item $FarHome\FarNet\FarNet.* z\FarNet
-	Copy-Item $FarHome\Plugins\FarNet\FarNetMan.*, History.txt, LICENSE z\Plugins\FarNet
-	Copy-Item FarNetMan\Release\x64\FarNetMan.dll z\Plugins.x64\FarNet
+	# samples
+	exec { robocopy ..\Modules z\tools\About\Samples /s /np /xf *.suo, Modules.build.ps1 } 1
+}
 
-	# Sample modules
-	exec { robocopy ..\Modules z\FarNet\Modules /s /np /xf *.suo } 1
+# Set version
+task Version {
+	. ..\Get-Version.ps1
+	$script:Version = $FarNetVersion
+	$Version
+}
 
-	# Zip
-	Push-Location z
-	exec { & 7z a ..\FarNet.$FarNetVersion.7z * }
-	Pop-Location
-
-	Remove-Item z -Recurse -Force
-	Clean
+# Make NuGet package
+task NuGet Package, Version, {
+	$text = @'
+FarNet provides the .NET API for Far Manager and the runtime infrastructure for
+.NET modules. The package includes the framework and the module manager plugin.
+'@
+	$text = "TEST ONLY, not yet ready"
+	Write-Warning "TEST ONLY"
+	# nuspec
+	Set-Content z\Package.nuspec @"
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>FarNet</id>
+		<version>$Version</version>
+		<authors>Roman Kuzmin</authors>
+		<owners>Roman Kuzmin</owners>
+		<projectUrl>https://code.google.com/p/farnet</projectUrl>
+		<licenseUrl>https://farnet.googlecode.com/svn/trunk/FarNet/LICENSE</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>$text</summary>
+		<description>$text</description>
+		<tags>FarManager FarNet PowerShell Module Plugin</tags>
+	</metadata>
+</package>
+"@
+	# pack
+	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }

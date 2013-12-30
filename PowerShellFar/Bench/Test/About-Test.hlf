@@ -99,7 +99,7 @@ This is just a test of what happens on an error in an event handler.
 
 #[Test]#
 
-Automated test. It invokes steps from the super-macro "Test-Dialog+.ps1" in
+Automated test. It invokes steps from the super-macro "Test-Dialog!.ps1" in
 ask-mode so that you can watch each step code or keys and see how each step
 works. At any time you may choose [Cancel] to stop stepping or [Continue] to
 play the rest of steps automatically.
