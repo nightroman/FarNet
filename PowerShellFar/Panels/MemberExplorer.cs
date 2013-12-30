@@ -59,12 +59,12 @@ namespace PowerShellFar
 				ExplorerFunctions.GetContent |
 				ExplorerFunctions.SetText;
 		}
-		///
+		/// <inheritdoc/>
 		public override Panel CreatePanel()
 		{
 			return new MemberPanel(this);
 		}
-		///
+		/// <inheritdoc/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
@@ -174,7 +174,7 @@ namespace PowerShellFar
 
 			return result;
 		}
-		///
+		/// <inheritdoc/>
 		public override void GetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
@@ -197,7 +197,7 @@ namespace PowerShellFar
 
 			args.CanSet = pi.IsSettable;
 		}
-		///
+		/// <inheritdoc/>
 		public override void SetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
@@ -208,7 +208,7 @@ namespace PowerShellFar
 			else
 				A.SetPropertyFromTextUI(Value, pi, args.Text.TrimEnd());
 		}
-		///
+		/// <inheritdoc/>
 		public override void DeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -258,7 +258,7 @@ namespace PowerShellFar
 				MemberPanel.WhenMemberChanged(Value); //????? will it be 2 times for THIS panel?
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void CreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;

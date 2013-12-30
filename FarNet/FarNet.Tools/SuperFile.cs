@@ -15,8 +15,10 @@ namespace FarNet.Tools
 	public class SuperFile : WrapFile
 	{
 		/// <summary>
-		/// New explorer file.
+		/// New super file with its explorer.
 		/// </summary>
+		/// <param name="explorer">The file's explorer.</param>
+		/// <param name="file">The base file.</param>
 		public SuperFile(Explorer explorer, FarFile file)
 			: base(file)
 		{

@@ -52,6 +52,9 @@ namespace FarNet
 		/// <summary>
 		/// Opens a viewer to view some text.
 		/// </summary>
+		/// <param name="text">The text to view.</param>
+		/// <param name="title">The viewer title.</param>
+		/// <param name="mode">The open mode.</param>
 		public abstract void ViewText(string text, string title, OpenMode mode);
 	}
 
@@ -123,6 +126,7 @@ namespace FarNet
 		/// <summary>
 		/// Opens the viewer.
 		/// </summary>
+		/// <param name="mode">The open mode.</param>
 		/// <remarks>
 		/// To open a viewer you should create a viewer operator by <see cref="IFar.CreateViewer"/>,
 		/// set at least its <see cref="FileName"/> and optionally: <see cref="DeleteSource"/>,
@@ -282,7 +286,8 @@ namespace FarNet
 	/// </summary>
 	public struct ViewFrame
 	{
-		///
+		/// <param name="offset">See <see cref="Offset"/></param>
+		/// <param name="column">See <see cref="Column"/></param>
 		public ViewFrame(long offset, long column)
 			: this()
 		{
@@ -297,29 +302,31 @@ namespace FarNet
 		/// Leftmost visible column index.
 		/// </summary>
 		public long Column { get; set; }
-		///
+		/// <include file='doc.xml' path='doc/OpEqual/*'/>
 		public static bool operator ==(ViewFrame left, ViewFrame right)
 		{
 			return
 				left.Offset == right.Offset &&
 				left.Column == right.Column;
 		}
-		///
+		/// <include file='doc.xml' path='doc/OpNotEqual/*'/>
 		public static bool operator !=(ViewFrame left, ViewFrame right)
 		{
 			return !(left == right);
 		}
-		///
+		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
 			return obj != null && obj.GetType() == typeof(ViewFrame) && this == (ViewFrame)obj;
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			return (int)Offset | ((int)Column << 16);
 		}
-		///
+		/// <summary>
+		/// Returns the string "(Offset, Column)".
+		/// </summary>
 		public override string ToString()
 		{
 			return "(" + Offset + ", " + Column + ")";

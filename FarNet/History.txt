@@ -2,9 +2,15 @@ http://code.google.com/p/farnet/downloads/list
 
 = 5.0.39 =
 
-Mostly technical build for the upgraded FarNetAccord.chm.
+FarNetAccord.chm is built by the upgraded documentation tools. Updated some
+topics, added missing documentation.
 
-FarNetAccord.chm is built by the upgraded documentation tools.
+Renamed the protected Panel.OpenChildBegin() to CanOpenAsChild().
+
+Enum ReadKeyOptions moved from FarNet.Works (internal) to FarNet (public).
+
+FarNet.Tools.SubsetForm - changed type of ItemToString from Converter to Func.
+As a result, PowerShell script blocks can be used directly without helpers.
 
 = 5.0.38 =
 

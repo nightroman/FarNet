@@ -41,6 +41,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Puts a value into the command line or opens a lookup panel or member panel.
 		/// </summary>
+		/// <param name="file">The file to process.</param>
 		public override void OpenFile(FarFile file)
 		{
 			if (file == null)
@@ -135,7 +136,7 @@ namespace PowerShellFar
 				A.Message(ex.Message);
 			}
 		}
-		///?? Must be called last
+		/// <inheritdoc/>
 		protected override bool CanClose()
 		{
 			if (Child != null)
@@ -197,7 +198,7 @@ namespace PowerShellFar
 				}
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");

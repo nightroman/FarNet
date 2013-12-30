@@ -74,6 +74,7 @@ namespace FarNet
 		/// <summary>
 		/// New module panel with its file explorer.
 		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		public Panel(Explorer explorer)
 		{
 			if (explorer == null) throw new ArgumentNullException("explorer");
@@ -92,8 +93,9 @@ namespace FarNet
 		/// <summary>
 		/// Navigates to a virtual file system location specified by the explorer and updates the panel.
 		/// </summary>
+		/// <param name="explorer">The target explorer.</param>
 		/// <remarks>
-		/// A new explorer must have the same <see cref="FarNet.Explorer.TypeId"/> as the current one.
+		/// The target explorer must have the same <see cref="FarNet.Explorer.TypeId"/> as the current one.
 		/// </remarks>
 		public virtual void Navigate(Explorer explorer)
 		{
@@ -228,7 +230,7 @@ namespace FarNet
 				throw new InvalidOperationException();
 
 			// setup/fail
-			if (!OpenChildBegin(parent))
+			if (!CanOpenAsChild(parent))
 				return;
 
 			// link
@@ -244,19 +246,18 @@ namespace FarNet
 		/// <summary>
 		/// It is called from <see cref="OpenChild"/> before linking the panels together.
 		/// </summary>
-		/// <param name="parent">The panel about to be parent.</param>
+		/// <param name="parent">The panel which is about to be parent.</param>
 		/// <returns>False to cancel opening.</returns>
 		/// <remarks>
 		/// This method is designed for cases when the child opening depends on the parent.
-		/// For example the initial current file may depend on the parent current file.
 		/// When this methods is called the parent is the active panel and its data can
 		/// be used as usual. The panels are not yet linked together, use the parameter
 		/// in order to access the parent.
 		/// <para>
-		/// If it returns false or even throws then the parent panel remains opened.
+		/// If it returns false or throws then the parent panel remains opened.
 		/// </para>
 		/// </remarks>
-		protected virtual bool OpenChildBegin(Panel parent) { return true; }
+		protected virtual bool CanOpenAsChild(Panel parent) { return true; }
 		/// <summary>
 		/// Gets the opposite opened module panel, the target for dual operations, or null.
 		/// </summary>
@@ -383,10 +384,12 @@ namespace FarNet
 		/// <summary>
 		/// Posts the <see cref="FarFile.Data"/> to be used to find a file and set it current on redrawing.
 		/// </summary>
+		/// <param name="data">The file data to be found on redrawing.</param>
 		public void PostData(object data) { _Panel.PostData(data); }
 		/// <summary>
 		/// Posts the file to be found and set current on redrawing.
 		/// </summary>
+		/// <param name="file">The file to be found on redrawing.</param>
 		/// <remarks>
 		/// The posted file is ignored if <see cref="PostData"/> or <see cref="PostName"/> were called.
 		/// The <see cref="FarNet.Explorer.FileComparer"/> is used in order to find the file.
@@ -395,6 +398,7 @@ namespace FarNet
 		/// <summary>
 		/// Posts the file name to be used to find a file and set it current on redrawing.
 		/// </summary>
+		/// <param name="name">The file name to found on redrawing.</param>
 		public void PostName(string name) { _Panel.PostName(name); }
 		#endregion
 		#region Settable modes
@@ -755,6 +759,7 @@ namespace FarNet
 		/// <summary>
 		/// Called when the panel is about to be closed.
 		/// </summary>
+		/// <param name="e">.</param>
 		/// <remarks>
 		/// There are issues:  http://bugs.farmanager.com/view.php?id=602
 		/// <para>
@@ -831,6 +836,7 @@ namespace FarNet
 		/// <summary>
 		/// Called when the panel is about to redraw.
 		/// </summary>
+		/// <param name="e">.</param>
 		/// <remarks>
 		/// Set <see cref="PanelEventArgs.Ignore"/> = true if the module redraws the panel itself.
 		/// <para>
@@ -849,6 +855,7 @@ namespace FarNet
 		/// <summary>
 		/// Called when panel view mode is changed.
 		/// </summary>
+		/// <param name="e">.</param>
 		/// <remarks>
 		/// The base method triggers the <see cref="ViewChanged"/> event.
 		/// </remarks>
@@ -913,6 +920,7 @@ namespace FarNet
 		/// <summary>
 		/// Sets key bars.
 		/// </summary>
+		/// <param name="bars">The array of key bar data.</param>
 		public void SetKeyBars(KeyBar[] bars) { _Panel.SetKeyBars(bars); }
 		/// <summary>
 		/// Gets the panel view plan or null if it is not set.

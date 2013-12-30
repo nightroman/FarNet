@@ -4,13 +4,12 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-param
-(
+param(
 	$FarHome = (property FarHome),
 	$FarNetModules = (property FarNetModules "$FarHome\FarNet\Modules")
 )
 
-use Framework\v4.0.30319 MSBuild
+use 4.0 MSBuild
 
 task Build {
 	exec { MSBuild /t:Build "/p:Configuration=Release;Install=$FarNetModules;FarHome=$FarHome" FarNet.Demo.csproj }

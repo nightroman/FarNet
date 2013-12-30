@@ -25,8 +25,9 @@ namespace PowerShellFar
 	public sealed class FolderTree : TreePanel
 	{
 		/// <summary>
-		/// New folder tree with the explorer.
+		/// New folder tree with a folder explorer.
 		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		public FolderTree(FolderExplorer explorer) : base(explorer)
 		{
 			// _091015_190130 Use of UpdateInfo is problematic: it is called after Close()
@@ -34,8 +35,9 @@ namespace PowerShellFar
 			// For now use redrawing, it looks working fine.
 		}
 		/// <summary>
-		/// New folder tree at the given location.
+		/// New folder tree at the given location path.
 		/// </summary>
+		/// <param name="path">The location path.</param>
 		public FolderTree(string path)
 			: this(new FolderExplorer(path))
 		{
@@ -52,7 +54,7 @@ namespace PowerShellFar
 		/// </summary>
 		public FolderTree()
 			: this((string)null) { }
-		///
+		/// <inheritdoc/>
 		public override void UIRedrawing(PanelEventArgs e)
 		{
 			base.UIRedrawing(e);
@@ -100,8 +102,9 @@ namespace PowerShellFar
 			return r;
 		}
 		/// <summary>
-		/// Opens path on another panel (FileSystem) or ItemPanel for other providers.
+		/// Opens the path on another panel for the FileSystem provider or an item panel as a child of this panel for other providers.
 		/// </summary>
+		/// <param name="file">The file to open.</param>
 		public override void OpenFile(FarFile file)
 		{
 			// base

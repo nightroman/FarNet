@@ -20,7 +20,7 @@ namespace PowerShellFar
 	{
 		internal FileMap Map { get; private set; } // internal ???
 		internal Meta[] Metas { get; private set; } // internal ???
-		///
+		/// <inheritdoc/>
 		protected FormatExplorer(Guid typeId) : base(typeId) { }
 		/// <include file='doc.xml' path='doc/Columns/*'/>
 		internal sealed override object[] Columns
@@ -48,7 +48,7 @@ namespace PowerShellFar
 			Metas = metas;
 		}
 		internal abstract object GetData(GetFilesEventArgs args);
-		///
+		/// <inheritdoc/>
 		public override IList<FarFile> DoGetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;

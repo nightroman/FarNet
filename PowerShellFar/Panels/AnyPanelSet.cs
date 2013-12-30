@@ -26,6 +26,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Opens the file using <see cref="AsOpenFile"/> or the default method.
 		/// </summary>
+		/// <param name="file">The file to be opened.</param>
 		public sealed override void UIOpenFile(FarFile file)
 		{
 			if (file == null)
@@ -59,6 +60,10 @@ namespace PowerShellFar
 		/// <summary>
 		/// Opens a file.
 		/// </summary>
+		/// <param name="file">The file to open.</param>
+		/// <remarks>
+		/// The base method calls Invoke-Item for <see cref="FileSystemInfo"/> files.
+		/// </remarks>
 		public virtual void OpenFile(FarFile file)
 		{
 			if (file == null)
@@ -93,8 +98,10 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="UIEditFile"/> worker.
 		/// </summary>
+		/// <param name="file">The file to edit.</param>
 		public void DoEditFile(FarFile file) { base.UIEditFile(file); }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="file">The file to edit.</param>
 		public sealed override void UIEditFile(FarFile file) //_091202_073429 NB: Data can be wrapped by PSObject.
 		{
 			if (AsEditFile != null)
@@ -112,8 +119,10 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="UIViewFile"/> worker.
 		/// </summary>
+		/// <param name="file">The file to view.</param>
 		public void DoViewFile(FarFile file) { base.UIViewFile(file); }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="file">The file to view.</param>
 		public sealed override void UIViewFile(FarFile file) //_091202_073429
 		{
 			if (AsViewFile != null)

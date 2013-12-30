@@ -18,7 +18,7 @@ namespace PowerShellFar
 	public sealed class ItemExplorer : FormatExplorer
 	{
 		const string TypeIdString = "07e4dde7-e113-4622-b2e9-81cf3cda927a";
-		///
+		/// <param name="location">The provider path.</param>
 		public ItemExplorer(string location)
 			: base(new Guid(TypeIdString))
 		{
@@ -46,12 +46,12 @@ namespace PowerShellFar
 			private set { _Provider_ = value; }
 		}
 		ProviderInfo _Provider_;
-		///
+		/// <inheritdoc/>
 		public override Panel DoCreatePanel()
 		{
 			return new ItemPanel(this);
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoAcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -98,7 +98,7 @@ namespace PowerShellFar
 				}
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -139,7 +139,7 @@ namespace PowerShellFar
 				throw;
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoGetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
@@ -180,14 +180,14 @@ namespace PowerShellFar
 					Far.Api.ShowError("Edit", ex);
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override Explorer DoExploreDirectory(ExploreDirectoryEventArgs args)
 		{
 			if (args == null) return null;
 
 			return Explore(My.PathEx.Combine(Location, args.File.Name));
 		}
-		///
+		/// <inheritdoc/>
 		public override Explorer DoExploreParent(ExploreParentEventArgs args)
 		{
 			if (args == null) return null;
@@ -255,7 +255,7 @@ namespace PowerShellFar
 
 			return Explore(path);
 		}
-		///
+		/// <inheritdoc/>
 		public override Explorer DoExploreRoot(ExploreRootEventArgs args)
 		{
 			string driveName = Info().DriveName;
@@ -297,7 +297,7 @@ namespace PowerShellFar
 			// get items for the location
 			return A.GetChildItems(Location);
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoRenameFile(RenameFileEventArgs args)
 		{
 			if (args == null) return;
@@ -310,7 +310,7 @@ namespace PowerShellFar
 			string src = Kit.EscapeWildcard(My.PathEx.Combine(Location, args.File.Name));
 			A.Psf.Engine.InvokeProvider.Item.Rename(src, newName);
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoCreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;
@@ -354,7 +354,7 @@ namespace PowerShellFar
 				}
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoSetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
@@ -377,7 +377,7 @@ namespace PowerShellFar
 					A.Message(ex.Message);
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoCloneFile(CloneFileEventArgs args)
 		{
 			if (args == null) return;

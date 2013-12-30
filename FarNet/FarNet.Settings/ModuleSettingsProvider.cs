@@ -49,22 +49,26 @@ namespace FarNet.Settings
 	/// </remarks>
 	public sealed class ModuleSettingsProvider : SettingsProvider
 	{
-		///
+		/// <summary>
+		/// Roaming file name key.
+		/// </summary>
 		public const string RoamingFileName = "RoamingFileName";
-		///
+		/// <summary>
+		/// Local file name key.
+		/// </summary>
 		public const string LocalFileName = "LocalFileName";
-		///
+		/// <inheritdoc/>
 		public override void Initialize(string name, NameValueCollection config)
 		{
 			base.Initialize(name ?? "ModuleSettingsProvider", config);
 		}
-		///
+		/// <inheritdoc/>
 		public override string ApplicationName
 		{
 			get { return string.Empty; }
 			set { }
 		}
-		///
+		/// <inheritdoc/>
 		public override string Name
 		{
 			get { return "ModuleSettingsProvider"; }
@@ -103,7 +107,7 @@ namespace FarNet.Settings
 
 			return data;
 		}
-		///
+		/// <inheritdoc/>
 		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
@@ -130,7 +134,7 @@ namespace FarNet.Settings
 
 			return result;
 		}
-		///
+		/// <inheritdoc/>
 		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods")]
 		public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection)

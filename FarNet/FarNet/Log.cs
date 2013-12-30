@@ -13,14 +13,19 @@ using System.Text.RegularExpressions;
 namespace FarNet
 {
 	/// <summary>
-	/// For internal use.
+	/// INTERNAL
 	/// </summary>
 	public static class Log
 	{
-		///
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
 		public static TraceSource Source { get { return _Source; } }
 		static readonly TraceSource _Source = new TraceSource("FarNet");
-		///
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		/// <param name="error">The exception to format.</param>
 		public static string FormatException(Exception error)
 		{
 			if (error == null)
@@ -55,13 +60,19 @@ namespace FarNet
 
 			return info;
 		}
-		///
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		/// <param name="error">The error message.</param>
 		public static void TraceError(string error)
 		{
 			Source.TraceEvent(TraceEventType.Error, 0, error);
 		}
 		// return: null if not written or formatted error info
-		///
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		/// <param name="error">The exception to trace.</param>
 		public static string TraceException(Exception error)
 		{
 			// no job?

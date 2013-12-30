@@ -65,7 +65,7 @@ namespace PowerShellFar
 
 		public override PS.KeyInfo ReadKey(PS.ReadKeyOptions options)
 		{
-			FarNet.KeyInfo k = Far.Api.UI.ReadKey((FN.ReadKeyOptions)options);
+			FarNet.KeyInfo k = Far.Api.UI.ReadKey((FarNet.ReadKeyOptions)options);
 			return new PS.KeyInfo((int)k.VirtualKeyCode, k.Character, (PS.ControlKeyStates)k.ControlKeyState, k.KeyDown);
 		}
 

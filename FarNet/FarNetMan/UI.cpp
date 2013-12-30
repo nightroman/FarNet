@@ -132,9 +132,9 @@ bool FarUI::KeyAvailable::get()
 	return Console::KeyAvailable;
 }
 
-KeyInfo^ FarUI::ReadKey(Works::ReadKeyOptions options)
+KeyInfo^ FarUI::ReadKey(ReadKeyOptions options)
 {
-	if (int(options & (Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp)) == 0)
+	if (int(options & (ReadKeyOptions::IncludeKeyDown | ReadKeyOptions::IncludeKeyUp)) == 0)
 		throw gcnew ArgumentException("Argument 'options': either IncludeKeyDown, IncludeKeyUp or both must be set.");
 
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -146,9 +146,9 @@ KeyInfo^ FarUI::ReadKey(Works::ReadKeyOptions options)
 		ThrowWithLastError("GetConsoleMode");
 
 	DWORD mode2 = 0;
-	if (int(options & Works::ReadKeyOptions::NoEcho) == 0)
+	if (int(options & ReadKeyOptions::NoEcho) == 0)
 		mode2 |= (ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
-	if (int(options & Works::ReadKeyOptions::AllowCtrlC) != 0)
+	if (int(options & ReadKeyOptions::AllowCtrlC) != 0)
 		mode2 |= ENABLE_PROCESSED_INPUT;
 
 	try
@@ -166,12 +166,12 @@ KeyInfo^ FarUI::ReadKey(Works::ReadKeyOptions options)
 				continue;
 			if (ir.Event.KeyEvent.bKeyDown)
 			{
-				if (int(options & Works::ReadKeyOptions::IncludeKeyDown) == 0)
+				if (int(options & ReadKeyOptions::IncludeKeyDown) == 0)
 					continue;
 			}
 			else
 			{
-				if (int(options & Works::ReadKeyOptions::IncludeKeyUp) == 0)
+				if (int(options & ReadKeyOptions::IncludeKeyUp) == 0)
 					continue;
 			}
 			return KeyInfoFromInputRecord(ir);
@@ -532,7 +532,7 @@ int FarUI::ReadKeys(array<KeyData^>^ keys)
 	int result = -1;
 	while (KeyAvailable)
 	{
-		KeyInfo^ info = ReadKey(Works::ReadKeyOptions::AllowCtrlC | Works::ReadKeyOptions::IncludeKeyDown | Works::ReadKeyOptions::IncludeKeyUp | Works::ReadKeyOptions::NoEcho);
+		KeyInfo^ info = ReadKey(ReadKeyOptions::AllowCtrlC | ReadKeyOptions::IncludeKeyDown | ReadKeyOptions::IncludeKeyUp | ReadKeyOptions::NoEcho);
 		if (!keys || keys->Length == 0)
 			break;
 		

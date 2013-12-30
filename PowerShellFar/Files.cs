@@ -14,26 +14,36 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Combined delegate or script action with one parameter.
-	/// Script variables: <c>$this</c> is the target object (sender).
+	/// Combined delegate or script block action with one parameter.
+	/// Script arguments: 0: the target object (sender).
 	/// </summary>
+	/// <typeparam name="T">Type of the sender.</typeparam>
 	public sealed class ScriptAction<T>
 	{
 		readonly Action<T> _action;
 		readonly ScriptBlock _script;
-		///
+		/// <summary>
+		/// New action with a delegate.
+		/// </summary>
+		/// <param name="action">The delegate.</param>
 		public ScriptAction(Action<T> action)
 		{
 			if (action == null) throw new ArgumentNullException("action");
 			_action = action;
 		}
-		///
+		/// <summary>
+		/// New action with a script block.
+		/// </summary>
+		/// <param name="script">The script block.</param>
 		public ScriptAction(ScriptBlock script)
 		{
 			if (script == null) throw new ArgumentNullException("script");
 			_script = script;
 		}
-		///
+		/// <summary>
+		/// Invokes the action.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
 		public void Invoke(T sender)
 		{
 			if (_action != null)
@@ -44,26 +54,36 @@ namespace PowerShellFar
 	}
 
 	/// <summary>
-	/// Combined delegate or script with two parameters.
-	/// Script variables: <c>$this</c> is the target object (sender), <c>$_</c> is the arguments.
+	/// Combined delegate or script block with two parameters.
+	/// Script arguments: 0: the target object (sender); 1: the arguments.
 	/// </summary>
+	/// <typeparam name="T">Event arguments type.</typeparam>
 	public sealed class ScriptHandler<T> where T : EventArgs
 	{
 		readonly EventHandler<T> _handler;
 		readonly ScriptBlock _script;
-		///
+		/// <summary>
+		/// New handler with a delegate.
+		/// </summary>
+		/// <param name="handler">The delegate.</param>
 		public ScriptHandler(EventHandler<T> handler)
 		{
 			if (handler == null) throw new ArgumentNullException("handler");
 			_handler = handler;
 		}
-		///
+		/// <summary>
+		/// New handler with a script block. 
+		/// </summary>
+		/// <param name="handler">The script block.</param>
 		public ScriptHandler(ScriptBlock handler)
 		{
 			if (handler == null) throw new ArgumentNullException("handler");
 			_script = handler;
 		}
-		///
+		/// <summary>
+		/// New handler with a delegate or a script block.
+		/// </summary>
+		/// <param name="handler">The delegate or script block.</param>
 		public ScriptHandler(object handler)
 		{
 			if (handler == null) throw new ArgumentNullException("handler");
@@ -76,7 +96,11 @@ namespace PowerShellFar
 			else
 				throw new ArgumentException("Invalid handler type.", "handler");
 		}
-		///
+		/// <summary>
+		/// Invokes the handler.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="args">The arguments.</param>
 		public void Invoke(object sender, T args)
 		{
 			if (_handler != null)
@@ -215,7 +239,7 @@ namespace PowerShellFar
 			private set;
 		}
 		/// <summary>
-		/// For internal use.
+		/// INTERNAL
 		/// </summary>
 		public override FileAttributes Attributes { get; set; } // _090810_180151
 	}
@@ -239,7 +263,7 @@ namespace PowerShellFar
 			Add(r);
 			return r;
 		}
-		///
+		/// <inheritdoc/>
 		protected override void ClearItems()
 		{
 			// detach all
@@ -249,7 +273,7 @@ namespace PowerShellFar
 			// clear
 			base.ClearItems();
 		}
-		///
+		/// <inheritdoc/>
 		protected override void InsertItem(int index, TreeFile item)
 		{
 			if (item == null)
@@ -264,7 +288,7 @@ namespace PowerShellFar
 			// attach
 			item.Parent = Parent;
 		}
-		///
+		/// <inheritdoc/>
 		protected override void RemoveItem(int index)
 		{
 			// get it, index is checked
@@ -276,7 +300,7 @@ namespace PowerShellFar
 			// detach
 			it.Parent = null;
 		}
-		///
+		/// <inheritdoc/>
 		protected override void SetItem(int index, TreeFile item)
 		{
 			if (item == null)
@@ -303,19 +327,25 @@ namespace PowerShellFar
 	public sealed class FileMetaComparer : EqualityComparer<FarFile>
 	{
 		readonly Meta _meta;
-		///
+		/// <summary>
+		/// New comparer with a meta data for comparison.
+		/// </summary>
+		/// <param name="meta">The meta for comparison.</param>
 		public FileMetaComparer(Meta meta)
 		{
 			if (meta == null) throw new ArgumentNullException("meta");
 			_meta = meta;
 		}
-		///
+		/// <summary>
+		/// New comparer with a property used on comparison.
+		/// </summary>
+		/// <param name="property">The property name.</param>
 		public FileMetaComparer(string property)
 		{
 			if (property == null) throw new ArgumentNullException("property");
 			_meta = new Meta(property);
 		}
-		///
+		/// <inheritdoc/>
 		public override bool Equals(FarFile x, FarFile y)
 		{
 			if (x == null || y == null)
@@ -323,7 +353,7 @@ namespace PowerShellFar
 			else
 				return object.Equals(_meta.GetValue(x.Data), _meta.GetValue(y.Data));
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode(FarFile obj)
 		{
 			if (obj == null || obj.Data == null)

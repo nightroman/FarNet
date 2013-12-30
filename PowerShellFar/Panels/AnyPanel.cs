@@ -27,8 +27,9 @@ namespace PowerShellFar
 	public partial class AnyPanel : Panel
 	{
 		/// <summary>
-		/// Default panel.
+		/// New panel with the explorer.
 		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		public AnyPanel(Explorer explorer)
 			: base(explorer)
 		{
@@ -105,8 +106,11 @@ namespace PowerShellFar
 		/// Tells to treat the items as not directories even if they have a directory flag.
 		/// </summary>
 		internal bool IgnoreDirectoryFlag { get; set; } // _090810_180151
-		///
-		protected override bool OpenChildBegin(Panel parent)
+		/// <inheritdoc/>
+		/// <remarks>
+		/// Prepares for opening this panel as a child panel.
+		/// </remarks>
+		protected override bool CanOpenAsChild(Panel parent)
 		{
 			if (parent == null) throw new ArgumentNullException("parent");
 
@@ -245,6 +249,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Adds name/handler pairs to the lookup collection.
 		/// </summary>
+		/// <param name="lookups">The dictionary with name/handler pairs.</param>
 		public void AddLookup(IDictionary lookups)
 		{
 			if (lookups != null)
@@ -319,7 +324,7 @@ namespace PowerShellFar
 		/// </remarks>
 		/// <seealso cref="ShowMenu"/>
 		public event EventHandler<PanelMenuEventArgs> MenuCreating;
-		///
+		/// <inheritdoc/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override bool UIKeyPressed(KeyInfo key)
 		{
@@ -444,7 +449,10 @@ namespace PowerShellFar
 				UserWants = UserAction.None;
 			}
 		}
-		///
+		/// <inheritdoc/>
+		/// <remarks>
+		/// The method prompts for the new file name and then calls the base method.
+		/// </remarks>
 		public override void UICloneFile(CloneFileEventArgs args)
 		{
 			if (args == null) return;
@@ -468,7 +476,7 @@ namespace PowerShellFar
 			// base
 			base.UICloneFile(args);
 		}
-		///
+		/// <inheritdoc/>
 		public override void UIRenameFile(RenameFileEventArgs args)
 		{
 			if (args == null) return;

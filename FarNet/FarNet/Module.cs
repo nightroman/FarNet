@@ -44,7 +44,7 @@ namespace FarNet
 		/// Gets a localized string from .resources files.
 		/// </summary>
 		/// <returns>Localized string. If a best match is not possible, null is returned.</returns>
-		/// <param name="name">String name.</param>
+		/// <param name="name">The string name.</param>
 		/// <remarks>
 		/// It gets a string from .resource files depending on the <see cref="IModuleManager.CurrentUICulture"/>.
 		/// <para>
@@ -89,15 +89,14 @@ namespace FarNet
 	/// Module exception.
 	/// </summary>
 	/// <remarks>
-	/// If a module throws exceptions then for better diagnostics it is
-	/// recommended to use this or derived exceptions in order to be able to
-	/// distinguish between system, module, and even particular module
-	/// exceptions.
+	/// If a module throws exceptions shown to a user in message boxes consider
+	/// to use this or derived classes in order to let a user to distinguish
+	/// between exceptions processed by a module and other exceptions.
 	/// <para>
-	/// Best practice: catch an exception, wrap it by a new module exception
-	/// with better explanation of a problem and throw the new one. Wrapped
-	/// inner exception is not lost: its message and stack are shown, for
-	/// example by <see cref="IFar.ShowError"/>.
+	/// Scenario. Catch some exception, wrap it by a new module exception with
+	/// a more detailed explanation of the problem, and throw the new one. The
+	/// inner exception information is not lost. Its details are available in
+	/// the error message box.
 	/// </para>
 	/// </remarks>
 	[Serializable]
@@ -105,11 +104,11 @@ namespace FarNet
 	{
 		///
 		public ModuleException() { }
-		///
+		/// <inheritdoc/>
 		public ModuleException(string message) : base(message) { }
-		///
+		/// <inheritdoc/>
 		public ModuleException(string message, Exception innerException) : base(message, innerException) { }
-		///
+		/// <inheritdoc/>
 		protected ModuleException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 
@@ -135,6 +134,7 @@ namespace FarNet
 		/// <summary>
 		/// The <see cref="BaseModuleItem.GetString"/> worker.
 		/// </summary>
+		/// <param name="name">The string name.</param>
 		public abstract string GetString(string name);
 		/// <summary>
 		/// Gets the path to the system special folder that is identified by the specified enumeration.
@@ -194,15 +194,16 @@ namespace FarNet
 		/// </summary>
 		public abstract string ModuleName { get; }
 		/// <summary>
-		/// For internal use.
+		/// INTERNAL
 		/// </summary>
 		public abstract string StoredUICulture { get; set; }
 		/// <summary>
-		/// For internal use. Loads the assembly.
+		/// INTERNAL
 		/// </summary>
+		/// <param name="connect">INTERNAL</param>
 		public abstract Assembly LoadAssembly(bool connect);
 		/// <summary>
-		/// For internal use.
+		/// INTERNAL
 		/// </summary>
 		public abstract void SaveSettings();
 	}
@@ -332,7 +333,9 @@ namespace FarNet
 		/// to make sure that this and other action names are updated from resources.
 		/// </remarks>
 		public bool Resources { get; set; }
-		///
+		/// <summary>
+		/// Calls <see cref="object.MemberwiseClone"/>.
+		/// </summary>
 		public object Clone() { return MemberwiseClone(); }
 	}
 
@@ -363,7 +366,7 @@ namespace FarNet
 	/// </summary>
 	public class ModuleCommandEventArgs : EventArgs
 	{
-		///
+		/// <param name="command">See <see cref="Command"/></param>
 		public ModuleCommandEventArgs(string command)
 		{
 			Command = command;
@@ -415,6 +418,8 @@ namespace FarNet
 		/// <summary>
 		/// Command handler called from the command line with a prefix.
 		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The arguments.</param>
 		public abstract void Invoke(object sender, ModuleCommandEventArgs e);
 	}
 
@@ -454,7 +459,10 @@ namespace FarNet
 	/// </summary>
 	public class ModuleDrawerEventArgs : EventArgs
 	{
-		///
+		/// <param name="colors">See <see cref="Colors"/></param>
+		/// <param name="lines">See <see cref="Lines"/></param>
+		/// <param name="startChar">See <see cref="StartChar"/></param>
+		/// <param name="endChar">See <see cref="EndChar"/></param>
 		public ModuleDrawerEventArgs(ICollection<EditorColor> colors, IList<ILine> lines, int startChar, int endChar)
 		{
 			Colors = colors;
@@ -467,15 +475,15 @@ namespace FarNet
 		/// </summary>
 		public ICollection<EditorColor> Colors { get; private set; }
 		/// <summary>
-		/// Gets the lines to get colors for. A drawer should not change anything.
+		/// Gets the lines to get colors for. A drawer should not change this collection.
 		/// </summary>
 		public IList<ILine> Lines { get; private set; }
 		/// <summary>
-		/// Index of the first character.
+		/// Gets the index of the first character.
 		/// </summary>
 		public int StartChar { get; private set; }
 		/// <summary>
-		/// Index of the character after the last.
+		/// Gets the index of the character after the last.
 		/// </summary>
 		public int EndChar { get; private set; }
 	}
@@ -500,6 +508,8 @@ namespace FarNet
 		/// <summary>
 		/// Editor <see cref="IEditorBase.Opened"/> handler.
 		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The arguments.</param>
 		/// <remarks>
 		/// This method is called once on opening an editor.
 		/// Normally it adds editor event handlers, then they do the jobs.
@@ -533,6 +543,8 @@ namespace FarNet
 		/// <summary>
 		/// Gets colors for the specified editor lines.
 		/// </summary>
+		/// <param name="sender">.</param>
+		/// <param name="e">.</param>
 		public abstract void Invoke(object sender, ModuleDrawerEventArgs e);
 	}
 
@@ -636,8 +648,10 @@ namespace FarNet
 	public abstract class ModuleTool : ModuleAction
 	{
 		/// <summary>
-		/// Tool handler called when its menu item is invoked.
+		/// This method is called when the tool menu item is invoked.
 		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The arguments.</param>
 		public abstract void Invoke(object sender, ModuleToolEventArgs e);
 	}
 
@@ -712,6 +726,8 @@ namespace FarNet
 		/// <summary>
 		/// Processes the command event.
 		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The arguments.</param>
 		void Invoke(object sender, ModuleCommandEventArgs e);
 		/// <summary>
 		/// Gets the command prefix. Setting is for internal use.
@@ -730,6 +746,8 @@ namespace FarNet
 		/// <summary>
 		/// Processes the editor event.
 		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The arguments.</param>
 		void Invoke(object sender, ModuleEditorEventArgs e);
 		/// <summary>
 		/// Gets the file mask. Setting is for internal use.
@@ -771,6 +789,8 @@ namespace FarNet
 		/// <summary>
 		/// Processes the tool event.
 		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The arguments.</param>
 		void Invoke(object sender, ModuleToolEventArgs e);
 		/// <summary>
 		/// Gets the tool options. Setting is for internal use.

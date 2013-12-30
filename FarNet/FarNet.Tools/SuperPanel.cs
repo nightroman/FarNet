@@ -23,9 +23,14 @@ namespace FarNet.Tools
 		const string Name = "Super Panel";
 		readonly object _lock = new object();
 		List<FarFile> _idleFiles;
-		///
+		/// <summary>
+		/// Gets the super explorer of this panel.
+		/// </summary>
 		public new SuperExplorer Explorer { get { return (SuperExplorer)base.Explorer; } }
-		///
+		/// <summary>
+		/// New super panel with a super explorer.
+		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		public SuperPanel(SuperExplorer explorer)
 			: base(explorer)
 		{
@@ -40,7 +45,7 @@ namespace FarNet.Tools
 		}
 		///
 		public SuperPanel() : this(new SuperExplorer()) { }
-		///
+		/// <inheritdoc/>
 		public override void UICopyMove(bool move)
 		{
 			// target
@@ -63,7 +68,7 @@ namespace FarNet.Tools
 			// call
 			this.Explorer.CommitFiles(this, that, files, move);
 		}
-		///
+		/// <inheritdoc/>
 		public override void UIIdle()
 		{
 			// let event happens first
@@ -87,6 +92,7 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Adds <see cref="SuperFile"/> files asynchronously.
 		/// </summary>
+		/// <param name="files">The files to add.</param>
 		/// <remarks>
 		/// It is thread safe and can be called from background threads.
 		/// The added files will be shown later when the panel is idle.
@@ -101,7 +107,7 @@ namespace FarNet.Tools
 				_idleFiles.AddRange(files);
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");

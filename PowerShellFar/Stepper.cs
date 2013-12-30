@@ -80,13 +80,19 @@ namespace PowerShellFar
 	{
 		const string DataVariableName = "Data";
 		object _current;
-		///
+		/// <summary>
+		/// Gets the current step object.
+		/// </summary>
 		public object Current { get { return _current; } }
-		///
+		/// <summary>
+		/// Not implemented.
+		/// </summary>
 		public void Reset() { throw new NotImplementedException(); }
 		///
 		public void Dispose() { }
-		///
+		/// <summary>
+		/// Returns the enumerator.
+		/// </summary>
 		public IEnumerator<object> GetEnumerator() { return this; }
 		IEnumerator System.Collections.IEnumerable.GetEnumerator() { return this; }
 		/// <summary>
@@ -448,7 +454,7 @@ namespace PowerShellFar
 		}
 		static void Throw(ScriptBlock script, string message, Exception innerException)
 		{
-			throw new ModuleException(string.Format(null,
+			throw new PowerShellFarException(string.Format(null,
 				"{0}\r\nAt {1}:{2}\r\nCode: {{{3}}}",
 				message,
 				script.File,
@@ -457,7 +463,7 @@ namespace PowerShellFar
 		}
 		void Throw(string message)
 		{
-			throw new ModuleException(string.Format(null,
+			throw new PowerShellFarException(string.Format(null,
 				"{0}\r\nUnit: {1}",
 				message,
 				CurrentUnit));

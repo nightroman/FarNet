@@ -97,6 +97,8 @@ namespace FarNet
 		/// <summary>
 		/// Opens a modal temporary editor to edit the given text.
 		/// </summary>
+		/// <param name="text">The text to edit.</param>
+		/// <param name="title">The editor title.</param>
 		public abstract string EditText(string text, string title);
 	}
 
@@ -414,10 +416,12 @@ namespace FarNet
 		/// <summary>
 		/// Converts the point in editor coordinates to the point in screen coordinates.
 		/// </summary>
+		/// <param name="point">The point in editor coordinates.</param>
 		public abstract Point ConvertPointEditorToScreen(Point point);
 		/// <summary>
 		/// Converts the point in screen coordinates to the point in editor coordinates.
 		/// </summary>
+		/// <param name="point">The point in screen coordinates.</param>
 		public abstract Point ConvertPointScreenToEditor(Point point);
 		/// <summary>
 		/// Gets or sets the current text frame.
@@ -514,6 +518,7 @@ namespace FarNet
 		/// <summary>
 		/// Opens the editor.
 		/// </summary>
+		/// <param name="mode">The open mode.</param>
 		/// <remarks>
 		/// To open an editor you should create an editor operator by <see cref="IFar.CreateEditor"/>,
 		/// set at least its <see cref="FileName"/> and optionally: <see cref="DeleteSource"/>,
@@ -715,6 +720,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns color spans of the specified line.
 		/// </summary>
+		/// <param name="line">Index of the line.</param>
 		public abstract IList<EditorColorInfo> GetColors(int line);
 		/// <summary>
 		/// Adds the drawer to this editor.
@@ -798,8 +804,8 @@ namespace FarNet
 	/// </summary>
 	public sealed class EditorChangedEventArgs : EventArgs
 	{
-		/// <param name="kind">See <see cref="Kind"/>.</param>
-		/// <param name="line">See <see cref="Line"/>.</param>
+		/// <param name="kind">See <see cref="Kind"/></param>
+		/// <param name="line">See <see cref="Line"/></param>
 		public EditorChangedEventArgs(EditorChangeKind kind, int line)
 		{
 			Kind = kind;
@@ -820,15 +826,20 @@ namespace FarNet
 	/// </summary>
 	public sealed class EditorSavingEventArgs : EventArgs
 	{
-		///
+		/// <param name="fileName">See <see cref="FileName"/></param>
+		/// <param name="codePage">See <see cref="CodePage"/></param>
 		public EditorSavingEventArgs(string fileName, int codePage)
 		{
 			FileName = fileName;
 			CodePage = codePage;
 		}
-		///
+		/// <summary>
+		/// Gets the file name being saved.
+		/// </summary>
 		public string FileName { get; private set; }
-		///
+		/// <summary>
+		/// Gets the code page used on saving.
+		/// </summary>
 		public int CodePage { get; private set; }
 	}
 
@@ -929,7 +940,6 @@ namespace FarNet
 		/// <summary>
 		/// Returns the line text.
 		/// </summary>
-		/// <returns>The line text.</returns>
 		public sealed override string ToString()
 		{
 			return Text;
@@ -1029,10 +1039,7 @@ namespace FarNet
 	/// </summary>
 	public struct TextFrame
 	{
-		/// <summary>
-		/// Sets the same value for all members.
-		/// </summary>
-		/// <param name="value">Value.</param>
+		/// <param name="value">The same value assigned to all properties.</param>
 		public TextFrame(int value)
 			: this()
 		{
@@ -1043,26 +1050,26 @@ namespace FarNet
 			VisibleChar = value;
 		}
 		/// <summary>
-		/// Caret line index.
+		/// Gets or sets the caret line index.
 		/// </summary>
 		public int CaretLine { get; set; }
 		/// <summary>
-		/// Caret character index.
+		/// Gets or sets the caret character index.
 		/// </summary>
 		public int CaretColumn { get; set; }
 		/// <summary>
-		/// Caret screen column index.
+		/// Gets or sets the caret screen column index.
 		/// </summary>
 		public int CaretScreenColumn { get; set; }
 		/// <summary>
-		/// First visible line index.
+		/// Gets or sets the first visible line index.
 		/// </summary>
 		public int VisibleLine { get; set; }
 		/// <summary>
-		/// First visible character index.
+		/// Gets or sets the first visible character index.
 		/// </summary>
 		public int VisibleChar { get; set; }
-		///
+		/// <include file='doc.xml' path='doc/OpEqual/*'/>
 		public static bool operator ==(TextFrame left, TextFrame right)
 		{
 			return
@@ -1072,25 +1079,27 @@ namespace FarNet
 				left.VisibleLine == right.VisibleLine &&
 				left.VisibleChar == right.VisibleChar;
 		}
-		///
+		/// <include file='doc.xml' path='doc/OpNotEqual/*'/>
 		public static bool operator !=(TextFrame left, TextFrame right)
 		{
 			return !(left == right);
 		}
-		///
+		/// <inheritdoc/>
 		public override bool Equals(Object obj)
 		{
 			return obj != null && obj.GetType() == typeof(TextFrame) && this == (TextFrame)obj;
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			return CaretLine | (CaretColumn << 16);
 		}
-		/// <inheritdoc/>
+		/// <summary>
+		/// Returns the string "(({0}/{1}, {2})({3}, {4}))", CaretColumn, CaretScreenColumn, CaretLine, VisibleChar, VisibleLine.
+		/// </summary>
 		public override string ToString()
 		{
-			return "((" + CaretColumn + "/" + CaretScreenColumn + ", " + CaretLine + ")(" + VisibleChar + ", " + VisibleLine + "))";
+			return string.Format(null, "(({0}/{1}, {2})({3}, {4}))", CaretColumn, CaretScreenColumn, CaretLine, VisibleChar, VisibleLine);
 		}
 	}
 
@@ -1099,11 +1108,11 @@ namespace FarNet
 	/// </summary>
 	public class EditorColor
 	{
-		/// <param name="line">See <see cref="Line"/>.</param>
-		/// <param name="start">See <see cref="Start"/>.</param>
-		/// <param name="end">See <see cref="End"/>.</param>
-		/// <param name="foreground">See <see cref="Foreground"/>.</param>
-		/// <param name="background">See <see cref="Background"/>.</param>
+		/// <param name="line">See <see cref="Line"/></param>
+		/// <param name="start">See <see cref="Start"/></param>
+		/// <param name="end">See <see cref="End"/></param>
+		/// <param name="foreground">See <see cref="Foreground"/></param>
+		/// <param name="background">See <see cref="Background"/></param>
 		public EditorColor(int line, int start, int end, ConsoleColor foreground, ConsoleColor background)
 		{
 			Line = line;
@@ -1132,10 +1141,12 @@ namespace FarNet
 		/// Background color. Black on black is the special case.
 		/// </summary>
 		public ConsoleColor Background { get; private set; }
-		/// <inheritdoc/>
+		/// <summary>
+		/// Returns the string "({0}, {1}) {2}/{3}", Start, End, Foreground, Background.
+		/// </summary>
 		public override string ToString()
 		{
-			return string.Format(null, "({0}, {1}) {2} on {3}", Start, End, Foreground, Background);
+			return string.Format(null, "({0}, {1}) {2}/{3}", Start, End, Foreground, Background);
 		}
 	}
 
@@ -1144,13 +1155,13 @@ namespace FarNet
 	/// </summary>
 	public class EditorColorInfo : EditorColor
 	{
-		/// <param name="line">See <see cref="EditorColor.Line"/>.</param>
-		/// <param name="start">See <see cref="EditorColor.Start"/>.</param>
-		/// <param name="end">See <see cref="EditorColor.End"/>.</param>
-		/// <param name="foreground">See <see cref="EditorColor.Foreground"/>.</param>
-		/// <param name="background">See <see cref="EditorColor.Background"/>.</param>
-		/// <param name="owner">See <see cref="Owner"/>.</param>
-		/// <param name="priority">See <see cref="Priority"/>.</param>
+		/// <param name="line">See <see cref="EditorColor.Line"/></param>
+		/// <param name="start">See <see cref="EditorColor.Start"/></param>
+		/// <param name="end">See <see cref="EditorColor.End"/></param>
+		/// <param name="foreground">See <see cref="EditorColor.Foreground"/></param>
+		/// <param name="background">See <see cref="EditorColor.Background"/></param>
+		/// <param name="owner">See <see cref="Owner"/></param>
+		/// <param name="priority">See <see cref="Priority"/></param>
 		public EditorColorInfo(int line, int start, int end, ConsoleColor foreground, ConsoleColor background, Guid owner, int priority)
 			: base(line, start, end, foreground, background)
 		{
@@ -1165,7 +1176,9 @@ namespace FarNet
 		/// Color priority.
 		/// </summary>
 		public int Priority { get; private set; }
-		/// <inheritdoc/>
+		/// <summary>
+		/// Returns the string "{0} {1} {2} ({3}, {4}) {5}/{6}", Priority, Owner, Line, Start, End, Foreground, Background.
+		/// </summary>
 		public override string ToString()
 		{
 			return string.Format(null, "{0} {1} {2} ({3}, {4}) {5}/{6}", Priority, Owner, Line, Start, End, Foreground, Background);

@@ -98,7 +98,10 @@ namespace PowerShellFar
 			//! Actually e.g. functions can be copied, see UICopyHere
 			return My.ProviderInfoEx.IsNavigation(Explorer.Provider);
 		}
-		///
+		/// <inheritdoc/>
+		/// <remarks>
+		/// The method updates internal data depending on the current explorer.
+		/// </remarks>
 		public override void UIExplorerEntered(ExplorerEnteredEventArgs args)
 		{
 			if (args == null) return;
@@ -220,7 +223,7 @@ namespace PowerShellFar
 
 			base.HelpMenuInitItems(items, e);
 		}
-		///
+		/// <inheritdoc/>
 		public override void UISetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
@@ -234,7 +237,10 @@ namespace PowerShellFar
 			if (0 != (args.Mode & ExplorerModes.Edit)) //????? in many cases it is not needed, think to avoid/do effectively
 				UpdateRedraw(true);
 		}
-		///
+		/// <inheritdoc/>
+		/// <remarks>
+		/// The method updates the panel if its location is the same as that panel location.
+		/// </remarks>
 		public override void OnThatFileChanged(Panel that, EventArgs args)
 		{
 			var panel = that as ItemPanel;

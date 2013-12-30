@@ -14,9 +14,14 @@ namespace PowerShellFar
 	/// </summary>
 	public abstract class FormatPanel : TablePanel
 	{
-		///
+		/// <summary>
+		/// Gets the panel explorer.
+		/// </summary>
 		public new FormatExplorer Explorer { get { return (FormatExplorer)base.Explorer; } }
-		///
+		/// <summary>
+		/// New format panel.
+		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		protected FormatPanel(FormatExplorer explorer) : base(explorer) { }
 		/// <summary>
 		/// Gets a list of ready files or a collection of PS objects.
@@ -49,7 +54,7 @@ namespace PowerShellFar
 
 			SetPlan(PanelViewMode.AlternativeFull, plan);
 		}
-		///
+		/// <inheritdoc/>
 		public override void Open()
 		{
 			if (IsOpened)
@@ -60,7 +65,7 @@ namespace PowerShellFar
 
 			base.Open();
 		}
-		///
+		/// <inheritdoc/>
 		public override IList<FarFile> UIGetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;

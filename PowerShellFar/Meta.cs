@@ -14,7 +14,7 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// Meta information of properties or calculated values.
+	/// Meta data for getting properties or calculated values.
 	/// </summary>
 	/// <remarks>
 	/// It is created internally from a string (property name), a script block (getting data from $_),
@@ -61,7 +61,7 @@ namespace PowerShellFar
 		/// Script block operating on $_.
 		/// </summary>
 		public ScriptBlock Script { get { return _Script; } }
-		///
+		/// <inheritdoc/>
 		public override string Name
 		{
 			get
@@ -73,10 +73,10 @@ namespace PowerShellFar
 					string.Empty;
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override string Kind { get { return _Kind; } set { _Kind = value; } }
 		string _Kind; //! CA
-		///
+		/// <inheritdoc/>
 		public override int Width { get { return _Width; } set { _Width = value; } }
 		int _Width; //! CA
 		/// <summary>
@@ -104,8 +104,9 @@ namespace PowerShellFar
 		/// </example>
 		public string FormatString { get; private set; }
 		/// <summary>
-		/// New from a property.
+		/// New meta from a property name.
 		/// </summary>
+		/// <param name="property">The property name.</param>
 		public Meta(string property)
 		{
 			if (string.IsNullOrEmpty(property))
@@ -114,8 +115,9 @@ namespace PowerShellFar
 			_Property = property;
 		}
 		/// <summary>
-		/// New from a script operating on $_.
+		/// New meta from a script block getting a value from $_.
 		/// </summary>
+		/// <param name="script">The script block.</param>
 		public Meta(ScriptBlock script)
 		{
 			if (script == null)
@@ -142,8 +144,9 @@ namespace PowerShellFar
 			Alignment = header.Alignment;
 		}
 		/// <summary>
-		/// New from supported types: <c>string</c>, <c>ScriptBlock</c>, and <c>IDictionary</c>.
+		/// New meta from supported types: <c>string</c>, <c>ScriptBlock</c>, and <c>IDictionary</c>.
 		/// </summary>
+		/// <param name="value">One of the supported values.</param>
 		public Meta(object value)
 		{
 			if (value == null)
@@ -228,6 +231,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Gets a meta value.
 		/// </summary>
+		/// <param name="value">The input object.</param>
 		public object GetValue(object value)
 		{
 			if (_Script != null)
@@ -292,6 +296,7 @@ namespace PowerShellFar
 		/// Gets a meta value as a string, formatted if <see cref="FormatString"/> is set and
 		/// aligned if <see cref="Width"/> is positive and <see cref="Alignment"/> is <c>Right</c>.
 		/// </summary>
+		/// <param name="value">The input object.</param>
 		public string GetString(object value)
 		{
 			if (string.IsNullOrEmpty(FormatString))
@@ -333,6 +338,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Gets meta value as Int64 (actual or 0).
 		/// </summary>
+		/// <param name="value">The input object.</param>
 		public Int64 GetInt64(object value)
 		{
 			return Get<Int64>(value);
@@ -340,6 +346,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Gets a meta value as DateTime (actual or default).
 		/// </summary>
+		/// <param name="value">The input object.</param>
 		public DateTime EvaluateDateTime(object value)
 		{
 			return Get<DateTime>(value);

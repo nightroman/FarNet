@@ -37,7 +37,7 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Gets or sets an optional converter of items to strings.
 		/// </summary>
-		public Converter<object, string> ItemToString { get; set; }
+		public Func<object, string> ItemToString { get; set; }
 
 		IListBox _ListBox1;
 		IListBox _ListBox2;

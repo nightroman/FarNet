@@ -9,7 +9,7 @@ using System;
 namespace FarNet.Works
 {
 	/// <summary>
-	/// For internal use.
+	/// INTERNAL
 	/// </summary>
 	public enum BufferCellType
 	{
@@ -22,23 +22,7 @@ namespace FarNet.Works
 	}
 
 	/// <summary>
-	/// For internal use.
-	/// </summary>
-	[Flags]
-	public enum ReadKeyOptions
-	{
-		///
-		AllowCtrlC = 1,
-		///
-		NoEcho = 2,
-		///
-		IncludeKeyDown = 4,
-		///
-		IncludeKeyUp = 8,
-	}
-
-	/// <summary>
-	/// For internal use.
+	/// INTERNAL
 	/// </summary>
 	public struct BufferCell
 	{
@@ -46,7 +30,6 @@ namespace FarNet.Works
 		private ConsoleColor foregroundColor;
 		private ConsoleColor backgroundColor;
 		private BufferCellType bufferCellType;
-
 		///
 		public BufferCell(char character, ConsoleColor foreground, ConsoleColor background, BufferCellType bufferCellType)
 		{
@@ -55,19 +38,16 @@ namespace FarNet.Works
 			this.backgroundColor = background;
 			this.bufferCellType = bufferCellType;
 		}
-
 		///
 		public static bool operator==(BufferCell first, BufferCell second)
 		{
 			return ((((first.Character == second.Character) && (first.BackgroundColor == second.BackgroundColor)) && (first.ForegroundColor == second.ForegroundColor)) && (first.BufferCellType == second.BufferCellType));
 		}
-
 		///
 		public static bool operator!=(BufferCell first, BufferCell second)
 		{
 			return !(first == second);
 		}
-
 		///
 		public char Character
 		{
@@ -80,7 +60,6 @@ namespace FarNet.Works
 				this.character = value;
 			}
 		}
-
 		///
 		public ConsoleColor ForegroundColor
 		{
@@ -93,7 +72,6 @@ namespace FarNet.Works
 				this.foregroundColor = value;
 			}
 		}
-
 		///
 		public ConsoleColor BackgroundColor
 		{
@@ -106,7 +84,6 @@ namespace FarNet.Works
 				this.backgroundColor = value;
 			}
 		}
-
 		///
 		public BufferCellType BufferCellType
 		{
@@ -119,8 +96,7 @@ namespace FarNet.Works
 				this.bufferCellType = value;
 			}
 		}
-
-		///
+		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
 			bool flag = false;
@@ -128,15 +104,13 @@ namespace FarNet.Works
 				flag = this == ((BufferCell)obj);
 			return flag;
 		}
-
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			uint num = ((uint)(this.ForegroundColor ^ this.BackgroundColor)) << 0x10;
 			num |= this.Character;
 			return num.GetHashCode();
 		}
-
 		///
 		public override string ToString()
 		{

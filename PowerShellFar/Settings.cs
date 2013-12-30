@@ -24,8 +24,9 @@ namespace PowerShellFar
 		public static Settings Default { get { return _Default; } }
 		static readonly Settings _Default = new Settings();
 		/// <summary>
-		/// Sets popup list menu.
+		/// Sets the popup list menu template.
 		/// </summary>
+		/// <param name="menu">The menu with default properties.</param>
 		public void PopupMenu(IListMenu menu)
 		{
 			if (menu == null) throw new ArgumentNullException("menu");
@@ -34,8 +35,9 @@ namespace PowerShellFar
 			menu.NoShadow = _PopupNoShadow;
 		}
 		/// <summary>
-		/// Sets list menu.
+		/// Sets the list menu template.
 		/// </summary>
+		/// <param name="menu">The menu with default properties.</param>
 		public void ListMenu(IListMenu menu)
 		{
 			if (menu == null) throw new ArgumentNullException("menu");
@@ -184,35 +186,45 @@ namespace PowerShellFar
 			}
 		}
 		ConsoleColor _CommandForegroundColor = ConsoleColor.DarkGray;
-		///
+		/// <summary>
+		/// Gets or sets the command text color.
+		/// </summary>
 		public ConsoleColor CommandForegroundColor
 		{
 			get { return _CommandForegroundColor; }
 			set { _CommandForegroundColor = value; }
 		}
 		ConsoleColor _DebugForegroundColor = ConsoleColor.Magenta;
-		///
+		/// <summary>
+		/// Gets or sets the debug text color.
+		/// </summary>
 		public ConsoleColor DebugForegroundColor
 		{
 			get { return _DebugForegroundColor; }
 			set { _DebugForegroundColor = value; }
 		}
 		ConsoleColor _ErrorForegroundColor = ConsoleColor.Red;
-		///
+		/// <summary>
+		/// Gets or sets the error text color.
+		/// </summary>
 		public ConsoleColor ErrorForegroundColor
 		{
 			get { return _ErrorForegroundColor; }
 			set { _ErrorForegroundColor = value; }
 		}
 		ConsoleColor _VerboseForegroundColor = ConsoleColor.Cyan;
-		///
+		/// <summary>
+		/// Gets or sets the verbose text color.
+		/// </summary>
 		public ConsoleColor VerboseForegroundColor
 		{
 			get { return _VerboseForegroundColor; }
 			set { _VerboseForegroundColor = value; }
 		}
 		ConsoleColor _WarningForegroundColor = ConsoleColor.Yellow;
-		///
+		/// <summary>
+		/// Gets or sets the warning text color.
+		/// </summary>
 		public ConsoleColor WarningForegroundColor
 		{
 			get { return _WarningForegroundColor; }

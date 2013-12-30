@@ -13,9 +13,10 @@ namespace PowerShellFar
 	/// </summary>
 	public abstract class TablePanel : AnyPanel
 	{
-		///
+		/// <summary>
+		/// Gets the panel explorer.
+		/// </summary>
 		public new TableExplorer Explorer { get { return (TableExplorer)base.Explorer; } }
-		///
 		internal TablePanel(TableExplorer explorer) : base(explorer) { }
 		/// <include file='doc.xml' path='doc/Columns/*'/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
