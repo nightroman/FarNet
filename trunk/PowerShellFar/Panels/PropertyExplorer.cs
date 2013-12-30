@@ -47,12 +47,12 @@ namespace PowerShellFar
 					ExplorerFunctions.CreateFile |
 					ExplorerFunctions.RenameFile);
 		}
-		///
+		/// <inheritdoc/>
 		public override Panel CreatePanel()
 		{
 			return new PropertyPanel(this);
 		}
-		///
+		/// <inheritdoc/>
 		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			var result = new List<FarFile>();
@@ -119,7 +119,7 @@ namespace PowerShellFar
 
 			return result;
 		}
-		///
+		/// <inheritdoc/>
 		public override void GetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
@@ -143,7 +143,7 @@ namespace PowerShellFar
 				Far.Api.ShowError("Edit", ex);
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void SetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
@@ -180,7 +180,7 @@ namespace PowerShellFar
 					A.Msg(ex);
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void DeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -237,7 +237,7 @@ namespace PowerShellFar
 				}
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void AcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -271,7 +271,7 @@ namespace PowerShellFar
 					A.Psf.Engine.InvokeProvider.Property.Copy(source, name, target, name);
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void RenameFile(RenameFileEventArgs args)
 		{
 			if (args == null) return;
@@ -308,7 +308,7 @@ namespace PowerShellFar
 				}
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void CreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;
@@ -350,7 +350,7 @@ namespace PowerShellFar
 				}
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void CloneFile(CloneFileEventArgs args)
 		{
 			if (args == null) return;

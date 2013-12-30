@@ -22,9 +22,14 @@ namespace PowerShellFar
 	/// </remarks>
 	public class TreePanel : AnyPanel
 	{
-		///
+		/// <summary>
+		/// Gets the panel explorer.
+		/// </summary>
 		public new TreeExplorer Explorer { get { return (TreeExplorer)base.Explorer; } }
-		///
+		/// <summary>
+		/// New tree panel with the explorer.
+		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		public TreePanel(TreeExplorer explorer)
 			: base(explorer)
 		{
@@ -54,6 +59,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Opens/closes the node.
 		/// </summary>
+		/// <param name="file">The node to open/close.</param>
 		public override void OpenFile(FarFile file)
 		{
 			if (file == null)
@@ -73,7 +79,7 @@ namespace PowerShellFar
 			}
 			UpdateRedraw(false);
 		}
-		///
+		/// <inheritdoc/>
 		public override bool UIKeyPressed(KeyInfo key)
 		{
 			if (key == null) throw new ArgumentNullException("key");
@@ -147,7 +153,7 @@ namespace PowerShellFar
 			// base
 			return base.UIKeyPressed(key);
 		}
-		///
+		/// <inheritdoc/>
 		public override IList<FarFile> UIGetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;

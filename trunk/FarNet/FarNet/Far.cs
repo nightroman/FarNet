@@ -45,12 +45,13 @@ namespace FarNet
 	public abstract class IFar
 	{
 		/// <summary>
-		/// For internal use.
+		/// INTERNAL
 		/// </summary>
 		public abstract Works.IPanelWorks WorksPanel(Panel panel, Explorer explorer);
 		/// <summary>
 		/// Gets a module action by its ID. Null is returned if the ID is not found.
 		/// </summary>
+		/// <param name="id">The module action ID.</param>
 		public abstract IModuleAction GetModuleAction(Guid id);
 		/// <summary>
 		/// Shows a message box.
@@ -158,6 +159,7 @@ namespace FarNet
 		/// <summary>
 		/// Sets the clipboard text.
 		/// </summary>
+		/// <param name="text">The text to be sent to the clipboard.</param>
 		public abstract void CopyToClipboard(string text);
 		/// <summary>
 		/// Creates a new editor.
@@ -184,10 +186,12 @@ namespace FarNet
 		/// <summary>
 		/// Converts a key string representation to <see cref="KeyInfo"/>. Returns null on errors.
 		/// </summary>
+		/// <param name="key">The key name to convert.</param>
 		public abstract KeyInfo NameToKeyInfo(string key);
 		/// <summary>
 		/// Converts a <see cref="KeyInfo"/> to its string representation. Returns null on errors.
 		/// </summary>
+		/// <param name="key">The key info to convert.</param>
 		public abstract string KeyInfoToName(KeyInfo key);
 		/// <summary>
 		/// Gets the current editor or null if none.
@@ -283,6 +287,7 @@ namespace FarNet
 		/// <summary>
 		/// Shows the help topic from a help file located in the directory of the calling assembly.
 		/// </summary>
+		/// <param name="topic">The help topic.</param>
 		public abstract void ShowHelpTopic(string topic);
 		/// <summary>
 		/// Formats the help topic path for <c>HelpTopic</c> properties of various UI classes.
@@ -333,10 +338,12 @@ namespace FarNet
 		/// <summary>
 		/// Posts a single step action, see <see cref="PostSteps"/>.
 		/// </summary>
+		/// <param name="handler">The step handler.</param>
 		public void PostStep(Action handler) { PostSteps(new object[] { handler }); }
 		/// <summary>
 		/// Posts a sequence of steps enumerated asynchronously (e.g. coroutine with <c>yield</c>).
 		/// </summary>
+		/// <param name="steps">The collection of steps.</param>
 		/// <remarks>
 		/// Some operations take effect only when module code finishes and the core gets control.
 		/// Such operations cannot be invoked synchronously in the middle of module code.
@@ -467,10 +474,12 @@ namespace FarNet
 		/// <summary>
 		/// Gets true if a Far Manager file mask is valid.
 		/// </summary>
+		/// <param name="mask">The mask to test.</param>
 		public abstract bool IsMaskValid(string mask);
 		/// <summary>
-		/// For internal use. Gets the local or roamimg data directory path of the application.
+		/// INTERNAL Gets the local or roamimg data directory path of the application.
 		/// </summary>
+		/// <param name="folder">The special folder.</param>
 		/// <remarks>
 		/// This method and directories are used by the core and not designed for modules.
 		/// Modules should use <see cref="IModuleManager.GetFolderPath"/> in order to get their data directories.

@@ -426,6 +426,8 @@ namespace FarNet.Forms
 		/// <summary>
 		/// Sets both cursor and top positions. It should be called when a dialog is shown.
 		/// </summary>
+		/// <param name="selected">Index of the selected item.</param>
+		/// <param name="top">Index of the top item.</param>
 		void SetFrame(int selected, int top);
 	}
 

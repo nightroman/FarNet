@@ -22,8 +22,8 @@ $form.Items = 0..9
 # set some preselected indexes
 $form.Indexes = @(0, 2, 4, 6)
 
-# set optional converter of items to strings
-$form.ItemToString = [PowerShellFar.Wrap]::ConverterToString({ "Item $_" })
+# set optional converter to strings
+$form.ItemToString = {param($1) "Item $1"}
 
 # show
 if ($form.Show()) {

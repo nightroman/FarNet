@@ -11,13 +11,13 @@ using FarNet;
 namespace PowerShellFar
 {
 	/// <summary>
-	/// FarNet module host for internal use.
+	/// INTERNAL
 	/// </summary>
 	[ModuleHost(Load = true)]
 	public sealed class Entry : ModuleHost
 	{
 		/// <summary>
-		/// For internal use.
+		/// INTERNAL
 		/// </summary>
 		internal static Entry Instance { get; private set; }
 		///

@@ -14,11 +14,14 @@ namespace PowerShellFar
 	/// </summary>
 	public sealed class PropertyPanel : ListPanel
 	{
-		///
+		/// <summary>
+		/// Gets the panel explorer.
+		/// </summary>
 		public new PropertyExplorer Explorer { get { return (PropertyExplorer)base.Explorer; } }
 		/// <summary>
 		/// New property panel with the item property explorer.
 		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		public PropertyPanel(PropertyExplorer explorer)
 			: base(explorer)
 		{
@@ -98,7 +101,7 @@ namespace PowerShellFar
 
 			base.HelpMenuInitItems(items, e);
 		}
-		///
+		/// <inheritdoc/>
 		public override void UICreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;

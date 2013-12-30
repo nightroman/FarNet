@@ -168,7 +168,6 @@
     <Compile Include="UI\ModulesMenu.cs" />
     <Compile Include="UniformUI.cs" />
     <Compile Include="Utility.cs" />
-    <Compile Include="Wrap.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PowerShellFar.ps1" />

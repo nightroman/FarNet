@@ -31,7 +31,7 @@ public:
 	virtual ConsoleColor GetPaletteForeground(PaletteColor paletteColor) override;
 	virtual int ReadKeys(array<KeyData^>^ keys) override;
 	virtual int SaveScreen(int x1, int y1, int x2, int y2) override;
-	virtual KeyInfo^ ReadKey(Works::ReadKeyOptions options) override;
+	virtual KeyInfo^ ReadKey(ReadKeyOptions options) override;
 	virtual void Break() override;
 	virtual void Clear() override;
 	virtual void Draw() override;

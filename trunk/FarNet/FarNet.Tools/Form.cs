@@ -22,7 +22,6 @@ namespace FarNet.Tools
 		/// The dialog used by form.
 		/// </summary>
 		protected IDialog Dialog { get; private set; }
-
 		/// <summary>
 		/// Gets or sets the form title.
 		/// </summary>
@@ -31,7 +30,6 @@ namespace FarNet.Tools
 			get { return Box.Text; }
 			set { Box.Text = value; }
 		}
-
 		/// <summary>
 		/// Creates the <see cref="Dialog"/> instance.
 		/// </summary>
@@ -40,10 +38,11 @@ namespace FarNet.Tools
 			Dialog = Far.Api.CreateDialog(-1, -1, DLG_XSIZE, DLG_YSIZE);
 			Box = Dialog.AddBox(3, 1, 0, 0, string.Empty);
 		}
-
 		/// <summary>
 		/// Sets the form size.
 		/// </summary>
+		/// <param name="height">The form height.</param>
+		/// <param name="width">The form width.</param>
 		protected void SetSize(int width, int height)
 		{
 			if (width <= 4 || height <= 2) throw new ArgumentException("Too small value.");
@@ -51,7 +50,6 @@ namespace FarNet.Tools
 			Dialog.Rect = new Place(-1, -1, width, height);
 			Box.Rect = new Place(3, 1, width - 4, height - 2);
 		}
-
 		/// <summary>
 		/// Shows the form.
 		/// </summary>
@@ -60,7 +58,6 @@ namespace FarNet.Tools
 		{
 			return Dialog.Show();
 		}
-
 		/// <summary>
 		/// Closes the form.
 		/// </summary>

@@ -1,6 +1,15 @@
 http://code.google.com/p/farnet/downloads/list
 (+ FarNet and API documentation)
 
+= 5.0.57 =
+
+Removed the helper PowerShellFar.Wrap with methods ConverterToString and
+Comparison. The first was needed for SubsetForm.ItemToString (not needed
+anymore, script blocks can be used directly, see Test-SubsetForm-.ps1).
+The second is not used, presumably.
+
+Amended documentation comments for FarNetAccord.chm
+
 = 5.0.56 =
 
 Fixed TabExpansion in the editor console opened from the debugger dialog.

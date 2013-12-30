@@ -4,6 +4,18 @@
 	/// <include file='doc.xml' path='doc/UnselectNames/*'/>
 	/// <include file='doc.xml' path='doc/N1[@name="N2"]/*'/>
 	-->
+	<OpEqual>
+		<summary>Compares two objects.</summary>
+		<param name="left">The left object to compare.</param>
+		<param name="right">The right object to compare.</param>
+		<returns>true if objects are equal; otherwise, false.</returns>
+	</OpEqual>
+	<OpNotEqual>
+		<summary>Compares two objects.</summary>
+		<param name="left">The left object to compare.</param>
+		<param name="right">The right object to compare.</param>
+		<returns>true if objects are not equal; otherwise, false.</returns>
+	</OpNotEqual>
 	<SelectNames>
 		<summary>
 			Select panel items with specified names.

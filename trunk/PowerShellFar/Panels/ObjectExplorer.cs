@@ -32,19 +32,19 @@ namespace PowerShellFar
 				ExplorerFunctions.GetContent |
 				ExplorerFunctions.OpenFile;
 		}
-		///
+		/// <inheritdoc/>
 		public override Panel DoCreatePanel()
 		{
 			return new ObjectPanel(this);
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoAcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (args == null) return;
 
 			AddObjects(args.FilesData);
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoDeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -61,7 +61,7 @@ namespace PowerShellFar
 			foreach (FarFile file in args.Files)
 				Cache.Remove(file);
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoGetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
@@ -78,7 +78,7 @@ namespace PowerShellFar
 			// text
 			args.UseText = A.InvokeFormatList(args.File.Data, true);
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoImportFiles(ImportFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -162,7 +162,7 @@ namespace PowerShellFar
 		{
 			get { return _AddedValues ?? (_AddedValues = new Collection<PSObject>()); }
 		}
-		///
+		/// <inheritdoc/>
 		public override Explorer DoOpenFile(OpenFileEventArgs args)
 		{
 			if (args == null) return null;
@@ -288,7 +288,7 @@ namespace PowerShellFar
 
 			return Far.Api.Message(message, "$Psf.Settings.MaximumPanelFileCount", MessageOptions.AbortRetryIgnore);
 		}
-		///
+		/// <inheritdoc/>
 		public override void DoCreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;

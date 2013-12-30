@@ -12,8 +12,9 @@ namespace FarNet
 	public struct Point
 	{
 		/// <summary>
-		/// Initializes a point with the same x and y.
+		/// Initializes a point with the same X (column) and Y (row) value.
 		/// </summary>
+		/// <param name="coordinate">The same X (column) and Y (row) value.</param>
 		public Point(int coordinate)
 			: this()
 		{
@@ -21,7 +22,7 @@ namespace FarNet
 			Y = coordinate;
 		}
 		/// <summary>
-		/// Initializes a new instance with the specified coordinates.
+		/// Initializes a point with the specified coordinates.
 		/// </summary>
 		/// <param name="column">The horizontal position of the point.</param>
 		/// <param name="row">The vertical position of the point.</param>
@@ -32,37 +33,36 @@ namespace FarNet
 			Y = row;
 		}
 		/// <summary>
-		/// Gets or sets the x-coordinate.
+		/// Gets or sets the X coordinate (column).
 		/// </summary>
 		public int X { get; set; }
 		/// <summary>
-		/// Gets or sets the y-coordinate.
+		/// Gets or sets the Y coordinate (row).
 		/// </summary>
 		public int Y { get; set; }
-		///
+		/// <include file='doc.xml' path='doc/OpEqual/*'/>
 		public static bool operator ==(Point left, Point right)
 		{
 			return left.X == right.X && left.Y == right.Y;
 		}
-		///
+		/// <include file='doc.xml' path='doc/OpNotEqual/*'/>
 		public static bool operator !=(Point left, Point right)
 		{
 			return left.X != right.X || left.Y != right.Y;
 		}
-		///
+		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
 			return obj != null && obj.GetType() == typeof(Point) && this == (Point)obj;
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			return X | (Y << 16);
 		}
 		/// <summary>
-		/// Returns the string (X, Y).
+		/// Returns the string "(X, Y)".
 		/// </summary>
-		/// <returns>The string (X, Y).</returns>
 		public override string ToString()
 		{
 			return "(" + X + ", " + Y + ")";
@@ -166,30 +166,29 @@ namespace FarNet
 			get { return this.Bottom - this.Top + 1; }
 			set { this.Bottom = (this.Top + value - 1); }
 		}
-		///
+		/// <include file='doc.xml' path='doc/OpEqual/*'/>
 		public static bool operator ==(Place left, Place right)
 		{
 			return left.First == right.First && left.Last == right.Last;
 		}
-		///
+		/// <include file='doc.xml' path='doc/OpNotEqual/*'/>
 		public static bool operator !=(Place left, Place right)
 		{
 			return left.First != right.First || left.Last != right.Last;
 		}
-		///
+		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
 			return obj != null && obj.GetType() == typeof(Place) && this == (Place)obj;
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			return First.GetHashCode() ^ Last.GetHashCode();
 		}
 		/// <summary>
-		/// Returns the string (First, Last).
+		/// Returns the string "(First, Last)".
 		/// </summary>
-		/// <returns>The string (First, Last).</returns>
 		public override string ToString()
 		{
 			return "(" + First + ", " + Last + ")";
@@ -197,6 +196,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns true if the rectangular contains the point.
 		/// </summary>
+		/// <param name="point">The point to test.</param>
 		public bool RectContains(Point point)
 		{
 			return point.X >= First.X && point.Y >= First.Y && point.X <= Last.X && point.Y <= Last.Y;
@@ -240,33 +240,32 @@ namespace FarNet
 		/// Gets length of the span or a negative value if the span does not exist.
 		/// </summary>
 		public int Length { get { return End - Start; } }
-		///
+		/// <include file='doc.xml' path='doc/OpEqual/*'/>
 		public static bool operator ==(Span left, Span right)
 		{
 			return left.Start == right.Start && left.End == right.End;
 		}
-		///
+		/// <include file='doc.xml' path='doc/OpNotEqual/*'/>
 		public static bool operator !=(Span left, Span right)
 		{
 			return left.Start != right.Start || left.End != right.End;
 		}
-		///
+		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
 			return obj != null && obj.GetType() == typeof(Span) && this == (Span)obj;
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			return Start | (End << 16);
 		}
 		/// <summary>
-		/// Returns the string "&lt;none&gt;" or "Length from Start to End".
+		/// Returns the string "Empty" or "{0} from {1} to {2}", Length, Start, End.
 		/// </summary>
-		/// <returns>The string representation.</returns>
 		public override string ToString()
 		{
-			return Length < 0 ? "<none>" : string.Format(null, "{0} from {1} to {2}", Length, Start, End);
+			return Length < 0 ? "Empty" : string.Format(null, "{0} from {1} to {2}", Length, Start, End);
 		}
 	}
 

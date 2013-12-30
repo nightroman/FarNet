@@ -17,8 +17,13 @@ namespace PowerShellFar
 	public sealed class MemberPanel : ListPanel
 	{
 		/// <summary>
-		/// New panel with the member explorer.
+		/// Gets the panel explorer.
 		/// </summary>
+		public new MemberExplorer Explorer { get { return (MemberExplorer)base.Explorer; } }
+		/// <summary>
+		/// New member panel with the member explorer.
+		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		public MemberPanel(MemberExplorer explorer)
 			: base(explorer)
 		{
@@ -26,10 +31,6 @@ namespace PowerShellFar
 			CurrentLocation = "*";
 			SortMode = PanelSortMode.Unsorted;
 		}
-		/// <summary>
-		/// Gets the <see cref="MemberExplorer"/>.
-		/// </summary>
-		public new MemberExplorer Explorer { get { return (MemberExplorer)base.Explorer; } }
 		///
 		protected override string DefaultTitle { get { return "Members: " + Target.BaseObject.GetType().Name; } }
 		internal sealed override PSObject Target
@@ -213,7 +214,7 @@ namespace PowerShellFar
 
 			base.HelpMenuInitItems(items, e);
 		}
-		///
+		/// <inheritdoc/>
 		public override void UICreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;

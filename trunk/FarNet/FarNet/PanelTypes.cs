@@ -655,7 +655,7 @@ namespace FarNet
 	/// </summary>
 	public sealed class CommandLineEventArgs : PanelEventArgs
 	{
-		/// <param name="command">See <see cref="Command"/>.</param>
+		/// <param name="command">See <see cref="Command"/></param>
 		public CommandLineEventArgs(string command) { Command = command; }
 		/// <summary>
 		/// Gets the command to be processed.
@@ -668,7 +668,7 @@ namespace FarNet
 	/// </summary>
 	public sealed class ViewChangedEventArgs : PanelEventArgs
 	{
-		///
+		/// <param name="columns">See <see cref="Columns"/></param>
 		public ViewChangedEventArgs(string columns) { Columns = columns; }
 		/// <summary>
 		/// Gets column kinds, e.g. N,S,D,T.
@@ -727,11 +727,11 @@ namespace FarNet
 	/// </remarks>
 	public sealed class SetColumn : FarColumn
 	{
-		///
+		/// <inheritdoc/>
 		public override string Name { get; set; }
-		///
+		/// <inheritdoc/>
 		public override string Kind { get; set; }
-		///
+		/// <inheritdoc/>
 		public override int Width { get; set; }
 	}
 
@@ -740,10 +740,10 @@ namespace FarNet
 	/// </summary>
 	public sealed class KeyBar
 	{
-		/// <param name="virtualKeyCode">Virtual key code of <see cref="Key"/>.</param>
-		/// <param name="controlKeyState">Control states of <see cref="Key"/>.</param>
-		/// <param name="text">See <see cref="Text"/>.</param>
-		/// <param name="longText">See <see cref="LongText"/>.</param>
+		/// <param name="virtualKeyCode">Virtual key code of <see cref="Key"/></param>
+		/// <param name="controlKeyState">Control states of <see cref="Key"/></param>
+		/// <param name="text">See <see cref="Text"/></param>
+		/// <param name="longText">See <see cref="LongText"/></param>
 		public KeyBar(int virtualKeyCode, ControlKeyStates controlKeyState, string text, string longText)
 		{
 			Key = new KeyData(virtualKeyCode, controlKeyState);

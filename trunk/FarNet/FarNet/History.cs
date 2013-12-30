@@ -19,8 +19,9 @@ namespace FarNet
 		/// </summary>
 		public abstract HistoryInfo[] Command();
 		/// <summary>
-		/// Returns dialog history.
+		/// Returns dialog history (edit box history).
 		/// </summary>
+		/// <param name="name">The dialog history name.</param>
 		public abstract HistoryInfo[] Dialog(string name);
 		/// <summary>
 		/// Returns editor history.
@@ -41,7 +42,9 @@ namespace FarNet
 	/// </summary>
 	public sealed class HistoryInfo
 	{
-		///
+		/// <param name="name">See <see cref="Name"/></param>
+		/// <param name="time">See <see cref="Time"/></param>
+		/// <param name="isLocked">See <see cref="IsLocked"/></param>
 		public HistoryInfo(string name, DateTime time, bool isLocked)
 		{
 			Name = name;

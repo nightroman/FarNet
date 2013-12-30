@@ -62,6 +62,7 @@ namespace FarNet.Tools
 		/// <summary>
 		/// New command with the search root.
 		/// </summary>
+		/// <param name="root">The root explorer.</param>
 		public SearchFileCommand(Explorer root)
 		{
 			if (root == null) throw new ArgumentNullException("root");
@@ -183,6 +184,7 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Starts search and when it is done opens the panel with results.
 		/// </summary>
+		/// <param name="sourcePanel">The result panel to open.</param>
 		public void Invoke(Panel sourcePanel)
 		{
 			if (sourcePanel == null) throw new ArgumentNullException("sourcePanel");
@@ -212,6 +214,7 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Starts search in the background and opens the panel for results immediately.
 		/// </summary>
+		/// <param name="sourcePanel">The result panel to open.</param>
 		public void InvokeAsync(Panel sourcePanel)
 		{
 			if (sourcePanel == null) throw new ArgumentNullException("sourcePanel");

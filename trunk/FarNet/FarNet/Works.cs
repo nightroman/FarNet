@@ -14,17 +14,22 @@ using System.Text.RegularExpressions;
 namespace FarNet.Works
 {
 	/// <summary>
-	/// For internal use.
+	/// INTERNAL
 	/// </summary>
 	public sealed class DelegateToString
 	{
 		readonly Delegate _handler;
-		///
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		/// <param name="handler">INTERNAL</param>
 		public DelegateToString(Delegate handler)
 		{
 			_handler = handler;
 		}
-		///
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
 		public override string ToString()
 		{
 			var sb = new StringBuilder();
@@ -49,7 +54,7 @@ namespace FarNet.Works
 	}
 
 	/// <summary>
-	/// For internal use.
+	/// INTERNAL
 	/// </summary>
 	public enum FormatMessageMode
 	{
@@ -64,12 +69,12 @@ namespace FarNet.Works
 	}
 
 	/// <summary>
-	/// For internal use.
+	/// INTERNAL
 	/// </summary>
 	public static class Kit
 	{
 		/// <summary>
-		/// For internal use.
+		/// INTERNAL
 		/// </summary>
 		public static string[] SplitLines(string value)
 		{
@@ -80,7 +85,7 @@ namespace FarNet.Works
 			return value.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 		}
 		/// <summary>
-		/// For internal use.
+		/// INTERNAL
 		/// </summary>
 		/// <param name="lines">Output lines.</param>
 		/// <param name="message">Input string.</param>
@@ -126,7 +131,7 @@ namespace FarNet.Works
 			}
 		}
 		/// <summary>
-		/// For internal use. Hashes the files using the comparer, counts dupes.
+		/// INTERNAL Hashes the files using the comparer, counts dupes.
 		/// </summary>
 		public static Dictionary<FarFile, int> HashFiles(IEnumerable files, IEqualityComparer<FarFile> comparer)
 		{

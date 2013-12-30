@@ -33,11 +33,9 @@ namespace PowerShellFar
 		/// New tree explorer.
 		/// </summary>
 		public TreeExplorer() : base(new Guid(TypeIdString)) { }
-		/// <summary>
-		/// New tree explorer.
-		/// </summary>
+		/// <inheritdoc/>
 		protected TreeExplorer(Guid typeId) : base(typeId) { }
-		///
+		/// <inheritdoc/>
 		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (args == null) return null;

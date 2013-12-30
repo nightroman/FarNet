@@ -17,16 +17,19 @@ namespace FarNet
 		/// <summary>
 		/// Called when files of another module panel have been changed.
 		/// </summary>
+		/// <param name="that">That panel.</param>
+		/// <param name="args">.</param>
 		/// <remarks>
-		/// This panel may want to be updated if it contains data related to that panel.
+		/// This panel may be updated if it contains data related to that panel.
 		/// </remarks>
 		public virtual void OnThatFileChanged(Panel that, EventArgs args)
 		{ }
 		/// <summary>
 		/// Called when files of this panel have been changed.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
-		/// The base method calls <see cref="OnThatFileChanged"/>.
+		/// The base method calls <see cref="OnThatFileChanged"/> on another module panel, if any.
 		/// </remarks>
 		public virtual void OnThisFileChanged(EventArgs args)
 		{
@@ -41,6 +44,7 @@ namespace FarNet
 		/// <summary>
 		/// It is called when a new explorer has been attached after one of the explore methods.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// The base method triggers the <see cref="ExplorerEntered"/> event.
 		/// </remarks>
@@ -96,6 +100,7 @@ namespace FarNet
 		/// <summary>
 		/// Copy/move action.
 		/// </summary>
+		/// <param name="move">Tells to move files.</param>
 		/// <remarks>
 		/// The source and target panel are module panels.
 		/// The target panel explorer accepts the selected files.
@@ -256,6 +261,7 @@ namespace FarNet
 		/// <summary>
 		/// Delete action.
 		/// </summary>
+		/// <param name="force">The force mode flag.</param>
 		public void UIDelete(bool force)
 		{
 			// can?
@@ -316,6 +322,7 @@ namespace FarNet
 		/// <summary>
 		/// Called when [Esc] or [ShiftEsc] is pressed and the command line is empty.
 		/// </summary>
+		/// <param name="force">The force mode parameter.</param>
 		/// <remarks>
 		/// By default it closes the the panel itself or with all parent panels.
 		/// The panel may override this method or use the <see cref="Escaping"/> event.
@@ -349,6 +356,7 @@ namespace FarNet
 		/// <summary>
 		/// Opens the file in the editor.
 		/// </summary>
+		/// <param name="file">The file to edit.</param>
 		/// <remarks>
 		/// The default method calls <see cref="FarNet.Explorer.GetContent"/>  to get a temporary file to edit
 		/// and <see cref="FarNet.Explorer.SetFile"/> to save changes when the editor closes.
@@ -434,6 +442,7 @@ namespace FarNet
 		/// <summary>
 		/// Opens the file in the viewer.
 		/// </summary>
+		/// <param name="file">The file to view.</param>
 		/// <remarks>
 		/// The default method calls <see cref="FarNet.Explorer.GetContent"/> to get a temporary file to view.
 		/// The explorer should have it implemented.
@@ -481,6 +490,7 @@ namespace FarNet
 		/// It is called for the current file when [Enter] is pressed.
 		/// The base method just calls <see cref="FarNet.Explorer.OpenFile"/> if the explorer supports it.
 		/// </remarks>
+		/// <param name="file">The file to be opened.</param>
 		public virtual void UIOpenFile(FarFile file)
 		{
 			if (file == null)

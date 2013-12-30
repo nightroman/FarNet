@@ -285,7 +285,7 @@ See $Error for details.
 			{
 				//! emergency
 				Entry.Unregister();
-				throw new ModuleException(@"
+				throw new PowerShellFarException(@"
 The engine was not successfully initialized and will be unloaded.
 For known issues see 'Problems and solutions' in the FarNet manual.
 ", _errorFatal);
@@ -649,6 +649,7 @@ Continue with this current directory?
 		/// Shows a new editor console in specified mode.
 		/// Called on "Editor console".
 		/// </summary>
+		/// <param name="mode">The editor open mode.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void ShowConsole(OpenMode mode)
 		{

@@ -13,35 +13,41 @@ using System.IO;
 namespace FarNet
 {
 	/// <summary>
-	/// TEST ONLY
+	/// INTERNAL
 	/// </summary>
 	public class XmlAttributeInfo
 	{
 		/// <summary>
-		/// TEST ONLY
+		/// INTERNAL
 		/// </summary>
+		/// <param name="name">INTERNAL</param>
+		/// <param name="getter">INTERNAL</param>
 		public XmlAttributeInfo(string name, Func<object, object> getter)
 		{
 			Name = name;
 			Getter = getter;
 		}
 		/// <summary>
-		/// TEST ONLY
+		/// INTERNAL
 		/// </summary>
 		public string Name { get; private set; }
 		/// <summary>
-		/// TEST ONLY
+		/// INTERNAL
 		/// </summary>
 		public Func<object, object> Getter { get; private set; }
 	}
 	/// <summary>
-	/// Not yet public.
+	/// INTERNAL
 	/// </summary>
 	public interface IXmlInfo
 	{
-		///
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
 		string XmlNodeName();
-		///
+		/// <summary>
+		/// INTERNAL
+		/// </summary>
 		IList<XmlAttributeInfo> XmlAttributes();
 	}
 	/// <summary>
@@ -221,7 +227,6 @@ namespace FarNet
 		/// <summary>
 		/// Returns the file name.
 		/// </summary>
-		/// <returns>The file name.</returns>
 		public sealed override string ToString()
 		{
 			return Name;
@@ -323,84 +328,67 @@ namespace FarNet
 			if ((Attributes & FileAttributes.Directory) == 0)
 				Length = ((FileInfo)info).Length;
 		}
-		/// <summary>
-		/// File name.
-		/// </summary>
+		/// <inheritdoc/>
 		public override string Name { get; set; }
-		/// <summary>
-		/// Description.
-		/// </summary>
+		/// <inheritdoc/>
 		public override string Description { get; set; }
-		/// <summary>
-		/// Owner.
-		/// </summary>
+		/// <inheritdoc/>
 		public override string Owner { get; set; }
-		/// <summary>
-		/// Creation time.
-		/// </summary>
+		/// <inheritdoc/>
 		public override DateTime CreationTime { get; set; }
-		/// <summary>
-		/// Last access time.
-		/// </summary>
+		/// <inheritdoc/>
 		public override DateTime LastAccessTime { get; set; }
-		/// <summary>
-		/// Last write time.
-		/// </summary>
+		/// <inheritdoc/>
 		public override DateTime LastWriteTime { get; set; }
-		/// <summary>
-		/// File length.
-		/// </summary>
+		/// <inheritdoc/>
 		public override long Length { get; set; }
-		/// <summary>
-		/// User data. Only for <see cref="Panel"/>.
-		/// </summary>
+		/// <inheritdoc/>
 		public override object Data { get; set; }
-		/// <summary>
-		/// File attributes.
-		/// </summary>
+		/// <inheritdoc/>
 		public override FileAttributes Attributes { get; set; }
-		/// <summary>
-		/// Custom columns. See <see cref="PanelPlan"/>.
-		/// </summary>
+		/// <inheritdoc/>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public override ICollection Columns { get; set; }
 	}
 
 	/// <summary>
-	/// File that wraps another file.
+	/// The base class for a file which wraps another file.
 	/// </summary>
 	public class WrapFile : FarFile
 	{
-		///
+		/// <summary>
+		/// New file which wraps another file.
+		/// </summary>
+		/// <param name="file">The base file.</param>
 		public WrapFile(FarFile file)
 		{
 			if (file == null) throw new ArgumentNullException("file");
 			_File = file;
 		}
 		/// <summary>
-		/// Gets the source file.
+		/// Gets the base file.
 		/// </summary>
 		public FarFile File { get { return _File; } }
 		readonly FarFile _File;
-		///
+		/// <inheritdoc/>
 		public override string Name { get { return File.Name; } }
-		///
+		/// <inheritdoc/>
 		public override string Description { get { return File.Description; } }
-		///
+		/// <inheritdoc/>
 		public override string Owner { get { return File.Owner; } }
-		///
+		/// <inheritdoc/>
 		public override object Data { get { return File.Data; } }
-		///
+		/// <inheritdoc/>
 		public override DateTime CreationTime { get { return File.CreationTime; } }
-		///
+		/// <inheritdoc/>
 		public override DateTime LastAccessTime { get { return File.LastAccessTime; } }
-		///
+		/// <inheritdoc/>
 		public override DateTime LastWriteTime { get { return File.LastWriteTime; } }
-		///
+		/// <inheritdoc/>
 		public override long Length { get { return File.Length; } }
-		///
+		/// <inheritdoc/>
 		public override ICollection Columns { get { return File.Columns; } }
-		///
+		/// <inheritdoc/>
 		public override FileAttributes Attributes { get { return File.Attributes; } }
 	}
 
@@ -409,12 +397,12 @@ namespace FarNet
 	/// </summary>
 	public sealed class FileFileComparer : EqualityComparer<FarFile>
 	{
-		///
+		/// <inheritdoc/>
 		public override bool Equals(FarFile x, FarFile y)
 		{
 			return object.Equals(x, y);
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode(FarFile obj)
 		{
 			return obj == null ? 0 : obj.GetHashCode();
@@ -426,7 +414,7 @@ namespace FarNet
 	/// </summary>
 	public sealed class FileDataComparer : EqualityComparer<FarFile>
 	{
-		///
+		/// <inheritdoc/>
 		public override bool Equals(FarFile x, FarFile y)
 		{
 			if (x == null || y == null)
@@ -434,7 +422,7 @@ namespace FarNet
 			else
 				return object.ReferenceEquals(x.Data, y.Data);
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode(FarFile obj)
 		{
 			return obj == null || obj.Data == null ? 0 : obj.Data.GetHashCode();
@@ -457,12 +445,13 @@ namespace FarNet
 		/// <summary>
 		/// New comparer with the specified string comparer.
 		/// </summary>
+		/// <param name="comparer">The string comparer.</param>
 		public FileNameComparer(StringComparer comparer)
 		{
 			if (comparer == null) throw new ArgumentNullException("comparer");
 			_comparer = comparer;
 		}
-		///
+		/// <inheritdoc/>
 		public override bool Equals(FarFile x, FarFile y)
 		{
 			if (x == null || y == null)
@@ -470,7 +459,7 @@ namespace FarNet
 			else
 				return _comparer.Equals(x.Name, y.Name);
 		}
-		///
+		/// <inheritdoc/>
 		public override int GetHashCode(FarFile obj)
 		{
 			return obj == null || obj.Name == null ? 0 : obj.Name.GetHashCode();

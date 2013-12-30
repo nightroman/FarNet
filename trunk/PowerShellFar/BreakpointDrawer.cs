@@ -17,7 +17,7 @@ namespace PowerShellFar
 	[System.Runtime.InteropServices.Guid("67db13c5-6b7b-4936-b984-e59db08e23c7")]
 	public class BreakpointDrawer : ModuleDrawer
 	{
-		///
+		/// <inheritdoc/>
 		public override void Invoke(object sender, ModuleDrawerEventArgs e)
 		{
 			if (e == null) return;

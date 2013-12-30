@@ -418,17 +418,19 @@ namespace PowerShellFar
 			}
 		}
 		/// <summary>
-		/// Invokes the script code.
+		/// Invokes the script text and returns the result collection.
 		/// </summary>
+		/// <param name="code">Script text.</param>
+		/// <param name="args">Script arguments.</param>
 		internal static Collection<PSObject> InvokeCode(string code, params object[] args)
 		{
 			if (Runspace.DefaultRunspace == null)
 				Runspace.DefaultRunspace = A.Psf.Runspace;
 
-			return Psf.Engine.InvokeCommand.NewScriptBlock(code).Invoke(args);
+			return ScriptBlock.Create(code).Invoke(args);
 		}
 		/// <summary>
-		/// Invokes the handler-like script and returns the result collection.
+		/// Invokes the script block and returns the result collection.
 		/// </summary>
 		/// <param name="script">The script block to invoke.</param>
 		/// <param name="args">Script arguments.</param>

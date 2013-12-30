@@ -36,6 +36,7 @@ namespace FarNet
 		/// <summary>
 		/// New explorer with its type ID.
 		/// </summary>
+		/// <param name="typeId">The explorer type ID.</param>
 		protected Explorer(Guid typeId) { _TypeId = typeId; }
 		/// <summary>
 		/// Gets the explorer type ID.
@@ -164,6 +165,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns the files.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// <para>
 		/// The method should choose the type of the result list carefully.
@@ -179,6 +181,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns a new directory explorer or null. It must not return itself.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// It is not called if <see cref="Functions"/> contains the <see cref="ExploreLocation"/> flag.
 		/// <para>
@@ -191,6 +194,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns a new location explorer or null. It must not return itself.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// It is called only if <see cref="Functions"/> contains the <see cref="ExploreLocation"/> flag.
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
@@ -199,6 +203,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns a new parent explorer or null. It must not return itself.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
@@ -206,6 +211,7 @@ namespace FarNet
 		/// <summary>
 		/// Returns a new root explorer or null. It must not return itself.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// <include file='doc.xml' path='doc/ExplorerModes/*'/>
 		/// </remarks>
@@ -213,6 +219,7 @@ namespace FarNet
 		/// <summary>
 		/// Exports the file content to a file or returns it as text.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// <para>
 		/// It is normally called by the core on [F3], [F4], [CtrlQ], if the
@@ -248,6 +255,7 @@ namespace FarNet
 		/// <summary>
 		/// Sets the file content given the system file.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// If this method is used then <see cref="Functions"/> should contain the <see cref="ExplorerFunctions.SetFile"/> flag.
 		/// </remarks>
@@ -255,6 +263,7 @@ namespace FarNet
 		/// <summary>
 		/// Sets the file content given the text string.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// If this method is used then <see cref="Functions"/> should contain the <see cref="ExplorerFunctions.SetText"/> flag.
 		/// </remarks>
@@ -262,6 +271,7 @@ namespace FarNet
 		/// <summary>
 		/// Accepts module files from another explorer, normally from another module panel.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// Read carefully all about <see cref="AcceptFilesEventArgs"/> and all its members.
 		/// <para>
@@ -273,10 +283,12 @@ namespace FarNet
 		/// <summary>
 		/// Deletes the files.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DeleteFiles(DeleteFilesEventArgs args) { if (args != null) args.Result = JobResult.Ignore; }
 		/// <summary>
 		/// Exports files to a native destination.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// This method gives some more control than default export performed with <see cref="GetContent"/>.
 		/// </remarks>
@@ -284,10 +296,12 @@ namespace FarNet
 		/// <summary>
 		/// Imports files from a native source.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void ImportFiles(ImportFilesEventArgs args) { if (args != null) args.Result = JobResult.Ignore; }
 		/// <summary>
 		/// Clones the file.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// It is normally called for the current item in a panel on [ShiftF5].
 		/// </remarks>
@@ -295,6 +309,7 @@ namespace FarNet
 		/// <summary>
 		/// Creates a new directory/file.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// It is normally called by the core on [F7] if the explorer has its flag <see cref="CanCreateFile"/> set.
 		/// If the explorer creates something then it may also want to set one of the <c>Post*</c>,
@@ -304,6 +319,7 @@ namespace FarNet
 		/// <summary>
 		/// Opens the file.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <returns>The explorer to be opened in a child panel, or null.</returns>
 		/// <remarks>
 		/// It is normally called for the current file in a panel on [Enter].
@@ -314,6 +330,7 @@ namespace FarNet
 		/// <summary>
 		/// Renames the file.
 		/// </summary>
+		/// <param name="args">.</param>
 		/// <remarks>
 		/// It is normally called for the current item in a panel on [ShiftF6].
 		/// If renaming is done then the core updates and redraws the panel
@@ -332,6 +349,7 @@ namespace FarNet
 		/// <summary>
 		/// Updates the panel when this explorer gets assigned to it.
 		/// </summary>
+		/// <param name="panel">The panel.</param>
 		public virtual void EnterPanel(Panel panel) { }
 		/// <summary>
 		/// Gets or sets the file comparer.
@@ -373,6 +391,7 @@ namespace FarNet
 		/// <summary>
 		/// Opens the explorer in a panel that is a child of the specified panel.
 		/// </summary>
+		/// <param name="parent">The parent panel.</param>
 		public void OpenPanelChild(Panel parent)
 		{
 			var panel = CreatePanel();

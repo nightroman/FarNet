@@ -92,18 +92,13 @@ namespace PowerShellFar
 		}
 	}
 
-	///
 	[Serializable]
-	public class ModuleException : FarNet.ModuleException
+	class PowerShellFarException : ModuleException
 	{
-		///
-		public ModuleException() { }
-		///
-		public ModuleException(string message) : base(message) { }
-		///
-		public ModuleException(string message, Exception innerException) : base(message, innerException) { }
-		///
-		protected ModuleException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		public PowerShellFarException() { }
+		public PowerShellFarException(string message) : base(message) { }
+		public PowerShellFarException(string message, Exception innerException) : base(message, innerException) { }
+		protected PowerShellFarException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 
 	/// <summary>

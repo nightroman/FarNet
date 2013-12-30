@@ -19,9 +19,7 @@ namespace PowerShellFar
 	/// </summary>
 	public class PowerExplorer : Explorer
 	{
-		/// <summary>
-		/// New explorer with its type ID.
-		/// </summary>
+		/// <inheritdoc/>
 		public PowerExplorer(Guid typeId) : base(typeId) { }
 		/// <summary>
 		/// Gets the collection ready to use as the file cache, if needed.
@@ -41,6 +39,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.GetFiles"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual IList<FarFile> DoGetFiles(GetFilesEventArgs args) { return Cache; }
 		/// <summary>
 		/// <see cref="Explorer.GetFiles"/> worker.
@@ -53,6 +52,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsGetFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			if (AsGetFiles == null)
@@ -77,6 +77,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.ExploreDirectory"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer DoExploreDirectory(ExploreDirectoryEventArgs args) { return null; }
 		/// <summary>
 		/// <see cref="Explorer.ExploreDirectory"/> worker.
@@ -86,6 +87,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsExploreDirectory { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override Explorer ExploreDirectory(ExploreDirectoryEventArgs args)
 		{
 			if (AsExploreDirectory == null)
@@ -96,6 +98,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.ExploreLocation"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer DoExploreLocation(ExploreLocationEventArgs args) { return null; }
 		/// <summary>
 		/// <see cref="Explorer.ExploreLocation"/> worker.
@@ -105,6 +108,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsExploreLocation { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override Explorer ExploreLocation(ExploreLocationEventArgs args)
 		{
 			if (AsExploreLocation == null)
@@ -115,6 +119,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.ExploreParent"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer DoExploreParent(ExploreParentEventArgs args) { return null; }
 		/// <summary>
 		/// <see cref="Explorer.ExploreParent"/> worker.
@@ -124,6 +129,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsExploreParent { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override Explorer ExploreParent(ExploreParentEventArgs args)
 		{
 			if (AsExploreParent == null)
@@ -134,6 +140,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.ExploreRoot"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer DoExploreRoot(ExploreRootEventArgs args) { return null; }
 		/// <summary>
 		/// <see cref="Explorer.ExploreRoot"/> worker.
@@ -143,6 +150,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsExploreRoot { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override Explorer ExploreRoot(ExploreRootEventArgs args)
 		{
 			if (AsExploreRoot == null)
@@ -153,6 +161,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.GetContent"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoGetContent(GetContentEventArgs args) { base.GetContent(args); }
 		/// <summary>
 		/// <see cref="Explorer.GetContent"/> worker.
@@ -162,6 +171,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsGetContent { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void GetContent(GetContentEventArgs args)
 		{
 			if (AsGetContent == null)
@@ -172,6 +182,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.SetFile"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoSetFile(SetFileEventArgs args) { base.SetFile(args); }
 		/// <summary>
 		/// <see cref="Explorer.SetFile"/> worker.
@@ -182,6 +193,7 @@ namespace PowerShellFar
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AsSet")]
 		public ScriptBlock AsSetFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void SetFile(SetFileEventArgs args)
 		{
 			if (AsSetFile == null)
@@ -192,6 +204,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.SetText"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoSetText(SetTextEventArgs args) { base.SetText(args); }
 		/// <summary>
 		/// <see cref="Explorer.SetText"/> worker.
@@ -202,6 +215,7 @@ namespace PowerShellFar
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AsSet")]
 		public ScriptBlock AsSetText { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void SetText(SetTextEventArgs args)
 		{
 			if (AsSetText == null)
@@ -212,6 +226,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.CloneFile"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoCloneFile(CloneFileEventArgs args) { base.CloneFile(args); }
 		/// <summary>
 		/// <see cref="Explorer.CloneFile"/> worker.
@@ -221,6 +236,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsCloneFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void CloneFile(CloneFileEventArgs args)
 		{
 			if (AsCloneFile == null)
@@ -231,6 +247,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.CreateFile"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoCreateFile(CreateFileEventArgs args) { base.CreateFile(args); }
 		/// <summary>
 		/// <see cref="Explorer.CreateFile"/> worker.
@@ -240,6 +257,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsCreateFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void CreateFile(CreateFileEventArgs args)
 		{
 			if (AsCreateFile == null)
@@ -250,6 +268,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.OpenFile"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer DoOpenFile(OpenFileEventArgs args) { return base.OpenFile(args); }
 		/// <summary>
 		/// <see cref="Explorer.OpenFile"/> worker.
@@ -259,6 +278,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsOpenFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override Explorer OpenFile(OpenFileEventArgs args)
 		{
 			if (AsOpenFile == null)
@@ -269,6 +289,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.RenameFile"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoRenameFile(RenameFileEventArgs args) { base.RenameFile(args); }
 		/// <summary>
 		/// <see cref="Explorer.RenameFile"/> worker.
@@ -278,6 +299,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsRenameFile { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void RenameFile(RenameFileEventArgs args)
 		{
 			if (AsRenameFile == null)
@@ -288,6 +310,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.AcceptFiles"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoAcceptFiles(AcceptFilesEventArgs args) { base.AcceptFiles(args); }
 		/// <summary>
 		/// <see cref="Explorer.AcceptFiles"/> worker.
@@ -297,6 +320,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsAcceptFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void AcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (AsAcceptFiles == null)
@@ -307,6 +331,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.ImportFiles"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoImportFiles(ImportFilesEventArgs args) { base.ImportFiles(args); }
 		/// <summary>
 		/// <see cref="Explorer.ImportFiles"/> worker.
@@ -316,6 +341,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsImportFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void ImportFiles(ImportFilesEventArgs args)
 		{
 			if (AsImportFiles == null)
@@ -326,6 +352,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.ExportFiles"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoExportFiles(ExportFilesEventArgs args) { base.ExportFiles(args); }
 		/// <summary>
 		/// <see cref="Explorer.ExportFiles"/> worker.
@@ -335,6 +362,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsExportFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void ExportFiles(ExportFilesEventArgs args)
 		{
 			if (AsExportFiles == null)
@@ -345,6 +373,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.DeleteFiles"/> worker.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void DoDeleteFiles(DeleteFilesEventArgs args) { base.DeleteFiles(args); }
 		/// <summary>
 		/// <see cref="Explorer.DeleteFiles"/> worker.
@@ -354,6 +383,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsDeleteFiles { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="args">.</param>
 		public sealed override void DeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (AsDeleteFiles == null)
@@ -383,6 +413,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// <see cref="Explorer.EnterPanel"/> worker.
 		/// </summary>
+		/// <param name="panel">The panel.</param>
 		public virtual void DoEnterPanel(Panel panel) { base.EnterPanel(panel); }
 		/// <summary>
 		/// <see cref="Explorer.EnterPanel"/> worker.
@@ -392,6 +423,7 @@ namespace PowerShellFar
 		/// </remarks>
 		public ScriptBlock AsEnterPanel { get; set; }
 		/// <include file='doc.xml' path='doc/ScriptFork/*'/>
+		/// <param name="panel">The panel.</param>
 		public sealed override void EnterPanel(Panel panel)
 		{
 			if (AsEnterPanel == null)

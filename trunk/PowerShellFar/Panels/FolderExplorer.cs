@@ -21,12 +21,13 @@ namespace PowerShellFar
 		/// <summary>
 		/// New folder explorer.
 		/// </summary>
+		/// <param name="path">The provider path to a root container.</param>
 		public FolderExplorer(string path)
 			: base(new Guid(TypeIdString))
 		{
 			Reset(path);
 		}
-		///
+		/// <inheritdoc/>
 		public override Panel CreatePanel()
 		{
 			return new FolderTree(this);
@@ -89,7 +90,7 @@ namespace PowerShellFar
 			// panel info
 			Location = ti.Path;
 		}
-		///
+		/// <inheritdoc/>
 		public override Explorer ExploreParent(ExploreParentEventArgs args)
 		{
 			if (args == null) return null;

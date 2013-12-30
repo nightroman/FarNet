@@ -82,6 +82,8 @@ namespace FarNet
 		/// <summary>
 		/// Reads a key from the input buffer.
 		/// </summary>
+		/// <param name="options">Read key options. See remarks.</param>
+		/// <remarks>Either <see cref="ReadKeyOptions.IncludeKeyDown"/>, <see cref="ReadKeyOptions.IncludeKeyUp"/> or both must be specified.</remarks>
 		public abstract KeyInfo ReadKey(ReadKeyOptions options);
 		///
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional")]
@@ -94,7 +96,7 @@ namespace FarNet
 		///
 		public abstract void SetBufferContents(Place rectangle, BufferCell fill);
 		/// <summary>
-		/// For internal use.
+		/// INTERNAL
 		/// </summary>
 		public abstract void Break();
 		/// <summary>
@@ -236,6 +238,7 @@ namespace FarNet
 		/// <summary>
 		/// Reads all keys from the input buffer and finds one of the given.
 		/// </summary>
+		/// <param name="keys">Array of keys to find.</param>
 		/// <returns>Index of the first found key or -1.</returns>
 		/// <remarks>
 		/// The input buffer is empty after the call.

@@ -15,9 +15,14 @@ namespace PowerShellFar
 	/// </summary>
 	public class ObjectPanel : FormatPanel
 	{
-		///
+		/// <summary>
+		/// Gets the panel explorer.
+		/// </summary>
 		public new ObjectExplorer Explorer { get { return (ObjectExplorer)base.Explorer; } }
-		///
+		/// <summary>
+		/// New object panel with the object explorer.
+		/// </summary>
+		/// <param name="explorer">The panel explorer.</param>
 		public ObjectPanel(ObjectExplorer explorer)
 			: base(explorer)
 		{
@@ -26,11 +31,12 @@ namespace PowerShellFar
 		}
 		///
 		public ObjectPanel() : this(new ObjectExplorer()) { }
-		///
+		/// <inheritdoc/>
 		protected override string DefaultTitle { get { return "Objects"; } }
 		/// <summary>
 		/// Adds a single objects to the panel as it is.
 		/// </summary>
+		/// <param name="value">The object to add.</param>
 		public void AddObject(object value)
 		{
 			if (value != null)

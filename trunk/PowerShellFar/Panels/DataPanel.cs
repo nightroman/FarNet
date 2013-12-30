@@ -20,11 +20,8 @@ namespace PowerShellFar
 	/// </summary>
 	public sealed class DataPanel : TablePanel, IDisposable
 	{
-		///
 		new DataExplorer Explorer { get { return (DataExplorer)base.Explorer; } }
-		/// <summary>
-		/// Constructor.
-		/// </summary>
+		///
 		public DataPanel()
 			: base(new DataExplorer())
 		{
@@ -454,6 +451,7 @@ namespace PowerShellFar
 		/// <summary>
 		/// Opens a member panel to edit the record.
 		/// </summary>
+		/// <param name="file">The file to open.</param>
 		public override void OpenFile(FarFile file)
 		{
 			BuildUpdateCommand();
@@ -615,7 +613,9 @@ namespace PowerShellFar
 					return false;
 			}
 		}
-		///
+		/// <summary>
+		/// Disposes data on exit.
+		/// </summary>
 		public override void UIClosed()
 		{
 			try

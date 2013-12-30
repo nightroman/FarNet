@@ -14,7 +14,9 @@ namespace FarNet.Tools
 	/// </summary>
 	public class SuperExplorer : Explorer
 	{
-		///
+		/// <summary>
+		/// The explorer type ID string.
+		/// </summary>
 		public const string TypeIdString = "7d503b37-23a0-4ebd-878b-226e972b0b9d";
 		readonly List<FarFile> _Cache;
 		/// <summary>
@@ -60,6 +62,7 @@ namespace FarNet.Tools
 		/// <summary>
 		/// Adds <see cref="SuperFile"/> files.
 		/// </summary>
+		/// <param name="files">The files to be added.</param>
 		public void AddFiles(IEnumerable<FarFile> files)
 		{
 			if (files == null)
@@ -69,17 +72,17 @@ namespace FarNet.Tools
 			foreach (SuperFile file in files)
 				_Cache.Add(file);
 		}
-		///
+		/// <inheritdoc/>
 		public override Panel CreatePanel()
 		{
 			return new SuperPanel(this);
 		}
-		///
+		/// <inheritdoc/>
 		public override IList<FarFile> GetFiles(GetFilesEventArgs args)
 		{
 			return _Cache;
 		}
-		///
+		/// <inheritdoc/>
 		public override Explorer ExploreDirectory(ExploreDirectoryEventArgs args)
 		{
 			if (args == null) return null;
@@ -87,7 +90,7 @@ namespace FarNet.Tools
 			var xfile = (SuperFile)args.File;
 			return ExploreSuperDirectory(xfile.Explorer, args.Mode, xfile.File);
 		}
-		///
+		/// <inheritdoc/>
 		public override Explorer OpenFile(OpenFileEventArgs args)
 		{
 			if (args == null) return null;
@@ -106,7 +109,7 @@ namespace FarNet.Tools
 			args.Result = args2.Result;
 			return explorer;
 		}
-		///
+		/// <inheritdoc/>
 		public override void AcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -120,7 +123,7 @@ namespace FarNet.Tools
 					Cache.Add(xfile);
 			}
 		}
-		///
+		/// <inheritdoc/>
 		public override void GetContent(GetContentEventArgs args)
 		{
 			if (args == null) return;
@@ -144,7 +147,7 @@ namespace FarNet.Tools
 			args.UseFileName = argsExport.UseFileName;
 			args.UseFileExtension = argsExport.UseFileExtension;
 		}
-		///
+		/// <inheritdoc/>
 		public override void SetFile(SetFileEventArgs args)
 		{
 			if (args == null) return;
@@ -162,7 +165,7 @@ namespace FarNet.Tools
 			// result
 			args.Result = argsImport.Result;
 		}
-		///
+		/// <inheritdoc/>
 		public override void SetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
@@ -366,7 +369,7 @@ namespace FarNet.Tools
 
 			return argsDelete.Result;
 		}
-		///
+		/// <inheritdoc/>
 		public override void DeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -395,7 +398,7 @@ namespace FarNet.Tools
 			else if (nDone == 0)
 				args.Result = JobResult.Ignore;
 		}
-		///
+		/// <inheritdoc/>
 		public override void ExportFiles(ExportFilesEventArgs args)
 		{
 			if (args == null) return;

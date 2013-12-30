@@ -41,7 +41,7 @@ Editor^ Editor0::GetCurrentEditor()
 	return editor;
 }
 
-// For internal use.
+// INTERNAL
 int Editor0::FindEditor(intptr_t id)
 {
 	for(int i = 0; i < _editors.Count; ++i)

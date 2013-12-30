@@ -17,6 +17,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.GetFiles"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual IList<FarFile> UIGetFiles(GetFilesEventArgs args)
 		{
 			return Explorer.GetFiles(args);
@@ -24,6 +25,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.ExploreDirectory"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer UIExploreDirectory(ExploreDirectoryEventArgs args)
 		{
 			return Explorer.ExploreDirectory(args);
@@ -31,6 +33,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.ExploreLocation"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer UIExploreLocation(ExploreLocationEventArgs args)
 		{
 			return Explorer.ExploreLocation(args);
@@ -38,6 +41,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.ExploreParent"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer UIExploreParent(ExploreParentEventArgs args)
 		{
 			return Explorer.ExploreParent(args);
@@ -45,6 +49,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.ExploreRoot"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer UIExploreRoot(ExploreRootEventArgs args)
 		{
 			return Explorer.ExploreRoot(args);
@@ -52,6 +57,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.GetContent"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UIGetContent(GetContentEventArgs args)
 		{
 			Explorer.GetContent(args);
@@ -59,6 +65,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.SetFile"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UISetFile(SetFileEventArgs args)
 		{
 			if (args == null) return;
@@ -71,6 +78,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.SetText"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UISetText(SetTextEventArgs args)
 		{
 			if (args == null) return;
@@ -83,6 +91,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.AcceptFiles"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UIAcceptFiles(AcceptFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -95,6 +104,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.DeleteFiles"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UIDeleteFiles(DeleteFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -107,6 +117,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.ExportFiles"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UIExportFiles(ExportFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -119,6 +130,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.ImportFiles"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UIImportFiles(ImportFilesEventArgs args)
 		{
 			if (args == null) return;
@@ -131,6 +143,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.CloneFile"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UICloneFile(CloneFileEventArgs args)
 		{
 			if (args == null) return;
@@ -143,6 +156,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.CreateFile"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UICreateFile(CreateFileEventArgs args)
 		{
 			if (args == null) return;
@@ -155,6 +169,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.OpenFile"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual Explorer UIOpenFile(OpenFileEventArgs args)
 		{
 			return Explorer.OpenFile(args);
@@ -162,6 +177,7 @@ namespace FarNet
 		/// <summary>
 		/// Calls <see cref="FarNet.Explorer.RenameFile"/> and <see cref="OnThisFileChanged"/>.
 		/// </summary>
+		/// <param name="args">.</param>
 		public virtual void UIRenameFile(RenameFileEventArgs args)
 		{
 			if (args == null) return;

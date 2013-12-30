@@ -104,21 +104,37 @@ namespace FarNet.Forms
 		public ColoringEventArgs(IControl control)
 			: base(control)
 		{ }
-		///
+		/// <summary>
+		/// Color 1, foreground.
+		/// </summary>
 		public ConsoleColor Foreground1 { get; set; }
-		///
+		/// <summary>
+		/// Color 1, background.
+		/// </summary>
 		public ConsoleColor Background1 { get; set; }
-		///
+		/// <summary>
+		/// Color 2, foreground.
+		/// </summary>
 		public ConsoleColor Foreground2 { get; set; }
-		///
+		/// <summary>
+		/// Color 2, background.
+		/// </summary>
 		public ConsoleColor Background2 { get; set; }
-		///
+		/// <summary>
+		/// Color 3, foreground.
+		/// </summary>
 		public ConsoleColor Foreground3 { get; set; }
-		///
+		/// <summary>
+		/// Color 3, background.
+		/// </summary>
 		public ConsoleColor Background3 { get; set; }
-		///
+		/// <summary>
+		/// Color 4, foreground.
+		/// </summary>
 		public ConsoleColor Foreground4 { get; set; }
-		///
+		/// <summary>
+		/// Color 4, background.
+		/// </summary>
 		public ConsoleColor Background4 { get; set; }
 	}
 
