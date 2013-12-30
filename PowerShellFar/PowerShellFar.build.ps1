@@ -86,15 +86,13 @@ task NuGet Package, Version, {
 PowerShellFar is the FarNet module which effectively combines the Windows
 PowerShell core with the text friendly console environment of Far Manager.
 '@
-	$text = "TEST ONLY, not yet ready"
-	Write-Warning "TEST ONLY"
 	# nuspec
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>FarNet.PowerShellFar</id>
-		<version>$Version.1</version>
+		<version>$Version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
@@ -102,6 +100,7 @@ PowerShell core with the text friendly console environment of Far Manager.
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
+		<releaseNotes>See https://farnet.googlecode.com/svn/trunk/PowerShellFar/History.txt</releaseNotes>
 		<tags>FarManager FarNet PowerShell Module Plugin</tags>
 	</metadata>
 </package>
