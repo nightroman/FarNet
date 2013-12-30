@@ -45,14 +45,14 @@
 	> Update-FarPackage.ps1 FarNet -FarHome <path> [-Platform <x64|x86>]
 
 	This command updates FarNet. The Platform is needed if Far.exe is not in
-	<path>. After updating look at extra files at the FarPackage directory:
+	<path>. After updating look at extra files at the FarPackages directory:
 	FarNet.X.Y.Z contains About-FarNet.htm, FarNetAPI.chm, History.txt.
 
 .Example
 	> Update-FarPackage.ps1 FarNet.PowerShellFar -FarHome <path>
 
 	This command updates PowerShellFar. The Platform is not needed.
-	After updating look at extra files at the FarPackage directory:
+	After updating look at extra files at the FarPackages directory:
 	FarNet.PowerShellFar.X.Y.Z contains About-PowerShellFar.htm, History.txt.
 #>
 
