@@ -94,9 +94,24 @@ If you are not administrator use the parameter `-Scope CurrentUser`, for example
 
 ### Install the module
 
-Copy *FarNet\Modules\PowerShellFar* to *%FARHOME%\FarNet\Modules\PowerShellFar*.
-The location and name can be changed but it is recommended to use the original:
-some tools assume this path by default, e.g. *Update-FarNet.ps1*.
+**Automated**
+
+Use the script <https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1>
+
+Close all Far instances and invoke this command in PowerShell:
+
+    Update-FarPackage.ps1 FarNet.PowerShellFar -FarHome <path>
+
+**Manual**
+
+The package directory *tools* contains files to be installed. Files from
+the *FarHome* directory should be copied to the *%FARHOME%* directory
+preserving its directory structure.
+
+Other files:
+
+- *About\About-PowerShellFar.htm* - this documentation
+- *About\History.txt* - the change log
 
 ### Using Bench scripts
 
@@ -1359,8 +1374,8 @@ There are three main objects defined as global variables.
 * `$Psf`
 
     The instance of `PowerShellFar.Actor` class exposing PowerShellFar features
-    additional to FarNet features. See *FarNetAccord.chm* documentation. Note
-    that PowerShellFar namespace provides public classes that can be created
+    additional to FarNet features. See *FarNetAPI.chm* documentation. Note that
+    PowerShellFar namespace provides public classes that can be created
     directly by `New-Object`.
 
 * `$Host`
@@ -1431,7 +1446,7 @@ The command to view or change settings temporarily is
 
     ps: Open-FarPanel $Psf.Settings
 
-These settings are described in *FarNetAccord.chm*.
+These settings are described in *FarNetAPI.chm*.
 
 Not everything is configured via `$Psf.Settings`. There are other exposed
 objects designed for configuration in the profile, for example `$Psf.Action`,
@@ -1538,7 +1553,7 @@ proceed on jobs. The macro `[F10]` can get control of exit in panels: see
 
 [Contents](#Contents)
 
-Some scripts in Bench and Test folders have suffixes "-" and "+". Why?
+Some scripts in Bench and Test folders have suffixes "-" and "!". Why?
 
 The suffixes designate that these scripts are not standard PowerShell scripts
 for, say, PowerShell console or ISE. Namely:
@@ -1548,7 +1563,7 @@ for, say, PowerShell console or ISE. Namely:
     PowerShellFar scripts that should be invoked by FarHost. Normally they will
     fail if you invoke them by console host or by ISE host.
 
-* Suffix "+"
+* Suffix "!"
 
     PowerShellFar step unit scripts. Normally they should be invoked by
     PowerShellFar.Stepper for step sequence processing.
@@ -1560,24 +1575,30 @@ assigning commands, see [File associations](:FileAssoc).
 
 ### Examples
 
-Standard PowerShell scripts:
-
-    mask    :  /[^-+]\.ps1$/i
-    command :  PowerShell.exe -NoExit ". '!\!.!'; exit"
-
 PowerShellFar scripts:
 
-    mask    :  *-.ps1
-    command :  ps: & (Get-FarPath) #
+    mask     :  *-.ps1
+    commands :
+        ps: & (Get-FarPath) #
 
 PowerShellFar steppers:
 
-    mask    :  *+.ps1
-    command :  ps: Invoke-FarStepper -Path (Get-FarPath) #
+    mask     :  *!.ps1
+    commands :
+        ps: Invoke-FarStepper -Path (Get-FarPath) #
+        ps: Invoke-FarStepper -Path (Get-FarPath) -Ask #
 
-With the associations above when you press `[Enter]` for scripts in the panel
-then standard scripts are started by PowerShell.exe, PowerShellFar scripts are
-started by PowerShellFar and step units are started by the stepper.
+Standard PowerShell scripts:
+
+    mask     :  *.ps1|*[-!].ps1
+    commands :
+        PowerShell.exe -File "!\!.!"
+        start PowerShell.exe -NoExit -File "!\!.!"
+
+With the associations above when you press `[Enter]` (or another assigned key)
+for scripts in the panel then standard scripts are invoked by PowerShell.exe,
+PowerShellFar scripts are invoked by PowerShellFar and step units are invoked
+by the stepper.
 
 
 *********************************************************************

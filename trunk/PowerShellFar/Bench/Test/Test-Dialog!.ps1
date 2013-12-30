@@ -35,7 +35,7 @@ $Data.Value = $null
 # open the test dialog if not yet
 if (!$TestOpened) {
 
-	Assert-Far ($Far.Window.Kind -ne 'Dialog') "Do not run this from a dialog" "Test-Dialog+.ps1"
+	Assert-Far ($Far.Window.Kind -ne 'Dialog') "Do not run this from a dialog" "Test-Dialog!.ps1"
 
 	{{
 		# run the dialog

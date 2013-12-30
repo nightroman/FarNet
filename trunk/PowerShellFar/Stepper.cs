@@ -74,7 +74,7 @@ namespace PowerShellFar
 	/// Direct use of this class is needed in more complex scenarous.
 	/// </para>
 	/// </remarks>
-	/// <example>Test-Stepper-.ps1, Test-Stepper+.ps1, Test-Dialog+.ps1.</example>
+	/// <example>Test-Stepper-.ps1, Test-Stepper!.ps1, Test-Dialog!.ps1.</example>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public sealed class Stepper : IEnumerator<object>, IEnumerable<object>
 	{

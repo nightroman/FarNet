@@ -1,1 +1,0 @@
-FarNet\Modules\PowerShellFar

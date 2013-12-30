@@ -14,7 +14,7 @@ $PsfHome = "$FarHome\FarNet\Modules\PowerShellFar"
 
 task Clean {
 	Remove-Item -Force -Recurse -ErrorAction 0 -LiteralPath `
-	bin, obj, Modules\FarDescription\bin, Modules\FarDescription\obj
+	z, bin, obj, Modules\FarDescription\bin, Modules\FarDescription\obj, About-PowerShellFar.htm
 }
 
 # Install all. Run after Build.
@@ -27,27 +27,6 @@ task Uninstall {
 task Help {
 	exec { MarkdownToHtml "From=About-PowerShellFar.text" "To=About-PowerShellFar.htm" }
 	exec { HtmlToFarHelp "From=About-PowerShellFar.htm" "To=$PsfHome\PowerShellFar.hlf" }
-}
-
-task Zip Help, {
-	. ..\Get-Version.ps1
-	$dir = 'z\FarNet\Modules\PowerShellFar'
-	$draw = 'C:\ROM\FarDev\Draw'
-
-	Remove-Item [z] -Force -Recurse
-	$null = mkdir $dir
-
-	Move-Item About-PowerShellFar.htm z
-	Copy-Item Install.txt z
-	Copy-Item History.txt, LICENSE, PowerShellFar.macro.lua $dir
-	Copy-Item $FarHome\FarNet\Modules\PowerShellFar\* $dir -Recurse
-	Copy-Item Bench $dir -Recurse -Force
-
-	Push-Location z
-	exec { & 7z a ..\PowerShellFar.$PowerShellFarVersion.7z * }
-	Pop-Location
-
-	Remove-Item z -Recurse -Force
 }
 
 task InstallBin {
@@ -78,4 +57,55 @@ task BuildPowerShellFarHelp -Inputs {Get-Item Commands\*} -Outputs "$PsfHome\Pow
 Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 "@)
 	$ps.Invoke()
+}
+
+# Make package files
+task Package Help, {
+	$dirMain = 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
+	$dirAbout = 'z\tools\About'
+
+	Remove-Item [z] -Force -Recurse
+	$null = mkdir $dirMain, $dirAbout
+
+	Copy-Item -Destination $dirAbout About-PowerShellFar.htm, History.txt
+	Copy-Item -Destination $dirMain LICENSE, PowerShellFar.macro.lua
+	Copy-Item -Destination $dirMain $FarHome\FarNet\Modules\PowerShellFar\* -Recurse
+	Copy-Item -Destination $dirMain Bench -Recurse -Force
+}
+
+# Set version
+task Version {
+	. ..\Get-Version.ps1
+	$script:Version = $PowerShellFarVersion
+	$Version
+}
+
+# Make NuGet package
+task NuGet Package, Version, {
+	$text = @'
+PowerShellFar is the FarNet module which effectively combines the Windows
+PowerShell core with the text friendly console environment of Far Manager.
+'@
+	$text = "TEST ONLY, not yet ready"
+	Write-Warning "TEST ONLY"
+	# nuspec
+	Set-Content z\Package.nuspec @"
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>FarNet.PowerShellFar</id>
+		<version>$Version.1</version>
+		<authors>Roman Kuzmin</authors>
+		<owners>Roman Kuzmin</owners>
+		<projectUrl>https://code.google.com/p/farnet</projectUrl>
+		<licenseUrl>https://farnet.googlecode.com/svn/trunk/PowerShellFar/LICENSE</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>$text</summary>
+		<description>$text</description>
+		<tags>FarManager FarNet PowerShell Module Plugin</tags>
+	</metadata>
+</package>
+"@
+	# pack
+	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }

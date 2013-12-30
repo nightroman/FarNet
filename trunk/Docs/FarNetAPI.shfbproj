@@ -11,13 +11,13 @@
     <SHFBSchemaVersion>1.9.5.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
-    <AssemblyName>FarNetAccord</AssemblyName>
-    <RootNamespace>FarNetAccord</RootNamespace>
-    <Name>FarNetAccord</Name>
+    <AssemblyName>FarNetAPI</AssemblyName>
+    <RootNamespace>FarNetAPI</RootNamespace>
+    <Name>FarNetAPI</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.0</FrameworkVersion>
     <OutputPath>.\Help\</OutputPath>
-    <HtmlHelpName>FarNetAccord</HtmlHelpName>
+    <HtmlHelpName>FarNetAPI</HtmlHelpName>
     <Language>en-US</Language>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <HelpFileFormat>HtmlHelp1</HelpFileFormat>

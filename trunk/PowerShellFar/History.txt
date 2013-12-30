@@ -1,14 +1,56 @@
-http://code.google.com/p/farnet/downloads/list
-(+ FarNet and API documentation)
+THE PACKAGE MOVED TO NUGET
+https://www.nuget.org/packages/FarNet.PowerShellFar
+
+HOW TO GET AND INSTALL
+
+The simplest way (automated):
+Use this script for getting, unpacking, and installing:
+https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
+Close all Far instances and invoke this command in PowerShell:
+Update-FarPackage.ps1 FarNet.PowerShellFar -FarHome <path>
+
+Other ways (manual):
+1. Use NuGet.exe for getting and unpacking.
+2. Alternatively:
+- download directly as http://nuget.org/api/v2/package/FarNet.PowerShellFar
+- unzip (you may rename it to .zip but ArcLite can unzip it without renaming)
+In both cases use files from the unpacked directory "tools", see Installation
+in About\About-PowerShellFar.htm, and copy files manually.
 
 = 5.0.57 =
+
+Update-FarPackage.ps1
+
+New script Update-FarPackage.ps1 replaces Update-FarNet.ps1. The new script
+installs or updates any NuGet package with special structure for Far Manager.
+For now there are two packages "FarNet" and "FarNet.PowerShellFar". Other
+FarNet modules will move to NuGet soon.
+
+The script needs only PowerShell. It downloads packages by System.Net.WebClient
+and unzips them by COM Shell.Application.
+
+NOTE: Other authors can push their packages designed for Far to NuGet and use
+this script for updates. This will work for native plugins, too. NuGet is for
+.NET libraries in first place but packages can be created from any files, not
+necessarily .NET related.
+
+OTHER CHANGES
 
 Removed the helper PowerShellFar.Wrap with methods ConverterToString and
 Comparison. The first was needed for SubsetForm.ItemToString (not needed
 anymore, script blocks can be used directly, see Test-SubsetForm-.ps1).
 The second is not used, presumably.
 
-Amended documentation comments for FarNetAccord.chm
+Amended documentation comments for FarNetAPI.chm
+
+RENAMED:
+- Test-Dialog+.ps1 -> Test-Dialog!.ps1
+- Test-Stepper+.ps1 -> Test-Stepper!.ps1
+
+REASON: OPC packages (NuGet) escape some characters (e.g. "+" becomes "%2B").
+Update-FarPackage.ps1 and NuGet.exe decode such names correctly but on manual
+unzipping such names will be problematic. We better avoid "+" and use another
+symbol which is not escaped, say, "!".
 
 = 5.0.56 =
 

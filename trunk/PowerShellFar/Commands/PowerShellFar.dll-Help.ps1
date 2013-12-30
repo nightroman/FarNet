@@ -577,7 +577,7 @@ This mode is used for troubleshooting, demonstrations, and etc.
 		}}
 		@{code={
 	# Invoke the test from Bench\Text with confirmations
-	Invoke-FarStepper .\Test-Stepper+.ps1 -Ask
+	Invoke-FarStepper .\Test-Stepper!.ps1 -Ask
 		}}
 	)
 }

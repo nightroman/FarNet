@@ -1,9 +1,27 @@
-http://code.google.com/p/farnet/downloads/list
+THE PACKAGE MOVED TO NUGET
+https://www.nuget.org/packages/FarNet
+
+HOW TO GET AND INSTALL
+
+The simplest way (automated):
+Use this script for getting, unpacking, and installing:
+https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
+Close all Far instances and invoke this command in PowerShell:
+Update-FarPackage.ps1 FarNet -FarHome <path> -Platform <x64|x86>
+
+Other ways (manual):
+1. Use NuGet.exe for getting and unpacking.
+2. Alternatively:
+- download directly as http://nuget.org/api/v2/package/FarNet
+- unzip (you may rename it to .zip but ArcLite can unzip it without renaming)
+In both cases use files from the unpacked directory "tools", see Installation
+in About\About-FarNet.htm, and copy files manually.
 
 = 5.0.39 =
 
-FarNetAccord.chm is built by the upgraded documentation tools. Updated some
-topics, added missing documentation.
+FarNetAccord.chm is replaced by FarNetAPI.chm and built by the upgraded
+documentation tools. Updated some topics, added missing documentation.
+FarNetAPI.chm is now included to the FarNet package.
 
 Renamed the protected Panel.OpenChildBegin() to CanOpenAsChild().
 

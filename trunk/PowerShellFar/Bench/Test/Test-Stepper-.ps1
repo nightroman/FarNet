@@ -39,8 +39,8 @@ $stepper.Ask = !$Auto
 
 # Add units
 $myFolder = Split-Path $MyInvocation.MyCommand.Path
-$stepper.AddFile("$myFolder\Test-Stepper+.ps1")
-$stepper.AddFile("$myFolder\Test-Dialog+.ps1")
+$stepper.AddFile("$myFolder\Test-Stepper!.ps1")
+$stepper.AddFile("$myFolder\Test-Dialog!.ps1")
 
 # Add a handler to watch stepping progress
 $stepper.add_StateChanged({
