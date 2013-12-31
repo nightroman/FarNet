@@ -108,7 +108,7 @@ FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>See https://farnet.googlecode.com/svn/trunk/FarNet/History.txt</releaseNotes>
+		<releaseNotes>https://farnet.googlecode.com/svn/trunk/FarNet/History.txt</releaseNotes>
 		<tags>FarManager FarNet PowerShell Module Plugin</tags>
 	</metadata>
 </package>
