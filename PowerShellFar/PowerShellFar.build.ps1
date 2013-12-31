@@ -100,7 +100,7 @@ PowerShell core with the text friendly console environment of Far Manager.
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>See https://farnet.googlecode.com/svn/trunk/PowerShellFar/History.txt</releaseNotes>
+		<releaseNotes>https://farnet.googlecode.com/svn/trunk/PowerShellFar/History.txt</releaseNotes>
 		<tags>FarManager FarNet PowerShell Module Plugin</tags>
 	</metadata>
 </package>

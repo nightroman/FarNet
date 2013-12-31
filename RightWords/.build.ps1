@@ -71,7 +71,7 @@ it works with dictionaries published on OpenOffice.org.
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
-		<releaseNotes>https://code.google.com/p/farnet/source/browse/trunk/RightWords/History.txt</releaseNotes>
+		<releaseNotes>https://farnet.googlecode.com/svn/trunk/RightWords/History.txt</releaseNotes>
 		<tags>FarManager FarNet Module NHunspell</tags>
 	</metadata>
 </package>
