@@ -1,30 +1,61 @@
 ﻿
 # FarNet module *RightWords*
 
-*********************************************************************
-## Synopsis
+* [Synopsis](#Synopsis)
+* [Installation](#Installation)
+* [Description](#Description)
+* [Dictionaries](#Dictionaries)
+* [Options](#Options)
+* [Settings](#Settings)
 
-Spell-checker and thesaurus based on NHunspell. The core Hunspell is used
-in OpenOffice and it works with dictionaries published on OpenOffice.org.
+*********************************************************************
+## Synopsis {#Synopsis}
+
+RightWords is the FarNet module for FarManager. It provides the spell-checker
+and thesaurus based on NHunspell. The core Hunspell is used in OpenOffice and
+it works with dictionaries published on OpenOffice.org.
 
 **Project**
 
- * Source: <http://code.google.com/p/farnet/>
+ * Source: <http://code.google.com/p/farnet>
  * Author: Roman Kuzmin
 
 **Prerequisites**
 
- * Far Manager 3.0.3297
- * Plugin FarNet 5.0.33
- * [NHunspell 1.1.0](http://sourceforge.net/projects/nhunspell/files/NHunspell.1.1.0.0.zip/download)
+ * Far Manager 3.0.3525
+ * Plugin FarNet 5.0.39
  * [Dictionaries](http://wiki.services.openoffice.org/wiki/Dictionaries)
 
+The *NHunspell* library is included to the package.
+
 *********************************************************************
-## Installation
+## Installation {#Installation}
 
-Download the NHunspell binaries and OpenOffice dictionaries.
+Get and install RightWords. The module is distributed as the NuGet package
+[FarNet.RightWords](https://www.nuget.org/packages/FarNet.RightWords).
+Use this script for getting, unpacking, and installing: [Update-FarPackage.ps1](https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1).
+If you download the script (i.e. not copy/paste) then do RMB > Properties > Unblock.
+Close all Far instances and invoke this command in PowerShell:
 
-Create the directory structure like this:
+    Update-FarPackage FarNet.RightWords -FarHome <path>
+
+Get and install dictionaries. Download OpenOffice
+[dictionaries](http://wiki.services.openoffice.org/wiki/Dictionaries)
+and copy them to new subdirectories of the directory *NHunspell*, e.g.
+to directories *English*, *Russian*.
+
+The installed file structure (dictionaries may be different):
+
+    %FARHOME%\FarNet\Modules\RightWords
+
+        About-RightWords.htm - this file
+        History.txt - the change log
+        LICENSE.txt - the license
+        RightWords.macro.lua - sample macros
+
+        RightWords.dll - the module
+        RightWords.resources - English UI strings
+        RightWords.ru.resources - Russian UI strings
 
     %FARHOME%\FarNet\NHunspell
 
@@ -38,17 +69,17 @@ Create the directory structure like this:
             ru_RU.aff, ru_RU.dic - spelling dictionaries
             th_ru_RU_v2.dat - thesaurus (optional)
 
-The NHunspell directory name should be used exactly. Thesaurus files are
-optional. Collection of dictionaries is up to a user.
+NOTES
 
-Dictionary directories may have any names. The names are used in the dictionary
-menu and in user dictionary file names (e.g. English -> RightWords.English.dic).
+- Do not rename or move the NHunspell directory.
+- Collection of dictionaries is up to a user.
+- Thesaurus files are optional.
+- Dictionary directories may have any names. The names are used in the
+  dictionary menu and in the user dictionary file names (e.g. English ->
+  RightWords.English.dic).
 
 *********************************************************************
-## Description
-
-Spell-checker and thesaurus based on NHunspell. The core Hunspell is used
-in OpenOffice and it works with dictionaries published on OpenOffice.org.
+## Description {#Description}
 
 In order to turn "Spelling mistakes" highlighting on and off use the menu:
 `[F11] | FarNet | Drawers | Spelling mistakes`
@@ -76,7 +107,7 @@ Thesaurus
   clipboard.
 
 *********************************************************************
-## Dictionaries
+## Dictionaries {#Dictionaries}
 
 *Add to Dictionary* command supports the common and language dictionaries. In
 order to add a word into a language dictionary two stems should be provided: a
@@ -105,7 +136,7 @@ User dictionaries are UTF-8 text files in the module roaming directory:
 *RightWords.dic* (common) and files like *RightWords.XYZ.dic* (languages).
 
 *********************************************************************
-## Options
+## Options {#Options}
 
 `[F9] | Options | Plugin configuration | FarNet | Drawers | Spelling mistakes`
 
@@ -113,7 +144,7 @@ User dictionaries are UTF-8 text files in the module roaming directory:
 * Priority - drawer color priority.
 
 *********************************************************************
-## Settings
+## Settings {#Settings}
 
 Open the module settings panel: `[F11] | FarNet | Settings | RightWords`
 
@@ -161,159 +192,4 @@ Yellow, White.
 The custom directory of user dictionaries. Environment variables are expanded.
 The default is the module roaming directory.
 
-*********************************************************************
-## History
-
-1.0.1
-
-    Added the SkipPattern to the settings.
-
-    Regular expression patterns in settings are created with
-    IgnorePatternWhitespace option (see About-RightWords).
-
-1.0.2
-
-    Fixed wrong text selection after word replacements.
-
-    Added [Ignore All] command to the suggestion menu.
-
-    Slightly improved the SkipPattern sample.
-
-1.0.3
-
-    Revised the suggestion menu actions and used numeric hotkeys.
-
-    Added [Add to Dictionary] command to the suggestion menu.
-    The user dictionary is the roaming file "RightWords.dic".
-
-1.0.4
-
-    Fixed potential SkipPattern filter issues after correction in the same
-    line.
-
-    Dictionaries are sorted internally by numbers of valid word hits. This
-    slightly improves performance for 2+ dictionaries and provides word
-    suggestions from more expected dictionaries first.
-
-1.0.5.
-
-    Use FarNet 4.4.20 (new editor color API).
-
-    Experimental, with known caveats, highlighting of misspelled words in the
-    editor. This mode is turned on/off by the module menu command
-    [Highlighting].
-
-    Highlighting color is black on red and it is not yet configurable.
-
-1.0.6
-
-    Use FarNet 4.4.21 (revised editor color API).
-
-    Highlighting is tested with and without the Colorer plugin and without
-    other editor color plugins. Scenarios with other editor color plugins are
-    not tested.
-
-    Highlighting is turned on automatically for files which names match the
-    mask: [F9] | Options | Plugins configuration | .NET | Editors | RightWords
-
-    Highlighting colors are configurable in settings (default: black on
-    yellow).
-
-    The [Correct word] menu contains the same commands as the [Correct text].
-
-    The thesaurus input box uses the current word as the default input.
-
-    Code clean-up and light optimization. NOTE: SkipPattern filter is
-    relatively expensive. The sample/recommended pattern is simplified (see
-    About-RightWords).
-
-1.0.7
-
-    [Add to Dictionary] command supports the common and language dictionaries.
-    See About-RightWords for details. This feature is very useful but it is not
-    that simple.
-
-    Ignore the `Native Library is already loaded` exception. It is possible in
-    rare cases when other modules use NHunspell and load it before RightWords.
-
-1.0.8
-
-    [Correct word] menu is shown one line lower (the word is visible more
-    often).
-
-    [Add to Dictionary] | Common: a user is asked to add one or two word forms.
-
-    Changed the default WordPattern and the sample SkipPattern (see Readme).
-
-    Fixed double added colors in the current line on highlighting.
-
-1.0.9
-
-    Added UserDictionaryDirectory to settings (optional). Unlike the other
-    settings it is local, it is stored in the local module settings, not the
-    roaming.
-
-    The UI is localized (English, Russian).
-
-1.0.10
-
-    Use FarNet 4.5.0
-
-    Fixed rare but possible dupes in the suggestion and dictionary menus.
-
-    The WordPattern setting: all regular expression capturing groups "(...)"
-    are removed from the word before spell-checking. This is used for checking
-    spelling of words with embedded "noise" parts, like the hotkey markers "&"
-    in .lng files. See About-RightWords for details and the example pattern
-    with "&".
-
-    Added "*.lng" to the default automatic highlighting file mask.
-
-2.0.0
-
-    Adapted for Far3 + FarNet5.
-
-2.0.1
-
-    Use FarNet 5.0.1. Bug fixing.
-
-2.0.2
-
-    Fixed highlighting defects on editing with spelling errors without Colorer.
-
-2.0.3
-
-    Use FarNet 5.0.3. Simplified and yet faster work with editor colors.
-
-2.0.4
-
-    Use FarNet 5.0.7 with amended drawer API.
-
-2.0.5
-
-    Use FarNet 5.0.8 with amended drawer API.
-
-2.1.0
-
-    FarNet 5.0.9 with centralized drawer infrastructure. As a result:
-    - Menu item "Highlighting" moved to the FarNet drawers menu.
-    - "Auto highlighting file mask" moved to the FarNet options.
-    - See RightWords.macro.lua for the updated "Highlighting" macro.
-
-2.1.1
-
-    The storage of the optional setting UserDictionaryDirectory changed from
-    local to roaming (by a user request, to improve portability). If this path
-    was set before then it has to be set again and the old *.local.settings
-    file can be removed, UserDictionaryDirectory was the only local setting.
-
-2.1.2
-
-    Adapted for FarNet 5.0.31
-
-2.1.3
-
-    Upgraded for NHunspell 1.1.0
-    http://sourceforge.net/projects/nhunspell/files/NHunspell.1.1.0.0.zip/download
-
-<http://code.google.com/p/farnet/downloads/list>
+***
