@@ -61,14 +61,14 @@ Convert-Helps "$BuildRoot\Commands\PowerShellFar.dll-Help.ps1" "$Outputs"
 
 # Make package files
 task Package Help, {
+	$dirRoot = 'z\tools'
 	$dirMain = 'z\tools\FarHome\FarNet\Modules\PowerShellFar'
-	$dirAbout = 'z\tools\About'
 
 	Remove-Item [z] -Force -Recurse
-	$null = mkdir $dirMain, $dirAbout
+	$null = mkdir $dirMain
 
-	Copy-Item -Destination $dirAbout About-PowerShellFar.htm, History.txt
-	Copy-Item -Destination $dirMain LICENSE, PowerShellFar.macro.lua
+	Copy-Item -Destination $dirRoot About-PowerShellFar.htm, History.txt
+	Copy-Item -Destination $dirMain LICENSE.txt, PowerShellFar.macro.lua
 	Copy-Item -Destination $dirMain $FarHome\FarNet\Modules\PowerShellFar\* -Recurse
 	Copy-Item -Destination $dirMain Bench -Recurse -Force
 }
@@ -96,7 +96,7 @@ PowerShell core with the text friendly console environment of Far Manager.
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
-		<licenseUrl>https://farnet.googlecode.com/svn/trunk/PowerShellFar/LICENSE</licenseUrl>
+		<licenseUrl>https://farnet.googlecode.com/svn/trunk/PowerShellFar/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
