@@ -12,7 +12,7 @@ using namespace System::Security::Permissions;
 [assembly: AssemblyDescription("FarNet plugin manager")];
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")];
 [assembly: AssemblyProduct("FarNet")];
-[assembly: AssemblyCopyright("Copyright (c) 2006-2013 Roman Kuzmin")];
+[assembly: AssemblyCopyright("Copyright (c) 2006-2014 Roman Kuzmin")];
 
 [assembly: ComVisible(false)];
 [assembly: CLSCompliant(true)];

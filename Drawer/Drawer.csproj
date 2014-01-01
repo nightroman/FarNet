@@ -50,12 +50,8 @@
     <Compile Include="Settings.cs" />
     <Compile Include="CurrentWordDrawer.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE" />
-    <Content Include="About-Drawer.text" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
   </Target>
 </Project>

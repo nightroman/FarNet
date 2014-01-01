@@ -49,15 +49,8 @@
     <Compile Include="TheCommand.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE" />
-    <Content Include="RightControl.macro.lua" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="About-RightControl.text" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="@(Content);Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="Bin\$(Configuration)\$(AssemblyName).dll" DestinationFolder="$(FARHOME)\FarNet\Modules\$(AssemblyName)" SkipUnchangedFiles="true" />
   </Target>
 </Project>

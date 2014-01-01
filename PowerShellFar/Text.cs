@@ -1,7 +1,7 @@
 
 /*
 PowerShellFar module for Far Manager
-Copyright (c) 2006-2013 Roman Kuzmin
+Copyright (c) 2006-2014 Roman Kuzmin
 */
 
 namespace PowerShellFar

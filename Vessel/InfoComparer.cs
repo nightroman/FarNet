@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module Vessel
-Copyright (c) 2011-2013 Roman Kuzmin
+Copyright (c) 2011-2014 Roman Kuzmin
 */
 
 using System.Collections.Generic;

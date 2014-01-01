@@ -1,7 +1,7 @@
 ﻿
 /*
 FarNet module FolderChart
-Copyright (c) 2010-2013 Roman Kuzmin
+Copyright (c) 2010-2014 Roman Kuzmin
 */
 
 using System;
