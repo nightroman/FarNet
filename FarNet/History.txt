@@ -1,6 +1,12 @@
 The NuGet package: https://www.nuget.org/packages/FarNet
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2256
 
+= 5.0.40 =
+
+Slightly simplified the NuGet package. It is recommended to update it by the
+upgraded script Update-FarPackage.ps1:
+https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
+
 = 5.0.39 =
 
 THE PACKAGE MOVED TO NUGET

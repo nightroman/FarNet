@@ -63,22 +63,21 @@ task Package Help, {
 	# folders
 	Remove-Item [z] -Recurse -Force
 	$null = mkdir `
-	z\tools\About,
 	z\tools\FarHome\FarNet,
 	z\tools\FarHome\Plugins\FarNet,
 	z\tools\FarHome.x64\Plugins\FarNet,
 	z\tools\FarHome.x86\Plugins\FarNet
 
 	# copy
-	Copy-Item -Destination z\tools\About About-FarNet.htm, History.txt, $FarHome\FarNet\FarNetAPI.chm
+	Copy-Item -Destination z\tools About-FarNet.htm, History.txt, $FarHome\FarNet\FarNetAPI.chm
 	Copy-Item -Destination z\tools\FarHome $FarHome\Far.exe.config
 	Copy-Item -Destination z\tools\FarHome\FarNet $FarHome\FarNet\FarNet.*
-	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.hlf, LICENSE
+	Copy-Item -Destination z\tools\FarHome\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.hlf, LICENSE.txt
 	Copy-Item -Destination z\tools\FarHome.x64\Plugins\FarNet FarNetMan\Release\x64\FarNetMan.dll
 	Copy-Item -Destination z\tools\FarHome.x86\Plugins\FarNet $FarHome\Plugins\FarNet\FarNetMan.dll
 
 	# samples
-	exec { robocopy ..\Modules z\tools\About\Samples /s /np /xf *.suo, Modules.build.ps1 } 1
+	exec { robocopy ..\Modules z\tools\Samples /s /np /xf *.suo, Modules.build.ps1 } 1
 }
 
 # Set version
@@ -104,7 +103,7 @@ FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
-		<licenseUrl>https://farnet.googlecode.com/svn/trunk/FarNet/LICENSE</licenseUrl>
+		<licenseUrl>https://farnet.googlecode.com/svn/trunk/FarNet/LICENSE.txt</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>
