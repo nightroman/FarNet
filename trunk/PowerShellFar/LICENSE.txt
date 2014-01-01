@@ -1,3 +1,4 @@
+
 PowerShellFar - FarNet module for Far Manager
 Copyright (c) 2006-2014 Roman Kuzmin
 All rights reserved.

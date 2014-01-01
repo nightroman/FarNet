@@ -1,3 +1,4 @@
+
 FarNet module RightWords for Far Manager
 Copyright (c) 2011-2014 Roman Kuzmin
 All rights reserved.

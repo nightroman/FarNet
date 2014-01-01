@@ -4,10 +4,10 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
-[assembly: AssemblyCopyright("Copyright (c) 2011-2013 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2011-2014 Roman Kuzmin")]
 [assembly: AssemblyDescription("Spell-checker and thesaurus")]
 [assembly: AssemblyProduct("FarNet.RightWords")]
-[assembly: AssemblyTitle("FarNet module RightWords")]
+[assembly: AssemblyTitle("FarNet module RightWords for Far Manager")]
 [assembly: AssemblyVersion("2.1.4")]
 
 [assembly: ComVisible(false)]

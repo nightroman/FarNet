@@ -4,10 +4,10 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
-[assembly: AssemblyCopyright("Copyright (c) 2012-2013 Roman Kuzmin")]
+[assembly: AssemblyCopyright("Copyright (c) 2012-2014 Roman Kuzmin")]
 [assembly: AssemblyDescription("Editor drawers")]
 [assembly: AssemblyProduct("FarNet.Drawer")]
-[assembly: AssemblyTitle("FarNet module Drawer")]
+[assembly: AssemblyTitle("FarNet module Drawer for Far Manager")]
 [assembly: AssemblyVersion("1.0.1")]
 
 [assembly: ComVisible(false)]
