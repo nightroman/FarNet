@@ -1,6 +1,6 @@
 
 using System.Reflection;
 
-[assembly: AssemblyVersion("5.0.57.0")]
+[assembly: AssemblyVersion("5.0.58.0")]
 [assembly: AssemblyProduct("PowerShellFar")]
 [assembly: AssemblyCompany("http://code.google.com/p/farnet/")]

@@ -45,7 +45,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.57
+### PowerShellFar 5.0.58
 
 PowerShellFar is the FarNet module which effectively combines the Windows
 PowerShell core with the text friendly console environment of Far Manager.
@@ -76,7 +76,7 @@ PowerShellFar, FarNet, and documentation can be updated by the included script
 ### Requirements
 
 - Far Manager 3.0.3525
-- Plugin FarNet 5.0.39
+- Plugin FarNet 5.0.40
 - Windows PowerShell V2, V3
 
 ### Set PowerShell execution policy
