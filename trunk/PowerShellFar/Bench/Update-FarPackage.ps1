@@ -196,7 +196,7 @@ function GetPlatform {
 	if (!($exe = Get-Item -LiteralPath "$FarHome\Far.exe" -ErrorAction 0) -or ($exe.VersionInfo.FileVersion -notmatch '\b(x86|x64)\b')) {
 		Write-Error "Cannot get info from Far.exe. Specify the Platform."
 	}
-	return ($Platform = $Matches[1])
+	return ($script:Platform = $Matches[1])
 }
 
 # FarHome.x64
