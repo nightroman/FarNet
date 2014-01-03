@@ -6,9 +6,11 @@ HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 Update-FarPackage.ps1
 
 - Added new parameter Source (Default: https://www.nuget.org/api/v2).
-- Used Id and Version from packages instead of provided. As a result:
+- Added new switch Remove which removes installed files. Read help.
+- Used Id and Version from packages instead of provided. Thus,
 * Unpacked directories are always "<Id>.<Version>".
 * The original capitalization is preserved.
+- Improved potential error messages.
 
 = 5.0.58 =
 
