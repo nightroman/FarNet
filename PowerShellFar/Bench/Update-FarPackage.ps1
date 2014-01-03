@@ -31,9 +31,12 @@
 		Specifies the path to the local package file.
 		Id and Version are extracted from the package.
 .Parameter Remove
-		Tells to remove installed files and empty directories. It must be used
-		with Path which specifies the path to the last installed package. Note
-		that changed files are removed, too, but added are not.
+		WARNING: This action deletes files. Use this switch carefully. If you
+		choose wrong FarHome or Path then some unexpected data may be deleted.
+
+		It tells to remove installed files and empty directories. It is used
+		with Path, the path to the last installed package. Note that changed
+		files are removed, too, but added are not.
 .Parameter OutputDirectory
 		The parent of the unpacked directory. Default: the current location.
 		The unpacked directory name is "<Id>.<Version>".
@@ -158,13 +161,16 @@ $package = [System.IO.Packaging.Package]::Open($Path, 'Open', 'Read')
 try {
 	# get "actual" Id and Version
 	$Id = $package.PackageProperties.Identifier
+	if (!$Id) { throw "The package is missing 'Identifier'." }
 	$Version = $package.PackageProperties.Version
+	if (!$Version) { throw "The package is missing 'Version'." }
 
 	# destination directory
 	$destination = Join-Path $PSCmdlet.GetUnresolvedProviderPathFromPSPath($OutputDirectory) "$Id.$Version"
+	Remove-Item -LiteralPath $destination -Force -Recurse -ErrorAction 0
 	Write-Verbose "Unpacking to '$destination'..."
 
-	$v3 = $PSVersionTable.CLRVersion.Major -lt 4
+	$CLR3 = $PSVersionTable.CLRVersion.Major -le 3
 	foreach($part in $package.GetParts()) {
 		if ($part.Uri -notmatch '^/tools/(.*)') {continue}
 		$uri = [System.Uri]::UnescapeDataString($Matches[1])
@@ -173,7 +179,7 @@ try {
 		$stream2 = New-Object System.IO.FileStream $to, 'Create'
 		try {
 			$stream1 = $part.GetStream('Open', 'Read')
-			if ($v3) {
+			if ($CLR3) {
 				$buffer = New-Object byte[] ($n = $stream1.Length)
 				$null = $stream1.Read($buffer, 0, $n)
 				$stream2.Write($buffer, 0, $n)
