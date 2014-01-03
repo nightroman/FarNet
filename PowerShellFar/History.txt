@@ -1,6 +1,15 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.59 =
+
+Update-FarPackage.ps1
+
+- Added new parameter Source (Default: https://www.nuget.org/api/v2).
+- Used Id and Version from packages instead of provided. As a result:
+* Unpacked directories are always "<Id>.<Version>".
+* The original capitalization is preserved.
+
 = 5.0.58 =
 
 Slightly simplified the NuGet package. It is recommended to update it by the
