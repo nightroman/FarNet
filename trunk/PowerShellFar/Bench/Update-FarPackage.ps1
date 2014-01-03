@@ -21,42 +21,45 @@
 		The package version, e.g. '5.0.40'.
 		If it is omitted then the latest version is requested from NuGet.
 		If it is "?" then the script returns the latest from NuGet and stops.
-.Parameter Path
-		Specifies the package file path to be unpacked to the directory
-		<package name without extension> in the output directory.
-.Parameter OutputDirectory
-		The parent of the unpacked directory. If it is omitted then the
-		unpacked directory is created in the current location.
+.Parameter Source
+		Specifies the package source.
+		Default: https://www.nuget.org/api/v2
 .Parameter CacheDirectory
 		The directory for downloaded packages.
 		Default: "$env:LOCALAPPDATA\NuGet\Cache".
+.Parameter Path
+		Specifies the path to the local package file.
+		Id and Version are extracted from the package.
+.Parameter OutputDirectory
+		The parent of the unpacked directory. Default: the current location.
+		The unpacked directory name is "<Id>.<Version>".
 .Parameter FarHome
 		The Far Manager directory to be updated. If it is omitted then the
 		script only downloads and unpacks the package without copying files.
 .Parameter Platform
 		Platform: x64 or x86|Win32. The default is extracted from Far.exe info.
 		It is needed only for packages with FarHome.x64|x86 folders if Far.exe
-		is not in FarHome or its info cannot be extracted for some reason.
+		is not in FarHome or its info cannot be extracted.
 
 .Example
 	> Update-FarPackage FarNet ?
 
-	This command just requests and returns the latest FarNet version.
+	This command just requests and returns the latest FarNet version string.
 
 .Example
 	> Update-FarPackage FarNet -Verbose
 
 	This command downloads the latest FarNet and unpacks it to the current
-	directory. It does not install or update because FarHome is omitted.
-	Verbose messages are enabled.
+	directory as FarNet.<Version>. It does not install any files because
+	FarHome is omitted. Verbose messages are enabled.
 
 .Example
 	> Update-FarPackage FarNet -FarHome <path> [-Platform <x64|x86>]
 
-	This command updates FarNet in FarHome. The Platform is needed only if
-	Far.exe is not in FarHome (normally it is). After updating look at extra
-	files at the output directory FarNet.<Version>, e.g. About-FarNet.htm,
-	FarNetAPI.chm, History.txt.
+	This command updates FarNet in FarHome. The Platform is needed if Far.exe
+	is not there (normally it is). After updating look at extra files at the
+	output directory FarNet.<Version>, e.g. About-FarNet.htm, FarNetAPI.chm,
+	History.txt.
 
 .Example
 	> Update-FarPackage FarNet.PowerShellFar -FarHome <path>
@@ -72,6 +75,8 @@ param(
 	$Id,
 	[Parameter(ParameterSetName='Id', Position=1)][string]
 	$Version,
+	[Parameter(ParameterSetName='Id')][string]
+	$Source = 'https://www.nuget.org/api/v2',
 	[Parameter(ParameterSetName='Id')][string]
 	$CacheDirectory = "$env:LOCALAPPDATA\NuGet\Cache",
 	[Parameter(ParameterSetName='Path', Mandatory=1)][string]
@@ -100,8 +105,8 @@ else {
 
 	# get version
 	if (!$Version -or $Version -eq '?') {
-		Write-Verbose "Getting the latest version..."
-		$Uri = "http://www.nuget.org/api/v2/Packages()?`$filter=Id eq '$Id' and IsLatestVersion eq true"
+		Write-Verbose "Getting the latest version of '$Id'..."
+		$Uri = "$Source/Packages()?`$filter=Id eq '$Id' and IsLatestVersion eq true"
 		$xml = [xml]$web.DownloadString($Uri)
 		$latest = ''
 		try {
@@ -112,7 +117,7 @@ else {
 			}
 		}
 		catch {}
-		if (!$latest) { Write-Error "Cannot get the latest version for '$Id'. Check the package ID." }
+		if (!$latest) { Write-Error "Cannot get the latest version of '$Id'. Check the package ID." }
 		Write-Verbose "The latest version is '$latest'."
 		if ($Version -eq '?') {
 			return $latest
@@ -121,6 +126,7 @@ else {
 	}
 
 	# exists?
+	$CacheDirectory = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($CacheDirectory)
 	$Path = "$CacheDirectory\$Id.$Version.nupkg"
 	if ([System.IO.File]::Exists($Path)) {
 		# use existing
@@ -128,25 +134,28 @@ else {
 	}
 	else {
 		# ensure cache
-		$CacheDirectory = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($CacheDirectory)
 		$null = [System.IO.Directory]::CreateDirectory($CacheDirectory)
 
 		# download
-		$Uri = "http://nuget.org/api/v2/package/$Id/$Version"
+		$Uri = "$Source/package/$Id/$Version"
 		Write-Verbose "Downloading '$Path'..."
 		$web.DownloadFile($Uri, $Path)
 	}
 }
 
-### destination directory
-$destination = Join-Path $PSCmdlet.GetUnresolvedProviderPathFromPSPath($OutputDirectory) ([System.IO.Path]::GetFileNameWithoutExtension($Path))
-Write-Verbose "Unpacking to '$destination'..."
-
 ### unpack to destination
 Add-Type -AssemblyName WindowsBase
-$v3 = $PSVersionTable.CLRVersion.Major -lt 4
 $package = [System.IO.Packaging.Package]::Open($Path, 'Open', 'Read')
 try {
+	# get "actual" Id and Version
+	$Id = $package.PackageProperties.Identifier
+	$Version = $package.PackageProperties.Version
+
+	# destination directory
+	$destination = Join-Path $PSCmdlet.GetUnresolvedProviderPathFromPSPath($OutputDirectory) "$Id.$Version"
+	Write-Verbose "Unpacking to '$destination'..."
+
+	$v3 = $PSVersionTable.CLRVersion.Major -lt 4
 	foreach($part in $package.GetParts()) {
 		if ($part.Uri -notmatch '^/tools/(.*)') {continue}
 		$uri = [System.Uri]::UnescapeDataString($Matches[1])
