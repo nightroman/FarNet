@@ -30,6 +30,10 @@
 .Parameter Path
 		Specifies the path to the local package file.
 		Id and Version are extracted from the package.
+.Parameter Remove
+		Tells to remove installed files and empty directories. It must be used
+		with Path which specifies the path to the last installed package. Note
+		that changed files are removed, too, but added are not.
 .Parameter OutputDirectory
 		The parent of the unpacked directory. Default: the current location.
 		The unpacked directory name is "<Id>.<Version>".
@@ -81,6 +85,8 @@ param(
 	$CacheDirectory = "$env:LOCALAPPDATA\NuGet\Cache",
 	[Parameter(ParameterSetName='Path', Mandatory=1)][string]
 	$Path,
+	[Parameter(ParameterSetName='Path')][switch]
+	$Remove,
 	[string]
 	$OutputDirectory = '.',
 	[string]
@@ -89,16 +95,19 @@ param(
 	$Platform
 )
 
-if ($MyInvocation.InvocationName -eq '.') { Write-Error 'Do not dot-source this script.' -ErrorAction Stop }
+try {&{ # to force new scope and amend errors
+
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 ### use or download package
 if ($PSCmdlet.ParameterSetName -eq 'Path') {
 	$Path = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
-	if (![IO.File]::Exists($Path)) { Write-Error "Missing file '$Path'." }
+	if (![IO.File]::Exists($Path)) { throw "Missing file '$Path'." }
 }
 else {
+	$Remove = $false #! v2
+
 	# web client
 	$web = New-Object -TypeName System.Net.WebClient
 	$web.UseDefaultCredentials = $true
@@ -117,7 +126,7 @@ else {
 			}
 		}
 		catch {}
-		if (!$latest) { Write-Error "Cannot get the latest version of '$Id'. Check the package ID." }
+		if (!$latest) { throw "Cannot get the latest version of '$Id'. Check the package ID." }
 		Write-Verbose "The latest version is '$latest'."
 		if ($Version -eq '?') {
 			return $latest
@@ -185,17 +194,38 @@ finally {
 ### FarHome?
 if (!$FarHome) {return}
 $FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
-if (![IO.Directory]::Exists($FarHome)) { Write-Error "Parameter FarHome: missing directory '$FarHome'." }
+if (![IO.Directory]::Exists($FarHome)) { throw "Parameter FarHome: missing directory '$FarHome'." }
 
 ### update from destination
 Write-Verbose "Updating '$FarHome'..."
+
+# removes empty directories
+function RemoveDirectory($item) {
+	$dir = [System.IO.Path]::GetDirectoryName($item)
+	if ($dir -eq $FarHome -or [System.IO.Directory]::GetFileSystemEntries($dir)) {return}
+
+	Write-Verbose "Removing empty directory '$dir'..."
+	try { [System.IO.Directory]::Delete($dir) }
+	catch { Write-Warning "Cannot remove '$dir'." }
+	RemoveDirectory $dir
+}
 
 # updates FarHome
 function UpdateFarHome($from) {
 	foreach($name in Get-ChildItem -Name -LiteralPath $from -Force -Recurse) {
 		if ([System.IO.Directory]::Exists("$from\$name")) {continue}
-		$null = [System.IO.Directory]::CreateDirectory("$FarHome\$([System.IO.Path]::GetDirectoryName($name))")
-		Copy-Item -LiteralPath "$from\$name" -Destination "$FarHome\$name" -Force
+		$to = "$FarHome\$name"
+		if ($Remove) {
+			if (Test-Path -LiteralPath $to) {
+				Remove-Item -LiteralPath $to -Force -ErrorVariable e -ErrorAction 0
+				if ($e) {Write-Warning $e}
+				else {RemoveDirectory $to}
+			}
+		}
+		else {
+			$null = [System.IO.Directory]::CreateDirectory("$FarHome\$([System.IO.Path]::GetDirectoryName($name))")
+			Copy-Item -LiteralPath "$from\$name" -Destination "$FarHome\$name" -Force
+		}
 	}
 }
 
@@ -203,7 +233,7 @@ function UpdateFarHome($from) {
 function GetPlatform {
 	if ($Platform) { return $Platform }
 	if (!($exe = Get-Item -LiteralPath "$FarHome\Far.exe" -ErrorAction 0) -or ($exe.VersionInfo.FileVersion -notmatch '\b(x86|x64)\b')) {
-		Write-Error "Cannot get info from Far.exe. Specify the Platform."
+		throw "Cannot get info from Far.exe. Specify the Platform."
 	}
 	return ($script:Platform = $Matches[1])
 }
@@ -226,3 +256,5 @@ if ([System.IO.Directory]::Exists(($from = "$destination\FarHome.x86"))) {
 if ([System.IO.Directory]::Exists(($from = "$destination\FarHome"))) {
 	UpdateFarHome $from
 }
+
+}} catch { Write-Error $_ -ErrorAction Stop }
