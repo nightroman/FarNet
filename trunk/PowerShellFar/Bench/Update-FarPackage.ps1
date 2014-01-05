@@ -33,7 +33,7 @@
 		particular version. If it is omitted then the latest version is taken
 		from NuGet. If it is "?" then the script returns the latest and stops.
 .Parameter Source
-		Specifies the package Web source.
+		Specifies the package NuGet source.
 		Default: https://www.nuget.org/api/v2
 .Parameter CacheDirectory
 		The directory for downloaded package files (<Id>.<Version>.nupkg).
@@ -45,7 +45,7 @@
 		operation uses "Update.<Id>.info" in FarHome and removes it, too.
 .Parameter OutputDirectory
 		The destination of unpacked directories. Default: the current location.
-		The unpacked directories names are "<Id>.<Version>".
+		The unpacked directory names are "<Id>.<Version>".
 .Parameter FarHome
 		The Far Manager directory to be updated. On automatic updates/removals
 		the current location is used by default. On other updates the script
@@ -56,9 +56,9 @@
 		not in FarHome or its info cannot be extracted.
 .Parameter Path
 		Specifies the path to existing package file. Id and Version are taken
-		from it. This kind of update is not recommended because the Source is
-		unknown and automatic updates are not possible until the package is
-		updated from Web as usual.
+		from it. This is not recommended for the initial installation because
+		the Source is yet unknown and automatic updates will not be possible
+		until the package is updated from a known Source.
 
 .Example
 	> Update-FarPackage [-FarHome <path>]
