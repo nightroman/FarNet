@@ -139,6 +139,10 @@ try {&{ # new scope and errors
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+### resolve FarHome
+$isFarHome = $FarHome
+$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
+
 # removes empty directories
 function RemoveDirectory($item) {
 	if (($dir = [System.IO.Path]::GetDirectoryName($item)) -eq $FarHome -or [System.IO.Directory]::GetFileSystemEntries($dir)) {
@@ -156,7 +160,6 @@ function RemoveDirectory($item) {
 
 ### remove the package
 if ($PSCmdlet.ParameterSetName -eq 'Remove') {
-	$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
 	$info = "$FarHome\Update.$Id.info"
 	if (![System.IO.File]::Exists($info)) { throw "Missing '$info' required for package removal." }
 	$null, $null, $lines = [System.IO.File]::ReadAllLines($info)
@@ -181,7 +184,6 @@ else {
 	### update all installed
 	if (!$Id) {
 		Write-Verbose -Verbose "Automatic update of installed packages."
-		$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
 		foreach($info in Get-Item "$FarHome\Update.*.info") {
 			if ($info.Name -notmatch '^Update\.(.+)\.info$') {continue}
 			$Id = $Matches[1]
@@ -285,14 +287,14 @@ finally {
 	$package.Close()
 }
 
-### FarHome? return?
-if (!$FarHome) {return}
-$FarHome = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($FarHome)
+### skip install?
+if (!$isFarHome) {return}
 
-### remove installed
+### re-Source, remove installed
 $info = "$FarHome\Update.$Id.info"
 if ([System.IO.File]::Exists($info)) {
 	Write-Verbose "Removing installed '$Id'..."
+	$Source, $null = [System.IO.File]::ReadAllLines($info)
 	& $MyInvocation.ScriptName -Remove -Id:$Id -FarHome:$FarHome
 }
 
