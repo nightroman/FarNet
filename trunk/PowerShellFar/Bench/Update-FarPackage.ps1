@@ -57,7 +57,7 @@
 .Parameter Path
 		Specifies the path to existing package file. Id and Version are taken
 		from it. This kind of update is not recommended because the Source is
-		unknown and automatic updates are not be possible until the package is
+		unknown and automatic updates are not possible until the package is
 		updated from Web as usual.
 
 .Example
