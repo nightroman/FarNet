@@ -25,7 +25,7 @@ Unblock. Example command in PowerShell:
 
 Alternatively, packages can be downloaded and unpacked by other NuGet tools,
 for example [http://nuget.org/nuget.exe NuGet.exe]. Package files are located
-in the unpacked sub-directory tools. They are copied manually as described in
+in the unpacked sub-directory _tools_. They are copied manually as described in
 package manuals. Example command in CMD:
 
 {{{
