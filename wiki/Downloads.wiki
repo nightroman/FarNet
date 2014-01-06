@@ -1,3 +1,5 @@
+#summary Where to get released packages
+
 == New Downloads ==
 
 As far as Google Code does not support new downloads starting 2014-01-15, new
@@ -21,10 +23,10 @@ Unblock. Example command in PowerShell:
 
 ----
 
-Alternatively, packages can be downloaded and unpacked by various NuGet tools,
+Alternatively, packages can be downloaded and unpacked by other NuGet tools,
 for example [http://nuget.org/nuget.exe NuGet.exe]. Package files are located
-in the unpacked sub-directory tools. They are be copied manually as described
-in package manuals. Example command in CMD:
+in the unpacked sub-directory tools. They are copied manually as described in
+package manuals. Example command in CMD:
 
 {{{
 	NuGet install <PackageID>
