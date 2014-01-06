@@ -1,0 +1,37 @@
+== New Downloads ==
+
+As far as Google Code does not support new downloads starting 2014-01-15, new
+releases are distributed as NuGet packages. This way may look unusual but it
+has many advantages with various supportive tools.
+
+FarNet packages and other tools released by the author can be found at this
+[https://www.nuget.org/profiles/nightroman NuGet Gallery page].
+
+----
+
+The simplest way to get, unpack, install, or update Far Manager NuGet packages is the PowerShell script
+[https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1 Update-FarPackage.ps1]
+
+If you download the script, i.e. not copy/paste, then do RMB > Properties >
+Unblock. Example command in PowerShell:
+
+{{{
+	Update-FarPackage <PackageID> -FarHome <FarDirectory>
+}}}
+
+----
+
+Alternatively, packages can be downloaded and unpacked by various NuGet tools,
+for example [http://nuget.org/nuget.exe NuGet.exe]. Package files are located
+in the unpacked sub-directory tools. They are be copied manually as described
+in package manuals. Example command in CMD:
+
+{{{
+	NuGet install <PackageID>
+}}}
+
+----
+
+== Old Downloads ==
+
+https://code.google.com/p/farnet/downloads/list
