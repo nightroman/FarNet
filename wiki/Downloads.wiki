@@ -6,8 +6,8 @@ As far as Google Code does not support new downloads starting 2014-01-15, new
 releases are distributed as NuGet packages. This way may look unusual but it
 has many advantages with various supportive tools.
 
-FarNet packages and other tools released by the author can be found at this
-[https://www.nuget.org/profiles/nightroman NuGet Gallery page].
+FarNet packages and other tools released by the author can be found at 
+[https://www.nuget.org/profiles/nightroman NuGet Gallery].
 
 ----
 
