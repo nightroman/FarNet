@@ -5,7 +5,6 @@ Copyright (c) 2006-2014 Roman Kuzmin
 */
 
 using System;
-using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -21,11 +20,6 @@ using FarNet;
 
 namespace PowerShellFar
 {
-	/// <summary>
-	/// Gets object sequence. Used for lazy evaluation. Suitable for script blocks.
-	/// </summary>
-	delegate IEnumerable GetValues(); //! IEnumerable<string> is not good for "script blocks delegates".
-
 	/// <summary>
 	/// For internal use and testing.
 	/// </summary>

@@ -5,6 +5,7 @@ Copyright (c) 2006-2014 Roman Kuzmin
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -643,7 +644,7 @@ namespace PowerShellFar
 		}
 		void OnSort()
 		{
-			GetValues getWords = delegate
+			Func<IEnumerable> getWords = delegate
 			{
 				var list = new List<string>();
 				foreach (DataColumn c in Table.Columns)
@@ -673,7 +674,7 @@ namespace PowerShellFar
 		}
 		void OnFilter()
 		{
-			GetValues getWords = delegate
+			Func<IEnumerable> getWords = delegate
 			{
 				var list = new List<string>();
 				foreach (DataColumn c in Table.Columns)

@@ -18,7 +18,7 @@ namespace PowerShellFar.UI
 		public string Prompt { get; set; }
 		public string Text { get; set; }
 		public string History { get; set; }
-		public GetValues GetWords { get; set; }
+		public Func<IEnumerable> GetWords { get; set; }
 
 		public bool Show()
 		{

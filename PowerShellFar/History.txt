@@ -3,14 +3,16 @@ HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
 = 5.0.59 =
 
+Fixed an error on TabExpansion in a weird case (looks like a PS issue).
+
 Update-FarPackage.ps1
 
+- The script supports automatic updates using "Update.*.info" files.
 - Added new parameter Source (Default: https://www.nuget.org/api/v2).
-- Added new switch Remove which removes installed files. Read help.
-- Used Id and Version from packages instead of provided. Thus,
-* Unpacked directories are always "<Id>.<Version>".
-* The original capitalization is preserved.
+- Added new switch Remove which removes installed files.
 - Improved potential error messages.
+
+Internal. Replaced delegate GetValues with a Func<>.
 
 = 5.0.58 =
 
