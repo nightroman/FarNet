@@ -285,7 +285,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			bool isEmpty = words.Count == 0;
 			var text = editLine.Text;
 			var last = replacementIndex + replacementLength - 1;
-			bool custom = last > 0 && text[last] == '=';
+			bool custom = last > 0 && last < text.Length && text[last] == '='; //_140112_150217 last can be out of range
 
 			// select a word
 			string word;
