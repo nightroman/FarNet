@@ -27,20 +27,20 @@ namespace PowerShellFar
 
 	sealed class ConsoleOutputWriter : OutputWriter
 	{
-		string _command;
+		string _header;
 		public ConsoleOutputWriter() { }
-		public ConsoleOutputWriter(string command)
+		public ConsoleOutputWriter(string header)
 		{
-			_command = command;
+			_header = header;
 		}
 		void Writing()
 		{
 			// echo the command and drop it
-			if (_command != null)
+			if (_header != null)
 			{
-				string header = string.Concat(Entry.CommandInvoke1.Prefix, ":", _command, Environment.NewLine);
+				string header = _header + Environment.NewLine;
 				Far.Api.UI.Write(header, Settings.Default.CommandForegroundColor);
-				_command = null;
+				_header = null;
 
 				A.Psf.Transcript.WriteLine(Environment.NewLine + header);
 			}

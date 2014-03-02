@@ -29,7 +29,7 @@ Set-Alias srff Search-FarFile -Description 'Search files in the panel'
 ### Actions
 $Psf.Action('&c. Complete word', { Complete-Word-.ps1 }, 'Dialog, Editor, Panels')
 $Psf.Action('&t. Edit description', { Edit-FarDescription-.ps1 }, 'Editor, Viewer, Panels')
-$Psf.Action('&h. Go to panel head item', { Go-Head-.ps1 }, 'Panels')
+$Psf.Action('&h. Go to the first file', { Go-Head-.ps1 }, 'Panels')
 $Psf.Action('&g. Go to selection start', { Go-Selection- }, 'Dialog, Editor, Panels')
 $Psf.Action('&d. Go to selection end', { Go-Selection- -End }, 'Dialog, Editor, Panels')
 $Psf.Action('&l. To lower case', { Set-Selection-.ps1 -ToLower }, 'Dialog, Editor, Panels')

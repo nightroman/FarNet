@@ -12,20 +12,20 @@ namespace PowerShellFar
 	static class Res
 	{
 		public const string
-			InvokeSelectedCode = "Invoke selected code",
 			BackgroundJobs = "Background jobs",
 			// main menu
-			MenuInvokeInputCode = "&1. Invoke input code... ", // use right margin spaces
-			MenuInvokeSelectedCode = "&2. " + InvokeSelectedCode,
-			MenuBackgroundJobs = "&3. " + BackgroundJobs + "...",
-			MenuCommandHistory = "&4. Command history...",
-			MenuEditorConsole = "&5. Editor console",
-			MenuPowerPanel = "&6. Power panel...",
-			MenuTabExpansion = "&7. TabExpansion",
-			MenuSnapin = "&8. Modules+...",
-			MenuDebugger = "&9. Debugger...",
-			MenuError = "&0. Errors...",
-			MenuHelp = "&-. Help",
+			MenuCommandConsole = "&c. Command console",
+			MenuInvokeCommands = "&1. Invoke commands",
+			MenuInvokeSelected = "&2. Invoke selected",
+			MenuBackgroundJobs = "&3. " + BackgroundJobs,
+			MenuCommandHistory = "&4. Command history",
+			MenuEditorConsole  = "&5. Editor console",
+			MenuPowerPanel     = "&6. Power panel",
+			MenuTabExpansion   = "&7. Complete",
+			MenuSnapin         = "&8. Modules+",
+			MenuDebugger       = "&9. Debugger",
+			MenuError          = "&0. Errors",
+			MenuHelp           = "&-. Help",
 			// ask
 			AskSaveModified = "Would you like to save modified data?",
 			// errors

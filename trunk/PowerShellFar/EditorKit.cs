@@ -546,7 +546,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 				IEdit edit = dialog.Focused as IEdit;
 				if (edit == null)
 				{
-					Far.Api.Message("The current control has to be an edit box", Res.InvokeSelectedCode);
+					Far.Api.Message("The current control must be an edit box.", Res.Me);
 					return;
 				}
 				code = edit.Line.SelectedText;

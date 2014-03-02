@@ -45,7 +45,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.59
+### PowerShellFar 5.0.60
 
 PowerShellFar is the FarNet module which effectively combines the Windows
 PowerShell core with the text friendly console environment of Far Manager.
@@ -75,8 +75,8 @@ PowerShellFar, FarNet, and documentation can be updated by the included script
 
 ### Requirements
 
-- Far Manager 3.0.3525
-- Plugin FarNet 5.0.40
+- Far Manager 3.0.3817
+- Plugin FarNet 5.0.41
 - Windows PowerShell V2, V3
 
 ### Set PowerShell execution policy
@@ -148,17 +148,23 @@ moment from almost any UI context.
 
 ### Ways to invoke commands
 
+* Command console
+
+    The console is opened from panels:
+    `[F11] \ PowerShellFar \ Command console`.
+    See [Menu commands](#MenuCommands).
+
 * Command box
 
     The command input box can be opened from almost any UI context:
-    `[F11] \ PowerShellFar \ Invoke input code...`.
+    `[F11] \ PowerShellFar \ Invoke commands`.
     See [Menu commands](#MenuCommands).
 
 * Selected code
 
     Selected text in any editor including the command line and
     dialog edit boxes can be invoked as PowerShell code:
-    `[F11] \ PowerShellFar \ Invoke selected code`.
+    `[F11] \ PowerShellFar \ Invoke selected`.
     See [Menu commands](#MenuCommands).
 
 * Command line
@@ -280,15 +286,40 @@ manually and normally should not pollute the history.
 
 [Contents](#Contents)
 
-### Invoke input code...
+### Command console
 
-You are prompted to enter PowerShell code to be invoked. Use `[Tab]` for code
-completion by TabExpansion. Use `[ShiftF1]` to view help for the current token.
+The genuine console with the prompt implemented as one line input box shown at
+the bottom. The prompt is shown repeatedly after each command. `[Esc]` cleans
+the current input line or, if the line is empty, exits the console mode and
+shows the panels.
+
+The command prompt uses the standard PowerShell function `prompt`. It may be
+replaced by any other in the profile.
+
+Consider starting Far Manager with the switch `/w` in order to use the console
+mode and be able to view lengthy command output.
+
+Use `[Tab]` for completion and `[F1]` for PowerShell context help.
+
 See also
 [TabExpansion2.ps1](#TabExpansion),
 [Command and macro examples](#Examples).
 
-### Invoke selected code
+---
+### Invoke commands
+
+You are prompted to enter one PowerShell command to be invoked. Use `[Tab]` for
+code completion by TabExpansion. Use `[ShiftF1]` to view help for the current
+token.
+
+Use `[Tab]` for completion and `[F1]` for PowerShell context help.
+
+See also
+[TabExpansion2.ps1](#TabExpansion),
+[Command and macro examples](#Examples).
+
+---
+### Invoke selected
 
 In editor: execute the selected code or the current line. Thus, you can try
 your code just in the editor. The code is executed in the global scope,
@@ -299,16 +330,19 @@ it is not an error. The command text is kept in the command line if an error
 happens or if there is a selection.
 See also "Easy invoke": [FAQ](#FAQ).
 
+---
 ### Background jobs
 
 Shows the background jobs menu.
 See [Background jobs menu](#MenuBackgroundJobs).
 
+---
 ### Command history
 
 Shows the command history menu.
 See [Command history menu](#MenuCommandHistory).
 
+---
 ### Editor console
 
 Opens a new *.psfconsole* file associated with a main, local, or remote session.
@@ -316,28 +350,33 @@ Files are stored in *%FARLOCALPROFILE%\FarNet\PowerShellFar*.
 Several editor consoles are allowed.
 See [Editor console](#EditorConsole).
 
+---
 ### Power panel
 
 Shows a menu with a list of panels available for opening.
 See [Power panel menu](#MenuPanels) and [Power panel](#PowerPanel).
 
-### TabExpansion
+---
+### Complete
 
 It calls TabExpansion for the text in the editor, the command line, or an edit
-box in a dialog. The default TabExpansion is replaced with advanced
+box in a dialog. The built-in PowerShell TabExpansion is replaced with advanced
 [TabExpansion2.ps1](#TabExpansion).
 
+---
 ### Modules+
 
 Shows available PowerShell modules and registered PowerShell snap-ins in a menu
 which imports or removes selected modules for the current session.
 See [Modules menu](#MenuModules).
 
+---
 ### Errors
 
 Shows the recent PowerShell errors stored in the global variable `$Error`.
 See [Errors menu](#MenuErrors).
 
+---
 ### Help
 
 For the current token in an editor, an edit box, or the command line it shows
@@ -345,6 +384,7 @@ available help information in the viewer. In code editors (*.ps1*, *.psm1*,
 *.psd1*, *.psfconsole*, input code boxes) this action is associated with
 `[ShiftF1]`. It is exposed for scripting as `$Psf.ShowHelp()`.
 
+---
 ### Others
 
 Other tools exist in the menu only if you have added them yourself, for example
@@ -408,7 +448,7 @@ command that opens a panel should not be called from a dialog.
 `[CtrlEnter]` Edits the command before invocation. In panels: inserts the
 command text into the command line with automatically added prefix. In editor
 consoles: inserts the command text into the editor. In other areas: opens the
-"Invoke input code" dialog with the command text inserted there.
+"Invoke commands" dialog with the command text inserted there.
 
 `[CtrlC]` Copies the command text to the clipboard.
 
@@ -764,8 +804,8 @@ async consoles, they do not require an editor to be current.
 
 You still can call external PowerShell commands working on text in this editor
 console as usual. "External" means that a command is executed not from this
-editor console. In other words, you can use menu actions "Invoke input code",
-"Invoke selected code", your own editor tools, and etc.
+editor console. In other words, you can use menu actions "Invoke commands",
+"Invoke selected", your own editor tools, and etc.
 
 ---
 
@@ -1390,9 +1430,9 @@ There are three main objects defined as global variables.
 
 [Contents](#Contents)
 
-PowerShellFar is configured via profiles with special fixed names located in
+PowerShellFar is configured via profiles with special names in the directory
 *%FARPROFILE%\FarNet\PowerShellFar*. Each profile is invoked on the relevant
-event, once per session. Profiles are invoked in the global scope.
+event, once per each session. Profiles are invoked in a session global scope.
 
 Supported profiles:
 
@@ -2032,17 +2072,27 @@ contains some C# code, *Test-Zoo-.ps1* shows how to compile and use it.
 
 **Q: How to make PowerShell code invocation from the command line easier?**
 
-A: There are at least two options, both using macros
+A: There are several options
 
-* Easy prefix
+* Command console
+
+    Start *Command console* from the menu, type commands, and work with their
+    output almost like in the genuine console. Some features are slightly
+    different because this console uses Far Manager UI.
+
+    How to start Far Manager in command console mode:
+
+        `Far.exe /w ps:$Psf.StartConsole()`
+
+* Easy prefix macro
 
     A macro that expands the empty command line to 'ps: '.
     See *PowerShellFar.macro.lua*, `[Space]`.
 
-* Easy invoke
+* Easy invoke macro
 
-    Type and run without prefix using a macro associated with "Invoke selected
-    code" menu command. See *PowerShellFar.macro.lua*, `[F5]`.
+    Type and run without prefix using a macro associated with the menu command
+    "Invoke selected". See *PowerShellFar.macro.lua*, `[F5]`.
 
     A bonus: if a command fails then its text is still in the command line and
     the caret position is the same. This is useful on composing and correcting

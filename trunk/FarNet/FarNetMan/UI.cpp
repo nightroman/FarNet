@@ -550,4 +550,16 @@ int FarUI::ReadKeys(array<KeyData^>^ keys)
 	return result;
 }
 
+bool FarUI::IsCommandMode::get()
+{
+	return _IsCommandMode;
+}
+void FarUI::IsCommandMode::set(bool value)
+{
+	if (value && _IsCommandMode)
+		throw gcnew InvalidOperationException("Command mode is already started.");
+
+	_IsCommandMode = value;
+}
+
 }

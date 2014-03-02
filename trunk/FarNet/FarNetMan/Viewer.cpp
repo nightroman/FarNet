@@ -73,7 +73,7 @@ void Viewer::Open(OpenMode mode)
 
 	// from dialog? set modal
 	WindowKind wt = Far::Api->Window->Kind;
-	if (wt == WindowKind::Dialog)
+	if (wt == WindowKind::Dialog || Far::Api->UI->IsCommandMode)
 		flags &= ~VF_NONMODAL;
 
 	// open: see editor

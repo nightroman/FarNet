@@ -212,7 +212,7 @@ namespace PowerShellFar
 			get { return _ErrorForegroundColor; }
 			set { _ErrorForegroundColor = value; }
 		}
-		ConsoleColor _VerboseForegroundColor = ConsoleColor.Cyan;
+		ConsoleColor _VerboseForegroundColor = ConsoleColor.Yellow;
 		/// <summary>
 		/// Gets or sets the verbose text color.
 		/// </summary>

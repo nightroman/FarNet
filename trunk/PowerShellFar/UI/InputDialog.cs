@@ -32,7 +32,7 @@ namespace PowerShellFar.UI
 			UIEdit.History = history;
 
 			// hotkeys
-			UIEdit.KeyPressed += delegate(object sender, KeyPressedEventArgs e)
+			UIEdit.KeyPressed += (sender, e) =>
 			{
 				switch (e.Key.VirtualKeyCode)
 				{
@@ -40,15 +40,11 @@ namespace PowerShellFar.UI
 						// [Tab]
 						e.Ignore = true;
 						EditorKit.ExpandCode(UIEdit.Line, null);
-						return;
+						break;
 					case KeyCode.F1:
-						if (e.Key.IsShift())
-						{
-							// [ShiftF1]
-							e.Ignore = true;
-							Help.ShowHelpForContext();
-							return;
-						}
+						// [F1]
+						e.Ignore = true;
+						Help.ShowHelpForContext();
 						break;
 				}
 			};

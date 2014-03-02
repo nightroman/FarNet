@@ -134,6 +134,17 @@ namespace PowerShellFar
 					}
 				default:
 					{
+						if (Far.Api.UI.IsCommandMode)
+						{
+							var line = Far.Api.Line;
+							if (line != null)
+							{
+								line.Text = code;
+								line.Caret = -1;
+							}
+							return;
+						}
+
 						if (m.Alternative)
 						{
 							UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, "PowerShell code");

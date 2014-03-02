@@ -71,6 +71,7 @@ namespace PowerShellFar.UI
 
 		static public Dictionary<string, PSObject> Prompt(string caption, string message, ICollection<FieldDescription> descriptions)
 		{
+			//TODO A.Psf.IsConsoleMode - need another way?
 			var r = new Dictionary<string, PSObject>();
 
 			// `Count == 1` (e.g. `Read-Host`): promts may have 2+ lines, so use another UI.
