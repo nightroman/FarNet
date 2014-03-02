@@ -56,7 +56,7 @@ task Clean RemoveMarkdownHtml, {
 # Make HLF from HTML files.
 task Help ConvertMarkdown, {
 	exec { HtmlToFarHelp From=TestHelpDown.htm To=TestHelpDown.hlf }
-	Compare-File "$BuildRoot\TestHelpDown.hlf" "$env:APPDATA\TestHelpDown.2.hlf"
+	Assert-SameFile "$env:APPDATA\TestHelpDown.2.hlf" "$BuildRoot\TestHelpDown.hlf" $env:MERGE
 	if (Test-Path z.Test.text) { exec { HtmlToFarHelp From=z.Test.htm To=z.Test.hlf } }
 }
 
@@ -83,33 +83,6 @@ task Zip ConvertMarkdown, Help, {
 	exec { & 7z a ..\HelpDown.$Version.7z * }
 }
 
-# Compare files, interactively save produced to expected.
-function Compare-File($produced, $expected, $diff)
-{
-	$toCopy = $false
-	if (Test-Path -LiteralPath $expected) {
-		$new = [System.IO.File]::ReadAllText($produced)
-		$old = [System.IO.File]::ReadAllText($expected)
-		if ($new -ceq $old) {
-			'The produced is the same as expected.'
-		}
-		else {
-			Write-Warning 'The produced is not the same as expected.'
-			if ($diff) {$diff.Value = $true}
-			if ($env:MERGE) { & $env:MERGE $produced $expected }
-			$toCopy = 1 -eq (Read-Host 'Save the produced as expected? [1] Yes [Enter] No')
-		}
-	}
-	else {
-		Write-Warning 'Saving the produced as expected.'
-		$toCopy = $true
-	}
-
-	if ($toCopy) {
-		Copy-Item -LiteralPath $produced $expected -Force
-	}
-}
-
 # Make HTM and HLF in %APPDATA%, compare with saved, remove the same.
 function Test-File($File)
 {
@@ -122,7 +95,6 @@ function Test-File($File)
 	exec { MarkdownToHtml From=$File To=$htm }
 	exec { HtmlToFarHelp From=$htm To=$hlf }
 
-	$diff = [ref]0
-	Compare-File $hlf $hlf2 $diff
-	if (!$diff.Value) { Remove-Item -LiteralPath $htm, $hlf }
+	Assert-SameFile $hlf2 $hlf $env:MERGE
+	Remove-Item -LiteralPath $htm, $hlf
 }

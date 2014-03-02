@@ -11,6 +11,7 @@ namespace FarNet
 ref class FarUI sealed : IUserInterface
 {
 public:
+	virtual property bool IsCommandMode { bool get() override; void set(bool value) override; }
 	virtual property bool KeyAvailable { bool get() override; }
 	virtual property ConsoleColor BackgroundColor { ConsoleColor get() override; void set(ConsoleColor value) override; }
 	virtual property ConsoleColor ForegroundColor { ConsoleColor get() override; void set(ConsoleColor value) override; }
@@ -53,5 +54,7 @@ public:
 	virtual void Write(String^ text, ConsoleColor foregroundColor, ConsoleColor backgroundColor) override;
 internal:
 	static FarUI Instance;
+private:
+	static bool _IsCommandMode;
 };
 }

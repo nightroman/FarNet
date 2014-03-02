@@ -20,6 +20,10 @@ namespace FarNet
 	public abstract class IUserInterface
 	{
 		/// <summary>
+		/// INTERNAL
+		/// </summary>
+		public abstract bool IsCommandMode { get; set; } // Gets or sets the command mode flag.
+		/// <summary>
 		/// Gets the Far main window handle.
 		/// </summary>
 		public abstract IntPtr MainWindowHandle { get; }

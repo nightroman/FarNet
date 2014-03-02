@@ -548,7 +548,7 @@ Continue with this current directory?
 		/// Shows an input dialog and returns entered PowerShell code.
 		/// </summary>
 		/// <remarks>
-		/// It is called by the plugin menu command "Invoke input code". You may call it, too.
+		/// It is called by the plugin menu command "Invoke commands". You may call it, too.
 		/// It is just an input box for any text but it is designed for PowerShell code input,
 		/// e.g. TabExpansion is enabled (by [Tab]).
 		/// <para>
@@ -566,7 +566,7 @@ Continue with this current directory?
 		}
 		/// <summary>
 		/// Prompts to input code and invokes it.
-		/// Called on "Invoke input code".
+		/// Called on "Invoke commands".
 		/// </summary>
 		/// <remarks>
 		/// If it is called during a macro then commands are not added to the history.
@@ -582,8 +582,16 @@ Continue with this current directory?
 				Act(code, null, Far.Api.MacroState == MacroState.None);
 		}
 		/// <summary>
+		/// Starts console mode (async).
+		/// Called on "Command console".
+		/// </summary>
+		public void StartConsole()
+		{
+			UI.InputConsole.Start();
+		}
+		/// <summary>
 		/// Invokes the selected text or the current line text in the editor or the command line.
-		/// Called on "Invoke selected code".
+		/// Called on "Invoke selected".
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void InvokeSelectedCode()

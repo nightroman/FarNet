@@ -206,7 +206,7 @@ namespace PowerShellFar.UI
 				}
 
 				if (_Dialog.Selected == _Quit)
-					throw new PipelineStoppedException();
+					return DebuggerResumeAction.Stop; //throw new PipelineStoppedException();
 			}
 
 			return DebuggerResumeAction.Continue;

@@ -50,7 +50,6 @@ param
 Assert-Far $env:SystemDataSQLite 'Please, set the env variable SystemDataSQLite.'
 
 # get factory
-$env:PreLoadSQLite_UseAssemblyDirectory = 1
 $null = [System.Reflection.Assembly]::LoadFile($env:SystemDataSQLite)
 $DbProviderFactory = [System.Data.SQLite.SQLiteFactory]::Instance
 

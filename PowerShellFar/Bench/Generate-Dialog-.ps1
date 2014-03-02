@@ -6,7 +6,7 @@
 
 .Description
 	How to use: when any dialog is opened press F11, select 'PowerShellFar',
-	'Invoke input code', invoke the command Generate-Dialog-.ps1 (with path if
+	'Invoke commands', invoke the command Generate-Dialog-.ps1 (with path if
 	it is not in the system paths).
 
 	The default output file is GeneratedDialog-.ps1 in the local module folder.

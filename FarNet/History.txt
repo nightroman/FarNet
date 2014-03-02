@@ -1,6 +1,11 @@
 The NuGet package: https://www.nuget.org/packages/FarNet
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2256
 
+= 5.0.41 =
+
+IUserInterface - new flag IsCommandMode, INTERNAL for now, needed for the new
+command console mode in PowerShellFar.
+
 = 5.0.40 =
 
 Slightly simplified the NuGet package. It is recommended to update it by the

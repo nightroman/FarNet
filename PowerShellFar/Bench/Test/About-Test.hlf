@@ -118,7 +118,7 @@ This button starts the same dialog to show it is fine to open nested dialogs.
 
 'Cancel' button (property IDialog.Cancel): if it is pushed Show() returns false.
 
-#F11 \ PowerShellFar \ Invoke input code#
+#F11 \ PowerShellFar \ Invoke commands#
 
 You can invoke PowerShell commands from dialogs. Thus, you can test a dialog
 and its items manually running PowerShell code right there. Variables defined

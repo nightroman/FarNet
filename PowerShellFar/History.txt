@@ -1,6 +1,42 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.60 =
+
+Requires FarNet 5.0.41
+
+New feature/mode: "Command console"
+
+The genuine console with the prompt implemented as one line input box with Far
+history completion, PowerShell completion with [Tab], PowerShell help with
+[F1], etc. It is like the standard PowerShell console but in many ways more
+powerful with Far UI behind. This mode is started from the menu in panels.
+[Esc] in the empty line exits back to panels.
+
+You can run Far Manager with this mode started:
+Far.exe /w ps:$Psf.StartConsole()
+
+This mode is useful already. But a few touches will make it even better and
+looking more like the standard console, with less surprises.
+
+To be continued:
+- Read-Host should use the same input line.
+- Nested prompt should use the same line, too.
+- Think of colored prompt via Write-Host (works in PowerShell console).
+- [F1] in empty command line should open a new topic about the shortcuts.
+
+OTHER CHANGES
+
+Simplified menu names. Hotkeys are not changed.
+
+Improved processing of the debugger command "Quit".
+
+Connect-SQLite-.ps1 requires System.Data.SQLite.1.0.91.0
+
+Go-Head-.ps1 now always goes to the first file, not directory.
+
+Test-Debugger.ps1 moved to https://github.com/nightroman/PowerShelf
+
 = 5.0.59 =
 
 Fixed an error on TabExpansion in a weird case (looks like a PS issue).

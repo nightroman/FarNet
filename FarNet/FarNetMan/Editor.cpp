@@ -51,7 +51,7 @@ void Editor::Open(OpenMode mode)
 
 	// from dialog? set modal
 	WindowKind wt = Far::Api->Window->Kind;
-	if (wt == WindowKind::Dialog)
+	if (wt == WindowKind::Dialog || Far::Api->UI->IsCommandMode)
 		mode = OpenMode::Modal;
 
 	// flags
