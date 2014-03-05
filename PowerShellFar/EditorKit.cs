@@ -427,7 +427,7 @@ $word = if ($line -match '(?:^|\s)(\S+)$') {$matches[1]} else {''}
 			}
 			catch (RuntimeException ex)
 			{
-				throw new RuntimeException("Error in Profile-Editor.ps1, see $Error for defails.", ex);
+				throw new RuntimeException("Error in Profile-Editor.ps1, see $Error for details.", ex);
 			}
 			finally
 			{

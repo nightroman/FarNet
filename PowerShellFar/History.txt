@@ -1,6 +1,24 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.61 =
+
+Implemented internals of "Read-Host -AsSecureString" properly with a password
+edit box in UI and SecureString returned as a result.
+
+Command console
+
+The input line is shown at the line before the last in order to be there always
+regardless of the key bar presence. As a result the last line is always empty,
+for now. Later we can make it either the status line with some dynamic custom
+information or maybe the special console mode tool bar.
+** Suggestions and ideas are welcome **
+
+Other tweaks:
+- [F1] in empty command lines opens the help topic "Command input line".
+- $Psf.StartConsole() throws an error if it is called not from panels.
+- Key and menu bars are hidden/restored, as panels.
+
 = 5.0.60 =
 
 Requires FarNet 5.0.41
@@ -18,12 +36,6 @@ Far.exe /w ps:$Psf.StartConsole()
 
 This mode is useful already. But a few touches will make it even better and
 looking more like the standard console, with less surprises.
-
-To be continued:
-- Read-Host should use the same input line.
-- Nested prompt should use the same line, too.
-- Think of colored prompt via Write-Host (works in PowerShell console).
-- [F1] in empty command line should open a new topic about the shortcuts.
 
 OTHER CHANGES
 

@@ -44,7 +44,7 @@ namespace PowerShellFar.UI
 					case KeyCode.F1:
 						// [F1]
 						e.Ignore = true;
-						Help.ShowHelpForContext();
+						Help.ShowHelpForContext("CommandInputLine");
 						break;
 				}
 			};

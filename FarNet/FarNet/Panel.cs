@@ -180,7 +180,7 @@ namespace FarNet
 				}
 				catch (InvalidOperationException ex)
 				{
-					throw new ModuleException("Cannot open a panel because panels window cannot be set current.", ex);
+					throw new ModuleException("Cannot open a panel because panels cannot be set current.", ex);
 				}
 
 				// 090623 PostJob may not work from the editor, for example, see "... because a module is not called for opening".

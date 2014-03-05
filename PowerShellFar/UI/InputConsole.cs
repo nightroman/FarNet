@@ -13,15 +13,19 @@ namespace PowerShellFar.UI
 {
 	class InputConsole
 	{
-		static bool _visible1, _visible2;
+		const string DefaultPrompt = "PS> ";
+
+		static bool _visiblePanel1;
+		static bool _visiblePanel2;
+		static bool _visibleKeyBar;
+
 		IDialog UIDialog { get; set; }
 		IEdit UIEdit { get; set; }
 		int _Caret = -1;
 
-		InputConsole(string prompt, string history) //TODO use prompt
+		InputConsole(string prompt, string history)
 		{
 			var size = Far.Api.UI.WindowSize;
-			int w = size.X - 1;
 
 			// shorten prompt
 			if (prompt.Length > size.X / 2)
@@ -30,22 +34,27 @@ namespace PowerShellFar.UI
 				prompt = prompt.Substring(0, n) + " .. " + prompt.Substring(prompt.Length - n, n);
 			}
 
-			UIDialog = Far.Api.CreateDialog(0, size.Y - 1, size.X - 1, size.Y - 1);
+			UIDialog = Far.Api.CreateDialog(0, size.Y - 2, size.X - 1, size.Y - 1);
 			UIDialog.NoShadow = true;
 
 			var UIText = UIDialog.AddText(0, 0, prompt.Length - 1, prompt);
-			UIEdit = UIDialog.AddEdit(prompt.Length, 0, w - 1, string.Empty);
 
-			// history
+			UIEdit = UIDialog.AddEdit(prompt.Length, 0, size.X - 2, string.Empty);
 			UIEdit.History = history;
 
-			UIText.Coloring += (sender, e) =>
+			var UIArea = UIDialog.AddText(0, 1, size.X - 1, string.Empty);
+
+			// color text
+			EventHandler<ColoringEventArgs> colorText = (sender, e) =>
 			{
 				// normal text
 				e.Background1 = ConsoleColor.Black;
 				e.Foreground1 = ConsoleColor.Gray;
 			};
+			UIText.Coloring += colorText;
+			UIArea.Coloring += colorText;
 
+			// color edit
 			UIEdit.Coloring += (sender, e) =>
 			{
 				// normal text
@@ -74,52 +83,53 @@ namespace PowerShellFar.UI
 			};
 
 			// hotkeys
-			UIEdit.KeyPressed += (sender, e) =>
-			{
-				switch (e.Key.VirtualKeyCode)
-				{
-					case KeyCode.Enter:
-						// [Enter]
-						_Caret = UIEdit.Line.Caret;
-						break;
-					case KeyCode.Escape:
-						// [Escape]
-						if (UIEdit.Line.Length > 0)
-						{
-							e.Ignore = true;
-							UIEdit.Text = "";
-						}
-						break;
-					case KeyCode.Tab:
-						// [Tab]
-						e.Ignore = true;
-						EditorKit.ExpandCode(UIEdit.Line, null);
-						break;
-					case KeyCode.F1:
-						// [F1]
-						e.Ignore = true;
-						Help.ShowHelpForContext();
-						break;
-					case KeyCode.UpArrow:
-						// [UpArrow]
-						if (e.Key.Is())
-						{
-							e.Ignore = true;
-							DoHistory(-1);
-						}
-						break;
-					case KeyCode.DownArrow:
-						// [UpArrow]
-						if (e.Key.Is())
-						{
-							e.Ignore = true;
-							DoHistory(1);
-						}
-						break;
-				}
-			};
+			UIEdit.KeyPressed += OnKey;
 		}
-		void DoHistory(int direction)
+		void OnKey(object sender, KeyPressedEventArgs e)
+		{
+			switch (e.Key.VirtualKeyCode)
+			{
+				case KeyCode.Enter:
+					// [Enter]
+					_Caret = UIEdit.Line.Caret;
+					break;
+				case KeyCode.Escape:
+					// [Escape]
+					if (UIEdit.Line.Length > 0)
+					{
+						e.Ignore = true;
+						UIEdit.Text = "";
+					}
+					break;
+				case KeyCode.Tab:
+					// [Tab]
+					e.Ignore = true;
+					EditorKit.ExpandCode(UIEdit.Line, null);
+					break;
+				case KeyCode.F1:
+					// [F1]
+					e.Ignore = true;
+					Help.ShowHelpForContext("CommandInputLine");
+					break;
+				case KeyCode.UpArrow:
+					// [UpArrow]
+					if (e.Key.Is())
+					{
+						e.Ignore = true;
+						OnHistory(-1);
+					}
+					break;
+				case KeyCode.DownArrow:
+					// [UpArrow]
+					if (e.Key.Is())
+					{
+						e.Ignore = true;
+						OnHistory(1);
+					}
+					break;
+			}
+		}
+		void OnHistory(int direction)
 		{
 			string lastUsedCmd = null;
 			if (History.Cache == null) //TODO duplicated code
@@ -176,17 +186,7 @@ namespace PowerShellFar.UI
 				UIEdit.Line.Caret = -1;
 			}
 		}
-		public static void Start()
-		{
-			// hide panels, passive first!
-			_visible2 = Far.Api.Panel2.IsVisible;
-			_visible1 = Far.Api.Panel.IsVisible;
-			Far.Api.Panel2.IsVisible = false;
-			Far.Api.Panel.IsVisible = false;
-
-			Far.Api.PostStep(Loop);
-		}
-		const string DefaultPrompt = "PS> ";
+		//! like PS, use just result[0] if it is not empty
 		static string GetPrompt()
 		{
 			try
@@ -194,16 +194,43 @@ namespace PowerShellFar.UI
 				using (var ps = A.Psf.NewPowerShell())
 				{
 					var r = ps.AddCommand("prompt").Invoke();
-					return r.Count == 1 && r[0] != null ? r[0].ToString() : DefaultPrompt;
+
+					string prompt;
+					if (r.Count > 0 && r[0] != null && (prompt = r[0].ToString()).Length > 0)
+						return prompt;
 				}
 			}
-			catch (RuntimeException)
-			{
-				return DefaultPrompt;
-			}
+			catch (RuntimeException) { }
+
+			return DefaultPrompt;
+		}
+		public static void Start()
+		{
+			// fail: must be panels
+			if (Far.Api.Window.Kind != WindowKind.Panels)
+				throw new InvalidOperationException("Command console must be started from panels.");
+
+			// exit: already started
+			if (Far.Api.UI.IsCommandMode)
+				return;
+
+			// save visibility of panels and key bar
+			_visiblePanel1 = Far.Api.Panel.IsVisible;
+			_visiblePanel2 = Far.Api.Panel2.IsVisible;
+			_visibleKeyBar = Console.CursorTop - Console.WindowTop == Console.WindowHeight - 2;
+
+			// post hide panels and key bar
+			if (_visiblePanel1 || _visiblePanel2)
+				Far.Api.PostMacro("Keys'CtrlO'");
+			if (_visibleKeyBar)
+				Far.Api.PostMacro("Keys'CtrlB'");
+
+			// post command loop
+			Far.Api.PostStep(Loop);
 		}
 		static void Loop()
 		{
+			Far.Api.UI.ShowUserScreen(); //! to hide menu bar
 			Far.Api.UI.IsCommandMode = true;
 			try
 			{
@@ -236,8 +263,12 @@ namespace PowerShellFar.UI
 			finally
 			{
 				Far.Api.UI.IsCommandMode = false;
-				Far.Api.Panel.IsVisible = _visible1;
-				Far.Api.Panel2.IsVisible = _visible2;
+
+				//! "Keys'CtrlO'" works but there are issues on testing
+				Far.Api.Panel.IsVisible = _visiblePanel1; //! 1st
+				Far.Api.Panel2.IsVisible = _visiblePanel2; //! 2nd
+				if (_visibleKeyBar)
+					Far.Api.PostMacro("Keys'CtrlB'");
 			}
 		}
 	}

@@ -45,7 +45,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.60
+### PowerShellFar 5.0.61
 
 PowerShellFar is the FarNet module which effectively combines the Windows
 PowerShell core with the text friendly console environment of Far Manager.
@@ -299,24 +299,13 @@ replaced by any other in the profile.
 Consider starting Far Manager with the switch `/w` in order to use the console
 mode and be able to view lengthy command output.
 
-Use `[Tab]` for completion and `[F1]` for PowerShell context help.
-
-See also
-[TabExpansion2.ps1](#TabExpansion),
-[Command and macro examples](#Examples).
+See [Command input line](#CommandInputLine) for some details.
 
 ---
 ### Invoke commands
 
-You are prompted to enter one PowerShell command to be invoked. Use `[Tab]` for
-code completion by TabExpansion. Use `[ShiftF1]` to view help for the current
-token.
-
-Use `[Tab]` for completion and `[F1]` for PowerShell context help.
-
-See also
-[TabExpansion2.ps1](#TabExpansion),
-[Command and macro examples](#Examples).
+You are prompted to enter PowerShell commands to be invoked. Commands output is
+shown in a viewer. See [Command input line](#CommandInputLine) for some details.
 
 ---
 ### Invoke selected
@@ -389,6 +378,59 @@ available help information in the viewer. In code editors (*.ps1*, *.psm1*,
 
 Other tools exist in the menu only if you have added them yourself, for example
 using the profile [Profile.ps1](#Profile).
+
+
+*********************************************************************
+# Command input line {#CommandInputLine}
+
+[Contents](#Contents)
+[Menu commands](#MenuCommands)
+
+The command input line is used for typing and invoking PowerShell commands. It
+is shown by the menu commands *Command console* and *Input commands*.
+
+The command input line is a standard dialog with an edit box, even if it looks
+like a command line, e.g. in the command console mode. Keys are typical for
+dialog text edit boxes.
+
+**Special keys and actions:**
+
+`[Enter]`
+
+  : Invokes the typed commands.
+
+`[Tab]`
+
+  : Invokes PowerShell code completion (TabExpansion).
+
+`[F1]`
+
+  : Shows PowerShell help for the current command or parameter or, if the input
+    line is empty, shows this topic.
+
+`[F10]`
+
+  : Exits the command input line.
+
+**Additional keys and actions in the command console:**
+
+`[Up]`
+
+  : Gets the previous command from history.
+
+`[Down]`
+
+  : Gets the next command from history.
+
+`[Esc]`
+
+  : Clears the input line or, if it is empty, exits the command console.
+
+**Additional information about the command console**
+
+When a typed command fails then its text is restored in the input line with the
+last caret position preserved. This is often useful on composing a lengthy
+command with mistakes and corrections inside its text.
 
 
 *********************************************************************

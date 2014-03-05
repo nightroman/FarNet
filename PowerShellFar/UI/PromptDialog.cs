@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Host;
+using System.Security;
 using FarNet;
 using FarNet.Forms;
 
@@ -61,12 +62,37 @@ namespace PowerShellFar.UI
 				Dialog.AddText(5, -1, x, s);
 
 				string value = fd.DefaultValue == null ? string.Empty : fd.DefaultValue.ToString();
-				IEdit ed = Dialog.AddEdit(x, 0, w - 6, value);
-				ed.History = Res.HistoryPrompt;
-				ed.UseLastHistory = false;
+				IEdit ed;
+				if (fd.ParameterTypeFullName == typeof(SecureString).FullName)
+				{
+					ed = Dialog.AddEditPassword(x, 0, w - 6, value);
+				}
+				else
+				{
+					ed = Dialog.AddEdit(x, 0, w - 6, value);
+					ed.History = Res.HistoryPrompt;
+					ed.UseLastHistory = false;
+				}
 
 				Edit[i] = ed;
 			}
+		}
+
+		static PSObject ValueToResult(string value, bool safe)
+		{
+			object r;
+			if (safe)
+			{
+				var ss = new SecureString();
+				r = ss;
+				foreach (var c in value)
+					ss.AppendChar(c);
+			}
+			else
+			{
+				r = value;
+			}
+			return new PSObject(r);
 		}
 
 		static public Dictionary<string, PSObject> Prompt(string caption, string message, ICollection<FieldDescription> descriptions)
@@ -77,18 +103,21 @@ namespace PowerShellFar.UI
 			// `Count == 1` (e.g. `Read-Host`): promts may have 2+ lines, so use another UI.
 			if (descriptions.Count == 1)
 			{
-				var prompt = descriptions.First().Name;
+				var current = descriptions.First();
+				var prompt = current.Name;
+				var safe = current.ParameterTypeFullName == typeof(SecureString).FullName;
 				var ui = new InputBoxEx()
 				{
 					Title = caption,
 					Prompt = prompt,
-					History = Res.HistoryPrompt
+					History = Res.HistoryPrompt,
+					Password = safe 
 				};
 
 				if (!ui.Show())
 					return null;
 
-				r.Add(prompt, PSObject.AsPSObject(ui.Text));
+				r.Add(prompt, ValueToResult(ui.Text, safe));
 			}
 			else
 			{
@@ -100,7 +129,7 @@ namespace PowerShellFar.UI
 				foreach (FieldDescription fd in descriptions)
 				{
 					++i;
-					r.Add(fd.Name, PSObject.AsPSObject(ui.Edit[i].Text));
+					r.Add(fd.Name, ValueToResult(ui.Edit[i].Text, fd.ParameterTypeFullName == typeof(SecureString).FullName));
 				}
 			}
 

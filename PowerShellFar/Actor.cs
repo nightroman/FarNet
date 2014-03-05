@@ -559,7 +559,7 @@ Continue with this current directory?
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public string InputCode()
 		{
-			UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, "PowerShell code");
+			UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, Res.InvokeCommands);
 			ui.UIEdit.IsPath = true;
 			ui.UIEdit.UseLastHistory = true;
 			return ui.UIDialog.Show() ? ui.UIEdit.Text : null;

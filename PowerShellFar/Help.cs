@@ -18,7 +18,7 @@ namespace PowerShellFar
 	static class Help
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		internal static void ShowHelpForContext()
+		internal static void ShowHelpForContext(string defaultTopic = null)
 		{
 			ILine line = Far.Api.Line;
 			if (line == null)
@@ -37,7 +37,10 @@ namespace PowerShellFar
 			text = text.TrimEnd();
 			if (text.Length == 0)
 			{
-				ShowAreaHelp();
+				if (defaultTopic == null)
+					ShowAreaHelp();
+				else
+					Far.Api.ShowHelpTopic(defaultTopic);
 				return;
 			}
 
