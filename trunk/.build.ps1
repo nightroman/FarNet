@@ -11,7 +11,7 @@ param
 )
 $FarHome = "C:\Bin\Far\$Platform"
 
-use Framework\v4.0.30319 MSBuild
+use 4.0 MSBuild
 
 $Builds = @(
 	'FarNet\FarNet.build.ps1'
@@ -29,6 +29,7 @@ task Clean {
 
 task Build {
 	exec { MSBuild FarNetAccord.sln /t:Build /p:Configuration=$Configuration /p:Platform=$Platform }
+	Invoke-Build Help .\PowerShellFar\PowerShellFar.build.ps1
 }
 
 task Install {

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Host;
+using System.Security;
 
 namespace PowerShellFar
 {
@@ -72,9 +73,18 @@ namespace PowerShellFar
 			throw new NotImplementedException();
 		}
 
-		public override System.Security.SecureString ReadLineAsSecureString()
+		public override SecureString ReadLineAsSecureString()
 		{
-			throw new NotImplementedException();
+			const string name = " ";
+			var field = new FieldDescription(name);
+			field.SetParameterType(typeof(SecureString));
+			var fields = new Collection<FieldDescription>() {field};
+			
+			var r = Prompt("", "", fields);
+			if (r == null)
+				return null;
+			
+			return (SecureString)r[name].BaseObject;
 		}
 
 		public override void WriteProgress(long sourceId, ProgressRecord record)

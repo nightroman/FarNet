@@ -19,6 +19,7 @@ namespace PowerShellFar.UI
 		public string Text { get; set; }
 		public string History { get; set; }
 		public Func<IEnumerable> GetWords { get; set; }
+		public bool Password { get; set; }
 
 		public bool Show()
 		{
@@ -37,8 +38,16 @@ namespace PowerShellFar.UI
 				promptTexts[i] = dialog.AddText(5, -1, w - 6, promptLines[i]);
 
 			// edit
-			var edit = dialog.AddEdit(5, -1, w - 6, Text);
-			edit.History = History;
+			IEdit edit;
+			if (Password)
+			{
+				edit = dialog.AddEditPassword(5, -1, w - 6, Text);
+			}
+			else
+			{
+				edit = dialog.AddEdit(5, -1, w - 6, Text);
+				edit.History = History;
+			}
 
 			// expansion
 			if (GetWords != null)

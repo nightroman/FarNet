@@ -620,7 +620,7 @@ void Panel0::OpenPanel(Panel2^ plugin)
 	}
 	catch(InvalidOperationException^ e)
 	{
-		throw gcnew InvalidOperationException("Cannot open a panel because panels window cannot be set current.", e);
+		throw gcnew InvalidOperationException("Cannot open a panel because panels cannot be set current.", e);
 	}
 
 	_panels[0] = plugin;

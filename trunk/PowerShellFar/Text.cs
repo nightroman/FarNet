@@ -12,12 +12,11 @@ namespace PowerShellFar
 	static class Res
 	{
 		public const string
-			BackgroundJobs = "Background jobs",
 			// main menu
 			MenuCommandConsole = "&c. Command console",
 			MenuInvokeCommands = "&1. Invoke commands",
 			MenuInvokeSelected = "&2. Invoke selected",
-			MenuBackgroundJobs = "&3. " + BackgroundJobs,
+			MenuBackgroundJobs = "&3. Background jobs",
 			MenuCommandHistory = "&4. Command history",
 			MenuEditorConsole  = "&5. Editor console",
 			MenuPowerPanel     = "&6. Power panel",
@@ -41,13 +40,14 @@ namespace PowerShellFar
 			PropertyIsNotSettableNow = "The property is not settable at this moment.",
 			UnknownFileSource = "The file source is unknown or not supported.",
 			// others
+			BackgroundJobs = "Background jobs",
 			Cancel = "Cancel",
-			Delete = "Delete",
-			PromptCode = "Enter PowerShell code",
-			Remove = "Remove",
 			CtrlC = "Cancel key is pressed.",
-			UIApply = "Apply command",
+			Delete = "Delete",
 			Empty = "Empty",
+			InvokeCommands = "Invoke commands",
+			Remove = "Remove",
+			UIApply = "Apply command",
 
 			// History of main input code, general top level code
 			History = "PowerShellFar",
