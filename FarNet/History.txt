@@ -1,6 +1,16 @@
 The NuGet package: https://www.nuget.org/packages/FarNet
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2256
 
+= 5.0.42 =
+
+IAnyEditor - the new method EditText(EditTextArgs) should be used instead of
+the old EditText(string, string). The old one is marked obsolete and will be
+removed.
+
+Far.Api.UI - added helper methods WriteLine().
+
+ILine - new property IsReadOnly.
+
 = 5.0.41 =
 
 IUserInterface - new flag IsCommandMode, INTERNAL for now, needed for the new

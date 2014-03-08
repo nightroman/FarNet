@@ -33,7 +33,7 @@ namespace PowerShellFar
 			InvalidColumnKind = "Invalid column kind: ",
 			LogError = "Cannot write to the log; ensure the path is valid and the file is not busy.",
 			MaximumPanelColumnCount = "Valid maximum column count should be from 3 to 13.", // _100202_113617
-			NeedsEditor = "Editor is not opened or its window is not current.",
+			NeedsEditor = "The current window must be an editor.",
 			NotSupportedByProvider = "Operation is not supported by the provider.",
 			NoUserMenu = "You did not define your user menu $Psf.UserMenu.\nPlease, see help and example script Profile-.ps1",
 			ParameterString = "Parameter must be a string.",

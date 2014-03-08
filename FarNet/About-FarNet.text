@@ -23,7 +23,7 @@
 
 [Contents](#Contents)
 
-### FarNet 5.0.41
+### FarNet 5.0.42
 
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The API is exposed in comfortable object oriented way and most of
@@ -42,7 +42,7 @@ tiny pieces of boilerplate framework code.
 
 ### Requirements
 
-- Far Manager 3.0.3817
+- Far Manager 3.0.3822
 - .NET Framework 3.5 or 4.0
 - Microsoft Visual C++ 2008 SP1 Redistributable Package
 
@@ -213,8 +213,7 @@ Normally the core discovers module changes and updates the cache itself. In
 rare cases the cache may have to be removed manually and the core restarted.
 Note that data of removed modules are removed from the cache automatically.
 
-The module cache file by default is
-*%LOCALAPPDATA%\Far Manager\Profile\FarNet\Cache??.binary*
+The module cache file is *%FARLOCALPROFILE%\FarNet\Cache??.binary*
 
 ---
 
@@ -242,17 +241,16 @@ variables should be used only in special cases:
 **Problem:** After installation Far cannot load FarNet or FarNet cannot load
 its modules.
 
-Read installation steps of [FarNet](#Installation) and modules carefully and
-ensure that you do everything correctly. Often mistake: *Far.exe.config* is not
-copied to the Far home directory.
+Read [Installation](#Installation) steps for FarNet and modules and ensure all
+is done correctly. Often mistake: *Far.exe.config* is not copied to the Far
+home directory.
 
 ---
 
-**Problem:** After updating of a FarNet module this module cannot start or works
-funny.
+**Problem:** After updating of a FarNet module this module cannot start, shows
+incorrect menu, or works incorrectly.
 
-Try again after removing the FarNet module cache. Its default location:
-*%LOCALAPPDATA%\Far Manager\Profile\FarNet\Cache??.binary*
+Try again after removing the FarNet module cache *%FARLOCALPROFILE%\FarNet\Cache??.binary*
 
 ---
 
@@ -264,7 +262,7 @@ x64 machines. But this is not always possible. Then the following batch file
 can be used to start x86 Far:
 
     set PATH=%WINDIR%\syswow64;%PATH%
-    "...\Far.exe"
+    Far.exe
 
 *********************************************************************
 ## Plugin menu {#MenuMain}

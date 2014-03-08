@@ -22,7 +22,7 @@ end;
 Macro {
 key="CtrlSpace"; description="PSF: Complete-Word-.ps1"; area=areaAnyEditor; condition=isEditor; action=function()
 if Area.DialogAutoCompletion then Keys("Esc") end
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:Complete-Word-.ps1")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":vps:Complete-Word-.ps1")
 end;
 }
 

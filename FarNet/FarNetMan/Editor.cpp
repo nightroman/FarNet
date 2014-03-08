@@ -14,9 +14,9 @@ Copyright (c) 2006-2014 Roman Kuzmin
 
 namespace FarNet
 {;
-String^ AnyEditor::EditText(String^ text, String^ title)
+String^ AnyEditor::EditText(EditTextArgs^ args)
 {
-	return Works::EditorTools::EditText(text, title);
+	return Works::EditorTools::EditText(args);
 }
 
 Editor::Editor()

@@ -11,6 +11,7 @@ namespace FarNet
 ref class EditorLine sealed : ILine
 {
 public:
+	virtual property bool IsReadOnly { bool get() override; }
 	virtual property FarNet::WindowKind WindowKind { FarNet::WindowKind get() override; }
 	virtual property int Caret { int get() override; void set(int value) override; }
 	virtual property int Index { int get() override; }

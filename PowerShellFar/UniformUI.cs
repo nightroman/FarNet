@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Security;
+using FarNet;
 
 namespace PowerShellFar
 {
@@ -41,40 +42,56 @@ namespace PowerShellFar
 
 		protected virtual void Writing() { }
 
-		#region PSHostUserInterface
+		static protected PSObject ValueToResult(string value, bool safe)
+		{
+			object r;
+			if (safe)
+			{
+				var ss = new SecureString();
+				r = ss;
+				foreach (var c in value)
+					ss.AppendChar(c);
+			}
+			else
+			{
+				r = value;
+			}
+			return new PSObject(r);
+		}
 
+		#region PSHostUserInterface
 		public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
 		{
 			throw new NotImplementedException();
 		}
-
 		public override int PromptForChoice(string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice)
 		{
 			throw new NotImplementedException();
 		}
-
 		public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName)
 		{
 			throw new NotImplementedException();
 		}
-
 		public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
 		{
 			return NativeMethods.PromptForCredential(caption, message, userName, targetName, allowedCredentialTypes, options);
 		}
-
 		public override PSHostRawUserInterface RawUI
 		{
 			get { return new RawUI(); }
 		}
-
 		public override string ReadLine()
 		{
 			throw new NotImplementedException();
 		}
-
 		public override SecureString ReadLineAsSecureString()
 		{
+			if (Far.Api.UI.IsCommandMode)
+			{
+				var ui = new UI.ReadLine() { Password = true };
+				return ui.Show() ? (SecureString)ValueToResult(ui.Text, true).BaseObject : null;
+			}
+			
 			const string name = " ";
 			var field = new FieldDescription(name);
 			field.SetParameterType(typeof(SecureString));
@@ -86,66 +103,55 @@ namespace PowerShellFar
 			
 			return (SecureString)r[name].BaseObject;
 		}
-
 		public override void WriteProgress(long sourceId, ProgressRecord record)
 		{
 		}
-
 		public sealed override void Write(string value)
 		{
 			Writing();
 			Writer.Write(value);
 		}
-
 		public sealed override void WriteLine()
 		{
 			Writing();
 			Writer.WriteLine();
 		}
-
 		public sealed override void WriteLine(string value)
 		{
 			Writing();
 			Writer.WriteLine(value);
 		}
-
 		public sealed override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
 			Writer.Write(foregroundColor, backgroundColor, value);
 		}
-
 		public sealed override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
 			Writer.WriteLine(foregroundColor, backgroundColor, value);
 		}
-
 		public sealed override void WriteDebugLine(string message)
 		{
 			Writing();
 			Writer.WriteDebugLine(message);
 		}
-
 		public sealed override void WriteErrorLine(string value)
 		{
 			HasError = true;
 			Writing();
 			Writer.WriteErrorLine(value);
 		}
-
 		public sealed override void WriteVerboseLine(string message)
 		{
 			Writing();
 			Writer.WriteVerboseLine(message);
 		}
-
 		public sealed override void WriteWarningLine(string message)
 		{
 			Writing();
 			Writer.WriteWarningLine(message);
 		}
-
 		#endregion
 	}
 }

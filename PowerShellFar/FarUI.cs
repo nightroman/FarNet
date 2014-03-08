@@ -5,17 +5,31 @@ Copyright (c) 2006-2014 Roman Kuzmin
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
+using System.Security;
+using System.Text;
 using FarNet;
 
 namespace PowerShellFar
 {
 	class FarUI : UniformUI
 	{
+		const string DefaultChoiceForMultipleChoices = @"(default is ""{0}"")";
+		const string DefaultChoicePrompt = @"(default is ""{0}""): ";
+		const string DefaultChoicesForMultipleChoices = "(default choices are {0})";
+		const string PromptForChoiceHelp = "[?] Help ";
+
+		const ConsoleColor ForegroundColor = ConsoleColor.Gray;
+		const ConsoleColor BackgroundColor = ConsoleColor.Black;
+		const ConsoleColor PromptColor = ConsoleColor.White;
+		const ConsoleColor DefaultPromptColor = ConsoleColor.Yellow;
+
 		Stack<OutputWriter> _writers = new Stack<OutputWriter>();
 		ConsoleOutputWriter _console;
 
@@ -35,46 +49,318 @@ namespace PowerShellFar
 				return _console;
 			}
 		}
-
 		internal OutputWriter PopWriter()
 		{
 			return _writers.Pop();
 		}
-
 		internal void PushWriter(OutputWriter writer)
 		{
 			_writers.Push(writer);
 		}
 
 		#region PSHostUserInterface
-
 		/// <summary>
 		/// Shows a dialog with a number of input fields.
 		/// </summary>
 		public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
 		{
-			return UI.PromptDialog.Prompt(caption, message, descriptions);
-		}
+			var r = new Dictionary<string, PSObject>();
 
+			if (Far.Api.UI.IsCommandMode)
+			{
+				WriteLine();
+				if (!string.IsNullOrEmpty(caption))
+					WriteLine(PromptColor, BackgroundColor, caption);
+				if (!string.IsNullOrEmpty(message))
+					WriteLine(message);
+			}
+
+			foreach (var current in descriptions) //TODO HelpMessage
+			{
+				var prompt = current.Name;
+
+				var type = Type.GetType(current.ParameterAssemblyFullName);
+				if (type.GetInterface(typeof(IList).FullName) != null)
+				{
+					var arrayList = new ArrayList();
+					for (; ; )
+					{
+						var prompt2 = string.Format(null, "{0}[{1}]", prompt, arrayList.Count);
+						if (Far.Api.UI.IsCommandMode)
+						{
+							WriteLine(prompt2 + ":");
+							var ui = new UI.ReadLine() { HelpMessage = current.HelpMessage, History = Res.HistoryPrompt };
+							if (!ui.Show())
+								break;
+
+							var s = ui.Text;
+
+							WriteLine(s);
+							arrayList.Add(s);
+						}
+						else
+						{
+							var ui = new UI.InputBoxEx()
+							{
+								Title = caption,
+								Prompt = string.IsNullOrEmpty(message) ? prompt2 : message + "\r" + prompt2,
+								History = Res.HistoryPrompt
+							};
+
+							if (!ui.Show())
+								break;
+
+							arrayList.Add(ui.Text);
+						}
+					}
+					r.Add(prompt, new PSObject(arrayList));
+				}
+				else
+				{
+					var safe = type == typeof(SecureString);
+
+					if (Far.Api.UI.IsCommandMode)
+					{
+						WriteLine(prompt + ":");
+						var ui = new UI.ReadLine() { HelpMessage = current.HelpMessage, Password = safe };
+						if (!ui.Show())
+							break;
+
+						if (!safe)
+							WriteLine(ui.Text);
+
+						r.Add(prompt, ValueToResult(ui.Text, safe));
+					}
+					else
+					{
+						var ui = new UI.InputBoxEx()
+						{
+							Title = caption,
+							Prompt = string.IsNullOrEmpty(message) ? prompt : message + "\r" + prompt,
+							History = Res.HistoryPrompt,
+							Password = safe
+						};
+
+						if (!ui.Show())
+							break;
+
+						r.Add(prompt, ValueToResult(ui.Text, safe));
+					}
+				}
+			}
+			return r;
+		}
 		/// <summary>
 		/// Shows a dialog with a number of choices.
 		/// </summary>
 		public override int PromptForChoice(string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice)
 		{
+			if (choices == null || choices.Count == 0)
+				throw new ArgumentException("choices");
+			if (defaultChoice < -1 || defaultChoice >= choices.Count)
+				throw new ArgumentException("defaultChoice");
+
 			//! DON'T Check(): crash on pressed CTRL-C and an error in 'Inquire' mode
 			//! 090211 The above is obsolete, perhaps.
-			return UI.ChoiceMsg.Show(caption, message, choices);
-		}
+			if (!Far.Api.UI.IsCommandMode)
+				return UI.ChoiceMsg.Show(caption, message, choices);
 
+			WriteLine();
+			if (!string.IsNullOrEmpty(caption))
+				WriteLine(PromptColor, BackgroundColor, caption);
+			if (!string.IsNullOrEmpty(message))
+				WriteLine(message);
+
+			string[,] hotkeysAndPlainLabels = null;
+			BuildHotkeysAndPlainLabels(choices, out hotkeysAndPlainLabels);
+
+			Dictionary<int, bool> dictionary = new Dictionary<int, bool>();
+			if (defaultChoice >= 0)
+				dictionary.Add(defaultChoice, true);
+
+			for (; ; )
+			{
+				WriteChoicePrompt(hotkeysAndPlainLabels, dictionary, false);
+
+				var ui = new UI.ReadLine();
+				if (!ui.Show())
+					throw new PipelineStoppedException(); //TODO
+
+				var text = ui.Text;
+				
+				// echo
+				WriteLine(ui.Text);
+
+				if (text.Length == 0)
+				{
+					if (defaultChoice >= 0)
+						return defaultChoice;
+				}
+				else
+				{
+					if (text.Trim() == "?")
+					{
+						ShowChoiceHelp(choices, hotkeysAndPlainLabels);
+					}
+					else
+					{
+						var num = DetermineChoicePicked(text.Trim(), choices, hotkeysAndPlainLabels);
+						if (num >= 0)
+							return num;
+					}
+				}
+			}
+		}
+		static int DetermineChoicePicked(string response, Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
+		{
+			int num = -1;
+			CultureInfo currentCulture = CultureInfo.CurrentCulture;
+			for (int i = 0; i < choices.Count; i++)
+			{
+				if (string.Compare(response, hotkeysAndPlainLabels[1, i], true, currentCulture) == 0)
+				{
+					num = i;
+					break;
+				}
+			}
+			if (num == -1)
+			{
+				for (int j = 0; j < choices.Count; j++)
+				{
+					if (hotkeysAndPlainLabels[0, j].Length > 0 && string.Compare(response, hotkeysAndPlainLabels[0, j], true, currentCulture) == 0)
+					{
+						num = j;
+						break;
+					}
+				}
+			}
+			return num;
+		}
+		//! c&p
+		void ShowChoiceHelp(Collection<ChoiceDescription> choices, string[,] hotkeysAndPlainLabels)
+		{
+			for (int i = 0; i < choices.Count; i++)
+			{
+				string text;
+				if (hotkeysAndPlainLabels[0, i].Length > 0)
+					text = hotkeysAndPlainLabels[0, i];
+				else
+					text = hotkeysAndPlainLabels[1, i];
+				WriteLine(string.Format(null, "{0} - {1}", text, choices[i].HelpMessage));
+			}
+		}
+		//! c&p
+		void WriteChoicePrompt(string[,] hotkeysAndPlainLabels, Dictionary<int, bool> defaultChoiceKeys, bool shouldEmulateForMultipleChoiceSelection)
+		{
+			ConsoleColor foregroundColor = ForegroundColor;
+			ConsoleColor backgroundColor = BackgroundColor;
+			int lineLenMax = RawUI.WindowSize.Width - 1;
+			int num = 0;
+			string format = "[{0}] {1}  ";
+			for (int i = 0; i < hotkeysAndPlainLabels.GetLength(1); i++)
+			{
+				ConsoleColor fg = PromptColor;
+				if (defaultChoiceKeys.ContainsKey(i))
+					fg = DefaultPromptColor;
+
+				string text = string.Format(null, format, hotkeysAndPlainLabels[0, i], hotkeysAndPlainLabels[1, i]);
+				WriteChoiceHelper(text, fg, backgroundColor, ref num, lineLenMax);
+				if (shouldEmulateForMultipleChoiceSelection)
+					WriteLine();
+			}
+
+			WriteChoiceHelper(PromptForChoiceHelp, foregroundColor, backgroundColor, ref num, lineLenMax);
+			if (shouldEmulateForMultipleChoiceSelection)
+				WriteLine();
+
+			string text2 = "";
+			if (defaultChoiceKeys.Count > 0)
+			{
+				string text3 = "";
+				StringBuilder stringBuilder = new StringBuilder();
+				foreach (int current in defaultChoiceKeys.Keys)
+				{
+					string text4 = hotkeysAndPlainLabels[0, current];
+					if (string.IsNullOrEmpty(text4))
+						text4 = hotkeysAndPlainLabels[1, current];
+
+					stringBuilder.Append(string.Format(null, "{0}{1}", text3, text4));
+					text3 = ",";
+				}
+				string o = stringBuilder.ToString();
+				if (defaultChoiceKeys.Count == 1)
+				{
+					text2 = shouldEmulateForMultipleChoiceSelection ?
+						string.Format(null, DefaultChoiceForMultipleChoices, o) :
+						string.Format(null, DefaultChoicePrompt, o);
+				}
+				else
+				{
+					text2 = string.Format(null, DefaultChoicesForMultipleChoices, o);
+				}
+			}
+			WriteChoiceHelper(text2, foregroundColor, backgroundColor, ref num, lineLenMax);
+			WriteLine(); //! or it is under the dialog
+		}
+		//! c&p
+		void WriteChoiceHelper(string text, ConsoleColor fg, ConsoleColor bg, ref int lineLen, int lineLenMax)
+		{
+			int num = RawUI.LengthInBufferCells(text);
+			bool flag = false;
+			if (lineLen + num > lineLenMax)
+			{
+				WriteLine();
+				flag = true;
+				lineLen = num;
+			}
+			else
+			{
+				lineLen += num;
+			}
+			Write(fg, bg, flag ? text.TrimEnd(null) : text);
+		}
+		//! c&p
+		static void BuildHotkeysAndPlainLabels(Collection<ChoiceDescription> choices, out string[,] hotkeysAndPlainLabels)
+		{
+			hotkeysAndPlainLabels = new string[2, choices.Count];
+			for (int i = 0; i < choices.Count; i++)
+			{
+				hotkeysAndPlainLabels[0, i] = string.Empty;
+				int num = choices[i].Label.IndexOf('&');
+				if (num >= 0)
+				{
+					StringBuilder stringBuilder = new StringBuilder(choices[i].Label.Substring(0, num), choices[i].Label.Length);
+					if (num + 1 < choices[i].Label.Length)
+					{
+						stringBuilder.Append(choices[i].Label.Substring(num + 1));
+						hotkeysAndPlainLabels[0, i] = choices[i].Label.Substring(num + 1, 1).Trim().ToUpper(CultureInfo.CurrentCulture);
+					}
+					hotkeysAndPlainLabels[1, i] = stringBuilder.ToString().Trim();
+				}
+				else
+				{
+					hotkeysAndPlainLabels[1, i] = choices[i].Label;
+				}
+				if (hotkeysAndPlainLabels[0, i] == "?")
+					throw new InvalidOperationException("Invalid hotkey '?'.");
+			}
+		}
 		/// <summary>
 		/// Reads a string.
 		/// </summary>
 		public override string ReadLine()
 		{
-			UI.InputDialog ui = new UI.InputDialog(string.Empty, Res.HistoryPrompt);
-			return ui.UIDialog.Show() ? ui.UIEdit.Text : string.Empty;
+			if (Far.Api.UI.IsCommandMode)
+			{
+				var ui = new UI.ReadLine() { History = Res.HistoryPrompt };
+				return ui.Show() ? ui.Text : string.Empty;
+			}
+			else
+			{
+				var ui = new UI.InputDialog(string.Empty, Res.HistoryPrompt);
+				return ui.UIDialog.Show() ? ui.UIEdit.Text : string.Empty;
+			}
 		}
-
 		/// <summary>
 		/// Shows progress information. Used by Write-Progress cmdlet.
 		/// It actually works at most once a second (for better performance on frequent calls).
@@ -113,7 +399,6 @@ namespace PowerShellFar
 			Far.Api.UI.SetProgressValue(record.PercentComplete, 100);
 		}
 		Stopwatch _progressWatch = Stopwatch.StartNew();
-
 		#endregion
 	}
 }

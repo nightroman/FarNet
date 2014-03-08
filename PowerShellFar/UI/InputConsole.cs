@@ -19,100 +19,99 @@ namespace PowerShellFar.UI
 		static bool _visiblePanel2;
 		static bool _visibleKeyBar;
 
-		IDialog UIDialog { get; set; }
-		IEdit UIEdit { get; set; }
-		int _Caret = -1;
+		IDialog _Dialog { get; set; }
+		IEdit _Edit { get; set; }
+		string _TextFromEditor;
 
 		InputConsole(string prompt, string history)
 		{
+			Far.Api.UI.WindowTitle = prompt;
 			var size = Far.Api.UI.WindowSize;
 
-			// shorten prompt
-			if (prompt.Length > size.X / 2)
+			bool tooLong = prompt.Length > size.X / 2;
+			var pos = tooLong ? size.X / 2 : prompt.Length;
+
+			_Dialog = Far.Api.CreateDialog(0, size.Y - 2, size.X - 1, size.Y - 1);
+			_Dialog.NoShadow = true;
+			_Dialog.KeepWindowTitle = true;
+
+			_Edit = _Dialog.AddEdit(pos, 0, size.X - 2, string.Empty);
+			_Edit.History = history;
+			_Edit.Coloring += ColorEdit;
+
+			if (tooLong)
 			{
-				int n = size.X / 4 - 2;
-				prompt = prompt.Substring(0, n) + " .. " + prompt.Substring(prompt.Length - n, n);
+				var UIText = _Dialog.AddEdit(0, 0, pos - 1, prompt.TrimEnd());
+				UIText.ReadOnly = true;
+				UIText.Coloring += ColorEdit;
+				UIText.LosingFocus += (sender, e) =>
+					{
+						UIText.Line.Caret = -1;
+					};
+			}
+			else
+			{
+				var UIText = _Dialog.AddText(0, 0, pos - 1, prompt);
+				UIText.Coloring += ColorText;
 			}
 
-			UIDialog = Far.Api.CreateDialog(0, size.Y - 2, size.X - 1, size.Y - 1);
-			UIDialog.NoShadow = true;
-
-			var UIText = UIDialog.AddText(0, 0, prompt.Length - 1, prompt);
-
-			UIEdit = UIDialog.AddEdit(prompt.Length, 0, size.X - 2, string.Empty);
-			UIEdit.History = history;
-
-			var UIArea = UIDialog.AddText(0, 1, size.X - 1, string.Empty);
-
-			// color text
-			EventHandler<ColoringEventArgs> colorText = (sender, e) =>
-			{
-				// normal text
-				e.Background1 = ConsoleColor.Black;
-				e.Foreground1 = ConsoleColor.Gray;
-			};
-			UIText.Coloring += colorText;
-			UIArea.Coloring += colorText;
-
-			// color edit
-			UIEdit.Coloring += (sender, e) =>
-			{
-				// normal text
-				e.Background1 = ConsoleColor.Black;
-				e.Foreground1 = ConsoleColor.Gray;
-				// selected text
-				e.Background2 = ConsoleColor.White;
-				e.Foreground2 = ConsoleColor.DarkGray;
-				// unchanged text
-				e.Background3 = ConsoleColor.Black;
-				e.Foreground3 = ConsoleColor.Red;
-				// combo
-				e.Background4 = ConsoleColor.Black;
-				e.Foreground4 = ConsoleColor.Gray;
-			};
-
-			// set caret
-			UIEdit.GotFocus += (sender, e) =>
-			{
-				if (_Caret >= 0)
-				{
-					UIEdit.IsTouched = true;
-					UIEdit.Line.Caret = _Caret;
-					_Caret = -1;
-				}
-			};
+			var UIArea = _Dialog.AddText(0, 1, size.X - 1, string.Empty);
+			UIArea.Coloring += ColorText;
 
 			// hotkeys
-			UIEdit.KeyPressed += OnKey;
+			_Edit.KeyPressed += OnKey;
+
+			// ignore clicks outside
+			_Dialog.MouseClicked += (sender, e) =>
+				{
+					if (e.Control == null)
+						e.Ignore = true;
+				};
+		}
+		void ColorEdit(object sender, ColoringEventArgs e)
+		{
+			// normal text
+			e.Background1 = ConsoleColor.Black;
+			e.Foreground1 = ConsoleColor.Gray;
+			// selected text
+			e.Background2 = ConsoleColor.White;
+			e.Foreground2 = ConsoleColor.DarkGray;
+			// unchanged text
+			e.Background3 = ConsoleColor.Black;
+			e.Foreground3 = ConsoleColor.Gray;
+			// combo
+			e.Background4 = ConsoleColor.Black;
+			e.Foreground4 = ConsoleColor.Gray;
+		}
+		void ColorText(object sender, ColoringEventArgs e)
+		{
+			// normal text
+			e.Background1 = ConsoleColor.Black;
+			e.Foreground1 = ConsoleColor.Gray;
 		}
 		void OnKey(object sender, KeyPressedEventArgs e)
 		{
 			switch (e.Key.VirtualKeyCode)
 			{
-				case KeyCode.Enter:
-					// [Enter]
-					_Caret = UIEdit.Line.Caret;
-					break;
 				case KeyCode.Escape:
-					// [Escape]
-					if (UIEdit.Line.Length > 0)
+					if (_Edit.Line.Length > 0)
 					{
 						e.Ignore = true;
-						UIEdit.Text = "";
+						_Edit.Text = "";
 					}
 					break;
 				case KeyCode.Tab:
-					// [Tab]
-					e.Ignore = true;
-					EditorKit.ExpandCode(UIEdit.Line, null);
+					if (e.Key.Is())
+					{
+						e.Ignore = true;
+						EditorKit.ExpandCode(_Edit.Line, null);
+					}
 					break;
 				case KeyCode.F1:
-					// [F1]
 					e.Ignore = true;
-					Help.ShowHelpForContext("CommandInputLine");
+					Help.ShowHelpForContext("CommandConsoleDialog");
 					break;
 				case KeyCode.UpArrow:
-					// [UpArrow]
 					if (e.Key.Is())
 					{
 						e.Ignore = true;
@@ -120,11 +119,20 @@ namespace PowerShellFar.UI
 					}
 					break;
 				case KeyCode.DownArrow:
-					// [UpArrow]
 					if (e.Key.Is())
 					{
 						e.Ignore = true;
 						OnHistory(1);
+					}
+					break;
+				case KeyCode.F4:
+					e.Ignore = true;
+					var args = new EditTextArgs() { Text = _Edit.Text, Title = "Input code", Extension = "psm1" };
+					var text = Far.Api.AnyEditor.EditText(args);
+					if (text != args.Text)
+					{
+						_TextFromEditor = text;
+						_Dialog.Close();
 					}
 					break;
 			}
@@ -134,7 +142,7 @@ namespace PowerShellFar.UI
 			string lastUsedCmd = null;
 			if (History.Cache == null) //TODO duplicated code
 			{
-				lastUsedCmd = UIEdit.Text;
+				lastUsedCmd = _Edit.Text;
 				History.Cache = History.ReadLines();
 				History.CacheIndex = History.Cache.Length;
 			}
@@ -182,8 +190,8 @@ namespace PowerShellFar.UI
 
 			if (code != null)
 			{
-				UIEdit.Text = code;
-				UIEdit.Line.Caret = -1;
+				_Edit.Text = code;
+				_Edit.Line.Caret = -1;
 			}
 		}
 		//! like PS, use just result[0] if it is not empty
@@ -234,30 +242,25 @@ namespace PowerShellFar.UI
 			Far.Api.UI.IsCommandMode = true;
 			try
 			{
-				string code = "";
-				int caret = -1;
 				for (; ; )
 				{
 					var prompt = GetPrompt();
 
 					var ui = new InputConsole(prompt, Res.History);
-					ui.UIEdit.Text = code;
-					ui._Caret = caret;
-
-					if (!ui.UIDialog.Show())
+					if (!ui._Dialog.Show())
 						return;
 
-					code = ui.UIEdit.Text.TrimEnd();
-					caret = ui._Caret;
+					bool fromEditor = ui._TextFromEditor != null;
+					var code = (fromEditor ? ui._TextFromEditor : ui._Edit.Text).TrimEnd();
 					if (code.Length == 0)
 						continue;
 
-					// invoke, add to history
-					if (A.Psf.Act(code, new ConsoleOutputWriter(prompt + code), true))
-					{
-						code = "";
-						caret = -1;
-					}
+					// code from editor - invoke, do not add to history
+					// code from line - invoke, add to history
+					if (fromEditor)
+						A.Psf.Act(code, new ConsoleOutputWriter(prompt + Environment.NewLine + code, true), false);
+					else
+						A.Psf.Act(code, new ConsoleOutputWriter(prompt + code, true), true);
 				}
 			}
 			finally

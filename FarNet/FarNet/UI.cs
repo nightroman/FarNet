@@ -174,29 +174,56 @@ namespace FarNet
 		/// </remarks>
 		public abstract void ShowUserScreen();
 		/// <summary>
-		/// Writes text on the user screen (under panels).
+		/// Writes text to the console with the current colors.
 		/// </summary>
-		/// <param name="text">Text.</param>
+		/// <param name="text">The text to be written.</param>
 		/// <remarks>
 		/// This method is called from the panels area in order to simulate classic console output.
-		/// Calls from other areas are allowed but console output is unexpected and difficult to see.
+		/// Calls from other areas are allowed but console output is unexpected, difficult to see,
+		/// and basically should be avoided.
 		/// <para>
-		/// In PowerShell scripts consider to use the <c>Write-Host</c> cmdlet instead of this method.
+		/// In PowerShell scripts consider to use <c>Write-Host</c> instead of this method.
 		/// </para>
 		/// </remarks>
 		public abstract void Write(string text);
 		/// <summary>
-		/// Writes colored text on the user screen (under panels).
+		/// Writes an empty line to the console.
 		/// </summary>
-		/// <param name="text">Text.</param>
-		/// <param name="foregroundColor">Text color.</param>
+		public void WriteLine()
+		{ Write(Environment.NewLine); }
+		/// <summary>
+		/// Writes text and a new line to the console with the current colors.
+		/// </summary>
+		/// <inheritdoc cref="Write(string)"/>
+		public void WriteLine(string text)
+		{ Write(text + Environment.NewLine); }
+		/// <summary>
+		/// Writes text to the console with the specified foreground color.
+		/// </summary>
+		/// <inheritdoc cref="Write(string)"/>
+		/// <param name="text">The text to be written.</param>
+		/// <param name="foregroundColor">Text foreground color.</param>
 		public abstract void Write(string text, ConsoleColor foregroundColor);
 		/// <summary>
-		/// Writes colored text on the user screen (under panels).
+		/// Writes text and a new line to the console with the specified foreground color.
 		/// </summary>
-		/// <include file='doc.xml' path='doc/Colors/*'/>
-		/// <param name="text">Text.</param>
+		/// <inheritdoc cref="Write(string, ConsoleColor)"/>
+		public void WriteLine(string text, ConsoleColor foregroundColor)
+		{ Write(text + Environment.NewLine, foregroundColor); }
+		/// <summary>
+		/// Writes text to the console with the specified foreground and background colors.
+		/// </summary>
+		/// <inheritdoc cref="Write(string)"/>
+		/// <param name="text">The text to be written.</param>
+		/// <param name="foregroundColor">Text foreground color.</param>
+		/// <param name="backgroundColor">Text background color.</param>
 		public abstract void Write(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor);
+		/// <summary>
+		/// Writes text and a new line to the console with the specified foreground and background colors.
+		/// </summary>
+		/// <inheritdoc cref="Write(string, ConsoleColor, ConsoleColor)"/>
+		public void WriteLine(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
+		{ Write(text + Environment.NewLine, foregroundColor, backgroundColor); }
 		/// <summary>
 		/// Tells the icon of not active window to flash.
 		/// </summary>

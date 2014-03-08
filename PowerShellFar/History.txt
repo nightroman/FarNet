@@ -1,6 +1,20 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.62 =
+
+Requires FarNet 5.0.42
+
+Command console:
+- UI (prompt, confirmation, choice) is mostly the same as in the MS PS console.
+- Clicks outside of the input line are ignored (for now?) and do not exit.
+- Too long prompts are not truncated but shown as read only edit boxes.
+- [F4] Opens the modal editor for editing/pasting multiline code.
+- Removed some AI on errors.
+
+Complete-Word-.ps1: checks IsReadOnly.
+Reformat-Selection-.ps1: checks IsLocked.
+
 = 5.0.61 =
 
 Implemented internals of "Read-Host -AsSecureString" properly with a password
