@@ -520,21 +520,23 @@ Continue with this current directory?
 			UI.ActorMenu.AddUserTool(text, click, area);
 		}
 		/// <summary>
-		/// Gets the editor or throws.
+		/// Gets the active editor or throws an error.
 		/// </summary>
 		/// <remarks>
-		/// Gets the editor associated with the current window or fails if there is none.
-		/// Using it avoids boring checks in scripts designed for the current editor.
+		/// This method gets the editor associated with the current window.
+		/// If it is not an editor window then an error is thrown.
+		/// <para>
+		/// The method is used by scripts designed for editors.
+		/// </para>
 		/// </remarks>
-		/// <exception cref="InvalidOperationException">Editor is not opened or its window is not current.</exception>
+		/// <exception cref="InvalidOperationException">The current window must be an editor.</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public IEditor Editor()
 		{
-			IEditor editor = Far.Api.Editor;
-			if (editor == null || Far.Api.Window.Kind != WindowKind.Editor)
+			if (Far.Api.Window.Kind != WindowKind.Editor)
 				throw new InvalidOperationException(Res.NeedsEditor);
-
-			return editor;
+			
+			return Far.Api.Editor;
 		}
 		/// <summary>
 		/// Returns PowerShellFar home path. Designed for internal use.

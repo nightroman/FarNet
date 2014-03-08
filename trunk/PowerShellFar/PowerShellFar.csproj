@@ -147,7 +147,7 @@
     <Compile Include="UI\InputDialog.cs" />
     <Compile Include="UI\InputConsole.cs" />
     <Compile Include="UI\NewValueDialog.cs" />
-    <Compile Include="UI\PromptDialog.cs" />
+    <Compile Include="UI\ReadLine.cs" />
     <Compile Include="UI\SelectMenu.cs" />
     <Compile Include="Panels\ObjectPanel.cs" />
     <Compile Include="AssemblyInfo.cs" />

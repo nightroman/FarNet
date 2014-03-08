@@ -22,46 +22,34 @@ namespace FarNet.Works
 			for (int i = start; i < end; ++i)
 				yield return editor[i].Text;
 		}
-		public static string EditText(string text, string title)
-		{
-			return EditText(text, title, false);
-		}
-		public static string EditText(string text, string title, bool locked)
+		public static string EditText(EditTextArgs args)
 		{
 			var file = Far.Api.TempName();
+			if (args.Extension != null)
+				file += "." + args.Extension; 
+			
 			try
 			{
-				if (!string.IsNullOrEmpty(text))
-					File.WriteAllText(file, text, Encoding.Unicode);
+				if (!string.IsNullOrEmpty(args.Text))
+					File.WriteAllText(file, args.Text, Encoding.Unicode);
 
 				var editor = Far.Api.CreateEditor();
 				editor.FileName = file;
+				editor.CodePage = 1200;
 				editor.DisableHistory = true;
-				if (!string.IsNullOrEmpty(title))
-					editor.Title = title;
-				if (locked)
+				if (!string.IsNullOrEmpty(args.Title))
+					editor.Title = args.Title;
+				if (args.IsLocked)
 					editor.IsLocked = true;
 				
 				editor.Open(OpenMode.Modal);
-				if (locked)
-				{
-					File.Delete(file);
+				if (args.IsLocked)
 					return null;
-				}
 
 				if (File.Exists(file))
 				{
-					// read and delete
-					var r = File.ReadAllText(file, Encoding.Default);
-					try
-					{
-						File.Delete(file);
-					}
-					catch (IOException e)
-					{
-						Log.TraceException(e);
-					}
-					return r;
+					// read and return
+					return File.ReadAllText(file, Encoding.Unicode);
 				}
 				else
 				{
@@ -71,7 +59,14 @@ namespace FarNet.Works
 			}
 			finally
 			{
-				File.Delete(file);
+				try
+				{
+					File.Delete(file);
+				}
+				catch (IOException e)
+				{
+					Log.TraceException(e);
+				}
 			}
 		}
 		/*

@@ -1,7 +1,7 @@
 
 <#
 .Synopsis
-	Reformats selected lines or the current line in the editor
+	Reformats selected lines or the current line in the editor.
 	Author: Roman Kuzmin
 
 .Description
@@ -15,18 +15,17 @@
 
 .Parameter RightMargin
 		Right margin. Default: $env:ReformatSelectionRightMargin or 79.
-
 .Parameter TabSize
 		Tab size for the line length calculation. Default: editor settings.
 #>
 
-param
-(
+param(
 	[int]$RightMargin = $env:ReformatSelectionRightMargin,
 	[int]$TabSize
 )
 
 $Editor = $Psf.Editor()
+Assert-Far (!$Editor.IsLocked) 'The editor is locked for changes.' 'Reformat selection'
 
 # get the prefix pattern by file type
 $type = ''

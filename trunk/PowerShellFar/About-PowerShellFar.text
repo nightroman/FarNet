@@ -36,7 +36,7 @@
 * [Search-Regex-.ps1](#SearchRegex)
 * [Other scripts](#Others)
 
-### Remarks
+### Appendix
 
 * [Using .NET assemblies](#UsingAssemblies)
 
@@ -45,23 +45,20 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.61
+### PowerShellFar 5.0.62
 
-PowerShellFar is the FarNet module which effectively combines the Windows
-PowerShell core with the text friendly console environment of Far Manager.
+PowerShellFar is the FarNet module which effectively combines Windows
+PowerShell with text friendly console environment of Far Manager.
 
-PowerShellFar implements the Windows PowerShell host in Far Manager, exposes
-the FarNet object model, and provides several ways for invoking commands and
-viewing the results. The package includes cmdlets, modules, and scripts for
-many popular Far Manager tasks. PowerShell syntax highlighting in editors is
-provided by Colorer.
+PowerShellFar implements the Windows PowerShell host, exposes the FarNet API,
+and provides several ways for invoking commands and viewing the results. The
+package includes cmdlets, modules, and scripts specifically designed for Far
+Manager. PowerShell syntax highlighting in editors is provided by Colorer.
 
 Most of PowerShell features are supported. Some PowerShell cmdlets and host
-features designed for plain console UI may not work or may work with some
-different UI.
+features designed for plain console UI may work with some differences in UI.
 
-PowerShellFar, FarNet, and documentation can be updated by the included script
-*Update-FarNet.ps1* or downloaded and installed manually from the project site.
+PowerShellFar and FarNet can be updated by the script *Update-FarNet.ps1*.
 
 ### Project
 
@@ -75,8 +72,8 @@ PowerShellFar, FarNet, and documentation can be updated by the included script
 
 ### Requirements
 
-- Far Manager 3.0.3817
-- Plugin FarNet 5.0.41
+- Far Manager 3.0.3822
+- Plugin FarNet 5.0.42
 - Windows PowerShell V2, V3
 
 ### Set PowerShell execution policy
@@ -142,38 +139,37 @@ are designed with 80 columns in mind.
 
 [Contents](#Contents)
 
-PowerShellFar is all about running PowerShell commands in the text friendly UI
-of Far Manager. There are many ways and literally you can run a command at any
-moment from almost any UI context.
+PowerShellFar is all about invoking PowerShell commands in Far Manager. There
+are many ways of doing this and literally you can type and invoke commands at
+any moment in almost any current context.
 
 ### Ways to invoke commands
 
 * Command console
 
-    The console is opened from panels:
+    The command console is started from panels:
     `[F11] \ PowerShellFar \ Command console`.
-    See [Menu commands](#MenuCommands).
+    See [Command console dialog](#CommandConsoleDialog).
 
-* Command box
+* Invoke commands
 
-    The command input box can be opened from almost any UI context:
+    The input box can be opened at any moment:
     `[F11] \ PowerShellFar \ Invoke commands`.
-    See [Menu commands](#MenuCommands).
+    See [Invoke commands dialog](#InvokeCommandsDialog).
 
 * Selected code
 
     Selected text in any editor including the command line and
     dialog edit boxes can be invoked as PowerShell code:
     `[F11] \ PowerShellFar \ Invoke selected`.
-    See [Menu commands](#MenuCommands).
 
 * Command line
 
-    In the panels use the command line to type and invoke commands with
-    prefixes: `ps:` and `vps:` by default.
+    In panels use the command line to type and invoke commands with prefixes
+    (`ps:` and `vps:` by default).
     See [Command line](#CommandLine).
 
-* Far user menu and file associations
+* User menu and file associations
 
     The user menu (`[F2]`) and file associations (`[F9] \ Commands \ File
     associations`) may include PowerShell commands with prefixes. See Far
@@ -183,7 +179,7 @@ moment from almost any UI context.
 
     Main, local, and remote editor consoles can be opened at any moment: `[F11]
     \ PowerShellFar \ Editor console`. The editor is modal if it is started
-    from modal context. Local and remote consoles use separate PowerShell
+    from a modal context. Local and remote consoles use separate PowerShell
     sessions and invoke commands asynchronously, UI is not blocked when
     commands are running, even with their output in progress.
     See [Editor console](#EditorConsole).
@@ -196,8 +192,8 @@ moment from almost any UI context.
 
 * Far Manager macros
 
-    Macros associate key combinations in the current UI area with pieces of
-    macro code which can invoke PowerShell commands.
+    Macros associate key combinations in UI areas with pieces of macro code
+    which can invoke PowerShell commands.
     See [Command and macro examples](#Examples).
 
 * Menu actions and event handlers
@@ -211,16 +207,17 @@ moment from almost any UI context.
 
 Think twice before stopping commands. There are must be good reasons for doing
 this and this should be presumably safe, i.e. you know that this does not make
-something broken or you know it is easy to recover.
+something broken or you know that it is easy to recover.
 
 `[CtrlBreak]` stops synchronous commands invoked from:
 
 - Command line
+- Command console
 - Command input box
 - Main editor console
-- Script editor by `[F5]`
-- User menu (`[F2]`)
 - File associations
+- User menu (`[F2]`)
+- Script editor (`[F5]`)
 
 `[CtrlC]` stops asynchronous commands commands invoked from:
 
@@ -229,9 +226,9 @@ something broken or you know it is easy to recover.
 
 `[Del]` in the background job list stops running background jobs.
 
-It is not normally possible to stop commands started from event handlers, e.g.
-editor and panel events or `$Psf.Action handlers`. Design such code carefully
-and test it before adding to handlers.
+It is not normally possible to stop commands started from event handlers like
+editor and panel events or `$Psf.Action` handlers. Design such code carefully
+and test it well before adding to handlers.
 
 
 *********************************************************************
@@ -239,15 +236,16 @@ and test it before adding to handlers.
 
 [Contents](#Contents)
 
-PowerShellFar commands with prefixes are used in the command line, the user
-menu (`[F2]`), and the file associations. By default command prefixes are:
-`ps:` (console output) and `vps:` (viewer output).
+Commands with prefixes are used in the command line, the user menu (`[F2]`),
+and the file associations. By default command prefixes are: `ps:` (console
+output) and `vps:` (viewer output).
 
 Console output is also transcribed in a temporary file which can be opened in a
 viewer at any time by the command `Show-FarTranscript [-External]`.
 
-Note: scripts opened in the editor can be invoked in the current session by
-`[F5]`. The key is hard-coded but a different key still can be used.
+Note: PowerShell scripts opened in the editor can be invoked in the current
+session by `[F5]`. The key is hard-coded but a different key can be used, too.
+
 See [Command and macro examples](#Examples).
 
 ### Examples
@@ -289,23 +287,16 @@ manually and normally should not pollute the history.
 ### Command console
 
 The genuine console with the prompt implemented as one line input box shown at
-the bottom. The prompt is shown repeatedly after each command. `[Esc]` cleans
-the current input line or, if the line is empty, exits the console mode and
-shows the panels.
-
-The command prompt uses the standard PowerShell function `prompt`. It may be
-replaced by any other in the profile.
-
-Consider starting Far Manager with the switch `/w` in order to use the console
-mode and be able to view lengthy command output.
-
-See [Command input line](#CommandInputLine) for some details.
+the bottom. The prompt is shown repeatedly after each command. Command output
+is written to the console. Consider starting Far Manager with the switch `/w`
+in order to use the console mode and be able to view lengthy command output.
+See [Command console dialog](#CommandConsoleDialog) for more details.
 
 ---
 ### Invoke commands
 
-You are prompted to enter PowerShell commands to be invoked. Commands output is
-shown in a viewer. See [Command input line](#CommandInputLine) for some details.
+You are prompted to enter PowerShell commands to be invoked. Output is shown in
+a viewer. See [Invoke commands dialog](#InvokeCommandsDialog) for more details.
 
 ---
 ### Invoke selected
@@ -317,7 +308,7 @@ variables created by commands are available for other commands.
 In command line: execute the command line text, the prefix is not required but
 it is not an error. The command text is kept in the command line if an error
 happens or if there is a selection.
-See also "Easy invoke": [FAQ](#FAQ).
+See also "Easy invoke macro": [FAQ](#FAQ).
 
 ---
 ### Background jobs
@@ -381,20 +372,24 @@ using the profile [Profile.ps1](#Profile).
 
 
 *********************************************************************
-# Command input line {#CommandInputLine}
+# Command console dialog {#CommandConsoleDialog}
 
 [Contents](#Contents)
 [Menu commands](#MenuCommands)
 
-The command input line is used for typing and invoking PowerShell commands. It
-is shown by the menu commands *Command console* and *Input commands*.
+The command console is started from panels:
+`[F11] \ PowerShellFar \ Command console`.
 
-The command input line is a standard dialog with an edit box, even if it looks
-like a command line, e.g. in the command console mode. Keys are typical for
-dialog text edit boxes.
+It is the genuine console with the prompt implemented as a dialog shown at the
+bottom. The dialog looks like a usual command line. This command line is shown
+repeatedly after each input. Commands output is written to the console.
 
-**Special keys and actions:**
+As far as this command line is a dialog, most of keys are typical for text edit
+controls. But some extra keys are associated with specific actions and tools.
 
+**Keys and actions:**
+
+<!--_140305_113849-->
 `[Enter]`
 
   : Invokes the typed commands.
@@ -405,14 +400,17 @@ dialog text edit boxes.
 
 `[F1]`
 
-  : Shows PowerShell help for the current command or parameter or, if the input
-    line is empty, shows this topic.
+  : If the input line is empty shows this topic. Otherwise shows PowerShell
+    help for the current command or its parameter.
+<!--_140305_113849-->
 
 `[F10]`
 
-  : Exits the command input line.
+  : Exits the command console.
 
-**Additional keys and actions in the command console:**
+`[Esc]`
+
+  : Clears the input line or exits the command console.
 
 `[Up]`
 
@@ -422,15 +420,79 @@ dialog text edit boxes.
 
   : Gets the next command from history.
 
-`[Esc]`
+`[CtrlAltUp]`, `[CtrlAltDown]`
 
-  : Clears the input line or, if it is empty, exits the command console.
+  : Scrolls the console window up and down by lines.
 
-**Additional information about the command console**
+`[CtrlAltPgUp]`, `[CtrlAltPgDn]`
 
-When a typed command fails then its text is restored in the input line with the
-last caret position preserved. This is often useful on composing a lengthy
-command with mistakes and corrections inside its text.
+  : Scrolls the console window up and down by screens.
+
+`[F4]`
+
+  : Opens the modal editor for input of multiline code. This is mostly used for
+    pasting and invoking external code snippets. This code is not added to the
+    command history.
+
+---
+**Prompt**
+
+Like in the Microsoft PowerShell console, the command prompt is defined by the
+global function `prompt`, built-in or custom. A custom prompt may be defined in
+the profile or any time later in a session.
+
+Unlike in the Microsoft console, `prompt` normally should just return text. It
+can use `Write-Host`, e.g. for colored text, but this output will be written to
+the console above the command line.
+
+---
+**Output**
+
+In order to be able to scroll and view lengthy command output consider starting
+Far Manager in window mode, for example using the switch `/w`:
+
+    Far.exe /w
+
+Another option is to set and save this mode permanently (`System.WindowMode =
+true`) in the full list of settings. The list is called from the command line:
+
+    far:config
+
+Also make sure that the current or saved console buffer height is large enough
+for output, e.g. set to the maximum value 9999 in the console property dialog.
+
+In any case you may use the built-in command `Show-FarTranscript` in order to
+view the whole session output in the internal or external viewer window.
+
+
+*********************************************************************
+# Invoke commands dialog {#InvokeCommandsDialog}
+
+[Contents](#Contents)
+[Menu commands](#MenuCommands)
+
+The input box can be opened at any moment:
+`[F11] \ PowerShellFar \ Invoke commands`.
+
+This dialog is used for typing and invoking PowerShell commands. Commands
+output is written to a temporary file and shown in the internal viewer.
+
+**Keys and actions:**
+
+<!--_140305_113849-->
+`[Enter]`
+
+  : Invokes the typed commands.
+
+`[Tab]`
+
+  : Invokes PowerShell code completion (TabExpansion).
+
+`[F1]`
+
+  : If the input line is empty shows this topic. Otherwise shows PowerShell
+    help for the current command or its parameter.
+<!--_140305_113849-->
 
 
 *********************************************************************
@@ -1549,9 +1611,10 @@ The output uses different colors depending on message types (errors, warnings,
 etc.). The whole session output is transcribed and can be opened in a viewer
 at any time during the session by Show-FarTranscript.
 
-User screen output may have unwanted screen effects on commands with Far UI and
-on PowerShell debugging. Such commands should be invoked from the command box
-or with `vps:` prefixes.
+Note that console output may have unwanted screen effects on commands with UI
+and on PowerShell debugging. Such commands should be invoked from the command
+box or with `vps:` prefixes. Mind that even if a command does not produce any
+output but may fail then its error information is still an output to be shown.
 
 Useful hotkeys:
 

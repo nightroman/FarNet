@@ -189,4 +189,12 @@ EditorSetString EditorLine::GetEss()
 	ess.StringNumber = _Index;
 	return ess;
 }
+
+bool EditorLine::IsReadOnly::get()
+{
+	AutoEditorInfo ei;
+
+	return (ei.CurState & ECSTATE_LOCKED) != 0;
+}
+
 }

@@ -26,7 +26,7 @@ public: DEF_EVENT_IMP(LosingFocus, _LosingFocus);
 public: DEF_EVENT_IMP(Opened, _Opened);
 public: DEF_EVENT_IMP(Redrawing, _Redrawing);
 public:
-	virtual String^ EditText(String^ text, String^ title) override;
+	virtual String^ EditText(EditTextArgs^ args) override;
 };
 
 ref class DrawerInfo sealed

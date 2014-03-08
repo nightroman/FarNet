@@ -29,9 +29,11 @@ namespace PowerShellFar
 	{
 		string _header;
 		public ConsoleOutputWriter() { }
-		public ConsoleOutputWriter(string header)
+		public ConsoleOutputWriter(string header, bool write = false) //TODO to write header always?
 		{
 			_header = header;
+			if (write)
+				Writing();
 		}
 		void Writing()
 		{
@@ -54,13 +56,13 @@ namespace PowerShellFar
 		public override void WriteLine()
 		{
 			Writing();
-			Far.Api.UI.Write(Environment.NewLine);
+			Far.Api.UI.WriteLine();
 			A.Psf.Transcript.WriteLine();
 		}
 		public override void WriteLine(string value)
 		{
 			Writing();
-			Far.Api.UI.Write(value + Environment.NewLine);
+			Far.Api.UI.WriteLine(value);
 			A.Psf.Transcript.WriteLine(value);
 		}
 		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
@@ -72,31 +74,31 @@ namespace PowerShellFar
 		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
-			Far.Api.UI.Write(value + Environment.NewLine, foregroundColor, backgroundColor);
+			Far.Api.UI.WriteLine(value, foregroundColor, backgroundColor);
 			A.Psf.Transcript.WriteLine(value);
 		}
 		public override void WriteDebugLine(string message)
 		{
 			Writing();
-			Far.Api.UI.Write("DEBUG: " + message + Environment.NewLine, Settings.Default.DebugForegroundColor);
+			Far.Api.UI.WriteLine("DEBUG: " + message, Settings.Default.DebugForegroundColor);
 			A.Psf.Transcript.WriteDebugLine(message);
 		}
 		public override void WriteErrorLine(string value)
 		{
 			Writing();
-			Far.Api.UI.Write(value + Environment.NewLine, Settings.Default.ErrorForegroundColor);
+			Far.Api.UI.WriteLine(value, Settings.Default.ErrorForegroundColor);
 			A.Psf.Transcript.WriteErrorLine(value);
 		}
 		public override void WriteVerboseLine(string message)
 		{
 			Writing();
-			Far.Api.UI.Write("VERBOSE: " + message + Environment.NewLine, Settings.Default.VerboseForegroundColor);
+			Far.Api.UI.WriteLine("VERBOSE: " + message, Settings.Default.VerboseForegroundColor);
 			A.Psf.Transcript.WriteVerboseLine(message);
 		}
 		public override void WriteWarningLine(string message)
 		{
 			Writing();
-			Far.Api.UI.Write("WARNING: " + message + Environment.NewLine, Settings.Default.WarningForegroundColor);
+			Far.Api.UI.WriteLine("WARNING: " + message, Settings.Default.WarningForegroundColor);
 			A.Psf.Transcript.WriteWarningLine(message);
 		}
 	}

@@ -145,4 +145,11 @@ void DialogLine::UnselectText()
 	Info.SendDlgMessage(_hDlg, DM_SETSELECTION, _id, &es);
 }
 
+bool DialogLine::IsReadOnly::get()
+{
+	FarDialogItem di;
+	Info.SendDlgMessage(_hDlg, DM_GETDLGITEMSHORT, _id, &di);
+	return (di.Flags & DIF_READONLY) != 0;
+}
+
 }

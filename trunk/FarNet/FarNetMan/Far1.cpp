@@ -306,7 +306,11 @@ void Far1::ShowError(String^ title, Exception^ error)
 	info += Environment::NewLine + error->ToString();
 
 	// locked editor
-	Works::EditorTools::EditText(info, error->GetType()->FullName, true);
+	EditTextArgs args;
+	args.Text = info;
+	args.Title = error->GetType()->FullName;
+	args.IsLocked = true;
+	Works::EditorTools::EditText(%args);
 }
 
 IDialog^ Far1::CreateDialog(int left, int top, int right, int bottom)

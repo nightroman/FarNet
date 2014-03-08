@@ -37,14 +37,12 @@ namespace PowerShellFar.UI
 				switch (e.Key.VirtualKeyCode)
 				{
 					case KeyCode.Tab:
-						// [Tab]
 						e.Ignore = true;
 						EditorKit.ExpandCode(UIEdit.Line, null);
 						break;
 					case KeyCode.F1:
-						// [F1]
 						e.Ignore = true;
-						Help.ShowHelpForContext("CommandInputLine");
+						Help.ShowHelpForContext("InvokeCommandsDialog");
 						break;
 				}
 			};

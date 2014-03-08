@@ -95,11 +95,42 @@ namespace FarNet
 	public abstract class IAnyEditor : IEditorBase
 	{
 		/// <summary>
-		/// Opens a modal temporary editor to edit the given text.
+		/// Opens a modal editor in order to edit the text.
 		/// </summary>
-		/// <param name="text">The text to edit.</param>
-		/// <param name="title">The editor title.</param>
-		public abstract string EditText(string text, string title);
+		/// <param name="args">Arguments.</param>
+		/// <returns>The result text.</returns>
+		public abstract string EditText(EditTextArgs args);
+		/// <summary>
+		/// Opens a modal editor in order to edit the text.
+		/// </summary>
+		/// <param name="text">Input text to be edited.</param>
+		/// <param name="title">Editor window title.</param>
+		[Obsolete("Use EditText(args).")]
+		public string EditText(string text, string title)
+		{ return EditText(new EditTextArgs() { Text = text, Title = title }); }
+	}
+
+	/// <summary>
+	/// Arguments of <see cref="IAnyEditor.EditText(EditTextArgs)"/>.
+	/// </summary>
+	public class EditTextArgs
+	{
+		/// <summary>
+		/// Input text to be edited.
+		/// </summary>
+		public string Text { get; set; }
+		/// <summary>
+		/// Editor window title.
+		/// </summary>
+		public string Title { get; set; }
+		/// <summary>
+		/// File extension (for Colorer).
+		/// </summary>
+		public string Extension { get; set; }
+		/// <summary>
+		/// Tells to open text locked for changes.
+		/// </summary>
+		public bool IsLocked { get; set; }
 	}
 
 	/// <summary>
@@ -965,6 +996,10 @@ namespace FarNet
 
 			return null;
 		}
+		/// <summary>
+		/// Gets true if the text is read only.
+		/// </summary>
+		public virtual bool IsReadOnly { get { return false; } }
 	}
 
 	/// <summary>

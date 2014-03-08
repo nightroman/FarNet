@@ -11,6 +11,7 @@ namespace FarNet
 ref class DialogLine sealed : ILine
 {
 public:
+	virtual property bool IsReadOnly { bool get() override; }
 	virtual property int Length	{ int get() override; }
 	virtual property int Caret { int get() override; void set(int value) override; }
 	virtual property String^ Text { String^ get() override; void set(String^ value) override; }
