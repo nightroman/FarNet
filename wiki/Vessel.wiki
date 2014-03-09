@@ -2,8 +2,9 @@
 
 == Introduction ==
 
-Vessel (short for View/Edit/Save/SELect) records and maintains history of file
-view, edit, and save operations and related statistics.
+Vessel (short for View/Edit/Save/SELect) is the FarNet module for Far
+Manager. It records and maintains history of file view, edit, and save
+operations and provides related tools.
 
 Features
 
