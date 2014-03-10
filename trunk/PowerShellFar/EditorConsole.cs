@@ -221,12 +221,12 @@ namespace PowerShellFar
 					{
 						if (e.Key.Is())
 						{
-							// [Enter] - invoke, copy, or pass
+							// invoke, copy, or pass
 							e.Ignore = Invoke();
 						}
 						else if (e.Key.IsShift())
 						{
-							// [ShiftEnter] similar to ISE
+							// similar to ISE
 							e.Ignore = true;
 							Editor.InsertLine();
 							Editor.Redraw();
@@ -237,7 +237,6 @@ namespace PowerShellFar
 					{
 						if (e.Key.Is())
 						{
-							// [Tab]
 							if (GetCommandArea() != null && EditorKit.NeedsTabExpansion(Editor))
 							{
 								e.Ignore = true;
@@ -252,7 +251,6 @@ namespace PowerShellFar
 					{
 						if (e.Key.Is())
 						{
-							// [Esc]
 							if (IsLastLineCurrent && currentLine.Length > 0)
 							{
 								e.Ignore = true;
@@ -267,7 +265,6 @@ namespace PowerShellFar
 					{
 						if (e.Key.Is())
 						{
-							// [End]
 							if (!IsLastLineCurrent)
 								return;
 
@@ -292,64 +289,13 @@ namespace PowerShellFar
 					{
 						if (e.Key.Is())
 						{
-							// [Up], [Down]
 							if (!IsLastLineCurrent)
 								return;
 
-							string lastUsedCmd = null;
-							if (History.Cache == null)
-							{
-								// don't lose not empty line!
-								if (currentLine.Length > 0)
-									return;
-
-								History.Cache = History.ReadLines();
-								History.CacheIndex = History.Cache.Length;
-							}
-							else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
-							{
-								lastUsedCmd = History.Cache[History.CacheIndex];
-							}
-							string code;
-							if (e.Key.VirtualKeyCode == KeyCode.UpArrow)
-							{
-								for (; ; )
-								{
-									if (--History.CacheIndex < 0)
-									{
-										code = string.Empty;
-										History.CacheIndex = -1;
-									}
-									else
-									{
-										code = History.Cache[History.CacheIndex];
-										if (code == lastUsedCmd)
-											continue;
-									}
-									break;
-								}
-							}
-							else
-							{
-								for (; ; )
-								{
-									if (++History.CacheIndex >= History.Cache.Length)
-									{
-										code = string.Empty;
-										History.CacheIndex = History.Cache.Length;
-									}
-									else
-									{
-										code = History.Cache[History.CacheIndex];
-										if (code == lastUsedCmd)
-											continue;
-									}
-									break;
-								}
-							}
-
+							var command = History.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, currentLine.Text);
+							
 							e.Ignore = true;
-							currentLine.Text = code;
+							currentLine.Text = command;
 							currentLine.Caret = -1;
 							Editor.Redraw();
 						}
@@ -359,7 +305,6 @@ namespace PowerShellFar
 					{
 						if (e.Key.Is())
 						{
-							// [Del]
 							if (!IsLastLineCurrent)
 								return;
 
@@ -396,7 +341,6 @@ namespace PowerShellFar
 					{
 						if (e.Key.IsShift())
 						{
-							// [ShiftF1]
 							e.Ignore = true;
 							Help.ShowHelpForContext();
 						}

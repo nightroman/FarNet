@@ -89,7 +89,7 @@ namespace PowerShellFar
 			get { return _ListMenuUsualMargins; }
 			set { _ListMenuUsualMargins = value; }
 		}
-		int _MaximumHistoryCount = 512;
+		int _MaximumHistoryCount = 1000;
 		/// <summary>
 		/// The maximum number of history commands kept in a file. In fact, 10% more is allowed.
 		/// </summary>

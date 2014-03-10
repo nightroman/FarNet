@@ -12,6 +12,8 @@ namespace PowerShellFar.UI
 {
 	class InputDialog
 	{
+		public static readonly Guid TypeId = new Guid("416ff960-9b6b-4f3f-8bda-0c9274c75e53");
+		
 		public IDialog UIDialog { get; private set; }
 		public IText[] UIPrompt { get; private set; }
 		public IEdit UIEdit { get; private set; }
@@ -22,6 +24,8 @@ namespace PowerShellFar.UI
 			int h = 5 + prompt.Length;
 
 			UIDialog = Far.Api.CreateDialog(-1, -1, w, h);
+			UIDialog.TypeId = TypeId;
+			
 			UIDialog.AddBox(3, 1, w - 4, h - 2, caption);
 			UIPrompt = new IText[prompt.Length];
 			for (int i = 0; i < prompt.Length; ++i)

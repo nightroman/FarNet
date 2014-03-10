@@ -11,7 +11,7 @@
 *********************************************************************
 ## Synopsis {#Synopsis}
 
-RightWords is the FarNet module for FarManager. It provides the spell-checker
+RightWords is the FarNet module for Far Manager. It provides the spell-checker
 and thesaurus based on NHunspell. The core Hunspell is used in OpenOffice and
 it works with dictionaries published on OpenOffice.org.
 

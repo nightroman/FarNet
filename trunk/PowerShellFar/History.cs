@@ -100,63 +100,94 @@ namespace PowerShellFar
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "PowerShellFar")]
 		public static void ShowHistory()
 		{
-			UI.CommandHistoryMenu m = new UI.CommandHistoryMenu(string.Empty);
+			var m = new UI.CommandHistoryMenu(string.Empty);
 			string code = m.Show();
 			if (code == null)
 				return;
 
+			// insert to command lines
 			switch (Far.Api.Window.Kind)
 			{
 				case WindowKind.Panels:
-					{
-						Far.Api.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
-						if (!m.Alternative)
-							Far.Api.PostMacro("Keys('Enter')", true, false);
-						return;
-					}
+					Far.Api.CommandLine.Text = Entry.CommandInvoke1.Prefix + ": " + code;
+					return;
 				case WindowKind.Editor:
+					var editor = Far.Api.Editor;
+					if (!(editor.Host is EditorConsole))
+						break;
+					editor.GoToEnd(true);
+					editor.InsertText(code);
+					return;
+				case WindowKind.Dialog:
+					var dialog = Far.Api.Dialog;
+					var typeId = dialog.TypeId;
+					if (typeId != UI.InputConsole.TypeId && typeId != UI.InputDialog.TypeId)
+						break;
+					var line = Far.Api.Line;
+					if (line == null || line.IsReadOnly)
+						break;
+					line.Text = code;
+					return;
+			}
+
+			// show "Invoke commands"
+			var ui = new UI.InputDialog(Res.Me, Res.History, Res.InvokeCommands);
+			ui.UIEdit.Text = code;
+			if (!ui.UIDialog.Show())
+				return;
+
+			// invoke input
+			code = ui.UIEdit.Text;
+			A.Psf.Act(code, null, true);
+		}
+		public static string GetNextCommand(bool up, string current)
+		{
+			string lastUsed = null;
+			
+			if (History.Cache == null)
+			{
+				lastUsed = current;
+				History.Cache = History.ReadLines();
+				History.CacheIndex = History.Cache.Length;
+			}
+			else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
+			{
+				lastUsed = History.Cache[History.CacheIndex];
+			}
+			
+			if (up)
+			{
+				for (; ; )
+				{
+					if (--History.CacheIndex < 0)
 					{
-						IEditor editor = A.Psf.Editor();
-
-						// case: usual editor
-						EditorConsole console = editor.Host as EditorConsole;
-						if (console == null)
-							goto default;
-
-						// case: psfconsole
-						editor.GoToEnd(true);
-						editor.InsertText(code);
-						if (m.Alternative)
-							return;
-
-						console.Invoke();
-						return;
+						History.CacheIndex = -1;
+						return string.Empty;
 					}
-				default:
+					else
 					{
-						if (Far.Api.UI.IsCommandMode)
-						{
-							var line = Far.Api.Line;
-							if (line != null)
-							{
-								line.Text = code;
-								line.Caret = -1;
-							}
-							return;
-						}
-
-						if (m.Alternative)
-						{
-							UI.InputDialog ui = new UI.InputDialog(Res.Me, Res.History, Res.InvokeCommands);
-							ui.UIEdit.Text = code;
-							if (!ui.UIDialog.Show())
-								return;
-							code = ui.UIEdit.Text;
-						}
-
-						A.Psf.Act(code, null, true);
-						return;
+						var command = History.Cache[History.CacheIndex];
+						if (command != lastUsed)
+							return command;
 					}
+				}
+			}
+			else
+			{
+				for (; ; )
+				{
+					if (++History.CacheIndex >= History.Cache.Length)
+					{
+						History.CacheIndex = History.Cache.Length;
+						return string.Empty;
+					}
+					else
+					{
+						var command = History.Cache[History.CacheIndex];
+						if (command != lastUsed)
+							return command;
+					}
+				}
 			}
 		}
 	}

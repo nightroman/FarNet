@@ -12,7 +12,6 @@ namespace PowerShellFar.UI
 	class CommandHistoryMenu
 	{
 		IListMenu _menu;
-		internal bool Alternative;
 
 		public CommandHistoryMenu(string prefix)
 		{
@@ -26,11 +25,9 @@ namespace PowerShellFar.UI
 			_menu.Incremental = prefix;
 			_menu.IncrementalOptions = PatternOptions.Substring;
 
-			_menu.AddKey(KeyCode.Enter, ControlKeyStates.LeftCtrlPressed);
 			_menu.AddKey(KeyCode.R, ControlKeyStates.LeftCtrlPressed, OnDelete);
 			_menu.AddKey(KeyCode.Delete, ControlKeyStates.None, OnDelete);
 		}
-
 		void ResetItems(string[] lines)
 		{
 			_menu.Items.Clear();
@@ -40,7 +37,6 @@ namespace PowerShellFar.UI
 					_menu.Add(s);
 			}
 		}
-
 		void OnDelete(object sender, MenuEventArgs e)
 		{
 			var lines = History.Update(null);
@@ -56,7 +52,6 @@ namespace PowerShellFar.UI
 				ResetItems(lines);
 			}
 		}
-
 		public string Show()
 		{
 			// fill
@@ -67,7 +62,6 @@ namespace PowerShellFar.UI
 				return null;
 
 			// selected
-			Alternative = _menu.Key.IsCtrl(KeyCode.Enter);
 			return _menu.Items[_menu.Selected].Text;
 		}
 	}

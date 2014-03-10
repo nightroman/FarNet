@@ -13,6 +13,7 @@ namespace PowerShellFar.UI
 {
 	class InputConsole
 	{
+		public static readonly Guid TypeId = new Guid("25b66eb8-14de-4894-94e4-02a6da03f75e");
 		const string DefaultPrompt = "PS> ";
 
 		static bool _visiblePanel1;
@@ -32,6 +33,7 @@ namespace PowerShellFar.UI
 			var pos = tooLong ? size.X / 2 : prompt.Length;
 
 			_Dialog = Far.Api.CreateDialog(0, size.Y - 2, size.X - 1, size.Y - 1);
+			_Dialog.TypeId = TypeId;
 			_Dialog.NoShadow = true;
 			_Dialog.KeepWindowTitle = true;
 
@@ -107,23 +109,19 @@ namespace PowerShellFar.UI
 						EditorKit.ExpandCode(_Edit.Line, null);
 					}
 					break;
-				case KeyCode.F1:
-					e.Ignore = true;
-					Help.ShowHelpForContext("CommandConsoleDialog");
-					break;
 				case KeyCode.UpArrow:
-					if (e.Key.Is())
-					{
-						e.Ignore = true;
-						OnHistory(-1);
-					}
-					break;
+					goto case KeyCode.DownArrow;
 				case KeyCode.DownArrow:
 					if (e.Key.Is())
 					{
 						e.Ignore = true;
-						OnHistory(1);
+						_Edit.Text = History.GetNextCommand(e.Key.VirtualKeyCode == KeyCode.UpArrow, _Edit.Text);
+						_Edit.Line.Caret = -1;
 					}
+					break;
+				case KeyCode.F1:
+					e.Ignore = true;
+					Help.ShowHelpForContext("CommandConsoleDialog");
 					break;
 				case KeyCode.F4:
 					e.Ignore = true;
@@ -135,63 +133,10 @@ namespace PowerShellFar.UI
 						_Dialog.Close();
 					}
 					break;
-			}
-		}
-		void OnHistory(int direction)
-		{
-			string lastUsedCmd = null;
-			if (History.Cache == null) //TODO duplicated code
-			{
-				lastUsedCmd = _Edit.Text;
-				History.Cache = History.ReadLines();
-				History.CacheIndex = History.Cache.Length;
-			}
-			else if (History.CacheIndex >= 0 && History.CacheIndex < History.Cache.Length)
-			{
-				lastUsedCmd = History.Cache[History.CacheIndex];
-			}
-			string code;
-			if (direction < 0)
-			{
-				for (; ; )
-				{
-					if (--History.CacheIndex < 0)
-					{
-						code = string.Empty;
-						History.CacheIndex = -1;
-					}
-					else
-					{
-						code = History.Cache[History.CacheIndex];
-						if (code == lastUsedCmd)
-							continue;
-					}
+				case KeyCode.F7:
+					e.Ignore = true;
+					A.Psf.ShowHistory();
 					break;
-				}
-			}
-			else
-			{
-				for (; ; )
-				{
-					if (++History.CacheIndex >= History.Cache.Length)
-					{
-						code = string.Empty;
-						History.CacheIndex = History.Cache.Length;
-					}
-					else
-					{
-						code = History.Cache[History.CacheIndex];
-						if (code == lastUsedCmd)
-							continue;
-					}
-					break;
-				}
-			}
-
-			if (code != null)
-			{
-				_Edit.Text = code;
-				_Edit.Line.Caret = -1;
 			}
 		}
 		//! like PS, use just result[0] if it is not empty
