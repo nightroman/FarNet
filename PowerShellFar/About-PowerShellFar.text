@@ -36,27 +36,25 @@
 * [Search-Regex-.ps1](#SearchRegex)
 * [Other scripts](#Others)
 
-### Appendix
-
-* [Using .NET assemblies](#UsingAssemblies)
-
 *********************************************************************
 # About {#About}
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.62
+### PowerShellFar 5.0.63
 
 PowerShellFar is the FarNet module which effectively combines Windows
 PowerShell with text friendly console environment of Far Manager.
 
-PowerShellFar implements the Windows PowerShell host, exposes the FarNet API,
-and provides several ways for invoking commands and viewing the results. The
-package includes cmdlets, modules, and scripts specifically designed for Far
-Manager. PowerShell syntax highlighting in editors is provided by Colorer.
+PowerShellFar implements the Windows PowerShell host, exposes the FarNet
+API, and provides several ways for invoking commands and viewing the
+results. The package includes cmdlets, modules, and scripts specifically
+designed for Far Manager. PowerShell syntax highlighting in editors is
+provided by Colorer.
 
-Most of PowerShell features are supported. Some PowerShell cmdlets and host
-features designed for plain console UI may work with some differences in UI.
+Most of PowerShell features are supported. Some PowerShell cmdlets and
+host features designed for plain console UI may work with some
+differences in UI.
 
 PowerShellFar and FarNet can be updated by the script *Update-FarNet.ps1*.
 
@@ -72,8 +70,8 @@ PowerShellFar and FarNet can be updated by the script *Update-FarNet.ps1*.
 
 ### Requirements
 
-- Far Manager 3.0.3822
-- Plugin FarNet 5.0.42
+- Far Manager 3.0.3827
+- Plugin FarNet 5.0.43
 - Windows PowerShell V2, V3
 
 ### Set PowerShell execution policy
@@ -319,8 +317,8 @@ See [Background jobs menu](#MenuBackgroundJobs).
 ---
 ### Command history
 
-Shows the command history menu.
-See [Command history menu](#MenuCommandHistory).
+Shows the command history list.
+See [Command history list](#MenuCommandHistory).
 
 ---
 ### Editor console
@@ -392,47 +390,51 @@ controls. But some extra keys are associated with specific actions and tools.
 <!--_140305_113849-->
 `[Enter]`
 
-  : Invokes the typed commands.
+ : Invokes the typed commands.
 
 `[Tab]`
 
-  : Invokes PowerShell code completion (TabExpansion).
+ : Invokes PowerShell code completion (TabExpansion).
 
 `[F1]`
 
-  : If the input line is empty shows this topic. Otherwise shows PowerShell
-    help for the current command or its parameter.
+ : If the input line is empty shows this topic. Otherwise shows PowerShell help
+   for the current command or its parameter.
 <!--_140305_113849-->
-
-`[F10]`
-
-  : Exits the command console.
-
-`[Esc]`
-
-  : Clears the input line or exits the command console.
-
-`[Up]`
-
-  : Gets the previous command from history.
-
-`[Down]`
-
-  : Gets the next command from history.
-
-`[CtrlAltUp]`, `[CtrlAltDown]`
-
-  : Scrolls the console window up and down by lines.
-
-`[CtrlAltPgUp]`, `[CtrlAltPgDn]`
-
-  : Scrolls the console window up and down by screens.
 
 `[F4]`
 
-  : Opens the modal editor for input of multiline code. This is mostly used for
-    pasting and invoking external code snippets. This code is not added to the
-    command history.
+ : Opens the modal editor for input of multiline code. This is mostly used for
+   pasting and invoking external code snippets. This code is not added to the
+   command history.
+
+`[F7]`
+
+ : Shows the PowerShell command history. Press `[F1]` there for help.
+
+`[F10]`
+
+ : Exits the command console.
+
+`[Esc]`
+
+ : Clears the input line or exits the command console.
+
+`[Up]`
+
+ : Gets the previous command from history.
+
+`[Down]`
+
+ : Gets the next command from history.
+
+`[CtrlAltUp]`, `[CtrlAltDown]`
+
+ : Scrolls the console window up and down by lines.
+
+`[CtrlAltPgUp]`, `[CtrlAltPgDn]`
+
+ : Scrolls the console window up and down by screens.
 
 ---
 **Prompt**
@@ -482,16 +484,16 @@ output is written to a temporary file and shown in the internal viewer.
 <!--_140305_113849-->
 `[Enter]`
 
-  : Invokes the typed commands.
+ : Invokes the typed commands.
 
 `[Tab]`
 
-  : Invokes PowerShell code completion (TabExpansion).
+ : Invokes PowerShell code completion (TabExpansion).
 
 `[F1]`
 
-  : If the input line is empty shows this topic. Otherwise shows PowerShell
-    help for the current command or its parameter.
+ : If the input line is empty shows this topic. Otherwise shows PowerShell help
+   for the current command or its parameter.
 <!--_140305_113849-->
 
 
@@ -515,55 +517,62 @@ Other information: output data size and a job name or its command text (shortene
 
 `[Enter]`
 
-  : If there are output data closes the menu and opens a viewer for the output.
+ : If there are output data closes the menu and opens a viewer for the output.
 
 `[F3]`
 
-  : The same but you will return to the job menu when you close a viewer.
+ : The same but you will return to the job menu when you close a viewer.
 
 `[F5]`
 
-  : Refreshes job data shown by this menu.
+ : Refreshes job data shown by this menu.
 
 `[Del]`
 
-  : For a running job: stops it. For a not running job: removes it from the list,
-    discards its output, errors, and deletes temp files, if any.
+ : For a running job: stops it. For a not running job: removes it from the
+   list, discards its output, errors, and deletes temp files, if any.
 
 `[ShiftDel]`
 
-  : Invokes `[Del]` action for each job in the list.
+ : Invokes `[Del]` action for each job in the list.
 
 
 *********************************************************************
-# Command history menu {#MenuCommandHistory}
+# Command history list {#MenuCommandHistory}
 
 [Contents](#Contents)
 
-Shows PowerShell command history. Behaviour and actions may depend on where the
-menu has started.
+The command history is shown by `[F11] \ PowerShellFar \ Invoke commands` from
+almost any context and by `[F7]` from the command console.
 
 ### Keys and actions
 
-`[Enter]` Invokes the command immediately as it is. Note: the history contains
-commands from all areas and the current area may be not suitable. Example: a
-command that opens a panel should not be called from a dialog.
+`[Enter]`
 
-`[CtrlEnter]` Edits the command before invocation. In panels: inserts the
-command text into the command line with automatically added prefix. In editor
-consoles: inserts the command text into the editor. In other areas: opens the
-"Invoke commands" dialog with the command text inserted there.
+ : Inserts the command to a command input line (panels, command console, editor
+   console, command box) or shows a dialog *Invoke commands* with this command.
 
-`[CtrlC]` Copies the command text to the clipboard.
+`[CtrlC]`
 
-`[CtrlR]`, `[Del]` Removes old and duplicated commands from the history.
+ : Copies the command text to the clipboard.
 
-`[Symbol]` Applies incremental filter immediately on typing. Symbols * and ?
-are wildcards.
+`[CtrlR]`, `[Del]`
 
-`[BS]` Removes the last symbol from the incremental filter string.
+ : Removes old and duplicated commands from the history.
 
-`[ShiftBS]` Removes the incremental filter string completely.
+---
+**Incremental filter**
+
+Typed characters are immediately applied as the filter. `*` and `?` are treated
+as wildcard characters.
+
+`[BS]`
+
+ : Removes the last character from the incremental filter.
+
+`[ShiftBS]`
+
+ : Removes the incremental filter string completely.
 
 
 *********************************************************************
@@ -2089,85 +2098,6 @@ or you can just invoke standard help commands, for example:
     man -det Panel-Data-.ps1
     help -full Panel-Property-.ps1
     ...
-
-
-*********************************************************************
-# Using .NET assemblies {#UsingAssemblies}
-
-[Contents](#Contents)
-
-Suppose you want to write a tool in a .NET language, not in PowerShell (perhaps
-performance is quite important or a tool is too complex for scripting). Be
-aware that there are many possible ways.
-
-### Way 1 - FarNet module
-
-Create a FarNet module, that is a .NET library dependent on FarNet. Implement
-one or more module classes. PowerShellFar itself is such a module.
-
-### Way 2 - .NET library
-
-Create a standard class library, then load and use it from scripts. It may or
-may not be dependent on FarNet or PowerShell. If a library is dependent on
-FarNet you should connect it, send the IFar instance there. For example:
-
-### Code (C#):
-
-    using System;
-    using FarNet;
-    namespace ClassLibrary1
-    {
-       public class Class1
-       {
-          public bool HelloWorld(string title)
-          {
-             return Far.Api.Message("Hello World", title);
-          }
-       }
-    }
-
-### Code (PowerShell):
-
-    # load the assembly (perhaps in a profile if it is always used)
-    Add-Type -Path "...\HelloWorld.dll"
-
-    # create the class instance
-    # (if the code is in the profile then all scripts see $Hello)
-    $Hello = New-Object ClassLibrary1.Class1
-
-    # use public members in $Hello, e.g. call HelloWorld()
-    $result = $Hello.HelloWorld("This is example of a parameter")
-
-
-### Advantages
-
-* Functionality of this assembly is available everywhere in PowerShell code
-and for other .NET modules.
-
-* Simplicity: .NET assembly contains pure functionality, no extra module
-infrastructure.
-
-* Flexibility: now you can decide how to use it: from the command line or a
-menu or a script or whatever. PowerShellFar provides many choices.
-
-* This assembly is loaded only when needed and once even if Add-Type is called
-many times (if it is in a profile then it is always loaded, indeed).
-
-
-### Way 3 - PowerShell module
-
-Modules depend on PowerShell and may or may not depend on FarNet. Modules
-implement PowerShell features and infrastructure. For example:
-
-- Cmdlets
-- Providers
-- Custom type formatting
-- New members to existing types
-
-### Way 4 - Compile .NET code dynamically
-
-The `Add-Type` cmdlet can compile .NET code at runtime. Example: *Test-Zoo.cs*
-contains some C# code, *Test-Zoo-.ps1* shows how to compile and use it.
 
 
 *********************************************************************

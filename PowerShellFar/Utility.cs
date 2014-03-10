@@ -59,7 +59,7 @@ namespace PowerShellFar
 
 			// use default external viewer
 			externalViewerFileName = Process.GetCurrentProcess().MainModule.FileName;
-			externalViewerArguments = "/ro /m /p /v \"" + fileName + "\"";
+			externalViewerArguments = "/w- /ro /m /p /v \"" + fileName + "\"";
 			return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 		}
 		///
@@ -395,11 +395,7 @@ namespace My
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public static Process Start(string fileName, string arguments)
 		{
-			return Process.Start(new ProcessStartInfo()
-			{
-				FileName = fileName,
-				Arguments = arguments
-			});
+			return Process.Start(new ProcessStartInfo() { FileName = fileName, Arguments = arguments });
 		}
 	}
 }

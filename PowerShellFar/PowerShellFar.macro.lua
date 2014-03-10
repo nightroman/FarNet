@@ -28,25 +28,25 @@ end;
 
 Macro {
 area="Common"; key="CtrlShiftL"; description="PSF: Favorites menu"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:Menu-Favorites-.ps1")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":vps:Menu-Favorites-.ps1")
 end;
 }
 
 Macro {
 area="Common"; key="AltF10"; description="PSF: Command history"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:$Psf.ShowHistory()")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":vps:$Psf.ShowHistory()")
 end;
 }
 
 Macro {
 area="Common"; key="CtrlShiftP"; description="PSF: Command box"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:$Psf.InvokeInputCode()")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":vps:$Psf.InvokeInputCode()")
 end;
 }
 
 Macro {
 area="Editor"; key="CtrlShiftM"; description="PSF: Show editor bookmarks"; action=function()
-Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":ps:Select-Bookmark-")
+Plugin.Call("10435532-9BB3-487B-A045-B0E6ECAAB6BC", ":vps:Select-Bookmark-")
 end;
 }
 

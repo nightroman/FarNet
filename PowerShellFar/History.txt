@@ -1,6 +1,20 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.63 =
+
+Command console:
+- As in MS console, [F7] shows PowerShell command history.
+- PromptForChoice: fixed formatting of long items.
+
+PowerShell history:
+- Default MaximumHistoryCount: 512 -> 1000.
+- [Enter] inserts to command lines or a new command input box.
+- [CtrlEnter] is not used.
+
+Other:
+- Added /w- to the default external viewer, i.e. Far /w- ...
+
 = 5.0.62 =
 
 Requires FarNet 5.0.42

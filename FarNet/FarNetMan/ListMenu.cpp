@@ -279,6 +279,7 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 			if (a.Restart)
 			{
 				_keyIndex = -2;
+				_ii = nullptr;
 				_toFilter = true;
 			}
 		}
@@ -333,8 +334,8 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 			}
 			else
 			{
-				_toFilter = true;
 				_ii = nullptr;
+				_toFilter = true;
 			}
 		}
 	}
@@ -381,8 +382,11 @@ void ListMenu::OnKeyPressed(Object^ sender, KeyPressedEventArgs^ e)
 
 bool ListMenu::Show()
 {
-	// main loop
+	//! drop filter indexes because they are invalid on the second show if items have changed
+	_ii = nullptr;
 	_toFilter = true;
+	
+	// main loop
 	for(int pass = 0;; ++pass)
 	{
 		// filter

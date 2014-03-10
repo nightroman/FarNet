@@ -3,7 +3,7 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("2.0.3")]
+[assembly: AssemblyVersion("2.0.4")]
 [assembly: AssemblyProduct("FarNet.Vessel")]
 [assembly: AssemblyTitle("FarNet module Vessel for Far Manager")]
 [assembly: AssemblyDescription("FarNet.Vessel: (View/Edit/Save/SELect) file history tools")]

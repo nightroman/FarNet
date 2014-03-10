@@ -83,8 +83,8 @@ task Version {
 # Make NuGet package
 task NuGet Package, Version, {
 	$text = @'
-PowerShellFar is the FarNet module which effectively combines the Windows
-PowerShell core with the text friendly console environment of Far Manager.
+PowerShellFar is the FarNet module which effectively combines Windows
+PowerShell with text friendly console environment of Far Manager.
 '@
 	# nuspec
 	Set-Content z\Package.nuspec @"

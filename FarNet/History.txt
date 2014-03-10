@@ -1,6 +1,11 @@
 The NuGet package: https://www.nuget.org/packages/FarNet
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2256
 
+= 5.0.43 =
+
+IListMenu - fixed "Index out of range" on the second Show() with incremental
+filter and changed items ([ShiftDel] and [CtrlR] in Vessel and PSF history).
+
 = 5.0.42 =
 
 IAnyEditor - the new method EditText(EditTextArgs) should be used instead of

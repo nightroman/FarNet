@@ -51,18 +51,18 @@ namespace FarNet
 		IList<XmlAttributeInfo> XmlAttributes();
 	}
 	/// <summary>
-	/// Abstract panel item representing file, directory, plugin item, or module item.
+	/// Abstract panel item representing native files and directories, plugin panel items, and module panel items.
 	/// </summary>
 	/// <remarks>
 	/// Modules may implement derived classes in order to represent their panel
 	/// items effectively. Alternatively, they may use <see cref="SetFile"/>,
-	/// already implemented simple property set.
+	/// the simple property set.
 	/// <para>
 	/// Although this class is abstract all its virtual properties are defined,
 	/// they get default values and throw <c>NotImplementedException</c> on
-	/// setting. Thus, derived classes do not have to implement every property,
-	/// at least <see cref="Name"/> has to be defined (in order to be shown in
-	/// a panel), other properties are implemented only if they are used.
+	/// setting. Thus, derived classes do not have to implement every property.
+	/// At least <see cref="Name"/> has to be defined in order to be shown in
+	/// a panel, other properties are implemented when needed.
 	/// </para>
 	/// </remarks>
 	public abstract class FarFile : IXmlInfo
@@ -232,7 +232,7 @@ namespace FarNet
 			return Name;
 		}
 		/// <summary>
-		/// Not yet public.
+		/// INTERNAL
 		/// </summary>
 		public virtual string XmlNodeName()
 		{
@@ -266,7 +266,7 @@ namespace FarNet
 			return _attrs;
 		}
 		/// <summary>
-		/// Not yet public.
+		/// INTERNAL
 		/// </summary>
 		public virtual IList<XmlAttributeInfo> XmlAttributes()
 		{

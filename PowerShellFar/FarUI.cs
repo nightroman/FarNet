@@ -252,11 +252,9 @@ namespace PowerShellFar
 		//! c&p
 		void WriteChoicePrompt(string[,] hotkeysAndPlainLabels, Dictionary<int, bool> defaultChoiceKeys, bool shouldEmulateForMultipleChoiceSelection)
 		{
-			ConsoleColor foregroundColor = ForegroundColor;
-			ConsoleColor backgroundColor = BackgroundColor;
-			int lineLenMax = RawUI.WindowSize.Width - 1;
-			int num = 0;
+			int lineLenMax = RawUI.BufferSize.Width - 1;
 			string format = "[{0}] {1}  ";
+			
 			for (int i = 0; i < hotkeysAndPlainLabels.GetLength(1); i++)
 			{
 				ConsoleColor fg = PromptColor;
@@ -264,12 +262,12 @@ namespace PowerShellFar
 					fg = DefaultPromptColor;
 
 				string text = string.Format(null, format, hotkeysAndPlainLabels[0, i], hotkeysAndPlainLabels[1, i]);
-				WriteChoiceHelper(text, fg, backgroundColor, ref num, lineLenMax);
+				WriteChoiceHelper(text, fg, BackgroundColor, lineLenMax);
 				if (shouldEmulateForMultipleChoiceSelection)
 					WriteLine();
 			}
 
-			WriteChoiceHelper(PromptForChoiceHelp, foregroundColor, backgroundColor, ref num, lineLenMax);
+			WriteChoiceHelper(PromptForChoiceHelp, ForegroundColor, BackgroundColor, lineLenMax);
 			if (shouldEmulateForMultipleChoiceSelection)
 				WriteLine();
 
@@ -299,25 +297,20 @@ namespace PowerShellFar
 					text2 = string.Format(null, DefaultChoicesForMultipleChoices, o);
 				}
 			}
-			WriteChoiceHelper(text2, foregroundColor, backgroundColor, ref num, lineLenMax);
+			
+			WriteChoiceHelper(text2, ForegroundColor, BackgroundColor, lineLenMax);
 			WriteLine(); //! or it is under the dialog
 		}
-		//! c&p
-		void WriteChoiceHelper(string text, ConsoleColor fg, ConsoleColor bg, ref int lineLen, int lineLenMax)
+		//! revised
+		// MS issues: wrapped line text misses end spaces due to TrimEnd(); 1st very long line is written with new line before it.
+		// Do: if (text can be written without wrapping) {write as it is} else (write it from a new line).
+		// We use the cursor just because we have it. It is simple and has no issues.
+		void WriteChoiceHelper(string text, ConsoleColor fg, ConsoleColor bg, int lineLenMax)
 		{
-			int num = RawUI.LengthInBufferCells(text);
-			bool flag = false;
-			if (lineLen + num > lineLenMax)
-			{
+			int x = Far.Api.UI.BufferCursor.X;
+			if (x > 0 && x + text.Length >= lineLenMax)
 				WriteLine();
-				flag = true;
-				lineLen = num;
-			}
-			else
-			{
-				lineLen += num;
-			}
-			Write(fg, bg, flag ? text.TrimEnd(null) : text);
+			Write(fg, bg, text);
 		}
 		//! c&p
 		static void BuildHotkeysAndPlainLabels(Collection<ChoiceDescription> choices, out string[,] hotkeysAndPlainLabels)
