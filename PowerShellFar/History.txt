@@ -1,6 +1,14 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.64 =
+
+Command console:
+- Read-Host and Prompt(): fixed history and password.
+- Show-FarTranscript uses the external viewer by default.
+- Transcribing is off by default, use Start-Transcript, Show-FarTranscript.
+- Start-Transcript, Stop-Transcript work like in MS with minor differences.
+
 = 5.0.63 =
 
 Command console:

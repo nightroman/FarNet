@@ -89,7 +89,7 @@ namespace PowerShellFar
 			string currentDirectory = A.Psf.SyncPaths();
 			try
 			{
-				A.Psf.Act(e.Command, new ConsoleOutputWriter("PS:" + e.Command), !e.IsMacro);
+				A.Psf.Act(e.Command, new ConsoleOutputWriter(CommandInvoke1.Prefix + ":" + e.Command), !e.IsMacro);
 			}
 			finally
 			{

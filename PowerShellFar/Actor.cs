@@ -130,11 +130,6 @@ namespace PowerShellFar
 					Runspace = null;
 				}
 			}
-
-			// clean the transcript
-			_transcript.Close();
-			if (_transcript.FileName != null)
-				My.FileEx.DeleteIgnoreError(_transcript.FileName);
 		}
 
 		void OpenRunspace(bool sync)
@@ -535,7 +530,7 @@ Continue with this current directory?
 		{
 			if (Far.Api.Window.Kind != WindowKind.Editor)
 				throw new InvalidOperationException(Res.NeedsEditor);
-			
+
 			return Far.Api.Editor;
 		}
 		/// <summary>
@@ -975,37 +970,32 @@ Continue with this current directory?
 				}
 			}
 		}
+		// Show debug dialog
 		void OnDebuggerStop(object sender, DebuggerStopEventArgs e)
 		{
-			// show debug dialog
 			UI.DebuggerDialog ui = new UI.DebuggerDialog(e);
-			if (FarUI.Writer is ConsoleOutputWriter || FarUI.Writer is TranscriptOutputWriter)
+
+			// viewer writer?
+			var writer = FarUI.Writer as TranscriptOutputWriter;
+
+			// no? if console writer and transcript then use transcript
+			if (writer == null && FarUI.Writer is ConsoleOutputWriter && Transcript != null)
+				writer = Transcript;
+
+			// add View handler
+			if (writer != null)
 			{
 				ui.OnView = delegate
 				{
-					// | console
-					{
-						var writer = FarUI.Writer as ConsoleOutputWriter;
-						if (writer != null)
-						{
-							Zoo.ShowTranscript(true);
-							return;
-						}
-					}
-					// | viewer
-					{
-						var writer = FarUI.Writer as TranscriptOutputWriter;
-						if (writer != null)
-						{
-							if (writer.FileName == null)
-								writer.Write(string.Empty);
+					// ensure file
+					if (writer.FileName == null)
+						writer.Write(string.Empty);
 
-							Zoo.StartExternalViewer(writer.FileName);
-							return;
-						}
-					}
+					// view file
+					Zoo.StartExternalViewer(writer.FileName);
 				};
 			}
+
 			e.ResumeAction = ui.Show();
 		}
 		/// <summary>
@@ -1033,9 +1023,8 @@ Continue with this current directory?
 			get { return Entry.Instance.Manager; }
 		}
 		/// <summary>
-		/// Transcript writer, ready to write.
+		/// Transcript writer, may be null.
 		/// </summary>
-		internal TranscriptOutputWriter Transcript { get { return _transcript; } }
-		readonly TranscriptOutputWriter _transcript = new TranscriptOutputWriter();
+		internal TranscriptOutputWriter Transcript { get; set; }
 	}
 }

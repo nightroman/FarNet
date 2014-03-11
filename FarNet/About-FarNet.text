@@ -14,7 +14,7 @@
 * [Plugin menu](#MenuMain)
 * [Config menu](#MenuConfig)
 
-### User interface features
+### User interface
 
 * [List menu](#ListMenu)
 
@@ -393,13 +393,16 @@ and common module options.
 * *Tools* shows the [Configure menu tools](#ConfigTool) menu.
 * *UI culture* shows the [Module UI culture](#ConfigUICulture) menu.
 
-**NOTE:** These are *system settings*. They exist for all modules and their tools.
-In contrast, there are also *user settings* panels opened from the plugin menu
-in panels. User settings exist only if they are implemented by a module.
-See [Settings menu and panels](#ModuleSettings) (`F11 | FarNet | Settings`).
+---
 
-In addition, modules may provide custom settings dialogs and even not standard
-ways to configure settings (e.g. via registry), see module manuals.
+These settings are *system settings*. They exist for all modules and their
+tools. In addition to them there are *user settings* panels opened from the
+plugin menu in panels. User settings exist only if they are implemented by
+modules.
+See [Settings menu and panels](#ModuleSettings) (`[F11] \ FarNet \ Settings`).
+
+Of course, modules may provide other settings dialogs and even other ways to
+configure settings (registry, config files, etc.).
 
 *********************************************************************
 ## Configure commands {#ConfigCommand}
@@ -495,20 +498,18 @@ on properties set by a module.
 
 `[Enter]`
 
-Selects the current item and closes the menu. The selected item is processed by
-a caller. Example: command history: the selected command is invoked.
+ : Selects the current item and closes the menu. The selected item is processed
+   by a caller. Example: command history: the selected command is invoked.
 
 `[CtrlEnter]`
 
-Recommended key for an alternative action, i.e. it selects the current item,
-closes the menu and the item is processed by a caller in alternative way.
-Example: command history: the selected command is inserted into the command
-line.
+ : Recommended key for an alternative action, i.e. it selects the current item,
+   closes the menu and the item is processed by a caller in alternative way.
 
 `[Del]`
 
-Recommended key for removing item(s) from the menu. Example: command history:
-removes duplicated commands or removes the current command and etc.
+ : Recommended key for removing item(s) from the menu. Example: command
+   history: removes duplicated commands or removes the current command and etc.
 
 ### Incremental filter
 
@@ -517,15 +518,15 @@ is enabled). By default symbols * and ? are wildcards.
 
 `[BS]`
 
-Removes the last symbol from the current incremental filter pattern.
+ : Removes the last symbol from the current incremental filter pattern.
 
 `[ShiftBS]`
 
-Removes the incremental filter string completely.
+ : Removes the incremental filter string completely.
 
 `[CtrlC]`, `[CtrlIns]`
 
-Copies the current item text to the clipboard.
+ : Copies the current item text to the clipboard.
 
 *********************************************************************
 ## Settings menu and panel {#ModuleSettings}
@@ -534,35 +535,34 @@ Copies the current item text to the clipboard.
 
 ### Settings menu
 
-The settings menu shows settings sets implemented by modules and discovered by
-the core (a module may implement any number of settings sets). On selection of
-a set from the menu its properties are shown in its module settings panel. The
-settings panel is uniform for all modules.
+The settings menu shows settings implemented by modules and discovered by the
+core (a module normally has one setting set but it may have several). On
+selection of a set from the menu its properties are shown in its module
+settings panel. The settings panel is uniform for all modules.
 
 ### Settings panel
 
 The module settings panel shows two columns: setting names and values. Use
 `[F4]` in order to edit values in text editors. Editors are not modal, several
-settings editors can be opened at the same time. Changed values are applied
-immediately and cannot be undone. The settings set is saved to files when the
-panel closes (e.g. by `[Esc]`).
+editors can be opened at the same time. Changed values are applied immediately
+and cannot be undone. The settings are saved when the panel closes (`[Esc]`).
 
-In editors consider to save changes before closing (use `[F2]`). If the current
-text is not valid then after an error message the editor is still opened and
-the text can be corrected. It is recommended to exit settings editors before
-closing the panel.
+In editors consider to save changes before closing (`[F2]`). In this case if
+the text is not valid then after an error message on saving the editor stays
+opened and the text can be corrected. It is recommended to exit all settings
+editors before closing the panel.
 
-Default setting names start with '-'. Ever edited setting names start with '+';
-note that such values may be equal to default as well. To reset settings to
-defaults use `[Del]` or `[F8]` in the panel for selected settings. Default
-settings are not stored in files, their values are defined in modules.
+Default setting names start with "-". Ever edited setting names start with "+".
+To reset selected values to default use `[Del]` or `[F8]` in the panel. Default
+values are not stored in files, they are defined in modules.
 
-`[CtrlF11]` in the panel shows default and ever edited values sorted
-separately. `[CtrlF3]` restores usual sort by names.
+`[CtrlF11]` in the panel shows default and edited values sorted separately.
+`[CtrlF3]` restores sorting by names.
 
-**NOTE:** These are *user settings* of modules that provide settings classes. In
-contrast, there are also *system settings* menus and dialogs. System settings
-exist for all modules and their tools.
-See [Config menu](#MenuConfig) (`F9 | Options | Plugin configuration`).
+---
+
+These settings are *user settings* provided by modules. In addition to them
+modules may also have *system settings* menus and dialogs shown by the core.
+See [Config menu](#MenuConfig) (`[F9] \ Options \ Plugin configuration`).
 
 *********************************************************************
