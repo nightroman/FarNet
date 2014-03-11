@@ -29,7 +29,7 @@ namespace PowerShellFar
 	{
 		string _header;
 		public ConsoleOutputWriter() { }
-		public ConsoleOutputWriter(string header, bool write = false) //TODO to write header always?
+		public ConsoleOutputWriter(string header, bool write = false)
 		{
 			_header = header;
 			if (write)
@@ -44,62 +44,72 @@ namespace PowerShellFar
 				Far.Api.UI.Write(header, Settings.Default.CommandForegroundColor);
 				_header = null;
 
-				A.Psf.Transcript.WriteLine(Environment.NewLine + header);
+				if (A.Psf.Transcript != null)
+					A.Psf.Transcript.WriteLine(Environment.NewLine + header);
 			}
 		}
 		public override void Write(string value)
 		{
 			Writing();
 			Far.Api.UI.Write(value);
-			A.Psf.Transcript.Write(value);
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.Write(value);
 		}
 		public override void WriteLine()
 		{
 			Writing();
 			Far.Api.UI.WriteLine();
-			A.Psf.Transcript.WriteLine();
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.WriteLine();
 		}
 		public override void WriteLine(string value)
 		{
 			Writing();
 			Far.Api.UI.WriteLine(value);
-			A.Psf.Transcript.WriteLine(value);
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.WriteLine(value);
 		}
 		public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
 			Far.Api.UI.Write(value, foregroundColor, backgroundColor);
-			A.Psf.Transcript.Write(value);
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.Write(value);
 		}
 		public override void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
 		{
 			Writing();
 			Far.Api.UI.WriteLine(value, foregroundColor, backgroundColor);
-			A.Psf.Transcript.WriteLine(value);
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.WriteLine(value);
 		}
 		public override void WriteDebugLine(string message)
 		{
 			Writing();
 			Far.Api.UI.WriteLine("DEBUG: " + message, Settings.Default.DebugForegroundColor);
-			A.Psf.Transcript.WriteDebugLine(message);
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.WriteDebugLine(message);
 		}
 		public override void WriteErrorLine(string value)
 		{
 			Writing();
 			Far.Api.UI.WriteLine(value, Settings.Default.ErrorForegroundColor);
-			A.Psf.Transcript.WriteErrorLine(value);
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.WriteErrorLine(value);
 		}
 		public override void WriteVerboseLine(string message)
 		{
 			Writing();
 			Far.Api.UI.WriteLine("VERBOSE: " + message, Settings.Default.VerboseForegroundColor);
-			A.Psf.Transcript.WriteVerboseLine(message);
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.WriteVerboseLine(message);
 		}
 		public override void WriteWarningLine(string message)
 		{
 			Writing();
 			Far.Api.UI.WriteLine("WARNING: " + message, Settings.Default.WarningForegroundColor);
-			A.Psf.Transcript.WriteWarningLine(message);
+			if (A.Psf.Transcript != null)
+				A.Psf.Transcript.WriteWarningLine(message);
 		}
 	}
 
@@ -205,14 +215,54 @@ namespace PowerShellFar
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	sealed class TranscriptOutputWriter : TextOutputWriter
 	{
+		public static string LastFileName { get; private set; }
+		static string TextTranscriptPrologue = @"
+**********************
+Windows PowerShell transcript start
+Start time: {0:yyyyMMddHHmmss}
+Username  : {1}\{2} 
+Machine	  : {3} ({4}) 
+**********************
+";
+		static string TextTranscriptEpilogue = @"
+**********************
+Windows PowerShell transcript end
+End time: {0:yyyyMMddHHmmss}
+**********************
+";
+
 		static int _fileNameCount;
 		StreamWriter _writer;
 		string _fileName;
+		bool _transcript;
+
 		public string FileName { get { return _fileName; } }
+
+		public TranscriptOutputWriter()
+		{ }
+		public TranscriptOutputWriter(string path, bool append)
+		{
+			_writer = new StreamWriter(path, append, Encoding.Unicode);
+			_writer.AutoFlush = true;
+			_writer.WriteLine(string.Format(null, TextTranscriptPrologue,
+			DateTime.Now,
+			Environment.UserDomainName,
+			Environment.UserName,
+			Environment.MachineName,
+			Environment.OSVersion.VersionString
+			));
+
+			_fileName = path;
+			_transcript = true;
+			LastFileName = path;
+		}
 		public void Close()
 		{
 			if (_writer != null)
 			{
+				if (_transcript)
+					_writer.Write(string.Format(null, TextTranscriptEpilogue, DateTime.Now));
+				
 				_writer.Close();
 				_writer = null;
 			}
@@ -224,30 +274,24 @@ namespace PowerShellFar
 			// It might be a virus scanner or an indexing service. Enough, the
 			// files are temporary, use the Temp path. It's better to have not
 			// deleted files there than in Personal.
+			// NB: the above is for "transcribe always".
+
 			string directory = Path.GetTempPath();
 
-			if (this == A.Psf.Transcript)
-			{
-				// the only session transcript
-				return Path.Combine(
-					directory,
-					string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.txt", DateTime.Now));
-			}
-			else
-			{
-				// next instant transcript
-				++_fileNameCount;
-				int process = Process.GetCurrentProcess().Id;
-				return Path.Combine(
-					directory,
-					string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.{1}.{2}.txt", DateTime.Now, process, _fileNameCount));
-			}
+			// next instant transcript
+			++_fileNameCount;
+			int process = Process.GetCurrentProcess().Id;
+			return Path.Combine(
+				directory,
+				string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.{1}.{2}.txt", DateTime.Now, process, _fileNameCount));
 		}
 		void Writing()
 		{
 			if (_writer == null)
 			{
-				_fileName = NewFileName();
+				if (_fileName == null)
+					_fileName = NewFileName();
+
 				_writer = new StreamWriter(_fileName, false, Encoding.Unicode);
 				_writer.AutoFlush = true;
 			}

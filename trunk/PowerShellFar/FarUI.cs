@@ -122,7 +122,7 @@ namespace PowerShellFar
 					if (Far.Api.UI.IsCommandMode)
 					{
 						WriteLine(prompt + ":");
-						var ui = new UI.ReadLine() { HelpMessage = current.HelpMessage, Password = safe };
+						var ui = new UI.ReadLine() { HelpMessage = current.HelpMessage, History = Res.HistoryPrompt, Password = safe };
 						if (!ui.Show())
 							break;
 

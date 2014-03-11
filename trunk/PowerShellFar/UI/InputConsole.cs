@@ -39,26 +39,26 @@ namespace PowerShellFar.UI
 
 			_Edit = _Dialog.AddEdit(pos, 0, size.X - 2, string.Empty);
 			_Edit.History = history;
-			_Edit.Coloring += ColorEdit;
+			_Edit.Coloring += Coloring.ColorEditAsConsole;
 
 			if (tooLong)
 			{
 				var UIText = _Dialog.AddEdit(0, 0, pos - 1, prompt.TrimEnd());
 				UIText.ReadOnly = true;
-				UIText.Coloring += ColorEdit;
+				UIText.Coloring += Coloring.ColorEditAsConsole;
 				UIText.LosingFocus += (sender, e) =>
-					{
-						UIText.Line.Caret = -1;
-					};
+				{
+					UIText.Line.Caret = -1;
+				};
 			}
 			else
 			{
 				var UIText = _Dialog.AddText(0, 0, pos - 1, prompt);
-				UIText.Coloring += ColorText;
+				UIText.Coloring += Coloring.ColorTextAsConsole;
 			}
 
 			var UIArea = _Dialog.AddText(0, 1, size.X - 1, string.Empty);
-			UIArea.Coloring += ColorText;
+			UIArea.Coloring += Coloring.ColorTextAsConsole;
 
 			// hotkeys
 			_Edit.KeyPressed += OnKey;
@@ -69,27 +69,6 @@ namespace PowerShellFar.UI
 					if (e.Control == null)
 						e.Ignore = true;
 				};
-		}
-		void ColorEdit(object sender, ColoringEventArgs e)
-		{
-			// normal text
-			e.Background1 = ConsoleColor.Black;
-			e.Foreground1 = ConsoleColor.Gray;
-			// selected text
-			e.Background2 = ConsoleColor.White;
-			e.Foreground2 = ConsoleColor.DarkGray;
-			// unchanged text
-			e.Background3 = ConsoleColor.Black;
-			e.Foreground3 = ConsoleColor.Gray;
-			// combo
-			e.Background4 = ConsoleColor.Black;
-			e.Foreground4 = ConsoleColor.Gray;
-		}
-		void ColorText(object sender, ColoringEventArgs e)
-		{
-			// normal text
-			e.Background1 = ConsoleColor.Black;
-			e.Foreground1 = ConsoleColor.Gray;
 		}
 		void OnKey(object sender, KeyPressedEventArgs e)
 		{

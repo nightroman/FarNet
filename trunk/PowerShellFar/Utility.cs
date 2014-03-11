@@ -17,6 +17,7 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text.RegularExpressions;
 using FarNet;
+using FarNet.Forms;
 
 namespace PowerShellFar
 {
@@ -62,28 +63,86 @@ namespace PowerShellFar
 			externalViewerArguments = "/w- /ro /m /p /v \"" + fileName + "\"";
 			return My.ProcessEx.Start(externalViewerFileName, externalViewerArguments);
 		}
+		#region Transcript
+		const string TextTranscriptFileExistsNoClobber = "File {0} already exists and {1} was specified.";
+		const string TextTranscriptFileReadOnly = "Transcription file is read only.";
+		const string TextTranscriptFileMissing = "Transcription file is missing.";
+		const string TextTranscriptInProgress = "Transcription has already been started. Use the Stop-Transcript command to stop transcription.";
+		const string TranscriptNotInProgress = "Transcription has not been started. Use the Start-Transcript command to start transcription.";
+		const string TextTranscriptStarted = "Transcript started, output file is {0}";
+		const string TextTranscriptStopped = "Transcript stopped, output file is {0}";
 		///
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
-		public static void ShowTranscript(bool external)
+		public static void ShowTranscript(bool internalViewer)
 		{
-			// ensure the file exists, we may want to open a viewer before output
-			if (A.Psf.Transcript.FileName == null)
-				A.Psf.Transcript.Write(string.Empty);
+			if (TranscriptOutputWriter.LastFileName == null)
+				throw new InvalidOperationException(TranscriptNotInProgress);
 
-			// open external or internal
-			if (external)
-			{
-				StartExternalViewer(A.Psf.Transcript.FileName);
-			}
-			else
+			if (!File.Exists(TranscriptOutputWriter.LastFileName))
+				throw new InvalidOperationException(TextTranscriptFileMissing);
+
+			if (internalViewer)
 			{
 				var viewer = Far.Api.CreateViewer();
-				viewer.Title = Path.GetFileName(A.Psf.Transcript.FileName);
-				viewer.FileName = A.Psf.Transcript.FileName;
+				viewer.Title = Path.GetFileName(TranscriptOutputWriter.LastFileName);
+				viewer.FileName = TranscriptOutputWriter.LastFileName;
 				viewer.CodePage = 1200;
 				viewer.Open();
 			}
+			else
+			{
+				StartExternalViewer(TranscriptOutputWriter.LastFileName);
+			}
 		}
+		///
+		public static string StopTranscript(bool force)
+		{
+			if (A.Psf.Transcript == null)
+			{
+				if (force)
+					return null;
+
+				throw new InvalidOperationException(TranscriptNotInProgress);
+			}
+
+			A.Psf.Transcript.Close();
+			A.Psf.Transcript = null;
+
+			return string.Format(null, TextTranscriptStopped, TranscriptOutputWriter.LastFileName);
+		}
+		///
+		public static string StartTranscript(string path, bool append, bool force, bool noClobber)
+		{
+			if (A.Psf.Transcript != null)
+				throw new InvalidOperationException(TextTranscriptInProgress);
+
+			if (string.IsNullOrEmpty(path))
+			{
+				path = Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+					string.Format(null, "PowerShell_transcript.{0:yyyyMMddHHmmss}.txt", DateTime.Now));
+			}
+
+			if (File.Exists(path))
+			{
+				if (noClobber && !append)
+					throw new InvalidOperationException(string.Format(null, TextTranscriptFileExistsNoClobber, path, "NoClobber"));
+
+				var fileInfo = new FileInfo(path);
+				if ((fileInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+				{
+					if (!force)
+						throw new InvalidOperationException(TextTranscriptFileReadOnly);
+
+					fileInfo.Attributes &= ~FileAttributes.ReadOnly;
+				}
+			}
+
+			A.Psf.Transcript = new TranscriptOutputWriter(path, append);
+
+			return string.Format(TextTranscriptStarted, path);
+		}
+		#endregion
 	}
 
 	[Serializable]
@@ -150,6 +209,31 @@ namespace PowerShellFar
 		public static string PositionMessage(string message)
 		{
 			return message.Trim().Replace("\n", "\r\n");
+		}
+	}
+
+	static class Coloring
+	{
+		public static void ColorEditAsConsole(object sender, ColoringEventArgs e)
+		{
+			// normal text
+			e.Background1 = ConsoleColor.Black;
+			e.Foreground1 = ConsoleColor.Gray;
+			// selected text
+			e.Background2 = ConsoleColor.White;
+			e.Foreground2 = ConsoleColor.DarkGray;
+			// unchanged text
+			e.Background3 = ConsoleColor.Black;
+			e.Foreground3 = ConsoleColor.Gray;
+			// combo
+			e.Background4 = ConsoleColor.Black;
+			e.Foreground4 = ConsoleColor.Gray;
+		}
+		public static void ColorTextAsConsole(object sender, ColoringEventArgs e)
+		{
+			// normal text
+			e.Background1 = ConsoleColor.Black;
+			e.Foreground1 = ConsoleColor.Gray;
 		}
 	}
 

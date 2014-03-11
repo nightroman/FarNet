@@ -41,7 +41,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.63
+### PowerShellFar 5.0.64
 
 PowerShellFar is the FarNet module which effectively combines Windows
 PowerShell with text friendly console environment of Far Manager.
@@ -238,8 +238,9 @@ Commands with prefixes are used in the command line, the user menu (`[F2]`),
 and the file associations. By default command prefixes are: `ps:` (console
 output) and `vps:` (viewer output).
 
-Console output is also transcribed in a temporary file which can be opened in a
-viewer at any time by the command `Show-FarTranscript [-External]`.
+Console output may be transcribed to a file, use `Start-Transcript` and
+`Stop-Transcript` for starting and stopping and `Show-FarTranscript` for
+viewing the output.
 
 Note: PowerShell scripts opened in the editor can be invoked in the current
 session by `[F5]`. The key is hard-coded but a different key can be used, too.
@@ -463,8 +464,9 @@ true`) in the full list of settings. The list is called from the command line:
 Also make sure that the current or saved console buffer height is large enough
 for output, e.g. set to the maximum value 9999 in the console property dialog.
 
-In any case you may use the built-in command `Show-FarTranscript` in order to
-view the whole session output in the internal or external viewer window.
+Console output may be transcribed to a file, use `Start-Transcript` and
+`Stop-Transcript` for starting and stopping and `Show-FarTranscript` for
+viewing the output.
 
 
 *********************************************************************
@@ -786,8 +788,9 @@ in editor, take a look at the source code, or stop the pipeline and debugging.
   repeated.
 
 `{View}`
-: Opens an external viewer to view the running command output. This action is
-  not available for some commands, e.g. for editor console commands.
+: Opens an external viewer to view commands output. This action is available
+  for: 1) commands with viewer output; 2) commands with console output if
+  `Start-Transcript` was called. It is not available for editor consoles.
 
 `{Line}`
 : Sets the current list line to the current debugger line.
@@ -803,9 +806,9 @@ It is possible that the debugger or your actions there may affect execution
 flow in unusual way, especially if the code deals with Far UI that may clash
 against the debugger UI. Think when you are about to debug such scenarios.
 
-When you debug commands with output it may be useful to open an external viewer
-of transcribed output before you start debugging (`Show-FarTranscript
--External`). In this way you can see the output during debugging.
+On debugging commands with output to console it is useful to `Start-Transcript`
+before debugging. In this case the output can be shown by the button `{View}`
+or by the command `Show-FarTranscript`.
 
 
 *********************************************************************
@@ -1617,8 +1620,9 @@ See example [Profile.ps1](#Profile).
 
 Output of these commands is written to the user screen (console under panels).
 The output uses different colors depending on message types (errors, warnings,
-etc.). The whole session output is transcribed and can be opened in a viewer
-at any time during the session by Show-FarTranscript.
+etc.). Console output may be transcribed to a file, use `Start-Transcript` and
+`Stop-Transcript` for starting and stopping and `Show-FarTranscript` for
+viewing the output.
 
 Note that console output may have unwanted screen effects on commands with UI
 and on PowerShell debugging. Such commands should be invoked from the command
@@ -1642,22 +1646,6 @@ output is redirected to a file and an external viewer is started to view it.
 Output of other code is discarded (e.g. commands from your menu tools or event
 handlers have no shown output). Failure messages are shown in error message
 boxes, minor errors and warnings are ignored.
-
-### Transcription of command output
-
-Output of `ps:` commands is written to the user screen and to the current session
-transcription file. The transcription file is in the `%TEMP%` directory, its name
-is *PowerShell_transcript.timestamp.txt*
-
-The transcription file is opened on the first command, kept opened until the
-end of the session, and deleted if Far exits normally.
-
-Use `Show-FarTranscript [-External]` to view the transcribed session output.
-External show is especially useful on script debugging.
-
-Output of `vps:` commands is written to files:
-*PowerShell_transcript.timestamp.pid.counter.txt*.
-They are deleted as soon as their viewers are closed.
 
 
 *********************************************************************
