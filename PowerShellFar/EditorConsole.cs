@@ -5,13 +5,11 @@ Copyright (c) 2006-2014 Roman Kuzmin
 */
 
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Security.Permissions;
 using System.Text;
-using System.Text.RegularExpressions;
 using FarNet;
 
 namespace PowerShellFar
@@ -488,7 +486,7 @@ namespace PowerShellFar
 				PowerShell.Runspace = Runspace;
 				PowerShell.Commands
 					.AddScript(code)
-					.AddCommand(A.OutCommand);
+					.AddCommand(A.OutHostCommand);
 
 				Editor.BeginAsync();
 				PowerShell.BeginInvoke<PSObject>(null, null, AsyncInvoke, null);

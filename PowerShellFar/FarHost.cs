@@ -139,13 +139,27 @@ namespace PowerShellFar
 		/// so the parent can restore that state when the child exits.
 		/// </summary>
 		public override void NotifyBeginApplication()
-		{ }
+		{
+			//_140311_185917 ps: git log -- [q] => without ShowUserScreen/SaveUserScreen it ends up with not shown panels
+			++_BeginApplication;
+			Far.Api.UI.ShowUserScreen();
+		}
+		// Why? NotifyEndApplication may be called without NotifyBeginApplication (no idea why).
+		// E.g. Panels, F11 PSF 1, PSF history, Enter
+		int _BeginApplication;
 		/// <summary>
 		/// Called after an external application process finishes.
 		/// It is used to restore state that the child process may have altered.
 		/// </summary>
 		public override void NotifyEndApplication()
-		{ }
+		{
+			//_140311_185917
+			if (_BeginApplication > 0)
+			{
+				--_BeginApplication;
+				Far.Api.UI.SaveUserScreen();
+			}
+		}
 		/// <summary>
 		/// Indicates to the host that an exit has been requested.
 		/// It passes the exit code that the host should use when exiting the process.

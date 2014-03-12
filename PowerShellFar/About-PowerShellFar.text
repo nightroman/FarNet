@@ -41,22 +41,17 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.64
+### PowerShellFar 5.0.65
 
-PowerShellFar is the FarNet module which effectively combines Windows
-PowerShell with text friendly console environment of Far Manager.
+PowerShellFar is the FarNet module for Far Manager, the file manager.
+It is the Windows PowerShell host in the genuine console environment.
 
-PowerShellFar implements the Windows PowerShell host, exposes the FarNet
-API, and provides several ways for invoking commands and viewing the
-results. The package includes cmdlets, modules, and scripts specifically
-designed for Far Manager. PowerShell syntax highlighting in editors is
-provided by Colorer.
+PowerShellFar exposes the FarNet API and provides many ways for invoking
+commands and viewing the results. The package includes cmdlets, modules,
+and scripts designed for Far Manager. Syntax highlighting in the editor
+is provided by Colorer.
 
-Most of PowerShell features are supported. Some PowerShell cmdlets and
-host features designed for plain console UI may work with some
-differences in UI.
-
-PowerShellFar and FarNet can be updated by the script *Update-FarNet.ps1*.
+To install and update PowerShellFar and FarNet use *Update-FarPackage.ps1*.
 
 ### Project
 
@@ -70,54 +65,57 @@ PowerShellFar and FarNet can be updated by the script *Update-FarNet.ps1*.
 
 ### Requirements
 
-- Far Manager 3.0.3827
+- Far Manager 3.0.3830
 - Plugin FarNet 5.0.43
-- Windows PowerShell V2, V3
+- Windows PowerShell 2.0, 3.0
 
+---
 ### Set PowerShell execution policy
 
-Start `PowerShell.exe` and type `Get-ExecutionPolicy`. If it is not *Bypass*,
-*Unrestricted*, or *RemoteSigned* then invoke `Set-ExecutionPolicy` with one of
-these values. *Bypass* is the fastest but the least secure.
+The module works with any policy. This step is recommended for comfortable work
+with *PowerShell.exe*, e.g. in order to use the script *Update-FarPackage.ps1*.
+
+Start `PowerShell.exe` as administrator, and type `Get-ExecutionPolicy`. If it
+is not *Bypass*, *Unrestricted*, or *RemoteSigned* invoke `Set-ExecutionPolicy`
+with the required value. *Bypass* is the least secure but may work faster.
 
 On x64 machines `Set-ExecutionPolicy` should be set for x86 and x64. Use the
 Windows start menu in order to open x86 and x64 consoles and set the policy.
 
-If you are not administrator use the parameter `-Scope CurrentUser`, for example:
+If you are not administrator use the parameter `-Scope CurrentUser`.
 
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-
+---
 ### Install the module
 
-**Automated**
+**Scripted**
 
 Use the script <https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1>
 
-Close all Far instances and invoke this command in PowerShell:
+Close Far Manager and invoke this command in PowerShell console:
 
     Update-FarPackage.ps1 FarNet.PowerShellFar -FarHome <path>
 
-**Manual**
+**Manually**
 
-The package directory *tools* contains files to be installed. Files from
-the *FarHome* directory should be copied to the *%FARHOME%* directory
-preserving its directory structure.
+The package directory *tools* contains files to be installed. Files from the
+*FarHome* directory should be copied to the Far Manager directory preserving
+their directory structure.
 
 Other files:
 
 - *About-PowerShellFar.htm* - this documentation
 - *History.txt* - the change log
 
-### Using Bench scripts
+---
+### Bench scripts
 
 Included Bench scripts are ready to use tools for various tasks. There are also
 test and demo scripts for learning PowerShellFar and PowerShell. In order to to
 use these scripts directly from Bench include the directory Bench in the path.
 
-New users may want to configure the module with the profile [Profile.ps1](#Profile).
-Then it should be copied to *%FARPROFILE%\FarNet\PowerShellFar*. It adds many
-features including additional menu tools, so that you can invoke some scripts
-right from the menu.
+New users may want to configure the module with [Profile.ps1](#Profile). Then
+it should be copied to *%FARPROFILE%\FarNet\PowerShellFar*. It adds various
+features including additional menu items invoking the scripts.
 
 ### Colorer support
 
@@ -125,11 +123,16 @@ The syntax scheme *powershell.hrc* and the optional color scheme *visual.hrd*
 come with the Colorer package. They provide syntax highlighting in PowerShell
 files and editor consoles.
 
-### Console window width
+### Console window
 
-If you work a lot with power panels then it is recommended to use the console
-width at least 164, so that panel widths are 80. Many PowerShell type formats
-are designed with 80 columns in mind.
+If you use a lot of PowerShell commands with console output consider to start
+Far Manager in window mode (`Far.exe /w`) and set/save the large enough buffer
+height. Alternatively, set this mode permanently (`System.WindowMode = true`)
+in the list of settings (type `far:config` in the command line).
+
+If you work a lot with power panels then set/save the console width at least
+164, so that panel widths are 80 or more. Many PowerShell type formats are
+designed with 80 columns in mind.
 
 
 *********************************************************************

@@ -124,7 +124,7 @@ namespace PowerShellFar
 		/// <param name="input">Input objects.</param>
 		public static void Out(PowerShell ps, IEnumerable input)
 		{
-			ps.Commands.AddCommand(OutCommand);
+			ps.Commands.AddCommand(OutHostCommand);
 			ps.Invoke(input);
 		}
 		/// <summary>
@@ -176,23 +176,34 @@ namespace PowerShellFar
 				}
 			}
 		}
-		static Command _OutCommand;
+		/// <summary>
+		/// Command for formatted output friendly for apps with interaction and colors.
+		/// </summary>
+		/// <remarks>
+		/// "Out-Host" is not suitable for apps with interaction, e.g. more.com, git.exe.
+		/// </remarks>
+		public static Command OutDefaultCommand
+		{
+			get
+			{
+				var command = new Command("Out-Default");
+				command.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error;
+				return command;
+			}
+		}
 		/// <summary>
 		/// Command for formatted output of everything.
 		/// </summary>
 		/// <remarks>
 		/// "Out-Default" is not suitable for external apps, output goes to console.
 		/// </remarks>
-		public static Command OutCommand
+		public static Command OutHostCommand
 		{
 			get
 			{
-				if (_OutCommand == null)
-				{
-					_OutCommand = new Command("Out-Host");
-					_OutCommand.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error;
-				}
-				return _OutCommand;
+				var command = new Command("Out-Host");
+				command.MergeUnclaimedPreviousCommandResults = PipelineResultTypes.Output | PipelineResultTypes.Error;
+				return command;
 			}
 		}
 		/// <summary>

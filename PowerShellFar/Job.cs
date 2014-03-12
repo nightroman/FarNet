@@ -234,7 +234,7 @@ namespace PowerShellFar
 			// UI: Write all output, including errors.
 			if (JobUI != null)
 			{
-				PowerShell.Commands.AddCommand(A.OutCommand);
+				PowerShell.Commands.AddCommand(A.OutHostCommand);
 			}
 			// Hidden: Write output to "Out-Null" to avoid memory use.
 			else if (keepSeconds <= 0)

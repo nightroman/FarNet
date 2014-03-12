@@ -4,8 +4,7 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-param
-(
+param(
 	$Platform = (property Platform Win32),
 	$Configuration = (property Configuration Release)
 )
@@ -83,8 +82,12 @@ task Version {
 # Make NuGet package
 task NuGet Package, Version, {
 	$text = @'
-PowerShellFar is the FarNet module which effectively combines Windows
-PowerShell with text friendly console environment of Far Manager.
+PowerShellFar is the FarNet module for Far Manager, the file manager.
+It is the Windows PowerShell host in the genuine console environment.
+
+To install FarNet and then FarNet.PowerShellFar in Far Manager use:
+
+https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
 '@
 	# nuspec
 	Set-Content z\Package.nuspec @"
