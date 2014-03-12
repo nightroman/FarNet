@@ -1,6 +1,15 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.65 =
+
+Command console and "ps:" commands:
+- Console apps with interaction and colors work as expected. In particular,
+...|more works fine, git.exe commands work with colors and interaction, etc.
+
+Execution policy:
+- The module does not require Set-ExecutionPolicy in PowerShell.
+
 = 5.0.64 =
 
 Command console:

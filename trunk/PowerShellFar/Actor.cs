@@ -141,6 +141,9 @@ namespace PowerShellFar
 			// initial state
 			var state = InitialSessionState.CreateDefault();
 
+			// can run scripts regadless of execution policy
+			state.AuthorizationManager = new AuthorizationManager(Res.Me);
+
 			// cmdlets
 			Commands.BaseCmdlet.AddCmdlets(state);
 
@@ -850,7 +853,9 @@ Continue with this current directory?
 				using (var ps = NewPowerShell())
 				{
 					_myCommand = code;
-					ps.Commands.AddScript(code).AddCommand(A.OutCommand);
+					//TODO We may need a mode with Out-Host even for console, e.g. to transcribe apps output
+					var output = FarUI.Writer is ConsoleOutputWriter ? A.OutDefaultCommand : A.OutHostCommand;
+					ps.Commands.AddScript(code).AddCommand(output);
 					ps.Invoke();
 				}
 			}
