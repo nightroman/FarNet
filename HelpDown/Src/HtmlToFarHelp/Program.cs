@@ -27,14 +27,14 @@ namespace HtmlToFarHelp
 	{
 		static int Main(string[] args)
 		{
+			var parameters = string.Join("; ", args);
+
 			var converter = new Converter();
 			string from = null;
 			string to = null;
 			try
 			{
-				var builder = new DbConnectionStringBuilder();
-				builder.ConnectionString = string.Join(";", args);
-
+				var builder = new DbConnectionStringBuilder() { ConnectionString = parameters };
 				foreach (DictionaryEntry it in (IDictionary)builder)
 				{
 					switch (it.Key.ToString())
@@ -50,7 +50,7 @@ namespace HtmlToFarHelp
 			}
 			catch (Exception e)
 			{
-				Console.Error.WriteLine("Invalid command line. " + e.Message);
+				Console.Error.WriteLine(string.Format(null, "Invalid command line. Parameter string: '{0}'. Error: {1}", parameters, e.Message));
 				return 1;
 			}
 

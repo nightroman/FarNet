@@ -12,7 +12,6 @@ anywhere. Use an empty set in order to reset the current options to global.
     IndentPara = 0;
     IndentQuote = 4;
     CenterHeading = false;
-    CenterRule = false;
     PlainCode = false;
     PlainHeading = false;
 -->

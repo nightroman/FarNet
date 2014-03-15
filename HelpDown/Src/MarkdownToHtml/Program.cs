@@ -15,6 +15,7 @@
 */
 
 using System;
+using System.Collections;
 using System.Data.Common;
 using System.IO;
 using System.Text;
@@ -24,27 +25,24 @@ namespace MarkdownToHtml
 {
 	class Program
 	{
-		const string argFrom = "FROM";
-		const string argTo = "TO";
-		const string argTitle = "TITLE";
 		static int Main(string[] args)
 		{
+			var parameters = string.Join("; ", args);
+			
 			string from = null;
 			string to = null;
 			string title = null;
 			try
 			{
-				var builder = new DbConnectionStringBuilder();
-				builder.ConnectionString = string.Join(";", args);
-
-				foreach (string key in builder.Keys)
+				var builder = new DbConnectionStringBuilder() { ConnectionString = parameters };
+				foreach (DictionaryEntry it in (IDictionary)builder)
 				{
-					switch (key.ToUpper())
+					switch (it.Key.ToString())
 					{
-						case argFrom: from = builder[argFrom].ToString(); break;
-						case argTo: to = builder[argTo].ToString(); break;
-						case argTitle: title = builder[argTitle].ToString(); break;
-						default: throw new ArgumentException("Unknown key: " + key);
+						case "from": from = it.Value.ToString(); break;
+						case "to": to = it.Value.ToString(); break;
+						case "title": title = it.Value.ToString(); break;
+						default: throw new ArgumentException("Unknown key: " + it.Key);
 					}
 				}
 
@@ -54,7 +52,7 @@ namespace MarkdownToHtml
 			}
 			catch (Exception e)
 			{
-				Console.Error.WriteLine("Invalid command line. " + e.Message);
+				Console.Error.WriteLine(string.Format(null, "Invalid command line. Parameter string: '{0}'. Error: {1}", parameters, e.Message));
 				return 1;
 			}
 
