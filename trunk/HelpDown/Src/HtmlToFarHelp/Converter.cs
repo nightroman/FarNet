@@ -82,7 +82,6 @@ namespace HtmlToFarHelp
 					switch (it.Key.ToString())
 					{
 						case "centerheading": options.CenterHeading = bool.Parse(value); break;
-						case "centerrule": options.CenterRule = bool.Parse(value); break;
 						case "plaincode": options.PlainCode = bool.Parse(value); break;
 						case "plainheading": options.PlainHeading = bool.Parse(value); break;
 						case "margin": options.Margin = int.Parse(value); break;
@@ -403,11 +402,7 @@ namespace HtmlToFarHelp
 		{
 			Writer.WriteLine();
 			Writer.WriteLine();
-
-			if (_options.CenterRule)
-				Writer.Write("^");
-
-			Writer.Write("___________________________________________________________________");
+			Writer.Write("@=");
 		}
 		void P1()
 		{

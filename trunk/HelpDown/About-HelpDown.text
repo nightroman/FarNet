@@ -18,7 +18,7 @@ anchors, valid topic links, and etc.
 
 Usage:
 
-    HtmlToFarHelp From=... To=...
+    HtmlToFarHelp From=<HTML file> To=<HLF file>
 
 Example:
 
@@ -35,7 +35,6 @@ markdown or HTML. Here is the example with available keys and default values:
         IndentPara = 0;
         IndentQuote = 4;
         CenterHeading = false;
-        CenterRule = false;
         PlainCode = false;
         PlainHeading = false;
     -->
@@ -69,7 +68,7 @@ compatible with HLF in order to be finally converted to HLF files via HTML
 
 Usage:
 
-    MarkdownToHtml From=... To=...
+    MarkdownToHtml From=<Markdown file> To=<HTML file>
 
 Example:
 

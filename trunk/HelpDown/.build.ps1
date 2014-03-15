@@ -9,16 +9,17 @@
 		Build configuration. Default: Release.
 #>
 
-param
-(
+param(
 	$Bin = (property Bin),
 	$Configuration = 'Release'
 )
+
+Set-StrictMode -Version Latest
 $Version = '1.0.0'
-Set-StrictMode -Version 2
+$SampleHome = "$HOME\data\HelpDown"
 
 # Use MSBuild.
-use Framework\v4.0.30319 MSBuild
+use 4.0 MSBuild
 
 # Default task.
 task . Build, Help, Help2, Clean
@@ -56,7 +57,7 @@ task Clean RemoveMarkdownHtml, {
 # Make HLF from HTML files.
 task Help ConvertMarkdown, {
 	exec { HtmlToFarHelp From=TestHelpDown.htm To=TestHelpDown.hlf }
-	Assert-SameFile "$env:APPDATA\TestHelpDown.2.hlf" "$BuildRoot\TestHelpDown.hlf" $env:MERGE
+	Assert-SameFile "$SampleHome\TestHelpDown.2.hlf" "$BuildRoot\TestHelpDown.hlf" $env:MERGE
 	if (Test-Path z.Test.text) { exec { HtmlToFarHelp From=z.Test.htm To=z.Test.hlf } }
 }
 
@@ -83,14 +84,14 @@ task Zip ConvertMarkdown, Help, {
 	exec { & 7z a ..\HelpDown.$Version.7z * }
 }
 
-# Make HTM and HLF in %APPDATA%, compare with saved, remove the same.
+# Make HTM and HLF in $SampleHome, compare with saved, remove the same.
 function Test-File($File)
 {
 	if (!(Test-Path -LiteralPath $File)) { Write-Warning "$File is missing."; return }
 	$name = [System.IO.Path]::GetFileNameWithoutExtension($File)
-	$htm = "$env:APPDATA\$name.htm"
-	$hlf = "$env:APPDATA\$name.hlf"
-	$hlf2 = "$env:APPDATA\$name.2.hlf"
+	$htm = "$SampleHome\$name.htm"
+	$hlf = "$SampleHome\$name.hlf"
+	$hlf2 = "$SampleHome\$name.2.hlf"
 
 	exec { MarkdownToHtml From=$File To=$htm }
 	exec { HtmlToFarHelp From=$htm To=$hlf }

@@ -38,7 +38,6 @@ namespace HtmlToFarHelp
 			};
 		}
 		public bool CenterHeading;
-		public bool CenterRule;
 		public bool PlainCode;
 		public bool PlainHeading;
 		public int Margin;
