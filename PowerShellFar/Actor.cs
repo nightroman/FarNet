@@ -774,7 +774,7 @@ Continue with this current directory?
 		// PS host
 		FarHost FarHost;
 		// PS UI
-		FarUI FarUI;
+		internal FarUI FarUI;
 		// PS runspace
 		internal Runspace Runspace { get; private set; }
 		// Main pipeline

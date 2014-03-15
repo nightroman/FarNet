@@ -18,17 +18,39 @@ using System;
 using System.Collections;
 using System.Data.Common;
 using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using MarkdownDeep;
+
+[assembly: AssemblyVersion("1.0.1")]
+[assembly: AssemblyProduct("MarkdownToHtml")]
+[assembly: AssemblyTitle("MarkdownToHtml")]
+[assembly: AssemblyDescription("MarkdownToHtml - converts markdown to HTML")]
+[assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
+[assembly: AssemblyCopyright("Copyright (c) 2012-2014 Roman Kuzmin")]
+[assembly: ComVisible(false)]
+[assembly: CLSCompliant(true)]
 
 namespace MarkdownToHtml
 {
 	class Program
 	{
+		const string Usage = @"Error: {0}
+{1}
+
+Usage:
+  MarkdownToHtml.exe key=value ...
+  MarkdownToHtml.exe ""key = value; ...""
+
+Keys:
+  From  = Input markdown file
+  To    = Output HTML file
+  Title = Optional HTML title
+";
 		static int Main(string[] args)
 		{
 			var parameters = string.Join("; ", args);
-			
 			string from = null;
 			string to = null;
 			string title = null;
@@ -46,13 +68,13 @@ namespace MarkdownToHtml
 					}
 				}
 
-				if (from == null) throw new ArgumentException("Missing argument: From=<Markdown file>");
-				if (to == null) throw new ArgumentException("Missing argument: To=<HTML file>");
+				if (from == null) throw new ArgumentException("Missing key 'From'.");
+				if (to == null) throw new ArgumentException("Missing key 'To'.");
 				if (title == null) title = Path.GetFileNameWithoutExtension(from);
 			}
 			catch (Exception e)
 			{
-				Console.Error.WriteLine(string.Format(null, "Invalid command line. Parameter string: '{0}'. Error: {1}", parameters, e.Message));
+				Console.Error.WriteLine(string.Format(null, Usage, e.Message, parameters));
 				return 1;
 			}
 

@@ -43,22 +43,22 @@ namespace PowerShellFar.UI
 
 			if (tooLong)
 			{
-				var UIText = _Dialog.AddEdit(0, 0, pos - 1, prompt.TrimEnd());
-				UIText.ReadOnly = true;
-				UIText.Coloring += Coloring.ColorEditAsConsole;
-				UIText.LosingFocus += (sender, e) =>
+				var uiText = _Dialog.AddEdit(0, 0, pos - 1, prompt.TrimEnd());
+				uiText.ReadOnly = true;
+				uiText.Coloring += Coloring.ColorEditAsConsole;
+				uiText.LosingFocus += (sender, e) =>
 				{
-					UIText.Line.Caret = -1;
+					uiText.Line.Caret = -1;
 				};
 			}
 			else
 			{
-				var UIText = _Dialog.AddText(0, 0, pos - 1, prompt);
-				UIText.Coloring += Coloring.ColorTextAsConsole;
+				var uiText = _Dialog.AddText(0, 0, pos - 1, prompt);
+				uiText.Coloring += Coloring.ColorTextAsConsole;
 			}
 
-			var UIArea = _Dialog.AddText(0, 1, size.X - 1, string.Empty);
-			UIArea.Coloring += Coloring.ColorTextAsConsole;
+			var uiArea = _Dialog.AddText(0, 1, size.X - 1, string.Empty);
+			uiArea.Coloring += Coloring.ColorTextAsConsole;
 
 			// hotkeys
 			_Edit.KeyPressed += OnKey;

@@ -20,10 +20,11 @@ namespace PowerShellFar
 {
 	class FarUI : UniformUI
 	{
-		const string DefaultChoiceForMultipleChoices = @"(default is ""{0}"")";
-		const string DefaultChoicePrompt = @"(default is ""{0}""): ";
-		const string DefaultChoicesForMultipleChoices = "(default choices are {0})";
-		const string PromptForChoiceHelp = "[?] Help ";
+		const string TextDefaultChoiceForMultipleChoices = @"(default is ""{0}"")";
+		const string TextDefaultChoicePrompt = @"(default is ""{0}"")";
+		const string TextDefaultChoicesForMultipleChoices = "(default choices are {0})";
+		const string TextPrompt = ": ";
+		const string TextPromptForChoiceHelp = "[?] Help ";
 
 		const ConsoleColor ForegroundColor = ConsoleColor.Gray;
 		const ConsoleColor BackgroundColor = ConsoleColor.Black;
@@ -75,7 +76,7 @@ namespace PowerShellFar
 					WriteLine(message);
 			}
 
-			foreach (var current in descriptions) //TODO HelpMessage
+			foreach (var current in descriptions)
 			{
 				var prompt = current.Name;
 
@@ -86,32 +87,31 @@ namespace PowerShellFar
 					for (; ; )
 					{
 						var prompt2 = string.Format(null, "{0}[{1}]", prompt, arrayList.Count);
+						string text;
 						if (Far.Api.UI.IsCommandMode)
 						{
-							WriteLine(prompt2 + ":");
-							var ui = new UI.ReadLine() { HelpMessage = current.HelpMessage, History = Res.HistoryPrompt };
-							if (!ui.Show())
+							WriteLine(prompt2);
+
+							//TODO HelpMessage - is fine by [F1]?
+							var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt };
+							if (!ui.Show() || (text = ui.Text).Length == 0)
 								break;
 
-							var s = ui.Text;
-
-							WriteLine(s);
-							arrayList.Add(s);
+							WriteLine(TextPrompt + text);
 						}
 						else
 						{
+							//TODO HelpMessage - not done
 							var ui = new UI.InputBoxEx()
 							{
 								Title = caption,
 								Prompt = string.IsNullOrEmpty(message) ? prompt2 : message + "\r" + prompt2,
 								History = Res.HistoryPrompt
 							};
-
-							if (!ui.Show())
+							if (!ui.Show() || (text = ui.Text).Length == 0)
 								break;
-
-							arrayList.Add(ui.Text);
 						}
+						arrayList.Add(text);
 					}
 					r.Add(prompt, new PSObject(arrayList));
 				}
@@ -119,20 +119,22 @@ namespace PowerShellFar
 				{
 					var safe = type == typeof(SecureString);
 
+					string text;
 					if (Far.Api.UI.IsCommandMode)
 					{
-						WriteLine(prompt + ":");
-						var ui = new UI.ReadLine() { HelpMessage = current.HelpMessage, History = Res.HistoryPrompt, Password = safe };
+						WriteLine(prompt);
+
+						//TODO HelpMessage - [F1] - really?
+						var ui = new UI.ReadLine() { Prompt = TextPrompt, HelpMessage = current.HelpMessage, History = Res.HistoryPrompt, Password = safe };
 						if (!ui.Show())
 							break;
 
-						if (!safe)
-							WriteLine(ui.Text);
-
-						r.Add(prompt, ValueToResult(ui.Text, safe));
+						text = ui.Text;
+						WriteLine(TextPrompt + (safe ? "*" : text));
 					}
 					else
 					{
+						//TODO HelpMessage - not done
 						var ui = new UI.InputBoxEx()
 						{
 							Title = caption,
@@ -140,12 +142,12 @@ namespace PowerShellFar
 							History = Res.HistoryPrompt,
 							Password = safe
 						};
-
 						if (!ui.Show())
 							break;
 
-						r.Add(prompt, ValueToResult(ui.Text, safe));
+						text = ui.Text;
 					}
+					r.Add(prompt, ValueToResult(text, safe));
 				}
 			}
 			return r;
@@ -182,14 +184,14 @@ namespace PowerShellFar
 			{
 				WriteChoicePrompt(hotkeysAndPlainLabels, dictionary, false);
 
-				var ui = new UI.ReadLine();
+				var ui = new UI.ReadLine() { Prompt = TextPrompt };
 				if (!ui.Show())
 					throw new PipelineStoppedException(); //TODO
 
 				var text = ui.Text;
 				
 				// echo
-				WriteLine(ui.Text);
+				WriteLine(TextPrompt + ui.Text);
 
 				if (text.Length == 0)
 				{
@@ -267,7 +269,7 @@ namespace PowerShellFar
 					WriteLine();
 			}
 
-			WriteChoiceHelper(PromptForChoiceHelp, ForegroundColor, BackgroundColor, lineLenMax);
+			WriteChoiceHelper(TextPromptForChoiceHelp, ForegroundColor, BackgroundColor, lineLenMax);
 			if (shouldEmulateForMultipleChoiceSelection)
 				WriteLine();
 
@@ -289,12 +291,12 @@ namespace PowerShellFar
 				if (defaultChoiceKeys.Count == 1)
 				{
 					text2 = shouldEmulateForMultipleChoiceSelection ?
-						string.Format(null, DefaultChoiceForMultipleChoices, o) :
-						string.Format(null, DefaultChoicePrompt, o);
+						string.Format(null, TextDefaultChoiceForMultipleChoices, o) :
+						string.Format(null, TextDefaultChoicePrompt, o);
 				}
 				else
 				{
-					text2 = string.Format(null, DefaultChoicesForMultipleChoices, o);
+					text2 = string.Format(null, TextDefaultChoicesForMultipleChoices, o);
 				}
 			}
 			
@@ -343,16 +345,19 @@ namespace PowerShellFar
 		/// </summary>
 		public override string ReadLine()
 		{
+			string text;
 			if (Far.Api.UI.IsCommandMode)
 			{
 				var ui = new UI.ReadLine() { History = Res.HistoryPrompt };
-				return ui.Show() ? ui.Text : string.Empty;
+				text = ui.Show() ? ui.Text : string.Empty;
+				WriteLine(text);
 			}
 			else
 			{
 				var ui = new UI.InputDialog(string.Empty, Res.HistoryPrompt);
-				return ui.UIDialog.Show() ? ui.UIEdit.Text : string.Empty;
+				text = ui.UIDialog.Show() ? ui.UIEdit.Text : string.Empty;
 			}
+			return text;
 		}
 		/// <summary>
 		/// Shows progress information. Used by Write-Progress cmdlet.

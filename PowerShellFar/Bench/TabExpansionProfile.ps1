@@ -54,15 +54,27 @@ $TabExpansionOptions.CustomArgumentCompleters += @{
 
 ### Add native application completers
 $TabExpansionOptions.NativeArgumentCompleters += @{
-	### Far Manager command line switches
-	'Far' = {
+	### complete x in "git x"
+	'git' = {
 		param($wordToComplete, $commandAst)
 
-		# default
-		if ($wordToComplete) {return}
+		# if (!word)
+		# git x [Tab] ~ ast -ne "git" -- skip it
+		# git [Tab] ~ ast -eq "git" -- get all commands
+		$code = "$commandAst"
+		if (!$wordToComplete -and $code -ne 'git') {return}
+		if ($wordToComplete -notmatch '^\w?[\w\-]*$') {return}
+		if ($code -notmatch "^git\s*$wordToComplete$") {return}
 
-		# suggest all command line switches
-		'/a','/ag','/clearcache','/co','/e','/export','/import','/m','/ma','/p','/ro','/rw','/s','/t','/u','/v','/w','/w-'
+		if (!($git = Get-Command git.exe -ErrorAction 0)) {return}
+		$git = Split-Path $git.Definition
+
+		$pat = "$wordToComplete*"
+		foreach($name in Get-ChildItem -LiteralPath $git\..\libexec\git-core -Filter git-*.exe -Name) {
+			if ($name -match '^git-(.*)\.exe$' -and $matches[1] -like $pat) {
+				$matches[1]
+			}
+		}
 	}
 }
 
