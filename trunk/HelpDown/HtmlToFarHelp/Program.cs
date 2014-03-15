@@ -18,18 +18,38 @@ using System;
 using System.Collections;
 using System.Data.Common;
 using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
+
+[assembly: AssemblyVersion("1.0.1")]
+[assembly: AssemblyProduct("HtmlToFarHelp")]
+[assembly: AssemblyTitle("HtmlToFarHelp")]
+[assembly: AssemblyDescription("HtmlToFarHelp - converts HTML to Far Manager help")]
+[assembly: AssemblyCompany("http://code.google.com/p/farnet/")]
+[assembly: AssemblyCopyright("Copyright (c) 2012-2014 Roman Kuzmin")]
+[assembly: ComVisible(false)]
+[assembly: CLSCompliant(true)]
 
 namespace HtmlToFarHelp
 {
 	class Program
 	{
+		const string Usage = @"Error: {0}
+{1}
+
+Usage:
+  HtmlToFarHelp.exe key=value ...
+  HtmlToFarHelp.exe ""key = value; ...""
+
+Keys:
+  From = Input HTML file
+  To   = Output HLF file
+";
 		static int Main(string[] args)
 		{
 			var parameters = string.Join("; ", args);
-
-			var converter = new Converter();
 			string from = null;
 			string to = null;
 			try
@@ -45,17 +65,18 @@ namespace HtmlToFarHelp
 					}
 				}
 
-				if (from == null) throw new ArgumentException("Missing argument: From=<HTML file>");
-				if (to == null) throw new ArgumentException("Missing argument: To=<HLF file>");
+				if (from == null) throw new ArgumentException("Missing key 'From'.");
+				if (to == null) throw new ArgumentException("Missing key 'To'.");
 			}
 			catch (Exception e)
 			{
-				Console.Error.WriteLine(string.Format(null, "Invalid command line. Parameter string: '{0}'. Error: {1}", parameters, e.Message));
+				Console.Error.WriteLine(string.Format(null, Usage, e.Message, parameters));
 				return 1;
 			}
 
 			try
 			{
+				var converter = new Converter();
 				using (var reader = new XmlTextReader(from))
 				{
 					using (var writer = new StreamWriter(to, false, Encoding.UTF8))

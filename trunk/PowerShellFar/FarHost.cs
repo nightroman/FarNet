@@ -26,6 +26,8 @@ namespace PowerShellFar
 		PSHostUserInterface _UI;
 		// Nested prompt editor.
 		IEditor _nested;
+		// Level counter.
+		int _BeginApplication;
 		/// <summary>
 		/// Construct an instance of this PSHost implementation.
 		/// Keep a reference to the hosting application object.
@@ -140,13 +142,18 @@ namespace PowerShellFar
 		/// </summary>
 		public override void NotifyBeginApplication()
 		{
-			//_140311_185917 ps: git log -- [q] => without ShowUserScreen/SaveUserScreen it ends up with not shown panels
+			//_140311_185917
+			// Why ShowUserScreen/SaveUserScreen:
+			// ps: git log -- [q] => without ShowUserScreen/SaveUserScreen results in not shown panels
+			// Why WriteLine:
+			// cc: MarkdownToHtml.exe from=z => error output overrides prompt echo
+			// ps: 42; MarkdownToHtml.exe => error output overrides 42
 			++_BeginApplication;
-			Far.Api.UI.ShowUserScreen();
+			if (A.Psf.FarUI.Writer is ConsoleOutputWriter)
+				A.Psf.FarUI.Writer.WriteLine(); // also calls ShowUserScreen and echo ps: ...
+			else
+				Far.Api.UI.ShowUserScreen();
 		}
-		// Why? NotifyEndApplication may be called without NotifyBeginApplication (no idea why).
-		// E.g. Panels, F11 PSF 1, PSF history, Enter
-		int _BeginApplication;
 		/// <summary>
 		/// Called after an external application process finishes.
 		/// It is used to restore state that the child process may have altered.
@@ -154,6 +161,8 @@ namespace PowerShellFar
 		public override void NotifyEndApplication()
 		{
 			//_140311_185917
+			// Why "if > 0"? NotifyEndApplication may be called without NotifyBeginApplication (no idea why).
+			// :: Panels, F11 PSF 1, PSF history, Enter
 			if (_BeginApplication > 0)
 			{
 				--_BeginApplication;

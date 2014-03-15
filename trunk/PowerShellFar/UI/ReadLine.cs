@@ -15,17 +15,18 @@ namespace PowerShellFar.UI
 	{
 		public string HelpMessage { get; set; }
 		public string History { get; set; }
+		public string Prompt { get; set; }
 		public bool Password { get; set; }
 
-		public string Text { get { return _Text ?? _Edit.Text; } }
-		public string EditText { get { return _Text; } }
+		public string Text { get { return _Text2 ?? _Edit.Text; } }
 
 		IDialog _Dialog;
 		IEdit _Edit;
-		string _Text;
+		string _Text2;
 
 		public bool Show()
 		{
+			string prompt = Prompt ?? "";
 			var size = Far.Api.UI.WindowSize;
 
 			_Dialog = Far.Api.CreateDialog(0, size.Y - 2, size.X - 1, size.Y - 1);
@@ -34,16 +35,22 @@ namespace PowerShellFar.UI
 
 			if (Password)
 			{
-				_Edit = _Dialog.AddEditPassword(0, 0, size.X - 1, string.Empty);
+				_Edit = _Dialog.AddEditPassword(prompt.Length, 0, size.X - 1, string.Empty);
 			}
 			else
 			{
 				int right = string.IsNullOrEmpty(History) ? size.X - 1 : size.X - 2;
-				_Edit = _Dialog.AddEdit(0, 0, right, string.Empty);
+				_Edit = _Dialog.AddEdit(prompt.Length, 0, right, string.Empty);
 				_Edit.History = History;
 			}
 			_Edit.Coloring += Coloring.ColorEditAsConsole;
 
+			if (prompt.Length > 0)
+			{
+				var uiText = _Dialog.AddText(0, 0, prompt.Length - 1, prompt);
+				uiText.Coloring += Coloring.ColorTextAsConsole;
+			}
+			
 			var uiArea = _Dialog.AddText(0, 1, size.X - 1, string.Empty);
 			uiArea.Coloring += Coloring.ColorTextAsConsole;
 
@@ -76,7 +83,7 @@ namespace PowerShellFar.UI
 					var text = Far.Api.AnyEditor.EditText(args);
 					if (text != args.Text)
 					{
-						_Text = text;
+						_Text2 = text;
 						_Dialog.Close();
 					}
 					break;

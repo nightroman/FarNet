@@ -1,6 +1,18 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.66 =
+
+Command console:
+- Fix: output from console apps could override prompt echo.
+- Read-Host and Prompt(): prompt and echo use ":" in a new line.
+- Like in MS, empty text exits prompts for multiple values (e.g. string[]).
+
+TabExpansionProfile.ps1: Replaced demo completer of Far switches with more
+practical completer of git commands, e.g. git [Tab]->all, git a[Tab]->a...
+
+HLF file uses new syntax (Mantis#0002619). Recommended Far 3.0.3831.
+
 = 5.0.65 =
 
 Command console and "ps:" commands:

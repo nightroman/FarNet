@@ -89,7 +89,11 @@ namespace PowerShellFar
 			if (Far.Api.UI.IsCommandMode)
 			{
 				var ui = new UI.ReadLine() { Password = true };
-				return ui.Show() ? (SecureString)ValueToResult(ui.Text, true).BaseObject : null;
+				if (!ui.Show())
+					return null;
+				
+				WriteLine("*");
+				return (SecureString)ValueToResult(ui.Text, true).BaseObject;
 			}
 			
 			const string name = " ";
