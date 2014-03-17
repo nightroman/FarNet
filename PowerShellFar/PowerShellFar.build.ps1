@@ -85,7 +85,9 @@ task NuGet Package, Version, {
 PowerShellFar is the FarNet module for Far Manager, the file manager.
 It is the Windows PowerShell host in the genuine console environment.
 
-To install FarNet and then FarNet.PowerShellFar in Far Manager use:
+---
+
+To install/update Far Manager packages use this PowerShell script:
 
 https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
 '@
@@ -99,7 +101,7 @@ https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
-		<licenseUrl>https://farnet.googlecode.com/svn/trunk/PowerShellFar/LICENSE.txt</licenseUrl>
+		<licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>

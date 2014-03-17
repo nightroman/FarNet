@@ -1,6 +1,12 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.67 =
+
+Command console:
+- Nested prompt and debugger console also use command console prompt.
+- Editor consoles are not used in command console mode (i.e. denied).
+
 = 5.0.66 =
 
 Command console:

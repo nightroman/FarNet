@@ -158,34 +158,15 @@ namespace PowerShellFar.UI
 				Far.Api.PostMacro("Keys'CtrlB'");
 
 			// post command loop
-			Far.Api.PostStep(Loop);
+			Far.Api.PostStep(StartLoop);
 		}
-		static void Loop()
+		static void StartLoop()
 		{
 			Far.Api.UI.ShowUserScreen(); //! to hide menu bar
 			Far.Api.UI.IsCommandMode = true;
 			try
 			{
-				for (; ; )
-				{
-					var prompt = GetPrompt();
-
-					var ui = new InputConsole(prompt, Res.History);
-					if (!ui._Dialog.Show())
-						return;
-
-					bool fromEditor = ui._TextFromEditor != null;
-					var code = (fromEditor ? ui._TextFromEditor : ui._Edit.Text).TrimEnd();
-					if (code.Length == 0)
-						continue;
-
-					// code from editor - invoke, do not add to history
-					// code from line - invoke, add to history
-					if (fromEditor)
-						A.Psf.Act(code, new ConsoleOutputWriter(prompt + Environment.NewLine + code, true), false);
-					else
-						A.Psf.Act(code, new ConsoleOutputWriter(prompt + code, true), true);
-				}
+				Loop(false);
 			}
 			finally
 			{
@@ -197,6 +178,52 @@ namespace PowerShellFar.UI
 				if (_visibleKeyBar)
 					Far.Api.PostMacro("Keys'CtrlB'");
 			}
+		}
+		internal static bool Exit { get; set; }
+		internal static void Loop(bool nested)
+		{
+			// reset the flag for this loop
+			Exit = false;
+			
+			// REPL
+			for (; ; )
+			{
+				// get prompt
+				var prompt = GetPrompt();
+
+				// show prompt
+				var ui = new InputConsole(prompt, Res.History);
+				if (!ui._Dialog.Show())
+				{
+					if (nested)
+					{
+						// user exists UI, not by "exit", so do "exit"
+						using (var ps = A.Psf.NewPowerShell())
+							ps.AddScript("exit").Invoke();
+					}
+					break;
+				}
+
+				// get code, skip empty
+				bool fromEditor = ui._TextFromEditor != null;
+				var code = (fromEditor ? ui._TextFromEditor : ui._Edit.Text).TrimEnd();
+				if (code.Length == 0)
+					continue;
+
+				// code from editor - invoke, do not add to history
+				// code from line - invoke, add to history
+				if (fromEditor)
+					A.Psf.Act(code, new ConsoleOutputWriter(prompt + Environment.NewLine + code, true), false);
+				else
+					A.Psf.Act(code, new ConsoleOutputWriter(prompt + code, true), true);
+
+				// "exit" is called and set by ExitNestedPrompt()
+				if (Exit)
+					break;
+			}
+			
+			// reset the flag for other loops
+			Exit = false;
 		}
 	}
 }

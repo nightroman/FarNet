@@ -576,10 +576,23 @@ HANDLE Far0::AsOpen(const OpenInfo* info)
 	}
 }
 
+void Far0::DisposeSteps()
+{
+	while(_steps->Count)
+		delete _steps->Pop();
+}
+
 // Plugin.Menu is not a replacement for F11, it is less predictable on posted keys and async jobs.
 void Far0::PostSelf()
 {
 	Far::Api->PostMacro("Keys('F11') Menu.Select('FarNet', 2) Keys('Enter')");
+	
+	// ++level. With no steps it is normally expected to be 0.
+	// Just in case something was wrong set it to expected 1.
+	if (!_steps || !_steps->Count)
+		_levelPostSelf = 1;
+	else
+		++_levelPostSelf;
 }
 
 // When PostSteps is better than PostJob: PostSteps calls from OpenW(),
@@ -597,24 +610,28 @@ void Far0::PostSteps(IEnumerable<Object^>^ steps)
 }
 
 /*
-Why fake step. On Action we PostSelf() and then action(). PostSelf() cannot be
-undone, OpenW() is going to be called anyway. A fake step is to ignore this call.
+Why fake steps. On Action we PostSelf() and then action(). PostSelf() cannot be
+undone, OpenW() is going to be called anyway. Fake steps are to ignore this call.
 
-Why skip step. `MoveNext` or `Current` can start modal UI. [F11] should work
-for a user as usual there even if pending steps exist. Thus, we set the flag
-before calling these members.
+Why skip step. MoveNext or Current can start modal UI. [F11] should work for
+a user as usual there even if we are self posted. Thus, we set the flag
+before calling these members and drop it after.
+
+_140316_042825!.ps1
+_140316_044206!.ps1
 */
-static bool _SkipStep;
 void Far0::OpenMenu(ModuleToolOptions from)
 {
 	// just show the menu
-	if (!_steps || !_steps->Count || _SkipStep)
+	if (!_steps || !_steps->Count || _skipStep)
 	{
 		ShowMenu(from);
 		return;
 	}
 
-	// the current iterator; null is a fake step
+	--_levelPostSelf;
+
+	// the current step iterator, null for fake steps to ignore
 	IEnumerator<Object^>^ enumerator = _steps->Peek();
 	if (!enumerator)
 	{
@@ -623,10 +640,11 @@ void Far0::OpenMenu(ModuleToolOptions from)
 	}
 
 	// invoke the next step
-	bool makeFakeStep = false;
 	try
 	{
-		_SkipStep = true;
+		_skipStep = true;
+		
+		// end of steps
 		if (!enumerator->MoveNext())
 		{
 			delete _steps->Pop();
@@ -657,35 +675,27 @@ void Far0::OpenMenu(ModuleToolOptions from)
 		Action^ action = dynamic_cast<Action^>(current);
 		if (action)
 		{
-			_SkipStep = false;
+			_skipStep = false;
 			PostSelf();
-			try
-			{
-				action();
-				return;
-			}
-			catch(...)
-			{
-				makeFakeStep = true;
-				throw;
-			}
+			action();
+			return;
 		}
 
 		throw gcnew InvalidOperationException("Unexpected step type: " + current->GetType());
 	}
 	catch(...)
 	{
-		while(_steps->Count)
-			delete _steps->Pop();
+		DisposeSteps();
 
-		if (makeFakeStep)
+		// post fake steps
+		if (_levelPostSelf > 0)
 			_steps->Push(nullptr);
 
 		throw;
 	}
 	finally
 	{
-		_SkipStep = false;
+		_skipStep = false;
 	}
 }
 

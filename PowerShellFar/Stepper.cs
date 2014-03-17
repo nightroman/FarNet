@@ -346,10 +346,11 @@ namespace PowerShellFar
 					_steps.Clear();
 					_StepIndex = 0;
 
-					// get steps from the current unit
+					// get steps from the unit
+					Collection<PSObject> steps;
 					var path = _units[_UnitIndex];
-					var code = "& '" + path.Replace("'", "''") + "'";
-					Collection<PSObject> steps = A.InvokeCode(code);
+					using (var ps = A.Psf.NewPowerShell())
+						steps = ps.AddCommand(path).Invoke();
 
 					// no steps? 'continue'
 					if (steps.Count == 0)

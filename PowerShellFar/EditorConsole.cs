@@ -46,6 +46,12 @@ namespace PowerShellFar
 		/// </remarks>
 		public static EditorConsole CreateConsole(bool prompt)
 		{
+			if (Far.Api.UI.IsCommandMode)
+			{
+				A.Message("Cannot start editor console from command console.");
+				return null;
+			}
+
 			int mode = 0;
 			if (prompt)
 			{
