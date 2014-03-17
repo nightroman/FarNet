@@ -92,6 +92,12 @@ task NuGet Package, Version, {
 	$text = @'
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The package includes the framework and the module manager plugin.
+
+---
+
+To install/update Far Manager packages use this PowerShell script:
+
+https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1
 '@
 	# nuspec
 	Set-Content z\Package.nuspec @"
@@ -103,7 +109,7 @@ FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://code.google.com/p/farnet</projectUrl>
-		<licenseUrl>https://farnet.googlecode.com/svn/trunk/FarNet/LICENSE.txt</licenseUrl>
+		<licenseUrl>http://opensource.org/licenses/BSD-3-Clause</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>

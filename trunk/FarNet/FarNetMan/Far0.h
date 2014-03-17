@@ -45,6 +45,7 @@ private:
 	static void PostSelf();
 	static void InvalidateProxyTool(ModuleToolOptions options);
 	static String^ GetMenuText(IModuleTool^ tool);
+	static void DisposeSteps();
 private:
 	static void FreePluginMenuItem(PluginMenuItem& p);
 	static array<IModuleTool^>^ _toolConfig;
@@ -59,7 +60,9 @@ private:
 	static List<IModuleEditor^> _registeredEditor;
 private:
 	static CultureInfo^ _currentUICulture;
-	// Step
+	// Steps
+	static bool _skipStep;
+	static int _levelPostSelf;
 	static Stack<IEnumerator<Object^>^>^ _steps;
 	// Sync
 	static HANDLE _hMutex;

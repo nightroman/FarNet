@@ -41,7 +41,7 @@
 
 [Contents](#Contents)
 
-### PowerShellFar 5.0.66
+### PowerShellFar 5.0.67
 
 PowerShellFar is the FarNet module for Far Manager, the file manager.
 It is the Windows PowerShell host in the genuine console environment.
@@ -65,8 +65,8 @@ To install and update PowerShellFar and FarNet use *Update-FarPackage.ps1*.
 
 ### Requirements
 
-- Far Manager 3.0.3831
-- Plugin FarNet 5.0.43
+- Far Manager 3.0.3835
+- Plugin FarNet 5.0.44
 - Windows PowerShell 2.0, 3.0
 
 ---
@@ -144,63 +144,60 @@ PowerShellFar is all about invoking PowerShell commands in Far Manager. There
 are many ways of doing this and literally you can type and invoke commands at
 any moment in almost any current context.
 
-### Ways to invoke commands
+**Command line**
 
-* Command console
+ : Use the Far Manager command line to type and invoke commands with prefixes
+   `ps:` and `vps:`, see [Command line](#CommandLine). This way is useful for
+   invoking a single command. For a series of commands the command console is
+   often more convenient.
 
-    The command console is started from panels:
-    `[F11] \ PowerShellFar \ Command console`.
-    See [Command console dialog](#CommandConsoleDialog).
+**Command console**
 
-* Invoke commands
+ : The command console is started from panels: `[F11] \ PowerShellFar \ Command console`.
+   This mode is similar to standard PowerShell console. But it provides many
+   extra features: permanent history, history completion, TabExpansion choice
+   menu, command context help, and etc.
+   See [Command console dialog](#CommandConsoleDialog).
 
-    The input box can be opened at any moment:
-    `[F11] \ PowerShellFar \ Invoke commands`.
-    See [Invoke commands dialog](#InvokeCommandsDialog).
+**Invoke commands**
 
-* Selected code
+ : The input box can be opened at any moment: `[F11] \ PowerShellFar \ Invoke commands`.
+   See [Invoke commands dialog](#InvokeCommandsDialog).
 
-    Selected text in any editor including the command line and
-    dialog edit boxes can be invoked as PowerShell code:
-    `[F11] \ PowerShellFar \ Invoke selected`.
+**Selected code**
 
-* Command line
+ : Selected text in any editor including the command line and dialog edit boxes
+   can be invoked as PowerShell code: `[F11] \ PowerShellFar \ Invoke selected`.
 
-    In panels use the command line to type and invoke commands with prefixes
-    (`ps:` and `vps:` by default).
-    See [Command line](#CommandLine).
+**Editor consoles**
 
-* User menu and file associations
+ : Main, local, and remote editor consoles: `[F11] \ PowerShellFar \ Editor console`.
+   The editor is modal if it is started from a modal context. Local and remote
+   consoles use new PowerShell sessions and invoke commands asynchronously, UI
+   is not blocked when commands are running, even with output in progress.
+   See [Editor console](#EditorConsole).
 
-    The user menu (`[F2]`) and file associations (`[F9] \ Commands \ File
-    associations`) may include PowerShell commands with prefixes. See Far
-    Manager help for details.
+**Script editor**
 
-* Editor consoles
+ : A script opened in the editor can be invoked by `[F5]` in the editor. It is
+   the same as to invoke the script without parameters from the command line or
+   the command box.
 
-    Main, local, and remote editor consoles can be opened at any moment: `[F11]
-    \ PowerShellFar \ Editor console`. The editor is modal if it is started
-    from a modal context. Local and remote consoles use separate PowerShell
-    sessions and invoke commands asynchronously, UI is not blocked when
-    commands are running, even with their output in progress.
-    See [Editor console](#EditorConsole).
+**Far Manager macros**
 
-* Script editor
+ : Macros associate key combinations in UI areas with pieces of macro code
+   which can invoke PowerShell commands.
+   See [Command and macro examples](#Examples).
 
-    A script opened in the editor can be invoked in the main session by `[F5]`
-    in the editor. It is the same as to invoke the script without parameters
-    from the command line or the command box.
+**User menu and file associations**
 
-* Far Manager macros
+ : The user menu (`[F2]`) and file associations (`[F9] \ Commands \ File associations`)
+   may include PowerShell commands with prefixes. See Far Manager help for
+   details.
 
-    Macros associate key combinations in UI areas with pieces of macro code
-    which can invoke PowerShell commands.
-    See [Command and macro examples](#Examples).
-
-* Menu actions and event handlers
-
-    Menu actions and various event handlers can be added using the profiles.
-    See [Profile.ps1](#Profile) and [Profile-Editor.ps1](#ProfileEditor).
+**Menu actions and event handlers**
+ : Menu actions and various event handlers can be added using the profiles.
+   See [Profile.ps1](#Profile) and [Profile-Editor.ps1](#ProfileEditor).
 
 ---
 
@@ -779,16 +776,15 @@ in editor, take a look at the source code, or stop the pipeline and debugging.
   next statement.
 
 `{Console}`
-: Opens an editor console (in other words, nested prompt) where you can examine
-  or change variables, invoke commands and etc. On exit the same dialog is
-  repeated. See also [Editor console](#EditorConsole).
+: Opens a command or editor console, depending on where debugging was started.
+  There you can examine or change variables, invoke commands, and etc. On exit
+  the debugger dialog is repeated.
 
 `{Edit}`
 : Opens the source in the editor at the debugger line. The editor is locked
   because changes during debugging normally should be avoided. Of course the
-  editor can be unlocked and the script modified but normal debugging steps may
-  be difficult after that. On exit from the editor the debugger dialog is
-  repeated.
+  editor can be unlocked and the script modified but normal debugging may be
+  difficult after that. On exit the debugger dialog is repeated.
 
 `{View}`
 : Opens an external viewer to view commands output. This action is available

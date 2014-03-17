@@ -23,7 +23,7 @@
 
 [Contents](#Contents)
 
-### FarNet 5.0.43
+### FarNet 5.0.44
 
 FarNet provides the .NET API for Far Manager and the runtime infrastructure for
 .NET modules. The API is exposed in comfortable object oriented way and most of
@@ -42,7 +42,7 @@ tiny pieces of boilerplate framework code.
 
 ### Requirements
 
-- Far Manager 3.0.3827
+- Far Manager 3.0.3835
 - .NET Framework 3.5 or 4.0
 - Microsoft Visual C++ 2008 SP1 Redistributable Package
 
@@ -56,7 +56,7 @@ modules. You may have to download and install one of the packages:
 
 ### Installation
 
-**Automated**
+**Scripted**
 
 Use the script <https://farnet.googlecode.com/svn/trunk/PowerShellFar/Bench/Update-FarPackage.ps1>
 
@@ -67,20 +67,17 @@ Close all Far instances and invoke this command in PowerShell:
 **Manual**
 
 The package directory *tools* contains files to be installed. Files from
-*FarHome...* directories should be copied to the *%FARHOME%* directory
+*FarHome* and *FarHome.x??* should be copied to the Far Manager directory
 preserving their directory structure.
 
-- *FarHome*
+*FarHome*
+ : The FarNet framework files and the common plugin files.
 
-    The FarNet framework files and the common plugin files.
+*FarHome.x64*
+ : Additional x64 plugin files for x64 installation.
 
-- *FarHome.x64*
-
-    Additional x64 plugin files for x64 installation.
-
-- *FarHome.x86*
-
-    Additional x86 plugin files for x86 installation.
+*FarHome.x86*
+ : Additional x86 plugin files for x86 installation.
 
 Other files and samples:
 
@@ -95,7 +92,8 @@ Other files and samples:
 
 *%FARHOME%*
 
-- *Far.exe.config* - the configuration file
+- *Far.exe.config* - the configuration file. If it is missing or invalid then
+  Far Manager fails to load FarNet.
 
 *%FARHOME%\Plugins\FarNet*
 
@@ -113,13 +111,6 @@ Other files and samples:
 
 - Module root directory. Each child directory is normally a module directory.
 
-NOTES
-
-- *Far.exe.config* can change the default FarNet directory but this is not
-recommended and not tested.
-- *Far.exe.config* must be in the *%FARHOME%* directory. If this file is missing
-or invalid then Far Manager fails to load FarNet and shows only basic failure
-message with no details.
 
 *********************************************************************
 ## Commands in macros {#Macros}
@@ -163,7 +154,7 @@ Asynchronous step (`IFar.PostStep()`)
 Conclusion:
 
 - Synchronous calls are for simple actions with no or tiny interaction;
-- Asynchronous `Plugin.Call` normally should be the last macro command;
+- Asynchronous command normally should be the last in a macro;
 - Asynchronous jobs are for opening any UI but panels;
 - Asynchronous steps are for opening panels.
 
@@ -193,8 +184,7 @@ Asynchronous step. *PowerShellFar* opens a panel:
 For each directory *ModuleName* in *Modules* the core looks for and loads the
 module assembly *ModuleName\ModuleName.dll* (note: directory and assembly names
 should be the same). When the assembly is loaded the core looks for the special
-module classes in it. The module directory may contain other files including
-other assemblies, the core ignores them.
+module classes in it. Other files including assemblies are ignored.
 
 Unique module names (module directory and base assembly names) define
 namespaces for various module information. These names should be chosen
@@ -207,7 +197,7 @@ carefully and should not change.
 If a module is not preloadable then on its first loading the core caches its
 meta data like menu item titles, command prefixes, supported file masks, and
 etc. Next time the module data are read from the cache and the module is not
-loaded when the core starts. It is loaded only when it starts to work.
+loaded when the core starts. It is loaded when it starts to work.
 
 Normally the core discovers module changes and updates the cache itself. In
 rare cases the cache may have to be removed manually and the core restarted.
