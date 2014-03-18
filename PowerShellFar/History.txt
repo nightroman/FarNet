@@ -1,6 +1,15 @@
 The NuGet package: https://www.nuget.org/packages/FarNet.PowerShellFar
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2258
 
+= 5.0.68 =
+
+Use FarNet 5.0.45
+
+Command console:
+- Fixed missing cursor on cls.
+- Fixed extra empty line on Read-Host.
+- Fixed a conflict between console app output and prompt. _140317_205620
+
 = 5.0.67 =
 
 Command console:

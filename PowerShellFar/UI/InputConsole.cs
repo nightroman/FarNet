@@ -160,9 +160,24 @@ namespace PowerShellFar.UI
 			// post command loop
 			Far.Api.PostStep(StartLoop);
 		}
+		//_140317_205620
+		// Why scroll one line:
+		// - ensure key bar is off
+		// - run PowerShell.exe with a prompt for choice, [CtrlC] there
+		// > there is text T at line [-2] (NB: cmdline is at line [-1])
+		// - start Command Console
+		// > 1) T at [-2] is under prompt
+		// > 2) if prompt echo is shorter that T, then end of T is shown after echo text.
 		static void StartLoop()
 		{
-			Far.Api.UI.ShowUserScreen(); //! to hide menu bar
+			//! to hide menu bar
+			Far.Api.UI.ShowUserScreen();
+
+			// scroll one line?
+			var textUnderPrompt = Far.Api.UI.GetBufferLineText(-2);
+			if (textUnderPrompt.Length > 0)
+				Far.Api.UI.WriteLine();
+
 			Far.Api.UI.IsCommandMode = true;
 			try
 			{
@@ -184,7 +199,7 @@ namespace PowerShellFar.UI
 		{
 			// reset the flag for this loop
 			Exit = false;
-			
+
 			// REPL
 			for (; ; )
 			{
@@ -221,7 +236,7 @@ namespace PowerShellFar.UI
 				if (Exit)
 					break;
 			}
-			
+
 			// reset the flag for other loops
 			Exit = false;
 		}
