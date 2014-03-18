@@ -516,10 +516,17 @@ IntPtr FarUI::MainWindowHandle::get()
 	return (IntPtr)Info.AdvControl(&MainGuid, ACTL_GETFARHWND, 0, 0);
 }
 
+//_140317_201247
+// Why cursor. With Far /s all is fine. Else on `cls` in PSF Command Console
+// the cursor is somewhere and not shown in the prompt until click or type.
+// So maybe one day this is not needed.
 void FarUI::Clear()
 {
+	Point cursor = BufferCursor;
+	ShowUserScreen();
 	Console::Clear();
 	SaveUserScreen();
+	BufferCursor = cursor;
 }
 
 void FarUI::Redraw()
@@ -560,6 +567,33 @@ void FarUI::IsCommandMode::set(bool value)
 		throw gcnew InvalidOperationException("Command mode is already started.");
 
 	_IsCommandMode = value;
+}
+
+String^ FarUI::GetBufferLineText(int lineIndex)
+{
+	Point size = BufferSize;
+	if (lineIndex < 0)
+		lineIndex += BufferSize.Y;
+	if (lineIndex < 0 || lineIndex >= BufferSize.Y)
+		throw gcnew IndexOutOfRangeException("Buffer line index is out of range.");
+
+	// get 
+	Place rect(0, lineIndex, BufferSize.X - 1, lineIndex);
+	array<Works::BufferCell, 2>^ cells = GetBufferContents(rect);
+	
+	// find last
+	int last = cells->GetLength(1);
+	while(--last >= 0 && cells[0, last].Character == ' ') {}
+
+	// empty
+	if (last < 0)
+		return String::Empty;
+
+	StringBuilder sb(last + 1);
+	for (int i = 0; i <= last; ++i)
+		sb.Append(cells[0, i].Character, 1);
+
+	return sb.ToString();
 }
 
 }

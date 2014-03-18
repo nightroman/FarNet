@@ -1,6 +1,12 @@
 The NuGet package: https://www.nuget.org/packages/FarNet
 HOW TO GET AND INSTALL: http://forum.farmanager.com/viewtopic.php?f=11&t=2256
 
+= 5.0.45 =
+
+IUserInterface:
+- New method GetBufferLineText, INTERNAL for now, used by PSF.
+- Work around missing cursor on cls in PSF command console. _140317_201247
+
 = 5.0.44 =
 
 Async steps:

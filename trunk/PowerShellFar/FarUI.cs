@@ -69,7 +69,6 @@ namespace PowerShellFar
 
 			if (Far.Api.UI.IsCommandMode)
 			{
-				WriteLine();
 				if (!string.IsNullOrEmpty(caption))
 					WriteLine(PromptColor, BackgroundColor, caption);
 				if (!string.IsNullOrEmpty(message))
